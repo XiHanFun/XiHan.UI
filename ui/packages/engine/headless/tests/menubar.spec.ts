@@ -869,6 +869,33 @@ describe('menubar 菜单内键盘', () => {
     expect(c.content('file').hasAttribute('hidden')).toBe(true)
   })
 
+  it('checkbox / radio 切换选择值后默认保持当前菜单展开', () => {
+    const checkbox = vi.fn()
+    const radio = vi.fn()
+    const c = mount({
+      defaultValue: 'view',
+      defaultCheckboxValue: ['full'],
+      defaultRadioValue: { density: 'compact' },
+      onCheckboxValueChange: checkbox,
+      onRadioValueChange: radio,
+    })
+
+    expect(c.api().getCheckboxItemProps({ value: 'full' }) as Record<string, unknown>).toMatchObject({
+      'role': 'menuitemcheckbox',
+      'aria-checked': 'true',
+    })
+    expect(c.api().getRadioItemProps({ value: 'comfortable', group: 'density' }) as Record<string, unknown>).toMatchObject({
+      'role': 'menuitemradio',
+      'aria-checked': 'false',
+    })
+
+    c.service.send({ type: 'ITEM.SELECT', value: 'full', kind: 'checkbox', close: false })
+    c.service.send({ type: 'ITEM.SELECT', value: 'comfortable', kind: 'radio', group: 'density', close: false })
+    expect(c.value()).toBe('view')
+    expect(checkbox).toHaveBeenCalledExactlyOnceWith({ value: [] })
+    expect(radio).toHaveBeenCalledExactlyOnceWith({ value: { density: 'comfortable' } })
+  })
+
   it('点击禁用条目：不选中、不收起、一个事件也不发', () => {
     const c = mount({}, { disabledItem: 'open' })
     click(c.trigger('file'))
@@ -1325,7 +1352,7 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，trig
     const h = mount({ defaultValue: 'file' })
     fire(itemProps(h, 'new'), 'onKeyDown', key('Enter'))
     expect(itemProps(h, 'new')['data-pressed']).toBe('')
-    h.service.send({ type: 'ITEM.SELECT', value: 'new' })
+    h.service.send({ type: 'ITEM.SELECT', value: 'new', kind: 'item', close: true })
     expect(h.value()).toBeNull()
     expect(itemProps(h, 'new')['data-pressed']).toBeUndefined()
   })

@@ -6,7 +6,7 @@
 // 提供 context menu 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { ContextMenuItemProps, ContextMenuNode, ContextMenuOpenChangeDetails, ContextMenuSchema, ContextMenuSelectDetails } from '@xihan-ui/headless'
+import type { ContextMenuAnyItemProps, ContextMenuCheckboxValueChangeDetails, ContextMenuNode, ContextMenuOpenChangeDetails, ContextMenuRadioValue, ContextMenuRadioValueChangeDetails, ContextMenuSchema, ContextMenuSelectDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
@@ -50,6 +50,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
+ * @fires checkbox-value-change - checkbox 选中集合变化
+ * @fires radio-value-change - RadioGroup 选中映射变化
  * @csspart root - 组件根容器（承载 data-state）
  * @csspart trigger - 右键触发区（aria-haspopup / aria-controls 所在，自带 Tab 位供键盘打开）
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
@@ -77,6 +79,10 @@ export class XhContextMenuElement extends XhPortalHostElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的禁用即以数据为准
     collection: { attribute: false },
+    checkboxValue: { attribute: false },
+    defaultCheckboxValue: { attribute: false },
+    radioValue: { attribute: false },
+    defaultRadioValue: { attribute: false },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     placement: { converter: STRING_CONVERTER },
@@ -91,6 +97,10 @@ export class XhContextMenuElement extends XhPortalHostElement {
   }
 
   declare collection?: ContextMenuNode[]
+  declare checkboxValue?: string[]
+  declare defaultCheckboxValue?: string[]
+  declare radioValue?: ContextMenuRadioValue
+  declare defaultRadioValue?: ContextMenuRadioValue
   declare open?: boolean
   declare defaultOpen?: boolean
   declare placement?: Placement
@@ -103,6 +113,24 @@ export class XhContextMenuElement extends XhPortalHostElement {
   declare longPressDelay?: number
   declare tone?: Tone
   declare size?: Size
+
+  get currentCheckboxValue(): string[] {
+    return this.ctrl.service ? [...connectContextMenu(this.ctrl.service, wcNormalize).checkboxValue] : []
+  }
+
+  get currentRadioValue(): ContextMenuRadioValue {
+    return this.ctrl.service ? { ...connectContextMenu(this.ctrl.service, wcNormalize).radioValue } : {}
+  }
+
+  setCheckboxValue(next: string[]): void {
+    if (this.ctrl.service)
+      connectContextMenu(this.ctrl.service, wcNormalize).setCheckboxValue(next)
+  }
+
+  setRadioValue(next: ContextMenuRadioValue): void {
+    if (this.ctrl.service)
+      connectContextMenu(this.ctrl.service, wcNormalize).setRadioValue(next)
+  }
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly menuScope = createScope(this, this.idGen)
@@ -144,6 +172,14 @@ export class XhContextMenuElement extends XhPortalHostElement {
 
   private readonly notifySelect = (details: ContextMenuSelectDetails): void => {
     this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyCheckboxValue = (details: ContextMenuCheckboxValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('checkbox-value-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyRadioValue = (details: ContextMenuRadioValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('radio-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private wireSubmenuChild(child: MenuSubmenuChild): void {
@@ -213,6 +249,10 @@ export class XhContextMenuElement extends XhPortalHostElement {
   private machineProps(): Partial<ContextMenuSchema['props']> {
     return {
       collection: this.collection,
+      checkboxValue: this.checkboxValue,
+      defaultCheckboxValue: this.defaultCheckboxValue,
+      radioValue: this.radioValue,
+      defaultRadioValue: this.defaultRadioValue,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
@@ -226,6 +266,8 @@ export class XhContextMenuElement extends XhPortalHostElement {
       size: this.size,
       onOpenChange: this.notifyOpen,
       onSelect: this.notifySelect,
+      onCheckboxValueChange: this.notifyCheckboxValue,
+      onRadioValueChange: this.notifyRadioValue,
     }
   }
 
@@ -326,7 +368,9 @@ export class XhContextMenuElement extends XhPortalHostElement {
 
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      const isRadio = el.getAttribute('kind') === 'radio'
+        || api.collection.some(node => node.kind === 'radio' && node.group === group.value)
+      this.spreader.spread(el, (isRadio ? api.getRadioGroupProps(group) : api.getGroupProps(group)) as Record<string, unknown>)
       for (const label of this.partsIn(el, 'group-label'))
         this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
     }
@@ -336,11 +380,23 @@ export class XhContextMenuElement extends XhPortalHostElement {
     // 打上去的 data-scope/data-part/data-value 正是方向键与连打检索在事件那一刻查 DOM 的依据，
     // 所以 wire 必须先于事件跑过——updated() 已保证。
     for (const el of this.getParts('item')) {
-      const item: ContextMenuItemProps = {
-        value: el.getAttribute('value') ?? '',
-        disabled: this.collection ? this.declaredDisabled(el) : isItemDisabled(el),
-      }
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      const value = el.getAttribute('value') ?? ''
+      const meta = api.collection.find(node => node.value === value)
+      const kind = (meta?.kind ?? el.getAttribute('kind') ?? 'item') as ContextMenuAnyItemProps['kind']
+      const closeAttr = el.getAttribute('close-on-select')
+      const closeOnSelect = meta?.closeOnSelect ?? (closeAttr == null ? undefined : closeAttr !== 'false')
+      const disabled = this.collection ? this.declaredDisabled(el) : isItemDisabled(el)
+      const item: ContextMenuAnyItemProps = kind === 'radio'
+        ? { value, disabled, closeOnSelect, kind, group: meta?.group ?? el.closest<HTMLElement>('[data-xh-part="group"]')?.getAttribute('value') ?? '' }
+        : kind === 'checkbox'
+          ? { value, disabled, closeOnSelect, kind }
+          : { value, disabled, kind }
+      const itemProps = item.kind === 'checkbox'
+        ? api.getCheckboxItemProps(item)
+        : item.kind === 'radio'
+          ? api.getRadioItemProps(item)
+          : api.getItemProps(item)
+      this.spreader.spread(el, itemProps as Record<string, unknown>)
       // 条目内的文本与标记位跟着同一份声明走，样式层各处状态一致
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)

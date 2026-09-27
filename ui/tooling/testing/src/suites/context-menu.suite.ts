@@ -542,6 +542,42 @@ export const contextMenuSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'RadioItem 改写组值，默认保持右键菜单展开',
+      spec: { apg: `${APG}#wai-aria-roles-states-and-properties` },
+      props: {
+        defaultRadioValue: { edit: 'paste' },
+        collection: [
+          { value: 'copy', label: 'Copy', kind: 'radio', group: 'edit', groupLabel: '编辑' },
+          { value: 'paste', label: 'Paste', kind: 'radio', group: 'edit' },
+          { value: 'delete', label: 'Delete', group: 'danger' },
+        ],
+      },
+      initial: {
+        parts: {
+          'group[0]': { role: 'group' },
+          'item[0]': { 'role': 'menuitemradio', 'aria-checked': 'false', 'data-state': 'unchecked' },
+          'item[1]': { 'role': 'menuitemradio', 'aria-checked': 'true', 'data-state': 'checked' },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'raw', why: '同上：contextmenu 只能手写', run: rightClickAt(10, 10) },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'click',
+          part: 'item[0]',
+          expect: {
+            parts: {
+              'content': { 'hidden': null, 'data-state': 'open' },
+              'item[0]': { 'aria-checked': 'true', 'data-state': 'checked' },
+              'item[1]': { 'aria-checked': 'false', 'data-state': 'unchecked' },
+            },
+            events: [{ type: 'radio-value-change', detail: { value: { edit: 'copy' } } }],
+          },
+        },
+      ],
+    },
+    {
       name: '点击禁用条目：不选中、不关闭、一个事件也不发',
       spec: { apg: APG },
       steps: [

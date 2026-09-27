@@ -17,7 +17,10 @@ export {
 } from './context-menu.machine'
 export { contextMenuMeta } from './context-menu.meta'
 export type {
+  ContextMenuAnyItemProps,
   ContextMenuApi,
+  ContextMenuCheckboxItemProps,
+  ContextMenuCheckboxValueChangeDetails,
   ContextMenuFocusIntent,
   ContextMenuGroupProps,
   ContextMenuItemProps,
@@ -25,6 +28,9 @@ export type {
   ContextMenuNodeMeta,
   ContextMenuOpenChangeDetails,
   ContextMenuPoint,
+  ContextMenuRadioItemProps,
+  ContextMenuRadioValue,
+  ContextMenuRadioValueChangeDetails,
   ContextMenuRefs,
   ContextMenuSchema,
   ContextMenuSelectDetails,

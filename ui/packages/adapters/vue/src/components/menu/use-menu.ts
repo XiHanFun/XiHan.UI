@@ -36,6 +36,8 @@ function useMenuImpl(
   props: MenuSchema['props'],
   onOpenChange?: MenuSchema['props']['onOpenChange'],
   onSelect?: MenuSchema['props']['onSelect'],
+  onCheckboxValueChange?: MenuSchema['props']['onCheckboxValueChange'],
+  onRadioValueChange?: MenuSchema['props']['onRadioValueChange'],
   treeParent?: MenuTreeNode,
 ): MenuContext {
   const xhConfig = useXhConfig()
@@ -57,6 +59,8 @@ function useMenuImpl(
     ...props,
     onOpenChange,
     onSelect: treeParent ? tree.select : onSelect,
+    onCheckboxValueChange,
+    onRadioValueChange,
   }), scope)
   const releaseParent = treeParent?.registerChild(tree)
   onBeforeUnmount(() => releaseParent?.())
@@ -107,8 +111,10 @@ export function useMenu(
   props: MenuSchema['props'],
   onOpenChange?: MenuSchema['props']['onOpenChange'],
   onSelect?: MenuSchema['props']['onSelect'],
+  onCheckboxValueChange?: MenuSchema['props']['onCheckboxValueChange'],
+  onRadioValueChange?: MenuSchema['props']['onRadioValueChange'],
 ): MenuContext {
-  return useMenuImpl(props, onOpenChange, onSelect)
+  return useMenuImpl(props, onOpenChange, onSelect, onCheckboxValueChange, onRadioValueChange)
 }
 
 /** 组合部件内部入口：把子菜单连接到 headless 逻辑树。 */
@@ -116,6 +122,8 @@ export function useMenuWithParent(
   props: MenuSchema['props'],
   onOpenChange: MenuSchema['props']['onOpenChange'] | undefined,
   treeParent: MenuTreeNode,
+  onCheckboxValueChange?: MenuSchema['props']['onCheckboxValueChange'],
+  onRadioValueChange?: MenuSchema['props']['onRadioValueChange'],
 ): MenuContext {
-  return useMenuImpl(props, onOpenChange, undefined, treeParent)
+  return useMenuImpl(props, onOpenChange, undefined, onCheckboxValueChange, onRadioValueChange, treeParent)
 }

@@ -659,6 +659,33 @@ describe('方向键导航', () => {
 })
 
 describe('选中与关闭', () => {
+  it('checkbox / radio 使用各自 ARIA 角色，默认切换值后保持展开', () => {
+    const checkbox = vi.fn()
+    const radio = vi.fn()
+    const h = mount({
+      defaultOpen: true,
+      defaultCheckboxValue: ['copy'],
+      defaultRadioValue: { density: 'compact' },
+      onCheckboxValueChange: checkbox,
+      onRadioValueChange: radio,
+    })
+
+    expect(h.api().getCheckboxItemProps({ value: 'copy' }) as Record<string, unknown>).toMatchObject({
+      'role': 'menuitemcheckbox',
+      'aria-checked': 'true',
+    })
+    expect(h.api().getRadioItemProps({ value: 'comfortable', group: 'density' }) as Record<string, unknown>).toMatchObject({
+      'role': 'menuitemradio',
+      'aria-checked': 'false',
+    })
+
+    h.service.send({ type: 'ITEM.SELECT', value: 'copy', kind: 'checkbox', close: false })
+    h.service.send({ type: 'ITEM.SELECT', value: 'comfortable', kind: 'radio', group: 'density', close: false })
+    expect(h.state()).toBe('open')
+    expect(checkbox).toHaveBeenCalledExactlyOnceWith({ value: [] })
+    expect(radio).toHaveBeenCalledExactlyOnceWith({ value: { density: 'comfortable' } })
+  })
+
   it('点击条目：先发选中详情再发关闭意图', () => {
     const onSelect = vi.fn()
     const onOpenChange = vi.fn()
@@ -1150,7 +1177,7 @@ describe('条目按压通道：Space / Enter 与触屏按住投影 data-pressed�
     const h = mount({ defaultOpen: true })
     fire(itemProps(h, 'copy'), 'onKeyDown', key('Enter'))
     expect(itemProps(h, 'copy')['data-pressed']).toBe('')
-    h.service.send({ type: 'ITEM.SELECT', value: 'copy' })
+    h.service.send({ type: 'ITEM.SELECT', value: 'copy', kind: 'item', close: true })
     expect(h.state()).toBe('closed')
     expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
     h.service.send({ type: 'OPEN', focus: 'none' })

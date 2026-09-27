@@ -15346,6 +15346,38 @@
             },
             {
               "kind": "field",
+              "name": "checkboxValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultCheckboxValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "radioValue",
+              "privacy": "public",
+              "type": {
+                "text": "ContextMenuRadioValue | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultRadioValue",
+              "privacy": "public",
+              "type": {
+                "text": "ContextMenuRadioValue | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "open",
               "privacy": "public",
               "type": {
@@ -15445,6 +15477,56 @@
             },
             {
               "kind": "field",
+              "name": "currentCheckboxValue",
+              "type": {
+                "text": "string[]"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentRadioValue",
+              "type": {
+                "text": "ContextMenuRadioValue"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setCheckboxValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setRadioValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "ContextMenuRadioValue"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -15525,6 +15607,18 @@
             {
               "kind": "field",
               "name": "notifySelect",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyCheckboxValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyRadioValue",
               "privacy": "private",
               "readonly": true
             },
@@ -15707,6 +15801,20 @@
               "name": "select",
               "type": {
                 "text": "ContextMenuSelectDetails"
+              }
+            },
+            {
+              "description": "checkbox 选中集合变化",
+              "name": "checkbox-value-change",
+              "type": {
+                "text": "ContextMenuCheckboxValueChangeDetails"
+              }
+            },
+            {
+              "description": "RadioGroup 选中映射变化",
+              "name": "radio-value-change",
+              "type": {
+                "text": "ContextMenuRadioValueChangeDetails"
               }
             }
           ],
@@ -36149,6 +36257,38 @@
             },
             {
               "kind": "field",
+              "name": "checkboxValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultCheckboxValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "radioValue",
+              "privacy": "public",
+              "type": {
+                "text": "MenuRadioValue | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultRadioValue",
+              "privacy": "public",
+              "type": {
+                "text": "MenuRadioValue | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "open",
               "privacy": "public",
               "type": {
@@ -36283,6 +36423,58 @@
             },
             {
               "kind": "field",
+              "name": "currentCheckboxValue",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "当前 checkbox 选中集合；非受控值从状态机读取。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentRadioValue",
+              "type": {
+                "text": "MenuRadioValue"
+              },
+              "description": "当前各 RadioGroup 的选中项；非受控值从状态机读取。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setCheckboxValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setRadioValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "MenuRadioValue"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -36396,6 +36588,18 @@
             {
               "kind": "field",
               "name": "dispatchSelect",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyCheckboxValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyRadioValue",
               "privacy": "private",
               "readonly": true
             },
@@ -36597,6 +36801,20 @@
               "name": "select",
               "type": {
                 "text": "MenuSelectDetails"
+              }
+            },
+            {
+              "description": "checkbox 选中集合变化；detail 为 `{ value: string[] }`",
+              "name": "checkbox-value-change",
+              "type": {
+                "text": "MenuCheckboxValueChangeDetails"
+              }
+            },
+            {
+              "description": "RadioGroup 选中映射变化；detail 为 `{ value: Record<string, string> }`",
+              "name": "radio-value-change",
+              "type": {
+                "text": "MenuRadioValueChangeDetails"
               }
             }
           ],
@@ -36987,6 +37205,38 @@
             },
             {
               "kind": "field",
+              "name": "checkboxValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultCheckboxValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "radioValue",
+              "privacy": "public",
+              "type": {
+                "text": "MenubarRadioValue | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultRadioValue",
+              "privacy": "public",
+              "type": {
+                "text": "MenubarRadioValue | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -37094,6 +37344,56 @@
             },
             {
               "kind": "field",
+              "name": "currentCheckboxValue",
+              "type": {
+                "text": "string[]"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentRadioValue",
+              "type": {
+                "text": "MenubarRadioValue"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setCheckboxValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setRadioValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "MenubarRadioValue"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -37158,6 +37458,18 @@
             {
               "kind": "field",
               "name": "notifySelect",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyCheckboxValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyRadioValue",
               "privacy": "private",
               "readonly": true
             },
@@ -37378,6 +37690,20 @@
               "name": "select",
               "type": {
                 "text": "MenubarSelectDetails"
+              }
+            },
+            {
+              "description": "checkbox 选中集合变化",
+              "name": "checkbox-value-change",
+              "type": {
+                "text": "MenubarCheckboxValueChangeDetails"
+              }
+            },
+            {
+              "description": "RadioGroup 选中映射变化",
+              "name": "radio-value-change",
+              "type": {
+                "text": "MenubarRadioValueChangeDetails"
               }
             }
           ],

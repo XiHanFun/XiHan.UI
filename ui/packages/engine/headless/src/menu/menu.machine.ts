@@ -9,6 +9,7 @@ import type { Layer, Placement, PositionResult } from '@xihan-ui/core'
 import type { MenuFocusIntent, MenuSchema } from './menu.types'
 import { createTypeahead, itemValue, navigateItems, queryItems, setup, trackHoverIntent } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from '../shared/menu-choice'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { menuItemQuery } from './menu.anatomy'
@@ -27,7 +28,7 @@ export function menuFallbackPlacement(submenu: boolean | undefined, dir: string 
 
 export const menuMachine = createMachine({
   name: 'menu',
-  context: ({ cell }) => ({
+  context: ({ cell, prop }) => ({
     // 位置结果由 trackPosition 回填
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 焦点锚点，服务 roving tabindex 与方向键起点
@@ -36,6 +37,18 @@ export const menuMachine = createMachine({
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
     // 按压通道：正被按住的那条条目，与开合无关
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    checkboxValue: cell<string[]>(() => ({
+      value: prop('checkboxValue'),
+      defaultValue: prop('defaultCheckboxValue') ?? [],
+      isEqual: (a, b) => Array.isArray(b) && a.length === b.length && a.every((value, index) => value === b[index]),
+      onChange: value => prop('onCheckboxValueChange')?.({ value }),
+    })),
+    radioValue: cell<Record<string, string>>(() => ({
+      value: prop('radioValue'),
+      defaultValue: prop('defaultRadioValue') ?? {},
+      isEqual: equalMenuRadioValue,
+      onChange: value => prop('onRadioValueChange')?.({ value }),
+    })),
   }),
   refs: () => ({
     config: null,
@@ -61,6 +74,8 @@ export const menuMachine = createMachine({
   on: {
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
+    'CHECKBOX.VALUE.SET': { actions: ['setCheckboxValue'] },
+    'RADIO.VALUE.SET': { actions: ['setRadioValue'] },
   },
   states: {
     closed: {
@@ -95,8 +110,9 @@ export const menuMachine = createMachine({
         ],
         // 选中即关闭：先发选中详情再收起
         'ITEM.SELECT': [
-          { guard: 'isOpenControlled', actions: ['invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
-          { target: 'closed', actions: ['invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
+          { guard: 'keepsMenuOpen', actions: ['selectChoice', 'invokeOnSelect'] },
+          { guard: 'isOpenControlled', actions: ['selectChoice', 'invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
+          { target: 'closed', actions: ['selectChoice', 'invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
         ],
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
         'FOCUS.CLEAR': { actions: ['clearFocusedValue'] },
@@ -113,6 +129,10 @@ export const menuMachine = createMachine({
       canPress: ({ prop, event }) => {
         const e = event.current()
         return !prop('disabled') && !(e.type === 'PRESS.START' && e.disabled)
+      },
+      keepsMenuOpen: ({ event }) => {
+        const e = event.current()
+        return e.type === 'ITEM.SELECT' && !e.close
       },
     },
     actions: {
@@ -136,8 +156,29 @@ export const menuMachine = createMachine({
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       invokeOnSelect: ({ prop, event }) => {
         const e = event.current()
-        if (e.type === 'ITEM.SELECT')
+        if (e.type === 'ITEM.SELECT' && (e.kind === 'item' || e.close))
           prop('onSelect')?.({ value: e.value })
+      },
+      selectChoice: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'ITEM.SELECT')
+          return
+        if (e.kind === 'checkbox') {
+          context.set('checkboxValue', toggleMenuCheckboxValue(context.get('checkboxValue'), e.value))
+          return
+        }
+        if (e.kind === 'radio')
+          context.set('radioValue', setMenuRadioValue(context.get('radioValue'), e.group ?? '', e.value))
+      },
+      setCheckboxValue: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'CHECKBOX.VALUE.SET')
+          context.set('checkboxValue', [...e.value])
+      },
+      setRadioValue: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'RADIO.VALUE.SET')
+          context.set('radioValue', { ...e.value })
       },
       // 仅受控时回写；open 变回 undefined 即转非受控
       syncOpen: ({ prop, send }) => {

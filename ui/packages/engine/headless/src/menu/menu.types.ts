@@ -7,6 +7,9 @@
 
 import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { MenuCheckboxValueChangeDetails, MenuChoiceGroupProps, MenuChoiceKind, MenuRadioValue, MenuRadioValueChangeDetails, MenuCheckboxItemProps as SharedMenuCheckboxItemProps, MenuRadioItemProps as SharedMenuRadioItemProps } from '../shared/menu-choice'
+
+export type { MenuCheckboxValueChangeDetails, MenuChoiceKind, MenuRadioValue, MenuRadioValueChangeDetails } from '../shared/menu-choice'
 
 /** 展开时的落焦端：'first'/'last' 从集合两端进入，'none' 不预先选择锚点。 */
 export type MenuFocusIntent = 'first' | 'last' | 'none'
@@ -48,6 +51,8 @@ export interface MenuSelectDetails {
 /** 条目数据。提供 collection 时，显示文本、禁用与语气以它为准。 */
 export interface MenuNode {
   value: string
+  /** 条目语义；普通命令缺省为 item。radio 条目必须同时声明 group。 */
+  kind?: MenuChoiceKind
   /** 展示文本；默认回退为 value。 */
   label?: string
   /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
@@ -73,11 +78,14 @@ export interface MenuNode {
   groupLabel?: string
   /** 本条之前绘制一条分隔线；写在首条上不产出分隔线。本条领头一个分组时，分隔线绘制在分组外。 */
   separatorBefore?: boolean
+  /** 激活后是否关闭菜单；普通命令默认 true，checkbox / radio 默认 false。 */
+  closeOnSelect?: boolean
 }
 
 /** 单个条目的元信息，由 collection 推导，不含焦点态。 */
 export interface MenuNodeMeta {
   value: string
+  kind: MenuChoiceKind
   /** node.label ?? node.value，恒为字符串。 */
   label: string
   disabled: boolean
@@ -94,6 +102,7 @@ export interface MenuNodeMeta {
   /** 分组标题；未提供时为 null。 */
   groupLabel: string | null
   separatorBefore: boolean
+  closeOnSelect: boolean
 }
 
 /**
@@ -106,10 +115,18 @@ export interface MenuItemProps {
   disabled?: boolean
 }
 
+export type MenuCheckboxItemProps = SharedMenuCheckboxItemProps
+
+export type MenuRadioItemProps = SharedMenuRadioItemProps
+
+/** 适配器写入条目上下文的已判别声明；kind 不作为各部件自己的公开 prop。 */
+export type MenuAnyItemProps
+  = | (MenuItemProps & { kind?: 'item' })
+    | (MenuCheckboxItemProps & { kind: 'checkbox' })
+    | (MenuRadioItemProps & { kind: 'radio' })
+
 /** 分组声明的身份：分组标题的 id 由它派生，group 与 group-label 依靠该值互相关联。 */
-export interface MenuGroupProps {
-  value: string
-}
+export interface MenuGroupProps extends MenuChoiceGroupProps {}
 
 export interface MenuSchema extends MachineSchema {
   props: {
@@ -118,6 +135,12 @@ export interface MenuSchema extends MachineSchema {
      * 未提供时回到这些事实都写在条目部件上的方式（语气写成条目的 `data-tone`）。
      */
     collection?: MenuNode[]
+    /** checkbox 条目的选中集合；提供即受控。 */
+    checkboxValue?: string[]
+    defaultCheckboxValue?: string[]
+    /** RadioGroup 身份到当前条目值的映射；提供即受控。 */
+    radioValue?: MenuRadioValue
+    defaultRadioValue?: MenuRadioValue
     /** 展开态，提供即受控；受控下内部不自行修改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
@@ -155,6 +178,8 @@ export interface MenuSchema extends MachineSchema {
     onOpenChange?: (details: MenuOpenChangeDetails) => void
     /** 条目被选中；菜单随之关闭。 */
     onSelect?: (details: MenuSelectDetails) => void
+    onCheckboxValueChange?: (details: MenuCheckboxValueChangeDetails) => void
+    onRadioValueChange?: (details: MenuRadioValueChangeDetails) => void
   }
   context: {
     /** 定位引擎回填的最新结果。 */
@@ -167,6 +192,8 @@ export interface MenuSchema extends MachineSchema {
     returnFocus: boolean
     /** 按压通道：Space / Enter 或触屏按住的条目 value；抬起、失焦或菜单收起即清空。 */
     pressedValue: string | null
+    checkboxValue: string[]
+    radioValue: MenuRadioValue
   }
   computed: Record<string, never>
   refs: MenuRefs
@@ -179,6 +206,8 @@ export interface MenuSchema extends MachineSchema {
     | { type: 'PRESS.START', value: string, disabled?: boolean }
     /** 按住的条目抬起、失焦或指针取消；只松开 value 对应的那一条。 */
     | { type: 'PRESS.END', value: string }
+    | { type: 'CHECKBOX.VALUE.SET', value: string[] }
+    | { type: 'RADIO.VALUE.SET', value: MenuRadioValue }
     // 受控回写：宿主改 open prop 后由 watch 派发
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
@@ -186,9 +215,9 @@ export interface MenuSchema extends MachineSchema {
     | { type: 'FOCUS.CLEAR' }
     /** 持有焦点的条目离开了 DOM：浏览器此时不派发 focusout，状态机无法感知，由适配器如实上报。 */
     | { type: 'ITEM.LOST' }
-    | { type: 'ITEM.SELECT', value: string }
+    | { type: 'ITEM.SELECT', value: string, kind: MenuChoiceKind, group?: string, close: boolean }
   tag: never
-  guard: 'isOpenControlled' | 'canPress'
+  guard: 'isOpenControlled' | 'canPress' | 'keepsMenuOpen'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -204,6 +233,9 @@ export interface MenuSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenDisabled'
+    | 'selectChoice'
+    | 'setCheckboxValue'
+    | 'setRadioValue'
   effect: 'trackPosition' | 'trackLayer' | 'trackHover'
 }
 
@@ -215,16 +247,24 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
   collection: readonly MenuNodeMeta[]
   /** 焦点锚点；收起时为 null。 */
   focusedValue: string | null
+  checkboxValue: readonly string[]
+  radioValue: Readonly<MenuRadioValue>
+  isCheckboxItemChecked: (value: string) => boolean
+  isRadioItemChecked: (group: string, value: string) => boolean
+  setCheckboxValue: (next: string[]) => void
+  setRadioValue: (next: MenuRadioValue) => void
   setOpen: (next: boolean) => void
   getTriggerProps: () => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   getItemProps: (props: MenuItemProps) => T['element']
-  getItemTextProps: (props: MenuItemProps) => T['element']
-  getItemIndicatorProps: (props: MenuItemProps) => T['element']
-  getItemDescriptionProps: (props: MenuItemProps) => T['element']
-  getItemShortcutProps: (props: MenuItemProps) => T['element']
-  getItemSuffixProps: (props: MenuItemProps) => T['element']
+  getCheckboxItemProps: (props: MenuCheckboxItemProps) => T['element']
+  getRadioItemProps: (props: MenuRadioItemProps) => T['element']
+  getItemTextProps: (props: MenuAnyItemProps) => T['element']
+  getItemIndicatorProps: (props: MenuAnyItemProps) => T['element']
+  getItemDescriptionProps: (props: MenuAnyItemProps) => T['element']
+  getItemShortcutProps: (props: MenuAnyItemProps) => T['element']
+  getItemSuffixProps: (props: MenuAnyItemProps) => T['element']
   /**
    * 子菜单触发条目（submenu 模式）：既是父菜单中的一条 item（value 是它在父菜单
    * 中的身份，父层的方向键与高亮照常识别它），又是本子菜单的触发器（aria-haspopup、
@@ -233,6 +273,7 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
   getSubmenuTriggerProps: (props: MenuItemProps) => T['element']
   getSeparatorProps: () => T['element']
   getGroupProps: (props: MenuGroupProps) => T['element']
+  getRadioGroupProps: (props: MenuGroupProps) => T['element']
   getGroupLabelProps: (props: MenuGroupProps) => T['element']
   getArrowProps: () => T['element']
 }

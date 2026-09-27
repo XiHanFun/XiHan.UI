@@ -5,14 +5,14 @@
 
 // 提供 context 相关实现。
 
-import type { ContextMenuGroupProps, ContextMenuItemProps } from '@xihan-ui/headless'
+import type { ContextMenuAnyItemProps, ContextMenuGroupProps } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey } from 'vue'
 import type { ContextMenuContext } from './use-context-menu'
 import { inject, provide } from 'vue'
 
 /** 条目声明的值与禁用，供 item-text / item-indicator 等子部件复用同一份声明。 */
 export interface ContextMenuItemContext {
-  item: ComputedRef<ContextMenuItemProps>
+  item: ComputedRef<ContextMenuAnyItemProps>
 }
 
 /** 分组声明的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
@@ -42,7 +42,7 @@ export function provideContextMenuItem(ctx: ContextMenuItemContext): void {
 export function useContextMenuItemContext(): ContextMenuItemContext {
   const ctx = inject(ITEM_KEY, null)
   if (!ctx)
-    throw new Error('[xh] ContextMenu 条目子部件必须用在 XhContextMenuItem 内')
+    throw new Error('[xh] ContextMenu 条目子部件必须用在 XhContextMenuItem / XhContextMenuCheckboxItem / XhContextMenuRadioItem 内')
   return ctx
 }
 

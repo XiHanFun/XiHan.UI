@@ -36,6 +36,8 @@ export function useContextMenu(
   props: ContextMenuSchema['props'],
   onOpenChange?: ContextMenuSchema['props']['onOpenChange'],
   onSelect?: ContextMenuSchema['props']['onSelect'],
+  onCheckboxValueChange?: ContextMenuSchema['props']['onCheckboxValueChange'],
+  onRadioValueChange?: ContextMenuSchema['props']['onRadioValueChange'],
 ): ContextMenuContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
@@ -52,7 +54,7 @@ export function useContextMenu(
     isRoot: () => true,
     onRootSelect: details => onSelect?.(details),
   })
-  service = useMachine(contextMenuMachine, () => ({ ...props, onOpenChange, onSelect }), scope)
+  service = useMachine(contextMenuMachine, () => ({ ...props, onOpenChange, onSelect, onCheckboxValueChange, onRadioValueChange }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null

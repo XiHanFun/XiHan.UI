@@ -54,6 +54,12 @@
 
 <XhDemo src="menu/06-description" />
 
+### 选择型条目
+
+CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
+
+<XhDemo src="menu/07-choice" />
+
 ## 设计指引
 
 ### 何时使用
@@ -74,6 +80,7 @@
 - 支持方向键、首字符检索、禁用条目和多级子菜单。
 - 子菜单使用安全三角避免指针斜向移动时误关闭。
 - 条目可组合图标、文字、说明和快捷键提示。
+- `CheckboxItem` 与 `RadioGroup / RadioItem` 表达菜单内的持久选项，值分别由 `checkboxValue` 与 `radioValue` 控制；默认切换后保持展开，逐条可用 `closeOnSelect` 改为收起。
 - 行首与行尾两格各有逐条钩子，只想加个图标不必把整条重搭；`item` 插槽仍是整条的接管口。
 - 选中命令后发出根级 `select` 并关闭菜单链。
 
@@ -86,6 +93,7 @@
 - 破坏性命令放在末尾、与普通命令分隔，并同时给出 `danger` 语气和图标。
 - 条目使用简短的动宾短语。
 - 仅为已注册的快捷键显示提示。
+- 一组选项只能取其一时使用 RadioGroup，不用多个互不关联的 CheckboxItem 模拟。
 
 ### 反模式
 
@@ -99,7 +107,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-menu>` |
-| Vue 组件 | `XhMenuArrow` `XhMenuContent` `XhMenuGroup` `XhMenuGroupLabel` `XhMenuItem` `XhMenuItemDescription` `XhMenuItemIndicator` `XhMenuItemShortcut` `XhMenuItemSuffix` `XhMenuItemText` `XhMenuPositioner` `XhMenuRoot` `XhMenuSeparator` `XhMenuSub` `XhMenuSubTrigger` `XhMenuTrigger` |
+| Vue 组件 | `XhMenuArrow` `XhMenuCheckboxItem` `XhMenuContent` `XhMenuGroup` `XhMenuGroupLabel` `XhMenuItem` `XhMenuItemDescription` `XhMenuItemIndicator` `XhMenuItemShortcut` `XhMenuItemSuffix` `XhMenuItemText` `XhMenuPositioner` `XhMenuRadioGroup` `XhMenuRadioItem` `XhMenuRoot` `XhMenuSeparator` `XhMenuSub` `XhMenuSubTrigger` `XhMenuTrigger` |
 | 组合式函数 | `useMenu` |
 | 状态机 | `menuMachine` |
 | 皮肤 | `@xihan-ui/styles/menu.css` |
@@ -109,6 +117,10 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `MenuNode[]` |  | 条目数据，显示文本、禁用、逐条语气与分组的事实源。提供后条目部件只需声明 value。 未提供时回到这些事实都写在条目部件上的方式（语气写成条目的 `data-tone`）。 |
+| `checkboxValue` | `string[]` |  | checkbox 条目的选中集合；提供即受控。 |
+| `defaultCheckboxValue` | `string[]` |  |  |
+| `radioValue` | `MenuRadioValue` |  | RadioGroup 身份到当前条目值的映射；提供即受控。 |
+| `defaultRadioValue` | `MenuRadioValue` |  |  |
 | `open` | `boolean` |  | 展开态，提供即受控；受控下内部不自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  |  |
@@ -126,6 +138,8 @@
 | `hoverCloseDelay` | `number` |  | 离开到收起的延时（ms），也是安全三角中的停滞上限，默认 300。 |
 | `onOpenChange` | `(details: MenuOpenChangeDetails) => void` |  | open 变化回调。 |
 | `onSelect` | `(details: MenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
+| `onCheckboxValueChange` | `(details: MenuCheckboxValueChangeDetails) => void` |  |  |
+| `onRadioValueChange` | `(details: MenuRadioValueChangeDetails) => void` |  |  |
 
 ### MenuNode
 
@@ -134,6 +148,7 @@
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `string` | 是 |  |
+| `kind` | `MenuChoiceKind` |  | 条目语义；普通命令缺省为 item。radio 条目必须同时声明 group。 |
 | `label` | `string` |  | 展示文本；默认回退为 value。 |
 | `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
 | `tone` | `Tone` |  | 该条命令自身动作的性质：删除写 danger、停用写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不改字重与缩进，也不表达选中或校验；禁用压过它。 红字不是唯一通道，破坏性命令仍要配图标。整张菜单的 tone 不下发给条目。 |
@@ -143,6 +158,7 @@
 | `group` | `string` |  | 归属分组的身份值；相邻同值的条目收进同一个 group 部件。未提供时本条直接落在 content 上。 |
 | `groupLabel` | `string` |  | 分组标题文字，取本组首个提供它的条目；本组无人提供时不铺 group-label。 |
 | `separatorBefore` | `boolean` |  | 本条之前绘制一条分隔线；写在首条上不产出分隔线。本条领头一个分组时，分隔线绘制在分组外。 |
+| `closeOnSelect` | `boolean` |  | 激活后是否关闭菜单；普通命令默认 true，checkbox / radio 默认 false。 |
 
 ### 事件
 
@@ -152,6 +168,8 @@
 | --- | --- | --- |
 | `open-change` | `MenuOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `select` | `MenuSelectDetails` | 条目被选中（菜单随之关闭）；detail 为 `{ value: string }` |
+| `checkbox-value-change` | `MenuCheckboxValueChangeDetails` | checkbox 选中集合变化；detail 为 `{ value: string[] }` |
+| `radio-value-change` | `MenuRadioValueChangeDetails` | RadioGroup 选中映射变化；detail 为 `{ value: Record&lt;string, string&gt; }` |
 
 ### 插槽
 
@@ -176,6 +194,7 @@
 | `XhMenuItem` | `value` | `string` | 是 |  |
 | `XhMenuItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhMenuPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhMenuRadioGroup` | `value` | `string` | 是 |  |
 | `XhMenuRoot` | `trigger` | `ReactNode` |  | 触发器中放置的内容；只提供 collection 时由它承载。 |
 | `XhMenuRoot` | `triggerAsChild` | `boolean` |  | 只提供 collection 时，trigger 给出的节点直接作为触发器使用，不再外包一个 button。 |
 | `XhMenuRoot` | `renderItem` | `(node: MenuNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
@@ -185,6 +204,10 @@
 | `XhMenuSub` | `value` | `string` | 是 | 它在父菜单中的条目身份。 |
 | `XhMenuSub` | `disabled` | `boolean` |  |  |
 | `XhMenuSub` | `collection` | `MenuNode[]` |  |  |
+| `XhMenuSub` | `checkboxValue` | `string[]` |  |  |
+| `XhMenuSub` | `defaultCheckboxValue` | `string[]` |  |  |
+| `XhMenuSub` | `radioValue` | `MenuRadioValue` |  |  |
+| `XhMenuSub` | `defaultRadioValue` | `MenuRadioValue` |  |  |
 | `XhMenuSub` | `placement` | `Placement` |  |  |
 | `XhMenuSub` | `offset` | `number` |  |  |
 | `XhMenuSub` | `loop` | `boolean` |  |  |
@@ -194,6 +217,8 @@
 | `XhMenuSub` | `dir` | `Direction` |  | 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 |
 | `XhMenuSub` | `tone` | `Tone` |  | 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 |
 | `XhMenuSub` | `size` | `Size` |  | 尺寸；默认继承父层，理由同 tone。 |
+| `XhMenuSub` | `onCheckboxValueChange` | `MenuProps['onCheckboxValueChange']` |  |  |
+| `XhMenuSub` | `onRadioValueChange` | `MenuProps['onRadioValueChange']` |  |  |
 | `XhMenuSub` | `children` | `SlotChildren<MenuSubSlotProps>` |  |  |
 
 ### 状态
@@ -205,15 +230,16 @@
 | `trigger` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
+| `item-indicator` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
 | `submenu-trigger` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `PRESS.START` · `PRESS.END` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `FOCUS.CLEAR` · `ITEM.LOST` · `ITEM.SELECT`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `PRESS.START` · `PRESS.END` · `CHECKBOX.VALUE.SET` · `RADIO.VALUE.SET` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `FOCUS.CLEAR` · `ITEM.LOST` · `ITEM.SELECT`
 
-**判据**：`isOpenControlled` · `canPress`
+**判据**：`isOpenControlled` · `canPress` · `keepsMenuOpen`
 
 ### connect API
 
@@ -225,19 +251,28 @@
 | `disabled` | `boolean` | 整张菜单是否禁用。 |
 | `collection` | `readonly MenuNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `focusedValue` | `string \| null` | 焦点锚点；收起时为 null。 |
+| `checkboxValue` | `readonly string[]` |  |
+| `radioValue` | `Readonly<MenuRadioValue>` |  |
+| `isCheckboxItemChecked` | `(value: string) => boolean` |  |
+| `isRadioItemChecked` | `(group: string, value: string) => boolean` |  |
+| `setCheckboxValue` | `(next: string[]) => void` |  |
+| `setRadioValue` | `(next: MenuRadioValue) => void` |  |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: MenuItemProps) => T['element']` |  |
-| `getItemTextProps` | `(props: MenuItemProps) => T['element']` |  |
-| `getItemIndicatorProps` | `(props: MenuItemProps) => T['element']` |  |
-| `getItemDescriptionProps` | `(props: MenuItemProps) => T['element']` |  |
-| `getItemShortcutProps` | `(props: MenuItemProps) => T['element']` |  |
-| `getItemSuffixProps` | `(props: MenuItemProps) => T['element']` |  |
+| `getCheckboxItemProps` | `(props: MenuCheckboxItemProps) => T['element']` |  |
+| `getRadioItemProps` | `(props: MenuRadioItemProps) => T['element']` |  |
+| `getItemTextProps` | `(props: MenuAnyItemProps) => T['element']` |  |
+| `getItemIndicatorProps` | `(props: MenuAnyItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: MenuAnyItemProps) => T['element']` |  |
+| `getItemShortcutProps` | `(props: MenuAnyItemProps) => T['element']` |  |
+| `getItemSuffixProps` | `(props: MenuAnyItemProps) => T['element']` |  |
 | `getSubmenuTriggerProps` | `(props: MenuItemProps) => T['element']` | 子菜单触发条目（submenu 模式）：既是父菜单中的一条 item（value 是它在父菜单 中的身份，父层的方向键与高亮照常识别它），又是本子菜单的触发器（aria-haspopup、 悬停 / 点击 / 右方向键展开）。父层的选中会跳过带 aria-haspopup 的条目。 |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: MenuGroupProps) => T['element']` |  |
+| `getRadioGroupProps` | `(props: MenuGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: MenuGroupProps) => T['element']` |  |
 | `getArrowProps` | `() => T['element']` |  |
 
@@ -273,8 +308,6 @@
 | `content` | `aria-label` | props.translations.content |
 | `content` | `aria-labelledby` | `trigger` 部件的 id \| undefined |
 | `content` | `role` | 'menu' |
-| `item` | `aria-disabled` | 'true' \| 'false' |
-| `item` | `role` | 'menuitem' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `item-shortcut` | `aria-hidden` | 'true' |
 | `separator` | `aria-orientation` | 'horizontal' |
@@ -286,7 +319,9 @@
 | `submenu-trigger` | `aria-disabled` | 'true' \| 'false' |
 | `submenu-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `submenu-trigger` | `aria-haspopup` | 'menu' |
+| `radio-group` | `aria-labelledby` | `group-label` 部件的 id |
 | `submenu-trigger` | `role` | 'menuitem' |
+| `radio-group` | `role` | 'group' |
 
 ## 样式参考
 
@@ -313,19 +348,16 @@
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-tone` | props.tone |
 | `content` | `data-xh-material` | 'frosted' |
-| `item` | `data-disabled` | ''（条件成立时才出现） |
-| `item` | `data-highlighted` | ''（条件成立时才出现） |
-| `item` | `data-pressed` | ''（条件成立时才出现） |
-| `item` | `data-tone` | metaOf.get(item.value)?.tone |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
-| `item` | `data-xh-collection-size` | props.size |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-indicator` | `data-state` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
 | `item-indicator` | `data-xh-collection-slot` | 'prefix' |
+| `item-indicator` | `data-xh-menu-choice-indicator` | item.kind \| undefined |
 | `item-description` | `data-disabled` | ''（条件成立时才出现） |
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
@@ -341,6 +373,7 @@
 | `submenu-trigger` | `data-in-path` | ''（条件成立时才出现） |
 | `submenu-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `submenu-trigger` | `data-state` | 'open' \| 'closed' |
+| `radio-group` | `data-value` | group.value |
 | `submenu-trigger` | `data-xh-collection-context` | 'overlay' |
 | `submenu-trigger` | `data-xh-collection-item` | '' |
 | `submenu-trigger` | `data-xh-collection-size` | props.size |

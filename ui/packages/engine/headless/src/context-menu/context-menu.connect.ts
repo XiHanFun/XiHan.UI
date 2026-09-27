@@ -6,7 +6,7 @@
 // 提供 context menu 相关实现。
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { ContextMenuApi, ContextMenuItemProps, ContextMenuNodeMeta, ContextMenuSchema } from './context-menu.types'
+import type { ContextMenuAnyItemProps, ContextMenuApi, ContextMenuCheckboxItemProps, ContextMenuItemProps, ContextMenuNodeMeta, ContextMenuRadioItemProps, ContextMenuSchema } from './context-menu.types'
 import {
   createPressTracker,
   dataAttr,
@@ -21,6 +21,7 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/core'
+import { menuChoiceCloses } from '../shared/menu-choice'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { contextMenuAnatomy, contextMenuItemQuery, contextMenuItemText } from './context-menu.anatomy'
 import { CONTEXT_MENU_DEFAULT_PLACEMENT } from './context-menu.machine'
@@ -55,18 +56,25 @@ export function connectContextMenu<T extends PropTypes>(
   const typeaheadOn = prop('typeahead') ?? true
 
   // collection 推出的条目元信息：显示文本、禁用、语气、标记位与分组都在这里定案，条目部件只报 value
-  const collection: ContextMenuNodeMeta[] = (prop('collection') ?? []).map(node => ({
-    value: node.value,
-    label: node.label ?? node.value,
-    disabled: !!node.disabled,
-    tone: node.tone ?? null,
-    indicator: node.indicator ?? null,
-    description: node.description ?? null,
-    shortcut: node.shortcut ?? null,
-    group: node.group ?? null,
-    groupLabel: node.groupLabel ?? null,
-    separatorBefore: !!node.separatorBefore,
-  }))
+  const collection: ContextMenuNodeMeta[] = (prop('collection') ?? []).map((node) => {
+    const kind = node.kind ?? 'item'
+    if (kind === 'radio' && !node.group)
+      throw new RangeError(`[xh] context-menu radio item ${JSON.stringify(node.value)} 必须声明非空 group`)
+    return {
+      value: node.value,
+      kind,
+      label: node.label ?? node.value,
+      disabled: !!node.disabled,
+      tone: node.tone ?? null,
+      indicator: node.indicator ?? null,
+      description: node.description ?? null,
+      shortcut: node.shortcut ?? null,
+      group: node.group ?? null,
+      groupLabel: node.groupLabel ?? null,
+      separatorBefore: !!node.separatorBefore,
+      closeOnSelect: menuChoiceCloses(kind, node.closeOnSelect),
+    }
+  })
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
 
   /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
@@ -96,11 +104,23 @@ export function connectContextMenu<T extends PropTypes>(
     scope.partId(contextMenuAnatomy.name, `group-label:${group}`)
 
   // item / item-text / item-indicator / item-description 共用同一份状态标记，样式层各处一致
-  const itemStateAttrs = (item: ContextMenuItemProps): Record<string, string | undefined> => ({
+  const itemStateAttrs = (item: ContextMenuAnyItemProps): Record<string, string | undefined> => ({
     'data-disabled': dataAttr(itemDisabled(item)),
     // 子部件够不着条目的 :focus 伪类，只能读这个标记
     'data-highlighted': dataAttr(anchor === item.value),
   })
+
+  const checkboxValue = context.get('checkboxValue')
+  const radioValue = context.get('radioValue')
+
+  const itemCloseOnSelect = (item: ContextMenuAnyItemProps, kind: 'item' | 'checkbox' | 'radio'): boolean =>
+    ('closeOnSelect' in item ? item.closeOnSelect : undefined)
+    ?? metaOf.get(item.value)?.closeOnSelect
+    ?? menuChoiceCloses(kind, undefined)
+
+  const selectItem = (item: ContextMenuAnyItemProps, kind: 'item' | 'checkbox' | 'radio', group?: string): void => {
+    send({ type: 'ITEM.SELECT', value: item.value, kind, group, close: itemCloseOnSelect(item, kind) })
+  }
 
   /** 方向键落点：条目集合只在事件那一刻读，顺序即文档序；起点用锚点，禁用条目自动跳过。 */
   const navigate = (content: HTMLElement, intent: NavIntent): void => {
@@ -133,7 +153,80 @@ export function connectContextMenu<T extends PropTypes>(
     if (!item || next == null || isItemDisabled(item) || item.hasAttribute('aria-haspopup'))
       return
     event.preventDefault()
-    send({ type: 'ITEM.SELECT', value: next })
+    const role = item.getAttribute('role')
+    const kind = role === 'menuitemcheckbox' ? 'checkbox' : role === 'menuitemradio' ? 'radio' : 'item'
+    send({
+      type: 'ITEM.SELECT',
+      value: next,
+      kind,
+      group: kind === 'radio' ? item.closest<HTMLElement>(parts.group.selector)?.getAttribute('data-value') ?? undefined : undefined,
+      close: item.getAttribute('data-xh-menu-close-on-select') === 'true',
+    })
+  }
+
+  const choiceChecked = (item: ContextMenuAnyItemProps, kind: 'item' | 'checkbox' | 'radio', group?: string): boolean => {
+    if (kind === 'checkbox')
+      return checkboxValue.includes(item.value)
+    if (kind === 'radio') {
+      if (!group)
+        throw new RangeError(`[xh] context-menu radio item ${JSON.stringify(item.value)} 必须声明非空 group`)
+      return radioValue[group] === item.value
+    }
+    return false
+  }
+
+  const getChoiceItemProps = (item: ContextMenuAnyItemProps, kind: 'item' | 'checkbox' | 'radio', group?: string): T['element'] => {
+    const handlers = press(item)
+    const checked = choiceChecked(item, kind, group)
+    const closeOnSelect = itemCloseOnSelect(item, kind)
+    const choiceState = kind === 'item' ? undefined : checked ? 'checked' : 'unchecked'
+    return normalize.element({
+      ...parts.item.attrs,
+      ...itemStateAttrs(item),
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'overlay',
+      'data-tone': itemTone(item),
+      [ITEM_VALUE_ATTR]: item.value,
+      'role': kind === 'checkbox' ? 'menuitemcheckbox' : kind === 'radio' ? 'menuitemradio' : 'menuitem',
+      'aria-checked': kind === 'item' ? undefined : checked ? 'true' : 'false',
+      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
+      'data-pressed': dataAttr(pressedValue === item.value),
+      'data-state': choiceState,
+      'data-xh-menu-close-on-select': closeOnSelect ? 'true' : 'false',
+      'tabindex': anchor === item.value ? 0 : -1,
+      'onClick': (event: MouseEvent) => {
+        if ((event.currentTarget as HTMLElement).hasAttribute('aria-haspopup'))
+          return
+        if (!itemDisabled(item))
+          selectItem(item, kind, group)
+      },
+      'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+      'onPointerenter': (event: PointerEvent) => {
+        const el = event.currentTarget as HTMLElement
+        if (isItemDisabled(el) || anchor === item.value)
+          return
+        pointerHot.add(el)
+        focusSafely(el)
+      },
+      'onPointerleave': (event: PointerEvent) => {
+        const el = event.currentTarget as HTMLElement
+        if (event.pointerType === 'touch' || !pointerHot.delete(el))
+          return
+        if (el.getAttribute('aria-expanded') === 'true' || el.ownerDocument.activeElement !== el)
+          return
+        const content = el.ownerDocument.getElementById(ids.content)
+        if (!content || content.contains(event.relatedTarget as Node | null))
+          return
+        content.focus()
+      },
+    })
   }
 
   return {
@@ -142,6 +235,12 @@ export function connectContextMenu<T extends PropTypes>(
     pressing,
     point,
     focusedValue: anchor,
+    checkboxValue,
+    radioValue,
+    isCheckboxItemChecked: value => checkboxValue.includes(value),
+    isRadioItemChecked: (group, value) => radioValue[group] === value,
+    setCheckboxValue: next => send({ type: 'CHECKBOX.VALUE.SET', value: next }),
+    setRadioValue: next => send({ type: 'RADIO.VALUE.SET', value: next }),
     setOpen: (next) => {
       if (next === open)
         return
@@ -264,6 +363,8 @@ export function connectContextMenu<T extends PropTypes>(
           send({ type: 'FOCUS.CLEAR' })
       },
       'onKeyDown': (event: KeyboardEvent) => {
+        if (event.defaultPrevented)
+          return
         const content = event.currentTarget as HTMLElement
         // 纵向菜单：左右键返回 null，放行给页面滚动
         const intent = navIntentFromKey(event, { axis: 'vertical', dir })
@@ -296,63 +397,20 @@ export function connectContextMenu<T extends PropTypes>(
     // （aria-disabled）由家族给；菜单没有持久选中，浮层选中面永不命中。子菜单触发项由子层的 menu 机器
     // 合并同一批标记并按开合报 data-in-path
     getItemProps: (item) => {
-      const handlers = press(item)
+      const meta = metaOf.get(item.value)
+      const choice = getChoiceItemProps(
+        meta?.kind === 'checkbox' ? { ...item, kind: 'checkbox' } : meta?.kind === 'radio' ? { ...item, kind: 'radio', group: meta.group ?? '' } : { ...item, kind: 'item' },
+        meta?.kind ?? 'item',
+        meta?.kind === 'radio' ? (meta.group ?? '') : undefined,
+      )
       return normalize.element({
-        ...parts.item.attrs,
-        ...itemStateAttrs(item),
         'data-xh-collection-item': '',
-        'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'overlay',
-        // 该条命令自身动作的性质；家族据此换字与悬停 / 按下的面，禁用与选中压过它
-        'data-tone': itemTone(item),
-        // 导航、检索与选中都以此为条目身份
-        [ITEM_VALUE_ATTR]: item.value,
-        'role': 'menuitem',
-        // 集合条目一律 aria-disabled，原生 disabled 不可聚焦也不派发 click
-        'aria-disabled': itemDisabled(item) ? 'true' : 'false',
-        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
-        'data-pressed': dataAttr(pressedValue === item.value),
-        // roving tabindex：整组只有锚点条目留在 Tab 序列内；收起态无锚点
-        'tabindex': anchor === item.value ? 0 : -1,
-        'onClick': (event: MouseEvent) => {
-          // 子菜单触发条目（带 aria-haspopup）的点按归子层：只展开不选中
-          if ((event.currentTarget as HTMLElement).hasAttribute('aria-haspopup'))
-            return
-          if (!itemDisabled(item))
-            send({ type: 'ITEM.SELECT', value: item.value })
-        },
-        // 禁用条目被聚焦也记锚点，方向键才有起点
-        'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
-        'onKeyDown': handlers.onKeyDown,
-        'onKeyUp': handlers.onKeyUp,
-        'onBlur': handlers.onBlur,
-        'onPointerDown': handlers.onPointerDown,
-        'onPointerUp': handlers.onPointerUp,
-        'onPointerCancel': handlers.onPointerCancel,
-        // 指针划过即把焦点搬来：活动项只有一个，hover 与键盘高亮不再各亮各的；
-        // 只聚焦不滚动，滚动留给键盘导航
-        'onPointerenter': (event: PointerEvent) => {
-          const el = event.currentTarget as HTMLElement
-          if (isItemDisabled(el) || anchor === item.value)
-            return
-          pointerHot.add(el)
-          focusSafely(el)
-        },
-        // 指针离开且没落到本菜单的其他位置：焦点还给 content，锚点随其 onFocus 清空。
-        // 触摸 tap 序列里的 leave 不作数；子菜单触发条目在子层展开时保持高亮标记打开路径
-        'onPointerleave': (event: PointerEvent) => {
-          const el = event.currentTarget as HTMLElement
-          if (event.pointerType === 'touch' || !pointerHot.delete(el))
-            return
-          if (el.getAttribute('aria-expanded') === 'true' || el.ownerDocument.activeElement !== el)
-            return
-          const content = el.ownerDocument.getElementById(ids.content)
-          if (!content || content.contains(event.relatedTarget as Node | null))
-            return
-          content.focus()
-        },
+        ...choice as Record<string, unknown>,
       })
     },
+    getCheckboxItemProps: (item: ContextMenuCheckboxItemProps) => getChoiceItemProps({ ...item, kind: 'checkbox' }, 'checkbox'),
+    getRadioItemProps: (item: ContextMenuRadioItemProps) => getChoiceItemProps({ ...item, kind: 'radio' }, 'radio', item.group),
 
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
@@ -361,13 +419,22 @@ export function connectContextMenu<T extends PropTypes>(
     }),
 
     // 标记位是常显的前导图标槽，不是选中对号：落家族的 prefix 列（indicator 槽缺省是藏起来的勾选标记）
-    getItemIndicatorProps: item => normalize.element({
-      ...parts['item-indicator'].attrs,
-      ...itemStateAttrs(item),
-      'data-xh-collection-slot': 'prefix',
-      // 标记位是纯装饰，语义由条目自己给出
-      'aria-hidden': true,
-    }),
+    getItemIndicatorProps: (item) => {
+      const choiceState = item.kind === 'checkbox'
+        ? (checkboxValue.includes(item.value) ? 'checked' : 'unchecked')
+        : item.kind === 'radio'
+          ? (radioValue[item.group] === item.value ? 'checked' : 'unchecked')
+          : undefined
+      return normalize.element({
+        ...parts['item-indicator'].attrs,
+        ...itemStateAttrs(item),
+        'data-xh-collection-slot': 'prefix',
+        'data-state': choiceState,
+        'data-xh-menu-choice-indicator': item.kind === 'checkbox' || item.kind === 'radio' ? item.kind : undefined,
+        // 标记位是纯装饰，语义由条目自己给出
+        'aria-hidden': true,
+      })
+    },
 
     getItemDescriptionProps: item => normalize.element({
       ...parts['item-description'].attrs,
@@ -404,6 +471,12 @@ export function connectContextMenu<T extends PropTypes>(
       'role': 'group',
       // 分组标题不是条目，只能靠 aria-labelledby 挂上来
       'aria-labelledby': groupLabelId(group.value),
+    }),
+    getRadioGroupProps: group => normalize.element({
+      ...parts.group.attrs,
+      'role': 'group',
+      'aria-labelledby': groupLabelId(group.value),
+      'data-value': group.value,
     }),
 
     getGroupLabelProps: group => normalize.element({

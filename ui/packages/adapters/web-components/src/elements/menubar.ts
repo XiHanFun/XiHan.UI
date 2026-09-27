@@ -6,7 +6,7 @@
 // 提供 menubar 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { MenubarItemProps, MenubarNode, MenubarSchema, MenubarSelectDetails, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
+import type { MenubarAnyItemProps, MenubarCheckboxValueChangeDetails, MenubarNode, MenubarRadioValue, MenubarRadioValueChangeDetails, MenubarSchema, MenubarSelectDetails, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
@@ -58,6 +58,8 @@ function authorDisabled(el: HTMLElement): boolean {
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 展开项变化；detail 为 `{ value: string | null }`
  * @fires select - 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }`
+ * @fires checkbox-value-change - checkbox 选中集合变化
+ * @fires radio-value-change - RadioGroup 选中映射变化
  * @csspart root - role=menubar 容器，承载 roving tabindex 的兜底 Tab 位与焦点离场
  * @csspart trigger - role=menuitem 的展开按钮，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart positioner - 浮层定位容器，须自带 value 与同项 trigger 配对；坐标由引擎写为内联样式
@@ -118,6 +120,10 @@ export class XhMenubarElement extends XhPortalHostElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它入口与条目的文本与禁用即以数据为准
     collection: { attribute: false },
+    checkboxValue: { attribute: false },
+    defaultCheckboxValue: { attribute: false },
+    radioValue: { attribute: false },
+    defaultRadioValue: { attribute: false },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     orientation: { converter: STRING_CONVERTER },
@@ -134,6 +140,10 @@ export class XhMenubarElement extends XhPortalHostElement {
   }
 
   declare collection?: MenubarNode[]
+  declare checkboxValue?: string[]
+  declare defaultCheckboxValue?: string[]
+  declare radioValue?: MenubarRadioValue
+  declare defaultRadioValue?: MenubarRadioValue
   declare value?: string
   declare defaultValue?: string
   declare orientation?: Orientation
@@ -146,6 +156,24 @@ export class XhMenubarElement extends XhPortalHostElement {
   declare tone?: Tone
   declare size?: Size
   declare translations?: Partial<MenubarTranslations>
+
+  get currentCheckboxValue(): string[] {
+    return this.ctrl.service ? [...connectMenubar(this.ctrl.service, wcNormalize).checkboxValue] : []
+  }
+
+  get currentRadioValue(): MenubarRadioValue {
+    return this.ctrl.service ? { ...connectMenubar(this.ctrl.service, wcNormalize).radioValue } : {}
+  }
+
+  setCheckboxValue(next: string[]): void {
+    if (this.ctrl.service)
+      connectMenubar(this.ctrl.service, wcNormalize).setCheckboxValue(next)
+  }
+
+  setRadioValue(next: MenubarRadioValue): void {
+    if (this.ctrl.service)
+      connectMenubar(this.ctrl.service, wcNormalize).setRadioValue(next)
+  }
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // trigger 与 content 按 value 逐对互指的 id 由 scope 派生
@@ -178,6 +206,14 @@ export class XhMenubarElement extends XhPortalHostElement {
 
   private readonly notifySelect = (details: MenubarSelectDetails): void => {
     this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyCheckboxValue = (details: MenubarCheckboxValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('checkbox-value-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyRadioValue = (details: MenubarRadioValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('radio-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private wireSubmenuChild(child: MenuSubmenuChild): void {
@@ -246,6 +282,10 @@ export class XhMenubarElement extends XhPortalHostElement {
   private machineProps(): Partial<MenubarSchema['props']> {
     return {
       collection: this.collection,
+      checkboxValue: this.checkboxValue,
+      defaultCheckboxValue: this.defaultCheckboxValue,
+      radioValue: this.radioValue,
+      defaultRadioValue: this.defaultRadioValue,
       value: this.value,
       defaultValue: this.defaultValue,
       orientation: this.orientation,
@@ -261,6 +301,8 @@ export class XhMenubarElement extends XhPortalHostElement {
       translations: this.translations,
       onValueChange: this.notifyValue,
       onSelect: this.notifySelect,
+      onCheckboxValueChange: this.notifyCheckboxValue,
+      onRadioValueChange: this.notifyRadioValue,
     }
   }
 
@@ -407,17 +449,31 @@ export class XhMenubarElement extends XhPortalHostElement {
 
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      const isRadio = el.getAttribute('kind') === 'radio'
+        || api.collection.some(menu => menu.items.some(node => node.kind === 'radio' && node.group === group.value))
+      this.spreader.spread(el, (isRadio ? api.getRadioGroupProps(group) : api.getGroupProps(group)) as Record<string, unknown>)
       for (const label of this.partsIn(el, 'group-label'))
         this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
     }
 
     for (const el of this.getParts('item')) {
-      const item: MenubarItemProps = {
-        value: el.getAttribute('value') ?? '',
-        disabled: authorDisabled(el),
-      }
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      const value = el.getAttribute('value') ?? ''
+      const meta = api.collection.flatMap(menu => menu.items).find(node => node.value === value)
+      const kind = (meta?.kind ?? el.getAttribute('kind') ?? 'item') as MenubarAnyItemProps['kind']
+      const closeAttr = el.getAttribute('close-on-select')
+      const closeOnSelect = meta?.closeOnSelect ?? (closeAttr == null ? undefined : closeAttr !== 'false')
+      const disabled = authorDisabled(el)
+      const item: MenubarAnyItemProps = kind === 'radio'
+        ? { value, disabled, closeOnSelect, kind, group: meta?.group ?? el.closest<HTMLElement>('[data-xh-part="group"]')?.getAttribute('value') ?? '' }
+        : kind === 'checkbox'
+          ? { value, disabled, closeOnSelect, kind }
+          : { value, disabled, kind }
+      const itemProps = item.kind === 'checkbox'
+        ? api.getCheckboxItemProps(item)
+        : item.kind === 'radio'
+          ? api.getRadioItemProps(item)
+          : api.getItemProps(item)
+      this.spreader.spread(el, itemProps as Record<string, unknown>)
       // 条目内的文本与标记位跟着同一份声明走
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)

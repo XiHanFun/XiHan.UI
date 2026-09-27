@@ -7,7 +7,7 @@
 
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { MenuApi, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema, MenubarTranslations, MenuSchema } from '@xihan-ui/headless'
+import type { MenuApi, MenubarAnyItemProps, MenubarApi, MenubarCheckboxItemProps, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioItemProps, MenubarRadioValue, MenubarSchema, MenubarTranslations, MenuSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -55,7 +55,7 @@ function useMenubarPart(register: MenubarPartRegistry, value: string): (el: HTML
 }
 
 /** 函数式 children 的载荷：当前展开的菜单项、是否有菜单展开，以及切换展开项的命令。 */
-export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue'>
+export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue' | 'checkboxValue' | 'radioValue' | 'setCheckboxValue' | 'setRadioValue'>
 
 /** 根上自有的取值；defaultValue、dir 与 onSelect 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir' | 'onSelect'>
@@ -70,6 +70,10 @@ interface MenubarItemRenderers {
 export interface XhMenubarRootProps extends RootElementProps {
   /** 菜单栏数据；提供后不必逐条放置部件。 */
   collection?: MenubarNode[]
+  checkboxValue?: string[]
+  defaultCheckboxValue?: string[]
+  radioValue?: MenubarRadioValue
+  defaultRadioValue?: MenubarRadioValue
   value?: string | null
   defaultValue?: string | null
   orientation?: Orientation
@@ -84,6 +88,8 @@ export interface XhMenubarRootProps extends RootElementProps {
   translations?: Partial<MenubarTranslations>
   onValueChange?: MenubarProps['onValueChange']
   onSelect?: MenubarProps['onSelect']
+  onCheckboxValueChange?: MenubarProps['onCheckboxValueChange']
+  onRadioValueChange?: MenubarProps['onRadioValueChange']
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: MenubarNodeMeta) => ReactNode
   /** 只接管条目行首那一格；其余槽仍由数据铺。 */
@@ -96,6 +102,10 @@ export interface XhMenubarRootProps extends RootElementProps {
 /** role=menubar 根节点：trigger 的 roving tabindex 作用域，各菜单浮层也挂在其内。 */
 export function XhMenubarRoot({
   collection,
+  checkboxValue,
+  defaultCheckboxValue,
+  radioValue,
+  defaultRadioValue,
   value,
   defaultValue,
   orientation,
@@ -110,6 +120,8 @@ export function XhMenubarRoot({
   translations,
   onValueChange,
   onSelect,
+  onCheckboxValueChange,
+  onRadioValueChange,
   children,
   renderItem,
   renderItemPrefix,
@@ -118,6 +130,10 @@ export function XhMenubarRoot({
 }: XhMenubarRootProps): ReactNode {
   const machineProps = {
     collection,
+    checkboxValue,
+    defaultCheckboxValue,
+    radioValue,
+    defaultRadioValue,
     value,
     defaultValue,
     orientation,
@@ -132,6 +148,8 @@ export function XhMenubarRoot({
     translations,
     onValueChange,
     onSelect,
+    onCheckboxValueChange,
+    onRadioValueChange,
   }
   const ctx = useMenubar(withXhConfig('menubar', machineProps) as MenubarProps)
   // 菜单栏根上的 onFocus 是 DOM 的 focus（不冒泡，只在根自己得焦时接管）。React 的同名合成事件
@@ -140,7 +158,15 @@ export function XhMenubarRoot({
   const bind = useNativeEvents(ctx.api.getRootProps() as Record<string, unknown>, ['onFocus'])
 
   const body = children != null
-    ? renderSlot(children, { value: ctx.api.value, open: ctx.api.open, setValue: ctx.api.setValue })
+    ? renderSlot(children, {
+        value: ctx.api.value,
+        open: ctx.api.open,
+        setValue: ctx.api.setValue,
+        checkboxValue: ctx.api.checkboxValue,
+        radioValue: ctx.api.radioValue,
+        setCheckboxValue: ctx.api.setCheckboxValue,
+        setRadioValue: ctx.api.setRadioValue,
+      })
     : collection
       ? <DefaultTree collection={ctx.api.collection} renderers={{ item: renderItem, prefix: renderItemPrefix, suffix: renderItemSuffix }} />
       : null
@@ -161,7 +187,7 @@ export function XhMenubarRoot({
   )
 }
 
-XhMenubarRoot.xhEvents = ['value-change', 'select'] as const
+XhMenubarRoot.xhEvents = ['value-change', 'select', 'checkbox-value-change', 'radio-value-change'] as const
 
 export interface XhMenubarTriggerProps extends Omit<ComponentPropsWithRef<'button'>, 'value'>, AsChildProps {
   value: string
@@ -310,6 +336,19 @@ export function XhMenubarGroup({ value, children, ...rest }: XhMenubarGroupProps
   )
 }
 
+export interface XhMenubarRadioGroupProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
+  value: string
+}
+export function XhMenubarRadioGroup({ value, children, ...rest }: XhMenubarRadioGroupProps): ReactNode {
+  const ctx = useMenubarContext()
+  const group = useMemo<MenubarGroupProps>(() => ({ value }), [value])
+  return (
+    <MenubarGroupProvider value={group}>
+      <div {...mergeReactProps(ctx.api.getRadioGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+    </MenubarGroupProvider>
+  )
+}
+
 export interface XhMenubarGroupLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhMenubarGroupLabel({ children, ...rest }: XhMenubarGroupLabelProps): ReactNode {
   const ctx = useMenubarContext()
@@ -322,29 +361,36 @@ export interface XhMenubarItemProps extends Omit<ComponentPropsWithRef<'div'>, '
   /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
-export function XhMenubarItem({ value, disabled, children, ...rest }: XhMenubarItemProps): ReactNode {
+interface MenubarItemImplProps extends ComponentPropsWithRef<'div'> {
+  item: MenubarAnyItemProps
+}
+function MenubarItemImpl({ item, children, ...rest }: MenubarItemImplProps): ReactNode {
   const ctx = useMenubarContext()
-  const item = useMemo<MenubarItemProps>(() => ({ value, disabled }), [value, disabled])
   const itemEl = useRef<HTMLElement | null>(null)
-  const previous = useRef(value)
+  const previous = useRef(item.value)
+  const headlessProps = item.kind === 'checkbox'
+    ? ctx.api.getCheckboxItemProps(item)
+    : item.kind === 'radio'
+      ? ctx.api.getRadioItemProps(item)
+      : ctx.api.getItemProps(item)
   // 条目的聚焦上报不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getItemProps(item) as Record<string, unknown>,
+    headlessProps as Record<string, unknown>,
     ['onFocus'],
   )
 
   // 本条目持有焦点时，value 变更按新值重报焦点条目
   useEffect(() => {
     const prev = previous.current
-    previous.current = value
-    if (prev === value)
+    previous.current = item.value
+    if (prev === item.value)
       return
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return
     if (itemEl.current && svc.scope.getActiveElement() === itemEl.current)
-      svc.send({ type: 'ITEM.FOCUS', value })
-  }, [ctx.service, value])
+      svc.send({ type: 'ITEM.FOCUS', value: item.value })
+  }, [ctx.service, item.value])
 
   // 卸载时上报焦点丢失：按「本节点当下正持有焦点」判定，不按 value 比对
   useIsomorphicLayoutEffect(() => () => {
@@ -369,6 +415,24 @@ export function XhMenubarItem({ value, disabled, children, ...rest }: XhMenubarI
       </div>
     </MenubarItemProvider>
   )
+}
+
+export function XhMenubarItem({ value, disabled, children, ...rest }: XhMenubarItemProps): ReactNode {
+  const item = useMemo<MenubarAnyItemProps>(() => ({ value, disabled, kind: 'item' }), [value, disabled])
+  return <MenubarItemImpl item={item} {...rest}>{children}</MenubarItemImpl>
+}
+
+export interface XhMenubarCheckboxItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'>, MenubarCheckboxItemProps {}
+export function XhMenubarCheckboxItem({ value, disabled, closeOnSelect, children, ...rest }: XhMenubarCheckboxItemProps): ReactNode {
+  const item = useMemo<MenubarAnyItemProps>(() => ({ value, disabled, closeOnSelect, kind: 'checkbox' }), [value, disabled, closeOnSelect])
+  return <MenubarItemImpl item={item} {...rest}>{children}</MenubarItemImpl>
+}
+
+export interface XhMenubarRadioItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'>, Omit<MenubarRadioItemProps, 'group'> {}
+export function XhMenubarRadioItem({ value, disabled, closeOnSelect, children, ...rest }: XhMenubarRadioItemProps): ReactNode {
+  const group = useMenubarGroupContext()
+  const item = useMemo<MenubarAnyItemProps>(() => ({ value, disabled, closeOnSelect, kind: 'radio', group: group.value }), [value, disabled, closeOnSelect, group.value])
+  return <MenubarItemImpl item={item} {...rest}>{children}</MenubarItemImpl>
 }
 
 export interface XhMenubarItemTextProps extends ComponentPropsWithRef<'span'> {}
@@ -520,15 +584,22 @@ export function XhMenubarSubTrigger({ children, ...rest }: XhMenubarSubTriggerPr
 
 /** 单个条目：文字在上，副文本在下，未提供副文本时不铺设该部件。 */
 function renderNode(meta: MenubarNodeMeta, renderers: MenubarItemRenderers): ReactNode {
-  return (
-    <XhMenubarItem key={meta.value} value={meta.value}>
-      {renderers.prefix ? <XhMenubarItemIndicator>{renderers.prefix(meta)}</XhMenubarItemIndicator> : null}
+  const content = (
+    <>
+      {renderers.prefix
+        ? <XhMenubarItemIndicator>{renderers.prefix(meta)}</XhMenubarItemIndicator>
+        : meta.kind !== 'item' ? <XhMenubarItemIndicator /> : null}
       <XhMenubarItemText>{renderers.item?.(meta) ?? meta.label}</XhMenubarItemText>
       {meta.description != null ? <XhMenubarItemDescription>{meta.description}</XhMenubarItemDescription> : null}
       {meta.shortcut != null ? <XhMenubarItemShortcut>{meta.shortcut}</XhMenubarItemShortcut> : null}
       {renderers.suffix ? <XhMenubarItemSuffix>{renderers.suffix(meta)}</XhMenubarItemSuffix> : null}
-    </XhMenubarItem>
+    </>
   )
+  if (meta.kind === 'checkbox')
+    return <XhMenubarCheckboxItem key={meta.value} value={meta.value} closeOnSelect={meta.closeOnSelect}>{content}</XhMenubarCheckboxItem>
+  if (meta.kind === 'radio')
+    return <XhMenubarRadioItem key={meta.value} value={meta.value} closeOnSelect={meta.closeOnSelect}>{content}</XhMenubarRadioItem>
+  return <XhMenubarItem key={meta.value} value={meta.value}>{content}</XhMenubarItem>
 }
 
 /** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
@@ -549,15 +620,29 @@ function renderNodes(collection: readonly MenubarNodeMeta[], renderers: MenubarI
     return (
       <Fragment key={`group:${head.group}`}>
         {lead}
-        <XhMenubarGroup value={head.group}>
-          {groupLabel != null ? <XhMenubarGroupLabel>{groupLabel}</XhMenubarGroupLabel> : null}
-          {run.map((node, index) => (
-            <Fragment key={node.value}>
-              {index > 0 && node.separatorBefore ? <XhMenubarSeparator /> : null}
-              {renderNode(node, renderers)}
-            </Fragment>
-          ))}
-        </XhMenubarGroup>
+        {head.kind === 'radio'
+          ? (
+              <XhMenubarRadioGroup value={head.group}>
+                {groupLabel != null ? <XhMenubarGroupLabel>{groupLabel}</XhMenubarGroupLabel> : null}
+                {run.map((node, index) => (
+                  <Fragment key={node.value}>
+                    {index > 0 && node.separatorBefore ? <XhMenubarSeparator /> : null}
+                    {renderNode(node, renderers)}
+                  </Fragment>
+                ))}
+              </XhMenubarRadioGroup>
+            )
+          : (
+              <XhMenubarGroup value={head.group}>
+                {groupLabel != null ? <XhMenubarGroupLabel>{groupLabel}</XhMenubarGroupLabel> : null}
+                {run.map((node, index) => (
+                  <Fragment key={node.value}>
+                    {index > 0 && node.separatorBefore ? <XhMenubarSeparator /> : null}
+                    {renderNode(node, renderers)}
+                  </Fragment>
+                ))}
+              </XhMenubarGroup>
+            )}
       </Fragment>
     )
   })

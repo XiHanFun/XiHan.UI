@@ -7,6 +7,9 @@
 
 import type { Cleanup, Direction, Layer, MachineSchema, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { MenuCheckboxValueChangeDetails, MenuChoiceGroupProps, MenuChoiceKind, MenuRadioValue, MenuRadioValueChangeDetails, MenuCheckboxItemProps as SharedMenuCheckboxItemProps, MenuRadioItemProps as SharedMenuRadioItemProps } from '../shared/menu-choice'
+
+export type { MenuCheckboxValueChangeDetails as MenubarCheckboxValueChangeDetails, MenuRadioValue as MenubarRadioValue, MenuRadioValueChangeDetails as MenubarRadioValueChangeDetails } from '../shared/menu-choice'
 
 /** 展开菜单时的落焦端：'first'/'last' 从集合两端进入，'none' 焦点留在 trigger 上。 */
 export type MenubarFocusIntent = 'first' | 'last' | 'none'
@@ -59,6 +62,8 @@ export interface MenubarSelectDetails {
  */
 export interface MenubarNode {
   value: string
+  /** items 中的条目语义；顶层入口忽略该字段。 */
+  kind?: MenuChoiceKind
   /** 展示文本，也是菜单内连打检索的取字来源；默认回退为 value。 */
   label?: string
   /** 副文本，写入 item-description 部件；只在条目上读取。 */
@@ -82,6 +87,8 @@ export interface MenubarNode {
   groupLabel?: string
   /** 本条之前绘制一条分隔线；写在首条上不产出分隔线。只在条目上读取。 */
   separatorBefore?: boolean
+  /** 选择型条目激活后是否关闭菜单栏；checkbox / radio 默认 false。 */
+  closeOnSelect?: boolean
   /** 该菜单中的条目；只在顶层节点上读取。 */
   items?: MenubarNode[]
 }
@@ -89,6 +96,7 @@ export interface MenubarNode {
 /** 单个节点的元信息，由 collection 推导，不含展开态与焦点态。 */
 export interface MenubarNodeMeta {
   value: string
+  kind: MenuChoiceKind
   /** node.label ?? node.value，恒为字符串。 */
   label: string
   /** 副文本原样透传，未提供时为 null。 */
@@ -104,6 +112,7 @@ export interface MenubarNodeMeta {
   groupLabel: string | null
   /** 本条之前是否绘制分隔线。 */
   separatorBefore: boolean
+  closeOnSelect: boolean
   /** 该菜单中的条目元信息；条目自身恒为空数组。 */
   items: readonly MenubarNodeMeta[]
 }
@@ -129,10 +138,15 @@ export interface MenubarItemProps {
   disabled?: boolean
 }
 
+export type MenubarCheckboxItemProps = SharedMenuCheckboxItemProps
+export type MenubarRadioItemProps = SharedMenuRadioItemProps
+export type MenubarAnyItemProps
+  = | (MenubarItemProps & { kind?: 'item' })
+    | (MenubarCheckboxItemProps & { kind: 'checkbox' })
+    | (MenubarRadioItemProps & { kind: 'radio' })
+
 /** 分组身份，group 与 group-label 依靠该值配对。 */
-export interface MenubarGroupProps {
-  value: string
-}
+export interface MenubarGroupProps extends MenuChoiceGroupProps {}
 
 export interface MenubarSchema extends MachineSchema {
   props: {
@@ -141,6 +155,10 @@ export interface MenubarSchema extends MachineSchema {
      * 未提供时回到文本与禁用逐个写在部件上的方式。
      */
     collection?: MenubarNode[]
+    checkboxValue?: string[]
+    defaultCheckboxValue?: string[]
+    radioValue?: MenuRadioValue
+    defaultRadioValue?: MenuRadioValue
     /** 当前展开项，提供即受控；null 表示全部收起。 */
     value?: string | null
     defaultValue?: string | null
@@ -165,6 +183,8 @@ export interface MenubarSchema extends MachineSchema {
     onValueChange?: (details: MenubarValueChangeDetails) => void
     /** 条目被选中；菜单随之收起。 */
     onSelect?: (details: MenubarSelectDetails) => void
+    onCheckboxValueChange?: (details: MenuCheckboxValueChangeDetails) => void
+    onRadioValueChange?: (details: MenuRadioValueChangeDetails) => void
   }
   context: {
     /** 当前展开项，受控时 cell 直读 prop。 */
@@ -204,6 +224,8 @@ export interface MenubarSchema extends MachineSchema {
     pressedPart: 'trigger' | 'item' | null
     /** 按压通道：按住的 trigger 或 item 的 value；抬起、失焦或（条目）菜单收起即清空。 */
     pressedValue: string | null
+    checkboxValue: string[]
+    radioValue: MenuRadioValue
   }
   computed: Record<string, never>
   refs: MenubarRefs
@@ -229,7 +251,9 @@ export interface MenubarSchema extends MachineSchema {
     | { type: 'ITEM.FOCUS', value: string }
     /** 持有焦点的条目离开了 DOM：浏览器此时不派发 focusout，状态机无法感知，由适配器如实上报。 */
     | { type: 'ITEM.LOST' }
-    | { type: 'ITEM.SELECT', value: string }
+    | { type: 'ITEM.SELECT', value: string, kind: MenuChoiceKind, group?: string, close: boolean }
+    | { type: 'CHECKBOX.VALUE.SET', value: string[] }
+    | { type: 'RADIO.VALUE.SET', value: MenuRadioValue }
     /** trigger 或条目被 Space / Enter 或触屏按住；disabled 是该部件自身的禁用事实，由 connect 判定后随事件带入。 */
     | { type: 'PRESS.START', part: 'trigger' | 'item', value: string, disabled?: boolean }
     /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一颗。 */
@@ -238,7 +262,7 @@ export interface MenubarSchema extends MachineSchema {
     | { type: 'SYNC.OPEN' }
     | { type: 'SYNC.CLOSE' }
   tag: never
-  guard: 'hasValue' | 'isCurrent' | 'shouldAbsorbToggle' | 'shouldSwitch' | 'canPress'
+  guard: 'hasValue' | 'isCurrent' | 'shouldAbsorbToggle' | 'shouldSwitch' | 'canPress' | 'keepsMenuOpen'
   action:
     | 'syncOpenState'
     | 'syncLayerOwner'
@@ -257,6 +281,9 @@ export interface MenubarSchema extends MachineSchema {
     | 'setReturnFocus'
     | 'restoreTriggerFocus'
     | 'invokeOnSelect'
+    | 'selectChoice'
+    | 'setCheckboxValue'
+    | 'setRadioValue'
     | 'clearTypeahead'
     | 'reanchor'
     | 'startPress'
@@ -279,6 +306,12 @@ export interface MenubarApi<T extends PropTypes = PropTypes> {
   focusedItem: string | null
   orientation: Orientation
   disabled: boolean
+  checkboxValue: readonly string[]
+  radioValue: Readonly<MenuRadioValue>
+  isCheckboxItemChecked: (value: string) => boolean
+  isRadioItemChecked: (group: string, value: string) => boolean
+  setCheckboxValue: (next: string[]) => void
+  setRadioValue: (next: MenuRadioValue) => void
   isOpen: (value: string) => boolean
   setValue: (next: string | null) => void
   getRootProps: () => T['element']
@@ -286,13 +319,16 @@ export interface MenubarApi<T extends PropTypes = PropTypes> {
   getPositionerProps: (props: MenubarContentProps) => T['element']
   getContentProps: (props: MenubarContentProps) => T['element']
   getItemProps: (props: MenubarItemProps) => T['element']
-  getItemTextProps: (props: MenubarItemProps) => T['element']
-  getItemIndicatorProps: (props: MenubarItemProps) => T['element']
-  getItemDescriptionProps: (props: MenubarItemProps) => T['element']
-  getItemShortcutProps: (props: MenubarItemProps) => T['element']
-  getItemSuffixProps: (props: MenubarItemProps) => T['element']
+  getCheckboxItemProps: (props: MenubarCheckboxItemProps) => T['element']
+  getRadioItemProps: (props: MenubarRadioItemProps) => T['element']
+  getItemTextProps: (props: MenubarAnyItemProps) => T['element']
+  getItemIndicatorProps: (props: MenubarAnyItemProps) => T['element']
+  getItemDescriptionProps: (props: MenubarAnyItemProps) => T['element']
+  getItemShortcutProps: (props: MenubarAnyItemProps) => T['element']
+  getItemSuffixProps: (props: MenubarAnyItemProps) => T['element']
   getSeparatorProps: () => T['element']
   getGroupProps: (props: MenubarGroupProps) => T['element']
+  getRadioGroupProps: (props: MenubarGroupProps) => T['element']
   getGroupLabelProps: (props: MenubarGroupProps) => T['element']
   getArrowProps: (props: MenubarContentProps) => T['element']
 }

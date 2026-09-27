@@ -6,7 +6,7 @@
 // 提供 context menu 相关实现。
 
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { ContextMenuApi, ContextMenuGroupProps, ContextMenuItemProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuSchema, MenuApi } from '@xihan-ui/headless'
+import type { ContextMenuAnyItemProps, ContextMenuApi, ContextMenuGroupProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuRadioValue, ContextMenuSchema, MenuApi } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
@@ -33,7 +33,7 @@ import { useContextMenu } from './use-context-menu'
 type ContextMenuProps = ContextMenuSchema['props']
 
 /** 默认插槽的载荷：右键菜单的展开态与锚点坐标，以及开合、按坐标展开的命令。 */
-export type ContextMenuRootSlotProps = Pick<ContextMenuApi, 'open' | 'point' | 'setOpen' | 'openAt'>
+export type ContextMenuRootSlotProps = Pick<ContextMenuApi, 'open' | 'point' | 'setOpen' | 'openAt' | 'checkboxValue' | 'radioValue' | 'setCheckboxValue' | 'setRadioValue'>
 
 /** 子菜单默认插槽的载荷：该层子菜单自己的展开态与开合命令。 */
 export type ContextMenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
@@ -53,6 +53,10 @@ export const XhContextMenuRoot = defineComponent({
   // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<ContextMenuNode[]> },
+    checkboxValue: { type: Array as PropType<string[]> },
+    defaultCheckboxValue: { type: Array as PropType<string[]> },
+    radioValue: { type: Object as PropType<ContextMenuRadioValue> },
+    defaultRadioValue: { type: Object as PropType<ContextMenuRadioValue> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     placement: { type: String as PropType<Placement> },
@@ -69,6 +73,8 @@ export const XhContextMenuRoot = defineComponent({
   emits: {
     'open-change': (_details: PayloadOf<ContextMenuProps, 'onOpenChange'>) => true,
     'select': (_details: PayloadOf<ContextMenuProps, 'onSelect'>) => true,
+    'checkbox-value-change': (_details: PayloadOf<ContextMenuProps, 'onCheckboxValueChange'>) => true,
+    'radio-value-change': (_details: PayloadOf<ContextMenuProps, 'onRadioValueChange'>) => true,
     'update:open': (_open: PayloadOf<ContextMenuProps, 'onOpenChange'>['open']) => true,
   },
   slots: Object as SlotsType<{
@@ -87,7 +93,13 @@ export const XhContextMenuRoot = defineComponent({
       emit('update:open', details.open)
     }
     const notifySelect: ContextMenuProps['onSelect'] = details => emit('select', details)
-    const ctx = useContextMenu(withXhConfig('context-menu', props) as ContextMenuProps, notifyOpen, notifySelect)
+    const ctx = useContextMenu(
+      withXhConfig('context-menu', props) as ContextMenuProps,
+      notifyOpen,
+      notifySelect,
+      details => emit('checkbox-value-change', details),
+      details => emit('radio-value-change', details),
+    )
     provideContextMenu(ctx)
     // 菜单钉在坐标上，坐标只能由 openAt 交进来。默认插槽那条路从载荷里拿，
     // 只交 collection 的那条路没有载荷，所以同一组命令也从实例上暴露一份。
@@ -110,6 +122,10 @@ export const XhContextMenuRoot = defineComponent({
             point: ctx.api.value.point,
             setOpen: ctx.api.value.setOpen,
             openAt: ctx.api.value.openAt,
+            checkboxValue: ctx.api.value.checkboxValue,
+            radioValue: ctx.api.value.radioValue,
+            setCheckboxValue: ctx.api.value.setCheckboxValue,
+            setRadioValue: ctx.api.value.setRadioValue,
           })
         : props.collection
           ? renderDefaultTree(ctx.api.value.collection, slots.trigger?.() ?? null, { 'item': slots.item, 'item-prefix': slots['item-prefix'], 'item-suffix': slots['item-suffix'] })
@@ -196,6 +212,19 @@ export const XhContextMenuGroup = defineComponent({
   },
 })
 
+export const XhContextMenuRadioGroup = defineComponent({
+  name: 'XhContextMenuRadioGroup',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useContextMenuContext()
+    const group = computed<ContextMenuGroupProps>(() => ({ value: props.value }))
+    provideContextMenuGroup({ group })
+    return () => h('div', ctx.api.value.getRadioGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhContextMenuGroupLabel = defineComponent({
   name: 'XhContextMenuGroupLabel',
   setup(_, { slots }) {
@@ -205,44 +234,59 @@ export const XhContextMenuGroupLabel = defineComponent({
   },
 })
 
-export const XhContextMenuItem = defineComponent({
-  name: 'XhContextMenuItem',
-  props: {
-    value: { type: String, required: true },
-    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
-    disabled: { type: Boolean, default: undefined },
-  },
-  setup(props, { slots }) {
-    const ctx = useContextMenuContext()
-    const item = computed<ContextMenuItemProps>(() => ({ value: props.value, disabled: props.disabled }))
-    provideContextMenuItem({ item })
-    // 本条目持有焦点时，value 变更按新值重报焦点条目，卸载时上报焦点丢失
-    const itemEl = ref<HTMLElement | null>(null)
-    watch(() => props.value, (next, prev) => {
-      if (next === prev)
-        return
-      const { service } = ctx
-      if (service.getStatus() !== 'Started')
-        return
-      if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
-        service.send({ type: 'ITEM.FOCUS', value: next })
-    })
-    onBeforeUnmount(() => {
-      const { service } = ctx
-      // 根已停机时不再送事件
-      if (service.getStatus() !== 'Started')
-        return
-      // 按「本节点当下正持有焦点」判定，不按 value 比对
-      if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
-        service.send({ type: 'ITEM.LOST' })
-    })
-    return () => h(
-      'div',
-      { ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>, ref: itemEl },
-      slots.default?.(),
-    )
-  },
-})
+function createContextMenuItemComponent(name: string, kind: 'item' | 'checkbox' | 'radio'): ReturnType<typeof defineComponent> {
+  return defineComponent({
+    name,
+    props: {
+      value: { type: String, required: true },
+      disabled: { type: Boolean, default: undefined },
+      closeOnSelect: { type: Boolean, default: undefined },
+    },
+    setup(props, { slots }) {
+      const ctx = useContextMenuContext()
+      const radioGroup = kind === 'radio' ? useContextMenuGroupContext() : null
+      const item = computed<ContextMenuAnyItemProps>(() => kind === 'radio'
+        ? { value: props.value, disabled: props.disabled, closeOnSelect: props.closeOnSelect, kind, group: radioGroup!.group.value.value }
+        : kind === 'checkbox'
+          ? { value: props.value, disabled: props.disabled, closeOnSelect: props.closeOnSelect, kind }
+          : { value: props.value, disabled: props.disabled, kind })
+      provideContextMenuItem({ item })
+      // 本条目持有焦点时，value 变更按新值重报焦点条目，卸载时上报焦点丢失
+      const itemEl = ref<HTMLElement | null>(null)
+      watch(() => props.value, (next, prev) => {
+        if (next === prev)
+          return
+        const { service } = ctx
+        if (service.getStatus() !== 'Started')
+          return
+        if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
+          service.send({ type: 'ITEM.FOCUS', value: next })
+      })
+      onBeforeUnmount(() => {
+        const { service } = ctx
+        // 根已停机时不再送事件
+        if (service.getStatus() !== 'Started')
+          return
+        // 按「本节点当下正持有焦点」判定，不按 value 比对
+        if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
+          service.send({ type: 'ITEM.LOST' })
+      })
+      return () => {
+        const declaration = item.value
+        const part = declaration.kind === 'checkbox'
+          ? ctx.api.value.getCheckboxItemProps(declaration)
+          : declaration.kind === 'radio'
+            ? ctx.api.value.getRadioItemProps(declaration)
+            : ctx.api.value.getItemProps(declaration)
+        return h('div', { ...part as Record<string, unknown>, ref: itemEl }, slots.default?.())
+      }
+    },
+  })
+}
+
+export const XhContextMenuItem = /* @__PURE__ */ createContextMenuItemComponent('XhContextMenuItem', 'item')
+export const XhContextMenuCheckboxItem = /* @__PURE__ */ createContextMenuItemComponent('XhContextMenuCheckboxItem', 'checkbox')
+export const XhContextMenuRadioItem = /* @__PURE__ */ createContextMenuItemComponent('XhContextMenuRadioItem', 'radio')
 
 /**
  * 右键菜单中的子菜单：子层运行一台 submenu 模式的 menu 状态机，触发条目由
@@ -414,7 +458,7 @@ function renderNodes(
     const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
     return [
       ...lead,
-      h(XhContextMenuGroup, { key: `group:${head.group}`, value: head.group }, () => [
+      h(head.kind === 'radio' ? XhContextMenuRadioGroup : XhContextMenuGroup, { key: `group:${head.group}`, value: head.group }, () => [
         ...(groupLabel != null ? [h(XhContextMenuGroupLabel, null, () => groupLabel)] : []),
         ...run.flatMap((node, index) => [
           ...(index > 0 && node.separatorBefore ? [h(XhContextMenuSeparator, { key: `separator:${node.value}` })] : []),
@@ -436,10 +480,13 @@ function renderItem(
 ): VNode {
   const prefix = itemSlots['item-prefix']
   const suffix = itemSlots['item-suffix']
-  return h(XhContextMenuItem, { key: meta.value, value: meta.value }, () => [
+  const Item = meta.kind === 'checkbox' ? XhContextMenuCheckboxItem : meta.kind === 'radio' ? XhContextMenuRadioItem : XhContextMenuItem
+  return h(Item, { key: meta.value, value: meta.value, closeOnSelect: meta.closeOnSelect }, () => [
     ...(prefix
       ? [h(XhContextMenuItemIndicator, null, () => prefix(meta))]
-      : meta.indicator != null ? [h(XhContextMenuItemIndicator, null, () => meta.indicator)] : []),
+      : meta.indicator != null
+        ? [h(XhContextMenuItemIndicator, null, () => meta.indicator)]
+        : meta.kind !== 'item' ? [h(XhContextMenuItemIndicator)] : []),
     h(XhContextMenuItemText, null, () => itemSlots.item?.(meta) ?? meta.label),
     ...(meta.description != null ? [h(XhContextMenuItemDescription, null, () => meta.description)] : []),
     ...(meta.shortcut != null ? [h(XhContextMenuItemShortcut, null, () => meta.shortcut)] : []),

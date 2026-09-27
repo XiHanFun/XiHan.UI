@@ -699,6 +699,38 @@ export const menubarSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'CheckboxItem 切换值后保持当前顶层菜单展开',
+      spec: { apg: `${APG}#wai-aria-roles-states-and-properties` },
+      props: {
+        defaultCheckboxValue: ['full'],
+        collection: MENUS.map(menu => ({
+          ...menu,
+          items: menu.items.map(item => item.value === 'full' ? { ...item, kind: 'checkbox' as const } : item),
+        })),
+      },
+      initial: {
+        parts: {
+          'item[7]': { 'role': 'menuitemcheckbox', 'aria-checked': 'true', 'data-state': 'checked' },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger[2]' },
+        { kind: 'settle', until: { attr: { part: 'content[2]', name: 'hidden', value: null } } },
+        {
+          kind: 'click',
+          part: 'item[7]',
+          expect: {
+            parts: {
+              'trigger[2]': { 'aria-expanded': 'true' },
+              'content[2]': { 'hidden': null, 'data-state': 'open' },
+              'item[7]': { 'aria-checked': 'false', 'data-state': 'unchecked' },
+            },
+            events: [{ type: 'checkbox-value-change', detail: { value: [] } }],
+          },
+        },
+      ],
+    },
+    {
       name: '点击禁用条目：不选中、不收起、一个事件也不发',
       spec: { apg: APG },
       fixture: () => menubarTree({ disabledItem: 'open' }),

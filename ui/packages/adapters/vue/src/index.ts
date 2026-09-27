@@ -313,6 +313,7 @@ export { provideContextMenuSub, useContextMenuSubContext } from './components/co
 export type { ContextMenuSubHandle } from './components/context-menu/context'
 export {
   XhContextMenuArrow,
+  XhContextMenuCheckboxItem,
   XhContextMenuContent,
   XhContextMenuGroup,
   XhContextMenuGroupLabel,
@@ -323,6 +324,8 @@ export {
   XhContextMenuItemSuffix,
   XhContextMenuItemText,
   XhContextMenuPositioner,
+  XhContextMenuRadioGroup,
+  XhContextMenuRadioItem,
   XhContextMenuRoot,
   XhContextMenuSeparator,
   XhContextMenuSub,
@@ -684,6 +687,7 @@ export { provideMenu, provideMenuGroup, provideMenuSub, useMenuContext, useMenuG
 export type { MenuGroupContext, MenuSubHandle } from './components/menu/context'
 export {
   XhMenuArrow,
+  XhMenuCheckboxItem,
   XhMenuContent,
   XhMenuGroup,
   XhMenuGroupLabel,
@@ -694,6 +698,8 @@ export {
   XhMenuItemSuffix,
   XhMenuItemText,
   XhMenuPositioner,
+  XhMenuRadioGroup,
+  XhMenuRadioItem,
   XhMenuRoot,
   XhMenuSeparator,
   XhMenuSub,
@@ -707,6 +713,7 @@ export { provideMenubarSub, useMenubarSubContext } from './components/menubar/co
 export type { MenubarSubHandle } from './components/menubar/context'
 export {
   XhMenubarArrow,
+  XhMenubarCheckboxItem,
   XhMenubarContent,
   XhMenubarGroup,
   XhMenubarGroupLabel,
@@ -717,6 +724,8 @@ export {
   XhMenubarItemSuffix,
   XhMenubarItemText,
   XhMenubarPositioner,
+  XhMenubarRadioGroup,
+  XhMenubarRadioItem,
   XhMenubarRoot,
   XhMenubarSeparator,
   XhMenubarSub,

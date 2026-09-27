@@ -37,6 +37,8 @@ export function useMenubar(
   props: MenubarSchema['props'],
   onValueChange?: MenubarSchema['props']['onValueChange'],
   onSelect?: MenubarSchema['props']['onSelect'],
+  onCheckboxValueChange?: MenubarSchema['props']['onCheckboxValueChange'],
+  onRadioValueChange?: MenubarSchema['props']['onRadioValueChange'],
 ): MenubarContext {
   const xhConfig = useXhConfig()
   const rootRef = ref<HTMLElement | null>(null)
@@ -63,7 +65,7 @@ export function useMenubar(
         onSelect?.({ menu, value: details.value })
     },
   })
-  service = useMachine(menubarMachine, () => ({ ...props, onValueChange, onSelect }), scope)
+  service = useMachine(menubarMachine, () => ({ ...props, onValueChange, onSelect, onCheckboxValueChange, onRadioValueChange }), scope)
 
   const put = (table: Map<string, HTMLElement>): MenubarPartRegistry => (value, el) => {
     if (el)

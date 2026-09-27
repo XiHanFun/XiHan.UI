@@ -328,6 +328,66 @@ describe('条目高亮标记', () => {
   })
 })
 
+describe('选择型条目', () => {
+  it('checkbox 具有 menuitemcheckbox 语义，激活后切换值且默认保持展开', () => {
+    const onCheckboxValueChange = vi.fn()
+    const h = mount({ defaultOpen: true, defaultCheckboxValue: ['copy'], onCheckboxValueChange })
+
+    expect(h.api().checkboxValue).toEqual(['copy'])
+    expect(h.api().getCheckboxItemProps({ value: 'copy' }) as Dict).toMatchObject({
+      'role': 'menuitemcheckbox',
+      'aria-checked': 'true',
+      'data-state': 'checked',
+    })
+
+    h.send({ type: 'ITEM.SELECT', value: 'copy', kind: 'checkbox', close: false })
+    expect(h.state()).toBe('open')
+    expect(h.api().checkboxValue).toEqual([])
+    expect(onCheckboxValueChange).toHaveBeenCalledExactlyOnceWith({ value: [] })
+  })
+
+  it('radio 以 group 为受控键，同组只保留一项', () => {
+    const onRadioValueChange = vi.fn()
+    const h = mount({ defaultOpen: true, defaultRadioValue: { density: 'compact' }, onRadioValueChange })
+
+    expect(h.api().getRadioItemProps({ value: 'compact', group: 'density' }) as Dict).toMatchObject({
+      'role': 'menuitemradio',
+      'aria-checked': 'true',
+    })
+    h.send({ type: 'ITEM.SELECT', value: 'comfortable', kind: 'radio', group: 'density', close: false })
+    expect(h.api().radioValue).toEqual({ density: 'comfortable' })
+    expect(onRadioValueChange).toHaveBeenCalledExactlyOnceWith({ value: { density: 'comfortable' } })
+    expect(h.state()).toBe('open')
+  })
+
+  it('选择型条目显式 closeOnSelect 后沿普通命令路径关闭', () => {
+    const h = mount({ defaultOpen: true })
+    const props = h.api().getCheckboxItemProps({ value: 'copy', closeOnSelect: true }) as Dict
+    expect(props.role).toBe('menuitemcheckbox')
+    h.send({ type: 'ITEM.SELECT', value: 'copy', kind: 'checkbox', close: true })
+    expect(h.api().checkboxValue).toEqual(['copy'])
+    expect(h.state()).toBe('closed')
+  })
+
+  it('radio 缺少 group 立即报错，不静默并入默认组', () => {
+    const h = mount()
+    expect(() => h.api().getRadioItemProps({ value: 'compact', group: '' })).toThrow('必须声明非空 group')
+    expect(() => mount({ collection: [{ value: 'compact', kind: 'radio' }] })).toThrow('必须声明非空 group')
+  })
+
+  it('choice indicator 从条目上下文读取同一份选中事实', () => {
+    const h = mount({ defaultCheckboxValue: ['copy'], defaultRadioValue: { density: 'compact' } })
+    expect(h.api().getItemIndicatorProps({ value: 'copy', kind: 'checkbox' }) as Dict).toMatchObject({
+      'data-state': 'checked',
+      'data-xh-menu-choice-indicator': 'checkbox',
+    })
+    expect(h.api().getItemIndicatorProps({ value: 'comfortable', group: 'density', kind: 'radio' }) as Dict).toMatchObject({
+      'data-state': 'unchecked',
+      'data-xh-menu-choice-indicator': 'radio',
+    })
+  })
+})
+
 describe('menu 浮层定位', () => {
   it('等 DOM 落定才挂：进入展开态那一刻还没碰引擎，一拍之后才把锚点与浮层交进去', async () => {
     const engine = fakeEngine()
@@ -635,7 +695,7 @@ describe('menu 按压通道：Space / Enter 与触屏按住投影 data-pressed�
     const h = mount({ defaultOpen: true })
     fire(itemProps(h, 'copy'), 'onKeyDown', key('Enter'))
     expect(itemProps(h, 'copy')['data-pressed']).toBe('')
-    h.send({ type: 'ITEM.SELECT', value: 'copy' })
+    h.send({ type: 'ITEM.SELECT', value: 'copy', kind: 'item', close: true })
     expect(h.state()).toBe('closed')
     expect(itemProps(h, 'copy')['data-pressed']).toBeUndefined()
     // 重开后条目是干净的
