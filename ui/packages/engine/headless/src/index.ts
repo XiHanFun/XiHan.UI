@@ -208,6 +208,8 @@ export { connectReasoning, reasoningAnatomy, reasoningDuration, reasoningKeyboar
 export type { ReasoningApi, ReasoningProps, ReasoningTranslations } from './reasoning'
 export { connectResizable, RESIZABLE_DEFAULT_DIMENSIONS, RESIZABLE_EDGES, RESIZABLE_LARGE_STEP, RESIZABLE_STEP, resizableAnatomy, resizableConstraints, resizableKeyboard, resizableMachine, resizableMeta } from './resizable'
 export type { ResizableApi, ResizableDimensions, ResizableDimensionsChangeDetails, ResizableDimensionsChangeEndDetails, ResizableOffset, ResizableRefs, ResizableSchema, ResizableTranslations } from './resizable'
+export { connectSankeyChart, defaultSankeySummary, SANKEY_TRANSLATIONS, sankeyChartAnatomy, sankeyChartKeyboard, sankeyChartMachine, sankeyChartMeta, sankeyMarkTag } from './sankey-chart'
+export type { SankeyActive, SankeyChartApi, SankeyChartSchema, SankeyChartTranslations, SankeyGradient, SankeyLegendItem, SankeyLinkColor, SankeyLinkDatum, SankeyMarkTag, SankeyModel, SankeyNavIntent, SankeyNodeAlign, SankeyNodeDatum, SankeyNodeSort, SankeyOrientation, SankeyOverlay, SankeySummary, SankeyTooltipModel, SankeyTooltipRow } from './sankey-chart'
 export { connectScrollArea, scrollAreaAnatomy, scrollAreaKeyboard, scrollAreaMeta, scrollAreaScrollbarProps } from './scroll-area'
 export type { ScrollAreaApi, ScrollAreaAxisState, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaServices, ScrollAreaTranslations, ScrollAreaVariant } from './scroll-area'
 export { connectScrollbar, SCROLLBAR_DEFAULT_TYPE, SCROLLBAR_HIDE_DELAY, SCROLLBAR_HOST_ATTR, SCROLLBAR_SCROLL_END_DELAY, SCROLLBAR_STEP, scrollbarAnatomy, scrollbarKeyboard, scrollbarMachine, scrollbarMeta } from './scrollbar'

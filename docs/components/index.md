@@ -154,6 +154,7 @@
 <XhComponentCard src="hierarchy-chart" name="HierarchyChart" label="层级图" href="/components/hierarchy-chart" />
 <XhComponentCard src="pie-chart" name="PieChart" label="饼图" href="/components/pie-chart" />
 <XhComponentCard src="radar-chart" name="RadarChart" label="雷达图" href="/components/radar-chart" />
+<XhComponentCard src="sankey-chart" name="SankeyChart" label="桑基图" href="/components/sankey-chart" />
 <XhComponentCard src="sparkline" name="Sparkline" label="迷你图" href="/components/sparkline" />
 <XhComponentCard src="progress-meter" name="Progress" label="仪表盘与子弹图" href="/components/progress#仪表盘" />
 

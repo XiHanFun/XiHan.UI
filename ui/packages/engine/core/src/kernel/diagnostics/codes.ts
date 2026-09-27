@@ -77,6 +77,8 @@ export const DIAGNOSTIC_CODES = {
   chartRadarOverlap: 'chart.radar-overlap',
   /** 层级图的数据组不成一棵树：扁平的行缺 idField / parentField，或 id 重复、父节点不存在、多个根、成环。 */
   chartHierarchyShape: 'chart.hierarchy-shape',
+  /** 桑基图的流带不合法：成环、自环、端点不存在或节点重复；负值另报 chart.negative-share。 */
+  chartSankeyShape: 'chart.sankey-shape',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]

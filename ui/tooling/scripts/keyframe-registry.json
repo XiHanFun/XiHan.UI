@@ -124,6 +124,7 @@
         "pie-chart",
         "radar-chart",
         "reasoning",
+        "sankey-chart",
         "sparkline",
         "tour"
       ],
@@ -438,6 +439,7 @@
         "pie-chart",
         "popconfirm",
         "radar-chart",
+        "sankey-chart",
         "spinner",
         "switch",
         "toast"

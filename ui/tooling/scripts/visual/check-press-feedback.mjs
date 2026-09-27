@@ -107,6 +107,7 @@ const PRESSABLE = {
   'pie-chart': ['legend-item'],
   'radar-chart': ['legend-item'],
   'hierarchy-chart': [{ part: 'path-item', feedback: 'surface' }],
+  'sankey-chart': ['legend-item'],
   // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）
   'cascader': ['clear-trigger', { part: 'item', feedback: 'surface' }, { part: 'search-item', feedback: 'surface' }],
   'tree-select': ['clear-trigger', { part: 'item', feedback: 'surface' }, { part: 'branch-control', feedback: 'surface' }],

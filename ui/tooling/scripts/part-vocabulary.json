@@ -166,6 +166,7 @@
       "hierarchy-chart",
       "pie-chart",
       "radar-chart",
+      "sankey-chart",
       "table"
     ],
     "cell": [
@@ -380,7 +381,8 @@
     "defs": [
       "cartesian-chart",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "deny-trigger": [
       "approval"
@@ -445,6 +447,7 @@
       "mention",
       "pie-chart",
       "radar-chart",
+      "sankey-chart",
       "select",
       "table",
       "transfer",
@@ -501,7 +504,8 @@
       "funnel-chart",
       "hierarchy-chart",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "fold-trigger": [
       "code-view"
@@ -531,6 +535,12 @@
     ],
     "glyph": [
       "icon"
+    ],
+    "gradient": [
+      "sankey-chart"
+    ],
+    "gradient-stop": [
+      "sankey-chart"
     ],
     "grid": [
       "calendar-picker",
@@ -965,19 +975,22 @@
       "fieldset",
       "heatmap",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "legend-item": [
       "cartesian-chart",
       "heatmap",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "legend-label": [
       "cartesian-chart",
       "heatmap",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "legend-scale": [
       "cartesian-chart"
@@ -994,7 +1007,8 @@
     "legend-swatch": [
       "cartesian-chart",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "line": [
       "cartesian-chart",
@@ -1016,6 +1030,7 @@
       "anchor",
       "breadcrumb",
       "navigation-menu",
+      "sankey-chart",
       "side-nav",
       "typography"
     ],
@@ -1113,13 +1128,15 @@
       "calendar-range-picker"
     ],
     "node": [
-      "hierarchy-chart"
+      "hierarchy-chart",
+      "sankey-chart"
     ],
     "node-drag-trigger": [
       "tree"
     ],
     "node-label": [
-      "hierarchy-chart"
+      "hierarchy-chart",
+      "sankey-chart"
     ],
     "note": [
       "approval",
@@ -1184,7 +1201,8 @@
       "funnel-chart",
       "hierarchy-chart",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "point": [
       "cartesian-chart",
@@ -1392,6 +1410,7 @@
       "rating",
       "reasoning",
       "resizable",
+      "sankey-chart",
       "scroll-area",
       "scrollbar",
       "segmented",
@@ -1593,6 +1612,7 @@
       "pagination",
       "pie-chart",
       "radar-chart",
+      "sankey-chart",
       "sparkline",
       "tool-call"
     ],
@@ -1612,7 +1632,8 @@
       "funnel-chart",
       "hierarchy-chart",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "tag-list": [
       "select"
@@ -1698,42 +1719,48 @@
       "heatmap",
       "hierarchy-chart",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "tooltip-header": [
       "cartesian-chart",
       "funnel-chart",
       "hierarchy-chart",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "tooltip-name": [
       "cartesian-chart",
       "funnel-chart",
       "hierarchy-chart",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "tooltip-row": [
       "cartesian-chart",
       "funnel-chart",
       "hierarchy-chart",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "tooltip-swatch": [
       "cartesian-chart",
       "funnel-chart",
       "hierarchy-chart",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "tooltip-value": [
       "cartesian-chart",
       "funnel-chart",
       "hierarchy-chart",
       "pie-chart",
-      "radar-chart"
+      "radar-chart",
+      "sankey-chart"
     ],
     "total-label": [
       "cartesian-chart"
@@ -1820,6 +1847,7 @@
       "pie-chart",
       "question-flow",
       "radar-chart",
+      "sankey-chart",
       "scroll-area",
       "virtualizer"
     ],
@@ -1931,6 +1959,7 @@
     "footer": true,
     "gap": true,
     "glyph": true,
+    "gradient": true,
     "grid": true,
     "group": true,
     "guide": true,
@@ -2006,6 +2035,7 @@
     "stage": true,
     "status": true,
     "stem": true,
+    "stop": true,
     "suffix": true,
     "summary": true,
     "swatch": true,

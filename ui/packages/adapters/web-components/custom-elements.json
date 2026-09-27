@@ -47808,6 +47808,756 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/sankey-chart.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-sankey-chart>`：桑基图宿主，节点分列排开、流带的宽度与流量成正比，看流量从哪里来、到哪里去。\n\n作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part=\"plot\">`，\n可选 empty 与 tooltip。渐变、流带、节点与节点名由本元素按场景生成进 plot，按标记的 key 复用节点；\n图例项生成进 legend；tooltip 留空时写入缺省内容（节点的流入流出明细，或流带的流量与占比），里面有作者写的节点时元素不碰它。\n摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n\n节点、流带与数值格式是对象或函数，只走 JS property。",
+          "name": "XhSankeyChartElement",
+          "cssParts": [
+            {
+              "description": "`<figure>`，承载 pending 与错误状态",
+              "name": "root"
+            },
+            {
+              "description": "`<figcaption>`，图表的可及名来源",
+              "name": "caption"
+            },
+            {
+              "description": "图例工具条，项由元素生成",
+              "name": "legend"
+            },
+            {
+              "description": "尺寸观测的宿主",
+              "name": "viewport"
+            },
+            {
+              "description": "绘图区 `<svg>`，流带与节点由元素生成",
+              "name": "plot"
+            },
+            {
+              "description": "提示框，留空时由元素写入缺省内容",
+              "name": "tooltip"
+            },
+            {
+              "description": "没有可画的数据时显示",
+              "name": "empty"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: sankeyChartAnatomy, meta: sankeyChartMeta, // plot 不是 <svg> 时 viewBox 会被小写成 viewbox 而静默失效，生成的图元也不显示 tags: { plot: ['svg'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "nodes",
+              "privacy": "public",
+              "type": {
+                "text": "readonly SankeyNodeDatum[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "links",
+              "privacy": "public",
+              "type": {
+                "text": "readonly SankeyLinkDatum[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "NumberFormatSpec | ((value: number) => string) | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "hiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultHiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<SankeyChartTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "SankeyOrientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "nodeAlign",
+              "privacy": "public",
+              "type": {
+                "text": "SankeyNodeAlign | undefined"
+              },
+              "attribute": "node-align"
+            },
+            {
+              "kind": "field",
+              "name": "linkColor",
+              "privacy": "public",
+              "type": {
+                "text": "SankeyLinkColor | undefined"
+              },
+              "attribute": "link-color"
+            },
+            {
+              "kind": "field",
+              "name": "nodeSort",
+              "privacy": "public",
+              "type": {
+                "text": "SankeyNodeSort | undefined"
+              },
+              "attribute": "node-sort"
+            },
+            {
+              "kind": "field",
+              "name": "activeKey",
+              "privacy": "public",
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "attribute": "active-key"
+            },
+            {
+              "kind": "field",
+              "name": "pending",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pending"
+            },
+            {
+              "kind": "field",
+              "name": "animated",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "animated"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "notifyHidden",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyKey",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyActive",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyPress",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SankeyChartSchema>( this, sankeyChartMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<SankeyChartSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<SankeyChartSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "SankeyChartApi | null"
+                }
+              },
+              "description": "连接层的产出：下面这些只读口都从这里取，机器尚未建立时为 null。"
+            },
+            {
+              "kind": "field",
+              "name": "legendItems",
+              "type": {
+                "text": "readonly SankeyLegendItem[]"
+              },
+              "description": "图例项：一个分组一项，带色槽与显隐；自行铺图例时照它生成节点。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "ChartDatumDetails | null"
+              },
+              "description": "激活的节点或流带（悬停或聚焦）；没有时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "tooltip",
+              "type": {
+                "text": "SankeyTooltipModel | null"
+              },
+              "description": "提示框的缺省内容模型；收起时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "empty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "没有可画的数据。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentHiddenSeries",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "此刻隐藏的分组。hiddenSeries 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentActiveKey",
+              "type": {
+                "text": "ChartKey | null"
+              },
+              "description": "此刻激活的键。activeKey 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "toggleSeries",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "切换某个分组的显隐，与点图例项同一条路。"
+            },
+            {
+              "kind": "method",
+              "name": "setFocusedDatum",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "ref",
+                  "type": {
+                    "text": "{ seriesId: string, index: number } | null"
+                  }
+                }
+              ],
+              "description": "移动键盘锚点：只改锚点，不移动 DOM 焦点，也不派发事件。"
+            },
+            {
+              "kind": "field",
+              "name": "#keys",
+              "privacy": "private",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "生成节点的 key 表。"
+            },
+            {
+              "kind": "field",
+              "name": "#tooltipKey",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "上一次写进提示框与数据表的内容：没变就不重建。"
+            },
+            {
+              "kind": "field",
+              "name": "#table",
+              "privacy": "private",
+              "type": {
+                "text": "SankeyChartApi['table'] | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#tableHost",
+              "privacy": "private",
+              "type": {
+                "text": "Element | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paintPlot",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "plot",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "SankeyChartApi"
+                  }
+                }
+              ],
+              "description": "绘图区：渐变定义排在最前，其后是场景标记；两者同一次排序，重画时一起复用。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintMarks",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "parent",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "SankeyChartApi"
+                  }
+                }
+              ],
+              "description": "场景标记画成 SVG 图元：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintMark",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "mark",
+                  "type": {
+                    "text": "ChartMark"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "SankeyChartApi"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#paintDefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "SankeyChartApi"
+                  }
+                }
+              ],
+              "description": "渐变定义：linkColor=\"gradient\" 时每条流带一个渐变、两端各一个色标。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintLegend",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "legend",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "SankeyChartApi"
+                  }
+                }
+              ],
+              "description": "图例项：一个分组一个按钮，色标与名字各一个 span。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintTooltip",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tooltip",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "SankeyChartApi"
+                  }
+                }
+              ],
+              "description": "提示框留空时写缺省内容：节点写合计与流入流出的明细，流带写流量与占比；激活的对象换了就重写。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintA11y",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "SankeyChartApi"
+                  }
+                }
+              ],
+              "description": "摘要与数据表追加在 root 末尾，视觉隐藏：无障碍等价物始终存在。"
+            }
+          ],
+          "events": [
+            {
+              "description": "图例切换显隐；detail 为 `{ hiddenSeries: string[] }`",
+              "name": "hidden-series-change",
+              "type": {
+                "text": "ChartHiddenSeriesChangeDetails"
+              }
+            },
+            {
+              "description": "指针或键盘换了激活的节点或流带；detail 为 `{ activeKey }`，收起时为 null",
+              "name": "active-key-change",
+              "type": {
+                "text": "ChartActiveKeyChangeDetails"
+              }
+            },
+            {
+              "description": "悬停或聚焦到某个节点或流带；detail 为数据详情，收起时为 null",
+              "name": "datum-active",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            },
+            {
+              "description": "指针点击、Enter 或 Space 按在某个节点或流带上；detail 为数据详情",
+              "name": "datum-press",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "SankeyOrientation | undefined"
+              },
+              "description": "流向，默认 horizontal（自左而右）",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "SankeyNodeAlign | undefined"
+              },
+              "description": "节点分列的方式，默认 justify",
+              "name": "node-align",
+              "fieldName": "nodeAlign"
+            },
+            {
+              "type": {
+                "text": "SankeyLinkColor | undefined"
+              },
+              "description": "流带的颜色，默认 neutral",
+              "name": "link-color",
+              "fieldName": "linkColor"
+            },
+            {
+              "type": {
+                "text": "SankeyNodeSort | undefined"
+              },
+              "description": "列内次序，默认 auto",
+              "name": "node-sort",
+              "fieldName": "nodeSort"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "数据重取中：保留上一帧、整体降低不透明度",
+              "name": "pending",
+              "fieldName": "pending"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
+              "name": "animated",
+              "fieldName": "animated"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "数字与内建文案的语言；未提供时按宿主语言",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "description": "激活的节点或流带（受控）：节点的身份或「源→目标」",
+              "name": "active-key",
+              "fieldName": "activeKey"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-sankey-chart",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-sankey-chart-empty-gap"
+            },
+            {
+              "name": "--xh-sankey-chart-gap"
+            },
+            {
+              "name": "--xh-sankey-chart-height"
+            },
+            {
+              "name": "--xh-sankey-chart-legend-gap"
+            },
+            {
+              "name": "--xh-sankey-chart-legend-swatch-radius"
+            },
+            {
+              "name": "--xh-sankey-chart-link-alpha"
+            },
+            {
+              "name": "--xh-sankey-chart-link-color"
+            },
+            {
+              "name": "--xh-sankey-chart-node-radius"
+            },
+            {
+              "name": "--xh-sankey-chart-node-width"
+            },
+            {
+              "name": "--xh-sankey-chart-series-color"
+            },
+            {
+              "name": "--xh-sankey-chart-tooltip-gap"
+            },
+            {
+              "name": "--xh-sankey-chart-tooltip-px"
+            },
+            {
+              "name": "--xh-sankey-chart-tooltip-py"
+            },
+            {
+              "name": "--xh-sankey-chart-tooltip-radius"
+            },
+            {
+              "name": "--xh-sankey-chart-tooltip-row-gap"
+            },
+            {
+              "name": "--xh-sankey-chart-tooltip-shadow"
+            },
+            {
+              "name": "--xh-sankey-chart-tooltip-swatch-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhSankeyChartElement",
+          "declaration": {
+            "name": "XhSankeyChartElement",
+            "module": "src/elements/sankey-chart.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/scroll-area.ts",
       "declarations": [
         {

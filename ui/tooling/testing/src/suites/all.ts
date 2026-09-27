@@ -97,6 +97,7 @@ import { radioGroupSuite } from './radio-group.suite'
 import { ratingSuite } from './rating.suite'
 import { reasoningSuite } from './reasoning.suite'
 import { resizableSuite } from './resizable.suite'
+import { sankeyChartSuite } from './sankey-chart.suite'
 import { scrollAreaSuite } from './scroll-area.suite'
 import { scrollbarSuite } from './scrollbar.suite'
 import { segmentedSuite } from './segmented.suite'
@@ -282,4 +283,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   radarChartSuite,
   funnelChartSuite,
   hierarchyChartSuite,
+  sankeyChartSuite,
 ]

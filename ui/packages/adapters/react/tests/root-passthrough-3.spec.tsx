@@ -27,6 +27,7 @@ import {
   XhPieChartRoot,
   XhPinInputRoot,
   XhRadarChartRoot,
+  XhSankeyChartRoot,
 } from '../src'
 
 /** 只记账不产出尺寸的观察器：jsdom 没有这两个构造器，组件挂载时会直接抛。 */
@@ -222,6 +223,15 @@ const CASES: Case[] = [
     machine: { data: { name: 'r', children: [{ name: 'a', value: 2 }, { name: 'b', value: 1 }] }, layout: 'sunburst', colorBy: 'uniform' },
     leaks: ['layout', 'colorBy'],
     render: props => <XhHierarchyChartRoot {...props} />,
+  },
+  {
+    name: 'sankey-chart',
+    scope: 'sankey-chart',
+    tag: 'figure',
+    token: '--xh-sankey-chart-probe',
+    machine: { links: [{ source: 'a', target: 'b', value: 2 }, { source: 'a', target: 'c', value: 1 }], orientation: 'vertical', linkColor: 'source' },
+    leaks: ['orientation', 'linkColor'],
+    render: props => <XhSankeyChartRoot {...props} />,
   },
   {
     name: 'pin-input',

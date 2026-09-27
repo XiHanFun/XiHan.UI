@@ -105,6 +105,7 @@ import type { RadioGroupTranslations } from '../radio-group/radio-group.types'
 import type { RatingTranslations } from '../rating/rating.types'
 import type { ReasoningTranslations } from '../reasoning/reasoning.types'
 import type { ResizableTranslations } from '../resizable/resizable.types'
+import type { SankeyChartTranslations } from '../sankey-chart/sankey-chart.types'
 import type { ScrollAreaTranslations } from '../scroll-area/scroll-area.types'
 import type { ScrollbarTranslations } from '../scrollbar/scrollbar.types'
 import type { SegmentedTranslations } from '../segmented/segmented.types'
@@ -247,6 +248,7 @@ export interface XhTranslationOverrides {
   'rating'?: Partial<RatingTranslations>
   'reasoning'?: Partial<ReasoningTranslations>
   'resizable'?: Partial<ResizableTranslations>
+  'sankey-chart'?: Partial<SankeyChartTranslations>
   'scroll-area'?: Partial<ScrollAreaTranslations>
   'scrollbar'?: Partial<ScrollbarTranslations>
   'segmented'?: Partial<SegmentedTranslations>
