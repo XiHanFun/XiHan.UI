@@ -12,6 +12,8 @@ import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, nextTick, onMounted, ref, useId } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
 import { slotPaints } from '../../runtime/slot-content'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { provideNavigationMenu, useNavigationMenuContext } from './context'
@@ -172,18 +174,24 @@ export const XhNavigationMenuContent = defineComponent({
 /** 面板内的链接项：href 由作者写，点击不拦截，只收起导航 */
 export const XhNavigationMenuLink = defineComponent({
   name: 'XhNavigationMenuLink',
+  // 直通属性自己合：作者的处理器排在部件前面，asChild 时连同部件属性一起落到作者的链接上
+  inheritAttrs: false,
   props: {
     current: Boolean,
+    /** 借用作者的子节点（如路由链接）作为链接，不再渲染自己的 `<a>`；子节点须恰好一个。 */
+    asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useNavigationMenuContext()
     // 链接身份：按压通道按它记按住的那一条，按实例生成，作者不必提供
     const value = useId()
-    return () => h(
-      'a',
-      ctx.api.value.getLinkProps({ value, current: props.current }) as Record<string, unknown>,
-      slots.default?.(),
-    )
+    return () => {
+      const part = mergePartProps(ctx.api.value.getLinkProps({ value, current: props.current }) as Record<string, unknown>, attrs)
+      const children = slots.default?.()
+      if (props.asChild)
+        return mergeIntoChild(children, part, 'navigation-menu', { applyAnatomy: true })
+      return h('a', part, children)
+    }
   },
 })
 

@@ -6,7 +6,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
-import { XhBreadcrumbItem, XhBreadcrumbLink, XhBreadcrumbList, XhBreadcrumbRoot, XhSideNavItem, XhSideNavLink, XhSideNavLinkText, XhSideNavList, XhSideNavRoot } from '../src'
+import { XhBreadcrumbItem, XhBreadcrumbLink, XhBreadcrumbList, XhBreadcrumbRoot, XhNavigationMenuItem, XhNavigationMenuLink, XhNavigationMenuList, XhNavigationMenuRoot, XhSideNavItem, XhSideNavLink, XhSideNavLinkText, XhSideNavList, XhSideNavRoot } from '../src'
 
 let host: HTMLElement | null = null
 let root: ReturnType<typeof createRoot> | null = null
@@ -140,5 +140,26 @@ describe('breadcrumb link asChild', () => {
       links[1]!.click()
     })
     expect(navigations).toEqual(['/home'])
+  })
+})
+
+describe('navigation-menu link asChild', () => {
+  it('直达链接的部件属性落到路由链接渲出的 <a> 上，点击交给路由跳转', async () => {
+    const el = await render(
+      <XhNavigationMenuRoot>
+        <XhNavigationMenuList>
+          <XhNavigationMenuItem>
+            <XhNavigationMenuLink current asChild><FakeLink to="/docs">文档</FakeLink></XhNavigationMenuLink>
+          </XhNavigationMenuItem>
+        </XhNavigationMenuList>
+      </XhNavigationMenuRoot>,
+    )
+    const links = [...el.querySelectorAll<HTMLElement>('[data-scope="navigation-menu"][data-part="link"]')]
+    expect(links).toHaveLength(1)
+    expect(el.querySelectorAll('a')).toHaveLength(1)
+    expect(links[0]!.getAttribute('href')).toBe('/app/docs')
+    expect(links[0]!.getAttribute('aria-current')).toBe('page')
+    await act(async () => links[0]!.click())
+    expect(navigations).toEqual(['/docs'])
   })
 })

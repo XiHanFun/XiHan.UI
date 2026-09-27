@@ -5,7 +5,7 @@
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
-import { XhBreadcrumbItem, XhBreadcrumbLink, XhBreadcrumbList, XhBreadcrumbRoot, XhSideNavItem, XhSideNavLink, XhSideNavLinkText, XhSideNavList, XhSideNavRoot } from '../src'
+import { XhBreadcrumbItem, XhBreadcrumbLink, XhBreadcrumbList, XhBreadcrumbRoot, XhNavigationMenuItem, XhNavigationMenuLink, XhNavigationMenuList, XhNavigationMenuRoot, XhSideNavItem, XhSideNavLink, XhSideNavLinkText, XhSideNavList, XhSideNavRoot } from '../src'
 
 // 条目数据不带 href：地址由路由链接自己算
 const COLLECTION = [{ value: 'home', label: '首页' }, { value: 'orders', label: '订单' }]
@@ -121,6 +121,29 @@ describe('breadcrumb link asChild', () => {
     const wrapper = mountBreadcrumb()
     await wrapper.findAll('[data-part="link"]')[0]!.trigger('click')
     expect(navigations).toEqual(['/home'])
+    wrapper.unmount()
+  })
+})
+
+describe('navigation-menu link asChild', () => {
+  it('直达链接的部件属性落到路由链接渲出的 <a> 上，点击交给路由跳转', async () => {
+    const wrapper = mount(XhNavigationMenuRoot, {
+      attachTo: document.body,
+      slots: {
+        default: () => h(XhNavigationMenuList, null, () => [
+          h(XhNavigationMenuItem, null, () => h(XhNavigationMenuLink, { current: true, asChild: true }, () =>
+            h(FakeRouterLink, { to: '/docs' }, () => '文档'))),
+        ]),
+      },
+    })
+    const links = wrapper.findAll('[data-scope="navigation-menu"][data-part="link"]')
+    expect(links).toHaveLength(1)
+    expect(wrapper.findAll('a')).toHaveLength(1)
+    expect(links[0]!.attributes('href')).toBe('/app/docs')
+    expect(links[0]!.attributes('aria-current')).toBe('page')
+    expect(links[0]!.attributes('data-xh-collection-context')).toBe('nav')
+    await links[0]!.trigger('click')
+    expect(navigations).toEqual(['/docs'])
     wrapper.unmount()
   })
 })

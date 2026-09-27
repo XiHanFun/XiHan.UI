@@ -9,9 +9,11 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import type { AsChildProps } from '../../runtime/as-child'
 import { Fragment, useEffect, useId, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { renderAsChild } from '../../runtime/as-child'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { slotPaints } from '../../runtime/slot-content'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
@@ -224,15 +226,19 @@ export function XhNavigationMenuContent({ value, children, ...rest }: XhNavigati
   )
 }
 
-export interface XhNavigationMenuLinkProps extends ComponentPropsWithRef<'a'> {
+export interface XhNavigationMenuLinkProps extends ComponentPropsWithRef<'a'>, AsChildProps {
   current?: boolean
 }
-/** 面板内的链接项：href 由作者写，点击不拦截，只收起导航。 */
-export function XhNavigationMenuLink({ current, children, ...rest }: XhNavigationMenuLinkProps): ReactNode {
+/**
+ * 面板内的链接项：href 由作者写，点击不拦截，只收起导航。
+ * asChild 借用作者的子节点（如路由链接）作为链接，不再渲染自己的 `<a>`。
+ */
+export function XhNavigationMenuLink({ current, asChild, children, ...rest }: XhNavigationMenuLinkProps): ReactNode {
   const ctx = useNavigationMenuContext()
   // 链接身份：按压通道按它记按住的那一条，按实例生成，作者不必提供
   const value = useId()
-  return <a {...mergeReactProps(ctx.api.getLinkProps({ value, current }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</a>
+  const props = mergePartProps(ctx.api.getLinkProps({ value, current }) as Record<string, unknown>, rest as Record<string, unknown>)
+  return renderAsChild(asChild, children, props, 'navigation-menu', (p, kids) => <a {...p}>{kids}</a>, { applyAnatomy: true })
 }
 
 export interface XhNavigationMenuIndicatorProps extends ComponentPropsWithRef<'li'> {}
