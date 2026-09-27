@@ -6,7 +6,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
-import { XhSideNavItem, XhSideNavLink, XhSideNavLinkText, XhSideNavList, XhSideNavRoot } from '../src'
+import { XhBreadcrumbItem, XhBreadcrumbLink, XhBreadcrumbList, XhBreadcrumbRoot, XhSideNavItem, XhSideNavLink, XhSideNavLinkText, XhSideNavList, XhSideNavRoot } from '../src'
 
 let host: HTMLElement | null = null
 let root: ReturnType<typeof createRoot> | null = null
@@ -104,5 +104,41 @@ describe('side-nav link asChild', () => {
     const link = el.querySelector<HTMLElement>('[data-part="link"]')!
     expect(link.tagName).toBe('A')
     expect(link.hasAttribute('href')).toBe(false)
+  })
+})
+
+describe('breadcrumb link asChild', () => {
+  function Breadcrumb(): ReactNode {
+    return (
+      <XhBreadcrumbRoot>
+        <XhBreadcrumbList>
+          <XhBreadcrumbItem>
+            <XhBreadcrumbLink value="home" asChild><FakeLink to="/home">首页</FakeLink></XhBreadcrumbLink>
+          </XhBreadcrumbItem>
+          <XhBreadcrumbItem>
+            <XhBreadcrumbLink value="orders" current asChild><FakeLink to="/orders">订单</FakeLink></XhBreadcrumbLink>
+          </XhBreadcrumbItem>
+        </XhBreadcrumbList>
+      </XhBreadcrumbRoot>
+    )
+  }
+
+  it('部件属性落到路由链接渲出的 <a> 上，href 仍是路由算出的', async () => {
+    const el = await render(<Breadcrumb />)
+    const links = [...el.querySelectorAll<HTMLElement>('[data-scope="breadcrumb"][data-part="link"]')]
+    expect(links).toHaveLength(2)
+    expect(el.querySelectorAll('a')).toHaveLength(2)
+    expect(links[0]!.getAttribute('href')).toBe('/app/home')
+    expect(links[1]!.getAttribute('aria-current')).toBe('page')
+  })
+
+  it('非当前页交给路由跳转，当前页的点击被部件拦下、路由不跳', async () => {
+    const el = await render(<Breadcrumb />)
+    const links = el.querySelectorAll<HTMLElement>('[data-part="link"]')
+    await act(async () => {
+      links[0]!.click()
+      links[1]!.click()
+    })
+    expect(navigations).toEqual(['/home'])
   })
 })

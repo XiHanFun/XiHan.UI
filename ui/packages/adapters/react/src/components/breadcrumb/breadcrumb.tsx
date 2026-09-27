@@ -8,9 +8,11 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { BreadcrumbItem, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import type { AsChildProps } from '../../runtime/as-child'
 import { useId } from 'react'
 import { withXhConfig } from '../../config/config'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { renderAsChild } from '../../runtime/as-child'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { BreadcrumbProvider, useBreadcrumbContext } from './context'
 import { useBreadcrumb } from './use-breadcrumb'
 
@@ -69,21 +71,24 @@ export function XhBreadcrumbItem({ children, ...rest }: XhBreadcrumbItemProps): 
   return <li {...mergeReactProps(ctx.api.getItemProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
 }
 
-export interface XhBreadcrumbLinkProps extends ComponentPropsWithRef<'a'> {
+export interface XhBreadcrumbLinkProps extends ComponentPropsWithRef<'a'>, AsChildProps {
   /** 链接身份，按压通道按它记住正被按住的那一条；未声明时派生一个实例内稳定的键。 */
   value?: string
   /** 当前页的条目。 */
   current?: boolean
 }
-/** href 由作者写，这里只补当前页标记与点击守卫；当前页同样渲染为 `<a>`。 */
-export function XhBreadcrumbLink({ value, current, children, ...rest }: XhBreadcrumbLinkProps): ReactNode {
+/**
+ * href 由作者写，这里只补当前页标记与点击守卫；当前页同样渲染为 `<a>`。
+ * asChild 借用作者的子节点（如路由链接）作为链接，不再渲染自己的 `<a>`。
+ */
+export function XhBreadcrumbLink({ value, current, asChild, children, ...rest }: XhBreadcrumbLinkProps): ReactNode {
   const ctx = useBreadcrumbContext()
   const fallbackValue = useId()
-  return (
-    <a {...mergeReactProps(ctx.api.getLinkProps({ value: value ?? fallbackValue, current }) as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children}
-    </a>
+  const props = mergePartProps(
+    ctx.api.getLinkProps({ value: value ?? fallbackValue, current }) as Record<string, unknown>,
+    rest as Record<string, unknown>,
   )
+  return renderAsChild(asChild, children, props, 'breadcrumb', (p, kids) => <a {...p}>{kids}</a>, { applyAnatomy: true })
 }
 
 export interface XhBreadcrumbLinkIconProps extends ComponentPropsWithRef<'span'> {}
