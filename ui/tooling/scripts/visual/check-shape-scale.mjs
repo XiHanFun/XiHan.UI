@@ -68,6 +68,8 @@ const NO_SLOT = {
  */
 const IDENTITY = {
   // circle：宽高相等的圆形对象
+  'citation:dismiss-trigger': 'circle',
+  'citation:source-index': 'circle',
   'avatar:root': 'circle',
   'avatar-group:overflow-item': 'circle',
   'icon-wrapper:root': 'circle',
@@ -126,6 +128,7 @@ const IDENTITY = {
   'approval:result': 'pill',
   'question-flow:result': 'pill',
   // pill：(b) 一维对象
+  'citation:trigger': 'pill',
   // liquid 档下不贴边的一维栏：轮播分页条、看图工具条（standard 档分页条没有面、工具条是 surface）
   'carousel:indicator-group[data-xh-liquid]': 'pill',
   'image-viewer:toolbar[data-xh-liquid]': 'pill',

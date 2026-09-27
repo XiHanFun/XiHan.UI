@@ -407,6 +407,9 @@
       "toast",
       "tour"
     ],
+    "dismiss-trigger": [
+      "citation"
+    ],
     "display": [
       "timer"
     ],
@@ -1056,6 +1059,7 @@
       "anchor",
       "breadcrumb",
       "carousel",
+      "citation",
       "command",
       "file-upload",
       "float-button",
@@ -1286,8 +1290,21 @@
       "calendar-range-picker"
     ],
     "preview": [
+      "citation",
       "editable",
       "json-viewer"
+    ],
+    "preview-header": [
+      "citation"
+    ],
+    "preview-link": [
+      "citation"
+    ],
+    "preview-meta": [
+      "citation"
+    ],
+    "preview-title": [
+      "citation"
     ],
     "progress": [
       "toast"
@@ -1309,6 +1326,9 @@
     ],
     "question": [
       "question-flow"
+    ],
+    "quote": [
+      "citation"
     ],
     "range": [
       "loading-bar",
@@ -1353,6 +1373,7 @@
       "cascader",
       "checkbox",
       "checkbox-group",
+      "citation",
       "clipboard",
       "code-view",
       "collapsible",
@@ -1599,8 +1620,23 @@
     "sort-trigger": [
       "table"
     ],
+    "source": [
+      "citation"
+    ],
+    "source-index": [
+      "citation"
+    ],
+    "source-link": [
+      "citation"
+    ],
+    "source-meta": [
+      "citation"
+    ],
     "source-panel": [
       "transfer"
+    ],
+    "source-title": [
+      "citation"
     ],
     "split": [
       "flex"
@@ -1684,6 +1720,7 @@
     ],
     "text": [
       "checkbox",
+      "citation",
       "json-viewer",
       "switch",
       "typography"
@@ -1828,6 +1865,7 @@
       "accordion",
       "back-top",
       "cascader",
+      "citation",
       "collapsible",
       "color-picker",
       "combobox",
@@ -2013,6 +2051,7 @@
     "heading": true,
     "icon": true,
     "image": true,
+    "index": true,
     "indicator": true,
     "input": true,
     "item": true,
@@ -2028,6 +2067,7 @@
     "mark": true,
     "media": true,
     "median": true,
+    "meta": true,
     "meter": true,
     "name": true,
     "needle": true,
@@ -2054,6 +2094,7 @@
     "prompt": true,
     "prose": true,
     "question": true,
+    "quote": true,
     "range": true,
     "rect": true,
     "region": true,
@@ -2073,6 +2114,7 @@
     "sider": true,
     "slice": true,
     "slider": true,
+    "source": true,
     "split": true,
     "spoke": true,
     "spotlight": true,

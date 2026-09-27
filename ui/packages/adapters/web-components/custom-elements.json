@@ -9016,6 +9016,440 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/citation.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-citation>` —— SourcePart 驱动的行内引用、来源预览与来源列表宿主。",
+          "name": "XhCitationElement",
+          "cssParts": [
+            {
+              "description": "组件根",
+              "name": "root"
+            },
+            {
+              "description": "含行内引用的正文",
+              "name": "text"
+            },
+            {
+              "description": "行内引用按钮",
+              "name": "trigger"
+            },
+            {
+              "description": "来源预览区域",
+              "name": "preview"
+            },
+            {
+              "description": "预览标题",
+              "name": "preview-title"
+            },
+            {
+              "description": "来源列表",
+              "name": "list"
+            },
+            {
+              "description": "来源条目",
+              "name": "source"
+            },
+            {
+              "description": "来源条目按钮",
+              "name": "source-link"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: citationAnatomy, meta: citationMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "sources",
+              "privacy": "public",
+              "type": {
+                "text": "readonly CitationSource[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "activeSourceId",
+              "privacy": "public",
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "attribute": "active-source-id"
+            },
+            {
+              "kind": "field",
+              "name": "defaultActiveSourceId",
+              "privacy": "public",
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "attribute": "default-active-source-id"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "CitationSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "onActiveSourceChange",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "onOpenChange",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "onSourceOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<CitationSchema>(this, citationMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<CitationSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "当前来源变化",
+              "name": "active-source-change",
+              "type": {
+                "text": "CitationActiveSourceChangeDetails"
+              }
+            },
+            {
+              "description": "预览展开态变化",
+              "name": "open-change",
+              "type": {
+                "text": "CitationOpenChangeDetails"
+              }
+            },
+            {
+              "description": "用户请求打开原始来源",
+              "name": "source-open",
+              "type": {
+                "text": "CitationSourceOpenDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "description": "受控的当前来源 id",
+              "name": "active-source-id",
+              "fieldName": "activeSourceId"
+            },
+            {
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "description": "非受控初始来源 id",
+              "name": "default-active-source-id",
+              "fieldName": "defaultActiveSourceId"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控预览展开态",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始展开态",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用全部引用入口",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "来源列表方向键是否循环",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-citation",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-citation-dismiss-trigger-radius"
+            },
+            {
+              "name": "--xh-citation-fg"
+            },
+            {
+              "name": "--xh-citation-font-size"
+            },
+            {
+              "name": "--xh-citation-gap"
+            },
+            {
+              "name": "--xh-citation-icon-size"
+            },
+            {
+              "name": "--xh-citation-index-active-bg"
+            },
+            {
+              "name": "--xh-citation-index-active-fg"
+            },
+            {
+              "name": "--xh-citation-index-bg"
+            },
+            {
+              "name": "--xh-citation-index-fg"
+            },
+            {
+              "name": "--xh-citation-index-font-size"
+            },
+            {
+              "name": "--xh-citation-index-radius"
+            },
+            {
+              "name": "--xh-citation-index-size"
+            },
+            {
+              "name": "--xh-citation-link-fg"
+            },
+            {
+              "name": "--xh-citation-list-gap"
+            },
+            {
+              "name": "--xh-citation-meta-fg"
+            },
+            {
+              "name": "--xh-citation-meta-font-size"
+            },
+            {
+              "name": "--xh-citation-preview-bg"
+            },
+            {
+              "name": "--xh-citation-preview-border"
+            },
+            {
+              "name": "--xh-citation-preview-fg"
+            },
+            {
+              "name": "--xh-citation-preview-gap"
+            },
+            {
+              "name": "--xh-citation-preview-header-content-gap"
+            },
+            {
+              "name": "--xh-citation-preview-header-gap"
+            },
+            {
+              "name": "--xh-citation-preview-link-radius"
+            },
+            {
+              "name": "--xh-citation-preview-px"
+            },
+            {
+              "name": "--xh-citation-preview-py"
+            },
+            {
+              "name": "--xh-citation-preview-radius"
+            },
+            {
+              "name": "--xh-citation-quote-border"
+            },
+            {
+              "name": "--xh-citation-quote-fg"
+            },
+            {
+              "name": "--xh-citation-quote-font-size"
+            },
+            {
+              "name": "--xh-citation-quote-ps"
+            },
+            {
+              "name": "--xh-citation-source-fg"
+            },
+            {
+              "name": "--xh-citation-source-link-content-gap"
+            },
+            {
+              "name": "--xh-citation-source-px"
+            },
+            {
+              "name": "--xh-citation-source-py"
+            },
+            {
+              "name": "--xh-citation-source-radius"
+            },
+            {
+              "name": "--xh-citation-source-title-fg"
+            },
+            {
+              "name": "--xh-citation-text-fg"
+            },
+            {
+              "name": "--xh-citation-title-fg"
+            },
+            {
+              "name": "--xh-citation-title-font-size"
+            },
+            {
+              "name": "--xh-citation-title-font-weight"
+            },
+            {
+              "name": "--xh-citation-trigger-fg"
+            },
+            {
+              "name": "--xh-citation-trigger-font-size"
+            },
+            {
+              "name": "--xh-citation-trigger-h"
+            },
+            {
+              "name": "--xh-citation-trigger-margin"
+            },
+            {
+              "name": "--xh-citation-trigger-px"
+            },
+            {
+              "name": "--xh-citation-trigger-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhCitationElement",
+          "declaration": {
+            "name": "XhCitationElement",
+            "module": "src/elements/citation.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/clipboard.ts",
       "declarations": [
         {

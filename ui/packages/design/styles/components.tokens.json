@@ -11527,6 +11527,851 @@
       "description": "checkbox-group 的 select-all-trigger 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-citation-dismiss-trigger-radius",
+      "component": "citation",
+      "part": [
+        "dismiss-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-circle"
+      ],
+      "visibility": "public",
+      "description": "citation 的 dismiss-trigger 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-fg",
+      "component": "citation",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "citation 的 root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-font-size",
+      "component": "citation",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_citation-font-size"
+      ],
+      "visibility": "public",
+      "description": "citation 的 root 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-gap",
+      "component": "citation",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_citation-gap"
+      ],
+      "visibility": "public",
+      "description": "citation 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-icon-size",
+      "component": "citation",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_citation-icon-size"
+      ],
+      "visibility": "public",
+      "description": "citation 的 root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-index-active-bg",
+      "component": "citation",
+      "part": [
+        "source",
+        "source-index"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "state=active"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source、source-index 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-index-active-fg",
+      "component": "citation",
+      "part": [
+        "source",
+        "source-index"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "state=active"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source、source-index 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-index-bg",
+      "component": "citation",
+      "part": [
+        "source-index"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source-index 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-index-fg",
+      "component": "citation",
+      "part": [
+        "source-index"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source-index 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-index-font-size",
+      "component": "citation",
+      "part": [
+        "source-index"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source-index 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-index-radius",
+      "component": "citation",
+      "part": [
+        "source-index"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-circle"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source-index 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-index-size",
+      "component": "citation",
+      "part": [
+        "source-index"
+      ],
+      "property": [
+        "block-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-box-sm"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source-index 部件 block-size、min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-link-fg",
+      "component": "citation",
+      "part": [
+        "preview-link"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview-link 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-list-gap",
+      "component": "citation",
+      "part": [
+        "list"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "citation 的 list 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-meta-fg",
+      "component": "citation",
+      "part": [
+        "preview-meta",
+        "source-meta"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview-meta、source-meta 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-meta-font-size",
+      "component": "citation",
+      "part": [
+        "preview-meta",
+        "source-meta"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview-meta、source-meta 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-preview-bg",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-preview-border",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-preview-fg",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-preview-gap",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-preview-header-content-gap",
+      "component": "citation",
+      "part": [
+        "preview-header"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "first-child"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview-header 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-preview-header-gap",
+      "component": "citation",
+      "part": [
+        "preview-header"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview-header 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-preview-link-radius",
+      "component": "citation",
+      "part": [
+        "preview-link"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview-link 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-preview-px",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_citation-pad"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-preview-py",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_citation-pad"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-preview-radius",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-surface"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-quote-border",
+      "component": "citation",
+      "part": [
+        "quote"
+      ],
+      "property": [
+        "border-inline-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "citation 的 quote 部件 border-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-quote-fg",
+      "component": "citation",
+      "part": [
+        "quote"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "citation 的 quote 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-quote-font-size",
+      "component": "citation",
+      "part": [
+        "quote"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-secondary-size"
+      ],
+      "visibility": "public",
+      "description": "citation 的 quote 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-quote-ps",
+      "component": "citation",
+      "part": [
+        "quote"
+      ],
+      "property": [
+        "padding-inline-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "citation 的 quote 部件 padding-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-source-fg",
+      "component": "citation",
+      "part": [
+        "source-link"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source-link 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-source-link-content-gap",
+      "component": "citation",
+      "part": [
+        "source-link"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "last-child"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source-link 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-source-px",
+      "component": "citation",
+      "part": [
+        "source-link"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source-link 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-source-py",
+      "component": "citation",
+      "part": [
+        "source-link"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "xh-action-profile=row"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source-link 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-source-radius",
+      "component": "citation",
+      "part": [
+        "source-link"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source-link 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-source-title-fg",
+      "component": "citation",
+      "part": [
+        "source-title"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "citation 的 source-title 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-text-fg",
+      "component": "citation",
+      "part": [
+        "text"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "citation 的 text 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-title-fg",
+      "component": "citation",
+      "part": [
+        "preview-title"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview-title 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-title-font-size",
+      "component": "citation",
+      "part": [
+        "preview-title"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview-title 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-title-font-weight",
+      "component": "citation",
+      "part": [
+        "preview-title"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-semibold"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview-title 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-trigger-fg",
+      "component": "citation",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "citation 的 trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-trigger-font-size",
+      "component": "citation",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "citation 的 trigger 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-trigger-h",
+      "component": "citation",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "min-block-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default",
+        "xh-action-profile=icon",
+        "xh-action-profile=row"
+      ],
+      "defaultToken": [
+        "--xh-space-6"
+      ],
+      "visibility": "public",
+      "description": "citation 的 trigger 部件 block-size、inline-size、min-block-size、min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-trigger-margin",
+      "component": "citation",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "margin-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "citation 的 trigger 部件 margin-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-trigger-px",
+      "component": "citation",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "citation 的 trigger 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-trigger-radius",
+      "component": "citation",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "citation 的 trigger 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-clipboard-control-active-layer",
       "component": "clipboard",
       "part": [
@@ -35682,6 +36527,7 @@
         "column-visibility-trigger",
         "control",
         "decrement-trigger",
+        "dismiss-trigger",
         "edit-trigger",
         "ellipsis-trigger",
         "expand-trigger",
@@ -35768,7 +36614,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、row-selection-indicator、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size、margin-inline-start 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、row-selection-indicator、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",

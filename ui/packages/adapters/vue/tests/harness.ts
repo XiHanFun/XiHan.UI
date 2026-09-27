@@ -6,6 +6,7 @@ import { renderFixtureSlots, resolveRoot } from './fixture-vnode'
 
 const PUBLIC_EVENTS = {
   'action': 'onAction',
+  'active-source-change': 'onActiveSourceChange',
   'checked-change': 'onCheckedChange',
   'decision': 'onDecision',
   'granted-scopes-change': 'onGrantedScopesChange',
@@ -45,6 +46,7 @@ const PUBLIC_EVENTS = {
   'window-change': 'onWindowChange',
   'brush-selection-change': 'onBrushSelectionChange',
   'root-key-change': 'onRootKeyChange',
+  'source-open': 'onSourceOpen',
 } as const
 
 function declaredEvents(component: Component): Set<string> {

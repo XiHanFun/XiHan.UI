@@ -20,6 +20,7 @@ import { cartesianChartSuite } from './cartesian-chart.suite'
 import { cascaderSuite } from './cascader.suite'
 import { checkboxGroupSuite } from './checkbox-group.suite'
 import { checkboxSuite } from './checkbox.suite'
+import { citationSuite } from './citation.suite'
 import { clipboardSuite } from './clipboard.suite'
 import { codeViewSuite } from './code-view.suite'
 import { collapsibleSuite } from './collapsible.suite'
@@ -288,4 +289,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   sankeyChartSuite,
   graphChartSuite,
   gridListSuite,
+  citationSuite,
 ]

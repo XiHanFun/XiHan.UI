@@ -19,6 +19,8 @@ export interface SourceUrlPart {
   readonly sourceId: string
   readonly url: string
   readonly title?: string
+  /** URL 来源同样可以携带正文锚点，供行内引用与来源预览直接消费。 */
+  readonly anchors?: readonly CitationAnchor[]
 }
 
 export interface SourceDocumentPart {
