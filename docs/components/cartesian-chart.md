@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `stem` · `connector` · `candle` · `wick` · `box` · `whisker` · `median` · `outlier` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `clip-path` · `clip-rect` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `stem` · `connector` · `candle` · `wick` · `box` · `whisker` · `median` · `outlier` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `zoom-slider` · `zoom-track` · `zoom-window` · `zoom-handle` · `summary` · `table`
 
 ## 示例
 
@@ -168,6 +168,12 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 
 <XhDemo src="cartesian-chart/25-stream" />
 
+### 缩放
+
+zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心缩放，放大后拖动平移，缩放条拖两端改窗口；点多时按像素降采样
+
+<XhDemo src="cartesian-chart/26-zoom" />
+
 ## 设计指引
 
 ### 何时使用
@@ -221,6 +227,10 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 - 散点的 `size` 把一个字段映射到点的面积（半径取平方根），全部散点系列共用一把尺，最大的点半径等于柱厚上限；大小缺失、为 0 或负数的行不画。大的点先画、小的压在上面。连续轴两端各收进最大半径，贴着定义域端点的气泡也整个落在绘图区里。
 - 散点的 `color` 按值着色：点的颜色取这个字段在顺序色阶上的位置，全部按值着色的系列共用一把尺，图例末尾多一条色阶（名字取 `translations.colorLabel`，两端写值域）。这样的系列不再取分类色，图例与提示框的色标取色阶中点或数据自己的颜色；字段缺失的点取色阶中点。点小，色阶最浅的一段压在承载面上看不清，点只用色阶上从 30% 起的一段，图例的渐变按同一段画。色阶的三个锚点缺省取 `--xh-chart-sequential-*`，`palette` 把它换到基础色板里同名的色相上（与热力图的色板同名），起点贴近承载面、终点贴近正文色，亮暗主题下都是值越大越显眼。
 - 散点在类目轴上用 `jitter`（类目步长的比例 0–1）左右散开，看一个类目里的分布而不是叠成一条竖线。偏移以点的身份为种子：重渲染不跳。点的身份缺省是「x 与它在同一个 x 上的出现次序」，往后追加数据、改某个点的 `y` 都不换身份；数据会换序时给 `datumId` 指定身份字段。
+- `zoom` 打开缩放：`x` 只缩放自变量轴，`y` 只缩放数值轴，`xy` 两根都缩放，缺省 `none`。窗口 `window` / `defaultWindow` 是两根轴上各一段 0–1 的比例（`{ x: { start, end }, y: { start, end } }`），对着取整后的整条轴；窗口一变派发 `onWindowChange`，受控时由作者写回。类目轴按窗口露出连续的一段类目，柱照样按露出的类目排满，窗外的数据不画；连续轴与数值轴换成窗口对着的定义域，两端不再取整，刻度在新定义域里重新取，系列与注释按绘图区裁剪。窗口的变化不播过渡，直接画到位。
+- 缩放的手势：按住 Ctrl（⌘）滚轮以指针为中心缩放，不按时滚轮照常滚动页面；放大后拖动绘图区平移，内容跟着指针走；触屏双指捏合缩放、单指拖动平移，只在能缩放的方向上拦截，另一个方向照常滚动页面。键盘在绘图区里按 + / − 以聚焦的数据为中心缩放；方向键把焦点移出窗口时，窗口平移到以它为中心。窗口最窄到只露出一个类目，连续轴放大到 100 倍为止。
+- 自变量轴能缩放、图是竖向时，绘图区下方有一条缩放条（`zoom-slider`）：淡底的轨道对着整条轴，窗口是品牌淡底的选中区，两端各一个手柄。拖窗口平移，拖手柄改一端，按轨道空处把窗口移过去。横向条形图不出缩放条，用滚轮、拖动与键盘缩放。Web Components 侧作者在外壳里放一个空的 `zoom-slider`，轨道、窗口与手柄由元素生成。
+- 折线的点比绘图区的像素多一倍以上时降采样（Largest-Triangle-Three-Buckets，保留峰谷）：线上的点不超过绘图区的宽度，缩放后只采窗口里的那一段；锚点、焦点、提示框与数据表仍是全部数据。
 - 提示框缺省按系列推断：只有散点时 `item`，否则 `axis`。`axis` 吸附到最近的键，列出该键上全部可见系列（散点在这个 x 上有点才列一行）；`item` 只报告指针命中的那一个数据，命中取离指针最近的标记，不要求指针正中。气泡的行在数值后面跟着大小，名字取 `translations.sizeLabel`。键盘聚焦与指针悬停显示同样的内容。`tooltipOrder` 改变提示框里各系列的行序：缺省 `series` 按图例次序，`descending` / `ascending` 按数值排，缺失值排在最后；回调里的 `items` 仍按图例次序。
 - 悬停图例项时，其余系列淡出到 `--xh-chart-dim-alpha`，该系列颜色不变；`trigger="item"` 时悬停或聚焦某个数据同样只保留它所在的系列。`axis` 模式不淡出：提示框列出的正是该键上的全部系列。
 - 提示框放在根内部，按指针所在的一侧翻转，不越出绘图区；它不进入浮层引擎，不参与浮层的层级与关闭协议。
@@ -264,7 +274,7 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-cartesian-chart>` |
-| Vue 组件 | `XhCartesianChartCaption` `XhCartesianChartEmpty` `XhCartesianChartLegend` `XhCartesianChartPlot` `XhCartesianChartRoot` `XhCartesianChartTooltip` `XhCartesianChartViewport` |
+| Vue 组件 | `XhCartesianChartCaption` `XhCartesianChartEmpty` `XhCartesianChartLegend` `XhCartesianChartPlot` `XhCartesianChartRoot` `XhCartesianChartTooltip` `XhCartesianChartViewport` `XhCartesianChartZoomSlider` |
 | 组合式函数 | `useCartesianChart` |
 | 状态机 | `cartesianChartMachine` |
 | 皮肤 | `@xihan-ui/styles/cartesian-chart.css` |
@@ -277,6 +287,7 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 | --- | --- | --- |
 | `hidden-series-change` | `ChartHiddenSeriesChangeDetails` | 图例切换显隐；detail 为 `{ hiddenSeries: string[] }` |
 | `active-key-change` | `ChartActiveKeyChangeDetails` | 指针或键盘换了激活的键；detail 为 `{ activeKey }`，收起时为 null |
+| `window-change` | `CartesianWindowChangeDetails` | 滚轮、捏合、拖动、键盘或缩放条改了缩放窗口；detail 为 `{ window }` |
 | `datum-active` | `ChartDatumDetails` | 悬停或聚焦到某个数据；detail 为数据详情，收起时为 null |
 | `datum-press` | `ChartDatumDetails` | 指针点击、Enter 或 Space 按在某个数据上；detail 为数据详情 |
 
@@ -308,6 +319,10 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 | `XhCartesianChartRoot` | `tooltipOrder` | `CartesianTooltipOrder` |  | 提示框里各系列的行序，缺省 series（按图例次序）。 |
 | `XhCartesianChartRoot` | `palette` | `ChartPalette` |  | 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上。 |
 | `XhCartesianChartRoot` | `annotations` | `readonly CartesianAnnotation[]` |  | 注释：参考线、参考带、标出的数据、平均线与趋势线。 |
+| `XhCartesianChartRoot` | `zoom` | `CartesianZoom` |  | 缩放：x 沿自变量轴、y 沿数值轴、xy 两个方向，缺省 none。 |
+| `XhCartesianChartRoot` | `window` | `CartesianWindow` |  | 缩放窗口（受控）。 |
+| `XhCartesianChartRoot` | `defaultWindow` | `CartesianWindow` |  | 初始缩放窗口（非受控）。 |
+| `XhCartesianChartRoot` | `onWindowChange` | `CartesianChartProps['onWindowChange']` |  |  |
 | `XhCartesianChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的系列（受控）。 |
 | `XhCartesianChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的系列（非受控）。 |
 | `XhCartesianChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。 |
@@ -339,6 +354,8 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 
 **状态**：`idle`
 
+**事件**：`WINDOW.SET` · `DRAG.START` · `DRAG.END`
+
 ### connect API
 
 `getXxxProps()` 返回对应部件的宿主属性。
@@ -364,6 +381,9 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 | `toggleSeries` | `(id: string) => void` | 切换某个系列的显隐。 |
 | `setFocusedDatum` | `(ref: { seriesId: string, index: number } \| null) => void` | 移动键盘锚点。只改锚点不移动 DOM 焦点，也不派发回调； 需要焦点跟随时自行调用元素的 focus()。 |
 | `markTag` | `(mark: Mark) => CartesianMarkTag` | 标记画成什么元素。 |
+| `zoom` | `{ readonly x: boolean, readonly y: boolean, readonly window: CartesianWindow }` | 缩放：两个方向能不能缩放，与生效的窗口（不能缩放的方向是整条轴）。 |
+| `clip` | `{ readonly id: string, readonly x: number, readonly y: number, readonly width: number, readonly height: number } \| null` | 缩放后要裁到的矩形（绘图区）与它在 defs 里的 clipPath id；没缩放连续轴与数值轴时为 null。 |
+| `setWindow` | `(window: CartesianWindow) => void` | 设置缩放窗口；不能缩放的方向保持整条轴。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getCaptionProps` | `() => T['element']` |  |
 | `getLegendProps` | `() => T['element']` |  |
@@ -387,6 +407,12 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 | `getTooltipValueProps` | `(row: CartesianTooltipRow) => T['element']` |  |
 | `getTooltipNameProps` | `(row: CartesianTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
+| `getClipPathProps` | `() => T['element']` | 裁剪区：画在绘图区的 defs 里，clip 为 null 时不画。 |
+| `getClipRectProps` | `() => T['element']` |  |
+| `getZoomSliderProps` | `() => T['element']` | 缩放条：作者放置，轨道、窗口与两端的手柄由组件生成；自变量方向不能缩放时收起。 |
+| `getZoomTrackProps` | `() => T['element']` |  |
+| `getZoomWindowProps` | `() => T['element']` |  |
+| `getZoomHandleProps` | `(edge: 'start' \| 'end') => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
 | `getTableProps` | `() => T['element']` |  |
 
@@ -407,6 +433,9 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 | `End` | 焦点在绘图区 | 当前系列的最后一个数据 |
 | `PageUp` / `PageDown` | 焦点在绘图区 | 跨 10% 的键，至少 1 个 |
 | `Enter` / `Space` | 焦点在绘图区 | 报告聚焦的数据（onDatumPress） |
+| `+` / `=` | 焦点在绘图区且开了 zoom | 以聚焦的数据为中心放大 1.5 倍；类目轴至少露出一个类目 |
+| `-` / `_` | 焦点在绘图区且开了 zoom | 以聚焦的数据为中心缩小 1.5 倍，到整条轴为止；焦点走出窗口时窗口平移过去 |
+| `ArrowLeft` / `ArrowRight` / `ArrowDown` / `ArrowUp` / `PageUp` / `PageDown` / `Home` / `End` | 焦点在缩放条的手柄 | 左右键（下上键同）把这一端移 1%（按住 Shift 或 PageUp / PageDown 移 10%），Home / End 把这一端移到能到的最远处；两端之间至少留一个类目或 1% 的轴 |
 | `Escape` | 提示框显示着 | 收起提示框，焦点留在原处；按键不拦截，外层浮层的关闭仍归它自己 |
 | `ArrowLeft` / `ArrowRight` / `Home` / `End` | 焦点在图例 | 在图例项之间移动，左右键跟随文字方向的视觉次序 |
 | `Enter` / `Space` | 焦点在图例项 | 切换该系列的显隐（原生按钮行为） |
@@ -428,6 +457,15 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 | `plot` | `aria-roledescription` | translations.chartRoleDescription |
 | `plot` | `role` | 'graphics-document' |
 | `tooltip` | `aria-hidden` | 'true' |
+| `zoom-slider` | `aria-label` | translations.zoomLabel |
+| `zoom-slider` | `role` | 'group' |
+| `zoom-handle` | `aria-label` | translations.zoomStartLabel \| translations.zoomEndLabel |
+| `zoom-handle` | `aria-orientation` | 'horizontal' |
+| `zoom-handle` | `aria-valuemax` | 100 |
+| `zoom-handle` | `aria-valuemin` | 0 |
+| `zoom-handle` | `aria-valuenow` | Math.round(shown.x[edge] * 100) |
+| `zoom-handle` | `aria-valuetext` | edgeText(shown.x[edge], edge) |
+| `zoom-handle` | `role` | 'slider' |
 | `mark` | `aria-hidden` | mark.exiting \|\| undefined |
 | `mark` | `aria-label` | undefined \| spec?.name |
 | `mark` | `aria-roledescription` | undefined \| translations.seriesRoleDescription |
@@ -443,6 +481,7 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 - 图例是 `role="toolbar"`，名称取 `translations.legendLabel`；每一项是 `<button aria-pressed>`，按下表示系列可见。图例整体只占一个 Tab 位，进入后左右键在项之间移动。
 - 提示框 `aria-hidden`：它显示的内容与数据的可访问名称是同一份，读两遍反而干扰。
 - Escape 收起提示框但不拦截按键，外层浮层的关闭仍由其自身处理。
+- 缩放条是 `role="group"`，名称取 `translations.zoomLabel`；两端的手柄是 `role="slider"`，名称取 `zoomStartLabel` / `zoomEndLabel`，值是窗口那一端在整条轴上的百分比，`aria-valuetext` 读出那一端对着的类目或值。缩放后摘要与数据表仍写全部数据，窗口只改画面。
 - 过渡只改画面：数据的名称、摘要、数据表与焦点次序在数据变化的那一刻就按新数据更新；收场中的标记 `aria-hidden`、不可聚焦，也不响应指针。
 - 颜色不是区分系列的唯一线索：图例文字、提示框中的系列名与数据名称都写出系列；折线与柱的色标形状也不同，散点的形状随色槽轮换；强制色与打印下柱与面积还有各自的纹理，折线还有各自的线型。
 
@@ -483,7 +522,10 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 | `legend-swatch` | `data-xh-chart-part` | 'legend-swatch' |
 | `legend-scale-value` | `data-edge` | edge |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
+| `plot` | `data-dragging` | ''（条件成立时才出现） |
 | `plot` | `data-xh-chart-part` | 'plot' |
+| `plot` | `data-zoomable` | 'both' \| 'horizontal' \| 'vertical' \| undefined |
+| `plot` | `data-zoomed` | ''（条件成立时才出现） |
 | `defs` | `data-xh-chart-part` | 'defs' |
 | `pattern` | `data-tone` | pattern.tone |
 | `pattern` | `data-xh-chart-part` | 'pattern' |
@@ -508,6 +550,8 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 | `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |
 | `empty` | `data-state` | 'loading' \| undefined |
 | `empty` | `data-xh-chart-part` | 'empty' |
+| `zoom-slider` | `data-dragging` | ''（条件成立时才出现） |
+| `zoom-handle` | `data-placement` | edge |
 | `mark` | `data-axis` | mark.key.slice('axis:'.length) \| undefined |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
 | `mark` | `data-drawing` | ''（条件成立时才出现） |
@@ -550,6 +594,14 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 | `--xh-cartesian-chart-tooltip-shadow` | `tooltip` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | cartesian-chart 的 tooltip 部件 box-shadow 覆盖槽。 |
 | `--xh-cartesian-chart-tooltip-swatch-line-radius` | `tooltip-swatch` | `border-radius` | `mark=line` | `--xh-shape-pill` | cartesian-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。 |
 | `--xh-cartesian-chart-tooltip-swatch-radius` | `tooltip-swatch` | `border-radius` | `default` | `--xh-shape-inset` | cartesian-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。 |
+| `--xh-cartesian-chart-zoom-h` | `zoom-slider` | `block-size` | `default` | `--xh-space-6` | cartesian-chart 的 zoom-slider 部件 block-size 覆盖槽。 |
+| `--xh-cartesian-chart-zoom-handle-bg` | `zoom-handle` | `background` | `default` | `--xh-bg-brand` | cartesian-chart 的 zoom-handle 部件 background 覆盖槽。 |
+| `--xh-cartesian-chart-zoom-handle-radius` | `zoom-handle` | `border-radius` | `default` | `--xh-shape-inset` | cartesian-chart 的 zoom-handle 部件 border-radius 覆盖槽。 |
+| `--xh-cartesian-chart-zoom-handle-w` | `zoom-handle` | `inline-size` | `default` | `--xh-space-2` | cartesian-chart 的 zoom-handle 部件 inline-size 覆盖槽。 |
+| `--xh-cartesian-chart-zoom-track-bg` | `zoom-track` | `background` | `default` | `--xh-bg-subtle` | cartesian-chart 的 zoom-track 部件 background 覆盖槽。 |
+| `--xh-cartesian-chart-zoom-track-radius` | `zoom-track` | `border-radius` | `default` | `--xh-shape-inset` | cartesian-chart 的 zoom-track 部件 border-radius 覆盖槽。 |
+| `--xh-cartesian-chart-zoom-window-bg` | `zoom-window` | `background` | `default` | `--xh-bg-brand-subtle` | cartesian-chart 的 zoom-window 部件 background 覆盖槽。 |
+| `--xh-cartesian-chart-zoom-window-radius` | `zoom-window` | `border-radius` | `default` | `--xh-shape-inset` | cartesian-chart 的 zoom-window 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -567,3 +619,4 @@ y 写成 [下, 上] 是区间，棒棒糖形态两头各一个点：一眼看出
 - 绘图区不随文字方向镜像：坐标系的方向是数据约定，时间在 rtl 页面上同样从左向右，左方向键始终向左。
 - 图例、标题与提示框的内容随文字方向排列，图例的左右键跟随视觉次序翻转。
 - 横向条形图的类目标签在 rtl 下同样位于左侧，数值轴同样从左向右增长。
+- 缩放条对着绘图区的横轴，同样不镜像：窗口的起点在左，左方向键把手柄往左移。

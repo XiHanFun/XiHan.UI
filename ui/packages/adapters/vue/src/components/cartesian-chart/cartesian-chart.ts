@@ -16,6 +16,8 @@ import type {
   CartesianTooltipModel,
   CartesianTooltipOrder,
   CartesianTrigger,
+  CartesianWindow,
+  CartesianZoom,
   ChartDatumDetails,
   ChartKey,
   ChartMark,
@@ -42,10 +44,14 @@ export interface CartesianChartTooltipSlotProps {
 
 /** 纹理定义：绘图区的第一个子节点，每种纹理一个 pattern、里面一条线。 */
 function renderDefs(api: CartesianChartApi): VNode {
-  return h('defs', api.getDefsProps() as Record<string, unknown>, api.patterns.map(pattern =>
-    h('pattern', { ...api.getPatternProps(pattern) as Record<string, unknown>, key: pattern.id }, [
-      h('path', api.getPatternLineProps(pattern) as Record<string, unknown>),
-    ])))
+  return h('defs', api.getDefsProps() as Record<string, unknown>, [
+    ...api.patterns.map(pattern =>
+      h('pattern', { ...api.getPatternProps(pattern) as Record<string, unknown>, key: pattern.id }, [
+        h('path', api.getPatternLineProps(pattern) as Record<string, unknown>),
+      ])),
+    // 缩放后的裁剪区：窗外的系列与注释按它裁掉
+    ...(api.clip ? [h('clipPath', { ...api.getClipPathProps() as Record<string, unknown>, key: 'clip' }, [h('rect', api.getClipRectProps() as Record<string, unknown>)])] : []),
+  ])
 }
 
 /** 一个场景标记画成 SVG 元素；分组递归画子标记，文字标记带文字。 */
@@ -162,6 +168,25 @@ export const XhCartesianChartPlot = defineComponent({
   },
 })
 
+/** 缩放条：一条轨道上的窗口与两端的手柄；自变量方向不能缩放时收起。 */
+export const XhCartesianChartZoomSlider = defineComponent({
+  name: 'XhCartesianChartZoomSlider',
+  setup() {
+    const ctx = useCartesianChartContext()
+    return () => {
+      const api = ctx.api.value
+      return h('div', api.getZoomSliderProps() as Record<string, unknown>, [
+        h('div', api.getZoomTrackProps() as Record<string, unknown>, [
+          h('div', api.getZoomWindowProps() as Record<string, unknown>, [
+            h('span', api.getZoomHandleProps('start') as Record<string, unknown>),
+            h('span', api.getZoomHandleProps('end') as Record<string, unknown>),
+          ]),
+        ]),
+      ])
+    }
+  },
+})
+
 /** 提示框：缺省内容按激活的数据生成，作用域插槽可替换。 */
 export const XhCartesianChartTooltip = defineComponent({
   name: 'XhCartesianChartTooltip',
@@ -203,6 +228,9 @@ export const XhCartesianChartRoot = defineComponent({
     tooltipOrder: { type: String as PropType<CartesianTooltipOrder> },
     palette: { type: String as PropType<ChartPalette> },
     annotations: { type: Array as PropType<readonly CartesianAnnotation[]> },
+    zoom: { type: String as PropType<CartesianZoom> },
+    window: { type: Object as PropType<CartesianWindow> },
+    defaultWindow: { type: Object as PropType<CartesianWindow> },
     hiddenSeries: { type: Array as PropType<string[]> },
     defaultHiddenSeries: { type: Array as PropType<string[]> },
     activeKey: { type: [String, Number, Date, null] as PropType<ChartKey | null> },
@@ -217,6 +245,8 @@ export const XhCartesianChartRoot = defineComponent({
     'update:hiddenSeries': (_hidden: PayloadOf<CartesianChartProps, 'onHiddenSeriesChange'>['hiddenSeries']) => true,
     'active-key-change': (_details: PayloadOf<CartesianChartProps, 'onActiveKeyChange'>) => true,
     'update:activeKey': (_key: PayloadOf<CartesianChartProps, 'onActiveKeyChange'>['activeKey']) => true,
+    'window-change': (_details: PayloadOf<CartesianChartProps, 'onWindowChange'>) => true,
+    'update:window': (_window: PayloadOf<CartesianChartProps, 'onWindowChange'>['window']) => true,
     'datum-active': (_details: PayloadOf<CartesianChartProps, 'onDatumActive'>) => true,
     'datum-press': (_details: PayloadOf<CartesianChartProps, 'onDatumPress'>) => true,
   },
@@ -239,6 +269,10 @@ export const XhCartesianChartRoot = defineComponent({
       onActiveKeyChange: (details) => {
         emit('active-key-change', details)
         emit('update:activeKey', details.activeKey)
+      },
+      onWindowChange: (details) => {
+        emit('window-change', details)
+        emit('update:window', details.window)
       },
       onDatumActive: details => emit('datum-active', details),
       onDatumPress: details => emit('datum-press', details),
@@ -265,6 +299,7 @@ export const XhCartesianChartRoot = defineComponent({
               h(XhCartesianChartPlot),
               h(XhCartesianChartEmpty, null, slots.empty ? () => slots.empty?.() : undefined),
             ]),
+            h(XhCartesianChartZoomSlider),
             h(XhCartesianChartTooltip, null, slots.tooltip ? { default: slots.tooltip } : undefined),
           ]
       return h('figure', {

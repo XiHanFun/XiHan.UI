@@ -10,6 +10,7 @@ import type { Tone } from '@xihan-ui/core'
 import type {
   AxisLayout,
   AxisScale,
+  AxisWindow,
   BandScale,
   ContinuousScale,
   CurveName,
@@ -45,6 +46,8 @@ import type {
   CartesianOrientation,
   CartesianScaleKind,
   CartesianSeries,
+  CartesianWindow,
+  CartesianZoom,
 } from './cartesian-chart.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import {
@@ -52,13 +55,17 @@ import {
   buildTableModel,
   createNumberFormat,
   createScene,
+  FULL_WINDOW,
   inferDomain,
+  isFullWindow,
   isVizError,
   jitter,
   kde,
   layoutAxis,
   linearRegression,
+  lttb,
   movingAverage,
+  needsSampling,
   scaleBand,
   scaleLinear,
   scaleLog,
@@ -69,6 +76,8 @@ import {
   stack,
   SYMBOL_NAMES,
   waterfall,
+  windowToDomain,
+  windowToIndexRange,
 } from '@xihan-ui/viz'
 import { assignChartSeries, buildChartSummary, labelBox, memoizeLast, placeWithoutOverlap, settleColumn } from '../shared/chart'
 
@@ -895,6 +904,14 @@ export interface CartesianLayout {
   readonly annotations: readonly CartesianAnnotation[]
   /** 平均线缺省标签的前缀。 */
   readonly averageLabel: string
+  /** 生效的缩放窗口：不能缩放的方向是整条轴。 */
+  readonly window: { readonly x: AxisWindow, readonly y: AxisWindow }
+  /** 连续轴或数值轴被缩放：窗外的标记要裁掉。 */
+  readonly clipped: boolean
+  /** 连续自变量轴取整后的整条定义域（日期取时间值）：缩放窗口的比例对着它；类目轴为 null。 */
+  readonly keyExtent: readonly [number, number] | null
+  /** 类目轴被缩放时露出的键的下标范围（含两端）；没缩放是整条。 */
+  readonly keyRange: readonly [number, number]
 }
 
 function isCategoryScale(scale: AxisScale): scale is BandScale<string | number> {
@@ -916,6 +933,8 @@ export function layoutCartesian(
   totals: boolean,
   annotations: readonly CartesianAnnotation[],
   averageLabel: string,
+  zoom: CartesianZoom,
+  zoomWindow: CartesianWindow,
 ): CartesianLayout {
   void measurerVersion
   const { spec } = domains.derived
@@ -925,6 +944,14 @@ export function layoutCartesian(
   const categoryKeys = spec.keys.map(categoryKey)
   const keyOf = new Map(categoryKeys.map((k, i) => [k, spec.keys[i]!]))
   const keyAxisConfig = spec.xAxis
+  // 缩放窗口：不能缩放的方向是整条轴。类目轴按窗口露出一段键，连续轴与数值轴按窗口换定义域
+  const windowX = zoom === 'x' || zoom === 'xy' ? zoomWindow.x : FULL_WINDOW
+  const windowY = zoom === 'y' || zoom === 'xy' ? zoomWindow.y : FULL_WINDOW
+  const category = spec.keyScale === 'band' || spec.keyScale === 'point'
+  const keyRange: [number, number] = category && !isFullWindow(windowX) && categoryKeys.length > 0
+    ? windowToIndexRange(windowX, categoryKeys.length)
+    : [0, categoryKeys.length - 1]
+  const shownKeys = categoryKeys.slice(keyRange[0], keyRange[1] + 1)
   const barCount = domains.derived.visible.some(s => s.spec.mark === 'bar')
   const scatterOnly = spec.series.length > 0 && spec.series.every(s => s.mark === 'scatter')
   // 散点落在定义域两端时整个点要在绘图区里、不压在坐标轴线上：连续轴两端各收进一截，气泡收进最大半径，
@@ -944,21 +971,32 @@ export function layoutCartesian(
     ? (spec.yAxis.reverse ? [plot.y, plot.y + plot.height] : [plot.y + plot.height, plot.y])
     : (spec.yAxis.reverse ? [plot.x + plot.width, plot.x] : [plot.x, plot.x + plot.width]))
 
+  let keyExtent: [number, number] | null = null
   const keyScaleOf = (plot: Rect): AxisScale => {
     const range = along(plot)
     if (spec.keyScale === 'band')
-      return scaleBand({ domain: categoryKeys, range, paddingInner: barCount ? 0.2 : 0.1, paddingOuter: barCount ? 0.1 : 0.05 })
+      return scaleBand({ domain: shownKeys, range, paddingInner: barCount ? 0.2 : 0.1, paddingOuter: barCount ? 0.1 : 0.05 })
     if (spec.keyScale === 'point')
-      return scalePoint({ domain: categoryKeys, range, paddingOuter: 0.5 })
+      return scalePoint({ domain: shownKeys, range, paddingOuter: 0.5 })
     const [lo, hi] = domains.key ?? [0, 1]
     const inner = inset(range)
-    if (spec.keyScale === 'time')
-      return scaleTime({ domain: [new Date(lo), new Date(hi)], range: inner })
-    if (spec.keyScale === 'utc')
-      return scaleUtc({ domain: [new Date(lo), new Date(hi)], range: inner })
-    const scale = spec.keyScale === 'log' ? scaleLog({ domain: [lo, hi], range: inner }) : scaleLinear({ domain: [lo, hi], range: inner })
+    const make = ([a, b]: readonly [number, number]): AxisScale => {
+      if (spec.keyScale === 'time')
+        return scaleTime({ domain: [new Date(a), new Date(b)], range: inner })
+      if (spec.keyScale === 'utc')
+        return scaleUtc({ domain: [new Date(a), new Date(b)], range: inner })
+      return spec.keyScale === 'log' ? scaleLog({ domain: [a, b], range: inner }) : scaleLinear({ domain: [a, b], range: inner })
+    }
+    let full = make([lo, hi])
     // 只有散点时自变量是一个量而不是序列：两端缺省取整到刻度上，与数值轴一致
-    return (spec.xAxis.nice ?? scatterOnly) ? scale.nice() : scale
+    if ((spec.xAxis.nice ?? scatterOnly) && spec.keyScale !== 'time' && spec.keyScale !== 'utc')
+      full = (full as ContinuousScale).nice()
+    // 窗口按取整后的整条轴换算：窗口的比例对着作者看到的那根轴
+    const extent = (full.domain as readonly (number | Date)[]).map(v => (v instanceof Date ? v.valueOf() : v)) as [number, number]
+    keyExtent = extent
+    if (isFullWindow(windowX))
+      return full
+    return make(windowToDomain(windowX, extent, spec.keyScale === 'log' ? 'log' : 'linear'))
   }
 
   const valueSpec: NumberFormatSpec = typeof spec.yAxis.format === 'object' && !isDateFormat(spec.yAxis.format)
@@ -982,10 +1020,12 @@ export function layoutCartesian(
     const dir = Math.sign(r1 - r0) || 1
     const range: [number, number] = [r0 + dir * pad.low, r1 - dir * pad.high]
     const [lo, hi] = domains.value
-    const base = spec.valueScale === 'log' ? scaleLog({ domain: [lo, hi], range }) : scaleLinear({ domain: [lo, hi], range })
-    if (spec.yAxis.nice === false || domains.percent)
-      return base
-    return base.nice(valueTickCount(range))
+    const make = ([a, b]: readonly [number, number]): ContinuousScale => (spec.valueScale === 'log' ? scaleLog({ domain: [a, b], range }) : scaleLinear({ domain: [a, b], range }))
+    const base = make([lo, hi])
+    const full = spec.yAxis.nice === false || domains.percent ? base : base.nice(valueTickCount(range))
+    if (isFullWindow(windowY))
+      return full
+    return make(windowToDomain(windowY, full.domain as [number, number], spec.valueScale === 'log' ? 'log' : 'linear'))
   }
 
   const valueTickFormat = (scale: AxisScale) => (value: unknown): string => {
@@ -1099,6 +1139,10 @@ export function layoutCartesian(
     return at ?? Number.NaN
   })
   return {
+    keyExtent,
+    window: { x: windowX, y: windowY },
+    clipped: (!category && !isFullWindow(windowX)) || !isFullWindow(windowY),
+    keyRange,
     binSpans,
     domains,
     size,
@@ -1239,6 +1283,8 @@ export interface CartesianScene {
   readonly labelValues: ReadonlyMap<string, CartesianLabelValue>
   /** 注释的标记与标签键 → 它是哪种注释、跟着哪个系列（参考线与参考带不跟系列）。 */
   readonly annotations: ReadonlyMap<string, CartesianAnnotationInfo>
+  /** 缩放后要裁到的矩形（绘图区）：窗外的标记不露出来；没缩放连续轴与数值轴时为 null。 */
+  readonly clip: Rect | null
 }
 
 /** 注释标记的归属：连接层据此写 data-kind、系列的色槽与淡出。 */
@@ -1539,8 +1585,12 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
       }
       // 单调平滑沿自变量方向求：横向时自变量是 y
       const curve: CurveName = !vertical && s.spec.curve === 'monotoneX' ? 'monotoneY' : s.spec.curve
+      // 点比绘图区沿自变量方向的像素多一倍以上时降采样：只取露在窗口里的一段（两头各带一个窗外的点），
+      // 用 LTTB 保住形状；提示框、焦点与数据表仍按全部的点
+      const extent = vertical ? plot.width : plot.height
+      const drawn = needsSampling(points.length, extent) ? sampleLine(points, vertical, plot) : points
       if (s.spec.area)
-        children.push({ kind: 'area', key: `${id}:area`, part: 'area-fill', points, curve, orientation: spec.orientation, paint, a11y: { label: '', focusable: false } })
+        children.push({ kind: 'area', key: `${id}:area`, part: 'area-fill', points: drawn, curve, orientation: spec.orientation, paint, a11y: { label: '', focusable: false } })
       // 区间带只铺带：不画线，也不逐点画点
       if (s.lows) {
         data.push({ kind: 'group', key: `series:${id}`, part: 'series', children })
@@ -1550,14 +1600,14 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
         kind: 'line',
         key: `${id}:line`,
         part: 'line',
-        points: points.map(({ key, x, y, defined }) => ({ key, x, y, defined })),
+        points: drawn.map(({ key, x, y, defined }) => ({ key, x, y, defined })),
         curve,
         datum: { seriesId: id, index: 0 },
         paint,
         a11y: { label: '', focusable: true },
       })
       // 数据点：点间距够宽（16px）时才画，太密的点连成一片反而看不清线
-      const spacing = spec.keys.length > 1 ? Math.abs(layout.keyCenters[1]! - layout.keyCenters[0]!) : Number.POSITIVE_INFINITY
+      const spacing = spec.keys.length > 1 ? keyStep(layout) : Number.POSITIVE_INFINITY
       const show = s.spec.symbols === 'always' || (s.spec.symbols === 'auto' && spacing >= 16)
       if (show) {
         const size = Math.PI * (metrics.pointSize / 2) ** 2
@@ -1576,7 +1626,7 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
   back.splice(1, 0, ...notes.back)
   const labels = cartesianLabels(layout, bars, anchors, notes.labels)
   const scene = createScene({ version, layers: { back, data, front: [...notes.front, ...labels.marks] }, bounds: { x: 0, y: 0, width: layout.size.width, height: layout.size.height } })
-  return { layout, scene, info, anchors, placements: labels.placements, labelValues: labels.values, annotations: notes.info }
+  return { layout, scene, info, anchors, placements: labels.placements, labelValues: labels.values, annotations: notes.info, clip: layout.clipped ? plot : null }
 }
 
 /**
@@ -1646,6 +1696,28 @@ export function colorPosition(domain: readonly [number, number] | null, value: n
   const [lo, hi] = domain
   const t = hi === lo ? 0.5 : Math.min(1, Math.max(0, (value - lo) / (hi - lo)))
   return POINT_COLOR_FLOOR + (1 - POINT_COLOR_FLOOR) * t
+}
+
+/**
+ * 折线降采样：先只留露在绘图区里的一段（两头各带一个窗外的点，线从边上连进来），再按绘图区的像素数用 LTTB 取点。
+ * 缺失值把线分成几段，LTTB 按段分配名额，断开的地方仍然断开。
+ */
+function sampleLine(points: readonly KeyedPoint[], vertical: boolean, plot: Rect): KeyedPoint[] {
+  const along = (p: KeyedPoint): number => (vertical ? p.x : p.y)
+  const [lo, hi] = vertical ? [plot.x, plot.x + plot.width] : [plot.y, plot.y + plot.height]
+  let first = points.findIndex(p => along(p) >= lo)
+  let last = points.length - 1
+  while (last >= 0 && !(along(points[last]!) <= hi))
+    last -= 1
+  if (first < 0 || last < first)
+    return []
+  first = Math.max(0, first - 1)
+  last = Math.min(points.length - 1, last + 1)
+  const shown = points.slice(first, last + 1)
+  const extent = hi - lo
+  if (!needsSampling(shown.length, extent))
+    return shown
+  return lttb(shown, Math.max(2, Math.round(extent)), p => along(p), p => (p.defined === false ? Number.NaN : vertical ? p.y : p.x))
 }
 
 /** 键间距：类目轴取步长，连续轴取相邻两个键中心的最小间距；只有一个键时退回柱厚上限。 */
@@ -2136,6 +2208,9 @@ function cartesianLabels(
     extra: Partial<Pick<TextMark, 'datum' | 'paint'>> = {},
   ): void => {
     const [x, y, anchor, baseline] = at
+    // 缩放后窗外的数据不写标签：标签落在绘图区（外扩一行字高）之外就不要
+    if (layout.clipped && !(x >= plot.x - lineHeight && x <= plot.x + plot.width + lineHeight && y >= plot.y - lineHeight && y <= plot.y + plot.height + lineHeight))
+      return
     const text = label.format(label.value)
     candidates.push({
       mark: { kind: 'text', key, part, x, y, text, anchor, baseline, ...extra },
@@ -2571,6 +2646,8 @@ export interface CartesianPipelineInput {
   readonly translations: CartesianChartTranslations
   readonly totals: boolean | undefined
   readonly annotations: readonly CartesianAnnotation[] | undefined
+  readonly zoom: CartesianZoom
+  readonly window: CartesianWindow
 }
 
 export interface CartesianModel {
@@ -2616,7 +2693,7 @@ export function createCartesianPipeline(): CartesianPipeline {
     const issues = [...spec.issues, ...derived.issues, ...domains.issues]
     const scene = input.size == null || issues.length > 0
       ? null
-      : sceneOf(layoutOf(domains, input.size, input.metrics, input.measurer, input.measurerVersion, input.locale, input.totals === true, annotations, input.translations.averageLabel))
+      : sceneOf(layoutOf(domains, input.size, input.metrics, input.measurer, input.measurerVersion, input.locale, input.totals === true, annotations, input.translations.averageLabel, input.zoom, input.window))
     return { spec, derived, domains, formats: a11y.formats, issues, warnings: warningsOf(spec, annotations), scene, summary: a11y.summary, table: a11y.table, translations: input.translations }
   }
 }

@@ -315,6 +315,7 @@ export {
   XhCartesianChartRoot,
   XhCartesianChartTooltip,
   XhCartesianChartViewport,
+  XhCartesianChartZoomSlider,
 } from './components/cartesian-chart/cartesian-chart'
 export type {
   CartesianChartRootSlotProps,
@@ -326,6 +327,7 @@ export type {
   XhCartesianChartRootProps,
   XhCartesianChartTooltipProps,
   XhCartesianChartViewportProps,
+  XhCartesianChartZoomSliderProps,
 } from './components/cartesian-chart/cartesian-chart'
 export { useCartesianChartContext } from './components/cartesian-chart/context'
 export { useCartesianChart } from './components/cartesian-chart/use-cartesian-chart'

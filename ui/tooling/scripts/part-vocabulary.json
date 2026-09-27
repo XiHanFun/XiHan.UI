@@ -204,6 +204,12 @@
       "time-range-picker",
       "tree-select"
     ],
+    "clip-path": [
+      "cartesian-chart"
+    ],
+    "clip-rect": [
+      "cartesian-chart"
+    ],
     "close-trigger": [
       "alert",
       "dialog",
@@ -1754,6 +1760,9 @@
     "window-state-trigger": [
       "floating-panel"
     ],
+    "zoom-handle": [
+      "cartesian-chart"
+    ],
     "zoom-in-trigger": [
       "image-viewer"
     ],
@@ -1761,7 +1770,14 @@
       "image-viewer"
     ],
     "zoom-slider": [
+      "cartesian-chart",
       "image-cropper"
+    ],
+    "zoom-track": [
+      "cartesian-chart"
+    ],
+    "zoom-window": [
+      "cartesian-chart"
     ]
   },
   "tails": {
@@ -1869,6 +1885,7 @@
     "prose": true,
     "question": true,
     "range": true,
+    "rect": true,
     "region": true,
     "result": true,
     "ring": true,
@@ -1913,7 +1930,8 @@
     "value": true,
     "viewport": true,
     "whisker": true,
-    "wick": true
+    "wick": true,
+    "window": true
   },
   "retired": {
     "area": "→ control（editable）/ saturation-area（color-picker）/ display（timer）",

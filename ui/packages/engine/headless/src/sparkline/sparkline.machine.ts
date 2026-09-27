@@ -43,6 +43,8 @@ function transitionState(params: Params<SparklineSchema>): ChartTransitionState 
     metrics: context.get('metrics'),
     // 迷你图不画文字，文字度量器换了也不必重排
     measurerVersion: 0,
+    // 迷你图没有缩放窗口一类的框架
+    extent: null,
     plot: refs.get('getRootEl')(),
     win: scope.getWin(),
     shown: refs.get('shown'),

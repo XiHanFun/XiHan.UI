@@ -264,6 +264,8 @@ function markElement(root: HTMLElement, key: string): HTMLElement | null {
 /** 各图表交给内核的过渡设定；numbers 是随过渡滚动的数，按当前数据算出。 */
 export type ChartBaseTransition<S extends ChartBaseSchema> = ChartTransitionOptions & {
   readonly numbers?: (params: Params<S>) => ChartNumbers
+  /** 还会改几何、但变化时不该播过渡的输入（直角坐标图的缩放窗口）：它变了，场景直接落到终态。 */
+  readonly extent?: (params: Params<S>) => unknown
 }
 
 /** 把机器的几片状态交给过渡。 */
@@ -277,6 +279,7 @@ function transitionState<S extends ChartBaseSchema>(params: Params<S>, transitio
     size: context.get('size'),
     metrics: context.get('metrics'),
     measurerVersion: context.get('measurerVersion'),
+    extent: transition.extent?.(params) ?? null,
     // 绘图区缺席（作者没写）时退到根：时长与减弱动效按同一条祖先链读
     plot: refs.get('getViewportEl')()?.querySelector('[data-part="plot"]') ?? root,
     win: scope.getWin(),

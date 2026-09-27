@@ -39,6 +39,8 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_chart-p', 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts'],
   // 系列或扇区引用的那一格纹理（url(#…)）：连接层写进系列分组与扇区的内联样式，纹理模式下皮肤拿它当填充
   ['--xh-_chart-pattern', 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts'],
+  // 缩放条上窗口的两端、缩放条对齐绘图区的左右内缩：连接层按窗口与绘图区的几何写进缩放条的内联样式，皮肤只读
+  ...['start', 'end', 'left', 'right'].map(edge => [`--xh-_chart-zoom-${edge}`, 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts']),
 ])
 
 // 皮肤声明、由运行时从计算样式读出的私有槽：取值链在皮肤里，消费方是 JS，皮肤里不必有 var() 消费点

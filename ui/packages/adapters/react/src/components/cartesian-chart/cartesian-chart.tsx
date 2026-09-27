@@ -17,6 +17,8 @@ import type {
   CartesianTooltipModel,
   CartesianTooltipOrder,
   CartesianTrigger,
+  CartesianWindow,
+  CartesianZoom,
   ChartDatumDetails,
   ChartKey,
   ChartMark,
@@ -46,8 +48,12 @@ export interface CartesianChartTooltipSlotProps {
 
 /** 纹理定义：绘图区的第一个子节点，每种纹理一个 pattern、里面一条线。 */
 function renderDefs(api: CartesianChartApi): ReactNode {
-  return createElement('defs', api.getDefsProps() as Record<string, unknown>, api.patterns.map(pattern =>
-    createElement('pattern', { ...api.getPatternProps(pattern) as Record<string, unknown>, key: pattern.id }, createElement('path', api.getPatternLineProps(pattern) as Record<string, unknown>))))
+  return createElement('defs', api.getDefsProps() as Record<string, unknown>, [
+    ...api.patterns.map(pattern =>
+      createElement('pattern', { ...api.getPatternProps(pattern) as Record<string, unknown>, key: pattern.id }, createElement('path', api.getPatternLineProps(pattern) as Record<string, unknown>))),
+    // 缩放后的裁剪区：窗外的系列与注释按它裁掉
+    api.clip ? createElement('clipPath', { ...api.getClipPathProps() as Record<string, unknown>, key: 'clip' }, createElement('rect', api.getClipRectProps() as Record<string, unknown>)) : null,
+  ])
 }
 
 /** 一个场景标记画成 SVG 元素；分组递归画子标记，文字标记带文字。 */
@@ -123,6 +129,13 @@ export interface XhCartesianChartRootProps extends Omit<ComponentPropsWithRef<'f
   palette?: ChartPalette
   /** 注释：参考线、参考带、标出的数据、平均线与趋势线。 */
   annotations?: readonly CartesianAnnotation[]
+  /** 缩放：x 沿自变量轴、y 沿数值轴、xy 两个方向，缺省 none。 */
+  zoom?: CartesianZoom
+  /** 缩放窗口（受控）。 */
+  window?: CartesianWindow
+  /** 初始缩放窗口（非受控）。 */
+  defaultWindow?: CartesianWindow
+  onWindowChange?: CartesianChartProps['onWindowChange']
   /** 隐藏的系列（受控）。 */
   hiddenSeries?: string[]
   /** 初始隐藏的系列（非受控）。 */
@@ -160,6 +173,10 @@ export function XhCartesianChartRoot({
   tooltipOrder,
   palette,
   annotations,
+  zoom,
+  window,
+  defaultWindow,
+  onWindowChange,
   hiddenSeries,
   defaultHiddenSeries,
   activeKey,
@@ -188,6 +205,10 @@ export function XhCartesianChartRoot({
     tooltipOrder,
     palette,
     annotations,
+    zoom,
+    window,
+    defaultWindow,
+    onWindowChange,
     hiddenSeries,
     defaultHiddenSeries,
     activeKey,
@@ -211,6 +232,7 @@ export function XhCartesianChartRoot({
             <XhCartesianChartPlot />
             <XhCartesianChartEmpty>{empty}</XhCartesianChartEmpty>
           </XhCartesianChartViewport>
+          <XhCartesianChartZoomSlider />
           <XhCartesianChartTooltip>{renderTooltip}</XhCartesianChartTooltip>
         </>
       )
@@ -240,7 +262,7 @@ export function XhCartesianChartRoot({
   )
 }
 
-XhCartesianChartRoot.xhEvents = ['hidden-series-change', 'active-key-change', 'datum-active', 'datum-press'] as const
+XhCartesianChartRoot.xhEvents = ['hidden-series-change', 'active-key-change', 'datum-active', 'datum-press', 'window-change'] as const
 
 export interface XhCartesianChartCaptionProps extends ComponentPropsWithRef<'figcaption'> {}
 
@@ -326,8 +348,9 @@ export interface XhCartesianChartPlotProps extends Omit<ComponentPropsWithRef<'s
  */
 export function XhCartesianChartPlot(props: XhCartesianChartPlotProps): ReactNode {
   const { api } = useCartesianChartContext()
-  // 指针离开是不冒泡的事件，改挂原生监听器；focusin / focusout 留给 React 的 onFocus / onBlur
-  const bind = useNativeEvents(api.getPlotProps() as Record<string, unknown>, ['onPointerLeave'])
+  // 指针离开是不冒泡的事件，改挂原生监听器；滚轮在 React 里是被动监听，拦不下页面的缩放，也改挂原生的。
+  // focusin / focusout 留给 React 的 onFocus / onBlur
+  const bind = useNativeEvents(api.getPlotProps() as Record<string, unknown>, ['onPointerLeave', 'onWheel'])
   const marks = [
     ...api.scene.layers.back,
     ...api.overlay.under,
@@ -340,6 +363,23 @@ export function XhCartesianChartPlot(props: XhCartesianChartPlotProps): ReactNod
       {renderDefs(api)}
       {marks.map(mark => renderMark(api, mark))}
     </svg>
+  )
+}
+
+export interface XhCartesianChartZoomSliderProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {}
+
+/** 缩放条：一条轨道上的窗口与两端的手柄；自变量方向不能缩放时收起。 */
+export function XhCartesianChartZoomSlider(props: XhCartesianChartZoomSliderProps): ReactNode {
+  const { api } = useCartesianChartContext()
+  return (
+    <div {...mergeReactProps(api.getZoomSliderProps() as Record<string, unknown>, props as Record<string, unknown>)}>
+      <div {...api.getZoomTrackProps() as Record<string, unknown>}>
+        <div {...api.getZoomWindowProps() as Record<string, unknown>}>
+          <span {...api.getZoomHandleProps('start') as Record<string, unknown>} />
+          <span {...api.getZoomHandleProps('end') as Record<string, unknown>} />
+        </div>
+      </div>
+    </div>
   )
 }
 

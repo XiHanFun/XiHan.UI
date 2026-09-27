@@ -17881,6 +17881,100 @@
   background: linear-gradient(to left, var(--xh-_chart-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
 }
 
+/* —— 缩放：能缩放的方向上触屏的拖动与捏合归绘图区，另一个方向照常滚动页面；
+   放大后指针是可拖动的手，拖着时是抓住的手 —— */
+[data-scope='cartesian-chart'][data-part='plot'][data-zoomable='horizontal'] {
+  touch-action: pan-y;
+}
+
+[data-scope='cartesian-chart'][data-part='plot'][data-zoomable='vertical'] {
+  touch-action: pan-x;
+}
+
+[data-scope='cartesian-chart'][data-part='plot'][data-zoomable='both'] {
+  touch-action: none;
+}
+
+[data-scope='cartesian-chart'][data-part='plot'][data-zoomed] {
+  cursor: grab;
+}
+
+[data-scope='cartesian-chart'][data-part='plot'][data-dragging] {
+  cursor: grabbing;
+}
+
+/* 缩放条：淡底的轨道上，窗口是选中区（品牌淡底），两端的手柄是品牌色的竖条。它对着自变量轴的整条轴；
+   绘图区不随 RTL 镜像，缩放条也不镜像，左右是物理方向 */
+[data-scope='cartesian-chart'][data-part='zoom-slider'] {
+  position: relative;
+  /* stylelint-disable-next-line property-disallowed-list, declaration-property-value-disallowed-list -- 缩放条不随 RTL 镜像，左右内缩对着绘图区的物理两边 */
+  margin-left: var(--xh-_chart-zoom-left, 0);
+  /* stylelint-disable-next-line property-disallowed-list, declaration-property-value-disallowed-list -- 同上 */
+  margin-right: var(--xh-_chart-zoom-right, 0);
+  block-size: var(--xh-cartesian-chart-zoom-h, var(--xh-space-6));
+  touch-action: none;
+  user-select: none;
+}
+
+[data-scope='cartesian-chart'][data-part='zoom-track'] {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--xh-cartesian-chart-zoom-track-radius, var(--xh-shape-inset));
+  background: var(--xh-cartesian-chart-zoom-track-bg, var(--xh-bg-subtle));
+}
+
+[data-scope='cartesian-chart'][data-part='zoom-window'] {
+  position: absolute;
+  inset-block: 0;
+  /* stylelint-disable-next-line property-disallowed-list -- 缩放条不随 RTL 镜像，窗口两端是物理的左右 */
+  left: var(--xh-_chart-zoom-start, 0%);
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+  right: calc(100% - var(--xh-_chart-zoom-end, 100%));
+  border-radius: var(--xh-cartesian-chart-zoom-window-radius, var(--xh-shape-inset));
+  background: var(--xh-cartesian-chart-zoom-window-bg, var(--xh-bg-brand-subtle));
+  cursor: grab;
+}
+
+[data-scope='cartesian-chart'][data-part='zoom-slider'][data-dragging] [data-part='zoom-window'] {
+  cursor: grabbing;
+}
+
+/* 手柄骑在窗口的两端：一半在窗口里、一半在外，拖它改窗口的一端；键盘聚焦时画焦点环 */
+[data-scope='cartesian-chart'][data-part='zoom-handle'] {
+  position: absolute;
+  inset-block: 0;
+  inline-size: var(--xh-cartesian-chart-zoom-handle-w, var(--xh-space-2));
+  border-radius: var(--xh-cartesian-chart-zoom-handle-radius, var(--xh-shape-inset));
+  background: var(--xh-cartesian-chart-zoom-handle-bg, var(--xh-bg-brand));
+  /* 竖条上没有字：补一支与品牌面配对的墨色，聚焦环取它 */
+  color: var(--xh-fg-on-brand);
+  cursor: ew-resize;
+  translate: -50% 0;
+}
+
+/* 手柄只有竖条那么宽：命中区向两侧各外扩一截，补到与缩放条一样高的正方 */
+[data-scope='cartesian-chart'][data-part='zoom-handle']::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline: calc(-1 * var(--xh-space-2));
+}
+
+[data-scope='cartesian-chart'][data-part='zoom-handle'][data-placement='start'] {
+  /* stylelint-disable-next-line property-disallowed-list -- 缩放条不随 RTL 镜像 */
+  left: 0;
+}
+
+[data-scope='cartesian-chart'][data-part='zoom-handle'][data-placement='end'] {
+  /* stylelint-disable-next-line property-disallowed-list -- 缩放条不随 RTL 镜像 */
+  left: 100%;
+}
+
+/* 环往内收、压在品牌色的竖条上：换成与面配对的前景色才看得见 */
+[data-scope='cartesian-chart'][data-part='zoom-handle']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 [data-scope='cartesian-chart'][data-part='empty'][data-state='loading'] {
   --xh-_chart-empty-gap: var(--xh-cartesian-chart-empty-gap, var(--xh-space-2));
 }
@@ -18290,6 +18384,24 @@
     fill: CanvasText;
   }
 
+  [data-scope='cartesian-chart'][data-part='zoom-track'] {
+    border: var(--xh-stroke-thin) solid CanvasText;
+    background: Canvas;
+  }
+
+  [data-scope='cartesian-chart'][data-part='zoom-window'] {
+    background: Highlight;
+  }
+
+  [data-scope='cartesian-chart'][data-part='zoom-handle'] {
+    background: CanvasText;
+  }
+
+  /* 系统色下前景与竖条同是 CanvasText：环改取 Highlight */
+  [data-scope='cartesian-chart'][data-part='zoom-handle']:focus-visible {
+    --xh-_ring-color: Highlight;
+  }
+
   /* 色阶在系统色下画不出来：只留轮廓，两端的值照常可读 */
   [data-scope='cartesian-chart'][data-part='legend-scale-bar'] {
     border: var(--xh-stroke-thin) solid CanvasText;
@@ -18340,9 +18452,10 @@
   }
 }
 
-/* 打印：纸上没有指针，准线不印；纹理开启；提示框与焦点环在配方里 */
+/* 打印：纸上没有指针，准线与缩放条不印；纹理开启；提示框与焦点环在配方里 */
 @media print {
-  [data-scope='cartesian-chart'][data-part='crosshair'] {
+  [data-scope='cartesian-chart'][data-part='crosshair'],
+  [data-scope='cartesian-chart'][data-part='zoom-slider'] {
     display: none;
   }
 
