@@ -27946,7 +27946,8 @@
                     "text": "HTMLElement"
                   }
                 }
-              ]
+              ],
+              "description": "读行的禁用声明，并摘掉作者写的原生 disabled，禁用态归一到 aria-disabled。"
             },
             {
               "kind": "method",

@@ -136,13 +136,15 @@ export class XhGridListElement extends XhElement {
     return this.getParts(name).filter(part => owner.contains(part))
   }
 
+  /** 读行的禁用声明，并摘掉作者写的原生 disabled，禁用态归一到 aria-disabled。 */
   private rowProps(row: HTMLElement): GridListRowProps {
-    return {
-      value: row.getAttribute('value') ?? '',
-      disabled: this.collection
-        ? this.declaredRowDisabled(row)
-        : row.hasAttribute('disabled') || row.getAttribute('aria-disabled') === 'true',
-    }
+    const disabled = this.collection
+      ? this.declaredRowDisabled(row)
+      : row.hasAttribute('disabled') || row.getAttribute('aria-disabled') === 'true'
+    // row 不是表单控件，原生 disabled 在它上面不是有效属性；摘掉之后由 connect 写回的 aria-disabled 承接，下一轮接线照样读得到
+    if (row.hasAttribute('disabled'))
+      row.removeAttribute('disabled')
+    return { value: row.getAttribute('value') ?? '', disabled }
   }
 
   protected wire(): void {
