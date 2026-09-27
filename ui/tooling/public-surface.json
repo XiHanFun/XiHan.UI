@@ -5226,6 +5226,7 @@
       "ExitLease",
       "FORM_RESET_EVENT",
       "FocusOptions",
+      "FocusScopeHandle",
       "FocusScopeOptions",
       "FocusableElement",
       "FormResetBridgeOptions",

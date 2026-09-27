@@ -260,7 +260,7 @@ describe('image-viewer 退场', () => {
     expect(getComputedStyle(closing!).animationName).toBe('xh-fade-out')
   })
 
-  it('内容与遮罩均完成退出前保留模态资源，完成后才发 exit-complete', async () => {
+  it('内容与遮罩均完成退出前保留层与滚动锁，背景在关闭那一刻即解除失活', async () => {
     const style = document.createElement('style')
     style.textContent = `
       @keyframes test-image-viewer-exit { from { opacity: 1 } to { opacity: 0 } }
@@ -288,7 +288,8 @@ describe('image-viewer 退场', () => {
     const content = part('image-viewer', 'content')!
     expect(content.inert).toBe(true)
     expect(content.getAttribute('aria-hidden')).toBe('true')
-    expect(outside.inert).toBe(true)
+    // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，滚动锁留到退场结束
+    expect(outside.inert).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
 
     const finite = content.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))

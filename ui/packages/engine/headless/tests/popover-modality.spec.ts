@@ -87,7 +87,7 @@ describe('popover 完整模态资源', () => {
     expect(document.body.style.overflow).toBe('hidden')
   })
 
-  it('逻辑关闭立即失活内容，但行为资源保留到 Presence 完成', async () => {
+  it('逻辑关闭立即失活内容并撤下背景失活，层与滚动锁保留到 Presence 完成', async () => {
     const f = fixture()
     await flush()
     f.service.send({ type: 'CLOSE' })
@@ -97,7 +97,8 @@ describe('popover 完整模态资源', () => {
     f.presence.update(false)
     expect(f.presence.rendered).toBe(true)
     expect(f.config.layerRegistry.list()).toHaveLength(1)
-    expect(f.outside.inert).toBe(true)
+    // 焦点要在关闭那一刻回到背景里的触发器，背景不能还是 inert
+    expect(f.outside.inert).not.toBe(true)
     expect(document.body.style.overflow).toBe('hidden')
 
     f.leases[0]!.done()

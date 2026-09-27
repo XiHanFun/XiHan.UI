@@ -4,7 +4,7 @@
 // WC 侧浮层壳物理搬回原位、焦点被收回 body。这里用 Chromium 钉住三件事，作为对拍采样时机的依据：
 // ① 焦点元素落 hidden（UA 样式表 display:none）+ inert 后，Chromium 的 focus fixup 不是同步的：
 //   同步读、微任务里读都还是那个条目，它要到渲染更新末尾才收回 body；jsdom 停在 hidden 条目上与此同构。
-// ② Core 焦点域 dispose 把归还排在动画帧上，跑在 fixup 之前：焦点从 hidden 条目直接搬到 trigger，
+// ② 浮层关闭那一刻 Core 焦点域就同步归还：焦点在 content 落 hidden / inert 之前已经搬到 trigger，
 //   blur 的 relatedTarget 就是 trigger（fixup 先跑的话会是 null），body 从来不是一个能画出来的稳定态。
 // ③ 焦点元素被物理搬迁（先摘再挂）时 Chromium 同步收回 body，blur 的 relatedTarget 为 null——
 //   WC 侧收起帧的 body 就是这一条，jsdom 与此同构。
@@ -55,11 +55,6 @@ async function until(check: () => boolean, label: string, timeout = 1000): Promi
   }
 }
 
-/** 下一个动画帧回调里 content 的计算 display。要在触发收起之前登记，才排在 Core dispose 的那一帧回调前面。 */
-function displayAtNextFrame(content: HTMLElement): Promise<string> {
-  return new Promise(resolve => requestAnimationFrame(() => resolve(getComputedStyle(content).display)))
-}
-
 /** 记下焦点离开时的去向：fixup 给 null，focus() 搬迁给目标元素。 */
 function trackBlur(el: HTMLElement): { readonly relatedTargets: (EventTarget | null)[] } {
   const relatedTargets: (EventTarget | null)[] = []
@@ -92,28 +87,23 @@ async function mountOpenPopover(): Promise<{ trigger: HTMLElement, content: HTML
 }
 
 describe('vue 浮层收起帧：Chromium 的 focus fixup 时序', () => {
-  it('escape 收起：content 落 hidden 后焦点仍停在里面的按钮上，直到 Core 在动画帧里把它直接搬给 trigger', async () => {
+  it('escape 收起：关闭那一刻焦点回到 trigger，不等动画帧，不经 body', async () => {
     const { trigger, content, inside } = await mountOpenPopover()
     const blur = trackBlur(inside)
 
-    // 先登记观察帧，再派 Escape：Core 的归还也是一帧回调，登记在我们之后、跑在我们之后
-    const displayAtFrame = displayAtNextFrame(content)
+    // 登记一帧观察：归还若排在动画帧里，这一帧回调时焦点还在 content 里
+    const atFrame = new Promise<Element | null>(resolve => requestAnimationFrame(() => resolve(document.activeElement)))
     inside.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
     await nextTick()
     await nextTick()
-    // Vue 已把 hidden / inert 投影到 content，焦点还在被藏起的按钮上
+    // 机器转入关闭即归还，不等渲染出的第一帧
+    expect(await atFrame).toBe(trigger)
     expect(content.hasAttribute('hidden')).toBe(true)
     expect(content.getAttribute('inert')).not.toBeNull()
-    expect(document.activeElement).toBe(inside)
 
-    // 动画帧回调里样式已算出 display:none：Core 的归还与之同帧、排在它之后
-    expect(await displayAtFrame).toBe('none')
-
-    // Core 的 dispose 回调把焦点还给 trigger：blur 的去向就是 trigger，不经 body。
-    // 若浏览器的 fixup 抢在前面，这里会先记下一次 relatedTarget 为 null 的 blur
-    await until(() => document.activeElement === trigger, '焦点归还 trigger')
+    // blur 的去向就是 trigger，不经 body；若浏览器的 fixup 抢在前面，这里会是 null
     expect(blur.relatedTargets).toEqual([trigger])
-    expect(content.hasAttribute('hidden')).toBe(true)
+    expect(document.activeElement).toBe(trigger)
   })
 
   it('没有 Core 归还时：hidden 上的焦点不会同步被收走，之后才被浏览器收回 body，blur 不带去向', async () => {

@@ -179,6 +179,8 @@ export const popoverMachine = createMachine({
           return undefined
 
         let reactivateFocus: (() => void) | undefined
+        let returnFocusNow: (() => void) | undefined
+        let revealBackgroundNow: (() => void) | undefined
         const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
           const dismiss = createDismissLayer({
             config,
@@ -215,9 +217,12 @@ export const popoverMachine = createMachine({
             restoreTarget: () => refs.get('getAnchorEl')(),
           })
           reactivateFocus = focus.reactivate
+          returnFocusNow = focus.returnFocus
           defer(() => {
             if (reactivateFocus === focus.reactivate)
               reactivateFocus = undefined
+            if (returnFocusNow === focus.returnFocus)
+              returnFocusNow = undefined
             focus.dispose()
           })
 
@@ -235,6 +240,11 @@ export const popoverMachine = createMachine({
             run,
           })
           defer(modalResources.dispose)
+          revealBackgroundNow = modalResources.reveal
+          defer(() => {
+            if (revealBackgroundNow === modalResources.reveal)
+              revealBackgroundNow = undefined
+          })
           const syncModalResources = (): void => {
             // 退场期间冻结关闭那一刻的模态策略；重开或展开中变更时再同步。
             if (state.get() === 'open')
@@ -266,6 +276,7 @@ export const popoverMachine = createMachine({
             return
           const open = state.get() === 'open'
           const reopening = open && !lastOpen && release !== undefined
+          const closing = !open && lastOpen
           lastOpen = open
           if (open) {
             // 先废弃旧退出租约，退场中重开沿用同一层登记与模态资源。
@@ -280,8 +291,14 @@ export const popoverMachine = createMachine({
               }))
             }
           }
-          else if (!presence || !presence.rendered) {
-            finish()
+          else {
+            // 关闭那一刻归还焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等
+            if (closing) {
+              revealBackgroundNow?.()
+              returnFocusNow?.()
+            }
+            if (!presence || !presence.rendered)
+              finish()
           }
         }
         try {

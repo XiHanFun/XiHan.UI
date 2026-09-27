@@ -23,7 +23,7 @@ export type { DismissLayerOptions, DismissReason, EscapeFallbackOptions } from '
 export { isInside, shouldDismiss } from './dismissable-layer/layer-stack'
 export type { InsideResult } from './dismissable-layer/layer-stack'
 export { createFocusScope } from './focus-scope'
-export type { FocusScopeOptions } from './focus-scope'
+export type { FocusScopeHandle, FocusScopeOptions } from './focus-scope'
 export { canTakeFocus } from './focus-scope/can-take-focus'
 
 export { acquireFocusGuards } from './focus-scope/focus-guards'

@@ -358,6 +358,7 @@ export const tourMachine = createMachine({
           return undefined
 
         let reactivateFocus: (() => void) | undefined
+        let returnFocusNow: (() => void) | undefined
         const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer) => {
           const getContentEl = refs.get('getContentEl')
           const dismiss = createDismissLayer({
@@ -405,9 +406,12 @@ export const tourMachine = createMachine({
             restoreFocus: () => true,
           })
           reactivateFocus = focus.reactivate
+          returnFocusNow = focus.returnFocus
           defer(() => {
             if (reactivateFocus === focus.reactivate)
               reactivateFocus = undefined
+            if (returnFocusNow === focus.returnFocus)
+              returnFocusNow = undefined
             focus.dispose()
           })
         }, { registry: config.layerRegistry, flush })
@@ -430,6 +434,7 @@ export const tourMachine = createMachine({
             return
           const open = state.get() === 'open'
           const reopening = open && !lastOpen && release !== undefined
+          const closing = !open && lastOpen
           lastOpen = open
           if (open) {
             // 退场中重开沿用原 Layer；Presence 会结清旧视觉租约。
@@ -443,8 +448,12 @@ export const tourMachine = createMachine({
               }))
             }
           }
-          else if (!presence || !presence.rendered) {
-            finish()
+          else {
+            // 关闭那一刻归还焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等
+            if (closing)
+              returnFocusNow?.()
+            if (!presence || !presence.rendered)
+              finish()
           }
         }
         try {

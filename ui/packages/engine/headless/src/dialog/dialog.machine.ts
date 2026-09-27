@@ -122,6 +122,8 @@ export const dialogMachine = createMachine({
           return undefined
 
         let reactivateFocus: (() => void) | undefined
+        let returnFocusNow: (() => void) | undefined
+        let revealBackgroundNow: (() => void) | undefined
         let resourcePolicy: string | undefined
         const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
           const role = prop('role') ?? 'dialog'
@@ -177,9 +179,12 @@ export const dialogMachine = createMachine({
             restoreTarget: () => scope.getById<HTMLElement>(scope.partId(refs.get('partScope'), 'trigger')),
           })
           reactivateFocus = focus.reactivate
+          returnFocusNow = focus.returnFocus
           defer(() => {
             if (reactivateFocus === focus.reactivate)
               reactivateFocus = undefined
+            if (returnFocusNow === focus.returnFocus)
+              returnFocusNow = undefined
             focus.dispose()
           })
 
@@ -198,6 +203,11 @@ export const dialogMachine = createMachine({
             run,
           })
           defer(modalResources.dispose)
+          revealBackgroundNow = modalResources.reveal
+          defer(() => {
+            if (revealBackgroundNow === modalResources.reveal)
+              revealBackgroundNow = undefined
+          })
           const syncModalResources = (): void => {
             // 退场期间保留关闭时的策略；重新展开或展开中改值才切换。
             if (state.get() === 'open')
@@ -231,6 +241,7 @@ export const dialogMachine = createMachine({
             return
           const open = state.get() === 'open'
           let reopening = open && !lastOpen && release !== undefined
+          const closing = !open && lastOpen
           lastOpen = open
           if (open) {
             // 退场中角色改变后需重建初始焦点语义；modal 本身由共享资源控制器原位切换。
@@ -252,8 +263,14 @@ export const dialogMachine = createMachine({
               }))
             }
           }
-          else if (!presence || !presence.rendered) {
-            finish()
+          else {
+            // 关闭那一刻归还焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等
+            if (closing) {
+              revealBackgroundNow?.()
+              returnFocusNow?.()
+            }
+            if (!presence || !presence.rendered)
+              finish()
           }
         }
         try {

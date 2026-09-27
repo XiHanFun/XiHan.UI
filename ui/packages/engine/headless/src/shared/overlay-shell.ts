@@ -5,7 +5,7 @@
 
 // 提供 overlay shell 相关实现。
 
-import type { Anchor, Cleanup, Dep, DismissReason, Layer, LayerRegistry, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
+import type { Anchor, Cleanup, Dep, DismissReason, FocusScopeHandle, Layer, LayerRegistry, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import { acquireScrollLock, bindLayerVisual, createDismissLayer, createFocusScope, hideOutside } from '@xihan-ui/core'
 
@@ -142,22 +142,38 @@ export interface ModalLayerResourcesOptions {
 }
 
 export interface ModalLayerResources {
-  /** 按最新 enabled 值取得或释放模态资源。 */
+  /** 按最新 enabled 值取得或释放模态资源；关闭时撤下的背景失活在这里补回。 */
   sync: () => void
+  /**
+   * 关闭那一刻先撤下背景失活，滚动锁留到退场结束：焦点要立即归还到背景里的触发器，
+   * 背景还是 inert 时 focus() 是空操作。退场中途重开时由 sync 补回。
+   */
+  reveal: () => void
   dispose: Cleanup
 }
 
 /**
- * 管理一层可动态切换的模态资源：滚动锁与背景失活必须同进同退。
+ * 管理一层可动态切换的模态资源：滚动锁与背景失活同进同退，只有关闭那一刻背景先解除失活。
  * 层登记、消解层与焦点域仍由调用方持有，不因 modal 改值而重建。
  */
 export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalLayerResources {
   let disposed = false
   let release: Cleanup | undefined
+  // 当前这一份背景失活：撤下时置空，补回时重建
+  let hidden: Cleanup | undefined
+  let revealed = false
+
+  const hideBackground = (): void => {
+    o.run(() => {
+      const targets = o.targets()
+      if (targets.length)
+        hidden = hideOutside(o.targets, o.config)
+    })
+  }
 
   const acquire = (): void => {
     const lock = o.run(() => acquireScrollLock({ config: o.config }))
-    let hidden: Cleanup | undefined
+    revealed = false
     let alive = true
     const cleanup = (): void => {
       if (!alive)
@@ -165,7 +181,9 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
       alive = false
       const errors: unknown[] = []
       try {
-        hidden?.()
+        const restore = hidden
+        hidden = undefined
+        restore?.()
       }
       catch (error) {
         errors.push(error)
@@ -184,13 +202,9 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
     release = cleanup
 
     o.flush(() => {
-      if (disposed || !alive || release !== cleanup || !o.enabled())
+      if (disposed || !alive || release !== cleanup || !o.enabled() || revealed)
         return
-      o.run(() => {
-        const targets = o.targets()
-        if (targets.length)
-          hidden = hideOutside(o.targets, o.config)
-      })
+      hideBackground()
     })
   }
 
@@ -198,8 +212,17 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
     if (disposed)
       return
     if (o.enabled()) {
-      if (!release)
+      if (!release) {
         acquire()
+      }
+      else if (revealed) {
+        revealed = false
+        const current = release
+        o.flush(() => {
+          if (!disposed && release === current && !revealed && !hidden && o.enabled())
+            hideBackground()
+        })
+      }
     }
     else {
       const cleanup = release
@@ -212,6 +235,14 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
 
   return {
     sync,
+    reveal() {
+      if (disposed || !release || revealed)
+        return
+      revealed = true
+      const restore = hidden
+      hidden = undefined
+      restore?.()
+    },
     dispose() {
       if (disposed)
         return
@@ -305,6 +336,12 @@ export function setupLayerTransaction(
 }
 
 /** Presence 与行为资源共享生命周期时的输入。 */
+/**
+ * 行为资源的释放函数，可顺带交出「立即归还焦点」：退场期间资源仍保留，
+ * 关闭那一刻内容已经 inert，焦点要在那时就交回触发器，不能等资源释放。
+ */
+export type OverlayRelease = Cleanup & { returnFocus?: () => void }
+
 export interface PresenceResourceOptions {
   /** 视觉 Presence；缺省（SSR/纯逻辑宿主）时逻辑关闭立即释放。 */
   presence: PresenceHandle | null | (() => PresenceHandle | null)
@@ -312,8 +349,11 @@ export interface PresenceResourceOptions {
   open: Dep
   /** 注册机器 tracker。 */
   track: (deps: Dep[], fn: () => void) => void
-  /** 获取本轮 Layer、DismissableLayer 与可选 FocusScope 等行为资源。 */
-  acquire: () => Cleanup | undefined
+  /**
+   * 获取本轮 Layer、DismissableLayer 与可选 FocusScope 等行为资源。
+   * 返回的释放函数带 returnFocus 时，逻辑关闭那一刻即调用它归还焦点。
+   */
+  acquire: () => OverlayRelease | undefined
   /** 退场尚未完成便重开时调用；用于恢复被失活的焦点域。 */
   onReopen?: () => void
   /** 退出完成后是否可以立即释放；多层菜单用它等待本层重新成为栈顶。 */
@@ -331,7 +371,7 @@ export interface PresenceResourceOptions {
  */
 export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
   let disposed = false
-  let release: Cleanup | undefined
+  let release: OverlayRelease | undefined
   let lastOpen = false
   let presence: PresenceHandle | null = null
   let offExit: Cleanup | undefined
@@ -366,6 +406,7 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
     const open = Boolean(o.open())
     const currentPresence = syncPresence()
     const reopening = open && !lastOpen && release !== undefined
+    const closing = !open && lastOpen
     lastOpen = open
     if (open) {
       const stopWaiting = offReleaseReady
@@ -377,6 +418,9 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
         o.onReopen?.()
       return
     }
+    // 关闭那一刻归还焦点：资源要留到退场播完，焦点不能跟着等
+    if (closing)
+      release?.returnFocus?.()
     if (!currentPresence || !currentPresence.rendered)
       finish()
   }
@@ -430,12 +474,13 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
  * 层只在展开期间入栈，常驻会占死栈顶把它下面每一层的 Escape 堵死。
  * 消解层与焦点域绑在同一个效应里，三者生命周期必须一致。
  */
-export function trackOverlayLayer(o: OverlayLayerOptions): Cleanup | undefined {
+export function trackOverlayLayer(o: OverlayLayerOptions): OverlayRelease | undefined {
   const { config, registerLayer } = o
   if (!config || !registerLayer)
     return undefined
 
-  return setupLayerTransaction(registerLayer, (layer, defer) => {
+  let focusScope: FocusScopeHandle | null = null
+  const cleanup = setupLayerTransaction(registerLayer, (layer, defer) => {
     o.onLayer?.(layer)
     defer(() => o.onLayer?.(null))
     const dismiss = createDismissLayer({
@@ -470,12 +515,18 @@ export function trackOverlayLayer(o: OverlayLayerOptions): Cleanup | undefined {
         restoreTarget: spec.restoreTarget,
       })
       spec.onReactivate?.(focus.reactivate)
+      focusScope = focus
       defer(() => {
         spec.onReactivate?.(null)
+        if (focusScope === focus)
+          focusScope = null
         focus.dispose()
       })
     }
   }, { registry: config.layerRegistry, flush: o.flush ?? (task => task()) })
+  if (!cleanup)
+    return undefined
+  return Object.assign(() => cleanup(), { returnFocus: () => focusScope?.returnFocus() })
 }
 
 /** 消解层的标准映射：Escape 与层外交互都收起，只在关闭原因上分开。 */

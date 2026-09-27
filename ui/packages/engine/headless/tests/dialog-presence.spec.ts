@@ -52,7 +52,7 @@ async function flush(): Promise<void> {
 }
 
 describe('对话框行为与 Presence 共用退出生命周期', () => {
-  it('关闭立即失活内容，但保留模态资源至真实退出完成', async () => {
+  it('关闭立即失活内容并撤下背景失活，层与滚动锁保留至真实退出完成', async () => {
     const f = fixture()
     f.service.send({ type: 'OPEN' })
     await flush()
@@ -65,7 +65,8 @@ describe('对话框行为与 Presence 共用退出生命周期', () => {
     f.presence.update(false)
     expect(f.presence.rendered).toBe(true)
     expect(f.config.layerRegistry.list()).toHaveLength(1)
-    expect(f.outside.inert).toBeTruthy()
+    // 焦点要在关闭那一刻回到背景里的触发器，背景不能还是 inert
+    expect(f.outside.inert).toBeFalsy()
     expect(document.body.style.overflow).toBe('hidden')
     f.leases[0]!.done()
     expect(f.config.layerRegistry.list()).toHaveLength(0)
@@ -89,6 +90,9 @@ describe('对话框行为与 Presence 共用退出生命周期', () => {
     expect(f.config.layerRegistry.list()).toHaveLength(1)
     expect(f.completed).toEqual([])
     expect(connectDialog(f.service, normalizeProps).getContentProps().inert).toBeUndefined()
+    // 关闭时撤下的背景失活在重开时补回
+    await flush()
+    expect(f.outside.inert).toBeTruthy()
     f.service.send({ type: 'CLOSE' })
     f.presence.update(false)
     f.leases[1]!.done()

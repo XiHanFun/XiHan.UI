@@ -289,6 +289,8 @@ export const commandMachine = createMachine({
       },
       trackOverlay: ({ refs, prop, scope, send, flush, state, track }) => {
         let reactivateFocus: (() => void) | null = null
+        let returnFocusNow: (() => void) | null = null
+        let revealBackgroundNow: (() => void) | null = null
         return trackPresenceResources({
           presence: () => refs.get('presence'),
           open: () => state.get() === 'open',
@@ -300,7 +302,7 @@ export const commandMachine = createMachine({
             if (!config || !registerLayer)
               return undefined
 
-            return setupLayerTransaction(registerLayer, (layer, defer, run) => {
+            const release = setupLayerTransaction(registerLayer, (layer, defer, run) => {
               const getContentEl = refs.get('getContentEl')
 
               const dismiss = createDismissLayer({
@@ -339,8 +341,10 @@ export const commandMachine = createMachine({
                 restoreTarget: () => scope.getById<HTMLElement>(scope.partId('command', 'trigger')),
               })
               reactivateFocus = focus.reactivate
+              returnFocusNow = focus.returnFocus
               defer(() => {
                 reactivateFocus = null
+                returnFocusNow = null
                 focus.dispose()
               })
 
@@ -359,6 +363,11 @@ export const commandMachine = createMachine({
                 run,
               })
               defer(modalResources.dispose)
+              revealBackgroundNow = modalResources.reveal
+              defer(() => {
+                if (revealBackgroundNow === modalResources.reveal)
+                  revealBackgroundNow = null
+              })
               const syncModalResources = (): void => modalResources.sync()
               refs.set('syncModalResources', syncModalResources)
               defer(() => {
@@ -367,8 +376,17 @@ export const commandMachine = createMachine({
               })
               syncModalResources()
             }, { registry: config.layerRegistry, flush })
+            // 关闭那一刻撤下背景失活并归还焦点：滚动锁留到退场播完，焦点不能跟着等
+            return release && Object.assign(() => release(), {
+              returnFocus: () => {
+                revealBackgroundNow?.()
+                returnFocusNow?.()
+              },
+            })
           },
           onReopen: () => {
+            // 关闭时撤下的背景失活在重开时补回
+            refs.get('syncModalResources')?.()
             const activate = reactivateFocus
             flush(() => scope.getWin().requestAnimationFrame(() => {
               if (state.get() === 'open' && reactivateFocus === activate)
