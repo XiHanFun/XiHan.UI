@@ -569,7 +569,7 @@ describe('键盘', () => {
     const collection = ITEMS.map(item => ({ value: item.value, label: item.text, disabled: 'disabled' in item ? item.disabled : false }))
     const h = mount({
       collection,
-      virtualizer: { count: collection.length, scrollToIndex, focusIndex: vi.fn(), getRenderedItemRoots: () => [] },
+      virtualizer: { count: collection.length, scrollToIndex, focusIndex: vi.fn(), getRenderedItemRoots: () => [], getViewportElement: () => null },
     })
     press(h.input, 'ArrowDown')
     press(h.input, 'End')

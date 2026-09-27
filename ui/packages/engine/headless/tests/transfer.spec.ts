@@ -565,8 +565,8 @@ describe('连接层：roving tabindex 与焦点', () => {
     const focusIndex = vi.fn()
     const h = mount({
       virtualizers: {
-        source: { count: ITEMS.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [] },
-        target: { count: 0, scrollToIndex: vi.fn(), focusIndex: vi.fn(), getRenderedItemRoots: () => [] },
+        source: { count: ITEMS.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [], getViewportElement: () => null },
+        target: { count: 0, scrollToIndex: vi.fn(), focusIndex: vi.fn(), getRenderedItemRoots: () => [], getViewportElement: () => null },
       },
     })
     h.side('source').list.focus()

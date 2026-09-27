@@ -37,6 +37,8 @@ export interface CollectionVirtualizer {
   focusIndex: (index: number, options: CollectionVirtualizerFocusOptions) => void
   /** Web Components 跨 Light-DOM 宿主接线使用：每个虚拟外壳内恰好一个语义集合条目根。 */
   getRenderedItemRoots: () => readonly HTMLElement[]
+  /** 实际滚动视口。组合组件的自绘滚动条通过它接管 Virtualizer 的滚动层。 */
+  getViewportElement: () => HTMLElement | null
 }
 
 /** 应渲染的内容变化时对外报告的详情，与 api 上的同名字段同源。 */

@@ -242,6 +242,10 @@ const OPAQUE_CALLS = new Set([
   'Boolean',
   'Number',
   'String',
+  // 对已显式点名的 getParts('…') 做数组投影，不改变滚动面归属；真实节点仍由前面的 part 字面量认领。
+  'map',
+  // CollectionVirtualizer 只把同一语义滚动面的实际 viewport 递出来，登记仍归组合组件的 list 面。
+  'getViewportElement',
 ])
 
 /**

@@ -1,3 +1,4 @@
+import type { CollectionVirtualizer } from '@xihan-ui/headless'
 import type { Root } from 'react-dom/client'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -8,6 +9,9 @@ import {
   XhListboxItemIndicator,
   XhListboxItemText,
   XhListboxRoot,
+  XhTransferList,
+  XhTransferRoot,
+  XhTransferSourcePanel,
   XhVirtualizerContent,
   XhVirtualizerItem,
   XhVirtualizerRoot,
@@ -67,5 +71,31 @@ describe('collectionVirtualizer 正式接线', () => {
     await expect.poll(() => document.activeElement?.getAttribute('data-value')).toBe('item-1000')
     expect((document.activeElement as HTMLElement).getAttribute('aria-posinset')).toBe('1000')
     expect(options().length).toBeLessThan(20)
+  })
+
+  it('transfer 自绘滚动条接管每侧 virtualizer viewport', async () => {
+    host = document.createElement('div')
+    document.body.appendChild(host)
+    root = createRoot(host)
+    let viewport: HTMLDivElement | null = null
+    const bridge: CollectionVirtualizer = {
+      count: 1,
+      scrollToIndex: () => {},
+      focusIndex: () => {},
+      getRenderedItemRoots: () => [],
+      getViewportElement: () => viewport,
+    }
+    await act(async () => root!.render(
+      <>
+        <div ref={(node) => { viewport = node }} style={{ blockSize: 100, overflow: 'auto' }}>
+          <div style={{ blockSize: 1000 }} />
+        </div>
+        <XhTransferRoot collection={[{ value: 'one', label: '一' }]} virtualizers={{ source: bridge }}>
+          <XhTransferSourcePanel><XhTransferList /></XhTransferSourcePanel>
+        </XhTransferRoot>
+      </>,
+    ))
+    await expect.poll(() => viewport?.hasAttribute('data-xh-scrollbar')).toBe(true)
+    expect(getComputedStyle(viewport!).scrollbarWidth).toBe('none')
   })
 })

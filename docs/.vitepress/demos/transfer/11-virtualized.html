@@ -1,11 +1,23 @@
 <!-- 双侧虚拟化 | 每个面板拥有独立窗口，搬运与搜索仍按该侧完整可见集合计算 -->
-<xh-transfer id="transfer-virtualized">
-  <div data-xh-part="root">
-    <div data-xh-part="source-panel"><div data-xh-part="list" style="overflow: visible; max-block-size: none"><xh-virtualizer id="transfer-source-virtualizer" estimate-size="36" viewport-tab-index="-1"><div data-xh-part="root"><div data-xh-part="viewport" style="block-size: 220px"><div data-xh-part="content"></div></div></div></xh-virtualizer></div></div>
-    <button data-xh-part="to-target-trigger"></button><button data-xh-part="to-source-trigger"></button>
-    <div data-xh-part="target-panel"><div data-xh-part="list" style="overflow: visible; max-block-size: none"><xh-virtualizer id="transfer-target-virtualizer" estimate-size="36" viewport-tab-index="-1"><div data-xh-part="root"><div data-xh-part="viewport" style="block-size: 220px"><div data-xh-part="content"></div></div></div></xh-virtualizer></div></div>
-  </div>
-</xh-transfer>
+<div style="inline-size: 100%; max-inline-size: 640px">
+  <xh-transfer id="transfer-virtualized" searchable>
+    <div data-xh-part="root">
+      <div data-xh-part="source-panel">
+        <div data-xh-part="panel-header"><span data-xh-part="panel-title">待选权限</span><span data-xh-part="panel-count"></span><button data-xh-part="select-all-trigger">全选</button></div>
+        <input data-xh-part="search" placeholder="搜索待选权限" />
+        <div data-xh-part="list" style="overflow: visible; max-block-size: none"><xh-virtualizer id="transfer-source-virtualizer" estimate-size="36" viewport-tab-index="-1"><div data-xh-part="root"><div data-xh-part="viewport" style="block-size: 220px"><div data-xh-part="content"></div></div></div></xh-virtualizer></div>
+        <div data-xh-part="empty">暂无待选权限</div>
+      </div>
+      <button data-xh-part="to-target-trigger"></button><button data-xh-part="to-source-trigger"></button>
+      <div data-xh-part="target-panel">
+        <div data-xh-part="panel-header"><span data-xh-part="panel-title">已选权限</span><span data-xh-part="panel-count"></span><button data-xh-part="select-all-trigger">全选</button></div>
+        <input data-xh-part="search" placeholder="搜索已选权限" />
+        <div data-xh-part="list" style="overflow: visible; max-block-size: none"><xh-virtualizer id="transfer-target-virtualizer" estimate-size="36" viewport-tab-index="-1"><div data-xh-part="root"><div data-xh-part="viewport" style="block-size: 220px"><div data-xh-part="content"></div></div></div></xh-virtualizer></div>
+        <div data-xh-part="empty">暂无已选权限</div>
+      </div>
+    </div>
+  </xh-transfer>
+</div>
 
 <script type="module">
   const transfer = document.getElementById("transfer-virtualized");

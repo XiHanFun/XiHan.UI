@@ -8,6 +8,9 @@ import {
   XhListboxItemIndicator,
   XhListboxItemText,
   XhListboxRoot,
+  XhTransferList,
+  XhTransferRoot,
+  XhTransferSourcePanel,
   XhVirtualizerContent,
   XhVirtualizerItem,
   XhVirtualizerRoot,
@@ -75,5 +78,33 @@ describe('collectionVirtualizer 正式接线', () => {
     expect(last.getAttribute('aria-setsize')).toBe('1000')
     expect(options().length).toBeLessThan(20)
     expect(document.querySelector<HTMLElement>('[data-scope="virtualizer"][data-part="viewport"]')!.scrollTop).toBeGreaterThan(0)
+  })
+
+  it('transfer 自绘滚动条接管每侧 virtualizer viewport', async () => {
+    host = document.createElement('div')
+    document.body.appendChild(host)
+    let viewport: HTMLElement | null = null
+    const bridge: CollectionVirtualizer = {
+      count: 1,
+      scrollToIndex: () => {},
+      focusIndex: () => {},
+      getRenderedItemRoots: () => [],
+      getViewportElement: () => viewport,
+    }
+    app = createApp({
+      render: () => h('div', null, [
+        h('div', {
+          ref: (el: unknown) => { viewport = el as HTMLElement | null },
+          style: { blockSize: '100px', overflow: 'auto' },
+        }, h('div', { style: { blockSize: '1000px' } })),
+        h(XhTransferRoot, {
+          collection: [{ value: 'one', label: '一' }],
+          virtualizers: { source: bridge },
+        }, () => h(XhTransferSourcePanel, null, () => h(XhTransferList))),
+      ]),
+    })
+    app.mount(host)
+    await expect.poll(() => viewport?.hasAttribute('data-xh-scrollbar')).toBe(true)
+    expect(getComputedStyle(viewport!).scrollbarWidth).toBe('none')
   })
 })

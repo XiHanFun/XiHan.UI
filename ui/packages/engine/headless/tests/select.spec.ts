@@ -555,7 +555,7 @@ describe('selectMachine 多选', () => {
     const collection = ITEMS.map(item => ({ value: item.value, label: item.text }))
     const h = mount({
       collection,
-      virtualizer: { count: collection.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [] },
+      virtualizer: { count: collection.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [], getViewportElement: () => null },
       defaultOpen: true,
     })
     await tick()
