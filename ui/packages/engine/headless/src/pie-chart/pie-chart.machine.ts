@@ -5,7 +5,7 @@
 
 // 提供 pie chart 相关实现。
 
-import type { PieChartSchema } from './pie-chart.types'
+import type { PieChartSchema } from './pie-chart.schema'
 import { reportDiagnostic, setup } from '@xihan-ui/core'
 import {
   chartBaseActions,

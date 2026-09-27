@@ -13,6 +13,7 @@ import type {
   ChartKey,
   ChartMark,
   ChartRow,
+  NumberFormatSpec,
   RadarChartApi,
   RadarChartSchema,
   RadarChartTranslations,
@@ -23,7 +24,6 @@ import type {
   RadarShape,
   RadarTooltipModel,
 } from '@xihan-ui/headless'
-import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectRadarChart, radarChartAnatomy, radarChartMachine, radarChartMeta } from '@xihan-ui/headless'
 import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'

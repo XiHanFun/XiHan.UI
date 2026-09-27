@@ -131,12 +131,17 @@ const componentProps = {}
   for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
     if (!entry.isDirectory())
       continue
-    const file = join(HEADLESS, entry.name, `${entry.name}.types.ts`)
-    if (await readFile(file, 'utf8').then(() => true, () => false))
-      typeFiles.push({ component: entry.name, file: resolve(file) })
+    const files = []
+    for (const suffix of ['types', 'schema']) {
+      const file = join(HEADLESS, entry.name, `${entry.name}.${suffix}.ts`)
+      if (await readFile(file, 'utf8').then(() => true, () => false))
+        files.push(resolve(file))
+    }
+    if (files.length)
+      typeFiles.push({ component: entry.name, files })
   }
 
-  const program = ts.createProgram(typeFiles.map(t => t.file), {
+  const program = ts.createProgram(typeFiles.flatMap(t => t.files), {
     target: ts.ScriptTarget.ESNext,
     module: ts.ModuleKind.ESNext,
     moduleResolution: ts.ModuleResolutionKind.Bundler,
@@ -152,29 +157,31 @@ const componentProps = {}
   }
 
   const unresolved = []
-  for (const { component, file } of typeFiles) {
-    const sf = program.getSourceFile(file)
-    if (!sf) {
-      unresolved.push(`${component}（类型文件没进编译单元）`)
-      continue
-    }
+  for (const { component, files } of typeFiles) {
     const pascal = component.replace(/(^|-)(\w)/g, (_, __, c) => c.toUpperCase())
     let names = null
     let fallback = null
-    ts.forEachChild(sf, (node) => {
-      if (ts.isInterfaceDeclaration(node) && node.name.text === `${pascal}Schema`) {
-        for (const member of node.members) {
-          if (ts.isPropertySignature(member) && member.name.getText(sf) === 'props' && member.type)
-            names = propsOf(member.type)
-        }
+    for (const file of files) {
+      const sf = program.getSourceFile(file)
+      if (!sf) {
+        unresolved.push(`${component}（类型文件没进编译单元）`)
+        continue
       }
-      // 没有机器的组件把 props 单独写成接口或类型别名；两份都在时是机器 props 与视图 props 分开写，
-      // 使用者两份都写得下来，公开面取并集
-      const isPropsDecl = (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node))
-        && node.name.text === `${pascal}Props`
-      if (isPropsDecl)
-        fallback = propsOf(ts.isTypeAliasDeclaration(node) ? node.type : node.name)
-    })
+      ts.forEachChild(sf, (node) => {
+        if (ts.isInterfaceDeclaration(node) && node.name.text === `${pascal}Schema`) {
+          for (const member of node.members) {
+            if (ts.isPropertySignature(member) && member.name.getText(sf) === 'props' && member.type)
+              names = propsOf(member.type)
+          }
+        }
+        // 没有机器的组件把 props 单独写成接口或类型别名；两份都在时是机器 props 与视图 props 分开写，
+        // 使用者两份都写得下来，公开面取并集
+        const isPropsDecl = (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node))
+          && node.name.text === `${pascal}Props`
+        if (isPropsDecl)
+          fallback = propsOf(ts.isTypeAliasDeclaration(node) ? node.type : node.name)
+      })
+    }
 
     const resolved = names?.size || fallback?.size
       ? new Set([...(names ?? []), ...(fallback ?? [])])

@@ -23,8 +23,8 @@ import type {
   FunnelLabels,
   FunnelShape,
   FunnelTooltipModel,
+  NumberFormatSpec,
 } from '@xihan-ui/headless'
-import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectFunnelChart, funnelChartAnatomy, funnelChartMachine, funnelChartMeta } from '@xihan-ui/headless'
 import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'

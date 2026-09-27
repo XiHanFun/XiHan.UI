@@ -10,6 +10,7 @@ import type {
   ChartKey,
   ChartMark,
   ChartRow,
+  NumberFormatSpec,
   PieChartApi,
   PieChartSchema,
   PieChartTranslations,
@@ -19,7 +20,6 @@ import type {
   PieTooltipModel,
   PieVariant,
 } from '@xihan-ui/headless'
-import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'

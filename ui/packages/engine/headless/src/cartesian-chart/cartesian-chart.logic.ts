@@ -10,7 +10,8 @@ import type { PropFn, Scope } from '@xihan-ui/core'
 import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey, ChartNavIntent } from '../shared/chart'
 import type { CartesianModel, CartesianSeriesValues } from './cartesian-chart.model'
-import type { CartesianAnnotationSummary, CartesianBrushSelection, CartesianChartSchema, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow, CartesianWindowRatio } from './cartesian-chart.types'
+import type { CartesianChartSchema, CartesianOverlay } from './cartesian-chart.schema'
+import type { CartesianAnnotationSummary, CartesianBrushSelection, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow, CartesianWindowRatio } from './cartesian-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { createPicker, domainToWindow, FULL_WINDOW, lttb } from '@xihan-ui/viz'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
@@ -433,13 +434,6 @@ export function cartesianHitTest(
     }
   }
   return ref ? { ref, key: model.spec.keys[best]! } : null
-}
-
-export interface CartesianOverlay {
-  /** 画在数据之下：十字准线（折线）或整条类目带的淡底（柱）。 */
-  readonly under: readonly Mark[]
-  /** 画在数据之上：激活数据上的点（焦点代理）与焦点环。 */
-  readonly over: readonly Mark[]
 }
 
 const EMPTY_OVERLAY: CartesianOverlay = Object.freeze({ under: [], over: [] })

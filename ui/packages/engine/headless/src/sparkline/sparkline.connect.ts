@@ -7,7 +7,8 @@
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { Mark, Scene, ShapeMark } from '@xihan-ui/viz'
-import type { SparklineApi, SparklineMarkerKind, SparklineSchema } from './sparkline.types'
+import type { SparklineApi, SparklineSchema } from './sparkline.schema'
+import type { SparklineMarkerKind } from './sparkline.types'
 import { createScene, markPath } from '@xihan-ui/viz'
 import { sparklineAnatomy } from './sparkline.anatomy'
 import { sparklineModelOf } from './sparkline.logic'

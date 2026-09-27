@@ -86,8 +86,7 @@
     "@xihan-ui/headless": "workspace:^",
     "@xihan-ui/motion": "workspace:^",
     "@xihan-ui/pointer": "workspace:^",
-    "@xihan-ui/position": "workspace:^",
-    "@xihan-ui/viz": "workspace:^"
+    "@xihan-ui/position": "workspace:^"
   },
   "devDependencies": {
     "@testing-library/react": "catalog:",

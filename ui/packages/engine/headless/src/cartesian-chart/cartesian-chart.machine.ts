@@ -5,7 +5,8 @@
 
 // 提供 cartesian chart 相关实现。
 
-import type { CartesianBrushing, CartesianBrushSelection, CartesianChartSchema, CartesianDrag, CartesianWindow } from './cartesian-chart.types'
+import type { CartesianChartSchema } from './cartesian-chart.schema'
+import type { CartesianBrushing, CartesianBrushSelection, CartesianDrag, CartesianWindow } from './cartesian-chart.types'
 import { reportDiagnostic, setup } from '@xihan-ui/core'
 import {
   chartBaseActions,

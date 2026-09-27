@@ -13,6 +13,7 @@ import type {
   ChartKey,
   ChartMark,
   ChartRow,
+  NumberFormatSpec,
   PieChartApi,
   PieChartSchema,
   PieChartTranslations,
@@ -23,7 +24,6 @@ import type {
   PieTooltipModel,
   PieVariant,
 } from '@xihan-ui/headless'
-import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectPieChart, pieChartAnatomy, pieChartMachine, pieChartMeta } from '@xihan-ui/headless'
 import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'

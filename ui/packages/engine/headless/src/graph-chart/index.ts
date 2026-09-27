@@ -9,13 +9,12 @@ export { graphChartAnatomy } from './graph-chart.anatomy'
 export { connectGraphChart, graphMarkTag } from './graph-chart.connect'
 export { graphChartKeyboard } from './graph-chart.keyboard'
 export { defaultGraphSummary, GRAPH_TRANSLATIONS } from './graph-chart.logic'
-export type { GraphActive, GraphNavIntent, GraphOverlay } from './graph-chart.logic'
+export type { GraphActive, GraphNavIntent } from './graph-chart.logic'
 export { graphChartMachine } from './graph-chart.machine'
 export { graphChartMeta } from './graph-chart.meta'
 export type { GraphModel } from './graph-chart.model'
+export type { GraphChartApi, GraphChartSchema, GraphOverlay } from './graph-chart.schema'
 export type {
-  GraphChartApi,
-  GraphChartSchema,
   GraphChartTranslations,
   GraphDrag,
   GraphLayout,

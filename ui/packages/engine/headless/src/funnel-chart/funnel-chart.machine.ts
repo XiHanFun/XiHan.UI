@@ -5,7 +5,7 @@
 
 // 提供 funnel chart 相关实现。
 
-import type { FunnelChartSchema } from './funnel-chart.types'
+import type { FunnelChartSchema } from './funnel-chart.schema'
 import { reportDiagnostic, setup } from '@xihan-ui/core'
 import {
   chartBaseActions,

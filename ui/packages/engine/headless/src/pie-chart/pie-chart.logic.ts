@@ -7,10 +7,10 @@
 // 只算值，不写属性：属性字典都在连接层。
 
 import type { PropFn, Scope } from '@xihan-ui/core'
-import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey, ChartNavIntent } from '../shared/chart'
 import type { PieModel, PieSliceSpec } from './pie-chart.model'
-import type { PieChartSchema, PieChartTranslations, PieSummary, PieTooltipModel } from './pie-chart.types'
+import type { PieChartSchema, PieOverlay } from './pie-chart.schema'
+import type { PieChartTranslations, PieSummary, PieTooltipModel } from './pie-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, resolveChartTranslations } from '../shared/chart'
 import { PIE_OTHER_ID, pieRefOf, pieSliceKey } from './pie-chart.model'
@@ -207,11 +207,6 @@ export function pieHitTest(model: PieModel, x: number, y: number): ChartDatumRef
       return pieRefOf(g.slice)
   }
   return null
-}
-
-export interface PieOverlay {
-  /** 画在扇区之上：焦点环。 */
-  readonly over: readonly Mark[]
 }
 
 const EMPTY_OVERLAY: PieOverlay = Object.freeze({ over: [] })

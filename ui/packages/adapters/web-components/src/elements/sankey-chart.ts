@@ -12,6 +12,7 @@ import type {
   ChartHiddenSeriesChangeDetails,
   ChartKey,
   ChartMark,
+  NumberFormatSpec,
   SankeyChartApi,
   SankeyChartSchema,
   SankeyChartTranslations,
@@ -24,7 +25,6 @@ import type {
   SankeyOrientation,
   SankeyTooltipModel,
 } from '@xihan-ui/headless'
-import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectSankeyChart, sankeyChartAnatomy, sankeyChartMachine, sankeyChartMeta } from '@xihan-ui/headless'
 import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'

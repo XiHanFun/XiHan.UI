@@ -7,13 +7,13 @@
 
 import type { Tone } from '@xihan-ui/core'
 import type {
+  NumberFormatSpec,
   SparklineCurve,
   SparklineMarkers,
   SparklineSchema,
   SparklineTranslations,
   SparklineVariant,
 } from '@xihan-ui/headless'
-import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'

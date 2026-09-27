@@ -12,12 +12,11 @@ export { defaultSparklineSummary, SPARKLINE_TRANSLATIONS } from './sparkline.log
 export { sparklineMachine } from './sparkline.machine'
 export { sparklineMeta } from './sparkline.meta'
 export type { SparklineModel } from './sparkline.model'
+export type { SparklineApi, SparklineSchema } from './sparkline.schema'
 export type {
-  SparklineApi,
   SparklineCurve,
   SparklineMarkerKind,
   SparklineMarkers,
-  SparklineSchema,
   SparklineSummary,
   SparklineTranslations,
   SparklineVariant,

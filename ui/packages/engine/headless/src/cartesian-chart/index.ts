@@ -9,10 +9,10 @@ export { cartesianChartAnatomy } from './cartesian-chart.anatomy'
 export { cartesianMarkTag, connectCartesianChart } from './cartesian-chart.connect'
 export { cartesianChartKeyboard } from './cartesian-chart.keyboard'
 export { CARTESIAN_TRANSLATIONS, defaultCartesianAnnotationSummary } from './cartesian-chart.logic'
-export type { CartesianOverlay } from './cartesian-chart.logic'
 export { cartesianChartMachine } from './cartesian-chart.machine'
 export { cartesianChartMeta } from './cartesian-chart.meta'
 export type { CartesianModel } from './cartesian-chart.model'
+export type { CartesianChartApi, CartesianChartSchema, CartesianOverlay } from './cartesian-chart.schema'
 export type {
   CartesianAnnotation,
   CartesianAnnotationSummary,
@@ -26,8 +26,6 @@ export type {
   CartesianBrushSelection,
   CartesianBrushSelectionChangeDetails,
   CartesianCandlestickSeries,
-  CartesianChartApi,
-  CartesianChartSchema,
   CartesianChartTranslations,
   CartesianCurve,
   CartesianDrag,

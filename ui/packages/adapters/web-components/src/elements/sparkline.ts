@@ -7,6 +7,8 @@
 
 import type { Service, Tone } from '@xihan-ui/core'
 import type {
+  ChartMark,
+  NumberFormatSpec,
   SparklineApi,
   SparklineCurve,
   SparklineMarkers,
@@ -14,7 +16,6 @@ import type {
   SparklineTranslations,
   SparklineVariant,
 } from '@xihan-ui/headless'
-import type { Mark, NumberFormatSpec } from '@xihan-ui/viz'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectSparkline, sparklineAnatomy, sparklineMachine, sparklineMeta } from '@xihan-ui/headless'
 import { GEN_ATTR, reconcile, SVG_NS } from '../dom/generated-nodes'
@@ -128,7 +129,7 @@ export class XhSparklineElement extends XhElement {
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
     const { back, data, front } = api.scene.layers
     // 摘要排在最前，其后是场景标记；两者同一次排序，重画时一起复用
-    reconcile<Mark | null>(root, [null, ...back, ...data, ...front], this.#keys, mark => mark?.key ?? SUMMARY_KEY, (mark, reuse) =>
+    reconcile<ChartMark | null>(root, [null, ...back, ...data, ...front], this.#keys, mark => mark?.key ?? SUMMARY_KEY, (mark, reuse) =>
       mark == null ? this.#paintSummary(root.ownerDocument, reuse, api) : this.#paintMark(root.ownerDocument, mark, reuse, api))
   }
 
@@ -142,7 +143,7 @@ export class XhSparklineElement extends XhElement {
   }
 
   /** 场景标记画成 `<path>`：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。 */
-  #paintMark(doc: Document, mark: Mark, reuse: Element | undefined, api: SparklineApi): Element {
+  #paintMark(doc: Document, mark: ChartMark, reuse: Element | undefined, api: SparklineApi): Element {
     const node = reuse?.localName === 'path' ? reuse : doc.createElementNS(SVG_NS, 'path')
     node.setAttribute(GEN_ATTR, '')
     this.spreader.spread(node as HTMLElement, api.getMarkProps(mark) as Record<string, unknown>)

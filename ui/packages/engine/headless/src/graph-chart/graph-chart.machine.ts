@@ -7,7 +7,8 @@
 
 import type { Params } from '@xihan-ui/core'
 import type { GraphSimulationRef } from './graph-chart.model'
-import type { GraphChartSchema, GraphView } from './graph-chart.types'
+import type { GraphChartSchema } from './graph-chart.schema'
+import type { GraphView } from './graph-chart.types'
 import { reportDiagnostic, setup } from '@xihan-ui/core'
 import { frameLoop, resolveMotionPreference } from '@xihan-ui/motion'
 import {

@@ -9,13 +9,12 @@ export { radarChartAnatomy } from './radar-chart.anatomy'
 export { connectRadarChart, radarMarkTag } from './radar-chart.connect'
 export { radarChartKeyboard } from './radar-chart.keyboard'
 export { defaultRadarSummary, RADAR_TRANSLATIONS } from './radar-chart.logic'
-export type { RadarActive, RadarOverlay } from './radar-chart.logic'
+export type { RadarActive } from './radar-chart.logic'
 export { radarChartMachine } from './radar-chart.machine'
 export { radarChartMeta } from './radar-chart.meta'
 export type { RadarModel } from './radar-chart.model'
+export type { RadarChartApi, RadarChartSchema, RadarOverlay } from './radar-chart.schema'
 export type {
-  RadarChartApi,
-  RadarChartSchema,
   RadarChartTranslations,
   RadarCurve,
   RadarIndicator,
