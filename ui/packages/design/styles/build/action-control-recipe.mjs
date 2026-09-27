@@ -324,6 +324,7 @@ export function compileActionControlRecipe(source) {
     '    transition:',
     `      background-color ${source.motion.duration} ${source.motion.easing},`,
     `      border-color ${source.motion.duration} ${source.motion.easing},`,
+    `      color ${source.motion.duration} ${source.motion.easing},`,
     `      box-shadow ${source.motion.duration} ${source.motion.easing},`,
     `      opacity ${source.motion.duration} ${source.motion.easing},`,
     `      scale ${source.motion.releaseDuration} ${source.motion.releaseEasing};`,

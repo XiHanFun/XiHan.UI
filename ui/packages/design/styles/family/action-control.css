@@ -54,6 +54,7 @@
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
@@ -116,7 +117,7 @@
     --xh-_action-variant-border-focus-visible: var(--xh-_tone-border-control, var(--xh-border-control));
     --xh-_action-variant-bg-disabled: transparent;
     --xh-_action-variant-fg-disabled: var(--xh-fg-disabled);
-    --xh-_action-variant-border-disabled: var(--xh-border-subtle);
+    --xh-_action-variant-border-disabled: var(--xh-border-default);
     --xh-_action-variant-bg-loading: transparent;
     --xh-_action-variant-fg-loading: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-_action-variant-border-loading: var(--xh-_tone-border-control, var(--xh-border-control));
@@ -165,7 +166,7 @@
   }
 
   [data-xh-action-control][data-xh-action-size='xs'] {
-    --xh-_action-profile-visual-size: 24px;
+    --xh-_action-profile-visual-size: var(--xh-control-action-size);
     --xh-_action-profile-padding-inline: var(--xh-space-1);
     --xh-_action-profile-padding-block: 0;
     --xh-_action-profile-gap: var(--xh-space-1);
@@ -224,13 +225,13 @@
   }
 
   [data-xh-action-control][data-xh-action-profile='field-inset'][data-xh-action-size='xs'] {
-    --xh-_action-profile-glyph-size: 12px;
+    --xh-_action-profile-glyph-size: var(--xh-control-indicator-sm);
     --xh-_action-profile-font-size: var(--xh-control-caption-sm);
   }
 
   [data-xh-action-control][data-xh-action-profile='field-inset'][data-xh-action-size='sm'] {
-    --xh-_action-profile-visual-size: 24px;
-    --xh-_action-profile-glyph-size: 14px;
+    --xh-_action-profile-visual-size: var(--xh-control-action-size);
+    --xh-_action-profile-glyph-size: var(--xh-control-indicator-md);
     --xh-_action-profile-font-size: var(--xh-control-caption-sm);
   }
 
