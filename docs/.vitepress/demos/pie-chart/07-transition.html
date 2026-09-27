@@ -16,7 +16,7 @@
   <!-- 按数据次序排列：扇区不随数值换位，只在原处伸缩 -->
   <xh-pie-chart id="pie-chart-transition" name-field="channel" value-field="visits" sort="none">
     <figure data-xh-part="root">
-      <figcaption data-xh-part="caption" id="pie-chart-transition-caption"></figcaption>
+      <figcaption data-xh-part="caption"></figcaption>
       <div data-xh-part="legend"></div>
       <div data-xh-part="viewport">
         <svg data-xh-part="plot"></svg>
@@ -30,7 +30,8 @@
 
 <script type="module">
   const chart = document.getElementById("pie-chart-transition");
-  const caption = document.getElementById("pie-chart-transition-caption");
+  // 部件的 id 归元素管（接线时换成它生成的那个），标题按部件取
+  const caption = chart.querySelector('[data-xh-part="caption"]');
   const channels = ["搜索", "直接访问", "社交", "邮件"];
   const weeks = [
     { week: 1, visits: [4200, 2800, 1800, 1200] },
