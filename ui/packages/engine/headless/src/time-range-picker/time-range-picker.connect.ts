@@ -18,6 +18,7 @@ import type {
 } from './time-range-picker.types'
 import { createPressTracker, dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { resolveTimeStep, timeColumns, timeItemValue } from '../shared/time-constraint'
 import {
   appendSegmentDigit,
   dayPeriodLabel,
@@ -33,7 +34,6 @@ import {
   timeSegments,
   timeSegmentText,
 } from '../time-field'
-import { resolveTimeStep, timePickerColumns, timePickerItemValue } from '../time-picker'
 import {
   findTimeRangePickerColumn,
   timeRangePickerAnatomy,
@@ -96,7 +96,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
   const translations = prop('translations')
   const hourCycle = resolveHourCycle(prop('hourCycle'), locale)
   const granularity = prop('granularity') ?? TIME_FIELD_GRANULARITY
-  const step = resolveTimeStep(prop('step'))
+  const step = resolveTimeStep({ minute: prop('step') }).minute
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
@@ -165,7 +165,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
 
   // 渲染列只随精度、小时制与 step 改变，不能随着另一端的区间边界删减 DOM，
   // 否则填写过程中列高、滚动位置和焦点节点都会跳。可选性另由 availableColumnGroups 判定。
-  const stableColumns = (): TimePickerColumn[] => timePickerColumns({ granularity, hourCycle, step })
+  const stableColumns = (): TimePickerColumn[] => timeColumns({ granularity, hourCycle, timeStep: { minute: step } })
   const columnGroups: readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup] = [
     { index: 0, columns: stableColumns() },
     { index: 1, columns: stableColumns() },
@@ -181,7 +181,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
   /** 这一端这一列此刻选中的那个值（两位补零）；该段还空着时为 null。 */
   const selectedIn = (index: TimeRangePickerEndIndex, unit: TimePickerColumnUnit): string | null => {
     const current = segmentNumber(drafts[index], unit, hourCycle)
-    return current == null ? null : timePickerItemValue(current)
+    return current == null ? null : timeItemValue(current)
   }
 
   /**

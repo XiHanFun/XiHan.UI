@@ -12,6 +12,7 @@ import type { TimeRangePickerColumnRef, TimeRangePickerEndIndex, TimeRangePicker
 import { canTakeFocus, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { timeColumnsFor, timeItemValue } from '../shared/time-constraint'
 import {
   appendSegmentDigit,
   clearTimeSegment,
@@ -29,7 +30,6 @@ import {
   setTimeSegment,
   TIME_FIELD_GRANULARITY,
 } from '../time-field'
-import { timePickerColumnsFor, timePickerItemValue } from '../time-picker'
 import { findTimeRangePickerColumn, findTimeRangePickerItem } from './time-range-picker.anatomy'
 
 const { createMachine, guards } = setup<TimeRangePickerSchema>()
@@ -135,12 +135,12 @@ export function timeRangePickerColumnsAt(
 ): TimePickerColumn[] {
   const value = params.context.get('value')
   const bounds = timeRangePickerBoundsAt(value, index, params.prop('min'), params.prop('max'))
-  return timePickerColumnsFor(
+  return timeColumnsFor(
     resolveTimeDraft(timeRangePickerEndAt(value, index), params.context.get('drafts')[index]),
     {
       granularity: params.prop('granularity') ?? TIME_FIELD_GRANULARITY,
       hourCycle: resolveHourCycle(params.prop('hourCycle'), params.prop('locale')),
-      step: params.prop('step'),
+      timeStep: { minute: params.prop('step') },
       min: bounds.min,
       max: bounds.max,
     },
@@ -392,7 +392,7 @@ export const timeRangePickerMachine = createMachine({
         if (!first)
           return
         const current = segmentNumber(currentDraft(params, index), first.unit, currentHourCycle(params))
-        const selected = current == null ? null : timePickerItemValue(current)
+        const selected = current == null ? null : timeItemValue(current)
         // 从输入段展开时保留段上的编辑焦点；从触发器展开则把空值落到第一项，
         // 避免焦点停在整列容器上，也让方向键与 Enter 立即有明确起点。
         const intent = params.context.get('focusIntent')

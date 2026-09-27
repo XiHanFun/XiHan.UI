@@ -8,12 +8,9 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, createServi
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { timeColumns } from '../src/shared/time-constraint'
 import {
   connectTimePicker,
-  resolveTimeStep,
-  timePickerColumns,
-  timePickerColumnsFor,
-  timePickerItemValue,
   timePickerMachine,
 } from '../src/time-picker'
 
@@ -132,10 +129,10 @@ function mount(initial: Partial<Props> = {}, mountOptions: MountOptions = {}): H
   const hiddenInput = doc.createElement('input')
   root.append(label, control, positioner, hiddenInput)
 
-  const grid = timePickerColumns({
+  const grid = timeColumns({
     granularity: 'second',
     hourCycle: initial.hourCycle,
-    step: initial.step,
+    timeStep: { minute: initial.step },
   })
   const columns = new Map<TimePickerColumnUnit, HTMLElement>()
   const options = new Map<string, HTMLElement>()
@@ -282,131 +279,6 @@ function enabledValues(el: HTMLElement): string[] {
     .filter(child => child.getAttribute('aria-disabled') !== 'true')
     .map(child => child.getAttribute('data-value') ?? '')
 }
-
-describe('可选值列表（纯函数）', () => {
-  it('默认排时分两列：时 0-23、分逐分钟，全部两位补零', () => {
-    const columns = timePickerColumns()
-    expect(columns.map(c => c.unit)).toEqual(['hour', 'minute'])
-    expect(columns[0]!.options).toHaveLength(24)
-    expect(columns[0]!.options[0]).toBe('00')
-    expect(columns[0]!.options[23]).toBe('23')
-    expect(columns[1]!.options).toHaveLength(60)
-    expect(columns[1]!.options[5]).toBe('05')
-  })
-
-  it('granularity 决定排几列：hour 只有时列，second 多一列逐秒', () => {
-    expect(timePickerColumns({ granularity: 'hour' }).map(c => c.unit)).toEqual(['hour'])
-    const second = timePickerColumns({ granularity: 'second' })
-    expect(second.map(c => c.unit)).toEqual(['hour', 'minute', 'second'])
-    expect(second[2]!.options).toHaveLength(60)
-  })
-
-  it('step 只决定分列的粒度，秒列照旧逐秒', () => {
-    const columns = timePickerColumns({ granularity: 'second', step: 15 })
-    expect(columns[1]!.options).toEqual(['00', '15', '30', '45'])
-    expect(columns[2]!.options).toHaveLength(60)
-  })
-
-  it('step 写坏了回落到逐分钟：0 会让循环停不下来，60 及以上只剩一格', () => {
-    expect(resolveTimeStep(0)).toBe(1)
-    expect(resolveTimeStep(-5)).toBe(1)
-    expect(resolveTimeStep(60)).toBe(1)
-    expect(resolveTimeStep(Number.NaN)).toBe(1)
-    expect(resolveTimeStep(undefined)).toBe(1)
-    expect(resolveTimeStep(7.9)).toBe(7)
-    expect(timePickerColumns({ step: 0 })[1]!.options).toHaveLength(60)
-  })
-
-  it('12 小时制下时列是 1-12', () => {
-    expect(timePickerColumns({ hourCycle: 12 })[0]!.options).toEqual(
-      ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
-    )
-  })
-
-  it('上下午成列，只在 12 小时制下出现且恒排末位', () => {
-    expect(timePickerColumns({ hourCycle: 12 }).map(c => c.unit)).toEqual(['hour', 'minute', 'dayPeriod'])
-    expect(timePickerColumns({ hourCycle: 12, granularity: 'second' }).map(c => c.unit))
-      .toEqual(['hour', 'minute', 'second', 'dayPeriod'])
-    // granularity=hour 也照给：上下午与精度无关
-    expect(timePickerColumns({ hourCycle: 12, granularity: 'hour' }).map(c => c.unit))
-      .toEqual(['hour', 'dayPeriod'])
-    // 24 小时制没有这一列
-    expect(timePickerColumns({ granularity: 'second' }).some(c => c.unit === 'dayPeriod')).toBe(false)
-  })
-
-  it('上下午两格写的是 00 / 01，与这一段上报的数同一个域', () => {
-    expect(timePickerColumns({ hourCycle: 12 }).at(-1)!.options).toEqual(['00', '01'])
-  })
-
-  it('上下午列在小时已选中且换算过去出界时才收窄', () => {
-    // 还没挑小时：两格都留着
-    expect(timePickerColumns({ hourCycle: 12, min: '09:00', max: '18:00' }).at(-1)!.options).toEqual(['00', '01'])
-    // 挑的是 9 点（显示 09）：上午 9 点在界内，下午 9 点是 21 点、出界
-    expect(timePickerColumns({ hourCycle: 12, min: '09:00', max: '18:00', hour: 9 }).at(-1)!.options).toEqual(['00'])
-    // 挑的是 15 点（显示 03）：上午 3 点在界外，只剩下午
-    expect(timePickerColumns({ hourCycle: 12, min: '09:00', max: '18:00', hour: 15 }).at(-1)!.options).toEqual(['01'])
-    // 挑的是 10 点（显示 10）：上午 10 点、下午 22 点，只剩上午
-    expect(timePickerColumns({ hourCycle: 12, min: '09:00', max: '18:00', hour: 10 }).at(-1)!.options).toEqual(['00'])
-  })
-
-  it('min/max 裁掉时列两端', () => {
-    expect(timePickerColumns({ min: '09:00', max: '11:00' })[0]!.options).toEqual(['09', '10', '11'])
-  })
-
-  it('下界落在半点上时，那一个整点仍留着（它下面还有分可选）', () => {
-    const columns = timePickerColumns({ min: '09:30', hour: 9 })
-    expect(columns[0]!.options[0]).toBe('09')
-    // 9 点这一格里，30 分之前的都不可选
-    expect(columns[1]!.options[0]).toBe('30')
-    expect(columns[1]!.options).toHaveLength(30)
-  })
-
-  it('分列只在时已选中且正好卡在界上时才收窄', () => {
-    // 还没挑时：不替用户先限死
-    expect(timePickerColumns({ min: '09:30' })[1]!.options).toHaveLength(60)
-    // 挑的是界内的另一个整点：整列都可选
-    expect(timePickerColumns({ min: '09:30', hour: 10 })[1]!.options).toHaveLength(60)
-    // 上界那一侧同理
-    expect(timePickerColumns({ max: '11:15', hour: 11 })[1]!.options).toEqual(['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15'])
-    expect(timePickerColumns({ max: '11:15', hour: 10 })[1]!.options).toHaveLength(60)
-  })
-
-  it('秒列只在时与分都卡在界上时才收窄', () => {
-    const onBound = timePickerColumns({ granularity: 'second', min: '09:30:20', hour: 9, minute: 30 })
-    expect(onBound[2]!.options[0]).toBe('20')
-    expect(onBound[2]!.options).toHaveLength(40)
-    const inside = timePickerColumns({ granularity: 'second', min: '09:30:20', hour: 9, minute: 31 })
-    expect(inside[2]!.options).toHaveLength(60)
-  })
-
-  it('12 小时制的裁剪按换算回去的真实小时判，上午下午各裁各的', () => {
-    // 上午：09:00-18:00 之间只剩 9/10/11（12 上午是 0 点，在界外）
-    expect(timePickerColumns({ hourCycle: 12, min: '09:00', max: '18:00', dayPeriod: 'am' })[0]!.options)
-      .toEqual(['09', '10', '11'])
-    // 下午：12(=12 点) 与 1-6(=13-18 点) 可选，7 点之后（19 点起）出界
-    expect(timePickerColumns({ hourCycle: 12, min: '09:00', max: '18:00', dayPeriod: 'pm' })[0]!.options)
-      .toEqual(['01', '02', '03', '04', '05', '06', '12'])
-  })
-
-  it('界写坏了当作没设界', () => {
-    expect(timePickerColumns({ min: '不是时间', max: '' })[0]!.options).toHaveLength(24)
-  })
-
-  it('timePickerColumnsFor 从逐段缓冲里取上午/下午：小时已填时由它说了算', () => {
-    const columns = timePickerColumnsFor(
-      { hour: 15, minute: null, second: null, dayPeriod: 'am' },
-      { hourCycle: 12, min: '09:00', max: '18:00' },
-    )
-    // 小时是 15（下午 3 点），缓冲里那个 am 不作数
-    expect(columns[0]!.options).toEqual(['01', '02', '03', '04', '05', '06', '12'])
-  })
-
-  it('timePickerItemValue 一律两位补零，与段上的文字同一套写法', () => {
-    expect(timePickerItemValue(0)).toBe('00')
-    expect(timePickerItemValue(9)).toBe('09')
-    expect(timePickerItemValue(23)).toBe('23')
-  })
-})
 
 describe('connectTimePicker 形态轴', () => {
   it('不写 variant 时 root、positioner 与 control 都落 outline；写 subtle 如实落', () => {

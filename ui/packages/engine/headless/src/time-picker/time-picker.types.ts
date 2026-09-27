@@ -7,13 +7,14 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { TimeColumn, TimeColumnUnit } from '../shared/time-constraint'
 import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
 
 /**
  * 浮层中成列排布的单位，与分段输入中的段同名同域：列上选择与段上输入写入的是同一个值。
  * dayPeriod 只在 12 小时制下成列，恒排在末位。
  */
-export type TimePickerColumnUnit = 'hour' | 'minute' | 'second' | 'dayPeriod'
+export type TimePickerColumnUnit = TimeColumnUnit
 
 /**
  * 展开时焦点落在时列的哪一格：
@@ -28,30 +29,7 @@ export type TimePickerFocusIntent = 'selected' | 'first' | 'last'
  * 上下午列写 '00'（上午）与 '01'（下午），与该段在 aria-valuenow 上报的数同一个域，
  * 显示的文字由 getItemText 按 locale 给出。
  */
-export interface TimePickerColumn<U extends TimePickerColumnUnit = TimePickerColumnUnit> {
-  readonly unit: U
-  readonly options: readonly string[]
-}
-
-/** 生成可选值列表的入参，全部是值，不涉及 DOM 也不读取状态机。 */
-export interface TimePickerColumnsOptions {
-  /** 精度：hour 只显示时列，minute 显示时分两列，second 再多一列秒。 */
-  granularity?: TimeGranularity
-  /** 12 小时制下时列是 1-12，24 小时制是 0-23。 */
-  hourCycle?: TimeHourCycle
-  /** 分列的步进（分钟），默认 1；越界的写法回退为 1。秒列恒为逐秒。 */
-  step?: number
-  /** 下界（含），ISO 时间串。裁掉落在界外的可选值。 */
-  min?: string
-  /** 上界（含）。同上。 */
-  max?: string
-  /** 已选的时（0-23）。分列与秒列据此收窄；尚未选择时两列不收窄。 */
-  hour?: number | null
-  /** 已选的分。秒列据此收窄。 */
-  minute?: number | null
-  /** 12 小时制下把时列的显示值换算回 0-23 的依据，默认 am。 */
-  dayPeriod?: TimeDayPeriod
-}
+export type TimePickerColumn<U extends TimePickerColumnUnit = TimePickerColumnUnit> = TimeColumn<U>
 
 // 适配器挂载前填入；保持缺省时副作用短路，机器状态照常转移但不定位、不挂消解层与焦点域。
 export interface TimePickerRefs {

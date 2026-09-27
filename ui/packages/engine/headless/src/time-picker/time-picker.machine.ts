@@ -6,10 +6,9 @@
 // 提供 time picker 相关实现。
 
 import type { Params, PositionResult } from '@xihan-ui/core'
+import type { TimeColumn } from '../shared/time-constraint'
 import type { TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
 import type {
-  TimePickerColumn,
-  TimePickerColumnsOptions,
   TimePickerColumnUnit,
   TimePickerFocusIntent,
   TimePickerPressedKey,
@@ -18,6 +17,7 @@ import type {
 import { canTakeFocus, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { timeColumnsFor, timeItemValue } from '../shared/time-constraint'
 import {
   appendSegmentDigit,
   clearTimeSegment,
@@ -34,9 +34,6 @@ import {
   setTimeDayPeriod,
   setTimeSegment,
   TIME_FIELD_GRANULARITY,
-  TIME_FIELD_HOUR_CYCLE,
-  to12Hour,
-  to24Hour,
 } from '../time-field'
 import { findTimePickerColumn, findTimePickerItem } from './time-picker.anatomy'
 
@@ -45,144 +42,6 @@ const { and } = guards
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const TIME_PICKER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
-
-/** 未指定 step 时的分列步进：逐分钟。 */
-export const TIME_PICKER_STEP = 1
-
-const MINUTES_IN_HOUR = 60
-const SECONDS_IN_MINUTE = 60
-
-/** 列上的选项与段上的文字用同一套两位补零，选中比对才对得上。 */
-export function timePickerItemValue(display: number): string {
-  return String(display).padStart(2, '0')
-}
-
-/**
- * 实际生效的分列步进，取值域 [1, 59]。
- * 0 与负数会让循环停不下来，60 及以上只剩一个 0 分可选，界外一律回落到逐分钟。
- */
-export function resolveTimeStep(step?: number): number {
-  const n = Math.trunc(step ?? TIME_PICKER_STEP)
-  return Number.isFinite(n) && n >= 1 && n < MINUTES_IN_HOUR ? n : TIME_PICKER_STEP
-}
-
-/** 时列的显示值序列：12 小时制是 1-12，24 小时制是 0-23。 */
-function hourDisplays(hourCycle: TimeHourCycle): number[] {
-  if (hourCycle === 12)
-    return Array.from({ length: 12 }, (_, i) => i + 1)
-  return Array.from({ length: 24 }, (_, i) => i)
-}
-
-/**
- * 可选值裁剪，逐段比大小而不是整点比较：
- * 时列只看时、分列在时相等时才看分、秒列在时分都相等时才看秒。
- */
-function withinLower(parts: readonly number[], bound: readonly number[]): boolean {
-  for (let i = 0; i < parts.length; i++) {
-    if (parts[i]! > bound[i]!)
-      return true
-    if (parts[i]! < bound[i]!)
-      return false
-  }
-  return true
-}
-
-function withinUpper(parts: readonly number[], bound: readonly number[]): boolean {
-  for (let i = 0; i < parts.length; i++) {
-    if (parts[i]! < bound[i]!)
-      return true
-    if (parts[i]! > bound[i]!)
-      return false
-  }
-  return true
-}
-
-function inRange(parts: readonly number[], lo: readonly number[] | null, hi: readonly number[] | null): boolean {
-  if (lo && !withinLower(parts, lo.slice(0, parts.length)))
-    return false
-  if (hi && !withinUpper(parts, hi.slice(0, parts.length)))
-    return false
-  return true
-}
-
-/** ISO 串 → [时, 分, 秒]；解析不了就是 null（此侧不设界）。 */
-function boundParts(value: string | undefined): number[] | null {
-  const time = parseTimeValue(value)
-  return time ? [time.hour, time.minute, time.second] : null
-}
-
-/**
- * 浮层里排哪几列、每列有哪些可选值。纯函数，入参全是值，不读机器也不碰 DOM。
- * step 只决定分列的粒度，秒列恒为逐秒；min/max 把不可选的裁掉而不是置灰；
- * 分列与秒列的裁剪取决于已选的时（分），没选时不收窄。
- */
-export function timePickerColumns(options: TimePickerColumnsOptions = {}): TimePickerColumn[] {
-  const hourCycle = options.hourCycle ?? TIME_FIELD_HOUR_CYCLE
-  const granularity = options.granularity ?? TIME_FIELD_GRANULARITY
-  const step = resolveTimeStep(options.step)
-  const lo = boundParts(options.min)
-  const hi = boundParts(options.max)
-  const period = options.dayPeriod ?? 'am'
-  const hour = options.hour ?? null
-  const minute = options.minute ?? null
-
-  const hours: string[] = []
-  for (const display of hourDisplays(hourCycle)) {
-    // 12 小时制的时列写的是显示值，落到哪个真实小时上要看当前的上午/下午
-    const h24 = hourCycle === 12 ? to24Hour(display, period) : display
-    if (inRange([h24], lo, hi))
-      hours.push(timePickerItemValue(display))
-  }
-  const columns: TimePickerColumn[] = [{ unit: 'hour', options: hours }]
-
-  if (granularity !== 'hour') {
-    const minutes: string[] = []
-    for (let m = 0; m < MINUTES_IN_HOUR; m += step) {
-      if (hour == null || inRange([hour, m], lo, hi))
-        minutes.push(timePickerItemValue(m))
-    }
-    columns.push({ unit: 'minute', options: minutes })
-  }
-
-  if (granularity === 'second') {
-    const seconds: string[] = []
-    for (let s = 0; s < SECONDS_IN_MINUTE; s++) {
-      if (hour == null || minute == null || inRange([hour, minute, s], lo, hi))
-        seconds.push(timePickerItemValue(s))
-    }
-    columns.push({ unit: 'second', options: seconds })
-  }
-
-  // 上下午列只在 12 小时制下存在，恒排末位：与分段输入里的段序一致，
-  // 也让数字列的下标不随小时制变动。
-  // 裁剪与时列互为对方的条件——时列按当前上下午换算成 0-23 比界，这一列则按当前的显示小时比：
-  // 小时还没填时不收窄（同分列与秒列在时未填时的做法）
-  if (hourCycle === 12) {
-    const display = hour == null ? null : to12Hour(hour).hour
-    const periods: string[] = []
-    for (const candidate of ['am', 'pm'] as const) {
-      if (display == null || inRange([to24Hour(display, candidate)], lo, hi))
-        periods.push(timePickerItemValue(candidate === 'pm' ? 1 : 0))
-    }
-    columns.push({ unit: 'dayPeriod', options: periods })
-  }
-
-  return columns
-}
-
-/** 逐段缓冲转成生成列表所需的入参；connect 与机器共用这一条。 */
-export function timePickerColumnsFor(
-  draft: TimeDraft,
-  options: Pick<TimePickerColumnsOptions, 'granularity' | 'hourCycle' | 'step' | 'min' | 'max'>,
-): TimePickerColumn[] {
-  return timePickerColumns({
-    ...options,
-    hour: draft.hour,
-    minute: draft.minute,
-    // 小时填上了就由它定上下午，没填才看缓冲里记着的那次按键，都没有则按上午
-    dayPeriod: draft.hour != null ? to12Hour(draft.hour).period : (draft.dayPeriod ?? 'am'),
-  })
-}
 
 /** 此刻该编辑哪一份逐段值；与 connect 显示用的是同一条规则。 */
 function currentDraft(params: Params<TimePickerSchema>): TimeDraft {
@@ -197,11 +56,11 @@ function currentGranularity(params: Params<TimePickerSchema>): TimeGranularity {
   return params.prop('granularity') ?? TIME_FIELD_GRANULARITY
 }
 
-function currentColumns(params: Params<TimePickerSchema>): TimePickerColumn[] {
-  return timePickerColumnsFor(currentDraft(params), {
+function currentColumns(params: Params<TimePickerSchema>): TimeColumn[] {
+  return timeColumnsFor(currentDraft(params), {
     granularity: currentGranularity(params),
     hourCycle: currentHourCycle(params),
-    step: params.prop('step'),
+    timeStep: { minute: params.prop('step') },
     min: params.prop('min'),
     max: params.prop('max'),
   })
@@ -435,7 +294,7 @@ export const timePickerMachine = createMachine({
         if (!first)
           return
         const current = segmentNumber(currentDraft(params), first.unit, currentHourCycle(params))
-        const selected = current == null ? null : timePickerItemValue(current)
+        const selected = current == null ? null : timeItemValue(current)
         // 从输入段展开时保留段上的编辑焦点；从触发器展开则把空值落到第一项，
         // 避免焦点停在整列容器上，也让方向键与 Enter 立即有明确起点。
         const intent = params.context.get('focusIntent')
