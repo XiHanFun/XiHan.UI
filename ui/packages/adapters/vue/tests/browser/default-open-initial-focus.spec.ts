@@ -73,7 +73,7 @@ afterEach(() => {
 
 describe('vue 挂载即展开：焦点的首个落点', () => {
   it('time-range-picker 无值：挂载那一拍焦点就在起点时列的首格，不是列容器；之后也不再挪', async () => {
-    mount(() => h(XhTimeRangePickerRoot, { defaultOpen: true, min: '08:00', max: '11:00', step: 30 }, () => [
+    mount(() => h(XhTimeRangePickerRoot, { defaultOpen: true, min: '08:00', max: '11:00', timeStep: { minute: 30 } }, () => [
       h(XhTimeRangePickerControl, null, () => [
         h(XhTimeRangePickerSegmentGroup, { index: 0 }, () => [h(XhTimeRangePickerSegment, { segment: 'hour' }), h(XhTimeRangePickerSegment, { segment: 'minute' })]),
         h(XhTimeRangePickerRangeSeparator),

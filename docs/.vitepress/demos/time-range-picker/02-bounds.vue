@@ -27,7 +27,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
     v-model:value="value"
     min="08:00"
     max="20:00"
-    :step="30"
+    :time-step="{ minute: 30 }"
   >
     <XhTimeRangePickerLabel>预约时段</XhTimeRangePickerLabel>
     <XhTimeRangePickerControl>

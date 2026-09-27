@@ -18,7 +18,7 @@ import type {
 } from './time-range-picker.types'
 import { createPressTracker, dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
-import { resolveTimeStep, timeColumns, timeItemValue } from '../shared/time-constraint'
+import { isTimeItemUnavailable, resolveTimeStep, timeColumns, timeDraftPeriod, timeItemValue } from '../shared/time-constraint'
 import {
   appendSegmentDigit,
   dayPeriodLabel,
@@ -96,7 +96,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
   const translations = prop('translations')
   const hourCycle = resolveHourCycle(prop('hourCycle'), locale)
   const granularity = prop('granularity') ?? TIME_FIELD_GRANULARITY
-  const step = resolveTimeStep({ minute: prop('step') }).minute
+  const timeStep = resolveTimeStep(prop('timeStep'))
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
@@ -163,12 +163,14 @@ export function connectTimeRangePicker<T extends PropTypes>(
       ? focusedSegment.segment
       : segments[0]!
 
-  // 渲染列只随精度、小时制与 step 改变，不能随着另一端的区间边界删减 DOM，
+  // 渲染列只随精度、小时制与步进改变，不能随着另一端的区间边界删减 DOM，
   // 否则填写过程中列高、滚动位置和焦点节点都会跳。可选性另由 availableColumnGroups 判定。
-  const stableColumns = (): TimePickerColumn[] => timeColumns({ granularity, hourCycle, timeStep: { minute: step } })
+  // 时的步进按真实小时取，12 小时制下这一端落在上午还是下午决定时列排哪几个显示值
+  const stableColumns = (index: TimeRangePickerEndIndex): TimePickerColumn[] =>
+    timeColumns({ granularity, hourCycle, timeStep, dayPeriod: timeDraftPeriod(drafts[index]) })
   const columnGroups: readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup] = [
-    { index: 0, columns: stableColumns() },
-    { index: 1, columns: stableColumns() },
+    { index: 0, columns: stableColumns(0) },
+    { index: 1, columns: stableColumns(1) },
   ]
   const availableColumnGroups: readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup] = [
     { index: 0, columns: timeRangePickerColumnsAt({ prop, context }, 0) },
@@ -210,7 +212,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
     const text = formatTimeValue(draftFromTime(time), granularity)
     return text === '' ? null : text
   }
-  // step 只裁列表里排哪些格，不限制值本身（段位里照样能敲出 14:37），快捷选项因此不看它
+  // 步进只裁列表里排哪些格，不限制值本身（段位里照样能敲出 14:37），快捷选项因此不看它
   const presets: readonly TimeRangePickerPresetState[] = (prop('presets') ?? []).map((preset) => {
     const raw = timeRangePickerPresetTimes(preset.value)
     const start = raw ? normalizeTime(raw[0]) : null
@@ -249,9 +251,11 @@ export function connectTimeRangePicker<T extends PropTypes>(
     selectedIn(index, unit) === option
 
   // 落在 min/max 之外或被另一端顶住的值仍留在稳定列中，但标为不可选；
-  // 整个控件禁用时全列都不可选，离散的不可选值由作者钩子判定。
+  // 整个控件禁用时全列都不可选，离散的不可选值由作者钩子判定：时格换算成 24 小时制，
+  // 连同这一端已选的时分与端号交给它
   const itemDisabled = ({ index, unit, value: option }: { index: TimeRangePickerEndIndex, unit: TimePickerColumnUnit, value: string }): boolean =>
-    disabled || !availableOptionsOf(index, unit).includes(option) || (prop('isTimeUnavailable')?.(option, unit, index) ?? false)
+    disabled || !availableOptionsOf(index, unit).includes(option)
+    || isTimeItemUnavailable(prop('isTimeUnavailable'), { unit, value: option, hourCycle, draft: drafts[index], index })
 
   const segmentTextOf = (index: TimeRangePickerEndIndex, segment: TimeSegmentType): string =>
     timeSegmentText(drafts[index], segment, { hourCycle, locale })
@@ -347,7 +351,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
     invalid: flagged,
     hourCycle,
     granularity,
-    step,
+    timeStep,
     segments,
     focusedSegment,
     columnGroups,

@@ -33,7 +33,7 @@ export default function Demo(): ReactNode {
 
   return (
     <>
-      <XhTimeRangePickerRoot value={value} onValueChange={details => setValue(details.value)} presets={presets} step={15}>
+      <XhTimeRangePickerRoot value={value} onValueChange={details => setValue(details.value)} presets={presets} timeStep={{ minute: 15 }}>
         <XhTimeRangePickerLabel>会议时段</XhTimeRangePickerLabel>
         <XhTimeRangePickerControl>
           {/* 端号定这组段位认领哪一端：0 起点、1 终点 */}

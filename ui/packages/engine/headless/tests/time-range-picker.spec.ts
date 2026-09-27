@@ -159,7 +159,7 @@ function mount(initial: Partial<Props> = {}, mountOptions: MountOptions = {}): H
   const grid = timeColumns({
     granularity: 'second',
     hourCycle: initial.hourCycle,
-    timeStep: { minute: initial.step },
+    timeStep: initial.timeStep,
   })
   const columnGroups = new Map<TimeRangePickerEndIndex, HTMLElement>()
   const columns = new Map<string, HTMLElement>()
@@ -587,18 +587,40 @@ describe('两组时列', () => {
   })
 
   it('isTimeUnavailable 收得到是哪一端', () => {
-    const calls: TimeRangePickerEndIndex[] = []
+    const calls: (TimeRangePickerEndIndex | null)[] = []
     const h = open({
       defaultOpen: true,
-      isTimeUnavailable: (value, unit, index) => {
-        calls.push(index)
-        return index === 1 && unit === 'minute' && value === '30'
+      isTimeUnavailable: (value, unit, context) => {
+        calls.push(context.index)
+        return context.index === 1 && unit === 'minute' && value === '30'
       },
     })
     expect(h.option(1, 'minute', '30').getAttribute('aria-disabled')).toBe('true')
     expect(h.option(0, 'minute', '30').getAttribute('aria-disabled')).toBe('false')
     expect(calls).toContain(0)
     expect(calls).toContain(1)
+  })
+
+  it('isTimeUnavailable 的上下文带这一端已选的时：终点 18 点只能选整点', () => {
+    const h = open({
+      defaultOpen: true,
+      defaultValue: ['09:30', '18:00'],
+      isTimeUnavailable: (value, unit, context) =>
+        context.index === 1 && unit === 'minute' && context.hour === 18 && value !== '00',
+    })
+    expect(h.option(1, 'minute', '30').getAttribute('aria-disabled')).toBe('true')
+    expect(h.option(1, 'minute', '00').getAttribute('aria-disabled')).toBe('false')
+    // 起点那一端 9 点，不受这条规则约束
+    expect(h.option(0, 'minute', '30').getAttribute('aria-disabled')).toBe('false')
+  })
+
+  it('timeStep 按单位取样，两组时列同一份', () => {
+    const h = open({ defaultOpen: true, timeStep: { hour: 6, minute: 30 } })
+    expect(h.api().timeStep).toEqual({ hour: 6, minute: 30, second: 1 })
+    for (const group of h.api().columnGroups) {
+      expect(group.columns[0]!.options).toEqual(['00', '06', '12', '18'])
+      expect(group.columns[1]!.options).toEqual(['00', '30'])
+    }
   })
 
   it('每列各留一个 Tab 位：锚点那一格是 0，其余 -1；两组各自独立', () => {

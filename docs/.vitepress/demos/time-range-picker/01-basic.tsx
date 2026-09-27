@@ -31,7 +31,7 @@ export default function Demo(): ReactNode {
         onValueChange={details => setValue(details.value)}
         name="open-at"
         endName="close-at"
-        step={15}
+        timeStep={{ minute: 15 }}
       >
         <XhTimeRangePickerLabel>营业时段</XhTimeRangePickerLabel>
         <XhTimeRangePickerControl>

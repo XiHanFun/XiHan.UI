@@ -100,7 +100,7 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
     render: () => h(XhTimeRangePickerRoot, {
       min: '08:00',
       max: '11:00',
-      step: 30,
+      timeStep: { minute: 30 },
       onValueChange: ({ value }: { value: string[] }) => values.push(value),
       ...props,
     }, () => [

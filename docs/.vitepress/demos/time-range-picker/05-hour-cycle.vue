@@ -23,7 +23,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 </script>
 
 <template>
-  <XhTimeRangePickerRoot v-model:value="value" :hour-cycle="12" locale="zh-CN" :step="30">
+  <XhTimeRangePickerRoot v-model:value="value" :hour-cycle="12" locale="zh-CN" :time-step="{ minute: 30 }">
     <XhTimeRangePickerLabel>值班时段</XhTimeRangePickerLabel>
     <XhTimeRangePickerControl>
       <XhTimeRangePickerSegmentGroup v-for="end in [0, 1]" :key="end" :index="end">

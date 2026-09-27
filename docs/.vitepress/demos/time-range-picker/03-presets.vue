@@ -33,7 +33,7 @@ const presets = computed(() => [
 </script>
 
 <template>
-  <XhTimeRangePickerRoot v-model:value="value" :presets="presets" :step="15">
+  <XhTimeRangePickerRoot v-model:value="value" :presets="presets" :time-step="{ minute: 15 }">
     <XhTimeRangePickerLabel>会议时段</XhTimeRangePickerLabel>
     <XhTimeRangePickerControl>
       <!-- 端号定这组段位认领哪一端：0 起点、1 终点 -->

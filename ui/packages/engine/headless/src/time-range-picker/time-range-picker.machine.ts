@@ -140,7 +140,7 @@ export function timeRangePickerColumnsAt(
     {
       granularity: params.prop('granularity') ?? TIME_FIELD_GRANULARITY,
       hourCycle: resolveHourCycle(params.prop('hourCycle'), params.prop('locale')),
-      timeStep: { minute: params.prop('step') },
+      timeStep: params.prop('timeStep'),
       min: bounds.min,
       max: bounds.max,
     },

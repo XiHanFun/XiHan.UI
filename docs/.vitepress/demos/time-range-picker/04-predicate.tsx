@@ -1,5 +1,5 @@
-// 逐格判定 | isTimeUnavailable 收到值、列与端，起点只能整点开始、终点只能半点结束
-import type { TimePickerColumnUnit, TimeRangePickerEndIndex } from "@xihan-ui/headless";
+// 逐格判定 | isTimeUnavailable 收到值、列与上下文（context.index 是哪一端），起点只能整点开始、终点只能半点结束
+import type { TimeColumnUnit, TimeUnavailableContext } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
   XhTimeRangePickerClearTrigger,
@@ -20,10 +20,10 @@ import {
 import { useState } from "react";
 
 // 判定与 min/max 的界外值同等对待：判真的格子仍可聚焦，只是选不中
-function isTimeUnavailable(option: string, unit: TimePickerColumnUnit, index: TimeRangePickerEndIndex): boolean {
+function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUnavailableContext): boolean {
   if (unit !== "minute")
     return false;
-  return index === 0 ? option !== "00" : option !== "30";
+  return context.index === 0 ? option !== "00" : option !== "30";
 }
 
 export default function Demo(): ReactNode {
@@ -32,7 +32,7 @@ export default function Demo(): ReactNode {
 
   return (
     <>
-      <XhTimeRangePickerRoot value={value} onValueChange={details => setValue(details.value)} isTimeUnavailable={isTimeUnavailable} step={15}>
+      <XhTimeRangePickerRoot value={value} onValueChange={details => setValue(details.value)} isTimeUnavailable={isTimeUnavailable} timeStep={{ minute: 15 }}>
         <XhTimeRangePickerLabel>课时</XhTimeRangePickerLabel>
         <XhTimeRangePickerControl>
           {/* 端号定这组段位认领哪一端：0 起点、1 终点 */}
