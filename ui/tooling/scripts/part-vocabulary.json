@@ -1772,6 +1772,12 @@
     "zoom-out-trigger": [
       "image-viewer"
     ],
+    "zoom-preview": [
+      "cartesian-chart"
+    ],
+    "zoom-preview-line": [
+      "cartesian-chart"
+    ],
     "zoom-slider": [
       "cartesian-chart",
       "image-cropper"

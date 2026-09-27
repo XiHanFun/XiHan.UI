@@ -183,6 +183,9 @@ export const XhCartesianChartZoomSlider = defineComponent({
             h('span', api.getZoomHandleProps('start') as Record<string, unknown>),
             h('span', api.getZoomHandleProps('end') as Record<string, unknown>),
           ]),
+          h('svg', api.getZoomPreviewProps() as Record<string, unknown>, [
+            h('path', api.getZoomPreviewLineProps() as Record<string, unknown>),
+          ]),
         ]),
       ])
     }

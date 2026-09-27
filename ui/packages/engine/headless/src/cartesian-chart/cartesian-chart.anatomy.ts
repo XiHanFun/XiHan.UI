@@ -78,6 +78,8 @@ export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'zoom-track',
   'zoom-window',
   'zoom-handle',
+  'zoom-preview',
+  'zoom-preview-line',
   'summary',
   'table',
 ])

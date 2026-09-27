@@ -30,6 +30,7 @@ const HEADLESS = 'packages/engine/headless/src'
 const IN_COMPONENT_STACKING = {
   'avatar-group.css': { reason: '头像相互压边，靠悬停项抬一层盖住相邻头像', isolatedBy: 'root' },
   'button-group.css': { reason: '相邻段的边框重叠，靠悬停段抬一层盖住邻段边框', isolatedBy: 'root' },
+  'cartesian-chart.css': { reason: '缩放条的手柄抬一层压住轨道里的缩略线，层号只在轨道内部排序', isolatedBy: 'zoom-track' },
   'carousel.css': { reason: '导航与分页覆盖在视口内容之上，层号只在走马灯内部排序', isolatedBy: 'root' },
   'clipboard.css': { reason: '输入框与复制按钮共边，靠聚焦或悬停项抬一层覆盖接缝', isolatedBy: 'root' },
   'color-slider.css': { reason: '隔离的 track 内，透明度那一路的棋盘格伪元素压在渐变后方且不参与页面层序', isolatedBy: 'track', levels: new Set(['-1']) },

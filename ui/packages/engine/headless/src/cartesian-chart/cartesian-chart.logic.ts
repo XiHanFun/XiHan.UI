@@ -12,7 +12,7 @@ import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey, Char
 import type { CartesianModel, CartesianSeriesValues } from './cartesian-chart.model'
 import type { CartesianAnnotationSummary, CartesianBrushSelection, CartesianChartSchema, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow, CartesianWindowRatio } from './cartesian-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
-import { createPicker, FULL_WINDOW } from '@xihan-ui/viz'
+import { createPicker, domainToWindow, FULL_WINDOW, lttb } from '@xihan-ui/viz'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
 import { cartesianDatumId, cartesianKeyId, colorPosition } from './cartesian-chart.model'
 
@@ -720,6 +720,46 @@ export function cartesianBrushedData(model: CartesianModel, selection: Cartesian
     const details = cartesianDetails(model, ref, 'item')
     return details ? [details] : []
   })
+}
+
+/** 缩放条缩略线最多取几个点：轨道只有几百像素宽，再多也画不出来。 */
+const PREVIEW_POINTS = 240
+
+const previews = new WeakMap<object, { extent: string, d: string | null }>()
+
+/**
+ * 缩放条轨道里的缩略线：第一个按键排的可见系列在整条自变量轴上的走势，写在 0–1 的单位框里
+ * （横向是整条轴上的位置，纵向上下各留一成）；点多时降采样。没有这样的系列时为 null。
+ */
+export function cartesianZoomPreview(model: CartesianModel): string | null {
+  const layout = model.scene?.layout
+  if (!layout)
+    return null
+  const extent = String(layout.keyExtent)
+  const cached = previews.get(model.derived)
+  if (cached && cached.extent === extent)
+    return cached.d
+  const keys = model.spec.keys
+  const s = model.derived.visible.find(v => v.keyAt == null && v.spec.mark !== 'scatter')
+  const values = s?.values ?? []
+  const finite = values.filter((v): v is number => v != null && Number.isFinite(v))
+  let d: string | null = null
+  if (s && keys.length > 1 && finite.length > 1) {
+    const lo = Math.min(...finite)
+    const span = Math.max(...finite) - lo
+    const kind = model.spec.keyScale === 'log' ? 'log' : 'linear'
+    const at = (j: number): number => {
+      if (!layout.keyExtent)
+        return (j + 0.5) / keys.length
+      const v = keys[j]!.valueOf() as number
+      return domainToWindow([v, v], layout.keyExtent, kind).start
+    }
+    const points = values.flatMap((v, j) => (v == null || !Number.isFinite(v) ? [] : [{ x: at(j), y: 0.9 - (span > 0 ? (v - lo) / span : 0.5) * 0.8 }]))
+    const sampled = points.length > PREVIEW_POINTS ? lttb(points, PREVIEW_POINTS, p => p.x, p => p.y) : points
+    d = `M${sampled.map(p => `${p.x.toFixed(4)},${p.y.toFixed(4)}`).join('L')}`
+  }
+  previews.set(model.derived, { extent, d })
+  return d
 }
 
 function findMark(marks: readonly Mark[], key: string): Mark | null {

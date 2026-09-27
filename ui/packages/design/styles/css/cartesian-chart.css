@@ -185,6 +185,8 @@
   [data-scope='cartesian-chart'][data-part='zoom-track'] {
     position: absolute;
     inset: 0;
+    /* 手柄与缩略线的层号只在轨道里排 */
+    isolation: isolate;
     border-radius: var(--xh-cartesian-chart-zoom-track-radius, var(--xh-shape-inset));
     background: var(--xh-cartesian-chart-zoom-track-bg, var(--xh-bg-subtle));
   }
@@ -205,6 +207,23 @@
     cursor: grabbing;
   }
 
+  /* 缩略线：整条轴上的走势，弱化色的细线铺满轨道，压在窗口的淡底之上、手柄之下；指针穿过它落到轨道与窗口上 */
+  [data-scope='cartesian-chart'][data-part='zoom-preview'] {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  [data-scope='cartesian-chart'][data-part='zoom-preview-line'] {
+    fill: none;
+    stroke: var(--xh-cartesian-chart-zoom-preview-color, var(--xh-chart-deemphasis));
+    stroke-width: var(--xh-stroke-thin);
+    stroke-linejoin: round;
+  }
+
   /* 手柄骑在窗口的两端：一半在窗口里、一半在外，拖它改窗口的一端；键盘聚焦时画焦点环 */
   [data-scope='cartesian-chart'][data-part='zoom-handle'] {
     position: absolute;
@@ -216,6 +235,8 @@
     color: var(--xh-fg-on-brand);
     cursor: ew-resize;
     translate: -50% 0;
+    /* 压在缩略线之上 */
+    z-index: 1;
   }
 
   /* 手柄只有竖条那么宽：命中区向两侧各外扩一截，补到与缩放条一样高的正方 */
@@ -666,6 +687,10 @@
 
     [data-scope='cartesian-chart'][data-part='zoom-window'] {
       background: Highlight;
+    }
+
+    [data-scope='cartesian-chart'][data-part='zoom-preview-line'] {
+      stroke: GrayText;
     }
 
     [data-scope='cartesian-chart'][data-part='zoom-handle'] {

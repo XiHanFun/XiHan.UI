@@ -81,7 +81,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart legend - 图例工具条，项与色阶由元素生成
  * @csspart viewport - 尺寸观测的宿主
  * @csspart plot - 绘图区 `<svg>`，标记由元素生成
- * @csspart zoom-slider - 缩放条外壳，轨道、窗口与两端的手柄由元素生成
+ * @csspart zoom-slider - 缩放条外壳，轨道、窗口、两端的手柄与缩略线由元素生成
  * @csspart tooltip - 提示框，留空时由元素写入缺省内容
  * @csspart empty - 没有可画的数据时显示
  */
@@ -381,15 +381,23 @@ export class XhCartesianChartElement extends XhElement {
       track = makeGen(doc, 'div')
       const win = makeGen(doc, 'div')
       win.append(makeGen(doc, 'span'), makeGen(doc, 'span'))
-      track.append(win)
+      // 缩略线跟在窗口后面：画在窗口的淡底之上、手柄之下；SVG 图元要在 SVG 命名空间里建
+      const preview = doc.createElementNS(SVG_NS, 'svg')
+      const line = doc.createElementNS(SVG_NS, 'path')
+      preview.setAttribute(GEN_ATTR, '')
+      line.setAttribute(GEN_ATTR, '')
+      preview.append(line)
+      track.append(win, preview)
       slider.append(track)
     }
-    const win = generated(track)[0] as HTMLElement
-    const [start, end] = generated(win) as HTMLElement[]
+    const [win, preview] = generated(track) as HTMLElement[]
+    const [start, end] = generated(win!) as HTMLElement[]
     this.spreader.spread(track, api.getZoomTrackProps() as Record<string, unknown>)
-    this.spreader.spread(win, api.getZoomWindowProps() as Record<string, unknown>)
+    this.spreader.spread(win!, api.getZoomWindowProps() as Record<string, unknown>)
     this.spreader.spread(start!, api.getZoomHandleProps('start') as Record<string, unknown>)
     this.spreader.spread(end!, api.getZoomHandleProps('end') as Record<string, unknown>)
+    this.spreader.spread(preview!, api.getZoomPreviewProps() as Record<string, unknown>)
+    this.spreader.spread(generated(preview!)[0] as HTMLElement, api.getZoomPreviewLineProps() as Record<string, unknown>)
   }
 
   /** 图例项：一个系列一个按钮，色标与名字各一个 span；末尾是色阶，没有按值着色时收起，节点常在。 */
