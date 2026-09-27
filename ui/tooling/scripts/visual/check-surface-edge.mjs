@@ -18,6 +18,8 @@
 //    不得是 --xh-border-subtle——它只作内部分隔线，只能出现在 border-block-start / -inline-end 类单边声明里；
 //    禁用态外边取 --xh-border-default（file-upload 条目、steps indicator、tag、table / transfer / tree
 //    内嵌勾选框曾在这里取 subtle，与独立 Checkbox / Switch 不同值）。
+// ⑥ 家族配方（styles/family）同样受 ⑤ 约束：配方给边色私有槽（名字带 border、不带 separator / divider）
+//    或四边边色赋 --xh-border-subtle 时判红——配方一处错会落到全部消费者身上，皮肤扫描看不到它。
 //
 // 存量登在 family-backlog.json 的 edge 段，命中即放行、不命中判过期，表只减不增。
 import { openBacklog } from '../lib/family-backlog.mjs'
@@ -210,6 +212,25 @@ for (const { comp, file, rules } of await readSkins()) {
   }
 }
 
+// ⑥ 家族配方里的边色槽与四边边色
+const FAMILY_DIR = 'packages/design/styles/family'
+const BORDER_SLOT = /^--xh-_[\w-]*border[\w-]*$/
+const SEPARATOR_SLOT = /separator|divider/
+let familyBorders = 0
+for (const { file, rules } of await readSkins(FAMILY_DIR)) {
+  for (const rule of rules) {
+    for (const decl of rule.decls) {
+      const slot = BORDER_SLOT.test(decl.prop) && !SEPARATOR_SLOT.test(decl.prop)
+      if (!slot && !FOUR_SIDES.has(decl.prop))
+        continue
+      familyBorders++
+      const token = innermost(decl.prop === 'border' ? (colorPositionOf(decl.value) ?? '') : decl.value)
+      if (token === '--xh-border-subtle')
+        problems.push(`family/${file}:${decl.line}  ${rule.selector} 的 ${decl.prop} 落在 --xh-border-subtle——它只作内部分隔线，配方里的外边（含禁用态）取 --xh-border-default`)
+    }
+  }
+}
+
 problems.push(...backlog.stale())
 for (const key of Object.keys(INVERTED_COMPACT)) {
   if (!invertedSeen.has(key))
@@ -224,4 +245,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-surface-edge] 通过：${managed} 块根面按三选一核过 · ${fourSided} 处四边边色没有落分隔色；backlog 待办 ${backlog.pending} 条，无过期豁免`)
+console.log(`[check-surface-edge] 通过：${managed} 块根面按三选一核过 · ${fourSided} 处四边边色与 ${familyBorders} 处家族配方边色没有落分隔色；backlog 待办 ${backlog.pending} 条，无过期豁免`)

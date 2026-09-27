@@ -11,7 +11,7 @@
       "description": "普通文字动作；标签决定行内宽度，视觉尺寸决定块轴高度。",
       "layout": { "square": false, "fill": false, "justify": "center", "press": "scale", "radius": "var(--xh-shape-control)" },
       "sizes": {
-        "xs": { "visualSize": "24px", "paddingInline": "var(--xh-space-1)", "paddingBlock": "0", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "xs": { "visualSize": "var(--xh-control-action-size)", "paddingInline": "var(--xh-space-1)", "paddingBlock": "0", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
         "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "var(--xh-control-px-sm)", "paddingBlock": "0", "gap": "var(--xh-control-gap-sm)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
         "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "var(--xh-control-px-md)", "paddingBlock": "0", "gap": "var(--xh-control-gap-md)", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
         "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "var(--xh-control-px-lg)", "paddingBlock": "0", "gap": "var(--xh-control-gap-lg)", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
@@ -21,7 +21,7 @@
       "description": "icon-only 与 close 动作；视觉盒为正方形，作者内容完整替换图形。",
       "layout": { "square": true, "fill": false, "justify": "center", "press": "scale", "radius": "var(--xh-shape-control)" },
       "sizes": {
-        "xs": { "visualSize": "24px", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "xs": { "visualSize": "var(--xh-control-action-size)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
         "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
         "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
         "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
@@ -31,8 +31,8 @@
       "description": "字段内部的 clear、reveal、increment/decrement；视觉盒紧凑，粗指针命中区不缩。",
       "layout": { "square": true, "fill": false, "justify": "center", "press": "scale", "radius": "var(--xh-shape-inset)" },
       "sizes": {
-        "xs": { "visualSize": "24px", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "12px", "fontSize": "var(--xh-control-caption-sm)" },
-        "sm": { "visualSize": "24px", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "14px", "fontSize": "var(--xh-control-caption-sm)" },
+        "xs": { "visualSize": "var(--xh-control-action-size)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-control-indicator-sm)", "fontSize": "var(--xh-control-caption-sm)" },
+        "sm": { "visualSize": "var(--xh-control-action-size)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-control-indicator-md)", "fontSize": "var(--xh-control-caption-sm)" },
         "md": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-caption-md)" },
         "lg": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-caption-lg)" }
       }
@@ -51,7 +51,7 @@
       "description": "铺满一行的动作或可选条目（取下一页、折叠代码、审批项）：宽度由容器给，高度随内容，只换面不缩放。",
       "layout": { "square": false, "fill": true, "justify": "start", "press": "surface", "radius": "var(--xh-shape-control)" },
       "sizes": {
-        "xs": { "visualSize": "24px", "paddingInline": "var(--xh-space-1)", "paddingBlock": "var(--xh-list-option-py-sm)", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "xs": { "visualSize": "var(--xh-control-action-size)", "paddingInline": "var(--xh-space-1)", "paddingBlock": "var(--xh-list-option-py-sm)", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
         "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "var(--xh-control-px-sm)", "paddingBlock": "var(--xh-list-option-py-sm)", "gap": "var(--xh-control-gap-sm)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
         "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "var(--xh-control-px-md)", "paddingBlock": "var(--xh-list-option-py-md)", "gap": "var(--xh-control-gap-md)", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
         "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "var(--xh-control-px-lg)", "paddingBlock": "var(--xh-list-option-py-lg)", "gap": "var(--xh-control-gap-lg)", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
@@ -61,7 +61,7 @@
       "description": "展开 / 收起的整行触发条（accordion、collapsible、reasoning、tool-call）：文本靠起始端、指示器靠末端，只换面不缩放。",
       "layout": { "square": false, "fill": true, "justify": "space-between", "press": "surface", "radius": "var(--xh-shape-control)" },
       "sizes": {
-        "xs": { "visualSize": "24px", "paddingInline": "var(--xh-space-2)", "paddingBlock": "var(--xh-space-2)", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "xs": { "visualSize": "var(--xh-control-action-size)", "paddingInline": "var(--xh-space-2)", "paddingBlock": "var(--xh-space-2)", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
         "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "var(--xh-space-3)", "paddingBlock": "var(--xh-space-3)", "gap": "var(--xh-control-gap-sm)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
         "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "var(--xh-space-4)", "paddingBlock": "var(--xh-space-4)", "gap": "var(--xh-control-gap-md)", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
         "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "var(--xh-space-5)", "paddingBlock": "var(--xh-space-5)", "gap": "var(--xh-control-gap-lg)", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
@@ -103,7 +103,7 @@
       "hover": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-action-host-bg-hover, var(--xh-bg-subtle)))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control-hover))" },
       "pressed": { "backgroundColor": "var(--xh-_tone-subtle-hover, var(--xh-action-host-bg-pressed, var(--xh-bg-subtle-hover)))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control-hover))" },
       "focus-visible": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control))" },
-      "disabled": { "backgroundColor": "transparent", "color": "var(--xh-fg-disabled)", "borderColor": "var(--xh-border-subtle)" },
+      "disabled": { "backgroundColor": "transparent", "color": "var(--xh-fg-disabled)", "borderColor": "var(--xh-border-default)" },
       "loading": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control))" }
     },
     "ghost": {
@@ -122,7 +122,7 @@
   },
   "coarsePointer": { "minimumTarget": "44px" },
   "motion": {
-    "$description": "统一点击触感：按下 120ms 进入 active 面并缩到 0.97，释放 200ms 回到 hover / rest；颜色类的悬停过渡走 micro。",
+    "$description": "统一点击触感：按下 120ms 进入 active 面并缩到 0.97；换面（底色、描边、字色）一律走 micro，只有缩放回到 1 走释放 200ms。",
     "duration": "var(--xh-motion-duration-micro)",
     "easing": "var(--xh-motion-ease-enter)",
     "pressDuration": "var(--xh-motion-duration-press)",

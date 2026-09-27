@@ -103,7 +103,7 @@ afterEach(async () => {
 describe('action Control 四 profile', () => {
   it.each([
     { density: 'comfortable' as const, expected: { 'text': [24, 32, 36, 40], 'icon': [24, 32, 36, 40], 'field-inset': [24, 24, 32, 36], 'floating': [32, 40, 48, 56] } },
-    { density: 'compact' as const, expected: { 'text': [24, 28, 32, 36], 'icon': [24, 28, 32, 36], 'field-inset': [24, 24, 28, 32], 'floating': [28, 36, 44, 52] } },
+    { density: 'compact' as const, expected: { 'text': [20, 28, 32, 36], 'icon': [20, 28, 32, 36], 'field-inset': [20, 20, 28, 32], 'floating': [28, 36, 44, 52] } },
   ])('$density：四 profile × xs/sm/md/lg 的视觉盒由同一配方解析', ({ density, expected }) => {
     mount(() => h('div'), density)
     const sizes = ['xs', 'sm', 'md', 'lg'] as const
@@ -123,7 +123,7 @@ describe('action Control 四 profile', () => {
 
   it.each([
     { density: 'comfortable' as const, minimum: [24, 32, 36, 40] },
-    { density: 'compact' as const, minimum: [24, 28, 32, 36] },
+    { density: 'compact' as const, minimum: [20, 28, 32, 36] },
   ])('$density：row / disclosure-trigger 铺满容器宽度，高度不低于视觉尺寸', ({ density, minimum }) => {
     mount(() => h('div'), density)
     const container = document.createElement('div')
@@ -139,6 +139,18 @@ describe('action Control 四 profile', () => {
         expect(getComputedStyle(element).display).toBe('flex')
       })
     }
+  })
+
+  it.each([
+    { density: 'comfortable' as const, expected: ['12px', '16px', '16px', '20px'] },
+    { density: 'compact' as const, expected: ['10px', '14px', '16px', '20px'] },
+  ])('$density：field-inset 字形 xs / sm 取指示符档，随密度换档', ({ density, expected }) => {
+    mount(() => h('div'), density)
+    const sizes = ['xs', 'sm', 'md', 'lg'] as const
+    sizes.forEach((size, index) => {
+      const element = rawAction('field-inset', size)
+      expect(getComputedStyle(element).getPropertyValue('--xh-_action-profile-glyph-size').trim(), size).toBe(expected[index])
+    })
   })
 
   it('rTL 沿逻辑行内轴排列，DOM 顺序和可访问顺序不倒置', () => {
@@ -374,6 +386,26 @@ describe('action Control 状态与命中区', () => {
     expect(Number.parseFloat(iconTarget.minBlockSize)).toBeGreaterThanOrEqual(44)
     expect(Number.parseFloat(iconTarget.minInlineSize)).toBeGreaterThanOrEqual(44)
     expect(first!.getBoundingClientRect().right).toBeCloseTo(second!.getBoundingClientRect().left, 1)
+  })
+
+  it('outline 禁用态外边取 --xh-border-default，不用内部分隔色', () => {
+    mount(() => h(XhButton, { variant: 'outline', disabled: true }, () => 'Disabled'))
+    freezeMotion()
+    const style = getComputedStyle(action())
+    expect(style.borderTopColor).toBe(resolveColor('--xh-border-default'))
+    expect(style.borderTopColor).not.toBe(resolveColor('--xh-border-subtle'))
+  })
+
+  it('换面的过渡覆盖字色：底色、描边与字色同一节奏，缩放单走释放时长', () => {
+    mount(() => h(XhButton, { variant: 'outline' }, () => 'Action'))
+    const style = getComputedStyle(action())
+    const properties = style.transitionProperty.split(',').map(p => p.trim())
+    const durations = style.transitionDuration.split(',').map(d => d.trim())
+    const durationOf = (property: string): string => durations[properties.indexOf(property) % durations.length]!
+    expect(properties).toContain('color')
+    expect(durationOf('color')).toBe(durationOf('background-color'))
+    expect(durationOf('color')).toBe(durationOf('border-color'))
+    expect(durationOf('scale')).not.toBe(durationOf('color'))
   })
 
   it('未命名空间的业务 data-action-control 不会被家族皮肤命中', () => {
