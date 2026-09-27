@@ -7,6 +7,7 @@
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
+  CollectionVirtualizer,
   FormControlState,
   TransferFilter,
   TransferItem,
@@ -106,6 +107,7 @@ export class XhTransferElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     collection: { attribute: false },
+    virtualizers: { attribute: false },
     value: { attribute: false },
     defaultValue: { attribute: false },
     name: { converter: STRING_CONVERTER },
@@ -128,6 +130,7 @@ export class XhTransferElement extends XhElement {
   }
 
   declare collection?: TransferItem[]
+  declare virtualizers?: Partial<Record<TransferSide, CollectionVirtualizer>>
   declare value?: string[]
   declare defaultValue?: string[]
   declare name?: string
@@ -170,6 +173,13 @@ export class XhTransferElement extends XhElement {
   // 不需要 config / 定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<TransferSchema>(this, transferMachine, () => this.machineProps())
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return [
+      ...(this.virtualizers?.source?.getRenderedItemRoots() ?? []),
+      ...(this.virtualizers?.target?.getRenderedItemRoots() ?? []),
+    ]
+  }
+
   /**
    * 两侧定高小列表各走一路自绘条：多路形态按此刻在场的每个 list 各建一套条子，紧跟在那一层后面、
    * 贴在列表自己的盒子上，挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；
@@ -199,6 +209,7 @@ export class XhTransferElement extends XhElement {
     }, this.inheritedControl)
     return {
       collection: this.collection,
+      virtualizers: this.virtualizers,
       value: this.value,
       defaultValue: this.defaultValue,
       name: this.name,
@@ -235,6 +246,8 @@ export class XhTransferElement extends XhElement {
     for (const side of SIDES) {
       const focused = context.get(transferFocusKey(side))
       if (focused == null)
+        continue
+      if (this.virtualizers?.[side])
         continue
       // data-value 只写在 item 上，条目内的文本与勾选标记离场不会误判；
       // 再比一次 data-side，另一侧那份同值节点离场才不会把本侧的锚点清掉

@@ -7,6 +7,7 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { CollectionVirtualizer } from '../virtualizer'
 
 /**
  * 展开时高亮的落点：
@@ -129,6 +130,8 @@ export interface ComboboxSchema extends MachineSchema {
      * 未提供时回到文本写在条目中、从 DOM 查询的方式。
      */
     collection?: ComboboxNode[]
+    /** 当前已过滤 collection 与 Virtualizer 的滚动桥；count 必须与 collection.length 一致。 */
+    virtualizer?: CollectionVirtualizer
     /**
      * 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。
      * 单选写为裸串是简写，内部一律归一为数组。

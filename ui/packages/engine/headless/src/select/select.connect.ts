@@ -8,8 +8,9 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { TagApi } from '../tag'
 import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
-import { contains, createPressTracker, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { connectStaticTag, tagVariantForControl } from '../tag'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
@@ -50,6 +51,9 @@ export function connectSelect<T extends PropTypes>(
     description: node.description ?? null,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+  const indexOf = new Map(collection.map((meta, index) => [meta.value, index]))
+  const virtualizer = prop('virtualizer')
+  assertCollectionVirtualizer('Select', virtualizer, collection.length, prop('collection') != null)
 
   // 给了 collection 就当场按数据算，首帧即准；没给才读机器现查 DOM 后回填的那一份。
   // 两条路都保证与 value 逐项等长对齐，查不到的那一项退回值本身。
@@ -153,6 +157,17 @@ export function connectSelect<T extends PropTypes>(
     })
   }
 
+  const matchVirtual = (query: string, from: string | null): { index: number, value: string } | null => {
+    if (!virtualizer)
+      return null
+    return virtualCollectionMatch(collection, from, query, {
+      value: item => item.value,
+      text: item => item.label,
+      disabled: item => item.disabled,
+      loop,
+    })
+  }
+
   const highlightEl = (el: HTMLElement | null): void => {
     const next = itemValue(el)
     if (next == null)
@@ -163,6 +178,18 @@ export function connectSelect<T extends PropTypes>(
 
   /** 方向键落点：起点用锚点，终点用活 DOM 算，禁用条目自动跳过。 */
   const highlightBy = (intent: NavIntent): void => {
+    if (virtualizer) {
+      const target = virtualCollectionTarget(collection, highlighted, intent, {
+        value: item => item.value,
+        disabled: item => item.disabled,
+        loop,
+      })
+      if (target) {
+        send({ type: 'ITEM.HIGHLIGHT', value: target.value })
+        virtualizer.focusIndex(target.index, { align: 'auto', selector: itemQuerySelector(selectItemQuery) })
+      }
+      return
+    }
     highlightEl(navigateItems(items(), highlighted, intent, { loop }))
   }
 
@@ -170,9 +197,15 @@ export function connectSelect<T extends PropTypes>(
   const activate = (event: KeyboardEvent): void => {
     if (highlighted == null || !interactive)
       return
-    const el = items().find(item => itemValue(item) === highlighted)
-    if (!el || isItemDisabled(el))
-      return
+    if (virtualizer) {
+      if (metaOf.get(highlighted)?.disabled)
+        return
+    }
+    else {
+      const el = items().find(item => itemValue(item) === highlighted)
+      if (!el || isItemDisabled(el))
+        return
+    }
     event.preventDefault()
     send({ type: 'ITEM.SELECT', value: highlighted })
   }
@@ -277,7 +310,9 @@ export function connectSelect<T extends PropTypes>(
         const query = isTypeaheadEvent(event) ? refs.get('typeahead').push(event.key) : null
         if (query != null) {
           event.preventDefault()
-          const next = itemValue(match(query, value.at(-1) ?? null))
+          const next = virtualizer
+            ? matchVirtual(query, value.at(-1) ?? null)?.value ?? null
+            : itemValue(match(query, value.at(-1) ?? null))
           if (next != null && interactive)
             send({ type: 'VALUE.SET', value: multiple ? (value.includes(next) ? value : [...value, next]) : [next] })
           return
@@ -431,7 +466,16 @@ export function connectSelect<T extends PropTypes>(
         const query = isTypeaheadEvent(event) ? refs.get('typeahead').push(event.key) : null
         if (query != null) {
           event.preventDefault()
-          highlightEl(match(query, highlighted))
+          if (virtualizer) {
+            const target = matchVirtual(query, highlighted)
+            if (target) {
+              send({ type: 'ITEM.HIGHLIGHT', value: target.value })
+              virtualizer.focusIndex(target.index, { align: 'auto', selector: itemQuerySelector(selectItemQuery) })
+            }
+          }
+          else {
+            highlightEl(match(query, highlighted))
+          }
           return
         }
         if (event.key === ' ')
@@ -504,6 +548,7 @@ export function connectSelect<T extends PropTypes>(
         'data-tone': itemTone(item),
         // 导航、检索与选中都以此为条目身份
         [ITEM_VALUE_ATTR]: item.value,
+        ...virtualCollectionAria(indexOf.get(item.value), collection.length),
         'role': 'option',
         // listbox 的选中语义是 aria-selected（不是 aria-checked）；未选中必须显式输出 false，
         // 省略会让读屏无从区分「未选中」与「不是选项」

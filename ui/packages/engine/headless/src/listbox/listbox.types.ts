@@ -6,6 +6,7 @@
 // 定义 listbox 类型契约。
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone, Typeahead } from '@xihan-ui/core'
+import type { CollectionVirtualizer } from '../virtualizer'
 
 /**
  * 焦点模型：roving tabindex（不做 aria-activedescendant 变体）。焦点实际落在条目上，
@@ -94,6 +95,8 @@ export interface ListboxSchema extends MachineSchema {
      * 未提供时回到文本与禁用都写在条目部件上的方式。
      */
     collection?: ListboxNode[]
+    /** 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 */
+    virtualizer?: CollectionVirtualizer
     /** 选中值，提供即受控；单选可写为裸串，内部归一为数组。 */
     value?: string | string[]
     defaultValue?: string | string[]

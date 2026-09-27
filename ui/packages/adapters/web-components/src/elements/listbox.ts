@@ -6,7 +6,7 @@
 // 提供 listbox 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, FormControlState, ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
@@ -77,6 +77,7 @@ export class XhListboxElement extends XhElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的禁用即以数据为准
     collection: { attribute: false },
+    virtualizer: { attribute: false },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
@@ -93,6 +94,7 @@ export class XhListboxElement extends XhElement {
   }
 
   declare collection?: ListboxNode[]
+  declare virtualizer?: CollectionVirtualizer
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare selectionMode?: ListboxSelectionMode
@@ -136,6 +138,10 @@ export class XhListboxElement extends XhElement {
   // 不需要 config/layer/定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<ListboxSchema>(this, listboxMachine, () => this.machineProps())
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.virtualizer?.getRenderedItemRoots() ?? []
+  }
+
   /**
    * 定高小列表的自绘条：条子是 content 的兄弟、挂在 root 这个定位盒上，贴在 content 自己的盒子上
    * （root 里还有标题与占位，贴壳边会盖到它们）；两条轴都摆——皮肤给的是两轴 overflow: auto。
@@ -153,6 +159,7 @@ export class XhListboxElement extends XhElement {
     const control = this.controlState()
     return {
       collection: this.collection,
+      virtualizer: this.virtualizer,
       value: this.value,
       defaultValue: this.defaultValue,
       selectionMode: this.selectionMode,
@@ -182,6 +189,8 @@ export class XhListboxElement extends XhElement {
       return
     const focusedValue = context.get('focusedValue')
     if (focusedValue == null)
+      return
+    if (this.virtualizer && this.collection?.some(node => node.value === focusedValue))
       return
     // data-value 只写在 item 上，条目内的文本与标记离场不会误判；
     // 只有走的正是持有锚点的那个条目才报，否则删任一无关条目都会清掉方向键起点

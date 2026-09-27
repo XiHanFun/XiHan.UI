@@ -7,11 +7,12 @@
 
 import type { PositionResult } from '@xihan-ui/core'
 import type { SelectFocusIntent, SelectSchema } from './select.types'
-import { createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { virtualCollectionTarget } from '../shared/virtual-collection'
 import { selectItemQuery, selectItemText } from './select.anatomy'
 
 const { createMachine } = setup<SelectSchema>()
@@ -287,13 +288,47 @@ export const selectMachine = createMachine({
       setInitialHighlightedValue: ({ refs, prop, context, state, event, flush }) => {
         // 锚点条目离场后的重挑：只在此前真有过锚点时补，判据取自机器自己的状态而不是事件类型——
         // 适配器误报时凭空补一个，会点亮一个本轮不该高亮的条目并把 Tab 位从容器上摘走
-        const repick = event.current().type === 'ITEM.LOST'
+        const lost = event.current().type === 'ITEM.LOST'
+        const collection = prop('collection')
+        const virtualizer = prop('virtualizer')
+        // 虚拟窗口淘汰持焦点节点不等于语义条目丢失；值仍在完整集合里时由桥继续交接焦点。
+        if (lost && virtualizer && collection?.some(item => item.value === context.get('highlightedValue')))
+          return
+        const repick = lost
         if (repick) {
           if (context.get('highlightedValue') == null)
             return
           context.set('highlightedValue', null)
         }
         const pick = (): void => {
+          if (collection && virtualizer) {
+            const intent = context.get('focusIntent')
+            const selection = context.get('value')
+            let index = -1
+            if (intent === 'selected') {
+              index = collection.findIndex(item => selection.includes(item.value) && !item.disabled)
+              if (index < 0 && (selection.length > 0 || repick)) {
+                index = virtualCollectionTarget(collection, null, 'first', {
+                  value: item => item.value,
+                  disabled: item => !!item.disabled,
+                })?.index ?? -1
+              }
+            }
+            else {
+              const selected = collection.find(item => selection.includes(item.value))?.value ?? null
+              const from = intent === 'first' || intent === 'last' ? null : selected
+              index = virtualCollectionTarget(collection, from, intent, {
+                value: item => item.value,
+                disabled: item => !!item.disabled,
+                loop: prop('loop') ?? true,
+              })?.index ?? -1
+            }
+            const item = index >= 0 ? collection[index] : undefined
+            context.set('highlightedValue', item?.value ?? null)
+            if (item)
+              virtualizer.focusIndex(index, { align: 'auto', selector: itemQuerySelector(selectItemQuery) })
+            return
+          }
           const content = refs.get('getContentEl')()
           // 无 DOM 环境（纯逻辑测试）：锚点留空，状态转移不受影响
           if (!content)

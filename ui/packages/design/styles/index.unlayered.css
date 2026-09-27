@@ -28353,7 +28353,7 @@
 /* 手写结构按真正的条目判断，空白文本与分组标题都不算候选。
    只排除 content 内部的 hidden 祖先；外层浮层退场时不改变本列表的几何。
    禁用条目仍是有效内容，不参与此处排除。 */
-[data-scope='listbox'][data-part='content']:not(:has(
+[data-scope='listbox'][data-part='content']:not([data-xh-virtualized]):not(:has(
   [data-scope='listbox'][data-part='item']:not([hidden]):not([data-scope='listbox'][data-part='content'] [hidden] *)
 )),
 [data-scope='listbox'][data-part='group']:not(:has(

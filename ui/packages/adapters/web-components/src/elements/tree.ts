@@ -6,7 +6,7 @@
 // 提供 tree 相关实现。
 
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { TreeExpandedValueChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, TreeExpandedValueChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTree, treeAnatomy, treeMachine, treeMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -91,6 +91,7 @@ export class XhTreeElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     collection: { attribute: false },
+    virtualizer: { attribute: false },
     variant: { converter: STRING_CONVERTER },
     expandedValue: { attribute: false },
     defaultExpandedValue: { attribute: false },
@@ -115,6 +116,7 @@ export class XhTreeElement extends XhElement {
   }
 
   declare collection?: TreeNode[]
+  declare virtualizer?: CollectionVirtualizer
   declare variant?: TreeSchema['props']['variant']
   declare expandedValue?: string[]
   declare defaultExpandedValue?: string[]
@@ -150,9 +152,14 @@ export class XhTreeElement extends XhElement {
   // 不需要 config/layer/定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<TreeSchema>(this, treeMachine, () => this.machineProps())
 
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.virtualizer?.getRenderedItemRoots() ?? []
+  }
+
   private machineProps(): Partial<TreeSchema['props']> {
     return {
       collection: this.collection,
+      virtualizer: this.virtualizer,
       variant: this.variant,
       expandedValue: this.expandedValue,
       // 机器自己兜 undefined，这里不补 []：props 每次读都新建数组会造成无谓的引用变动
@@ -190,6 +197,8 @@ export class XhTreeElement extends XhElement {
       return
     const focusedValue = context.get('focusedValue')
     if (focusedValue == null)
+      return
+    if (this.virtualizer)
       return
     // data-value 只写在 item 与 branch 上，行内的文本与标记离场不会误判；
     // 只有走的正是持有锚点的那个节点才报，否则删任一无关节点都会清掉方向键起点

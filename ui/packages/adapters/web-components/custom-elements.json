@@ -13113,6 +13113,14 @@
             },
             {
               "kind": "field",
+              "name": "virtualizer",
+              "privacy": "public",
+              "type": {
+                "text": "CollectionVirtualizer | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -33235,6 +33243,14 @@
             },
             {
               "kind": "field",
+              "name": "virtualizer",
+              "privacy": "public",
+              "type": {
+                "text": "CollectionVirtualizer | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -33415,6 +33431,16 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<ListboxSchema>(this, listboxMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
             },
             {
               "kind": "field",
@@ -51083,6 +51109,14 @@
             },
             {
               "kind": "field",
+              "name": "virtualizer",
+              "privacy": "public",
+              "type": {
+                "text": "CollectionVirtualizer | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -67332,6 +67366,14 @@
             },
             {
               "kind": "field",
+              "name": "virtualizers",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<Record<TransferSide, CollectionVirtualizer>> | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -67514,6 +67556,16 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TransferSchema>(this, transferMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
             },
             {
               "kind": "field",
@@ -69382,6 +69434,14 @@
             },
             {
               "kind": "field",
+              "name": "virtualizer",
+              "privacy": "public",
+              "type": {
+                "text": "CollectionVirtualizer | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "privacy": "public",
               "type": {
@@ -69560,6 +69620,16 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TreeSchema>(this, treeMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
             },
             {
               "kind": "method",
@@ -70539,6 +70609,15 @@
             },
             {
               "kind": "field",
+              "name": "viewportTabIndex",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "viewport-tab-index"
+            },
+            {
+              "kind": "field",
               "name": "getItemKey",
               "privacy": "public",
               "type": {
@@ -70559,6 +70638,13 @@
               "name": "virtualizerScope",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "registeredItemIndices",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Set<number>()"
             },
             {
               "kind": "field",
@@ -70628,6 +70714,15 @@
                 "text": "number"
               },
               "description": "整份列表的主轴总长（px）。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "collectionVirtualizer",
+              "type": {
+                "text": "CollectionVirtualizer | null"
+              },
+              "description": "交给 Tree / Listbox / Select / Combobox / Transfer 的正式集合虚拟化桥。",
               "readonly": true
             },
             {
@@ -70775,6 +70870,13 @@
               "description": "多列网格的列数，默认 1",
               "name": "lanes",
               "fieldName": "lanes"
+            },
+            {
+              "name": "viewport-tab-index",
+              "type": {
+                "text": "number | undefined"
+              },
+              "fieldName": "viewportTabIndex"
             }
           ],
           "superclass": {

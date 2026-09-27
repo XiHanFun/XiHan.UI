@@ -6,7 +6,7 @@
 // 提供 select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -31,6 +31,7 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<SelectNode[]> },
+    virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
     value: { type: [String, Array] as PropType<string | string[] | null> },
@@ -385,6 +386,8 @@ export const XhSelectItem = /* @__PURE__ */ defineComponent({
     onBeforeUnmount(() => {
       const { service } = ctx
       if (service.getStatus() !== 'Started')
+        return
+      if (service.prop('virtualizer') && service.prop('collection')?.some(node => node.value === props.value))
         return
       // 按「本节点当下正持有焦点」判定，不按 value 比对
       if (itemEl.value && service.scope.getActiveElement() === itemEl.value)

@@ -31,6 +31,7 @@
 ## 组合
 
 - 前缀放[图标](./icon)，行尾放[菜单](./menu)；放入[分栏](./splitter)的一侧。
+- 大树把 `visibleNodes` 的长度交给 [Virtualizer](./virtualizer)，并把其 `collectionVirtualizer` 回传给根；展开收起后同步更新 `count`。
 
 ## 最佳实践
 

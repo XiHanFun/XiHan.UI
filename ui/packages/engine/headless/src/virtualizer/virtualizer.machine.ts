@@ -78,6 +78,9 @@ export const virtualizerMachine = createMachine({
     getViewportEl: () => null,
     getContentEl: () => null,
     getVirtualizer: () => null,
+    itemElements: new Map<number, HTMLElement>(),
+    pendingFocus: null,
+    collectionVirtualizer: null,
   }),
   initialState: () => 'idle',
   // 内核全程活着，它要挂 ResizeObserver 与 scroll 监听，与状态无关
@@ -185,6 +188,9 @@ export const virtualizerMachine = createMachine({
           const stopping = kernel
           kernel = null
           stopping?.dispose()
+          refs.get('itemElements').clear()
+          refs.set('pendingFocus', null)
+          refs.set('collectionVirtualizer', null)
         }
       },
     },

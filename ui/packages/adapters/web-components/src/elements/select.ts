@@ -6,7 +6,7 @@
 // 提供 select 相关实现。
 
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, FormControlState, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta, tagAnatomy } from '@xihan-ui/headless'
@@ -104,6 +104,7 @@ export class XhSelectElement extends XhPortalHostElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
+    virtualizer: { attribute: false },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     open: { converter: BOOLEAN_CONVERTER },
@@ -129,6 +130,7 @@ export class XhSelectElement extends XhPortalHostElement {
 
   // 属性只递得进单值，多选集合走 property
   declare collection?: SelectNode[]
+  declare virtualizer?: CollectionVirtualizer
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare open?: boolean
@@ -213,6 +215,7 @@ export class XhSelectElement extends XhPortalHostElement {
     }, this.inheritedControl)
     return {
       collection: this.collection,
+      virtualizer: this.virtualizer,
       value: this.value,
       defaultValue: this.defaultValue ?? null,
       open: this.open,
@@ -246,7 +249,7 @@ export class XhSelectElement extends XhPortalHostElement {
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {
-    return this.portal.roots
+    return [...this.portal.roots, ...(this.virtualizer?.getRenderedItemRoots() ?? [])]
   }
 
   /** 在状态机挂载前建立 Presence，确保 default-open 的行为资源与视觉退场共享同一租约。 */
@@ -307,6 +310,8 @@ export class XhSelectElement extends XhPortalHostElement {
     // 收起态无高亮锚点
     const highlighted = context.get('highlightedValue')
     if (highlighted == null)
+      return
+    if (this.virtualizer && this.collection?.some(node => node.value === highlighted))
       return
     const content = this.getPart('content')
     const active = scope.getActiveElement()

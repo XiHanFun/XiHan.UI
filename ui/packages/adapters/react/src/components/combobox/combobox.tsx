@@ -6,7 +6,7 @@
 // 提供 combobox 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo } from 'react'
@@ -41,6 +41,7 @@ type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
 
 export interface XhComboboxRootProps extends RootElementProps {
   collection?: ComboboxNode[]
+  virtualizer?: CollectionVirtualizer
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
   /** 无匹配时的提示语。提供后不必再写 empty 部件。 */
@@ -88,6 +89,7 @@ export interface XhComboboxRootProps extends RootElementProps {
 
 export function XhComboboxRoot({
   collection,
+  virtualizer,
   label,
   empty,
   value,
@@ -127,6 +129,7 @@ export function XhComboboxRoot({
 }: XhComboboxRootProps): ReactNode {
   const ctx = useCombobox(withXhConfig('combobox', useFormControlProps({
     collection,
+    virtualizer,
     value,
     defaultValue,
     inputValue,

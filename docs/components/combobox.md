@@ -66,6 +66,12 @@
 
 <XhDemo src="combobox/08-custom-content" />
 
+### 候选虚拟化
+
+过滤后的完整 collection 与 count 同步，高亮仍可跨窗口移动
+
+<XhDemo src="combobox/09-virtualized" />
+
 ## 设计指引
 
 ### 何时使用
@@ -95,6 +101,7 @@
 - 放进[表单字段](./field)获得标签、说明与错误信息，字段状态会接到输入框上。
 - 候选列表是常驻的[列表框](./listbox)收进浮层的形态；选项固定且不需要输入时换成[选择器](./select)。
 - 多选时的已选项可用[标签组](./tag-group)排在输入框前。
+- 长候选列表接入 [Virtualizer](./virtualizer) 时，过滤后的 collection 与 `count` 必须同批更新；高亮、`aria-activedescendant` 与确认仍按完整候选序列计算。
 
 ### 最佳实践
 
@@ -125,6 +132,7 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `ComboboxNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍由调用方完成：传入的即当前应显示的候选。 提供后条目部件只需声明 value，显示文本也不再从 DOM 查询。 未提供时回到文本写在条目中、从 DOM 查询的方式。 |
+| `virtualizer` | `CollectionVirtualizer` |  | 当前已过滤 collection 与 Virtualizer 的滚动桥；count 必须与 collection.length 一致。 |
 | `value` | `string \| string[]` |  | 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选写为裸串是简写，内部一律归一为数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `inputValue` | `string` |  | 输入框中的字符串。提供即受控，与选中值各自独立。 过滤不由组件完成：调用方用该串筛选条目，把筛选结果重新渲染进来。 |

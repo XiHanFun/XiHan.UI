@@ -48,6 +48,12 @@
 
 <XhDemo src="listbox/05-empty" />
 
+### 集合虚拟化
+
+collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
+
+<XhDemo src="listbox/06-virtualized" />
+
 ## 设计指引
 
 ### 何时使用
@@ -74,6 +80,7 @@
 
 - 收进浮层即是[选择器](./select)与[组合框](./combobox)的候选列表；常驻时直接铺在面板内。
 - 长列表接入[虚拟滚动](./virtualizer)只渲染可视区；两侧搬运的场景使用[穿梭框](./transfer)。
+- 接入 Virtualizer 时 collection 仍须是完整集合；方向键、连打检索、全选与区间选择不会退化成只处理当前 DOM 窗口。
 
 ### 最佳实践
 
@@ -104,6 +111,7 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `ListboxNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 |
 | `value` | `string \| string[]` |  | 选中值，提供即受控；单选可写为裸串，内部归一为数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `selectionMode` | `ListboxSelectionMode` |  | 选择模式，默认 single。 |
@@ -286,6 +294,7 @@
 | `content` | `data-invalid` | ''（条件成立时才出现） |
 | `content` | `data-orientation` | props.orientation |
 | `content` | `data-readonly` | ''（条件成立时才出现） |
+| `content` | `data-xh-virtualized` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |

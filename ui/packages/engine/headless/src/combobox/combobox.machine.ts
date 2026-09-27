@@ -11,6 +11,7 @@ import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValu
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { virtualCollectionTarget } from '../shared/virtual-collection'
 import { comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 
 const { createMachine } = setup<ComboboxSchema>()
@@ -232,6 +233,23 @@ export const comboboxMachine = createMachine({
             context.set('highlightedValue', null)
             return
           }
+          const collection = prop('collection')
+          const virtualizer = prop('virtualizer')
+          if (collection && virtualizer) {
+            const selected = context.get('value')[0] ?? null
+            const target = intent === 'selected'
+              ? collection.findIndex(item => item.value === selected && !item.disabled)
+              : virtualCollectionTarget(collection, null, intent, {
+                value: item => item.value,
+                disabled: item => !!item.disabled,
+                loop: prop('loop') ?? true,
+              })?.index ?? -1
+            const item = target >= 0 ? collection[target] : undefined
+            context.set('highlightedValue', item?.value ?? null)
+            if (item)
+              virtualizer.scrollToIndex(target, { align: 'auto' })
+            return
+          }
           const content = refs.get('getContentEl')()
           // 无 DOM 环境时锚点留空，状态转移不受影响
           if (!content)
@@ -272,7 +290,15 @@ export const comboboxMachine = createMachine({
        * 候选集合重新结算：条数供空态节点用，同时把悬空的高亮摘掉。
        * 过滤是调用方做的，机器无从预知何时变，所以适配器每次提交完 DOM 都要发一次 ITEMS.SYNC。
        */
-      syncItems: ({ refs, context }) => {
+      syncItems: ({ refs, prop, context }) => {
+        const collection = prop('collection')
+        if (collection) {
+          context.set('itemCount', collection.length)
+          const highlighted = context.get('highlightedValue')
+          if (highlighted != null && !collection.some(item => item.value === highlighted))
+            context.set('highlightedValue', null)
+          return
+        }
         const content = refs.get('getContentEl')()
         if (!content)
           return
@@ -292,6 +318,35 @@ export const comboboxMachine = createMachine({
         flush(() => {
           if (state.get() !== 'open')
             return
+          const collection = prop('collection')
+          if (collection) {
+            context.set('itemCount', collection.length)
+            const behavior = prop('inputBehavior') ?? 'none'
+            if (behavior === 'none') {
+              const highlighted = context.get('highlightedValue')
+              if (highlighted != null && !collection.some(item => item.value === highlighted))
+                context.set('highlightedValue', null)
+              return
+            }
+            const index = collection.findIndex(item => !item.disabled)
+            const first = index >= 0 ? collection[index] : undefined
+            context.set('highlightedValue', first?.value ?? null)
+            if (first)
+              prop('virtualizer')?.scrollToIndex(index, { align: 'auto' })
+            if (behavior !== 'autocomplete' || !first || deleting)
+              return
+            const typed = context.get('inputValue')
+            const text = first.label ?? first.value
+            if (typed === '' || text.length <= typed.length || !text.toLowerCase().startsWith(typed.toLowerCase()))
+              return
+            const input = refs.get('getInputEl')()
+            if (!input)
+              return
+            context.set('inputValue', text)
+            input.value = text
+            input.setSelectionRange?.(typed.length, text.length)
+            return
+          }
           const content = refs.get('getContentEl')()
           if (!content)
             return

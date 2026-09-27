@@ -6,7 +6,7 @@
 // 提供 tree 相关实现。
 
 import type { CascadeStrategy, ControlVariant, Direction, Orientation, Service } from '@xihan-ui/core'
-import type { TreeApi, TreeNode, TreeSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, TreeApi, TreeNode, TreeSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
@@ -62,6 +62,8 @@ function useNodeFocusReport(
     // 整棵树一起卸载时根部件先停机，此刻送事件会在 dev 下抛
     if (service.getStatus() !== 'Started')
       return
+    if (service.prop('virtualizer'))
+      return
     if (el.current && service.scope.getActiveElement() === el.current)
       service.send({ type: 'TREE.BLUR' })
   }, [service, el])
@@ -69,6 +71,7 @@ function useNodeFocusReport(
 
 export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: TreeNode[]
+  virtualizer?: CollectionVirtualizer
   /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 */
   variant?: ControlVariant
   expandedValue?: string[]
@@ -100,6 +103,7 @@ export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
 
 export function XhTreeRoot({
   collection,
+  virtualizer,
   variant,
   expandedValue,
   defaultExpandedValue,
@@ -126,6 +130,7 @@ export function XhTreeRoot({
 }: XhTreeRootProps): ReactNode {
   const ctx = useTree(withXhConfig('tree', {
     collection,
+    virtualizer,
     variant,
     expandedValue,
     defaultExpandedValue,

@@ -29,7 +29,7 @@ export function normalizeItemIndex(raw: number | string | null | undefined, fall
   return Number.isFinite(value) ? value : fallback
 }
 
-function selector(q: ItemQuery): string {
+export function itemQuerySelector(q: ItemQuery): string {
   return `[${DATA_SCOPE}="${q.scope}"][${DATA_PART}="${q.part}"]`
 }
 
@@ -40,7 +40,7 @@ function selector(q: ItemQuery): string {
 export function queryItems(container: HTMLElement | null, q: ItemQuery): HTMLElement[] {
   if (!container)
     return []
-  const items = [...container.querySelectorAll<HTMLElement>(selector(q))]
+  const items = [...container.querySelectorAll<HTMLElement>(itemQuerySelector(q))]
   // 归属判据取容器自己的 part，条目与容器间可能隔着同 scope 的其它 part
   const part = container.getAttribute(DATA_PART)
   if (part == null)

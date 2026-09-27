@@ -550,6 +550,24 @@ describe('selectMachine 多选', () => {
     expect(h.state()).toBe('open')
   })
 
+  it('虚拟化时 Home / End 与确认都按完整 collection 计算', async () => {
+    const focusIndex = vi.fn()
+    const collection = ITEMS.map(item => ({ value: item.value, label: item.text }))
+    const h = mount({
+      collection,
+      virtualizer: { count: collection.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [] },
+      defaultOpen: true,
+    })
+    await tick()
+    press(h.content, 'End')
+    expect(h.highlighted()).toBe('cherry')
+    expect(focusIndex).toHaveBeenLastCalledWith(2, expect.objectContaining({ align: 'auto' }))
+    press(h.content, 'Enter')
+    expect(h.value()).toEqual(['cherry'])
+    expect(h.item('cherry').getAttribute('aria-posinset')).toBe('3')
+    expect(h.item('cherry').getAttribute('aria-setsize')).toBe('3')
+  })
+
   it('集合按点击先后排列，不跟文档序对齐', async () => {
     const h = mount({ multiple: true, defaultOpen: true })
     await tick()

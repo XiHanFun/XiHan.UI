@@ -8,6 +8,7 @@
 import type { CascadeStrategy, ControlVariant, Direction, MachineSchema, Orientation, PropTypes, Tone, Typeahead } from '@xihan-ui/core'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
+import type { CollectionVirtualizer } from '../virtualizer'
 
 /**
  * 焦点模型：roving tabindex，不做 aria-activedescendant 变体。
@@ -140,6 +141,8 @@ export interface TreeSchema extends MachineSchema {
   props: {
     /** 树数据，层级元信息的唯一事实源。默认为空树。 */
     collection?: TreeNode[]
+    /** 完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。 */
+    virtualizer?: CollectionVirtualizer
     /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 */
     variant?: ControlVariant
     /**

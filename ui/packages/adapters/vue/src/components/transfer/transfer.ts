@@ -7,6 +7,7 @@
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
+  CollectionVirtualizer,
   TransferCheckState,
   TransferFilter,
   TransferGroupProps,
@@ -70,6 +71,7 @@ export const XhTransferRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<TransferItem[]> },
+    virtualizers: { type: Object as PropType<Partial<Record<TransferSide, CollectionVirtualizer>>> },
     value: { type: Array as PropType<string[]> },
     defaultValue: { type: Array as PropType<string[]> },
     name: { type: String },
@@ -299,6 +301,9 @@ export const XhTransferItem = defineComponent({
         return
       const { service } = ctx
       if (service.getStatus() !== 'Started')
+        return
+      const side = panel.value.side
+      if (service.prop('virtualizers')?.[side] && ctx.api.value.visibleItems(side).some(item => item.value === props.value))
         return
       if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
         service.send({ type: 'ITEM.FOCUS', side: panel.value.side, value: next })

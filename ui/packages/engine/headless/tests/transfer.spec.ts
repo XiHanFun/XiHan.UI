@@ -561,6 +561,22 @@ describe('连接层：roving tabindex 与焦点', () => {
     expect(h.selection()).toEqual([])
   })
 
+  it('虚拟化按本侧完整可见集合导航，并报告全局位置', () => {
+    const focusIndex = vi.fn()
+    const h = mount({
+      virtualizers: {
+        source: { count: ITEMS.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [] },
+        target: { count: 0, scrollToIndex: vi.fn(), focusIndex: vi.fn(), getRenderedItemRoots: () => [] },
+      },
+    })
+    h.side('source').list.focus()
+    press(h.side('source').list, 'End')
+    expect(focusIndex).toHaveBeenLastCalledWith(3, expect.objectContaining({ align: 'auto' }))
+    expect(h.item('source', 'durian').getAttribute('tabindex')).toBe('0')
+    expect(h.item('source', 'durian').getAttribute('aria-posinset')).toBe('4')
+    expect(h.item('source', 'durian').getAttribute('aria-setsize')).toBe('4')
+  })
+
   it('方向键不跨侧：左栏走到尽头也不会跑到右栏去', () => {
     const h = mount({ defaultValue: ['cherry', 'durian'] })
     h.side('source').list.focus()

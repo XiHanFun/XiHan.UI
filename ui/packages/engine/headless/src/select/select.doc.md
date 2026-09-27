@@ -30,6 +30,7 @@
 
 - 与[表单字段](./field)组合。
 - 不参与表单时使用 [气泡卡片](./popover) 与 [列表框](./listbox)。
+- 长选项列表把完整 collection 与 [Virtualizer](./virtualizer) 的 `collectionVirtualizer` 同时交给根，浮层内只渲染 `virtualItems`。
 
 ## 最佳实践
 

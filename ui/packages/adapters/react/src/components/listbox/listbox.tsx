@@ -6,7 +6,7 @@
 // 提供 listbox 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { ListboxApi, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, ListboxApi, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
@@ -39,6 +39,7 @@ type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'default
 
 export interface XhListboxRootProps extends RootElementProps {
   collection?: ListboxNode[]
+  virtualizer?: CollectionVirtualizer
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
   value?: string | string[]
@@ -67,6 +68,7 @@ export interface XhListboxRootProps extends RootElementProps {
 
 export function XhListboxRoot({
   collection,
+  virtualizer,
   value,
   defaultValue,
   selectionMode,
@@ -90,6 +92,7 @@ export function XhListboxRoot({
 }: XhListboxRootProps): ReactNode {
   const ctx = useListbox(useFormControlProps({
     collection,
+    virtualizer,
     value,
     defaultValue,
     selectionMode,
@@ -230,6 +233,8 @@ export function XhListboxItem({ value, disabled, children, ...rest }: XhListboxI
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return
+    if (svc.prop('virtualizer') && svc.prop('collection')?.some(node => node.value === value))
+      return
     if (itemEl.current && svc.scope.getActiveElement() === itemEl.current)
       svc.send({ type: 'ITEM.FOCUS', value })
   }, [ctx.service, value])
@@ -241,7 +246,7 @@ export function XhListboxItem({ value, disabled, children, ...rest }: XhListboxI
       return
     if (itemEl.current && svc.scope.getActiveElement() === itemEl.current)
       svc.send({ type: 'LIST.BLUR' })
-  }, [ctx.service])
+  }, [ctx.service, value])
 
   return (
     <ListboxItemProvider value={item}>

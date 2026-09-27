@@ -6,6 +6,7 @@
 // 定义 transfer 类型契约。
 
 import type { Direction, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { CollectionVirtualizer } from '../virtualizer'
 
 /**
  * 所在侧。source 是尚未选入的，target 是已选入的；
@@ -97,6 +98,8 @@ export interface TransferSchema extends MachineSchema {
   props: {
     /** 条目全集，元信息的唯一事实源。默认为空。 */
     collection?: TransferItem[]
+    /** 两侧各自的虚拟化桥；count 必须等于该侧搜索过滤后的 visibleItems.length。 */
+    virtualizers?: Partial<Record<TransferSide, CollectionVirtualizer>>
     /**
      * 落在 target 侧的值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。
      */

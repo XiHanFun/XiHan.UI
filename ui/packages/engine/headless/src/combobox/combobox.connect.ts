@@ -9,6 +9,7 @@ import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } fro
 import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNodeMeta, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
 import { contains, createPressTracker, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionTarget } from '../shared/virtual-collection'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
 
@@ -50,6 +51,9 @@ export function connectCombobox<T extends PropTypes>(
     description: node.description ?? null,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+  const indexOf = new Map(collection.map((meta, index) => [meta.value, index]))
+  const virtualizer = prop('virtualizer')
+  assertCollectionVirtualizer('Combobox', virtualizer, collection.length, nodes != null)
 
   // 给了 collection 就当场按数据算，首帧即准；选中项已被宿主筛出候选时退回机器算好的那一份
   const onlySelected = value.length === 1 ? value[0] : undefined
@@ -124,6 +128,10 @@ export function connectCombobox<T extends PropTypes>(
   const pressHighlighted = (): void => {
     if (highlighted == null || context.get('pressedPart') === 'item')
       return
+    if (virtualizer) {
+      send({ type: 'PRESS.START', part: 'item', value: highlighted, disabled: metaOf.get(highlighted)?.disabled ?? true })
+      return
+    }
     const el = items().find(item => itemValue(item) === highlighted)
     send({ type: 'PRESS.START', part: 'item', value: highlighted, disabled: !el || isItemDisabled(el) })
   }
@@ -144,6 +152,18 @@ export function connectCombobox<T extends PropTypes>(
 
   /** 方向键落点：起点用当前高亮，终点用活 DOM 算，禁用候选自动跳过。 */
   const highlightBy = (intent: NavIntent): void => {
+    if (virtualizer) {
+      const target = virtualCollectionTarget(collection, highlighted, intent, {
+        value: item => item.value,
+        disabled: item => item.disabled,
+        loop,
+      })
+      if (target) {
+        send({ type: 'ITEM.HIGHLIGHT', value: target.value })
+        virtualizer.scrollToIndex(target.index, { align: 'auto' })
+      }
+      return
+    }
     highlightEl(navigateItems(items(), highlighted, intent, { loop }))
   }
 
@@ -151,6 +171,13 @@ export function connectCombobox<T extends PropTypes>(
   const commitHighlighted = (): boolean => {
     if (highlighted == null)
       return false
+    if (virtualizer) {
+      const meta = metaOf.get(highlighted)
+      if (!meta || meta.disabled)
+        return false
+      send({ type: 'ITEM.SELECT', value: highlighted, label: meta.label })
+      return true
+    }
     const el = items().find(item => itemValue(item) === highlighted)
     if (!el || isItemDisabled(el))
       return false
@@ -525,6 +552,7 @@ export function connectCombobox<T extends PropTypes>(
         'data-tone': itemTone(item),
         // 导航与选中都以此为候选身份
         [ITEM_VALUE_ATTR]: item.value,
+        ...virtualCollectionAria(indexOf.get(item.value), collection.length),
         // aria-activedescendant 要指得到它，所以每个候选都得有个稳定 id
         'id': itemId(item.value),
         'role': 'option',

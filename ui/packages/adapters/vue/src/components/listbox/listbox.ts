@@ -6,7 +6,7 @@
 // 提供 listbox 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUpdated, ref, watch } from 'vue'
@@ -35,6 +35,7 @@ export const XhListboxRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<ListboxNode[]> },
+    virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
     value: { type: [String, Array] as PropType<string | string[]> },
@@ -201,6 +202,8 @@ export const XhListboxItem = defineComponent({
         return
       const { service } = ctx
       if (service.getStatus() !== 'Started')
+        return
+      if (service.prop('virtualizer') && service.prop('collection')?.some(node => node.value === props.value))
         return
       if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
         service.send({ type: 'ITEM.FOCUS', value: next })

@@ -8,7 +8,7 @@
 import type { VirtualizerApi, VirtualizerRangeChangeDetails, VirtualizerSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, onMounted, onUpdated, ref } from 'vue'
+import { defineComponent, h, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
 import { provideVirtualizer, useVirtualizerContext } from './context'
 import { useVirtualizer } from './use-virtualizer'
 
@@ -23,6 +23,7 @@ export type VirtualizerRootSlotProps = Pick<
   | 'endIndex'
   | 'scrolling'
   | 'lanes'
+  | 'collectionVirtualizer'
   | 'scrollToIndex'
   | 'measureElement'
   | 'measure'
@@ -42,6 +43,7 @@ export const XhVirtualizerRoot = defineComponent({
     paddingStart: { type: Number },
     paddingEnd: { type: Number },
     lanes: { type: Number },
+    viewportTabIndex: { type: Number },
   },
   // change 携带当前该渲染哪些条目的详情
   emits: {
@@ -61,6 +63,7 @@ export const XhVirtualizerRoot = defineComponent({
       endIndex: ctx.api.value.endIndex,
       scrolling: ctx.api.value.scrolling,
       lanes: ctx.api.value.lanes,
+      collectionVirtualizer: ctx.api.value.collectionVirtualizer,
       scrollToIndex: ctx.api.value.scrollToIndex,
       measureElement: ctx.api.value.measureElement,
       measure: ctx.api.value.measure,
@@ -102,6 +105,18 @@ export const XhVirtualizerItem = defineComponent({
   setup(props, { slots }) {
     const ctx = useVirtualizerContext()
     const el = ref<HTMLElement | null>(null)
+    let registeredIndex: number | null = null
+
+    const bindItem = (value: unknown): void => {
+      const node = value as HTMLElement | null
+      const next = Number(props.value)
+      if (registeredIndex != null && (node == null || registeredIndex !== next))
+        ctx.api.value.registerItemElement(registeredIndex, null)
+      registeredIndex = node == null ? null : next
+      el.value = node
+      if (node)
+        ctx.api.value.registerItemElement(next, node)
+    }
 
     // 在挂载与更新后量尺寸，此时节点已落进 DOM
     const report = (): void => {
@@ -110,10 +125,14 @@ export const XhVirtualizerItem = defineComponent({
     }
     onMounted(report)
     onUpdated(report)
+    onBeforeUnmount(() => {
+      if (registeredIndex != null)
+        ctx.api.value.registerItemElement(registeredIndex, null)
+    })
 
     return () => h('div', {
       ...ctx.api.value.getItemProps({ index: Number(props.value) }) as Record<string, unknown>,
-      ref: el,
+      ref: bindItem,
     }, slots.default?.())
   },
 })

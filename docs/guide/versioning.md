@@ -107,7 +107,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
 
 ::: warning `data-xh-part`、`data-xh-scroll`、墨色域、液态下层与图表纹理的声明是 `data-xh-` 前缀里仅有的例外
-其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 58 个）是库自用标记，排除在承诺之外。例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理；`data-xh-ink` 与 `data-xh-ink-margin` 写在作者自己的彩色区块上，声明底色极性与余量（见[色彩 · 彩色面与墨色域](/design/colors#彩色面与墨色域)），取值与语义按公开面承诺；`data-xh-backdrop` 与 `data-xh-backdrop-busy` 写在作者自己的图片、视频、画布区域上，声明液态面下层的明暗与杂乱（见[设计令牌与主题 · 液态材质](./theme#液态材质)），同样按公开面承诺；`data-xh-chart-patterns` 写在作者自己的祖先上，让其中的图表改用纹理区分系列（见[直角坐标图](../components/cartesian-chart)），同样按公开面承诺。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
+其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 60 个）是库自用标记，排除在承诺之外。例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理；`data-xh-ink` 与 `data-xh-ink-margin` 写在作者自己的彩色区块上，声明底色极性与余量（见[色彩 · 彩色面与墨色域](/design/colors#彩色面与墨色域)），取值与语义按公开面承诺；`data-xh-backdrop` 与 `data-xh-backdrop-busy` 写在作者自己的图片、视频、画布区域上，声明液态面下层的明暗与杂乱（见[设计令牌与主题 · 液态材质](./theme#液态材质)），同样按公开面承诺；`data-xh-chart-patterns` 写在作者自己的祖先上，让其中的图表改用纹理区分系列（见[直角坐标图](../components/cartesian-chart)），同样按公开面承诺。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
 :::
 
 ### requiredParts 的方向是反的
@@ -121,7 +121,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 247 个不同的 `data-*` 属性名、1757 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 248 个不同的 `data-*` 属性名、1758 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -133,7 +133,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 197 个属性名 / 842 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
+样式钩子。自带皮肤消费了 198 个属性名 / 843 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -213,12 +213,12 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 145（`defineXhElements()` 注册 144 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1428 条声明 / 417 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 417 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| observed attribute | 1429 条声明 / 418 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 418 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 101 个名字 / 238 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（223 处中 221 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
 | 事件 `detail` 形状 | 197 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
-| `attribute: false` 的 JS 字段 | 272 条（涉及 89 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
+| `attribute: false` 的 JS 字段 | 277 条（涉及 91 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
 | 命令式方法 | 116（分布在 58 个元素） | **受约束**，含参数与返回类型 |
 
 命令式方法全清单：
@@ -419,11 +419,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，17238 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，17248 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 207 条子入口、8964 个导出名、142 个 `data-scope` 与 1255 条部件配对、
-142 个组件的 1911 个 prop 名、249 种 `data-*`、34 个 `data-state` 取值、660 个令牌、
+覆盖：包名与 207 条子入口、8967 个导出名、142 个 `data-scope` 与 1255 条部件配对、
+142 个组件的 1917 个 prop 名、250 种 `data-*`、34 个 `data-state` 取值、660 个令牌、
 5 个 `@layer` 名、4199 个组件覆盖槽、144 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改
