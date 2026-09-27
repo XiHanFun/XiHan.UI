@@ -176,22 +176,22 @@ export function treemapTile(name: TreemapTileName): TreemapTile {
 }
 
 /** 边距：常数，或按节点给（顶部标题只给有子节点的节点留）。 */
-export type TreemapPadding = number | (<T>(node: HierarchyNode<T>) => number)
+export type TreemapPadding<T = unknown> = number | ((node: HierarchyNode<T>) => number)
 
-export interface TreemapOptions {
+export interface TreemapOptions<T = unknown> {
   readonly size: readonly [number, number]
   readonly tile?: TreemapTileName | TreemapTile
   /** 兄弟之间的间隙。 */
-  readonly paddingInner?: TreemapPadding
+  readonly paddingInner?: TreemapPadding<T>
   /** 父节点四边向里缩的量。 */
-  readonly paddingOuter?: TreemapPadding
+  readonly paddingOuter?: TreemapPadding<T>
   /** 父节点顶边单独向里缩的量（留给分组标题），缺省同 paddingOuter。 */
-  readonly paddingTop?: TreemapPadding
+  readonly paddingTop?: TreemapPadding<T>
   /** 四边取整到像素。 */
   readonly round?: boolean
 }
 
-function paddingOf(padding: TreemapPadding | undefined): <T>(node: HierarchyNode<T>) => number {
+function paddingOf<T>(padding: TreemapPadding<T> | undefined): (node: HierarchyNode<T>) => number {
   if (typeof padding === 'function')
     return node => Math.max(0, padding(node) || 0)
   const value = Math.max(0, padding ?? 0)
@@ -199,7 +199,7 @@ function paddingOf(padding: TreemapPadding | undefined): <T>(node: HierarchyNode
 }
 
 /** 铺矩形树图：把 [0, w] × [0, h] 分给各节点，四边写回节点的 x0 / y0 / x1 / y1。 */
-export function treemap<T>(root: HierarchyNode<T>, options: TreemapOptions): HierarchyNode<T> {
+export function treemap<T>(root: HierarchyNode<T>, options: TreemapOptions<T>): HierarchyNode<T> {
   const [dx, dy] = options.size
   if (!(dx >= 0) || !(dy >= 0))
     throw invalidArgument('矩形树图的尺寸必须是非负数', { size: options.size })

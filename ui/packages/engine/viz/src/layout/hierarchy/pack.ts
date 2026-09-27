@@ -289,15 +289,15 @@ export function packSiblings(circles: Circle[], random: RandomSource = createRan
 
 /* ---------- 圆堆积 ---------- */
 
-export interface PackOptions {
+export interface PackOptions<T = unknown> {
   readonly size: readonly [number, number]
   /** 兄弟圆之间的间隙。 */
   readonly padding?: number
   /** 叶子的半径；缺省取聚合值的平方根，整体再缩放进尺寸。给了就不再缩放。 */
-  readonly radius?: <T>(node: HierarchyNode<T>) => number
+  readonly radius?: (node: HierarchyNode<T>) => number
 }
 
-export function pack<T>(root: HierarchyNode<T>, options: PackOptions): HierarchyNode<T> {
+export function pack<T>(root: HierarchyNode<T>, options: PackOptions<T>): HierarchyNode<T> {
   const [dx, dy] = options.size
   if (!(dx >= 0) || !(dy >= 0))
     throw invalidArgument('圆堆积的尺寸必须是非负数', { size: options.size })
@@ -305,7 +305,7 @@ export function pack<T>(root: HierarchyNode<T>, options: PackOptions): Hierarchy
     throw invalidArgument('圆堆积之前先 sum() 或 count() 算出聚合值，或给出叶子的半径', {})
   const padding = Math.max(0, options.padding ?? 0)
   const random = createRandom(PACK_SEED)
-  const leafRadius = options.radius ?? (<N>(node: HierarchyNode<N>) => Math.sqrt(node.value ?? 0))
+  const leafRadius = options.radius ?? ((node: HierarchyNode<T>) => Math.sqrt(node.value ?? 0))
   root.eachBefore((node) => {
     if (!node.children)
       node.r = Math.max(0, Number(leafRadius(node)) || 0)
