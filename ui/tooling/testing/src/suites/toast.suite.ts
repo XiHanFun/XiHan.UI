@@ -205,6 +205,7 @@ export const toastSuite: ConformanceSuite = {
           expect: {
             parts: { root: { 'data-state': 'unmounted' } },
             events: [
+              { type: 'action', detail: { id: 't1' } },
               { type: 'status-change', detail: { id: 't1', status: 'dismissing' } },
               { type: 'status-change', detail: { id: 't1', status: 'unmounted' } },
             ],
