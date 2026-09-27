@@ -37,6 +37,7 @@ const PUBLIC_EVENTS = {
   'stick-change': 'onStickChange',
   'stop': 'onStop',
   'submit': 'onSubmit',
+  'tab-close': 'onTabClose',
   'tab-move': 'onTabMove',
   'value-change': 'onValueChange',
   'hidden-series-change': 'onHiddenSeriesChange',

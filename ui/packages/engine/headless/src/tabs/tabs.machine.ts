@@ -108,13 +108,18 @@ export const tabsMachine = createMachine({
     scrollMax: cell<number>(() => ({ defaultValue: 0 })),
     // 按压通道：正被按住的 trigger（按 value 记），与选中、焦点锚点、拖动无关
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    // 被选中过的标签：初值即首帧的选中项，之后每换一次选中记一笔，只增不减
+    visited: cell<string[]>(() => {
+      const initial = prop('value') ?? prop('defaultValue') ?? null
+      return { defaultValue: initial == null ? [] : [initial] }
+    }),
   }),
   // 挂载即量一次，让指示条首帧就在位、翻页钮首帧就知道要不要露面
   entry: ['measureStrip', 'measureIndicator'],
   watch: ({ track, context, action }) => {
-    // 选中值一变：被裁掉的选中标签先挪进视野，再重量指示条。指示条量的是排布位、与位移无关，
-    // 先后顺序只为让两次更新落在同一轮
-    track([context.dep('value')], () => action(['revealSelected', 'measureIndicator']))
+    // 选中值一变：先记进被选中过的标签，再把被裁掉的选中标签挪进视野，最后重量指示条。指示条量的是排布位、
+    // 与位移无关，先后顺序只为让几次更新落在同一轮
+    track([context.dep('value')], () => action(['recordVisited', 'revealSelected', 'measureIndicator']))
     // 焦点落到被裁掉的标签上，标签带自己挪过去：标签带不是滚动容器，浏览器不会替它做这件事
     track([context.dep('focusedValue')], () => action(['revealFocused']))
   },
@@ -335,6 +340,12 @@ export const tabsMachine = createMachine({
           context.set('focusedValue', e.value)
       },
       clearFocusedValue: ({ context }) => context.set('focusedValue', null),
+      recordVisited: ({ context }) => {
+        const value = context.get('value') ?? null
+        const visited = context.get('visited')
+        if (value != null && !visited.includes(value))
+          context.set('visited', [...visited, value])
+      },
       startTabDrag: ({ context, refs, event }) => {
         const e = event.current()
         if (e.type !== 'TAB_DRAG.START')

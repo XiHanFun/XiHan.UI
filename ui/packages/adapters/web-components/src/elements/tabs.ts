@@ -49,6 +49,9 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} reorderable - 标签可以拖动换位，默认关闭
+ * @attr {boolean} closable - 标签可关闭：点 close-trigger，或焦点在标签上按 Delete / Backspace，发 tab-close；默认关闭
+ * @attr {boolean} lazy-mount - 面板内容等到对应标签第一次被选中才渲染；面板内容须写在面板里的 `<template>` 中，默认关闭
+ * @attr {boolean} unmount-on-exit - 标签被选走后卸掉面板内容；面板内容须写在面板里的 `<template>` 中，默认关闭
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
  * @fires tab-move - 标签换位；detail 为 `{ value, from, to, values }`，values 是重排后的整份标签序
  * @fires tab-close - 标签被关闭；detail 为 `{ value, values }`，values 是关闭该标签之后剩余的标签序
@@ -60,6 +63,7 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
  * @csspart prev-trigger - 标签带放不下时的往前翻页钮，须位于 list 中；对读屏隐藏、不占 Tab 位，放得下时 hidden
  * @csspart next-trigger - 标签带放不下时的往后翻页钮，与 prev-trigger 成对
  * @csspart trigger - role=tab 的标签按钮，须自带 value 属性标识身份
+ * @csspart close-trigger - 标签的关闭钮，紧跟在所属 trigger 之后、与它平级，须自带与它相同的 value 属性；对读屏隐藏、不占 Tab 位，closable 关闭时 hidden
  * @csspart content - role=tabpanel 的面板，须自带 value 属性与 trigger 配对；未选中时 hidden
  * @csspart tab-drag-trigger - 标签拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由标签带上的 Alt + 方向键承担
  */
@@ -84,6 +88,8 @@ export class XhTabsElement extends XhElement {
     // 三态转换器只留给缺省为真的开关（如 loop），那种开关摘属性会落回默认值、写 "false" 才关得掉
     reorderable: { type: Boolean },
     closable: { type: Boolean },
+    lazyMount: { type: Boolean, attribute: 'lazy-mount' },
+    unmountOnExit: { type: Boolean, attribute: 'unmount-on-exit' },
     // 对象走不了属性，只作为 property 暴露
     translations: { attribute: false },
   }
@@ -100,6 +106,8 @@ export class XhTabsElement extends XhElement {
   declare size?: Size
   declare reorderable?: boolean
   declare closable?: boolean
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
   declare translations?: Partial<TabsTranslations>
 
   private readonly notify = (details: TabsValueChangeDetails): void => {
@@ -139,6 +147,8 @@ export class XhTabsElement extends XhElement {
       size: this.size,
       reorderable: this.reorderable ?? false,
       closable: this.closable ?? false,
+      lazyMount: this.lazyMount ?? false,
+      unmountOnExit: this.unmountOnExit ?? false,
       translations: this.translations,
       onValueChange: this.notify,
       onTabMove: this.notifyTabMove,
@@ -168,6 +178,28 @@ export class XhTabsElement extends XhElement {
   private triggerElOf(el: HTMLElement): HTMLElement {
     const owner = el.closest<HTMLElement>(TRIGGER_SELECTOR)
     return owner && owner !== this && this.contains(owner) ? owner : el
+  }
+
+  /** 从面板里 <template> 克隆出来、此刻挂在面板上的节点；没挂着就不在表里。 */
+  private readonly stamped = new WeakMap<HTMLElement, Node[]>()
+
+  /**
+   * 面板内容写在面板里的 <template> 中时，该渲染就把模板克隆进面板（排在模板之后），该卸掉就把克隆出来的节点撤走。
+   * 作者直接写在面板里的内容本就在 DOM 上，不经这里：Light DOM 的作者节点不归元素增删。
+   */
+  private syncTemplateContent(panel: HTMLElement, mounted: boolean): void {
+    const template = Array.from(panel.children).find((child): child is HTMLTemplateElement => child instanceof HTMLTemplateElement)
+    const current = this.stamped.get(panel)
+    if (mounted && !current && template) {
+      const nodes = Array.from((template.content.cloneNode(true) as DocumentFragment).childNodes)
+      template.after(...nodes)
+      this.stamped.set(panel, nodes)
+    }
+    else if (!mounted && current) {
+      for (const node of current)
+        node.parentNode?.removeChild(node)
+      this.stamped.delete(panel)
+    }
   }
 
   protected wire(): void {
@@ -223,6 +255,17 @@ export class XhTabsElement extends XhElement {
       this.spreader.spread(el, props as Record<string, unknown>)
     }
 
+    // 关闭钮与标签平级，身份取作者写在它身上的 value；禁用与 trigger 同一套来路：给了 collection 以数据为准，
+    // 否则读钮自己身上的声明（与 Vue / React 在钮上传 disabled 一致）
+    for (const close of this.getParts('close-trigger')) {
+      const props = api.getCloseTriggerProps({
+        value: close.getAttribute('value') ?? '',
+        disabled: this.collection ? this.declaredDisabled(close) : isItemDisabled(close),
+      }) as Record<string, unknown>
+      this.spreader.spread(close, props)
+      this.setPartHidden(close, props.hidden === true)
+    }
+
     // 把手长在标签里，身份跟着所在的那个 trigger 走
     for (const el of this.getParts('tab-drag-trigger')) {
       // 禁用与 trigger 走同一条来路：没给 collection 时禁用写在标记上，
@@ -235,10 +278,12 @@ export class XhTabsElement extends XhElement {
       this.spreader.spread(el, props as Record<string, unknown>)
     }
 
-    // 面板常挂，未选中的由 connect 输出的 hidden 收起
+    // 面板常挂，未选中的由 connect 输出的 hidden 收起；写在面板里 <template> 中的内容按 isContentMounted 克隆进来或撤走
     for (const el of this.getParts('content')) {
-      const props = api.getContentProps({ value: el.getAttribute('value') ?? '' })
+      const value = el.getAttribute('value') ?? ''
+      const props = api.getContentProps({ value })
       this.spreader.spread(el, props as Record<string, unknown>)
+      this.syncTemplateContent(el, api.isContentMounted(value))
     }
   }
 }

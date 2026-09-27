@@ -695,11 +695,62 @@
     mask-image: var(--xh-glyph-mark-chevron-down);
   }
 
+  /* —— 关闭钮 —— */
+  /* 关闭钮与所属标签平级、紧跟其后（不嵌进 role=tab 的按钮里），画面上收进标签面的行尾：标签在行尾让出一格
+     （钮的边长 + 与行尾的留白 + 与文字的间距），钮以负的起始外边距退回这一格，结束外边距补回同样的留白，
+     下一枚标签的起点与没有关闭钮时一致。留白取标签与钮高度差的一半，钮在标签里上下左右都居中对齐。
+     面归 Action Control icon 档 ghost 面、xs 档（连接层投影）：四态面、0.97 按压与粗指针命中区由家族配方给，
+     这里只管落位与字色。悬停落在钮上时标签自己回到静息面，只有钮亮起，按下去关的是哪一个一目了然 */
+  [data-scope='tabs'][data-part='root'] {
+    --xh-_tabs-close-size: var(--xh-control-action-size);
+    --xh-_tabs-close-inset: calc((var(--xh-tabs-trigger-h, var(--xh-_tabs-trigger-h)) - var(--xh-_tabs-close-size)) / 2);
+    /* 钮退回去的距离：横排退过自己、行尾留白与标签带间距；竖排退过半个标签高、半个钮高与标签带间距 */
+    --xh-_tabs-close-offset: calc(var(--xh-_tabs-close-size) + var(--xh-_tabs-close-inset) + var(--xh-tabs-list-gap, var(--xh-_tabs-list-gap)));
+    --xh-_tabs-close-offset-block: calc((var(--xh-tabs-trigger-h, var(--xh-_tabs-trigger-h)) + var(--xh-_tabs-close-size)) / 2 + var(--xh-tabs-list-gap, var(--xh-_tabs-list-gap)));
+  }
+
+  [data-scope='tabs'][data-part='trigger']:has(+ [data-scope='tabs'][data-part='close-trigger']:not([hidden])) {
+    padding-inline-end: calc(var(--xh-_tabs-close-size) + var(--xh-_tabs-close-inset) + var(--xh-space-1));
+  }
+
+  [data-scope='tabs'][data-part='close-trigger'] {
+    --xh-action-fg-rest: var(--xh-fg-muted);
+    /* 作者塞进来的图标跟着 xs 档走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
+    flex: none;
+    /* segment 档的标签抬了一层压在滑动的抬起面上，钮排在标签之后、同一层即压在标签上 */
+    z-index: 1;
+    margin-inline-start: calc(-1 * var(--xh-_tabs-close-offset));
+    margin-inline-end: var(--xh-_tabs-close-inset);
+  }
+
+  /* 竖排：标签上下排开，钮退回的是上一行——起始外边距改在块向，行向贴到行尾 */
+  [data-scope='tabs'][data-part='root'][data-orientation='vertical'] [data-scope='tabs'][data-part='close-trigger'] {
+    align-self: flex-end;
+    margin-block-start: calc(-1 * var(--xh-_tabs-close-offset-block));
+    margin-block-end: var(--xh-_tabs-close-inset);
+    margin-inline-start: 0;
+  }
+
+  /* 没写内容就由皮肤画一枚叉；作者塞了自己的图形这一条即不命中 */
+  [data-scope='tabs'][data-part='close-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  }
+
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   [data-scope='tabs'][data-part='root'][hidden],
   [data-scope='tabs'][data-part='list'][hidden],
   [data-scope='tabs'][data-part='trigger'][hidden],
+  [data-scope='tabs'][data-part='close-trigger'][hidden],
   [data-scope='tabs'][data-part='indicator'][hidden],
   [data-scope='tabs'][data-part='separator'][hidden],
   [data-scope='tabs'][data-part='prev-trigger'][hidden],
@@ -757,9 +808,10 @@
       text-decoration: underline;
     }
 
-    /* 纸上翻不了页，两只钮不上纸 */
+    /* 纸上翻不了页、也关不了标签，这几只钮不上纸 */
     [data-scope='tabs'][data-part='prev-trigger'],
-    [data-scope='tabs'][data-part='next-trigger'] {
+    [data-scope='tabs'][data-part='next-trigger'],
+    [data-scope='tabs'][data-part='close-trigger'] {
       display: none;
     }
   }

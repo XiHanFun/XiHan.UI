@@ -1077,6 +1077,7 @@ export type { TableRootSlotProps, TableToolbarSlotProps } from './components/tab
 export { useTable } from './components/table/use-table'
 export type { TableContext } from './components/table/use-table'
 export {
+  XhTabsCloseTrigger,
   XhTabsContent,
   XhTabsIndicator,
   XhTabsList,

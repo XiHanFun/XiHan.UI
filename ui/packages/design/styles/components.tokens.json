@@ -67430,19 +67430,24 @@
       "name": "--xh-tabs-list-gap",
       "component": "tabs",
       "part": [
-        "list"
+        "close-trigger",
+        "list",
+        "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-start",
+        "margin-inline-start"
       ],
       "state": [
-        "default"
+        "default",
+        "orientation=vertical"
       ],
       "defaultToken": [
         "--xh-_tabs-list-gap"
       ],
       "visibility": "public",
-      "description": "tabs 的 list 部件 gap 覆盖槽。"
+      "description": "tabs 的 close-trigger、list、root 部件 gap、margin-block-start、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tabs-list-p",
@@ -68009,23 +68014,32 @@
       "name": "--xh-tabs-trigger-h",
       "component": "tabs",
       "part": [
+        "close-trigger",
         "next-trigger",
         "prev-trigger",
+        "root",
         "trigger"
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "margin-block-end",
+        "margin-block-start",
+        "margin-inline-end",
+        "margin-inline-start",
+        "padding-inline-end"
       ],
       "state": [
         "default",
+        "has(+ [data-scope='tabs'][data-part='close-trigger']:not([hidden])",
+        "orientation=vertical",
         "xh-action-profile=icon"
       ],
       "defaultToken": [
         "--xh-_tabs-trigger-h"
       ],
       "visibility": "public",
-      "description": "tabs 的 next-trigger、prev-trigger、trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "tabs 的 close-trigger、next-trigger、prev-trigger、root、trigger 部件 block-size、inline-size、margin-block-end、margin-block-start、margin-inline-end、margin-inline-start、padding-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-px",
