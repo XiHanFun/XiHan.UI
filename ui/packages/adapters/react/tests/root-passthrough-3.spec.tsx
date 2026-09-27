@@ -1,13 +1,14 @@
 // @vitest-environment jsdom
 //
 // 逐实例令牌是这个库有文档的主题通道：作者把 `--xh-*` 写在 root 元素的 style 上。
-// 这一份核这一组 17 个 root 三件事：作者写的 style 与 className 落到了 root 元素上、
+// 这一份核这一组 18 个 root 三件事：作者写的 style 与 className 落到了 root 元素上、
 // connect 自己产出的属性一个没被顶掉、交给机器的那几个取值没有漏成 DOM 属性。
 import type { ReactElement } from 'react'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
+  XhFunnelChartRoot,
   XhInfiniteScrollRoot,
   XhJsonViewerRoot,
   XhListboxRoot,
@@ -202,6 +203,15 @@ const CASES: Case[] = [
     machine: { data: [{ name: 'a', x: 1, y: 2, z: 3 }], nameField: 'name', indicators: [{ key: 'x' }, { key: 'y' }, { key: 'z' }], shape: 'circle', curve: 'catmull-rom' },
     leaks: ['shape', 'curve'],
     render: props => <XhRadarChartRoot {...props} />,
+  },
+  {
+    name: 'funnel-chart',
+    scope: 'funnel-chart',
+    tag: 'figure',
+    token: '--xh-funnel-chart-probe',
+    machine: { data: [{ stage: 'a', users: 3 }, { stage: 'b', users: 1 }], nameField: 'stage', valueField: 'users', shape: 'bar', conversion: 'none' },
+    leaks: ['shape', 'conversion'],
+    render: props => <XhFunnelChartRoot {...props} />,
   },
   {
     name: 'pin-input',

@@ -59,6 +59,7 @@ import { XhFlexElement } from './elements/flex'
 import { XhFloatButtonElement } from './elements/float-button'
 import { XhFloatingPanelElement } from './elements/floating-panel'
 import { XhFormElement } from './elements/form'
+import { XhFunnelChartElement } from './elements/funnel-chart'
 import { XhGradientTextElement } from './elements/gradient-text'
 import { XhGridElement } from './elements/grid'
 import { XhHeatmapElement } from './elements/heatmap'
@@ -173,6 +174,7 @@ export function defineXhElements(): void {
   defineElement('xh-flex', XhFlexElement, VERSION)
   defineElement('xh-float-button', XhFloatButtonElement, VERSION)
   defineElement('xh-floating-panel', XhFloatingPanelElement, VERSION)
+  defineElement('xh-funnel-chart', XhFunnelChartElement, VERSION)
   defineElement('xh-gradient-text', XhGradientTextElement, VERSION)
   defineElement('xh-grid', XhGridElement, VERSION)
   defineElement('xh-heatmap', XhHeatmapElement, VERSION)
@@ -344,6 +346,7 @@ export {
   XhFileUploadElement,
   XhFloatingPanelElement,
   XhFormElement,
+  XhFunnelChartElement,
   XhHeatmapElement,
   XhHoverCardElement,
   XhIconElement,

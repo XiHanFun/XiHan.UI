@@ -26760,6 +26760,104 @@
   --xh-action-ring-color-focus-visible: currentColor;
 }
 
+/* styles/funnel-chart.css */
+/* 定义 funnel chart 样式。 */
+
+/* 标题、视口、提示框、空态、焦点环与顺序色阶走 Chart 家族配方。本皮肤 @import 它，单独引入仍成立。 */
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='funnel-chart'] {
+  --xh-funnel-chart-skin: 1;
+}
+
+/* 几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何 */
+[data-scope='funnel-chart'][data-part='root'] {
+  --xh-_chart-metric-bar-max: var(--xh-chart-bar-max);
+  --xh-_chart-metric-gap: var(--xh-funnel-chart-stage-gap, var(--xh-chart-gap));
+  --xh-_chart-metric-line-width: var(--xh-chart-line-width);
+  --xh-_chart-metric-point-size: var(--xh-chart-point-size);
+  --xh-_chart-metric-hit-min: var(--xh-chart-hit-min);
+  --xh-_chart-metric-tick-length: var(--xh-chart-tick-length);
+  --xh-_chart-metric-label-gap: var(--xh-chart-label-gap);
+  --xh-_chart-metric-radius: var(--xh-shape-inset);
+  --xh-_chart-metric-font-size: var(--xh-text-caption-size);
+  --xh-_chart-metric-leading: var(--xh-leading-tight);
+  --xh-_chart-gap: var(--xh-funnel-chart-gap, var(--xh-space-3));
+}
+
+/* —— 家族配方的组件槽：标题、视口、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
+   对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
+[data-scope='funnel-chart'][data-part='viewport'] {
+  --xh-_chart-height: var(--xh-funnel-chart-height, var(--xh-chart-height));
+}
+
+[data-scope='funnel-chart'][data-part='tooltip'] {
+  --xh-_chart-tooltip-gap: var(--xh-funnel-chart-tooltip-gap, var(--xh-space-1));
+  --xh-_chart-tooltip-py: var(--xh-funnel-chart-tooltip-py, var(--xh-surface-pad-sm));
+  --xh-_chart-tooltip-px: var(--xh-funnel-chart-tooltip-px, var(--xh-surface-pad-sm));
+  --xh-_chart-tooltip-radius: var(--xh-funnel-chart-tooltip-radius, var(--xh-shape-overlay));
+  --xh-_chart-tooltip-shadow: var(--xh-funnel-chart-tooltip-shadow, var(--xh-material-frosted-shadow));
+}
+
+[data-scope='funnel-chart'][data-part='tooltip-row'] {
+  --xh-_chart-tooltip-row-gap: var(--xh-funnel-chart-tooltip-row-gap, var(--xh-space-2));
+}
+
+[data-scope='funnel-chart'][data-part='tooltip-swatch'] {
+  --xh-_chart-tooltip-swatch-radius: var(--xh-funnel-chart-tooltip-swatch-radius, var(--xh-shape-inset));
+}
+
+[data-scope='funnel-chart'][data-part='empty'][data-state='loading'] {
+  --xh-_chart-empty-gap: var(--xh-funnel-chart-empty-gap, var(--xh-space-2));
+}
+
+/* —— 阶段：顺序色阶由深入浅，颜色由 Chart 家族配方按段号与段内百分比兑好放在私有槽里；
+   相邻阶段之间的间隙由几何留出，不画描边；指着一个阶段时其余阶段淡出，被指着的不位移 —— */
+[data-scope='funnel-chart'][data-part='stage'] {
+  fill: var(--xh-_chart-seq-fill);
+  stroke: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='funnel-chart'][data-part='stage'][data-dimmed],
+[data-scope='funnel-chart'][data-part='stage-label'][data-dimmed],
+[data-scope='funnel-chart'][data-part='conversion'][data-dimmed] {
+  opacity: var(--xh-chart-dim-alpha);
+}
+
+/* 阶段标签与转化率是标注：标注字色，不取色阶色 */
+[data-scope='funnel-chart'][data-part='stage-label'],
+[data-scope='funnel-chart'][data-part='conversion'] {
+  fill: var(--xh-chart-label);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 写在阶段里的标签压在色阶色上：深浅两端都要读得清，描一圈承载面色 */
+[data-scope='funnel-chart'][data-part='stage-label'][data-placement='inside'] {
+  stroke: var(--xh-chart-surface);
+  stroke-width: var(--xh-stroke-thick);
+  paint-order: stroke;
+  font-weight: var(--xh-font-weight-medium);
+}
+
+/* 强制色：阶段改成系统色的面与描边，标注取正文色；焦点环在配方里 */
+@media (forced-colors: active) {
+  [data-scope='funnel-chart'][data-part='stage'] {
+    fill: Canvas;
+    stroke: CanvasText;
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='funnel-chart'][data-part='stage-label'],
+  [data-scope='funnel-chart'][data-part='conversion'] {
+    fill: CanvasText;
+  }
+
+  [data-scope='funnel-chart'][data-part='stage-label'][data-placement='inside'] {
+    stroke: Canvas;
+  }
+}
+
 /* styles/hover-card.css */
 /* 定义 hover card 样式。 */
 

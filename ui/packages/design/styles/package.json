@@ -94,6 +94,7 @@
     "./floating-panel.css": "./css/floating-panel.css",
     "./forced-colors.css": "./css/forced-colors.css",
     "./form.css": "./css/form.css",
+    "./funnel-chart.css": "./css/funnel-chart.css",
     "./gradient-text.css": "./css/gradient-text.css",
     "./grid.css": "./css/grid.css",
     "./heatmap.css": "./css/heatmap.css",
