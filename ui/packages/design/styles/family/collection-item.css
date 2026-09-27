@@ -55,7 +55,7 @@
        指针落焦时它把简写复位成 none，outline-color 同时落到 currentColor；焦点离开、规则失效的那一刻
        solid 立即回来，颜色若还在过渡就画成一圈实心边（上一条目闪边）。颜色即时切换后这条路径没有中间帧 */
     transition:
-      background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

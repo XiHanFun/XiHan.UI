@@ -210,7 +210,7 @@ export function assertCollectionItemRecipe(source) {
   assertFields(source.separator, ['blockMargin', 'inlineMargin', 'color'], 'root.separator')
   if (source.separator.blockMargin.startsWith('-') || source.separator.inlineMargin.startsWith('-'))
     fail('separator margin 不允许使用负值')
-  assertFields(source.motion, ['$description', 'duration', 'easing', 'pressDuration', 'pressEasing', 'releaseDuration', 'releaseEasing'], 'root.motion')
+  assertFields(source.motion, ['$description', 'duration', 'easing', 'pressDuration', 'pressEasing'], 'root.motion')
   assertExactKeys(source.direction, ['axis', 'flow'], 'root.direction')
   if (source.direction.axis !== 'logical' || source.direction.flow !== 'row')
     fail('root.direction 必须使用 logical row')
@@ -390,7 +390,7 @@ ${rest}
        指针落焦时它把简写复位成 none，outline-color 同时落到 currentColor；焦点离开、规则失效的那一刻
        solid 立即回来，颜色若还在过渡就画成一圈实心边（上一条目闪边）。颜色即时切换后这条路径没有中间帧 */
     transition:
-      background-color ${source.motion.releaseDuration} ${source.motion.releaseEasing},
+      background-color ${source.motion.duration} ${source.motion.easing},
       color ${source.motion.duration} ${source.motion.easing};
   }
 

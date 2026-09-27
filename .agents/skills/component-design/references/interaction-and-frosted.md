@@ -44,7 +44,7 @@ rest
   └─ pointerdown / Space / Enter
        └─ 0–120ms：scale 1 → 0.97，背景进入 active
             └─ release / keyup
-                 └─ 0–200ms：scale 0.97 → 1，背景回到 hover/rest
+                 └─ 0–200ms：scale 0.97 → 1；背景、描边、字色 0–120ms 回到 hover/rest
 ```
 
 固定参数：
@@ -52,7 +52,8 @@ rest
 | 参数 | 值 | 说明 |
 | --- | ---: | --- |
 | press duration | `--xh-motion-duration-press`（120ms） | 必须先于业务请求反馈 |
-| release duration | `--xh-motion-duration-release`（200ms） | 允许轻微回弹但不得过冲明显 |
+| release duration | `--xh-motion-duration-release`（200ms） | 只作用于缩放；允许轻微回弹但不得过冲明显 |
+| surface duration | `--xh-motion-duration-micro`（120ms） | 底色、描边、字色的换面，悬停进入与按压释放同一时长 |
 | press scale | `--xh-motion-scale-press`（0.97） | 所有离散 Action Control 一致 |
 | press easing | `--xh-motion-ease-press` | 按下稳定，不使用弹簧 |
 | release easing | `--xh-motion-ease-release` | 快速恢复，末端柔和 |
@@ -76,7 +77,7 @@ rest
 - Tabs card / segment trigger、Segmented item、load-more trigger。
 - 大面积 Card Action、导航项、可选择列表行。
 
-这些部件在 120ms 内切到 active 面，200ms 回到 hover / rest；不允许零反馈。原因是缩放整行会让文字发虚、边界漂移并影响相邻内容感知。
+这些部件在 120ms 内切到 active 面，松开后按 micro（120ms）回到 hover / rest；不允许零反馈。原因是缩放整行会让文字发虚、边界漂移并影响相邻内容感知。
 
 不播放点击反馈（须在门禁登记理由）：
 

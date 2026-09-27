@@ -117,10 +117,11 @@
 | 阶段 | 时长 | 结果 | 缓动 |
 | --- | ---: | --- | --- |
 | 按下 | 120ms（`--xh-motion-duration-press`） | scale 1 → 0.97，底进入 active | `--xh-motion-ease-press` |
-| 释放 | 200ms（`--xh-motion-duration-release`） | scale 0.97 → 1，底回到 hover / rest | `--xh-motion-ease-release` |
+| 释放 | 200ms（`--xh-motion-duration-release`） | scale 0.97 → 1；底、描边、字色按 120ms（`--xh-motion-duration-micro`）回到 hover / rest | `--xh-motion-ease-release` |
 
 - transform origin 固定居中；指针 `:active`、键盘 Space / Enter 与 Headless 投影的 `data-pressed` 三者一致。
 - 行级条目与 disclosure trigger（菜单项、树节点、表格行、手风琴标题）只换面，不缩放整个条目；不允许零反馈。
+- 换面（底、描边、字色）悬停进入与按压释放同一时长 micro：CSS 分不出这两种来路，200ms 的释放只给缩放。
 - 不用点击波纹；不允许组件自设 0.94 / 0.96 / 0.98 等缩放。
 - 业务事件不等动画结束：按下首帧先于异步 loading 可见；pending 后锁定重复操作，不持续缩放。
 - hover + pressed 时 pressed 优先；focus-visible + pressed 保留焦点环、按压只改内部表面；selected / danger + pressed 保留各自身份，在其上派生 active 面。

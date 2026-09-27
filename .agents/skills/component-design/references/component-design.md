@@ -672,7 +672,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 阶段 | 时长 | 结果 | 缓动 |
 | --- | ---: | --- | --- |
 | 按下 | `--xh-motion-duration-press`（120ms） | scale 1 → `--xh-motion-scale-press`（0.97），背景进入 active | `--xh-motion-ease-press` |
-| 释放 | `--xh-motion-duration-release`（200ms） | scale 0.97 → 1，背景回到 hover/rest | `--xh-motion-ease-release` |
+| 释放 | `--xh-motion-duration-release`（200ms） | scale 0.97 → 1；背景、描边、字色按 `--xh-motion-duration-micro` 回到 hover/rest | `--xh-motion-ease-release`（换面 `--xh-motion-ease-enter`） |
 
 - transform origin 固定为 center。
 - 指针 `:active`、键盘 Press 和 Headless `data-pressed` 必须一致。
@@ -684,7 +684,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 主体规则含 `inline-size: 100%`、`flex: 1`、含文本的 grid / flex 或高度随内容多行的部件——Menu Item、Listbox Item、Tree Node、Table Row、SideNav link、Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger、Tabs trigger、Segmented item、NavigationMenu / Menubar trigger、Anchor / Breadcrumb link、load-more trigger：
 
-- 使用相同的 120ms 按下、200ms 释放节奏。
+- 按下 120ms 切到 active 面；松开与悬停进入一样按 micro 回到 hover / rest。换面的过渡分不出「悬停进入」与「按压释放」两种来路，所以换面只取一个时长，释放时长只给缩放。
 - 只换面：active 背景，不缩放整个条目。
 - 集合行投影 `data-xh-collection-item`（Tabs line trigger、Anchor / Breadcrumb link、NavigationMenu / Menubar trigger 投影 `nav` 语境）；铺满一行的独立动作条目（load-more trigger、审批项）登记 Action Control `row` profile，disclosure trigger 登记 `disclosure-trigger` profile。两档 `press: surface`、`fill: true`：宽度由容器给、高度随内容、按下 `scale: none` 只换面；不允许零反馈。
 - Space / Enter 与粗指针触屏由 Headless / pointer 会话投影 `data-pressed`，皮肤 `:is(:active, [data-pressed])`。

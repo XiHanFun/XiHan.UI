@@ -390,13 +390,11 @@
     "color": "var(--xh-material-frosted-separator)"
   },
   "motion": {
-    "$description": "集合项与离散控件同节奏：按下 120ms 切到 pressed 面，释放 200ms 回到 hover / rest；只换面，不缩放整条。pressed 面由配方给出，组件皮肤不再自写 :active。",
+    "$description": "集合项与离散控件同节奏：按下 120ms 切到 pressed 面，松开与悬停进入一样按 micro 回到 hover / rest；只换面，不缩放整条。pressed 面由配方给出，组件皮肤不再自写 :active。",
     "duration": "var(--xh-motion-duration-micro)",
     "easing": "var(--xh-motion-ease-enter)",
     "pressDuration": "var(--xh-motion-duration-press)",
-    "pressEasing": "var(--xh-motion-ease-press)",
-    "releaseDuration": "var(--xh-motion-duration-release)",
-    "releaseEasing": "var(--xh-motion-ease-release)"
+    "pressEasing": "var(--xh-motion-ease-press)"
   },
   "direction": {
     "axis": "logical",

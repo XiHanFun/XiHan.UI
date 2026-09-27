@@ -1070,7 +1070,7 @@
        指针落焦时它把简写复位成 none，outline-color 同时落到 currentColor；焦点离开、规则失效的那一刻
        solid 立即回来，颜色若还在过渡就画成一圈实心边（上一条目闪边）。颜色即时切换后这条路径没有中间帧 */
     transition:
-      background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -27174,7 +27174,7 @@
   }
 
   /* 摘要里的每一条是一个真链接，指向对应字段容器。铺满一行的集合行：悬停 / 按下只换面不缩放，
-     底面坐在摘要的 surface 白底上，走白底承载阶梯 100 → 200；换面走按压时间线，释放回 release 档 */
+     底面坐在摘要的 surface 白底上，走白底承载阶梯 100 → 200；换面按下走 press，其余走 micro */
   [data-scope='form'][data-part='error-summary-item'] {
     display: block;
     padding-inline: var(--xh-form-summary-item-px, var(--xh-space-1));
@@ -27186,7 +27186,7 @@
     text-underline-offset: var(--xh-form-summary-item-underline-offset, var(--xh-space-0_5));
     cursor: pointer;
     transition:
-      background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -44462,10 +44462,10 @@
     line-height: var(--xh-tree-row-leading, var(--xh-leading-normal));
     white-space: nowrap;
     user-select: none;
-    /* 换面走家族的按下 / 释放时间线（与家族基础块同一份，描边色同样不进过渡）；box-shadow 一并接过渡：
+    /* 换面走家族的时间线（按下 press，其余一律 micro，描边色同样不进过渡）；box-shadow 一并接过渡：
        换父落点那圈内描边挂在行自己身上，跟着 data-drop 在行间移动 */
     transition:
-      background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
