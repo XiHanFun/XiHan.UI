@@ -7,6 +7,8 @@ const translations = { label: "会议时区", placeholder: "搜索城市或偏�
 </script>
 
 <template>
-  <XhTimeZoneSelect default-value="UTC" :time-zones="zones" disabled :translations="translations" />
-  <XhTimeZoneSelect :time-zones="zones" invalid :translations="translations" />
+  <div data-demo-stack>
+    <XhTimeZoneSelect default-value="UTC" :time-zones="zones" disabled :translations="translations" />
+    <XhTimeZoneSelect :time-zones="zones" invalid :translations="translations" />
+  </div>
 </template>

@@ -6,16 +6,18 @@ const zones = ["America/New_York", "Europe/London", "Asia/Shanghai"];
 </script>
 
 <template>
-  <XhTimeZoneSelect
-    default-value="America/New_York"
-    :time-zones="zones"
-    :reference-time="Date.UTC(2026, 0, 15)"
-    :translations="{ label: '冬季排期时区' }"
-  />
-  <XhTimeZoneSelect
-    default-value="America/New_York"
-    :time-zones="zones"
-    :reference-time="Date.UTC(2026, 6, 15)"
-    :translations="{ label: '夏季排期时区' }"
-  />
+  <div data-demo-stack>
+    <XhTimeZoneSelect
+      default-value="America/New_York"
+      :time-zones="zones"
+      :reference-time="Date.UTC(2026, 0, 15)"
+      :translations="{ label: '冬季排期时区' }"
+    />
+    <XhTimeZoneSelect
+      default-value="America/New_York"
+      :time-zones="zones"
+      :reference-time="Date.UTC(2026, 6, 15)"
+      :translations="{ label: '夏季排期时区' }"
+    />
+  </div>
 </template>

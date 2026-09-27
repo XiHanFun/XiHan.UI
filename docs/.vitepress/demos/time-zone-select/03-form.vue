@@ -8,7 +8,7 @@ const zones = ["UTC", "Asia/Shanghai", "America/New_York"];
 </script>
 
 <template>
-  <form @submit.prevent>
+  <form data-demo-stack @submit.prevent>
     <XhTimeZoneSelect v-model:value="value" name="timeZone" :time-zones="zones" />
     <button type="submit">保存排期</button>
   </form>

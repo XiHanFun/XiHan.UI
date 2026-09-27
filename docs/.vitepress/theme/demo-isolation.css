@@ -62,6 +62,20 @@
   --xh-tabs-scroll-trigger-bg: var(--demo-stage-bg, var(--vp-c-bg));
 }
 
+/* 多个紧凑控件或“控件 + 状态回读”作为一个整体参与舞台居中；
+   外层保持内容宽，内部统一纵向排列，不让组件根的 100% 宽度把每一项拆成整行。 */
+.xh-demo__stage [data-demo-stack] {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--xh-space-3);
+  min-inline-size: 0;
+}
+
+.vp-doc .xh-demo__stage [data-demo-stack] > p {
+  margin: 0;
+}
+
 /* 示例中必须由作者提供的原生控件使用这一层，避免重复内联整套字段外观。 */
 .xh-demo__stage .xh-demo-control {
   box-sizing: border-box;
