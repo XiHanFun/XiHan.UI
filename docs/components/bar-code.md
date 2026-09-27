@@ -1,4 +1,4 @@
-# BarCode 条形码 <Badge type="info" text="alpha" />
+# BarCode 条形码
 
 将一段文本绘制为一维条形码，`format` 选择码制。
 

@@ -368,8 +368,7 @@
         },
         {
           "id": "bar-code",
-          "name": "条形码",
-          "status": "alpha"
+          "name": "条形码"
         },
         {
           "id": "card",
@@ -472,15 +471,18 @@
       "components": [
         {
           "id": "cartesian-chart",
-          "name": "直角坐标图"
+          "name": "直角坐标图",
+          "status": "new"
         },
         {
           "id": "funnel-chart",
-          "name": "漏斗图"
+          "name": "漏斗图",
+          "status": "new"
         },
         {
           "id": "graph-chart",
-          "name": "关系图"
+          "name": "关系图",
+          "status": "new"
         },
         {
           "id": "heatmap",
@@ -488,23 +490,28 @@
         },
         {
           "id": "hierarchy-chart",
-          "name": "层级图"
+          "name": "层级图",
+          "status": "new"
         },
         {
           "id": "pie-chart",
-          "name": "饼图"
+          "name": "饼图",
+          "status": "new"
         },
         {
           "id": "radar-chart",
-          "name": "雷达图"
+          "name": "雷达图",
+          "status": "new"
         },
         {
           "id": "sankey-chart",
-          "name": "桑基图"
+          "name": "桑基图",
+          "status": "new"
         },
         {
           "id": "sparkline",
-          "name": "迷你图"
+          "name": "迷你图",
+          "status": "new"
         }
       ],
       "references": [

@@ -1,4 +1,4 @@
-# GraphChart 关系图
+# GraphChart 关系图 <Badge type="tip" text="new" />
 
 看实体之间的连接关系、聚类与层级结构。同一个组件用四种布局：力导、环形、树与径向树。
 

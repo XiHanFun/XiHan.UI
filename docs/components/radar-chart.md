@@ -1,4 +1,4 @@
-# RadarChart 雷达图
+# RadarChart 雷达图 <Badge type="tip" text="new" />
 
 比较少数几个实体在多个指标上的画像。每个指标一根轴，自 12 点方向顺时针排开，一个实体连成一个多边形。
 

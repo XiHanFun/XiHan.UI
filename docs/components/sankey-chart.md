@@ -1,4 +1,4 @@
-# SankeyChart 桑基图
+# SankeyChart 桑基图 <Badge type="tip" text="new" />
 
 看流量从哪里来、到哪里去、在哪里流失。节点分列排开，流带的宽度与流量成正比。
 

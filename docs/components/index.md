@@ -117,7 +117,7 @@
 <XhComponentCard src="accordion" name="Accordion" label="手风琴" href="/components/accordion" />
 <XhComponentCard src="avatar" name="Avatar" label="头像" href="/components/avatar" />
 <XhComponentCard src="avatar-group" name="AvatarGroup" label="头像组" href="/components/avatar-group" />
-<XhComponentCard src="bar-code" name="BarCode" label="条形码" href="/components/bar-code" status="alpha" />
+<XhComponentCard src="bar-code" name="BarCode" label="条形码" href="/components/bar-code" />
 <XhComponentCard src="card" name="Card" label="卡片" href="/components/card" />
 <XhComponentCard src="carousel" name="Carousel" label="走马灯" href="/components/carousel" />
 <XhComponentCard src="collapsible" name="Collapsible" label="折叠区域" href="/components/collapsible" />
@@ -148,15 +148,15 @@
 
 <div class="xh-component-grid">
 
-<XhComponentCard src="cartesian-chart" name="CartesianChart" label="直角坐标图" href="/components/cartesian-chart" />
-<XhComponentCard src="funnel-chart" name="FunnelChart" label="漏斗图" href="/components/funnel-chart" />
-<XhComponentCard src="graph-chart" name="GraphChart" label="关系图" href="/components/graph-chart" />
+<XhComponentCard src="cartesian-chart" name="CartesianChart" label="直角坐标图" href="/components/cartesian-chart" status="new" />
+<XhComponentCard src="funnel-chart" name="FunnelChart" label="漏斗图" href="/components/funnel-chart" status="new" />
+<XhComponentCard src="graph-chart" name="GraphChart" label="关系图" href="/components/graph-chart" status="new" />
 <XhComponentCard src="heatmap" name="Heatmap" label="热力图" href="/components/heatmap" />
-<XhComponentCard src="hierarchy-chart" name="HierarchyChart" label="层级图" href="/components/hierarchy-chart" />
-<XhComponentCard src="pie-chart" name="PieChart" label="饼图" href="/components/pie-chart" />
-<XhComponentCard src="radar-chart" name="RadarChart" label="雷达图" href="/components/radar-chart" />
-<XhComponentCard src="sankey-chart" name="SankeyChart" label="桑基图" href="/components/sankey-chart" />
-<XhComponentCard src="sparkline" name="Sparkline" label="迷你图" href="/components/sparkline" />
+<XhComponentCard src="hierarchy-chart" name="HierarchyChart" label="层级图" href="/components/hierarchy-chart" status="new" />
+<XhComponentCard src="pie-chart" name="PieChart" label="饼图" href="/components/pie-chart" status="new" />
+<XhComponentCard src="radar-chart" name="RadarChart" label="雷达图" href="/components/radar-chart" status="new" />
+<XhComponentCard src="sankey-chart" name="SankeyChart" label="桑基图" href="/components/sankey-chart" status="new" />
+<XhComponentCard src="sparkline" name="Sparkline" label="迷你图" href="/components/sparkline" status="new" />
 <XhComponentCard src="progress-meter" name="Progress" label="仪表盘与子弹图" href="/components/progress#仪表盘" />
 
 </div>
