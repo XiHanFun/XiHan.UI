@@ -149,6 +149,57 @@ describe('dialog 退场', () => {
     expect(document.querySelectorAll('[data-scope=\'dialog\'][data-part=\'content\']')).toHaveLength(1)
     expect(getComputedStyle(part('dialog', 'content')!).animationName).toBe('xh-sheet-in')
   })
+
+  it('退场中途重新展开从当前透明度接着淡入，不先跳回全透明', async () => {
+    // 进退场放慢到 1 秒，好在退场播到一半时重开并量出进场首帧的透明度
+    const root = document.documentElement
+    root.style.setProperty('--xh-motion-duration-exit', '1000ms')
+    root.style.setProperty('--xh-motion-duration-enter', '1000ms')
+    root.style.setProperty('--xh-motion-duration-enter-strong', '1000ms')
+    try {
+      const open = mount(value => h(XhDialogRoot, { open: value }, {
+        default: () => h(XhDialogContent, null, { default: () => h(XhDialogTitle, null, () => '标题') }),
+      }))
+      await settle()
+      const content = part('dialog', 'content')!
+      await Promise.all(content.getAnimations().map(animation => animation.finished.catch(() => undefined)))
+
+      open.value = false
+      await settle()
+      await new Promise(resolve => setTimeout(resolve, 300))
+      const beforeReopen = Number(getComputedStyle(content).opacity)
+      expect(beforeReopen, '退场播到三成时还没淡完').toBeGreaterThan(0.3)
+
+      open.value = true
+      await settle()
+      await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)))
+      const afterReopen = Number(getComputedStyle(content).opacity)
+      expect(getComputedStyle(content).animationName).toBe('xh-sheet-in')
+      expect(afterReopen, '进场首帧接着退场当时的透明度').toBeGreaterThan(beforeReopen - 0.25)
+    }
+    finally {
+      root.style.removeProperty('--xh-motion-duration-exit')
+      root.style.removeProperty('--xh-motion-duration-enter')
+      root.style.removeProperty('--xh-motion-duration-enter-strong')
+    }
+  })
+
+  it('完整关闭后再打开照常从全透明淡入', async () => {
+    const open = mount(value => h(XhDialogRoot, { open: value }, {
+      default: () => h(XhDialogContent, null, { default: () => h(XhDialogTitle, null, () => '标题') }),
+    }))
+    await settle()
+    open.value = false
+    await settle()
+    const closing = part('dialog', 'content')!
+    await animationEnd(closing)
+    await settle()
+
+    open.value = true
+    await settle()
+    const content = part('dialog', 'content')!
+    expect(content.style.getPropertyValue('--xh-_enter-from-opacity')).toBe('')
+  })
 })
 
 describe('select 行为资源退出', () => {

@@ -2460,7 +2460,7 @@
      Date / Time picker、ColorPicker、Tooltip */
   @keyframes xh-overlay-slide-in {
     from {
-      opacity: 0;
+      opacity: var(--xh-_enter-from-opacity, 0);
       translate:
         calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
         calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
@@ -2491,7 +2491,7 @@
      起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），四个都没写就退回原地缩放 */
   @keyframes xh-overlay-pop-in {
     from {
-      opacity: 0;
+      opacity: var(--xh-_enter-from-opacity, 0);
       scale: var(--xh-motion-scale-enter);
       translate:
         calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
@@ -2523,7 +2523,7 @@
      页内浮现的小件也取它：Approval、QuestionFlow 的结果标记，MessageFeed、Log 的回底钮 */
   @keyframes xh-pop-in {
     from {
-      opacity: 0;
+      opacity: var(--xh-_enter-from-opacity, 0);
       scale: var(--xh-motion-scale-enter);
     }
 
@@ -2538,7 +2538,7 @@
      Cascader 列项的淡入 */
   @keyframes xh-fade-in {
     from {
-      opacity: 0;
+      opacity: var(--xh-_enter-from-opacity, 0);
     }
 
     to {
@@ -2559,7 +2559,7 @@
   /* 页内内容的上浮进场：淡入叠一小段向上位移。Command 的分组、EmptyState、QuestionFlow */
   @keyframes xh-rise-in {
     from {
-      opacity: 0;
+      opacity: var(--xh-_enter-from-opacity, 0);
       translate: 0 var(--xh-motion-distance-sm);
     }
 
@@ -2606,7 +2606,7 @@
      Approval、MessageFeed、QuestionFlow、ToolCall 的条目 */
   @keyframes xh-item-in {
     from {
-      opacity: 0;
+      opacity: var(--xh-_enter-from-opacity, 0);
       translate: 0 var(--xh-motion-distance-md);
     }
 
@@ -2619,7 +2619,7 @@
   /* 自上而下的显现：新揭开的内容从上方落位。DiffView 展开的折叠块、Form 的错误汇总 */
   @keyframes xh-drop-in {
     from {
-      opacity: 0;
+      opacity: var(--xh-_enter-from-opacity, 0);
       translate: 0 calc(-1 * var(--xh-motion-distance-sm));
     }
 
@@ -2633,7 +2633,7 @@
      位移与缩放写独立属性，互不覆盖，手势期间写 translate 也不会把 scale 抹掉。Dialog、Notification */
   @keyframes xh-sheet-in {
     from {
-      opacity: 0;
+      opacity: var(--xh-_enter-from-opacity, 0);
       translate: 0 var(--xh-motion-distance-md);
       scale: var(--xh-motion-scale-enter);
     }
@@ -2687,7 +2687,7 @@
      时长取淡变档（enter / exit），不随几何时长一起归零。Drawer */
   @keyframes xh-slide-fade-in {
     from {
-      opacity: var(--xh-motion-travel-opacity);
+      opacity: var(--xh-_enter-from-opacity, var(--xh-motion-travel-opacity));
     }
 
     to {
@@ -41245,7 +41245,7 @@
   /* 新条目从视口边缘外进入，同时落到自己的折叠层级。整幅位移取令牌，减弱动效下归零，只剩淡入 */
   @keyframes xh-toast-in {
     from {
-      opacity: 0;
+      opacity: var(--xh-_enter-from-opacity, 0);
       translate: 0 calc(var(--xh-toast-dir, 1) * (var(--xh-toast-offset-collapsed, 0px) - var(--xh-motion-travel)));
       scale: var(--xh-toast-scale-collapsed, var(--xh-_toast-stack-scale));
     }
@@ -43182,7 +43182,7 @@
   /* 高亮框落定时那一下呼吸：换步时视线要跟着它走，纯位移太容易被漏看 */
   @keyframes xh-tour-spotlight-in {
     from {
-      opacity: 0;
+      opacity: var(--xh-_enter-from-opacity, 0);
       scale: calc(2 - var(--xh-motion-scale-enter));
     }
 

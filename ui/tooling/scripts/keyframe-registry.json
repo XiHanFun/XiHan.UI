@@ -92,7 +92,7 @@
       "relation": "data"
     },
     "xh-drop-in": {
-      "content": "from{opacity:0;translate:0 calc(-1 * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
+      "content": "from{opacity:var(--xh-_enter-from-opacity,0);translate:0 calc(-1 * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
       "definedIn": [
         "family/motion.css"
       ],
@@ -103,7 +103,7 @@
       "relation": "fade"
     },
     "xh-fade-in": {
-      "content": "from{opacity:0}to{opacity:1}",
+      "content": "from{opacity:var(--xh-_enter-from-opacity,0)}to{opacity:1}",
       "definedIn": [
         "family/motion.css"
       ],
@@ -168,7 +168,7 @@
       ]
     },
     "xh-item-in": {
-      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
+      "content": "from{opacity:var(--xh-_enter-from-opacity,0);translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
       "definedIn": [
         "family/motion.css"
       ],
@@ -219,7 +219,7 @@
       ]
     },
     "xh-overlay-pop-in": {
-      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter);translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;scale:1;translate:0 0}",
+      "content": "from{opacity:var(--xh-_enter-from-opacity,0);scale:var(--xh-motion-scale-enter);translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;scale:1;translate:0 0}",
       "definedIn": [
         "family/motion.css"
       ],
@@ -233,7 +233,7 @@
       "relation": "anchored-panel"
     },
     "xh-overlay-slide-in": {
-      "content": "from{opacity:0;translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
+      "content": "from{opacity:var(--xh-_enter-from-opacity,0);translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
       "definedIn": [
         "family/motion.css"
       ],
@@ -279,7 +279,7 @@
       "relation": "anchored-list"
     },
     "xh-pop-in": {
-      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
+      "content": "from{opacity:var(--xh-_enter-from-opacity,0);scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
       "definedIn": [
         "family/motion.css"
       ],
@@ -329,7 +329,7 @@
       ]
     },
     "xh-rise-in": {
-      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-sm)}to{opacity:1;translate:0 0}",
+      "content": "from{opacity:var(--xh-_enter-from-opacity,0);translate:0 var(--xh-motion-distance-sm)}to{opacity:1;translate:0 0}",
       "definedIn": [
         "family/motion.css"
       ],
@@ -341,7 +341,7 @@
       "relation": "fade"
     },
     "xh-sheet-in": {
-      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}to{opacity:1;translate:0 0;scale:1}",
+      "content": "from{opacity:var(--xh-_enter-from-opacity,0);translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}to{opacity:1;translate:0 0;scale:1}",
       "definedIn": [
         "family/motion.css"
       ],
@@ -392,7 +392,7 @@
       ]
     },
     "xh-slide-fade-in": {
-      "content": "from{opacity:var(--xh-motion-travel-opacity)}to{opacity:1}",
+      "content": "from{opacity:var(--xh-_enter-from-opacity,var(--xh-motion-travel-opacity))}to{opacity:1}",
       "definedIn": [
         "family/motion.css"
       ],
@@ -476,7 +476,7 @@
       ]
     },
     "xh-toast-in": {
-      "content": "from{opacity:0;translate:0 calc(var(--xh-toast-dir,1) * (var(--xh-toast-offset-collapsed,0px) - var(--xh-motion-travel)));scale:var(--xh-toast-scale-collapsed,var(--xh-_toast-stack-scale))}to{opacity:1;translate:0 calc(var(--xh-toast-dir,1) * var(--xh-toast-offset-collapsed,0px));scale:var(--xh-toast-scale-collapsed,var(--xh-_toast-stack-scale))}",
+      "content": "from{opacity:var(--xh-_enter-from-opacity,0);translate:0 calc(var(--xh-toast-dir,1) * (var(--xh-toast-offset-collapsed,0px) - var(--xh-motion-travel)));scale:var(--xh-toast-scale-collapsed,var(--xh-_toast-stack-scale))}to{opacity:1;translate:0 calc(var(--xh-toast-dir,1) * var(--xh-toast-offset-collapsed,0px));scale:var(--xh-toast-scale-collapsed,var(--xh-_toast-stack-scale))}",
       "definedIn": [
         "toast.css"
       ],
@@ -494,7 +494,7 @@
       ]
     },
     "xh-tour-spotlight-in": {
-      "content": "from{opacity:0;scale:calc(2 - var(--xh-motion-scale-enter))}to{opacity:1;scale:1}",
+      "content": "from{opacity:var(--xh-_enter-from-opacity,0);scale:calc(2 - var(--xh-motion-scale-enter))}to{opacity:1;scale:1}",
       "definedIn": [
         "tour.css"
       ],
