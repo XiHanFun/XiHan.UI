@@ -33341,6 +33341,174 @@
   }
 }
 
+/* styles/sankey-chart.css */
+/* 定义 sankey chart 样式。 */
+
+/* 标题、视口、图例、提示框、空态与焦点环走 Chart 家族配方。本皮肤 @import 它，单独引入仍成立。 */
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='sankey-chart'] {
+    --xh-sankey-chart-skin: 1;
+  }
+
+  /* 几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何。
+     节点的厚度借柱的最大厚度那一格传进去 */
+  [data-scope='sankey-chart'][data-part='root'] {
+    --xh-_chart-metric-bar-max: var(--xh-sankey-chart-node-width, var(--xh-space-3));
+    --xh-_chart-metric-gap: var(--xh-chart-gap);
+    --xh-_chart-metric-line-width: var(--xh-chart-line-width);
+    --xh-_chart-metric-point-size: var(--xh-chart-point-size);
+    --xh-_chart-metric-hit-min: var(--xh-chart-hit-min);
+    --xh-_chart-metric-tick-length: var(--xh-chart-tick-length);
+    --xh-_chart-metric-label-gap: var(--xh-chart-label-gap);
+    --xh-_chart-metric-radius: var(--xh-sankey-chart-node-radius, var(--xh-shape-inset));
+    --xh-_chart-metric-font-size: var(--xh-text-caption-size);
+    --xh-_chart-metric-leading: var(--xh-leading-tight);
+    --xh-_chart-gap: var(--xh-sankey-chart-gap, var(--xh-space-3));
+  }
+
+  /* —— 家族配方的组件槽：标题、视口、图例、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
+     对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
+  [data-scope='sankey-chart'][data-part='viewport'] {
+    --xh-_chart-height: var(--xh-sankey-chart-height, var(--xh-chart-height));
+  }
+
+  [data-scope='sankey-chart'][data-part='legend'] {
+    --xh-_chart-legend-gap: var(--xh-sankey-chart-legend-gap, var(--xh-space-1));
+  }
+
+  [data-scope='sankey-chart'][data-part='legend-swatch'] {
+    --xh-_chart-legend-swatch-radius: var(--xh-sankey-chart-legend-swatch-radius, var(--xh-shape-inset));
+  }
+
+  [data-scope='sankey-chart'][data-part='tooltip'] {
+    --xh-_chart-tooltip-gap: var(--xh-sankey-chart-tooltip-gap, var(--xh-space-1));
+    --xh-_chart-tooltip-py: var(--xh-sankey-chart-tooltip-py, var(--xh-surface-pad-sm));
+    --xh-_chart-tooltip-px: var(--xh-sankey-chart-tooltip-px, var(--xh-surface-pad-sm));
+    --xh-_chart-tooltip-radius: var(--xh-sankey-chart-tooltip-radius, var(--xh-shape-overlay));
+    --xh-_chart-tooltip-shadow: var(--xh-sankey-chart-tooltip-shadow, var(--xh-material-frosted-shadow));
+  }
+
+  [data-scope='sankey-chart'][data-part='tooltip-row'] {
+    --xh-_chart-tooltip-row-gap: var(--xh-sankey-chart-tooltip-row-gap, var(--xh-space-2));
+  }
+
+  [data-scope='sankey-chart'][data-part='tooltip-swatch'] {
+    --xh-_chart-tooltip-swatch-radius: var(--xh-sankey-chart-tooltip-swatch-radius, var(--xh-shape-inset));
+  }
+
+  [data-scope='sankey-chart'][data-part='empty'][data-state='loading'] {
+    --xh-_chart-empty-gap: var(--xh-sankey-chart-empty-gap, var(--xh-space-2));
+  }
+
+  /* —— 色槽：分组由色槽承担，作者可以在节点上覆盖 --xh-sankey-chart-series-color ——
+     节点、取了颜色的流带、渐变的色标、图例项与提示框的行都带着色槽，各自从这里取系列色 */
+  [data-scope='sankey-chart'][data-xh-chart-slot='1'] {
+    --xh-_chart-series: var(--xh-sankey-chart-series-color, var(--xh-chart-categorical-1));
+  }
+
+  [data-scope='sankey-chart'][data-xh-chart-slot='2'] {
+    --xh-_chart-series: var(--xh-sankey-chart-series-color, var(--xh-chart-categorical-2));
+  }
+
+  [data-scope='sankey-chart'][data-xh-chart-slot='3'] {
+    --xh-_chart-series: var(--xh-sankey-chart-series-color, var(--xh-chart-categorical-3));
+  }
+
+  [data-scope='sankey-chart'][data-xh-chart-slot='4'] {
+    --xh-_chart-series: var(--xh-sankey-chart-series-color, var(--xh-chart-categorical-4));
+  }
+
+  [data-scope='sankey-chart'][data-xh-chart-slot='5'] {
+    --xh-_chart-series: var(--xh-sankey-chart-series-color, var(--xh-chart-categorical-5));
+  }
+
+  [data-scope='sankey-chart'][data-xh-chart-slot='6'] {
+    --xh-_chart-series: var(--xh-sankey-chart-series-color, var(--xh-chart-categorical-6));
+  }
+
+  [data-scope='sankey-chart'][data-xh-chart-slot='7'] {
+    --xh-_chart-series: var(--xh-sankey-chart-series-color, var(--xh-chart-categorical-7));
+  }
+
+  [data-scope='sankey-chart'][data-xh-chart-slot='8'] {
+    --xh-_chart-series: var(--xh-sankey-chart-series-color, var(--xh-chart-categorical-8));
+  }
+
+  /* —— 流带：缺省是半透明的中性色，交叠处叠深、读得出汇合；取了颜色或渐变时换成对应的面。
+     指着一个节点或一条流带时相连的流带换色，其余淡出 —— */
+  [data-scope='sankey-chart'][data-part='link'] {
+    --xh-_sankey-link: var(--xh-sankey-chart-link-color, var(--xh-chart-categorical-other));
+
+    fill: var(--xh-_sankey-link);
+    fill-opacity: var(--xh-sankey-chart-link-alpha, var(--xh-chart-link-alpha));
+    stroke: none;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='sankey-chart'][data-part='link'][data-xh-chart-slot] {
+    --xh-_sankey-link: var(--xh-_chart-series);
+  }
+
+  [data-scope='sankey-chart'][data-part='link'][data-gradient] {
+    --xh-_sankey-link: var(--xh-_sankey-gradient);
+  }
+
+  [data-scope='sankey-chart'][data-part='gradient-stop'] {
+    stop-color: var(--xh-_chart-series);
+  }
+
+  /* —— 节点：取分组的系列色，压在流带两端上 —— */
+  [data-scope='sankey-chart'][data-part='node'] {
+    fill: var(--xh-_chart-series);
+    stroke: none;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='sankey-chart'][data-part='link'][data-dimmed],
+  [data-scope='sankey-chart'][data-part='node'][data-dimmed],
+  [data-scope='sankey-chart'][data-part='node-label'][data-dimmed] {
+    opacity: var(--xh-chart-dim-alpha);
+  }
+
+  /* 节点名写在列间的空当里，底下可能压着流带：正文色，描一圈承载面色，交叠处也读得清。名字不接指针，命中归节点 */
+  [data-scope='sankey-chart'][data-part='node-label'] {
+    fill: var(--xh-fg-default);
+    stroke: var(--xh-chart-surface);
+    stroke-width: var(--xh-stroke-thick);
+    stroke-linejoin: round;
+    paint-order: stroke;
+    pointer-events: none;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 强制色：节点改成系统色的面与描边，流带取次级系统色、被指着的取高亮色，名字取正文色；
+     焦点环、图例与色标在配方里 */
+  @media (forced-colors: active) {
+    [data-scope='sankey-chart'][data-part='node'] {
+      fill: Canvas;
+      stroke: CanvasText;
+      stroke-width: var(--xh-stroke-thin);
+    }
+
+    [data-scope='sankey-chart'][data-part='link'],
+    [data-scope='sankey-chart'][data-part='link'][data-xh-chart-slot],
+    [data-scope='sankey-chart'][data-part='link'][data-gradient] {
+      --xh-_sankey-link: GrayText;
+    }
+
+    [data-scope='sankey-chart'][data-part='link'][data-highlighted] {
+      --xh-_sankey-link: Highlight;
+    }
+
+    [data-scope='sankey-chart'][data-part='node-label'] {
+      fill: CanvasText;
+      stroke: Canvas;
+    }
+  }
+}
+
 /* styles/scroll-area.css */
 /* 定义 scroll area 样式。 */
 

@@ -54697,6 +54697,350 @@
       "description": "resizable 的 handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-sankey-chart-empty-gap",
+      "component": "sankey-chart",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "state=loading"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 empty 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-gap",
+      "component": "sankey-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-height",
+      "component": "sankey-chart",
+      "part": [
+        "viewport"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-height"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 viewport 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-legend-gap",
+      "component": "sankey-chart",
+      "part": [
+        "legend"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 legend 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-legend-swatch-radius",
+      "component": "sankey-chart",
+      "part": [
+        "legend-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 legend-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-link-alpha",
+      "component": "sankey-chart",
+      "part": [
+        "link"
+      ],
+      "property": [
+        "fill-opacity"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-link-alpha"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 link 部件 fill-opacity 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-link-color",
+      "component": "sankey-chart",
+      "part": [
+        "link"
+      ],
+      "property": [
+        "fill"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-categorical-other"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 link 部件 fill 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-node-radius",
+      "component": "sankey-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-node-width",
+      "component": "sankey-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-bar-max"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 root 部件 --xh-_chart-metric-bar-max 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-series-color",
+      "component": "sankey-chart",
+      "part": [
+        "gradient-stop",
+        "legend-swatch",
+        "link",
+        "node",
+        "pattern-line",
+        "tooltip-swatch"
+      ],
+      "property": [
+        "background",
+        "border",
+        "fill",
+        "stop-color",
+        "stroke"
+      ],
+      "state": [
+        "@media (forced-colors: active)",
+        "@media print",
+        "mark=line",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=1",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns",
+        "xh-chart-slot",
+        "xh-chart-slot=1",
+        "xh-chart-slot=2",
+        "xh-chart-slot=3",
+        "xh-chart-slot=4",
+        "xh-chart-slot=5",
+        "xh-chart-slot=6",
+        "xh-chart-slot=7",
+        "xh-chart-slot=8"
+      ],
+      "defaultToken": [
+        "--xh-chart-categorical-1",
+        "--xh-chart-categorical-2",
+        "--xh-chart-categorical-3",
+        "--xh-chart-categorical-4",
+        "--xh-chart-categorical-5",
+        "--xh-chart-categorical-6",
+        "--xh-chart-categorical-7",
+        "--xh-chart-categorical-8"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 gradient-stop、legend-swatch、link、node、pattern-line、tooltip-swatch 部件 background、border、fill、stop-color、stroke 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-tooltip-gap",
+      "component": "sankey-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 tooltip 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-tooltip-px",
+      "component": "sankey-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 tooltip 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-tooltip-py",
+      "component": "sankey-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 tooltip 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-tooltip-radius",
+      "component": "sankey-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-overlay"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 tooltip 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-tooltip-row-gap",
+      "component": "sankey-chart",
+      "part": [
+        "tooltip-row"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 tooltip-row 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-tooltip-shadow",
+      "component": "sankey-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-shadow"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 tooltip 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-sankey-chart-tooltip-swatch-radius",
+      "component": "sankey-chart",
+      "part": [
+        "tooltip-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "sankey-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-scroll-area-fade-size",
       "component": "scroll-area",
       "part": [

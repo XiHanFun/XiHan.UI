@@ -107,6 +107,7 @@ import { XhRadioGroupElement } from './elements/radio-group'
 import { XhRatingElement } from './elements/rating'
 import { XhReasoningElement } from './elements/reasoning'
 import { XhResizableElement } from './elements/resizable'
+import { XhSankeyChartElement } from './elements/sankey-chart'
 import { XhScrollAreaElement } from './elements/scroll-area'
 import { XhScrollbarElement } from './elements/scrollbar'
 import { XhSegmentedElement } from './elements/segmented'
@@ -204,6 +205,7 @@ export function defineXhElements(): void {
   defineElement('xh-radar-chart', XhRadarChartElement, VERSION)
   defineElement('xh-reasoning', XhReasoningElement, VERSION)
   defineElement('xh-resizable', XhResizableElement, VERSION)
+  defineElement('xh-sankey-chart', XhSankeyChartElement, VERSION)
   defineElement('xh-segmented', XhSegmentedElement, VERSION)
   defineElement('xh-signature-pad', XhSignaturePadElement, VERSION)
   defineElement('xh-skeleton', XhSkeletonElement, VERSION)
@@ -383,6 +385,7 @@ export {
   XhRatingElement,
   XhReasoningElement,
   XhResizableElement,
+  XhSankeyChartElement,
   XhScrollAreaElement,
   XhScrollbarElement,
   XhSegmentedElement,

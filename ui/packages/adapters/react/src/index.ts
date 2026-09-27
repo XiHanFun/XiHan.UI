@@ -2020,6 +2020,29 @@ export { XhResizableHandle, XhResizableRoot } from './components/resizable/resiz
 export type { ResizableRootSlotProps, XhResizableHandleProps, XhResizableRootProps } from './components/resizable/resizable'
 export { useResizable } from './components/resizable/use-resizable'
 export type { ResizableContext } from './components/resizable/use-resizable'
+export { useSankeyChartContext } from './components/sankey-chart/context'
+export {
+  XhSankeyChartCaption,
+  XhSankeyChartEmpty,
+  XhSankeyChartLegend,
+  XhSankeyChartPlot,
+  XhSankeyChartRoot,
+  XhSankeyChartTooltip,
+  XhSankeyChartViewport,
+} from './components/sankey-chart/sankey-chart'
+export type {
+  SankeyChartRootSlotProps,
+  SankeyChartTooltipSlotProps,
+  XhSankeyChartCaptionProps,
+  XhSankeyChartEmptyProps,
+  XhSankeyChartLegendProps,
+  XhSankeyChartPlotProps,
+  XhSankeyChartRootProps,
+  XhSankeyChartTooltipProps,
+  XhSankeyChartViewportProps,
+} from './components/sankey-chart/sankey-chart'
+export { useSankeyChart } from './components/sankey-chart/use-sankey-chart'
+export type { SankeyChartContext } from './components/sankey-chart/use-sankey-chart'
 export { useScrollAreaContext, useScrollAreaScrollbarContext } from './components/scroll-area/context'
 export {
   XhScrollAreaContent,
