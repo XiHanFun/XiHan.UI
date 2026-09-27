@@ -217,16 +217,16 @@
   }
 
   /* 值气泡：挂在拇指里，跟着拇指一起走位。
-     两侧 inset 都钉在 50% 再靠自动外边距回中：气泡宽度由文字撑出，用 translate 回中的话
-     rtl 下 inset-inline-start 映射到 right，位移是物理方向的，会把气泡推向错误的一侧。
+     气泡宽度由文字撑出，只能靠平移回中。不能两侧 inset 都钉在 50% 再靠自动外边距回中：
+     那样可用宽度是 0，气泡比它宽，自动外边距按规范取 0，气泡从拇指中线起排、偏出半个自身宽。
      默认只在推动那一刻露面，静止时留在 DOM 里但不占视线 */
   [data-scope='slider'][data-part='value-text'] {
     position: absolute;
     inset-block-end: 100%;
-    inset-inline: 50%;
+    inset-inline-start: 50%;
     inline-size: max-content;
     margin-block-end: var(--xh-slider-value-text-offset, var(--xh-space-2));
-    margin-inline: auto;
+    translate: -50% 0;
     padding-block: var(--xh-slider-value-text-py, var(--xh-space-0_5));
     padding-inline: var(--xh-slider-value-text-px, var(--xh-space-2));
     border-radius: var(--xh-slider-value-text-radius, var(--xh-shape-control));
@@ -239,6 +239,11 @@
     pointer-events: none;
     opacity: 0;
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，气泡才落回拇指正上方 */
+  [data-scope='slider'][data-part='value-text']:dir(rtl) {
+    translate: 50% 0;
   }
 
   [data-scope='slider'][data-part='value-text'][hidden] {
@@ -290,6 +295,11 @@
     translate: -50% -50%;
   }
 
+  /* 连接层把比例点写在 inset-inline-start 上：rtl 下平移的行内分量掉头，刻度点才以比例点为中心 */
+  [data-scope='slider'][data-part='tick']:dir(rtl) {
+    translate: 50% -50%;
+  }
+
   /* 落进已选区间的刻度点跟 range 同色 */
   [data-scope='slider'][data-part='tick'][data-passed] {
     background: var(--xh-slider-tick-bg-active, var(--xh-_tone, var(--xh-bg-brand)));
@@ -307,6 +317,10 @@
     cursor: pointer;
     pointer-events: auto;
     user-select: none;
+  }
+
+  [data-scope='slider'][data-part='tick-label']:dir(rtl) {
+    translate: 50% 0;
   }
 
   [data-scope='slider'][data-part='tick-label'][data-passed] {
@@ -333,6 +347,10 @@
     inset-block-start: auto;
     inset-inline-start: 50%;
     translate: -50% 50%;
+  }
+
+  [data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick']:dir(rtl) {
+    translate: 50% 50%;
   }
 
   [data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick-label'] {

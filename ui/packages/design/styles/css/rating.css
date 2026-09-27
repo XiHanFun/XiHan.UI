@@ -157,6 +157,11 @@
     pointer-events: none;
   }
 
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，星形才落回格子正中 */
+  [data-scope='rating'][data-part='item']:empty:dir(rtl)::after {
+    translate: 50% -50%;
+  }
+
   [data-scope='rating'][data-part='item']:empty::after {
     background-color: var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent));
     clip-path: inset(0 100% 0 0);

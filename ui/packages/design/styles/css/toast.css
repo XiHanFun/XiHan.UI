@@ -72,6 +72,11 @@
     translate: -50% 0;
   }
 
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，居中的那一摞才落回视口正中 */
+  [data-scope='toast'][data-part='group']:is([data-placement='top'], [data-placement='bottom']):dir(rtl) {
+    translate: 50% 0;
+  }
+
   [data-scope='toast'][data-part='group'][data-placement$='-start'] {
     inset-inline-start: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-left));
   }
