@@ -31,7 +31,7 @@ import {
 import { sameArray as sameDates } from '../shared/array'
 import { calendarPeriodValue } from '../shared/calendar'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
-import { timePickerColumns } from '../time-picker'
+import { timeColumns as buildTimeColumns } from '../shared/time-constraint'
 import { datePickerAnatomy } from './date-picker.anatomy'
 import { DATE_PICKER_DEFAULT_PLACEMENT } from './date-picker.machine'
 import { datePickerPresetDates } from './date-picker.presets'
@@ -120,7 +120,7 @@ export function connectDatePicker<T extends PropTypes>(
   const timeGranularity = prop('timeGranularity') ?? 'minute'
   // 内嵌面板恒为 24 小时制，生成函数因此不会给出上下午那一列；滤一道把这件事写进类型里
   const timeColumns: readonly TimePickerColumn<DatePickerTimeUnit>[] = showTime
-    ? timePickerColumns({ granularity: timeGranularity, hourCycle: 24 })
+    ? buildTimeColumns({ granularity: timeGranularity, hourCycle: 24 })
         .filter((column): column is TimePickerColumn<DatePickerTimeUnit> => column.unit !== 'dayPeriod')
     : []
   const timeValue = showTime && value[0] != null ? datePickerTimePart(value[0]) : null

@@ -9,7 +9,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, createServi
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { timePickerColumns } from '../src/time-picker'
+import { timeColumns } from '../src/shared/time-constraint'
 import {
   connectTimeRangePicker,
   resolveTimeRangePickerEndIndex,
@@ -156,10 +156,10 @@ function mount(initial: Partial<Props> = {}, mountOptions: MountOptions = {}): H
     hiddenInputs.set(index, doc.createElement('input'))
   root.append(label, control, positioner, hiddenInputs.get(0)!, hiddenInputs.get(1)!)
 
-  const grid = timePickerColumns({
+  const grid = timeColumns({
     granularity: 'second',
     hourCycle: initial.hourCycle,
-    step: initial.step,
+    timeStep: { minute: initial.step },
   })
   const columnGroups = new Map<TimeRangePickerEndIndex, HTMLElement>()
   const columns = new Map<string, HTMLElement>()

@@ -10,6 +10,7 @@ import type { TimeSegmentType } from '../time-field'
 import type { TimePickerApi, TimePickerColumnUnit, TimePickerPresetState, TimePickerPressedKey, TimePickerSchema } from './time-picker.types'
 import { createPressTracker, dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { resolveTimeStep, timeColumnsFor, timeItemValue } from '../shared/time-constraint'
 import {
   appendSegmentDigit,
   dayPeriodLabel,
@@ -33,12 +34,7 @@ import {
   timePickerPresetQuery,
   timePickerSegmentQuery,
 } from './time-picker.anatomy'
-import {
-  resolveTimeStep,
-  TIME_PICKER_DEFAULT_PLACEMENT,
-  timePickerColumnsFor,
-  timePickerItemValue,
-} from './time-picker.machine'
+import { TIME_PICKER_DEFAULT_PLACEMENT } from './time-picker.machine'
 
 const parts = timePickerAnatomy.build()
 
@@ -70,7 +66,7 @@ export function connectTimePicker<T extends PropTypes>(
   const locale = prop('locale')
   const hourCycle = resolveHourCycle(prop('hourCycle'), locale)
   const granularity = prop('granularity') ?? TIME_FIELD_GRANULARITY
-  const step = resolveTimeStep(prop('step'))
+  const step = resolveTimeStep({ minute: prop('step') }).minute
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
@@ -128,10 +124,10 @@ export function connectTimePicker<T extends PropTypes>(
     : segments[0]!
 
   // 列表是纯函数按当前值算出来的，connect 与机器读到的是同一份
-  const columns = timePickerColumnsFor(draft, {
+  const columns = timeColumnsFor(draft, {
     granularity,
     hourCycle,
-    step,
+    timeStep: { minute: step },
     min: prop('min'),
     max: prop('max'),
   })
@@ -142,7 +138,7 @@ export function connectTimePicker<T extends PropTypes>(
   /** 这一列此刻选中的那个值（两位补零）；该段还空着时为 null。 */
   const selectedIn = (unit: TimePickerColumnUnit): string | null => {
     const current = segmentNumber(draft, unit, hourCycle)
-    return current == null ? null : timePickerItemValue(current)
+    return current == null ? null : timeItemValue(current)
   }
 
   /**
