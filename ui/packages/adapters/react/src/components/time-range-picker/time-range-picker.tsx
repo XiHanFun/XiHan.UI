@@ -17,6 +17,8 @@ import type {
   TimeRangePickerPresetState,
   TimeRangePickerSchema,
   TimeSegmentType,
+  TimeStep,
+  TimeUnavailablePredicate,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -88,13 +90,15 @@ export interface XhTimeRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   locale?: string
   hourCycle?: TimeHourCycle
   granularity?: TimeGranularity
-  step?: number
+  /** 按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。 */
+  timeStep?: TimeStep
   /** 快捷选项；提供后浮层中多出一列，时刻要在调用方计算后再传入。 */
   presets?: TimeRangePickerPreset[]
   disabled?: boolean
   /** 两组段位与时列各自的读屏名字。 */
   translations?: TimeRangePickerProps['translations']
-  isTimeUnavailable?: (value: string, unit: TimePickerColumnUnit, index: TimeRangePickerEndIndex) => boolean
+  /** 逐格可选性：时列按 24 小时制给值，第三个参数带这一端已选的时分与端号。 */
+  isTimeUnavailable?: TimeUnavailablePredicate
   readOnly?: boolean
   invalid?: boolean
   required?: boolean
@@ -123,7 +127,7 @@ export function XhTimeRangePickerRoot({
   locale,
   hourCycle,
   granularity,
-  step,
+  timeStep,
   presets,
   disabled,
   translations,
@@ -154,7 +158,7 @@ export function XhTimeRangePickerRoot({
     locale,
     hourCycle,
     granularity,
-    step,
+    timeStep,
     presets,
     disabled,
     translations,

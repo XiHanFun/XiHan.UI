@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
 
   return (
     <>
-      <XhTimeRangePickerRoot value={value} onValueChange={details => setValue(details.value)} hourCycle={12} locale="zh-CN" step={30}>
+      <XhTimeRangePickerRoot value={value} onValueChange={details => setValue(details.value)} hourCycle={12} locale="zh-CN" timeStep={{ minute: 30 }}>
         <XhTimeRangePickerLabel>值班时段</XhTimeRangePickerLabel>
         <XhTimeRangePickerControl>
           {([0, 1] as const).map(end => (

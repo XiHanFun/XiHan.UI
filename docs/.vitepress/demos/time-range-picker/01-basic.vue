@@ -29,7 +29,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
     v-model:value="value"
     name="open-at"
     end-name="close-at"
-    :step="15"
+    :time-step="{ minute: 15 }"
   >
     <XhTimeRangePickerLabel>营业时段</XhTimeRangePickerLabel>
     <XhTimeRangePickerControl>

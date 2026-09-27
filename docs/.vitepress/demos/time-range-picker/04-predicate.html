@@ -1,4 +1,4 @@
-<!-- 逐格判定 | isTimeUnavailable 收到值、列与端，起点只能整点开始、终点只能半点结束 -->
+<!-- 逐格判定 | isTimeUnavailable 收到值、列与上下文（context.index 是哪一端），起点只能整点开始、终点只能半点结束 -->
 <div id="time-range-picker-predicate"></div>
 <span aria-live="polite" style="font-size: 13px">
   当前值：<span id="time-range-picker-predicate-value">（未填齐）</span>
@@ -6,7 +6,7 @@
 
 <!-- 结构先收在模板里：两组列里的格子要在元素接线前就位，所以铺满了才入页 -->
 <template id="time-range-picker-predicate-shell">
-  <xh-time-range-picker step="15">
+  <xh-time-range-picker time-step='{"minute":15}'>
     <div data-xh-part="root">
       <label data-xh-part="label">课时</label>
       <div data-xh-part="control">
@@ -83,10 +83,10 @@
   }
 
   // 判定函数只走 property；判真的格子仍可聚焦，只是选不中
-  picker.isTimeUnavailable = (option, unit, index) => {
+  picker.isTimeUnavailable = (option, unit, context) => {
     if (unit !== "minute")
       return false;
-    return index === 0 ? option !== "00" : option !== "30";
+    return context.index === 0 ? option !== "00" : option !== "30";
   };
 
   picker.addEventListener("value-change", async (event) => {

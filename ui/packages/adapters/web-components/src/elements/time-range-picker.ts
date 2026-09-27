@@ -19,12 +19,14 @@ import type {
   TimeRangePickerSchema,
   TimeRangePickerValueChangeDetails,
   TimeSegmentType,
+  TimeStep,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTimeRangePicker, resolveFormControlState, resolveTimeRangePickerEndIndex, timeRangePickerAnatomy, timeRangePickerMachine, timeRangePickerMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
+import { TIME_STEP_CONVERTER } from '../dom/time-step'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -89,7 +91,7 @@ function declaredEnd(el: HTMLElement, position: number): TimeRangePickerEndIndex
  * @attr {string} locale - BCP 47 语言标记，决定上午 / 下午文字与默认小时制
  * @attr {'12'|'24'} hour-cycle - 小时制；未提供时按 locale 推断，仍没有时使用 24
  * @attr {'hour'|'minute'|'second'} granularity - 值精确到哪一段，默认 minute
- * @attr {number} step - 分列的步进（分钟），默认 1
+ * @attr {string} time-step - 按单位的步进，JSON 对象（`{"minute":15}`），各单位缺省 1；也可通过 property 传入对象
  * @prop {TimeRangePickerPreset[]} presets - 快捷选项（数组只能通过 property 设置）：提供后浮层中多出一列
  * @attr {boolean} disabled - 禁用：段整组退出 Tab 序列，触发器使用原生 disabled，隐藏输入不参与提交
  * @attr {boolean} read-only - 只读：浮层照常展开与浏览，但值不可修改也不可清空
@@ -141,7 +143,7 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
     locale: { converter: STRING_CONVERTER },
     hourCycle: { converter: HOUR_CYCLE_CONVERTER, attribute: 'hour-cycle' },
     granularity: { converter: STRING_CONVERTER },
-    step: { converter: NUMBER_CONVERTER },
+    timeStep: { converter: TIME_STEP_CONVERTER, attribute: 'time-step' },
     // 快捷选项是数组，只能走 property
     presets: { attribute: false },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -171,7 +173,7 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
   declare locale?: string
   declare hourCycle?: TimeHourCycle
   declare granularity?: TimeGranularity
-  declare step?: number
+  declare timeStep?: TimeStep
   declare presets?: TimeRangePickerPreset[]
   declare disabled?: boolean
   declare readOnly?: boolean
@@ -241,7 +243,7 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
       locale: this.locale,
       hourCycle: this.hourCycle,
       granularity: this.granularity,
-      step: this.step,
+      timeStep: this.timeStep,
       presets: this.presets,
       disabled: control.disabled,
       readOnly: control.readOnly,
@@ -352,7 +354,7 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
   }
 
   /**
-   * 起止两组各自当前应排列的列及每列的可选值：落在 min/max 之外的、不符合 step 的、
+   * 起止两组各自当前应排列的列及每列的可选值：落在 min/max 之外的、不在步进上的、
    * 被另一端限制的、以及随已选的时（分）收窄后排除的值都已剔除。作者据此渲染两组列与格子。
    * 状态机尚未建立时两组都是空数组。
    */

@@ -11,11 +11,11 @@ const SCOPE = '[data-scope="time-range-picker"]'
 /**
  * 全部用例共用的界与步进。
  *
- * 可选值是纯函数按 min/max/step 与另一端生成的，作者只该渲染那一份；
+ * 可选值是纯函数按 min/max/timeStep 与另一端生成的，作者只该渲染那一份；
  * fixture 是静态的，所以反过来把界设成正好长出这几格——
  * 让 fixture 与生成结果逐格对齐，锚点才不会指向一个 fixture 里没有的值。
  */
-const BASE = { min: '08:00', max: '11:00', step: 30 } as const
+const BASE = { min: '08:00', max: '11:00', timeStep: { minute: 30 } } as const
 
 /** fixture 里段的排布顺序：起点那组四段在前，终点那组四段在后。 */
 const S_HOUR = 'segment[0]'
@@ -538,6 +538,23 @@ export const timeRangePickerSuite: ConformanceSuite = {
           [S_HOUR_10]: { 'aria-disabled': 'true', 'data-disabled': '' },
           [S_HOUR_11]: { 'aria-disabled': 'true' },
           [E_HOUR_11]: { 'aria-disabled': 'false' },
+        },
+      },
+    },
+    {
+      name: 'isTimeUnavailable 的上下文带端号与这一端已选的时：终点 10 点只能选整点，起点不受约束',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: {
+        ...BASE,
+        defaultValue: ['09:30', '10:00'],
+        isTimeUnavailable: (value: string, unit: string, context: { hour: number | null, index: 0 | 1 | null }) =>
+          context.index === 1 && unit === 'minute' && context.hour === 10 && value !== '00',
+      },
+      initial: {
+        parts: {
+          [E_MINUTE_30]: { 'aria-disabled': 'true', 'data-disabled': '' },
+          [E_MINUTE_00]: { 'aria-disabled': 'false' },
+          [S_MINUTE_30]: { 'aria-disabled': 'false' },
         },
       },
     },

@@ -7,6 +7,7 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { ResolvedTimeStep, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
 import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
 import type { TimePickerColumn, TimePickerColumnUnit, TimePickerFocusIntent } from '../time-picker'
 
@@ -108,7 +109,7 @@ export interface TimeRangePickerPreset {
 export interface TimeRangePickerPresetState extends TimeRangePickerPreset {
   /** 归一为组件值形状的两端（'9:00/18:00' → ['09:00', '18:00']）；不是恰好两端或无法解析时为 null。 */
   times: readonly [string, string] | null
-  /** 不可按下：作者标记了 disabled、无法解析、任一端落在 min / max 之外、或终点早于起点。step 只裁剪列表，不限制它。 */
+  /** 不可按下：作者标记了 disabled、无法解析、任一端落在 min / max 之外、或终点早于起点。timeStep 只裁剪列表，不限制它。 */
   disabled: boolean
   /** 当前两端与它相同（按归一后的串比较）。 */
   selected: boolean
@@ -143,8 +144,11 @@ export interface TimeRangePickerSchema extends MachineSchema {
     hourCycle?: TimeHourCycle
     /** 值精确到哪一段，默认 minute。它同时决定两组分段输入各显示几段、浮层中各排几列。 */
     granularity?: TimeGranularity
-    /** 分列的步进（分钟），默认 1。只影响浮层中的可选值，不限制手动输入的分钟数。 */
-    step?: number
+    /**
+     * 按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。时的步进按 24 小时制的真实小时取。
+     * 只影响浮层中的可选值，不限制段位上手动输入的数。
+     */
+    timeStep?: TimeStep
     /**
      * 快捷选项（「上午」「全天」等）。提供后浮层中多出一列，点击即两端整份写入值并收起。
      * 时刻需计算后传入：连接层每帧求值，把当前时刻放进渲染期会每帧得出一个新结果。
@@ -174,10 +178,12 @@ export interface TimeRangePickerSchema extends MachineSchema {
     dir?: Direction
     offset?: number
     /**
-     * 逐值可选性。接收两位补零的值、所属的列与端：同一个 '30' 在分钟列与秒列含义不同，
-     * 起点与终点也可以各有规则。与 min / max 的界外值同等处理：判定为真的格子仍可聚焦，只是不可选中。
+     * 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）；
+     * unit 区分同一个 '30' 属于哪一列；context 带这一端已选的时（24 小时制）与分，以及是哪一端（index），
+     * 起点与终点可以各有规则；date 在本组件恒为 null。
+     * 与 min / max 的界外值同等处理：判定为真的格子仍可聚焦，只是不可选中。
      */
-    isTimeUnavailable?: (value: string, unit: TimePickerColumnUnit, index: TimeRangePickerEndIndex) => boolean
+    isTimeUnavailable?: TimeUnavailablePredicate
     /** 段位与两端读屏名的覆盖；未提供时使用内置英文语义名。 */
     translations?: Partial<TimeRangePickerTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
@@ -307,13 +313,13 @@ export interface TimeRangePickerApi<T extends PropTypes = PropTypes> {
   /** 实际生效的小时制（prop 未提供时由 locale 推断的值）。 */
   hourCycle: TimeHourCycle
   granularity: TimeGranularity
-  /** 实际生效的分列步进。 */
-  step: number
+  /** 实际生效的按单位步进。 */
+  timeStep: ResolvedTimeStep
   /** 两组段位各自当前参与显示的段，文档序；两组相同。未列入的段由 connect 写上 hidden 收起。 */
   segments: TimeSegmentType[]
   /** 焦点所在的段；焦点在分段输入外时为 null。 */
   focusedSegment: TimeRangePickerSegmentRef | null
-  /** 起止两组时列：每组应排列的稳定列及完整选项（已按 step 取样）。界外项由 isItemDisabled 标记，作者据此渲染浮层。 */
+  /** 起止两组时列：每组应排列的稳定列及完整选项（已按 timeStep 取样）。界外项由 isItemDisabled 标记，作者据此渲染浮层。 */
   columnGroups: readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup]
   focusedColumn: TimeRangePickerColumnRef | null
   focusedItem: string | null
