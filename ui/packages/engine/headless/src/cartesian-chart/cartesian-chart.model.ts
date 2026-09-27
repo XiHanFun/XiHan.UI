@@ -107,7 +107,11 @@ export interface CartesianSeriesSpec {
   readonly order: number
   /** 堆叠组；不堆叠为 null。 */
   readonly stack: string | null
-  readonly stackOffset: 'none' | 'expand' | 'diverging'
+  readonly stackOffset: 'none' | 'expand' | 'diverging' | 'silhouette' | 'wiggle'
+  /** 区间：y 写成 [下, 上] 时下端的字段；不是区间为 null。 */
+  readonly yLow: string | null
+  /** 柱的形态：实心柱或棒棒糖。 */
+  readonly shape: 'bar' | 'lollipop'
   readonly curve: CurveName
   readonly area: boolean
   readonly symbols: 'auto' | 'always' | 'none'
@@ -182,7 +186,14 @@ function valueFieldOf(s: CartesianSeries): string {
     return s.close
   if (s.mark === 'boxplot')
     return typeof s.y === 'string' ? s.y : s.y.median
-  return s.y
+  if (s.mark === 'scatter')
+    return s.y
+  return typeof s.y === 'string' ? s.y : s.y[1]
+}
+
+/** 区间的下端字段：柱与折线的 y 写成 [下, 上] 时取下端；不是区间为 null。 */
+function lowFieldOf(s: CartesianSeries): string | null {
+  return (s.mark === 'bar' || s.mark === 'line') && typeof s.y !== 'string' ? s.y[0] : null
 }
 
 /** 柱与折线能堆叠、写数据标签；散点与 K 线不能。 */
@@ -245,10 +256,10 @@ export function normalizeCartesianSpec(
       const fields = s.mark === 'scatter'
         ? [s.x, s.y, s.size, s.datumId, s.color]
         : s.mark === 'bar'
-          ? [xFieldOf(s), binEndOf(s), s.y, s.waterfall?.total]
+          ? [xFieldOf(s), binEndOf(s), lowFieldOf(s), valueFieldOf(s), s.waterfall?.total]
           : s.mark === 'candlestick'
             ? [s.x, s.open, s.high, s.low, s.close]
-            : s.mark === 'boxplot' ? [s.x, ...(typeof s.y === 'string' ? [s.y] : Object.values(s.y))] : [s.x, s.y]
+            : s.mark === 'boxplot' ? [s.x, ...(typeof s.y === 'string' ? [s.y] : Object.values(s.y))] : [s.x, lowFieldOf(s), valueFieldOf(s)]
       for (const field of fields) {
         if (field == null)
           continue
@@ -281,7 +292,7 @@ export function normalizeCartesianSpec(
 
   // 柱的堆叠组里有负值时缺省 diverging：正负各自累加，互不抵消
   const hasNegative = (s: CartesianSeries): boolean => rows.some(row => (numberOf(row[valueFieldOf(s)]) ?? 0) < 0)
-  const groupOffset = (s: CartesianSeries): 'none' | 'expand' | 'diverging' => {
+  const groupOffset = (s: CartesianSeries): CartesianSeriesSpec['stackOffset'] => {
     if (!stackable(s) || s.stack == null)
       return 'none'
     const members = seriesInput.filter((o): o is CartesianBarSeries | CartesianLineSeries => stackable(o) && o.mark === s.mark && o.stack === s.stack)
@@ -310,17 +321,23 @@ export function normalizeCartesianSpec(
         : null,
       size: scatter?.size ?? null,
       // 缺省形状随色槽（语义系列随纹理序号）轮换：颜色分不清时形状还分得开
-      symbol: scatter ? scatter.symbol ?? SYMBOL_NAMES[((identity.slot ?? identity.pattern ?? 1) - 1) % SYMBOL_NAMES.length]! : null,
+      // 棒棒糖的点是圆：图例与提示框的色标画成圆
+      symbol: scatter
+        ? scatter.symbol ?? SYMBOL_NAMES[((identity.slot ?? identity.pattern ?? 1) - 1) % SYMBOL_NAMES.length]!
+        : s.mark === 'bar' && s.shape === 'lollipop' ? 'circle' : null,
       jitter: scatter ? Math.min(1, Math.max(0, Number.isFinite(scatter.jitter) ? scatter.jitter! : 0)) : 0,
       datumId: scatter?.datumId ?? null,
       color: scatter?.color ?? null,
       order,
-      // 瀑布的每一步接在自己的累计值上，不参与堆叠
-      stack: !stackable(s) || (s.mark === 'bar' && s.waterfall) ? null : s.stack ?? null,
+      // 瀑布的每一步接在自己的累计值上，区间自己就有两端：都不参与堆叠
+      stack: !stackable(s) || (s.mark === 'bar' && s.waterfall) || lowFieldOf(s) != null ? null : s.stack ?? null,
       waterfall: s.mark === 'bar' && s.waterfall ? { total: s.waterfall.total ?? null } : null,
       stackOffset: groupOffset(s),
       curve: s.mark === 'line' ? CURVES[s.curve ?? 'linear'] : 'linear',
-      area: s.mark === 'line' && s.area === true,
+      // 区间带只铺带：按面积画，定义域也盖住下端
+      area: s.mark === 'line' && (s.area === true || lowFieldOf(s) != null),
+      yLow: lowFieldOf(s),
+      shape: s.mark === 'bar' ? s.shape ?? 'bar' : 'bar',
       symbols: s.mark === 'line' ? (s.symbols ?? 'auto') : 'none',
       connectNulls: s.mark === 'line' && s.connectNulls === true,
       labels: stackable(s) ? s.labels ?? 'none' : 'none',
@@ -400,6 +417,8 @@ export interface CartesianSeriesValues {
   readonly ohlc: readonly (CartesianOhlc | null)[] | null
   /** 箱线：每个键上的五数、离群点与小提琴的密度；不是箱线为 null。 */
   readonly boxes: readonly (CartesianBox | null)[] | null
+  /** 区间：每个键上的下端（values 是上端）；不是区间为 null。 */
+  readonly lows: readonly (number | null)[] | null
   /** 贴近基线的一端。 */
   readonly low: readonly (number | null)[]
   /** 值所在的一端。 */
@@ -458,6 +477,7 @@ function scatterPoints(spec: CartesianSpec, s: CartesianSeriesSpec): Omit<Cartes
     ends: null,
     ohlc: null,
     boxes: null,
+    lows: null,
   }
 }
 
@@ -531,7 +551,7 @@ function boxplotValues(spec: CartesianSpec, s: CartesianSeriesSpec, issues: Char
           density: box.style === 'violin' ? kde(values, { points: VIOLIN_SAMPLES, extent: [stats.min, stats.max] }) : null,
         }
       })
-  return { spec: s, values: boxes.map(b => b?.median ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends: null, ohlc: null, boxes }
+  return { spec: s, values: boxes.map(b => b?.median ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends: null, ohlc: null, boxes, lows: null }
 }
 
 /** K 线一个键上的开高低收。 */
@@ -561,7 +581,7 @@ function candlestickValues(spec: CartesianSpec, s: CartesianSeriesSpec, rows: re
     }
     return { open, high, low, close }
   })
-  return { spec: s, values: ohlc.map(o => o?.close ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends: null, ohlc, boxes: null }
+  return { spec: s, values: ohlc.map(o => o?.close ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends: null, ohlc, boxes: null, lows: null }
 }
 
 export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly string[]): CartesianDerived {
@@ -574,6 +594,7 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
     const values = filled<number | null>(n, null)
     const rows = filled(n, -1)
     const ends = s.binEnd == null ? null : filled<number | null>(n, null)
+    const lows = s.yLow == null ? null : filled<number | null>(n, null)
     spec.rows.forEach((row, index) => {
       const id = cartesianKeyId(row[s.x])
       const at = id == null ? undefined : spec.keyIndex.get(id)
@@ -582,6 +603,17 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
         return
       rows[at] = index
       values[at] = numberOf(row[s.y])
+      if (lows) {
+        // 区间：下端不能高过上端；缺了一端这个键上没有区间
+        const low = numberOf(row[s.yLow!])
+        const high = values[at]
+        if (low != null && high != null && low > high)
+          issues.push({ code: DIAGNOSTIC_CODES.chartInvalidRange, message: '区间的下端不能高于上端', detail: { series: s.id, row: index, low, high } })
+        if (low == null || high == null)
+          values[at] = null
+        else
+          lows[at] = low
+      }
       if (ends) {
         // 分箱的止点必须在起点之后：区间倒过来或缺了止点，这一箱画不出宽度
         const start = timeValue(row[s.x])
@@ -597,11 +629,11 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
     if (s.box)
       return boxplotValues(spec, s, issues)
     if (!s.waterfall)
-      return { spec: s, values, rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends, ohlc: null, boxes: null }
+      return { spec: s, values, rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends, ohlc: null, boxes: null, lows }
     // 瀑布：小计行的 y 被忽略，数值取算出来的累计值；缺失的一步不画、不改累计
     const total = s.waterfall.total
     const steps = waterfall(values, rows.map(r => total != null && r >= 0 && Boolean(spec.rows[r]![total])))
-    return { spec: s, values: steps.map(step => step?.value ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps, ends: null, ohlc: null, boxes: null }
+    return { spec: s, values: steps.map(step => step?.value ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps, ends: null, ohlc: null, boxes: null, lows: null }
   })
 
   const stacked = new Map<string, { low: (number | null)[], high: (number | null)[], outermost: boolean[] }>()
@@ -619,6 +651,8 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
         keys: members.map(m => m.spec.id),
         value: (j, key) => members.find(m => m.spec.id === key)?.values[j] ?? null,
         offset,
+        // 流图的层按峰值出现的先后由内向外排：早出峰的在中间，整体摆动最小
+        order: offset === 'wiggle' ? 'insideOut' : 'none',
       })
       for (const s of result) {
         stacked.set(s.key, {
@@ -643,6 +677,9 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
       return { ...entry, ...s }
     if (entry.keyAt)
       return { ...entry, low: entry.values, high: entry.values, outermost: entry.values.map(() => true) }
+    // 区间从下端画到上端
+    if (entry.lows)
+      return { ...entry, low: entry.lows, high: entry.values, outermost: entry.values.map(() => true) }
     // 箱线的两端是须线与离群点的最远处：定义域要盖住它们
     if (entry.boxes) {
       const reach = (b: CartesianBox | null, side: 'low' | 'high'): number | null => (b == null
@@ -719,7 +756,8 @@ function annotationExtent(annotations: readonly CartesianAnnotation[], axis: 'x'
 export function cartesianDomains(derived: CartesianDerived, annotations: readonly CartesianAnnotation[]): CartesianDomains {
   const { spec } = derived
   const issues: ChartSpecIssue[] = []
-  const bars = derived.visible.some(s => s.spec.mark === 'bar')
+  // 柱从 0 长出，长度就是数值：数值轴含 0；浮着的区间柱不从 0 长出，不强制
+  const bars = derived.visible.some(s => s.spec.mark === 'bar' && !s.lows)
   const percent = derived.visible.length > 0 && derived.visible.every(s => s.spec.stack != null && s.spec.stackOffset === 'expand')
   const values: number[] = []
   for (const s of derived.visible) {
@@ -1132,6 +1170,12 @@ function labelPadding(
   let low = 0
   let end = 0
   for (const s of derived.visible) {
+    // 棒棒糖的点落在数值上：贴着定义域两端的点整个落在绘图区里，两端各收进一个点的半径加描边环
+    if (s.spec.mark === 'bar' && s.spec.shape === 'lollipop') {
+      const reach = metrics.pointSize * 0.75 + metrics.gap
+      high = Math.max(high, reach)
+      low = Math.max(low, reach)
+    }
     const outside = s.spec.mark === 'bar' && s.spec.labels === 'end' && s.spec.stack == null
     const onPoints = s.spec.mark === 'line' && s.spec.labels === 'end'
     if (outside || onPoints) {
@@ -1413,8 +1457,8 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           continue
         const width = span ? Math.max(1, Math.abs(span[1] - span[0]) - gap) : thickness
         const start = span ? Math.min(span[0], span[1]) + gap / 2 : center - groupWidth / 2 + slotIndex * (thickness + gap)
-        // 对数轴上没有 0：不堆叠的柱从定义域下界长起
-        const a = s.spec.stack == null && spec.valueScale === 'log' ? baseline : toValue(lo)
+        // 对数轴上没有 0：不堆叠的柱从定义域下界长起；区间柱从自己的下端画起
+        const a = s.spec.stack == null && !s.lows && spec.valueScale === 'log' ? baseline : toValue(lo)
         const b = toValue(hi)
         if (!Number.isFinite(a) || !Number.isFinite(b))
           continue
@@ -1432,6 +1476,24 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
         const rect = vertical
           ? { x: start, y: Math.min(a, far), width, height: Math.abs(far - a) }
           : { x: Math.min(a, far), y: start, width: Math.abs(far - a), height: width }
+        seriesAnchors[j] = point(start + width / 2, b)
+        if (s.spec.shape === 'lollipop') {
+          // 棒棒糖：细杆从基线（区间的下端）画到数值，顶一个点；区间时两头各一个点（哑铃），只有上端的点可聚焦。
+          // 标签的落位按点的外沿算：杆的矩形沿数值方向两头各让出一个点的半径
+          const r = metrics.pointSize * 0.75
+          const c = crisp(start + width / 2)
+          const datum = cartesianDatumId(spec.keys[j]!)
+          const head = (at: number): { x: number, y: number } => (vertical ? { x: c, y: at } : { x: at, y: c })
+          children.push({ kind: 'path', key: `${id}:stem:${datum}`, part: 'stem', d: vertical ? `M${c},${a}L${c},${b}` : `M${a},${c}L${b},${c}`, paint })
+          if (s.lows)
+            children.push({ kind: 'symbol', key: `${id}:low:${datum}`, part: 'point', ...head(a), size: Math.PI * r * r, symbol: 'circle', paint, a11y: { label: '', focusable: false } })
+          children.push({ kind: 'symbol', key, part: 'point', ...head(b), size: Math.PI * r * r, symbol: 'circle', datum: { seriesId: id, index: rowIndex }, paint, a11y: { label: '', focusable: true } })
+          const grown = vertical
+            ? { x: c - r, y: rect.y - r, width: r * 2, height: rect.height + r * 2 }
+            : { x: rect.x - r, y: c - r, width: rect.width + r * 2, height: r * 2 }
+          bars.set(key, { ...grown, positive, stacked: false, row: rowIndex })
+          continue
+        }
         children.push({
           kind: 'rect',
           key,
@@ -1446,7 +1508,6 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           paint: s.steps?.[j] && !s.steps[j]!.total ? { ...paint, trend: s.steps[j]!.trend } : paint,
           a11y: { label: '', focusable: true },
         })
-        seriesAnchors[j] = point(start + width / 2, b)
         bars.set(key, { ...rect, positive, stacked: s.spec.stack != null, row: rowIndex })
       }
       if (s.steps)
@@ -1471,7 +1532,8 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           ? { key: cartesianDatumId(spec.keys[j]!), x: p.x, y: p.y, y0: b.y, defined }
           : { key: cartesianDatumId(spec.keys[j]!), x: p.x, y: p.y, x0: b.x, defined })
         if (defined) {
-          seriesAnchors[j] = p
+          // 区间带的锚点在带的正中：提示框与焦点代理落在带里，不贴着上沿
+          seriesAnchors[j] = s.lows ? point(center, (v + base) / 2) : p
           info.set(`${id}:${cartesianDatumId(spec.keys[j]!)}`, { seriesId: id, position: j })
         }
       }
@@ -1479,6 +1541,11 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
       const curve: CurveName = !vertical && s.spec.curve === 'monotoneX' ? 'monotoneY' : s.spec.curve
       if (s.spec.area)
         children.push({ kind: 'area', key: `${id}:area`, part: 'area-fill', points, curve, orientation: spec.orientation, paint, a11y: { label: '', focusable: false } })
+      // 区间带只铺带：不画线，也不逐点画点
+      if (s.lows) {
+        data.push({ kind: 'group', key: `series:${id}`, part: 'series', children })
+        continue
+      }
       children.push({
         kind: 'line',
         key: `${id}:line`,
@@ -2376,7 +2443,7 @@ export function cartesianA11y(
   // 含散点时一个 x 上可以有多个点，按键对齐的宽表放不下：改成每个数据一行的长表；K 线一个键四个价，每个价一列
   const table = unique.some(s => s.keyAt)
     ? pointTable(unique, spec, formats, translations)
-    : unique.some(s => s.ohlc || s.boxes)
+    : unique.some(s => s.ohlc || s.boxes || s.lows)
       ? statsTable(unique, spec, formats, translations)
       : buildTableModel({
           keyLabel: translations.keyLabel,
@@ -2389,8 +2456,8 @@ export function cartesianA11y(
 }
 
 /**
- * K 线与箱线的数据表：首列是自变量，K 线系列开高低收各一列、箱线系列五数与离群点各一列
- * （多个系列时列名带上系列名），其余系列各一列。
+ * K 线、箱线与区间的数据表：首列是自变量，K 线系列开高低收各一列、箱线系列五数与离群点各一列
+ * （多个系列时列名带上系列名），区间写成一格「下 – 上」，其余系列各一列。
  */
 function statsTable(
   series: readonly CartesianSeriesValues[],
@@ -2434,7 +2501,12 @@ function statsTable(
             const outliers = box?.outliers ?? []
             return [...boxFields.slice(0, 5).map(f => cell(box?.[f as 'min'])), { value: outliers, text: outliers.map(formats.value).join(', ') }]
           }
-          return [cell(s.values[j])]
+          // 区间写成一格「下 – 上」
+          const low = s.lows?.[j]
+          const high = s.values[j]
+          if (s.lows)
+            return [low == null || high == null ? cell(null) : { value: [low, high], text: `${formats.value(low)} – ${formats.value(high)}` }]
+          return [cell(high)]
         }),
       ],
     })),

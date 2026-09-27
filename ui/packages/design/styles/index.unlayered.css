@@ -18038,6 +18038,13 @@
   stroke-width: var(--xh-stroke-thin);
 }
 
+/* 棒棒糖的细杆：系列色的线，杆顶的点沿用点的画法（系列色加一圈承载面色的描边环） */
+[data-scope='cartesian-chart'][data-part='stem'] {
+  fill: none;
+  stroke: var(--xh-_chart-series);
+  stroke-width: var(--xh-_chart-metric-line-width);
+}
+
 /* 瀑布的连接线：上一步的终点连到下一步的起点，结构色的细线 */
 [data-scope='cartesian-chart'][data-part='connector'] {
   fill: none;
@@ -18227,6 +18234,7 @@
   }
 
   [data-scope='cartesian-chart'][data-part='connector'],
+  [data-scope='cartesian-chart'][data-part='stem'],
   [data-scope='cartesian-chart'][data-part='whisker'],
   [data-scope='cartesian-chart'][data-part='median'],
   [data-scope='cartesian-chart'][data-part='wick'],

@@ -1500,6 +1500,9 @@
       "signature-pad",
       "tool-call"
     ],
+    "stem": [
+      "cartesian-chart"
+    ],
     "strength-meter": [
       "password-input"
     ],
@@ -1886,6 +1889,7 @@
     "split": true,
     "spotlight": true,
     "status": true,
+    "stem": true,
     "suffix": true,
     "summary": true,
     "swatch": true,

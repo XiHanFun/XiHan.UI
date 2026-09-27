@@ -179,6 +179,12 @@ function detailsOf(model: CartesianModel, s: CartesianSeriesValues, position: nu
   const anchor = model.scene?.anchors.get(s.spec.id)?.[position] ?? null
   const formatted: Record<string, string> = { key: model.formats.key(key), value: value == null ? '' : model.formats.value(value) }
   const values: Record<string, unknown> = { key, value }
+  // 区间：写成「下 – 上」
+  const low = s.lows?.[position]
+  if (low != null && value != null) {
+    values.low = low
+    formatted.value = `${model.formats.value(low)} – ${model.formats.value(value)}`
+  }
   // K 线：主值是收盘，写成文字时四个价一起写
   const ohlc = s.ohlc?.[position]
   if (ohlc) {

@@ -68,8 +68,13 @@ export interface CartesianBarSeries extends CartesianSeriesBase {
    * 相邻两箱之间留一道表面间隙；提示框、可及名与数据表把键写成「起 – 止」。
    */
   x: string | readonly [string, string]
-  /** 数值字段。 */
-  y: string
+  /**
+   * 数值字段。写成二元组 [下, 上] 是区间：柱从下端画到上端浮着（浮动柱，数值轴不强制含 0），
+   * 棒棒糖形态时两头各一个点（哑铃）；提示框、可及名与数据表写成「下 – 上」。区间不参与堆叠。
+   */
+  y: string | readonly [string, string]
+  /** 形态：bar 实心柱（缺省），lollipop 一根细杆顶一个点，类目多、柱挤在一起时更轻。 */
+  shape?: 'bar' | 'lollipop'
   /** 同名的柱系列堆叠在一起。 */
   stack?: string
   /** 堆叠方式：none 逐段累加，expand 每列归一成百分比，diverging 正值向上、负值向下；同一堆叠组须一致。含负值时缺省 diverging。 */
@@ -90,15 +95,19 @@ export interface CartesianBarSeries extends CartesianSeriesBase {
 export interface CartesianLineSeries extends CartesianSeriesBase {
   mark: 'line'
   x: string
-  y: string
+  /** 数值字段。写成二元组 [下, 上] 是区间带（置信区间、正常范围）：只铺带、不画线，提示框写成「下 – 上」。 */
+  y: string | readonly [string, string]
   /** 插值，缺省 linear。 */
   curve?: CartesianCurve
   /** 画面积：折线下铺一层系列色淡洗。 */
   area?: boolean
   /** 同名的折线系列堆叠（堆叠面积）。 */
   stack?: string
-  /** 堆叠方式：none 逐段累加，expand 每列归一成百分比。 */
-  stackOffset?: 'none' | 'expand'
+  /**
+   * 堆叠方式：none 逐段累加，expand 每列归一成百分比，silhouette 以 0 为中线上下对称，
+   * wiggle 让各层的摆动最小（流图，层按峰值出现的先后由内向外排）。同一堆叠组须一致。
+   */
+  stackOffset?: 'none' | 'expand' | 'silhouette' | 'wiggle'
   /** 数据点：auto 点间距足够时显示，always 始终显示，none 不显示。缺省 auto。 */
   symbols?: 'auto' | 'always' | 'none'
   /** 缺失值处连上而不断开，缺省 false。 */

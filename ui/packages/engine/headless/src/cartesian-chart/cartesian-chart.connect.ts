@@ -50,9 +50,9 @@ const EMPTY_SCENE: Scene = createScene({ version: 0, layers: {}, bounds: { x: 0,
 /** 文字基线的写法：场景里是 top / middle / bottom，SVG 的 dominant-baseline 各有对应。 */
 const BASELINE = { top: 'hanging', middle: 'central', bottom: 'text-after-edge', alphabetic: 'alphabetic' } as const
 
-/** 色标画成什么：柱与面积是方块，折线是一段短线，散点是点（形状另由 data-symbol 给出）。 */
-function swatchMark(item: { mark: CartesianLegendItem['mark'], area: boolean }): 'bar' | 'line' | 'point' {
-  return item.mark === 'scatter' ? 'point' : item.mark === 'line' && !item.area ? 'line' : 'bar'
+/** 色标画成什么：柱与面积是方块，折线是一段短线，散点与棒棒糖是点（形状另由 data-symbol 给出）。 */
+function swatchMark(item: { mark: CartesianLegendItem['mark'], area: boolean, symbol: CartesianLegendItem['symbol'] }): 'bar' | 'line' | 'point' {
+  return item.symbol != null ? 'point' : item.mark === 'line' && !item.area ? 'line' : 'bar'
 }
 
 /** 色阶位置 0–1 换成段号与段内百分比：低段在起点与中点之间，高段在中点与终点之间。 */
@@ -524,8 +524,8 @@ export function connectCartesianChart<T extends PropTypes>(
         props['aria-hidden'] = true
       }
       else if (mark.part === 'bar' || mark.part === 'candle' || mark.part === 'box' || (mark.part === 'point' && mark.a11y?.focusable)) {
-        // 散点的点与柱一样本身就是数据标记，roving 取 Tab 位；折线上的点是焦点代理，出现即占
-        const proxy = mark.part === 'point' && (mark.datum == null || seriesById.get(mark.datum.seriesId)?.mark !== 'scatter')
+        // 散点的点、棒棒糖的点与柱一样本身就是数据标记，roving 取 Tab 位；折线上的点是焦点代理，出现即占
+        const proxy = mark.part === 'point' && mark.datum != null && seriesById.get(mark.datum.seriesId)?.mark === 'line'
         const ref = mark.datum ?? null
         const own = ref ? cartesianDetails(model, ref, 'item') : null
         props.role = 'graphics-symbol'

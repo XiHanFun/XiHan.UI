@@ -7824,6 +7824,7 @@
         "line",
         "median",
         "root",
+        "stem",
         "tooltip-swatch"
       ],
       "property": [
@@ -7857,7 +7858,7 @@
         "--xh-chart-line-width"
       ],
       "visibility": "public",
-      "description": "cartesian-chart 的 annotation、candle、legend-swatch、line、median、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。"
+      "description": "cartesian-chart 的 annotation、candle、legend-swatch、line、median、root、stem、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。"
     },
     {
       "name": "--xh-cartesian-chart-point-size",
@@ -7908,6 +7909,7 @@
         "outlier",
         "pattern-line",
         "point",
+        "stem",
         "tooltip-swatch",
         "whisker",
         "wick"
@@ -7963,7 +7965,7 @@
         "--xh-chart-categorical-8"
       ],
       "visibility": "public",
-      "description": "cartesian-chart 的 annotation、area-fill、bar、box、candle、dot、legend-item、legend-swatch、line、median、outlier、pattern-line、point、tooltip-swatch、whisker、wick 部件 background、border、fill、stroke 覆盖槽。"
+      "description": "cartesian-chart 的 annotation、area-fill、bar、box、candle、dot、legend-item、legend-swatch、line、median、outlier、pattern-line、point、stem、tooltip-swatch、whisker、wick 部件 background、border、fill、stroke 覆盖槽。"
     },
     {
       "name": "--xh-cartesian-chart-tooltip-gap",
