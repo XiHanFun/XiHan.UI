@@ -1154,6 +1154,29 @@ export { useFunnelChart } from './components/funnel-chart/use-funnel-chart'
 export type { FunnelChartContext } from './components/funnel-chart/use-funnel-chart'
 export { XhGradientText } from './components/gradient-text/gradient-text'
 export type { XhGradientTextProps } from './components/gradient-text/gradient-text'
+export { useGraphChartContext } from './components/graph-chart/context'
+export {
+  XhGraphChartCaption,
+  XhGraphChartEmpty,
+  XhGraphChartLegend,
+  XhGraphChartPlot,
+  XhGraphChartRoot,
+  XhGraphChartTooltip,
+  XhGraphChartViewport,
+} from './components/graph-chart/graph-chart'
+export type {
+  GraphChartRootSlotProps,
+  GraphChartTooltipSlotProps,
+  XhGraphChartCaptionProps,
+  XhGraphChartEmptyProps,
+  XhGraphChartLegendProps,
+  XhGraphChartPlotProps,
+  XhGraphChartRootProps,
+  XhGraphChartTooltipProps,
+  XhGraphChartViewportProps,
+} from './components/graph-chart/graph-chart'
+export { useGraphChart } from './components/graph-chart/use-graph-chart'
+export type { GraphChartContext } from './components/graph-chart/use-graph-chart'
 export { useGridContext } from './components/grid/context'
 export type { GridContext } from './components/grid/context'
 export { XhGridItem, XhGridRoot } from './components/grid/grid'

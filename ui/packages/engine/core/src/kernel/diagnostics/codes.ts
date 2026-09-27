@@ -79,6 +79,10 @@ export const DIAGNOSTIC_CODES = {
   chartHierarchyShape: 'chart.hierarchy-shape',
   /** 桑基图的流带不合法：成环、自环、端点不存在或节点重复；负值另报 chart.negative-share。 */
   chartSankeyShape: 'chart.sankey-shape',
+  /** 关系图的数据不合法：节点重复、连线的端点不存在、自环，或树布局下数据不是一棵树。 */
+  chartGraphShape: 'chart.graph-shape',
+  /** 关系图的节点太多：多于 500 个时交互变慢，按提醒报；多于 2000 个时不画，先聚合。 */
+  chartGraphSize: 'chart.graph-size',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]

@@ -61,6 +61,7 @@ import { XhFloatingPanelElement } from './elements/floating-panel'
 import { XhFormElement } from './elements/form'
 import { XhFunnelChartElement } from './elements/funnel-chart'
 import { XhGradientTextElement } from './elements/gradient-text'
+import { XhGraphChartElement } from './elements/graph-chart'
 import { XhGridElement } from './elements/grid'
 import { XhHeatmapElement } from './elements/heatmap'
 import { XhHierarchyChartElement } from './elements/hierarchy-chart'
@@ -178,6 +179,7 @@ export function defineXhElements(): void {
   defineElement('xh-floating-panel', XhFloatingPanelElement, VERSION)
   defineElement('xh-funnel-chart', XhFunnelChartElement, VERSION)
   defineElement('xh-gradient-text', XhGradientTextElement, VERSION)
+  defineElement('xh-graph-chart', XhGraphChartElement, VERSION)
   defineElement('xh-grid', XhGridElement, VERSION)
   defineElement('xh-heatmap', XhHeatmapElement, VERSION)
   defineElement('xh-hierarchy-chart', XhHierarchyChartElement, VERSION)
@@ -351,6 +353,7 @@ export {
   XhFloatingPanelElement,
   XhFormElement,
   XhFunnelChartElement,
+  XhGraphChartElement,
   XhHeatmapElement,
   XhHierarchyChartElement,
   XhHoverCardElement,

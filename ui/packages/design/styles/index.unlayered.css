@@ -26858,6 +26858,190 @@
   }
 }
 
+/* styles/graph-chart.css */
+/* 定义 graph chart 样式。 */
+
+/* 标题、视口、图例、提示框、空态与焦点环走 Chart 家族配方。本皮肤 @import 它，单独引入仍成立。 */
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='graph-chart'] {
+  --xh-graph-chart-skin: 1;
+}
+
+/* 几何要用的像素值以这里的私有槽为真源：机器挂载后从计算样式读它们，作者覆盖组件槽即改变几何。
+   节点的基准半径借点径那一格传进去 */
+[data-scope='graph-chart'][data-part='root'] {
+  --xh-_chart-metric-bar-max: var(--xh-chart-bar-max);
+  --xh-_chart-metric-gap: var(--xh-chart-gap);
+  --xh-_chart-metric-line-width: var(--xh-chart-line-width);
+  --xh-_chart-metric-point-size: var(--xh-graph-chart-node-size, var(--xh-chart-point-size));
+  --xh-_chart-metric-hit-min: var(--xh-chart-hit-min);
+  --xh-_chart-metric-tick-length: var(--xh-chart-tick-length);
+  --xh-_chart-metric-label-gap: var(--xh-chart-label-gap);
+  --xh-_chart-metric-radius: var(--xh-shape-inset);
+  --xh-_chart-metric-font-size: var(--xh-text-caption-size);
+  --xh-_chart-metric-leading: var(--xh-leading-tight);
+  --xh-_chart-gap: var(--xh-graph-chart-gap, var(--xh-space-3));
+}
+
+/* —— 家族配方的组件槽：标题、视口、图例、提示框与空态由 family/chart.css 画，本图表的覆盖槽写在
+   对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
+[data-scope='graph-chart'][data-part='viewport'] {
+  --xh-_chart-height: var(--xh-graph-chart-height, var(--xh-chart-height));
+}
+
+[data-scope='graph-chart'][data-part='legend'] {
+  --xh-_chart-legend-gap: var(--xh-graph-chart-legend-gap, var(--xh-space-1));
+}
+
+[data-scope='graph-chart'][data-part='legend-swatch'] {
+  --xh-_chart-legend-swatch-radius: var(--xh-graph-chart-legend-swatch-radius, var(--xh-shape-inset));
+}
+
+[data-scope='graph-chart'][data-part='tooltip'] {
+  --xh-_chart-tooltip-gap: var(--xh-graph-chart-tooltip-gap, var(--xh-space-1));
+  --xh-_chart-tooltip-py: var(--xh-graph-chart-tooltip-py, var(--xh-surface-pad-sm));
+  --xh-_chart-tooltip-px: var(--xh-graph-chart-tooltip-px, var(--xh-surface-pad-sm));
+  --xh-_chart-tooltip-radius: var(--xh-graph-chart-tooltip-radius, var(--xh-shape-overlay));
+  --xh-_chart-tooltip-shadow: var(--xh-graph-chart-tooltip-shadow, var(--xh-material-frosted-shadow));
+}
+
+[data-scope='graph-chart'][data-part='tooltip-row'] {
+  --xh-_chart-tooltip-row-gap: var(--xh-graph-chart-tooltip-row-gap, var(--xh-space-2));
+}
+
+[data-scope='graph-chart'][data-part='empty'][data-state='loading'] {
+  --xh-_chart-empty-gap: var(--xh-graph-chart-empty-gap, var(--xh-space-2));
+}
+
+/* —— 色槽：分组由色槽承担，作者可以在节点上覆盖 --xh-graph-chart-series-color ——
+   节点、被强调的连线、图例项都带着色槽，各自从这里取系列色 */
+[data-scope='graph-chart'][data-xh-chart-slot='1'] {
+  --xh-_chart-series: var(--xh-graph-chart-series-color, var(--xh-chart-categorical-1));
+}
+
+[data-scope='graph-chart'][data-xh-chart-slot='2'] {
+  --xh-_chart-series: var(--xh-graph-chart-series-color, var(--xh-chart-categorical-2));
+}
+
+[data-scope='graph-chart'][data-xh-chart-slot='3'] {
+  --xh-_chart-series: var(--xh-graph-chart-series-color, var(--xh-chart-categorical-3));
+}
+
+[data-scope='graph-chart'][data-xh-chart-slot='4'] {
+  --xh-_chart-series: var(--xh-graph-chart-series-color, var(--xh-chart-categorical-4));
+}
+
+[data-scope='graph-chart'][data-xh-chart-slot='5'] {
+  --xh-_chart-series: var(--xh-graph-chart-series-color, var(--xh-chart-categorical-5));
+}
+
+[data-scope='graph-chart'][data-xh-chart-slot='6'] {
+  --xh-_chart-series: var(--xh-graph-chart-series-color, var(--xh-chart-categorical-6));
+}
+
+[data-scope='graph-chart'][data-xh-chart-slot='7'] {
+  --xh-_chart-series: var(--xh-graph-chart-series-color, var(--xh-chart-categorical-7));
+}
+
+[data-scope='graph-chart'][data-xh-chart-slot='8'] {
+  --xh-_chart-series: var(--xh-graph-chart-series-color, var(--xh-chart-categorical-8));
+}
+
+/* —— 连线：次要的中性色细线，有权重时按权重加粗（宽度由连接层写进私有槽）；箭头与线同色。
+   指着一个节点时连着它的线换成它的颜色，其余淡出 —— */
+[data-scope='graph-chart'][data-part='link'],
+[data-scope='graph-chart'][data-part='arrow'] {
+  --xh-_graph-link: var(--xh-graph-chart-link-color, var(--xh-fg-subtle));
+
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='graph-chart'][data-part='link'] {
+  fill: none;
+  stroke: var(--xh-_graph-link);
+  stroke-width: var(--xh-_graph-link-width, var(--xh-graph-chart-link-width, var(--xh-stroke-thin)));
+  stroke-linecap: round;
+}
+
+[data-scope='graph-chart'][data-part='arrow'] {
+  fill: var(--xh-_graph-link);
+  stroke: none;
+}
+
+[data-scope='graph-chart'][data-part='link'][data-highlighted],
+[data-scope='graph-chart'][data-part='arrow'][data-highlighted] {
+  --xh-_graph-link: var(--xh-_chart-series);
+}
+
+/* —— 节点：取分组的系列色，外面描一圈承载面色，节点挨在一起、压在连线上时边界照样分明 —— */
+[data-scope='graph-chart'][data-part='node'] {
+  fill: var(--xh-_chart-series);
+  stroke: var(--xh-chart-surface);
+  stroke-width: var(--xh-chart-gap);
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='graph-chart'][data-part='link'][data-dimmed],
+[data-scope='graph-chart'][data-part='arrow'][data-dimmed],
+[data-scope='graph-chart'][data-part='node'][data-dimmed],
+[data-scope='graph-chart'][data-part='node-label'][data-dimmed] {
+  opacity: var(--xh-chart-dim-alpha);
+}
+
+/* 节点名可能压在连线上：正文色，描一圈承载面色，交叠处也读得清。名字不接指针，命中归节点 */
+[data-scope='graph-chart'][data-part='node-label'] {
+  fill: var(--xh-fg-default);
+  stroke: var(--xh-chart-surface);
+  stroke-width: var(--xh-stroke-thick);
+  stroke-linejoin: round;
+  paint-order: stroke;
+  pointer-events: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* —— 直接操纵：能拖的节点给抓手，拖着时整张图是抓紧的手；放大后空白处也能拖着平移。
+   触屏在节点上的拖动归图，其余地方照常滚动页面 —— */
+[data-scope='graph-chart'][data-part='plot'][data-draggable] [data-part='node'] {
+  cursor: grab;
+  touch-action: none;
+}
+
+[data-scope='graph-chart'][data-part='plot'][data-zoomed] {
+  cursor: grab;
+  touch-action: none;
+}
+
+[data-scope='graph-chart'][data-part='plot'][data-dragging],
+[data-scope='graph-chart'][data-part='plot'][data-dragging] [data-part='node'] {
+  cursor: grabbing;
+}
+
+/* 强制色：节点改成系统色的面与描边，连线取次级系统色、被强调的取高亮色，名字取正文色；
+   焦点环、图例与色标在配方里 */
+@media (forced-colors: active) {
+  [data-scope='graph-chart'][data-part='node'] {
+    fill: Canvas;
+    stroke: CanvasText;
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='graph-chart'][data-part='link'],
+  [data-scope='graph-chart'][data-part='arrow'] {
+    --xh-_graph-link: GrayText;
+  }
+
+  [data-scope='graph-chart'][data-part='link'][data-highlighted],
+  [data-scope='graph-chart'][data-part='arrow'][data-highlighted] {
+    --xh-_graph-link: Highlight;
+  }
+
+  [data-scope='graph-chart'][data-part='node-label'] {
+    fill: CanvasText;
+    stroke: Canvas;
+  }
+}
+
 /* styles/hierarchy-chart.css */
 /* 定义 hierarchy chart 样式。 */
 

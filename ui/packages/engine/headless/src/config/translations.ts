@@ -59,6 +59,7 @@ import type { FloatingPanelTranslations } from '../floating-panel/floating-panel
 import type { FormTranslations } from '../form/form.types'
 import type { FunnelChartTranslations } from '../funnel-chart/funnel-chart.types'
 import type { GradientTextTranslations } from '../gradient-text/gradient-text.types'
+import type { GraphChartTranslations } from '../graph-chart/graph-chart.types'
 import type { GridTranslations } from '../grid/grid.types'
 import type { HeatmapTranslations } from '../heatmap/heatmap.types'
 import type { HierarchyChartTranslations } from '../hierarchy-chart/hierarchy-chart.types'
@@ -203,6 +204,7 @@ export interface XhTranslationOverrides {
   'form'?: Partial<FormTranslations>
   'funnel-chart'?: Partial<FunnelChartTranslations>
   'gradient-text'?: Partial<GradientTextTranslations>
+  'graph-chart'?: Partial<GraphChartTranslations>
   'grid'?: Partial<GridTranslations>
   'heatmap'?: Partial<HeatmapTranslations>
   'hierarchy-chart'?: Partial<HierarchyChartTranslations>

@@ -51,6 +51,7 @@ import { floatingPanelSuite } from './floating-panel.suite'
 import { formSuite } from './form.suite'
 import { funnelChartSuite } from './funnel-chart.suite'
 import { gradientTextSuite } from './gradient-text.suite'
+import { graphChartSuite } from './graph-chart.suite'
 import { gridSuite } from './grid.suite'
 import { heatmapSuite } from './heatmap.suite'
 import { hierarchyChartSuite } from './hierarchy-chart.suite'
@@ -284,4 +285,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   funnelChartSuite,
   hierarchyChartSuite,
   sankeyChartSuite,
+  graphChartSuite,
 ]
