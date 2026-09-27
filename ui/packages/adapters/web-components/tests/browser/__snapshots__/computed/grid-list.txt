@@ -339,7 +339,7 @@ font-size: 14px
 line-height: 21px
 font-weight: 400
 color: rgba(0, 0, 0, 0)
-background-color: oklch(1 0 0)
+background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
