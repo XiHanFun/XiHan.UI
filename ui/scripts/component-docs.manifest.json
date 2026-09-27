@@ -475,6 +475,10 @@
           "name": "直角坐标图"
         },
         {
+          "id": "funnel-chart",
+          "name": "漏斗图"
+        },
+        {
           "id": "heatmap",
           "name": "热力图"
         },

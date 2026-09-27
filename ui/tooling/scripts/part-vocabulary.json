@@ -162,6 +162,7 @@
     ],
     "caption": [
       "cartesian-chart",
+      "funnel-chart",
       "pie-chart",
       "radar-chart",
       "table"
@@ -342,6 +343,9 @@
       "timer",
       "tree-select"
     ],
+    "conversion": [
+      "funnel-chart"
+    ],
     "copy-trigger": [
       "clipboard"
     ],
@@ -433,6 +437,7 @@
       "combobox",
       "command",
       "diff-view",
+      "funnel-chart",
       "json-viewer",
       "listbox",
       "mention",
@@ -491,6 +496,7 @@
     ],
     "focus-ring": [
       "cartesian-chart",
+      "funnel-chart",
       "pie-chart",
       "radar-chart"
     ],
@@ -1159,6 +1165,7 @@
     ],
     "plot": [
       "cartesian-chart",
+      "funnel-chart",
       "pie-chart",
       "radar-chart"
     ],
@@ -1323,6 +1330,7 @@
       "float-button",
       "floating-panel",
       "form",
+      "funnel-chart",
       "gradient-text",
       "grid",
       "heatmap",
@@ -1530,6 +1538,12 @@
     "spotlight": [
       "tour"
     ],
+    "stage": [
+      "funnel-chart"
+    ],
+    "stage-label": [
+      "funnel-chart"
+    ],
     "status": [
       "clipboard",
       "signature-pad",
@@ -1556,6 +1570,7 @@
     "summary": [
       "cartesian-chart",
       "diff-view",
+      "funnel-chart",
       "pagination",
       "pie-chart",
       "radar-chart",
@@ -1575,6 +1590,7 @@
     ],
     "table": [
       "cartesian-chart",
+      "funnel-chart",
       "pie-chart",
       "radar-chart"
     ],
@@ -1658,32 +1674,38 @@
     ],
     "tooltip": [
       "cartesian-chart",
+      "funnel-chart",
       "heatmap",
       "pie-chart",
       "radar-chart"
     ],
     "tooltip-header": [
       "cartesian-chart",
+      "funnel-chart",
       "pie-chart",
       "radar-chart"
     ],
     "tooltip-name": [
       "cartesian-chart",
+      "funnel-chart",
       "pie-chart",
       "radar-chart"
     ],
     "tooltip-row": [
       "cartesian-chart",
+      "funnel-chart",
       "pie-chart",
       "radar-chart"
     ],
     "tooltip-swatch": [
       "cartesian-chart",
+      "funnel-chart",
       "pie-chart",
       "radar-chart"
     ],
     "tooltip-value": [
       "cartesian-chart",
+      "funnel-chart",
       "pie-chart",
       "radar-chart"
     ],
@@ -1762,6 +1784,7 @@
       "carousel",
       "cartesian-chart",
       "diff-view",
+      "funnel-chart",
       "image-cropper",
       "image-viewer",
       "log",
@@ -1859,6 +1882,7 @@
     "connector": true,
     "content": true,
     "control": true,
+    "conversion": true,
     "corner": true,
     "count": true,
     "counter": true,
@@ -1951,6 +1975,7 @@
     "split": true,
     "spoke": true,
     "spotlight": true,
+    "stage": true,
     "status": true,
     "stem": true,
     "suffix": true,

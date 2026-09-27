@@ -32684,6 +32684,204 @@
       "description": "form 的 reset-trigger、submit-trigger 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-funnel-chart-empty-gap",
+      "component": "funnel-chart",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "state=loading"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "funnel-chart 的 empty 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-funnel-chart-gap",
+      "component": "funnel-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "funnel-chart 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-funnel-chart-height",
+      "component": "funnel-chart",
+      "part": [
+        "viewport"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-height"
+      ],
+      "visibility": "public",
+      "description": "funnel-chart 的 viewport 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-funnel-chart-stage-gap",
+      "component": "funnel-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-_chart-metric-gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-gap"
+      ],
+      "visibility": "public",
+      "description": "funnel-chart 的 root 部件 --xh-_chart-metric-gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-funnel-chart-tooltip-gap",
+      "component": "funnel-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "funnel-chart 的 tooltip 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-funnel-chart-tooltip-px",
+      "component": "funnel-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "funnel-chart 的 tooltip 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-funnel-chart-tooltip-py",
+      "component": "funnel-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "funnel-chart 的 tooltip 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-funnel-chart-tooltip-radius",
+      "component": "funnel-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-overlay"
+      ],
+      "visibility": "public",
+      "description": "funnel-chart 的 tooltip 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-funnel-chart-tooltip-row-gap",
+      "component": "funnel-chart",
+      "part": [
+        "tooltip-row"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "funnel-chart 的 tooltip-row 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-funnel-chart-tooltip-shadow",
+      "component": "funnel-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-shadow"
+      ],
+      "visibility": "public",
+      "description": "funnel-chart 的 tooltip 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-funnel-chart-tooltip-swatch-radius",
+      "component": "funnel-chart",
+      "part": [
+        "tooltip-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "funnel-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-gradient-text-from",
       "component": "gradient-text",
       "part": [

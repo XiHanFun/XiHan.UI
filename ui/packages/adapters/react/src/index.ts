@@ -1131,6 +1131,27 @@ export type {
 } from './components/form/form'
 export { useForm } from './components/form/use-form'
 export type { FormCallbacks, FormContext } from './components/form/use-form'
+export { useFunnelChartContext } from './components/funnel-chart/context'
+export {
+  XhFunnelChartCaption,
+  XhFunnelChartEmpty,
+  XhFunnelChartPlot,
+  XhFunnelChartRoot,
+  XhFunnelChartTooltip,
+  XhFunnelChartViewport,
+} from './components/funnel-chart/funnel-chart'
+export type {
+  FunnelChartRootSlotProps,
+  FunnelChartTooltipSlotProps,
+  XhFunnelChartCaptionProps,
+  XhFunnelChartEmptyProps,
+  XhFunnelChartPlotProps,
+  XhFunnelChartRootProps,
+  XhFunnelChartTooltipProps,
+  XhFunnelChartViewportProps,
+} from './components/funnel-chart/funnel-chart'
+export { useFunnelChart } from './components/funnel-chart/use-funnel-chart'
+export type { FunnelChartContext } from './components/funnel-chart/use-funnel-chart'
 export { XhGradientText } from './components/gradient-text/gradient-text'
 export type { XhGradientTextProps } from './components/gradient-text/gradient-text'
 export { useGridContext } from './components/grid/context'

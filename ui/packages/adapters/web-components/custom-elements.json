@@ -25510,6 +25510,729 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/funnel-chart.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-funnel-chart>`：漏斗图宿主，一行数据一个阶段，看各阶段的保留量与逐级转化率。\n\n作者写外壳：root（`<figure>`）、caption、viewport 与其中空的 `<svg data-xh-part=\"plot\">`，可选 empty 与 tooltip。\n阶段、阶段标签与转化率由本元素按场景生成进 plot，按标记的 key 复用节点；tooltip 留空时写入缺省内容\n（阶段名、数值与转化率），里面有作者写的节点时元素不碰它。摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n\n数据与数值格式是对象或函数，只走 JS property。",
+          "name": "XhFunnelChartElement",
+          "cssParts": [
+            {
+              "description": "`<figure>`，承载 pending、错误状态与色板",
+              "name": "root"
+            },
+            {
+              "description": "`<figcaption>`，图表的可及名来源",
+              "name": "caption"
+            },
+            {
+              "description": "尺寸观测的宿主",
+              "name": "viewport"
+            },
+            {
+              "description": "绘图区 `<svg>`，阶段、标签与转化率由元素生成",
+              "name": "plot"
+            },
+            {
+              "description": "提示框，留空时由元素写入缺省内容",
+              "name": "tooltip"
+            },
+            {
+              "description": "没有可画的阶段时显示",
+              "name": "empty"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: funnelChartAnatomy, meta: funnelChartMeta, // plot 不是 <svg> 时 viewBox 会被小写成 viewbox 而静默失效，生成的图元也不显示 tags: { plot: ['svg'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "data",
+              "privacy": "public",
+              "type": {
+                "text": "readonly ChartRow[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "NumberFormatSpec | ((value: number) => string) | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "hiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultHiddenSeries",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<FunnelChartTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "nameField",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name-field"
+            },
+            {
+              "kind": "field",
+              "name": "valueField",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value-field"
+            },
+            {
+              "kind": "field",
+              "name": "shape",
+              "privacy": "public",
+              "type": {
+                "text": "FunnelShape | undefined"
+              },
+              "attribute": "shape"
+            },
+            {
+              "kind": "field",
+              "name": "align",
+              "privacy": "public",
+              "type": {
+                "text": "FunnelAlign | undefined"
+              },
+              "attribute": "align"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "FunnelDirection | undefined"
+              },
+              "attribute": "direction"
+            },
+            {
+              "kind": "field",
+              "name": "conversion",
+              "privacy": "public",
+              "type": {
+                "text": "FunnelConversion | undefined"
+              },
+              "attribute": "conversion"
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "privacy": "public",
+              "type": {
+                "text": "FunnelLabels | undefined"
+              },
+              "attribute": "labels"
+            },
+            {
+              "kind": "field",
+              "name": "palette",
+              "privacy": "public",
+              "type": {
+                "text": "ChartPalette | undefined"
+              },
+              "attribute": "palette"
+            },
+            {
+              "kind": "field",
+              "name": "activeKey",
+              "privacy": "public",
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "attribute": "active-key"
+            },
+            {
+              "kind": "field",
+              "name": "pending",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pending"
+            },
+            {
+              "kind": "field",
+              "name": "animated",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "animated"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "notifyHidden",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyKey",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyActive",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyPress",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<FunnelChartSchema>( this, funnelChartMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<FunnelChartSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<FunnelChartSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "FunnelChartApi | null"
+                }
+              },
+              "description": "连接层的产出：下面这些只读口都从这里取，机器尚未建立时为 null。"
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "ChartDatumDetails | null"
+              },
+              "description": "激活的阶段（悬停或聚焦）；没有时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "tooltip",
+              "type": {
+                "text": "FunnelTooltipModel | null"
+              },
+              "description": "提示框的缺省内容模型；收起时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "empty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "没有可画的数据。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentHiddenSeries",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "此刻隐藏的阶段。hiddenSeries 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentActiveKey",
+              "type": {
+                "text": "ChartKey | null"
+              },
+              "description": "此刻激活的键。activeKey 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "toggleSeries",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "切换某个阶段的显隐，与点图例项同一条路。"
+            },
+            {
+              "kind": "method",
+              "name": "setFocusedDatum",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "ref",
+                  "type": {
+                    "text": "{ seriesId: string, index: number } | null"
+                  }
+                }
+              ],
+              "description": "移动键盘锚点：只改锚点，不移动 DOM 焦点，也不派发事件。"
+            },
+            {
+              "kind": "field",
+              "name": "#keys",
+              "privacy": "private",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "生成节点的 key 表。"
+            },
+            {
+              "kind": "field",
+              "name": "#tooltipKey",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "上一次写进提示框与数据表的内容：没变就不重建。"
+            },
+            {
+              "kind": "field",
+              "name": "#table",
+              "privacy": "private",
+              "type": {
+                "text": "FunnelChartApi['table'] | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#tableHost",
+              "privacy": "private",
+              "type": {
+                "text": "Element | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paintPlot",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "plot",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "FunnelChartApi"
+                  }
+                }
+              ],
+              "description": "绘图区：场景标记按 key 复用节点。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintMarks",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "parent",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "marks",
+                  "type": {
+                    "text": "readonly ChartMark[]"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "FunnelChartApi"
+                  }
+                }
+              ],
+              "description": "场景标记画成 SVG 图元：createElementNS 建节点，SVG 图元挂在非 SVG 命名空间下不会显示。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintMark",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Element"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "doc",
+                  "type": {
+                    "text": "Document"
+                  }
+                },
+                {
+                  "name": "mark",
+                  "type": {
+                    "text": "ChartMark"
+                  }
+                },
+                {
+                  "name": "reuse",
+                  "type": {
+                    "text": "Element | undefined"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "FunnelChartApi"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#paintTooltip",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tooltip",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "FunnelChartApi"
+                  }
+                }
+              ],
+              "description": "提示框留空时写缺省内容：头部是阶段名，下面是数值与两种转化率。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintA11y",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "FunnelChartApi"
+                  }
+                }
+              ],
+              "description": "摘要与数据表追加在 root 末尾，视觉隐藏：无障碍等价物始终存在。"
+            }
+          ],
+          "events": [
+            {
+              "description": "阶段的显隐变了；detail 为 `{ hiddenSeries: string[] }`",
+              "name": "hidden-series-change",
+              "type": {
+                "text": "ChartHiddenSeriesChangeDetails"
+              }
+            },
+            {
+              "description": "指针或键盘换了激活的阶段；detail 为 `{ activeKey }`，收起时为 null",
+              "name": "active-key-change",
+              "type": {
+                "text": "ChartActiveKeyChangeDetails"
+              }
+            },
+            {
+              "description": "悬停或聚焦到某个阶段；detail 为阶段详情，收起时为 null",
+              "name": "datum-active",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            },
+            {
+              "description": "指针点击、Enter 或 Space 按在某个阶段上；detail 为阶段详情",
+              "name": "datum-press",
+              "type": {
+                "text": "ChartDatumDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "阶段名所在的字段",
+              "name": "name-field",
+              "fieldName": "nameField"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "数值所在的字段",
+              "name": "value-field",
+              "fieldName": "valueField"
+            },
+            {
+              "type": {
+                "text": "FunnelShape | undefined"
+              },
+              "description": "阶段的形状，默认 trapezoid",
+              "name": "shape",
+              "fieldName": "shape"
+            },
+            {
+              "type": {
+                "text": "FunnelAlign | undefined"
+              },
+              "description": "阶段的对齐，默认 center",
+              "name": "align",
+              "fieldName": "align"
+            },
+            {
+              "type": {
+                "text": "FunnelDirection | undefined"
+              },
+              "description": "排列方向，默认 down；up 即金字塔",
+              "name": "direction",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "FunnelConversion | undefined"
+              },
+              "description": "转化率的基准，默认 previous",
+              "name": "conversion",
+              "fieldName": "conversion"
+            },
+            {
+              "type": {
+                "text": "FunnelLabels | undefined"
+              },
+              "description": "阶段标签，默认 inside（放不下时写到阶段外侧）",
+              "name": "labels",
+              "fieldName": "labels"
+            },
+            {
+              "type": {
+                "text": "ChartPalette | undefined"
+              },
+              "description": "顺序色阶的色板：阶段由深入浅取这个色相",
+              "name": "palette",
+              "fieldName": "palette"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "数据重取中：保留上一帧、整体降低不透明度",
+              "name": "pending",
+              "fieldName": "pending"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
+              "name": "animated",
+              "fieldName": "animated"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "数字与内建文案的语言；未提供时按宿主语言",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "ChartKey | null | undefined"
+              },
+              "description": "激活的阶段（受控）：与别的图联动时是阶段名",
+              "name": "active-key",
+              "fieldName": "activeKey"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-funnel-chart",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-funnel-chart-empty-gap"
+            },
+            {
+              "name": "--xh-funnel-chart-gap"
+            },
+            {
+              "name": "--xh-funnel-chart-height"
+            },
+            {
+              "name": "--xh-funnel-chart-stage-gap"
+            },
+            {
+              "name": "--xh-funnel-chart-tooltip-gap"
+            },
+            {
+              "name": "--xh-funnel-chart-tooltip-px"
+            },
+            {
+              "name": "--xh-funnel-chart-tooltip-py"
+            },
+            {
+              "name": "--xh-funnel-chart-tooltip-radius"
+            },
+            {
+              "name": "--xh-funnel-chart-tooltip-row-gap"
+            },
+            {
+              "name": "--xh-funnel-chart-tooltip-shadow"
+            },
+            {
+              "name": "--xh-funnel-chart-tooltip-swatch-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhFunnelChartElement",
+          "declaration": {
+            "name": "XhFunnelChartElement",
+            "module": "src/elements/funnel-chart.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/gradient-text.ts",
       "declarations": [
         {
