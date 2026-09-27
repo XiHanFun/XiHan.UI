@@ -7,6 +7,7 @@
 
 import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 import type { EasingFunction, EasingName } from '@xihan-ui/motion'
+import type { NumberAnimationFormatOptions } from './number-animation.format'
 
 /** 缓动：曲线名，或一条 CSS 缓动函数串（`ease-out`、`cubic-bezier(...)`、`steps(...)`、`linear(...)` 等）。取值与 CSS 侧同源。 */
 export type NumberAnimationEasing = EasingName | (string & {})
@@ -36,10 +37,20 @@ export interface NumberAnimationSchema extends MachineSchema {
     duration?: number
     /** 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串，默认线性；认不出的写法在起跑时报错。 */
     easing?: NumberAnimationEasing
-    /** 小数位，默认 0。夹进 [0, 20]。 */
+    /** 小数位，默认 0。夹进 [0, 20]；每一帧都按这个位数铺字。 */
     precision?: number
-    /** 千位分隔符，默认不分隔。 */
+    /** 分组符。给了就分组并把该语言的分组符换成它；默认不分组。 */
     separator?: string
+    /**
+     * BCP 47 语言标记，决定小数点、分组习惯、数字系统与货币写法。
+     * 未提供时按宿主语言，宿主也没有时按 en-US。
+     */
+    locale?: string
+    /**
+     * 交给 Intl.NumberFormat 的选项：货币、百分比、单位、紧凑记数、符号与数字系统，
+     * `useGrouping` 打开即按该语言的习惯分组。小数位不在其中，归 `precision`。
+     */
+    formatOptions?: NumberAnimationFormatOptions
     /** 是否运行，默认 true。变为假即停在当前值，变为真从当前值继续走向终点。 */
     active?: boolean
     /** 尺寸：sm / md / lg，只写为 root 的 data-size。 */
@@ -84,7 +95,7 @@ export interface NumberAnimationApi<T extends PropTypes = PropTypes> {
   phase: NumberAnimationPhase
   /** 当前数值（未格式化）。 */
   value: number
-  /** 当前数值按 precision 与 separator 格式化的文本，即根中应显示的文字。 */
+  /** 当前数值按 locale、precision、separator 与 formatOptions 格式化的文本，即根中应显示的文字。 */
   text: string
   /** 是否仍在运行。 */
   running: boolean

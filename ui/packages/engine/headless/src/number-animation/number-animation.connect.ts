@@ -7,6 +7,7 @@
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { NumberAnimationApi, NumberAnimationSchema } from './number-animation.types'
+import { resolveLocale } from '@xihan-ui/core'
 import { numberAnimationAnatomy } from './number-animation.anatomy'
 import { formatNumberAnimation, resolveNumberAnimationPrecision } from './number-animation.format'
 
@@ -31,6 +32,7 @@ export function connectNumberAnimation<T extends PropTypes>(
     value,
     resolveNumberAnimationPrecision(prop('precision')),
     prop('separator'),
+    { locale: resolveLocale(prop('locale'), scope), options: prop('formatOptions') },
   )
 
   return {

@@ -6,7 +6,7 @@
 // 提供 number animation 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { NumberAnimationCompleteDetails, NumberAnimationEasing, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
+import type { NumberAnimationCompleteDetails, NumberAnimationEasing, NumberAnimationFormatOptions, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
 import { connectNumberAnimation, numberAnimationAnatomy, numberAnimationMachine, numberAnimationMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -36,7 +36,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {number} duration - 时长毫秒，默认 1000；<=0 即一步到位
  * @attr {string} easing - 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串，默认线性；认不出的写法在起跑时报错
  * @attr {number} precision - 小数位，默认 0
- * @attr {string} separator - 千位分隔符，默认不分隔
+ * @attr {string} separator - 分组符；给了就分组并把该语言的分组符换成它，默认不分组
+ * @attr {string} locale - BCP 47 语言标记，决定小数点、分组习惯、数字系统与货币写法；未提供时按宿主语言，宿主也没有时按 en-US
+ * @prop {NumberAnimationFormatOptions} formatOptions - 交给 Intl.NumberFormat 的选项（货币、百分比、单位、紧凑记数、符号、数字系统、useGrouping）；小数位归 precision，只能通过 property 设置
  * @attr {boolean} active - 是否运行，默认真；`active="false"` 停在当前值
  * @attr {'sm'|'md'|'lg'} size - 尺寸，只影响字号
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定数字使用哪族颜色
@@ -55,6 +57,8 @@ export class XhNumberAnimationElement extends XhElement {
     easing: { converter: STRING_CONVERTER },
     precision: { converter: NUMBER_CONVERTER },
     separator: { converter: STRING_CONVERTER },
+    locale: { converter: STRING_CONVERTER },
+    formatOptions: { attribute: false },
     active: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
@@ -67,6 +71,8 @@ export class XhNumberAnimationElement extends XhElement {
   declare easing?: NumberAnimationEasing
   declare precision?: number
   declare separator?: string
+  declare locale?: string
+  declare formatOptions?: NumberAnimationFormatOptions
   declare active?: boolean
   declare size?: Size
   declare tone?: Tone
@@ -87,6 +93,8 @@ export class XhNumberAnimationElement extends XhElement {
       easing: this.easing,
       precision: this.precision,
       separator: this.separator,
+      locale: this.locale,
+      formatOptions: this.formatOptions,
       // 布尔属性经三态转换器进来：不在即 undefined，把缺省交回机器
       active: this.active,
       size: this.size,

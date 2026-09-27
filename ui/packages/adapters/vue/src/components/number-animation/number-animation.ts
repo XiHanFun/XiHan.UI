@@ -6,7 +6,7 @@
 // 提供 number animation 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { NumberAnimationApi, NumberAnimationCompleteDetails, NumberAnimationEasing, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
+import type { NumberAnimationApi, NumberAnimationCompleteDetails, NumberAnimationEasing, NumberAnimationFormatOptions, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { createScope } from '@xihan-ui/core'
@@ -19,7 +19,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 type NumberAnimationProps = NumberAnimationSchema['props']
 
-/** 默认插槽的载荷：当前帧的数值，以及它按 precision 与 separator 格式化后的文本。 */
+/** 默认插槽的载荷：当前帧的数值，以及它按 locale、precision、separator 与 formatOptions 格式化后的文本。 */
 export type NumberAnimationSlotProps = Pick<NumberAnimationApi, 'value' | 'text'>
 
 /**
@@ -38,6 +38,8 @@ export const XhNumberAnimation = defineComponent({
     easing: { type: String as PropType<NumberAnimationEasing> },
     precision: { type: Number },
     separator: { type: String },
+    locale: { type: String },
+    formatOptions: { type: Object as PropType<NumberAnimationFormatOptions> },
     active: { type: Boolean, default: undefined },
     size: { type: String as PropType<Size> },
     tone: { type: String as PropType<Tone> },

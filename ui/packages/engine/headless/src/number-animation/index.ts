@@ -13,6 +13,7 @@ export {
   NUMBER_ANIMATION_PRECISION_MAX,
   resolveNumberAnimationPrecision,
 } from './number-animation.format'
+export type { NumberAnimationFormatOptions, NumberAnimationIntl } from './number-animation.format'
 export { numberAnimationKeyboard } from './number-animation.keyboard'
 export {
   NUMBER_ANIMATION_DURATION,

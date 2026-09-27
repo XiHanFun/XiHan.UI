@@ -42,6 +42,12 @@ duration 决定时长，easing 决定快慢的分配；同一段距离四档并�
 
 <XhDemo src="number-animation/04-follow-data" />
 
+### 语言与数字格式
+
+locale 决定小数点与分组习惯，formatOptions 交给 Intl.NumberFormat 铺货币、百分比与紧凑记数；小数位仍归 precision
+
+<XhDemo src="number-animation/05-intl" />
+
 ## 设计指引
 
 ### 何时使用
@@ -55,7 +61,8 @@ duration 决定时长，easing 决定快慢的分配；同一段距离四档并�
 
 ### 特性
 
-- `precision` 小数位、`separator` 千位分隔。
+- `precision` 小数位、`separator` 分组符，每一帧都按同一个位数铺字，数字不会在滚动中忽长忽短。
+- 文字由 `Intl.NumberFormat` 铺出：`locale` 决定小数点、分组习惯与数字系统（未提供时跟随宿主语言），`formatOptions` 给出货币、百分比、单位与紧凑记数；`formatOptions.useGrouping` 打开即按该语言的习惯分组。
 - `easing` 与 `duration` 决定滚动的节奏。
 - `live` 决定读屏播报方式，通常只播报终值。
 
@@ -92,8 +99,10 @@ duration 决定时长，easing 决定快慢的分配；同一段距离四档并�
 | `to` | `number` |  | 终点，默认 0。改写它从当前显示值继续走向新终点，不跳回起点。 |
 | `duration` | `number` |  | 时长毫秒，默认 1000；&lt;=0 即一步到位。 |
 | `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串，默认线性；认不出的写法在起跑时报错。 |
-| `precision` | `number` |  | 小数位，默认 0。夹进 [0, 20]。 |
-| `separator` | `string` |  | 千位分隔符，默认不分隔。 |
+| `precision` | `number` |  | 小数位，默认 0。夹进 [0, 20]；每一帧都按这个位数铺字。 |
+| `separator` | `string` |  | 分组符。给了就分组并把该语言的分组符换成它；默认不分组。 |
+| `locale` | `string` |  | BCP 47 语言标记，决定小数点、分组习惯、数字系统与货币写法。 未提供时按宿主语言，宿主也没有时按 en-US。 |
+| `formatOptions` | `NumberAnimationFormatOptions` |  | 交给 Intl.NumberFormat 的选项：货币、百分比、单位、紧凑记数、符号与数字系统， `useGrouping` 打开即按该语言的习惯分组。小数位不在其中，归 `precision`。 |
 | `active` | `boolean` |  | 是否运行，默认 true。变为假即停在当前值，变为真从当前值继续走向终点。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，只写为 root 的 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只写为 root 的 data-tone。 |
@@ -148,7 +157,7 @@ duration 决定时长，easing 决定快慢的分配；同一段距离四档并�
 | --- | --- | --- |
 | `phase` | `NumberAnimationPhase` |  |
 | `value` | `number` | 当前数值（未格式化）。 |
-| `text` | `string` | 当前数值按 precision 与 separator 格式化的文本，即根中应显示的文字。 |
+| `text` | `string` | 当前数值按 locale、precision、separator 与 formatOptions 格式化的文本，即根中应显示的文字。 |
 | `running` | `boolean` | 是否仍在运行。 |
 | `getRootProps` | `() => T['element']` |  |
 
