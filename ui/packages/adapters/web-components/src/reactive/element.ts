@@ -185,7 +185,7 @@ export class XhReactiveElement extends HostBase implements ReactiveControllerHos
   private changedProperties: PropertyValues = new Map()
   private pendingUpdate = false
   private hasUpdated = false
-  /** 升级前就写在实例上的字段值，首轮更新时补写回去。 */
+  /** 升级前就写在实例上的字段值，首次连接时补写回去。 */
   private instanceProperties: Map<string, unknown> | undefined
   private updatePromise!: Promise<boolean>
   private startUpdating!: (value: boolean) => void
@@ -228,8 +228,22 @@ export class XhReactiveElement extends HostBase implements ReactiveControllerHos
     this.controllers.delete(controller)
   }
 
+  /**
+   * 把升级前取下的字段值写回访问器。放在控制器的 hostConnected 之前：状态机在那里就按 props 建起来，
+   * 等首轮更新再补，模板克隆出来、升级前就赋好的 defaultValue 之类会被错过。
+   */
+  private restoreInstanceProperties(): void {
+    const saved = this.instanceProperties
+    if (saved === undefined)
+      return
+    this.instanceProperties = undefined
+    const self = this as unknown as Record<string, unknown>
+    for (const [name, value] of saved) self[name] = value
+  }
+
   connectedCallback(): void {
     this.renderRoot ??= this.createRenderRoot()
+    this.restoreInstanceProperties()
     this.startUpdating(true)
     for (const controller of this.controllers) controller.hostConnected?.()
   }
@@ -290,11 +304,6 @@ export class XhReactiveElement extends HostBase implements ReactiveControllerHos
   private performUpdate(): void {
     if (!this.pendingUpdate)
       return
-    if (!this.hasUpdated && this.instanceProperties) {
-      const self = this as unknown as Record<string, unknown>
-      for (const [name, value] of this.instanceProperties) self[name] = value
-      this.instanceProperties = undefined
-    }
     const changed = this.changedProperties
     try {
       for (const controller of this.controllers) controller.hostUpdate?.()

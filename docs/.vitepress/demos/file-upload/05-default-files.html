@@ -12,8 +12,8 @@
     }),
   ];
 
-  // defaultFiles 是挂载那一刻的初值：元素一进文档就把机器建起来，
-  // 所以先把元素造好、设完这份初值，再挂到页面上
+  // defaultFiles 是初值：列表被改动之前什么时候赋都算数。
+  // 这里先把元素造好、设完这份初值再挂到页面上，一挂上就是带着两份文件的列表
   const upload = document.createElement("xh-file-upload");
   upload.setAttribute("max-files", "4");
   upload.innerHTML = `
