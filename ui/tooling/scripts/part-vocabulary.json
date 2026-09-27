@@ -86,6 +86,9 @@
       "floating-panel",
       "table"
     ],
+    "box": [
+      "cartesian-chart"
+    ],
     "branch": [
       "json-viewer",
       "side-nav",
@@ -1039,6 +1042,9 @@
       "empty-state",
       "page-header"
     ],
+    "median": [
+      "cartesian-chart"
+    ],
     "month-block": [
       "heatmap"
     ],
@@ -1074,6 +1080,9 @@
     "note": [
       "approval",
       "question-flow"
+    ],
+    "outlier": [
+      "cartesian-chart"
     ],
     "output": [
       "tool-call"
@@ -1733,6 +1742,9 @@
       "calendar-picker",
       "calendar-range-picker"
     ],
+    "whisker": [
+      "cartesian-chart"
+    ],
     "wick": [
       "cartesian-chart"
     ],
@@ -1762,6 +1774,7 @@
     "bar": true,
     "block": true,
     "body": true,
+    "box": true,
     "branch": true,
     "breadcrumb": true,
     "button": {
@@ -1826,11 +1839,13 @@
     "logo": true,
     "mark": true,
     "media": true,
+    "median": true,
     "meter": true,
     "name": true,
     "needle": true,
     "note": true,
     "number": true,
+    "outlier": true,
     "output": true,
     "panel": true,
     "paragraph": true,
@@ -1893,6 +1908,7 @@
     "truncation": true,
     "value": true,
     "viewport": true,
+    "whisker": true,
     "wick": true
   },
   "retired": {

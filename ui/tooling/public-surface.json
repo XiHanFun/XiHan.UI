@@ -5463,6 +5463,8 @@
       "CartesianAxis",
       "CartesianAxisFormat",
       "CartesianBarSeries",
+      "CartesianBoxplotFields",
+      "CartesianBoxplotSeries",
       "CartesianCandlestickSeries",
       "CartesianChartApi",
       "CartesianChartSchema",
@@ -9006,6 +9008,7 @@
       "axis-line",
       "axis-title",
       "bar",
+      "box",
       "candle",
       "caption",
       "connector",
@@ -9028,6 +9031,8 @@
       "legend-scale-value",
       "legend-swatch",
       "line",
+      "median",
+      "outlier",
       "pattern",
       "pattern-line",
       "plot",
@@ -9046,6 +9051,7 @@
       "tooltip-value",
       "total-label",
       "viewport",
+      "whisker",
       "wick"
     ],
     "cascader": [

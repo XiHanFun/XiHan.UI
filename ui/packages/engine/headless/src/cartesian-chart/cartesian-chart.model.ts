@@ -13,6 +13,7 @@ import type {
   BandScale,
   ContinuousScale,
   CurveName,
+  DensityPoint,
   FontSpec,
   KeyedPoint,
   LineMark,
@@ -37,6 +38,7 @@ import type {
   CartesianAxis,
   CartesianAxisFormat,
   CartesianBarSeries,
+  CartesianBoxplotFields,
   CartesianChartTranslations,
   CartesianCurve,
   CartesianLineSeries,
@@ -46,12 +48,14 @@ import type {
 } from './cartesian-chart.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import {
+  boxplotStats,
   buildTableModel,
   createNumberFormat,
   createScene,
   inferDomain,
   isVizError,
   jitter,
+  kde,
   layoutAxis,
   linearRegression,
   movingAverage,
@@ -78,13 +82,15 @@ export interface CartesianSeriesSpec {
   readonly tone: Tone | null
   /** 纹理序号：分类系列等于色槽，语义系列按声明次序。 */
   readonly pattern: number | null
-  readonly mark: 'bar' | 'line' | 'scatter' | 'candlestick'
+  readonly mark: 'bar' | 'line' | 'scatter' | 'candlestick' | 'boxplot'
   /** 自变量字段；分箱的柱是区间的起点。 */
   readonly x: string
   /** 分箱的柱：区间止点的字段；不分箱为 null。 */
   readonly binEnd: string | null
   /** 数值字段：K 线是收盘。 */
   readonly y: string
+  /** 箱线：原始值字段或算好的五数字段、画法与要不要离群点；不是箱线为 null。 */
+  readonly box: { readonly raw: string | null, readonly stats: CartesianBoxplotFields | null, readonly style: 'box' | 'violin', readonly outliers: boolean } | null
   /** K 线：开高低收四个字段与画法；不是 K 线为 null。 */
   readonly ohlc: { readonly open: string, readonly high: string, readonly low: string, readonly close: string, readonly style: 'candle' | 'ohlc' } | null
   /** 散点：气泡大小的字段；不是气泡为 null。 */
@@ -172,7 +178,11 @@ function numberOf(value: unknown): number | null {
 
 /** 数值字段：系列 id 缺省取它，堆叠与负值判断都看它；K 线取收盘。 */
 function valueFieldOf(s: CartesianSeries): string {
-  return s.mark === 'candlestick' ? s.close : s.y
+  if (s.mark === 'candlestick')
+    return s.close
+  if (s.mark === 'boxplot')
+    return typeof s.y === 'string' ? s.y : s.y.median
+  return s.y
 }
 
 /** 柱与折线能堆叠、写数据标签；散点与 K 线不能。 */
@@ -193,8 +203,8 @@ function binEndOf(s: CartesianSeries): string | null {
 function inferKeyScale(rows: readonly ChartRow[], series: readonly CartesianSeries[], axis: CartesianAxis): CartesianScaleKind {
   if (axis.scale)
     return axis.scale
-  // 分箱的柱落在数值轴上，按区间的真实宽度画；其余的柱与 K 线是类目
-  if (series.some(s => (s.mark === 'bar' && binEndOf(s) == null) || s.mark === 'candlestick'))
+  // 分箱的柱落在数值轴上，按区间的真实宽度画；其余的柱、K 线与箱线是类目
+  if (series.some(s => (s.mark === 'bar' && binEndOf(s) == null) || s.mark === 'candlestick' || s.mark === 'boxplot'))
     return 'band'
   let dates = 0
   let numbers = 0
@@ -236,7 +246,9 @@ export function normalizeCartesianSpec(
         ? [s.x, s.y, s.size, s.datumId, s.color]
         : s.mark === 'bar'
           ? [xFieldOf(s), binEndOf(s), s.y, s.waterfall?.total]
-          : s.mark === 'candlestick' ? [s.x, s.open, s.high, s.low, s.close] : [s.x, s.y]
+          : s.mark === 'candlestick'
+            ? [s.x, s.open, s.high, s.low, s.close]
+            : s.mark === 'boxplot' ? [s.x, ...(typeof s.y === 'string' ? [s.y] : Object.values(s.y))] : [s.x, s.y]
       for (const field of fields) {
         if (field == null)
           continue
@@ -244,6 +256,12 @@ export function normalizeCartesianSpec(
           issues.push({ code: DIAGNOSTIC_CODES.chartUnknownField, message: `系列引用的字段「${field}」在数据里不存在`, detail: { field } })
       }
     }
+  }
+
+  // 小提琴要原始值才画得出密度：y 写成算好的五数字段时画不出来
+  for (const s of seriesInput) {
+    if (s.mark === 'boxplot' && s.style === 'violin' && typeof s.y !== 'string')
+      issues.push({ code: DIAGNOSTIC_CODES.chartViolinRaw, message: '小提琴图要原始值：y 写成原始值的字段名', detail: { series: s.id ?? s.y.median } })
   }
 
   // 同一堆叠组的堆叠方式必须一致：柱与折线各自成组；散点不堆叠
@@ -287,6 +305,9 @@ export function normalizeCartesianSpec(
       binEnd: binEndOf(s),
       y: valueFieldOf(s),
       ohlc: s.mark === 'candlestick' ? { open: s.open, high: s.high, low: s.low, close: s.close, style: s.style ?? 'candle' } : null,
+      box: s.mark === 'boxplot'
+        ? { raw: typeof s.y === 'string' ? s.y : null, stats: typeof s.y === 'string' ? null : s.y, style: s.style ?? 'box', outliers: s.outliers !== false }
+        : null,
       size: scatter?.size ?? null,
       // 缺省形状随色槽（语义系列随纹理序号）轮换：颜色分不清时形状还分得开
       symbol: scatter ? scatter.symbol ?? SYMBOL_NAMES[((identity.slot ?? identity.pattern ?? 1) - 1) % SYMBOL_NAMES.length]! : null,
@@ -377,6 +398,8 @@ export interface CartesianSeriesValues {
   readonly ends: readonly (number | null)[] | null
   /** K 线：每个键上的开高低收；不是 K 线为 null。 */
   readonly ohlc: readonly (CartesianOhlc | null)[] | null
+  /** 箱线：每个键上的五数、离群点与小提琴的密度；不是箱线为 null。 */
+  readonly boxes: readonly (CartesianBox | null)[] | null
   /** 贴近基线的一端。 */
   readonly low: readonly (number | null)[]
   /** 值所在的一端。 */
@@ -434,7 +457,81 @@ function scatterPoints(spec: CartesianSpec, s: CartesianSeriesSpec): Omit<Cartes
     steps: null,
     ends: null,
     ohlc: null,
+    boxes: null,
   }
+}
+
+/** 箱线一个键上的统计：须线两端、四分位与中位数、须线外的离群点、小提琴的密度轮廓。 */
+export interface CartesianBox {
+  readonly min: number
+  readonly q1: number
+  readonly median: number
+  readonly q3: number
+  readonly max: number
+  readonly outliers: readonly number[]
+  /** 小提琴的密度：在最小到最大值之间均匀取样；箱线为 null。 */
+  readonly density: readonly DensityPoint[] | null
+}
+
+/** 小提琴轮廓的取样点数。 */
+const VIOLIN_SAMPLES = 32
+
+/**
+ * 箱线：原始值按 x 分组求五数（R-7 四分位，须线到 1.5 倍四分距以内最远的点，其外为离群点；不要离群点时须线直达两端），
+ * 小提琴另求核密度；算好的五数每个键取第一行，五个数须依次不减，否则报 chart.invalid-range。数值是中位数。
+ */
+function boxplotValues(spec: CartesianSpec, s: CartesianSeriesSpec, issues: ChartSpecIssue[]): Omit<CartesianSeriesValues, 'low' | 'high' | 'outermost'> {
+  const n = spec.keys.length
+  const box = s.box!
+  const rows = filled(n, -1)
+  const groups = Array.from({ length: n }, (): number[] => [])
+  const given = filled<CartesianBox | null>(n, null)
+  spec.rows.forEach((row, index) => {
+    const id = cartesianKeyId(row[s.x])
+    const at = id == null ? undefined : spec.keyIndex.get(id)
+    if (at === undefined)
+      return
+    if (box.raw != null) {
+      const v = numberOf(row[box.raw])
+      if (v == null)
+        return
+      if (rows[at] === -1)
+        rows[at] = index
+      groups[at]!.push(v)
+      return
+    }
+    if (rows[at] !== -1)
+      return
+    rows[at] = index
+    const f = box.stats!
+    const five = [row[f.min], row[f.q1], row[f.median], row[f.q3], row[f.max]].map(numberOf)
+    if (five.some(v => v == null))
+      return
+    const [min, q1, median, q3, max] = five as number[]
+    if (!(min! <= q1! && q1! <= median! && median! <= q3! && q3! <= max!)) {
+      issues.push({ code: DIAGNOSTIC_CODES.chartInvalidRange, message: '箱线的五数必须依次不减：最小 ≤ 下四分位 ≤ 中位数 ≤ 上四分位 ≤ 最大', detail: { series: s.id, row: index, five } })
+      return
+    }
+    given[at] = { min: min!, q1: q1!, median: median!, q3: q3!, max: max!, outliers: [], density: null }
+  })
+  const boxes = box.raw == null
+    ? given
+    : groups.map((values): CartesianBox | null => {
+        const stats = boxplotStats(values)
+        if (!stats)
+          return null
+        // 不要离群点：须线直达最小与最大值
+        return {
+          min: box.outliers ? stats.lowWhisker : stats.min,
+          q1: stats.q1,
+          median: stats.median,
+          q3: stats.q3,
+          max: box.outliers ? stats.highWhisker : stats.max,
+          outliers: box.outliers ? stats.outliers : [],
+          density: box.style === 'violin' ? kde(values, { points: VIOLIN_SAMPLES, extent: [stats.min, stats.max] }) : null,
+        }
+      })
+  return { spec: s, values: boxes.map(b => b?.median ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends: null, ohlc: null, boxes }
 }
 
 /** K 线一个键上的开高低收。 */
@@ -464,7 +561,7 @@ function candlestickValues(spec: CartesianSpec, s: CartesianSeriesSpec, rows: re
     }
     return { open, high, low, close }
   })
-  return { spec: s, values: ohlc.map(o => o?.close ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends: null, ohlc }
+  return { spec: s, values: ohlc.map(o => o?.close ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends: null, ohlc, boxes: null }
 }
 
 export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly string[]): CartesianDerived {
@@ -497,12 +594,14 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
     })
     if (s.ohlc)
       return candlestickValues(spec, s, rows, issues)
+    if (s.box)
+      return boxplotValues(spec, s, issues)
     if (!s.waterfall)
-      return { spec: s, values, rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends, ohlc: null }
+      return { spec: s, values, rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps: null, ends, ohlc: null, boxes: null }
     // 瀑布：小计行的 y 被忽略，数值取算出来的累计值；缺失的一步不画、不改累计
     const total = s.waterfall.total
     const steps = waterfall(values, rows.map(r => total != null && r >= 0 && Boolean(spec.rows[r]![total])))
-    return { spec: s, values: steps.map(step => step?.value ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps, ends: null, ohlc: null }
+    return { spec: s, values: steps.map(step => step?.value ?? null), rows, keyAt: null, pointIds: null, sizes: null, colors: null, steps, ends: null, ohlc: null, boxes: null }
   })
 
   const stacked = new Map<string, { low: (number | null)[], high: (number | null)[], outermost: boolean[] }>()
@@ -544,6 +643,13 @@ export function deriveCartesian(spec: CartesianSpec, hiddenSeries: readonly stri
       return { ...entry, ...s }
     if (entry.keyAt)
       return { ...entry, low: entry.values, high: entry.values, outermost: entry.values.map(() => true) }
+    // 箱线的两端是须线与离群点的最远处：定义域要盖住它们
+    if (entry.boxes) {
+      const reach = (b: CartesianBox | null, side: 'low' | 'high'): number | null => (b == null
+        ? null
+        : side === 'low' ? Math.min(b.min, ...b.outliers) : Math.max(b.max, ...b.outliers))
+      return { ...entry, low: entry.boxes.map(b => reach(b, 'low')), high: entry.boxes.map(b => reach(b, 'high')), outermost: entry.values.map(() => true) }
+    }
     // K 线的两端是最低价与最高价：定义域要盖住整根影线
     if (entry.ohlc)
       return { ...entry, low: entry.ohlc.map(o => o?.low ?? null), high: entry.ohlc.map(o => o?.high ?? null), outermost: entry.values.map(() => true) }
@@ -622,7 +728,7 @@ export function cartesianDomains(derived: CartesianDerived, annotations: readonl
       const lo = s.low[j]
       if (hi != null)
         values.push(hi)
-      if (lo != null && (s.spec.mark === 'bar' || s.spec.mark === 'candlestick'))
+      if (lo != null && (s.spec.mark === 'bar' || s.spec.mark === 'candlestick' || s.spec.mark === 'boxplot'))
         values.push(lo)
       else if (lo != null && s.spec.area)
         values.push(lo)
@@ -1290,6 +1396,9 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
     else if (s.spec.mark === 'candlestick') {
       children.push(...candleMarks(layout, s, paint, seriesAnchors, info))
     }
+    else if (s.spec.mark === 'boxplot') {
+      children.push(...boxMarks(layout, s, paint, seriesAnchors, info))
+    }
     else if (s.spec.mark === 'bar') {
       const slotIndex = barSlots.indexOf(s.spec.stack == null ? `s:${id}` : `g:${s.spec.stack}`)
       for (let j = 0; j < spec.keys.length; j++) {
@@ -1472,6 +1581,89 @@ export function colorPosition(domain: readonly [number, number] | null, value: n
   return POINT_COLOR_FLOOR + (1 - POINT_COLOR_FLOOR) * t
 }
 
+/** 键间距：类目轴取步长，连续轴取相邻两个键中心的最小间距；只有一个键时退回柱厚上限。 */
+function keyStep(layout: CartesianLayout): number {
+  if (isCategoryScale(layout.keyScale))
+    return (layout.keyScale as { step?: number }).step ?? layout.bandwidth
+  const centers = layout.keyCenters.filter(Number.isFinite).sort((a, b) => a - b)
+  let step = Number.POSITIVE_INFINITY
+  for (let i = 1; i < centers.length; i++)
+    step = Math.min(step, centers[i]! - centers[i - 1]!)
+  return Number.isFinite(step) ? step : layout.metrics.barMax
+}
+
+/**
+ * 箱线：须线（中线加两端短横）、箱（下四分位到上四分位）、中位线与离群点；小提琴画核密度的对称轮廓与中位线。
+ * 箱宽取键间距的六成，不超过两倍柱厚上限；小提琴的宽度按整个系列里最大的密度归一，各组之间可以比较。
+ * 箱与小提琴轮廓是可聚焦的数据标记，锚点是中位数。
+ */
+function boxMarks(
+  layout: CartesianLayout,
+  s: CartesianSeriesValues,
+  paint: MarkPaint,
+  anchors: ({ x: number, y: number } | null)[],
+  info: Map<string, CartesianMarkInfo>,
+): Mark[] {
+  const { domains, metrics, keyCenters } = layout
+  const { spec } = domains.derived
+  const vertical = spec.orientation === 'vertical'
+  const id = s.spec.id
+  const width = Math.max(1, Math.min(metrics.barMax * 2, keyStep(layout) * 0.6))
+  const toValue = (v: number): number => layout.valueScale.map(v) ?? Number.NaN
+  const at = (along: number, across: number): string => (vertical ? `${along},${across}` : `${across},${along}`)
+  const maxDensity = Math.max(0, ...s.boxes!.flatMap(b => b?.density?.map(p => p.density) ?? []))
+  const outlierSize = Math.PI * (metrics.pointSize / 3) ** 2
+  const marks: Mark[] = []
+  s.boxes!.forEach((b, j) => {
+    const center = keyCenters[j]!
+    if (!b || !Number.isFinite(center))
+      return
+    const datum = cartesianDatumId(spec.keys[j]!)
+    const key = `${id}:${datum}`
+    const ref = { seriesId: id, index: s.rows[j]! }
+    const c = crisp(center)
+    const median = toValue(b.median)
+    info.set(key, { seriesId: id, position: j })
+    anchors[j] = vertical ? { x: center, y: median } : { x: median, y: center }
+    const mid = crisp(median)
+    if (b.density && maxDensity > 0) {
+      const left = b.density.map(p => at(c - (p.density / maxDensity) * (width / 2), toValue(p.value)))
+      const right = [...b.density].reverse().map(p => at(c + (p.density / maxDensity) * (width / 2), toValue(p.value)))
+      marks.push({ kind: 'path', key, part: 'box', d: `M${left.join('L')}L${right.join('L')}Z`, datum: ref, paint, a11y: { label: '', focusable: true } })
+      marks.push({ kind: 'path', key: `${id}:median:${datum}`, part: 'median', d: `M${at(c - width / 4, mid)}L${at(c + width / 4, mid)}`, paint })
+      return
+    }
+    const [lo, q1, q3, hi] = [toValue(b.min), toValue(b.q1), toValue(b.q3), toValue(b.max)]
+    const cap = width / 4
+    marks.push({
+      kind: 'path',
+      key: `${id}:whisker:${datum}`,
+      part: 'whisker',
+      d: `M${at(c, hi)}L${at(c, q3)}M${at(c, q1)}L${at(c, lo)}M${at(c - cap, crisp(hi))}L${at(c + cap, crisp(hi))}M${at(c - cap, crisp(lo))}L${at(c + cap, crisp(lo))}`,
+      paint,
+    })
+    const [top, bottom] = [Math.min(q1, q3), Math.max(q1, q3)]
+    const span = Math.max(1, bottom - top)
+    marks.push({
+      kind: 'rect',
+      key,
+      part: 'box',
+      ...(vertical ? { x: c - width / 2, y: top, width, height: span } : { x: top, y: c - width / 2, width: span, height: width }),
+      cornerRadius: Math.min(metrics.radius, width / 2, span / 2),
+      orientation: vertical ? 'vertical' : 'horizontal',
+      datum: ref,
+      paint,
+      a11y: { label: '', focusable: true },
+    })
+    marks.push({ kind: 'path', key: `${id}:median:${datum}`, part: 'median', d: `M${at(c - width / 2, mid)}L${at(c + width / 2, mid)}`, paint })
+    b.outliers.forEach((v, i) => {
+      const across = toValue(v)
+      marks.push({ kind: 'symbol', key: `${id}:outlier:${datum}:${i}`, part: 'outlier', ...(vertical ? { x: center, y: across } : { x: across, y: center }), size: outlierSize, symbol: 'circle', paint })
+    })
+  })
+  return marks
+}
+
 /**
  * K 线：每个键一根。蜡烛是影线（最低到最高）加实体（开盘到收盘，至少一像素高，十字星也看得见）；
  * 美国线是一条竖线加左开右收两道短横。收盘不低于开盘为涨、低于开盘为跌，写在 paint.trend 上。
@@ -1489,16 +1681,7 @@ function candleMarks(
   const vertical = spec.orientation === 'vertical'
   const id = s.spec.id
   const ohlc = s.spec.ohlc!
-  // 键间距：类目轴取步长，连续轴取相邻两个键中心的最小间距
-  let step = isCategoryScale(layout.keyScale) ? ((layout.keyScale as { step?: number }).step ?? layout.bandwidth) : Number.POSITIVE_INFINITY
-  if (!Number.isFinite(step)) {
-    const centers = keyCenters.filter(Number.isFinite).sort((a, b) => a - b)
-    for (let i = 1; i < centers.length; i++)
-      step = Math.min(step, centers[i]! - centers[i - 1]!)
-    if (!Number.isFinite(step))
-      step = metrics.barMax
-  }
-  const width = Math.max(1, Math.min(metrics.barMax, step * 0.7))
+  const width = Math.max(1, Math.min(metrics.barMax, keyStep(layout) * 0.7))
   const toValue = (v: number): number => layout.valueScale.map(v) ?? Number.NaN
   const at = (along: number, across: number): string => (vertical ? `${along},${across}` : `${across},${along}`)
   const marks: Mark[] = []
@@ -2193,8 +2376,8 @@ export function cartesianA11y(
   // 含散点时一个 x 上可以有多个点，按键对齐的宽表放不下：改成每个数据一行的长表；K 线一个键四个价，每个价一列
   const table = unique.some(s => s.keyAt)
     ? pointTable(unique, spec, formats, translations)
-    : unique.some(s => s.ohlc)
-      ? ohlcTable(unique, spec, formats, translations)
+    : unique.some(s => s.ohlc || s.boxes)
+      ? statsTable(unique, spec, formats, translations)
       : buildTableModel({
           keyLabel: translations.keyLabel,
           series,
@@ -2205,21 +2388,29 @@ export function cartesianA11y(
   return { summary, table, formats }
 }
 
-/** K 线的数据表：首列是自变量，K 线系列开高低收各一列（多个系列时列名带上系列名），其余系列各一列。 */
-function ohlcTable(
+/**
+ * K 线与箱线的数据表：首列是自变量，K 线系列开高低收各一列、箱线系列五数与离群点各一列
+ * （多个系列时列名带上系列名），其余系列各一列。
+ */
+function statsTable(
   series: readonly CartesianSeriesValues[],
   spec: CartesianSpec,
   formats: CartesianFormats,
   translations: CartesianChartTranslations,
 ): TableModel {
-  const names = translations.ohlcColumns
-  const fields = ['open', 'high', 'low', 'close'] as const
+  const ohlcFields = ['open', 'high', 'low', 'close'] as const
+  const boxFields = ['min', 'q1', 'median', 'q3', 'max', 'outliers'] as const
   const many = series.length > 1
   const columns: TableModel['columns'][number][] = [{ id: 'key', label: translations.keyLabel }]
+  const label = (s: CartesianSeriesValues, name: string): string => (many ? `${s.spec.name} ${name}` : name)
   for (const s of series) {
     if (s.ohlc) {
-      for (const f of fields)
-        columns.push({ id: `${s.spec.id}:${f}`, label: many ? `${s.spec.name} ${names[f]}` : names[f] })
+      for (const f of ohlcFields)
+        columns.push({ id: `${s.spec.id}:${f}`, label: label(s, translations.ohlcColumns[f]) })
+    }
+    else if (s.boxes) {
+      for (const f of boxFields)
+        columns.push({ id: `${s.spec.id}:${f}`, label: label(s, translations.boxColumns[f]) })
     }
     else {
       columns.push({ id: s.spec.id, label: s.spec.name })
@@ -2235,7 +2426,15 @@ function ohlcTable(
         { value: key, text: formats.key(key) },
         ...series.flatMap((s) => {
           const j = spec.keyIndex.get(cartesianKeyId(key)!)!
-          return s.ohlc ? fields.map(f => cell(s.ohlc![j]?.[f])) : [cell(s.values[j])]
+          if (s.ohlc)
+            return ohlcFields.map(f => cell(s.ohlc![j]?.[f]))
+          const box = s.boxes?.[j]
+          if (s.boxes) {
+            // 离群点写成一格：逐个列出；没有离群点写空
+            const outliers = box?.outliers ?? []
+            return [...boxFields.slice(0, 5).map(f => cell(box?.[f as 'min'])), { value: outliers, text: outliers.map(formats.value).join(', ') }]
+          }
+          return [cell(s.values[j])]
         }),
       ],
     })),

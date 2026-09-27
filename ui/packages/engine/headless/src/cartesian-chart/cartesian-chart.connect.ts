@@ -124,7 +124,7 @@ export function connectCartesianChart<T extends PropTypes>(
   const anchorKey = anchor ? cartesianMarkKey(model, anchor) : null
   // 锚点落在柱或散点上时标记自己占 Tab 位；落在折线上时绘图区占，聚焦时再转投给焦点代理
   const anchorMark = anchor == null ? undefined : model.derived.visible.find(s => s.spec.id === anchor.seriesId)?.spec.mark
-  const anchorIsBar = anchorMark === 'bar' || anchorMark === 'scatter' || anchorMark === 'candlestick'
+  const anchorIsBar = anchorMark === 'bar' || anchorMark === 'scatter' || anchorMark === 'candlestick' || anchorMark === 'boxplot'
 
   const active: CartesianActive | null = cartesianActive(model, {
     hover: context.get('hover'),
@@ -523,7 +523,7 @@ export function connectCartesianChart<T extends PropTypes>(
       if (mark.exiting) {
         props['aria-hidden'] = true
       }
-      else if (mark.part === 'bar' || mark.part === 'candle' || (mark.part === 'point' && mark.a11y?.focusable)) {
+      else if (mark.part === 'bar' || mark.part === 'candle' || mark.part === 'box' || (mark.part === 'point' && mark.a11y?.focusable)) {
         // 散点的点与柱一样本身就是数据标记，roving 取 Tab 位；折线上的点是焦点代理，出现即占
         const proxy = mark.part === 'point' && (mark.datum == null || seriesById.get(mark.datum.seriesId)?.mark !== 'scatter')
         const ref = mark.datum ?? null
@@ -552,6 +552,9 @@ export function connectCartesianChart<T extends PropTypes>(
         props['data-trend'] = mark.paint?.trend
       if (mark.part === 'candle')
         props['data-style'] = mark.kind === 'rect' ? 'candle' : 'ohlc'
+      // 箱线的箱是矩形，小提琴是密度轮廓
+      if (mark.part === 'box')
+        props['data-style'] = mark.kind === 'rect' ? 'box' : 'violin'
       if (mark.part === 'crosshair')
         props['data-kind'] = mark.kind === 'rect' ? 'band' : 'line'
       // 注释：参考线与参考带是结构色，跟着系列的（标出的点、平均线、趋势线）取系列色、随系列淡出
