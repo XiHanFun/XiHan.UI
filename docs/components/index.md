@@ -105,7 +105,6 @@
 <XhComponentCard src="time-field" name="TimeField" label="时间字段" href="/components/time-field" />
 <XhComponentCard src="time-picker" name="TimePicker" label="时间选择器" href="/components/time-picker" />
 <XhComponentCard src="time-range-picker" name="TimeRangePicker" label="时间范围选择器" href="/components/time-range-picker" status="new" />
-<XhComponentCard src="time-zone-select" name="TimeZoneSelect" label="时区选择器" href="/components/time-zone-select" />
 <XhComponentCard src="transfer" name="Transfer" label="穿梭框" href="/components/transfer" />
 <XhComponentCard src="tree-select" name="TreeSelect" label="树选择" href="/components/tree-select" />
 

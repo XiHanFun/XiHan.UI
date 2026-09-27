@@ -178,7 +178,6 @@
     "./time-field.css": "./css/time-field.css",
     "./time-picker.css": "./css/time-picker.css",
     "./time-range-picker.css": "./css/time-range-picker.css",
-    "./time-zone-select.css": "./css/time-zone-select.css",
     "./timeline.css": "./css/timeline.css",
     "./timer.css": "./css/timer.css",
     "./timestamp.css": "./css/timestamp.css",

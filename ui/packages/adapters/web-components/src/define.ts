@@ -136,7 +136,6 @@ import { XhTextFieldElement } from './elements/text-field'
 import { XhTimeFieldElement } from './elements/time-field'
 import { XhTimePickerElement } from './elements/time-picker'
 import { XhTimeRangePickerElement } from './elements/time-range-picker'
-import { XhTimeZoneSelectElement } from './elements/time-zone-select'
 import { XhTimelineElement } from './elements/timeline'
 import { XhTimerElement } from './elements/timer'
 import { XhTimestampElement } from './elements/timestamp'
@@ -287,7 +286,6 @@ export function defineXhElements(): void {
   defineElement('xh-time-field', XhTimeFieldElement, VERSION)
   defineElement('xh-time-picker', XhTimePickerElement, VERSION)
   defineElement('xh-time-range-picker', XhTimeRangePickerElement, VERSION)
-  defineElement('xh-time-zone-select', XhTimeZoneSelectElement, VERSION)
   defineElement('xh-timeline', XhTimelineElement, VERSION)
   defineElement('xh-timer', XhTimerElement, VERSION)
   defineElement('xh-timestamp', XhTimestampElement, VERSION)
@@ -422,7 +420,6 @@ export {
   XhTimePickerElement,
   XhTimeRangePickerElement,
   XhTimerElement,
-  XhTimeZoneSelectElement,
   XhToastElement,
   XhToggleElement,
   XhToggleGroupElement,

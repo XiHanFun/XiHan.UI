@@ -109,7 +109,6 @@ import {
   timeRangePickerSuite,
   timerSuite,
   timestampSuite,
-  timeZoneSelectSuite,
   toastSuite,
   toggleSuite,
   toolCallSuite,
@@ -264,7 +263,6 @@ const SUITES: readonly ConformanceSuite[] = [
   graphChartSuite,
   gridListSuite,
   citationSuite,
-  timeZoneSelectSuite,
 ]
 
 /** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */

@@ -10,7 +10,7 @@ interface Updatable extends HTMLElement {
 }
 
 // 对外语义事件（跨适配器一致的 CustomEvent），无关组件忽略
-const PUBLIC_EVENTS = ['action', 'active-source-change', 'open-change', 'checked-change', 'checkbox-value-change', 'radio-value-change', 'clamp-toggle', 'color-error', 'branch-load-start', 'branch-load', 'branch-load-error', 'column-preference-change', 'pressed-change', 'node-move', 'row-move', 'tab-move', 'value-change', 'input-value-change', 'select', 'sort', 'status-change', 'submit', 'stop', 'source-open', 'stick-change', 'download-complete', 'download-error', 'item-delete', 'item-focus', 'decision', 'granted-scopes-change', 'expanded-value-change', 'index-change', 'answers-change', 'notes-change', 'paused-change', 'hidden-series-change', 'active-key-change', 'datum-active', 'datum-press', 'window-change', 'brush-selection-change', 'root-key-change']
+const PUBLIC_EVENTS = ['action', 'active-source-change', 'open-change', 'checked-change', 'checkbox-value-change', 'radio-value-change', 'clamp-toggle', 'color-error', 'branch-load-start', 'branch-load', 'branch-load-error', 'column-preference-change', 'pressed-change', 'node-move', 'row-move', 'tab-move', 'value-change', 'select', 'sort', 'status-change', 'submit', 'stop', 'source-open', 'stick-change', 'download-complete', 'download-error', 'item-delete', 'item-focus', 'decision', 'granted-scopes-change', 'expanded-value-change', 'index-change', 'answers-change', 'notes-change', 'paused-change', 'hidden-series-change', 'active-key-change', 'datum-active', 'datum-press', 'window-change', 'brush-selection-change', 'root-key-change']
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 

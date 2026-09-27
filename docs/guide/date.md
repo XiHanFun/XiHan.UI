@@ -111,8 +111,6 @@ ZonedDateTime.from(
 
 `compare(a, b)` 只比较时间点；`equals(other)` 同时比较时间点与时区。模型精度为毫秒，不提供多历法；多历法需要单独定义值语义、字段顺序和组件交互，不作为时区能力的隐式扩展。
 
-让用户选择时区时使用[时区选择器](../components/time-zone-select)。它保存 IANA 名，并可用实际排期的 `referenceTime` 显示 DST 偏移；不要把候选中的 `UTC+08:00` 说明文字当作值保存。
-
 日期类组件的 `timeZone` prop 只决定「今天」是哪一天（聚焦日的兜底、今天的标记、快捷预设）与日期字段的 `valueAsDate`。格式化只由日期字段决定，与时区无关。
 
 ## 周与地区
