@@ -896,6 +896,10 @@ export type { ResizableRootSlotProps } from './components/resizable/resizable'
 export { useResizable } from './components/resizable/use-resizable'
 export type { ResizableContext } from './components/resizable/use-resizable'
 
+export { XhSankeyChartCaption, XhSankeyChartEmpty, XhSankeyChartLegend, XhSankeyChartPlot, XhSankeyChartRoot, XhSankeyChartTooltip, XhSankeyChartViewport } from './components/sankey-chart/sankey-chart'
+export type { SankeyChartRootSlotProps, SankeyChartTooltipSlotProps } from './components/sankey-chart/sankey-chart'
+export { useSankeyChart } from './components/sankey-chart/use-sankey-chart'
+export type { SankeyChartContext, SankeyChartNotifiers } from './components/sankey-chart/use-sankey-chart'
 export {
   XhScrollAreaContent,
   XhScrollAreaCorner,
@@ -905,10 +909,6 @@ export {
   XhScrollAreaTrack,
   XhScrollAreaViewport,
 } from './components/scroll-area/scroll-area'
-export { XhSankeyChartCaption, XhSankeyChartEmpty, XhSankeyChartLegend, XhSankeyChartPlot, XhSankeyChartRoot, XhSankeyChartTooltip, XhSankeyChartViewport } from './components/sankey-chart/sankey-chart'
-export type { SankeyChartRootSlotProps, SankeyChartTooltipSlotProps } from './components/sankey-chart/sankey-chart'
-export { useSankeyChart } from './components/sankey-chart/use-sankey-chart'
-export type { SankeyChartContext, SankeyChartNotifiers } from './components/sankey-chart/use-sankey-chart'
 export type { ScrollAreaRootSlotProps } from './components/scroll-area/scroll-area'
 export { useScrollArea } from './components/scroll-area/use-scroll-area'
 export type { ScrollAreaContext } from './components/scroll-area/use-scroll-area'
