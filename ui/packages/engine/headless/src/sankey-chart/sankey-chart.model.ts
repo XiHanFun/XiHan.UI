@@ -354,6 +354,8 @@ export function sankeyScene(layout: SankeyLayoutResult, version: number): Sankey
       width: g.width,
       height: g.height,
       cornerRadius: Math.min(radius, g.width / 2, g.height / 2),
+      // 节点不贴基线：四角都圆
+      baseline: 'none',
     }
     data.push(node)
     if (g.label) {

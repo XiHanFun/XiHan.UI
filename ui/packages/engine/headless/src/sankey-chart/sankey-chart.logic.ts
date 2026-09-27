@@ -322,6 +322,7 @@ export function sankeyOverlay(model: SankeyModel, focused: { ref: ChartDatumRef,
       width: g.width + inset * 2,
       height: g.height + inset * 2,
       cornerRadius: layout.metrics.radius + inset,
+      baseline: 'none',
     }],
   }
 }
