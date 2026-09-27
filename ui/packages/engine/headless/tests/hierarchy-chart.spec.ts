@@ -5,6 +5,7 @@ import type { ArcMark, Mark, RectMark } from '@xihan-ui/viz'
 import type { HierarchyChartApi, HierarchyChartSchema } from '../src/hierarchy-chart'
 import { createService, DIAGNOSTIC_CODES, normalizeProps, onDiagnostic } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
+import { markPath } from '@xihan-ui/viz'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectHierarchyChart, hierarchyChartMachine } from '../src/hierarchy-chart'
 import { hierarchyEntryScene } from '../src/hierarchy-chart/hierarchy-chart.model'
@@ -188,6 +189,13 @@ describe('几何', () => {
     expect(east.startAngle).toBeCloseTo(Math.PI)
     expect(south.innerRadius).toBeCloseTo(hole.r)
     expect((nodeOf(api, '华南/深圳') as ArcMark).innerRadius).toBeGreaterThan(south.outerRadius)
+  })
+
+  it('矩形的块不贴基线，四角都圆', async () => {
+    const rig = await makeRig(BASE)
+    const block = nodeOf(rig.api(), '华南/深圳') as RectMark
+    expect(block.baseline).toBe('none')
+    expect(markPath(block).match(/A/g)).toHaveLength(4)
   })
 
   it('冰柱图：一层一条带；horizontal 时层自左而右', async () => {

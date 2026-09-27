@@ -269,7 +269,7 @@ export function hierarchyOverlay(model: HierarchyModel, focused: { ref: ChartDat
   const radius = layout.metrics.radius
   const s = g.shape
   if (s.kind === 'rect') {
-    return { over: [{ kind: 'rect', key: 'focus-ring', part: 'focus-ring', x: s.x - inset, y: s.y - inset, width: s.width + inset * 2, height: s.height + inset * 2, cornerRadius: radius + inset }] }
+    return { over: [{ kind: 'rect', key: 'focus-ring', part: 'focus-ring', x: s.x - inset, y: s.y - inset, width: s.width + inset * 2, height: s.height + inset * 2, cornerRadius: radius + inset, baseline: 'none' }] }
   }
   if (s.kind === 'circle')
     return { over: [{ kind: 'arc', key: 'focus-ring', part: 'focus-ring', cx: s.cx, cy: s.cy, innerRadius: 0, outerRadius: s.r + inset, startAngle: 0, endAngle: 2 * Math.PI }] }

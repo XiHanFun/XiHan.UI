@@ -367,7 +367,8 @@ export function hierarchyScene(layout: HierarchyLayoutResult, version: number): 
     const meta = layout.derived.spec.meta.get(g.node)!
     const base = { key: hierarchyNodeKey(g.key), part: 'node', datum: { seriesId: g.key, index: meta.row }, paint: meta.slot == null ? {} : { slot: meta.slot }, a11y: { label: '', focusable: true } }
     if (g.shape.kind === 'rect') {
-      const mark: RectMark = { kind: 'rect', ...base, x: g.shape.x, y: g.shape.y, width: g.shape.width, height: g.shape.height, cornerRadius: Math.min(radius, g.shape.width / 2, g.shape.height / 2) }
+      // 块不贴基线：四角都圆
+      const mark: RectMark = { kind: 'rect', ...base, x: g.shape.x, y: g.shape.y, width: g.shape.width, height: g.shape.height, cornerRadius: Math.min(radius, g.shape.width / 2, g.shape.height / 2), baseline: 'none' }
       data.push(mark)
     }
     else if (g.shape.kind === 'arc') {
