@@ -159,10 +159,10 @@ describe('缩放条', () => {
     const rig = await makeRig({ ...LINE, defaultWindow: { x: [20, 80] } })
     ;(rig.api().getZoomHandleProps('start') as Dict).onKeyDown({ key: 'ArrowRight', preventDefault: vi.fn() })
     await settle()
-    expect((rig.service.context.get('window').x as number[])[0]).toBeCloseTo(21)
+    expect((rig.service.context.get('window').x as readonly [number, number])[0]).toBeCloseTo(21)
     ;(rig.api().getZoomHandleProps('end') as Dict).onKeyDown({ key: 'ArrowLeft', shiftKey: true, preventDefault: vi.fn() })
     await settle()
-    expect((rig.service.context.get('window').x as number[])[1]).toBeCloseTo(70)
+    expect((rig.service.context.get('window').x as readonly [number, number])[1]).toBeCloseTo(70)
   })
 
   it('窗口的两端与缩放条对齐绘图区的左右内缩写成缩放条上的私有槽', async () => {
