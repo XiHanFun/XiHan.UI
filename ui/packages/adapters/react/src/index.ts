@@ -1890,6 +1890,29 @@ export type {
 } from './components/question-flow/question-flow'
 export { useQuestionFlow } from './components/question-flow/use-question-flow'
 export type { QuestionFlowContext } from './components/question-flow/use-question-flow'
+export { useRadarChartContext } from './components/radar-chart/context'
+export {
+  XhRadarChartCaption,
+  XhRadarChartEmpty,
+  XhRadarChartLegend,
+  XhRadarChartPlot,
+  XhRadarChartRoot,
+  XhRadarChartTooltip,
+  XhRadarChartViewport,
+} from './components/radar-chart/radar-chart'
+export type {
+  RadarChartRootSlotProps,
+  RadarChartTooltipSlotProps,
+  XhRadarChartCaptionProps,
+  XhRadarChartEmptyProps,
+  XhRadarChartLegendProps,
+  XhRadarChartPlotProps,
+  XhRadarChartRootProps,
+  XhRadarChartTooltipProps,
+  XhRadarChartViewportProps,
+} from './components/radar-chart/radar-chart'
+export { useRadarChart } from './components/radar-chart/use-radar-chart'
+export type { RadarChartContext } from './components/radar-chart/use-radar-chart'
 export { useRadioGroupContext, useRadioGroupItemContext } from './components/radio-group/context'
 export {
   XhRadioGroupItem,

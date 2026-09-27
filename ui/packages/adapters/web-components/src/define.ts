@@ -100,6 +100,7 @@ import { XhPopoverElement } from './elements/popover'
 import { XhProgressElement } from './elements/progress'
 import { XhPromptInputElement } from './elements/prompt-input'
 import { XhQuestionFlowElement } from './elements/question-flow'
+import { XhRadarChartElement } from './elements/radar-chart'
 import { XhRadioGroupElement } from './elements/radio-group'
 import { XhRatingElement } from './elements/rating'
 import { XhReasoningElement } from './elements/reasoning'
@@ -196,6 +197,7 @@ export function defineXhElements(): void {
   defineElement('xh-pie-chart', XhPieChartElement, VERSION)
   defineElement('xh-popconfirm', XhPopconfirmElement, VERSION)
   defineElement('xh-question-flow', XhQuestionFlowElement, VERSION)
+  defineElement('xh-radar-chart', XhRadarChartElement, VERSION)
   defineElement('xh-reasoning', XhReasoningElement, VERSION)
   defineElement('xh-resizable', XhResizableElement, VERSION)
   defineElement('xh-segmented', XhSegmentedElement, VERSION)
@@ -370,6 +372,7 @@ export {
   XhProgressElement,
   XhPromptInputElement,
   XhQuestionFlowElement,
+  XhRadarChartElement,
   XhRadioGroupElement,
   XhRatingElement,
   XhReasoningElement,

@@ -850,6 +850,10 @@ export {
 export type { QuestionFlowOptionSlotProps, QuestionFlowRootSlotProps } from './components/question-flow/question-flow'
 export { useQuestionFlow } from './components/question-flow/use-question-flow'
 export type { QuestionFlowCallbacks, QuestionFlowContext } from './components/question-flow/use-question-flow'
+export { XhRadarChartCaption, XhRadarChartEmpty, XhRadarChartLegend, XhRadarChartPlot, XhRadarChartRoot, XhRadarChartTooltip, XhRadarChartViewport } from './components/radar-chart/radar-chart'
+export type { RadarChartRootSlotProps, RadarChartTooltipSlotProps } from './components/radar-chart/radar-chart'
+export { useRadarChart } from './components/radar-chart/use-radar-chart'
+export type { RadarChartContext, RadarChartNotifiers } from './components/radar-chart/use-radar-chart'
 export {
   XhRadioGroupItem,
   XhRadioGroupItemText,

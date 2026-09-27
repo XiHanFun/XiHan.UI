@@ -475,16 +475,20 @@
           "name": "直角坐标图"
         },
         {
+          "id": "heatmap",
+          "name": "热力图"
+        },
+        {
           "id": "pie-chart",
           "name": "饼图"
         },
         {
-          "id": "sparkline",
-          "name": "迷你图"
+          "id": "radar-chart",
+          "name": "雷达图"
         },
         {
-          "id": "heatmap",
-          "name": "热力图"
+          "id": "sparkline",
+          "name": "迷你图"
         }
       ],
       "references": [

@@ -52009,6 +52009,345 @@
       "description": "question-flow 的 viewport 部件 block-size 覆盖槽。"
     },
     {
+      "name": "--xh-radar-chart-empty-gap",
+      "component": "radar-chart",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "state=loading"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 empty 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-gap",
+      "component": "radar-chart",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-height",
+      "component": "radar-chart",
+      "part": [
+        "viewport"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-height"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 viewport 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-legend-gap",
+      "component": "radar-chart",
+      "part": [
+        "legend"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 legend 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-legend-swatch-radius",
+      "component": "radar-chart",
+      "part": [
+        "legend-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 legend-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-line-width",
+      "component": "radar-chart",
+      "part": [
+        "legend-swatch",
+        "line",
+        "root",
+        "tooltip-swatch"
+      ],
+      "property": [
+        "background",
+        "block-size",
+        "stroke-dasharray",
+        "stroke-width"
+      ],
+      "state": [
+        "@media (forced-colors: active)",
+        "@media print",
+        "default",
+        "mark=line",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns"
+      ],
+      "defaultToken": [
+        "--xh-chart-line-width"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 legend-swatch、line、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-point-size",
+      "component": "radar-chart",
+      "part": [
+        "legend-swatch",
+        "root",
+        "tooltip-swatch"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "@media (forced-colors: active)",
+        "@media print",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=1",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns"
+      ],
+      "defaultToken": [
+        "--xh-chart-point-size"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 legend-swatch、root、tooltip-swatch 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-series-color",
+      "component": "radar-chart",
+      "part": [
+        "area-fill",
+        "legend-swatch",
+        "line",
+        "pattern-line",
+        "point",
+        "tooltip-swatch"
+      ],
+      "property": [
+        "background",
+        "border",
+        "fill",
+        "stroke"
+      ],
+      "state": [
+        "@media (forced-colors: active)",
+        "@media print",
+        "mark=line",
+        "where([data-xh-chart-patterns])",
+        "xh-chart-pattern",
+        "xh-chart-pattern=1",
+        "xh-chart-pattern=2",
+        "xh-chart-pattern=3",
+        "xh-chart-pattern=4",
+        "xh-chart-pattern=5",
+        "xh-chart-pattern=6",
+        "xh-chart-pattern=7",
+        "xh-chart-pattern=8",
+        "xh-chart-patterns",
+        "xh-chart-slot=1",
+        "xh-chart-slot=2",
+        "xh-chart-slot=3",
+        "xh-chart-slot=4",
+        "xh-chart-slot=5",
+        "xh-chart-slot=6",
+        "xh-chart-slot=7",
+        "xh-chart-slot=8"
+      ],
+      "defaultToken": [
+        "--xh-chart-categorical-1",
+        "--xh-chart-categorical-2",
+        "--xh-chart-categorical-3",
+        "--xh-chart-categorical-4",
+        "--xh-chart-categorical-5",
+        "--xh-chart-categorical-6",
+        "--xh-chart-categorical-7",
+        "--xh-chart-categorical-8"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 area-fill、legend-swatch、line、pattern-line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-tooltip-gap",
+      "component": "radar-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 tooltip 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-tooltip-px",
+      "component": "radar-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 tooltip 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-tooltip-py",
+      "component": "radar-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-pad-sm"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 tooltip 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-tooltip-radius",
+      "component": "radar-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-overlay"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 tooltip 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-tooltip-row-gap",
+      "component": "radar-chart",
+      "part": [
+        "tooltip-row"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 tooltip-row 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-tooltip-shadow",
+      "component": "radar-chart",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-shadow"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 tooltip 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-tooltip-swatch-radius",
+      "component": "radar-chart",
+      "part": [
+        "tooltip-swatch"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-radio-group-gap",
       "component": "radio-group",
       "part": [
