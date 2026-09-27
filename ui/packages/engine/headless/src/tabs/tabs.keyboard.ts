@@ -20,7 +20,7 @@ export const tabsKeyboard: KeyboardTable = {
     { id: 'tabs.kbd.activate', keys: ['Enter', 'Space'], when: 'focus in trigger, not disabled', does: '把选中切到焦点所在 trigger（manual 模式的确认键）' },
     { id: 'tabs.kbd.press', keys: ['Enter', 'Space'], when: 'held in trigger, not disabled', does: '按住期间该 trigger 投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与按压互相独立，确认语义照旧由这一次按键承担' },
     { id: 'tabs.kbd.close', keys: ['Delete', 'Backspace'], when: 'focus in trigger, closable 开启, not disabled', does: '关闭焦点所在标签：发 onTabClose（被关的标签与剩余标签序），与点 close-trigger 同一个意图；库不改标签序，标签由数据源删掉' },
-    { id: 'tabs.kbd.tab',keys: ['Tab', 'Shift+Tab'], when: 'focus in list', does: '整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底，焦点进来后转投锚点 trigger（即选中项），锚点缺席或被禁用才落首个可停留项' },
+    { id: 'tabs.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'focus in list', does: '整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底，焦点进来后转投锚点 trigger（即选中项），锚点缺席或被禁用才落首个可停留项' },
     { id: 'tabs.kbd.tab-move', keys: ['Alt+ArrowLeft', 'Alt+ArrowRight', 'Alt+ArrowUp', 'Alt+ArrowDown'], when: 'focus in list, reorderable 开启, 按键与 orientation 同轴', does: '把焦点标签在标签带里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻、rtl 下左右两键对调，竖排的上下两键不对调；已是首位 / 末位就不动，也不回绕；标签序不进库，只报一次重排好的新顺序。裸方向键仍是导航、Enter/Space 仍是确认' },
   ],
 }
