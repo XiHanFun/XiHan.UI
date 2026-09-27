@@ -197,6 +197,7 @@
 <div class="xh-component-grid">
 
 <XhComponentCard src="approval" name="Approval" label="审批" href="/components/approval" status="alpha" />
+<XhComponentCard src="citation" name="Citation" label="引用来源" href="/components/citation" status="alpha" />
 <XhComponentCard src="code-view" name="CodeView" label="代码视图" href="/components/code-view" />
 <XhComponentCard src="diff-view" name="DiffView" label="差异视图" href="/components/diff-view" />
 <XhComponentCard src="log" name="Log" label="日志" href="/components/log" />

@@ -28,6 +28,7 @@ import type { CartesianChartTranslations } from '../cartesian-chart/cartesian-ch
 import type { CascaderTranslations } from '../cascader/cascader.types'
 import type { CheckboxGroupTranslations } from '../checkbox-group/checkbox-group.types'
 import type { CheckboxTranslations } from '../checkbox/checkbox.types'
+import type { CitationTranslations } from '../citation/citation.types'
 import type { ClipboardTranslations } from '../clipboard/clipboard.types'
 import type { CodeViewTranslations } from '../code-view/code-view.types'
 import type { CollapsibleTranslations } from '../collapsible/collapsible.types'
@@ -174,6 +175,7 @@ export interface XhTranslationOverrides {
   'cascader'?: Partial<CascaderTranslations>
   'checkbox'?: Partial<CheckboxTranslations>
   'checkbox-group'?: Partial<CheckboxGroupTranslations>
+  'citation'?: Partial<CitationTranslations>
   'clipboard'?: Partial<ClipboardTranslations>
   'code-view'?: Partial<CodeViewTranslations>
   'collapsible'?: Partial<CollapsibleTranslations>

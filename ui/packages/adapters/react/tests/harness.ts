@@ -8,6 +8,7 @@ import { declaredEvents, renderFixtureSlots, resolveRoot } from './fixture-eleme
 /** 对外语义事件 → React 侧的回调 prop 名。跨适配器一致的那一份。 */
 const PUBLIC_EVENTS = {
   'action': 'onAction',
+  'active-source-change': 'onActiveSourceChange',
   'checked-change': 'onCheckedChange',
   'decision': 'onDecision',
   'granted-scopes-change': 'onGrantedScopesChange',
@@ -47,6 +48,7 @@ const PUBLIC_EVENTS = {
   'window-change': 'onWindowChange',
   'brush-selection-change': 'onBrushSelectionChange',
   'root-key-change': 'onRootKeyChange',
+  'source-open': 'onSourceOpen',
 } as const
 
 const globals = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }

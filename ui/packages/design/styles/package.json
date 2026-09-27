@@ -62,6 +62,7 @@
     "./cascader.css": "./css/cascader.css",
     "./checkbox-group.css": "./css/checkbox-group.css",
     "./checkbox.css": "./css/checkbox.css",
+    "./citation.css": "./css/citation.css",
     "./clipboard.css": "./css/clipboard.css",
     "./code-view.css": "./css/code-view.css",
     "./collapsible.css": "./css/collapsible.css",

@@ -8,7 +8,7 @@
 | `@xihan-ui/markdown` | 流式 Markdown 渲染：增量切块、稳定 key、消毒 |
 | `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器；可选 peer，安装后可用 |
 
-配套的组件按职责分为四件：[消息流](../components/message-feed)渲染结构化会话，[日志](../components/log)渲染持续追加的内容，[提示输入框](../components/prompt-input)接收输入，[代码视图](../components/code-view)呈现代码。
+配套组件按职责拆分：[消息流](../components/message-feed)渲染结构化会话，[引用来源](../components/citation)把 `SourcePart` 投影为行内引用、预览和来源列表，[日志](../components/log)渲染持续追加的内容，[提示输入框](../components/prompt-input)接收输入，[代码视图](../components/code-view)呈现代码。
 
 ## 数据流
 
@@ -53,7 +53,7 @@ type UIMessagePart
     | StepStartPart;
 ```
 
-配套的类型守卫 `isTextPart` / `isToolPart` / `isSourcePart` 等按 part 类型分流渲染。消息元数据带 `TokenUsage` 与 `CostBreakdown`。
+配套的类型守卫 `isTextPart` / `isToolPart` / `isSourcePart` 等按 part 类型分流渲染。URL 与文档来源都可以携带 `anchors`；`SourcePart[]` 可直接交给 Citation 的 `sources`。消息元数据带 `TokenUsage` 与 `CostBreakdown`。
 
 ## 归约
 

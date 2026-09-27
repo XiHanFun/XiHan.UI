@@ -29,6 +29,7 @@ import { XhCartesianChartElement } from './elements/cartesian-chart'
 import { XhCascaderElement } from './elements/cascader'
 import { XhCheckboxElement } from './elements/checkbox'
 import { XhCheckboxGroupElement } from './elements/checkbox-group'
+import { XhCitationElement } from './elements/citation'
 import { XhClipboardElement } from './elements/clipboard'
 import { XhCodeViewElement } from './elements/code-view'
 import { XhCollapsibleElement } from './elements/collapsible'
@@ -163,6 +164,7 @@ export function defineXhElements(): void {
   defineElement('xh-bar-code', XhBarCodeElement, VERSION)
   defineElement('xh-button-group', XhButtonGroupElement, VERSION)
   defineElement('xh-cartesian-chart', XhCartesianChartElement, VERSION)
+  defineElement('xh-citation', XhCitationElement, VERSION)
   defineElement('xh-color-field', XhColorFieldElement, VERSION)
   defineElement('xh-color-slider', XhColorSliderElement, VERSION)
   defineElement('xh-color-swatch', XhColorSwatchElement, VERSION)
@@ -328,6 +330,7 @@ export {
   XhCascaderElement,
   XhCheckboxElement,
   XhCheckboxGroupElement,
+  XhCitationElement,
   XhClipboardElement,
   XhCodeViewElement,
   XhCollapsibleElement,
