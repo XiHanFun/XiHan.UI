@@ -124,6 +124,11 @@
     translate: -50% 0;
   }
 
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，指示条才落回把手正中 */
+  [data-scope='resizable'][data-part='handle']:is([data-edge='n'], [data-edge='s']):dir(rtl)::after {
+    translate: 50% 0;
+  }
+
   [data-scope='resizable'][data-part='handle'][data-edge='n']::after {
     inset-block-start: var(--xh-resizable-indicator-inset, 0);
   }

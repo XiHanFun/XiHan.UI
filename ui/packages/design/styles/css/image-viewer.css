@@ -164,6 +164,11 @@
     border-radius: var(--xh-image-viewer-toolbar-radius-outer, var(--xh-image-viewer-overlay-radius, var(--xh-shape-surface)));
   }
 
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，工具条与计数才落回中线 */
+  [data-scope='image-viewer'][data-part='toolbar']:dir(rtl) {
+    translate: 50% 0;
+  }
+
   /* 工具条里的七颗钮：接 Action Control icon 档 xs（24px 视觉盒），底色交给工具条，本体只管命中区与按压。
      悬停 / 按下的底从 chrome 那层深底派生，不取页面的 --xh-bg-subtle-* 阶梯。
      position 交给配方的 relative：粗指针下 44px 命中区 ::after 以钮自身为包含块；
@@ -195,6 +200,10 @@
     padding: var(--xh-image-viewer-counter-padding, var(--xh-space-1) var(--xh-space-3));
     border-radius: var(--xh-image-viewer-counter-radius, var(--xh-image-viewer-overlay-radius, var(--xh-shape-control)));
     font-size: var(--xh-text-secondary-size);
+  }
+
+  [data-scope='image-viewer'][data-part='counter']:dir(rtl) {
+    translate: 50% 0;
   }
 
   /* 两颗翻页钮：浮在图上的单图标圆钮，接 Action Control floating 档 md（48px，正方盒取 circle）。

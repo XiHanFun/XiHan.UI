@@ -11355,6 +11355,11 @@
     translate: -50% 0;
   }
 
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，指示条才落回把手正中 */
+  [data-scope='resizable'][data-part='handle']:is([data-edge='n'], [data-edge='s']):dir(rtl)::after {
+    translate: 50% 0;
+  }
+
   [data-scope='resizable'][data-part='handle'][data-edge='n']::after {
     inset-block-start: var(--xh-resizable-indicator-inset, 0);
   }
@@ -17526,6 +17531,11 @@
     translate: -50% 0;
   }
 
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，分页条才落回中线 */
+  [data-scope='carousel'][data-part='indicator-group'][data-orientation='horizontal']:dir(rtl) {
+    translate: 50% 0;
+  }
+
   /* liquid 档：分页点托在一条液态胶囊上（不贴边的一维栏取 pill），压在任何媒体上都看得清。
      胶囊是墨色域，点的中性色随之取墨色；胶囊本身不可按，不挂按住形变 */
   :where([data-material='liquid']) [data-scope='carousel'][data-part='indicator-group'][data-xh-liquid] {
@@ -17674,6 +17684,11 @@
     inset-inline-end: auto;
     translate: -50% 0;
     rotate: 90deg;
+  }
+
+  [data-scope='carousel'][data-part='root'][data-orientation='vertical']
+    > :is([data-part='prev-trigger'], [data-part='next-trigger']):dir(rtl) {
+    translate: 50% 0;
   }
 
   /* 纵轨的翻页钮整颗转了 90°，形变会跟着转到错的方向，这一档不挂 */
@@ -17838,6 +17853,10 @@
         background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
     }
 
+    [data-scope='carousel'][data-part='indicator']:dir(rtl)::after {
+      translate: 50% -50%;
+    }
+
     [data-scope='carousel'][data-part='indicator']:is(:active, [data-pressed]):not([data-current])::after {
       background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
     }
@@ -17876,6 +17895,13 @@
       block-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
       border-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
       translate: -50% -50%;
+    }
+
+    [data-scope='carousel'][data-part='root'][data-autoplay]
+      [data-scope='carousel'][data-part='indicator'][data-current]:dir(rtl)::before,
+    [data-scope='carousel'][data-part='root'][data-paused]
+      [data-scope='carousel'][data-part='indicator'][data-current]:dir(rtl)::before {
+      translate: 50% -50%;
     }
 
     [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
@@ -28073,6 +28099,11 @@
     border-radius: var(--xh-image-viewer-toolbar-radius-outer, var(--xh-image-viewer-overlay-radius, var(--xh-shape-surface)));
   }
 
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，工具条与计数才落回中线 */
+  [data-scope='image-viewer'][data-part='toolbar']:dir(rtl) {
+    translate: 50% 0;
+  }
+
   /* 工具条里的七颗钮：接 Action Control icon 档 xs（24px 视觉盒），底色交给工具条，本体只管命中区与按压。
      悬停 / 按下的底从 chrome 那层深底派生，不取页面的 --xh-bg-subtle-* 阶梯。
      position 交给配方的 relative：粗指针下 44px 命中区 ::after 以钮自身为包含块；
@@ -28104,6 +28135,10 @@
     padding: var(--xh-image-viewer-counter-padding, var(--xh-space-1) var(--xh-space-3));
     border-radius: var(--xh-image-viewer-counter-radius, var(--xh-image-viewer-overlay-radius, var(--xh-shape-control)));
     font-size: var(--xh-text-secondary-size);
+  }
+
+  [data-scope='image-viewer'][data-part='counter']:dir(rtl) {
+    translate: 50% 0;
   }
 
   /* 两颗翻页钮：浮在图上的单图标圆钮，接 Action Control floating 档 md（48px，正方盒取 circle）。
@@ -33389,6 +33424,11 @@
     pointer-events: none;
   }
 
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，星形才落回格子正中 */
+  [data-scope='rating'][data-part='item']:empty:dir(rtl)::after {
+    translate: 50% -50%;
+  }
+
   [data-scope='rating'][data-part='item']:empty::after {
     background-color: var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent));
     clip-path: inset(0 100% 0 0);
@@ -35136,16 +35176,16 @@
   }
 
   /* 值气泡：挂在拇指里，跟着拇指一起走位。
-     两侧 inset 都钉在 50% 再靠自动外边距回中：气泡宽度由文字撑出，用 translate 回中的话
-     rtl 下 inset-inline-start 映射到 right，位移是物理方向的，会把气泡推向错误的一侧。
+     气泡宽度由文字撑出，只能靠平移回中。不能两侧 inset 都钉在 50% 再靠自动外边距回中：
+     那样可用宽度是 0，气泡比它宽，自动外边距按规范取 0，气泡从拇指中线起排、偏出半个自身宽。
      默认只在推动那一刻露面，静止时留在 DOM 里但不占视线 */
   [data-scope='slider'][data-part='value-text'] {
     position: absolute;
     inset-block-end: 100%;
-    inset-inline: 50%;
+    inset-inline-start: 50%;
     inline-size: max-content;
     margin-block-end: var(--xh-slider-value-text-offset, var(--xh-space-2));
-    margin-inline: auto;
+    translate: -50% 0;
     padding-block: var(--xh-slider-value-text-py, var(--xh-space-0_5));
     padding-inline: var(--xh-slider-value-text-px, var(--xh-space-2));
     border-radius: var(--xh-slider-value-text-radius, var(--xh-shape-control));
@@ -35158,6 +35198,11 @@
     pointer-events: none;
     opacity: 0;
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，气泡才落回拇指正上方 */
+  [data-scope='slider'][data-part='value-text']:dir(rtl) {
+    translate: 50% 0;
   }
 
   [data-scope='slider'][data-part='value-text'][hidden] {
@@ -35209,6 +35254,11 @@
     translate: -50% -50%;
   }
 
+  /* 连接层把比例点写在 inset-inline-start 上：rtl 下平移的行内分量掉头，刻度点才以比例点为中心 */
+  [data-scope='slider'][data-part='tick']:dir(rtl) {
+    translate: 50% -50%;
+  }
+
   /* 落进已选区间的刻度点跟 range 同色 */
   [data-scope='slider'][data-part='tick'][data-passed] {
     background: var(--xh-slider-tick-bg-active, var(--xh-_tone, var(--xh-bg-brand)));
@@ -35226,6 +35276,10 @@
     cursor: pointer;
     pointer-events: auto;
     user-select: none;
+  }
+
+  [data-scope='slider'][data-part='tick-label']:dir(rtl) {
+    translate: 50% 0;
   }
 
   [data-scope='slider'][data-part='tick-label'][data-passed] {
@@ -35252,6 +35306,10 @@
     inset-block-start: auto;
     inset-inline-start: 50%;
     translate: -50% 50%;
+  }
+
+  [data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick']:dir(rtl) {
+    translate: 50% 50%;
   }
 
   [data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick-label'] {
@@ -40715,6 +40773,11 @@
     inset-block-start: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-top));
     inset-inline-start: 50%;
     translate: -50% 0;
+  }
+
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，居中的那一摞才落回视口正中 */
+  [data-scope='toast'][data-part='group']:is([data-placement='top'], [data-placement='bottom']):dir(rtl) {
+    translate: 50% 0;
   }
 
   [data-scope='toast'][data-part='group'][data-placement$='-start'] {

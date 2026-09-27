@@ -216,6 +216,11 @@
     translate: -50% 0;
   }
 
+  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，分页条才落回中线 */
+  [data-scope='carousel'][data-part='indicator-group'][data-orientation='horizontal']:dir(rtl) {
+    translate: 50% 0;
+  }
+
   /* liquid 档：分页点托在一条液态胶囊上（不贴边的一维栏取 pill），压在任何媒体上都看得清。
      胶囊是墨色域，点的中性色随之取墨色；胶囊本身不可按，不挂按住形变 */
   :where([data-material='liquid']) [data-scope='carousel'][data-part='indicator-group'][data-xh-liquid] {
@@ -364,6 +369,11 @@
     inset-inline-end: auto;
     translate: -50% 0;
     rotate: 90deg;
+  }
+
+  [data-scope='carousel'][data-part='root'][data-orientation='vertical']
+    > :is([data-part='prev-trigger'], [data-part='next-trigger']):dir(rtl) {
+    translate: 50% 0;
   }
 
   /* 纵轨的翻页钮整颗转了 90°，形变会跟着转到错的方向，这一档不挂 */
@@ -528,6 +538,10 @@
         background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
     }
 
+    [data-scope='carousel'][data-part='indicator']:dir(rtl)::after {
+      translate: 50% -50%;
+    }
+
     [data-scope='carousel'][data-part='indicator']:is(:active, [data-pressed]):not([data-current])::after {
       background: var(--xh-carousel-indicator-bg-active, var(--xh-fg-default));
     }
@@ -566,6 +580,13 @@
       block-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
       border-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
       translate: -50% -50%;
+    }
+
+    [data-scope='carousel'][data-part='root'][data-autoplay]
+      [data-scope='carousel'][data-part='indicator'][data-current]:dir(rtl)::before,
+    [data-scope='carousel'][data-part='root'][data-paused]
+      [data-scope='carousel'][data-part='indicator'][data-current]:dir(rtl)::before {
+      translate: 50% -50%;
     }
 
     [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
