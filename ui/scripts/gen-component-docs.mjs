@@ -442,8 +442,24 @@ const RELATION_ROLE = {
   'value': '数值',
 }
 
-/** 角色的排列顺序，照设计规范的角色表。 */
-const ROLE_ORDER = ['按压', '状态', '切换', '指示与换位', '披露', '出现', '列表', '导航', '数值', '循环']
+/** 角色的排列顺序，照设计规范的角色表；细分角色也固定顺序，避免跟随运行环境的 locale 漂移。 */
+const ROLE_ORDER = [
+  '按压',
+  '状态',
+  '切换',
+  '指示与换位',
+  '披露',
+  '出现',
+  '出现（锚定列表）',
+  '出现（锚定面板）',
+  '出现（面板）',
+  '出现（无锚定弹出）',
+  '列表',
+  '导航',
+  '导航（整幅滑入）',
+  '数值',
+  '循环',
+]
 
 /** 从皮肤读出本组件承担的动效角色：时长档、共享关键帧的关系、循环周期与按压配方。 */
 function motionRoles(sk) {
@@ -471,8 +487,8 @@ function motionRoles(sk) {
     roles.delete('出现')
   if (roles.has('导航（整幅滑入）'))
     roles.delete('导航')
-  const rank = role => ROLE_ORDER.indexOf(role.replace(/（.*$/, ''))
-  return [...roles].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b))
+  const rank = role => ROLE_ORDER.indexOf(role)
+  return [...roles].sort((a, b) => rank(a) - rank(b))
 }
 
 /** 组件槽里管动效的那几支：默认值落在动效令牌上，或覆盖的就是过渡与动画本身。 */
