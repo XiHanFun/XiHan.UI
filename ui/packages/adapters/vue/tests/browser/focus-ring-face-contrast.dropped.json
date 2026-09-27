@@ -62,6 +62,10 @@
   "[data-scope=\"carousel\"][data-part=\"prev-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"carousel\"][data-part=\"root\"][data-autoplay] [data-scope=\"carousel\"][data-part=\"indicator\"][data-current]::before": "写法挂不出来：::",
   "[data-scope=\"carousel\"][data-part=\"root\"][data-paused] [data-scope=\"carousel\"][data-part=\"indicator\"][data-current]::before": "写法挂不出来：::",
+  "[data-scope=\"cartesian-chart\"][data-part=\"legend-item\"][aria-pressed=\"false\"] > [data-part=\"legend-swatch\"][data-mark=\"point\"]:not([data-symbol=\"circle\"], [data-symbol=\"square\"])": "部件不接焦点：cartesian-chart/legend-swatch",
+  "[data-scope=\"cartesian-chart\"][data-part=\"legend-scale-bar\"]": "部件不接焦点：cartesian-chart/legend-scale-bar",
+  "[data-scope=\"cartesian-chart\"][data-part=\"zoom-track\"]": "部件不接焦点：cartesian-chart/zoom-track",
+  "[data-scope=\"cartesian-chart\"][data-part=\"zoom-window\"]": "部件不接焦点：cartesian-chart/zoom-window",
   "[data-scope=\"cascader\"][data-part=\"clear-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"cascader\"][data-part=\"indicator\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"cascader\"][data-part=\"item-indicator\"]:empty::before": "写法挂不出来：:empty",
@@ -165,6 +169,7 @@
   "[data-scope=\"heatmap\"][data-part=\"row-label\"]": "部件不接焦点：heatmap/row-label",
   "[data-scope=\"heatmap\"][data-part=\"tooltip\"]": "部件不接焦点：heatmap/tooltip",
   "[data-scope=\"heatmap\"][data-part=\"week-day\"]": "部件不接焦点：heatmap/week-day",
+  "[data-scope=\"hierarchy-chart\"][data-part=\"path-item\"] + [data-scope=\"hierarchy-chart\"][data-part=\"path-item\"]::before": "写法挂不出来：+",
   "[data-scope=\"highlight\"][data-part=\"mark\"]": "部件不接焦点：highlight/mark",
   "[data-scope=\"highlight\"][data-part=\"root\"][data-tone] [data-part=\"mark\"]": "部件不接焦点：highlight/mark",
   "[data-scope=\"hover-card\"][data-part=\"arrow\"]": "部件不接焦点：hover-card/arrow",
@@ -510,5 +515,6 @@
   "[data-scope=\"typography\"][data-part=\"prose\"] pre::-webkit-scrollbar-thumb:hover": "写法挂不出来：::",
   "[data-scope=\"typography\"][data-part=\"prose\"] pre::-webkit-scrollbar-track": "写法挂不出来：::",
   "[data-scope=\"typography\"][data-part=\"text\"][data-variant=\"code\"]": "部件不接焦点：typography/text",
-  "[data-scope=\"watermark\"][data-part=\"root\"][data-state=\"ready\"]::after": "写法挂不出来：::"
+  "[data-scope=\"watermark\"][data-part=\"root\"][data-state=\"ready\"]::after": "写法挂不出来：::",
+  "[dir=\"rtl\"] [data-scope=\"cartesian-chart\"][data-part=\"legend-scale-bar\"]": "部件不接焦点：cartesian-chart/legend-scale-bar"
 }
