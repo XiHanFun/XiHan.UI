@@ -8,7 +8,7 @@ const zones = ["UTC", "Asia/Shanghai", "America/New_York"];
 export default function Demo(): ReactNode {
   const [value, setValue] = useState<string | null>(null);
   return (
-    <form onSubmit={event => event.preventDefault()}>
+    <form data-demo-stack onSubmit={event => event.preventDefault()}>
       <XhTimeZoneSelect name="timeZone" value={value} timeZones={zones} onValueChange={details => setValue(details.value)} />
       <button type="submit">保存排期</button>
     </form>

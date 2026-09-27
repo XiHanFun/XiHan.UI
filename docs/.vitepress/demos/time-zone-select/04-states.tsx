@@ -7,9 +7,9 @@ const translations = { label: "会议时区", placeholder: "搜索城市或偏�
 
 export default function Demo(): ReactNode {
   return (
-    <>
+    <div data-demo-stack>
       <XhTimeZoneSelect defaultValue="UTC" timeZones={zones} disabled translations={translations} />
       <XhTimeZoneSelect timeZones={zones} invalid translations={translations} />
-    </>
+    </div>
   );
 }

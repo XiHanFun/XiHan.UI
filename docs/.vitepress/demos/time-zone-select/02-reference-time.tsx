@@ -6,9 +6,9 @@ const zones = ["America/New_York", "Europe/London", "Asia/Shanghai"];
 
 export default function Demo(): ReactNode {
   return (
-    <>
+    <div data-demo-stack>
       <XhTimeZoneSelect defaultValue="America/New_York" timeZones={zones} referenceTime={Date.UTC(2026, 0, 15)} translations={{ label: "冬季排期时区" }} />
       <XhTimeZoneSelect defaultValue="America/New_York" timeZones={zones} referenceTime={Date.UTC(2026, 6, 15)} translations={{ label: "夏季排期时区" }} />
-    </>
+    </div>
   );
 }

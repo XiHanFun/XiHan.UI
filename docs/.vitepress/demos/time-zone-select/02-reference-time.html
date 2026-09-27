@@ -1,5 +1,5 @@
 <!-- 参考时刻 | 用排期当天而不是今天计算 DST 偏移 -->
-<div id="tz-reference-host"></div>
+<div id="tz-reference-host" data-demo-stack></div>
 <script type="module">
   const mount = async (id, label, referenceTime) => {
     const host = document.createElement("xh-time-zone-select"); host.id = id; host.referenceTime = referenceTime; host.timeZones = ["America/New_York", "Europe/London", "Asia/Shanghai"]; host.translations = { label };
