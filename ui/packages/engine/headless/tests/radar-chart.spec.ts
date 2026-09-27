@@ -99,6 +99,19 @@ describe('规格与诊断', () => {
     expect(rig.api().model.scene).toBeNull()
   })
 
+  it('还没给指标与数据时是空态、不报诊断；之后补齐照常画', async () => {
+    const seen: DiagnosticRecord[] = []
+    stops.push(onDiagnostic(r => seen.push(r)))
+    const rig = await makeRig({ nameField: 'model' })
+    expect(seen).toEqual([])
+    expect((rig.api().getRootProps() as Dict)['data-state']).toBeUndefined()
+
+    rig.setProps({ data: DATA, indicators: INDICATORS })
+    await settle()
+    expect(seen).toEqual([])
+    expect(byPart(rig.api(), 'series')).toHaveLength(2)
+  })
+
   it('多于 3 个实体按提醒报 chart.radar-overlap，图照常画', async () => {
     const seen: DiagnosticRecord[] = []
     stops.push(onDiagnostic(r => seen.push(r)))
