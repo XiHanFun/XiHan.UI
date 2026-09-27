@@ -385,7 +385,7 @@ export function XhCartesianChartPlot(props: XhCartesianChartPlotProps): ReactNod
 
 export interface XhCartesianChartZoomSliderProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {}
 
-/** 缩放条：一条轨道上的窗口与两端的手柄；自变量方向不能缩放时收起。 */
+/** 缩放条：一条轨道上的窗口、两端的手柄与整条轴的缩略线；自变量方向不能缩放时收起。 */
 export function XhCartesianChartZoomSlider(props: XhCartesianChartZoomSliderProps): ReactNode {
   const { api } = useCartesianChartContext()
   return (
@@ -395,6 +395,9 @@ export function XhCartesianChartZoomSlider(props: XhCartesianChartZoomSliderProp
           <span {...api.getZoomHandleProps('start') as Record<string, unknown>} />
           <span {...api.getZoomHandleProps('end') as Record<string, unknown>} />
         </div>
+        <svg {...api.getZoomPreviewProps() as Record<string, unknown>}>
+          <path {...api.getZoomPreviewLineProps() as Record<string, unknown>} />
+        </svg>
       </div>
     </div>
   )

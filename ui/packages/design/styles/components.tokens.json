@@ -8220,6 +8220,24 @@
       "description": "cartesian-chart 的 zoom-handle 部件 inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-cartesian-chart-zoom-preview-color",
+      "component": "cartesian-chart",
+      "part": [
+        "zoom-preview-line"
+      ],
+      "property": [
+        "stroke"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-deemphasis"
+      ],
+      "visibility": "public",
+      "description": "cartesian-chart 的 zoom-preview-line 部件 stroke 覆盖槽。"
+    },
+    {
       "name": "--xh-cartesian-chart-zoom-track-bg",
       "component": "cartesian-chart",
       "part": [

@@ -180,6 +180,32 @@ describe('缩放条', () => {
   })
 })
 
+describe('缩略线', () => {
+  it('轨道里画第一个按键排的系列在整条轴上的走势：单位框里横向是轴上的位置，点多时降采样', async () => {
+    const rig = await makeRig({
+      data: Array.from({ length: 5000 }, (_, i) => ({ t: i, v: Math.sin(i / 50) })),
+      series: [{ mark: 'line', x: 't', y: 'v', symbols: 'none' }],
+      zoom: 'x',
+      defaultWindow: { x: [1000, 2000] },
+    })
+    const d = (rig.api().getZoomPreviewLineProps() as Dict).d as string
+    const points = d.slice(1).split('L').map(p => p.split(',').map(Number))
+    expect(points.length).toBeLessThanOrEqual(240)
+    // 缩放不改缩略线：它画的是整条轴
+    expect(points[0]![0]).toBeCloseTo(0)
+    expect(points.at(-1)![0]).toBeCloseTo(1)
+    expect(points.every(([, y]) => y! >= 0.1 - 1e-9 && y! <= 0.9 + 1e-9)).toBe(true)
+    expect((rig.api().getZoomPreviewProps() as Dict)['aria-hidden']).toBe(true)
+  })
+
+  it('只有散点或没开缩放时不画', async () => {
+    const scatter = await makeRig({ data: [{ x: 1, y: 2 }, { x: 2, y: 3 }], series: [{ mark: 'scatter', x: 'x', y: 'y' }], zoom: 'x' })
+    expect((scatter.api().getZoomPreviewLineProps() as Dict).d).toBeUndefined()
+    const off = await makeRig({ ...LINE, zoom: 'none' })
+    expect((off.api().getZoomPreviewLineProps() as Dict).d).toBeUndefined()
+  })
+})
+
 describe('受控与降采样', () => {
   it('受控窗口：只派发意图，由作者写回', async () => {
     const onWindowChange = vi.fn()

@@ -561,6 +561,9 @@ export interface CartesianChartApi<T extends PropTypes = PropTypes> {
   getZoomTrackProps: () => T['element']
   getZoomWindowProps: () => T['element']
   getZoomHandleProps: (edge: 'start' | 'end') => T['element']
+  /** 缩放条轨道里的缩略线：整条轴上的走势，只给眼睛看；轨道里跟在窗口后面，一个 svg 里一条 path。 */
+  getZoomPreviewProps: () => T['element']
+  getZoomPreviewLineProps: () => T['element']
   getSummaryProps: () => T['element']
   getTableProps: () => T['element']
 }

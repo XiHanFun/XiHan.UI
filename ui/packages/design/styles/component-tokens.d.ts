@@ -407,6 +407,7 @@ export type ComponentTokenName
     | '--xh-cartesian-chart-zoom-handle-bg'
     | '--xh-cartesian-chart-zoom-handle-radius'
     | '--xh-cartesian-chart-zoom-handle-w'
+    | '--xh-cartesian-chart-zoom-preview-color'
     | '--xh-cartesian-chart-zoom-track-bg'
     | '--xh-cartesian-chart-zoom-track-radius'
     | '--xh-cartesian-chart-zoom-window-bg'

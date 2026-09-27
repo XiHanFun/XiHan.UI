@@ -5831,7 +5831,7 @@
               "name": "plot"
             },
             {
-              "description": "缩放条外壳，轨道、窗口与两端的手柄由元素生成",
+              "description": "缩放条外壳，轨道、窗口、两端的手柄与缩略线由元素生成",
               "name": "zoom-slider"
             },
             {
@@ -6804,6 +6804,9 @@
             },
             {
               "name": "--xh-cartesian-chart-zoom-handle-w"
+            },
+            {
+              "name": "--xh-cartesian-chart-zoom-preview-color"
             },
             {
               "name": "--xh-cartesian-chart-zoom-track-bg"

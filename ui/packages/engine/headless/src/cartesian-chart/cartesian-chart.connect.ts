@@ -46,6 +46,7 @@ import {
   cartesianTooltip,
   cartesianTranslations,
   cartesianTrigger,
+  cartesianZoomPreview,
   FULL_CARTESIAN_RATIO,
   sameWindow,
 } from './cartesian-chart.logic'
@@ -1040,6 +1041,21 @@ export function connectCartesianChart<T extends PropTypes>(
         event.preventDefault()
         setRatio({ ...shown, x })
       },
+    }),
+
+    // 缩略线：单位框按轨道拉伸，线宽不跟着拉；只给眼睛看
+    getZoomPreviewProps: () => normalize.element({
+      ...parts['zoom-preview'].attrs,
+      'viewBox': '0 0 1 1',
+      'preserveAspectRatio': 'none',
+      'aria-hidden': true,
+      'focusable': 'false',
+    }),
+
+    getZoomPreviewLineProps: () => normalize.element({
+      ...parts['zoom-preview-line'].attrs,
+      'd': zoomX && orientation === 'vertical' ? cartesianZoomPreview(model) ?? undefined : undefined,
+      'vector-effect': 'non-scaling-stroke',
     }),
 
     // 提示框不进读屏：每个标记的可及名已经念全了键与数值，再念一遍是重复

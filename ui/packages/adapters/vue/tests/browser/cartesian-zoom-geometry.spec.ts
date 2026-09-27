@@ -123,6 +123,22 @@ describe('缩放', () => {
     expect(part('zoom-slider').hasAttribute('data-dragging')).toBe(false)
   })
 
+  it('缩略线铺满轨道、画得出来，压在窗口之上、手柄之下', async () => {
+    mount({ ...LINE, defaultWindow: { x: [20, 60] } })
+    await settle()
+    const track = part('zoom-track').getBoundingClientRect()
+    const preview = part('zoom-preview').getBoundingClientRect()
+    expect(preview.width).toBeCloseTo(track.width, 0)
+    expect(preview.height).toBeCloseTo(track.height, 0)
+    const line = document.querySelector<SVGPathElement>(`[data-scope='cartesian-chart'][data-part='zoom-preview-line']`)!
+    expect(line.getTotalLength()).toBeGreaterThan(0)
+    expect(getComputedStyle(line).stroke).not.toBe('none')
+    // 手柄压在缩略线之上：按在手柄正中命中的是手柄
+    const handle = all('zoom-handle')[0]!.getBoundingClientRect()
+    const hit = document.elementFromPoint(handle.left + handle.width / 2, handle.top + handle.height / 2)
+    expect(hit?.getAttribute('data-part')).toBe('zoom-handle')
+  })
+
   it('连续轴放大后系列按绘图区裁剪：裁剪框就是网格占的那块', async () => {
     mount({ ...LINE, defaultWindow: { x: [50, 100] } })
     await settle()
