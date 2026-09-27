@@ -47,6 +47,7 @@ import type {
   CartesianScaleKind,
   CartesianSeries,
   CartesianWindow,
+  CartesianWindowRatio,
   CartesianZoom,
 } from './cartesian-chart.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
@@ -55,7 +56,9 @@ import {
   buildTableModel,
   createNumberFormat,
   createScene,
+  domainToWindow,
   FULL_WINDOW,
+  indexRangeToWindow,
   inferDomain,
   isFullWindow,
   isVizError,
@@ -77,7 +80,6 @@ import {
   SYMBOL_NAMES,
   waterfall,
   windowToDomain,
-  windowToIndexRange,
 } from '@xihan-ui/viz'
 import { assignChartSeries, buildChartSummary, labelBox, memoizeLast, placeWithoutOverlap, settleColumn } from '../shared/chart'
 
@@ -904,14 +906,27 @@ export interface CartesianLayout {
   readonly annotations: readonly CartesianAnnotation[]
   /** 平均线缺省标签的前缀。 */
   readonly averageLabel: string
-  /** 生效的缩放窗口：不能缩放的方向是整条轴。 */
-  readonly window: { readonly x: AxisWindow, readonly y: AxisWindow }
+  /** 生效的缩放窗口在两根轴上的比例：不能缩放的方向是整条轴。 */
+  readonly window: CartesianWindowRatio
   /** 连续轴或数值轴被缩放：窗外的标记要裁掉。 */
   readonly clipped: boolean
   /** 连续自变量轴取整后的整条定义域（日期取时间值）：缩放窗口的比例对着它；类目轴为 null。 */
   readonly keyExtent: readonly [number, number] | null
   /** 类目轴被缩放时露出的键的下标范围（含两端）；没缩放是整条。 */
   readonly keyRange: readonly [number, number]
+  /** 数值轴取整后的整条定义域：y 窗口的比例对着它。 */
+  readonly valueExtent: readonly [number, number]
+}
+
+/** 连续自变量轴上的键换成数：日期取时间值。 */
+function keyNumber(key: ChartKey): number {
+  return key instanceof Date ? key.valueOf() : Number(key)
+}
+
+/** 定义域里的一段换成整条轴上的比例；两端不是有限数、对数轴取到非正数或整条轴只有一个值时是整条轴。 */
+function ratioOf(range: readonly [number, number], full: readonly [number, number], kind: 'linear' | 'log'): AxisWindow {
+  const valid = (v: number): boolean => Number.isFinite(v) && (kind !== 'log' || v > 0)
+  return range.every(valid) && full.every(valid) && full[0] !== full[1] ? domainToWindow(range, full, kind) : FULL_WINDOW
 }
 
 function isCategoryScale(scale: AxisScale): scale is BandScale<string | number> {
@@ -944,13 +959,25 @@ export function layoutCartesian(
   const categoryKeys = spec.keys.map(categoryKey)
   const keyOf = new Map(categoryKeys.map((k, i) => [k, spec.keys[i]!]))
   const keyAxisConfig = spec.xAxis
-  // 缩放窗口：不能缩放的方向是整条轴。类目轴按窗口露出一段键，连续轴与数值轴按窗口换定义域
-  const windowX = zoom === 'x' || zoom === 'xy' ? zoomWindow.x : FULL_WINDOW
-  const windowY = zoom === 'y' || zoom === 'xy' ? zoomWindow.y : FULL_WINDOW
+  // 缩放窗口写的是定义域里的值，这里换成整条轴上的比例；不能缩放的方向是整条轴。
+  // 类目轴按窗口露出一段键，连续轴与数值轴按窗口换定义域
+  const zoomX = zoom === 'x' || zoom === 'xy'
+  const zoomY = zoom === 'y' || zoom === 'xy'
   const category = spec.keyScale === 'band' || spec.keyScale === 'point'
-  const keyRange: [number, number] = category && !isFullWindow(windowX) && categoryKeys.length > 0
-    ? windowToIndexRange(windowX, categoryKeys.length)
-    : [0, categoryKeys.length - 1]
+  const keyKind = spec.keyScale === 'log' ? 'log' : 'linear'
+  let windowX: AxisWindow = FULL_WINDOW
+  let keyRange: [number, number] = [0, categoryKeys.length - 1]
+  if (category && zoomX && zoomWindow.x && categoryKeys.length > 0) {
+    // 两端的类目不在数据里时取轴的那一端：数据往后推、窗口的首个类目滚出去时窗口照样有效
+    const indexOf = (key: ChartKey, missing: number): number => {
+      const i = categoryKeys.indexOf(categoryKey(key))
+      return i < 0 ? missing : i
+    }
+    const a = indexOf(zoomWindow.x[0], 0)
+    const b = indexOf(zoomWindow.x[1], categoryKeys.length - 1)
+    keyRange = [Math.min(a, b), Math.max(a, b)]
+    windowX = indexRangeToWindow(keyRange[0], keyRange[1], categoryKeys.length)
+  }
   const shownKeys = categoryKeys.slice(keyRange[0], keyRange[1] + 1)
   const barCount = domains.derived.visible.some(s => s.spec.mark === 'bar')
   const scatterOnly = spec.series.length > 0 && spec.series.every(s => s.mark === 'scatter')
@@ -972,6 +999,8 @@ export function layoutCartesian(
     : (spec.yAxis.reverse ? [plot.x + plot.width, plot.x] : [plot.x, plot.x + plot.width]))
 
   let keyExtent: [number, number] | null = null
+  let valueExtent: [number, number] = [domains.value[0], domains.value[1]]
+  let windowY: AxisWindow = FULL_WINDOW
   const keyScaleOf = (plot: Rect): AxisScale => {
     const range = along(plot)
     if (spec.keyScale === 'band')
@@ -991,12 +1020,14 @@ export function layoutCartesian(
     // 只有散点时自变量是一个量而不是序列：两端缺省取整到刻度上，与数值轴一致
     if ((spec.xAxis.nice ?? scatterOnly) && spec.keyScale !== 'time' && spec.keyScale !== 'utc')
       full = (full as ContinuousScale).nice()
-    // 窗口按取整后的整条轴换算：窗口的比例对着作者看到的那根轴
+    // 窗口按取整后的整条轴换算：越出整条轴的部分夹回来
     const extent = (full.domain as readonly (number | Date)[]).map(v => (v instanceof Date ? v.valueOf() : v)) as [number, number]
     keyExtent = extent
+    if (zoomX && zoomWindow.x)
+      windowX = ratioOf([keyNumber(zoomWindow.x[0]), keyNumber(zoomWindow.x[1])], extent, keyKind)
     if (isFullWindow(windowX))
       return full
-    return make(windowToDomain(windowX, extent, spec.keyScale === 'log' ? 'log' : 'linear'))
+    return make(windowToDomain(windowX, extent, keyKind))
   }
 
   const valueSpec: NumberFormatSpec = typeof spec.yAxis.format === 'object' && !isDateFormat(spec.yAxis.format)
@@ -1023,9 +1054,12 @@ export function layoutCartesian(
     const make = ([a, b]: readonly [number, number]): ContinuousScale => (spec.valueScale === 'log' ? scaleLog({ domain: [a, b], range }) : scaleLinear({ domain: [a, b], range }))
     const base = make([lo, hi])
     const full = spec.yAxis.nice === false || domains.percent ? base : base.nice(valueTickCount(range))
+    const valueKind = spec.valueScale === 'log' ? 'log' : 'linear'
+    valueExtent = full.domain as [number, number]
+    windowY = zoomY && zoomWindow.y ? ratioOf(zoomWindow.y, valueExtent, valueKind) : FULL_WINDOW
     if (isFullWindow(windowY))
       return full
-    return make(windowToDomain(windowY, full.domain as [number, number], spec.valueScale === 'log' ? 'log' : 'linear'))
+    return make(windowToDomain(windowY, valueExtent, valueKind))
   }
 
   const valueTickFormat = (scale: AxisScale) => (value: unknown): string => {
@@ -1140,6 +1174,7 @@ export function layoutCartesian(
   })
   return {
     keyExtent,
+    valueExtent,
     window: { x: windowX, y: windowY },
     clipped: (!category && !isFullWindow(windowX)) || !isFullWindow(windowY),
     keyRange,

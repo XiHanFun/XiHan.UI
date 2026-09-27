@@ -10,7 +10,7 @@ import type { PropFn, Scope } from '@xihan-ui/core'
 import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey, ChartNavIntent } from '../shared/chart'
 import type { CartesianModel, CartesianSeriesValues } from './cartesian-chart.model'
-import type { CartesianAnnotationSummary, CartesianChartSchema, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow } from './cartesian-chart.types'
+import type { CartesianAnnotationSummary, CartesianChartSchema, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow, CartesianWindowRatio } from './cartesian-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { createPicker, FULL_WINDOW } from '@xihan-ui/viz'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
@@ -27,11 +27,24 @@ function defaultOhlcLabel({ open, high, low, close }: { open: string, high: stri
 }
 
 /** 整条轴：两个方向都没缩放。 */
-export const FULL_CARTESIAN_WINDOW: CartesianWindow = Object.freeze({ x: FULL_WINDOW, y: FULL_WINDOW })
+export const FULL_CARTESIAN_WINDOW: CartesianWindow = Object.freeze({ x: null, y: null })
 
-/** 两个窗口是否相同：受控时作者每次给新对象，内容没变不该当成变化。 */
+/** 整条轴的比例：两个方向都是 0–1。 */
+export const FULL_CARTESIAN_RATIO: CartesianWindowRatio = Object.freeze({ x: FULL_WINDOW, y: FULL_WINDOW })
+
+function sameEnd(a: ChartKey, b: ChartKey): boolean {
+  return a instanceof Date || b instanceof Date ? a.valueOf() === b.valueOf() : a === b
+}
+
+function sameRange(a: readonly [ChartKey, ChartKey] | null | undefined, b: readonly [ChartKey, ChartKey] | null | undefined): boolean {
+  if (a == null || b == null)
+    return a == null && b == null
+  return sameEnd(a[0], b[0]) && sameEnd(a[1], b[1])
+}
+
+/** 两个窗口是否相同：受控时作者每次给新对象，内容没变不该当成变化；日期按时间值比。 */
 export function sameWindow(a: CartesianWindow, b: CartesianWindow | undefined): boolean {
-  return b != null && a.x.start === b.x.start && a.x.end === b.x.end && a.y.start === b.y.start && a.y.end === b.y.end
+  return b != null && sameRange(a.x, b.x) && sameRange(a.y, b.y)
 }
 
 /** 缺省的五数写法：须线两端、四分位与中位数依次写出。 */

@@ -43,5 +43,6 @@ export type {
   CartesianTrigger,
   CartesianWindow,
   CartesianWindowChangeDetails,
+  CartesianWindowRatio,
   CartesianZoom,
 } from './cartesian-chart.types'

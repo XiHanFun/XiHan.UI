@@ -221,8 +221,17 @@ export type CartesianAnnotation
 /** 缩放的方向：x 沿自变量轴，y 沿数值轴。 */
 export type CartesianZoom = 'none' | 'x' | 'y' | 'xy'
 
-/** 缩放窗口：两根轴各一段，取值是定义域的比例 0–1（start ≤ end）；整条轴是 { start: 0, end: 1 }。 */
+/**
+ * 缩放窗口：两根轴各露出的一段，写定义域里的值。x 在类目轴上是首尾两个类目（含两端），在连续轴上是两端的值
+ * （时间轴写 Date）；y 是数值轴的 [下, 上]。不写或写 null 是整条轴。多张图接到同一份窗口上即可联动。
+ */
 export interface CartesianWindow {
+  readonly x?: readonly [ChartKey, ChartKey] | null
+  readonly y?: readonly [number, number] | null
+}
+
+/** 两根轴的窗口换成整条轴上的比例 0–1：缩放条、手势与键盘都在比例上算。 */
+export interface CartesianWindowRatio {
   readonly x: AxisWindow
   readonly y: AxisWindow
 }
@@ -241,7 +250,8 @@ export interface CartesianDrag {
   readonly pointerId: number
   readonly from: { readonly x: number, readonly y: number }
   readonly size: { readonly x: number, readonly y: number }
-  readonly window: CartesianWindow
+  /** 按下时的窗口（比例）。 */
+  readonly window: CartesianWindowRatio
 }
 
 /** 摘要里的一条注释：名字、所属系列（参考线与参考带为 null）与已写成文字的值。 */
@@ -377,7 +387,7 @@ export interface CartesianChartSchema extends MachineSchema {
      * 放大后拖动绘图区平移；自变量方向可缩放时缩放条（zoom-slider）可用。
      */
     zoom?: CartesianZoom
-    /** 缩放窗口（受控）：两根轴各一段，取值是定义域的比例 0–1。 */
+    /** 缩放窗口（受控）：两根轴各露出的一段，写定义域里的值；不写或写 null 的轴是整条。 */
     window?: CartesianWindow
     /** 初始缩放窗口（非受控）。 */
     defaultWindow?: CartesianWindow
@@ -397,6 +407,11 @@ export interface CartesianChartSchema extends MachineSchema {
     pipeline: CartesianPipeline
     /** 触屏捏合：按下着的触点（pointerId → 绘图区里的坐标）。 */
     touches: Map<number, { x: number, y: number }>
+    /**
+     * 手势上一次算出的窗口比例与它写成的窗口：类目轴的窗口取整到类目，连续几次细小的滚轮若都从取整后的
+     * 窗口起算会原地不动；窗口还是那一份时从这里接着算。
+     */
+    zoomRatio: { ratio: CartesianWindowRatio, window: CartesianWindow } | null
   }
   state: 'idle'
   event: ChartBaseEvent
@@ -455,11 +470,11 @@ export interface CartesianChartApi<T extends PropTypes = PropTypes> {
   setFocusedDatum: (ref: { seriesId: string, index: number } | null) => void
   /** 标记画成什么元素。 */
   markTag: (mark: Mark) => CartesianMarkTag
-  /** 缩放：两个方向能不能缩放，与生效的窗口（不能缩放的方向是整条轴）。 */
-  zoom: { readonly x: boolean, readonly y: boolean, readonly window: CartesianWindow }
+  /** 缩放：两个方向能不能缩放、当前的窗口，与它在两根轴上的比例（不能缩放的方向是整条轴）。 */
+  zoom: { readonly x: boolean, readonly y: boolean, readonly window: CartesianWindow, readonly ratio: CartesianWindowRatio }
   /** 缩放后要裁到的矩形（绘图区）与它在 defs 里的 clipPath id；没缩放连续轴与数值轴时为 null。 */
   clip: { readonly id: string, readonly x: number, readonly y: number, readonly width: number, readonly height: number } | null
-  /** 设置缩放窗口；不能缩放的方向保持整条轴。 */
+  /** 设置缩放窗口（定义域里的值）；不能缩放的方向保持整条轴。 */
   setWindow: (window: CartesianWindow) => void
   getRootProps: () => T['element']
   getCaptionProps: () => T['element']

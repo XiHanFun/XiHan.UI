@@ -7,7 +7,6 @@
 
 import type { CartesianChartSchema, CartesianDrag, CartesianWindow } from './cartesian-chart.types'
 import { reportDiagnostic, setup } from '@xihan-ui/core'
-import { clampWindow, FULL_WINDOW } from '@xihan-ui/viz'
 import {
   chartBaseActions,
   chartBaseContext,
@@ -36,7 +35,7 @@ export const cartesianChartMachine = createMachine({
     })),
     drag: params.cell<CartesianDrag | null>(() => ({ defaultValue: null })),
   }),
-  refs: () => ({ ...chartBaseRefs(), pipeline: createCartesianPipeline(), touches: new Map() }),
+  refs: () => ({ ...chartBaseRefs(), pipeline: createCartesianPipeline(), touches: new Map(), zoomRatio: null }),
   computed: {
     scene: params => cartesianModelOf(params).scene?.scene ?? null,
   },
@@ -111,15 +110,15 @@ export const cartesianChartMachine = createMachine({
           : cartesianDetails(model, active.ref, cartesianTrigger(params.prop('trigger'), model))
         notifyChartActive(params, details)
       },
-      // 窗口夹在 [0, 1] 里；不能缩放的方向保持整条轴
+      // 不能缩放的方向保持整条轴；越出整条轴的部分由布局按比例尺夹回来
       setWindow: ({ context, event, prop }) => {
         const e = event.current()
         if (e.type !== 'WINDOW.SET')
           return
         const zoom = prop('zoom') ?? 'none'
         context.set('window', {
-          x: zoom === 'x' || zoom === 'xy' ? clampWindow(e.window.x) : FULL_WINDOW,
-          y: zoom === 'y' || zoom === 'xy' ? clampWindow(e.window.y) : FULL_WINDOW,
+          x: zoom === 'x' || zoom === 'xy' ? e.window.x ?? null : null,
+          y: zoom === 'y' || zoom === 'xy' ? e.window.y ?? null : null,
         })
       },
       startDrag: ({ context, event }) => {
