@@ -48,7 +48,7 @@ for (const file of await demoFiles(DEMOS)) {
 
 if (problems.length) {
   console.error('[check-demo-imports] ✗ 示例引了文档站没装的包：')
-  for (const problem of [...new Set(problems)])
+  for (const problem of new Set(problems))
     console.error(`  ${problem}`)
   console.error('把它按 link:../ui/packages/<组>/<包> 写进 docs/package.json，再在 docs 下跑一次 pnpm install。')
   process.exit(1)

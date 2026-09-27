@@ -59,7 +59,7 @@ function stubViewport(width: number) {
   return {
     resize(next: number) {
       current = next
-      for (const fn of [...listeners]) fn()
+      for (const fn of listeners) fn()
     },
     restore() {
       window.matchMedia = original

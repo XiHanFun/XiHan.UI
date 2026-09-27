@@ -255,7 +255,7 @@ export function trackListMotion(container: Element, options: TrackArrivalsOption
   return () => {
     observer.disconnect()
     resizer?.disconnect()
-    for (const finish of [...ghosts])
+    for (const finish of ghosts)
       finish()
   }
 }

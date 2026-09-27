@@ -207,7 +207,7 @@ export function createFormPathRecord<T>(entries: Iterable<readonly [FormPath, T]
 
 /** 浅拷贝时保留不可枚举的数组路径索引。 */
 export function cloneFormPathRecord<T>(record: FormPathRecord<T> | undefined): FormPathRecord<T> {
-  const out = { ...(record ?? {}) } as FormPathRecord<T>
+  const out = { ...record } as FormPathRecord<T>
   const entries = entriesOf(record ?? out)
   if (entries.size)
     Object.defineProperty(out, PATH_ENTRIES, { value: new Map(entries) })

@@ -172,7 +172,7 @@ describe('brandScaleCss', () => {
 
 describe('registerBrand', () => {
   afterEach(() => {
-    for (const el of [...document.head.querySelectorAll('style[data-xh-brand]')])
+    for (const el of document.head.querySelectorAll('style[data-xh-brand]'))
       el.remove()
   })
 

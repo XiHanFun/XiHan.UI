@@ -380,7 +380,7 @@ export const fileUploadMachine = createMachine({
         const files = context.get('acceptedFiles')
         const present = new Set(files.map(file => fileKeyOf(refs, file)))
         const controllers = refs.get('uploadControllers')
-        for (const [id, controller] of [...controllers]) {
+        for (const [id, controller] of controllers) {
           if (!present.has(id)) {
             controller.abort()
             controllers.delete(id)

@@ -45,7 +45,7 @@ export function xhConfigGeneration(): number {
 /** 配置变了就叫一遍：全局那份改了、任一 <xh-config> 改了或进出文档，都走这里。 */
 export function notifyXhConfigChange(): void {
   generation += 1
-  for (const listener of [...listeners]) listener()
+  for (const listener of listeners) listener()
 }
 
 /** 覆写全局配置。整份替换，不做深合并：需要修改一处时把整份取出修改后写回。 */

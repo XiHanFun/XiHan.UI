@@ -122,7 +122,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     // 标签节点跟着值走，与 Vue 的 v-for 同语义：没了的移除、新来的建，其余原地复用。
     // 复用而不是整批重建，焦点才留得住（就地编辑与删除按钮都靠这一点）
     const live = new Set(api.value)
-    for (const [v, n] of [...nodes]) {
+    for (const [v, n] of nodes) {
       if (!live.has(v)) {
         n.item.remove()
         nodes.delete(v)

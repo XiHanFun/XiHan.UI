@@ -224,7 +224,7 @@ export function createVisualEnvironmentController(
       return
     state = next
     project()
-    for (const subscriber of [...subscribers])
+    for (const subscriber of subscribers)
       subscriber(state)
   }
 

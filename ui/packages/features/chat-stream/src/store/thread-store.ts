@@ -60,8 +60,8 @@ export function createThreadStore(options: ThreadStoreOptions): ThreadStore {
     if (disposed)
       return
     current = { messages, status, error }
-    // 先拷贝再遍历，允许回调内退订
-    for (const fn of [...listeners]) fn(current)
+    // 回调内可以退订：Set 遍历中删掉当前项不影响其余
+    for (const fn of listeners) fn(current)
   }
 
   const batcher = createFrameBatcher(publish, options.frame)

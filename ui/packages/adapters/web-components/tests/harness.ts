@@ -120,10 +120,10 @@ export function createWcHarness(): AdapterHarness {
     try {
       for (let round = 0; round < MAX_SETTLE_ROUNDS; round++) {
         // 让出一次微任务，等这一拍派出去的效应先把新一轮更新排上队
-        await null
+        await Promise.resolve()
         // resolve 成 false 表示更新途中又排了新一轮，接着等下一轮
         for (let self = 0; self < MAX_SETTLE_ROUNDS && !(await el.updateComplete); self++) { /* 等到不再自排新一轮 */ }
-        await null
+        await Promise.resolve()
         if (observer.takeRecords().length === 0)
           return
       }

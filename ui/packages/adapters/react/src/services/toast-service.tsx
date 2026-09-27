@@ -186,7 +186,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   const subs = new Set<() => void>()
   const notify = (): void => {
     version += 1
-    for (const fn of [...subs]) fn()
+    for (const fn of subs) fn()
   }
   const subscribe = (fn: () => void): (() => void) => {
     subs.add(fn)

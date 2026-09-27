@@ -33,7 +33,7 @@ function mediaWindow(): { win: Window, queries: Record<string, MutableMql> } {
 
 function change(query: MutableMql, matches: boolean): void {
   query.matches = matches
-  for (const listener of [...query.listeners])
+  for (const listener of query.listeners)
     listener()
 }
 

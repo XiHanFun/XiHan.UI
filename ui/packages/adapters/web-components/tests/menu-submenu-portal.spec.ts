@@ -186,7 +186,7 @@ describe('web Components Menu 子菜单 Portal', () => {
     await settle()
 
     expect(select).toHaveBeenCalledTimes(1)
-    expect((select.mock.calls[0]?.[0] as CustomEvent).detail).toEqual({ value: 'sms' })
+    expect(select).toHaveBeenCalledWith(expect.objectContaining({ detail: { value: 'sms' } }))
     expect(handles.trigger.getAttribute('aria-expanded')).toBe('false')
     expect(handles.root.querySelector<HTMLElement>(':scope > [data-xh-part="trigger"]')!.getAttribute('aria-expanded')).toBe('false')
   })

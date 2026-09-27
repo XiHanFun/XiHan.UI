@@ -145,7 +145,7 @@ describe('看片浮层的控件带：报的角色与拿得到的走位一致', (
       await userEvent.tab()
       walked.push(focusedPart())
     }
-    expect(walked).toEqual([...TOOL_PARTS.slice(1)])
+    expect(walked).toEqual(TOOL_PARTS.slice(1))
   })
 
   it('焦点停在条里的钮上时，左右方向键仍然翻页', async () => {

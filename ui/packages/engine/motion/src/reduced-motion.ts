@@ -42,7 +42,7 @@ export function setMotionOverride(preference: MotionPreference | null): void {
   if (override === preference)
     return
   override = preference
-  for (const notify of [...overrideListeners]) notify()
+  for (const notify of overrideListeners) notify()
 }
 
 /** 当前的应用级强制偏好，未设置为 null。 */

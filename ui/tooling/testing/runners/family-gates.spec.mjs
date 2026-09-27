@@ -75,7 +75,7 @@ function append(root, path, contents) {
 function addStale(root, section, key = 'demo:root') {
   const path = join(root, BACKLOG)
   const json = JSON.parse(readFileSync(path, 'utf8'))
-  json[section] = { ...(json[section] ?? {}), [key]: '夹具：早已迁走' }
+  json[section] = { ...json[section], [key]: '夹具：早已迁走' }
   writeFileSync(path, JSON.stringify(json, null, 2))
 }
 

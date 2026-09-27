@@ -79,7 +79,7 @@ function createRegistry(scope: Scope, options: () => ScrollbarsOptions): BarRegi
 
   const notify = (): void => {
     version += 1
-    for (const fn of [...subscribers]) fn()
+    for (const fn of subscribers) fn()
   }
 
   /**

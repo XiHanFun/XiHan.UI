@@ -100,7 +100,7 @@ const tokens = JSON.parse(await readFile(join(UI, 'packages', 'design', 'tokens'
 const rows = sources
   .get('llms-tokens.txt')
   .split('\n')
-  .filter(line => /^\| `--xh-/.test(line) && line.split('|').length === 6)
+  .filter(line => line.startsWith('| `--xh-') && line.split('|').length === 6)
   .length
 if (rows !== Object.keys(tokens).length) {
   bail(`llms-tokens.txt 列了 ${rows} 支令牌，tokens.json 是 ${Object.keys(tokens).length} 支`)
