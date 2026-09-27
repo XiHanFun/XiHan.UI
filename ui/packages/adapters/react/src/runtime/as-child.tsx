@@ -48,18 +48,28 @@ export function isRoleMarker(key: string): boolean {
   return key === 'data-scope' || key === 'data-part' || key === 'data-variant' || key.startsWith('data-xh-')
 }
 
+export interface MergeIntoChildOptions {
+  /**
+   * 子节点是组件时缺省视作自带解剖，只落接线属性。路由链接这类只把属性转交给自己渲出元素的封装没有自己的解剖，
+   * 置 true 让部件的解剖与家族标记照样落上去。
+   */
+  applyAnatomy?: boolean
+}
+
 /**
  * 把部件属性合并到作者的子节点上。
  *
  * @param children 作者给的内容
  * @param props 部件该挂的属性（含 ref）
  * @param scope 部件所属组件名，只用于诊断文案
+ * @param options 解剖标记的落法
  * @returns 合并后的元素；子节点不合规时抛错
  */
 export function mergeIntoChild(
   children: ReactNode,
   props: Record<string, unknown>,
   scope: string,
+  options: MergeIntoChildOptions = {},
 ): ReactElement {
   const candidates = attributable(children, scope)
   if (candidates.length !== 1)
@@ -67,7 +77,7 @@ export function mergeIntoChild(
   const child = candidates[0]!
 
   // 子节点自带解剖标记时不覆盖它，只落接线属性；否则整套属性都给它
-  const keepAnatomy = !carriesOwnAnatomy(child)
+  const keepAnatomy = !!options.applyAnatomy || !carriesOwnAnatomy(child)
   const own: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(props)) {
     if (!keepAnatomy && isRoleMarker(key))
@@ -106,8 +116,9 @@ export function renderAsChild(
   props: Record<string, unknown>,
   scope: string,
   fallback: (props: Record<string, unknown>, children: ReactNode) => ReactElement,
+  options?: MergeIntoChildOptions,
 ): ReactNode {
   if (asChild)
-    return mergeIntoChild(children, props, scope)
+    return mergeIntoChild(children, props, scope, options)
   return fallback(props, children)
 }

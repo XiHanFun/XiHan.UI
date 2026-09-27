@@ -441,6 +441,8 @@ export function connectSideNav<T extends PropTypes>(
     // 起始侧 2px 指示条，悬停 / 高亮 / 按下面与禁用面按 aria-disabled 给
     getLinkProps: ({ value: v }) => {
       const handlers = press('link', v)
+      // 没有 href 就不写这个键：asChild 把属性合到路由链接上时，一个值为空的 href 会盖掉它自己算出的地址
+      const href = metaOf(v) ? collectionHref(collection, v) : undefined
       return normalize.element({
         ...parts.link.attrs,
         'data-xh-collection-item': '',
@@ -449,7 +451,7 @@ export function connectSideNav<T extends PropTypes>(
         // 该入口自身的性质；家族据此换字与悬停 / 按下的面，当前项与禁用压过它
         'data-tone': nodeTone(v),
         'data-value': v,
-        'href': metaOf(v) ? (collectionHref(collection, v) ?? undefined) : undefined,
+        ...(href == null ? {} : { href }),
         // 选中的那条就是「当前页」，读屏与皮肤都认它
         'aria-current': isSelected(v) ? 'page' : undefined,
         'data-current': dataAttr(isSelected(v)),

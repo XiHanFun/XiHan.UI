@@ -598,7 +598,7 @@ function scriptedMotion(id) {
 // ── 人工文案：与组件源码同放，本脚本只负责搬运 ────────────────────────────────
 
 // 允许的小节名。写错的名字直接报错，不会静默丢掉一整段
-const PROSE_SECTIONS = ['何时使用', '何时不用', '特性', '无障碍', '响应式', 'RTL', '组合', '最佳实践', '反模式']
+const PROSE_SECTIONS = ['何时使用', '何时不用', '特性', '无障碍', '响应式', 'RTL', '组合', '接路由', '最佳实践', '反模式']
 
 /**
  * 读 <id>/<id>.doc.md：首个 ## 之前是概述，其后按小节名切开。
@@ -1171,7 +1171,7 @@ function renderComponent(entry, category) {
     }
   }
 
-  const guidance = ['何时使用', '何时不用', '特性', '组合', '最佳实践', '反模式']
+  const guidance = ['何时使用', '何时不用', '特性', '组合', '接路由', '最佳实践', '反模式']
     .map(title => [title, authored(title)])
     .filter(([, text]) => text)
   if (guidance.length) {

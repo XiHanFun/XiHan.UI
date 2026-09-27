@@ -30,6 +30,28 @@
 
 - 放入[布局](./layout)的侧栏区域。
 
+## 接路由
+
+- Vue / React 的 `link` 缺省渲染 `<a>`，`href` 由作者写或取自 `collection`。接客户端路由时给 `XhSideNavLink` 加 `asChild`，把路由链接放进去当唯一的子节点：部件属性、按压与聚焦接线合到它渲出的元素上，跳转交给路由；子节点不是恰好一个元素时直接报错。
+- 当前项跟着路由走：把当前路径换算成 `value` 受控传入。点选只发 `value-change`，真正的当前项仍以路由为准。
+- Web Components 不需要 asChild：`link` 本来就是作者写的节点，元素只往它身上写属性与监听、不替换它。路由库自己的链接元素，或自行拦截点击的 `<a>`，直接标 `data-xh-part="link"` 即可。
+
+```vue
+<XhSideNavLink value="orders" as-child>
+  <RouterLink to="/orders">
+    <XhSideNavLinkText>订单</XhSideNavLinkText>
+  </RouterLink>
+</XhSideNavLink>
+```
+
+```tsx
+<XhSideNavLink value="orders" asChild>
+  <Link to="/orders">
+    <XhSideNavLinkText>订单</XhSideNavLinkText>
+  </Link>
+</XhSideNavLink>
+```
+
 ## 最佳实践
 
 - 导航层级保持在两到三级。
