@@ -49,7 +49,7 @@ describe('xhSeparator 的一步到位写法', () => {
   })
 
   it('假分支留下的 children 不算给了文案：仍是一条线', () => {
-    mount(<XhSeparator>{false && <span>或</span>}</XhSeparator>)
+    mount(<XhSeparator>{false}</XhSeparator>)
     expect(parts('separator', 'content')).toHaveLength(0)
   })
 

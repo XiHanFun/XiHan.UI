@@ -59,7 +59,7 @@ export function createPresence(o: PresenceOptions): PresenceHandle {
       return
     onRenderedChange(state !== 'unmounted')
     if (state === 'unmounted') {
-      for (const fn of [...exitCompleteFns]) fn()
+      for (const fn of exitCompleteFns) fn()
     }
   }
 
@@ -94,13 +94,13 @@ export function createPresence(o: PresenceOptions): PresenceHandle {
       return
     open = nextOpen
     if (open) {
-      for (const l of [...leases]) l.settle()
+      for (const l of leases) l.settle()
       leases.clear()
       transition('OPEN')
       return
     }
     // 关闭：给动画探测器一个同步窗口去申领租约
-    for (const fn of [...beforeExitFns]) fn()
+    for (const fn of beforeExitFns) fn()
     if (leases.size === 0)
       transition('CLOSE_NO_LEASE')
   }
@@ -129,7 +129,7 @@ export function createPresence(o: PresenceOptions): PresenceHandle {
       if (disposed)
         return
       disposed = true
-      for (const l of [...leases]) l.settle()
+      for (const l of leases) l.settle()
       leases.clear()
       exitCompleteFns.clear()
       beforeExitFns.clear()

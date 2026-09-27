@@ -41,7 +41,7 @@ export function createVanillaRuntime(opts: { isServer?: boolean } = {}): Vanilla
     try {
       do {
         dirty = false
-        for (const fn of [...globalSubs]) fn()
+        for (const fn of globalSubs) fn()
       } while (dirty)
     }
     finally {
@@ -61,7 +61,7 @@ export function createVanillaRuntime(opts: { isServer?: boolean } = {}): Vanilla
           return
         value = v
         ver += 1
-        for (const fn of [...subs]) fn()
+        for (const fn of subs) fn()
         flushGlobal()
       },
       subscribe(fn) {

@@ -48,11 +48,11 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
 ])
 
 // 皮肤声明、由运行时从计算样式读出的私有槽：取值链在皮肤里，消费方是 JS，皮肤里不必有 var() 消费点
-const RUNTIME_READ_SLOTS = new Map([
-  // 图表的几何度量：机器挂载后从根的计算样式读取，作者覆盖组件槽即改变几何
-  ...['bar-max', 'gap', 'line-width', 'point-size', 'hit-min', 'tick-length', 'label-gap', 'radius', 'font-size', 'leading']
+// 图表的几何度量：机器挂载后从根的计算样式读取，作者覆盖组件槽即改变几何
+const RUNTIME_READ_SLOTS = new Map(
+  ['bar-max', 'gap', 'line-width', 'point-size', 'hit-min', 'tick-length', 'label-gap', 'radius', 'font-size', 'leading']
     .map(name => [`--xh-_chart-metric-${name}`, 'packages/engine/headless/src/shared/chart/metrics.ts']),
-])
+)
 
 const files = (await Promise.all(STYLE_DIRS.map(async dir =>
   (await readdir(dir).catch(() => [])).filter(file => file.endsWith('.css')).map(file => ({ dir, file })),

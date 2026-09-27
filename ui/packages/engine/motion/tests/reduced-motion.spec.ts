@@ -27,7 +27,7 @@ function createHost(matches = false): {
     win,
     set: (value: boolean) => {
       mql.matches = value
-      for (const fn of [...handlers]) fn()
+      for (const fn of handlers) fn()
     },
     get listeners() {
       return handlers.size

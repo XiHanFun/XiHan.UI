@@ -293,7 +293,7 @@ function attrBucket(key) {
  * 不同字面量之间（getter 分支各返回一个对象）先出现的算数。`...helper(…)` 展开时把辅助函数体的表在
  * 展开处并进来；expanding 是正在展开的辅助名栈，辅助互相展开的环走到这里就停。
  */
-function literalAttrs(node, sf, locals, expanding) {
+function literalAttrs(node, locals, expanding) {
   const out = new Map()
   const visit = (n) => {
     if (ts.isObjectLiteralExpression(n)) {
@@ -304,7 +304,7 @@ function literalAttrs(node, sf, locals, expanding) {
           if (!helper)
             continue
           expanding.add(helper.name)
-          for (const [key, value] of literalAttrs(helper.body, sf, locals, expanding))
+          for (const [key, value] of literalAttrs(helper.body, locals, expanding))
             own.set(key, value)
           expanding.delete(helper.name)
           continue
@@ -347,7 +347,7 @@ function attrSurface(id, parts, states) {
       const name = node.name.getText(sf)
       if (/^get[A-Z]\w*Props$/.test(name)) {
         const part = getterPart(name)
-        for (const [key, init] of literalAttrs(node, sf, locals, new Set())) {
+        for (const [key, init] of literalAttrs(node, locals, new Set())) {
           const dedupe = `${part} ${key}`
           if (seen.has(dedupe))
             continue

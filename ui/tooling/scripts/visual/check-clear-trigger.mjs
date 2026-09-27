@@ -99,7 +99,7 @@ function checkButtonSkin(c, part, { sizeSlot, sizeToken, radiusSlot, radiusToken
     const radiusRe = new RegExp(`border-radius:\\s*var\\(${esc(radiusSlot)},\\s*var\\(${esc(radiusToken)}\\)\\)`)
     if (!has(rules, (t, b) => t.trim() === '' && radiusRe.test(b)))
       problems.push(`${c}.css [${part}] 圆角该写 var(${radiusSlot}, var(${radiusToken}))`)
-    if (!has(rules, (t, b) => /^\[hidden\]/.test(t.trim()) && /display:\s*none/.test(b)))
+    if (!has(rules, (t, b) => t.trim().startsWith('[hidden]') && /display:\s*none/.test(b)))
       problems.push(`${c}.css [${part}] 缺 [hidden] { display: none }`)
     if (press) {
       if (!has(rules, (t, b) => /:active/.test(t) && /--xh-motion-scale-press/.test(b)))

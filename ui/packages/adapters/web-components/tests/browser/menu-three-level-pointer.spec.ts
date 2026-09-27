@@ -164,7 +164,7 @@ describe('web Components Menu 三级真实指针', () => {
     expect(byValue('share-wecom').getAttribute('aria-expanded')).toBe('true')
     await click(byValue('share-team'))
     expect(onSelect).toHaveBeenCalledTimes(1)
-    expect((onSelect.mock.calls[0]?.[0] as CustomEvent).detail).toEqual({ value: 'share-team' })
+    expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ detail: { value: 'share-team' } }))
     expect(rootTrigger().getAttribute('aria-expanded')).toBe('false')
   })
 
@@ -187,7 +187,7 @@ describe('web Components Menu 三级真实指针', () => {
     await click(byValue('share-dingtalk'))
 
     expect(onSelect).toHaveBeenCalledTimes(1)
-    expect((onSelect.mock.calls[0]?.[0] as CustomEvent<{ value: string }>).detail).toEqual({ value: 'share-dingtalk' })
+    expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ detail: { value: 'share-dingtalk' } }))
     expect(rootTrigger().getAttribute('aria-expanded')).toBe('false')
     expect(byValue('share').getAttribute('aria-expanded')).toBe('false')
     expect(byValue('share-im').getAttribute('aria-expanded')).toBe('false')

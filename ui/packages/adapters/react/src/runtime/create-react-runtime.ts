@@ -95,7 +95,7 @@ export function createReactRuntime(): ReactRuntime {
   function notify(): void {
     version += 1
     machineEpoch += 1
-    for (const fn of [...subscribers]) fn()
+    for (const fn of subscribers) fn()
   }
 
   /** 当前处于渲染中或自己的 effect 内，调用 flushSync 会触发 React 的警告。 */
@@ -277,6 +277,7 @@ export function createReactRuntime(): ReactRuntime {
       mounted = true
       disposed = false
       inEffect(() => {
+        // oxlint-disable-next-line unicorn/no-useless-spread -- 挂载中登记的回调由 onMount 立即调用，直接遍历会再调一次
         for (const fn of [...mounts]) fn()
       })
     },

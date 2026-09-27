@@ -94,7 +94,7 @@ function parseAnimation(part) {
   const tokensOf = splitTop(part, ' ')
   const name = tokensOf.find(t => /^xh-[\w-]+$/.test(t)) ?? null
   const timeToken = tokensOf.find(t => /^(?:var\(|calc\(|-?\d+(?:\.\d+)?m?s$)/.test(t) && resolve(t, 'time') !== null)
-    ?? tokensOf.find(t => /^var\(/.test(t))
+    ?? tokensOf.find(t => t.startsWith('var('))
   const iterations = tokensOf.includes('infinite') ? Number.POSITIVE_INFINITY : Number(tokensOf.find(t => /^\d+(?:\.\d+)?$/.test(t)) ?? 1)
   const direction = tokensOf.find(t => DIRECTIONS.has(t))
   return { name, duration: timeToken ? resolve(timeToken, 'time') : null, iterations, direction }

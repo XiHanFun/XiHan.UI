@@ -309,9 +309,9 @@ function scanSkin(css, parts, actionParts) {
 
         // 随文标记档的两项旁证：尺寸基准取指示符档、圆角取内嵌档
         if (BOX_PROPS.has(decl.prop) && decl.value.includes(INLINE_MARK_SIZE))
-          mark.set(part, { ...(mark.get(part) ?? {}), size: true })
+          mark.set(part, { ...mark.get(part), size: true })
         if (decl.prop === 'border-radius' && decl.value.includes(INLINE_MARK_RADIUS))
-          mark.set(part, { ...(mark.get(part) ?? {}), radius: true })
+          mark.set(part, { ...mark.get(part), radius: true })
       }
     }
   }

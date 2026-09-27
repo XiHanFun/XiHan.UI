@@ -26,7 +26,7 @@ export function createServiceConfig(initial?: XhConfigSource): ServiceConfigSour
     read: () => (typeof source === 'function' ? source() : source) ?? {},
     set: (next) => {
       source = next
-      for (const fn of [...subs]) fn()
+      for (const fn of subs) fn()
     },
     subscribe: (fn) => {
       subs.add(fn)

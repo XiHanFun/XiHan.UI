@@ -27,7 +27,7 @@ class FakeResizeObserver {
 }
 
 function triggerResize(): void {
-  for (const cb of [...roCallbacks]) cb()
+  for (const cb of roCallbacks) cb()
 }
 
 function nextFrame(): Promise<void> {

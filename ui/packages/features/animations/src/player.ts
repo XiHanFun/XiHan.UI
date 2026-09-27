@@ -77,7 +77,7 @@ export function createMotionPlayer(options: MotionPlayerOptions = {}): MotionPla
       running.delete(target)
       return
     }
-    for (const handle of [...running.values()]) handle.cancel()
+    for (const handle of running.values()) handle.cancel()
     running.clear()
   }
 

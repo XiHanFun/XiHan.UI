@@ -161,7 +161,7 @@ function cancelBranchLoad(params: TreeSelectActionParams, value: string): void {
 }
 
 function cancelBranchLoads(params: TreeSelectActionParams, except: ReadonlySet<string> = new Set()): void {
-  for (const value of [...params.refs.get('branchLoadControllers').keys()]) {
+  for (const value of params.refs.get('branchLoadControllers').keys()) {
     if (!except.has(value))
       cancelBranchLoad(params, value)
   }
@@ -377,7 +377,7 @@ export const treeSelectMachine = createMachine({
         )
         const live = lazyBranches(source, children)
         const controllers = refs.get('branchLoadControllers')
-        for (const [value, entry] of [...controllers]) {
+        for (const [value, entry] of controllers) {
           if (live.get(value) !== entry.node) {
             entry.controller.abort()
             controllers.delete(value)
@@ -389,7 +389,7 @@ export const treeSelectMachine = createMachine({
           context.set('branchLoads', loads)
         if (Object.keys(children).length !== Object.keys(currentChildren).length)
           context.set('loadedChildren', children)
-        for (const [value] of [...owners]) {
+        for (const value of owners.keys()) {
           if (!keep(value))
             owners.delete(value)
         }

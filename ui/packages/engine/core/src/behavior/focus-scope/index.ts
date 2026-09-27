@@ -538,7 +538,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable & { reactivat
     resourcesReleased = true
     documentScopes.ownershipListeners.delete(schedulePendingRecovery)
     documentScopes.live.delete(mountSeq)
-    for (const listener of [...documentScopes.ownershipListeners]) listener()
+    for (const listener of documentScopes.ownershipListeners) listener()
     mutationObserver?.disconnect()
     mutationObserver = null
     trackedFocusPath.clear()

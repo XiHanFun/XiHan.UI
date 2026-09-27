@@ -111,7 +111,7 @@ export function createSpreader(): Spreader {
       if (!nextAttrs.has(key))
         removeAttr(node, key)
     }
-    for (const [ev, fn] of [...s.listeners]) {
+    for (const [ev, fn] of s.listeners) {
       if (!nextEvents.has(ev)) {
         node.removeEventListener(ev, fn)
         s.listeners.delete(ev)

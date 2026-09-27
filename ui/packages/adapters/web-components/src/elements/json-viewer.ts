@@ -305,7 +305,7 @@ export class XhJsonViewerElement extends XhElement {
     const alive = new Set<string>()
     this.paint(tree, children.get(null) ?? [], children, api, alive)
     // 收起或换了数据之后不再出现的行，缓存里也不留
-    for (const key of [...this.rows.keys()]) {
+    for (const key of this.rows.keys()) {
       if (!alive.has(key))
         this.rows.delete(key)
     }
@@ -329,7 +329,8 @@ export class XhJsonViewerElement extends XhElement {
    */
   private adopt(root: HTMLElement, keep: HTMLElement, drop: HTMLElement | undefined): void {
     drop?.remove()
-    for (const child of [...root.children]) {
+    // children 是活集合，边删边走会跳项；:scope > * 取的是静态列表
+    for (const child of root.querySelectorAll(':scope > *')) {
       if (child !== keep && child !== this.emptyEl)
         child.remove()
     }

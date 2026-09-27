@@ -137,7 +137,7 @@ function withYearTriggers(base: FixtureNode): FixtureNode {
  */
 function selection(...values: readonly string[]): Record<string, Record<string, string | null>> {
   const out: Record<string, Record<string, string | null>> = {}
-  for (const day of [...new Set([...values, '2024-02-15', '2024-02-16', '2024-02-18'])]) {
+  for (const day of new Set([...values, '2024-02-15', '2024-02-16', '2024-02-18'])) {
     const selected = values.includes(day)
     out[`cell[${at(day)}]`] = {
       'aria-selected': selected ? 'true' : 'false',
