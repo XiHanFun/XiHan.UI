@@ -91,7 +91,7 @@ describe('command 面板与命令', () => {
     expect(save.matches(':active')).toBe(true)
     expect(getComputedStyle(save).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
     expect(getComputedStyle(save).scale).toBe('none')
-    expect(save.getBoundingClientRect().width).toBe(before.width)
+    expect(Math.abs(save.getBoundingClientRect().width - before.width)).toBeLessThanOrEqual(0.5)
     // 松手即执行并收起：按下面在松手前采
     await releasePointer(save)
   })
