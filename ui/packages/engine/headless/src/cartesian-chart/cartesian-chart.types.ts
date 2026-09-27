@@ -129,7 +129,19 @@ export interface CartesianScatterSeries extends CartesianSeriesBase {
   color?: string
 }
 
-export type CartesianSeries = CartesianBarSeries | CartesianLineSeries | CartesianScatterSeries
+/** K 线系列：每个键一根，开高低收四个字段；收盘不低于开盘为涨、低于开盘为跌，取涨跌色。 */
+export interface CartesianCandlestickSeries extends CartesianSeriesBase {
+  mark: 'candlestick'
+  x: string
+  open: string
+  high: string
+  low: string
+  close: string
+  /** candle 蜡烛（实体加影线，缺省），ohlc 美国线（竖线加左开右收两道短横）。 */
+  style?: 'candle' | 'ohlc'
+}
+
+export type CartesianSeries = CartesianBarSeries | CartesianLineSeries | CartesianScatterSeries | CartesianCandlestickSeries
 
 /**
  * 注释：画在数据之外、帮读者读数的参照。axis 是 x（自变量轴）或 y（数值轴），与屏幕方向无关；
@@ -211,7 +223,7 @@ export interface CartesianLegendItem {
   readonly name: string
   readonly slot: number | null
   readonly tone: Tone | null
-  readonly mark: 'bar' | 'line' | 'scatter'
+  readonly mark: 'bar' | 'line' | 'scatter' | 'candlestick'
   /** 有面积的折线：图例色标画成方块。 */
   readonly area: boolean
   /** 散点的形状：色标画成同一个形状；其余系列为 null。 */
@@ -235,7 +247,7 @@ export interface CartesianTooltipRow {
   readonly value: string
   readonly slot: number | null
   readonly tone: Tone | null
-  readonly mark: 'bar' | 'line' | 'scatter'
+  readonly mark: 'bar' | 'line' | 'scatter' | 'candlestick'
   readonly area: boolean
   readonly symbol: SymbolName | null
   /** 按值着色的数据在色阶上的位置 0–1：色标画成它自己的颜色；其余为 null。 */
@@ -263,6 +275,10 @@ export interface CartesianChartTranslations extends ChartTranslations {
   referenceLabel: string
   /** 平均线的名字：缺省标签写「名字 均值」，摘要里写「名字（系列）：均值」。 */
   averageLabel: string
+  /** K 线的开高低收在提示框、可及名与数据表里的写法（值已按数值轴的格式写好）。 */
+  ohlcLabel: (values: { open: string, high: string, low: string, close: string }) => string
+  /** K 线数据表四列的列名。 */
+  ohlcColumns: { open: string, high: string, low: string, close: string }
   /** 摘要末尾写注释的模板：参考线、参考带与平均线逐条写出名字与值。 */
   annotationSummary: (items: readonly CartesianAnnotationSummary[]) => string
   /** 摘要模板。 */

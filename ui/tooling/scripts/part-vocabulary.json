@@ -144,6 +144,9 @@
       "editable",
       "popconfirm"
     ],
+    "candle": [
+      "cartesian-chart"
+    ],
     "canvas": [
       "progress"
     ],
@@ -1730,6 +1733,9 @@
       "calendar-picker",
       "calendar-range-picker"
     ],
+    "wick": [
+      "cartesian-chart"
+    ],
     "window-state-trigger": [
       "floating-panel"
     ],
@@ -1764,6 +1770,7 @@
       "pendingUsers": []
     },
     "calendar": true,
+    "candle": true,
     "canvas": true,
     "caption": true,
     "cell": true,
@@ -1885,7 +1892,8 @@
     "trigger": true,
     "truncation": true,
     "value": true,
-    "viewport": true
+    "viewport": true,
+    "wick": true
   },
   "retired": {
     "area": "→ control（editable）/ saturation-area（color-picker）/ display（timer）",

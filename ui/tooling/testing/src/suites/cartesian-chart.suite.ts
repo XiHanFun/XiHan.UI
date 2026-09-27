@@ -337,6 +337,31 @@ const cases: readonly ConformanceCase[] = [
     },
   },
   {
+    name: 'K 线：实体是可聚焦的 graphics-symbol，可及名写出四个价；影线只给眼睛看',
+    spec: { apg: GRAPHICS },
+    props: {
+      data: [
+        { day: 'a', o: 10, h: 12, l: 9, c: 11 },
+        { day: 'b', o: 11, h: 11, l: 8, c: 9 },
+      ],
+      series: [{ mark: 'candlestick', x: 'day', open: 'o', high: 'h', low: 'l', close: 'c', name: '价' }],
+    },
+    initial: {
+      counts: { candle: 2, wick: 2 },
+      parts: {
+        candle: [
+          { 'role': 'graphics-symbol', 'data-trend': 'rise', 'data-style': 'candle', 'tabindex': '0', 'aria-label': 'a, 价 Open 10, High 12, Low 9, Close 11' },
+          { 'data-trend': 'fall', 'tabindex': '-1' },
+        ],
+        wick: [{ 'aria-hidden': 'true', 'data-trend': 'rise' }, { 'aria-hidden': 'true', 'data-trend': 'fall' }],
+      },
+    },
+    steps: [
+      { kind: 'focus', part: 'candle[0]', via: 'keyboard' },
+      { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'candle[1]', exact: true } } },
+    ],
+  },
+  {
     name: '没有数据：空态显示，绘图区没有数据标记',
     spec: { adr: 'chart-empty' },
     props: { data: [] },

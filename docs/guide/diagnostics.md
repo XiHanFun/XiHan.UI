@@ -56,6 +56,7 @@ export const DIAGNOSTIC_CODES = {
   chartInvalidRange: "chart.invalid-range", // 区间不合法：两端不是有限数，或下界大于上界
   chartMeterOnly: "chart.meter-only", // Progress 在非 meter 语义下用了分段、目标、量程刻度或指示方式
   chartAnnotationTarget: "chart.annotation-target", // 图表注释指向的系列不存在，或指向的类目不在轴上：这条注释不画
+  chartOhlcRange: "chart.ohlc-range", // K 线的开高低收对不上：最低价高于开盘或收盘，或最高价低于开盘或收盘
 };
 ```
 

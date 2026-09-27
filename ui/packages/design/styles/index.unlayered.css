@@ -17987,6 +17987,31 @@
   fill: var(--xh-chart-fall);
 }
 
+/* K 线：涨取涨色、跌取跌色（缺省绿涨红跌，主题可以翻过来）；实体是方角，影线与美国线是细线 */
+[data-scope='cartesian-chart'][data-trend='rise'] {
+  --xh-_chart-trend: var(--xh-chart-rise);
+}
+
+[data-scope='cartesian-chart'][data-trend='fall'] {
+  --xh-_chart-trend: var(--xh-chart-fall);
+}
+
+[data-scope='cartesian-chart'][data-part='candle'] {
+  fill: var(--xh-_chart-trend, var(--xh-_chart-series));
+  stroke: none;
+}
+
+[data-scope='cartesian-chart'][data-part='candle'][data-style='ohlc'],
+[data-scope='cartesian-chart'][data-part='wick'] {
+  fill: none;
+  stroke: var(--xh-_chart-trend, var(--xh-_chart-series));
+  stroke-width: var(--xh-stroke-thin);
+}
+
+[data-scope='cartesian-chart'][data-part='candle'][data-style='ohlc'] {
+  stroke-width: var(--xh-_chart-metric-line-width);
+}
+
 /* 瀑布的连接线：上一步的终点连到下一步的起点，结构色的细线 */
 [data-scope='cartesian-chart'][data-part='connector'] {
   fill: none;
@@ -18175,8 +18200,21 @@
     stroke-width: var(--xh-stroke-thin);
   }
 
-  [data-scope='cartesian-chart'][data-part='connector'] {
+  [data-scope='cartesian-chart'][data-part='connector'],
+  [data-scope='cartesian-chart'][data-part='wick'],
+  [data-scope='cartesian-chart'][data-part='candle'][data-style='ohlc'] {
     stroke: CanvasText;
+  }
+
+  /* 系统色下涨跌分不开：涨空心、跌实心 */
+  [data-scope='cartesian-chart'][data-part='candle'][data-trend='rise'] {
+    fill: Canvas;
+    stroke: CanvasText;
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='cartesian-chart'][data-part='candle'][data-trend='fall'] {
+    fill: CanvasText;
   }
 
   [data-scope='cartesian-chart'][data-part='line'] {

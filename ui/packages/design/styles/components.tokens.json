@@ -7819,6 +7819,7 @@
       "component": "cartesian-chart",
       "part": [
         "annotation",
+        "candle",
         "legend-swatch",
         "line",
         "root",
@@ -7839,6 +7840,7 @@
         "mark=line",
         "method=moving-average",
         "not([data-drawing])",
+        "style=ohlc",
         "where([data-xh-chart-patterns])",
         "xh-chart-pattern",
         "xh-chart-pattern=2",
@@ -7854,7 +7856,7 @@
         "--xh-chart-line-width"
       ],
       "visibility": "public",
-      "description": "cartesian-chart 的 annotation、legend-swatch、line、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。"
+      "description": "cartesian-chart 的 annotation、candle、legend-swatch、line、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。"
     },
     {
       "name": "--xh-cartesian-chart-point-size",
@@ -7895,13 +7897,15 @@
         "annotation",
         "area-fill",
         "bar",
+        "candle",
         "dot",
         "legend-item",
         "legend-swatch",
         "line",
         "pattern-line",
         "point",
-        "tooltip-swatch"
+        "tooltip-swatch",
+        "wick"
       ],
       "property": [
         "background",
@@ -7918,6 +7922,7 @@
         "mark=line",
         "mark=point",
         "not([data-symbol='circle'], [data-symbol='square'])",
+        "style=ohlc",
         "symbol=circle",
         "symbol=square",
         "tone",
@@ -7953,7 +7958,7 @@
         "--xh-chart-categorical-8"
       ],
       "visibility": "public",
-      "description": "cartesian-chart 的 annotation、area-fill、bar、dot、legend-item、legend-swatch、line、pattern-line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。"
+      "description": "cartesian-chart 的 annotation、area-fill、bar、candle、dot、legend-item、legend-swatch、line、pattern-line、point、tooltip-swatch、wick 部件 background、border、fill、stroke 覆盖槽。"
     },
     {
       "name": "--xh-cartesian-chart-tooltip-gap",

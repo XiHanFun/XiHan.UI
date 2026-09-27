@@ -5463,6 +5463,7 @@
       "CartesianAxis",
       "CartesianAxisFormat",
       "CartesianBarSeries",
+      "CartesianCandlestickSeries",
       "CartesianChartApi",
       "CartesianChartSchema",
       "CartesianChartTranslations",
@@ -9005,6 +9006,7 @@
       "axis-line",
       "axis-title",
       "bar",
+      "candle",
       "caption",
       "connector",
       "crosshair",
@@ -9043,7 +9045,8 @@
       "tooltip-swatch",
       "tooltip-value",
       "total-label",
-      "viewport"
+      "viewport",
+      "wick"
     ],
     "cascader": [
       "clear-trigger",
