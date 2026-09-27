@@ -52,6 +52,7 @@ export { XhBadge, XhBadgeIndicator, XhBadgeRoot } from './components/badge/badge
 export { XhBarCode } from './components/bar-code/bar-code'
 export {
   XhBreadcrumbEllipsis,
+  XhBreadcrumbEllipsisTrigger,
   XhBreadcrumbItem,
   XhBreadcrumbLink,
   XhBreadcrumbLinkIcon,

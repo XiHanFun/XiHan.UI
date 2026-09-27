@@ -20,13 +20,13 @@
 
 加粗的是必需部件。
 
-`data-scope="breadcrumb"`：**`root`** · **`list`** · **`item`** · **`link`** · `link-icon` · `separator` · `ellipsis`
+`data-scope="breadcrumb"`：**`root`** · **`list`** · **`item`** · **`link`** · `link-icon` · `separator` · `ellipsis` · `ellipsis-trigger`
 
 ## 示例
 
 ### 折叠层级
 
-收起过长路径的中间部分
+收起过长路径的中间部分，按下省略位展开完整路径
 
 <XhDemo src="breadcrumb/02-ellipsis" />
 
@@ -57,13 +57,15 @@
 ### 特性
 
 - `collection` 可直接生成完整路径，也支持手写部件。
-- `maxItems` 将过长路径的中间层折叠为省略号。
+- `maxItems` 将过长路径的中间层折叠为一个省略位。省略位里的 `ellipsis-trigger` 是被折叠层级的入口：它是一枚按钮，键盘可达、读屏念出 `translations.ellipsis`（缺省 Show full path），按下即就地展开完整路径，省略位收起，焦点落到第一条展开出来的链接上；展开后不再折回。
+- Vue / React 由 `collection` 铺开时自动折叠与展开；Web Components 把完整路径逐层写成部件，在首层之后放一个装着触发器的省略位，元素按 `max-items` 收起中间层，展开后放出来。
 - 默认分隔符为箭头，可通过插槽或渲染函数替换。
 - 当前页使用 `aria-current="page"`，不参与键盘导航。
 
 ### 组合
 
 - 通常放在页头或正文标题之前。
+- `ellipsis` 是路径里的一个列表项，里面放 `ellipsis-trigger`；触发器不写内容时由皮肤画一枚省略号字形，写了内容即换成作者的，可及名始终取 `translations.ellipsis`。被收起的层级与展开后的省略位带 `hidden`，紧跟在它后面的分隔符由皮肤一并收起。
 
 ### 接路由
 
@@ -104,7 +106,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-breadcrumb>` |
-| Vue 组件 | `XhBreadcrumbEllipsis` `XhBreadcrumbItem` `XhBreadcrumbLink` `XhBreadcrumbLinkIcon` `XhBreadcrumbList` `XhBreadcrumbRoot` `XhBreadcrumbSeparator` |
+| Vue 组件 | `XhBreadcrumbEllipsis` `XhBreadcrumbEllipsisTrigger` `XhBreadcrumbItem` `XhBreadcrumbLink` `XhBreadcrumbLinkIcon` `XhBreadcrumbList` `XhBreadcrumbRoot` `XhBreadcrumbSeparator` |
 | 组合式函数 | `useBreadcrumb` |
 | 状态机 | `breadcrumbMachine` |
 | 皮肤 | `@xihan-ui/styles/breadcrumb.css` |
@@ -114,7 +116,7 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `readonly BreadcrumbNode[]` |  | 层级数据，文字、链接与当前页的事实源。 未提供时回到层级逐个写成部件的方式。 |
-| `maxItems` | `number` |  | 最多展开的层数，超出的中间层折叠为一个省略位；未提供时全部列出。 |
+| `maxItems` | `number` |  | 最多展开的层数，超出的中间层折叠为一个省略位；未提供时全部列出。 省略位里的触发器按下即展开完整路径，焦点落到第一条展开出来的链接上。 |
 | `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
 | `translations` | `Partial<BreadcrumbTranslations>` |  |  |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
@@ -149,7 +151,7 @@
 
 **状态**：`idle`
 
-**事件**：`PRESS.START` · `PRESS.END`
+**事件**：`PRESS.START` · `PRESS.END` · `EXPAND`
 
 **判据**：`canPress`
 
@@ -160,14 +162,18 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `collection` | `readonly BreadcrumbNodeMeta[]` | 由 collection 推导的层级元信息，按数据顺序排列；未提供 collection 时为空数组。 |
-| `items` | `readonly BreadcrumbItem[]` | 按 maxItems 折叠后的序列，省略位自带被折叠的层级；未提供 collection 时为空数组。 |
+| `items` | `readonly BreadcrumbItem[]` | 按 maxItems 折叠后的序列，省略位自带被折叠的层级；展开后即完整路径；未提供 collection 时为空数组。 |
+| `expanded` | `boolean` | 省略位已被展开。 |
+| `expand` | `() => void` | 展开折叠的路径；焦点不动。 |
+| `collapsedRange` | `(count: number) => BreadcrumbCollapsedRange \| null` | 一条 count 层的路径按 maxItems 折掉的那一段；不折或已展开时为 null。 层级由作者逐个写成部件时（Web Components）据它收起被折叠的层级。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |
 | `getLinkProps` | `(props: BreadcrumbLinkProps) => T['element']` |  |
 | `getLinkIconProps` | `() => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
-| `getEllipsisProps` | `() => T['element']` |  |
+| `getEllipsisProps` | `() => T['element']` | 省略位：列表项，展开后 hidden。 |
+| `getEllipsisTriggerProps` | `() => T['button']` | 省略位里的触发器：按下展开完整路径，焦点落到第一条展开出来的链接上。 |
 
 ## 无障碍
 
@@ -179,7 +185,8 @@
 | --- | --- | --- |
 | `Enter` | focus in link, 非当前页 | 跟随链接（原生 &lt;a href&gt; 的激活行为，面包屑自己不监听按键） |
 | `Enter` / `Space` | held in link, 非当前页 | 按住期间该链接投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。跟随链接照旧由这一次按键（原生 &lt;a href&gt;）承担，当前页那条不进 |
-| `Tab` / `Shift+Tab` | focus in root | 逐条走过可点的链接；面包屑不做 roving tabindex，当前页那条带 tabindex=-1 自动脱序 |
+| `Enter` / `Space` | focus in ellipsis-trigger | 展开被折叠的层级（原生 &lt;button&gt; 的激活行为），省略位收起，焦点落到第一条展开出来的链接上 |
+| `Tab` / `Shift+Tab` | focus in root | 逐条走过可点的链接与省略位触发器；面包屑不做 roving tabindex，当前页那条带 tabindex=-1 自动脱序 |
 
 ### ARIA
 
@@ -192,7 +199,7 @@
 | `link` | `aria-disabled` | 'true' \| 'false' |
 | `link-icon` | `aria-hidden` | 'true' |
 | `separator` | `aria-hidden` | 'true' |
-| `ellipsis` | `aria-hidden` | 'true' |
+| `ellipsis-trigger` | `aria-label` | props.translations.ellipsis |
 
 ## 样式参考
 
@@ -214,6 +221,9 @@
 | `link` | `data-xh-collection-item` | '' |
 | `link` | `data-xh-collection-size` | props.size |
 | `link` | `data-xh-collection-terminal` | ''（条件成立时才出现） |
+| `ellipsis-trigger` | `data-xh-collection-context` | 'nav' |
+| `ellipsis-trigger` | `data-xh-collection-item` | '' |
+| `ellipsis-trigger` | `data-xh-collection-size` | props.size |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -222,12 +232,12 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-breadcrumb-ellipsis-size` | `ellipsis` | `inline-size` | `default` | `--xh-space-5` | breadcrumb 的 ellipsis 部件 inline-size 覆盖槽。 |
-| `--xh-breadcrumb-fg` | `link`<br>`root` | `color` | `default`<br>`xh-collection-context=nav` | `--xh-fg-muted` | breadcrumb 的 link、root 部件 color 覆盖槽。 |
-| `--xh-breadcrumb-font-size` | `link`<br>`root` | `font-size` | `default` | `--xh-_breadcrumb-font-size` | breadcrumb 的 link、root 部件 font-size 覆盖槽。 |
+| `--xh-breadcrumb-ellipsis-size` | `ellipsis` | `min-inline-size` | `default` | `--xh-space-5` | breadcrumb 的 ellipsis 部件 min-inline-size 覆盖槽。 |
+| `--xh-breadcrumb-fg` | `ellipsis-trigger`<br>`link`<br>`root` | `color` | `default`<br>`xh-collection-context=nav` | `--xh-fg-muted` | breadcrumb 的 ellipsis-trigger、link、root 部件 color 覆盖槽。 |
+| `--xh-breadcrumb-font-size` | `ellipsis-trigger`<br>`link`<br>`root` | `font-size` | `default` | `--xh-_breadcrumb-font-size` | breadcrumb 的 ellipsis-trigger、link、root 部件 font-size 覆盖槽。 |
 | `--xh-breadcrumb-gap` | `list` | `gap` | `default` | `--xh-_breadcrumb-gap` | breadcrumb 的 list 部件 gap 覆盖槽。 |
-| `--xh-breadcrumb-icon-size` | `link`<br>`root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | breadcrumb 的 link、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-breadcrumb-leading` | `link`<br>`root` | `line-height` | `default` | `--xh-leading-tight` | breadcrumb 的 link、root 部件 line-height 覆盖槽。 |
+| `--xh-breadcrumb-icon-size` | `ellipsis-trigger`<br>`link`<br>`root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | breadcrumb 的 ellipsis-trigger、link、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-breadcrumb-leading` | `ellipsis-trigger`<br>`link`<br>`root` | `line-height` | `default` | `--xh-leading-tight` | breadcrumb 的 ellipsis-trigger、link、root 部件 line-height 覆盖槽。 |
 | `--xh-breadcrumb-link-bg-hover` | `link` | `background-color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-bg-subtle` | breadcrumb 的 link 部件 background-color 覆盖槽。 |
 | `--xh-breadcrumb-link-bg-pressed` | `link` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=nav` | `--xh-bg-subtle-hover` | breadcrumb 的 link 部件 background-color 覆盖槽。 |
 | `--xh-breadcrumb-link-fg-current` | `link` | `color` | `current`<br>`xh-collection-context=nav`<br>`xh-collection-terminal` | `--xh-_breadcrumb-accent-text` | breadcrumb 的 link 部件 color 覆盖槽。 |

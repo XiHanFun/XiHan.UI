@@ -155,6 +155,7 @@ export { XhBarCode } from './components/bar-code/bar-code'
 export type { XhBarCodeProps } from './components/bar-code/bar-code'
 export {
   XhBreadcrumbEllipsis,
+  XhBreadcrumbEllipsisTrigger,
   XhBreadcrumbItem,
   XhBreadcrumbLink,
   XhBreadcrumbLinkIcon,
@@ -164,6 +165,7 @@ export {
 } from './components/breadcrumb/breadcrumb'
 export type {
   XhBreadcrumbEllipsisProps,
+  XhBreadcrumbEllipsisTriggerProps,
   XhBreadcrumbItemProps,
   XhBreadcrumbLinkIconProps,
   XhBreadcrumbLinkProps,

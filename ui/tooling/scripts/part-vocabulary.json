@@ -441,6 +441,7 @@
       "breadcrumb"
     ],
     "ellipsis-trigger": [
+      "breadcrumb",
       "pagination"
     ],
     "empty": [
