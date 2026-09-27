@@ -53,7 +53,7 @@ describe('connectReasoning 投影', () => {
       'data-xh-action-profile': 'disclosure-trigger',
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'sm',
+      'data-xh-action-size': 'md',
     })
     expect((r.api({ size: 'lg' }).getTriggerProps() as Record<string, unknown>)['data-xh-action-size']).toBe('lg')
     expect(trigger['aria-label']).toBeUndefined()
@@ -84,10 +84,10 @@ describe('connectReasoning 投影', () => {
     r.stop()
   })
 
-  it('variant 不写时根落 subtle；写 outline 如实落', () => {
+  it('variant 不写时根落 outline；写 subtle 如实落', () => {
     const r = makeReasoning()
-    expect(r.api().getRootProps()).toMatchObject({ 'data-variant': 'subtle' })
-    expect(r.api({ variant: 'outline' }).getRootProps()).toMatchObject({ 'data-variant': 'outline' })
+    expect(r.api().getRootProps()).toMatchObject({ 'data-variant': 'outline' })
+    expect(r.api({ variant: 'subtle' }).getRootProps()).toMatchObject({ 'data-variant': 'subtle' })
     r.stop()
   })
 

@@ -55643,7 +55643,8 @@
       ],
       "state": [
         "default",
-        "variant=outline"
+        "variant=outline",
+        "variant=subtle"
       ],
       "defaultToken": [
         "--xh-bg-subtle",
@@ -55662,6 +55663,7 @@
         "border"
       ],
       "state": [
+        "default",
         "variant=outline"
       ],
       "defaultToken": [

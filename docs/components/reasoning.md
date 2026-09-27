@@ -60,7 +60,7 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 - 思考时长由两个时刻计算，任一缺席即无法计算：流被中止时兜底收尾不写结束时刻，推理块只有起点没有终点，这一情况必须被处理。
 - 名称与时长都排在开关内，“思考过程，用时 12 秒”整句构成开关的可访问名称。
 - 状态文案由组件提供：进行中显示“在想”的文案，完成后把秒数代入 `thoughtFor` 的 `{seconds}`，无法计算时长时回落到折叠区的名称。名称位不写内容时显示的就是它。
-- 形态三档：`outline` 描边、`subtle` 底色分区（默认档）、`ghost` 无壳内联。一段回答中穿插多处思考时使用 `ghost`，它不占一块面，开关收为只占文字宽度的小圆角块。
+- 形态三档：`outline` 描边（默认档）、`subtle` 底色分区、`ghost` 无壳内联。一段回答中穿插多处思考时使用 `ghost`，它不占一块面，开关收为只占文字宽度的小圆角块。
 - 开合有动画：展开与收起是行高与内缩同帧动画，收起在动画完成后才真正隐藏。
 
 ### 组合
@@ -101,7 +101,7 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 | `streaming` | `boolean` |  | 仍在思考。适配器把它折叠为状态机的 running。 |
 | `tone` | `Tone` |  |  |
 | `translations` | `Partial<ReasoningTranslations>` |  |  |
-| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 subtle。 |
+| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 |
 
 ### 事件
 
@@ -237,8 +237,8 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-reasoning-bg` | `root` | `background` | `default`<br>`variant=outline` | `--xh-bg-subtle`<br>`--xh-bg-surface` | reasoning 的 root 部件 background 覆盖槽。 |
-| `--xh-reasoning-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | reasoning 的 root 部件 border 覆盖槽。 |
+| `--xh-reasoning-bg` | `root` | `background` | `default`<br>`variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | reasoning 的 root 部件 background 覆盖槽。 |
+| `--xh-reasoning-border` | `root` | `border` | `default`<br>`variant=outline` | `--xh-border-default` | reasoning 的 root 部件 border 覆盖槽。 |
 | `--xh-reasoning-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | reasoning 的 content 部件 color 覆盖槽。 |
 | `--xh-reasoning-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | reasoning 的 content 部件 font-size 覆盖槽。 |
 | `--xh-reasoning-content-leading` | `content` | `line-height` | `default` | `--xh-text-prose-leading` | reasoning 的 content 部件 line-height 覆盖槽。 |

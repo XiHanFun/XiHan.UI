@@ -10903,15 +10903,14 @@
   --xh-reasoning-skin: 1;
 }
 
-/* 一张淡底面：--xh-bg-subtle 底 + 透明边位 + 无影（subtle 无影），描边留给 outline 档打开。
-   缺省淡底承载开关：向它下发 hover 200 → pressed 300 的阶梯，白底档在形态规则里改回 100 → 200 */
+/* 一张描边面：--xh-border-default 描边 + surface 底 + 无影（静态内容面），与同族的 ToolCall 等一致。
+   白底承载开关：向它下发 hover 100 → pressed 200 的阶梯，淡底档在形态规则里改成 200 → 300 */
 [data-scope='reasoning'][data-part='root'] {
-  --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
-  --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+  --xh-action-host-bg-hover: var(--xh-bg-subtle);
+  --xh-action-host-bg-pressed: var(--xh-bg-subtle-hover);
 
-  /* 作者塞进两个图形位的图标与皮肤画的兜底字形同一把尺：按档取，与开关的家族档同步——
-     不写 data-size 时字号是 sm 档，字形随之取 sm */
-  --xh-_reasoning-icon-size: var(--xh-glyph-size-sm);
+  /* 作者塞进两个图形位的图标与皮肤画的兜底字形同一把尺：按档取，与开关的家族档同步 */
+  --xh-_reasoning-icon-size: var(--xh-glyph-size-md);
   --xh-icon-size: var(--xh-reasoning-icon-size, var(--xh-_reasoning-icon-size));
 
   /* 影另落一份进私有槽给语气档：它要把影与左侧色条叠成一条 box-shadow，缺省无影写成零影占位 */
@@ -10919,15 +10918,15 @@
 
   /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
      公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
-  --xh-_reasoning-px: var(--xh-space-3);
-  --xh-_reasoning-py: var(--xh-space-2);
-  --xh-_reasoning-font-size: var(--xh-control-font-sm);
+  --xh-_reasoning-px: var(--xh-space-4);
+  --xh-_reasoning-py: var(--xh-space-4);
+  --xh-_reasoning-font-size: var(--xh-control-font-md);
 
   display: block;
   overflow: hidden;
-  border: var(--xh-stroke-thin) solid transparent;
+  border: var(--xh-stroke-thin) solid var(--xh-reasoning-border, var(--xh-border-default));
   border-radius: var(--xh-reasoning-radius, var(--xh-shape-surface));
-  background: var(--xh-reasoning-bg, var(--xh-bg-subtle));
+  background: var(--xh-reasoning-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-reasoning-shadow, none);
 }
 
@@ -10937,15 +10936,14 @@
 }
 
 /* —— 形态 —— */
-/* 缺省档即 subtle，写在上面那条基础规则里 */
-/* 描边分区：--xh-border-default 描边 + surface 底（静态内容面）；
-   白底承载面把开关的阶梯改回 hover 100 → pressed 200 */
-[data-scope='reasoning'][data-part='root'][data-variant='outline'] {
-  --xh-action-host-bg-hover: var(--xh-bg-subtle);
-  --xh-action-host-bg-pressed: var(--xh-bg-subtle-hover);
+/* 缺省档即 outline，写在上面那条基础规则里 */
+/* 底色分区：--xh-bg-subtle 底 + 透明边位 + 无影；淡底承载面向开关下发 hover 200 → pressed 300 */
+[data-scope='reasoning'][data-part='root'][data-variant='subtle'] {
+  --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
 
-  border: var(--xh-stroke-thin) solid var(--xh-reasoning-border, var(--xh-border-default));
-  background: var(--xh-reasoning-bg, var(--xh-bg-surface));
+  border-color: transparent;
+  background: var(--xh-reasoning-bg, var(--xh-bg-subtle));
 }
 
 /* 无壳内联：思考过程贴着正文走，不占一块面；开关落在正文的白底上，阶梯同 outline 档 */
@@ -11150,22 +11148,22 @@
 /* 尺寸档改内衬、字号与图标档 */
 [data-scope='reasoning'][data-part='root'][data-size='sm'] {
   --xh-_reasoning-icon-size: var(--xh-glyph-size-sm);
-  --xh-_reasoning-px: var(--xh-space-2);
-  --xh-_reasoning-py: var(--xh-space-1);
+  --xh-_reasoning-px: var(--xh-space-3);
+  --xh-_reasoning-py: var(--xh-space-3);
   --xh-_reasoning-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='reasoning'][data-part='root'][data-size='md'] {
   --xh-_reasoning-icon-size: var(--xh-glyph-size-md);
-  --xh-_reasoning-px: var(--xh-space-3);
-  --xh-_reasoning-py: var(--xh-space-2);
+  --xh-_reasoning-px: var(--xh-space-4);
+  --xh-_reasoning-py: var(--xh-space-4);
   --xh-_reasoning-font-size: var(--xh-control-font-md);
 }
 
 [data-scope='reasoning'][data-part='root'][data-size='lg'] {
   --xh-_reasoning-icon-size: var(--xh-glyph-size-lg);
-  --xh-_reasoning-px: var(--xh-space-4);
-  --xh-_reasoning-py: var(--xh-space-3);
+  --xh-_reasoning-px: var(--xh-space-5);
+  --xh-_reasoning-py: var(--xh-space-5);
   --xh-_reasoning-font-size: var(--xh-control-font-lg);
 }
 
@@ -41987,8 +41985,8 @@
 [data-scope='tool-call'][data-part='root'] {
   /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
      公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
-  --xh-_tool-call-px: var(--xh-space-3);
-  --xh-_tool-call-py: var(--xh-space-2);
+  --xh-_tool-call-px: var(--xh-space-4);
+  --xh-_tool-call-py: var(--xh-space-4);
   --xh-_tool-call-font-size: var(--xh-control-font-md);
 
   /* 影另落一份进私有槽给语气档：它要把影与左侧色条叠成一条 box-shadow，缺省无影写成零影占位 */
@@ -42314,20 +42312,20 @@
 
 /* 尺寸档只改内衬与字号 */
 [data-scope='tool-call'][data-part='root'][data-size='sm'] {
-  --xh-_tool-call-px: var(--xh-space-2);
-  --xh-_tool-call-py: var(--xh-space-1);
+  --xh-_tool-call-px: var(--xh-space-3);
+  --xh-_tool-call-py: var(--xh-space-3);
   --xh-_tool-call-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='tool-call'][data-part='root'][data-size='md'] {
-  --xh-_tool-call-px: var(--xh-space-3);
-  --xh-_tool-call-py: var(--xh-space-2);
+  --xh-_tool-call-px: var(--xh-space-4);
+  --xh-_tool-call-py: var(--xh-space-4);
   --xh-_tool-call-font-size: var(--xh-control-font-md);
 }
 
 [data-scope='tool-call'][data-part='root'][data-size='lg'] {
-  --xh-_tool-call-px: var(--xh-space-4);
-  --xh-_tool-call-py: var(--xh-space-3);
+  --xh-_tool-call-px: var(--xh-space-5);
+  --xh-_tool-call-py: var(--xh-space-5);
   --xh-_tool-call-font-size: var(--xh-control-font-lg);
 }
 

@@ -40,7 +40,7 @@ export const reasoningSuite: ConformanceSuite = {
             'data-xh-action-profile': 'disclosure-trigger',
             'data-xh-action-variant': 'ghost',
             'data-xh-action-display': 'always',
-            'data-xh-action-size': 'sm',
+            'data-xh-action-size': 'md',
           },
           content: { role: 'region', hidden: '', inert: '' },
           indicator: { 'aria-hidden': 'true' },

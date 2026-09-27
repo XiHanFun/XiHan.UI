@@ -15,7 +15,7 @@ export interface ReasoningProps {
   startTime?: number
   /** 思考结束的时刻。可能缺席：流被中止时兜底收尾不写该字段。 */
   endTime?: number
-  /** 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 subtle。 */
+  /** 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 */
   variant?: ControlVariant
   tone?: Tone
   size?: Size
