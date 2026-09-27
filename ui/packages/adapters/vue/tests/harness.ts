@@ -22,6 +22,7 @@ const PUBLIC_EVENTS = {
   'answers-change': 'onAnswersChange',
   'expanded-value-change': 'onExpandedValueChange',
   'index-change': 'onIndexChange',
+  'input-value-change': 'onInputValueChange',
   'notes-change': 'onNotesChange',
   'paused-change': 'onPausedChange',
   'item-delete': 'onItemDelete',

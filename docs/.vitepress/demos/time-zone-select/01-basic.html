@@ -1,0 +1,23 @@
+<!-- 基础用法 | 按地区、城市或 UTC 偏移检索 IANA 时区 -->
+<xh-time-zone-select id="tz-basic" value="Asia/Shanghai">
+  <div data-xh-part="root">
+    <xh-combobox>
+      <div data-xh-part="root">
+        <label data-xh-part="label"></label>
+        <div data-xh-part="control"><input data-xh-part="input"><button data-xh-part="clear-trigger"></button><button data-xh-part="trigger"></button></div>
+        <div data-xh-part="positioner"><div id="tz-basic-content" data-xh-part="content"></div><div data-xh-part="empty"></div></div>
+        <input data-xh-part="hidden-input">
+      </div>
+    </xh-combobox>
+  </div>
+</xh-time-zone-select>
+<p id="tz-basic-value">当前值：Asia/Shanghai</p>
+<script type="module">
+  const host = document.getElementById("tz-basic");
+  const output = document.getElementById("tz-basic-value");
+  const zones = ["UTC", "Asia/Shanghai", "Asia/Tokyo", "Asia/Kolkata", "Europe/London", "Europe/Paris", "America/New_York", "America/Los_Angeles", "Australia/Sydney"];
+  await customElements.whenDefined("xh-time-zone-select");
+  host.timeZones = zones;
+  await host.updateComplete;
+  host.addEventListener("value-change", (event) => { host.value = event.detail.value; output.textContent = `当前值：${event.detail.value ?? "未选择"}`; });
+</script>

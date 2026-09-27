@@ -409,7 +409,7 @@ font-size: 14px
 line-height: 14px
 font-weight: 400
 color: oklch(0.145 0.005 258)
-background-color: rgba(0, 0, 0, 0)
+background-color: oklab(0.94552 -0.00538907 -0.0253536)
 transition-property: background-color, border-color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)

@@ -41205,6 +41205,25 @@
   }
 }
 
+/* styles/time-zone-select.css */
+/* TimeZoneSelect 是 Combobox 领域组合；本皮肤只定义组合根，交互皮肤由 combobox.css 提供。 */
+
+@layer xihan.components {
+  [data-scope='time-zone-select'] {
+    --xh-time-zone-select-skin: 1;
+  }
+
+  [data-scope='time-zone-select'][data-part='root'] {
+    display: block;
+    min-inline-size: 0;
+    inline-size: 100%;
+  }
+
+  [data-scope='time-zone-select'][data-part='root'][hidden] {
+    display: none;
+  }
+}
+
 /* styles/toast.css */
 /* 定义 toast 样式。 */
 

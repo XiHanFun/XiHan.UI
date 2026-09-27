@@ -49,6 +49,7 @@ const NOT_SINGLE_CONTROL = {
   'segmented': '分组：根是 role=radiogroup',
   'date-field': '分段输入：焦点在各段上，没有单一可聚焦控件',
   'time-field': '同 date-field',
+  'time-zone-select': '组合封装：真控件由内层 Combobox 调 useFieldStateWiring / useFieldLabelWiring 接线',
   'pin-input': '分段输入：每格一个 input',
   'slider': '图形控件：焦点在各个拇指上',
   'color-slider': '图形控件：焦点在拇指上',
