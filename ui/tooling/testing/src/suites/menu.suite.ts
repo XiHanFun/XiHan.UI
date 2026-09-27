@@ -300,6 +300,39 @@ export const menuSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'CheckboxItem 切换受控集合语义，默认保持菜单展开',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/examples/menu-button-actions/' },
+      props: {
+        defaultCheckboxValue: ['copy'],
+        collection: [
+          { value: 'copy', label: '复制', kind: 'checkbox' },
+          { value: 'paste', label: '粘贴' },
+          { value: 'delete', label: '删除' },
+        ],
+      },
+      initial: {
+        parts: {
+          'item[0]': { 'role': 'menuitemcheckbox', 'aria-checked': 'true', 'data-state': 'checked' },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'click',
+          part: 'item[0]',
+          expect: {
+            parts: {
+              'trigger': { 'aria-expanded': 'true' },
+              'content': { 'hidden': null, 'data-state': 'open' },
+              'item[0]': { 'aria-checked': 'false', 'data-state': 'unchecked' },
+            },
+            events: [{ type: 'checkbox-value-change', detail: { value: [] } }],
+          },
+        },
+      ],
+    },
+    {
       name: 'Enter 选中焦点所在条目：与点击同一条出口',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['menu.kbd.select'],

@@ -6,7 +6,7 @@
 // 提供 menu 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { MenuNode, MenuOpenChangeDetails, MenuSchema, MenuSelectDetails, MenuTranslations } from '@xihan-ui/headless'
+import type { MenuAnyItemProps, MenuCheckboxValueChangeDetails, MenuNode, MenuOpenChangeDetails, MenuRadioValue, MenuRadioValueChangeDetails, MenuSchema, MenuSelectDetails, MenuTranslations } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
@@ -46,6 +46,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} disabled - 整张菜单禁用：触发器不再展开，条目全部为 aria-disabled
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
+ * @fires checkbox-value-change - checkbox 选中集合变化；detail 为 `{ value: string[] }`
+ * @fires radio-value-change - RadioGroup 选中映射变化；detail 为 `{ value: Record<string, string> }`
  * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=menu 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
@@ -73,6 +75,10 @@ export class XhMenuElement extends XhPortalHostElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
+    checkboxValue: { attribute: false },
+    defaultCheckboxValue: { attribute: false },
+    radioValue: { attribute: false },
+    defaultRadioValue: { attribute: false },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     placement: { converter: STRING_CONVERTER },
@@ -92,6 +98,10 @@ export class XhMenuElement extends XhPortalHostElement {
   }
 
   declare collection?: MenuNode[]
+  declare checkboxValue?: string[]
+  declare defaultCheckboxValue?: string[]
+  declare radioValue?: MenuRadioValue
+  declare defaultRadioValue?: MenuRadioValue
   declare open?: boolean
   declare defaultOpen?: boolean
   declare placement?: Placement
@@ -107,6 +117,26 @@ export class XhMenuElement extends XhPortalHostElement {
   declare openOnHover?: boolean
   declare hoverOpenDelay?: number
   declare hoverCloseDelay?: number
+
+  /** 当前 checkbox 选中集合；非受控值从状态机读取。 */
+  get currentCheckboxValue(): string[] {
+    return this.ctrl.service ? [...connectMenu(this.ctrl.service, wcNormalize).checkboxValue] : []
+  }
+
+  /** 当前各 RadioGroup 的选中项；非受控值从状态机读取。 */
+  get currentRadioValue(): MenuRadioValue {
+    return this.ctrl.service ? { ...connectMenu(this.ctrl.service, wcNormalize).radioValue } : {}
+  }
+
+  setCheckboxValue(next: string[]): void {
+    if (this.ctrl.service)
+      connectMenu(this.ctrl.service, wcNormalize).setCheckboxValue(next)
+  }
+
+  setRadioValue(next: MenuRadioValue): void {
+    if (this.ctrl.service)
+      connectMenu(this.ctrl.service, wcNormalize).setRadioValue(next)
+  }
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly menuScope = createScope(this, this.idGen)
@@ -159,6 +189,14 @@ export class XhMenuElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
   }
 
+  private readonly notifyCheckboxValue = (details: MenuCheckboxValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('checkbox-value-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyRadioValue = (details: MenuRadioValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('radio-value-change', { detail: details, bubbles: true, composed: true }))
+  }
+
   private readonly ctrl = new MachineController<MenuSchema>(
     this,
     menuMachine,
@@ -179,6 +217,10 @@ export class XhMenuElement extends XhPortalHostElement {
   private machineProps(): Partial<MenuSchema['props']> {
     return {
       collection: this.collection,
+      checkboxValue: this.checkboxValue,
+      defaultCheckboxValue: this.defaultCheckboxValue,
+      radioValue: this.radioValue,
+      defaultRadioValue: this.defaultRadioValue,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
@@ -196,6 +238,8 @@ export class XhMenuElement extends XhPortalHostElement {
       hoverCloseDelay: this.hoverCloseDelay,
       onOpenChange: this.notifyOpen,
       onSelect: this.notifySelect,
+      onCheckboxValueChange: this.notifyCheckboxValue,
+      onRadioValueChange: this.notifyRadioValue,
     }
   }
 
@@ -369,15 +413,31 @@ export class XhMenuElement extends XhPortalHostElement {
     put('content', api.getContentProps() as Record<string, unknown>)
     put('arrow', api.getArrowProps() as Record<string, unknown>)
 
+    const itemDeclaration = (el: HTMLElement): MenuAnyItemProps => {
+      const value = el.getAttribute('value') ?? ''
+      const meta = api.collection.find(node => node.value === value)
+      const kind = (meta?.kind ?? el.getAttribute('kind') ?? 'item') as MenuAnyItemProps['kind']
+      const closeAttr = el.getAttribute('close-on-select')
+      const closeOnSelect = meta?.closeOnSelect ?? (closeAttr == null ? undefined : closeAttr !== 'false')
+      const disabled = this.collection ? this.declaredDisabled(el) : isItemDisabled(el)
+      if (kind === 'radio') {
+        const group = meta?.group ?? el.closest<HTMLElement>('[data-xh-part="group"]')?.getAttribute('value') ?? ''
+        return { value, disabled, closeOnSelect, kind, group }
+      }
+      return { value, disabled, closeOnSelect, kind }
+    }
+
     // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled
     // （集合条目一律 aria-disabled，原生 disabled 不可聚焦、也不派 click）。
     // 打上去的 data-scope/data-part/data-value 正是方向键在事件那一刻查 DOM 的依据，
     // 所以 wire 必须先于事件跑过——updated() 已保证。
     for (const el of this.getParts('item')) {
-      const props = api.getItemProps({
-        value: el.getAttribute('value') ?? '',
-        disabled: this.collection ? this.declaredDisabled(el) : isItemDisabled(el),
-      })
+      const declaration = itemDeclaration(el)
+      const props = declaration.kind === 'checkbox'
+        ? api.getCheckboxItemProps(declaration)
+        : declaration.kind === 'radio'
+          ? api.getRadioItemProps(declaration)
+          : api.getItemProps(declaration)
       this.spreader.spread(el, props as Record<string, unknown>)
     }
     for (const child of this.submenuBridges.values())
@@ -385,12 +445,9 @@ export class XhMenuElement extends XhPortalHostElement {
     this.parentRegistration?.sync()
 
     // 条目子部件的身份取所属条目自报的 value，与条目本身同一份声明
-    const ownerItem = (el: HTMLElement): { value: string, disabled?: boolean } => {
+    const ownerItem = (el: HTMLElement): MenuAnyItemProps => {
       const owner = this.getParts('item').find(item => item.contains(el))
-      return {
-        value: owner?.getAttribute('value') ?? '',
-        disabled: owner ? (this.collection ? this.declaredDisabled(owner) : isItemDisabled(owner)) : undefined,
-      }
+      return owner ? itemDeclaration(owner) : { value: '', kind: 'item' }
     }
     for (const el of this.getParts('item-text'))
       this.spreader.spread(el, api.getItemTextProps(ownerItem(el)) as Record<string, unknown>)
@@ -410,7 +467,9 @@ export class XhMenuElement extends XhPortalHostElement {
     // 分组与它的标题靠同一个 value 互相认领，标题的 id 由 connect 据此派生
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      const isRadio = el.getAttribute('kind') === 'radio'
+        || api.collection.some(node => node.kind === 'radio' && node.group === group.value)
+      this.spreader.spread(el, (isRadio ? api.getRadioGroupProps(group) : api.getGroupProps(group)) as Record<string, unknown>)
       for (const label of this.partsIn(el, 'group-label'))
         this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
     }

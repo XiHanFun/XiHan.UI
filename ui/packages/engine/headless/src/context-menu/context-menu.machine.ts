@@ -9,6 +9,7 @@ import type { Layer, PositionResult, VirtualAnchor } from '@xihan-ui/core'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
 import { createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from '../shared/menu-choice'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { contextMenuAnatomy, contextMenuItemQuery } from './context-menu.anatomy'
@@ -43,7 +44,7 @@ function triggerOrigin(el: HTMLElement | null): ContextMenuPoint | null {
 
 export const contextMenuMachine = createMachine({
   name: 'context-menu',
-  context: ({ cell }) => ({
+  context: ({ cell, prop }) => ({
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     point: cell<ContextMenuPoint | null>(() => ({ defaultValue: null, isEqual: samePoint })),
@@ -54,6 +55,18 @@ export const contextMenuMachine = createMachine({
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
     // 条目的按压通道：正被按住的那条；触发区的长按是另一回事（pressing 状态），不共用这一格
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    checkboxValue: cell<string[]>(() => ({
+      value: prop('checkboxValue'),
+      defaultValue: prop('defaultCheckboxValue') ?? [],
+      isEqual: (a, b) => Array.isArray(b) && a.length === b.length && a.every((value, index) => value === b[index]),
+      onChange: value => prop('onCheckboxValueChange')?.({ value }),
+    })),
+    radioValue: cell<Record<string, string>>(() => ({
+      value: prop('radioValue'),
+      defaultValue: prop('defaultRadioValue') ?? {},
+      isEqual: equalMenuRadioValue,
+      onChange: value => prop('onRadioValueChange')?.({ value }),
+    })),
   }),
   refs: () => ({
     config: null,
@@ -79,6 +92,8 @@ export const contextMenuMachine = createMachine({
   on: {
     'ITEM.PRESS.START': { guard: 'canPressItem', actions: ['startItemPress'] },
     'ITEM.PRESS.END': { actions: ['endItemPress'] },
+    'CHECKBOX.VALUE.SET': { actions: ['setCheckboxValue'] },
+    'RADIO.VALUE.SET': { actions: ['setRadioValue'] },
   },
   states: {
     closed: {
@@ -136,8 +151,9 @@ export const contextMenuMachine = createMachine({
         ],
         // 选中即关闭：先发选中详情，再走与 CLOSE 相同的收口
         'ITEM.SELECT': [
-          { guard: 'isOpenControlled', actions: ['invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
-          { target: 'closed', actions: ['invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
+          { guard: 'keepsMenuOpen', actions: ['selectChoice', 'invokeOnSelect'] },
+          { guard: 'isOpenControlled', actions: ['selectChoice', 'invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
+          { target: 'closed', actions: ['selectChoice', 'invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
         ],
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
         'FOCUS.CLEAR': { actions: ['clearFocusedValue'] },
@@ -154,6 +170,10 @@ export const contextMenuMachine = createMachine({
       canPressItem: ({ event }) => {
         const e = event.current()
         return !(e.type === 'ITEM.PRESS.START' && e.disabled)
+      },
+      keepsMenuOpen: ({ event }) => {
+        const e = event.current()
+        return e.type === 'ITEM.SELECT' && !e.close
       },
       movedBeyondTolerance: ({ context, event }) => {
         const e = event.current()
@@ -184,8 +204,29 @@ export const contextMenuMachine = createMachine({
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       invokeOnSelect: ({ prop, event }) => {
         const e = event.current()
-        if (e.type === 'ITEM.SELECT')
+        if (e.type === 'ITEM.SELECT' && (e.kind === 'item' || e.close))
           prop('onSelect')?.({ value: e.value })
+      },
+      selectChoice: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'ITEM.SELECT')
+          return
+        if (e.kind === 'checkbox') {
+          context.set('checkboxValue', toggleMenuCheckboxValue(context.get('checkboxValue'), e.value))
+          return
+        }
+        if (e.kind === 'radio')
+          context.set('radioValue', setMenuRadioValue(context.get('radioValue'), e.group ?? '', e.value))
+      },
+      setCheckboxValue: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'CHECKBOX.VALUE.SET')
+          context.set('checkboxValue', [...e.value])
+      },
+      setRadioValue: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'RADIO.VALUE.SET')
+          context.set('radioValue', { ...e.value })
       },
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
       syncOpen: ({ prop, send }) => {

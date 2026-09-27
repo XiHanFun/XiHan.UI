@@ -6,7 +6,7 @@
 // 提供 menu 相关实现。
 
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { MenuApi, MenuGroupProps, MenuItemProps, MenuNode, MenuNodeMeta, MenuSchema, MenuTranslations } from '@xihan-ui/headless'
+import type { MenuAnyItemProps, MenuApi, MenuGroupProps, MenuNode, MenuNodeMeta, MenuRadioValue, MenuSchema, MenuTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
@@ -22,7 +22,7 @@ import { useMenu, useMenuWithParent } from './use-menu'
 type MenuProps = MenuSchema['props']
 
 /** 默认插槽的载荷：展开态与修改展开的动作。 */
-export type MenuRootSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
+export type MenuRootSlotProps = Pick<MenuApi, 'open' | 'setOpen' | 'checkboxValue' | 'radioValue' | 'setCheckboxValue' | 'setRadioValue'>
 
 /** 代铺条目时可逐槽接管的三个插槽；三个都不写即完全按数据铺。 */
 export interface MenuItemSlots {
@@ -39,6 +39,10 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
   // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<MenuNode[]> },
+    checkboxValue: { type: Array as PropType<string[]> },
+    defaultCheckboxValue: { type: Array as PropType<string[]> },
+    radioValue: { type: Object as PropType<MenuRadioValue> },
+    defaultRadioValue: { type: Object as PropType<MenuRadioValue> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     placement: { type: String as PropType<Placement> },
@@ -63,6 +67,8 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
   emits: {
     'open-change': (_details: PayloadOf<MenuProps, 'onOpenChange'>) => true,
     'select': (_details: PayloadOf<MenuProps, 'onSelect'>) => true,
+    'checkbox-value-change': (_details: PayloadOf<MenuProps, 'onCheckboxValueChange'>) => true,
+    'radio-value-change': (_details: PayloadOf<MenuProps, 'onRadioValueChange'>) => true,
     'update:open': (_open: PayloadOf<MenuProps, 'onOpenChange'>['open']) => true,
   },
   slots: Object as SlotsType<{
@@ -81,10 +87,19 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
       emit('update:open', details.open)
     }
     const notifySelect: MenuProps['onSelect'] = details => emit('select', details)
-    const ctx = useMenu(withXhConfig('menu', props) as MenuProps, notifyOpen, notifySelect)
+    const notifyCheckboxValue: MenuProps['onCheckboxValueChange'] = details => emit('checkbox-value-change', details)
+    const notifyRadioValue: MenuProps['onRadioValueChange'] = details => emit('radio-value-change', details)
+    const ctx = useMenu(withXhConfig('menu', props) as MenuProps, notifyOpen, notifySelect, notifyCheckboxValue, notifyRadioValue)
     provideMenu(ctx)
     return () => (slots.default
-      ? slots.default({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
+      ? slots.default({
+          open: ctx.api.value.open,
+          setOpen: ctx.api.value.setOpen,
+          checkboxValue: ctx.api.value.checkboxValue,
+          radioValue: ctx.api.value.radioValue,
+          setCheckboxValue: ctx.api.value.setCheckboxValue,
+          setRadioValue: ctx.api.value.setRadioValue,
+        })
       : props.collection
         ? renderDefaultTree(ctx.api.value.collection, slots.trigger?.() ?? null, { 'item': slots.item, 'item-prefix': slots['item-prefix'], 'item-suffix': slots['item-suffix'] }, props.triggerAsChild)
         : [])
@@ -154,44 +169,57 @@ export const XhMenuContent = /* @__PURE__ */ defineComponent({
   },
 })
 
-export const XhMenuItem = /* @__PURE__ */ defineComponent({
-  name: 'XhMenuItem',
-  props: {
-    value: { type: String, required: true },
-    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
-    disabled: { type: Boolean, default: undefined },
-  },
-  setup(props, { slots }) {
-    const ctx = useMenuContext()
-    const item = computed<MenuItemProps>(() => ({ value: props.value, disabled: props.disabled }))
-    provideMenuItem({ item })
-    // 本条目持有焦点时，value 变更按新值重报焦点条目，卸载时上报焦点丢失
-    const itemEl = ref<HTMLElement | null>(null)
-    watch(() => props.value, (next, prev) => {
-      if (next === prev)
-        return
-      const svc = ctx.service
-      if (svc.getStatus() !== 'Started')
-        return
-      if (itemEl.value && svc.scope.getActiveElement() === itemEl.value)
-        svc.send({ type: 'ITEM.FOCUS', value: next })
-    })
-    onBeforeUnmount(() => {
-      const { service } = ctx
-      // 根已停机时不再送事件
-      if (service.getStatus() !== 'Started')
-        return
-      // 按「本节点当下正持有焦点」判定，不按 value 比对
-      if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
-        service.send({ type: 'ITEM.LOST' })
-    })
-    return () => h(
-      'div',
-      { ...ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>, ref: itemEl },
-      slots.default?.(),
-    )
-  },
-})
+function createMenuItemComponent(name: string, kind: 'item' | 'checkbox' | 'radio'): ReturnType<typeof defineComponent> {
+  return defineComponent({
+    name,
+    props: {
+      value: { type: String, required: true },
+      disabled: { type: Boolean, default: undefined },
+      closeOnSelect: { type: Boolean, default: undefined },
+    },
+    setup(props, { slots }) {
+      const ctx = useMenuContext()
+      const radioGroup = kind === 'radio' ? useMenuGroupContext() : null
+      const item = computed<MenuAnyItemProps>(() => kind === 'radio'
+        ? { value: props.value, disabled: props.disabled, closeOnSelect: props.closeOnSelect, kind, group: radioGroup!.group.value.value }
+        : { value: props.value, disabled: props.disabled, closeOnSelect: props.closeOnSelect, kind })
+      provideMenuItem({ item })
+      // 本条目持有焦点时，value 变更按新值重报焦点条目，卸载时上报焦点丢失
+      const itemEl = ref<HTMLElement | null>(null)
+      watch(() => props.value, (next, prev) => {
+        if (next === prev)
+          return
+        const svc = ctx.service
+        if (svc.getStatus() !== 'Started')
+          return
+        if (itemEl.value && svc.scope.getActiveElement() === itemEl.value)
+          svc.send({ type: 'ITEM.FOCUS', value: next })
+      })
+      onBeforeUnmount(() => {
+        const { service } = ctx
+        // 根已停机时不再送事件
+        if (service.getStatus() !== 'Started')
+          return
+        // 按「本节点当下正持有焦点」判定，不按 value 比对
+        if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
+          service.send({ type: 'ITEM.LOST' })
+      })
+      return () => {
+        const declaration = item.value
+        const part = declaration.kind === 'checkbox'
+          ? ctx.api.value.getCheckboxItemProps(declaration)
+          : declaration.kind === 'radio'
+            ? ctx.api.value.getRadioItemProps(declaration)
+            : ctx.api.value.getItemProps(declaration)
+        return h('div', { ...part as Record<string, unknown>, ref: itemEl }, slots.default?.())
+      }
+    },
+  })
+}
+
+export const XhMenuItem = /* @__PURE__ */ createMenuItemComponent('XhMenuItem', 'item')
+export const XhMenuCheckboxItem = /* @__PURE__ */ createMenuItemComponent('XhMenuCheckboxItem', 'checkbox')
+export const XhMenuRadioItem = /* @__PURE__ */ createMenuItemComponent('XhMenuRadioItem', 'radio')
 
 /** 默认插槽的载荷：本层子菜单的展开态与修改展开的动作。 */
 export type MenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
@@ -207,6 +235,10 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
     value: { type: String, required: true },
     disabled: { type: Boolean, default: undefined },
     collection: { type: Array as PropType<MenuNode[]> },
+    checkboxValue: { type: Array as PropType<string[]> },
+    defaultCheckboxValue: { type: Array as PropType<string[]> },
+    radioValue: { type: Object as PropType<MenuRadioValue> },
+    defaultRadioValue: { type: Object as PropType<MenuRadioValue> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
@@ -220,10 +252,14 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
     size: { type: String as PropType<Size> },
     hoverCloseDelay: { type: Number },
   },
+  emits: {
+    'checkbox-value-change': (_details: PayloadOf<MenuProps, 'onCheckboxValueChange'>) => true,
+    'radio-value-change': (_details: PayloadOf<MenuProps, 'onRadioValueChange'>) => true,
+  },
   slots: Object as SlotsType<{
     default?: (props: MenuSubSlotProps) => VNode[]
   }>,
-  setup(props, { slots }) {
+  setup(props, { slots, emit }) {
     const parent = useMenuContext()
     const ctx = useMenuWithParent(
       {
@@ -235,6 +271,8 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
       } as MenuProps,
       undefined,
       parent.tree,
+      details => emit('checkbox-value-change', details),
+      details => emit('radio-value-change', details),
     )
     // 覆盖菜单上下文：本子树内的部件都归子机器
     provideMenu(ctx)
@@ -329,6 +367,19 @@ export const XhMenuGroup = /* @__PURE__ */ defineComponent({
   },
 })
 
+export const XhMenuRadioGroup = /* @__PURE__ */ defineComponent({
+  name: 'XhMenuRadioGroup',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useMenuContext()
+    const group = computed<MenuGroupProps>(() => ({ value: props.value }))
+    provideMenuGroup({ group })
+    return () => h('div', ctx.api.value.getRadioGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhMenuGroupLabel = /* @__PURE__ */ defineComponent({
   name: 'XhMenuGroupLabel',
   setup(_, { slots }) {
@@ -389,7 +440,7 @@ function renderNodes(
     const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
     return [
       ...lead,
-      h(XhMenuGroup, { key: `group:${head.group}`, value: head.group }, () => [
+      h(head.kind === 'radio' ? XhMenuRadioGroup : XhMenuGroup, { key: `group:${head.group}`, value: head.group }, () => [
         ...(groupLabel != null ? [h(XhMenuGroupLabel, null, () => groupLabel)] : []),
         ...run.flatMap((node, index) => [
           ...(index > 0 && node.separatorBefore ? [h(XhMenuSeparator, { key: `separator:${node.value}` })] : []),
@@ -415,10 +466,13 @@ function renderItem(
 ): VNode {
   const prefix = itemSlots['item-prefix']
   const suffix = itemSlots['item-suffix']
-  return h(XhMenuItem, { key: meta.value, value: meta.value }, () => itemSlots.item?.(meta) ?? [
+  const Item = meta.kind === 'checkbox' ? XhMenuCheckboxItem : meta.kind === 'radio' ? XhMenuRadioItem : XhMenuItem
+  return h(Item, { key: meta.value, value: meta.value, closeOnSelect: meta.closeOnSelect }, () => itemSlots.item?.(meta) ?? [
     ...(prefix
       ? [h(XhMenuItemIndicator, null, () => prefix(meta))]
-      : meta.indicator != null ? [h(XhMenuItemIndicator, null, () => meta.indicator)] : []),
+      : meta.indicator != null
+        ? [h(XhMenuItemIndicator, null, () => meta.indicator)]
+        : meta.kind !== 'item' ? [h(XhMenuItemIndicator)] : []),
     h(XhMenuItemText, null, () => meta.label),
     ...(meta.description != null ? [h(XhMenuItemDescription, null, () => meta.description)] : []),
     ...(meta.shortcut != null ? [h(XhMenuItemShortcut, null, () => meta.shortcut)] : []),

@@ -7,7 +7,7 @@
 
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema } from '@xihan-ui/headless'
+import type { MenubarAnyItemProps, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioValue, MenubarSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
@@ -54,7 +54,7 @@ function useMenubarPart(register: MenubarPartRegistry, value: () => string): (el
 }
 
 /** 默认插槽的载荷：当前展开的菜单项、是否有菜单展开，以及切换展开项的命令。 */
-export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue'>
+export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue' | 'checkboxValue' | 'radioValue' | 'setCheckboxValue' | 'setRadioValue'>
 
 /** role=menubar 根节点：trigger 的 roving tabindex 作用域，各菜单浮层也挂在其内 */
 /** 代铺条目时可逐槽接管的三个插槽；三个都不写即完全按数据铺。 */
@@ -72,6 +72,10 @@ export const XhMenubarRoot = defineComponent({
   // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<MenubarNode[]> },
+    checkboxValue: { type: Array as PropType<string[]> },
+    defaultCheckboxValue: { type: Array as PropType<string[]> },
+    radioValue: { type: Object as PropType<MenubarRadioValue> },
+    defaultRadioValue: { type: Object as PropType<MenubarRadioValue> },
     value: { type: String as PropType<string | null> },
     defaultValue: { type: String as PropType<string | null> },
     orientation: { type: String as PropType<Orientation> },
@@ -89,6 +93,8 @@ export const XhMenubarRoot = defineComponent({
   emits: {
     'value-change': (_details: PayloadOf<MenubarProps, 'onValueChange'>) => true,
     'select': (_details: PayloadOf<MenubarProps, 'onSelect'>) => true,
+    'checkbox-value-change': (_details: PayloadOf<MenubarProps, 'onCheckboxValueChange'>) => true,
+    'radio-value-change': (_details: PayloadOf<MenubarProps, 'onRadioValueChange'>) => true,
     'update:value': (_value: PayloadOf<MenubarProps, 'onValueChange'>['value']) => true,
   },
   slots: Object as SlotsType<{
@@ -106,7 +112,13 @@ export const XhMenubarRoot = defineComponent({
       emit('update:value', details.value)
     }
     const notifySelect: MenubarProps['onSelect'] = details => emit('select', details)
-    const ctx = useMenubar(withXhConfig('menubar', props) as MenubarProps, notifyValue, notifySelect)
+    const ctx = useMenubar(
+      withXhConfig('menubar', props) as MenubarProps,
+      notifyValue,
+      notifySelect,
+      details => emit('checkbox-value-change', details),
+      details => emit('radio-value-change', details),
+    )
     provideMenubar(ctx)
     return () => h('div', {
       ...ctx.api.value.getRootProps() as Record<string, unknown>,
@@ -116,6 +128,10 @@ export const XhMenubarRoot = defineComponent({
           value: ctx.api.value.value,
           open: ctx.api.value.open,
           setValue: ctx.api.value.setValue,
+          checkboxValue: ctx.api.value.checkboxValue,
+          radioValue: ctx.api.value.radioValue,
+          setCheckboxValue: ctx.api.value.setCheckboxValue,
+          setRadioValue: ctx.api.value.setRadioValue,
         })
       : props.collection
         ? renderDefaultTree(ctx.api.value.collection, { 'item': slots.item, 'item-prefix': slots['item-prefix'], 'item-suffix': slots['item-suffix'] })
@@ -279,6 +295,19 @@ export const XhMenubarGroup = defineComponent({
   },
 })
 
+export const XhMenubarRadioGroup = defineComponent({
+  name: 'XhMenubarRadioGroup',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useMenubarContext()
+    const group = computed<MenubarGroupProps>(() => ({ value: props.value }))
+    provideMenubarGroup({ group })
+    return () => h('div', ctx.api.value.getRadioGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhMenubarGroupLabel = defineComponent({
   name: 'XhMenubarGroupLabel',
   setup(_, { slots }) {
@@ -288,44 +317,59 @@ export const XhMenubarGroupLabel = defineComponent({
   },
 })
 
-export const XhMenubarItem = defineComponent({
-  name: 'XhMenubarItem',
-  props: {
-    value: { type: String, required: true },
-    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
-    disabled: { type: Boolean, default: undefined },
-  },
-  setup(props, { slots }) {
-    const ctx = useMenubarContext()
-    const item = computed<MenubarItemProps>(() => ({ value: props.value, disabled: props.disabled }))
-    provideMenubarItem({ item })
-    // 本条目持有焦点时，value 变更重报焦点条目，卸载时上报焦点丢失
-    const itemEl = ref<HTMLElement | null>(null)
-    watch(() => props.value, (next, prev) => {
-      if (next === prev)
-        return
-      const { service } = ctx
-      if (service.getStatus() !== 'Started')
-        return
-      if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
-        service.send({ type: 'ITEM.FOCUS', value: next })
-    })
-    onBeforeUnmount(() => {
-      const { service } = ctx
-      // 整组一起卸载时根部件先停机，此刻送事件会在 dev 下抛
-      if (service.getStatus() !== 'Started')
-        return
-      // 按「本节点当下正持有焦点」判定，不按 value 比对
-      if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
-        service.send({ type: 'ITEM.LOST' })
-    })
-    return () => h(
-      'div',
-      { ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>, ref: itemEl },
-      slots.default?.(),
-    )
-  },
-})
+function createMenubarItemComponent(name: string, kind: 'item' | 'checkbox' | 'radio'): ReturnType<typeof defineComponent> {
+  return defineComponent({
+    name,
+    props: {
+      value: { type: String, required: true },
+      disabled: { type: Boolean, default: undefined },
+      closeOnSelect: { type: Boolean, default: undefined },
+    },
+    setup(props, { slots }) {
+      const ctx = useMenubarContext()
+      const radioGroup = kind === 'radio' ? useMenubarGroupContext() : null
+      const item = computed<MenubarAnyItemProps>(() => kind === 'radio'
+        ? { value: props.value, disabled: props.disabled, closeOnSelect: props.closeOnSelect, kind, group: radioGroup!.group.value.value }
+        : kind === 'checkbox'
+          ? { value: props.value, disabled: props.disabled, closeOnSelect: props.closeOnSelect, kind }
+          : { value: props.value, disabled: props.disabled, kind })
+      provideMenubarItem({ item })
+      // 本条目持有焦点时，value 变更重报焦点条目，卸载时上报焦点丢失
+      const itemEl = ref<HTMLElement | null>(null)
+      watch(() => props.value, (next, prev) => {
+        if (next === prev)
+          return
+        const { service } = ctx
+        if (service.getStatus() !== 'Started')
+          return
+        if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
+          service.send({ type: 'ITEM.FOCUS', value: next })
+      })
+      onBeforeUnmount(() => {
+        const { service } = ctx
+        // 整组一起卸载时根部件先停机，此刻送事件会在 dev 下抛
+        if (service.getStatus() !== 'Started')
+          return
+        // 按「本节点当下正持有焦点」判定，不按 value 比对
+        if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
+          service.send({ type: 'ITEM.LOST' })
+      })
+      return () => {
+        const declaration = item.value
+        const part = declaration.kind === 'checkbox'
+          ? ctx.api.value.getCheckboxItemProps(declaration)
+          : declaration.kind === 'radio'
+            ? ctx.api.value.getRadioItemProps(declaration)
+            : ctx.api.value.getItemProps(declaration)
+        return h('div', { ...part as Record<string, unknown>, ref: itemEl }, slots.default?.())
+      }
+    },
+  })
+}
+
+export const XhMenubarItem = /* @__PURE__ */ createMenubarItemComponent('XhMenubarItem', 'item')
+export const XhMenubarCheckboxItem = /* @__PURE__ */ createMenubarItemComponent('XhMenubarCheckboxItem', 'checkbox')
+export const XhMenubarRadioItem = /* @__PURE__ */ createMenubarItemComponent('XhMenubarRadioItem', 'radio')
 
 export const XhMenubarItemText = defineComponent({
   name: 'XhMenubarItemText',
@@ -426,8 +470,11 @@ function renderNode(
 ): VNode {
   const prefix = itemSlots['item-prefix']
   const suffix = itemSlots['item-suffix']
-  return h(XhMenubarItem, { key: meta.value, value: meta.value }, () => [
-    ...(prefix ? [h(XhMenubarItemIndicator, null, () => prefix(meta))] : []),
+  const Item = meta.kind === 'checkbox' ? XhMenubarCheckboxItem : meta.kind === 'radio' ? XhMenubarRadioItem : XhMenubarItem
+  return h(Item, { key: meta.value, value: meta.value, closeOnSelect: meta.closeOnSelect }, () => [
+    ...(prefix
+      ? [h(XhMenubarItemIndicator, null, () => prefix(meta))]
+      : meta.kind !== 'item' ? [h(XhMenubarItemIndicator)] : []),
     h(XhMenubarItemText, null, () => itemSlots.item?.(meta) ?? meta.label),
     ...(meta.description != null ? [h(XhMenubarItemDescription, null, () => meta.description)] : []),
     ...(meta.shortcut != null ? [h(XhMenubarItemShortcut, null, () => meta.shortcut)] : []),
@@ -451,7 +498,7 @@ function renderNodes(
     const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
     return [
       ...lead,
-      h(XhMenubarGroup, { key: `group:${head.group}`, value: head.group }, () => [
+      h(head.kind === 'radio' ? XhMenubarRadioGroup : XhMenubarGroup, { key: `group:${head.group}`, value: head.group }, () => [
         ...(groupLabel != null ? [h(XhMenubarGroupLabel, null, () => groupLabel)] : []),
         ...run.flatMap((node, index) => [
           ...(index > 0 && node.separatorBefore ? [h(XhMenubarSeparator, { key: `separator:${node.value}` })] : []),

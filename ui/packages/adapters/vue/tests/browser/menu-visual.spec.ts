@@ -3,11 +3,14 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
+  XhMenuCheckboxItem,
   XhMenuContent,
   XhMenuItem,
   XhMenuItemIndicator,
   XhMenuItemText,
   XhMenuPositioner,
+  XhMenuRadioGroup,
+  XhMenuRadioItem,
   XhMenuRoot,
   XhMenuSub,
   XhMenuSubTrigger,
@@ -48,7 +51,7 @@ async function mountMenu(): Promise<void> {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
-    render: () => h(XhMenuRoot, null, () => [
+    render: () => h(XhMenuRoot, { defaultCheckboxValue: ['wrap'], defaultRadioValue: { density: 'compact' } }, () => [
       h(XhMenuTrigger, null, () => '打开'),
       h(XhMenuPositioner, null, () => h(XhMenuContent, { style: { inlineSize: '220px' } }, () => [
         h(XhMenuItem, { value: 'copy' }, () => [
@@ -57,6 +60,14 @@ async function mountMenu(): Promise<void> {
         ]),
         h(XhMenuItem, { value: 'paste' }, () => h(XhMenuItemText, null, () => '粘贴')),
         h(XhMenuItem, { value: 'blocked', disabled: true }, () => h(XhMenuItemText, null, () => '不可用')),
+        h(XhMenuCheckboxItem, { value: 'wrap' }, () => [
+          h(XhMenuItemIndicator),
+          h(XhMenuItemText, null, () => '自动换行'),
+        ]),
+        h(XhMenuRadioGroup, { value: 'density' }, () => [
+          h(XhMenuRadioItem, { value: 'compact' }, () => [h(XhMenuItemIndicator), h(XhMenuItemText, null, () => '紧凑')]),
+          h(XhMenuRadioItem, { value: 'comfortable' }, () => [h(XhMenuItemIndicator), h(XhMenuItemText, null, () => '宽松')]),
+        ]),
         h(XhMenuSub, { value: 'more', openOnHover: false }, () => [
           h(XhMenuSubTrigger, null, () => '更多'),
           h(XhMenuPositioner, null, () => h(XhMenuContent, null, () => [
@@ -138,5 +149,34 @@ describe('menu 条目接入 Collection Item', () => {
     expect(trigger.dataset.state).toBe('open')
     expect(getComputedStyle(trigger).backgroundColor).toBe(resolve('--xh-bg-subtle'))
     expect(getComputedStyle(trigger).backgroundColor).not.toBe(resolve('--xh-bg-brand-subtle'))
+  })
+
+  it('checkbox / radio 使用可读角色与稳定标记位，切换后默认保持菜单展开', async () => {
+    await mountMenu()
+    const wrap = item('wrap')
+    const compact = item('compact')
+    const comfortable = item('comfortable')
+    const wrapIndicator = wrap.querySelector<HTMLElement>('[data-part="item-indicator"]')!
+    const comfortableIndicator = comfortable.querySelector<HTMLElement>('[data-part="item-indicator"]')!
+
+    expect(wrap.getAttribute('role')).toBe('menuitemcheckbox')
+    expect(wrap.getAttribute('aria-checked')).toBe('true')
+    expect(getComputedStyle(wrapIndicator).visibility).toBe('visible')
+    expect(compact.getAttribute('role')).toBe('menuitemradio')
+    expect(compact.getAttribute('aria-checked')).toBe('true')
+    expect(comfortable.getAttribute('aria-checked')).toBe('false')
+    expect(getComputedStyle(comfortableIndicator).visibility).toBe('hidden')
+
+    await userEvent.click(wrap)
+    await nextTick()
+    expect(wrap.getAttribute('aria-checked')).toBe('false')
+    expect(getComputedStyle(wrapIndicator).visibility).toBe('hidden')
+    expect(document.querySelector('[data-scope="menu"][data-part="content"]')?.hasAttribute('hidden')).toBe(false)
+
+    await userEvent.click(comfortable)
+    await nextTick()
+    expect(compact.getAttribute('aria-checked')).toBe('false')
+    expect(comfortable.getAttribute('aria-checked')).toBe('true')
+    expect(getComputedStyle(comfortableIndicator).visibility).toBe('visible')
   })
 })

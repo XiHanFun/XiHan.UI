@@ -87,10 +87,10 @@ const SEMANTIC = {
   'toolbar:item': [{ kind: 'flat', state: '[aria-pressed=\'true\']' }],
   // 展开路径 / 打开中：与家族 hover 同档的中性面
   'menu:trigger': [{ kind: 'open', state: '[data-state=\'open\']' }],
-  'menu:item': [{ kind: 'open', state: '[data-state=\'open\']' }],
+  'menu:item': [{ kind: 'open', state: '[data-in-path]' }, { kind: 'overlay', state: '[data-state=\'checked\']' }],
   'menubar:trigger': [{ kind: 'open', state: '[data-state=\'open\']' }],
-  'menubar:item': [{ kind: 'open', state: '[data-state=\'open\']' }],
-  'context-menu:item': [{ kind: 'open', state: '[data-state=\'open\']' }],
+  'menubar:item': [{ kind: 'open', state: '[data-in-path]' }, { kind: 'overlay', state: '[data-state=\'checked\']' }],
+  'context-menu:item': [{ kind: 'open', state: '[data-in-path]' }, { kind: 'overlay', state: '[data-state=\'checked\']' }],
   'navigation-menu:trigger': [{ kind: 'open', state: '[data-state=\'open\']' }],
   'side-nav:branch-trigger': [{ kind: 'open', state: '[data-in-path]' }],
   'date-picker:trigger': [{ kind: 'open', state: '[data-state=\'open\']' }],

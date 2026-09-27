@@ -7,6 +7,9 @@
 
 import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { MenuCheckboxValueChangeDetails, MenuChoiceGroupProps, MenuChoiceKind, MenuRadioValue, MenuRadioValueChangeDetails, MenuCheckboxItemProps as SharedMenuCheckboxItemProps, MenuRadioItemProps as SharedMenuRadioItemProps } from '../shared/menu-choice'
+
+export type { MenuCheckboxValueChangeDetails as ContextMenuCheckboxValueChangeDetails, MenuRadioValue as ContextMenuRadioValue, MenuRadioValueChangeDetails as ContextMenuRadioValueChangeDetails } from '../shared/menu-choice'
 
 /**
  * 展开时焦点落在集合的哪一端：ArrowUp 这类反向入口从末尾进入，键盘入口从首个可用条目进入。
@@ -62,6 +65,7 @@ export interface ContextMenuSelectDetails {
 /** 条目数据。提供 collection 时，显示文本、禁用、语气、标记位与分组以它为准。 */
 export interface ContextMenuNode {
   value: string
+  kind?: MenuChoiceKind
   /** 展示文本，也是连打检索的取字来源；默认回退为 value。 */
   label?: string
   /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
@@ -87,11 +91,14 @@ export interface ContextMenuNode {
   groupLabel?: string
   /** 本条之前绘制一条分隔线；写在首条上不产出分隔线。本条领头一个分组时，分隔线绘制在分组外。 */
   separatorBefore?: boolean
+  /** 选择型条目激活后是否关闭菜单；checkbox / radio 默认 false。 */
+  closeOnSelect?: boolean
 }
 
 /** 单个条目的元信息，由 collection 推导，不含高亮态。 */
 export interface ContextMenuNodeMeta {
   value: string
+  kind: MenuChoiceKind
   /** node.label ?? node.value，恒为字符串。 */
   label: string
   disabled: boolean
@@ -108,6 +115,7 @@ export interface ContextMenuNodeMeta {
   /** 分组标题；未提供时为 null。 */
   groupLabel: string | null
   separatorBefore: boolean
+  closeOnSelect: boolean
 }
 
 /**
@@ -120,10 +128,15 @@ export interface ContextMenuItemProps {
   disabled?: boolean
 }
 
+export type ContextMenuCheckboxItemProps = SharedMenuCheckboxItemProps
+export type ContextMenuRadioItemProps = SharedMenuRadioItemProps
+export type ContextMenuAnyItemProps
+  = | (ContextMenuItemProps & { kind?: 'item' })
+    | (ContextMenuCheckboxItemProps & { kind: 'checkbox' })
+    | (ContextMenuRadioItemProps & { kind: 'radio' })
+
 /** 分组声明的身份：分组标题的 id 由它派生，group 与 group-label 依靠该值互相关联。 */
-export interface ContextMenuGroupProps {
-  value: string
-}
+export interface ContextMenuGroupProps extends MenuChoiceGroupProps {}
 
 /** 读屏文案，默认英文。 */
 export interface ContextMenuTranslations {
@@ -138,6 +151,10 @@ export interface ContextMenuSchema extends MachineSchema {
      * 未提供时回到文本与禁用全部写在条目部件上的方式。
      */
     collection?: ContextMenuNode[]
+    checkboxValue?: string[]
+    defaultCheckboxValue?: string[]
+    radioValue?: MenuRadioValue
+    defaultRadioValue?: MenuRadioValue
     /** 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
@@ -167,6 +184,8 @@ export interface ContextMenuSchema extends MachineSchema {
     onOpenChange?: (details: ContextMenuOpenChangeDetails) => void
     /** 条目被选中；菜单随之关闭。 */
     onSelect?: (details: ContextMenuSelectDetails) => void
+    onCheckboxValueChange?: (details: MenuCheckboxValueChangeDetails) => void
+    onRadioValueChange?: (details: MenuRadioValueChangeDetails) => void
   }
   context: {
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
@@ -183,6 +202,8 @@ export interface ContextMenuSchema extends MachineSchema {
     returnFocus: boolean
     /** 按压通道：Space / Enter 或触屏按住的条目 value；抬起、失焦或菜单收起即清空。触发区的长按另走 pressing 状态。 */
     pressedValue: string | null
+    checkboxValue: string[]
+    radioValue: MenuRadioValue
   }
   computed: Record<string, never>
   refs: ContextMenuRefs
@@ -205,6 +226,8 @@ export interface ContextMenuSchema extends MachineSchema {
     | { type: 'ITEM.PRESS.START', value: string, disabled?: boolean }
     /** 按住的条目抬起、失焦或指针取消；只松开 value 对应的那一条。 */
     | { type: 'ITEM.PRESS.END', value: string }
+    | { type: 'CHECKBOX.VALUE.SET', value: string[] }
+    | { type: 'RADIO.VALUE.SET', value: MenuRadioValue }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
@@ -212,9 +235,9 @@ export interface ContextMenuSchema extends MachineSchema {
     | { type: 'FOCUS.CLEAR' }
     /** 持有焦点的条目离开了 DOM：浏览器不派发 focusout，由适配器如实上报。 */
     | { type: 'ITEM.LOST' }
-    | { type: 'ITEM.SELECT', value: string }
+    | { type: 'ITEM.SELECT', value: string, kind: MenuChoiceKind, group?: string, close: boolean }
   tag: never
-  guard: 'isOpenControlled' | 'movedBeyondTolerance' | 'canPressItem'
+  guard: 'isOpenControlled' | 'movedBeyondTolerance' | 'canPressItem' | 'keepsMenuOpen'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -233,6 +256,9 @@ export interface ContextMenuSchema extends MachineSchema {
     | 'startItemPress'
     | 'endItemPress'
     | 'releaseItemPress'
+    | 'selectChoice'
+    | 'setCheckboxValue'
+    | 'setRadioValue'
   effect: 'trackPosition' | 'trackLayer' | 'trackLongPress'
 }
 
@@ -246,6 +272,12 @@ export interface ContextMenuApi<T extends PropTypes = PropTypes> {
   point: ContextMenuPoint | null
   /** 焦点锚点；收起时为 null。 */
   focusedValue: string | null
+  checkboxValue: readonly string[]
+  radioValue: Readonly<MenuRadioValue>
+  isCheckboxItemChecked: (value: string) => boolean
+  isRadioItemChecked: (group: string, value: string) => boolean
+  setCheckboxValue: (next: string[]) => void
+  setRadioValue: (next: MenuRadioValue) => void
   /** 收起经 CLOSE；展开沿用最近一次锚点坐标，从未有过坐标时锚定在触发区的起始角。 */
   setOpen: (next: boolean) => void
   /** 命令式展开到指定视口坐标。 */
@@ -255,13 +287,16 @@ export interface ContextMenuApi<T extends PropTypes = PropTypes> {
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   getItemProps: (props: ContextMenuItemProps) => T['element']
-  getItemTextProps: (props: ContextMenuItemProps) => T['element']
-  getItemIndicatorProps: (props: ContextMenuItemProps) => T['element']
-  getItemDescriptionProps: (props: ContextMenuItemProps) => T['element']
-  getItemShortcutProps: (props: ContextMenuItemProps) => T['element']
-  getItemSuffixProps: (props: ContextMenuItemProps) => T['element']
+  getCheckboxItemProps: (props: ContextMenuCheckboxItemProps) => T['element']
+  getRadioItemProps: (props: ContextMenuRadioItemProps) => T['element']
+  getItemTextProps: (props: ContextMenuAnyItemProps) => T['element']
+  getItemIndicatorProps: (props: ContextMenuAnyItemProps) => T['element']
+  getItemDescriptionProps: (props: ContextMenuAnyItemProps) => T['element']
+  getItemShortcutProps: (props: ContextMenuAnyItemProps) => T['element']
+  getItemSuffixProps: (props: ContextMenuAnyItemProps) => T['element']
   getSeparatorProps: () => T['element']
   getGroupProps: (props: ContextMenuGroupProps) => T['element']
+  getRadioGroupProps: (props: ContextMenuGroupProps) => T['element']
   getGroupLabelProps: (props: ContextMenuGroupProps) => T['element']
   getArrowProps: () => T['element']
 }

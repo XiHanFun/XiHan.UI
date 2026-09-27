@@ -5,7 +5,7 @@
 
 // 提供 context 相关实现。
 
-import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps } from '@xihan-ui/headless'
+import type { MenubarAnyItemProps, MenubarContentProps, MenubarGroupProps } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey, Ref } from 'vue'
 import type { MenubarContext } from './use-menubar'
 import { inject, provide } from 'vue'
@@ -19,7 +19,7 @@ export interface MenubarMenuContext {
 
 /** 条目声明的值与禁用，供 item-text / item-indicator 等子部件复用同一份声明。 */
 export interface MenubarItemContext {
-  item: ComputedRef<MenubarItemProps>
+  item: ComputedRef<MenubarAnyItemProps>
 }
 
 /** 分组声明的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
@@ -59,7 +59,7 @@ export function provideMenubarItem(ctx: MenubarItemContext): void {
 export function useMenubarItemContext(): MenubarItemContext {
   const ctx = inject(ITEM_KEY, null)
   if (!ctx)
-    throw new Error('[xh] Menubar 条目子部件必须用在 XhMenubarItem 内')
+    throw new Error('[xh] Menubar 条目子部件必须用在 XhMenubarItem / XhMenubarCheckboxItem / XhMenubarRadioItem 内')
   return ctx
 }
 

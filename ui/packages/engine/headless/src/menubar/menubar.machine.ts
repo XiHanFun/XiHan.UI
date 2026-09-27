@@ -15,6 +15,7 @@ import {
   queryItems,
   setup,
 } from '@xihan-ui/core'
+import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from '../shared/menu-choice'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { menubarItemQuery, menubarTriggerQuery } from './menubar.anatomy'
@@ -65,6 +66,18 @@ export const menubarMachine = createMachine({
     // 按压通道：正被按住的那颗（trigger 或 item，按 value 记），与哪张菜单开着无关
     pressedPart: cell<'trigger' | 'item' | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    checkboxValue: cell<string[]>(() => ({
+      value: prop('checkboxValue'),
+      defaultValue: prop('defaultCheckboxValue') ?? [],
+      isEqual: (a, b) => Array.isArray(b) && a.length === b.length && a.every((value, index) => value === b[index]),
+      onChange: value => prop('onCheckboxValueChange')?.({ value }),
+    })),
+    radioValue: cell<Record<string, string>>(() => ({
+      value: prop('radioValue'),
+      defaultValue: prop('defaultRadioValue') ?? {},
+      isEqual: equalMenuRadioValue,
+      onChange: value => prop('onRadioValueChange')?.({ value }),
+    })),
   }),
   refs: ({ prop }) => ({
     config: null,
@@ -102,6 +115,8 @@ export const menubarMachine = createMachine({
     'MENUBAR.BLUR': { actions: ['setReturnFocus', 'clearFocusedValue', 'clearValue'] },
     'VALUE.SET': { actions: ['setValueFromEvent'] },
     'PRESENCE.SET': { actions: ['setPresence'] },
+    'CHECKBOX.VALUE.SET': { actions: ['setCheckboxValue'] },
+    'RADIO.VALUE.SET': { actions: ['setRadioValue'] },
   },
   states: {
     idle: {
@@ -138,7 +153,10 @@ export const menubarMachine = createMachine({
           { actions: ['setFocusedValue'] },
         ],
         // 选中即收起：先发选中详情再清 value
-        'ITEM.SELECT': { actions: ['invokeOnSelect', 'setReturnFocus', 'clearValue'] },
+        'ITEM.SELECT': [
+          { guard: 'keepsMenuOpen', actions: ['selectChoice', 'invokeOnSelect'] },
+          { actions: ['selectChoice', 'invokeOnSelect', 'setReturnFocus', 'clearValue'] },
+        ],
         'ITEM.FOCUS': { actions: ['setFocusedItem'] },
         // 焦点条目被移出 DOM 时重挑锚点
         'ITEM.LOST': { actions: ['clearFocusedItem', 'setInitialFocusedItem'] },
@@ -152,6 +170,10 @@ export const menubarMachine = createMachine({
       canPress: ({ prop, event }) => {
         const e = event.current()
         return !prop('disabled') && !(e.type === 'PRESS.START' && e.disabled)
+      },
+      keepsMenuOpen: ({ event }) => {
+        const e = event.current()
+        return e.type === 'ITEM.SELECT' && !e.close
       },
       // cell 初值可能是 undefined，先归一再判
       hasValue: ({ context }) => (context.get('value') ?? null) != null,
@@ -370,8 +392,29 @@ export const menubarMachine = createMachine({
       invokeOnSelect: ({ prop, context, event }) => {
         const e = event.current()
         const menu = context.get('value') ?? null
-        if (e.type === 'ITEM.SELECT' && menu != null)
+        if (e.type === 'ITEM.SELECT' && menu != null && (e.kind === 'item' || e.close))
           prop('onSelect')?.({ menu, value: e.value })
+      },
+      selectChoice: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'ITEM.SELECT')
+          return
+        if (e.kind === 'checkbox') {
+          context.set('checkboxValue', toggleMenuCheckboxValue(context.get('checkboxValue'), e.value))
+          return
+        }
+        if (e.kind === 'radio')
+          context.set('radioValue', setMenuRadioValue(context.get('radioValue'), e.group ?? '', e.value))
+      },
+      setCheckboxValue: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'CHECKBOX.VALUE.SET')
+          context.set('checkboxValue', [...e.value])
+      },
+      setRadioValue: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'RADIO.VALUE.SET')
+          context.set('radioValue', { ...e.value })
       },
       // 收起时必须丢缓冲，否则下次打开第一个字母会被拼进上一轮的查询串
       clearTypeahead: ({ refs }) => refs.get('typeahead').clear(),

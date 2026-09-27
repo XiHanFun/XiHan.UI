@@ -7,6 +7,7 @@
 
 /* 共享关键帧由 family/motion.css 提供，条目走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
 @import '../family/collection-item.css';
+@import '../family/menu-choice.css';
 @import '../family/motion.css';
 @import '../family/material.css';
 

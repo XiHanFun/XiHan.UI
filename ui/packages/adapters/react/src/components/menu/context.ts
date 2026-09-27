@@ -5,7 +5,7 @@
 
 // 提供 context 相关实现。
 
-import type { MenuGroupProps, MenuItemProps } from '@xihan-ui/headless'
+import type { MenuAnyItemProps, MenuGroupProps } from '@xihan-ui/headless'
 import type { MenuContext } from './use-menu'
 import { createContext, useContext } from 'react'
 
@@ -21,14 +21,14 @@ export function useMenuContext(): MenuContext {
 }
 
 /** 条目声明的值与禁用，供 item-text / item-indicator / item-description 复用同一份声明。 */
-const ItemCtx = createContext<MenuItemProps | undefined>(undefined)
+const ItemCtx = createContext<MenuAnyItemProps | undefined>(undefined)
 
 export const MenuItemProvider = ItemCtx
 
-export function useMenuItemContext(): MenuItemProps {
+export function useMenuItemContext(): MenuAnyItemProps {
   const item = useContext(ItemCtx)
   if (!item)
-    throw new Error('XhMenu 的条目子部件要放在 XhMenuItem 里')
+    throw new Error('XhMenu 的条目子部件要放在 XhMenuItem / XhMenuCheckboxItem / XhMenuRadioItem 里')
   return item
 }
 

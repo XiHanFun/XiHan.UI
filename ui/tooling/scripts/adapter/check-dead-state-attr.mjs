@@ -81,6 +81,9 @@ const HOOK_ATTRS = {
  * 键写成「组件:属性」，值写清承载它的是哪一条。
  */
 const HOOKS = {
+  'menu:data-xh-menu-close-on-select': '键盘确认在 content 冒泡层读取，决定选择后是否关闭菜单链；它是行为传输位，不参与视觉',
+  'context-menu:data-xh-menu-close-on-select': '键盘确认在 content 冒泡层读取，决定选择后是否关闭菜单链；它是行为传输位，不参与视觉',
+  'menubar:data-xh-menu-close-on-select': '键盘确认在 content 冒泡层读取，决定选择后是否关闭菜单栏；它是行为传输位，不参与视觉',
   'button:data-size': '控件尺寸由同节点的 data-xh-action-size 交给 Action Control 配方；data-size 保留为作者样式钩子',
   'color-swatch:data-size': '色块尺寸由同节点的 data-xh-swatch-size 交给 Swatch 色块面配方；data-size 保留为作者样式钩子',
   'color-picker:data-channel': '两个滑块挂载点各有自己的部件名（hue-slider / alpha-slider），皮肤按部件名选；data-channel 与滑块 root 上的那份同名，留给作者按通道写样式的钩子',

@@ -6,7 +6,7 @@
 // 提供 menu 相关实现。
 
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { MenuApi, MenuGroupProps, MenuItemProps, MenuNode, MenuNodeMeta, MenuSchema, MenuTranslations } from '@xihan-ui/headless'
+import type { MenuAnyItemProps, MenuApi, MenuCheckboxItemProps, MenuGroupProps, MenuNode, MenuNodeMeta, MenuRadioItemProps, MenuRadioValue, MenuSchema, MenuTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -35,7 +35,7 @@ import { useMenu, useMenuWithParent } from './use-menu'
 type MenuProps = MenuSchema['props']
 
 /** 函数式 children 的载荷：菜单的展开态与开合命令。 */
-export type MenuRootSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
+export type MenuRootSlotProps = Pick<MenuApi, 'open' | 'setOpen' | 'checkboxValue' | 'radioValue' | 'setCheckboxValue' | 'setRadioValue'>
 
 /** 代铺条目时可逐槽接管的三处渲染；三处都不给即完全按数据铺。 */
 interface MenuItemRenderers {
@@ -47,6 +47,10 @@ interface MenuItemRenderers {
 export interface XhMenuRootProps {
   /** 条目数据；提供后不必逐条放置部件。 */
   collection?: MenuNode[]
+  checkboxValue?: string[]
+  defaultCheckboxValue?: string[]
+  radioValue?: MenuRadioValue
+  defaultRadioValue?: MenuRadioValue
   open?: boolean
   defaultOpen?: boolean
   placement?: Placement
@@ -74,6 +78,8 @@ export interface XhMenuRootProps {
   renderItemSuffix?: (node: MenuNodeMeta) => ReactNode
   onOpenChange?: MenuProps['onOpenChange']
   onSelect?: MenuProps['onSelect']
+  onCheckboxValueChange?: MenuProps['onCheckboxValueChange']
+  onRadioValueChange?: MenuProps['onRadioValueChange']
   children?: SlotChildren<MenuRootSlotProps>
 }
 
@@ -89,7 +95,14 @@ export function XhMenuRoot({
   const ctx = useMenu(withXhConfig('menu', props) as MenuProps)
 
   const body = children != null
-    ? renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })
+    ? renderSlot(children, {
+        open: ctx.api.open,
+        setOpen: ctx.api.setOpen,
+        checkboxValue: ctx.api.checkboxValue,
+        radioValue: ctx.api.radioValue,
+        setCheckboxValue: ctx.api.setCheckboxValue,
+        setRadioValue: ctx.api.setRadioValue,
+      })
     : props.collection
       ? <DefaultTree collection={ctx.api.collection} trigger={trigger} triggerAsChild={triggerAsChild} renderers={{ item: renderItem, prefix: renderItemPrefix, suffix: renderItemSuffix }} />
       : null
@@ -97,7 +110,7 @@ export function XhMenuRoot({
   return <MenuProvider value={ctx}>{body}</MenuProvider>
 }
 
-XhMenuRoot.xhEvents = ['open-change', 'select'] as const
+XhMenuRoot.xhEvents = ['open-change', 'select', 'checkbox-value-change', 'radio-value-change'] as const
 
 export interface XhMenuTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 export function XhMenuTrigger({ children, asChild, ...rest }: XhMenuTriggerProps): ReactNode {
@@ -167,29 +180,37 @@ export interface XhMenuItemProps extends Omit<ComponentPropsWithRef<'div'>, 'val
   /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
-export function XhMenuItem({ value, disabled, children, ...rest }: XhMenuItemProps): ReactNode {
+interface MenuItemImplProps extends ComponentPropsWithRef<'div'> {
+  item: MenuAnyItemProps
+}
+
+function MenuItemImpl({ item, children, ...rest }: MenuItemImplProps): ReactNode {
   const ctx = useMenuContext()
-  const item = useMemo<MenuItemProps>(() => ({ value, disabled }), [value, disabled])
   const itemEl = useRef<HTMLElement | null>(null)
-  const previous = useRef(value)
+  const previous = useRef(item.value)
+  const headlessProps = item.kind === 'checkbox'
+    ? ctx.api.getCheckboxItemProps(item)
+    : item.kind === 'radio'
+      ? ctx.api.getRadioItemProps(item)
+      : ctx.api.getItemProps(item)
   // 条目的聚焦上报与指针划过都不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getItemProps(item) as Record<string, unknown>,
+    headlessProps as Record<string, unknown>,
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
 
   // 本条目持有焦点时，value 变更按新值重报焦点条目
   useEffect(() => {
     const prev = previous.current
-    previous.current = value
-    if (prev === value)
+    previous.current = item.value
+    if (prev === item.value)
       return
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return
     if (itemEl.current && svc.scope.getActiveElement() === itemEl.current)
-      svc.send({ type: 'ITEM.FOCUS', value })
-  }, [ctx.service, value])
+      svc.send({ type: 'ITEM.FOCUS', value: item.value })
+  }, [ctx.service, item.value])
 
   // 卸载时上报焦点丢失：按「本节点当下正持有焦点」判定，不按 value 比对
   useIsomorphicLayoutEffect(() => () => {
@@ -214,6 +235,24 @@ export function XhMenuItem({ value, disabled, children, ...rest }: XhMenuItemPro
       </div>
     </MenuItemProvider>
   )
+}
+
+export function XhMenuItem({ value, disabled, children, ...rest }: XhMenuItemProps): ReactNode {
+  const item = useMemo<MenuAnyItemProps>(() => ({ value, disabled, kind: 'item' }), [value, disabled])
+  return <MenuItemImpl item={item} {...rest}>{children}</MenuItemImpl>
+}
+
+export interface XhMenuCheckboxItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'>, MenuCheckboxItemProps {}
+export function XhMenuCheckboxItem({ value, disabled, closeOnSelect, children, ...rest }: XhMenuCheckboxItemProps): ReactNode {
+  const item = useMemo<MenuAnyItemProps>(() => ({ value, disabled, closeOnSelect, kind: 'checkbox' }), [value, disabled, closeOnSelect])
+  return <MenuItemImpl item={item} {...rest}>{children}</MenuItemImpl>
+}
+
+export interface XhMenuRadioItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'>, Omit<MenuRadioItemProps, 'group'> {}
+export function XhMenuRadioItem({ value, disabled, closeOnSelect, children, ...rest }: XhMenuRadioItemProps): ReactNode {
+  const group = useMenuGroupContext()
+  const item = useMemo<MenuAnyItemProps>(() => ({ value, disabled, closeOnSelect, kind: 'radio', group: group.value }), [value, disabled, closeOnSelect, group.value])
+  return <MenuItemImpl item={item} {...rest}>{children}</MenuItemImpl>
 }
 
 export interface XhMenuItemTextProps extends ComponentPropsWithRef<'span'> {}
@@ -269,6 +308,19 @@ export function XhMenuGroup({ value, children, ...rest }: XhMenuGroupProps): Rea
   )
 }
 
+export interface XhMenuRadioGroupProps extends ComponentPropsWithRef<'div'> {
+  value: string
+}
+export function XhMenuRadioGroup({ value, children, ...rest }: XhMenuRadioGroupProps): ReactNode {
+  const ctx = useMenuContext()
+  const group = useMemo<MenuGroupProps>(() => ({ value }), [value])
+  return (
+    <MenuGroupProvider value={group}>
+      <div {...mergeReactProps(ctx.api.getRadioGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+    </MenuGroupProvider>
+  )
+}
+
 export interface XhMenuGroupLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhMenuGroupLabel({ children, ...rest }: XhMenuGroupLabelProps): ReactNode {
   const ctx = useMenuContext()
@@ -296,6 +348,10 @@ export interface XhMenuSubProps {
   value: string
   disabled?: boolean
   collection?: MenuNode[]
+  checkboxValue?: string[]
+  defaultCheckboxValue?: string[]
+  radioValue?: MenuRadioValue
+  defaultRadioValue?: MenuRadioValue
   placement?: Placement
   offset?: number
   loop?: boolean
@@ -308,6 +364,8 @@ export interface XhMenuSubProps {
   tone?: Tone
   /** 尺寸；默认继承父层，理由同 tone。 */
   size?: Size
+  onCheckboxValueChange?: MenuProps['onCheckboxValueChange']
+  onRadioValueChange?: MenuProps['onRadioValueChange']
   children?: SlotChildren<MenuSubSlotProps>
 }
 
@@ -412,10 +470,11 @@ function renderNodes(
       )
     }
     const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
+    const Group = head.kind === 'radio' ? XhMenuRadioGroup : XhMenuGroup
     return (
       <Fragment key={`group:${head.group}`}>
         {lead}
-        <XhMenuGroup value={head.group}>
+        <Group value={head.group}>
           {groupLabel != null ? <XhMenuGroupLabel>{groupLabel}</XhMenuGroupLabel> : null}
           {run.map((node, index) => (
             <Fragment key={node.value}>
@@ -423,7 +482,7 @@ function renderNodes(
               {renderItemNode(node, renderers)}
             </Fragment>
           ))}
-        </XhMenuGroup>
+        </Group>
       </Fragment>
     )
   })
@@ -438,19 +497,22 @@ function renderItemNode(
   meta: MenuNodeMeta,
   renderers: MenuItemRenderers,
 ): ReactNode {
-  return (
-    <XhMenuItem key={meta.value} value={meta.value}>
-      {renderers.item?.(meta) ?? (
-        <>
-          {renderers.prefix
-            ? <XhMenuItemIndicator>{renderers.prefix(meta)}</XhMenuItemIndicator>
-            : meta.indicator != null ? <XhMenuItemIndicator>{meta.indicator}</XhMenuItemIndicator> : null}
-          <XhMenuItemText>{meta.label}</XhMenuItemText>
-          {meta.description != null ? <XhMenuItemDescription>{meta.description}</XhMenuItemDescription> : null}
-          {meta.shortcut != null ? <XhMenuItemShortcut>{meta.shortcut}</XhMenuItemShortcut> : null}
-          {renderers.suffix ? <XhMenuItemSuffix>{renderers.suffix(meta)}</XhMenuItemSuffix> : null}
-        </>
-      )}
-    </XhMenuItem>
+  const content = renderers.item?.(meta) ?? (
+    <>
+      {renderers.prefix
+        ? <XhMenuItemIndicator>{renderers.prefix(meta)}</XhMenuItemIndicator>
+        : meta.indicator != null
+          ? <XhMenuItemIndicator>{meta.indicator}</XhMenuItemIndicator>
+          : meta.kind !== 'item' ? <XhMenuItemIndicator /> : null}
+      <XhMenuItemText>{meta.label}</XhMenuItemText>
+      {meta.description != null ? <XhMenuItemDescription>{meta.description}</XhMenuItemDescription> : null}
+      {meta.shortcut != null ? <XhMenuItemShortcut>{meta.shortcut}</XhMenuItemShortcut> : null}
+      {renderers.suffix ? <XhMenuItemSuffix>{renderers.suffix(meta)}</XhMenuItemSuffix> : null}
+    </>
   )
+  if (meta.kind === 'checkbox')
+    return <XhMenuCheckboxItem key={meta.value} value={meta.value} closeOnSelect={meta.closeOnSelect}>{content}</XhMenuCheckboxItem>
+  if (meta.kind === 'radio')
+    return <XhMenuRadioItem key={meta.value} value={meta.value} closeOnSelect={meta.closeOnSelect}>{content}</XhMenuRadioItem>
+  return <XhMenuItem key={meta.value} value={meta.value}>{content}</XhMenuItem>
 }

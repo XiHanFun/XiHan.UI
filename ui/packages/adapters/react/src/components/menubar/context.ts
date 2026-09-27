@@ -5,7 +5,7 @@
 
 // 提供 context 相关实现。
 
-import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps } from '@xihan-ui/headless'
+import type { MenubarAnyItemProps, MenubarContentProps, MenubarGroupProps } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { MenubarContext } from './use-menubar'
 import { createContext, useContext } from 'react'
@@ -42,14 +42,14 @@ export function useMenubarPositionerContext(): RefObject<HTMLElement | null> | n
 }
 
 /** 条目声明的值与禁用，供 item-text / item-indicator 等子部件复用同一份声明。 */
-const ItemCtx = createContext<MenubarItemProps | undefined>(undefined)
+const ItemCtx = createContext<MenubarAnyItemProps | undefined>(undefined)
 
 export const MenubarItemProvider = ItemCtx
 
-export function useMenubarItemContext(): MenubarItemProps {
+export function useMenubarItemContext(): MenubarAnyItemProps {
   const item = useContext(ItemCtx)
   if (!item)
-    throw new Error('XhMenubar 的条目子部件要放在 XhMenubarItem 里')
+    throw new Error('XhMenubar 的条目子部件要放在 XhMenubarItem / XhMenubarCheckboxItem / XhMenubarRadioItem 里')
   return item
 }
 
