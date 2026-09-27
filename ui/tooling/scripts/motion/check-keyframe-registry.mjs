@@ -16,7 +16,8 @@
 //
 // 判据 4 是这套表的核心：它是唯一能拦住「同一个动作长出第 N 个名字」的机器判据。
 // 规范式把同一段动画的不同写法归到一种：from / to 与 0% / 100% 同义，transform 里
-// 只有一个 rotate() 时与独立的 rotate 属性同义，角度统一折成 turn。
+// 只有一个 rotate() 时与独立的 rotate 属性同义，角度统一折成 turn；运行时起点槽
+// var(--xh-_enter-from-opacity, X) 只在退场中途重开时才有值，按它的兜底 X 比。
 // retired 记着收敛掉的旧名，旧名再出现（定义或引用）即判红。
 //
 // 登记表 tooling/scripts/keyframe-registry.json 由 `pnpm keyframes:update` 生成并入库。
@@ -49,11 +50,17 @@ function toTurn(angle) {
   return `${Number((Number(m[1]) / perTurn).toFixed(6))}turn`
 }
 
+/** 运行时写入的进场起点槽：静态比对时取兜底值，写法不同但静息时同一段动画。 */
+const RUNTIME_START = /^var\(--xh-_enter-from-opacity,(.+)\)$/
+
 /** 一条声明的规范式：transform 里只有一个 rotate() 时改写成独立的 rotate 属性。 */
 function canonicalDeclaration(decl) {
   const colon = decl.indexOf(':')
   let prop = decl.slice(0, colon)
   let value = decl.slice(colon + 1)
+  const start = RUNTIME_START.exec(value)
+  if (start)
+    value = start[1]
   if (prop === 'transform' && value.startsWith('rotate(') && value.endsWith(')') && !value.slice(7, -1).includes('(')) {
     prop = 'rotate'
     value = value.slice(7, -1)
