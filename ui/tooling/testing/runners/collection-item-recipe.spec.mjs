@@ -104,9 +104,10 @@ describe('collection Item recipe', () => {
     expect(css).not.toMatch(/^\s*\[data-(?!xh-collection)[^\]]+\][^{]*\{/m)
   })
 
-  it('换面走统一点击时间线：释放 200ms，按下 120ms，pressed 面排在 hover 与高亮之后', async () => {
+  it('换面走统一点击时间线：按下 120ms，其余换面走 micro，pressed 面排在 hover 与高亮之后', async () => {
     const css = compileCollectionItemRecipe(await source())
-    expect(css).toContain('background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release)')
+    expect(css).toContain('background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)')
+    expect(css).not.toContain('--xh-motion-duration-release')
     // 按压面同时认指针 :active 与 Headless 投影的 data-pressed（键盘 / 触屏），同一档
     const pressed = css.match(/\[data-error\]\):is\(:active, \[data-pressed\]\) \{([^}]*)\}/)[1]
     expect(css).not.toMatch(/\[data-error\]\):active \{/)
