@@ -23,6 +23,14 @@ export const GRAPH_INTERACTIVE_LIMIT = 500
 /** 多过这么多个节点不画：先聚合。 */
 export const GRAPH_NODE_LIMIT = 2000
 
+/**
+ * 力导的定位力：宽视口时纵向拉得紧、横向拉得松，收敛出来的形状接近视口的宽高比，
+ * 等比缩放进视口时不再只按短边截住、留出大片空白。宽高比夹在 1/3 到 3 之间，极端视口不把图拉扁。
+ */
+const PULL_STRENGTH = 0.05
+const PULL_EXPONENT = 0.75
+const PULL_ASPECT_MAX = 3
+
 /* ---------- 规格 ---------- */
 
 export interface GraphNodeSpec {
@@ -286,7 +294,20 @@ export function layoutGraphBase(derived: GraphDerived, layout: GraphLayout, size
   // 力导：同步跑到收敛，再把结果缩放、平移到视口里；名字写在节点下面，底边多留一行
   const index = new Map(derived.nodes.map((node, i) => [node.id, i]))
   const links = derived.links.map(l => ({ source: index.get(l.source)!, target: index.get(l.target)! }))
-  const sim = forceSimulation(n, links, { ...graphForceOptions(derived, radius, metrics, 1), center: [0, 0] })
+  const padX = rMax + gap + widest / 2
+  const padTop = rMax + gap
+  const padBottom = rMax + gap * 2 + font.lineHeight
+  const availW = Math.max(1, width - padX * 2)
+  const availH = Math.max(1, height - padTop - padBottom)
+  const aspect = Math.min(PULL_ASPECT_MAX, Math.max(1 / PULL_ASPECT_MAX, availW / availH))
+  const kx = PULL_STRENGTH * aspect ** -PULL_EXPONENT
+  const ky = PULL_STRENGTH * aspect ** PULL_EXPONENT
+  const sim = forceSimulation(n, links, {
+    ...graphForceOptions(derived, radius, metrics, 1),
+    center: [0, 0],
+    x: { target: 0, strength: kx },
+    y: { target: 0, strength: ky },
+  })
   sim.run()
   let x0 = Number.POSITIVE_INFINITY
   let y0 = Number.POSITIVE_INFINITY
@@ -298,11 +319,6 @@ export function layoutGraphBase(derived: GraphDerived, layout: GraphLayout, size
     x1 = Math.max(x1, p.x)
     y1 = Math.max(y1, p.y)
   })
-  const padX = rMax + gap + widest / 2
-  const padTop = rMax + gap
-  const padBottom = rMax + gap * 2 + font.lineHeight
-  const availW = Math.max(1, width - padX * 2)
-  const availH = Math.max(1, height - padTop - padBottom)
   // 一两个节点时模拟的范围几乎是 0：放大有上限，免得两个节点被拉到视口两端
   const fit = Math.min(availW / Math.max(x1 - x0, 1e-9), availH / Math.max(y1 - y0, 1e-9), 3)
   const ox = padX + (availW - (x1 - x0) * fit) / 2
@@ -320,7 +336,10 @@ export interface GraphSimulationRef {
   readonly base: GraphBase
 }
 
-/** 拖动开始时按当前的位置建一个模拟：弹簧与电荷按底图的缩放换算，不再向心，免得整张图往中间跳。 */
+/**
+ * 拖动开始时按当前的位置建一个模拟：弹簧与电荷按底图的缩放换算；不再向心，也不带底图的定位力——
+ * 定位力会把放下的节点拽回原处，拖动就白拖了。
+ */
 export function createGraphSimulation(base: GraphBase, placed: ReadonlyMap<string, { readonly x: number, readonly y: number }>): GraphSimulationRef {
   const { derived } = base
   const ids = derived.nodes.map(n => n.id)

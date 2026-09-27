@@ -185,6 +185,19 @@ describe('几何', () => {
     expect(label.anchor).toBe('middle')
   })
 
+  it('力导的形状跟着视口的宽高比走：宽视口里横着铺开，窄高视口里竖着铺开', async () => {
+    const extent = (api: GraphChartApi): number => {
+      const ns = byPart(api, 'node') as ArcMark[]
+      const xs = ns.map(n => n.cx)
+      const ys = ns.map(n => n.cy)
+      return (Math.max(...xs) - Math.min(...xs)) / (Math.max(...ys) - Math.min(...ys))
+    }
+    const wide = await makeRig(BASE, { width: 900, height: 320 })
+    const tall = await makeRig(BASE, { width: 320, height: 640 })
+    expect(extent(wide.api())).toBeGreaterThan(1.5)
+    expect(extent(tall.api())).toBeLessThan(1)
+  })
+
   it('环形：节点到圆心等距；同组相邻，组间多留一份空当', async () => {
     const rig = await makeRig({ ...BASE, layout: 'circular' })
     const api = rig.api()
