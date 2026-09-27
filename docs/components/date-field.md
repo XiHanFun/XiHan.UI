@@ -54,6 +54,12 @@
 
 <XhDemo src="date-field/06-datetime" />
 
+### 12 小时制
+
+hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / p 切换），值仍是 24 小时制的 ISO 串
+
+<XhDemo src="date-field/07-hour-cycle" />
+
 ## 设计指引
 
 ### 何时使用
@@ -70,7 +76,7 @@
 
 - `locale` 决定日期段的顺序和分隔方式。
 - `min` 与 `max` 限制可输入范围。
-- `granularity` 支持日期或精确到分钟的日期时间。
+- `granularity` 支持日期或精确到分钟的日期时间；`hourCycle={12}` 时小时段收 1-12，时刻段后面多出上下午段，值仍是 24 小时制的 ISO 串。
 - `year + week` 段集使用 ISO 周历，固定周一到周日，不随显示语言改变。
 - 标准组合包含标签、输入框、日期段和隐藏表单输入；支持受控值与原生表单提交。
 - 聚焦只强调正在编辑的日期段，错误段使用独立的危险色反馈。
@@ -116,6 +122,7 @@
 | `locale` | `string` |  | BCP 47 语言标记，决定年月日三段的先后。未提供时按宿主语言，宿主也没有时按 en-US（月日年）排列。 |
 | `timeZone` | `string` |  | IANA 时区名，只用于取今天：空段上按上下键时从今天的对应位起步。 |
 | `granularity` | `DateGranularity` |  | 精度，默认 day（只有年月日三段）。提供 segments 时它不再生效。 |
+| `hourCycle` | `DateHourCycle` |  | 时刻段的小时制，默认 24，不随 locale 推断。12 时小时段收 1-12，时刻段后面多出上下午段（按 a / p 或上下键切换）； 只在按 granularity 铺段且精度到时以下时生效，提供 segments 时由段集里有没有 dayPeriod 决定。值仍是 24 小时制的 ISO 串。 |
 | `segments` | `DateSegmentSet` |  | 段集：该控件由哪几段组成，提供后以它为准，granularity 让位。写 `['year', 'quarter']` 得到「2026 Q2」、`['year', 'week']` 得到「2026 33」。归一后为空（如 `[]`）视同未提供。 值仍是 ISO 日期（时间）串，因此段集中必须有 year，否则段位可编辑但无法拼出值。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |

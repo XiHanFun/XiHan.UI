@@ -9,6 +9,7 @@ import type { Params } from '@xihan-ui/core'
 import type {
   DateFieldSchema,
   DateGranularity,
+  DateHourCycle,
   DateSegmentRange,
   DateSegments,
   DateSegmentSet,
@@ -159,12 +160,21 @@ export function localeDateOrder(locale: string = DATE_FIELD_LOCALE): readonly Da
   return order
 }
 
-/** 段序：年月日按 locale 排，时分秒按精度追加在后面。 */
+/** 12 小时制只在有时刻段时才多出上下午段：只到日的精度没有小时可换算。 */
+function takesDayPeriod(granularity: DateGranularity, hourCycle: DateHourCycle | undefined): boolean {
+  return hourCycle === 12 && (TIME_SEGMENTS[granularity] ?? []).length > 0
+}
+
+/** 段序：年月日按 locale 排，时分秒按精度追加在后面；12 小时制再在末尾追加上下午段。 */
 export function dateSegmentOrder(
   locale: string = DATE_FIELD_LOCALE,
   granularity: DateGranularity = DATE_FIELD_GRANULARITY,
+  hourCycle?: DateHourCycle,
 ): DateSegmentType[] {
-  return [...localeDateOrder(locale), ...(TIME_SEGMENTS[granularity] ?? [])]
+  const order: DateSegmentType[] = [...localeDateOrder(locale), ...(TIME_SEGMENTS[granularity] ?? [])]
+  if (takesDayPeriod(granularity, hourCycle))
+    order.push('dayPeriod')
+  return order
 }
 
 /** 该精度下必须填齐的段（不含顺序）。 */
@@ -181,14 +191,15 @@ export function hasSegmentSet(set: DateSegmentSet | undefined): boolean {
  * 此刻这份控件由哪几段组成，文档序。
  *
  * 给了段集就以它为准（归一后的顺序，不随 locale 变——「2026 Q2」没有别的排法）；
- * 没给则退回 granularity 那条老路，年月日按 locale 排、时刻段按精度追加。
+ * 没给则退回 granularity 那条老路，年月日按 locale 排、时刻段按精度追加，12 小时制再追加上下午段。
  */
 export function resolveSegmentSet(
   set: DateSegmentSet | undefined,
   locale: string = DATE_FIELD_LOCALE,
   granularity: DateGranularity = DATE_FIELD_GRANULARITY,
+  hourCycle?: DateHourCycle,
 ): DateSegmentType[] {
-  return hasSegmentSet(set) ? normalizeSegmentSet(set!) : dateSegmentOrder(locale, granularity)
+  return hasSegmentSet(set) ? normalizeSegmentSet(set!) : dateSegmentOrder(locale, granularity, hourCycle)
 }
 
 /** 一份控件的段位口径：两条路（段集 / granularity）都从这里分岔。 */
@@ -196,11 +207,27 @@ export interface DateSegmentOptions {
   set?: DateSegmentSet
   locale?: string
   granularity?: DateGranularity
+  /** 只对 granularity 那条路生效：12 小时制时段位按块换算小时与上下午。 */
+  hourCycle?: DateHourCycle
+}
+
+/**
+ * 按 granularity 铺段的 12 小时制换成一份等价的段集，值往返交给块那一套：
+ * 小时要拆成 1-12 与上下午，老路只认 24 小时制。段集只用来换算，段序仍按 locale。
+ */
+function twelveHourBlocks(options: DateSegmentOptions): DateSegmentSet | null {
+  const granularity = options.granularity ?? DATE_FIELD_GRANULARITY
+  if (hasSegmentSet(options.set) || !takesDayPeriod(granularity, options.hourCycle))
+    return null
+  return [...granularitySegments(granularity), 'dayPeriod']
 }
 
 /** ISO 串 → 逐段的值。段集在场时按块派生，否则走 granularity 那条老路。 */
 export function isoToSegments(iso: string | null | undefined, options: DateSegmentOptions = {}): DateSegments {
   const { set, locale = DATE_FIELD_LOCALE, granularity } = options
+  const twelve = twelveHourBlocks(options)
+  if (twelve)
+    return isoToBlocks(iso, twelve, locale)
   return hasSegmentSet(set)
     ? isoToBlocks(iso, set!, locale)
     : parseIsoSegments(iso, granularity)
@@ -209,6 +236,9 @@ export function isoToSegments(iso: string | null | undefined, options: DateSegme
 /** 逐段的值 → ISO 串；要求的段缺一个就是 null。同上，两条路各走各的。 */
 export function segmentsToValue(segments: DateSegments, options: DateSegmentOptions = {}): string | null {
   const { set, locale = DATE_FIELD_LOCALE, granularity } = options
+  const twelve = twelveHourBlocks(options)
+  if (twelve)
+    return blocksToIso(segments, twelve, locale)
   return hasSegmentSet(set)
     ? blocksToIso(segments, set!, locale)
     : segmentsToIso(segments, granularity)
@@ -528,13 +558,14 @@ function optionsOf(params: Params<DateFieldSchema>): DateSegmentOptions {
     set: params.prop('segments'),
     locale: localeOf(params),
     granularity: granularityOf(params),
+    hourCycle: params.prop('hourCycle'),
   }
 }
 
 /** 此刻在用的那几段，文档序。 */
 function setOf(params: Params<DateFieldSchema>): DateSegmentType[] {
   const options = optionsOf(params)
-  return resolveSegmentSet(options.set, options.locale, options.granularity)
+  return resolveSegmentSet(options.set, options.locale, options.granularity, options.hourCycle)
 }
 
 /** 清空按钮此刻可用：可编辑，且在用的段里填了哪怕一段（与 connect 里按钮的显隐同一口径）。 */
@@ -608,7 +639,7 @@ export const dateFieldMachine = createMachine({
     segments: cell<DateSegments>(() => ({
       defaultValue: isoToSegments(
         prop('value') === undefined ? prop('defaultValue') : prop('value'),
-        { set: prop('segments'), locale: prop('locale'), granularity: prop('granularity') },
+        { set: prop('segments'), locale: prop('locale'), granularity: prop('granularity'), hourCycle: prop('hourCycle') },
       ),
       isEqual: sameSegments,
     })),
@@ -623,7 +654,8 @@ export const dateFieldMachine = createMachine({
     track([context.dep('value')], () => action(['syncSegmentsFromValue']))
     // 段集换了（date-picker 按视图换段集）也要重派生：值没动，但要哪几块变了。
     // 指纹取归一后的段名串，作者每帧新建一个同内容的数组不该白惊动一次
-    track([() => setKeyOf(prop('segments'))], () => action(['syncSegmentsFromSet']))
+    // 小时制换了同理：小时段收的数从 0-23 换成 1-12，上下午段随之出现或收起
+    track([() => setKeyOf(prop('segments')), () => prop('hourCycle')], () => action(['syncSegmentsFromSet']))
     // 按住途中转入禁用 / 只读或段位被清空：清空按钮随即藏起，不会再来 keyup，按压面由机器自己收
     track([() => prop('disabled'), () => prop('readOnly'), context.dep('segments')], () => action(['releaseWhenInert']))
   },

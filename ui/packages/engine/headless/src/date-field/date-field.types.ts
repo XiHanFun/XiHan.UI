@@ -36,6 +36,9 @@ export type DateSegmentSet = readonly DateSegmentType[]
 /** 精度：决定共有几段，也决定产出的 ISO 串截止到哪一位。 */
 export type DateGranularity = 'day' | 'hour' | 'minute' | 'second'
 
+/** 时刻段的小时制。12 表示小时段收 1-12 并在时刻段后面多出一个上下午段。 */
+export type DateHourCycle = 12 | 24
+
 /** 半天：上午或下午。上下午段接收的即这两个值。 */
 export type DateDayPeriod = 'am' | 'pm'
 
@@ -118,6 +121,11 @@ export interface DateFieldSchema extends MachineSchema {
     timeZone?: string
     /** 精度，默认 day（只有年月日三段）。提供 segments 时它不再生效。 */
     granularity?: DateGranularity
+    /**
+     * 时刻段的小时制，默认 24，不随 locale 推断。12 时小时段收 1-12，时刻段后面多出上下午段（按 a / p 或上下键切换）；
+     * 只在按 granularity 铺段且精度到时以下时生效，提供 segments 时由段集里有没有 dayPeriod 决定。值仍是 24 小时制的 ISO 串。
+     */
+    hourCycle?: DateHourCycle
     /**
      * 段集：该控件由哪几段组成，提供后以它为准，granularity 让位。写 `['year', 'quarter']`
      * 得到「2026 Q2」、`['year', 'week']` 得到「2026 33」。归一后为空（如 `[]`）视同未提供。

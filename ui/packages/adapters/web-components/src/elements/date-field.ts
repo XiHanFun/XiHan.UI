@@ -6,8 +6,9 @@
 // 提供 date field 相关实现。
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateSegmentSet, DateSegmentType, FormControlState } from '@xihan-ui/headless'
+import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType, FormControlState } from '@xihan-ui/headless'
 import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -87,6 +88,7 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
  * @attr {string} locale - BCP 47 语言标记，决定年月日三段的先后；未提供时按宿主语言，宿主也没有时按 en-US
  * @attr {string} time-zone - IANA 时区名，只用于取今天（空段按上下键时的起点）
  * @attr {'day'|'hour'|'minute'|'second'} granularity - 精度，决定共有几段，默认 day
+ * @attr {'12'|'24'} hour-cycle - 时刻段的小时制，默认 24；12 时小时段收 1-12 并多出上下午段
  * @attr {string} segments - 段集，逗号分隔的段名（`year,quarter`）；提供后 granularity 让位。
  *   可选的九块：year / quarter / month / week / day / hour / minute / second / dayPeriod。
  *   季度与月、周与日两两互斥，都写时以较细的粒度为准
@@ -120,6 +122,7 @@ export class XhDateFieldElement extends XhElement {
     locale: { converter: STRING_CONVERTER },
     timeZone: { converter: STRING_CONVERTER, attribute: 'time-zone' },
     granularity: { converter: STRING_CONVERTER },
+    hourCycle: { converter: HOUR_CYCLE_CONVERTER, attribute: 'hour-cycle' },
     segments: { converter: SEGMENT_SET_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
@@ -140,6 +143,7 @@ export class XhDateFieldElement extends XhElement {
   declare locale?: string
   declare timeZone?: string
   declare granularity?: DateGranularity
+  declare hourCycle?: DateHourCycle
   declare segments?: DateSegmentSet
   declare disabled?: boolean
   declare readOnly?: boolean
@@ -181,6 +185,7 @@ export class XhDateFieldElement extends XhElement {
       locale: this.locale,
       timeZone: this.timeZone,
       granularity: this.granularity,
+      hourCycle: this.hourCycle,
       segments: this.segments,
       disabled: control.disabled,
       readOnly: control.readOnly,
