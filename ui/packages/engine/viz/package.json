@@ -30,6 +30,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./graph": {
+      "types": "./dist/graph.d.ts",
+      "import": "./dist/graph.js"
+    },
     "./hierarchy": {
       "types": "./dist/hierarchy.d.ts",
       "import": "./dist/hierarchy.js"
@@ -37,10 +41,6 @@
     "./sankey": {
       "types": "./dist/sankey.d.ts",
       "import": "./dist/sankey.js"
-    },
-    "./graph": {
-      "types": "./dist/graph.d.ts",
-      "import": "./dist/graph.js"
     }
   },
   "main": "./dist/index.js",
