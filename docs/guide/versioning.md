@@ -100,8 +100,8 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
 | `data-scope` 取值（组件身份） | 137 | **受约束**（新增第 138 个组件是 minor） |
-| `data-part` 取值（部件名） | 312 个不同名字 / 1135 条「组件 × 部件」配对 | **受约束** |
-| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 312 个 | **受约束** |
+| `data-part` 取值（部件名） | 313 个不同名字 / 1136 条「组件 × 部件」配对 | **受约束** |
+| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 313 个 | **受约束** |
 | `meta.requiredParts`（必备部件） | 301 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
@@ -419,10 +419,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，16508 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，16509 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 199 条子入口、8581 个导出名、137 个 `data-scope` 与 1135 条部件配对、
+覆盖：包名与 199 条子入口、8581 个导出名、137 个 `data-scope` 与 1136 条部件配对、
 137 个组件的 1783 个 prop 名、245 种 `data-*`、34 个 `data-state` 取值、660 个令牌、
 5 个 `@layer` 名、4104 个组件覆盖槽、139 个自定义元素及其 attribute 与事件。
 

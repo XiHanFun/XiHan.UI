@@ -15,7 +15,7 @@ import { createAnatomy } from '@xihan-ui/core'
 // 线尾标签被推开时，leader-line 把它连回线尾。
 // defs 里的 pattern 是各系列的纹理，pattern-line 是纹理的线：强制色、打印与环境开启纹理时柱与面积改用它填充。
 // legend-scale 是按值着色时图例末尾的色阶：名字、低端的值、渐变条、高端的值。
-// connector 是瀑布相邻两步之间的连接线，只给眼睛看。candle 是 K 线的实体（美国线是整根线），wick 是影线。
+// stem 是棒棒糖的细杆（杆顶的点是 point），只给眼睛看。connector 是瀑布相邻两步之间的连接线，只给眼睛看。candle 是 K 线的实体（美国线是整根线），wick 是影线。
 // box 是箱线的箱（小提琴是密度轮廓），whisker 是须线，median 是中位线，outlier 是离群点；只有 box 可聚焦。
 // annotation 是注释（参考线、参考带、标出的点、平均线、趋势线），annotation-label 是它的标签，都只给眼睛看。
 export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
@@ -43,6 +43,7 @@ export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'axis-title',
   'series',
   'bar',
+  'stem',
   'connector',
   'candle',
   'wick',
