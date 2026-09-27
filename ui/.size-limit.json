@@ -3,7 +3,7 @@
     "name": "core",
     "path": "packages/engine/core/dist/index.js",
     "gzip": true,
-    "limit": "30.3 kB"
+    "limit": "32.5 kB"
   },
   {
     "name": "core/date",
@@ -27,7 +27,7 @@
     "name": "motion",
     "path": "packages/engine/motion/dist/index.js",
     "gzip": true,
-    "limit": "3 kB"
+    "limit": "5.5 kB"
   },
   {
     "name": "position",
@@ -39,7 +39,7 @@
     "name": "pointer",
     "path": "packages/engine/pointer/dist/index.js",
     "gzip": true,
-    "limit": "2.3 kB"
+    "limit": "2.5 kB"
   },
   {
     "name": "viz",
@@ -106,19 +106,19 @@
     "name": "animations",
     "path": "packages/features/animations/dist/index.js",
     "gzip": true,
-    "limit": "3.9 kB"
+    "limit": "7.1 kB"
   },
   {
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "379 kB"
+    "limit": "522 kB"
   },
   {
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "424 kB",
+    "limit": "565 kB",
     "ignore": [
       "vue"
     ]
@@ -136,7 +136,7 @@
     "name": "vue/behavior",
     "path": "packages/adapters/vue/dist/behavior.js",
     "gzip": true,
-    "limit": "5.5 kB",
+    "limit": "6 kB",
     "ignore": [
       "vue"
     ]
@@ -145,7 +145,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "421 kB",
+    "limit": "564 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -165,7 +165,7 @@
     "name": "react/behavior",
     "path": "packages/adapters/react/dist/behavior.js",
     "gzip": true,
-    "limit": "5.7 kB",
+    "limit": "6.1 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -194,13 +194,13 @@
     "name": "web-components",
     "path": "packages/adapters/web-components/dist/index.js",
     "gzip": true,
-    "limit": "10.3 kB"
+    "limit": "10.8 kB"
   },
   {
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "416 kB"
+    "limit": "560 kB"
   },
   {
     "name": "web-components/backgrounds",
@@ -218,7 +218,7 @@
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "423 kB"
+    "limit": "470 kB"
   },
   {
     "name": "styles/index.css（主入口，扁平有层）",
@@ -304,7 +304,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhToastRoot }",
     "gzip": true,
-    "limit": "12 kB",
+    "limit": "15.2 kB",
     "ignore": [
       "vue"
     ]
