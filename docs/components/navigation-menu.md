@@ -64,6 +64,24 @@
 
 - 窄屏时切换为抽屉或侧栏导航，不压缩顶部入口。
 
+### 接路由
+
+- Vue / React 的 `link`（直达链接与面板里的链接）缺省渲染 `<a>`，`href` 由作者写或取自 `collection`。接客户端路由时给 `XhNavigationMenuLink` 加 `asChild`，把路由链接放进去当唯一的子节点：部件属性与按压接线合到它渲出的元素上，跳转交给路由，点击后照常收起面板；子节点不是恰好一个元素时直接报错。
+- 当前页由作者按路由判定后写 `current`。
+- Web Components 不需要 asChild：`link` 本来就是作者写的节点，元素只往它身上写属性与监听、不替换它。路由库自己的链接元素，或自行拦截点击的 `<a>`，直接标 `data-xh-part="link"` 即可。
+
+```vue
+<XhNavigationMenuLink :current="route.path === '/docs'" as-child>
+  <RouterLink to="/docs">文档</RouterLink>
+</XhNavigationMenuLink>
+```
+
+```tsx
+<XhNavigationMenuLink current={pathname === '/docs'} asChild>
+  <Link to="/docs">文档</Link>
+</XhNavigationMenuLink>
+```
+
 ### 最佳实践
 
 - 使用短标题和简洁说明组织链接。
