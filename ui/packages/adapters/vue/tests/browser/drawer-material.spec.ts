@@ -85,7 +85,7 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
   it.each([
     ['right', '-100%'],
     ['left', '100%'],
-  ] as const)('RTL 下 %s：行内方向的推入随书写方向翻转，与逻辑贴边同侧', async (side, from) => {
+  ] as const)('从右到左（RTL）下 %s：行内方向的推入随书写方向翻转，与逻辑贴边同侧', async (side, from) => {
     document.documentElement.dir = 'rtl'
     try {
       mount(side)

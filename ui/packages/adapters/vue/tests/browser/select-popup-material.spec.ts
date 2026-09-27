@@ -149,7 +149,6 @@ describe('选择器实体触发与 M2 浮层', () => {
   })
 })
 
-
 /** 1px 顶光：材质配方把它画在背景最上一层渐变里（钉在面本身上，不随内容滚动），取那层的第一个色标。 */
 function highlightOf(el: Element): string {
   const image = getComputedStyle(el).backgroundImage

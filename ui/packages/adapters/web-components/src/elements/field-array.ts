@@ -102,6 +102,7 @@ export class XhFieldArrayElement extends XhElement {
     // 列表动效经它取行所在的根节点
     onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')),
   })
+
   private inheritedControl: FormControlState | undefined
 
   /** 最近的 Field 或 Form 只交状态；FieldArray 仅消费公开的禁用、只读、无效三轴。 */

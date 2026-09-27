@@ -152,6 +152,7 @@ export class XhTagsInputElement extends XhElement {
   private readonly ctrl = new MachineController<TagsInputSchema>(this, tagsInputMachine, () => this.machineProps(), {
     onBuilt: svc => svc.refs.set('getControlEl', () => this.getPart('control')),
   })
+
   private inheritedControl: FormControlState | undefined
 
   /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
