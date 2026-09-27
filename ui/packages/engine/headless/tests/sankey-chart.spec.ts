@@ -5,6 +5,7 @@ import type { AreaMark, Mark, RectMark, TextMark } from '@xihan-ui/viz'
 import type { SankeyChartApi, SankeyChartSchema } from '../src/sankey-chart'
 import { createService, DIAGNOSTIC_CODES, normalizeProps, onDiagnostic } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
+import { markPath } from '@xihan-ui/viz'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectSankeyChart, sankeyChartMachine } from '../src/sankey-chart'
 import { sankeyEntryScene } from '../src/sankey-chart/sankey-chart.model'
@@ -172,6 +173,13 @@ describe('几何', () => {
     expect(link.points[0]!.x).toBeCloseTo(search.x + search.width)
     expect(link.points[1]!.x).toBeCloseTo(home.x)
     expect(link.curve).toBe('bumpX')
+  })
+
+  it('节点不贴基线，四角都圆', async () => {
+    const rig = await makeRig(BASE)
+    const home = node(rig.api(), 'home')
+    expect(home.baseline).toBe('none')
+    expect(markPath(home).match(/A/g)).toHaveLength(4)
   })
 
   it('名字写在列间的空当里：前半程写在节点右边，后半程写在左边', async () => {
