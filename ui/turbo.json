@@ -14,6 +14,7 @@
     },
     "test": {
       "dependsOn": ["^build"],
+      "passThroughEnv": ["VITEST_MAX_WORKERS"],
       "inputs": [
         "src/**",
         "tests/**",
@@ -39,11 +40,13 @@
     },
     "@xihan-ui/tokens#test": {
       "dependsOn": ["^build"],
+      "passThroughEnv": ["VITEST_MAX_WORKERS"],
       "inputs": ["src/**", "tests/**", "tokens/**", "tokens.css", "vitest*.config.ts", "package.json"],
       "outputs": ["coverage/**"]
     },
     "@xihan-ui/testing#test": {
       "dependsOn": ["^build", "@xihan-ui/vue#build", "@xihan-ui/react#build", "@xihan-ui/web-components#build"],
+      "passThroughEnv": ["VITEST_MAX_WORKERS"],
       "inputs": ["src/**", "tests/**", "spec/**", "runners/**", "vitest*.config.ts", "package.json"],
       "outputs": ["coverage/**"]
     },
