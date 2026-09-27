@@ -5492,6 +5492,7 @@
       "CartesianTrigger",
       "CartesianWindow",
       "CartesianWindowChangeDetails",
+      "CartesianWindowRatio",
       "CartesianZoom",
       "CascaderApi",
       "CascaderColumn",

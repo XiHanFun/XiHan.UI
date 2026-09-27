@@ -78,13 +78,14 @@ describe('缩放', () => {
     await settle()
     expect(seen).toEqual([false, true])
     expect(windows).toHaveLength(1)
-    const { x } = windows[0]!
-    expect(x.end - x.start).toBeLessThan(1)
-    expect(x.start + (x.end - x.start) / 4).toBeCloseTo(0.25, 2)
+    const [a, b] = windows[0]!.x as [number, number]
+    expect(b - a).toBeLessThan(100)
+    // 锚点对着的值不动：指针在 1/4 处（t = 25）
+    expect(a + (b - a) / 4).toBeCloseTo(25, 0)
   })
 
   it('缩放条与绘图区左右对齐，窗口画在它对着的那一段', async () => {
-    mount({ ...BARS, defaultWindow: { x: { start: 0.25, end: 0.75 }, y: { start: 0, end: 1 } } })
+    mount({ ...BARS, defaultWindow: { x: ['三月', '六月'] } })
     await settle()
     const grid = part('grid').getBoundingClientRect()
     const track = part('zoom-track').getBoundingClientRect()
@@ -102,7 +103,7 @@ describe('缩放', () => {
   })
 
   it('真指针拖终点手柄往左：窗口的终点跟着走，柱只剩露出的类目', async () => {
-    const windows = mount({ ...BARS, defaultWindow: { x: { start: 0, end: 0.75 }, y: { start: 0, end: 1 } } })
+    const windows = mount({ ...BARS, defaultWindow: { x: ['一月', '六月'] } })
     await settle()
     expect(all('bar')).toHaveLength(6)
     const scale = await mouseScale()
@@ -117,13 +118,13 @@ describe('缩放', () => {
       await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', button: 'left', x: from + ((to - from) * i) / 4, y })
     await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, x: to, y })
     await settle()
-    expect(windows.at(-1)!.x.end).toBeCloseTo(0.5, 1)
+    expect(windows.at(-1)!.x).toEqual(['一月', '四月'])
     expect(all('bar')).toHaveLength(4)
     expect(part('zoom-slider').hasAttribute('data-dragging')).toBe(false)
   })
 
   it('连续轴放大后系列按绘图区裁剪：裁剪框就是网格占的那块', async () => {
-    mount({ ...LINE, defaultWindow: { x: { start: 0.5, end: 1 }, y: { start: 0, end: 1 } } })
+    mount({ ...LINE, defaultWindow: { x: [50, 100] } })
     await settle()
     const group = all('series')[0]!
     const ref = group.getAttribute('clip-path')!

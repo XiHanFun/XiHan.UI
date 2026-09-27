@@ -401,7 +401,7 @@ const cases: readonly ConformanceCase[] = [
         key: '-',
         expect: {
           parts: { plot: { 'data-zoomed': null } },
-          events: [{ type: 'window-change', detail: { window: { x: { start: 0, end: 1 }, y: { start: 0, end: 1 } } } }],
+          events: [{ type: 'window-change', detail: { window: { x: null, y: null } } }],
         },
       },
     ],
@@ -410,7 +410,7 @@ const cases: readonly ConformanceCase[] = [
     name: '缩放条：两端的手柄是 slider，读出窗口两端对着的类目；方向键移动一端并派发 window-change',
     spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb/' },
     covers: ['cartesian-chart.kbd.zoom-edge'],
-    props: { zoom: 'x', defaultWindow: { x: { start: 0, end: 2 / 3 }, y: { start: 0, end: 1 } } },
+    props: { zoom: 'x', defaultWindow: { x: ['一月', '二月'] } },
     initial: {
       counts: { 'bar': 4, 'zoom-handle': 2 },
       parts: {
@@ -428,7 +428,7 @@ const cases: readonly ConformanceCase[] = [
         key: 'End',
         expect: {
           parts: { 'zoom-handle': [{ 'aria-valuenow': '0' }, { 'aria-valuenow': '100', 'aria-valuetext': '三月' }] },
-          events: [{ type: 'window-change', detail: { window: { x: { start: 0, end: 1 }, y: { start: 0, end: 1 } } } }],
+          events: [{ type: 'window-change', detail: { window: { x: null, y: null } } }],
         },
       },
       { kind: 'settle', until: { attr: { part: 'zoom-handle[1]', name: 'aria-valuenow', value: '100' } }, expect: { counts: { bar: 6 } } },

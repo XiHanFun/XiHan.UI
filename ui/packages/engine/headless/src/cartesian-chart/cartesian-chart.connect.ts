@@ -6,7 +6,7 @@
 // 提供 cartesian chart 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { Mark, Scene, ShapeMark, TextMark } from '@xihan-ui/viz'
+import type { AxisWindow, Mark, Scene, ShapeMark, TextMark } from '@xihan-ui/viz'
 import type { ChartDatumRef, ChartFrame } from '../shared/chart'
 import type { CartesianActive } from './cartesian-chart.logic'
 import type { CartesianScene } from './cartesian-chart.model'
@@ -17,9 +17,10 @@ import type {
   CartesianMarkTag,
   CartesianTooltipRow,
   CartesianWindow,
+  CartesianWindowRatio,
 } from './cartesian-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
-import { clampWindow, createScene, domainToWindow, isFullWindow, markPath, pan, windowToDomain, zoomAt } from '@xihan-ui/viz'
+import { clampWindow, createScene, domainToWindow, indexRangeToWindow, isFullWindow, markPath, pan, windowToDomain, windowToIndexRange, zoomAt } from '@xihan-ui/viz'
 import { chartNavIntentFromKey, chartPatternFill, chartPatterns, placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { cartesianChartAnatomy } from './cartesian-chart.anatomy'
@@ -39,7 +40,7 @@ import {
   cartesianTooltip,
   cartesianTranslations,
   cartesianTrigger,
-  FULL_CARTESIAN_WINDOW,
+  FULL_CARTESIAN_RATIO,
   sameWindow,
 } from './cartesian-chart.logic'
 
@@ -218,12 +219,39 @@ export function connectCartesianChart<T extends PropTypes>(
   const win = context.get('window')
   const drag = context.get('drag')
   const layout = model.scene?.layout ?? null
-  const shown = layout?.window ?? FULL_CARTESIAN_WINDOW
+  const shown = layout?.window ?? FULL_CARTESIAN_RATIO
   const zoomed = !isFullWindow(shown.x) || !isFullWindow(shown.y)
   const category = model.spec.keyScale === 'band' || model.spec.keyScale === 'point'
   const keyCount = model.spec.keys.length
+  const keyKind = model.spec.keyScale === 'log' ? 'log' : 'linear'
+  const valueKind = model.spec.valueScale === 'log' ? 'log' : 'linear'
   // 窗口最窄：类目轴至少露出一个类目，连续轴放大到 100 倍为止
   const limits = { minSpan: category && keyCount > 0 ? Math.min(1, 1 / keyCount) : 0.01 }
+  // 手势从上一次算出的比例接着算：类目轴的窗口取整到类目，细小的几次滚轮若都从取整后的窗口起算会原地不动
+  const lastRatio = service.refs.get('zoomRatio')
+  const base: CartesianWindowRatio = lastRatio && sameWindow(lastRatio.window, win) ? lastRatio.ratio : shown
+  /** 比例换回定义域里的值：类目轴取窗口盖到的首尾类目，连续轴与数值轴按取整后的整条轴换算；整条轴写 null。 */
+  const windowOf = (ratio: CartesianWindowRatio): CartesianWindow => {
+    let x: CartesianWindow['x'] = null
+    if (zoomX && layout && keyCount > 0 && !isFullWindow(ratio.x)) {
+      if (category) {
+        const [first, last] = windowToIndexRange(ratio.x, keyCount)
+        x = first === 0 && last === keyCount - 1 ? null : [model.spec.keys[first]!, model.spec.keys[last]!]
+      }
+      else if (layout.keyExtent) {
+        const [a, b] = windowToDomain(ratio.x, layout.keyExtent, keyKind)
+        x = model.spec.keyScale === 'time' || model.spec.keyScale === 'utc' ? [new Date(a), new Date(b)] : [a, b]
+      }
+    }
+    const y = zoomY && layout && !isFullWindow(ratio.y) ? windowToDomain(ratio.y, layout.valueExtent, valueKind) : null
+    return { x, y }
+  }
+  const setRatio = (ratio: CartesianWindowRatio): void => {
+    const next = windowOf(ratio)
+    service.refs.set('zoomRatio', { ratio, window: next })
+    if (!sameWindow(next, win))
+      send({ type: 'WINDOW.SET', window: next })
+  }
   const setWindow = (next: CartesianWindow): void => {
     if (!sameWindow(next, win))
       send({ type: 'WINDOW.SET', window: next })
@@ -242,10 +270,33 @@ export function connectCartesianChart<T extends PropTypes>(
       value: Math.min(1, Math.max(0, prop('yAxis')?.reverse ? 1 - value : value)),
     }
   }
-  const zoomAround = (anchor: { key: number, value: number }, factor: number): void => setWindow({
-    x: zoomX ? zoomAt(win.x, anchor.key, factor, limits) : win.x,
-    y: zoomY ? zoomAt(win.y, anchor.value, factor) : win.y,
+  /** 以画面上的一点为中心缩放：锚点是它在露出的窗口里的位置，换成接着算的那份比例里的位置再缩。 */
+  const zoomAxis = (from: AxisWindow, view: AxisWindow, at: number, factor: number, bounds?: { minSpan: number }): AxisWindow => {
+    const pivot = view.start + (view.end - view.start) * at
+    const span = from.end - from.start
+    return zoomAt(from, span > 0 ? (pivot - from.start) / span : 0.5, factor, bounds)
+  }
+  const zoomAround = (anchor: { key: number, value: number }, factor: number): void => setRatio({
+    x: zoomX ? zoomAxis(base.x, shown.x, anchor.key, factor, limits) : base.x,
+    y: zoomY ? zoomAxis(base.y, shown.y, anchor.value, factor) : base.y,
   })
+  /**
+   * 键盘在类目轴上缩放：按整个类目增减，每按一次至少多露或少露一个类目；按比例缩的话，
+   * 类目少时一次缩放盖不过一整格，露出的类目不变，这一下就白按了。焦点所在的类目在窗口里的相对位置不变。
+   */
+  const zoomKeys = (focus: number, factor: number, at: { key: number, value: number }): void => {
+    const [first, last] = layout!.keyRange
+    const count = last - first + 1
+    const next = factor > 1
+      ? Math.max(1, Math.min(count - 1, Math.floor(count / factor)))
+      : Math.min(keyCount, Math.max(count + 1, Math.ceil(count / factor)))
+    const pivot = focus >= first && focus <= last ? focus : first + Math.floor(count / 2)
+    const start = Math.min(keyCount - next, Math.max(0, Math.round(pivot + 0.5 - ((pivot + 0.5 - first) / count) * next)))
+    setRatio({
+      x: indexRangeToWindow(start, start + next - 1, keyCount),
+      y: zoomY ? zoomAxis(base.y, shown.y, at.value, factor) : base.y,
+    })
+  }
   /** 拖着绘图区平移：内容跟着指针走，窗口朝反方向挪。 */
   const panTo = (at: { x: number, y: number }): void => {
     if (!drag || drag.target !== 'plot')
@@ -254,9 +305,9 @@ export function connectCartesianChart<T extends PropTypes>(
     const dy = (at.y - drag.from.y) / drag.size.y
     const keyDelta = (orientation === 'vertical' ? -dx : -dy) * (prop('xAxis')?.reverse ? -1 : 1)
     const valueDelta = (orientation === 'vertical' ? dy : -dx) * (prop('yAxis')?.reverse ? -1 : 1)
-    setWindow({
-      x: zoomX ? pan(drag.window.x, keyDelta) : win.x,
-      y: zoomY ? pan(drag.window.y, valueDelta) : win.y,
+    setRatio({
+      x: zoomX ? pan(drag.window.x, keyDelta) : base.x,
+      y: zoomY ? pan(drag.window.y, valueDelta) : base.y,
     })
   }
   /** 一个数据在整条自变量轴上的位置 0–1：类目取类目的中心，连续轴按取整后的整条轴换算。 */
@@ -269,17 +320,17 @@ export function connectCartesianChart<T extends PropTypes>(
     const extent = layout?.keyExtent
     const key = model.spec.keys[j]!
     const v = key instanceof Date ? key.valueOf() : Number(key)
-    return extent ? domainToWindow([v, v], extent, model.spec.keyScale === 'log' ? 'log' : 'linear').start : null
+    return extent ? domainToWindow([v, v], extent, keyKind).start : null
   }
   /** 键盘把焦点移出了窗口：窗口平移过去，让焦点落在窗口正中。 */
   const follow = (ref: ChartDatumRef): void => {
-    if (!zoomX || isFullWindow(win.x))
+    if (!zoomX || isFullWindow(shown.x))
       return
     const r = keyRatio(ref)
-    if (r == null || (r >= win.x.start && r <= win.x.end))
+    if (r == null || (r >= shown.x.start && r <= shown.x.end))
       return
-    const span = win.x.end - win.x.start
-    setWindow({ ...win, x: clampWindow({ start: r - span / 2, end: r + span / 2 }) })
+    const span = base.x.end - base.x.start
+    setRatio({ ...base, x: clampWindow({ start: r - span / 2, end: r + span / 2 }) })
   }
   /** 缩放条手柄报给读屏的值：窗口那一端对着的键。 */
   const edgeText = (r: number, edge: 'start' | 'end'): string => {
@@ -292,7 +343,7 @@ export function connectCartesianChart<T extends PropTypes>(
     const extent = layout?.keyExtent
     if (!extent)
       return ''
-    const [v] = windowToDomain({ start: r, end: r }, extent, model.spec.keyScale === 'log' ? 'log' : 'linear')
+    const [v] = windowToDomain({ start: r, end: r }, extent, keyKind)
     return model.formats.key(model.spec.keyScale === 'time' || model.spec.keyScale === 'utc' ? new Date(v) : v)
   }
   const touches = service.refs.get('touches')
@@ -312,7 +363,7 @@ export function connectCartesianChart<T extends PropTypes>(
       : drag.target === 'end'
         ? { start, end: Math.max(start + limits.minSpan, Math.min(1, end + d)) }
         : pan(drag.window.x, d / (end - start))
-    setWindow({ ...win, x })
+    setRatio({ ...base, x })
   }
   const slideStart = (target: 'start' | 'end' | 'window') => (event: PointerEvent): void => {
     if (event.button !== 0)
@@ -325,7 +376,7 @@ export function connectCartesianChart<T extends PropTypes>(
     event.preventDefault()
     event.stopPropagation()
     el.setPointerCapture?.(event.pointerId)
-    send({ type: 'DRAG.START', drag: { target, pointerId: event.pointerId, from: { x: event.clientX, y: 0 }, size: { x: width, y: 1 }, window: win } })
+    send({ type: 'DRAG.START', drag: { target, pointerId: event.pointerId, from: { x: event.clientX, y: 0 }, size: { x: width, y: 1 }, window: base } })
   }
   const clipId = `${ids.plot}-clip`
   const clip = model.scene?.clip ?? null
@@ -373,7 +424,7 @@ export function connectCartesianChart<T extends PropTypes>(
     toggleSeries: id => send({ type: 'LEGEND.TOGGLE', id }),
     setFocusedDatum: ref => send({ type: 'FOCUS.SET', ref }),
     markTag: cartesianMarkTag,
-    zoom: { x: zoomX, y: zoomY, window: shown },
+    zoom: { x: zoomX, y: zoomY, window: win, ratio: shown },
     clip: clip ? { id: clipId, ...clip } : null,
     setWindow,
 
@@ -525,7 +576,7 @@ export function connectCartesianChart<T extends PropTypes>(
           return
         const target = event.currentTarget as Element
         target.setPointerCapture?.(event.pointerId)
-        send({ type: 'DRAG.START', drag: { target: 'plot', pointerId: event.pointerId, from: at, size: { x: layout.plot.width, y: layout.plot.height }, window: win } })
+        send({ type: 'DRAG.START', drag: { target: 'plot', pointerId: event.pointerId, from: at, size: { x: layout.plot.width, y: layout.plot.height }, window: base } })
       },
       'onPointerUp': endPointer,
       'onPointerMove': (event: PointerEvent) => {
@@ -590,7 +641,13 @@ export function connectCartesianChart<T extends PropTypes>(
           event.preventDefault()
           const from = focused && focusWithin ? focused : anchor
           const p = from ? model.scene?.anchors.get(from.seriesId)?.[cartesianPositionOf(model, from)] : null
-          zoomAround((p ? ratioAt(p) : null) ?? { key: 0.5, value: 0.5 }, event.key === '+' || event.key === '=' ? KEY_ZOOM_STEP : 1 / KEY_ZOOM_STEP)
+          const factor = event.key === '+' || event.key === '=' ? KEY_ZOOM_STEP : 1 / KEY_ZOOM_STEP
+          const at = (p ? ratioAt(p) : null) ?? { key: 0.5, value: 0.5 }
+          if (category && zoomX && layout) {
+            zoomKeys(from ? cartesianKeyIndexOf(model, from) : -1, factor, at)
+            return
+          }
+          zoomAround(at, factor)
           return
         }
         const intent = chartNavIntentFromKey(event, orientation)
@@ -833,8 +890,8 @@ export function connectCartesianChart<T extends PropTypes>(
         if (rect.width <= 0)
           return
         const r = (event.clientX - rect.left) / rect.width
-        const span = win.x.end - win.x.start
-        setWindow({ ...win, x: clampWindow({ start: r - span / 2, end: r + span / 2 }) })
+        const span = base.x.end - base.x.start
+        setRatio({ ...base, x: clampWindow({ start: r - span / 2, end: r + span / 2 }) })
       },
     }),
 
@@ -862,13 +919,16 @@ export function connectCartesianChart<T extends PropTypes>(
       'onPointerUp': endPointer,
       'onPointerCancel': endPointer,
       'onKeyDown': (event: KeyboardEvent) => {
-        const { start, end } = win.x
-        const big = event.shiftKey ? SLIDE_PAGE : SLIDE_STEP
+        // 从露出的窗口起算：类目轴一步正好一个类目
+        const { start, end } = shown.x
+        const unit = category && keyCount > 0 ? 1 / keyCount : SLIDE_STEP
+        const page = Math.max(unit, SLIDE_PAGE)
+        const big = event.shiftKey ? page : unit
         const delta = event.key === 'ArrowRight' || event.key === 'ArrowUp'
           ? big
           : event.key === 'ArrowLeft' || event.key === 'ArrowDown'
             ? -big
-            : event.key === 'PageUp' ? SLIDE_PAGE : event.key === 'PageDown' ? -SLIDE_PAGE : null
+            : event.key === 'PageUp' ? page : event.key === 'PageDown' ? -page : null
         let x: { start: number, end: number } | null = null
         if (delta != null)
           x = edge === 'start' ? { start: Math.min(end - limits.minSpan, Math.max(0, start + delta)), end } : { start, end: Math.max(start + limits.minSpan, Math.min(1, end + delta)) }
@@ -879,7 +939,7 @@ export function connectCartesianChart<T extends PropTypes>(
         if (!x)
           return
         event.preventDefault()
-        setWindow({ ...win, x })
+        setRatio({ ...shown, x })
       },
     }),
 
