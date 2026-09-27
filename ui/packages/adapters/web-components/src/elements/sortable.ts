@@ -74,6 +74,8 @@ export class XhSortableElement extends XhElement {
     autoScroll: { converter: BOOLEAN_CONVERTER, attribute: 'auto-scroll' },
     // 对象进不了属性，只作为 property 暴露
     translations: { attribute: false },
+    // 跨嵌套 Light DOM 组合时，由作者把显式 data-xh-part-owner="sortable" 的角色根交进来。
+    partRoots: { attribute: false },
   }
 
   declare ids?: string[]
@@ -84,6 +86,11 @@ export class XhSortableElement extends XhElement {
   declare autoScroll?: boolean
   /** 区域名、项名、拖拽把手名，以及拾起 / 移动 / 放下 / 取消四句键盘拖拽播报。 */
   declare translations?: SortableSchema['props']['translations']
+  declare partRoots?: HTMLElement[]
+
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.partRoots ?? []
+  }
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly sortableScope = createScope(null, this.idGen)

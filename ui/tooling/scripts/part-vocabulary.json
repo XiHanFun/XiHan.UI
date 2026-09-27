@@ -444,6 +444,7 @@
       "diff-view",
       "funnel-chart",
       "graph-chart",
+      "grid-list",
       "hierarchy-chart",
       "json-viewer",
       "listbox",
@@ -940,6 +941,7 @@
       "editable",
       "field",
       "file-upload",
+      "grid-list",
       "listbox",
       "mention",
       "number-field",
@@ -1086,6 +1088,7 @@
       "cascader",
       "combobox",
       "command",
+      "grid-list",
       "listbox",
       "mention",
       "select",
@@ -1381,6 +1384,7 @@
       "gradient-text",
       "graph-chart",
       "grid",
+      "grid-list",
       "heatmap",
       "hierarchy-chart",
       "highlight",
@@ -1477,8 +1481,21 @@
     ],
     "row": [
       "diff-view",
+      "grid-list",
       "heatmap",
       "table"
+    ],
+    "row-action": [
+      "grid-list"
+    ],
+    "row-actions": [
+      "grid-list"
+    ],
+    "row-content": [
+      "grid-list"
+    ],
+    "row-description": [
+      "grid-list"
     ],
     "row-drag-trigger": [
       "table"
@@ -1488,6 +1505,12 @@
     ],
     "row-select-trigger": [
       "table"
+    ],
+    "row-selection-indicator": [
+      "grid-list"
+    ],
+    "row-text": [
+      "grid-list"
     ],
     "saturation-area": [
       "color-picker"

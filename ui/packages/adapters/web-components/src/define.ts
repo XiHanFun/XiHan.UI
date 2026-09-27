@@ -63,6 +63,7 @@ import { XhFunnelChartElement } from './elements/funnel-chart'
 import { XhGradientTextElement } from './elements/gradient-text'
 import { XhGraphChartElement } from './elements/graph-chart'
 import { XhGridElement } from './elements/grid'
+import { XhGridListElement } from './elements/grid-list'
 import { XhHeatmapElement } from './elements/heatmap'
 import { XhHierarchyChartElement } from './elements/hierarchy-chart'
 import { XhHighlightElement } from './elements/highlight'
@@ -181,6 +182,7 @@ export function defineXhElements(): void {
   defineElement('xh-gradient-text', XhGradientTextElement, VERSION)
   defineElement('xh-graph-chart', XhGraphChartElement, VERSION)
   defineElement('xh-grid', XhGridElement, VERSION)
+  defineElement('xh-grid-list', XhGridListElement, VERSION)
   defineElement('xh-heatmap', XhHeatmapElement, VERSION)
   defineElement('xh-hierarchy-chart', XhHierarchyChartElement, VERSION)
   defineElement('xh-highlight', XhHighlightElement, VERSION)
@@ -354,6 +356,7 @@ export {
   XhFormElement,
   XhFunnelChartElement,
   XhGraphChartElement,
+  XhGridListElement,
   XhHeatmapElement,
   XhHierarchyChartElement,
   XhHoverCardElement,

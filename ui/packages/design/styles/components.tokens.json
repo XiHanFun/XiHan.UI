@@ -33359,6 +33359,616 @@
       "description": "grid 的 root 部件 grid-template-rows 覆盖槽。"
     },
     {
+      "name": "--xh-grid-list-bg",
+      "component": "grid-list",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default",
+        "variant=outline",
+        "variant=subtle"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle",
+        "--xh-bg-surface",
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-border",
+      "component": "grid-list",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "variant=outline"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 root 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-border-invalid",
+      "component": "grid-list",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 root 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-gap",
+      "component": "grid-list",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-list-option-gap"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-icon-size",
+      "component": "grid-list",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-label-fg",
+      "component": "grid-list",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-label-font-size",
+      "component": "grid-list",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-label-font-weight",
+      "component": "grid-list",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-semibold"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-label-px",
+      "component": "grid-list",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-px-md"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 label 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-label-py",
+      "component": "grid-list",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 label 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-p",
+      "component": "grid-list",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "padding"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 root 部件 padding 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-radius",
+      "component": "grid-list",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-surface"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 root 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-action-font-size",
+      "component": "grid-list",
+      "part": [
+        "row-action"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-font-sm"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-action 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-actions-gap",
+      "component": "grid-list",
+      "part": [
+        "row-actions"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-actions 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-actions-ms",
+      "component": "grid-list",
+      "part": [
+        "row-actions"
+      ],
+      "property": [
+        "margin-inline-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-gap-md"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-actions 部件 margin-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-content-gap",
+      "component": "grid-list",
+      "part": [
+        "row-content"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-content 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-description-fg",
+      "component": "grid-list",
+      "part": [
+        "row-description"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-description 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-description-font-size",
+      "component": "grid-list",
+      "part": [
+        "row-description"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-caption-md"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-description 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-indicator-bg",
+      "component": "grid-list",
+      "part": [
+        "row-selection-indicator"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-selection-indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-indicator-bg-selected",
+      "component": "grid-list",
+      "part": [
+        "row-selection-indicator"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "state=checked"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-selection-indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-indicator-border",
+      "component": "grid-list",
+      "part": [
+        "row-selection-indicator"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-control"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-selection-indicator 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-indicator-border-selected",
+      "component": "grid-list",
+      "part": [
+        "row-selection-indicator"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "state=checked"
+      ],
+      "defaultToken": [
+        "--xh-border-control-focus"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-selection-indicator 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-indicator-fg-selected",
+      "component": "grid-list",
+      "part": [
+        "row-selection-indicator"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "state=checked"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-selection-indicator 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-indicator-glyph-size",
+      "component": "grid-list",
+      "part": [
+        "row-selection-indicator"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "empty",
+        "state=checked"
+      ],
+      "defaultToken": [
+        "--xh-icon-size"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-selection-indicator 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-indicator-me",
+      "component": "grid-list",
+      "part": [
+        "row-selection-indicator"
+      ],
+      "property": [
+        "margin-inline-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-gap-md"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-selection-indicator 部件 margin-inline-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-indicator-radius",
+      "component": "grid-list",
+      "part": [
+        "row-selection-indicator"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-selection-indicator 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-indicator-size",
+      "component": "grid-list",
+      "part": [
+        "row-selection-indicator"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_grid-list-indicator"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row-selection-indicator 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-loading-opacity",
+      "component": "grid-list",
+      "part": [
+        "root",
+        "row"
+      ],
+      "property": [
+        "opacity"
+      ],
+      "state": [
+        "loading"
+      ],
+      "defaultToken": [
+        "--xh-state-disabled-opacity"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 root、row 部件 opacity 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-radius",
+      "component": "grid-list",
+      "part": [
+        "row"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-state-fg",
+      "component": "grid-list",
+      "part": [
+        "empty",
+        "loading"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 empty、loading 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-state-font-size",
+      "component": "grid-list",
+      "part": [
+        "empty",
+        "loading"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-body-size"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 empty、loading 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-state-px",
+      "component": "grid-list",
+      "part": [
+        "empty",
+        "loading"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-px-md"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 empty、loading 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-state-py",
+      "component": "grid-list",
+      "part": [
+        "empty",
+        "loading"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 empty、loading 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-heatmap-bg",
       "component": "heatmap",
       "part": [
@@ -35096,6 +35706,7 @@
         "rotate-left-trigger",
         "rotate-right-trigger",
         "row-select-trigger",
+        "row-selection-indicator",
         "scroll-to-end-trigger",
         "select-all-trigger",
         "separator",
@@ -35146,6 +35757,7 @@
       ],
       "defaultToken": [
         "--xh-_color-swatch-picker-mark",
+        "--xh-_grid-list-indicator-glyph",
         "--xh-glyph-size-2xl",
         "--xh-glyph-size-3xl",
         "--xh-glyph-size-4xl",
@@ -35156,7 +35768,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size、margin-inline-start 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、row-selection-indicator、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",

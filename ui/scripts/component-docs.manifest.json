@@ -395,6 +395,11 @@
           "name": "空状态"
         },
         {
+          "id": "grid-list",
+          "name": "网格列表",
+          "status": "new"
+        },
+        {
           "id": "highlight",
           "name": "文本高亮"
         },

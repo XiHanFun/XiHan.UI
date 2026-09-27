@@ -27360,6 +27360,183 @@
   }
 }
 
+/* styles/grid-list.css */
+/* GridList 的行复用 Collection Item；拖动把手由组合进来的 Sortable 负责。 */
+
+@layer xihan.components {
+  [data-scope='grid-list'] {
+    --xh-grid-list-skin: 1;
+  }
+
+  [data-scope='grid-list'][data-part='root'] {
+    --xh-_grid-list-indicator: var(--xh-control-indicator-md);
+    --xh-_grid-list-indicator-glyph: calc(var(--xh-_grid-list-indicator) * 0.75);
+    --xh-icon-size: var(--xh-grid-list-icon-size, var(--xh-glyph-size-md));
+
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    gap: var(--xh-grid-list-gap, var(--xh-list-option-gap));
+    inline-size: 100%;
+    min-inline-size: 0;
+    padding: var(--xh-grid-list-p, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-grid-list-radius, var(--xh-shape-surface));
+    background: var(--xh-grid-list-bg, transparent);
+  }
+
+  [data-scope='grid-list'][data-part='root'][data-variant='outline'] {
+    border-color: var(--xh-grid-list-border, var(--xh-border-default));
+    background: var(--xh-grid-list-bg, var(--xh-bg-surface));
+  }
+
+  [data-scope='grid-list'][data-part='root'][data-variant='subtle'] {
+    background: var(--xh-grid-list-bg, var(--xh-bg-subtle));
+  }
+
+  [data-scope='grid-list'][data-part='root'][data-invalid] {
+    border-color: var(--xh-grid-list-border-invalid, var(--xh-border-invalid));
+  }
+
+  [data-scope='grid-list'][data-part='root']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='grid-list'][data-part='root'][data-size='sm'] {
+    --xh-_grid-list-indicator: var(--xh-control-indicator-sm);
+    --xh-icon-size: var(--xh-grid-list-icon-size, var(--xh-glyph-size-sm));
+  }
+
+  [data-scope='grid-list'][data-part='root'][data-size='lg'] {
+    --xh-_grid-list-indicator: var(--xh-control-indicator-lg);
+    --xh-icon-size: var(--xh-grid-list-icon-size, var(--xh-glyph-size-lg));
+  }
+
+  [data-scope='grid-list'][data-part='label'] {
+    padding-block: var(--xh-grid-list-label-py, var(--xh-space-1));
+    padding-inline: var(--xh-grid-list-label-px, var(--xh-control-px-md));
+    color: var(--xh-grid-list-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-grid-list-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-grid-list-label-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-leading-normal);
+  }
+
+  [data-scope='grid-list'][data-part='row'] {
+    /* 长期承载面的可选集合使用 page 语境：选中铺品牌淡底，行级按压只换面、不缩放。 */
+    --xh-collection-radius: var(--xh-grid-list-row-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='grid-list'][data-part='root'][data-readonly]
+  [data-scope='grid-list'][data-part='row'] {
+    cursor: default;
+  }
+
+  /* 重新取数时保留上一帧，整列降档；aria-busy 与这一副可见回执同源。 */
+  [data-scope='grid-list'][data-part='root'][data-loading]
+  [data-scope='grid-list'][data-part='row'] {
+    opacity: var(--xh-grid-list-row-loading-opacity, var(--xh-state-disabled-opacity));
+    pointer-events: none;
+  }
+
+  /* content 保持真实 gridcell 盒；里面两行自己排，不依赖 Collection Item 的直接子项网格。 */
+  [data-scope='grid-list'][data-part='row-content'] {
+    display: flex;
+    grid-row: 1 / span 2;
+    grid-column: text;
+    flex-direction: column;
+    gap: var(--xh-grid-list-row-content-gap, var(--xh-space-1));
+    min-inline-size: 0;
+  }
+
+  [data-scope='grid-list'][data-part='row-text'],
+  [data-scope='grid-list'][data-part='row-description'] {
+    grid-row: auto;
+    grid-column: auto;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  [data-scope='grid-list'][data-part='row-text'] {
+    color: inherit;
+    white-space: nowrap;
+  }
+
+  [data-scope='grid-list'][data-part='row-description'] {
+    color: var(--xh-grid-list-row-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-grid-list-row-description-font-size, var(--xh-control-caption-md));
+    white-space: nowrap;
+  }
+
+  [data-scope='grid-list'][data-part='row-actions'] {
+    display: flex;
+    grid-row: 1 / span 2;
+    grid-column: suffix / span 2;
+    gap: var(--xh-grid-list-row-actions-gap, var(--xh-space-1));
+    align-items: center;
+    margin-inline-start: var(--xh-grid-list-row-actions-ms, var(--xh-control-gap-md));
+  }
+
+  [data-scope='grid-list'][data-part='row-action'] {
+    --xh-action-font-size: var(--xh-grid-list-row-action-font-size, var(--xh-control-font-sm));
+  }
+
+  [data-scope='grid-list'][data-part='row-selection-indicator'] {
+    display: grid;
+    grid-row: 1 / span 2;
+    grid-column: prefix;
+    place-items: center;
+    inline-size: var(--xh-grid-list-row-indicator-size, var(--xh-_grid-list-indicator));
+    block-size: var(--xh-grid-list-row-indicator-size, var(--xh-_grid-list-indicator));
+    margin-inline-end: var(--xh-grid-list-row-indicator-me, var(--xh-control-gap-md));
+    border: var(--xh-stroke-thin) solid var(--xh-grid-list-row-indicator-border, var(--xh-border-control));
+    border-radius: var(--xh-grid-list-row-indicator-radius, var(--xh-shape-inset));
+    background: var(--xh-grid-list-row-indicator-bg, var(--xh-bg-surface));
+    color: transparent;
+  }
+
+  [data-scope='grid-list'][data-part='row-selection-indicator'][data-state='checked'] {
+    border-color: var(--xh-grid-list-row-indicator-border-selected, var(--xh-border-control-focus));
+    background: var(--xh-grid-list-row-indicator-bg-selected, var(--xh-bg-brand));
+    color: var(--xh-grid-list-row-indicator-fg-selected, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='grid-list'][data-part='row-selection-indicator'][data-state='checked']:empty::after {
+    content: '';
+    inline-size: var(--xh-grid-list-row-indicator-glyph-size, var(--xh-icon-size, var(--xh-_grid-list-indicator-glyph)));
+    block-size: var(--xh-grid-list-row-indicator-glyph-size, var(--xh-icon-size, var(--xh-_grid-list-indicator-glyph)));
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  [data-scope='grid-list'][data-part='empty'],
+  [data-scope='grid-list'][data-part='loading'] {
+    padding-block: var(--xh-grid-list-state-py, var(--xh-space-4));
+    padding-inline: var(--xh-grid-list-state-px, var(--xh-control-px-md));
+    color: var(--xh-grid-list-state-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-grid-list-state-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-normal);
+    text-align: center;
+  }
+
+  [data-scope='grid-list'][data-part='row-selection-indicator'][hidden],
+  [data-scope='grid-list'][data-part='row-content'][hidden],
+  [data-scope='grid-list'][data-part='row-actions'][hidden],
+  [data-scope='grid-list'][data-part='empty'][hidden],
+  [data-scope='grid-list'][data-part='loading'][hidden],
+  [data-scope='grid-list'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  @media print {
+    [data-scope='grid-list'][data-part='row-actions'] {
+      display: none;
+    }
+  }
+}
+
 /* styles/hierarchy-chart.css */
 /* 定义 hierarchy chart 样式。 */
 
