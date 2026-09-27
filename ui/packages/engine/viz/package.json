@@ -29,6 +29,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./hierarchy": {
+      "types": "./dist/hierarchy.d.ts",
+      "import": "./dist/hierarchy.js"
     }
   },
   "main": "./dist/index.js",

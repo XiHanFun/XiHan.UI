@@ -17,6 +17,8 @@ export type VizErrorCode
     | 'XH_VIZ_LOG_DOMAIN'
     | 'XH_VIZ_BAR_BASELINE'
     | 'XH_VIZ_NEGATIVE_SHARE'
+    | 'XH_VIZ_HIERARCHY'
+    | 'XH_VIZ_SANKEY_CYCLE'
 
 /** viz 的唯一错误类型。`detail` 放定位问题所需的原始输入，由上层转成诊断。 */
 export class VizError extends Error {
@@ -44,4 +46,9 @@ export function isVizError(value: unknown): value is VizError {
 /** 参数不合法时统一走这里，保证报错形状一致。 */
 export function invalidArgument(message: string, detail: Record<string, unknown> = {}): VizError {
   return new VizError('XH_VIZ_INVALID_ARGUMENT', message, detail)
+}
+
+/** 层级数据组不成一棵树：多个根、没有根、父节点不存在、成环或共享子树。 */
+export function hierarchyError(message: string, detail: Record<string, unknown> = {}): VizError {
+  return new VizError('XH_VIZ_HIERARCHY', message, detail)
 }

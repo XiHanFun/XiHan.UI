@@ -48,6 +48,12 @@
     "limit": "32 kB"
   },
   {
+    "name": "viz/hierarchy",
+    "path": "packages/engine/viz/dist/hierarchy.js",
+    "gzip": true,
+    "limit": "4.5 kB"
+  },
+  {
     "name": "code-highlight",
     "path": "packages/features/code-highlight/dist/index.js",
     "gzip": true,
