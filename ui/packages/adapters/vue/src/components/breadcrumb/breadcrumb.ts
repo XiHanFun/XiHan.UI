@@ -10,6 +10,8 @@ import type { BreadcrumbItem, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProp
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h, useId } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { mergeIntoChild } from '../../runtime/as-child'
+import { mergePartProps } from '../../runtime/merge-props'
 import { provideBreadcrumb, useBreadcrumbContext } from './context'
 import { useBreadcrumb } from './use-breadcrumb'
 
@@ -63,18 +65,27 @@ export const XhBreadcrumbItem = defineComponent({
  */
 export const XhBreadcrumbLink = defineComponent({
   name: 'XhBreadcrumbLink',
+  // 直通属性自己合：作者的处理器排在部件前面，asChild 时连同部件属性一起落到作者的链接上
+  inheritAttrs: false,
   props: {
     value: { type: String },
     current: Boolean,
+    /** 借用作者的子节点（如路由链接）作为链接，不再渲染自己的 `<a>`；子节点须恰好一个。 */
+    asChild: Boolean,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const ctx = useBreadcrumbContext()
     const fallbackValue = useId()
-    return () => h(
-      'a',
-      ctx.api.value.getLinkProps({ value: props.value ?? fallbackValue, current: props.current }) as Record<string, unknown>,
-      slots.default?.(),
-    )
+    return () => {
+      const part = mergePartProps(
+        ctx.api.value.getLinkProps({ value: props.value ?? fallbackValue, current: props.current }) as Record<string, unknown>,
+        attrs,
+      )
+      const children = slots.default?.()
+      if (props.asChild)
+        return mergeIntoChild(children, part, 'breadcrumb', { applyAnatomy: true })
+      return h('a', part, children)
+    }
   },
 })
 
