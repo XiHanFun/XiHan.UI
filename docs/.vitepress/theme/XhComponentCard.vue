@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { Component } from "vue";
-import { useData, withBase } from "vitepress";
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue";
-import { restoreDemoStage, stageAttrs } from "./demo-stage";
+import { withBase } from "vitepress";
+import { defineAsyncComponent, hydrateOnVisible } from "vue";
 
 const props = defineProps<{
   href: string;
@@ -13,58 +12,18 @@ const props = defineProps<{
   status?: "alpha" | "new" | "updated";
 }>();
 
+// 示意图是纯静态 SVG：预渲染时就写进页面，客户端滚到附近才取回并接管，首屏没有占位闪烁
 const previews = import.meta.glob<{ default: Component }>("../catalog/*.vue");
-const load = previews[`../catalog/${props.src}.vue`];
-const demo = load ? defineAsyncComponent(load) : undefined;
-const placeholderTones = ["brand", "info", "success", "warning", "danger"] as const;
-const placeholderTone = placeholderTones[props.src.length % placeholderTones.length];
-const root = ref<HTMLElement | null>(null);
-const visible = ref(false);
-let observer: IntersectionObserver | undefined;
-
-const { isDark } = useData();
-// 预览与示例舞台打同一组档位属性（主题 / 密度 / 对比度 / 方向），读者在示例页存下的档位
-// 到总览页同样生效；总览页没有工具条，这里自己校正一次（幂等）
-const stageBindings = computed(() => stageAttrs(isDark.value));
-
-onMounted(() => {
-  restoreDemoStage();
-  if (!("IntersectionObserver" in window)) {
-    visible.value = true;
-    return;
-  }
-
-  observer = new IntersectionObserver(([entry]) => {
-    if (!entry?.isIntersecting)
-      return;
-    visible.value = true;
-    observer?.disconnect();
-  }, { rootMargin: "160px" });
-
-  if (root.value)
-    observer.observe(root.value);
-});
-
-onBeforeUnmount(() => observer?.disconnect());
+const load = props.renderless ? undefined : previews[`../catalog/${props.src}.vue`];
+const preview = load
+  ? defineAsyncComponent({ loader: load, hydrate: hydrateOnVisible({ rootMargin: "160px" }) })
+  : undefined;
 </script>
 
 <template>
-  <article ref="root" class="xh-component-card">
-    <div
-      class="xh-component-card__preview xh-demo__stage"
-      inert
-      aria-hidden="true"
-      v-bind="stageBindings"
-    >
-      <div v-if="visible && demo && !renderless" class="xh-component-card__demo">
-        <component :is="demo" />
-      </div>
-      <span
-        v-else
-        class="xh-component-card__placeholder"
-        data-demo-block
-        :data-tone="placeholderTone"
-      />
+  <article class="xh-component-card">
+    <div class="xh-component-card__preview">
+      <component :is="preview" v-if="preview" />
     </div>
     <a class="xh-component-card__link" :href="withBase(href)">
       <strong>{{ name }}</strong>
@@ -91,103 +50,78 @@ onBeforeUnmount(() => observer?.disconnect());
 }
 
 /*
- * 预览卡是描边面，不是 Card：边界只由描边承担，底取页面色、无影、不缩放。
- * 宽高两档由这里以变量下发给各预览根（--xh-doc-catalog-w 常规、-narrow 单行输入类、-h 可用高），
- * 预览文件自己不写尺寸散值。contain: layout paint 兼做裁切与固定定位包含块：
- * Dialog / Command 缩略面板的 positioner 是 position: fixed，靠它圈在卡内。
+ * 预览卡是描边面，不是 Card：边界只由描边承担，底取页面色、无影。
+ * 卡里只放一张 240 × 160 画布的示意图（docs/.vitepress/catalog/*.vue），宽窄都铺满内容区、
+ * 按比例缩放；--xh-doc-catalog-canvas-h 是画布在卡里的高，宽屏下与画布 1:1。
  */
 .xh-component-card__preview {
-  --xh-doc-catalog-w: 240px;
-  --xh-doc-catalog-w-narrow: 160px;
-  --xh-doc-catalog-h: 166px;
+  --xh-doc-catalog-canvas-h: 160px;
 
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  block-size: 190px;
+  display: grid;
+  block-size: calc(var(--xh-doc-catalog-canvas-h) + 2 * var(--xh-space-3) + 2 * var(--xh-stroke-thin));
   padding: var(--xh-space-3);
   border: var(--xh-stroke-thin) solid var(--xh-border-default);
   border-radius: var(--xh-shape-surface);
   background: var(--xh-bg-page);
   box-shadow: none;
-  contain: layout paint;
 }
 
-.xh-component-card__demo {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: var(--xh-space-2);
-  inline-size: 100%;
-  max-block-size: 100%;
-  overflow: hidden;
-}
-
-/*
- * 示意图：240 × 160 画布的内联 SVG，铺满内容区、按比例缩放。
- * 画的是界面布局，随书写方向镜像；方向固定的内容（图表绘图区、代码、条码）标 data-direction="fixed"。
- */
-.xh-component-card__demo > svg {
+.xh-component-card__preview > svg {
   display: block;
   inline-size: 100%;
-  block-size: var(--xh-doc-catalog-h);
+  block-size: 100%;
 }
 
-.xh-component-card__demo:dir(rtl) > svg:not([data-direction="fixed"]) {
+/* 示意图画的是界面布局，随书写方向镜像；方向固定的内容（图表绘图区、代码、条码）标 data-direction="fixed" */
+.xh-component-card__preview:dir(rtl) > svg:not([data-direction="fixed"]) {
   transform: scaleX(-1);
 }
 
 /*
  * 强制色：示意图转成系统色线稿。有填充的形状画成 Canvas 面 + CanvasText 边，
  * 线与文字条取 CanvasText；品牌与选中取 Highlight / HighlightText，禁用取 GrayText。
+ * 示意图作者只按令牌语义取色，不写强制色分支。
  */
 @media (forced-colors: active) {
-  .xh-component-card__demo > svg {
+  .xh-component-card__preview > svg {
     forced-color-adjust: none;
   }
 
-  .xh-component-card__demo > svg :where([fill]:not([fill="none"])) {
+  .xh-component-card__preview > svg :where([fill]:not([fill="none"])) {
     fill: Canvas;
     stroke: CanvasText;
   }
 
-  .xh-component-card__demo > svg :where([stroke]:not([stroke="none"])) {
+  .xh-component-card__preview > svg :where([stroke]:not([stroke="none"])) {
     stroke: CanvasText;
   }
 
-  .xh-component-card__demo > svg :is([fill*="brand"], [fill*="focus"]) {
+  .xh-component-card__preview > svg :is([fill*="brand"], [fill*="focus"]) {
     fill: Highlight;
     stroke: Highlight;
   }
 
-  .xh-component-card__demo > svg :is([stroke*="brand"], [stroke*="focus"]) {
+  .xh-component-card__preview > svg :is([stroke*="brand"], [stroke*="focus"]) {
     stroke: Highlight;
   }
 
-  .xh-component-card__demo > svg [fill*="on-brand"] {
+  .xh-component-card__preview > svg [fill*="on-brand"] {
     fill: HighlightText;
     stroke: HighlightText;
   }
 
-  .xh-component-card__demo > svg [stroke*="on-brand"] {
+  .xh-component-card__preview > svg [stroke*="on-brand"] {
     stroke: HighlightText;
   }
 
-  .xh-component-card__demo > svg [stroke*="disabled"] {
+  .xh-component-card__preview > svg [stroke*="disabled"] {
     stroke: GrayText;
   }
 }
 
-.xh-component-card__placeholder {
-  --xh-demo-block-inline-size: var(--xh-space-8);
-  --xh-demo-block-block-size: var(--xh-space-6);
-  --xh-demo-block-radius: var(--xh-shape-control);
-}
-
 .vp-doc .xh-component-card__link {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: var(--xh-space-1_5);
   align-items: baseline;
   padding-top: var(--xh-space-2_5);
@@ -228,16 +162,14 @@ onBeforeUnmount(() => observer?.disconnect());
   font-weight: var(--xh-font-weight-medium);
 }
 
-@media (max-width: 640px) {
+@media not all and (min-width: 640px) {
   .xh-component-grid {
     grid-template-columns: 1fr 1fr;
     gap: var(--xh-space-4) var(--xh-space-3);
   }
 
   .xh-component-card__preview {
-    --xh-doc-catalog-h: 124px;
-
-    block-size: 148px;
+    --xh-doc-catalog-canvas-h: 120px;
   }
 }
 </style>
