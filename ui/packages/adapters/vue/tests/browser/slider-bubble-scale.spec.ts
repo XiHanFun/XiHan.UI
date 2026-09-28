@@ -34,7 +34,7 @@ function mount(scope: 'slider' | 'color-slider', orientation: 'horizontal' | 've
   }
 }
 
-describe.each(['slider'] as const)('%s 值气泡', (scope) => {
+describe.each(['slider', 'color-slider'] as const)('%s 值气泡', (scope) => {
   it.each([
     ['horizontal', 'ltr'],
     ['horizontal', 'rtl'],
