@@ -236,6 +236,7 @@ export const treeSelectMachine = createMachine({
     presence: null,
     position: null,
     getAnchorEl: () => null,
+    getTriggerEl: () => null,
     getFloatingEl: () => null,
     getContentEl: () => null,
     typeahead: createTypeahead(),
@@ -678,7 +679,7 @@ export const treeSelectMachine = createMachine({
               restoreFocus: () => context.get('returnFocus'),
               // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
               // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-              restoreTarget: () => refs.get('getAnchorEl')(),
+              restoreTarget: () => refs.get('getTriggerEl')(),
               onReactivate: reactivate => reactivateFocus = reactivate,
             },
           }),

@@ -64,7 +64,9 @@ export function useSelect(props: SelectSchema['props']): SelectContext {
     refs: (service) => {
       // 定位引擎由适配器注入，机器只经端口驱动
       service.refs.set('position', createPositionEngine() as never)
-      service.refs.set('getAnchorEl', (() => triggerRef.current) as never)
+      // 锚点是字段盒：列表面板与盒子同宽、左缘对齐；作者没写 control 时退回触发器
+      service.refs.set('getAnchorEl', (() => controlRef.current ?? triggerRef.current) as never)
+      service.refs.set('getTriggerEl', (() => triggerRef.current) as never)
       service.refs.set('getFloatingEl', (() => positionerRef.current) as never)
       service.refs.set('getContentEl', (() => contentRef.current) as never)
     },

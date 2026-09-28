@@ -61,6 +61,7 @@ export const selectMachine = createMachine({
     presence: null,
     position: null,
     getAnchorEl: () => null,
+    getTriggerEl: () => null,
     getFloatingEl: () => null,
     getContentEl: () => null,
     // 缓冲随服务存活：收起态在 trigger 上连打、展开态在 content 上连打共用同一份
@@ -395,13 +396,14 @@ export const selectMachine = createMachine({
        * 多选标签行的到达、离场与换位：首帧就在的标签直接呈现，之后新选的播进场，
        * 取消选中的在原处播完退场，其余标签滑到新位置。标签行在触发器里，没有标签行（单选或作者没写）就不接。
        * React 的祖先 ref 在子组件 layout effect 之后才附着，延到提交后的微任务再取，仍在首帧绘制之前。
+       * 触发按钮经适配器的 ref 取：纯逻辑环境（无 DOM）没有它，也就不接。
        */
-      trackTagListMotion: ({ scope, flush }) => {
+      trackTagListMotion: ({ refs, flush }) => {
         let disposed = false
         let stop: (() => void) | undefined
         flush(() => {
-          scope.getWin().queueMicrotask(() => {
-            const list = scope.getById(scope.partId('select', 'trigger'))?.querySelector<HTMLElement>(SELECT_TAG_LIST_SELECTOR)
+          queueMicrotask(() => {
+            const list = refs.get('getTriggerEl')()?.querySelector<HTMLElement>(SELECT_TAG_LIST_SELECTOR)
             if (disposed || !list)
               return
             stop = trackListMotion(list, { item: SELECT_TAG_SELECTOR })
@@ -449,7 +451,7 @@ export const selectMachine = createMachine({
               restoreFocus: () => context.get('returnFocus'),
               // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
               // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-              restoreTarget: () => refs.get('getAnchorEl')(),
+              restoreTarget: () => refs.get('getTriggerEl')(),
               onReactivate: reactivate => reactivateFocus = reactivate,
             },
           }),

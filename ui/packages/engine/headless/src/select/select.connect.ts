@@ -396,9 +396,9 @@ export function connectSelect<T extends PropTypes>(
             return
           send({ type: 'VALUE.CLEAR' })
           // 键盘/程序化激活这一路没走 pointerdown，主动把焦点送回 trigger；
-          // 适配器没挂锚点 ref 时按 id 在同一文档里找
+          // 适配器没挂触发按钮 ref 时按 id 在同一文档里找
           const doc = (event.currentTarget as HTMLElement | null)?.ownerDocument
-          const trigger = refs.get('getAnchorEl')() ?? doc?.getElementById(ids.trigger) ?? null
+          const trigger = refs.get('getTriggerEl')() ?? doc?.getElementById(ids.trigger) ?? null
           trigger?.focus()
         },
       })

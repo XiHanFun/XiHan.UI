@@ -178,6 +178,40 @@ for (const name of Object.keys(WIDTH_EXEMPT)) {
     problems.push(`${name} 登记在 WIDTH_EXEMPT 里却没被扫到——名单过期了`)
 }
 
+// 锚宽那条通道：列表型浮层的候选面板与字段盒等宽，下界与限高取列表档。
+// 反过来，菜单与面板型浮层按自然宽度，跟着触发器拉伸就是走样，不许消费锚宽。
+const LIST_OVERLAYS = ['select', 'combobox', 'tree-select']
+const listWired = []
+
+for (const family of families) {
+  const name = family.name ?? family
+  const css = await read(`${SKINS}/${name}.css`)
+  const anchorSlot = `--xh-_${name}-anchor-w`
+  if (!LIST_OVERLAYS.includes(name)) {
+    if (css?.includes(`var(${anchorSlot})`))
+      problems.push(`${name} 不是列表型浮层，却消费了 ${anchorSlot}——菜单与面板型浮层按自然宽度，不跟随触发器拉伸`)
+    continue
+  }
+  const connect = await read(`${HEADLESS}/${name}/${name}.connect.ts`)
+  const missing = []
+  if (!connect?.includes(`overlayAnchorWidthVar('${name}'`) && !connect?.includes(`'${anchorSlot}'`))
+    missing.push(`${name}.connect.ts 没发 ${anchorSlot}（面板量不到字段盒多宽）`)
+  const width = new RegExp(`(?<![\\w-])inline-size:\\s*min\\(\\s*max\\(var\\(--xh-${name}-content-min-w, var\\(--xh-overlay-menu-min-w\\)\\), var\\(${anchorSlot}\\)\\),\\s*var\\(--xh-_${name}-available-w\\)\\s*\\)`)
+  if (!width.test(css ?? ''))
+    missing.push(`${name}.css 的 content 没写 inline-size: min(max(下界, ${anchorSlot}), 可用宽)——面板会随最长的选项变宽，不与字段盒等宽`)
+  if (!css?.includes(`max-block-size: min(var(--xh-${name}-content-max-h, var(--xh-overlay-menu-max-h))`))
+    missing.push(`${name}.css 的 content 限高没取 --xh-overlay-menu-max-h（列表型浮层同一个限高）`)
+  if (missing.length)
+    problems.push(`${name} 是列表型浮层，锚宽通道没接齐：\n      ${missing.join('\n      ')}`)
+  else
+    listWired.push(name)
+}
+
+for (const name of LIST_OVERLAYS) {
+  if (!listWired.includes(name) && !problems.some(p => p.startsWith(`${name} 是列表型浮层`)))
+    problems.push(`${name} 登记在 LIST_OVERLAYS 里却没被扫到——名单过期了`)
+}
+
 if (problems.length) {
   console.error('[check-overlay-size] ✗ 可用空间通道没接齐：')
   for (const p of problems)
@@ -186,4 +220,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-overlay-size] 通过：可用高度 ${wired.length} 个浮层三段齐、可用宽度 ${wiredW.length} 个三段齐（宽度另有 ${usedExemptW.size} 个按名单不接）（另有 ${usedExempt.size} 个按名单不接、${SIZE_NOT_ENGINE_POSITIONED.size} 个不吃引擎坐标、${Object.keys(SKIN_POSITIONED).length} 个由皮肤排布）`)
+console.log(`[check-overlay-size] 通过：可用高度 ${wired.length} 个浮层三段齐、可用宽度 ${wiredW.length} 个三段齐、列表型 ${listWired.length} 个与字段盒等宽（宽度另有 ${usedExemptW.size} 个按名单不接）（另有 ${usedExempt.size} 个按名单不接、${SIZE_NOT_ENGINE_POSITIONED.size} 个不吃引擎坐标、${Object.keys(SKIN_POSITIONED).length} 个由皮肤排布）`)

@@ -269,6 +269,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     svc.refs.set('presence', this.ensurePageSizeExit(svc.state.get() === 'open').presence)
     svc.refs.set('position', createPositionEngine())
     svc.refs.set('getAnchorEl', () => this.pageSizeNodes?.trigger ?? null)
+    svc.refs.set('getTriggerEl', () => this.pageSizeNodes?.trigger ?? null)
     svc.refs.set('getFloatingEl', () => this.pageSizeNodes?.positioner ?? null)
     svc.refs.set('getContentEl', () => this.pageSizeNodes?.content ?? null)
   }

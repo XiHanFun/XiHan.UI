@@ -179,6 +179,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   if (options.position)
     service.refs.set('position', options.position)
   service.refs.set('getAnchorEl', () => trigger)
+  service.refs.set('getTriggerEl', () => trigger)
   service.refs.set('getFloatingEl', () => positioner)
   service.refs.set('getContentEl', () => content)
 
