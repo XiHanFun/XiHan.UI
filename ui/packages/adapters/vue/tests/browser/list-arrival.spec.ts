@@ -249,7 +249,7 @@ describe('tag-group 标签增删', () => {
     items.value = [...items.value, { value: 'solid', label: 'solid' }]
     await nextTick()
     await nextTick()
-    expect(running(tags().at(-1)!)).toContain('xh-item-in')
+    expect(running(tags().at(-1)!)).toContain('xh-pop-in')
   })
 })
 
@@ -301,6 +301,6 @@ describe('select 多选标签行', () => {
     value.value = ['北京', '广州', '深圳']
     await nextTick()
     await nextTick()
-    expect(running(tags().at(-1)!)).toContain('xh-item-in')
+    expect(running(tags().at(-1)!)).toContain('xh-pop-in')
   })
 })
