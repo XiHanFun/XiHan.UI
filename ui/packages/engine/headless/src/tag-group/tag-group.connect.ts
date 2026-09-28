@@ -5,10 +5,12 @@
 
 // 提供 tag group 相关实现。
 
-import type { NavIntent, NormalizeProps, PropTypes, SelectionOrder, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TagApi, TagPressPort } from '../tag'
 import type { TagGroupApi, TagGroupItemProps, TagGroupNodeMeta, TagGroupSchema } from './tag-group.types'
-import { contains, createPressTracker, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, mergeProps, navigateItems, navIntentFromKey, toggleSelectAll } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, mergeProps } from '@xihan-ui/core'
+import { isEditableTarget } from '../shared/editable-target'
+import { createGridCollection, fromInlineControl, readGridKey } from '../shared/grid-collection'
 import { connectStaticTag } from '../tag'
 import { tagGroupAnatomy, tagGroupItems, tagGroupItemText } from './tag-group.anatomy'
 
@@ -72,27 +74,15 @@ export function connectTagGroup<T extends PropTypes>(
   /** 按文档序现读条目集合；仅在事件回调中调用。 */
   const items = (list: HTMLElement): HTMLElement[] => tagGroupItems(list)
 
-  const focusValue = (el: HTMLElement | null): string | null => {
-    const next = itemValue(el)
-    if (next == null)
-      return null
-    focusItem(el)
-    send({ type: 'ITEM.FOCUS', value: next })
-    return next
-  }
-
-  /** 方向键落点：以锚点为起点在活 DOM 上求解，禁用条目跳过。 */
-  const focusBy = (list: HTMLElement, intent: NavIntent): string | null =>
-    focusValue(navigateItems(items(list), anchor, intent, { loop }))
-
-  /** 连打检索落点：从当前锚点的下一个绕一圈查找，未命中保持原状。 */
-  const focusMatch = (list: HTMLElement, query: string): void => {
-    const all = items(list)
-    focusValue(matchTypeahead(all, indexOfValue(all, anchor), query, {
-      text: tagGroupItemText,
-      skip: isItemDisabled,
-    }))
-  }
+  // 导航、检索、入组落点与全选归网格集合；全序从标记里取——集合怎么算归原语，谁在前谁在后归 DOM
+  const grid = createGridCollection({
+    items,
+    text: tagGroupItemText,
+    anchor,
+    loop,
+    isSelected,
+    onFocus: next => send({ type: 'ITEM.FOCUS', value: next }),
+  })
 
   /** 确认键：作用于焦点所在的非禁用条目。 */
   const commit = (list: HTMLElement, kind: 'replace' | 'toggle'): void => {
@@ -102,22 +92,6 @@ export function connectTagGroup<T extends PropTypes>(
     if (!el || isItemDisabled(el))
       return
     send({ type: kind === 'toggle' ? 'ITEM.TOGGLE' : 'ITEM.SELECT', value: focusedValue })
-  }
-
-  /** 从标记里取全序与禁用判定：集合怎么算归原语，谁在前谁在后归 DOM。 */
-  const orderOf = (list: HTMLElement): SelectionOrder => {
-    const all = items(list)
-    const disabled = new Set(all.filter(el => isItemDisabled(el)).map(itemValue).filter((v): v is string => v != null))
-    return {
-      items: all.map(itemValue).filter((v): v is string => v != null),
-      isDisabled: (v: string) => disabled.has(v),
-    }
-  }
-
-  /** 全选/取消全选；取消时保留选中的禁用条目。 */
-  const selectAll = (list: HTMLElement): void => {
-    const next = toggleSelectAll({ selected: value, anchor: null }, orderOf(list))
-    send({ type: 'VALUE.SET', value: [...next.selected] })
   }
 
   /**
@@ -141,7 +115,7 @@ export function connectTagGroup<T extends PropTypes>(
     if (owner && contains(owner, scope.getActiveElement())) {
       const next = all[index - 1] ?? all[index + 1] ?? null
       if (next)
-        focusValue(next)
+        grid.focusValue(next)
       else
         focusItem(list)
     }
@@ -238,90 +212,73 @@ export function connectTagGroup<T extends PropTypes>(
       'data-orientation': orientation,
       'data-disabled': dataAttr(groupDisabled),
       'onKeyDown': (event: KeyboardEvent) => {
-        if (groupDisabled)
+        // 输入法组合中的按键归候选框，落在可编辑控件上的按键归那个控件
+        if (groupDisabled || isComposingEvent(event) || isEditableTarget(event.target))
           return
         const list = event.currentTarget as HTMLElement
-        const key = event.key
-        const command = event.ctrlKey || event.metaKey
-
-        // Ctrl/Cmd + A 全选，只在可多选时接这个键
-        if (command && !event.altKey && (key === 'a' || key === 'A')) {
-          if (!multiselectable || !editable)
+        const key = readGridKey(event, { axis: orientation, dir, typeahead: typeaheadOn ? refs.get('typeahead') : null })
+        switch (key?.kind) {
+          // Ctrl/Cmd + A 全选，只在可多选时接这个键
+          case 'select-all': {
+            if (!multiselectable || !editable)
+              return
+            event.preventDefault()
+            // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+            if (event.repeat)
+              return
+            send({ type: 'VALUE.SET', value: grid.selectAll(list, value) })
             return
-          event.preventDefault()
-          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
-          if (event.repeat)
-            return
-          selectAll(list)
-          return
-        }
-        // 方向键：带修饰键的组合不算导航
-        const intent = command || event.altKey || event.shiftKey ? null : navIntentFromKey(key, { axis: orientation, dir })
-        if (intent) {
-          event.preventDefault()
-          focusBy(list, intent)
-          return
-        }
-        // 摘除走 Delete / Backspace：摘除钮不占 Tab 位，键盘那一路只能落在这儿
-        if (key === 'Delete' || key === 'Backspace') {
-          if (focusedValue == null)
-            return
-          const el = items(list).find(item => itemValue(item) === focusedValue)
-          if (!el)
-            return
-          // 禁用与可摘从节点上现读：作者写在部件上的那一份声明已由上一帧落到 DOM，
-          // 键盘这一路手里只有一个值，回不到作者的原始声明
-          const item = {
-            value: focusedValue,
-            disabled: isItemDisabled(el),
-            deletable: el.hasAttribute('data-deletable'),
           }
-          if (!canDelete(item))
+          // 方向键：带 Shift 的组合不算导航，标签组没有范围选
+          case 'navigate': {
+            if (key.extend)
+              return
+            event.preventDefault()
+            grid.focusBy(list, key.intent)
             return
-          event.preventDefault()
-          requestDelete(item)
-          return
-        }
-        if (key === 'Enter') {
-          if (!selectable || !editable)
+          }
+          // 摘除走 Delete / Backspace：摘除钮不占 Tab 位，键盘那一路只能落在这儿
+          case 'delete': {
+            if (focusedValue == null)
+              return
+            const el = items(list).find(item => itemValue(item) === focusedValue)
+            if (!el)
+              return
+            // 禁用与可摘从节点上现读：作者写在部件上的那一份声明已由上一帧落到 DOM，
+            // 键盘这一路手里只有一个值，回不到作者的原始声明
+            const item = {
+              value: focusedValue,
+              disabled: isItemDisabled(el),
+              deletable: el.hasAttribute('data-deletable'),
+            }
+            if (!canDelete(item))
+              return
+            event.preventDefault()
+            requestDelete(item)
             return
-          event.preventDefault()
-          commit(list, multiselectable ? 'toggle' : 'replace')
-          return
-        }
-        // 连打检索只搬焦点、不改选中。缓冲区空时 push(' ') 返回 null，空格才落到下面当确认键
-        const query = typeaheadOn && !command && !event.altKey ? refs.get('typeahead').push(key) : null
-        if (query != null) {
-          event.preventDefault()
-          focusMatch(list, query)
-          return
-        }
-        if (key === ' ') {
-          if (!selectable || !editable)
+          }
+          // 连打检索只搬焦点、不改选中
+          case 'typeahead': {
+            event.preventDefault()
+            grid.focusMatch(list, key.query)
             return
-          event.preventDefault()
-          commit(list, multiselectable ? 'toggle' : 'replace')
+          }
+          // 确认键是切换：按住不放的连发只认第一下，否则复选会来回翻转
+          case 'enter':
+          case 'space': {
+            if (!selectable || !editable)
+              return
+            event.preventDefault()
+            if (!event.repeat)
+              commit(list, multiselectable ? 'toggle' : 'replace')
+          }
         }
       },
-      'onFocus': (event: FocusEvent) => {
-        const list = event.currentTarget as HTMLElement
-        // 只接管从组外进来的焦点：摘完最后一枚时焦点是从组内交到容器手上的，不能再弹出去
-        if (contains(list, event.relatedTarget as Node | null))
-          return
-        const all = items(list)
-        // 焦点落在首个可停留的选中项上，取不到则退回首个可停留条目
-        const selected = all.find((el) => {
-          const v = itemValue(el)
-          return v != null && isSelected(v) && !isItemDisabled(el)
-        })
-        // 落点条目自己的 onFocus 会把锚点接过去
-        focusItem(selected ?? navigateItems(all, null, 'first'))
-      },
+      // 只接管从组外进来的焦点：摘完最后一枚时焦点是从组内交到容器手上的，不能再弹出去
+      'onFocus': (event: FocusEvent) => grid.enter(event),
       'onFocusOut': (event: FocusEvent) => {
-        const list = event.currentTarget as HTMLElement
-        if (contains(list, event.relatedTarget as Node | null))
-          return
-        send({ type: 'LIST.BLUR' })
+        if (grid.leaves(event))
+          send({ type: 'LIST.BLUR' })
       },
     }),
 
@@ -342,8 +299,9 @@ export function connectTagGroup<T extends PropTypes>(
         'tabindex': anchor === item.value ? 0 : -1,
         'data-selectable': dataAttr(selectable),
         'data-deletable': dataAttr(isDeletable(item)),
-        'onClick': () => {
-          if (!selectable || !editable || isDisabled(item))
+        // 标签里作者放的链接、按钮归它们自己，点它们不改选中
+        'onClick': (event: MouseEvent) => {
+          if (!selectable || !editable || isDisabled(item) || fromInlineControl(event.target, event.currentTarget as HTMLElement))
             return
           send(multiselectable
             ? { type: 'ITEM.TOGGLE', value: item.value }

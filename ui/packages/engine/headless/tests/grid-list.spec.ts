@@ -31,6 +31,10 @@ describe('gridList 选择与动作', () => {
 
     const none = service({ selectionMode: 'none', defaultValue: ['a'] })
     expect(none.machine.context.get('value')).toEqual([])
+
+    // 单选下切换退化成选中这一条，不会把旧值留下
+    single.machine.send({ type: 'ROW.TOGGLE', value: 'c' })
+    expect(single.machine.context.get('value')).toEqual(['c'])
   })
 
   it('受控 value 只发意图，宿主写回后才改变', async () => {

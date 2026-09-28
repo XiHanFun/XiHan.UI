@@ -5,28 +5,14 @@
 
 // 提供 grid list 相关实现。
 
-import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { GridListApi, GridListNodeMeta, GridListRowProps, GridListSchema } from './grid-list.types'
-import {
-  contains,
-  createPressTracker,
-  dataAttr,
-  focusItem,
-  indexOfValue,
-  isComposingEvent,
-  isItemDisabled,
-  ITEM_VALUE_ATTR,
-  itemValue,
-  matchTypeahead,
-  navigateItems,
-  navIntentFromKey,
-  queryItems,
-} from '@xihan-ui/core'
+import { createPressTracker, dataAttr, isComposingEvent, ITEM_VALUE_ATTR, queryItems } from '@xihan-ui/core'
 import { isEditableTarget } from '../shared/editable-target'
+import { createGridCollection, fromInlineControl, readGridKey } from '../shared/grid-collection'
 import { gridListAnatomy, gridListRowQuery, gridListRowText } from './grid-list.anatomy'
 
 const parts = gridListAnatomy.build()
-const INTERACTIVE = 'button, a[href], input, select, textarea, [contenteditable], [role="button"], [role="checkbox"], [role="link"]'
 
 export function connectGridList<T extends PropTypes>(
   service: Service<GridListSchema>,
@@ -40,7 +26,6 @@ export function connectGridList<T extends PropTypes>(
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   const loading = !!prop('loading')
-  const loop = prop('loop') ?? true
   const editable = !disabled && !readOnly && !loading
   const selectable = selectionMode !== 'none'
   const counted = prop('collection') != null
@@ -64,28 +49,18 @@ export function connectGridList<T extends PropTypes>(
     'data-highlighted': dataAttr(focusedValue === row.value),
   })
 
-  const rows = (root: HTMLElement): HTMLElement[] =>
-    queryItems(root, gridListRowQuery).filter(row => row.closest('[hidden]') == null)
-
-  const focusValue = (row: HTMLElement | null): string | null => {
-    const next = itemValue(row)
-    if (next == null)
-      return null
-    focusItem(row)
-    send({ type: 'ROW.FOCUS', value: next })
-    return next
-  }
-
-  const focusBy = (root: HTMLElement, intent: NavIntent): string | null =>
-    focusValue(navigateItems(rows(root), anchor, intent, { loop }))
-
-  const focusMatch = (root: HTMLElement, query: string): void => {
-    const list = rows(root)
-    focusValue(matchTypeahead(list, indexOfValue(list, anchor), query, {
-      text: gridListRowText,
-      skip: isItemDisabled,
-    }))
-  }
+  // 全选与范围选的全序：给了数据按数据序（禁用行占着位置但不被收进去），手写的行按当下可见的行
+  const grid = createGridCollection({
+    items: root => queryItems(root, gridListRowQuery).filter(row => row.closest('[hidden]') == null),
+    text: gridListRowText,
+    anchor,
+    loop: prop('loop') ?? true,
+    isSelected,
+    onFocus: next => send({ type: 'ROW.FOCUS', value: next }),
+    order: collection.length
+      ? { items: collection.map(item => item.value), isDisabled: item => !!metaOf.get(item)?.disabled }
+      : null,
+  })
 
   const commitSelection = (rowValue: string): void => {
     if (!editable || !selectable || metaOf.get(rowValue)?.disabled)
@@ -95,30 +70,12 @@ export function connectGridList<T extends PropTypes>(
       : { type: 'ROW.SELECT', value: rowValue })
   }
 
-  /**
-   * Shift 扩选：从锚点到这一行那一段并进扩选开始前的选中集，只在多选下生效。
-   * 全序取当下可见的行（有 collection 时取数据序），禁用行占着位置但不被收进去。
-   */
+  /** Shift 扩选：从锚点到这一行那一段并进扩选开始前的选中集，只在多选下生效。 */
   const extendTo = (root: HTMLElement, rowValue: string): void => {
     if (!editable || selectionMode !== 'multiple')
       return
-    const items = collection.length
-      ? collection.map(item => item.value)
-      : rows(root).map(itemValue).filter((item): item is string => item != null)
-    const off = collection.length
-      ? collection.filter(item => item.disabled).map(item => item.value)
-      : rows(root).filter(row => isItemDisabled(row)).map(itemValue).filter((item): item is string => item != null)
-    send({ type: 'ROW.EXTEND', value: rowValue, items, disabled: off })
-  }
-
-  const selectAll = (root: HTMLElement): void => {
-    if (!editable || selectionMode !== 'multiple')
-      return
-    const available = collection.length
-      ? collection.filter(item => !item.disabled).map(item => item.value)
-      : rows(root).filter(row => !isItemDisabled(row)).map(itemValue).filter((item): item is string => item != null)
-    const all = available.length > 0 && available.every(item => value.includes(item))
-    send({ type: 'VALUE.SET', value: all ? value.filter(item => !available.includes(item)) : [...new Set([...value, ...available])] })
+    const order = grid.order(root)
+    send({ type: 'ROW.EXTEND', value: rowValue, items: [...order.items], disabled: order.items.filter(item => order.isDisabled?.(item)) })
   }
 
   const pressedValue = context.get('pressedValue')
@@ -169,72 +126,67 @@ export function connectGridList<T extends PropTypes>(
         if (disabled || isComposingEvent(event) || isEditableTarget(event.target))
           return
         const root = event.currentTarget as HTMLElement
-        const target = event.target as HTMLElement
-        const row = target.closest<HTMLElement>(parts.row.selector)
-        if (row && target !== row && target.closest(INTERACTIVE))
+        const row = (event.target as HTMLElement).closest<HTMLElement>(parts.row.selector)
+        // 行内按钮的 Enter / Space 交给按钮自己
+        if (fromInlineControl(event.target, row))
           return
-        const rowValue = itemValue(row) ?? focusedValue
-        const command = event.ctrlKey || event.metaKey
-        if (command && !event.altKey && (event.key === 'a' || event.key === 'A')) {
-          if (selectionMode !== 'multiple')
-            return
-          event.preventDefault()
-          if (!event.repeat)
-            selectAll(root)
-          return
-        }
-        const intent = command || event.altKey ? null : navIntentFromKey(event.key, { axis: 'vertical', dir: prop('dir') ?? 'ltr' })
-        if (intent) {
-          event.preventDefault()
-          const next = focusBy(root, intent)
-          // Shift + 方向键 / Home / End：焦点照常移动，锚点到新焦点行那一段并进选中
-          if (next != null && event.shiftKey)
-            extendTo(root, next)
-          return
-        }
-        if (event.key === 'Enter' && rowValue != null) {
-          event.preventDefault()
-          if (event.repeat)
-            return
-          if (prop('onAction'))
-            send({ type: 'ROW.ACTION', value: rowValue })
-          else
-            commitSelection(rowValue)
-          return
-        }
-        const query = (prop('typeahead') ?? true) && !command && !event.altKey
-          ? refs.get('typeahead').push(event.key)
-          : null
-        if (query != null) {
-          event.preventDefault()
-          focusMatch(root, query)
-          return
-        }
-        if (event.key === ' ' && rowValue != null) {
-          event.preventDefault()
-          if (event.repeat)
-            return
-          // Shift + Space：锚点到焦点行那一段并进选中（只在多选下；单选照常选中这一行）
-          if (event.shiftKey && selectionMode === 'multiple')
-            extendTo(root, rowValue)
-          else
-            commitSelection(rowValue)
-        }
-      },
-      'onFocus': (event: FocusEvent) => {
-        const root = event.currentTarget as HTMLElement
-        if (event.target !== root || contains(root, event.relatedTarget as Node | null))
-          return
-        const list = rows(root)
-        const selected = list.find((row) => {
-          const rowValue = itemValue(row)
-          return rowValue != null && isSelected(rowValue) && !isItemDisabled(row)
+        const key = readGridKey(event, {
+          axis: 'vertical',
+          dir: prop('dir') ?? 'ltr',
+          typeahead: (prop('typeahead') ?? true) ? refs.get('typeahead') : null,
         })
-        focusItem(selected ?? navigateItems(list, null, 'first'))
+        const rowValue = row?.getAttribute(ITEM_VALUE_ATTR) ?? focusedValue
+        switch (key?.kind) {
+          case 'select-all': {
+            if (selectionMode !== 'multiple')
+              return
+            event.preventDefault()
+            if (!event.repeat && editable)
+              send({ type: 'VALUE.SET', value: grid.selectAll(root, value) })
+            return
+          }
+          case 'navigate': {
+            event.preventDefault()
+            const next = grid.focusBy(root, key.intent)
+            // Shift + 方向键 / Home / End：焦点照常移动，锚点到新焦点行那一段并进选中
+            if (next != null && key.extend)
+              extendTo(root, next)
+            return
+          }
+          case 'enter': {
+            if (rowValue == null)
+              return
+            event.preventDefault()
+            if (event.repeat)
+              return
+            if (prop('onAction'))
+              send({ type: 'ROW.ACTION', value: rowValue })
+            else
+              commitSelection(rowValue)
+            return
+          }
+          case 'typeahead': {
+            event.preventDefault()
+            grid.focusMatch(root, key.query)
+            return
+          }
+          case 'space': {
+            if (rowValue == null)
+              return
+            event.preventDefault()
+            if (event.repeat)
+              return
+            // Shift + Space：锚点到焦点行那一段并进选中（只在多选下；单选照常选中这一行）
+            if (key.extend && selectionMode === 'multiple')
+              extendTo(root, rowValue)
+            else
+              commitSelection(rowValue)
+          }
+        }
       },
+      'onFocus': (event: FocusEvent) => grid.enter(event),
       'onFocusOut': (event: FocusEvent) => {
-        const root = event.currentTarget as HTMLElement
-        if (!contains(root, event.relatedTarget as Node | null))
+        if (grid.leaves(event))
           send({ type: 'GRID.BLUR' })
       },
     }),
@@ -262,8 +214,7 @@ export function connectGridList<T extends PropTypes>(
         'tabindex': anchor === row.value ? 0 : -1,
         'data-pressed': dataAttr(pressedValue === row.value),
         'onClick': (event: MouseEvent) => {
-          const target = event.target as HTMLElement
-          if (off || target.closest(INTERACTIVE))
+          if (off || fromInlineControl(event.target, event.currentTarget as HTMLElement))
             return
           if (selectionMode === 'none') {
             send({ type: 'ROW.ACTION', value: row.value })
