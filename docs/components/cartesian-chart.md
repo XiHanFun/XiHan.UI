@@ -180,6 +180,18 @@ brush 打开刷选：在绘图区里拖动框出一块，框外的点淡出，�
 
 <XhDemo src="cartesian-chart/27-brush" />
 
+### 对称对数轴
+
+yAxis.scale 写 symlog：长尾数据跨越正负、含 0 也画得出，0 附近铺得开、尾部压得住；还有 sqrt 与 pow（指数写 exponent）
+
+<XhDemo src="cartesian-chart/28-symlog" />
+
+### 按时区排时间刻度
+
+xAxis.timeZone 写 IANA 名：整点与整天落在那个时区的墙上时间上，刻度标签、提示框与数据表里的日期都按它写
+
+<XhDemo src="cartesian-chart/29-time-zone" />
+
 ## 设计指引
 
 ### 何时使用
@@ -206,7 +218,8 @@ brush 打开刷选：在绘图区里拖动框出一块，框外的点淡出，�
 - 系列用 `mark` 区分画法：`bar`、`line` 与 `scatter`。每个系列用字段名把数据的列映射到通道：`x` 是自变量，`y` 是数值。同一张图可以混放不同画法的系列，它们共用坐标轴。
 - 数据是对象数组，组件只读不写。系列 `id` 缺省取 `y` 的字段名，`name` 缺省同 `id`；图例、提示框与数据表显示 `name`，`hiddenSeries` 与部件上的 `data-series-id` 使用 `id`。
 - `x` 是自变量轴、`y` 是数值轴，与屏幕方向无关。`orientation="horizontal"` 把整张图转置：自变量竖排、数值横向延伸，即条形图；`xAxis` / `yAxis` 的配置不用跟着对调。
-- 比例尺缺省按数据推断：含柱系列或自变量不是数字与日期时为 `band`（类目），自变量是 `Date` 时为 `time`，是数字时为 `linear`；数值轴为 `linear`。`scale` 可显式指定 `band` / `point` / `linear` / `log` / `time` / `utc`。`log` 的定义域必须全为正数，否则报错并在根上写 `data-state="error"`。
+- 比例尺缺省按数据推断：含柱系列或自变量不是数字与日期时为 `band`（类目），自变量是 `Date` 时为 `time`，是数字时为 `linear`；数值轴为 `linear`。`scale` 可显式指定 `band` / `point` / `linear` / `log` / `sqrt` / `pow` / `symlog` / `time` / `utc`。`log` 的定义域必须全为正数，否则报错并在根上写 `data-state="error"`。`sqrt` 适合读面积感的量；`pow` 的指数写在 `exponent`（正的有限数，缺省 1）；`symlog` 是对称对数，跨越正负、含 0 的长尾数据也画得出，常数写在 `constant`（正数，缺省 1，越小越接近对数）。参数无效时报 `chart.scale-param`。这些只是同一根轴换一种比例尺，不是另一种图表。
+- 时间轴（`time` / `utc`）的 `timeZone` 写一个 IANA 时区名：整点、整天、月初这些刻度落在那个时区的墙上时间上（夏令时的跳变按日期模块的规则处理），刻度标签、提示框、可及名与数据表里的日期都按它写，看的人在哪个时区都一样。缺省 `time` 按运行环境所在时区、`utc` 按 UTC；名字无效时报 `chart.scale-param`。
 - 类目轴的顺序缺省是数据中首次出现的顺序，`xAxis.domain` 可给出显式顺序；只在 `domain` 里、数据中没有的类目也会占位。
 - 有柱系列时数值轴强制包含 0：柱的长度就是它编码的量，基线不在 0 时长度之比不再等于数值之比。只有折线时 `zero` 缺省不强制，定义域贴合数据；需要从 0 起时写 `yAxis.zero`。
 - 数值轴两端缺省取整到刻度上（`nice`），刻度数量按绘图区长度估算：竖向的数值轴约每 2.5 行字高一个，横向的按最宽的刻度标签加间隙估算；`ticks` 可以给数量提示或显式的刻度值。

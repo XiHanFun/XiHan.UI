@@ -860,3 +860,69 @@ describe('过渡', () => {
     expect(rig.api().scene).toBe(target)
   })
 })
+
+describe('连续数值轴的更多比例尺', () => {
+  const LONG_TAIL = [{ m: 'a', v: 1 }, { m: 'b', v: 100 }, { m: 'c', v: 10000 }]
+
+  it('sqrt / symlog / pow 轴建成对应种类的比例尺', async () => {
+    for (const kind of ['sqrt', 'symlog', 'pow'] as const) {
+      const rig = await makeRig({ data: LONG_TAIL, series: [{ mark: 'line', x: 'm', y: 'v' }], yAxis: { scale: kind, exponent: 0.5 } })
+      expect(rig.api().model.spec.valueScale).toBe(kind)
+      expect(rig.api().model.scene!.layout.valueScale.kind).toBe(kind)
+      expect(rig.api().model.issues).toEqual([])
+    }
+  })
+
+  it('symlog 轴跨越正负、含 0 也画得出，不报对数轴的定义域问题', async () => {
+    const rig = await makeRig({ data: [{ m: 'a', v: -500 }, { m: 'b', v: 0 }, { m: 'c', v: 8000 }], series: [{ mark: 'line', x: 'm', y: 'v' }], yAxis: { scale: 'symlog' } })
+    const layout = rig.api().model.scene!.layout
+    expect(layout.valueScale.domain[0]).toBeLessThanOrEqual(-500)
+    expect(rig.api().model.issues).toEqual([])
+    // 同样的像素距离里，0 附近铺得比长尾那一端开
+    const at = (v: number): number => layout.valueScale.map(v) as number
+    expect(Math.abs(at(0) - at(100))).toBeGreaterThan(Math.abs(at(7900) - at(8000)))
+  })
+
+  it('幂轴的指数、对称对数轴的常数无效：报出比例尺参数问题，整张图不画', async () => {
+    const pow = await makeRig({ data: LONG_TAIL, series: [{ mark: 'line', x: 'm', y: 'v' }], yAxis: { scale: 'pow', exponent: -1 } })
+    expect(pow.api().model.issues.map(i => i.code)).toContain(DIAGNOSTIC_CODES.chartScaleParam)
+    expect(pow.api().model.scene).toBeNull()
+    const symlog = await makeRig({ data: LONG_TAIL, series: [{ mark: 'line', x: 'm', y: 'v' }], yAxis: { scale: 'symlog', constant: 0 } })
+    expect(symlog.api().model.issues.map(i => i.code)).toContain(DIAGNOSTIC_CODES.chartScaleParam)
+  })
+
+  it('自变量轴同样可以是 sqrt 轴（散点）', async () => {
+    const rig = await makeRig({ data: [{ x: 1, y: 1 }, { x: 400, y: 2 }], series: [{ mark: 'scatter', x: 'x', y: 'y' }], xAxis: { scale: 'sqrt' } })
+    expect(rig.api().model.scene!.layout.keyScale.kind).toBe('sqrt')
+  })
+})
+
+describe('时间轴按 IANA 时区排刻度', () => {
+  // 东京的三天：UTC 的前一天 15:00 就是东京的零点
+  const DAYS = [
+    { t: new Date('2024-03-01T00:00:00Z'), v: 1 },
+    { t: new Date('2024-03-02T12:00:00Z'), v: 3 },
+    { t: new Date('2024-03-04T00:00:00Z'), v: 2 },
+  ]
+
+  it('整天的刻度落在那个时区的零点上，标签按它的墙上时间写', async () => {
+    const rig = await makeRig({ data: DAYS, series: [{ mark: 'line', x: 't', y: 'v' }], xAxis: { scale: 'utc', timeZone: 'Asia/Tokyo', ticks: 3 }, locale: 'en-US' }, { width: 600, height: 240 })
+    const ticks = rig.api().model.scene!.layout.keyAxis.ticks
+    expect(ticks.length).toBeGreaterThan(0)
+    for (const tick of ticks)
+      expect((tick.value as Date).getUTCHours()).toBe(15)
+    expect(rig.api().model.issues).toEqual([])
+  })
+
+  it('提示框与数据表里的日期同样按时区写', async () => {
+    const rig = await makeRig({ data: DAYS, series: [{ mark: 'line', x: 't', y: 'v' }], xAxis: { scale: 'utc', timeZone: 'America/New_York', format: { month: 'numeric', day: 'numeric', hour: 'numeric', hour12: false } }, locale: 'en-US' })
+    // 2024-03-02T12:00Z 在纽约是 3 月 2 日 7 点
+    expect(rig.api().model.formats.key(new Date('2024-03-02T12:00:00Z'))).toContain('3/2')
+    expect(rig.api().model.formats.key(new Date('2024-03-02T12:00:00Z'))).toMatch(/\b0?7\b/)
+  })
+
+  it('时区名无效时报出比例尺参数问题', async () => {
+    const rig = await makeRig({ data: DAYS, series: [{ mark: 'line', x: 't', y: 'v' }], xAxis: { scale: 'utc', timeZone: 'Mars/Olympus' } })
+    expect(rig.api().model.issues.map(i => i.code)).toContain(DIAGNOSTIC_CODES.chartScaleParam)
+  })
+})
