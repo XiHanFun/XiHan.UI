@@ -268,7 +268,7 @@ function validConstant(value: number | undefined): boolean {
   return value == null || (Number.isFinite(value) && value > 0)
 }
 
-/** 轴配置里的比例尺参数有没有问题：幂指数、对称对数常数与时区。 */
+/** 轴配置里的参数有没有问题：幂指数、对称对数常数、时区与最小厚度。 */
 function scaleParamIssues(axis: CartesianAxis, which: 'x' | 'y'): ChartSpecIssue[] {
   const out: ChartSpecIssue[] = []
   if (axis.scale === 'pow' && !validExponent(axis.exponent))
@@ -277,6 +277,8 @@ function scaleParamIssues(axis: CartesianAxis, which: 'x' | 'y'): ChartSpecIssue
     out.push({ code: DIAGNOSTIC_CODES.chartScaleParam, message: '对称对数轴的常数必须是正数', detail: { axis: which, constant: axis.constant } })
   if (axis.timeZone != null && zonedTimeIntervals(axis.timeZone) == null)
     out.push({ code: DIAGNOSTIC_CODES.chartScaleParam, message: `时区「${axis.timeZone}」不是有效的 IANA 名`, detail: { axis: which, timeZone: axis.timeZone } })
+  if (axis.minSize != null && !(Number.isFinite(axis.minSize) && axis.minSize >= 0))
+    out.push({ code: DIAGNOSTIC_CODES.chartScaleParam, message: '坐标轴的最小厚度必须是非负的有限数', detail: { axis: which, minSize: axis.minSize } })
   return out
 }
 
@@ -1006,15 +1008,37 @@ export interface CartesianLayout {
   readonly valueExtent: readonly [number, number]
 }
 
+/**
+ * 刻度格式器按比例尺建一次：时间与数值格式器各带几份 Intl 实例，逐个标签现建会让一次布局慢上一个量级。
+ * 求绘图区时每一轮都换一份比例尺，按比例尺对象记住即可。
+ */
+export function perScale(build: (scale: AxisScale) => (value: unknown) => string): (scale: AxisScale) => (value: unknown) => string {
+  const built = new WeakMap<AxisScale, (value: unknown) => string>()
+  return (scale) => {
+    let format = built.get(scale)
+    if (!format) {
+      format = build(scale)
+      built.set(scale, format)
+    }
+    return format
+  }
+}
+
 /** 连续自变量轴上的键换成数：日期取时间值。 */
 function keyNumber(key: ChartKey): number {
   return key instanceof Date ? key.valueOf() : Number(key)
 }
 
-/** 定义域里的一段换成整条轴上的比例；两端不是有限数、对数轴取到非正数或整条轴只有一个值时是整条轴。 */
-function ratioOf(range: readonly [number, number], full: readonly [number, number], kind: 'linear' | 'log'): AxisWindow {
+/**
+ * 定义域里的一段换成整条轴上的比例；两端不是有限数、对数轴取到非正数、整条轴只有一个值，
+ * 或这一段整个落在整条轴之外（数据还没到、窗口指着已经挤掉的时段）时是整条轴。
+ */
+export function ratioOf(range: readonly [number, number], full: readonly [number, number], kind: 'linear' | 'log'): AxisWindow {
   const valid = (v: number): boolean => Number.isFinite(v) && (kind !== 'log' || v > 0)
-  return range.every(valid) && full.every(valid) && full[0] !== full[1] ? domainToWindow(range, full, kind) : FULL_WINDOW
+  if (!range.every(valid) || !full.every(valid) || full[0] === full[1])
+    return FULL_WINDOW
+  const overlaps = Math.max(range[0], range[1]) >= Math.min(full[0], full[1]) && Math.min(range[0], range[1]) <= Math.max(full[0], full[1])
+  return overlaps ? domainToWindow(range, full, kind) : FULL_WINDOW
 }
 
 function isCategoryScale(scale: AxisScale): scale is BandScale<string | number> {
@@ -1179,24 +1203,31 @@ export function layoutCartesian(
     return make(windowToDomain(windowY, valueExtent, valueKind))
   }
 
-  const valueTickFormat = (scale: AxisScale) => (value: unknown): string => {
-    if (typeof spec.yAxis.format === 'function')
-      return spec.yAxis.format(value)
+  const valueTickFormat = perScale((scale) => {
+    const own = spec.yAxis.format
+    if (typeof own === 'function')
+      return value => own(value)
     const continuous = scale as ContinuousScale
-    return continuous.tickFormat(locale, valueTickCount(continuous.range), valueSpec)(value as number)
-  }
-  const keyTickFormat = (scale: AxisScale) => (value: unknown): string => {
+    const format = continuous.tickFormat(locale, valueTickCount(continuous.range), valueSpec)
+    return value => format(value as number)
+  })
+  const keyTickFormat = perScale((scale) => {
     if (isCategoryScale(scale))
-      return formats.key(keyOf.get(value as string | number) ?? (value as ChartKey))
-    if (typeof spec.xAxis.format === 'function')
-      return spec.xAxis.format(value)
+      return value => formats.key(keyOf.get(value as string | number) ?? (value as ChartKey))
+    const own = spec.xAxis.format
+    if (typeof own === 'function')
+      return value => own(value)
     if (scale.kind === 'time' || scale.kind === 'utc') {
-      if (isDateFormat(spec.xAxis.format))
-        return new Intl.DateTimeFormat(locale, { ...spec.xAxis.format, timeZone: axisTimeZone(spec.xAxis) ?? spec.xAxis.format.timeZone }).format(value as Date)
-      return (scale as TimeScale).tickFormat(locale)(value as Date)
+      if (isDateFormat(own)) {
+        const dates = new Intl.DateTimeFormat(locale, { ...own, timeZone: axisTimeZone(spec.xAxis) ?? own.timeZone })
+        return value => dates.format(value as Date)
+      }
+      const format = (scale as TimeScale).tickFormat(locale)
+      return value => format(value as Date)
     }
-    return (scale as ContinuousScale).tickFormat(locale)(value as number)
-  }
+    const format = (scale as ContinuousScale).tickFormat(locale)
+    return value => format(value as number)
+  })
 
   const common = {
     measure: measurer,
@@ -1234,6 +1265,7 @@ export function layoutCartesian(
     maxLabelSize: maxLabel,
     tickLength: 0,
     title: spec.yAxis.title,
+    minThickness: spec.yAxis.minSize,
   } as const
   const solved = solvePlotRect({
     outer,
@@ -1246,6 +1278,7 @@ export function layoutCartesian(
         maxLabelSize: maxLabel,
         tickLength: keyTicks,
         title: spec.xAxis.title,
+        minThickness: spec.xAxis.minSize,
       },
       [valuePosition]: valueAxisConfig,
     },

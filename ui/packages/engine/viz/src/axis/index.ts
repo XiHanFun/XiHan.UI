@@ -46,6 +46,8 @@ export interface AxisLayoutInput {
   readonly title?: string
   /** 标题字体，缺省同 font。 */
   readonly titleFont?: FontSpec
+  /** 至少占这么厚：上下或左右叠放的几张图写同一个值，绘图区的那一边对齐。缺省按内容。 */
+  readonly minThickness?: number
 }
 
 export interface AxisTick {
@@ -148,7 +150,7 @@ function thinning(offsets: readonly number[], need: (i: number, j: number) => nu
 /** 布局一根坐标轴。 */
 export function layoutAxis(input: AxisLayoutInput): AxisLayout {
   const { font, measure, minLabelGap: gap, maxLabelSize, tickLength, labelGap, labelOverflow } = input
-  for (const [name, value] of Object.entries({ minLabelGap: gap, maxLabelSize, tickLength, labelGap })) {
+  for (const [name, value] of Object.entries({ minLabelGap: gap, maxLabelSize, tickLength, labelGap, minThickness: input.minThickness ?? 0 })) {
     if (!(value >= 0) || !Number.isFinite(value))
       throw invalidArgument(`${name} 必须是非负有限数`, { [name]: value })
   }
@@ -226,7 +228,7 @@ export function layoutAxis(input: AxisLayoutInput): AxisLayout {
   const titleHeight = input.title ? labelGap + (input.titleFont ?? font).lineHeight : 0
   return {
     ticks,
-    thickness: tickLength + (visible.length > 0 ? labelGap + labelExtent : 0) + titleHeight,
+    thickness: Math.max(input.minThickness ?? 0, tickLength + (visible.length > 0 ? labelGap + labelExtent : 0) + titleHeight),
     gridOffsets: offsets,
   }
 }

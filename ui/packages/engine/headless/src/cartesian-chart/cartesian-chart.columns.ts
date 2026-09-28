@@ -26,7 +26,6 @@ import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import {
   createScene,
   createTimeFormat,
-  domainToWindow,
   FULL_WINDOW,
   indexRangeToWindow,
   inferDomain,
@@ -57,7 +56,7 @@ import {
 } from '@xihan-ui/viz/columns'
 import { chartPageSize } from '../shared/chart'
 import { zonedTimeIntervals } from '../shared/chart/time-zone'
-import { axisMarks, axisTimeZone, cartesianFormats, cartesianKeyId, colorPosition, continuousScaleOf, crisp, gridLine, isDateFormat, normalizeCartesianSpec } from './cartesian-chart.model'
+import { axisMarks, axisTimeZone, cartesianKeyId, colorPosition, continuousScaleOf, crisp, gridLine, isDateFormat, normalizeCartesianSpec, perScale, ratioOf } from './cartesian-chart.model'
 import { cartesianProbesOf } from './cartesian-chart.probe'
 
 /* ---------- 规格 ---------- */
@@ -372,6 +371,8 @@ export interface CartesianColumnsLayoutInput {
   readonly measurer: TextMeasurer
   readonly measurerVersion: number
   readonly locale: string
+  /** 管线按规格与语言记住的那份格式：布局每次都现建会多构造几个 Intl 实例。 */
+  readonly formats: CartesianFormats
   readonly zoom: CartesianZoom
   readonly window: CartesianWindow
   readonly annotations: readonly CartesianAnnotation[]
@@ -422,11 +423,10 @@ function affine(d0: number, d1: number, r0: number, r1: number): { to: (v: numbe
 export function layoutColumns(columns: CartesianColumns, input: CartesianColumnsLayoutInput): CartesianColumnsLayout {
   const { spec, key, visible } = columns
   const { base } = spec
-  const { size, metrics, measurer, locale, zoom, window: zoomWindow, annotations } = input
+  const { size, metrics, measurer, locale, formats, zoom, window: zoomWindow, annotations } = input
   void input.measurerVersion
   const n = columns.length
   const font = metrics.font
-  const formats = cartesianFormats(base, locale)
   const zoomX = zoom === 'x' || zoom === 'xy'
   const zoomY = zoom === 'y' || zoom === 'xy'
   const scatterOnly = visible.length > 0 && visible.every(s => s.spec.mark === 'scatter')
@@ -472,12 +472,8 @@ export function layoutColumns(columns: CartesianColumns, input: CartesianColumns
     if (xa.max != null)
       hi = columnsKeyNumber(xa.max)
     keyExtent = !Number.isFinite(lo) || !Number.isFinite(hi) ? [0, 1] : lo === hi ? [lo - 1, hi + 1] : [lo, hi]
-    if (zoomX && zoomWindow.x) {
-      const a = columnsKeyNumber(zoomWindow.x[0])
-      const b = columnsKeyNumber(zoomWindow.x[1])
-      if (Number.isFinite(a) && Number.isFinite(b))
-        windowX = domainToWindow([Math.min(a, b), Math.max(a, b)], keyExtent, 'linear')
-    }
+    if (zoomX && zoomWindow.x)
+      windowX = ratioOf([columnsKeyNumber(zoomWindow.x[0]), columnsKeyNumber(zoomWindow.x[1])], keyExtent, 'linear')
     domain = isFullWindow(windowX) ? keyExtent : windowToDomain(windowX, keyExtent, 'linear') as [number, number]
   }
   let from = 0
@@ -522,7 +518,7 @@ export function layoutColumns(columns: CartesianColumns, input: CartesianColumns
     const full = base.yAxis.nice === false ? whole : whole.nice(valueTickCount(range))
     valueExtent = full.domain as [number, number]
     windowY = zoomY && zoomWindow.y
-      ? domainToWindow([Math.min(...zoomWindow.y), Math.max(...zoomWindow.y)], valueExtent, valueKind)
+      ? ratioOf(zoomWindow.y, valueExtent, valueKind)
       : FULL_WINDOW
     return isFullWindow(windowY) ? full : make(windowToDomain(windowY, valueExtent, valueKind) as [number, number])
   }
@@ -570,24 +566,32 @@ export function layoutColumns(columns: CartesianColumns, input: CartesianColumns
       ordinalLabel = labelAt
     }
   }
-  const keyTickFormat = (scale: AxisScale) => (v: unknown): string => {
-    if (ordinalLabel)
-      return ordinalLabel(v as number)
-    if (typeof base.xAxis.format === 'function')
-      return base.xAxis.format(v)
+  const keyTickFormat = perScale((scale) => {
+    const label = ordinalLabel
+    if (label)
+      return v => label(v as number)
+    const own = base.xAxis.format
+    if (typeof own === 'function')
+      return v => own(v)
     if (scale.kind === 'time' || scale.kind === 'utc') {
-      if (isDateFormat(base.xAxis.format))
-        return new Intl.DateTimeFormat(locale, { ...base.xAxis.format, timeZone: timeZone ?? base.xAxis.format.timeZone }).format(v as Date)
-      return (scale as TimeScale).tickFormat(locale)(v as Date)
+      if (isDateFormat(own)) {
+        const dates = new Intl.DateTimeFormat(locale, { ...own, timeZone: timeZone ?? own.timeZone })
+        return v => dates.format(v as Date)
+      }
+      const format = (scale as TimeScale).tickFormat(locale)
+      return v => format(v as Date)
     }
-    return (scale as ContinuousScale).tickFormat(locale)(v as number)
-  }
-  const valueTickFormat = (scale: AxisScale) => (v: unknown): string => {
-    if (typeof base.yAxis.format === 'function')
-      return base.yAxis.format(v)
+    const format = (scale as ContinuousScale).tickFormat(locale)
+    return v => format(v as number)
+  })
+  const valueTickFormat = perScale((scale) => {
+    const own = base.yAxis.format
+    if (typeof own === 'function')
+      return v => own(v)
     const continuous = scale as ContinuousScale
-    return continuous.tickFormat(locale, valueTickCount(continuous.range), valueSpec)(v as number)
-  }
+    const format = continuous.tickFormat(locale, valueTickCount(continuous.range), valueSpec)
+    return v => format(v as number)
+  })
   const common = { measure: measurer, font, minLabelGap: metrics.labelGap * 2, labelGap: metrics.labelGap }
   const maxLabel = Math.max(48, size.width * 0.3)
   const lastLabel = spec.ordinal ? labelAt(keyRange[1]) : spec.time ? formats.key(new Date(domain[1])) : formats.key(domain[1])
@@ -611,6 +615,7 @@ export function layoutColumns(columns: CartesianColumns, input: CartesianColumns
         maxLabelSize: maxLabel,
         tickLength: metrics.tickLength,
         title: base.xAxis.title,
+        minThickness: base.xAxis.minSize,
       },
       left: {
         ...common,
@@ -620,6 +625,7 @@ export function layoutColumns(columns: CartesianColumns, input: CartesianColumns
         maxLabelSize: maxLabel,
         tickLength: 0,
         title: base.yAxis.title,
+        minThickness: base.yAxis.minSize,
       },
     },
     scales: {
@@ -1374,28 +1380,49 @@ export function columnsHitTest(
 /** 缩略线最多取几个点：轨道只有几百像素宽。 */
 const PREVIEW_COLUMNS = 240
 
-/** 缩放条的缩略线：第一个按键排的系列在整条轴上的走势，按像素列降采样，写在 0–1 的单位框里。 */
+/**
+ * 缩放条的缩略线：第一个按键排的系列在整条轴上的走势，写在 0–1 的单位框里。按列取最低与最高两点、按先后连起来，
+ * 峰谷都在；逐点只做比较，流式每帧重算也只是一遍扫描。
+ */
 export function columnsZoomPreview(columns: CartesianColumns): string | null {
   const s = columns.visible.find(v => v.spec.mark !== 'scatter')
   const key = columns.key
   const n = columns.length
   if (!s || !key || n < 2)
     return null
-  const e = createYExtent(s, n)
+  const e = s.ohlc ? createYExtent(s, n) : s.extent.extent(0, n)
   if (!e)
     return null
+  const y = s.y
   const span = e.max - e.min
   const ordinal = columns.spec.ordinal
   const k0 = key[0] as number
   const k1 = key[n - 1] as number
   const at = (i: number): number => (ordinal ? (i + 0.5) / n : k1 === k0 ? 0.5 : ((key[i] as number) - k0) / (k1 - k0))
-  const decimated = decimateLine(null, s.y, 0, n, i => at(i) * PREVIEW_COLUMNS, { gaps: 'skip' })
   let d = ''
-  for (let k = 0; k < decimated.count; k++) {
-    const i = decimated.indices[k] as number
-    const x = at(i)
-    const y = 0.9 - (span > 0 ? ((s.y[i] as number) - e.min) / span : 0.5) * 0.8
-    d += `${d ? 'L' : 'M'}${x.toFixed(4)},${y.toFixed(4)}`
+  const point = (i: number): void => {
+    const v = 0.9 - (span > 0 ? ((y[i] as number) - e.min) / span : 0.5) * 0.8
+    d += `${d ? 'L' : 'M'}${at(i).toFixed(4)},${v.toFixed(4)}`
+  }
+  let i = 0
+  for (let c = 1; c <= PREVIEW_COLUMNS && i < n; c++) {
+    const edge = c === PREVIEW_COLUMNS ? n : ordinal ? Math.ceil((c / PREVIEW_COLUMNS) * n) : bisectRight(key, k0 + (c / PREVIEW_COLUMNS) * (k1 - k0))
+    let lo = -1
+    let hi = -1
+    for (; i < edge; i++) {
+      const v = y[i] as number
+      if (!Number.isFinite(v))
+        continue
+      if (lo < 0 || v < (y[lo] as number))
+        lo = i
+      if (hi < 0 || v > (y[hi] as number))
+        hi = i
+    }
+    if (lo < 0)
+      continue
+    point(Math.min(lo, hi))
+    if (lo !== hi)
+      point(Math.max(lo, hi))
   }
   return d || null
 }

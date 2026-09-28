@@ -111,7 +111,7 @@ export function windowToDomain(w: AxisWindow, full: readonly [number, number], k
   return [backward(kind, a + (b - a) * w.start), backward(kind, a + (b - a) * w.end)]
 }
 
-/** 连续轴的一段定义域换成窗口；越出完整定义域的部分夹回来。 */
+/** 连续轴的一段定义域换成窗口；越出完整定义域的部分夹回来，整段都在外面时落成贴着那一端的零宽窗口。 */
 export function domainToWindow(domain: readonly [number, number], full: readonly [number, number], kind: WindowScaleKind = 'linear'): AxisWindow {
   const [a, b] = [forward(kind, full[0]), forward(kind, full[1])]
   const [x, y] = [forward(kind, domain[0]), forward(kind, domain[1])]
@@ -119,7 +119,8 @@ export function domainToWindow(domain: readonly [number, number], full: readonly
     throw invalidArgument('定义域换不成窗口', { domain, full, kind })
   const start = (Math.min(x, y) - a) / (b - a)
   const end = (Math.max(x, y) - a) / (b - a)
-  return clampWindow({ start: Math.max(0, Math.min(start, end)), end: Math.min(1, Math.max(start, end)) })
+  const unit = (v: number): number => Math.min(1, Math.max(0, v))
+  return clampWindow({ start: unit(Math.min(start, end)), end: unit(Math.max(start, end)) })
 }
 
 /**
