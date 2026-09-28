@@ -235,6 +235,23 @@ describe('勾选标记家族', () => {
     expect(getComputedStyle(part('table', 'row-select-trigger', 1)).color).toBe(getComputedStyle(first).color)
   })
 
+  it('table：树形表级联下部分子行勾中的父行画半选横杠', async () => {
+    const columns = [{ id: 'select', label: '', width: 56 }, { id: 'name', label: '名称', width: 160 }]
+    const rows = [{ id: 'rd', expandable: true }, { id: 'rd-web', parentId: 'rd' }, { id: 'rd-app', parentId: 'rd' }]
+    await mount(() => h(XhTableRoot, { columns, rows, selectionMode: 'multiple', cascade: true, defaultExpandedValue: ['rd'] }, () => [
+      h(XhTableBody, null, () => rows.map(row => h(XhTableRow, { key: row.id, value: row.id }, () => [
+        h(XhTableCell, { value: 'select' }, () => h(XhTableRowSelectTrigger)),
+        h(XhTableCell, { value: 'name' }, () => row.id),
+      ]))),
+    ]))
+    await userEvent.click(part('table', 'row-select-trigger', 1))
+    await nextTick()
+    finish()
+    expectMark(part('table', 'row-select-trigger', 0), '::before', 'indeterminate')
+    expectMark(part('table', 'row-select-trigger', 1), '::before', 'checked')
+    expectMark(part('table', 'row-select-trigger', 2), '::before', 'unchecked')
+  })
+
   it('question-flow：多选的记号同一份标记', async () => {
     const questions = [{ id: 'q', prompt: '多选', type: 'multiple' as const, options: [{ value: 'x', label: '甲' }] }]
     await mount(() => h(XhQuestionFlowRoot, { questions }, () => [

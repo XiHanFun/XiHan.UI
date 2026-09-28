@@ -51,6 +51,10 @@ describe('树形表的级联勾选', () => {
     // 禁用子行没勾上，父行因此是半选，不是全勾
     expect(t.api().isSelected('rd')).toBe(false)
     expect(t.trigger('rd')['data-indeterminate']).toBe('')
+    // 方框里的记号由勾选标记配方画：半选画横杠
+    expect(t.trigger('rd')['data-xh-check-mark']).toBe('indeterminate')
+    expect(t.trigger('rd-web')['data-xh-check-mark']).toBe('checked')
+    expect(t.trigger('ops')['data-xh-check-mark']).toBe('unchecked')
     expect(t.api().isSelected('rd-web')).toBe(true)
   })
 
