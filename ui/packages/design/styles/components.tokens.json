@@ -11769,6 +11769,180 @@
       "description": "checkbox-group 的 select-all-trigger 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-citation-card-backdrop",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "-webkit-backdrop-filter",
+        "backdrop-filter"
+      ],
+      "state": [
+        "preview-mode=hover",
+        "xh-material=frosted"
+      ],
+      "defaultToken": [
+        "--xh-_material-backdrop"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-card-bg",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "not([data-xh-action-control])",
+        "preview-mode=hover",
+        "xh-material=frosted"
+      ],
+      "defaultToken": [
+        "--xh-_material-bg"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-card-border",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "not([data-xh-action-control])",
+        "preview-mode=hover",
+        "xh-material=frosted"
+      ],
+      "defaultToken": [
+        "--xh-_material-border"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-card-fg",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "not([data-xh-action-control])",
+        "preview-mode=hover",
+        "xh-material=frosted"
+      ],
+      "defaultToken": [
+        "--xh-_material-fg"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-card-max-h",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "max-block-size"
+      ],
+      "state": [
+        "preview-mode=hover"
+      ],
+      "defaultToken": [
+        "--xh-overlay-max-h"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 max-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-card-max-w",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "max-inline-size"
+      ],
+      "state": [
+        "preview-mode=hover"
+      ],
+      "defaultToken": [
+        "--xh-overlay-max-w"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 max-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-card-quote-lines",
+      "component": "citation",
+      "part": [
+        "preview",
+        "quote"
+      ],
+      "property": [
+        "-webkit-line-clamp"
+      ],
+      "state": [
+        "not([hidden])",
+        "preview-mode=hover"
+      ],
+      "defaultToken": [
+        "6"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview、quote 部件 -webkit-line-clamp 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-card-radius",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "preview-mode=hover"
+      ],
+      "defaultToken": [
+        "--xh-shape-overlay"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-card-shadow",
+      "component": "citation",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "not([data-xh-action-control])",
+        "preview-mode=hover",
+        "xh-material=frosted"
+      ],
+      "defaultToken": [
+        "--xh-_material-shadow"
+      ],
+      "visibility": "public",
+      "description": "citation 的 preview 部件 box-shadow 覆盖槽。"
+    },
+    {
       "name": "--xh-citation-dismiss-trigger-radius",
       "component": "citation",
       "part": [
@@ -11808,19 +11982,21 @@
       "name": "--xh-citation-font-size",
       "component": "citation",
       "part": [
+        "positioner",
         "root"
       ],
       "property": [
         "font-size"
       ],
       "state": [
-        "default"
+        "default",
+        "preview-mode=hover"
       ],
       "defaultToken": [
         "--xh-_citation-font-size"
       ],
       "visibility": "public",
-      "description": "citation 的 root 部件 font-size 覆盖槽。"
+      "description": "citation 的 positioner、root 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-citation-gap",
@@ -11836,7 +12012,9 @@
       "state": [
         "@keyframes xh-citation-preview-collapse",
         "@keyframes xh-citation-preview-expand",
-        "default"
+        "default",
+        "not([data-xh-material])",
+        "xh-material"
       ],
       "defaultToken": [
         "--xh-_citation-gap"
@@ -11848,19 +12026,20 @@
       "name": "--xh-citation-icon-size",
       "component": "citation",
       "part": [
+        "positioner",
         "root"
       ],
       "property": [
         "--xh-icon-size"
       ],
       "state": [
-        "default"
+        "is([data-part='root'], [data-part='positioner'])"
       ],
       "defaultToken": [
         "--xh-_citation-icon-size"
       ],
       "visibility": "public",
-      "description": "citation 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "citation 的 positioner、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-citation-index-active-bg",
@@ -11992,6 +12171,24 @@
       "description": "citation 的 source-index 部件 block-size、min-inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-citation-layer",
+      "component": "citation",
+      "part": [
+        "positioner"
+      ],
+      "property": [
+        "z-index"
+      ],
+      "state": [
+        "preview-mode=hover"
+      ],
+      "defaultToken": [
+        "--xh-_layer"
+      ],
+      "visibility": "public",
+      "description": "citation 的 positioner 部件 z-index 覆盖槽。"
+    },
+    {
       "name": "--xh-citation-link-fg",
       "component": "citation",
       "part": [
@@ -12031,6 +12228,7 @@
       "name": "--xh-citation-meta-fg",
       "component": "citation",
       "part": [
+        "preview-index",
         "preview-meta",
         "source-meta"
       ],
@@ -12044,12 +12242,13 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "citation 的 preview-meta、source-meta 部件 color 覆盖槽。"
+      "description": "citation 的 preview-index、preview-meta、source-meta 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-citation-meta-font-size",
       "component": "citation",
       "part": [
+        "preview-index",
         "preview-meta",
         "source-meta"
       ],
@@ -12063,7 +12262,26 @@
         "--xh-text-caption-size"
       ],
       "visibility": "public",
-      "description": "citation 的 preview-meta、source-meta 部件 font-size 覆盖槽。"
+      "description": "citation 的 preview-index、preview-meta、source-meta 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-citation-pager-radius",
+      "component": "citation",
+      "part": [
+        "next-trigger",
+        "prev-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "citation 的 next-trigger、prev-trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-citation-preview-bg",
@@ -12075,7 +12293,8 @@
         "background"
       ],
       "state": [
-        "default"
+        "not([data-xh-material])",
+        "xh-material"
       ],
       "defaultToken": [
         "--xh-bg-surface"
@@ -12093,7 +12312,8 @@
         "border"
       ],
       "state": [
-        "default"
+        "not([data-xh-material])",
+        "xh-material"
       ],
       "defaultToken": [
         "--xh-border-default"
@@ -12111,7 +12331,8 @@
         "color"
       ],
       "state": [
-        "default"
+        "not([data-xh-material])",
+        "xh-material"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -12237,7 +12458,8 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "not([data-xh-material])",
+        "xh-material"
       ],
       "defaultToken": [
         "--xh-shape-surface"

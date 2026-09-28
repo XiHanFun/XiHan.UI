@@ -3,7 +3,7 @@
 import type { CitationSchema } from '../src/citation'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { citationMachine, connectCitation } from '../src/citation'
 
 type Props = CitationSchema['props']
@@ -151,5 +151,191 @@ describe('citation 预览的披露', () => {
     ;((api().getSourceLinkProps({ sourceId: 'web' }) as Dict).onClick as () => void)()
     expect(preview(api, 'web')['data-state']).toBe('open')
     expect(preview(api, 'web').inert).toBeUndefined()
+  })
+})
+
+describe('citation 悬停预览', () => {
+  type Dict = Record<string, unknown>
+  const mouse = { pointerType: 'mouse' } as PointerEvent
+  const touch = { pointerType: 'touch' } as PointerEvent
+  const trigger = (api: ReturnType<typeof setup>['api'], sourceId: string, citationId = sourceId): Dict =>
+    api().getTriggerProps({ sourceId, citationId }) as Dict
+  const enter = (props: Dict, event = mouse): void => (props.onPointerEnter as (e: PointerEvent) => void)(event)
+  const leave = (props: Dict, event = mouse): void => (props.onPointerLeave as (e: PointerEvent) => void)(event)
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('inline 档不接悬停：引用编号上没有指针与焦点处理器，定位壳不参与排版', () => {
+    const { api } = setup({ sources })
+    expect(trigger(api, 'web').onPointerEnter).toBeUndefined()
+    const positioner = api().getPositionerProps() as Dict
+    expect(positioner['data-preview-mode']).toBe('inline')
+    expect(positioner['data-positioned']).toBe('')
+    expect(positioner.hidden).toBeUndefined()
+    expect(positioner.style).toEqual({})
+  })
+
+  it('指针停够 openDelay 才打开；没停够就离开则不打开', () => {
+    vi.useFakeTimers()
+    const { api } = setup({ sources, previewMode: 'hover' })
+    enter(trigger(api, 'web'))
+    vi.advanceTimersByTime(699)
+    expect(api().open).toBe(false)
+    leave(trigger(api, 'web'))
+    vi.advanceTimersByTime(10)
+    expect(api().open).toBe(false)
+
+    enter(trigger(api, 'web'))
+    vi.advanceTimersByTime(700)
+    expect(api().open).toBe(true)
+    expect(api().activeSourceId).toBe('web')
+    expect(trigger(api, 'web')['aria-expanded']).toBe('true')
+  })
+
+  it('离开后等 closeDelay 才收起；其间指针进卡片即撤销', () => {
+    vi.useFakeTimers()
+    const { api } = setup({ sources, previewMode: 'hover', openDelay: 0 })
+    enter(trigger(api, 'web'))
+    vi.advanceTimersByTime(0)
+    expect(api().open).toBe(true)
+    leave(trigger(api, 'web'))
+    vi.advanceTimersByTime(200)
+    ;((api().getPositionerProps() as Dict).onPointerEnter as (e: PointerEvent) => void)(mouse)
+    vi.advanceTimersByTime(500)
+    expect(api().open).toBe(true)
+    ;((api().getPositionerProps() as Dict).onPointerLeave as (e: PointerEvent) => void)(mouse)
+    vi.advanceTimersByTime(300)
+    expect(api().open).toBe(false)
+  })
+
+  it('卡片开着时指向另一处引用直接切过去；刚收起不久指向另一处也直接接替', () => {
+    vi.useFakeTimers()
+    const { api } = setup({ sources, previewMode: 'hover' })
+    enter(trigger(api, 'web'))
+    vi.advanceTimersByTime(700)
+    enter(trigger(api, 'doc'))
+    expect(api().activeSourceId).toBe('doc')
+    expect(api().open).toBe(true)
+
+    leave(trigger(api, 'doc'))
+    vi.advanceTimersByTime(300)
+    expect(api().open).toBe(false)
+    vi.advanceTimersByTime(100)
+    enter(trigger(api, 'web'))
+    expect(api().open).toBe(true)
+    expect(api().activeSourceId).toBe('web')
+  })
+
+  it('接替窗口过了就重新等 openDelay；skipDelayDuration 为 0 不接替', () => {
+    vi.useFakeTimers()
+    const { api } = setup({ sources, previewMode: 'hover', skipDelayDuration: 0 })
+    enter(trigger(api, 'web'))
+    vi.advanceTimersByTime(700)
+    leave(trigger(api, 'web'))
+    vi.advanceTimersByTime(300)
+    enter(trigger(api, 'doc'))
+    expect(api().open).toBe(false)
+    vi.advanceTimersByTime(700)
+    expect(api().open).toBe(true)
+  })
+
+  it('聚焦当场打开；焦点挪进卡片或另一处引用不收起，离开两者才收起', () => {
+    const { api, service } = setup({ sources, previewMode: 'hover' })
+    const card = document.createElement('div')
+    const inside = document.createElement('button')
+    card.append(inside)
+    const other = document.createElement('button')
+    other.setAttribute('data-scope', 'citation')
+    other.setAttribute('data-part', 'trigger')
+    document.body.append(card, other)
+    service.refs.set('getFloatingEl', () => card)
+
+    ;(trigger(api, 'web').onFocus as () => void)()
+    expect(api().open).toBe(true)
+    const blur = (relatedTarget: Element | null): void =>
+      (trigger(api, 'web').onBlur as (e: FocusEvent) => void)({ relatedTarget } as unknown as FocusEvent)
+    blur(inside)
+    expect(api().open).toBe(true)
+    blur(other)
+    expect(api().open).toBe(true)
+    blur(null)
+    expect(api().open).toBe(false)
+    card.remove()
+    other.remove()
+  })
+
+  it('触屏的指针进出不走悬停，交给点按', () => {
+    vi.useFakeTimers()
+    const { api } = setup({ sources, previewMode: 'hover', openDelay: 0 })
+    enter(trigger(api, 'web'), touch)
+    vi.advanceTimersByTime(10)
+    expect(api().open).toBe(false)
+    ;(trigger(api, 'web').onClick as () => void)()
+    expect(api().open).toBe(true)
+    leave(trigger(api, 'web'), touch)
+    vi.advanceTimersByTime(500)
+    expect(api().open).toBe(true)
+  })
+
+  it('hover 档：卡片收着时定位壳带 hidden，开着时是 fixed 定位层；预览画 frosted 面', () => {
+    const { api } = setup({ sources, previewMode: 'hover' })
+    expect((api().getPositionerProps() as Dict).hidden).toBe(true)
+    ;(trigger(api, 'web').onClick as () => void)()
+    const positioner = api().getPositionerProps() as Dict
+    expect(positioner.hidden).toBeUndefined()
+    expect(positioner['data-state']).toBe('open')
+    expect((positioner.style as Dict).position).toBe('fixed')
+    // 引擎量完之前不算落位，皮肤据此藏着
+    expect(positioner['data-positioned']).toBeUndefined()
+    expect((api().getPreviewProps({ sourceId: 'web' }) as Dict)['data-xh-material']).toBe('frosted')
+  })
+})
+
+describe('citation 一处多源', () => {
+  type Dict = Record<string, unknown>
+  const multi = { sourceIds: ['web', 'doc'], citationId: 'claim' }
+
+  it('打开后在几个来源之间轮换，位置与翻页钮随之变', () => {
+    const { api } = setup({ sources })
+    ;((api().getTriggerProps(multi) as Dict).onClick as () => void)()
+    expect(api().activeSourceId).toBe('web')
+    expect(api().activeGroup).toEqual(['web', 'doc'])
+    expect(api().getPreviewPosition({ sourceId: 'web' })).toEqual({ index: 1, total: 2 })
+    expect((api().getNextTriggerProps({ sourceId: 'web' }) as Dict).hidden).toBeUndefined()
+
+    ;((api().getNextTriggerProps({ sourceId: 'web' }) as Dict).onClick as () => void)()
+    expect(api().activeSourceId).toBe('doc')
+    // 缺省回绕
+    ;((api().getNextTriggerProps({ sourceId: 'doc' }) as Dict).onClick as () => void)()
+    expect(api().activeSourceId).toBe('web')
+  })
+
+  it('loop 为 false 时停在两端，尽头那颗钮禁用', () => {
+    const { api } = setup({ sources, loop: false })
+    ;((api().getTriggerProps(multi) as Dict).onClick as () => void)()
+    expect((api().getPrevTriggerProps({ sourceId: 'web' }) as Dict).disabled).toBe(true)
+    ;((api().getPrevTriggerProps({ sourceId: 'web' }) as Dict).onClick as () => void)()
+    expect(api().activeSourceId).toBe('web')
+  })
+
+  it('只有一个来源、或从来源列表打开时不显示翻页', () => {
+    const { api } = setup({ sources })
+    ;((api().getTriggerProps({ sourceId: 'web' }) as Dict).onClick as () => void)()
+    expect(api().activeGroup).toBeNull()
+    expect((api().getPrevTriggerProps({ sourceId: 'web' }) as Dict).hidden).toBe(true)
+    expect((api().getPreviewIndexProps({ sourceId: 'web' }) as Dict).hidden).toBe(true)
+  })
+
+  it('一处多源的可及名列出各来源的序号', () => {
+    const { api } = setup({ sources })
+    expect((api().getTriggerProps(multi) as Dict)['aria-label']).toBe('Sources 1, 2')
+  })
+
+  it('sourceId 与 sourceIds 同时写、或一个都不写，立即报错', () => {
+    const { api } = setup({ sources })
+    expect(() => api().getTriggerProps({ sourceId: 'web', sourceIds: ['doc'] })).toThrow(/只能写一个/)
+    expect(() => api().getTriggerProps({})).toThrow(/至少要引一个来源/)
   })
 })

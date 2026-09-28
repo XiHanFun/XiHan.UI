@@ -28,7 +28,8 @@ function renderNode(node: FixtureNode, doc: Document, ns?: string): HTMLElement 
   const el = childNs ? doc.createElementNS(childNs, tag) as SVGElement : doc.createElement(tag)
   if (node.part)
     el.dataset.xhPart = node.part
-  for (const [k, v] of Object.entries(node.attrs ?? {})) el.setAttribute(k, v)
+  // 列表值（Vue / React 侧是数组 prop）在作者节点上写成空白分隔的一串
+  for (const [k, v] of Object.entries(node.attrs ?? {})) el.setAttribute(k, typeof v === 'string' ? v : v.join(' '))
   // 写进具名插槽的子节点由 mount 摆到 root 之前，这里不再渲一遍
   const kids = node.children?.filter(rendersHere).filter(c => c.slot == null)
   if (kids?.length) {

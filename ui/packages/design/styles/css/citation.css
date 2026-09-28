@@ -6,6 +6,9 @@
 /* 定义 citation 样式。 */
 
 @import '../family/action-control.css';
+/* hover 档的卡片：共享关键帧与 frosted 材质配方 */
+@import '../family/motion.css';
+@import '../family/material.css';
 
 @layer xihan.motion {
   /* 预览的披露：内容区高度从 0 长到连接层量下的那一版，内缩与描边一起长回来，
@@ -42,13 +45,16 @@
     --xh-citation-skin: 1;
   }
 
-  [data-scope='citation'][data-part='root'] {
+  /* 尺寸档的私有槽写在根上，也写在 hover 档的定位壳上：它被搬到 portal 落点后继承不到根上的值 */
+  [data-scope='citation']:is([data-part='root'], [data-part='positioner']) {
     --xh-_citation-gap: var(--xh-space-3);
     --xh-_citation-pad: var(--xh-surface-pad-md);
     --xh-_citation-font-size: var(--xh-control-font-md);
     --xh-_citation-icon-size: var(--xh-glyph-size-md);
     --xh-icon-size: var(--xh-citation-icon-size, var(--xh-_citation-icon-size));
+  }
 
+  [data-scope='citation'][data-part='root'] {
     /* 纵向一列：预览展开的首帧用负的上外距抵掉它前面那道间距，flex 里负外距会把后面的内容一起拉回来 */
     display: flex;
     flex-direction: column;
@@ -89,18 +95,22 @@
     --xh-action-bg-rest: var(--xh-_action-variant-bg-hover);
   }
 
-  /* 预览是正文流里的静态 surface，不漂浮、不盖住正文。
-     开合是 surface 级披露：高度按内容区（content-box）动，展开与收起途中把长出盒外的内容裁掉 */
   [data-scope='citation'][data-part='preview'] {
+    display: grid;
+    gap: var(--xh-citation-preview-gap, var(--xh-space-3));
+    padding-block: var(--xh-citation-preview-py, var(--xh-_citation-pad));
+    padding-inline: var(--xh-citation-preview-px, var(--xh-_citation-pad));
+  }
+
+  /* inline 档：预览是正文流里的静态 surface，不漂浮、不盖住正文。
+     开合是 surface 级披露：高度按内容区（content-box）动，展开与收起途中把长出盒外的内容裁掉。
+     hover 档的预览带 data-xh-material，面交给材质配方画 */
+  [data-scope='citation'][data-part='preview']:not([data-xh-material]) {
     /* 根上那道间距：展开与收起时用负外距抵掉它 */
     --xh-_citation-preview-gap: var(--xh-citation-gap, var(--xh-_citation-gap));
 
     box-sizing: content-box;
     overflow: clip;
-    display: grid;
-    gap: var(--xh-citation-preview-gap, var(--xh-space-3));
-    padding-block: var(--xh-citation-preview-py, var(--xh-_citation-pad));
-    padding-inline: var(--xh-citation-preview-px, var(--xh-_citation-pad));
     border: var(--xh-stroke-thin) solid var(--xh-citation-preview-border, var(--xh-border-default));
     border-radius: var(--xh-citation-preview-radius, var(--xh-shape-surface));
     background: var(--xh-citation-preview-bg, var(--xh-bg-surface));
@@ -110,12 +120,136 @@
   /* 展开与收起只在开合时播：首帧就开着的预览直接呈现（data-instant）。
      收起时连接层押后 hidden，收回 0 播完才藏起；forwards 把末态钉住，免得播完到藏起之间弹回原样。
      减弱动效下两支披露时长瞬时完成 */
-  [data-scope='citation'][data-part='preview'][data-state='open']:not([data-instant]) {
+  [data-scope='citation'][data-part='preview'][data-preview-mode='inline'][data-state='open']:not([data-instant]) {
     animation: xh-citation-preview-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
   }
 
-  [data-scope='citation'][data-part='preview'][data-state='closed']:not([data-instant]) {
+  [data-scope='citation'][data-part='preview'][data-preview-mode='inline'][data-state='closed']:not([data-instant]) {
     animation: xh-citation-preview-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
+  }
+
+  /* 定位壳：inline 档不参与排版，里面的预览照常在正文流里 */
+  [data-scope='citation'][data-part='positioner'][data-preview-mode='inline'] {
+    display: contents;
+  }
+
+  /* hover 档：坐标由定位引擎写进 style（left / top），这里只定位模式与层级 */
+  [data-scope='citation'][data-part='positioner'][data-preview-mode='hover'] {
+    /* 落定那一侧的可用高度与宽度，由定位引擎经内联自定义属性写进来，卡片据此限高限宽；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口 */
+    --xh-_citation-available-h: 100vh;
+    --xh-_citation-available-w: 100vw;
+
+    position: fixed;
+    z-index: var(--xh-citation-layer, var(--xh-_layer, var(--xh-layer-popover)));
+    font-size: var(--xh-citation-font-size, var(--xh-_citation-font-size));
+  }
+
+  /* 锚点被滚出可视区：卡片随之收起 */
+  [data-scope='citation'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  [data-scope='citation'][data-part='positioner'][hidden] {
+    display: none;
+  }
+
+  /* 缩放原点与进场位移按落定的那一侧给：卡片从贴着引用编号的那条边涨开。两个槽由预览继承；
+     placement 是物理方向，origin 与 translate 也是物理量，不随书写方向翻 */
+  [data-scope='citation'][data-part='positioner'][data-placement^='top'] {
+    --xh-_overlay-origin-y: 100%;
+    --xh-_overlay-enter-down: 1;
+  }
+
+  [data-scope='citation'][data-part='positioner'][data-placement^='bottom'] {
+    --xh-_overlay-origin-y: 0;
+    --xh-_overlay-enter-up: 1;
+  }
+
+  [data-scope='citation'][data-part='positioner'][data-placement^='left'] {
+    --xh-_overlay-origin-x: 100%;
+    --xh-_overlay-enter-right: 1;
+  }
+
+  [data-scope='citation'][data-part='positioner'][data-placement^='right'] {
+    --xh-_overlay-origin-x: 0;
+    --xh-_overlay-enter-left: 1;
+  }
+
+  /* hover 档的预览是锚定面板：材质家族配方画 frosted 面（描边、底、1px 顶光、前景、投影与背景滤镜），
+     这里只把使用者槽接进来；形状取 overlay，内容长了在卡片里滚 */
+  [data-scope='citation'][data-part='preview'][data-preview-mode='hover'] {
+    --xh-frosted-bg: var(--xh-citation-card-bg, var(--xh-_material-bg));
+    --xh-frosted-border: var(--xh-citation-card-border, var(--xh-_material-border));
+    --xh-frosted-fg: var(--xh-citation-card-fg, var(--xh-_material-fg));
+    --xh-frosted-shadow: var(--xh-citation-card-shadow, var(--xh-_material-shadow));
+    --xh-frosted-backdrop: var(--xh-citation-card-backdrop, var(--xh-_material-backdrop));
+
+    box-sizing: border-box;
+    inline-size: max-content;
+    max-inline-size: min(var(--xh-citation-card-max-w, var(--xh-overlay-max-w)), var(--xh-_citation-available-w));
+    max-block-size: min(var(--xh-citation-card-max-h, var(--xh-overlay-max-h)), var(--xh-_citation-available-h));
+    /* 卡片不做滚动面：引文收到有限几行，全文经打开来源的链接看 */
+    overflow: clip;
+    border-radius: var(--xh-citation-card-radius, var(--xh-shape-overlay));
+    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
+  }
+
+  /* hover 档的引文按行数裁，裁掉的那一行末尾收省略号 */
+  [data-scope='citation'][data-part='preview'][data-preview-mode='hover'] [data-scope='citation'][data-part='quote']:not([hidden]) {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--xh-citation-card-quote-lines, 6);
+  }
+
+  /* 出现与退场按锚定面板那一组：开着时 pop-in，收起时 pop-out 播完才藏起；卡片里轮换来源不再播 */
+  [data-scope='citation'][data-part='preview'][data-preview-mode='hover'][data-state='open']:not([data-instant]) {
+    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='citation'][data-part='preview'][data-preview-mode='hover'][data-state='closed']:not([data-instant]) {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  /* 一处多源的轮换：两颗翻页钮夹着位置，排在收起钮之前 */
+  [data-scope='citation'][data-part='prev-trigger'],
+  [data-scope='citation'][data-part='next-trigger'] {
+    --xh-action-padding-inline: 0;
+    --xh-action-radius: var(--xh-citation-pager-radius, var(--xh-shape-control));
+    flex: none;
+  }
+
+  [data-scope='citation'][data-part='prev-trigger']:empty::before,
+  [data-scope='citation'][data-part='next-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+    /* 上一个指向行首、下一个指向行尾：RTL 下水平翻过来 */
+    scale: var(--xh-direction-sign) 1;
+  }
+
+  [data-scope='citation'][data-part='next-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-right);
+    mask-image: var(--xh-glyph-mark-chevron-right);
+  }
+
+  [data-scope='citation'][data-part='preview-index'] {
+    flex: none;
+    align-self: center;
+    color: var(--xh-citation-meta-fg, var(--xh-fg-muted));
+    font-size: var(--xh-citation-meta-font-size, var(--xh-text-caption-size));
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='citation'][data-part='prev-trigger'][hidden],
+  [data-scope='citation'][data-part='next-trigger'][hidden],
+  [data-scope='citation'][data-part='preview-index'][hidden] {
+    display: none;
   }
 
   [data-scope='citation'][data-part='preview'][hidden] {
@@ -131,6 +265,7 @@
 
   [data-scope='citation'][data-part='preview-header'] > :first-child {
     display: grid;
+    flex: 1;
     gap: var(--xh-citation-preview-header-content-gap, var(--xh-space-0_5));
     min-inline-size: 0;
   }
@@ -266,14 +401,14 @@
     white-space: nowrap;
   }
 
-  [data-scope='citation'][data-part='root'][data-size='sm'] {
+  [data-scope='citation']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_citation-gap: var(--xh-space-2);
     --xh-_citation-pad: var(--xh-surface-pad-sm);
     --xh-_citation-font-size: var(--xh-control-font-sm);
     --xh-_citation-icon-size: var(--xh-glyph-size-sm);
   }
 
-  [data-scope='citation'][data-part='root'][data-size='lg'] {
+  [data-scope='citation']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_citation-gap: var(--xh-space-4);
     --xh-_citation-pad: var(--xh-surface-pad-lg);
     --xh-_citation-font-size: var(--xh-control-font-lg);
@@ -288,7 +423,14 @@
   }
 
   @media print {
-    [data-scope='citation'][data-part='dismiss-trigger'] {
+    [data-scope='citation'][data-part='dismiss-trigger'],
+    [data-scope='citation'][data-part='prev-trigger'],
+    [data-scope='citation'][data-part='next-trigger'] {
+      display: none;
+    }
+
+    /* 悬停卡片是瞬态浮层，打印时不出现 */
+    [data-scope='citation'][data-part='positioner'][data-preview-mode='hover'] {
       display: none;
     }
 

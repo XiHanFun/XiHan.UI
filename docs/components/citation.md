@@ -20,7 +20,7 @@ SourcePart 直接驱动行内引用、来源预览和来源列表
 
 加粗的是必需部件。
 
-`data-scope="citation"`：**`root`** · `text` · `trigger` · **`preview`** · `preview-header` · **`preview-title`** · `preview-meta` · `quote` · `preview-link` · `dismiss-trigger` · **`list`** · **`source`** · **`source-link`** · `source-index` · `source-title` · `source-meta`
+`data-scope="citation"`：**`root`** · `text` · `trigger` · `positioner` · **`preview`** · `preview-header` · **`preview-title`** · `preview-meta` · `quote` · `preview-link` · `dismiss-trigger` · `prev-trigger` · `next-trigger` · `preview-index` · **`list`** · **`source`** · **`source-link`** · `source-index` · `source-title` · `source-meta`
 
 ## 示例
 
@@ -42,6 +42,18 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 
 <XhDemo src="citation/04-keyboard" />
 
+### 悬停预览
+
+preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指针停留或聚焦即出现、离开即收起，不推动正文；卡片开着时指向另一处引用直接切过去
+
+<XhDemo src="citation/05-hover" />
+
+### 一处多源
+
+一处引用引了几个来源时写 source-ids，预览里用上一个 / 下一个在它们之间轮换，位置写在两颗翻页钮之间
+
+<XhDemo src="citation/06-multi-source" />
+
 ## 设计指引
 
 ### 何时使用
@@ -58,9 +70,13 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 
 - 行内 trigger 用 `aria-controls` / `aria-expanded` 指向唯一 preview region；预览再以 `aria-labelledby` 指回打开入口。
 - 来源列表只占一个 Tab 位，支持 ↑ / ↓、Home、End 与 Enter / Space；`Escape` 收起预览并按需归还焦点。
-- 预览是正文流里的一块面：展开时从 0 长到整块、收起时收回 0，后面的段落随之平移；首帧就开着的预览直接呈现。
+- 预览有两种出现方式，由 `previewMode` 决定：
+  - `inline`（缺省）：预览是正文流里的一块面，展开时从 0 长到整块、收起时收回 0，后面的段落随之平移；首帧就开着的预览直接呈现。缺省取它：现有结构不用改，也不依赖悬停，触屏与键盘同样顺手。
+  - `hover`：预览放进 `positioner` 部件，锚定在引用编号旁的悬停卡片，搬到 portal 落点、不推动正文。指针停留 `openDelay`（缺省 700ms）出现，离开编号与卡片 `closeDelay`（缺省 300ms）后收起，中途移进卡片即撤销；卡片开着或刚收起不到 `skipDelayDuration`（缺省 300ms）时，指向另一处引用直接接替，与悬停卡片、文字提示同一套节奏。焦点落到引用上当场打开，焦点离开引用与卡片即收起；触屏没有悬停，点按照常开合。Escape 与卡片外的按下都会收起它。
+- 一处引用引了几个来源时写 `sourceIds`（Web Components 在 `value` 里写成空白分隔的几个 id），预览里的 `prev-trigger` / `next-trigger` 在这几个来源之间轮换，`preview-index` 显示「2 / 3」；只有一个来源时三者收起。hover 档轮换时卡片就地换内容，不再播一次出现。
 - URL 来源保留原生链接导航；文档来源通过 `source-open` 把 `SourcePart` 与当前 anchor 交回宿主。
 - `activeSourceId` 与 `open` 可分别受控，受控时只有宿主写回才改变可见状态。
+- 正文里的引用常随[流式正文](./markdown-stream)到达：把流式正文放进 `text` 部件，在它的 `citation` 插槽里渲 trigger。首帧一个引用都没有是真实首帧，`text` 与 `trigger` 都不是必需部件。
 
 ### 最佳实践
 
@@ -75,7 +91,7 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-citation>` |
-| Vue 组件 | `XhCitationList` `XhCitationPreview` `XhCitationRoot` `XhCitationSource` `XhCitationSourceIndex` `XhCitationSourceLink` `XhCitationSourceMeta` `XhCitationSourceTitle` `XhCitationText` `XhCitationTrigger` |
+| Vue 组件 | `XhCitationList` `XhCitationPositioner` `XhCitationPreview` `XhCitationRoot` `XhCitationSource` `XhCitationSourceIndex` `XhCitationSourceLink` `XhCitationSourceMeta` `XhCitationSourceTitle` `XhCitationText` `XhCitationTrigger` |
 | 组合式函数 | `useCitation` |
 | 状态机 | `citationMachine` |
 | 皮肤 | `@xihan-ui/styles/citation.css` |
@@ -84,6 +100,12 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `previewMode` | `CitationPreviewMode` |  | 预览怎样出现，缺省 inline。 hover 档要在根里放 positioner 部件，预览放进它里面，定位到当前引用编号旁。 |
+| `openDelay` | `number` |  | hover 档：指针停在引用上到卡片出现的等待毫秒，缺省 700。 |
+| `closeDelay` | `number` |  | hover 档：指针离开引用与卡片到收起的等待毫秒，缺省 300；也是从编号挪进卡片的通行时间。 |
+| `skipDelayDuration` | `number` |  | hover 档：卡片刚收起不到这么久，指向另一处引用即直接出现、不再等 openDelay，缺省 300； 卡片开着时指向另一处引用始终直接切过去。0 表示不接替。 |
+| `placement` | `Placement` |  | hover 档：卡片相对引用编号的朝向，缺省 bottom，空间不足时由定位引擎避让。 |
+| `offset` | `number` |  | hover 档：卡片与引用编号的间距（px）。 |
 | `sources` | `readonly CitationSource[]` |  | @xihan-ui/chat-stream 的 SourcePart[] 可直接传入。 |
 | `activeSourceId` | `string \| null` |  |  |
 | `defaultActiveSourceId` | `string \| null` |  |  |
@@ -114,12 +136,14 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhCitationPositioner` | `container` | `PortalContainer` |  | 本实例的 Portal 容器；优先于应用级配置。 |
 | `XhCitationPreview` | `sourceId` | `string` | 是 |  |
 | `XhCitationPreview` | `anchorIndex` | `number` |  |  |
 | `XhCitationRoot` | `children` | `ReactNode` |  |  |
 | `XhCitationSource` | `sourceId` | `string` | 是 |  |
 | `XhCitationSource` | `disabled` | `boolean` |  |  |
-| `XhCitationTrigger` | `sourceId` | `string` | 是 |  |
+| `XhCitationTrigger` | `sourceId` | `string` |  | 这一处引用的来源；一处引多个来源时改写 sourceIds，两者只写一个。 |
+| `XhCitationTrigger` | `sourceIds` | `readonly string[]` |  | 一处引用多个来源，预览里可以在它们之间轮换。 |
 | `XhCitationTrigger` | `citationId` | `string` |  |  |
 | `XhCitationTrigger` | `anchorIndex` | `number` |  |  |
 
@@ -130,15 +154,18 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | 部件 | 取值 |
 | --- | --- |
 | `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
 | `preview` | 'open' \| 'closed' |
 | `source` | 'active' \| 'inactive' |
 | `source-link` | 'active' \| 'inactive' |
 
 以下名称仅用于内部状态机。
 
-**状态**：`idle`
+**状态**：`idle` · `opening` · `closing`
 
-**事件**：`CITATION.ACTIVATE` · `SOURCE.ACTIVATE` · `SOURCE.OPEN` · `SOURCE.FOCUS` · `LIST.BLUR` · `OPEN.SET` · `PREVIEW.MEASURED` · `PREVIEW.LEFT`
+**事件**：`CITATION.ACTIVATE` · `TRIGGER.ENTER` · `POINTER.LEAVE` · `FLOATING.ENTER` · `TRIGGER.FOCUS` · `FLOATING.FOCUS` · `HOVER.BLUR` · `after.openDelay` · `after.closeDelay` · `GROUP.STEP` · `DISMISS` · `SOURCE.ACTIVATE` · `SOURCE.OPEN` · `SOURCE.FOCUS` · `LIST.BLUR` · `OPEN.SET` · `PREVIEW.MEASURED` · `PREVIEW.LEFT`
+
+**判据**：`isHoverMode` · `isVisible` · `isWarm` · `isFocusHeld` · `isSameTarget`
 
 ### connect API
 
@@ -150,6 +177,8 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | `activeSource` | `CitationSource \| null` |  |
 | `activeSourceId` | `string \| null` |  |
 | `activeAnchorIndex` | `number \| null` |  |
+| `activeGroup` | `readonly string[] \| null` | 当前那处引用引到的全部来源；只有一个或从来源列表打开时为 null。 |
+| `previewMode` | `CitationPreviewMode` |  |
 | `open` | `boolean` |  |
 | `focusedSourceId` | `string \| null` |  |
 | `setOpen` | `(next: boolean) => void` |  |
@@ -157,6 +186,7 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | `getRootProps` | `() => T['element']` |  |
 | `getTextProps` | `() => T['element']` |  |
 | `getTriggerProps` | `(props: CitationTriggerProps) => T['button']` |  |
+| `getPositionerProps` | `() => T['element']` | hover 档的浮层定位壳；inline 档不参与排版（display: contents）。 |
 | `getPreviewProps` | `(props: CitationPreviewProps) => T['element']` |  |
 | `getPreviewHeaderProps` | `(props: CitationPreviewProps) => T['element']` |  |
 | `getPreviewTitleProps` | `(props: CitationPreviewProps) => T['element']` |  |
@@ -164,6 +194,10 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | `getQuoteProps` | `(props: CitationPreviewProps) => T['element']` |  |
 | `getPreviewLinkProps` | `(props: CitationPreviewProps) => T['element']` |  |
 | `getDismissTriggerProps` | `(props: CitationPreviewProps) => T['button']` |  |
+| `getPrevTriggerProps` | `(props: CitationPreviewProps) => T['button']` | 一处多源时换到上一个来源；只有一个来源时带 hidden。 |
+| `getNextTriggerProps` | `(props: CitationPreviewProps) => T['button']` | 一处多源时换到下一个来源；只有一个来源时带 hidden。 |
+| `getPreviewIndexProps` | `(props: CitationPreviewProps) => T['element']` | 一处多源时的位置，如「2 / 3」；只有一个来源时带 hidden。 |
+| `getPreviewPosition` | `(props: CitationPreviewProps) => { index: number, total: number } \| null` | 该预览此刻在一处多源里排第几（1 基）与共几个；不在多源轮换里时为 null。 |
 | `getListProps` | `() => T['element']` |  |
 | `getSourceProps` | `(props: CitationSourceItemProps) => T['element']` |  |
 | `getSourceLinkProps` | `(props: CitationSourceItemProps) => T['button']` |  |
@@ -185,7 +219,9 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | `Home` | focus in source list | 焦点移到第一条可用来源 |
 | `End` | focus in source list | 焦点移到最后一条可用来源 |
 | `Space` / `Enter` | focus on source list item, not disabled | 将该来源设为当前来源并展开预览 |
-| `Escape` | source preview open | 收起预览；若焦点位于预览内则归还到打开它的行内引用或来源条目 |
+| `Tab` | previewMode 为 hover，焦点落到行内引用上 | 当场打开该引用的悬停卡片；焦点移进卡片不收起，离开引用与卡片即收起 |
+| `Space` / `Enter` | focus on previous / next source button in preview, 一处引用引了多个来源 | 在这几个来源之间换到上一个 / 下一个，尽头按 loop 回绕 |
+| `Escape` | source preview open | 收起预览；若焦点位于预览内则归还到打开它的行内引用或来源条目；hover 档由消解层收起卡片 |
 
 ### ARIA
 
@@ -195,12 +231,13 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | --- | --- | --- |
 | `trigger` | `aria-controls` | `preview` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
-| `trigger` | `aria-label` | labels.citation(index + 1, citationSourceTitle(current)) |
+| `trigger` | `aria-label` | labels.citations(ids.map(sourceId =&gt; indexOf(sourceId… \| labels.citation(indexOf(ids[0]!) + 1, citationSourceT… |
 | `preview` | `aria-label` | labels.preview \| undefined |
 | `preview` | `aria-labelledby` | context.get('activeTriggerId') \| undefined |
 | `preview` | `role` | 'region' |
 | `preview-link` | `aria-label` | labels.openSource(title) |
 | `dismiss-trigger` | `aria-label` | labels.closePreview |
+| `preview-index` | `aria-hidden` | 'true' |
 | `list` | `aria-label` | labels.sources |
 | `list` | `role` | 'list' |
 | `source` | `role` | 'listitem' |
@@ -225,6 +262,7 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-preview-mode` | props.previewMode |
 | `root` | `data-size` | props.size |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
@@ -233,8 +271,16 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | `trigger` | `data-xh-action-profile` | 'text' |
 | `trigger` | `data-xh-action-size` | 'xs' |
 | `trigger` | `data-xh-action-variant` | 'subtle' |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 \| undefined |
+| `positioner` | `data-positioned` | ''（条件成立时才出现） |
+| `positioner` | `data-preview-mode` | props.previewMode |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
 | `preview` | `data-instant` | ''（条件成立时才出现） |
+| `preview` | `data-preview-mode` | props.previewMode |
 | `preview` | `data-state` | 'open' \| 'closed' |
+| `preview` | `data-xh-material` | 'frosted' \| undefined |
 | `preview-link` | `data-xh-action-control` | '' |
 | `preview-link` | `data-xh-action-display` | 'always' \| undefined |
 | `preview-link` | `data-xh-action-profile` | 'text' \| undefined |
@@ -264,11 +310,20 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-citation-card-backdrop` | `preview` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `preview-mode=hover`<br>`xh-material=frosted` | `--xh-_material-backdrop` | citation 的 preview 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
+| `--xh-citation-card-bg` | `preview` | `background` | `not([data-xh-action-control])`<br>`preview-mode=hover`<br>`xh-material=frosted` | `--xh-_material-bg` | citation 的 preview 部件 background 覆盖槽。 |
+| `--xh-citation-card-border` | `preview` | `border` | `not([data-xh-action-control])`<br>`preview-mode=hover`<br>`xh-material=frosted` | `--xh-_material-border` | citation 的 preview 部件 border 覆盖槽。 |
+| `--xh-citation-card-fg` | `preview` | `color` | `not([data-xh-action-control])`<br>`preview-mode=hover`<br>`xh-material=frosted` | `--xh-_material-fg` | citation 的 preview 部件 color 覆盖槽。 |
+| `--xh-citation-card-max-h` | `preview` | `max-block-size` | `preview-mode=hover` | `--xh-overlay-max-h` | citation 的 preview 部件 max-block-size 覆盖槽。 |
+| `--xh-citation-card-max-w` | `preview` | `max-inline-size` | `preview-mode=hover` | `--xh-overlay-max-w` | citation 的 preview 部件 max-inline-size 覆盖槽。 |
+| `--xh-citation-card-quote-lines` | `preview`<br>`quote` | `-webkit-line-clamp` | `not([hidden])`<br>`preview-mode=hover` | `6` | citation 的 preview、quote 部件 -webkit-line-clamp 覆盖槽。 |
+| `--xh-citation-card-radius` | `preview` | `border-radius` | `preview-mode=hover` | `--xh-shape-overlay` | citation 的 preview 部件 border-radius 覆盖槽。 |
+| `--xh-citation-card-shadow` | `preview` | `box-shadow` | `not([data-xh-action-control])`<br>`preview-mode=hover`<br>`xh-material=frosted` | `--xh-_material-shadow` | citation 的 preview 部件 box-shadow 覆盖槽。 |
 | `--xh-citation-dismiss-trigger-radius` | `dismiss-trigger` | `border-radius` | `default` | `--xh-shape-control` | citation 的 dismiss-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-citation-fg` | `root` | `color` | `default` | `--xh-fg-default` | citation 的 root 部件 color 覆盖槽。 |
-| `--xh-citation-font-size` | `root` | `font-size` | `default` | `--xh-_citation-font-size` | citation 的 root 部件 font-size 覆盖槽。 |
-| `--xh-citation-gap` | `preview`<br>`root` | `gap`<br>`margin-block-start` | `@keyframes xh-citation-preview-collapse`<br>`@keyframes xh-citation-preview-expand`<br>`default` | `--xh-_citation-gap` | citation 的 preview、root 部件 gap、margin-block-start 覆盖槽。 |
-| `--xh-citation-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_citation-icon-size` | citation 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-citation-font-size` | `positioner`<br>`root` | `font-size` | `default`<br>`preview-mode=hover` | `--xh-_citation-font-size` | citation 的 positioner、root 部件 font-size 覆盖槽。 |
+| `--xh-citation-gap` | `preview`<br>`root` | `gap`<br>`margin-block-start` | `@keyframes xh-citation-preview-collapse`<br>`@keyframes xh-citation-preview-expand`<br>`default`<br>`not([data-xh-material])`<br>`xh-material` | `--xh-_citation-gap` | citation 的 preview、root 部件 gap、margin-block-start 覆盖槽。 |
+| `--xh-citation-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])` | `--xh-_citation-icon-size` | citation 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-citation-index-active-bg` | `source`<br>`source-index` | `background` | `state=active` | `--xh-bg-brand` | citation 的 source、source-index 部件 background 覆盖槽。 |
 | `--xh-citation-index-active-fg` | `source`<br>`source-index` | `color` | `state=active` | `--xh-fg-on-brand` | citation 的 source、source-index 部件 color 覆盖槽。 |
 | `--xh-citation-index-bg` | `source-index` | `background` | `default` | `--xh-bg-subtle` | citation 的 source-index 部件 background 覆盖槽。 |
@@ -276,20 +331,22 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | `--xh-citation-index-font-size` | `source-index` | `font-size` | `default` | `--xh-text-caption-size` | citation 的 source-index 部件 font-size 覆盖槽。 |
 | `--xh-citation-index-radius` | `source-index` | `border-radius` | `default` | `--xh-shape-circle` | citation 的 source-index 部件 border-radius 覆盖槽。 |
 | `--xh-citation-index-size` | `source-index` | `block-size`<br>`min-inline-size` | `default` | `--xh-control-box-sm` | citation 的 source-index 部件 block-size、min-inline-size 覆盖槽。 |
+| `--xh-citation-layer` | `positioner` | `z-index` | `preview-mode=hover` | `--xh-_layer` | citation 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-citation-link-fg` | `preview-link` | `color` | `default` | `--xh-fg-brand` | citation 的 preview-link 部件 color 覆盖槽。 |
 | `--xh-citation-list-gap` | `list` | `gap` | `default` | `--xh-space-1` | citation 的 list 部件 gap 覆盖槽。 |
-| `--xh-citation-meta-fg` | `preview-meta`<br>`source-meta` | `color` | `default` | `--xh-fg-muted` | citation 的 preview-meta、source-meta 部件 color 覆盖槽。 |
-| `--xh-citation-meta-font-size` | `preview-meta`<br>`source-meta` | `font-size` | `default` | `--xh-text-caption-size` | citation 的 preview-meta、source-meta 部件 font-size 覆盖槽。 |
-| `--xh-citation-preview-bg` | `preview` | `background` | `default` | `--xh-bg-surface` | citation 的 preview 部件 background 覆盖槽。 |
-| `--xh-citation-preview-border` | `preview` | `border` | `default` | `--xh-border-default` | citation 的 preview 部件 border 覆盖槽。 |
-| `--xh-citation-preview-fg` | `preview` | `color` | `default` | `--xh-fg-default` | citation 的 preview 部件 color 覆盖槽。 |
+| `--xh-citation-meta-fg` | `preview-index`<br>`preview-meta`<br>`source-meta` | `color` | `default` | `--xh-fg-muted` | citation 的 preview-index、preview-meta、source-meta 部件 color 覆盖槽。 |
+| `--xh-citation-meta-font-size` | `preview-index`<br>`preview-meta`<br>`source-meta` | `font-size` | `default` | `--xh-text-caption-size` | citation 的 preview-index、preview-meta、source-meta 部件 font-size 覆盖槽。 |
+| `--xh-citation-pager-radius` | `next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-control` | citation 的 next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-citation-preview-bg` | `preview` | `background` | `not([data-xh-material])`<br>`xh-material` | `--xh-bg-surface` | citation 的 preview 部件 background 覆盖槽。 |
+| `--xh-citation-preview-border` | `preview` | `border` | `not([data-xh-material])`<br>`xh-material` | `--xh-border-default` | citation 的 preview 部件 border 覆盖槽。 |
+| `--xh-citation-preview-fg` | `preview` | `color` | `not([data-xh-material])`<br>`xh-material` | `--xh-fg-default` | citation 的 preview 部件 color 覆盖槽。 |
 | `--xh-citation-preview-gap` | `preview` | `gap` | `default` | `--xh-space-3` | citation 的 preview 部件 gap 覆盖槽。 |
 | `--xh-citation-preview-header-content-gap` | `preview-header` | `gap` | `first-child` | `--xh-space-0_5` | citation 的 preview-header 部件 gap 覆盖槽。 |
 | `--xh-citation-preview-header-gap` | `preview-header` | `gap` | `default` | `--xh-space-3` | citation 的 preview-header 部件 gap 覆盖槽。 |
 | `--xh-citation-preview-link-radius` | `preview-link` | `border-radius` | `focus-visible` | `--xh-shape-control` | citation 的 preview-link 部件 border-radius 覆盖槽。 |
 | `--xh-citation-preview-px` | `preview` | `padding-inline` | `default` | `--xh-_citation-pad` | citation 的 preview 部件 padding-inline 覆盖槽。 |
 | `--xh-citation-preview-py` | `preview` | `padding-block` | `default` | `--xh-_citation-pad` | citation 的 preview 部件 padding-block 覆盖槽。 |
-| `--xh-citation-preview-radius` | `preview` | `border-radius` | `default` | `--xh-shape-surface` | citation 的 preview 部件 border-radius 覆盖槽。 |
+| `--xh-citation-preview-radius` | `preview` | `border-radius` | `not([data-xh-material])`<br>`xh-material` | `--xh-shape-surface` | citation 的 preview 部件 border-radius 覆盖槽。 |
 | `--xh-citation-quote-border` | `quote` | `border-inline-start` | `default` | `--xh-fg-brand` | citation 的 quote 部件 border-inline-start 覆盖槽。 |
 | `--xh-citation-quote-fg` | `quote` | `color` | `default` | `--xh-fg-muted` | citation 的 quote 部件 color 覆盖槽。 |
 | `--xh-citation-quote-font-size` | `quote` | `font-size` | `default` | `--xh-text-secondary-size` | citation 的 quote 部件 font-size 覆盖槽。 |
@@ -314,12 +371,12 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 
 ### 动效
 
-动效角色：按压 · 状态 · 披露（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 披露 · 出现（锚定面板）（见[动效规范](../design/motion#角色)）。
 
-关键帧 `xh-citation-preview-collapse` · `xh-citation-preview-expand` 随皮肤自带，不引用别处文件里的名字；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-citation-preview-collapse` · `xh-citation-preview-expand` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。

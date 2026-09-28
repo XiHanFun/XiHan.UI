@@ -182,7 +182,7 @@ export type { CheckboxGroupContext } from './components/checkbox-group/use-check
 export { XhCheckbox } from './components/checkbox/checkbox'
 export { useCheckbox } from './components/checkbox/use-checkbox'
 export type { CheckboxContext } from './components/checkbox/use-checkbox'
-export { XhCitationList, XhCitationPreview, XhCitationRoot, XhCitationSource, XhCitationSourceIndex, XhCitationSourceLink, XhCitationSourceMeta, XhCitationSourceTitle, XhCitationText, XhCitationTrigger } from './components/citation/citation'
+export { XhCitationList, XhCitationPositioner, XhCitationPreview, XhCitationRoot, XhCitationSource, XhCitationSourceIndex, XhCitationSourceLink, XhCitationSourceMeta, XhCitationSourceTitle, XhCitationText, XhCitationTrigger } from './components/citation/citation'
 export { provideCitation, provideCitationSource, useCitationContext, useCitationSource } from './components/citation/context'
 export { useCitation } from './components/citation/use-citation'
 export type { CitationContext } from './components/citation/use-citation'
