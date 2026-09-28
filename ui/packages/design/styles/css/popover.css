@@ -65,14 +65,13 @@
   /* 交叉轴原点按对齐取：start / end 对齐时面板与锚点在那一端齐平，缩放从那一端涨开，贴着小触发器的面板
      才像是从触发器里长出来；居中对齐留在中线。上下两侧的 start / end 是行内轴上的逻辑对齐，RTL 下起始缘在右；
      左右两侧的 start / end 落在块轴上，不随书写方向翻 */
-  [data-scope='popover'][data-part='positioner']:is([data-placement='top-start'], [data-placement='bottom-start']),
-  [data-scope='popover'][data-part='positioner']:is([data-placement='top-end'], [data-placement='bottom-end']):dir(rtl) {
-    --xh-_overlay-origin-x: 0;
+  /* 起始缘与末尾缘按就近的书写方向取：LTR 起始在左，RTL 起始在右 */
+  [data-scope='popover'][data-part='positioner']:is([data-placement='top-start'], [data-placement='bottom-start']) {
+    --xh-_overlay-origin-x: var(--xh-direction-start);
   }
 
-  [data-scope='popover'][data-part='positioner']:is([data-placement='top-end'], [data-placement='bottom-end']),
-  [data-scope='popover'][data-part='positioner']:is([data-placement='top-start'], [data-placement='bottom-start']):dir(rtl) {
-    --xh-_overlay-origin-x: 100%;
+  [data-scope='popover'][data-part='positioner']:is([data-placement='top-end'], [data-placement='bottom-end']) {
+    --xh-_overlay-origin-x: var(--xh-direction-end);
   }
 
   [data-scope='popover'][data-part='positioner']:is([data-placement='left-start'], [data-placement='right-start']) {

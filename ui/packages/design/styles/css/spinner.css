@@ -124,11 +124,8 @@
     -webkit-mask: linear-gradient(90deg, var(--xh-_spinner-dot-dim) 40%, currentColor 50%, var(--xh-_spinner-dot-dim) 60%) 100% 0 / 300% 100% no-repeat;
     mask: linear-gradient(90deg, var(--xh-_spinner-dot-dim) 40%, currentColor 50%, var(--xh-_spinner-dot-dim) 60%) 100% 0 / 300% 100% no-repeat;
     animation: xh-spinner-dots var(--xh-spinner-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
-  }
-
-  /* 波跟着书写方向走：RTL 下从右往左依次亮起 */
-  [data-scope='spinner'][data-part='root'][data-variant='dots']:dir(rtl)::before {
-    animation-direction: reverse;
+    /* 波跟着书写方向走：三枚点左右对称，按书写方向符号水平翻过来，RTL 下就从右往左依次亮起 */
+    scale: var(--xh-direction-sign) 1;
   }
 
   [data-scope='spinner'][data-part='root'][data-variant='dots'][data-tone]::before {

@@ -1189,6 +1189,16 @@
       "$description": "书写方向的符号：从左往右为 1、从右往左为 -1。由就近的 dir 属性决定、靠继承传到子树：dir 写在哪一层就在哪一层翻转，局部写回 ltr 的子树跟着翻回；dir=\"auto\" 沿用外层。",
       "$type": "number",
       "$value": 1
+    },
+    "start": {
+      "$description": "行内起始缘在水平方向上的位置，按盒子自身宽度的百分比计：从左往右为 0%、从右往左为 100%。给只认物理坐标的量（transform-origin、背景位置）找起始缘，与 sign 同一个就近的 dir。",
+      "$type": "dimension",
+      "$value": "0%"
+    },
+    "end": {
+      "$description": "行内末尾缘在水平方向上的位置：从左往右为 100%、从右往左为 0%。",
+      "$type": "dimension",
+      "$value": "100%"
     }
   }
 }
