@@ -58047,7 +58047,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-skeleton>`：骨架屏宿主，把 connectSkeleton 产出的属性接到角色节点上；刚加载完的骨架淡出播完才收起。\n\n骨架条声明形状：在 item 节点上写 `shape`。运行期改写该属性不触发重新接线，\n需作者自行 requestUpdate。",
+          "description": "`<xh-skeleton>`：骨架屏宿主，无状态机，把 connectSkeleton 产出的属性接到角色节点上。\n\n骨架条声明形状：在 item 节点上写 `shape`。运行期改写该属性不触发重新接线，\n需作者自行 requestUpdate。",
           "name": "XhSkeletonElement",
           "cssParts": [
             {
@@ -58095,13 +58095,6 @@
                 "text": "SkeletonAnimation | undefined"
               },
               "attribute": "animation"
-            },
-            {
-              "kind": "field",
-              "name": "ctrl",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new MachineController<SkeletonSchema>( this, skeletonMachine, () => ({ loading: this.loading, shape: this.shape, animation: this.animation }), )"
             },
             {
               "kind": "method",

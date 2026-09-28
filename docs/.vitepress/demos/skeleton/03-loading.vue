@@ -1,4 +1,4 @@
-<!-- 加载结束 | loading 期间容器报告 aria-busy；切换为 false 后骨架让出位置，原地盖在真实内容之上淡出，播完才收起 -->
+<!-- 加载结束 | loading 期间容器报告 aria-busy，切换为 false 后整块收起，位置让给真实内容 -->
 <script setup lang="ts">
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 import { ref } from "vue";

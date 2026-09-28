@@ -5,7 +5,7 @@
 
 // 定义 skeleton 类型契约。
 
-import type { MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/core'
 
 /** 骨架条的形状：一行文字、一个圆、一块矩形。 */
 export type SkeletonShape = 'text' | 'circle' | 'rect'
@@ -20,27 +20,6 @@ export interface SkeletonProps {
   shape?: SkeletonShape
   /** 动效档，默认 'shimmer'；默认档不输出 data-animation。 */
   animation?: SkeletonAnimation
-}
-
-export interface SkeletonSchema extends MachineSchema {
-  props: SkeletonProps
-  context: {
-    /**
-     * 容器是否还留着（没有 hidden）。加载中为真；加载结束后等淡出播完才为假，期间 data-state 已是 loaded。
-     * 挂载时就已加载完的，初值即为假：首帧直接收起，不播淡出。
-     */
-    rendered: boolean
-  }
-  computed: Record<string, never>
-  refs: Record<string, never>
-  state: 'idle'
-  event:
-    /** 容器留着与否（淡出播完才报 false）。 */
-    | { type: 'ROOT.RENDERED', rendered: boolean }
-  tag: never
-  guard: never
-  action: 'setRendered'
-  effect: 'trackRootPresence' | 'trackExitOverlay'
 }
 
 /** 单根骨架条的声明。 */
