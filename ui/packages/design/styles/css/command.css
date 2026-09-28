@@ -8,6 +8,7 @@
 /* 共享关键帧由 family/motion.css 提供，命令走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
 @import '../family/collection-item.css';
 @import '../family/field-chrome.css';
+@import '../family/loading-ring.css';
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -207,6 +208,7 @@
     /* 模态面板里的滚动面：到底后不把滚动链穿透给页面 */
     overflow-y: auto;
     overscroll-behavior: contain;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 没有可见命令时不保留列表的上下内距；只排除列表内部 hidden 祖先，退场中的外壳不影响判断。 */
@@ -241,7 +243,7 @@
     display: block;
     padding-block: var(--xh-command-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-command-group-label-px, var(--xh-_command-px));
-    color: var(--xh-command-group-label-fg, var(--xh-fg-subtle));
+    color: var(--xh-command-group-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-command-group-label-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-command-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
@@ -308,9 +310,9 @@
   [data-scope='command'][data-part='empty'] {
     display: block;
     flex: none;
-    padding-block: var(--xh-command-empty-py, var(--xh-space-6));
+    padding-block: var(--xh-command-empty-py, var(--xh-space-3));
     padding-inline: var(--xh-command-empty-px, var(--xh-_command-px));
-    color: var(--xh-command-empty-fg, var(--xh-fg-subtle));
+    color: var(--xh-command-empty-fg, var(--xh-fg-muted));
     font-size: var(--xh-command-empty-font-size, var(--xh-_command-font-size));
     line-height: var(--xh-leading-none);
     text-align: center;
@@ -318,14 +320,26 @@
 
   /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   [data-scope='command'][data-part='loading'] {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-_command-gap);
     flex: none;
-    padding-block: var(--xh-command-loading-py, var(--xh-space-6));
+    padding-block: var(--xh-command-loading-py, var(--xh-space-3));
     padding-inline: var(--xh-command-loading-px, var(--xh-_command-px));
-    color: var(--xh-command-loading-fg, var(--xh-fg-subtle));
+    color: var(--xh-command-loading-fg, var(--xh-fg-muted));
     font-size: var(--xh-command-loading-font-size, var(--xh-_command-font-size));
     line-height: var(--xh-leading-none);
     text-align: center;
+  }
+
+  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
+     直径取所在尺寸档的图标档 */
+  [data-scope='command'][data-part='loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   }
 
   /* 未提供状态内容时不渲染一块纯留白，提示文案仍由作者明确提供。 */
@@ -334,7 +348,7 @@
     display: none;
   }
 
-  /* 取数在途：列表压暗一档，与在途占位一起说明这块正在变 */
+  /* 刷新：已有命令时后台在取，保留上一帧，列表按 micro 淡下，数据到了再淡回；在途占位此时让位 */
   [data-scope='command'][data-part='list'][aria-busy='true'] {
     opacity: var(--xh-command-list-busy-opacity, var(--xh-state-disabled-opacity));
   }

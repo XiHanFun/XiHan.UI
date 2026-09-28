@@ -72,6 +72,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 - 零可见命令时列表不保留额外空白行；搜索输入和作者提供的状态、底栏仍然在场。未提供 Empty / Loading 文案时不显示空白占位，也不自动生成提示文字。
 - `collection` 与过滤结果保持数据语义；已挂载节点上的 `hidden` 会排除对应条目或分组的交互与 ARIA 高亮。未挂载或虚拟候选不按隐藏推断；展开期间替换列表节点后，可见性观察会切换到新节点。
 - `closeOnSelect` 决定选中后是否收起；连续执行多条命令时关闭它。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
 ### 组合
 
@@ -354,7 +355,9 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `empty` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-xh-loading-ring` | '' |
 | `footer` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
@@ -369,10 +372,10 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | command 的 backdrop 部件 z-index 覆盖槽。 |
 | `--xh-command-bg` | `content` | `background` | `default` | `--xh-material-elevated-bg` | command 的 content 部件 background 覆盖槽。 |
 | `--xh-command-border` | `content` | `border` | `default` | `--xh-material-elevated-border` | command 的 content 部件 border 覆盖槽。 |
-| `--xh-command-empty-fg` | `empty` | `color` | `default` | `--xh-fg-subtle` | command 的 empty 部件 color 覆盖槽。 |
+| `--xh-command-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | command 的 empty 部件 color 覆盖槽。 |
 | `--xh-command-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_command-font-size` | command 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-command-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_command-px` | command 的 empty 部件 padding-inline 覆盖槽。 |
-| `--xh-command-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-6` | command 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-command-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | command 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-command-fg` | `content` | `color` | `default` | `--xh-material-elevated-fg` | command 的 content 部件 color 覆盖槽。 |
 | `--xh-command-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-elevated-separator` | command 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-command-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | command 的 footer 部件 color 覆盖槽。 |
@@ -381,7 +384,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-footer-px` | `footer` | `padding-inline` | `default` | `--xh-_command-px` | command 的 footer 部件 padding-inline 覆盖槽。 |
 | `--xh-command-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | command 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-command-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | command 的 group 部件 gap 覆盖槽。 |
-| `--xh-command-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-subtle` | command 的 group-label 部件 color 覆盖槽。 |
+| `--xh-command-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-muted` | command 的 group-label 部件 color 覆盖槽。 |
 | `--xh-command-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | command 的 group-label 部件 font-size 覆盖槽。 |
 | `--xh-command-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | command 的 group-label 部件 font-weight 覆盖槽。 |
 | `--xh-command-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_command-px` | command 的 group-label 部件 padding-inline 覆盖槽。 |
@@ -410,10 +413,10 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | command 的 list 部件 gap 覆盖槽。 |
 | `--xh-command-list-px` | `list` | `padding-inline` | `default` | `--xh-space-2` | command 的 list 部件 padding-inline 覆盖槽。 |
 | `--xh-command-list-py` | `list` | `padding-block` | `default` | `--xh-space-2` | command 的 list 部件 padding-block 覆盖槽。 |
-| `--xh-command-loading-fg` | `loading` | `color` | `default` | `--xh-fg-subtle` | command 的 loading 部件 color 覆盖槽。 |
+| `--xh-command-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | command 的 loading 部件 color 覆盖槽。 |
 | `--xh-command-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_command-font-size` | command 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-command-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_command-px` | command 的 loading 部件 padding-inline 覆盖槽。 |
-| `--xh-command-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-6` | command 的 loading 部件 padding-block 覆盖槽。 |
+| `--xh-command-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | command 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-command-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | command 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-command-max-w` | `content` | `max-inline-size` | `default` | `--xh-_command-max-w` | command 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-command-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | command 的 input 部件 color 覆盖槽。 |
@@ -427,7 +430,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 
 动效角色：按压 · 状态 · 出现（锚定面板）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
