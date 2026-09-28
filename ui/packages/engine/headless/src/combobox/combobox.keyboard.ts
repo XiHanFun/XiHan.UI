@@ -27,7 +27,7 @@ export const comboboxKeyboard: KeyboardTable = {
     { id: 'combobox.kbd.escape', keys: ['Escape'], when: 'open', does: '先清除高亮；高亮已空时才收起列表，选中值不变' },
     { id: 'combobox.kbd.close-alt', keys: ['Alt+ArrowUp'], when: 'open', does: '收起列表，选中值不变' },
     { id: 'combobox.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '收起列表且不拦按键，焦点按 Tab 序列自然离开' },
-    { id: 'combobox.kbd.remove-last', keys: ['Backspace'], when: 'multiple, 输入串为空且已有选中', does: '删掉最后一个已选项' },
+    { id: 'combobox.kbd.remove-last', keys: ['Backspace'], when: 'multiple, 输入串为空且已有选中', does: '删掉最后一个已选项，它的标签在原处淡出；标签里的删除钮不占 Tab 位，键盘走这一条' },
     { id: 'combobox.kbd.type', keys: ['可打印字符'], when: 'focus in input', does: '改写输入串并展开列表；过滤由调用方按 onInputValueChange 自己做' },
   ],
 }

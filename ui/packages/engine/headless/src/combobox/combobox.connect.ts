@@ -7,8 +7,9 @@
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNodeMeta, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
-import { contains, createPressTracker, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, mergeProps, navigateItems, queryItems } from '@xihan-ui/core'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { connectSelectionTags } from '../shared/selection-tags'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionTarget } from '../shared/virtual-collection'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
@@ -83,6 +84,28 @@ export function connectCombobox<T extends PropTypes>(
   const placement = position?.placement ?? prop('placement') ?? COMBOBOX_DEFAULT_PLACEMENT
 
   const isSelected = (v: string): boolean => value.includes(v)
+
+  // 多选的已选项在盒里、输入框之前排成标签：套的是库里的 tag，截断与 +N 的做法与 Select 同一套。
+  // 文字先按当前候选取，已被宿主筛出候选的退回机器记下的那份，都没有就用值本身。
+  // 删除钮摘值后把焦点送回输入框：按下时已拦掉夺焦，这一步兜住程序化点击
+  const valueLabels = context.get('valueLabels')
+  const selectionTags = connectSelectionTags({
+    entries: multiple ? value.map(v => ({ key: v, label: metaOf.get(v)?.label ?? valueLabels[v] ?? v })) : [],
+    maxTagCount: prop('maxTagCount'),
+    overflowTag: prop('translations')?.overflowTag,
+    deleteItem: prop('translations')?.deleteItem,
+    variant,
+    tone: prop('tone'),
+    size: prop('size'),
+    disabled,
+    readOnly,
+    onDelete: (v) => {
+      send({ type: 'VALUE.SET', value: value.filter(x => x !== v) })
+      refs.get('getInputEl')()?.focus()
+    },
+  }, normalize)
+  const tags = selectionTags.visible.map(tag => ({ value: tag.key, label: tag.label }))
+  const { overflowCount, overflowText } = selectionTags
 
   /** 条目 id。aria-activedescendant 只认单个 IDREF，值里带空格会把它劈成两截，所以先编码再拼。 */
   const itemId = (v: string): string => scope.partId(comboboxAnatomy.name, `item:${encodeURIComponent(v)}`)
@@ -208,6 +231,9 @@ export function connectCombobox<T extends PropTypes>(
     invalid,
     empty,
     canClear,
+    tags,
+    overflowCount,
+    overflowText,
     isSelected,
     setOpen: (next) => {
       if (next !== open)
@@ -216,6 +242,7 @@ export function connectCombobox<T extends PropTypes>(
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     setInputValue: next => send({ type: 'INPUT.SET', value: next }),
     clear: () => send({ type: 'VALUE.CLEAR' }),
+    deselect: v => send({ type: 'VALUE.SET', value: value.filter(x => x !== v) }),
 
     // 三个视觉轴打在根与 positioner 上：输入行与候选各从就近的那一处继承私有槽，其余子部件不重复标注
     getRootProps: () => normalize.element({
@@ -251,6 +278,40 @@ export function connectCombobox<T extends PropTypes>(
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
     }),
+
+    // 标签行：盒里、输入框之前；单选的选中项文字在输入框里，行不露面；多选无选中时同样收起。
+    // 行怎么排、标签怎么进出归标签行家族配方
+    getTagListProps: () => normalize.element({
+      ...parts['tag-list'].attrs,
+      'data-xh-tag-list': '',
+      'hidden': !multiple || value.length === 0 || undefined,
+      'data-disabled': dataAttr(disabled),
+    }),
+
+    // 标签本体就是 tag 的 root（data-scope="tag"），只多一个 data-value 记它代表哪个选中值
+    getTagProps: ({ value: v }) => ({
+      ...selectionTags.tag(v).getRootProps() as Record<string, unknown>,
+      'data-value': v,
+    }) as T['element'],
+
+    // 折起来的那些合成一枚：也是 tag 的 root，data-count 记折了几枚；没有折起的就整个收起，不留空位
+    getOverflowTagProps: () => ({
+      ...selectionTags.overflow.getRootProps() as Record<string, unknown>,
+      'data-count': String(overflowCount),
+    }) as T['element'],
+
+    // 两种标签的文字都落在 tag 的 label 上，截断规则挂在那一层
+    getTagLabelProps: () => selectionTags.overflow.getLabelProps(),
+
+    // 删除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用与点按都由 tag 给。
+    // 不占 Tab 位：整个组合框只占输入框一个停靠点，键盘用退格删掉最后一个；按下不夺焦，焦点留在输入框
+    getItemDeleteTriggerProps: ({ value: v }) => mergeProps<T['button']>(
+      selectionTags.tag(v).getCloseTriggerProps(),
+      normalize.button({
+        tabindex: -1,
+        onPointerDown: keepFocus,
+      }),
+    ),
 
     getInputProps: (input = {}) => normalize.input({
       ...parts.input.attrs,

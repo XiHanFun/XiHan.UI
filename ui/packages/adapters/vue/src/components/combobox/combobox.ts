@@ -6,12 +6,13 @@
 // 提供 combobox 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ComboboxApi, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, ComboboxApi, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema, ComboboxTagMeta } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
+import { slotIsPlainText } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -19,18 +20,20 @@ import {
   provideCombobox,
   provideComboboxItem,
   provideComboboxItemGroup,
+  provideComboboxTag,
   useComboboxContext,
   useComboboxItemContext,
   useComboboxItemGroupContext,
+  useComboboxTagContext,
 } from './context'
 import { useCombobox } from './use-combobox'
 
 type ComboboxProps = ComboboxSchema['props']
 
-/** 默认插槽的载荷：展开状态、选中值、输入串、高亮候选、空态，以及修改它们的命令。 */
+/** 默认插槽的载荷：展开状态、选中值、输入串、高亮候选、空态、多选的可见标签与折起的个数，以及修改它们的命令。 */
 export type ComboboxRootSlotProps = Pick<
   ComboboxApi,
-  'open' | 'value' | 'inputValue' | 'highlightedValue' | 'empty' | 'isSelected' | 'setOpen' | 'setValue' | 'setInputValue' | 'clear'
+  'open' | 'value' | 'inputValue' | 'highlightedValue' | 'empty' | 'tags' | 'overflowCount' | 'overflowText' | 'isSelected' | 'setOpen' | 'setValue' | 'setInputValue' | 'clear' | 'deselect'
 >
 
 export const XhComboboxRoot = defineComponent({
@@ -53,6 +56,8 @@ export const XhComboboxRoot = defineComponent({
     name: { type: String },
     form: { type: String },
     multiple: Boolean,
+    /** 多选标签最多显示的数量，其余折进 +N；默认 3。 */
+    maxTagCount: { type: Number },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
@@ -127,15 +132,20 @@ export const XhComboboxRoot = defineComponent({
             inputValue: ctx.api.value.inputValue,
             highlightedValue: ctx.api.value.highlightedValue,
             empty: ctx.api.value.empty,
+            tags: ctx.api.value.tags,
+            overflowCount: ctx.api.value.overflowCount,
+            overflowText: ctx.api.value.overflowText,
             isSelected: ctx.api.value.isSelected,
             setOpen: ctx.api.value.setOpen,
             setValue: ctx.api.value.setValue,
             setInputValue: ctx.api.value.setInputValue,
             clear: ctx.api.value.clear,
+            deselect: ctx.api.value.deselect,
           })
         : props.collection
           ? renderDefaultTree(
               ctx.api.value.collection,
+              props.multiple ? ctx.api.value.tags : null,
               slots.label?.() ?? (props.label != null ? [props.label] : null),
               slots.empty?.() ?? (props.empty != null ? [props.empty] : null),
               slots.item,
@@ -165,6 +175,72 @@ export const XhComboboxControl = defineComponent({
       ...ctx.api.value.getControlProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.controlRef.value = el as HTMLElement },
     }, slots.default?.())
+  },
+})
+
+export const XhComboboxTagList = defineComponent({
+  name: 'XhComboboxTagList',
+  setup(_, { slots }) {
+    const ctx = useComboboxContext()
+    // 标签行：盒里、输入框之前，可见标签与 +N 那一枚在里面并排；单选或无选中时连接层给 hidden
+    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
+export const XhComboboxTagLabel = defineComponent({
+  name: 'XhComboboxTagLabel',
+  setup(_, { slots }) {
+    const ctx = useComboboxContext()
+    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 标签内容：只有文字时替它包一层 label：截断规则挂在 label 上，直接展开在 root 上的文字过长会把
+ * 删除按钮挤出；作者自己写了节点则原样放行。与 XhTagRoot 同一规则。
+ * 库自身填入的文字（+N，没有折叠时是空串）恒包 label，三个适配器渲染出同一棵树。
+ */
+function tagChildren(content: VNode[] | string | undefined): VNode[] | string | undefined {
+  if (typeof content === 'string')
+    return [h(XhComboboxTagLabel, null, () => content)]
+  return slotIsPlainText(content) ? [h(XhComboboxTagLabel, null, () => content)] : content
+}
+
+/** 一个选中值一个标签，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从组合框传下，形态按盒的面派生；配合 XhComboboxItemDeleteTrigger 可删除。 */
+export const XhComboboxTag = defineComponent({
+  name: 'XhComboboxTag',
+  props: {
+    /** 它代表哪个选中值。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useComboboxContext()
+    provideComboboxTag({ value: () => props.value })
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+  },
+})
+
+/** 折叠的标签合成的一个标签：同样是 tag 的 root；有插槽时使用插槽，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
+export const XhComboboxOverflowTag = defineComponent({
+  name: 'XhComboboxOverflowTag',
+  setup(_, { slots }) {
+    const ctx = useComboboxContext()
+    return () => h(
+      'span',
+      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
+    )
+  },
+})
+
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem；点按移除所在标签的选中值，焦点留在输入框。 */
+export const XhComboboxItemDeleteTrigger = defineComponent({
+  name: 'XhComboboxItemDeleteTrigger',
+  setup(_, { slots }) {
+    const ctx = useComboboxContext()
+    const tag = useComboboxTagContext()
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -372,6 +448,7 @@ export const XhComboboxLoading = defineComponent({
  */
 function renderDefaultTree(
   collection: readonly ComboboxNodeMeta[],
+  tags: readonly ComboboxTagMeta[] | null,
   label: (VNode | string)[] | null,
   empty: (VNode | string)[] | null,
   itemSlot: ((node: ComboboxNodeMeta) => VNode[]) | undefined,
@@ -382,6 +459,16 @@ function renderDefaultTree(
   return [
     ...(label ? [h(XhComboboxLabel, null, () => label)] : []),
     h(XhComboboxControl, null, () => [
+      // 多选的已选项排在输入框之前：一枚一个带删除钮的标签，摆不下的折进 +N
+      ...(tags
+        ? [h(XhComboboxTagList, null, () => [
+            ...tags.map(tag => h(XhComboboxTag, { key: tag.value, value: tag.value }, () => [
+              h(XhComboboxTagLabel, null, () => tag.label),
+              h(XhComboboxItemDeleteTrigger),
+            ])),
+            h(XhComboboxOverflowTag),
+          ])]
+        : []),
       h(XhComboboxInput),
       ...(clearable ? [h(XhComboboxClearTrigger)] : []),
       h(XhComboboxTrigger),

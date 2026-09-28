@@ -16,12 +16,13 @@ import type {
   ComboboxNode,
   ComboboxOpenChangeDetails,
   ComboboxSchema,
+  ComboboxTagMeta,
   ComboboxValueChangeDetails,
   FormControlState,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
-import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox, resolveFormControlState } from '@xihan-ui/headless'
+import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox, resolveFormControlState, tagAnatomy } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -47,6 +48,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 过滤不由本元素完成：输入串变化时派发 input-value-change，作者据此增删 item 节点；
  * 元素每次接线完成后都会把当前候选条数与悬空高亮重新结算一次，空态节点（empty）据此显示。
  *
+ * 多选的已选项排在盒里、输入框之前的 tag-list 中：作者按 tags 渲染 tag 节点（与 Select 同一写法），
+ * tag 与 overflow-tag 接线为库内 tag 的 root（data-scope="tag"），语气、尺寸与禁用从本元素传下，
+ * 形态按盒的面派生；节点中只有文字时元素为它包一层 tag 的 label。item-delete-trigger 接线为所在标签
+ * 那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦。overflow-tag 留空即由元素填入 +N。
+ *
  * @customElement xh-combobox
  * @attr {string} value - 受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 传入数组
  * @attr {string} default-value - 非受控初始选中值
@@ -54,7 +60,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} default-input-value - 非受控初始输入串
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {boolean} multiple - 多选：选中后列表不收起、输入串清空以便继续筛选
+ * @attr {boolean} multiple - 多选：选中后列表不收起、输入串清空以便继续筛选；已选项在输入框前排成标签
+ * @attr {number} max-tag-count - 多选标签最多显示的数量，其余折叠进 overflowCount 并合成 overflow-tag；默认 3
  * @attr {boolean} disabled - 整个控件禁用：输入框与两个按钮都使用原生 disabled
  * @attr {boolean} read-only - 只读：文字可选可复制，但展开、选中、清空一概不发生
  * @attr {boolean} invalid - 校验失败标注
@@ -76,6 +83,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid）
  * @csspart label - 标题，须是原生 label（connect 提供的 for 只在它身上生效）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
+ * @csspart tag-list - 盒里、输入框之前的标签行：可见标签与 overflow-tag 放在其中；单选或无选中时带 hidden
+ * @csspart tag - 多选标签，须自带 value 属性标识选中值；接线为 tag 的 root（data-scope="tag"），语气、尺寸与禁用随本元素、形态按盒的面派生
+ * @csspart tag-label - 标签文字，须放在 tag 中；接线为 tag 的 label（截断落在这一层）。标签里只有文字时元素自动包一层，带删除钮时由作者写它包住文字
+ * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger（data-scope="tag"），不占 Tab 位、按下不夺焦，禁用与只读时保留位置、原生 disabled；点击移除所在标签的选中值，可及名使用 translations.deleteItem
+ * @csspart overflow-tag - 折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N（文字使用 translations.overflowTag），作者写了内容则由作者负责；没有折叠的标签时带 hidden
  * @csspart input - 输入框，整个组合框唯一的 Tab 停靠点；写 input 时带 role=combobox，写 textarea 时保留它自带的 textbox 角色
  * @csspart trigger - 展开 / 收起按钮，须是原生 button；不占 Tab 位，可及名由作者提供；旁边的清空按钮出现时皮肤让它让位
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，读屏按 aria-label 找到它
@@ -99,7 +111,13 @@ export class XhComboboxElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
-  static override partContract = { anatomy: comboboxAnatomy, meta: comboboxMeta }
+  // tag / overflow-tag 接的是 tag 的 root，tag-label 接的是 tag 的 label，item-delete-trigger 接的是 tag 的 close-trigger：
+  // 四个作者名都归 tag 那套 scope 管，不在本元素的解剖里
+  static override partContract = {
+    anatomy: comboboxAnatomy,
+    meta: comboboxMeta,
+    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
+  }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
@@ -117,6 +135,7 @@ export class XhComboboxElement extends XhPortalHostElement {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     multiple: { type: Boolean },
+    maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -146,6 +165,7 @@ export class XhComboboxElement extends XhPortalHostElement {
   declare open?: boolean
   declare defaultOpen?: boolean
   declare multiple?: boolean
+  declare maxTagCount?: number
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -207,6 +227,10 @@ export class XhComboboxElement extends XhPortalHostElement {
   /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
   private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
+  /** overflow-tag 的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
+  private readonly ownsText = new WeakMap<HTMLElement, boolean>()
+  /** 每枚标签里由元素补出来的那层 label。 */
+  private readonly tagLabels = new WeakMap<HTMLElement, HTMLElement>()
   private inheritedControl: FormControlState | undefined
 
   setFormControlState(state: FormControlState | undefined): void {
@@ -231,6 +255,7 @@ export class XhComboboxElement extends XhPortalHostElement {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       multiple: this.multiple ?? false,
+      maxTagCount: this.maxTagCount,
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
@@ -314,6 +339,59 @@ export class XhComboboxElement extends XhPortalHostElement {
     this.hiddenInputs.release(nodes)
   }
 
+  /** 填入元素代管的文字（overflow-tag 的 +N）；首次见到该节点时若已有内容则归作者，之后不再改写。 */
+  private fillText(el: HTMLElement, text: string): void {
+    let owned = this.ownsText.get(el)
+    if (owned === undefined) {
+      owned = (el.textContent ?? '').trim() === ''
+      this.ownsText.set(el, owned)
+    }
+    if (!owned || el.textContent === text)
+      return
+    el.textContent = text
+  }
+
+  /**
+   * 标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，
+   * 返回 null——带删除钮的标签由作者用 tag-label 包住文字。补出来的那层不打 data-xh-part，不进角色节点表。
+   */
+  private ensureTagLabel(tag: HTMLElement): HTMLElement | null {
+    const existing = this.tagLabels.get(tag)
+    if (existing && existing.parentNode === tag)
+      return existing
+    if (tag.children.length > 0)
+      return null
+    const label = this.ownerDocument.createElement('span')
+    label.append(...Array.from(tag.childNodes))
+    tag.append(label)
+    this.tagLabels.set(tag, label)
+    return label
+  }
+
+  /**
+   * 应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序；单选恒为空数组。
+   * 作者据此渲染 tag 部件。状态机尚未建立时返回空数组。
+   */
+  get tags(): ComboboxTagMeta[] {
+    return this.ctrl.service ? connectCombobox(this.ctrl.service, wcNormalize).tags : []
+  }
+
+  /** 被 max-tag-count 折叠的标签数；+N 标签由元素填入 overflow-tag，此处仅供作者读取。状态机尚未建立时为 0。 */
+  get overflowCount(): number {
+    return this.ctrl.service ? connectCombobox(this.ctrl.service, wcNormalize).overflowCount : 0
+  }
+
+  /** overflow-tag 显示的文字（由 translations.overflowTag 计算）；没有折叠的标签或状态机尚未建立时为空串。 */
+  get overflowText(): string {
+    return this.ctrl.service ? connectCombobox(this.ctrl.service, wcNormalize).overflowText : ''
+  }
+
+  /** 移除一个选中值，其余保持选中先后；状态机尚未建立时不做任何事。 */
+  deselect(value: string): void {
+    if (this.ctrl.service)
+      connectCombobox(this.ctrl.service, wcNormalize).deselect(value)
+  }
+
   protected wire(): void {
     const api = connectCombobox(this.ctrl.service, wcNormalize)
 
@@ -325,6 +403,33 @@ export class XhComboboxElement extends XhPortalHostElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
+    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    // 标签是多实例 part，接的是 tag 的 root：身份取自己的 value 属性；只有文字的补一层 label
+    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    for (const el of this.getParts('tag')) {
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      const label = this.ensureTagLabel(el)
+      if (label)
+        this.spreader.spread(label, tagLabelProps)
+    }
+    // 作者自己包住的标签文字：带删除钮的标签用它，截断落在这一层
+    for (const el of this.getParts('tag-label'))
+      this.spreader.spread(el, tagLabelProps)
+    // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
+    for (const el of this.getParts('item-delete-trigger')) {
+      const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    }
+    // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
+    const overflowTag = this.getPart('overflow-tag')
+    if (overflowTag) {
+      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      const label = this.ensureTagLabel(overflowTag)
+      if (label) {
+        this.spreader.spread(label, tagLabelProps)
+        this.fillText(label, api.overflowText)
+      }
+    }
     // 宿主标签直接读作者写的标记：作者摆的是 input 还是 textarea，DOM 已经说明白了
     const inputHost: ComboboxInputHost = this.getPart('input')?.tagName === 'TEXTAREA' ? 'textarea' : 'input'
     put('input', api.getInputProps({ as: inputHost }) as Record<string, unknown>)

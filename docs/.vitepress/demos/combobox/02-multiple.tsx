@@ -1,4 +1,4 @@
-// 多选 | 选择多个城市
+// 多选 | 已选城市在输入框前排成标签
 import type { ReactNode } from "react";
 import { XhComboboxRoot } from "@xihan-ui/react";
 import { useState } from "react";
@@ -11,6 +11,7 @@ const cities = [
 ];
 
 export default function Demo(): ReactNode {
+  const [picked, setPicked] = useState<string[]>(["beijing", "chengdu"]);
   const [query, setQuery] = useState("");
 
   const q = query.trim().toLowerCase();
@@ -18,6 +19,8 @@ export default function Demo(): ReactNode {
 
   return (
     <XhComboboxRoot
+      value={picked}
+      onValueChange={details => setPicked(details.value)}
       inputValue={query}
       onInputValueChange={details => setQuery(details.inputValue)}
       collection={filtered}

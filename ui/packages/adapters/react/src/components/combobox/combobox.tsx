@@ -6,7 +6,7 @@
 // 提供 combobox 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxNode, ComboboxNodeMeta, ComboboxSchema, ComboboxTagMeta } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo } from 'react'
@@ -14,7 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
-import { renderSlot } from '../../runtime/slot-content'
+import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -22,18 +22,20 @@ import {
   ComboboxGroupProvider,
   ComboboxItemProvider,
   ComboboxProvider,
+  ComboboxTagProvider,
   useComboboxContext,
   useComboboxGroupContext,
   useComboboxItemContext,
+  useComboboxTagContext,
 } from './context'
 import { useCombobox } from './use-combobox'
 
 type ComboboxProps = ComboboxSchema['props']
 
-/** 函数式 children 的载荷：展开状态、选中值、输入串、高亮候选、空态，以及修改它们的命令。 */
+/** 函数式 children 的载荷：展开状态、选中值、输入串、高亮候选、空态、多选的可见标签与折起的个数，以及修改它们的命令。 */
 export type ComboboxRootSlotProps = Pick<
   ComboboxApi,
-  'open' | 'value' | 'inputValue' | 'highlightedValue' | 'empty' | 'isSelected' | 'setOpen' | 'setValue' | 'setInputValue' | 'clear'
+  'open' | 'value' | 'inputValue' | 'highlightedValue' | 'empty' | 'tags' | 'overflowCount' | 'overflowText' | 'isSelected' | 'setOpen' | 'setValue' | 'setInputValue' | 'clear' | 'deselect'
 >
 
 /** 根上自有的取值；dir 与原生的同名属性含义不同，由这里接管。 */
@@ -57,6 +59,8 @@ export interface XhComboboxRootProps extends RootElementProps {
   /** 显式关联的原生表单 ID。 */
   form?: string
   multiple?: boolean
+  /** 多选标签最多显示的数量，其余折进 +N；默认 3。 */
+  maxTagCount?: number
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
@@ -101,6 +105,7 @@ export function XhComboboxRoot({
   name,
   form,
   multiple,
+  maxTagCount,
   disabled,
   readOnly,
   invalid,
@@ -139,6 +144,7 @@ export function XhComboboxRoot({
     name,
     form,
     multiple,
+    maxTagCount,
     disabled,
     readOnly,
     invalid,
@@ -173,16 +179,21 @@ export function XhComboboxRoot({
         inputValue: api.inputValue,
         highlightedValue: api.highlightedValue,
         empty: api.empty,
+        tags: api.tags,
+        overflowCount: api.overflowCount,
+        overflowText: api.overflowText,
         isSelected: api.isSelected,
         setOpen: api.setOpen,
         setValue: api.setValue,
         setInputValue: api.setInputValue,
         clear: api.clear,
+        deselect: api.deselect,
       })
     : collection
       ? (
           <DefaultTree
             collection={api.collection}
+            tags={multiple ? api.tags : null}
             label={label}
             empty={empty}
             clearable={clearable}
@@ -232,6 +243,62 @@ export function XhComboboxControl({ children, ...rest }: XhComboboxControlProps)
       {children}
     </div>
   )
+}
+
+export interface XhComboboxTagListProps extends ComponentPropsWithRef<'span'> {}
+/** 标签行：盒里、输入框之前，可见标签与 +N 标签在其中并排；单选或无选中时连接层写 hidden。 */
+export function XhComboboxTagList({ children, ...rest }: XhComboboxTagListProps): ReactNode {
+  const ctx = useComboboxContext()
+  return <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+export interface XhComboboxTagLabelProps extends ComponentPropsWithRef<'span'> {}
+/** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
+export function XhComboboxTagLabel({ children, ...rest }: XhComboboxTagLabelProps): ReactNode {
+  const ctx = useComboboxContext()
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/**
+ * 标签内容：只有文字时替它包一层 label：截断规则挂在 label 上，直接展开在 root 上的文字过长会把
+ * 删除按钮挤出；作者自己写了节点则原样放行。与 XhTagRoot 同一规则。
+ * 库自身填入的文字（+N，没有折叠时是空串）恒包 label，三个适配器渲染出同一棵树。
+ */
+function tagChildren(children: ReactNode): ReactNode {
+  return typeof children === 'string' || slotIsPlainText(children) ? <XhComboboxTagLabel>{children}</XhComboboxTagLabel> : children
+}
+
+export interface XhComboboxTagProps extends ComponentPropsWithRef<'span'> {
+  /** 它代表哪个选中值。 */
+  value: string
+}
+/** 一个选中值一个标签，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从组合框传下，形态按盒的面派生；配合 XhComboboxItemDeleteTrigger 可删除。 */
+export function XhComboboxTag({ value, children, ...rest }: XhComboboxTagProps): ReactNode {
+  const ctx = useComboboxContext()
+  return (
+    <ComboboxTagProvider value={value}>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
+    </ComboboxTagProvider>
+  )
+}
+
+export interface XhComboboxOverflowTagProps extends ComponentPropsWithRef<'span'> {}
+/** 折叠的标签合成的一个标签：同样是 tag 的 root；有内容时使用内容，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
+export function XhComboboxOverflowTag({ children, ...rest }: XhComboboxOverflowTagProps): ReactNode {
+  const ctx = useComboboxContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {tagChildren(children ?? ctx.api.overflowText)}
+    </span>
+  )
+}
+
+export interface XhComboboxItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem；点按移除所在标签的选中值，焦点留在输入框。 */
+export function XhComboboxItemDeleteTrigger({ children, ...rest }: XhComboboxItemDeleteTriggerProps): ReactNode {
+  const ctx = useComboboxContext()
+  const value = useComboboxTagContext()
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
 export interface XhComboboxInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue'> {
@@ -444,6 +511,7 @@ function noop(): void {}
  */
 function DefaultTree(props: {
   collection: readonly ComboboxNodeMeta[]
+  tags: readonly ComboboxTagMeta[] | null
   label?: ReactNode
   empty?: ReactNode
   clearable?: boolean
@@ -455,6 +523,20 @@ function DefaultTree(props: {
     <>
       {props.label != null ? <XhComboboxLabel>{props.label}</XhComboboxLabel> : null}
       <XhComboboxControl>
+        {/* 多选的已选项排在输入框之前：一枚一个带删除钮的标签，摆不下的折进 +N */}
+        {props.tags
+          ? (
+              <XhComboboxTagList>
+                {props.tags.map(tag => (
+                  <XhComboboxTag key={tag.value} value={tag.value}>
+                    <XhComboboxTagLabel>{tag.label}</XhComboboxTagLabel>
+                    <XhComboboxItemDeleteTrigger />
+                  </XhComboboxTag>
+                ))}
+                <XhComboboxOverflowTag />
+              </XhComboboxTagList>
+            )
+          : null}
         <XhComboboxInput />
         {props.clearable ? <XhComboboxClearTrigger /> : null}
         <XhComboboxTrigger />

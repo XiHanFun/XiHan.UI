@@ -1739,6 +1739,7 @@
       "sankey-chart"
     ],
     "tag-list": [
+      "combobox",
       "select"
     ],
     "target": [

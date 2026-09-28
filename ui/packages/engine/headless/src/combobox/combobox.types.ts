@@ -147,12 +147,14 @@ export interface ComboboxSchema extends MachineSchema {
     /** 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
-    /** 多选：选中为集合，选中后列表不收起、输入串清空以便继续筛选。 */
     /** 表单字段名；hidden-input 按选中值逐个生成同名字段，不使用分隔符编码。 */
     name?: string
     /** 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 */
     form?: string
+    /** 多选：选中为集合，选中后列表不收起、输入串清空以便继续筛选；已选项在输入框前排成标签。 */
     multiple?: boolean
+    /** 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 */
+    maxTagCount?: number
     /** 整个控件禁用：输入框与两个按钮都使用原生 disabled。 */
     disabled?: boolean
     /** 只读：文字可选可复制，但展开、选中、清空一概不发生。 */
@@ -199,6 +201,11 @@ export interface ComboboxSchema extends MachineSchema {
     inputValue: string
     /** 单选选中项的显示文本；由动作从 DOM 查询后回填，失焦复原输入串时使用。 */
     valueText: string | null
+    /**
+     * 选中值见过的显示文本，按值记：选中那一刻带来的、按 collection 或 DOM 结算出的都记下。
+     * 候选由调用方过滤，已选项常常不在当前候选里，标签的文字只能从这里取。只增不减。
+     */
+    valueLabels: Record<string, string>
     /** 高亮候选，经 aria-activedescendant 上报给读屏；收起即清空。焦点始终不在它身上。 */
     highlightedValue: string | null
     /** 当前候选条数；null 表示尚未结算（首帧、无 DOM 环境），此时不判定为空。 */
@@ -276,7 +283,18 @@ export interface ComboboxSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
-  effect: 'trackPosition' | 'trackLayer'
+  effect: 'trackPosition' | 'trackLayer' | 'trackTagListMotion'
+}
+
+/** 标签声明的身份：代表哪个选中值。 */
+export interface ComboboxTagProps {
+  value: string
+}
+
+/** 可见标签的数据：值与显示文本。 */
+export interface ComboboxTagMeta {
+  value: string
+  label: string
 }
 
 export interface ComboboxApi<T extends PropTypes = PropTypes> {
@@ -299,14 +317,35 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   empty: boolean
   /** 清空按钮当前是否可按。 */
   canClear: boolean
+  /** 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组，选中项的文字在输入框里。 */
+  tags: ComboboxTagMeta[]
+  /** 被 maxTagCount 折叠的标签数。 */
+  overflowCount: number
+  /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
+  overflowText: string
   isSelected: (value: string) => boolean
   setOpen: (next: boolean) => void
   setValue: (next: string[]) => void
   setInputValue: (next: string) => void
   clear: () => void
+  /** 移除一个选中值。 */
+  deselect: (value: string) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
   getControlProps: () => T['element']
+  /** 标签行：放在盒里、输入框之前，收纳可见标签与 +N 标签；单选或无选中时整体 hidden。 */
+  getTagListProps: () => T['element']
+  /** 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生，另带 data-value 记录代表的值。 */
+  getTagProps: (props: ComboboxTagProps) => T['element']
+  /** 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 */
+  getTagLabelProps: () => T['element']
+  /** 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 */
+  getOverflowTagProps: () => T['element']
+  /**
+   * 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，
+   * 禁用与只读时保留位置、原生 disabled。不占 Tab 位，按下不夺焦：焦点留在输入框，键盘用退格删掉最后一个。
+   */
+  getItemDeleteTriggerProps: (props: ComboboxTagProps) => T['button']
   /** 不传参即单行 input，产出与增加此参数前逐字相同。 */
   getInputProps: (props?: ComboboxInputProps) => T['input']
   getTriggerProps: () => T['button']
@@ -340,4 +379,8 @@ export interface ComboboxTranslations {
   trigger: string
   /** 清空按钮的无障碍名，默认 'Clear'。 */
   clearTrigger: string
+  /** 标签删除按钮的可及名，接收标签文本；默认 `Delete <label>`。 */
+  deleteItem: (label: string) => string
+  /** 被折叠的标签（overflow-tag）显示的文字，接收折叠的个数；默认 +N。 */
+  overflowTag: (count: number) => string
 }

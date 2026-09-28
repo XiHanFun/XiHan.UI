@@ -56,3 +56,21 @@ export function useComboboxItemGroupContext(): ComboboxItemGroupContext {
     throw new Error('[xh] Combobox 分组标题必须用在 XhComboboxGroup 内')
   return ctx
 }
+
+/** 标签声明的值，供标签中的删除按钮复用同一份声明。 */
+export interface ComboboxTagContext {
+  value: () => string
+}
+
+const TAG_KEY: InjectionKey<ComboboxTagContext> = Symbol.for('xh-combobox-tag')
+
+export function provideComboboxTag(ctx: ComboboxTagContext): void {
+  provide(TAG_KEY, ctx)
+}
+
+export function useComboboxTagContext(): ComboboxTagContext {
+  const ctx = inject(TAG_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] Combobox 标签子部件必须用在 XhComboboxTag 内')
+  return ctx
+}
