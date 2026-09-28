@@ -152,7 +152,7 @@
     "data-draggable": "这一项可以拖动重排：tabs 的页签、tree 的节点、table 的行。",
     "data-dragging": "正在拖动中：轮播、取色区、上传投放区、浮动面板、裁剪框、图片查看器与直角坐标图的平移、直角坐标图的刷选、滚动区、滚动条、滑块、排序、表格、页签、树。",
     "data-drawing": "正在画出来：signature-pad 的笔正落在画布上；cartesian-chart 新出现的折线正由描线关键帧从头描到尾，过渡结束即撤。",
-    "data-editing": "tags-input 的这枚标签正在原地改文字。",
+    "data-editing": "正在编辑：tags-input 的这枚标签正在原地改文字；date-range-picker 的这一端是日历下一次点选、时间格写入的那一端（时间组与它的小标题）。",
     "data-empty": "没有值或没有条目：输入族一个字没填、集合没有数据、面板没有内容。",
     "data-error": "异步动作或局部数据源已失败、尚可由作者重试：TreeSelect 懒分支的取子项失败。它与 data-invalid 的校验失败不同，也不复用 tool-call 已落定时专用的 data-errored。",
     "data-errored": "tool-call 这次调用跑砸了：阶段落在 output-error。与 data-settled 成对。",

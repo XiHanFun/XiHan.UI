@@ -18535,6 +18535,26 @@
               "name": "calendar"
             },
             {
+              "description": "showTime 下一端的时间列外壳（role=group），须自带 index 属性（0 起点、1 终点）；未开启时带 hidden",
+              "name": "column-group"
+            },
+            {
+              "description": "时间组的小标题，纯视觉；内容为空时由元素填 translations.startTime / endTime",
+              "name": "column-group-label"
+            },
+            {
+              "description": "一端的一列，须自带 unit 属性（hour / minute / second / dayPeriod），端号取所在 column-group",
+              "name": "time-column"
+            },
+            {
+              "description": "时间选项，须自带 value 属性（两位补零串，上下午列写 '00' / '01'）；内容为空时由元素填字",
+              "name": "time-item"
+            },
+            {
+              "description": "showTime 的收口按钮；未开启时带 hidden",
+              "name": "confirm-trigger"
+            },
+            {
               "description": "日历标题栏外壳（data-scope=\"calendar-range-picker\"）",
               "name": "header"
             },
@@ -18898,6 +18918,69 @@
             },
             {
               "kind": "field",
+              "name": "showTime",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "show-time"
+            },
+            {
+              "kind": "field",
+              "name": "timeGranularity",
+              "privacy": "public",
+              "type": {
+                "text": "DateRangePickerSchema['props']['timeGranularity'] | undefined"
+              },
+              "attribute": "time-granularity"
+            },
+            {
+              "kind": "field",
+              "name": "hourCycle",
+              "privacy": "public",
+              "type": {
+                "text": "TimeHourCycle | undefined"
+              },
+              "attribute": "hour-cycle"
+            },
+            {
+              "kind": "field",
+              "name": "timeStep",
+              "privacy": "public",
+              "type": {
+                "text": "TimeStep | undefined"
+              },
+              "attribute": "time-step"
+            },
+            {
+              "kind": "field",
+              "name": "isTimeUnavailable",
+              "privacy": "public",
+              "type": {
+                "text": "TimeUnavailablePredicate"
+              },
+              "description": "showTime 时间列的逐格可选性（函数只能通过 property 设置）"
+            },
+            {
+              "kind": "field",
+              "name": "defaultTime",
+              "privacy": "public",
+              "type": {
+                "text": "[string, string]"
+              },
+              "description": "只点日期时起止各补的时刻（数组只能通过 property 设置），例如 ['00:00:00', '23:59:59']"
+            },
+            {
+              "kind": "field",
+              "name": "activeIndex",
+              "privacy": "public",
+              "type": {
+                "text": "DateRangePickerEndIndex | undefined"
+              },
+              "attribute": "active-index"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -18959,6 +19042,12 @@
             },
             {
               "kind": "field",
+              "name": "notifyActiveIndex",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notifyActiveView",
               "privacy": "private",
               "readonly": true
@@ -19012,6 +19101,14 @@
               "readonly": true,
               "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "快捷选项列自己的条子：住在 content 里，条子贴在它的盒子上、紧跟在那一层后面；\n窄视口横排横滚、宽视口竖排竖滚，两轴都摆。"
+            },
+            {
+              "kind": "field",
+              "name": "timeBars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollables: () => this.getParts('time-column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "description": "每一列时间选项自己竖滚：每列一套贴层的竖条，紧跟在那一列后面（浮层 4px 档）。"
             },
             {
               "kind": "method",
@@ -19186,6 +19283,48 @@
               "readonly": true
             },
             {
+              "kind": "field",
+              "name": "timeColumnGroups",
+              "type": {
+                "text": "readonly DateRangePickerTimeColumnGroup[]"
+              },
+              "description": "showTime 下起止两组时间列（每组的小标题与时 / 分[/ 秒][/ 上下午] 各列的格，按步进取样）；\n作者据此铺 column-group、time-column 与 time-item。状态机尚未建立或没开 showTime 时两组的列都为空。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ownsText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "格子与小标题上的文字是否归元素填，首次见到该节点时定。"
+            },
+            {
+              "kind": "method",
+              "name": "fillText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "填节点上的文字，归属只在第一次见到这个节点时定一次。"
+            },
+            {
               "kind": "method",
               "name": "partsIn",
               "privacy": "private",
@@ -19300,6 +19439,13 @@
               "name": "active-view-change",
               "type": {
                 "text": "CalendarViewChangeDetails"
+              }
+            },
+            {
+              "description": "当前编辑的一端变化；detail 为 `{ activeIndex: 0 | 1 }`",
+              "name": "active-index-change",
+              "type": {
+                "text": "DateRangePickerActiveIndexChangeDetails"
               }
             }
           ],
@@ -19503,6 +19649,46 @@
               "description": "两端都落定即收起，默认 true；写 close-on-select=\"false\" 关闭",
               "name": "close-on-select",
               "fieldName": "closeOnSelect"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "一体化时间：两端升格为日期时间，起止各多出一组时间列，由确认按钮收口；只在按天挑时生效",
+              "name": "show-time",
+              "fieldName": "showTime"
+            },
+            {
+              "type": {
+                "text": "DateRangePickerSchema['props']['timeGranularity'] | undefined"
+              },
+              "description": "showTime 的时间段精度，默认 minute",
+              "name": "time-granularity",
+              "fieldName": "timeGranularity"
+            },
+            {
+              "type": {
+                "text": "TimeHourCycle | undefined"
+              },
+              "description": "showTime 的小时制，默认 24；12 时多出上下午列与上下午段",
+              "name": "hour-cycle",
+              "fieldName": "hourCycle"
+            },
+            {
+              "type": {
+                "text": "TimeStep | undefined"
+              },
+              "description": "showTime 时间列按单位的步进，JSON 对象（`{\"minute\":15}`）；也可通过 property 传入对象",
+              "name": "time-step",
+              "fieldName": "timeStep"
+            },
+            {
+              "type": {
+                "text": "DateRangePickerEndIndex | undefined"
+              },
+              "description": "受控：当前编辑哪一端；未提供时每次展开按入口重定（从终点那组段位展开为 1）",
+              "name": "active-index",
+              "fieldName": "activeIndex"
             }
           ],
           "superclass": {
@@ -19541,6 +19727,48 @@
             },
             {
               "name": "--xh-date-range-picker-column-divider"
+            },
+            {
+              "name": "--xh-date-range-picker-column-group-gap"
+            },
+            {
+              "name": "--xh-date-range-picker-column-group-label-fg"
+            },
+            {
+              "name": "--xh-date-range-picker-column-group-label-fg-active"
+            },
+            {
+              "name": "--xh-date-range-picker-column-group-label-font-weight-active"
+            },
+            {
+              "name": "--xh-date-range-picker-column-group-label-px"
+            },
+            {
+              "name": "--xh-date-range-picker-column-group-offset"
+            },
+            {
+              "name": "--xh-date-range-picker-confirm-trigger-bg"
+            },
+            {
+              "name": "--xh-date-range-picker-confirm-trigger-bg-active"
+            },
+            {
+              "name": "--xh-date-range-picker-confirm-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-date-range-picker-confirm-trigger-fg"
+            },
+            {
+              "name": "--xh-date-range-picker-confirm-trigger-h"
+            },
+            {
+              "name": "--xh-date-range-picker-confirm-trigger-px"
+            },
+            {
+              "name": "--xh-date-range-picker-confirm-trigger-radius"
+            },
+            {
+              "name": "--xh-date-range-picker-confirm-trigger-shadow"
             },
             {
               "name": "--xh-date-range-picker-content-bg"
@@ -19691,6 +19919,57 @@
             },
             {
               "name": "--xh-date-range-picker-range-separator-px"
+            },
+            {
+              "name": "--xh-date-range-picker-time-column-gap"
+            },
+            {
+              "name": "--xh-date-range-picker-time-column-h"
+            },
+            {
+              "name": "--xh-date-range-picker-time-column-min-w"
+            },
+            {
+              "name": "--xh-date-range-picker-time-column-min-w-mobile"
+            },
+            {
+              "name": "--xh-date-range-picker-time-column-padding"
+            },
+            {
+              "name": "--xh-date-range-picker-time-column-px"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-bg-hover"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-bg-pressed"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-check-fg"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-check-size"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-fg"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-fg-selected"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-font-weight-selected"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-h"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-px"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-py"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-radius"
             }
           ]
         }

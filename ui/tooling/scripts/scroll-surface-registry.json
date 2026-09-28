@@ -129,6 +129,12 @@
       "gutter": false,
       "why": "日期区间浮层里的快捷选项列"
     },
+    "date-range-picker:time-column": {
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "日期时间区间里起止各一组的时间列，定高小列表"
+    },
     "time-picker:column": {
       "mode": "drawn",
       "overscroll": true,

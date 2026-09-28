@@ -32,6 +32,7 @@ const STATUS_MARKS = {
   'date-picker:preset': '--xh-date-picker-preset-check-size',
   'date-picker:time-item': '--xh-date-picker-time-item-check-size',
   'date-range-picker:preset': '--xh-date-range-picker-preset-check-size',
+  'date-range-picker:time-item': '--xh-date-range-picker-time-item-check-size',
   'time-picker:preset': '--xh-time-picker-preset-check-size',
   'time-picker:item': '--xh-time-picker-item-check-size',
   'time-range-picker:preset': '--xh-time-range-picker-preset-check-size',

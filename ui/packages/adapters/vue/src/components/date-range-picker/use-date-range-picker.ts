@@ -42,7 +42,7 @@ export interface DateRangePickerContext {
 
 type DateRangePickerHandlers = Pick<
   DateRangePickerSchema['props'],
-  'onValueChange' | 'onOpenChange' | 'onFocusedValueChange' | 'onActiveViewChange'
+  'onValueChange' | 'onOpenChange' | 'onFocusedValueChange' | 'onActiveViewChange' | 'onActiveIndexChange'
 >
 
 /** 已创建的 RuntimeConfig 永久归属首次根节点的 Document；动态 Scope 后续不能改写这份事实。 */

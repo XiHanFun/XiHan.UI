@@ -11,12 +11,17 @@ import type {
   CalendarRangePickerApi,
   CalendarView,
   DateFieldSegmentState,
+  DatePickerTimeUnit,
   DateRangePickerApi,
+  DateRangePickerEndIndex,
   DateRangePickerPreset,
   DateRangePickerPresetState,
   DateRangePickerSchema,
   DateSegmentSet,
   DateSegmentType,
+  TimeHourCycle,
+  TimeStep,
+  TimeUnavailablePredicate,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -143,10 +148,24 @@ export interface XhDateRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   closeOnSelect?: boolean
+  /** 一体化时间：两端升格为日期时间，起止各多出一组时间列，由确认按钮收口；只在按天挑时生效。 */
+  showTime?: boolean
+  timeGranularity?: DateRangePickerProps['timeGranularity']
+  /** showTime 的小时制，默认 24；12 时多出上下午列与上下午段。 */
+  hourCycle?: TimeHourCycle
+  /** showTime 时间列按单位的步进：`{ hour?, minute?, second? }`。 */
+  timeStep?: TimeStep
+  /** showTime 时间列的逐格可选性：时列按 24 小时制给值，第三个参数带这一端已选的时分、日期与端号。 */
+  isTimeUnavailable?: TimeUnavailablePredicate
+  /** 只点日期时起止各补的时刻，例如 ['00:00:00', '23:59:59']。 */
+  defaultTime?: [string, string]
+  /** 当前编辑哪一端；给定即受控，未给时每次展开按入口重定。 */
+  activeIndex?: DateRangePickerEndIndex
   onValueChange?: DateRangePickerProps['onValueChange']
   onOpenChange?: DateRangePickerProps['onOpenChange']
   onFocusedValueChange?: DateRangePickerProps['onFocusedValueChange']
   onActiveViewChange?: DateRangePickerProps['onActiveViewChange']
+  onActiveIndexChange?: DateRangePickerProps['onActiveIndexChange']
   children?: SlotChildren<DateRangePickerRootSlotProps>
 }
 
@@ -183,10 +202,18 @@ export function XhDateRangePickerRoot({
   offset,
   dir,
   closeOnSelect,
+  showTime,
+  timeGranularity,
+  hourCycle,
+  timeStep,
+  isTimeUnavailable,
+  defaultTime,
+  activeIndex,
   onValueChange,
   onOpenChange,
   onFocusedValueChange,
   onActiveViewChange,
+  onActiveIndexChange,
   children,
   ...rest
 }: XhDateRangePickerRootProps): ReactNode {
@@ -222,10 +249,18 @@ export function XhDateRangePickerRoot({
     offset,
     dir,
     closeOnSelect,
+    showTime,
+    timeGranularity,
+    hourCycle,
+    timeStep,
+    isTimeUnavailable,
+    defaultTime,
+    activeIndex,
     onValueChange,
     onOpenChange,
     onFocusedValueChange,
     onActiveViewChange,
+    onActiveIndexChange,
   })) as DateRangePickerProps)
   const api = ctx.api
   return (
@@ -482,6 +517,59 @@ export function XhDateRangePickerPreset({ value, children, ...rest }: XhDateRang
       {slotPaints(children) ? children : api.presets.find(p => p.value === value)?.label}
     </div>
   )
+}
+
+/** 一列时间选项连同贴在它盒子上的竖条：每列一台滚动条机器，列数随精度与小时制变时组件实例跟着增减。 */
+function XhDateRangePickerTimeColumnHost({ index, unit }: { index: DateRangePickerEndIndex, unit: DatePickerTimeUnit }): ReactNode {
+  const ctx = useDateRangePickerContext()
+  const api = ctx.api
+  const timeColumnRef = useRef<HTMLDivElement | null>(null)
+  // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
+  const bars = useScrollbars({
+    scrollable: () => timeColumnRef.current,
+    anchor: 'layer',
+    props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
+  useEffect(() => bars.measure())
+  const column = api.timeColumnGroups[index].columns.find(item => item.unit === unit)
+  if (!column)
+    return null
+  return (
+    <>
+      <div {...mergeReactProps(api.getTimeColumnProps({ index, unit: column.unit }) as Record<string, unknown>, { ref: timeColumnRef })}>
+        {column.options.map(option => (
+          <div key={option} {...api.getTimeItemProps({ index, unit: column.unit, value: option }) as Record<string, unknown>}>
+            {api.getTimeItemText({ unit: column.unit, value: option })}
+          </div>
+        ))}
+      </div>
+      {bars.render()}
+    </>
+  )
+}
+
+/** 起止两组时间列整组自动铺设：每组一个外壳、一行小标题与时/分[/秒][/上下午]各一列；未开启 showTime 时整组带 hidden。 */
+export function XhDateRangePickerTimePanel(): ReactNode {
+  const ctx = useDateRangePickerContext()
+  const api = ctx.api
+  return (
+    <>
+      {api.timeColumnGroups.map(group => (
+        <div key={group.index} {...api.getColumnGroupProps({ index: group.index }) as Record<string, unknown>}>
+          <div {...api.getColumnGroupLabelProps({ index: group.index }) as Record<string, unknown>}>{group.label}</div>
+          {group.columns.map(column => (
+            <XhDateRangePickerTimeColumnHost key={column.unit} index={group.index} unit={column.unit} />
+          ))}
+        </div>
+      ))}
+    </>
+  )
+}
+
+export interface XhDateRangePickerConfirmTriggerProps extends ComponentPropsWithRef<'button'> {}
+export function XhDateRangePickerConfirmTrigger({ children, ...rest }: XhDateRangePickerConfirmTriggerProps): ReactNode {
+  const ctx = useDateRangePickerContext()
+  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
 export interface XhDateRangePickerHeaderProps extends ComponentPropsWithRef<'div'> {}

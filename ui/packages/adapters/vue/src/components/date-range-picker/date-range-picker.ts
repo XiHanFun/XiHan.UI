@@ -12,12 +12,17 @@ import type {
   CalendarRangePickerApi,
   CalendarView,
   DateFieldSegmentState,
+  DatePickerTimeUnit,
   DateRangePickerApi,
+  DateRangePickerEndIndex,
   DateRangePickerPreset,
   DateRangePickerPresetState,
   DateRangePickerSchema,
   DateSegmentSet,
   DateSegmentType,
+  TimeHourCycle,
+  TimeStep,
+  TimeUnavailablePredicate,
 } from '@xihan-ui/headless'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -142,6 +147,19 @@ export const XhDateRangePickerRoot = defineComponent({
     /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
     dir: { type: String as PropType<Direction> },
     closeOnSelect: { type: Boolean, default: undefined },
+    /** 一体化时间：两端升格为日期时间，起止各多出一组时间列，由确认按钮收口；只在按天挑时生效。 */
+    showTime: { type: Boolean, default: undefined },
+    timeGranularity: { type: String as PropType<DateRangePickerProps['timeGranularity']> },
+    /** showTime 的小时制，默认 24；12 时多出上下午列与上下午段。 */
+    hourCycle: { type: Number as PropType<TimeHourCycle> },
+    /** showTime 时间列按单位的步进：`{ hour?, minute?, second? }`。 */
+    timeStep: { type: Object as PropType<TimeStep> },
+    /** showTime 时间列的逐格可选性：时列按 24 小时制给值，第三个参数带这一端已选的时分、日期与端号。 */
+    isTimeUnavailable: { type: Function as PropType<TimeUnavailablePredicate> },
+    /** 只点日期时起止各补的时刻，例如 ['00:00:00', '23:59:59']。 */
+    defaultTime: { type: Array as unknown as PropType<[string, string]> },
+    /** 当前编辑哪一端；给定即受控，未给时每次展开按入口重定。 */
+    activeIndex: { type: Number as PropType<DateRangePickerEndIndex> },
   },
   // *-change 携带 details 对象，update:* 携带裸值；值恒为 [start, end]，只填了终点时是 ['', end]
   emits: {
@@ -152,6 +170,8 @@ export const XhDateRangePickerRoot = defineComponent({
     'update:value': (_value: PayloadOf<DateRangePickerProps, 'onValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<DateRangePickerProps, 'onOpenChange'>['open']) => true,
     'update:activeView': (_view: PayloadOf<DateRangePickerProps, 'onActiveViewChange'>['activeView']) => true,
+    'active-index-change': (_details: PayloadOf<DateRangePickerProps, 'onActiveIndexChange'>) => true,
+    'update:activeIndex': (_index: PayloadOf<DateRangePickerProps, 'onActiveIndexChange'>['activeIndex']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: DateRangePickerRootSlotProps) => VNode[]
@@ -172,11 +192,16 @@ export const XhDateRangePickerRoot = defineComponent({
       emit('active-view-change', details)
       emit('update:activeView', details.activeView)
     }
+    const notifyActiveIndex: DateRangePickerProps['onActiveIndexChange'] = (details) => {
+      emit('active-index-change', details)
+      emit('update:activeIndex', details.activeIndex)
+    }
     const ctx = useDateRangePickerWithRoot(withXhConfig('date-range-picker', useFormControlProps(props)) as DateRangePickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
       onFocusedValueChange: notifyFocus,
       onActiveViewChange: notifyActiveView,
+      onActiveIndexChange: notifyActiveIndex,
     }, rootRef)
     provideDateRangePicker(ctx)
     // 网格与段位由作者照插槽里的 weeks / segments 自行渲染
@@ -438,6 +463,73 @@ export const XhDateRangePickerPreset = defineComponent({
         slotPaints(authored) ? authored : api.presets.find(p => p.value === props.value)?.label,
       )
     }
+  },
+})
+
+/** 一列时间选项连同贴在它盒子上的竖条：每列一台滚动条机器，列数随精度与小时制变时组件实例跟着增减。 */
+const XhDateRangePickerTimeColumnHost = defineComponent({
+  name: 'XhDateRangePickerTimeColumnHost',
+  props: {
+    index: { type: Number as PropType<DateRangePickerEndIndex>, required: true },
+    unit: { type: String as PropType<DatePickerTimeUnit>, required: true },
+  },
+  setup(props) {
+    const ctx = useDateRangePickerContext()
+    const timeColumnRef = ref<HTMLElement | null>(null)
+    // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
+    const bars = useScrollbars({
+      scrollable: () => timeColumnRef.value,
+      anchor: 'layer',
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+    })
+    onUpdated(() => bars.measure())
+    return () => {
+      const api = ctx.api.value
+      const column = api.timeColumnGroups[props.index].columns.find(item => item.unit === props.unit)
+      if (!column)
+        return null
+      return [
+        h(
+          'div',
+          {
+            ...api.getTimeColumnProps({ index: props.index, unit: column.unit }) as Record<string, unknown>,
+            ref: (el: unknown) => { timeColumnRef.value = el as HTMLElement },
+          },
+          column.options.map(option =>
+            h(
+              'div',
+              { ...api.getTimeItemProps({ index: props.index, unit: column.unit, value: option }) as Record<string, unknown>, key: option },
+              api.getTimeItemText({ unit: column.unit, value: option }),
+            ),
+          ),
+        ),
+        ...bars.render(),
+      ]
+    }
+  },
+})
+
+export const XhDateRangePickerTimePanel = defineComponent({
+  name: 'XhDateRangePickerTimePanel',
+  setup() {
+    const ctx = useDateRangePickerContext()
+    // 起止两组时间列整组自动铺：每组一个外壳、一行小标题与时/分[/秒][/上下午]各一列；没开 showTime 时整组带 hidden
+    return () => ctx.api.value.timeColumnGroups.map(group =>
+      h('div', { ...ctx.api.value.getColumnGroupProps({ index: group.index }) as Record<string, unknown>, key: group.index }, [
+        h('div', ctx.api.value.getColumnGroupLabelProps({ index: group.index }) as Record<string, unknown>, group.label),
+        ...group.columns.map(column =>
+          h(XhDateRangePickerTimeColumnHost, { index: group.index, unit: column.unit, key: column.unit }),
+        ),
+      ]),
+    )
+  },
+})
+
+export const XhDateRangePickerConfirmTrigger = defineComponent({
+  name: 'XhDateRangePickerConfirmTrigger',
+  setup(_, { slots }) {
+    const ctx = useDateRangePickerContext()
+    return () => h('button', ctx.api.value.getConfirmTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
