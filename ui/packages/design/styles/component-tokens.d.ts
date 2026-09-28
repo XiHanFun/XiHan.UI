@@ -3384,6 +3384,7 @@ export type ComponentTokenName
     | '--xh-table-sort-fg'
     | '--xh-table-sort-fg-active'
     | '--xh-table-sort-size'
+    | '--xh-table-span-layer'
     | '--xh-table-state-fg'
     | '--xh-table-state-gap'
     | '--xh-table-state-min-h'

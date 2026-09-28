@@ -919,6 +919,23 @@ export const tableSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '单元格合并：起点报 aria-rowspan / aria-colspan；下面行里被跨过的格子是对读屏隐藏的占位，同一行被跨过的不渲染',
+      spec: { apg: APG },
+      props: props({
+        // size 列头两行合并；c 行从 name 起横向合并两列
+        cellSpan: ({ column, rowIndex, row }: { column: TableColumnDef, rowIndex: number, row: TableRowDef }) =>
+          column.id === 'size' && rowIndex === 0 ? { rowSpan: 2 } : row.id === 'c' && column.id === 'name' ? { colSpan: 2 } : null,
+      }),
+      initial: {
+        parts: {
+          'cell[2]': { 'aria-rowspan': '2', 'data-row-span': '' },
+          'cell[6]': { 'aria-hidden': 'true', 'data-covered': '', 'role': null, 'hidden': null },
+          'cell[8]': { 'aria-colspan': '2', 'aria-rowspan': null },
+          'cell[9]': { 'aria-hidden': 'true', 'hidden': '' },
+        },
+      },
+    },
+    {
       name: '树形表级联勾选：勾一个子行，父行把手半选；子行全勾上，父行跟着选中',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: props({ rows: TREE_ROWS, selectionMode: 'multiple', cascade: true, defaultExpandedValue: ['a'] }),

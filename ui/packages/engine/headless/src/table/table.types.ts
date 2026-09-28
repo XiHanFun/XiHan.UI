@@ -129,8 +129,8 @@ export interface TableColumnDef {
   /**
    * 横向冻结（左右滚动时该列固定），写为条目上的 data-frozen。true 等于 'start'（固定在行首侧），'end' 固定在行尾侧。
    * 与表头吸顶的 data-fixed 是两件事：那是布尔，这个带方向，同名会使 [data-fixed] 一条选择器命中两种语义。
-   * 同侧有多列吸附时，连接层按前面各列的数字列宽累加出偏移，写入 --xh-table-sticky-inset；
-   * 有一列宽度不是数字时无法计算，该侧从该列起都回退为贴边。
+   * 同侧有多列吸附时，连接层按前面各列的宽度累加出偏移，写入 --xh-table-sticky-inset：
+   * 数字列宽直接累加，不是数字（没写、百分比、fr 这类）的列取挂载后实测的列头宽度，量到之前该侧从该列起暂时贴边。
    */
   sticky?: boolean | 'start' | 'end'
   /** 列宽。数字按 px 处理，字符串原样写入内联 inline-size。 */
@@ -141,6 +141,13 @@ export interface TableColumnDef {
   maxWidth?: number
   /** 该列的宽度可以拖动修改。提供后才产出改宽把手。 */
   resizable?: boolean
+  /**
+   * 表头分组：给了 children 即为分组列，只在表头占一格、横跨它全部叶子列，不进列号空间，
+   * 也不承载数据、排序、改宽与冻结。叶子列才是生效列；嵌套几层表头就有几行，
+   * 较浅的叶子列（含前缀列）的列头纵向跨到最后一行。分组内的叶子列都要给出宽度，
+   * 分组那一格的宽度才能按叶子列之和算准。
+   */
+  children?: TableColumnDef[]
   /**
    * 该列可以拖动换位。提供后才产出拖拽把手：每个把手都是一个 Tab 位，
    * 未声明的表格不承担该代价。
@@ -171,6 +178,54 @@ export interface TableRowDef {
    * 指向不存在的父行时按根行处理，不丢弃该行。
    */
   parentId?: string
+}
+
+/**
+ * 表头里的一格。多级表头按层给出，每层一行：分组格横跨它的叶子列，较浅的叶子列纵向跨到最后一行，
+ * 被纵向跨过的那几层给一条 covered 占位，渲出来保住列宽、对读屏隐藏。
+ */
+export interface TableHeaderCell {
+  /** 叶子列 id 或分组 id。 */
+  id: string
+  label?: string
+  /** 第几行表头，1 起算，即所在表头行的 aria-rowindex。 */
+  level: number
+  /** 起始列号（aria-colindex），1 起算。 */
+  colIndex: number
+  colSpan: number
+  /** 纵向跨几行表头；只有叶子列会大于 1。 */
+  rowSpan: number
+  /** 叶子列（生效列之一）；false 为分组格。 */
+  leaf: boolean
+  /** 被上面某层的叶子列纵向跨过的占位。 */
+  covered: boolean
+}
+
+/** 单元格合并的询问：这一格是不是合并区的起点、往下往右各跨几格。 */
+export interface TableCellSpanDetails {
+  row: TableRowDef
+  /** 在可见数据行里的序号，0 起算。 */
+  rowIndex: number
+  column: TableColumn
+  /** 在生效列里的序号，0 起算。 */
+  columnIndex: number
+}
+
+/** 合并区的大小。省略即 1；超出表体（或遇到展开的详情行）的部分截掉。 */
+export interface TableCellSpan {
+  rowSpan?: number
+  colSpan?: number
+}
+
+/**
+ * 挂载后实测的版面，由机器量好写进 context：连接层在渲染期不碰 DOM，
+ * 冻结列的偏移与纵向合并格的高度都靠它。
+ */
+export interface TableLayout {
+  /** 列头宽度（px），按列 id（分组格按分组 id）。 */
+  columnWidths: Record<string, number>
+  /** 行的纵向位置（px，相对 root），按 aria-rowindex；top 是内容盒上沿（已扣掉行首分隔线）。 */
+  rowBoxes: Record<number, { top: number, bottom: number }>
 }
 
 /** 可见行序列的元素。展开展平的产物，数据行与详情行都在其中。 */
@@ -248,6 +303,16 @@ export interface TableRowProps {
 /** 列系部件的声明：只声明列 id。可排序、吸附与列宽都从 columns 查询。 */
 export interface TableColumnProps {
   value: string
+  /**
+   * 列头所在的表头行（1 起算）。只在多级表头下需要：同一叶子列在上层是起点、在下层是占位，
+   * 分组 id 也按它定位。省略时叶子列取它起始的那一层，分组取它出现的第一处。
+   */
+  level?: number
+}
+
+/** 表头行的声明：多级表头下写明第几行，1 起算；省略即第 1 行。 */
+export interface TableHeaderRowProps {
+  level?: number
 }
 
 /**
@@ -291,6 +356,13 @@ export interface TableSchema extends MachineSchema {
     defaultExpandedValue?: string[]
     /** 默认 none：未声明则没有选择机制，行也不报告 aria-selected。 */
     selectionMode?: TableSelectionMode
+    /**
+     * 单元格合并（与 antd 的 spanMethod 同一种写法）：逐格询问，返回合并区的大小。
+     * 表格按它算出起点格的 aria-rowspan / aria-colspan：同一行里被横向合并的格子不渲染（hidden），
+     * 下面被纵向跨过的行在那一列留一格占位保住列宽、对读屏隐藏。作者照常逐格渲染，由连接层决定谁显谁藏。
+     * 合并只在可见数据行之间，遇到展开的详情行截断。焦点仍是行级：上下键逐行走，合并格随它的起点行读出。
+     */
+    cellSpan?: (details: TableCellSpanDetails) => TableCellSpan | null | undefined
     /**
      * 树形表（行声明了 parentId）在 multiple 下父子级联勾选，与 Tree 的 cascade 同一套算法：
      * 勾父整枝传导、子全勾父勾、部分勾选的父行把手显示半选，禁用行的子树整棵冻结。
@@ -405,9 +477,13 @@ export interface TableSchema extends MachineSchema {
      * 没有按住时为 null。抬起、失焦或指针取消即清空，加载中由机器自行松开。
      */
     pressed: TablePressedKey | null
+    /** 挂载后实测的版面；没有需要实测的东西（冻结列都有数字宽度、没有纵向合并）时一直是空的。 */
+    layout: TableLayout
   }
   computed: Record<string, never>
   refs: {
+    /** root 节点，实测版面从它往下量。适配器在挂载时填入。 */
+    getRootEl: () => HTMLElement | null
     /** 正在拖动的列：按下时的列宽与指针横坐标。 */
     resize: { columnId: string, startWidth: number, originX: number } | null
     /**
@@ -544,7 +620,7 @@ export interface TableSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'trackResizePointer' | 'trackColumnDragPointer' | 'trackRowDragPointer'
+  effect: 'trackResizePointer' | 'trackColumnDragPointer' | 'trackRowDragPointer' | 'measureLayout'
 }
 
 export interface TableApi<T extends PropTypes = PropTypes> {
@@ -588,6 +664,18 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   rowCount: number
   /** aria-colcount：列定义的条数。 */
   columnCount: number
+  /**
+   * 表头按层排好的格子，每层一行；没有分组时只有一行、每格是一列。
+   * 多级表头按它逐层渲染表头行与列头（带上 level），占位格也要渲。
+   */
+  headerRows: readonly (readonly TableHeaderCell[])[]
+  /** 表头占几行，数据行的行号从它之后起算。 */
+  headerRowCount: number
+  /**
+   * 某一格此刻的合并情形：起点给出跨度，被合并掉的给 covered。没有 cellSpan 时恒是 1×1、不被合并。
+   * 作者据此省掉被合并格的内容，或在自绘时跳过它。
+   */
+  cellSpanOf: (rowId: string, columnId: string) => { rowSpan: number, colSpan: number, covered: boolean }
   isSelected: (value: string) => boolean
   isExpanded: (value: string) => boolean
   /** 该列当前的排序方向；不参与排序时为 null。 */
@@ -624,8 +712,8 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   getHeaderProps: () => T['element']
   getBodyProps: () => T['element']
   getFooterProps: () => T['element']
-  /** 表头行：恒占行号空间的第 1 行。 */
-  getHeaderRowProps: () => T['element']
+  /** 表头行：占行号空间最前面的几行；多级表头下写明第几行。 */
+  getHeaderRowProps: (props?: TableHeaderRowProps) => T['element']
   /** 脚注行：占行号空间的最后一行。 */
   getFooterRowProps: () => T['element']
   /**

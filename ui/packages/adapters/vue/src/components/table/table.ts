@@ -27,9 +27,11 @@ import { withXhConfig } from '../../config/config'
 import {
   provideTable,
   provideTableColumn,
+  provideTableHeaderLevel,
   provideTableRow,
   provideTableSection,
   useOptionalTableColumnContext,
+  useOptionalTableHeaderLevel,
   useOptionalTableRowContext,
   useTableColumnContext,
   useTableContext,
@@ -91,6 +93,9 @@ export type TableRootSlotProps = Pick<
   | 'toggleSelectAll'
   | 'toggleExpandRow'
   | 'rowReorderDisabledReason'
+  | 'headerRows'
+  | 'headerRowCount'
+  | 'cellSpanOf'
 >
 
 /**
@@ -126,6 +131,8 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     selection: { type: [Array, String] as PropType<TableSelection> },
     defaultSelection: { type: [Array, String] as PropType<TableSelection> },
     selectionMode: { type: String as PropType<TableSelectionMode> },
+    /** 单元格合并：逐格询问合并区的大小，与 antd 的 spanMethod 同一种写法。 */
+    cellSpan: { type: Function as PropType<TableProps['cellSpan']> },
     /** 树形表在 multiple 下父子级联勾选，与 Tree 的 cascade 同义。 */
     cascade: { type: Boolean, default: undefined },
     checkedStrategy: { type: String as PropType<CascadeStrategy> },
@@ -220,7 +227,9 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
         empty: ctx.api.value.empty,
         loading: ctx.api.value.loading,
       }) ?? null,
-      h('div', mergeProps(ctx.api.value.getRootProps() as Record<string, unknown>, attrs), slots.default?.({
+      h('div', mergeProps(ctx.api.value.getRootProps() as Record<string, unknown>, attrs, {
+        ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement | null },
+      }), slots.default?.({
         columns: ctx.api.value.columns,
         columnPreference: ctx.api.value.columnPreference,
         columnSettings: ctx.api.value.columnSettings,
@@ -231,6 +240,9 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
         setColumnPreference: ctx.api.value.setColumnPreference,
         rowNumber: ctx.api.value.rowNumber,
         visibleRows: ctx.api.value.visibleRows,
+        headerRows: ctx.api.value.headerRows,
+        headerRowCount: ctx.api.value.headerRowCount,
+        cellSpanOf: ctx.api.value.cellSpanOf,
         sort: ctx.api.value.sort,
         selection: ctx.api.value.selection,
         selectionState: ctx.api.value.selectionState,
@@ -346,15 +358,19 @@ export const XhTableRow = /* @__PURE__ */ defineComponent({
   props: {
     /** 行 id：数据行必须提供，表头行与脚注行省略。 */
     value: { type: String },
+    /** 多级表头下写明这是第几行表头（1 起算），行里的列头据此定位；单行表头省略。 */
+    level: { type: Number },
   },
   setup(props, { slots }) {
     const ctx = useTableContext()
     const section = useTableSection()
     if (section !== 'body') {
+      if (section === 'header')
+        provideTableHeaderLevel(computed(() => props.level))
       return () => h(
         'div',
         (section === 'header'
-          ? ctx.api.value.getHeaderRowProps()
+          ? ctx.api.value.getHeaderRowProps({ level: props.level })
           : ctx.api.value.getFooterRowProps()) as Record<string, unknown>,
         slots.default?.(),
       )
@@ -376,10 +392,13 @@ export const XhTableColumnHeader = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnHeader',
   props: {
     value: { type: String, required: true },
+    /** 多级表头里这一格所在的表头行；省略时取所在表头行写明的层号。 */
+    level: { type: Number },
   },
   setup(props, { slots }) {
     const ctx = useTableContext()
-    const column = computed<TableColumnProps>(() => ({ value: props.value }))
+    const headerLevel = useOptionalTableHeaderLevel()
+    const column = computed<TableColumnProps>(() => ({ value: props.value, level: props.level ?? headerLevel?.value }))
     provideTableColumn({ column })
     return () => h(
       'div',

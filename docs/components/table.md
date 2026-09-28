@@ -84,9 +84,9 @@ colspan 从它自己的列向后计算，报告为 aria-colspan；1 与省略同
 
 <XhDemo src="table/11-editable-cell" />
 
-### 多行表头与表头分组
+### 多级表头与表头分组
 
-表头写几行就是几行；分组格的跨列数与两行表头的行号由标记声明，columns 仍只登记叶子列
+列给出 children 即为分组：表头按 headerRows 逐层渲染，分组格的跨列数、行号与较浅列头的纵向跨行都由表格算出
 
 <XhDemo src="table/12-group-header" />
 
@@ -168,6 +168,12 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 
 <XhDemo src="table/25-tree-cascade" />
 
+### 单元格合并
+
+cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向合并，汇总行的两个季度横向合并；作者照常逐格渲染，被合并掉的格子由表格收起或留成占位
+
+<XhDemo src="table/26-cell-span" />
+
 ## 设计指引
 
 ### 何时使用
@@ -188,6 +194,10 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 - 选中行铺品牌淡底行面并由行首的勾选方框标记；悬停与按下只换面，行的几何与吸附列不动。
 - 表头吸顶与列吸附、条纹、密度、边框都是开关。
 - 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
+- 表头分组：列给出 `children` 即为分组，只在表头占一格、横跨它的全部叶子列，不进列号空间，也不承载数据、排序、改宽与冻结。嵌套几层就有几行表头，按 `headerRows` 逐层渲染：表头行写明 `level`，列头按所在的行定位自己是哪一格；较浅的叶子列（含前缀列）在它起始的那一行出列头、纵向跨到最后一行（`aria-rowspan`），下面各行那一格是对读屏隐藏的占位，照样渲染以保住列宽。行号空间把各层表头都算进去，数据行从表头之后起算。分组内的叶子列要给出宽度，分组格的宽度按它们相加；列偏好把一个分组的叶子列拆开时，分组格按连续的段各出一格。
+- 单元格合并用 `cellSpan`，与 antd 的 `spanMethod` 同一种写法：逐格询问合并区的大小（`rowSpan` / `colSpan`）。表格按它算出起点格的 `aria-rowspan` / `aria-colspan`：与起点同一行、被横向跨过的格子不渲染（`hidden`）；下面行里被纵向跨过的，在合并区最左那一列留一格占位（`data-covered`，对读屏隐藏、只保住宽度），其余不渲染。作者照常逐格渲染，谁显谁藏由表格决定；`cellSpanOf(行, 列)` 可查某一格的合并情形。合并只在可见数据行之间，遇到展开的详情行截断。
+- 纵向合并的起点格（`data-row-span`）挂载后按实测行位铺满合并的几行，压在下面几行之上、底色随起点行；量到之前按普通格子排。
+- 冻结列不必都写数字宽度：同侧多列冻结时，数字宽度直接累加，其余（没写、百分比、`fr`）取挂载后实测的列头宽度；量到之前那一侧从该列起暂时贴边。
 - 行数很大时只渲染窗口内的行。
 - 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
@@ -232,6 +242,7 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 | `expandedValue` | `string[]` |  | 展开集合。提供即受控，语义同上。 |
 | `defaultExpandedValue` | `string[]` |  |  |
 | `selectionMode` | `TableSelectionMode` |  | 默认 none：未声明则没有选择机制，行也不报告 aria-selected。 |
+| `cellSpan` | `(details: TableCellSpanDetails) => TableCellSpan \| null \| undefined` |  | 单元格合并（与 antd 的 spanMethod 同一种写法）：逐格询问，返回合并区的大小。 表格按它算出起点格的 aria-rowspan / aria-colspan：同一行里被横向合并的格子不渲染（hidden）， 下面被纵向跨过的行在那一列留一格占位保住列宽、对读屏隐藏。作者照常逐格渲染，由连接层决定谁显谁藏。 合并只在可见数据行之间，遇到展开的详情行截断。焦点仍是行级：上下键逐行走，合并格随它的起点行读出。 |
 | `cascade` | `boolean` |  | 树形表（行声明了 parentId）在 multiple 下父子级联勾选，与 Tree 的 cascade 同一套算法： 勾父整枝传导、子全勾父勾、部分勾选的父行把手显示半选，禁用行的子树整棵冻结。 级联下不接 Shift 范围选。默认 false；平表与 single 下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外选中值的收敛策略，默认 child（只收叶行）；parent = 最高整枝，all = 全部勾中的行。与 Tree 同义。 |
 | `prefixColumns` | `TableColumnKind[]` |  | 需要的前缀列，按给定顺序插在最前面，默认不插入任何列。 它们由库插入并占用列号：不占用时右侧所有列的 aria-colindex 会整体错位， 这正是使用者手工向 columns 中添加假列的原因。作者按 `api.columns` 渲染即可， 每一项都声明 `kind`。 |
@@ -267,11 +278,12 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 | `id` | `string` | 是 | 全表唯一：既是 DOM 身份（data-value），也是排序链与列号索引的键。 |
 | `label` | `string` |  | 展示名。只供调用方渲染，不作为可及名。 |
 | `sortable` | `boolean` |  | 可排序：提供后才产出 aria-sort，排序把手也才响应按键与点击。 |
-| `sticky` | `boolean \| 'start' \| 'end'` |  | 横向冻结（左右滚动时该列固定），写为条目上的 data-frozen。true 等于 'start'（固定在行首侧），'end' 固定在行尾侧。 与表头吸顶的 data-fixed 是两件事：那是布尔，这个带方向，同名会使 [data-fixed] 一条选择器命中两种语义。 同侧有多列吸附时，连接层按前面各列的数字列宽累加出偏移，写入 --xh-table-sticky-inset； 有一列宽度不是数字时无法计算，该侧从该列起都回退为贴边。 |
+| `sticky` | `boolean \| 'start' \| 'end'` |  | 横向冻结（左右滚动时该列固定），写为条目上的 data-frozen。true 等于 'start'（固定在行首侧），'end' 固定在行尾侧。 与表头吸顶的 data-fixed 是两件事：那是布尔，这个带方向，同名会使 [data-fixed] 一条选择器命中两种语义。 同侧有多列吸附时，连接层按前面各列的宽度累加出偏移，写入 --xh-table-sticky-inset： 数字列宽直接累加，不是数字（没写、百分比、fr 这类）的列取挂载后实测的列头宽度，量到之前该侧从该列起暂时贴边。 |
 | `width` | `string \| number` |  | 列宽。数字按 px 处理，字符串原样写入内联 inline-size。 |
 | `minWidth` | `number` |  | 拖动改列宽时的下限（px）。未提供时使用 TABLE_COLUMN_MIN_WIDTH。 |
 | `maxWidth` | `number` |  | 拖动改列宽时的上限（px）。未提供时不封顶。 |
 | `resizable` | `boolean` |  | 该列的宽度可以拖动修改。提供后才产出改宽把手。 |
+| `children` | `TableColumnDef[]` |  | 表头分组：给了 children 即为分组列，只在表头占一格、横跨它全部叶子列，不进列号空间， 也不承载数据、排序、改宽与冻结。叶子列才是生效列；嵌套几层表头就有几行， 较浅的叶子列（含前缀列）的列头纵向跨到最后一行。分组内的叶子列都要给出宽度， 分组那一格的宽度才能按叶子列之和算准。 |
 | `reorderable` | `boolean` |  | 该列可以拖动换位。提供后才产出拖拽把手：每个把手都是一个 Tab 位， 未声明的表格不承担该代价。 不可拖动的列与冻结列一样是屏障：跨过它落下会把它挤走，而作者已声明该列不动。 |
 
 ### TableRowDef
@@ -324,11 +336,13 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 | `XhTableCell` | `value` | `string` | 是 | 列 id。 |
 | `XhTableCell` | `colspan` | `number \| string` |  | 跨列数，从 value 所在列向后计算。 |
 | `XhTableColumnHeader` | `value` | `string` | 是 |  |
+| `XhTableColumnHeader` | `level` | `number` |  | 多级表头里这一格所在的表头行；省略时取所在表头行写明的层号。 |
 | `XhTableColumnVisibilityTrigger` | `value` | `string` |  | 列 id。写在列设置区中时必须提供；写在列标题中时可省略，跟随该列。 |
 | `XhTableExpandedRow` | `value` | `string` | 是 | 所属数据行的 id。 |
 | `XhTableRoot` | `toolbar` | `SlotChildren<TableToolbarSlotProps>` |  | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
 | `XhTableRoot` | `children` | `SlotChildren<TableRootSlotProps>` |  |  |
 | `XhTableRow` | `value` | `string` |  | 行 id：数据行必须提供，表头行与脚注行省略。 |
+| `XhTableRow` | `level` | `number` |  | 多级表头下写明这是第几行表头（1 起算），行里的列头据此定位；单行表头省略。 |
 
 ### 状态
 
@@ -374,6 +388,9 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 | `empty` | `boolean` | 表体为空（显式声明或 rows 为空）。 |
 | `rowCount` | `number` | aria-rowcount：表头行 + 可见行 + 脚注行。 |
 | `columnCount` | `number` | aria-colcount：列定义的条数。 |
+| `headerRows` | `readonly (readonly TableHeaderCell[])[]` | 表头按层排好的格子，每层一行；没有分组时只有一行、每格是一列。 多级表头按它逐层渲染表头行与列头（带上 level），占位格也要渲。 |
+| `headerRowCount` | `number` | 表头占几行，数据行的行号从它之后起算。 |
+| `cellSpanOf` | `(rowId: string, columnId: string) => { rowSpan: number, colSpan: number, covered: boolean }` | 某一格此刻的合并情形：起点给出跨度，被合并掉的给 covered。没有 cellSpan 时恒是 1×1、不被合并。 作者据此省掉被合并格的内容，或在自绘时跳过它。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `sortDirection` | `(value: string) => TableSortDirection \| null` | 该列当前的排序方向；不参与排序时为 null。 |
@@ -395,7 +412,7 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 | `getHeaderProps` | `() => T['element']` |  |
 | `getBodyProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
-| `getHeaderRowProps` | `() => T['element']` | 表头行：恒占行号空间的第 1 行。 |
+| `getHeaderRowProps` | `(props?: TableHeaderRowProps) => T['element']` | 表头行：占行号空间最前面的几行；多级表头下写明第几行。 |
 | `getFooterRowProps` | `() => T['element']` | 脚注行：占行号空间的最后一行。 |
 | `rowNumber` | `(rowId: string) => string` | 该行显示的序号。平表是分页全局序号，树形是大纲编号。 不显示序号列时仍可调用：它是纯计算，不依赖是否有该列。 |
 | `columnPreference` | `TableColumnPreference` | 当前的列偏好。原样交出即可存储。 |
@@ -460,7 +477,7 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 | `root` | `aria-colcount` | columns.length \|\| undefined |
 | `root` | `aria-labelledby` | `caption` 部件的 id |
 | `root` | `aria-multiselectable` | 'true' \| 'false' |
-| `root` | `aria-rowcount` | HEADER_ROW_COUNT + visibleRows.length + (hasFooter ? … |
+| `root` | `aria-rowcount` | headerRowCount + visibleRows.length + (hasFooter ? 1 … |
 | `root` | `role` | 'treegrid' \| 'grid' |
 | `header` | `role` | 'rowgroup' |
 | `body` | `role` | 'rowgroup' |
@@ -474,11 +491,16 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 | `row` | `aria-selected` | 'true' \| 'false' \| undefined |
 | `row` | `aria-setsize` | metaIndex.get(row.value)?.setSize \| undefined |
 | `row` | `role` | 'row' |
-| `column-header` | `aria-colindex` | columnIndex.get(column.value) |
+| `column-header` | `aria-colindex` | cell.colIndex |
+| `column-header` | `aria-colspan` | cell.colSpan \| undefined |
+| `column-header` | `aria-hidden` | 'true' |
+| `column-header` | `aria-rowspan` | cell.rowSpan \| undefined |
 | `column-header` | `aria-sort` | 'ascending' \| 'descending' \| 'none' \| undefined |
 | `column-header` | `role` | 'columnheader' |
 | `cell` | `aria-colindex` | columnIndex.get(cell.value) |
-| `cell` | `aria-colspan` | cell.colSpan \| undefined |
+| `cell` | `aria-colspan` | Math.max(cell.colSpan ?? 1, origin?.colSpan ?? 1) \| undefined |
+| `cell` | `aria-hidden` | 'true' |
+| `cell` | `aria-rowspan` | origin.rowSpan \| undefined |
 | `cell` | `role` | 'gridcell' |
 | `toolbar` | `aria-label` | label.toolbar |
 | `column-list` | `aria-label` | label.columnList |
@@ -516,8 +538,8 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
-| `header-row` | `aria-rowindex` | 1 |
-| `footer-row` | `aria-rowindex` | HEADER_ROW_COUNT + visibleRows.length + (hasFooter ? … \| undefined |
+| `header-row` | `aria-rowindex` | Math.max(1, Math.min(Math.trunc(header?.level ?? 1) \|… |
+| `footer-row` | `aria-rowindex` | headerRowCount + visibleRows.length + (hasFooter ? 1 … \| undefined |
 | `header-row` | `role` | 'row' |
 | `footer-row` | `role` | 'row' |
 
@@ -525,6 +547,7 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 - `column-label` 不带角色与状态：列头 `role=columnheader` 的可及名由它里面的文字算出，视觉上被省略号截断的列名读屏仍读全文。
 - 列宽把手与列拖拽把手同样各占一个 Tab 位，名字分别取 `translations.columnResize` 与 `translations.columnDrag`。
 - 行内的勾选框与展开箭头对读屏隐藏：选中与展开都由行自身的属性与方向键 / 空格承担。
+- 焦点是行级的，合并格不改变键盘：上下键逐行走，每一行都是一个停靠点；纵向合并格只在起点行里报出（带 `aria-rowspan`），下面几行那一格是占位、读屏跳过。表格刻意不做单元格级导航（左右键是展开 / 收起），合并格因此没有「焦点落进合并格、再移出」的问题。
 - 级联的半选只画在行选把手上：`row` 角色没有 mixed 这一档，半选的父行对读屏报 `aria-selected=false`，勾了哪些子行由子行各自报出。
 
 ## 样式参考
@@ -562,16 +585,21 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 | `row` | `data-xh-collection-context` | 'page' |
 | `row` | `data-xh-collection-item` | '' |
 | `row` | `data-xh-collection-size` | props.size |
+| `column-header` | `data-covered` | ''（条件成立时才出现） |
 | `column-header` | `data-dragging` | ''（条件成立时才出现） |
 | `column-header` | `data-drop` | 'before' \| 'after' |
 | `column-header` | `data-frozen` | undefined |
+| `column-header` | `data-group` | ''（条件成立时才出现） |
+| `column-header` | `data-row-span` | ''（条件成立时才出现） |
 | `column-header` | `data-sort` | 'asc' \| 'desc' |
 | `column-header` | `data-sort-index` | tableSortIndexOf(sort, value) \| undefined |
 | `column-header` | `data-sortable` | ''（条件成立时才出现） |
+| `cell` | `data-covered` | ''（条件成立时才出现） |
 | `cell` | `data-disabled` | ''（条件成立时才出现） \| undefined |
 | `cell` | `data-dragging` | ''（条件成立时才出现） |
 | `cell` | `data-drop` | 'before' \| 'after' |
 | `cell` | `data-frozen` | undefined |
+| `cell` | `data-row-span` | ''（条件成立时才出现） |
 | `cell` | `data-selected` | ''（条件成立时才出现） \| undefined |
 | `toolbar` | `data-size` | props.size |
 | `column-list` | `data-size` | props.size |
@@ -725,6 +753,7 @@ cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父
 | `--xh-table-sort-fg` | `sort-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | table 的 sort-trigger 部件 color 覆盖槽。 |
 | `--xh-table-sort-fg-active` | `sort-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`sort`<br>`sort-index` | `--xh-fg-default` | table 的 sort-trigger 部件 color 覆盖槽。 |
 | `--xh-table-sort-size` | `sort-trigger` | `--xh-icon-size` | `default` | `--xh-_table-trigger-size` | table 的 sort-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-table-span-layer` | `cell`<br>`column-header` | `z-index` | `is([data-part='cell'], [data-part='column-header'])`<br>`row-span` | `1` | table 的 cell、column-header 部件 z-index 覆盖槽。 |
 | `--xh-table-state-fg` | `empty`<br>`loading` | `color` | `default` | `--xh-fg-muted` | table 的 empty、loading 部件 color 覆盖槽。 |
 | `--xh-table-state-gap` | `empty`<br>`loading` | `gap` | `default` | `--xh-space-2` | table 的 empty、loading 部件 gap 覆盖槽。 |
 | `--xh-table-state-min-h` | `empty`<br>`loading` | `min-block-size` | `default` | `8rem` | table 的 empty、loading 部件 min-block-size 覆盖槽。 |

@@ -58621,7 +58621,7 @@
               "name": "column-label"
             },
             {
-              "description": "role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数",
+              "description": "role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数。cellSpan 合并掉的格子由元素写上 hidden 或占位，作者照常逐格写",
               "name": "cell"
             },
             {
@@ -58773,6 +58773,14 @@
                 "text": "CascadeStrategy | undefined"
               },
               "attribute": "checked-strategy"
+            },
+            {
+              "kind": "field",
+              "name": "cellSpan",
+              "privacy": "public",
+              "type": {
+                "text": "TableSchema['props']['cellSpan'] | undefined"
+              }
             },
             {
               "kind": "field",
@@ -58970,7 +58978,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<TableSchema>(this, tableMachine, () => this.machineProps())"
+              "default": "new MachineController<TableSchema>( this, tableMachine, () => this.machineProps(), { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) }, )"
             },
             {
               "kind": "method",
@@ -59105,6 +59113,67 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "headerLevelOf",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "number | undefined"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "列头所在表头行写明的层号（row 上的 level 属性）；不在表头里、或没写时省略。"
+            },
+            {
+              "kind": "field",
+              "name": "headerRows",
+              "type": {
+                "text": "TableApi['headerRows']"
+              },
+              "description": "表头按层排好的格子：多级表头按它逐层写表头行（row 上写 level）与列头。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "headerRowCount",
+              "type": {
+                "text": "number"
+              },
+              "description": "表头占几行；数据行的行号从它之后起算。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "cellSpanOf",
+              "return": {
+                "type": {
+                  "text": "ReturnType<TableApi['cellSpanOf']>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "rowId",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "columnId",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "某一格此刻的合并情形：起点给出跨度，被合并掉的给 covered。"
             },
             {
               "kind": "method",
@@ -59534,6 +59603,9 @@
             },
             {
               "name": "--xh-table-sort-size"
+            },
+            {
+              "name": "--xh-table-span-layer"
             },
             {
               "name": "--xh-table-state-fg"
