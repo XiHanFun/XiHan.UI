@@ -43,7 +43,7 @@ interface Case {
 const CASES: Record<string, Case> = {
   'tabs': {
     item: 'trigger',
-    render: value => h(XhTabsRoot, { 'value': value.value, 'onUpdate:value': (next: string) => (value.value = next) }, () =>
+    render: value => h(XhTabsRoot, { 'value': value.value, 'onUpdate:value': (next: string | null) => (value.value = next ?? '') }, () =>
       h(XhTabsList, null, () => [h(XhTabsIndicator), ...ENTRIES.map(entry => h(XhTabsTrigger, { value: entry.value }, () => entry.label))])),
   },
   'segmented': {
