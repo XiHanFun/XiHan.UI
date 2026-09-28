@@ -1,24 +1,11 @@
-<script setup lang="ts">
-import {
-  XhPopoverCloseTrigger,
-  XhPopoverContent,
-  XhPopoverDescription,
-  XhPopoverRoot,
-  XhPopoverTitle,
-  XhPopoverTrigger,
-} from "@xihan-ui/vue";
-</script>
-
 <template>
-  <!-- 展示已打开的静态面板：不包 Positioner，content 就地渲染，宽度由预览根约束 -->
-  <div style="display: grid; gap: var(--xh-space-2); justify-items: start; inline-size: var(--xh-doc-catalog-w)">
-    <XhPopoverRoot placement="bottom-start" default-open :close-on-interact-outside="false" :translations="{ close: '关闭' }">
-      <XhPopoverTrigger>订阅设置</XhPopoverTrigger>
-      <XhPopoverContent>
-        <XhPopoverTitle>订阅设置</XhPopoverTitle>
-        <XhPopoverDescription>每周一汇总发送，随时可以退订。</XhPopoverDescription>
-        <XhPopoverCloseTrigger />
-      </XhPopoverContent>
-    </XhPopoverRoot>
-  </div>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="24.5" y="16.5" width="79" height="31" rx="4" stroke="var(--xh-border-default)" />
+    <path d="M43 32h42" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <rect x="24.5" y="58.5" width="167" height="79" rx="12" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M57 59l7-7 7 7" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M43 78h58" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M168 74l8 8m0-8l-8 8" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M42 98h116M42 110h92" stroke="var(--xh-fg-muted)" stroke-width="4" />
+  </svg>
 </template>

@@ -1,50 +1,18 @@
-<script setup lang="ts">
-import type { CommandNode } from "@xihan-ui/headless";
-import {
-  XhCommandContent,
-  XhCommandGroup,
-  XhCommandGroupLabel,
-  XhCommandInput,
-  XhCommandItem,
-  XhCommandItemText,
-  XhCommandList,
-  XhCommandRoot,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const commands: CommandNode[] = [
-  { value: "users", label: "用户管理", group: "nav" },
-  { value: "export", label: "导出报表", group: "action" },
-];
-const groups = [
-  { value: "nav", label: "页面" },
-  { value: "action", label: "动作" },
-];
-// 面板 portal 到这块预览根里；卡片的 contain: layout paint 把 fixed 定位层圈成卡内包含块
-const host = ref<HTMLElement | null>(null);
-</script>
-
 <template>
-  <div
-    ref="host"
-    style="position: relative; inline-size: var(--xh-doc-catalog-w); block-size: var(--xh-doc-catalog-h); --xh-command-max-w: var(--xh-doc-catalog-w); --xh-command-inset-block-start: var(--xh-space-3)"
-  >
-    <XhCommandRoot v-if="host" :collection="commands" :groups="groups" default-open :modal="false" :close-on-interact-outside="false" placeholder="搜命令…">
-      <template #default>
-        <XhCommandContent :container="host">
-          <XhCommandInput />
-          <XhCommandList>
-            <XhCommandGroup v-for="group in groups" :key="group.value" :value="group.value">
-              <XhCommandGroupLabel>{{ group.label }}</XhCommandGroupLabel>
-              <template v-for="command in commands" :key="command.value">
-                <XhCommandItem v-if="command.group === group.value" :value="command.value">
-                  <XhCommandItemText>{{ command.label }}</XhCommandItemText>
-                </XhCommandItem>
-              </template>
-            </XhCommandGroup>
-          </XhCommandList>
-        </XhCommandContent>
-      </template>
-    </XhCommandRoot>
-  </div>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="24.5" y="16.5" width="191" height="127" rx="12" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M48 32a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M63 33h66" stroke="var(--xh-fg-disabled)" stroke-width="6" />
+    <path d="M24 49.5h192" stroke="var(--xh-border-subtle)" />
+    <path d="M38 62h24" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <rect x="28" y="70" width="184" height="24" rx="4" fill="var(--xh-bg-subtle)" />
+    <path d="M37 76h6l4 4v8h-10zm6 0v4h4" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M59 82h50" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M182 82h20" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M36 102h4l2 2h6v7h-12z" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M59 106h66" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M182 106h20" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M44.5 127.5a2.5 2.5 0 1 1-5 0a2.5 2.5 0 1 1 5 0m-7.5 8.5a5 5 0 0 1 10 0" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M59 130h42" stroke="var(--xh-fg-muted)" stroke-width="6" />
+  </svg>
 </template>

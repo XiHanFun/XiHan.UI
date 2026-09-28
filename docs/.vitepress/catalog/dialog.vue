@@ -1,34 +1,14 @@
-<script setup lang="ts">
-import {
-  XhButton,
-  XhDialogCloseTrigger,
-  XhDialogContent,
-  XhDialogDescription,
-  XhDialogRoot,
-  XhDialogTitle,
-  XhDialogTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-// 面板 portal 到这块预览根里；卡片的 contain: layout paint 把 fixed 定位层圈成卡内包含块
-const host = ref<HTMLElement | null>(null);
-</script>
-
 <template>
-  <div
-    ref="host"
-    style="position: relative; display: grid; place-items: start; inline-size: var(--xh-doc-catalog-w); block-size: var(--xh-doc-catalog-h); --xh-dialog-max-w: var(--xh-doc-catalog-w)"
-  >
-    <XhDialogRoot v-if="host" default-open :modal="false" :close-on-interact-outside="false" :translations="{ close: '关闭' }">
-      <XhDialogTrigger>打开对话框</XhDialogTrigger>
-      <XhDialogContent :container="host">
-        <XhDialogTitle>确认发布</XhDialogTitle>
-        <XhDialogDescription>发布后这篇文档对所有人可见，之后仍可撤回。</XhDialogDescription>
-        <div style="display: flex; justify-content: flex-end">
-          <XhButton>发布</XhButton>
-        </div>
-        <XhDialogCloseTrigger />
-      </XhDialogContent>
-    </XhDialogRoot>
-  </div>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M26 16h92M26 28h60" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M8 0h224a8 8 0 0 1 8 8v144a8 8 0 0 1-8 8h-224a8 8 0 0 1-8-8v-144a8 8 0 0 1 8-8z" fill="var(--xh-bg-overlay)" />
+    <rect x="36.5" y="28.5" width="167" height="103" rx="12" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M55 48h66" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M180 44l8 8m0-8l-8 8" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M54 68h132M54 80h100" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <rect x="96.5" y="100.5" width="43" height="23" rx="4" stroke="var(--xh-border-default)" />
+    <path d="M108 112h20" stroke="var(--xh-fg-default)" stroke-width="4" />
+    <rect x="148" y="100" width="44" height="24" rx="4" fill="var(--xh-bg-brand)" />
+    <path d="M160 112h20" stroke="var(--xh-fg-on-brand)" stroke-width="4" />
+  </svg>
 </template>
