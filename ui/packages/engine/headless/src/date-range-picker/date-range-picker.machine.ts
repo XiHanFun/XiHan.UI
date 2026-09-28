@@ -25,6 +25,7 @@ import {
 } from '../date-picker'
 import { sameArray } from '../shared/array'
 import { sortIso } from '../shared/calendar'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { resolveHourCycle } from '../time-field'
@@ -288,6 +289,8 @@ export function findDateRangePickerCellEl(container: HTMLElement | null, value: 
 export const dateRangePickerMachine = createMachine({
   name: 'date-range-picker',
   context: ({ prop, cell }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     value: cell<string[]>(() => ({
@@ -333,7 +336,7 @@ export const dateRangePickerMachine = createMachine({
     getFloatingEl: () => null,
     getContentEl: () => null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
   // 开合受控（给定 open prop）时用户事件只发意图、不自改状态；宿主写回 open 后由 watch
@@ -357,6 +360,8 @@ export const dateRangePickerMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         // 先编辑哪一端按入口定：从终点那组段位展开是终点，其余是起点
@@ -435,6 +440,7 @@ export const dateRangePickerMachine = createMachine({
       },
     },
     actions: {
+      clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')

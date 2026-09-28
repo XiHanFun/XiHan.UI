@@ -9,6 +9,7 @@ import { cascaderMachine, connectCascader } from '../src/cascader'
 import { comboboxMachine, connectCombobox } from '../src/combobox'
 import { connectContextMenu, contextMenuMachine } from '../src/context-menu'
 import { datePickerMachine } from '../src/date-picker'
+import { dateRangePickerMachine } from '../src/date-range-picker'
 import { connectDialog, dialogMachine } from '../src/dialog'
 import { connectDrawer, drawerMachine } from '../src/drawer'
 import { connectMenu, menuMachine } from '../src/menu'
@@ -98,6 +99,10 @@ const CASES: Record<string, Case> = {
   },
   'date-picker': {
     machine: datePickerMachine,
+    parts: marked,
+  },
+  'date-range-picker': {
+    machine: dateRangePickerMachine,
     parts: marked,
   },
 }
