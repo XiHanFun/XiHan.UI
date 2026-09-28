@@ -7,8 +7,9 @@
 
 import type { TagPressedPart } from '../tag/tag.types'
 import type { TagGroupSchema, TagGroupSelectionMode } from './tag-group.types'
-import { createTypeahead, setup } from '@xihan-ui/core'
+import { createTypeahead, setup, trackListMotion } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
+import { TAG_GROUP_ITEM_SELECTOR } from './tag-group.anatomy'
 
 const { createMachine } = setup<TagGroupSchema>()
 
@@ -39,6 +40,7 @@ export const tagGroupMachine = createMachine({
     typeahead: createTypeahead(),
   }),
   initialState: () => 'idle',
+  effects: ['trackListMotion'],
   // 按住途中整组转入禁用或只读：不会再来 keyup，按压面由机器自己收
   watch: ({ track, prop, action }) => {
     track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
@@ -65,6 +67,29 @@ export const tagGroupMachine = createMachine({
       canPress: ({ context, prop, event }) => {
         const e = event.current()
         return e.type === 'PRESS.START' && context.get('pressedPart') == null && !prop('disabled') && !prop('readOnly') && !e.disabled
+      },
+    },
+    effects: {
+      /**
+       * 标签的到达、离场与换位：首帧就在的直接呈现，之后新加的播进场、同一批按到达顺序错开，
+       * 删掉的在原处播完退场，其余标签滑到新位置。条目的去留归宿主，这里只看 DOM 的增删。
+       * React 的祖先 ref 在子组件 layout effect 之后才附着，延到提交后的微任务再取，仍在首帧绘制之前。
+       */
+      trackListMotion: ({ scope, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          scope.getWin().queueMicrotask(() => {
+            const list = scope.getById(scope.partId('tag-group', 'list'))
+            if (disposed || !list)
+              return
+            stop = trackListMotion(list, { item: TAG_GROUP_ITEM_SELECTOR })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
       },
     },
     actions: {
