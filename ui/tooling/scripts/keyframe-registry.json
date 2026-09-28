@@ -181,9 +181,6 @@
         "field-array",
         "message-feed",
         "question-flow",
-        "select",
-        "tag-group",
-        "tags-input",
         "tool-call"
       ],
       "relation": "list"
@@ -299,7 +296,10 @@
         "navigation-menu",
         "pagination",
         "question-flow",
-        "side-nav"
+        "select",
+        "side-nav",
+        "tag-group",
+        "tags-input"
       ],
       "relation": "detached"
     },

@@ -649,23 +649,25 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 角色 | 用途 | 可动属性 | 时长 / 缓动 | 减弱动效 |
 | --- | --- | --- | --- | --- |
 | 按压 | 确认按下（§9.1–§9.3） | `scale` + 换面 | `press` / `press`，`release` / `release` | 只换面 |
-| 状态 | hover、选中、焦点、校验的换色；liquid 档的交互光（§9.12） | 颜色、描边色、阴影、`opacity`；交互光只动描边上的渐变位置 | `micro` / `enter`；交互光 `glint` / `enter` | 保留淡变；交互光不播 |
+| 状态 | hover、选中、焦点、校验的换色；liquid 档的交互光（§9.12） | 颜色、描边色、阴影、`opacity`；交互光只动描边上的渐变位置；焦点环即时 | `micro` / `enter`；交互光 `glint` / `enter` | 保留淡变；交互光不播 |
 | 切换 | 开关滑块、单选圆点、勾选标记 | `translate`、`scale` | `nudge` / `continuous`；短边 ≤ 32px 部件的缩放可用 `settle`；liquid 档的滑块用弹簧 `spring-toggle` | 瞬时 |
 | 指示 | 选中指示器在项之间移动（§9.8） | `translate`；尺寸为登记例外 | `move` / `continuous`；liquid 档用双沿弹簧 `spring-lead` / `spring-trail` | 瞬时 |
 | 披露 | 内容展开收起（§9.4） | `grid-template-rows` | `expand` / `enter-strong`；`collapse` / `exit` | 瞬时 |
 | 出现 | 挂载与卸载（§9.5） | `opacity`、小幅 `translate` / `scale` | `enter` / `enter` 或 `enter-strong`；`exit` / `exit` | 淡变 |
 | 列表 | 加入、移除、重排、错开（§9.6） | 同出现；重排用 `translate` | 同出现；重排 `move` / `continuous` | 淡变，无错开 |
-| 导航 | 抽屉、侧栏、走马灯、标签带滚动、平滑滚动 | `translate`、滚动位置 | 进 `slide` / `slide`；出 `exit` / `exit` | 抽屉类淡变，其余瞬时 |
+| 导航 | 整幅位移：抽屉、覆盖式侧栏、走马灯翻页、平滑滚动 | `translate`、滚动位置 | 进 `slide` / `slide`；出 `exit` / `exit` | 抽屉类淡变，其余瞬时 |
 | 数值 | 进度、计数、倒计时（§9.7） | `translate`、`clip-path`、文本 | `move` / `continuous` | 瞬时；倒计时分段 |
 | 手势 | 拖拽跟手、松手归位、快甩、越界回弹 | `translate`、`scale`（`scale-drag`） | 跟手无过渡；松手用弹簧并交接松手速度（§9.11）：归位与快甩 `smooth`、越界回弹 `stiff` | 瞬时归位 |
 | 循环 | 转圈、微光、脉冲、光标、不定进度、呼吸（§9.12） | `rotate`、`background-position`、`opacity`、`translate`；呼吸只动 `opacity`、`scale` | 循环时长 / `loop`；呼吸 `loop-breathe` / `breathe` | 停止并显示静态替代 |
 | 注意 | 抖动、脉冲强调 | — | 只在 `@xihan-ui/animations` 中使用：`attention`，摆幅以 `--xh-motion-distance-md` 为准 | 不播放 |
-| 数据 | 图表入场、更新、退出（§9.10） | 几何参数、`scale`、`stroke-dashoffset`、`opacity` | `move` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
+| 数据 | 图表入场、更新、退出（§9.10） | 几何参数、`scale`、`stroke-dashoffset`、`opacity` | 入场 `reveal` / `enter-strong`，描线 `reveal` / `continuous`；更新与删除 `morph` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
 | 氛围 | 动态背景、跑马灯 | 着色器时间轴、`translate` | 由速度决定 | 冻结或停止 |
 
 表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`；弹簧名是 `@xihan-ui/motion` 的预设，由令牌生成。
 
 - 带位移、缩放、旋转或尺寸变化的动画不得使用 `micro`、`enter`、`exit` 三支时长：这三支在减弱动效下保留为淡变（§14.4）。
+- 屏内换位与尺寸变化（占位式侧栏折叠、分栏折叠、标签带滚动、指示器滑移）归指示 / 列表的 `move`，不归导航；导航只管整幅位移。
+- 焦点环（`outline` 与字段外壳的环）即时出现、即时撤下，不进过渡：键盘用户要焦点当场落位；字段的描边与底色换色照常 `micro` 淡变。
 - `move` 与 `nudge` 的分界：跨位置的换位与尺寸变化（指示器滑移、进度增长、堆叠重排、视口长高）取 `move`（200ms）；原地的小幅几何变化（滑块、勾选标记、展开箭头、拇指缩放）与跟手的拖拽让位、查看器缩放平移取 `nudge`（120ms）。
 - 例外：进出场（出现、列表加入与移除、整幅滑出）用 `enter` / `exit` 与对应曲线，关键帧与过渡同一条，前提是其中的位移与缩放只取 `--xh-motion-distance-*`、`--xh-motion-scale-*`、`--xh-motion-travel`：减弱动效下归零，剩下的只有淡变。整幅滑入仍走 `slide`。
 
@@ -729,6 +731,9 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 遮罩与全屏面 `xh-fade-in / out`。皮肤内不得重定义共享关键帧。
 
+- Toast 与 Notification 从视口边缘推入属出现，不属整幅滑入：位移以卡片自身高度计、只在堆叠边缘出入，卡片小、距离短，取 `enter` / `exit`；`slide` 只给以视口尺度移动的面（抽屉、覆盖式侧栏、走马灯翻页）。
+- 日历翻月、年月视图切换瞬时，不做方向动画：日期格是查阅对象，横移途中读格会读错；方向由标题里的年月文字交代。
+
 - 进场必有退场：凡有进场关键帧的部件必须有对应退场；退场一律经 Presence 等待动画结束再卸载，不用固定计时器。
 - 分层：遮罩与面板同时开始、同时退场，在最长的那个结束后卸载；面板内列表的错开从面板进场开始计时。
 - 打断：退场中途重新打开时取消退场，从当前透明度继续进场，不先跳回不可见。
@@ -736,7 +741,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 ### 9.6 列表
 
-- 加入用 `xh-item-in`，移除用 `xh-fade-out`，都经 Presence。重排用 FLIP：读取旧位置、写入新布局、以 `translate` 反向补偿后过渡到 0，`--xh-motion-duration-move` + `--xh-motion-ease-continuous`。
+- 加入用 `xh-item-in`（竖向上浮），移除用 `xh-fade-out`，都经 Presence。行内横排的胶囊集合（TagsInput、TagGroup、Select 标签行）加入用 `xh-pop-in`：竖向上浮与它们的来源方向不符，还会探出字段外壳的底边。重排用 FLIP：读取旧位置、写入新布局、以 `translate` 反向补偿后过渡到 0，`--xh-motion-duration-move` + `--xh-motion-ease-continuous`。
 - 条目由作者渲染、删掉即卸载的集合，离场由列表动效在原位置放一个退场态的替身：绝对定位在原排布位、`inert`、摘掉 id 与表单名，播完即移除。作者的列表写法不为退场改变。
 - 错开步长 `--xh-motion-stagger-step`，只对同一批到达的条目按到达顺序计数，最多 5 步；不按 DOM 位置（`nth-child`）计数。
 - 首帧规则：初始渲染时已存在的内容（默认展开的披露、默认打开的浮层、历史消息、初始列表）直接呈现，只有用户操作或新数据导致的出现才播进场。headless 以共享状态属性 `data-instant` 标记这类内容，皮肤的进场写在 `:not([data-instant])` 下。
@@ -771,14 +776,16 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 | 场景 | 做法 | 时长 / 缓动 |
 | --- | --- | --- |
-| 柱入场 | `scale` 沿值轴从 0 到 1，原点在基线 | `move` / `enter-strong` |
-| 折线描出 | 共享关键帧 `xh-draw`（`pathLength="1"` + `stroke-dashoffset`） | `move` / `continuous` |
-| 扇区展开、数据更新、图例切换 | JS 参数插值（按几何参数插值，不按路径字符串插值），坐标轴刻度同步插值 | `move` / `continuous` |
+| 柱入场 | `scale` 沿值轴从 0 到 1，原点在基线 | `reveal` / `enter-strong` |
+| 折线描出 | 共享关键帧 `xh-draw`（`pathLength="1"` + `stroke-dashoffset`） | `reveal` / `continuous` |
+| 扇区扫开 | 饼图与旭日图同一手势：扇区收在整圈的起始角上，起止角一起按比例放开 | `reveal` / `enter-strong` |
+| 数据更新、图例切换 | JS 参数插值（按几何参数插值，不按路径字符串插值），坐标轴刻度同步插值 | `morph` / `continuous` |
 | 点、标签淡入 | 淡入 | `enter` / `enter` |
-| 条目删除 | 收回基线并淡出后移除 | `exit` / `exit` |
+| 条目删除 | 收回基线并淡出后移除，与邻居的重排同一段 | `morph` / `continuous` |
+| 缩放换窗 | 一步到位的换窗（键盘缩放、滚轮一格、点缩放条、命令式）从当前帧补间到新窗口；拖动平移、捏合与触控板连续滑动跟手 | `move` / `continuous` |
 | 悬停、聚焦 | 不改几何，只换状态属性 | `micro` / `enter` |
 
-- 错开按系列，最多 5 步；同一系列内的点不错开。
+- 错开按系列（直角坐标图与雷达图的多系列同一规则），最多 5 步；同一系列内的点不错开。
 - 首次挂载播放入场；重取数据后的变化按「更新」处理，不再次播放入场。
 - 十字准线与提示框跟随指针时不做位置过渡。
 

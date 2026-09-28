@@ -13,18 +13,21 @@
 | 披露 | 内容展开收起 | `grid-template-rows` | `expand` / `enter-strong`；`collapse` / `exit` | 瞬时 |
 | 出现 | 挂载与卸载 | `opacity`、小幅 `translate` / `scale` | `enter` / `enter` 或 `enter-strong`；`exit` / `exit` | 淡变 |
 | 列表 | 加入、移除、重排、错开 | 同出现；重排用 `translate` | 同出现；重排 `move` / `continuous` | 淡变，无错开 |
-| 导航 | 抽屉、侧栏、走马灯、标签带滚动、平滑滚动 | `translate`、滚动位置 | 进 `slide` / `slide`；出 `exit` / `exit` | 抽屉类淡变，其余瞬时 |
+| 导航 | 整幅位移：抽屉、覆盖式侧栏、走马灯翻页、平滑滚动 | `translate`、滚动位置 | 进 `slide` / `slide`；出 `exit` / `exit` | 抽屉类淡变，其余瞬时 |
 | 数值 | 进度、计数、倒计时 | `translate`、`clip-path`、文本 | `move` / `continuous` | 瞬时；倒计时按秒分段 |
 | 手势 | 拖拽跟手、松手归位、快甩、越界回弹 | `translate`、`scale` | 跟手无过渡；松手用弹簧并交接松手速度 | 瞬时归位 |
 | 循环 | 转圈、微光、光标、不定进度、呼吸 | `rotate`、`background-position`、`opacity`、`translate` | 循环周期 / `loop` | 停止并显示静态替代 |
 | 注意 | 抖动、脉冲强调 | — | 只在 [`@xihan-ui/animations`](/guide/animations) 中使用：`attention` | 不播放 |
-| 数据 | 图表入场、更新、退出 | 几何参数、`stroke-dashoffset`、`opacity` | 入场 `reveal` / `enter-strong`，描线 `reveal` / `continuous`；更新 `morph` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
+| 数据 | 图表入场、更新、退出 | 几何参数、`stroke-dashoffset`、`opacity` | 入场 `reveal` / `enter-strong`，描线 `reveal` / `continuous`；更新与删除 `morph` / `continuous`；缩放换窗 `move` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
 | 氛围 | 动态背景、跑马灯 | 着色器时间轴、`translate` | 由速度决定 | 冻结或停止 |
 
 表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`。
 
 - 带位移、缩放、旋转或尺寸变化的动画不用 `micro`、`enter`、`exit` 三支时长：这三支在减弱动效下保留为淡变。例外是进出场（出现、列表加入与移除、整幅滑出）：其中的位移与缩放只取幅度令牌，减弱动效下归零，剩下的只有淡变，所以照常取 `enter` / `exit`。
 - `move` 与 `nudge` 的分界：跨位置的换位与尺寸变化（指示器滑移、进度增长、堆叠重排、视口长高）取 `move`；原地的小幅几何变化（滑块、勾选标记、展开箭头、拇指缩放）与跟手的让位、查看器缩放平移取 `nudge`。
+- 屏内换位与尺寸变化（占位式侧栏折叠、分栏折叠、标签带滚动）归 `move`，不归导航：导航只管以视口尺度移动的整幅位移。Toast 与通知从边缘推入是出现，取 `enter` / `exit`。
+- 焦点环即时出现、即时撤下，不淡入：键盘用户要焦点当场落位；字段的描边与底色换色照常淡变。
+- 日历翻月与视图切换瞬时，不做方向动画：横移途中读格会读错，方向由标题的年月交代。
 
 ## 令牌
 

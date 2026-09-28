@@ -284,11 +284,11 @@ export function compileFieldChromeRecipe(source) {
     `    color: ${stateValue(source, 'rest', 'color')};`,
     `    box-shadow: ${stateValue(source, 'rest', 'shadow')};`,
     `    cursor: ${stateValue(source, 'rest', 'cursor')};`,
+    // 焦点环即时出现与撤下（键盘用户要焦点当场落位），不进过渡；底色、描边与阴影照常淡变
     '    transition:',
     `      background-color ${source.motion.duration} ${source.motion.easing},`,
     `      border-color ${source.motion.duration} ${source.motion.easing},`,
-    `      box-shadow ${source.motion.duration} ${source.motion.easing},`,
-    `      outline-color ${source.motion.duration} ${source.motion.easing};`,
+    `      box-shadow ${source.motion.duration} ${source.motion.easing};`,
   ].join('\n'))
 
   // 三档都输出（含 outline），显式 data-variant='outline' 与缺省基础规则同值。
