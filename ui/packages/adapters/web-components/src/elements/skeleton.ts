@@ -5,11 +5,10 @@
 
 // 提供 skeleton 相关实现。
 
-import type { SkeletonAnimation, SkeletonSchema, SkeletonShape } from '@xihan-ui/headless'
-import { connectSkeleton, skeletonAnatomy, skeletonMachine, skeletonMeta } from '@xihan-ui/headless'
+import type { SkeletonAnimation, SkeletonProps, SkeletonShape } from '@xihan-ui/headless'
+import { connectSkeleton, skeletonAnatomy, skeletonMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -25,7 +24,7 @@ function itemShape(el: HTMLElement): SkeletonShape | undefined {
 }
 
 /**
- * `<xh-skeleton>`：骨架屏宿主，把 connectSkeleton 产出的属性接到角色节点上；刚加载完的骨架淡出播完才收起。
+ * `<xh-skeleton>`：骨架屏宿主，无状态机，把 connectSkeleton 产出的属性接到角色节点上。
  *
  * 骨架条声明形状：在 item 节点上写 `shape`。运行期改写该属性不触发重新接线，
  * 需作者自行 requestUpdate。
@@ -51,14 +50,9 @@ export class XhSkeletonElement extends XhElement {
   declare shape?: SkeletonShape
   declare animation?: SkeletonAnimation
 
-  private readonly ctrl = new MachineController<SkeletonSchema>(
-    this,
-    skeletonMachine,
-    () => ({ loading: this.loading, shape: this.shape, animation: this.animation }),
-  )
-
   protected wire(): void {
-    const api = connectSkeleton(this.ctrl.service, wcNormalize)
+    const props: SkeletonProps = { loading: this.loading, shape: this.shape, animation: this.animation }
+    const api = connectSkeleton(props, wcNormalize)
 
     const root = this.getPart('root')
     if (root)

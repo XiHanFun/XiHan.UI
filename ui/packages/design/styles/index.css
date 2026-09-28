@@ -15509,13 +15509,6 @@
     display: none;
   }
 
-  /* 刚加载完：机器已把骨架原地抬出文档流、钉住原来的尺寸，真实内容补上它空出来的位置；
-     骨架盖在内容之上淡出，播完才收起，不挡内容的指针。挂载时就已加载完的直接收起，不播这一段 */
-  [data-scope='skeleton'][data-part='root'][data-state='loaded']:not([hidden]) {
-    pointer-events: none;
-    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-  }
-
   /*
    * 单根骨架条。底色与微光两层叠在一起：
    * background-color 是静止时看到的那层，background-image 是扫过去的那道光。

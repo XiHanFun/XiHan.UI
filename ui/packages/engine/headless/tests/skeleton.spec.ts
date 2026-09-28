@@ -1,31 +1,13 @@
 // @vitest-environment jsdom
 import type { SkeletonProps } from '../src/skeleton'
-import { createService, normalizeProps } from '@xihan-ui/core'
-import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
+import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
-import { connectSkeleton, skeletonAnatomy, skeletonMachine, skeletonMeta } from '../src/skeleton'
+import { connectSkeleton, skeletonAnatomy, skeletonMeta } from '../src/skeleton'
 
 type Props = Record<string, unknown>
 
-function make(initial: SkeletonProps = {}) {
-  const runtime = createVanillaRuntime()
-  const props = runtime.signal<SkeletonProps>(initial)
-  const service = createService(skeletonMachine, { props: () => props.get(), runtime })
-  runtime.start()
-  return {
-    setProps: (next: SkeletonProps) => props.set({ ...props.get(), ...next }),
-    api: () => connectSkeleton(service, normalizeProps),
-  }
-}
-
 function api(props: SkeletonProps = {}) {
-  return make(props).api()
-}
-
-/** 等 flush：宿主提交之后的回调排在微任务里。 */
-async function settle(): Promise<void> {
-  for (let i = 0; i < 4; i++)
-    await Promise.resolve()
+  return connectSkeleton(props, normalizeProps)
 }
 
 describe('connectSkeleton', () => {
@@ -55,7 +37,7 @@ describe('connectSkeleton', () => {
     expect((api().getRootProps() as Props).hidden).toBeUndefined()
   })
 
-  it('挂载时就已加载完：忙态与装饰标记都不再输出，整块骨架首帧直接收起', () => {
+  it('loading 为假：忙态与隐藏都不再输出，整块骨架收起', () => {
     const a = api({ loading: false })
     expect(a.loading).toBe(false)
     const root = a.getRootProps() as Props
@@ -66,20 +48,6 @@ describe('connectSkeleton', () => {
     expect(root.hidden).toBe(true)
     // 没有需要藏起来的装饰了
     expect((a.getItemProps() as Props)['aria-hidden']).toBeUndefined()
-  })
-
-  it('刚加载完：没有可等的淡出（没有渲染宿主）时当场收起；又开始加载即刻露面', async () => {
-    const s = make()
-    s.setProps({ loading: false })
-    await settle()
-    const root = s.api().getRootProps() as Props
-    expect(root['aria-busy']).toBeUndefined()
-    expect(root['data-state']).toBe('loaded')
-    expect(root.hidden).toBe(true)
-
-    s.setProps({ loading: true })
-    expect((s.api().getRootProps() as Props).hidden).toBeUndefined()
-    expect((s.api().getItemProps() as Props)['aria-hidden']).toBe(true)
   })
 
   it('形状缺省为 text，容器上的 shape 是每根骨架条的默认值', () => {

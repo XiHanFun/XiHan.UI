@@ -8,6 +8,5 @@
 export { skeletonAnatomy } from './skeleton.anatomy'
 export { connectSkeleton } from './skeleton.connect'
 export { skeletonKeyboard } from './skeleton.keyboard'
-export { skeletonMachine } from './skeleton.machine'
 export { skeletonMeta } from './skeleton.meta'
-export type { SkeletonAnimation, SkeletonApi, SkeletonItemProps, SkeletonProps, SkeletonSchema, SkeletonShape, SkeletonTranslations } from './skeleton.types'
+export type { SkeletonAnimation, SkeletonApi, SkeletonItemProps, SkeletonProps, SkeletonShape, SkeletonTranslations } from './skeleton.types'
