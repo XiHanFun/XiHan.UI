@@ -16,6 +16,11 @@ import type { MultiPointerSession } from '@xihan-ui/pointer'
  */
 export type CarouselPauseSource = 'pointer' | 'focus' | 'api' | 'visibility'
 
+/**
+ * 换页的方式：slide 整条轨道沿轴平移；fade 条目叠放在视口的同一格里，新一页淡入、旧一页同时淡出，轨道不动。
+ */
+export type CarouselEffect = 'slide' | 'fade'
+
 export interface CarouselPageChangeDetails {
   /** 变化后的页码，0 基，恒在 [0, totalPages - 1] 内。 */
   page: number
@@ -100,6 +105,12 @@ export interface CarouselSchema extends MachineSchema {
     allowPointerDrag?: boolean
     /** 张与张之间的间距，任意 CSS 长度（如 '12px'）。落为条目自身的内边距，不影响位移计算。 */
     spacing?: string
+    /**
+     * 换页方式，默认 slide（轨道平移）。fade 时条目叠放、新一页淡入旧一页淡出，与平移同一段时长与曲线，
+     * 减弱动效下直接换；loop 回绕也只是一次淡变。拖拽仍按方向与速度决定翻不翻页，画面不跟手位移。
+     * fade 一页只放一张：slidesPerPage 大于 1 时报错。
+     */
+    effect?: CarouselEffect
     translations?: Partial<CarouselTranslations>
     /** 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onPageChange?: (details: CarouselPageChangeDetails) => void

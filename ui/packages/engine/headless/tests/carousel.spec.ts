@@ -1357,3 +1357,41 @@ describe('carouselMachine 无缝回绕', () => {
     plain.stop()
   })
 })
+
+describe('carousel 淡变换页', () => {
+  it('缺省按轨道平移；effect=fade 投影在 list 上，轨道不写页位移', () => {
+    expect((makeCarousel({ ...SIX, defaultPage: 2 }).api().getListProps() as Dict)['data-effect']).toBe('slide')
+    const list = makeCarousel({ ...SIX, effect: 'fade', defaultPage: 2 }).api().getListProps() as Dict
+    expect(list['data-effect']).toBe('fade')
+    // 写空串摘掉内联声明：从 slide 换过来时残留的页位移一并撤下
+    expect(list.style).toEqual({ translate: '' })
+  })
+
+  it('一页放不止一张时报错，不静默退回平移', () => {
+    const c = makeCarousel({ slideCount: 6, slidesPerPage: 2, effect: 'fade' })
+    expect(() => c.api()).toThrow(RangeError)
+    c.stop()
+  })
+
+  it('loop 下从末页翻回首页只是一次淡变：不走回绕的虚拟页，条目不平移', () => {
+    const c = makeCarousel({ slideCount: 3, loop: true, defaultPage: 2, effect: 'fade' })
+    c.service.send({ type: 'PAGE.NEXT' })
+    expect(c.service.context.get('page')).toBe(0)
+    expect(c.service.context.get('wrap')).toBeNull()
+    expect('translate' in ((c.api().getItemProps({ index: 0 }) as Dict).style as Dict)).toBe(false)
+    c.stop()
+  })
+
+  it('拖拽只按方向决定翻页：画面不跟手位移，松手后也没有落定的弹簧', () => {
+    const c = makeCarousel({ ...SIX, allowPointerDrag: true, effect: 'fade' })
+    pressViewport(c, 300)
+    movePointer(240)
+    expect(c.api().dragging).toBe(true)
+    expect((c.api().getListProps() as Dict).style).toEqual({ translate: '' })
+    releasePointer()
+    expect(c.api().page).toBe(1)
+    expect(c.service.context.get('settling')).toBe(false)
+    expect((c.api().getListProps() as Dict)['data-animating']).toBeUndefined()
+    c.stop()
+  })
+})

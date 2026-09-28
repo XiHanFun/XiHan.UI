@@ -180,7 +180,8 @@ export const carouselSuite: ConformanceSuite = {
             'aria-atomic': 'false',
             'data-orientation': 'horizontal',
           },
-          'list': { 'data-orientation': 'horizontal', 'data-dragging': null },
+          // 换页方式缺省是轨道平移，默认值只在 connect 里定
+          'list': { 'data-orientation': 'horizontal', 'data-dragging': null, 'data-effect': 'slide' },
           'item[0]': {
             'role': 'group',
             'aria-roledescription': 'slide',
@@ -472,6 +473,28 @@ export const carouselSuite: ConformanceSuite = {
           part: 'next-trigger',
           expect: { parts: { 'item[0]': { 'data-inview': '' }, 'indicator[0]': { 'aria-current': 'true' } } },
         },
+      ],
+    },
+    {
+      name: 'effect=fade：轨道不写页位移；loop 下末页往后翻直接淡到首页，不走回绕的虚拟页',
+      spec: { apg: APG },
+      props: { slideCount: 4, effect: 'fade', loop: true, defaultPage: 3 },
+      initial: { parts: { list: { 'data-effect': 'fade' } } },
+      steps: [
+        expectTrack(''),
+        {
+          kind: 'click',
+          part: 'next-trigger',
+          expect: {
+            parts: {
+              'item[0]': { 'data-inview': '' },
+              'item[3]': { 'data-inview': null },
+              'list': { 'data-snapped': null },
+              'indicator[0]': { 'aria-current': 'true' },
+            },
+          },
+        },
+        expectTrack(''),
       ],
     },
     {

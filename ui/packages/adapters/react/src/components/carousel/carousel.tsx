@@ -6,7 +6,7 @@
 // 提供 carousel 相关实现。
 
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { CarouselApi, CarouselSchema, CarouselTranslations } from '@xihan-ui/headless'
+import type { CarouselApi, CarouselEffect, CarouselSchema, CarouselTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
@@ -58,6 +58,8 @@ export interface XhCarouselRootProps extends RootElementProps {
   autoplay?: boolean | number
   allowPointerDrag?: boolean
   spacing?: string
+  /** 换页方式：slide 轨道平移（缺省）；fade 条目叠放、新一页淡入旧一页淡出，一页只放一张。 */
+  effect?: CarouselEffect
   translations?: Partial<CarouselTranslations>
   onPageChange?: CarouselProps['onPageChange']
   children?: SlotChildren<CarouselRootSlotProps>
@@ -75,6 +77,7 @@ export function XhCarouselRoot({
   autoplay,
   allowPointerDrag,
   spacing,
+  effect,
   translations,
   onPageChange,
   children,
@@ -92,6 +95,7 @@ export function XhCarouselRoot({
     autoplay,
     allowPointerDrag,
     spacing,
+    effect,
     translations,
     onPageChange,
   }) as CarouselProps)

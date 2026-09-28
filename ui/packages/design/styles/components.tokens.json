@@ -7145,37 +7145,43 @@
       "name": "--xh-carousel-duration",
       "component": "carousel",
       "part": [
+        "item",
         "list"
       ],
       "property": [
-        "transition"
+        "transition",
+        "transition-duration"
       ],
       "state": [
-        "default"
+        "default",
+        "effect=fade"
       ],
       "defaultToken": [
         "--xh-motion-duration-slide"
       ],
       "visibility": "public",
-      "description": "carousel 的 list 部件 transition 覆盖槽。"
+      "description": "carousel 的 item、list 部件 transition、transition-duration 覆盖槽。"
     },
     {
       "name": "--xh-carousel-ease",
       "component": "carousel",
       "part": [
+        "item",
         "list"
       ],
       "property": [
-        "transition"
+        "transition",
+        "transition-timing-function"
       ],
       "state": [
-        "default"
+        "default",
+        "effect=fade"
       ],
       "defaultToken": [
         "--xh-motion-ease-slide"
       ],
       "visibility": "public",
-      "description": "carousel 的 list 部件 transition 覆盖槽。"
+      "description": "carousel 的 item、list 部件 transition、transition-timing-function 覆盖槽。"
     },
     {
       "name": "--xh-carousel-icon-size",

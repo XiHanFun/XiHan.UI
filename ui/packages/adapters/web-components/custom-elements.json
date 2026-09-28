@@ -5778,6 +5778,15 @@
             },
             {
               "kind": "field",
+              "name": "effect",
+              "privacy": "public",
+              "type": {
+                "text": "CarouselEffect | undefined"
+              },
+              "attribute": "effect"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -5915,6 +5924,14 @@
               "description": "张与张之间的间距（任意 CSS 长度）",
               "name": "spacing",
               "fieldName": "spacing"
+            },
+            {
+              "type": {
+                "text": "CarouselEffect | undefined"
+              },
+              "description": "换页方式，默认 slide；fade 时条目叠放、新一页淡入旧一页淡出，一页只放一张",
+              "name": "effect",
+              "fieldName": "effect"
             }
           ],
           "superclass": {

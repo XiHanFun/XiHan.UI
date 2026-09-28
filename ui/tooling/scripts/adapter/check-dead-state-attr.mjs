@@ -141,7 +141,6 @@ const HOOKS = {
   // 其余逐条
   'calendar-picker:data-focus': '漫游焦点的锚点位。看得见的聚焦环走 :focus-visible',
   'calendar-range-picker:data-focus': '漫游焦点的锚点位。看得见的聚焦环走 :focus-visible',
-  'carousel:data-inview': '这一帧在不在视口里，作者拿它做懒加载与埋点',
   'code-view:data-foldable': '折不折得动。真正裁切的是根上的 data-clamped',
   'diff-view:data-expanded': '折叠段展开后整条 gap 置 hidden，显隐由它承载',
   'diff-view:data-truncated': '整份差异被截断的标志，作者拿它决定要不要提示"还有更多"',
