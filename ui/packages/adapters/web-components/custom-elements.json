@@ -56346,6 +56346,33 @@
             },
             {
               "kind": "field",
+              "name": "inverted",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "inverted"
+            },
+            {
+              "kind": "field",
+              "name": "draggableRange",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "draggable-range"
+            },
+            {
+              "kind": "field",
+              "name": "trackFill",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "track-fill"
+            },
+            {
+              "kind": "field",
               "name": "orientation",
               "privacy": "public",
               "type": {
@@ -56679,6 +56706,30 @@
               "description": "只接受刻度落点：拖动、点击与键盘都吸附到最近 / 下一档刻度；刻度表经 marks property 赋值",
               "name": "snap-to-marks",
               "fieldName": "snapToMarks"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "反向：min 落在轨道末端（横排在行尾、竖排在顶端），方向键跟随屏幕方向",
+              "name": "inverted",
+              "fieldName": "inverted"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "多拇指时按住两端拇指之间的轨道整段平移、宽度不变；只认刻度落点时不生效",
+              "name": "draggable-range",
+              "fieldName": "draggableRange"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "画出已选区间并给落进区间的刻度上色，默认开启；写 \"false\" 关掉",
+              "name": "track-fill",
+              "fieldName": "trackFill"
             },
             {
               "type": {

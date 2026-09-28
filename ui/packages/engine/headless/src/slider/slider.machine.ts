@@ -9,7 +9,7 @@ import type { SliderPoint, SliderSchema } from './slider.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { clamp, clampIndex } from '../shared/number'
-import { closestThumb, normalizeMarkValues, pointToValue, setThumbValue, snapToMarkValues, snapToStep, stepMarkValue } from './slider.geometry'
+import { closestThumb, normalizeMarkValues, pointToValue, setThumbValue, shiftThumbValues, snapToMarkValues, snapToStep, stepMarkValue } from './slider.geometry'
 
 const { createMachine } = setup<SliderSchema>()
 
@@ -29,7 +29,7 @@ interface Bounds {
   markValues?: number[]
 }
 
-type AxisBounds = Bounds & Pick<Props, 'orientation' | 'dir'>
+type AxisBounds = Bounds & Pick<Props, 'orientation' | 'dir' | 'inverted'>
 
 /** 区间与步长的缺省收在一处。 */
 function bounds(prop: PropReader): Bounds {
@@ -46,7 +46,7 @@ function bounds(prop: PropReader): Bounds {
 
 /** 换算坐标还要知道朝向：竖直轨道与 RTL 下屏幕坐标与值是反着走的。 */
 function axis(prop: PropReader): AxisBounds {
-  return { ...bounds(prop), orientation: prop('orientation'), dir: prop('dir') }
+  return { ...bounds(prop), orientation: prop('orientation'), dir: prop('dir'), inverted: prop('inverted') }
 }
 
 /**
@@ -79,6 +79,8 @@ export const sliderMachine = createMachine({
       onChange: value => prop('onValueChange')?.({ value }),
     })),
     activeIndex: cell<number>(() => ({ defaultValue: 0 })),
+    dragMode: cell<SliderSchema['context']['dragMode']>(() => ({ defaultValue: null })),
+    rangeOrigin: cell<SliderSchema['context']['rangeOrigin']>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     getTrackEl: () => null,
@@ -107,7 +109,7 @@ export const sliderMachine = createMachine({
       on: {
         'DRAG.MOVE': { actions: ['dragThumb'] },
         // 收尾通知只在这里发一次，拖动途中 onValueChange 已连发多次
-        'DRAG.END': { target: 'idle', actions: ['invokeChangeEnd'] },
+        'DRAG.END': { target: 'idle', actions: ['invokeChangeEnd', 'clearDrag'] },
       },
     },
   },
@@ -175,9 +177,18 @@ export const sliderMachine = createMachine({
         if (target == null)
           return
         const values = context.get('value')
+        const o = bounds(prop)
+        // 按在两端拇指之间的轨道上：整段一起平移，按下这一下不动任何拇指
+        if (prop('draggableRange') && !o.markValues?.length && !e.onThumb && values.length > 1
+          && target > Math.min(...values) && target < Math.max(...values)) {
+          context.set('dragMode', 'range')
+          context.set('rangeOrigin', { pointer: target, values: [...values] })
+          return
+        }
         const index = closestThumb(values, target)
+        context.set('dragMode', 'thumb')
         context.set('activeIndex', index)
-        context.set('value', setThumbValue(values, index, target, bounds(prop)))
+        context.set('value', setThumbValue(values, index, target, o))
       },
       dragThumb: ({ context, prop, refs, event }) => {
         const e = event.current()
@@ -186,8 +197,18 @@ export const sliderMachine = createMachine({
         const target = valueAtPoint(e.point, refs.get('getTrackEl')(), axis(prop))
         if (target == null)
           return
+        const origin = context.get('rangeOrigin')
+        // 整段拖动：位移一律从按下那一刻算起，不逐帧累加；两次落点都吸在同一张网格上，差值是 step 的整数倍
+        if (origin) {
+          context.set('value', shiftThumbValues(origin.values, target - origin.pointer, bounds(prop)))
+          return
+        }
         const index = context.get('activeIndex')
         context.set('value', setThumbValue(context.get('value'), index, target, bounds(prop)))
+      },
+      clearDrag: ({ context }) => {
+        context.set('dragMode', null)
+        context.set('rangeOrigin', null)
       },
       invokeChangeEnd: ({ context, prop }) => {
         prop('onValueChangeEnd')?.({

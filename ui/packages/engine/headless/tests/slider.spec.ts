@@ -5,7 +5,7 @@ import type { SliderSchema } from '../src/slider'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { connectSlider, sliderMachine } from '../src/slider'
+import { connectSlider, displayPercent, pointToValue, shiftThumbValues, sliderMachine } from '../src/slider'
 
 type Props = SliderSchema['props']
 type Dict = Record<string, unknown>
@@ -502,5 +502,123 @@ describe('connectSlider 属性输出', () => {
     expect(a.thumbs.map(t => t.percent)).toEqual([0.25, 0.75])
     expect(a.range).toEqual({ start: 0.25, end: 0.75 })
     expect(a.value).toEqual([25, 75])
+  })
+})
+
+describe('slider 反向', () => {
+  it('指针换算对调：横排反向时左端是 max；竖排反向时顶端是 min', () => {
+    const rect = { x: 0, y: 0, width: 200, height: 200 }
+    const o = { min: 0, max: 100, step: 1 }
+    expect(pointToValue({ clientX: 0, clientY: 0 }, rect, { ...o, inverted: true })).toBe(100)
+    expect(pointToValue({ clientX: 150, clientY: 0 }, rect, { ...o, inverted: true })).toBe(25)
+    expect(pointToValue({ clientX: 0, clientY: 0 }, rect, { ...o, orientation: 'vertical', inverted: true })).toBe(0)
+    // RTL 再反向，负负得正：左端回到 min
+    expect(pointToValue({ clientX: 0, clientY: 0 }, rect, { ...o, dir: 'rtl', inverted: true })).toBe(0)
+    expect(displayPercent(0.3, true)).toBeCloseTo(0.7)
+    expect(displayPercent(0.3, false)).toBe(0.3)
+  })
+
+  it('拇指、区间与刻度都从末端量起', () => {
+    const s = makeService({ defaultValue: [30], inverted: true, marks: [{ value: 50 }] })
+    expect((thumbProps(s).style as Dict).insetInlineStart).toBe('70%')
+    expect((api(s).getRangeProps() as Dict).style).toMatchObject({ insetInlineStart: '70%', inlineSize: '30%' })
+    expect((api(s).getTickProps({ value: 50 }) as Dict).style).toMatchObject({ insetInlineStart: '50%' })
+    // 值语义不变：api.thumbs 仍按值的位置报
+    expect(api(s).thumbs[0]!.percent).toBeCloseTo(0.3)
+  })
+
+  it('方向键跟随屏幕方向：横排反向时 ArrowRight 朝 min；竖排反向时 ArrowUp 朝 min', () => {
+    const h = makeService({ defaultValue: [50], inverted: true })
+    pressKey(h, 'ArrowRight')
+    expect(h.context.get('value')).toEqual([49])
+    pressKey(h, 'ArrowLeft')
+    pressKey(h, 'ArrowLeft')
+    expect(h.context.get('value')).toEqual([51])
+    // 横排时上下键不看反向：恒是向上朝 max
+    pressKey(h, 'ArrowUp')
+    expect(h.context.get('value')).toEqual([52])
+
+    const v = makeService({ defaultValue: [50], inverted: true, orientation: 'vertical' })
+    pressKey(v, 'ArrowUp')
+    expect(v.context.get('value')).toEqual([49])
+    pressKey(v, 'ArrowDown')
+    pressKey(v, 'ArrowDown')
+    expect(v.context.get('value')).toEqual([51])
+  })
+
+  it('反向的拖动：按在左端取 max', () => {
+    const s = makeService({ defaultValue: [0], inverted: true })
+    const rig = mountRig(s)
+    rig.press(0)
+    expect(s.context.get('value')).toEqual([100])
+    document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+  })
+})
+
+describe('slider 整段拖动', () => {
+  it('shiftThumbValues：整组一起挪、宽度不变，挪到尽头就停', () => {
+    const o = { min: 0, max: 100, step: 5 }
+    expect(shiftThumbValues([20, 60], 20, o)).toEqual([40, 80])
+    expect(shiftThumbValues([20, 60], 80, o)).toEqual([60, 100])
+    expect(shiftThumbValues([20, 60], -50, o)).toEqual([0, 40])
+    expect(shiftThumbValues([0.1, 0.3], 0.2, { min: 0, max: 1, step: 0.1 })).toEqual([0.3, 0.5])
+  })
+
+  it('按在两端拇指之间的轨道上：整段一起平移，按下那一下不动；松手收尾一次', () => {
+    const ends: unknown[] = []
+    const s = makeService({ defaultValue: [20, 60], draggableRange: true, onValueChangeEnd: d => ends.push(d) })
+    const rig = mountRig(s, 2)
+    rig.press(80) // 40：落在 20 与 60 之间
+    expect(s.context.get('dragMode')).toBe('range')
+    expect(s.context.get('value')).toEqual([20, 60])
+    expect(api(s).getThumbProps(0)).toMatchObject({ 'data-dragging': '' })
+    expect(api(s).getThumbProps(1)).toMatchObject({ 'data-dragging': '' })
+
+    document.dispatchEvent(new PointerEvent('pointermove', { clientX: 120, clientY: 5, bubbles: true }))
+    expect(s.context.get('value')).toEqual([40, 80])
+    document.dispatchEvent(new PointerEvent('pointermove', { clientX: 200, clientY: 5, bubbles: true }))
+    expect(s.context.get('value')).toEqual([60, 100])
+    document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+    expect(s.context.get('dragMode')).toBeNull()
+    expect(ends).toHaveLength(1)
+  })
+
+  it('按在拇指上仍只推那一个；落在区间外照旧跳最近的拇指', () => {
+    const s = makeService({ defaultValue: [20, 60], draggableRange: true })
+    const rig = mountRig(s, 2)
+    rig.thumbs[1]!.dispatchEvent(new PointerEvent('pointerdown', { clientX: 80, clientY: 5, button: 0, bubbles: true, cancelable: true }))
+    expect(s.context.get('dragMode')).toBe('thumb')
+    expect(s.context.get('value')).toEqual([20, 40])
+    document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+
+    rig.press(180) // 90：在区间外
+    expect(s.context.get('dragMode')).toBe('thumb')
+    expect(s.context.get('value')).toEqual([20, 90])
+    document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+  })
+
+  it('不开 draggableRange、单拇指或只认刻度落点时都不做整段拖动；range 部件据此报 data-draggable', () => {
+    const off = makeService({ defaultValue: [20, 60] })
+    const rig = mountRig(off, 2)
+    rig.press(80)
+    expect(off.context.get('dragMode')).toBe('thumb')
+    document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+    expect(api(off).getRangeProps()).toMatchObject({ 'data-draggable': undefined })
+
+    const on = makeService({ defaultValue: [20, 60], draggableRange: true })
+    expect(api(on).getRangeProps()).toMatchObject({ 'data-draggable': '' })
+    const marks = makeService({ defaultValue: [20, 60], draggableRange: true, snapToMarks: true, marks: [{ value: 20 }, { value: 60 }] })
+    expect(api(marks).getRangeProps()).toMatchObject({ 'data-draggable': undefined })
+  })
+})
+
+describe('slider 不填充轨道', () => {
+  it('trackFill 关掉后 range 部件收起，刻度不再按区间上色', () => {
+    const s = makeService({ defaultValue: [60], trackFill: false, marks: [{ value: 20 }] })
+    expect(api(s).getRangeProps()).toMatchObject({ hidden: true })
+    expect(api(s).getTickProps({ value: 20 })).toMatchObject({ 'data-passed': undefined })
+    const on = makeService({ defaultValue: [60], marks: [{ value: 20 }] })
+    expect(api(on).getRangeProps()).toMatchObject({ hidden: undefined })
+    expect(api(on).getTickProps({ value: 20 })).toMatchObject({ 'data-passed': '' })
   })
 })

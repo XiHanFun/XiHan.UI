@@ -53,6 +53,9 @@ const NUMBER_LIST_CONVERTER = {
  * @attr {number} large-step - PageUp / PageDown 的步长，默认 10 倍 step
  * @attr {number} min-steps-between-thumbs - 相邻滑块至少相隔的格数，默认 0
  * @attr {boolean} snap-to-marks - 只接受刻度落点：拖动、点击与键盘都吸附到最近 / 下一档刻度；刻度表经 marks property 赋值
+ * @attr {boolean} inverted - 反向：min 落在轨道末端（横排在行尾、竖排在顶端），方向键跟随屏幕方向
+ * @attr {boolean} draggable-range - 多拇指时按住两端拇指之间的轨道整段平移、宽度不变；只认刻度落点时不生效
+ * @attr {boolean} track-fill - 画出已选区间并给落进区间的刻度上色，默认开启；写 "false" 关掉
  * @attr {'horizontal'|'vertical'} orientation - 轨道朝向，默认 horizontal
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写水平轨道上左右两键与指针的语义，默认 ltr
  * @attr {boolean} disabled - 禁用：拇指退出 Tab 序列、不可推动、不参与表单提交
@@ -90,6 +93,9 @@ export class XhSliderElement extends XhElement {
     largeStep: { converter: NUMBER_CONVERTER, attribute: 'large-step' },
     minStepsBetweenThumbs: { converter: NUMBER_CONVERTER, attribute: 'min-steps-between-thumbs' },
     snapToMarks: { converter: BOOLEAN_CONVERTER, attribute: 'snap-to-marks' },
+    inverted: { converter: BOOLEAN_CONVERTER },
+    draggableRange: { converter: BOOLEAN_CONVERTER, attribute: 'draggable-range' },
+    trackFill: { converter: BOOLEAN_CONVERTER, attribute: 'track-fill' },
     marks: { attribute: false },
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -113,6 +119,9 @@ export class XhSliderElement extends XhElement {
   /** 刻度表；数组无法表达为属性，只作为 property 暴露。 */
   declare marks?: SliderSchema['props']['marks']
   declare snapToMarks?: boolean
+  declare inverted?: boolean
+  declare draggableRange?: boolean
+  declare trackFill?: boolean
   declare orientation?: Orientation
   declare direction?: Direction
   declare disabled?: boolean
@@ -165,6 +174,9 @@ export class XhSliderElement extends XhElement {
       minStepsBetweenThumbs: this.minStepsBetweenThumbs,
       marks: this.marks,
       snapToMarks: this.snapToMarks,
+      inverted: this.inverted,
+      draggableRange: this.draggableRange,
+      trackFill: this.trackFill,
       orientation: this.orientation,
       dir: this.direction,
       disabled: control.disabled,

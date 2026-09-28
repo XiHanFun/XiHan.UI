@@ -13,7 +13,7 @@ export const sliderKeyboard: KeyboardTable = {
   component: 'slider',
   source: APG,
   rows: [
-    { id: 'slider.kbd.increment', keys: ['ArrowRight', 'ArrowUp'], when: 'focus in thumb, not disabled/readOnly', does: '按 step 增大；RTL 与竖直排布下按屏幕方向对调，语义恒是"朝 max 走一格"' },
+    { id: 'slider.kbd.increment', keys: ['ArrowRight', 'ArrowUp'], when: 'focus in thumb, not disabled/readOnly', does: '按 step 增大；方向跟随屏幕：RTL 对调左右两键，inverted 再对调一次（竖直轨道 inverted 时 ArrowUp 朝 min）' },
     { id: 'slider.kbd.decrement', keys: ['ArrowLeft', 'ArrowDown'], when: 'focus in thumb, not disabled/readOnly', does: '按 step 减小，同上对调规则' },
     { id: 'slider.kbd.large-increment', keys: ['PageUp'], when: 'focus in thumb, not disabled/readOnly', does: '按 largeStep 增大（默认 10 倍 step）' },
     { id: 'slider.kbd.large-decrement', keys: ['PageDown'], when: 'focus in thumb, not disabled/readOnly', does: '按 largeStep 减小' },

@@ -208,6 +208,41 @@ export const sliderSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '反向：拇指从末端量起，方向键跟随屏幕方向（横排 ArrowRight 朝 min）',
+      spec: { apg: APG_KBD },
+      props: { defaultValue: [50], inverted: true },
+      steps: [
+        { kind: 'focus', part: 'thumb' },
+        { kind: 'key', key: 'ArrowRight', expect: { parts: { thumb: { 'aria-valuenow': '49' } } } },
+        { kind: 'key', key: 'ArrowLeft', expect: { parts: { thumb: { 'aria-valuenow': '50' } } } },
+        {
+          kind: 'raw',
+          why: '拇指的落点是内联样式，归一化快照不采集 style',
+          run: ({ doc }) => {
+            const start = findPart(doc, 'thumb').style.insetInlineStart
+            if (start !== '50%')
+              throw new Error(`值 50 反向后仍落在 50%，实际是 ${start}`)
+          },
+        },
+        {
+          kind: 'raw',
+          why: '按下轨道左端：反向后左端是 max',
+          run: ({ doc }) => {
+            layoutTrack(doc)
+            pressControl(doc, 0)
+            releasePointer(doc)
+          },
+          expect: { parts: { thumb: { 'aria-valuenow': '100' } } },
+        },
+      ],
+    },
+    {
+      name: '不填充：trackFill 关掉后 range 部件收起',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { defaultValue: [40], trackFill: false },
+      initial: { parts: { range: { hidden: '' } } },
+    },
+    {
       name: '竖直轨道：aria-orientation 跟着换，屏幕向上仍是朝 max',
       spec: { apg: `${APG}#roles_states_properties` },
       props: { defaultValue: [50], orientation: 'vertical' },
@@ -390,6 +425,35 @@ export const sliderSuite: ConformanceSuite = {
           kind: 'raw',
           why: '两份表单影子同名 append，值只落 DOM property',
           run: ({ doc }) => assertHiddenInputs(doc, [['price', '0', false], ['price', '80', false]]),
+        },
+      ],
+    },
+    {
+      name: '整段拖动：按在两端拇指之间往右拖，两端一起走、间距不变；按在区间外照旧抓最近的拇指',
+      spec: { apg: APG_MULTI },
+      fixture: twoThumbs,
+      props: { defaultValue: [20, 60], draggableRange: true },
+      initial: { parts: { range: { 'data-draggable': '' } } },
+      steps: [
+        {
+          kind: 'raw',
+          why: '整段拖动要真实坐标：按下落在 40（两端之间），再往右挪 40px',
+          run: ({ doc }) => {
+            layoutTrack(doc)
+            pressControl(doc, 80)
+            movePointer(doc, 120)
+            releasePointer(doc)
+          },
+          expect: { parts: { thumb: [{ 'aria-valuenow': '40' }, { 'aria-valuenow': '80' }] } },
+        },
+        {
+          kind: 'raw',
+          why: '落点在区间外：抓最近的那个拇指',
+          run: ({ doc }) => {
+            pressControl(doc, 10) // 落在 5，离 40 更近
+            releasePointer(doc)
+          },
+          expect: { parts: { thumb: [{ 'aria-valuenow': '5' }, { 'aria-valuenow': '80' }] } },
         },
       ],
     },
