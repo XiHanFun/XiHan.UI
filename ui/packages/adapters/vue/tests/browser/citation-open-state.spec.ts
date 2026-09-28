@@ -1,5 +1,6 @@
 // 引用编号展开预览时的「打开中」面：与悬停同档的中性面，不用品牌淡底（品牌淡底只表达选中 / 当前）；
 // 禁用时前景降级，不只靠透明度。
+import type { CitationSource } from '@xihan-ui/headless'
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
@@ -18,7 +19,7 @@ afterEach(() => {
   host = null
 })
 
-const sources = [{ type: 'source-url', sourceId: 'report', title: '报告', url: 'https://example.com/report' }] as const
+const sources: CitationSource[] = [{ type: 'source-url', sourceId: 'report', title: '报告', url: 'https://example.com/report' }]
 
 async function mount(disabled = false): Promise<HTMLElement> {
   host = document.createElement('div')

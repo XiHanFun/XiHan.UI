@@ -175,7 +175,9 @@ describe('缩放', () => {
     host.style.setProperty('--xh-motion-duration-enter', '1ms')
     host.style.setProperty('--xh-motion-duration-move', '400ms')
     document.body.append(host)
-    app = createApp({ render: () => h(XhCartesianChartRoot, { ...BARS, defaultWindow: { x: ['一月', '六月'] } }, { caption: () => '缩放' }) })
+    const given: Record<string, unknown> = { ...BARS, defaultWindow: { x: ['一月', '六月'] } }
+    const props = reactive(given)
+    app = createApp({ render: () => h(XhCartesianChartRoot, props, { caption: () => '缩放' }) })
     app.mount(host)
     await settle()
     await new Promise(resolve => setTimeout(resolve, 100))
