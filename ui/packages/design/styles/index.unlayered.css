@@ -25007,9 +25007,10 @@
   user-select: none;
 }
 
-/* 检索串换掉一批结果时，新露面的条目自上而下逐条冒出来，同一批按到达顺序错开（序号封顶，命令再多也
+/* 新插进列表的命令（宿主追加、异步取回的一批）自上而下逐条冒出来，同一批按到达顺序错开（序号封顶，命令再多也
    不会拖出一条越来越慢的尾巴）。打开时已有的结果直接呈现：自己或本列表带 data-instant。
-   筛掉的条目带 hidden 不生成盒子，重新露面算新到。backwards 让每条在自己那份延迟里保持起始帧 */
+   检索过滤筛掉的条目带 hidden 不生成盒子，重新露面只是换一批已有结果，机器给它打上 data-instant 直接呈现。
+   backwards 让每条在自己那份延迟里保持起始帧 */
 [data-scope='command'][data-part='list'] [data-part='item']:not([data-instant], [data-scope='command'][data-part='list'][data-instant] *) {
   animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));

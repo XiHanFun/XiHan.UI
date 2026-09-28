@@ -141,7 +141,7 @@ it('暂时移除 List 时清掉旧隐藏镜像，未挂载候选恢复纯数据�
   expect(f.api().highlightedValue).toBe('first')
 })
 
-it('条目到达：打开时已有的结果带 data-instant、list 撤掉标记；筛掉又露面的一批按到达顺序排号；收起再开重新等接上', async () => {
+it('条目到达：打开时已有的结果带 data-instant、list 撤掉标记；筛掉又露面的只是换显隐、直接呈现；收起再开重新等接上', async () => {
   const f = await fixture()
   expect(f.api().getListProps()['data-instant']).toBeUndefined()
   const items = [...f.list.querySelectorAll<HTMLElement>('[data-part="item"]')]
@@ -152,8 +152,9 @@ it('条目到达：打开时已有的结果带 data-instant、list 撤掉标记�
   await new Promise(resolve => setTimeout(resolve, 0))
   for (const item of items) item.hidden = false
   await new Promise(resolve => setTimeout(resolve, 0))
-  expect(items.map(item => item.hasAttribute('data-instant'))).toEqual([false, false])
-  expect(items.map(item => item.style.getPropertyValue('--xh-_stagger-index'))).toEqual(['0', '1'])
+  // 检索过滤换一批已有结果不算到达：露出来的仍带首帧标记，不排错开序号
+  expect(items.map(item => item.hasAttribute('data-instant'))).toEqual([true, true])
+  expect(items.map(item => item.style.getPropertyValue('--xh-_stagger-index'))).toEqual(['', ''])
 
   f.api().setOpen(false)
   f.api().setOpen(true)

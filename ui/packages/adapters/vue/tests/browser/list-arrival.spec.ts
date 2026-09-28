@@ -110,7 +110,7 @@ describe('历史消息里的卡片', () => {
 })
 
 describe('command 条目到达', () => {
-  it('打开时已有的结果不逐条入场；筛掉又露面的一批按到达顺序错开，一直露着的不重播', async () => {
+  it('打开时已有的结果不逐条入场；检索过滤筛掉又露面的只是换一批已有结果，直接呈现，不重播', async () => {
     const host = document.createElement('div')
     document.body.append(host)
     const values = ['a', 'b', 'c', 'd', 'e', 'f']
@@ -132,8 +132,28 @@ describe('command 条目到达', () => {
     await settle()
     hidden.value = []
     await nextTick()
-    expect(running(item('e'))).toEqual(['xh-rise-in'])
-    expect([staggerSteps(item('e')), staggerSteps(item('f'))]).toEqual([0, 1])
+    expect([running(item('e')), running(item('f')), running(item('a'))]).toEqual([[], [], []])
+  })
+
+  it('新插进列表的命令才是新到：一批按到达顺序上浮错开', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const values = ref(['a', 'b'])
+    app = createApp({
+      render: () => h(XhCommandRoot, { defaultOpen: true, modal: false, collection: values.value.map(value => ({ value, label: value })) }, () =>
+        h(XhCommandContent, null, () => [
+          h(XhCommandInput),
+          h(XhCommandList, null, () => values.value.map(value => h(XhCommandItem, { key: value, value }, () => value))),
+        ])),
+    })
+    app.mount(host)
+    await settle()
+    const item = (value: string): HTMLElement => document.querySelector<HTMLElement>(`[data-scope="command"][data-part="item"][data-value="${value}"]`)!
+
+    values.value = [...values.value, 'c', 'd']
+    await nextTick()
+    expect(running(item('c'))).toEqual(['xh-rise-in'])
+    expect([staggerSteps(item('c')), staggerSteps(item('d'))]).toEqual([0, 1])
     expect(running(item('a'))).toEqual([])
   })
 })

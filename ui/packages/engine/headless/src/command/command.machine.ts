@@ -266,8 +266,9 @@ export const commandMachine = createMachine({
             sync()
             return
           }
-          // 接上这张列表时已在的结果属于打开那一帧，之后新露面的一批才进场
-          stopArrivals = trackArrivals(list, { item: COMMAND_ITEM_SELECTOR })
+          // 接上这张列表时已在的结果属于打开那一帧，直接呈现。检索过滤只是换一批已有结果的显隐：
+          // 露出来的直接呈现，逐键重播上浮与错开会让列表一直在动、读不稳；新插进列表的命令才算新到
+          stopArrivals = trackArrivals(list, { item: COMMAND_ITEM_SELECTOR, reveal: 'instant' })
           send({ type: 'ARRIVALS.TRACKED' })
           const win = list.ownerDocument.defaultView
           if (!win)
