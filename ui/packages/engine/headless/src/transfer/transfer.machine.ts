@@ -6,14 +6,17 @@
 // 提供 transfer 相关实现。
 
 import type { ContextFacade, Params, PropFn } from '@xihan-ui/core'
-import type { TransferPressedKey, TransferSchema, TransferSide } from './transfer.types'
+import type { TransferItem, TransferPressedKey, TransferSchema, TransferSide } from './transfer.types'
 import { applySelection, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import {
   transferCheckedValues,
+  transferClampPage,
   transferIsCheckable,
   transferMove,
   transferOperableValues,
+  transferPageCount,
+  transferPageSize,
   transferSideOf,
   transferToggleAll,
   transferToggleValue,
@@ -25,6 +28,11 @@ const { createMachine } = setup<TransferSchema>()
 /** 某一侧的搜索串住在哪个 cell 里，连接层与动作共用这一份映射。 */
 export function transferQueryKey(side: TransferSide): 'sourceQuery' | 'targetQuery' {
   return side === 'source' ? 'sourceQuery' : 'targetQuery'
+}
+
+/** 某一侧的页码住在哪个 cell 里。 */
+export function transferPageKey(side: TransferSide): 'sourcePage' | 'targetPage' {
+  return side === 'source' ? 'sourcePage' : 'targetPage'
 }
 
 /** 某一侧的焦点锚点住在哪个 cell 里。 */
@@ -44,16 +52,25 @@ type SetParams = Pick<Params<TransferSchema>, 'prop' | 'context'>
  * searchable 关掉时搜索串一律按空处理，那个框此刻带着 hidden。
  */
 function operableOn(params: SetParams, side: TransferSide): string[] {
+  return transferOperableValues(filteredOn(params, side))
+}
+
+/** 某一侧分侧 + 搜索之后的全部条目（不分页）。 */
+function filteredOn(params: SetParams, side: TransferSide): TransferItem[] {
   const { prop, context } = params
   const query = prop('searchable') ? context.get(transferQueryKey(side)) : ''
-  const visible = transferVisibleItems(
+  return transferVisibleItems(
     prop('collection') ?? [],
     context.get('value'),
     side,
     query,
     prop('filter'),
   )
-  return transferOperableValues(visible)
+}
+
+/** 某一侧此刻的页数。 */
+function pageCountOn(params: SetParams, side: TransferSide): number {
+  return transferPageCount(filteredOn(params, side).length, transferPageSize(params.prop('pageSize')))
 }
 
 /** 禁用、只读与加载：三者都改不了勾选、也搬不动，按压通道一律不进。 */
@@ -103,6 +120,9 @@ export const transferMachine = createMachine({
     targetQuery: cell<string>(() => ({ defaultValue: '' })),
     sourceFocusedValue: cell<string | null>(() => ({ defaultValue: null })),
     targetFocusedValue: cell<string | null>(() => ({ defaultValue: null })),
+    // 两侧页码也不受控、不对外通知：翻页只影响这一页渲染哪些条目
+    sourcePage: cell<number>(() => ({ defaultValue: 1 })),
+    targetPage: cell<number>(() => ({ defaultValue: 1 })),
     // 按压通道：正被按住的那一个，按部件键记；与勾选、搬运无关
     pressed: cell<TransferPressedKey | null>(() => ({ defaultValue: null })),
   }),
@@ -112,6 +132,8 @@ export const transferMachine = createMachine({
   watch: ({ track, prop, context, action }) => {
     track([() => prop('disabled'), () => prop('readOnly'), () => prop('loading')], () => action(['releaseWhenInert']))
     track([context.dep('value'), context.dep('selection')], () => action(['releaseWhenInert']))
+    // 条目搬走、全集或每页条数变了之后页数可能变少：把两侧页码夹回去，免得页数回升时跳回一个过期的页码
+    track([context.dep('value'), () => prop('collection'), () => prop('pageSize')], () => action(['clampPages']))
   },
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
@@ -129,6 +151,7 @@ export const transferMachine = createMachine({
         'SIDE.TOGGLE_ALL': { actions: ['toggleAll'] },
         'ITEMS.MOVE': { actions: ['moveItems'] },
         'SEARCH.SET': { actions: ['setQuery'] },
+        'PAGE.SET': { actions: ['setPage'] },
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
         'LIST.BLUR': { actions: ['clearFocusedValue'] },
       },
@@ -169,7 +192,7 @@ export const transferMachine = createMachine({
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         resetDeclaredValue(params, 'selection', 'selection', 'defaultSelection')
-        for (const key of ['selectionAnchor', 'selectionBaseline', 'sourceQuery', 'targetQuery', 'sourceFocusedValue', 'targetFocusedValue'] as const)
+        for (const key of ['selectionAnchor', 'selectionBaseline', 'sourceQuery', 'targetQuery', 'sourceFocusedValue', 'targetFocusedValue', 'sourcePage', 'targetPage'] as const)
           params.context.reset(key)
       },
 
@@ -261,7 +284,25 @@ export const transferMachine = createMachine({
         if (e.type !== 'SEARCH.SET')
           return
         context.set(transferQueryKey(e.side), e.query)
+        // 搜到的是另一批条目，停在原来的页码上多半是空页：回到第 1 页
+        context.set(transferPageKey(e.side), 1)
         // 不动焦点锚点：搜索把它藏起来时连接层会把锚点投影成 null，清空搜索后焦点还回得到原处
+      },
+
+      setPage: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'PAGE.SET')
+          return
+        params.context.set(transferPageKey(e.side), transferClampPage(e.page, pageCountOn(params, e.side)))
+      },
+
+      clampPages: (params) => {
+        for (const side of ['source', 'target'] as const) {
+          const key = transferPageKey(side)
+          const clamped = transferClampPage(params.context.get(key), pageCountOn(params, side))
+          if (clamped !== params.context.get(key))
+            params.context.set(key, clamped)
+        }
       },
 
       setFocusedValue: ({ context, event }) => {

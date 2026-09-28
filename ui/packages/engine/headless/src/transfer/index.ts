@@ -8,15 +8,19 @@
 export { transferAnatomy, transferItemQuery } from './transfer.anatomy'
 export { connectTransfer } from './transfer.connect'
 export { transferKeyboard } from './transfer.keyboard'
-export { transferFocusKey, transferMachine, transferOppositeSide, transferQueryKey } from './transfer.machine'
+export { transferFocusKey, transferMachine, transferOppositeSide, transferPageKey, transferQueryKey } from './transfer.machine'
 export { transferMeta } from './transfer.meta'
 export {
   transferCheckedValues,
   transferCheckState,
+  transferClampPage,
   transferIsCheckable,
   transferMatchesQuery,
   transferMove,
   transferOperableValues,
+  transferPageCount,
+  transferPageItems,
+  transferPageSize,
   transferSideOf,
   transferToggleAll,
   transferToggleValue,

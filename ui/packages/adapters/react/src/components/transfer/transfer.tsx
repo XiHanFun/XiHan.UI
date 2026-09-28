@@ -62,6 +62,14 @@ export interface TransferPanelSlotProps {
   items: readonly TransferItem[]
   checkState: TransferCheckState
   query: string
+  /** 这一侧分侧 + 搜索之后共有几条（不分页）。 */
+  total: number
+  /** 当前页码（从 1 起）；不分页时恒为 1。 */
+  page: number
+  /** 共有几页（至少 1 页）。 */
+  pageCount: number
+  /** 翻到这一侧的第 page 页。 */
+  setPage: (page: number) => void
 }
 
 export interface XhTransferRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -75,6 +83,8 @@ export interface XhTransferRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   defaultSelection?: string[]
   searchable?: boolean
   filter?: TransferFilter
+  /** 每侧每页几条；给了即分页，两侧各翻各的，缺省不分页。 */
+  pageSize?: number
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
@@ -101,6 +111,7 @@ export function XhTransferRoot({
   defaultSelection,
   searchable,
   filter,
+  pageSize,
   disabled,
   readOnly,
   invalid,
@@ -127,6 +138,7 @@ export function XhTransferRoot({
     defaultSelection,
     searchable,
     filter,
+    pageSize,
     disabled,
     readOnly,
     invalid,
@@ -184,6 +196,10 @@ function TransferPanel({ side, children, ...rest }: XhTransferPanelProps & { sid
           items: api.visibleItems(side),
           checkState: api.checkState(side),
           query: api.query(side),
+          total: api.filteredItems(side).length,
+          page: api.page(side),
+          pageCount: api.pageCount(side),
+          setPage: (page: number) => api.setPage(side, page),
         })}
       </div>
     </TransferPanelProvider>

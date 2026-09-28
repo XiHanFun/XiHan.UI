@@ -42,6 +42,26 @@ export function transferVisibleItems(
   )
 }
 
+/** 每页条数的归一：给了能用的正数就取整，其余（没给、0、负数、非有限数）都是不分页。 */
+export function transferPageSize(raw: number | undefined): number | undefined {
+  return raw != null && Number.isFinite(raw) && raw >= 1 ? Math.floor(raw) : undefined
+}
+
+/** 一侧有几页：不分页或没有条目时恒为 1 页。 */
+export function transferPageCount(total: number, pageSize: number | undefined): number {
+  return pageSize ? Math.max(1, Math.ceil(total / pageSize)) : 1
+}
+
+/** 页码（从 1 起）夹回 1 到页数之间；非有限数按第 1 页。 */
+export function transferClampPage(page: number, pageCount: number): number {
+  return Number.isFinite(page) ? Math.min(Math.max(1, Math.trunc(page)), Math.max(1, pageCount)) : 1
+}
+
+/** 取第 page 页的条目；不分页时原样返回全部。 */
+export function transferPageItems<T>(items: readonly T[], page: number, pageSize: number | undefined): T[] {
+  return pageSize ? items.slice((page - 1) * pageSize, page * pageSize) : [...items]
+}
+
 /**
  * 这一侧此刻接不接受勾选。oneWay 下 target 侧不接受：勾选的唯一用途是搬运，而往回搬已被封死。
  */

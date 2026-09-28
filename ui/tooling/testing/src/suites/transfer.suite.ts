@@ -632,6 +632,50 @@ export const transferSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'pageSize：每侧只渲染当前这一页，其余条目隐去；全选、计数与搬运仍按整侧算',
+      spec: { apg: APG },
+      props: { ...BASE, pageSize: 2 },
+      initial: {
+        parts: {
+          'item[0]': { hidden: null },
+          'item[1]': { hidden: null },
+          'item[2]': { hidden: '' },
+          'item[3]': { hidden: '' },
+          'panel-count[0]': { 'data-count': '4' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'select-all-trigger[0]',
+          expect: {
+            parts: {
+              // 第 2 页的 cherry、durian 也勾上了（banana 禁用不进），只是此刻不在这一页上
+              'panel-count[0]': { 'data-checked-count': '3' },
+              'select-all-trigger[0]': { 'aria-checked': 'true', 'data-state': 'checked' },
+              'item[0]': { 'aria-selected': 'true' },
+              'item[2]': { 'hidden': '', 'aria-selected': 'false' },
+            },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'to-target-trigger',
+          expect: {
+            parts: {
+              'panel-count[0]': { 'data-count': '1' },
+              'panel-count[1]': { 'data-count': '3' },
+              // 右栏也分页：apple、cherry 在第 1 页，durian 在第 2 页
+              'item[4]': { hidden: null },
+              'item[6]': { hidden: null },
+              'item[7]': { hidden: '' },
+            },
+            events: [{ type: 'value-change', detail: { value: ['apple', 'cherry', 'durian'] } }],
+          },
+        },
+      ],
+    },
+    {
       name: 'oneWay：右侧不接受勾选，往回搬那条路恒禁用，右侧的勾选格也不在场',
       spec: { apg: APG },
       props: { ...BASE, oneWay: true, defaultValue: ['durian'] },
