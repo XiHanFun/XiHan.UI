@@ -33118,6 +33118,9 @@
             },
             {
               "name": "--xh-input-group-shadow"
+            },
+            {
+              "name": "--xh-input-group-w"
             }
           ]
         }
