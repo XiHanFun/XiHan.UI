@@ -1,7 +1,7 @@
 <!-- 运行态与播报 | status 由宿主持有，组件只把它透出为 root 上的 data-state；已发送、等首个片段时列表之后的呼吸点亮起，首个片段一到就收；播报只发生在 live-region 中，一轮结束后才写入一句 -->
 <div style="display: grid; gap: 12px">
-  <xh-message-feed id="message-feed-status" count="1" status="idle" style="block-size: 200px">
-    <div data-xh-part="root">
+  <xh-message-feed id="message-feed-status" count="1" status="idle">
+    <div data-xh-part="root" style="block-size: 200px">
       <div data-xh-part="viewport">
         <div data-xh-part="list" id="message-feed-status-list">
           <article data-xh-part="item" item-id="m1" item-index="0" item-role="user">

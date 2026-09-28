@@ -1,7 +1,7 @@
 <!-- 跳到指定的一条 | 消息 id 就是锚点：Vue 侧使用 root 插槽提供的 scrollToItem / focusItem，自定义元素侧按同一个 id 取节点自行滚动 -->
 <div style="display: grid; gap: 12px">
-  <xh-message-feed id="message-feed-scroll-to" count="16" style="block-size: 220px">
-    <div data-xh-part="root">
+  <xh-message-feed id="message-feed-scroll-to" count="16">
+    <div data-xh-part="root" style="block-size: 220px">
       <div data-xh-part="viewport" id="message-feed-scroll-to-viewport">
         <div data-xh-part="list">
           <article data-xh-part="item" item-id="m1" item-index="0" item-role="assistant">第 1 条 · 会话记录</article>
