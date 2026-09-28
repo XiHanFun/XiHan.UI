@@ -70405,6 +70405,15 @@
             },
             {
               "kind": "field",
+              "name": "pageSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "page-size"
+            },
+            {
+              "kind": "field",
               "name": "searchable",
               "privacy": "public",
               "type": {
@@ -70647,6 +70656,84 @@
             },
             {
               "kind": "method",
+              "name": "filteredItems",
+              "return": {
+                "type": {
+                  "text": "readonly TransferItem[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "side",
+                  "type": {
+                    "text": "TransferSide"
+                  }
+                }
+              ],
+              "description": "某一侧分侧 + 搜索之后的全部条目（不分页）；状态机尚未建立时返回空数组。"
+            },
+            {
+              "kind": "method",
+              "name": "currentPage",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "side",
+                  "type": {
+                    "text": "TransferSide"
+                  }
+                }
+              ],
+              "description": "某一侧当前页码（从 1 起）；不分页或状态机尚未建立时为 1。"
+            },
+            {
+              "kind": "method",
+              "name": "pageCount",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "side",
+                  "type": {
+                    "text": "TransferSide"
+                  }
+                }
+              ],
+              "description": "某一侧共有几页（至少 1 页）。"
+            },
+            {
+              "kind": "method",
+              "name": "setPage",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "side",
+                  "type": {
+                    "text": "TransferSide"
+                  }
+                },
+                {
+                  "name": "page",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "翻到某一侧的第 page 页（从 1 起，夹回页数之内）。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -70696,6 +70783,14 @@
               "description": "每侧带一个搜索框；关闭时搜索框仍在 DOM 中但带 hidden",
               "name": "searchable",
               "fieldName": "searchable"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "每侧每页几条；给了即分页，两侧各翻各的，当前页以外的条目带 hidden",
+              "name": "page-size",
+              "fieldName": "pageSize"
             },
             {
               "type": {

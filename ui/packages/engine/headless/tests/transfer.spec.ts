@@ -6,10 +6,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   connectTransfer,
   transferCheckState,
+  transferClampPage,
   transferIsCheckable,
   transferMachine,
   transferMove,
   transferOperableValues,
+  transferPageCount,
+  transferPageItems,
+  transferPageSize,
   transferSideOf,
   transferToggleAll,
   transferToggleValue,
@@ -1212,5 +1216,77 @@ describe('副文本', () => {
     const props = mount().api().getItemDescriptionProps({ value: 'a', side: 'source' }) as Record<string, unknown>
     expect(props['data-xh-collection-slot']).toBe('description')
     expect(props['data-part']).toBe('item-description')
+  })
+})
+
+describe('分页', () => {
+  it('页数、夹页码与切页：不分页或没有条目时恒为 1 页', () => {
+    expect(transferPageSize(undefined)).toBeUndefined()
+    expect(transferPageSize(0)).toBeUndefined()
+    expect(transferPageSize(-3)).toBeUndefined()
+    expect(transferPageSize(2.7)).toBe(2)
+    expect(transferPageCount(5, 2)).toBe(3)
+    expect(transferPageCount(0, 2)).toBe(1)
+    expect(transferPageCount(5, undefined)).toBe(1)
+    expect(transferClampPage(9, 3)).toBe(3)
+    expect(transferClampPage(0, 3)).toBe(1)
+    expect(transferClampPage(Number.NaN, 3)).toBe(1)
+    expect(transferPageItems(['a', 'b', 'c', 'd', 'e'], 3, 2)).toEqual(['e'])
+    expect(transferPageItems(['a', 'b'], 1, undefined)).toEqual(['a', 'b'])
+  })
+
+  it('每侧只渲染当前这一页，其余条目带 hidden；两侧各翻各的', () => {
+    const h = mount({ pageSize: 2, defaultValue: ['durian'] })
+    expect(h.api().pageCount('source')).toBe(2)
+    expect(h.api().pageCount('target')).toBe(1)
+    expect(shownOn(h, 'source')).toEqual(['apple', 'banana'])
+    h.api().setPage('source', 2)
+    expect(shownOn(h, 'source')).toEqual(['cherry'])
+    expect(h.api().page('source')).toBe(2)
+    expect(shownOn(h, 'target')).toEqual(['durian'])
+    // 越界的页码夹回页数之内
+    h.api().setPage('source', 9)
+    expect(h.api().page('source')).toBe(2)
+  })
+
+  it('全选、三态、计数与搬运按整侧算，不受分页影响', () => {
+    const h = mount({ pageSize: 1 })
+    expect(h.api().visibleItems('source').map(item => item.value)).toEqual(['apple'])
+    expect(h.api().filteredItems('source')).toHaveLength(4)
+    h.api().toggleAll('source')
+    // banana 禁用，不进勾选
+    expect(h.selection()).toEqual(['apple', 'cherry', 'durian'])
+    expect(h.api().checkState('source')).toBe('checked')
+    expect(h.side('source').count.getAttribute('data-count')).toBe('4')
+    expect(h.side('source').count.getAttribute('data-checked-count')).toBe('3')
+    h.api().move('target')
+    expect(h.value()).toEqual(['apple', 'cherry', 'durian'])
+  })
+
+  it('搬走条目后页数变少，页码夹回最后一页；搜索串一变回到第 1 页', () => {
+    const h = mount({ pageSize: 1, searchable: true })
+    h.api().setPage('source', 4)
+    expect(shownOn(h, 'source')).toEqual(['durian'])
+    h.api().toggle('durian')
+    h.api().move('target')
+    expect(h.api().pageCount('source')).toBe(3)
+    expect(h.api().page('source')).toBe(3)
+    expect(shownOn(h, 'source')).toEqual(['cherry'])
+
+    h.api().setQuery('source', 'e')
+    expect(h.api().page('source')).toBe(1)
+    expect(shownOn(h, 'source')).toEqual(['apple'])
+  })
+
+  it('方向键只在当前这一页里走', () => {
+    const h = mount({ pageSize: 2 })
+    h.api().setPage('source', 2)
+    const cherry = h.item('source', 'cherry')
+    cherry.focus()
+    press(cherry, 'ArrowDown')
+    expect(document.activeElement).toBe(h.item('source', 'durian'))
+    press(h.item('source', 'durian'), 'ArrowDown')
+    // 回绕也只绕回本页的第一条
+    expect(document.activeElement).toBe(cherry)
   })
 })

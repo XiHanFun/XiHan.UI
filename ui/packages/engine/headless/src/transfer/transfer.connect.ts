@@ -18,12 +18,16 @@ import type {
 import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionTarget } from '../shared/virtual-collection'
 import { transferAnatomy, transferItemQuery } from './transfer.anatomy'
-import { transferFocusKey, transferOppositeSide, transferQueryKey } from './transfer.machine'
+import { transferFocusKey, transferOppositeSide, transferPageKey, transferQueryKey } from './transfer.machine'
 import {
   transferCheckedValues,
   transferCheckState,
+  transferClampPage,
   transferIsCheckable,
   transferOperableValues,
+  transferPageCount,
+  transferPageItems,
+  transferPageSize,
   transferSideOf,
   transferVisibleItems,
 } from './transfer.sets'
@@ -73,12 +77,17 @@ export function connectTransfer<T extends PropTypes>(
   const queries = bySide<string>(side => (searchable ? context.get(transferQueryKey(side)) : ''))
 
   // connect 在 render 期求值，此时 DOM 尚不存在，不得读 DOM
-  const visible = bySide(side => transferVisibleItems(collection, value, side, queries[side], filter))
+  // filtered 是分侧 + 搜索之后的整侧，全选、三态、计数与搬运按它算；visible 再切出当前这一页，渲染与方向键按它走
+  const filtered = bySide(side => transferVisibleItems(collection, value, side, queries[side], filter))
+  const pageSize = transferPageSize(prop('pageSize'))
+  const pageCounts = bySide(side => transferPageCount(filtered[side].length, pageSize))
+  const pages = bySide(side => transferClampPage(context.get(transferPageKey(side)), pageCounts[side]))
+  const visible = bySide(side => transferPageItems(filtered[side], pages[side], pageSize))
   const virtualizers = prop('virtualizers') ?? {}
   assertCollectionVirtualizer('Transfer source', virtualizers.source, visible.source.length, prop('collection') != null)
   assertCollectionVirtualizer('Transfer target', virtualizers.target, visible.target.length, prop('collection') != null)
   const visibleIndex = bySide(side => new Map(visible[side].map((item, index) => [item.value, index])))
-  const operable = bySide(side => transferOperableValues(visible[side]))
+  const operable = bySide(side => transferOperableValues(filtered[side]))
   const checked = bySide(side => transferCheckedValues(operable[side], selection))
   const checkStates = bySide<TransferCheckState>(side => transferCheckState(operable[side], selection))
 
@@ -235,6 +244,11 @@ export function connectTransfer<T extends PropTypes>(
     oneWay,
     searchable,
     visibleItems: side => visible[side],
+    filteredItems: side => filtered[side],
+    pageSize,
+    page: side => pages[side],
+    pageCount: side => pageCounts[side],
+    setPage: (side, page) => send({ type: 'PAGE.SET', side, page }),
     checkedValues: side => checked[side],
     checkState: side => checkStates[side],
     query: side => queries[side],
@@ -293,7 +307,7 @@ export function connectTransfer<T extends PropTypes>(
     getPanelCountProps: panel => normalize.element({
       ...parts['panel-count'].attrs,
       'data-side': panel.side,
-      'data-count': String(visible[panel.side].length),
+      'data-count': String(filtered[panel.side].length),
       'data-checked-count': String(checked[panel.side].length),
     }),
 
@@ -478,7 +492,7 @@ export function connectTransfer<T extends PropTypes>(
       'data-side': panel.side,
       'data-disabled': dataAttr(disabled),
       // 取数在途时让位给在途占位，两者不同屏
-      'hidden': loading || visible[panel.side].length > 0 || undefined,
+      'hidden': loading || filtered[panel.side].length > 0 || undefined,
     }),
 
     // 在途占位：与空态占位同一个位置、同一副观感，两者不同屏

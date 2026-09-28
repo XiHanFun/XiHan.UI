@@ -30,6 +30,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 缺省为真的开关（方向键回绕）只有三态才关得掉——
 // Lit 默认的 Boolean 转换器是 v !== null，写 loop="false" 照样是真。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 const SIDES: readonly TransferSide[] = ['source', 'target']
 
@@ -66,6 +67,7 @@ function stripNativeDisabled(el: HTMLElement): void {
  * @attr {string} name - 原生表单字段名，目标侧每个值提交一个同名字段
  * @attr {string} form - 原生表单 ID，显式指定时覆盖祖先表单归属
  * @attr {boolean} searchable - 每侧带一个搜索框；关闭时搜索框仍在 DOM 中但带 hidden
+ * @attr {number} page-size - 每侧每页几条；给了即分页，两侧各翻各的，当前页以外的条目带 hidden
  * @attr {boolean} disabled - 整个控件禁用：条目为 aria-disabled，按钮与搜索框使用原生 disabled
  * @attr {boolean} read-only - 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动
  * @attr {boolean} invalid - 校验失败标注
@@ -115,6 +117,7 @@ export class XhTransferElement extends XhElement {
     selection: { attribute: false },
     defaultSelection: { attribute: false },
     filter: { attribute: false },
+    pageSize: { converter: NUMBER_CONVERTER, attribute: 'page-size' },
     searchable: { type: Boolean },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
@@ -138,6 +141,7 @@ export class XhTransferElement extends XhElement {
   declare selection?: string[]
   declare defaultSelection?: string[]
   declare filter?: TransferFilter
+  declare pageSize?: number
   declare searchable?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
@@ -220,6 +224,7 @@ export class XhTransferElement extends XhElement {
       selection: this.selection,
       defaultSelection: this.defaultSelection,
       filter: this.filter,
+      pageSize: this.pageSize,
       searchable: this.searchable ?? false,
       disabled: control.disabled,
       readOnly: control.readOnly,
@@ -273,6 +278,27 @@ export class XhTransferElement extends XhElement {
    */
   visibleItems(side: TransferSide): readonly TransferItem[] {
     return this.ctrl.service ? connectTransfer(this.ctrl.service, wcNormalize).visibleItems(side) : []
+  }
+
+  /** 某一侧分侧 + 搜索之后的全部条目（不分页）；状态机尚未建立时返回空数组。 */
+  filteredItems(side: TransferSide): readonly TransferItem[] {
+    return this.ctrl.service ? connectTransfer(this.ctrl.service, wcNormalize).filteredItems(side) : []
+  }
+
+  /** 某一侧当前页码（从 1 起）；不分页或状态机尚未建立时为 1。 */
+  currentPage(side: TransferSide): number {
+    return this.ctrl.service ? connectTransfer(this.ctrl.service, wcNormalize).page(side) : 1
+  }
+
+  /** 某一侧共有几页（至少 1 页）。 */
+  pageCount(side: TransferSide): number {
+    return this.ctrl.service ? connectTransfer(this.ctrl.service, wcNormalize).pageCount(side) : 1
+  }
+
+  /** 翻到某一侧的第 page 页（从 1 起，夹回页数之内）。 */
+  setPage(side: TransferSide, page: number): void {
+    if (this.ctrl.service)
+      connectTransfer(this.ctrl.service, wcNormalize).setPage(side, page)
   }
 
   protected wire(): void {

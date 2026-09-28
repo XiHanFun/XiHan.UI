@@ -59,6 +59,14 @@ export interface TransferPanelSlotProps {
   items: readonly TransferItem[]
   checkState: TransferCheckState
   query: string
+  /** 这一侧分侧 + 搜索之后共有几条（不分页）。 */
+  total: number
+  /** 当前页码（从 1 起）；不分页时恒为 1。 */
+  page: number
+  /** 共有几页（至少 1 页）。 */
+  pageCount: number
+  /** 翻到这一侧的第 page 页。 */
+  setPage: (page: number) => void
 }
 
 /** 源/目标两个面板部件共用的插槽集合。 */
@@ -80,6 +88,7 @@ export const XhTransferRoot = defineComponent({
     defaultSelection: { type: Array as PropType<string[]> },
     searchable: Boolean,
     filter: { type: Function as PropType<TransferFilter> },
+    pageSize: { type: Number },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
@@ -147,6 +156,10 @@ function panelSetup(side: TransferSide): (props: unknown, ctx: { slots: Transfer
       items: ctx.api.value.visibleItems(side),
       checkState: ctx.api.value.checkState(side),
       query: ctx.api.value.query(side),
+      total: ctx.api.value.filteredItems(side).length,
+      page: ctx.api.value.page(side),
+      pageCount: ctx.api.value.pageCount(side),
+      setPage: (page: number) => ctx.api.value.setPage(side, page),
     }))
   }
 }

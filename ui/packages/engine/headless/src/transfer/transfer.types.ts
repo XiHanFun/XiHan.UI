@@ -116,6 +116,12 @@ export interface TransferSchema extends MachineSchema {
     searchable?: boolean
     /** 自定义匹配规则；默认为标签大小写不敏感包含。 */
     filter?: TransferFilter
+    /**
+     * 每侧每页几条；给了即分页，两侧各翻各的，缺省不分页。
+     * 分页只决定这一页渲染哪些条目、方向键在哪些条目间走；全选、三态、计数与搬运仍按整侧（分侧 + 搜索之后）算。
+     * 搜索串一变该侧回到第 1 页；条目搬走后页数变少时页码夹回最后一页。
+     */
+    pageSize?: number
     /** 整个控件禁用：条目为 aria-disabled，三个按钮与搜索框使用原生 disabled。 */
     disabled?: boolean
     /** 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动。禁用还额外移除键盘入口。 */
@@ -156,6 +162,9 @@ export interface TransferSchema extends MachineSchema {
      */
     sourceFocusedValue: string | null
     targetFocusedValue: string | null
+    /** 两侧各自的页码（从 1 起）。不受控：它只影响这一页渲染哪些条目；读侧一律夹回页数之内。 */
+    sourcePage: number
+    targetPage: number
     /**
      * 按压通道：正被 Space / Enter 或触屏按住的那一个，按部件键记（见 TransferPressedKey）；
      * 没有按住时为 null。抬起、失焦或指针取消即清空；转入禁用 / 只读 / 加载，或搬运按钮失去可搬的
@@ -180,6 +189,8 @@ export interface TransferSchema extends MachineSchema {
     /** 把对面勾选的条目移到 to 侧。 */
     | { type: 'ITEMS.MOVE', to: TransferSide }
     | { type: 'SEARCH.SET', side: TransferSide, query: string }
+    /** 翻到某一侧的第 page 页（从 1 起，夹回页数之内）。 */
+    | { type: 'PAGE.SET', side: TransferSide, page: number }
     | { type: 'ITEM.FOCUS', side: TransferSide, value: string }
     /** 焦点离开某一侧的列表，或持有焦点的条目被移出 DOM（浏览器此时不派发 focusout）。 */
     | { type: 'LIST.BLUR', side: TransferSide }
@@ -200,6 +211,8 @@ export interface TransferSchema extends MachineSchema {
     | 'toggleAll'
     | 'moveItems'
     | 'setQuery'
+    | 'setPage'
+    | 'clampPages'
     | 'setFocusedValue'
     | 'clearFocusedValue'
     | 'startPress'
@@ -220,9 +233,19 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   invalid: boolean
   oneWay: boolean
   searchable: boolean
-  /** 某一侧当前可见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 */
+  /** 某一侧当前可见的条目（分侧 + 搜索 + 分页之后），顺序恒为 collection 原序。 */
   visibleItems: (side: TransferSide) => readonly TransferItem[]
-  /** 某一侧当前实际勾选的值（只计可见且未禁用的条目，与三态、移动同一口径）。 */
+  /** 某一侧分侧 + 搜索之后的全部条目（不分页）；全选、三态、计数与搬运都按它算。 */
+  filteredItems: (side: TransferSide) => readonly TransferItem[]
+  /** 每页几条；不分页时为 undefined。 */
+  pageSize: number | undefined
+  /** 某一侧当前页码（从 1 起）。 */
+  page: (side: TransferSide) => number
+  /** 某一侧共有几页（至少 1 页）。 */
+  pageCount: (side: TransferSide) => number
+  /** 翻到某一侧的第 page 页（从 1 起，夹回页数之内）。 */
+  setPage: (side: TransferSide, page: number) => void
+  /** 某一侧当前实际勾选的值（只计分侧 + 搜索之后未禁用的条目，与三态、移动同一口径；分页不影响）。 */
   checkedValues: (side: TransferSide) => string[]
   checkState: (side: TransferSide) => TransferCheckState
   query: (side: TransferSide) => string

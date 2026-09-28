@@ -84,6 +84,12 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 
 <XhDemo src="transfer/11-virtualized" />
 
+### 分页
+
+page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用分页组件拼进面板，页码、页数与条数取自面板插槽。全选、计数与搬运仍按整侧算，搜索串一变回到第 1 页
+
+<XhDemo src="transfer/12-paged" />
+
 ## 设计指引
 
 ### 何时使用
@@ -105,6 +111,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 - 条目可写副文本，第 2 行放一句解释，搬到另一侧一并带着。
 - 条目行尾留一格给作者（计数、徽标）；行首那一格归勾选框。
 - 万级条目时只渲染可视区。
+- `pageSize` 给了即分页：两侧各翻各的，只渲染当前这一页，方向键只在这一页里走；全选、三态、计数与搬运仍按整侧（分侧 + 搜索之后）算。搜索串一变该侧回到第 1 页，条目搬走后页数变少时页码夹回最后一页。翻页器用[分页](./pagination)拼进面板，页码、页数与条数取自面板插槽（`page` / `pageCount` / `total` / `setPage`）。
 - 每一侧的空（`empty`）与在途（`loading`）各有部件；`loading` 为真时两侧列表报 `aria-busy`，空态让位。
 - 设置 `name` 后，目标侧每个值以一个同名原生字段提交；源侧勾选 `selection` 不参与提交。三端自动装配隐藏出口，无需手写节点。
 - 值内逗号保留原样，使用 `new FormData(form).getAll(name)` 读取数组；目标为空时没有该字段，显式选中的空字符串则是一个有效字段值。
@@ -114,6 +121,8 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 ### 组合
 
 - 内层是[列表框](./listbox)；长列表为 source / target 各接一台[虚拟滚动](./virtualizer)，两侧桥分别写入 `virtualizers`，不能共用滚动窗口。
+- 分页时每侧面板里放一台[分页](./pagination)，与虚拟滚动二选一。
+- 树形候选不内置：条目是一维集合（`value` 是扁平的已选集合），父子勾选联动与展开状态属于[树](./tree)。需要按层级选择时用树选择或树 + 列表组合，而不是把树塞进穿梭框的一侧。
 
 ### 最佳实践
 
@@ -151,6 +160,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `defaultSelection` | `string[]` |  |  |
 | `searchable` | `boolean` |  | 每侧带一个搜索框；关闭时搜索框仍在 DOM 中但带 hidden，且搜索串一律按空处理。 |
 | `filter` | `TransferFilter` |  | 自定义匹配规则；默认为标签大小写不敏感包含。 |
+| `pageSize` | `number` |  | 每侧每页几条；给了即分页，两侧各翻各的，缺省不分页。 分页只决定这一页渲染哪些条目、方向键在哪些条目间走；全选、三态、计数与搬运仍按整侧（分侧 + 搜索之后）算。 搜索串一变该侧回到第 1 页；条目搬走后页数变少时页码夹回最后一页。 |
 | `disabled` | `boolean` |  | 整个控件禁用：条目为 aria-disabled，三个按钮与搜索框使用原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动。禁用还额外移除键盘入口。 |
 | `invalid` | `boolean` |  | 校验失败：两侧列表报告 aria-invalid，各角色节点带 data-invalid。 |
@@ -220,7 +230,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 
 **状态**：`idle`
 
-**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `ITEM.FOCUS` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `PAGE.SET` · `ITEM.FOCUS` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -238,8 +248,13 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `invalid` | `boolean` |  |
 | `oneWay` | `boolean` |  |
 | `searchable` | `boolean` |  |
-| `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当前可见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 |
-| `checkedValues` | `(side: TransferSide) => string[]` | 某一侧当前实际勾选的值（只计可见且未禁用的条目，与三态、移动同一口径）。 |
+| `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当前可见的条目（分侧 + 搜索 + 分页之后），顺序恒为 collection 原序。 |
+| `filteredItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧分侧 + 搜索之后的全部条目（不分页）；全选、三态、计数与搬运都按它算。 |
+| `pageSize` | `number \| undefined` | 每页几条；不分页时为 undefined。 |
+| `page` | `(side: TransferSide) => number` | 某一侧当前页码（从 1 起）。 |
+| `pageCount` | `(side: TransferSide) => number` | 某一侧共有几页（至少 1 页）。 |
+| `setPage` | `(side: TransferSide, page: number) => void` | 翻到某一侧的第 page 页（从 1 起，夹回页数之内）。 |
+| `checkedValues` | `(side: TransferSide) => string[]` | 某一侧当前实际勾选的值（只计分侧 + 搜索之后未禁用的条目，与三态、移动同一口径；分页不影响）。 |
 | `checkState` | `(side: TransferSide) => TransferCheckState` |  |
 | `query` | `(side: TransferSide) => string` |  |
 | `canMove` | `(to: TransferSide) => boolean` | 向 to 侧移动当前是否可行：对面有勾选的可操作条目，且该路径未被 oneWay 关闭。 |
@@ -347,7 +362,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `panel-header` | `data-side` | panel.side |
 | `panel-title` | `data-side` | panel.side |
 | `panel-count` | `data-checked-count` | String(checked[panel.side].length) |
-| `panel-count` | `data-count` | String(visible[panel.side].length) |
+| `panel-count` | `data-count` | String(filtered[panel.side].length) |
 | `panel-count` | `data-side` | panel.side |
 | `search` | `data-side` | panel.side |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
