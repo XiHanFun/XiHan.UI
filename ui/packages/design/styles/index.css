@@ -15262,14 +15262,16 @@
     display: inline-flex;
     align-self: flex-start;
     align-items: center;
-    gap: var(--xh-approval-result-gap, var(--xh-space-1_5));
-    padding-inline: var(--xh-approval-result-px, var(--xh-space-2));
-    padding-block: var(--xh-approval-result-py, var(--xh-space-1));
+    gap: var(--xh-approval-result-gap, var(--xh-space-1));
+    padding-inline: var(--xh-approval-result-px, var(--xh-space-1_5));
+    padding-block: var(--xh-approval-result-py, var(--xh-space-0_5));
+    border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-approval-result-radius, var(--xh-shape-pill));
-    background: var(--xh-approval-result-bg, color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)));
-    color: var(--xh-approval-result-fg, var(--xh-fg-success));
+    background: var(--xh-approval-result-bg, var(--xh-_tone-subtle));
+    color: var(--xh-approval-result-fg, var(--xh-_tone-fg));
     font-size: var(--xh-approval-result-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-approval-result-font-weight, var(--xh-text-label-weight));
+    font-weight: var(--xh-approval-result-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-control-indicator-md);
   }
 
   /* 落定结果弹出；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
@@ -15281,10 +15283,10 @@
     display: none;
   }
 
-  /* 超时按拒绝收口，两者同档：视觉上不该看着像第三种结果 */
+  /* 超时按拒绝收口，两者同档（连接层同投 danger 语气）：视觉上不该看着像第三种结果 */
   [data-scope='approval'][data-part='result']:is([data-state='denied'], [data-state='expired']) {
-    background: var(--xh-approval-result-bg-denied, color-mix(in oklab, var(--xh-fg-danger) 12%, var(--xh-bg-surface)));
-    color: var(--xh-approval-result-fg-denied, var(--xh-fg-danger));
+    background: var(--xh-approval-result-bg-denied, var(--xh-_tone-subtle));
+    color: var(--xh-approval-result-fg-denied, var(--xh-_tone-fg));
   }
 
   /* 动作行：两颗按钮靠右排，间距归库管。
@@ -20307,9 +20309,9 @@
     font-size: var(--xh-citation-font-size, var(--xh-_citation-font-size));
   }
 
-  /* 禁用降前景：正文与编号一起落到禁用色，不靠整体透明度（编号的面由家族的禁用档给） */
-  [data-scope='citation'][data-part='root'][data-disabled] {
-    --xh-citation-text-fg: var(--xh-fg-disabled);
+  /* 禁用降前景：正文落到禁用色，不靠整体透明度（编号的面与字由家族的禁用档给） */
+  [data-scope='citation'][data-part='root'][data-disabled] [data-scope='citation'][data-part='text'] {
+    color: var(--xh-fg-disabled);
   }
 
   [data-scope='citation'][data-part='text'] {
@@ -33316,14 +33318,16 @@
     display: inline-flex;
     align-self: flex-start;
     align-items: center;
-    gap: var(--xh-question-flow-result-gap, var(--xh-space-1_5));
-    padding-inline: var(--xh-question-flow-result-px, var(--xh-space-2));
-    padding-block: var(--xh-question-flow-result-py, var(--xh-space-1));
+    gap: var(--xh-question-flow-result-gap, var(--xh-space-1));
+    padding-inline: var(--xh-question-flow-result-px, var(--xh-space-1_5));
+    padding-block: var(--xh-question-flow-result-py, var(--xh-space-0_5));
+    border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-question-flow-result-radius, var(--xh-shape-pill));
-    background: var(--xh-question-flow-result-bg, var(--xh-bg-subtle));
-    color: var(--xh-question-flow-result-fg, var(--xh-fg-success));
+    background: var(--xh-question-flow-result-bg, var(--xh-_tone-subtle));
+    color: var(--xh-question-flow-result-fg, var(--xh-_tone-fg));
     font-size: var(--xh-question-flow-result-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-question-flow-result-font-weight, var(--xh-text-label-weight));
+    font-weight: var(--xh-question-flow-result-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-control-indicator-md);
   }
 
   /* 落定结果弹出；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
@@ -42511,29 +42515,31 @@
     display: none;
   }
 
-  /* 三档落定的阶段收成药丸：淡底 + 同族深字。在跑的两档不带底，让扫光自己说话 */
-  [data-scope='tool-call'][data-part='status'][data-state='awaiting-approval'],
-  [data-scope='tool-call'][data-part='status'][data-state='output-available'],
-  [data-scope='tool-call'][data-part='status'][data-state='output-error'] {
+  /* 三档落定的阶段收成状态 chip：几何与 Tag 的 sm 档同一把尺，淡底 + 同族可读字取连接层投影的语气。
+     在跑的两档不带底，让扫光自己说话 */
+  [data-scope='tool-call'][data-part='status'][data-tone] {
     padding-block: var(--xh-tool-call-status-py, var(--xh-space-0_5));
-    padding-inline: var(--xh-tool-call-status-px, var(--xh-space-2));
+    padding-inline: var(--xh-tool-call-status-px, var(--xh-space-1_5));
+    border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-tool-call-status-radius, var(--xh-shape-pill));
+    font-weight: var(--xh-font-weight-medium);
+    line-height: var(--xh-control-indicator-md);
   }
 
-  /* 各阶段的状态色：与语气轴分开走，语气是作者定的强调 */
+  /* 各阶段的覆盖槽仍按阶段给：作者可以单独改某一档 */
   [data-scope='tool-call'][data-part='status'][data-state='awaiting-approval'] {
-    background: var(--xh-tool-call-status-bg-approval, color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)));
-    color: var(--xh-tool-call-status-fg-approval, color-mix(in oklab, var(--xh-fg-warning) 60%, var(--xh-fg-default)));
+    background: var(--xh-tool-call-status-bg-approval, var(--xh-_tone-subtle));
+    color: var(--xh-tool-call-status-fg-approval, var(--xh-_tone-fg));
   }
 
   [data-scope='tool-call'][data-part='status'][data-state='output-available'] {
-    background: var(--xh-tool-call-status-bg-done, color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)));
-    color: var(--xh-tool-call-status-fg-done, color-mix(in oklab, var(--xh-fg-success) 60%, var(--xh-fg-default)));
+    background: var(--xh-tool-call-status-bg-done, var(--xh-_tone-subtle));
+    color: var(--xh-tool-call-status-fg-done, var(--xh-_tone-fg));
   }
 
   [data-scope='tool-call'][data-part='status'][data-state='output-error'] {
-    background: var(--xh-tool-call-status-bg-error, color-mix(in oklab, var(--xh-fg-danger) 12%, var(--xh-bg-surface)));
-    color: var(--xh-tool-call-status-fg-error, color-mix(in oklab, var(--xh-fg-danger) 60%, var(--xh-fg-default)));
+    background: var(--xh-tool-call-status-bg-error, var(--xh-_tone-subtle));
+    color: var(--xh-tool-call-status-fg-error, var(--xh-_tone-fg));
   }
 
   /* 在跑的时候状态文字自己扫一道光：data-loading 此前在皮肤里没有任何表达，

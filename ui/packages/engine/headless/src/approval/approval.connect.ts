@@ -212,11 +212,13 @@ export function connectApproval<T extends PropTypes>(
     }),
 
     // 判定落定后才露出的那一格。文字由播报区念，这里只给眼睛看
+    // 语气随判定：批准 success，拒绝与超时同档 danger（超时按拒绝收口）
     getResultProps: () => normalize.element({
       ...parts.result.attrs,
       'aria-hidden': true,
       'hidden': !settled || undefined,
       'data-state': status,
+      'data-tone': status === 'approved' ? 'success' : settled ? 'danger' : undefined,
     }),
 
     // 只排布两颗按钮，不承载语义

@@ -262,6 +262,7 @@
 | `label` | `data-state` | props.phase |
 | `summary` | `data-state` | props.phase |
 | `status` | `data-state` | props.phase |
+| `status` | `data-tone` | statusTone(phase) |
 | `duration` | `data-loading` | ''（条件成立时才出现） |
 | `duration` | `data-state` | props.phase |
 | `approval` | `data-state` | props.phase |
@@ -294,17 +295,17 @@
 | `--xh-tool-call-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | tool-call 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-tool-call-shadow` | `root` | `box-shadow` | `default`<br>`tone` | `0 0 0 transparent`<br>`none` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-tool-call-shimmer-duration` | `root`<br>`status` | `animation` | `loading` | `--xh-motion-loop-shimmer` | tool-call 的 root、status 部件 animation 覆盖槽。 |
-| `--xh-tool-call-status-bg-approval` | `status` | `background` | `state=awaiting-approval` | `--xh-fg-warning` | tool-call 的 status 部件 background 覆盖槽。 |
-| `--xh-tool-call-status-bg-done` | `status` | `background` | `state=output-available` | `--xh-fg-success` | tool-call 的 status 部件 background 覆盖槽。 |
-| `--xh-tool-call-status-bg-error` | `status` | `background` | `state=output-error` | `--xh-fg-danger` | tool-call 的 status 部件 background 覆盖槽。 |
+| `--xh-tool-call-status-bg-approval` | `status` | `background` | `state=awaiting-approval` | `--xh-_tone-subtle` | tool-call 的 status 部件 background 覆盖槽。 |
+| `--xh-tool-call-status-bg-done` | `status` | `background` | `state=output-available` | `--xh-_tone-subtle` | tool-call 的 status 部件 background 覆盖槽。 |
+| `--xh-tool-call-status-bg-error` | `status` | `background` | `state=output-error` | `--xh-_tone-subtle` | tool-call 的 status 部件 background 覆盖槽。 |
 | `--xh-tool-call-status-fg` | `root`<br>`status` | `color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`loading`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-fg-muted` | tool-call 的 root、status 部件 color 覆盖槽。 |
-| `--xh-tool-call-status-fg-approval` | `status` | `color` | `state=awaiting-approval` | `--xh-fg-warning` | tool-call 的 status 部件 color 覆盖槽。 |
-| `--xh-tool-call-status-fg-done` | `status` | `color` | `state=output-available` | `--xh-fg-success` | tool-call 的 status 部件 color 覆盖槽。 |
-| `--xh-tool-call-status-fg-error` | `status` | `color` | `state=output-error` | `--xh-fg-danger` | tool-call 的 status 部件 color 覆盖槽。 |
+| `--xh-tool-call-status-fg-approval` | `status` | `color` | `state=awaiting-approval` | `--xh-_tone-fg` | tool-call 的 status 部件 color 覆盖槽。 |
+| `--xh-tool-call-status-fg-done` | `status` | `color` | `state=output-available` | `--xh-_tone-fg` | tool-call 的 status 部件 color 覆盖槽。 |
+| `--xh-tool-call-status-fg-error` | `status` | `color` | `state=output-error` | `--xh-_tone-fg` | tool-call 的 status 部件 color 覆盖槽。 |
 | `--xh-tool-call-status-font-size` | `duration`<br>`error`<br>`status` | `font-size` | `default` | `--xh-text-caption-size` | tool-call 的 duration、error、status 部件 font-size 覆盖槽。 |
-| `--xh-tool-call-status-px` | `status` | `padding-inline` | `state=awaiting-approval`<br>`state=output-available`<br>`state=output-error` | `--xh-space-2` | tool-call 的 status 部件 padding-inline 覆盖槽。 |
-| `--xh-tool-call-status-py` | `status` | `padding-block` | `state=awaiting-approval`<br>`state=output-available`<br>`state=output-error` | `--xh-space-0_5` | tool-call 的 status 部件 padding-block 覆盖槽。 |
-| `--xh-tool-call-status-radius` | `status` | `border-radius` | `state=awaiting-approval`<br>`state=output-available`<br>`state=output-error` | `--xh-shape-pill` | tool-call 的 status 部件 border-radius 覆盖槽。 |
+| `--xh-tool-call-status-px` | `status` | `padding-inline` | `tone` | `--xh-space-1_5` | tool-call 的 status 部件 padding-inline 覆盖槽。 |
+| `--xh-tool-call-status-py` | `status` | `padding-block` | `tone` | `--xh-space-0_5` | tool-call 的 status 部件 padding-block 覆盖槽。 |
+| `--xh-tool-call-status-radius` | `status` | `border-radius` | `tone` | `--xh-shape-pill` | tool-call 的 status 部件 border-radius 覆盖槽。 |
 | `--xh-tool-call-status-shimmer-base` | `root`<br>`status` | `background-image` | `loading` | `--xh-fg-subtle` | tool-call 的 root、status 部件 background-image 覆盖槽。 |
 | `--xh-tool-call-status-shimmer-sheen` | `root`<br>`status` | `background-image` | `loading` | `--xh-fg-default` | tool-call 的 root、status 部件 background-image 覆盖槽。 |
 | `--xh-tool-call-summary-bg` | `summary` | `background` | `default` | `--xh-bg-subtle` | tool-call 的 summary 部件 background 覆盖槽。 |

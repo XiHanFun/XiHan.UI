@@ -2383,7 +2383,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-success"
+        "--xh-_tone-subtle"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 background 覆盖槽。"
@@ -2403,7 +2403,7 @@
         "state=expired"
       ],
       "defaultToken": [
-        "--xh-fg-danger"
+        "--xh-_tone-subtle"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 background 覆盖槽。"
@@ -2421,7 +2421,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-success"
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 color 覆盖槽。"
@@ -2441,7 +2441,7 @@
         "state=expired"
       ],
       "defaultToken": [
-        "--xh-fg-danger"
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 color 覆盖槽。"
@@ -2477,7 +2477,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 font-weight 覆盖槽。"
@@ -2495,7 +2495,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1_5"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 gap 覆盖槽。"
@@ -2513,7 +2513,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1_5"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 padding-inline 覆盖槽。"
@@ -2531,7 +2531,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0_5"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 padding-block 覆盖槽。"
@@ -53937,7 +53937,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_tone-subtle"
       ],
       "visibility": "public",
       "description": "question-flow 的 result 部件 background 覆盖槽。"
@@ -53955,7 +53955,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-success"
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
       "description": "question-flow 的 result 部件 color 覆盖槽。"
@@ -53991,7 +53991,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "question-flow 的 result 部件 font-weight 覆盖槽。"
@@ -54009,7 +54009,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1_5"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "question-flow 的 result 部件 gap 覆盖槽。"
@@ -54027,7 +54027,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1_5"
       ],
       "visibility": "public",
       "description": "question-flow 的 result 部件 padding-inline 覆盖槽。"
@@ -54045,7 +54045,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0_5"
       ],
       "visibility": "public",
       "description": "question-flow 的 result 部件 padding-block 覆盖槽。"
@@ -77512,7 +77512,7 @@
         "state=awaiting-approval"
       ],
       "defaultToken": [
-        "--xh-fg-warning"
+        "--xh-_tone-subtle"
       ],
       "visibility": "public",
       "description": "tool-call 的 status 部件 background 覆盖槽。"
@@ -77530,7 +77530,7 @@
         "state=output-available"
       ],
       "defaultToken": [
-        "--xh-fg-success"
+        "--xh-_tone-subtle"
       ],
       "visibility": "public",
       "description": "tool-call 的 status 部件 background 覆盖槽。"
@@ -77548,7 +77548,7 @@
         "state=output-error"
       ],
       "defaultToken": [
-        "--xh-fg-danger"
+        "--xh-_tone-subtle"
       ],
       "visibility": "public",
       "description": "tool-call 的 status 部件 background 覆盖槽。"
@@ -77590,7 +77590,7 @@
         "state=awaiting-approval"
       ],
       "defaultToken": [
-        "--xh-fg-warning"
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
       "description": "tool-call 的 status 部件 color 覆盖槽。"
@@ -77608,7 +77608,7 @@
         "state=output-available"
       ],
       "defaultToken": [
-        "--xh-fg-success"
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
       "description": "tool-call 的 status 部件 color 覆盖槽。"
@@ -77626,7 +77626,7 @@
         "state=output-error"
       ],
       "defaultToken": [
-        "--xh-fg-danger"
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
       "description": "tool-call 的 status 部件 color 覆盖槽。"
@@ -77661,12 +77661,10 @@
         "padding-inline"
       ],
       "state": [
-        "state=awaiting-approval",
-        "state=output-available",
-        "state=output-error"
+        "tone"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1_5"
       ],
       "visibility": "public",
       "description": "tool-call 的 status 部件 padding-inline 覆盖槽。"
@@ -77681,9 +77679,7 @@
         "padding-block"
       ],
       "state": [
-        "state=awaiting-approval",
-        "state=output-available",
-        "state=output-error"
+        "tone"
       ],
       "defaultToken": [
         "--xh-space-0_5"
@@ -77701,9 +77697,7 @@
         "border-radius"
       ],
       "state": [
-        "state=awaiting-approval",
-        "state=output-available",
-        "state=output-error"
+        "tone"
       ],
       "defaultToken": [
         "--xh-shape-pill"
