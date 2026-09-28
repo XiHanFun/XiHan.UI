@@ -15,6 +15,7 @@ import { connectDialog, dialogMachine } from '../src/dialog'
 import { connectDrawer, drawerMachine } from '../src/drawer'
 import { connectFloatingPanel, floatingPanelMachine } from '../src/floating-panel'
 import { connectHoverCard, hoverCardMachine } from '../src/hover-card'
+import { connectImageViewer, imageViewerMachine } from '../src/image-viewer'
 import { connectMenu, menuMachine } from '../src/menu'
 import { connectPopconfirm } from '../src/popconfirm'
 import { connectPopover, popoverMachine } from '../src/popover'
@@ -122,6 +123,14 @@ const CASES: Record<string, Case> = {
   'color-picker': {
     machine: colorPickerMachine,
     parts: marked,
+  },
+  'image-viewer': {
+    machine: imageViewerMachine,
+    props: open => ({ ...open, collection: [{ src: 'a.png' }] }),
+    parts: (service) => {
+      const api = connectImageViewer(service, normalizeProps)
+      return [api.getContentProps() as Attrs, api.getBackdropProps() as Attrs]
+    },
   },
   'floating-panel': {
     machine: floatingPanelMachine,
