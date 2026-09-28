@@ -21,8 +21,11 @@ import { sameArray } from '../shared/array'
 import { waitForTransition } from '../shared/part-presence'
 import { fileUploadHiddenInputId, fileUploadListId, fileUploadProgressId } from './file-upload.anatomy'
 
-/** 列表动效认的条目：接线之后的部件，以及 Web Components 作者刚放进列表、还没接线的节点。 */
-const FILE_UPLOAD_ITEM_SELECTOR = '[data-scope="file-upload"][data-part="item"], [data-scope="file-upload"][data-part="list"] > [data-xh-part="item"]'
+/**
+ * 列表动效认的条目：只认接线之后的部件。条目位可以多于文件（Vue 的下标条目、Web Components 作者写的一池位子），
+ * 空出来的位子撤掉部件属性、只剩空壳，不算条目；收下文件后接线才算。
+ */
+const FILE_UPLOAD_ITEM_SELECTOR = '[data-scope="file-upload"][data-part="item"]'
 
 const { createMachine } = setup<FileUploadSchema>()
 
@@ -196,6 +199,11 @@ export function sameRemoteFiles(a: readonly FileUploadRemoteFile[], b: readonly 
  */
 export function fileUploadPressKey(refs: UploadActionParams['refs'], file: FileUploadFile): FileUploadPressedKey {
   return `item-delete:${file instanceof File ? fileKeyOf(refs, file) : `remote:${file.id}`}`
+}
+
+/** 本地文件的内部 id（没发过就发一个）：连接层按它给进度条写 id，机器等淡出时按同一个 id 找回。 */
+export function fileUploadFileKey(refs: UploadActionParams['refs'], file: File): string {
+  return fileKeyOf(refs, file)
 }
 
 /** 取（或发）文件的内部 id：文件对象是身份，同一个 File 恒拿同一个 id。 */
