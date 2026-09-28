@@ -50,6 +50,8 @@ export const XhPaginationRoot = defineComponent({
     page: { type: Number },
     defaultPage: { type: Number },
     siblingCount: { type: Number },
+    /** 整组不可交互：按钮、跳页与每页条数一并禁用。 */
+    disabled: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction> },
     translations: { type: Object as PropType<Partial<PaginationTranslations>> },
     placement: { type: String as PropType<Placement> },
@@ -104,6 +106,15 @@ export const XhPaginationRoot = defineComponent({
   },
 })
 
+/** 跳到首页；按需放在上一页之前，没写内容时由皮肤画双箭头。 */
+export const XhPaginationFirstTrigger = defineComponent({
+  name: 'XhPaginationFirstTrigger',
+  setup(_, { slots }) {
+    const ctx = usePaginationContext()
+    return () => h('button', ctx.api.value.getFirstTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhPaginationPrevTrigger = defineComponent({
   name: 'XhPaginationPrevTrigger',
   setup(_, { slots }) {
@@ -117,6 +128,15 @@ export const XhPaginationNextTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = usePaginationContext()
     return () => h('button', ctx.api.value.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 跳到末页；按需放在下一页之后，没写内容时由皮肤画双箭头。 */
+export const XhPaginationLastTrigger = defineComponent({
+  name: 'XhPaginationLastTrigger',
+  setup(_, { slots }) {
+    const ctx = usePaginationContext()
+    return () => h('button', ctx.api.value.getLastTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

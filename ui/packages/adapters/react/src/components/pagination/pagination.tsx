@@ -55,6 +55,8 @@ export interface XhPaginationRootProps extends RootElementProps {
   defaultPage?: number
   /** 当前页两侧各保留几个页码。 */
   siblingCount?: number
+  /** 整组不可交互：按钮、跳页与每页条数一并禁用。 */
+  disabled?: boolean
   dir?: Direction
   translations?: Partial<PaginationTranslations>
   placement?: Placement
@@ -77,6 +79,7 @@ export function XhPaginationRoot({
   page,
   defaultPage,
   siblingCount,
+  disabled,
   dir,
   translations,
   placement,
@@ -98,6 +101,7 @@ export function XhPaginationRoot({
     page,
     defaultPage,
     siblingCount,
+    disabled,
     dir,
     translations,
     placement,
@@ -147,6 +151,13 @@ export function XhPaginationRoot({
   )
 }
 
+export interface XhPaginationFirstTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 跳到首页；按需放在上一页之前，没写内容时由皮肤画双箭头。 */
+export function XhPaginationFirstTrigger({ children, ...rest }: XhPaginationFirstTriggerProps): ReactNode {
+  const ctx = usePaginationContext()
+  return <button {...mergeReactProps(ctx.api.getFirstTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
 export interface XhPaginationPrevTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhPaginationPrevTrigger({ children, ...rest }: XhPaginationPrevTriggerProps): ReactNode {
   const ctx = usePaginationContext()
@@ -157,6 +168,13 @@ export interface XhPaginationNextTriggerProps extends ComponentPropsWithRef<'but
 export function XhPaginationNextTrigger({ children, ...rest }: XhPaginationNextTriggerProps): ReactNode {
   const ctx = usePaginationContext()
   return <button {...mergeReactProps(ctx.api.getNextTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
+export interface XhPaginationLastTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 跳到末页；按需放在下一页之后，没写内容时由皮肤画双箭头。 */
+export function XhPaginationLastTrigger({ children, ...rest }: XhPaginationLastTriggerProps): ReactNode {
+  const ctx = usePaginationContext()
+  return <button {...mergeReactProps(ctx.api.getLastTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
 export interface XhPaginationItemProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {

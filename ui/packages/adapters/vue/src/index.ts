@@ -801,8 +801,10 @@ export { XhPageHeaderBackTrigger, XhPageHeaderBreadcrumb, XhPageHeaderDescriptio
 export {
   XhPaginationContent,
   XhPaginationEllipsisTrigger,
+  XhPaginationFirstTrigger,
   XhPaginationItem,
   XhPaginationJumper,
+  XhPaginationLastTrigger,
   XhPaginationNextTrigger,
   XhPaginationPageSizeSelect,
   XhPaginationPositioner,

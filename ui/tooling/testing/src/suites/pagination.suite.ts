@@ -14,7 +14,7 @@ function q(doc: Document, part: string): HTMLElement | null {
 }
 
 /**
- * 作者手写的页码节点：1 / 2 / 3 / … / 10。
+ * 作者手写的页码节点：首页 / 上一页 / 1 / 2 / 3 / … / 10 / 下一页 / 末页。
  * 序列本身（哪几页该出、省略号落在哪）是纯函数的活，由 headless 单测按不变量守；
  * 这里固定成一组节点，验的是"给定页码，属性该长什么样"。
  */
@@ -26,6 +26,7 @@ export const paginationSuite: ConformanceSuite = {
     part: 'root',
     tag: 'nav',
     children: [
+      { part: 'first-trigger', tag: 'button', text: '首页' },
       { part: 'prev-trigger', tag: 'button', text: '上一页' },
       { part: 'item', tag: 'button', attrs: { value: '1' }, text: '1' },
       { part: 'item', tag: 'button', attrs: { value: '2' }, text: '2' },
@@ -33,6 +34,7 @@ export const paginationSuite: ConformanceSuite = {
       { part: 'ellipsis-trigger', tag: 'button', attrs: { side: 'end' }, text: '…' },
       { part: 'item', tag: 'button', attrs: { value: '10' }, text: '10' },
       { part: 'next-trigger', tag: 'button', text: '下一页' },
+      { part: 'last-trigger', tag: 'button', text: '末页' },
       {
         part: 'positioner',
         tag: 'div',
@@ -46,14 +48,30 @@ export const paginationSuite: ConformanceSuite = {
       spec: { apg: APG, adr: ARIA_CURRENT },
       props: { count: 100, pageSize: 10 },
       initial: {
-        order: ['root', 'prev-trigger', 'item[0]', 'item[1]', 'item[2]', 'ellipsis-trigger', 'item[3]', 'next-trigger', 'positioner', 'content'],
-        counts: { 'root': 1, 'prev-trigger': 1, 'item': 4, 'ellipsis-trigger': 1, 'next-trigger': 1, 'positioner': 1, 'content': 1 },
+        order: ['root', 'first-trigger', 'prev-trigger', 'item[0]', 'item[1]', 'item[2]', 'ellipsis-trigger', 'item[3]', 'next-trigger', 'last-trigger', 'positioner', 'content'],
+        counts: { 'root': 1, 'first-trigger': 1, 'prev-trigger': 1, 'item': 4, 'ellipsis-trigger': 1, 'next-trigger': 1, 'last-trigger': 1, 'positioner': 1, 'content': 1 },
         parts: {
           'root': {
             'aria-label': 'Pagination',
             // dir 没给就不写：写死 ltr 会切断从 RTL 祖先继承来的方向
             'dir': null,
             'data-empty': null,
+            'data-disabled': null,
+          },
+          // 首页钮与上一页同一副：首页时原生 disabled
+          'first-trigger': {
+            'type': 'button',
+            'aria-label': 'First page',
+            'disabled': '',
+            'data-disabled': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'ghost',
+          },
+          'last-trigger': {
+            'type': 'button',
+            'aria-label': 'Last page',
+            'disabled': null,
+            'data-disabled': null,
           },
           'prev-trigger': {
             'type': 'button',
@@ -251,12 +269,63 @@ export const paginationSuite: ConformanceSuite = {
     {
       name: 'Enter / Space 由原生按钮负责：三个可点部件都得是 <button type="button">',
       spec: { apg: `${APG}#keyboardinteraction` },
-      covers: ['pagination.kbd.item', 'pagination.kbd.prev', 'pagination.kbd.next'],
+      covers: ['pagination.kbd.item', 'pagination.kbd.prev', 'pagination.kbd.next', 'pagination.kbd.first', 'pagination.kbd.last'],
       props: { count: 100, pageSize: 10, defaultPage: 2 },
       steps: [
         nativeActivation('pagination', 'item'),
         nativeActivation('pagination', 'prev-trigger'),
         nativeActivation('pagination', 'next-trigger'),
+        nativeActivation('pagination', 'first-trigger'),
+        nativeActivation('pagination', 'last-trigger'),
+      ],
+    },
+    {
+      name: '首页 / 末页钮一步跳到头，到头那一侧转原生 disabled',
+      spec: { apg: APG, adr: ARIA_CURRENT },
+      props: { count: 100, pageSize: 10, defaultPage: 3 },
+      steps: [
+        {
+          kind: 'click',
+          part: 'last-trigger',
+          expect: {
+            parts: {
+              'item[3]': { 'aria-current': 'page' },
+              'last-trigger': { 'disabled': '', 'data-disabled': '' },
+              'first-trigger': { 'disabled': null, 'data-disabled': null },
+            },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'first-trigger',
+          expect: {
+            parts: {
+              'item[0]': { 'aria-current': 'page' },
+              'first-trigger': { 'disabled': '', 'data-disabled': '' },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '整组禁用：每类按钮都是原生 disabled，当前页照常标出，点了不翻页、省略位不摊开',
+      spec: { apg: APG },
+      props: { count: 100, pageSize: 10, defaultPage: 2, disabled: true },
+      initial: {
+        parts: {
+          'root': { 'data-disabled': '' },
+          'first-trigger': { 'disabled': '', 'data-disabled': '' },
+          'prev-trigger': { 'disabled': '', 'data-disabled': '' },
+          'next-trigger': { 'disabled': '', 'data-disabled': '' },
+          'last-trigger': { 'disabled': '', 'data-disabled': '' },
+          'item[0]': { 'disabled': '', 'data-disabled': '' },
+          'item[1]': { 'disabled': '', 'aria-current': 'page', 'data-current': '' },
+          'ellipsis-trigger': { 'disabled': '', 'data-disabled': '', 'aria-expanded': 'false' },
+        },
+      },
+      steps: [
+        dispatchClickOnDisabled('pagination', 'item[2]', { parts: { 'item[1]': { 'aria-current': 'page' } }, events: [] }),
+        dispatchClickOnDisabled('pagination', 'ellipsis-trigger', { parts: { 'ellipsis-trigger': { 'aria-expanded': 'false' } }, events: [] }),
       ],
     },
     {
@@ -266,8 +335,10 @@ export const paginationSuite: ConformanceSuite = {
       covers: ['pagination.kbd.press'],
       props: { count: 100, pageSize: 10, defaultPage: 2 },
       steps: [
+        heldPress('pagination', 'first-trigger'),
         heldPress('pagination', 'prev-trigger'),
         heldPress('pagination', 'next-trigger'),
+        heldPress('pagination', 'last-trigger'),
         heldPress('pagination', 'item', { value: '3' }),
         heldPress('pagination', 'ellipsis-trigger', { selector: '[data-scope="pagination"][data-part="ellipsis-trigger"][data-side="end"]' }),
         { kind: 'settle', until: { attr: { part: 'ellipsis-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'item[1]': { 'aria-current': 'page' }, 'item[2]': { 'aria-current': null, 'data-pressed': null } } } },
@@ -340,11 +411,13 @@ export const paginationSuite: ConformanceSuite = {
           run: ({ doc }) => {
             const nodes = [...doc.querySelectorAll<HTMLElement>(
               '[data-scope="pagination"][data-part="item"],'
+              + '[data-scope="pagination"][data-part="first-trigger"],'
               + '[data-scope="pagination"][data-part="prev-trigger"],'
-              + '[data-scope="pagination"][data-part="next-trigger"]',
+              + '[data-scope="pagination"][data-part="next-trigger"],'
+              + '[data-scope="pagination"][data-part="last-trigger"]',
             )]
-            if (nodes.length !== 6)
-              throw new Error(`预期 6 个可点部件，实际 ${nodes.length}`)
+            if (nodes.length !== 8)
+              throw new Error(`预期 8 个可点部件，实际 ${nodes.length}`)
             for (const el of nodes) {
               // 出现 tabindex 就说明有人给分页器套了 roving tabindex
               if (el.hasAttribute('tabindex'))
