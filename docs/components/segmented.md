@@ -298,6 +298,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | `item-text` | `data-invalid` | ''（条件成立时才出现） |
 | `item-text` | `data-readonly` | ''（条件成立时才出现） |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-value` | context.get('value') |
 
 <!-- xh-component-tokens:start -->
