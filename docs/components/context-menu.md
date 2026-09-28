@@ -70,6 +70,7 @@
 - 条目可组合图标、文字、说明和快捷键提示。
 - `CheckboxItem` 与 `RadioGroup / RadioItem` 可直接修改视图开关和互斥选项，默认切换后保持右键菜单展开。
 - 选中任意层级的命令后发出根级 `select` 并关闭菜单链。
+- `disabled` 让整张菜单失效：右键、长按、菜单键与 Shift+F10 都不再展开，浏览器自己的右键菜单照常出现；触发区退出 Tab 序列，展开途中转为禁用即收起。
 
 ### 组合
 
@@ -117,6 +118,7 @@
 | `typeahead` | `boolean` |  | 连打检索，默认开启。关闭后可打印字符一律放行给页面。 |
 | `translations` | `Partial<ContextMenuTranslations>` |  | 读屏文案，默认英文。 |
 | `longPressDelay` | `number` |  | 触摸端长按多久视为触发（ms），默认 700。 |
+| `disabled` | `boolean` |  | 整张菜单禁用：右键、长按、菜单键与 Shift+F10 都不再展开，也不拦截浏览器自己的右键菜单； 触发区退出 Tab 序列，条目全部为 aria-disabled，展开途中转为禁用即收起。与 Menu 的 disabled 同名同义。 |
 | `tone` | `Tone` |  | 整张菜单的语气：brand / neutral / success / warning / danger / info。 只为浮层与作者放进来的内容备好该族颜色，不下发给条目——条目保持中性档， 逐条的语气写在 collection 的 `tone` 上（见 ContextMenuNode）。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
 | `onOpenChange` | `(details: ContextMenuOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -215,7 +217,7 @@
 
 **事件**：`CONTEXT.MENU` · `OPEN` · `CLOSE` · `PRESS.START` · `PRESS.MOVE` · `PRESS.END` · `after.longPressDelay` · `ITEM.PRESS.START` · `ITEM.PRESS.END` · `CHECKBOX.VALUE.SET` · `RADIO.VALUE.SET` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `FOCUS.CLEAR` · `ITEM.LOST` · `ITEM.SELECT`
 
-**判据**：`isOpenControlled` · `movedBeyondTolerance` · `canPressItem` · `keepsMenuOpen`
+**判据**：`isOpenControlled` · `movedBeyondTolerance` · `canPressItem` · `keepsMenuOpen` · `isDisabled`
 
 ### connect API
 
@@ -224,6 +226,7 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
+| `disabled` | `boolean` | 整张菜单是否禁用。 |
 | `collection` | `readonly ContextMenuNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `pressing` | `boolean` | 长按计时进行中；触发区据此提供按压反馈。 |
 | `point` | `ContextMenuPoint \| null` | 当前锚点坐标；从未打开过时为 null。 |
@@ -279,9 +282,9 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `trigger` | `aria-controls` | `content` 部件的 id |
-| `trigger` | `aria-haspopup` | 'menu' |
-| `trigger` | `aria-keyshortcuts` | 'Shift+F10' |
+| `trigger` | `aria-controls` | undefined \| `content` 部件的 id |
+| `trigger` | `aria-haspopup` | undefined \| 'menu' |
+| `trigger` | `aria-keyshortcuts` | undefined \| 'Shift+F10' |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-label` | props.translations.content |
 | `content` | `role` | 'menu' |
@@ -312,6 +315,7 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressing` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |

@@ -66,6 +66,8 @@ export const XhContextMenuRoot = defineComponent({
     translations: { type: Object as PropType<ContextMenuProps['translations']> },
     dir: { type: String as PropType<Direction> },
     longPressDelay: { type: Number },
+    /** 整张菜单禁用：不再展开，浏览器自己的右键菜单照常出现。 */
+    disabled: { type: Boolean, default: undefined },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
   },

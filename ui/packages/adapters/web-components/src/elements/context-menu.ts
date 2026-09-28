@@ -46,6 +46,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，默认 ltr
  * @attr {number} long-press-delay - 触摸端长按触发时长（ms），默认 700
+ * @attr {boolean} disabled - 整张菜单禁用：不再展开，浏览器自己的右键菜单照常出现，条目全部禁用
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
@@ -92,6 +93,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
     translations: { attribute: false },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     longPressDelay: { converter: NUMBER_CONVERTER, attribute: 'long-press-delay' },
+    disabled: { converter: BOOLEAN_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
   }
@@ -111,6 +113,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
   declare translations?: ContextMenuSchema['props']['translations']
   declare direction?: Direction
   declare longPressDelay?: number
+  declare disabled?: boolean
   declare tone?: Tone
   declare size?: Size
 
@@ -246,6 +249,24 @@ export class XhContextMenuElement extends XhPortalHostElement {
   /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
 
+  // 整张禁用期间的条目自身声明快照：connect 每帧把 aria-disabled 写回条目，回读分不清作者声明与自己的写回
+  private readonly ownItemDisabled = new WeakMap<HTMLElement, boolean>()
+  /** 上一帧是否整张禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
+  private wasMenuDisabled = false
+
+  private itemDisabled(el: HTMLElement, menuDisabled: boolean): boolean | undefined {
+    if (this.collection)
+      return this.declaredDisabled(el)
+    // 头一回见到这个条目，或本帧与上一帧都没整张禁用：DOM 上的 aria-disabled 就是作者声明
+    if (!this.ownItemDisabled.has(el) || (!menuDisabled && !this.wasMenuDisabled)) {
+      const own = isItemDisabled(el)
+      this.ownItemDisabled.set(el, own)
+      return own
+    }
+    // 整张禁用那几帧（以及解禁当帧）DOM 上留着机器的写回值，只认快照
+    return this.ownItemDisabled.get(el)
+  }
+
   private machineProps(): Partial<ContextMenuSchema['props']> {
     return {
       collection: this.collection,
@@ -262,6 +283,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
       translations: this.translations,
       dir: this.direction,
       longPressDelay: this.longPressDelay,
+      disabled: this.disabled,
       tone: this.tone,
       size: this.size,
       onOpenChange: this.notifyOpen,
@@ -385,7 +407,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
       const kind = (meta?.kind ?? el.getAttribute('kind') ?? 'item') as ContextMenuAnyItemProps['kind']
       const closeAttr = el.getAttribute('close-on-select')
       const closeOnSelect = meta?.closeOnSelect ?? (closeAttr == null ? undefined : closeAttr !== 'false')
-      const disabled = this.collection ? this.declaredDisabled(el) : isItemDisabled(el)
+      const disabled = this.itemDisabled(el, api.disabled)
       const item: ContextMenuAnyItemProps = kind === 'radio'
         ? { value, disabled, closeOnSelect, kind, group: meta?.group ?? el.closest<HTMLElement>('[data-xh-part="group"]')?.getAttribute('value') ?? '' }
         : kind === 'checkbox'
@@ -409,6 +431,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
       for (const suffix of this.partsIn(el, 'item-suffix'))
         this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
     }
+    this.wasMenuDisabled = api.disabled
     for (const child of this.submenuBridges.values())
       this.wireSubmenuChild(child)
 
