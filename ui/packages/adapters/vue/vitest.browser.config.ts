@@ -21,7 +21,7 @@ const TOUCH_SPECS = readdirSync(BROWSER_DIR)
   .map(name => `tests/browser/${name}`)
 
 /** 量主线程耗时的预算用例：与整套并行跑时量到的是别份用例抢走的 CPU，放到最后单独串行跑。 */
-const SERIAL_SPECS = ['tests/browser/overlay-open-budget.spec.ts']
+const SERIAL_SPECS = ['tests/browser/overlay-open-budget.spec.ts', 'tests/browser/cartesian-budget.spec.ts']
 
 // 浏览器态：真实 Chromium，跑 jsdom 里演不出来的那部分（无障碍、布局、可见性、真实焦点）。
 // 与 vitest.config 缺省的 jsdom 单测互不覆盖，各跑各的目录。
