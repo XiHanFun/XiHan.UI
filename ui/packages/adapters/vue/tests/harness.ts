@@ -56,6 +56,7 @@ const PUBLIC_EVENTS = {
   'brush-selection-change': 'onBrushSelectionChange',
   'root-key-change': 'onRootKeyChange',
   'source-open': 'onSourceOpen',
+  'panel-size-change': 'onPanelSizeChange',
 } as const
 
 function declaredEvents(component: Component): Set<string> {

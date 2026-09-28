@@ -58,6 +58,7 @@ const PUBLIC_EVENTS = {
   'brush-selection-change': 'onBrushSelectionChange',
   'root-key-change': 'onRootKeyChange',
   'source-open': 'onSourceOpen',
+  'panel-size-change': 'onPanelSizeChange',
 } as const
 
 const globals = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }

@@ -21,4 +21,6 @@ export const drawerAnatomy = createAnatomy('drawer', [
   'body',
   'footer',
   'close-trigger',
+  // 改尺把手：落在朝向页面的那条边上，拖动或方向键推面板的厚度
+  'resize-trigger',
 ])

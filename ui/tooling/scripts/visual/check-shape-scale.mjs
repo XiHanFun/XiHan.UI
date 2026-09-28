@@ -157,6 +157,8 @@ const IDENTITY = {
   'navigation-menu:link::after': 'pill',
   'navigation-menu:indicator': 'pill',
   'resizable:handle::after': 'pill',
+  // 抽屉改尺把手的指示条：与 Resizable 把手同一种一维对象
+  'drawer:resize-trigger::after': 'pill',
   'table:column-resize-trigger::after': 'pill',
   'image-cropper:crop-handle::after': 'pill',
   'scrollbar:thumb': 'pill',

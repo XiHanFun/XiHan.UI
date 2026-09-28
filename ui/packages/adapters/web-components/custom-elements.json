@@ -23092,6 +23092,10 @@
             {
               "description": "关闭按钮",
               "name": "close-trigger"
+            },
+            {
+              "description": "改尺把手（role=separator），落在朝向页面的那条边上；没开 resizable 时收起",
+              "name": "resize-trigger"
             }
           ],
           "members": [
@@ -23201,6 +23205,51 @@
                 "text": "OverlayBackdropVariant | undefined"
               },
               "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "resizable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "resizable"
+            },
+            {
+              "kind": "field",
+              "name": "panelSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "panel-size"
+            },
+            {
+              "kind": "field",
+              "name": "defaultPanelSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "default-panel-size"
+            },
+            {
+              "kind": "field",
+              "name": "minPanelSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min-panel-size"
+            },
+            {
+              "kind": "field",
+              "name": "maxPanelSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-panel-size"
             },
             {
               "kind": "field",
@@ -23373,6 +23422,13 @@
               "description": "退出完成且本层资源已释放"
             },
             {
+              "name": "panel-size-change",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "厚度变化意图；detail 为 `{ panelSize: number }`"
+            },
+            {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
               "name": "open-change",
               "type": {
@@ -23467,6 +23523,46 @@
               "description": "遮罩形态：只影响 backdrop 的底色与模糊",
               "name": "variant",
               "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "可调厚度：朝向页面那条边上的 resize-trigger 拖动或用方向键推",
+              "name": "resizable",
+              "fieldName": "resizable"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "受控厚度（像素）；未提供即非受控",
+              "name": "panel-size",
+              "fieldName": "panelSize"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "非受控的初始厚度（像素）；不给即按 size 档",
+              "name": "default-panel-size",
+              "fieldName": "defaultPanelSize"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "厚度下限（像素），默认 160",
+              "name": "min-panel-size",
+              "fieldName": "minPanelSize"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "厚度上限（像素）；不给时只受视口（或所在容器）限制",
+              "name": "max-panel-size",
+              "fieldName": "maxPanelSize"
             }
           ],
           "superclass": {
@@ -23553,6 +23649,27 @@
             },
             {
               "name": "--xh-drawer-radius"
+            },
+            {
+              "name": "--xh-drawer-resize-indicator-length"
+            },
+            {
+              "name": "--xh-drawer-resize-indicator-thickness"
+            },
+            {
+              "name": "--xh-drawer-resize-trigger-bg"
+            },
+            {
+              "name": "--xh-drawer-resize-trigger-bg-active"
+            },
+            {
+              "name": "--xh-drawer-resize-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-drawer-resize-trigger-radius"
+            },
+            {
+              "name": "--xh-drawer-resize-trigger-size"
             },
             {
               "name": "--xh-drawer-shadow"

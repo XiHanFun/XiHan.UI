@@ -1,83 +1,39 @@
-// 拖动边缘改变厚度 | 面板中放一根把手，拖动时把新厚度写进 content 的 --xh-drawer-size；该槽覆盖 size 三档，滑入滑出仍按面板自身宽度计算
-import type { CSSProperties, PointerEvent, ReactNode } from "react";
+// 调整厚度 | resizable 在朝向页面的那条边上放一根把手：拖动或用方向键推，厚度夹在 minPanelSize 与 maxPanelSize 之间；受控的 panelSize 读写当前厚度
+import type { ReactNode } from "react";
 import {
   XhButton,
   XhDrawerCloseTrigger,
   XhDrawerContent,
   XhDrawerDescription,
+  XhDrawerResizeTrigger,
   XhDrawerRoot,
   XhDrawerTitle,
   XhDrawerTrigger,
 } from "@xihan-ui/react";
-import { useRef, useState } from "react";
-
-const MIN = 260;
-const MAX = 560;
-
-const handleStyle: CSSProperties = {
-  position: "absolute",
-  insetBlock: 0,
-  insetInlineStart: 0,
-  inlineSize: "8px",
-  cursor: "ew-resize",
-  touchAction: "none",
-};
+import { useState } from "react";
 
 export default function Demo(): ReactNode {
-  const [width, setWidth] = useState(0);
-  const dragging = useRef(false);
-  const panel = useRef<HTMLElement | null>(null);
-
-  function begin(event: PointerEvent<HTMLDivElement>): void {
-    const handle = event.currentTarget;
-    panel.current = handle.closest<HTMLElement>("[data-scope=\"drawer\"][data-part=\"content\"]");
-    if (!panel.current)
-      return;
-    dragging.current = true;
-    // 起点取面板当前的实际厚度
-    setWidth(Math.round(panel.current.getBoundingClientRect().width));
-    handle.setPointerCapture(event.pointerId);
-  }
-
-  function move(event: PointerEvent<HTMLDivElement>): void {
-    if (!dragging.current || !panel.current)
-      return;
-    // 面板贴右边，厚度就是视口右缘到指针的距离
-    const next = Math.round(Math.min(MAX, Math.max(MIN, window.innerWidth - event.clientX)));
-    setWidth(next);
-    panel.current.style.setProperty("--xh-drawer-size", `${next}px`);
-  }
-
-  function end(event: PointerEvent<HTMLDivElement>): void {
-    if (!dragging.current)
-      return;
-    dragging.current = false;
-    panel.current = null;
-    event.currentTarget.releasePointerCapture(event.pointerId);
-  }
+  const [panelSize, setPanelSize] = useState<number>();
 
   return (
-    <XhDrawerRoot translations={{ close: "关闭" }}>
+    <XhDrawerRoot
+      resizable
+      panelSize={panelSize}
+      onPanelSizeChange={({ panelSize }) => setPanelSize(panelSize)}
+      minPanelSize={260}
+      maxPanelSize={560}
+      translations={{ close: "关闭", resizeTrigger: "调整抽屉宽度" }}
+    >
       {({ setOpen }) => (
         <>
           <XhDrawerTrigger>打开可调宽的抽屉</XhDrawerTrigger>
           <XhDrawerContent>
-            <div
-              style={handleStyle}
-              onPointerDown={begin}
-              onPointerMove={move}
-              onPointerUp={end}
-              onPointerCancel={end}
-            />
             <XhDrawerTitle>字段设置</XhDrawerTitle>
-            <XhDrawerDescription>
-              {`拖面板左边缘，厚度在 ${MIN} 到 ${MAX} 像素之间取值。`}
-            </XhDrawerDescription>
-            <p style={{ margin: 0, color: "var(--xh-fg-muted)" }}>
-              {`当前厚度：${width ? `${width} px` : "默认"}`}
-            </p>
+            <XhDrawerDescription>拖面板左边缘，或聚焦把手后按方向键；Home / End 推到最窄与最宽。</XhDrawerDescription>
+            <p style={{ margin: 0, color: "var(--xh-fg-muted)" }}>{`当前厚度：${panelSize ? `${panelSize} px` : "默认"}`}</p>
             <XhButton variant="solid" onClick={() => setOpen(false)}>关闭</XhButton>
             <XhDrawerCloseTrigger />
+            <XhDrawerResizeTrigger />
           </XhDrawerContent>
         </>
       )}

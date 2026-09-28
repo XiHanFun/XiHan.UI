@@ -28852,6 +28852,148 @@
       "description": "drawer 的 content 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
     },
     {
+      "name": "--xh-drawer-resize-indicator-length",
+      "component": "drawer",
+      "part": [
+        "resize-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "is([data-side='left'], [data-side='right'])",
+        "is([data-side='top'], [data-side='bottom'])",
+        "side=bottom",
+        "side=left",
+        "side=right",
+        "side=top"
+      ],
+      "defaultToken": [
+        "--xh-space-8"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-resize-indicator-thickness",
+      "component": "drawer",
+      "part": [
+        "resize-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "is([data-side='left'], [data-side='right'])",
+        "is([data-side='top'], [data-side='bottom'])",
+        "side=bottom",
+        "side=left",
+        "side=right",
+        "side=top"
+      ],
+      "defaultToken": [
+        "--xh-stroke-strong"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-resize-trigger-bg",
+      "component": "drawer",
+      "part": [
+        "resize-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-control"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 resize-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-resize-trigger-bg-active",
+      "component": "drawer",
+      "part": [
+        "resize-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "resizing"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 resize-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-resize-trigger-bg-hover",
+      "component": "drawer",
+      "part": [
+        "resize-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "hover"
+      ],
+      "defaultToken": [
+        "--xh-border-control-hover"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 resize-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-resize-trigger-radius",
+      "component": "drawer",
+      "part": [
+        "resize-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 resize-trigger 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-resize-trigger-size",
+      "component": "drawer",
+      "part": [
+        "resize-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "side=bottom",
+        "side=left",
+        "side=right",
+        "side=top"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-drawer-shadow",
       "component": "drawer",
       "part": [

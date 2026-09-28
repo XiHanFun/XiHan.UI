@@ -13,6 +13,7 @@ import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
+import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { DrawerProvider, useDrawerContext } from './context'
@@ -45,9 +46,18 @@ export interface XhDrawerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'c
    * 提供 container 后默认为真，不必再写一遍；两个都未提供即铺满视口。
    */
   contained?: boolean
+  /** 可调厚度：朝向页面那条边上的把手拖动或用方向键推。 */
+  resizable?: boolean
+  /** 受控厚度（像素）；未提供即非受控。 */
+  panelSize?: number
+  defaultPanelSize?: number
+  minPanelSize?: number
+  maxPanelSize?: number
   translations?: DrawerProps['translations']
   onOpenChange?: DrawerProps['onOpenChange']
   onExitComplete?: DrawerProps['onExitComplete']
+  /** 厚度变化意图：拖动途中连续发出，键盘每推一步发一次。 */
+  onPanelSizeChange?: DrawerProps['onPanelSizeChange']
   children?: SlotChildren<DrawerRootSlotProps>
 }
 
@@ -63,9 +73,15 @@ export function XhDrawerRoot({
   size,
   variant,
   contained,
+  resizable,
+  panelSize,
+  defaultPanelSize,
+  minPanelSize,
+  maxPanelSize,
   translations,
   onOpenChange,
   onExitComplete,
+  onPanelSizeChange,
   children,
   container,
   ...rest
@@ -82,9 +98,15 @@ export function XhDrawerRoot({
     size,
     variant,
     contained,
+    resizable,
+    panelSize,
+    defaultPanelSize,
+    minPanelSize,
+    maxPanelSize,
     translations,
     onOpenChange,
     onExitComplete,
+    onPanelSizeChange,
   }) as DrawerProps, container)
   const api = ctx.api
   // root 是真实节点，content 会被搬到浮层落点，data-side 挂在这里供页面内的部分读取
@@ -97,7 +119,7 @@ export function XhDrawerRoot({
   )
 }
 
-XhDrawerRoot.xhEvents = ['open-change', 'exit-complete'] as const
+XhDrawerRoot.xhEvents = ['open-change', 'exit-complete', 'panel-size-change'] as const
 
 export interface XhDrawerTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 
@@ -176,4 +198,13 @@ export interface XhDrawerCloseTriggerProps extends ComponentPropsWithRef<'button
 export function XhDrawerCloseTrigger({ children, ...rest }: XhDrawerCloseTriggerProps): ReactNode {
   const ctx = useDrawerContext()
   return <button {...mergeReactProps(ctx.api.getCloseTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
+export interface XhDrawerResizeTriggerProps extends ComponentPropsWithRef<'div'> {}
+/** 改尺把手：role=separator，落在朝向页面的那条边上；放在 XhDrawerContent 里。 */
+export function XhDrawerResizeTrigger(props: XhDrawerResizeTriggerProps): ReactNode {
+  const ctx = useDrawerContext()
+  // 得焦量厚度挂在 focus 上：它不冒泡，委派在根容器上的合成事件收不到，装成原生监听器
+  const bind = useNativeEvents(ctx.api.getResizeTriggerProps() as Record<string, unknown>, ['onFocus'])
+  return <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, props as Record<string, unknown>)} />
 }

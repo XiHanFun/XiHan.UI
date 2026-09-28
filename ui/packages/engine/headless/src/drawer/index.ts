@@ -8,6 +8,6 @@
 export { drawerAnatomy } from './drawer.anatomy'
 export { connectDrawer, DRAWER_DEFAULT_SIDE } from './drawer.connect'
 export { drawerKeyboard } from './drawer.keyboard'
-export { drawerMachine } from './drawer.machine'
+export { DRAWER_MIN_PANEL_SIZE, drawerMachine } from './drawer.machine'
 export { drawerMeta } from './drawer.meta'
-export type { DrawerApi, DrawerOpenChangeDetails, DrawerRefs, DrawerSchema, DrawerSide, DrawerTranslations } from './drawer.types'
+export type { DrawerApi, DrawerOpenChangeDetails, DrawerPanelSizeChangeDetails, DrawerRefs, DrawerSchema, DrawerSide, DrawerTranslations } from './drawer.types'
