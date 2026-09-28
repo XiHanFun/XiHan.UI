@@ -22,6 +22,7 @@ export function connectLayout<T extends PropTypes>(
 ): LayoutApi<T> {
   const { state, prop, send, scope, context } = service
   const collapsed = state.get() === 'collapsed'
+  const instant = context.get('siderInstant')
   const placement = prop('siderPlacement') ?? 'start'
   const ids = scope.ids('layout', 'sider')
   // 按压通道：真源在机器 context，跟踪器只把 Space / Enter 与触屏按住翻成事件；指针按住由 :active 表出
@@ -85,6 +86,7 @@ export function connectLayout<T extends PropTypes>(
       ...parts['sider-backdrop'].attrs,
       'aria-hidden': true,
       'data-collapsed': dataAttr(collapsed),
+      'data-instant': dataAttr(instant),
       'hidden': !sheet || undefined,
       'onClick': () => setSiderCollapsed(true),
     }),
@@ -93,6 +95,8 @@ export function connectLayout<T extends PropTypes>(
       ...parts.sider.attrs,
       'id': ids.sider,
       'data-collapsed': dataAttr(collapsed),
+      // 首帧与跨过断点的开合直接落位，皮肤据此不走过渡
+      'data-instant': dataAttr(instant),
       'data-placement': placement,
       'data-presentation': presentation,
       'data-fixed': dataAttr(siderFixed),

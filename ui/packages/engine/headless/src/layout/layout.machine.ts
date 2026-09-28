@@ -33,6 +33,8 @@ export const layoutMachine = createMachine({
     siderNarrow: cell<boolean>(() => ({ defaultValue: false })),
     // 按压通道：把手被 Space / Enter 或触屏按住，与折叠态互相独立（Enter 在 keydown 即翻面，按压面不能随之丢）
     pressed: cell<boolean>(() => ({ defaultValue: false })),
+    // 首帧直接落位：挂载那一刻的开合不是用户的操作
+    siderInstant: cell<boolean>(() => ({ defaultValue: true })),
   }),
   refs: () => ({
     config: null,
@@ -40,7 +42,7 @@ export const layoutMachine = createMachine({
   initialState: ({ prop }) => ((prop('siderCollapsed') ?? prop('defaultSiderCollapsed')) ? 'collapsed' : 'expanded'),
   watch: ({ track, prop, action }) => track([() => prop('siderCollapsed')], () => action(['syncSiderCollapsed'])),
   // 挂根级：断点与折叠态无关，跟着状态挂会在每次折叠时重挂并重发一次当前值
-  effects: ['trackSiderBreakpoint', 'trackLiquid'],
+  effects: ['trackSiderBreakpoint', 'trackLiquid', 'settleSiderInstant'],
   // 按压通道挂根级：把手在两个折叠态下都在场；它没有禁用态，按住一律进，不设守卫
   on: {
     'PRESS.START': { actions: ['startPress'] },
@@ -53,12 +55,12 @@ export const layoutMachine = createMachine({
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'SIDER.COLLAPSE': [
-          { guard: 'isSiderCollapsedControlled', actions: ['invokeOnCollapse'] },
-          { target: 'collapsed', actions: ['invokeOnCollapse'] },
+          { guard: 'isSiderCollapsedControlled', actions: ['markSiderSource', 'invokeOnCollapse'] },
+          { target: 'collapsed', actions: ['markSiderSource', 'invokeOnCollapse'] },
         ],
         'SIDER.TOGGLE': [
-          { guard: 'isSiderCollapsedControlled', actions: ['invokeOnCollapse'] },
-          { target: 'collapsed', actions: ['invokeOnCollapse'] },
+          { guard: 'isSiderCollapsedControlled', actions: ['markSiderSource', 'invokeOnCollapse'] },
+          { target: 'collapsed', actions: ['markSiderSource', 'invokeOnCollapse'] },
         ],
         'CONTROLLED.COLLAPSE': { target: 'collapsed' },
       },
@@ -66,12 +68,12 @@ export const layoutMachine = createMachine({
     collapsed: {
       on: {
         'SIDER.EXPAND': [
-          { guard: 'isSiderCollapsedControlled', actions: ['invokeOnExpand'] },
-          { target: 'expanded', actions: ['invokeOnExpand'] },
+          { guard: 'isSiderCollapsedControlled', actions: ['markSiderSource', 'invokeOnExpand'] },
+          { target: 'expanded', actions: ['markSiderSource', 'invokeOnExpand'] },
         ],
         'SIDER.TOGGLE': [
-          { guard: 'isSiderCollapsedControlled', actions: ['invokeOnExpand'] },
-          { target: 'expanded', actions: ['invokeOnExpand'] },
+          { guard: 'isSiderCollapsedControlled', actions: ['markSiderSource', 'invokeOnExpand'] },
+          { target: 'expanded', actions: ['markSiderSource', 'invokeOnExpand'] },
         ],
         'CONTROLLED.EXPAND': { target: 'expanded' },
       },
@@ -83,6 +85,11 @@ export const layoutMachine = createMachine({
     },
     actions: {
       startPress: ({ context }) => context.set('pressed', true),
+      // 跨过断点引起的开合直接落位；用户的开合（把手、遮罩、Escape、API）照常过渡
+      markSiderSource: ({ context, event }) => {
+        const e = event.current()
+        context.set('siderInstant', (e.type === 'SIDER.COLLAPSE' || e.type === 'SIDER.EXPAND') && e.source === 'breakpoint')
+      },
       endPress: ({ context }) => context.set('pressed', false),
       invokeOnCollapse: ({ prop }) => prop('onSiderCollapsedChange')?.({ collapsed: true }),
       invokeOnExpand: ({ prop }) => prop('onSiderCollapsedChange')?.({ collapsed: false }),
@@ -96,6 +103,32 @@ export const layoutMachine = createMachine({
     },
     effects: {
       trackSiderBreakpoint,
+      /**
+       * 落位之后撤下 data-instant：首帧、开合或窄屏判定变了之后等宿主提交，先按落位后的样子把侧栏的样式
+       * 算一遍（此时还带着标记、不走过渡），再撤标记——撤标记只改过渡声明，不改任何取值，不会补播。
+       * 受控时断点只发意图，宿主写回之后开合才落下，所以跟着开合与判定走，而不是跟着意图走。
+       */
+      settleSiderInstant: ({ state, prop, context, scope, flush, track }) => {
+        let disposed = false
+        const settle = (): void => flush(() => {
+          if (disposed || !context.get('siderInstant'))
+            return
+          const sider = scope.getById(scope.partId('layout', 'sider'))
+          if (sider) {
+            // 同一批回调里开合刚变、宿主还没提交：留给提交之后由开合的跟踪再排的那一轮
+            const presentation = resolveSiderPresentation(prop('siderPresentation'), prop('siderBreakpoint'), context.get('siderNarrow'))
+            if (sider.hasAttribute('data-collapsed') !== state.matches('collapsed') || sider.getAttribute('data-presentation') !== presentation)
+              return
+            void scope.getComputedStyle(sider).translate
+          }
+          context.set('siderInstant', false)
+        })
+        settle()
+        track([() => state.get(), context.dep('siderNarrow')], settle)
+        return () => {
+          disposed = true
+        }
+      },
       /** 吸顶的顶栏浮在内容之上：材质轴为 liquid 时按下层换色调、亮边随指针。随 headerFixed 挂撤 */
       trackLiquid: ({ prop, scope, flush, track }) => {
         let stop: (() => void) | undefined

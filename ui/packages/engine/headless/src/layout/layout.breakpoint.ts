@@ -129,6 +129,9 @@ export function trackSiderBreakpoint({ prop, context, send, scope, track }: Effe
     const enteredSheet = presentation !== 'sheet' && nextPresentation === 'sheet'
     current.matched = matched
     presentation = nextPresentation
+    // 跨过断点是环境引起的变化：宽度档与覆盖档的开合都直接落位
+    if (changed)
+      context.set('siderInstant', true)
     context.set('siderNarrow', !matched)
     if (!isCurrent()) {
       pending = !disposed
@@ -141,7 +144,7 @@ export function trackSiderBreakpoint({ prop, context, send, scope, track }: Effe
       return
     }
     if (nextPresentation === 'sheet' && (changed || enteredSheet))
-      send(matched ? { type: 'SIDER.EXPAND' } : { type: 'SIDER.COLLAPSE' })
+      send(matched ? { type: 'SIDER.EXPAND', source: 'breakpoint' } : { type: 'SIDER.COLLAPSE', source: 'breakpoint' })
   }
 
   function sync(): void {

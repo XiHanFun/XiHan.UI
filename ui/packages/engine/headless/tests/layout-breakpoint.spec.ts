@@ -111,6 +111,27 @@ describe('layout 动态断点', () => {
     expect(changes).toEqual([])
   })
 
+  it('首帧与跨过断点的开合直接落位（siderInstant），落位后撤下；用户的开合照常过渡', async () => {
+    viewport()
+    const l = layout({ siderPresentation: 'sheet' })
+    expect(l.service.context.get('siderInstant')).toBe(true)
+    l.start()
+    await Promise.resolve()
+    expect(l.service.context.get('siderInstant')).toBe(false)
+
+    // 跨过断点：宽度档与开合都是环境引起的
+    l.set({ siderBreakpoint: 'lg' })
+    expect(l.service.state.get()).toBe('collapsed')
+    expect(l.service.context.get('siderInstant')).toBe(true)
+    await Promise.resolve()
+    expect(l.service.context.get('siderInstant')).toBe(false)
+
+    // 用户按把手
+    l.service.send({ type: 'SIDER.TOGGLE' })
+    expect(l.service.state.get()).toBe('expanded')
+    expect(l.service.context.get('siderInstant')).toBe(false)
+  })
+
   it('stop 后的旧查询回调不报告、不写 context', () => {
     const v = viewport()
     const notify = vi.fn()

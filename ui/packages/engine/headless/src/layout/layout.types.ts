@@ -81,13 +81,19 @@ export interface LayoutSchema extends MachineSchema {
      * 抬起、失焦或指针取消时撤下；与折叠态互相独立。把手没有禁用态，按住一律进。
      */
     pressed: boolean
+    /**
+     * 侧栏与遮罩的下一次开合直接落位、不走过渡，二者投影 data-instant：首帧，以及跨过断点这类环境引起的开合。
+     * 落位之后（宿主提交、样式按落位后的样子算过一遍）撤下，此后用户的开合照常过渡。
+     */
+    siderInstant: boolean
   }
   computed: Record<string, never>
   refs: LayoutRefs
   state: 'expanded' | 'collapsed'
   event:
-    | { type: 'SIDER.COLLAPSE' }
-    | { type: 'SIDER.EXPAND' }
+    /** source 为 breakpoint：跨过断点引起的开合，直接落位。 */
+    | { type: 'SIDER.COLLAPSE', source?: 'breakpoint' }
+    | { type: 'SIDER.EXPAND', source?: 'breakpoint' }
     | { type: 'SIDER.TOGGLE' }
     // 受控回写：宿主改 siderCollapsed 后由 watch 派发，无条件跳转、不再通知
     | { type: 'CONTROLLED.COLLAPSE' }
@@ -98,8 +104,8 @@ export interface LayoutSchema extends MachineSchema {
     | { type: 'PRESS.END' }
   tag: never
   guard: 'isSiderCollapsedControlled'
-  action: 'invokeOnCollapse' | 'invokeOnExpand' | 'syncSiderCollapsed' | 'startPress' | 'endPress'
-  effect: 'trackSiderBreakpoint' | 'dismissSiderSheet' | 'trackLiquid'
+  action: 'invokeOnCollapse' | 'invokeOnExpand' | 'syncSiderCollapsed' | 'startPress' | 'endPress' | 'markSiderSource'
+  effect: 'trackSiderBreakpoint' | 'dismissSiderSheet' | 'trackLiquid' | 'settleSiderInstant'
 }
 
 export interface LayoutApi<T extends PropTypes = PropTypes> {
