@@ -81,6 +81,8 @@ export function connectToast<T extends PropTypes>(
       'aria-describedby': prop('description') ? ids.description : undefined,
       // 不报 aria-busy：这一块本身就是活区，busy 会让读屏把「正在上传」这句压到完事才念
       'data-loading': dataAttr(loading),
+      // 作者没渲染 indicator 时行首的兜底字形画在 root 的伪元素上：环那一层接加载环配方，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
       // 语气轴只挂在 root 上，子部件靠继承拿到语气槽
       'data-tone': tone,
       'data-state': status,
@@ -106,6 +108,8 @@ export function connectToast<T extends PropTypes>(
       ...parts.indicator.attrs,
       'aria-hidden': true,
       'data-loading': dataAttr(loading),
+      // 兜底的环那一层接加载环配方，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
     }),
 
     getContentProps: () => normalize.element({

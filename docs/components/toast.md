@@ -231,7 +231,9 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `root` | `data-paused` | ''（条件成立时才出现） |
 | `root` | `data-state` | toStatus(state.get()) |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-xh-loading-ring` | '' |
 | `indicator` | `data-loading` | ''（条件成立时才出现） |
+| `indicator` | `data-xh-loading-ring` | '' |
 | `action-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `action-trigger` | `data-xh-action-control` | '' |
 | `action-trigger` | `data-xh-action-display` | 'always' |
@@ -282,7 +284,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `--xh-toast-front-height` | `root` | `block-size` | `expanded`<br>`frontmost`<br>`not([data-expanded])`<br>`not([data-frontmost])`<br>`stack-index` | `auto` | toast 的 root 部件 block-size 覆盖槽。 |
 | `--xh-toast-gap` | `root` | `gap` | `default` | `--xh-space-2` | toast 的 root 部件 gap 覆盖槽。 |
 | `--xh-toast-height` | `root` | `block-size` | `expanded` | `auto` | toast 的 root 部件 block-size 覆盖槽。 |
-| `--xh-toast-icon-fg` | `indicator`<br>`root` | `background-color`<br>`color` | `default` | `--xh-_tone-fg` | toast 的 indicator、root 部件 background-color、color 覆盖槽。 |
+| `--xh-toast-icon-fg` | `indicator`<br>`root` | `background-color`<br>`border-block-start-color`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring` | `--xh-_tone-fg` | toast 的 indicator、root 部件 background-color、border-block-start-color、border-color、color 覆盖槽。 |
 | `--xh-toast-icon-size` | `close-trigger`<br>`root` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | toast 的 close-trigger、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-toast-indicator-p` | `indicator` | `padding` | `default` | `--xh-space-1` | toast 的 indicator 部件 padding 覆盖槽。 |
 | `--xh-toast-inline-size` | `group`<br>`root` | `inline-size` | `default` | `28.75rem` | toast 的 group、root 部件 inline-size 覆盖槽。 |
@@ -294,8 +296,8 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `--xh-toast-progress-bg` | `progress` | `background` | `default` | `--xh-_tone-soft` | toast 的 progress 部件 background 覆盖槽。 |
 | `--xh-toast-progress-duration` | `progress` | `animation` | `default` | `--xh-motion-duration-slide` | toast 的 progress 部件 animation 覆盖槽。 |
 | `--xh-toast-progress-thickness` | `progress` | `block-size` | `default` | `--xh-space-0_5` | toast 的 progress 部件 block-size 覆盖槽。 |
-| `--xh-toast-px` | `root` | `padding-inline` | `default` | `--xh-space-4` | toast 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-toast-py` | `root` | `padding-block` | `default` | `--xh-space-3` | toast 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-toast-px` | `root` | `inset-inline-start`<br>`padding-inline` | `default` | `--xh-space-4` | toast 的 root 部件 inset-inline-start、padding-inline 覆盖槽。 |
+| `--xh-toast-py` | `root` | `inset-block-start`<br>`padding-block` | `default` | `--xh-space-3` | toast 的 root 部件 inset-block-start、padding-block 覆盖槽。 |
 | `--xh-toast-radius` | `root` | `border-radius` | `default` | `--xh-shape-overlay` | toast 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-toast-scale` | `*` | `scale` | `@keyframes xh-toast-out` | `1` | toast 的 * 部件 scale 覆盖槽。 |
 | `--xh-toast-scale-collapsed` | `*`<br>`root` | `--xh-toast-scale`<br>`scale` | `@keyframes xh-toast-in`<br>`default` | `--xh-_toast-stack-scale` | toast 的 *、root 部件 --xh-toast-scale、scale 覆盖槽。 |
@@ -309,11 +311,11 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位 · 出现 · 导航 · 数值 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现 · 导航 · 数值（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-toast-progress-duration`。
 
-关键帧 `xh-toast-in` · `xh-toast-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-toast-in` · `xh-toast-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

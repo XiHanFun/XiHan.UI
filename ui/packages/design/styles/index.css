@@ -2438,6 +2438,77 @@
   }
 }
 
+/* family/loading-ring.css */
+/*
+ * 加载环家族配方：「这里正在等」的那枚圆环，与 Spinner 环档同一副画法——一整圈轨道色，
+ * 只有起始边换成前景色，绕中心匀速转，转起来才看得出方向。
+ *
+ * 连接层在承载者上投影 data-xh-loading-ring，并用共享的 data-loading 说此刻在不在等。
+ * 环画在承载者的 ::before 上：伪元素有没有、多大、摆在哪由皮肤决定（皮肤写 content 与尺寸），
+ * 配方只负责把它画成环、随 data-loading 淡入淡出并转停。收起时环停在当前角度淡出，
+ * 与皮肤里接替它的那枚字形交叉淡变；不在等时不转。
+ *
+ * 轨道取 --xh-border-default、环粗取 --xh-stroke-thick；起始边颜色走私有槽 --xh-_loading-ring-fg，
+ * 皮肤按自己的语气与公开槽给，没给时取 currentColor。
+ *
+ * 转圈与淡变的关键帧与时长走 motion.css：引入本配方的皮肤同时 @import 它；家族文件之间不互相引入，
+ * 全量入口里每份家族只内联一次。
+ */
+@layer xihan.components {
+  [data-xh-loading-ring]::before {
+    /* 环粗算进直径，换厚度不会把环撑大 */
+    box-sizing: border-box;
+    border: var(--xh-stroke-thick) solid var(--xh-border-default);
+    border-block-start-color: var(--xh-_loading-ring-fg, currentColor);
+    border-radius: var(--xh-shape-circle);
+    /* 承载者的这枚伪元素在别的状态下可能画着字形：环不带底、不带遮罩 */
+    background: none;
+    -webkit-mask: none;
+    mask: none;
+    opacity: 0;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    /* 不在等时停在当前角度，淡出途中不先跳回零度 */
+    animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite paused;
+  }
+
+  [data-xh-loading-ring][data-loading]::before {
+    opacity: 1;
+    animation-play-state: running;
+  }
+
+  /* 减弱动效与打印：环停下并整圈换成点线，静止的形状仍读得出「还没好」；淡入淡出照常。
+     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-xh-loading-ring]::before {
+      border-style: dotted;
+      border-color: var(--xh-_loading-ring-fg, currentColor);
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-xh-loading-ring]::before {
+    border-style: dotted;
+    border-color: var(--xh-_loading-ring-fg, currentColor);
+    animation: none;
+  }
+
+  @media print {
+    [data-xh-loading-ring]::before {
+      border-style: dotted;
+      border-color: var(--xh-_loading-ring-fg, currentColor);
+      animation: none;
+    }
+  }
+
+  /* 强制色：轨道取系统文字色，起始边取高亮色，转向照样读得出 */
+  @media (forced-colors: active) {
+    [data-xh-loading-ring]::before {
+      border-color: CanvasText;
+      border-block-start-color: Highlight;
+    }
+  }
+}
+
 /* family/motion.css */
 /* 定义 motion 样式。 */
 
@@ -42541,7 +42612,7 @@
 /* styles/toast.css */
 /* 定义 toast 样式。 */
 
-/* Toast 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方；full bundle 递归去重。 */
+/* Toast 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方与加载环配方；full bundle 递归去重。 */
 
 @layer xihan.motion {
   /* 新条目从视口边缘外进入，同时落到自己的折叠层级。整幅位移取令牌，减弱动效下归零，只剩淡入 */
@@ -42725,10 +42796,16 @@
   }
 
   /*
-   * 语气的非颜色通道。行首字形按 data-tone 区分信息、成功、警告与失败；加载中另由 data-loading 说，
-   * 字形换成转圈但配色仍照语气走。
-   * 作者未渲染 indicator 时由 root 的伪元素补上。
+   * 语气的非颜色通道。行首字形按 data-tone 区分信息、成功、警告与失败；加载中另由 data-loading 说。
+   * 行首那一格叠着两层：::before 是加载环（加载环家族配方画成与 Spinner 环档同一副环，随 data-loading
+   * 淡入淡出、转与停），::after 是语气字形，加载中淡出让位——加载落定时环淡出、字形淡入，同一格里交叉淡变。
+   * 两层的颜色都照语气走。作者未渲染 indicator 时由 root 的伪元素补上。
    */
+  [data-scope='toast'][data-part='root'] {
+    --xh-_loading-ring-fg: var(--xh-toast-icon-fg, var(--xh-_tone-fg));
+  }
+
+  /* 环那一层占着行首那一格，字形那一层叠在它上面 */
   [data-scope='toast'][data-part='root']::before {
     content: '';
     flex: none;
@@ -42736,53 +42813,52 @@
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
+  }
+
+  /* 字形那一层按根的内衬落在同一格上：行首那一格贴着内容盒的起始角（root 按 flex-start 排列） */
+  [data-scope='toast'][data-part='root']::after {
+    content: '';
+    position: absolute;
+    inset-block-start: var(--xh-toast-py, var(--xh-space-3));
+    inset-inline-start: var(--xh-toast-px, var(--xh-space-4));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     background-color: var(--xh-toast-icon-fg, var(--xh-_tone-fg));
     -webkit-mask: var(--xh-glyph-mark-info) center / contain no-repeat;
     mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='toast'][data-part='root'][data-tone='success']::before {
+  [data-scope='toast'][data-part='root'][data-tone='success']::after {
     -webkit-mask-image: var(--xh-glyph-mark-check);
     mask-image: var(--xh-glyph-mark-check);
   }
 
-  [data-scope='toast'][data-part='root'][data-tone='warning']::before {
+  [data-scope='toast'][data-part='root'][data-tone='warning']::after {
     -webkit-mask-image: var(--xh-glyph-mark-warning);
     mask-image: var(--xh-glyph-mark-warning);
   }
 
-  [data-scope='toast'][data-part='root'][data-tone='danger']::before {
+  [data-scope='toast'][data-part='root'][data-tone='danger']::after {
     -webkit-mask-image: var(--xh-glyph-mark-close);
     mask-image: var(--xh-glyph-mark-close);
   }
 
-  /* 加载中不是语气：只换字形，颜色沿用当前语气的前景档；写在四档语气之后，转圈压过它们 */
-  [data-scope='toast'][data-part='root'][data-loading]::before {
-    -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
-    mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite;
+  /* 加载中不是语气：字形淡出让位给环，颜色仍照语气走 */
+  [data-scope='toast'][data-part='root'][data-loading]::after {
+    opacity: 0;
   }
 
-  /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；「在等什么」由条子上的
-     role=status 与可见文案继续承担。
-     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='toast'][data-part='root'][data-loading]::before {
-      animation: none;
-    }
-  }
-
-  :where([data-motion='reduce']) [data-scope='toast'][data-part='root'][data-loading]::before {
-    animation: none;
-  }
-
-  /* 作者渲染了指示符部件，行首那枚兜底字形就让位给它，一行里不出现两枚图形 */
-  [data-scope='toast'][data-part='root']:has([data-part='indicator'])::before {
+  /* 作者渲染了指示符部件，行首那两层兜底就让位给它，一行里不出现两枚图形 */
+  [data-scope='toast'][data-part='root']:has([data-part='indicator'])::before,
+  [data-scope='toast'][data-part='root']:has([data-part='indicator'])::after {
     content: none;
   }
 
-  /* 指示符部件：字形与 root 上那枚同尺同色，作者往里塞节点即整枚换掉 */
+  /* 指示符部件：字形与 root 上那枚同尺同色，作者往里塞节点即整枚换掉。
+     兜底的环与字形同样叠两层：字形那一层按它定位，叠在环那一层上 */
   [data-scope='toast'][data-part='indicator'] {
+    position: relative;
     flex: none;
     display: inline-flex;
     align-items: center;
@@ -42794,49 +42870,46 @@
     color: var(--xh-toast-icon-fg, var(--xh-_tone-fg));
   }
 
-  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  /* 没写内容就由皮肤画兜底的环与字形；作者往部件里塞了自己的图形，这几条即不命中。
+     环那一层由加载环配方画，字形按根上的语气换 */
   [data-scope='toast'][data-part='indicator']:empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
+  }
+
+  [data-scope='toast'][data-part='indicator']:empty::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    margin: auto;
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-info) center / contain no-repeat;
     mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='toast'][data-part='indicator'][data-tone='success']:empty::before {
+  [data-scope='toast'][data-part='root'][data-tone='success'] [data-scope='toast'][data-part='indicator']:empty::after {
     -webkit-mask-image: var(--xh-glyph-mark-check);
     mask-image: var(--xh-glyph-mark-check);
   }
 
-  [data-scope='toast'][data-part='indicator'][data-tone='warning']:empty::before {
+  [data-scope='toast'][data-part='root'][data-tone='warning'] [data-scope='toast'][data-part='indicator']:empty::after {
     -webkit-mask-image: var(--xh-glyph-mark-warning);
     mask-image: var(--xh-glyph-mark-warning);
   }
 
-  [data-scope='toast'][data-part='indicator'][data-tone='danger']:empty::before {
+  [data-scope='toast'][data-part='root'][data-tone='danger'] [data-scope='toast'][data-part='indicator']:empty::after {
     -webkit-mask-image: var(--xh-glyph-mark-close);
     mask-image: var(--xh-glyph-mark-close);
   }
 
-  [data-scope='toast'][data-part='indicator'][data-loading]:empty::before {
-    -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
-    mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite;
-  }
-
-  /* 减少动效：与 root 上那枚同一处理——转圈停下，静止的箭头仍读得出「还没好」。
-     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='toast'][data-part='indicator'][data-loading]:empty::before {
-      animation: none;
-    }
-  }
-
-  :where([data-motion='reduce']) [data-scope='toast'][data-part='indicator'][data-loading]:empty::before {
-    animation: none;
+  [data-scope='toast'][data-part='indicator'][data-loading]:empty::after {
+    opacity: 0;
   }
 
   [data-scope='toast'][data-part='indicator'][hidden] {
@@ -43032,11 +43105,7 @@
       display: none;
     }
 
-    /* 摞收起后条子本不该出现在纸上；这一条兜的是作者把条子摆在别处的用法：
-       动画会被定格在任意一帧——转了一半的圈。取值与减弱动效那一档相同。 */
-    [data-scope='toast'][data-part='root'][data-loading]::before {
-      animation: none;
-    }
+    /* 作者把条子摆在摞外的用法：加载环的静止替代由加载环配方在打印档给出 */
   }
 
   [data-scope='toast'][data-part='content'][hidden],

@@ -76467,16 +76467,23 @@
       ],
       "property": [
         "background-color",
+        "border-block-start-color",
+        "border-color",
         "color"
       ],
       "state": [
-        "default"
+        "@media (prefers-reduced-motion: reduce)",
+        "@media print",
+        "default",
+        "motion=reduce",
+        "where([data-motion='reduce'])",
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-_tone-fg"
       ],
       "visibility": "public",
-      "description": "toast 的 indicator、root 部件 background-color、color 覆盖槽。"
+      "description": "toast 的 indicator、root 部件 background-color、border-block-start-color、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-toast-icon-size",
@@ -76695,6 +76702,7 @@
         "root"
       ],
       "property": [
+        "inset-inline-start",
         "padding-inline"
       ],
       "state": [
@@ -76704,7 +76712,7 @@
         "--xh-space-4"
       ],
       "visibility": "public",
-      "description": "toast 的 root 部件 padding-inline 覆盖槽。"
+      "description": "toast 的 root 部件 inset-inline-start、padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-toast-py",
@@ -76713,6 +76721,7 @@
         "root"
       ],
       "property": [
+        "inset-block-start",
         "padding-block"
       ],
       "state": [
@@ -76722,7 +76731,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "toast 的 root 部件 padding-block 覆盖槽。"
+      "description": "toast 的 root 部件 inset-block-start、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-toast-radius",

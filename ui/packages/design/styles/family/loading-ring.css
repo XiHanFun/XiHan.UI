@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
+ * 加载环家族配方：「这里正在等」的那枚圆环，与 Spinner 环档同一副画法——一整圈轨道色，
+ * 只有起始边换成前景色，绕中心匀速转，转起来才看得出方向。
+ *
+ * 连接层在承载者上投影 data-xh-loading-ring，并用共享的 data-loading 说此刻在不在等。
+ * 环画在承载者的 ::before 上：伪元素有没有、多大、摆在哪由皮肤决定（皮肤写 content 与尺寸），
+ * 配方只负责把它画成环、随 data-loading 淡入淡出并转停。收起时环停在当前角度淡出，
+ * 与皮肤里接替它的那枚字形交叉淡变；不在等时不转。
+ *
+ * 轨道取 --xh-border-default、环粗取 --xh-stroke-thick；起始边颜色走私有槽 --xh-_loading-ring-fg，
+ * 皮肤按自己的语气与公开槽给，没给时取 currentColor。
+ *
+ * 转圈与淡变的关键帧与时长走 motion.css：引入本配方的皮肤同时 @import 它；家族文件之间不互相引入，
+ * 全量入口里每份家族只内联一次。
+ */
+@layer xihan.components {
+  [data-xh-loading-ring]::before {
+    /* 环粗算进直径，换厚度不会把环撑大 */
+    box-sizing: border-box;
+    border: var(--xh-stroke-thick) solid var(--xh-border-default);
+    border-block-start-color: var(--xh-_loading-ring-fg, currentColor);
+    border-radius: var(--xh-shape-circle);
+    /* 承载者的这枚伪元素在别的状态下可能画着字形：环不带底、不带遮罩 */
+    background: none;
+    -webkit-mask: none;
+    mask: none;
+    opacity: 0;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    /* 不在等时停在当前角度，淡出途中不先跳回零度 */
+    animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite paused;
+  }
+
+  [data-xh-loading-ring][data-loading]::before {
+    opacity: 1;
+    animation-play-state: running;
+  }
+
+  /* 减弱动效与打印：环停下并整圈换成点线，静止的形状仍读得出「还没好」；淡入淡出照常。
+     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-xh-loading-ring]::before {
+      border-style: dotted;
+      border-color: var(--xh-_loading-ring-fg, currentColor);
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-xh-loading-ring]::before {
+    border-style: dotted;
+    border-color: var(--xh-_loading-ring-fg, currentColor);
+    animation: none;
+  }
+
+  @media print {
+    [data-xh-loading-ring]::before {
+      border-style: dotted;
+      border-color: var(--xh-_loading-ring-fg, currentColor);
+      animation: none;
+    }
+  }
+
+  /* 强制色：轨道取系统文字色，起始边取高亮色，转向照样读得出 */
+  @media (forced-colors: active) {
+    [data-xh-loading-ring]::before {
+      border-color: CanvasText;
+      border-block-start-color: Highlight;
+    }
+  }
+}
