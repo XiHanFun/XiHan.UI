@@ -1,17 +1,7 @@
-<script setup lang="ts">
-import type { MarkdownBlock } from "@xihan-ui/headless";
-import { createStreamRenderer } from "@xihan-ui/markdown";
-import { XhMarkdownStreamContent, XhMarkdownStreamRoot } from "@xihan-ui/vue";
-
-const article = `先给**结论**：这段正文是一次性渲好的。
-
-- 块列表由渲染器产出
-`;
-const blocks = createStreamRenderer().render(article, { ended: true }) as readonly MarkdownBlock[];
-</script>
-
 <template>
-  <XhMarkdownStreamRoot :blocks="blocks" style="inline-size: var(--xh-doc-catalog-w)">
-    <XhMarkdownStreamContent />
-  </XhMarkdownStreamRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M32 28h88" stroke="var(--xh-fg-default)" stroke-width="8" />
+    <path d="M30 52h180M30 64h164M30 76h116M34 96h0M34 112h0M46 96h124M46 112h100M30 132h84" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <rect x="120" y="126" width="6" height="12" fill="var(--xh-fg-default)" />
+  </svg>
 </template>

@@ -1,21 +1,23 @@
-<script setup lang="ts">
-import { XhLogContent, XhLogLine, XhLogRoot, XhLogViewport } from "@xihan-ui/vue";
-
-const lines = [
-  "12:00:01  boot  读取配置",
-  "12:00:01  boot  监听 :8080",
-  "12:00:02  db    连接池就绪",
-  "12:00:03  http  GET /health 200",
-  "12:00:04  http  POST /api/orders 201",
-];
-</script>
-
 <template>
-  <XhLogRoot :rows="5" style="inline-size: var(--xh-doc-catalog-w)">
-    <XhLogViewport>
-      <XhLogContent>
-        <XhLogLine v-for="(line, i) in lines" :key="i">{{ line }}</XhLogLine>
-      </XhLogContent>
-    </XhLogViewport>
-  </XhLogRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" data-direction="fixed" aria-hidden="true" focusable="false">
+    <rect x="20.5" y="16.5" width="199" height="127" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M34 32h36" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M82 32h16" stroke="var(--xh-fg-brand)" stroke-width="4" />
+    <path d="M110 32h68" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M34 52h36" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M82 52h16" stroke="var(--xh-fg-brand)" stroke-width="4" />
+    <path d="M110 52h52" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M34 72h36" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M82 72h16" stroke="var(--xh-fg-brand)" stroke-width="4" />
+    <path d="M110 72h84" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M34 92h36" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M82 92h16" stroke="var(--xh-fg-warning)" stroke-width="4" />
+    <path d="M110 92h60" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M34 112h36" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M82 112h16" stroke="var(--xh-fg-brand)" stroke-width="4" />
+    <path d="M110 112h44" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M34 132h36" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <circle cx="196" cy="124" r="13.5" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M192 122l4 4 4-4" stroke="var(--xh-fg-default)" stroke-width="2" />
+  </svg>
 </template>
