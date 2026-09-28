@@ -75,12 +75,14 @@ function hidden(part: string): boolean {
 }
 
 describe('图片：在机器就位前就已解码', () => {
-  it('一个 load 事件都不派，也照样落到 loaded', () => {
+  it('一个 load 事件都不派，也照样落到 loaded', async () => {
     restore = pretendDecoded()
     mount()
     expect(state('root')).toBe('loaded')
     expect(state('image')).toBe('loaded')
     expect(hidden('image')).toBe(false)
+    // 占位层按退场规则收起：提交之后探测完没有可等的退场才报藏起，等这一拍（仍在首帧绘制之前）
+    await act(async () => {})
     expect(hidden('placeholder')).toBe(true)
     expect(hidden('fallback')).toBe(true)
   })
