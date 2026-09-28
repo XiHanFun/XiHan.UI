@@ -312,11 +312,41 @@
   }
 
   /*
+   * 搜索命中的那一段：与 Highlight 的命中片段同一身份（品牌淡底 + 品牌深字），浏览器给 mark 的固定亮黄不随主题走。
+   * 在命中之间逐个走时停住的那一行（data-current），片段换成品牌实心，一眼分得出「现在停在哪」。
+   */
+  [data-scope='json-viewer'][data-part='mark'] {
+    border-radius: var(--xh-json-viewer-mark-radius, var(--xh-shape-inset));
+    background: var(--xh-json-viewer-mark-bg, var(--xh-bg-brand-subtle));
+    color: var(--xh-json-viewer-mark-fg, var(--xh-fg-brand-strong));
+  }
+
+  [data-scope='json-viewer'][data-part='branch'][data-current] > [data-scope='json-viewer'][data-part='branch-control'] > [data-scope='json-viewer'][data-part='branch-text'] > [data-scope='json-viewer'][data-part='mark'],
+  [data-scope='json-viewer'][data-part='item'][data-current] > [data-scope='json-viewer'][data-part='item-key'] > [data-scope='json-viewer'][data-part='mark'],
+  [data-scope='json-viewer'][data-part='item'][data-current] > [data-scope='json-viewer'][data-part='item-value'] > [data-scope='json-viewer'][data-part='mark'] {
+    background: var(--xh-json-viewer-mark-bg-current, var(--xh-bg-brand));
+    color: var(--xh-json-viewer-mark-fg-current, var(--xh-fg-on-brand));
+  }
+
+  /*
    * 高对比档：分支行的按压面常态靠底色深一档表出，这一档里底色被统一换成 Canvas，
    * 按住那一下与静息塌成同一个样子；用系统高亮反色画回来，行里的键名、摘要与箭头跟着换成反色前景
    */
   @media (forced-colors: active) {
     [data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) {
+      background: Highlight;
+      color: HighlightText;
+    }
+
+    /* 命中片段在系统色下换成 Mark 那一对，停住的那一条换成系统高亮 */
+    [data-scope='json-viewer'][data-part='mark'] {
+      background: Mark;
+      color: MarkText;
+    }
+
+    [data-scope='json-viewer'][data-part='branch'][data-current] > [data-scope='json-viewer'][data-part='branch-control'] > [data-scope='json-viewer'][data-part='branch-text'] > [data-scope='json-viewer'][data-part='mark'],
+    [data-scope='json-viewer'][data-part='item'][data-current] > [data-scope='json-viewer'][data-part='item-key'] > [data-scope='json-viewer'][data-part='mark'],
+    [data-scope='json-viewer'][data-part='item'][data-current] > [data-scope='json-viewer'][data-part='item-value'] > [data-scope='json-viewer'][data-part='mark'] {
       background: Highlight;
       color: HighlightText;
     }

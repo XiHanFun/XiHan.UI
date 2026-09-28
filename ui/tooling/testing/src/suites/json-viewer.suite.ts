@@ -424,6 +424,24 @@ export const jsonViewerSuite: ConformanceSuite = {
       },
     },
     {
+      name: 'search：命中行投影 data-match，祖先分支自动展开，键名与值里命中的那一段铺成 mark',
+      spec: { adr: 'json-viewer-search' },
+      props: props({ search: 'O' }),
+      initial: {
+        // count 的键名与 meta 里 ok 的键名各命中一段；meta 被命中行 ok 撑开，tags 没有命中、仍收着
+        counts: { 'mark': 2, 'branch-content': 2 },
+        parts: {
+          'item[0]': { 'data-value': NAME, 'data-match': null },
+          'item[1]': { 'data-value': COUNT, 'data-match': '' },
+          'branch[1]': { 'data-value': TAGS, 'aria-expanded': 'false', 'data-match': null },
+          'branch[2]': { 'data-value': META, 'aria-expanded': 'true', 'data-match': null },
+        },
+      },
+      steps: [
+        { kind: 'setProps', props: { search: '' }, expect: { counts: { mark: 0 }, parts: { 'item[1]': { 'data-match': null } } } },
+      ],
+    },
+    {
       name: 'value 没给：一行也摊不出来，空态那一格站出来说话',
       spec: { apg: APG },
       props: {},

@@ -24,6 +24,7 @@ export const jsonViewerAnatomy = createAnatomy('json-viewer', [
   'preview',
   'text',
   'empty',
+  'mark',
 ])
 
 /**

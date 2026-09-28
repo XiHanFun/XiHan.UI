@@ -6,6 +6,7 @@
 // 定义 json viewer 类型契约。
 
 import type { ControlVariant, Direction, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
+import type { HighlightSegment } from '../highlight/highlight.split'
 
 /**
  * 值的类型标签，直接写入 data-value-type 供皮肤逐类型上色。
@@ -127,6 +128,12 @@ export interface JsonViewerSchema extends MachineSchema {
     dir?: Direction
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    /**
+     * 搜索词：键名与值文本里含有它（不区分大小写）的行即为命中。
+     * 命中行的祖先分支自动展开（写进展开集合），命中片段由作者按 `api.segments` 铺成 mark 部件。
+     * 空串与只含空白视为没有搜索。
+     */
+    search?: string
     translations?: Partial<JsonViewerTranslations>
     onExpandedValueChange?: (details: JsonViewerExpandedValueChangeDetails) => void
   }
@@ -145,6 +152,8 @@ export interface JsonViewerSchema extends MachineSchema {
      * 没有按住时为 null。抬起、失焦或指针取消时撤下；与展开集合、焦点锚点互相独立。
      */
     pressedValue: string | null
+    /** 在命中之间逐个走时停在哪一行；搜索词一变就回到未选。它投影 data-current，并被滚进视野。 */
+    activeMatch: string | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -163,6 +172,10 @@ export interface JsonViewerSchema extends MachineSchema {
     | { type: 'PRESS.START', value: string }
     /** 该分支行抬起、失焦或指针取消。 */
     | { type: 'PRESS.END', value: string }
+    /** 停到某一条命中上（null 即不停在任何一条）。 */
+    | { type: 'MATCH.SET', value: string | null }
+    /** 搜索词或数据变了：展开命中行的祖先，并回到未选。 */
+    | { type: 'SEARCH.SYNC' }
   tag: never
   guard: never
   action:
@@ -174,6 +187,10 @@ export interface JsonViewerSchema extends MachineSchema {
     | 'clearFocusWithin'
     | 'startPress'
     | 'endPress'
+    | 'syncSearch'
+    | 'revealMatches'
+    | 'setActiveMatch'
+    | 'scrollToActiveMatch'
   effect: never
 }
 
@@ -208,6 +225,22 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
   emptyText: string
   /** 缩进后的 JSON 原文；键序与环路记号与树档一致。text 档之外也可获取，便于作者实现复制原文。 */
   text: string
+  /** 命中搜索词的行路径，按树序排列；没有搜索时为空。 */
+  searchMatches: readonly string[]
+  /** 在命中之间逐个走时停在哪一行；没有时为 null。 */
+  activeMatch: string | null
+  /** 停到下一条命中（走到末尾回到第一条），并把它滚进视野。 */
+  nextMatch: () => void
+  /** 停到上一条命中（走到开头回到最后一条），并把它滚进视野。 */
+  prevMatch: () => void
+  setActiveMatch: (value: string | null) => void
+  /**
+   * 键名按搜索词切成的片段，依次拼接恒等于键名；命中的片段铺成 mark 部件。
+   * 没有搜索或没有键名时整段是一个不命中的片段。
+   */
+  keySegments: (node: JsonViewerNode) => readonly HighlightSegment[]
+  /** 值文本（即 valueText）按搜索词切成的片段；截断占位行的文案不参与命中。 */
+  valueSegments: (node: JsonViewerNode) => readonly HighlightSegment[]
   getRootProps: () => T['element']
   getTreeProps: () => T['element']
   getTextProps: () => T['element']
@@ -222,4 +255,6 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
   getBranchContentProps: (props: JsonViewerNodeProps) => T['element']
   getPreviewProps: (props: JsonViewerNodeProps) => T['element']
   getEmptyProps: () => T['element']
+  /** 键名与值文本里命中搜索词的那一段。 */
+  getMarkProps: () => T['element']
 }

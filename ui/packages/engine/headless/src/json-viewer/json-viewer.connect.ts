@@ -6,10 +6,12 @@
 // 提供 json viewer 相关实现。
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { HighlightSegment } from '../highlight/highlight.split'
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema } from './json-viewer.types'
 import { contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
+import { splitHighlight } from '../highlight/highlight.split'
 import { jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery } from './json-viewer.anatomy'
-import { flattenJson, jsonSeedExpanded, jsonText } from './json-viewer.machine'
+import { flattenJson, jsonSearch, jsonSearchQuery, jsonSeedExpanded, jsonText } from './json-viewer.machine'
 
 const parts = jsonViewerAnatomy.build()
 
@@ -17,7 +19,7 @@ export function connectJsonViewer<T extends PropTypes>(
   service: Service<JsonViewerSchema>,
   normalize: NormalizeProps<T>,
 ): JsonViewerApi<T> {
-  const { context, prop, send } = service
+  const { context, prop, send, scope } = service
   // null = 还没人碰过展开集合，按当下的数据现算：value 可能晚于机器启动才到
   const expandedValue = context.get('expandedValue') ?? jsonSeedExpanded(prop)
   const loop = prop('loop') ?? false
@@ -63,6 +65,27 @@ export function connectJsonViewer<T extends PropTypes>(
   const isExpanded = (value: string): boolean => expandedValue.includes(value)
   const nodeOf = (value: string): JsonViewerNode | undefined => byPath.get(value)
 
+  // 搜索：命中在整棵树里找（收起的分支里也找得到），祖先分支由机器在搜索词变化时展开
+  const query = jsonSearchQuery(prop('search'))
+  const { matches } = jsonSearch(prop('value'), prop('search'), {
+    maxItems: prop('maxItems'),
+    maxStringLength: prop('maxStringLength'),
+    sortKeys: prop('sortKeys'),
+  })
+  const matchSet = new Set(matches)
+  /** 按搜索词切段；search 为假时整段一个不命中的片段。 */
+  const segmentsOf = (text: string, search = true): readonly HighlightSegment[] => splitHighlight(text, search && query ? [query] : [], false)
+  const activeMatch = context.get('activeMatch')
+  const stepMatch = (delta: 1 | -1): void => {
+    if (!matches.length)
+      return
+    const at = activeMatch == null ? -1 : matches.indexOf(activeMatch)
+    const next = at < 0
+      ? (delta > 0 ? 0 : matches.length - 1)
+      : (at + delta + matches.length) % matches.length
+    send({ type: 'MATCH.SET', value: matches[next]! })
+  }
+
   const previewText = (node: JsonViewerNode): string => {
     if (!node.branch)
       return ''
@@ -98,6 +121,9 @@ export function connectJsonViewer<T extends PropTypes>(
     'data-truncated': dataAttr(!!node?.truncated),
     // 焦点落在哪一行是事实，与展开态互相独立
     'data-highlighted': dataAttr(highlighted === value),
+    // 这一行命中了搜索词；在命中之间逐个走时停在这一行另投 data-current
+    'data-match': dataAttr(matchSet.has(value)),
+    'data-current': dataAttr(activeMatch != null && activeMatch === value),
   })
 
   /** 分支一系再多一个展开态：箭头旋转与子层露面都看它。 */
@@ -170,6 +196,13 @@ export function connectJsonViewer<T extends PropTypes>(
     isExpanded,
     previewText,
     valueText,
+    searchMatches: matches,
+    activeMatch: activeMatch != null && matchSet.has(activeMatch) ? activeMatch : null,
+    nextMatch: () => stepMatch(1),
+    prevMatch: () => stepMatch(-1),
+    setActiveMatch: value => send({ type: 'MATCH.SET', value }),
+    keySegments: node => segmentsOf(node.key ?? ''),
+    valueSegments: node => (node.truncated ? segmentsOf(valueText(node), false) : segmentsOf(valueText(node))),
     setExpandedValue: next => send({ type: 'EXPANDED.SET', value: next }),
     expand: value => send({ type: 'BRANCH.EXPAND', value }),
     collapse: value => send({ type: 'BRANCH.COLLAPSE', value }),
@@ -194,6 +227,8 @@ export function connectJsonViewer<T extends PropTypes>(
     // 键盘全在 tree 上收口：行只管声明自己，一次冒泡一个处理器
     getTreeProps: () => normalize.element({
       ...parts.tree.attrs,
+      // 机器按 id 找到它，把停住的那一条命中滚进视野
+      'id': scope.partId('json-viewer', 'tree'),
       'role': 'tree',
       // 这一片行没有可见标题，不给名字读屏只会念「树」
       'aria-label': label.tree,
@@ -410,5 +445,8 @@ export function connectJsonViewer<T extends PropTypes>(
       ...parts.empty.attrs,
       hidden: !isEmpty || undefined,
     }),
+
+    // 命中片段：只是同一段文字里的一截，读屏照常连着念，不另报身份
+    getMarkProps: () => normalize.element(parts.mark.attrs),
   }
 }

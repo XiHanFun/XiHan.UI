@@ -33205,6 +33205,10 @@
             {
               "description": "无法展开任何一行时的占位，铺设 translations.empty 的文案；有行可展开时带 hidden",
               "name": "empty"
+            },
+            {
+              "description": "键名与值里命中搜索词的那一段",
+              "name": "mark"
             }
           ],
           "members": [
@@ -33277,6 +33281,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "sort-keys"
+            },
+            {
+              "kind": "field",
+              "name": "search",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "search"
             },
             {
               "kind": "field",
@@ -33473,6 +33486,55 @@
               ]
             },
             {
+              "kind": "field",
+              "name": "searchMatches",
+              "type": {
+                "text": "readonly string[]"
+              },
+              "description": "命中搜索词的行路径，按树序排列；没有搜索或状态机尚未建立时为空。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "activeMatch",
+              "type": {
+                "text": "string | null"
+              },
+              "description": "在命中之间逐个走时停在哪一行；没有时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "nextMatch",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "停到下一条命中（走到末尾回到第一条），并把它滚进视野。"
+            },
+            {
+              "kind": "method",
+              "name": "prevMatch",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "停到上一条命中（走到开头回到最后一条），并把它滚进视野。"
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "JsonViewerApi | null"
+                }
+              },
+              "description": "状态机建立之后才有连接层可取；元素尚未连接时为 null。"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -33591,6 +33653,14 @@
             },
             {
               "type": {
+                "text": "string | undefined"
+              },
+              "description": "搜索词：键名与值里含有它的行即命中，命中行的祖先自动展开，命中片段铺成 mark 部件",
+              "name": "search",
+              "fieldName": "search"
+            },
+            {
+              "type": {
                 "text": "boolean | undefined"
               },
               "description": "上下键到达首尾回绕，默认关闭",
@@ -33683,6 +33753,21 @@
             },
             {
               "name": "--xh-json-viewer-key-font-weight"
+            },
+            {
+              "name": "--xh-json-viewer-mark-bg"
+            },
+            {
+              "name": "--xh-json-viewer-mark-bg-current"
+            },
+            {
+              "name": "--xh-json-viewer-mark-fg"
+            },
+            {
+              "name": "--xh-json-viewer-mark-fg-current"
+            },
+            {
+              "name": "--xh-json-viewer-mark-radius"
             },
             {
               "name": "--xh-json-viewer-max-h"

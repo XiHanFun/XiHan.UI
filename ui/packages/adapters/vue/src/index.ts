@@ -624,6 +624,7 @@ export { provideInputGroup, useInputGroupContext } from './components/input-grou
 export type { InputGroupContext } from './components/input-group/context'
 export { XhInputGroupItem, XhInputGroupRoot } from './components/input-group/input-group'
 export { XhJsonViewerRoot } from './components/json-viewer/json-viewer'
+export type { JsonViewerToolbarSlotProps } from './components/json-viewer/json-viewer'
 export { useJsonViewer } from './components/json-viewer/use-json-viewer'
 export type { JsonViewerContext } from './components/json-viewer/use-json-viewer'
 export { XhKbd } from './components/kbd/kbd'

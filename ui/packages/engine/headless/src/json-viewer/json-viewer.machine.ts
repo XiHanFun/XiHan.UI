@@ -268,6 +268,44 @@ export function jsonSeedExpanded(prop: PropFn<JsonViewerSchema>): string[] {
   })
 }
 
+/** 搜索词归一：去掉首尾空白、按不区分大小写比较；空串即没有搜索。 */
+export function jsonSearchQuery(search: string | undefined): string {
+  return (search ?? '').trim().toLowerCase()
+}
+
+export interface JsonSearchResult {
+  /** 命中行的路径，按树序排列。 */
+  matches: string[]
+  /** 命中行的祖先分支路径：把它们都展开，命中行才看得见。 */
+  ancestors: string[]
+}
+
+/**
+ * 在整棵树里找含有搜索词的行：键名或值文本里含有它即命中（不区分大小写）。
+ * 不看展开态，收起的分支里的行一样找得到；maxItems 折掉的成员不在其中，它们本来就不显示。
+ * 截断占位行没有自己的内容，不参与命中。
+ */
+export function jsonSearch(value: unknown, search: string | undefined, options: JsonViewerWalkOptions = {}): JsonSearchResult {
+  const query = jsonSearchQuery(search)
+  if (!query || value === undefined)
+    return { matches: [], ancestors: [] }
+  const rows = collectRows(value, options, () => true)
+  const byPath = new Map(rows.map(row => [row.value, row]))
+  const matches: string[] = []
+  const ancestors = new Set<string>()
+  for (const row of rows) {
+    if (row.truncated)
+      continue
+    const hit = (row.key ?? '').toLowerCase().includes(query) || row.text.toLowerCase().includes(query)
+    if (!hit)
+      continue
+    matches.push(row.value)
+    for (let parent = row.parent; parent != null; parent = byPath.get(parent)?.parent ?? null)
+      ancestors.add(parent)
+  }
+  return { matches, ancestors: [...ancestors] }
+}
+
 /** 路径集合按元素比：受控时 cell 每次读都产出新数组，默认的 Object.is 恒不相等。 */
 function samePaths(a: string[] | null, b: string[] | null | undefined): boolean {
   if (a == null || b == null)
@@ -296,8 +334,14 @@ export const jsonViewerMachine = createMachine({
     focusWithin: cell<boolean>(() => ({ defaultValue: false })),
     // 按压通道：正被按住的分支行，与展开集合互相独立（Enter 在 keydown 即翻面，按压面不能随之丢）
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    activeMatch: cell<string | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
+  // 首帧就带着搜索词时同样要把命中行展开出来
+  entry: ['revealMatches'],
+  watch: ({ track, prop, action }) => {
+    track([() => prop('search'), () => prop('value')], () => action(['syncSearch']))
+  },
   states: {
     idle: {
       // 省略 target：只跑 actions，不换状态
@@ -311,6 +355,8 @@ export const jsonViewerMachine = createMachine({
         // 按压通道：视图没有禁用态，没有守卫；分支行只是内容的一行，按住只记事实
         'PRESS.START': { actions: ['startPress'] },
         'PRESS.END': { actions: ['endPress'] },
+        'MATCH.SET': { actions: ['setActiveMatch', 'scrollToActiveMatch'] },
+        'SEARCH.SYNC': { actions: ['revealMatches'] },
       },
     },
   },
@@ -367,6 +413,38 @@ export const jsonViewerMachine = createMachine({
         const e = event.current()
         if (e.type === 'PRESS.END' && context.get('pressedValue') === e.value)
           context.set('pressedValue', null)
+      },
+      syncSearch: ({ send }) => send({ type: 'SEARCH.SYNC' }),
+      /**
+       * 命中行的祖先分支并进展开集合：写进去而不是只在渲染时临时摊开，
+       * 用户随后照常能把它们收起，搜索词清空后展开的分支也留着。停在哪一条回到未选。
+       */
+      revealMatches: ({ context, prop }) => {
+        context.set('activeMatch', null)
+        const { ancestors } = jsonSearch(prop('value'), prop('search'), {
+          maxItems: prop('maxItems'),
+          sortKeys: prop('sortKeys'),
+        })
+        if (!ancestors.length)
+          return
+        const current = context.get('expandedValue') ?? jsonSeedExpanded(prop)
+        const missing = ancestors.filter(path => !current.includes(path))
+        if (missing.length)
+          context.set('expandedValue', [...current, ...missing])
+      },
+      setActiveMatch: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'MATCH.SET')
+          context.set('activeMatch', e.value)
+      },
+      // 停住的那一条滚进视野：它的祖先已经在搜索时展开，这一行就在树里
+      scrollToActiveMatch: ({ context, scope }) => {
+        const value = context.get('activeMatch')
+        const tree = scope.getById(scope.partId('json-viewer', 'tree'))
+        if (value == null || !tree)
+          return
+        const escape = scope.getWin().CSS?.escape ?? ((raw: string) => raw.replace(/["\\]/g, '\\$&'))
+        tree.querySelector<HTMLElement>(`[data-value="${escape(value)}"]`)?.scrollIntoView?.({ block: 'nearest' })
       },
     },
   },

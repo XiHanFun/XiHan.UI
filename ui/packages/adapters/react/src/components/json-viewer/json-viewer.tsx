@@ -6,12 +6,14 @@
 // 提供 json viewer 相关实现。
 
 import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
-import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
+import type { HighlightSegment, JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import type { SlotChildren } from '../../runtime/slot-content'
 import { groupJsonViewerNodesByParent } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
+import { renderSlot } from '../../runtime/slot-content'
 import { useJsonViewer } from './use-json-viewer'
 
 type JsonViewerProps = JsonViewerSchema['props']
@@ -28,6 +30,15 @@ interface BranchProps {
   node: JsonViewerNode
 }
 
+/** 按片段铺文字：命中搜索词的那一段包进 mark 部件，其余原样是文本。 */
+function Segments({ api, segments }: { api: JsonViewerApi, segments: readonly HighlightSegment[] }): ReactNode {
+  // 片段在原文里的起始位置就是它的身份：同一段文字切出来的片段两两不重叠
+  const starts = segments.reduce<number[]>((acc, _segment, i) => [...acc, i === 0 ? 0 : acc[i - 1]! + segments[i - 1]!.text.length], [])
+  return segments.map((segment, i) => (segment.matched
+    ? <mark key={starts[i]} {...api.getMarkProps() as Record<string, unknown>}>{segment.text}</mark>
+    : segment.text))
+}
+
 /** 一层的行：标量是 item，对象与数组是 branch。 */
 function JsonRows({ api, groups, parent }: RowsProps): ReactNode {
   return (groups.get(parent) ?? []).map(node => (node.branch
@@ -42,8 +53,8 @@ function JsonItem({ api, node }: { api: JsonViewerApi, node: JsonViewerNode }): 
   const bind = useNativeEvents(api.getItemProps(ref) as Record<string, unknown>, ['onFocus'])
   return (
     <div {...bind.attrs} ref={bind.ref}>
-      {node.key != null ? <span {...api.getItemKeyProps(ref) as Record<string, unknown>}>{node.key}</span> : null}
-      <span {...api.getItemValueProps(ref) as Record<string, unknown>}>{api.valueText(node)}</span>
+      {node.key != null ? <span {...api.getItemKeyProps(ref) as Record<string, unknown>}><Segments api={api} segments={api.keySegments(node)} /></span> : null}
+      <span {...api.getItemValueProps(ref) as Record<string, unknown>}><Segments api={api} segments={api.valueSegments(node)} /></span>
     </div>
   )
 }
@@ -59,7 +70,7 @@ function JsonBranch({ api, groups, node }: BranchProps): ReactNode {
         <span {...api.getBranchTriggerProps(ref) as Record<string, unknown>}>
           <span {...api.getBranchIndicatorProps(ref) as Record<string, unknown>} />
         </span>
-        {node.key != null ? <span {...api.getBranchTextProps(ref) as Record<string, unknown>}>{node.key}</span> : null}
+        {node.key != null ? <span {...api.getBranchTextProps(ref) as Record<string, unknown>}><Segments api={api} segments={api.keySegments(node)} /></span> : null}
         <span {...api.getPreviewProps(ref) as Record<string, unknown>}>{api.previewText(node)}</span>
       </div>
       {/* 收起的子层不渲染：一份大 JSON 全铺出来会把页面压住，展开集合本来也是逐层放开的 */}
@@ -88,6 +99,12 @@ function JsonViewerTree({ api }: { api: JsonViewerApi }): ReactNode {
   )
 }
 
+/**
+ * 工具条的载荷：搜索命中与在命中之间逐个走的两个动作。
+ * 搜索框、上一条 / 下一条与计数由作者摆在这里，搜索词经 search 交给根。
+ */
+export type JsonViewerToolbarSlotProps = Pick<JsonViewerApi, 'searchMatches' | 'activeMatch' | 'nextMatch' | 'prevMatch'>
+
 /** 根上自有的取值；行由组件按数据铺设，不接收 children，dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
 
@@ -107,10 +124,14 @@ export interface XhJsonViewerRootProps extends RootElementProps {
   loop?: boolean
   dir?: Direction
   size?: Size
+  /** 搜索词：键名与值里含有它的行即命中，命中行的祖先自动展开，命中片段铺成 mark。 */
+  search?: string
   translations?: Partial<JsonViewerTranslations>
   onExpandedValueChange?: JsonViewerProps['onExpandedValueChange']
   /** 空态格子的内容；未写时铺设 translations 中的兜底文案。 */
   empty?: ReactNode
+  /** 树之前的一条：放搜索框与上一条 / 下一条，渲染为根的前一个兄弟。 */
+  toolbar?: SlotChildren<JsonViewerToolbarSlotProps>
 }
 
 /** 行是按数据展开的，作者无法写出也不必写：整棵树由组件自行铺设。 */
@@ -124,12 +145,14 @@ export function XhJsonViewerRoot({
   maxStringLength,
   maxItems,
   sortKeys,
+  search,
   loop,
   dir,
   size,
   translations,
   onExpandedValueChange,
   empty,
+  toolbar,
   ...rest
 }: XhJsonViewerRootProps): ReactNode {
   const machineProps = {
@@ -142,6 +165,7 @@ export function XhJsonViewerRoot({
     maxStringLength,
     maxItems,
     sortKeys,
+    search,
     loop,
     dir,
     size,
@@ -158,13 +182,21 @@ export function XhJsonViewerRoot({
   )
 
   return (
-    <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {/* 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份 */}
-      {api.view === 'text'
-        ? <pre {...api.getTextProps() as Record<string, unknown>}>{api.text}</pre>
-        : <JsonViewerTree api={api} />}
-      {emptySlot}
-    </div>
+    <>
+      {renderSlot(toolbar, {
+        searchMatches: api.searchMatches,
+        activeMatch: api.activeMatch,
+        nextMatch: api.nextMatch,
+        prevMatch: api.prevMatch,
+      })}
+      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+        {/* 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份 */}
+        {api.view === 'text'
+          ? <pre {...api.getTextProps() as Record<string, unknown>}>{api.text}</pre>
+          : <JsonViewerTree api={api} />}
+        {emptySlot}
+      </div>
+    </>
   )
 }
 

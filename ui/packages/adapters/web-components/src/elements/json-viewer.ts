@@ -6,7 +6,7 @@
 // 提供 json viewer 相关实现。
 
 import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
-import type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations } from '@xihan-ui/headless'
+import type { HighlightSegment, JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations } from '@xihan-ui/headless'
 import { connectJsonViewer, groupJsonViewerNodesByParent, jsonViewerAnatomy, jsonViewerMachine, jsonViewerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -67,6 +67,42 @@ function setText(el: HTMLElement, text: string): void {
     el.textContent = text
 }
 
+/** 每个文字节点上一次铺的片段，片段没变就不重铺。 */
+const painted = new WeakMap<HTMLElement, string>()
+
+/**
+ * 按片段铺文字：命中搜索词的那一段包进 mark 部件。片段与上一次一样就一个节点都不碰；
+ * 一段都没命中时退回纯文本，与没有搜索时的结构一致。
+ */
+function setSegments(
+  el: HTMLElement,
+  segments: readonly HighlightSegment[],
+  mark: (node: HTMLElement) => void,
+): void {
+  if (!segments.some(segment => segment.matched)) {
+    painted.delete(el)
+    if (el.children.length)
+      el.textContent = ''
+    setText(el, segments.map(segment => segment.text).join(''))
+    return
+  }
+  const signature = segments.map(segment => `${segment.matched ? 1 : 0}:${segment.text}`).join('|')
+  if (painted.get(el) === signature)
+    return
+  el.textContent = ''
+  for (const segment of segments) {
+    if (!segment.matched) {
+      el.append(segment.text)
+      continue
+    }
+    const node = el.ownerDocument.createElement('mark')
+    node.textContent = segment.text
+    mark(node)
+    el.append(node)
+  }
+  painted.set(el, signature)
+}
+
 /**
  * `<xh-json-viewer>`：Light-DOM 行为宿主：作者只写一个 root 角色节点，
  * 元素运行 json-viewer 状态机，把 value 展平成的每一行铺进 root。
@@ -86,6 +122,7 @@ function setText(el: HTMLElement, text: string): void {
  * @attr {number} max-string-length - 字符串值超过该字符数即截断
  * @attr {number} max-items - 同一层最多展开该数量的成员，其余收为一行占位
  * @attr {boolean} sort-keys - 对象键按字典序排列
+ * @attr {string} search - 搜索词：键名与值里含有它的行即命中，命中行的祖先自动展开，命中片段铺成 mark 部件
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义；未提供时从 DOM 读取
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -104,6 +141,7 @@ function setText(el: HTMLElement, text: string): void {
  * @csspart preview - 收起摘要（如 `{…} 3`），对读屏隐藏
  * @csspart branch-content - role=group 的子层容器，只在展开时存在
  * @csspart empty - 无法展开任何一行时的占位，铺设 translations.empty 的文案；有行可展开时带 hidden
+ * @csspart mark - 键名与值里命中搜索词的那一段
  */
 export class XhJsonViewerElement extends XhElement {
   static override partContract = { anatomy: jsonViewerAnatomy, meta: jsonViewerMeta }
@@ -119,6 +157,7 @@ export class XhJsonViewerElement extends XhElement {
     maxStringLength: { converter: NUMBER_CONVERTER, attribute: 'max-string-length' },
     maxItems: { converter: NUMBER_CONVERTER, attribute: 'max-items' },
     sortKeys: { converter: BOOLEAN_CONVERTER, attribute: 'sort-keys' },
+    search: { converter: STRING_CONVERTER },
     view: { attribute: 'view' },
     variant: { converter: STRING_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
@@ -134,6 +173,7 @@ export class XhJsonViewerElement extends XhElement {
   declare maxStringLength?: number
   declare maxItems?: number
   declare sortKeys?: boolean
+  declare search?: string
   declare view?: 'tree' | 'text'
   declare variant?: ControlVariant
   declare loop?: boolean
@@ -158,6 +198,7 @@ export class XhJsonViewerElement extends XhElement {
       maxItems: this.maxItems,
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
       sortKeys: this.sortKeys,
+      search: this.search,
       view: this.view,
       variant: this.variant,
       loop: this.loop,
@@ -231,6 +272,7 @@ export class XhJsonViewerElement extends XhElement {
     alive: Set<string>,
   ): void {
     const wanted: HTMLElement[] = []
+    const mark = (el: HTMLElement): void => this.spreader.spread(el, api.getMarkProps() as Record<string, unknown>)
     for (const node of nodes) {
       alive.add(node.value)
       const shape = `${node.branch}|${node.key != null}`
@@ -247,7 +289,7 @@ export class XhJsonViewerElement extends XhElement {
         this.spreader.spread(row.indicator!, api.getBranchIndicatorProps(ref) as Record<string, unknown>)
         if (row.text) {
           this.spreader.spread(row.text, api.getBranchTextProps(ref) as Record<string, unknown>)
-          setText(row.text, node.key ?? '')
+          setSegments(row.text, api.keySegments(node), mark)
         }
         this.spreader.spread(row.preview!, api.getPreviewProps(ref) as Record<string, unknown>)
         setText(row.preview!, api.previewText(node))
@@ -266,14 +308,39 @@ export class XhJsonViewerElement extends XhElement {
         this.spreader.spread(row.host, api.getItemProps(ref) as Record<string, unknown>)
         if (row.itemKey) {
           this.spreader.spread(row.itemKey, api.getItemKeyProps(ref) as Record<string, unknown>)
-          setText(row.itemKey, node.key ?? '')
+          setSegments(row.itemKey, api.keySegments(node), mark)
         }
         this.spreader.spread(row.itemValue!, api.getItemValueProps(ref) as Record<string, unknown>)
-        setText(row.itemValue!, api.valueText(node))
+        setSegments(row.itemValue!, api.valueSegments(node), mark)
       }
       wanted.push(row.host)
     }
     reconcile(container, wanted)
+  }
+
+  /** 命中搜索词的行路径，按树序排列；没有搜索或状态机尚未建立时为空。 */
+  get searchMatches(): readonly string[] {
+    return this.api()?.searchMatches ?? []
+  }
+
+  /** 在命中之间逐个走时停在哪一行；没有时为 null。 */
+  get activeMatch(): string | null {
+    return this.api()?.activeMatch ?? null
+  }
+
+  /** 停到下一条命中（走到末尾回到第一条），并把它滚进视野。 */
+  nextMatch(): void {
+    this.api()?.nextMatch()
+  }
+
+  /** 停到上一条命中（走到开头回到最后一条），并把它滚进视野。 */
+  prevMatch(): void {
+    this.api()?.prevMatch()
+  }
+
+  /** 状态机建立之后才有连接层可取；元素尚未连接时为 null。 */
+  private api(): JsonViewerApi | null {
+    return this.ctrl.service ? connectJsonViewer(this.ctrl.service, wcNormalize) : null
   }
 
   protected wire(): void {

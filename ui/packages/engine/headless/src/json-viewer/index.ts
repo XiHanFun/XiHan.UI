@@ -13,11 +13,14 @@ export {
   JSON_VIEWER_ROOT_PATH,
   jsonChildPath,
   jsonExpandedPathsToDepth,
+  jsonSearch,
+  jsonSearchQuery,
   jsonText,
   jsonValueText,
   jsonValueType,
   jsonViewerMachine,
 } from './json-viewer.machine'
+export type { JsonSearchResult } from './json-viewer.machine'
 export { jsonViewerMeta } from './json-viewer.meta'
 export { groupJsonViewerNodesByParent } from './json-viewer.projection'
 export type { JsonViewerNodesByParent } from './json-viewer.projection'

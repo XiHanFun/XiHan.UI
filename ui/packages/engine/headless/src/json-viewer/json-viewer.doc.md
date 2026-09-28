@@ -42,6 +42,8 @@
 
 ## 组合
 
+- 搜索：`search` 标出键名与值里含有搜索词的行（不区分大小写），命中行的祖先分支自动展开（写进展开集合，之后照常能收起），命中的那一段铺成 `mark` 部件。搜索框与上一条 / 下一条由作者摆在树之前：Vue 写进 `toolbar` 插槽，React 经 `toolbar` 传入，载荷是 `searchMatches`、`activeMatch`、`nextMatch`、`prevMatch`；Web Components 在元素上取 `searchMatches` / `activeMatch` 并调用 `nextMatch()` / `prevMatch()`。停住的那一条投影 `data-current`、命中片段换成实心，并被滚进视野。
+
 - 放入[标签页](./tabs)或[抽屉](./drawer)作为调试面板；行数多时套一层[滚动区域](./scroll-area)。
 - 配合[剪贴板](./clipboard)提供原始 JSON 的复制。
 
