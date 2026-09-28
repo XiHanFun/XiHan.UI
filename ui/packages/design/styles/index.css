@@ -47324,7 +47324,10 @@
 
   /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   [data-scope='tree-select'][data-part='loading'] {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-_tree-select-gap);
     flex: none;
     padding-block: var(--xh-tree-select-loading-py, var(--xh-space-3));
     padding-inline: var(--xh-tree-select-loading-px, var(--xh-_tree-select-row-px));
@@ -47336,6 +47339,15 @@
 
   [data-scope='tree-select'][data-part='loading'][hidden] {
     display: none;
+  }
+
+  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
+     直径取所在尺寸档的图标档 */
+  [data-scope='tree-select'][data-part='loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   }
 
   /* 浮层底部的操作区：排在树下面，与树之间用一条分隔线断开；不参与收缩，行再多也压不扁它 */
@@ -47581,6 +47593,69 @@
     flex-direction: column;
     gap: var(--xh-tree-select-branch-content-gap, var(--xh-list-option-gap));
     padding-inline-start: var(--xh-tree-select-indent, var(--xh-space-4));
+  }
+
+  /* 分支首次展开取子项时的三种占位落在子层的位置（与子层同一缩进），与整树的占位同一副样子：
+     在途一枚加载环 + 文案、成功为空一句文案、失败一枚警示字形 + 说明。它们不是 treeitem，不接悬停与按下 */
+  [data-scope='tree-select']:is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error']) {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-_tree-select-gap);
+    padding-block: var(--xh-tree-select-branch-status-py, var(--xh-_tree-select-row-py));
+    padding-inline: calc(var(--xh-tree-select-indent, var(--xh-space-4)) + var(--xh-_tree-select-row-px)) var(--xh-_tree-select-row-px);
+    color: var(--xh-tree-select-branch-status-fg, var(--xh-material-frosted-fg-muted));
+    font-size: var(--xh-tree-select-branch-status-font-size, var(--xh-_tree-select-font-size));
+    line-height: var(--xh-leading-none);
+    user-select: none;
+  }
+
+  [data-scope='tree-select'][data-part='branch-loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  }
+
+  /* 失败的非颜色通道：一枚警示字形，取危险色 */
+  [data-scope='tree-select'][data-part='branch-error']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    background-color: var(--xh-tree-select-branch-error-fg, var(--xh-fg-danger));
+    -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+  }
+
+  /* 重试钮排在失败说明之下、与说明同一缩进；指针入口，键盘在出错的分支行上按 Enter / Space 重试 */
+  [data-scope='tree-select'][data-part='branch-retry-trigger'] {
+    align-self: flex-start;
+    margin-inline-start: calc(var(--xh-tree-select-indent, var(--xh-space-4)) + var(--xh-_tree-select-row-px));
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--xh-tree-select-branch-retry-fg, var(--xh-fg-brand));
+    font: inherit;
+    font-size: var(--xh-tree-select-branch-status-font-size, var(--xh-_tree-select-font-size));
+    line-height: var(--xh-leading-normal);
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: var(--xh-space-0_5);
+    cursor: pointer;
+    transition: text-decoration-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='tree-select'][data-part='branch-retry-trigger']:hover {
+    text-decoration-color: currentColor;
+  }
+
+  [data-scope='tree-select'][data-part='branch-retry-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='tree-select']:is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'], [data-part='branch-retry-trigger'])[hidden] {
+    display: none;
   }
 
   /* 收起态的唯一开关：display 盖掉了 UA 的 [hidden]{display:none}，漏了这条整棵子树就收不起来 */
