@@ -38,16 +38,28 @@ date 只到日、datetime 到秒、relative 表述为几分钟前等相对说法
 
 ### 相对时间
 
-just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只更换用词，未提供时跟随浏览器语言
+一分钟以内是「现在」，其余按分、时、天取整，过去说「几分钟前」、将来说「几分钟后」，离现在三十天及以上退回绝对日期；用词由 Intl 按 locale 给出，未提供时跟随浏览器语言
 
 <XhDemo src="timestamp/04-relative" />
+
+### 自动刷新
+
+相对型不给 now 时自己刷新：文字只在跨过分钟、小时、天的边界时才变，就只在那一刻刷新；页面隐藏或离开视口时暂停，回来时立即补一次
+
+<XhDemo src="timestamp/05-live" />
+
+### 时区
+
+time-zone 给了 IANA 时区名就按那个时区的墙钟显示，datetime 带上该时区的偏移量；不带偏移量的 value 串也按这个时区解读
+
+<XhDemo src="timestamp/06-time-zone" />
 
 ## 设计指引
 
 ### 何时使用
 
 - 展示创建时间、更新时间、事件发生时刻。
-- 需要“n 分钟前”等相对表述。
+- 需要“n 分钟前”“n 分钟后”等相对表述，并随时间推移自己刷新。
 
 ### 何时不用
 
@@ -56,9 +68,11 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 
 ### 特性
 
-- `type` 切换绝对与相对；相对分四档（分 / 小时 / 天），超过三十天退回绝对日期。
+- `type` 切换绝对与相对；相对说法一分钟以内是「现在」，其余按分、时、天取整，过去与将来都认，离现在三十天及以上退回绝对日期。
+- 用词与缺省日期写法由 `Intl.RelativeTimeFormat` / `Intl.DateTimeFormat` 按 `locale` 给出，任何语言都可用；未提供时跟随宿主浏览器语言，读取失败时使用 `en-US`。`translations.justNow` 可换掉「现在」那一档的说法。
 - `format` 自定义格式串，只改变显示文本，`datetime` 属性不变。
-- `locale` 只切换用词与默认格式串：`zh` 开头使用中文，其余英文。未提供时跟随宿主浏览器语言，读取失败时使用 `en-US`。
+- `timeZone` 给了 IANA 时区名就按那个时区的墙钟显示，`datetime` 带上偏移量；不带偏移量的 `value` 串也按这个时区解读。认不出的时区落 `invalid`。
+- 相对型不给 `now` 时自动刷新：文字只在跨过分钟、小时、天的边界时才变，就只在那一刻刷新；页面隐藏或元素离开视口时暂停，回来时立即补一次。`refreshInterval` 改成固定间隔，给 0 不刷新；它是停留时长，不受减弱动效影响。
 
 ### 组合
 
@@ -67,7 +81,7 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 ### 最佳实践
 
 - 相对时间旁给出绝对时间（提示或 `title`），“3 天前”在追查问题时不够用。
-- 时区要明确：跨时区团队中“昨天”是含糊的说法。
+- 时区要明确：跨时区团队中“昨天”是含糊的说法，给 `timeZone` 让所有人看到同一个墙钟。
 
 ### 反模式
 
@@ -82,18 +96,21 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 | --- | --- |
 | 自定义元素 | `<xh-timestamp>` |
 | Vue 组件 | `XhTimestamp` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `timestampMachine` |
 | 皮肤 | `@xihan-ui/styles/timestamp.css` |
 
 ### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `format` | `string` |  | 自定义格式串，记号为 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s。 提供后覆盖该 locale 的默认格式串；relative 型下只在回退为绝对日期时使用。 |
-| `locale` | `string` |  | BCP 47 语言标记，决定用词与默认格式串：zh 开头使用中文，其余一律英文。 未提供时按宿主语言，宿主也没有时按 en-US。它只切换面向用户的文本，datetime 恒为同一种写法。 |
-| `now` | `TimestampValue` |  | 计算相对表述时的参照时刻，默认取当前时刻。提供后整个组件的产出完全由入参决定。 |
-| `type` | `TimestampType` |  | 呈现方式：date 只到日、datetime 到秒、relative 表述为「几分钟前」，默认 datetime。 |
-| `value` | `TimestampValue` |  | 要显示的时刻。只写年月日的串按本地零点解读。 |
+| `format` | `string` |  | 自定义格式串，记号为 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s。 提供后覆盖该语言的缺省写法；relative 型下只在回退为绝对日期时使用。 |
+| `locale` | `string` |  | BCP 47 语言标记，决定相对说法的用词与缺省的日期写法，任何语言都由 Intl 给出。 未提供时按宿主语言，宿主也没有时按 en-US。它只切换面向用户的文本，datetime 与语言无关。 |
+| `now` | `TimestampValue` |  | 计算相对说法时的参照时刻，默认取当前时刻并自动刷新。提供后整个组件的产出完全由入参决定，不再刷新。 |
+| `refreshInterval` | `number` |  | 相对型的刷新间隔（毫秒）。缺省按距今远近自适应：文字只在跨过分钟、小时、天的边界时才变， 就只在那一刻刷新；给正数按固定间隔刷新，给 0 不刷新。页面隐藏或元素离开视口时暂停，回来时立即刷新一次。 这是停留时长，不是动效，不受减弱动效影响。 |
+| `timeZone` | `string` |  | IANA 时区名（如 `Asia/Shanghai`）。给了就按这个时区的墙钟显示，datetime 带上该时区的偏移量； 不带偏移量的 `value` 串也按这个时区解读。未提供时按运行时本地、datetime 不带偏移量。认不出的时区落 invalid。 |
+| `translations` | `Partial<TimestampTranslations>` |  |  |
+| `type` | `TimestampType` |  | 呈现方式：date 只到日、datetime 到秒、relative 表述为「几分钟前」「几分钟后」，默认 datetime。 |
+| `value` | `TimestampValue` |  | 要显示的时刻。只写年月日的串按零点解读；不带偏移量的串按 `timeZone` 的墙钟解读，没给时区时按本地。 |
 
 ### 状态
 
@@ -102,6 +119,14 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'empty' |
+
+以下名称仅用于内部状态机。
+
+**状态**：`idle` · `live`
+
+**事件**：`REFRESH.SYNC` · `TICK`
+
+**判据**：`shouldRefresh`
 
 ### connect API
 
@@ -113,7 +138,8 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 | `text` | `string` | 面向用户的文本；没有可读时刻时为空串。 |
 | `stamp` | `string \| undefined` | 写入 datetime 的时间戳；没有可读时刻时为 undefined，此时根上不写该属性。 |
 | `state` | `TimestampState` | 当前状态。 |
-| `relative` | `boolean` | 本次是否实际按相对表述朗读。落在四档之外回退为绝对日期时为 false。 |
+| `relative` | `boolean` | 本次是否实际按相对说法朗读。离现在三十天及以上回退为绝对日期时为 false。 |
+| `refreshing` | `boolean` | 正在按时刷新相对说法。 |
 | `getRootProps` | `() => T['element']` |  |
 
 ## 无障碍

@@ -1,4 +1,4 @@
-// 相对时间 | just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只更换用词，未提供时跟随浏览器语言
+// 相对时间 | 一分钟以内是「现在」，其余按分、时、天取整，过去说「几分钟前」、将来说「几分钟后」，离现在三十天及以上退回绝对日期；用词由 Intl 按 locale 给出，未提供时跟随浏览器语言
 import type { CSSProperties, ReactNode } from "react";
 import { XhTimestamp } from "@xihan-ui/react";
 import { Fragment } from "react";
@@ -11,7 +11,9 @@ const moments = [
   "2026-08-11T11:30:00",
   "2026-08-11T09:00:00",
   "2026-08-09T12:00:00",
-  // 超过三十天，四档都装不下，改报绝对日期
+  // 将来的时刻
+  "2026-08-11T12:30:00",
+  // 超过三十天，没有档位可用，改报绝对日期
   "2026-01-01T00:00:00",
 ];
 

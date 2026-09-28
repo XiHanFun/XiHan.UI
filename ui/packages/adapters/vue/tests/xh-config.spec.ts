@@ -196,8 +196,8 @@ describe('provideXhConfig · locale', () => {
         h('div', { id: 'own' }, [h(XhTimestamp, { value, type: 'date', locale: 'zh-CN' })]),
       ]
     })
-    // en 是 MM/DD/YYYY，zh-CN 是 YYYY-MM-DD
-    expect(host.querySelector('#global')?.textContent).toContain('/')
-    expect(host.querySelector('#own')?.textContent).toContain('-')
+    // en 的日期是月在前（MM/DD/YYYY），zh-CN 是年在前（YYYY/MM/DD）
+    expect(host.querySelector('#global')?.textContent).toMatch(/^\d{2}\/\d{2}\/2026$/)
+    expect(host.querySelector('#own')?.textContent).toMatch(/^2026\/\d{2}\/\d{2}$/)
   })
 })

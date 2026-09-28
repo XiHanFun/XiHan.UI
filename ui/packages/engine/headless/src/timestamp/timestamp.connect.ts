@@ -5,12 +5,19 @@
 
 // 提供 timestamp 相关实现。
 
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TimestampType } from './timestamp.format'
-import type { TimestampApi, TimestampProps, TimestampState } from './timestamp.types'
+import type { TimestampApi, TimestampProps, TimestampSchema, TimestampState } from './timestamp.types'
 import { dataAttr, resolveLocale } from '@xihan-ui/core'
 import { timestampAnatomy } from './timestamp.anatomy'
-import { formatRelativeTime, formatTimePattern, timestampMachineStamp, timestampWords, toTimeDate } from './timestamp.format'
+import {
+  formatRelativeTime,
+  formatTimePattern,
+  formatTimestampDate,
+  isTimestampTimeZone,
+  timestampMachineStamp,
+  toTimeDate,
+} from './timestamp.format'
 
 const parts = timestampAnatomy.build()
 
@@ -24,30 +31,27 @@ function isProvided(value: TimestampProps['value']): boolean {
 }
 
 /**
- * Time 无状态机：文本与戳全部由 props 算出。
+ * 文本与戳由 props 与机器里的参照时刻算出；机器只负责按时改写参照时刻。
  *
- * 显示的文本与 datetime 取自同一个墙钟，组件不做时区换算——选时区是宿主的事。
- * datetime 因此不带偏移量，它是一个本地日期时间串。
+ * 没给时区时显示的文本与 datetime 取自运行时本地的同一个墙钟，datetime 不带偏移量；
+ * 给了时区时两者都按那个时区，datetime 带上偏移量。
  *
- * 认不出的时刻不抛：抛在 Vue 的 computed 或 WC 的 wire 里会连累整棵树。
+ * 认不出的时刻或时区不抛：抛在 Vue 的 computed 或 WC 的 wire 里会连累整棵树。
  * 改成落到 `state: 'invalid'` 且一个字都不显示，也不写 datetime——
  * 与其给机器一个瞎编的时间戳，不如什么都不给。
- *
- * @example
- * // 参照时刻给定后产出完全确定：文本是「30 分钟前」，datetime 是 2026-08-11T09:00:00
- * connectTimestamp({ value: '2026-08-11T09:00:00', type: 'relative', now: '2026-08-11T09:30:00' }, normalize)
  */
 export function connectTimestamp<T extends PropTypes>(
-  props: TimestampProps,
+  service: Service<TimestampSchema>,
   normalize: NormalizeProps<T>,
 ): TimestampApi<T> {
-  const type = props.type ?? DEFAULT_TYPE
-  // 无状态机也就没有 scope，宿主语言只能问全局；SSR 期问不到，落到 en-US
-  const locale = resolveLocale(props.locale)
-  const words = timestampWords(locale)
+  const { prop, context, state: machineState, scope } = service
+  const type = prop('type') ?? DEFAULT_TYPE
+  const locale = resolveLocale(prop('locale'), scope)
+  const timeZone = prop('timeZone')
+  const zoneKnown = isTimestampTimeZone(timeZone)
 
-  const provided = isProvided(props.value)
-  const date = provided ? toTimeDate(props.value) : undefined
+  const provided = isProvided(prop('value'))
+  const date = provided && zoneKnown ? toTimeDate(prop('value'), timeZone) : undefined
   let state: TimestampState = 'empty'
   if (provided)
     state = date ? 'ready' : 'invalid'
@@ -55,18 +59,20 @@ export function connectTimestamp<T extends PropTypes>(
   let text = ''
   let relative = false
   if (date) {
+    const format = prop('format')
     if (type === 'relative') {
-      const phrase = formatRelativeTime(date, toTimeDate(props.now) ?? new Date(), locale)
+      const now = toTimeDate(prop('now'), timeZone) ?? new Date(context.get('now'))
+      const phrase = formatRelativeTime(date, now, locale, prop('translations')?.justNow)
       relative = phrase !== undefined
-      // 退回绝对日期时的格式串：作者给了就用作者的
-      text = phrase ?? formatTimePattern(date, props.format ?? words.date)
+      // 退回绝对日期时的格式：作者给了格式串就用作者的
+      text = phrase ?? (format ? formatTimePattern(date, format, timeZone) : formatTimestampDate(date, 'date', locale, timeZone))
     }
     else {
-      text = formatTimePattern(date, props.format ?? (type === 'date' ? words.date : words.datetime))
+      text = format ? formatTimePattern(date, format, timeZone) : formatTimestampDate(date, type, locale, timeZone)
     }
   }
 
-  const stamp = date ? timestampMachineStamp(date, type) : undefined
+  const stamp = date ? timestampMachineStamp(date, type, timeZone) : undefined
 
   return {
     date,
@@ -74,14 +80,17 @@ export function connectTimestamp<T extends PropTypes>(
     stamp,
     state,
     relative,
+    refreshing: machineState.matches('live'),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 机器按 id 找到它，离开视口就暂停刷新
+      'id': scope.partId('timestamp', 'root'),
       // 没有可读时刻时不写：空的 datetime 是一条机器读得进去、却指不到任何时刻的假信息
       'datetime': stamp,
       'data-format': type,
       'data-state': state,
-      // 这一次真按相对说法念了才立；落在四档之外退回绝对日期时不写
+      // 这一次真按相对说法念了才立；离现在三十天及以上退回绝对日期时不写
       'data-relative': dataAttr(relative),
     }),
   }
