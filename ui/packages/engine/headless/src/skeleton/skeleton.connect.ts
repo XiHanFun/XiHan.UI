@@ -5,14 +5,15 @@
 
 // 提供 skeleton 相关实现。
 
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { SkeletonApi, SkeletonItemProps, SkeletonProps } from './skeleton.types'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { SkeletonApi, SkeletonItemProps, SkeletonSchema } from './skeleton.types'
 import { skeletonAnatomy } from './skeleton.anatomy'
+import { skeletonLoading } from './skeleton.machine'
 
 const parts = skeletonAnatomy.build()
 
 /**
- * Skeleton 无状态机：加载态与形状全部来自 props。
+ * 加载态与形状全部来自 props；机器只记容器还留不留着——刚加载完的骨架要淡出播完才收起。
  *
  * 无障碍分两层，两层缺一不可：
  * · 骨架条是纯装饰，逐根写 aria-hidden="true" 把它们从无障碍树里摘掉，
@@ -21,32 +22,37 @@ const parts = skeletonAnatomy.build()
  * aria-hidden 只写在骨架条上、绝不写在容器上：写在容器上会连同它自己的 aria-busy
  * 一起被摘出无障碍树，加载态就再也报不出去了。
  *
- * loading 为假时两者都不输出——内容已经就位，既不该再说"忙"，也没有需要藏起来的装饰；
- * 同时给容器加 hidden，把留在 DOM 里的整块骨架收起来。
+ * loading 为假时不再说"忙"——内容已经就位；淡出那几帧骨架条仍是装饰、仍摘出无障碍树，
+ * 播完给容器加 hidden，把留在 DOM 里的整块骨架收起来。
  */
 export function connectSkeleton<T extends PropTypes>(
-  props: SkeletonProps,
+  service: Service<SkeletonSchema>,
   normalize: NormalizeProps<T>,
 ): SkeletonApi<T> {
-  const loading = props.loading ?? true
-  const shape = props.shape ?? 'text'
+  const { prop, context, scope } = service
+  const loading = skeletonLoading(prop('loading'))
+  const shape = prop('shape') ?? 'text'
+  // 刚加载完：淡出播完之前容器还留着，盖在真实内容之上
+  const shown = loading || context.get('rendered')
 
   return {
     loading,
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 机器按 id 找到容器，等它的淡出、把它抬出文档流
+      'id': scope.partId('skeleton', 'root'),
       'aria-busy': loading ? 'true' : undefined,
       'data-state': loading ? 'loading' : 'loaded',
       // 动效档挂在容器上，逐根骨架条靠后代选择器接到，不必各写一份
-      'data-animation': props.animation,
+      'data-animation': prop('animation'),
       // 收起时留着节点，只加 hidden
-      'hidden': !loading || undefined,
+      'hidden': !shown || undefined,
     }),
 
     getItemProps: (item: SkeletonItemProps = {}) => normalize.element({
       ...parts.item.attrs,
-      'aria-hidden': loading ? true : undefined,
+      'aria-hidden': shown ? true : undefined,
       'data-shape': item.shape ?? shape,
     }),
   }

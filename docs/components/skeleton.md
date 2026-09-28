@@ -32,7 +32,7 @@
 
 ### 加载结束
 
-loading 期间容器报告 aria-busy，切换为 false 后整块收起，位置让给真实内容
+loading 期间容器报告 aria-busy；切换为 false 后骨架让出位置，原地盖在真实内容之上淡出，播完才收起
 
 <XhDemo src="skeleton/03-loading" />
 
@@ -57,7 +57,7 @@ loading 期间容器报告 aria-busy，切换为 false 后整块收起，位置�
 
 ### 特性
 
-- `loading` 为假时替换为真实内容。
+- `loading` 为假时替换为真实内容：刚加载完的骨架让出版面，原地盖在真实内容之上淡出，播完才收起；挂载时就已加载完的直接收起，不播淡出。
 - `shape` 决定骨块的形状（文本行、圆形、矩形）。
 - `animation` 在微光、呼吸和静止三档之间切换。
 
@@ -83,7 +83,7 @@ loading 期间容器报告 aria-busy，切换为 false 后整块收起，位置�
 | --- | --- |
 | 自定义元素 | `<xh-skeleton>` |
 | Vue 组件 | `XhSkeletonItem` `XhSkeletonRoot` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `skeletonMachine` |
 | 皮肤 | `@xihan-ui/styles/skeleton.css` |
 
 ### Props
@@ -109,6 +109,12 @@ loading 期间容器报告 aria-busy，切换为 false 后整块收起，位置�
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'loading' \| 'loaded' |
+
+以下名称仅用于内部状态机。
+
+**状态**：`idle`
+
+**事件**：`ROOT.RENDERED`
 
 ### connect API
 
@@ -178,10 +184,10 @@ loading 期间容器报告 aria-busy，切换为 false 后整块收起，位置�
 
 ### 动效
 
-动效角色：循环（见[动效规范](../design/motion#角色)）。
+动效角色：出现 · 循环（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-skeleton-duration` · `--xh-skeleton-pulse-duration`。
 
-关键帧 `xh-skeleton-pulse` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-shimmer` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-skeleton-pulse` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-out` · `xh-shimmer` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
