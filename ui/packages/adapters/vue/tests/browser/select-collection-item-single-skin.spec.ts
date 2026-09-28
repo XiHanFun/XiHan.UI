@@ -44,7 +44,7 @@ describe('collection Item 单皮肤入口', () => {
     expect(selectedStyle.paddingInlineStart).toBe('12px')
     expect(selectedStyle.fontSize).toBe('14px')
     expect(selectedStyle.fontWeight).toBe('400')
-    expect(getComputedStyle(indicator).visibility).toBe('visible')
+    expect(getComputedStyle(indicator).opacity).toBe('1')
     expect(getComputedStyle(disabled!).cursor).toBe('not-allowed')
   })
 })

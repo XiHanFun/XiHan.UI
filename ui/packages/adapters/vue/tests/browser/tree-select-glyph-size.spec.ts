@@ -24,6 +24,7 @@ import {
   XhTreeSelectTrigger,
   XhTreeSelectValueText,
 } from '../../src'
+import { shownMask } from './glyph-mask'
 import { pseudoBox } from './pseudo-box'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -170,7 +171,7 @@ describe.each(['comfortable', 'compact'] as const)('树选择器自绘状态字�
     const mark = part('item', 0).querySelector<HTMLElement>('[data-part=\'item-indicator\']')!
     expect(mark.closest('[data-part=\'item\']')!.getAttribute('aria-selected')).toBe('true')
     expect(mark.hasAttribute('data-selected')).toBe(true)
-    expect(getComputedStyle(mark).visibility).toBe('visible')
+    expect(getComputedStyle(mark).opacity).toBe('1')
     expect(mark.getBoundingClientRect().width).toBe(indicator)
     expect(mark.getBoundingClientRect().height).toBe(indicator)
     const check = pseudoBox(mark, '::before')
@@ -186,9 +187,9 @@ describe.each(['comfortable', 'compact'] as const)('树选择器自绘状态字�
     const mark = part('branch-control').querySelector<HTMLElement>('[data-part=\'item-indicator\']')!
     expect(mark.hasAttribute('data-indeterminate')).toBe(true)
     expect(mark.hasAttribute('data-selected')).toBe(false)
-    expect(getComputedStyle(mark).visibility).toBe('visible')
+    expect(getComputedStyle(mark).opacity).toBe('1')
     const selectedMark = part('item', 0).querySelector<HTMLElement>('[data-part=\'item-indicator\']')!
-    expect(getComputedStyle(mark, '::before').maskImage).not.toBe(getComputedStyle(selectedMark, '::before').maskImage)
+    expect(shownMask(mark, '::before')).not.toBe(shownMask(selectedMark, '::before'))
     expect(mark.getBoundingClientRect().width).toBe(indicator)
     const minus = pseudoBox(mark, '::before')
     const observed = describeGlyph(mark, '::before')

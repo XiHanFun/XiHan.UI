@@ -122,7 +122,7 @@ describe('select 使用 Collection Item', () => {
     expect(selected!.getAttribute('aria-selected')).toBe('true')
     expect(selected!.dataset.state).toBe('checked')
     expect(disabled!.getAttribute('aria-disabled')).toBe('true')
-    expect(getComputedStyle(indicator).visibility).toBe('visible')
+    expect(getComputedStyle(indicator).opacity).toBe('1')
     expect(getComputedStyle(selected!).fontWeight).toBe(getComputedStyle(plain!).fontWeight)
 
     const width = selected!.getBoundingClientRect().width
@@ -147,7 +147,7 @@ describe('select 使用 Collection Item', () => {
     await userEvent.hover(selected!)
     await nextTick()
     expect(getComputedStyle(selected!).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
-    expect(getComputedStyle(indicator).visibility).toBe('visible')
+    expect(getComputedStyle(indicator).opacity).toBe('1')
 
     // 按下：白底阶梯 hover 100 → pressed 200，面由家族 pressed 规则给出，只换面不缩放
     plain!.style.transition = 'none'
@@ -209,12 +209,15 @@ describe('select 使用 Collection Item', () => {
     const item = rawItem({ context: 'page' })
     const indicator = item.querySelector<HTMLElement>('[data-xh-collection-slot=\'indicator\']')!
     const width = item.getBoundingClientRect().width
-    expect(getComputedStyle(indicator).visibility).toBe('hidden')
+    expect(getComputedStyle(indicator).opacity).toBe('0')
 
     item.setAttribute('aria-selected', 'true')
     expect(getComputedStyle(item).backgroundColor).toBe(tokenColor('--xh-bg-brand-subtle'))
     expect(getComputedStyle(item).color).toBe(tokenColor('--xh-fg-on-brand-subtle'))
-    expect(getComputedStyle(indicator).visibility).toBe('visible')
+    // 对号按选中态淡变：读终值前把这一段过渡走完
+    for (const animation of indicator.getAnimations())
+      animation.finish()
+    expect(getComputedStyle(indicator).opacity).toBe('1')
     // 与 overlay 同列：对号贴着结束侧内边距，行首一格留给前导图标
     expect(indicator.getBoundingClientRect().right).toBeCloseTo(item.getBoundingClientRect().right - Number.parseFloat(getComputedStyle(item).paddingInlineEnd), 0)
     expect(getComputedStyle(item).fontWeight).toBe('400')

@@ -19,6 +19,7 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from '../../src'
+import { shownMask } from './glyph-mask'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -127,9 +128,9 @@ function searchItem(text: string): HTMLElement {
   return element
 }
 
+/** 勾与半选杠叠成两层遮罩，露出来的是尺寸不为 0 的那层 */
 function mask(element: HTMLElement, pseudo = '::before'): string {
-  const style = getComputedStyle(element, pseudo)
-  return style.maskImage || style.webkitMaskImage || ''
+  return shownMask(element, pseudo)
 }
 
 function resolvedMask(token: string): string {
@@ -189,8 +190,8 @@ describe('级联选择的统一选中标记', () => {
     expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
     expect(getComputedStyle(selected).backgroundColor).toBe(resolvedColor('--xh-bg-subtle'))
     expect(getComputedStyle(path).backgroundColor).toBe(getComputedStyle(selected).backgroundColor)
-    expect(getComputedStyle(selectedIndicator).visibility).toBe('visible')
-    expect(getComputedStyle(itemIndicator('hangzhou')).visibility).toBe('hidden')
+    expect(getComputedStyle(selectedIndicator).opacity).toBe('1')
+    expect(getComputedStyle(itemIndicator('hangzhou')).opacity).toBe('0')
     expect(mask(selectedIndicator)).toBe(resolvedMask('--xh-glyph-mark-check'))
     expect(itemIndicator('hangzhou').getBoundingClientRect().right)
       .toBeCloseTo(selectedIndicator.getBoundingClientRect().right, 0)
@@ -216,8 +217,8 @@ describe('级联选择的统一选中标记', () => {
     expect(colorAlpha(getComputedStyle(selected).backgroundColor)).toBe(0)
     expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
     expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
-    expect(getComputedStyle(selected, '::after').visibility).toBe('visible')
-    expect(getComputedStyle(plain, '::after').visibility).toBe('hidden')
+    expect(getComputedStyle(selected, '::after').opacity).toBe('1')
+    expect(getComputedStyle(plain, '::after').opacity).toBe('0')
     expect(mask(selected, '::after')).toBe(resolvedMask('--xh-glyph-mark-check'))
   })
 
@@ -231,7 +232,7 @@ describe('级联选择的统一选中标记', () => {
     const columnHalf = itemIndicator('east')
     const checked = itemIndicator('shanghai')
     expect(item('east').getAttribute('data-state')).toBe('indeterminate')
-    expect(getComputedStyle(columnHalf).visibility).toBe('visible')
+    expect(getComputedStyle(columnHalf).opacity).toBe('1')
     expect(mask(columnHalf)).toBe(resolvedMask('--xh-glyph-mark-minus'))
     expect(mask(columnHalf)).not.toBe(mask(checked))
 
@@ -239,7 +240,7 @@ describe('级联选择的统一选中标记', () => {
     const resultHalf = searchItem('区域')
     expect(resultHalf.getAttribute('data-state')).toBe('indeterminate')
     expect(resultHalf.getAttribute('aria-checked')).toBe('mixed')
-    expect(getComputedStyle(resultHalf, '::after').visibility).toBe('visible')
+    expect(getComputedStyle(resultHalf, '::after').opacity).toBe('1')
     expect(mask(resultHalf, '::after')).toBe(resolvedMask('--xh-glyph-mark-minus'))
   })
 

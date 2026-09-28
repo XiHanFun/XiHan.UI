@@ -80,8 +80,8 @@ describe('列表框的选中反馈', () => {
         expect(appleStyle.backgroundColor).toBe('rgba(0, 0, 0, 0)')
         expect(appleStyle.color).toBe(resolve('--xh-fg-default', 'color'))
         expect(appleStyle.fontWeight).toBe(getComputedStyle(banana).fontWeight)
-        expect(getComputedStyle(indicator(apple)).visibility).toBe('visible')
-        expect(getComputedStyle(indicator(banana)).visibility).toBe('hidden')
+        expect(getComputedStyle(indicator(apple)).opacity).toBe('1')
+        expect(getComputedStyle(indicator(banana)).opacity).toBe('0')
         const appleMark = indicator(apple).getBoundingClientRect()
         const appleText = apple.querySelector<HTMLElement>(`[data-part='item-text']`)!.getBoundingClientRect()
         expect(dir === 'ltr' ? appleMark.left >= appleText.right : appleMark.right <= appleText.left).toBe(true)
@@ -105,7 +105,10 @@ describe('列表框的选中反馈', () => {
         await nextTick()
         expect(banana.getAttribute('data-state')).toBe('checked')
         expect(apple.getAttribute('data-state')).toBe(selectionMode === 'single' ? 'unchecked' : 'checked')
-        expect(getComputedStyle(indicator(banana)).visibility).toBe('visible')
+        // 对号按选中态淡变：读终值前把这一段过渡走完
+        for (const animation of indicator(banana).getAnimations())
+          animation.finish()
+        expect(getComputedStyle(indicator(banana)).opacity).toBe('1')
         // 选中 + 悬停：仍是 100 档，行与对号的几何不动
         expect(getComputedStyle(banana).backgroundColor).toBe(resolve('--xh-bg-subtle'))
         expect(getComputedStyle(banana).color).toBe(resolve('--xh-fg-default', 'color'))
@@ -166,7 +169,7 @@ describe('列表框的选中反馈', () => {
     await userEvent.hover(item('cherry'))
     expect(getComputedStyle(apple).backgroundColor).toBe(getComputedStyle(banana).backgroundColor)
     expect(getComputedStyle(apple).color).toBe(getComputedStyle(banana).color)
-    expect(getComputedStyle(indicator(apple)).visibility).toBe('visible')
+    expect(getComputedStyle(indicator(apple)).opacity).toBe('1')
   })
 
   it('打印：对号是遮罩出来的一块底色，按原样印出，不随打印丢底色', async () => {

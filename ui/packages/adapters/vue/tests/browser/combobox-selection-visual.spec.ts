@@ -129,8 +129,8 @@ describe('combobox 统一选中反馈', () => {
     expect(alpha(getComputedStyle(selected).backgroundColor)).toBe(0)
     expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
     expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
-    expect(getComputedStyle(selectedIndicator).visibility).toBe('visible')
-    expect(getComputedStyle(plainIndicator).visibility).toBe('hidden')
+    expect(getComputedStyle(selectedIndicator).opacity).toBe('1')
+    expect(getComputedStyle(plainIndicator).opacity).toBe('0')
     expect(getComputedStyle(selectedIndicator, '::before').maskImage).not.toBe('none')
   })
 
@@ -150,7 +150,7 @@ describe('combobox 统一选中反馈', () => {
     expect(selected.hasAttribute('data-highlighted')).toBe(true)
     expect(getComputedStyle(selected).backgroundColor).toBe(neutral)
     expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
-    expect(getComputedStyle(byTestId('selected-indicator')).visibility).toBe('visible')
+    expect(getComputedStyle(byTestId('selected-indicator')).opacity).toBe('1')
   })
 
   it('多选中的禁用项保留对号但整行统一失效，不响应指针高亮', async () => {
@@ -159,7 +159,7 @@ describe('combobox 统一选中反馈', () => {
     const indicator = byTestId('disabled-indicator')
 
     expect(disabled.getAttribute('data-state')).toBe('checked')
-    expect(getComputedStyle(indicator).visibility).toBe('visible')
+    expect(getComputedStyle(indicator).opacity).toBe('1')
     expect(getComputedStyle(indicator).color).toBe(getComputedStyle(disabled).color)
     expect(getComputedStyle(disabled).cursor).toBe('not-allowed')
 

@@ -431,10 +431,12 @@ ${sizeVars(source, size)}
     grid-column: suffix;
   }
 
+  /* 对号常驻在 indicator 列、未选中时透明：按选中态淡变，不按 visibility 瞬切 */
   [data-xh-collection-slot='indicator'] {
     grid-column: indicator;
     color: var(--xh-_collection-indicator-fg);
-    visibility: hidden;
+    opacity: 0;
+    transition: opacity ${source.motion.duration} ${source.motion.easing};
   }
 
   [data-xh-collection-slot='shortcut'],
@@ -476,7 +478,7 @@ ${contextStateVars(source, context, state)}${stateExtras(source, state, '    ')}
   }`)}
 
   [data-xh-collection-item]:is([aria-selected='true'], [data-state='checked']) [data-xh-collection-slot='indicator'] {
-    visibility: visible;
+    opacity: 1;
   }
 
   [data-xh-collection-item][data-state='checked'] {

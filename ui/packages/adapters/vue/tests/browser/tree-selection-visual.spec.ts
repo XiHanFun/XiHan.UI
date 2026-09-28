@@ -108,9 +108,9 @@ describe('树的选中与按压反馈', () => {
     expect(getComputedStyle(index).color).toBe(resolve('--xh-fg-default', 'color'))
     expect(getComputedStyle(index).color).toBe(getComputedStyle(app).color)
     expect(getComputedStyle(index).fontWeight).toBe(getComputedStyle(app).fontWeight)
-    expect(getComputedStyle(mark(index)).visibility).toBe('visible')
+    expect(getComputedStyle(mark(index)).opacity).toBe('1')
     expect(getComputedStyle(mark(index)).color).toBe(resolve('--xh-fg-brand', 'color'))
-    expect(getComputedStyle(mark(app)).visibility).toBe('hidden')
+    expect(getComputedStyle(mark(app)).opacity).toBe('0')
     // 对号在正文之后、贴着行的末端：作者把它写在行首，皮肤照样排到最后
     const text = index.querySelector<HTMLElement>('[data-part="item-text"]')!.getBoundingClientRect()
     const row = index.getBoundingClientRect()
@@ -152,9 +152,9 @@ describe('树的选中与按压反馈', () => {
     expect(part('branch', 'src').getAttribute('aria-selected')).toBe('true')
     expect(getComputedStyle(src).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(src).color).toBe(resolve('--xh-fg-default', 'color'))
-    expect(getComputedStyle(mark(src)).visibility).toBe('visible')
+    expect(getComputedStyle(mark(src)).opacity).toBe('1')
     expect(mark(src).getBoundingClientRect().left).toBeGreaterThanOrEqual(src.querySelector<HTMLElement>('[data-part="branch-text"]')!.getBoundingClientRect().right)
-    expect(getComputedStyle(mark(docs)).visibility).toBe('hidden')
+    expect(getComputedStyle(mark(docs)).opacity).toBe('0')
     // 点行落焦：焦点行同时是高亮行，选中 + 高亮与未选中行的高亮同为 100
     await userEvent.click(src)
     await nextTick()
@@ -179,7 +179,7 @@ describe('树的选中与按压反馈', () => {
 
     expect(getComputedStyle(index).backgroundColor).toBe(getComputedStyle(app).backgroundColor)
     expect(getComputedStyle(index).color).toBe(getComputedStyle(app).color)
-    expect(getComputedStyle(mark(index)).visibility).toBe('visible')
+    expect(getComputedStyle(mark(index)).opacity).toBe('1')
   })
 
   it('打印：对号是遮罩出来的一块底色，按原样印出，不随打印丢底色', async () => {

@@ -140,7 +140,7 @@ describe.each(['comfortable', 'compact'] as const)('选择器自绘状态字形�
     const mark = indicatorOf('apple')
     expect(item('apple').getAttribute('aria-selected')).toBe('true')
     expect(mark.childNodes.length, '空标记盒才由皮肤画兜底的勾').toBe(0)
-    expect(getComputedStyle(mark).visibility).toBe('visible')
+    expect(getComputedStyle(mark).opacity).toBe('1')
     expect(getComputedStyle(mark, '::before').maskImage, '兜底字形是勾').not.toBe('none')
     const check = pseudoBox(mark, '::before')
     const observed = describeGlyph(mark, '::before')

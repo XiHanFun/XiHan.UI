@@ -190,7 +190,7 @@ describe('选择器分组与选项反馈', () => {
     expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(style.outlineStyle).toBe('solid')
     expect(Number.parseFloat(style.outlineWidth)).toBeGreaterThan(0)
-    expect(getComputedStyle(indicator).visibility).toBe('visible')
+    expect(getComputedStyle(indicator).opacity).toBe('1')
   })
 
   it.each([false, true])('multiple=%s：选中只显示对号，移走高亮后不留蓝底或强调文字', async (multiple) => {
@@ -208,13 +208,13 @@ describe('选择器分组与选项反馈', () => {
     expect(colorAlpha(getComputedStyle(selected).backgroundColor)).toBe(0)
     expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
     expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
-    expect(getComputedStyle(indicator).visibility).toBe('visible')
-    expect(getComputedStyle(plainIndicator).visibility).toBe('hidden')
+    expect(getComputedStyle(indicator).opacity).toBe('1')
+    expect(getComputedStyle(plainIndicator).opacity).toBe('0')
     const highlighted = getComputedStyle(plain).backgroundColor
     await userEvent.hover(selected)
     await nextTick()
     expect(getComputedStyle(selected).backgroundColor).toBe(highlighted)
-    expect(getComputedStyle(indicator).visibility).toBe('visible')
+    expect(getComputedStyle(indicator).opacity).toBe('1')
   })
 
   it('未选中行的 hover 与 pressed 分档，disabled 行及勾选位统一失效', async () => {
