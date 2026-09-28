@@ -181,11 +181,13 @@
   }
 
   /* 组内分段使用同一块中性操作面（淡底承载：hover 200 → pressed 300 由 host 槽下发）；
-     中间段保持直角，只给整组两端补回控件圆角。按下态 / 禁用面与散落条目同一套规则 */
+     中间段保持直角，只给整组两端补回控件圆角。按下态 / 禁用面与散落条目同一套规则。
+     分段零间距直角相接，按下只换面不缩放：缩放任一段都会把两侧接缝撕开 */
   [data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='item'] {
     --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
     --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
     --xh-action-radius: 0;
+    --xh-action-scale-pressed: none;
     --xh-action-bg-disabled: var(--xh-toolbar-item-bg-disabled, var(--xh-bg-subtle));
 
     position: relative;
