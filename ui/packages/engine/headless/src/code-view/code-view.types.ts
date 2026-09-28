@@ -37,6 +37,20 @@ export interface CodeViewLineProps {
   index: number
 }
 
+/**
+ * 一个可折叠的语法块，两端都是 0 基行下标：start 是块头那一行（折叠后仍显示），
+ * 其下 start + 1 到 end（含）这些行随折叠收起。
+ */
+export interface CodeViewFoldRegion {
+  readonly start: number
+  readonly end: number
+}
+
+export interface CodeViewFoldedChangeDetails {
+  /** 折叠着的块，写块头的行号（受 startLine 影响），升序。 */
+  folded: number[]
+}
+
 export interface CodeViewSchema extends MachineSchema {
   props: {
     code: string
@@ -64,6 +78,18 @@ export interface CodeViewSchema extends MachineSchema {
     /** 折叠态，纯受控：没有 defaultClamped，需要非受控时套用 collapsible。 */
     clamped?: boolean
     /**
+     * 按缩进找出语法块，块头那一行的行首给一颗折叠钮，默认关闭。
+     * 一行之下缩进更深的连续行（夹在中间的空行算在内）是它的块；与语言无关，
+     * 花括号语言的收尾括号与块头同缩进，折叠后留在外面。
+     */
+    blockFolding?: boolean
+    /** 折叠着的块，写块头的行号（受 startLine 影响）；受控。不是块头的行号忽略。 */
+    folded?: readonly number[]
+    /** 非受控时一开始就折叠着的块，写法同 folded。 */
+    defaultFolded?: readonly number[]
+    /** 语法块的折叠集合变化。 */
+    onFoldedChange?: (details: CodeViewFoldedChangeDetails) => void
+    /**
      * 着色实现。未提供时为纯文本，提供后也允许返回 null（语言未识别等），同样回退为纯文本。
      * 未闭合的块默认不着色，见 {@link highlightWhileStreaming}。
      */
@@ -86,19 +112,30 @@ export interface CodeViewSchema extends MachineSchema {
      * 抬起、失焦、指针取消，或按住途中折叠条因不再可折叠而收起时撤下；与折叠态互相独立。
      */
     pressed: boolean
+    /** 折叠着的语法块，写块头的行号，升序。 */
+    folded: readonly number[]
+    /**
+     * 行首折叠钮组的 Tab 停靠点：上一次聚焦的那颗钮所在块头的行号。
+     * 为 null、或它已不再是可见的块头时，停靠点落在第一颗可见的钮上。
+     */
+    foldFocus: number | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
-  /** 单态：折叠态纯受控、着色与切行都是纯函数，机器只承载按压通道。 */
+  /** 单态：整段收起纯受控、着色与切行都是纯函数；机器承载按压通道与语法块的折叠集合。 */
   state: 'idle'
   event:
     /** 按压通道（shared/press）：折叠条被 Space / Enter 或触屏按住。 */
     | { type: 'PRESS.START' }
     /** 折叠条抬起、失焦或指针取消。 */
     | { type: 'PRESS.END' }
+    /** 翻转一个语法块的折叠：line 是块头的行号。 */
+    | { type: 'FOLD.TOGGLE', line: number }
+    /** 焦点落到某颗行首折叠钮上，记下它作为这组钮的 Tab 停靠点。 */
+    | { type: 'FOLD.FOCUS', line: number }
   tag: never
   guard: 'canPress'
-  action: 'startPress' | 'endPress' | 'releaseWhenUnfoldable'
+  action: 'startPress' | 'endPress' | 'releaseWhenUnfoldable' | 'toggleFold' | 'setFoldFocus'
   effect: never
 }
 
@@ -118,6 +155,15 @@ export interface CodeViewApi<T extends PropTypes = PropTypes> {
   clamped: boolean
   /** 发出一次折叠意图；与当前态相同时不发。 */
   setClamped: (next: boolean) => void
+  /** 按缩进找出的语法块，按块头先后排；blockFolding 关闭时为空。 */
+  foldRegions: readonly CodeViewFoldRegion[]
+  /** 折叠着的块，写块头的行号，升序；只含当下确实是块头的行号。 */
+  folded: readonly number[]
+  /** 该行是不是某个语法块的块头；适配器据此决定要不要在行首建折叠钮。 */
+  isFoldStart: (index: number) => boolean
+  /** 翻转一个语法块的折叠，line 是块头的行号；不是块头时不做事。 */
+  toggleFold: (line: number) => void
+  getLineFoldTriggerProps: (props: CodeViewLineProps) => T['button']
   getRootProps: () => T['element']
   getHeaderProps: () => T['element']
   getFilenameProps: () => T['element']
@@ -138,6 +184,56 @@ export interface CodeViewTranslations {
   expand: string
   /** 收起按钮的可访问名。 */
   collapse: string
+  /**
+   * 行首折叠钮的可访问名，first / last 是这个块折叠后收起的首末行号；
+   * 名字不随开合变，开合由 aria-expanded 表达。
+   */
+  foldBlock: (first: number, last: number) => string
+}
+
+/** 缩进里的一个制表符按几列算。 */
+const FOLD_TAB_SIZE = 4
+
+/** 一行的缩进列数；空行与纯空白行返回 -1，它们不开块也不收块。 */
+function indentOf(text: string): number {
+  let columns = 0
+  for (const char of text) {
+    if (char === ' ')
+      columns += 1
+    else if (char === '\t')
+      columns += FOLD_TAB_SIZE - (columns % FOLD_TAB_SIZE)
+    else
+      return columns
+  }
+  return -1
+}
+
+/**
+ * 按缩进找出可折叠的语法块：一行之下紧接着出现缩进更深的非空行，这一行就是块头，
+ * 块延伸到缩进回落到不深于块头之前的最后一个非空行（块尾的空行不算进去）。
+ * 单趟完成，块按块头先后排；块之间只会嵌套，不会交错。
+ */
+export function findCodeViewFoldRegions(texts: readonly string[]): readonly CodeViewFoldRegion[] {
+  const regions: CodeViewFoldRegion[] = []
+  const open: { start: number, indent: number }[] = []
+  let lastFilled = -1
+  const closeDeeperThan = (indent: number): void => {
+    while (open.length > 0 && open[open.length - 1]!.indent >= indent) {
+      const head = open.pop()!
+      if (lastFilled > head.start)
+        regions.push({ start: head.start, end: lastFilled })
+    }
+  }
+  texts.forEach((text, index) => {
+    const indent = indentOf(text)
+    if (indent < 0)
+      return
+    closeDeeperThan(indent)
+    open.push({ start: index, indent })
+    lastFilled = index
+  })
+  closeDeeperThan(0)
+  return regions.sort((a, b) => a.start - b.start)
 }
 
 /** 按 \n 切分统计代码行数：空串为 1 行，结尾换行多计一行。 */

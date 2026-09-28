@@ -6,7 +6,7 @@
 // 提供 code view 相关实现。
 
 import type { HighlighterPort, IdGenerator } from '@xihan-ui/core'
-import type { CodeViewApi, CodeViewClampToggleDetails, CodeViewProps, CodeViewSchema, CodeViewTranslations } from '@xihan-ui/headless'
+import type { CodeViewApi, CodeViewClampToggleDetails, CodeViewFoldedChangeDetails, CodeViewProps, CodeViewSchema, CodeViewTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { codeViewAnatomy, codeViewMachine, codeViewMeta, connectCodeView, createCodeViewHighlighterResource } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -21,6 +21,18 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 空串按缺席处理，避免 Number('') 落成 0
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
+// 逗号分隔的行号表；缺席为 undefined，空串是一张空表（受控地一个都不折叠）
+/** 按块折叠时铺出来的一行：开合只改属性，不重铺节点。 */
+interface FoldingLine {
+  readonly index: number
+  readonly row: HTMLElement
+  readonly content: HTMLElement
+  readonly trigger: HTMLElement | null
+}
+
+const LINE_LIST_CONVERTER = {
+  fromAttribute: (v: string | null) => (v == null ? undefined : v.split(',').map(s => s.trim()).filter(s => s !== '').map(Number).filter(Number.isInteger)),
+}
 
 /**
  * `<xh-code-view>`：Light-DOM 行为宿主，wire 时计算 connectCodeView 的产出，
@@ -40,9 +52,13 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} highlight-lines - 要高亮的行号，写为 `3,7-9`
  * @attr {number} clamp - 超过该行数才视为可折叠
  * @attr {boolean} clamped - 折叠态，纯受控
+ * @attr {boolean} block-folding - 按缩进找出语法块，块头行首给一颗折叠钮，默认关闭
+ * @attr {string} folded - 折叠着的语法块，写块头的行号、逗号分隔；受控
+ * @attr {string} default-folded - 非受控时一开始就折叠着的块，写法同 folded
  * @attr {boolean} highlight-while-streaming - 未闭合时也着色，默认关闭
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires clamp-toggle - 折叠态切换的意图；detail 为 `{ clamped: boolean }`
+ * @fires folded-change - 语法块的折叠集合变化；detail 为 `{ folded: number[] }`
  * @csspart root - 外壳，承载 data-lang / data-complete / data-clamped / data-digits
  * @csspart header - 文件名与语言角标所在的行
  * @csspart filename - 文件名，渲染后即为 pre 的可访问名
@@ -54,6 +70,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart line-content - 该行的正文与记号
  * @csspart token - 着色生效时的一个记号，承载 data-kind
  * @csspart fold-trigger - 展开或收起，承载 aria-expanded / aria-controls；Space / Enter 与触屏按住投影 data-pressed
+ * @csspart line-fold-trigger - 语法块块头行首的折叠钮，由本元素铺在正文最前面；一组只占一个 Tab 位，上下方向键在组内走
  */
 export class XhCodeViewElement extends XhElement {
   static override partContract = { anatomy: codeViewAnatomy, meta: codeViewMeta }
@@ -71,6 +88,9 @@ export class XhCodeViewElement extends XhElement {
     highlightLines: { converter: STRING_CONVERTER, attribute: 'highlight-lines' },
     clamp: { converter: NUMBER_CONVERTER },
     clamped: { converter: BOOLEAN_CONVERTER },
+    blockFolding: { type: Boolean, attribute: 'block-folding' },
+    folded: { converter: LINE_LIST_CONVERTER },
+    defaultFolded: { converter: LINE_LIST_CONVERTER, attribute: 'default-folded' },
     highlightWhileStreaming: { converter: BOOLEAN_CONVERTER, attribute: 'highlight-while-streaming' },
     size: { converter: STRING_CONVERTER },
     // 对象值走不了 HTML 属性，只作为 property 暴露
@@ -88,6 +108,9 @@ export class XhCodeViewElement extends XhElement {
   declare highlightLines?: string
   declare clamp?: number
   declare clamped?: boolean
+  declare blockFolding?: boolean
+  declare folded?: number[]
+  declare defaultFolded?: number[]
   declare highlightWhileStreaming?: boolean
   declare size?: CodeViewProps['size']
   /** 可访问名与折叠按钮的文案。 */
@@ -102,6 +125,8 @@ export class XhCodeViewElement extends XhElement {
 
   /** 上一次铺进 code 部件的那份逐行结构，用来判断要不要重铺。 */
   #painted?: string
+  /** 开了按块折叠时记下铺出来的各行，开合变了就地改属性。 */
+  #folding: FoldingLine[] = []
   #releaseHighlighter?: () => void
 
   override connectedCallback(): void {
@@ -141,12 +166,18 @@ export class XhCodeViewElement extends XhElement {
       highlightLines: this.highlightLines,
       clamp: this.clamp,
       clamped: this.clamped,
+      blockFolding: this.blockFolding,
+      folded: this.folded,
+      defaultFolded: this.defaultFolded,
       highlighter: this.resolvedHighlighter(),
       highlightWhileStreaming: this.highlightWhileStreaming,
       size: this.size,
       translations: this.translations,
       onClampToggle: (details: CodeViewClampToggleDetails) => {
         this.dispatchEvent(new CustomEvent('clamp-toggle', { detail: details, bubbles: true, composed: true }))
+      },
+      onFoldedChange: (details: CodeViewFoldedChangeDetails) => {
+        this.dispatchEvent(new CustomEvent('folded-change', { detail: details, bubbles: true, composed: true }))
       },
     }
   }
@@ -181,17 +212,21 @@ export class XhCodeViewElement extends XhElement {
     const host = this.getPart('code')
     if (!host) {
       this.#painted = undefined
+      this.#folding = []
       return
     }
-    const signature = `${api.lineNumbers}|${api.lines
+    const signature = `${api.lineNumbers}|${api.foldRegions.map(region => region.start).join(',')}|${api.lines
       .map((line, index) => `${api.lineNumberAt(index)} ${line.tokens.map(t => `${t.kind}${t.text}`).join('')} ${line.text}`)
       .join('')}`
-    if (signature === this.#painted)
+    if (signature === this.#painted) {
+      this.#refold(api)
       return
+    }
     this.#painted = signature
 
     const doc = host.ownerDocument
     const frame = doc.createDocumentFragment()
+    const folding: FoldingLine[] = []
     api.lines.forEach((line, index) => {
       const row = doc.createElement('span')
       this.spreader.spread(row, api.getLineProps({ index }) as Record<string, unknown>)
@@ -205,9 +240,18 @@ export class XhCodeViewElement extends XhElement {
 
       const content = doc.createElement('span')
       this.spreader.spread(content, api.getLineContentProps({ index }) as Record<string, unknown>)
+      // 块头的折叠钮放在正文最前面，由皮肤定位到正文让出的那一列里；不是块头的行不建
+      let trigger: HTMLElement | null = null
+      if (api.isFoldStart(index)) {
+        trigger = doc.createElement('button')
+        this.spreader.spread(trigger, api.getLineFoldTriggerProps({ index }) as Record<string, unknown>)
+        content.appendChild(trigger)
+      }
       // 没有着色结果就一个文本节点，别平白多包一层 span
       if (line.tokens.length === 0) {
-        content.textContent = line.text
+        // 空行不留空文本节点，与直接写 textContent 时一样
+        if (line.text !== '')
+          content.append(line.text)
       }
       else {
         for (const token of line.tokens) {
@@ -219,7 +263,23 @@ export class XhCodeViewElement extends XhElement {
       }
       row.appendChild(content)
       frame.appendChild(row)
+      if (api.foldRegions.length > 0)
+        folding.push({ index, row, content, trigger })
     })
     host.replaceChildren(frame)
+    this.#folding = folding
+  }
+
+  /**
+   * 结构没变、只是语法块开合或停靠点变了：就地改写各行与折叠钮的属性。
+   * 不重铺节点——重铺会把焦点从刚按下的那颗钮上摘掉。
+   */
+  #refold(api: CodeViewApi): void {
+    for (const { index, row, content, trigger } of this.#folding) {
+      this.spreader.spread(row, api.getLineProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(content, api.getLineContentProps({ index }) as Record<string, unknown>)
+      if (trigger)
+        this.spreader.spread(trigger, api.getLineFoldTriggerProps({ index }) as Record<string, unknown>)
+    }
   }
 }

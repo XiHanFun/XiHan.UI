@@ -1,6 +1,6 @@
 # CodeView 代码视图
 
-一段代码的逐行呈现：行号、指定行高亮、超长折叠、文件名，可选语法着色，支持流式追加时的未闭合状态。
+一段代码的逐行呈现：行号、指定行高亮、超长折叠、按语法块折叠、文件名，可选语法着色，支持流式追加时的未闭合状态。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/code-view" target="_blank" rel="noreferrer">Headless</a>
@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="code-view"`：**`root`** · `header` · `filename` · `lang-label` · **`pre`** · **`code`** · `line` · `line-number` · `line-content` · `token` · `fold-trigger`
+`data-scope="code-view"`：**`root`** · `header` · `filename` · `lang-label` · **`pre`** · **`code`** · `line` · `line-number` · `line-content` · `token` · `fold-trigger` · `line-fold-trigger`
 
 ## 示例
 
@@ -66,6 +66,18 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 
 <XhDemo src="code-view/08-size" />
 
+### 头部下载
+
+下载交给下载触发器：放进头部条，文件名沿用代码的文件名，写出的是原文
+
+<XhDemo src="code-view/09-download" />
+
+### 按块折叠
+
+block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠集合写块头的行号，可受控（folded）也可非受控（default-folded）；一组钮只占一个 Tab 位、上下方向键在组内走
+
+<XhDemo src="code-view/10-block-folding" />
+
 ## 设计指引
 
 ### 何时使用
@@ -87,9 +99,12 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 - `highlighter` 是着色端口，由宿主决定接入哪个着色器；返回 `null` 是合法结果，回到纯文本。适配器默认接 `@xihan-ui/code-highlight`，它是可选 peer：已安装时自动着色，未安装时保持纯文本。适配器显式传 `null` 时不请求默认模块；只有模块缺席才回到纯文本，已安装模块的加载或初始化异常照常抛出。
 - 行号由皮肤用 `attr()` 绘制，复制代码不会带上行号，读屏也不会逐行读出数字。
 - `clamped` 是纯受控的：折叠状态通常由外部“全部展开 / 全部折叠”统一持有，内建状态会与之冲突。
+- `blockFolding` 按缩进折叠语法块：一行之下缩进更深的连续行（夹在中间的空行算在内）是它的块，块头行首出现折叠钮，收起后块头正文后面画一枚省略号。按缩进而不按括号配对，是为了不依赖语言：Python、YAML 这类没有括号的语言一样能折；花括号语言的收尾括号与块头同缩进，折叠后留在外面。缩进不规整的代码（压缩过的、混排制表符的）找不出有意义的块，这时不要开它。
+- 折叠集合写块头的行号（随 `startLine`），`folded` 受控、`defaultFolded` 非受控，变化经 `folded-change` 报出；代码变了以后不再是块头的行号自动失效。收起的行不占高度，`pre` 预撑的行数按看得见的算。
 
 ### 组合
 
+- 下载使用[下载触发器](./download-trigger)，同样放进 `header`，`data` 给原文、`fileName` 沿用文件名。
 - 与[剪贴板](./clipboard)配合提供复制；需要非受控折叠时放入[折叠区域](./collapsible)。把剪贴板的三个部件放进 `header`，再用 `--xh-clipboard-copy-trigger-border: transparent`、`--xh-clipboard-copy-trigger-bg: transparent`、`--xh-clipboard-copy-trigger-h: var(--xh-control-h-sm)` 三个槽把按钮调整为头部内的低强调形态。
 - 内建词法只区分注释、字符串、数字、关键字、标点五档。需要区分函数名、类型名、属性名时，自行实现 `highlighter` 端口（同步纯函数，可接 Shiki 等）传入，皮肤按记号种类上色的规则不变。
 - 放进 AI 回复正文时由[流式正文](./markdown-stream)交付代码块。
@@ -132,6 +147,10 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `highlightLines` | `string \| readonly number[]` |  | 要高亮的行号，写为 `'3,7-9'` 或行号数组；非法片段丢弃不报错。 |
 | `clamp` | `number` |  | 超过该行数才视为可折叠。 |
 | `clamped` | `boolean` |  | 折叠态，纯受控：没有 defaultClamped，需要非受控时套用 collapsible。 |
+| `blockFolding` | `boolean` |  | 按缩进找出语法块，块头那一行的行首给一颗折叠钮，默认关闭。 一行之下缩进更深的连续行（夹在中间的空行算在内）是它的块；与语言无关， 花括号语言的收尾括号与块头同缩进，折叠后留在外面。 |
+| `folded` | `readonly number[]` |  | 折叠着的块，写块头的行号（受 startLine 影响）；受控。不是块头的行号忽略。 |
+| `defaultFolded` | `readonly number[]` |  | 非受控时一开始就折叠着的块，写法同 folded。 |
+| `onFoldedChange` | `(details: CodeViewFoldedChangeDetails) => void` |  | 语法块的折叠集合变化。 |
 | `highlighter` | `HighlighterPort` |  | 着色实现。未提供时为纯文本，提供后也允许返回 null（语言未识别等），同样回退为纯文本。 未闭合的块默认不着色，见 {@link highlightWhileStreaming}。 |
 | `highlightWhileStreaming` | `boolean` |  | 块尚未闭合时也着色，默认 false。 默认关闭是因为未闭合代码的词法本身不稳定：引号、括号随时会配对， 每到一个 token 整块变一次色，比不着色更差。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
@@ -145,6 +164,7 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `clamp-toggle` | `CustomEvent` | 折叠态切换的意图；detail 为 `{ clamped: boolean }` |
+| `folded-change` | `CustomEvent` | 语法块的折叠集合变化；detail 为 `{ folded: number[] }` |
 
 ### 插槽
 
@@ -172,12 +192,13 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | 部件 | 取值 |
 | --- | --- |
 | `fold-trigger` | 'closed' \| 'open' |
+| `line-fold-trigger` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
-**事件**：`PRESS.START` · `PRESS.END`
+**事件**：`PRESS.START` · `PRESS.END` · `FOLD.TOGGLE` · `FOLD.FOCUS`
 
 **判据**：`canPress`
 
@@ -195,6 +216,11 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `foldable` | `boolean` | 折叠可用：提供了正数 clamp 且行数确实超过它。 |
 | `clamped` | `boolean` |  |
 | `setClamped` | `(next: boolean) => void` | 发出一次折叠意图；与当前态相同时不发。 |
+| `foldRegions` | `readonly CodeViewFoldRegion[]` | 按缩进找出的语法块，按块头先后排；blockFolding 关闭时为空。 |
+| `folded` | `readonly number[]` | 折叠着的块，写块头的行号，升序；只含当下确实是块头的行号。 |
+| `isFoldStart` | `(index: number) => boolean` | 该行是不是某个语法块的块头；适配器据此决定要不要在行首建折叠钮。 |
+| `toggleFold` | `(line: number) => void` | 翻转一个语法块的折叠，line 是块头的行号；不是块头时不做事。 |
+| `getLineFoldTriggerProps` | `(props: CodeViewLineProps) => T['button']` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
 | `getFilenameProps` | `() => T['element']` |  |
@@ -218,6 +244,10 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `Tab` | 代码块在 Tab 序列中 | &lt;pre&gt; 自身可聚焦，随后方向键的横向滚动交给浏览器，组件不接管 |
 | `Enter` / `Space` | 焦点在折叠按钮上 | 翻面折叠态并发出意图；组件只接 click，按键走原生 button 的默认行为 |
 | `Enter` / `Space` | 按住折叠按钮且代码可折叠 | 按住期间 fold-trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或折叠条收起撤下 |
+| `Tab` | 开了按块折叠 | 一组行首折叠钮只占一个 Tab 位：落在上次聚焦的那颗，它被收起或不再是块头时落在第一颗看得见的钮上 |
+| `Enter` / `Space` | 焦点在行首折叠钮上 | 折叠或展开这个语法块，走原生 button 的激活 |
+| `ArrowDown` / `ArrowUp` | 焦点在行首折叠钮上 | 移到下一颗 / 上一颗看得见的折叠钮，收起在块里的跳过；到头不回绕 |
+| `Home` / `End` | 焦点在行首折叠钮上 | 移到第一颗 / 最后一颗看得见的折叠钮 |
 
 ### ARIA
 
@@ -231,9 +261,12 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `fold-trigger` | `aria-controls` | `pre` 部件的 id |
 | `fold-trigger` | `aria-expanded` | 'false' \| 'true' |
 | `fold-trigger` | `aria-label` | translations?.expand \| translations?.collapse |
+| `line-fold-trigger` | `aria-expanded` | 'true' \| 'false' |
+| `line-fold-trigger` | `aria-label` | undefined \| foldLabel(lineNumberAt(region.start + 1), lineNumberA… |
 
 - `pre` 可聚焦并带可访问名称：渲染了文件名时指向它，否则使用 `translations.code`。
 - 折叠按钮带 `aria-expanded` 与 `aria-controls`，指向 `pre`。
+- 行首折叠钮合起来只占一个 Tab 位，上下方向键在看得见的钮之间走，Home / End 到首末；名字写这个块收起的是哪几行（`translations.foldBlock`），开合由 `aria-expanded` 表达。
 - 语言角标与行号槽都对读屏隐藏，它们是装饰而非内容。
 
 ## 样式参考
@@ -248,6 +281,7 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-block-folding` | ''（条件成立时才出现） |
 | `root` | `data-clamped` | ''（条件成立时才出现） |
 | `root` | `data-complete` | ''（条件成立时才出现） |
 | `root` | `data-digits` | String(Math.min( String(lineNumberAt(lineCount - 1)).… |
@@ -259,10 +293,13 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `pre` | `data-wrap` | ''（条件成立时才出现） |
 | `code` | `data-lang` | prop('lang')?.trim() \|\| CODE_VIEW_FALLBACK_LANG |
 | `code` | `data-wrap` | ''（条件成立时才出现） |
+| `line` | `data-folded` | ''（条件成立时才出现） |
 | `line` | `data-highlighted` | ''（条件成立时才出现） |
 | `line` | `data-line-number` | String(lineNumberAt(index)) |
+| `line-number` | `data-folded` | ''（条件成立时才出现） |
 | `line-number` | `data-highlighted` | ''（条件成立时才出现） |
 | `line-number` | `data-line-number` | String(lineNumberAt(index)) |
+| `line-content` | `data-folded` | ''（条件成立时才出现） |
 | `line-content` | `data-highlighted` | ''（条件成立时才出现） |
 | `line-content` | `data-line-number` | String(lineNumberAt(index)) |
 | `token` | `data-kind` | token.kind |
@@ -273,6 +310,12 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `fold-trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
 | `fold-trigger` | `data-xh-action-size` | props.size |
 | `fold-trigger` | `data-xh-action-variant` | 'ghost' |
+| `line-fold-trigger` | `data-state` | 'open' \| 'closed' |
+| `line-fold-trigger` | `data-xh-action-control` | '' |
+| `line-fold-trigger` | `data-xh-action-display` | 'always' |
+| `line-fold-trigger` | `data-xh-action-profile` | 'icon' |
+| `line-fold-trigger` | `data-xh-action-size` | props.size |
+| `line-fold-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -287,8 +330,11 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `--xh-code-view-fg` | `root` | `color` | `default` | `--xh-fg-muted` | code-view 的 root 部件 color 覆盖槽。 |
 | `--xh-code-view-filename-fg` | `filename` | `color` | `default` | `--xh-fg-default` | code-view 的 filename 部件 color 覆盖槽。 |
 | `--xh-code-view-fold-bg-hover` | `fold-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | code-view 的 fold-trigger 部件 background-color 覆盖槽。 |
+| `--xh-code-view-fold-col` | `line-content`<br>`line-fold-trigger`<br>`root` | `block-size`<br>`inline-size`<br>`min-block-size`<br>`min-inline-size`<br>`padding-inline-start` | `block-folding`<br>`line-numbers`<br>`not([data-line-numbers])`<br>`xh-action-profile=disclosure-trigger`<br>`xh-action-profile=icon` | `--xh-code-view-line-height` | code-view 的 line-content、line-fold-trigger、root 部件 block-size、inline-size、min-block-size、min-inline-size、padding-inline-start 覆盖槽。 |
 | `--xh-code-view-fold-fg` | `fold-trigger` | `color` | `default` | `--xh-fg-muted` | code-view 的 fold-trigger 部件 color 覆盖槽。 |
 | `--xh-code-view-fold-py` | `fold-trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-space-2` | code-view 的 fold-trigger 部件 padding-block 覆盖槽。 |
+| `--xh-code-view-folded-fg` | `line-content` | `background-color` | `folded` | `--xh-fg-subtle` | code-view 的 line-content 部件 background-color 覆盖槽。 |
+| `--xh-code-view-folded-gap` | `line-content` | `margin-inline-start` | `folded` | `--xh-space-1` | code-view 的 line-content 部件 margin-inline-start 覆盖槽。 |
 | `--xh-code-view-font` | `code`<br>`filename` | `font-family` | `default` | `--xh-font-family-mono` | code-view 的 code、filename 部件 font-family 覆盖槽。 |
 | `--xh-code-view-font-size` | `root` | `font-size` | `default` | `--xh-_code-view-font-size` | code-view 的 root 部件 font-size 覆盖槽。 |
 | `--xh-code-view-gutter-border` | `line-number` | `border-inline-end` | `default` | `--xh-border-subtle` | code-view 的 line-number 部件 border-inline-end 覆盖槽。 |
@@ -303,16 +349,19 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `--xh-code-view-highlight-bar` | `line` | `box-shadow`<br>`outline`<br>`outline-offset` | `@media print`<br>`highlighted` | `--xh-stroke-thick` | code-view 的 line 部件 box-shadow、outline、outline-offset 覆盖槽。 |
 | `--xh-code-view-highlight-bg` | `line` | `background` | `highlighted` | `--xh-bg-subtle` | code-view 的 line 部件 background 覆盖槽。 |
 | `--xh-code-view-highlight-fg` | `line` | `box-shadow` | `highlighted` | `--xh-border-strong` | code-view 的 line 部件 box-shadow 覆盖槽。 |
+| `--xh-code-view-icon-size` | `line-fold-trigger` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | code-view 的 line-fold-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-code-view-keyword-fg` | `token` | `color` | `kind=keyword` | `--xh-syntax-keyword` | code-view 的 token 部件 color 覆盖槽。 |
 | `--xh-code-view-keyword-weight` | `token` | `font-weight` | `kind=keyword` | `--xh-font-weight-semibold` | code-view 的 token 部件 font-weight 覆盖槽。 |
 | `--xh-code-view-label-fg` | `lang-label` | `color` | `default` | `--xh-fg-subtle` | code-view 的 lang-label 部件 color 覆盖槽。 |
 | `--xh-code-view-label-font-size` | `lang-label` | `font-size` | `default` | `--xh-text-caption-size` | code-view 的 lang-label 部件 font-size 覆盖槽。 |
-| `--xh-code-view-line-height` | `line`<br>`pre` | `line-height`<br>`min-block-size` | `default` | `--xh-text-code-leading` | code-view 的 line、pre 部件 line-height、min-block-size 覆盖槽。 |
+| `--xh-code-view-line-fold-trigger-fg` | `line-fold-trigger` | `color` | `default` | `--xh-fg-subtle` | code-view 的 line-fold-trigger 部件 color 覆盖槽。 |
+| `--xh-code-view-line-fold-trigger-radius` | `line-fold-trigger` | `border-radius` | `default` | `--xh-shape-control` | code-view 的 line-fold-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-code-view-line-height` | `line`<br>`line-content`<br>`line-fold-trigger`<br>`pre`<br>`root` | `block-size`<br>`inline-size`<br>`line-height`<br>`min-block-size`<br>`min-inline-size`<br>`padding-inline-start` | `block-folding`<br>`default`<br>`line-numbers`<br>`not([data-line-numbers])`<br>`xh-action-profile=disclosure-trigger`<br>`xh-action-profile=icon` | `--xh-text-code-leading` | code-view 的 line、line-content、line-fold-trigger、pre、root 部件 block-size、inline-size、line-height、min-block-size、min-inline-size、padding-inline-start 覆盖槽。 |
 | `--xh-code-view-number-fg` | `line-number` | `color` | `default` | `--xh-fg-subtle` | code-view 的 line-number 部件 color 覆盖槽。 |
 | `--xh-code-view-number-font-size` | `line-number` | `font-size` | `default` | `--xh-text-caption-size` | code-view 的 line-number 部件 font-size 覆盖槽。 |
 | `--xh-code-view-number-token-fg` | `token` | `color` | `kind=number` | `--xh-syntax-number` | code-view 的 token 部件 color 覆盖槽。 |
 | `--xh-code-view-punctuation-fg` | `token` | `color` | `kind=punctuation` | `--xh-fg-subtle` | code-view 的 token 部件 color 覆盖槽。 |
-| `--xh-code-view-px` | `fold-trigger`<br>`line`<br>`line-content`<br>`line-number`<br>`root` | `padding-inline`<br>`padding-inline-end`<br>`padding-inline-start` | `default`<br>`line-numbers`<br>`not([data-line-numbers])` | `--xh-space-3` | code-view 的 fold-trigger、line、line-content、line-number、root 部件 padding-inline、padding-inline-end、padding-inline-start 覆盖槽。 |
+| `--xh-code-view-px` | `fold-trigger`<br>`line`<br>`line-content`<br>`line-fold-trigger`<br>`line-number`<br>`root` | `inset-inline-start`<br>`padding-inline`<br>`padding-inline-end`<br>`padding-inline-start` | `block-folding`<br>`default`<br>`line-numbers`<br>`not([data-line-numbers])` | `--xh-space-3` | code-view 的 fold-trigger、line、line-content、line-fold-trigger、line-number、root 部件 inset-inline-start、padding-inline、padding-inline-end、padding-inline-start 覆盖槽。 |
 | `--xh-code-view-py` | `pre` | `padding-block` | `default` | `--xh-space-3` | code-view 的 pre 部件 padding-block 覆盖槽。 |
 | `--xh-code-view-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | code-view 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-code-view-shadow` | `root` | `box-shadow` | `default` | `none` | code-view 的 root 部件 box-shadow 覆盖槽。 |
@@ -321,12 +370,12 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 披露（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `box-shadow` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。

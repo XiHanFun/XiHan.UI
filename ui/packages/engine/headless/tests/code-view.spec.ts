@@ -4,7 +4,7 @@ import { createCounterIdGenerator, createScope, createService, normalizeProps } 
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
 // 直接从组件目录导入，不经包主入口
-import { codeViewMachine, connectCodeView, isCodeViewFoldable, parseLineRanges, splitCodeLines } from '../src/code-view'
+import { codeViewMachine, connectCodeView, findCodeViewFoldRegions, isCodeViewFoldable, parseLineRanges, splitCodeLines } from '../src/code-view'
 
 type Dict = Record<string, unknown>
 
@@ -316,6 +316,131 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     // 阈值抬高到行数之上同样收起
     h.setProps({ clamp: 10 })
     expect(trigger()['data-pressed']).toBeUndefined()
+    h.stop()
+  })
+})
+
+const BLOCKS = [
+  'function outer() {', // 0
+  '  if (ok) {', // 1
+  '    run()', // 2
+  '', // 3
+  '    done()', // 4
+  '  }', // 5
+  '}', // 6
+  '', // 7
+  'const tail = 1', // 8
+].join('\n')
+
+describe('findCodeViewFoldRegions', () => {
+  it('一行之下缩进更深的连续行是它的块；收尾括号与块头同缩进，留在块外', () => {
+    const regions = findCodeViewFoldRegions(BLOCKS.split('\n'))
+    expect(regions).toEqual([{ start: 0, end: 5 }, { start: 1, end: 4 }])
+  })
+
+  it('夹在块中间的空行算进去，块尾的空行不算', () => {
+    expect(findCodeViewFoldRegions(['a:', '  b', '', '  c', '', 'd'])).toEqual([{ start: 0, end: 3 }])
+  })
+
+  it('制表符按四列算；没有更深缩进的行不成块', () => {
+    expect(findCodeViewFoldRegions(['a', '\tb', '    c', 'd'])).toEqual([{ start: 0, end: 2 }])
+    expect(findCodeViewFoldRegions(['a', 'b', 'c'])).toEqual([])
+    expect(findCodeViewFoldRegions([])).toEqual([])
+  })
+
+  it('块能延伸到最后一行', () => {
+    expect(findCodeViewFoldRegions(['def f():', '    return 1'])).toEqual([{ start: 0, end: 1 }])
+  })
+})
+
+describe('按块折叠', () => {
+  const click = (props: Dict): void => fire(props, 'onClick', {})
+
+  it('默认关闭：没有块、行首不建折叠钮', () => {
+    const a = api({ code: BLOCKS })
+    expect(a.foldRegions).toEqual([])
+    expect(a.isFoldStart(0)).toBe(false)
+    expect((a.getRootProps() as Dict)['data-block-folding']).toBeUndefined()
+  })
+
+  it('开了之后块头有钮，名字写收起的首末行号、开合交给 aria-expanded', () => {
+    const a = api({ code: BLOCKS, blockFolding: true })
+    expect((a.getRootProps() as Dict)['data-block-folding']).toBe('')
+    expect(a.isFoldStart(0)).toBe(true)
+    expect(a.isFoldStart(2)).toBe(false)
+    const trigger = a.getLineFoldTriggerProps({ index: 1 }) as Dict
+    expect(trigger['aria-label']).toBe('Lines 3–5')
+    expect(trigger['aria-expanded']).toBe('true')
+    expect(trigger['data-state']).toBe('open')
+    expect(trigger['data-value']).toBe('2')
+    expect(trigger['data-xh-action-profile']).toBe('icon')
+  })
+
+  it('点钮折叠：块里的行带 hidden，块头带 data-folded，pre 预撑的行数扣掉收起的行', () => {
+    const h = makeCodeView({ code: BLOCKS, blockFolding: true })
+    click(h.api().getLineFoldTriggerProps({ index: 1 }) as Dict)
+    const a = h.api()
+    expect(a.folded).toEqual([2])
+    expect((a.getLineProps({ index: 1 }) as Dict)['data-folded']).toBe('')
+    expect((a.getLineProps({ index: 1 }) as Dict).hidden).toBeUndefined()
+    expect([2, 3, 4].map(index => (a.getLineProps({ index }) as Dict).hidden)).toEqual([true, true, true])
+    expect((a.getLineProps({ index: 5 }) as Dict).hidden).toBeUndefined()
+    expect((a.getLineFoldTriggerProps({ index: 1 }) as Dict)['aria-expanded']).toBe('false')
+    const style = (a.getPreProps() as Dict).style as Dict
+    expect(style.minBlockSize).toContain('* 6)')
+    // 再点一次展开
+    click(a.getLineFoldTriggerProps({ index: 1 }) as Dict)
+    expect(h.api().folded).toEqual([])
+    h.stop()
+  })
+
+  it('外层收起时里层的行跟着藏，里层钮也不再是 Tab 停靠点', () => {
+    const h = makeCodeView({ code: BLOCKS, blockFolding: true, defaultFolded: [1] })
+    const a = h.api()
+    expect([1, 2, 5].map(index => (a.getLineProps({ index }) as Dict).hidden)).toEqual([true, true, true])
+    expect((a.getLineFoldTriggerProps({ index: 0 }) as Dict).tabindex).toBe(0)
+    expect((a.getLineFoldTriggerProps({ index: 1 }) as Dict).tabindex).toBe(-1)
+    h.stop()
+  })
+
+  it('受控：点钮只报意图，集合由宿主写回；不是块头的行号忽略，行号随 startLine 走', () => {
+    const onFoldedChange = vi.fn()
+    const h = makeCodeView({ code: BLOCKS, blockFolding: true, folded: [], onFoldedChange })
+    click(h.api().getLineFoldTriggerProps({ index: 0 }) as Dict)
+    expect(onFoldedChange).toHaveBeenLastCalledWith({ folded: [1] })
+    expect(h.api().folded).toEqual([])
+    h.setProps({ folded: [1, 3] })
+    // 第 3 行不是块头，忽略
+    expect(h.api().folded).toEqual([1])
+    h.setProps({ startLine: 10, folded: [11] })
+    expect(h.api().folded).toEqual([11])
+    expect((h.api().getLineProps({ index: 2 }) as Dict).hidden).toBe(true)
+    h.stop()
+  })
+
+  it('一组钮只占一个 Tab 位：点过的那颗成为停靠点，被收起后落回第一颗看得见的', () => {
+    const h = makeCodeView({ code: BLOCKS, blockFolding: true })
+    const tab = (index: number): unknown => (h.api().getLineFoldTriggerProps({ index }) as Dict).tabindex
+    expect([tab(0), tab(1)]).toEqual([0, -1])
+    click(h.api().getLineFoldTriggerProps({ index: 1 }) as Dict)
+    expect([tab(0), tab(1)]).toEqual([-1, 0])
+    click(h.api().getLineFoldTriggerProps({ index: 0 }) as Dict)
+    expect(tab(0)).toBe(0)
+    h.stop()
+  })
+
+  it('只收起一行的块，名字写单个行号', () => {
+    const a = api({ code: 'if (x) {\n  y()\n}', blockFolding: true })
+    expect((a.getLineFoldTriggerProps({ index: 0 }) as Dict)['aria-label']).toBe('Line 2')
+  })
+
+  it('toggleFold 只认块头的行号', () => {
+    const onFoldedChange = vi.fn()
+    const h = makeCodeView({ code: BLOCKS, blockFolding: true, onFoldedChange })
+    h.api().toggleFold(3)
+    expect(onFoldedChange).not.toHaveBeenCalled()
+    h.api().toggleFold(1)
+    expect(onFoldedChange).toHaveBeenLastCalledWith({ folded: [1] })
     h.stop()
   })
 })

@@ -45,6 +45,10 @@ export const XhCodeViewRoot = defineComponent({
     clamp: { type: Number },
     // 纯受控：没有 defaultClamped，要非受控就套 collapsible
     clamped: { type: Boolean, default: undefined },
+    blockFolding: Boolean,
+    /** 折叠着的语法块，写块头的行号；受控，配 v-model:folded。 */
+    folded: { type: Array as PropType<readonly number[]> },
+    defaultFolded: { type: Array as PropType<readonly number[]> },
     /** 替换着色实现（典型是接入 Shiki）；显式传 null 则关闭着色。 */
     highlighter: { type: Object as PropType<HighlighterPort | null> },
     highlightWhileStreaming: { type: Boolean, default: undefined },
@@ -54,6 +58,9 @@ export const XhCodeViewRoot = defineComponent({
   emits: {
     'clamp-toggle': (_details: PayloadOf<CodeViewProps, 'onClampToggle'>) => true,
     'update:clamped': (_clamped: boolean) => true,
+    // folded-change 携带 { folded }，块头行号升序
+    'folded-change': (_details: PayloadOf<CodeViewProps, 'onFoldedChange'>) => true,
+    'update:folded': (_folded: number[]) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: CodeViewRootSlotProps) => VNode[]
@@ -95,6 +102,15 @@ export const XhCodeViewRoot = defineComponent({
       get clamped() {
         return props.clamped
       },
+      get blockFolding() {
+        return props.blockFolding
+      },
+      get folded() {
+        return props.folded
+      },
+      get defaultFolded() {
+        return props.defaultFolded
+      },
       get highlighter() {
         if (props.highlighter === null)
           return undefined
@@ -116,6 +132,10 @@ export const XhCodeViewRoot = defineComponent({
       onClampToggle: (details) => {
         emit('clamp-toggle', details)
         emit('update:clamped', details.clamped)
+      },
+      onFoldedChange: (details) => {
+        emit('folded-change', details)
+        emit('update:folded', details.folded)
       },
     }
     const ctx = useCodeView(forward)
@@ -202,15 +222,19 @@ export const XhCodeViewCode = defineComponent({
           h(
             'span',
             api.getLineContentProps({ index }) as Record<string, unknown>,
-            slots.line?.({ line, index, number: api.lineNumberAt(index) })
-            // 没有着色结果就一个文本节点，别平白多包一层 span
-            ?? (line.tokens.length === 0
-              ? line.text
-              : line.tokens.map((token, i) => h(
-                  'span',
-                  { ...api.getTokenProps(token) as Record<string, unknown>, key: i },
-                  token.text,
-                ))),
+            [
+              // 块头的折叠钮放在正文最前面，由皮肤定位到正文让出的那一列里；不是块头的行不建
+              api.isFoldStart(index) ? h('button', api.getLineFoldTriggerProps({ index }) as Record<string, unknown>) : null,
+              slots.line?.({ line, index, number: api.lineNumberAt(index) })
+              // 没有着色结果就一个文本节点，别平白多包一层 span
+              ?? (line.tokens.length === 0
+                ? line.text
+                : line.tokens.map((token, i) => h(
+                    'span',
+                    { ...api.getTokenProps(token) as Record<string, unknown>, key: i },
+                    token.text,
+                  ))),
+            ],
           ),
         ],
       )))

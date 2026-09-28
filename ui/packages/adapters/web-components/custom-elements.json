@@ -10647,6 +10647,10 @@
             {
               "description": "展开或收起，承载 aria-expanded / aria-controls；Space / Enter 与触屏按住投影 data-pressed",
               "name": "fold-trigger"
+            },
+            {
+              "description": "语法块块头行首的折叠钮，由本元素铺在正文最前面；一组只占一个 Tab 位，上下方向键在组内走",
+              "name": "line-fold-trigger"
             }
           ],
           "members": [
@@ -10751,6 +10755,33 @@
             },
             {
               "kind": "field",
+              "name": "blockFolding",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "block-folding"
+            },
+            {
+              "kind": "field",
+              "name": "folded",
+              "privacy": "public",
+              "type": {
+                "text": "number[] | undefined"
+              },
+              "attribute": "folded"
+            },
+            {
+              "kind": "field",
+              "name": "defaultFolded",
+              "privacy": "public",
+              "type": {
+                "text": "number[] | undefined"
+              },
+              "attribute": "default-folded"
+            },
+            {
+              "kind": "field",
               "name": "highlightWhileStreaming",
               "privacy": "public",
               "type": {
@@ -10818,6 +10849,16 @@
             },
             {
               "kind": "field",
+              "name": "#folding",
+              "privacy": "private",
+              "type": {
+                "text": "FoldingLine[]"
+              },
+              "default": "[]",
+              "description": "开了按块折叠时记下铺出来的各行，开合变了就地改属性。"
+            },
+            {
+              "kind": "field",
               "name": "#releaseHighlighter",
               "privacy": "private",
               "type": {
@@ -10873,6 +10914,25 @@
                 }
               ],
               "description": "把逐行结构铺进 code 部件。\n内容未变时不重铺：每次更新都重建节点会丢失用户正在拖动的选区。"
+            },
+            {
+              "kind": "method",
+              "name": "#refold",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CodeViewApi"
+                  }
+                }
+              ],
+              "description": "结构没变、只是语法块开合或停靠点变了：就地改写各行与折叠钮的属性。\n不重铺节点——重铺会把焦点从刚按下的那颗钮上摘掉。"
             }
           ],
           "events": [
@@ -10882,6 +10942,13 @@
                 "text": "CustomEvent"
               },
               "description": "折叠态切换的意图；detail 为 `{ clamped: boolean }`"
+            },
+            {
+              "name": "folded-change",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "语法块的折叠集合变化；detail 为 `{ folded: number[] }`"
             }
           ],
           "attributes": [
@@ -10969,6 +11036,30 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "按缩进找出语法块，块头行首给一颗折叠钮，默认关闭",
+              "name": "block-folding",
+              "fieldName": "blockFolding"
+            },
+            {
+              "type": {
+                "text": "number[] | undefined"
+              },
+              "description": "折叠着的语法块，写块头的行号、逗号分隔；受控",
+              "name": "folded",
+              "fieldName": "folded"
+            },
+            {
+              "type": {
+                "text": "number[] | undefined"
+              },
+              "description": "非受控时一开始就折叠着的块，写法同 folded",
+              "name": "default-folded",
+              "fieldName": "defaultFolded"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "未闭合时也着色，默认关闭",
               "name": "highlight-while-streaming",
               "fieldName": "highlightWhileStreaming"
@@ -11008,10 +11099,19 @@
               "name": "--xh-code-view-fold-bg-hover"
             },
             {
+              "name": "--xh-code-view-fold-col"
+            },
+            {
               "name": "--xh-code-view-fold-fg"
             },
             {
               "name": "--xh-code-view-fold-py"
+            },
+            {
+              "name": "--xh-code-view-folded-fg"
+            },
+            {
+              "name": "--xh-code-view-folded-gap"
             },
             {
               "name": "--xh-code-view-font"
@@ -11056,6 +11156,9 @@
               "name": "--xh-code-view-highlight-fg"
             },
             {
+              "name": "--xh-code-view-icon-size"
+            },
+            {
               "name": "--xh-code-view-keyword-fg"
             },
             {
@@ -11066,6 +11169,12 @@
             },
             {
               "name": "--xh-code-view-label-font-size"
+            },
+            {
+              "name": "--xh-code-view-line-fold-trigger-fg"
+            },
+            {
+              "name": "--xh-code-view-line-fold-trigger-radius"
             },
             {
               "name": "--xh-code-view-line-height"

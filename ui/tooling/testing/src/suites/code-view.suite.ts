@@ -28,6 +28,9 @@ function expectKeysNotSwallowed({ doc }: RawStepContext): void {
  */
 const PLAIN_HIGHLIGHTER: HighlighterPort = { highlight: () => null }
 
+/** 两层嵌套的块：第 1 行包着第 2–5 行，第 2 行包着第 3–4 行；收尾括号与块头同缩进，留在块外。 */
+const BLOCKS = 'fn() {\n  if (x) {\n    a()\n    b()\n  }\n}\ntail'
+
 /** 逐行结构由适配器铺，两侧都不由作者写；fixture 只声明作者那几件。 */
 export const codeViewSuite: ConformanceSuite = {
   component: 'code-view',
@@ -247,6 +250,90 @@ export const codeViewSuite: ConformanceSuite = {
       props: { code: 'a\nb', clamp: 5 },
       initial: { parts: { 'fold-trigger': { hidden: '' } } },
       steps: [heldPressIgnored('code-view', 'fold-trigger', '代码没超过阈值，折叠条收起、不可按')],
+    },
+    {
+      name: '按块折叠：只有块头建折叠钮，名字写收起的行号，一组只有一颗在 Tab 序列里',
+      spec: { apg: WCAG },
+      props: { code: BLOCKS, blockFolding: true },
+      initial: {
+        counts: { 'line': 7, 'line-fold-trigger': 2 },
+        parts: {
+          'root': { 'data-block-folding': '' },
+          'line-fold-trigger': [
+            { 'aria-label': 'Lines 2–5', 'aria-expanded': 'true', 'data-state': 'open', 'tabindex': '0', 'data-xh-action-profile': 'icon' },
+            { 'aria-label': 'Lines 3–4', 'aria-expanded': 'true', 'data-state': 'open', 'tabindex': '-1' },
+          ],
+        },
+      },
+    },
+    {
+      name: '点折叠钮：块里的行收起、块头带 data-folded，报出折叠集合；再点展开',
+      spec: { apg: WCAG },
+      covers: ['code-view.kbd.block-fold-toggle', 'code-view.kbd.block-fold-tab'],
+      props: { code: BLOCKS, blockFolding: true },
+      steps: [
+        {
+          kind: 'click',
+          part: 'line-fold-trigger[1]',
+          expect: {
+            events: [{ type: 'folded-change', detail: { folded: [2] } }],
+            parts: {
+              'line': [{ hidden: null }, { 'hidden': null, 'data-folded': '' }, { hidden: '' }, { hidden: '' }, { hidden: null }],
+              'line-fold-trigger': [{ tabindex: '-1' }, { 'aria-expanded': 'false', 'data-state': 'closed', 'tabindex': '0' }],
+            },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'line-fold-trigger[1]',
+          expect: {
+            events: [{ type: 'folded-change', detail: { folded: [] } }],
+            parts: { line: [{ hidden: null }, { 'data-folded': null }, { hidden: null }, { hidden: null }, { hidden: null }] },
+          },
+        },
+      ],
+    },
+    {
+      name: '受控：点钮只报意图，宿主写回后外层收起、里层的钮跟着藏',
+      spec: { apg: WCAG },
+      props: { code: BLOCKS, blockFolding: true, folded: [] },
+      steps: [
+        {
+          kind: 'click',
+          part: 'line-fold-trigger[0]',
+          expect: {
+            events: [{ type: 'folded-change', detail: { folded: [1] } }],
+            parts: { 'line-fold-trigger': [{ 'aria-expanded': 'true' }, { 'aria-expanded': 'true' }] },
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { code: BLOCKS, blockFolding: true, folded: [1] },
+          expect: {
+            parts: {
+              'line': [{ 'data-folded': '' }, { hidden: '' }, { hidden: '' }, { hidden: '' }, { hidden: '' }, { hidden: null }],
+              'line-fold-trigger': [{ 'aria-expanded': 'false', 'tabindex': '0' }, { tabindex: '-1' }],
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '上下方向键在看得见的折叠钮之间走、到头不回绕，Home / End 到首末',
+      spec: { apg: WCAG },
+      covers: ['code-view.kbd.block-fold-move', 'code-view.kbd.block-fold-edge'],
+      props: { code: `${BLOCKS}\nnext {\n  x\n}`, blockFolding: true },
+      steps: [
+        { kind: 'focus', part: 'line-fold-trigger[0]', expect: { activeElement: { part: 'line-fold-trigger[0]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'line-fold-trigger[1]', exact: true }, parts: { 'line-fold-trigger': [{ tabindex: '-1' }, { tabindex: '0' }, { tabindex: '-1' }] } } },
+        { kind: 'key', key: 'End', expect: { activeElement: { part: 'line-fold-trigger[2]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'line-fold-trigger[2]', exact: true } } },
+        { kind: 'key', key: 'Home', expect: { activeElement: { part: 'line-fold-trigger[0]', exact: true } } },
+        // 收起外层后，里层那颗藏在块里，ArrowDown 跳过它
+        { kind: 'click', part: 'line-fold-trigger[0]' },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'line-fold-trigger[2]', exact: true } } },
+        { kind: 'key', key: 'ArrowUp', expect: { activeElement: { part: 'line-fold-trigger[0]', exact: true } } },
+      ],
     },
   ],
 }
