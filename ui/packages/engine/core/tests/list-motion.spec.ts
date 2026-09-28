@@ -395,4 +395,19 @@ describe('沿 transform 换位', () => {
     expect(spy.mock.calls.filter(([name]) => name === 'translate')).toHaveLength(0)
     expect(calls[0]!.keyframes[0]).toEqual({ transform: 'translate(0px, 40px)' })
   })
+
+  it('一批里有条目换了位才回调 onReflow', async () => {
+    const container = list(3)
+    const onReflow = vi.fn()
+    stops.push(trackListMotion(container, { item: '[data-part="item"]', channel: 'transform', onReflow }))
+    const last = container.children[2] as HTMLElement & { moveTo: (next: number) => void }
+    stubAnimate(last)
+    container.append(item('tail'))
+    await flush()
+    expect(onReflow).not.toHaveBeenCalled()
+    ;(container.children[0] as HTMLElement).remove()
+    last.moveTo(40)
+    await flush()
+    expect(onReflow).toHaveBeenCalledTimes(1)
+  })
 })

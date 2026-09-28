@@ -50,16 +50,17 @@ function currentTranslate(el: HTMLElement, win: Window): [number, number] {
 /**
  * 反向补偿一段位移再交给过渡：先把条目按 (dx, dy) 推回旧位置并关掉过渡，提交这一帧样式后撤掉，
  * 皮肤里条目的 translate 过渡把它带回新位置；上一段没走完时从当前位置接着走。正在播关键帧的条目不补偿。
+ * transform 通道改由 glideBy 沿 transform 走一段。返回这一次有没有真的推出去（没位移、正在播关键帧的不算）。
  */
-function shift(el: HTMLElement, dx: number, dy: number, win: Window, channel: 'translate' | 'transform' = 'translate'): void {
+function shift(el: HTMLElement, dx: number, dy: number, win: Window, channel: 'translate' | 'transform' = 'translate'): boolean {
   if (dx === 0 && dy === 0)
-    return
+    return false
   const running = el.getAnimations?.().some(animation => 'animationName' in animation && animation.playState === 'running')
   if (running)
-    return
+    return false
   if (channel === 'transform') {
     glideBy(el, dx, dy)
-    return
+    return true
   }
   const [cx, cy] = currentTranslate(el, win)
   const translate = el.style.getPropertyValue('translate')
@@ -74,6 +75,7 @@ function shift(el: HTMLElement, dx: number, dy: number, win: Window, channel: 't
   if (transition)
     el.style.setProperty('transition', transition)
   else el.style.removeProperty('transition')
+  return true
 }
 
 function byDocumentOrder(a: Element, b: Element): number {
@@ -191,6 +193,8 @@ export interface TrackListMotionOptions extends TrackArrivalsOptions {
    * Web 动画，给 translate 另有用途、过渡清单又归别处的条目用（Tabs 的标签：标签带整体位移占着 translate）。
    */
   channel?: 'translate' | 'transform'
+  /** 一批变更里有条目换了位时回调（排布位已重量）：跟着条目走的东西（Tabs 的指示条）据此一起滑过去。 */
+  onReflow?: () => void
 }
 
 export function trackListMotion(container: Element, options: TrackListMotionOptions): () => void {
@@ -235,12 +239,12 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
   if (!win || typeof Observer !== 'function')
     return () => resizer?.disconnect()
 
-  /** 换位：从旧排布位（加上在途的补偿）过渡到新排布位。 */
-  function reflow(el: HTMLElement, from: Slot): void {
+  /** 换位：从旧排布位（加上在途的补偿）过渡到新排布位。挪了位置返回 true。 */
+  function reflow(el: HTMLElement, from: Slot): boolean {
     const to = slotOf(el)
     if (to.parent !== from.parent)
-      return
-    shift(el, from.left - to.left, from.top - to.top, win!, channel)
+      return false
+    return shift(el, from.left - to.left, from.top - to.top, win!, channel)
   }
 
   /** 离场：替身放回原处，播完退场再移除。 */
@@ -319,9 +323,10 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
       .sort(byDocumentOrder))
 
     // 换位：留下来的已知条目
+    let reflowed = false
     for (const [el, from] of slots) {
       if (el.isConnected && !departing.has(el) && container.contains(el))
-        reflow(el, from)
+        reflowed = reflow(el, from) || reflowed
     }
 
     // 离场：回调时已不在文档里的已知条目；同一批里被挪了位置的还在文档里，算换位
@@ -334,6 +339,8 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
     }
 
     measure()
+    if (reflowed)
+      options.onReflow?.()
   })
   observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden'], attributeOldValue: true })
 
