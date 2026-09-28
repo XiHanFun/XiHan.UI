@@ -64,6 +64,7 @@ interface PageSizeNodes {
  * @attr {number} page - 受控页码；未提供该属性即非受控
  * @attr {number} default-page - 非受控初始页，默认 1
  * @attr {number} sibling-count - 当前页两侧各显示的页数，默认 1
+ * @attr {boolean} disabled - 整组不可交互：翻页钮、页码与省略位原生 disabled，跳页输入框与每页条数下拉一并禁用
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响排版；上一页 / 下一页的语义不随之翻转
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -78,8 +79,10 @@ interface PageSizeNodes {
  * @csspart root - nav 地标，承载 aria-label 与 data-empty
  * @csspart summary - 信息区容器；文本由作者放置，默认文案取 api.summaryText
  * @csspart jumper - 跳页输入框（input），输入页码按回车即跳转
+ * @csspart first-trigger - 跳到首页，按需放在上一页之前；首页时为原生 disabled
  * @csspart prev-trigger - 上一页；首页时为原生 disabled
  * @csspart next-trigger - 下一页；末页时为原生 disabled
+ * @csspart last-trigger - 跳到末页，按需放在下一页之后；末页时为原生 disabled
  * @csspart item - 页码按钮，须自带 value 属性；当前页带 aria-current="page" 与 data-current
  * @csspart ellipsis-trigger - 被折叠页码的入口，须自带 side 属性（start / end）；承载 data-side 与 aria-expanded
  * @csspart page-size-select - 每页条数控制器的挂载点，写一个空 `<div>` 即可；其中的下拉角色节点由元素自行创建
@@ -101,6 +104,8 @@ export class XhPaginationElement extends XhPortalHostElement {
     page: { converter: NUMBER_CONVERTER },
     defaultPage: { converter: NUMBER_CONVERTER, attribute: 'default-page' },
     siblingCount: { converter: NUMBER_CONVERTER, attribute: 'sibling-count' },
+    // 缺席即关，没有第二种来路，用 Lit 自带的 Boolean 转换器就够
+    disabled: { type: Boolean },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -119,6 +124,7 @@ export class XhPaginationElement extends XhPortalHostElement {
   declare page?: number
   declare defaultPage?: number
   declare siblingCount?: number
+  declare disabled?: boolean
   declare direction?: Direction
   declare tone?: Tone
   declare size?: Size
@@ -376,6 +382,7 @@ export class XhPaginationElement extends XhPortalHostElement {
       page: this.page,
       defaultPage: this.defaultPage,
       siblingCount: this.siblingCount,
+      disabled: this.disabled ?? false,
       dir: this.direction,
       tone: this.tone,
       size: this.size,
@@ -403,8 +410,10 @@ export class XhPaginationElement extends XhPortalHostElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('summary', api.getSummaryProps() as Record<string, unknown>)
     put('jumper', api.getJumperProps() as Record<string, unknown>)
+    put('first-trigger', api.getFirstTriggerProps() as Record<string, unknown>)
     put('prev-trigger', api.getPrevTriggerProps() as Record<string, unknown>)
     put('next-trigger', api.getNextTriggerProps() as Record<string, unknown>)
+    put('last-trigger', api.getLastTriggerProps() as Record<string, unknown>)
 
     // 页码是多实例 part，逐个打：身份取作者写的 value。
     // 漏写时给 NaN 而不是 Number(null) 的 0：NaN 与任何页都不相等，按钮点了会被机器

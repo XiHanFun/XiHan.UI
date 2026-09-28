@@ -13,8 +13,11 @@ export const paginationAnatomy = createAnatomy('pagination', [
   'summary',
   // 跳页输入框：敲页码回车即跳
   'jumper',
+  // 跳到首页 / 末页的两枚钮，按需放；到头那一侧禁用
+  'first-trigger',
   'prev-trigger',
   'next-trigger',
+  'last-trigger',
   'item',
   'ellipsis-trigger',
   // 每页条数控制器的挂载点：里头装的是库里的 select，档位从 pageSizeOptions 来

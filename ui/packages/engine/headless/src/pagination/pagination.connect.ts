@@ -31,8 +31,12 @@ export function connectPagination<T extends PropTypes>(
   const page = clampPage(context.get('page'), totalPages)
   const siblingCount = prop('siblingCount') ?? PAGINATION_SIBLING_COUNT
 
-  const canGoPrev = page > 1
-  const canGoNext = page < totalPages
+  // 整组禁用压过一切：翻页钮、页码与省略位都不可操作
+  const disabled = !!prop('disabled')
+  const hasPrev = page > 1
+  const hasNext = page < totalPages
+  const canGoPrev = hasPrev && !disabled
+  const canGoNext = hasNext && !disabled
 
   const label = paginationLabels(prop)
 
@@ -103,10 +107,11 @@ export function connectPagination<T extends PropTypes>(
     pages: buildPageSequence(page, totalPages, siblingCount),
     pageItems: items,
     openEllipsis,
+    disabled,
     pageRange,
     summaryText: label.summary(pageRange.start, pageRange.end, count),
-    previousPage: canGoPrev ? page - 1 : null,
-    nextPage: canGoNext ? page + 1 : null,
+    previousPage: hasPrev ? page - 1 : null,
+    nextPage: hasNext ? page + 1 : null,
     setPage,
     goToPrevPage: () => send({ type: 'PAGE.PREV' }),
     goToNextPage: () => send({ type: 'PAGE.NEXT' }),
@@ -123,6 +128,7 @@ export function connectPagination<T extends PropTypes>(
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-empty': dataAttr(totalPages === 0),
+      'data-disabled': dataAttr(disabled),
     }),
 
     // 信息区只承载文本，语义由文本本身给；不发 aria-live，翻页不该抢读屏的话头
@@ -139,7 +145,7 @@ export function connectPagination<T extends PropTypes>(
       'min': 1,
       'max': Math.max(totalPages, 1),
       'aria-label': label.jumper,
-      'disabled': totalPages === 0 || undefined,
+      'disabled': totalPages === 0 || disabled || undefined,
       'data-empty': dataAttr(totalPages === 0),
       'onKeydown': (event: KeyboardEvent) => {
         // 输入法组合中的 Enter 是在选字，不是在跳页
@@ -157,8 +163,23 @@ export function connectPagination<T extends PropTypes>(
     }),
 
     // 首尾两端的按钮是单体控件，用原生 disabled（不可聚焦、脱出 Tab 序列）
-    // 四类格子都是 Action Control 的 text 档（分页按钮），缺省中性的 ghost 形态：
+    // 各类格子都是 Action Control 的 text 档（分页按钮），缺省中性的 ghost 形态：
     // 悬停 / 按下 / 禁用面、按压缩放与几何由家族配方给，皮肤只映射使用者槽
+    getFirstTriggerProps: () => normalize.button({
+      ...parts['first-trigger'].attrs,
+      'type': 'button',
+      'aria-label': label.firstTrigger,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'disabled': !canGoPrev || undefined,
+      'data-disabled': dataAttr(!canGoPrev),
+      ...press('first', !canGoPrev),
+      'onClick': () => setPage(1),
+    }),
+
     getPrevTriggerProps: () => normalize.button({
       ...parts['prev-trigger'].attrs,
       'type': 'button',
@@ -190,6 +211,21 @@ export function connectPagination<T extends PropTypes>(
       'onClick': () => send({ type: 'PAGE.NEXT' }),
     }),
 
+    getLastTriggerProps: () => normalize.button({
+      ...parts['last-trigger'].attrs,
+      'type': 'button',
+      'aria-label': label.lastTrigger,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'disabled': !canGoNext || undefined,
+      'data-disabled': dataAttr(!canGoNext),
+      ...press('last', !canGoNext),
+      'onClick': () => setPage(totalPages),
+    }),
+
     getItemProps: (item) => {
       // 总页数为 0 时谁都不是当前页，此时的页码 1 只是兜底读数
       const current = totalPages > 0 && item.page === page
@@ -206,10 +242,17 @@ export function connectPagination<T extends PropTypes>(
         // aria-current 不是布尔属性，规范里默认值就是 "false"，省略即"不是当前项"
         'aria-current': current ? 'page' : undefined,
         'data-current': dataAttr(current),
+        // 整组禁用时页码同样是原生 disabled：不可聚焦、脱出 Tab 序列
+        'disabled': disabled || undefined,
+        'data-disabled': dataAttr(disabled),
         // 行里与摊开面板里的页码同用 item:页号，同一页不会同时出现在两处
-        ...press(`item:${item.page}`),
+        ...press(`item:${item.page}`, disabled),
         // 不写 tabindex：分页是一组各自独立的按钮，每个页码都是一个 Tab 停靠点
-        'onClick': () => setPage(item.page),
+        'onClick': () => {
+          // 作者把这份 props 摊到非按钮节点上时原生 disabled 不生效，守卫得自己带
+          if (!disabled)
+            setPage(item.page)
+        },
       })
     },
 
@@ -237,7 +280,9 @@ export function connectPagination<T extends PropTypes>(
       'aria-haspopup': 'true',
       'aria-controls': openEllipsis === props.side ? ids.content : undefined,
       'data-state': openEllipsis === props.side ? 'open' : 'closed',
-      ...press(`ellipsis:${props.side}`),
+      'disabled': disabled || undefined,
+      'data-disabled': dataAttr(disabled),
+      ...press(`ellipsis:${props.side}`, disabled),
       'onPointerenter': () => send({ type: 'ELLIPSIS.ENTER', side: props.side }),
       'onPointerleave': () => send({ type: 'ELLIPSIS.LEAVE' }),
       'onClick': () => send({ type: 'ELLIPSIS.TOGGLE', side: props.side }),

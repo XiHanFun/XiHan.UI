@@ -38,14 +38,16 @@ export interface PaginationEllipsisTriggerProps {
  * 按压通道里「正被按住的那一个」的键：两端翻页钮、页码（按页号）与省略位（按侧）各占一个身份，
  * 摊开面板里的页码与行里的页码同用 item:页号（同一页不会同时出现在两处）。
  */
-export type PaginationPressedKey = 'prev' | 'next' | `item:${number}` | `ellipsis:${PaginationEllipsisSide}`
+export type PaginationPressedKey = 'first' | 'prev' | 'next' | 'last' | `item:${number}` | `ellipsis:${PaginationEllipsisSide}`
 
 /** 读屏文案。默认英文，与 dialog / popover 的 translations 写法一致。 */
 export interface PaginationTranslations {
   /** 根节点的 aria-label，用于区分同页的多个 nav 地标。 */
   root: string
+  firstTrigger: string
   prevTrigger: string
   nextTrigger: string
+  lastTrigger: string
   /** 页码按钮的 aria-label。 */
   item: (page: number) => string
   /** 省略位的 aria-label：它是可展开的按钮，需要说明展开的内容。 */
@@ -76,6 +78,11 @@ export interface PaginationSchema extends MachineSchema {
     defaultPage?: number
     /** 当前页两侧各显示的页数，默认 1。 */
     siblingCount?: number
+    /**
+     * 整组不可交互：翻页钮、页码与省略位都是原生 disabled（不可聚焦、不接指针与键盘），跳页输入框与每页条数下拉一并禁用，
+     * 省略位不摊开、已摊开的收起。当前页照常标出；setPage 等命令式调用不受它约束。
+     */
+    disabled?: boolean
     /** 文字方向，只作用于排版；上一页 / 下一页的语义不随之翻转，上一页永远是 page - 1。 */
     dir?: Direction
     translations?: Partial<PaginationTranslations>
@@ -155,7 +162,8 @@ export interface PaginationSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releasePress'
-  guard: 'isSameEllipsis' | 'canPress'
+    | 'closeWhenDisabled'
+  guard: 'isSameEllipsis' | 'canPress' | 'isEnabled'
   effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer'
 }
 
@@ -180,6 +188,8 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   pageItems: PaginationPageItem[]
   /** 当前展开的是哪一侧的省略位；未展开时为 null。 */
   openEllipsis: PaginationEllipsisSide | null
+  /** 整组禁用。 */
+  disabled: boolean
   /** 当前页对应的条目区间，1 基闭区间；无数据时是 { start: 0, end: 0 }。 */
   pageRange: PaginationEntryRange
   /** 信息区文本，由 translations.summary 与 pageRange / count 算出。 */
@@ -200,8 +210,12 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   getSummaryProps: () => T['element']
   /** 跳页输入框：输入页码按回车即跳转，越界值由 setPage 夹回合法区间。 */
   getJumperProps: () => T['input']
+  /** 跳到首页；已在首页、无数据或整组禁用时原生 disabled。 */
+  getFirstTriggerProps: () => T['button']
   getPrevTriggerProps: () => T['button']
   getNextTriggerProps: () => T['button']
+  /** 跳到末页；已在末页、无数据或整组禁用时原生 disabled。 */
+  getLastTriggerProps: () => T['button']
   getItemProps: (props: PaginationItemProps) => T['button']
   /** 省略位：可展开的按钮，展开后列出被折叠的页码。 */
   getEllipsisTriggerProps: (props: PaginationEllipsisTriggerProps) => T['button']

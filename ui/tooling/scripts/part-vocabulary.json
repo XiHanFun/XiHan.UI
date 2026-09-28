@@ -505,6 +505,9 @@
     "filename": [
       "code-view"
     ],
+    "first-trigger": [
+      "pagination"
+    ],
     "flip-horizontal-trigger": [
       "image-viewer"
     ],
@@ -979,6 +982,9 @@
     ],
     "lang-label": [
       "code-view"
+    ],
+    "last-trigger": [
+      "pagination"
     ],
     "leader-line": [
       "cartesian-chart",

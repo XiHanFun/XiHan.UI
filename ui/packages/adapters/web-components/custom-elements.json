@@ -42335,12 +42335,20 @@
               "name": "jumper"
             },
             {
+              "description": "跳到首页，按需放在上一页之前；首页时为原生 disabled",
+              "name": "first-trigger"
+            },
+            {
               "description": "上一页；首页时为原生 disabled",
               "name": "prev-trigger"
             },
             {
               "description": "下一页；末页时为原生 disabled",
               "name": "next-trigger"
+            },
+            {
+              "description": "跳到末页，按需放在下一页之后；末页时为原生 disabled",
+              "name": "last-trigger"
             },
             {
               "description": "页码按钮，须自带 value 属性；当前页带 aria-current=\"page\" 与 data-current",
@@ -42435,6 +42443,15 @@
                 "text": "number | undefined"
               },
               "attribute": "sibling-count"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
             },
             {
               "kind": "field",
@@ -43002,6 +43019,14 @@
               "description": "当前页两侧各显示的页数，默认 1",
               "name": "sibling-count",
               "fieldName": "siblingCount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整组不可交互：翻页钮、页码与省略位原生 disabled，跳页输入框与每页条数下拉一并禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
             },
             {
               "type": {

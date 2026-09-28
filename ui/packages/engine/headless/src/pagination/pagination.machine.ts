@@ -31,8 +31,10 @@ export function paginationLabels(prop: PropFn<PaginationSchema>): PaginationTran
   const translations = prop('translations')
   return {
     root: translations?.root ?? 'Pagination',
+    firstTrigger: translations?.firstTrigger ?? 'First page',
     prevTrigger: translations?.prevTrigger ?? 'Previous page',
     nextTrigger: translations?.nextTrigger ?? 'Next page',
+    lastTrigger: translations?.lastTrigger ?? 'Last page',
     item: translations?.item ?? ((value: number) => `Page ${value}`),
     ellipsis: translations?.ellipsis ?? ((n: number) => `${n} more pages`),
     pageSizeSelect: translations?.pageSizeSelect ?? 'Items per page',
@@ -56,6 +58,8 @@ export function paginationPageSizeSelectProps(service: Service<PaginationSchema>
     dir: prop('dir'),
     tone: prop('tone'),
     size: prop('size'),
+    // 整组禁用时下拉一并禁用
+    disabled: prop('disabled'),
     onValueChange: ({ value }) => {
       // 清空是下拉自带的键盘动作（Delete / Backspace），而分页没有「不分页」这一档：
       // 落空即不发事件，受控的档位于是原样留着
@@ -107,6 +111,10 @@ export const paginationMachine = createMachine({
     }
   },
   initialState: () => 'closed',
+  // 整组一禁用：摊开的省略位收起，按住的那一格松开
+  watch: ({ track, prop, action }) => {
+    track([() => prop('disabled')], () => action(['closeWhenDisabled']))
+  },
   // 省略位的 Layer 与消解资源由根效应持有，逻辑关闭后等 Presence 真实退场再归还。
   effects: ['trackLayer'],
   // 翻页与省略位的浮层是两件正交的事：翻页在哪个态下都该生效，挂根上不逐态复制
@@ -122,10 +130,10 @@ export const paginationMachine = createMachine({
   states: {
     closed: {
       on: {
-        // 悬停先进等待态，停够时长才摊开
-        'ELLIPSIS.ENTER': { target: 'opening', actions: ['openEllipsis'] },
+        // 悬停先进等待态，停够时长才摊开；整组禁用时不摊开
+        'ELLIPSIS.ENTER': { guard: 'isEnabled', target: 'opening', actions: ['openEllipsis'] },
         // 点一下不走延时
-        'ELLIPSIS.TOGGLE': { target: 'visible.open', actions: ['openEllipsis'] },
+        'ELLIPSIS.TOGGLE': { guard: 'isEnabled', target: 'visible.open', actions: ['openEllipsis'] },
       },
     },
     opening: {
@@ -180,11 +188,12 @@ export const paginationMachine = createMachine({
         const e = event.current()
         return e.type === 'ELLIPSIS.TOGGLE' && e.side === context.get('openEllipsis')
       },
-      // 分页没有整组禁用；到边界的翻页钮是原生 disabled，那份事实由 connect 判定后随事件带入
-      canPress: ({ event }) => {
+      // 整组禁用一概不进；到边界的翻页钮是原生 disabled，那份事实由 connect 判定后随事件带入
+      canPress: ({ event, prop }) => {
         const e = event.current()
-        return e.type === 'PRESS.START' && !e.disabled
+        return e.type === 'PRESS.START' && !e.disabled && !prop('disabled')
       },
+      isEnabled: ({ prop }) => !prop('disabled'),
     },
     effects: {
       // 延时经机器的定时原语：负数、NaN 与无穷不会被 setTimeout 悄悄当成 0，而是报 INVALID_DELAY
@@ -260,6 +269,12 @@ export const paginationMachine = createMachine({
           context.set('pressed', null)
       },
       releasePress: ({ context }) => context.set('pressed', null),
+      closeWhenDisabled: ({ prop, context, send }) => {
+        if (!prop('disabled'))
+          return
+        context.set('pressed', null)
+        send({ type: 'ELLIPSIS.CLOSE' })
+      },
       openEllipsis: ({ context, event }) => {
         const e = event.current()
         if ((e.type === 'ELLIPSIS.ENTER' || e.type === 'ELLIPSIS.TOGGLE') && e.side)

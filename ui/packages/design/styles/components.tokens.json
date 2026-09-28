@@ -37218,6 +37218,7 @@
         "edit-trigger",
         "ellipsis-trigger",
         "expand-trigger",
+        "first-trigger",
         "flip-horizontal-trigger",
         "flip-vertical-trigger",
         "increment-trigger",
@@ -37227,6 +37228,7 @@
         "item-close-trigger",
         "item-delete-trigger",
         "item-indicator",
+        "last-trigger",
         "move-down-trigger",
         "move-up-trigger",
         "next-trigger",
@@ -37300,7 +37302,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、row-selection-indicator、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size、margin-inline-start 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、last-trigger、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、row-selection-indicator、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
@@ -49174,8 +49176,10 @@
       "component": "pagination",
       "part": [
         "ellipsis-trigger",
+        "first-trigger",
         "item",
         "jumper",
+        "last-trigger",
         "next-trigger",
         "prev-trigger",
         "summary"
@@ -49190,7 +49194,7 @@
         "--xh-_pagination-font-size"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger、summary 部件 font-size 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger、summary 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-pagination-gap",
@@ -49216,7 +49220,9 @@
       "component": "pagination",
       "part": [
         "ellipsis-trigger",
+        "first-trigger",
         "item",
+        "last-trigger",
         "next-trigger",
         "positioner",
         "prev-trigger",
@@ -49238,14 +49244,16 @@
         "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、next-trigger、positioner、prev-trigger、root 部件 --xh-icon-size 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、positioner、prev-trigger、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg",
       "component": "pagination",
       "part": [
         "ellipsis-trigger",
+        "first-trigger",
         "item",
+        "last-trigger",
         "next-trigger",
         "prev-trigger"
       ],
@@ -49261,14 +49269,16 @@
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg-active",
       "component": "pagination",
       "part": [
         "ellipsis-trigger",
+        "first-trigger",
         "item",
+        "last-trigger",
         "next-trigger",
         "prev-trigger"
       ],
@@ -49287,14 +49297,16 @@
         "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg-hover",
       "component": "pagination",
       "part": [
         "ellipsis-trigger",
+        "first-trigger",
         "item",
+        "last-trigger",
         "next-trigger",
         "prev-trigger"
       ],
@@ -49312,7 +49324,7 @@
         "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-bg-selected",
@@ -49454,8 +49466,10 @@
       "component": "pagination",
       "part": [
         "ellipsis-trigger",
+        "first-trigger",
         "item",
         "jumper",
+        "last-trigger",
         "next-trigger",
         "prev-trigger"
       ],
@@ -49479,7 +49493,7 @@
         "--xh-fg-default"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger 部件 color 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-fg-selected",
@@ -49512,7 +49526,9 @@
       "component": "pagination",
       "part": [
         "ellipsis-trigger",
+        "first-trigger",
         "item",
+        "last-trigger",
         "next-trigger",
         "prev-trigger"
       ],
@@ -49526,15 +49542,17 @@
         "--xh-text-label-weight"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 font-weight 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-h",
       "component": "pagination",
       "part": [
         "ellipsis-trigger",
+        "first-trigger",
         "item",
         "jumper",
+        "last-trigger",
         "next-trigger",
         "prev-trigger",
         "summary"
@@ -49549,14 +49567,16 @@
         "--xh-_pagination-item-size"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger、summary 部件 block-size 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger、summary 部件 block-size 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-min-size",
       "component": "pagination",
       "part": [
         "ellipsis-trigger",
+        "first-trigger",
         "item",
+        "last-trigger",
         "next-trigger",
         "prev-trigger"
       ],
@@ -49570,15 +49590,17 @@
         "--xh-_pagination-item-size"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、next-trigger、prev-trigger 部件 min-inline-size 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-px",
       "component": "pagination",
       "part": [
         "ellipsis-trigger",
+        "first-trigger",
         "item",
         "jumper",
+        "last-trigger",
         "next-trigger",
         "prev-trigger"
       ],
@@ -49592,15 +49614,17 @@
         "--xh-_pagination-item-px"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger 部件 padding-inline 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-radius",
       "component": "pagination",
       "part": [
         "ellipsis-trigger",
+        "first-trigger",
         "item",
         "jumper",
+        "last-trigger",
         "next-trigger",
         "prev-trigger"
       ],
@@ -49614,7 +49638,7 @@
         "--xh-shape-control"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger 部件 border-radius 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-shadow",
