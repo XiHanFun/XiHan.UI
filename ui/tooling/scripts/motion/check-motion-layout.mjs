@@ -40,6 +40,7 @@ const LAYOUT_EXCEPTIONS = {
   'tour:progress-dot:inline-size': DOT,
   'switch:thumb:inline-size': '开关滑块按下伸长：拇指是轨道里绝对定位的小件，伸长不推动轨道外的任何东西',
   'layout:sider:inline-size': '侧栏折叠必须让出内容区宽度：内容区跟着侧栏重排正是这个动作要表达的',
+  'splitter:panel:flex-basis': '面板折叠 / 展开必须让出相邻面板的空间：相邻面板跟着重排正是这个动作要表达的（拖拽与步进不带过渡）',
   'question-flow:viewport:block-size': '换题时视口随题目内容增减高度：下面的操作条要跟着挪到新位置',
   'toast:root:block-size': '轻提示叠放展开时卡片长回自己的高度：叠放区跟着撑开',
   'tour:spotlight:inline-size': '聚光框是 position: fixed 的独立框，跟着目标换位换尺寸，不在文档流里，不推动其他元素',

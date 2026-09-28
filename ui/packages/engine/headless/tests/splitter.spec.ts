@@ -414,6 +414,27 @@ describe('splitterMachine 布局', () => {
     expect(s.context.get('sizes')).toEqual([30, 70])
   })
 
+  it('折叠 / 展开时根投影 data-animating，过渡播完撤下；步进与整份赋值当场打断，不带过渡', async () => {
+    const s = makeService({
+      defaultSizes: [30, 70],
+      panels: [{ id: 'a', collapsible: true }, { id: 'b' }],
+    })
+    s.send({ type: 'PANEL.COLLAPSE', index: 0 })
+    expect(api(s).getRootProps()['data-animating']).toBe('')
+    // 没有挂上 DOM、没有可等的过渡：宿主提交之后即刻撤下
+    await Promise.resolve()
+    expect(api(s).getRootProps()['data-animating']).toBeUndefined()
+
+    s.send({ type: 'PANEL.EXPAND', index: 0 })
+    expect(s.context.get('animating')).toBe(true)
+    s.send({ type: 'BOUNDARY.STEP', index: 0, direction: 1 })
+    expect(s.context.get('animating')).toBe(false)
+
+    s.send({ type: 'PANEL.COLLAPSE', index: 0 })
+    s.send({ type: 'SIZES.SET', sizes: [40, 60] })
+    expect(s.context.get('animating')).toBe(false)
+  })
+
   it('一上来就是折叠态时展开退到 min', () => {
     const s = makeService({
       defaultSizes: [0, 100],
