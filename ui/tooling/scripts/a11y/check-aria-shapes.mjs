@@ -237,10 +237,11 @@ function paints(decls) {
 
 /**
  * 替组件画它自己部件的家族配方：图表的根、视口与空态由 Chart 配方画，规则按 data-xh-chart-part 指部件、
- * 不带 data-scope。@import 了它的皮肤，配方里的规则算这份皮肤的。动作控件、集合项这类配方画的是交互反馈，
+ * 不带 data-scope；加载环配方按 data-xh-loading-ring + data-loading 替承载者画在途那枚环。
+ * @import 了它的皮肤，配方里的规则算这份皮肤的。动作控件、集合项这类配方画的是交互反馈，
  * 不代组件画在途，不在此列。
  */
-const PART_FAMILIES = ['chart.css']
+const PART_FAMILIES = ['chart.css', 'loading-ring.css']
 
 const skinRules = []
 for (const file of (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()) {

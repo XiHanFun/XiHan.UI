@@ -16443,35 +16443,17 @@
    圆环挂在这一行上而不是某一颗钮上：连接层只拿到「有一条判定在途」，
    拿不到是哪一颗按下的，画在两颗钮上会有一颗在说假话 */
 
-[data-scope='approval'][data-part='root'][data-loading] [data-scope='approval'][data-part='footer']::before {
+/* 环由加载环配方画在这一行的 ::before 上（连接层投影 data-xh-loading-ring 与 data-loading），
+   随在途淡入淡出、转与停；直径取所在尺寸档的图标档，转速认使用者槽 */
+[data-scope='approval'][data-part='footer'] {
+  --xh-_loading-ring-duration: var(--xh-approval-loading-duration, var(--xh-motion-loop-spin));
+}
+
+[data-scope='approval'][data-part='footer']::before {
   content: '';
   flex: none;
-
-  /* 圆环那一枚跟着两颗钮的字号走，不跟页面的：download-trigger 与 clipboard 的圆环
-     1em 量的都是它所在那颗钮，这里的宿主是整行，不锁字号就会比按钮上的大一圈 */
-  font-size: var(--xh-approval-action-font-size, var(--xh-text-label-size));
-  inline-size: 1em;
-  block-size: 1em;
-  border: var(--xh-stroke-thin) solid transparent;
-  border-block-start-color: currentColor;
-  border-radius: var(--xh-shape-circle);
-  animation: xh-spin var(--xh-approval-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
-}
-
-/* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
-   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
-@media (prefers-reduced-motion: reduce) {
-  [data-scope='approval'][data-part='root'][data-loading] [data-scope='approval'][data-part='footer']::before {
-    border-style: dotted;
-    border-color: currentColor;
-    animation: none;
-  }
-}
-
-:where([data-motion='reduce']) [data-scope='approval'][data-part='root'][data-loading] [data-scope='approval'][data-part='footer']::before {
-  border-style: dotted;
-  border-color: currentColor;
-  animation: none;
+  inline-size: var(--xh-_approval-icon-size);
+  block-size: var(--xh-_approval-icon-size);
 }
 
 /* 尺寸档改内衬、间距、按钮高度、行内字号与图标档 */
