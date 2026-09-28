@@ -280,6 +280,8 @@ export interface TreeSelectSchema extends MachineSchema {
     pressedPart: TreeSelectPressedPart | null
     /** 按压通道：按住的节点 value；clear-trigger 没有值，记 null。抬起、失焦或浮层收起即清空。 */
     pressedValue: string | null
+    /** 标签行的列表动效已经接上；接上之前 tag-list 带 data-instant，首帧的标签一律不播进场。 */
+    tagListTracked: boolean
   }
   computed: Record<string, never>
   refs: TreeSelectRefs
@@ -319,9 +321,12 @@ export interface TreeSelectSchema extends MachineSchema {
     | { type: 'PRESS.START', part: TreeSelectPressedPart, value?: string, disabled?: boolean }
     /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
     | { type: 'PRESS.END', part: TreeSelectPressedPart, value?: string }
+    /** 标签行的列表动效已接上：之后到达的标签才播进场。 */
+    | { type: 'TAG_LIST.TRACKED' }
   tag: never
   guard: 'isOpenControlled' | 'isMultiple' | 'canPress'
   action:
+    | 'markTagListTracked'
     | 'invokeOnOpen'
     | 'invokeOnClose'
     | 'syncOpen'
