@@ -140,7 +140,7 @@ Vue、React、Web Components 只负责：
 | Tag、Badge、ToolCall status、Approval result、QuestionFlow result | 状态 chip | 形状 pill；见 §6.3 |
 | 图表根 | 无壳 | 不画外边、不填底，透出宿主面；需要框时由作者放进 Card |
 | 图例项 | Action Control `text` profile、ghost、xs 档 | 按压 0.97；显隐标记见 §7.3「图例显隐」 |
-| 面板内关闭钮（Dialog、Drawer、Tour、Notification、Popover、Citation 预览） | Action Control `icon` profile、ghost、sm 档（Citation 为 xs），control 形状 | 绝对定位在右上角，内缩 `--xh-surface-action-inset`；FloatingPanel 的叉排在 header 流里；Alert 的叉行内垂直居中 |
+| 面板内关闭钮（Dialog、Drawer、Tour、Notification、Popover、Citation 预览） | Action Control `icon` profile、ghost、sm 档（Citation 为 xs），control 形状 | 绝对定位在右上角，内缩 `--xh-surface-action-inset`；Popover 气泡内衬比面板小一档，内缩取 `--xh-space-2`，否则叉会伸出气泡的盒子被裁掉；FloatingPanel 的叉排在 header 流里；Alert 的叉行内垂直居中 |
 | Toast 关闭钮 | Action Control `icon` profile、ghost、xs 档 | 轻提示本身紧凑，叉取 xs；可悬停设备上悬停或聚焦才显，触屏常显 |
 | ImageViewer 关闭钮 | Action Control `floating` profile、sm 档（40px）、circle | 悬浮在媒体上的单图标动作，与翻页钮同一身份 |
 | Tag / TagsInput 标签内的移除钮 | 行内标记，不投影 Action Control | 字形与命中区取指示符档（`--xh-control-indicator-size`），悬停只换 currentColor 淡底；胶囊内放不下 xs 视觉盒 |
