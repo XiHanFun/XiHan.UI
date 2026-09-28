@@ -144,3 +144,56 @@ describe('取下一页的按钮：按压通道', () => {
     m.stop()
   })
 })
+
+// ══ 往前取数：保住视口 ══
+
+describe('edge: start', () => {
+  /** 一个滚动容器：scrollHeight 随子节点数现算，每条 30px。jsdom 没有布局，靠它演出插入后的高度。 */
+  function scroller(rows: number): HTMLElement {
+    const el = document.createElement('div')
+    for (let i = 0; i < rows; i++)
+      el.append(document.createElement('div'))
+    let top = 0
+    Object.defineProperties(el, {
+      scrollHeight: { configurable: true, get: () => el.childElementCount * 30 },
+      scrollTop: { configurable: true, get: () => top, set: (value: number) => { top = value } },
+    })
+    document.body.append(el)
+    return el
+  }
+
+  function mountWithTarget(initial: Props, target: HTMLElement) {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>(initial)
+    const service = createService(infiniteScrollMachine, { props: () => props.get(), runtime })
+    service.refs.set('getTargetEl', () => target)
+    runtime.start()
+    return { setProps: (next: Props) => props.set({ ...props.get(), ...next }), stop: () => runtime.stop() }
+  }
+
+  it('取数期间内容插在前面：滚动量补上插入的那截高度，离底部的距离不变', async () => {
+    const el = scroller(20)
+    el.scrollTop = 60
+    const rig = mountWithTarget({ edge: 'start' }, el)
+    rig.setProps({ loading: true })
+    for (let i = 0; i < 10; i++)
+      el.prepend(document.createElement('div'))
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(el.scrollTop).toBe(360)
+    rig.stop()
+    el.remove()
+  })
+
+  it('缺省的 end 不碰滚动量', async () => {
+    const el = scroller(20)
+    el.scrollTop = 60
+    const rig = mountWithTarget({}, el)
+    rig.setProps({ loading: true })
+    for (let i = 0; i < 10; i++)
+      el.prepend(document.createElement('div'))
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(el.scrollTop).toBe(60)
+    rig.stop()
+    el.remove()
+  })
+})

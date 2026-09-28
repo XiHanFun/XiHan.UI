@@ -6470,6 +6470,7 @@
       "ImageViewerTransform",
       "ImageViewerTranslations",
       "InfiniteScrollApi",
+      "InfiniteScrollEdge",
       "InfiniteScrollPhase",
       "InfiniteScrollRefs",
       "InfiniteScrollSchema",
@@ -12087,6 +12088,7 @@
     "infinite-scroll": [
       "disabled",
       "distance",
+      "edge",
       "loading",
       "onLoad"
     ],
@@ -19885,6 +19887,7 @@
       "attributes": [
         "disabled",
         "distance",
+        "edge",
         "loading"
       ],
       "events": [

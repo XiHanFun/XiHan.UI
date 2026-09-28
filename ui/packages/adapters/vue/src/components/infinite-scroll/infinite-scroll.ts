@@ -5,7 +5,7 @@
 
 // 提供 infinite scroll 相关实现。
 
-import type { InfiniteScrollApi, InfiniteScrollSchema } from '@xihan-ui/headless'
+import type { InfiniteScrollApi, InfiniteScrollEdge, InfiniteScrollSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideInfiniteScroll, useInfiniteScrollContext } from './context'
@@ -24,6 +24,8 @@ export const XhInfiniteScrollRoot = defineComponent({
     distance: { type: Number },
     disabled: { type: Boolean, default: undefined },
     loading: { type: Boolean, default: undefined },
+    /** 取数的那一头：end 在末尾往后取，start 在开头往前取、取数期间保住视口。 */
+    edge: { type: String as PropType<InfiniteScrollEdge> },
     /** 裁剪出可视区的滚动容器，默认即整页滚动；distance 的提前量扩展的正是这块区域。 */
     target: { type: Object as PropType<HTMLElement | null> },
   },

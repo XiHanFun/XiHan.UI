@@ -139,7 +139,7 @@ export type { CropConstraints, CropProjection, CropToCanvasOptions, ImageCropper
 export { clampImageViewerIndex, connectImageViewer, IMAGE_VIEWER_IDENTITY, IMAGE_VIEWER_MAX_SCALE, IMAGE_VIEWER_MIN_SCALE, IMAGE_VIEWER_ZOOM_STEP, imageViewerAnatomy, imageViewerCount, imageViewerCounterText, imageViewerKeyboard, imageViewerMachine, imageViewerMeta, stepImageViewerIndex } from './image-viewer'
 export type { ImageViewerApi, ImageViewerImageStatus, ImageViewerIndexChangeDetails, ImageViewerItem, ImageViewerOpenChangeDetails, ImageViewerPressedPart, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform, ImageViewerTranslations } from './image-viewer'
 export { connectInfiniteScroll, infiniteScrollAnatomy, infiniteScrollKeyboard, infiniteScrollMachine, infiniteScrollMeta, resolveInfiniteScrollPhase } from './infinite-scroll'
-export type { InfiniteScrollApi, InfiniteScrollPhase, InfiniteScrollRefs, InfiniteScrollSchema, InfiniteScrollTranslations } from './infinite-scroll'
+export type { InfiniteScrollApi, InfiniteScrollEdge, InfiniteScrollPhase, InfiniteScrollRefs, InfiniteScrollSchema, InfiniteScrollTranslations } from './infinite-scroll'
 export { connectInputGroup, inputGroupAnatomy, inputGroupKeyboard, inputGroupMeta } from './input-group'
 export type { InputGroupApi, InputGroupProps, InputGroupTranslations } from './input-group'
 export { connectJsonViewer, flattenJson, groupJsonViewerNodesByParent, JSON_VIEWER_ROOT_PATH, jsonChildPath, jsonExpandedPathsToDepth, jsonSearch, jsonSearchQuery, jsonText, jsonValueText, jsonValueType, jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery, jsonViewerKeyboard, jsonViewerMachine, jsonViewerMeta } from './json-viewer'

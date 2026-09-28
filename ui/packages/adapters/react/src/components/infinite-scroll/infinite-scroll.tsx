@@ -5,7 +5,7 @@
 
 // 提供 infinite scroll 相关实现。
 
-import type { InfiniteScrollApi, InfiniteScrollSchema } from '@xihan-ui/headless'
+import type { InfiniteScrollApi, InfiniteScrollEdge, InfiniteScrollSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useCallback } from 'react'
@@ -29,6 +29,8 @@ export interface XhInfiniteScrollRootProps extends RootElementProps {
   disabled?: boolean
   /** 正在取数：其间不观察、不重复触发。取完由宿主写回 false。 */
   loading?: boolean
+  /** 取数的那一头：end 在末尾往后取，start 在开头往前取、取数期间保住视口。 */
+  edge?: InfiniteScrollEdge
   /** 裁剪出可视区的滚动容器，默认即整页滚动；distance 的提前量扩展的正是这块区域。 */
   target?: HTMLElement | null
   /** 应取下一页。 */
@@ -41,13 +43,14 @@ export function XhInfiniteScrollRoot({
   distance,
   disabled,
   loading,
+  edge,
   target,
   onLoad,
   children,
   ...rest
 }: XhInfiniteScrollRootProps): ReactNode {
   const getTarget = useCallback(() => target ?? null, [target])
-  const ctx = useInfiniteScroll({ distance, disabled, loading, onLoad } as InfiniteScrollProps, getTarget)
+  const ctx = useInfiniteScroll({ distance, disabled, loading, edge, onLoad } as InfiniteScrollProps, getTarget)
   const api = ctx.api
   return (
     <InfiniteScrollProvider value={ctx}>

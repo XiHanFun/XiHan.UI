@@ -6,13 +6,14 @@
 // 提供 infinite scroll 相关实现。
 
 import type { Service } from '@xihan-ui/core'
-import type { InfiniteScrollSchema } from '@xihan-ui/headless'
+import type { InfiniteScrollEdge, InfiniteScrollSchema } from '@xihan-ui/headless'
 import { connectInfiniteScroll, infiniteScrollAnatomy, infiniteScrollMachine, infiniteScrollMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
+const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 三态布尔：缺席=undefined、在场=true、显式写 "false"=false
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
@@ -28,6 +29,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @customElement xh-infinite-scroll
  * @attr {number} distance - 提前量（px）：哨兵距可视区该距离即视为进入，默认 0
  * @attr {boolean} disabled - 关闭，不再观察也不再触发
+ * @attr {'end'|'start'} edge - 取数的那一头：end（默认）在末尾往后取，start 在开头往前取、取数期间保住视口
  * @attr {boolean} loading - 正在取数，期间不观察、不重复触发；取完由宿主写回 false
  * @fires load - 应取下一页
  * @csspart root - 列表外壳，承载 data-loading / data-disabled 与 aria-busy
@@ -42,6 +44,7 @@ export class XhInfiniteScrollElement extends XhElement {
     distance: { converter: NUMBER_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
+    edge: { converter: STRING_CONVERTER },
     // 滚动容器是 DOM 句柄，只走 property；不给即以窗口视口为准
     target: { attribute: false },
   }
@@ -49,6 +52,7 @@ export class XhInfiniteScrollElement extends XhElement {
   declare distance?: number
   declare disabled?: boolean
   declare loading?: boolean
+  declare edge?: InfiniteScrollEdge
   declare target?: HTMLElement | null
 
   private readonly notify = (): void => {
@@ -67,6 +71,7 @@ export class XhInfiniteScrollElement extends XhElement {
       distance: this.distance,
       disabled: this.disabled,
       loading: this.loading,
+      edge: this.edge,
       onLoad: this.notify,
     }
   }

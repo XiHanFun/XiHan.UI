@@ -32978,6 +32978,15 @@
             },
             {
               "kind": "field",
+              "name": "edge",
+              "privacy": "public",
+              "type": {
+                "text": "InfiniteScrollEdge | undefined"
+              },
+              "attribute": "edge"
+            },
+            {
+              "kind": "field",
               "name": "target",
               "privacy": "public",
               "type": {
@@ -33058,6 +33067,14 @@
               "description": "关闭，不再观察也不再触发",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "InfiniteScrollEdge | undefined"
+              },
+              "description": "取数的那一头：end（默认）在末尾往后取，start 在开头往前取、取数期间保住视口",
+              "name": "edge",
+              "fieldName": "edge"
             },
             {
               "type": {
