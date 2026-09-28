@@ -91,6 +91,7 @@ const HOOKS = {
   'color-field:data-editing': '正在编辑的视觉就是框里那串还没收下的字本身，收不下才由 data-invalid 描红；这一位留给作者做提示文案一类的钩子',
   'kbd:data-key': '逐键规范化后的 KeyboardEvent.key，供作者与测试定位，不改变统一表面',
   'json-viewer:data-match': '命中的视觉由行里的 mark 片段承担，行面不换；这一位留给作者与测试定位命中行',
+  'log:data-bright': '高亮色（90–97）在缺省皮肤里与基础色同一档，由 data-fg 着色；data-bright 留给作者把两组分开着色的钩子',
   'kbd:data-register': '监听已注册的行为事实；展示外观不因是否安装监听而改变，保留为作者样式钩子',
   'toggle:data-size': '控件尺寸由同节点的 data-xh-action-size 交给 Action Control 配方；data-size 保留为作者样式钩子',
   'download-trigger:data-size': '控件尺寸由同节点的 data-xh-action-size 交给 Action Control 配方；data-size 保留为作者样式钩子',

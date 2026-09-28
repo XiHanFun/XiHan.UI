@@ -6,9 +6,10 @@
 // 提供 log 相关实现。
 
 import type { Size } from '@xihan-ui/core'
-import type { LogApi, LogLevel, LogProps, LogSchema, LogTranslations } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, LogAnsiSegment, LogApi, LogLevel, LogProps, LogSchema, LogTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { parseAnsi } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideLog, useLogContext } from './context'
@@ -32,6 +33,10 @@ export const XhLogRoot = defineComponent({
     rows: { type: Number },
     loading: Boolean,
     size: { type: String as PropType<Size> },
+    /** 只显示这几个级别的行，缺省全部显示。 */
+    levels: { type: Array as PropType<readonly LogLevel[]> },
+    /** 与虚拟滚动接线：传入 XhVirtualizerRoot 插槽里的 collectionVirtualizer。 */
+    virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     translations: { type: Object as PropType<Partial<LogTranslations>> },
   },
   // stick-change 携带 { atBottom, sticking }，无对应的 v-model
@@ -80,15 +85,33 @@ export const XhLogContent = defineComponent({
   },
 })
 
+export const XhLogSegment = defineComponent({
+  name: 'XhLogSegment',
+  props: {
+    /** parseAnsi 拆出的一段。 */
+    segment: { type: Object as PropType<LogAnsiSegment>, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useLogContext()
+    return () => h('span', ctx.api.value.getSegmentProps(props.segment) as Record<string, unknown>, slots.default?.() ?? props.segment.text)
+  },
+})
+
 export const XhLogLine = defineComponent({
   name: 'XhLogLine',
   props: {
     level: { type: String as PropType<LogLevel> },
+    /** 带 ANSI 转义的一行原文：按 SGR 拆成着色的段；写了插槽时以插槽为准。 */
+    ansi: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useLogContext()
     // 一行的文本与标注由作者写在插槽里，级别落成行上的 data-level
-    return () => h('div', ctx.api.value.getLineProps({ level: props.level }) as Record<string, unknown>, slots.default?.())
+    return () => h(
+      'div',
+      ctx.api.value.getLineProps({ level: props.level }) as Record<string, unknown>,
+      slots.default?.() ?? (props.ansi === undefined ? undefined : parseAnsi(props.ansi).map(segment => h(XhLogSegment, { segment }))),
+    )
   },
 })
 

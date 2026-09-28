@@ -210,6 +210,59 @@ export const logSuite: ConformanceSuite = {
       },
     },
     {
+      name: '级别过滤：levels 之外的行收起，没写级别的行不受影响',
+      spec: { apg: APG },
+      props: { levels: ['error'] },
+      fixture: base => ({
+        ...base,
+        children: base.children?.map(node => (node.part === 'viewport'
+          ? {
+              ...node,
+              children: node.children?.map(content => ({
+                ...content,
+                children: content.children?.map((line, i) => (
+                  i === 0 ? { ...line, attrs: { level: 'info' } } : i === 1 ? { ...line, attrs: { level: 'error' } } : line
+                )),
+              })),
+            }
+          : node)),
+      }),
+      initial: {
+        parts: {
+          'line[0]': { 'data-level': 'info', 'hidden': '' },
+          'line[1]': { 'data-level': 'error', 'hidden': null },
+          'line[2]': { hidden: null },
+        },
+      },
+    },
+    {
+      name: 'ANSI 着色：带转义的一行拆成 segment，颜色与字形写成 data 属性',
+      spec: { apg: APG },
+      fixture: base => ({
+        ...base,
+        children: base.children?.map(node => (node.part === 'viewport'
+          ? {
+              ...node,
+              children: node.children?.map(content => ({
+                ...content,
+                children: [
+                  // Vue / React 把原文交给 ansi；Web Components 的原文就是行的文字，ansi 属性只作开关
+                  { part: 'line', attrs: { ansi: '\u001B[1;31merror\u001B[0m done' }, only: ['vue', 'react'] },
+                  { part: 'line', attrs: { ansi: '' }, text: '\u001B[1;31merror\u001B[0m done', only: ['wc'] },
+                ],
+              })),
+            }
+          : node)),
+      }),
+      initial: {
+        counts: { segment: 2 },
+        parts: {
+          'segment[0]': { 'data-fg': 'red', 'data-bold': '' },
+          'segment[1]': { 'data-fg': null, 'data-bold': null },
+        },
+      },
+    },
+    {
       name: '取行中：根落 data-loading，日志区报 aria-busy',
       spec: { apg: LIVE },
       props: { loading: true },

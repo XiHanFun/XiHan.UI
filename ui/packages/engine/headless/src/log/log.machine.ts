@@ -93,9 +93,21 @@ export const logMachine = createMachine({
       }),
 
       /** 在 flush 时创建粘底句柄并存入 refs，卸载时释放；config 缺席则不创建。 */
-      trackStickToBottom: ({ refs, prop, send, flush }) => {
+      trackStickToBottom: ({ refs, prop, send, flush, track }) => {
         let disposed = false
         let handle: StickToBottomHandle | undefined
+
+        // 接了虚拟滚动：滚动的是 Virtualizer 的视口，长高的是它的内容层
+        const scrollEl = (): HTMLElement | null => prop('virtualizer')?.getViewportElement() ?? refs.get('getViewportEl')()
+        const contentEl = (): HTMLElement | null => {
+          const virtualizer = prop('virtualizer')
+          if (!virtualizer)
+            return refs.get('getContentEl')()
+          if (!virtualizer.getContentElement)
+            throw new Error('[xh] Log 接虚拟滚动时 virtualizer 必须提供 getContentElement：粘底要观察内容层的长高')
+          return virtualizer.getContentElement()
+        }
+        track([() => prop('virtualizer')], () => handle?.retarget())
 
         flush(() => {
           if (disposed)
@@ -105,8 +117,8 @@ export const logMachine = createMachine({
             return
           handle = createStickToBottom({
             config,
-            scrollEl: refs.get('getViewportEl'),
-            contentEl: refs.get('getContentEl'),
+            scrollEl,
+            contentEl,
             threshold: prop('threshold'),
             onChange: s => send({ type: 'STICK.CHANGE', atBottom: s.atBottom, sticking: s.sticking }),
           })

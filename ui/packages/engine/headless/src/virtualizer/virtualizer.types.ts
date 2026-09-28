@@ -27,7 +27,7 @@ export interface CollectionVirtualizerFocusOptions extends VirtualizerScrollToOp
 }
 
 /**
- * Virtualizer 与 Tree / Listbox / Select / Combobox / Transfer 之间的正式接线协议。
+ * Virtualizer 与 Tree / Listbox / Select / Combobox / Transfer / Log 之间的正式接线协议。
  * 集合组件始终按完整数据计算键盘与选择语义；本桥只负责把目标下标带进窗口，并在节点挂载后交接焦点。
  */
 export interface CollectionVirtualizer {
@@ -39,6 +39,11 @@ export interface CollectionVirtualizer {
   getRenderedItemRoots: () => readonly HTMLElement[]
   /** 实际滚动视口。组合组件的自绘滚动条通过它接管 Virtualizer 的滚动层。 */
   getViewportElement: () => HTMLElement | null
+  /**
+   * 撑出总长的内容层。跟着内容长高的组合组件（日志的粘底）观察它的尺寸变化；
+   * Virtualizer 交出的桥总带着它，自己实现这份协议又要接日志时必须提供。
+   */
+  getContentElement?: () => HTMLElement | null
 }
 
 /** 应渲染的内容变化时对外报告的详情，与 api 上的同名字段同源。 */

@@ -43013,6 +43013,188 @@
       "description": "loading-bar 的 track 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-log-ansi-black",
+      "component": "log",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "fg=black"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "log 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-log-ansi-blue",
+      "component": "log",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "fg=blue"
+      ],
+      "defaultToken": [
+        "--xh-fg-info"
+      ],
+      "visibility": "public",
+      "description": "log 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-log-ansi-bold-weight",
+      "component": "log",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "bold"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-semibold"
+      ],
+      "visibility": "public",
+      "description": "log 的 segment 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-log-ansi-cyan",
+      "component": "log",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "fg=cyan"
+      ],
+      "defaultToken": [
+        "--xh-syntax-string"
+      ],
+      "visibility": "public",
+      "description": "log 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-log-ansi-dim-fg",
+      "component": "log",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "dim",
+        "fg",
+        "not([data-fg])"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "log 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-log-ansi-green",
+      "component": "log",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "fg=green"
+      ],
+      "defaultToken": [
+        "--xh-fg-success"
+      ],
+      "visibility": "public",
+      "description": "log 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-log-ansi-magenta",
+      "component": "log",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "fg=magenta"
+      ],
+      "defaultToken": [
+        "--xh-syntax-keyword"
+      ],
+      "visibility": "public",
+      "description": "log 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-log-ansi-red",
+      "component": "log",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "fg=red"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "log 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-log-ansi-white",
+      "component": "log",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "fg=white"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "log 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-log-ansi-yellow",
+      "component": "log",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "fg=yellow"
+      ],
+      "defaultToken": [
+        "--xh-fg-warning"
+      ],
+      "visibility": "public",
+      "description": "log 的 segment 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-log-bg",
       "component": "log",
       "part": [
@@ -43052,19 +43234,22 @@
       "name": "--xh-log-content-px",
       "component": "log",
       "part": [
-        "content"
+        "content",
+        "line",
+        "viewport"
       ],
       "property": [
         "padding-inline"
       ],
       "state": [
-        "default"
+        "default",
+        "virtualized"
       ],
       "defaultToken": [
         "--xh-_log-content-px"
       ],
       "visibility": "public",
-      "description": "log 的 content 部件 padding-inline 覆盖槽。"
+      "description": "log 的 content、line、viewport 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-log-fg",
@@ -43088,37 +43273,41 @@
       "name": "--xh-log-font",
       "component": "log",
       "part": [
-        "content"
+        "content",
+        "viewport"
       ],
       "property": [
         "font-family"
       ],
       "state": [
-        "default"
+        "default",
+        "virtualized"
       ],
       "defaultToken": [
         "--xh-font-family-mono"
       ],
       "visibility": "public",
-      "description": "log 的 content 部件 font-family 覆盖槽。"
+      "description": "log 的 content、viewport 部件 font-family 覆盖槽。"
     },
     {
       "name": "--xh-log-font-size",
       "component": "log",
       "part": [
-        "content"
+        "content",
+        "viewport"
       ],
       "property": [
         "font-size"
       ],
       "state": [
-        "default"
+        "default",
+        "virtualized"
       ],
       "defaultToken": [
         "--xh-_log-font-size"
       ],
       "visibility": "public",
-      "description": "log 的 content 部件 font-size 覆盖槽。"
+      "description": "log 的 content、viewport 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-log-icon-size",
@@ -43230,6 +43419,25 @@
       ],
       "visibility": "public",
       "description": "log 的 line、root、viewport 部件 block-size、line-height 覆盖槽。"
+    },
+    {
+      "name": "--xh-log-line-px",
+      "component": "log",
+      "part": [
+        "line",
+        "viewport"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "virtualized"
+      ],
+      "defaultToken": [
+        "--xh-log-content-px"
+      ],
+      "visibility": "public",
+      "description": "log 的 line、viewport 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-log-radius",

@@ -8,7 +8,7 @@ import type { LogProps, LogSchema, LogStickChangeDetails } from '../src/log'
 import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
-import { connectLog, logMachine } from '../src/log'
+import { connectLog, logMachine, parseAnsi, stripAnsi } from '../src/log'
 
 type MachineProps = LogSchema['props']
 
@@ -213,5 +213,112 @@ describe('logMachine 按压通道：Space / Enter 与触屏按住投影 data-pre
     fire(trigger(), 'onKeyUp', key(' '))
     expect(trigger()['data-pressed']).toBeUndefined()
     l.stop()
+  })
+})
+
+const ESC = '\u001B'
+
+describe('parseAnsi', () => {
+  it('前景色、粗体与复位拆成一段段，相邻同样式并成一段', () => {
+    expect(parseAnsi(`${ESC}[31merror${ESC}[0m: disk full`)).toEqual([
+      { text: 'error', fg: 'red' },
+      { text: ': disk full' },
+    ])
+    expect(parseAnsi(`${ESC}[1;32mok${ESC}[22m done${ESC}[39m`)).toEqual([
+      { text: 'ok', fg: 'green', bold: true },
+      { text: ' done', fg: 'green' },
+    ])
+  })
+
+  it('90–97 记 bright；256 色只认前 16 个，高位与真彩色不着色', () => {
+    expect(parseAnsi(`${ESC}[94minfo`)).toEqual([{ text: 'info', fg: 'blue', bright: true }])
+    expect(parseAnsi(`${ESC}[38;5;9mhot`)).toEqual([{ text: 'hot', fg: 'red', bright: true }])
+    expect(parseAnsi(`${ESC}[38;5;208mx${ESC}[38;2;255;0;0my`)).toEqual([{ text: 'xy' }])
+  })
+
+  it('背景色不着色；斜体、下划线与暗淡各自开关', () => {
+    expect(parseAnsi(`${ESC}[41;3mhi${ESC}[23;4m u${ESC}[24;2m d`)).toEqual([
+      { text: 'hi', italic: true },
+      { text: ' u', underline: true },
+      { text: ' d', dim: true },
+    ])
+  })
+
+  it('不是 SGR 的转义（清行、挪光标、改标题）整段去掉', () => {
+    expect(stripAnsi(`${ESC}[2K${ESC}[1Gprogress${ESC}]0;title\u0007 50%`)).toBe('progress 50%')
+  })
+
+  it('没有转义的文字原样一段；空串没有段', () => {
+    expect(parseAnsi('plain')).toEqual([{ text: 'plain' }])
+    expect(parseAnsi('')).toEqual([])
+    expect(parseAnsi(`${ESC}[31m${ESC}[0m`)).toEqual([])
+  })
+})
+
+describe('connectLog 着色与过滤', () => {
+  it('一段 ANSI 文字的颜色与字形写成 data 属性', async () => {
+    const l = makeLog()
+    await flush()
+    expect(l.api().getSegmentProps({ text: 'x', fg: 'red', bright: true, bold: true })).toMatchObject({
+      'data-scope': 'log',
+      'data-part': 'segment',
+      'data-fg': 'red',
+      'data-bright': '',
+      'data-bold': '',
+    })
+    l.stop()
+  })
+
+  it('levels 只留所选级别的行，没写级别的行不受影响', async () => {
+    const l = makeLog()
+    await flush()
+    const api = l.api({ levels: ['warn', 'error'] })
+    expect((api.getLineProps({ level: 'info' }) as Record<string, unknown>).hidden).toBe(true)
+    expect((api.getLineProps({ level: 'error' }) as Record<string, unknown>).hidden).toBeUndefined()
+    expect((api.getLineProps() as Record<string, unknown>).hidden).toBeUndefined()
+    expect(api.isLevelVisible('debug')).toBe(false)
+    expect(l.api().isLevelVisible('debug')).toBe(true)
+    l.stop()
+  })
+})
+
+describe('log 与虚拟滚动接线', () => {
+  it('接了 Virtualizer：视口不占 Tab 位、带 data-virtualized，粘底跟 Virtualizer 的滚动层走', async () => {
+    const scroller = document.createElement('div')
+    const inner = document.createElement('div')
+    scroller.append(inner)
+    document.body.append(scroller)
+    const metrics = { scrollTop: 0, scrollHeight: 2000, clientHeight: 200 }
+    for (const k of ['scrollTop', 'scrollHeight', 'clientHeight'] as const) {
+      Object.defineProperty(scroller, k, {
+        get: () => metrics[k],
+        set: (v: number) => {
+          metrics[k] = v
+        },
+        configurable: true,
+      })
+    }
+    const virtualizer = {
+      count: 100,
+      scrollToIndex: () => {},
+      focusIndex: () => {},
+      getRenderedItemRoots: () => [],
+      getViewportElement: () => scroller,
+      getContentElement: () => inner,
+    }
+    const l = makeLog({ virtualizer })
+    await flush()
+    const viewport = l.api().getViewportProps() as Record<string, unknown>
+    expect(viewport.tabindex).toBeUndefined()
+    expect(viewport['data-virtualized']).toBe('')
+    expect(l.api().virtualized).toBe(true)
+
+    // 在 Virtualizer 的视口里上滚：日志离底、回底钮冒出来
+    metrics.scrollTop = 200
+    scroller.dispatchEvent(new Event('scroll'))
+    await flush()
+    expect(l.api().atBottom).toBe(false)
+    l.stop()
+    scroller.remove()
   })
 })

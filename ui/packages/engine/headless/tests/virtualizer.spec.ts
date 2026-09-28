@@ -570,6 +570,8 @@ describe('命令式方法', () => {
     expect(r.api().collectionVirtualizer).toBe(bridge)
     expect(bridge.count).toBe(1200)
     expect(bridge.getViewportElement()).toBe(r.viewport)
+    // 跟着内容长高的组合组件（日志的粘底）观察内容层
+    expect(bridge.getContentElement?.()).toBe(r.content)
   })
 
   it('measureElement 把真实尺寸回喂给内核，位移与总长随之变', async () => {

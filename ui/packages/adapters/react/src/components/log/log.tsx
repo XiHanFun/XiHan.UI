@@ -6,9 +6,10 @@
 // 提供 log 相关实现。
 
 import type { Size } from '@xihan-ui/core'
-import type { LogApi, LogLevel, LogProps, LogSchema, LogTranslations } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, LogAnsiSegment, LogApi, LogLevel, LogProps, LogSchema, LogTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { parseAnsi } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
@@ -36,6 +37,10 @@ export interface XhLogRootProps extends RootElementProps {
   loading?: boolean
   /** 尺寸：sm / md / lg。 */
   size?: Size
+  /** 只显示这几个级别的行，缺省全部显示。 */
+  levels?: readonly LogLevel[]
+  /** 与虚拟滚动接线：传入 XhVirtualizerRoot 函数式 children 里的 collectionVirtualizer。 */
+  virtualizer?: CollectionVirtualizer
   translations?: Partial<LogTranslations>
   onStickChange?: LogSchema['props']['onStickChange']
   children?: SlotChildren<LogRootSlotProps>
@@ -45,12 +50,14 @@ export function XhLogRoot({
   rows,
   loading,
   size,
+  levels,
+  virtualizer,
   translations,
   onStickChange,
   children,
   ...rest
 }: XhLogRootProps): ReactNode {
-  const ctx = useLog(withXhConfig('log', { rows, loading, size, translations }) as LogProps, onStickChange)
+  const ctx = useLog({ ...withXhConfig('log', { rows, loading, size, levels, translations }) as LogProps, virtualizer }, onStickChange)
   const { api } = ctx
   return (
     <LogProvider value={ctx}>
@@ -107,14 +114,30 @@ export function XhLogContent({ children, ...rest }: XhLogContentProps): ReactNod
 export interface XhLogLineProps extends ComponentPropsWithRef<'div'> {
   /** 该行的级别，写为行上的 data-level。 */
   level?: LogLevel
+  /** 带 ANSI 转义的一行原文：按 SGR 拆成着色的段；写了 children 时以 children 为准。 */
+  ansi?: string
 }
 /** 一行的文本与标注由作者写在 children 中。 */
-export function XhLogLine({ level, children, ...rest }: XhLogLineProps): ReactNode {
+export function XhLogLine({ level, ansi, children, ...rest }: XhLogLineProps): ReactNode {
   const ctx = useLogContext()
   return (
     <div {...mergeReactProps(ctx.api.getLineProps({ level }) as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children}
+      {children ?? (ansi === undefined ? undefined : parseAnsi(ansi).map((segment, index) => <XhLogSegment key={index} segment={segment} />))}
     </div>
+  )
+}
+
+export interface XhLogSegmentProps extends ComponentPropsWithRef<'span'> {
+  /** parseAnsi 拆出的一段。 */
+  segment: LogAnsiSegment
+}
+/** 一行 ANSI 文字里的一段：颜色与字形由皮肤映射到语义令牌。 */
+export function XhLogSegment({ segment, children, ...rest }: XhLogSegmentProps): ReactNode {
+  const ctx = useLogContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getSegmentProps(segment) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children ?? segment.text}
+    </span>
   )
 }
 

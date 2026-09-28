@@ -37420,7 +37420,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-log>`：Light-DOM 行为宿主：作者写 root / viewport / content / line 角色节点，\n元素把 connectLog 的产出接上。行增长时跟随滚动到底部，用户上滚后解除贴附，\n滚回底部阈值内、按回到底部按钮或调用 scrollToBottom() 时恢复。\n\n行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点中，元素只发身份与等宽排版。",
+          "description": "`<xh-log>`：Light-DOM 行为宿主：作者写 root / viewport / content / line 角色节点，\n元素把 connectLog 的产出接上。行增长时跟随滚动到底部，用户上滚后解除贴附，\n滚回底部阈值内、按回到底部按钮或调用 scrollToBottom() 时恢复。\n\n行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点中，元素只发身份与等宽排版。\n例外是带 ansi 属性的行：它的文字是带 ANSI 转义的原文，元素按 SGR 拆成着色的 segment；原文换了就重拆一遍。\n\n接虚拟滚动时把 xh-virtualizer 的 collectionVirtualizer 交给 virtualizer property，行放进 Virtualizer 的条目里，\n粘底改跟 Virtualizer 的视口与内容层走。",
           "name": "XhLogElement",
           "cssParts": [
             {
@@ -37436,8 +37436,12 @@
               "name": "content"
             },
             {
-              "description": "一行日志，承载身份、等宽排版与 data-level；级别写为节点上的 level 属性",
+              "description": "一行日志，承载身份、等宽排版与 data-level；级别写为节点上的 level 属性，带 ansi 属性时按 ANSI 转义着色",
               "name": "line"
+            },
+            {
+              "description": "带 ansi 属性的行拆出的一段，元素生成，颜色与字形写成 data 属性",
+              "name": "segment"
             },
             {
               "description": "回到底部按钮，在底部时收起（hidden + 内联 display）",
@@ -37487,6 +37491,24 @@
             },
             {
               "kind": "field",
+              "name": "levels",
+              "privacy": "public",
+              "type": {
+                "text": "readonly LogLevel[] | undefined"
+              },
+              "attribute": "levels"
+            },
+            {
+              "kind": "field",
+              "name": "virtualizer",
+              "privacy": "public",
+              "type": {
+                "text": "CollectionVirtualizer | undefined"
+              },
+              "description": "与虚拟滚动接线：xh-virtualizer 的 collectionVirtualizer。"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -37520,6 +37542,14 @@
             },
             {
               "kind": "field",
+              "name": "#ansiText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, string>()",
+              "description": "带 ansi 属性的行上一次拆出来的纯文字：节点文字与它不同，说明作者换了原文。"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -37529,7 +37559,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<LogSchema>( this, logMachine, () => ({ onStickChange: this.notify }), { scope: this.logScope, onBuilt: svc => this.injectRefs(svc) }, )"
+              "default": "new MachineController<LogSchema>( this, logMachine, () => ({ onStickChange: this.notify, virtualizer: this.virtualizer }), { scope: this.logScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
               "kind": "method",
@@ -37569,6 +37599,31 @@
                   "text": "LogProps"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "#paintAnsi",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "line",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "LogApi"
+                  }
+                }
+              ],
+              "description": "带 ansi 属性的行：原文换了就按 SGR 重拆成 segment 节点，没换只重铺属性。"
             },
             {
               "kind": "method",
@@ -37624,6 +37679,14 @@
               "description": "尺寸：sm / md / lg",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "readonly LogLevel[] | undefined"
+              },
+              "description": "只显示这几个级别的行，空白分隔（如 \"warn error\"），缺省全部显示；没写 level 的行不受影响",
+              "name": "levels",
+              "fieldName": "levels"
             }
           ],
           "superclass": {
@@ -37633,6 +37696,36 @@
           "tagName": "xh-log",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-log-ansi-black"
+            },
+            {
+              "name": "--xh-log-ansi-blue"
+            },
+            {
+              "name": "--xh-log-ansi-bold-weight"
+            },
+            {
+              "name": "--xh-log-ansi-cyan"
+            },
+            {
+              "name": "--xh-log-ansi-dim-fg"
+            },
+            {
+              "name": "--xh-log-ansi-green"
+            },
+            {
+              "name": "--xh-log-ansi-magenta"
+            },
+            {
+              "name": "--xh-log-ansi-red"
+            },
+            {
+              "name": "--xh-log-ansi-white"
+            },
+            {
+              "name": "--xh-log-ansi-yellow"
+            },
             {
               "name": "--xh-log-bg"
             },
@@ -37668,6 +37761,9 @@
             },
             {
               "name": "--xh-log-line-height"
+            },
+            {
+              "name": "--xh-log-line-px"
             },
             {
               "name": "--xh-log-radius"
