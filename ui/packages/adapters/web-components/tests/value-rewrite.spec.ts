@@ -113,6 +113,8 @@ describe('原地改写角色节点上的 value', () => {
       </xh-tabs>
     `)
     await settle(el)
+    // 标签带的换位动效在接线之后的下一帧才挂上，挂上时给首帧的标签打一次标记；等过这一帧再数
+    await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)))
 
     // 自触发会让 wire() 一轮接一轮地写属性。数一段静默期里的属性变动：
     // 不自触发的话没人再动 DOM，这里应当是 0
