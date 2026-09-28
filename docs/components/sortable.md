@@ -215,6 +215,7 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-drag-mode` | context.get('mode') \| undefined |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `item` | `data-animating` | ''（条件成立时才出现） |

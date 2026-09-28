@@ -129,6 +129,8 @@ export function connectSortable<T extends PropTypes>(
       'data-orientation': axis,
       'data-disabled': dataAttr(disabled),
       'data-dragging': dataAttr(dragging),
+      // 拖动由什么驱动：指针拖动时被拖那一项跟手，键盘拖动时它逐格挪、与让位的邻项同一段一起滑
+      'data-drag-mode': dragging ? mode ?? undefined : undefined,
     }),
 
     getItemProps: ({ id, disabled: itemDisabled }) => {

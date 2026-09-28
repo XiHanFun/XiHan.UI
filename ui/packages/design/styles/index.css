@@ -39252,9 +39252,17 @@
      看起来像是尺寸算错了。皮肤只管拖起来那一项的视觉反馈。 */
 
   /* 让位期间关掉过渡，跟手的那一项才不会慢半拍粘在指针后面。
-     其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。 */
+     其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。
+     键盘拖动时被拖那一项不跟手、逐格挪，与让位的邻项同一段一起滑；抓起时的抬升照常淡变 */
   [data-scope='sortable'][data-part='root'][data-dragging] [data-part='item']:not([data-dragging]) {
     transition: translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
+  }
+
+  [data-scope='sortable'][data-part='root'][data-drag-mode='keyboard'] [data-part='item'][data-dragging] {
+    transition:
+      translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 抓起与放下时的抬升、压深都淡变。位移不进这条：它由连接层每帧写内联 translate */

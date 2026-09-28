@@ -185,6 +185,33 @@ describe('排序 · 键盘拖动', () => {
     expect(s.api().to).toBe(1)
   })
 
+  it('根投影拖动由什么驱动：键盘拾起为 keyboard，放下或取消即撤', () => {
+    const s = makeSortable()
+    const mode = (): unknown => (s.api().getRootProps() as Record<string, unknown>)['data-drag-mode']
+    expect(mode()).toBeUndefined()
+    s.service.send({ type: 'ITEM.PICKUP', id: 'b' })
+    expect(mode()).toBe('keyboard')
+    s.service.send({ type: 'KEY.CANCEL' })
+    expect(mode()).toBeUndefined()
+  })
+
+  it('一场拖动收尾时量下各项位置、排上归位后即撤；键盘取消时被拖那一项也在归位之列', () => {
+    const s = makeSortable()
+    s.service.send({ type: 'ITEM.PICKUP', id: 'b' })
+    s.service.send({ type: 'KEY.MOVE', step: 1 })
+    let seen: { rects: Map<string, unknown>, skip: string | null } | null = null
+    const set = s.service.refs.set.bind(s.service.refs)
+    s.service.refs.set = ((key: string, value: unknown) => {
+      if (key === 'layout' && value)
+        seen = value as typeof seen
+      set(key as never, value as never)
+    }) as typeof s.service.refs.set
+    s.service.send({ type: 'KEY.CANCEL' })
+    expect(seen!.rects.size).toBe(IDS.length)
+    expect(seen!.skip).toBeNull()
+    expect(s.service.refs.get('layout')).toBeNull()
+  })
+
   it('方向键一次挪一格，让位量与指针拖动同源', () => {
     const s = makeSortable()
     s.service.send({ type: 'ITEM.PICKUP', id: 'a' })

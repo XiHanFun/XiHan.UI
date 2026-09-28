@@ -64,6 +64,11 @@ export interface SortableRefs {
   drop: { id: string, left: number, top: number, velocity: { x: number, y: number } } | null
   /** 放下后把那一项收进新位置的两支弹簧；落定、再次拾起或卸载时撤下。 */
   settle: { x: SpringValue, y: SpringValue } | null
+  /**
+   * 一场拖动收尾之前各项在屏幕上的位置（含拖动时写的位移），与不必由它归位的那一项（弹簧收进的被拖项）：
+   * 宿主重排、位移撤掉之后，其余各项按它从原处滑回自己的排布位。归位排上之后即撤。
+   */
+  layout: { rects: Map<string, { left: number, top: number }>, skip: string | null } | null
 }
 
 export interface SortableSchema extends MachineSchema {
@@ -150,6 +155,8 @@ export interface SortableSchema extends MachineSchema {
     | 'invokeDragEnd'
     | 'captureDrop'
     | 'settleDrop'
+    | 'captureLayout'
+    | 'glideLayout'
     | 'startPress'
     | 'endPress'
     | 'releasePress'
