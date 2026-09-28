@@ -12939,6 +12939,12 @@
     translate: calc(-1 * var(--xh-_segmented-indicator-x)) var(--xh-_segmented-indicator-y);
   }
 
+  /* 首次落位与同一项的重量（窗口缩放、换上正式字体）直接到位，只有换项才滑：连接层在这一落点投影
+     data-instant。投影的淡变照留，整组禁用时滑块落回轨道平面仍是淡变 */
+  [data-scope='segmented'][data-part='indicator'][data-instant] {
+    transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
   /* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
      被拉长时在另一个方向上压扁，表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
   :where([data-material='liquid']) [data-scope='segmented'][data-part='indicator'] {

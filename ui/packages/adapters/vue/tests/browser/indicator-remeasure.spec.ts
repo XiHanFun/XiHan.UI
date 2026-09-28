@@ -4,6 +4,10 @@ import type { App, Ref, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
+  XhSegmentedIndicator,
+  XhSegmentedItem,
+  XhSegmentedItemText,
+  XhSegmentedRoot,
   XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
@@ -29,6 +33,13 @@ const CASES: Record<string, Case> = {
     item: 'trigger',
     render: value => h(XhTabsRoot, { 'value': value.value, 'onUpdate:value': (next: string) => (value.value = next) }, () =>
       h(XhTabsList, null, () => [h(XhTabsIndicator), ...ENTRIES.map(entry => h(XhTabsTrigger, { value: entry.value }, () => entry.label))])),
+  },
+  segmented: {
+    item: 'item',
+    render: value => h(XhSegmentedRoot, { 'value': value.value, 'onUpdate:value': (next: string | null) => (value.value = next ?? '') }, () => [
+      h(XhSegmentedIndicator),
+      ...ENTRIES.map(entry => h(XhSegmentedItem, { value: entry.value }, () => h(XhSegmentedItemText, null, () => entry.label))),
+    ]),
   },
 }
 
