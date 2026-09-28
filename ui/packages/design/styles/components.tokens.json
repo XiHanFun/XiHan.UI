@@ -47640,6 +47640,188 @@
       "description": "message-feed 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-message-feed-separator-fg",
+      "component": "message-feed",
+      "part": [
+        "separator"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 separator 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-separator-font-size",
+      "component": "message-feed",
+      "part": [
+        "separator"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 separator 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-separator-gap",
+      "component": "message-feed",
+      "part": [
+        "separator"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 separator 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-separator-line",
+      "component": "message-feed",
+      "part": [
+        "separator"
+      ],
+      "property": [
+        "border-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 separator 部件 border-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-unread-count-bg",
+      "component": "message-feed",
+      "part": [
+        "unread-count"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 unread-count 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-unread-count-fg",
+      "component": "message-feed",
+      "part": [
+        "unread-count"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 unread-count 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-unread-count-font-size",
+      "component": "message-feed",
+      "part": [
+        "unread-count"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 unread-count 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-unread-count-px",
+      "component": "message-feed",
+      "part": [
+        "unread-count"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 unread-count 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-unread-count-radius",
+      "component": "message-feed",
+      "part": [
+        "unread-count"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 unread-count 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-message-feed-unread-count-size",
+      "component": "message-feed",
+      "part": [
+        "unread-count"
+      ],
+      "property": [
+        "block-size",
+        "line-height",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 unread-count 部件 block-size、line-height、min-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-navigation-menu-content-bg",
       "component": "navigation-menu",
       "part": [

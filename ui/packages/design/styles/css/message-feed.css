@@ -188,8 +188,9 @@
     animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
-  /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中 */
-  [data-scope='message-feed'][data-part='scroll-to-end-trigger']:empty::before {
+  /* 没写内容（或只放了未读数角标）就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中 */
+  [data-scope='message-feed'][data-part='scroll-to-end-trigger']:empty::before,
+  [data-scope='message-feed'][data-part='scroll-to-end-trigger']:has(> [data-part='unread-count']:only-child)::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
@@ -229,6 +230,49 @@
     white-space: nowrap;
   }
 
+  /* 消息之间的分隔（按日期分组）：一行次级标注居中，两侧各一道内部分隔线 */
+  [data-scope='message-feed'][data-part='separator'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-message-feed-separator-gap, var(--xh-space-3));
+    color: var(--xh-message-feed-separator-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-message-feed-separator-font-size, var(--xh-text-caption-size));
+  }
+
+  [data-scope='message-feed'][data-part='separator']::before,
+  [data-scope='message-feed'][data-part='separator']::after {
+    flex: 1;
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-message-feed-separator-line, var(--xh-border-subtle));
+    content: '';
+  }
+
+  [data-scope='message-feed'][data-part='separator'][hidden] {
+    display: none;
+  }
+
+  /* 回到底部上的未读数：状态 chip，钉在按钮行尾上角外侧，不改按钮盒 */
+  [data-scope='message-feed'][data-part='unread-count'] {
+    position: absolute;
+    inset-block-start: calc(-1 * var(--xh-space-1));
+    inset-inline-end: calc(-1 * var(--xh-space-1));
+    box-sizing: border-box;
+    min-inline-size: var(--xh-message-feed-unread-count-size, var(--xh-space-4));
+    block-size: var(--xh-message-feed-unread-count-size, var(--xh-space-4));
+    padding-inline: var(--xh-message-feed-unread-count-px, var(--xh-space-1));
+    border-radius: var(--xh-message-feed-unread-count-radius, var(--xh-shape-pill));
+    background: var(--xh-message-feed-unread-count-bg, var(--xh-bg-brand));
+    color: var(--xh-message-feed-unread-count-fg, var(--xh-fg-on-brand));
+    font-size: var(--xh-message-feed-unread-count-font-size, var(--xh-text-caption-size));
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-message-feed-unread-count-size, var(--xh-space-4));
+    text-align: center;
+    pointer-events: none;
+  }
+
+  [data-scope='message-feed'][data-part='unread-count'][hidden] {
+    display: none;
+  }
+
   @media print {
     /* 打印：回到底部这颗钮只有在能滚的地方才成立，落到纸上是一颗按不动的按钮；
        等首个片段的呼吸点是一瞬间的状态，纸上没有「正在进行」。 */
@@ -242,6 +286,11 @@
   @media (forced-colors: active) {
     [data-scope='message-feed'][data-part='pending-indicator'] {
       background: CanvasText;
+    }
+
+    [data-scope='message-feed'][data-part='unread-count'] {
+      background: Highlight;
+      color: HighlightText;
     }
   }
 }

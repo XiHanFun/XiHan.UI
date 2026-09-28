@@ -112,7 +112,7 @@ describe('citation 悬停卡片', () => {
     await userEvent.hover(trigger(0))
     await until(() => positioner().hasAttribute('data-positioned'))
     await userEvent.hover(after)
-    await until(() => positioner().hidden, 120)
+    await until(() => positioner().hidden === true, 120)
     expect(positioner().hidden).toBe(true)
   })
 
