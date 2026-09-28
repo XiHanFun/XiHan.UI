@@ -16,11 +16,10 @@ const log = ref("（还没发过）");
   <div style="display: grid; gap: 12px">
     <XhPromptInputRoot
       v-slot="{ value, setValue }"
-      default-value="输入框两侧各放了一颗自己的按钮"
+      default-value="框里放了自己的计数与清空钮"
       :translations="{ input: '给助手写点什么' }"
       @submit="log = `提交：${$event.value}`"
     >
-      <XhButton variant="ghost" size="sm">附件</XhButton>
       <!-- maxlength 是原生属性，直接落到 textarea 上 -->
       <XhPromptInputInput :maxlength="max" rows="1" placeholder="最多 40 个字" />
       <span style="font-size: 13px; white-space: nowrap">{{ value.length }} / {{ max }}</span>
