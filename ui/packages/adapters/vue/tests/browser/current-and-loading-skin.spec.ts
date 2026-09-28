@@ -29,6 +29,7 @@ import {
   XhNavigationMenuRoot,
   XhSwitch,
   XhToastContent,
+  XhToastIndicator,
   XhToastRoot,
   XhToastTitle,
 } from '../../src'
@@ -84,6 +85,17 @@ const settled = (): Promise<void> => new Promise(resolve => setTimeout(resolve, 
 
 const styleOf = (el: HTMLElement, prop: string): string => getComputedStyle(el).getPropertyValue(prop)
 const beforeOf = (el: HTMLElement, prop: string): string => getComputedStyle(el, '::before').getPropertyValue(prop)
+const afterOf = (el: HTMLElement, prop: string): string => getComputedStyle(el, '::after').getPropertyValue(prop)
+
+/** 在宿主里把令牌解析成与 getComputedStyle 同格式的颜色值。 */
+function resolveColor(token: string): string {
+  const probe = document.createElement('span')
+  probe.style.color = `var(${token})`
+  host!.append(probe)
+  const value = getComputedStyle(probe).color
+  probe.remove()
+  return value
+}
 
 // —— 当前项：三家的前景与字重都走 -<部件>-fg-current / -<部件>-font-weight-current ——
 
@@ -295,26 +307,100 @@ describe('轻提示的语气字形', () => {
       await mount(() => TOAST({ tone }))
       const root = part('toast', 'root')
       expect(root.getAttribute('data-tone')).toBe(tone)
-      const mask = beforeOf(root, 'mask-image')
+      const mask = afterOf(root, 'mask-image')
       expect(mask).not.toBe('none')
       marks.push(mask)
+      expect(afterOf(root, 'opacity')).toBe('1')
       expect(Number.parseFloat(beforeOf(root, 'width'))).toBeGreaterThan(0)
+      expect(afterOf(root, 'width')).toBe(beforeOf(root, 'width'))
     }
     expect(new Set(marks).size).toBe(4)
   })
 
-  it('加载中转起来，语气位不受它影响', async () => {
+  it('加载中画的是与 Spinner 环档同一副加载环：一整圈轨道色、起始边语气色，转起来；语气位不受它影响', async () => {
     await mount(() => TOAST({ loading: true, tone: 'success' }))
     const root = part('toast', 'root')
     expect(root.getAttribute('data-tone')).toBe('success')
     expect(root.hasAttribute('data-loading')).toBe(true)
+    // 转的是环，不是遮罩出来的箭头字形
+    expect(beforeOf(root, 'mask-image')).toBe('none')
+    expect(beforeOf(root, 'border-top-style')).toBe('solid')
+    expect(beforeOf(root, 'border-top-left-radius')).toBe('50%')
+    expect(beforeOf(root, 'border-right-color')).toBe(resolveColor('--xh-border-default'))
+    // 起始边与语气字形同一个颜色
+    expect(beforeOf(root, 'border-top-color')).toBe(afterOf(root, 'background-color'))
+    expect(beforeOf(root, 'border-top-color')).not.toBe(beforeOf(root, 'border-right-color'))
     expect(beforeOf(root, 'animation-name')).toBe('xh-spin')
     expect(beforeOf(root, 'animation-iteration-count')).toBe('infinite')
+    expect(beforeOf(root, 'animation-play-state')).toBe('running')
+    expect(beforeOf(root, 'opacity')).toBe('1')
+    // 语气字形让位
+    expect(afterOf(root, 'opacity')).toBe('0')
   })
 
-  it('字形的颜色留了使用者槽', async () => {
+  it('加载落定时环淡出、语气字形淡入，两者在同一格里交叉淡变；环停在当前角度淡出', async () => {
+    let loading = true
+    await mount(() => TOAST({ loading, tone: 'success' }))
+    const root = part('toast', 'root')
+    // 条子在台上转过一帧：过渡要有变化之前的样式才起得来
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    expect(beforeOf(root, 'opacity')).toBe('1')
+    loading = false
+    app!._instance!.proxy!.$forceUpdate()
+    await expect.poll(() => root.hasAttribute('data-loading')).toBe(false)
+    const fades = root.getAnimations({ subtree: true })
+      .filter(a => (a as CSSTransition).transitionProperty === 'opacity')
+      .map(a => (a.effect as KeyframeEffect).pseudoElement)
+    expect(fades).toContain('::before')
+    expect(fades).toContain('::after')
+    expect(beforeOf(root, 'animation-play-state')).toBe('paused')
+    await settled()
+    expect(beforeOf(root, 'opacity')).toBe('0')
+    expect(afterOf(root, 'opacity')).toBe('1')
+  })
+
+  it('渲染了指示符部件：兜底让位给它，它的字形按根上的语气换，加载中同样画环', async () => {
+    const WITH_INDICATOR = (props: Record<string, unknown>): unknown =>
+      h(XhToastRoot, { ...props, duration: 0 }, () => [
+        h(XhToastIndicator),
+        h(XhToastContent, null, () => h(XhToastTitle, null, () => '一句话')),
+      ])
+    const marks: string[] = []
+    for (const tone of ['info', 'success', 'warning', 'danger']) {
+      await mount(() => WITH_INDICATOR({ tone }))
+      expect(beforeOf(part('toast', 'root'), 'content')).toBe('none')
+      expect(afterOf(part('toast', 'root'), 'content')).toBe('none')
+      marks.push(afterOf(part('toast', 'indicator'), 'mask-image'))
+    }
+    expect(new Set(marks).size).toBe(4)
+
+    await mount(() => WITH_INDICATOR({ tone: 'success', loading: true }))
+    const indicator = part('toast', 'indicator')
+    expect(beforeOf(indicator, 'animation-name')).toBe('xh-spin')
+    expect(beforeOf(indicator, 'border-top-left-radius')).toBe('50%')
+    expect(beforeOf(indicator, 'opacity')).toBe('1')
+    expect(afterOf(indicator, 'opacity')).toBe('0')
+  })
+
+  it('减弱动效下环停下并整圈换成点线，淡入淡出照常', async () => {
+    document.documentElement.dataset.motion = 'reduce'
+    try {
+      await mount(() => TOAST({ loading: true, tone: 'success' }))
+      const root = part('toast', 'root')
+      expect(beforeOf(root, 'animation-name')).toBe('none')
+      expect(beforeOf(root, 'border-top-style')).toBe('dotted')
+      expect(beforeOf(root, 'transition-property')).toBe('opacity')
+    }
+    finally {
+      delete document.documentElement.dataset.motion
+    }
+  })
+
+  it('字形与环的颜色留了使用者槽', async () => {
     setSlot('--xh-toast-icon-fg', RED)
     await mount(() => TOAST({ tone: 'success' }))
-    expect(beforeOf(part('toast', 'root'), 'background-color')).toBe(RED)
+    expect(afterOf(part('toast', 'root'), 'background-color')).toBe(RED)
+    await mount(() => TOAST({ tone: 'success', loading: true }))
+    expect(beforeOf(part('toast', 'root'), 'border-top-color')).toBe(RED)
   })
 })

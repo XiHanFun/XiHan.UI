@@ -37,6 +37,7 @@
     "./chart.css": "./family/chart.css",
     "./collection-item.css": "./family/collection-item.css",
     "./field-chrome.css": "./family/field-chrome.css",
+    "./loading-ring.css": "./family/loading-ring.css",
     "./material.css": "./family/material.css",
     "./motion.css": "./family/motion.css",
     "./swatch.css": "./family/swatch.css",
