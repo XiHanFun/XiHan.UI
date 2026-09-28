@@ -7,7 +7,7 @@
 
 import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
 import type { TourPressedPart, TourSchema, TourSpotlightRect, TourStep } from './tour.types'
-import { canTakeFocus, createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
+import { canTakeFocus, createDismissLayer, createFocusScope, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { setupLayerTransaction } from '../shared/overlay-shell'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
@@ -19,6 +19,9 @@ export const TOUR_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
 
 /** 与共享的 OVERLAY_OFFSET 不同：气泡要给聚光灯的描边与留白让出位置，间距更大。 */
 export const TOUR_DEFAULT_OFFSET = 12
+
+/** 目标缺席时等它出现的缺省时长（ms）。 */
+export const TOUR_TARGET_TIMEOUT = 3000
 
 /** 总步数。作者给什么都得先落成非负整数。 */
 export function tourStepCount(steps: readonly TourStep[] | undefined): number {
@@ -54,19 +57,27 @@ function stepOf(prop: PropFn<TourSchema>, raw: number): number {
 }
 
 /**
- * 按选择器找目标节点。经 scope 查而不是全局 document：组件可能活在 shadow root 里。
+ * 取当前步的目标节点：选择器经 scope 的根节点查（组件可能活在 shadow root 里），元素原样用，函数现调。
+ * 已脱离文档的节点量不出几何，按取不到处理。
  */
-function resolveTourTarget(scope: Scope, step: TourStep | null): HTMLElement | null {
-  const selector = step?.target
-  if (!selector)
+export function resolveTourTarget(scope: Scope, step: TourStep | null): HTMLElement | null {
+  const target = step?.target
+  if (!target)
     return null
-  try {
-    return scope.getRootNode().querySelector<HTMLElement>(selector)
+  let el: HTMLElement | null
+  if (typeof target === 'string') {
+    try {
+      el = scope.getRootNode().querySelector<HTMLElement>(target)
+    }
+    catch {
+      // 作者手写的选择器可能非法；查不到就是不锚定，不让它抛出去
+      return null
+    }
   }
-  catch {
-    // 作者手写的选择器可能非法；查不到就是不锚定，不让它抛出去
-    return null
+  else {
+    el = typeof target === 'function' ? target() : target
   }
+  return el?.isConnected ? el : null
 }
 
 // 步序住在 context 的 cell 里，受控/非受控在 cell 收口，这一路不需要影子事件。
@@ -85,6 +96,8 @@ export const tourMachine = createMachine({
     spotlight: cell<TourSpotlightRect | null>(() => ({ defaultValue: null, isEqual: sameTourSpotlight })),
     // 按压通道：正被按住的那颗按钮，四颗都住在气泡里，只在展开态收事件
     pressed: cell<TourPressedPart | null>(() => ({ defaultValue: null })),
+    // 声明的目标等满时长仍没出现：该步按居中呈现
+    missingTarget: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -118,7 +131,7 @@ export const tourMachine = createMachine({
     },
     open: {
       // 进入 open：定位 → 高亮 → 消解与焦点。退出 open 时按同序清理。
-      effects: ['trackPosition', 'trackSpotlight'],
+      effects: ['trackPosition', 'trackSpotlight', 'trackTarget'],
       // 几何随展开态一起来一起走，留着上一轮坐标会让下次展开先按旧位置闪一帧；
       // 收起即松开：按住 Enter 走完末步或跳过，那颗按钮随内容藏起，不会再来 keyup 或 blur
       exit: ['clearGeometry', 'releasePress'],
@@ -139,7 +152,11 @@ export const tourMachine = createMachine({
           { guard: 'isOpenControlled', actions: ['invokeOnSkip', 'invokeOnClose'] },
           { target: 'closed', actions: ['invokeOnSkip', 'invokeOnClose'] },
         ],
-        'GEOMETRY.SYNC': { actions: ['reanchorPosition', 'measureSpotlight'] },
+        'GEOMETRY.SYNC': { actions: ['recheckTarget', 'reanchorPosition', 'measureSpotlight'] },
+        // 等到了目标：先滚进视口，再挂锚点、量高亮框
+        'TARGET.FOUND': { actions: ['scrollTargetIntoView', 'reanchorPosition', 'measureSpotlight'] },
+        // 等不到：该步按居中呈现，锚点与高亮框随之撤掉
+        'TARGET.MISSING': { actions: ['markTargetMissing', 'reanchorPosition', 'measureSpotlight'] },
         // 按压通道：首步的上一步是原生禁用，按住它不进按压面；其余三颗照收
         'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
         'PRESS.END': { actions: ['endPress'] },
@@ -209,6 +226,15 @@ export const tourMachine = createMachine({
           context.set('pressed', null)
       },
       releasePress: ({ context }) => context.set('pressed', null),
+      markTargetMissing: ({ context }) => context.set('missingTarget', true),
+      // 超时后目标才挂上来：remeasure 时再取一次，取到了就回到锚定
+      recheckTarget: ({ prop, context, scope }) => {
+        if (!context.get('missingTarget'))
+          return
+        const step = currentTourStep(prop('steps'), stepOf(prop, context.get('value')))
+        if (resolveTourTarget(scope, step))
+          context.set('missingTarget', false)
+      },
       reanchorPosition: ({ refs }) => refs.get('reanchor')?.(),
       // 目标不在视口内先滚进来（nearest：已可见时不动）；量测与定位随后按滚完的布局取
       scrollTargetIntoView: ({ prop, context, scope }) => {
@@ -347,6 +373,47 @@ export const tourMachine = createMachine({
           win.removeEventListener('resize', onResize)
           win.removeEventListener('scroll', onScroll, { capture: true })
         }
+      },
+      /**
+       * 当前步声明了目标而取不到时等它出现：盯住组件所在的根节点，任何节点增删与属性变化后再取一次，
+       * 取到即发 TARGET.FOUND；等满 targetTimeout 仍没有就发 TARGET.MISSING。展开与每次换步重新开始等，
+       * 收起即撤掉观察与计时。
+       */
+      trackTarget: ({ prop, context, scope, send, track }) => {
+        let stop: (() => void) | undefined
+        const sync = (): void => {
+          stop?.()
+          stop = undefined
+          context.set('missingTarget', false)
+          const step = currentTourStep(prop('steps'), stepOf(prop, context.get('value')))
+          if (!step?.target || resolveTourTarget(scope, step))
+            return
+          const root = scope.getRootNode()
+          const Observer = scope.getWin().MutationObserver
+          const observer = Observer
+            ? new Observer(() => {
+                if (!resolveTourTarget(scope, step))
+                  return
+                stop?.()
+                stop = undefined
+                send({ type: 'TARGET.FOUND' })
+              })
+            : null
+          observer?.observe(root, { childList: true, subtree: true, attributes: true })
+          const cancelTimer = setTimeoutEffect(() => {
+            stop?.()
+            stop = undefined
+            send({ type: 'TARGET.MISSING' })
+          }, prop('targetTimeout') ?? TOUR_TARGET_TIMEOUT)
+          stop = () => {
+            observer?.disconnect()
+            cancelTimer()
+          }
+        }
+        // 只盯步序：清单常以字面量传入，每轮渲染都是新数组，盯它会让等待与超时反复重来
+        track([context.dep('value')], sync)
+        sync()
+        return () => stop?.()
       },
       // 层、消解层与焦点域共享 Presence 生命周期：逻辑关闭先让内容失活，
       // 真正的视觉退场结束后才逆序归还。Tour 本身没有滚动锁或背景失活资源，不能在这里虚构它们。

@@ -14,6 +14,7 @@ export {
   isTourLastStep,
   TOUR_DEFAULT_OFFSET,
   TOUR_DEFAULT_PLACEMENT,
+  TOUR_TARGET_TIMEOUT,
   tourMachine,
   tourStepCount,
 } from './tour.machine'
@@ -30,6 +31,7 @@ export type {
   TourSkipDetails,
   TourSpotlightRect,
   TourStep,
+  TourTarget,
   TourTranslations,
   TourValueChangeDetails,
 } from './tour.types'

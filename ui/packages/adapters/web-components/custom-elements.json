@@ -68194,7 +68194,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tour>`：Light-DOM 行为宿主：作者写 root / backdrop / spotlight / positioner / content / ... 角色节点，\n元素运行 tour 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点是每一步 target 选择器查询到的页面节点（由状态机解析），被定位的浮层取 positioner。",
+          "description": "`<xh-tour>`：Light-DOM 行为宿主：作者写 root / backdrop / spotlight / positioner / content / ... 角色节点，\n元素运行 tour 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点是每一步 target（选择器、元素或返回元素的函数）取到的页面节点（由状态机解析，缺席时等它出现），被定位的浮层取 positioner。",
           "name": "XhTourElement",
           "cssParts": [
             {
@@ -68383,6 +68383,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "auto-scroll"
+            },
+            {
+              "kind": "field",
+              "name": "targetTimeout",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "target-timeout"
             },
             {
               "kind": "field",
@@ -68769,6 +68778,14 @@
               "description": "展开与换步时自动把目标滚进视口（nearest），默认 true；写 auto-scroll=\"false\" 关闭",
               "name": "auto-scroll",
               "fieldName": "autoScroll"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "目标缺席时等它出现的时长（ms），默认 3000；0 即不等，超时后该步居中呈现",
+              "name": "target-timeout",
+              "fieldName": "targetTimeout"
             }
           ],
           "superclass": {

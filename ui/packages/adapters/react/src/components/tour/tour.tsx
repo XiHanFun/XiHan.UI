@@ -53,6 +53,8 @@ export interface XhTourRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   showBackdrop?: boolean
   spotlightPadding?: number
   autoScroll?: boolean
+  /** 目标缺席时等它出现的时长（ms），默认 3000；0 即不等。 */
+  targetTimeout?: number
   translations?: Partial<TourTranslations>
   onOpenChange?: TourProps['onOpenChange']
   onValueChange?: TourProps['onValueChange']
@@ -76,6 +78,7 @@ export function XhTourRoot({
   showBackdrop,
   spotlightPadding,
   autoScroll,
+  targetTimeout,
   translations,
   onOpenChange,
   onValueChange,
@@ -98,6 +101,7 @@ export function XhTourRoot({
     showBackdrop,
     spotlightPadding,
     autoScroll,
+    targetTimeout,
     translations,
     onOpenChange,
     onValueChange,

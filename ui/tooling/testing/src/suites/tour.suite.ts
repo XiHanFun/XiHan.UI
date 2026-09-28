@@ -417,6 +417,24 @@ export const tourSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '目标取不到且 targetTimeout=0：该步不等，按居中呈现，不画高亮框与箭头',
+      spec: { zag: 'tour.types#target' },
+      props: { steps: [{ id: 'missing', target: '#tour-target-missing', title: '缺席' }], defaultOpen: true, targetTimeout: 0 },
+      steps: [
+        {
+          kind: 'settle',
+          until: { attr: { part: 'positioner', name: 'data-position', value: 'center' } },
+          expect: {
+            parts: {
+              positioner: { 'hidden': null, 'data-position': 'center', 'data-positioned': '' },
+              spotlight: { hidden: '' },
+              arrow: { hidden: '' },
+            },
+          },
+        },
+      ],
+    },
+    {
       name: 'showBackdrop=false：展开也不画遮罩，其余照常',
       spec: { zag: 'tour.types#showBackdrop' },
       props: { ...PROPS, defaultOpen: true, showBackdrop: false },

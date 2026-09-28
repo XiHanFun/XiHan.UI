@@ -35,8 +35,9 @@ export function connectTour<T extends PropTypes>(
   const firstStep = value <= 0
   const lastStep = isTourLastStep(value, count)
   const showBackdrop = prop('showBackdrop') ?? true
-  // 锚定与否只看这一步自己的声明，不看量出来的框：量是推迟到宿主提交之后的
-  const anchored = !!currentStep?.target
+  // 锚定与否看这一步自己的声明，不看量出来的框（量是推迟到宿主提交之后的）；
+  // 声明了目标却等满时长也没等到，该步按居中呈现
+  const anchored = !!currentStep?.target && !context.get('missingTarget')
 
   const ids = scope.ids('tour', 'content', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'

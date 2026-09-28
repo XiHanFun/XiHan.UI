@@ -60,6 +60,7 @@
 - 高亮框同步目标节点的实际圆角，直角与圆角目标保持各自轮廓。
 - `autoScroll` 自动将目标滚动到可见区域。
 - 无目标步骤在视口中居中，适合开场与结束。
+- 步骤的 `target` 可以是 CSS 选择器、元素，或返回元素的函数（路由切换后才挂上的节点用函数最稳）。进入某一步时目标还没挂上，组件盯住文档等它出现，期间气泡不露面；等到了即滚进视口、定位并高亮，等满 `targetTimeout`（缺省 3000ms，0 即不等）仍没有，该步改在视口中居中呈现、不画高亮框与箭头，不再等待；之后目标才挂上来，调用 `remeasure()` 重新锚定。
 - `showBackdrop=false` 关闭背景暗幕，但保留目标高亮环。
 - 支持受控步序、完成和跳过回调。
 - 气泡走 M4 sheet 三件套（1px 描边、不透明底、投影），与对话框同源；边界由描边承担，不只靠影分层。锚定步从贴着目标的那条边涨开入场，退场按 exit 档收拢。
@@ -80,7 +81,7 @@
 ### 反模式
 
 - 不要强制用户完成引导。
-- 不要指向尚未渲染的目标。
+- 不要让目标长时间缺席：等待期间气泡不露面，超时后该步退成居中，引导就失去了指向。进入该步前先把目标渲染出来，或把步骤放在目标出现之后。
 
 ## API 参考
 
@@ -111,6 +112,7 @@
 | `showBackdrop` | `boolean` |  | 绘制遮罩，默认 true。 |
 | `spotlightPadding` | `number` |  | 高亮框在目标四周留出的空白（px），默认 8。 |
 | `autoScroll` | `boolean` |  | 展开与换步时自动把目标滚进视口（nearest，已可见时不动），默认 true。 |
+| `targetTimeout` | `number` |  | 目标缺席时等它出现的时长（ms），默认 3000；只收有限非负数，0 即不等。 超时后该步按居中呈现、不再等待；之后目标挂上来了，调用 remeasure 重新锚定。 |
 | `translations` | `Partial<TourTranslations>` |  |  |
 | `onValueChange` | `(details: TourValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: TourOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -124,7 +126,7 @@
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `id` | `string` | 是 | 稳定标识，写入 data-step-id；作者据此对应（埋点、按步定制渲染）。 |
-| `target` | `string \| null` |  | 高亮目标的 CSS 选择器。null / 省略 / 查询不到节点都视为该步不锚定任何元素： 浮层居中、不绘制高亮框、不显示箭头。 |
+| `target` | `TourTarget \| null` |  | 高亮目标。null / 省略即该步不锚定任何元素：浮层居中、不绘制高亮框、不显示箭头。 声明了目标而进入该步时还取不到（节点尚未挂上、元素已脱离文档），就盯住文档等它出现， 期间气泡不露面；等到了即定位高亮，等满 targetTimeout 仍没有则该步按居中呈现。 |
 | `title` | `string` |  |  |
 | `description` | `string` |  |  |
 | `placement` | `Placement` |  | 该步的首选放置位；未提供时沿用整份引导的 placement。 |
@@ -177,7 +179,7 @@
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `VALUE.SET` · `STEP.PREV` · `STEP.NEXT` · `SKIP` · `GEOMETRY.SYNC` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `CLOSE` · `VALUE.SET` · `STEP.PREV` · `STEP.NEXT` · `SKIP` · `GEOMETRY.SYNC` · `TARGET.FOUND` · `TARGET.MISSING` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isOpenControlled` · `isLastStep` · `isLastStepOpenControlled` · `canPress`
 
@@ -193,14 +195,14 @@
 | `currentStep` | `TourStep \| null` | 当前步的声明；清单为空时为 null。 |
 | `firstStep` | `boolean` | 停在首步：上一步按钮据此禁用。 |
 | `lastStep` | `boolean` | 停在末步：下一步按钮据此更换文案（完成）。 |
-| `anchored` | `boolean` | 该步锚定了页面元素：居中步为 false，此时不绘制高亮框也不显示箭头。 |
+| `anchored` | `boolean` | 该步锚定了页面元素：居中步与等不到目标的步为 false，此时不绘制高亮框也不显示箭头。 |
 | `progressText` | `string` | 「第 m 步，共 n 步」。作者未编写 progress-text 的内容时由适配器填入。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: number) => void` | 直接跳到某一步；越界会被夹回 [0, count - 1]。 |
 | `goToNextStep` | `() => void` | 末步再前进一步 = 完成：先发 onComplete，再关闭。 |
 | `goToPrevStep` | `() => void` |  |
 | `skip` | `() => void` | 放弃引导：先发 onSkip，再关闭。 |
-| `remeasure` | `() => void` | 重新测量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调用它校准。 |
+| `remeasure` | `() => void` | 重新测量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）或超时后才挂上来时调用它校准。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getBackdropProps` | `() => T['element']` |  |
 | `getSpotlightProps` | `() => T['element']` |  |

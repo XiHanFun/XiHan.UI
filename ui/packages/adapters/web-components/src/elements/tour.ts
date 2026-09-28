@@ -43,7 +43,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
 /**
  * `<xh-tour>`：Light-DOM 行为宿主：作者写 root / backdrop / spotlight / positioner / content / ... 角色节点，
  * 元素运行 tour 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，
- * 锚点是每一步 target 选择器查询到的页面节点（由状态机解析），被定位的浮层取 positioner。
+ * 锚点是每一步 target（选择器、元素或返回元素的函数）取到的页面节点（由状态机解析，缺席时等它出现），被定位的浮层取 positioner。
  *
  * @customElement xh-tour
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
@@ -58,6 +58,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} show-backdrop - 绘制遮罩，默认 true；写 show-backdrop="false" 关闭
  * @attr {number} spotlight-padding - 高亮框在目标四周留出的空白（px），默认 8
  * @attr {boolean} auto-scroll - 展开与换步时自动把目标滚进视口（nearest），默认 true；写 auto-scroll="false" 关闭
+ * @attr {number} target-timeout - 目标缺席时等它出现的时长（ms），默认 3000；0 即不等，超时后该步居中呈现
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires value-change - 步序变化；detail 为 `{ value: number }`
  * @fires complete - 末步再按下一步；detail 为 `{ step: number }`
@@ -100,6 +101,7 @@ export class XhTourElement extends XhPortalHostElement {
     showBackdrop: { converter: BOOLEAN_CONVERTER, attribute: 'show-backdrop' },
     spotlightPadding: { converter: NUMBER_CONVERTER, attribute: 'spotlight-padding' },
     autoScroll: { converter: BOOLEAN_CONVERTER, attribute: 'auto-scroll' },
+    targetTimeout: { converter: NUMBER_CONVERTER, attribute: 'target-timeout' },
     // 对象值进不了属性，只作为 property 暴露
     steps: { attribute: false },
     translations: { attribute: false },
@@ -117,6 +119,7 @@ export class XhTourElement extends XhPortalHostElement {
   declare showBackdrop?: boolean
   declare spotlightPadding?: number
   declare autoScroll?: boolean
+  declare targetTimeout?: number
   /** 步骤清单。它是步序的上界，也是读屏"第 m 步，共 n 步"的分母。 */
   declare steps?: TourStep[]
   /** 关闭按钮的无障碍名与进度文案；connect 每帧重写，作者写在节点上的值会被覆盖，只能从此处提供。 */
@@ -179,6 +182,7 @@ export class XhTourElement extends XhPortalHostElement {
       showBackdrop: this.showBackdrop,
       spotlightPadding: this.spotlightPadding,
       autoScroll: this.autoScroll,
+      targetTimeout: this.targetTimeout,
       translations: this.translations,
       onOpenChange: this.notifyOpen,
       onValueChange: this.notifyValue,

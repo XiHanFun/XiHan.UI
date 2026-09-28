@@ -302,8 +302,8 @@ export { connectToolbar, toolbarAnatomy, toolbarItemQuery, toolbarKeyboard, tool
 export type { ToolbarApi, ToolbarItemProps, ToolbarSchema, ToolbarTranslations } from './toolbar'
 export { connectTooltip, TOOLTIP_DEFAULT_PLACEMENT, tooltipAnatomy, tooltipKeyboard, tooltipMachine, tooltipMeta } from './tooltip'
 export type { TooltipApi, TooltipOpenChangeDetails, TooltipRefs, TooltipSchema, TooltipTranslations } from './tooltip'
-export { clampTourStep, connectTour, currentTourStep, isTourLastStep, sameTourSpotlight, TOUR_DEFAULT_OFFSET, TOUR_DEFAULT_PLACEMENT, TOUR_DEFAULT_SPOTLIGHT_PADDING, tourAnatomy, tourKeyboard, tourMachine, tourMeta, tourSpotlightBox, tourStepCount } from './tour'
-export type { TourApi, TourCompleteDetails, TourOpenChangeDetails, TourPressedPart, TourProgressDotProps, TourRefs, TourSchema, TourSkipDetails, TourSpotlightRect, TourStep, TourTranslations, TourValueChangeDetails } from './tour'
+export { clampTourStep, connectTour, currentTourStep, isTourLastStep, sameTourSpotlight, TOUR_DEFAULT_OFFSET, TOUR_DEFAULT_PLACEMENT, TOUR_DEFAULT_SPOTLIGHT_PADDING, TOUR_TARGET_TIMEOUT, tourAnatomy, tourKeyboard, tourMachine, tourMeta, tourSpotlightBox, tourStepCount } from './tour'
+export type { TourApi, TourCompleteDetails, TourOpenChangeDetails, TourPressedPart, TourProgressDotProps, TourRefs, TourSchema, TourSkipDetails, TourSpotlightRect, TourStep, TourTarget, TourTranslations, TourValueChangeDetails } from './tour'
 export { connectTransfer, transferAnatomy, transferCheckedValues, transferCheckState, transferFocusKey, transferIsCheckable, transferItemQuery, transferKeyboard, transferMachine, transferMatchesQuery, transferMeta, transferMove, transferOperableValues, transferOppositeSide, transferQueryKey, transferSideOf, transferToggleAll, transferToggleValue, transferVisibleItems } from './transfer'
 export type { TransferApi, TransferCheckState, TransferFilter, TransferGroupProps, TransferItem, TransferItemProps, TransferMoveInput, TransferMoveResult, TransferPanelProps, TransferPressedKey, TransferSchema, TransferSelectionChangeDetails, TransferSide, TransferTranslations, TransferValueChangeDetails } from './transfer'
 
