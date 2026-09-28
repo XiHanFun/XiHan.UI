@@ -87,6 +87,27 @@ export const alertSuite: ConformanceSuite = {
       },
     },
     {
+      name: 'banner：根带横幅标记，实时区语义与关闭钮照旧',
+      spec: { apg: APG },
+      props: { banner: true, tone: 'warning' },
+      initial: {
+        parts: {
+          'root': { 'data-banner': '', 'role': 'alert', 'aria-live': 'assertive', 'data-state': 'open' },
+          'close-trigger': { hidden: null, disabled: null },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'close-trigger',
+          expect: {
+            parts: { root: { 'data-state': 'closed', 'hidden': '' } },
+            events: [{ type: 'open-change', detail: { open: false } }],
+          },
+        },
+      ],
+    },
+    {
       name: '点击关闭：root 收起并派发 open-change',
       spec: { apg: APG },
       covers: ['alert.kbd.close'],

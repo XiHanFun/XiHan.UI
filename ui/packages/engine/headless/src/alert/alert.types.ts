@@ -25,6 +25,11 @@ export interface AlertSchema extends MachineSchema {
     tone?: Tone
     /** 关闭按钮是否可用，默认 true。false 时该按钮同时被禁用与收起。 */
     closable?: boolean
+    /**
+     * 横幅：页面顶部的通栏，贴着页面或容器的边铺满整行，不取圆角，只在朝向页面内容的块尾画一道描边。
+     * 说的是提示贴在哪儿，不是面的形态：面与语气规则与页内提示相同。默认 false。
+     */
+    banner?: boolean
     /** 受控显隐；未提供该 prop 即非受控。 */
     open?: boolean
     /** 非受控初始显隐，默认显示。 */
@@ -80,6 +85,8 @@ export interface AlertApi<T extends PropTypes = PropTypes> {
   open: boolean
   tone: string
   closable: boolean
+  /** 是否横幅：贴边铺满的页面通栏。 */
+  banner: boolean
   setOpen: (next: boolean) => void
   getRootProps: () => T['element']
   getIndicatorProps: () => T['element']

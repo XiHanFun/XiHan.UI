@@ -48,6 +48,12 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 <XhDemo src="alert/05-action" />
 
+### 横幅
+
+banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页面内容的块尾画一道描边；关闭后下方内容平移上来
+
+<XhDemo src="alert/06-banner" />
+
 ## 设计指引
 
 ### 何时使用
@@ -67,6 +73,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 - `content` 是标题与说明共用的必需文本列，操作和关闭入口排在尾端。
 - `closable` 显示关闭按钮，关闭状态可受控。
 - 关闭时先淡出、再收起占位，下方内容随之平移上来；退场播完才藏起，途中不再响应交互。
+- `banner` 把提示改成页面顶部的横幅：贴着页面或容器的边铺满整行，不取圆角，只在朝向页面内容的块尾画一道描边。它说的是提示贴在哪儿，不是面的形态：面、语气、实时区语义与关闭都与页内提示相同。
 
 ### 组合
 
@@ -75,6 +82,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 ### 最佳实践
 
 - 说明发生了什么、影响是什么、用户可以做什么，三项缺一不可。
+- 横幅只放影响整个页面或整个应用的事（停机维护、账号欠费、离线），一页至多一条，放在页面最顶上、其余内容之前；区块内的事用页内提示。
 - 严重程度不能只靠颜色表达，标题文字本身应说明。
 
 ### 反模式
@@ -99,6 +107,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | --- | --- | --- | --- |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色，默认 info。 danger / warning 使用 role="alert"，其余使用 role="status"。 |
 | `closable` | `boolean` |  | 关闭按钮是否可用，默认 true。false 时该按钮同时被禁用与收起。 |
+| `banner` | `boolean` |  | 横幅：页面顶部的通栏，贴着页面或容器的边铺满整行，不取圆角，只在朝向页面内容的块尾画一道描边。 说的是提示贴在哪儿，不是面的形态：面与语气规则与页内提示相同。默认 false。 |
 | `open` | `boolean` |  | 受控显隐；未提供该 prop 即非受控。 |
 | `defaultOpen` | `boolean` |  | 非受控初始显隐，默认显示。 |
 | `onOpenChange` | `(details: AlertOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -145,6 +154,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | `open` | `boolean` |  |
 | `tone` | `string` |  |
 | `closable` | `boolean` |  |
+| `banner` | `boolean` | 是否横幅：贴边铺满的页面通栏。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
@@ -193,6 +203,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-banner` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |

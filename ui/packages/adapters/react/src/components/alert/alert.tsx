@@ -19,6 +19,8 @@ export interface XhAlertRootProps extends ComponentPropsWithRef<'div'> {
   tone?: Tone
   /** 默认交给 connect 决定，写 false 才真正关闭。 */
   closable?: boolean
+  /** 横幅：贴边铺满的页面通栏，不取圆角，只留块尾描边。 */
+  banner?: boolean
   open?: boolean
   defaultOpen?: boolean
   translations?: Partial<AlertTranslations>
@@ -29,6 +31,7 @@ export interface XhAlertRootProps extends ComponentPropsWithRef<'div'> {
 export function XhAlertRoot({
   tone,
   closable,
+  banner,
   open,
   defaultOpen,
   translations,
@@ -39,6 +42,7 @@ export function XhAlertRoot({
   const ctx = useAlert(withXhConfig('alert', {
     tone,
     closable,
+    banner,
     open,
     defaultOpen,
     translations,

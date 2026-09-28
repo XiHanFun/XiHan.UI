@@ -19,6 +19,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @customElement xh-alert
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定实时区级别与配色
  * @attr {boolean} closable - 关闭按钮是否可用，默认为真
+ * @attr {boolean} banner - 横幅：贴边铺满的页面通栏，不取圆角，只留块尾描边
  * @attr {boolean} open - 受控显隐；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始显隐，默认显示
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
@@ -33,11 +34,12 @@ import { MachineController } from '../runtime/machine-controller'
 export class XhAlertElement extends XhElement {
   static override partContract = { anatomy: alertAnatomy, meta: alertMeta }
 
-  // 三个布尔都用三态转换器：属性缺席翻成 undefined，缺省值由机器与 connect 决定；
+  // 布尔一律用三态转换器：属性缺席翻成 undefined，缺省值由机器与 connect 决定；
   // 用 Lit 自带的 Boolean 转换器的话，缺省为真的 closable / default-open 永远关不掉
   static override properties = {
     tone: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     closable: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
+    banner: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     open: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultOpen: {
       attribute: 'default-open',
@@ -49,6 +51,7 @@ export class XhAlertElement extends XhElement {
 
   declare tone?: Tone
   declare closable?: boolean
+  declare banner?: boolean
   declare open?: boolean
   declare defaultOpen?: boolean
   declare translations?: AlertSchema['props']['translations']
@@ -67,6 +70,7 @@ export class XhAlertElement extends XhElement {
     return {
       tone: this.tone,
       closable: this.closable,
+      banner: this.banner,
       open: this.open,
       defaultOpen: this.defaultOpen,
       translations: this.translations,

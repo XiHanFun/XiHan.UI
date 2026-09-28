@@ -39,6 +39,7 @@ export function connectAlert<T extends PropTypes>(
   const press = pressHandlers(service)
   const tone = prop('tone') ?? 'info'
   const closable = prop('closable') ?? true
+  const banner = !!prop('banner')
   const ids = scope.ids('alert', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'
   // 收起后先播完退场（淡出、再收起占位）才藏起：这几帧里根还留着，但已不接交互
@@ -55,6 +56,7 @@ export function connectAlert<T extends PropTypes>(
     open,
     tone,
     closable,
+    banner,
     setOpen,
 
     getRootProps: () => normalize.element({
@@ -69,6 +71,8 @@ export function connectAlert<T extends PropTypes>(
       'id': scope.partId('alert', 'root'),
       // 语气轴只挂在 root 上，子部件靠继承拿到语气槽
       'data-tone': tone,
+      // 横幅是贴边铺满的页面通栏：皮肤据此撤掉圆角与另外三条边，只留朝向页面内容的块尾描边
+      'data-banner': dataAttr(banner),
       'data-state': stateAttr,
       // 退场动画播完才写 hidden
       'hidden': (!open && !exiting) || undefined,

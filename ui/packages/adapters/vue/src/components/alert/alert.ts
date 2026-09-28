@@ -22,6 +22,7 @@ export const XhAlertRoot = defineComponent({
     tone: String as PropType<Tone>,
     // 三态：不传即由 connect 决定缺省，传 false 才真的关掉
     closable: { type: Boolean, default: undefined },
+    banner: { type: Boolean, default: undefined },
     open: { type: Boolean, default: undefined },
     defaultOpen: { type: Boolean, default: undefined },
     translations: Object as PropType<Partial<AlertTranslations>>,

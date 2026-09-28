@@ -314,3 +314,34 @@ describe('alertMachine 按压通道：Space / Enter 与触屏按住投影 data-p
     a.stop()
   })
 })
+
+describe('横幅', () => {
+  it('缺省是页内提示：根不带横幅标记，api 报 false', () => {
+    const a = makeAlert()
+    expect(a.api().banner).toBe(false)
+    expect((a.api().getRootProps() as Dict)['data-banner']).toBeUndefined()
+    a.stop()
+  })
+
+  it('banner=true：根带横幅标记，语气、实时区与关闭照旧', () => {
+    const a = makeAlert({ banner: true, tone: 'warning' })
+    const root = a.api().getRootProps() as Dict
+    expect(a.api().banner).toBe(true)
+    expect(root['data-banner']).toBe('')
+    expect(root['data-tone']).toBe('warning')
+    expect(root.role).toBe('alert')
+    expect((a.api().getCloseTriggerProps() as Dict).hidden).toBeUndefined()
+    a.api().setOpen(false)
+    expect(a.state()).toBe('closed')
+    a.stop()
+  })
+
+  it('经 signal 切换横幅：根上的标记跟着换', () => {
+    const a = makeAlert()
+    a.setProps({ banner: true })
+    expect((a.api().getRootProps() as Dict)['data-banner']).toBe('')
+    a.setProps({ banner: false })
+    expect((a.api().getRootProps() as Dict)['data-banner']).toBeUndefined()
+    a.stop()
+  })
+})
