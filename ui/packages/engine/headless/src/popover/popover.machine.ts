@@ -9,6 +9,7 @@ import type { PositionResult } from '@xihan-ui/core'
 import type { PopoverPressedPart, PopoverSchema } from './popover.types'
 import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
 
@@ -19,13 +20,14 @@ const { createMachine } = setup<PopoverSchema>()
 
 export const popoverMachine = createMachine({
   name: 'popover',
-  context: ({ cell }) => ({
+  context: ({ cell, prop }) => ({
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 关闭时是否把焦点归还触发器；Tab 与层外交互关闭时让出，其余出口归还
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
     // 按压通道：正被按住的那颗按钮，与开合无关
     pressed: cell<PopoverPressedPart | null>(() => ({ defaultValue: null })),
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
   }),
   refs: () => ({
     config: null,
@@ -38,7 +40,7 @@ export const popoverMachine = createMachine({
     getContentEl: () => null,
     getInitialFocusEl: () => null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 层、焦点域和模态资源由机器持有；逻辑关闭后继续保留到 Presence 完成真实退场。
   effects: ['trackLayer'],
   // 受控（open prop 给定）时，用户事件只发意图回调、不自改状态；宿主写回 open 后
@@ -56,6 +58,8 @@ export const popoverMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 禁用 → 不展开；受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
@@ -107,6 +111,7 @@ export const popoverMachine = createMachine({
           context.set('pressed', null)
       },
       releasePress: ({ context }) => context.set('pressed', null),
+      clearOpenedAtMount,
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       // 关闭原因在事件里现成：消解层回报的 src，没有 src 的走 programmatic
       invokeOnClose: ({ prop, event }) => {
