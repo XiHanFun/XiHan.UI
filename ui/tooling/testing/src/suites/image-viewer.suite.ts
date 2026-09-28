@@ -174,7 +174,7 @@ export const imageViewerSuite: ConformanceSuite = {
               'flip-horizontal-trigger': { 'type': 'button', 'aria-label': 'Flip horizontal', 'disabled': null, 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },
               'flip-vertical-trigger': { 'type': 'button', 'aria-label': 'Flip vertical', 'disabled': null, 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },
               'reset-trigger': { 'type': 'button', 'aria-label': 'Reset', 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },
-              'close-trigger': { 'type': 'button', 'aria-label': 'Close', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'lg' },
+              'close-trigger': { 'type': 'button', 'aria-label': 'Close', 'data-xh-action-control': '', 'data-xh-action-profile': 'floating', 'data-xh-action-size': 'sm' },
             },
           },
         },
