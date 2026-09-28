@@ -115,6 +115,8 @@ describe('tooltip 紧凑反白 M2', () => {
     })
     const positioner = part('positioner')
     const contentElement = part('content')
+    // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户打开时的进场
+    delete contentElement.dataset.instant
     const positionerStyle = getComputedStyle(positioner)
     const content = getComputedStyle(contentElement)
     const placement = positioner.dataset.placement?.split('-')[0]
