@@ -8,7 +8,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 141 components, each shipping a headless core, Vue and React components, a custom element, and a default skin.
 
-> The 18 public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to five recorded entries (the shared table’s `tag` and `select` disabled-tag contrast, `file-upload`’s disabled item text contrast and `prompt-input`’s author-owned accessible name, plus the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
+> The 18 public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to six recorded entries (the shared table’s `tag`, `select` and `combobox` disabled-tag contrast, `file-upload`’s disabled item text contrast and `prompt-input`’s author-owned accessible name, plus the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
 
 ## Packages
 
