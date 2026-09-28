@@ -125,6 +125,7 @@
     "data-at-min-horizontal": "scroll-area 的视口横向已经贴着起始端。",
     "data-at-min-vertical": "scroll-area 的视口纵向已经贴着顶端。",
     "data-auto-fill": "marquee 开了自动补足副本：内容不足一屏时复制到铺满。",
+    "data-lines": "tree 打开了缩进参考线：每一层子节点的行首画一道竖线。",
     "data-match": "json-viewer 这一行的键名或值命中了搜索词。",
     "data-fade": "marquee 开了两端渐隐：窗口沿滚动方向两端画遮罩，内容从一端淡入、从另一端淡出。",
     "data-auto-resize": "editable 的输入框随内容自动长高。",

@@ -5,6 +5,8 @@
 
 /* 定义 tree 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 @import '../family/collection-item.css';
 
 @layer xihan.components {
@@ -328,6 +330,30 @@
     padding-inline-start: var(--xh-tree-indent, var(--xh-space-4));
   }
 
+  /*
+   * 缩进参考线：每一层子节点的行首画一道竖线，对齐父节点展开箭头的中线，层级深时一眼看得出谁跟谁同层。
+   * 线画在子层容器自己的伪元素上：定位在子层里，只贯穿这一层的全部子孙，不越出父节点的范围。
+   * 它是内部分隔的一种，颜色取 border-subtle；行悬停与选中换面时线压在面上照样看得见
+   */
+  [data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'] {
+    position: relative;
+  }
+
+  [data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content']::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    /* 父行的行首内边距加半个箭头盒：竖线正好落在父节点展开箭头的中线上 */
+    inset-inline-start: calc(
+      var(--xh-tree-row-px, var(--xh-control-px-md)) +
+        var(--xh-tree-indicator-size, var(--xh-control-indicator-size)) / 2 -
+        var(--xh-stroke-thin) / 2
+    );
+    inline-size: var(--xh-stroke-thin);
+    background: var(--xh-tree-line-color, var(--xh-border-subtle));
+    pointer-events: none;
+  }
+
   /* 末端那一层横排：子节点并排铺开、必要时折行。缩进照旧由子层容器自己顶——
      那是这一层相对上一层的位置，与层内怎么排无关 */
   [data-scope='tree'][data-part='branch-content'][data-orientation='horizontal'] {
@@ -387,6 +413,33 @@
     -webkit-mask-size: 0 0, 100% 100%;
     mask-size: 0 0, 100% 100%;
     transition-delay: 0s;
+  }
+
+  /* 这一枝在取子节点：展开箭头换成转圈，不再按开合转向；只换字形，颜色沿用箭头的弱前景 */
+  [data-scope='tree'][data-part='branch'][data-loading] > [data-scope='tree'][data-part='branch-control'] [data-scope='tree'][data-part='branch-trigger'],
+  [data-scope='tree'][data-part='branch'][data-loading] > [data-scope='tree'][data-part='branch-control'] [data-scope='tree'][data-part='branch-indicator'] {
+    rotate: none;
+  }
+
+  [data-scope='tree'][data-part='branch'][data-loading] > [data-scope='tree'][data-part='branch-control'] [data-scope='tree'][data-part='branch-trigger']:empty::before,
+  [data-scope='tree'][data-part='branch'][data-loading] > [data-scope='tree'][data-part='branch-control'] [data-scope='tree'][data-part='branch-indicator']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
+    mask-image: var(--xh-glyph-mark-rotate-right);
+    animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite;
+  }
+
+  /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」，在途由分支的 aria-busy 念出。
+     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='tree'][data-part='branch'][data-loading] > [data-scope='tree'][data-part='branch-control'] [data-scope='tree'][data-part='branch-trigger']:empty::before,
+    [data-scope='tree'][data-part='branch'][data-loading] > [data-scope='tree'][data-part='branch-control'] [data-scope='tree'][data-part='branch-indicator']:empty::before {
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='tree'][data-part='branch'][data-loading] > [data-scope='tree'][data-part='branch-control'] [data-scope='tree'][data-part='branch-trigger']:empty::before,
+  :where([data-motion='reduce']) [data-scope='tree'][data-part='branch'][data-loading] > [data-scope='tree'][data-part='branch-control'] [data-scope='tree'][data-part='branch-indicator']:empty::before {
+    animation: none;
   }
 
   /* —— 节点拖拽搬家 —— */
@@ -517,6 +570,20 @@
     /* 打印默认丢底色，而对号与半选杠是遮罩出来的一块底色：行本就不换面，丢了它选中在纸上就没了踪影 */
     [data-scope='tree'][data-part='item-indicator'] {
       print-color-adjust: exact;
+    }
+
+    /* 转了一半的圈定格在纸上没有意义，停下 */
+    [data-scope='tree'][data-part='branch'][data-loading] > [data-scope='tree'][data-part='branch-control'] [data-scope='tree'][data-part='branch-trigger']:empty::before,
+    [data-scope='tree'][data-part='branch'][data-loading] > [data-scope='tree'][data-part='branch-control'] [data-scope='tree'][data-part='branch-indicator']:empty::before {
+      animation: none;
+    }
+  }
+
+  /* 强制色：参考线是一块底色，系统色下会被抹成 Canvas；换成 GrayText 并只让这条线不参与强制换色 */
+  @media (forced-colors: active) {
+    [data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content']::before {
+      background: GrayText;
+      forced-color-adjust: none;
     }
   }
 }

@@ -71528,6 +71528,24 @@
             },
             {
               "kind": "field",
+              "name": "lines",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lines"
+            },
+            {
+              "kind": "field",
+              "name": "loadingValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "正在取子节点的分支；在其中的分支报告 aria-busy，展开箭头换成转圈。只能通过 property 设置"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "privacy": "public",
               "type": {
@@ -71772,6 +71790,14 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头",
+              "name": "lines",
+              "fieldName": "lines"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "整棵树禁用：所有节点为 aria-disabled，键盘与点击都不能改变展开与选中",
               "name": "disabled",
               "fieldName": "disabled"
@@ -71915,6 +71941,9 @@
             },
             {
               "name": "--xh-tree-leaf-row-gap"
+            },
+            {
+              "name": "--xh-tree-line-color"
             },
             {
               "name": "--xh-tree-loading-fg"

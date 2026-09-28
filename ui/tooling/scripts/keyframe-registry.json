@@ -488,7 +488,8 @@
         "sankey-chart",
         "spinner",
         "switch",
-        "toast"
+        "toast",
+        "tree"
       ],
       "relation": "loop"
     },

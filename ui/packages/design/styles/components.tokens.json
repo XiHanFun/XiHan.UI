@@ -82801,26 +82801,30 @@
       "name": "--xh-tree-indicator-size",
       "component": "tree",
       "part": [
+        "branch-content",
         "branch-control",
         "branch-indicator",
         "branch-trigger",
         "item",
-        "item-indicator"
+        "item-indicator",
+        "tree"
       ],
       "property": [
         "--xh-icon-size",
         "inline-size",
+        "inset-inline-start",
         "padding-inline-start"
       ],
       "state": [
         "default",
+        "lines",
         "orientation=vertical"
       ],
       "defaultToken": [
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、branch-indicator、branch-trigger、item、item-indicator 部件 --xh-icon-size、inline-size、padding-inline-start 覆盖槽。"
+      "description": "tree 的 branch-content、branch-control、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tree-item-check-fg",
@@ -82955,6 +82959,25 @@
       ],
       "visibility": "public",
       "description": "tree 的 branch-content 部件 column-gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-line-color",
+      "component": "tree",
+      "part": [
+        "branch-content",
+        "tree"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "lines"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "tree 的 branch-content、tree 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-tree-loading-fg",
@@ -83275,22 +83298,26 @@
       "name": "--xh-tree-row-px",
       "component": "tree",
       "part": [
+        "branch-content",
         "branch-control",
-        "item"
+        "item",
+        "tree"
       ],
       "property": [
+        "inset-inline-start",
         "padding-inline",
         "padding-inline-start"
       ],
       "state": [
         "default",
+        "lines",
         "orientation=vertical"
       ],
       "defaultToken": [
         "--xh-control-px-md"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 padding-inline、padding-inline-start 覆盖槽。"
+      "description": "tree 的 branch-content、branch-control、item、tree 部件 inset-inline-start、padding-inline、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tree-row-py",
