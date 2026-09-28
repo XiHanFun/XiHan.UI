@@ -4,6 +4,11 @@ import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
+  XhDatePickerCalendar,
+  XhDatePickerContent,
+  XhDatePickerPositioner,
+  XhDatePickerRoot,
+  XhDatePickerTimePanel,
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
@@ -68,6 +73,20 @@ async function mountTimeRangePicker(): Promise<void> {
           }),
         )),
       )))),
+  })
+  app.mount(host)
+  await settle()
+}
+
+async function mountDatePicker(): Promise<void> {
+  host = document.createElement('div')
+  document.body.append(host)
+  app = createApp({
+    render: () => h(XhDatePickerRoot, { defaultOpen: true, defaultValue: '2026-09-28T14:35', showTime: true }, () =>
+      h(XhDatePickerPositioner, null, () => h(XhDatePickerContent, null, () => [
+        h(XhDatePickerCalendar),
+        h(XhDatePickerTimePanel),
+      ]))),
   })
   app.mount(host)
   await settle()
@@ -167,5 +186,13 @@ describe('时间列滚动定位', () => {
       expect(Math.abs(hourColumn.scrollTop - alignedTop(hourColumn, hour))).toBeLessThanOrEqual(1)
       expect(Math.abs(minuteColumn.scrollTop - alignedTop(minuteColumn, minute))).toBeLessThanOrEqual(1)
     }
+  })
+
+  it('日期选择的时间列同一套：打开时停在所选时刻', async () => {
+    await mountDatePicker()
+    const hour = column('date-picker', 'time-column', 'hour')
+    const minute = column('date-picker', 'time-column', 'minute')
+    expect(Math.abs(hour.scrollTop - alignedTop(hour, '14'))).toBeLessThanOrEqual(1)
+    expect(Math.abs(minute.scrollTop - alignedTop(minute, '35'))).toBeLessThanOrEqual(1)
   })
 })
