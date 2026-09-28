@@ -66,7 +66,7 @@ export interface CollapsibleSchema extends MachineSchema {
   tag: never
   guard: 'isOpenControlled' | 'canPress'
   action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markMoved' | 'markOpened'
-  effect: never
+  effect: 'trackDisclosureHandoff'
 }
 
 export interface CollapsibleApi<T extends PropTypes = PropTypes> {

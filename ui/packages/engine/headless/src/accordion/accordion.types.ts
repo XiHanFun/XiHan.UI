@@ -112,7 +112,7 @@ export interface AccordionSchema extends MachineSchema {
   tag: never
   guard: 'canPress'
   action: 'toggleItem' | 'setValue' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markMoved'
-  effect: never
+  effect: 'trackDisclosureHandoff'
 }
 
 export interface AccordionApi<T extends PropTypes = PropTypes> {

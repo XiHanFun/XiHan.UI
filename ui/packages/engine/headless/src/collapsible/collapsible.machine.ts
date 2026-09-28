@@ -6,7 +6,8 @@
 // 提供 collapsible 相关实现。
 
 import type { CollapsibleSchema } from './collapsible.types'
-import { setup } from '@xihan-ui/core'
+import { isSSR, setup } from '@xihan-ui/core'
+import { retainDisclosureHandoff } from '../shared/disclosure-handoff'
 
 const { createMachine } = setup<CollapsibleSchema>()
 
@@ -20,6 +21,7 @@ export const collapsibleMachine = createMachine({
     // 首帧即展开也算展开过：lazyMount 下它的内容照常首屏就在
     opened: cell<boolean>(() => ({ defaultValue: !!(prop('open') ?? prop('defaultOpen')) })),
   }),
+  effects: ['trackDisclosureHandoff'],
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
@@ -61,6 +63,23 @@ export const collapsibleMachine = createMachine({
     },
   },
   implementations: {
+    effects: {
+      /** 展开到一半点收起（或反过来）时，新一段关键帧从此刻的开合程度接着走。没有 DOM 的宿主不接。 */
+      trackDisclosureHandoff: ({ scope, flush }) => {
+        if (isSSR())
+          return undefined
+        let release: (() => void) | undefined
+        let disposed = false
+        flush(() => {
+          if (!disposed)
+            release = retainDisclosureHandoff(scope.getDoc())
+        })
+        return () => {
+          disposed = true
+          release?.()
+        }
+      },
+    },
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
       canPress: ({ prop }) => !prop('disabled'),
