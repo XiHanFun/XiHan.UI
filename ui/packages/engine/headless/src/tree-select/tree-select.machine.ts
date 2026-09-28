@@ -281,6 +281,7 @@ export const treeSelectMachine = createMachine({
     // 按压通道：正被按住的那一个（节点按 value 记、叶子行与分支行分开认，清空按钮只记部件），与开合无关
     pressedPart: cell<TreeSelectPressedPart | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    tagListTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -316,6 +317,7 @@ export const treeSelectMachine = createMachine({
     // 按压通道：三个部件两个状态都认；禁用 / 只读 / 加载不进，清空按钮在清不了时不进
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
+    'TAG_LIST.TRACKED': { actions: ['markTagListTracked'] },
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
@@ -390,6 +392,7 @@ export const treeSelectMachine = createMachine({
       },
     },
     actions: {
+      markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
 
       startPress: ({ context, event }) => {
@@ -718,9 +721,10 @@ export const treeSelectMachine = createMachine({
       /**
        * 多选标签行的到达、离场与换位。标签行在触发器里；触发按钮经适配器的 ref 取。
        */
-      trackTagListMotion: ({ refs, flush }) => trackSelectionTagMotion({
+      trackTagListMotion: ({ refs, send, flush }) => trackSelectionTagMotion({
         flush,
         list: () => refs.get('getTriggerEl')()?.querySelector<HTMLElement>(TREE_SELECT_TAG_LIST_SELECTOR),
+        onTracked: () => send({ type: 'TAG_LIST.TRACKED' }),
       }),
 
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读

@@ -454,6 +454,8 @@ export function connectTreeSelect<T extends PropTypes>(
     getTagListProps: () => normalize.element({
       ...parts['tag-list'].attrs,
       'data-xh-tag-list': '',
+      // 列表动效接上之前，首帧的标签直接呈现
+      'data-instant': dataAttr(!context.get('tagListTracked')),
       'hidden': value.length === 0 || undefined,
       'data-disabled': dataAttr(disabled),
     }),

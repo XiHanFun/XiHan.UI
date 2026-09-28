@@ -352,6 +352,8 @@ export interface CascaderSchema extends MachineSchema {
     pressedPart: CascaderPressedPart | null
     /** 按压通道：按住的条目 value 或候选路径键；clear-trigger 没有值，记 null。抬起、失焦或浮层收起即清空。 */
     pressedValue: string | null
+    /** 标签行的列表动效已经接上；接上之前 tag-list 带 data-instant，首帧的标签一律不播进场。 */
+    tagListTracked: boolean
     /** 懒分支取回的直接子项，按分支 value 记；与 collection 合成有效树。 */
     loadedChildren: Record<string, CascaderNode[]>
     /** 懒分支的取数状态，按分支 value 记。 */
@@ -397,11 +399,14 @@ export interface CascaderSchema extends MachineSchema {
     | { type: 'PRESS.START', part: CascaderPressedPart, value?: string, disabled?: boolean }
     /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
     | { type: 'PRESS.END', part: CascaderPressedPart, value?: string }
+    /** 标签行的列表动效已接上：之后到达的标签才播进场。 */
+    | { type: 'TAG_LIST.TRACKED' }
     /** 重新取这个懒分支的直接子项（失败后的显式重试）。 */
     | { type: 'BRANCH.RETRY', value: string }
   tag: never
   guard: 'isOpenControlled' | 'isMultiple' | 'staysOpenOnSelect' | 'canPress'
   action:
+    | 'markTagListTracked'
     | 'resetToDefault'
     | 'invokeOnOpen'
     | 'invokeOnClose'

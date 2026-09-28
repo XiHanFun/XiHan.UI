@@ -278,6 +278,7 @@ export const cascaderMachine = createMachine({
     // 按压通道：正被按住的那一个（条目按 value、候选按路径键记，清空按钮只记部件），与开合无关
     pressedPart: cell<CascaderPressedPart | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    tagListTracked: cell<boolean>(() => ({ defaultValue: false })),
     // 懒分支取回的子项与取数状态，按分支 value 记
     loadedChildren: cell<Record<string, CascaderNode[]>>(() => ({ defaultValue: {} })),
     branchLoads: cell<Record<string, CascaderBranchLoadSnapshot>>(() => ({ defaultValue: {} })),
@@ -313,6 +314,7 @@ export const cascaderMachine = createMachine({
     // 按压通道：三个部件两个状态都认；禁用 / 只读 / 加载不进，清空按钮在清不了时不进
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
+    'TAG_LIST.TRACKED': { actions: ['markTagListTracked'] },
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
@@ -390,6 +392,7 @@ export const cascaderMachine = createMachine({
       },
     },
     actions: {
+      markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')
@@ -673,9 +676,10 @@ export const cascaderMachine = createMachine({
       }),
 
       /** 多选标签行的到达、离场与换位。标签行在触发器里；触发按钮即定位锚点，经适配器的 ref 取。 */
-      trackTagListMotion: ({ refs, flush }) => trackSelectionTagMotion({
+      trackTagListMotion: ({ refs, send, flush }) => trackSelectionTagMotion({
         flush,
         list: () => refs.get('getAnchorEl')()?.querySelector<HTMLElement>(CASCADER_TAG_LIST_SELECTOR),
+        onTracked: () => send({ type: 'TAG_LIST.TRACKED' }),
       }),
 
       // 初始即展开时展开路径上的懒分支补一次取数；卸载时中止所有在途请求

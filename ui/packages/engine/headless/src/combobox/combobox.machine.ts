@@ -54,6 +54,7 @@ export const comboboxMachine = createMachine({
     // 按压通道：正被按住的那一个（候选按 value 记，两个按钮只记部件），与开合无关
     pressedPart: cell<ComboboxPressedPart | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    tagListTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -83,6 +84,7 @@ export const comboboxMachine = createMachine({
     // 按压通道：候选与两个按钮两个状态都认；禁用 / 只读 / 加载不进，清空按钮在清不了时不进
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
+    'TAG_LIST.TRACKED': { actions: ['markTagListTracked'] },
     'FORM.RESET': { actions: ['resetToDefault'] },
     // 这几件事与开合无关，两个状态里都得认
     'VALUE.SET': { actions: ['setValue', 'syncValueText'] },
@@ -171,6 +173,7 @@ export const comboboxMachine = createMachine({
       },
     },
     actions: {
+      markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')
@@ -565,9 +568,10 @@ export const comboboxMachine = createMachine({
       /**
        * 多选标签行的到达、离场与换位。标签行在盒里、输入框之前；盒经适配器的锚点 ref 取。
        */
-      trackTagListMotion: ({ refs, flush }) => trackSelectionTagMotion({
+      trackTagListMotion: ({ refs, send, flush }) => trackSelectionTagMotion({
         flush,
         list: () => refs.get('getAnchorEl')()?.querySelector<HTMLElement>(COMBOBOX_TAG_LIST_SELECTOR),
+        onTracked: () => send({ type: 'TAG_LIST.TRACKED' }),
       }),
 
       // Layer 与 DismissableLayer 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
