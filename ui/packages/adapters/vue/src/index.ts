@@ -1385,7 +1385,7 @@ export type { AlertOptions, ConfirmOptions, DialogActionError, DialogBody, Dialo
 export { createLoadingBarService } from './services/loading-bar-service'
 export type { LoadingBarService, LoadingBarServiceOptions } from './services/loading-bar-service'
 export { createNotificationService } from './services/notification-service'
-export type { NotificationMessageOptions, NotificationService, NotificationServiceOptions } from './services/notification-service'
+export type { NotificationMessageOptions, NotificationPromiseOptions, NotificationService, NotificationServiceOptions } from './services/notification-service'
 export { createToastService } from './services/toast-service'
 export type { ToastMessageOptions, ToastService, ToastServiceOptions } from './services/toast-service'
 // 使用者写 upload 实现与远程附件时要用的形状，从 headless 转发，docs 与应用不必另装依赖

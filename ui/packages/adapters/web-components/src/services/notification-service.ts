@@ -15,6 +15,7 @@ import type { XhNotificationElement, XhNotificationItemElement } from '../elemen
 import type {
   NotificationCreateOptions,
   NotificationMessageOptions,
+  NotificationPromiseOptions,
   NotificationService,
   NotificationServiceOptions,
 } from './types'
@@ -211,6 +212,22 @@ export function createNotificationService(options: NotificationServiceOptions = 
     success: sugar('success'),
     warning: sugar('warning'),
     danger: sugar('danger'),
+    loading: (title, opts = {}) => create({ ...opts, loading: true, title }),
+    promise: <T>(input: Promise<T> | (() => Promise<T>), opts: NotificationPromiseOptions<T>): Promise<T> => {
+      const { loading, success, error, ...rest } = opts
+      const running = typeof input === 'function' ? input() : input
+      const { onAction, ...record } = rest
+      const tracked = controller.trackPromise(
+        running,
+        { ...record, loading: true, title: loading },
+        value => ({ loading: false, tone: 'success', title: typeof success === 'function' ? success(value) : success }),
+        reason => ({ loading: false, tone: 'danger', title: typeof error === 'function' ? error(reason) : error }),
+        onAction,
+      )
+      // 与 create 一样当场铺出 loading 那一条；落定后的改写经 items-change 重绘
+      render()
+      return tracked
+    },
     pauseAll: controller.pauseAll,
     resumeAll: controller.resumeAll,
     dispose: () => {

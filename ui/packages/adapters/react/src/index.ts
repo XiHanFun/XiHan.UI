@@ -3081,6 +3081,7 @@ export { createNotificationService } from './services/notification-service'
 export type {
   NotificationCreateOptions,
   NotificationMessageOptions,
+  NotificationPromiseOptions,
   NotificationService,
   NotificationServiceOptions,
   NotificationTranslationsSource,

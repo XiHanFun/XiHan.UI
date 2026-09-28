@@ -98,6 +98,13 @@ export interface NotificationCreateOptions extends NotificationOptions {
 
 export type NotificationMessageOptions = Omit<NotificationCreateOptions, 'tone' | 'loading' | 'title'>
 
+/** promise 三态的标题：成功与失败可以给函数，拿到结果再拼标题。 */
+export interface NotificationPromiseOptions<T> extends Omit<NotificationMessageOptions, 'duration'> {
+  loading: string
+  success: string | ((value: T) => string)
+  error: string | ((reason: unknown) => string)
+}
+
 export interface NotificationServiceOptions extends ServiceHostOptions {
   /** 默认落位，默认 bottom-end；单条可用 options.placement 覆盖。 */
   placement?: NotificationPlacement
@@ -123,6 +130,13 @@ export interface NotificationService {
   success: (title: string, options?: NotificationMessageOptions) => string
   warning: (title: string, options?: NotificationMessageOptions) => string
   danger: (title: string, options?: NotificationMessageOptions) => string
+  /** 以 loading 态弹出一条并返回 id，之后用 update(id, { loading: false, tone: 'success', title: … }) 收尾。 */
+  loading: (title: string, options?: NotificationMessageOptions) => string
+  /**
+   * 先弹出一条 loading，Promise 落定后就地改写为 success / danger；说明等其余字段三态共用。
+   * Promise 的结果原样交回调用方，拒绝也照旧拒绝。
+   */
+  promise: <T>(input: Promise<T> | (() => Promise<T>), options: NotificationPromiseOptions<T>) => Promise<T>
   /** 把当下这些卡片的计时全按住。 */
   pauseAll: () => void
   resumeAll: () => void

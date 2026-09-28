@@ -206,6 +206,57 @@ describe('createNotificationService', () => {
     notify.dispose()
   })
 
+  it('loading 以加载态弹出一条并返回 id，之后用 update 收尾', async () => {
+    const notify = createNotificationService()
+    const id = notify.loading('正在导出', { description: '共 3 个文件' })
+    await tick()
+    const card = document.querySelector('[data-scope="notification"][data-part="item"]')
+    expect(card?.hasAttribute('data-loading')).toBe(true)
+    expect(document.body.textContent).toContain('共 3 个文件')
+    notify.update(id, { loading: false, tone: 'success', title: '导出完成' })
+    await tick()
+    expect(card?.hasAttribute('data-loading')).toBe(false)
+    expect(card?.getAttribute('data-tone')).toBe('success')
+    notify.dispose()
+  })
+
+  it('promise 兑现后就地改写成成功，说明三态共用，结果原样透传', async () => {
+    const notify = createNotificationService()
+    let resolve!: (value: number) => void
+    const running = notify.promise(new Promise<number>((r) => {
+      resolve = r
+    }), { loading: '正在同步', success: v => `已同步 ${v} 条`, error: '同步失败', description: '通讯录' })
+    await tick()
+    const cards = () => document.querySelectorAll('[data-scope="notification"][data-part="item"]')
+    expect(cards()).toHaveLength(1)
+    expect(cards()[0]!.hasAttribute('data-loading')).toBe(true)
+    resolve(12)
+    await expect(running).resolves.toBe(12)
+    await tick()
+    expect(cards()).toHaveLength(1)
+    expect(cards()[0]!.hasAttribute('data-loading')).toBe(false)
+    expect(cards()[0]!.getAttribute('data-tone')).toBe('success')
+    expect(document.body.textContent).toContain('已同步 12 条')
+    expect(document.body.textContent).toContain('通讯录')
+    notify.dispose()
+  })
+
+  it('promise 拒绝时改写成失败，并把 reason 继续抛出去；传函数时当场调用', async () => {
+    const notify = createNotificationService()
+    const boom = new Error('断网')
+    await expect(notify.promise(() => Promise.reject(boom), {
+      loading: '正在同步',
+      success: '已同步',
+      error: r => `同步失败：${(r as Error).message}`,
+    })).rejects.toBe(boom)
+    await tick()
+    const card = document.querySelector('[data-scope="notification"][data-part="item"]')
+    expect(card?.getAttribute('data-tone')).toBe('danger')
+    expect(card?.hasAttribute('data-loading')).toBe(false)
+    expect(document.body.textContent).toContain('同步失败：断网')
+    notify.dispose()
+  })
+
   it('dispose 移除宿主容器', async () => {
     const notify = createNotificationService()
     notify.info('一条')

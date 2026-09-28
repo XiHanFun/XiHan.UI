@@ -28,6 +28,7 @@ export type {
   LoadingBarServiceOptions,
   NotificationCreateOptions,
   NotificationMessageOptions,
+  NotificationPromiseOptions,
   NotificationService,
   NotificationServiceOptions,
   ServiceHostOptions,
