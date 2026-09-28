@@ -91,8 +91,17 @@ function arrive(batch: readonly Element[]): void {
  * 排布位在每批变更之后、以及容器或任一条目尺寸变化时重量一次。离场节点按原来的 offsetParent 定位，
  * 容器应是定位元素。
  */
-export function trackListMotion(container: Element, options: TrackArrivalsOptions): () => void {
+export interface TrackListMotionOptions extends TrackArrivalsOptions {
+  /**
+   * 离场时放不放替身（缺省放）。条目自己带退场、播完才由宿主移除的集合（通知卡片）传 false：
+   * 此时只做到达与换位，被移除的条目直接离开，留下来的条目从旧排布位过渡到新排布位。
+   */
+  depart?: boolean
+}
+
+export function trackListMotion(container: Element, options: TrackListMotionOptions): () => void {
   const { item } = options
+  const placeholders = options.depart ?? true
   const win = container.ownerDocument.defaultView
   const departing = new WeakSet<Element>()
   const ghosts = new Set<() => void>()
@@ -240,7 +249,7 @@ export function trackListMotion(container: Element, options: TrackArrivalsOption
     }
 
     // 离场：回调时已不在文档里的已知条目；同一批里被挪了位置的还在文档里，算换位
-    if (container.isConnected) {
+    if (placeholders && container.isConnected) {
       for (const { el, parent, next } of removed) {
         const slot = slots.get(el)
         if (slot && !el.isConnected && parent.isConnected && container.contains(parent))

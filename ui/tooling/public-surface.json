@@ -5363,6 +5363,7 @@
       "TopLevelState",
       "TrackAppearanceOptions",
       "TrackArrivalsOptions",
+      "TrackListMotionOptions",
       "Transition",
       "TransitionMap",
       "Transparency",

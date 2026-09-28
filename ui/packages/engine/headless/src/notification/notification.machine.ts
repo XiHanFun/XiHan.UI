@@ -6,7 +6,7 @@
 // 提供 notification 相关实现。
 
 import type { NotificationDedupe, NotificationPlacement, NotificationRecord, NotificationSchema } from './notification.types'
-import { setup, trackArrivals } from '@xihan-ui/core'
+import { setup, trackListMotion } from '@xihan-ui/core'
 
 const { createMachine } = setup<NotificationSchema>()
 
@@ -136,7 +136,9 @@ export const notificationMachine = createMachine({
             const root = refs.get('getRootEl')()
             if (disposed || !root)
               return
-            stop = trackArrivals(root, { item: '[data-scope="notification"][data-part="item"]', initial: 'arrive' })
+            // 卡片自己带退场、播完才收起：不放离场替身，只做到达与换位——一张卡收起或新卡插进来时，
+            // 其余卡片从旧位置过渡到新位置，不整张跳位
+            stop = trackListMotion(root, { item: '[data-scope="notification"][data-part="item"]', initial: 'arrive', depart: false })
           })
         })
         return () => {
