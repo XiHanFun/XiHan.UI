@@ -35709,6 +35709,38 @@
   display: none;
 }
 
+/* 选项带一行说明：说明另起一行、与文字左缘对齐，两行之间不留行距；字色取次级、字号小一档 */
+[data-scope='question-flow'][data-part='item']:has(> [data-part='item-description']) {
+  flex-wrap: wrap;
+  row-gap: 0;
+}
+
+[data-scope='question-flow'][data-part='item-description'] {
+  display: block;
+  flex: 1 0 100%;
+  padding-inline-start: calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) + var(--xh-question-flow-item-gap, var(--xh-space-1_5)));
+  color: var(--xh-question-flow-item-description-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-question-flow-item-description-font-size, var(--xh-text-caption-size));
+  text-align: start;
+}
+
+[data-scope='question-flow'][data-part='item-description'][hidden] {
+  display: none;
+}
+
+/* 题目说明（含多选的数量要求）：题干下一行的次级文字 */
+[data-scope='question-flow'][data-part='description'] {
+  display: block;
+  margin: 0;
+  color: var(--xh-question-flow-description-fg, var(--xh-fg-muted));
+  font-size: var(--xh-question-flow-description-font-size, var(--xh-text-secondary-size));
+  line-height: var(--xh-leading-normal);
+}
+
+[data-scope='question-flow'][data-part='description'][hidden] {
+  display: none;
+}
+
 /* 自由文本：与选项同等算数的一条答案，占满整行 */
 [data-scope='question-flow'][data-part='note'] {
   display: block;

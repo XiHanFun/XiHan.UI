@@ -20,13 +20,15 @@
 - 单选自动前进，多选等待用户点击继续：选中一项后隔一小段自动翻到下一题；连续更改时，每次更改都从整段延时重新计时。自动前进只走到下一题，末题上停止，不替用户提交。
 - 一个按钮两个身份：不是末题时为“继续”，末题时为“发送”。它原位切换 `data-mode` 与可访问名称，正在按它的用户不会按空。
 - 自由文本与选项同等有效：填写了“都不是，我想要……”即视为已作答，继续键随之可用。
+- 多选的数量要求：`minSelections` 管选够——选够之前继续键不可用（写了自由文本同样算作答）；`maxSelections` 管选满——选满之后其余未选项转为不可选（`aria-disabled`），取消一项又能再选，程序化的 `toggleOption` 守同一条上限。选项组带 `data-at-max` 供皮肤取用。
+- 两种说明：题目的 `description` 写进 `description` 部件并成为选项组的描述，缺席时由多选的数量要求代填（文案取 `translations.selectionRange`）；选项的 `description` 写进 `item-description` 部件，排在选项之内另起一行。有没有题目说明看数据，没有时该部件收起。
 - 进度只播报一次：`counter` 部件 `aria-hidden`，逐题跳动的数字不进入活动区域；换题与提交由 `announcement` 读出一句。
 - 跳过是明确路径：`allowSkip` 关闭时整个跳过键收起，而不是保留一个不可用的按钮。末题上跳过即提交，否则最后一题没有出口。
 
 ## 无障碍
 
 - 每题是 `role=group`，题干是它的可访问名称；题干缺席时退到 `translations.prompt`。
-- 选项组按题型取 `role=radiogroup`（单选）或 `role=group`（多选），同样由题干命名；选项各自是 `role=radio` 或 `role=checkbox` 并显式报告 `aria-checked`。
+- 选项组按题型取 `role=radiogroup`（单选）或 `role=group`（多选），同样由题干命名、由题目说明描述（`aria-describedby`，多选的数量要求就在其中）；选项各自是 `role=radio` 或 `role=checkbox` 并显式报告 `aria-checked`。选项说明排在选项之内，跟着选项名一起念。
 - 选项组内是漫游焦点：整组只占一个 Tab 位，落在选中项上，没有选中时落在首个可停留项。
 - 上一题 / 下一题只提供按钮入口，不接管全局按键，避免与选项漫游争抢方向键。这两个按钮通常只绘制箭头，因此它们的可访问名称始终发出（`translations.prev` / `translations.next`，默认 `Previous question` / `Next question`）；跳过键一般带可见文字，未提供 `translations.skip` 时不产出 `aria-label`。
 - 自由文本取 `translations.note` 作为可访问名称（默认 `Other answer`），占位文字取 `translations.notePlaceholder`。

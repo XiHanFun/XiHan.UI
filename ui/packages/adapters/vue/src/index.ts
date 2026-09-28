@@ -877,9 +877,11 @@ export type { PromptInputCallbacks, PromptInputContext } from './components/prom
 export { provideQuestionFlow, useQuestionFlowContext } from './components/question-flow/context'
 export {
   XhQuestionFlowCounter,
+  XhQuestionFlowDescription,
   XhQuestionFlowFooter,
   XhQuestionFlowGroup,
   XhQuestionFlowItem,
+  XhQuestionFlowItemDescription,
   XhQuestionFlowItemIndicator,
   XhQuestionFlowItemText,
   XhQuestionFlowLiveRegion,

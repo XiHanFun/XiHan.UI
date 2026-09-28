@@ -15,7 +15,7 @@ import type {
 } from './question-flow.types'
 import { createPressTracker, dataAttr, focusItem, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { questionFlowAnatomy, questionFlowItemQuery } from './question-flow.anatomy'
-import { canAdvanceQuestion, clampQuestionIndex } from './question-flow.types'
+import { canAdvanceQuestion, clampQuestionIndex, questionSelectionLimits } from './question-flow.types'
 
 const parts = questionFlowAnatomy.build()
 
@@ -47,6 +47,7 @@ export function connectQuestionFlow<T extends PropTypes>(
   const size = prop('size') ?? 'md'
 
   const promptId = (id: string): string => scope.partId(questionFlowAnatomy.name, `prompt:${encodeURIComponent(id)}`)
+  const descriptionId = (id: string): string => scope.partId(questionFlowAnatomy.name, `description:${encodeURIComponent(id)}`)
 
   const questionOf = (id: string): QuestionFlowQuestion | undefined => questions.find(q => q.id === id)
   const typeOf = (id: string): 'single' | 'multiple' => questionOf(id)?.type ?? 'single'
@@ -54,12 +55,39 @@ export function connectQuestionFlow<T extends PropTypes>(
   const noteOf = (id: string): string => notes[id] ?? ''
   const isCurrent = (id: string): boolean => current?.id === id
   const isOptionSelected = (questionId: string, value: string): boolean => answersOf(questionId).includes(value)
+  const selectionLimitsOf = (id: string): ReturnType<typeof questionSelectionLimits> => questionSelectionLimits(questionOf(id))
+
+  // 题目自带的说明优先；缺席时多选的数量要求代填（至少 1 项、没有上限时不必说）
+  const rangeText = translations?.selectionRange ?? ((min: number, max: number | undefined): string => {
+    if (max === undefined)
+      return `Choose at least ${min}`
+    if (min === max)
+      return `Choose ${min}`
+    return min > 1 ? `Choose ${min} to ${max}` : `Choose up to ${max}`
+  })
+  const descriptionOf = (id: string): string => {
+    const question = questionOf(id)
+    if (question?.description)
+      return question.description
+    if (typeOf(id) === 'single')
+      return ''
+    const { min, max } = selectionLimitsOf(id)
+    return min === 1 && max === undefined ? '' : rangeText(min, max)
+  }
+
+  /** 多选选满了：其余未选的项转为不可选，取消一项又能再选。 */
+  const atMax = (questionId: string): boolean => {
+    const { max } = selectionLimitsOf(questionId)
+    return typeOf(questionId) === 'multiple' && max !== undefined && answersOf(questionId).length >= max
+  }
 
   const optionDisabled = (item: QuestionFlowItemProps): boolean => {
     if (submitted)
       return true
     const declared = item.disabled ?? questionOf(item.questionId)?.options.find(o => o.value === item.value)?.disabled
-    return declared === true
+    if (declared === true)
+      return true
+    return atMax(item.questionId) && !isOptionSelected(item.questionId, item.value)
   }
 
   /**
@@ -122,6 +150,8 @@ export function connectQuestionFlow<T extends PropTypes>(
     noteOf,
     isOptionSelected,
     isCurrent,
+    selectionLimitsOf,
+    descriptionOf,
     goTo: next => send({ type: 'GOTO', index: next }),
     next: () => send({ type: 'NEXT' }),
     prev: () => send({ type: 'PREV' }),
@@ -173,7 +203,14 @@ export function connectQuestionFlow<T extends PropTypes>(
       id: promptId(item.id),
     }),
 
-    // 单选取 radiogroup，多选取普通组；题干在场时由题干命名
+    // 题目说明：进入选项组时一并念出（包括多选的数量要求）
+    getDescriptionProps: item => normalize.element({
+      ...parts.description.attrs,
+      id: descriptionId(item.id),
+      hidden: descriptionOf(item.id) === '' || undefined,
+    }),
+
+    // 单选取 radiogroup，多选取普通组；题干在场时由题干命名，有说明时由说明描述
     getGroupProps: (item) => {
       const prompt = questionOf(item.id)?.prompt
       const single = typeOf(item.id) === 'single'
@@ -182,7 +219,10 @@ export function connectQuestionFlow<T extends PropTypes>(
         ...parts.group.attrs,
         'aria-labelledby': prompt ? promptId(item.id) : undefined,
         'aria-label': prompt ? undefined : (translations?.options ?? 'Options'),
+        'aria-describedby': descriptionOf(item.id) === '' ? undefined : descriptionId(item.id),
         'data-select-mode': single ? 'single' : 'multiple',
+        // 多选选满了：未选项各自已是 aria-disabled，组上这一位留给作者的样式钩子
+        'data-at-max': dataAttr(atMax(item.id)),
         // 键盘全在组上收口：选项只管声明自己，一次冒泡一个处理器
         'onKeyDown': (event: KeyboardEvent) => {
           if (submitted || !isCurrent(item.id))
@@ -295,6 +335,13 @@ export function connectQuestionFlow<T extends PropTypes>(
     // 排在选项之内，文本自然构成它的可及名
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
+      'data-value': item.value,
+      'data-state': isOptionSelected(item.questionId, item.value) ? 'checked' : 'unchecked',
+    }),
+
+    // 选项下的一行说明：同样排在选项之内，跟着选项名一起念
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
       'data-value': item.value,
       'data-state': isOptionSelected(item.questionId, item.value) ? 'checked' : 'unchecked',
     }),

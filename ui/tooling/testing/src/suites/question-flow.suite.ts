@@ -40,6 +40,23 @@ const DISABLED_QUESTIONS = [
   QUESTIONS[2]!,
 ]
 
+/** 同一份标记，第二题（多选）最多选一项。 */
+const LIMITED_QUESTIONS = [QUESTIONS[0]!, { ...QUESTIONS[1]!, maxSelections: 1 }, QUESTIONS[2]!]
+
+/** 每题在题干后面加一块题目说明，内容留空由组件代填。 */
+function withDescriptions(base: FixtureNode): FixtureNode {
+  const addTo = (node: FixtureNode): FixtureNode => {
+    if (node.part === 'question') {
+      const children = node.children ?? []
+      const at = children.findIndex(child => child.part === 'prompt') + 1
+      const description: FixtureNode = { part: 'description', tag: 'p', attrs: node.attrs }
+      return { ...node, children: [...children.slice(0, at), description, ...children.slice(at)] }
+    }
+    return node.children ? { ...node, children: node.children.map(addTo) } : node
+  }
+  return addTo(base)
+}
+
 function itemNode(questionId: string, value: string, label: string): FixtureNode {
   const attrs = { 'question-id': questionId, 'option-value': value }
   return {
@@ -487,6 +504,53 @@ export const questionFlowSuite: ConformanceSuite = {
         },
         heldPressIgnored('question-flow', 'submit-trigger', '交卷后继续钮原生 disabled，不接受按压'),
         heldPressIgnored('question-flow', 'item', '交卷后选项一律 aria-disabled，不接受按压', { value: 'main' }),
+      ],
+    },
+    {
+      name: '多选选满上限：其余未选项转为不可选，Space 不加；数量要求写进题目说明并描述选项组',
+      spec: { apg: APG },
+      props: { questions: LIMITED_QUESTIONS, defaultIndex: 1 },
+      fixture: withDescriptions,
+      initial: {
+        parts: {
+          // 单选题没有说明，整块收起；多选题有数量要求，露出来
+          'description[0]': { hidden: '' },
+          'description[1]': { hidden: null },
+          'group[1]': { 'data-at-max': null },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'item[3]' },
+        {
+          kind: 'key',
+          key: 'Space',
+          expect: {
+            parts: {
+              'item[3]': { 'aria-checked': 'true', 'aria-disabled': 'false' },
+              'item[4]': { 'aria-checked': 'false', 'aria-disabled': 'true' },
+              'group[1]': { 'data-at-max': '' },
+            },
+            events: [{ type: 'answers-change', detail: { answers: { checks: ['unit'] } } }],
+          },
+        },
+        { kind: 'focus', part: 'item[4]' },
+        { kind: 'key', key: 'Space', expect: { parts: { 'item[4]': { 'aria-checked': 'false' } }, events: [] } },
+        {
+          kind: 'raw',
+          why: '说明的 id 由实例级 scope 派生，写不成固定期望；说明的文字也要核对',
+          run: ({ doc }: RawStepContext) => {
+            const groups = doc.querySelectorAll<HTMLElement>('[data-scope="question-flow"][data-part="group"]')
+            const descriptions = doc.querySelectorAll<HTMLElement>('[data-scope="question-flow"][data-part="description"]')
+            const group = groups[1]
+            const description = descriptions[1]
+            if (!group || !description)
+              throw new Error('找不到第二题的 group 或 description 部件')
+            if (group.getAttribute('aria-describedby') !== description.id)
+              throw new Error('多选题的选项组应由题目说明描述')
+            if (description.textContent?.trim() !== 'Choose 1')
+              throw new Error(`题目说明应由数量要求代填，实际 ${description.textContent}`)
+          },
+        },
       ],
     },
   ],

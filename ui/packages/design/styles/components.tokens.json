@@ -56106,6 +56106,42 @@
       "description": "question-flow 的 counter 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-question-flow-description-fg",
+      "component": "question-flow",
+      "part": [
+        "description"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 description 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-question-flow-description-font-size",
+      "component": "question-flow",
+      "part": [
+        "description"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-secondary-size"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 description 部件 font-size 覆盖槽。"
+    },
+    {
       "name": "--xh-question-flow-dot-radius",
       "component": "question-flow",
       "part": [
@@ -56369,12 +56405,14 @@
       "name": "--xh-question-flow-indicator-size",
       "component": "question-flow",
       "part": [
+        "item-description",
         "item-indicator"
       ],
       "property": [
         "--xh-icon-size",
         "block-size",
-        "inline-size"
+        "inline-size",
+        "padding-inline-start"
       ],
       "state": [
         "default",
@@ -56385,7 +56423,7 @@
         "--xh-_question-flow-indicator"
       ],
       "visibility": "public",
-      "description": "question-flow 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
+      "description": "question-flow 的 item-description、item-indicator 部件 --xh-icon-size、block-size、inline-size、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-item-bg",
@@ -56428,6 +56466,42 @@
       ],
       "visibility": "public",
       "description": "question-flow 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-question-flow-item-description-fg",
+      "component": "question-flow",
+      "part": [
+        "item-description"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 item-description 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-question-flow-item-description-font-size",
+      "component": "question-flow",
+      "part": [
+        "item-description"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 item-description 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-item-fg",
@@ -56501,10 +56575,12 @@
       "name": "--xh-question-flow-item-gap",
       "component": "question-flow",
       "part": [
-        "item"
+        "item",
+        "item-description"
       ],
       "property": [
-        "gap"
+        "gap",
+        "padding-inline-start"
       ],
       "state": [
         "default"
@@ -56513,7 +56589,7 @@
         "--xh-space-1_5"
       ],
       "visibility": "public",
-      "description": "question-flow 的 item 部件 gap 覆盖槽。"
+      "description": "question-flow 的 item、item-description 部件 gap、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-item-px",

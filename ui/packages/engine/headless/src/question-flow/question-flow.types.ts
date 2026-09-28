@@ -18,6 +18,11 @@ export interface QuestionFlowOption {
   value: string
   /** 展示文本；默认回退为 value。 */
   label?: string
+  /**
+   * 选项下的一行说明，写进 item-description 部件：一句话说不清这个选项意味着什么时才用。
+   * 它排在选项之内，与 item-text 一起构成选项的可访问名。
+   */
+  description?: string
   disabled?: boolean
 }
 
@@ -31,6 +36,25 @@ export interface QuestionFlowQuestion {
   options: readonly QuestionFlowOption[]
   /** 允许不作答直接进入下一题。 */
   optional?: boolean
+  /** 题目的补充说明，写进 description 部件并成为选项组的描述；缺席时由多选的数量要求代填。 */
+  description?: string
+  /**
+   * 多选至少选几项，默认 1。选够之前继续键不可用（写了自由文本同样算作答）。
+   * 只对 multiple 生效；非有限值或小于 1 按 1 算。
+   */
+  minSelections?: number
+  /**
+   * 多选最多选几项。选满之后其余未选项转为不可选（aria-disabled），取消一项又能再选。
+   * 只对 multiple 生效；非有限值或小于 1 当没给，小于 minSelections 时按 minSelections 算。
+   */
+  maxSelections?: number
+}
+
+/** 一道多选题的数量要求，已夹成合法值。 */
+export interface QuestionFlowSelectionLimits {
+  min: number
+  /** 没有上限时为 undefined。 */
+  max: number | undefined
 }
 
 /** 每题一份答案集合，键是题 id。 */
@@ -204,7 +228,7 @@ export interface QuestionFlowApi<T extends PropTypes = PropTypes> {
   current: QuestionFlowQuestion | undefined
   isFirst: boolean
   isLast: boolean
-  /** 当前题是否可以进入下一题：已选选项、已填自由文本，或该题本身可跳过。 */
+  /** 当前题是否可以进入下一题：选够了选项、已填自由文本，或该题本身可跳过。 */
   canAdvance: boolean
   allowSkip: boolean
   /** 视觉上的 N / M。它对读屏隐藏，进度由播报区朗读。 */
@@ -217,6 +241,10 @@ export interface QuestionFlowApi<T extends PropTypes = PropTypes> {
   noteOf: (questionId: string) => string
   isOptionSelected: (questionId: string, value: string) => boolean
   isCurrent: (questionId: string) => boolean
+  /** 这一题的数量要求；单选恒为 { min: 1, max: 1 }。 */
+  selectionLimitsOf: (questionId: string) => QuestionFlowSelectionLimits
+  /** 这一题的说明文字：题目自带的 description，缺席时由多选的数量要求代填；都没有时为空串。 */
+  descriptionOf: (questionId: string) => string
   goTo: (index: number) => void
   next: () => void
   prev: () => void
@@ -231,10 +259,13 @@ export interface QuestionFlowApi<T extends PropTypes = PropTypes> {
   getTrackProps: () => T['element']
   getQuestionProps: (props: QuestionFlowQuestionProps) => T['element']
   getPromptProps: (props: QuestionFlowQuestionProps) => T['element']
+  /** 题目说明：有说明文字时成为选项组的 aria-describedby。 */
+  getDescriptionProps: (props: QuestionFlowQuestionProps) => T['element']
   getGroupProps: (props: QuestionFlowQuestionProps) => T['element']
   getItemProps: (props: QuestionFlowItemProps) => T['button']
   getItemIndicatorProps: (props: QuestionFlowItemProps) => T['element']
   getItemTextProps: (props: QuestionFlowItemProps) => T['element']
+  getItemDescriptionProps: (props: QuestionFlowItemProps) => T['element']
   getNoteProps: (props: QuestionFlowQuestionProps) => T['input']
   getFooterProps: () => T['element']
   getPrevTriggerProps: () => T['button']
@@ -269,6 +300,19 @@ export interface QuestionFlowTranslations {
   progress: (current: number, total: number) => string
   /** 提交后播报的语句。 */
   submitted: string
+  /** 多选的数量要求写成的说明；min 为 1 且没有上限时不调用。 */
+  selectionRange: (min: number, max: number | undefined) => string
+}
+
+/** 一道题的数量要求：单选恒为一项；多选按 minSelections / maxSelections 夹成合法值。 */
+export function questionSelectionLimits(question: QuestionFlowQuestion | undefined): QuestionFlowSelectionLimits {
+  if ((question?.type ?? 'single') === 'single')
+    return { min: 1, max: 1 }
+  const rawMin = question!.minSelections
+  const min = rawMin !== undefined && Number.isFinite(rawMin) && rawMin >= 1 ? Math.floor(rawMin) : 1
+  const rawMax = question!.maxSelections
+  const max = rawMax !== undefined && Number.isFinite(rawMax) && rawMax >= 1 ? Math.max(Math.floor(rawMax), min) : undefined
+  return { min, max }
 }
 
 /** 把下标夹进 [0, count)；题数为零时恒取 0。 */
@@ -280,7 +324,7 @@ export function clampQuestionIndex(index: number, count: number): number {
   return Math.min(Math.max(Math.trunc(index), 0), count - 1)
 }
 
-/** 该题是否可以进入下一题：已选选项、已填自由文本，或它本身可跳过。 */
+/** 该题是否可以进入下一题：选够了选项（多选看 minSelections）、已填自由文本，或它本身可跳过。 */
 export function canAdvanceQuestion(
   question: QuestionFlowQuestion | undefined,
   answers: QuestionFlowAnswers,
@@ -290,7 +334,7 @@ export function canAdvanceQuestion(
     return true
   if (question.optional === true)
     return true
-  if ((answers[question.id]?.length ?? 0) > 0)
+  if ((answers[question.id]?.length ?? 0) >= questionSelectionLimits(question).min)
     return true
   return (notes[question.id] ?? '').trim() !== ''
 }

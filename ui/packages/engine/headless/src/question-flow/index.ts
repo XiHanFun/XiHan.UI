@@ -10,7 +10,7 @@ export { connectQuestionFlow } from './question-flow.connect'
 export { questionFlowKeyboard } from './question-flow.keyboard'
 export { questionFlowMachine } from './question-flow.machine'
 export { questionFlowMeta } from './question-flow.meta'
-export { canAdvanceQuestion, clampQuestionIndex } from './question-flow.types'
+export { canAdvanceQuestion, clampQuestionIndex, questionSelectionLimits } from './question-flow.types'
 export type {
   QuestionFlowAnswers,
   QuestionFlowAnswersChangeDetails,
@@ -25,6 +25,7 @@ export type {
   QuestionFlowQuestionProps,
   QuestionFlowRefs,
   QuestionFlowSchema,
+  QuestionFlowSelectionLimits,
   QuestionFlowSkipDetails,
   QuestionFlowStatus,
   QuestionFlowSubmitDetails,

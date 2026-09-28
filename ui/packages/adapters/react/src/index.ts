@@ -2006,9 +2006,11 @@ export type { PromptInputContext } from './components/prompt-input/use-prompt-in
 export { useQuestionFlowContext } from './components/question-flow/context'
 export {
   XhQuestionFlowCounter,
+  XhQuestionFlowDescription,
   XhQuestionFlowFooter,
   XhQuestionFlowGroup,
   XhQuestionFlowItem,
+  XhQuestionFlowItemDescription,
   XhQuestionFlowItemIndicator,
   XhQuestionFlowItemText,
   XhQuestionFlowLiveRegion,
@@ -2028,8 +2030,10 @@ export type {
   QuestionFlowOptionSlotProps,
   QuestionFlowRootSlotProps,
   XhQuestionFlowCounterProps,
+  XhQuestionFlowDescriptionProps,
   XhQuestionFlowFooterProps,
   XhQuestionFlowGroupProps,
+  XhQuestionFlowItemDescriptionProps,
   XhQuestionFlowItemIndicatorProps,
   XhQuestionFlowItemProps,
   XhQuestionFlowItemTextProps,
