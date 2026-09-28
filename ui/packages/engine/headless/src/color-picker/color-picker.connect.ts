@@ -191,10 +191,13 @@ export function connectColorPicker<T extends PropTypes>(
       id: ids.label,
     }),
 
-    /** 触发按钮的收纳容器，也是描边、底色与聚焦环所在的那一层。 */
+    /** 触发按钮的收纳容器，也是描边、底色与聚焦环所在的那一层：接字段外壳家族，与同族字段同一套静息 / 悬停 / 聚焦面。 */
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       ...stateAttrs(),
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': prop('variant') ?? 'outline',
     }),
 
     getTriggerProps: () => normalize.button({

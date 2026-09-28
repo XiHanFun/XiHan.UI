@@ -110,6 +110,12 @@ const SHARED_FAMILY = {
     contentSelector: `[data-scope='select'][data-part='trigger']`,
     actionParts: new Set(['clear-trigger']),
   },
+  // 盒里只有那颗装着色块与值文本的触发器；吸管钮长在浮层里，不是盒内尾钮
+  'color-picker': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: `[data-scope='color-picker'][data-part='trigger']`,
+    actionParts: new Set(),
+  },
   'tree-select': {
     boxSelector: '[data-xh-field-chrome]',
     contentSelector: `[data-scope='tree-select'][data-part='trigger']`,

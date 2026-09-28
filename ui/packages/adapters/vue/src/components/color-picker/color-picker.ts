@@ -5,7 +5,7 @@
 
 // 提供 color picker 相关实现。
 
-import type { Direction, Placement, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, Placement, Size } from '@xihan-ui/core'
 import type {
   ColorFormat,
   ColorPickerApi,
@@ -51,6 +51,7 @@ export const XhColorPickerRoot = defineComponent({
     swatches: { type: Array as PropType<string[]> },
     name: { type: String },
     size: { type: String as PropType<Size> },
+    variant: { type: String as PropType<ControlVariant> },
     dir: { type: String as PropType<Direction> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },

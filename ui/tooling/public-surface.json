@@ -11377,7 +11377,8 @@
       "size",
       "swatches",
       "translations",
-      "value"
+      "value",
+      "variant"
     ],
     "color-slider": [
       "alpha",
@@ -18997,7 +18998,8 @@
         "read-only",
         "size",
         "swatches",
-        "value"
+        "value",
+        "variant"
       ],
       "events": [
         "color-error",

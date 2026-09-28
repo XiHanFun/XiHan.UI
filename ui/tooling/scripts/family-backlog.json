@@ -3,15 +3,10 @@
   "edge": {
     "button:root:raised": "solid 档的 raised 抬升没有描边，raised 必带 --xh-border-default，待本组件迁移",
     "color-picker:area-thumb:raised": "拇指描边落 --xh-color-neutral-0 原语，应为 --xh-border-default，待本组件迁移",
-    "color-picker:control:raised": "raised 退役待本组件迁移",
     "file-upload:trigger:raised": "raised 退役待本组件迁移"
   },
   "selection": {},
   "ladder": {
-    "color-picker:channel-input:focus": "焦点边写了 border-color: var(--xh-color-picker-input-border-focus, var(--xh-_tone, va，焦点边框一律 --xh-border-control-focus，不随 tone；待本组件迁移",
-    "color-picker:control:focus": "焦点边写了 border-color: var(--xh-color-picker-control-border-focus, var(--xh-_tone, ，焦点边框一律 --xh-border-control-focus，不随 tone；待本组件迁移",
-    "color-picker:eye-dropper-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "color-picker:eye-dropper-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "file-upload:clear-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "file-upload:clear-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "file-upload:dropzone:focus": "焦点边写了 border-color: var(--xh-file-upload-dropzone-border-focus, var(--xh-_tone, ，焦点边框一律 --xh-border-control-focus，不随 tone；待本组件迁移",
@@ -25,7 +20,6 @@
   "scroll": {},
   "press": {},
   "text": {
-    "color-picker:label:font-size": "font-size 落 --xh-control-font-md，字段标签字号不随档，应为 --xh-text-label-size；待本组件迁移",
     "file-upload:label:spacing": "根的 gap 落 --xh-space-3，字段标签贴控件应为 --xh-space-1；待本组件迁移",
     "file-upload:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "steps:title:font-size": "font-size 落 --xh-control-font-md，Surface / Feedback / 浮层内标题应为 --xh-text-label-size；待本组件迁移",

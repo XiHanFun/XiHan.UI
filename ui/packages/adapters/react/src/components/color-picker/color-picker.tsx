@@ -5,7 +5,7 @@
 
 // 提供 color picker 相关实现。
 
-import type { Direction, Placement, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, Placement, Size } from '@xihan-ui/core'
 import type {
   ColorFormat,
   ColorPickerApi,
@@ -62,6 +62,8 @@ export interface XhColorPickerRootProps extends RootElementProps {
   /** 表单字段名；提供后表单影子才带 name 并参与提交。 */
   name?: string
   size?: Size
+  /** 盒的形态：outline / subtle / ghost，默认 outline。 */
+  variant?: ControlVariant
   /** 文字方向，默认 ltr。 */
   dir?: Direction
   placement?: Placement
@@ -85,6 +87,7 @@ export function XhColorPickerRoot({
   swatches,
   name,
   size,
+  variant,
   dir,
   placement,
   offset,
@@ -107,6 +110,7 @@ export function XhColorPickerRoot({
     swatches,
     name,
     size,
+    variant,
     dir,
     placement,
     offset,

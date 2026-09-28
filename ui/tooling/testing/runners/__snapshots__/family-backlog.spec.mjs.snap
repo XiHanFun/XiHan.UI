@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 4,
-  "ladder": 12,
+  "edge": 3,
+  "ladder": 8,
   "motion": 0,
   "press": 0,
   "scroll": 0,
   "selection": 0,
   "shape": 0,
-  "text": 7,
+  "text": 6,
 }
 `;
 
@@ -17,17 +17,12 @@ exports[`family-backlog 键集合 > edge 1`] = `
 [
   "button:root:raised",
   "color-picker:area-thumb:raised",
-  "color-picker:control:raised",
   "file-upload:trigger:raised",
 ]
 `;
 
 exports[`family-backlog 键集合 > ladder 1`] = `
 [
-  "color-picker:channel-input:focus",
-  "color-picker:control:focus",
-  "color-picker:eye-dropper-trigger:hover",
-  "color-picker:eye-dropper-trigger:pressed",
   "file-upload:clear-trigger:hover",
   "file-upload:clear-trigger:pressed",
   "file-upload:dropzone:focus",
@@ -51,7 +46,6 @@ exports[`family-backlog 键集合 > shape 1`] = `[]`;
 
 exports[`family-backlog 键集合 > text 1`] = `
 [
-  "color-picker:label:font-size",
   "file-upload:label:spacing",
   "file-upload:root:icon-size",
   "steps:title:font-size",
