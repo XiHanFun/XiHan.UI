@@ -18,6 +18,7 @@
 - `changeOnSelect` 允许选择中间层。
 - `expandTrigger` 支持点击或悬停展开。
 - `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。
+- 多选的已选路径在触发器里排成标签，与[选择器](./select)同一套呈现：文字是整条路径（按 `separator` 连缀），超出 `maxTagCount`（默认 3）合并为 `+N`；标签身份写路径的比较键（`api.tags` 里的 `key`），触发器外可放带删除钮的标签，value-text 仍留在 DOM 里给触发器的可及名。
 - `searchable` 按完整路径筛选选项；`filter` 接管匹配规则，拿到的候选是一条可落值的完整路径（`path` 与逐段的 `labels`），检索词已 trim，空串不调用。
 - 选项可逐条声明语气，不向下传导；搜索结果取整条路径末段的语气。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。

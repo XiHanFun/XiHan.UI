@@ -513,6 +513,7 @@ export type ComponentTokenName
     | '--xh-cascader-search-divider'
     | '--xh-cascader-search-list-gap'
     | '--xh-cascader-search-p'
+    | '--xh-cascader-tag-list-gap'
     | '--xh-cascader-trigger-fg'
     | '--xh-cascader-trigger-font-size'
     | '--xh-cascader-trigger-gap'

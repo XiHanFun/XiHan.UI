@@ -23,10 +23,11 @@ import type { CascaderContext } from './use-cascader'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUpdated, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
+import { slotIsPlainText } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
-import { provideCascader, provideCascaderContent, provideCascaderGroup, provideCascaderItem, useCascaderContentContext, useCascaderContext, useCascaderGroupContext, useCascaderItemContext } from './context'
+import { provideCascader, provideCascaderContent, provideCascaderGroup, provideCascaderItem, provideCascaderTag, useCascaderContentContext, useCascaderContext, useCascaderGroupContext, useCascaderItemContext, useCascaderTagContext } from './context'
 import { useCascader } from './use-cascader'
 
 type CascaderProps = CascaderSchema['props']
@@ -61,7 +62,7 @@ function reportItemFocus(
   })
 }
 
-/** 默认插槽的载荷：级联的展开态、选中态与列数据，以及修改它们的方法。 */
+/** 默认插槽的载荷：级联的展开态、选中态与列数据、多选的可见标签与折起的个数，以及修改它们的方法。 */
 export type CascaderRootSlotProps = Pick<
   CascaderApi,
   | 'open'
@@ -73,6 +74,9 @@ export type CascaderRootSlotProps = Pick<
   | 'focusedPath'
   | 'displayText'
   | 'canClear'
+  | 'tags'
+  | 'overflowCount'
+  | 'overflowText'
   | 'isSelected'
   | 'isIndeterminate'
   | 'isActive'
@@ -82,6 +86,7 @@ export type CascaderRootSlotProps = Pick<
   | 'setActivePath'
   | 'select'
   | 'clear'
+  | 'deselect'
 >
 
 export const XhCascaderRoot = defineComponent({
@@ -98,6 +103,8 @@ export const XhCascaderRoot = defineComponent({
     expandTrigger: { type: String as PropType<CascaderExpandTrigger> },
     changeOnSelect: Boolean,
     multiple: Boolean,
+    /** 多选标签最多显示的数量，其余折进 +N；默认 3。 */
+    maxTagCount: { type: Number },
     searchable: { type: Boolean, default: undefined },
     /** 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 */
     filter: { type: Function as PropType<CascaderProps['filter']> },
@@ -154,6 +161,9 @@ export const XhCascaderRoot = defineComponent({
       focusedPath: ctx.api.value.focusedPath,
       displayText: ctx.api.value.displayText,
       canClear: ctx.api.value.canClear,
+      tags: ctx.api.value.tags,
+      overflowCount: ctx.api.value.overflowCount,
+      overflowText: ctx.api.value.overflowText,
       isSelected: ctx.api.value.isSelected,
       isIndeterminate: ctx.api.value.isIndeterminate,
       isActive: ctx.api.value.isActive,
@@ -163,6 +173,7 @@ export const XhCascaderRoot = defineComponent({
       setActivePath: ctx.api.value.setActivePath,
       select: ctx.api.value.select,
       clear: ctx.api.value.clear,
+      deselect: ctx.api.value.deselect,
     }), ...ctx.api.value.value.map(path => h('input', {
       ...ctx.api.value.getHiddenInputProps({ path }) as Record<string, unknown>,
       key: JSON.stringify(path),
@@ -213,6 +224,72 @@ export const XhCascaderValueText = defineComponent({
       ctx.api.value.getValueTextProps() as Record<string, unknown>,
       slots.default?.() ?? ctx.api.value.displayText,
     )
+  },
+})
+
+export const XhCascaderTagList = defineComponent({
+  name: 'XhCascaderTagList',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    // 标签行：可见标签与 +N 那一枚在里面并排；无选中时连接层给 hidden，value-text 回来显示占位文字
+    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
+export const XhCascaderTagLabel = defineComponent({
+  name: 'XhCascaderTagLabel',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 标签内容：只有文字时替它包一层 label：截断规则挂在 label 上，直接展开在 root 上的文字过长会把
+ * 删除按钮挤出；作者自己写了节点则原样放行。与 XhTagRoot 同一规则。
+ * 库自身填入的文字（+N，没有折叠时是空串）恒包 label，三个适配器渲染出同一棵树。
+ */
+function tagChildren(content: VNode[] | string | undefined): VNode[] | string | undefined {
+  if (typeof content === 'string')
+    return [h(XhCascaderTagLabel, null, () => content)]
+  return slotIsPlainText(content) ? [h(XhCascaderTagLabel, null, () => content)] : content
+}
+
+/** 一条选中路径一个标签，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从级联传下，形态按控件的面派生；触发器内纯展示，触发器外配合 XhCascaderItemDeleteTrigger 可删除。 */
+export const XhCascaderTag = defineComponent({
+  name: 'XhCascaderTag',
+  props: {
+    /** 它代表哪条选中路径：写路径的比较键，即 tags 里的 key。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useCascaderContext()
+    provideCascaderTag({ value: () => props.value })
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+  },
+})
+
+/** 折叠的标签合成的一个标签：同样是 tag 的 root；有插槽时使用插槽，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
+export const XhCascaderOverflowTag = defineComponent({
+  name: 'XhCascaderOverflowTag',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    return () => h(
+      'span',
+      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
+    )
+  },
+})
+
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem；点按移除所在标签的选中路径。 */
+export const XhCascaderItemDeleteTrigger = defineComponent({
+  name: 'XhCascaderItemDeleteTrigger',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    const tag = useCascaderTagContext()
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
   },
 })
 

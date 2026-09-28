@@ -347,15 +347,20 @@ export {
   XhCascaderIndicator,
   XhCascaderInput,
   XhCascaderItem,
+  XhCascaderItemDeleteTrigger,
   XhCascaderItemDescription,
   XhCascaderItemIndicator,
   XhCascaderItemSuffix,
   XhCascaderItemText,
   XhCascaderLabel,
   XhCascaderLoading,
+  XhCascaderOverflowTag,
   XhCascaderPositioner,
   XhCascaderRoot,
   XhCascaderSearchList,
+  XhCascaderTag,
+  XhCascaderTagLabel,
+  XhCascaderTagList,
   XhCascaderTrigger,
   XhCascaderValueText,
 } from './components/cascader/cascader'
@@ -364,6 +369,7 @@ export {
   useCascaderContext,
   useCascaderGroupContext,
   useCascaderItemContext,
+  useCascaderTagContext,
 } from './components/cascader/context'
 export { useCascader } from './components/cascader/use-cascader'
 export type { CascaderContext } from './components/cascader/use-cascader'

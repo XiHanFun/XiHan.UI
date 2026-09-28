@@ -20,13 +20,13 @@
 
 加粗的是必需部件。
 
-`data-scope="cascader"`：`root` · `hidden-input` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `footer`
+`data-scope="cascader"`：`root` · `hidden-input` · `label` · `control` · **`trigger`** · `value-text` · `tag-list` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `footer`
 
 ## 示例
 
 ### 多选
 
-选择多个分类路径
+multiple 下已选路径在触发器里排成标签，文字是整条路径；超出 maxTagCount（默认 3）的折进 +N，触发器里的标签只作展示
 
 <XhDemo src="cascader/02-multiple" />
 
@@ -72,6 +72,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 - `changeOnSelect` 允许选择中间层。
 - `expandTrigger` 支持点击或悬停展开。
 - `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。
+- 多选的已选路径在触发器里排成标签，与[选择器](./select)同一套呈现：文字是整条路径（按 `separator` 连缀），超出 `maxTagCount`（默认 3）合并为 `+N`；标签身份写路径的比较键（`api.tags` 里的 `key`），触发器外可放带删除钮的标签，value-text 仍留在 DOM 里给触发器的可及名。
 - `searchable` 按完整路径筛选选项；`filter` 接管匹配规则，拿到的候选是一条可落值的完整路径（`path` 与逐段的 `labels`），检索词已 trim，空串不调用。
 - 选项可逐条声明语气，不向下传导；搜索结果取整条路径末段的语气。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
@@ -102,7 +103,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-cascader>` |
-| Vue 组件 | `XhCascaderClearTrigger` `XhCascaderColumn` `XhCascaderContent` `XhCascaderControl` `XhCascaderFooter` `XhCascaderGroup` `XhCascaderGroupLabel` `XhCascaderIndicator` `XhCascaderInput` `XhCascaderItem` `XhCascaderItemDescription` `XhCascaderItemIndicator` `XhCascaderItemSuffix` `XhCascaderItemText` `XhCascaderLabel` `XhCascaderLoading` `XhCascaderPositioner` `XhCascaderRoot` `XhCascaderSearchList` `XhCascaderTrigger` `XhCascaderValueText` |
+| Vue 组件 | `XhCascaderClearTrigger` `XhCascaderColumn` `XhCascaderContent` `XhCascaderControl` `XhCascaderFooter` `XhCascaderGroup` `XhCascaderGroupLabel` `XhCascaderIndicator` `XhCascaderInput` `XhCascaderItem` `XhCascaderItemDeleteTrigger` `XhCascaderItemDescription` `XhCascaderItemIndicator` `XhCascaderItemSuffix` `XhCascaderItemText` `XhCascaderLabel` `XhCascaderLoading` `XhCascaderOverflowTag` `XhCascaderPositioner` `XhCascaderRoot` `XhCascaderSearchList` `XhCascaderTag` `XhCascaderTagLabel` `XhCascaderTagList` `XhCascaderTrigger` `XhCascaderValueText` |
 | 组合式函数 | `useCascader` |
 | 状态机 | `cascaderMachine` |
 | 皮肤 | `@xihan-ui/styles/cascader.css` |
@@ -120,7 +121,8 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `defaultOpen` | `boolean` |  |  |
 | `expandTrigger` | `CascaderExpandTrigger` |  | 子列的展开方式，默认 click。 |
 | `changeOnSelect` | `boolean` |  | 中间层（分支）也可以落值。关闭时点击分支只展开子列，不改变选中值。 |
-| `multiple` | `boolean` |  | 多选：选中为路径集合，选中后浮层不收起、焦点留在列中以便继续选择。 |
+| `multiple` | `boolean` |  | 多选：选中为路径集合，选中后浮层不收起、焦点留在列中以便继续选择；已选路径在触发器里排成标签。 |
+| `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 |
 | `searchable` | `boolean` |  | 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图。 |
 | `filter` | `CascaderFilter` |  | 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 |
 | `cascade` | `boolean` |  | 多选下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（按路径原样切换）；单选下无效。 |
@@ -186,6 +188,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `XhCascaderPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhCascaderRoot` | `children` | `SlotChildren<CascaderRootSlotProps>` |  |  |
 | `XhCascaderSearchList` | `renderItem` | `(result: CascaderSearchResult) => ReactNode` |  | 每条候选的自定义内容；未提供时把整条路径连缀为一行。 |
+| `XhCascaderTag` | `value` | `string` | 是 | 它代表哪条选中路径：写路径的比较键，即 tags 里的 key。 |
 
 ### 状态
 
@@ -237,6 +240,9 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `tags` | `CascaderTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value 同序；文字是整条路径的显示名按 separator 连缀。 |
+| `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `isSelected` | `(value: string) => boolean` | 该条目是否为某条选中路径的末项。 |
 | `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代部分勾选）；非级联恒为 false。 |
 | `isActive` | `(value: string) => boolean` | 该条目是否落在展开路径上（它的子列已打开，或它自身即为最后一站）。 |
@@ -252,12 +258,18 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `setActivePath` | `(next: string[]) => void` |  |
 | `select` | `(path: string[]) => void` | 选中一条路径，与点击条目同一语义（分支是否落值仍取决于 changeOnSelect）。 |
 | `clear` | `() => void` |  |
+| `deselect` | `(path: readonly string[]) => void` | 移除一条选中路径，其余保持选中先后。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getHiddenInputProps` | `(props: { path: readonly string[] }) => T['input']` | 每条路径独立编码，适配器按 value 渲染重复同名字段。 |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
+| `getTagListProps` | `() => T['element']` | 标签行：收纳可见标签与 +N 标签，放在触发器中；无选中时整体 hidden。 |
+| `getTagProps` | `(props: CascaderTagProps) => T['element']` | 标签：一条选中路径一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生，另带 data-value 记录路径的比较键。放在触发器中即纯展示，放在外部配删除按钮可删除。 |
+| `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 |
+| `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
+| `getItemDeleteTriggerProps` | `(props: CascaderTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，禁用时保留位置、原生 disabled；点击移除所在标签的选中路径；须放在触发器外的标签中。 |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
@@ -395,6 +407,8 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-placeholder` | ''（条件成立时才出现） |
+| `tag-list` | `data-disabled` | ''（条件成立时才出现） |
+| `tag-list` | `data-xh-tag-list` | '' |
 | `indicator` | `data-clearable` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
@@ -463,6 +477,8 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `item-indicator` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `footer` | `data-state` | 'open' \| 'closed' |
+| `overflow-tag` | `data-count` | String(overflowCount) |
+| `tag` | `data-value` | cascaderPathKey(path) |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -566,6 +582,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-search-divider` | `input` | `border-block-end` | `default` | `--xh-material-frosted-separator` | cascader 的 input 部件 border-block-end 覆盖槽。 |
 | `--xh-cascader-search-list-gap` | `search-list` | `gap` | `default` | `--xh-list-option-gap` | cascader 的 search-list 部件 gap 覆盖槽。 |
 | `--xh-cascader-search-p` | `search-list` | `padding` | `default` | `--xh-space-1` | cascader 的 search-list 部件 padding 覆盖槽。 |
+| `--xh-cascader-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | cascader 的 tag-list 部件 gap 覆盖槽。 |
 | `--xh-cascader-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | cascader 的 trigger 部件 color 覆盖槽。 |
 | `--xh-cascader-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-cascader-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_cascader-gap` | cascader 的 trigger 部件 gap 覆盖槽。 |
@@ -573,9 +590,9 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `mask-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `mask-size` · `opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

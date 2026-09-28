@@ -167,6 +167,7 @@
       "consumers": [
         "alert",
         "avatar",
+        "cascader",
         "clipboard",
         "combobox",
         "command",
@@ -344,6 +345,7 @@
         "approval",
         "back-top",
         "badge",
+        "cascader",
         "combobox",
         "float-button",
         "floating-panel",

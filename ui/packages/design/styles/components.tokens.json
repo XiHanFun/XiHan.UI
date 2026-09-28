@@ -10336,6 +10336,24 @@
       "description": "cascader 的 search-list 部件 padding 覆盖槽。"
     },
     {
+      "name": "--xh-cascader-tag-list-gap",
+      "component": "cascader",
+      "part": [
+        "tag-list"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "xh-tag-list"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 tag-list 部件 gap 覆盖槽。"
+    },
+    {
       "name": "--xh-cascader-trigger-fg",
       "component": "cascader",
       "part": [

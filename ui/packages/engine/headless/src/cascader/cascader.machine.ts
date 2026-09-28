@@ -11,7 +11,8 @@ import { cascadeToggle, collapseChecked, itemValue, queryItems, resetDeclaredVal
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
-import { cascaderAnatomy, cascaderItemQuery } from './cascader.anatomy'
+import { trackSelectionTagMotion } from '../shared/selection-tags'
+import { CASCADER_TAG_LIST_SELECTOR, cascaderAnatomy, cascaderItemQuery } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
   cascaderIndexNodes,
@@ -138,7 +139,7 @@ export const cascaderMachine = createMachine({
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
-  effects: ['trackLayer'],
+  effects: ['trackLayer', 'trackTagListMotion'],
   // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 回写
   watch: ({ track, prop, context, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
@@ -463,6 +464,12 @@ export const cascaderMachine = createMachine({
       }),
 
       // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
+      /** 多选标签行的到达、离场与换位。标签行在触发器里；触发按钮即定位锚点，经适配器的 ref 取。 */
+      trackTagListMotion: ({ refs, flush }) => trackSelectionTagMotion({
+        flush,
+        list: () => refs.get('getAnchorEl')()?.querySelector<HTMLElement>(CASCADER_TAG_LIST_SELECTOR),
+      }),
+
       trackLayer: ({ refs, context, send, flush, scope, state, track, prop }) => {
         let reactivateFocus: (() => void) | null = null
         return trackPresenceResources({

@@ -20241,6 +20241,18 @@
   color: var(--xh-fg-disabled);
 }
 
+/* 标签行：触发器里收着可见标签与 +N 那一枚的一行，行里每一枚都是 tag（data-scope="tag"），样子归 tag.css；
+   行怎么排、标签怎么进出归标签行家族配方（family/tag-list.css），这里只把使用者的间距槽接进去 */
+[data-scope='cascader'][data-part='tag-list'] {
+  --xh-tag-list-gap: var(--xh-cascader-tag-list-gap, var(--xh-space-1));
+}
+
+/* 标签行露面时 value-text 让位：两者是触发器里的同一格，占位文字与标签不同屏。
+   value-text 留在 DOM 里，trigger 的可及名仍从它取到完整的选中路径文本 */
+[data-scope='cascader'][data-part='trigger']:has([data-part='tag-list']:not([hidden])) [data-part='value-text'] {
+  display: none;
+}
+
 /* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个。
    判据查的是盒里此刻真有一颗没收起的清空钮，不是「有没有值」——
    作者没摆清空钮时箭头照常留着，不然让了位没人接，指示符整个消失 */

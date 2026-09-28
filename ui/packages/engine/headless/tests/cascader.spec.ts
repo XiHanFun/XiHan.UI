@@ -530,6 +530,67 @@ describe('开合与受控', () => {
   })
 })
 
+describe('多选标签', () => {
+  const XIHU = ['zhejiang', 'hangzhou', 'xihu']
+  const YUHANG = ['zhejiang', 'hangzhou', 'yuhang']
+  const XUANWU = ['jiangsu', 'nanjing', 'xuanwu']
+  const MACAU = ['macau']
+
+  it('已选路径按选中先后排成标签，文字是整条路径按 separator 连缀；maxTagCount 之外的折进 +N', () => {
+    const h = mount({ multiple: true, defaultValue: [XIHU, XUANWU, MACAU], maxTagCount: 2, separator: ' > ' })
+    expect(h.api().tags).toEqual([
+      { path: XIHU, key: JSON.stringify(XIHU), label: 'Zhejiang > Hangzhou > Xihu' },
+      { path: XUANWU, key: JSON.stringify(XUANWU), label: 'Jiangsu > Nanjing > Xuanwu' },
+    ])
+    expect(h.api().overflowCount).toBe(1)
+    expect(h.api().overflowText).toBe('+1')
+  })
+
+  it('不给 maxTagCount 时最多摆 3 枚；+N 的文字走 translations.overflowTag', () => {
+    const h = mount({
+      multiple: true,
+      defaultValue: [XIHU, YUHANG, XUANWU, MACAU],
+      translations: { overflowTag: count => `还有 ${count} 项` },
+    })
+    expect(h.api().tags).toHaveLength(3)
+    expect(h.api().getOverflowTagProps()).toMatchObject({ 'data-scope': 'tag', 'data-count': '1' })
+    expect(h.api().overflowText).toBe('还有 1 项')
+  })
+
+  it('标签行投影标签行家族，无选中时收起；每枚标签是 tag 的 root，data-value 是路径的比较键', () => {
+    const h = mount({ multiple: true, variant: 'subtle' })
+    expect(h.api().getTagListProps()).toMatchObject({ 'data-xh-tag-list': '', 'hidden': true })
+    h.api().setValue([XIHU])
+    expect((h.api().getTagListProps() as Record<string, unknown>).hidden).toBeUndefined()
+    expect(h.api().getTagProps({ value: JSON.stringify(XIHU) })).toMatchObject({
+      'data-scope': 'tag',
+      'data-part': 'root',
+      'data-value': JSON.stringify(XIHU),
+      'data-variant': 'outline',
+    })
+  })
+
+  it('删除钮可及名走 translations.deleteItem，拿到整条路径的文字；点它摘掉那条路径，只读时原生 disabled', () => {
+    const h = mount({ multiple: true, defaultValue: [XIHU, MACAU], translations: { deleteItem: label => `移除 ${label}` } })
+    const button = document.createElement('button')
+    document.body.append(button)
+    spread(button, h.api().getItemDeleteTriggerProps({ value: JSON.stringify(XIHU) }) as Record<string, unknown>)
+    expect(button.getAttribute('aria-label')).toBe('移除 Zhejiang / Hangzhou / Xihu')
+    click(button)
+    expect(h.value()).toEqual([MACAU])
+    button.remove()
+
+    const ro = mount({ multiple: true, defaultValue: [XIHU], readOnly: true })
+    expect(ro.api().getItemDeleteTriggerProps({ value: JSON.stringify(XIHU) })).toMatchObject({ disabled: true })
+  })
+
+  it('deselect 摘掉一条路径，其余保持选中先后', () => {
+    const h = mount({ multiple: true, defaultValue: [XIHU, XUANWU, MACAU] })
+    h.api().deselect(XUANWU)
+    expect(h.value()).toEqual([XIHU, MACAU])
+  })
+})
+
 describe('选中路径与回显', () => {
   it('单条路径是简写，内部一律归一成路径集合', () => {
     expect(mount({ defaultValue: ['zhejiang', 'hangzhou'] }).value()).toEqual([['zhejiang', 'hangzhou']])
@@ -1192,9 +1253,13 @@ describe('空态占位', () => {
 
   it('文案默认英文，translations 逐键覆盖', () => {
     const h = mount()
-    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches', loading: 'Loading', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: 'Clear' })
+    // 两个函数型文案单独验：toEqual 比不了函数的身份
+    const { deleteItem, overflowTag, ...texts } = h.api().translations
+    expect(texts).toEqual({ empty: 'No data', noMatch: 'No matches', loading: 'Loading', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: 'Clear' })
+    expect(deleteItem('Xihu')).toBe('Delete Xihu')
+    expect(overflowTag(2)).toBe('+2')
     h.setProps({ translations: { empty: '暂无数据', loading: '正在加载', clearTrigger: '清空' } })
-    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches', loading: '正在加载', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: '清空' })
+    expect(h.api().translations).toMatchObject({ empty: '暂无数据', noMatch: 'No matches', loading: '正在加载', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: '清空' })
     expect(h.clear.getAttribute('aria-label')).toBe('清空')
   })
 })

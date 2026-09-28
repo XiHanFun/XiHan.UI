@@ -1740,6 +1740,7 @@
       "sankey-chart"
     ],
     "tag-list": [
+      "cascader",
       "combobox",
       "select",
       "tree-select"
