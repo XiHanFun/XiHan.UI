@@ -60688,7 +60688,7 @@
               "name": "trigger"
             },
             {
-              "description": "序号 / 对勾圆点，对读屏隐藏",
+              "description": "序号 / 对勾圆点（dot 形态下是不盛内容的小圆点），对读屏隐藏",
               "name": "indicator"
             },
             {
@@ -60848,6 +60848,15 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "StepsVariant | undefined"
+              },
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -61018,6 +61027,14 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "StepsVariant | undefined"
+              },
+              "description": "标记形态：number 序号圆点（缺省）/ dot 不盛内容的小圆点，此时 indicator 留空",
+              "name": "variant",
+              "fieldName": "variant"
             }
           ],
           "superclass": {
@@ -61116,6 +61133,12 @@
             },
             {
               "name": "--xh-steps-indicator-radius"
+            },
+            {
+              "name": "--xh-steps-indicator-ring-bg"
+            },
+            {
+              "name": "--xh-steps-indicator-ring-bg-disabled"
             },
             {
               "name": "--xh-steps-indicator-shadow"

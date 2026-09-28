@@ -6,7 +6,7 @@
 // 提供 steps 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { StepNode, StepsApi, StepsSchema, StepStatus, StepsTranslations } from '@xihan-ui/headless'
+import type { StepNode, StepsApi, StepsSchema, StepStatus, StepsTranslations, StepsVariant } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -42,6 +42,8 @@ export const XhStepsRoot = defineComponent({
     translations: { type: Object as PropType<Partial<StepsTranslations>> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
+    /** 标记形态：number 序号圆点（缺省）/ dot 不盛内容的小圆点。 */
+    variant: { type: String as PropType<StepsVariant> },
   },
   // value-change 携带 { value }，update:value 携带裸下标
   emits: {

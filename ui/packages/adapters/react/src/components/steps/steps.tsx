@@ -6,7 +6,7 @@
 // 提供 steps 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { StepNode, StepsApi, StepsSchema, StepStatus, StepsTranslations } from '@xihan-ui/headless'
+import type { StepNode, StepsApi, StepsSchema, StepStatus, StepsTranslations, StepsVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
@@ -50,6 +50,8 @@ export interface XhStepsRootProps extends RootElementProps {
   translations?: Partial<StepsTranslations>
   tone?: Tone
   size?: Size
+  /** 标记形态：number 序号圆点（缺省）/ dot 不盛内容的小圆点。 */
+  variant?: StepsVariant
   onValueChange?: StepsProps['onValueChange']
   children?: SlotChildren<StepsRootSlotProps>
 }
@@ -70,6 +72,7 @@ export function XhStepsRoot({
   translations,
   tone,
   size,
+  variant,
   onValueChange,
   children,
   ...rest
@@ -90,6 +93,7 @@ export function XhStepsRoot({
     translations,
     tone,
     size,
+    variant,
     onValueChange,
   }) as StepsProps)
   const api = ctx.api

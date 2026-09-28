@@ -39875,6 +39875,13 @@
   --xh-_steps-indicator-size: var(--xh-control-h-md);
   --xh-_steps-title-font-size: var(--xh-control-font-md);
   --xh-_steps-caption-font-size: var(--xh-text-caption-size);
+  /* 圆点一圈边的宽：序号圆点是细边（多数状态透明占位），点状形态的空心圈要粗一档才读得出是个圈 */
+  --xh-_steps-indicator-border-width: var(--xh-stroke-thin);
+  /* 圆点四周给当前步那圈环留的位置：序号圆点不留，点状形态留出环的宽度，换步不挪版面 */
+  --xh-_steps-indicator-margin: var(--xh-space-0);
+  /* 当前步那圈环：离圆点边一道缝，环本身一道粗描边宽 */
+  --xh-_steps-ring-gap: var(--xh-space-0_5);
+  --xh-_steps-ring-thickness: var(--xh-stroke-thick);
 
   /* 语气落在当前步的标记、走过那几步的对号与连接线上：强调色画描边与填充，
      accent-text 是普通底上的强调文字（走过与当前步的标题），on-accent 是实心底上的前景。
@@ -39928,6 +39935,23 @@
   --xh-_steps-indicator-size: var(--xh-control-h-lg);
   --xh-_steps-title-font-size: var(--xh-control-font-lg);
   --xh-_steps-caption-font-size: var(--xh-text-secondary-size);
+}
+
+/* —— 点状形态 —— */
+/* 圆点不盛内容，是纯位置标记：直径不在控件高度那把尺上，与 Timeline 圆点同走空间尺相邻的三格，
+   不随密度换档；描边粗一档，四周留出当前步那圈环的宽度 */
+[data-scope='steps'][data-part='root'][data-variant='dot'] {
+  --xh-_steps-indicator-size: var(--xh-space-2_5);
+  --xh-_steps-indicator-border-width: var(--xh-stroke-thick);
+  --xh-_steps-indicator-margin: calc(var(--xh-_steps-ring-gap) + var(--xh-_steps-ring-thickness));
+}
+
+[data-scope='steps'][data-part='root'][data-variant='dot'][data-size='sm'] {
+  --xh-_steps-indicator-size: var(--xh-space-2);
+}
+
+[data-scope='steps'][data-part='root'][data-variant='dot'][data-size='lg'] {
+  --xh-_steps-indicator-size: var(--xh-space-3);
 }
 
 /* 步骤与连接线必须保持在同一条流程轴上，空间不足时由标题省略而不是拆成两行。 */
@@ -40049,6 +40073,8 @@
      圆点自己走 control-h 的尺（最小 compact sm 的 28px），两档字形在三档圆点里都留得出边距 */
   --xh-icon-size: var(--xh-steps-indicator-mark-size, var(--xh-control-indicator-size));
 
+  /* 当前步那圈环（::after）以圆点为准绳定位 */
+  position: relative;
   display: inline-flex;
   grid-row: 1 / span 2;
   flex: none;
@@ -40056,7 +40082,7 @@
   justify-content: center;
   inline-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
   block-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
-  border: var(--xh-stroke-thin) solid var(--xh-steps-indicator-border, transparent);
+  border: var(--xh-_steps-indicator-border-width) solid var(--xh-steps-indicator-border, transparent);
   border-radius: var(--xh-steps-indicator-radius, var(--xh-shape-circle));
   background: var(--xh-steps-indicator-bg, var(--xh-bg-subtle));
   color: var(--xh-steps-indicator-fg, var(--xh-fg-muted));
@@ -40086,20 +40112,21 @@
   color: var(--xh-steps-indicator-fg-hover, var(--xh-fg-default));
 }
 
+/* 点状形态里走过的点是实心标记色，悬停不换成中性面：承载它的行换面即是悬停反馈 */
 [data-scope='steps'][data-part='trigger']:hover:not([data-disabled], [data-readonly])
-  [data-scope='steps'][data-part='indicator'][data-state='completed'] {
+  [data-scope='steps'][data-part='indicator'][data-state='completed']:not([data-variant='dot']) {
   background: var(--xh-steps-indicator-bg-completed-hover, var(--xh-_steps-host-bg-hover));
 }
 
 [data-scope='steps'][data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
-  [data-scope='steps'][data-part='indicator']:is([data-state='incomplete'], [data-state='completed']) {
+  [data-scope='steps'][data-part='indicator']:is([data-state='incomplete'], [data-state='completed']:not([data-variant='dot'])) {
   background: var(--xh-steps-indicator-bg-pressed, var(--xh-_steps-host-bg-pressed));
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-scope='steps'][data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
-  [data-scope='steps'][data-part='indicator'][data-state='current'] {
+  [data-scope='steps'][data-part='indicator'][data-state='current']:not([data-variant='dot']) {
   background: var(--xh-steps-indicator-bg-current-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
@@ -40117,6 +40144,73 @@
   border-color: var(--xh-steps-indicator-border-completed, transparent);
   background: var(--xh-steps-indicator-bg-completed, var(--xh-bg-subtle));
   color: var(--xh-steps-indicator-fg-completed, var(--xh-_steps-accent-mark));
+}
+
+/* 点状形态的三态：没走到的空心粗圈（墨色与序号形态的序号同一支），走过的实心标记色（序号形态里那枚对号的颜色），
+   当前步实心品牌（格状当前）外加一圈同色环。空心 / 实心 / 带环是形状通道，不只靠颜色分三态；
+   四周留出环的宽度，换步时版面不挪 */
+[data-scope='steps'][data-part='indicator'][data-variant='dot'] {
+  margin: var(--xh-_steps-indicator-margin);
+  border-color: var(--xh-steps-indicator-border, var(--xh-fg-muted));
+  background: var(--xh-steps-indicator-bg, transparent);
+}
+
+/* 实心的点底与圈同一色，取自 --xh-_steps-dot：走过的标记色、当前步品牌，按下换语气 active 档
+   （与序号圆点当前步按下同一档），动不了的禁用墨色。小圆点上画不下实心那档的内高光 */
+[data-scope='steps'][data-part='indicator'][data-variant='dot'][data-state='completed'] {
+  --xh-_steps-dot: var(--xh-steps-indicator-bg-completed, var(--xh-_steps-accent-mark));
+}
+
+[data-scope='steps'][data-part='indicator'][data-variant='dot'][data-state='current'] {
+  --xh-_steps-dot: var(--xh-steps-indicator-bg-current, var(--xh-_steps-accent));
+
+  box-shadow: none;
+}
+
+[data-scope='steps'][data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
+  [data-scope='steps'][data-part='indicator'][data-variant='dot'] {
+  --xh-_steps-dot: var(--xh-steps-indicator-bg-current-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+
+/* 动不了的那几步形状不变、墨色退到禁用档：空心的仍是空心。排在单步语气之前、与它同特指度：
+   标了语气又被锁住的那一步与序号形态一样按语气画 */
+[data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'][data-variant='dot'] {
+  --xh-_steps-dot: var(--xh-steps-indicator-bg-disabled, var(--xh-fg-disabled));
+
+  border-color: var(--xh-steps-indicator-border-disabled, var(--xh-fg-disabled));
+  background: transparent;
+}
+
+/* 带上触发器这一层祖先：特指度才压得过上面与下面两条禁用块铺的底 */
+[data-scope='steps'][data-part='trigger'] [data-scope='steps'][data-part='indicator'][data-variant='dot']:not([data-state='incomplete']) {
+  border-color: var(--xh-_steps-dot);
+  background: var(--xh-_steps-dot);
+}
+
+/* 当前步那圈环：离圆点边一道缝、一道粗描边宽，叠在圆点外面、不接指针；环面由整圈底色经环形遮罩挖空中心得来。
+   静息收着，点状形态的当前步才亮出来，走到 / 离开这一步时按状态角色淡入淡出 */
+[data-scope='steps'][data-part='indicator']::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * (var(--xh-_steps-indicator-border-width) + var(--xh-_steps-ring-gap) + var(--xh-_steps-ring-thickness)));
+  border-radius: inherit;
+  background: var(--xh-steps-indicator-ring-bg, var(--xh-_steps-accent));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--xh-_steps-ring-thickness)), currentColor 0);
+  mask: radial-gradient(farthest-side, transparent calc(100% - var(--xh-_steps-ring-thickness)), currentColor 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='steps'][data-part='indicator'][data-variant='dot'][data-state='current']::after {
+  opacity: 1;
+}
+
+[data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator']::after {
+  background: var(--xh-steps-indicator-ring-bg-disabled, var(--xh-fg-disabled));
 }
 
 /* 单步语气：tones / collection 给某一步标了 data-tone，四个强调槽在这一步重新从语气层取值，
@@ -40215,9 +40309,10 @@
   inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
   min-inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
   block-size: var(--xh-steps-separator-min-length, var(--xh-space-7));
-  /* 圆点半径减去线宽的一半：calc 里的除法要写成乘 0.5，除号在这儿是无效语法 */
+  /* 圆点半径加上它四周留给环的位置，减去线宽的一半：calc 里的除法要写成乘 0.5，除号在这儿是无效语法 */
   margin-inline-start: calc(
     var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size)) * 0.5
+    + var(--xh-_steps-indicator-margin)
     + var(--xh-steps-trigger-p, var(--xh-control-px-sm))
     - var(--xh-steps-separator-thickness, var(--xh-stroke-thick)) * 0.5
   );
@@ -40240,8 +40335,9 @@
 }
 
 /* 没写内容就由皮肤画兜底对号；作者往部件里塞了自己的图形，这几条即不命中。
-   尺寸读圆点自己改接过的 --xh-icon-size：指示符档，随密度换档（见圆点块） */
-[data-scope='steps'][data-part='indicator'][data-state='completed']:empty::before {
+   尺寸读圆点自己改接过的 --xh-icon-size：指示符档，随密度换档（见圆点块）。
+   点状形态不盛内容，走过的点本身就是标记，不画对号 */
+[data-scope='steps'][data-part='indicator'][data-state='completed']:not([data-variant='dot']):empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
@@ -40266,7 +40362,7 @@
   }
 
   [data-scope='steps'][data-part='trigger']:hover:not([data-disabled], [data-readonly])
-    [data-scope='steps'][data-part='indicator'][data-state='incomplete'] {
+    [data-scope='steps'][data-part='indicator'][data-state='incomplete']:not([data-variant='dot']) {
     border-color: Highlight;
   }
 
@@ -40279,6 +40375,25 @@
   [data-scope='steps'][data-part='separator']::after {
     background: Highlight;
   }
+
+  /* 点状形态的点靠底色画实心，这一档里底色被换成 Canvas，走过与当前步的点会与空心的圈混成一样。
+     实心的点与当前步那圈环换成 CanvasText：整行悬停涂成 Highlight 时照样看得见，走过与当前步靠那圈环分开；
+     动不了的取 GrayText */
+  [data-scope='steps'][data-part='trigger'] [data-scope='steps'][data-part='indicator'][data-variant='dot']:not([data-state='incomplete']),
+  [data-scope='steps'][data-part='indicator']::after {
+    border-color: CanvasText;
+    background: CanvasText;
+  }
+
+  [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'][data-variant='dot'] {
+    border-color: GrayText;
+  }
+
+  [data-scope='steps'][data-part='item'][data-disabled]
+    [data-scope='steps'][data-part='trigger'] [data-scope='steps'][data-part='indicator'][data-variant='dot']:not([data-state='incomplete']),
+  [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator']::after {
+    background: GrayText;
+  }
 }
 
 @media print {
@@ -40290,6 +40405,12 @@
 
   [data-scope='steps'][data-part='title'][data-state='current'] {
     font-weight: var(--xh-font-weight-semibold);
+  }
+
+  /* 点状形态的点与当前步那圈环都是底色画的，丢了底色走过与当前步就只剩空心圈：这两样照原色印 */
+  [data-scope='steps'][data-part='indicator'][data-variant='dot'],
+  [data-scope='steps'][data-part='indicator']::after {
+    print-color-adjust: exact;
   }
 }
 

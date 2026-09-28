@@ -49,6 +49,8 @@ export function connectSteps<T extends PropTypes>(
   // 只读展示：换成有序列表语义，trigger 只排版，不聚焦、不接事件、不置灰
   const readOnly = !!prop('readOnly')
   const loop = !!prop('loop')
+  // 标记形态不写时显式落 number：root 与圆点上始终带 data-variant，嵌套的步骤条各认各的形态
+  const variant = prop('variant') ?? 'number'
   const listLabel = prop('translations')?.list
   const complete = count > 0 && value >= count
 
@@ -131,6 +133,7 @@ export function connectSteps<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-orientation': orientation,
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
@@ -264,10 +267,12 @@ export function connectSteps<T extends PropTypes>(
       })
     },
 
-    // 序号圆点是纯视觉的，第 k 步共 n 步已由 posinset/setsize 说明，不参与名字计算
+    // 序号圆点是纯视觉的，第 k 步共 n 步已由 posinset/setsize 说明，不参与名字计算。
+    // 形态写在圆点自己身上：点状的规则落在它身上，嵌在面板里的另一台步骤条不被外层的形态波及
     getIndicatorProps: item => normalize.element({
       ...parts.indicator.attrs,
       'aria-hidden': true,
+      'data-variant': variant,
       'data-state': getItemState(item).status,
       // 首帧就走过、此后没被回退到的步：对号直接呈现；此后才走过的步对号淡入
       'data-instant': dataAttr(item.index < context.get('untouchedBelow')),

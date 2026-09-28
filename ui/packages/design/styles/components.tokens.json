@@ -39055,6 +39055,7 @@
         "is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])",
         "mode=send",
         "mode=stop",
+        "not([data-variant='dot'])",
         "preset=toast",
         "size=2xl",
         "size=3xl",
@@ -39069,7 +39070,8 @@
         "state=completed",
         "state=paused",
         "state=running",
-        "state=visible"
+        "state=visible",
+        "variant=dot"
       ],
       "defaultToken": [
         "--xh-_color-swatch-picker-mark",
@@ -66647,10 +66649,12 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "variant=dot"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle",
+        "transparent"
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 background 覆盖槽。"
@@ -66659,19 +66663,25 @@
       "name": "--xh-steps-indicator-bg-completed",
       "component": "steps",
       "part": [
-        "indicator"
+        "indicator",
+        "trigger"
       ],
       "property": [
-        "background"
+        "background",
+        "border-color"
       ],
       "state": [
-        "state=completed"
+        "not([data-state='incomplete'])",
+        "state=completed",
+        "state=incomplete",
+        "variant=dot"
       ],
       "defaultToken": [
+        "--xh-_steps-accent-mark",
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator 部件 background 覆盖槽。"
+      "description": "steps 的 indicator、trigger 部件 background、border-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-bg-completed-hover",
@@ -66687,8 +66697,10 @@
         "disabled",
         "hover",
         "not([data-disabled], [data-readonly])",
+        "not([data-variant='dot'])",
         "readonly",
-        "state=completed"
+        "state=completed",
+        "variant=dot"
       ],
       "defaultToken": [
         "--xh-_steps-host-bg-hover"
@@ -66700,19 +66712,24 @@
       "name": "--xh-steps-indicator-bg-current",
       "component": "steps",
       "part": [
-        "indicator"
+        "indicator",
+        "trigger"
       ],
       "property": [
-        "background"
+        "background",
+        "border-color"
       ],
       "state": [
-        "state=current"
+        "not([data-state='incomplete'])",
+        "state=current",
+        "state=incomplete",
+        "variant=dot"
       ],
       "defaultToken": [
         "--xh-_steps-accent"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator 部件 background 覆盖槽。"
+      "description": "steps 的 indicator、trigger 部件 background、border-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-bg-current-pressed",
@@ -66722,40 +66739,51 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background",
+        "border-color"
       ],
       "state": [
         "disabled",
         "is(:active, [data-pressed])",
         "not([data-disabled], [data-readonly])",
+        "not([data-state='incomplete'])",
+        "not([data-variant='dot'])",
         "pressed",
         "readonly",
-        "state=current"
+        "state=current",
+        "state=incomplete",
+        "variant=dot"
       ],
       "defaultToken": [
         "--xh-_tone-active"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
+      "description": "steps 的 indicator、trigger 部件 background、border-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-bg-disabled",
       "component": "steps",
       "part": [
         "indicator",
-        "item"
+        "item",
+        "trigger"
       ],
       "property": [
-        "background"
+        "background",
+        "border-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "not([data-state='incomplete'])",
+        "state=incomplete",
+        "variant=dot"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-muted",
+        "--xh-fg-disabled"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator、item 部件 background 覆盖槽。"
+      "description": "steps 的 indicator、item、trigger 部件 background、border-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-bg-hover",
@@ -66793,12 +66821,13 @@
       "state": [
         "disabled",
         "is(:active, [data-pressed])",
-        "is([data-state='incomplete'], [data-state='completed'])",
+        "is([data-state='incomplete'], [data-state='completed']:not([data-variant='dot'])",
         "not([data-disabled], [data-readonly])",
         "pressed",
         "readonly",
         "state=completed",
-        "state=incomplete"
+        "state=incomplete",
+        "variant=dot"
       ],
       "defaultToken": [
         "--xh-_steps-host-bg-pressed"
@@ -66833,16 +66862,19 @@
         "indicator"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "variant=dot"
       ],
       "defaultToken": [
+        "--xh-fg-muted",
         "transparent"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator 部件 border 覆盖槽。"
+      "description": "steps 的 indicator 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-border-completed",
@@ -66891,10 +66923,12 @@
         "border-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "variant=dot"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-border-default",
+        "--xh-fg-disabled"
       ],
       "visibility": "public",
       "description": "steps 的 indicator、item 部件 border-color 覆盖槽。"
@@ -67088,6 +67122,43 @@
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-ring-bg",
+      "component": "steps",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_steps-accent"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-ring-bg-disabled",
+      "component": "steps",
+      "part": [
+        "indicator",
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator、item 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-shadow",
