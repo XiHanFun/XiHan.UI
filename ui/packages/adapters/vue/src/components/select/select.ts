@@ -6,7 +6,7 @@
 // 提供 select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -117,6 +117,7 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
         : props.collection
           ? renderDefaultTree(
               ctx.api.value.collection,
+              props.multiple ? ctx.api.value.tags : null,
               slots.label?.() ?? (props.label != null ? [props.label] : null),
               props.clearable,
               slots.item,
@@ -455,13 +456,25 @@ export const XhSelectItemIndicator = /* @__PURE__ */ defineComponent({
  */
 function renderDefaultTree(
   collection: readonly SelectNodeMeta[],
+  tags: readonly SelectTagMeta[] | null,
   label: (VNode | string)[] | null,
   clearable: boolean,
   itemSlot?: (node: SelectNodeMeta) => VNode[],
   prefixSlot?: (node: SelectNodeMeta) => VNode[],
   suffixSlot?: (node: SelectNodeMeta) => VNode[],
 ): VNode[] {
-  const trigger = h(XhSelectTrigger, null, () => [h(XhSelectValueText), h(XhSelectIndicator)])
+  // 多选的已选项在触发器里排成标签：占位文字与标签行同时写着，有选中时标签露面、占位让位；
+  // 触发器里的标签只作展示（按钮不能套按钮），摆不下的折进 +N
+  const trigger = h(XhSelectTrigger, null, () => [
+    h(XhSelectValueText),
+    ...(tags
+      ? [h(XhSelectTagList, null, () => [
+          ...tags.map(tag => h(XhSelectTag, { key: tag.value, value: tag.value }, () => tag.label)),
+          h(XhSelectOverflowTag),
+        ])]
+      : []),
+    h(XhSelectIndicator),
+  ])
   return [
     ...(label ? [h(XhSelectLabel, null, () => label)] : []),
     // control 是盒：描边、底色与聚焦环都长在它上面，触发器与清空钮在里面并排。

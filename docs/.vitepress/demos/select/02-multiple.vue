@@ -1,4 +1,4 @@
-<!-- 多选 | 选择多个值 -->
+<!-- 多选 | 已选项在触发器里排成标签 -->
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
 import { ref } from "vue";

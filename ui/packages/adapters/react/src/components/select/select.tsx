@@ -6,7 +6,7 @@
 // 提供 select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, SelectApi, SelectNode, SelectNodeMeta, SelectSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, SelectApi, SelectNode, SelectNodeMeta, SelectSchema, SelectTagMeta } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
@@ -171,7 +171,7 @@ export function XhSelectRoot({
         deselect: api.deselect,
       })
     : collection
-      ? <DefaultTree collection={api.collection} label={label} clearable={clearable} renderItem={renderItem} renderItemPrefix={renderItemPrefix} renderItemSuffix={renderItemSuffix} />
+      ? <DefaultTree collection={api.collection} tags={multiple ? api.tags : null} label={label} clearable={clearable} renderItem={renderItem} renderItemPrefix={renderItemPrefix} renderItemSuffix={renderItemSuffix} />
       : null
 
   return (
@@ -517,15 +517,26 @@ export function XhSelectItemIndicator({ children, ...rest }: XhSelectItemIndicat
  */
 function DefaultTree(props: {
   collection: readonly SelectNodeMeta[]
+  tags: readonly SelectTagMeta[] | null
   label?: ReactNode
   clearable?: boolean
   renderItem?: (node: SelectNodeMeta) => ReactNode
   renderItemPrefix?: (node: SelectNodeMeta) => ReactNode
   renderItemSuffix?: (node: SelectNodeMeta) => ReactNode
 }): ReactNode {
+  // 多选的已选项在触发器里排成标签：占位文字与标签行同时写着，有选中时标签露面、占位让位；
+  // 触发器里的标签只作展示（按钮不能套按钮），摆不下的折进 +N
   const trigger = (
     <XhSelectTrigger>
       <XhSelectValueText />
+      {props.tags
+        ? (
+            <XhSelectTagList>
+              {props.tags.map(tag => <XhSelectTag key={tag.value} value={tag.value}>{tag.label}</XhSelectTag>)}
+              <XhSelectOverflowTag />
+            </XhSelectTagList>
+          )
+        : null}
       <XhSelectIndicator />
     </XhSelectTrigger>
   )
