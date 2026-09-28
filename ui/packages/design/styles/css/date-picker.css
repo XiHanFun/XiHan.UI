@@ -628,6 +628,11 @@
     opacity: 1;
   }
 
+  /* 界外、被判为不可用的格走 aria-disabled，家族按它给禁用面；选中标记跟着降级 */
+  [data-scope='date-picker'][data-part='time-item'][data-disabled]::after {
+    background-color: var(--xh-fg-disabled);
+  }
+
   @media not all and (min-width: 768px) {
     [data-scope='date-picker'][data-part='content'] {
       padding-inline: var(--xh-date-picker-content-px, var(--xh-space-2));
@@ -734,11 +739,13 @@
     }
 
     [data-scope='date-picker'][data-part='preset'][data-disabled]::after,
+    [data-scope='date-picker'][data-part='time-item'][data-disabled]::after,
     [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
       background-color: GrayText;
     }
 
     [data-scope='date-picker'][data-part='preset'][data-disabled],
+    [data-scope='date-picker'][data-part='time-item'][data-disabled],
     [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
       color: GrayText;
     }

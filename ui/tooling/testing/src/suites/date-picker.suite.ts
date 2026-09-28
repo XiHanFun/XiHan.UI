@@ -235,20 +235,24 @@ function presetGroupFixture(base: FixtureNode, presets: readonly { value: string
  * 两种写法在 DOM 里落成同一副 time-column / time-item 部件。只有用到它的那条用例派生这一份；
  * 精度取缺省的 minute，只铺时、分两列（Vue 侧逐格重渲，列越多用例越慢）。
  */
-function showTimeFixture(base: FixtureNode, options: { columns?: boolean } = {}): FixtureNode {
+function showTimeFixture(base: FixtureNode, options: { columns?: boolean, hourCycle?: 12 | 24 } = {}): FixtureNode {
+  // 上下午那一格的字归元素按 locale 填，作者留空；数字格作者照值写
   const timeColumn = (unit: string, values: readonly string[]): FixtureNode => ({
     part: 'time-column',
     attrs: { unit },
     only: ['wc'],
-    children: values.map(value => ({ part: 'time-item', attrs: { value }, text: value })),
+    children: values.map(value => ({ part: 'time-item', attrs: { value }, ...(unit === 'dayPeriod' ? {} : { text: value }) })),
   })
+  const pad = (n: number): string => String(n).padStart(2, '0')
+  const twelve = options.hourCycle === 12
   // 没开 showTime 时 Vue / React 的面板一列都不铺，而作者写的列会带 hidden 留在 DOM 里，三家对不齐：只铺确认钮
   const columns: FixtureNode[] = options.columns === false
     ? []
     : [
         { part: 'time-panel', only: ['vue', 'react'] },
-        timeColumn('hour', Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))),
-        timeColumn('minute', Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))),
+        timeColumn('hour', twelve ? Array.from({ length: 12 }, (_, i) => pad(i + 1)) : Array.from({ length: 24 }, (_, i) => pad(i))),
+        timeColumn('minute', Array.from({ length: 60 }, (_, i) => pad(i))),
+        ...(twelve ? [timeColumn('dayPeriod', ['00', '01'])] : []),
       ]
   const extra: FixtureNode[] = [...columns, { part: 'confirm-trigger', tag: 'button', text: '确定' }]
   return {
@@ -270,6 +274,16 @@ function showTimeFixture(base: FixtureNode, options: { columns?: boolean } = {})
 /** showTime 下某一列的一格：列按 data-unit 认、格按 data-value 认。 */
 function timeItemIn(unit: string, value: string): string {
   return `[data-scope="date-picker"][data-part="time-column"][data-unit="${unit}"] [data-part="time-item"][data-value="${value}"]`
+}
+
+/** 断言某一格的一个属性；格按单位与值认，与三家的文档序无关。 */
+function expectTimeItem(doc: Document, unit: string, value: string, name: string, want: string | null, why: string): void {
+  const el = doc.querySelector(timeItemIn(unit, value))
+  if (!el)
+    throw new Error(`${why}：找不到 ${unit} 列的 ${value}`)
+  const got = name === 'text' ? (el.textContent ?? '') : el.getAttribute(name)
+  if (got !== want)
+    throw new Error(`${why}：${unit}:${value} 的 ${name} 期望 ${want}，实际 ${got}`)
 }
 
 export const datePickerSuite: ConformanceSuite = {
@@ -972,6 +986,54 @@ export const datePickerSuite: ConformanceSuite = {
           until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } },
           expect: { parts: { 'content': { hidden: '' }, 'trigger': { 'data-pressed': null }, 'clear-trigger': { hidden: null } }, events: [] },
         },
+      ],
+    },
+    {
+      name: 'showTime 12 小时制：时间列末位多出上下午列，时列写显示值，点上下午改的是背后 24 小时制的时',
+      spec: { apg: APG },
+      fixture: base => showTimeFixture(base, { hourCycle: 12 }),
+      props: { ...BASE_PROPS, defaultValue: '2024-02-15T21:30', showTime: true, hourCycle: 12 },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '格按单位与值认；上下午那一格的字是文本节点',
+          run: ({ doc }) => {
+            expectTimeItem(doc, 'hour', '09', 'aria-selected', 'true', '21 点在时列上是 09')
+            expectTimeItem(doc, 'dayPeriod', '01', 'aria-selected', 'true', '21 点在下午')
+            expectTimeItem(doc, 'dayPeriod', '01', 'text', '下午', '上下午的字按 locale 现译')
+            expectTimeItem(doc, 'dayPeriod', '00', 'text', '上午', '上下午的字按 locale 现译')
+          },
+        },
+        // 上下午列排在末位：时列 12 格、分列 60 格之后
+        {
+          kind: 'click',
+          part: 'time-item[72]',
+          expect: { events: [{ type: 'value-change', detail: { value: ['2024-02-15T09:30'] } }] },
+        },
+      ],
+    },
+    {
+      name: 'showTime 的 min 带时间段：与它同一天的界外时刻留在列里、标为不可选，按下不写值',
+      spec: { apg: APG },
+      fixture: showTimeFixture,
+      props: { ...BASE_PROPS, min: '2024-02-15T09:30', defaultValue: '2024-02-15T09:45', showTime: true },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '格按单位与值认',
+          run: ({ doc }) => {
+            expectTimeItem(doc, 'hour', '08', 'aria-disabled', 'true', '8 点整点都在下界之前')
+            expectTimeItem(doc, 'hour', '09', 'aria-disabled', 'false', '9 点里还有界内的分')
+            expectTimeItem(doc, 'minute', '15', 'aria-disabled', 'true', '9 点卡在界上，30 分之前不可选')
+            expectTimeItem(doc, 'minute', '30', 'aria-disabled', 'false', '9:30 就是下界本身')
+          },
+        },
+        // 分列的 15 在文档序里排第 24 + 15 格：按下不写值
+        { kind: 'click', part: 'time-item[39]', expect: { events: [] } },
       ],
     },
     {

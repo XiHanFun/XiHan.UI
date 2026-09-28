@@ -20,6 +20,9 @@ import type {
   DatePickerTimeUnit,
   DateSegmentSet,
   DateSegmentType,
+  TimeHourCycle,
+  TimeStep,
+  TimeUnavailablePredicate,
 } from '@xihan-ui/headless'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -135,6 +138,12 @@ export const XhDatePickerRoot = defineComponent({
     closeOnSelect: { type: Boolean, default: undefined },
     showTime: { type: Boolean, default: undefined },
     timeGranularity: { type: String as PropType<DatePickerSchema['props']['timeGranularity']> },
+    /** showTime 的小时制，默认 24；12 时多出上下午列与上下午段。 */
+    hourCycle: { type: Number as PropType<TimeHourCycle> },
+    /** showTime 时间列按单位的步进：`{ hour?, minute?, second? }`。 */
+    timeStep: { type: Object as PropType<TimeStep> },
+    /** showTime 时间列的逐格可选性：时列按 24 小时制给值，第三个参数带已选的时分与所属日期。 */
+    isTimeUnavailable: { type: Function as PropType<TimeUnavailablePredicate> },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: {
@@ -440,7 +449,7 @@ const XhDatePickerTimeColumnHost = defineComponent({
             h(
               'div',
               { ...api.getTimeItemProps({ unit: column.unit, value: option }) as Record<string, unknown>, key: option },
-              option,
+              api.getTimeItemText({ unit: column.unit, value: option }),
             ),
           ),
         ),
@@ -454,7 +463,7 @@ export const XhDatePickerTimePanel = defineComponent({
   name: 'XhDatePickerTimePanel',
   setup() {
     const ctx = useDatePickerContext()
-    // 时间列整组自动铺：时/分[/秒]各一列，选项点按写值；没开 showTime 时整组带 hidden
+    // 时间列整组自动铺：时/分[/秒][/上下午]各一列，选项点按写值；没开 showTime 时整组带 hidden
     return () => ctx.api.value.timeColumns.map(column =>
       h(XhDatePickerTimeColumnHost, { unit: column.unit, key: column.unit }),
     )

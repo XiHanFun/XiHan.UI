@@ -54,6 +54,18 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 
 <XhDemo src="date-picker/06-granularity" />
 
+### 12 小时制
+
+hourCycle=12 时时间列末位多出上下午列，输入行也多出上下午段；值仍是 24 小时制的 ISO 串
+
+<XhDemo src="date-picker/07-hour-cycle" />
+
+### 可约时段
+
+timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界外的时刻不可选，isTimeUnavailable 再按已选的日子收掉周末的下午
+
+<XhDemo src="date-picker/08-time-constraints" />
+
 ## 设计指引
 
 ### 何时使用
@@ -74,6 +86,8 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 - `min`、`max` 与 `isDateUnavailable` 限制可选日期。
 - `presets` 提供常用日期快捷项。
 - `showTime` 在 `granularity=day + selectionMode=single` 时让输入行显示完整日期时间，并加入时、分或秒选择列。
+- 时间列与时间选择器共用一份约束：`hourCycle={12}` 多出上下午列与上下午段（缺省 24，不随 locale 推断）；`timeStep` 按时、分、秒各设步长；`isTimeUnavailable` 逐格判定，第三个参数带已选的时分与这份时间所属的日期。
+- `min` / `max` 可以带时间段（`2026-09-28T09:30`）：日历按日期段收，与它同一天时界外的时刻留在列里、标为不可选，列长不随所选的日子变。
 - 日期时间组合面板让时间列与日期内容区从同一水平线开始；各时间列只纵向滚动，底部操作独占一行。
 - 输入值、展开状态和聚焦日期均可受控。
 - 点击输入行可以继续逐段键入，点击日历图标则把焦点送入日历；展开期间输入框保持激活边界。
@@ -149,8 +163,11 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 | `offset` | `number` |  |  |
 | `translations` | `Partial<DatePickerTranslations>` |  |  |
 | `closeOnSelect` | `boolean` |  | 选完即收起，默认 true。多选不收起。 |
-| `showTime` | `boolean` |  | 一体化时间：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，面板中多出时间列， 选完日期不收起、由确认按钮收口。只在 day + single 下生效。 |
+| `showTime` | `boolean` |  | 一体化时间：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，面板中多出时间列， 选完日期不收起、由确认按钮收口。只在 day + single 下生效。 此时 min / max 可以带时间段（'2026-09-28T09:30'）：日历按日期段收，时间列在与它同一天时按时间段标不可选。 |
 | `timeGranularity` | `DatePickerTimeGranularity` |  | showTime 的时间段精度，默认 minute。 |
+| `hourCycle` | `TimeHourCycle` |  | showTime 的小时制，默认 24，不随 locale 推断。12 时时间列多出上下午列、输入行的时刻段后面多出上下午段； 值仍是 24 小时制的 ISO 串。 |
+| `timeStep` | `TimeStep` |  | showTime 时间列按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。只影响列里的格，不限制段位上手动输入的数。 |
+| `isTimeUnavailable` | `TimeUnavailablePredicate` |  | showTime 时间列的逐格可选性。value 是两位补零的格值，时列恒按 24 小时制给出； context 带已选的时（24 小时制）与分、这份时间所属的日期（date，还没有值时是聚焦日），index 恒为 null。 判定为真的格子仍可聚焦，只是按不下去，与 min / max 之外的时刻同等对待。 |
 | `onValueChange` | `(details: DatePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: DatePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onFocusedValueChange` | `(details: DatePickerFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻月、展开、段位输入都会发出）。 网格由外部渲染，不监听该事件时日历不会换月。 |
@@ -258,8 +275,12 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 | `setActiveView` | `(next: CalendarView) => void` | 直接切换到某一层级。 |
 | `presets` | `readonly DatePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
 | `showTime` | `boolean` | showTime 生效（已开启且为单选模式）。 |
-| `timeColumns` | `readonly TimePickerColumn<DatePickerTimeUnit>[]` | 时间列（时 / 分[/ 秒]）；未开启 showTime 时为空数组。 |
+| `timeColumns` | `readonly TimePickerColumn<DatePickerTimeUnit>[]` | 时间列（时 / 分[/ 秒][/ 上下午]），格按步进取样；未开启 showTime 时为空数组。 |
 | `timeValue` | `string \| null` | 当前时间段（'HH:mm[:ss]'）；尚无值时为 null。 |
+| `hourCycle` | `TimeHourCycle` | 时间列与时刻段实际生效的小时制。 |
+| `timeStep` | `ResolvedTimeStep` | 实际生效的按单位步进。 |
+| `getTimeItemText` | `(props: DatePickerTimeItemProps) => string` | 某一格显示的文字：数字列即格值，上下午列按 locale 给出「上午 / 下午」。各适配器都用它填字。 |
+| `isTimeItemDisabled` | `(props: DatePickerTimeItemProps) => boolean` | 某一格按不下去：落在 min / max 之外、被 isTimeUnavailable 判为不可用，或整个控件禁用。 |
 | `calendar` | `CalendarPickerApi<T>` | 内嵌日历：选日期、翻月、键盘导航都在它身上。 |
 | `field` | `DatePickerFieldApi<T>` | 内嵌分段输入。 |
 | `getRootProps` | `() => T['element']` |  |
@@ -327,6 +348,7 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 | `time-column` | `aria-multiselectable` | 'false' |
 | `time-column` | `aria-orientation` | 'vertical' |
 | `time-column` | `role` | 'listbox' |
+| `time-item` | `aria-disabled` | 'true' \| 'false' |
 | `time-item` | `aria-selected` | 'true' \| 'false' |
 | `time-item` | `role` | 'option' |
 
@@ -400,6 +422,7 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 | `calendar` | `data-readonly` | ''（条件成立时才出现） |
 | `calendar` | `data-state` | 'open' \| 'closed' |
 | `time-column` | `data-unit` | live[at]!.getAttribute('data-unit') as DatePickerTime… |
+| `time-item` | `data-disabled` | ''（条件成立时才出现） |
 | `time-item` | `data-pressed` | ''（条件成立时才出现） |
 | `time-item` | `data-state` | 'checked' \| 'unchecked' |
 | `time-item` | `data-unit` | live[at]!.getAttribute('data-unit') as DatePickerTime… |

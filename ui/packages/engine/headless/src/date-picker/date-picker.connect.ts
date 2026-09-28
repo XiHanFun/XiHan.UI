@@ -31,11 +31,12 @@ import {
 import { sameArray as sameDates } from '../shared/array'
 import { calendarPeriodValue } from '../shared/calendar'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
-import { timeColumns as buildTimeColumns } from '../shared/time-constraint'
+import { resolveTimeStep } from '../shared/time-constraint'
+import { TIME_FIELD_HOUR_CYCLE } from '../time-field'
 import { datePickerAnatomy } from './date-picker.anatomy'
 import { DATE_PICKER_DEFAULT_PLACEMENT } from './date-picker.machine'
 import { datePickerPresetDates } from './date-picker.presets'
-import { datePickerDatePart, datePickerJoinDateTime, datePickerSetTimeUnit, datePickerTimePart } from './date-picker.time'
+import { datePickerDatePart, datePickerJoinDateTime, datePickerTimeModel, datePickerTimePart } from './date-picker.time'
 
 const parts = datePickerAnatomy.build()
 /** 段位的 CSS 选择器，取自分段输入那一份解剖。 */
@@ -58,6 +59,7 @@ function resolveTranslations(input: Partial<DatePickerTranslations> | undefined)
     hour: input?.hour ?? 'hour',
     minute: input?.minute ?? 'minute',
     second: input?.second ?? 'second',
+    dayPeriod: input?.dayPeriod ?? 'AM/PM',
   }
 }
 
@@ -118,33 +120,44 @@ export function connectDatePicker<T extends PropTypes>(
   // —— showTime：值升格为 datetime，面板里多出时间列，收口交给确认按钮 ——
   const showTime = !!prop('showTime') && selectionMode === 'single'
   const timeGranularity = prop('timeGranularity') ?? 'minute'
-  // 内嵌面板恒为 24 小时制，生成函数因此不会给出上下午那一列；滤一道把这件事写进类型里
-  const timeColumns: readonly TimePickerColumn<DatePickerTimeUnit>[] = showTime
-    ? buildTimeColumns({ granularity: timeGranularity, hourCycle: 24 })
-        .filter((column): column is TimePickerColumn<DatePickerTimeUnit> => column.unit !== 'dayPeriod')
-    : []
+  // 小时制缺省 24，不随 locale 推断
+  const hourCycle = prop('hourCycle') ?? TIME_FIELD_HOUR_CYCLE
+  const timeStep = resolveTimeStep(prop('timeStep'))
   const timeValue = showTime && value[0] != null ? datePickerTimePart(value[0]) : null
+  // 这份时间落在哪一天：有值取值的日期段，没有就是点时间格时会落上的聚焦日
+  const timeDate = value[0] != null ? datePickerDatePart(value[0]) : calendar.focusedValue
+  // 格按步进取样、界外的格只标不可选：列长不随所选的日子变，焦点节点与滚动位置不跳
+  const time = datePickerTimeModel({
+    time: timeValue,
+    date: timeDate,
+    granularity: timeGranularity,
+    hourCycle,
+    timeStep: prop('timeStep'),
+    min: prop('min'),
+    max: prop('max'),
+    isTimeUnavailable: prop('isTimeUnavailable'),
+    locale: prop('locale'),
+  })
+  const timeColumns: readonly TimePickerColumn<DatePickerTimeUnit>[] = showTime ? time.columns : []
 
-  /** 时间列里那一段在 'HH:mm[:ss]' 里排第几。 */
-  const timeSlotOf = (unit: DatePickerTimeUnit): number => (unit === 'hour' ? 0 : unit === 'minute' ? 1 : 2)
+  /** 一格按不下去：整个控件禁用，或落在界外 / 被作者判为不可用。 */
+  const timeItemDisabled = (unit: DatePickerTimeUnit, option: string): boolean =>
+    disabled || time.isUnavailable(unit, option)
 
   /**
-   * 一列此刻的 Tab 落点：选中的那一项，还没选就落头一项。
+   * 一列此刻的 Tab 落点：选中且按得下的那一项，否则头一个按得下的项。
    *
    * 不另立「聚焦到哪一项」的状态：这几列只是选个数，落点由选中值推得出来，
    * 焦点本身交给 DOM。列里一格都没有时给 null，那时 Tab 位归列自己。
    */
-  const timeAnchorOf = (unit: DatePickerTimeUnit): string | null => {
-    const column = timeColumns.find(c => c.unit === unit)
-    if (!column?.options.length)
-      return null
-    const picked = timeValue?.split(':')[timeSlotOf(unit)]
-    return picked != null && column.options.includes(picked) ? picked : column.options[0]!
-  }
+  const timeAnchorOf = (unit: DatePickerTimeUnit): string | null => (showTime ? time.anchorOf(unit) : null)
 
   /** 一列里的全部选项，文档序。事件那一刻现查，不缓存节点数组。 */
   const timeItemsIn = (column: HTMLElement | null): HTMLElement[] =>
     column ? [...column.querySelectorAll<HTMLElement>(parts['time-item'].selector)] : []
+
+  /** 格自报的不可选：方向键在列内走时跳过它们。 */
+  const timeItemInert = (el: HTMLElement): boolean => el.getAttribute('aria-disabled') === 'true'
 
   /** 同一份浮层里露出来的那几列。收起的列（没开 showTime）不算一站。 */
   const timeColumnsIn = (from: HTMLElement): HTMLElement[] => {
@@ -210,13 +223,11 @@ export function connectDatePicker<T extends PropTypes>(
     send({ type: 'VALUE.SET', value: next, src: 'preset' })
   }
 
-  /** 点时间选项：该单位写进值；还没有日期时以聚焦日起值。 */
-  const pickTimeUnit = (unit: 'hour' | 'minute' | 'second', next: string): void => {
-    if (!interactive)
+  /** 点时间选项：该单位写进值（12 小时制下按当前的上下午换算）；还没有日期时以聚焦日起值。 */
+  const pickTimeUnit = (unit: DatePickerTimeUnit, next: string): void => {
+    if (!interactive || timeItemDisabled(unit, next))
       return
-    const date = value[0] != null ? datePickerDatePart(value[0]) : calendar.focusedValue
-    const nextTime = datePickerSetTimeUnit(timeValue, unit, next, timeGranularity)
-    send({ type: 'VALUE.SET', value: [datePickerJoinDateTime(date, nextTime, timeGranularity)], src: 'api' })
+    send({ type: 'VALUE.SET', value: [datePickerJoinDateTime(timeDate, time.pick(unit, next), timeGranularity)], src: 'api' })
   }
 
   /**
@@ -361,6 +372,10 @@ export function connectDatePicker<T extends PropTypes>(
     showTime,
     timeColumns,
     timeValue,
+    hourCycle,
+    timeStep,
+    getTimeItemText: ({ unit, value: option }) => time.itemText(unit, option),
+    isTimeItemDisabled: ({ unit, value: option }) => timeItemDisabled(unit, option),
     calendar,
     field,
     setOpen: (next) => {
@@ -671,11 +686,14 @@ export function connectDatePicker<T extends PropTypes>(
         // 焦点在哪一格：事件从那一格冒上来。落在列自己身上时从头一格起步
         const current = (event.target as HTMLElement | null)?.closest<HTMLElement>(parts['time-item'].selector) ?? null
 
-        // 上下键与 Home/End 在列内走，到头回绕——一列就是一圈数
+        // 上下键与 Home/End 在列内走，到头回绕——一列就是一圈数；按不下去的格跳过
         const within = navIntentFromKey(event, { axis: 'vertical' })
         if (within) {
           event.preventDefault()
-          const at = stepIndex(items.length, current ? items.indexOf(current) : -1, within, { loop: true })
+          const at = stepIndex(items.length, current ? items.indexOf(current) : -1, within, {
+            loop: true,
+            skip: i => timeItemInert(items[i]!),
+          })
           if (at >= 0)
             focusSafely(items[at])
           return
@@ -702,7 +720,8 @@ export function connectDatePicker<T extends PropTypes>(
     }),
 
     getTimeItemProps: ({ unit, value: v }) => {
-      const selected = timeValue?.split(':')[timeSlotOf(unit)] === v
+      const selected = showTime && time.selectedOf(unit) === v
+      const itemDisabled = timeItemDisabled(unit, v)
       // 时间格同走 Collection Item 的 overlay 语境：选中只留行尾对号，不再上品牌淡底
       return normalize.element({
         ...parts['time-item'].attrs,
@@ -711,14 +730,17 @@ export function connectDatePicker<T extends PropTypes>(
         'data-xh-collection-context': 'overlay',
         'role': 'option',
         'aria-selected': selected ? 'true' : 'false',
+        // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
+        'aria-disabled': itemDisabled ? 'true' : 'false',
         'data-unit': unit,
         'data-value': v,
         // 与其余 role=option 组件同一套选中编码
         'data-state': selected ? 'checked' : 'unchecked',
+        'data-disabled': dataAttr(itemDisabled),
         // roving tabindex：每列只有落点那一格留在 Tab 序列内，其余靠方向键到达
         'tabindex': timeAnchorOf(unit) === v ? 0 : -1,
-        // 按住的回执与写值同一道门：只读不进
-        ...press(`time-item:${unit}:${v}`, readOnly),
+        // 按住的回执与写值同一道门：只读、界外与作者判为不可用的格都不进
+        ...press(`time-item:${unit}:${v}`, readOnly || itemDisabled),
         'onClick': () => pickTimeUnit(unit, v),
       })
     },

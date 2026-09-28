@@ -10,6 +10,8 @@ import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { CalendarPickerApi, CalendarPickerSchema, CalendarPickerSelectionMode, CalendarPickerTranslations } from '../calendar-picker'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentSet } from '../date-field'
 import type { CalendarGranularity, CalendarPeriodValue, CalendarView, CalendarViewChangeDetails } from '../shared/calendar'
+import type { ResolvedTimeStep, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
+import type { TimeHourCycle } from '../time-field'
 import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker'
 import type { DatePickerTimeGranularity } from './date-picker.time'
 
@@ -30,6 +32,8 @@ export interface DatePickerTranslations extends CalendarPickerTranslations {
   minute: string
   /** 秒列的名字。 */
   second: string
+  /** 上下午列的名字（12 小时制下才有这一列）。 */
+  dayPeriod: string
 }
 
 /**
@@ -65,8 +69,8 @@ export interface DatePickerPresetProps {
   value: string
 }
 
-/** 内嵌时间面板的列单位：该面板恒为 24 小时制，没有上下午列。 */
-export type DatePickerTimeUnit = Exclude<TimePickerColumnUnit, 'dayPeriod'>
+/** 内嵌时间面板的列单位：上下午列只在 12 小时制下出现，恒排末位。 */
+export type DatePickerTimeUnit = TimePickerColumnUnit
 
 /**
  * 接了按压通道的部件，按 key 记住正被按住的那一个：
@@ -79,7 +83,7 @@ export interface DatePickerTimeColumnProps {
   unit: DatePickerTimeUnit
 }
 
-/** 时间选项声明所属的列与自身的值（两位补零的显示串）。 */
+/** 时间选项声明所属的列与自身的值（两位补零的显示串；上下午列写 '00' / '01'）。 */
 export interface DatePickerTimeItemProps {
   unit: DatePickerTimeUnit
   value: string
@@ -202,10 +206,24 @@ export interface DatePickerSchema extends MachineSchema {
     /**
      * 一体化时间：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，面板中多出时间列，
      * 选完日期不收起、由确认按钮收口。只在 day + single 下生效。
+     * 此时 min / max 可以带时间段（'2026-09-28T09:30'）：日历按日期段收，时间列在与它同一天时按时间段标不可选。
      */
     showTime?: boolean
     /** showTime 的时间段精度，默认 minute。 */
     timeGranularity?: DatePickerTimeGranularity
+    /**
+     * showTime 的小时制，默认 24，不随 locale 推断。12 时时间列多出上下午列、输入行的时刻段后面多出上下午段；
+     * 值仍是 24 小时制的 ISO 串。
+     */
+    hourCycle?: TimeHourCycle
+    /** showTime 时间列按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。只影响列里的格，不限制段位上手动输入的数。 */
+    timeStep?: TimeStep
+    /**
+     * showTime 时间列的逐格可选性。value 是两位补零的格值，时列恒按 24 小时制给出；
+     * context 带已选的时（24 小时制）与分、这份时间所属的日期（date，还没有值时是聚焦日），index 恒为 null。
+     * 判定为真的格子仍可聚焦，只是按不下去，与 min / max 之外的时刻同等对待。
+     */
+    isTimeUnavailable?: TimeUnavailablePredicate
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: DatePickerValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
@@ -357,10 +375,18 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   presets: readonly DatePickerPresetState[]
   /** showTime 生效（已开启且为单选模式）。 */
   showTime: boolean
-  /** 时间列（时 / 分[/ 秒]）；未开启 showTime 时为空数组。 */
+  /** 时间列（时 / 分[/ 秒][/ 上下午]），格按步进取样；未开启 showTime 时为空数组。 */
   timeColumns: readonly TimePickerColumn<DatePickerTimeUnit>[]
   /** 当前时间段（'HH:mm[:ss]'）；尚无值时为 null。 */
   timeValue: string | null
+  /** 时间列与时刻段实际生效的小时制。 */
+  hourCycle: TimeHourCycle
+  /** 实际生效的按单位步进。 */
+  timeStep: ResolvedTimeStep
+  /** 某一格显示的文字：数字列即格值，上下午列按 locale 给出「上午 / 下午」。各适配器都用它填字。 */
+  getTimeItemText: (props: DatePickerTimeItemProps) => string
+  /** 某一格按不下去：落在 min / max 之外、被 isTimeUnavailable 判为不可用，或整个控件禁用。 */
+  isTimeItemDisabled: (props: DatePickerTimeItemProps) => boolean
   /** 内嵌日历：选日期、翻月、键盘导航都在它身上。 */
   calendar: CalendarPickerApi<T>
   /** 内嵌分段输入。 */
