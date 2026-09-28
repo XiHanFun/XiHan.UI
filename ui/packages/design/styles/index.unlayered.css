@@ -39227,6 +39227,12 @@
   border-radius: 0;
   /* 文字度量归单元格，行不给行高 */
   line-height: inherit;
+  /* 换面走家族的时间线；translate 是换位提交后的落位：宿主按 ids 重排之后，连接层把行按旧位置反向补偿，
+     这条过渡带它滑到新位置，走完即归零，不常驻变换 */
+  transition:
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
 /* 家族给了 display，UA 的 [hidden]{display:none} 已被盖掉 */
@@ -39245,7 +39251,8 @@
   --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
   --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
-  transition: none;
+  /* 换面即时，只留换位：Alt + 方向键搬的正是这一行，它照样从旧位置滑到新位置 */
+  transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
 /* 行间线画在后一行的上沿，区段里第一个可见行不画：行只负责行与行之间，外边界归 root 与区段容器 */
@@ -39322,7 +39329,6 @@
     outline-offset: calc(-1 * var(--xh-stroke-thin));
   }
 }
-
 /* 分组表头横跨它的几列，名字居中压在这几列正上方 */
 [data-scope='table'][data-part='column-header'][data-group] {
   justify-content: center;
@@ -39352,6 +39358,42 @@
    否则横向滚动时其它列头从它下面穿过去 */
 [data-scope='table'][data-part='column-header'][data-frozen] {
   background: var(--xh-table-header-bg, var(--xh-bg-subtle-opaque));
+}
+
+/* 冻结列的边界：紧挨滚动区的那一列在朝向滚动区的一侧画一道描边，只在确有内容被压住时出现——
+   行首冻结列在滚离起始端之后、行尾冻结列在还没滚到末端时。冻结列与被压住的内容同在一个平面上，
+   层级靠描边而不是阴影；线常驻、按 micro 淡入淡出，不改格子的盒尺寸 */
+[data-scope='table']:is([data-part='column-header'], [data-part='cell'])[data-frozen-edge]::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inline-size: var(--xh-stroke-thin);
+  background: var(--xh-table-frozen-edge, var(--xh-border-default));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='table']:is([data-part='column-header'], [data-part='cell'])[data-frozen-edge][data-frozen='start']::after {
+  inset-inline-end: 0;
+}
+
+[data-scope='table']:is([data-part='column-header'], [data-part='cell'])[data-frozen-edge][data-frozen='end']::after {
+  inset-inline-start: 0;
+}
+
+/* root 恒报两端（没有冻结列时两端都算贴着）；虚拟滚动的行隔着视口，按后代认 */
+[data-scope='table'][data-part='root']:not([data-at-min-horizontal]) :is([data-part='column-header'], [data-part='cell'])[data-frozen-edge][data-frozen='start']::after,
+[data-scope='table'][data-part='root']:not([data-at-max-horizontal]) :is([data-part='column-header'], [data-part='cell'])[data-frozen-edge][data-frozen='end']::after {
+  opacity: 1;
+}
+
+/* 边界线是一块底色，系统色下会被抹成 Canvas：换成 CanvasText 并只让这条线不参与强制换色 */
+@media (forced-colors: active) {
+  [data-scope='table']:is([data-part='column-header'], [data-part='cell'])[data-frozen-edge]::after {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
 }
 
 /* —— 三个可叠加的外观开关 —— */
@@ -39928,11 +39970,13 @@
   content: none;
 }
 
-/* 详情行：靠 data-state 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色 */
+/* 详情行：靠 data-state 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色；
+   换位时随它的数据行一起从旧位置滑到新位置 */
 [data-scope='table'][data-part='expanded-row'] {
   display: flex;
   align-items: stretch;
   background: var(--xh-table-detail-bg, var(--xh-bg-subtle));
+  transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
 /* 详情行里的格子铺满整行，且不按数据格那样截断成一行 */

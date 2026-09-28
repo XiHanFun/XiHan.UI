@@ -1174,6 +1174,23 @@ describe('吸附列的偏移与外观开关', () => {
     expect((ops.style as Record<string, unknown> | undefined)?.['--xh-table-sticky-inset']).toBeUndefined()
   })
 
+  it('紧挨滚动区的冻结列才标 data-frozen-edge：行首侧最靠后的一列、行尾侧最靠前的一列', () => {
+    const h = mount({ columns: STICKY_COLUMNS })
+    const edge = (value: string): unknown => (h.api().getCellProps({ value, row: 'a' }) as Record<string, unknown>)['data-frozen-edge']
+    expect(edge('select')).toBeUndefined()
+    expect(edge('name')).toBe('')
+    expect(edge('size')).toBeUndefined()
+    expect(edge('ops')).toBe('')
+    expect((h.api().getColumnHeaderProps({ value: 'name' }) as Record<string, unknown>)['data-frozen-edge']).toBe('')
+  })
+
+  it('横向滚动的两端：没量过（服务端与挂载前、jsdom 不排版）两端都算贴着，根上两位都在，不画边界', () => {
+    const h = mount({ columns: STICKY_COLUMNS })
+    const root = h.api().getRootProps() as Record<string, unknown>
+    expect(root['data-at-min-horizontal']).toBe('')
+    expect(root['data-at-max-horizontal']).toBe('')
+  })
+
   it('不吸附的列不写 data-frozen', () => {
     const h = mount({ columns: STICKY_COLUMNS })
     const size = h.api().getCellProps({ value: 'size', row: 'a' }) as Record<string, unknown>

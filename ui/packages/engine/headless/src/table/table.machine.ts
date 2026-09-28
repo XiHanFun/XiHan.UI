@@ -5,6 +5,7 @@
 
 // 提供 table 相关实现。
 
+import type { RefsFacade } from '@xihan-ui/core'
 import type { DragAnnounceKind } from '../shared/drag'
 import type { TableLayoutNeeds } from './table.layout'
 import type {
@@ -15,18 +16,20 @@ import type {
   TableRowDef,
   TableRowReorderReason,
   TableSchema,
+  TableScrollEdges,
   TableSelection,
   TableSelectionMode,
   TableSortDescriptor,
 } from './table.types'
-import { applySelection, cascadeState, cascadeToggle, collapseChecked, setup } from '@xihan-ui/core'
+import { applySelection, cascadeState, cascadeToggle, collapseChecked, ITEM_VALUE_ATTR, setup, trackReorder } from '@xihan-ui/core'
 import { clampSize, createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { dragAnnouncement, hitAlong, hitAlongNested, insertionIndex } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
+import { TABLE_BODY_ROW_SELECTOR, TABLE_BODY_SELECTOR } from './table.anatomy'
 import { orderColumnIds, resolveTableColumns, tableLeafColumns } from './table.columns'
 import { canOwnChildren, draggableColumnIds, reorderTableRows, tableRowMoveOf, toColumnPreferenceIndex } from './table.drag'
-import { measureTableLayout, sameTableLayout, TABLE_EMPTY_LAYOUT, tableLayoutNeeds } from './table.layout'
+import { measureTableLayout, sameTableLayout, TABLE_EMPTY_LAYOUT, tableLayoutNeeds, tableScrollEdges } from './table.layout'
 import { flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
@@ -122,6 +125,11 @@ export const tableMachine = createMachine({
     pressed: cell<TablePressedKey | null>(() => ({ defaultValue: null })),
     // 实测版面：只由 measureLayout 效应写，值没变不写
     layout: cell<TableLayout>(() => ({ defaultValue: TABLE_EMPTY_LAYOUT, isEqual: sameTableLayout })),
+    // 横向滚动相对两端：只由 trackScrollEdges 效应写，值没变不写
+    scrollEdges: cell<TableScrollEdges>(() => ({
+      defaultValue: { atStart: true, atEnd: true },
+      isEqual: (a, b) => !!b && a.atStart === b.atStart && a.atEnd === b.atEnd,
+    })),
   }),
   // 按住途中转入加载：取数在途各把手都动不了，不会再来 keyup，按压面由机器自己收
   watch: ({ track, prop, action }) => {
@@ -132,10 +140,11 @@ export const tableMachine = createMachine({
     resize: null,
     columnDrag: null,
     rowDrag: null,
+    reorder: null,
   }),
   initialState: () => 'idle',
   // 版面实测与拖动 / 改宽的过程无关，全程挂着；需不需要量由 props 现判
-  effects: ['measureLayout'],
+  effects: ['measureLayout', 'trackScrollEdges'],
   // 按压通道与拖动 / 改宽的过程无关，四个状态都认；加载中不进，部件自身的禁用随事件带入
   on: {
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
@@ -278,8 +287,49 @@ export const tableMachine = createMachine({
           if (frame)
             scope.getWin().cancelAnimationFrame?.(frame)
           stop?.()
+          refs.get('reorder')?.()
+          refs.set('reorder', null)
         }
       },
+      /**
+       * 盯住横向滚动离两端还有多远，给冻结列的边界提示用：只在有冻结列时才写，滚动与尺寸变化时现量。
+       * 滚动容器是 root 自己；放进滚动区的表格不自己滚，两端一直贴着，不画提示。
+       */
+      trackScrollEdges: ({ refs, prop, context, scope, flush }) => {
+        let stop: (() => void) | null = null
+        let disposed = false
+        const frozen = (): boolean => {
+          const sticky = context.get('columnPreference').sticky
+          return tableLeafColumns(prop('columns') ?? []).some(column => !!(sticky?.[column.id] ?? column.sticky))
+        }
+        flush(() => {
+          const root = refs.get('getRootEl')()
+          if (disposed || !root)
+            return
+          const win = scope.getWin()
+          const read = (): void => {
+            if (!frozen())
+              return
+            context.set('scrollEdges', tableScrollEdges(root, win.getComputedStyle(root).direction === 'rtl'))
+          }
+          root.addEventListener('scroll', read, { passive: true })
+          // 两端的位置还随内容宽度变：区段容器按最宽的一行撑开，盯住它们的尺寸
+          const resize = typeof win.ResizeObserver === 'function' ? new win.ResizeObserver(read) : null
+          resize?.observe(root)
+          for (const section of root.children)
+            resize?.observe(section)
+          read()
+          stop = () => {
+            root.removeEventListener('scroll', read)
+            resize?.disconnect()
+          }
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
+
       /** 跟手交给指针会话：拖出表头仍要跟，系统收走指针也会收尾。 */
       trackResizePointer: ({ scope, send }) => {
         const session = createPointerSession({
@@ -478,7 +528,7 @@ export const tableMachine = createMachine({
           announceRowMove(context, prop, 'rejected', session.rowId)
           return
         }
-        commitRowMove(context, prop, send, session.rowId, target, 'dropped')
+        commitRowMove(context, prop, send, session.rowId, target, 'dropped', () => armRowReorder(refs))
       },
 
       cancelRowDrag: ({ context, prop, refs }) => {
@@ -494,11 +544,11 @@ export const tableMachine = createMachine({
           context.set('rowReorderBlocked', e.reason)
       },
 
-      moveRowBy: ({ context, prop, event, send }) => {
+      moveRowBy: ({ context, prop, event, send, refs }) => {
         const e = event.current()
         if (e.type !== 'ROW.MOVE_BY')
           return
-        commitRowMove(context, prop, send, e.rowId, e.target, 'moved')
+        commitRowMove(context, prop, send, e.rowId, e.target, 'moved', () => armRowReorder(refs))
       },
 
       moveColumnBy: ({ context, prop, event, send }) => {
@@ -882,6 +932,7 @@ function commitRowMove(
   rowId: string,
   target: TableDropTarget,
   kind: DragAnnounceKind,
+  beforeCommit: () => void,
 ): void {
   const rows = prop('rows') ?? []
   const move = tableRowMoveOf(flattenTableRows(rows, context.get('expandedValue')), rowId, target)
@@ -895,10 +946,24 @@ function commitRowMove(
     announceRowMove(context, prop, 'rejected', rowId)
     return
   }
+  beforeCommit()
   prop('onRowMove')?.(details)
   // 焦点锚点跟着搬走的那一行，键盘连着挪几格才不会挪一次就丢了起点
   send({ type: 'ROW.FOCUS', value: rowId })
   announceRowMove(context, prop, kind, rowId, move.index + 1)
+}
+
+/**
+ * 报出换位之前记下表体里每一行（连同展开的详情行）此刻的排布位，宿主按 ids 重排的那一批变更里，
+ * 行从旧位置滑到新位置（皮肤给行的 translate 过渡）。数据行按 data-value、详情行按 id 认身份。
+ * 上一次没等到写回的先停掉。
+ */
+function armRowReorder(refs: RefsFacade<TableSchema>): void {
+  refs.get('reorder')?.()
+  const body = refs.get('getRootEl')()?.querySelector<HTMLElement>(TABLE_BODY_SELECTOR) ?? null
+  refs.set('reorder', body
+    ? trackReorder(body, { item: TABLE_BODY_ROW_SELECTOR, key: row => row.getAttribute(ITEM_VALUE_ATTR) ?? row.id })
+    : null)
 }
 
 /** 收尾：拖动态的三样一起清干净，别留半截。 */

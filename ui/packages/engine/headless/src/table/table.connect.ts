@@ -353,6 +353,17 @@ export function connectTable<T extends PropTypes>(
       acc = acc != null && insetWidth(def) != null ? acc + insetWidth(def)! : null
     }
   }
+  // 紧挨滚动区的那两列：行首一侧最靠后的冻结列、行尾一侧最靠前的冻结列。边界提示只画在它们身上
+  const frozenEdges = new Set<string>()
+  {
+    const startEdge = columns.filter(def => stickySideOf(def) === 'start').at(-1)
+    const endEdge = columns.find(def => stickySideOf(def) === 'end')
+    if (startEdge)
+      frozenEdges.add(startEdge.id)
+    if (endEdge)
+      frozenEdges.add(endEdge.id)
+  }
+  const scrollEdges = context.get('scrollEdges')
   const stickyAttrs = (def: TableColumnDef | undefined): Record<string, unknown> => {
     const side = stickySideOf(def)
     if (!side)
@@ -360,6 +371,7 @@ export function connectTable<T extends PropTypes>(
     const inset = def ? stickyInset.get(def.id) : undefined
     return {
       'data-frozen': side,
+      'data-frozen-edge': dataAttr(!!def && frozenEdges.has(def.id)),
       ...(inset != null && inset > 0 ? { style: { '--xh-table-sticky-inset': `${inset}px` } } : {}),
     }
   }
@@ -678,6 +690,10 @@ export function connectTable<T extends PropTypes>(
       'data-striped': dataAttr(!!prop('striped')),
       'data-variant': prop('variant') ?? 'outline',
       'data-split': dataAttr(!!prop('ruled')),
+      // 横向滚动贴着哪一端：皮肤据此只在确有内容被压住的那一侧画冻结列的边界。
+      // 只在有冻结列时才跟踪，没有时恒报两端都贴着
+      'data-at-min-horizontal': dataAttr(scrollEdges.atStart),
+      'data-at-max-horizontal': dataAttr(scrollEdges.atEnd),
     }),
 
     getCaptionProps: () => normalize.element({
