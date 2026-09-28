@@ -6,7 +6,7 @@
 // 提供 grid 相关实现。
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { GridApi, GridBreakpoint, GridCols, GridColsByBreakpoint, GridOffset, GridProps, GridSpan } from './grid.types'
+import type { GridApi, GridBreakpoint, GridCols, GridColsByBreakpoint, GridOffset, GridProps, GridRowSpan, GridSpan } from './grid.types'
 import { gridAnatomy } from './grid.anatomy'
 
 const parts = gridAnatomy.build()
@@ -39,7 +39,7 @@ type Tiers = Record<'base' | GridBreakpoint, string | undefined>
  * 给断点对象时逐档取，没写的档是 undefined。
  * 属性名不由这里拼——它们是公开面，得在调用处按字面写着才盯得住改名。
  */
-function tiers(value: GridCols | GridSpan | GridOffset | undefined, max: number): Tiers {
+function tiers(value: GridCols | GridSpan | GridOffset | GridRowSpan | undefined, max: number): Tiers {
   const byTier: GridColsByBreakpoint = value != null && typeof value === 'object' ? value : { base: value }
   const out = { base: tier(byTier.base, max) } as Tiers
   for (const at of BREAKPOINTS)
@@ -76,10 +76,11 @@ export function connectGrid<T extends PropTypes>(
       })
     },
 
-    // 跨列与错列是每一格自报的声明，都不写就按文档序占一格
+    // 跨列、错列与跨行是每一格自报的声明，都不写就按文档序占一格
     getItemProps: (item = {}) => {
       const span = tiers(item.span, MAX_COLUMN_COUNT)
       const offset = tiers(item.offset, MAX_COLUMN_OFFSET)
+      const rowSpan = tiers(item.rowSpan, MAX_COLUMN_COUNT)
       return normalize.element({
         ...parts.item.attrs,
         'data-span': span.base,
@@ -92,6 +93,11 @@ export function connectGrid<T extends PropTypes>(
         'data-offset-md': offset.md,
         'data-offset-lg': offset.lg,
         'data-offset-xl': offset.xl,
+        'data-row-span': rowSpan.base,
+        'data-row-span-sm': rowSpan.sm,
+        'data-row-span-md': rowSpan.md,
+        'data-row-span-lg': rowSpan.lg,
+        'data-row-span-xl': rowSpan.xl,
       })
     },
   }

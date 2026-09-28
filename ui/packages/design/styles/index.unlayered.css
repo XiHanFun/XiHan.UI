@@ -6206,10 +6206,12 @@
 [data-scope='grid'][data-part='item'] {
   grid-column-start: var(--xh-_grid-start);
   grid-column-end: span var(--xh-_grid-span);
+  grid-row-end: span var(--xh-_grid-row-span);
 
-  /* 两个槽位在每一格上都声明一遍，嵌套时内层的格子不吃外层那一格的值 */
+  /* 三个槽位在每一格上都声明一遍，嵌套时内层的格子不吃外层那一格的值 */
   --xh-_grid-span: 1;
   --xh-_grid-start: auto;
+  --xh-_grid-row-span: 1;
 }
 
 /* —— 跨列 —— */
@@ -6685,6 +6687,255 @@
 
   [data-scope='grid'][data-part='item'][data-offset-xl='11'] {
     --xh-_grid-start: 12;
+  }
+}
+
+/* —— 跨行 —— */
+/* 占一行是格子上的缺省，这里从跨两行起逐值写。行高由内容撑出时跨几行就占几条行轨道，
+   同一行里其余的格子按各自内容排，不被拉成同高 */
+[data-scope='grid'][data-part='item'][data-row-span='2'] {
+  --xh-_grid-row-span: 2;
+}
+
+[data-scope='grid'][data-part='item'][data-row-span='3'] {
+  --xh-_grid-row-span: 3;
+}
+
+[data-scope='grid'][data-part='item'][data-row-span='4'] {
+  --xh-_grid-row-span: 4;
+}
+
+[data-scope='grid'][data-part='item'][data-row-span='5'] {
+  --xh-_grid-row-span: 5;
+}
+
+[data-scope='grid'][data-part='item'][data-row-span='6'] {
+  --xh-_grid-row-span: 6;
+}
+
+[data-scope='grid'][data-part='item'][data-row-span='7'] {
+  --xh-_grid-row-span: 7;
+}
+
+[data-scope='grid'][data-part='item'][data-row-span='8'] {
+  --xh-_grid-row-span: 8;
+}
+
+[data-scope='grid'][data-part='item'][data-row-span='9'] {
+  --xh-_grid-row-span: 9;
+}
+
+[data-scope='grid'][data-part='item'][data-row-span='10'] {
+  --xh-_grid-row-span: 10;
+}
+
+[data-scope='grid'][data-part='item'][data-row-span='11'] {
+  --xh-_grid-row-span: 11;
+}
+
+[data-scope='grid'][data-part='item'][data-row-span='12'] {
+  --xh-_grid-row-span: 12;
+}
+
+/* —— 逐档跨行 —— */
+/* 与逐档跨列逐字同构：移动优先，没写的档沿用比它窄的那一档；每档都从 1 写起，某一档收回一行同样合法 */
+@media (min-width: 640px) {
+  [data-scope='grid'][data-part='item'][data-row-span-sm='1'] {
+    --xh-_grid-row-span: 1;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-sm='2'] {
+    --xh-_grid-row-span: 2;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-sm='3'] {
+    --xh-_grid-row-span: 3;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-sm='4'] {
+    --xh-_grid-row-span: 4;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-sm='5'] {
+    --xh-_grid-row-span: 5;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-sm='6'] {
+    --xh-_grid-row-span: 6;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-sm='7'] {
+    --xh-_grid-row-span: 7;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-sm='8'] {
+    --xh-_grid-row-span: 8;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-sm='9'] {
+    --xh-_grid-row-span: 9;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-sm='10'] {
+    --xh-_grid-row-span: 10;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-sm='11'] {
+    --xh-_grid-row-span: 11;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-sm='12'] {
+    --xh-_grid-row-span: 12;
+  }
+}
+
+@media (min-width: 768px) {
+  [data-scope='grid'][data-part='item'][data-row-span-md='1'] {
+    --xh-_grid-row-span: 1;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-md='2'] {
+    --xh-_grid-row-span: 2;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-md='3'] {
+    --xh-_grid-row-span: 3;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-md='4'] {
+    --xh-_grid-row-span: 4;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-md='5'] {
+    --xh-_grid-row-span: 5;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-md='6'] {
+    --xh-_grid-row-span: 6;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-md='7'] {
+    --xh-_grid-row-span: 7;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-md='8'] {
+    --xh-_grid-row-span: 8;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-md='9'] {
+    --xh-_grid-row-span: 9;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-md='10'] {
+    --xh-_grid-row-span: 10;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-md='11'] {
+    --xh-_grid-row-span: 11;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-md='12'] {
+    --xh-_grid-row-span: 12;
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-scope='grid'][data-part='item'][data-row-span-lg='1'] {
+    --xh-_grid-row-span: 1;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-lg='2'] {
+    --xh-_grid-row-span: 2;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-lg='3'] {
+    --xh-_grid-row-span: 3;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-lg='4'] {
+    --xh-_grid-row-span: 4;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-lg='5'] {
+    --xh-_grid-row-span: 5;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-lg='6'] {
+    --xh-_grid-row-span: 6;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-lg='7'] {
+    --xh-_grid-row-span: 7;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-lg='8'] {
+    --xh-_grid-row-span: 8;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-lg='9'] {
+    --xh-_grid-row-span: 9;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-lg='10'] {
+    --xh-_grid-row-span: 10;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-lg='11'] {
+    --xh-_grid-row-span: 11;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-lg='12'] {
+    --xh-_grid-row-span: 12;
+  }
+}
+
+@media (min-width: 1280px) {
+  [data-scope='grid'][data-part='item'][data-row-span-xl='1'] {
+    --xh-_grid-row-span: 1;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-xl='2'] {
+    --xh-_grid-row-span: 2;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-xl='3'] {
+    --xh-_grid-row-span: 3;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-xl='4'] {
+    --xh-_grid-row-span: 4;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-xl='5'] {
+    --xh-_grid-row-span: 5;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-xl='6'] {
+    --xh-_grid-row-span: 6;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-xl='7'] {
+    --xh-_grid-row-span: 7;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-xl='8'] {
+    --xh-_grid-row-span: 8;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-xl='9'] {
+    --xh-_grid-row-span: 9;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-xl='10'] {
+    --xh-_grid-row-span: 10;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-xl='11'] {
+    --xh-_grid-row-span: 11;
+  }
+
+  [data-scope='grid'][data-part='item'][data-row-span-xl='12'] {
+    --xh-_grid-row-span: 12;
   }
 }
 

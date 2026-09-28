@@ -231,6 +231,28 @@ export const gridSuite: ConformanceSuite = {
       },
     },
     {
+      name: '跨行由每一格自报：整数落 data-row-span，断点对象逐档落，越界按没写算',
+      spec: { apg: APG },
+      props: { cols: 3 },
+      fixture: (base): FixtureNode => ({
+        ...base,
+        children: [
+          { part: 'item', attrs: { 'row-span': '2' }, text: '甲' },
+          { part: 'item', attrs: { 'row-span': '{"base":1,"lg":3}' }, text: '乙' },
+          { part: 'item', attrs: { 'row-span': '13' }, text: '丙' },
+          { part: 'item', text: '丁' },
+        ],
+      }),
+      initial: {
+        parts: {
+          'item[0]': { 'data-row-span': '2', 'data-row-span-lg': null },
+          'item[1]': { 'data-row-span': '1', 'data-row-span-md': null, 'data-row-span-lg': '3' },
+          'item[2]': { 'data-row-span': null },
+          'item[3]': { 'data-row-span': null },
+        },
+      },
+    },
+    {
       name: '跨列与错列越界按没写算：span 收 1 至 12、offset 收 1 至 11，出界即不输出',
       spec: { apg: APG },
       props: { cols: 4 },

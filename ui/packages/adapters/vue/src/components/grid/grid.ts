@@ -17,6 +17,7 @@ type ColsByBreakpoint = Exclude<GridProps['cols'], GridColumnCount | undefined>
 /** 断点对象形态的跨列与错列，同样从类型上取。 */
 type SpanByBreakpoint = Exclude<GridItemProps['span'], GridColumnCount | undefined>
 type OffsetByBreakpoint = Exclude<GridItemProps['offset'], GridColumnOffset | undefined>
+type RowSpanByBreakpoint = Exclude<GridItemProps['rowSpan'], GridRowCount | undefined>
 
 export const XhGridRoot = defineComponent({
   name: 'XhGridRoot',
@@ -60,6 +61,9 @@ export const XhGridItem = defineComponent({
     offset: {
       type: [Number, String, Object] as PropType<GridColumnOffset | string | OffsetByBreakpoint>,
     },
+    rowSpan: {
+      type: [Number, String, Object] as PropType<GridRowCount | string | RowSpanByBreakpoint>,
+    },
   },
   setup(props, { slots }) {
     const ctx = useGridContext()
@@ -68,6 +72,7 @@ export const XhGridItem = defineComponent({
       ctx.api.value.getItemProps({
         span: normalizeGridTier(props.span) as GridItemProps['span'],
         offset: normalizeGridTier(props.offset) as GridItemProps['offset'],
+        rowSpan: normalizeGridTier(props.rowSpan) as GridItemProps['rowSpan'],
       }) as Record<string, unknown>,
       slots.default?.(),
     )

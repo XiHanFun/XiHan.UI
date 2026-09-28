@@ -65,6 +65,23 @@ export interface GridSpanByBreakpoint {
 /** 跨列：整数即各档同一个跨度；断点对象则逐档取值。 */
 export type GridSpan = GridColumnCount | GridSpanByBreakpoint
 
+/** 逐档的跨行，档位与列数同一套。 */
+export interface GridRowSpanByBreakpoint {
+  /** 未达到任何断点时的跨行数，未提供时占一行。 */
+  base?: GridRowCount
+  /** 视口宽度达到 sm 断点后的跨行数。 */
+  sm?: GridRowCount
+  /** 视口宽度达到 md 断点后的跨行数。 */
+  md?: GridRowCount
+  /** 视口宽度达到 lg 断点后的跨行数。 */
+  lg?: GridRowCount
+  /** 视口宽度达到 xl 断点后的跨行数。 */
+  xl?: GridRowCount
+}
+
+/** 跨行：整数即各档同一个跨度；断点对象则逐档取值。 */
+export type GridRowSpan = GridRowCount | GridRowSpanByBreakpoint
+
 /** 逐档的错列，档位与列数同一套。 */
 export interface GridOffsetByBreakpoint {
   /** 未达到任何断点时的错列数，未提供时不错列。 */
@@ -124,6 +141,12 @@ export interface GridItemProps {
    * 也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的错位，未写的档沿用更窄的一档。
    */
   offset?: GridOffset
+  /**
+   * 跨行数：1 至 12 的整数，未提供时占一行；范围外的值也占一行。
+   * 行高由内容撑出时，跨几行就占几条行轨道，同行其余格按各自内容排；
+   * 也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的跨度，未写的档沿用更窄的一档。
+   */
+  rowSpan?: GridRowSpan
 }
 
 export interface GridApi<T extends PropTypes = PropTypes> {
