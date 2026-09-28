@@ -56188,7 +56188,6 @@
       ],
       "state": [
         "default",
-        "dir(rtl)",
         "disabled",
         "empty",
         "focus-visible",
@@ -56220,7 +56219,6 @@
       ],
       "state": [
         "@media print",
-        "dir(rtl)",
         "disabled",
         "empty",
         "focus-visible",

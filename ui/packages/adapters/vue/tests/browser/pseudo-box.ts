@@ -37,8 +37,9 @@ export function pseudoBox(host: HTMLElement, pseudo: '::before' | '::after'): Ps
     const borderTop = Number.parseFloat(hostStyle.borderTopWidth) || 0
     const paddingBoxWidth = rect.width - borderLeft - (Number.parseFloat(hostStyle.borderRightWidth) || 0)
     const paddingBoxHeight = rect.height - borderTop - (Number.parseFloat(hostStyle.borderBottomWidth) || 0)
-    x = rect.left + borderLeft + lengthOf(style.left, paddingBoxWidth)
-    y = rect.top + borderTop + lengthOf(style.top, paddingBoxHeight)
+    // 外边距报的是使用值：四边 inset 为 0、外边距 auto 回中的盒，余量折进了 margin-left / margin-top
+    x = rect.left + borderLeft + lengthOf(style.left, paddingBoxWidth) + (Number.parseFloat(style.marginLeft) || 0)
+    y = rect.top + borderTop + lengthOf(style.top, paddingBoxHeight) + (Number.parseFloat(style.marginTop) || 0)
   }
   if (style.translate !== 'none') {
     const [tx = '0', ty = '0'] = style.translate.split(' ')
