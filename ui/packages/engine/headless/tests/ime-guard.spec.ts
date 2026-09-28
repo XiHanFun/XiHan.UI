@@ -12,6 +12,7 @@ const SRC = join(import.meta.dirname, '../src')
 const EXEMPT: Record<string, string> = {
   'carousel': 'onKeyDown 开头就用 isEditableTarget 把可编辑目标整个放行',
   'clipboard': 'onKeyDown 是复制钮的按压通道（shared/press 的 createPressTracker 自己用 isComposingEvent 挡组合态）；input 只有 onFocus',
+  'dialog': 'onKeyDown 一处是按钮的按压通道（shared/press 的 createPressTracker 自己用 isComposingEvent 挡组合态），另一处挂在拖动把手上只接方向键与激活键；contenteditable 只出现在指针拖动起点要让开的可交互元素选择器里',
   'file-upload': 'onKeyDown 挂在 dropzone 的 div 上只接 Enter / Space，另三处是选择 / 删除 / 清空钮的按压通道（shared/press 的 createPressTracker 自己用 isComposingEvent 挡组合态）；HTMLInputElement 是 type=file 的隐藏输入，只有 onChange',
   'image-cropper': 'onKeyDown 挂在 crop-area 与 crop-handle 上，只接方向键；两处 HTMLInputElement 是 type=range 的两条滑杆，只有 onInput',
   'transfer': 'onKeyDown 挂在 list 上；search 与 list 在解剖里是兄弟节点，按键不冒泡过去，且 search 只有 onInput',
