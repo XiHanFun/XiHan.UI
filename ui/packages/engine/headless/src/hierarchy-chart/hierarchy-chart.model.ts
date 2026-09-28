@@ -390,17 +390,18 @@ export function hierarchyScene(layout: HierarchyLayoutResult, version: number): 
 }
 
 /**
- * 首次出现从哪一帧起跑：矩形只淡入（嵌套的矩形各自长出会互相穿插）；旭日的扇区顺着扫开，与饼图同一手势；
- * 圆堆积的圆从圆心长出。标签淡入。
+ * 首次出现从哪一帧起跑：矩形只淡入（嵌套的矩形各自长出会互相穿插）；旭日的扇区都收在整圈的起始角上、
+ * 起止角一起按比例放开，每一圈顺着扫开，与饼图同一手势；圆堆积的圆从圆心长出。标签淡入。
  */
 export function hierarchyEntryScene(target: Scene): Scene {
+  const isCircle = (mark: Mark): boolean => mark.kind === 'arc' && mark.innerRadius === 0 && mark.endAngle - mark.startAngle >= 2 * Math.PI - 1e-9
+  const sectors = target.layers.data.filter((mark): mark is ArcMark => mark.kind === 'arc' && !isCircle(mark))
+  const origin = sectors.length > 0 ? Math.min(...sectors.map(arc => arc.startAngle)) : 0
   const data = target.layers.data.map((mark): Mark => {
     if (mark.kind === 'rect')
       return { ...mark, opacity: 0 }
-    if (mark.kind === 'arc') {
-      const circle = mark.innerRadius === 0 && mark.endAngle - mark.startAngle >= 2 * Math.PI - 1e-9
-      return circle ? { ...mark, outerRadius: 0 } : { ...mark, endAngle: mark.startAngle }
-    }
+    if (mark.kind === 'arc')
+      return isCircle(mark) ? { ...mark, outerRadius: 0 } : { ...mark, startAngle: origin, endAngle: origin }
     return { ...mark, opacity: 0 }
   })
   return createScene({ version: 0, layers: { data }, bounds: target.bounds })
