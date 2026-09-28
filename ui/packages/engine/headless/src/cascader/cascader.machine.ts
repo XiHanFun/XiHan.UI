@@ -9,6 +9,7 @@ import type { ActionFn, ContextFacade, PositionResult } from '@xihan-ui/core'
 import type { CascaderBranchLoadSnapshot, CascaderFocusIntent, CascaderNode, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderValue } from './cascader.types'
 import { cascadeToggle, collapseChecked, itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
@@ -255,6 +256,8 @@ export function findCascaderItemEl(container: HTMLElement | null, value: string 
 export const cascaderMachine = createMachine({
   name: 'cascader',
   context: ({ prop, cell }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 里的引擎回填
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     value: cell<string[][]>(() => ({
@@ -296,7 +299,7 @@ export const cascaderMachine = createMachine({
     branchLoadSequence: { n: 0 },
     branchLoadOwners: new Map(),
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   // 请求控制器随服务存活，展开路径离开、浮层收起与卸载都会中止在途的那几个
   effects: ['trackLayer', 'trackTagListMotion', 'trackBranchLoads'],
@@ -327,6 +330,8 @@ export const cascaderMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控只发意图，非受控落 target 并一并通知。
         // 落点意图与焦点归还策略先记进 context，受控转移那一拍走 CONTROLLED.OPEN 读不到原事件
@@ -394,6 +399,7 @@ export const cascaderMachine = createMachine({
     },
     actions: {
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
+      clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')

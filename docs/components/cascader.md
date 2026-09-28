@@ -451,6 +451,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `positioner` | `data-tone` | props.tone |
 | `positioner` | `data-variant` | props.variant |
 | `content` | `data-empty` | ''（条件成立时才出现） |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-searching` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
