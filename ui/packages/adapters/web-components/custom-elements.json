@@ -70610,6 +70610,15 @@
             },
             {
               "kind": "field",
+              "name": "followCursor",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "follow-cursor"
+            },
+            {
+              "kind": "field",
               "name": "tone",
               "privacy": "public",
               "type": {
@@ -70735,6 +70744,17 @@
             },
             {
               "kind": "method",
+              "name": "findGroup",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "TooltipGroup | null"
+                }
+              },
+              "description": "最近的 `<xh-tooltip-provider>` 建的那一组；不在 Provider 里时为 null，归页面级的那一组。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -70828,6 +70848,14 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger",
+              "name": "follow-cursor",
+              "fieldName": "followCursor"
+            },
+            {
+              "type": {
                 "text": "Tone | undefined"
               },
               "description": "语气",
@@ -70893,6 +70921,81 @@
               "name": "--xh-tooltip-trigger-gap"
             }
           ]
+        },
+        {
+          "kind": "class",
+          "description": "`<xh-tooltip-provider>`：提示组。包裹一棵子树，其中的 `<xh-tooltip>` 归同一组：共用接替窗口、\n同一时刻只开一个，没写延时的取这里给的缺省。\n\n它不渲染任何内容、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，\n布局上它是 display: contents。与 Vue / React 的 XhTooltipProvider 是同一件事：那两家沿组件树找，这里沿 DOM 祖先链找。",
+          "name": "XhTooltipProviderElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "openDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "open-delay"
+            },
+            {
+              "kind": "field",
+              "name": "closeDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "close-delay"
+            },
+            {
+              "kind": "field",
+              "name": "skipDelayDuration",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "skip-delay-duration"
+            },
+            {
+              "kind": "field",
+              "name": "tooltipGroup",
+              "type": {
+                "text": "TooltipGroup"
+              },
+              "readonly": true,
+              "description": "这一组：元素的一生里只建一次；缺省值每次现读，改属性下一次开合即生效。"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "组内提示悬停进入到展开的缺省等待毫秒；提示自己写了就以提示为准",
+              "name": "open-delay",
+              "fieldName": "openDelay"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "组内提示悬停移出到收起的缺省等待毫秒",
+              "name": "close-delay",
+              "fieldName": "closeDelay"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "组内提示的缺省接替窗口毫秒；0 表示组内不接替",
+              "name": "skip-delay-duration",
+              "fieldName": "skipDelayDuration"
+            }
+          ],
+          "superclass": {
+            "name": "XhReactiveElement",
+            "module": "/src/reactive"
+          },
+          "tagName": "xh-tooltip-provider",
+          "customElement": true
         }
       ],
       "exports": [
@@ -70901,6 +71004,14 @@
           "name": "XhTooltipElement",
           "declaration": {
             "name": "XhTooltipElement",
+            "module": "src/elements/tooltip.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "XhTooltipProviderElement",
+          "declaration": {
+            "name": "XhTooltipProviderElement",
             "module": "src/elements/tooltip.ts"
           }
         }

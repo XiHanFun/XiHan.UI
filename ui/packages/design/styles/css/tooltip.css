@@ -114,6 +114,12 @@
     backdrop-filter: var(--xh-tooltip-backdrop, var(--xh-material-frosted-compact-backdrop));
   }
 
+  /* 跟随鼠标的提示压在指针旁边、随指针挪：它接了指针就会挡住 trigger 上的移动，指针一滑进去便算离开了 trigger。
+     这一档浮层本体同样让指针穿过去，停留细看交给 trigger 本身 */
+  [data-scope='tooltip'][data-part='positioner'][data-follow-cursor] [data-scope='tooltip'][data-part='content'] {
+    pointer-events: none;
+  }
+
   /* 反白面是一块彩色面（连接层打 data-xh-ink-surface）：面内的作者内容按这块底取墨色。
      底色取自被墨色域改写的令牌，所以域只落在面内的子元素上，这里的取值仍按外层主题解析 */
   [data-scope='tooltip'][data-part='content'][data-xh-ink-surface] {

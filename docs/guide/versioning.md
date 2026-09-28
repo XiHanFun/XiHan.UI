@@ -73,7 +73,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | Vue 上下文类型 `*Context` / `*Callbacks` | 108 | 用于给透传的 `api` 标注类型。只保证可读，不保证可构造：新增可选字段不算破坏，因此不要写 `const c: SelectContext = { … }` 这类字面量赋值 |
-| `custom-elements.json`（CEM） | 1 份 / 143 个元素 | 已经进过清单的 `tagName` / `attribute` / `event` 条目不会消失；`cssProperties`（皮肤覆盖槽）与 `events` 的 `type`（detail 类型）由 `scripts/enrich-cem.mjs` 从皮肤与元素源码生成，`gate:cem` 校验同步。字段结构细节仍不承诺，补充算 minor |
+| `custom-elements.json`（CEM） | 1 份 / 144 个元素 | 已经进过清单的 `tagName` / `attribute` / `event` 条目不会消失；`cssProperties`（皮肤覆盖槽）与 `events` 的 `type`（detail 类型）由 `scripts/enrich-cem.mjs` 从皮肤与元素源码生成，`gate:cem` 校验同步。字段结构细节仍不承诺，补充算 minor |
 
 ### 排除
 
@@ -85,7 +85,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | Vue 的 `provide*` / `use*Context` 函数 | 119 | [Vue 适配器](../adapters/vue) 已写明父子组件之间的 provide / inject 是内部实现，不对外开放。需要下探时使用 `use<家族>()` |
 | Vue 的 `useTimelineItem` | 1 | 名字形似组合式函数，实际是 inject 管道，与上一行同类 |
 | 适配器运行时底座 | Vue 3 个、WC 8 个 | `createVueRuntime` / `createVueIdGenerator` / `vueNormalize`；`createLitRuntime` / `createSpreader` / `defineElement` / `discoverParts` / `wcNormalize` / `MachineController` 等。这些是适配器与内核之间的接缝，签名依赖的类型未从同一个包导出，无法构造调用 |
-| WC 的元素类导出 `Xh*Element` | 117 | 仅用于 `instanceof` 与手动 `customElements.define`，不支持 `extends`（基类不导出、`wire()` 是 protected abstract）。获取元素使用 `document.querySelector` |
+| WC 的元素类导出 `Xh*Element` | 118 | 仅用于 `instanceof` 与手动 `customElements.define`，不支持 `extends`（基类不导出、`wire()` 是 protected abstract）。获取元素使用 `document.querySelector` |
 | WC 元素上的 `static partContract` | 141 | 部件校验的输入数据，实现细节 |
 | `dist/` 内部文件名 | — | `element-Bx4xCiT2.js` 这类打包 chunk 每次构建都可能变化，不得 deep import |
 | `.d.ts` 的文件布局 | — | 类型从包入口获取，不引用具体 `.d.ts` 路径 |
@@ -211,7 +211,7 @@ brand  neutral  success  warning  danger  info
 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
-| 自定义元素标签 `xh-*` | 144（`defineXhElements()` 注册 143 + `xh-background`） | **受约束** |
+| 自定义元素标签 `xh-*` | 145（`defineXhElements()` 注册 144 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
 | observed attribute | 1524 条声明 / 460 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 460 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
@@ -240,7 +240,7 @@ brand  neutral  success  warning  danger  info
 
 以下与包结构有关的事实同样在承诺内：
 
-- 元素在 `@xihan-ui/web-components/define`，不在包主入口。`defineXhElements()` 是全量注册：调用即注册全部 143 个元素，没有逐个的 `defineXhButton()`。（补充细粒度 define 是 minor；补充后 `defineXhElements` 的全量语义即成为承诺。）
+- 元素在 `@xihan-ui/web-components/define`，不在包主入口。`defineXhElements()` 是全量注册：调用即注册全部 144 个元素，没有逐个的 `defineXhButton()`。（补充细粒度 define 是 minor；补充后 `defineXhElements` 的全量语义即成为承诺。）
 - `xh-background` 单独在 `@xihan-ui/web-components/backgrounds`，因为它依赖可选 peer。把它移入 `./define` 会强制所有使用方安装 WebGL 引擎，属于破坏性变更。
 - 元素全部是 Light DOM，没有 shadow root，`::part()` 不生效。CEM 中的 `cssParts` 条目在本包读作 `data-xh-part`，不是 shadow part。
 
@@ -390,7 +390,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | --- | --- |
 | `@xihan-ui/vue` | 1153 个组件、111 个组合式函数 |
 | `@xihan-ui/react` | 组件与 hooks（铺开中，公开面随批次增长） |
-| `@xihan-ui/web-components` | 144 个自定义元素 |
+| `@xihan-ui/web-components` | 145 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 141 份组件皮肤、5 个层名 |
 | `@xihan-ui/tokens` | 666 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |

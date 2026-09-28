@@ -176,6 +176,7 @@
     "data-focus": "键盘焦点所在的条目 / 格子。",
     "data-foldable": "code-view 允许折叠代码段。",
     "data-folded": "code-view 这一行是折叠着的语法块的块头，下面的行收起了。",
+    "data-follow-cursor": "tooltip 跟随鼠标：由指针打开的提示锚在指针落点上并随移动重新落位，样式层据此让浮层本体不接指针。",
     "data-frozen-edge": "table 里紧挨滚动区的那一列冻结列（行首侧最靠后、行尾侧最靠前）：横向滚过后边界提示画在它朝向滚动区的一侧。",
     "data-full-width": "button 撑满容器宽度。",
     "data-fullscreen": "watermark 的全屏档：印子固定铺满整个视口、压在页面一切内容之上，根不再建层叠上下文。",

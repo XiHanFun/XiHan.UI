@@ -2847,6 +2847,7 @@ export {
   XhTooltipArrow,
   XhTooltipContent,
   XhTooltipPositioner,
+  XhTooltipProvider,
   XhTooltipRoot,
   XhTooltipTrigger,
 } from './components/tooltip/tooltip'
@@ -2855,6 +2856,7 @@ export type {
   XhTooltipArrowProps,
   XhTooltipContentProps,
   XhTooltipPositionerProps,
+  XhTooltipProviderProps,
   XhTooltipRootProps,
   XhTooltipTriggerProps,
 } from './components/tooltip/tooltip'

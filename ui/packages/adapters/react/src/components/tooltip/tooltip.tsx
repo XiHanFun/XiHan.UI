@@ -10,18 +10,42 @@ import type { TooltipApi, TooltipSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { createTooltipGroup } from '@xihan-ui/headless'
+import { useRef, useState } from 'react'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
-import { TooltipProvider, useTooltipContext } from './context'
+import { TooltipGroupContext, TooltipProvider, useTooltipContext } from './context'
 import { useTooltip } from './use-tooltip'
 
 type TooltipProps = TooltipSchema['props']
 
 /** 函数式 children 的载荷：展开状态与开合方法。 */
 export interface TooltipRootSlotProps extends Pick<TooltipApi, 'open' | 'setOpen'> {}
+
+export interface XhTooltipProviderProps {
+  /** 组内提示悬停进入到展开的缺省等待毫秒；提示自己写了就以提示为准。 */
+  openDelay?: number
+  /** 组内提示悬停移出到收起的缺省等待毫秒。 */
+  closeDelay?: number
+  /** 组内提示的缺省接替窗口毫秒；0 表示组内不接替。 */
+  skipDelayDuration?: number
+  children?: ReactNode
+}
+
+/**
+ * 提示组：子树里的提示归同一组，共用接替窗口、同一时刻只开一个，没写延时的取这里给的缺省。
+ * 本身不渲染节点，也不改动子节点的排布。
+ */
+export function XhTooltipProvider({ openDelay, closeDelay, skipDelayDuration, children }: XhTooltipProviderProps): ReactNode {
+  // 组在 Provider 的一生里只建一次；缺省值每次现读，改 props 下一次开合即生效
+  const latest = useRef({ openDelay, closeDelay, skipDelayDuration })
+  latest.current = { openDelay, closeDelay, skipDelayDuration }
+  const [group] = useState(() => createTooltipGroup(() => latest.current))
+  return <TooltipGroupContext value={group}>{children}</TooltipGroupContext>
+}
 
 export interface XhTooltipRootProps {
   open?: boolean
@@ -35,6 +59,8 @@ export interface XhTooltipRootProps {
   /** 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与。 */
   skipDelayDuration?: number
   disabled?: boolean
+  /** 跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger。 */
+  followCursor?: boolean
   tone?: Tone
   size?: Size
   onOpenChange?: TooltipProps['onOpenChange']

@@ -5,12 +5,13 @@
 
 // 提供 tooltip 相关实现。
 
-import type { PositionResult, Transition } from '@xihan-ui/core'
-import type { TooltipSchema } from './tooltip.types'
+import type { PositionResult, Transition, VirtualAnchor } from '@xihan-ui/core'
+import type { TooltipGroup } from './tooltip.group'
+import type { TooltipRefs, TooltipSchema } from './tooltip.types'
 import { createDismissLayer, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
-import { isTooltipGroupWarm, joinTooltipGroup } from './tooltip.group'
+import { setupLayerTransaction, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { pageTooltipGroup } from './tooltip.group'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
 export const TOOLTIP_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
@@ -28,6 +29,21 @@ const SKIP_DELAY = 300
 function resolveSkipDelay(ms: number | undefined): number {
   const value = ms ?? SKIP_DELAY
   return Number.isFinite(value) && value > 0 ? value : 0
+}
+
+/** 所在的提示组：Provider 注入的那一组，没有 Provider 时归页面级的那一组。 */
+function groupOf(refs: { get: <K extends keyof TooltipRefs>(key: K) => TooltipRefs[K] }): TooltipGroup {
+  return refs.get('group') ?? pageTooltipGroup
+}
+
+/** 两项延时的取值顺序：提示自己写的 > 所在组给的缺省 > 内建缺省。 */
+function delayOf(own: number | undefined, group: TooltipGroup, key: 'openDelay' | 'closeDelay'): number {
+  return own ?? group.defaults()[key] ?? (key === 'openDelay' ? OPEN_DELAY : CLOSE_DELAY)
+}
+
+/** 接替窗口同样先看提示自己，再看所在组，最后取内建缺省。 */
+function skipDelayOf(own: number | undefined, group: TooltipGroup): number {
+  return resolveSkipDelay(own ?? group.defaults().skipDelayDuration)
 }
 
 // 展开态收起：受控只发意图、停在原地等宿主写回；非受控直接落到 closed 并一并通知。
@@ -73,18 +89,25 @@ export const tooltipMachine = createMachine({
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
+    group: null,
+    cursor: null,
+    reanchor: null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'visible' : 'closed'),
   // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
+  // 跟随鼠标：指针在 trigger 上移动时记下落点，展开态下按新落点重算一轮；其余状态只记不算
+  on: {
+    'POINTER.MOVE': { actions: ['trackCursor'] },
+  },
   states: {
     closed: {
       on: {
         // 悬停先进等待态，到点才展开，避免指针路过就闪一堆提示
         'POINTER.ENTER': [
           { guard: 'isDisabled' },
-          { target: 'opening' },
+          { target: 'opening', actions: ['trackCursor'] },
         ],
         // 聚焦与命令式展开都不走延时
         'FOCUS': OPEN_FROM_FOCUS,
@@ -136,7 +159,7 @@ export const tooltipMachine = createMachine({
           on: {
             'after.closeDelay': CLOSE_FROM_CLOSING,
             // 等待期内回到锚点即撤销收起
-            'POINTER.ENTER': { target: 'visible.open' },
+            'POINTER.ENTER': { target: 'visible.open', actions: ['trackCursor'] },
             'FOCUS': { target: 'visible.open' },
             'BLUR': CLOSE_FROM_CLOSING,
             'ESCAPE': CLOSE_FROM_CLOSING,
@@ -160,8 +183,24 @@ export const tooltipMachine = createMachine({
       markFocusOpened: ({ context }) => context.set('focusOpened', true),
       clearFocusOpened: ({ context }) => context.set('focusOpened', false),
       // 热窗口内打开即接替：不播进场。打开那一刻判，收起即清
-      syncInstant: ({ context, prop, scope }) => context.set('instant', isTooltipGroupWarm(scope.id, resolveSkipDelay(prop('skipDelayDuration')))),
+      syncInstant: ({ context, prop, scope, refs }) => {
+        const group = groupOf(refs)
+        context.set('instant', group.isWarm(scope.id, skipDelayOf(prop('skipDelayDuration'), group)))
+      },
       clearInstant: ({ context }) => context.set('instant', false),
+      // 只记指针的落点：触屏没有悬停落点，锚回 trigger；没带落点的进入（指针移进浮层）不动已记的那一点
+      trackCursor: ({ refs, prop, event }) => {
+        const e = event.current()
+        if ((e.type !== 'POINTER.ENTER' && e.type !== 'POINTER.MOVE') || !prop('followCursor'))
+          return
+        if (e.pointerType === 'touch')
+          refs.set('cursor', null)
+        else if (e.point)
+          refs.set('cursor', { x: e.point.x, y: e.point.y })
+        else
+          return
+        refs.get('reanchor')?.()
+      },
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制收起
       syncOpen: ({ prop, send }) => {
         const open = prop('open')
@@ -172,57 +211,53 @@ export const tooltipMachine = createMachine({
     },
     effects: {
       // 热窗口内（另一个提示开着或刚收起）不等：下一拍即展开
-      waitForOpenDelay: ({ prop, send, scope }) => setTimeoutEffect(
-        () => send({ type: 'after.openDelay' }),
-        isTooltipGroupWarm(scope.id, resolveSkipDelay(prop('skipDelayDuration'))) ? 0 : prop('openDelay') ?? OPEN_DELAY,
-      ),
-      waitForCloseDelay: ({ prop, send }) =>
-        setTimeoutEffect(() => send({ type: 'after.closeDelay' }), prop('closeDelay') ?? CLOSE_DELAY),
-      // 引擎经 refs 注入；缺引擎或缺元素时静默跳过，状态转移不受影响
-      trackPosition: ({ refs, prop, context, flush }) => {
-        // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
-        // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带 hidden、高度为 0，算出的坐标会错位。
-        // flush 等的就是适配器把这一帧渲染出去。
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? TOOLTIP_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
-              arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
-            },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
+      waitForOpenDelay: ({ prop, send, scope, refs }) => {
+        const group = groupOf(refs)
+        return setTimeoutEffect(
+          () => send({ type: 'after.openDelay' }),
+          group.isWarm(scope.id, skipDelayOf(prop('skipDelayDuration'), group)) ? 0 : delayOf(prop('openDelay'), group, 'openDelay'),
+        )
       },
-      /** 露面即登记进同页提示的热窗口：别的开着的提示随之收起；收起时撤下并记下收起时刻。 */
-      trackGroup: ({ scope, send }) => joinTooltipGroup(scope.id, () => send({ type: 'CLOSE' })),
+      waitForCloseDelay: ({ prop, send, refs }) =>
+        setTimeoutEffect(() => send({ type: 'after.closeDelay' }), delayOf(prop('closeDelay'), groupOf(refs), 'closeDelay')),
+      // 引擎经 refs 注入；缺引擎或缺元素时静默跳过，状态转移不受影响。
+      // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着；
+      // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带 hidden、高度为 0，算出的坐标会错位
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        engine: refs.get('position'),
+        flush,
+        clear: () => context.set('position', null),
+        // 跟随鼠标时指针每挪一下就按新落点重挂一轮
+        onSchedule: schedule => refs.set('reanchor', schedule),
+        getAnchor: () => {
+          // 跟随鼠标只跟指针打开的那一次：聚焦打开没有指针落点、触屏落点已清空，这两种锚回 trigger
+          if (prop('followCursor') && !context.get('focusOpened') && refs.get('cursor')) {
+            const anchor: VirtualAnchor = {
+              // 零尺寸矩形钉在指针上：每次量都读最新的落点
+              getBoundingClientRect: () => {
+                const point = refs.get('cursor') ?? { x: 0, y: 0 }
+                return { x: point.x, y: point.y, width: 0, height: 0 }
+              },
+            }
+            return anchor
+          }
+          return refs.get('getAnchorEl')()
+        },
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? TOOLTIP_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
+          arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
+        }),
+        onResult: result => context.set('position', result),
+      }),
+      /** 露面即登记进所在组的热窗口：组里别的开着的提示随之收起；收起时撤下并记下收起时刻。 */
+      trackGroup: ({ scope, send, refs }) => groupOf(refs).join(scope.id, () => send({ type: 'CLOSE' })),
       /** 浮层退场完成前保留原栈位；关闭后不再响应消解，不建焦点域、不锁滚动。 */
       trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
         presence: () => refs.get('presence'),

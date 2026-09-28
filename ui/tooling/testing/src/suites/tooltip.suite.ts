@@ -126,6 +126,33 @@ export const tooltipSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'followCursor：定位层带跟随标记；指针进入照样按 openDelay 展开',
+      spec: { apg: APG },
+      props: { followCursor: true, openDelay: 50, skipDelayDuration: 0 },
+      initial: {
+        parts: { positioner: { 'data-follow-cursor': '' } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'apply-step 无 hover 步骤类型，悬停只能直接派发指针事件；没有落点的进入锚回 trigger',
+          run: dispatchOnTrigger('pointerenter'),
+          expect: {
+            parts: { content: { 'data-state': 'closed', 'hidden': '' } },
+            events: [],
+          },
+        },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'content', name: 'data-state', value: 'open' } },
+          expect: {
+            parts: { content: { 'data-state': 'open', 'hidden': null }, positioner: { 'data-follow-cursor': '' } },
+            events: [{ type: 'open-change', detail: { open: true } }],
+          },
+        },
+      ],
+    },
+    {
       name: 'Escape 立即收起：不等 closeDelay',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['tooltip.kbd.escape'],

@@ -9,17 +9,43 @@ import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type { TooltipApi, TooltipSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { createTooltipGroup } from '@xihan-ui/headless'
 import { defineComponent, h, mergeProps } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
-import { provideTooltip, useTooltipContext } from './context'
+import { provideTooltip, provideTooltipGroup, useTooltipContext } from './context'
 import { useTooltip } from './use-tooltip'
 
 type TooltipProps = TooltipSchema['props']
 
 /** 默认插槽的载荷：展开状态与开合方法。 */
 export type TooltipRootSlotProps = Pick<TooltipApi, 'open' | 'setOpen'>
+
+/**
+ * 提示组：子树里的提示归同一组，共用接替窗口、同一时刻只开一个，没写延时的取这里给的缺省。
+ * 本身不渲染节点，也不改动子节点的排布。
+ */
+export const XhTooltipProvider = defineComponent({
+  name: 'XhTooltipProvider',
+  props: {
+    /** 组内提示悬停进入到展开的缺省等待毫秒；提示自己写了就以提示为准。 */
+    openDelay: { type: Number },
+    /** 组内提示悬停移出到收起的缺省等待毫秒。 */
+    closeDelay: { type: Number },
+    /** 组内提示的缺省接替窗口毫秒；0 表示组内不接替。 */
+    skipDelayDuration: { type: Number },
+  },
+  setup(props, { slots }) {
+    // 组在 Provider 的一生里只建一次；缺省值每次现读，改 props 下一次开合即生效
+    provideTooltipGroup(createTooltipGroup(() => ({
+      openDelay: props.openDelay,
+      closeDelay: props.closeDelay,
+      skipDelayDuration: props.skipDelayDuration,
+    })))
+    return () => slots.default?.()
+  },
+})
 
 export const XhTooltipRoot = defineComponent({
   name: 'XhTooltipRoot',
@@ -35,6 +61,8 @@ export const XhTooltipRoot = defineComponent({
     /** 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与。 */
     skipDelayDuration: { type: Number },
     disabled: Boolean,
+    /** 跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger。 */
+    followCursor: { type: Boolean, default: undefined },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
   },

@@ -141,7 +141,7 @@ import { XhToggleElement } from './elements/toggle'
 import { XhToggleGroupElement } from './elements/toggle-group'
 import { XhToolCallElement } from './elements/tool-call'
 import { XhToolbarElement } from './elements/toolbar'
-import { XhTooltipElement } from './elements/tooltip'
+import { XhTooltipElement, XhTooltipProviderElement } from './elements/tooltip'
 import { XhTourElement } from './elements/tour'
 import { XhTransferElement } from './elements/transfer'
 import { XhTreeElement } from './elements/tree'
@@ -289,6 +289,7 @@ export function defineXhElements(): void {
   defineElement('xh-tool-call', XhToolCallElement, VERSION)
   defineElement('xh-toolbar', XhToolbarElement, VERSION)
   defineElement('xh-tooltip', XhTooltipElement, VERSION)
+  defineElement('xh-tooltip-provider', XhTooltipProviderElement, VERSION)
   defineElement('xh-tour', XhTourElement, VERSION)
   defineElement('xh-transfer', XhTransferElement, VERSION)
   defineElement('xh-tree', XhTreeElement, VERSION)
@@ -419,6 +420,7 @@ export {
   XhToolbarElement,
   XhToolCallElement,
   XhTooltipElement,
+  XhTooltipProviderElement,
   XhTourElement,
   XhTransferElement,
   XhTreeElement,

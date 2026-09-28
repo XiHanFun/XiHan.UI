@@ -24,6 +24,7 @@ export function connectTooltip<T extends PropTypes>(
   // 展开等待期：浮层还没入栈，Escape 由 trigger 就地撤销
   const pending = state.matches('opening')
   const disabled = !!prop('disabled')
+  const followCursor = !!prop('followCursor')
   const ids = scope.ids('tooltip', 'trigger', 'content')
   const stateAttr = open ? 'open' : 'closed'
   // 定位结果由 trackPosition 效应写进 context，这里只读结果，不查 DOM、不调引擎
@@ -49,7 +50,14 @@ export function connectTooltip<T extends PropTypes>(
       'data-state': stateAttr,
       // 只标记不输出原生 disabled/aria-disabled：关掉的是提示，被包裹的控件仍可用
       'data-disabled': dataAttr(disabled),
-      'onPointerenter': () => send({ type: 'POINTER.ENTER' }),
+      // 跟随鼠标时把落点与指针类型一并带上：触屏没有悬停落点，机器据此锚回 trigger
+      'onPointerenter': (event: PointerEvent) => send(followCursor
+        ? { type: 'POINTER.ENTER', point: { x: event.clientX, y: event.clientY }, pointerType: event.pointerType }
+        : { type: 'POINTER.ENTER' }),
+      // 只有跟随鼠标才听移动：其余时候提示锚在 trigger 上，指针在上面怎么挪都与它无关
+      'onPointermove': followCursor
+        ? (event: PointerEvent) => send({ type: 'POINTER.MOVE', point: { x: event.clientX, y: event.clientY }, pointerType: event.pointerType })
+        : undefined,
       'onPointerleave': () => send({ type: 'POINTER.LEAVE' }),
       // 按下即让位给真正的操作
       'onPointerdown': () => send({ type: 'POINTER.DOWN' }),
@@ -73,6 +81,8 @@ export function connectTooltip<T extends PropTypes>(
       // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
       'data-positioned': dataAttr(overlayPositioned(position)),
       'data-state': stateAttr,
+      // 跟随鼠标的提示压在指针旁边：皮肤据此让它不接指针，免得挡住 trigger 上的移动
+      'data-follow-cursor': dataAttr(followCursor),
       'style': {
         ...overlayFixedStyle(position),
         // 皮肤给 SSR 首帧兜了一条 inset-inline-start，RTL 下它落在 right 上；

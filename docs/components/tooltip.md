@@ -66,6 +66,18 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 
 <XhDemo src="tooltip/08-long-text" />
 
+### 提示组
+
+XhTooltipProvider 把一排提示放进同一组：没写延时的取组的缺省，组里另一个开着时指向下一个直接接替，同一时刻只开一个
+
+<XhDemo src="tooltip/09-provider" />
+
+### 跟随鼠标
+
+followCursor 让提示锚在指针落点上并随移动更新；触屏与键盘聚焦时仍锚在触发器上
+
+<XhDemo src="tooltip/10-follow-cursor" />
+
 ## 设计指引
 
 ### 何时使用
@@ -83,6 +95,8 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 
 - `openDelay` / `closeDelay` 防止指针经过时连续闪烁。
 - 同页的提示共用一个接替窗口（`skipDelayDuration`，默认 300ms）：另一个提示还开着、或刚收起一个不到这么久时，指向下一个不再等 `openDelay`、也不播进场，直接接替，上一个随之收起。横扫一排工具栏钮时提示一个个跟上。
+- `XhTooltipProvider`（Web Components 为 `<xh-tooltip-provider>` 容器元素）把子树里的提示放进同一组：组内共用接替窗口、同一时刻只开一个，不同组之间互不接替、互不收起；组上的 `openDelay` / `closeDelay` / `skipDelayDuration` 是组内提示的缺省，提示自己写了就以提示为准。没放进 Provider 的提示同属页面级的那一组。Provider 自身不渲染节点，Web Components 那个元素是 `display: contents`。
+- `followCursor` 让由指针打开的提示锚在指针落点上，指针在触发器上挪动时跟过去；触屏没有悬停落点、键盘聚焦没有指针，这两种情形仍锚在触发器上。跟随中的浮层不接指针，免得挡住触发器上的移动；位置跟手，不做过渡。
 - 聚焦也能触发，键盘用户可以访问。
 - 语气与尺寸两轴。
 - 默认保持反白的小型 M2 表面（compact 档 frosted），与承载操作的 Popover 分开；六种语气都使用高遮蔽 tint 与不透明文字，箭头和气泡同色同边。边界由 on 色 20% 的拼色描边承担（frosted 的透明深边压在反白底上看不见），不画顶部高光；圆角取 4px 控件档。
@@ -100,7 +114,7 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 
 ### 当前边界
 
-- 没有 TooltipProvider：接替窗口按页面共用，不分组；触发器滚动关闭仍是后续独立行为功能。
+- 触发器滚动关闭仍是后续独立行为功能。
 - 共享浮层位移原语当前最小档是 4px；Tooltip 先与 Menu 使用同一 `xh-overlay-slide-in/out` 定义。规格中的 2px 需要新增公共 motion distance 档后统一接入，不能局部改写现有语义令牌。
 
 ### 反模式
@@ -115,7 +129,7 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tooltip>` |
-| Vue 组件 | `XhTooltipArrow` `XhTooltipContent` `XhTooltipPositioner` `XhTooltipRoot` `XhTooltipTrigger` |
+| Vue 组件 | `XhTooltipArrow` `XhTooltipContent` `XhTooltipPositioner` `XhTooltipProvider` `XhTooltipRoot` `XhTooltipTrigger` |
 | 组合式函数 | `useTooltip` |
 | 状态机 | `tooltipMachine` |
 | 皮肤 | `@xihan-ui/styles/tooltip.css` |
@@ -133,6 +147,7 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 | `closeDelay` | `number` |  | 悬停移出到收起的等待毫秒，默认 300。 |
 | `skipDelayDuration` | `number` |  | 跳过等待的窗口毫秒，默认 300：另一个提示还开着，或刚收起一个不到这么久时，指向这一个不等 openDelay、 也不播进场，直接接替（上一个随之收起）。0 或负数表示不参与接替，每次都等 openDelay。 |
 | `disabled` | `boolean` |  | 只关闭提示本身，不影响被包裹控件的可用性。 |
+| `followCursor` | `boolean` |  | 跟随鼠标：由指针打开的提示锚在指针落点上，随指针在 trigger 上移动而更新，默认 false。 触屏没有悬停落点、聚焦打开没有指针，这两种情形退回锚定到 trigger。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定内边距与字号档位。 |
 | `onOpenChange` | `(details: TooltipOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -160,6 +175,10 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhTooltipPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhTooltipProvider` | `openDelay` | `number` |  | 组内提示悬停进入到展开的缺省等待毫秒；提示自己写了就以提示为准。 |
+| `XhTooltipProvider` | `closeDelay` | `number` |  | 组内提示悬停移出到收起的缺省等待毫秒。 |
+| `XhTooltipProvider` | `skipDelayDuration` | `number` |  | 组内提示的缺省接替窗口毫秒；0 表示组内不接替。 |
+| `XhTooltipProvider` | `children` | `ReactNode` |  |  |
 | `XhTooltipRoot` | `children` | `SlotChildren<TooltipRootSlotProps>` |  |  |
 
 ### 状态
@@ -176,7 +195,7 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 
 **状态**：`closed` · `opening` · `visible` · `visible.open` · `visible.closing`
 
-**事件**：`POINTER.ENTER` · `POINTER.LEAVE` · `POINTER.DOWN` · `FOCUS` · `BLUR` · `ESCAPE` · `OPEN` · `CLOSE` · `after.openDelay` · `after.closeDelay` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`POINTER.ENTER` · `POINTER.MOVE` · `POINTER.LEAVE` · `POINTER.DOWN` · `FOCUS` · `BLUR` · `ESCAPE` · `OPEN` · `CLOSE` · `after.openDelay` · `after.closeDelay` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
 
 **判据**：`isOpenControlled` · `isDisabled` · `isFocusOpened`
 
@@ -231,6 +250,7 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 | --- | --- | --- |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-follow-cursor` | ''（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
