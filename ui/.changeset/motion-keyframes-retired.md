@@ -16,6 +16,7 @@
 | `xh-notification-spin` | `xh-spin` |
 | `xh-reasoning-shimmer` | `xh-shimmer` |
 | `xh-tool-call-shimmer` | `xh-shimmer` |
+| `xh-skeleton-shimmer` | `xh-shimmer` |
 | `xh-approval-in` | `xh-item-in` |
 | `xh-message-feed-item-in` | `xh-item-in` |
 | `xh-question-flow-in` | `xh-item-in` |
