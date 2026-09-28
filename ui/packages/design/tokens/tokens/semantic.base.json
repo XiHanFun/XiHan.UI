@@ -436,7 +436,7 @@
       "$value": "{radius.md}"
     },
     "overlay": {
-      "$description": "脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Toast。",
+      "$description": "脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification。",
       "$type": "dimension",
       "$value": "{radius.lg}"
     },
@@ -688,7 +688,7 @@
       "$value": 0.98
     },
     "scale-stack": {
-      "$description": "叠放的一摞里每往后一层保留的比例，后层按层深逐层收拢（Toast 的收起态）。减弱动效下为 1：层与层只靠位移分开，不缩放。",
+      "$description": "叠放的一摞里每往后一层保留的比例，后层按层深逐层收拢（叠放的通知收起时，轻提示预设的缺省）。减弱动效下为 1：层与层只靠位移分开，不缩放。",
       "$type": "number",
       "$value": 0.95
     },

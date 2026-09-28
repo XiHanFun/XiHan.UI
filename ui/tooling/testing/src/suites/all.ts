@@ -80,6 +80,7 @@ import { menuSuite } from './menu.suite'
 import { menubarSuite } from './menubar.suite'
 import { messageFeedSuite } from './message-feed.suite'
 import { navigationMenuSuite } from './navigation-menu.suite'
+import { notificationItemSuite } from './notification-item.suite'
 import { notificationSuite } from './notification.suite'
 import { numberAnimationSuite } from './number-animation.suite'
 import { numberFieldSuite } from './number-field.suite'
@@ -127,7 +128,6 @@ import { timeRangePickerSuite } from './time-range-picker.suite'
 import { timelineSuite } from './timeline.suite'
 import { timerSuite } from './timer.suite'
 import { timestampSuite } from './timestamp.suite'
-import { toastSuite } from './toast.suite'
 import { toggleGroupSuite } from './toggle-group.suite'
 import { toggleSuite } from './toggle.suite'
 import { toolCallSuite } from './tool-call.suite'
@@ -251,7 +251,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   timelineSuite,
   timerSuite,
   timestampSuite,
-  toastSuite,
+  notificationItemSuite,
   notificationSuite,
   toggleSuite,
   toggleGroupSuite,

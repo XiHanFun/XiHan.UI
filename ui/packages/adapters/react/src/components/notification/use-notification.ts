@@ -5,14 +5,14 @@
 
 // 提供 use notification 相关实现。
 
-import type { NotificationOptions, NotificationSchema, ToastSchema } from '@xihan-ui/headless'
+import type { NotificationItemSchema, NotificationOptions, NotificationSchema } from '@xihan-ui/headless'
 import type { NotificationContext, NotificationItemContext } from './context'
-import { connectNotification, connectNotificationItem, notificationMachine, toastMachine } from '@xihan-ui/headless'
+import { connectNotification, connectNotificationItem, notificationItemMachine, notificationMachine } from '@xihan-ui/headless'
 import { useMemo, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
-import { useToastExit } from '../toast/use-toast-exit'
 import { useNotificationContextOptional } from './context'
+import { useNotificationItemExit } from './use-item-exit'
 
 export function useNotification(props: NotificationSchema['props']): NotificationContext {
   const service = useMachine(notificationMachine, () => props)
@@ -36,21 +36,23 @@ export function useNotification(props: NotificationSchema['props']): Notificatio
 }
 
 /**
- * 单条卡片。生命周期复用 toast 的状态机：那是会自动消失的卡片这一通用行为。
+ * 单条卡片：计时、暂停、按压与退场都在它自己的机器上。
  * 退场完成后由这里通知队列删除记录：队列在外层，卡片自身不知道它。
  */
-export function useNotificationItem(props: ToastSchema['props']): NotificationItemContext {
+export function useNotificationItem(props: NotificationItemSchema['props']): NotificationItemContext {
   const queue = useNotificationContextOptional()
-  const service = useMachine(toastMachine, () => ({
+  const service = useMachine(notificationItemMachine, () => ({
     ...props,
     onStatusChange: (details) => {
       props.onStatusChange?.(details)
       if (details.status === 'unmounted')
         queue?.dismiss(details.id)
     },
-  } satisfies ToastSchema['props']))
+  } satisfies NotificationItemSchema['props']))
   const api = connectNotificationItem(service, reactNormalize)
   const rootRef = useRef<HTMLElement | null>(null)
-  useToastExit({ service, isOpen: () => api.status === 'visible', rootRef })
+  // 传 getter 而非节点本身，ref 在提交后才附着；叠摞展开的追踪从它找所在的那一摞
+  service.refs.set('getRootEl', () => rootRef.current)
+  useNotificationItemExit({ service, isOpen: () => api.status === 'visible', rootRef })
   return { api, service, rootRef }
 }

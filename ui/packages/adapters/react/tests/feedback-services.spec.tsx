@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 //
-// 三个反馈类命令式服务：从组件树之外调起，自带宿主树。
+// 反馈类命令式服务：从组件树之外调起，自带宿主树。
 // 这一层没有共享套件可用（套件描述的是组件的 DOM 契约，服务是另一层），只能自己钉。
 import { act } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createLoadingBarService, createNotificationService, createToastService } from '../src'
+import { createLoadingBarService, createNotificationService } from '../src'
 
 let dispose: Array<() => void> = []
 
@@ -33,57 +33,56 @@ async function dispatchInAct(el: HTMLElement, event: Event): Promise<void> {
   })
 }
 
-const toasts = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[data-scope="toast"][data-part="root"]')]
 const cards = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[data-scope="notification"][data-part="item"]')]
 function titleTexts(nodes: HTMLElement[]): string[] {
-  return nodes.map(n => n.querySelector('[data-part="title"]')?.textContent?.trim() ?? '')
+  return nodes.map(n => n.querySelector('[data-part="item-title"]')?.textContent?.trim() ?? '')
 }
 
-describe('轻提示服务', () => {
+describe('通知服务的轻提示预设', () => {
   it('入队即渲染，类型糖带上语气', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     dispose.push(() => toast.dispose())
     toast.success('保存好了')
     await settle()
-    expect(toasts()).toHaveLength(1)
-    expect(titleTexts(toasts())).toEqual(['保存好了'])
-    expect(toasts()[0]!.getAttribute('data-tone')).toBe('success')
+    expect(cards()).toHaveLength(1)
+    expect(titleTexts(cards())).toEqual(['保存好了'])
+    expect(cards()[0]!.getAttribute('data-tone')).toBe('success')
   })
 
   it('dismiss 把那一条删掉', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     dispose.push(() => toast.dispose())
     const id = toast.info('一')
     toast.info('二')
     await settle()
-    expect(toasts()).toHaveLength(2)
+    expect(cards()).toHaveLength(2)
     toast.dismiss(id)
     await settle()
-    expect(titleTexts(toasts())).toEqual(['二'])
+    expect(titleTexts(cards())).toEqual(['二'])
   })
 
   it('超过 max 的挤掉最旧的', async () => {
-    const toast = createToastService({ max: 2 })
+    const toast = createNotificationService({ preset: 'toast', max: 2 })
     dispose.push(() => toast.dispose())
     toast.info('一')
     toast.info('二')
     toast.info('三')
     await settle()
-    expect(toasts()).toHaveLength(2)
+    expect(cards()).toHaveLength(2)
   })
 
   it('不写 max 缺省留 3 条：连发 20 条只剩最新的三条', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     dispose.push(() => toast.dispose())
     for (let i = 1; i <= 20; i++)
       toast.info(`第 ${i} 条`, { duration: 0 })
     await settle()
-    expect(titleTexts(toasts())).toEqual(['第 18 条', '第 19 条', '第 20 条'])
-    expect(document.querySelector('[data-scope="toast"][data-part="group"]')?.getAttribute('data-count')).toBe('3')
+    expect(titleTexts(cards())).toEqual(['第 18 条', '第 19 条', '第 20 条'])
+    expect(document.querySelector('[data-scope="notification"][data-part="group"]')?.getAttribute('data-count')).toBe('3')
   })
 
   it('promise 兑现后就地改写成成功，且原样透传结果', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     dispose.push(() => toast.dispose())
     const value = await toast.promise(Promise.resolve(42), {
       loading: '提交中',
@@ -92,11 +91,11 @@ describe('轻提示服务', () => {
     })
     expect(value).toBe(42)
     await settle()
-    expect(titleTexts(toasts())).toEqual(['成了 42'])
+    expect(titleTexts(cards())).toEqual(['成了 42'])
   })
 
   it('promise 拒绝时改写成失败，并把 reason 继续抛出去', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     dispose.push(() => toast.dispose())
     const boom = new Error('后端拒了')
     await expect(toast.promise(Promise.reject(boom), {
@@ -105,22 +104,22 @@ describe('轻提示服务', () => {
       error: r => `败了：${(r as Error).message}`,
     })).rejects.toBe(boom)
     await settle()
-    expect(titleTexts(toasts())).toEqual(['败了：后端拒了'])
+    expect(titleTexts(cards())).toEqual(['败了：后端拒了'])
   })
 
   it('行内动作的回调按 id 存表，点它才调', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     dispose.push(() => toast.dispose())
     const onAction = vi.fn()
     toast.create({ title: '删掉了', actionLabel: '撤销', onAction })
     await settle()
-    const action = document.querySelector<HTMLElement>('[data-scope="toast"][data-part="action-trigger"]')!
+    const action = document.querySelector<HTMLElement>('[data-scope="notification"][data-part="item-action-trigger"]')!
     await act(async () => action.click())
     expect(onAction).toHaveBeenCalledTimes(1)
   })
 
   it('卸载之后再调命令直接抛，不静默吞掉', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     toast.dispose()
     expect(() => toast.info('还在吗')).toThrow(/已卸载/)
   })
@@ -230,7 +229,7 @@ describe('通知服务', () => {
   it('按压通道：按住 Enter 关掉卡片，按压面随退场由机器收', async () => {
     const notification = createNotificationService()
     dispose.push(() => notification.dispose())
-    // 服务级 dismiss 直接把记录摘出队列、卡片随之卸载；退场帧只在卡片自己走 TOAST.DISMISS 时才有
+    // 服务级 dismiss 直接把记录摘出队列、卡片随之卸载；退场帧只在卡片自己走 ITEM.DISMISS 时才有
     notification.info('有新消息', { duration: 0 })
     await settle()
     const close = cards()[0]!.querySelector<HTMLElement>('[data-part="item-close-trigger"]')!

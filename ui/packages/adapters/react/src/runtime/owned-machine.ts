@@ -7,7 +7,7 @@
 //
 // 命令式服务的队列机器没有 DOM 锚点，不必等宿主树提交。宿主树用 flushSync 提交，
 // 但从业务组件的 effect 里懒建服务时 React 正处在提交上下文，flushSync 只能排队、
-// 提示要等这轮 effect 跑完才渲：机器与端口若跟着宿主的渲染体走，createToastService()
+// 提示要等这轮 effect 跑完才渲：机器与端口若跟着宿主的渲染体走，createNotificationService()
 // 返回后紧接着那条命令就落在窗口期里。机器归服务持有、当场 start，端口随即接上，
 // 宿主组件只负责订阅与渲染，什么时候提交都不再影响命令能否入队。
 

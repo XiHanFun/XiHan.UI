@@ -4,6 +4,7 @@
  */
 
 // 全局命令式通知服务：自带一个挂到浮层落点的 `<xh-notification>` 与默认模板。
+// 卡片与轻提示是同一个服务的两种预设，preset 在创建时定下。
 //
 // 通知常常不是从某个组件里发出来的——推送连接的回调、后台任务的收尾、拦截器里的
 // 一条系统消息，调用点都在文档树之外。队列由这个元素持有，业务代码只管发。
@@ -19,7 +20,7 @@ import type {
   NotificationService,
   NotificationServiceOptions,
 } from './types'
-import { createFeedbackServiceController, NOTIFICATION_PLACEMENT, NOTIFICATION_PLACEMENTS, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
+import { createFeedbackServiceController, NOTIFICATION_PLACEMENTS, notificationPresetOf, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
 import { createServiceHolder, partNode, reportServiceFailure } from './host'
 import { defineFeedbackElements } from './register'
 
@@ -46,16 +47,18 @@ export function createNotificationService(options: NotificationServiceOptions = 
     onStateChange: () => render(),
   })
 
+  queue.preset = queueProps.preset
   queue.placement = queueProps.placement
   queue.max = queueProps.max
   queue.dedupe = queueProps.dedupe
   queue.gap = queueProps.gap
   queue.duration = queueProps.duration
+  queue.stacked = queueProps.stacked
   queue.pauseOnPageIdle = queueProps.pauseOnPageIdle
   queue.translations = translations
 
   // 默认那一摞先建出来：group 是元素契约里的必需部件，一条通知都没有时也得在
-  ensureGroup(queueProps.placement ?? NOTIFICATION_PLACEMENT).hidden = true
+  ensureGroup(queueProps.placement ?? notificationPresetOf(queueProps.preset).placement).hidden = true
 
   try {
     holder.appendChild(queue)
@@ -103,12 +106,14 @@ export function createNotificationService(options: NotificationServiceOptions = 
     if (shapes.get(item.id) !== shape) {
       shapes.set(item.id, shape)
       const card = partNode('div', 'item')
-      // 四个节点平铺：两列网格与右上角那颗叉都归皮肤，模板套一层行容器只会与它打架。
+      // 两种预设同一份结构，排版归皮肤按 data-preset 给。
       // 指示符与说明都恒渲染——皮肤的 :empty 规则负责把空盒收走，
       // 而 aria-describedby 无条件指着说明那一个，节点缺席就成了悬空引用
-      card.appendChild(partNode('div', 'item-indicator'))
-      card.appendChild(partNode('div', 'item-title'))
-      card.appendChild(partNode('div', 'item-description'))
+      card.appendChild(partNode('span', 'item-indicator'))
+      const content = partNode('div', 'item-content')
+      content.appendChild(partNode('div', 'item-title'))
+      content.appendChild(partNode('div', 'item-description'))
+      card.appendChild(content)
       if (item.actionLabel)
         card.appendChild(partNode('button', 'item-action-trigger'))
       if (item.closable)
@@ -120,6 +125,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
       action.textContent = item.actionLabel ?? ''
 
     node.itemId = item.id
+    node.preset = item.preset
     node.titleText = resolveFeedbackServiceTitle(item)
     node.description = item.description
     node.tone = item.tone

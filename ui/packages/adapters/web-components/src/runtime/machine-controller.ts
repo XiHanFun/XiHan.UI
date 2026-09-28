@@ -20,8 +20,8 @@ export interface MachineControllerOptions<T extends MachineSchema> {
   onBuilt?: (service: Service<T>) => void
   /**
    * 全局配置从哪个桶中取，默认取状态机名。
-   * 只有运行其他组件状态机的元素需要写它：例如通知的卡片运行的是 toast 的状态机，
-   * 文案却应跟随通知。
+   * 只有状态机名与文案桶不同名的元素需要写它：例如通知的卡片运行的是 notification-item 的状态机，
+   * 文案却在 notification 那一桶。
    */
   configName?: string
 }

@@ -9,7 +9,6 @@ import {
   createDialogService,
   createLoadingBarService,
   createNotificationService,
-  createToastService,
 } from '../src/services'
 
 const disposers: Array<() => void> = []
@@ -48,9 +47,9 @@ function connectPageWhoseCallbackRuns(fn: () => void): void {
 }
 
 describe('业务元素 connectedCallback 里首次调用命令式服务', () => {
-  it('toast：不抛 SEND_BEFORE_MOUNT，提示最终渲染出来', async () => {
+  it('轻提示预设：不抛 SEND_BEFORE_MOUNT，提示最终渲染出来', async () => {
     connectPageWhoseCallbackRuns(() => {
-      const toast = createToastService()
+      const toast = createNotificationService({ preset: 'toast' })
       disposers.push(() => toast.dispose())
       toast.danger('授权被拒绝')
     })

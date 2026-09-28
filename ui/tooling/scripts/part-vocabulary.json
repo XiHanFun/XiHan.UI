@@ -5,9 +5,6 @@
       "alert",
       "empty-state"
     ],
-    "action-trigger": [
-      "toast"
-    ],
     "actions": [
       "fieldset"
     ],
@@ -229,7 +226,6 @@
       "popover",
       "tabs",
       "tag",
-      "toast",
       "tour"
     ],
     "code": [
@@ -316,7 +312,6 @@
       "time-picker",
       "time-range-picker",
       "timeline",
-      "toast",
       "tool-call",
       "tooltip",
       "tour",
@@ -408,7 +403,6 @@
       "popover",
       "steps",
       "timeline",
-      "toast",
       "tour"
     ],
     "dismiss-trigger": [
@@ -594,7 +588,6 @@
       "question-flow",
       "select",
       "side-nav",
-      "toast",
       "toolbar",
       "transfer"
     ],
@@ -715,7 +708,6 @@
       "steps",
       "tabs",
       "timeline",
-      "toast",
       "tool-call",
       "tree-select"
     ],
@@ -808,7 +800,8 @@
     ],
     "item-content": [
       "field-array",
-      "list"
+      "list",
+      "notification"
     ],
     "item-delete-trigger": [
       "field-array",
@@ -1331,9 +1324,6 @@
     "preview-title": [
       "citation"
     ],
-    "progress": [
-      "toast"
-    ],
     "progress-dot": [
       "tour"
     ],
@@ -1506,7 +1496,6 @@
       "timeline",
       "timer",
       "timestamp",
-      "toast",
       "toggle",
       "toggle-group",
       "tool-call",
@@ -1803,7 +1792,6 @@
       "popover",
       "steps",
       "timeline",
-      "toast",
       "tour"
     ],
     "to-source-trigger": [

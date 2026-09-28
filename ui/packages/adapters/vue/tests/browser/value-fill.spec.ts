@@ -3,7 +3,7 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
-import { XhLoadingBarPeg, XhLoadingBarRange, XhLoadingBarRoot, XhLoadingBarTrack, XhProgress, XhToastProgress, XhToastRoot, XhToastTitle } from '../../src'
+import { XhLoadingBarPeg, XhLoadingBarRange, XhLoadingBarRoot, XhLoadingBarTrack, XhNotificationItem, XhNotificationItemProgress, XhNotificationItemTitle, XhProgress } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -173,14 +173,14 @@ describe('加载条的填充', () => {
 
 describe('倒计时条', () => {
   async function countdown(): Promise<{ bar: HTMLElement, animation: Animation }> {
-    await mount(() => h(XhToastRoot, { title: '已保存', duration: 4000 }, () => [h(XhToastTitle), h(XhToastProgress)]))
-    const bar = part('toast', 'progress')
+    await mount(() => h(XhNotificationItem, { preset: 'toast', title: '已保存', duration: 4000 }, () => [h(XhNotificationItemTitle), h(XhNotificationItemProgress)]))
+    const bar = part('notification', 'item-progress')
     const [animation] = bar.getAnimations().filter(a => (a as CSSAnimation).animationName === 'xh-countdown')
     animation!.pause()
     return { bar, animation: animation! }
   }
 
-  it.each([['ltr', 'inset(0px 50% 0px 0px)'], ['rtl', 'inset(0px 0px 0px 50%)']] as const)('%s：条子不改宽度，从行尾往行首裁掉走过的时间', async (dir, half) => {
+  it.each([['ltr', 'inset(0px 50% 0px 0%)'], ['rtl', 'inset(0px 0% 0px 50%)']] as const)('%s：倒计时条不改宽度，从行尾往行首裁掉走过的时间', async (dir, half) => {
     document.documentElement.dir = dir
     const { bar, animation } = await countdown()
     const width = bar.getBoundingClientRect().width
@@ -194,6 +194,6 @@ describe('倒计时条', () => {
     const { bar, animation } = await countdown()
     expect(getComputedStyle(bar).animationTimingFunction).toBe('steps(4)')
     animation.currentTime = 1500
-    expect(getComputedStyle(bar).clipPath).toBe('inset(0px 25% 0px 0px)')
+    expect(getComputedStyle(bar).clipPath).toBe('inset(0px 25% 0px 0%)')
   })
 })

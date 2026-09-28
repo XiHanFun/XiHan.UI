@@ -25,7 +25,7 @@ export function mountServiceHost(holder: HTMLElement, node: ReactNode, service: 
   try {
     root = createRoot(holder)
     // 同步提交这一帧：createRoot().render() 是排队的，而服务建好之后紧接着就可能收到命令
-    // （拦截器里 createToastService() 下一行就 toast.info(…)）。宿主没渲出来时队列句柄还是空的，
+    // （拦截器里 createNotificationService() 下一行就 notify.info(…)）。宿主没渲出来时队列句柄还是空的，
     // 那条提示会被当成「宿主没挂起来」静默丢掉
     flushSync(() => root!.render(node))
     return root

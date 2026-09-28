@@ -5,6 +5,7 @@ import {
   XhNotificationGroup,
   XhNotificationItem,
   XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
@@ -59,8 +60,10 @@ function startUpload(create: Create, update: Update): void {
           "
         >
           <XhNotificationItemIndicator />
-          <XhNotificationItemTitle />
-          <XhNotificationItemDescription />
+          <XhNotificationItemContent>
+            <XhNotificationItemTitle />
+            <XhNotificationItemDescription />
+          </XhNotificationItemContent>
           <XhNotificationItemCloseTrigger />
         </XhNotificationItem>
       </template>

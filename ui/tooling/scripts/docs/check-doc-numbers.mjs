@@ -449,11 +449,12 @@ const truth = {
     },
   },
   轻提示同屏上限: {
-    how: 'headless 的 notification.machine.ts 里 NOTIFICATION_MAX 的值（轻提示服务的 max 缺省读它）',
-    async value() {
-      const src = await read('packages/engine/headless/src/notification/notification.machine.ts')
-      return Number(src.match(/\bNOTIFICATION_MAX = (\d+)/)[1])
-    },
+    how: 'headless 的 notification.presets.ts 里 NOTIFICATION_TOAST_MAX 的值（轻提示预设每个落位的 max 缺省）',
+    value: () => constantIn('packages/engine/headless/src/notification/notification.presets.ts', 'NOTIFICATION_TOAST_MAX'),
+  },
+  通知卡片同屏上限: {
+    how: 'headless 的 notification.presets.ts 里 NOTIFICATION_CARD_MAX 的值（卡片预设每个落位的 max 缺省）',
+    value: () => constantIn('packages/engine/headless/src/notification/notification.presets.ts', 'NOTIFICATION_CARD_MAX'),
   },
   自定义元素数加一: {
     how: '自定义元素数 + 1（正文里「defineXhElements() 注册 N + xh-background」的那个总数，xh-background 由 defineXhBackground 单独注册）',
@@ -1168,8 +1169,8 @@ const DWELL = {
   'Pagination 浮层打开延迟': ['packages/engine/headless/src/pagination/pagination.machine.ts', 'PAGINATION_OPEN_DELAY'],
   'Pagination 浮层关闭延迟': ['packages/engine/headless/src/pagination/pagination.machine.ts', 'PAGINATION_CLOSE_DELAY'],
   'ContextMenu 长按判定': ['packages/engine/headless/src/context-menu/context-menu.machine.ts', 'CONTEXT_MENU_LONG_PRESS_DELAY'],
-  'Toast 停留': ['packages/engine/headless/src/toast/toast.machine.ts', 'TOAST_DURATION'],
-  'Notification 停留': ['packages/engine/headless/src/notification/notification.connect.ts', 'NOTIFICATION_DURATION'],
+  'Notification 停留': ['packages/engine/headless/src/notification/notification.presets.ts', 'NOTIFICATION_CARD_DURATION'],
+  'Notification 轻提示预设停留': ['packages/engine/headless/src/notification/notification.presets.ts', 'NOTIFICATION_TOAST_DURATION'],
   'Clipboard 成功态保留': ['packages/engine/headless/src/clipboard/clipboard.machine.ts', 'CLIPBOARD_TIMEOUT'],
   'Carousel 自动播放间隔': ['packages/engine/headless/src/carousel/carousel.machine.ts', 'CAROUSEL_AUTOPLAY_INTERVAL'],
   'QuestionFlow 自动下一题': ['packages/engine/headless/src/question-flow/question-flow.machine.ts', 'AUTO_ADVANCE_DELAY'],
@@ -1273,7 +1274,10 @@ const TABLE = [
   ['docs/runtime/markdown.md', /当前对官方 \d+ 条用例的一致率是 (\d+)\//, 'CommonMark通过数'],
   ['docs/runtime/markdown.md', /摘掉之后的一致率是 \d+\/(\d+)/, '摘掉HTML两节的用例数'],
   ['docs/runtime/markdown.md', /摘掉之后的一致率是 (\d+)\//, '摘掉HTML两节的通过数'],
-  ['docs/runtime/services.md', /最多同时留 (\d+) 条/, '轻提示同屏上限'],
+  ['docs/runtime/services.md', /\| `max`（每个位置） \| (\d+) \|/, '通知卡片同屏上限'],
+  ['docs/runtime/services.md', /\| `max`（每个位置） \| \d+ \| (\d+) \|/, '轻提示同屏上限'],
+  ['docs/runtime/services.md', /\| `duration` \| (\d+) \|/, '停留:Notification 停留'],
+  ['docs/runtime/services.md', /\| `duration` \| \d+ \| (\d+) \|/, '停留:Notification 轻提示预设停留'],
 
   // 包 README——npm 把它们当落地页，改数字的人一般只翻文档站，这一片最容易停在旧值
   ['ui/packages/README.md', /`headless` 的 (\d+) 个/, '组件数'],
@@ -1477,8 +1481,8 @@ const TABLE = [
   ['docs/design/dwell.md', /\| Pagination 省略位浮层 \| `openDelay` \/ `closeDelay` \| (\d+) \/ \d+ms/, '停留:Pagination 浮层打开延迟'],
   ['docs/design/dwell.md', /\| Pagination 省略位浮层 \| `openDelay` \/ `closeDelay` \| \d+ \/ (\d+)ms/, '停留:Pagination 浮层关闭延迟'],
   ['docs/design/dwell.md', /\| ContextMenu \| `longPressDelay` \| (\d+)ms/, '停留:ContextMenu 长按判定'],
-  ['docs/design/dwell.md', /\| Toast \| `duration` \| (\d+)ms/, '停留:Toast 停留'],
   ['docs/design/dwell.md', /\| Notification \| `duration` \| (\d+)ms/, '停留:Notification 停留'],
+  ['docs/design/dwell.md', /\| Notification 轻提示预设 \| `duration` \| (\d+)ms/, '停留:Notification 轻提示预设停留'],
   ['docs/design/dwell.md', /\| Clipboard \| `timeout` \| (\d+)ms/, '停留:Clipboard 成功态保留'],
   ['docs/design/dwell.md', /\| Carousel \| `autoplay` \| (\d+)ms/, '停留:Carousel 自动播放间隔'],
   ['docs/design/dwell.md', /\| QuestionFlow \| `autoAdvanceDelay` \| (\d+)ms/, '停留:QuestionFlow 自动下一题'],

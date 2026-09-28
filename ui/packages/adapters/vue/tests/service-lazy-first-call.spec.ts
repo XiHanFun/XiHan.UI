@@ -8,7 +8,7 @@
 // 先在别处弹过一次再进该页反而正常，因此单独守住「首次调用在 onMounted 里」这一型。
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick, onMounted } from 'vue'
-import { createDialogService, createLoadingBarService, createNotificationService, createToastService } from '../src'
+import { createDialogService, createLoadingBarService, createNotificationService } from '../src'
 
 const disposers: Array<() => void> = []
 
@@ -52,9 +52,9 @@ function mountPageWhoseMountedRuns(fn: () => void): void {
 }
 
 describe('业务组件 onMounted 里首次调用命令式服务', () => {
-  it('toast：不抛 SEND_BEFORE_MOUNT，提示最终渲染出来', async () => {
+  it('轻提示预设：不抛 SEND_BEFORE_MOUNT，提示最终渲染出来', async () => {
     mountPageWhoseMountedRuns(() => {
-      const toast = createToastService()
+      const toast = createNotificationService({ preset: 'toast' })
       disposers.push(() => toast.dispose())
       toast.danger('授权被拒绝')
     })

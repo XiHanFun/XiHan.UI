@@ -135,7 +135,6 @@ import type { TimeRangePickerTranslations } from '../time-range-picker/time-rang
 import type { TimelineTranslations } from '../timeline/timeline.types'
 import type { TimerTranslations } from '../timer/timer.types'
 import type { TimestampTranslations } from '../timestamp/timestamp.types'
-import type { ToastTranslations } from '../toast/toast.types'
 import type { ToggleGroupTranslations } from '../toggle-group/toggle-group.types'
 import type { ToggleTranslations } from '../toggle/toggle.types'
 import type { ToolCallTranslations } from '../tool-call/tool-call.types'
@@ -279,7 +278,6 @@ export interface XhTranslationOverrides {
   'timeline'?: Partial<TimelineTranslations>
   'timer'?: Partial<TimerTranslations>
   'timestamp'?: Partial<TimestampTranslations>
-  'toast'?: Partial<ToastTranslations>
   'notification'?: Partial<NotificationTranslations>
   'toggle'?: Partial<ToggleTranslations>
   'toggle-group'?: Partial<ToggleGroupTranslations>

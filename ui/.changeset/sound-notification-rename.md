@@ -22,7 +22,7 @@
 import { withToastSound } from '@xihan-ui/vue/sound'
 export const toast = withToastSound(createToastService())
 
-// 之后
+// 之后（轻提示服务同批并入通知，见通知的 changeset）
 import { withNotificationSound } from '@xihan-ui/vue/sound'
-export const toast = withNotificationSound(createToastService())
+export const toast = withNotificationSound(createNotificationService({ preset: 'toast' }))
 ```

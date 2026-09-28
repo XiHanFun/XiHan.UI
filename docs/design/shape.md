@@ -11,7 +11,7 @@
     '--xh-shape-inset': '4px · 嵌在控件里的内层：菜单项、勾选方框、字段内的清空钮、表格行选择框、色块',
     '--xh-shape-control': '4px · 控件本体：Button、Input、Select trigger、Toggle、分页按钮、kbd、tooltip、Tabs / Steps trigger',
     '--xh-shape-surface': '8px · 成面的静态容器：Card、Alert、Panel、列表容器、Segmented 与 Tabs 的轨道',
-    '--xh-shape-overlay': '12px · 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Toast',
+    '--xh-shape-overlay': '12px · 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification',
     '--xh-shape-circle': '50% · 宽高相等的圆：头像、单选圈、开关与滑杆的拇指、步骤圆点、加载环、悬浮单图标动作',
     '--xh-shape-pill': '9999px · 只两类身份：状态 chip（Badge、Tag、结果标记）与一维对象（轨道、进度条、指示条、手柄、滚动条滑块）',
   }"

@@ -23,10 +23,8 @@ export interface FeedbackServiceControllerState {
 }
 
 export interface FeedbackServiceControllerOptions {
-  /** 用于已卸载错误，例如 toast / notification。 */
+  /** 用于已卸载错误，例如 notification / dialog。 */
   name: string
-  /** Toast 使用自己的稳定前缀；Notification 留给 notificationMachine 生成 id。 */
-  idPrefix?: string
   /** 单条退场后是否还要经队列端口删除记录，缺省需要。 */
   dismissOnUnmounted?: boolean
   /** 服务级暂停变化后通知宿主重渲或 paint。 */
@@ -58,7 +56,7 @@ export interface FeedbackServiceController<TCreate extends FeedbackServiceRecord
   dispose: () => void
 }
 
-/** Toast 与 Notification 命令式服务共享的框架无关生命周期控制器。 */
+/** 通知命令式服务的框架无关生命周期控制器：动作回调表、整组暂停与 Promise 三态。 */
 export function createFeedbackServiceController<TCreate extends FeedbackServiceRecord, TUpdate>(
   options: FeedbackServiceControllerOptions,
 ): FeedbackServiceController<TCreate, TUpdate> {
@@ -66,7 +64,6 @@ export function createFeedbackServiceController<TCreate extends FeedbackServiceR
   const actions = new Map<string, () => void>()
   let paused = false
   let disposed = false
-  let sequence = 0
   let state = snapshot()
 
   function snapshot(): FeedbackServiceControllerState {
@@ -88,10 +85,8 @@ export function createFeedbackServiceController<TCreate extends FeedbackServiceR
     const current = useQueue()
     if (!current)
       return ''
-    const next = options.idPrefix && record.id == null
-      ? { ...record, id: `${options.idPrefix}-${++sequence}` }
-      : record
-    const id = current.create(next)
+    // 没给 id 时由队列机器按实例流水号生成，命令返回的就是它
+    const id = current.create(record)
     if (onAction)
       actions.set(id, onAction)
     return id

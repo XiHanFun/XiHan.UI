@@ -5,15 +5,15 @@
 
 // 提供 use notification 相关实现。
 
-import type { NotificationSchema, ToastSchema } from '@xihan-ui/headless'
+import type { NotificationItemSchema, NotificationSchema } from '@xihan-ui/headless'
 import type { MaybeRefOrGetter } from 'vue'
 import type { NotificationContext, NotificationItemContext } from './context'
-import { connectNotification, connectNotificationItem, notificationMachine, toastMachine } from '@xihan-ui/headless'
+import { connectNotification, connectNotificationItem, notificationItemMachine, notificationMachine } from '@xihan-ui/headless'
 import { computed, ref, toValue } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
-import { useToastExit } from '../toast/use-toast-exit'
 import { useNotificationContextOptional } from './context'
+import { useNotificationItemExit } from './use-item-exit'
 
 /** props 接收 ref/getter 时每帧现取，文案等值可以在运行期更换。 */
 export function useNotification(
@@ -37,23 +37,25 @@ export function useNotification(
 }
 
 /**
- * 单条卡片。生命周期复用 toast 的状态机：那是会自动消失的卡片这一通用行为。
+ * 单条卡片：计时、暂停、按压与退场都在它自己的机器上。
  * 退场完成后由这里通知队列删除记录：队列在外层，卡片自身不知道它。
  */
 export function useNotificationItem(
-  props: ToastSchema['props'],
-  onStatusChange?: ToastSchema['props']['onStatusChange'],
-  onAction?: ToastSchema['props']['onAction'],
+  props: NotificationItemSchema['props'],
+  onStatusChange?: NotificationItemSchema['props']['onStatusChange'],
+  onAction?: NotificationItemSchema['props']['onAction'],
 ): NotificationItemContext {
   const queue = useNotificationContextOptional()
-  const notifyStatus: ToastSchema['props']['onStatusChange'] = (details) => {
+  const notifyStatus: NotificationItemSchema['props']['onStatusChange'] = (details) => {
     onStatusChange?.(details)
     if (details.status === 'unmounted')
       queue?.dismiss(details.id)
   }
-  const service = useMachine(toastMachine, () => ({ ...props, onStatusChange: notifyStatus, onAction }))
+  const service = useMachine(notificationItemMachine, () => ({ ...props, onStatusChange: notifyStatus, onAction }))
   const api = computed(() => connectNotificationItem(service, vueNormalize))
   const rootRef = ref<HTMLElement | null>(null)
-  useToastExit({ service, isOpen: () => api.value.status === 'visible', rootRef })
+  // 传 getter 而非节点本身，ref 在挂载后才有值；叠摞展开的追踪从它找所在的那一摞
+  service.refs.set('getRootEl', () => rootRef.value)
+  useNotificationItemExit({ service, isOpen: () => api.value.status === 'visible', rootRef })
   return { api, rootRef }
 }

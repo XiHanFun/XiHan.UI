@@ -5,7 +5,7 @@ import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
-  createToastService,
+  createNotificationService,
   XhCarouselIndicator,
   XhCarouselIndicatorGroup,
   XhCarouselItem,
@@ -208,13 +208,13 @@ describe.each(['ltr', 'rtl'] as const)('行内轴居中（%s）', (dir) => {
     }
   })
 
-  it.each(['top', 'bottom'] as const)('toast 在 %s 居中时整摞落在视口正中', async (placement) => {
+  it.each(['top', 'bottom'] as const)('轻提示预设在 %s 居中时整摞落在视口正中', async (placement) => {
     document.documentElement.dir = dir
-    const toast = createToastService({ placement })
+    const toast = createNotificationService({ preset: 'toast', placement })
     dispose = () => toast.dispose()
     toast.info('已保存')
     await nextTick()
     await frames()
-    expectElementCentered(part('toast', 'group'), 'toast 组')
+    expectElementCentered(part('notification', 'group'), '轻提示那一摞')
   })
 })

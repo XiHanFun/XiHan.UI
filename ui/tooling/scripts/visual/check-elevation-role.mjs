@@ -4,7 +4,7 @@
 // 四档角色：raised = 静态抬起面（卡片、分段控制器的滑块、静止的滑杆拇指）；
 // lifted = 被指针拎起、正跟着手走的东西（拖动中的滑杆拇指），比 raised 高一档、不到 floating；
 // floating = 锚定浮层（下拉、菜单、popover、hover-card、tooltip，它们 portal 到同一落点，投影同深）；
-// sheet = 遮罩式与通知（dialog / drawer / toast / tour）；浮动面板与悬浮动作走 M2 frosted。
+// sheet = 遮罩式与通知（dialog / drawer / notification / tour）；浮动面板与悬浮动作走 M2 frosted。
 // 皮肤直接引 --xh-shadow-* 原语或给 box-shadow 写字面值，海拔就脱离了层级阶梯。
 //
 // 允许：组件槽包着角色令牌 / 私有槽 / none / 0 / inset 描边式阴影（focus ring 与分割线那种）。
@@ -30,8 +30,8 @@ const MATERIAL_ELEVATED = /--xh-material-elevated-shadow\b/
 const MATERIAL_LIQUID = /--xh-material-liquid-shadow\b/
 // 材质家族配方（family/material.css）在部件上声明的投影私有槽：frosted 档取 M2 投影，liquid 档由配方换成液态投影
 const MATERIAL_RECIPE = /--xh-_material-shadow\b/
-/** 已迁到 material-elevated 三件套的 sheet 面：`组件/部件`。sheet 面：Dialog / Drawer / Command / Tour / Toast / Notification。 */
-const ELEVATED_CONSUMERS = new Set(['dialog/content', 'drawer/content', 'tour/content', 'toast/root', 'notification/item', 'layout/sider', 'command/content'])
+/** 已迁到 material-elevated 三件套的 sheet 面：`组件/部件`。sheet 面：Dialog / Drawer / Command / Tour / Notification。 */
+const ELEVATED_CONSUMERS = new Set(['dialog/content', 'drawer/content', 'tour/content', 'notification/item', 'layout/sider', 'command/content'])
 /**
  * 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>))。
  * 允许套多层：加法式改名把新槽名排在外层、旧名留在它的兜底位上，链因此不止一层。
@@ -120,7 +120,6 @@ const EXPECTED = {
   'time-picker': { content: ['floating'] },
   // 两组时列并排的锚定面板：floating
   'time-range-picker': { content: ['floating'] },
-  'toast': { root: ['sheet'] },
   'tooltip': { content: ['frosted'] },
   'tour': { content: ['sheet'] },
   'tree-select': { content: ['frosted'] },

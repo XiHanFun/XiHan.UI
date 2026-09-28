@@ -1,14 +1,14 @@
 <!-- 为通知配声 | withNotificationSound 包一层现成服务，调用点无需修改；loading 不发声，转为 success 时才发声 -->
 <script setup lang="ts">
-import type { ToastService } from "@xihan-ui/vue";
-import { createToastService, XhButton } from "@xihan-ui/vue";
+import type { NotificationService } from "@xihan-ui/vue";
+import { createNotificationService, XhButton } from "@xihan-ui/vue";
 import { withNotificationSound } from "@xihan-ui/vue/sound";
 import { onBeforeUnmount } from "vue";
 
 // 惰性建单例：服务要 document，等到第一次调用（必然在客户端）再建
-let toast: ToastService | undefined;
-function use(): ToastService {
-  toast ??= withNotificationSound(createToastService({ placement: "top" }));
+let toast: NotificationService | undefined;
+function use(): NotificationService {
+  toast ??= withNotificationSound(createNotificationService({ preset: "toast", placement: "top" }));
   return toast;
 }
 onBeforeUnmount(() => toast?.dispose());

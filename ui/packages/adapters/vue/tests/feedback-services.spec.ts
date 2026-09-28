@@ -3,7 +3,7 @@
 // 所有用例都不挂宿主组件。
 import { afterEach, describe, expect, it } from 'vitest'
 import { nextTick } from 'vue'
-import { createDialogService, createLoadingBarService, createNotificationService, createToastService } from '../src'
+import { createDialogService, createLoadingBarService, createNotificationService } from '../src'
 
 async function tick(): Promise<void> {
   await nextTick()
@@ -21,9 +21,9 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-describe('createToastService', () => {
+describe('createNotificationService 的轻提示预设', () => {
   it('模块作用域一行调用即渲染出通知', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     toast.success('已保存')
     await tick()
     expect(document.body.textContent).toContain('已保存')
@@ -31,7 +31,7 @@ describe('createToastService', () => {
   })
 
   it('loading 转 success 就地改写同一条', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     const id = toast.loading('上传中')
     await tick()
     expect(document.body.textContent).toContain('上传中')
@@ -43,7 +43,7 @@ describe('createToastService', () => {
   })
 
   it('dismissAll 一次收走所有条目', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     toast.danger('同步失败')
     toast.info('另一条')
     await tick()
@@ -56,12 +56,12 @@ describe('createToastService', () => {
     toast.dispose()
   })
 
-  it('落位是整个服务的口径，不逐条各去一处', async () => {
-    const toast = createToastService({ placement: 'bottom-end' })
+  it('没写逐条落位时整摞落在服务的 placement，一个位置一摞', async () => {
+    const toast = createNotificationService({ preset: 'toast', placement: 'bottom-end' })
     toast.info('一条')
     toast.info('两条')
     await tick()
-    const groups = [...document.querySelectorAll('[data-scope="toast"][data-part="group"]')]
+    const groups = [...document.querySelectorAll('[data-scope="notification"][data-part="group"]')]
     // 一个服务只有一摞：条目落在哪儿由服务档一次定好
     expect(groups.length).toBe(1)
     expect(groups[0]!.getAttribute('data-placement')).toBe('bottom-end')
@@ -70,7 +70,7 @@ describe('createToastService', () => {
   })
 
   it('max：超出上限挤掉最旧的那条', async () => {
-    const toast = createToastService({ max: 2 })
+    const toast = createNotificationService({ preset: 'toast', max: 2 })
     toast.info('第一条')
     toast.info('第二条')
     toast.info('第三条')
@@ -81,51 +81,52 @@ describe('createToastService', () => {
   })
 
   it('不写 max 缺省留 3 条：连发 20 条只剩最新的三条', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     for (let i = 1; i <= 20; i++)
       toast.info(`第 ${i} 条`, { duration: 0 })
     await tick()
-    const titles = [...document.querySelectorAll('[data-scope="toast"][data-part="title"]')].map(el => el.textContent)
+    const titles = [...document.querySelectorAll('[data-scope="notification"][data-part="item-title"]')].map(el => el.textContent)
     expect(titles).toEqual(['第 18 条', '第 19 条', '第 20 条'])
-    expect(document.querySelector('[data-scope="toast"][data-part="group"]')?.getAttribute('data-count')).toBe('3')
+    expect(document.querySelector('[data-scope="notification"][data-part="group"]')?.getAttribute('data-count')).toBe('3')
     toast.dispose()
   })
 
   it('dispose 移除宿主容器', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     toast.success('一条')
     await tick()
     toast.dispose()
-    expect(document.querySelectorAll('[data-scope="toast"]').length).toBe(0)
+    expect(document.querySelectorAll('[data-scope="notification"]').length).toBe(0)
     expect(() => toast.success('再来')).toThrow('已卸载')
   })
 })
 
-describe('createToastService 的默认模板', () => {
+describe('轻提示预设的默认模板', () => {
   function toastRoot(): HTMLElement {
-    const el = document.querySelector<HTMLElement>('[data-scope="toast"][data-part="root"]')
+    const el = document.querySelector<HTMLElement>('[data-scope="notification"][data-part="item"]')
     if (!el)
-      throw new Error('没渲染出条子')
+      throw new Error('没渲染出轻提示')
     return el
   }
 
   const closeOf = (): HTMLElement | null =>
-    document.querySelector<HTMLElement>('[data-scope="toast"][data-part="close-trigger"]')
+    document.querySelector<HTMLElement>('[data-scope="notification"][data-part="item-close-trigger"]')
 
-  it('默认模板铺指示符、文本列与关闭按钮', async () => {
-    const toast = createToastService()
+  it('默认模板铺指示符、文本列与关闭按钮，卡片带轻提示的预设', async () => {
+    const toast = createNotificationService({ preset: 'toast' })
     toast.success('已保存', { description: '更改已同步到云端' })
     await tick()
     const root = toastRoot()
     expect(closeOf()).not.toBeNull()
-    expect([...root.children].map(el => el.getAttribute('data-part'))).toEqual(['indicator', 'content', 'close-trigger'])
-    expect(root.querySelector('[data-part="description"]')?.textContent).toBe('更改已同步到云端')
+    expect([...root.children].map(el => el.getAttribute('data-part'))).toEqual(['item-indicator', 'item-content', 'item-close-trigger'])
+    expect(root.getAttribute('data-preset')).toBe('toast')
+    expect(root.querySelector('[data-part="item-description"]')?.textContent).toBe('更改已同步到云端')
     expect(root.getAttribute('data-tone')).toBe('success')
     toast.dispose()
   })
 
   it('closable=false 显式去掉关闭入口', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     toast.danger('导出失败', { duration: 0, closable: false })
     await tick()
     expect(closeOf()).toBeNull()
@@ -133,7 +134,7 @@ describe('createToastService 的默认模板', () => {
   })
 
   it('loading 同样出叉，且 closable 能显式改口', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     toast.loading('上传中')
     await tick()
     expect(closeOf()).not.toBeNull()
@@ -147,7 +148,7 @@ describe('createToastService 的默认模板', () => {
   })
 
   it('没写 tone 也按 info 落位：语气位得有，皮肤才画得出字形；不在加载中就没有 data-loading', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     toast.create({ title: '无语气' })
     await tick()
     const root = toastRoot()
@@ -157,7 +158,7 @@ describe('createToastService 的默认模板', () => {
   })
 
   it('loading 收尾时加载位撤掉、语气位换掉，字形才会从转圈换成勾号', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     const id = toast.loading('上传中')
     await tick()
     expect(toastRoot().hasAttribute('data-loading')).toBe(true)
@@ -278,12 +279,14 @@ describe('createNotificationService 的默认模板', () => {
   const partOf = (name: string): HTMLElement | null =>
     document.querySelector<HTMLElement>(`[data-scope="notification"][data-part="${name}"]`)
 
-  it('四个节点平铺，不再套一层行容器', async () => {
+  it('指示符、文本列与叉三格，标题与说明收在文本列里；两种预设同一份结构', async () => {
     const notify = createNotificationService()
     notify.info('有新的审批', { description: '张三提交了一份请假单' })
     await tick()
     const parts = [...card().children].map(c => c.getAttribute('data-part'))
-    expect(parts).toEqual(['item-indicator', 'item-title', 'item-description', 'item-close-trigger'])
+    expect(parts).toEqual(['item-indicator', 'item-content', 'item-close-trigger'])
+    expect([...partOf('item-content')!.children].map(c => c.getAttribute('data-part'))).toEqual(['item-title', 'item-description'])
+    expect(card().getAttribute('data-preset')).toBe('card')
     notify.dispose()
   })
 
@@ -373,7 +376,7 @@ describe('createNotificationService 的默认模板', () => {
 
   it('按压通道：按住 Enter 关掉卡片，按压面随退场由机器收', async () => {
     const notify = createNotificationService()
-    // 服务级 dismiss 直接把记录摘出队列、卡片随之卸载；退场帧只在卡片自己走 TOAST.DISMISS 时才有
+    // 服务级 dismiss 直接把记录摘出队列、卡片随之卸载；退场帧只在卡片自己走 ITEM.DISMISS 时才有
     notify.info('有新的审批', { duration: 0 })
     await tick()
     const close = partOf('item-close-trigger')!

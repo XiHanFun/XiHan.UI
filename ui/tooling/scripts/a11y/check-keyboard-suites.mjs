@@ -140,10 +140,22 @@ for (const dir of (await readdir(HEADLESS, { withFileTypes: true })).filter(d =>
       problems.push(`${dir}  ${ADAPTERS[key].label} 的 conformance 清单没有登记 ${accepted[key].join(' / ')}`)
   }
 
-  // 逐行对账：表里每一行都要有用例 covers 到，或在 ROW_EXEMPT 里写明由谁认领
+  // 逐行对账：表里每一行都要有用例 covers 到，或在 ROW_EXEMPT 里写明由谁认领。
+  // 同一份解剖拆成两个挂载点的组件（WC 侧单条卡片是另一个自定义元素）另有一份套件，
+  // 它断言的是同一份解剖，covers 一并算进来
   const suite = await readFile(join(SUITES, `${dir}.suite.ts`), 'utf8')
+  const anatomyRef = new RegExp(`\\banatomy:\\s*${camel(dir)}Anatomy\\b`)
+  const companions = []
+  for (const file of suiteFiles) {
+    if (file === `${dir}.suite.ts` || !file.endsWith('.suite.ts'))
+      continue
+    const source = await readFile(join(SUITES, file), 'utf8')
+    if (anatomyRef.test(source))
+      companions.push(source)
+  }
   const coveredRows = new Set(
-    [...suite.matchAll(/covers:\s*\[([^\]]*)\]/g)]
+    [suite, ...companions]
+      .flatMap(source => [...source.matchAll(/covers:\s*\[([^\]]*)\]/g)])
       .flatMap(m => [...m[1].matchAll(/'([^']+)'/g)].map(x => x[1])),
   )
   for (const [, rowId] of keyboard.matchAll(/id:\s*'([^']+)'/g)) {

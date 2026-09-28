@@ -1,8 +1,8 @@
 # 命令式服务
 
-部分反馈不适合写成模板：删除前确认、保存后提示，这类反馈没有挂载位置的问题，适合一次调用弹出。库提供四个服务工厂：对话框、轻提示、通知与顶部进度条。
+部分反馈不适合写成模板：删除前确认、保存后提示，这类反馈没有挂载位置的问题，适合一次调用弹出。库提供三个服务工厂：对话框、通知与顶部进度条；轻提示是通知服务的一个预设。
 
-四者都自建宿主容器、自行管理挂载与卸载，用完后需调用 `dispose()`。
+三者都自建宿主容器、自行管理挂载与卸载，用完后需调用 `dispose()`。
 
 工厂返回即可接收命令，与宿主何时渲染无关：在组件的挂载回调（Vue 的 `onMounted`、React 的 `useEffect`、自定义元素的 `connectedCallback`）里懒建服务并紧接着发第一条命令，与在模块作用域调用一样成立，不需要等一帧。
 
@@ -84,26 +84,45 @@ const next = await dialog.prompt({
 
 后续调用排队顺次弹出，避免多层模态叠加。当前项的内容与遮罩全部完成有限退场动画后，队列才放出下一项；无动画或减弱动效时不额外等待固定时间。
 
-## 轻提示服务
+## 通知服务
+
+轻提示与通知是同一个服务的两种预设：轻提示是用户刚才那个操作的一句结果，通知卡片是系统或他人主动推送的两层消息。
 
 ```ts
-import { createToastService } from "@xihan-ui/vue";
+import { createNotificationService } from "@xihan-ui/vue";
 
-const toast = createToastService({ placement: "top", max: 5 });
-
+// 轻提示：落底部居中、叠成一摞、一句话读完就走
+const toast = createNotificationService({ preset: "toast" });
 toast.success("已保存");
 toast.danger("保存失败，请重试", { duration: 8000 });
+
+// 卡片：落右下、逐条排开，标题加正文两层
+const notify = createNotificationService();
+notify.info("有新的审批", { description: "张三提交了一份请假单" });
+notify.danger("同步失败", { description: "网络中断，稍后自动重试", duration: 0 });
 ```
+
+| 缺省值 | `preset: 'card'`（缺省） | `preset: 'toast'` |
+| --- | --- | --- |
+| `placement` | `bottom-end` | `bottom` |
+| `max`（每个位置） | 5 | 3 |
+| `gap` | 16 | 12 |
+| `duration` | 5000 | 4000 |
+| `stacked` | 不叠 | 叠成一摞，鼠标或焦点进入即展开，整摞计时一并按住 |
+| `pauseOnPageIdle` | 关闭 | 开启 |
+| 卡片排版 | 两列网格，关闭按钮钉在右上角 | 一行，关闭按钮排在行尾、悬停或聚焦才显现 |
+
+表中每一项都可以在创建时单独改写，卡片排版随预设走。
 
 | 方法 | 返回 | 说明 |
 | --- | --- | --- |
 | `create(options)` | `string`（id） | 入队；同 id 已存在则就地改写 |
 | `update(id, options)` | — | 改写正在显示的条目 |
-| `dismiss(id)` / `dismissAll()` | — | 手动关闭 |
-| `info` / `success` / `warning` / `danger` | `string`（id） | 语气快捷方法，第一个参数是正文 |
-| `loading(message, options)` | `string`（id） | 以 `loading` 态弹出一条并返回 id，之后用 `update` 收尾 |
+| `dismiss(id)` / `dismissAll()` | — | 立即移出队列，不播退场动画 |
+| `info` / `success` / `warning` / `danger` | `string`（id） | 语气快捷方法，第一个参数是标题，正文写在 `options.description` |
+| `loading(title, options)` | `string`（id） | 以 `loading` 态弹出一条并返回 id，之后用 `update` 收尾 |
 | `promise(input, options)` | `Promise<T>` | 先弹出 loading，落定后就地改写为成功 / 失败 |
-| `pauseAll()` / `resumeAll()` | — | 整组暂停计时、再恢复 |
+| `pauseAll()` / `resumeAll()` | — | 当前卡片整组暂停计时、再恢复 |
 | `setConfig(next)` | — | 更换全局配置源（切换语言用） |
 | `dispose()` | — | 卸载宿主应用并移除容器 |
 
@@ -122,7 +141,7 @@ catch {
 }
 ```
 
-同一条链有封装写法，结果与拒绝都原样返回：
+同一条链有封装写法，结果与拒绝都原样返回。三段文案落在标题上，`description` 等其余字段三态共用：
 
 ```ts
 const url = await toast.promise(upload(file), {
@@ -147,7 +166,7 @@ toast.info("已删除 3 条记录", { duration: 8000, actionLabel: "撤销", onA
 同一句错误连续发出多次时，`dedupe: 'content'` 把它们合并为一条并在标题后追加计数：
 
 ```ts
-const toast = createToastService({ dedupe: "content" });
+const toast = createNotificationService({ preset: "toast", dedupe: "content" });
 toast.danger("同步失败");
 toast.danger("同步失败"); // 界面上是「同步失败 ×2」
 ```
@@ -155,53 +174,16 @@ toast.danger("同步失败"); // 界面上是「同步失败 ×2」
 超出 `max` 时先移除低优先级的条目，同级中移除最旧的。未指定优先级时按语气派生（`danger` 最高、
 `warning` 次之、其余持平），也可以逐条写 `priority`：一条报错不应被随后的多条提示挤出。
 
-服务档的默认落位是 `top`，最多同时留 5 条，超出时移除最旧的。落位是整个服务的口径：
-一次操作的反馈不应逐条分散到不同位置，在 `createToastService({ placement })` 中一次确定。
+### 落位与关闭
 
-默认不显示关闭按钮。一条轻提示是一枚状态字形加一句话的小条，到时自行消失；
-多一个关闭按钮就多一次是否点击的判断。确需保留出口（如 `duration: 0` 的常驻提示）时显式开启：
+整摞的位置在创建时由 `placement` 定下；单条可以用 `options.placement` 覆盖，落到另一个位置的另一摞。
+一次操作的反馈通常不逐条分散，轻提示保持服务的口径即可；消息各有轻重时，逐条决定位置是合理的。
 
-```ts
-toast.danger("导出失败，请重试", { duration: 0, closable: true });
-```
-
-## 通知服务
+关闭按钮缺省提供，`closable: false` 去掉。`duration: 0` 即常驻不消失，由用户手动关闭：
 
 ```ts
-import { createNotificationService } from "@xihan-ui/vue";
-
-const notify = createNotificationService({ placement: "bottom-end", max: 5 });
-
-notify.info("有新的审批", { description: "张三提交了一份请假单" });
-notify.danger("同步失败", { description: "网络中断，稍后自动重试", duration: 0 });
+toast.danger("导出失败，请重试", { duration: 0 });
 ```
-
-| 方法 | 返回 | 说明 |
-| --- | --- | --- |
-| `create(options)` | `string`（id） | 入队；同 id 已存在则就地改写 |
-| `update(id, options)` | — | 改写正在显示的条目 |
-| `dismiss(id)` / `dismissAll()` | — | 手动关闭 |
-| `info` / `success` / `warning` / `danger` | `string`（id） | 语气快捷方法，第一个参数是标题，正文写在 `options.description` |
-| `loading(title, options)` | `string`（id） | 以 `loading` 态弹出一条并返回 id，之后用 `update` 收尾 |
-| `promise(input, options)` | `Promise<T>` | 先弹出 loading，落定后就地改写为成功 / 失败 |
-| `pauseAll()` / `resumeAll()` | — | 当前卡片整组暂停计时、再恢复 |
-| `setConfig(next)` | — | 更换全局配置源（切换语言用） |
-| `dispose()` | — | 卸载宿主应用并移除容器 |
-
-行内动作、`dedupe`、`priority` 以及在途 → 完成那条链与轻提示同形：两者运行同一台队列状态机，
-上限、移除与合并计数只有一份实现。`promise` 的三段文案落在标题上，`description` 等其余字段三态共用：
-
-```ts
-await notify.promise(syncContacts(), {
-  loading: "正在同步",
-  success: count => `已同步 ${count} 位联系人`,
-  error: "同步失败，稍后自动重试",
-  description: "通讯录",
-});
-```
-
-与轻提示的两处不同：条目有标题与正文两层，且单条可以用 `options.placement` 覆盖落位：
-消息各有轻重，逐条决定位置是合理的。`duration: 0` 即常驻不消失，由用户手动关闭。
 
 队列需要位于页面结构中（通知中心一栏自行排版）时改用组件形态的
 [通知](../components/notification)，两者不共享队列。
@@ -239,7 +221,7 @@ http.interceptors.response.use(
 
 ## 切换语言（Vue 侧）
 
-Vue 的四个服务都自建宿主应用，无法接入组件树中的 `provideXhConfig`，因此配置从 `config` 选项提供。传入 ref 或 getter，不传一次性的对象：传对象时文案只在创建服务时求值一次，之后应用切换语言，服务子树中的按钮与读屏名不随之更新；队列中排队的对话框也会跨过这次切换。
+Vue 的三个服务都自建宿主应用，无法接入组件树中的 `provideXhConfig`，因此配置从 `config` 选项提供。传入 ref 或 getter，不传一次性的对象：传对象时文案只在创建服务时求值一次，之后应用切换语言，服务子树中的按钮与读屏名不随之更新；队列中排队的对话框也会跨过这次切换。
 
 ```ts
 const dialog = createDialogService({
@@ -256,16 +238,16 @@ dialog.setConfig({ locale: "en-US" });
 
 ## Web Components 侧
 
-同样四个工厂，从 `@xihan-ui/web-components/services` 取，句柄的方法与 Vue 侧同名同形：
+同样三个工厂，从 `@xihan-ui/web-components/services` 取，句柄的方法与 Vue 侧同名同形：
 
 ```ts
-import { createToastService } from "@xihan-ui/web-components/services";
+import { createNotificationService } from "@xihan-ui/web-components/services";
 
-const toast = createToastService({ placement: "top", max: 5 });
+const toast = createNotificationService({ preset: "toast", placement: "top" });
 toast.success("已保存");
 ```
 
-服务自行生成真实的自定义元素与角色节点（`<xh-toast>`、`<xh-notification>`、`<xh-dialog>`、
+服务自行生成真实的自定义元素与角色节点（`<xh-notification>` 与 `<xh-notification-item>`、`<xh-dialog>`、
 `<xh-loading-bar>`），得到的仍是一棵可查询、可选中的 DOM；用到的元素在服务创建时按需注册，
 不必先 `import '@xihan-ui/web-components/define'`。
 
@@ -278,24 +260,24 @@ toast.success("已保存");
 
 ## 不适合使用服务的场景
 
-- 确认可撤销的操作：直接执行，然后发一条带撤销按钮的轻提示。事前确认对用户是额外的一道关卡，撤销才是有效的兜底。
-- 提示内容较长或需要用户处理：轻提示会自行消失，用[警告提示](../components/alert)常驻，或用[通知](../components/notification)分标题与正文两层。
+- 确认可撤销的操作：直接执行，然后发一条带撤销按钮的轻提示（`preset: "toast"`）。事前确认对用户是额外的一道关卡，撤销才是有效的兜底。
+- 提示内容较长或需要用户处理：轻提示会自行消失，用[警告提示](../components/alert)常驻，或用通知的卡片预设分标题与正文两层、`duration: 0` 常驻。
 - 对话框中需要放表单：用组件形态的[对话框](../components/dialog)，服务档只提供标题、正文与按钮行。
 
 ## 一个应用创建几个
 
-各创建一个，挂在应用启动处，全局共用。每个页面各创建一个会产生多个宿主容器，多组提示互相遮盖。
+每种服务（通知的每种预设）各创建一个，挂在应用启动处，全局共用。每个页面各创建一个会产生多个宿主容器，多组提示互相遮盖。
 
-服务不经 provide/inject，因此在组件外（路由守卫、拦截器、store）也能调用，这正是命令式的意义。但也因此它无法获取 [全局配置](./config) 注入的文案：服务的文案在 `createDialogService` / `createToastService` / `createNotificationService` 的入参中单独提供。
+服务不经 provide/inject，因此在组件外（路由守卫、拦截器、store）也能调用，这正是命令式的意义。但也因此它无法获取 [全局配置](./config) 注入的文案：服务的文案在 `createDialogService` / `createNotificationService` 的入参中单独提供。
 
 ## 与其他库的对应关系
 
 | 其他库 | 本库 |
 | --- | --- |
 | Element Plus `ElMessageBox.confirm` | `dialog.confirm` |
-| Element Plus `ElMessage` / `ElNotification` | `toast.*` / [通知](../components/notification) |
-| Ant Design `Modal.confirm` / `message` / `notification` | `dialog.confirm` / `toast.*` / [通知](../components/notification) |
-| Naive UI `useDialog` / `useMessage` | `createDialogService` / `createToastService` |
-| Semi Design `Modal.confirm` / `Toast` | `dialog.confirm` / `toast.*` |
+| Element Plus `ElMessage` / `ElNotification` | 轻提示预设 `toast.*` / 卡片预设 `notify.*` |
+| Ant Design `Modal.confirm` / `message` / `notification` | `dialog.confirm` / 轻提示预设 `toast.*` / 卡片预设 `notify.*` |
+| Naive UI `useDialog` / `useMessage` | `createDialogService` / `createNotificationService({ preset: "toast" })` |
+| Semi Design `Modal.confirm` / `Toast` | `dialog.confirm` / 轻提示预设 `toast.*` |
 
-轻提示与通知按发起方分工。轻提示是用户刚才操作的结果，一句话、自行消失；[通知](../components/notification)是系统或他人主动推送的消息，有标题与正文两层、可以常驻。两者都有服务档（`createToastService` / `createNotificationService`），队列各自独立；通知另有组件形态 `XhNotificationRoot`，队列需要位于页面结构中（通知中心一栏自行排版）时使用。轻提示没有容器组件：反馈落位是整个服务的口径。
+轻提示与通知卡片按发起方分工，但它们是同一种到期自行消失的消息：轻提示是用户刚才操作的结果，一句话、自行消失；卡片是系统或他人主动推送的消息，有标题与正文两层、可以常驻。两者由 [通知](../components/notification) 的 `preset` 区分，服务档都是 `createNotificationService`，每个服务实例各自持有队列；组件形态 `XhNotificationRoot` 同样接受 `preset`，队列需要位于页面结构中（通知中心一栏自行排版）时使用。

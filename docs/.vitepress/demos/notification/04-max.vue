@@ -5,6 +5,7 @@ import {
   XhNotificationGroup,
   XhNotificationItem,
   XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
@@ -53,8 +54,10 @@ function nextTitle(): string {
           "
         >
           <XhNotificationItemIndicator />
-          <XhNotificationItemTitle />
-          <XhNotificationItemDescription />
+          <XhNotificationItemContent>
+            <XhNotificationItemTitle />
+            <XhNotificationItemDescription />
+          </XhNotificationItemContent>
           <XhNotificationItemCloseTrigger />
         </XhNotificationItem>
       </template>

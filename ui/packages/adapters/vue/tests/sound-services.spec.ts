@@ -6,7 +6,7 @@ import type { ObjectDirective } from 'vue'
 import type { SoundDirectiveValue } from '../src/sound'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
-import { createDialogService, createToastService } from '../src'
+import { createDialogService, createNotificationService } from '../src'
 import { setSoundPlayer, vSound, withDialogSound, withNotificationSound } from '../src/sound'
 
 interface Recorder extends SoundPlayer {
@@ -48,7 +48,7 @@ afterEach(() => {
 describe('withNotificationSound', () => {
   it('四个语气糖各发各的声，视觉照旧', async () => {
     const player = recorder()
-    const toast = withNotificationSound(createToastService(), { player, autoUnlock: false })
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), { player, autoUnlock: false })
     toast.success('已保存')
     toast.danger('保存失败')
     toast.warning('注意')
@@ -62,7 +62,7 @@ describe('withNotificationSound', () => {
 
   it('loading 不发声，转成 success 时才响', async () => {
     const player = recorder()
-    const toast = withNotificationSound(createToastService(), { player, autoUnlock: false })
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), { player, autoUnlock: false })
     const id = toast.loading('上传中')
     await tick()
     expect(player.played).toEqual([])
@@ -75,7 +75,7 @@ describe('withNotificationSound', () => {
 
   it('只改文案不发声', async () => {
     const player = recorder()
-    const toast = withNotificationSound(createToastService(), { player, autoUnlock: false })
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), { player, autoUnlock: false })
     const id = toast.create({ tone: 'info', title: '一' })
     await tick()
     toast.update(id, { title: '二' })
@@ -86,7 +86,7 @@ describe('withNotificationSound', () => {
 
   it('create 不给类型时按 info 发声，返回的 id 原样透传', async () => {
     const player = recorder()
-    const service = createToastService()
+    const service = createNotificationService({ preset: 'toast' })
     const toast = withNotificationSound(service, { player, autoUnlock: false })
     const id = toast.create({ title: '无类型' })
     await tick()
@@ -100,7 +100,7 @@ describe('withNotificationSound', () => {
 
   it('sounds 可逐项改写，给 null 即这一类静音', async () => {
     const player = recorder()
-    const toast = withNotificationSound(createToastService(), {
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), {
       player,
       autoUnlock: false,
       sounds: { success: 'complete', danger: null },
@@ -115,11 +115,11 @@ describe('withNotificationSound', () => {
 
   it('autoUnlock 在首次手势解锁一次，dispose 后不再监听', async () => {
     const player = recorder()
-    const toast = withNotificationSound(createToastService(), { player })
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), { player })
     document.dispatchEvent(new Event('pointerdown'))
     document.dispatchEvent(new Event('pointerdown'))
     expect(player.unlocks).toBe(1)
-    const later = withNotificationSound(createToastService(), { player })
+    const later = withNotificationSound(createNotificationService({ preset: 'toast' }), { player })
     later.dispose()
     document.dispatchEvent(new Event('pointerdown'))
     expect(player.unlocks).toBe(1)

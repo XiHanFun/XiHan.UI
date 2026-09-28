@@ -1,19 +1,24 @@
+// @vitest-environment jsdom
+// 叠摞的测量挂在真实节点上，这份用例要一棵 DOM
 import type { NotificationSchema } from '../src/notification'
-import type { ToastSchema } from '../src/toast'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { describe, expect, it } from 'vitest'
-import { connectNotification, connectNotificationItem, NOTIFICATION_MAX, notificationMachine, notificationPriorityOf, visibleNotifications } from '../src/notification'
-import { toastMachine } from '../src/toast'
+import { afterEach, describe, expect, it } from 'vitest'
+import { connectNotification, NOTIFICATION_PRESETS, notificationMachine, notificationPresetOf, notificationPriorityOf, visibleNotifications } from '../src/notification'
+
+const NOTIFICATION_MAX = NOTIFICATION_PRESETS.card.max
 
 type Props = NotificationSchema['props']
 
-function makeQueue(initial: Props = {}) {
+function makeQueue(initial: Props = {}, root: HTMLElement | null = null) {
   const runtime = createVanillaRuntime()
   const props = runtime.signal<Props>(initial)
   const service = createService(notificationMachine, { props: () => props.get(), runtime })
+  service.refs.set('getRootEl', () => root)
   runtime.start()
   return {
+    service,
+    setProps: (next: Props) => props.set({ ...props.get(), ...next }),
     api: () => connectNotification(service, normalizeProps),
     items: () => service.context.get('items'),
     titles: () => connectNotification(service, normalizeProps).visibleNotifications.map(item => item.title),
@@ -56,7 +61,7 @@ describe('挤条按优先级', () => {
 })
 
 describe('上限的缺省', () => {
-  it('不给 max：每个位置默认只留 NOTIFICATION_MAX 条，多出来的从队列里挤掉', () => {
+  it('不给 max：卡片预设每个位置默认只留 5 条，多出来的从队列里挤掉', () => {
     expect(NOTIFICATION_MAX).toBe(5)
     const q = makeQueue()
     for (let i = 1; i <= NOTIFICATION_MAX + 2; i++)
@@ -160,154 +165,154 @@ describe('合并计数', () => {
   })
 })
 
-describe('卡片上的两颗钮', () => {
-  it('投影 Action Control 家族属性：操作钮 text outline sm，关闭钮 icon ghost sm', () => {
-    const runtime = createVanillaRuntime()
-    const props = runtime.signal<ToastSchema['props']>({ duration: 0 })
-    const service = createService(toastMachine, { props: () => props.get(), runtime })
-    runtime.start()
-    const api = connectNotificationItem(service, normalizeProps)
-    const action = api.getItemActionTriggerProps() as Record<string, unknown>
-    const close = api.getItemCloseTriggerProps() as Record<string, unknown>
-    expect(action['data-xh-action-control']).toBe('')
-    expect(action['data-xh-action-profile']).toBe('text')
-    expect(action['data-xh-action-variant']).toBe('outline')
-    expect(action['data-xh-action-display']).toBe('always')
-    expect(action['data-xh-action-size']).toBe('sm')
-    expect(close['data-xh-action-control']).toBe('')
-    expect(close['data-xh-action-profile']).toBe('icon')
-    expect(close['data-xh-action-variant']).toBe('ghost')
-    expect(close['data-xh-action-display']).toBe('always')
-    expect(close['data-xh-action-size']).toBe('sm')
-    runtime.stop()
+describe('预设', () => {
+  it('缺省卡片：落右下、每个位置 5 条、逐条排开、间距 16、停留 5000、后台不暂停', () => {
+    const q = makeQueue()
+    const api = q.api()
+    expect(api.preset).toBe('card')
+    expect(api.stacked).toBe(false)
+    const group = api.getGroupProps() as Record<string, unknown>
+    expect(group['data-placement']).toBe('bottom-end')
+    expect(group['data-preset']).toBe('card')
+    expect(group['data-stacked']).toBeUndefined()
+    expect(group.style).toEqual({ gap: '16px' })
+    api.create({ title: '一条' })
+    expect(q.api().visibleNotifications[0]).toMatchObject({
+      preset: 'card',
+      placement: 'bottom-end',
+      duration: 5000,
+      pauseOnPageIdle: false,
+    })
+    q.stop()
+  })
+
+  it('轻提示：落底部居中、最多 3 条、叠成一摞、间距 12、停留 4000、后台暂停', () => {
+    const q = makeQueue({ preset: 'toast' })
+    expect(q.api().stacked).toBe(true)
+    const group = q.api().getGroupProps() as Record<string, unknown>
+    expect(group['data-placement']).toBe('bottom')
+    expect(group['data-preset']).toBe('toast')
+    expect(group['data-stacked']).toBe('')
+    expect(group.style).toEqual({ gap: '12px' })
+    for (let i = 1; i <= 5; i++)
+      q.api().create({ title: `第 ${i} 条` })
+    expect(q.titles()).toEqual(['第 3 条', '第 4 条', '第 5 条'])
+    expect(q.api().visibleNotifications[0]).toMatchObject({
+      preset: 'toast',
+      placement: 'bottom',
+      duration: 4000,
+      pauseOnPageIdle: true,
+    })
+    q.stop()
+  })
+
+  it('每一项都能单独改写：写了就以 prop 为准，预设只管没写的那几项', () => {
+    const q = makeQueue({ preset: 'toast', placement: 'top', max: 5, gap: 20, duration: 900, stacked: false, pauseOnPageIdle: false })
+    const group = q.api().getGroupProps() as Record<string, unknown>
+    expect(group['data-placement']).toBe('top')
+    expect(group['data-stacked']).toBeUndefined()
+    expect(group.style).toEqual({ gap: '20px' })
+    for (let i = 1; i <= 6; i++)
+      q.api().create({ title: `第 ${i} 条` })
+    expect(q.api().count).toBe(5)
+    expect(q.api().visibleNotifications[0]).toMatchObject({ duration: 900, pauseOnPageIdle: false })
+    q.stop()
+  })
+
+  it('不认识的预设当场报错，不静默落回卡片', () => {
+    expect(() => notificationPresetOf('banner' as never)).toThrow('preset')
+    expect(notificationPresetOf(undefined)).toBe(NOTIFICATION_PRESETS.card)
   })
 })
 
-// ══ 按压通道：卡片复用 toast 那台机器，pressed 记在它的 context 里，卡片按 part 键比对投影 ══
-
-type Dict = Record<string, unknown>
-const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
-const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
-
-function makeItem(initial: ToastSchema['props']) {
-  const runtime = createVanillaRuntime()
-  const props = runtime.signal<ToastSchema['props']>(initial)
-  const service = createService(toastMachine, { props: () => props.get(), runtime })
-  runtime.start()
-  return {
-    service,
-    state: () => service.state.get(),
-    setProps: (next: ToastSchema['props']) => props.set({ ...props.get(), ...next }),
-    close: (): Dict => connectNotificationItem(service, normalizeProps).getItemCloseTriggerProps() as Dict,
-    action: (): Dict => connectNotificationItem(service, normalizeProps).getItemActionTriggerProps() as Dict,
-    stop: () => runtime.stop(),
-  }
-}
-
-describe('卡片按压通道：Space / Enter 与触屏按住投影 data-pressed，按住的是哪颗就只落在哪颗上', () => {
-  it('关闭钮：keydown 在场、keyup 撤下；触屏按下在场、抬起 / 取消撤下；失焦撤下；鼠标按下不走这一路', () => {
-    const t = makeItem({ duration: 0 })
-    expect(t.close()['data-pressed']).toBeUndefined()
-    fire(t.close(), 'onKeyDown', key(' '))
-    expect(t.close()['data-pressed']).toBe('')
-    fire(t.close(), 'onKeyUp', key(' '))
-    expect(t.close()['data-pressed']).toBeUndefined()
-    fire(t.close(), 'onKeyDown', key('Enter'))
-    expect(t.close()['data-pressed']).toBe('')
-    fire(t.close(), 'onBlur', {})
-    expect(t.close()['data-pressed']).toBeUndefined()
-    fire(t.close(), 'onPointerDown', { pointerType: 'touch' })
-    expect(t.close()['data-pressed']).toBe('')
-    fire(t.close(), 'onPointerCancel', {})
-    expect(t.close()['data-pressed']).toBeUndefined()
-    fire(t.close(), 'onPointerDown', { pointerType: 'touch' })
-    expect(t.close()['data-pressed']).toBe('')
-    fire(t.close(), 'onPointerUp', {})
-    expect(t.close()['data-pressed']).toBeUndefined()
-    fire(t.close(), 'onPointerDown', { pointerType: 'mouse' })
-    expect(t.close()['data-pressed']).toBeUndefined()
-    expect(t.state()).toBe('visible.running')
-    t.stop()
+describe('叠摞', () => {
+  const roots: HTMLElement[] = []
+  afterEach(() => {
+    for (const root of roots.splice(0))
+      root.remove()
   })
 
-  it('操作钮：只有按住的那颗带 data-pressed，另一颗的 keyup 不把它松开；加载中照有回执', () => {
-    const t = makeItem({ loading: true })
-    fire(t.action(), 'onKeyDown', key(' '))
-    expect(t.action()['data-pressed']).toBe('')
-    expect(t.close()['data-pressed']).toBeUndefined()
-    fire(t.close(), 'onKeyUp', key(' '))
-    expect(t.action()['data-pressed']).toBe('')
-    fire(t.action(), 'onKeyUp', key(' '))
-    expect(t.action()['data-pressed']).toBeUndefined()
-    t.stop()
-  })
-
-  it('进入退场即松开：按住 Enter 关掉卡片，按钮随卡片离场，按压面由机器收；退场后按住不进', () => {
-    const t = makeItem({ duration: 0 })
-    fire(t.close(), 'onKeyDown', key('Enter'))
-    expect(t.close()['data-pressed']).toBe('')
-    t.service.send({ type: 'TOAST.DISMISS' })
-    expect(t.state()).toBe('dismissing')
-    expect(t.close()['data-pressed']).toBeUndefined()
-    fire(t.action(), 'onPointerDown', { pointerType: 'touch' })
-    expect(t.action()['data-pressed']).toBeUndefined()
-    t.stop()
-  })
-
-  it('closable=false：关闭钮按住不进；经 signal 转成不可关闭时按住的关闭钮自收', () => {
-    const off = makeItem({ duration: 0, closable: false })
-    fire(off.close(), 'onKeyDown', key(' '))
-    expect(off.close()['data-pressed']).toBeUndefined()
-    fire(off.close(), 'onPointerDown', { pointerType: 'touch' })
-    expect(off.close()['data-pressed']).toBeUndefined()
-    off.stop()
-
-    const t = makeItem({ duration: 0 })
-    fire(t.close(), 'onKeyDown', key(' '))
-    expect(t.close()['data-pressed']).toBe('')
-    t.setProps({ closable: false })
-    expect(t.close()['data-pressed']).toBeUndefined()
-    t.stop()
-  })
-})
-
-describe('宿主按住整摞的计时', () => {
-  function makeToast(initial: ToastSchema['props']) {
-    const runtime = createVanillaRuntime()
-    const props = runtime.signal<ToastSchema['props']>(initial)
-    const service = createService(toastMachine, { props: () => props.get(), runtime })
-    runtime.start()
-    return {
-      state: () => service.state.get(),
-      setProps: (next: ToastSchema['props']) => props.set({ ...props.get(), ...next }),
-      pausedBy: () => service.context.get('pausedBy'),
-      stop: () => runtime.stop(),
+  /** 按连接层的产出摆一摞：group 带 data-stacked 与落位，底下三条卡片。 */
+  function stage(q: ReturnType<typeof makeQueue>, root: HTMLElement): HTMLElement[] {
+    const group = document.createElement('div')
+    const attrs = q.api().getGroupProps() as Record<string, unknown>
+    for (const [name, value] of Object.entries(attrs)) {
+      if (name.startsWith('data-') && value !== undefined)
+        group.setAttribute(name, String(value))
     }
+    const items = ['a', 'b', 'c'].map((id) => {
+      const item = document.createElement('div')
+      item.dataset.scope = 'notification'
+      item.dataset.part = 'item'
+      item.id = id
+      const button = document.createElement('button')
+      item.append(button)
+      group.append(item)
+      return item
+    })
+    root.append(group)
+    return items
   }
 
-  it('paused 置真按住、置假放开', () => {
-    const t = makeToast({ duration: 1000 })
-    expect(t.state()).toBe('visible.running')
-    t.setProps({ paused: true })
-    expect(t.state()).toBe('visible.paused')
-    expect(t.pausedBy()).toEqual(['service'])
-    t.setProps({ paused: false })
-    expect(t.state()).toBe('visible.running')
-    expect(t.pausedBy()).toEqual([])
-    t.stop()
+  async function settle(): Promise<void> {
+    await new Promise(resolve => setTimeout(resolve, 0))
+  }
+
+  it('最新一条在最前，后层写上层深与偏移；卡片预设的一摞不接', async () => {
+    const root = document.createElement('div')
+    document.body.append(root)
+    roots.push(root)
+    const q = makeQueue({ preset: 'toast' }, root)
+    const items = stage(q, root)
+    await settle()
+    expect(items.map(item => item.dataset.stackIndex)).toEqual(['2', '1', '0'])
+    expect(items.map(item => item.hasAttribute('data-frontmost'))).toEqual([false, false, true])
+    expect(items[0]!.style.getPropertyValue('--xh-_notification-depth')).toBe('2')
+    expect(items[0]!.style.getPropertyValue('--xh-_notification-offset')).toBe('24px')
+    q.stop()
+
+    const cardRoot = document.createElement('div')
+    document.body.append(cardRoot)
+    roots.push(cardRoot)
+    const card = makeQueue({}, cardRoot)
+    const cardItems = stage(card, cardRoot)
+    await settle()
+    expect(cardItems.every(item => item.dataset.stackIndex === undefined)).toBe(true)
+    card.stop()
   })
 
-  it('起手就被按住的那条直接落在暂停态：watch 只看得见变化', () => {
-    const t = makeToast({ duration: 1000, paused: true })
-    expect(t.state()).toBe('visible.paused')
-    expect(t.pausedBy()).toEqual(['service'])
-    t.stop()
+  it('焦点进入即展开，group 投影 data-expanded；Escape 收起并让焦点离开', async () => {
+    const root = document.createElement('div')
+    document.body.append(root)
+    roots.push(root)
+    const q = makeQueue({ preset: 'toast', defaultItems: [{ id: 'a' }] }, root)
+    const items = stage(q, root)
+    await settle()
+
+    items[2]!.querySelector('button')!.focus()
+    expect(q.service.context.get('expanded')).toEqual(['bottom'])
+    expect((q.api().getGroupProps() as Record<string, unknown>)['data-expanded']).toBe('')
+    expect(items.every(item => item.hasAttribute('data-expanded'))).toBe(true)
+
+    items[2]!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    expect(document.activeElement).toBe(document.body)
+    expect(q.service.context.get('expanded')).toEqual([])
+    expect((q.api().getGroupProps() as Record<string, unknown>)['data-expanded']).toBeUndefined()
+    q.stop()
   })
 
-  it('与指针那一路并存，最后一个松开才继续走', () => {
-    const t = makeToast({ duration: 1000, paused: true })
-    t.setProps({ paused: false })
-    expect(t.state()).toBe('visible.running')
-    t.stop()
+  it('展开着的那一摞撤走时一并收起，不留一份按住的计时', async () => {
+    const root = document.createElement('div')
+    document.body.append(root)
+    roots.push(root)
+    const q = makeQueue({ preset: 'toast' }, root)
+    const items = stage(q, root)
+    await settle()
+    items[0]!.querySelector('button')!.focus()
+    expect(q.service.context.get('expanded')).toEqual(['bottom'])
+    root.replaceChildren()
+    await settle()
+    expect(q.service.context.get('expanded')).toEqual([])
+    q.stop()
   })
 })

@@ -5,7 +5,6 @@
 
 // 提供 host 相关实现。
 
-import type { ReactiveControllerHost } from '../reactive'
 import { DIAGNOSTIC_CODES, ensurePortalRoot, reportDiagnostic } from '@xihan-ui/core'
 
 /**
@@ -17,47 +16,6 @@ export function createServiceHolder(target?: HTMLElement): { holder: HTMLElement
   const holder = document.createElement('div')
   ensurePortalRoot(document).appendChild(holder)
   return { holder, release: () => holder.remove() }
-}
-
-/**
- * 供没有元素的状态机使用的最小反应宿主。
- *
- * 轻提示的堆叠在库中没有对应的自定义元素（堆叠位置是整个服务的口径，
- * 不是逐页各挂一份），因此队列状态机没有可依附的元素。状态机只要求宿主在状态变化时
- * 被唤醒一次，这里就只兑现这一件事：把重绘排进微任务，同一拍内的多次写入合并为一次。
- */
-export function createServiceReactiveHost(render: () => void): ReactiveControllerHost {
-  let scheduled = false
-  let settle: (() => void) | null = null
-  let pending: Promise<boolean> | null = null
-
-  const flush = (): void => {
-    scheduled = false
-    const done = settle
-    settle = null
-    pending = null
-    render()
-    done?.()
-  }
-
-  return {
-    addController: () => {},
-    removeController: () => {},
-    requestUpdate: () => {
-      if (scheduled)
-        return
-      scheduled = true
-      queueMicrotask(flush)
-    },
-    get updateComplete(): Promise<boolean> {
-      if (!scheduled)
-        return Promise.resolve(true)
-      pending ??= new Promise<boolean>((resolve) => {
-        settle = () => resolve(!scheduled)
-      })
-      return pending
-    },
-  }
 }
 
 /**

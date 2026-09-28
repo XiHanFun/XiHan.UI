@@ -552,10 +552,6 @@
         {
           "id": "notification",
           "name": "通知"
-        },
-        {
-          "id": "toast",
-          "name": "轻提示"
         }
       ]
     },

@@ -119,7 +119,7 @@ const ROLE_OVERRIDE = {
   'radio-group:scale': '圆点直径为指示器一半的小件落位，选中时走 --xh-motion-ease-settle 的过冲收束，过冲量落在圈内不碰描边；收起走 enter-strong 不过冲',
   'question-flow:scale': '单选圆点与 RadioGroup 同一套落位：直径为记号盒一半，选中时走 --xh-motion-ease-settle 的过冲收束，过冲量落在圈内不碰描边；收起走 enter-strong 不过冲',
   'color-swatch-picker:scale': '压在色块正中的选中徽标落位，走 --xh-motion-ease-settle 的过冲收束，过冲量落在格内不碰描边',
-  'toast:scale': '叠放重排：往后一层的收拢比例与位移是同一次换位，随位移走 move + continuous，不是形变',
+  'notification:scale': '叠放重排：往后一层的收拢比例与位移是同一次换位，随位移走 move + continuous，不是形变',
   'image-viewer:rotate': '看片的旋转与平移、缩放同属一次视图变换，随平移走 nudge + continuous，不是部件原地形变',
   'image-viewer:scale': '看片的缩放与平移、旋转同属一次视图变换，随平移走 nudge + continuous，不是部件原地形变',
   'progress:rotate': '仪表盘指针转到当前值是数值变化，与圆弧填充同属数值角色，随圆弧走 move + continuous，不是部件原地形变',

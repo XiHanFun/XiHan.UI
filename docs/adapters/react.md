@@ -159,12 +159,12 @@ import { useBackground, XhBackground } from "@xihan-ui/react/backgrounds";
 
 ## 命令式服务
 
-对话框、轻提示、通知、顶部进度条四个服务从组件树之外调用，自带宿主树：
+对话框、通知、顶部进度条三个服务从组件树之外调用，自带宿主树；轻提示是通知服务的 `preset: "toast"`：
 
 ```ts
-import { createToastService } from "@xihan-ui/react";
+import { createNotificationService } from "@xihan-ui/react";
 
-const toast = createToastService();
+const toast = createNotificationService({ preset: "toast" });
 toast.success("已保存");
 ```
 

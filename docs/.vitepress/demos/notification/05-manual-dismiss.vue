@@ -5,6 +5,7 @@ import {
   XhNotificationGroup,
   XhNotificationItem,
   XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
@@ -73,8 +74,10 @@ function settle(
           @status-change="(details) => settle(details, dismiss)"
         >
           <XhNotificationItemIndicator />
-          <XhNotificationItemTitle />
-          <XhNotificationItemDescription />
+          <XhNotificationItemContent>
+            <XhNotificationItemTitle />
+            <XhNotificationItemDescription />
+          </XhNotificationItemContent>
           <XhNotificationItemCloseTrigger />
         </XhNotificationItem>
       </template>

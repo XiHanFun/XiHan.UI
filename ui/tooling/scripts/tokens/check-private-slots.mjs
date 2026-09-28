@@ -21,7 +21,6 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_progress-x', 'packages/engine/headless/src/progress/progress.connect.ts'],
   ['--xh-_progress-y', 'packages/engine/headless/src/progress/progress.connect.ts'],
   ['--xh-_progress-needle-angle', 'packages/engine/headless/src/progress/progress.connect.ts'],
-  ['--xh-_toast-progress-steps', 'packages/engine/headless/src/toast/toast.connect.ts'],
   // 提示关闭时收占位的起点：机器在收起前量下整块高度，连接层在退场途中写进根的内联样式，收占位的关键帧只读
   ['--xh-_alert-exit-block-size', 'packages/engine/headless/src/alert/alert.connect.ts'],
   // 引用预览披露的内容区高度：机器在露面与收起前量下，连接层写进预览的内联样式，展开与收起的关键帧只读
@@ -32,8 +31,9 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_stagger-index', 'packages/engine/core/src/behavior/arrival/track-arrivals.ts'],
   // 退场中途重开时进场的起点透明度：退场探测按退场播到的位置写进节点的内联样式，进场关键帧只读
   ['--xh-_enter-from-opacity', 'packages/engine/core/src/behavior/presence/animation-end.ts'],
-  // 叠放的一摞里各条的层深：堆叠控制器写进条目的内联样式，皮肤按它逐层算收拢比例
-  ['--xh-_toast-depth', 'packages/engine/headless/src/toast/toast.stack.ts'],
+  // 叠放的一摞里各条的层深、收起与展开时的位移、最前一条与自身的高度：叠摞控制器写进条目的内联样式，
+  // 皮肤按层深逐层算收拢比例、按位移与高度排开
+  ...['depth', 'offset', 'offset-expanded', 'front-height', 'height'].map(name => [`--xh-_notification-${name}`, 'packages/engine/headless/src/notification/notification.stack.ts']),
   // 图表提示框的锚点坐标：连接层按数据或指针的位置写进提示框的内联样式，皮肤只读
   ['--xh-_chart-tip-x', 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts'],
   ['--xh-_chart-tip-y', 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts'],

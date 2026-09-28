@@ -27,11 +27,11 @@ import {
   XhNavigationMenuLink,
   XhNavigationMenuList,
   XhNavigationMenuRoot,
+  XhNotificationItem,
+  XhNotificationItemContent,
+  XhNotificationItemIndicator,
+  XhNotificationItemTitle,
   XhSwitch,
-  XhToastContent,
-  XhToastIndicator,
-  XhToastRoot,
-  XhToastTitle,
 } from '../../src'
 // 皮肤与令牌一起加载：这里查的就是皮肤算出来的取值
 import '@xihan-ui/tokens/tokens.css'
@@ -293,19 +293,19 @@ describe('开关的只读观感', () => {
   })
 })
 
-// —— 轻提示的语气：此前只有色相一条通道 ——
+// —— 轻提示预设的语气：色相之外还有字形这条通道 ——
 
-describe('轻提示的语气字形', () => {
+describe('轻提示预设的语气字形', () => {
   const TOAST = (props: Record<string, unknown>): unknown =>
-    h(XhToastRoot, { ...props, duration: 0 }, () => [
-      h(XhToastContent, null, () => h(XhToastTitle, null, () => '一句话')),
+    h(XhNotificationItem, { ...props, preset: 'toast', duration: 0 }, () => [
+      h(XhNotificationItemContent, null, () => h(XhNotificationItemTitle, null, () => '一句话')),
     ])
 
   it('四档各画一枚不同的字形，行首那一格真占了指示符那么大', async () => {
     const marks: string[] = []
     for (const tone of ['info', 'success', 'warning', 'danger']) {
       await mount(() => TOAST({ tone }))
-      const root = part('toast', 'root')
+      const root = part('notification', 'item')
       expect(root.getAttribute('data-tone')).toBe(tone)
       const mask = afterOf(root, 'mask-image')
       expect(mask).not.toBe('none')
@@ -319,7 +319,7 @@ describe('轻提示的语气字形', () => {
 
   it('加载中画的是与 Spinner 环档同一副加载环：一整圈轨道色、起始边语气色，转起来；语气位不受它影响', async () => {
     await mount(() => TOAST({ loading: true, tone: 'success' }))
-    const root = part('toast', 'root')
+    const root = part('notification', 'item')
     expect(root.getAttribute('data-tone')).toBe('success')
     expect(root.hasAttribute('data-loading')).toBe(true)
     // 转的是环，不是遮罩出来的箭头字形
@@ -341,8 +341,8 @@ describe('轻提示的语气字形', () => {
   it('加载落定时环淡出、语气字形淡入，两者在同一格里交叉淡变；环停在当前角度淡出', async () => {
     let loading = true
     await mount(() => TOAST({ loading, tone: 'success' }))
-    const root = part('toast', 'root')
-    // 条子在台上转过一帧：过渡要有变化之前的样式才起得来
+    const root = part('notification', 'item')
+    // 卡片在台上转过一帧：过渡要有变化之前的样式才起得来
     await new Promise(resolve => requestAnimationFrame(resolve))
     expect(beforeOf(root, 'opacity')).toBe('1')
     loading = false
@@ -359,23 +359,23 @@ describe('轻提示的语气字形', () => {
     expect(afterOf(root, 'opacity')).toBe('1')
   })
 
-  it('渲染了指示符部件：兜底让位给它，它的字形按根上的语气换，加载中同样画环', async () => {
+  it('渲染了指示符部件：兜底让位给它，它的字形按卡片上的语气换，加载中同样画环', async () => {
     const WITH_INDICATOR = (props: Record<string, unknown>): unknown =>
-      h(XhToastRoot, { ...props, duration: 0 }, () => [
-        h(XhToastIndicator),
-        h(XhToastContent, null, () => h(XhToastTitle, null, () => '一句话')),
+      h(XhNotificationItem, { ...props, preset: 'toast', duration: 0 }, () => [
+        h(XhNotificationItemIndicator),
+        h(XhNotificationItemContent, null, () => h(XhNotificationItemTitle, null, () => '一句话')),
       ])
     const marks: string[] = []
     for (const tone of ['info', 'success', 'warning', 'danger']) {
       await mount(() => WITH_INDICATOR({ tone }))
-      expect(beforeOf(part('toast', 'root'), 'content')).toBe('none')
-      expect(afterOf(part('toast', 'root'), 'content')).toBe('none')
-      marks.push(afterOf(part('toast', 'indicator'), 'mask-image'))
+      expect(beforeOf(part('notification', 'item'), 'content')).toBe('none')
+      expect(afterOf(part('notification', 'item'), 'content')).toBe('none')
+      marks.push(afterOf(part('notification', 'item-indicator'), 'mask-image'))
     }
     expect(new Set(marks).size).toBe(4)
 
     await mount(() => WITH_INDICATOR({ tone: 'success', loading: true }))
-    const indicator = part('toast', 'indicator')
+    const indicator = part('notification', 'item-indicator')
     expect(beforeOf(indicator, 'animation-name')).toBe('xh-spin')
     expect(beforeOf(indicator, 'border-top-left-radius')).toBe('50%')
     expect(beforeOf(indicator, 'opacity')).toBe('1')
@@ -386,7 +386,7 @@ describe('轻提示的语气字形', () => {
     document.documentElement.dataset.motion = 'reduce'
     try {
       await mount(() => TOAST({ loading: true, tone: 'success' }))
-      const root = part('toast', 'root')
+      const root = part('notification', 'item')
       expect(beforeOf(root, 'animation-name')).toBe('none')
       expect(beforeOf(root, 'border-top-style')).toBe('dotted')
       expect(beforeOf(root, 'transition-property')).toBe('opacity')
@@ -397,10 +397,10 @@ describe('轻提示的语气字形', () => {
   })
 
   it('字形与环的颜色留了使用者槽', async () => {
-    setSlot('--xh-toast-icon-fg', RED)
+    setSlot('--xh-notification-indicator-fg', RED)
     await mount(() => TOAST({ tone: 'success' }))
-    expect(afterOf(part('toast', 'root'), 'background-color')).toBe(RED)
+    expect(afterOf(part('notification', 'item'), 'background-color')).toBe(RED)
     await mount(() => TOAST({ tone: 'success', loading: true }))
-    expect(beforeOf(part('toast', 'root'), 'border-top-color')).toBe(RED)
+    expect(beforeOf(part('notification', 'item'), 'border-top-color')).toBe(RED)
   })
 })

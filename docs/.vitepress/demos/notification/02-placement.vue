@@ -5,6 +5,7 @@ import {
   XhNotificationGroup,
   XhNotificationItem,
   XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
@@ -59,8 +60,10 @@ const itemTranslations = { close: "关闭" };
           "
         >
           <XhNotificationItemIndicator />
-          <XhNotificationItemTitle />
-          <XhNotificationItemDescription />
+          <XhNotificationItemContent>
+            <XhNotificationItemTitle />
+            <XhNotificationItemDescription />
+          </XhNotificationItemContent>
           <XhNotificationItemCloseTrigger />
         </XhNotificationItem>
       </template>

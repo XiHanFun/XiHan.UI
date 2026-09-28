@@ -44,7 +44,7 @@ const LAYOUT_EXCEPTIONS = {
   'layout:sider:inline-size': '侧栏折叠必须让出内容区宽度：内容区跟着侧栏重排正是这个动作要表达的',
   'splitter:panel:flex-basis': '面板折叠 / 展开必须让出相邻面板的空间：相邻面板跟着重排正是这个动作要表达的（拖拽与步进不带过渡）',
   'question-flow:viewport:block-size': '换题时视口随题目内容增减高度：下面的操作条要跟着挪到新位置',
-  'toast:root:block-size': '轻提示叠放展开时卡片长回自己的高度：叠放区跟着撑开',
+  'notification:item:block-size': '叠放的一摞展开时各条长回自己的高度：叠放区跟着撑开',
   'floating-panel:positioner:left': FLOATING_PANEL_MAXIMIZE,
   'floating-panel:positioner:top': FLOATING_PANEL_MAXIMIZE,
   'floating-panel:positioner:width': FLOATING_PANEL_MAXIMIZE,

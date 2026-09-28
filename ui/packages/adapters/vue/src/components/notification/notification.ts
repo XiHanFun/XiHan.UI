@@ -5,7 +5,19 @@
 
 // 提供 notification 相关实现。
 
-import type { NotificationDedupe, NotificationItemApi, NotificationOptions, NotificationPlacement, NotificationRecord, NotificationSchema, NotificationTranslations, ResolvedNotification, ToastSchema, ToastTone } from '@xihan-ui/headless'
+import type {
+  NotificationDedupe,
+  NotificationItemApi,
+  NotificationItemSchema,
+  NotificationOptions,
+  NotificationPlacement,
+  NotificationPreset,
+  NotificationRecord,
+  NotificationSchema,
+  NotificationTone,
+  NotificationTranslations,
+  ResolvedNotification,
+} from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, Fragment, h } from 'vue'
@@ -14,6 +26,7 @@ import { provideNotification, provideNotificationItem, useNotificationContext, u
 import { useNotification, useNotificationItem } from './use-notification'
 
 type NotificationProps = NotificationSchema['props']
+type NotificationItemProps = NotificationItemSchema['props']
 
 /** 默认插槽的载荷：当前可见的通知队列与它的落位分组，以及入队、改写、关闭的命令。 */
 export interface NotificationRootSlotProps {
@@ -33,11 +46,13 @@ export const XhNotificationRoot = defineComponent({
   props: {
     items: { type: Array as PropType<NotificationRecord[]> },
     defaultItems: { type: Array as PropType<NotificationRecord[]> },
+    preset: { type: String as PropType<NotificationPreset> },
     placement: { type: String as PropType<NotificationPlacement> },
     max: { type: Number },
     dedupe: { type: String as PropType<NotificationDedupe> },
     gap: { type: Number },
     duration: { type: Number },
+    stacked: { type: Boolean, default: undefined },
     pauseOnPageIdle: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<NotificationTranslations>> },
   },
@@ -102,15 +117,22 @@ export const XhNotificationGroup = defineComponent({
   },
 })
 
-/** 单条卡片。生命周期复用 toast 的状态机：会自动消失的卡片，该行为与消息来源无关。 */
+/** 默认插槽的载荷：该卡片自己的 api。 */
+export interface NotificationItemSlotProps {
+  item: NotificationItemApi
+}
+
+/** 单条卡片：到期自行消失的一条消息，计时、暂停、按压与退场都在它自己身上。 */
 export const XhNotificationItem = defineComponent({
   name: 'XhNotificationItem',
   // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
+    // 队列身份，不是 DOM id；不给则回落到实例的 scope id
     id: { type: String },
+    preset: { type: String as PropType<NotificationPreset> },
     title: { type: String },
     description: { type: String },
-    tone: { type: String as PropType<ToastTone> },
+    tone: { type: String as PropType<NotificationTone> },
     loading: { type: Boolean, default: undefined },
     duration: { type: Number },
     closable: { type: Boolean, default: undefined },
@@ -119,20 +141,19 @@ export const XhNotificationItem = defineComponent({
     paused: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<NotificationTranslations>> },
   },
+  // status-change 携带 { id, status }，action 携带 { id }
   emits: {
-    'status-change': (_details: PayloadOf<ToastSchema['props'], 'onStatusChange'>) => true,
-    'action': () => true,
+    'status-change': (_details: PayloadOf<NotificationItemProps, 'onStatusChange'>) => true,
+    'action': (_details: PayloadOf<NotificationItemProps, 'onAction'>) => true,
   },
   slots: Object as SlotsType<{
-    default?: (props: { item: NotificationItemApi }) => VNode[]
+    default?: (props: NotificationItemSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    // 桶名写 notification 而不是 toast：卡片跑的虽然是 toast 那台机器，
-    // 但它的文案该跟着通知走——写 toast 的话，改这颗叉的读屏名会连所有轻提示一起改
     const ctx = useNotificationItem(
-      withXhConfig('notification', props) as ToastSchema['props'],
+      withXhConfig('notification', props) as NotificationItemProps,
       details => emit('status-change', details),
-      () => emit('action'),
+      details => emit('action', details),
     )
     provideNotificationItem(ctx)
     return () => h(
@@ -143,12 +164,21 @@ export const XhNotificationItem = defineComponent({
   },
 })
 
-/** 语气指示符。作者未写内容时由皮肤按 data-tone 绘制兜底字形，data-loading 时换为加载指示。 */
+/** 语气指示符。作者未写内容时由皮肤按 data-tone 绘制兜底字形，data-loading 时换为加载环。 */
 export const XhNotificationItemIndicator = defineComponent({
   name: 'XhNotificationItemIndicator',
   setup(_, { slots }) {
     const ctx = useNotificationItemContext()
     return () => h('span', ctx.api.value.getItemIndicatorProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 标题与说明的文本列。 */
+export const XhNotificationItemContent = defineComponent({
+  name: 'XhNotificationItemContent',
+  setup(_, { slots }) {
+    const ctx = useNotificationItemContext()
+    return () => h('div', ctx.api.value.getItemContentProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -181,6 +211,7 @@ export const XhNotificationItemActionTrigger = defineComponent({
   name: 'XhNotificationItemActionTrigger',
   setup(_, { slots }) {
     const ctx = useNotificationItemContext()
+    // 原生 <button>，激活行为交给平台
     return () => h('button', ctx.api.value.getItemActionTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })

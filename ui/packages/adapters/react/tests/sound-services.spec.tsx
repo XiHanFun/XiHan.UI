@@ -11,7 +11,7 @@ import { createSoundPlayer } from '@xihan-ui/sound'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createDialogService, createToastService, XhButton } from '../src'
+import { createDialogService, createNotificationService, XhButton } from '../src'
 import { setSoundPlayer, useSoundOnPress, withDialogSound, withNotificationSound } from '../src/sound'
 
 interface Recorder extends SoundPlayer {
@@ -105,7 +105,7 @@ const pressable = (): HTMLButtonElement => document.querySelector('button')!
 describe('withNotificationSound', () => {
   it('四个语气糖各发各的声，视觉照旧', async () => {
     const player = recorder()
-    const toast = withNotificationSound(createToastService(), { player, autoUnlock: false })
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), { player, autoUnlock: false })
     cleanups.push(() => toast.dispose())
     toast.success('已保存')
     toast.danger('保存失败')
@@ -119,7 +119,7 @@ describe('withNotificationSound', () => {
 
   it('loading 不发声，转成 success 时才响', async () => {
     const player = recorder()
-    const toast = withNotificationSound(createToastService(), { player, autoUnlock: false })
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), { player, autoUnlock: false })
     cleanups.push(() => toast.dispose())
     const id = toast.loading('上传中')
     await settle()
@@ -132,7 +132,7 @@ describe('withNotificationSound', () => {
 
   it('只改文案不发声', async () => {
     const player = recorder()
-    const toast = withNotificationSound(createToastService(), { player, autoUnlock: false })
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), { player, autoUnlock: false })
     cleanups.push(() => toast.dispose())
     const id = toast.create({ tone: 'info', title: '一' })
     await settle()
@@ -143,7 +143,7 @@ describe('withNotificationSound', () => {
 
   it('create 不给类型时按 info 发声，返回的 id 原样透传', async () => {
     const player = recorder()
-    const toast = withNotificationSound(createToastService(), { player, autoUnlock: false })
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), { player, autoUnlock: false })
     cleanups.push(() => toast.dispose())
     const id = toast.create({ title: '无类型' })
     await settle()
@@ -160,11 +160,11 @@ describe('withNotificationSound', () => {
   it('行内动作的回调照原样透传', async () => {
     const player = recorder()
     const onAction = vi.fn()
-    const toast = withNotificationSound(createToastService(), { player, autoUnlock: false })
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), { player, autoUnlock: false })
     cleanups.push(() => toast.dispose())
     toast.create({ tone: 'info', title: '已删除', actionLabel: '撤销', onAction })
     await settle()
-    const trigger = document.querySelector<HTMLElement>('[data-scope="toast"][data-part="action-trigger"]')
+    const trigger = document.querySelector<HTMLElement>('[data-scope="notification"][data-part="item-action-trigger"]')
     expect(trigger).not.toBeNull()
     await act(async () => trigger!.click())
     expect(onAction).toHaveBeenCalledTimes(1)
@@ -172,7 +172,7 @@ describe('withNotificationSound', () => {
 
   it('sounds 可逐项改写，给 null 即这一类静音', async () => {
     const player = recorder()
-    const toast = withNotificationSound(createToastService(), {
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), {
       player,
       autoUnlock: false,
       sounds: { success: 'complete', danger: null },
@@ -189,13 +189,13 @@ describe('withNotificationSound', () => {
 
   it('autoUnlock 在首次手势解锁一次，dispose 后不再监听', async () => {
     const player = recorder()
-    const toast = withNotificationSound(createToastService(), { player })
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), { player })
     cleanups.push(() => toast.dispose())
     document.dispatchEvent(new Event('pointerdown'))
     document.dispatchEvent(new Event('pointerdown'))
     expect(player.unlocks).toBe(1)
 
-    const later = withNotificationSound(createToastService(), { player })
+    const later = withNotificationSound(createNotificationService({ preset: 'toast' }), { player })
     later.dispose()
     document.dispatchEvent(new Event('pointerdown'))
     expect(player.unlocks).toBe(1)
@@ -340,12 +340,12 @@ describe('共享播放器', () => {
   it('包服务时取的是当时的共享播放器，之后换实现不改已包好的那个', async () => {
     const before = recorder()
     setSoundPlayer(before)
-    const early = withNotificationSound(createToastService(), { autoUnlock: false })
+    const early = withNotificationSound(createNotificationService({ preset: 'toast' }), { autoUnlock: false })
     cleanups.push(() => early.dispose())
 
     const after = recorder()
     setSoundPlayer(after)
-    const late = withNotificationSound(createToastService(), { autoUnlock: false })
+    const late = withNotificationSound(createNotificationService({ preset: 'toast' }), { autoUnlock: false })
     cleanups.push(() => late.dispose())
 
     early.info('旧的')
@@ -384,7 +384,7 @@ describe('关掉声音', () => {
 
     const player = createSoundPlayer()
     cleanups.push(() => player.dispose())
-    const toast = withNotificationSound(createToastService(), {
+    const toast = withNotificationSound(createNotificationService({ preset: 'toast' }), {
       player,
       autoUnlock: false,
       // 主题里没有这个名字：播放器一旦走到取配方那一步就会报一条

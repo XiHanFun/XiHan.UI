@@ -7,8 +7,8 @@ Web Components 适配器：把框架无关的 headless（anatomy + machine + con
   `spreadProps` 把 `connect()` 产出命令式打上去。每个组件一个 `xh-*` 元素，part 不是各自的元素。
 - `MachineController` 把机器唯一解释器 `createService` 桥到 controller 生命周期，
   不重造 FSM。元素类只在 `@xihan-ui/web-components/define` 子路径，`defineXhElements()` 显式注册。
-- **命令式反馈服务在 `@xihan-ui/web-components/services` 子路径**：`createToastService` /
-  `createNotificationService` / `createDialogService` / `createLoadingBarService`，句柄与 Vue 适配器
+- **命令式反馈服务在 `@xihan-ui/web-components/services` 子路径**：`createNotificationService`（轻提示是它的
+  `preset: 'toast'`）/ `createDialogService` / `createLoadingBarService`，句柄与 Vue 适配器
   同名同形。服务自己生成 `xh-*` 元素与 `data-xh-part` 角色节点（用到哪个就现注册哪个，
   不必先 import `/define`），配置沿 DOM 祖先链解析，因此这一侧没有 `config` 入参也没有 `setConfig`。
 - **两个入口在 Node 下都可安全 import**：基类无 DOM 时取一个替身基座（`src/reactive/element.ts`），

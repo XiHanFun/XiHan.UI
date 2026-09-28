@@ -11,7 +11,7 @@ export interface AlertOpenChangeDetails {
   open: boolean
 }
 
-/** 读屏文案。默认英文，与 dialog / toast 的 translations 写法一致。 */
+/** 读屏文案。默认英文，与 dialog / notification 的 translations 写法一致。 */
 export interface AlertTranslations {
   close: string
 }

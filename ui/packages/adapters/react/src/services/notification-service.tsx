@@ -5,12 +5,13 @@
 
 // 全局命令式通知服务：自带一个挂到 body 的宿主树与默认卡片模板，
 // info/success 等命令在任意模块作用域可调（推送回调、请求拦截器），
-// 不要求调用点在组件树内。
+// 不要求调用点在组件树内。卡片与轻提示是同一个服务的两种预设，preset 在创建时定下。
 import type {
   NotificationApi,
   NotificationDedupe,
   NotificationOptions,
   NotificationPlacement,
+  NotificationPreset,
   NotificationTranslations,
   ResolvedNotification,
 } from '@xihan-ui/headless'
@@ -24,6 +25,7 @@ import {
   XhNotificationItem,
   XhNotificationItemActionTrigger,
   XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
@@ -40,15 +42,21 @@ export type NotificationTranslationsSource
     | (() => Partial<NotificationTranslations>)
 
 export interface NotificationServiceOptions {
-  /** 默认落位，默认 bottom-end；单条可用 options.placement 覆盖。 */
+  /** 形态预设，默认 card；轻提示传 'toast'。决定下面几项没写时的缺省值与卡片排版。 */
+  preset?: NotificationPreset
+  /** 默认落位：card 为 bottom-end，toast 为 bottom；单条可用 options.placement 覆盖。 */
   placement?: NotificationPlacement
-  /** 每个位置最多同时保留几条，超出时先移除低优先级的、同级中移除最旧的。默认 5；传 Infinity 即不限。 */
+  /** 每个位置最多同时保留几条，超出时先移除低优先级的、同级中移除最旧的：card 为 5、toast 为 3；传 Infinity 即不限。 */
   max?: number
   /** 重复的判定方式，默认 'id'；传 'content' 则同一内容合并为一条并计数。 */
   dedupe?: NotificationDedupe
-  /** 同一堆叠内的间距（px），默认 16。 */
+  /** 同一堆叠内的间距（px）：card 为 16、toast 为 12。 */
   gap?: number
+  /** 单条未写 duration 时的停留毫秒：card 为 5000、toast 为 4000。 */
   duration?: number
+  /** 同一位置的几条叠成一摞：card 默认不叠，toast 默认叠。 */
+  stacked?: boolean
+  /** 页面切到后台时暂停计时：card 默认关闭，toast 默认开启。 */
   pauseOnPageIdle?: boolean
   /** 通知的文案：堆叠区的读屏名与卡片上关闭按钮的读屏名，统一在一个桶中。 */
   translations?: NotificationTranslationsSource
@@ -62,6 +70,10 @@ export interface NotificationServiceOptions {
   target?: HTMLElement
 }
 
+/**
+ * create 的入参。`actionLabel` 是卡片上行内动作按钮的文案，`onAction` 是按下它执行的动作：
+ * 回调不进入队列记录（该记录要能被整份替换、序列化、比对），服务按 id 单独保存一张表。
+ */
 export interface NotificationCreateOptions extends NotificationOptions {
   onAction?: () => void
 }
@@ -80,6 +92,7 @@ export interface NotificationService {
   /** 入队并返回 id；同 id 已存在则就地改写，被合并的返回被并入的那一条。 */
   create: (options?: NotificationCreateOptions) => string
   update: (id: string, options: Partial<NotificationOptions>) => void
+  /** 立即从队列中删除，不播退场动画。卡片自己的关闭按钮先播退场动画再移出。 */
   dismiss: (id: string) => void
   dismissAll: () => void
   info: (title: string, options?: NotificationMessageOptions) => string
@@ -113,6 +126,7 @@ function DefaultCard(props: {
   return (
     <XhNotificationItem
       id={item.id}
+      preset={item.preset}
       title={resolveFeedbackServiceTitle(item)}
       description={item.description}
       tone={item.tone}
@@ -126,16 +140,18 @@ function DefaultCard(props: {
         if (status === 'unmounted')
           props.onUnmounted(id)
       }}
-      onAction={() => props.onAction(item.id)}
+      onAction={({ id }: { id: string }) => props.onAction(id)}
     >
-      {/* 四个节点平铺：两列网格与右上角那颗叉都归皮肤，模板套一层行容器只会与它打架。
+      {/* 两种预设同一份结构，排版归皮肤按 data-preset 给。
           指示符与说明都恒渲染——皮肤的 :empty 规则负责把空盒收走，
           而 aria-describedby 无条件指着说明那一个，节点缺席就成了悬空引用 */}
       <XhNotificationItemIndicator />
-      <XhNotificationItemTitle />
-      <XhNotificationItemDescription />
+      <XhNotificationItemContent>
+        <XhNotificationItemTitle />
+        <XhNotificationItemDescription />
+      </XhNotificationItemContent>
       {item.actionLabel ? <XhNotificationItemActionTrigger>{item.actionLabel}</XhNotificationItemActionTrigger> : null}
-      {item.closable !== false ? <XhNotificationItemCloseTrigger /> : null}
+      {item.closable ? <XhNotificationItemCloseTrigger /> : null}
     </XhNotificationItem>
   )
 }
@@ -178,6 +194,12 @@ export function createNotificationService(options: NotificationServiceOptions = 
     () => ({ ...queueProps, translations: readTranslations() }),
     configSource.read,
   )
+  // 条目到达与叠摞都挂在作用域包装上；机器的追踪在宿主首次提交之后才去取它
+  let rootEl: HTMLElement | null = null
+  queue.service.refs.set('getRootEl', () => rootEl)
+  const bindRoot = (el: HTMLDivElement | null): void => {
+    rootEl = el
+  }
   const queueApi = (): NotificationApi => connectNotification(queue.service, reactNormalize)
   controller.attach({
     create: opts => queueApi().create(opts),
@@ -194,7 +216,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
     controller.syncItems(api.visibleNotifications.map(item => item.id))
     return (
       <XhConfigProvider config={configSource.read()}>
-        <div {...api.getRootProps() as Record<string, unknown>}>
+        <div {...api.getRootProps() as Record<string, unknown>} ref={bindRoot}>
           {api.placements.map(placement => (
             <div key={placement} {...api.getGroupProps({ placement }) as Record<string, unknown>}>
               {/* 按队列身份 id 给 key，避免节点被就地复用 */}
@@ -243,6 +265,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
     warning: sugar('warning'),
     danger: sugar('danger'),
     loading: (title, opts = {}) => create({ ...opts, loading: true, title }),
+    // 类型参数写成 <T,>：.tsx 里裸的 <T> 会被当成 JSX 标签
     promise: <T,>(input: Promise<T> | (() => Promise<T>), opts: NotificationPromiseOptions<T>): Promise<T> => {
       const { loading, success, error, ...rest } = opts
       const running = typeof input === 'function' ? input() : input

@@ -6,6 +6,7 @@ export interface ApplyContext {
   readonly harness: AdapterHarness
   readonly root: HTMLElement
   readonly doc: Document
+  /** 部件的 data-scope：取自解剖，与挂载点同名的组件就是组件名，拆成两个挂载点的组件（通知卡片）两份套件同一个作用域。 */
   readonly component: string
   readonly anatomy: Anatomy<string>
 }

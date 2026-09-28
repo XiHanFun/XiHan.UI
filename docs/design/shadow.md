@@ -11,7 +11,7 @@
     '--xh-elevation-raised': '贴在页面上、略抬起的面：Card、Segmented 与 Tabs 的滑块、静止的滑杆拇指、开关拇指。必带 border-default 描边，影只是加成',
     '--xh-elevation-lifted': '被指针拎起来、正跟着手移动的东西：拖动中的滑杆拇指、排序项、取色器拇指。比 raised 高、没到 floating',
     '--xh-elevation-floating': 'portal 出去的锚定浮层里含网格或多列的面板：日期 / 时间选择器面板、NavigationMenu 面板、侧栏弹出层',
-    '--xh-elevation-sheet': '模态与强反馈面：Dialog、Drawer、Command、Toast、Notification',
+    '--xh-elevation-sheet': '模态与强反馈面：Dialog、Drawer、Command、Notification',
   }"
 />
 
@@ -26,13 +26,13 @@
 | M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式 | 实体底色，无高光、无投影 |
 | M1 soft | `--xh-material-soft-*` | Button soft、Tag、Popconfirm 动作等次级操作；不用于 Card 与字段 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
 | M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等需要透景的锚定瞬态浮层 | 0.88 不透明度，16px 模糊，108% 饱和度，1px 可见边界 |
-| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Toast、Notification 等模态与强反馈面，必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
+| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面，必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
 
 另有两个由海拔组成的叠加档：raised = solid 描边 + solid 底 + `--xh-elevation-raised`（Card 与可抬起 / 可拖起部件）；floating = solid 底 + `--xh-border-default` + `--xh-elevation-floating`（含网格或多列的锚定面板）。它们没有 `--xh-material-*` 令牌。
 
 ## 磨砂面的范围
 
-- 只用于需要保留背景空间感的瞬态浮层；正文、表单主体、Card、Table、Toast 与 Dialog 主阅读面不用。
+- 只用于需要保留背景空间感的瞬态浮层；正文、表单主体、Card、Table、Notification 与 Dialog 主阅读面不用。
 - 含网格或多列的锚定面板（日期面板、多列级联）改用 floating：实体底、不透景，网格线不会与背景打架。
 - 不把 `backdrop-filter` 放在页面根、大滚动区或重叠的多层表面，不对模糊半径做动画。
 - 焦点环必须搭配 `focus-surface` 对应的实体隔离面。
