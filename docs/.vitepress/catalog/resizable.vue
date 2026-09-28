@@ -1,19 +1,8 @@
-<script setup lang="ts">
-import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const dimensions = ref({ width: 180, height: 96 });
-</script>
-
 <template>
-  <XhResizableRoot
-    v-model:dimensions="dimensions"
-    :min-width="140"
-    :min-height="72"
-    aria-label="可调区块预览"
-    style="display: grid; place-items: center; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
-  >
-    <span data-demo-block data-tone="brand" aria-hidden="true" style="--xh-demo-block-inline-size: 64%; --xh-demo-block-block-size: 48px" />
-    <XhResizableHandle edge="se" />
-  </XhResizableRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="48.5" y="32.5" width="143" height="95" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M67 52h66" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M66 72h104M66 84h84" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M186 112l-10 10m10-5l-5 5" stroke="var(--xh-fg-subtle)" stroke-width="2" />
+  </svg>
 </template>

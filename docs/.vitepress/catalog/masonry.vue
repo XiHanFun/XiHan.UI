@@ -1,23 +1,11 @@
-<script setup lang="ts">
-import { XhMasonry } from "@xihan-ui/vue";
-
-const cards = [
-  { id: "a", tone: "brand", height: "52px" },
-  { id: "b", tone: "success", height: "76px" },
-  { id: "c", tone: "warning", height: "64px" },
-  { id: "d", tone: "info", height: "72px" },
-] as const;
-</script>
-
 <template>
-  <XhMasonry :columns="2" gap="sm" style="inline-size: var(--xh-doc-catalog-w)">
-    <article
-      v-for="card in cards"
-      :key="card.id"
-      data-demo-block
-      :data-tone="card.tone"
-      aria-hidden="true"
-      :style="{ '--xh-demo-block-block-size': card.height }"
-    />
-  </XhMasonry>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="36" y="24" width="52" height="48" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="36" y="80" width="52" height="56" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="94" y="24" width="52" height="72" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="94" y="104" width="52" height="32" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="152" y="24" width="52" height="32" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="152" y="64" width="52" height="40" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="152" y="112" width="52" height="24" rx="4" fill="var(--xh-bg-subtle-hover)" />
+  </svg>
 </template>
