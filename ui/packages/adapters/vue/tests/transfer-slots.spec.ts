@@ -55,7 +55,7 @@ describe('面板插槽的变量', () => {
     const m = mount()
     try {
       await nextTick()
-      expect(Object.keys(m.源).sort()).toEqual(['checkState', 'items', 'query', 'side'])
+      expect(Object.keys(m.源).sort()).toEqual(['checkState', 'items', 'page', 'pageCount', 'query', 'setPage', 'side', 'total'])
       expect(m.源.collection).toBeUndefined()
     }
     finally {
