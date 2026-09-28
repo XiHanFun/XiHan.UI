@@ -56920,6 +56920,14 @@
             {
               "description": "搜索一条都没命中时露面的占位，放在 list 之后；节点为空时填入 translations.noMatch",
               "name": "empty"
+            },
+            {
+              "description": "图标栏名称提示的定位层，放在 root 里；接线为 tooltip 的 positioner（data-scope=\"tooltip\"），显示期间搬到浮层落点",
+              "name": "tooltip-positioner"
+            },
+            {
+              "description": "图标栏名称提示本体，放在 tooltip-positioner 里；接线为 tooltip 的 content，文字由元素填成对着那一行的标签，对读屏隐藏。延时、接替窗口与提示组随 Tooltip，就近的 xh-tooltip-provider 同样生效",
+              "name": "tooltip"
             }
           ],
           "members": [
@@ -56938,7 +56946,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: sideNavAnatomy, meta: sideNavMeta }"
+              "default": "{ anatomy: sideNavAnatomy, meta: sideNavMeta, delegates: [{ name: tooltipAnatomy.name, parts: ['tooltip-positioner', 'tooltip'] }], }"
             },
             {
               "kind": "field",
@@ -57140,6 +57148,40 @@
               "default": "new MachineController<SideNavSchema>( this, sideNavMachine, () => this.machineProps(), { scope: this.navScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
+              "kind": "field",
+              "name": "hintCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<TooltipSchema>( this, tooltipMachine, () => sideNavTooltipProps(this.ctrl.service), { scope: this.navScope, onBuilt: svc => this.injectHintRefs(svc) }, )",
+              "description": "图标栏的名称提示：一台内嵌的 Tooltip 机器，props 从侧栏现读（开合受控于侧栏）。\n排在侧栏机器之后登记，建机器时侧栏那台已经在了；作者没放 tooltip 部件时照建不误，只是不接进连接层。"
+            },
+            {
+              "kind": "field",
+              "name": "hintEngine",
+              "type": {
+                "text": "PositionEnginePort"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "hintExit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "名称提示的退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
+              "name": "hintPortal",
+              "privacy": "private",
+              "readonly": true,
+              "description": "名称提示的定位层显示期间搬到浮层落点，视觉环境取自它对着的那一行。"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -57215,6 +57257,30 @@
                   "text": "readonly HTMLElement[]"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "registerHintLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectHintRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<TooltipSchema>"
+                  }
+                }
+              ]
             },
             {
               "kind": "method",
@@ -71519,6 +71585,24 @@
           ]
         },
         {
+          "kind": "function",
+          "name": "findTooltipGroup",
+          "return": {
+            "type": {
+              "text": "TooltipGroup | null"
+            }
+          },
+          "parameters": [
+            {
+              "name": "from",
+              "type": {
+                "text": "Element"
+              }
+            }
+          ],
+          "description": "从 from 的父节点起沿 DOM 祖先链找最近的 `<xh-tooltip-provider>`，取它那一组；不在 Provider 里时为 null，归页面级的那一组。\n自己跑一台提示机的宿主（侧栏图标栏的名称提示）也经这里认组，与 `<xh-tooltip>` 同一个判据。"
+        },
+        {
           "kind": "class",
           "description": "`<xh-tooltip-provider>`：提示组。包裹一棵子树，其中的 `<xh-tooltip>` 归同一组：共用接替窗口、\n同一时刻只开一个，没写延时的取这里给的缺省。\n\n它不渲染任何内容、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，\n布局上它是 display: contents。与 Vue / React 的 XhTooltipProvider 是同一件事：那两家沿组件树找，这里沿 DOM 祖先链找。",
           "name": "XhTooltipProviderElement",
@@ -71600,6 +71684,14 @@
           "name": "XhTooltipElement",
           "declaration": {
             "name": "XhTooltipElement",
+            "module": "src/elements/tooltip.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "findTooltipGroup",
+          "declaration": {
+            "name": "findTooltipGroup",
             "module": "src/elements/tooltip.ts"
           }
         },

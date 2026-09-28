@@ -48,6 +48,12 @@
 
 <XhDemo src="side-nav/05-search" />
 
+### 图标栏名称提示
+
+折叠成图标栏后，悬停或聚焦只剩图标的入口时在旁侧显示它的名称
+
+<XhDemo src="side-nav/06-collapsed-tooltip" />
+
 ## 设计指引
 
 ### 何时使用
@@ -66,6 +72,7 @@
 - `accordion` 限制同一层级只展开一个分支。
 - 入口可逐条声明语气，不向下传导；当前项的品牌淡底压过它。
 - 折叠后保留图标入口，子级在浮层中展示。
+- 放一个 `tooltip` 部件，折叠成图标栏后只剩图标的入口（顶层叶子；`collapsedPopout` 关掉时也含顶层分支）悬停或聚焦时在行尾一侧显示名称。它就是库内的 [文字提示](./tooltip)：悬停延时、接替窗口、提示组与反白外观都与 Tooltip 一致，放在 `XhTooltipProvider` 里同样归那一组；弹出分支的面板自己就是去处，不再叠一层提示。
 - 方向键上下移动，左右键展开或收起分支。
 - 放一个 `input` 即可按标签过滤导航树：命中入口的祖先保留并展开，没命中的整行、整枝收起，分组的成员一个都没命中就整组收起；`filter` 可换成自定义匹配。
 - 命中的入口整枝留下：分支本身命中时，它的子项照常在里面，不因命中而自动展开。
@@ -116,7 +123,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-side-nav>` |
-| Vue 组件 | `XhSideNavBranch` `XhSideNavBranchContent` `XhSideNavBranchIndicator` `XhSideNavBranchText` `XhSideNavBranchTrigger` `XhSideNavEmpty` `XhSideNavGroup` `XhSideNavGroupLabel` `XhSideNavInput` `XhSideNavItem` `XhSideNavLink` `XhSideNavLinkText` `XhSideNavList` `XhSideNavRoot` |
+| Vue 组件 | `XhSideNavBranch` `XhSideNavBranchContent` `XhSideNavBranchIndicator` `XhSideNavBranchText` `XhSideNavBranchTrigger` `XhSideNavEmpty` `XhSideNavGroup` `XhSideNavGroupLabel` `XhSideNavInput` `XhSideNavItem` `XhSideNavLink` `XhSideNavLinkText` `XhSideNavList` `XhSideNavRoot` `XhSideNavTooltip` |
 | 组合式函数 | `useSideNav` |
 | 状态机 | `sideNavMachine` |
 | 皮肤 | `@xihan-ui/styles/side-nav.css` |
@@ -185,6 +192,7 @@
 | `XhSideNavGroupLabel` | `value` | `string` | 是 |  |
 | `XhSideNavLink` | `value` | `string` | 是 |  |
 | `XhSideNavRoot` | `children` | `SlotChildren<SideNavRootSlotProps>` |  |  |
+| `XhSideNavTooltip` | `container` | `() => Element \| null` |  | 名称提示的 Portal 容器；优先于应用级配置。 |
 
 ### 状态
 
@@ -202,7 +210,7 @@
 
 **状态**：`idle` · `popout`
 
-**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR` · `POPOUT.OPEN` · `POPOUT.CLOSE` · `POPOUT.HOVER` · `POPOUT.HOVER_END` · `PRESENCE.SET` · `PRESS.START` · `PRESS.END` · `COLLAPSE.SETTLED` · `INPUT.CHANGE`
+**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR` · `POPOUT.OPEN` · `POPOUT.CLOSE` · `POPOUT.HOVER` · `POPOUT.HOVER_END` · `PRESENCE.SET` · `PRESS.START` · `PRESS.END` · `COLLAPSE.SETTLED` · `INPUT.CHANGE` · `TOOLTIP.TARGET` · `TOOLTIP.OPEN_CHANGE`
 
 **判据**：`canChange` · `canPopout` · `canPress`
 
@@ -248,6 +256,9 @@
 | `getBranchContentProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getLinkProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getLinkTextProps` | `() => T['element']` | 链接文字的载体：折叠时由皮肤整体隐藏。 |
+| `tooltipText` | `string` | 名称提示的文字：对着的那一行在 collection 里的标签（缺省退回 value）；还没对着任何一行时为空串。 |
+| `getTooltipPositionerProps` | `() => T['element']` | 名称提示的定位层：即库内 tooltip 的 positioner（data-scope="tooltip"），坐标、落点与层号由内嵌的提示机给， 作者把它搬到浮层落点。只在 connect 拿到内嵌提示机时可用，否则直接报错。 |
+| `getTooltipContentProps` | `() => T['element']` | 名称提示本体：即库内 tooltip 的 content，反白面、进退场与接替窗口都随 Tooltip； 对读屏隐藏（行文字已是可及名，不再念第二遍）。只在 connect 拿到内嵌提示机时可用，否则直接报错。 |
 
 ## 无障碍
 
@@ -270,6 +281,8 @@
 | `ArrowLeft` / `Escape` | focus in 弹出面板 | 收回面板，焦点还给触发按钮（RTL 与 ArrowRight 对调；Escape 归消解层） |
 | `可打印字符` | focus in input | 改写检索词：导航树裁到只剩命中的那几枝，命中入口的祖先自动展开、其余收起；搜索里的展开收起只记在搜索视图里，不改写 expandedValue |
 | `ArrowDown` / `Enter` | focus in input | 焦点交给导航行：搜索中落在剩下的第一行，不在搜索中落在 Tab 锚点 |
+| `Tab` / `ArrowDown` / `ArrowUp` / `Home` / `End` | collapsed 落成图标栏、放了 tooltip 部件，焦点落到只剩图标的行（顶层叶子；collapsedPopout 关掉时也含顶层分支） | 立即显示该行的名称提示，不走悬停延时；焦点离开即收。提示对读屏隐藏，可及名仍由行文字承担 |
+| `Escape` | 名称提示显示中 | 收起名称提示，焦点留在行上（Escape 归消解层按层栈仲裁） |
 | `Escape` | focus in input, 检索词非空 | 清空检索词，回到整棵树与原来的展开态，焦点留在搜索框；检索词已空时不拦截这一下 |
 
 ### ARIA
@@ -293,11 +306,14 @@
 | `link` | `aria-disabled` | 'true' \| undefined |
 | `empty` | `role` | 'status' |
 | `popout-positioner` | `aria-hidden` | !open \|\| undefined |
+| `tooltip-content` | `aria-hidden` | 'true' |
+| `tooltip-content` | `role` | undefined |
 
 - `list` 与 `branch-content` 使用列表语义。
 - 将文字放入 `branch-text` 或 `link-text`，确保折叠后仍有可访问名称。
 - 装饰图标使用 `aria-hidden="true"`。
 - 搜索框没有可见标签，可及名取 `translations.input`；空态以 `role="status"` 露面即播报。
+- 图标栏的名称提示对读屏隐藏，行上也不挂 `aria-describedby`：行文字已是可及名，提示只给看得见的人补上被裁掉的那段字。Escape 收起提示，焦点留在行上。
 
 ## 样式参考
 

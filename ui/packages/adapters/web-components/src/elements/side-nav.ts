@@ -6,15 +6,16 @@
 // 提供 side nav 相关实现。
 
 import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { SideNavApi, SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from '@xihan-ui/headless'
+import type { SideNavApi, SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails, TooltipSchema } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectSideNav, sideNavAnatomy, sideNavMachine, sideNavMeta } from '@xihan-ui/headless'
+import { connectSideNav, findSideNavRowEl, sideNavAnatomy, sideNavMachine, sideNavMeta, sideNavTooltipProps, tooltipAnatomy, tooltipMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
+import { findTooltipGroup } from './tooltip'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -68,12 +69,19 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * @csspart link - 目标链接，须自带 value 属性；选中时输出 aria-current="page" 与 data-current
  * @csspart link-text - 链接文字载体，折叠为图标栏时裁剪到不可见但仍参与播报，是链接在图标栏中的可及名
  * @csspart empty - 搜索一条都没命中时露面的占位，放在 list 之后；节点为空时填入 translations.noMatch
+ * @csspart tooltip-positioner - 图标栏名称提示的定位层，放在 root 里；接线为 tooltip 的 positioner（data-scope="tooltip"），显示期间搬到浮层落点
+ * @csspart tooltip - 图标栏名称提示本体，放在 tooltip-positioner 里；接线为 tooltip 的 content，文字由元素填成对着那一行的标签，对读屏隐藏。延时、接替窗口与提示组随 Tooltip，就近的 xh-tooltip-provider 同样生效
  */
 export class XhSideNavElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
-  static override partContract = { anatomy: sideNavAnatomy, meta: sideNavMeta }
+  // tooltip-positioner / tooltip 接的是库内 tooltip 的 positioner 与 content：两个作者名归 tooltip 那套 scope 管，不在本元素的解剖里
+  static override partContract = {
+    anatomy: sideNavAnatomy,
+    meta: sideNavMeta,
+    delegates: [{ name: tooltipAnatomy.name, parts: ['tooltip-positioner', 'tooltip'] }],
+  }
 
   // dir 只占属性名、字段改叫 direction：同名声明会盖掉 HTMLElement 原生反射。
   static override properties = {
@@ -149,6 +157,29 @@ export class XhSideNavElement extends XhPortalHostElement {
     { scope: this.navScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /**
+   * 图标栏的名称提示：一台内嵌的 Tooltip 机器，props 从侧栏现读（开合受控于侧栏）。
+   * 排在侧栏机器之后登记，建机器时侧栏那台已经在了；作者没放 tooltip 部件时照建不误，只是不接进连接层。
+   */
+  private readonly hintCtrl = new MachineController<TooltipSchema>(
+    this,
+    tooltipMachine,
+    () => sideNavTooltipProps(this.ctrl.service),
+    { scope: this.navScope, onBuilt: svc => this.injectHintRefs(svc) },
+  )
+
+  private readonly hintEngine: PositionEnginePort = createPositionEngine()
+  /** 名称提示的退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private hintExit: OverlayExit | null = null
+  /** 名称提示的定位层显示期间搬到浮层落点，视觉环境取自它对着的那一行。 */
+  private readonly hintPortal = this.createAnchoredPortalController({
+    name: 'SideNav tooltip',
+    config: () => this.config,
+    source: () => findSideNavRowEl(this.ctrl.service, this.ctrl.service.context.get('tooltipValue')),
+    root: () => this.getPart('tooltip-positioner'),
+    onChange: () => this.requestUpdate(),
+  })
+
   private machineProps(): Partial<SideNavSchema['props']> {
     return {
       collection: this.collection,
@@ -199,7 +230,38 @@ export class XhSideNavElement extends XhPortalHostElement {
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {
-    return this.portal.roots
+    return [...this.portal.roots, ...this.hintPortal.roots]
+  }
+
+  // 名称提示只参与 Escape 仲裁与栈顶判定：不陷焦点、不锁滚动、没有遮罩；对着的那一行记为本层分支
+  private readonly registerHintLayer = (): { layer: Layer, dispose: Cleanup } => {
+    this.ensureConfig()
+    return this.config!.layerRegistry.register({
+      kind: 'inline',
+      node: () => this.getPart('tooltip'),
+      branches: () => [findSideNavRowEl(this.ctrl.service, this.ctrl.service.context.get('tooltipValue'))].filter(Boolean) as Element[],
+      isModal: () => false,
+      surfaces: () => [],
+    })
+  }
+
+  // 每次（重）建机器后都要重注：refs 属于机器实例
+  private injectHintRefs(svc: Service<TooltipSchema>): void {
+    this.ensureConfig()
+    this.hintExit ??= createOverlayExit({ open: false, onExitComplete: () => this.requestUpdate() })
+    svc.refs.set('config', this.config)
+    svc.refs.set('registerLayer', this.registerHintLayer)
+    svc.refs.set('presence', this.hintExit.presence)
+    svc.refs.set('position', this.hintEngine)
+    svc.refs.set('getAnchorEl', () => findSideNavRowEl(this.ctrl.service, this.ctrl.service.context.get('tooltipValue')))
+    svc.refs.set('getFloatingEl', () => this.getPart('tooltip-positioner'))
+    svc.refs.set('group', findTooltipGroup(this))
+  }
+
+  /** 挪进或挪出 xh-tooltip-provider 都要改认所在的那一组：机器没重建时 onBuilt 不会再跑。 */
+  override connectedCallback(): void {
+    super.connectedCallback()
+    this.hintCtrl.service.refs.set('group', findTooltipGroup(this))
   }
 
   /** 当前弹出分支名下的角色节点：按归属分支的 value 现查。 */
@@ -296,12 +358,20 @@ export class XhSideNavElement extends XhPortalHostElement {
       this.setPartHidden(el, true)
     }
     this.exits.clear()
+    this.hintPortal.dispose()
+    this.hintExit?.dispose()
+    this.hintExit = null
+    this.setPartHidden(this.getPart('tooltip'), true)
     // 层由弹出态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     this.config = null // 重连时 ensureConfig 重建
   }
 
   protected wire(): void {
-    const api = connectSideNav(this.ctrl.service, wcNormalize)
+    // 作者放了名称提示的两个节点才把内嵌提示机接进连接层：不放就没有提示，行上也不转发事件
+    const hintPositioner = this.getPart('tooltip-positioner')
+    const hintContent = this.getPart('tooltip')
+    const hint = hintPositioner && hintContent ? this.hintCtrl.service : undefined
+    const api = connectSideNav(this.ctrl.service, wcNormalize, hint)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)
@@ -397,6 +467,22 @@ export class XhSideNavElement extends XhPortalHostElement {
       if (gated !== undefined)
         el.toggleAttribute('hidden', hidden)
       this.setPartHidden(el, hidden)
+    }
+
+    // 名称提示：两个节点接的是 tooltip 的 positioner 与 content，文字由元素填成对着那一行的标签。
+    // 退场动画播完之前先别收：必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
+    if (hint && hintPositioner && hintContent) {
+      this.spreader.spread(hintPositioner, api.getTooltipPositionerProps() as Record<string, unknown>)
+      this.spreader.spread(hintContent, api.getTooltipContentProps() as Record<string, unknown>)
+      if (hintContent.textContent !== api.tooltipText)
+        hintContent.textContent = api.tooltipText
+      this.ensureConfig()
+      this.hintExit ??= createOverlayExit({ open: false, onExitComplete: () => this.requestUpdate() })
+      const open = hint.state.matches('visible')
+      this.hintExit.track(hintContent)
+      this.hintExit.update(open)
+      this.setPartHidden(hintContent, !this.hintExit.visible)
+      this.hintPortal.sync(this.hintExit.visible)
     }
   }
 }

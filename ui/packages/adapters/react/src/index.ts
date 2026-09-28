@@ -2298,6 +2298,7 @@ export {
   XhSideNavLinkText,
   XhSideNavList,
   XhSideNavRoot,
+  XhSideNavTooltip,
 } from './components/side-nav/side-nav'
 export type {
   SideNavRootSlotProps,
@@ -2315,6 +2316,7 @@ export type {
   XhSideNavLinkTextProps,
   XhSideNavListProps,
   XhSideNavRootProps,
+  XhSideNavTooltipProps,
 } from './components/side-nav/side-nav'
 export { useSideNav } from './components/side-nav/use-side-nav'
 export type { SideNavContext } from './components/side-nav/use-side-nav'

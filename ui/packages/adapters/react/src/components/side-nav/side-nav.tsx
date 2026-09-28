@@ -5,21 +5,28 @@
 
 // 提供 side nav 相关实现。
 
-import type { Direction, Size, Tone } from '@xihan-ui/core'
+import type { Direction, Service, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { SideNavApi, SideNavFilter, SideNavNode, SideNavSchema, SideNavTranslations } from '@xihan-ui/headless'
+import type { SideNavApi, SideNavFilter, SideNavNode, SideNavSchema, SideNavTranslations, TooltipSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { connectSideNav, findSideNavRowEl, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
+import { createPositionEngine } from '@xihan-ui/position'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
+import { reactNormalize } from '../../runtime/normalize-props'
 import { XhPortal } from '../../runtime/portal'
+import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { renderSlot } from '../../runtime/slot-content'
+import { useMachine } from '../../runtime/use-machine'
+import { useOverlay } from '../../runtime/use-overlay'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { TooltipGroupContext } from '../tooltip/context'
 import { SideNavGroupProvider, SideNavItemProvider, SideNavNodeProvider, SideNavProvider, useSideNavContext, useSideNavGroupContext, useSideNavItemContext, useSideNavNodeContext } from './context'
 import { useSideNav } from './use-side-nav'
 
@@ -325,6 +332,85 @@ export function XhSideNavBranchContent({ children, container, ...rest }: XhSideN
   )
 }
 
+export interface XhSideNavTooltipProps {
+  /** 名称提示的 Portal 容器；优先于应用级配置。 */
+  container?: () => Element | null
+}
+/**
+ * 图标栏的名称提示：落成图标栏后，只剩图标的行悬停或聚焦时在行尾一侧显示行的标签。
+ * 本体是一台内嵌的 Tooltip 机器（延时、接替窗口、提示组与定位全随 Tooltip），开合受控于侧栏；
+ * 放一个即可，定位层搬到浮层落点，文字取 collection 里的标签，对读屏隐藏。
+ */
+export function XhSideNavTooltip({ container }: XhSideNavTooltipProps): ReactNode {
+  const ctx = useSideNavContext()
+  const idGenerator = useReactIdGenerator()
+  const scope = useReactScope()
+  const positionerRef = useRef<HTMLElement | null>(null)
+  const contentRef = useRef<HTMLElement | null>(null)
+  const serviceRef = useRef<Service<TooltipSchema> | null>(null)
+  // 放在 XhTooltipProvider 里就归它那一组，与页面上其余提示共用接替窗口
+  const group = useContext(TooltipGroupContext)
+  // 锚点是提示此刻对着的那一行，现查
+  const nav = ctx.service
+  const anchor = useCallback(() => findSideNavRowEl(nav, nav.context.get('tooltipValue')), [nav])
+
+  const overlay = useOverlay({
+    scope,
+    idGenerator,
+    initialOpen: false,
+    isOpen: () => serviceRef.current?.state.matches('visible') ?? false,
+    // 提示只参与 Escape 仲裁与栈顶判定：不陷焦点、不锁滚动、没有遮罩；对着的那一行记为本层分支
+    layer: () => ({ kind: 'inline', branches: () => [anchor()].filter(Boolean) as Element[], isModal: () => false }),
+    node: () => contentRef.current,
+    refs: (service) => {
+      service.refs.set('position', createPositionEngine() as never)
+      service.refs.set('getAnchorEl', anchor as never)
+      service.refs.set('getFloatingEl', (() => positionerRef.current) as never)
+      service.refs.set('group', group as never)
+    },
+  })
+  const hint = useMachine<TooltipSchema>(tooltipMachine, () => sideNavTooltipProps(nav), {
+    scope,
+    onCreate: overlay.onCreate as never,
+  })
+  serviceRef.current = hint
+
+  // 交给根：行上的指针与焦点经根的连接层转给这台机器
+  const { setTooltip } = ctx
+  useIsomorphicLayoutEffect(() => {
+    setTooltip(hint)
+    return () => setTooltip(null)
+  }, [setTooltip, hint])
+
+  const api = connectSideNav(nav, reactNormalize, hint)
+  // 指针进出装成原生监听器：移入提示要能撤销收起等待
+  const bind = useNativeEvents(api.getTooltipContentProps() as Record<string, unknown>)
+  return (
+    <XhPortal container={container ?? ctx.portalContainer}>
+      <div
+        {...mergeReactProps(
+          api.getTooltipPositionerProps() as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { positionerRef.current = el } },
+        )}
+      >
+        <div
+          {...mergeReactProps(
+            bind.attrs,
+            { ref: bind.ref },
+            {
+              // 收起跟着退场闸门走：皮肤给 content 声明了 display，真正的收起落成内联 display
+              style: overlay.rendered ? undefined : { display: 'none' },
+              ref: (el: HTMLDivElement | null) => { contentRef.current = el },
+            },
+          )}
+        >
+          {api.tooltipText}
+        </div>
+      </div>
+    </XhPortal>
+  )
+}
+
 export interface XhSideNavLinkTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhSideNavLinkText({ children, ...rest }: XhSideNavLinkTextProps): ReactNode {
   const ctx = useSideNavContext()
@@ -346,10 +432,10 @@ export function XhSideNavLink({ value, asChild, children, ...rest }: XhSideNavLi
     return () => reportItem(null)
   }, [reportItem, value])
   useJoinGroup(value)
-  // 链接的聚焦上报不冒泡，改装成原生监听器
+  // 链接的聚焦上报与指针进出（图标栏的名称提示）都不冒泡，改装成原生监听器
   const bind = useNativeEvents(
     ctx.api.getLinkProps({ value }) as Record<string, unknown>,
-    ['onFocus'],
+    ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
   const props = mergePartProps(mergeReactProps(bind.attrs, { ref: bind.ref }), rest as Record<string, unknown>)
   return renderAsChild(asChild, children, props, 'side-nav', (p, kids) => <a {...p}>{kids}</a>, { applyAnatomy: true })

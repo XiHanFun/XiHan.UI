@@ -154,6 +154,13 @@ export interface SideNavSchema extends MachineSchema {
      * 不动作者的 expandedValue，清空检索词即回到原来的展开态。
      */
     searchExpanded: string[]
+    /** 名称提示对着的那一行：图标栏里指针停住或焦点落下、只剩图标的那一条。 */
+    tooltipValue: string | null
+    /**
+     * 名称提示开着：内嵌的提示机按受控跑，开合意图经 TOOLTIP.OPEN_CHANGE 回到这里；
+     * 只有落成图标栏时才认「开」，折叠开关一翻即清。
+     */
+    tooltipOpen: boolean
   }
   computed: Record<string, never>
   refs: SideNavRefs
@@ -186,6 +193,10 @@ export interface SideNavSchema extends MachineSchema {
     | { type: 'COLLAPSE.SETTLED', round: number }
     /** 搜索框里的检索词变了；换词即按新词重置搜索视图的展开集合。 */
     | { type: 'INPUT.CHANGE', value: string }
+    /** 名称提示改对着这一行：指针停到或焦点落到图标栏里只剩图标的那一条。 */
+    | { type: 'TOOLTIP.TARGET', value: string }
+    /** 内嵌提示机报来的开合意图。 */
+    | { type: 'TOOLTIP.OPEN_CHANGE', open: boolean }
   tag: never
   guard: 'canChange' | 'canPopout' | 'canPress'
   action:
@@ -210,6 +221,8 @@ export interface SideNavSchema extends MachineSchema {
     | 'schedulePopoutHover'
     | 'cancelPopoutHover'
     | 'setInputValue'
+    | 'setTooltipTarget'
+    | 'setTooltipOpen'
   effect: 'trackPopoutSessions' | 'releasePopoutHover' | 'trackPopoutPosition' | 'trackPopoutLayer' | 'trackPopoutHover'
 }
 
@@ -292,4 +305,16 @@ export interface SideNavApi<T extends PropTypes = PropTypes> {
   getLinkProps: (props: SideNavNodeProps) => T['element']
   /** 链接文字的载体：折叠时由皮肤整体隐藏。 */
   getLinkTextProps: () => T['element']
+  /** 名称提示的文字：对着的那一行在 collection 里的标签（缺省退回 value）；还没对着任何一行时为空串。 */
+  tooltipText: string
+  /**
+   * 名称提示的定位层：即库内 tooltip 的 positioner（data-scope="tooltip"），坐标、落点与层号由内嵌的提示机给，
+   * 作者把它搬到浮层落点。只在 connect 拿到内嵌提示机时可用，否则直接报错。
+   */
+  getTooltipPositionerProps: () => T['element']
+  /**
+   * 名称提示本体：即库内 tooltip 的 content，反白面、进退场与接替窗口都随 Tooltip；
+   * 对读屏隐藏（行文字已是可及名，不再念第二遍）。只在 connect 拿到内嵌提示机时可用，否则直接报错。
+   */
+  getTooltipContentProps: () => T['element']
 }

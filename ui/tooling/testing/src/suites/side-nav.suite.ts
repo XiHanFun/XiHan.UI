@@ -246,6 +246,58 @@ function branchesHidden(...values: readonly string[]): readonly AttrExpectation[
   return ['user', 'order'].map(v => ({ hidden: values.includes(v) ? '' : null }))
 }
 
+/**
+ * 名称提示用例的结构：Vue / React 放一个 tooltip 部件（组件自己渲染定位层与本体），
+ * Web Components 由作者手写定位层包着本体；两个节点接线后都是 tooltip 的部件。
+ */
+function withTooltip(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: [
+      ...(base.children ?? []),
+      { part: 'tooltip', only: ['vue', 'react'] },
+      { part: 'tooltip-positioner', only: ['wc'], children: [{ part: 'tooltip' }] },
+    ],
+  }
+}
+
+/**
+ * 名称提示的现状：它是库内 tooltip 的部件（data-scope="tooltip"），不进 side-nav 的属性快照，只能直接读 DOM。
+ * 开合要经内嵌提示机的受控回写走一轮，多等几拍再判。
+ */
+function tooltipShows(expected: { open: boolean, text?: string, instant?: boolean }): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: '名称提示戴 tooltip 的 scope，不进 side-nav 的属性快照；开合经内嵌提示机的受控回写，要多等几拍',
+    run: async ({ doc, flush }) => {
+      const read = (): { content: HTMLElement | null, open: boolean } => {
+        const content = doc.querySelector<HTMLElement>('[data-scope="tooltip"][data-part="content"]')
+        return { content, open: content?.getAttribute('data-state') === 'open' && !content.hasAttribute('hidden') }
+      }
+      for (let i = 0; i < 10 && read().open !== expected.open; i++)
+        await flush()
+      const { content, open } = read()
+      if (!content)
+        throw new Error('找不到名称提示的本体（data-scope="tooltip" data-part="content"）')
+      if (open !== expected.open)
+        throw new Error(`名称提示应当${expected.open ? '显示' : '收起'}，实际 data-state=${content.getAttribute('data-state')} hidden=${content.hasAttribute('hidden')}`)
+      if (content.getAttribute('aria-hidden') !== 'true' || content.hasAttribute('role'))
+        throw new Error(`名称提示要对读屏隐藏且不当 role=tooltip，实际 aria-hidden=${content.getAttribute('aria-hidden')} role=${content.getAttribute('role')}`)
+      if (expected.text != null && content.textContent !== expected.text)
+        throw new Error(`名称提示的文字不符：期望 ${JSON.stringify(expected.text)}，实际 ${JSON.stringify(content.textContent)}`)
+      if (expected.instant != null && content.hasAttribute('data-instant') !== expected.instant)
+        throw new Error(`名称提示的 data-instant 应当${expected.instant ? '在场' : '缺席'}`)
+      const positioner = content.closest('[data-scope="tooltip"][data-part="positioner"]')
+      if (!positioner)
+        throw new Error('名称提示的本体要包在 tooltip 的 positioner 里')
+      const rows = [...doc.querySelectorAll<HTMLElement>('[data-scope="side-nav"]:is([data-part="link"], [data-part="branch-trigger"])')]
+      const described = rows.filter(row => row.hasAttribute('aria-describedby'))
+      if (described.length)
+        throw new Error('行上不该挂 aria-describedby：名称提示对读屏隐藏，行文字已是可及名')
+    },
+  }
+}
+
 /** 原生的 getComputedStyle，伪造退场动画期间暂存，结束后放回。 */
 let nativeComputedStyle: Window['getComputedStyle'] | null = null
 const animationMocks = new Map<Element, ReturnType<typeof installCssAnimationMock>>()
@@ -1016,6 +1068,62 @@ export const sideNavSuite: ConformanceSuite = {
           ...typeInto(''),
           expect: { parts: { group: [{ hidden: null }, { hidden: null }], item: itemsHidden() } },
         },
+      ],
+    },
+    {
+      name: '图标栏名称提示：焦点落到只剩图标的叶子立即显示行的标签、对读屏隐藏；焦点移到弹出分支即收，移回来在接替窗口内直接显示',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/#keyboardinteraction' },
+      fixture: withTooltip,
+      props: props({ collapsed: true }),
+      covers: ['side-nav.kbd.tooltip-show'],
+      steps: [
+        tooltipShows({ open: false }),
+        { kind: 'focus', part: 'link[0]', via: 'keyboard', expect: { activeElement: { part: 'link[0]', exact: true } } },
+        tooltipShows({ open: true, text: 'Home' }),
+        // 弹出分支的面板自己就是去处，不再叠一层提示
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'branch-trigger[0]', exact: true } } },
+        tooltipShows({ open: false }),
+        { kind: 'key', key: 'ArrowUp', expect: { activeElement: { part: 'link[0]', exact: true } } },
+        tooltipShows({ open: true, text: 'Home', instant: true }),
+        { kind: 'blur' },
+        tooltipShows({ open: false }),
+      ],
+    },
+    {
+      name: '图标栏名称提示：collapsedPopout 关掉的纯图标栏里，分支行同样只剩图标，Home / End 走到哪行显示哪行的标签',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/#keyboardinteraction' },
+      fixture: withTooltip,
+      props: props({ collapsed: true, collapsedPopout: false }),
+      covers: ['side-nav.kbd.tooltip-show'],
+      steps: [
+        { kind: 'focus', part: 'link[0]', via: 'keyboard' },
+        { kind: 'key', key: 'End', expect: { activeElement: { part: 'branch-trigger[1]', exact: true } } },
+        tooltipShows({ open: true, text: 'Order' }),
+        { kind: 'key', key: 'Home', expect: { activeElement: { part: 'link[0]', exact: true } } },
+        tooltipShows({ open: true, text: 'Home' }),
+      ],
+    },
+    {
+      name: '图标栏名称提示：Escape 收起提示，焦点留在行上',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/#keyboardinteraction' },
+      fixture: withTooltip,
+      props: props({ collapsed: true }),
+      covers: ['side-nav.kbd.tooltip-escape'],
+      steps: [
+        { kind: 'focus', part: 'link[0]', via: 'keyboard' },
+        tooltipShows({ open: true, text: 'Home' }),
+        { kind: 'key', key: 'Escape', expect: { activeElement: { part: 'link[0]', exact: true } } },
+        tooltipShows({ open: false }),
+      ],
+    },
+    {
+      name: '图标栏名称提示：平铺时行文字都在，聚焦不显示提示',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/#keyboardinteraction' },
+      fixture: withTooltip,
+      props: props(),
+      steps: [
+        { kind: 'focus', part: 'link[0]', via: 'keyboard' },
+        tooltipShows({ open: false }),
       ],
     },
     {

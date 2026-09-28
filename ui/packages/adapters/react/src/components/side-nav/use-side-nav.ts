@@ -6,11 +6,11 @@
 // 提供 use side nav 相关实现。
 
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { SideNavApi, SideNavSchema } from '@xihan-ui/headless'
+import type { SideNavApi, SideNavSchema, TooltipSchema } from '@xihan-ui/headless'
 import { createRuntimeConfig } from '@xihan-ui/core'
 import { connectSideNav, sideNavMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useXhConfig } from '../../config/config'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
@@ -23,6 +23,8 @@ export interface SideNavContext {
   config: RuntimeConfig | null
   /** 弹出面板的定位层迁移到的位置：全局配置 > 运行时配置 > body。 */
   portalContainer: () => Element | null
+  /** XhSideNavTooltip 挂上时交进它那台内嵌的 Tooltip 机器，卸下时交回 null；没有即没有名称提示。 */
+  setTooltip: (tooltip: Service<TooltipSchema> | null) => void
 }
 
 export function useSideNav(props: SideNavSchema['props']): SideNavContext {
@@ -65,11 +67,13 @@ export function useSideNav(props: SideNavSchema['props']): SideNavContext {
   }, [config, scope])
 
   const service = useMachine(sideNavMachine, () => props, { scope, onCreate })
+  // 图标栏名称提示的内嵌机器：行上的指针与焦点经连接层转给它
+  const [tooltip, setTooltip] = useState<Service<TooltipSchema> | null>(null)
 
   const portalContainer = useCallback(
     () => xhConfig.portalContainer?.() ?? config?.portalContainer() ?? null,
     [xhConfig, config],
   )
 
-  return { api: connectSideNav(service, reactNormalize), service, config, portalContainer }
+  return { api: connectSideNav(service, reactNormalize, tooltip ?? undefined), service, config, portalContainer, setTooltip }
 }

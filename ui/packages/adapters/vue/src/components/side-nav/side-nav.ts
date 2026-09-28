@@ -5,17 +5,24 @@
 
 // 提供 side nav 相关实现。
 
-import type { Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, Layer, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { SideNavApi, SideNavFilter, SideNavNode, SideNavSchema } from '@xihan-ui/headless'
+import type { SideNavApi, SideNavFilter, SideNavNode, SideNavSchema, TooltipSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import { createScope } from '@xihan-ui/core'
+import { connectSideNav, findSideNavRowEl, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
+import { createPositionEngine } from '@xihan-ui/position'
+import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
+import { vueNormalize } from '../../runtime/normalize-props'
 import { XhPortal } from '../../runtime/portal'
+import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { createVueIdGenerator } from '../../runtime/vue-id'
+import { useTooltipGroup } from '../tooltip/context'
 import { provideSideNav, provideSideNavGroup, provideSideNavItem, provideSideNavNode, useSideNavContext, useSideNavGroupContext, useSideNavItemContext, useSideNavNodeContext } from './context'
 import { useSideNav } from './use-side-nav'
 
@@ -283,6 +290,70 @@ export const XhSideNavBranchContent = defineComponent({
         }, [content]),
       ])
     }
+  },
+})
+
+/**
+ * 图标栏的名称提示：落成图标栏后，只剩图标的行悬停或聚焦时在行尾一侧显示行的标签。
+ * 本体是一台内嵌的 Tooltip 机器（延时、接替窗口、提示组与定位全随 Tooltip），开合受控于侧栏；
+ * 放一个即可，定位层搬到浮层落点，文字取 collection 里的标签，对读屏隐藏。
+ */
+export const XhSideNavTooltip = defineComponent({
+  name: 'XhSideNavTooltip',
+  props: {
+    /** 名称提示的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element> },
+  },
+  setup(props) {
+    const ctx = useSideNavContext()
+    const positionerRef = ref<HTMLElement | null>(null)
+    const contentRef = ref<HTMLElement | null>(null)
+    const hint = useMachine<TooltipSchema>(tooltipMachine, () => sideNavTooltipProps(ctx.service), createScope(null, createVueIdGenerator()))
+    // 锚点是提示此刻对着的那一行，现查
+    const anchor = (): HTMLElement | null => findSideNavRowEl(ctx.service, ctx.service.context.get('tooltipValue'))
+    const config = ctx.config
+    if (config) {
+      // 提示只参与 Escape 仲裁与栈顶判定：不陷焦点、不锁滚动、没有遮罩；对着的那一行记为本层分支
+      hint.refs.set('config', config)
+      hint.refs.set('registerLayer', (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
+        kind: 'inline',
+        node: () => contentRef.value,
+        branches: () => [anchor()].filter(Boolean) as Element[],
+        isModal: () => false,
+        surfaces: () => [],
+      }))
+      hint.refs.set('position', createPositionEngine())
+    }
+    hint.refs.set('getAnchorEl', anchor)
+    hint.refs.set('getFloatingEl', () => positionerRef.value)
+    // 放在 XhTooltipProvider 里就归它那一组，与页面上其余提示共用接替窗口
+    hint.refs.set('group', useTooltipGroup())
+    const visible = useOverlayExit({
+      config,
+      isOpen: () => hint.state.matches('visible'),
+      contentRef,
+      onPresence: presence => hint.refs.set('presence', presence),
+    })
+    // 交给根：行上的指针与焦点经根的连接层转给这台机器
+    ctx.tooltip.value = hint
+    onBeforeUnmount(() => {
+      if (ctx.tooltip.value === hint)
+        ctx.tooltip.value = null
+    })
+    const api = computed(() => connectSideNav(ctx.service, vueNormalize, hint))
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
+      h('div', {
+        ...api.value.getTooltipPositionerProps() as Record<string, unknown>,
+        ref: (el: unknown) => { positionerRef.value = el as HTMLElement | null },
+      }, [
+        h('div', {
+          ...api.value.getTooltipContentProps() as Record<string, unknown>,
+          // 收起跟着退场闸门走：皮肤给 content 声明了 display，真正的收起落成内联 display
+          style: visible.value ? undefined : { display: 'none' },
+          ref: (el: unknown) => { contentRef.value = el as HTMLElement | null },
+        }, api.value.tooltipText),
+      ]),
+    ])
   },
 })
 
