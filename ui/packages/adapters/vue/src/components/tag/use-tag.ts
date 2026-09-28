@@ -7,16 +7,18 @@
 
 import type { TagApi, TagSchema } from '@xihan-ui/headless'
 import type { ComputedRef } from 'vue'
+import { createScope } from '@xihan-ui/core'
 import { connectStaticTag, connectTag, tagMachine } from '@xihan-ui/headless'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface TagContext {
   api: ComputedRef<TagApi>
 }
 
-// 不建 scope：connect 不派生任何 id
+// 机器路的根节点带 scope 派生的 id：关闭时按它找到节点，等退场播完再藏起
 export function useTag(
   props: TagSchema['props'],
   onOpenChange?: TagSchema['props']['onOpenChange'],
@@ -39,7 +41,7 @@ export function useTag(
     return { api }
   }
 
-  const service = useMachine(tagMachine, () => ({ ...props, onOpenChange }))
+  const service = useMachine(tagMachine, () => ({ ...props, onOpenChange }), createScope(null, createVueIdGenerator()))
   const api = computed(() => connectTag(service, vueNormalize))
   return { api }
 }

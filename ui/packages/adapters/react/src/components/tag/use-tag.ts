@@ -9,16 +9,19 @@ import type { TagApi, TagSchema } from '@xihan-ui/headless'
 import { connectStaticTag, connectTag, tagMachine } from '@xihan-ui/headless'
 import { useState } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface TagContext {
   api: TagApi
 }
 
-// 不建 scope：connect 不派生任何 id
-/** 运行状态机的路径：提供关闭按钮后，展开态由状态机管理。 */
+/**
+ * 运行状态机的路径：提供关闭按钮后，展开态由状态机管理。
+ * 根节点带 scope 派生的 id：关闭时按它找到节点，等退场播完再藏起。
+ */
 export function useTag(props: TagSchema['props']): TagContext {
-  const service = useMachine(tagMachine, () => props)
+  const service = useMachine(tagMachine, () => props, { scope: useReactScope() })
   return { api: connectTag(service, reactNormalize) }
 }
 

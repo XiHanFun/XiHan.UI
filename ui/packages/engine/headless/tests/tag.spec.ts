@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import type { TagOpenChangeDetails, TagSchema } from '../src/tag'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
@@ -107,14 +108,32 @@ describe('connectTag 三轴', () => {
 })
 
 describe('connectTag 显隐', () => {
-  it('收起态给 root 打 hidden 与 data-state=closed，展开态两者都不留假值', () => {
+  it('收起态给 root 打 hidden 与 data-state=closed，展开态两者都不留假值', async () => {
     const t = makeTag({ closable: true })
     expect(t.api().getRootProps().hidden).toBeUndefined()
     expect(t.api().getRootProps()['data-state']).toBe('open')
+    expect(t.api().getRootProps().inert).toBeUndefined()
 
     t.api().setOpen(false)
-    expect(t.api().getRootProps().hidden).toBe(true)
+    // 先翻 closed、退场开播：根节点还留着，不可交互
     expect(t.api().getRootProps()['data-state']).toBe('closed')
+    expect(t.api().getRootProps().hidden).toBeUndefined()
+    expect(t.api().getRootProps().inert).toBe(true)
+    // 没有 DOM、没有可等的退场动画：宿主提交之后即刻藏起
+    await Promise.resolve()
+    expect(t.api().getRootProps().hidden).toBe(true)
+    expect(t.api().getRootProps().inert).toBeUndefined()
+  })
+
+  it('机器路的根节点带稳定 id，供退场时找到节点；快路不写', () => {
+    expect(makeTag({ closable: true }).api().getRootProps().id).toMatch(/tag/)
+    expect(connectStaticTag({}, { get: () => true, set: () => {} }, normalizeProps).getRootProps().id).toBeUndefined()
+  })
+
+  it('初始收起的标签一开始就藏起，不播退场', () => {
+    const t = makeTag({ closable: true, defaultOpen: false })
+    expect(t.api().getRootProps().hidden).toBe(true)
+    expect(t.api().getRootProps().inert).toBeUndefined()
   })
 })
 

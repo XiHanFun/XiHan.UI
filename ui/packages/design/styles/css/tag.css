@@ -5,6 +5,9 @@
 
 /* 定义 tag 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='tag'] {
@@ -49,6 +52,12 @@
      漏掉这条，摘掉的标签还会一直摊在页面上 */
   [data-scope='tag'][data-part='root'][hidden] {
     display: none;
+  }
+
+  /* 关掉的标签先原地淡出，播完连接层才写 hidden。
+     标签组与选择框的标签行里删掉的那一枚，由列表动效放回原处的替身也是 closed，同一段淡出 */
+  [data-scope='tag'][data-part='root'][data-state='closed'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 文字过长时截断，关闭钮才始终留在标签里 */

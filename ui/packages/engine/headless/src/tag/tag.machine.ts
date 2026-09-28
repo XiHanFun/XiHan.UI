@@ -7,15 +7,17 @@
 
 import type { TagPressedPart, TagSchema } from './tag.types'
 import { setup } from '@xihan-ui/core'
+import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<TagSchema>()
 
 // 受控（open 给定）时用户事件只发意图、不自改状态，由 watch 派发 CONTROLLED.* 回写。
 export const tagMachine = createMachine({
   name: 'tag',
-  context: ({ cell }) => ({
+  context: ({ cell, prop }) => ({
     // 按压通道：正被按住的部件（root 或关闭钮），与显隐无关
     pressed: cell<TagPressedPart | null>(() => ({ defaultValue: null })),
+    rendered: cell<boolean>(() => ({ defaultValue: prop('open') ?? prop('defaultOpen') ?? true })),
   }),
   // 标签是内容流里常驻的一块，没给任何显隐声明就是显示
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen') ?? true) ? 'open' : 'closed'),
@@ -25,9 +27,11 @@ export const tagMachine = createMachine({
     track([() => prop('disabled'), () => prop('readOnly'), () => prop('closable')], () => action(['releaseWhenInert']))
   },
   // 两个状态都要认的按压事件：按 part 记按住的那个；禁用 / 只读不进，关闭钮还要 closable
+  effects: ['trackRootPresence'],
   on: {
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
+    'ROOT.RENDERED': { actions: ['setRendered'] },
   },
   states: {
     closed: {
@@ -63,6 +67,17 @@ export const tagMachine = createMachine({
         return e.part !== 'close-trigger' || !!prop('closable')
       },
     },
+    effects: {
+      /** 关闭时根节点先播完退场，才写 hidden 收起；重新打开立即露面。 */
+      trackRootPresence: ({ state, scope, send, track, flush }) => trackPartPresence({
+        scope,
+        id: scope.partId('tag', 'root'),
+        open: () => state.matches('open'),
+        track,
+        flush,
+        onRenderedChange: rendered => send({ type: 'ROOT.RENDERED', rendered }),
+      }),
+    },
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
@@ -84,6 +99,11 @@ export const tagMachine = createMachine({
           context.set('pressed', null)
       },
       releasePress: ({ context }) => context.set('pressed', null),
+      setRendered: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'ROOT.RENDERED')
+          context.set('rendered', e.rendered)
+      },
       syncOpen: ({ prop, send }) => {
         const open = prop('open')
         if (open === undefined)

@@ -68,6 +68,8 @@ export interface TagSchema extends MachineSchema {
      * 禁用与只读时谁都不进，关闭钮还要 closable；收起时一并松开（钮随标签一起 hidden，不会再来 keyup）。
      */
     pressed: TagPressedPart | null
+    /** 根节点是否还留着（没有 hidden）：打开时立即为真；收起后等根节点的退场动画播完才为假。 */
+    rendered: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -81,10 +83,12 @@ export interface TagSchema extends MachineSchema {
     // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，part 说的是哪一个部件
     | { type: 'PRESS.START', part: TagPressedPart }
     | { type: 'PRESS.END', part: TagPressedPart }
+    // 根节点留着与否（退场动画播完才报 false）
+    | { type: 'ROOT.RENDERED', rendered: boolean }
   tag: never
   guard: 'isOpenControlled' | 'canPress'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'releasePress'
-  effect: never
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'releasePress' | 'setRendered'
+  effect: 'trackRootPresence'
 }
 
 export interface TagApi<T extends PropTypes = PropTypes> {
