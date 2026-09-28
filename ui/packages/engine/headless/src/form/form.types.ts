@@ -251,6 +251,13 @@ export interface FormSchema extends MachineSchema {
      * 没有按住时为 null。抬起、失焦、指针取消，或异步校验开始 / 按住的摘要条目所指字段改好了时即撤下。
      */
     pressed: FormPressedKey | null
+    /**
+     * 错误摘要是否还留着（没有 hidden）。露面时立即为真；错误全改完或重置后等摘要的退场动画播完才为假，
+     * 期间摘要的 data-state 已经是 idle、退场动画在播。
+     */
+    summaryRendered: boolean
+    /** 摘要最后一次露面时的错误表：退场那几帧里条目与条数照这份画，不随错误表清空一起消失。 */
+    summaryErrors: FormErrors
   }
   computed: Record<string, never>
   refs: FormRefs
@@ -290,6 +297,10 @@ export interface FormSchema extends MachineSchema {
     | { type: 'PRESS.START', key: FormPressedKey, disabled?: boolean }
     /** 按住的部件抬起、失焦或指针取消；只收自己那一下。 */
     | { type: 'PRESS.END', key: FormPressedKey }
+    /** 摘要露面期间错误表变了：记下这一版，退场时照它画。 */
+    | { type: 'SUMMARY.SNAPSHOT' }
+    /** 摘要节点留着与否（退场动画播完才报 false）。 */
+    | { type: 'SUMMARY.RENDERED', rendered: boolean }
   tag: never
   guard: 'isEnabled' | 'isEditable' | 'isValidationSnapshotCurrent' | 'canPress'
   action:
@@ -312,7 +323,9 @@ export interface FormSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: never
+    | 'snapshotSummary'
+    | 'setSummaryRendered'
+  effect: 'trackSummaryPresence'
 }
 
 export interface FormApi<T extends PropTypes = PropTypes> {
@@ -341,6 +354,16 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   getFieldValue: (name: FormPath) => unknown
   /** 该字段当前的错误文案；无错时为 undefined。 */
   getFieldError: (name: FormPath) => string | undefined
+  /**
+   * 错误摘要此刻画的那版错误表：平时就是 errors；错误全改完、摘要播退场的那几帧里是撤下之前的最后一版，
+   * 摘要里的文案与条数照它写，才不会先于摘要一起消失。
+   */
+  summaryErrors: FormErrors
+  /** summaryErrors 里出错的字段名，插入顺序。 */
+  summaryErrorNames: FormPath[]
+  summaryErrorCount: number
+  /** 错误摘要此刻给该字段画的文案；摘要里的条目读它而不读 getFieldError。 */
+  getSummaryError: (name: FormPath) => string | undefined
   isFieldInvalid: (name: FormPath) => boolean
   /** 该字段的规则中声明了 required：字段的必填标记由此推导。 */
   isFieldRequired: (name: FormPath) => boolean

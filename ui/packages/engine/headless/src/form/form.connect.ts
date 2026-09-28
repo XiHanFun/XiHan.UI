@@ -75,6 +75,11 @@ export function connectForm<T extends PropTypes>(
   const stateAttr = submitFailed ? 'invalid' : 'idle'
   // 错误全改完就撤下摘要，此时状态仍停在失败态（下一次提交成功才回 idle）
   const summaryVisible = submitFailed && invalid
+  // 撤下时先播完退场才藏起；退场那几帧里条目与条数照摘要最后一次露面的那版错误表画
+  const summaryExiting = !summaryVisible && context.get('summaryRendered')
+  const summaryErrors = summaryExiting ? context.get('summaryErrors') : errors
+  const summaryErrorNames = summaryExiting ? formErrorNames(summaryErrors) : errorNames
+  const summaryError = (name: FormPath): string | undefined => getFormPathValue(summaryErrors, name)
 
   const fieldError = (name: FormPath): string | undefined => getFormPathValue(errors, name)
 
@@ -114,6 +119,10 @@ export function connectForm<T extends PropTypes>(
     getFieldId: name => formFieldId(scope, name),
     getFieldValue: name => getFormPathValue(values, name),
     getFieldError: fieldError,
+    summaryErrors,
+    summaryErrorNames,
+    summaryErrorCount: summaryErrorNames.length,
+    getSummaryError: summaryError,
     isFieldInvalid: name => fieldError(name) !== undefined,
     isFieldRequired: name => hasRequiredRule(getFormPathValue(service.refs.get('rules'), name)),
     setFieldValue: (name, value) => send({ type: 'FIELD.SET', name, value }),
@@ -194,11 +203,14 @@ export function connectForm<T extends PropTypes>(
       'aria-live': 'assertive',
       // 整份摘要一起念，否则用户只听到半截
       'aria-atomic': 'true',
-      'data-state': stateAttr,
+      // 摘要露面为 invalid；撤下（含退场途中）为 idle，皮肤据此播进场与退场
+      'data-state': summaryVisible ? 'invalid' : 'idle',
       // 皮肤据此渲染"共 N 处错误"这类修饰
-      'data-count': String(errorCount),
-      // 常挂 + hidden：作者写在里面的节点不卸载
-      'hidden': !summaryVisible || undefined,
+      'data-count': String(summaryErrorNames.length),
+      // 常挂 + hidden：作者写在里面的节点不卸载；退场动画播完才写
+      'hidden': (!summaryVisible && !summaryExiting) || undefined,
+      // 退场途中的链接不再可点、可聚焦
+      'inert': summaryExiting || undefined,
     }),
 
     getErrorSummaryItemProps: item => normalize.element({
@@ -207,8 +219,8 @@ export function connectForm<T extends PropTypes>(
       'href': `#${formFieldId(scope, item.name)}`,
       [FORM_FIELD_NAME_ATTR]: formPathKey(item.name),
       'data-invalid': dataAttr(fieldError(item.name) !== undefined),
-      // 作者一次把所有字段的条目都写上，这里按当下的错误表决定谁露面
-      'hidden': fieldError(item.name) === undefined || undefined,
+      // 作者一次把所有字段的条目都写上，这里按当下的错误表决定谁露面（摘要退场途中按它最后那一版）
+      'hidden': summaryError(item.name) === undefined || undefined,
       // Space / Enter 与触屏按住投影 data-pressed，皮肤的按下面同时认它与指针 :active；
       // Enter 在 keydown 即把焦点送进字段，链接随即失焦、按压面跟着撤下
       ...press(`error:${formPathKey(item.name)}`, fieldError(item.name) === undefined),

@@ -10,6 +10,7 @@ import type { FormErrors } from './form.errors'
 import type { FormArrayMutation, FormPath } from './form.path'
 import type { FormPressedKey, FormRules, FormSchema, FormValidateOn, FormValidationErrorDetails, FormValidationTask, FormValues } from './form.types'
 import { focusFirst, focusSafely, getTabbables, queryItems, setup } from '@xihan-ui/core'
+import { trackPartPresence } from '../shared/part-presence'
 import { formFieldGroupQuery, formFieldName } from './form.anatomy'
 import { firstFormErrorName, formErrorNames, mergeFormErrors, normalizeFormErrors, sameFormErrors } from './form.errors'
 import { cloneFormPathRecord, formPathEntries, formPathKey, getFormPathValue, rebaseFormArrayPath, rebaseFormPathRecord, sameFormPathRecords, setFormPathValue } from './form.path'
@@ -278,10 +279,13 @@ export const formMachine = createMachine({
     validationError: cell<FormValidationErrorDetails | null>(() => ({ defaultValue: null })),
     // 按压通道：被 Space / Enter 或触屏按住的那一个部件（提交钮 / 重置钮 / 摘要条目），按 key 记
     pressed: cell<FormPressedKey | null>(() => ({ defaultValue: null })),
+    summaryRendered: cell<boolean>(() => ({ defaultValue: false })),
+    summaryErrors: cell<FormErrors>(() => ({ defaultValue: {} })),
   }),
   // 挂载即 idle：作者预置的 defaultErrors 不该让错误摘要一上来就显形
   initialState: () => 'idle',
   exit: ['discardValidation'],
+  effects: ['trackSummaryPresence'],
   watch: ({ track, prop, context, action }) => {
     track([context.dep('values'), () => prop('values')], () => action(['discardStaleValidation']))
     track([() => prop('rules')], () => action(['syncRules']))
@@ -309,6 +313,8 @@ export const formMachine = createMachine({
     // 按压通道：两颗钮是原生 disabled、条目按错误表显隐，程序化派发由守卫再守一次；异步校验在途时不进
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
+    'SUMMARY.SNAPSHOT': { actions: ['snapshotSummary'] },
+    'SUMMARY.RENDERED': { actions: ['setSummaryRendered'] },
   },
   states: {
     idle: {
@@ -360,6 +366,29 @@ export const formMachine = createMachine({
         return (e.type === 'VALIDATION.PASS' || e.type === 'VALIDATION.FAIL') && sameFormValues(e.values, context.get('values'))
       },
     },
+    effects: {
+      /**
+       * 错误摘要的进退场：提交失败且还有错时露面；错误全改完或重置时先播完退场，根上才写 hidden 收起。
+       * 露面期间每一版错误表都记下来，退场那几帧照最后一版画，条目不会先于摘要一起消失。
+       */
+      trackSummaryPresence: ({ state, context, scope, send, track, flush }) => {
+        const open = (): boolean => state.matches('invalid') && formErrorNames(context.get('errors')).length > 0
+        track([open, context.dep('errors')], () => {
+          if (open())
+            send({ type: 'SUMMARY.SNAPSHOT' })
+        })
+        if (open())
+          send({ type: 'SUMMARY.SNAPSHOT' })
+        return trackPartPresence({
+          scope,
+          id: scope.partId('form', 'error-summary'),
+          open,
+          track,
+          flush,
+          onRenderedChange: rendered => send({ type: 'SUMMARY.RENDERED', rendered }),
+        })
+      },
+    },
     actions: {
       startPress: ({ context, event }) => {
         const e = event.current()
@@ -383,6 +412,17 @@ export const formMachine = createMachine({
         }
         if (pressed.startsWith('error:') && !formErrorNames(context.get('errors')).some(name => `error:${formPathKey(name)}` === pressed))
           context.set('pressed', null)
+      },
+      // 空表不记：错误全改完那一刻摘要开始退场，要画的正是清空之前那一版
+      snapshotSummary: ({ context }) => {
+        const errors = context.get('errors')
+        if (formErrorNames(errors).length > 0)
+          context.set('summaryErrors', errors)
+      },
+      setSummaryRendered: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'SUMMARY.RENDERED')
+          context.set('summaryRendered', e.rendered)
       },
 
       discardValidation,

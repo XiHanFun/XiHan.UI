@@ -208,10 +208,11 @@ export function XhFormErrorSummary({ children, ...rest }: XhFormErrorSummaryProp
   const api = useFormContext().api
   return (
     <div {...mergeReactProps(api.getErrorSummaryProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {/* 摘要读它自己那版错误表：退场途中文案与条数照撤下之前的写 */}
       {renderSlot(children, {
-        errors: api.errors,
-        errorNames: api.errorNames,
-        errorCount: api.errorCount,
+        errors: api.summaryErrors,
+        errorNames: api.summaryErrorNames,
+        errorCount: api.summaryErrorCount,
       })}
     </div>
   )
@@ -233,7 +234,7 @@ export function XhFormErrorSummaryItem({ name, children, ...rest }: XhFormErrorS
         rest as Record<string, unknown>,
       )}
     >
-      {renderSlot(children, { name, error: api.getFieldError(name) })}
+      {renderSlot(children, { name, error: api.getSummaryError(name) })}
     </a>
   )
 }
