@@ -33119,6 +33119,12 @@
     block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
+/* 首次落位与同一项的重量（窗口缩放、换上正式字体）直接到位，只有换项才滑：连接层在这一落点投影
+   data-instant。写在排布那几条之后，同一特异性按先后压过它们单写的过渡 */
+[data-scope='navigation-menu'][data-part='indicator'][data-instant] {
+  transition: none;
+}
+
 /* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
    被拉长时在另一个方向上压扁（横排缺省压块向，竖排压行向），表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
 :where([data-material='liquid']) [data-scope='navigation-menu'][data-part='indicator'] {

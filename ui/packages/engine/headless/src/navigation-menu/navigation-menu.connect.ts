@@ -249,6 +249,8 @@ export function connectNavigationMenu<T extends PropTypes>(
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
       'aria-hidden': true,
+      // 首次落位与同一项的重量直接到位：皮肤在它身上撤掉几何过渡，只有换项才滑
+      'data-instant': dataAttr(context.get('indicatorInstant')),
       'data-state': stateAttr(open),
       'data-orientation': orientation,
       'data-value': value ?? undefined,

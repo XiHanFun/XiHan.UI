@@ -9,6 +9,13 @@ import {
   XhAnchorLink,
   XhAnchorList,
   XhAnchorRoot,
+  XhNavigationMenuContent,
+  XhNavigationMenuIndicator,
+  XhNavigationMenuItem,
+  XhNavigationMenuLink,
+  XhNavigationMenuList,
+  XhNavigationMenuRoot,
+  XhNavigationMenuTrigger,
   XhSegmentedIndicator,
   XhSegmentedItem,
   XhSegmentedItemText,
@@ -34,24 +41,35 @@ interface Case {
 }
 
 const CASES: Record<string, Case> = {
-  tabs: {
+  'tabs': {
     item: 'trigger',
     render: value => h(XhTabsRoot, { 'value': value.value, 'onUpdate:value': (next: string) => (value.value = next) }, () =>
       h(XhTabsList, null, () => [h(XhTabsIndicator), ...ENTRIES.map(entry => h(XhTabsTrigger, { value: entry.value }, () => entry.label))])),
   },
-  segmented: {
+  'segmented': {
     item: 'item',
     render: value => h(XhSegmentedRoot, { 'value': value.value, 'onUpdate:value': (next: string | null) => (value.value = next ?? '') }, () => [
       h(XhSegmentedIndicator),
       ...ENTRIES.map(entry => h(XhSegmentedItem, { value: entry.value }, () => h(XhSegmentedItemText, null, () => entry.label))),
     ]),
   },
-  anchor: {
+  'anchor': {
     item: 'link',
     render: value => h(XhAnchorRoot, { value: value.value, smooth: false, style: { inlineSize: '360px' } }, () =>
       h(XhAnchorList, null, () => [
         ...ENTRIES.map(entry => h(XhAnchorItem, null, () => h(XhAnchorLink, { value: entry.value }, () => entry.label))),
         h(XhAnchorIndicator),
+      ])),
+  },
+  'navigation-menu': {
+    item: 'trigger',
+    render: value => h(XhNavigationMenuRoot, { value: value.value }, () =>
+      h(XhNavigationMenuList, null, () => [
+        ...ENTRIES.map(entry => h(XhNavigationMenuItem, null, () => [
+          h(XhNavigationMenuTrigger, { value: entry.value }, () => entry.label),
+          h(XhNavigationMenuContent, { value: entry.value }, () => h(XhNavigationMenuLink, { href: `#${entry.value}` }, () => entry.label)),
+        ])),
+        h(XhNavigationMenuIndicator),
       ])),
   },
 }
