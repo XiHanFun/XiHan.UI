@@ -886,3 +886,162 @@ describe('传输收尾与列表动效的投影', () => {
     expect(atComplete).toEqual([undefined, undefined])
   })
 })
+
+describe('file-upload 作者准入判定 validate', () => {
+  it('类型与大小通过之后才问 validate，返回的码并进原因、拒收的不占名额', () => {
+    const calls: string[] = []
+    const validate = (file: File): string | null => {
+      calls.push(file.name)
+      return file.name.startsWith('dup') ? 'duplicate' : null
+    }
+    const { accepted, rejected } = validateFiles(
+      [makeFile('a.png', 'image/png'), makeFile('dup.png', 'image/png'), makeFile('b.txt'), makeFile('c.png', 'image/png')],
+      { accept: 'image/*', maxFiles: 2, validate },
+    )
+    expect(accepted.map(f => f.name)).toEqual(['a.png', 'c.png'])
+    expect(rejected.map(r => [r.file.name, r.reasons])).toEqual([['dup.png', ['duplicate']], ['b.txt', ['type']]])
+    // 类型已出局的不再问作者
+    expect(calls).toEqual(['a.png', 'dup.png', 'c.png'])
+  })
+
+  it('validate 可返回一组码，空串与空数组都是放行；它拿得到这一批与列表里已有的文件', () => {
+    const seen: number[] = []
+    const { rejected } = validateFiles([makeFile('a.txt'), makeFile('b.txt')], {
+      maxFiles: 5,
+      acceptedFiles: [makeFile('old.txt')],
+      validate: (file, ctx) => {
+        seen.push(ctx.files.length + ctx.acceptedFiles.length * 10)
+        return file.name === 'a.txt' ? ['too-short', 'no-header'] : ''
+      },
+    })
+    expect(rejected).toEqual([{ file: expect.any(File), reasons: ['too-short', 'no-header'] }])
+    expect(seen).toEqual([12, 12])
+  })
+
+  it('机器里被 validate 拒收的文件进 onFileReject，与内建原因同一条通道', () => {
+    const onFileReject = vi.fn()
+    const m = open({ maxFiles: 5, validate: file => (file.size > 4 ? 'too-long' : null), onFileReject })
+    m.api().addFiles([makeFile('a.txt', 'text/plain', 2), makeFile('b.txt', 'text/plain', 9)])
+    expect(names(m)).toEqual(['a.txt'])
+    expect(onFileReject).toHaveBeenCalledWith({ files: [{ file: expect.any(File), reasons: ['too-long'] }] })
+  })
+})
+
+describe('file-upload 粘贴', () => {
+  function pasteEvent(files: File[]): Event {
+    const event = new Event('paste', { bubbles: true, cancelable: true })
+    Object.defineProperty(event, 'clipboardData', { value: { files } })
+    return event
+  }
+
+  it('焦点在组件里时粘贴收下剪贴板里的文件，过同一道校验，并拦下默认行为', () => {
+    const onFileReject = vi.fn()
+    const m = open({ maxFiles: 5, accept: 'image/*', onFileReject })
+    const event = pasteEvent([makeFile('shot.png', 'image/png'), makeFile('note.txt')])
+    m.dropzone.dispatchEvent(event)
+    expect(names(m)).toEqual(['shot.png'])
+    expect(event.defaultPrevented).toBe(true)
+    expect(onFileReject).toHaveBeenCalledTimes(1)
+  })
+
+  it('剪贴板里没有文件时不拦截：文字照常粘贴到别处', () => {
+    const m = open({ maxFiles: 5 })
+    const event = pasteEvent([])
+    m.trigger.dispatchEvent(event)
+    expect(event.defaultPrevented).toBe(false)
+    expect(names(m)).toEqual([])
+  })
+
+  it('allowPaste=false 或禁用时不收、也不拦', () => {
+    for (const props of [{ allowPaste: false }, { disabled: true }]) {
+      const m = open({ maxFiles: 5, ...props })
+      const event = pasteEvent([makeFile('a.txt')])
+      m.root.dispatchEvent(event)
+      expect(names(m)).toEqual([])
+      expect(event.defaultPrevented).toBe(false)
+    }
+  })
+})
+
+describe('file-upload 并发上限与取消', () => {
+  function deferredUploads() {
+    const pending = new Map<string, { resolve: () => void, reject: (e: unknown) => void, signal: AbortSignal }>()
+    const upload = ({ file, signal }: { file: File, signal: AbortSignal }) => new Promise<void>((resolve, reject) => {
+      pending.set(file.name, { resolve, reject, signal })
+      signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')))
+    })
+    return { pending, upload }
+  }
+
+  it('到了 maxConcurrentUploads 的报 queued 排队，前面的传完按列表顺序补上', async () => {
+    const { pending, upload } = deferredUploads()
+    const files = ['a.txt', 'b.txt', 'c.txt'].map(n => makeFile(n))
+    const m = open({ maxFiles: 5, maxConcurrentUploads: 2, upload })
+    m.api().addFiles(files)
+    await vi.waitFor(() => expect([...pending.keys()]).toEqual(['a.txt', 'b.txt']))
+    expect(m.api().uploadOf(files[2]!)?.status).toBe('queued')
+
+    pending.get('a.txt')!.resolve()
+    await vi.waitFor(() => expect(pending.has('c.txt')).toBe(true))
+    expect(m.api().uploadOf(files[2]!)?.status).toBe('uploading')
+  })
+
+  it('失败同样空出位子；删掉在传的文件也空出位子', async () => {
+    const { pending, upload } = deferredUploads()
+    const files = ['a.txt', 'b.txt', 'c.txt'].map(n => makeFile(n))
+    const m = open({ maxFiles: 5, maxConcurrentUploads: 1, upload })
+    m.api().addFiles(files)
+    await vi.waitFor(() => expect(pending.has('a.txt')).toBe(true))
+    pending.get('a.txt')!.reject(new Error('boom'))
+    await vi.waitFor(() => expect(pending.has('b.txt')).toBe(true))
+    expect(m.api().uploadOf(files[0]!)?.status).toBe('error')
+
+    m.api().deleteFile(files[1]!)
+    await vi.waitFor(() => expect(pending.has('c.txt')).toBe(true))
+    expect(pending.get('b.txt')!.signal.aborted).toBe(true)
+  })
+
+  it('cancelUpload 中止传输但留下文件，状态落 canceled、不自动重开；startUpload 可重开，空出的位子补给排队的', async () => {
+    const { pending, upload } = deferredUploads()
+    const onUploadCancel = vi.fn()
+    const onUploadError = vi.fn()
+    const files = ['a.txt', 'b.txt'].map(n => makeFile(n))
+    const m = open({ maxFiles: 5, maxConcurrentUploads: 1, upload, onUploadCancel, onUploadError })
+    m.api().addFiles(files)
+    await vi.waitFor(() => expect(pending.has('a.txt')).toBe(true))
+
+    m.api().cancelUpload(files[0]!)
+    expect(pending.get('a.txt')!.signal.aborted).toBe(true)
+    expect(names(m)).toEqual(['a.txt', 'b.txt'])
+    expect(m.api().uploadOf(files[0]!)?.status).toBe('canceled')
+    expect(onUploadCancel).toHaveBeenCalledWith({ file: files[0] })
+    await vi.waitFor(() => expect(pending.has('b.txt')).toBe(true))
+    // 中止不算失败
+    expect(onUploadError).not.toHaveBeenCalled()
+
+    // 再动列表也不会把取消的自动拉起来
+    m.api().addFiles([makeFile('c.txt')])
+    expect(m.api().uploadOf(files[0]!)?.status).toBe('canceled')
+
+    pending.delete('a.txt')
+    pending.get('b.txt')!.resolve()
+    await vi.waitFor(() => expect(pending.has('c.txt')).toBe(true))
+    pending.get('c.txt')!.resolve()
+    m.api().startUpload(files[0]!)
+    await vi.waitFor(() => expect(pending.has('a.txt')).toBe(true))
+    expect(m.api().uploadOf(files[0]!)?.status).toBe('uploading')
+  })
+
+  it('排队中的文件也能取消：撤出队列，不再补上', async () => {
+    const { pending, upload } = deferredUploads()
+    const files = ['a.txt', 'b.txt'].map(n => makeFile(n))
+    const m = open({ maxFiles: 5, maxConcurrentUploads: 1, upload })
+    m.api().addFiles(files)
+    await vi.waitFor(() => expect(m.api().uploadOf(files[1]!)?.status).toBe('queued'))
+    m.api().cancelUpload(files[1]!)
+    expect(m.api().uploadOf(files[1]!)?.status).toBe('canceled')
+    pending.get('a.txt')!.resolve()
+    await vi.waitFor(() => expect(m.api().uploadOf(files[0]!)?.status).toBe('done'))
+    expect(pending.has('b.txt')).toBe(false)
+  })
+})

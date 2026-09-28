@@ -20,7 +20,7 @@ export interface FileUploadContext {
 
 export function useFileUpload(
   props: FileUploadSchema['props'],
-  handlers: Pick<FileUploadSchema['props'], 'onFilesChange' | 'onFileAccept' | 'onFileReject' | 'onRemoteFilesChange' | 'onUploadComplete' | 'onUploadError'> = {},
+  handlers: Pick<FileUploadSchema['props'], 'onFilesChange' | 'onFileAccept' | 'onFileReject' | 'onRemoteFilesChange' | 'onUploadComplete' | 'onUploadError' | 'onUploadCancel'> = {},
 ): FileUploadContext {
   // scope id 走 Vue 的 useId，保证同页多实例的 IDREF 与隐藏输入不相撞
   const idGen = createVueIdGenerator()

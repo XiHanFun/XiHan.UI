@@ -43,6 +43,7 @@ export function connectFileUpload<T extends PropTypes>(
   const invalid = !!prop('invalid')
   const allowDrop = prop('allowDrop') ?? true
   const canDrop = allowDrop && !disabled
+  const canPaste = (prop('allowPaste') ?? true) && !disabled
   const maxFiles = normalizeMaxFiles(prop('maxFiles'))
   const empty = acceptedFiles.length === 0 && remoteFiles.length === 0
   const ids = scope.ids('file-upload', 'label', 'dropzone')
@@ -119,6 +120,7 @@ export function connectFileUpload<T extends PropTypes>(
     allFiles: [...remoteFiles, ...acceptedFiles],
     uploadOf,
     startUpload: file => send({ type: 'UPLOAD.START', file }),
+    cancelUpload: file => send({ type: 'UPLOAD.CANCEL', file }),
     dragging,
     disabled,
     invalid,
@@ -137,6 +139,17 @@ export function connectFileUpload<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-invalid': dataAttr(invalid),
       'data-empty': dataAttr(empty),
+      // 粘贴冒泡到这里：焦点在投放区、选择钮或删除钮上时 Ctrl / Cmd+V 都收得到。
+      // 剪贴板里没有文件时不拦截，文字照常粘贴
+      'onPaste': (event: ClipboardEvent) => {
+        if (!canPaste)
+          return
+        const files = filesFromTransfer(event.clipboardData)
+        if (!files.length)
+          return
+        event.preventDefault()
+        send({ type: 'PASTE', files })
+      },
     }),
 
     getLabelProps: () => normalize.label({

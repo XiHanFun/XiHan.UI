@@ -1384,5 +1384,6 @@ export type {
   FileUploadResult,
   FileUploadSnapshot,
   FileUploadStatus,
+  FileUploadValidateContext,
   SideNavNode,
 } from '@xihan-ui/headless'

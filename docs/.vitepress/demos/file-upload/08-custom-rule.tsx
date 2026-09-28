@@ -1,4 +1,5 @@
-// 宿主自定义的准入 | 组件只管理 accept 与大小数量这几条通用规则，其他规则由宿主在受控列表中再筛一遍：这里同名文件只保留最先到达的一份
+// 作者的准入判定 | accept 与大小数量之外的规矩交给 validate：类型与大小通过之后逐个问它，返回拒绝码即拒收，拒收的文件带着这个码进 file-reject；这里同名文件只收最先到的一份
+import type { FileUploadValidateContext } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
   XhFileUploadDropzone,
@@ -19,46 +20,36 @@ function keyOf(file: File): string {
   return `${file.name}-${file.size}-${file.lastModified}`;
 }
 
+// 列表里已有同名的，或同一批里排在它前面的有同名的，就报 duplicate
+function validate(file: File, context: FileUploadValidateContext): string | null {
+  const earlier = context.files.slice(0, context.files.indexOf(file));
+  const taken = [...context.acceptedFiles, ...earlier].some(other => other.name === file.name);
+  return taken ? "duplicate" : null;
+}
+
 export default function Demo(): ReactNode {
-  const [files, setFiles] = useState<File[]>([]);
   const [dropped, setDropped] = useState("");
-  const [lastAccepted, setLastAccepted] = useState("");
 
-  // 组件报来的是变化之后的完整列表，宿主按自己的规矩决定最终留下哪些
-  function onFilesChange(details: { files: File[] }): void {
-    const seen = new Set<string>();
-    const kept: File[] = [];
-    const names: string[] = [];
-    for (const file of details.files) {
-      if (seen.has(file.name)) {
-        names.push(file.name);
-        continue;
-      }
-      seen.add(file.name);
-      kept.push(file);
-    }
-    setFiles(kept);
-    setDropped(names.join("、"));
-  }
-
-  // 这一批组件收下了谁
-  function onFileAccept(details: { files: File[] }): void {
-    setLastAccepted(details.files.map(file => file.name).join("、"));
+  // 拒收的文件与内建原因（类型、大小、数量）走同一条通道，按码挑出自己关心的那一类
+  function onFileReject(details: { files: { file: File; reasons: string[] }[] }): void {
+    setDropped(details.files
+      .filter(rejection => rejection.reasons.includes("duplicate"))
+      .map(rejection => rejection.file.name)
+      .join("、"));
   }
 
   return (
     <div style={{ width: "100%", maxWidth: "480px", display: "grid", gap: "12px" }}>
       <XhFileUploadRoot
-        files={files}
         maxFiles={6}
-        onFilesChange={onFilesChange}
-        onFileAccept={onFileAccept}
+        validate={validate}
+        onFileReject={onFileReject}
       >
         {({ acceptedFiles }) => (
           <>
             <XhFileUploadLabel>去重后的附件</XhFileUploadLabel>
             <XhFileUploadDropzone>
-              <span>同名文件只留最先来的那份</span>
+              <span>同名文件只收最先来的那份</span>
             </XhFileUploadDropzone>
             <div>
               <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
@@ -77,7 +68,6 @@ export default function Demo(): ReactNode {
         )}
       </XhFileUploadRoot>
 
-      {lastAccepted ? <span>{`这一批收下：${lastAccepted}`}</span> : null}
       {dropped ? <span>{`同名挡下：${dropped}`}</span> : null}
     </div>
   );

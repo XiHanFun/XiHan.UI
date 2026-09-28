@@ -60,9 +60,9 @@ item-preview 是一个空方框，作者可放置任意内容；放入的图片�
 
 <XhDemo src="file-upload/07-image-wall" />
 
-### 宿主自定义的准入
+### 作者的准入判定
 
-组件只管理 accept 与大小数量这几条通用规则，其他规则由宿主在受控列表中再筛一遍：这里同名文件只保留最先到达的一份
+accept 与大小数量之外的规矩交给 validate：类型与大小通过之后逐个问它，返回拒绝码即拒收，拒收的文件带着这个码进 file-reject；这里同名文件只收最先到的一份
 
 <XhDemo src="file-upload/08-custom-rule" />
 
@@ -84,6 +84,12 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 
 <XhDemo src="file-upload/11-remote-files" />
 
+### 并发上限与取消
+
+max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补上；cancelUpload 只中止传输、文件留在列表里，startUpload 让它重新开传
+
+<XhDemo src="file-upload/12-queue" />
+
 ## 设计指引
 
 ### 何时使用
@@ -100,7 +106,10 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 - 超出 `maxFiles` / `maxFileSize` / `minFileSize` 的文件立即被拒绝，`onFileReject` 逐个报告原因。
 - `autoUpload` 决定选择后立即上传还是等待提交。
 - `remoteFiles` 回显服务器上已有的附件，与本次新选的文件并列在同一个列表中。
-- 上传生命周期（完成、失败）各有回调；宿主还可以插入自定义的准入判断。
+- `validate` 在类型与大小校验之后逐个判定，返回拒绝码即拒收，与内建原因一起进 `onFileReject`。
+- 焦点在组件里时可以直接粘贴文件（`allowPaste`，默认开启），与选择、投放走同一道校验。
+- 上传生命周期（完成、失败、取消）各有回调；`maxConcurrentUploads` 限定同时在传的份数，其余排队。
+- `cancelUpload` 中止传输但保留文件，`startUpload` 让取消或失败的文件重新开传；删除文件同样中止它的传输。
 
 ### 组合
 
@@ -142,6 +151,9 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | `files` | `File[]` |  | 已选文件。提供即受控：cell 直读 prop，写入只发 onFilesChange 不落内部值。 |
 | `defaultFiles` | `File[]` |  |  |
 | `allowDrop` | `boolean` |  | 是否接受拖拽投放，默认 true。关闭后投放区不再拦截默认行为，也不再输出 data-dragging。 |
+| `allowPaste` | `boolean` |  | 是否接受粘贴，默认 true：焦点在组件里（投放区、选择钮、删除钮）时 Ctrl / Cmd+V 收下剪贴板里的文件， 与选择、投放走同一道校验。剪贴板里没有文件时不拦截，文字照常粘贴到别处。 |
+| `validate` | `(file: File, context: FileUploadValidateContext) => string \| string[] \| null \| undefined` |  | 作者自己的准入判定，在类型与大小校验通过之后、数量上限之前逐个调用：返回拒绝码（一个或一组）即拒收， 拒收的文件连同返回的码一起进 onFileReject，不占数量名额；返回 null / undefined / 空数组即放行。 只接受同步判定；要读图片尺寸之类的异步检查放进 upload，失败时抛错走 onUploadError。 |
+| `maxConcurrentUploads` | `number` |  | 同时在传的文件数上限，默认不限。到了上限的文件报 queued 排队，前面的传完、失败或被取消后按列表顺序补上。 |
 | `directory` | `boolean` |  | 选择目录而不是文件（隐藏输入带 webkitdirectory）。 |
 | `capture` | `'user' \| 'environment'` |  | 移动端直接调用摄像头 / 麦克风采集。 |
 | `remoteFiles` | `FileUploadRemoteFile[]` |  | 服务器已有附件（编辑表单回显）。提供即受控：cell 直读 prop，删改只发 onRemoteFilesChange 不落内部值。条目计入 maxFiles 总量，与本地文件一起渲染。 |
@@ -155,6 +167,7 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | `onRemoteFilesChange` | `(details: FileUploadRemoteFilesChangeDetails) => void` |  | 远程附件列表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onUploadComplete` | `(details: FileUploadCompleteDetails) => void` |  | 单个文件传输完成（upload 的 Promise 兑现）。 |
 | `onUploadError` | `(details: FileUploadErrorDetails) => void` |  | 单个文件传输失败（upload 的 Promise 拒绝）；中止不视为失败，不发出。 |
+| `onUploadCancel` | `(details: FileUploadCancelDetails) => void` |  | 单个文件的传输被 cancelUpload 取消（文件留在列表里）；删除文件时的中止不发出。 |
 
 ### FileUploadRemoteFile
 
@@ -212,9 +225,9 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 
 **状态**：`idle` · `dragging`
 
-**事件**：`FILES.SET` · `FILES.ADD` · `FILE.DELETE` · `FILES.CLEAR` · `PICKER.OPEN` · `DRAG.OVER` · `DRAG.LEAVE` · `DROP` · `UPLOAD.START` · `REMOTE.DELETE` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED` · `PROGRESS.SETTLED`
+**事件**：`FILES.SET` · `FILES.ADD` · `FILE.DELETE` · `FILES.CLEAR` · `PICKER.OPEN` · `DRAG.OVER` · `DRAG.LEAVE` · `DROP` · `PASTE` · `UPLOAD.CANCEL` · `UPLOAD.START` · `REMOTE.DELETE` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED` · `PROGRESS.SETTLED`
 
-**判据**：`canChange` · `canDrop`
+**判据**：`canChange` · `canDrop` · `canPaste`
 
 ### connect API
 
@@ -232,7 +245,8 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | `maxFiles` | `number` | 生效的数量上限（已按默认值与非法值归一）。 |
 | `getFileSizeText` | `(file: FileUploadFile) => string` | 字节数格式化为可读形式，供作者渲染 item-size-text；远程附件未报大小时为空串。 |
 | `uploadOf` | `(file: FileUploadFile) => FileUploadSnapshot \| null` | 该条目的传输快照：远程附件恒为 done；本地文件未配置 upload 时为 null， 已配置而尚未开始传输时为 idle。 |
-| `startUpload` | `(file: File) => void` | 手动开始传输（autoUpload 关闭时）或失败后重试；不在列表中或传输中的文件调用无效。 |
+| `startUpload` | `(file: File) => void` | 手动开始传输（autoUpload 关闭时）、失败或取消后重试；不在列表中或传输中的文件调用无效。 |
+| `cancelUpload` | `(file: File) => void` | 取消这个文件的传输（在传或排队中），文件留在列表里、状态落 canceled；删除用 deleteFile。 |
 | `setFiles` | `(files: File[]) => void` |  |
 | `addFiles` | `(files: File[]) => void` |  |
 | `deleteFile` | `(file: FileUploadFile) => void` | 本地文件按引用移除（传输中会中止），远程附件按 id 移除。 |
@@ -265,6 +279,7 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | `Enter` / `Space` | focus on trigger | 打开系统文件选择框（原生 button 的默认激活） |
 | `Enter` / `Space` | focus on item-delete-trigger | 把这一条从列表里删掉（原生 button 的默认激活） |
 | `Enter` / `Space` | focus on clear-trigger | 清空整份列表（原生 button 的默认激活）；列表为空时按钮照常在位、可聚焦，激活是空操作 |
+| `Ctrl+V` / `Meta+V` | focus inside the component, not disabled, allowPaste | 收下剪贴板里的文件，与选择、投放走同一道校验；剪贴板里没有文件时不拦截，文字照常粘贴到别处 |
 | `Enter` / `Space` | held on trigger / item-delete-trigger / clear-trigger, not disabled | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下（选择钮打开系统文件框即失焦），删除钮随文件离开列表时一并撤下 |
 
 ### ARIA

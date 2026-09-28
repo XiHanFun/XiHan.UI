@@ -8,14 +8,17 @@
 import type { Scope } from '@xihan-ui/core'
 import type {
   FileUploadApi,
+  FileUploadCancelDetails,
   FileUploadCompleteDetails,
   FileUploadErrorDetails,
+  FileUploadFile,
   FileUploadFileAcceptDetails,
   FileUploadFileRejectDetails,
   FileUploadFilesChangeDetails,
   FileUploadRemoteFile,
   FileUploadRemoteFilesChangeDetails,
   FileUploadSchema,
+  FileUploadSnapshot,
   FileUploadTranslations,
   FormControlState,
 } from '@xihan-ui/headless'
@@ -63,6 +66,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} invalid - 校验失败标注
  * @attr {string} name - 表单字段名；提供后隐藏输入才参与提交
  * @attr {boolean} allow-drop - 是否接受拖拽投放，默认 true；写 allow-drop="false" 关闭
+ * @attr {boolean} allow-paste - 是否接受粘贴，默认 true：焦点在组件里时 Ctrl / Cmd+V 收下剪贴板里的文件；写 allow-paste="false" 关闭
+ * @attr {number} max-concurrent-uploads - 同时在传的文件数上限，默认不限；到了上限的报 queued 排队
  * @attr {boolean} directory - 选择目录而不是文件（隐藏输入带 webkitdirectory）
  * @attr {'user'|'environment'} capture - 移动端直接调用摄像头 / 麦克风采集
  * @attr {boolean} auto-upload - 接受后即自动开始传输（须配置 upload 实现），默认 true；写 auto-upload="false" 关闭
@@ -70,6 +75,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @fires remote-files-change - 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }`
  * @fires upload-complete - 单个文件传输完成；detail 为 `{ file, url? }`
  * @fires upload-error - 单个文件传输失败；detail 为 `{ file, error }`
+ * @fires upload-cancel - 单个文件的传输被 cancelUpload 取消（文件留在列表里）；detail 为 `{ file }`
  * @fires file-accept - 本次接受了哪些文件；detail 为 `{ files: File[] }`
  * @fires file-reject - 本次拒绝了哪些文件及各自的原因；detail 为 `{ files: { file, reasons }[] }`
  * @csspart root - 组件根容器，承载 data-dragging / data-disabled / data-invalid / data-empty
@@ -106,6 +112,10 @@ export class XhFileUploadElement extends XhElement {
     invalid: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     allowDrop: { converter: BOOLEAN_CONVERTER, attribute: 'allow-drop' },
+    allowPaste: { converter: BOOLEAN_CONVERTER, attribute: 'allow-paste' },
+    // 作者的准入判定是函数，只走 property
+    validate: { attribute: false },
+    maxConcurrentUploads: { converter: NUMBER_CONVERTER, attribute: 'max-concurrent-uploads' },
     directory: { type: Boolean },
     capture: { converter: STRING_CONVERTER },
     translations: { attribute: false },
@@ -125,6 +135,9 @@ export class XhFileUploadElement extends XhElement {
   declare invalid?: boolean
   declare name?: string
   declare allowDrop?: boolean
+  declare allowPaste?: boolean
+  declare validate?: FileUploadSchema['props']['validate']
+  declare maxConcurrentUploads?: number
   declare directory?: boolean
   declare capture?: 'user' | 'environment'
   declare translations?: Partial<FileUploadTranslations>
@@ -154,6 +167,10 @@ export class XhFileUploadElement extends XhElement {
 
   private readonly notifyUploadError = (details: FileUploadErrorDetails): void => {
     this.dispatchEvent(new CustomEvent('upload-error', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyUploadCancel = (details: FileUploadCancelDetails): void => {
+    this.dispatchEvent(new CustomEvent('upload-cancel', { detail: details, bubbles: true, composed: true }))
   }
 
   // file-upload 机器无常驻副作用，controller 只带 props 与 scope。
@@ -192,6 +209,9 @@ export class XhFileUploadElement extends XhElement {
       invalid: control.invalid,
       name: this.name,
       allowDrop: this.allowDrop,
+      allowPaste: this.allowPaste,
+      validate: this.validate,
+      maxConcurrentUploads: this.maxConcurrentUploads,
       directory: this.directory ?? false,
       capture: this.capture,
       translations: this.translations,
@@ -199,6 +219,7 @@ export class XhFileUploadElement extends XhElement {
       onRemoteFilesChange: this.notifyRemoteChange,
       onUploadComplete: this.notifyUploadComplete,
       onUploadError: this.notifyUploadError,
+      onUploadCancel: this.notifyUploadCancel,
       onFileAccept: this.notifyAccept,
       onFileReject: this.notifyReject,
     }
@@ -234,6 +255,21 @@ export class XhFileUploadElement extends XhElement {
   /** 按引用移除某一个文件。 */
   deleteFile(file: File): void {
     this.commands().deleteFile(file)
+  }
+
+  /** 这个文件此刻的传输快照（状态、进度、地址、错误）：远程附件恒为 done，没配 upload 时本地文件为 null。 */
+  uploadOf(file: FileUploadFile): FileUploadSnapshot | null {
+    return this.commands().uploadOf(file)
+  }
+
+  /** 手动开传（auto-upload 关闭时），或让失败、取消的文件重新开传。 */
+  startUpload(file: File): void {
+    this.commands().startUpload(file)
+  }
+
+  /** 取消这个文件的传输（在传或排队中），文件留在列表里、状态落 canceled；删除用 deleteFile。 */
+  cancelUpload(file: File): void {
+    this.commands().cancelUpload(file)
   }
 
   /** 清空整份列表（本地与远程一起）。 */

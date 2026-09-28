@@ -18,10 +18,15 @@ export type FileRejectReason
   /** 其余校验都通过，但超过 maxFiles。 */
     | 'too-many-files'
 
+/**
+ * 拒绝码：内建的四种原因之外，validate 返回的作者自定义码（如 'duplicate'、'image-too-small'）原样并入。
+ */
+export type FileUploadRejectCode = FileRejectReason | (string & {})
+
 export interface FileUploadRejection {
   file: File
-  /** 可能同时命中多条。 */
-  reasons: FileRejectReason[]
+  /** 可能同时命中多条；作者 validate 返回的自定义码排在内建原因之后。 */
+  reasons: FileUploadRejectCode[]
 }
 
 /** 服务器上已有的附件：没有本地字节，只有元信息与访问地址。 */
@@ -39,7 +44,11 @@ export interface FileUploadRemoteFile {
 /** 列表条目：本地文件或服务器已有附件。 */
 export type FileUploadFile = File | FileUploadRemoteFile
 
-export type FileUploadStatus = 'idle' | 'uploading' | 'done' | 'error'
+/**
+ * idle：还没开传（autoUpload 关闭时等作者开传）；queued：排队等空位（在传的数量到了 maxConcurrentUploads）；
+ * uploading：在传；done：传完；error：失败；canceled：被 cancelUpload 中止、文件留在列表里，等作者重新开传。
+ */
+export type FileUploadStatus = 'canceled' | 'done' | 'error' | 'idle' | 'queued' | 'uploading'
 
 /** 单个文件的传输快照。远程附件恒为 done。 */
 export interface FileUploadSnapshot {
@@ -57,7 +66,7 @@ export interface FileUploadRequest {
   file: File
   /** 汇报进度（0–100），进度条据此更新。 */
   onProgress: (progress: number) => void
-  /** 文件被删除或组件卸载时中止；实现应把它传递给底层请求。 */
+  /** 文件被删除、被 cancelUpload 取消或组件卸载时中止；实现应把它传递给底层请求。 */
   signal: AbortSignal
 }
 
@@ -74,6 +83,18 @@ export interface FileUploadCompleteDetails {
 export interface FileUploadErrorDetails {
   file: File
   error: unknown
+}
+
+export interface FileUploadCancelDetails {
+  file: File
+}
+
+/** validate 收到的上下文：这一批里的全部文件与列表里已有的本地文件，查重之类的判定用得上。 */
+export interface FileUploadValidateContext {
+  /** 本次一起到来的这一批（选择、投放或粘贴）。 */
+  files: readonly File[]
+  /** 列表里已有的本地文件（整份替换时为空）。 */
+  acceptedFiles: readonly File[]
 }
 
 /**
@@ -149,6 +170,21 @@ export interface FileUploadSchema extends MachineSchema {
     defaultFiles?: File[]
     /** 是否接受拖拽投放，默认 true。关闭后投放区不再拦截默认行为，也不再输出 data-dragging。 */
     allowDrop?: boolean
+    /**
+     * 是否接受粘贴，默认 true：焦点在组件里（投放区、选择钮、删除钮）时 Ctrl / Cmd+V 收下剪贴板里的文件，
+     * 与选择、投放走同一道校验。剪贴板里没有文件时不拦截，文字照常粘贴到别处。
+     */
+    allowPaste?: boolean
+    /**
+     * 作者自己的准入判定，在类型与大小校验通过之后、数量上限之前逐个调用：返回拒绝码（一个或一组）即拒收，
+     * 拒收的文件连同返回的码一起进 onFileReject，不占数量名额；返回 null / undefined / 空数组即放行。
+     * 只接受同步判定；要读图片尺寸之类的异步检查放进 upload，失败时抛错走 onUploadError。
+     */
+    validate?: (file: File, context: FileUploadValidateContext) => string | string[] | null | undefined
+    /**
+     * 同时在传的文件数上限，默认不限。到了上限的文件报 queued 排队，前面的传完、失败或被取消后按列表顺序补上。
+     */
+    maxConcurrentUploads?: number
     /** 选择目录而不是文件（隐藏输入带 webkitdirectory）。 */
     directory?: boolean
     /** 移动端直接调用摄像头 / 麦克风采集。 */
@@ -179,6 +215,8 @@ export interface FileUploadSchema extends MachineSchema {
     onUploadComplete?: (details: FileUploadCompleteDetails) => void
     /** 单个文件传输失败（upload 的 Promise 拒绝）；中止不视为失败，不发出。 */
     onUploadError?: (details: FileUploadErrorDetails) => void
+    /** 单个文件的传输被 cancelUpload 取消（文件留在列表里）；删除文件时的中止不发出。 */
+    onUploadCancel?: (details: FileUploadCancelDetails) => void
   }
   context: {
     /** 已接受的文件。受控（files 提供）时 cell 直读 prop。 */
@@ -223,6 +261,10 @@ export interface FileUploadSchema extends MachineSchema {
     | { type: 'DRAG.OVER' }
     | { type: 'DRAG.LEAVE' }
     | { type: 'DROP', files: File[] }
+    /** 粘贴进来的文件：焦点在组件里时从剪贴板取出。 */
+    | { type: 'PASTE', files: File[] }
+    /** 中止这个文件的传输，文件留在列表里，状态落 canceled。 */
+    | { type: 'UPLOAD.CANCEL', file: File }
     /** 手动开始传输（autoUpload 关闭时）或失败后重试。 */
     | { type: 'UPLOAD.START', file: File }
     | { type: 'REMOTE.DELETE', id: string }
@@ -236,8 +278,8 @@ export interface FileUploadSchema extends MachineSchema {
     /** 某个文件传完后，进度条走满并淡出播完。 */
     | { type: 'PROGRESS.SETTLED', id: string }
   tag: never
-  guard: 'canChange' | 'canDrop'
-  action: 'setFiles' | 'addFiles' | 'deleteFile' | 'clearFiles' | 'openFilePicker' | 'resetToDefault' | 'syncUploads' | 'startUpload' | 'deleteRemoteFile' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markListTracked' | 'settleProgress'
+  guard: 'canChange' | 'canDrop' | 'canPaste'
+  action: 'setFiles' | 'addFiles' | 'deleteFile' | 'clearFiles' | 'openFilePicker' | 'resetToDefault' | 'syncUploads' | 'startUpload' | 'cancelUpload' | 'deleteRemoteFile' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markListTracked' | 'settleProgress'
   effect: 'trackUploads' | 'trackListMotion' | 'trackProgressExit'
 }
 
@@ -262,8 +304,10 @@ export interface FileUploadApi<T extends PropTypes = PropTypes> {
    * 已配置而尚未开始传输时为 idle。
    */
   uploadOf: (file: FileUploadFile) => FileUploadSnapshot | null
-  /** 手动开始传输（autoUpload 关闭时）或失败后重试；不在列表中或传输中的文件调用无效。 */
+  /** 手动开始传输（autoUpload 关闭时）、失败或取消后重试；不在列表中或传输中的文件调用无效。 */
   startUpload: (file: File) => void
+  /** 取消这个文件的传输（在传或排队中），文件留在列表里、状态落 canceled；删除用 deleteFile。 */
+  cancelUpload: (file: File) => void
   setFiles: (files: File[]) => void
   addFiles: (files: File[]) => void
   /** 本地文件按引用移除（传输中会中止），远程附件按 id 移除。 */

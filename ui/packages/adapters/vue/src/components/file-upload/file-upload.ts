@@ -26,6 +26,7 @@ export type FileUploadRootSlotProps = Pick<
   | 'allFiles'
   | 'uploadOf'
   | 'startUpload'
+  | 'cancelUpload'
   | 'dragging'
   | 'empty'
   | 'disabled'
@@ -57,6 +58,9 @@ export const XhFileUploadRoot = defineComponent({
     invalid: { type: Boolean, default: undefined },
     name: { type: String },
     allowDrop: { type: Boolean, default: undefined },
+    allowPaste: { type: Boolean, default: undefined },
+    validate: { type: Function as PropType<FileUploadProps['validate']> },
+    maxConcurrentUploads: { type: Number },
     directory: Boolean,
     capture: { type: String as PropType<'user' | 'environment'> },
     translations: { type: Object as PropType<Partial<FileUploadTranslations>> },
@@ -71,6 +75,7 @@ export const XhFileUploadRoot = defineComponent({
     'update:remoteFiles': (_files: PayloadOf<FileUploadProps, 'onRemoteFilesChange'>['files']) => true,
     'upload-complete': (_details: PayloadOf<FileUploadProps, 'onUploadComplete'>) => true,
     'upload-error': (_details: PayloadOf<FileUploadProps, 'onUploadError'>) => true,
+    'upload-cancel': (_details: PayloadOf<FileUploadProps, 'onUploadCancel'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: FileUploadRootSlotProps) => VNode[]
@@ -88,7 +93,8 @@ export const XhFileUploadRoot = defineComponent({
     }
     const onUploadComplete: FileUploadProps['onUploadComplete'] = details => emit('upload-complete', details)
     const onUploadError: FileUploadProps['onUploadError'] = details => emit('upload-error', details)
-    const ctx = useFileUpload(withXhConfig('file-upload', useFormControlProps(props)) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject, onRemoteFilesChange, onUploadComplete, onUploadError })
+    const onUploadCancel: FileUploadProps['onUploadCancel'] = details => emit('upload-cancel', details)
+    const ctx = useFileUpload(withXhConfig('file-upload', useFormControlProps(props)) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject, onRemoteFilesChange, onUploadComplete, onUploadError, onUploadCancel })
     provideFileUpload(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       acceptedFiles: ctx.api.value.acceptedFiles,
@@ -96,6 +102,7 @@ export const XhFileUploadRoot = defineComponent({
       allFiles: ctx.api.value.allFiles,
       uploadOf: ctx.api.value.uploadOf,
       startUpload: ctx.api.value.startUpload,
+      cancelUpload: ctx.api.value.cancelUpload,
       dragging: ctx.api.value.dragging,
       empty: ctx.api.value.empty,
       disabled: ctx.api.value.disabled,

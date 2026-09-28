@@ -7,13 +7,14 @@
 
 import type { ActionFn, ContextFacade, PropFn } from '@xihan-ui/core'
 import type {
-  FileRejectReason,
   FileUploadFile,
   FileUploadPressedKey,
+  FileUploadRejectCode,
   FileUploadRejection,
   FileUploadRemoteFile,
   FileUploadSchema,
   FileUploadSnapshot,
+  FileUploadValidateContext,
   FileUploadValidationResult,
 } from './file-upload.types'
 import { resetDeclaredValue, setup, trackListMotion } from '@xihan-ui/core'
@@ -87,11 +88,28 @@ export interface FileValidationOptions {
   minFileSize?: number
   /** 列表里已经有几个：数量上限按"已有 + 本批已收下"一起算。 */
   existingCount?: number
+  /** 作者的准入判定：类型与大小通过之后逐个调用，返回拒绝码即拒收。 */
+  validate?: (file: File, context: FileUploadValidateContext) => string | string[] | null | undefined
+  /** 列表里已有的本地文件，原样交给 validate。 */
+  acceptedFiles?: readonly File[]
+}
+
+/** 作者 validate 的返回值摊成拒绝码列表：空串、null、undefined 与空数组都是放行。 */
+function customCodes(result: string | string[] | null | undefined): string[] {
+  if (result == null)
+    return []
+  return (Array.isArray(result) ? result : [result]).filter(code => typeof code === 'string' && code !== '')
+}
+
+/** 同时在传的上限归一：没给、非正数、非有限数都按不限。 */
+export function normalizeMaxConcurrentUploads(max: number | undefined): number {
+  return max != null && Number.isFinite(max) && max >= 1 ? Math.floor(max) : Number.POSITIVE_INFINITY
 }
 
 /**
- * 一批文件的准入判定。纯函数，不碰 DOM 也不看机器状态。
- * 数量上限只作用于本来能收下的文件：类型或大小已出局的不占名额、也不再报一次数量超限。
+ * 一批文件的准入判定。纯函数，不碰 DOM 也不看机器状态（作者的 validate 由调用方交进来）。
+ * 先判类型与大小，都过了再问作者的 validate；数量上限只作用于本来能收下的文件：
+ * 类型、大小或作者判定已出局的不占名额、也不再报一次数量超限。
  */
 export function validateFiles(
   files: readonly File[],
@@ -105,13 +123,15 @@ export function validateFiles(
   let taken = Math.max(options.existingCount ?? 0, 0)
 
   for (const file of files) {
-    const reasons: FileRejectReason[] = []
+    const reasons: FileUploadRejectCode[] = []
     if (!acceptsFile(file, options.accept))
       reasons.push('type')
     if (file.size > maxSize)
       reasons.push('size-too-large')
     if (file.size < minSize)
       reasons.push('size-too-small')
+    if (!reasons.length && options.validate)
+      reasons.push(...customCodes(options.validate(file, { files, acceptedFiles: options.acceptedFiles ?? [] })))
     if (!reasons.length && taken >= maxFiles)
       reasons.push('too-many-files')
 
@@ -177,6 +197,8 @@ function intake(
     minFileSize: prop('minFileSize'),
     // 名额是全列表共享的：服务器已有附件占掉的名额本批不能再用
     existingCount: base.length + context.get('remoteFiles').length,
+    validate: prop('validate'),
+    acceptedFiles: base,
   })
   if (accepted.length) {
     context.set('acceptedFiles', [...base, ...accepted])
@@ -226,9 +248,22 @@ function patchUpload(context: ContextFacade<FileUploadSchema>, id: string, patch
 }
 
 /**
+ * 空出来的传输位按列表顺序补给排队的文件：在传的传完、失败或被取消后调用。
+ * 只补 queued 的：idle（等作者开传）与 canceled（等作者重开）不自己动。
+ */
+function pumpQueue(params: UploadActionParams): void {
+  const { context, refs } = params
+  const uploads = context.get('uploads')
+  for (const file of context.get('acceptedFiles')) {
+    if (uploads[fileKeyOf(refs, file)]?.status === 'queued')
+      beginUpload(params, file)
+  }
+}
+
+/**
  * 给一个文件开传：置 uploading、调 upload 实现、把进度与成败写回快照。
- * 已在传、已传完与已失败的这里都不再动——失败要走 UPLOAD.START 显式重试，
- * 否则每次列表变化都会把失败的又拉起来。
+ * 已在传、已传完、已失败与已取消的这里都不再动——失败与取消要走 UPLOAD.START 显式重开，
+ * 否则每次列表变化都会把它们又拉起来。在传的数量到了上限就记 queued 排队，空出位子再补。
  */
 function beginUpload(params: UploadActionParams, file: File): void {
   const { context, prop, refs } = params
@@ -240,8 +275,13 @@ function beginUpload(params: UploadActionParams, file: File): void {
   if (controllers.has(id))
     return
   const status = context.get('uploads')[id]?.status
-  if (status === 'uploading' || status === 'done' || status === 'error')
+  if (status === 'uploading' || status === 'done' || status === 'error' || status === 'canceled')
     return
+  if (controllers.size >= normalizeMaxConcurrentUploads(prop('maxConcurrentUploads'))) {
+    if (status !== 'queued')
+      patchUpload(context, id, { status: 'queued', progress: 0 })
+    return
+  }
 
   const controller = new AbortController()
   controllers.set(id, controller)
@@ -254,21 +294,28 @@ function beginUpload(params: UploadActionParams, file: File): void {
     patchUpload(context, id, { progress: clamped })
   }
 
+  // 只摘自己这一份：取消后立即重开会给同一个文件换上新的句柄，旧那一趟晚到的收尾不能把它摘掉
+  const release = (): void => {
+    if (controllers.get(id) === controller)
+      controllers.delete(id)
+  }
   Promise.resolve()
     .then(() => upload({ file, onProgress, signal: controller.signal }))
     .then((result) => {
-      controllers.delete(id)
+      release()
       if (controller.signal.aborted)
         return
       patchUpload(context, id, { status: 'done', progress: 100, url: result?.url ?? undefined })
       prop('onUploadComplete')?.({ file, url: result?.url ?? undefined })
+      pumpQueue(params)
     })
     .catch((error) => {
-      controllers.delete(id)
+      release()
       if (controller.signal.aborted)
         return
       patchUpload(context, id, { status: 'error', error })
       prop('onUploadError')?.({ file, error })
+      pumpQueue(params)
     })
 }
 
@@ -325,6 +372,9 @@ export const fileUploadMachine = createMachine({
     'FILES.CLEAR': { guard: 'canChange', actions: ['clearFiles'] },
     'PICKER.OPEN': { guard: 'canChange', actions: ['openFilePicker'] },
     'UPLOAD.START': { guard: 'canChange', actions: ['startUpload'] },
+    'UPLOAD.CANCEL': { guard: 'canChange', actions: ['cancelUpload'] },
+    // 粘贴在两个状态下一样：不改悬停态
+    'PASTE': { guard: 'canPaste', actions: ['addFiles'] },
     'REMOTE.DELETE': { guard: 'canChange', actions: ['deleteRemoteFile'] },
     // 按压通道：三种按钮都是原生 disabled，禁用时不派事件；程序化派发由 canChange 再守一次
     'PRESS.START': { guard: 'canChange', actions: ['startPress'] },
@@ -356,6 +406,7 @@ export const fileUploadMachine = createMachine({
     guards: {
       canChange: ({ prop }) => !prop('disabled'),
       canDrop: ({ prop }) => !prop('disabled') && (prop('allowDrop') ?? true),
+      canPaste: ({ prop }) => !prop('disabled') && (prop('allowPaste') ?? true),
     },
     actions: {
       resetToDefault: (params) => {
@@ -396,10 +447,12 @@ export const fileUploadMachine = createMachine({
         const files = context.get('acceptedFiles')
         const present = new Set(files.map(file => fileKeyOf(refs, file)))
         const controllers = refs.get('uploadControllers')
+        let freed = false
         for (const [id, controller] of controllers) {
           if (!present.has(id)) {
             controller.abort()
             controllers.delete(id)
+            freed = true
           }
         }
         const uploads = context.get('uploads')
@@ -419,6 +472,9 @@ export const fileUploadMachine = createMachine({
           for (const file of files)
             beginUpload(params, file)
         }
+        // 删掉在传的文件空出了位子：补给排队的（autoUpload 关闭时经 startUpload 进队的也在这里补）
+        if (freed)
+          pumpQueue(params)
       },
 
       startUpload: (params) => {
@@ -430,12 +486,30 @@ export const fileUploadMachine = createMachine({
           return
         const id = fileKeyOf(refs, e.file)
         const status = context.get('uploads')[id]?.status
-        if (status === 'uploading' || status === 'done')
+        if (status === 'uploading' || status === 'done' || status === 'queued')
           return
-        // 失败的先归零再开：beginUpload 对 error 不自动重试
-        if (status === 'error')
+        // 失败与取消的先归零再开：beginUpload 对这两种不自动重开
+        if (status === 'error' || status === 'canceled')
           patchUpload(context, id, { status: 'idle', progress: 0, error: undefined })
         beginUpload(params, e.file)
+      },
+
+      // 取消但留下文件：中止在传的（或撤出排队），状态落 canceled 等作者重开；空出的位子补给排队的
+      cancelUpload: (params) => {
+        const { context, event, prop, refs } = params
+        const e = event.current()
+        if (e.type !== 'UPLOAD.CANCEL' || !context.get('acceptedFiles').includes(e.file))
+          return
+        const id = fileKeyOf(refs, e.file)
+        const status = context.get('uploads')[id]?.status
+        if (status !== 'uploading' && status !== 'queued')
+          return
+        const controllers = refs.get('uploadControllers')
+        controllers.get(id)?.abort()
+        controllers.delete(id)
+        patchUpload(context, id, { status: 'canceled', progress: 0 })
+        prop('onUploadCancel')?.({ file: e.file })
+        pumpQueue(params)
       },
 
       deleteRemoteFile: ({ context, event }) => {
@@ -454,7 +528,7 @@ export const fileUploadMachine = createMachine({
       },
       addFiles: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type !== 'FILES.ADD' && e.type !== 'DROP')
+        if (e.type !== 'FILES.ADD' && e.type !== 'DROP' && e.type !== 'PASTE')
           return
         // 只收一个时新文件替换旧的，与原生单文件输入一致
         const base = normalizeMaxFiles(prop('maxFiles')) === 1 ? [] : context.get('acceptedFiles')
