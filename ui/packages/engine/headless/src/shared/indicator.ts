@@ -160,8 +160,11 @@ export interface LiquidIndicator {
    * 落到新盒子。key 是指示器所指的那一项：key 变了、宿主在液态档下、此前已有落点时，
    * 两沿各一支弹簧追过去——去向那一侧的沿用前沿参数，另一侧用后沿参数，途中被拉长、停下时收回；
    * 其余情形直接落定：标准档的换项由皮肤的过渡接手，尺寸变化重量与首次落位直接到位（见 onFrame 的 instant）。
+   *
+   * glide：同一项的落点是因为条目换了位才挪动的（宿主重排了顺序，条目正沿同一段 move 滑过去），
+   * 按换项处理，指示器跟着一起滑，不直接到位。
    */
-  place: (box: IndicatorBox | null, key: unknown) => void
+  place: (box: IndicatorBox | null, key: unknown, options?: { glide?: boolean }) => void
   dispose: () => void
 }
 
@@ -213,9 +216,9 @@ export function createLiquidIndicator(options: LiquidIndicatorOptions): LiquidIn
   }
 
   return {
-    place: (box, key) => {
+    place: (box, key, placing) => {
       const host = options.host()
-      const moved = key !== lastKey
+      const moved = key !== lastKey || !!placing?.glide
       lastKey = key
       axis = options.axis()
       const running = Boolean(edges[0]?.animating || edges[1]?.animating)
