@@ -45,6 +45,7 @@ const PSEUDO = {
   'tags-input': 'input',
   'text-field': 'input',
   'transfer': 'search',
+  'tree-select': 'input',
 }
 
 /** 通道 ②：`[data-placeholder]` 属性钩子，组件 → 承载占位文字的部件。 */

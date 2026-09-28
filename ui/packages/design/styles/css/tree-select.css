@@ -366,12 +366,17 @@
   }
 
   /* 浮层内搜索框：排在树上方，框自己不画边不画底，只在底下画一道分隔线把它与树分开；边界归面板 */
+  /* 面板内嵌的搜索框：通栏一行，控件高与字号随尺寸档，只画一道面内分隔的下划线（取面材质的分隔令牌）；
+     重置与占位前景由字段家族按 data-xh-field-input 给，占位与值文本的占位同一支组件槽 */
   [data-scope='tree-select'][data-part='input'] {
+    --xh-field-placeholder-fg: var(--xh-tree-select-placeholder-fg, var(--xh-fg-subtle));
+
     flex: none;
     min-inline-size: 0;
+    block-size: var(--xh-tree-select-input-h, var(--xh-_tree-select-h));
     margin-block-end: var(--xh-tree-select-input-gap, var(--xh-space-1));
-    padding-block: var(--xh-tree-select-input-py, var(--xh-space-2));
-    padding-inline: var(--xh-tree-select-input-px, var(--xh-_tree-select-row-px));
+    padding-block: 0;
+    padding-inline: var(--xh-tree-select-input-px, var(--xh-_tree-select-px));
     border: none;
     border-block-end: var(--xh-stroke-thin) solid var(--xh-tree-select-search-divider, var(--xh-material-frosted-separator));
     background: none;
