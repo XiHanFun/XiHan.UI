@@ -8,6 +8,7 @@
 import type { PositionResult, Transition } from '@xihan-ui/core'
 import type { HoverCardSchema } from './hover-card.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 
@@ -59,7 +60,9 @@ const OPEN_FROM_POINTER = openNow('clearFocusHeld')
 // 受控下用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.*。
 export const hoverCardMachine = createMachine({
   name: 'hover-card',
-  context: ({ cell }) => ({
+  context: ({ cell, prop }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 回填
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     focusHeld: cell<boolean>(() => ({ defaultValue: false })),
@@ -75,12 +78,14 @@ export const hoverCardMachine = createMachine({
     getTitleEl: () => null,
     getDescriptionEl: () => null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'visible' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'visible' : 'closed'),
   // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 悬停先进等待态，到点才展开
         'POINTER.ENTER': [
@@ -153,6 +158,7 @@ export const hoverCardMachine = createMachine({
       isFocusHeld: ({ context }) => context.get('focusHeld'),
     },
     actions: {
+      clearOpenedAtMount,
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       markFocusHeld: ({ context }) => context.set('focusHeld', true),
