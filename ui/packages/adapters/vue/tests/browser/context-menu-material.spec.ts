@@ -183,7 +183,9 @@ describe('右键菜单 flex 行与反馈', () => {
     await mountContextMenu()
     const raw = byTestId('raw-item')
     const rest = getComputedStyle(raw).backgroundColor
+    // 量的是各档落定的底色，不量换面的过渡：两条都关掉过渡，读到的就是终值
     raw.style.transition = 'none'
+    byTestId('submenu').style.transition = 'none'
     await userEvent.hover(raw)
     const hovered = getComputedStyle(raw).backgroundColor
     expect(hovered).not.toBe(rest)
@@ -223,6 +225,8 @@ describe('右键菜单四向短位移', () => {
       expect(directions(positioner), item.placement).toEqual(item.expected)
     }
 
+    // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户打开时的那条进场
+    delete content.dataset.instant
     content.dataset.state = 'open'
     expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-in')
     // 打开态不常驻合成层：常驻的 will-change 会让静止画面沿用入场动画中途的栅格而发虚

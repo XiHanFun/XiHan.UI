@@ -5,6 +5,12 @@ import type { App, Ref, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
+  XhContextMenuContent,
+  XhContextMenuItem,
+  XhContextMenuItemText,
+  XhContextMenuPositioner,
+  XhContextMenuRoot,
+  XhContextMenuTrigger,
   XhDialogContent,
   XhDialogRoot,
   XhDialogTitle,
@@ -51,7 +57,7 @@ const FRUITS = [
 ]
 
 const CASES: Record<string, Case> = {
-  popover: {
+  'popover': {
     parts: ['content'],
     enter: 'xh-overlay-pop-in',
     render: props => h(XhPopoverRoot, props, () => [
@@ -59,7 +65,7 @@ const CASES: Record<string, Case> = {
       h(XhPopoverPositioner, null, () => h(XhPopoverContent, null, () => h(XhPopoverTitle, null, () => '标题'))),
     ]),
   },
-  popconfirm: {
+  'popconfirm': {
     parts: ['content'],
     enter: 'xh-overlay-pop-in',
     render: props => h(XhPopconfirmRoot, props, () => [
@@ -67,7 +73,7 @@ const CASES: Record<string, Case> = {
       h(XhPopconfirmPositioner, null, () => h(XhPopconfirmContent, null, () => '确定删除？')),
     ]),
   },
-  menu: {
+  'menu': {
     parts: ['content'],
     enter: 'xh-overlay-slide-in',
     render: props => h(XhMenuRoot, props, () => [
@@ -77,12 +83,22 @@ const CASES: Record<string, Case> = {
       ))),
     ]),
   },
-  dialog: {
+  'context-menu': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhContextMenuRoot, props, () => [
+      h(XhContextMenuTrigger, null, () => '右键这块区域'),
+      h(XhContextMenuPositioner, null, () => h(XhContextMenuContent, null, () => FRUITS.map(node =>
+        h(XhContextMenuItem, { key: node.value, value: node.value }, () => h(XhContextMenuItemText, null, () => node.label)),
+      ))),
+    ]),
+  },
+  'dialog': {
     parts: ['content', 'backdrop'],
     enter: 'xh-sheet-in',
     render: props => h(XhDialogRoot, props, () => h(XhDialogContent, null, () => h(XhDialogTitle, null, () => '标题'))),
   },
-  drawer: {
+  'drawer': {
     parts: ['content', 'backdrop'],
     enter: 'xh-slide-in',
     render: props => h(XhDrawerRoot, props, () => h(XhDrawerContent, null, () => h(XhDrawerTitle, null, () => '设置'))),

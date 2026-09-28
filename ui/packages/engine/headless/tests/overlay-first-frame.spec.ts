@@ -5,6 +5,7 @@ import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/core'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
+import { connectContextMenu, contextMenuMachine } from '../src/context-menu'
 import { connectDialog, dialogMachine } from '../src/dialog'
 import { connectDrawer, drawerMachine } from '../src/drawer'
 import { connectMenu, menuMachine } from '../src/menu'
@@ -28,31 +29,35 @@ interface Case {
 }
 
 const CASES: Record<string, Case> = {
-  popover: {
+  'popover': {
     machine: popoverMachine,
     parts: service => [connectPopover(service, normalizeProps).getContentProps() as Attrs],
   },
-  popconfirm: {
+  'popconfirm': {
     machine: popoverMachine,
     parts: service => [connectPopconfirm(service, {}, normalizeProps).getContentProps() as Attrs],
   },
-  dialog: {
+  'dialog': {
     machine: dialogMachine,
     parts: (service) => {
       const api = connectDialog(service, normalizeProps)
       return [api.getContentProps() as Attrs, api.getBackdropProps() as Attrs]
     },
   },
-  drawer: {
+  'drawer': {
     machine: drawerMachine,
     parts: (service) => {
       const api = connectDrawer(service, normalizeProps)
       return [api.getContentProps() as Attrs, api.getBackdropProps() as Attrs]
     },
   },
-  menu: {
+  'menu': {
     machine: menuMachine,
     parts: service => [connectMenu(service, normalizeProps).getContentProps() as Attrs],
+  },
+  'context-menu': {
+    machine: contextMenuMachine,
+    parts: service => [connectContextMenu(service, normalizeProps).getContentProps() as Attrs],
   },
 }
 
