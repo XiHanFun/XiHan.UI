@@ -17,6 +17,7 @@ import {
   XhNotificationItem,
   XhNotificationItemTitle,
   XhNotificationRoot,
+  XhTagGroupRoot,
   XhToolCallLabel,
   XhToolCallRoot,
   XhToolCallTrigger,
@@ -201,5 +202,47 @@ describe('notification 条目到达', () => {
     expect(getComputedStyle(moved).translate).not.toBe('none')
     await Promise.all(moved.getAnimations().map(a => a.finished.catch(() => undefined)))
     expect(['none', '0px'].includes(getComputedStyle(moved).translate)).toBe(true)
+  })
+})
+
+describe('tag-group 标签增删', () => {
+  it('删掉一枚：原处的替身淡出，后面的标签从旧位置滑过来；新加的一枚播进场', async () => {
+    const host = document.createElement('div')
+    host.style.inlineSize = '600px'
+    document.body.append(host)
+    const items = ref(['vue', 'react', 'svelte', 'angular'].map(value => ({ value, label: value })))
+    app = createApp({
+      render: () => h(XhTagGroupRoot, {
+        'collection': items.value,
+        'deletable': true,
+        'onItem-delete': ({ value }: { value: string }) => {
+          items.value = items.value.filter(item => item.value !== value)
+        },
+      }),
+    })
+    app.mount(host)
+    await settle()
+    const tags = (): HTMLElement[] => [...host.querySelectorAll<HTMLElement>('[data-scope="tag-group"][data-part="list"] > [data-scope="tag"][data-part="root"]')]
+    // 首帧就在的标签不播进场
+    for (const tag of tags())
+      expect(running(tag)).toEqual([])
+
+    const after = tags()[2]!
+    const left = after.offsetLeft
+    host.querySelectorAll<HTMLButtonElement>('[data-scope="tag"][data-part="close-trigger"]')[1]!.click()
+    await nextTick()
+    await nextTick()
+    const ghost = host.querySelector<HTMLElement>('[data-scope="tag"][data-part="root"][data-state="closed"]')!
+    expect(ghost).not.toBeNull()
+    expect(ghost.inert).toBe(true)
+    expect(running(ghost)).toEqual(['xh-fade-out'])
+    // 后面那枚已排到新位置，换位中途带着反向补偿的 translate
+    expect(after.offsetLeft).toBeLessThan(left)
+    expect(getComputedStyle(after).translate).not.toBe('none')
+
+    items.value = [...items.value, { value: 'solid', label: 'solid' }]
+    await nextTick()
+    await nextTick()
+    expect(running(tags().at(-1)!)).toContain('xh-item-in')
   })
 })

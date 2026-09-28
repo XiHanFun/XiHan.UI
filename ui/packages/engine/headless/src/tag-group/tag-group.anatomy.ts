@@ -34,8 +34,12 @@ const tagParts = tagAnatomy.build()
  * 作者塞进格子里的独立标签没有 row 角色，靠这一道排除；
  * 嵌套的标签组各认各的 list，互不吞并。
  */
+/** 条目选择器：在场的标签，外加 Web Components 作者刚放进来、尚未接线的条目节点。列表动效据此认到达与离场。 */
+export const TAG_GROUP_ITEM_SELECTOR = `${tagParts.root.selector}[role="row"], ${parts.list.selector} > [data-xh-part="item"]`
+
+/** 列表里在场的标签，按文档序。删掉的标签在原处留着退场替身（inert），不算条目。 */
 export function tagGroupItems(list: HTMLElement): HTMLElement[] {
-  const all = [...list.querySelectorAll<HTMLElement>(`${tagParts.root.selector}[role="row"]`)]
+  const all = [...list.querySelectorAll<HTMLElement>(`${tagParts.root.selector}[role="row"]:not([inert])`)]
   return all.filter(el => el.parentElement?.closest<HTMLElement>(parts.list.selector) === list)
 }
 

@@ -209,6 +209,15 @@ describe('条目是 tag 的 root', () => {
     expect(h.items()).toHaveLength(VALUES.length)
     expect(inner.items()).toHaveLength(VALUES.length)
   })
+
+  it('删掉的标签留在原处的退场替身（inert）不算条目：方向键、检索与摘除都只在在场的标签里走', () => {
+    const h = mount()
+    const ghost = h.nodes('vue').item.cloneNode(true) as HTMLElement
+    ghost.setAttribute('inert', '')
+    ghost.setAttribute('data-state', 'closed')
+    h.nodes('vue').item.before(ghost)
+    expect(h.items().map(el => el.getAttribute('data-value'))).toEqual([...VALUES])
+  })
 })
 
 describe('选中与高亮落在 tag 的 root 上', () => {

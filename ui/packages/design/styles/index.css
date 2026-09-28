@@ -39003,6 +39003,8 @@
 /* styles/tag-group.css */
 /* 定义 tag group 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='tag-group'] {
@@ -39059,10 +39061,23 @@
      标签这时是拿焦点的那个节点，按下与松手之间要有回应；选中与锚点的过渡也挂在这一层 */
   [data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root'] {
     user-select: none;
+    /* 增删一枚、其余标签换到新位置时，由列表动效先反向补偿、再沿 translate 这条滑过去 */
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release),
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 新加的标签进场，同一批按到达顺序错开；首帧就在的直接呈现 */
+  [data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root']:not([data-instant]) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 删掉的标签：替身留在原处淡出，播完即移除 */
+  [data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root'][data-state='closed'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 参与选中的标签才是点击目标，只是标记的那些不给手势暗示 */

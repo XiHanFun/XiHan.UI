@@ -176,7 +176,7 @@ export interface TagGroupSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: never
+  effect: 'trackListMotion'
 }
 
 export interface TagGroupApi<T extends PropTypes = PropTypes> {
