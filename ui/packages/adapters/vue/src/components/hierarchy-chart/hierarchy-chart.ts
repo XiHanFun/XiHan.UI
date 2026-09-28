@@ -99,6 +99,24 @@ export const XhHierarchyChartPath = defineComponent({
   },
 })
 
+/** 图例：按值着色时每个看得见的层一条色阶（名字、低端的值、渐变条、高端的值）；其余着色方式收起。 */
+export const XhHierarchyChartLegend = defineComponent({
+  name: 'XhHierarchyChartLegend',
+  setup() {
+    const ctx = useHierarchyChartContext()
+    return () => {
+      const api = ctx.api.value
+      return h('div', api.getLegendProps() as Record<string, unknown>, api.legendScales.map(scale =>
+        h('div', { ...api.getLegendScaleProps(scale) as Record<string, unknown>, key: scale.level }, [
+          h('span', api.getLegendScaleNameProps() as Record<string, unknown>, scale.name),
+          h('span', api.getLegendScaleValueProps('min') as Record<string, unknown>, scale.min),
+          h('span', api.getLegendScaleBarProps() as Record<string, unknown>),
+          h('span', api.getLegendScaleValueProps('max') as Record<string, unknown>, scale.max),
+        ])))
+    }
+  },
+})
+
 /** 视口：尺寸观测的宿主，块尺寸由组件槽决定。 */
 export const XhHierarchyChartViewport = defineComponent({
   name: 'XhHierarchyChartViewport',
@@ -226,6 +244,7 @@ export const XhHierarchyChartRoot = defineComponent({
         : [
             ...(slots.caption ? [h(XhHierarchyChartCaption, null, () => slots.caption?.())] : []),
             h(XhHierarchyChartPath),
+            h(XhHierarchyChartLegend),
             // 空态放进视口：叠在绘图区上，标题与路径不被盖住
             h(XhHierarchyChartViewport, null, () => [
               h(XhHierarchyChartPlot),

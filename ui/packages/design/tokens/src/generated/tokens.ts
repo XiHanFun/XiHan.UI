@@ -517,6 +517,7 @@ export const tokens = {
   "--xh-chart-hit-min": "var(--xh-space-6)",
   "--xh-chart-tick-length": "var(--xh-space-1)",
   "--xh-chart-label-gap": "var(--xh-space-1)",
+  "--xh-chart-legend-scale-width": "calc(var(--xh-space-8) * 3)",
   "--xh-chart-area-alpha": "0.1",
   "--xh-chart-link-alpha": "0.35",
   "--xh-chart-dim-alpha": "0.3",

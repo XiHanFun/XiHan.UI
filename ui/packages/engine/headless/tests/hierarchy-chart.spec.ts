@@ -391,6 +391,33 @@ describe('语义与着色', () => {
     expect([top['data-seg'], top.style['--xh-_chart-p'], top['data-xh-chart-slot']]).toEqual(['high', '100.0%', undefined])
     expect((v.getRootProps() as Dict)['data-palette']).toBe('teal')
   })
+
+  it('按值着色时图例每个看得见的层一条色阶：低端 0，高端是这一层的最大值；其余着色方式收起', async () => {
+    const value = await makeRig({ ...BASE, colorBy: 'value', locale: 'en-US' })
+    const v = value.api()
+    expect(v.legendScales).toEqual([
+      { level: 1, name: 'Level 1', min: '0', max: '100' },
+      { level: 2, name: 'Level 2', min: '0', max: '60' },
+    ])
+    expect(v.getLegendProps() as Dict).toMatchObject({ 'aria-hidden': true, 'hidden': undefined, 'data-xh-chart-part': 'legend' })
+    expect((v.getLegendScaleProps(v.legendScales[1]!) as Dict)['data-level']).toBe(2)
+    expect((v.getLegendScaleValueProps('max') as Dict)['data-edge']).toBe('max')
+    const branch = await makeRig(BASE)
+    expect(branch.api().legendScales).toEqual([])
+    expect((branch.api().getLegendProps() as Dict).hidden).toBe(true)
+  })
+
+  it('只看得见一层时色阶取数值的名字；下钻后层号从新的根数起，文案可以换', async () => {
+    const one = await makeRig({ ...BASE, colorBy: 'value', depth: 1, locale: 'en-US' })
+    expect(one.api().legendScales).toEqual([{ level: 1, name: 'Value', min: '0', max: '100' }])
+    const rig = await makeRig({ ...BASE, colorBy: 'value', locale: 'en-US', translations: { levelLabel: level => `第 ${level} 层` } })
+    rig.api().drillTo('华南')
+    await settle()
+    expect(rig.api().legendScales).toEqual([{ level: 1, name: 'Value', min: '0', max: '60' }])
+    rig.api().drillTo(null)
+    await settle()
+    expect(rig.api().legendScales.map(s => s.name)).toEqual(['第 1 层', '第 2 层'])
+  })
 })
 
 describe('入场与无障碍', () => {

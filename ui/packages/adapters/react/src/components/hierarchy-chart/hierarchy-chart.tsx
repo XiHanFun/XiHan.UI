@@ -121,6 +121,25 @@ export function XhHierarchyChartPath(props: XhHierarchyChartPathProps): ReactNod
   )
 }
 
+export interface XhHierarchyChartLegendProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {}
+
+/** 图例：按值着色时每个看得见的层一条色阶（名字、低端的值、渐变条、高端的值）；其余着色方式收起。 */
+export function XhHierarchyChartLegend(props: XhHierarchyChartLegendProps): ReactNode {
+  const { api } = useHierarchyChartContext()
+  return (
+    <div {...mergeReactProps(api.getLegendProps() as Record<string, unknown>, props as Record<string, unknown>)}>
+      {api.legendScales.map(scale => (
+        <div key={scale.level} {...api.getLegendScaleProps(scale) as Record<string, unknown>}>
+          <span {...api.getLegendScaleNameProps() as Record<string, unknown>}>{scale.name}</span>
+          <span {...api.getLegendScaleValueProps('min') as Record<string, unknown>}>{scale.min}</span>
+          <span {...api.getLegendScaleBarProps() as Record<string, unknown>} />
+          <span {...api.getLegendScaleValueProps('max') as Record<string, unknown>}>{scale.max}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export interface XhHierarchyChartViewportProps extends ComponentPropsWithRef<'div'> {}
 
 /** 视口：尺寸观测的宿主，块尺寸由组件槽决定。 */
@@ -299,6 +318,7 @@ export function XhHierarchyChartRoot({
         <>
           {caption === undefined ? null : <XhHierarchyChartCaption>{caption}</XhHierarchyChartCaption>}
           <XhHierarchyChartPath />
+          <XhHierarchyChartLegend />
           {/* 空态放进视口：叠在绘图区上，标题与路径不被盖住 */}
           <XhHierarchyChartViewport>
             <XhHierarchyChartPlot />

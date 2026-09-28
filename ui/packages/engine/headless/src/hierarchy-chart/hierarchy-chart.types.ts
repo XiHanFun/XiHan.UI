@@ -26,6 +26,18 @@ export interface HierarchyPathItem {
   readonly current: boolean
 }
 
+/**
+ * 按值着色时图例里的一条色阶：颜色在同一层里按最大值归一，所以每个看得见的层各一条。
+ * 名字与两端的值已按格式写成文字。
+ */
+export interface HierarchyLegendScale {
+  /** 第几层：1 是当前的根下面一层。 */
+  readonly level: number
+  readonly name: string
+  readonly min: string
+  readonly max: string
+}
+
 /** 提示框里的一行：数值与占比。 */
 export interface HierarchyTooltipRow {
   readonly key: 'value' | 'parent' | 'root'
@@ -58,6 +70,8 @@ export interface HierarchyChartTranslations extends ChartTranslations {
   /** 数据表与提示框的列名 / 行名。 */
   nameLabel: string
   valueLabel: string
+  /** 按值着色、看得见的层不止一层时，每条色阶的名字；只有一层时色阶取 valueLabel。 */
+  levelLabel: (level: number) => string
   parentShareLabel: string
   rootShareLabel: string
   summary: (model: HierarchySummary) => string

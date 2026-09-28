@@ -29717,7 +29717,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-hierarchy-chart>`：层级图宿主，看层级数据中各部分的占比，并逐层下钻。\n\n作者写外壳：root（`<figure>`）、caption、path、viewport 与其中空的 `<svg data-xh-part=\"plot\">`，可选 empty 与 tooltip。\n路径项、节点、节点名与分组标题由本元素生成：路径项生成进 path，其余按场景生成进 plot，按 key 复用节点；\ntooltip 留空时写入缺省内容（路径、数值与两种占比），里面有作者写的节点时元素不碰它。摘要与数据表由元素追加在\nroot 末尾，视觉隐藏。\n\n数据与数值格式是对象或函数，只走 JS property。受控回到最顶层写 `rootKey = null`（property）。",
+          "description": "`<xh-hierarchy-chart>`：层级图宿主，看层级数据中各部分的占比，并逐层下钻。\n\n作者写外壳：root（`<figure>`）、caption、path、viewport 与其中空的 `<svg data-xh-part=\"plot\">`，可选 legend、empty 与 tooltip。\n路径项、色阶、节点、节点名与分组标题由本元素生成：路径项生成进 path，按值着色时每层一条色阶生成进 legend，\n其余按场景生成进 plot，按 key 复用节点；\ntooltip 留空时写入缺省内容（路径、数值与两种占比），里面有作者写的节点时元素不碰它。摘要与数据表由元素追加在\nroot 末尾，视觉隐藏。\n\n数据与数值格式是对象或函数，只走 JS property。受控回到最顶层写 `rootKey = null`（property）。",
           "name": "XhHierarchyChartElement",
           "cssParts": [
             {
@@ -29731,6 +29731,10 @@
             {
               "description": "下钻路径，路径项由元素生成；还在最顶层时收起",
               "name": "path"
+            },
+            {
+              "description": "图例：按值着色时每个看得见的层一条色阶，由元素生成；其余着色方式收起",
+              "name": "legend"
             },
             {
               "description": "尺寸观测的宿主",
@@ -30249,6 +30253,31 @@
             },
             {
               "kind": "method",
+              "name": "#paintLegend",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "legend",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "HierarchyChartApi"
+                  }
+                }
+              ],
+              "description": "图例：每个看得见的层一条色阶（名字、低端的值、渐变条、高端的值），按层号复用。"
+            },
+            {
+              "kind": "method",
               "name": "#paintTooltip",
               "privacy": "private",
               "return": {
@@ -30484,6 +30513,18 @@
             },
             {
               "name": "--xh-hierarchy-chart-icon-size"
+            },
+            {
+              "name": "--xh-hierarchy-chart-legend-gap"
+            },
+            {
+              "name": "--xh-hierarchy-chart-legend-scale-bar-radius"
+            },
+            {
+              "name": "--xh-hierarchy-chart-legend-scale-gap"
+            },
+            {
+              "name": "--xh-hierarchy-chart-legend-scale-width"
             },
             {
               "name": "--xh-hierarchy-chart-node-gap"

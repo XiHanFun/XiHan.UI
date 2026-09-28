@@ -18,6 +18,7 @@ export type {
   HierarchyChartTranslations,
   HierarchyColorBy,
   HierarchyLayout,
+  HierarchyLegendScale,
   HierarchyMarkTag,
   HierarchyPathItem,
   HierarchyRootKeyChangeDetails,

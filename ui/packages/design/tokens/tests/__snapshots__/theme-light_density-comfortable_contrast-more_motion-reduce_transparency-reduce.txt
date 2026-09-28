@@ -64,6 +64,7 @@
 --xh-chart-hit-min: 24px  ← var(--xh-space-6)
 --xh-chart-label: oklch(0.439 0.006 258)  ← var(--xh-fg-muted)
 --xh-chart-label-gap: 4px  ← var(--xh-space-1)
+--xh-chart-legend-scale-width: calc(32px * 3)  ← calc(var(--xh-space-8) * 3)
 --xh-chart-line-width: 2px  ← var(--xh-stroke-thick)
 --xh-chart-link-alpha: 0.35
 --xh-chart-node-width: 12px  ← var(--xh-space-3)

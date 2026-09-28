@@ -1,9 +1,10 @@
-<!-- 按值着色 | colorBy="value" 让颜色深浅对应数值：不关心属于哪个分支、只看哪里大时用它，palette 换色相 -->
+<!-- 按值着色 | colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层一条色阶，translations.levelLabel 给各层起名 -->
 <div style="width: 100%">
   <xh-hierarchy-chart id="hierarchy-chart-value" color-by="value" palette="teal">
     <figure data-xh-part="root">
       <figcaption data-xh-part="caption">全年预算（万元）</figcaption>
       <nav data-xh-part="path"></nav>
+      <div data-xh-part="legend"></div>
       <div data-xh-part="viewport">
         <svg data-xh-part="plot"></svg>
         <div data-xh-part="empty"></div>
@@ -46,4 +47,6 @@
     ],
   };
   chart.data = budget;
+  // 颜色在同一层里按最大值归一：图例每层一条色阶，给层起个读者认得的名字
+  chart.translations = { levelLabel: level => (level === 1 ? "部门" : "项目") };
 </script>
