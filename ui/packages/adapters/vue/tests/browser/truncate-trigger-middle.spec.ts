@@ -67,7 +67,7 @@ describe('truncate 展开按钮（Chromium）', () => {
 })
 
 describe('truncate 中间省略（Chromium）', () => {
-  it('被裁时两个伪元素各占一半：前一半末尾收省略号，后一半反向排露出结尾；原文不上色但照旧排着', async () => {
+  it('被裁时两个伪元素各占一半：前一半末尾收省略号，后一半贴末尾按末端对齐露出结尾；原文不上色但照旧排着', async () => {
     mount({ position: 'middle' })
     const root = await overflowing()
     await vi.waitFor(() => expect(root.getAttribute('data-middle-text')).toBe(TEXT))
@@ -79,7 +79,10 @@ describe('truncate 中间省略（Chromium）', () => {
     expect(Number.parseFloat(head.width)).toBeCloseTo(width / 2, 0)
     expect(Number.parseFloat(tail.width)).toBeCloseTo(width / 2, 0)
     expect(head.textOverflow).toBe('ellipsis')
-    expect(tail.direction).toBe('rtl')
+    // 后一半贴在末尾侧、按末端对齐：放不下的部分从起始侧溢出，露出原文的结尾
+    expect(tail.display).toBe('flex')
+    expect(tail.justifyContent).toBe('flex-end')
+    expect(Number.parseFloat(tail.left)).toBeCloseTo(width / 2, 0)
     // 原文只是不上色：溢出照它量，量出来仍是被裁
     expect(getComputedStyle(root).webkitTextFillColor).toBe('rgba(0, 0, 0, 0)')
     expect(root.scrollWidth).toBeGreaterThan(root.clientWidth)

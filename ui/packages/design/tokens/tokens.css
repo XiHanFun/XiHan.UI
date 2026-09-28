@@ -627,10 +627,14 @@
      rtl 块排在后面：<html dir="rtl"> 同时命中两块时靠书写顺序取 rtl */
   :where(:root), :where([dir='ltr' i]) {
     --xh-direction-sign: 1;
+    --xh-direction-start: 0%;
+    --xh-direction-end: 100%;
   }
 
   :where([dir='rtl' i]) {
     --xh-direction-sign: -1;
+    --xh-direction-start: 100%;
+    --xh-direction-end: 0%;
   }
 
   /* mode 轴 · 浅色基线与显式取值完全同源；合并选择器避免把整套候选重复输出两次。 */

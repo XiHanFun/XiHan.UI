@@ -522,6 +522,8 @@ export const tokens = {
   "--xh-chart-dim-alpha": "0.3",
   "--xh-chart-pending-alpha": "0.6",
   "--xh-direction-sign": "1",
+  "--xh-direction-start": "0%",
+  "--xh-direction-end": "100%",
   "--xh-material-solid-bg": "var(--xh-bg-surface)",
   "--xh-material-solid-backdrop": "none",
   "--xh-material-solid-border": "var(--xh-border-default)",

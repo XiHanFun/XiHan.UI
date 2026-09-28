@@ -73,7 +73,10 @@ describe('三点档错相', () => {
     document.documentElement.dir = 'rtl'
     try {
       const root = await mount(undefined, 'dots')
-      expect(wave(root).effect!.getComputedTiming().direction).toBe('reverse')
+      // 三枚点左右对称：整层水平翻过来，遮罩的扫向随之掉头
+      expect(getComputedStyle(root, '::before').scale).toBe('-1 1')
+      document.documentElement.removeAttribute('dir')
+      expect(getComputedStyle(root, '::before').scale).toBe('1')
     }
     finally {
       document.documentElement.removeAttribute('dir')

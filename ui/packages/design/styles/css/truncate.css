@@ -70,18 +70,13 @@
     text-overflow: ellipsis;
   }
 
-  /* 后一半的盒子按相反方向排，溢出就落在它的开头那侧，露出来的是原文的结尾。
-     文字本身用方向隔离符包成与正文同向的一整段：盒子反了向，字序与标点仍照正文的方向排。
-     逻辑偏移按它自己的方向换算：方向翻过来了，它的起始侧正是盒子的末尾侧 */
+  /* 后一半的盒子贴在末尾侧，文字照正文的方向排：弹性容器按末端对齐，放不下的部分从起始侧溢出，
+     露出来的正是原文的结尾。不翻方向，也就不用分书写方向各写一版 */
   [data-scope='truncate'][data-part='root'][data-middle-text]::after {
-    content: '\2066' attr(data-middle-text) '\2069' / '';
-    inset-inline-start: 0;
-    direction: rtl;
-  }
-
-  [data-scope='truncate'][data-part='root'][data-middle-text]:dir(rtl)::after {
-    content: '\2067' attr(data-middle-text) '\2069' / '';
-    direction: ltr;
+    content: attr(data-middle-text) / '';
+    inset-inline-end: 0;
+    display: flex;
+    justify-content: flex-end;
   }
 
   /* —— 展开按钮 —— */

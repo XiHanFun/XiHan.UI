@@ -63,8 +63,9 @@ function resolve(name, seen = new Set()) {
 /**
  * 动效幅度令牌不当候选：它们在减弱动效下归零或归一，不是尺寸。
  * 尺寸槽的兜底与它们同值（100% 的宽度 ≡ 整幅位移 100%）只是巧合，真引过去反而会在减弱档下把尺寸压没。
+ * 书写方向的起止缘位置同理：它是坐标，rtl 下 0% 与 100% 对调，引过去的宽度会在 rtl 里归零。
  */
-const NOT_A_SIZE = /^--xh-motion-(?:travel|distance-|scale-)/
+const NOT_A_SIZE = /^--xh-(?:motion-(?:travel|distance-|scale-)|direction-)/
 
 /** 归一化后的最终值 → 令牌名列表。 */
 const byValue = new Map()

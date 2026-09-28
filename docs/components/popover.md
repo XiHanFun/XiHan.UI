@@ -327,4 +327,4 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
