@@ -1,5 +1,5 @@
-import type { ContextMenuNode } from "@xihan-ui/headless";
 // 视图设置 | 右键菜单中的 checkbox 与 radio 切换后保持展开
+import type { ContextMenuNode } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { XhContextMenuRoot } from "@xihan-ui/react";
 

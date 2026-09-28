@@ -1,3 +1,4 @@
+// 选择型条目 | CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 import type { ReactNode } from "react";
 import {
   XhMenuCheckboxItem,
@@ -10,7 +11,6 @@ import {
   XhMenuRoot,
   XhMenuTrigger,
 } from "@xihan-ui/react";
-// 选择型条目 | CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 import { useState } from "react";
 
 export default function Demo(): ReactNode {

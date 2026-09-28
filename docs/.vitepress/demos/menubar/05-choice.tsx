@@ -1,5 +1,5 @@
-import type { MenubarNode } from "@xihan-ui/headless";
 // 菜单栏设置 | checkbox 与 radio 的值独立于当前展开菜单
+import type { MenubarNode } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { XhMenubarRoot } from "@xihan-ui/react";
 
