@@ -192,6 +192,24 @@ xAxis.timeZone 写 IANA 名：整点与整天落在那个时区的墙上时间�
 
 <XhDemo src="cartesian-chart/29-time-zone" />
 
+### 加载态
+
+pending 表示正在取数：首次还没有数据时空态写「加载中」并转圈，之后重取时保留上一帧、整体变淡，取回来再过渡到新值
+
+<XhDemo src="cartesian-chart/30-loading" />
+
+### 下钻
+
+onDatumPress 接住点下的那根柱（Enter / Space 同样）：换成这个地区按月的数据，旁边放一个按钮回到全部地区
+
+<XhDemo src="cartesian-chart/31-drill-down" />
+
+### 刷选联动
+
+onBrushSelectionChange 交出框里的数据：旁边的统计跟着框走，清掉框就回到全部门店
+
+<XhDemo src="cartesian-chart/32-brush-linked" />
+
 ## 设计指引
 
 ### 何时使用
@@ -277,7 +295,7 @@ xAxis.timeZone 写 IANA 名：整点与整天落在那个时区的墙上时间�
 - 一张图的系列保持在 5 个以内，超过时读者需要反复对照图例。系列之间需要逐个比较时考虑分成几张小图。
 - 折线图的自变量是时间时给 `Date`，不要先格式化成字符串：字符串会被当成类目，间隔不均匀的日期会被画成等距。
 - 堆叠只在各部分之和有意义时使用：堆叠后只有最底下一段和总量能准确比较，中间各段的起点不齐，不适合逐段比较。
-- 需要可见的表格视图时，把 `api.table` 交给[表格](./table)组件，而不是在图下方另写一份数据。
+- 需要可见的表格视图时，把 `api.table` 交给[表格](./table)组件（Vue 与 React 从根的作用域插槽 / 函数式 children 取 `table`，Web Components 读元素的 `table`），而不是在图下方另写一份数据。
 
 ### 反模式
 

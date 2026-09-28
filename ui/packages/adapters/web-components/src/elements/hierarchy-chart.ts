@@ -213,6 +213,11 @@ export class XhHierarchyChartElement extends XhElement {
     return this.api()?.empty ?? true
   }
 
+  /** 数据表模型：与根里视觉隐藏的那张表同一份，要可见的表格视图时交给表格组件。 */
+  get table(): HierarchyChartApi['table'] {
+    return this.api()?.table ?? { columns: [], rows: [] }
+  }
+
   /** 下钻路径：从最顶层到当前的根。 */
   get path(): readonly HierarchyPathItem[] {
     return this.api()?.path ?? []

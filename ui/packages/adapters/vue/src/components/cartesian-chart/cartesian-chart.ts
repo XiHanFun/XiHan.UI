@@ -36,7 +36,7 @@ import { useCartesianChart } from './use-cartesian-chart'
 type CartesianChartProps = CartesianChartSchema['props']
 
 /** 默认插槽的载荷：自行摆放部件时用得上的状态与动作。 */
-export type CartesianChartRootSlotProps = Pick<CartesianChartApi, 'legendItems' | 'active' | 'tooltip' | 'empty' | 'hiddenSeries' | 'activeKey' | 'toggleSeries' | 'setFocusedDatum'>
+export type CartesianChartRootSlotProps = Pick<CartesianChartApi, 'legendItems' | 'active' | 'tooltip' | 'empty' | 'hiddenSeries' | 'activeKey' | 'toggleSeries' | 'setFocusedDatum' | 'table'>
 
 /** 提示框插槽的载荷：激活的数据（axis 模式带 items）与缺省的内容模型。 */
 export interface CartesianChartTooltipSlotProps {
@@ -300,6 +300,7 @@ export const XhCartesianChartRoot = defineComponent({
             active: api.active,
             tooltip: api.tooltip,
             empty: api.empty,
+            table: api.table,
             hiddenSeries: api.hiddenSeries,
             activeKey: api.activeKey,
             toggleSeries: api.toggleSeries,

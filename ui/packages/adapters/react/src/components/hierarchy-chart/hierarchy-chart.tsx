@@ -33,7 +33,7 @@ import { useHierarchyChart } from './use-hierarchy-chart'
 type HierarchyChartProps = HierarchyChartSchema['props']
 
 /** 函数式 children 的载荷：自行摆放部件时用得上的状态与动作。 */
-export type HierarchyChartRootSlotProps = Pick<HierarchyChartApi, 'active' | 'tooltip' | 'empty' | 'path' | 'rootKey' | 'activeKey' | 'drillTo' | 'drillUp' | 'setFocusedDatum'>
+export type HierarchyChartRootSlotProps = Pick<HierarchyChartApi, 'active' | 'tooltip' | 'empty' | 'path' | 'rootKey' | 'activeKey' | 'drillTo' | 'drillUp' | 'setFocusedDatum' | 'table'>
 
 /** 提示框内容的载荷：激活的节点与缺省的内容模型。 */
 export interface HierarchyChartTooltipSlotProps {
@@ -331,6 +331,7 @@ export function XhHierarchyChartRoot({
         active: api.active,
         tooltip: api.tooltip,
         empty: api.empty,
+        table: api.table,
         path: api.path,
         rootKey: api.rootKey,
         activeKey: api.activeKey,

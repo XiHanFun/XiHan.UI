@@ -30,7 +30,7 @@ import { useRadarChart } from './use-radar-chart'
 type RadarChartProps = RadarChartSchema['props']
 
 /** 默认插槽的载荷：自行摆放部件时用得上的状态与动作。 */
-export type RadarChartRootSlotProps = Pick<RadarChartApi, 'legendItems' | 'active' | 'tooltip' | 'empty' | 'hiddenSeries' | 'activeKey' | 'toggleSeries' | 'setFocusedDatum'>
+export type RadarChartRootSlotProps = Pick<RadarChartApi, 'legendItems' | 'active' | 'tooltip' | 'empty' | 'hiddenSeries' | 'activeKey' | 'toggleSeries' | 'setFocusedDatum' | 'table'>
 
 /** 提示框插槽的载荷：激活的顶点与缺省的内容模型。 */
 export interface RadarChartTooltipSlotProps {
@@ -227,6 +227,7 @@ export const XhRadarChartRoot = defineComponent({
             active: api.active,
             tooltip: api.tooltip,
             empty: api.empty,
+            table: api.table,
             hiddenSeries: api.hiddenSeries,
             activeKey: api.activeKey,
             toggleSeries: api.toggleSeries,

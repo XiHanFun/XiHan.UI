@@ -29,7 +29,7 @@ import { useGraphChart } from './use-graph-chart'
 type GraphChartProps = GraphChartSchema['props']
 
 /** 默认插槽的载荷：自行摆放部件时用得上的状态与动作。 */
-export type GraphChartRootSlotProps = Pick<GraphChartApi, 'legendItems' | 'active' | 'tooltip' | 'empty' | 'hiddenSeries' | 'activeKey' | 'view' | 'toggleSeries' | 'zoomBy' | 'resetView' | 'setFocusedDatum'>
+export type GraphChartRootSlotProps = Pick<GraphChartApi, 'legendItems' | 'active' | 'tooltip' | 'empty' | 'hiddenSeries' | 'activeKey' | 'view' | 'toggleSeries' | 'zoomBy' | 'resetView' | 'setFocusedDatum' | 'table'>
 
 /** 提示框插槽的载荷：激活的节点与缺省的内容模型。 */
 export interface GraphChartTooltipSlotProps {
@@ -222,6 +222,7 @@ export const XhGraphChartRoot = defineComponent({
             active: api.active,
             tooltip: api.tooltip,
             empty: api.empty,
+            table: api.table,
             hiddenSeries: api.hiddenSeries,
             activeKey: api.activeKey,
             view: api.view,
