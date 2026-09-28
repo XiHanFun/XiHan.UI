@@ -402,7 +402,7 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | `--xh-tags-input-input-basis` | `input` | `flex-basis` | `default` | `6rem` | tags-input 的 input 部件 flex-basis 覆盖槽。 |
 | `--xh-tags-input-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | tags-input 的 input 部件 color 覆盖槽。 |
 | `--xh-tags-input-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_tags-input-input-font-size` | tags-input 的 input 部件 font-size 覆盖槽。 |
-| `--xh-tags-input-input-min-w` | `input` | `min-inline-size` | `default` | `4rem` | tags-input 的 input 部件 min-inline-size 覆盖槽。 |
+| `--xh-tags-input-input-min-w` | `input` | `min-inline-size` | `default` | `--xh-control-input-min-w` | tags-input 的 input 部件 min-inline-size 覆盖槽。 |
 | `--xh-tags-input-item-bg-highlight` | `item`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-_tags-input-accent` | tags-input 的 item、root 部件 background 覆盖槽。 |
 | `--xh-tags-input-item-fg-highlight` | `item`<br>`root` | `color` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-_tags-input-accent-fg` | tags-input 的 item、root 部件 color 覆盖槽。 |
 | `--xh-tags-input-item-font-size` | `item-input` | `font-size` | `default` | `--xh-_tags-input-item-font-size` | tags-input 的 item-input 部件 font-size 覆盖槽。 |

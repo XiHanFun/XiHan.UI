@@ -272,6 +272,7 @@
     --xh-control-box-lg: 48px;
     --xh-control-w: 16rem;
     --xh-control-min-w: 12rem;
+    --xh-control-input-min-w: 4rem;
     --xh-control-px-sm: var(--xh-space-2);
     --xh-control-px-md: var(--xh-space-3);
     --xh-control-px-lg: var(--xh-space-4);

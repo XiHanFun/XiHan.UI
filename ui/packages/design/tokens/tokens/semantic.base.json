@@ -34,6 +34,11 @@
       "$type": "dimension",
       "$value": "12rem"
     },
+    "input-min-w": {
+      "$description": "字段盒里与已选标签并排的输入框的最小宽度：标签再多也给打字留出这一截。",
+      "$type": "dimension",
+      "$value": "4rem"
+    },
     "px-sm": {
       "$type": "dimension",
       "$value": "{space.2}"

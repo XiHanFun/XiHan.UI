@@ -274,6 +274,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-<c>-control-min-w` | `--xh-control-min-w` | 12rem | 被 flex / grid 容器压缩时的底线；根上写成 `min(缺省宽, 底线, 100%)`，底线不高过缺省宽，容器比底线还窄时收成容器宽 |
 
 - 根另带 `max-inline-size: 100%`；盒（control）只写家族的 `min(…, 100%)` 地板，由根撑开。要撑满表单列由使用者在根上写 `inline-size: 100%`。
+- 盒里与已选标签并排的输入框（TagsInput、多选 Combobox）最小宽取 `--xh-control-input-min-w`（4rem）：标签再多也给打字留出这一截——TagsInput 的输入框换到下一行，多选 Combobox 的标签先截断、再折进 +N。
 - 刻意例外（须登记进 check-control-box 的 EXEMPT）：DateRangePicker 起止两组按日的段位、分隔符与日历钮排在一行，内容比缺省宽宽，缺省 `inline-size: max-content`、地板取 `--xh-control-w`（按年、按月时不比别的字段窄）；PinInput 由格数与格宽定宽；PromptInput 铺满宿主；Field 的控件铺满表单列；Clipboard 只放复制钮的用法是独立按钮，缺省宽只给带输入框的用法（`:has(control)`）。
 - InputGroup 整组是一个字段：缺省宽走 `--xh-input-group-w` → `--xh-control-w`，组里带字段外壳的控件占满前后缀与动作之外的剩余宽度，前后缀与按钮按内容宽。
 - 示例不写内联宽度，让文档展示缺省宽；只有演示宽度本身的示例才改槽。

@@ -70492,7 +70492,7 @@
         "default"
       ],
       "defaultToken": [
-        "4rem"
+        "--xh-control-input-min-w"
       ],
       "visibility": "public",
       "description": "tags-input 的 input 部件 min-inline-size 覆盖槽。"

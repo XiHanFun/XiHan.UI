@@ -41545,7 +41545,7 @@
 
   /* 撑满剩余宽度由家族的 flex: 1 1 auto 给，这里只换起算宽 */
   flex-basis: var(--xh-tags-input-input-basis, 6rem);
-  min-inline-size: var(--xh-tags-input-input-min-w, 4rem);
+  min-inline-size: var(--xh-tags-input-input-min-w, var(--xh-control-input-min-w));
   /* 行盒收到标签那一行的高度以内，输入框不去顶高整个框 */
   block-size: auto;
   line-height: var(--xh-leading-tight);
