@@ -182,6 +182,11 @@ export interface MenuSchema extends MachineSchema {
     onRadioValueChange?: (details: MenuRadioValueChangeDetails) => void
   }
   context: {
+    /**
+     * 挂载时开着、还没收起过：这一段打开属于首帧，content 投影 data-instant 直接呈现、不播进场。
+     * 第一次收起时清掉，之后的每一次打开照常进场。
+     */
+    openedAtMount: boolean
     /** 定位引擎回填的最新结果。 */
     position: PositionResult | null
     /** roving tabindex 的锚点，同时是方向键的起点；收起即清空。 */
@@ -236,6 +241,7 @@ export interface MenuSchema extends MachineSchema {
     | 'selectChoice'
     | 'setCheckboxValue'
     | 'setRadioValue'
+    | 'clearOpenedAtMount'
   effect: 'trackPosition' | 'trackLayer' | 'trackHover'
 }
 
