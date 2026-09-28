@@ -8,5 +8,8 @@ export default defineXihanPackage({
     hierarchy: 'src/layout/hierarchy/index.ts',
     sankey: 'src/layout/sankey/index.ts',
     graph: 'src/layout/graph/index.ts',
+    // 大数据：列式数据仓与降采样、画布绘制原语，只画小数据的图不为它们付字节
+    columns: 'src/columns/index.ts',
+    canvas: 'src/canvas/index.ts',
   },
 })

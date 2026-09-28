@@ -17,8 +17,8 @@ const WEEK = 7 * DAY
 const MONTH = 30 * DAY
 const YEAR = 365 * DAY
 
-/** 候选：[间隔, 步数, 名义时长]。名义时长只用于挑选，刻度本身按日历推进。 */
-const CANDIDATES: ReadonlyArray<readonly [TimeIntervalName, number, number]> = [
+/** 候选：[间隔, 步数, 名义时长]。名义时长只用于挑选，刻度本身按日历推进。等距时间轴的刻度也从这张表里挑。 */
+export const TIME_TICK_CANDIDATES: ReadonlyArray<readonly [TimeIntervalName, number, number]> = [
   ['second', 1, SECOND],
   ['second', 5, 5 * SECOND],
   ['second', 15, 15 * SECOND],
@@ -67,9 +67,9 @@ export function timeTickInterval(start: Date, stop: Date, count: number, set: Ti
     return null
   const target = Math.abs(b - a) / count
   let i = 0
-  while (i < CANDIDATES.length && (CANDIDATES[i] as readonly [TimeIntervalName, number, number])[2] <= target)
+  while (i < TIME_TICK_CANDIDATES.length && (TIME_TICK_CANDIDATES[i] as readonly [TimeIntervalName, number, number])[2] <= target)
     i++
-  if (i === CANDIDATES.length) {
+  if (i === TIME_TICK_CANDIDATES.length) {
     const step = Math.max(1, Math.round(Math.abs(tickStep(a / YEAR, b / YEAR, count))))
     return { interval: set.year.every(step) as TimeInterval, name: 'year' }
   }
@@ -77,8 +77,8 @@ export function timeTickInterval(start: Date, stop: Date, count: number, set: Ti
     const step = Math.max(1, Math.round(Math.abs(tickStep(a, b, count))))
     return { interval: set.millisecond.every(step) as TimeInterval, name: 'millisecond' }
   }
-  const lower = CANDIDATES[i - 1] as readonly [TimeIntervalName, number, number]
-  const upper = CANDIDATES[i] as readonly [TimeIntervalName, number, number]
+  const lower = TIME_TICK_CANDIDATES[i - 1] as readonly [TimeIntervalName, number, number]
+  const upper = TIME_TICK_CANDIDATES[i] as readonly [TimeIntervalName, number, number]
   const [name, step] = target / lower[2] < upper[2] / target ? lower : upper
   const base = name === 'week' ? set.week(options.firstDayOfWeek ?? 1) : set[name]
   return { interval: base.every(step) as TimeInterval, name }
