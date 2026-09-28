@@ -2646,6 +2646,10 @@
  * 轨道取 --xh-border-default、环粗取 --xh-stroke-thick；起始边颜色走私有槽 --xh-_loading-ring-fg，
  * 皮肤按自己的语气与公开槽给，没给时取 currentColor。
  *
+ * 进行中的动作钮投影 data-xh-loading-ring="overlay"：环居中压在钮上、不占排布，钮宽不变，直径取钮的图标档。
+ * 进入在途要等一个 micro 才起淡，不到一个 micro 就结束的短请求什么都不闪；退出在途不等，按 micro 淡出。
+ * 钮里原有的内容由皮肤按同一段等待淡出留位，与环交叉。
+ *
  * 转圈与淡变的关键帧与时长走 motion.css：引入本配方的皮肤同时 @import 它；家族文件之间不互相引入，
  * 全量入口里每份家族只内联一次。
  */
@@ -2669,6 +2673,22 @@
   [data-xh-loading-ring][data-loading]::before {
     opacity: 1;
     animation-play-state: running;
+  }
+
+  /* 压在动作钮上的环：钮是定位盒（Action Control 给 position: relative），环在钮正中、不进排布 */
+  [data-xh-loading-ring='overlay']::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    margin: auto;
+    pointer-events: none;
+  }
+
+  /* 只在进入在途时等：退出那一刻撤掉这一档，淡出不延迟 */
+  [data-xh-loading-ring='overlay'][data-loading]::before {
+    transition-delay: var(--xh-motion-duration-micro);
   }
 
   /* 减弱动效与打印：环停下并整圈换成点线，静止的形状仍读得出「还没好」；淡入淡出照常。
