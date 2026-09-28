@@ -66062,7 +66062,7 @@
         "animation"
       ],
       "state": [
-        "loading"
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-motion-loop-spin"
@@ -66083,9 +66083,9 @@
       "state": [
         "@media (prefers-reduced-motion: reduce)",
         "@media print",
-        "loading",
         "motion=reduce",
-        "where([data-motion='reduce'])"
+        "where([data-motion='reduce'])",
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-_switch-accent"

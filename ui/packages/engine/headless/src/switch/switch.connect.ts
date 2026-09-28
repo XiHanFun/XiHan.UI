@@ -102,6 +102,8 @@ export function connectSwitch<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(loading),
+      // 提交中滑块里转的那枚环由加载环配方画，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
       'data-dragging': dataAttr(dragging),
       'data-animating': dataAttr(settling && !dragging),
       'style': { translate: thumbPosition == null ? '' : `${thumbPosition}px 0` },

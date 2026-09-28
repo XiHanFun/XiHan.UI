@@ -51,7 +51,6 @@ const NO_SLOT = {
   'color-swatch-picker:indicator::before': '压在色块正中的选中徽标，圆是它的身份',
   'tour:progress-dot': '进度圆点，8px 正方盒取 circle；当前那颗拉成 20px 胶囊取 pill，两档都是身份',
   'form:submit-trigger::before': '提交在途转圈的加载环，正方盒取 circle',
-  'switch:thumb::after': '转圈的加载环',
   // reset 层的原生细条：主体是 :where([data-scope][data-part], [data-xh-scroll], …) 一组宿主，
   // 部件位记作 *；原生滑块与自绘 scrollbar:thumb 同为一维对象，pill 是它的身份
   'reset:*::-webkit-scrollbar-thumb': '原生细条的滑块，与自绘 scrollbar:thumb 同身份',
@@ -83,7 +82,6 @@ const IDENTITY = {
   'timeline:indicator': 'circle',
   'spinner:root::before': 'circle',
   'form:submit-trigger::before': 'circle',
-  'switch:thumb::after': 'circle',
   'color-swatch-picker:indicator::before': 'circle',
   'skeleton:item[data-shape=\'circle\']': 'circle',
   // 位置指示点：8px 圆点，当前项拉长成 20px 胶囊；粗指针下点由 ::after 画、进度条由 ::before 画，同一张表
