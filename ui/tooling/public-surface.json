@@ -14049,6 +14049,7 @@
     "--xh-nav-link-max-w",
     "--xh-overlay-arrow-size",
     "--xh-overlay-backdrop-blur",
+    "--xh-overlay-calendar-column-h",
     "--xh-overlay-column-item-h",
     "--xh-overlay-column-min-w",
     "--xh-overlay-drawer-w-lg",

@@ -12,8 +12,11 @@ const STYLES_DIR = 'packages/design/styles/css'
 /** 高度属性。 */
 const HEIGHT_PROPS = new Set(['block-size', 'min-block-size', 'max-block-size'])
 
-/** 滚动面高度令牌：三档定高、页内滚动面上限、菜单族上限、列表族上限。 */
-const HEIGHT_TOKENS = /--xh-(?:viewport-h-(?:sm|md|lg)|viewport-max-h|overlay-menu-max-h|overlay-max-h)\b/
+/**
+ * 滚动面高度令牌：三档定高、页内滚动面上限、菜单族上限、列表族上限，
+ * 以及与日历并排的时间列定高（与日历网格同高，令牌本身以中档定高封顶）。
+ */
+const HEIGHT_TOKENS = /--xh-(?:viewport-h-(?:sm|md|lg)|viewport-max-h|overlay-menu-max-h|overlay-max-h|overlay-calendar-column-h)\b/
 
 /** 控件高度令牌：既是控件又在框内滚的部件，它的地板走这把尺。 */
 const CONTROL_FLOOR_TOKENS = /--xh-control-(?:h|box)-(?:sm|md|lg)\b/
@@ -182,7 +185,7 @@ for (const file of files) {
         governed++
         continue
       }
-      report(comp, `${part} 的 ${name}: ${value} —— 没走 --xh-viewport-h-* / --xh-viewport-max-h / --xh-overlay-menu-max-h / --xh-overlay-max-h（地板可走 --xh-control-h-* / --xh-control-box-*）`)
+      report(comp, `${part} 的 ${name}: ${value} —— 没走 --xh-viewport-h-* / --xh-viewport-max-h / --xh-overlay-menu-max-h / --xh-overlay-max-h / --xh-overlay-calendar-column-h（地板可走 --xh-control-h-* / --xh-control-box-*）`)
     }
 
     // 四、面板必须写高度声明；不上这把尺的登在名单里
@@ -226,7 +229,7 @@ if (problems.size) {
     for (const p of list)
       console.error(`    ${p}`)
   }
-  console.error('\n口径：滚动面高度取 --xh-viewport-h-sm/md/lg（定高）或 --xh-viewport-max-h / --xh-overlay-menu-max-h / --xh-overlay-max-h（上限），')
+  console.error('\n口径：滚动面高度取 --xh-viewport-h-sm/md/lg（定高；与日历并排的时间列取 --xh-overlay-calendar-column-h）或 --xh-viewport-max-h / --xh-overlay-menu-max-h / --xh-overlay-max-h（上限），')
   console.error('      可包一层组件槽；并排成对的面板写 block-size，单个浮层面板写 max-block-size。')
   process.exit(1)
 }
