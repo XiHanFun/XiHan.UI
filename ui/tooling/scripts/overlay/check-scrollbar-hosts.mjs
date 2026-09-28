@@ -48,6 +48,9 @@ const SUITES_DIR = 'tooling/testing/src/suites'
 const VUE_CALL = 'useScrollbars('
 /** WC 侧的调用点。 */
 const WC_CALL = 'new ScrollbarsController('
+/** WC 侧共用的「更多」菜单控制器：Toolbar、Tabs 经它自建菜单浮层，条子在它里面接。 */
+const WC_OVERFLOW_MENU = 'packages/adapters/web-components/src/runtime/overflow-menu-controller.ts'
+const WC_OVERFLOW_MENU_CALL = 'new OverflowMenuController('
 /** React 侧的调用点：与 Vue 同为 hook，同名。 */
 const REACT_CALL = 'useScrollbars('
 
@@ -370,7 +373,7 @@ const problems = []
  * 键是宿主组件，scope 是内嵌组件；登记了却不再自建条子的判过期。
  */
 const EMBEDDED_HOSTS = {
-  toolbar: { scope: 'menu', why: '「更多」菜单的定位层与列表由 <xh-toolbar> 自建（归 menu 的 scope）；Vue / React 由 XhToolbarOverflowTrigger 渲 XhMenuRoot，条子随 XhMenuPositioner 接上' },
+  toolbar: { scope: 'menu', why: '「更多」菜单的定位层与列表由 <xh-toolbar> 经共用的 OverflowMenuController 自建（归 menu 的 scope）；Vue / React 由 XhToolbarOverflowTrigger 渲 XhMenuRoot，条子随 XhMenuPositioner 接上' },
 }
 
 // Vue 侧：组件名取 components/ 下那一层目录名，直接摆在 components/ 里的取文件名。
@@ -389,13 +392,23 @@ for await (const file of walk(VUE)) {
 }
 
 const wcHosts = new Map()
+/** 经共用的「更多」菜单控制器自建浮层的 WC 元素：条子接在控制器里，元素文件里看不到那一处调用。 */
+const wcOverflowMenuHosts = new Set()
 for (const name of await readdir(WC)) {
   if (!name.endsWith('.ts'))
     continue
   const src = stripSourceComments(await readFile(join(WC, name), 'utf8'))
+  if (src.includes(WC_OVERFLOW_MENU_CALL))
+    wcOverflowMenuHosts.add(basename(name, '.ts'))
   if (!src.includes(WC_CALL))
     continue
   wcHosts.set(basename(name, '.ts'), { blocks: callBlocks(src), src })
+}
+// 控制器自己得真接了条子：元素经它自建浮层，就靠它那一处调用配条子
+if (wcOverflowMenuHosts.size > 0) {
+  const controller = await read(WC_OVERFLOW_MENU)
+  if (controller === null || !stripSourceComments(controller).includes(WC_CALL))
+    problems.push(`${WC_OVERFLOW_MENU}：${[...wcOverflowMenuHosts].join(' / ')} 经它自建「更多」菜单，它却没接 ScrollbarsController，菜单列表跟着缺条子`)
 }
 
 // React 侧：组件名取 components/ 下那一层目录名，与 Vue 同一套铺法
@@ -417,7 +430,7 @@ const allHosts = [...new Set([...vueHosts.keys(), ...wcHosts.keys(), ...reactHos
 for (const [comp, { scope, why }] of Object.entries(EMBEDDED_HOSTS)) {
   if (typeof why !== 'string' || !why.trim())
     problems.push(`EMBEDDED_HOSTS.${comp}：缺 why`)
-  if (!wcHosts.has(comp)) {
+  if (!wcHosts.has(comp) && !wcOverflowMenuHosts.has(comp)) {
     // 组件本身不在（门禁的临时夹具只铺了它要核的那几个）就没什么可核的；在却不再自建条子才是登记过期
     if (await read(join(WC, `${comp}.ts`)) !== null)
       problems.push(`EMBEDDED_HOSTS.${comp}：Web Components 侧已不再自建条子，登记过期`)

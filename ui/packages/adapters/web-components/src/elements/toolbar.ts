@@ -5,18 +5,14 @@
 
 // 提供 toolbar 相关实现。
 
-import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Orientation, RuntimeConfig, Service, Size } from '@xihan-ui/core'
-import type { MenuAnyItemProps, MenuApi, MenuSchema, ToolbarItemProps, ToolbarSchema, ToolbarTranslations } from '@xihan-ui/headless'
-import type { OverlayExit } from '../overlay-exit'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectMenu, connectToolbar, menuMachine, toolbarAnatomy, toolbarMachine, toolbarMeta, toolbarOverflowMenuProps } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
-import { mergeAsChildProps } from '../dom/as-child'
+import type { ControlVariant, Direction, Orientation, Service, Size } from '@xihan-ui/core'
+import type { ToolbarItemProps, ToolbarSchema, ToolbarTranslations } from '@xihan-ui/headless'
+import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { connectToolbar, toolbarAnatomy, toolbarMachine, toolbarMeta, toolbarOverflowMenuProps } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { OverflowMenuController } from '../runtime/overflow-menu-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 字符串属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
 // Lit 默认转换器会在属性被移除时把值落成 null，那样就再也表达不了"未指定"。
@@ -25,23 +21,6 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 布尔三态：缺席 = undefined（用 connect 的默认值），="false" = false，其余 = true。
 // Lit 自带的 Boolean 转换器是 v !== null，缺省为真的 loop 会因此永远关不掉。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
-
-/** 「更多」菜单里的一条：条目节点、勾选项的标记位与文字载体。 */
-interface OverflowEntry {
-  item: HTMLElement
-  indicator: HTMLElement | null
-  text: HTMLElement
-  /** 这一条之前的分隔线；没有时为 null。 */
-  separator: HTMLElement | null
-}
-
-/** 「更多」菜单那一套节点。作者只写 overflow-trigger，这些由元素自己建。 */
-interface OverflowMenuNodes {
-  positioner: HTMLElement
-  content: HTMLElement
-  /** 按条目值索引：收纳变了只补差额，不整套重建。 */
-  entries: Map<string, OverflowEntry>
-}
 
 /**
  * `<xh-toolbar>`：Light-DOM 行为宿主：作者写 root、若干 item，可选的 group、separator 与
@@ -108,41 +87,18 @@ export class XhToolbarElement extends XhPortalHostElement {
   /** 上一帧是否整条禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
   private wasToolbarDisabled = false
 
-  private readonly idGen: IdGenerator = createCounterIdGenerator()
-  /** 「更多」菜单的 id 由它派生：触发器与列表靠 aria-controls / aria-labelledby 互相认领。 */
-  private readonly menuScope = createScope(this, this.idGen)
-  private config: RuntimeConfig | null = null
-
   private readonly ctrl = new MachineController<ToolbarSchema>(this, toolbarMachine, () => this.machineProps(), {
     // 收纳量测在机器的挂载效应里跑，root 的取值口要赶在那之前交出去
     onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')),
   })
 
-  /** 「更多」菜单：一台 menu 机器，props 从工具条的机器现读，故必须排在 ctrl 之后建。 */
-  private readonly menuCtrl = new MachineController<MenuSchema>(
-    this,
-    menuMachine,
-    () => toolbarOverflowMenuProps(this.ctrl.service as Service<ToolbarSchema>),
-    { scope: this.menuScope, onBuilt: svc => this.injectMenuRefs(svc) },
-  )
-
-  /** 「更多」菜单那一套节点；overflow-trigger 缺席时不建。 */
-  private menuNodes: OverflowMenuNodes | null = null
-  /** 退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。 */
-  private menuExit: OverlayExit | null = null
-  private readonly menuPortal = this.createAnchoredPortalController({
+  /** 「更多」菜单：菜单机器的 props 从工具条的机器现读，故必须排在 ctrl 之后建。 */
+  private readonly overflowMenu = new OverflowMenuController(this, {
     name: 'Toolbar overflow menu',
-    config: () => this.config,
-    source: () => this.getPart('overflow-trigger'),
-    root: () => this.menuNodes?.positioner ?? null,
-    onChange: () => this.requestUpdate(),
-  })
-
-  /** 条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；浮层里的条子走 4px 档 */
-  private readonly bars = new ScrollbarsController(this, {
-    shell: () => this.menuNodes?.positioner ?? null,
-    scrollable: () => this.menuNodes?.content ?? null,
-    props: () => ({ size: 'sm' }),
+    spreader: this.spreader,
+    trigger: () => this.getPart('overflow-trigger'),
+    props: () => toolbarOverflowMenuProps(this.ctrl.service as Service<ToolbarSchema>),
+    createPortal: options => this.createAnchoredPortalController(options),
   })
 
   private machineProps(): Partial<ToolbarSchema['props']> {
@@ -156,49 +112,6 @@ export class XhToolbarElement extends XhPortalHostElement {
       size: this.size,
       translations: this.translations,
     }
-  }
-
-  private ensureConfig(): void {
-    if (this.config)
-      return
-    this.config = createRuntimeConfig({ scope: this.menuScope, idGenerator: this.idGen })
-  }
-
-  private ensureMenuExit(open: boolean): OverlayExit {
-    this.ensureConfig()
-    this.menuExit ??= createOverlayExit({
-      open,
-      onExitComplete: () => this.requestUpdate(),
-    })
-    return this.menuExit
-  }
-
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
-  private readonly registerMenuLayer = (): { layer: Layer, dispose: Cleanup } => {
-    this.ensureConfig()
-    return this.config!.layerRegistry.register({
-      kind: 'popover',
-      node: () => this.menuNodes?.content ?? null,
-      // 「更多」钮记为本层分支：点它算层内交互，开合交给它自己切换；
-      // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
-      branches: () => [this.getPart('overflow-trigger'), this.menuNodes?.positioner].filter(Boolean) as Element[],
-      isModal: () => false,
-      surfaces: () => [],
-    })
-  }
-
-  // onBuilt 在 ctrl 构造期就跑（此刻 this.menuCtrl 尚未赋值），故 service 由参数传入。
-  // 每次(重)建机器后都要重注：refs 属于机器实例，重连时的新机器不会继承旧的。
-  private injectMenuRefs(svc: Service<MenuSchema>): void {
-    this.ensureConfig()
-    svc.refs.set('config', this.config)
-    svc.refs.set('registerLayer', this.registerMenuLayer)
-    svc.refs.set('presence', this.ensureMenuExit(svc.state.get() === 'open').presence)
-    svc.refs.set('position', createPositionEngine())
-    svc.refs.set('getAnchorEl', () => this.getPart('overflow-trigger'))
-    svc.refs.set('getFloatingEl', () => this.menuNodes?.positioner ?? null)
-    svc.refs.set('getContentEl', () => this.menuNodes?.content ?? null)
   }
 
   /**
@@ -269,153 +182,14 @@ export class XhToolbarElement extends XhPortalHostElement {
     // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
     this.wasToolbarDisabled = !!this.disabled
 
-    this.wireOverflowMenu(api.getOverflowTriggerProps() as Record<string, unknown>)
-  }
-
-  /**
-   * 「更多」钮与它弹出的菜单。钮是作者写的工具条部件，菜单的开合接线按 asChild 的规则合进它的属性
-   * （菜单的解剖标记让位、工具条的处理器先跑），与 Vue / React 落到节点上的一模一样；
-   * 菜单的定位层、列表与条目由元素自己建。
-   */
-  private wireOverflowMenu(triggerProps: Record<string, unknown>): void {
-    const trigger = this.getPart('overflow-trigger')
-    if (!trigger) {
-      this.releaseMenuNodes()
-      return
-    }
-    const menu = connectMenu(this.menuCtrl.service as Service<MenuSchema>, wcNormalize)
-    this.spreader.spread(trigger, mergeAsChildProps(menu.getTriggerProps() as Record<string, unknown>, triggerProps))
-
-    const nodes = this.ensureMenuNodes()
-    this.spreader.spread(nodes.positioner, menu.getPositionerProps() as Record<string, unknown>)
-    this.spreader.spread(nodes.content, menu.getContentProps() as Record<string, unknown>)
-    this.wireMenuEntries(menu, nodes)
-
-    // Light DOM 的 content 常驻，可见性由宿主自管：皮肤给 content 设了 display，会盖过 UA 的
-    // [hidden]{display:none}。必须排在 content 的属性之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
-    const exit = this.ensureMenuExit(menu.open)
-    exit.track(nodes.content)
-    exit.update(menu.open)
-    // 直接写而不走 setPartHidden：那条路是为作者写的角色节点留的，要护住作者自己的内联
-    // display；这层是元素建的，没有作者的那一份
-    nodes.content.style.display = exit.visible ? '' : 'none'
-
-    this.bars.wire()
-    this.menuPortal.sync(exit.visible)
-  }
-
-  /** 定位层与列表：建一次，挂在宿主里 root 之后；展开时由 Portal 搬到落点。 */
-  private ensureMenuNodes(): OverflowMenuNodes {
-    const current = this.menuNodes
-    if (current?.positioner.isConnected)
-      return current
-    if (current)
-      this.releaseMenuNodes()
-    const doc = this.ownerDocument
-    const positioner = doc.createElement('div')
-    const content = doc.createElement('div')
-    positioner.append(content)
-    // 定位层是 fixed，坐标由引擎给，摆在哪一层都不影响落位；放在 root 外，不进工具条的排布与收纳量测
-    this.append(positioner)
-    this.menuNodes = { positioner, content, entries: new Map() }
-    return this.menuNodes
-  }
-
-  /** 按菜单的条目元信息铺条目：已有的复用、缺的新建、多的移除，次序与收纳一致。 */
-  private wireMenuEntries(menu: MenuApi, nodes: OverflowMenuNodes): void {
-    const doc = this.ownerDocument
-    const alive = new Set<string>()
-    let cursor: ChildNode | null = nodes.content.firstChild
-    const place = (node: HTMLElement): void => {
-      if (node === cursor)
-        cursor = node.nextSibling
-      else
-        nodes.content.insertBefore(node, cursor)
-    }
-    menu.collection.forEach((meta, index) => {
-      alive.add(meta.value)
-      let entry = nodes.entries.get(meta.value)
-      const wantsIndicator = meta.kind !== 'item'
-      if (!entry || (entry.indicator != null) !== wantsIndicator) {
-        if (entry)
-          this.removeEntry(entry)
-        const item = doc.createElement('div')
-        const indicator = wantsIndicator ? doc.createElement('span') : null
-        const text = doc.createElement('span')
-        if (indicator)
-          item.append(indicator)
-        item.append(text)
-        entry = { item, indicator, text, separator: null }
-        nodes.entries.set(meta.value, entry)
-      }
-      // 首条上的分隔线标记不产出分隔线：菜单开头不留一道空隔
-      const wantsSeparator = index > 0 && meta.separatorBefore
-      if (wantsSeparator && !entry.separator)
-        entry.separator = doc.createElement('div')
-      if (!wantsSeparator && entry.separator) {
-        this.spreader.release(entry.separator)
-        entry.separator.remove()
-        entry.separator = null
-      }
-      if (entry.separator) {
-        this.spreader.spread(entry.separator, menu.getSeparatorProps() as Record<string, unknown>)
-        place(entry.separator)
-      }
-      // 禁用与选完收起都由 collection 定案，条目只报身份
-      const declaration: MenuAnyItemProps = meta.kind === 'checkbox'
-        ? { value: meta.value, kind: 'checkbox' }
-        : { value: meta.value, kind: 'item' }
-      const itemProps = declaration.kind === 'checkbox' ? menu.getCheckboxItemProps(declaration) : menu.getItemProps(declaration)
-      this.spreader.spread(entry.item, itemProps as Record<string, unknown>)
-      if (entry.indicator)
-        this.spreader.spread(entry.indicator, menu.getItemIndicatorProps(declaration) as Record<string, unknown>)
-      this.spreader.spread(entry.text, menu.getItemTextProps(declaration) as Record<string, unknown>)
-      if (entry.text.textContent !== meta.label)
-        entry.text.textContent = meta.label
-      place(entry.item)
-    })
-    for (const [value, entry] of nodes.entries) {
-      if (alive.has(value))
-        continue
-      // 焦点正在这一条上：它一走，菜单得就地另挑锚点，否则整张菜单没有 Tab 停靠点
-      const svc = this.menuCtrl.service as Service<MenuSchema>
-      if (svc.getStatus() === 'Started' && svc.context.get('focusedValue') === value)
-        svc.send({ type: 'ITEM.LOST' })
-      this.removeEntry(entry)
-      nodes.entries.delete(value)
-    }
-  }
-
-  private removeEntry(entry: OverflowEntry): void {
-    for (const node of [entry.separator, entry.item, entry.indicator, entry.text]) {
-      if (node)
-        this.spreader.release(node)
-    }
-    entry.separator?.remove()
-    entry.item.remove()
-  }
-
-  private releaseMenuNodes(): void {
-    const nodes = this.menuNodes
-    if (!nodes)
-      return
-    this.menuPortal.dispose()
-    for (const entry of nodes.entries.values())
-      this.removeEntry(entry)
-    this.spreader.release(nodes.positioner)
-    this.spreader.release(nodes.content)
-    nodes.positioner.remove()
-    this.menuNodes = null
+    // 「更多」钮与它弹出的菜单：钮是作者写的工具条部件，菜单那一套由共用的控制器自建
+    this.overflowMenu.wire(api.getOverflowTriggerProps() as Record<string, unknown>)
   }
 
   override disconnectedCallback(): void {
-    this.menuPortal.dispose()
+    this.overflowMenu.disposePortal()
     super.disconnectedCallback()
-    // 退场没播完就离场：立刻结清并收起
-    this.menuExit?.dispose()
-    this.menuExit = null
-    this.releaseMenuNodes()
-    // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
-    this.config = null // 重连时 ensureConfig 重建
+    // 退场没播完就离场：立刻结清并收起；重连时按需重建
+    this.overflowMenu.release()
   }
 }
