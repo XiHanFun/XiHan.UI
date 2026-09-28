@@ -33,12 +33,12 @@ describe('雷达图各圈的数值', () => {
     app.mount(host)
     await nextTick()
     await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
-    const labels = [...document.querySelectorAll<SVGTextElement>("[data-scope='radar-chart'][data-part='ring-label']")]
-    await expect.poll(() => document.querySelectorAll("[data-scope='radar-chart'][data-part='ring-label']").length).toBe(5)
+    const labels = [...document.querySelectorAll<SVGTextElement>('[data-scope="radar-chart"][data-part="ring-label"]')]
+    await expect.poll(() => document.querySelectorAll('[data-scope="radar-chart"][data-part="ring-label"]').length).toBe(5)
     expect(labels.map(l => l.textContent)).toEqual(['20', '40', '60', '80', '100'])
     const tops = labels.map(l => l.getBoundingClientRect().top)
     expect(tops).toEqual([...tops].sort((x, y) => y - x))
-    const spoke = document.querySelector<SVGElement>("[data-scope='radar-chart'][data-part='spoke']")!.getBoundingClientRect()
+    const spoke = document.querySelector<SVGElement>('[data-scope="radar-chart"][data-part="spoke"]')!.getBoundingClientRect()
     for (const label of labels)
       expect(label.getBoundingClientRect().left).toBeGreaterThanOrEqual(spoke.left)
     expect(Number(getComputedStyle(labels[0]!).opacity)).toBeCloseTo(0.8)
