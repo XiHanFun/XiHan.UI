@@ -119,14 +119,14 @@ function handoff(el: HTMLElement, win: Window): void {
 
 /**
  * 在一份文档上接上面级披露的接力，返回释放函数。多个组件共用一个观察者，按引用计数撤下。
- * 没有 MutationObserver 的宿主里什么都不做。
+ * 没有 MutationObserver 或 Web Animations（读不出正在播的关键帧，比如 jsdom）的宿主里什么都不做。
  */
 export function retainDisclosureHandoff(doc: Document): () => void {
   let entry = installs.get(doc)
   if (!entry) {
     const win = doc.defaultView
     const Observer = win?.MutationObserver
-    if (!win || typeof Observer !== 'function')
+    if (!win || typeof Observer !== 'function' || typeof win.Element.prototype.getAnimations !== 'function')
       return () => {}
     const observer = new Observer((records) => {
       for (const record of records) {
