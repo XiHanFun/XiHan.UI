@@ -26,6 +26,24 @@ export async function pressPointer(element: HTMLElement): Promise<void> {
   await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', buttons: 1, clickCount: 1 })
 }
 
+/** 指针挪到元素中心、不按键：读它的 :hover 面。 */
+export async function hoverPointer(element: HTMLElement): Promise<void> {
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...centerOf(element) })
+}
+
+/** setup.ts 钉在视口角落的那块停靠点。 */
+function parkElement(): HTMLElement {
+  const park = document.querySelector<HTMLElement>('[data-test-park-pointer]')
+  if (!park)
+    throw new Error('停靠点不在 DOM 里：setup.ts 的 parkPointer 没跑')
+  return park
+}
+
+/** 指针挪回停靠点：悬停面撤下，下一用例从干净状态起。 */
+export async function movePointerAway(): Promise<void> {
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...centerOf(parkElement()) })
+}
+
 /** 在元素中心松开主键：合成一次完整的 click。 */
 export async function releasePointer(element: HTMLElement): Promise<void> {
   const { x, y } = centerOf(element)
@@ -37,9 +55,6 @@ export async function releasePointer(element: HTMLElement): Promise<void> {
  * 按住途中的断言做完即可撤下 :active 面而不翻动选中值；指针随后停在停靠点上，下一用例的悬停从干净状态起。
  */
 export async function releasePointerAway(): Promise<void> {
-  const park = document.querySelector<HTMLElement>('[data-test-park-pointer]')
-  if (!park)
-    throw new Error('停靠点不在 DOM 里：setup.ts 的 parkPointer 没跑')
-  await releasePointer(park)
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...centerOf(park) })
+  await releasePointer(parkElement())
+  await movePointerAway()
 }

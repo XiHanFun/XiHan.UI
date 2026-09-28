@@ -230,7 +230,8 @@ for (const file of files) {
     // 这条规则自己就带 border / outline 的，通道在这一档里活得下来
     if (/(?:^|[\s;])(?:border|outline)[\w-]*\s*:/.test(body))
       continue
-    // 字形节点：底色是拿来填 mask 图形的，画出来的是真字形，不是一块底
+    // 字形节点：底色是拿来填 mask 图形的，不是一块表达状态的底。它在这一档里同样会被换成 Canvas，
+    // 那一半由 check-forced-glyphs 管（要求补救块里退出强制换色、写系统色）
     if (/(?:^|[\s;])(?:-webkit-)?mask[\w-]*\s*:/.test(body))
       continue
     const hooks = hooksIn(selector)

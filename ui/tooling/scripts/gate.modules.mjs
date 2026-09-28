@@ -59,6 +59,7 @@ export const MODULES = [
       'node tooling/scripts/skin/check-css-floor.mjs',
       'node tooling/scripts/skin/check-print-surface.mjs',
       'node tooling/scripts/skin/check-forced-colors.mjs',
+      'node tooling/scripts/skin/check-forced-glyphs.mjs',
       'node tooling/scripts/skin/check-safe-area.mjs',
     ],
   },
