@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="sparkline"`：**`root`** · `summary` · `band` · `area-fill` · `line` · `bar` · `dot`
+`data-scope="sparkline"`：**`root`** · `summary` · `band` · `reference-line` · `area-fill` · `line` · `bar` · `dot`
 
 ## 示例
 
