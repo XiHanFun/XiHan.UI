@@ -136,6 +136,51 @@ describe('通知服务', () => {
     expect(cards()[0]!.querySelector('[data-part="item-description"]')?.textContent).toBe('来自甲')
   })
 
+  it('loading 以加载态弹出一条并返回 id，之后用 update 收尾', async () => {
+    const notification = createNotificationService()
+    dispose.push(() => notification.dispose())
+    const id = notification.loading('正在导出', { description: '共 3 个文件' })
+    await settle()
+    expect(cards()[0]!.hasAttribute('data-loading')).toBe(true)
+    await act(async () => notification.update(id, { loading: false, tone: 'success', title: '导出完成' }))
+    await settle()
+    expect(cards()[0]!.hasAttribute('data-loading')).toBe(false)
+    expect(cards()[0]!.getAttribute('data-tone')).toBe('success')
+    expect(cards()[0]!.querySelector('[data-part="item-description"]')?.textContent).toBe('共 3 个文件')
+  })
+
+  it('promise 兑现后就地改写成成功，说明三态共用，结果原样透传', async () => {
+    const notification = createNotificationService()
+    dispose.push(() => notification.dispose())
+    const value = await notification.promise(Promise.resolve(12), {
+      loading: '正在同步',
+      success: v => `已同步 ${v} 条`,
+      error: '同步失败',
+      description: '通讯录',
+    })
+    expect(value).toBe(12)
+    await settle()
+    expect(cards()).toHaveLength(1)
+    expect(cards()[0]!.getAttribute('data-tone')).toBe('success')
+    expect(cards()[0]!.hasAttribute('data-loading')).toBe(false)
+    expect(cards()[0]!.querySelector('[data-part="item-title"]')?.textContent).toBe('已同步 12 条')
+    expect(cards()[0]!.querySelector('[data-part="item-description"]')?.textContent).toBe('通讯录')
+  })
+
+  it('promise 拒绝时改写成失败，并把 reason 继续抛出去', async () => {
+    const notification = createNotificationService()
+    dispose.push(() => notification.dispose())
+    const boom = new Error('断网')
+    await expect(notification.promise(() => Promise.reject(boom), {
+      loading: '正在同步',
+      success: '已同步',
+      error: r => `同步失败：${(r as Error).message}`,
+    })).rejects.toBe(boom)
+    await settle()
+    expect(cards()[0]!.getAttribute('data-tone')).toBe('danger')
+    expect(cards()[0]!.querySelector('[data-part="item-title"]')?.textContent).toBe('同步失败：断网')
+  })
+
   it('dismissAll 清空', async () => {
     const notification = createNotificationService()
     dispose.push(() => notification.dispose())

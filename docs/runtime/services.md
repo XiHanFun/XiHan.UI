@@ -182,12 +182,23 @@ notify.danger("同步失败", { description: "网络中断，稍后自动重试"
 | `update(id, options)` | — | 改写正在显示的条目 |
 | `dismiss(id)` / `dismissAll()` | — | 手动关闭 |
 | `info` / `success` / `warning` / `danger` | `string`（id） | 语气快捷方法，第一个参数是标题，正文写在 `options.description` |
+| `loading(title, options)` | `string`（id） | 以 `loading` 态弹出一条并返回 id，之后用 `update` 收尾 |
+| `promise(input, options)` | `Promise<T>` | 先弹出 loading，落定后就地改写为成功 / 失败 |
 | `pauseAll()` / `resumeAll()` | — | 当前卡片整组暂停计时、再恢复 |
 | `setConfig(next)` | — | 更换全局配置源（切换语言用） |
 | `dispose()` | — | 卸载宿主应用并移除容器 |
 
-行内动作、`dedupe` 与 `priority` 与轻提示同形：两者运行同一台队列状态机，上限、移除与
-合并计数只有一份实现。
+行内动作、`dedupe`、`priority` 以及在途 → 完成那条链与轻提示同形：两者运行同一台队列状态机，
+上限、移除与合并计数只有一份实现。`promise` 的三段文案落在标题上，`description` 等其余字段三态共用：
+
+```ts
+await notify.promise(syncContacts(), {
+  loading: "正在同步",
+  success: count => `已同步 ${count} 位联系人`,
+  error: "同步失败，稍后自动重试",
+  description: "通讯录",
+});
+```
 
 与轻提示的两处不同：条目有标题与正文两层，且单条可以用 `options.placement` 覆盖落位：
 消息各有轻重，逐条决定位置是合理的。`duration: 0` 即常驻不消失，由用户手动关闭。

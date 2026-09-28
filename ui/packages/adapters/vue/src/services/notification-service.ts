@@ -70,6 +70,13 @@ export interface NotificationCreateOptions extends NotificationOptions {
 /** 类型糖的入参：只差 type 与 title，其余同 create。 */
 export type NotificationMessageOptions = Omit<NotificationCreateOptions, 'tone' | 'loading' | 'title'>
 
+/** promise 三态的标题：成功与失败可以传函数，拿到结果后再拼装标题。 */
+export interface NotificationPromiseOptions<T> extends Omit<NotificationMessageOptions, 'duration'> {
+  loading: string
+  success: string | ((value: T) => string)
+  error: string | ((reason: unknown) => string)
+}
+
 export interface NotificationService {
   /** 入队并返回 id；同 id 已存在则就地改写，被合并的返回被并入的那一条。 */
   create: (options?: NotificationCreateOptions) => string
@@ -80,6 +87,13 @@ export interface NotificationService {
   success: (title: string, options?: NotificationMessageOptions) => string
   warning: (title: string, options?: NotificationMessageOptions) => string
   danger: (title: string, options?: NotificationMessageOptions) => string
+  /** 以 loading 态弹出一条并返回 id，之后用 update(id, { loading: false, tone: 'success', title: … }) 收尾。 */
+  loading: (title: string, options?: NotificationMessageOptions) => string
+  /**
+   * 先弹出一条 loading，Promise 落定后就地改写为 success / danger；说明等其余字段三态共用。
+   * Promise 的结果原样交回调用方，拒绝也照旧拒绝。
+   */
+  promise: <T>(input: Promise<T> | (() => Promise<T>), options: NotificationPromiseOptions<T>) => Promise<T>
   /** 暂停当前这些卡片的计时，'service' 这一路与指针、焦点并存。 */
   pauseAll: () => void
   resumeAll: () => void
@@ -211,6 +225,19 @@ export function createNotificationService(options: NotificationServiceOptions = 
     success: sugar('success'),
     warning: sugar('warning'),
     danger: sugar('danger'),
+    loading: (title, opts = {}) => create({ ...opts, loading: true, title }),
+    promise: <T>(input: Promise<T> | (() => Promise<T>), opts: NotificationPromiseOptions<T>): Promise<T> => {
+      const { loading, success, error, ...rest } = opts
+      const running = typeof input === 'function' ? input() : input
+      const { onAction, ...record } = rest
+      return controller.trackPromise(
+        running,
+        { ...record, loading: true, title: loading },
+        value => ({ loading: false, tone: 'success', title: typeof success === 'function' ? success(value) : success }),
+        reason => ({ loading: false, tone: 'danger', title: typeof error === 'function' ? error(reason) : error }),
+        onAction,
+      )
+    },
     pauseAll: controller.pauseAll,
     resumeAll: controller.resumeAll,
     setConfig: next => configSource.set(next),

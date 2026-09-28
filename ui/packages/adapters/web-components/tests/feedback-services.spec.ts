@@ -144,6 +144,53 @@ describe('createNotificationService', () => {
     notify.dispose()
   })
 
+  it('loading 以加载态弹出一条并返回 id，之后用 update 收尾', async () => {
+    const notify = createNotificationService()
+    const id = notify.loading('正在导出', { description: '共 3 个文件' })
+    await tick()
+    expect(partOf('notification', 'item')?.hasAttribute('data-loading')).toBe(true)
+    notify.update(id, { loading: false, tone: 'success', title: '导出完成' })
+    await tick()
+    expect(partOf('notification', 'item')?.hasAttribute('data-loading')).toBe(false)
+    expect(partOf('notification', 'item')?.getAttribute('data-tone')).toBe('success')
+    expect(partOf('notification', 'item-description')?.textContent).toBe('共 3 个文件')
+    notify.dispose()
+  })
+
+  it('promise 兑现后就地改写成成功，说明三态共用，结果原样透传', async () => {
+    const notify = createNotificationService()
+    let resolve!: (value: number) => void
+    const running = notify.promise(new Promise<number>((r) => {
+      resolve = r
+    }), { loading: '正在同步', success: v => `已同步 ${v} 条`, error: '同步失败', description: '通讯录' })
+    await tick()
+    expect(partOf('notification', 'item')?.hasAttribute('data-loading')).toBe(true)
+    resolve(12)
+    await expect(running).resolves.toBe(12)
+    await tick()
+    expect(document.querySelectorAll('[data-scope="notification"][data-part="item"]')).toHaveLength(1)
+    expect(partOf('notification', 'item')?.hasAttribute('data-loading')).toBe(false)
+    expect(partOf('notification', 'item')?.getAttribute('data-tone')).toBe('success')
+    expect(partOf('notification', 'item-title')?.textContent).toBe('已同步 12 条')
+    expect(partOf('notification', 'item-description')?.textContent).toBe('通讯录')
+    notify.dispose()
+  })
+
+  it('promise 拒绝时改写成失败，并把 reason 继续抛出去；传函数时当场调用', async () => {
+    const notify = createNotificationService()
+    const boom = new Error('断网')
+    await expect(notify.promise(() => Promise.reject(boom), {
+      loading: '正在同步',
+      success: '已同步',
+      error: r => `同步失败：${(r as Error).message}`,
+    })).rejects.toBe(boom)
+    await tick()
+    expect(partOf('notification', 'item')?.getAttribute('data-tone')).toBe('danger')
+    expect(partOf('notification', 'item')?.hasAttribute('data-loading')).toBe(false)
+    expect(partOf('notification', 'item-title')?.textContent).toBe('同步失败：断网')
+    notify.dispose()
+  })
+
   it('dispose 撤掉宿主容器', async () => {
     const notify = createNotificationService()
     notify.info('一条')
