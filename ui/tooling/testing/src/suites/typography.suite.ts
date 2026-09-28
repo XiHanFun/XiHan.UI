@@ -162,7 +162,7 @@ export const typographySuite: ConformanceSuite = {
     {
       name: '删除线、下划线与标记是三个独立开关，与形态、语气叠加；没开就不输出',
       spec: { apg: APG },
-      fixture: base => ({
+      fixture: (base): FixtureNode => ({
         ...base,
         children: [
           {
