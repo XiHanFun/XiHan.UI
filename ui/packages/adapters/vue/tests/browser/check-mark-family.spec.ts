@@ -216,8 +216,8 @@ describe('勾选标记家族', () => {
       h(XhTableHeader, null, () => [h(XhTableRow, null, () => columns.map(column =>
         h(XhTableColumnHeader, { key: column.id, value: column.id }, () => column.id === 'select' ? h(XhTableSelectAllTrigger) : column.label)))]),
       h(XhTableBody, null, () => rows.map(row => h(XhTableRow, { key: row.id, value: row.id }, () => [
-        h(XhTableCell, { column: 'select' }, () => h(XhTableRowSelectTrigger)),
-        h(XhTableCell, { column: 'name' }, () => row.id),
+        h(XhTableCell, { value: 'select' }, () => h(XhTableRowSelectTrigger)),
+        h(XhTableCell, { value: 'name' }, () => row.id),
       ]))),
     ]))
     const all = part('table', 'select-all-trigger')
