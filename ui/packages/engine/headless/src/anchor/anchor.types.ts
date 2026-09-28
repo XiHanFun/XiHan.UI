@@ -47,7 +47,7 @@ export interface AnchorTargetOffset {
 /** 适配器在挂载前填入的 DOM 取值器。 */
 export interface AnchorRefs {
   /** 判定线所依附的滚动容器，返回 null 即挂在窗口上。 */
-  getScrollEl: () => HTMLElement | null
+  getTargetEl: () => HTMLElement | null
   /** 链接集合的查询容器（list），同时是指示条定位的参照系。 */
   getListEl: () => HTMLElement | null
   /** 液态档的双沿指示器：由效应建好放进来，量到的落点交给它。 */

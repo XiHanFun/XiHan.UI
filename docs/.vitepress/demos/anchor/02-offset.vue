@@ -28,7 +28,7 @@ const scrollEl = ref<HTMLElement | null>(null);
       align-items: start;
     "
   >
-    <XhAnchorRoot :scroll-element="scrollEl" :offset="44" smooth>
+    <XhAnchorRoot :target="scrollEl" :offset="44" smooth>
       <XhAnchorList>
         <XhAnchorItem v-for="s in sections" :key="s.value">
           <XhAnchorLink :value="s.value">{{ s.label }}</XhAnchorLink>

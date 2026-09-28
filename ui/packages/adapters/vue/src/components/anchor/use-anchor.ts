@@ -20,18 +20,18 @@ export interface AnchorContext {
   listRef: Ref<HTMLElement | null>
 }
 
-/** Anchor 不派生 part id，故不另建 scope；getScrollEl 返回判定线所依附的滚动容器，null 即挂在窗口上。 */
+/** Anchor 不派生 part id，故不另建 scope；getTargetEl 返回判定线所依附的滚动容器，null 即挂在窗口上。 */
 export function useAnchor(
   props: AnchorSchema['props'],
   onValueChange?: AnchorSchema['props']['onValueChange'],
-  getScrollEl: () => HTMLElement | null = () => null,
+  getTargetEl: () => HTMLElement | null = () => null,
 ): AnchorContext {
   const listRef = ref<HTMLElement | null>(null)
   const service = useMachine(anchorMachine, () => ({ ...props, onValueChange }))
 
   // 观察器与量测都在机器的 effect 里跑，DOM 侧的取值口经 refs 交进去
   service.refs.set('getListEl', () => listRef.value)
-  service.refs.set('getScrollEl', getScrollEl)
+  service.refs.set('getTargetEl', getTargetEl)
 
   const api = computed(() => connectAnchor(service, vueNormalize))
   return { api, service, listRef }

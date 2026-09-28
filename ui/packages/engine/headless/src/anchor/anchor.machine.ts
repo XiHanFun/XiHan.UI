@@ -105,7 +105,7 @@ export const anchorMachine = createMachine({
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
-    getScrollEl: () => null,
+    getTargetEl: () => null,
     getListEl: () => null,
     liquidIndicator: null,
   }),
@@ -191,7 +191,7 @@ export const anchorMachine = createMachine({
           return
         const offset = prop('offset') ?? ANCHOR_DEFAULT_OFFSET
         const top = target.getBoundingClientRect().top
-        const container = refs.get('getScrollEl')()
+        const container = refs.get('getTargetEl')()
         // 减弱动效档下降成瞬移，与 back-top 走同一条归一化；按滚动目标所在的作用域判断
         const behavior = resolveScrollBehavior('smooth', scope, container ?? scope.getDoc().scrollingElement)
         if (container) {
@@ -285,7 +285,7 @@ export const anchorMachine = createMachine({
        */
       waitForScrollSettle: ({ refs, scope, send }) => {
         const win = scope.getWin()
-        const read = (): number => refs.get('getScrollEl')()?.scrollTop ?? win.scrollY
+        const read = (): number => refs.get('getTargetEl')()?.scrollTop ?? win.scrollY
         let last = read()
         let moved = false
         let still = 0
@@ -315,7 +315,7 @@ export const anchorMachine = createMachine({
           const ids = collectTargetIds(prop('collection'), refs.get('getListEl')())
           if (ids.length === 0)
             return
-          const container = refs.get('getScrollEl')()
+          const container = refs.get('getTargetEl')()
           // 判定原点：整页滚动时是视口顶边，容器滚动时是容器自己的顶边
           const originTop = container ? container.getBoundingClientRect().top : 0
           const offsets: AnchorTargetOffset[] = []
@@ -344,7 +344,7 @@ export const anchorMachine = createMachine({
           win.queueMicrotask(() => {
             if (disposed)
               return
-            const source: EventTarget = refs.get('getScrollEl')() ?? win
+            const source: EventTarget = refs.get('getTargetEl')() ?? win
             const onScroll = (): void => resolve()
             // 窗口尺寸变化后归属与指示条位置都要重算
             const onResize = (): void => {

@@ -63,7 +63,7 @@ export class XhAnchorElement extends XhElement {
     collection: { attribute: false },
     translations: { attribute: false },
     // 滚动容器是 DOM 句柄，只走 property；不给即挂在窗口上
-    scrollElement: { attribute: false },
+    target: { attribute: false },
   }
 
   declare value?: string
@@ -77,7 +77,7 @@ export class XhAnchorElement extends XhElement {
   declare size?: Size
   declare collection?: readonly string[]
   declare translations?: Partial<AnchorTranslations>
-  declare scrollElement?: HTMLElement | null
+  declare target?: HTMLElement | null
 
   private readonly notify = (details: AnchorValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -110,7 +110,7 @@ export class XhAnchorElement extends XhElement {
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<AnchorSchema>): void {
     svc.refs.set('getListEl', () => this.getPart('list'))
-    svc.refs.set('getScrollEl', () => this.scrollElement ?? null)
+    svc.refs.set('getTargetEl', () => this.target ?? null)
   }
 
   protected wire(): void {

@@ -22,7 +22,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px; inline-size: min(640px, 100%)">
     <XhAnchorRoot
-      :scroll-element="scrollEl"
+      :target="scrollEl"
       orientation="horizontal"
       smooth
     >

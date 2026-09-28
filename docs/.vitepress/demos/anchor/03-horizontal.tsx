@@ -29,7 +29,7 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px", inlineSize: "min(640px, 100%)" }}>
-      <XhAnchorRoot scrollElement={() => scrollEl.current} orientation="horizontal" smooth>
+      <XhAnchorRoot target={() => scrollEl.current} orientation="horizontal" smooth>
         <XhAnchorList>
           {sections.map(s => (
             <XhAnchorItem key={s.value}>

@@ -63,6 +63,6 @@
 <script type="module">
   const template = document.getElementById("anchor-basic-nav");
   const anchor = template.content.firstElementChild;
-  anchor.scrollElement = document.getElementById("anchor-basic-scroll");
+  anchor.target = document.getElementById("anchor-basic-scroll");
   template.replaceWith(anchor);
 </script>

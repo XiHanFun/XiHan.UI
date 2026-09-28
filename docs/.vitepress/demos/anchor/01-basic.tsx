@@ -37,7 +37,7 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={layout}>
-      <XhAnchorRoot scrollElement={() => scrollEl.current} smooth>
+      <XhAnchorRoot target={() => scrollEl.current} smooth>
         <XhAnchorList>
           {sections.map(s => (
             <XhAnchorItem key={s.value}>

@@ -48,7 +48,7 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={layout}>
-      <XhAnchorRoot scrollElement={() => scrollEl.current} offset={44} smooth>
+      <XhAnchorRoot target={() => scrollEl.current} offset={44} smooth>
         <XhAnchorList>
           {sections.map(s => (
             <XhAnchorItem key={s.value}>
