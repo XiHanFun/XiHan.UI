@@ -10,6 +10,7 @@ import type {
   NumberFormatSpec,
   SparklineCurve,
   SparklineMarkers,
+  SparklineReference,
   SparklineSchema,
   SparklineTranslations,
   SparklineVariant,
@@ -36,6 +37,8 @@ export interface XhSparklineProps extends Omit<ComponentPropsWithRef<'svg'>, 'ch
   markers?: SparklineMarkers
   /** 参考带 [下界, 上界]。 */
   band?: readonly [number, number]
+  /** 参考线：固定值，或 mean / median 按数据算出。 */
+  reference?: SparklineReference
   /** 语气，默认 neutral。 */
   tone?: Tone
   /** 摘要里的数值格式。 */
@@ -58,6 +61,7 @@ export function XhSparkline({
   curve,
   markers,
   band,
+  reference,
   tone,
   format,
   animated,
@@ -73,6 +77,7 @@ export function XhSparkline({
     curve,
     markers,
     band,
+    reference,
     tone,
     format,
     animated,

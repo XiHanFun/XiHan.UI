@@ -56648,6 +56648,15 @@
             },
             {
               "kind": "field",
+              "name": "reference",
+              "privacy": "public",
+              "type": {
+                "text": "SparklineReference | undefined"
+              },
+              "attribute": "reference"
+            },
+            {
+              "kind": "field",
               "name": "format",
               "privacy": "public",
               "type": {
@@ -56901,6 +56910,14 @@
             },
             {
               "type": {
+                "text": "SparklineReference | undefined"
+              },
+              "description": "参考线：一个数（目标、阈值），或 mean / median 按数据算出",
+              "name": "reference",
+              "fieldName": "reference"
+            },
+            {
+              "type": {
                 "text": "Tone | undefined"
               },
               "description": "语气，默认 neutral",
@@ -56954,6 +56971,9 @@
             },
             {
               "name": "--xh-sparkline-marker-size"
+            },
+            {
+              "name": "--xh-sparkline-reference-color"
             },
             {
               "name": "--xh-sparkline-width"

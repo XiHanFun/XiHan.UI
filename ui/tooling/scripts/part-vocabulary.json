@@ -1356,6 +1356,9 @@
       "date-range-picker",
       "time-range-picker"
     ],
+    "reference-line": [
+      "sparkline"
+    ],
     "reset-trigger": [
       "form",
       "image-viewer"

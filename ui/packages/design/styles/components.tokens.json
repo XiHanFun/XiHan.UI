@@ -63368,6 +63368,24 @@
       "description": "sparkline 的 legend-swatch、root、tooltip-swatch 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-sparkline-reference-color",
+      "component": "sparkline",
+      "part": [
+        "reference-line"
+      ],
+      "property": [
+        "stroke"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-label"
+      ],
+      "visibility": "public",
+      "description": "sparkline 的 reference-line 部件 stroke 覆盖槽。"
+    },
+    {
       "name": "--xh-sparkline-width",
       "component": "sparkline",
       "part": [

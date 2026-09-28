@@ -17,6 +17,9 @@ export type SparklineMarkers = 'none' | 'last' | 'extremes'
 /** 标记指的是哪个数据：末点、最高点、最低点。 */
 export type SparklineMarkerKind = 'last' | 'max' | 'min'
 
+/** 参考线：一个固定值（目标、阈值），或按数据算出的均值 / 中位数。 */
+export type SparklineReference = number | 'mean' | 'median'
+
 /** 摘要模型：摘要模板拿到的全部事实，数字已按 locale 写好。 */
 export interface SparklineSummary {
   readonly variant: SparklineVariant
@@ -34,6 +37,8 @@ export interface SparklineSummary {
   readonly wins: number
   readonly losses: number
   readonly ties: number
+  /** 参考线的值；没有参考线时为 null。 */
+  readonly reference: string | null
 }
 
 export interface SparklineTranslations {

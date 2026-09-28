@@ -8,7 +8,15 @@
 
 import type { AreaMark, LineMark, Mark, NumberFormatSpec, RectMark, Scene, SymbolMark } from '@xihan-ui/viz'
 import type { ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../shared/chart'
-import type { SparklineCurve, SparklineMarkerKind, SparklineMarkers, SparklineSummary, SparklineTranslations, SparklineVariant } from './sparkline.types'
+import type {
+  SparklineCurve,
+  SparklineMarkerKind,
+  SparklineMarkers,
+  SparklineReference,
+  SparklineSummary,
+  SparklineTranslations,
+  SparklineVariant,
+} from './sparkline.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import { createNumberFormat, createScene, scaleLinear } from '@xihan-ui/viz'
 import { memoizeLast } from '../shared/chart'
@@ -26,6 +34,8 @@ export interface SparklineSpec {
   /** 逐个数据的键：过渡按它对齐新旧两帧，数据整体平移一格时折线跟着滑动而不是变形。 */
   readonly keys: readonly string[]
   readonly band: readonly [number, number] | null
+  /** 参考线的值：固定值原样，mean / median 按有值的点算出；没有参考线或没有数据时为 null。 */
+  readonly reference: number | null
   /** 有值的点数。 */
   readonly count: number
   readonly issues: readonly ChartSpecIssue[]
@@ -52,7 +62,22 @@ function isRow(value: unknown): value is ChartRow {
   return value != null && typeof value === 'object'
 }
 
-const EMPTY_SPEC: SparklineSpec = Object.freeze({ values: [], xs: null, keys: [], band: null, count: 0, issues: [] })
+const EMPTY_SPEC: SparklineSpec = Object.freeze({ values: [], xs: null, keys: [], band: null, reference: null, count: 0, issues: [] })
+
+/** 参考线的值：固定值原样，均值与中位数按有值的点算。 */
+function referenceValue(reference: SparklineReference | undefined, values: readonly (number | null)[]): number | null {
+  if (reference == null)
+    return null
+  if (typeof reference === 'number')
+    return reference
+  const defined = values.filter((v): v is number => v != null).sort((a, b) => a - b)
+  if (defined.length === 0)
+    return null
+  if (reference === 'mean')
+    return defined.reduce((sum, v) => sum + v, 0) / defined.length
+  const mid = defined.length >> 1
+  return defined.length % 2 === 1 ? defined[mid]! : (defined[mid - 1]! + defined[mid]!) / 2
+}
 
 /** 规格归一：取值与横坐标、核字段与参考带。 */
 export function normalizeSparklineSpec(
@@ -60,8 +85,11 @@ export function normalizeSparklineSpec(
   x: string | undefined,
   y: string | undefined,
   band: readonly [number, number] | undefined,
+  reference?: SparklineReference,
 ): SparklineSpec {
   const issues: ChartSpecIssue[] = []
+  if (reference != null && reference !== 'mean' && reference !== 'median' && !(typeof reference === 'number' && Number.isFinite(reference)))
+    issues.push({ code: DIAGNOSTIC_CODES.chartInvalidRange, message: '参考线要写成有限数，或 mean / median', detail: { reference } })
   let range: readonly [number, number] | null = null
   if (band != null) {
     const [lo, hi] = band
@@ -109,7 +137,7 @@ export function normalizeSparklineSpec(
     seen.add(key)
     return key
   })
-  return { values, xs, keys, band: range, count: values.filter(v => v != null).length, issues }
+  return { values, xs, keys, band: range, reference: referenceValue(reference, values), count: values.filter(v => v != null).length, issues }
 }
 
 /** 数据的两种写法。 */
@@ -214,7 +242,7 @@ export function sparklineScene(spec: SparklineSpec, options: SparklineSceneOptio
   }
 
   const defined = spec.values.filter((v): v is number => v != null)
-  const domain = [...defined, ...(spec.band ?? [])]
+  const domain = [...defined, ...(spec.band ?? []), ...(spec.reference == null ? [] : [spec.reference])]
   let lo = domain.length > 0 ? Math.min(...domain) : 0
   let hi = domain.length > 0 ? Math.max(...domain) : 0
   if (variant === 'bar') {
@@ -238,6 +266,12 @@ export function sparklineScene(spec: SparklineSpec, options: SparklineSceneOptio
     const top = yOf(spec.band[1])
     const band: RectMark = { kind: 'rect', key: 'band', part: 'band', x: 0, y: top, width, height: yOf(spec.band[0]) - top }
     back.push(band)
+  }
+
+  // 参考线横贯整条，压在数据底下：它是读数据的尺子，不抢数据的位置
+  if (spec.reference != null) {
+    const y = yOf(spec.reference)
+    back.push({ kind: 'line', key: 'reference', part: 'reference-line', curve: 'linear', points: [{ key: 'start', x: 0, y }, { key: 'end', x: width, y }] })
   }
 
   if (variant === 'bar') {
@@ -314,7 +348,7 @@ export function sparklineEntryScene(target: Scene): Scene {
   const seed = (marks: readonly Mark[]): Mark[] => marks.flatMap((mark): Mark[] => {
     if (mark.kind === 'line' || mark.kind === 'symbol')
       return [mark]
-    if (mark.kind === 'area' || mark.part === 'band')
+    if (mark.kind === 'area' || mark.part === 'band' || mark.part === 'reference-line')
       return [{ ...mark, opacity: 0 }]
     return []
   })
@@ -385,6 +419,8 @@ export function sparklineSummaryModel(spec: SparklineSpec, variant: SparklineVar
     wins: defined.filter(v => v > 0).length,
     losses: defined.filter(v => v < 0).length,
     ties: defined.filter(v => v === 0).length,
+    // 盈亏形态不画参考线，也不读
+    reference: variant === 'win-loss' || spec.reference == null ? null : formats.value(spec.reference),
   }
 }
 
@@ -395,6 +431,7 @@ export interface SparklinePipelineInput {
   readonly x: string | undefined
   readonly y: string | undefined
   readonly band: readonly [number, number] | undefined
+  readonly reference: SparklineReference | undefined
   readonly variant: SparklineVariant | undefined
   readonly curve: SparklineCurve | undefined
   readonly markers: SparklineMarkers | undefined
@@ -429,7 +466,7 @@ export function createSparklinePipeline(): SparklinePipeline {
   const bandOf = memoizeLast((lo: number | undefined, hi: number | undefined): readonly [number, number] | undefined =>
     lo === undefined && hi === undefined ? undefined : [lo as number, hi as number])
   return (input) => {
-    const spec = normalize(input.data, input.x, input.y, bandOf(input.band?.[0], input.band?.[1]))
+    const spec = normalize(input.data, input.x, input.y, bandOf(input.band?.[0], input.band?.[1]), input.reference)
     const variant = input.variant ?? 'line'
     const options = optionsOf(variant, input.curve ?? 'linear', input.markers ?? 'last')
     const scene = input.size == null || spec.issues.length > 0 ? null : sceneOf(spec, options, input.size, input.metrics)

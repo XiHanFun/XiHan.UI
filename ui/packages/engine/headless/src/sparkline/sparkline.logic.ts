@@ -26,9 +26,9 @@ export function defaultSparklineSummary(model: SparklineSummary): string {
     return `${plural(model.count, 'result', 'results')}: ${parts.join(', ')}.`
   }
   if (model.count === 1)
-    return `1 point: ${model.last}.`
+    return `1 point: ${model.last}.${model.reference == null ? '' : ` Reference ${model.reference}.`}`
   const range = model.min === model.max ? `all ${model.max}` : `ranging from ${model.min} to ${model.max}`
-  const head = `${model.count} points, ${range}.`
+  const head = `${model.count} points, ${range}.${model.reference == null ? '' : ` Reference ${model.reference}.`}`
   if (model.direction === 'flat')
     return `${head} Last ${model.last}, unchanged from the first.`
   if (model.change == null)
@@ -71,6 +71,7 @@ export function sparklineModelOf(source: SparklineModelSource): SparklineModel {
     x: prop('x'),
     y: prop('y'),
     band: prop('band'),
+    reference: prop('reference'),
     variant: prop('variant'),
     curve: prop('curve'),
     markers: prop('markers'),
