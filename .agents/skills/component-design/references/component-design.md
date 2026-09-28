@@ -997,18 +997,149 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 第一个示例必须用最少结构展示核心用途。
 - 一个示例只证明一个意图。
 - 不为覆盖 API 保留重复或低质量示例。
-- 组件总览使用独立极简预览，并遵守：
-  - 一律 md 默认档、默认 variant；`size="sm|lg"` 只允许以尺寸本身为身份的组件（ColorSwatch、Icon、NumberAnimation）并登记；tone 只在组件核心用途即语气时（Alert、Toast、Notification、Badge、Progress）允许一个非 neutral 值。
-  - 预览根不写 inline-size 散值，宽度由卡片以 CSS 变量下发（常规与单行输入类两档）；禁止内联 font-size / padding / gap 字面值，只引令牌。
-  - 禁止裸 `overflow: auto | scroll` 容器，需要滚动的用 ScrollArea 或加 `data-xh-scroll`；文字用 span / div，不用 p / li / a。
-  - 卡片不缩放（无 `transform: scale`），预览底色 `--xh-bg-page`，并打 `data-theme / data-density / dir` 舞台属性、受示例隔离样式保护。
-  - 浮层类展示已打开的静态面板，不能只剩触发钮；trigger 走 Action Control 默认档。
+- 组件总览的每张卡片放一张内联 SVG 示意图，不挂真实组件，写法见 §15.2。
 - 复杂业务组合放到模式页，不塞进基础组件专页。
 - 示例必须覆盖 Vue、React、Web Components；确实不适用时登记原因。
 - 图表的第一个示例只写根、视口与绘图区；作为双 y 轴替代的多图联动示例放在显眼处。
 - 文档另设《选图指南》：按数据任务选组件，并给出系列数量阶梯。
 
-### 15.2 文案
+### 15.2 总览示意图
+
+组件总览（`docs/components/index.md`）同时摆出全部组件，每张卡片只放一张内联 SVG 示意图：源文件是 `docs/.vitepress/catalog/<组件>.vue`，跨分类引用的卡片用清单里 `preview` 指定的文件名。示意图只画识别该组件所需的特征，不挂真实组件、不引 `@xihan-ui/*` 运行时。门禁 `check-catalog-preview` 逐条核对本节。
+
+**文件与根**
+
+- 文件只有一个 `<template>`，里面只有一个 `<svg>` 根；不写 `<script>`、`<style>`。
+- 根属性固定为 `viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"`，不写 `width` / `height` / `style` / `class`。卡片标题已给可及名，示意图对读屏隐藏。
+- 画布只有 240 × 160 一档。卡片把 SVG 铺满内容区、按比例缩放，宽屏下与画布 1:1。
+- 元素只用 `g`、`path`、`rect`、`circle`、`defs`、`linearGradient`、`stop`。不写 `<text>`、`<foreignObject>`、`<image>`、`<use>`、`<style>`、`<animate*>` / `<set>`，不写 `transform`、事件与 Vue 绑定。
+- 渐变的 `id` 以文件名开头（`<组件>-<用途>`）：全部示意图内联在同一页，撞名时后一张会取到前一张的渐变。
+- 一张图的元素不超过 40 个；同色、同线宽、相邻绘制的文字条与字形合并成一条 `path`。
+
+**网格与尺度**
+
+- 坐标取 4 的倍数；1 线宽的描边落在半格（`x="24.5"`），外框仍对齐整格；`rect` / `circle` 的坐标与尺寸取 0.5 的倍数。
+- 内容框两档：常规 x 16–224（宽 208），单行字段 x 40–200（宽 160）。构图上下居中，离画布边不少于 8。
+
+| 构件 | 尺寸 | 形状 |
+| --- | --- | --- |
+| 控件：按钮、字段、触发器 | 高 32 | 圆角 4 |
+| 面板里的紧凑按钮、列表行 | 高 24；行的悬停面左右各内缩 4 | 圆角 4 |
+| 复选框、色块 | 16 × 16、24 × 24 | 圆角 4 |
+| 单选圈、头像、浮动钮、节点 | — | `<circle>` |
+| 开关 | 32 × 16，拇指半径 6 | 胶囊 |
+| 轨道：滑块、进度、滚动条 | 线宽 4 / 6 的圆头线 | 胶囊 |
+| 标签、徽标 | 高 16–20 | 胶囊 |
+| 内容面：Card、列表与表格容器 | — | 圆角 8 |
+| 浮层：Popover、Menu、Dialog、Toast | — | 圆角 12 |
+| 字形 | 16 × 16 格 | 线宽 2 |
+
+- `rect` 的 `rx` 只取 4 / 8 / 12，或等于短边一半（胶囊）；圆用 `<circle>`。数据标记按 §6.3 取 inset。
+- 线宽只有五档：1 描边、分隔、网格与坐标轴；2 字形、焦点边、指示条、折线；4 / 6 / 8 文字条与轨道。虚线只画不存在实体边的范围（拖放区、视口外的虚拟行），取 `stroke-dasharray="4 4"`。
+
+**文字条**
+
+文字一律画成圆头线 `<path d="M x y h len" stroke-width="…">`，不写真实文案：语言、字体与字宽都不进示意图。数字与字母同样画成短条。条长取 4 的倍数，圆头向两端各伸出半个线宽，按可见长度排版。
+
+| 角色 | 线宽 | 颜色 |
+| --- | --- | --- |
+| 大号数值、页面标题 | 8 | `--xh-fg-default` |
+| 标题、控件里的值与按钮字 | 6 | `--xh-fg-default` |
+| 条目与正文里的主文字 | 6 | `--xh-fg-muted` |
+| 占位 | 6 | `--xh-fg-disabled` |
+| 字段标签、列头 | 4 | `--xh-fg-default` |
+| 段落、说明 | 4 | `--xh-fg-muted` |
+| 次级标注、时间、计数 | 4 | `--xh-fg-subtle` |
+| 图表刻度与标签 | 4 | `--xh-chart-label` |
+| 品牌实心面上 | 6 / 4 | `--xh-fg-on-brand` |
+| 选中面上 | 6 / 4 | `--xh-fg-on-brand-subtle` |
+| 链接、当前项 | 6 / 4 | `--xh-fg-brand` / `--xh-fg-brand-strong` |
+
+**颜色**
+
+- `fill`、`stroke`、`stop-color` 只写 `var(--xh-*)` 语义令牌、同文件渐变 `url(#…)` 或 `none`；不写十六进制、`rgb()`、具名色与 `currentColor`。亮暗主题、高对比与墨色都随令牌走。
+- 可用的令牌族：`--xh-bg-*`、`--xh-fg-*`、`--xh-border-*`、`--xh-chart-*` 的颜色、`--xh-syntax-*`、`--xh-gradient-brand-*`；语气色写在 `<g data-tone="…">` 里取 `--xh-tone-*`；基础色板 `--xh-color-*` 只给画颜色本身的组件（ColorField、ColorPicker、ColorSlider、ColorSwatch、ColorSwatchPicker）。
+- 透明度只取令牌：`fill-opacity` 取 `--xh-chart-area-alpha` / `--xh-chart-link-alpha`；渐变的 `stop-opacity` 只取 0 / 1。
+
+| 构件 | 取色 |
+| --- | --- |
+| 卡片底 | 不画，透出卡片的 `--xh-bg-page` |
+| 内容面 | `--xh-bg-surface` 底 + `--xh-border-default` 描边 |
+| 浮层面 | `--xh-bg-surface-raised` 底 + `--xh-border-default` 描边 |
+| 控件盒：字段、复选框、单选圈 | 只描 `--xh-border-control`，不填底；聚焦 `--xh-border-control-focus`，校验失败 `--xh-border-invalid` |
+| 按钮 | 主动作 `--xh-bg-brand` 实心；次要动作 `--xh-border-default` 描边；中性触发器 `--xh-bg-subtle` 淡底 |
+| 选中 / 当前 | 行与开关面 `--xh-bg-brand-subtle`；对号与指示条 `--xh-fg-brand`；格状当前 `--xh-bg-brand` |
+| 悬停行、打开中的触发器 | `--xh-bg-subtle` |
+| 轨道 | `--xh-bg-subtle-active`，已走过的一段 `--xh-bg-brand` |
+| 分隔线 | `--xh-border-subtle`；面的外边 `--xh-border-default` |
+| 图片占位 | `--xh-bg-subtle-hover-opaque` 底，山与日 `--xh-bg-subtle-active-opaque` |
+| 遮罩 | `--xh-bg-overlay` |
+| 数据标记 | 数据色（§7.6）；相邻填充之间用 `--xh-chart-surface` 线宽 2 分开 |
+
+**画什么**
+
+- 画组件缺省形态的识别特征：md 档、缺省 variant；语气即核心用途的组件（Alert、Badge、Progress、Toast、Notification）可以画非中性语气。
+- 浮层类画已打开的静态面板：触发器 + 面板，带箭头的浮层画箭头，模态画遮罩；不只画触发器。
+- 同族组件用同一套构件拼：字段类是控件盒 + 值条 + 尾部字形；下拉类是触发器 + 下方隔 4 的浮层面 + 24 高的行；集合类是 24 高的行、悬停面与行尾对号；图表类画示意性的数据图形（网格、坐标轴、刻度条与数据色），不画真实数据。
+- 各张图的信息量相近：主体占画布的一半到七成，不画说明性的注释与引线。
+- 不画动效：转圈、骨架、跑马灯与流式光标都画静止的一帧，没有循环、进场与悬停反馈。
+
+**字形**
+
+字形在 16 × 16 格里画，线宽 2，`stroke` 取前景令牌。写成「起点 + 相对命令」：起点相对格的左上角，挪位置只改起点。
+
+| 字形 | 起点 | 相对命令 |
+| --- | --- | --- |
+| `chevron-down` | 4, 6 | `l4 4 4-4` |
+| `chevron-up` | 4, 10 | `l4-4 4 4` |
+| `chevron-right` | 6, 4 | `l4 4-4 4` |
+| `chevron-left` | 10, 4 | `l-4 4 4 4` |
+| `check` | 3, 8 | `l3 3 7-7` |
+| `close` | 4, 4 | `l8 8m0-8l-8 8` |
+| `plus` | 8, 3 | `v10m-5-5h10` |
+| `minus` | 3, 8 | `h10` |
+| `more` | 3, 8 | `h0m5 0h0m5 0h0` |
+| `grip` | 6, 3 | `h0m4 0h0m-4 5h0m4 0h0m-4 5h0m4 0h0` |
+| `search` | 12, 7 | `a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5` |
+| `zoom-in` | 12, 7 | `a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5m-7-9v4m-2-2h4` |
+| `zoom-out` | 12, 7 | `a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5m-9-7h4` |
+| `arrow-up` | 8, 14 | `v-12m-5 5l5-5 5 5` |
+| `arrow-right` | 2, 8 | `h12m-5-5l5 5-5 5` |
+| `download` | 8, 2 | `v8m-4-4l4 4 4-4m-10 8h12` |
+| `upload` | 8, 10 | `v-8m-4 4l4-4 4 4m-10 8h12` |
+| `copy` | 6, 6 | `h8v8h-8zm-4 4v-8h8` |
+| `pencil` | 2, 14 | `l1-4 8-8 3 3-8 8z` |
+| `calendar` | 2, 4 | `h12v10h-12zm0 4h12m-9-6v3m6-3v3` |
+| `clock` | 14, 8 | `a6 6 0 1 1-12 0a6 6 0 1 1 12 0m-6-3v3l2 2` |
+| `info` | 14, 8 | `a6 6 0 1 1-12 0a6 6 0 1 1 12 0m-6-.5v3.5m0-6h0` |
+| `check-circle` | 14, 8 | `a6 6 0 1 1-12 0a6 6 0 1 1 12 0m-8.5 0l2 2 3-3.5` |
+| `alert` | 8, 2 | `l6.5 11.5h-13zm0 4.5v3m0 2.5h0` |
+| `bell` | 3, 12 | `h10l-1.5-2.5v-3a3.5 3.5 0 0 0-7 0v3zm3.5 2h3` |
+| `user` | 10.5, 5.5 | `a2.5 2.5 0 1 1-5 0a2.5 2.5 0 1 1 5 0m-7.5 8.5a5 5 0 0 1 10 0` |
+| `home` | 2, 8 | `l6-5 6 5m-10-1v7h8v-7` |
+| `file` | 3, 2 | `h6l4 4v8h-10zm6 0v4h4` |
+| `folder` | 2, 4 | `h4l2 2h6v7h-12z` |
+| `image` | 2, 3 | `h12v10h-12zm0 8l4-4 3 3 2-2 3 3` |
+| `link` | 6.5, 9.5 | `l3-3m-4.5.5l-1.5 1.5a2.8 2.8 0 0 0 4 4l1.5-1.5m2-2l1.5-1.5a2.8 2.8 0 0 0-4-4l-1.5 1.5` |
+| `eye` | 1, 8 | `q7-8 14 0q-7 8-14 0zm7-2a2 2 0 1 1 0 4a2 2 0 1 1 0-4` |
+| `paperclip` | 12, 7 | `l-5 5a2 2 0 0 1-3-3l6-6a3 3 0 0 1 4 4l-6 6` |
+| `sparkle` | 8, 2 | `q1 5 6 6q-5 1-6 6q-1-5-6-6q5-1 6-6z` |
+| `align-left` | 2, 4 | `h12m-12 4h8m-8 4h10` |
+| `align-center` | 2, 4 | `h12m-10 4h8m-9 4h10` |
+| `align-right` | 2, 4 | `h12m-8 4h8m-10 4h10` |
+| `play` | 5, 3 | `v10l8-5z` |
+| `pause` | 5.5, 3 | `v10m5-10v10` |
+| `refresh` | 13, 8 | `a5 5 0 1 1-1.5-3.5m1.5-2.5v4h-4` |
+| `rotate` | 3, 8 | `a5 5 0 1 1 1.5 3.5m-1.5 2.5v-4h4` |
+| `resize` | 14, 4 | `l-10 10m10-5l-5 5` |
+
+**环境**
+
+- 方向：示意图画的是界面布局，RTL 下整张水平镜像。方向固定的内容不镜像，根上写 `data-direction="fixed"`：图表分类的全部卡片（绘图区不随 RTL 镜像，§14.2），条码与二维码，代码、差异、JSON 与日志。
+- 强制色：卡片把示意图转成系统色线稿：有填充的形状画成 `Canvas` 面 + `CanvasText` 边，线与文字条取 `CanvasText`，引用品牌令牌的取 `Highlight` / `HighlightText`，禁用取 `GrayText`。示意图只按语义取令牌，不写强制色分支。
+- 密度与高对比：控件高度与线宽按画布固定，密度不改示意图；高对比随令牌加深描边。
+
+### 15.3 文案
 
 - 使用短句、事实和约束。
 - 先说用户能完成什么，不描述实现过程。
@@ -1016,7 +1147,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 错误文案说明发生了什么以及下一步怎么做，不责怪用户。
 - 标题、标签、按钮和单句提示不写多余标点。
 
-### 15.3 自动生成内容
+### 15.4 自动生成内容
 
 Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM 必须由源码生成或校验，不允许手工维护两份不一致的事实。
 
@@ -1030,7 +1161,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 4. Vue、React、Web Components 适配器。
 5. 共享 CSS 和组件令牌。
 6. 三端一致性与真实浏览器测试。
-7. 文档、示例、总览预览和生成物。
+7. 文档、示例、总览示意图和生成物。
 8. changeset。
 
 不得在重建共享 dist 时并行运行依赖该 dist 的适配器测试。
@@ -1077,7 +1208,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - [ ] 正常、交互、禁用、加载、错误和退出状态齐全。
 - [ ] 亮暗、密度、RTL、指针和无障碍环境通过。
 - [ ] 组件槽、文档、CEM 和公开面闭环。
-- [ ] 示例无冗余，总览有独立预览。
+- [ ] 示例无冗余，总览有按 §15.2 画的示意图。
 - [ ] 单测、一致性、浏览器和构建门禁通过。
 - [ ] 图表：数据色经 `--xh-chart-*` 且色板门禁通过；摘要与数据表存在；非颜色通道齐备；SSR 首屏无偏移。
 - [ ] changeset 和独立提交完成。
@@ -1097,7 +1228,8 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - 禁止除 Button 外的触发器缺省品牌实心。
 - 禁止正方盒取 pill、禁止分页点两种语言。
 - 禁止整行 / disclosure trigger 缩放，禁止集合行零按压反馈。
-- 禁止皮肤手写 scrollbar-width / scrollbar-color，禁止总览预览缩放、内联 px 与裸 overflow。
+- 禁止皮肤手写 scrollbar-width / scrollbar-color。
+- 禁止总览卡片挂真实组件；禁止总览示意图写散色、文字与动画。
 - 禁止 glass 材质及其兼容别名。
 - 禁止 liquid 用于内容层、瞬态浮层与模态；禁止 liquid 嵌套；禁止 liquid 上的选中用品牌色字。
 - 禁止皮肤直接取 `--xh-color-neutral-*` 原语画描边与淡底（墨色域无法重映射）。

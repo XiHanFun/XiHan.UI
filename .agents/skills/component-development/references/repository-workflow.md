@@ -36,7 +36,7 @@ git log -5 --oneline
 | 三端一致性套件 | `ui/tooling/testing/src/suites` |
 | 组件文档文案 | Headless 的 `<component>.doc.md` |
 | 示例 | `docs/.vitepress/demos/<component>` |
-| 总览预览 | `docs/.vitepress/catalog/<component>.vue` |
+| 总览示意图 | `docs/.vitepress/catalog/<component>.vue`（内联 SVG，写法见设计真源 §15.2） |
 | 文档清单 | `ui/scripts/component-docs.manifest.json` |
 
 生成文件必须由真源生成，不要直接修生成结果。
