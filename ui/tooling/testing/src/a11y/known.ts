@@ -1,4 +1,4 @@
-import type { KnownViolations } from './run'
+import type { A11yTheme, KnownViolations } from './run'
 
 /**
  * axe 存量违规登记表，两个适配器共用；修好一条即从表里删一条，否则判登记过期。
@@ -35,6 +35,19 @@ export const knownA11yViolations: KnownViolations = {
   'file-upload': { 'color-contrast': '禁用时文件条目的名字与大小是全库统一的 fg-disabled 一档（浅色 2.58:1 落 bg-surface、深色 2.27:1），按 1.4.3 失效控件豁免；listitem 不能写 aria-disabled，axe 看得见' },
 }
 
+/**
+ * 只在某一主题下命中的登记，各适配器基线共用。
+ *
+ * 占位态的刷新相位：已有节点时重新取数不换成占位，树的行保留上一帧淡到 --xh-state-disabled-opacity。
+ * 这一段里树报 aria-busy、行不接指针也不进按压面，是暂时失效的控件；夹具「整棵树禁用 / 加载时」正好停在
+ * 这一相位，淡下去的行文字被 axe 按常态文字量对比度。深色档淡下之后仍够 4.5:1，只有浅色档命中
+ */
+export const knownA11yViolationsByTheme = {
+  light: {
+    tree: { 'color-contrast': '加载中（已有节点时重新取数）行保留上一帧淡到禁用透明度，树报 aria-busy、行不接指针与按压，按 1.4.3 失效控件豁免' },
+  },
+} satisfies Partial<Record<A11yTheme, KnownViolations>>
+
 /** 全组件通用登记，整轮至少命中一次即可。 */
 export const knownA11yViolationsEverywhere: Readonly<Record<string, string>> = {}
 
@@ -46,6 +59,7 @@ const replayExempt: Readonly<Record<string, string>> = {
 /** Vue 适配器的基线。 */
 export const vueA11yBaseline = {
   known: knownA11yViolations,
+  knownByTheme: knownA11yViolationsByTheme,
   knownEverywhere: knownA11yViolationsEverywhere,
   replayExempt,
 }
@@ -57,6 +71,7 @@ export const wcA11yBaseline = {
     // 必需子节点由作者手写
     steps: { 'aria-required-children': 'WC 侧作者手写的部件缺角色要求的直接子节点' },
   },
+  knownByTheme: knownA11yViolationsByTheme,
   knownEverywhere: knownA11yViolationsEverywhere,
   replayExempt,
 }
@@ -64,6 +79,7 @@ export const wcA11yBaseline = {
 /** React 适配器的基线，在共用表之上逐条列出 React 独有的登记。 */
 export const reactA11yBaseline = {
   known: knownA11yViolations,
+  knownByTheme: knownA11yViolationsByTheme,
   knownEverywhere: knownA11yViolationsEverywhere,
   replayExempt,
 }
