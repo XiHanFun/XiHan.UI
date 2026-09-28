@@ -6,9 +6,11 @@
 // 提供 table 相关实现。
 
 import type { DragAnnounceKind } from '../shared/drag'
+import type { TableLayoutNeeds } from './table.layout'
 import type {
   TableColumnPreference,
   TableDropTarget,
+  TableLayout,
   TablePressedKey,
   TableRowDef,
   TableRowReorderReason,
@@ -22,8 +24,9 @@ import { clampSize, createPointerSession, resolveSessionDoc, shouldActivate } fr
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { dragAnnouncement, hitAlong, hitAlongNested, insertionIndex } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
-import { orderColumnIds, resolveTableColumns } from './table.columns'
+import { orderColumnIds, resolveTableColumns, tableLeafColumns } from './table.columns'
 import { canOwnChildren, draggableColumnIds, reorderTableRows, tableRowMoveOf, toColumnPreferenceIndex } from './table.drag'
+import { measureTableLayout, sameTableLayout, TABLE_EMPTY_LAYOUT, tableLayoutNeeds } from './table.layout'
 import { flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
@@ -117,17 +120,22 @@ export const tableMachine = createMachine({
     announcement: cell<string>(() => ({ defaultValue: '' })),
     // 按压通道：正被按住的那一个，按部件键记；与排序、选中、展开无关
     pressed: cell<TablePressedKey | null>(() => ({ defaultValue: null })),
+    // 实测版面：只由 measureLayout 效应写，值没变不写
+    layout: cell<TableLayout>(() => ({ defaultValue: TABLE_EMPTY_LAYOUT, isEqual: sameTableLayout })),
   }),
   // 按住途中转入加载：取数在途各把手都动不了，不会再来 keyup，按压面由机器自己收
   watch: ({ track, prop, action }) => {
     track([() => prop('loading')], () => action(['releaseWhenInert']))
   },
   refs: () => ({
+    getRootEl: () => null,
     resize: null,
     columnDrag: null,
     rowDrag: null,
   }),
   initialState: () => 'idle',
+  // 版面实测与拖动 / 改宽的过程无关，全程挂着；需不需要量由 props 现判
+  effects: ['measureLayout'],
   // 按压通道与拖动 / 改宽的过程无关，四个状态都认；加载中不进，部件自身的禁用随事件带入
   on: {
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
@@ -200,6 +208,78 @@ export const tableMachine = createMachine({
       },
     },
     effects: {
+      /**
+       * 挂载后实测版面：冻结列里没写数字宽度的列要量列头宽度才算得出吸附偏移，
+       * 纵向合并格（cellSpan、多级表头里较浅的叶子列）要量行位才铺得到最后一行。
+       * 两样都不需要时不观察任何行与列头；root 的子树变了（行进出、表头换层）再现判一次。
+       * 量在下一帧：一次渲染里连着好几处变化，只量一回。
+       */
+      measureLayout: ({ refs, prop, context, scope, flush }) => {
+        let disposed = false
+        let frame = 0
+        let stop: (() => void) | null = null
+        const needs = (): TableLayoutNeeds => tableLayoutNeeds(prop('columns') ?? [], context.get('columnPreference'), !!prop('cellSpan'))
+        const measure = (): void => {
+          frame = 0
+          const root = refs.get('getRootEl')()
+          if (disposed || !root)
+            return
+          context.set('layout', measureTableLayout(root, needs()))
+        }
+        const schedule = (): void => {
+          if (disposed || frame)
+            return
+          const win = scope.getWin()
+          if (typeof win.requestAnimationFrame === 'function')
+            frame = win.requestAnimationFrame(measure)
+          else measure()
+        }
+        flush(() => {
+          const root = refs.get('getRootEl')()
+          if (disposed || !root)
+            return
+          const win = scope.getWin()
+          const observed = new Set<Element>()
+          const resize = typeof win.ResizeObserver === 'function' ? new win.ResizeObserver(schedule) : null
+          // 行与列头是一批批进出的：只盯需要的那一类，新来的补上观察
+          const observeParts = (): void => {
+            const need = needs()
+            if (!resize || (!need.columns && !need.rows))
+              return
+            const selector = [
+              need.rows ? '[data-scope="table"][data-part="row"]' : '',
+              need.columns ? '[data-scope="table"][data-part="column-header"]' : '',
+            ].filter(Boolean).join(',')
+            for (const el of root.querySelectorAll(selector)) {
+              if (!observed.has(el)) {
+                resize.observe(el)
+                observed.add(el)
+              }
+            }
+          }
+          const mutation = typeof win.MutationObserver === 'function'
+            ? new win.MutationObserver(() => {
+                observeParts()
+                schedule()
+              })
+            : null
+          mutation?.observe(root, { childList: true, subtree: true })
+          resize?.observe(root)
+          observeParts()
+          schedule()
+          stop = () => {
+            resize?.disconnect()
+            mutation?.disconnect()
+            observed.clear()
+          }
+        })
+        return () => {
+          disposed = true
+          if (frame)
+            scope.getWin().cancelAnimationFrame?.(frame)
+          stop?.()
+        }
+      },
       /** 跟手交给指针会话：拖出表头仍要跟，系统收走指针也会收尾。 */
       trackResizePointer: ({ scope, send }) => {
         const session = createPointerSession({
@@ -472,7 +552,7 @@ export const tableMachine = createMachine({
 
         if (e.toIndex !== undefined) {
           // 基线取「当下的列序」：没有偏好时就是作者给的原顺序
-          const ids = (prop('columns') ?? []).map(column => column.id)
+          const ids = tableLeafColumns(prop('columns') ?? []).map(column => column.id)
           const ordered = orderColumnIds(ids, current.order)
           const from = ordered.indexOf(e.columnId)
           if (from >= 0) {
@@ -495,7 +575,7 @@ export const tableMachine = createMachine({
         if (e.type !== 'SORT.TOGGLE')
           return
         // 没声明 sortable 的列不进排序链，否则那一列的表头不报 aria-sort
-        const column = (prop('columns') ?? []).find(item => item.id === e.value)
+        const column = tableLeafColumns(prop('columns') ?? []).find(item => item.id === e.value)
         if (!column?.sortable)
           return
         context.set('sort', tableToggleSort(context.get('sort'), e.value, { append: e.append }))
@@ -636,7 +716,7 @@ function currentColumnWidth(
   columnId: string,
 ): number | null {
   const override = context.get('columnPreference').widths?.[columnId]
-  const raw = override ?? prop('columns')?.find(c => c.id === columnId)?.width
+  const raw = override ?? tableLeafColumns(prop('columns') ?? []).find(c => c.id === columnId)?.width
   return typeof raw === 'number' && Number.isFinite(raw) ? raw : null
 }
 
@@ -653,7 +733,7 @@ function writeColumnWidth(
   columnId: string,
   next: number,
 ): void {
-  const def = prop('columns')?.find(c => c.id === columnId)
+  const def = tableLeafColumns(prop('columns') ?? []).find(c => c.id === columnId)
   const { width } = clampSize({ width: next, height: 0 }, {
     minWidth: def?.minWidth ?? TABLE_COLUMN_MIN_WIDTH,
     maxWidth: def?.maxWidth,
@@ -685,7 +765,7 @@ function draggableSegment(
   prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
 ): string[] {
   return draggableColumnIds(resolveTableColumns(
-    prop('columns') ?? [],
+    tableLeafColumns(prop('columns') ?? []),
     prop('prefixColumns') ?? [],
     context.get('columnPreference'),
   ))
@@ -707,7 +787,7 @@ function announceColumnDrag(
     total: segment.length,
     // 列名比列 id 好听。作者没给 translations.item 时退回列的 label
     translations: {
-      item: (value: string) => (prop('columns') ?? []).find(c => c.id === value)?.label ?? value,
+      item: (value: string) => tableLeafColumns(prop('columns') ?? []).find(c => c.id === value)?.label ?? value,
       ...t,
     },
   }))
@@ -730,7 +810,7 @@ function commitColumnMove(
   const segment = draggableSegment(context, prop)
   const within = insertionIndex(segment, columnId, target)
   const toIndex = toColumnPreferenceIndex(
-    (prop('columns') ?? []).map(column => column.id),
+    tableLeafColumns(prop('columns') ?? []).map(column => column.id),
     context.get('columnPreference').order,
     columnId,
     target,

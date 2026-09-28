@@ -7,7 +7,7 @@
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { MeasuredRow } from './table.drag'
-import type { TableApi, TableColumn, TableColumnDef, TableColumnSetting, TablePressedKey, TableSchema, TableVisibleRow } from './table.types'
+import type { TableApi, TableColumn, TableColumnDef, TableColumnSetting, TableHeaderCell, TablePressedKey, TableSchema, TableVisibleRow } from './table.types'
 import {
   cascadeState,
   contains,
@@ -27,7 +27,7 @@ import { flatMoveIntentFromKey } from '../shared/drag'
 import { isEditableTarget } from '../shared/editable-target'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
-import { orderColumnIds, resolveTableColumns } from './table.columns'
+import { buildTableHeaderRows, orderColumnIds, resolveTableColumns, tableColumnAncestors, tableLeafColumns } from './table.columns'
 import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds, rowGroupRects, rowReorderReason, tableRowMoveCommand, treeRowIntentFromKey } from './table.drag'
 import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableCascades, tableSelectionMode } from './table.machine'
 import {
@@ -42,9 +42,6 @@ import {
 import { tableSortDirectionOf, tableSortIndexOf } from './table.sort'
 
 const parts = tableAnatomy.build()
-
-/** 表头恒占行号空间的第 1 行，数据行因此从第 2 行起算。 */
-const HEADER_ROW_COUNT = 1
 
 /** 列宽：数字按 px，字符串原样交给 CSS。 */
 function columnSize(width: string | number | undefined): string | undefined {
@@ -67,6 +64,23 @@ function columnSizeStyle(width: string | number | undefined, pinned: boolean): R
   if (!size)
     return {}
   return pinned ? { inlineSize: size, flexGrow: 0, flexShrink: 0 } : { inlineSize: size }
+}
+
+/**
+ * 合并格（横跨几列的分组表头、横向合并的单元格）的宽度：跨过的各列宽度相加，伸缩系数也相加，
+ * 与它下面那几列各自伸缩之后的总宽对得上。有一列没写宽度就只按伸缩系数分，宽度交给内容。
+ */
+function spanSizeStyle(
+  defs: readonly (TableColumnDef | undefined)[],
+  widthOf: (def: TableColumnDef | undefined) => string | number | undefined,
+  pinnedOf: (def: TableColumnDef | undefined) => boolean,
+): Record<string, unknown> {
+  const sizes = defs.map(def => columnSize(widthOf(def)))
+  const grow = defs.reduce((n, def) => n + (pinnedOf(def) ? 0 : 1), 0)
+  const style: Record<string, unknown> = { flexGrow: grow, flexShrink: grow }
+  if (sizes.every(size => size != null))
+    style.inlineSize = sizes.length === 1 ? sizes[0] : `calc(${sizes.join(' + ')})`
+  return style
 }
 
 /**
@@ -142,7 +156,9 @@ export function connectTable<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): TableApi<T> {
   const { context, prop, send, scope } = service
-  const authorColumns = prop('columns') ?? []
+  // 分组列只在表头占格：生效列、列号、列偏好与设置区都只认叶子列
+  const authorTree = prop('columns') ?? []
+  const authorColumns = tableLeafColumns(authorTree)
   const rows = prop('rows') ?? []
   // 前缀列插在最前面并占住列号：不占的话右侧所有列的 aria-colindex 会整体串位。
   // 数据列按列偏好排过序、藏过、覆盖过宽与冻结
@@ -152,6 +168,20 @@ export function connectTable<T extends PropTypes>(
     prop('prefixColumns') ?? [],
     columnPreference,
   )
+  // 表头逐层排好：没有分组时只有一行
+  const headerRows = buildTableHeaderRows(columns, tableColumnAncestors(authorTree))
+  const headerRowCount = headerRows.length
+  const headerCells = new Map<string, TableHeaderCell>()
+  const headerCellFirst = new Map<string, TableHeaderCell>()
+  for (const cell of headerRows.flat()) {
+    const key = `${cell.id}\u0000${cell.level}`
+    if (!headerCells.has(key))
+      headerCells.set(key, cell)
+    // 省略 level 时：叶子列取它起始的那一格，分组取它出现的第一处
+    if (!cell.covered && !headerCellFirst.has(cell.id))
+      headerCellFirst.set(cell.id, cell)
+  }
+  const layout = context.get('layout')
   const sort = context.get('sort')
   const selection = context.get('selection')
   const expandedValue = context.get('expandedValue')
@@ -199,7 +229,7 @@ export function connectTable<T extends PropTypes>(
   const dataRowIndex = new Map<string, number>()
   const detailRowIndex = new Map<string, number>()
   for (const row of visibleRows) {
-    const index = HEADER_ROW_COUNT + row.index + 1
+    const index = headerRowCount + row.index + 1
     if (row.kind === 'data') {
       metaIndex.set(row.id, row)
       dataRowIndex.set(row.id, index)
@@ -286,13 +316,15 @@ export function connectTable<T extends PropTypes>(
   // 两个状态节点常挂且互斥，只在表体为空时显形
   const showLoading = loading && isEmpty
   const showEmpty = !loading && isEmpty
-  const rowCount = HEADER_ROW_COUNT + visibleRows.length + (hasFooter ? 1 : 0)
+  const rowCount = headerRowCount + visibleRows.length + (hasFooter ? 1 : 0)
 
   const metaOf = (value: string): TableVisibleRow | undefined => metaIndex.get(value)
   const columnOf = (value: string): TableColumnDef | undefined => columnIndexDefs.get(value)
 
-  // 吸附列：同侧多列时按数字列宽累加偏移。行首侧从左往右加、行尾侧从右往左加；
-  // 碰到宽度不是数字的列就算不下去，那一侧从这列起都退回贴边（偏移留空，皮肤按 0 处理）
+  // 吸附列：同侧多列时按列宽累加偏移。行首侧从左往右加、行尾侧从右往左加；
+  // 宽度不是数字的列取挂载后实测的列头宽度，还没量到时那一侧从这列起暂时退回贴边（偏移留空，皮肤按 0 处理）
+  const insetWidth = (def: TableColumnDef): number | undefined =>
+    typeof def.width === 'number' ? def.width : layout.columnWidths[def.id]
   const stickySideOf = (def: TableColumnDef | undefined): 'start' | 'end' | undefined =>
     def?.sticky === true ? 'start' : def?.sticky === 'start' || def?.sticky === 'end' ? def.sticky : undefined
   const stickyInset = new Map<string, number>()
@@ -303,7 +335,7 @@ export function connectTable<T extends PropTypes>(
         continue
       if (acc != null)
         stickyInset.set(def.id, acc)
-      acc = acc != null && typeof def.width === 'number' ? acc + def.width : null
+      acc = acc != null && insetWidth(def) != null ? acc + insetWidth(def)! : null
     }
     acc = 0
     for (let i = columns.length - 1; i >= 0; i--) {
@@ -312,7 +344,7 @@ export function connectTable<T extends PropTypes>(
         continue
       if (acc != null)
         stickyInset.set(def.id, acc)
-      acc = acc != null && typeof def.width === 'number' ? acc + def.width : null
+      acc = acc != null && insetWidth(def) != null ? acc + insetWidth(def)! : null
     }
   }
   const stickyAttrs = (def: TableColumnDef | undefined): Record<string, unknown> => {
@@ -325,6 +357,93 @@ export function connectTable<T extends PropTypes>(
       ...(inset != null && inset > 0 ? { style: { '--xh-table-sticky-inset': `${inset}px` } } : {}),
     }
   }
+  /**
+   * 单元格合并：逐格问 cellSpan，记下起点的跨度与被合并掉的格子。
+   * 合并只在可见数据行之间，遇到展开的详情行截断；横向不越过最后一列。
+   * 被合并掉的格子分两种：与起点同一行的（横向跨过的）不渲染，下面行里的在合并区最左那一列留占位，
+   * 占位带着合并区的宽度，其余列同样不渲染。
+   */
+  interface SpanOrigin { rowSpan: number, colSpan: number, rowIndex: number }
+  interface SpanCover { origin: string, spacer: boolean, colSpan: number, columnIndex: number }
+  const spanKey = (rowId: string, columnId: string): string => `${rowId}\u0000${columnId}`
+  const spanOrigins = new Map<string, SpanOrigin>()
+  const spanCovers = new Map<string, SpanCover>()
+  const cellSpan = prop('cellSpan')
+  if (cellSpan) {
+    const rowDefs = new Map(rows.map(row => [row.id, row]))
+    // 数据行在可见序列里的位置；中间夹了详情行的两行不算相邻
+    const runs: TableVisibleRow[][] = []
+    let run: TableVisibleRow[] = []
+    for (const row of visibleRows) {
+      if (row.kind === 'data') {
+        run.push(row)
+      }
+      else if (run.length) {
+        runs.push(run)
+        run = []
+      }
+    }
+    if (run.length)
+      runs.push(run)
+    let dataIndex = 0
+    for (const segment of runs) {
+      segment.forEach((row, r) => {
+        const rowDef = rowDefs.get(row.id)
+        const index = dataIndex + r
+        columns.forEach((column, c) => {
+          const key = spanKey(row.id, column.id)
+          if (spanCovers.has(key) || !rowDef)
+            return
+          const span = cellSpan({ row: rowDef, rowIndex: index, column, columnIndex: c })
+          const rowSpan = Math.max(1, Math.min(Math.trunc(span?.rowSpan ?? 1) || 1, segment.length - r))
+          const colSpan = Math.max(1, Math.min(Math.trunc(span?.colSpan ?? 1) || 1, columns.length - c))
+          if (rowSpan === 1 && colSpan === 1)
+            return
+          spanOrigins.set(key, { rowSpan, colSpan, rowIndex: dataRowIndex.get(row.id) ?? 0 })
+          for (let dr = 0; dr < rowSpan; dr++) {
+            for (let dc = 0; dc < colSpan; dc++) {
+              if (dr === 0 && dc === 0)
+                continue
+              const target = segment[r + dr]!
+              const col = columns[c + dc]!
+              spanCovers.set(spanKey(target.id, col.id), { origin: key, spacer: dr > 0 && dc === 0, colSpan, columnIndex: c })
+            }
+          }
+        })
+      })
+      dataIndex += segment.length
+    }
+  }
+  const cellSpanOf = (rowId: string, columnId: string): { rowSpan: number, colSpan: number, covered: boolean } => {
+    const key = spanKey(rowId, columnId)
+    const origin = spanOrigins.get(key)
+    return origin
+      ? { rowSpan: origin.rowSpan, colSpan: origin.colSpan, covered: false }
+      : { rowSpan: 1, colSpan: 1, covered: spanCovers.has(key) }
+  }
+
+  /**
+   * 纵向合并格的高度：从起点行的内容盒上沿铺到最后一行的下沿；多出自己那一行的部分用负的下外边距让回去，
+   * 自己那一行的高度因此不被它撑高。行位还没量到时不写，合并格先按普通格子排。
+   */
+  const rowSpanStyle = (startRowIndex: number, rowSpan: number): Record<string, string> => {
+    const first = layout.rowBoxes[startRowIndex]
+    const last = layout.rowBoxes[startRowIndex + rowSpan - 1]
+    if (!first || !last)
+      return {}
+    return {
+      '--xh-_table-span-block': `${Math.max(0, last.bottom - first.top)}px`,
+      '--xh-_table-span-overhang': `${Math.max(0, last.bottom - first.bottom)}px`,
+    }
+  }
+  /** 横跨几列的格子（分组表头、合并单元格、下面行里的占位）：宽度按跨过的各列相加。 */
+  const spanColumnsStyle = (startIndex: number, colSpan: number): Record<string, unknown> =>
+    spanSizeStyle(
+      columns.slice(startIndex, startIndex + colSpan),
+      def => def?.width,
+      def => (def ? hasWidthOverride(def.id) : false),
+    )
+
   const isSelected = (value: string): boolean => (cascaded ? cascaded.checked.has(value) : tableRowSelected(selection, value))
   /** 级联下部分子孙勾中的父行：把手画半选。行本身仍报 aria-selected=false——row 角色没有 mixed 这一档。 */
   const isIndeterminate = (value: string): boolean => cascaded?.indeterminate.has(value) ?? false
@@ -504,6 +623,9 @@ export function connectTable<T extends PropTypes>(
     empty: isEmpty,
     rowCount,
     columnCount: columns.length,
+    headerRows,
+    headerRowCount,
+    cellSpanOf,
     isSelected,
     isExpanded,
     sortDirection,
@@ -745,10 +867,11 @@ export function connectTable<T extends PropTypes>(
     }),
 
     // 表头行不进方向键序列，也不认领 Tab 位；表头里的排序与全选把手各自占位
-    getHeaderRowProps: () => normalize.element({
+    getHeaderRowProps: header => normalize.element({
       ...parts.row.attrs,
       'role': 'row',
-      'aria-rowindex': 1,
+      // 多级表头逐层占行号：第几行表头就是第几行
+      'aria-rowindex': Math.max(1, Math.min(Math.trunc(header?.level ?? 1) || 1, headerRowCount)),
       'data-section': 'header',
     }),
 
@@ -855,7 +978,38 @@ export function connectTable<T extends PropTypes>(
     },
 
     getColumnHeaderProps: (column) => {
+      const cell = column.level != null
+        ? headerCells.get(`${column.value}\u0000${column.level}`)
+        : headerCellFirst.get(column.value)
+      // 被上层的叶子列纵向跨过的占位：保住那一列的宽度与冻结，对读屏隐藏
+      if (cell?.covered) {
+        const def = columnOf(column.value)
+        const sticky = stickyAttrs(def)
+        const sizeStyle = columnSizeStyle(def?.width, hasWidthOverride(column.value))
+        return normalize.element({
+          ...parts['column-header'].attrs,
+          [ITEM_VALUE_ATTR]: column.value,
+          'aria-hidden': true,
+          'data-covered': dataAttr(true),
+          ...sticky,
+          ...(Object.keys(sizeStyle).length ? { style: { ...sticky.style as Record<string, unknown>, ...sizeStyle } } : {}),
+        })
+      }
+      // 分组格：横跨它的叶子列，不排序、不改宽、不冻结
+      if (cell && !cell.leaf) {
+        return normalize.element({
+          ...parts['column-header'].attrs,
+          [ITEM_VALUE_ATTR]: column.value,
+          'role': 'columnheader',
+          'aria-colindex': cell.colIndex,
+          'aria-colspan': cell.colSpan > 1 ? cell.colSpan : undefined,
+          'data-group': dataAttr(true),
+          'style': spanColumnsStyle(cell.colIndex - 1, cell.colSpan),
+        })
+      }
       const def = columnOf(column.value)
+      // 较浅的叶子列纵向跨到最后一行表头
+      const headerSpan = cell && cell.rowSpan > 1 ? cell.rowSpan : undefined
       const sortable = !!def?.sortable
       const direction = sortDirection(column.value)
       const sizeStyle = columnSizeStyle(def?.width, hasWidthOverride(column.value))
@@ -866,6 +1020,8 @@ export function connectTable<T extends PropTypes>(
         [ITEM_VALUE_ATTR]: column.value,
         'role': 'columnheader',
         'aria-colindex': columnIndex.get(column.value),
+        'aria-rowspan': headerSpan,
+        'data-row-span': dataAttr(!!headerSpan),
         // 可排序但没在排的列报 none，不可排序的列不写 aria-sort
         'aria-sort': sortable
           ? (direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none')
@@ -876,8 +1032,15 @@ export function connectTable<T extends PropTypes>(
         'data-dragging': dataAttr(draggingColumn === column.value),
         'data-drop': dropSide(column.value),
         ...sticky,
-        // 列宽由连接层写进内联 inline-size：那条轴归它，皮肤不再声明；吸附偏移与它同住一个 style
-        ...(Object.keys(sizeStyle).length ? { style: { ...sticky.style as Record<string, unknown>, ...sizeStyle } } : {}),
+        // 列宽由连接层写进内联 inline-size：那条轴归它，皮肤不再声明；吸附偏移与纵向合并的高度与它同住一个 style
+        ...(() => {
+          const style = {
+            ...sticky.style as Record<string, unknown>,
+            ...sizeStyle,
+            ...(headerSpan && cell ? rowSpanStyle(cell.level, headerSpan) : {}),
+          }
+          return Object.keys(style).length ? { style } : {}
+        })(),
       })
     },
 
@@ -890,10 +1053,29 @@ export function connectTable<T extends PropTypes>(
 
     getCellProps: (cell) => {
       const def = columnOf(cell.value)
-      const sizeStyle = columnSizeStyle(def?.width, hasWidthOverride(cell.value))
       const sticky = stickyAttrs(def)
-      // 跨列数只在真的跨了列时报，1 是默认值
-      const colSpan = cell.colSpan != null && cell.colSpan > 1 ? cell.colSpan : undefined
+      const cover = cell.row != null ? spanCovers.get(spanKey(cell.row, cell.value)) : undefined
+      // 被合并掉的格子：同一行里横向跨过的不渲染；下面行里合并区最左那一列留占位保住宽度，其余不渲染
+      if (cover) {
+        return normalize.element({
+          ...parts.cell.attrs,
+          [ITEM_VALUE_ATTR]: cell.value,
+          'aria-hidden': true,
+          'data-covered': dataAttr(true),
+          'hidden': cover.spacer ? undefined : true,
+          ...sticky,
+          'style': { ...sticky.style as Record<string, unknown>, ...spanColumnsStyle(cover.columnIndex, cover.colSpan) },
+        })
+      }
+      const origin = cell.row != null ? spanOrigins.get(spanKey(cell.row, cell.value)) : undefined
+      // 跨列数只在真的跨了列时报，1 是默认值；合并区算出来的与作者写的取大者
+      const spanCols = Math.max(cell.colSpan ?? 1, origin?.colSpan ?? 1)
+      const colSpan = spanCols > 1 ? spanCols : undefined
+      const rowSpan = origin && origin.rowSpan > 1 ? origin.rowSpan : undefined
+      const sizeStyle = origin && origin.colSpan > 1
+        ? spanColumnsStyle(columnIndex.get(cell.value)! - 1, origin.colSpan)
+        : columnSizeStyle(def?.width, hasWidthOverride(cell.value))
+      const spanStyle = rowSpan && origin ? rowSpanStyle(origin.rowIndex, rowSpan) : {}
       return normalize.element({
         ...parts.cell.attrs,
         // 列身份与表头格发同一份：少了它，使用者按列写的样式只命中表头，
@@ -902,6 +1084,8 @@ export function connectTable<T extends PropTypes>(
         'role': 'gridcell',
         'aria-colindex': columnIndex.get(cell.value),
         'aria-colspan': colSpan,
+        'aria-rowspan': rowSpan,
+        'data-row-span': dataAttr(!!rowSpan),
         // 表头与脚注的格子不给 row，也就没有选中/禁用可言
         'data-selected': cell.row != null ? dataAttr(isSelected(cell.row)) : undefined,
         'data-disabled': cell.row != null ? dataAttr(isRowDisabled(cell.row)) : undefined,
@@ -909,7 +1093,9 @@ export function connectTable<T extends PropTypes>(
         'data-dragging': dataAttr(draggingColumn === cell.value),
         'data-drop': dropSide(cell.value),
         ...sticky,
-        ...(Object.keys(sizeStyle).length ? { style: { ...sticky.style as Record<string, unknown>, ...sizeStyle } } : {}),
+        ...(Object.keys(sizeStyle).length || Object.keys(spanStyle).length
+          ? { style: { ...sticky.style as Record<string, unknown>, ...sizeStyle, ...spanStyle } }
+          : {}),
       })
     },
 

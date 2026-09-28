@@ -39191,6 +39191,40 @@
     white-space: nowrap;
   }
 
+  /* 纵向合并：起点格（cellSpan 合并的单元格、多级表头里较浅的叶子列头）铺满合并的几行，
+     高度由连接层实测行位后写进私有槽；多出自己那一行的部分用负的下外边距让回去，自己那一行不被撑高。
+     它压在下面几行之上，底色随起点行（表头随表头底），挡住那一列里的行间线。量到之前按普通格子排 */
+  [data-scope='table']:is([data-part='cell'], [data-part='column-header'])[data-row-span] {
+    /* 缺省即不铺开：连接层量到行位后在内联样式里改写这两支 */
+    --xh-_table-span-block: auto;
+    --xh-_table-span-overhang: 0px;
+
+    position: relative;
+    z-index: var(--xh-table-span-layer, 1);
+    align-self: flex-start;
+    block-size: var(--xh-_table-span-block);
+    margin-block-end: calc(-1 * var(--xh-_table-span-overhang));
+    background: inherit;
+  }
+
+  /* 被合并掉的格子只留位置（带着列宽与冻结）：内容与底色都不画，对读屏已隐藏 */
+  [data-scope='table']:is([data-part='cell'], [data-part='column-header'])[data-covered] {
+    visibility: hidden;
+  }
+
+  /* 高对比档里合并格的底被换成系统底色，盖住行间线这件事照旧成立；补一圈系统描边标出合并区 */
+  @media (forced-colors: active) {
+    [data-scope='table']:is([data-part='cell'], [data-part='column-header'])[data-row-span] {
+      outline: var(--xh-stroke-thin) solid CanvasText;
+      outline-offset: calc(-1 * var(--xh-stroke-thin));
+    }
+  }
+
+  /* 分组表头横跨它的几列，名字居中压在这几列正上方 */
+  [data-scope='table'][data-part='column-header'][data-group] {
+    justify-content: center;
+  }
+
   /* 横向吸附：钉在滚动容器的一侧。背景继承自行，跟着选中/高亮一起变，
      滚过去时不会露出一块与所在行不同色的补丁。
      同侧多列时的偏移由连接层按前面各列的宽度累加好写进 --xh-table-sticky-inset */

@@ -28,6 +28,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
 import {
   TableColumnProvider,
+  TableHeaderLevelProvider,
   TableProvider,
   TableRowProvider,
   TableSectionProvider,
@@ -35,6 +36,7 @@ import {
   useOptionalTableRowContext,
   useTableColumnContext,
   useTableContext,
+  useTableHeaderLevel,
   useTableRowContext,
   useTableSection,
 } from './context'
@@ -103,6 +105,9 @@ export type TableRootSlotProps = Pick<
   | 'toggleSelectAll'
   | 'toggleExpandRow'
   | 'rowReorderDisabledReason'
+  | 'headerRows'
+  | 'headerRowCount'
+  | 'cellSpanOf'
 >
 
 /**
@@ -142,6 +147,8 @@ export interface XhTableRootProps extends RootElementProps {
   cascade?: boolean
   /** 级联下对外选中值的收敛策略，默认 child。 */
   checkedStrategy?: CascadeStrategy
+  /** 单元格合并：逐格询问合并区的大小，与 antd 的 spanMethod 同一种写法。 */
+  cellSpan?: TableProps['cellSpan']
   /** 需要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插入最前面并占用列号。 */
   prefixColumns?: TableColumnKind[]
   /** 列偏好：给定即受控。持久化归使用者，库只负责把它算进生效列。 */
@@ -192,6 +199,7 @@ export function XhTableRoot({
   selectionMode,
   cascade,
   checkedStrategy,
+  cellSpan,
   prefixColumns,
   columnPreference,
   defaultColumnPreference,
@@ -231,6 +239,7 @@ export function XhTableRoot({
     selectionMode,
     cascade,
     checkedStrategy,
+    cellSpan,
     prefixColumns,
     columnPreference,
     defaultColumnPreference,
@@ -278,7 +287,13 @@ export function XhTableRoot({
         empty: api.empty,
         loading: api.loading,
       })}
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
+      >
         {renderSlot(children, {
           columns: api.columns,
           columnPreference: api.columnPreference,
@@ -290,6 +305,9 @@ export function XhTableRoot({
           setColumnPreference: api.setColumnPreference,
           rowNumber: api.rowNumber,
           visibleRows: api.visibleRows,
+          headerRows: api.headerRows,
+          headerRowCount: api.headerRowCount,
+          cellSpanOf: api.cellSpanOf,
           sort: api.sort,
           selection: api.selection,
           selectionState: api.selectionState,
@@ -403,6 +421,8 @@ export function XhTableFooter({ children, ...rest }: XhTableFooterProps): ReactN
 export interface XhTableRowProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   /** 行 id：数据行必须提供，表头行与脚注行省略。 */
   value?: string
+  /** 多级表头下写明这是第几行表头（1 起算），行里的列头据此定位；单行表头省略。 */
+  level?: number
 }
 
 /**
@@ -416,14 +436,18 @@ export function XhTableRow(props: XhTableRowProps): ReactNode {
 }
 
 /** 表头行与脚注行：不认领 Tab 位、不报告行身份。 */
-function TableSectionRow({ section, value: _value, children, ...rest }: XhTableRowProps & { section: TableSection }): ReactNode {
+function TableSectionRow({ section, value: _value, level, children, ...rest }: XhTableRowProps & { section: TableSection }): ReactNode {
   const ctx = useTableContext()
-  const attrs = (section === 'header' ? ctx.api.getHeaderRowProps() : ctx.api.getFooterRowProps()) as Record<string, unknown>
-  return <div {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</div>
+  const attrs = (section === 'header' ? ctx.api.getHeaderRowProps({ level }) : ctx.api.getFooterRowProps()) as Record<string, unknown>
+  return (
+    <TableHeaderLevelProvider value={section === 'header' ? level : undefined}>
+      <div {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</div>
+    </TableHeaderLevelProvider>
+  )
 }
 
 /** 数据行：行身份供行内的操作按钮与单元格读取，焦点落点如实上报给状态机。 */
-function TableDataRow({ value, children, ...rest }: XhTableRowProps): ReactNode {
+function TableDataRow({ value, level: _level, children, ...rest }: XhTableRowProps): ReactNode {
   const ctx = useTableContext()
   const row = useMemo(() => ({ value: value ?? '' }), [value])
   const el = useRef<HTMLElement | null>(null)
@@ -448,10 +472,13 @@ function TableDataRow({ value, children, ...rest }: XhTableRowProps): ReactNode 
 
 export interface XhTableColumnHeaderProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   value: string
+  /** 多级表头里这一格所在的表头行；省略时取所在表头行写明的层号。 */
+  level?: number
 }
-export function XhTableColumnHeader({ value, children, ...rest }: XhTableColumnHeaderProps): ReactNode {
+export function XhTableColumnHeader({ value, level, children, ...rest }: XhTableColumnHeaderProps): ReactNode {
   const ctx = useTableContext()
-  const column = useMemo(() => ({ value }), [value])
+  const rowLevel = useTableHeaderLevel()
+  const column = useMemo(() => ({ value, level: level ?? rowLevel }), [value, level, rowLevel])
   return (
     <TableColumnProvider value={column}>
       <div {...mergeReactProps(ctx.api.getColumnHeaderProps(column) as Record<string, unknown>, rest as Record<string, unknown>)}>

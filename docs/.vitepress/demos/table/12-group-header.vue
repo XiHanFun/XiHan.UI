@@ -1,4 +1,4 @@
-<!-- 多行表头与表头分组 | 表头写几行就是几行；分组格的跨列数与两行表头的行号由标记声明，columns 仍只登记叶子列 -->
+<!-- 多级表头与表头分组 | 列给出 children 即为分组：表头按 headerRows 逐层渲染，分组格的跨列数、行号与较浅列头的纵向跨行都由表格算出 -->
 <script setup lang="ts">
 import {
   XhTableBody,
@@ -11,13 +11,25 @@ import {
   XhTableRow,
 } from "@xihan-ui/vue";
 
-// 只有叶子列进 columns：列号与列总数按它算
+// 分组只在表头占格：列号、列宽与数据都按叶子列算，分组内的叶子列要给出宽度
 const columns = [
   { id: "team", label: "小组", width: "8rem" },
-  { id: "q1", label: "Q1", width: "5rem" },
-  { id: "q2", label: "Q2", width: "5rem" },
-  { id: "q3", label: "Q3", width: "5rem" },
-  { id: "q4", label: "Q4", width: "5rem" },
+  {
+    id: "h1",
+    label: "上半年",
+    children: [
+      { id: "q1", label: "Q1", width: "5rem" },
+      { id: "q2", label: "Q2", width: "5rem" },
+    ],
+  },
+  {
+    id: "h2",
+    label: "下半年",
+    children: [
+      { id: "q3", label: "Q3", width: "5rem" },
+      { id: "q4", label: "Q4", width: "5rem" },
+    ],
+  },
 ];
 
 const teams = [
@@ -27,46 +39,24 @@ const teams = [
 ];
 
 const rows = teams.map(t => ({ id: t.id }));
-
-// 分组格宽度取两列之和，伸缩系数也翻倍，两行表头才对得齐
-const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
+const leaves = ["team", "q1", "q2", "q3", "q4"] as const;
 </script>
 
 <template>
   <div style="width: 100%; max-width: 620px">
-    <!-- 表头占两行，行号空间比缺省的多一行，总行数在这里自报 -->
-    <XhTableRoot :columns="columns" :rows="rows" :aria-rowcount="teams.length + 2">
+    <XhTableRoot v-slot="{ headerRows }" :columns="columns" :rows="rows">
       <XhTableCaption>季度交付单量</XhTableCaption>
       <XhTableHeader>
-        <XhTableRow>
-          <XhTableColumnHeader value="team" />
-          <XhTableColumnHeader value="q1" :style="groupStyle" :aria-colspan="2">
-            <XhTableColumnLabel>上半年</XhTableColumnLabel>
-          </XhTableColumnHeader>
-          <XhTableColumnHeader value="q3" :style="groupStyle" :aria-colspan="2">
-            <XhTableColumnLabel>下半年</XhTableColumnLabel>
-          </XhTableColumnHeader>
-        </XhTableRow>
-        <!-- 第二行表头自报行号：缺省那条恒为 1 -->
-        <XhTableRow :aria-rowindex="2">
-          <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
+        <!-- 每层一行，写明第几行；「小组」在第一行纵向跨满两行，第二行那一格是占位，照样渲 -->
+        <XhTableRow v-for="(cells, i) in headerRows" :key="i" :level="i + 1">
+          <XhTableColumnHeader v-for="cell in cells" :key="cell.id" :value="cell.id">
+            <XhTableColumnLabel>{{ cell.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
-        <!-- 数据行也往后挪一行 -->
-        <XhTableRow
-          v-for="(t, i) in teams"
-          :key="t.id"
-          :value="t.id"
-          :aria-rowindex="i + 3"
-        >
-          <XhTableCell value="team">{{ t.team }}</XhTableCell>
-          <XhTableCell value="q1">{{ t.q1 }}</XhTableCell>
-          <XhTableCell value="q2">{{ t.q2 }}</XhTableCell>
-          <XhTableCell value="q3">{{ t.q3 }}</XhTableCell>
-          <XhTableCell value="q4">{{ t.q4 }}</XhTableCell>
+        <XhTableRow v-for="t in teams" :key="t.id" :value="t.id">
+          <XhTableCell v-for="id in leaves" :key="id" :value="id">{{ t[id] }}</XhTableCell>
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>

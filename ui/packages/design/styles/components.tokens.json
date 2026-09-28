@@ -67099,6 +67099,26 @@
       "description": "table 的 sort-trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
+      "name": "--xh-table-span-layer",
+      "component": "table",
+      "part": [
+        "cell",
+        "column-header"
+      ],
+      "property": [
+        "z-index"
+      ],
+      "state": [
+        "is([data-part='cell'], [data-part='column-header'])",
+        "row-span"
+      ],
+      "defaultToken": [
+        "1"
+      ],
+      "visibility": "public",
+      "description": "table 的 cell、column-header 部件 z-index 覆盖槽。"
+    },
+    {
       "name": "--xh-table-state-fg",
       "component": "table",
       "part": [

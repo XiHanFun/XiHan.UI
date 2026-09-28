@@ -27,6 +27,16 @@ const KEY: InjectionKey<TableContext> = Symbol.for('xh-table')
 const SECTION_KEY: InjectionKey<TableSection> = Symbol.for('xh-table-section')
 const ROW_KEY: InjectionKey<TableRowContext> = Symbol.for('xh-table-row')
 const COLUMN_KEY: InjectionKey<TableColumnContext> = Symbol.for('xh-table-column')
+const HEADER_LEVEL_KEY: InjectionKey<ComputedRef<number | undefined>> = Symbol.for('xh-table-header-level')
+
+/** 表头行写明的层号，供行里的列头定位自己在多级表头里的哪一格。 */
+export function provideTableHeaderLevel(level: ComputedRef<number | undefined>): void {
+  provide(HEADER_LEVEL_KEY, level)
+}
+
+export function useOptionalTableHeaderLevel(): ComputedRef<number | undefined> | null {
+  return inject(HEADER_LEVEL_KEY, null)
+}
 
 export function provideTable(ctx: TableContext): void {
   provide(KEY, ctx)

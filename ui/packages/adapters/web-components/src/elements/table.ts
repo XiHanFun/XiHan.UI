@@ -99,7 +99,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart row - role=row；写在 body 里的须自带 value 属性标识行身份
  * @csspart column-header - role=columnheader，须自带 value 属性标识列身份；承载 aria-sort
  * @csspart column-label - 列名的容器，列头里唯一可收窄的一格：列名太长时由它出省略号，排序 / 列宽 / 列拖拽把手写在它之外作为兄弟；不可排序、不可改宽的列也用它（裸写在列头里的文本是匿名 flex item，缩不下去，窄列上会把把手挤出列头盒）；不带角色与状态
- * @csspart cell - role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数
+ * @csspart cell - role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数。cellSpan 合并掉的格子由元素写上 hidden 或占位，作者照常逐格写
  * @csspart select-all-trigger - 全选把手，三态（aria-checked 半选为 mixed），自占一个 Tab 位
  * @csspart row-select-trigger - 行选择把手（aria-hidden 且不占 Tab 位，键盘路径由 Space 承担）
  * @csspart sort-trigger - 排序钮，独立的定尺图标钮，不包列名（列名留在 column-header 里、钮写在列名之后），可及名取 translations.sort(列名)；自占一个 Tab 位，按住 Shift 点击是追加到排序链
@@ -130,6 +130,8 @@ export class XhTableElement extends XhElement {
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     cascade: { converter: BOOLEAN_CONVERTER },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
+    // 合并询问是函数，走不了属性；只作为 property 暴露
+    cellSpan: { attribute: false },
     // 前缀列是数组，走不了属性；只作为 property 暴露
     prefixColumns: { attribute: false },
     // 列偏好是对象，走不了属性；只作为 property 暴露
@@ -165,6 +167,7 @@ export class XhTableElement extends XhElement {
   declare selectionMode?: TableSelectionMode
   declare cascade?: boolean
   declare checkedStrategy?: CascadeStrategy
+  declare cellSpan?: TableSchema['props']['cellSpan']
   declare prefixColumns?: TableColumnKind[]
   declare columnPreference?: TableColumnPreference
   declare defaultColumnPreference?: TableColumnPreference
@@ -206,7 +209,13 @@ export class XhTableElement extends XhElement {
   }
 
   // table 机器无副作用，controller 只带 props。
-  private readonly ctrl = new MachineController<TableSchema>(this, tableMachine, () => this.machineProps())
+  // 版面实测从 root 往下量：取值口惰性读，角色节点要等首次 updated 才发现得到
+  private readonly ctrl = new MachineController<TableSchema>(
+    this,
+    tableMachine,
+    () => this.machineProps(),
+    { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) },
+  )
 
   private machineProps(): Partial<TableSchema['props']> {
     return {
@@ -222,6 +231,7 @@ export class XhTableElement extends XhElement {
       selectionMode: this.selectionMode,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
+      cellSpan: this.cellSpan,
       prefixColumns: this.prefixColumns,
       columnPreference: this.columnPreference,
       defaultColumnPreference: this.defaultColumnPreference,
@@ -297,7 +307,31 @@ export class XhTableElement extends XhElement {
   }
 
   private columnOf(el: HTMLElement): TableColumnProps {
-    return { value: this.identityOf(el, COLUMN_HEADER_SELECTOR) }
+    return { value: this.identityOf(el, COLUMN_HEADER_SELECTOR), level: this.headerLevelOf(el) }
+  }
+
+  /** 列头所在表头行写明的层号（row 上的 level 属性）；不在表头里、或没写时省略。 */
+  private headerLevelOf(el: HTMLElement): number | undefined {
+    if (this.sectionOf(el) !== 'header')
+      return undefined
+    const raw = el.closest<HTMLElement>(ROW_SELECTOR)?.getAttribute('level')
+    const level = raw == null ? Number.NaN : Number(raw)
+    return Number.isFinite(level) ? level : undefined
+  }
+
+  /** 表头按层排好的格子：多级表头按它逐层写表头行（row 上写 level）与列头。 */
+  get headerRows(): TableApi['headerRows'] {
+    return this.commands().headerRows
+  }
+
+  /** 表头占几行；数据行的行号从它之后起算。 */
+  get headerRowCount(): number {
+    return this.commands().headerRowCount
+  }
+
+  /** 某一格此刻的合并情形：起点给出跨度，被合并掉的给 covered。 */
+  cellSpanOf(rowId: string, columnId: string): ReturnType<TableApi['cellSpanOf']> {
+    return this.commands().cellSpanOf(rowId, columnId)
   }
 
   /**
@@ -356,8 +390,10 @@ export class XhTableElement extends XhElement {
     }
     putAll('row', (el) => {
       const section = this.sectionOf(el)
-      if (section === 'header')
-        return api.getHeaderRowProps()
+      if (section === 'header') {
+        const raw = el.getAttribute('level')
+        return api.getHeaderRowProps({ level: raw == null ? undefined : Number(raw) })
+      }
       if (section === 'footer')
         return api.getFooterRowProps()
       return api.getRowProps(this.rowOf(el))

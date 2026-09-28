@@ -16,11 +16,18 @@ const Ctx = createContext<TableContext | undefined>(undefined)
 const SectionCtx = createContext<TableSection>('body')
 const RowCtx = createContext<TableRowProps | undefined>(undefined)
 const ColumnCtx = createContext<TableColumnProps | undefined>(undefined)
+/** 表头行写明的层号，供行里的列头定位自己在多级表头里的哪一格。 */
+const HeaderLevelCtx = createContext<number | undefined>(undefined)
 
 export const TableProvider = Ctx
 export const TableSectionProvider = SectionCtx
 export const TableRowProvider = RowCtx
 export const TableColumnProvider = ColumnCtx
+export const TableHeaderLevelProvider = HeaderLevelCtx
+
+export function useTableHeaderLevel(): number | undefined {
+  return useContext(HeaderLevelCtx)
+}
 
 export function useTableContext(): TableContext {
   const ctx = useContext(Ctx)
