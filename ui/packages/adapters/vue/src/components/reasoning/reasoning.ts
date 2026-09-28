@@ -45,6 +45,8 @@ export const XhReasoningRoot = defineComponent({
   setup(props, { slots, emit }) {
     const configured = withXhConfig('reasoning', props)
     const machineProps: MachineProps = {
+      // 思考中每秒走一次表，已用时据此跟着走
+      clock: true,
       // 还在写就是还在跑，自动开合据此走
       get running() {
         return props.streaming

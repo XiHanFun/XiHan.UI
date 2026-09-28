@@ -104,6 +104,8 @@ export class XhReasoningElement extends XhElement {
     this,
     toolCallMachine,
     () => ({
+      // 思考中每秒走一次表，已用时据此跟着走
+      clock: true,
       running: this.streaming,
       open: this.open,
       defaultOpen: this.defaultOpen,

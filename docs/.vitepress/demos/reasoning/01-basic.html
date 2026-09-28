@@ -1,4 +1,4 @@
-<!-- 基础用法 | 思考时自动展开、思考完成后自动收起；状态文案由组件按是否在思考与时长给出 -->
+<!-- 基础用法 | 思考时自动展开、每秒更新已经想了多久，思考完成后自动收起；状态文案由组件按是否在思考、已用时与时长给出 -->
 <xh-reasoning id="reasoning-basic" streaming>
   <div data-xh-part="root">
     <button data-xh-part="trigger">
@@ -19,6 +19,7 @@
   panel.translations = {
     label: "思考过程",
     thinking: "正在思考…",
+    thinkingFor: "已想了 {seconds} 秒…",
     thoughtFor: "想了 {seconds} 秒",
   };
 
@@ -31,7 +32,7 @@
     at = Math.min(at + 2, full.length);
     body.textContent = full.slice(0, at);
     if (at < full.length) {
-      setTimeout(tick, 60);
+      setTimeout(tick, 240);
       return;
     }
     const endTime = performance.timeOrigin + performance.now();

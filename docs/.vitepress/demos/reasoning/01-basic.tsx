@@ -1,4 +1,4 @@
-// 基础用法 | 思考时自动展开、思考完成后自动收起；状态文案由组件按是否在思考与时长给出
+// 基础用法 | 思考时自动展开、每秒更新已经想了多久，思考完成后自动收起；状态文案由组件按是否在思考、已用时与时长给出
 import type { ReactNode } from "react";
 import {
   XhReasoningContent,
@@ -15,6 +15,7 @@ const full = "先看约束：只读一次文件，别改它。再看目标：找
 const translations = {
   label: "思考过程",
   thinking: "正在思考…",
+  thinkingFor: "已想了 {seconds} 秒…",
   thoughtFor: "想了 {seconds} 秒",
 };
 
@@ -33,7 +34,7 @@ export default function Demo(): ReactNode {
       at = Math.min(at + 2, full.length);
       setText(full.slice(0, at));
       if (at < full.length) {
-        timer = window.setTimeout(tick, 60);
+        timer = window.setTimeout(tick, 240);
         return;
       }
       setEndTime(Date.now());
