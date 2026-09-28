@@ -46782,20 +46782,15 @@
     display: none;
   }
 
-  /* 收起时朝向行首、展开时转向下方，与逻辑书写方向一致：
-     rtl 下 inline-start 在右侧，箭头因此要反着转 */
+  /* 收起时指向行尾、展开时转向下方，与逻辑书写方向一致：rtl 下行尾在左侧，收起的箭头转半圈；
+     旋转角乘书写方向的符号（ltr 0deg、rtl 180deg），按就近的 dir 走 */
+  [data-scope='tree-select'][data-part='branch-trigger'],
+  [data-scope='tree-select'][data-part='branch-indicator'] {
+    rotate: calc(90deg - 90deg * var(--xh-direction-sign));
+  }
+
   [data-scope='tree-select'][data-part='branch-trigger'][data-state='open'],
   [data-scope='tree-select'][data-part='branch-indicator'][data-state='open'] {
-    rotate: 90deg;
-  }
-
-  [dir='rtl'] [data-scope='tree-select'][data-part='branch-trigger'],
-  [dir='rtl'] [data-scope='tree-select'][data-part='branch-indicator'] {
-    rotate: 180deg;
-  }
-
-  [dir='rtl'] [data-scope='tree-select'][data-part='branch-trigger'][data-state='open'],
-  [dir='rtl'] [data-scope='tree-select'][data-part='branch-indicator'][data-state='open'] {
     rotate: 90deg;
   }
 
