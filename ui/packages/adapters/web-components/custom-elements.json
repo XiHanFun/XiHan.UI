@@ -51299,7 +51299,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-scroll-area>`：Light-DOM 行为宿主：作者写 root / viewport / content 与两条 scrollbar\n角色节点，元素按轴各运行一台 scrollbar 状态机并把 connect 产出接上。\n\n滚动区没有自己的状态机，它是视口加两条 scrollbar 的组装：scrollbar 角色节点是该\nscrollbar 的挂载点、同时充当它的根，其中按 scrollbar 的方式写 track / thumb / corner\n（它们带 data-scope=\"scrollbar\"），两个组件共用同一份滚动条。\n\n滚动本身一概不接管：viewport 是实际 overflow:auto 的层，键盘（PageUp / PageDown、方向键、\nHome / End）与滚轮全部使用浏览器原生路径，元素只是把原生滚动条隐藏并另绘一套。\n自绘的滚动条对读屏隐藏：同一件事不必报告两遍。\n\n每条滚动条用 orientation 属性写明管理的轴（未写即 vertical），\n轨道与滑块按所在滚动条的轴向取几何，不必另写。这是挂载时的静态声明：运行期需要换轴时更换节点。",
+          "description": "`<xh-scroll-area>`：Light-DOM 行为宿主：作者写 root / viewport / content 与两条 scrollbar\n角色节点，元素按轴各运行一台 scrollbar 状态机并把 connect 产出接上。\n\n滚动区没有自己的状态机，它是视口加两条 scrollbar 的组装：scrollbar 角色节点是该\nscrollbar 的挂载点、同时充当它的根，其中按 scrollbar 的方式写 track / thumb / corner\n（它们带 data-scope=\"scrollbar\"），两个组件共用同一份滚动条。\n\n滚动本身一概不接管：viewport 是实际 overflow:auto 的层，键盘（PageUp / PageDown、方向键、\nHome / End）与滚轮全部使用浏览器原生路径，元素只是把原生滚动条隐藏并另绘一套。\n自绘的滚动条对读屏隐藏：同一件事不必报告两遍。\n\n每条滚动条用 orientation 属性写明管理的轴（未写即 vertical），\n轨道与滑块按所在滚动条的轴向取几何，不必另写。这是挂载时的静态声明：运行期需要换轴时更换节点。\n\n元素的 scrollTo 滚的是 viewport 而不是元素自己：参数与原生 Element.scrollTo 同形。",
           "name": "XhScrollAreaElement",
           "cssParts": [
             {
@@ -51434,6 +51434,18 @@
               "default": "new MachineController<ScrollbarSchema>( this, scrollbarMachine, () => scrollAreaScrollbarProps(this.areaProps(), 'horizontal'), { scope: this.areaScope, onBuilt: svc => this.injectRefs(svc, 'horizontal') }, )"
             },
             {
+              "kind": "field",
+              "name": "notifyScroll",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyReachEnd",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
               "kind": "method",
               "name": "areaProps",
               "privacy": "private",
@@ -51442,6 +51454,73 @@
                   "text": "ScrollAreaProps"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "scrollTo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "ScrollToOptions"
+                  }
+                }
+              ],
+              "description": "滚动 viewport：与原生 Element.scrollTo 同形，数字形式按 (left, top) 解读。"
+            },
+            {
+              "kind": "method",
+              "name": "scrollTo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "x",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "y",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "scrollTo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "first",
+                  "optional": true,
+                  "type": {
+                    "text": "ScrollToOptions | number"
+                  }
+                },
+                {
+                  "name": "second",
+                  "optional": true,
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
             },
             {
               "kind": "method",
@@ -51537,6 +51616,22 @@
                 "type": {
                   "text": "void"
                 }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "某条轴的滚动量变了，按轴分别派发；detail 为 `{ orientation, offset, max }`",
+              "name": "scroll-change",
+              "type": {
+                "text": "ScrollAreaScrollDetails"
+              }
+            },
+            {
+              "description": "某条轴滚到了末端，只在跨过末端那一下派发；detail 为 `{ orientation, offset, max }`",
+              "name": "reach-end",
+              "type": {
+                "text": "ScrollAreaScrollDetails"
               }
             }
           ],

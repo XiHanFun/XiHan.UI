@@ -157,6 +157,9 @@ function minThumbOf(p: Pick<Params<ScrollbarSchema>, 'prop'>): number {
   return declared != null && Number.isFinite(declared) ? Math.max(0, declared) : SCROLL_MIN_THUMB_SIZE
 }
 
+/** 判定"已经到头"的容差（px）：滚动量是小数，差不到一像素不算还能滚。 */
+const REACH_END_TOLERANCE = 1
+
 function detailsOf(p: MeasureParams): { offset: number, max: number } {
   const m = p.context.get('metrics')
   return { offset: m.scroll, max: maxScrollOffset(m) }
@@ -168,8 +171,8 @@ const ENTER_SHOWS: Array<Transition<ScrollbarSchema>> = [
   { actions: ['markPointerInside'] },
 ]
 const SCROLL_KEEPS_ALIVE: Array<Transition<ScrollbarSchema>> = [
-  { guard: 'showsOnScroll', target: 'hiding', actions: ['measure', 'markScrolling'] },
-  { actions: ['measure', 'markScrolling'] },
+  { guard: 'showsOnScroll', target: 'hiding', actions: ['measure', 'markScrolling', 'reportScroll'] },
+  { actions: ['measure', 'markScrolling', 'reportScroll'] },
 ]
 
 export const scrollbarMachine = createMachine({
@@ -184,6 +187,7 @@ export const scrollbarMachine = createMachine({
     coarse: cell<boolean>(() => ({ defaultValue: false })),
     scrollableId: cell<string | null>(() => ({ defaultValue: null })),
     rootMounted: cell<boolean>(() => ({ defaultValue: false })),
+    reportedScroll: cell<number>(() => ({ defaultValue: 0 })),
   }),
   refs: () => ({
     getScrollableEl: () => null,
@@ -221,7 +225,7 @@ export const scrollbarMachine = createMachine({
         ],
         // 指针占着这块地方时滚动只记账，留在 visible：起了倒计时会当着指针的面收起
         'SCROLL': [
-          { guard: 'staysVisible', actions: ['measure', 'markScrolling'] },
+          { guard: 'staysVisible', actions: ['measure', 'markScrolling', 'reportScroll'] },
           ...SCROLL_KEEPS_ALIVE,
         ],
         'DRAG.START': { guard: 'canInteract', target: 'dragging', actions: ['startDrag'] },
@@ -237,8 +241,8 @@ export const scrollbarMachine = createMachine({
         'POINTER.LEAVE': { actions: ['clearPointerInside'] },
         // reenter 强制重挂计时器，把倒计时推倒重来
         'SCROLL': [
-          { guard: 'showsOnScroll', target: 'hiding', reenter: true, actions: ['measure', 'markScrolling'] },
-          { actions: ['measure', 'markScrolling'] },
+          { guard: 'showsOnScroll', target: 'hiding', reenter: true, actions: ['measure', 'markScrolling', 'reportScroll'] },
+          { actions: ['measure', 'markScrolling', 'reportScroll'] },
         ],
         'DRAG.START': { guard: 'canInteract', target: 'dragging', actions: ['startDrag'] },
       },
@@ -249,7 +253,7 @@ export const scrollbarMachine = createMachine({
         // 手可以把滑块拖到组件外面，进出的记账照收，但不改状态
         'POINTER.ENTER': { actions: ['markPointerInside'] },
         'POINTER.LEAVE': { actions: ['clearPointerInside'] },
-        'SCROLL': { actions: ['measure', 'markScrolling'] },
+        'SCROLL': { actions: ['measure', 'markScrolling', 'reportScroll'] },
         'DRAG.MOVE': { actions: ['dragScroll'] },
         // 松手后指针还在容器里就留着滚动条，不然开始倒计时
         'DRAG.END': [
@@ -346,6 +350,23 @@ export const scrollbarMachine = createMachine({
           return
         runMeasure(params)
         applyScroll(params, params.context.get('metrics').scroll + e.delta)
+      },
+
+      /**
+       * 滚动量相对上一次通知变了才通知；到头只在跨过末端那一下通知一次。
+       * 命令式滚动与拖动当场已经量过，量值与上次通知比，原生 scroll 事件晚到一帧也照样通知得到。
+       */
+      reportScroll: (params) => {
+        const metrics = params.context.get('metrics')
+        const previous = params.context.get('reportedScroll')
+        if (metrics.scroll === previous)
+          return
+        params.context.set('reportedScroll', metrics.scroll)
+        params.prop('onScrollChange')?.(detailsOf(params))
+        const max = maxScrollOffset(metrics)
+        const atEnd = (offset: number): boolean => max > REACH_END_TOLERANCE && offset >= max - REACH_END_TOLERANCE
+        if (atEnd(metrics.scroll) && !atEnd(previous))
+          params.prop('onReachEnd')?.(detailsOf(params))
       },
 
       scrollToOffset: (params) => {

@@ -6895,6 +6895,8 @@
       "ScrollAreaAxisState",
       "ScrollAreaOrientation",
       "ScrollAreaProps",
+      "ScrollAreaScrollDetails",
+      "ScrollAreaScrollToOptions",
       "ScrollAreaScrollbarProps",
       "ScrollAreaServices",
       "ScrollAreaTranslations",
@@ -12615,6 +12617,8 @@
       "dir",
       "forceVisible",
       "hideDelay",
+      "onReachEnd",
+      "onScrollChange",
       "orientation",
       "size",
       "type",
@@ -12632,6 +12636,8 @@
       "minThumbSize",
       "onDragEnd",
       "onDragStart",
+      "onReachEnd",
+      "onScrollChange",
       "onScrollEnd",
       "onScrollStart",
       "orientation",
@@ -20436,7 +20442,10 @@
         "type",
         "variant"
       ],
-      "events": []
+      "events": [
+        "reach-end",
+        "scroll-change"
+      ]
     },
     "xh-scrollbar": {
       "attributes": [

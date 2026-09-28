@@ -42,6 +42,12 @@
 
 <XhDemo src="scroll-area/04-fade" />
 
+### 命令式滚动与到底通知
+
+scrollTo 滚动视口，reach-end 在滚到底那一下通知一次，常用来提示或续载
+
+<XhDemo src="scroll-area/05-scroll-to" />
+
 ## 设计指引
 
 ### 何时使用
@@ -61,6 +67,8 @@
 - 支持五种滚动条显示时机。
 - `fade` 变体在可滚动边缘显示渐隐提示。
 - 触屏设备默认保留原生滚动体验。
+- `scrollTo` 滚动视口，参数与原生 `Element.scrollTo` 的对象形式同形；`smooth` 在减弱动效下即刻到位。Vue 从组件实例与默认插槽取，React 从函数式 children 取，Web Components 直接调元素的 `scrollTo`。
+- `scroll-change` 按轴报滚动量，`reach-end` 在某条轴跨过末端那一下报一次；两者都不与原生 `scroll` 同名，不会冒泡进祖先的滚动监听。
 
 ### 组合
 
@@ -95,10 +103,21 @@
 | `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻转。 必须显式提供：组件不读取计算样式，无法感知从 RTL 祖先继承的方向。 |
 | `forceVisible` | `boolean` |  | 触屏（粗指针）上也绘制自绘滚动条，默认 false：默认交给原生滚动。 |
 | `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 |
+| `onReachEnd` | `(details: ScrollAreaScrollDetails) => void` |  | 某条轴滚到了末端：只在跨过末端那一下通知，停在末端不重复；内容不溢出时不通知。 |
+| `onScrollChange` | `(details: ScrollAreaScrollDetails) => void` |  | 某条轴的滚动量变了（滚轮、键盘、拖动与命令式滚动都算），按轴分别通知。 |
 | `orientation` | `ScrollAreaOrientation` |  | 归本组件管理的轴，默认 both。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，影响滚动条厚度，也是边缘渐隐的带宽。 |
 | `type` | `ScrollbarType` |  | 滚动条显示的时机，默认 scroll-hover。 |
 | `variant` | `ScrollAreaVariant` |  | 形态：plain / fade，默认 plain。 |
+
+### 事件
+
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `scroll-change` | `ScrollAreaScrollDetails` | 某条轴的滚动量变了，按轴分别派发；detail 为 `{ orientation, offset, max }` |
+| `reach-end` | `ScrollAreaScrollDetails` | 某条轴滚到了末端，只在跨过末端那一下派发；detail 为 `{ orientation, offset, max }` |
 
 ### 插槽
 
@@ -138,6 +157,7 @@
 | `horizontal` | `ScrollAreaAxisState` |  |
 | `draggingAxis` | `Orientation \| null` | 正被拖动的轴；未拖动时为 null。 |
 | `cornerVisible` | `boolean` | 右下角补丁是否应显示：两条滚动条同时在场才有它的位置。 |
+| `scrollTo` | `(options: ScrollAreaScrollToOptions) => void` | 滚动视口，与原生 Element.scrollTo 的对象形式同形；视口还没挂上时什么也不做。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |

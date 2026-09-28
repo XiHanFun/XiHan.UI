@@ -6,7 +6,7 @@
 // 提供 scroll area 相关实现。
 
 import type { Direction, IdGenerator, Orientation, Service, Size } from '@xihan-ui/core'
-import type { ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaVariant, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaScrollDetails, ScrollAreaVariant, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectScrollArea, scrollAreaAnatomy, scrollAreaMeta, scrollAreaScrollbarProps, scrollbarAnatomy, scrollbarMachine } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -34,6 +34,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 每条滚动条用 orientation 属性写明管理的轴（未写即 vertical），
  * 轨道与滑块按所在滚动条的轴向取几何，不必另写。这是挂载时的静态声明：运行期需要换轴时更换节点。
  *
+ * 元素的 scrollTo 滚的是 viewport 而不是元素自己：参数与原生 Element.scrollTo 同形。
+ *
  * @customElement xh-scroll-area
  * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} type - 滚动条显示的时机，默认 scroll-hover
  * @attr {number} hide-delay - 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600
@@ -42,6 +44,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'sm'|'md'|'lg'} size - 尺寸档，影响滚动条厚度，也是边缘渐隐的带宽
  * @attr {'ltr'|'rtl'} dir - 排版方向，只改写横轴的滚动量正负与指针位移方向
  * @attr {boolean} force-visible - 触屏（粗指针）上也绘制自绘滚动条；默认交给原生滚动
+ * @fires scroll-change - 某条轴的滚动量变了，按轴分别派发；detail 为 `{ orientation, offset, max }`
+ * @fires reach-end - 某条轴滚到了末端，只在跨过末端那一下派发；detail 为 `{ orientation, offset, max }`
  * @csspart root - 组件根容器（承载 data-orientation / data-reveal-mode / data-dragging），定位上下文
  * @csspart viewport - 实际 overflow:auto 的层，带 tabindex=0 使键盘用户可以进入；承载 data-lane-vertical / data-lane-horizontal 与两条轴各自的 data-at-min-* / data-at-max-*
  * @csspart content - 内容包裹层，横向溢出依靠它撑出宽度
@@ -97,6 +101,14 @@ export class XhScrollAreaElement extends XhElement {
     { scope: this.areaScope, onBuilt: svc => this.injectRefs(svc, 'horizontal') },
   )
 
+  private readonly notifyScroll = (details: ScrollAreaScrollDetails): void => {
+    this.dispatchEvent(new CustomEvent('scroll-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyReachEnd = (details: ScrollAreaScrollDetails): void => {
+    this.dispatchEvent(new CustomEvent('reach-end', { detail: details, bubbles: true, composed: true }))
+  }
+
   private areaProps(): ScrollAreaProps {
     return this.configured('scroll-area', {
       type: this.type,
@@ -106,7 +118,21 @@ export class XhScrollAreaElement extends XhElement {
       size: this.size,
       dir: this.direction,
       forceVisible: this.forceVisible ?? false,
+      onScrollChange: this.notifyScroll,
+      onReachEnd: this.notifyReachEnd,
     })
+  }
+
+  /** 滚动 viewport：与原生 Element.scrollTo 同形，数字形式按 (left, top) 解读。 */
+  override scrollTo(options?: ScrollToOptions): void
+  override scrollTo(x: number, y: number): void
+  override scrollTo(first?: ScrollToOptions | number, second?: number): void {
+    const options: ScrollToOptions = typeof first === 'number' ? { left: first, top: second } : first ?? {}
+    connectScrollArea(
+      { vertical: this.verticalCtrl.service, horizontal: this.horizontalCtrl.service },
+      this.areaProps(),
+      wcNormalize,
+    ).scrollTo(options)
   }
 
   /**

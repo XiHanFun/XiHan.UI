@@ -6,7 +6,7 @@ import type { Orientation } from '@xihan-ui/core'
 import type { ScrollAreaApi, ScrollAreaProps, ScrollAreaServices } from '../src/scroll-area'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectScrollArea, scrollAreaScrollbarProps } from '../src/scroll-area'
 import { SCROLLBAR_HOST_ATTR, scrollbarMachine } from '../src/scrollbar'
 
@@ -261,6 +261,60 @@ describe('占道、让位与交叉口', () => {
     expect((r.api().getTrackProps({ orientation: 'vertical' }) as Dict)['data-scope']).toBe('scrollbar')
     expect((r.api().getThumbProps({ orientation: 'vertical' }) as Dict)['data-part']).toBe('thumb')
     expect((r.api().getCornerProps() as Dict)['data-scope']).toBe('scrollbar')
+  })
+})
+
+describe('滚动通知与命令式滚动', () => {
+  it('两台机器各报各的轴，通知里带着轴向；到头按轴各报一次', async () => {
+    const onScrollChange = vi.fn()
+    const onReachEnd = vi.fn()
+    const r = rig({ type: 'always', onScrollChange, onReachEnd })
+    await settle()
+    r.viewport.scrollTop = 120
+    r.viewport.dispatchEvent(new Event('scroll'))
+    expect(onScrollChange.mock.calls).toEqual([[{ orientation: 'vertical', offset: 120, max: 300 }]])
+    r.viewport.scrollLeft = 300
+    r.viewport.dispatchEvent(new Event('scroll'))
+    expect(onScrollChange).toHaveBeenLastCalledWith({ orientation: 'horizontal', offset: 300, max: 300 })
+    expect(onReachEnd.mock.calls).toEqual([[{ orientation: 'horizontal', offset: 300, max: 300 }]])
+  })
+
+  it('orientation 没管的那条轴不接通知', () => {
+    const onScrollChange = vi.fn()
+    expect(scrollAreaScrollbarProps({ orientation: 'vertical', onScrollChange }, 'horizontal').onScrollChange).toBeUndefined()
+    expect(scrollAreaScrollbarProps({ orientation: 'vertical', onScrollChange }, 'vertical').onScrollChange).toBeTypeOf('function')
+  })
+
+  it('scrollTo 交给视口的原生 scrollTo，没管的轴剔掉；两轴都剔光就不调', async () => {
+    const r = rig({ orientation: 'vertical' })
+    await settle()
+    const native = vi.fn()
+    r.viewport.scrollTo = native as typeof r.viewport.scrollTo
+    r.api().scrollTo({ top: 40, left: 40 })
+    expect(native).toHaveBeenCalledWith({ top: 40, behavior: 'auto' })
+    r.api().scrollTo({ left: 40 })
+    expect(native).toHaveBeenCalledTimes(1)
+  })
+
+  it('smooth 在减弱动效下改为即刻到位', async () => {
+    const r = rig()
+    await settle()
+    const native = vi.fn()
+    r.viewport.scrollTo = native as typeof r.viewport.scrollTo
+    // jsdom 没有 matchMedia：装一个只对减弱动效那条查询作答的替身
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query.includes('prefers-reduced-motion: reduce'),
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }))
+    try {
+      r.api().scrollTo({ top: 10, behavior: 'smooth' })
+    }
+    finally {
+      vi.unstubAllGlobals()
+    }
+    expect(native).toHaveBeenCalledWith({ top: 10, behavior: 'auto' })
   })
 })
 

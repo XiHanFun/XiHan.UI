@@ -19,6 +19,8 @@
 - 支持五种滚动条显示时机。
 - `fade` 变体在可滚动边缘显示渐隐提示。
 - 触屏设备默认保留原生滚动体验。
+- `scrollTo` 滚动视口，参数与原生 `Element.scrollTo` 的对象形式同形；`smooth` 在减弱动效下即刻到位。Vue 从组件实例与默认插槽取，React 从函数式 children 取，Web Components 直接调元素的 `scrollTo`。
+- `scroll-change` 按轴报滚动量，`reach-end` 在某条轴跨过末端那一下报一次；两者都不与原生 `scroll` 同名，不会冒泡进祖先的滚动监听。
 
 ## 组合
 

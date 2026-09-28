@@ -6,7 +6,7 @@
 // 定义 scroll area 类型契约。
 
 import type { Direction, Orientation, PropTypes, Service, Size } from '@xihan-ui/core'
-import type { ScrollbarSchema, ScrollbarType } from '../scrollbar/scrollbar.types'
+import type { ScrollbarSchema, ScrollbarScrollDetails, ScrollbarType } from '../scrollbar/scrollbar.types'
 
 /** 归本组件管理的轴。被关闭的轴滚动条恒不显示，视口在该方向也不滚动。 */
 export type ScrollAreaOrientation = Orientation | 'both'
@@ -16,6 +16,21 @@ export type ScrollAreaOrientation = Orientation | 'both'
  * fade 在该端仍可滚动时把该侧内容淡出，滚到头即收起，带宽跟随 size。
  */
 export type ScrollAreaVariant = 'plain' | 'fade'
+
+/** 某条轴的滚动通知：哪条轴，以及它距逻辑起始缘的滚动量与还能再滚多远（px）。 */
+export interface ScrollAreaScrollDetails extends ScrollbarScrollDetails {
+  orientation: Orientation
+}
+
+/**
+ * 命令式滚动的目标，与原生 Element.scrollTo 的对象形式同形：top / left 是视口的原生滚动坐标，
+ * 越界由浏览器夹取；orientation 没管的那条轴忽略。behavior 为 smooth 时在减弱动效下改为即刻到位。
+ */
+export interface ScrollAreaScrollToOptions {
+  top?: number
+  left?: number
+  behavior?: ScrollBehavior
+}
 
 /**
  * 滚动区域自身没有状态机：它只是视口加两条 scrollbar 的组装。滚动条的显隐、拖动、
@@ -39,6 +54,10 @@ export interface ScrollAreaProps {
   dir?: Direction
   /** 触屏（粗指针）上也绘制自绘滚动条，默认 false：默认交给原生滚动。 */
   forceVisible?: boolean
+  /** 某条轴的滚动量变了（滚轮、键盘、拖动与命令式滚动都算），按轴分别通知。 */
+  onScrollChange?: (details: ScrollAreaScrollDetails) => void
+  /** 某条轴滚到了末端：只在跨过末端那一下通知，停在末端不重复；内容不溢出时不通知。 */
+  onReachEnd?: (details: ScrollAreaScrollDetails) => void
 }
 
 /** 两条轴各一台 scrollbar 状态机；适配器创建后交给 connect。 */
@@ -77,6 +96,8 @@ export interface ScrollAreaApi<T extends PropTypes = PropTypes> {
   draggingAxis: Orientation | null
   /** 右下角补丁是否应显示：两条滚动条同时在场才有它的位置。 */
   cornerVisible: boolean
+  /** 滚动视口，与原生 Element.scrollTo 的对象形式同形；视口还没挂上时什么也不做。 */
+  scrollTo: (options: ScrollAreaScrollToOptions) => void
   getRootProps: () => T['element']
   getViewportProps: () => T['element']
   getContentProps: () => T['element']

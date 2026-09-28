@@ -404,6 +404,57 @@ describe('成段的滚动通知', () => {
     scrollTo(r, 120)
     expect(onScrollStart).toHaveBeenCalledTimes(2)
   })
+
+  it('滚动量变了才报 scroll-change：同一个位置的重复 scroll 事件不重复报', async () => {
+    const onScrollChange = vi.fn()
+    const r = rig({ type: 'always', onScrollChange })
+    await settle()
+
+    scrollTo(r, 30)
+    scrollTo(r, 30)
+    scrollTo(r, 60)
+    expect(onScrollChange.mock.calls).toEqual([[{ offset: 30, max: 300 }], [{ offset: 60, max: 300 }]])
+  })
+
+  it('命令式滚动当场量过，晚到的原生 scroll 事件照样报', async () => {
+    const onScrollChange = vi.fn()
+    const r = rig({ type: 'always', onScrollChange })
+    await settle()
+
+    r.api().scrollTo(120)
+    expect(onScrollChange).not.toHaveBeenCalled()
+    r.scrollable.dispatchEvent(new Event('scroll'))
+    expect(onScrollChange).toHaveBeenCalledWith({ offset: 120, max: 300 })
+  })
+
+  it('reach-end 只在跨过末端那一下报：停在末端不重复，离开再回来才再报', async () => {
+    const onReachEnd = vi.fn()
+    const r = rig({ type: 'always', onReachEnd })
+    await settle()
+
+    scrollTo(r, 200)
+    expect(onReachEnd).not.toHaveBeenCalled()
+    scrollTo(r, 300)
+    expect(onReachEnd).toHaveBeenCalledTimes(1)
+    expect(onReachEnd).toHaveBeenCalledWith({ offset: 300, max: 300 })
+    // 差不到一像素也算到头，停在末端附近来回不重复报
+    scrollTo(r, 299.5)
+    scrollTo(r, 300)
+    expect(onReachEnd).toHaveBeenCalledTimes(1)
+
+    scrollTo(r, 100)
+    scrollTo(r, 300)
+    expect(onReachEnd).toHaveBeenCalledTimes(2)
+  })
+
+  it('内容不溢出时没有"末端"可言，不报 reach-end', async () => {
+    const onReachEnd = vi.fn()
+    const r = rig({ type: 'always', onReachEnd }, { clientH: 100, clientW: 100, scrollH: 100, scrollW: 100 })
+    await settle()
+    scrollTo(r, 0)
+    r.scrollable.dispatchEvent(new Event('scroll'))
+    expect(onReachEnd).not.toHaveBeenCalled()
+  })
 })
 
 describe('拖动滑块', () => {
