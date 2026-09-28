@@ -5,7 +5,7 @@
 
 // 提供 table 相关实现。
 
-import type { ControlVariant, Direction, Service, Size } from '@xihan-ui/core'
+import type { CascadeStrategy, ControlVariant, Direction, Service, Size } from '@xihan-ui/core'
 import type {
   TableApi,
   TableColumnDef,
@@ -138,6 +138,10 @@ export interface XhTableRootProps extends RootElementProps {
   selection?: TableSelection
   defaultSelection?: TableSelection
   selectionMode?: TableSelectionMode
+  /** 树形表在 multiple 下父子级联勾选，与 Tree 的 cascade 同义。 */
+  cascade?: boolean
+  /** 级联下对外选中值的收敛策略，默认 child。 */
+  checkedStrategy?: CascadeStrategy
   /** 需要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插入最前面并占用列号。 */
   prefixColumns?: TableColumnKind[]
   /** 列偏好：给定即受控。持久化归使用者，库只负责把它算进生效列。 */
@@ -186,6 +190,8 @@ export function XhTableRoot({
   selection,
   defaultSelection,
   selectionMode,
+  cascade,
+  checkedStrategy,
   prefixColumns,
   columnPreference,
   defaultColumnPreference,
@@ -223,6 +229,8 @@ export function XhTableRoot({
     selection,
     defaultSelection,
     selectionMode,
+    cascade,
+    checkedStrategy,
     prefixColumns,
     columnPreference,
     defaultColumnPreference,

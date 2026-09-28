@@ -919,6 +919,34 @@ export const tableSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '树形表级联勾选：勾一个子行，父行把手半选；子行全勾上，父行跟着选中',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: props({ rows: TREE_ROWS, selectionMode: 'multiple', cascade: true, defaultExpandedValue: ['a'] }),
+      steps: [
+        {
+          kind: 'click',
+          part: 'row-select-trigger[1]',
+          expect: {
+            parts: {
+              'row[1]': { 'aria-selected': 'false' },
+              'row-select-trigger[0]': { 'data-indeterminate': '' },
+              'row[2]': { 'aria-selected': 'true' },
+            },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'row-select-trigger[2]',
+          expect: {
+            parts: {
+              'row[1]': { 'aria-selected': 'true' },
+              'row-select-trigger[0]': { 'data-indeterminate': null },
+            },
+          },
+        },
+      ],
+    },
+    {
       name: '行换位：排序中的表格拖不动行，Alt + 上下键一并不认',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: props({ rows: REORDERABLE_ROWS, rowReorderable: true, defaultSort: [{ id: 'name', direction: 'asc' }] }),

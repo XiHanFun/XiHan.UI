@@ -5,7 +5,7 @@
 
 // 提供 table 相关实现。
 
-import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
+import type { CascadeStrategy, ControlVariant, Direction, Size } from '@xihan-ui/core'
 import type {
   TableApi,
   TableColumnDef,
@@ -126,6 +126,9 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     selection: { type: [Array, String] as PropType<TableSelection> },
     defaultSelection: { type: [Array, String] as PropType<TableSelection> },
     selectionMode: { type: String as PropType<TableSelectionMode> },
+    /** 树形表在 multiple 下父子级联勾选，与 Tree 的 cascade 同义。 */
+    cascade: { type: Boolean, default: undefined },
+    checkedStrategy: { type: String as PropType<CascadeStrategy> },
     /** 需要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插入最前面并占用列号。 */
     prefixColumns: { type: Array as PropType<TableColumnKind[]> },
     /** 当前页码与每页条数：只用于计算序号，不参与切片。 */

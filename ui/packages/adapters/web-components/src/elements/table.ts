@@ -5,7 +5,7 @@
 
 // 提供 table 相关实现。
 
-import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
+import type { CascadeStrategy, ControlVariant, Direction, Size } from '@xihan-ui/core'
 import type {
   TableApi,
   TableColumnDef,
@@ -67,6 +67,8 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  *
  * @customElement xh-table
  * @attr {'none'|'single'|'multiple'} selection-mode - 选择模式，默认 none（未声明则没有选择机制）
+ * @attr {boolean} cascade - 树形表在 multiple 下父子级联勾选，与 Tree 的 cascade 同义
+ * @attr {'child'|'parent'|'all'} checked-strategy - 级联下对外选中值的收敛策略，默认 child
  * @attr {boolean} loading - 数据加载中：root 报告 aria-busy，表体为空时加载态节点显示
  * @attr {boolean} empty - 显式声明表体为空；未提供时按 rows 是否为空推导，写 empty="false" 强制不为空
  * @attr {boolean} sticky-header - 表头吸顶，只写 data-fixed（布尔）；列冻结使用 data-frozen
@@ -126,6 +128,8 @@ export class XhTableElement extends XhElement {
     expandedValue: { attribute: false },
     defaultExpandedValue: { attribute: false },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    cascade: { converter: BOOLEAN_CONVERTER },
+    checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     // 前缀列是数组，走不了属性；只作为 property 暴露
     prefixColumns: { attribute: false },
     // 列偏好是对象，走不了属性；只作为 property 暴露
@@ -159,6 +163,8 @@ export class XhTableElement extends XhElement {
   declare expandedValue?: string[]
   declare defaultExpandedValue?: string[]
   declare selectionMode?: TableSelectionMode
+  declare cascade?: boolean
+  declare checkedStrategy?: CascadeStrategy
   declare prefixColumns?: TableColumnKind[]
   declare columnPreference?: TableColumnPreference
   declare defaultColumnPreference?: TableColumnPreference
@@ -214,6 +220,8 @@ export class XhTableElement extends XhElement {
       expandedValue: this.expandedValue,
       defaultExpandedValue: this.defaultExpandedValue,
       selectionMode: this.selectionMode,
+      cascade: this.cascade,
+      checkedStrategy: this.checkedStrategy,
       prefixColumns: this.prefixColumns,
       columnPreference: this.columnPreference,
       defaultColumnPreference: this.defaultColumnPreference,

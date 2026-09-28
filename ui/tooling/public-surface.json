@@ -8538,6 +8538,9 @@
       "switchMachine",
       "switchMeta",
       "tableAnatomy",
+      "tableCascadeRoots",
+      "tableCascadeSelectableLeaves",
+      "tableCascades",
       "tableKeyboard",
       "tableMachine",
       "tableMeta",
@@ -12871,6 +12874,8 @@
     ],
     "table": [
       "allowRowDrop",
+      "cascade",
+      "checkedStrategy",
       "columnPreference",
       "columns",
       "defaultColumnPreference",
@@ -20792,6 +20797,8 @@
     },
     "xh-table": {
       "attributes": [
+        "cascade",
+        "checked-strategy",
         "dir",
         "empty",
         "footer",

@@ -9,6 +9,7 @@ import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } fro
 import type { MeasuredRow } from './table.drag'
 import type { TableApi, TableColumn, TableColumnDef, TableColumnSetting, TablePressedKey, TableSchema, TableVisibleRow } from './table.types'
 import {
+  cascadeState,
   contains,
   createPressTracker,
   dataAttr,
@@ -28,11 +29,14 @@ import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { orderColumnIds, resolveTableColumns } from './table.columns'
 import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds, rowGroupRects, rowReorderReason, tableRowMoveCommand, treeRowIntentFromKey } from './table.drag'
-import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableSelectionMode } from './table.machine'
+import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableCascades, tableSelectionMode } from './table.machine'
 import {
   flattenTableRows,
+  tableCascadeRoots,
+  tableCascadeSelectableLeaves,
   tableRowSelected,
   tableSelectableRowIds,
+  tableSelectionIds,
   tableSelectionState,
 } from './table.rows'
 import { tableSortDirectionOf, tableSortIndexOf } from './table.sort'
@@ -268,7 +272,14 @@ export function connectTable<T extends PropTypes>(
   }
 
   const selectableIds = tableSelectableRowIds(rows)
-  const selectionState = tableSelectionState(selection, selectableIds)
+  // 级联：父行勾没勾、半没半选由它的子孙算出来，对外值只是收敛后的那一份
+  const cascaded = tableCascades(prop('cascade'), mode, rows)
+    ? cascadeState(tableCascadeRoots(rows), tableSelectionIds(selection, selectableIds))
+    : null
+  // 级联下全选的基数是够得着的叶行：禁用子树冻结着，它的父行永远勾不满
+  const selectionState = cascaded
+    ? tableSelectionState([...cascaded.checked], tableCascadeSelectableLeaves(rows))
+    : tableSelectionState(selection, selectableIds)
   // 全选把手只在复选下生效
   const canSelectAll = mode === 'multiple'
   const isEmpty = prop('empty') ?? dataRows.length === 0
@@ -314,7 +325,9 @@ export function connectTable<T extends PropTypes>(
       ...(inset != null && inset > 0 ? { style: { '--xh-table-sticky-inset': `${inset}px` } } : {}),
     }
   }
-  const isSelected = (value: string): boolean => tableRowSelected(selection, value)
+  const isSelected = (value: string): boolean => (cascaded ? cascaded.checked.has(value) : tableRowSelected(selection, value))
+  /** 级联下部分子孙勾中的父行：把手画半选。行本身仍报 aria-selected=false——row 角色没有 mixed 这一档。 */
+  const isIndeterminate = (value: string): boolean => cascaded?.indeterminate.has(value) ?? false
   const isExpanded = (value: string): boolean => !!metaOf(value)?.expanded
   const isRowDisabled = (value: string): boolean => !!metaOf(value)?.disabled
   const sortDirection = (value: string): 'asc' | 'desc' | null => tableSortDirectionOf(sort, value)
@@ -949,6 +962,7 @@ export function connectTable<T extends PropTypes>(
     getRowSelectTriggerProps: row => normalize.element({
       ...parts['row-select-trigger'].attrs,
       ...rowState(row.value),
+      'data-indeterminate': dataAttr(isIndeterminate(row.value)),
       // 把手不占 Tab 位，按压面主要为触屏而设；选择关停或行禁用时不进
       ...press(`row-select:${row.value}`, mode === 'none' || isRowDisabled(row.value)),
       // 定尺方框：接 Action Control icon 档、outline 形态，面与按压由家族给，边长由皮肤钉在指示符档

@@ -162,6 +162,12 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 
 <XhDemo src="table/24-column-settings" />
 
+### 树形表级联勾选
+
+cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父行跟着勾中、勾了一部分显示半选，禁用行的子树不动；对外值缺省只收叶行
+
+<XhDemo src="table/25-tree-cascade" />
+
 ## 设计指引
 
 ### 何时使用
@@ -183,6 +189,7 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 - 表头吸顶与列吸附、条纹、密度、边框都是开关。
 - 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
 - 行数很大时只渲染窗口内的行。
+- 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
 - 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页按钮的行为由作者决定，取数在途时自动停用。
 
@@ -225,6 +232,8 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `expandedValue` | `string[]` |  | 展开集合。提供即受控，语义同上。 |
 | `defaultExpandedValue` | `string[]` |  |  |
 | `selectionMode` | `TableSelectionMode` |  | 默认 none：未声明则没有选择机制，行也不报告 aria-selected。 |
+| `cascade` | `boolean` |  | 树形表（行声明了 parentId）在 multiple 下父子级联勾选，与 Tree 的 cascade 同一套算法： 勾父整枝传导、子全勾父勾、部分勾选的父行把手显示半选，禁用行的子树整棵冻结。 级联下不接 Shift 范围选。默认 false；平表与 single 下无效。 |
+| `checkedStrategy` | `CascadeStrategy` |  | 级联下对外选中值的收敛策略，默认 child（只收叶行）；parent = 最高整枝，all = 全部勾中的行。与 Tree 同义。 |
 | `prefixColumns` | `TableColumnKind[]` |  | 需要的前缀列，按给定顺序插在最前面，默认不插入任何列。 它们由库插入并占用列号：不占用时右侧所有列的 aria-colindex 会整体错位， 这正是使用者手工向 columns 中添加假列的原因。作者按 `api.columns` 渲染即可， 每一项都声明 `kind`。 |
 | `columnPreference` | `TableColumnPreference` |  | 列偏好。提供即受控：内部不自行修改，写入只发 onColumnPreferenceChange。 持久化归使用者：库只负责把它计算进生效列。 |
 | `defaultColumnPreference` | `TableColumnPreference` |  |  |
@@ -329,7 +338,7 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | --- | --- |
 | `row` | 'open' \| 'closed' \| undefined |
 | `column-visibility-trigger` | 'unchecked' \| 'checked' |
-| `select-all-trigger` | tableSelectionState(selection, selectableIds) |
+| `select-all-trigger` | tableSelectionState([...cascaded.checked], tableCasca… \| tableSelectionState(selection, selectableIds) |
 | `row-select-trigger` | 'open' \| 'closed' \| undefined |
 | `expand-trigger` | 'open' \| 'closed' \| undefined |
 | `expanded-row` | 'open' \| 'closed' |
@@ -516,6 +525,7 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 - `column-label` 不带角色与状态：列头 `role=columnheader` 的可及名由它里面的文字算出，视觉上被省略号截断的列名读屏仍读全文。
 - 列宽把手与列拖拽把手同样各占一个 Tab 位，名字分别取 `translations.columnResize` 与 `translations.columnDrag`。
 - 行内的勾选框与展开箭头对读屏隐藏：选中与展开都由行自身的属性与方向键 / 空格承担。
+- 级联的半选只画在行选把手上：`row` 角色没有 mixed 这一档，半选的父行对读屏报 `aria-selected=false`，勾了哪些子行由子行各自报出。
 
 ## 样式参考
 
@@ -577,7 +587,7 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `column-visibility-trigger` | `data-xh-check-mark-profile` | 'box' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
-| `select-all-trigger` | `data-state` | tableSelectionState(selection, selectableIds) |
+| `select-all-trigger` | `data-state` | tableSelectionState([...cascaded.checked], tableCasca… \| tableSelectionState(selection, selectableIds) |
 | `select-all-trigger` | `data-xh-action-control` | '' |
 | `select-all-trigger` | `data-xh-action-display` | 'always' |
 | `select-all-trigger` | `data-xh-action-profile` | 'icon' |
@@ -587,6 +597,7 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `select-all-trigger` | `data-xh-check-mark-profile` | 'box' |
 | `row-select-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-highlighted` | ''（条件成立时才出现） |
+| `row-select-trigger` | `data-indeterminate` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-selected` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-state` | 'open' \| 'closed' \| undefined |
@@ -725,8 +736,8 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `--xh-table-toolbar-fg` | `toolbar` | `color` | `default` | `--xh-fg-default` | table 的 toolbar 部件 color 覆盖槽。 |
 | `--xh-table-toolbar-gap` | `toolbar` | `gap` | `default` | `--xh-_table-toolbar-gap` | table 的 toolbar 部件 gap 覆盖槽。 |
 | `--xh-table-toolbar-py` | `toolbar` | `padding-block` | `default` | `--xh-space-2` | table 的 toolbar 部件 padding-block 覆盖槽。 |
-| `--xh-table-trigger-bg-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `--xh-ink-surface`<br>`background-color`<br>`border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate`<br>`xh-ink-surface` | `--xh-bg-brand` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 --xh-ink-surface、background-color、border、border-color 覆盖槽。 |
-| `--xh-table-trigger-bg-checked-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand-active` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
+| `--xh-table-trigger-bg-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `--xh-ink-surface`<br>`background-color`<br>`border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`indeterminate`<br>`is(:active, [data-pressed])`<br>`is([data-selected], [data-indeterminate])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate`<br>`xh-ink-surface` | `--xh-bg-brand` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 --xh-ink-surface、background-color、border、border-color 覆盖槽。 |
+| `--xh-table-trigger-bg-checked-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`indeterminate`<br>`is(:active, [data-pressed])`<br>`is([data-selected], [data-indeterminate])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand-active` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
 | `--xh-table-trigger-bg-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
 | `--xh-table-trigger-border` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-table-trigger-border-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-table-trigger-bg-checked` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
