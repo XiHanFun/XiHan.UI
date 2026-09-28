@@ -1,22 +1,18 @@
-<script setup lang="ts">
-import { XhPieChartRoot } from "@xihan-ui/vue";
-
-const channels = [
-  { channel: "搜索", visits: 42 },
-  { channel: "直接访问", visits: 26 },
-  { channel: "社交", visits: 18 },
-  { channel: "邮件", visits: 9 },
-];
-</script>
-
 <template>
-  <!-- 卡片只有一块可用高：视口高度取卡片下发的那个值，不带标题，标签留给正文页 -->
-  <XhPieChartRoot
-    :data="channels"
-    name-field="channel"
-    value-field="visits"
-    labels="none"
-    aria-label="访问来源"
-    style="inline-size: var(--xh-doc-catalog-w); --xh-pie-chart-height: var(--xh-doc-catalog-h)"
-  />
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" data-direction="fixed" aria-hidden="true" focusable="false">
+    <path d="M84 28A52 52 0 0 1 114.56 122.07L102.81 105.89A32 32 0 0 0 84 48z" fill="var(--xh-chart-categorical-1)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+    <path d="M114.56 122.07A52 52 0 0 1 41.93 110.56L58.11 98.81A32 32 0 0 0 102.81 105.89z" fill="var(--xh-chart-categorical-2)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+    <path d="M41.93 110.56A52 52 0 0 1 41.93 49.44L58.11 61.19A32 32 0 0 0 58.11 98.81z" fill="var(--xh-chart-categorical-3)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+    <path d="M41.93 49.44A52 52 0 0 1 84 28L84 48A32 32 0 0 0 58.11 61.19z" fill="var(--xh-chart-categorical-4)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+    <path d="M76 76h16" stroke="var(--xh-fg-default)" stroke-width="8" />
+    <path d="M74 94h20" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <rect x="156" y="46" width="12" height="12" rx="4" fill="var(--xh-chart-categorical-1)" />
+    <path d="M176 52h28" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <rect x="156" y="66" width="12" height="12" rx="4" fill="var(--xh-chart-categorical-2)" />
+    <path d="M176 72h20" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <rect x="156" y="86" width="12" height="12" rx="4" fill="var(--xh-chart-categorical-3)" />
+    <path d="M176 92h24" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <rect x="156" y="106" width="12" height="12" rx="4" fill="var(--xh-chart-categorical-4)" />
+    <path d="M176 112h16" stroke="var(--xh-chart-label)" stroke-width="4" />
+  </svg>
 </template>
