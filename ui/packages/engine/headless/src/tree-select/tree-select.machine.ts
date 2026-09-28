@@ -8,12 +8,13 @@
 import type { ActionFn, PositionResult } from '@xihan-ui/core'
 import type { TreeVisibleNode } from '../tree'
 import type { TreeSelectBranchLoadSnapshot, TreeSelectFocusIntent, TreeSelectNode, TreeSelectPressedPart, TreeSelectSchema } from './tree-select.types'
-import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues, uniqueArray as unique } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
+import { virtualCollectionTarget } from '../shared/virtual-collection'
 import { flattenTree } from '../tree'
 import { TREE_SELECT_TAG_LIST_SELECTOR, treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatomy'
 import { resolveTreeSelectSearch } from './tree-select.search'
@@ -192,6 +193,9 @@ function cancelBranchLoads(params: TreeSelectActionParams, except: ReadonlySet<s
  * 容器里的全部节点元素（叶子与分支），按可见序排列，只在事件那一刻读活 DOM。
  * 顺序不取文档序：收起分支的子节点仍留在文档里，按文档序走会走进看不见的子树。
  */
+/** 节点身份所在的两个部件：虚拟窗口交接焦点时按它在条目外壳里找节点。 */
+export const TREE_SELECT_NODE_SELECTOR = `${itemQuerySelector(treeSelectBranchQuery)}, ${itemQuerySelector(treeSelectItemQuery)}`
+
 export function treeSelectNodeEls(
   container: HTMLElement | null,
   rows: readonly TreeVisibleNode[],
@@ -219,6 +223,30 @@ export function findTreeSelectNodeEl(container: HTMLElement | null, value: strin
       return hit
   }
   return null
+}
+
+/**
+ * 虚拟窗口下展开那一刻的锚点：DOM 只有窗口里那几行，按可见行的数据挑，判据与 DOM 那一路相同。
+ * selected 意图停在首个可停留的选中行，没有选中值不落锚点（补挑时退回首个可用行）；
+ * first / last 从边界起步，next / prev 从首个选中值走一步。
+ */
+function virtualAnchorIndex(
+  rows: readonly TreeVisibleNode[],
+  intent: TreeSelectFocusIntent,
+  selected: readonly string[],
+  options: { repick: boolean, disabled: (value: string) => boolean, loop: boolean },
+): number {
+  const nav = { value: (row: TreeVisibleNode) => row.value, disabled: (row: TreeVisibleNode) => options.disabled(row.value) }
+  if (intent === 'selected') {
+    if (selected.length === 0 && !options.repick)
+      return -1
+    const current = rows.findIndex(row => selected.includes(row.value) && !options.disabled(row.value))
+    if (current >= 0)
+      return current
+    return virtualCollectionTarget(rows, null, 'first', nav)?.index ?? -1
+  }
+  const from = intent === 'first' || intent === 'last' ? null : (selected[0] ?? null)
+  return virtualCollectionTarget(rows, from, intent, { ...nav, loop: options.loop })?.index ?? -1
 }
 
 // 选中集合与展开集合都住在 context 的 cell 里，受控/非受控在 cell 收口，这两路不需要影子事件。
@@ -472,18 +500,39 @@ export const treeSelectMachine = createMachine({
         // 锚点节点离场后的重挑：只在此前真有过锚点时补，判据取自机器自己的状态而不是事件类型——
         // 适配器误报时凭空补一个，会点亮一个本轮不该高亮的节点并把 Tab 位从容器上摘走
         const repick = event.current().type === 'NODE.LOST'
+        const virtualizer = prop('virtualizer')
+        // 虚拟窗口淘汰持焦点节点不等于节点丢失：值仍在可见行里时由桥继续交接焦点
+        if (repick && virtualizer) {
+          const anchor = context.get('focusedValue')
+          const view = treeSelectView(prop, context)
+          if (anchor != null && flattenTree(view.nodes, view.expanded).some(row => row.value === anchor))
+            return
+        }
         if (repick) {
           if (context.get('focusedValue') == null)
             return
           context.set('focusedValue', null)
         }
         const pick = (): void => {
+          const view = treeSelectView(prop, context)
+          const rows = flattenTree(view.nodes, view.expanded)
+          // 虚拟窗口：按可见行的数据挑锚点，由桥把那一行滚进窗口，挂上后焦点域再落焦
+          if (virtualizer) {
+            const index = virtualAnchorIndex(rows, context.get('focusIntent'), context.get('value'), {
+              repick,
+              disabled: v => !!prop('disabled') || rows.find(row => row.value === v)?.disabled === true,
+              loop: prop('loop') ?? false,
+            })
+            const row = index >= 0 ? rows[index] : undefined
+            context.set('focusedValue', row?.value ?? null)
+            if (row)
+              virtualizer.focusIndex(index, { align: 'auto', selector: TREE_SELECT_NODE_SELECTOR })
+            return
+          }
           const content = refs.get('getContentEl')()
           // 无 DOM 环境：锚点留空，状态转移不受影响
           if (!content)
             return
-          const view = treeSelectView(prop, context)
-          const rows = flattenTree(view.nodes, view.expanded)
           const els = treeSelectNodeEls(content, rows)
           const intent = context.get('focusIntent')
           const selected = context.get('value')

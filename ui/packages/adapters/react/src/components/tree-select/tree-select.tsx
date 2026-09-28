@@ -6,7 +6,7 @@
 // 提供 tree select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Service, Size, Tone } from '@xihan-ui/core'
-import type { TreeSelectApi, TreeSelectNode, TreeSelectSchema, TreeSelectTagMeta } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, TreeSelectApi, TreeSelectNode, TreeSelectSchema, TreeSelectTagMeta } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -95,6 +95,8 @@ function useNodeFocusReport(
 
 export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: TreeSelectNode[]
+  /** 完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。 */
+  virtualizer?: CollectionVirtualizer
   loadChildren?: TreeSelectProps['loadChildren']
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
@@ -142,6 +144,7 @@ export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>
 
 export function XhTreeSelectRoot({
   collection,
+  virtualizer,
   loadChildren,
   label,
   clearable,
@@ -183,6 +186,7 @@ export function XhTreeSelectRoot({
 }: XhTreeSelectRootProps): ReactNode {
   const ctx = useTreeSelect(withXhConfig('tree-select', useFormControlProps({
     collection,
+    virtualizer,
     loadChildren,
     clearable,
     value,
@@ -406,7 +410,8 @@ export function XhTreeSelectPositioner({ children, container, ...rest }: XhTreeS
   // 两条轴都摆：深层节点靠缩进往行末推，横向溢出与纵向一样是常态。
   // 横条的正负按排版方向算，而组件不读计算样式，把 positioner 上那份显式交过去
   const bars = useScrollbars({
-    scrollable: () => ctx.treeRef.current,
+    // 虚拟窗口的滚动层是 Virtualizer 的视口，条子跟着它走
+    scrollable: () => ctx.service.prop('virtualizer')?.getViewportElement() ?? ctx.treeRef.current,
     axes: ['vertical', 'horizontal'],
     // 条子走浮层 4px 档
     props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),

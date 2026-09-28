@@ -12,6 +12,13 @@ import {
   XhTransferList,
   XhTransferRoot,
   XhTransferSourcePanel,
+  XhTreeSelectContent,
+  XhTreeSelectControl,
+  XhTreeSelectItem,
+  XhTreeSelectPositioner,
+  XhTreeSelectRoot,
+  XhTreeSelectTree,
+  XhTreeSelectTrigger,
   XhVirtualizerContent,
   XhVirtualizerItem,
   XhVirtualizerRoot,
@@ -71,6 +78,49 @@ describe('collectionVirtualizer 正式接线', () => {
     await expect.poll(() => document.activeElement?.getAttribute('data-value')).toBe('item-1000')
     expect((document.activeElement as HTMLElement).getAttribute('aria-posinset')).toBe('1000')
     expect(options().length).toBeLessThan(20)
+  })
+
+  it('tree-select 只挂窗口里的行，End 跨完整可见行把焦点交给末行，自绘条接管视口', async () => {
+    host = document.createElement('div')
+    document.body.appendChild(host)
+    root = createRoot(host)
+    await act(async () => root!.render(
+      <XhVirtualizerRoot count={collection.length} estimateSize={36} overscan={0} viewportTabIndex={-1}>
+        {({ virtualItems, collectionVirtualizer }) => (
+          <XhTreeSelectRoot collection={collection} virtualizer={collectionVirtualizer} defaultOpen>
+            <XhTreeSelectControl><XhTreeSelectTrigger>选择</XhTreeSelectTrigger></XhTreeSelectControl>
+            <XhTreeSelectPositioner>
+              <XhTreeSelectContent>
+                <XhTreeSelectTree style={{ overflow: 'visible', maxBlockSize: 'none' }}>
+                  <XhVirtualizerViewport style={{ blockSize: 144 }}>
+                    <XhVirtualizerContent>
+                      {virtualItems.map(item => (
+                        <XhVirtualizerItem key={item.key} value={item.index} style={{ blockSize: 36 }}>
+                          <XhTreeSelectItem value={collection[item.index]!.value}>{collection[item.index]!.label}</XhTreeSelectItem>
+                        </XhVirtualizerItem>
+                      ))}
+                    </XhVirtualizerContent>
+                  </XhVirtualizerViewport>
+                </XhTreeSelectTree>
+              </XhTreeSelectContent>
+            </XhTreeSelectPositioner>
+          </XhTreeSelectRoot>
+        )}
+      </XhVirtualizerRoot>,
+    ))
+
+    const rows = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[data-scope="tree-select"][data-part="item"]')]
+    await expect.poll(() => rows().length).toBeGreaterThan(0)
+    expect(rows().length).toBeLessThan(20)
+    const tree = document.querySelector<HTMLElement>('[data-scope="tree-select"][data-part="tree"]')!
+    act(() => tree.focus())
+    await act(async () => tree.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true, cancelable: true })))
+    await expect.poll(() => document.activeElement?.getAttribute('data-value')).toBe('item-1000')
+    expect((document.activeElement as HTMLElement).getAttribute('aria-posinset')).toBe('1000')
+    expect(rows().length).toBeLessThan(20)
+    const viewport = document.querySelector<HTMLElement>('[data-scope="virtualizer"][data-part="viewport"]')!
+    expect(viewport.scrollTop).toBeGreaterThan(0)
+    await expect.poll(() => viewport.hasAttribute('data-xh-scrollbar')).toBe(true)
   })
 
   it('transfer 自绘滚动条接管每侧 virtualizer viewport', async () => {

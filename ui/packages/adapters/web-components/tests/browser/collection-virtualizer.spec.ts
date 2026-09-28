@@ -2,6 +2,7 @@ import type { CollectionVirtualizer } from '@xihan-ui/headless'
 import type { XhComboboxElement } from '../../src/elements/combobox'
 import type { XhListboxElement } from '../../src/elements/listbox'
 import type { XhTransferElement } from '../../src/elements/transfer'
+import type { XhTreeSelectElement } from '../../src/elements/tree-select'
 import type { XhVirtualizerElement } from '../../src/elements/virtualizer'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../../src/define'
@@ -160,6 +161,70 @@ describe('collectionVirtualizer 正式接线', () => {
     expect(viewportRect.height).toBeCloseTo(listRect.height, 1)
     expect(barRect.top).toBeCloseTo(listRect.top, 1)
     expect(barRect.bottom).toBeCloseTo(listRect.bottom, 1)
+  })
+
+  it('tree-select 跨 Light-DOM 宿主只挂窗口里的行，End 把焦点交给末行，自绘条接管视口', async () => {
+    const stage = document.createElement('div')
+    stage.dataset.test = 'collection-virtualizer'
+    stage.innerHTML = `
+      <xh-tree-select default-open>
+        <div data-xh-part="root">
+          <div data-xh-part="control"><button data-xh-part="trigger">选择</button></div>
+          <div data-xh-part="positioner"><div data-xh-part="content">
+            <div data-xh-part="tree" style="overflow: visible; max-block-size: none">
+              <xh-virtualizer count="1000" estimate-size="36" overscan="0" viewport-tab-index="-1">
+                <div data-xh-part="root"><div data-xh-part="viewport" style="block-size: 144px"><div data-xh-part="content"></div></div></div>
+              </xh-virtualizer>
+            </div>
+          </div></div>
+        </div>
+      </xh-tree-select>
+    `
+    document.body.append(stage)
+    const treeSelect = stage.querySelector<XhTreeSelectElement>('xh-tree-select')!
+    const virtualizer = stage.querySelector<XhVirtualizerElement>('xh-virtualizer')!
+    const content = virtualizer.querySelector<HTMLElement>('[data-xh-part="content"]')!
+    treeSelect.collection = collection
+    const render = (virtualItems: readonly { index: number, key: string | number }[]): void => {
+      content.replaceChildren(...virtualItems.map((virtualItem) => {
+        const shell = document.createElement('div')
+        shell.dataset.xhPart = 'item'
+        shell.setAttribute('value', String(virtualItem.index))
+        shell.style.blockSize = '36px'
+        const row = document.createElement('div')
+        row.dataset.xhPart = 'item'
+        row.dataset.xhPartOwner = 'tree-select'
+        row.setAttribute('value', collection[virtualItem.index]!.value)
+        const text = document.createElement('span')
+        text.dataset.xhPart = 'item-text'
+        text.textContent = collection[virtualItem.index]!.label
+        row.append(text)
+        shell.append(row)
+        return shell
+      }))
+      virtualizer.requestUpdate()
+      const bridge = virtualizer.collectionVirtualizer
+      if (bridge) {
+        treeSelect.virtualizer = bridge
+        treeSelect.requestUpdate()
+      }
+    }
+    virtualizer.addEventListener('range-change', event => render((event as CustomEvent).detail.virtualItems))
+    await expect.poll(() => virtualizer.collectionVirtualizer != null).toBe(true)
+    render(virtualizer.virtualItems)
+
+    const rows = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[data-scope="tree-select"][data-part="item"]')]
+    await expect.poll(() => rows().length).toBeGreaterThan(0)
+    expect(rows().length).toBeLessThan(20)
+    const tree = document.querySelector<HTMLElement>('[data-scope="tree-select"][data-part="tree"]')!
+    tree.focus()
+    tree.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true, cancelable: true }))
+    await expect.poll(() => document.activeElement?.getAttribute('data-value')).toBe('item-1000')
+    await expect.poll(() => (document.activeElement as HTMLElement).getAttribute('aria-posinset')).toBe('1000')
+    expect(rows().length).toBeLessThan(20)
+    const viewport = virtualizer.querySelector<HTMLElement>('[data-scope="virtualizer"][data-part="viewport"]')!
+    expect(viewport.scrollTop).toBeGreaterThan(0)
+    await expect.poll(() => viewport.hasAttribute('data-xh-scrollbar')).toBe(true)
   })
 
   it('combobox 滚动后仍铺满 viewport，不留下半面空白', async () => {

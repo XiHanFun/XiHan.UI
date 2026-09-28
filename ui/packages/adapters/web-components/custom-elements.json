@@ -71462,6 +71462,15 @@
             },
             {
               "kind": "field",
+              "name": "virtualizer",
+              "privacy": "public",
+              "type": {
+                "text": "CollectionVirtualizer | undefined"
+              },
+              "description": "完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。只能作为 property 设置。"
+            },
+            {
+              "kind": "field",
               "name": "loadChildren",
               "privacy": "public",
               "type": {
@@ -71980,7 +71989,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('tree'), axes: ['vertical', 'horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), // 虚拟窗口的滚动层是 Virtualizer 的视口，条子跟着它走 scrollable: () => this.virtualizer?.getViewportElement() ?? this.getPart('tree'), axes: ['vertical', 'horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "树的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。\n两条轴都排布：深层节点依靠缩进向行末推，横向溢出与纵向一样是常态；\n横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。"
             },
             {

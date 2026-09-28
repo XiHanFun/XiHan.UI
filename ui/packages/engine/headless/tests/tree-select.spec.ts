@@ -8,6 +8,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, createServi
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { flattenTree } from '../src/tree'
 import { connectTreeSelect, defaultTreeSelectFilter, filterTreeSelectNodes, treeSelectMachine } from '../src/tree-select'
 
 type Props = TreeSelectSchema['props']
@@ -603,6 +604,69 @@ describe('浮层内搜索', () => {
     expect(event.defaultPrevented).toBe(true)
     expect(h.api().inputValue).toBe('d')
     expect(document.activeElement).toBe(h.searchBox)
+  })
+})
+
+describe('虚拟窗口', () => {
+  const EXPANDED = ['src', 'utils']
+  const VISIBLE = flattenTree(COLLECTION, EXPANDED).map(row => row.value)
+
+  function bridge(count = VISIBLE.length): { virtualizer: NonNullable<Props['virtualizer']>, focusIndex: ReturnType<typeof vi.fn> } {
+    const focusIndex = vi.fn()
+    return {
+      focusIndex,
+      virtualizer: { count, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [], getViewportElement: () => null },
+    }
+  }
+
+  it('count 必须等于可见行数，对不上即报错', () => {
+    expect(() => mount({ defaultExpandedValue: EXPANDED, virtualizer: bridge(3).virtualizer })).toThrow(RangeError)
+  })
+
+  it('与 searchable 不能同开：搜索视图的可见行由组件裁剪，count 无从对齐', () => {
+    expect(() => mount({ defaultExpandedValue: EXPANDED, searchable: true, virtualizer: bridge().virtualizer }))
+      .toThrow(/virtualizer 与 searchable/)
+  })
+
+  it('展开时锚点按选中值在可见行里的下标交给桥，由它滚进窗口', async () => {
+    const { virtualizer, focusIndex } = bridge()
+    const h = mount({ defaultOpen: true, defaultValue: 'math', defaultExpandedValue: EXPANDED, virtualizer })
+    await settle()
+    expect(h.focused()).toBe('math')
+    expect(focusIndex).toHaveBeenCalledWith(VISIBLE.indexOf('math'), expect.objectContaining({ align: 'auto' }))
+  })
+
+  it('方向键按可见行的数据落点：先记锚点，再交给桥把那一行滚进窗口', async () => {
+    const { virtualizer, focusIndex } = bridge()
+    const h = mount({ defaultOpen: true, defaultValue: 'src', defaultExpandedValue: EXPANDED, virtualizer })
+    await settle()
+    focusIndex.mockClear()
+    press(h.node('src'), 'End')
+    expect(h.focused()).toBe('license')
+    expect(focusIndex).toHaveBeenCalledWith(VISIBLE.length - 1, expect.objectContaining({ align: 'auto' }))
+    press(h.node('src'), 'ArrowUp')
+    expect(h.focused()).toBe('docs')
+    // 禁用行不是落点：readme 被跳过
+    press(h.node('src'), 'ArrowUp')
+    expect(h.focused()).toBe('math')
+  })
+
+  it('连打检索按可见行的 label 命中，同样经桥落焦', async () => {
+    const { virtualizer, focusIndex } = bridge()
+    const h = mount({ defaultOpen: true, defaultValue: 'src', defaultExpandedValue: EXPANDED, virtualizer })
+    await settle()
+    focusIndex.mockClear()
+    press(h.node('src'), 'm')
+    expect(h.focused()).toBe('math')
+    expect(focusIndex).toHaveBeenCalledWith(VISIBLE.indexOf('math'), expect.objectContaining({ align: 'auto' }))
+  })
+
+  it('持焦点节点被窗口淘汰不等于丢失：值仍在可见行里就不清锚点', async () => {
+    const { virtualizer } = bridge()
+    const h = mount({ defaultOpen: true, defaultValue: 'math', defaultExpandedValue: EXPANDED, virtualizer })
+    await settle()
+    h.send({ type: 'NODE.LOST' })
+    expect(h.focused()).toBe('math')
   })
 })
 

@@ -6,7 +6,7 @@
 // 提供 tree select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { TreeSelectApi, TreeSelectNode, TreeSelectNodeProps, TreeSelectSchema, TreeSelectTagMeta } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, TreeSelectApi, TreeSelectNode, TreeSelectNodeProps, TreeSelectSchema, TreeSelectTagMeta } from '@xihan-ui/headless'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeSelectContext } from './use-tree-select'
@@ -96,6 +96,8 @@ export const XhTreeSelectRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<TreeSelectNode[]> },
+    /** 完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。 */
+    virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     loadChildren: { type: Function as PropType<TreeSelectProps['loadChildren']> },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
@@ -362,7 +364,8 @@ export const XhTreeSelectPositioner = defineComponent({
     // 两条轴都摆：深层节点靠缩进往行末推，横向溢出与纵向一样是常态。
     // 横条的正负按排版方向算，而组件不读计算样式，把 positioner 上那份显式交过去
     const bars = useScrollbars({
-      scrollable: () => ctx.treeRef.value,
+      // 虚拟窗口的滚动层是 Virtualizer 的视口，条子跟着它走
+      scrollable: () => ctx.service.prop('virtualizer')?.getViewportElement() ?? ctx.treeRef.value,
       axes: ['vertical', 'horizontal'],
       // 条子走浮层 4px 档
       props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),

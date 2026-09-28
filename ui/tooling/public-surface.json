@@ -13398,7 +13398,8 @@
       "tone",
       "translations",
       "value",
-      "variant"
+      "variant",
+      "virtualizer"
     ],
     "truncate": [
       "defaultOpen",
