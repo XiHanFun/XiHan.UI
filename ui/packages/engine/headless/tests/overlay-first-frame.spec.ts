@@ -24,6 +24,7 @@ import { connectSelect, selectMachine } from '../src/select'
 import { connectTimePicker, timePickerMachine } from '../src/time-picker'
 import { connectTimeRangePicker, timeRangePickerMachine } from '../src/time-range-picker'
 import { connectTooltip, tooltipMachine } from '../src/tooltip'
+import { connectTour, tourMachine } from '../src/tour'
 import { connectTreeSelect, treeSelectMachine } from '../src/tree-select'
 
 type Attrs = Record<string, unknown>
@@ -130,6 +131,14 @@ const CASES: Record<string, Case> = {
     parts: (service) => {
       const api = connectCommand(service, normalizeProps)
       return [api.getContentProps() as Attrs, api.getBackdropProps() as Attrs]
+    },
+  },
+  'tour': {
+    machine: tourMachine,
+    props: open => ({ ...open, steps: [{ id: 'one', target: '#one', title: '第一步' }] }),
+    parts: (service) => {
+      const api = connectTour(service, normalizeProps)
+      return [api.getContentProps() as Attrs, api.getBackdropProps() as Attrs, api.getSpotlightProps() as Attrs]
     },
   },
   'image-viewer': {

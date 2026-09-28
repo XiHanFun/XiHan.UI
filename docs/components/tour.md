@@ -269,14 +269,17 @@
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-step` | String(value) |
+| `backdrop` | `data-instant` | ''（条件成立时才出现） |
 | `backdrop` | `data-position` | 'anchored' \| 'center' |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
 | `spotlight` | `data-dimmed` | ''（条件成立时才出现） |
+| `spotlight` | `data-instant` | ''（条件成立时才出现） |
 | `spotlight` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-position` | 'anchored' \| 'center' |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-step` | String(value) |

@@ -8,6 +8,7 @@
 import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
 import type { TourPressedPart, TourSchema, TourSpotlightRect, TourStep } from './tour.types'
 import { canTakeFocus, createDismissLayer, createFocusScope, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { setupLayerTransaction } from '../shared/overlay-shell'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
@@ -85,6 +86,8 @@ export function resolveTourTarget(scope: Scope, step: TourStep | null): HTMLElem
 export const tourMachine = createMachine({
   name: 'tour',
   context: ({ prop, cell }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     value: cell<number>(() => ({
       value: prop('value'),
       defaultValue: prop('defaultValue') ?? 0,
@@ -108,7 +111,7 @@ export const tourMachine = createMachine({
     getContentEl: () => null,
     reanchor: null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 逻辑收起之后，层、消解与焦点域必须等所有视觉退场租约结清才归还。
   effects: ['trackOverlay'],
   watch: ({ track, prop, context, action }) => {
@@ -120,6 +123,8 @@ export const tourMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
@@ -189,6 +194,7 @@ export const tourMachine = createMachine({
       },
     },
     actions: {
+      clearOpenedAtMount,
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       invokeOnComplete: ({ prop, context }) =>
