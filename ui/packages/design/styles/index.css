@@ -28364,52 +28364,32 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 「选择文件」是定尺的独立动作按钮：盒型、三档几何、悬停 100 / 按下 200 与 0.97 按压、焦点环、禁用面与
+     粗指针命中区由 Action Control 家族按 text 档 outline 给（连接层投影），不再悬停抬 raised 影。
+     这里只把使用者槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省） */
   [data-scope='file-upload'][data-part='trigger'] {
-    display: inline-flex;
+    --xh-action-bg-rest: var(--xh-file-upload-trigger-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-file-upload-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-file-upload-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-file-upload-trigger-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-file-upload-trigger-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-file-upload-trigger-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-border-rest: var(--xh-file-upload-trigger-border, var(--xh-_action-variant-border-rest));
+    /* 矩阵各态无影：使用者槽仍可自行加 */
+    --xh-action-shadow-hover: var(--xh-file-upload-trigger-shadow-hover, none);
+    --xh-action-radius: var(--xh-file-upload-trigger-radius, var(--xh-shape-control));
+    --xh-action-visual-size: var(--xh-file-upload-trigger-h, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-inline: var(--xh-file-upload-trigger-px, var(--xh-_action-profile-padding-inline));
+    --xh-action-gap: var(--xh-file-upload-trigger-gap, var(--xh-_action-profile-gap));
+    --xh-action-font-size: var(--xh-file-upload-trigger-font-size, var(--xh-_action-profile-font-size));
+    --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
     flex: none;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-file-upload-trigger-gap, var(--xh-control-gap-md));
-    block-size: var(--xh-file-upload-trigger-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-file-upload-trigger-px, var(--xh-control-px-md));
-    border: var(--xh-stroke-thin) solid var(--xh-file-upload-trigger-border, var(--xh-border-control));
-    border-radius: var(--xh-file-upload-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-file-upload-trigger-bg, var(--xh-bg-surface));
-    color: var(--xh-file-upload-trigger-fg, var(--xh-fg-default));
-    /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族 */
-    font-family: inherit;
-    font-size: var(--xh-file-upload-trigger-font-size, var(--xh-text-body-size));
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    font-weight: var(--xh-file-upload-trigger-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='file-upload'][data-part='trigger'][hidden] {
     display: none;
-  }
-
-  /* 悬停换底色的同时把这块面抬起一档：只换底色的回执在一颗按钮上太轻 */
-  [data-scope='file-upload'][data-part='trigger']:hover:not(:disabled) {
-    background: var(--xh-file-upload-trigger-bg-hover, var(--xh-bg-subtle-hover));
-    box-shadow: var(--xh-file-upload-trigger-shadow-hover, var(--xh-elevation-raised));
-  }
-
-  /* 按下：换到按压档底色并轻微下压，抬起的那一档同时落回，松手弹回；禁用钮不压 */
-  [data-scope='file-upload'][data-part='trigger']:not(:disabled):is(:active, [data-pressed]) {
-    background: var(--xh-file-upload-trigger-bg-active, var(--xh-bg-subtle-active));
-    box-shadow: none;
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 单体控件走原生 disabled（与集合条目的 aria-disabled 相反），因此用 :disabled */
-  [data-scope='file-upload'][data-part='trigger']:disabled {
-    background: var(--xh-bg-subtle);
-    color: var(--xh-fg-disabled);
   }
 
   /* 连接层已经把这一套视觉隐藏写进了内联 style，这里是给元素升级前那一瞬兜底
@@ -28623,108 +28603,52 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 删除是一行里的小图标按钮：正方形、无边框，靠底色表达 hover */
+  /* 删除是一行里的小图标钮：Action Control icon 档 ghost、xs 视觉盒，悬停 100 / 按下 200 与 0.97 按压由家族给；
+     悬停与按下时字换危险色，说明这一下会删掉。钮里的叉按 xs 档的字形尺画 */
   [data-scope='file-upload'][data-part='item-delete-trigger'] {
-    display: inline-flex;
+    --xh-action-bg-hover: var(--xh-file-upload-delete-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-file-upload-delete-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-file-upload-delete-fg, var(--xh-fg-muted));
+    --xh-action-fg-hover: var(--xh-file-upload-delete-fg-hover, var(--xh-fg-danger-hover));
+    --xh-action-fg-pressed: var(--xh-file-upload-delete-fg-hover, var(--xh-fg-danger-hover));
+    --xh-action-radius: var(--xh-file-upload-delete-radius, var(--xh-shape-control));
+    --xh-action-visual-size: var(--xh-file-upload-delete-size, var(--xh-_action-profile-visual-size));
+    --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
     flex: none;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--xh-file-upload-delete-size, var(--xh-control-action-size));
-    block-size: var(--xh-file-upload-delete-size, var(--xh-control-action-size));
-    padding: 0;
-    border: 0;
-    border-radius: var(--xh-file-upload-delete-radius, var(--xh-shape-control));
-    background: transparent;
-    color: var(--xh-file-upload-delete-fg, var(--xh-fg-muted));
-    font-family: inherit;
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='file-upload'][data-part='item-delete-trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='file-upload'][data-part='item-delete-trigger']:hover:not(:disabled) {
-    background: var(--xh-file-upload-delete-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-file-upload-delete-fg-hover, var(--xh-fg-danger-hover));
-  }
-
-  /* 按下：换到按压档底色并轻微下压，松手弹回；禁用钮不压 */
-  [data-scope='file-upload'][data-part='item-delete-trigger']:not(:disabled):is(:active, [data-pressed]) {
-    background: var(--xh-file-upload-delete-bg-active, var(--xh-bg-subtle-active));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  [data-scope='file-upload'][data-part='item-delete-trigger']:disabled {
-    color: var(--xh-fg-disabled);
-  }
-
-  /* 清空是收尾动作，画成不带底色的文字按钮：它比"选择文件"次要 */
+  /* 清空是收尾动作，画成不带底的文字钮：Action Control text 档 ghost、sm，比「选择文件」小一档 */
   [data-scope='file-upload'][data-part='clear-trigger'] {
-    display: inline-flex;
+    --xh-action-bg-hover: var(--xh-file-upload-clear-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-file-upload-clear-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-file-upload-clear-fg, var(--xh-fg-muted));
+    --xh-action-fg-hover: var(--xh-file-upload-clear-fg-hover, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-file-upload-clear-fg-hover, var(--xh-fg-default));
+    --xh-action-radius: var(--xh-file-upload-clear-radius, var(--xh-shape-control));
+    --xh-action-visual-size: var(--xh-file-upload-clear-h, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-inline: var(--xh-file-upload-clear-px, var(--xh-_action-profile-padding-inline));
+    --xh-action-gap: var(--xh-file-upload-clear-gap, var(--xh-_action-profile-gap));
+    --xh-action-font-size: var(--xh-file-upload-clear-font-size, var(--xh-_action-profile-font-size));
+    --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
     flex: none;
     align-self: flex-start;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-file-upload-clear-gap, var(--xh-control-gap-sm));
-    block-size: var(--xh-file-upload-clear-h, var(--xh-control-h-sm));
-    padding-inline: var(--xh-file-upload-clear-px, var(--xh-control-px-sm));
-    border: 0;
-    border-radius: var(--xh-file-upload-clear-radius, var(--xh-shape-control));
-    background: transparent;
-    color: var(--xh-file-upload-clear-fg, var(--xh-fg-muted));
-    font-family: inherit;
-    font-size: var(--xh-file-upload-clear-font-size, var(--xh-text-caption-size));
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='file-upload'][data-part='clear-trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='file-upload'][data-part='clear-trigger']:hover:not(:disabled) {
-    background: var(--xh-file-upload-clear-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-file-upload-clear-fg-hover, var(--xh-fg-default));
-  }
-
-  /* 按下：换到按压档底色并轻微下压，松手弹回；禁用钮不压 */
-  [data-scope='file-upload'][data-part='clear-trigger']:not(:disabled):is(:active, [data-pressed]) {
-    background: var(--xh-file-upload-clear-bg-active, var(--xh-bg-subtle-active));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 空列表时按钮照常可按（收起它会让焦点掉回 body），只把前景压淡一档 */
+  /* 空列表时按钮照常可按（收起它会让焦点掉回 body），只把前景压淡一档；三态一起压，家族的悬停规则更特定 */
   [data-scope='file-upload'][data-part='clear-trigger'][data-empty] {
-    color: var(--xh-fg-subtle);
-  }
-
-  [data-scope='file-upload'][data-part='clear-trigger']:disabled {
-    color: var(--xh-fg-disabled);
-  }
-
-  /*
-   * 高对比档：三颗钮的按压面常态靠换底表出，这一档里底色被统一换成 Canvas，按住那一下与静息塌成同一个样子；
-   * 用系统高亮反色画回来，兜底字形读 currentColor、自己跟着换
-   */
-  @media (forced-colors: active) {
-    [data-scope='file-upload'][data-part='trigger']:not(:disabled):is(:active, [data-pressed]),
-    [data-scope='file-upload'][data-part='item-delete-trigger']:not(:disabled):is(:active, [data-pressed]),
-    [data-scope='file-upload'][data-part='clear-trigger']:not(:disabled):is(:active, [data-pressed]) {
-      background: Highlight;
-      color: HighlightText;
-    }
+    --xh-action-fg-rest: var(--xh-fg-subtle);
+    --xh-action-fg-hover: var(--xh-fg-subtle);
+    --xh-action-fg-pressed: var(--xh-fg-subtle);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

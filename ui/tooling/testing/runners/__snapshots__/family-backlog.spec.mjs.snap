@@ -2,8 +2,8 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 3,
-  "ladder": 7,
+  "edge": 2,
+  "ladder": 1,
   "motion": 0,
   "press": 0,
   "scroll": 0,
@@ -17,19 +17,12 @@ exports[`family-backlog 键集合 > edge 1`] = `
 [
   "button:root:raised",
   "color-picker:area-thumb:raised",
-  "file-upload:trigger:raised",
 ]
 `;
 
 exports[`family-backlog 键集合 > ladder 1`] = `
 [
-  "file-upload:clear-trigger:hover",
-  "file-upload:clear-trigger:pressed",
   "file-upload:dropzone:focus",
-  "file-upload:item-delete-trigger:hover",
-  "file-upload:item-delete-trigger:pressed",
-  "file-upload:trigger:hover",
-  "file-upload:trigger:pressed",
 ]
 `;
 

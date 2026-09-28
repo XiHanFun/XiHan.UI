@@ -25886,6 +25886,9 @@
               "name": "--xh-file-upload-trigger-font-size"
             },
             {
+              "name": "--xh-file-upload-trigger-font-weight"
+            },
+            {
               "name": "--xh-file-upload-trigger-gap"
             },
             {
