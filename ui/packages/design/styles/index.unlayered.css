@@ -1075,10 +1075,12 @@
      描边在这里常驻 solid、静息透明，靠颜色表达键盘高亮。宿主页面常见的
      button:focus:not(:focus-visible) { outline: none } 复位（VitePress 等）是无层规则，压过本份；
      指针落焦时它把简写复位成 none，outline-color 同时落到 currentColor；焦点离开、规则失效的那一刻
-     solid 立即回来，颜色若还在过渡就画成一圈实心边（上一条目闪边）。颜色即时切换后这条路径没有中间帧 */
+     solid 立即回来，颜色若还在过渡就画成一圈实心边（上一条目闪边）。颜色即时切换后这条路径没有中间帧。
+     不透明度同一节奏：集合在后台刷新时保留上一帧、条目按 micro 淡下，数据到了再淡回 */
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope][data-xh-collection-item][data-xh-collection-size='sm'] {
