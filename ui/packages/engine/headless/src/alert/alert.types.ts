@@ -39,6 +39,13 @@ export interface AlertSchema extends MachineSchema {
      * 抬起、失焦、指针取消，或提示收起（按钮随之隐藏）时撤下。
      */
     pressed: boolean
+    /**
+     * 提示是否还留着（没有 hidden）。显示时立即为真；收起后等根上的退场动画（先淡出、再收起占位）
+     * 播完才为假，期间 data-state 已经是 closed。
+     */
+    rendered: boolean
+    /** 收起那一刻量下的整块高度（像素），退场收占位从它收到 0；显示期间与量不到时为 null。 */
+    exitBlockSize: number | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -53,10 +60,20 @@ export interface AlertSchema extends MachineSchema {
     | { type: 'PRESS.START' }
     /** 关闭按钮抬起、失焦或指针取消。 */
     | { type: 'PRESS.END' }
+    /** 根节点留着与否（退场动画播完才报 false）。 */
+    | { type: 'ROOT.RENDERED', rendered: boolean }
   tag: never
   guard: 'isOpenControlled' | 'canPress'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'startPress' | 'endPress' | 'releaseWhenInert'
-  effect: never
+  action:
+    | 'invokeOnOpen'
+    | 'invokeOnClose'
+    | 'syncOpen'
+    | 'startPress'
+    | 'endPress'
+    | 'releaseWhenInert'
+    | 'measureExit'
+    | 'setRendered'
+  effect: 'trackRootPresence'
 }
 
 export interface AlertApi<T extends PropTypes = PropTypes> {

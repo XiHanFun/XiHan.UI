@@ -1,7 +1,8 @@
+// @vitest-environment jsdom
 import type { AlertOpenChangeDetails, AlertSchema } from '../src/alert'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
 import { alertMachine, connectAlert } from '../src/alert'
 
@@ -19,6 +20,42 @@ function makeAlert(initial: Props = {}) {
     api: () => connectAlert(service, normalizeProps),
     stop: () => runtime.stop(),
   }
+}
+
+/** 等宿主提交（vanilla 运行时是一个微任务）与退场租约的 finished 链落定。 */
+async function settle(): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, 0))
+}
+
+const realGetComputedStyle = window.getComputedStyle.bind(window)
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
+/**
+ * 按 connect 给根的 id 挂一个根节点：量得出整块高度，身上有一段在播的退场动画。
+ * jsdom 不排版也不跑 CSS 动画，高度、计算样式与动画对象都桩成浏览器里的取值；finish() 模拟退场播完。
+ */
+function stubExit(alert: ReturnType<typeof makeAlert>, height: number): { finish: () => void } {
+  const node = document.createElement('div')
+  node.id = String(alert.api().getRootProps().id)
+  node.getBoundingClientRect = () => ({ height }) as DOMRect
+  document.body.append(node)
+  vi.spyOn(window, 'getComputedStyle').mockImplementation(((el: Element, pseudo?: string | null) => {
+    if (el === node)
+      return { animationName: 'xh-fade-out', animationDuration: '0.12s', animationDelay: '0s', animationTimingFunction: 'linear', opacity: '1', display: 'flex' } as CSSStyleDeclaration
+    return realGetComputedStyle(el as HTMLElement, pseudo)
+  }) as typeof window.getComputedStyle)
+  let finish!: () => void
+  const finished = new Promise<Animation>((resolve) => {
+    finish = () => resolve({} as Animation)
+  })
+  Object.defineProperty(node, 'getAnimations', {
+    configurable: true,
+    value: () => [{ animationName: 'xh-fade-out', playState: 'running', effect: { getComputedTiming: () => ({ endTime: 120 }) }, finished }],
+  })
+  return { finish }
 }
 
 /** 关闭按钮的处理器不读事件对象，直接调即可（node 环境里没有 MouseEvent）。 */
@@ -97,10 +134,70 @@ describe('connectAlert 实时区语义', () => {
     expect(api.getIndicatorProps()['aria-hidden']).toBe(true)
   })
 
-  it('收起态给 root 打 hidden，展开态不留这个属性', () => {
+  it('收起态给 root 打 hidden，展开态不留这个属性；没有可等的退场时提交之后即藏起', async () => {
     const a = makeAlert()
     expect(a.api().getRootProps().hidden).toBeUndefined()
     a.api().setOpen(false)
+    await settle()
+    expect(a.api().getRootProps().hidden).toBe(true)
+  })
+
+  it('初始即收起：不留退场、直接 hidden', () => {
+    const a = makeAlert({ defaultOpen: false })
+    expect(a.api().getRootProps().hidden).toBe(true)
+    expect(a.api().getRootProps().inert).toBeUndefined()
+  })
+})
+
+describe('alertMachine 关闭的退场', () => {
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  it('收起时先量下整块高度，等根上的退场动画播完才写 hidden；退场途中不接交互', async () => {
+    const a = makeAlert()
+    const fade = stubExit(a, 64)
+    press(a.api().getCloseTriggerProps())
+    expect(a.state()).toBe('closed')
+
+    const exiting = a.api().getRootProps()
+    expect(exiting['data-state']).toBe('closed')
+    expect(exiting.hidden).toBeUndefined()
+    expect(exiting.inert).toBe(true)
+    expect((exiting.style as Record<string, string>)['--xh-_alert-exit-block-size']).toBe('64px')
+
+    await settle()
+    expect(a.api().getRootProps().hidden).toBeUndefined()
+
+    fade.finish()
+    await settle()
+    const gone = a.api().getRootProps()
+    expect(gone.hidden).toBe(true)
+    expect(gone.inert).toBeUndefined()
+    expect((gone.style as Record<string, string>)['--xh-_alert-exit-block-size']).toBe('')
+  })
+
+  it('退场途中重新显示：当场露面，交互恢复', async () => {
+    const a = makeAlert()
+    stubExit(a, 64)
+    press(a.api().getCloseTriggerProps())
+    await settle()
+    a.api().setOpen(true)
+    const root = a.api().getRootProps()
+    expect(root.hidden).toBeUndefined()
+    expect(root.inert).toBeUndefined()
+    expect(root['data-state']).toBe('open')
+  })
+
+  it('受控收起同样先量高度、等退场', async () => {
+    const a = makeAlert({ open: true })
+    const fade = stubExit(a, 40)
+    a.setProps({ open: false })
+    expect((a.api().getRootProps().style as Record<string, string>)['--xh-_alert-exit-block-size']).toBe('40px')
+    await settle()
+    expect(a.api().getRootProps().hidden).toBeUndefined()
+    fade.finish()
+    await settle()
     expect(a.api().getRootProps().hidden).toBe(true)
   })
 })
