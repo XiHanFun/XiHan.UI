@@ -82187,7 +82187,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "tree 的 empty 部件 color 覆盖槽。"
@@ -82205,7 +82205,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-_tree-font-size"
       ],
       "visibility": "public",
       "description": "tree 的 empty 部件 font-size 覆盖槽。"
@@ -82223,7 +82223,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-_tree-row-px"
       ],
       "visibility": "public",
       "description": "tree 的 empty 部件 padding-inline 覆盖槽。"
@@ -82520,7 +82520,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "tree 的 loading 部件 color 覆盖槽。"
@@ -82538,10 +82538,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-_tree-font-size"
       ],
       "visibility": "public",
       "description": "tree 的 loading 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-loading-gap",
+      "component": "tree",
+      "part": [
+        "loading"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_tree-row-gap"
+      ],
+      "visibility": "public",
+      "description": "tree 的 loading 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-tree-loading-px",
@@ -82556,7 +82574,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-_tree-row-px"
       ],
       "visibility": "public",
       "description": "tree 的 loading 部件 padding-inline 覆盖槽。"
@@ -82821,6 +82839,27 @@
       ],
       "visibility": "public",
       "description": "tree 的 branch-control、item 部件 line-height 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-row-loading-opacity",
+      "component": "tree",
+      "part": [
+        "branch-control",
+        "item",
+        "tree"
+      ],
+      "property": [
+        "opacity"
+      ],
+      "state": [
+        "is([data-scope='tree'][data-part='item'], [data-scope='tree'][data-part='branch-control'])",
+        "loading"
+      ],
+      "defaultToken": [
+        "--xh-state-disabled-opacity"
+      ],
+      "visibility": "public",
+      "description": "tree 的 branch-control、item、tree 部件 opacity 覆盖槽。"
     },
     {
       "name": "--xh-tree-row-px",

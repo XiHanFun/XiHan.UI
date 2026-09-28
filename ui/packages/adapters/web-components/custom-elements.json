@@ -71460,7 +71460,7 @@
               "name": "empty"
             },
             {
-              "description": "在途占位，与空态占位同一位置，加载期间显示",
+              "description": "在途占位，与空态占位同一位置，还没有节点、正在加载时显示：一枚加载环排在文案之前",
               "name": "loading"
             },
             {
@@ -72075,6 +72075,9 @@
               "name": "--xh-tree-loading-font-size"
             },
             {
+              "name": "--xh-tree-loading-gap"
+            },
+            {
               "name": "--xh-tree-loading-px"
             },
             {
@@ -72112,6 +72115,9 @@
             },
             {
               "name": "--xh-tree-row-leading"
+            },
+            {
+              "name": "--xh-tree-row-loading-opacity"
             },
             {
               "name": "--xh-tree-row-px"

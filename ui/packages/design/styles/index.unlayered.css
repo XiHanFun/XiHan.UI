@@ -45669,14 +45669,16 @@
 }
 
 /* 空态占位：待在 root 里、tree 的兄弟（role=tree 只许拥有 treeitem 与 group）。
-   盒归 tree，这里只画一句居中的次要文字 */
+   与在途占位同一副排版：一行居中的次要文字，字号与行内内衬随尺寸档与条目同档，块向内距一档 */
 [data-scope='tree'][data-part='empty'] {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding-block: var(--xh-tree-empty-py, var(--xh-space-3));
-  padding-inline: var(--xh-tree-empty-px, var(--xh-space-3));
-  color: var(--xh-tree-empty-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-tree-empty-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-leading-none);
+  padding-inline: var(--xh-tree-empty-px, var(--xh-_tree-row-px));
+  color: var(--xh-tree-empty-fg, var(--xh-fg-muted));
+  font-size: var(--xh-tree-empty-font-size, var(--xh-_tree-font-size));
+  line-height: var(--xh-leading-normal);
   text-align: center;
 }
 
@@ -45689,15 +45691,26 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+/* 在途占位：与空态占位同一个位置、同一副排版，两者不同屏。还没有节点时一枚加载环排在文案之前 */
 [data-scope='tree'][data-part='loading'] {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--xh-tree-loading-gap, var(--xh-_tree-row-gap));
   padding-block: var(--xh-tree-loading-py, var(--xh-space-3));
-  padding-inline: var(--xh-tree-loading-px, var(--xh-space-3));
-  color: var(--xh-tree-loading-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-tree-loading-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-leading-none);
+  padding-inline: var(--xh-tree-loading-px, var(--xh-_tree-row-px));
+  color: var(--xh-tree-loading-fg, var(--xh-fg-muted));
+  font-size: var(--xh-tree-loading-font-size, var(--xh-_tree-font-size));
+  line-height: var(--xh-leading-normal);
   text-align: center;
+}
+
+/* 环由加载环配方画成（轨道 + 起始边、随 data-loading 淡入并转），这里只给它盒子：直径取尺寸档的图标档 */
+[data-scope='tree'][data-part='loading']::before {
+  content: '';
+  flex: none;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
 }
 
 [data-scope='tree'][data-part='loading'][hidden] {
@@ -45797,7 +45810,15 @@
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 已有节点时重新取数：不换成占位，行保留上一帧、按 micro 淡到禁用透明度，数据到了再淡回；
+   树框（描边与底）不淡，取数在途时行不接指针 */
+[data-scope='tree'][data-part='tree'][data-loading] :is([data-scope='tree'][data-part='item'], [data-scope='tree'][data-part='branch-control']) {
+  opacity: var(--xh-tree-row-loading-opacity, var(--xh-state-disabled-opacity));
+  pointer-events: none;
 }
 
 /* 分支行的首格是展开箭头，叶子行没有这一格，由行盒自己补出来（对号在行尾，不再替叶子顶这一格），

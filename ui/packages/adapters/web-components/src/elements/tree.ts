@@ -69,7 +69,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 中、与 tree 部件平级（root 自身不带角色，无法进入 role=tree 的子节点集合）
  * @csspart tree - role=tree 容器，键盘在此收口，也是 roving tabindex 的兜底位
  * @csspart empty - 空态占位，须放在 root 中作为 tree 的兄弟；提供 collection 时由元素按条数收放，节点手写时由作者负责
- * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
+ * @csspart loading - 在途占位，与空态占位同一位置，还没有节点、正在加载时显示：一枚加载环排在文案之前
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
  * @csspart item-description - 条目的第 2 行副文本

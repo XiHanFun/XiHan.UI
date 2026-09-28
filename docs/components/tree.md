@@ -139,7 +139,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 - 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
 - 节点可写副文本，第 2 行放一句解释，不进连打检索串。
 - 节点行尾留一格给作者（计数、徽标），排在对号之前；行首那一格归展开箭头与拖拽把手。
-- 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 内作为 `tree` 的兄弟；`loading` 为真时树报告 `aria-busy`，空态让位。
+- 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 内作为 `tree` 的兄弟；`loading` 为真时树报告 `aria-busy`，空态让位。在途分两种：还没有节点时在途占位露面，一枚加载环排在文案之前；已有节点时重新取数不换成占位，行保留上一帧淡下，取完再淡回。
 - `leafOrientation` 按结构判据横排：子节点全是叶子的层跟随它，其余始终竖排。
 - 节点级加载态：`loadingValue` 里的分支报告 `aria-busy`，展开箭头换成转圈（减弱动效下停住）。取数归作者：在 `onExpandedValueChange` 里发起请求，回来后写回 `collection` 并把它移出 `loadingValue`。
 - `lines` 打开缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头，颜色取内部分隔线（`--xh-tree-line-color`），只是外观，不改结构与键盘。
@@ -191,7 +191,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 |
 | `expandOnClick` | `boolean` |  | 点击分支行（与确认键）是否同时展开 / 收起，默认 false：展开与选中分开，只有 branch-trigger 与左右方向键能改变展开态。 |
 | `disabled` | `boolean` |  | 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不再改变展开 / 选中。 |
-| `loading` | `boolean` |  | 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位。 |
+| `loading` | `boolean` |  | 节点加载中：树报告 aria-busy、隐藏空态占位；还没有节点时显示在途占位，已有节点时行保留上一帧淡下。 |
 | `loadingValue` | `string[]` |  | 正在取子节点的分支（节点 value）。在其中的分支报告 aria-busy，展开箭头换成转圈； 取数本身归作者：常见写法是在 onExpandedValueChange 里发起请求、回来后写回 collection 并移出这里。 |
 | `lines` | `boolean` |  | 缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头，默认 false。只是外观，不改结构与键盘。 |
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
@@ -391,6 +391,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-lines` | ''（条件成立时才出现） |
+| `tree` | `data-loading` | ''（条件成立时才出现） |
 | `tree` | `data-orientation` | 'vertical' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-draggable` | ''（条件成立时才出现） |
@@ -472,6 +473,8 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `node-drag-trigger` | `data-xh-collection-slot` | 'prefix' |
 | `empty` | `data-disabled` | ''（条件成立时才出现） |
 | `loading` | `data-disabled` | ''（条件成立时才出现） |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
+| `loading` | `data-xh-loading-ring` | '' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -496,9 +499,9 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `--xh-tree-drop-fg` | `branch-control`<br>`item` | `background`<br>`box-shadow` | `disabled`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-disabled])` | `--xh-border-control-focus` | tree 的 branch-control、item 部件 background、box-shadow 覆盖槽。 |
 | `--xh-tree-drop-inside-bg` | `branch-control`<br>`item` | `background` | `disabled`<br>`drop=inside`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | tree 的 branch-control、item 部件 background 覆盖槽。 |
 | `--xh-tree-drop-line` | `branch-control`<br>`item` | `block-size`<br>`box-shadow` | `disabled`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-disabled])` | `--xh-stroke-thick` | tree 的 branch-control、item 部件 block-size、box-shadow 覆盖槽。 |
-| `--xh-tree-empty-fg` | `empty` | `color` | `default` | `--xh-fg-subtle` | tree 的 empty 部件 color 覆盖槽。 |
-| `--xh-tree-empty-font-size` | `empty` | `font-size` | `default` | `--xh-text-body-size` | tree 的 empty 部件 font-size 覆盖槽。 |
-| `--xh-tree-empty-px` | `empty` | `padding-inline` | `default` | `--xh-space-3` | tree 的 empty 部件 padding-inline 覆盖槽。 |
+| `--xh-tree-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | tree 的 empty 部件 color 覆盖槽。 |
+| `--xh-tree-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_tree-font-size` | tree 的 empty 部件 font-size 覆盖槽。 |
+| `--xh-tree-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_tree-row-px` | tree 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | tree 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-tree-fg` | `tree` | `color` | `default` | `--xh-fg-default` | tree 的 tree 部件 color 覆盖槽。 |
 | `--xh-tree-gap` | `root` | `gap` | `default` | `--xh-space-2` | tree 的 root 部件 gap 覆盖槽。 |
@@ -512,9 +515,10 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `--xh-tree-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tree 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-tree-leaf-row-gap` | `branch-content` | `column-gap` | `orientation=horizontal` | `--xh-space-3` | tree 的 branch-content 部件 column-gap 覆盖槽。 |
 | `--xh-tree-line-color` | `branch-content`<br>`tree` | `background` | `lines` | `--xh-border-subtle` | tree 的 branch-content、tree 部件 background 覆盖槽。 |
-| `--xh-tree-loading-fg` | `loading` | `color` | `default` | `--xh-fg-subtle` | tree 的 loading 部件 color 覆盖槽。 |
-| `--xh-tree-loading-font-size` | `loading` | `font-size` | `default` | `--xh-text-body-size` | tree 的 loading 部件 font-size 覆盖槽。 |
-| `--xh-tree-loading-px` | `loading` | `padding-inline` | `default` | `--xh-space-3` | tree 的 loading 部件 padding-inline 覆盖槽。 |
+| `--xh-tree-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | tree 的 loading 部件 color 覆盖槽。 |
+| `--xh-tree-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_tree-font-size` | tree 的 loading 部件 font-size 覆盖槽。 |
+| `--xh-tree-loading-gap` | `loading` | `gap` | `default` | `--xh-_tree-row-gap` | tree 的 loading 部件 gap 覆盖槽。 |
+| `--xh-tree-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_tree-row-px` | tree 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | tree 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-tree-max-h` | `tree` | `max-block-size` | `default` | `--xh-viewport-h-lg` | tree 的 tree 部件 max-block-size 覆盖槽。 |
 | `--xh-tree-px` | `tree` | `padding-inline` | `default` | `--xh-space-1` | tree 的 tree 部件 padding-inline 覆盖槽。 |
@@ -527,6 +531,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `--xh-tree-row-font-size` | `branch-control`<br>`item` | `font-size` | `default` | `--xh-_tree-font-size` | tree 的 branch-control、item 部件 font-size 覆盖槽。 |
 | `--xh-tree-row-gap` | `branch-control`<br>`item` | `gap`<br>`padding-inline-start` | `default`<br>`orientation=vertical` | `--xh-_tree-row-gap` | tree 的 branch-control、item 部件 gap、padding-inline-start 覆盖槽。 |
 | `--xh-tree-row-leading` | `branch-control`<br>`item` | `line-height` | `default` | `--xh-leading-normal` | tree 的 branch-control、item 部件 line-height 覆盖槽。 |
+| `--xh-tree-row-loading-opacity` | `branch-control`<br>`item`<br>`tree` | `opacity` | `is([data-scope='tree'][data-part='item'], [data-scope='tree'][data-part='branch-control'])`<br>`loading` | `--xh-state-disabled-opacity` | tree 的 branch-control、item、tree 部件 opacity 覆盖槽。 |
 | `--xh-tree-row-px` | `branch-content`<br>`branch-control`<br>`item`<br>`tree` | `inset-inline-start`<br>`padding-inline`<br>`padding-inline-start` | `default`<br>`lines`<br>`orientation=vertical` | `--xh-_tree-row-px` | tree 的 branch-content、branch-control、item、tree 部件 inset-inline-start、padding-inline、padding-inline-start 覆盖槽。 |
 | `--xh-tree-row-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_tree-row-py` | tree 的 branch-control、item 部件 padding-block 覆盖槽。 |
 | `--xh-tree-row-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-control` | tree 的 branch-control、item 部件 border-radius 覆盖槽。 |
@@ -538,7 +543,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 
 动效角色：按压 · 状态 · 切换 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `box-shadow` · `color` · `mask-size` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `box-shadow` · `color` · `mask-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

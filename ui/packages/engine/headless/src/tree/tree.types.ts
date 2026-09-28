@@ -180,7 +180,7 @@ export interface TreeSchema extends MachineSchema {
     expandOnClick?: boolean
     /** 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不再改变展开 / 选中。 */
     disabled?: boolean
-    /** 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位。 */
+    /** 节点加载中：树报告 aria-busy、隐藏空态占位；还没有节点时显示在途占位，已有节点时行保留上一帧淡下。 */
     loading?: boolean
     /**
      * 正在取子节点的分支（节点 value）。在其中的分支报告 aria-busy，展开箭头换成转圈；
