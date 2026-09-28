@@ -223,7 +223,8 @@
   [data-scope='drawer'][data-part='content'][data-side='left'],
   [data-scope='drawer'][data-part='content'][data-side='right'] {
     inset-block: 0;
-    inline-size: var(--xh-drawer-size, var(--xh-_drawer-size));
+    /* 调过厚度就按连接层写进私有槽的像素走，压过 size 档与使用者槽 */
+    inline-size: var(--xh-_drawer-panel-size, var(--xh-drawer-size, var(--xh-_drawer-size)));
     /* 视口比抽屉还窄时让位，否则面板会顶出一条横向滚动条 */
     max-inline-size: 100%;
   }
@@ -245,7 +246,7 @@
   [data-scope='drawer'][data-part='content'][data-side='top'],
   [data-scope='drawer'][data-part='content'][data-side='bottom'] {
     inset-inline: 0;
-    block-size: var(--xh-drawer-size, var(--xh-_drawer-size));
+    block-size: var(--xh-_drawer-panel-size, var(--xh-drawer-size, var(--xh-_drawer-size)));
     max-block-size: 100%;
   }
 
@@ -416,11 +417,115 @@
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
 
+  /* —— 改尺 ——
+     把手是一条透明的命中区，贴在朝向页面的那条边上，中间一段指示条标出这里能推：
+     左右放置时是竖条、上下放置时是横条。贴边用逻辑属性：right 贴的是行尾侧，把手落在行首那条边，
+     与机器按书写方向翻转推动方向同源。厚度跟手，不挂过渡 */
+  [data-scope='drawer'][data-part='content'][data-resizing] {
+    user-select: none;
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger'] {
+    --xh-_drawer-resize-indicator: var(--xh-drawer-resize-trigger-bg, var(--xh-border-control));
+
+    position: absolute;
+    display: block;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    touch-action: none;
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger']::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    border-radius: var(--xh-drawer-resize-trigger-radius, var(--xh-shape-pill));
+    background: var(--xh-_drawer-resize-indicator);
+    pointer-events: none;
+    /* 起点是逻辑属性、平移是物理通道：行内分量乘方向符号，RTL 下指示条才落回把手正中 */
+    translate: calc(-50% * var(--xh-direction-sign)) -50%;
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger']:hover {
+    --xh-_drawer-resize-indicator: var(--xh-drawer-resize-trigger-bg-hover, var(--xh-border-control-hover));
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger'][data-resizing] {
+    --xh-_drawer-resize-indicator: var(--xh-drawer-resize-trigger-bg-active, var(--xh-bg-brand));
+  }
+
+  /* 键盘落在把手上时指示条换成焦点色：命中区贴着面板边，外扩的环会压到页面上 */
+  [data-scope='drawer'][data-part='resize-trigger']:focus-visible {
+    --xh-_drawer-resize-indicator: var(--xh-ring-focus);
+
+    outline: none;
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger'][data-side='left'],
+  [data-scope='drawer'][data-part='resize-trigger'][data-side='right'] {
+    inset-block: 0;
+    inline-size: var(--xh-drawer-resize-trigger-size, var(--xh-space-2));
+    cursor: ew-resize;
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger'][data-side='right'] {
+    inset-inline-start: 0;
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger'][data-side='left'] {
+    inset-inline-end: 0;
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger'][data-side='top'],
+  [data-scope='drawer'][data-part='resize-trigger'][data-side='bottom'] {
+    inset-inline: 0;
+    block-size: var(--xh-drawer-resize-trigger-size, var(--xh-space-2));
+    cursor: ns-resize;
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger'][data-side='top'] {
+    inset-block-end: 0;
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger'][data-side='bottom'] {
+    inset-block-start: 0;
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger']:is([data-side='left'], [data-side='right'])::after {
+    inline-size: var(--xh-drawer-resize-indicator-thickness, var(--xh-stroke-strong));
+    block-size: var(--xh-drawer-resize-indicator-length, var(--xh-space-8));
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger']:is([data-side='top'], [data-side='bottom'])::after {
+    inline-size: var(--xh-drawer-resize-indicator-length, var(--xh-space-8));
+    block-size: var(--xh-drawer-resize-indicator-thickness, var(--xh-stroke-strong));
+  }
+
+  [data-scope='drawer'][data-part='resize-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 强制色下指示条的底色会被系统色吃掉：改画成正文色，调整中与聚焦时取高亮色 */
+  @media (forced-colors: active) {
+    [data-scope='drawer'][data-part='resize-trigger']::after {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+
+    [data-scope='drawer'][data-part='resize-trigger']:is([data-resizing], :focus-visible)::after {
+      background: Highlight;
+    }
+  }
+
   @media print {
     /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
     [data-scope='drawer'][data-part='backdrop'],
-    [data-scope='drawer'][data-part='positioner'] {
+    [data-scope='drawer'][data-part='positioner'],
+    [data-scope='drawer'][data-part='resize-trigger'] {
       display: none;
     }
   }

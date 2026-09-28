@@ -54,6 +54,7 @@
     "date-range-picker [data-part='segment-group'][data-scope='date-range-picker']": "容器不占 Tab 位也不承载焦点，环由 control 画",
     "dialog [data-part='content'][data-scope='dialog']": "面板是焦点陷阱的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
     "drawer [data-part='content'][data-scope='drawer']": "面板是焦点陷阱的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
+    "drawer [data-part='resize-trigger'][data-scope='drawer']": "把手本体是贴在面板边上的透明命中区，聚焦时由 ::after 的指示条切换为焦点色；外扩的环会压到页面上",
     "editable [data-part='control'][data-scope='editable'] [data-part='input'][data-scope='editable']": "输入框位于一体式字段盒内，环由 control 的 :focus-within 画在统一外框上",
     "editable [data-part='control'][data-scope='editable'] [data-xh-action-profile='field-inset']": "三颗动作钮位于一体式字段盒内，环由 control 的 :focus-within 画在统一外框上",
     "field [data-part='control'][data-scope='field'] [data-part='input'][data-scope='field']": "家族随皮肤引入的规则：field 的 control 就是作者的原生控件、自身即 chrome，没有盒内 input 部件，这条命不中；环由家族 :focus-within 画在控件自己身上",

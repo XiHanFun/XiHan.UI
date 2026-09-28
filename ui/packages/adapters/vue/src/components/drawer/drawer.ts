@@ -49,13 +49,22 @@ export const XhDrawerRoot = defineComponent({
      * 提供 container 后默认为真，不必再写一遍；两个都未提供即铺满视口。
      */
     contained: { type: Boolean, default: undefined },
+    /** 可调厚度：朝向页面那条边上的把手拖动或用方向键推。 */
+    resizable: { type: Boolean, default: undefined },
+    /** 受控厚度（像素），支持 v-model:panel-size；未提供即非受控。 */
+    panelSize: { type: Number },
+    defaultPanelSize: { type: Number },
+    minPanelSize: { type: Number },
+    maxPanelSize: { type: Number },
     translations: { type: Object as PropType<DrawerProps['translations']> },
   },
-  // open-change 携带 { open }，update:open 携带裸布尔
+  // open-change 携带 { open }，update:open 携带裸布尔；panel-size-change 携带 { panelSize }
   emits: {
     'open-change': (_details: PayloadOf<DrawerProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<DrawerProps, 'onOpenChange'>['open']) => true,
     'exit-complete': () => true,
+    'panel-size-change': (_details: PayloadOf<DrawerProps, 'onPanelSizeChange'>) => true,
+    'update:panelSize': (_size: PayloadOf<DrawerProps, 'onPanelSizeChange'>['panelSize']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: DrawerRootSlotProps) => VNode[]
@@ -67,7 +76,11 @@ export const XhDrawerRoot = defineComponent({
     }
     // 容器一处给定，两件事都从它派生：contained 交给机器（皮肤据此把遮罩与定位层
     // 从 fixed 换成 absolute），同一个值又是 Teleport 的落点，两边不会各说各话
-    const ctx = useDrawer(withXhConfig('drawer', props) as DrawerProps, notify, () => props.container, () => emit('exit-complete'))
+    const notifySize: DrawerProps['onPanelSizeChange'] = (details) => {
+      emit('panel-size-change', details)
+      emit('update:panelSize', details.panelSize)
+    }
+    const ctx = useDrawer(withXhConfig('drawer', props) as DrawerProps, notify, () => props.container, () => emit('exit-complete'), notifySize)
     provideDrawer(ctx)
     // root 是真实节点，content 会被 portal 到 body，data-side 挂在这里供页面内的部分读取
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
@@ -178,5 +191,14 @@ export const XhDrawerCloseTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useDrawerContext()
     return () => h('button', ctx.api.value.getCloseTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 改尺把手：role=separator，落在朝向页面的那条边上；放在 XhDrawerContent 里。 */
+export const XhDrawerResizeTrigger = defineComponent({
+  name: 'XhDrawerResizeTrigger',
+  setup() {
+    const ctx = useDrawerContext()
+    return () => h('div', ctx.api.value.getResizeTriggerProps() as Record<string, unknown>)
   },
 })

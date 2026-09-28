@@ -473,6 +473,7 @@ export {
   XhDrawerDescription,
   XhDrawerFooter,
   XhDrawerHeader,
+  XhDrawerResizeTrigger,
   XhDrawerRoot,
   XhDrawerTitle,
   XhDrawerTrigger,

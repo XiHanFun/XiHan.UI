@@ -20,6 +20,15 @@ import { XhPortalHostElement } from '../runtime/portal-host'
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
+// 数值属性同理；写不成数的值当作没写，缺省仍由机器给
+const NUMBER_CONVERTER = {
+  fromAttribute: (v: string | null) => {
+    if (v === null)
+      return undefined
+    const n = Number(v)
+    return Number.isFinite(n) ? n : undefined
+  },
+}
 
 /**
  * `<xh-drawer>`：Light-DOM 行为宿主，运行 drawer 状态机并把 connect 产出接到角色节点上，
@@ -40,8 +49,14 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
  * @attr {'sm'|'md'|'lg'} size - 尺寸：横向放置时影响面板宽度、纵向放置时影响面板高度
  * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
+ * @attr {boolean} resizable - 可调厚度：朝向页面那条边上的 resize-trigger 拖动或用方向键推
+ * @attr {number} panel-size - 受控厚度（像素）；未提供即非受控
+ * @attr {number} default-panel-size - 非受控的初始厚度（像素）；不给即按 size 档
+ * @attr {number} min-panel-size - 厚度下限（像素），默认 160
+ * @attr {number} max-panel-size - 厚度上限（像素）；不给时只受视口（或所在容器）限制
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires exit-complete - 退出完成且本层资源已释放
+ * @fires panel-size-change - 厚度变化意图；detail 为 `{ panelSize: number }`
  * @csspart root - 留在页面原地的容器，承载 data-side / data-size / data-state
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
@@ -53,6 +68,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart body - 正文：面板中唯一会滚动的段
  * @csspart footer - 面板尾：动作按钮所在的段，不随正文滚动
  * @csspart close-trigger - 关闭按钮
+ * @csspart resize-trigger - 改尺把手（role=separator），落在朝向页面的那条边上；没开 resizable 时收起
  */
 export class XhDrawerElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -73,6 +89,11 @@ export class XhDrawerElement extends XhPortalHostElement {
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
     size: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
+    resizable: { converter: BOOLEAN_CONVERTER },
+    panelSize: { converter: NUMBER_CONVERTER, attribute: 'panel-size' },
+    defaultPanelSize: { converter: NUMBER_CONVERTER, attribute: 'default-panel-size' },
+    minPanelSize: { converter: NUMBER_CONVERTER, attribute: 'min-panel-size' },
+    maxPanelSize: { converter: NUMBER_CONVERTER, attribute: 'max-panel-size' },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }
@@ -87,6 +108,11 @@ export class XhDrawerElement extends XhPortalHostElement {
   declare restoreFocus?: boolean
   declare size?: Size
   declare variant?: OverlayBackdropVariant
+  declare resizable?: boolean
+  declare panelSize?: number
+  declare defaultPanelSize?: number
+  declare minPanelSize?: number
+  declare maxPanelSize?: number
   declare translations?: DrawerSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -132,8 +158,14 @@ export class XhDrawerElement extends XhPortalHostElement {
       size: this.size,
       variant: this.variant,
       translations: this.translations,
+      resizable: this.resizable,
+      panelSize: this.panelSize,
+      defaultPanelSize: this.defaultPanelSize,
+      minPanelSize: this.minPanelSize,
+      maxPanelSize: this.maxPanelSize,
       onOpenChange: this.notify,
       onExitComplete: () => this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true })),
+      onPanelSizeChange: details => this.dispatchEvent(new CustomEvent('panel-size-change', { detail: details, bubbles: true, composed: true })),
     }
   }
 
@@ -209,6 +241,7 @@ export class XhDrawerElement extends XhPortalHostElement {
     put('body', api.getBodyProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
+    put('resize-trigger', api.getResizeTriggerProps() as Record<string, unknown>)
 
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
     // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画

@@ -29,6 +29,8 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   // 对话框的拖动位移：机器按指针与方向键算好，连接层写进 content 的内联样式，皮肤按它平移面板
   ['--xh-_dialog-drag-x', 'packages/engine/headless/src/dialog/dialog.connect.ts'],
   ['--xh-_dialog-drag-y', 'packages/engine/headless/src/dialog/dialog.connect.ts'],
+  // 抽屉调过的厚度：机器按指针与方向键算好，连接层写进 content 的内联样式，压过 size 档
+  ['--xh-_drawer-panel-size', 'packages/engine/headless/src/drawer/drawer.connect.ts'],
   // 引用预览披露的内容区高度：机器在露面与收起前量下，连接层写进预览的内联样式，展开与收起的关键帧只读
   ['--xh-_citation-preview-block-size', 'packages/engine/headless/src/citation/citation.connect.ts'],
   // 跑马灯一份内容在滚动轴上的实测长度：机器挂载后量、随尺寸变化重量，连接层写进根的内联样式，一圈的时长按它换算

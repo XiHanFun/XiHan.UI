@@ -32,6 +32,7 @@ export function useDrawer(
   onOpenChange?: DrawerSchema['props']['onOpenChange'],
   container?: () => string | Element | null | undefined,
   onExitComplete?: DrawerSchema['props']['onExitComplete'],
+  onPanelSizeChange?: DrawerSchema['props']['onPanelSizeChange'],
 ): DrawerContext {
   // 应用级默认挂载点：core 的 RuntimeConfig 一直留着这个字段，这里把它真正接上
   const xhConfig = useXhConfig()
@@ -45,7 +46,7 @@ export function useDrawer(
   const service = useMachine(
     drawerMachine,
     // 显式写了 contained 以它为准；没写则「给了容器即局部」
-    () => ({ ...props, contained: props.contained ?? container?.() != null, onOpenChange, onExitComplete }),
+    () => ({ ...props, contained: props.contained ?? container?.() != null, onOpenChange, onExitComplete, onPanelSizeChange }),
     scope,
   )
 

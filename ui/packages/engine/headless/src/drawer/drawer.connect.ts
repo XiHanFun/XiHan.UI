@@ -9,12 +9,22 @@ import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-u
 import type { DialogPressedPart } from '../dialog'
 import type { DrawerApi, DrawerSchema, DrawerSide } from './drawer.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
+import { RESIZABLE_LARGE_STEP, RESIZABLE_STEP } from '../resizable'
 import { drawerAnatomy } from './drawer.anatomy'
+import { DRAWER_MIN_PANEL_SIZE } from './drawer.machine'
 
 const parts = drawerAnatomy.build()
 
 /** side 缺省时的落点。 */
 export const DRAWER_DEFAULT_SIDE: DrawerSide = 'right'
+
+/** 方向键对应的屏幕方向：物理键位，RTL 下不翻；推向哪条边变厚由机器按贴边的一侧与书写方向定。 */
+const ARROW_DELTA: Readonly<Record<string, { dx: number, dy: number } | undefined>> = {
+  ArrowDown: { dx: 0, dy: 1 },
+  ArrowLeft: { dx: -1, dy: 0 },
+  ArrowRight: { dx: 1, dy: 0 },
+  ArrowUp: { dx: 0, dy: -1 },
+}
 
 export function connectDrawer<T extends PropTypes>(
   service: Service<DrawerSchema>,
@@ -26,6 +36,9 @@ export function connectDrawer<T extends PropTypes>(
   const role = prop('role') ?? 'dialog'
   const side = prop('side') ?? DRAWER_DEFAULT_SIDE
   const contained = !!prop('contained')
+  const resizable = !!prop('resizable')
+  const panelSize = context.get('panelSize') ?? null
+  const resizing = context.get('gesture') === 'resize'
   const ids = scope.ids('drawer', 'trigger', 'content', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'
 
@@ -56,6 +69,8 @@ export function connectDrawer<T extends PropTypes>(
   return {
     open,
     side,
+    panelSize,
+    resizing,
     setOpen,
     // root 留在页面原地（content 会被 portal 走），收起态也带 data-state / data-side
     getRootProps: () => normalize.element({
@@ -117,6 +132,9 @@ export function connectDrawer<T extends PropTypes>(
       'data-side': side,
       'data-size': prop('size'),
       'data-contained': dataAttr(contained),
+      // 调过厚度就写进私有槽，压过 size 档；没调过写空串，撤掉上一轮留在节点上的值
+      'data-resizing': dataAttr(resizing),
+      'style': { '--xh-_drawer-panel-size': panelSize != null ? `${panelSize}px` : '' },
       // positioner 非必需部件，content 收起态必须自带 hidden，否则最小结构（root + content）
       // 下抽屉关不掉（WC 侧 content 常驻，尤为明显）
       'hidden': !open || undefined,
@@ -140,5 +158,60 @@ export function connectDrawer<T extends PropTypes>(
       ...press('close-trigger'),
       'onClick': () => send({ type: 'CLOSE', src: 'close-trigger' }),
     }),
+    // 把手是一条能被方向键推来推去的分隔条，不是按钮：激活键在这里没有语义
+    getResizeTriggerProps: () => {
+      const horizontal = side === 'left' || side === 'right'
+      const min = prop('minPanelSize') ?? DRAWER_MIN_PANEL_SIZE
+      const max = prop('maxPanelSize')
+      const now = panelSize ?? context.get('measuredPanelSize')
+      return normalize.element({
+        ...parts['resize-trigger'].attrs,
+        'role': 'separator',
+        // 竖着的分隔条推的是宽度：左右放置的抽屉把手是竖线
+        'aria-orientation': horizontal ? 'vertical' : 'horizontal',
+        'aria-label': prop('translations')?.resizeTrigger ?? 'Resize drawer',
+        'aria-controls': ids.content,
+        // 没调过、也还没量过时不报当前值：把手得焦那一刻会量一次
+        'aria-valuenow': now != null ? String(now) : undefined,
+        'aria-valuemin': String(min),
+        // 不给上限即只受视口限制，这一条随之缺席
+        'aria-valuemax': max != null && Number.isFinite(max) ? String(max) : undefined,
+        'tabindex': resizable ? 0 : undefined,
+        'data-side': side,
+        'data-resizing': dataAttr(resizing),
+        // 没开改尺时整条收起：留一个推不动的把手只会误导
+        'hidden': !resizable || undefined,
+        // 触摸拖动要接管手势：不关掉浏览器滚动与缩放，指针事件会被系统收走
+        'style': { touchAction: 'none' },
+        'onPointerDown': (event: PointerEvent) => {
+          // 只认主键：右键会顺带弹出上下文菜单，中键是自动滚动
+          if (!resizable || event.button !== 0)
+            return
+          // 挡掉文本选中与默认聚焦
+          event.preventDefault()
+          send({ type: 'RESIZE.START', point: { clientX: event.clientX, clientY: event.clientY }, pointerId: event.pointerId })
+        },
+        'onFocus': () => {
+          if (resizable)
+            send({ type: 'RESIZE.MEASURE' })
+        },
+        'onKeyDown': (event: KeyboardEvent) => {
+          if (!resizable || event.ctrlKey || event.metaKey || event.altKey)
+            return
+          if (event.key === 'Home' || event.key === 'End') {
+            event.preventDefault()
+            send({ type: 'RESIZE.TO_BOUND', bound: event.key === 'Home' ? 'min' : 'max' })
+            return
+          }
+          const delta = ARROW_DELTA[event.key]
+          // 不在表里的键原样放行
+          if (!delta)
+            return
+          event.preventDefault()
+          const step = event.shiftKey ? RESIZABLE_LARGE_STEP : RESIZABLE_STEP
+          send({ type: 'RESIZE.NUDGE', dx: delta.dx * step, dy: delta.dy * step })
+        },
+      })
+    },
   }
 }

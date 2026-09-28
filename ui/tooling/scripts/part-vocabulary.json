@@ -1398,6 +1398,7 @@
       "image-viewer"
     ],
     "resize-trigger": [
+      "drawer",
       "floating-panel",
       "splitter"
     ],

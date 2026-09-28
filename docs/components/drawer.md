@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="drawer"`：**`root`** · `trigger` · `backdrop` · `positioner` · **`content`** · `header` · `title` · `description` · `body` · `footer` · `close-trigger`
+`data-scope="drawer"`：**`root`** · `trigger` · `backdrop` · `positioner` · **`content`** · `header` · `title` · `description` · `body` · `footer` · `close-trigger` · `resize-trigger`
 
 ## 示例
 
@@ -54,9 +54,9 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 
 <XhDemo src="drawer/06-guard" />
 
-### 拖动边缘改变厚度
+### 调整厚度
 
-面板中放一根把手，拖动时把新厚度写进 content 的 --xh-drawer-size；该槽覆盖 size 三档，滑入滑出仍按面板自身宽度计算
+resizable 在朝向页面的那条边上放一根把手：拖动或用方向键推，厚度夹在 minPanelSize 与 maxPanelSize 之间；受控的 panelSize 读写当前厚度
 
 <XhDemo src="drawer/07-resize" />
 
@@ -82,7 +82,7 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 
 - `side` 决定滑出方向；`contained` 让它只占据某个容器而不是整个视口。
 - `modal=false` 时不渲染遮罩，定位层也不截获页面指针；页面可以与抽屉并行交互。展开期间切换 `modal`，滚动锁、背景失活与焦点陷阱会同步切换。
-- 可以拖动边缘调整厚度。
+- `resizable` 在朝向页面的那条边上放一根改尺把手（`resize-trigger`，role=separator）：拖动它面板沿贴边方向变宽（左右放置）或变高（上下放置），聚焦后方向键推一步（8px）、Shift 大步（40px）、Home / End 推到下限与上限。推向页面那一侧变厚：从右往左排版时 `right` 贴在屏幕左边，把手与推的方向一起翻过来。厚度夹在 `minPanelSize`（缺省 160）与 `maxPanelSize` 之间，且不超出视口（`contained` 时是所在容器）。`panelSize` / `defaultPanelSize` / `onPanelSizeChange` 走受控与非受控；没调过时面板按 `size` 档绘制。拖动走 `@xihan-ui/pointer` 的指针会话，步长与 Resizable 同一档。把手是 content 里的绝对定位节点，content 自己滚动（不用 body 段）时它会随内容滚走，长内容请放进 body。
 - 关闭时内容立即失活并退出可访问树；面板与遮罩全部完成退场后释放模态资源并发出 `onExitComplete` / `exit-complete`。退场中重开不会被旧完成关闭，卸载立即清理。
 - 关闭前可以拦截，例如有未保存改动时先确认。
 - 面板走 M4 sheet 三件套（1px 描边、不透明底、投影），边界由描边承担，不只靠影分层；入场是整面板从画外推入的大尺度位移，走 slide 时长与曲线，退场仍走 exit 档。
@@ -110,7 +110,7 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-drawer>` |
-| Vue 组件 | `XhDrawerBody` `XhDrawerCloseTrigger` `XhDrawerContent` `XhDrawerDescription` `XhDrawerFooter` `XhDrawerHeader` `XhDrawerRoot` `XhDrawerTitle` `XhDrawerTrigger` |
+| Vue 组件 | `XhDrawerBody` `XhDrawerCloseTrigger` `XhDrawerContent` `XhDrawerDescription` `XhDrawerFooter` `XhDrawerHeader` `XhDrawerResizeTrigger` `XhDrawerRoot` `XhDrawerTitle` `XhDrawerTrigger` |
 | 组合式函数 | `useDrawer` |
 | 状态机 | `drawerMachine` |
 | 皮肤 | `@xihan-ui/styles/drawer.css` |
@@ -133,6 +133,12 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | `translations` | `Partial<DrawerTranslations>` |  |  |
 | `onOpenChange` | `(details: DrawerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onExitComplete` | `() => void` |  | 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 |
+| `resizable` | `boolean` |  | 可调厚度：朝向页面的那条边上的 resize-trigger 拖动或用方向键推，面板沿贴边方向变宽（左右放置）或变高（上下放置）。 默认 false。厚度夹在 minPanelSize 与 maxPanelSize 之间，且不超出视口（contained 时是所在容器）。 |
+| `panelSize` | `number` |  | 受控厚度（像素）；未提供即非受控。没有值时面板按 size 档的厚度绘制。 |
+| `defaultPanelSize` | `number` |  | 非受控的初始厚度（像素）；不给即按 size 档。 |
+| `minPanelSize` | `number` |  | 厚度下限（像素），默认 160。 |
+| `maxPanelSize` | `number` |  | 厚度上限（像素）；不给时只受视口（或所在容器）限制。 |
+| `onPanelSizeChange` | `(details: DrawerPanelSizeChangeDetails) => void` |  | 厚度变化意图：拖动途中连续发出，键盘每推一步发一次。 |
 
 ### 事件
 
@@ -141,6 +147,7 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `exit-complete` | `CustomEvent` | 退出完成且本层资源已释放 |
+| `panel-size-change` | `CustomEvent` | 厚度变化意图；detail 为 `{ panelSize: number }` |
 | `open-change` | `DrawerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
@@ -176,9 +183,9 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END` · `DRAG.START` · `DRAG.NUDGE` · `DRAG.RESET` · `GESTURE.MOVE` · `GESTURE.END`
+**事件**：`RESIZE.START` · `RESIZE.NUDGE` · `RESIZE.TO_BOUND` · `RESIZE.MEASURE`
 
-**判据**：`isOpenControlled` · `canDrag`
+**判据**：`canResize`
 
 ### connect API
 
@@ -187,6 +194,8 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
+| `panelSize` | `number \| null` | 当前厚度；没被调过、也没给初值时为 null。 |
+| `resizing` | `boolean` | 正在被指针调厚度。 |
 | `side` | `DrawerSide` | 已解析的滑出边（prop 未提供时是默认值），作者据此配置动画。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
@@ -200,6 +209,7 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | `getBodyProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
 | `getCloseTriggerProps` | `() => T['button']` |  |
+| `getResizeTriggerProps` | `() => T['element']` | 改尺把手：role=separator，落在朝向页面的那条边上；没开 resizable 时带 hidden。 |
 
 ## 无障碍
 
@@ -214,6 +224,9 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | `Tab` | open 且 modal | 在 content 内向后循环焦点 |
 | `Shift+Tab` | open 且 modal | 在 content 内向前循环焦点 |
 | `Enter` / `Space` | held in trigger / close-trigger | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或抽屉收起撤下 |
+| `ArrowLeft` / `ArrowRight` / `ArrowUp` / `ArrowDown` | focus in resize-trigger, resizable | 按屏幕方向推把手一步（8px）：推向页面那一侧变厚、推向贴边那一侧变薄；左右放置只认左右键、上下放置只认上下键；夹在上下限之间 |
+| `Shift+ArrowLeft` / `Shift+ArrowRight` / `Shift+ArrowUp` / `Shift+ArrowDown` | focus in resize-trigger, resizable | 按大步长推（40px） |
+| `Home` / `End` | focus in resize-trigger, resizable | Home 推到厚度下限，End 推到上限（没给上限时推到视口或所在容器能放下的最大厚度） |
 
 ### ARIA
 
@@ -230,12 +243,21 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
 | `close-trigger` | `aria-label` | props.translations.close |
+| `resize-trigger` | `aria-controls` | `content` 部件的 id |
+| `resize-trigger` | `aria-label` | props.translations.resizeTrigger |
+| `resize-trigger` | `aria-orientation` | 'vertical' \| 'horizontal' |
+| `resize-trigger` | `aria-valuemax` | String(max) \| undefined |
+| `resize-trigger` | `aria-valuemin` | String(min) |
+| `resize-trigger` | `aria-valuenow` | String(now) \| undefined |
+| `resize-trigger` | `role` | 'separator' |
 
 ## 样式参考
 
 ### 皮肤
 
 `@xihan-ui/styles/drawer.css` 使用 `[data-scope="drawer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 
@@ -261,6 +283,7 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-contained` | ''（条件成立时才出现） |
+| `content` | `data-resizing` | ''（条件成立时才出现） |
 | `content` | `data-side` | props.side |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -270,6 +293,8 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | `close-trigger` | `data-xh-action-profile` | 'icon' |
 | `close-trigger` | `data-xh-action-size` | 'sm' |
 | `close-trigger` | `data-xh-action-variant` | 'ghost' |
+| `resize-trigger` | `data-resizing` | ''（条件成立时才出现） |
+| `resize-trigger` | `data-side` | props.side |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -304,6 +329,13 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 | `--xh-drawer-px` | `content` | `padding-inline` | `contained`<br>`default` | `--xh-surface-px-md` | drawer 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-drawer-py` | `content` | `padding-block-end`<br>`padding-block-start` | `contained`<br>`default` | `--xh-surface-py-md` | drawer 的 content 部件 padding-block-end、padding-block-start 覆盖槽。 |
 | `--xh-drawer-radius` | `content` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-shape-overlay` | drawer 的 content 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-drawer-resize-indicator-length` | `resize-trigger` | `block-size`<br>`inline-size` | `is([data-side='left'], [data-side='right'])`<br>`is([data-side='top'], [data-side='bottom'])`<br>`side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-space-8` | drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-drawer-resize-indicator-thickness` | `resize-trigger` | `block-size`<br>`inline-size` | `is([data-side='left'], [data-side='right'])`<br>`is([data-side='top'], [data-side='bottom'])`<br>`side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-stroke-strong` | drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-drawer-resize-trigger-bg` | `resize-trigger` | `background` | `default` | `--xh-border-control` | drawer 的 resize-trigger 部件 background 覆盖槽。 |
+| `--xh-drawer-resize-trigger-bg-active` | `resize-trigger` | `background` | `resizing` | `--xh-bg-brand` | drawer 的 resize-trigger 部件 background 覆盖槽。 |
+| `--xh-drawer-resize-trigger-bg-hover` | `resize-trigger` | `background` | `hover` | `--xh-border-control-hover` | drawer 的 resize-trigger 部件 background 覆盖槽。 |
+| `--xh-drawer-resize-trigger-radius` | `resize-trigger` | `border-radius` | `default` | `--xh-shape-pill` | drawer 的 resize-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-drawer-resize-trigger-size` | `resize-trigger` | `block-size`<br>`inline-size` | `side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-space-2` | drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-drawer-shadow` | `content` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | drawer 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-drawer-size` | `content` | `block-size`<br>`inline-size` | `side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-_drawer-size` | drawer 的 content 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-drawer-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | drawer 的 title 部件 color 覆盖槽。 |
@@ -329,7 +361,7 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 
 动效角色：按压 · 状态 · 出现 · 导航（整幅滑入）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-slide-fade-in` · `xh-slide-fade-out` · `xh-slide-in` · `xh-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-slide-fade-in` · `xh-slide-fade-out` · `xh-slide-in` · `xh-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -337,4 +369,4 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走；另有按 `dir` 分支的规则。

@@ -6,13 +6,20 @@
 // 定义 drawer 类型契约。
 
 import type { OverlayBackdropVariant, OverlayCloseReason, PropTypes, Size } from '@xihan-ui/core'
-import type { DialogRefs, DialogSchema } from '../dialog'
+import type { DialogPoint, DialogRefs, DialogSchema } from '../dialog'
 
 /** 抽屉贴靠的视口边，也是滑入方向的来源。 */
 export type DrawerSide = 'top' | 'right' | 'bottom' | 'left'
 
 export interface DrawerTranslations {
   close: string
+  /** 改尺把手的 aria-label：把手是一条透明的命中区，读屏读不出它推的是哪条边。 */
+  resizeTrigger: string
+}
+
+export interface DrawerPanelSizeChangeDetails {
+  /** 面板沿贴边方向的厚度（像素）：左右放置是宽度，上下放置是高度。 */
+  panelSize: number
 }
 
 /** 抽屉运行对话框的状态机，DOM 环境与元素 getter 这一组即属于它。 */
@@ -28,10 +35,10 @@ export interface DrawerOpenChangeDetails {
 }
 
 /**
- * 抽屉的 schema：除 props 外整份取自对话框：状态、事件、守卫、动作、效应与 refs 都是它的。
- * props 这一层自行定义：多出 side 与 contained，文案与开合回调换成抽屉自身的形状。
+ * 抽屉的 schema：状态、效应与 refs 取自对话框，改尺在它上面另加一段。
+ * props 这一层自行定义：多出 side、contained 与改尺那几项，文案与开合回调换成抽屉自身的形状。
  */
-export interface DrawerSchema extends Omit<DialogSchema, 'props'> {
+export interface DrawerSchema extends Omit<DialogSchema, 'props' | 'context' | 'event' | 'guard' | 'action'> {
   props: {
     open?: boolean
     defaultOpen?: boolean
@@ -63,11 +70,47 @@ export interface DrawerSchema extends Omit<DialogSchema, 'props'> {
     onOpenChange?: (details: DrawerOpenChangeDetails) => void
     /** 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 */
     onExitComplete?: () => void
+    /**
+     * 可调厚度：朝向页面的那条边上的 resize-trigger 拖动或用方向键推，面板沿贴边方向变宽（左右放置）或变高（上下放置）。
+     * 默认 false。厚度夹在 minPanelSize 与 maxPanelSize 之间，且不超出视口（contained 时是所在容器）。
+     */
+    resizable?: boolean
+    /** 受控厚度（像素）；未提供即非受控。没有值时面板按 size 档的厚度绘制。 */
+    panelSize?: number
+    /** 非受控的初始厚度（像素）；不给即按 size 档。 */
+    defaultPanelSize?: number
+    /** 厚度下限（像素），默认 160。 */
+    minPanelSize?: number
+    /** 厚度上限（像素）；不给时只受视口（或所在容器）限制。 */
+    maxPanelSize?: number
+    /** 厚度变化意图：拖动途中连续发出，键盘每推一步发一次。 */
+    onPanelSizeChange?: (details: DrawerPanelSizeChangeDetails) => void
   }
+  context: DialogSchema['context'] & {
+    /** 面板厚度；没被调过、也没给初值时为 null，按 size 档绘制。受控时直读 panelSize。 */
+    panelSize: number | null
+    /** 最近一次量到的实际厚度：还没调过时给把手的 aria-valuenow 用，不对外通知。 */
+    measuredPanelSize: number | null
+  }
+  event: DialogSchema['event']
+    /** 指针按住改尺把手：量下起点与这一场的上下限，开始跟手。 */
+    | { type: 'RESIZE.START', point: DialogPoint, pointerId?: number }
+    /** 键盘推一步：dx / dy 是屏幕坐标里的位移，推向页面那一侧是变厚。 */
+    | { type: 'RESIZE.NUDGE', dx: number, dy: number }
+    /** Home / End：推到下限或上限。 */
+    | { type: 'RESIZE.TO_BOUND', bound: 'min' | 'max' }
+    /** 把手得焦：量一次实际厚度，读屏报得出当前值。 */
+    | { type: 'RESIZE.MEASURE' }
+  guard: DialogSchema['guard'] | 'canResize'
+  action: DialogSchema['action'] | 'startResize' | 'nudgeResize' | 'resizeToBound' | 'measurePanel'
 }
 
 export interface DrawerApi<T extends PropTypes = PropTypes> {
   open: boolean
+  /** 当前厚度；没被调过、也没给初值时为 null。 */
+  panelSize: number | null
+  /** 正在被指针调厚度。 */
+  resizing: boolean
   /** 已解析的滑出边（prop 未提供时是默认值），作者据此配置动画。 */
   side: DrawerSide
   setOpen: (next: boolean) => void
@@ -82,4 +125,6 @@ export interface DrawerApi<T extends PropTypes = PropTypes> {
   getBodyProps: () => T['element']
   getFooterProps: () => T['element']
   getCloseTriggerProps: () => T['button']
+  /** 改尺把手：role=separator，落在朝向页面的那条边上；没开 resizable 时带 hidden。 */
+  getResizeTriggerProps: () => T['element']
 }
