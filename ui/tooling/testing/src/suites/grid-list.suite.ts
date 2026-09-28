@@ -129,6 +129,23 @@ export const gridListSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '多选 Shift 范围选：Shift + 方向键扩到新焦点行、往回扩即收回，Shift + Space 与 Shift + 点击扩到那一行',
+      spec: { apg: `${APG}#keyboardinteractionforlayoutgrids` },
+      covers: ['grid-list.kbd.extend', 'grid-list.kbd.extend-select'],
+      props: { selectionMode: 'multiple' },
+      steps: [
+        { kind: 'focus', part: 'root' },
+        { kind: 'key', key: ' ', expect: { parts: { row: selected('a') } } },
+        { kind: 'key', key: 'ArrowDown', modifiers: ['Shift'], expect: { activeElement: { part: 'row[1]', exact: true }, parts: { row: selected('a', 'b') } } },
+        { kind: 'key', key: 'ArrowUp', modifiers: ['Shift'], expect: { activeElement: { part: 'row[0]', exact: true }, parts: { row: selected('a') } } },
+        { kind: 'key', key: 'ArrowDown' },
+        { kind: 'key', key: ' ', modifiers: ['Shift'], expect: { parts: { row: selected('a', 'b') } } },
+        // 裸点第一行：切掉它并把锚点挪过来
+        { kind: 'click', part: 'row[0]', expect: { parts: { row: selected('b') } } },
+        { kind: 'click', part: 'row[1]', modifiers: ['Shift'], expect: { parts: { row: selected('a', 'b') } } },
+      ],
+    },
+    {
       name: '连打检索按行标题移动焦点',
       spec: { apg: `${APG}#keyboardinteractionforlayoutgrids` },
       covers: ['grid-list.kbd.typeahead'],
