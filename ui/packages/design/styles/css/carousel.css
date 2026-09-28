@@ -236,6 +236,11 @@
     box-shadow: var(--xh-_liquid-shadow);
     -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
     backdrop-filter: var(--xh-material-liquid-backdrop);
+    /* 翻页换到深浅不同的图上时色调翻转：底色、细线与投影一起淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 分页点与 Tour 的步骤点同一种语言：8px 圆点，当前页拉长成 20px 胶囊并换品牌色。

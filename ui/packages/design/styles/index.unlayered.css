@@ -8271,7 +8271,8 @@
 }
 
 /* liquid 档：吸顶的顶栏是内容从下面滚过的导航层，换成液态面。贴边铺满的栏不取圆角，
-   边界由下沿那条墨色细线承担。液态面是墨色域，前景在这里按域重取，子孙跟着继承 */
+   边界由下沿那条墨色细线承担。液态面是墨色域，前景在这里按域重取，子孙跟着继承。
+   滚过深浅分界时色调翻转：底色、字色、细线与投影一起淡变，不在同一帧跳 */
 :where([data-material='liquid']) [data-scope='layout'][data-part='header'][data-fixed][data-xh-liquid] {
   border-block-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-material-liquid-border));
   background: var(--xh-layout-header-bg, var(--xh-_liquid-bg));
@@ -8279,6 +8280,11 @@
   box-shadow: var(--xh-_liquid-shadow);
   -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
   backdrop-filter: var(--xh-material-liquid-backdrop);
+  transition:
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 头也吸顶时侧栏钉在头的下沿，两段不叠在一起 */
@@ -17463,6 +17469,11 @@
   box-shadow: var(--xh-_liquid-shadow);
   -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
   backdrop-filter: var(--xh-material-liquid-backdrop);
+  /* 翻页换到深浅不同的图上时色调翻转：底色、细线与投影一起淡变 */
+  transition:
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 分页点与 Tour 的步骤点同一种语言：8px 圆点，当前页拉长成 20px 胶囊并换品牌色。
@@ -28528,6 +28539,12 @@
   box-shadow: var(--xh-_liquid-shadow);
   -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
   backdrop-filter: var(--xh-material-liquid-backdrop);
+  /* 换到深浅不同的图上时色调翻转：底色、字色、细线与投影一起淡变 */
+  transition:
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 :where([data-material='liquid']) [data-scope='image-viewer'][data-part='toolbar'][data-xh-liquid] {

@@ -352,6 +352,39 @@ describe('接入液态面', () => {
   })
 })
 
+describe('色调翻转', () => {
+  /** 翻一次墨色域，返回这一帧里在播的过渡属性名。 */
+  function flip(el: HTMLElement): string[] {
+    el.setAttribute('data-xh-ink', el.getAttribute('data-xh-ink') === 'light' ? 'dark' : 'light')
+    return el.getAnimations()
+      .filter((animation): animation is CSSTransition => animation instanceof CSSTransition)
+      .map(animation => animation.transitionProperty)
+  }
+
+  it('吸顶顶栏、走马灯分页条与图片预览工具条：色调翻转时底色与细线一起淡变，不在同一帧跳', async () => {
+    await mount(layout(true), 'oklch(0.3 0.1 258)')
+    const header = part('layout', 'header')
+    await judged(header)
+    expect(flip(header)).toEqual(expect.arrayContaining(['background-color', 'color', 'border-bottom-color']))
+    app!.unmount()
+    host!.remove()
+    under!.remove()
+
+    await mount(carousel, 'oklch(0.3 0.1 258)')
+    const group = part('carousel', 'indicator-group')
+    await judged(group)
+    expect(flip(group)).toEqual(expect.arrayContaining(['background-color', 'border-top-color']))
+    app!.unmount()
+    host!.remove()
+    under!.remove()
+
+    await mount(imageViewer(undefined, 'transparent'), 'oklch(0.96 0.02 100)')
+    const toolbar = part('image-viewer', 'toolbar')
+    await judged(toolbar)
+    expect(flip(toolbar)).toEqual(expect.arrayContaining(['background-color', 'color', 'border-top-color']))
+  })
+})
+
 describe('四种下层上的前景对比度', () => {
   for (const [name, background] of UNDERLAYS) {
     it(`${name}：图标 ≥ 3:1，文字 ≥ 4.5:1`, async () => {

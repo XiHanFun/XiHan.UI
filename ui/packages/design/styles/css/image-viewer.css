@@ -285,6 +285,12 @@
     box-shadow: var(--xh-_liquid-shadow);
     -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
     backdrop-filter: var(--xh-material-liquid-backdrop);
+    /* 换到深浅不同的图上时色调翻转：底色、字色、细线与投影一起淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   :where([data-material='liquid']) [data-scope='image-viewer'][data-part='toolbar'][data-xh-liquid] {
