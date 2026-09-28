@@ -1,11 +1,12 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { collapsibleAnatomy, collapsibleKeyboard } from '@xihan-ui/headless'
+import { expectPartText } from './shared/content-text'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/'
 
-// content 始终在 DOM，展开态靠 hidden 属性显隐，不卸载。
+// content 节点始终在 DOM，展开态靠 hidden 属性显隐；它里面的内容缺省同样不卸载，lazyMount / unmountOnExit 才按展开挂卸。
 export const collapsibleSuite: ConformanceSuite = {
   component: 'collapsible',
   anatomy: collapsibleAnatomy,
@@ -137,6 +138,30 @@ export const collapsibleSuite: ConformanceSuite = {
           },
         },
         { kind: 'setProps', props: { disabled: true }, expect: { parts: { trigger: { 'disabled': '', 'data-pressed': null } } } },
+      ],
+    },
+    {
+      name: 'lazyMount：没展开过 content 里没有内容，第一次展开起挂上，收起后仍挂着',
+      spec: { adr: 'disclosure-content-mount' },
+      props: { lazyMount: true },
+      steps: [
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('collapsible', 'content', 0, '') },
+        { kind: 'click', part: 'trigger' },
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('collapsible', 'content', 0, '内容') },
+        { kind: 'click', part: 'trigger' },
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('collapsible', 'content', 0, '内容') },
+      ],
+    },
+    {
+      name: 'unmountOnExit：收起落定后卸下内容，content 节点仍在，再展开重新挂上',
+      spec: { adr: 'disclosure-content-mount' },
+      props: { unmountOnExit: true, defaultOpen: true },
+      steps: [
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('collapsible', 'content', 0, '内容') },
+        { kind: 'click', part: 'trigger', expect: { parts: { content: { 'data-state': 'closed' } } } },
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('collapsible', 'content', 0, '') },
+        { kind: 'click', part: 'trigger' },
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('collapsible', 'content', 0, '内容') },
       ],
     },
   ],

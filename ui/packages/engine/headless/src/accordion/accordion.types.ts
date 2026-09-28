@@ -68,6 +68,16 @@ export interface AccordionSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    /**
+     * 条目内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。
+     * 条目多、内容重且多数不会被展开时打开它。
+     */
+    lazyMount?: boolean
+    /**
+     * 收起动画播完后卸载条目内容，再展开时重新挂载，默认 false。
+     * 内容里的输入与滚动位置随之丢失；与 lazyMount 一起用即「只在展开期间存在」。
+     */
+    unmountOnExit?: boolean
     /** 展开集合变化回调。 */
     onValueChange?: (details: AccordionValueChangeDetails) => void
   }
@@ -83,6 +93,8 @@ export interface AccordionSchema extends MachineSchema {
      * 不播展开、收起动画；第一次开合起才按动效走。
      */
     moved: string[]
+    /** 挂载之后展开过的条目（含首帧即展开）。lazyMount 下条目内容从第一次展开起才挂载。 */
+    opened: string[]
   }
   computed: Record<string, never>
   refs: {
@@ -117,6 +129,11 @@ export interface AccordionApi<T extends PropTypes = PropTypes> {
   getTriggerProps: (props: AccordionItemProps) => T['button']
   getContentProps: (props: AccordionItemProps) => T['element']
   getIndicatorProps: (props: AccordionItemProps) => T['element']
+  /**
+   * 该条目 content 里的内容此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 未打开 lazyMount / unmountOnExit 时恒为真；content 节点本身始终在场，只有它的内容按此挂卸。
+   */
+  isContentMounted: (props: AccordionItemProps, present: boolean) => boolean
 }
 
 /** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */

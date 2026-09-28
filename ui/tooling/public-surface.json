@@ -11029,12 +11029,14 @@
       "defaultValue",
       "dir",
       "disabled",
+      "lazyMount",
       "loop",
       "multiple",
       "onValueChange",
       "orientation",
       "size",
       "tone",
+      "unmountOnExit",
       "value",
       "variant"
     ],
@@ -11370,10 +11372,12 @@
       "defaultOpen",
       "dir",
       "disabled",
+      "lazyMount",
       "onOpenChange",
       "open",
       "size",
-      "tone"
+      "tone",
+      "unmountOnExit"
     ],
     "color-field": [
       "alpha",
@@ -18662,11 +18666,13 @@
         "collapsible",
         "dir",
         "disabled",
+        "lazy-mount",
         "loop",
         "multiple",
         "orientation",
         "size",
         "tone",
+        "unmount-on-exit",
         "variant"
       ],
       "events": [
@@ -19051,9 +19057,11 @@
         "default-open",
         "dir",
         "disabled",
+        "lazy-mount",
         "open",
         "size",
-        "tone"
+        "tone",
+        "unmount-on-exit"
       ],
       "events": [
         "open-change"

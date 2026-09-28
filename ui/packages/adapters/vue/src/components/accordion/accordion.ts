@@ -32,6 +32,8 @@ export const XhAccordionRoot = defineComponent({
     dir: { type: String as PropType<Direction> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
+    lazyMount: Boolean,
+    unmountOnExit: Boolean,
   },
   // value-change 携带 { value }，update:value 携带裸数组
   emits: {
@@ -121,7 +123,7 @@ export const XhAccordionContent = defineComponent({
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+    }, ctx.api.value.isContentMounted(item(), visible.value) ? slots.default?.() : undefined)
   },
 })
 

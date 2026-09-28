@@ -13,6 +13,7 @@ import { collapsibleAnatomy, collapsibleMachine, collapsibleMeta, connectCollaps
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 
 /**
@@ -26,6 +27,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'ltr'|'rtl'} dir - 文字方向，写到 root 上；未提供时继承祖先
+ * @attr {boolean} lazy-mount - 内容第一次展开时才挂载；内容写在 content 里的一个 `<template>` 中时首次展开才实例化
+ * @attr {boolean} unmount-on-exit - 收起动画播完后卸载内容，再展开时从 `<template>` 重新克隆（没写模板时原样放回）
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 披露根容器
  * @csspart header - 触发器与其同排内容所在的行，可省略
@@ -56,6 +59,8 @@ export class XhCollapsibleElement extends XhElement {
     size: {},
     // property 另起名字，避开 HTMLElement 自带的 dir 存取器
     textDir: { attribute: 'dir' },
+    lazyMount: { type: Boolean, attribute: 'lazy-mount' },
+    unmountOnExit: { type: Boolean, attribute: 'unmount-on-exit' },
   }
 
   declare open?: boolean
@@ -64,6 +69,11 @@ export class XhCollapsibleElement extends XhElement {
   declare tone?: Tone
   declare size?: Size
   declare textDir?: Direction
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
+
+  /** content 里内容的挂卸落点。 */
+  private readonly lazyContent = new LazyContent()
 
   private readonly notify = (details: CollapsibleOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -83,6 +93,8 @@ export class XhCollapsibleElement extends XhElement {
       tone: this.tone,
       size: this.size,
       dir: this.textDir,
+      lazyMount: this.lazyMount ?? false,
+      unmountOnExit: this.unmountOnExit ?? false,
       onOpenChange: this.notify,
     }
   }
@@ -114,5 +126,6 @@ export class XhCollapsibleElement extends XhElement {
     this.exit.update(api.open)
     if (content)
       this.setPartHidden(content, !this.exit.visible)
+    this.lazyContent.sync(content, api.isContentMounted(this.exit.visible))
   }
 }

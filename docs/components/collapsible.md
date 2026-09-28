@@ -60,6 +60,12 @@ tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 
 <XhDemo src="collapsible/07-tone" />
 
+### 内容懒挂载
+
+lazyMount 让内容第一次展开时才挂载，之后收起只隐藏；再加 unmountOnExit 即只在展开期间存在，收起动画播完就卸载，里面输入的内容再展开时已清空
+
+<XhDemo src="collapsible/08-lazy-mount" />
+
 ## 设计指引
 
 ### 何时使用
@@ -76,6 +82,7 @@ tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 - 触发器与内容通过 `aria-controls` 与 `aria-expanded` 关联。
 - 展开动画由皮肤提供，内容高度由组件测量。
 - 指示符部件留空时由皮肤绘制箭头，放入图形时以作者提供的为准，两种情形的转向都由皮肤处理。
+- 内容缺省随组件一起挂载、收起只隐藏；`lazyMount` 让它第一次展开才挂载，`unmountOnExit` 让它在收起动画播完后卸载、再展开时重新挂载。content 节点本身始终在场，`aria-controls` 不会指空。Web Components 里把内容写进 content 里的一个 `<template>`，解析时不实例化，挂载时克隆、卸载时丢弃；没写模板时卸载只是把节点暂时摘下、挂载时原样放回。
 
 ### 组合
 
@@ -112,6 +119,8 @@ tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
+| `lazyMount` | `boolean` |  | 内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。 收起的内容很重（图表、长列表、iframe）且多数用户不会展开时打开它。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载内容，再展开时重新挂载，默认 false。 内容里的输入与滚动位置随之丢失；与 lazyMount 一起用即「只在展开期间存在」。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### 事件
@@ -163,6 +172,7 @@ tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 | `getTriggerProps` | `() => T['button']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
+| `isContentMounted` | `(present: boolean) => boolean` | content 里的内容此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。 未打开 lazyMount / unmountOnExit 时恒为真；content 节点本身始终在场，只有它的内容按此挂卸。 |
 
 ## 无障碍
 
