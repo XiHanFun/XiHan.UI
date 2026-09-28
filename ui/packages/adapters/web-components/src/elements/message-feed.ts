@@ -50,6 +50,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart item-label - 作者名所在的格，渲染后即成为该条消息的可访问名
  * @csspart scroll-to-end-trigger - 回到底部
  * @csspart pending-indicator - 已发送、等首个片段时的呼吸点，放在列表之后；只在 status 为 submitted 时出现，对读屏隐藏
+ * @csspart separator - 消息之间的分隔（按日期分组），与条目平级放在 list 里，对读屏隐藏
+ * @csspart unread-count - 回到底部按钮上的未读数，放在按钮里；元素写入条数，没有未读时收起
  * @csspart live-region - 视觉隐藏的原子播报区，一份会话只应有一个
  */
 export class XhMessageFeedElement extends XhElement {
@@ -153,6 +155,18 @@ export class XhMessageFeedElement extends XhElement {
     put('list', api.getListProps() as Record<string, unknown>)
     put('scroll-to-end-trigger', api.getScrollToEndTriggerProps() as Record<string, unknown>)
     put('live-region', api.getLiveRegionProps() as Record<string, unknown>)
+    for (const el of this.getParts('separator'))
+      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+    const unread = this.getPart('unread-count')
+    if (unread) {
+      const props = api.getUnreadCountProps() as Record<string, unknown>
+      this.spreader.spread(unread, props)
+      // 条数是运行期才知道的：元素写进去
+      const text = String(api.unreadCount)
+      if (unread.textContent !== text)
+        unread.textContent = text
+      this.setPartHidden(unread, props.hidden === true)
+    }
     const pending = this.getPart('pending-indicator')
     if (pending) {
       const props = api.getPendingIndicatorProps() as Record<string, unknown>

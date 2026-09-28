@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@xihan-ui/animations": "link:../ui/packages/features/animations",
+    "@xihan-ui/chat-stream": "link:../ui/packages/features/chat-stream",
     "@xihan-ui/code-highlight": "link:../ui/packages/features/code-highlight",
     "@xihan-ui/core": "link:../ui/packages/engine/core",
     "@xihan-ui/headless": "link:../ui/packages/engine/headless",

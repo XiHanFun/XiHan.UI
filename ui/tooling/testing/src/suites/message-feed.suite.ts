@@ -290,6 +290,50 @@ export const messageFeedSuite: ConformanceSuite = {
       steps: [heldPressIgnored('message-feed', 'scroll-to-end-trigger', '视口在底、按钮带 hidden，不可按')],
     },
     {
+      name: '分隔与未读数：分隔与条目平级、对读屏隐藏；离底期间 count 增长，回底钮带上未读数，名字里念出条数',
+      spec: { apg: APG },
+      skipParity: 'jsdom 无布局，粘底状态由伪造几何驱动，两适配器的 RO 回调时机天然不同步',
+      props: { count: 3 },
+      fixture: base => ({
+        ...base,
+        children: base.children?.map((node) => {
+          if (node.part === 'scroll-to-end-trigger')
+            return { ...node, children: [{ part: 'unread-count', tag: 'span' }] }
+          if (node.part !== 'viewport')
+            return node
+          return {
+            ...node,
+            children: node.children?.map(list => (list.part === 'list'
+              ? { ...list, children: [list.children![0]!, { part: 'separator', text: '今天' }, ...list.children!.slice(1)] }
+              : list)),
+          }
+        }),
+      }),
+      initial: {
+        parts: {
+          'separator': { 'aria-hidden': 'true' },
+          'unread-count': { 'hidden': '', 'aria-hidden': 'true' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'jsdom 无布局，粘底状态只能由伪造几何驱动',
+          run: scrollAwayFromBottom,
+        },
+        {
+          kind: 'setProps',
+          props: { count: 5 },
+          expect: {
+            parts: {
+              'unread-count': { hidden: null },
+              'scroll-to-end-trigger': { 'aria-label': 'Scroll to bottom, 2 new messages' },
+            },
+          },
+        },
+      ],
+    },
+    {
       name: '离底后 Space / Enter 按住与触屏按下：按钮投影 data-pressed，抬起、失焦或指针取消撤下；按住途中回到底部即随按钮一起收起',
       spec: { adr: 'press-channel' },
       covers: ['message-feed.kbd.press'],

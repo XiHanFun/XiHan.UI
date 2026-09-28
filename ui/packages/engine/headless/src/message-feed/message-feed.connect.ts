@@ -30,6 +30,7 @@ export function connectMessageFeed<T extends PropTypes>(
   const loop = prop('loop') ?? false
   const count = prop('count')
   const translations = prop('translations')
+  const unreadCount = context.get('unread') ?? 0
 
   const itemLabel = translations?.item
     ?? ((position: number, size: number, role?: MessageFeedItemRole): string => {
@@ -91,6 +92,7 @@ export function connectMessageFeed<T extends PropTypes>(
     focusedId,
     // 只看在不在底：粘着但内容还没追上时按钮不该冒出来
     showScrollToEndTrigger: !atBottom,
+    unreadCount,
     scrollToBottom: () => send({ type: 'SCROLL_TO_BOTTOM' }),
     scrollToItem: (id) => {
       itemById(id)?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
@@ -210,7 +212,10 @@ export function connectMessageFeed<T extends PropTypes>(
       // frosted 材质面：皮肤按材质家族配方取面，液态档由配方换值
       'data-xh-material': 'frosted',
       'id': scope.partId('message-feed', 'scroll-to-end-trigger'),
-      'aria-label': translations?.scrollToBottom ?? 'Scroll to bottom',
+      // 有未读时名字里带上条数：未读数本身是给眼睛看的角标，对读屏隐藏
+      'aria-label': unreadCount > 0
+        ? (translations?.scrollToBottomUnread ?? ((n: number) => `Scroll to bottom, ${n} new messages`))(unreadCount)
+        : translations?.scrollToBottom ?? 'Scroll to bottom',
       'data-state': atBottom ? 'hidden' : 'visible',
       // 收起不卸载：按钮反复建删会让它的进场动画每次从头播。回底后先播完退场再藏起
       'hidden': (atBottom && !context.get('triggerRendered')) || undefined,
@@ -223,6 +228,17 @@ export function connectMessageFeed<T extends PropTypes>(
       'onPointerDown': press.onPointerDown,
       'onPointerUp': press.onPointerUp,
       'onPointerCancel': press.onPointerCancel,
+    }),
+
+    getUnreadCountProps: () => normalize.element({
+      ...parts['unread-count'].attrs,
+      'aria-hidden': true,
+      'hidden': unreadCount === 0 || undefined,
+    }),
+
+    getSeparatorProps: () => normalize.element({
+      ...parts.separator.attrs,
+      'aria-hidden': true,
     }),
 
     /**

@@ -250,6 +250,28 @@ export function XhMessageFeedScrollToEndTrigger({ children, ...rest }: XhMessage
   )
 }
 
+export interface XhMessageFeedUnreadCountProps extends ComponentPropsWithRef<'span'> {}
+/** 回到底部按钮上的未读数：放进按钮里；children 留空时显示条数，没有未读时收起。 */
+export function XhMessageFeedUnreadCount({ children, ...rest }: XhMessageFeedUnreadCountProps): ReactNode {
+  const ctx = useMessageFeedContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getUnreadCountProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children ?? String(ctx.api.unreadCount)}
+    </span>
+  )
+}
+
+export interface XhMessageFeedSeparatorProps extends ComponentPropsWithRef<'div'> {}
+/** 消息之间的分隔（按日期分组）：是内容层的直接子节点、与条目平级，对读屏隐藏。 */
+export function XhMessageFeedSeparator({ children, ...rest }: XhMessageFeedSeparatorProps): ReactNode {
+  const ctx = useMessageFeedContext()
+  return (
+    <div {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </div>
+  )
+}
+
 export interface XhMessageFeedPendingIndicatorProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {}
 /** 已发送、等首个片段时的呼吸点：放在列表之后，只在 status 为 submitted 时出现。 */
 export function XhMessageFeedPendingIndicator(props: XhMessageFeedPendingIndicatorProps): ReactNode {

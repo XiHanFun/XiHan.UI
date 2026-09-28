@@ -19,6 +19,7 @@ interface Rig {
   viewport: HTMLElement
   list: HTMLElement
   api: () => MessageFeedApi
+  setProps: (next: Props) => void
   stop: () => void
 }
 
@@ -72,6 +73,7 @@ function mount(initial: Props = {}, history = 0): Rig {
     viewport,
     list,
     api: () => connectMessageFeed(service, normalizeProps),
+    setProps: next => props.set(next),
     stop: () => {
       runtime.stop()
       root.remove()
@@ -168,6 +170,60 @@ describe('粘底', () => {
     rig.viewport.scrollTop = 0
     rig.api().scrollToBottom()
     expect(rig.viewport.scrollTop).toBe(CONTENT - VIEWPORT)
+  })
+})
+
+describe('未读数', () => {
+  it('离底期间 count 的增量记成未读，回到底部清零；按钮名字里带上条数', async () => {
+    const rig = mount({ count: 3 })
+    await settle()
+    rig.service.send({ type: 'STICK.CHANGE', atBottom: false, sticking: false })
+    rig.setProps({ count: 5 })
+    await settle()
+    expect(rig.api().unreadCount).toBe(2)
+    expect((rig.api().getUnreadCountProps() as Dict).hidden).toBeUndefined()
+    expect((rig.api().getScrollToEndTriggerProps() as Dict)['aria-label']).toBe('Scroll to bottom, 2 new messages')
+
+    rig.service.send({ type: 'STICK.CHANGE', atBottom: true, sticking: true })
+    expect(rig.api().unreadCount).toBe(0)
+    expect((rig.api().getUnreadCountProps() as Dict).hidden).toBe(true)
+    expect((rig.api().getScrollToEndTriggerProps() as Dict)['aria-label']).toBe('Scroll to bottom')
+  })
+
+  it('在底时新到的消息不算未读；count 变少只更新基准', async () => {
+    const rig = mount({ count: 3 })
+    await settle()
+    rig.setProps({ count: 4 })
+    await settle()
+    expect(rig.api().unreadCount).toBe(0)
+    rig.service.send({ type: 'STICK.CHANGE', atBottom: false, sticking: false })
+    rig.setProps({ count: 2 })
+    await settle()
+    expect(rig.api().unreadCount).toBe(0)
+    rig.setProps({ count: 3 })
+    await settle()
+    expect(rig.api().unreadCount).toBe(1)
+  })
+
+  it('未读数是给眼睛看的角标，对读屏隐藏；名字文案可换', async () => {
+    const rig = mount({ count: 1, translations: { scrollToBottomUnread: n => `回到底部，${n} 条新消息` } })
+    await settle()
+    rig.service.send({ type: 'STICK.CHANGE', atBottom: false, sticking: false })
+    rig.setProps({ count: 2, translations: { scrollToBottomUnread: n => `回到底部，${n} 条新消息` } })
+    await settle()
+    expect(rig.api().getUnreadCountProps()).toMatchObject({ 'aria-hidden': true })
+    expect((rig.api().getScrollToEndTriggerProps() as Dict)['aria-label']).toBe('回到底部，1 条新消息')
+  })
+})
+
+describe('分隔', () => {
+  it('按日期分组的分隔对读屏隐藏：role=feed 只认 article 子节点', () => {
+    const rig = mount()
+    expect(rig.api().getSeparatorProps()).toMatchObject({
+      'data-scope': 'message-feed',
+      'data-part': 'separator',
+      'aria-hidden': true,
+    })
   })
 })
 

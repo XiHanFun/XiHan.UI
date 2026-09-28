@@ -22,7 +22,7 @@ const ITEM_SELECTOR = '[data-scope="message-feed"][data-part="item"]'
 // 按住途中回到底部（Enter 在 keydown 即 click 滚回去）按钮随之收起，不会再来 keyup / blur，按压面随贴底回报一并收。
 export const messageFeedMachine = createMachine({
   name: 'message-feed',
-  context: ({ cell }) => ({
+  context: ({ cell, prop }) => ({
     // 初值为在底且粘附，真实几何由句柄的第一次回报补上
     atBottom: cell<boolean>(() => ({ defaultValue: true })),
     sticking: cell<boolean>(() => ({ defaultValue: true })),
@@ -31,6 +31,8 @@ export const messageFeedMachine = createMachine({
     arrivalsTracked: cell<boolean>(() => ({ defaultValue: false })),
     // 与 atBottom 的初值对上：起步在底，按钮收着
     triggerRendered: cell<boolean>(() => ({ defaultValue: false })),
+    unread: cell<number>(() => ({ defaultValue: 0 })),
+    lastCount: cell<number | null>(() => ({ defaultValue: prop('count') ?? null })),
   }),
   refs: () => ({
     config: null,
@@ -40,6 +42,8 @@ export const messageFeedMachine = createMachine({
     stick: null,
   }),
   initialState: () => 'idle',
+  // 宿主声明的总数变了：离底期间的增量记成未读
+  watch: ({ track, prop, action }) => track([() => prop('count')], () => action(['countUnread'])),
   // 粘底、条目到达与回到底部按钮的进退场三路副作用全程挂载
   effects: ['trackStickToBottom', 'trackArrivals', 'trackTriggerPresence', 'trackLiquid'],
   states: {
@@ -68,13 +72,24 @@ export const messageFeedMachine = createMachine({
           return
         context.set('atBottom', e.atBottom)
         context.set('sticking', e.sticking)
-        // 回到底部即收起按钮：被按住的那一下不会再来 keyup，按压面在这里一并收
-        if (e.atBottom)
+        // 回到底部即收起按钮：被按住的那一下不会再来 keyup，按压面在这里一并收；未读一并清零
+        if (e.atBottom) {
           context.set('pressed', false)
+          context.set('unread', 0)
+        }
         // 句柄只在值变化时回报，此处直接转发
         prop('onStickChange')?.({ atBottom: e.atBottom, sticking: e.sticking })
       },
       markArrivalsTracked: ({ context }) => context.set('arrivalsTracked', true),
+      /** count 增长且此刻不在底：增量记成未读；减少（截断历史、换会话）不动未读，只更新基准。 */
+      countUnread: ({ context, prop }) => {
+        const next = prop('count') ?? null
+        const prev = context.get('lastCount') ?? null
+        context.set('lastCount', next)
+        if (next === null || prev === null || next <= prev || context.get('atBottom'))
+          return
+        context.set('unread', context.get('unread') + (next - prev))
+      },
       setTriggerRendered: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'TRIGGER.RENDERED')

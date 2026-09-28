@@ -11,6 +11,9 @@ importers:
       '@xihan-ui/animations':
         specifier: link:../ui/packages/features/animations
         version: link:../ui/packages/features/animations
+      '@xihan-ui/chat-stream':
+        specifier: link:../ui/packages/features/chat-stream
+        version: link:../ui/packages/features/chat-stream
       '@xihan-ui/code-highlight':
         specifier: link:../ui/packages/features/code-highlight
         version: link:../ui/packages/features/code-highlight

@@ -29,6 +29,10 @@
         "symbol": "createDialogService",
         "reason": "这份示例的主语是 createDialogService 这个工厂函数：它自己建 <xh-dialog> 节点、挂到浮层落点、多次调用排队顺次弹、onOk 返 Promise 时确认钮自动 pending。函数只能 import，而示例源码经 innerHTML 注入、<script> 逐个重建执行，页面里没有 import map，裸说明符当场抛错——现有九百多份自定义元素示例里没有一份 import 过任何包。同目录的 07-imperative 演的是手搓一个确认框，那是「不用这个服务怎么写」，拿它套上这一份的首行就是拿形似的东西冒充。要答「不用 Vue 怎么调这个服务」，得先给文档站一条让示例取到包的路，那是文档站的能力，不是这一份示例补得上的。"
       },
+      "message-feed/10-actions": {
+        "symbol": "createThreadStore",
+        "reason": "这份示例的主语是 @xihan-ui/chat-stream 的会话容器 createThreadStore：动作条上的重新生成、编辑重发、分支切换、重试与续写各是它的一个方法，界面只照它的快照渲染。不用它就得在示例里手抄一棵消息树（兄弟分支、选中路径、截断续写），那答的是「怎么不用它」。函数取不到的原因同 dialog/09-service。消息流的元素写法本身在同目录其余示例里都有自定义元素版。"
+      },
       "notification/08-service": {
         "symbol": "createNotificationService",
         "reason": "这份示例的主语是 createNotificationService 这个工厂函数：它自己建 <xh-notification> 与卡片节点、挂到浮层落点、按预设排版，句柄在模块作用域随处可调。函数只能 import，而示例源码经 innerHTML 注入、<script> 逐个重建执行，页面里没有 import map，裸说明符当场抛错。同目录的 07-toast 演的是用 <xh-notification preset=\"toast\"> 自己铺一摞，那是「不用这个服务怎么写」。要答「不用 Vue 怎么调这个服务」，得先给文档站一条让示例取到包的路，那是文档站的能力，不是这一份示例补得上的。"

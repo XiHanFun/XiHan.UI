@@ -178,6 +178,24 @@ export const XhMessageFeedScrollToEndTrigger = defineComponent({
   },
 })
 
+/** 回到底部按钮上的未读数：放进按钮里；插槽留空时显示条数，没有未读时收起。 */
+export const XhMessageFeedUnreadCount = defineComponent({
+  name: 'XhMessageFeedUnreadCount',
+  setup(_, { slots }) {
+    const ctx = useMessageFeedContext()
+    return () => h('span', ctx.api.value.getUnreadCountProps() as Record<string, unknown>, slots.default?.() ?? String(ctx.api.value.unreadCount))
+  },
+})
+
+/** 消息之间的分隔（按日期分组）：是内容层的直接子节点、与条目平级，对读屏隐藏。 */
+export const XhMessageFeedSeparator = defineComponent({
+  name: 'XhMessageFeedSeparator',
+  setup(_, { slots }) {
+    const ctx = useMessageFeedContext()
+    return () => h('div', ctx.api.value.getSeparatorProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 已发送、等首个片段时的呼吸点：放在列表之后，只在 status 为 submitted 时出现。 */
 export const XhMessageFeedPendingIndicator = defineComponent({
   name: 'XhMessageFeedPendingIndicator',

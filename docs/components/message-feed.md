@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `pending-indicator` · `scroll-to-end-trigger` · `live-region`
+`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `separator` · `pending-indicator` · `scroll-to-end-trigger` · `unread-count` · `live-region`
 
 ## 示例
 
@@ -60,6 +60,24 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 
 <XhDemo src="message-feed/07-scroll-to" />
 
+### 按日期分隔
+
+跨天的消息之间放一条 separator，与条目平级写在列表里；它对读屏隐藏，时间由消息自己的时间戳表达
+
+<XhDemo src="message-feed/08-date-separator" />
+
+### 回到底部带未读数
+
+离开底部期间新到的消息记成未读，数字挂在回到底部按钮上并进入它的可访问名；回到底部即清零
+
+<XhDemo src="message-feed/09-unread" />
+
+### 消息动作条
+
+每条消息下挂一条工具条：复制交给剪贴板；重新生成、编辑重发、切换分支、失败重试与截断续写各是会话容器 createThreadStore 上的一个方法，界面只照快照渲染
+
+<XhDemo src="message-feed/10-actions" />
+
 ## 设计指引
 
 ### 何时使用
@@ -81,13 +99,16 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 - 消息内容全部由作者编写：气泡、头像、时间、动作条都不是本组件的部件。
 - 新生成的消息与出现的“回到底部”各带一段淡入位移；减弱动效由令牌层收敛，不需要另行关闭。
 - 已发送、等首个片段（`status` 为 `submitted`）时，放在列表之后的 `pending-indicator` 显示为一颗呼吸的圆点，首个片段到来即收起；它只给视觉看，进度由宿主写进播报区。减弱动效下圆点静止。
-- “回到底部”留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
+- “回到底部”留空时皮肤绘制向下的字形，放入节点即替换为自定义图形；只放入 `unread-count` 时字形照旧。
+- 未读数：离开底部期间 `count` 的增量累加成未读条数，回到底部即清零。把 `unread-count` 放进“回到底部”按钮里，它显示条数、没有未读时收起；条数同时写进按钮的可访问名，角标本身对读屏隐藏。
+- 按日期分隔：`separator` 与条目平级写在内容层里，显示“今天”“9 月 27 日”这类标注，对读屏隐藏；怎么分组由作者按消息时间决定，组件不解析日期。
 - 应用设为 `data-material="liquid"` 时，“回到底部”换成液态面：按下层换色调，按住时液面随手指形变。
 
 ### 组合
 
 - 正文使用[流式正文](./markdown-stream)，代码使用[代码视图](./code-view)。
-- 每条消息的动作条使用[工具栏](./toolbar)，复制使用[剪贴板](./clipboard)。
+- 每条消息的动作条使用[工具栏](./toolbar)，复制使用[剪贴板](./clipboard)：剪贴板根的插槽给出 `copy` 与 `copied`，复制按钮仍写成工具栏的一项，方向键照常走到它。
+- 动作条上的重新生成、编辑重发、分支切换、失败重试与截断续写，对应 `@xihan-ui/chat-stream` 会话容器的 `regenerate`、`edit`、`selectBranch`、`retry` 与 `continue`；分支位置取快照的 `branches`，见 [AI 对话](../guide/ai)。
 - 加载更早的消息使用[无限滚动](./infinite-scroll)，必须把消息流的滚动容器交给它，否则它的提前量只对窗口视口生效。
 - 空会话使用[空状态](./empty-state)，并显式把它的 `live` 设为 `off`：它默认会成为活动区域，放在消息流中会与播报区冲突。
 - 需要左右分侧或气泡时，条目上带 `data-role`（`user` / `assistant` / `system`），在自己的样式表中按它编写 `align-self`、底色、内衬与最大行宽，组件不预设这层外观。
@@ -95,7 +116,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 
 ### 最佳实践
 
-- 条目必须是内容层的直接子节点：向上插入历史消息时的滚动补偿只在直接子节点中选锚点，套一层壳或使用 `display: contents` 都会让补偿静默失效。
+- 条目与分隔都必须是内容层的直接子节点：向上插入历史消息时的滚动补偿只在直接子节点中选锚点，套一层壳或使用 `display: contents` 都会让补偿静默失效。
 - 一轮流式结束时把整段最终文本写入播报区，不每个 token 写一次。
 
 ### 反模式
@@ -111,7 +132,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-message-feed>` |
-| Vue 组件 | `XhMessageFeedItem` `XhMessageFeedItemLabel` `XhMessageFeedList` `XhMessageFeedLiveRegion` `XhMessageFeedPendingIndicator` `XhMessageFeedRoot` `XhMessageFeedScrollToEndTrigger` `XhMessageFeedViewport` |
+| Vue 组件 | `XhMessageFeedItem` `XhMessageFeedItemLabel` `XhMessageFeedList` `XhMessageFeedLiveRegion` `XhMessageFeedPendingIndicator` `XhMessageFeedRoot` `XhMessageFeedScrollToEndTrigger` `XhMessageFeedSeparator` `XhMessageFeedUnreadCount` `XhMessageFeedViewport` |
 | 组合式函数 | `useMessageFeed` |
 | 状态机 | `messageFeedMachine` |
 | 皮肤 | `@xihan-ui/styles/message-feed.css` |
@@ -187,6 +208,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `sticking` | `boolean` |  |
 | `focusedId` | `string \| null` | roving tabindex 的锚点。 |
 | `showScrollToEndTrigger` | `boolean` | 是否显示回到底部按钮：只判断是否在底部，不判断贴附意图。 |
+| `unreadCount` | `number` | 离底期间新到的消息条数，回到底部即清零。按 count 的增长算，count 缺席时恒为 0。 |
 | `scrollToBottom` | `() => void` |  |
 | `scrollToItem` | `(id: string) => void` | 把某条消息滚进可视区；该条不在 DOM 中时不做任何事。 |
 | `focusItem` | `(id: string) => void` | 把焦点落到某条消息上；该条不在 DOM 中时不做任何事。 |
@@ -196,6 +218,8 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `getItemProps` | `(props: MessageFeedItemProps) => T['element']` |  |
 | `getItemLabelProps` | `(props: Pick<MessageFeedItemProps, 'id'>) => T['element']` |  |
 | `getScrollToEndTriggerProps` | `() => T['button']` |  |
+| `getUnreadCountProps` | `() => T['element']` | 回到底部按钮上的未读数：没有未读时带 hidden，对读屏隐藏（条数已在按钮的可访问名里）。 |
+| `getSeparatorProps` | `() => T['element']` | 消息之间的分隔（按日期分组的「今天」「9 月 27 日」这类）：是内容层的直接子节点、与条目平级， 对读屏隐藏——role=feed 只认 article 子节点，时间由消息自己的时间戳表达。 |
 | `getPendingIndicatorProps` | `() => T['element']` | 已发送、等首个片段时的呼吸点：status 为 submitted 时出现，对读屏隐藏。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
@@ -229,8 +253,10 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `item` | `aria-posinset` | item.index + 1 |
 | `item` | `aria-setsize` | props.count |
 | `item` | `role` | 'article' |
+| `separator` | `aria-hidden` | 'true' |
 | `pending-indicator` | `aria-hidden` | 'true' |
-| `scroll-to-end-trigger` | `aria-label` | translations?.scrollToBottom |
+| `scroll-to-end-trigger` | `aria-label` | (translations?.scrollToBottomUnread ?? ((n: number) =… \| translations?.scrollToBottom |
+| `unread-count` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
 
@@ -295,6 +321,16 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `--xh-message-feed-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-circle` | message-feed 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_material-shadow` | message-feed 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size` | message-feed 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-message-feed-separator-fg` | `separator` | `color` | `default` | `--xh-fg-subtle` | message-feed 的 separator 部件 color 覆盖槽。 |
+| `--xh-message-feed-separator-font-size` | `separator` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 separator 部件 font-size 覆盖槽。 |
+| `--xh-message-feed-separator-gap` | `separator` | `gap` | `default` | `--xh-space-3` | message-feed 的 separator 部件 gap 覆盖槽。 |
+| `--xh-message-feed-separator-line` | `separator` | `border-block-start` | `default` | `--xh-border-subtle` | message-feed 的 separator 部件 border-block-start 覆盖槽。 |
+| `--xh-message-feed-unread-count-bg` | `unread-count` | `background` | `default` | `--xh-bg-brand` | message-feed 的 unread-count 部件 background 覆盖槽。 |
+| `--xh-message-feed-unread-count-fg` | `unread-count` | `color` | `default` | `--xh-fg-on-brand` | message-feed 的 unread-count 部件 color 覆盖槽。 |
+| `--xh-message-feed-unread-count-font-size` | `unread-count` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 unread-count 部件 font-size 覆盖槽。 |
+| `--xh-message-feed-unread-count-px` | `unread-count` | `padding-inline` | `default` | `--xh-space-1` | message-feed 的 unread-count 部件 padding-inline 覆盖槽。 |
+| `--xh-message-feed-unread-count-radius` | `unread-count` | `border-radius` | `default` | `--xh-shape-pill` | message-feed 的 unread-count 部件 border-radius 覆盖槽。 |
+| `--xh-message-feed-unread-count-size` | `unread-count` | `block-size`<br>`line-height`<br>`min-inline-size` | `default` | `--xh-space-4` | message-feed 的 unread-count 部件 block-size、line-height、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

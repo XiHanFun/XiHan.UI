@@ -111,6 +111,8 @@ const IDENTITY = {
   'approval:pending-indicator': 'circle',
   // pill：(a) 状态 chip
   'badge:indicator': 'pill',
+  // 回到底部上的未读数与徽标的计数同形：一位数时近圆，位数多了横向拉长
+  'message-feed:unread-count': 'pill',
   'tag:root': 'pill',
   // liquid 档下看图的计数是一行字的 chip（standard 档仍是控件档）
   'image-viewer:counter[data-xh-liquid]': 'pill',
