@@ -84,6 +84,44 @@ export const gridListSuite: ConformanceSuite = {
       },
     },
     {
+      name: '整体禁用后解禁：行回到自己声明的禁用，不被禁用期间写满的 aria-disabled 锁住',
+      spec: { apg: APG },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { disabled: true },
+          expect: { parts: { 'row[0]': { 'aria-disabled': 'true' }, 'row[2]': { 'aria-disabled': 'true' } } },
+        },
+        {
+          kind: 'setProps',
+          props: { disabled: false },
+          expect: {
+            parts: {
+              'row[0]': { 'aria-disabled': 'false', 'data-disabled': null },
+              'row[1]': { 'aria-disabled': 'false', 'data-disabled': null },
+              'row[2]': { 'aria-disabled': 'true', 'data-disabled': '' },
+            },
+          },
+        },
+        // 解禁后的行照常接受选择
+        { kind: 'focus', part: 'root', expect: { activeElement: { part: 'row[0]', exact: true } } },
+        { kind: 'key', key: ' ', expect: { parts: { row: selected('a') } } },
+      ],
+    },
+    {
+      name: '挂载时就整体禁用：解禁后行同样回到自己声明的禁用',
+      spec: { apg: APG },
+      props: { disabled: true },
+      initial: { parts: { 'row[0]': { 'aria-disabled': 'true' }, 'row[2]': { 'aria-disabled': 'true', 'disabled': null } } },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { disabled: false },
+          expect: { parts: { 'row[0]': { 'aria-disabled': 'false' }, 'row[2]': { 'aria-disabled': 'true' } } },
+        },
+      ],
+    },
+    {
       name: 'roving 与纵向导航：进入首行、跳过禁用行、Home/End 到端点',
       spec: { apg: `${APG}#keyboardinteractionforlayoutgrids` },
       covers: ['grid-list.kbd.tab', 'grid-list.kbd.next', 'grid-list.kbd.prev', 'grid-list.kbd.first', 'grid-list.kbd.last'],
