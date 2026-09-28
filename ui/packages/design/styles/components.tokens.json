@@ -64161,7 +64161,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-lg"
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
       "description": "spinner 的 root 部件 block-size、inline-size 覆盖槽。"
