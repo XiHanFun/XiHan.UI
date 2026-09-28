@@ -38,6 +38,7 @@ const DEFS_KEY = 'defs'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-radar-chart>`：雷达图宿主，一行数据一个实体，每个指标一根轴，比较少数几个实体的画像。
@@ -55,6 +56,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} area - 轮廓里铺一层系列色的淡洗，默认开；`area="false"` 时只画轮廓
  * @attr {'shared'|'independent'} scale - 量程，默认 independent（每个指标自己的量程）
  * @attr {'linear'|'catmull-rom'} curve - 轮廓的画法，默认 linear
+ * @attr {number} rings - 网格分几圈，2–10，默认 4
+ * @attr {boolean} ring-labels - 在 12 点方向那根轴上写出每一圈的数值；只在各指标量程相同时写
  * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
  * @attr {string} locale - 数字与内建文案的语言；未提供时按宿主语言
@@ -92,6 +95,8 @@ export class XhRadarChartElement extends XhElement {
     area: { converter: BOOLEAN_CONVERTER },
     scale: { converter: STRING_CONVERTER },
     curve: { converter: STRING_CONVERTER },
+    rings: { converter: NUMBER_CONVERTER },
+    ringLabels: { converter: BOOLEAN_CONVERTER, attribute: 'ring-labels' },
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
     pending: { converter: BOOLEAN_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
@@ -109,6 +114,8 @@ export class XhRadarChartElement extends XhElement {
   declare area?: boolean
   declare scale?: RadarScale
   declare curve?: RadarCurve
+  declare rings?: number
+  declare ringLabels?: boolean
   declare activeKey?: ChartKey | null
   declare pending?: boolean
   declare animated?: boolean
@@ -146,6 +153,8 @@ export class XhRadarChartElement extends XhElement {
       area: this.area,
       scale: this.scale,
       curve: this.curve,
+      rings: this.rings,
+      ringLabels: this.ringLabels,
       format: this.format,
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,

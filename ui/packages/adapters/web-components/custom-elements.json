@@ -48242,6 +48242,24 @@
             },
             {
               "kind": "field",
+              "name": "rings",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "rings"
+            },
+            {
+              "kind": "field",
+              "name": "ringLabels",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "ring-labels"
+            },
+            {
+              "kind": "field",
               "name": "activeKey",
               "privacy": "public",
               "type": {
@@ -48763,6 +48781,22 @@
             },
             {
               "type": {
+                "text": "number | undefined"
+              },
+              "description": "网格分几圈，2–10，默认 4",
+              "name": "rings",
+              "fieldName": "rings"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "在 12 点方向那根轴上写出每一圈的数值；只在各指标量程相同时写",
+              "name": "ring-labels",
+              "fieldName": "ringLabels"
+            },
+            {
+              "type": {
                 "text": "boolean | undefined"
               },
               "description": "数据重取中：保留上一帧、整体降低不透明度",
@@ -48821,6 +48855,12 @@
             },
             {
               "name": "--xh-radar-chart-point-size"
+            },
+            {
+              "name": "--xh-radar-chart-ring-label-fg"
+            },
+            {
+              "name": "--xh-radar-chart-ring-label-opacity"
             },
             {
               "name": "--xh-radar-chart-series-color"

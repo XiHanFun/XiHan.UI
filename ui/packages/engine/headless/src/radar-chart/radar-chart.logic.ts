@@ -70,6 +70,8 @@ export function radarModelOf(source: RadarModelSource): RadarModel {
     area: prop('area'),
     scale: prop('scale'),
     curve: prop('curve'),
+    rings: prop('rings'),
+    ringLabels: prop('ringLabels'),
     format: prop('format'),
     hiddenSeries: context.get('hiddenSeries'),
     size: context.get('size'),

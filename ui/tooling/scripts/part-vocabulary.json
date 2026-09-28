@@ -1368,6 +1368,9 @@
       "approval",
       "question-flow"
     ],
+    "ring-label": [
+      "radar-chart"
+    ],
     "root": [
       "accordion",
       "affix",

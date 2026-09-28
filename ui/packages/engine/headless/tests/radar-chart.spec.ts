@@ -266,3 +266,36 @@ describe('入场与无障碍', () => {
     expect(api.table.rows.map(r => r.cells.map(c => c.text))).toEqual([['A', '80', '60', '70', '40', '90'], ['B', '60', '90', '50', '70', '60']])
   })
 })
+
+describe('网格圈数与各圈的数值', () => {
+  it('rings 定圈数，上限按圈数取整到刻度上', async () => {
+    const rig = await makeRig({ ...BASE, scale: 'shared', rings: 5 })
+    expect(byPart(rig.api(), 'grid-ring')).toHaveLength(5)
+    expect(rig.api().model.derived.domains[0]).toEqual([0, 100])
+  })
+
+  it('圈数夹在 2–10 之间', async () => {
+    const rig = await makeRig({ ...BASE, rings: 40 })
+    expect(byPart(rig.api(), 'grid-ring')).toHaveLength(10)
+  })
+
+  it('共用量程时在 12 点方向那根轴上写每一圈的数值，从内到外', async () => {
+    const rig = await makeRig({ ...BASE, scale: 'shared', rings: 4, ringLabels: true, locale: 'en-US' })
+    const labels = byPart(rig.api(), 'ring-label') as TextMark[]
+    expect(labels.map(l => l.text)).toEqual(['25', '50', '75', '100'])
+    const { cx, cy } = rig.api().model.scene!.layout
+    // 写在轴的右侧，越往外离圆心越远
+    expect(labels.every(l => l.x > cx)).toBe(true)
+    expect(labels.map(l => cy - l.y)).toEqual([...labels.map(l => cy - l.y)].sort((a, b) => a - b))
+  })
+
+  it('各指标量程不同时不写：一根轴的刻度代表不了别的轴', async () => {
+    const rig = await makeRig({ ...BASE, ringLabels: true, indicators: [...INDICATORS.slice(0, 4), { key: 'comfort', label: '舒适', max: 200 }] })
+    expect(byPart(rig.api(), 'ring-label')).toHaveLength(0)
+  })
+
+  it('缺省不写', async () => {
+    const rig = await makeRig({ ...BASE, scale: 'shared' })
+    expect(byPart(rig.api(), 'ring-label')).toHaveLength(0)
+  })
+})

@@ -48,6 +48,13 @@ export interface RadarChartSchema extends MachineSchema {
     scale?: RadarScale
     /** 轮廓的画法，缺省 linear。 */
     curve?: RadarCurve
+    /** 网格分几圈，2–10，缺省 4；上限按这个圈数取整到刻度上。 */
+    rings?: number
+    /**
+     * 在 12 点方向那根轴上写出每一圈的数值，缺省 false。只在各指标量程相同时写
+     * （scale 为 shared，或各指标写了同样的上下限）：量程各不相同时每根轴的刻度不一样，写在一根轴上会误读。
+     */
+    ringLabels?: boolean
     /** 数值格式：提示框、可及名与数据表共用。 */
     format?: NumberFormatSpec | ((value: number) => string)
     translations?: Partial<RadarChartTranslations>

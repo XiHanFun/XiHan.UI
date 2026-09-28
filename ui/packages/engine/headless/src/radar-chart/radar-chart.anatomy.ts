@@ -24,6 +24,7 @@ export const radarChartAnatomy = createAnatomy('radar-chart', [
   'pattern',
   'pattern-line',
   'grid-ring',
+  'ring-label',
   'spoke',
   'indicator-label',
   'series',

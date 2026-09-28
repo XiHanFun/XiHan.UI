@@ -48,6 +48,12 @@ area 关掉淡洗，只留轮廓线与顶点：实体多、面积叠在一起互
 
 <XhDemo src="radar-chart/05-outline" />
 
+### 各圈的数值
+
+ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈数；只在各指标量程相同时写
+
+<XhDemo src="radar-chart/06-ring-labels" />
+
 ## 设计指引
 
 ### 何时使用
@@ -66,6 +72,7 @@ area 关掉淡洗，只留轮廓线与顶点：实体多、面积叠在一起互
 
 - 数据是对象数组，每行一个实体（一个系列）：`nameField` 指定实体名所在的字段，`indicators` 列出指标，每一项写数据里的字段 `key`、显示的名字 `label` 与可选的量程 `min` / `max`。还没给指标时按空态处理；给了但少于 3 个或多于 10 个时报 `chart.indicator-count`，字段不存在时报 `chart.unknown-field`，根上写 `data-state="error"`。
 - 量程由 `scale` 决定：`independent`（缺省）每个指标自己的量程，下限缺省 0（有负值时取最小值），上限按全部实体的最大值取整到刻度上；`shared` 全部指标共用一个量程，适合同一种单位的指标。量程按全部实体算，图例隐藏一个实体时其余实体的形状不变。超出量程的值贴在圆心或最外圈上。
+- 网格的圈数由 `rings` 定（2–10，缺省 4），上限按圈数取整到刻度上，每一圈都落在整数刻度。`ringLabels` 在 12 点方向那根轴的右侧写出每一圈的数值（部件 `ring-label`）；只在各指标量程相同时写（`shared`，或各指标写了同样的上下限），量程各不相同时一根轴的刻度代表不了别的轴，写出来反而误读，这时读数交给提示框与数据表。
 - 网格由 `shape` 决定：`polygon`（缺省）画成与指标同数的多边形，`circle` 画成同心圆；都是等分的四圈加每个指标一根轴，只给眼睛看。指标名写在轴端外侧：右半边从轴端往外写，左半边往回写，正上方与正下方居中；过长时截断。
 - 每个实体一个分组：轮廓线、铺在里面的系列色淡洗（`area`，缺省开）与每个指标上的顶点。`curve="catmull-rom"` 让轮廓平滑地穿过每个顶点；缺失的值落在圆心、不画顶点，也不进焦点次序。
 - 颜色按数据次序依次取分类色 1–8；图例隐藏一个实体后，其余实体的颜色不变。多于 3 个实体时开发期报 `chart.radar-overlap` 提醒（按两两配对检查只有前 3 个色槽都合格），多于 8 个时报错。
@@ -142,6 +149,8 @@ area 关掉淡洗，只留轮廓线与顶点：实体多、面积叠在一起互
 | `XhRadarChartRoot` | `area` | `boolean` |  | 轮廓里铺一层系列色的淡洗，缺省 true。 |
 | `XhRadarChartRoot` | `scale` | `RadarScale` |  | 量程，缺省 independent。 |
 | `XhRadarChartRoot` | `curve` | `RadarCurve` |  | 轮廓的画法，缺省 linear。 |
+| `XhRadarChartRoot` | `rings` | `number` |  | 网格分几圈，2–10，缺省 4。 |
+| `XhRadarChartRoot` | `ringLabels` | `boolean` |  | 在 12 点方向那根轴上写出每一圈的数值；只在各指标量程相同时写。 |
 | `XhRadarChartRoot` | `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式。 |
 | `XhRadarChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的实体（受控）。 |
 | `XhRadarChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的实体（非受控）。 |
@@ -338,6 +347,8 @@ area 关掉淡洗，只留轮廓线与顶点：实体多、面积叠在一起互
 | `--xh-radar-chart-legend-swatch-radius` | `legend-swatch` | `border-radius` | `default` | `--xh-shape-inset` | radar-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
 | `--xh-radar-chart-line-width` | `legend-swatch`<br>`line`<br>`root`<br>`tooltip-swatch` | `background`<br>`block-size`<br>`stroke-dasharray`<br>`stroke-width` | `@media (forced-colors: active)`<br>`@media print`<br>`default`<br>`mark=line`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-line-width` | radar-chart 的 legend-swatch、line、root、tooltip-swatch 部件 background、block-size、stroke-dasharray、stroke-width 覆盖槽。 |
 | `--xh-radar-chart-point-size` | `legend-swatch`<br>`root`<br>`tooltip-swatch` | `background` | `@media (forced-colors: active)`<br>`@media print`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns` | `--xh-chart-point-size` | radar-chart 的 legend-swatch、root、tooltip-swatch 部件 background 覆盖槽。 |
+| `--xh-radar-chart-ring-label-fg` | `ring-label` | `fill` | `default` | `--xh-chart-label` | radar-chart 的 ring-label 部件 fill 覆盖槽。 |
+| `--xh-radar-chart-ring-label-opacity` | `ring-label` | `opacity` | `default` | `0.8` | radar-chart 的 ring-label 部件 opacity 覆盖槽。 |
 | `--xh-radar-chart-series-color` | `area-fill`<br>`legend-swatch`<br>`line`<br>`pattern-line`<br>`point`<br>`tooltip-swatch` | `background`<br>`border`<br>`fill`<br>`stroke` | `@media (forced-colors: active)`<br>`@media print`<br>`mark=line`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns`<br>`xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | radar-chart 的 area-fill、legend-swatch、line、pattern-line、point、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。 |
 | `--xh-radar-chart-tooltip-gap` | `tooltip` | `gap` | `default` | `--xh-space-1` | radar-chart 的 tooltip 部件 gap 覆盖槽。 |
 | `--xh-radar-chart-tooltip-px` | `tooltip` | `padding-inline` | `default` | `--xh-surface-pad-sm` | radar-chart 的 tooltip 部件 padding-inline 覆盖槽。 |
