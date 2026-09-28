@@ -99,14 +99,8 @@ afterEach(() => {
   host = null
 })
 
-/** 1px 顶光：材质配方把它画在背景最上一层渐变里（钉在面本身上，不随内容滚动），取那层的第一个色标。 */
-function highlightOf(el: Element): string {
-  const image = getComputedStyle(el).backgroundImage
-  return /linear-gradient\((?:to [a-z ]+,\s*)?([a-z]+\([^)]*\)|[a-z]+)/.exec(image)?.[1] ?? 'rgba(0, 0, 0, 0)'
-}
-
 describe('级联选择首次加载表面', () => {
-  it.each(['light', 'dark'] as const)('%s：触发框实体、唯一状态面磨砂，增强对比度关闭透明光效', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：触发框透明描边、面板是不透景的实体浮起面', async (theme) => {
     await mountCascader({ theme })
     const control = getComputedStyle(part('control'))
     const content = part('content')
@@ -114,21 +108,17 @@ describe('级联选择首次加载表面', () => {
     // 描边式字段外壳不填底：透明底不是磨砂，没有背景滤镜
     expect(colorAlpha(control.backgroundColor)).toBe(0)
     expect(control.backdropFilter).toBe('none')
-    expect(style.backdropFilter).toContain('blur(16px)')
-    expect(colorAlpha(style.backgroundColor)).toBeLessThan(255)
-    expect(colorAlpha(style.backgroundColor)).toBeGreaterThan(220)
+    // 多列面板取 floating：实体底、无背景滤镜、有浮起投影
+    expect(style.backdropFilter).toBe('none')
+    expect(colorAlpha(style.backgroundColor)).toBe(255)
     expect(style.boxShadow).not.toBe('none')
-    expect(colorAlpha(highlightOf(content))).toBeGreaterThan(0)
-    part('positioner').dataset.contrast = 'more'
-    expect(getComputedStyle(content).backdropFilter).toBe('none')
-    expect(colorAlpha(getComputedStyle(content).backgroundColor)).toBe(255)
-    expect(colorAlpha(highlightOf(content))).toBe(0)
+    expect(style.backgroundImage).toBe('none')
   })
 
-  it('加载与空态共用材质次要文字，视图切换不额外产生表面', async () => {
+  it('加载与空态共用次要文字，视图切换不额外产生表面', async () => {
     const state = await mountCascader({ theme: 'dark' })
     const probe = document.createElement('span')
-    probe.style.color = 'var(--xh-material-frosted-fg-muted)'
+    probe.style.color = 'var(--xh-fg-muted)'
     part('content').append(probe)
     const muted = getComputedStyle(probe).color
     probe.remove()

@@ -58,7 +58,7 @@ const CROSS_PART = {
   // 最近使用色与预设色板是同一台色块选择器、并排在同一块取色面里：格子边长、间距与图标尺必须同一族，
   // 作者改预设色板的格子，最近使用色一起变，不另立一套只给最近使用色的槽
   'color-picker.swatch': ['recent-swatch-picker'],
-  'cascader.column': ['search-list', 'empty'],
+  'cascader.column': ['search-list'],
   // 搜索候选与列内条目排的是同一套行度量，空态文字与条目同一档字号
   'cascader.item': ['search-item', 'empty'],
   // 搜索候选由组件自动生成，没有独立 indicator 节点；末端伪元素与列项对号必须共用尺寸和颜色

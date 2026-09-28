@@ -269,7 +269,7 @@ interface Harness {
   /** 引擎回报并写进 context 的位置结果。 */
   position: () => PositionResult | null
   /** 换掉锚点 / 浮层 ref，用来验它们缺席时不挂订阅。 */
-  setRef: (key: 'getAnchorEl' | 'getFloatingEl', value: () => HTMLElement | null) => void
+  setRef: (key: 'getAnchorEl' | 'getTriggerEl' | 'getFloatingEl', value: () => HTMLElement | null) => void
   /** 搜索词，Escape 的两拍按它分岔。 */
   inputValue: () => string
   column: (level: number) => HTMLElement
@@ -382,6 +382,7 @@ function mount(initial: Partial<Props> = {}, options: Options = {}): Harness {
   if (options.position)
     service.refs.set('position', options.position)
   service.refs.set('getAnchorEl', () => trigger)
+  service.refs.set('getTriggerEl', () => trigger)
   service.refs.set('getFloatingEl', () => positioner)
   service.refs.set('getContentEl', () => content)
 
@@ -1586,6 +1587,32 @@ describe('cascader 浮层定位', () => {
     expect(options.placement).toBe('top-end')
     expect(options.offset).toBe(2)
     expect(options.dir).toBe('rtl')
+  })
+
+  it('锚点实测宽度投影成私有槽，一级列据此与字段盒等宽；没量到时撤掉声明', async () => {
+    const engine = fakeEngine()
+    const h = mount({}, { position: engine.port })
+    h.send({ type: 'OPEN' })
+    await tick()
+    const style = (): Record<string, string> => (h.api().getPositionerProps() as { style: Record<string, string> }).style
+    expect(style()['--xh-_cascader-anchor-w']).toBe('')
+    engine.calls[0]!.emit({ ...RESULT, anchorWidth: 256 })
+    expect(style()['--xh-_cascader-anchor-w']).toBe('256px')
+  })
+
+  it('定位锚在字段盒上，清空后焦点仍回触发按钮', async () => {
+    const engine = fakeEngine()
+    const h = mount({ defaultValue: ['zhejiang', 'hangzhou'] }, { position: engine.port })
+    const control = document.createElement('div')
+    document.body.append(control)
+    h.setRef('getAnchorEl', () => control)
+    h.send({ type: 'OPEN' })
+    await tick()
+    expect(engine.calls[0]!.anchor).toBe(control)
+    h.send({ type: 'CLOSE' })
+    click(h.clear)
+    expect(document.activeElement).toBe(h.trigger)
+    control.remove()
   })
 
   it('引擎回报的结果写进 context，连接层据此认落位', async () => {

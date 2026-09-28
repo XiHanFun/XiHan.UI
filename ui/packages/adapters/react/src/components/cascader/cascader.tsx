@@ -237,7 +237,17 @@ export interface XhCascaderControlProps extends ComponentPropsWithRef<'div'> {}
 /** 描边、底色与聚焦环所在的层，触发按钮与尾部动作按钮在其中并排。 */
 export function XhCascaderControl({ children, ...rest }: XhCascaderControlProps): ReactNode {
   const ctx = useCascaderContext()
-  return <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return (
+    <div
+      {...mergeReactProps(
+        ctx.api.getControlProps() as Record<string, unknown>,
+        rest as Record<string, unknown>,
+        { ref: (el: HTMLDivElement | null) => { ctx.controlRef.current = el } },
+      )}
+    >
+      {children}
+    </div>
+  )
 }
 
 export interface XhCascaderTriggerProps extends ComponentPropsWithRef<'button'> {}

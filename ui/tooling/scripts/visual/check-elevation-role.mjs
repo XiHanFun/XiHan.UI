@@ -66,7 +66,7 @@ const EXPECTED = {
   'segmented': { indicator: ['raised'] },
   // 被指针拎起、跟着手走的条目：lifted（拖起的面是作者内容，不强加描边，raised 条款不适用）
   'sortable': { item: ['lifted'] },
-  'cascader': { content: ['frosted'] },
+  'cascader': { content: ['floating'] },
   'combobox': { content: ['frosted'] },
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档
   'command': { content: ['sheet'] },

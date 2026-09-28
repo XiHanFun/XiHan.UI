@@ -24,6 +24,7 @@ export interface CascaderContext extends OverlayWiring {
   api: CascaderApi
   rootRef: RefObject<HTMLDivElement | null>
   triggerRef: RefObject<HTMLElement | null>
+  controlRef: RefObject<HTMLElement | null>
   positionerRef: RefObject<HTMLElement | null>
   contentRef: RefObject<HTMLElement | null>
 }
@@ -33,6 +34,7 @@ export function useCascader(props: CascaderSchema['props']): CascaderContext {
   const scope = useReactScope()
   const rootRef = useRef<HTMLDivElement | null>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
+  const controlRef = useRef<HTMLElement | null>(null)
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
   const serviceRef = useRef<Service<CascaderSchema> | null>(null)
@@ -55,9 +57,11 @@ export function useCascader(props: CascaderSchema['props']): CascaderContext {
     layer,
     node: () => contentRef.current,
     refs: (service) => {
-      // 定位引擎由适配器注入，机器只经端口驱动；锚点取 trigger
+      // 定位引擎由适配器注入，机器只经端口驱动
       service.refs.set('position', createPositionEngine() as never)
-      service.refs.set('getAnchorEl', (() => triggerRef.current) as never)
+      // 锚点是字段盒：一级列与盒子同宽、面板左缘对齐；作者没写 control 时退回触发器
+      service.refs.set('getAnchorEl', (() => controlRef.current ?? triggerRef.current) as never)
+      service.refs.set('getTriggerEl', (() => triggerRef.current) as never)
       service.refs.set('getFloatingEl', (() => positionerRef.current) as never)
       service.refs.set('getContentEl', (() => contentRef.current) as never)
     },
@@ -76,6 +80,7 @@ export function useCascader(props: CascaderSchema['props']): CascaderContext {
     api: connectCascader(service, reactNormalize),
     rootRef,
     triggerRef,
+    controlRef,
     positionerRef,
     contentRef,
   }

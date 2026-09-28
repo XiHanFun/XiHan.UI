@@ -198,8 +198,10 @@ export interface CascaderRefs {
   presence: PresenceHandle | null
   /** 浮层定位引擎；未提供时不产出位置结果。 */
   position: PositionEnginePort | null
-  /** 定位锚点，取 trigger；清空按钮按下后也把焦点归还给它。 */
+  /** 定位锚点，取字段盒（control）：一级列与它等宽、面板与它起始缘对齐。 */
   getAnchorEl: () => HTMLElement | null
+  /** 触发按钮：收起与清空后焦点归还到这里。 */
+  getTriggerEl: () => HTMLElement | null
   /** 被定位的浮层容器，通常是 positioner。 */
   getFloatingEl: () => HTMLElement | null
   /** 焦点域容器、消解层节点，同时是条目集合的查询容器（各列都位于其中）。 */
