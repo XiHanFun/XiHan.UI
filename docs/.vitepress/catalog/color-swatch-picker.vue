@@ -1,16 +1,13 @@
-<!-- 提供 color-swatch-picker 相关实现。 -->
-
-<script setup lang="ts">
-import { XhColorSwatchPickerRoot } from "@xihan-ui/vue";
-
-const swatches = [
-  { value: "#e11d48", label: "玫红" },
-  { value: "#f59e0b", label: "琥珀" },
-  { value: "#10b981", label: "翠绿" },
-  { value: "#3b82f6", label: "天蓝" },
-];
-</script>
-
 <template>
-  <XhColorSwatchPickerRoot :swatches="swatches" default-value="#3b82f6" />
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M30 52h44" stroke="var(--xh-fg-default)" stroke-width="4" />
+    <rect x="28" y="68" width="24" height="24" rx="4" fill="var(--xh-color-red-500)" />
+    <rect x="60" y="68" width="24" height="24" rx="4" fill="var(--xh-color-amber-500)" />
+    <rect x="92" y="68" width="24" height="24" rx="4" fill="var(--xh-color-green-500)" />
+    <rect x="122" y="66" width="28" height="28" rx="4" stroke="var(--xh-fg-default)" stroke-width="2" />
+    <rect x="124" y="68" width="24" height="24" rx="4" fill="var(--xh-color-blue-500)" />
+    <path d="M130 80l3 3 6-6" stroke="var(--xh-color-neutral-0)" stroke-width="2" />
+    <rect x="156" y="68" width="24" height="24" rx="4" fill="var(--xh-color-purple-500)" />
+    <rect x="188" y="68" width="24" height="24" rx="4" fill="var(--xh-color-pink-500)" />
+  </svg>
 </template>

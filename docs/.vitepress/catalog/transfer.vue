@@ -1,46 +1,29 @@
-<script setup lang="ts">
-import {
-  XhTransferItem,
-  XhTransferItemCheckbox,
-  XhTransferItemText,
-  XhTransferList,
-  XhTransferPanelHeader,
-  XhTransferPanelTitle,
-  XhTransferRoot,
-  XhTransferSourcePanel,
-  XhTransferTargetPanel,
-  XhTransferToSourceTrigger,
-  XhTransferToTargetTrigger,
-} from "@xihan-ui/vue";
-
-const items = [
-  { value: "read", label: "查看" },
-  { value: "create", label: "新建" },
-  { value: "delete", label: "删除" },
-];
-</script>
-
 <template>
-  <XhTransferRoot :default-value="['read']" :collection="items" style="inline-size: var(--xh-doc-catalog-w); --xh-transfer-list-h: 64px">
-    <XhTransferSourcePanel>
-      <XhTransferPanelHeader><XhTransferPanelTitle>待选</XhTransferPanelTitle></XhTransferPanelHeader>
-      <XhTransferList>
-        <XhTransferItem v-for="item in items" :key="item.value" :value="item.value">
-          <XhTransferItemCheckbox />
-          <XhTransferItemText>{{ item.label }}</XhTransferItemText>
-        </XhTransferItem>
-      </XhTransferList>
-    </XhTransferSourcePanel>
-    <XhTransferToTargetTrigger />
-    <XhTransferToSourceTrigger />
-    <XhTransferTargetPanel>
-      <XhTransferPanelHeader><XhTransferPanelTitle>已选</XhTransferPanelTitle></XhTransferPanelHeader>
-      <XhTransferList>
-        <XhTransferItem v-for="item in items" :key="item.value" :value="item.value">
-          <XhTransferItemCheckbox />
-          <XhTransferItemText>{{ item.label }}</XhTransferItemText>
-        </XhTransferItem>
-      </XhTransferList>
-    </XhTransferTargetPanel>
-  </XhTransferRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="16.5" y="24.5" width="87" height="111" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <rect x="24" y="32" width="16" height="16" rx="4" fill="var(--xh-bg-brand)" />
+    <path d="M28 40h8" stroke="var(--xh-fg-on-brand)" stroke-width="2" />
+    <path d="M49 40h26" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M86 40h8" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M16 55.5h88" stroke="var(--xh-border-subtle)" />
+    <rect x="24" y="64" width="16" height="16" rx="4" fill="var(--xh-bg-brand)" />
+    <path d="M28 72l2.5 2.5 5.5-5.5" stroke="var(--xh-fg-on-brand)" stroke-width="2" />
+    <path d="M49 72h34" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <rect x="24.5" y="88.5" width="15" height="15" rx="4" stroke="var(--xh-border-control)" />
+    <path d="M49 96h26" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <rect x="24" y="112" width="16" height="16" rx="4" fill="var(--xh-bg-brand)" />
+    <path d="M28 120l2.5 2.5 5.5-5.5" stroke="var(--xh-fg-on-brand)" stroke-width="2" />
+    <path d="M49 120h38" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <rect x="108" y="60" width="24" height="24" rx="4" fill="var(--xh-bg-brand)" />
+    <path d="M118 68l4 4-4 4" stroke="var(--xh-fg-on-brand)" stroke-width="2" />
+    <rect x="108.5" y="88.5" width="23" height="23" rx="4" stroke="var(--xh-border-default)" />
+    <path d="M122 96l-4 4 4 4" stroke="var(--xh-fg-disabled)" stroke-width="2" />
+    <rect x="136.5" y="24.5" width="87" height="111" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <rect x="144.5" y="32.5" width="15" height="15" rx="4" stroke="var(--xh-border-control)" />
+    <path d="M169 40h26" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M206 40h8" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M136 55.5h88" stroke="var(--xh-border-subtle)" />
+    <rect x="144.5" y="64.5" width="15" height="15" rx="4" stroke="var(--xh-border-control)" />
+    <path d="M169 72h30" stroke="var(--xh-fg-muted)" stroke-width="6" />
+  </svg>
 </template>

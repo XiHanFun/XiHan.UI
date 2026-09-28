@@ -1,12 +1,13 @@
-<script setup lang="ts">
-import { XhComboboxRoot } from "@xihan-ui/vue";
-
-const cities = [
-  { value: "beijing", label: "Beijing 北京" },
-  { value: "berlin", label: "Berlin 柏林" },
-];
-</script>
-
 <template>
-  <XhComboboxRoot :collection="cities" :default-value="['beijing']" label="城市" placeholder="搜索城市" style="inline-size: var(--xh-doc-catalog-w)" />
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="40.5" y="20.5" width="159" height="31" rx="4" stroke="var(--xh-border-control)" />
+    <path d="M60 35a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5M178 38l4-4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M73 36h22" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M103 28v16" stroke="var(--xh-fg-default)" stroke-width="2" />
+    <rect x="40.5" y="56.5" width="159" height="79" rx="12" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <rect x="44" y="60" width="152" height="24" rx="4" fill="var(--xh-bg-subtle)" />
+    <path d="M55 72h50M55 96h38" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M177 96l3 3 7-7" stroke="var(--xh-fg-brand)" stroke-width="2" />
+    <path d="M55 120h58" stroke="var(--xh-fg-muted)" stroke-width="6" />
+  </svg>
 </template>
