@@ -7,16 +7,18 @@
 
 import type { SpinnerApi, SpinnerProps } from '@xihan-ui/headless'
 import type { ComputedRef } from 'vue'
-import { connectSpinner } from '@xihan-ui/headless'
+import { connectSpinner, spinnerMachine } from '@xihan-ui/headless'
 import { computed } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { useMachine } from '../../runtime/use-machine'
 
 export interface SpinnerContext {
   api: ComputedRef<SpinnerApi>
 }
 
-// Spinner 无状态机也不派生 part id，props 变了由 computed 重算属性
+// 状态机只管露面前的等待；props 每帧现展开，改了文案与轴 computed 照常重算
 export function useSpinner(props: SpinnerProps): SpinnerContext {
-  const api = computed(() => connectSpinner(props, vueNormalize))
+  const service = useMachine(spinnerMachine, () => ({ ...props }))
+  const api = computed(() => connectSpinner(service, vueNormalize))
   return { api }
 }

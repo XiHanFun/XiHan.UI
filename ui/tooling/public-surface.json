@@ -6997,6 +6997,8 @@
       "SparklineVariant",
       "SpinnerApi",
       "SpinnerProps",
+      "SpinnerSchema",
+      "SpinnerState",
       "SpinnerTranslations",
       "SpinnerVariant",
       "SplitterApi",
@@ -8478,6 +8480,7 @@
       "sparklineMeta",
       "spinnerAnatomy",
       "spinnerKeyboard",
+      "spinnerMachine",
       "spinnerMeta",
       "splitCodeLines",
       "splitDayPeriod",
@@ -12771,6 +12774,7 @@
       "y"
     ],
     "spinner": [
+      "delay",
       "label",
       "size",
       "tone",
@@ -20609,6 +20613,7 @@
     },
     "xh-spinner": {
       "attributes": [
+        "delay",
         "label",
         "size",
         "tone",

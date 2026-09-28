@@ -1,14 +1,27 @@
 // @vitest-environment jsdom
 import type { SpinnerProps } from '../src/spinner'
-import { normalizeProps } from '@xihan-ui/core'
-import { describe, expect, it } from 'vitest'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 // 直接指到组件目录：包主入口的导出由接线一并补，测试不等它
-import { connectSpinner, SPINNER_DEFAULT_LABEL, spinnerAnatomy, spinnerMeta } from '../src/spinner'
+import { connectSpinner, SPINNER_DEFAULT_LABEL, spinnerAnatomy, spinnerMachine, spinnerMeta } from '../src/spinner'
 
 type Dict = Record<string, unknown>
 
+function make(initial: SpinnerProps = {}) {
+  const runtime = createVanillaRuntime()
+  const props = runtime.signal<SpinnerProps>(initial)
+  const service = createService(spinnerMachine, { props: () => props.get(), runtime })
+  runtime.start()
+  return {
+    api: () => connectSpinner(service, normalizeProps),
+    setProps: (next: Partial<SpinnerProps>) => props.set(prev => ({ ...prev, ...next })),
+    stop: () => runtime.stop(),
+  }
+}
+
 function api(props: SpinnerProps = {}) {
-  return connectSpinner(props, normalizeProps)
+  return make(props).api()
 }
 
 function root(props: SpinnerProps = {}): Dict {
@@ -78,5 +91,49 @@ describe('connectSpinner 尺寸', () => {
 describe('connectSpinner 文案节点', () => {
   it('label 部件只带身份标记：内容是作者的，角色与活区都在 root 上', () => {
     expect(api().getLabelProps()).toEqual({ 'data-scope': 'spinner', 'data-part': 'label' })
+  })
+})
+
+describe('spinner 露面前的等待', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('不写 delay、写 0、负数或非有限数都即刻露面', () => {
+    for (const delay of [undefined, 0, -100, Number.NaN, Number.POSITIVE_INFINITY]) {
+      const t = make({ delay })
+      expect(t.api().visible).toBe(true)
+      expect(t.api().getRootProps()).toMatchObject({ 'data-state': 'visible' })
+    }
+  })
+
+  it('等够 delay 才露面：之前 data-state 为 hidden，活区语义与可及名照旧', () => {
+    vi.useFakeTimers()
+    const t = make({ delay: 300, label: '正在加载' })
+    expect(t.api().visible).toBe(false)
+    expect(t.api().getRootProps()).toMatchObject({ 'data-state': 'hidden', 'role': 'status', 'aria-label': '正在加载' })
+    vi.advanceTimersByTime(299)
+    expect(t.api().visible).toBe(false)
+    vi.advanceTimersByTime(1)
+    expect(t.api().visible).toBe(true)
+    expect(t.api().getRootProps()).toMatchObject({ 'data-state': 'visible' })
+  })
+
+  it('等待途中停机（宿主卸掉转圈）：计时器随之撤掉，不再露面', () => {
+    vi.useFakeTimers()
+    const t = make({ delay: 300 })
+    t.stop()
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('等待途中把 delay 改成 0 即刻露面；露面之后再改 delay 不回到等待', () => {
+    vi.useFakeTimers()
+    const t = make({ delay: 1000 })
+    t.setProps({ delay: 0 })
+    expect(t.api().visible).toBe(true)
+    t.setProps({ delay: 500 })
+    expect(t.api().visible).toBe(true)
+    vi.advanceTimersByTime(1000)
+    expect(t.api().visible).toBe(true)
   })
 })

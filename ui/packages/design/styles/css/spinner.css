@@ -34,6 +34,11 @@
     vertical-align: middle;
   }
 
+  /* 露面前的等待：整块藏起、位置照留，露面那一刻布局不跳；visibility 同时把它从读屏里摘掉 */
+  [data-scope='spinner'][data-part='root'][data-state='hidden'] {
+    visibility: hidden;
+  }
+
   [data-scope='spinner'][data-part='root']::before {
     content: '';
 

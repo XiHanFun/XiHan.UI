@@ -22,6 +22,8 @@ export const XhSpinner = defineComponent({
     size: { type: String as PropType<Size> },
     variant: { type: String as PropType<SpinnerVariant> },
     tone: { type: String as PropType<Tone> },
+    /** 挂载后等多少毫秒才露面，默认 0；加载在这之前结束时转圈从头到尾不出现。 */
+    delay: { type: Number },
     translations: { type: Object as PropType<Partial<SpinnerTranslations>> },
   },
   setup(props, { slots }) {

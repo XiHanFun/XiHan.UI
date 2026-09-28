@@ -20,6 +20,8 @@ export interface XhSpinnerProps extends ComponentPropsWithRef<'span'> {
   /** 形态：ring / arc / dots。 */
   variant?: SpinnerVariant
   tone?: Tone
+  /** 挂载后等多少毫秒才露面，默认 0；加载在这之前结束时转圈从头到尾不出现。 */
+  delay?: number
   translations?: Partial<SpinnerTranslations>
 }
 
@@ -29,11 +31,12 @@ export function XhSpinner({
   size,
   variant,
   tone,
+  delay,
   translations,
   children,
   ...rest
 }: XhSpinnerProps): ReactNode {
-  const ctx = useSpinner(withXhConfig('spinner', { label, size, variant, tone, translations }) as SpinnerProps)
+  const ctx = useSpinner(withXhConfig('spinner', { label, size, variant, tone, delay, translations }) as SpinnerProps)
   return (
     <SpinnerProvider value={ctx}>
       <span {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>

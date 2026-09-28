@@ -6,16 +6,18 @@
 // 提供 spinner 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { SpinnerProps, SpinnerTranslations, SpinnerVariant } from '@xihan-ui/headless'
-import { connectSpinner, spinnerAnatomy, spinnerMeta } from '@xihan-ui/headless'
+import type { SpinnerSchema, SpinnerTranslations, SpinnerVariant } from '@xihan-ui/headless'
+import { connectSpinner, spinnerAnatomy, spinnerMachine, spinnerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
+const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-spinner>`：加载指示器宿主，无状态机，把活区语义与可及名接到角色节点上。
+ * `<xh-spinner>`：加载指示器宿主，把活区语义与可及名接到角色节点上；状态机只管露面前的等待。
  * 转圈图形由皮肤绘制在 root 的伪元素上，元素不生成任何结构。
  *
  * @customElement xh-spinner
@@ -23,7 +25,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'sm'|'md'|'lg'} size - 直径档位，默认 md
  * @attr {'ring'|'arc'|'dots'} variant - 形态，默认 ring
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
- * @csspart root - role=status 的活区容器，承载 aria-live / aria-label / data-size / data-variant / data-tone
+ * @attr {number} delay - 连接后等多少毫秒才露面，默认 0；加载在这之前结束、元素被移除时它从头到尾不出现
+ * @csspart root - role=status 的活区容器，承载 aria-live / aria-label / data-size / data-variant / data-tone / data-state
  * @csspart label - 可见文案节点，可省略
  */
 export class XhSpinnerElement extends XhElement {
@@ -35,6 +38,7 @@ export class XhSpinnerElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
+    delay: { converter: NUMBER_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }
@@ -43,17 +47,20 @@ export class XhSpinnerElement extends XhElement {
   declare size?: Size
   declare variant?: SpinnerVariant
   declare tone?: Tone
+  declare delay?: number
   declare translations?: Partial<SpinnerTranslations>
 
+  private readonly ctrl = new MachineController<SpinnerSchema>(this, spinnerMachine, () => this.configured('spinner', {
+    label: this.label,
+    size: this.size,
+    variant: this.variant,
+    tone: this.tone,
+    delay: this.delay,
+    translations: this.translations,
+  }))
+
   protected wire(): void {
-    const props: SpinnerProps = {
-      label: this.label,
-      size: this.size,
-      variant: this.variant,
-      tone: this.tone,
-      translations: this.translations,
-    }
-    const api = connectSpinner(this.configured('spinner', props), wcNormalize)
+    const api = connectSpinner(this.ctrl.service, wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
       const el = this.getPart(name)
