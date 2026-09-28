@@ -78,7 +78,7 @@ function finiteAnimations(node: HTMLElement): Animation[] {
 }
 
 describe.each(['dialog', 'drawer'] as const)('%s 的行为资源退出合同', (scope) => {
-  it('等完内容全部有限动画和遮罩，退出期间内容与背景保持失活', async () => {
+  it('等完内容全部有限动画和遮罩才释放层与滚动锁，内容当场失活、背景当场解除失活', async () => {
     installLongExit(scope)
     const outside = document.createElement('button')
     document.body.append(outside)
@@ -111,7 +111,8 @@ describe.each(['dialog', 'drawer'] as const)('%s 的行为资源退出合同', (
     action.blur()
     action.focus()
     expect(document.activeElement).not.toBe(action)
-    expect(outside.inert).toBe(true)
+    // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+    expect(outside.inert).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
     const animations = finiteAnimations(content)
     expect(animations).toHaveLength(2)
@@ -436,7 +437,7 @@ describe('image-viewer 退场', () => {
     expect(query('image-viewer', 'content'), '动画结束后应当卸载').toBeNull()
   })
 
-  it('内容和遮罩的全部退出租约完成前保留模态资源，完成后才通知', async () => {
+  it('内容和遮罩的全部退出租约完成前保留层与滚动锁，背景在关闭那一刻即解除失活，完成后才通知', async () => {
     installLongExit('image-viewer')
     const outside = document.createElement('button')
     document.body.append(outside)
@@ -454,7 +455,8 @@ describe('image-viewer 退场', () => {
     const content = part('image-viewer', 'content')
     expect(content.inert).toBe(true)
     expect(content.getAttribute('aria-hidden')).toBe('true')
-    expect(outside.inert).toBe(true)
+    // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+    expect(outside.inert).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
 
     const contentAnimations = finiteAnimations(content)

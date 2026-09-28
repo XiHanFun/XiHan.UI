@@ -104,7 +104,7 @@ describe('popover 模态资源', () => {
     expect(document.activeElement).toBe(f.outside)
   })
 
-  it('关闭期间保留模态资源至真实 CSS 退出，重开与卸载均不泄漏', async () => {
+  it('关闭即撤背景失活，层与滚动锁保留至真实 CSS 退出，重开与卸载均不泄漏', async () => {
     style = document.createElement('style')
     style.textContent = `
       @keyframes popover-long-exit { from { opacity: 1 } to { opacity: 0 } }
@@ -121,7 +121,8 @@ describe('popover 模态资源', () => {
     const closing = content()
     expect(closing.inert).toBe(true)
     expect(closing.getAttribute('aria-hidden')).toBe('true')
-    expect(f.outside.inert).toBe(true)
+    // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+    expect(f.outside.inert).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
     expect(getLayerRegistry(document).list()).toHaveLength(1)
     expect(finiteAnimations(closing)).toHaveLength(1)
