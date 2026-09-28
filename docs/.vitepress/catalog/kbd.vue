@@ -1,7 +1,8 @@
-<script setup lang="ts">
-import { XhKbd } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <XhKbd :keys="['Mod', 'K']" />
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="68.5" y="64.5" width="59" height="31" rx="4" fill="var(--xh-bg-subtle)" stroke="var(--xh-border-default)" />
+    <path d="M85 80h26" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <rect x="144.5" y="64.5" width="31" height="31" rx="4" fill="var(--xh-bg-subtle)" stroke="var(--xh-border-default)" />
+    <path d="M159 80h2" stroke="var(--xh-fg-default)" stroke-width="6" />
+  </svg>
 </template>
