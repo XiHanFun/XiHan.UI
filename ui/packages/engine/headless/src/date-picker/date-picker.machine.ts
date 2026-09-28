@@ -112,6 +112,7 @@ export function datePickerCalendarProps(service: Service<DatePickerSchema>): Cal
     value: withTime ? context.get('value').map(datePickerDatePart) : context.get('value'),
     focusedValue: datePickerFocusedValue(service),
     selectionMode: prop('selectionMode'),
+    maxSelected: prop('maxSelected'),
     granularity: prop('granularity'),
     // 钻到哪一层由编排机持有：日历是内嵌的，收起再展开要回到作者要的那一档
     activeView: context.get('activeView'),
@@ -122,6 +123,7 @@ export function datePickerCalendarProps(service: Service<DatePickerSchema>): Cal
     min: datePickerCalendarBound(prop('min')),
     max: datePickerCalendarBound(prop('max')),
     locale: prop('locale'),
+    firstDayOfWeek: prop('firstDayOfWeek'),
     timeZone: prop('timeZone'),
     isDateUnavailable: prop('isDateUnavailable'),
     disabled: prop('disabled'),

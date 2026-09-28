@@ -893,6 +893,25 @@ describe('内嵌日历原样复用，不重写一条', () => {
     expect(onFocusedValueChange).toHaveBeenCalledTimes(before)
   })
 
+  it('firstDayOfWeek 转给日历：en-US 下写 1，表头与行首从星期一排起，输入行的段序仍按 locale', () => {
+    const h = mount({ defaultOpen: true, defaultValue: '2026-07-28', locale: 'en-US', firstDayOfWeek: 1 })
+    expect(h.api().calendar.weekDays[0]!.long).toBe('Monday')
+    expect(h.rendered()[0]).toBe('2026-06-29')
+    expect(h.api().field.segments.map(segment => segment.type)).toEqual(['month', 'day', 'year'])
+  })
+
+  it('maxSelected 转给日历：多选选满后没选中的格子不可再加选，已选的仍可点掉', () => {
+    const h = mount({ defaultOpen: true, selectionMode: 'multiple', maxSelected: 2, defaultValue: ['2026-07-10', '2026-07-20'] })
+    expect(h.api().calendar.maxSelected).toBe(2)
+    expect(h.cell('2026-07-15').getAttribute('aria-disabled')).toBe('true')
+    click(h.cell('2026-07-15'))
+    expect(h.value()).toEqual(['2026-07-10', '2026-07-20'])
+    click(h.cell('2026-07-10'))
+    expect(h.value()).toEqual(['2026-07-20'])
+    click(h.cell('2026-07-15'))
+    expect(h.value()).toEqual(['2026-07-15', '2026-07-20'])
+  })
+
   it('min / max 与 isDateUnavailable 一并转给日历', () => {
     const h = mount({
       defaultOpen: true,
@@ -1343,6 +1362,21 @@ describe('快捷选项', () => {
     expect(multiple.value()).toEqual(['2026-07-01', '2026-07-31'])
     // 多选不收起
     expect(multiple.state()).toBe('open')
+  })
+
+  it('maxSelected：带的日期比上限多的那条按不下去；选满时整份替换的快捷选项照常可按', () => {
+    const h = mount({
+      defaultOpen: true,
+      selectionMode: 'multiple',
+      maxSelected: 2,
+      defaultValue: ['2026-07-02', '2026-07-03'],
+      presets: [{ value: '2026-07-10/2026-07-20', label: '两天' }, { value: '2026-07-01/2026-07-02/2026-07-03', label: '三天' }],
+    })
+    expect(h.api().presets.map(p => p.disabled)).toEqual([false, true])
+    pick(h, '2026-07-01/2026-07-02/2026-07-03')
+    expect(h.value()).toEqual(['2026-07-02', '2026-07-03'])
+    pick(h, '2026-07-10/2026-07-20')
+    expect(h.value()).toEqual(['2026-07-10', '2026-07-20'])
   })
 
   it('落在 min/max 之外或被作者判不可用的，按不下去', () => {

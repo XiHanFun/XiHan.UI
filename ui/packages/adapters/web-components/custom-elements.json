@@ -17349,6 +17349,15 @@
             },
             {
               "kind": "field",
+              "name": "firstDayOfWeek",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "first-day-of-week"
+            },
+            {
+              "kind": "field",
               "name": "timeZone",
               "privacy": "public",
               "type": {
@@ -17364,6 +17373,15 @@
                 "text": "CalendarPickerSelectionMode | undefined"
               },
               "attribute": "selection-mode"
+            },
+            {
+              "kind": "field",
+              "name": "maxSelected",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-selected"
             },
             {
               "kind": "field",
@@ -18068,6 +18086,14 @@
             },
             {
               "type": {
+                "text": "number | undefined"
+              },
+              "description": "周首日，0 = 星期日 … 6 = 星期六；未提供时按 locale",
+              "name": "first-day-of-week",
+              "fieldName": "firstDayOfWeek"
+            },
+            {
+              "type": {
                 "text": "string | undefined"
               },
               "description": "判定今天与格式化使用的时区，默认宿主本地时区",
@@ -18081,6 +18107,14 @@
               "description": "选择模式，默认 single",
               "name": "selection-mode",
               "fieldName": "selectionMode"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "multiple 下最多选几个周期；选满后日历里没选中的格子不可再加选",
+              "name": "max-selected",
+              "fieldName": "maxSelected"
             },
             {
               "type": {

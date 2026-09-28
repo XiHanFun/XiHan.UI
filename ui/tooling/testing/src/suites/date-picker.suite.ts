@@ -1118,5 +1118,24 @@ export const datePickerSuite: ConformanceSuite = {
         heldPressIgnored('date-picker', 'confirm-trigger', '没开 showTime 时确认钮藏着，不接受按压'),
       ],
     },
+    {
+      name: 'maxSelected 交给内嵌日历：多选选满后没选中的格子转 aria-disabled，已选的仍可点掉',
+      spec: { apg: APG },
+      props: { ...BASE_PROPS, defaultValue: [ANCHOR], selectionMode: 'multiple', maxSelected: 1 },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '日历格戴的是内嵌日历的 scope，按本组件的 scope 采不进快照',
+          run: ({ doc }) => {
+            if (cellTrigger(doc, '2024-02-20').getAttribute('aria-disabled') !== 'true')
+              throw new Error('选满后没选中的格子该转 aria-disabled')
+            if (cellTrigger(doc, ANCHOR).getAttribute('aria-disabled') !== 'false')
+              throw new Error('已选的格子仍该可按，点掉即腾出名额')
+          },
+        },
+      ],
+    },
   ],
 }
