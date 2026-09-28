@@ -655,6 +655,15 @@
             },
             {
               "kind": "field",
+              "name": "banner",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "banner"
+            },
+            {
+              "kind": "field",
               "name": "open",
               "privacy": "public",
               "type": {
@@ -738,6 +747,14 @@
               "description": "关闭按钮是否可用，默认为真",
               "name": "closable",
               "fieldName": "closable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "横幅：贴边铺满的页面通栏，不取圆角，只留块尾描边",
+              "name": "banner",
+              "fieldName": "banner"
             },
             {
               "type": {

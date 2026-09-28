@@ -15125,6 +15125,16 @@
     line-height: var(--xh-alert-leading, var(--xh-leading-normal));
   }
 
+  /* 横幅：页面顶部的通栏，贴着页面或容器的边铺满整行。贴边的三条边是页面自己的边，画出来只会压在边上；
+     边界只留朝向页面内容的块尾一道，与页面内容同一层、同一种描边。贴边铺满的栏不取圆角：
+     圆了会在两个角露出底下的页面。面与语气规则与页内提示相同，横幅不换底色 */
+  [data-scope='alert'][data-part='root'][data-banner] {
+    inline-size: 100%;
+    border-block-start-width: 0;
+    border-inline-width: 0;
+    border-radius: 0;
+  }
+
   /* 关闭的退场：先淡出，再把占位收起——下面的内容跟着一路平移上来，而不是整块跳上来。
      收占位接在淡出之后（延迟一个 exit），播完连接层才写 hidden。收起态常挂 hidden，这条只在退场途中命中；
      减弱动效下收占位瞬时完成，淡出照常 */

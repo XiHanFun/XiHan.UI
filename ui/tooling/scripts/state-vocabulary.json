@@ -136,6 +136,7 @@
     "data-row-span": "table 里纵向跨行的起点格：cellSpan 合并的单元格、多级表头里较浅的叶子列头，高度铺满合并的几行。",
     "data-autoplay": "carousel 的自动轮播正在跑。",
     "data-banded": "progress 的量画了分段色带：线形据此改画成子弹图，轨道加厚一档、填充收窄压在色带正中。",
+    "data-banner": "alert 是页面顶部的横幅：样式层据此撤掉圆角与贴边的三条边，只留朝向页面内容的块尾描边。",
     "data-block": "segmented 占满整行宽度。",
     "data-block-folding": "code-view 开了按语法块折叠：每行正文让出一列给块头的折叠钮。",
     "data-bold": "log 的这一段 ANSI 文字是粗体（SGR 1）。",

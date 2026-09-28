@@ -11241,6 +11241,7 @@
       "onAffixChange"
     ],
     "alert": [
+      "banner",
       "closable",
       "defaultOpen",
       "onOpenChange",
@@ -13587,6 +13588,7 @@
     "data-autoplay",
     "data-axis",
     "data-banded",
+    "data-banner",
     "data-block",
     "data-block-folding",
     "data-bold",
@@ -19070,6 +19072,7 @@
     },
     "xh-alert": {
       "attributes": [
+        "banner",
         "closable",
         "default-open",
         "open",
