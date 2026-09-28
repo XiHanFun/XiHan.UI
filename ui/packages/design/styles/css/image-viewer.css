@@ -119,11 +119,20 @@
     max-inline-size: 90%;
     max-block-size: 85%;
     user-select: none;
-    /* 位移、旋转与缩放都是内联 style 写的，只给按钮带来的缩放旋转一点缓动；拖拽平移要跟手，不缓 */
+    /* 位移、旋转与缩放都是内联 style 写的，只给按钮带来的缩放旋转一点缓动；拖拽平移要跟手，不缓。
+       新图取到之后淡入 */
     transition:
       translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
       rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
-      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+      opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 取图期间（打开与换下标）：换图那一刻变换直接归位、不补间——转过、放大过的旧图不当着用户转回、缩回；
+     旧图随即让位，视口垫着的占位面顶上，不露底色闪一拍。取到之后撤掉这一档，按上面的进场档淡入 */
+  [data-scope='image-viewer'][data-part='image'][data-loading] {
+    opacity: 0;
+    transition: none;
   }
 
   /* 拖拽期间平移每帧都在改：只在这一档备好合成层，松手后随 data-dragging 一起撤掉 */
