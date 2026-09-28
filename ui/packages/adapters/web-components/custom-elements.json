@@ -49585,6 +49585,10 @@
               "name": "prompt"
             },
             {
+              "description": "题目说明，成为选项组的描述；没写内容时元素写上数据里的说明或多选的数量要求，没有说明时收起",
+              "name": "description"
+            },
+            {
               "description": "选项组，单选取 radiogroup、多选取 group",
               "name": "group"
             },
@@ -49599,6 +49603,10 @@
             {
               "description": "选项文字，排在选项内因而构成它的可及名",
               "name": "item-text"
+            },
+            {
+              "description": "选项下的一行说明，同样排在选项内",
+              "name": "item-description"
             },
             {
               "description": "该题的自由文本，须是原生 `<input>`",
@@ -49928,6 +49936,38 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "#filledDescriptions",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, string>()",
+              "description": "元素替作者写进各题说明的文字；作者自己写了内容就不再碰它。"
+            },
+            {
+              "kind": "method",
+              "name": "#fillDescription",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
             }
           ],
           "events": [
@@ -50095,6 +50135,12 @@
               "name": "--xh-question-flow-counter-font-size"
             },
             {
+              "name": "--xh-question-flow-description-fg"
+            },
+            {
+              "name": "--xh-question-flow-description-font-size"
+            },
+            {
               "name": "--xh-question-flow-dot-radius"
             },
             {
@@ -50144,6 +50190,12 @@
             },
             {
               "name": "--xh-question-flow-item-bg-hover"
+            },
+            {
+              "name": "--xh-question-flow-item-description-fg"
+            },
+            {
+              "name": "--xh-question-flow-item-description-font-size"
             },
             {
               "name": "--xh-question-flow-item-fg"

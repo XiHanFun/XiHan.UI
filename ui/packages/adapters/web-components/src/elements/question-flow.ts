@@ -62,10 +62,12 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart track - 纵向排布全部题目的轨道
  * @csspart question - 一题的整块，role=group；非当前题 aria-hidden 且 inert
  * @csspart prompt - 题干，同时是选项组的可访问名
+ * @csspart description - 题目说明，成为选项组的描述；没写内容时元素写上数据里的说明或多选的数量要求，没有说明时收起
  * @csspart group - 选项组，单选取 radiogroup、多选取 group
  * @csspart item - 一个选项，须是原生 `<button>` 并自带 option-value 属性标识身份
  * @csspart item-indicator - 记号，对读屏隐藏
  * @csspart item-text - 选项文字，排在选项内因而构成它的可及名
+ * @csspart item-description - 选项下的一行说明，同样排在选项内
  * @csspart note - 该题的自由文本，须是原生 `<input>`
  * @csspart footer - 排布步进与动作的页脚
  * @csspart prev-trigger - 上一题
@@ -230,6 +232,13 @@ export class XhQuestionFlowElement extends XhElement {
       this.spreader.spread(question, api.getQuestionProps({ id }) as Record<string, unknown>)
       for (const prompt of this.partsIn(question, 'prompt'))
         this.spreader.spread(prompt, api.getPromptProps({ id }) as Record<string, unknown>)
+      for (const description of this.partsIn(question, 'description')) {
+        const props = api.getDescriptionProps({ id }) as Record<string, unknown>
+        this.spreader.spread(description, props)
+        // 作者没写内容就由元素写上数据里的说明（或多选的数量要求），与另两端同一条规则
+        this.#fillDescription(description, api.descriptionOf(id))
+        this.setPartHidden(description, props.hidden === true)
+      }
       for (const group of this.partsIn(question, 'group'))
         this.spreader.spread(group, api.getGroupProps({ id }) as Record<string, unknown>)
       for (const note of this.partsIn(question, 'note'))
@@ -242,7 +251,21 @@ export class XhQuestionFlowElement extends XhElement {
           this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
         for (const label of this.partsIn(option, 'item-text'))
           this.spreader.spread(label, api.getItemTextProps(item) as Record<string, unknown>)
+        for (const description of this.partsIn(option, 'item-description'))
+          this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
       }
     }
+  }
+
+  /** 元素替作者写进各题说明的文字；作者自己写了内容就不再碰它。 */
+  readonly #filledDescriptions = new WeakMap<HTMLElement, string>()
+
+  #fillDescription(el: HTMLElement, text: string): void {
+    const ours = this.#filledDescriptions.get(el)
+    if (el.childNodes.length > 0 && (ours === undefined || el.textContent !== ours))
+      return
+    if (el.textContent !== text)
+      el.textContent = text
+    this.#filledDescriptions.set(el, text)
   }
 }

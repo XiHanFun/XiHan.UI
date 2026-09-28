@@ -16,7 +16,7 @@ import type {
 import { queryItems, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { toggleItemValue } from '../checkbox-group'
 import { questionFlowQuestionQuery } from './question-flow.anatomy'
-import { clampQuestionIndex } from './question-flow.types'
+import { clampQuestionIndex, questionSelectionLimits } from './question-flow.types'
 
 const { createMachine } = setup<QuestionFlowSchema>()
 
@@ -183,10 +183,18 @@ export const questionFlowMachine = createMachine({
         const count = questionsOf(prop('questions')).length
         return clampQuestionIndex(context.get('index'), count) >= count - 1
       },
-      // 选项禁用由 connect 挡在指针与按键那一侧，这里只挡"这一题不在场"
-      canToggle: ({ prop, event }) => {
+      // 选项禁用由 connect 挡在指针与按键那一侧，这里挡"这一题不在场"与多选选满之后再加一项——
+      // 程序化的 toggleOption 与指针、按键一样守这条上限，取消照常
+      canToggle: ({ prop, context, event }) => {
         const e = event.current()
-        return e.type === 'OPTION.TOGGLE' && questionsOf(prop('questions')).some(q => q.id === e.questionId)
+        if (e.type !== 'OPTION.TOGGLE')
+          return false
+        const question = questionsOf(prop('questions')).find(q => q.id === e.questionId)
+        if (!question)
+          return false
+        const { max } = questionSelectionLimits(question)
+        const picked = context.get('answers')[e.questionId] ?? []
+        return (question.type ?? 'single') === 'single' || max === undefined || picked.includes(e.value) || picked.length < max
       },
       // 部件自身的禁用（边界题翻页钮、答不完整的提交钮、禁用选项）只有 connect 知道，随 PRESS.START 带进来
       canPress: ({ event }) => {

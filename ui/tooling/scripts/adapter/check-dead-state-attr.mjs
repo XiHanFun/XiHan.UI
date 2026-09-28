@@ -148,6 +148,7 @@ const HOOKS = {
   'diff-view:data-expanded': '折叠段展开后整条 gap 置 hidden，显隐由它承载',
   'diff-view:data-truncated': '整份差异被截断的标志，作者拿它决定要不要提示"还有更多"',
   'field-array:data-at-max': '顶到上限时新增钮置 aria-disabled，观感挂在那一位上（field-array.css:173）',
+  'question-flow:data-at-max': '选满之后的观感在其余未选项的 data-disabled 上（Action Control 的禁用面），选项组上这一位留给作者的样式钩子',
   'field-array:data-at-min': '到下限时删除钮置 aria-disabled，观感挂在那一位上（field-array.css:124）',
   'field-array:data-first': '第一条在形上与别的条目没有差别',
   'field-array:data-last': '最后一条在形上与别的条目没有差别',

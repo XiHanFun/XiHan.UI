@@ -169,6 +169,25 @@ export const XhQuestionFlowPrompt = defineComponent({
   },
 })
 
+/**
+ * 题目说明：插槽留空时显示题目自带的 description，缺席时由多选的数量要求代填。
+ * 有没有说明看数据，没有时整块收起。
+ */
+export const XhQuestionFlowDescription = defineComponent({
+  name: 'XhQuestionFlowDescription',
+  props: {
+    questionId: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useQuestionFlowContext()
+    return () => h(
+      'p',
+      ctx.api.value.getDescriptionProps({ id: props.questionId }) as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.descriptionOf(props.questionId),
+    )
+  },
+})
+
 export const XhQuestionFlowGroup = defineComponent({
   name: 'XhQuestionFlowGroup',
   props: {
@@ -245,6 +264,26 @@ export const XhQuestionFlowItemText = defineComponent({
     return () => h(
       'span',
       ctx.api.value.getItemTextProps({
+        questionId: props.questionId,
+        value: props.optionValue,
+      }) as Record<string, unknown>,
+      slots.default?.(),
+    )
+  },
+})
+
+/** 选项下的一行说明：同样排在选项之内，跟着选项名一起念。 */
+export const XhQuestionFlowItemDescription = defineComponent({
+  name: 'XhQuestionFlowItemDescription',
+  props: {
+    questionId: { type: String, required: true },
+    optionValue: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useQuestionFlowContext()
+    return () => h(
+      'span',
+      ctx.api.value.getItemDescriptionProps({
         questionId: props.questionId,
         value: props.optionValue,
       }) as Record<string, unknown>,

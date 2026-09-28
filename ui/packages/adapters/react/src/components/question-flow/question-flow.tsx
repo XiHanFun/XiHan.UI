@@ -218,6 +218,27 @@ export function XhQuestionFlowPrompt({ questionId, children, ...rest }: XhQuesti
   )
 }
 
+export interface XhQuestionFlowDescriptionProps extends ComponentPropsWithRef<'p'> {
+  questionId: string
+}
+/**
+ * 题目说明：没写 children 时显示题目自带的 description，缺席时由多选的数量要求代填。
+ * 有没有说明看数据，没有时整块收起。
+ */
+export function XhQuestionFlowDescription({ questionId, children, ...rest }: XhQuestionFlowDescriptionProps): ReactNode {
+  const ctx = useQuestionFlowContext()
+  return (
+    <p
+      {...mergeReactProps(
+        ctx.api.getDescriptionProps({ id: questionId }) as Record<string, unknown>,
+        rest as Record<string, unknown>,
+      )}
+    >
+      {children ?? ctx.api.descriptionOf(questionId)}
+    </p>
+  )
+}
+
 export interface XhQuestionFlowGroupProps extends ComponentPropsWithRef<'div'> {
   questionId: string
 }
@@ -295,6 +316,22 @@ export function XhQuestionFlowItemText({
 }: XhQuestionFlowItemTextProps): ReactNode {
   const ctx = useQuestionFlowContext()
   const attrs = ctx.api.getItemTextProps({ questionId, value: optionValue }) as Record<string, unknown>
+  return <span {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</span>
+}
+
+export interface XhQuestionFlowItemDescriptionProps extends ComponentPropsWithRef<'span'> {
+  questionId: string
+  optionValue: string
+}
+/** 选项下的一行说明：同样排在选项之内，跟着选项名一起念。 */
+export function XhQuestionFlowItemDescription({
+  questionId,
+  optionValue,
+  children,
+  ...rest
+}: XhQuestionFlowItemDescriptionProps): ReactNode {
+  const ctx = useQuestionFlowContext()
+  const attrs = ctx.api.getItemDescriptionProps({ questionId, value: optionValue }) as Record<string, unknown>
   return <span {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</span>
 }
 

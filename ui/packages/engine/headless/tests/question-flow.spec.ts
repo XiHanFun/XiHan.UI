@@ -489,3 +489,83 @@ describe('question-flow：按压通道，Space / Enter 与触屏按住投影 dat
     expect(skip()['data-pressed']).toBeUndefined()
   })
 })
+
+describe('question-flow：多选的数量要求与说明', () => {
+  const LIMITED: QuestionFlowQuestion[] = [
+    {
+      id: 'm',
+      prompt: '选几个语言',
+      type: 'multiple',
+      minSelections: 2,
+      maxSelections: 3,
+      options: [{ value: 'ts' }, { value: 'go' }, { value: 'rs' }, { value: 'py', description: '只用来写脚本' }],
+    },
+    { id: 's', prompt: '单选', options: [{ value: 'x' }] },
+  ]
+  const item = (r: Rig, value: string): Dict => r.api().getItemProps({ questionId: 'm', value }) as Dict
+
+  it('选够 minSelections 之前继续键不可用；写了自由文本同样算作答', () => {
+    const r = mount({ questions: LIMITED })
+    r.api().toggleOption('m', 'ts')
+    expect(r.api().canAdvance).toBe(false)
+    r.api().toggleOption('m', 'go')
+    expect(r.api().canAdvance).toBe(true)
+
+    const noted = mount({ questions: LIMITED })
+    noted.api().toggleOption('m', 'ts')
+    noted.api().setNote('m', '还有 Kotlin')
+    expect(noted.api().canAdvance).toBe(true)
+  })
+
+  it('选满 maxSelections：其余未选项转为不可选，点了不加；取消一项又能再选', () => {
+    const r = mount({ questions: LIMITED })
+    for (const value of ['ts', 'go', 'rs'])
+      click(item(r, value))
+    expect(r.api().answersOf('m')).toEqual(['ts', 'go', 'rs'])
+    expect(item(r, 'py')['aria-disabled']).toBe('true')
+    expect(item(r, 'ts')['aria-disabled']).toBe('false')
+    expect((r.api().getGroupProps({ id: 'm' }) as Dict)['data-at-max']).toBe('')
+    click(item(r, 'py'))
+    // 程序化入口守同一条上限
+    r.api().toggleOption('m', 'py')
+    expect(r.api().answersOf('m')).toEqual(['ts', 'go', 'rs'])
+    click(item(r, 'go'))
+    expect(item(r, 'py')['aria-disabled']).toBe('false')
+    click(item(r, 'py'))
+    expect(r.api().answersOf('m')).toEqual(['ts', 'rs', 'py'])
+  })
+
+  it('数量要求代填成题目说明并描述选项组；题目自带说明时用它；单选没有说明', () => {
+    const r = mount({ questions: LIMITED })
+    expect(r.api().descriptionOf('m')).toBe('Choose 2 to 3')
+    const group = r.api().getGroupProps({ id: 'm' }) as Dict
+    const description = r.api().getDescriptionProps({ id: 'm' }) as Dict
+    expect(group['aria-describedby']).toBe(description.id)
+    expect(description.hidden).toBeUndefined()
+    expect(r.api().descriptionOf('s')).toBe('')
+    expect((r.api().getGroupProps({ id: 's' }) as Dict)['aria-describedby']).toBeUndefined()
+    expect((r.api().getDescriptionProps({ id: 's' }) as Dict).hidden).toBe(true)
+
+    const own = mount({ questions: [{ ...LIMITED[0]!, description: '按熟练度挑' }] })
+    expect(own.api().descriptionOf('m')).toBe('按熟练度挑')
+  })
+
+  it('非法的上下限按规则夹住：min 小于 1 按 1，max 小于 min 按 min，单选恒为一项', () => {
+    const r = mount({
+      questions: [
+        { id: 'a', type: 'multiple', minSelections: 0, maxSelections: Number.NaN, options: [] },
+        { id: 'b', type: 'multiple', minSelections: 3, maxSelections: 2, options: [] },
+      ],
+    })
+    expect(r.api().selectionLimitsOf('a')).toEqual({ min: 1, max: undefined })
+    expect(r.api().selectionLimitsOf('b')).toEqual({ min: 3, max: 3 })
+    expect(r.api().descriptionOf('b')).toBe('Choose 3')
+    expect(mount().api().selectionLimitsOf('a')).toEqual({ min: 1, max: 1 })
+  })
+
+  it('选项说明部件跟着选项的选中态', () => {
+    const r = mount({ questions: LIMITED })
+    click(item(r, 'py'))
+    expect(r.api().getItemDescriptionProps({ questionId: 'm', value: 'py' }) as Dict).toMatchObject({ 'data-value': 'py', 'data-state': 'checked' })
+  })
+})
