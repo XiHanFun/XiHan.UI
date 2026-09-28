@@ -5588,6 +5588,7 @@
       "ANCHOR_DEFAULT_BOUNDS",
       "ANCHOR_DEFAULT_OFFSET",
       "APPROVAL_DENY_SELECTOR",
+      "AVATAR_FALLBACK_DELAY",
       "AccordionApi",
       "AccordionItemProps",
       "AccordionNode",
@@ -11056,6 +11057,7 @@
     ],
     "avatar": [
       "alt",
+      "fallbackDelay",
       "onStatusChange",
       "size",
       "src",
@@ -13520,6 +13522,7 @@
     "incomplete",
     "indeterminate",
     "invalid",
+    "loaded",
     "loading",
     "on",
     "open",
@@ -18645,6 +18648,7 @@
     "xh-avatar": {
       "attributes": [
         "alt",
+        "fallback-delay",
         "size",
         "src",
         "tone"

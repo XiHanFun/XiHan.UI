@@ -23,6 +23,8 @@ export const XhAvatarRoot = defineComponent({
     alt: { type: String },
     size: { type: String as PropType<Size> },
     tone: { type: String as PropType<Tone> },
+    /** 回退内容延迟多久才露面（毫秒），默认 300；图片在这段时间里载好就不闪首字母。 */
+    fallbackDelay: { type: Number },
   },
   // status-change 携带 { status }
   emits: {

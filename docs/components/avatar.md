@@ -118,6 +118,7 @@ tone 改变淡底与回退文字的配色组；不写 tone 即中性默认，直
 | `alt` | `string` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；默认档不输出 data-size |
 | `tone` | `Tone` |  | 颜色：决定底色与回退字使用哪组状态色；未提供时不输出 data-tone，使用皮肤的中性默认 |
+| `fallbackDelay` | `number` |  | 回退内容延迟多久才露面（毫秒），默认 300。图片在这段时间里载好就直接出图，不先闪一下首字母—— 缓存命中与虚拟列表回收行时尤其明显。没有 src 或载入失败时回退内容立即露面，不等。 |
 | `onStatusChange` | `(details: AvatarStatusChangeDetails) => void` |  | 状态落定时通知，过渡态 idle 不通知。 |
 
 ### 事件
@@ -142,7 +143,7 @@ tone 改变淡底与回退文字的配色组；不写 tone 即中性默认，直
 
 **状态**：`idle` · `loading` · `loaded` · `error`
 
-**事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR`
+**事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR` · `FALLBACK.DUE` · `FALLBACK.RENDERED`
 
 **判据**：`hasSrc`
 
@@ -203,6 +204,6 @@ tone 改变淡底与回退文字的配色组；不写 tone 即中性默认，直
 
 动效角色：出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

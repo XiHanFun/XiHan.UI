@@ -39,11 +39,11 @@ function withSettledImages<T>(settled: SettledImage, run: () => Promise<T>): Pro
 
 const SRC = 'https://example.test/a.png'
 
-async function mountAvatar(): Promise<{ root: HTMLElement, teardown: () => void }> {
+async function mountAvatar(props: Record<string, unknown> = {}): Promise<{ root: HTMLElement, teardown: () => void }> {
   const host = document.createElement('div')
   document.body.appendChild(host)
   const app = createApp({
-    render: () => h(XhAvatarRoot, { src: SRC }, () => [h(XhAvatarImage), h(XhAvatarFallback, () => 'XH')]),
+    render: () => h(XhAvatarRoot, { src: SRC, ...props }, () => [h(XhAvatarImage), h(XhAvatarFallback, () => 'XH')]),
   })
   app.mount(host)
   await nextTick()
@@ -76,7 +76,8 @@ describe('avatar 挂载前就已就绪的图片', () => {
 
   it('取回失败（naturalWidth 为 0）不冒认成功：仍留在 loading，显示回退', async () => {
     await withSettledImages({ complete: true, naturalWidth: 0, currentSrc: SRC }, async () => {
-      const { root, teardown } = await mountAvatar()
+      // 不等 fallbackDelay：载入中回退内容立即露面，才看得出它没被当成已载好收起
+      const { root, teardown } = await mountAvatar({ fallbackDelay: 0 })
       try {
         expect(root.getAttribute('data-state')).toBe('loading')
         expect(root.querySelector('[data-part="fallback"]')!.hasAttribute('hidden')).toBe(false)

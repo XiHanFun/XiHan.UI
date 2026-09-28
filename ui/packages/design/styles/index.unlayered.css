@@ -15403,8 +15403,8 @@
 }
 
 /* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起。
-   载完那一刻 hidden 撤掉、这个节点从不显示变为显示，淡入在那一刻起跑，
-   图片不是硬切上来盖掉回退字 */
+   载完那一刻 hidden 撤掉、这个节点从不显示变为显示，淡入在那一刻起跑；
+   回退内容同一刻开始淡出（见下），两者交叉，中间不露一拍底色 */
 [data-scope='avatar'][data-part='image'] {
   inline-size: 100%;
   block-size: 100%;
@@ -15422,7 +15422,14 @@
   text-transform: uppercase;
 }
 
-/* display 会盖掉 hidden 属性的 UA 规则，加载完成后显式让位给图片 */
+/* 图片载好：回退内容浮到图片之上原地淡出，与图片的淡入交叉；播完连接层才写 hidden */
+[data-scope='avatar'][data-part='fallback'][data-state='loaded'] {
+  position: absolute;
+  inset: 0;
+  animation: xh-fade-out var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) forwards;
+}
+
+/* display 会盖掉 hidden 属性的 UA 规则：载入中等过 fallbackDelay 之前、以及淡出播完之后收起 */
 [data-scope='avatar'][data-part='fallback'][hidden] {
   display: none;
 }

@@ -102,7 +102,6 @@ const HOOKS = {
   'side-nav:data-placement': '侧栏弹出分支暴露定位引擎实际落点，供自定义皮肤读取；标准皮肤没有箭头，坐标由 positioner 内联值承载',
   // 显隐一律由 hidden 承载：收起时留着节点只加 hidden，data-state 是同一件事的同名镜像
   'alert:data-state': '开合的显隐由 root 上的 hidden 承载',
-  'avatar:data-state': '图与兜底各自的显隐由自己的 hidden 承载',
   'editable:data-state': '预览与输入的切换由两边各自的 hidden 承载',
   'image:data-state': '图与兜底各自的显隐由自己的 hidden 承载',
   'skeleton:data-state': '加载完置 hidden，整块骨架收起',
