@@ -131,7 +131,7 @@ describe('关闭那一刻归还焦点', () => {
     await mount(() => h(XhSelectRoot, { collection }, () => [
       h(XhSelectTrigger, null, () => '选择'),
       h(XhSelectPositioner, null, () => h(XhSelectContent, null, () => h(XhSelectList, null, () => collection.map(item =>
-        h(XhSelectItem, { item, key: item.value }, () => h(XhSelectItemText, null, () => item.label)),
+        h(XhSelectItem, { value: item.value, key: item.value }, () => h(XhSelectItemText, null, () => item.label)),
       )))),
     ]))
     await expectFocusBackDuringExit('select')

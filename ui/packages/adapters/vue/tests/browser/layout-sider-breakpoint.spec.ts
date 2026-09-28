@@ -43,8 +43,9 @@ function transitions(el: HTMLElement): string[] {
 
 describe('layout 侧栏断点', () => {
   it('挂载时就窄于断点：覆盖档侧栏直接收起，不闪出展开的面板、不播收起的退场；按把手展开照常播', async () => {
-    // 断点取一个远宽于测试视口的档：挂载那一刻就是窄屏
-    const breakpoint = window.innerWidth < 1280 ? 'xl' : '2xl'
+    // 断点取最宽的一档，远宽于测试视口：挂载那一刻就是窄屏
+    expect(window.innerWidth).toBeLessThan(1280)
+    const breakpoint = 'xl'
     host = document.createElement('div')
     document.body.append(host)
     app = createApp({
