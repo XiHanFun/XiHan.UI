@@ -393,7 +393,9 @@
       "LogContext",
       "LogRootSlotProps",
       "MarkdownStreamBlockSlotProps",
+      "MarkdownStreamCitationSlotProps",
       "MarkdownStreamContext",
+      "MarkdownStreamMathSlotProps",
       "MarkdownStreamRootSlotProps",
       "MarqueeContext",
       "MatrixCodeContext",
@@ -3188,7 +3190,9 @@
       "LogContext",
       "LogRootSlotProps",
       "MarkdownStreamBlockSlotProps",
+      "MarkdownStreamCitationSlotProps",
       "MarkdownStreamContext",
+      "MarkdownStreamMathSlotProps",
       "MarkdownStreamRootSlotProps",
       "MarqueeContext",
       "MatrixCodeContext",
@@ -6594,12 +6598,15 @@
       "LogSchema",
       "LogStickChangeDetails",
       "LogTranslations",
+      "MARKDOWN_INLINE_ATTR",
       "MARKDOWN_STREAM_LIVE_KEY",
       "MENTION_DEFAULT_PLACEMENT",
       "MENTION_DEFAULT_PREFIX",
       "MENUBAR_DEFAULT_PLACEMENT",
       "MENU_DEFAULT_PLACEMENT",
       "MarkdownBlock",
+      "MarkdownInline",
+      "MarkdownInlineMount",
       "MarkdownStreamApi",
       "MarkdownStreamProps",
       "MarkdownStreamTranslations",
@@ -8399,6 +8406,7 @@
       "qrEncode",
       "quantizeTimer",
       "quarterToMonth",
+      "queryMarkdownInlines",
       "questionFlowAnatomy",
       "questionFlowItemQuery",
       "questionFlowKeyboard",
@@ -8502,6 +8510,7 @@
       "sameFormValues",
       "sameHeatmapCell",
       "sameHeatmapTip",
+      "sameMarkdownInlines",
       "sameMasonryHeights",
       "sameNotificationContent",
       "samePinValue",
@@ -9508,7 +9517,9 @@
       "LIVE_BLOCK_KEY",
       "RenderOpts",
       "RenderedBlock",
+      "RenderedInline",
       "StreamRenderer",
+      "StreamRendererOptions",
       "blockKind",
       "createStreamRenderer",
       "fenceLang",
@@ -20194,7 +20205,9 @@
         "size",
         "streaming"
       ],
-      "events": []
+      "events": [
+        "inline-mount"
+      ]
     },
     "xh-marquee": {
       "attributes": [

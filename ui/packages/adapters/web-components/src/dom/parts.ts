@@ -39,10 +39,26 @@ export function discoverParts(
       out.set(part, [el])
   }
 
+  /**
+   * 嵌套的 xh-* 子树归内层元素自己管，只有里面显式声明归本宿主（data-xh-part-owner）的角色子树由本宿主认领，
+   * 且只认离它最近的那一台同类宿主：再往里嵌的另一台同类元素归它自己。
+   * 典型是流式正文里挂进来的行内引用角标，它们在 xh-markdown-stream 里，却是外层 xh-citation 的 trigger。
+   */
+  function claimNested(nested: Element): void {
+    for (const el of Array.from(nested.querySelectorAll<HTMLElement>(`[${PART_OWNER_ATTR}="${hostOwner}"]`))) {
+      if (el.parentElement?.closest(host.localName) !== host)
+        continue
+      collect(el)
+      walk(el)
+    }
+  }
+
   function walk(node: Element): void {
     for (const child of Array.from(node.children)) {
-      if (child.tagName.toLowerCase().startsWith('xh-'))
+      if (child.tagName.toLowerCase().startsWith('xh-')) {
+        claimNested(child)
         continue
+      }
       const el = child as HTMLElement
       const declaredOwner = el.getAttribute(PART_OWNER_ATTR)
       // 显式归给另一台宿主的整棵子树由它经 externalPartRoots 接管，本宿主不得写它。

@@ -5,8 +5,8 @@
 
 // 提供 markdown stream 相关实现。
 
-import type { MarkdownBlock, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from '@xihan-ui/headless'
-import { connectMarkdownStream, markdownBlockHtml, markdownStreamAnatomy, markdownStreamMeta } from '@xihan-ui/headless'
+import type { MarkdownBlock, MarkdownInlineMount, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from '@xihan-ui/headless'
+import { connectMarkdownStream, markdownBlockHtml, markdownStreamAnatomy, markdownStreamMeta, queryMarkdownInlines } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -14,6 +14,7 @@ import { XhElement } from '../element-base'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 缺省为真的开关：缺席翻成 undefined 交给 connect，要关掉写 caret="false"
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+const BLOCK_SELECTOR = markdownStreamAnatomy.build().block.selector
 
 /**
  * `<xh-markdown-stream>`：Light-DOM 行为宿主，无状态机：wire 时计算 connectMarkdownStream
@@ -26,6 +27,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * markdown 块铺设已消毒的 html；代码块与公式块只铺设原文，需要交给代码组件或公式引擎时
  * 由作者监听块节点自行接管。
  *
+ * 正文里的行内引用与行内公式在 html 里是占位节点（带 data-md-inline），新铺出来一个就派发一次
+ * `inline-mount`，detail 给出占位节点、所在块与挂点内容；作者往占位节点里放引用角标或公式引擎的产物。
+ * 角标要接到外层 `<xh-citation>` 上时写成 `data-xh-part="trigger"` 并声明 `data-xh-part-owner="citation"`，
+ * 外层引用元素即认领它。
+ *
+ * @fires inline-mount - 新铺出一个行内挂点的占位节点；detail 为 `{ key, element, block, index, inline }`
  * @customElement xh-markdown-stream
  * @attr {'off'|'polite'|'assertive'} announce - 播报档位：off（默认）/ polite / assertive
  * @attr {boolean} streaming - 正文是否仍在增长，只写 data-streaming
@@ -60,6 +67,8 @@ export class XhMarkdownStreamElement extends XhElement {
 
   /** 上一轮铺出来的块节点，按 key 索引。 */
   readonly #nodes = new Map<string, HTMLElement>()
+  /** 每个块节点上一轮铺进去的内容。 */
+  readonly #painted = new WeakMap<HTMLElement, string>()
 
   private viewProps(): MarkdownStreamProps {
     return {
@@ -102,6 +111,8 @@ export class XhMarkdownStreamElement extends XhElement {
 
     const doc = host.ownerDocument
     const seen = new Set<string>()
+    /** 这一轮重铺了 html 的块节点：它们里面的占位节点是新的。 */
+    const mounted: HTMLElement[] = []
     let cursor: ChildNode | null = host.firstChild
 
     for (const block of api.blocks) {
@@ -119,14 +130,19 @@ export class XhMarkdownStreamElement extends XhElement {
 
       this.spreader.spread(node, api.getBlockProps({ block }) as Record<string, unknown>)
       const html = markdownBlockHtml(block)
+      // 与上一轮铺的比，而不是与节点此刻的内容比：作者往占位节点里挂了引用角标或公式，
+      // 节点内容已经不是铺进去的那份，拿它比会把作者的节点整块冲掉
+      const painted = html ?? block.source ?? ''
+      if (this.#painted.get(node) === painted)
+        continue
+      this.#painted.set(node, painted)
       if (html === undefined) {
         // 代码与公式块没人接管就把原文当正文显示
-        if (node.textContent !== (block.source ?? ''))
-          node.textContent = block.source ?? ''
+        node.textContent = painted
+        continue
       }
-      else if (node.innerHTML !== html) {
-        node.innerHTML = html
-      }
+      node.innerHTML = html
+      mounted.push(node)
     }
 
     for (const [key, node] of this.#nodes) {
@@ -134,6 +150,20 @@ export class XhMarkdownStreamElement extends XhElement {
         continue
       node.remove()
       this.#nodes.delete(key)
+    }
+
+    // 新铺出来的占位节点逐个报给作者，由作者往里挂引用角标或公式引擎的产物。
+    // 排到接线之后的微任务里报：作者挂进去的角标常归外层 xh-citation 管，外层此刻可能正在接线、
+    // 对这一刻的节点变动充耳不闻，挪到它接完之后才接得住
+    if (mounted.length > 0) {
+      const fresh = queryMarkdownInlines(host, api.blocks)
+        .filter(mount => mounted.includes(mount.element.closest<HTMLElement>(BLOCK_SELECTOR)!))
+      queueMicrotask(() => {
+        for (const mount of fresh) {
+          if (mount.element.isConnected)
+            this.dispatchEvent(new CustomEvent<MarkdownInlineMount>('inline-mount', { detail: mount, bubbles: true, composed: true }))
+        }
+      })
     }
   }
 }

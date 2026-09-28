@@ -88,6 +88,33 @@ export const markdownStreamSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '行内引用与公式在 html 里是占位节点：没人接管时照样铺出，降级内容可见',
+      spec: { apg: WCAG },
+      props: {
+        blocks: [{
+          key: '0:a',
+          kind: 'markdown',
+          html: '<p>结论<span data-md-inline="0" data-md-citation="report">[report]</span>与<span data-md-inline="1" data-md-math="inline">x^2</span></p>',
+          complete: true,
+          inlines: [{ kind: 'citation', sourceIds: ['report'] }, { kind: 'math', source: 'x^2', display: false }],
+        }],
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '占位节点是块内容的一部分，属性快照看不到',
+          run: ({ doc }: RawStepContext) => {
+            const cite = doc.querySelector<HTMLElement>('[data-md-inline="0"]')
+            const math = doc.querySelector<HTMLElement>('[data-md-inline="1"]')
+            if (cite?.textContent !== '[report]')
+              throw new Error(`引用占位节点应显示来源 id，实际「${cite?.textContent}」`)
+            if (math?.textContent !== 'x^2')
+              throw new Error(`公式占位节点应显示 TeX 原文，实际「${math?.textContent}」`)
+          },
+        },
+      ],
+    },
+    {
       name: '开了播报：写完那一刻念一句，还在写的时候不念',
       spec: { apg: WCAG },
       props: { blocks: GROWING, streaming: true, announce: 'polite' },

@@ -37482,7 +37482,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-markdown-stream>`：Light-DOM 行为宿主，无状态机：wire 时计算 connectMarkdownStream\n的产出，接到作者编写的角色节点上，并把块列表铺进 content 角色节点。\n\n块由数据铺设，作者无法编写 N 个节点，因此 content 部件的内容由本元素接管。\n逐 key 比对复用：key 未变的块只改内容不重建节点：整表重铺会把已定型的块连同用户\n正在拖动的选区一起清除，而稳定 key 正是为了避免这一点。\n\nmarkdown 块铺设已消毒的 html；代码块与公式块只铺设原文，需要交给代码组件或公式引擎时\n由作者监听块节点自行接管。",
+          "description": "`<xh-markdown-stream>`：Light-DOM 行为宿主，无状态机：wire 时计算 connectMarkdownStream\n的产出，接到作者编写的角色节点上，并把块列表铺进 content 角色节点。\n\n块由数据铺设，作者无法编写 N 个节点，因此 content 部件的内容由本元素接管。\n逐 key 比对复用：key 未变的块只改内容不重建节点：整表重铺会把已定型的块连同用户\n正在拖动的选区一起清除，而稳定 key 正是为了避免这一点。\n\nmarkdown 块铺设已消毒的 html；代码块与公式块只铺设原文，需要交给代码组件或公式引擎时\n由作者监听块节点自行接管。\n\n正文里的行内引用与行内公式在 html 里是占位节点（带 data-md-inline），新铺出来一个就派发一次\n`inline-mount`，detail 给出占位节点、所在块与挂点内容；作者往占位节点里放引用角标或公式引擎的产物。\n角标要接到外层 `<xh-citation>` 上时写成 `data-xh-part=\"trigger\"` 并声明 `data-xh-part-owner=\"citation\"`，\n外层引用元素即认领它。",
           "name": "XhMarkdownStreamElement",
           "cssParts": [
             {
@@ -37574,6 +37574,14 @@
               "description": "上一轮铺出来的块节点，按 key 索引。"
             },
             {
+              "kind": "field",
+              "name": "#painted",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, string>()",
+              "description": "每个块节点上一轮铺进去的内容。"
+            },
+            {
               "kind": "method",
               "name": "viewProps",
               "privacy": "private",
@@ -37611,6 +37619,15 @@
                 }
               ],
               "description": "逐 key 比对铺块：key 相同复用节点、只更新内容，key 消失的移除，新 key 追加。"
+            }
+          ],
+          "events": [
+            {
+              "name": "inline-mount",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "新铺出一个行内挂点的占位节点；detail 为 `{ key, element, block, index, inline }`"
             }
           ],
           "attributes": [

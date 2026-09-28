@@ -20,7 +20,7 @@ SourcePart 直接驱动行内引用、来源预览和来源列表
 
 加粗的是必需部件。
 
-`data-scope="citation"`：**`root`** · **`text`** · **`trigger`** · **`preview`** · `preview-header` · **`preview-title`** · `preview-meta` · `quote` · `preview-link` · `dismiss-trigger` · **`list`** · **`source`** · **`source-link`** · `source-index` · `source-title` · `source-meta`
+`data-scope="citation"`：**`root`** · `text` · `trigger` · **`preview`** · `preview-header` · **`preview-title`** · `preview-meta` · `quote` · `preview-link` · `dismiss-trigger` · **`list`** · **`source`** · **`source-link`** · `source-index` · `source-title` · `source-meta`
 
 ## 示例
 

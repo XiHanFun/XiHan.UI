@@ -5,16 +5,21 @@
 
 // 提供 render 相关实现。
 
-import type { LinkDefs } from './refs'
+import type { RenderContext } from './context'
 import { fenceBody, fenceLang } from './blocks'
+import { footnoteNumber, footnoteSlug } from './context'
 import { escapeAttr, escapeText } from './escape'
 import { renderInline } from './inline'
-import { NO_DEFS, splitDefinitions } from './refs'
+import { normalizeLabel, splitDefinitions } from './refs'
 import { blockType, CODE_INDENT, LIST_ITEM, splitRow, stripColumns, topLevelRanges } from './scan'
 
 const HEADING = /^ {0,3}(#{1,6})(?![^ \t])(.*)$/
 const CLOSING_HASHES = /\s+#+$/
 const ORDERED_MARKER = /^(\d{1,9})[.)]$/
+/** GFM 任务列表项首的勾选标记：方括号里一个空格或 x，后面跟空白或到行尾。 */
+const TASK_MARKER = /^\[([ x])\](?=[ \t\n]|$)[ \t]*/i
+/** 脚注定义的起始行：`[^标签]:`。 */
+const FOOTNOTE_DEF = /^ {0,3}\[\^([^\]\s]+)\]:[ \t]*/
 const MAX_DEPTH = 6
 /** 一张表补齐后允许的单元格总数上限，超过则不补空单元格。 */
 const MAX_TABLE_CELLS = 50_000
@@ -49,30 +54,30 @@ function renderMath(src: string): string {
 }
 
 /** Setext 标题：末行是下划线，等号一级、短横二级；标题正文是它上面那几行。 */
-function renderSetextHeading(src: string, defs: LinkDefs, depth: number): string {
+function renderSetextHeading(src: string, ctx: RenderContext, depth: number): string {
   const lines = contentLines(src)
   const underline = lines.pop() ?? ''
   const level = underline.trimStart().startsWith('=') ? 1 : 2
   const body = lines.map(line => line.replace(/^[ \t]+/, '')).join('\n')
   // 正文前面挂着的链接引用定义不算标题文字，与段落同一套规矩（只在顶层收）
   const text = (depth === 0 ? splitDefinitions(body).rest : body).trim()
-  return `<h${level}>${renderInline(text, defs)}</h${level}>`
+  return `<h${level}>${renderInline(text, ctx)}</h${level}>`
 }
 
-function renderHeading(src: string, defs: LinkDefs): string {
+function renderHeading(src: string, ctx: RenderContext): string {
   const match = HEADING.exec(src.split('\n')[0]!)
   if (match === null)
-    return `<p>${renderInline(src, defs)}</p>`
+    return `<p>${renderInline(src, ctx)}</p>`
   const level = match[1]!.length
   const text = (match[2] ?? '').trim().replace(CLOSING_HASHES, '')
-  return `<h${level}>${renderInline(text, defs)}</h${level}>`
+  return `<h${level}>${renderInline(text, ctx)}</h${level}>`
 }
 
-function renderQuote(src: string, defs: LinkDefs, depth: number): string {
+function renderQuote(src: string, ctx: RenderContext, depth: number): string {
   const inner = contentLines(src)
     .map(line => line.replace(/^ {0,3}> ?/, ''))
     .join('\n')
-  return `<blockquote>\n${renderBlocks(inner, defs, depth + 1)}\n</blockquote>`
+  return `<blockquote>\n${renderBlocks(inner, ctx, depth + 1)}\n</blockquote>`
 }
 
 /** 去掉最多 count 个前导空格。 */
@@ -87,27 +92,38 @@ function stripIndent(line: string, count: number): string {
  * 松列表里内容整块排布，`<li>` 与内容之间要换行；紧列表里首段的文字紧跟 `<li>`，
  * 其后若还有块（典型是嵌套列表）各自另起一行。收尾的 `</li>` 只要出现过块级内容就换行。
  */
-function renderItem(src: string, defs: LinkDefs, depth: number, tight: boolean): string {
+function renderItem(src: string, ctx: RenderContext, depth: number, tight: boolean): string {
   if (src.trim() === '')
     return '<li></li>'
-  if (!tight)
-    return `<li>\n${renderBlocks(src, defs, depth + 1)}\n</li>`
+  // GFM 任务列表：项首的 [ ] / [x] 换成一个只读勾选框，li 带上 data-task 供皮肤去掉项目符号
+  const task = TASK_MARKER.exec(src)
+  const body = task === null ? src : src.slice(task[0]!.length)
+  const box = task === null ? '' : `<input type="checkbox" disabled${task[1] === ' ' ? '' : ' checked'}> `
+  const open = task === null ? '<li>' : `<li data-task="${task[1] === ' ' ? 'open' : 'done'}">`
+  if (!tight) {
+    const inner = renderBlocks(body, ctx, depth + 1)
+    // 松列表的勾选框放进第一段里，与正文同一行
+    return `${open}\n${box === '' ? inner : inner.replace(/^<p>/, `<p>${box}`)}\n</li>`
+  }
 
-  const lines = src.split('\n')
+  const lines = body.split('\n')
   const parts: string[] = []
   let blocky = false
-  topLevelRanges(src).forEach((range, index) => {
+  topLevelRanges(body).forEach((range, index) => {
     const block = lines.slice(range.startLine, range.endLine).join('\n')
     const paragraph = blockType(block) === 'paragraph'
-    const html = paragraph ? renderInline(block.trim(), defs) : renderBlockHtml(block, defs, depth + 1)
+    const html = paragraph ? renderInline(block.trim(), ctx) : renderBlockHtml(block, ctx, depth + 1)
     if (index === 0 && paragraph) {
-      parts.push(html)
+      parts.push(box + html)
       return
     }
     blocky = true
     parts.push(`\n${html}`)
   })
-  return `<li>${parts.join('')}${blocky ? '\n' : ''}</li>`
+  // 勾选框后面还没有字（流式中刚写到标记）时只放勾选框
+  if (parts.length === 0)
+    parts.push(box.trimEnd())
+  return `${open}${parts.join('')}${blocky ? '\n' : ''}</li>`
 }
 
 /** 这一项里有没有不属于任何块的空行：项之间隔了空行，或项内部空行分块。 */
@@ -123,7 +139,7 @@ function itemIsLoose(item: readonly string[], last: boolean): boolean {
   return lines.some((line, i) => line.trim() === '' && !inBlock.has(i))
 }
 
-function renderList(src: string, defs: LinkDefs, depth: number): string {
+function renderList(src: string, ctx: RenderContext, depth: number): string {
   const lines = contentLines(src)
   const first = LIST_ITEM.exec(lines[0]!)!
   const baseIndent = first[1]!.length
@@ -141,7 +157,7 @@ function renderList(src: string, defs: LinkDefs, depth: number): string {
       items[items.length - 1]!.push(stripIndent(line, indent))
   }
   const tight = !items.some((item, i) => itemIsLoose(item, i === items.length - 1))
-  const body = items.map(item => renderItem(item.join('\n'), defs, depth, tight)).join('\n')
+  const body = items.map(item => renderItem(item.join('\n'), ctx, depth, tight)).join('\n')
   if (!ordered)
     return `<ul>\n${body}\n</ul>`
   const start = Number.parseInt(ORDERED_MARKER.exec(first[2]!)![1]!, 10)
@@ -157,12 +173,12 @@ function alignOf(spec: string): string {
   return text.startsWith(':') ? 'left' : ''
 }
 
-function renderTable(src: string, defs: LinkDefs): string {
+function renderTable(src: string, ctx: RenderContext): string {
   const lines = contentLines(src)
   const head = splitRow(lines[0]!)
   const aligns = splitRow(lines[1]!).map(alignOf)
   const attrOf = (index: number): string => ALIGN_STYLE[aligns[index] ?? ''] ?? ''
-  const headCells = head.map((cell, i) => `<th${attrOf(i)}>${renderInline(cell, defs)}</th>`).join('')
+  const headCells = head.map((cell, i) => `<th${attrOf(i)}>${renderInline(cell, ctx)}</th>`).join('')
   const bodyLines = lines.slice(2)
   // 补齐后的单元格总数不超上限才补空单元格，超了就只出写了的那些并在 table 上留标记
   const pads = head.length * (bodyLines.length + 1) <= MAX_TABLE_CELLS
@@ -174,7 +190,7 @@ function renderTable(src: string, defs: LinkDefs): string {
     const width = Math.min(head.length, cells.length)
     let body = ''
     for (let i = 0; i < width; i++)
-      body += `<td${attrOf(i)}>${renderInline(cells[i]!, defs)}</td>`
+      body += `<td${attrOf(i)}>${renderInline(cells[i]!, ctx)}</td>`
     if (pads !== undefined) {
       for (let i = width; i < head.length; i++)
         body += pads[i]!
@@ -186,16 +202,41 @@ function renderTable(src: string, defs: LinkDefs): string {
   return `<table${mark}>\n<thead>\n<tr>${headCells}</tr>\n</thead>${body}\n</table>`
 }
 
+/**
+ * 脚注定义块：一行 `[^标签]:` 起一条，续行归前一条。定义写在哪儿就渲在哪儿（流式里定义
+ * 通常就在文末），序号取该标签首次被引用时分到的那个号，与正文里的角标对上；
+ * 每条带一个回到首次引用处的回链。
+ */
+function renderFootnotes(src: string, ctx: RenderContext): string {
+  const items: { label: string, lines: string[] }[] = []
+  for (const line of contentLines(src)) {
+    const def = FOOTNOTE_DEF.exec(line)
+    if (def !== null) {
+      items.push({ label: normalizeLabel(def[1]!), lines: [line.slice(def[0]!.length)] })
+      continue
+    }
+    items.at(-1)?.lines.push(line.replace(/^[ \t]+/, ''))
+  }
+  const body = items.map(({ label, lines }) => {
+    const n = footnoteNumber(ctx, label)
+    const slug = escapeAttr(footnoteSlug(label))
+    const text = renderInline(lines.join('\n').trim(), ctx)
+    const back = `<a href="#${escapeAttr(ctx.idPrefix)}fnref-${slug}" data-footnote-backref aria-label="Back to reference ${n}">↩</a>`
+    return `<li id="${escapeAttr(ctx.idPrefix)}fn-${slug}" value="${n}"><p>${text} ${back}</p></li>`
+  })
+  return `<section data-footnotes>\n<ol>\n${body.join('\n')}\n</ol>\n</section>`
+}
+
 /** 段落转 HTML；顶层段落开头的引用定义行不进正文，只剩定义时不产出标签。 */
-function renderParagraph(src: string, defs: LinkDefs, depth: number): string {
+function renderParagraph(src: string, ctx: RenderContext, depth: number): string {
   // 逐行剥行首空白：段落续行的缩进不进正文。行尾空白留着，硬换行靠的就是它
   const text = contentLines(src).map(line => line.replace(/^[ \t]+/, '')).join('\n')
   const body = depth === 0 ? splitDefinitions(text).rest : text
-  return body === '' ? '' : `<p>${renderInline(body, defs)}</p>`
+  return body === '' ? '' : `<p>${renderInline(body, ctx)}</p>`
 }
 
 /** 一个顶层块转 HTML。 */
-export function renderBlockHtml(src: string, defs: LinkDefs = NO_DEFS, depth = 0): string {
+export function renderBlockHtml(src: string, ctx: RenderContext, depth = 0): string {
   if (depth > MAX_DEPTH)
     return `<p>${escapeText(src)}</p>`
   switch (blockType(src)) {
@@ -206,26 +247,28 @@ export function renderBlockHtml(src: string, defs: LinkDefs = NO_DEFS, depth = 0
     case 'math':
       return renderMath(src)
     case 'heading':
-      return renderHeading(src, defs)
+      return renderHeading(src, ctx)
     case 'setext':
-      return renderSetextHeading(src, defs, depth)
+      return renderSetextHeading(src, ctx, depth)
     case 'thematic':
       return '<hr>'
     case 'quote':
-      return renderQuote(src, defs, depth)
+      return renderQuote(src, ctx, depth)
     case 'list':
-      return renderList(src, defs, depth)
+      return renderList(src, ctx, depth)
     case 'table':
-      return renderTable(src, defs)
+      return renderTable(src, ctx)
+    case 'footnote':
+      return renderFootnotes(src, ctx)
     default:
-      return renderParagraph(src, defs, depth)
+      return renderParagraph(src, ctx, depth)
   }
 }
 
 /** 一段可能含多个块的文本转 HTML。 */
-export function renderBlocks(src: string, defs: LinkDefs = NO_DEFS, depth = 0): string {
+export function renderBlocks(src: string, ctx: RenderContext, depth = 0): string {
   const lines = src.split('\n')
   return topLevelRanges(src)
-    .map(range => renderBlockHtml(lines.slice(range.startLine, range.endLine).join('\n'), defs, depth))
+    .map(range => renderBlockHtml(lines.slice(range.startLine, range.endLine).join('\n'), ctx, depth))
     .join('\n')
 }

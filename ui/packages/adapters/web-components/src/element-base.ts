@@ -9,7 +9,7 @@ import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
 import { onXhConfigChange, withXhConfig } from './config'
 import { validatePartContract } from './dom/part-contract'
-import { containsPart, discoverParts } from './dom/parts'
+import { containsPart, discoverParts, PART_OWNER_ATTR } from './dom/parts'
 import { createSpreader } from './dom/spread'
 import { reportStackingTrap } from './dom/stacking-context'
 import { XhReactiveElement } from './reactive'
@@ -220,7 +220,7 @@ export abstract class XhElement extends XhReactiveElement {
     this.partObserver = new MutationObserver((records) => {
       if (this.wiring)
         return
-      const hit = records.some(r => (touchesParts(r) || rewritesDeclaration(r)) && this.ownsSubtree(r.target))
+      const hit = records.some(r => (touchesParts(r) || rewritesDeclaration(r)) && (this.ownsSubtree(r.target) || this.claimsMoved(r)))
       if (hit)
         this.requestUpdate()
     })
@@ -243,6 +243,26 @@ export abstract class XhElement extends XhReactiveElement {
       observe(root)
   }
 
+  /**
+   * 进出的节点里有没有显式声明归本宿主的角色子树：它们常被挂进嵌套 xh-* 的内容里（流式正文里的引用角标），
+   * 变动的目标是嵌套宿主里的节点，按目标判会漏掉。
+   */
+  private claimsMoved(record: MutationRecord): boolean {
+    const owner = this.localName.replace(/^xh-/, '')
+    const selector = `[${PART_OWNER_ATTR}="${owner}"]`
+    const claimed = (el: Element): boolean => el.parentElement?.closest(this.localName) === this
+    for (const node of [...Array.from(record.addedNodes), ...Array.from(record.removedNodes)]) {
+      if (node.nodeType !== 1)
+        continue
+      const el = node as Element
+      if (el.matches(selector) && (claimed(el) || !el.isConnected))
+        return true
+      if (Array.from(el.querySelectorAll(selector)).some(inner => claimed(inner) || !inner.isConnected))
+        return true
+    }
+    return false
+  }
+
   /** 目标是否归本宿主管：嵌套 xh-* 子树归内层元素自己管，外层不替它重跑 wire（discoverParts 本来也跳过它们）。 */
   private ownsSubtree(target: Node): boolean {
     for (const root of this.externalPartRoots()) {
@@ -256,10 +276,15 @@ export abstract class XhElement extends XhReactiveElement {
           break
       }
     }
+    const owner = this.localName.replace(/^xh-/, '')
     for (let node: Node | null = target; node; node = node.parentNode) {
       if (node === this)
         return true
-      const tag = (node as Element).tagName
+      const el = node as Element
+      // 嵌套宿主里显式声明归本宿主的角色子树（discoverParts 认领的那些），且离它最近的同类宿主就是本宿主
+      if (typeof el.getAttribute === 'function' && el.getAttribute(PART_OWNER_ATTR) === owner)
+        return el.parentElement?.closest(this.localName) === this
+      const tag = el.tagName
       if (typeof tag === 'string' && tag.toLowerCase().startsWith('xh-'))
         return false
     }

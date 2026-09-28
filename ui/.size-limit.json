@@ -88,7 +88,7 @@
     "name": "markdown",
     "path": "packages/features/markdown/dist/index.js",
     "gzip": true,
-    "limit": "8.5 kB"
+    "limit": "10.5 kB"
   },
   {
     "name": "backgrounds",

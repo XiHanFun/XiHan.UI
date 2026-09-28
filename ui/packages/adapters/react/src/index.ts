@@ -1535,6 +1535,8 @@ export {
 } from './components/markdown-stream/markdown-stream'
 export type {
   MarkdownStreamBlockSlotProps,
+  MarkdownStreamCitationSlotProps,
+  MarkdownStreamMathSlotProps,
   MarkdownStreamRootSlotProps,
   XhMarkdownStreamContentProps,
   XhMarkdownStreamLiveRegionProps,
