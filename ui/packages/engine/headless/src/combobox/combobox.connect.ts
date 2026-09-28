@@ -709,6 +709,9 @@ export function connectCombobox<T extends PropTypes>(
     // 展开着才顶上来：收起时整块浮层都不在场
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
       'role': 'status',
       'data-state': stateAttr,
       // 已有候选时列表原样留着，只由 aria-busy 报后台刷新；零候选才用状态文字占据表面。

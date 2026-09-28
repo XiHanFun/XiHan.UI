@@ -53,7 +53,6 @@ const BUSY_WITHOUT_SKIN = {
   'infinite-scroll': '外壳这一层刻意不给盒模型（连 display 都不写），身上没有可画的面；在途的观感由作者自己的哨兵内容表出（infinite-scroll.css 外壳一段已写明）',
   // 以下几家：aria-busy 落在会被换掉的条目容器上，不是刚被按下的控件
   'cascader': '取数期那一格由只在取数期在场的 loading 部件承载（收起时 hidden），承载它的是部件的在场与否，不是一条按属性分档的规则',
-  'combobox': '取数期那一格由只在取数期在场的 loading 部件承载（收起时 hidden），承载它的是部件的在场与否，不是一条按属性分档的规则',
   'listbox': '取数期那一格由只在取数期在场的 loading 部件承载（收起时 hidden），承载它的是部件的在场与否，不是一条按属性分档的规则',
   'mention': '取数期那一格由只在取数期在场的 loading 部件承载（收起时 hidden），承载它的是部件的在场与否，不是一条按属性分档的规则',
   'transfer': '取数期那一格由只在取数期在场的 loading 部件承载（收起时 hidden），承载它的是部件的在场与否，不是一条按属性分档的规则',
