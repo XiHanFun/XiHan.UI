@@ -73,6 +73,7 @@ export function connectVirtualizer<T extends PropTypes>(
         .map(element => element.firstElementChild)
         .filter((element): element is HTMLElement => element instanceof scope.getWin().HTMLElement),
       getViewportElement: () => refs.get('getViewportEl')(),
+      getContentElement: () => refs.get('getContentEl')(),
     } satisfies CollectionVirtualizer
     refs.set('collectionVirtualizer', collectionVirtualizer)
   }

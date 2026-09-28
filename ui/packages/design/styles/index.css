@@ -9557,6 +9557,26 @@
     scrollbar-gutter: stable;
   }
 
+  /* 接了虚拟滚动：视口只定高、不滚动，里面那层 Virtualizer 视口铺满它、由它滚；
+     行放在 Virtualizer 的条目里没有 content 包裹层，等宽排版落在视口上由行继承 */
+  [data-scope='log'][data-part='viewport'][data-virtualized] {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
+    /* 不滚动的视口不留滚动条空道：空道由里面那层 Virtualizer 视口自己管 */
+    scrollbar-gutter: auto;
+    font-family: var(--xh-log-font, var(--xh-font-family-mono));
+    font-size: var(--xh-log-font-size, var(--xh-_log-font-size));
+  }
+
+  [data-scope='log'][data-part='viewport'][hidden] {
+    display: none;
+  }
+
+  [data-scope='log'][data-part='viewport'][data-virtualized] [data-scope='log'][data-part='line'] {
+    padding-inline: var(--xh-log-line-px, var(--xh-log-content-px, var(--xh-_log-content-px)));
+  }
+
   /* 取行期间指针给出忙的反馈 */
   [data-scope='log'][data-part='root'][data-loading] [data-scope='log'][data-part='viewport'] {
     cursor: progress;
@@ -9597,6 +9617,58 @@
 
   [data-scope='log'][data-part='line'][data-level='error'] {
     color: var(--xh-log-level-error-fg, var(--xh-fg-danger));
+  }
+
+  /* ANSI 着色：八种颜色映射到语义令牌（红、绿、黄、蓝落在语气前景，品红、青借代码着色的关键字与字符串色，
+     黑与白落在正文与次要前景），高亮色（90–97）与基础色同一档，只由 data-bright 记下。
+     颜色盖过行的级别色；粗体、斜体、下划线与暗淡各自一个开关 */
+  [data-scope='log'][data-part='segment'][data-fg='black'] {
+    color: var(--xh-log-ansi-black, var(--xh-fg-default));
+  }
+
+  [data-scope='log'][data-part='segment'][data-fg='red'] {
+    color: var(--xh-log-ansi-red, var(--xh-fg-danger));
+  }
+
+  [data-scope='log'][data-part='segment'][data-fg='green'] {
+    color: var(--xh-log-ansi-green, var(--xh-fg-success));
+  }
+
+  [data-scope='log'][data-part='segment'][data-fg='yellow'] {
+    color: var(--xh-log-ansi-yellow, var(--xh-fg-warning));
+  }
+
+  [data-scope='log'][data-part='segment'][data-fg='blue'] {
+    color: var(--xh-log-ansi-blue, var(--xh-fg-info));
+  }
+
+  [data-scope='log'][data-part='segment'][data-fg='magenta'] {
+    color: var(--xh-log-ansi-magenta, var(--xh-syntax-keyword));
+  }
+
+  [data-scope='log'][data-part='segment'][data-fg='cyan'] {
+    color: var(--xh-log-ansi-cyan, var(--xh-syntax-string));
+  }
+
+  [data-scope='log'][data-part='segment'][data-fg='white'] {
+    color: var(--xh-log-ansi-white, var(--xh-fg-muted));
+  }
+
+  [data-scope='log'][data-part='segment'][data-bold] {
+    font-weight: var(--xh-log-ansi-bold-weight, var(--xh-font-weight-semibold));
+  }
+
+  /* 暗淡只在没指定颜色时换成次要前景：指定了颜色的那一段保留自己的颜色 */
+  [data-scope='log'][data-part='segment'][data-dim]:not([data-fg]) {
+    color: var(--xh-log-ansi-dim-fg, var(--xh-fg-subtle));
+  }
+
+  [data-scope='log'][data-part='segment'][data-italic] {
+    font-style: italic;
+  }
+
+  [data-scope='log'][data-part='segment'][data-underline] {
+    text-decoration: underline;
   }
 
   /* 回到底部：浮在视口右下角，收起时不卸载只隐藏。盒型、悬停 / 按下面与缩放由 Action Control 的

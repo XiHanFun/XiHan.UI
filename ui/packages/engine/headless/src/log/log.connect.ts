@@ -6,7 +6,7 @@
 // 提供 log 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { LogApi, LogLineProps, LogProps, LogSchema } from './log.types'
+import type { LogApi, LogLevel, LogLineProps, LogProps, LogSchema } from './log.types'
 import { dataAttr } from '@xihan-ui/core'
 import { pressHandlers } from '../shared/press'
 import { logAnatomy } from './log.anatomy'
@@ -28,7 +28,10 @@ export function connectLog<T extends PropTypes>(
   props: LogProps,
   normalize: NormalizeProps<T>,
 ): LogApi<T> {
-  const { context, send, scope } = service
+  const { context, send, scope, prop } = service
+  const virtualized = prop('virtualizer') != null
+  const levels = props.levels
+  const isLevelVisible = (level?: LogLevel): boolean => level === undefined || levels === undefined || levels.includes(level)
 
   const atBottom = context.get('atBottom')
   const sticking = context.get('sticking')
@@ -52,6 +55,8 @@ export function connectLog<T extends PropTypes>(
     atBottom,
     sticking,
     showScrollToEndTrigger,
+    virtualized,
+    isLevelVisible,
     scrollToBottom: () => send({ type: 'SCROLL_TO_BOTTOM' }),
 
     getRootProps: () => normalize.element({
@@ -71,7 +76,9 @@ export function connectLog<T extends PropTypes>(
       'aria-live': 'off',
       'aria-label': label.log,
       'aria-busy': loading ? 'true' : undefined,
-      'tabindex': 0,
+      // 接了虚拟滚动时滚动的是里面那层 Virtualizer 视口，Tab 位与原生按键滚动归它
+      'tabindex': virtualized ? undefined : 0,
+      'data-virtualized': dataAttr(virtualized),
       // 按行数定高：行高本身是皮肤的槽位，这里只做乘法；rows 缺席时写空串把高度还给皮肤。
       // 写成 style 而非 CSS 自定义属性，WC 侧的属性铺设写不进 --* 变量
       'style': { blockSize: rows ? `calc(${LINE_HEIGHT} * ${rows})` : '' },
@@ -85,6 +92,19 @@ export function connectLog<T extends PropTypes>(
     getLineProps: (line?: LogLineProps) => normalize.element({
       ...parts.line.attrs,
       'data-level': line?.level,
+      // 级别过滤：不在所选级别里的行收起，没写级别的行不受影响
+      'hidden': !isLevelVisible(line?.level) || undefined,
+    }),
+
+    // 颜色只给名字，皮肤映射到语义令牌；字形各是一个开关
+    getSegmentProps: segment => normalize.element({
+      ...parts.segment.attrs,
+      'data-fg': segment.fg,
+      'data-bright': dataAttr(segment.bright),
+      'data-bold': dataAttr(segment.bold),
+      'data-dim': dataAttr(segment.dim),
+      'data-italic': dataAttr(segment.italic),
+      'data-underline': dataAttr(segment.underline),
     }),
 
     // 收起时置 hidden，不卸载节点：按钮反复建删会让它的进场动画每次从头播

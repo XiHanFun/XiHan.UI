@@ -1514,6 +1514,7 @@ export {
   XhLogLiveRegion,
   XhLogRoot,
   XhLogScrollToEndTrigger,
+  XhLogSegment,
   XhLogViewport,
 } from './components/log/log'
 export type {
@@ -1523,6 +1524,7 @@ export type {
   XhLogLiveRegionProps,
   XhLogRootProps,
   XhLogScrollToEndTriggerProps,
+  XhLogSegmentProps,
   XhLogViewportProps,
 } from './components/log/log'
 export { useLog } from './components/log/use-log'

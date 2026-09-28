@@ -6,9 +6,9 @@
 // 提供 log 相关实现。
 
 import type { IdGenerator, RuntimeConfig, Service, Size } from '@xihan-ui/core'
-import type { LogLevel, LogProps, LogSchema, LogStickChangeDetails, LogTranslations } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, LogApi, LogLevel, LogProps, LogSchema, LogStickChangeDetails, LogTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectLog, logAnatomy, logMachine, logMeta } from '@xihan-ui/headless'
+import { connectLog, logAnatomy, logMachine, logMeta, parseAnsi } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -19,6 +19,10 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 const LEVELS = new Set<string>(['debug', 'info', 'warn', 'error'])
+// levels 写成空白分隔的几个级别；四档之外的词不认
+const LEVELS_CONVERTER = {
+  fromAttribute: (v: string | null) => (v == null ? undefined : v.split(/\s+/).filter(level => LEVELS.has(level)) as LogLevel[]),
+}
 
 /** 一行的级别，取作者写在节点上的 level；四档之外一律当没写。 */
 function lineLevel(el: HTMLElement): LogLevel | undefined {
@@ -32,16 +36,22 @@ function lineLevel(el: HTMLElement): LogLevel | undefined {
  * 滚回底部阈值内、按回到底部按钮或调用 scrollToBottom() 时恢复。
  *
  * 行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点中，元素只发身份与等宽排版。
+ * 例外是带 ansi 属性的行：它的文字是带 ANSI 转义的原文，元素按 SGR 拆成着色的 segment；原文换了就重拆一遍。
+ *
+ * 接虚拟滚动时把 xh-virtualizer 的 collectionVirtualizer 交给 virtualizer property，行放进 Virtualizer 的条目里，
+ * 粘底改跟 Virtualizer 的视口与内容层走。
  *
  * @customElement xh-log
  * @attr {number} rows - 视口按多少行定高；未提供时高度由皮肤决定
  * @attr {boolean} loading - 行仍在传输中：日志区报告 aria-busy，根写 data-loading
  * @attr {string} size - 尺寸：sm / md / lg
+ * @attr {string} levels - 只显示这几个级别的行，空白分隔（如 "warn error"），缺省全部显示；没写 level 的行不受影响
  * @fires stick-change - 贴底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`
  * @csspart root - 组件根容器，承载 data-size / data-loading / data-at-bottom / data-sticking
  * @csspart viewport - 滚动容器；role=log + aria-live=off + tabindex=0，按行数定高写入内联样式
  * @csspart content - 所有行的包裹层，尺寸变化的观察目标
- * @csspart line - 一行日志，承载身份、等宽排版与 data-level；级别写为节点上的 level 属性
+ * @csspart line - 一行日志，承载身份、等宽排版与 data-level；级别写为节点上的 level 属性，带 ansi 属性时按 ANSI 转义着色
+ * @csspart segment - 带 ansi 属性的行拆出的一段，元素生成，颜色与字形写成 data 属性
  * @csspart scroll-to-end-trigger - 回到底部按钮，在底部时收起（hidden + 内联 display）
  * @csspart live-region - 视觉隐藏的播报区（role=status + aria-live=polite + aria-atomic）
  */
@@ -53,19 +63,26 @@ export class XhLogElement extends XhElement {
     rows: { converter: NUMBER_CONVERTER },
     loading: { type: Boolean },
     size: { converter: STRING_CONVERTER },
+    levels: { converter: LEVELS_CONVERTER },
     // 对象值走不了 HTML 属性，只作为 property 暴露
+    virtualizer: { attribute: false },
     translations: { attribute: false },
   }
 
   declare rows?: number
   declare loading?: boolean
   declare size?: Size
+  declare levels?: readonly LogLevel[]
+  /** 与虚拟滚动接线：xh-virtualizer 的 collectionVirtualizer。 */
+  declare virtualizer?: CollectionVirtualizer
   /** 日志区与回到底部按钮的无障碍名，由 connect 写到节点上。 */
   declare translations?: Partial<LogTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly logScope = createScope(null, this.idGen)
   private config: RuntimeConfig | null = null
+  /** 带 ansi 属性的行上一次拆出来的纯文字：节点文字与它不同，说明作者换了原文。 */
+  readonly #ansiText = new WeakMap<HTMLElement, string>()
 
   private readonly notify = (details: LogStickChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('stick-change', { detail: details, bubbles: true, composed: true }))
@@ -74,7 +91,7 @@ export class XhLogElement extends XhElement {
   private readonly ctrl = new MachineController<LogSchema>(
     this,
     logMachine,
-    () => ({ onStickChange: this.notify }),
+    () => ({ onStickChange: this.notify, virtualizer: this.virtualizer }),
     { scope: this.logScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
@@ -97,7 +114,24 @@ export class XhLogElement extends XhElement {
       rows: this.rows,
       loading: this.loading ?? false,
       size: this.size,
+      levels: this.levels,
       translations: this.translations,
+    }
+  }
+
+  /** 带 ansi 属性的行：原文换了就按 SGR 重拆成 segment 节点，没换只重铺属性。 */
+  #paintAnsi(line: HTMLElement, api: LogApi): void {
+    const current = line.textContent ?? ''
+    if (this.#ansiText.get(line) !== current) {
+      const segments = parseAnsi(current)
+      const doc = line.ownerDocument
+      line.replaceChildren(...segments.map((segment) => {
+        const span = doc.createElement('span')
+        span.textContent = segment.text
+        this.spreader.spread(span, api.getSegmentProps(segment) as Record<string, unknown>)
+        return span
+      }))
+      this.#ansiText.set(line, line.textContent ?? '')
     }
   }
 
@@ -128,8 +162,11 @@ export class XhLogElement extends XhElement {
     put('live-region', api.getLiveRegionProps() as Record<string, unknown>)
 
     // 多实例 part 逐个打，行有几条打几条；级别取作者写在节点上的 level
-    for (const el of this.getParts('line'))
+    for (const el of this.getParts('line')) {
       this.spreader.spread(el, api.getLineProps({ level: lineLevel(el) }) as Record<string, unknown>)
+      if (el.hasAttribute('ansi'))
+        this.#paintAnsi(el, api)
+    }
 
     // 除 hidden 属性外还写内联 display，压住作者层给该 part 声明的 display
     this.setPartHidden(this.getPart('scroll-to-end-trigger'), !api.showScrollToEndTrigger)

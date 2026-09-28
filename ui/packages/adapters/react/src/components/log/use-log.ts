@@ -26,7 +26,7 @@ export interface LogContext {
 
 /** 状态机只接收 onStickChange，rows / loading / translations 是纯视图属性，直接进入 connect。 */
 export function useLog(
-  props: LogProps,
+  props: LogProps & Pick<LogSchema['props'], 'virtualizer'>,
   onStickChange?: LogSchema['props']['onStickChange'],
 ): LogContext {
   const idGenerator = useReactIdGenerator()
@@ -34,7 +34,8 @@ export function useLog(
   const viewportRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
 
-  const service = useMachine(logMachine, () => ({ onStickChange }), {
+  // 虚拟滚动接线决定粘底跟谁走，是机器的事；其余视图属性直接进 connect
+  const service = useMachine(logMachine, () => ({ onStickChange, virtualizer: props.virtualizer }), {
     scope,
     // 粘底副作用在机器的挂载效应里建句柄，三处取值口得赶在那之前交出去
     onCreate: (svc: Service<LogSchema>) => {

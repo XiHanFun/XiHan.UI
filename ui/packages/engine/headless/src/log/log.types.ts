@@ -6,14 +6,30 @@
 // 定义 log 类型契约。
 
 import type { MachineSchema, PropTypes, RuntimeConfig, Size, StickToBottomHandle } from '@xihan-ui/core'
+import type { CollectionVirtualizer } from '../virtualizer'
 
 /** 一行日志的级别。 */
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 
 /** 逐行取属性时的声明。 */
 export interface LogLineProps {
-  /** 该行的级别；未提供时不写 data-level，行使用默认前景色。 */
+  /** 该行的级别；未提供时不写 data-level，行使用默认前景色，也不受级别过滤影响。 */
   level?: LogLevel
+}
+
+/** ANSI 前景色的八种名字；bright 另记，皮肤把它们映射到语义令牌。 */
+export type LogAnsiColor = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white'
+
+/** 一行 ANSI 文字拆出的一段：文字与它的颜色、字形。 */
+export interface LogAnsiSegment {
+  readonly text: string
+  readonly fg?: LogAnsiColor
+  /** 90–97 这一组高亮色。 */
+  readonly bright?: boolean
+  readonly bold?: boolean
+  readonly dim?: boolean
+  readonly italic?: boolean
+  readonly underline?: boolean
 }
 
 export interface LogTranslations {
@@ -44,6 +60,11 @@ export interface LogSchema extends MachineSchema {
   props: {
     /** 距底部多少 px 视为在底部，默认使用贴底原语的默认值。 */
     threshold?: number
+    /**
+     * 与虚拟滚动接线：传入 Virtualizer 的 collectionVirtualizer，行只挂载当前窗口里的那些。
+     * 粘底改跟 Virtualizer 的滚动层与内容层，日志视口只保留 role=log 与定高，由它里面的 Virtualizer 视口滚动。
+     */
+    virtualizer?: CollectionVirtualizer
     /** 贴底状态变化时通知宿主。 */
     onStickChange?: (details: LogStickChangeDetails) => void
   }
@@ -86,6 +107,11 @@ export interface LogSchema extends MachineSchema {
 export interface LogProps {
   /** 视口按多少行定高；未提供时高度由皮肤决定。 */
   rows?: number
+  /**
+   * 只显示这几个级别的行，缺省全部显示。没写 level 的行不受过滤影响。
+   * 接了虚拟滚动时 DOM 里只有窗口里的行，过滤要在交给 Virtualizer 之前按 isLevelVisible 做。
+   */
+  levels?: readonly LogLevel[]
   /** 行仍在传输中：日志区报告 aria-busy，根写 data-loading。 */
   loading?: boolean
   /** 尺寸：sm / md / lg。影响行文字号与内衬，行高不随档位变化。 */
@@ -103,12 +129,18 @@ export interface LogApi<T extends PropTypes = PropTypes> {
   sticking: boolean
   /** 是否显示回到底部按钮，不在底部时为 true。 */
   showScrollToEndTrigger: boolean
+  /** 是否接了虚拟滚动。 */
+  virtualized: boolean
+  /** 某级别的行此刻是否显示；没写级别的行始终显示。 */
+  isLevelVisible: (level?: LogLevel) => boolean
   /** 滚动到底部并恢复贴附。 */
   scrollToBottom: () => void
   getRootProps: () => T['element']
   getViewportProps: () => T['element']
   getContentProps: () => T['element']
   getLineProps: (props?: LogLineProps) => T['element']
+  /** 一段 ANSI 文字：颜色与字形写成 data 属性，皮肤映射到语义令牌。 */
+  getSegmentProps: (segment: LogAnsiSegment) => T['element']
   getScrollToEndTriggerProps: () => T['button']
   getLiveRegionProps: () => T['element']
 }

@@ -7,9 +7,10 @@
 
 import type { ComponentMeta } from '../spec/types'
 
-// 粘底要读滚动容器与内容容器，两者必需；line 有几行摆几个，一行没有也是一份合法的日志视图。
-// scroll-to-end-trigger 与 live-region 同样可缺省。
+// 视口必需：它承载 role=log 与定高。content 只在不虚拟化时是粘底的观察对象，接了虚拟滚动时
+// 行放在 Virtualizer 的内容层里、没有 content，所以不进必需表；line 有几行摆几个，一行没有也是一份合法的日志视图。
+// segment、scroll-to-end-trigger 与 live-region 同样可缺省。
 export const logMeta: ComponentMeta = {
   component: 'log',
-  requiredParts: ['root', 'viewport', 'content'],
+  requiredParts: ['root', 'viewport'],
 }

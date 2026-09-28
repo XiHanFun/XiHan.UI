@@ -683,6 +683,7 @@ export {
   XhLogLiveRegion,
   XhLogRoot,
   XhLogScrollToEndTrigger,
+  XhLogSegment,
   XhLogViewport,
 } from './components/log/log'
 export type { LogRootSlotProps } from './components/log/log'
