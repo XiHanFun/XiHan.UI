@@ -3932,6 +3932,7 @@ export type ComponentTokenName
     | '--xh-tool-call-icon-size'
     | '--xh-tool-call-indicator-fg'
     | '--xh-tool-call-label-font'
+    | '--xh-tool-call-label-font-weight'
     | '--xh-tool-call-px'
     | '--xh-tool-call-py'
     | '--xh-tool-call-radius'

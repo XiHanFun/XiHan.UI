@@ -42880,6 +42880,8 @@
     overflow: hidden;
     flex: 1 1 auto;
     font-family: var(--xh-tool-call-label-font, var(--xh-font-family-mono));
+    /* 面级披露的触发条文字取标签角色，与 Accordion、Collapsible、Reasoning 同一档字重 */
+    font-weight: var(--xh-tool-call-label-font-weight, var(--xh-text-label-weight));
     text-overflow: ellipsis;
     white-space: nowrap;
   }

@@ -67212,6 +67212,9 @@
               "name": "--xh-tool-call-label-font"
             },
             {
+              "name": "--xh-tool-call-label-font-weight"
+            },
+            {
               "name": "--xh-tool-call-px"
             },
             {

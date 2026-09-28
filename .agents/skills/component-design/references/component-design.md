@@ -179,6 +179,11 @@ Vue、React、Web Components 只负责：
 - `density`：comfortable、compact，由环境统一控制；comfortable 是基线。
 - `orientation`：horizontal、vertical，仅结构确实支持两种方向时提供。
 
+缺省形态的两类刻意例外：
+
+- 缺省 `ghost`：Accordion、Descriptions、List、PageHeader、Toolbar。它们是排版骨架，通常嵌在 Card、Panel 或页面分区里，自带一圈描边会与宿主面叠成两道边；需要独立成面时由作者显式写 `outline` / `subtle`。Headless 仍须显式给出 `ghost` 缺省，不允许「不传」成为第四种形态。
+- 不设 `variant` 轴：Alert（语义由 `tone` 承担，面固定为描边面）、CodeView / DiffView / Log（代码类面固定为描边面，行号槽与高亮依赖这层底）、Collapsible（只有触发条与内容，没有自己的壳）、Citation（随文引用，形态固定）。新增此类组件同样登记在这里，不用私有轴补形态。
+
 禁止用 `type`、`color`、`status`、`danger` 等多套 props 重复表达同一视觉结果。
 
 ### 5.3 第三步：确定层级
@@ -273,7 +278,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | control | 4px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger |
 | surface | 8px | Card、Alert、Panel、列表容器、Segmented 与 Tabs segment 的轨道 |
 | overlay | 12px | Popover、Menu、Dialog、Drawer、Toast |
-| circle | 50% | 宽高相等的圆形对象：avatar、icon-wrapper、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点 |
+| circle | 50% | 宽高相等的圆形对象：avatar、icon-wrapper、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点 |
 | pill | 9999px | 仅两类身份：(a) 状态 chip：Badge、Tag、ToolCall status、Approval result、QuestionFlow result；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、skeleton text、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄、不贴边的 liquid 一维栏（§8.5）、随文的引用编号（Citation trigger） |
 
 强制规则：
@@ -311,6 +316,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 不使用极小字号换取信息密度。
 - 单行控件文字必须垂直居中；多行内容使用正文行高。
 - 标题、标签和按钮不写多余句号。
+- 动作区对齐按用途分两种：决策面（Dialog、Drawer 页脚、Popconfirm、Approval、Tour 步骤）整组贴行尾，主动作排在最后、次要动作在它之前；Card 页脚是内容的延续而不是一次决策，与正文同起点对齐。RTL 下行尾与起点随书写方向镜像，主动作仍在阅读顺序的最后。
 
 ### 6.5 图标尺寸
 
@@ -450,6 +456,17 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 快捷键提示不换行：它是一串按键记号，折行会读成两个组合。
 - 快捷键是纯装饰，可及名由条目自己的文字承担；只为真正注册了的快捷键显示提示，写一个不存在的组合比不写更糟。
 - 说明与快捷键可以同时出现，此时说明占第 2 行、快捷键仍贴行尾；条目高度由说明行撑开，快捷键不额外增高。
+
+集合行高按语境取，不由组件自定：
+
+| 语境 | 组件 | 行高来源 |
+| --- | --- | --- |
+| 候选与菜单 | Menu 族、Listbox、Select / Combobox / Cascader 选项、Tree、Command | `--xh-list-option-py-*` 内距加一行文字撑开，说明行再撑高一行 |
+| 页面级导航 | SideNav | 最小行高取 `--xh-control-h-*`，与折叠窄栏的方形图标位、同档控件等高 |
+| 随文目录 | Anchor | 块向内距 `--xh-space-1`，贴近正文阅读节奏，不按控件高 |
+
+- 新增集合组件从这三种语境里取一种，不另立行高；同一语境内 sm / md / lg 只随控件档变。
+- 行高不随选中、当前或语气改变：这些状态只换面与字色。
 
 ### 7.6 数据色
 
@@ -900,6 +917,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 不提供双 y 轴：两个量纲用两张联动的图，或指数化到同一基准。
 - 立即报错的输入：对数轴定义域含 0 或跨正负；柱系列所在值轴不含 0；分类系列超过 8 个；同图混用分类色与语气色；同一堆叠组的偏移方式不一致；占比类（饼、漏斗、层级）出现负值；K 线不满足 low ≤ open、close ≤ high；桑基数据成环；层级数据多根、缺父或成环。
 - 块级结构（图例、视口、提示框、缩放条）以组合部件暴露，由作者摆放；绘图区里的标记按数据生成，作者不逐个书写。
+- 不提供导出（PNG / SVG / 数据下载）：图表只负责展示与交互，导出涉及字体嵌入、主题解析与打印尺寸，交给宿主应用按自身需求实现；需要打印时走 §14.5 的打印规则。
 
 ## 13. 无障碍
 
