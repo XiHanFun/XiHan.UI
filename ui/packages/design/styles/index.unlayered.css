@@ -11271,6 +11271,7 @@
 
 /* styles/prompt-input.css */
 /* PromptInput 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
+/* 字形换身份时的淡入由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='prompt-input'] {
@@ -11484,6 +11485,18 @@
   vertical-align: var(--xh-glyph-baseline-shift);
   border-radius: var(--xh-prompt-input-stop-mark-radius, var(--xh-shape-inset));
   background-color: currentColor;
+}
+
+/* 身份切换时换上来的那一枚字形淡入，与按钮换面同一拍：停止的方块从略小处浮出，发送的箭头只淡入。
+   两种身份各取一支关键帧，切换时动画名跟着换才会重播。首帧就在的字形直接呈现（data-instant）；
+   减弱动效下缩放归一、只剩淡入。粗指针下 ::after 是家族的命中区，字形只有 ::before 这一层，
+   旧字形与新字形不在两层上叠着淡 */
+[data-scope='prompt-input'][data-part='submit-trigger'][data-mode='send']:not([data-instant]):empty::before {
+  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+[data-scope='prompt-input'][data-part='submit-trigger'][data-mode='stop']:not([data-instant]):empty::before {
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* styles/reset.css */

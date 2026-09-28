@@ -24,6 +24,7 @@ export const promptInputMachine = createMachine({
     isComposing: cell<boolean>(() => ({ defaultValue: false })),
     // 按压通道：发送 / 停止按钮被 Space / Enter 或触屏按住
     pressed: cell<boolean>(() => ({ defaultValue: false })),
+    modeChanged: cell<boolean>(() => ({ defaultValue: false })),
   }),
   // 初值判空与 isValueEmpty 守卫同样使用 trim
   initialState: ({ prop }) => {
@@ -36,7 +37,7 @@ export const promptInputMachine = createMachine({
     // 宿主直接改 value 不经过 VALUE.SET，这里补一次状态同步
     track([context.dep('value')], () => action(['syncValueState']))
     // 按住途中按钮身份随 loading 切换（发送 ↔ 停止）：换了身份的按钮不该顶着上一个身份的按压面，一律松开
-    track([() => prop('loading')], () => action(['endPress']))
+    track([() => prop('loading')], () => action(['endPress', 'markModeChanged']))
     // 提交后清空 / 组合态使发送钮转禁用：不会再来 keyup，按压面由机器自己收
     track([() => prop('allowEmptySubmit'), context.dep('value'), context.dep('isComposing')], () => action(['releaseWhenInert']))
   },
@@ -134,6 +135,7 @@ export const promptInputMachine = createMachine({
       },
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
+      markModeChanged: ({ context }) => context.set('modeChanged', true),
       // 发送身份下转为不可提交（清空、组合中）即松开；停止身份恒可用，不动
       releaseWhenInert: ({ context, prop, guard }) => {
         if (context.get('pressed') && prop('loading') !== true && !guard('canSubmit'))

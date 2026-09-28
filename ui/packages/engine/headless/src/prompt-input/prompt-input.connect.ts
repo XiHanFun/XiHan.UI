@@ -129,6 +129,8 @@ export function connectPromptInput<T extends PropTypes>(
       'type': 'button',
       // 同一颗按钮按 loading 在发送与停止两种身份间切换
       'data-mode': loading ? 'stop' : 'send',
+      // 身份换过之前兜底字形直接呈现；换过之后换上来的那一枚淡入
+      'data-instant': dataAttr(!context.get('modeChanged')),
       'aria-label': loading ? (translations?.stop ?? 'Stop generating') : (translations?.send ?? 'Send'),
       // 生成期间恒可用，此刻按钮的语义是停止；家族按 data-disabled 给禁用面，与原生 disabled 同步
       'disabled': (!loading && !canSubmit) || undefined,

@@ -264,6 +264,7 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 | `input` | `data-state` | 'empty' \| 'editing' \| 'disabled' |
 | `input` | `data-xh-field-input` | '' |
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `submit-trigger` | `data-instant` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-mode` | 'stop' \| 'send' |
 | `submit-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-xh-action-control` | '' |
@@ -318,9 +319,9 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-`border-radius` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`border-radius` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
