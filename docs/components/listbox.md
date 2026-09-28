@@ -277,6 +277,8 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 
 `@xihan-ui/styles/listbox.css` 使用 `[data-scope="listbox"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
