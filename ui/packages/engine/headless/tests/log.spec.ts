@@ -76,7 +76,7 @@ describe('connectLog 投影', () => {
     const l = makeLog()
     await flush()
     expect(l.api({ rows: 8 }).rows).toBe(8)
-    expect((l.api({ rows: 8 }).getViewportProps() as Record<string, unknown>).style).toEqual({ blockSize: 'calc(var(--xh-log-line-height, 1.25rem) * 8)' })
+    expect((l.api({ rows: 8 }).getViewportProps() as Record<string, unknown>).style).toEqual({ blockSize: 'calc(var(--xh-log-line-height, var(--xh-text-code-leading)) * 8)' })
     expect(l.api({ rows: 5.7 }).rows).toBe(5)
     expect(l.api({ rows: 0 }).rows).toBeUndefined()
     expect(l.api({ rows: -3 }).rows).toBeUndefined()

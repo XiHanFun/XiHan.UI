@@ -24,7 +24,7 @@
 
     /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
        公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
-    --xh-_diff-view-font-size: var(--xh-control-font-sm);
+    --xh-_diff-view-font-size: var(--xh-control-font-md);
     --xh-_diff-view-px: var(--xh-space-3);
     --xh-_diff-view-py: var(--xh-space-2);
 
