@@ -366,7 +366,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 导航（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 导航（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-carousel-duration` · `--xh-carousel-ease`。
 
