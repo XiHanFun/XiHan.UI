@@ -29,6 +29,7 @@ export type {
   CartesianChartTranslations,
   CartesianCurve,
   CartesianDrag,
+  CartesianFollowChangeDetails,
   CartesianLabelOverflow,
   CartesianLegendItem,
   CartesianLegendScale,

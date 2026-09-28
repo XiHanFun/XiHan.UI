@@ -248,6 +248,11 @@ export interface CartesianWindowChangeDetails {
   readonly window: CartesianWindow
 }
 
+export interface CartesianFollowChangeDetails {
+  /** 缩放窗口是否跟着最新的数据走。 */
+  readonly follow: boolean
+}
+
 /**
  * 一次拖动的起点：plot 在绘图区里平移（放大之后），start / end 拖缩放条的一端，window 拖缩放条的整个窗口。
  * from 是起点坐标（绘图区平移是绘图区里的像素，缩放条是轨道上的比例），size 是轨道或绘图区沿拖动方向的像素长度。

@@ -6214,6 +6214,24 @@
             },
             {
               "kind": "field",
+              "name": "follow",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "follow"
+            },
+            {
+              "kind": "field",
+              "name": "defaultFollow",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-follow"
+            },
+            {
+              "kind": "field",
               "name": "brush",
               "privacy": "public",
               "type": {
@@ -6333,6 +6351,12 @@
             {
               "kind": "field",
               "name": "notifyWindow",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyFollow",
               "privacy": "private",
               "readonly": true
             },
@@ -6926,6 +6950,13 @@
               }
             },
             {
+              "description": "用户把窗口拖离或拖回数据末端，跟随的开关变了；detail 为 `{ follow }`",
+              "name": "follow-change",
+              "type": {
+                "text": "CartesianFollowChangeDetails"
+              }
+            },
+            {
               "description": "刷选范围变了（指针松手时一次，键盘每按一次）；detail 为 `{ selection, data }`",
               "name": "brush-selection-change",
               "type": {
@@ -7011,6 +7042,22 @@
               "description": "提示框里各系列的行序，默认 series（按图例次序）",
               "name": "tooltip-order",
               "fieldName": "tooltipOrder"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "缩放窗口跟随最新的数据（受控）：窗口右端贴着数据末端时，新数据到来窗口随之右移；未提供该属性即非受控",
+              "name": "follow",
+              "fieldName": "follow"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控时初始是否跟随，默认 true",
+              "name": "default-follow",
+              "fieldName": "defaultFollow"
             },
             {
               "type": {

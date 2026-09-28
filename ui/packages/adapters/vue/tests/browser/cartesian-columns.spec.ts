@@ -159,3 +159,34 @@ describe('日 K 线', () => {
     }
   })
 })
+
+describe('流式', () => {
+  it('数据仓追加：窗口跟着末端走、数据表跟着长；键盘把焦点移回开头后停止跟随并派发 update:follow', async () => {
+    const store = createColumnStore({ fields: ['t', 'v'] })
+    for (let i = 0; i < 200; i++)
+      store.append({ t: T0 + i * 1000, v: 50 + Math.sin(i / 9) * 10 })
+    const windows: number[][] = []
+    const follows: boolean[] = []
+    const { host } = mount({
+      'data': store,
+      'series': [{ mark: 'line', x: 't', y: 'v', name: '价格' }],
+      'xAxis': { scale: 'utc' },
+      'zoom': 'x',
+      'defaultWindow': { x: [new Date(T0 + 150 * 1000), new Date(T0 + 199 * 1000)], y: null },
+      'onWindowChange': (details: { window: { x: Date[] | null } }) => windows.push((details.window.x ?? []).map(d => d.valueOf())),
+      'onUpdate:follow': (follow: boolean) => follows.push(follow),
+    })
+    await settle()
+    for (let i = 200; i < 210; i++)
+      store.append({ t: T0 + i * 1000, v: 50 })
+    await settle()
+    // 十次追加在同一帧里合成一次刷新：窗口只挪一次，右端落在最新的点上
+    expect(windows).toEqual([[T0 + 160 * 1000, T0 + 209 * 1000]])
+    expect(host.querySelectorAll('[data-part="table"] tbody tr')).toHaveLength(210)
+    part(host, 'plot')[0]!.focus()
+    await settle()
+    await userEvent.keyboard('{Home}')
+    await settle()
+    expect(follows).toEqual([false])
+  })
+})

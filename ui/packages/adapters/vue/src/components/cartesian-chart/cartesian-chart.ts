@@ -243,6 +243,8 @@ export const XhCartesianChartRoot = defineComponent({
     zoom: { type: String as PropType<CartesianZoom> },
     window: { type: Object as PropType<CartesianWindow> },
     defaultWindow: { type: Object as PropType<CartesianWindow> },
+    follow: { type: Boolean, default: undefined },
+    defaultFollow: { type: Boolean, default: undefined },
     brush: { type: String as PropType<CartesianBrush> },
     brushSelection: { type: Object as PropType<CartesianBrushSelection | null> },
     defaultBrushSelection: { type: Object as PropType<CartesianBrushSelection | null> },
@@ -262,6 +264,8 @@ export const XhCartesianChartRoot = defineComponent({
     'update:activeKey': (_key: PayloadOf<CartesianChartProps, 'onActiveKeyChange'>['activeKey']) => true,
     'window-change': (_details: PayloadOf<CartesianChartProps, 'onWindowChange'>) => true,
     'update:window': (_window: PayloadOf<CartesianChartProps, 'onWindowChange'>['window']) => true,
+    'follow-change': (_details: PayloadOf<CartesianChartProps, 'onFollowChange'>) => true,
+    'update:follow': (_follow: PayloadOf<CartesianChartProps, 'onFollowChange'>['follow']) => true,
     'brush-selection-change': (_details: PayloadOf<CartesianChartProps, 'onBrushSelectionChange'>) => true,
     'update:brushSelection': (_selection: PayloadOf<CartesianChartProps, 'onBrushSelectionChange'>['selection']) => true,
     'datum-active': (_details: PayloadOf<CartesianChartProps, 'onDatumActive'>) => true,
@@ -290,6 +294,10 @@ export const XhCartesianChartRoot = defineComponent({
       onWindowChange: (details) => {
         emit('window-change', details)
         emit('update:window', details.window)
+      },
+      onFollowChange: (details) => {
+        emit('follow-change', details)
+        emit('update:follow', details.follow)
       },
       onBrushSelectionChange: (details) => {
         emit('brush-selection-change', details)

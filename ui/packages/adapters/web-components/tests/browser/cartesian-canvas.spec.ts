@@ -133,3 +133,32 @@ describe('列式数据', () => {
     }
   })
 })
+
+describe('流式', () => {
+  it('数据仓追加时数据表按位置更新：已有的行节点原地复用；把窗口拖离末端派发 follow-change', async () => {
+    const chart = mount('auto')
+    const store = createColumnStore({ fields: ['t', 'v'] })
+    for (let i = 0; i < 20; i++)
+      store.append({ t: i, v: i % 5 })
+    chart.xAxis = { scale: 'linear' }
+    chart.series = [{ mark: 'line', x: 't', y: 'v', name: '读数' }]
+    chart.zoom = 'x'
+    chart.defaultWindow = { x: [10, 19], y: null }
+    chart.data = store
+    await frames()
+    const rows = () => [...chart.querySelectorAll('[data-part="table"] tbody tr')]
+    const first = rows()[0]
+    expect(rows()).toHaveLength(20)
+    store.append({ t: 20, v: 3 })
+    await frames()
+    expect(rows()).toHaveLength(21)
+    expect(rows()[0]).toBe(first)
+    const follows: boolean[] = []
+    chart.addEventListener('follow-change', event => follows.push((event as CustomEvent<{ follow: boolean }>).detail.follow))
+    part(chart, 'plot')[0]!.focus()
+    await frames()
+    await userEvent.keyboard('{Home}')
+    await frames()
+    expect(follows).toEqual([false])
+  })
+})
