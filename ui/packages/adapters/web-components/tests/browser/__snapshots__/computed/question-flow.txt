@@ -163,7 +163,7 @@ min-height: auto
 font-size: 14px
 line-height: 21px
 font-weight: 400
-color: rgba(0, 0, 0, 0)
+color: oklch(1 0 0)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color
 transition-duration: 0.12s, 0.12s, 0.12s
@@ -173,7 +173,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: rgba(0, 0, 0, 0)
+outline-color: oklch(1 0 0)
 
 [item-text]
 padding-top: 0px
