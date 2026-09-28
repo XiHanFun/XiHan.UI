@@ -32,7 +32,7 @@ import { sameArray as sameDates } from '../shared/array'
 import { calendarPeriodValue } from '../shared/calendar'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { resolveTimeStep } from '../shared/time-constraint'
-import { TIME_FIELD_HOUR_CYCLE } from '../time-field'
+import { resolveHourCycle } from '../time-field'
 import { datePickerAnatomy } from './date-picker.anatomy'
 import { DATE_PICKER_DEFAULT_PLACEMENT } from './date-picker.machine'
 import { datePickerPresetDates } from './date-picker.presets'
@@ -120,8 +120,8 @@ export function connectDatePicker<T extends PropTypes>(
   // —— showTime：值升格为 datetime，面板里多出时间列，收口交给确认按钮 ——
   const showTime = !!prop('showTime') && selectionMode === 'single'
   const timeGranularity = prop('timeGranularity') ?? 'minute'
-  // 小时制缺省 24，不随 locale 推断
-  const hourCycle = prop('hourCycle') ?? TIME_FIELD_HOUR_CYCLE
+  // 小时制缺省按 locale 推断，与 TimePicker / TimeRangePicker 同一口径
+  const hourCycle = resolveHourCycle(prop('hourCycle'), prop('locale'))
   const timeStep = resolveTimeStep(prop('timeStep'))
   const timeValue = showTime && value[0] != null ? datePickerTimePart(value[0]) : null
   // 这份时间落在哪一天：有值取值的日期段，没有就是点时间格时会落上的聚焦日

@@ -1282,10 +1282,14 @@ describe('showTime 的时间约束：小时制、步进、界与逐格判定', (
     expect(h.value()).toEqual(['2026-08-17T11:30'])
   })
 
-  it('缺省仍是 24 小时制，不随 locale 推断', () => {
-    const h = mount({ showTime: true, locale: 'en-US' })
-    expect(h.api().hourCycle).toBe(24)
-    expect(h.api().timeColumns.map(column => column.unit)).toEqual(['hour', 'minute'])
+  it('小时制缺省按 locale 推断，与 TimePicker 同一口径；显式给出时照给的', () => {
+    const us = mount({ showTime: true, locale: 'en-US' })
+    expect(us.api().hourCycle).toBe(12)
+    expect(us.api().timeColumns.map(column => column.unit)).toEqual(['hour', 'minute', 'dayPeriod'])
+    const cn = mount({ showTime: true, locale: 'zh-CN' })
+    expect(cn.api().hourCycle).toBe(24)
+    expect(cn.api().timeColumns.map(column => column.unit)).toEqual(['hour', 'minute'])
+    expect(mount({ showTime: true, locale: 'en-US', hourCycle: 24 }).api().hourCycle).toBe(24)
   })
 
   it('timeStep 按单位取样', () => {

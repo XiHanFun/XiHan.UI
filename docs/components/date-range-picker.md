@@ -160,7 +160,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `closeOnSelect` | `boolean` |  | 选完即收起，默认 true。两端都落定才视为选完；showTime 下不收，由确认按钮收口。 |
 | `showTime` | `boolean` |  | 一体化时间：两端都升格为 'YYYY-MM-DDTHH:mm[:ss]'（不带时区），输入行两组段位带上时刻段， 浮层里起止各多出一组时间列，选完日期不收起、由确认按钮收口。只在 granularity=day 下生效。 此时 min / max 可以带时间段：日历按日期段收，时间列在与它同一天时按时间段标不可选。 |
 | `timeGranularity` | `DatePickerTimeGranularity` |  | showTime 的时间段精度，默认 minute。 |
-| `hourCycle` | `TimeHourCycle` |  | showTime 的小时制，默认 24，不随 locale 推断。12 时两组时间列多出上下午列、两组段位多出上下午段。 |
+| `hourCycle` | `TimeHourCycle` |  | showTime 的小时制，缺省按 locale 推断（与 TimePicker 同一口径，没给 locale 时 24）。12 时两组时间列多出上下午列、两组段位多出上下午段。 |
 | `timeStep` | `TimeStep` |  | showTime 时间列按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。 |
 | `isTimeUnavailable` | `TimeUnavailablePredicate` |  | showTime 时间列的逐格可选性。value 是两位补零的格值，时列恒按 24 小时制给出； context 带这一端已选的时（24 小时制）与分、这一端所属的日期与端号（index）。 判定为真的格子仍可聚焦，只是按不下去。起止同一天时，终点列早于起点的时刻另由组件自己标不可选。 |
 | `defaultTime` | `[string, string]` |  | showTime 下只点日期时两端各补的时刻，例如 `['00:00:00', '23:59:59']`（区间查询最常用）。 只补还没有时刻的那一端：已挑过时刻的一端换日期时时刻原样留着。按 timeGranularity 归一，写坏的一端按零点补。 |

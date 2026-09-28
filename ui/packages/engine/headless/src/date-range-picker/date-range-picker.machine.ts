@@ -27,6 +27,7 @@ import { sameArray } from '../shared/array'
 import { sortIso } from '../shared/calendar'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { resolveHourCycle } from '../time-field'
 
 const { createMachine, guards } = setup<DateRangePickerSchema>()
 const { and } = guards
@@ -242,7 +243,7 @@ function dateRangePickerFieldPropsAt(
     value: valueAt(context.get('value'), index),
     // showTime 下一组段位承载完整的日期时间；日历仍只读日期段
     granularity: withTime ? dateRangePickerTimeGranularity(service) : DATE_PICKER_GRANULARITY,
-    hourCycle: withTime ? prop('hourCycle') : undefined,
+    hourCycle: withTime ? resolveHourCycle(prop('hourCycle'), prop('locale')) : undefined,
     // 段集在场时 granularity 让路；不给就走老路，年月日按 locale 排
     segments: prop('segments') ?? datePickerSegmentSet(prop('granularity')),
     min: prop('min'),

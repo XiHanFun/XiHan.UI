@@ -222,7 +222,7 @@ export interface DatePickerSchema extends MachineSchema {
     /** showTime 的时间段精度，默认 minute。 */
     timeGranularity?: DatePickerTimeGranularity
     /**
-     * showTime 的小时制，默认 24，不随 locale 推断。12 时时间列多出上下午列、输入行的时刻段后面多出上下午段；
+     * showTime 的小时制，缺省按 locale 推断（与 TimePicker 同一口径，没给 locale 时 24）。12 时时间列多出上下午列、输入行的时刻段后面多出上下午段；
      * 值仍是 24 小时制的 ISO 串。
      */
     hourCycle?: TimeHourCycle
