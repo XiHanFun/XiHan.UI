@@ -37775,7 +37775,6 @@
         "default",
         "direction",
         "empty",
-        "indeterminate",
         "is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])",
         "mode=send",
         "mode=stop",
@@ -67638,7 +67637,6 @@
         "disabled",
         "focus-visible",
         "hover",
-        "indeterminate",
         "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
@@ -86543,6 +86541,42 @@
       ],
       "visibility": "public",
       "description": "typography 的 text 部件 text-underline-offset 覆盖槽。"
+    },
+    {
+      "name": "--xh-virtualizer-sticky-bg",
+      "component": "virtualizer",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "fixed"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "virtualizer 的 item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-virtualizer-sticky-layer",
+      "component": "virtualizer",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "z-index"
+      ],
+      "state": [
+        "fixed"
+      ],
+      "defaultToken": [
+        "--xh-layer-sticky"
+      ],
+      "visibility": "public",
+      "description": "virtualizer 的 item 部件 z-index 覆盖槽。"
     },
     {
       "name": "--xh-watermark-fg",

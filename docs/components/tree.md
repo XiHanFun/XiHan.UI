@@ -529,7 +529,7 @@ lines 在每一层子节点的行首画一道竖线，对齐父节点的展开�
 
 动效角色：按压 · 状态 · 切换 · 循环（见[动效规范](../design/motion#角色)）。
 
-`-webkit-mask-size` · `background-color` · `box-shadow` · `color` · `mask-size` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `box-shadow` · `color` · `mask-size` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

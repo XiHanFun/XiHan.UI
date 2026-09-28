@@ -4354,6 +4354,8 @@ export type ComponentTokenName
     | '--xh-typography-text-fg-tone'
     | '--xh-typography-text-font-weight'
     | '--xh-typography-text-underline-offset'
+    | '--xh-virtualizer-sticky-bg'
+    | '--xh-virtualizer-sticky-layer'
     | '--xh-watermark-fg'
     | '--xh-watermark-image'
     | '--xh-watermark-layer'

@@ -414,7 +414,8 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `week-day` | `data-week-day` | undefined \| String(label.weekDay) |
 | `cell` | `data-drawing` | ''（条件成立时才出现） |
 | `cell` | `data-highlighted` | ''（条件成立时才出现） |
-| `cell` | `data-level` | String(level) |
+| `cell` | `data-level` | String(place.level) |
+| `cell` | `data-polarity` | place.polarity |
 | `tooltip` | `data-inline-anchor` | undefined \| tip.inlineAnchor |
 | `tooltip` | `data-placement` | undefined \| ((): 'block-start' \| 'block-end' =&gt; { if (activeRef =… |
 | `tooltip` | `data-state` | 'hidden' \| 'visible' |
