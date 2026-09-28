@@ -93,6 +93,21 @@ describe('approval：语气与行高', () => {
     expect(dark).not.toBe(resolveColor('--xh-action-brand-solid'))
   })
 
+  it('判定落定时根的描边换色走状态档：micro 时长 + enter 曲线，与别处状态换色同一拍', () => {
+    mountGate()
+    // 撤掉夹具为稳定态压成 0 的时长，量的是皮肤真实声明的那一档
+    host!.style.removeProperty('--xh-motion-duration-micro')
+    const probe = document.createElement('span')
+    probe.style.transition = 'border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)'
+    host!.append(probe)
+    const expected = getComputedStyle(probe)
+    const root = getComputedStyle(part('root'))
+    expect(root.transitionProperty).toBe('border-color')
+    expect(root.transitionDuration).toBe(expected.transitionDuration)
+    expect(root.transitionTimingFunction).toBe(expected.transitionTimingFunction)
+    probe.remove()
+  })
+
   it('授权行走正文行高，不吃家族的单行档', () => {
     mountGate()
     const item = part('item')

@@ -15716,7 +15716,8 @@
     border-radius: var(--xh-approval-radius, var(--xh-shape-surface));
     background: var(--xh-approval-bg, var(--xh-bg-surface));
     box-shadow: var(--xh-approval-shadow, none);
-    transition: border-color var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    /* 判定落定时描边随语气换色：属状态换色，与别处悬停、选中、校验的换色同一档 */
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */

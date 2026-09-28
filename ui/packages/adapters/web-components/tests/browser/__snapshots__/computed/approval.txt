@@ -341,8 +341,8 @@ font-weight: 400
 color: rgb(0, 0, 0)
 background-color: oklch(1 0 0)
 transition-property: border-color
-transition-duration: 0.2s
-transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
+transition-duration: 0.12s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1)
 animation-name: xh-item-in
 animation-duration: 0.2s
 animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
