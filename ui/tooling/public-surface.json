@@ -12782,6 +12782,7 @@
       "loop",
       "onValueChange",
       "orientation",
+      "readOnly",
       "size",
       "statuses",
       "tone",
@@ -20609,6 +20610,7 @@
         "linear",
         "loop",
         "orientation",
+        "read-only",
         "size",
         "tone",
         "value"

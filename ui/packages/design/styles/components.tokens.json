@@ -63601,7 +63601,8 @@
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled])",
+        "not([data-disabled], [data-readonly])",
+        "readonly",
         "state=completed"
       ],
       "defaultToken": [
@@ -63641,8 +63642,9 @@
       "state": [
         "disabled",
         "is(:active, [data-pressed])",
-        "not([data-disabled])",
+        "not([data-disabled], [data-readonly])",
         "pressed",
+        "readonly",
         "state=current"
       ],
       "defaultToken": [
@@ -63683,7 +63685,8 @@
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled])",
+        "not([data-disabled], [data-readonly])",
+        "readonly",
         "state=incomplete"
       ],
       "defaultToken": [
@@ -63706,8 +63709,9 @@
         "disabled",
         "is(:active, [data-pressed])",
         "is([data-state='incomplete'], [data-state='completed'])",
-        "not([data-disabled])",
+        "not([data-disabled], [data-readonly])",
         "pressed",
+        "readonly",
         "state=completed",
         "state=incomplete"
       ],
@@ -63916,7 +63920,8 @@
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled])",
+        "not([data-disabled], [data-readonly])",
+        "readonly",
         "state=incomplete"
       ],
       "defaultToken": [
@@ -64362,6 +64367,7 @@
       "state": [
         "default",
         "orientation=vertical",
+        "readonly",
         "xh-action-profile=row"
       ],
       "defaultToken": [

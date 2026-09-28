@@ -43,6 +43,8 @@ export interface XhStepsRootProps extends RootElementProps {
   /** 线性推进：尚未到达的步骤锁定，不可点击也不可跳过。 */
   linear?: boolean
   disabled?: boolean
+  /** 只读展示：不可点、不可聚焦、不置灰，语义换成有序列表，trigger 渲染为 div。 */
+  readOnly?: boolean
   loop?: boolean
   dir?: Direction
   translations?: Partial<StepsTranslations>
@@ -62,6 +64,7 @@ export function XhStepsRoot({
   orientation,
   linear,
   disabled,
+  readOnly,
   loop,
   dir,
   translations,
@@ -81,6 +84,7 @@ export function XhStepsRoot({
     orientation,
     linear,
     disabled,
+    readOnly,
     loop,
     dir,
     translations,
@@ -171,18 +175,14 @@ export function XhStepsTrigger({ children, ...rest }: XhStepsTriggerProps): Reac
   // 步骤自己的 onFocus 同样是不冒泡的 DOM focus：改装成原生监听器，与另外两家同一条到达路径
   const bind = useNativeEvents(ctx.api.getTriggerProps(item) as Record<string, unknown>, ['onFocus'])
 
-  return (
-    <button
-      {...mergeReactProps(
-        bind.attrs,
-        { ref: bind.ref },
-        rest as Record<string, unknown>,
-        { ref: (el: HTMLButtonElement | null) => { itemEl.current = el } },
-      )}
-    >
-      {children}
-    </button>
+  const props = mergeReactProps(
+    bind.attrs,
+    { ref: bind.ref },
+    rest as Record<string, unknown>,
+    { ref: (el: HTMLElement | null) => { itemEl.current = el } },
   )
+  // 只读展示的 trigger 只排版，不是按钮
+  return ctx.api.readOnly ? <div {...props}>{children}</div> : <button {...props}>{children}</button>
 }
 
 export interface XhStepsIndicatorProps extends ComponentPropsWithRef<'span'> {}

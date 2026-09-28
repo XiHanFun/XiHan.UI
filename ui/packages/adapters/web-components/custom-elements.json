@@ -57232,7 +57232,7 @@
               "name": "item"
             },
             {
-              "description": "role=tab 的步骤按钮（roving tabindex 落在它身上）",
+              "description": "role=tab 的步骤按钮（roving tabindex 落在它身上）；read-only 下是只排版的 div",
               "name": "trigger"
             },
             {
@@ -57319,6 +57319,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
             },
             {
               "kind": "field",
@@ -57517,6 +57526,14 @@
               "description": "整组不可交互，不保留 Tab 停靠点",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读展示：不可点、不可聚焦、不置灰，语义换成有序列表；此时 trigger 须写成 div",
+              "name": "read-only",
+              "fieldName": "readOnly"
             },
             {
               "type": {

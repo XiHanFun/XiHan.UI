@@ -48,6 +48,7 @@ function stepIndexOf(el: HTMLElement): number {
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
  * @attr {boolean} linear - 线性模式：无法跳到尚未到达的步（这些 trigger 一律禁用）
  * @attr {boolean} disabled - 整组不可交互，不保留 Tab 停靠点
+ * @attr {boolean} read-only - 只读展示：不可点、不可聚焦、不置灰，语义换成有序列表；此时 trigger 须写成 div
  * @attr {boolean} loop - 方向键到达末尾回绕，默认关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft / ArrowRight 的前后语义，默认 ltr
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
@@ -56,7 +57,7 @@ function stepIndexOf(el: HTMLElement): number {
  * @csspart root - 组件根容器（承载 data-orientation / data-complete / data-empty）
  * @csspart list - role=tablist 容器（方向键与 Tab 序列在此收口）
  * @csspart item - 单个步骤容器；作者在此写 value（身份）与可选 disabled
- * @csspart trigger - role=tab 的步骤按钮（roving tabindex 落在它身上）
+ * @csspart trigger - role=tab 的步骤按钮（roving tabindex 落在它身上）；read-only 下是只排版的 div
  * @csspart indicator - 序号 / 对勾圆点，对读屏隐藏
  * @csspart title - 步骤标题
  * @csspart description - 步骤说明
@@ -76,6 +77,7 @@ export class XhStepsElement extends XhElement {
     orientation: { converter: STRING_CONVERTER },
     linear: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     // 数组与对象进不了属性，只作为 property 暴露
@@ -93,6 +95,7 @@ export class XhStepsElement extends XhElement {
   declare orientation?: Orientation
   declare linear?: boolean
   declare disabled?: boolean
+  declare readOnly?: boolean
   declare loop?: boolean
   declare direction?: Direction
   declare collection?: StepNode[]
@@ -122,6 +125,7 @@ export class XhStepsElement extends XhElement {
       // 布尔属性缺席即 undefined，把缺省交回 connect
       linear: this.linear,
       disabled: this.disabled,
+      readOnly: this.readOnly,
       loop: this.loop,
       dir: this.direction,
       tone: this.tone,

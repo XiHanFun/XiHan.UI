@@ -46,6 +46,8 @@ export function connectSteps<T extends PropTypes>(
   const dir = prop('dir')
   const linear = !!prop('linear')
   const disabled = !!prop('disabled')
+  // 只读展示：换成有序列表语义，trigger 只排版，不聚焦、不接事件、不置灰
+  const readOnly = !!prop('readOnly')
   const loop = !!prop('loop')
   const listLabel = prop('translations')?.list
   const complete = count > 0 && value >= count
@@ -119,6 +121,7 @@ export function connectSteps<T extends PropTypes>(
     collection,
     complete,
     focusedStep,
+    readOnly,
     getItemState,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     goToNextStep: () => send({ type: 'STEP.NEXT' }),
@@ -138,65 +141,84 @@ export function connectSteps<T extends PropTypes>(
 
     // 键盘全在 list 上收口，条目只管声明自己。
     // 角色用 tablist/tab/tabpanel；第几步另由 trigger 上的 aria-current=step 与 posinset/setsize 说明。
-    getListProps: () => normalize.element({
-      ...parts.list.attrs,
-      'role': 'tablist',
-      // 作者给了名字才写：省略时读屏只报角色，指向不存在的名字更糟
-      'aria-label': listLabel,
-      'aria-orientation': orientation,
-      'data-orientation': orientation,
-      // 显式 true/false：省略是"没说"，显式 false 是"明确说了不是"
-      'aria-disabled': disabled ? 'true' : 'false',
-      // 焦点在组外时容器兜底进 Tab 序列，由 onFocus 转投给条目。
-      // 判据用 focusedStep 而非 anchor：anchor 可能指向没有对应条目的步序，那时无人认领 tabindex=0。
-      // 整组禁用时不给兜底。
-      'tabindex': disabled ? undefined : (focusedStep == null ? 0 : -1),
-      'onKeydown': (event: KeyboardEvent) => {
-        if (disabled)
-          return
-        // 轴跟随 orientation；不归导航管的键绝不 preventDefault。dir 只作用于水平轴
-        const intent = navIntentFromKey(event, { axis: orientation, dir })
-        if (intent) {
-          event.preventDefault()
-          navigate(event.currentTarget as HTMLElement, intent)
-          return
-        }
-        // 方向键只搬焦点、不改步序，切步要靠确认键
-        if (event.key === 'Enter' || event.key === ' ')
-          activate(event)
-      },
-      'onFocus': (event: FocusEvent) => {
-        if (disabled)
-          return
-        const list = event.currentTarget as HTMLElement
-        // 只有从组外进入才转投；组内往外退（Shift+Tab）时转投会把人困在组里
-        if (contains(list, event.relatedTarget as Node | null))
-          return
-        focusAnchor(list)
-      },
-      'onFocusout': (event: FocusEvent) => {
-        const list = event.currentTarget as HTMLElement
-        if (contains(list, event.relatedTarget as Node | null))
-          return
-        send({ type: 'LIST.BLUR' })
-      },
-    }),
+    // 只读展示没有可操作的条目：换成有序列表，不进 Tab 序列、不接键盘
+    getListProps: () => readOnly
+      ? normalize.element({
+          ...parts.list.attrs,
+          'role': 'list',
+          'aria-label': listLabel,
+          'data-orientation': orientation,
+        })
+      : normalize.element({
+          ...parts.list.attrs,
+          'role': 'tablist',
+          // 作者给了名字才写：省略时读屏只报角色，指向不存在的名字更糟
+          'aria-label': listLabel,
+          'aria-orientation': orientation,
+          'data-orientation': orientation,
+          // 显式 true/false：省略是"没说"，显式 false 是"明确说了不是"
+          'aria-disabled': disabled ? 'true' : 'false',
+          // 焦点在组外时容器兜底进 Tab 序列，由 onFocus 转投给条目。
+          // 判据用 focusedStep 而非 anchor：anchor 可能指向没有对应条目的步序，那时无人认领 tabindex=0。
+          // 整组禁用时不给兜底。
+          'tabindex': disabled ? undefined : (focusedStep == null ? 0 : -1),
+          'onKeydown': (event: KeyboardEvent) => {
+            if (disabled)
+              return
+            // 轴跟随 orientation；不归导航管的键绝不 preventDefault。dir 只作用于水平轴
+            const intent = navIntentFromKey(event, { axis: orientation, dir })
+            if (intent) {
+              event.preventDefault()
+              navigate(event.currentTarget as HTMLElement, intent)
+              return
+            }
+            // 方向键只搬焦点、不改步序，切步要靠确认键
+            if (event.key === 'Enter' || event.key === ' ')
+              activate(event)
+          },
+          'onFocus': (event: FocusEvent) => {
+            if (disabled)
+              return
+            const list = event.currentTarget as HTMLElement
+            // 只有从组外进入才转投；组内往外退（Shift+Tab）时转投会把人困在组里
+            if (contains(list, event.relatedTarget as Node | null))
+              return
+            focusAnchor(list)
+          },
+          'onFocusout': (event: FocusEvent) => {
+            const list = event.currentTarget as HTMLElement
+            if (contains(list, event.relatedTarget as Node | null))
+              return
+            send({ type: 'LIST.BLUR' })
+          },
+        }),
 
     getItemProps: (item) => {
       const s = getItemState(item)
       return normalize.element({
         ...parts.item.attrs,
+        // 只读展示下一步就是有序列表里的一项，当前步由它自己说
+        'role': readOnly ? 'listitem' : undefined,
+        'aria-current': readOnly && s.current ? 'step' : undefined,
         'data-orientation': orientation,
         'data-state': s.status,
         // 单步语气打在最外层：语气层在这一级重算颜色，indicator / title / separator 靠继承拿到
         'data-tone': s.tone,
-        // 禁用标记打在最外层，后代选择器才够得着 indicator / title / description
-        'data-disabled': dataAttr(s.disabled),
+        // 禁用标记打在最外层，后代选择器才够得着 indicator / title / description；只读展示不置灰
+        'data-disabled': dataAttr(s.disabled && !readOnly),
       })
     },
 
     getTriggerProps: (item) => {
       const s = getItemState(item)
+      // 只读展示：trigger 只是「序号 + 标题 + 说明」的排版容器，不投影 Action Control、不进 Tab 序列、不接事件
+      if (readOnly) {
+        return normalize.button({
+          ...parts.trigger.attrs,
+          'data-state': s.status,
+          'data-readonly': '',
+        })
+      }
       const handlers = press(item, s.disabled)
       return normalize.button({
         ...parts.trigger.attrs,
@@ -271,12 +293,13 @@ export function connectSteps<T extends PropTypes>(
 
     // 全部面板常挂靠 hidden 显隐，不做懒挂载，面板内的滚动位置与表单态才留得住。
     // 走到完成位时所有步骤面板收起，index 等于 count 的面板即完成页。
+    // 只读展示没有 tab 可指：面板只随步序显隐，不带 tabpanel 语义
     getContentProps: item => normalize.element({
       ...parts.content.attrs,
       'id': contentId(item.index),
-      'role': 'tabpanel',
-      'aria-labelledby': triggerId(item.index),
-      'tabindex': 0,
+      'role': readOnly ? undefined : 'tabpanel',
+      'aria-labelledby': readOnly ? undefined : triggerId(item.index),
+      'tabindex': readOnly ? undefined : 0,
       'hidden': item.index !== value || undefined,
       'data-state': getItemState(item).status,
     }),

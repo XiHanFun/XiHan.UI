@@ -102,6 +102,12 @@ export interface StepsSchema extends MachineSchema {
     linear?: boolean
     /** 整组不可交互：trigger 全部退出 Tab 序列，指针与键盘都不响应。 */
     disabled?: boolean
+    /**
+     * 只读展示：步骤只呈现进度，不可点、不可聚焦、不发事件，也不置灰。
+     * 语义从 tablist 换成有序列表（list / listitem，当前步 aria-current="step"），trigger 渲染为普通容器、只排版。
+     * 步序仍由 value / setValue 驱动。
+     */
+    readOnly?: boolean
     /** 方向键到达末尾是否回绕，默认 false。 */
     loop?: boolean
     /** 文字方向，默认 ltr；只影响水平轴上 ArrowLeft / ArrowRight 的前后语义。 */
@@ -160,6 +166,8 @@ export interface StepsApi<T extends PropTypes = PropTypes> {
   complete: boolean
   /** 焦点在组外时为 null。 */
   focusedStep: number | null
+  /** 只读展示：适配器据此把 trigger 渲染为普通容器而不是按钮。 */
+  readOnly: boolean
   getItemState: (props: StepsItemProps) => StepsItemState
   /**
    * 直接跳到某一步；越界会被夹回 [0, count]。

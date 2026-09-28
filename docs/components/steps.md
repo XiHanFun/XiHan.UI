@@ -42,6 +42,12 @@
 
 <XhDemo src="steps/04-error-step" />
 
+### 只读展示
+
+只呈现进度：步骤不可点、不可聚焦，也不置灰
+
+<XhDemo src="steps/05-read-only" />
+
 ## 设计指引
 
 ### 何时使用
@@ -61,6 +67,7 @@
 - 当前步骤使用实心强调标记，已完成步骤使用中性面加品牌对号。
 - `linear` 限制用户跳到尚未完成的步骤。
 - 方向键移动焦点，Enter 或空格切换步骤。
+- `readOnly` 是纯展示形态：只呈现进度，步骤不可点、不可聚焦、不发事件，标题与说明不置灰；语义换成有序列表（`list` / `listitem`，当前步 `aria-current="step"`），`trigger` 只负责排版。与 `disabled` 不同，`disabled` 是「本可操作、此刻不行」，会置灰。Vue / React 的 `trigger` 在只读下渲染为 `<div>`；Web Components 由作者把 `trigger` 写成 `<div>`。
 
 ### 组合
 
@@ -76,6 +83,7 @@
 
 - 不要在流程进行中改变步骤总数。
 - 不要用步骤条表示连续百分比进度。
+- 不要用 `disabled` 表达「只展示进度」：它会把每一步置灰，读屏也会念成一排不可用的按钮，改用 `readOnly`。
 
 ## API 参考
 
@@ -102,6 +110,7 @@
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal；不同轴的方向键放行给页面滚动与读屏。 |
 | `linear` | `boolean` |  | 线性模式：只能回到已走过的步。未解锁（index &gt; step）的 trigger 一律禁用。 只拦截跳转，goToNextStep 逐步前进照常可用。 |
 | `disabled` | `boolean` |  | 整组不可交互：trigger 全部退出 Tab 序列，指针与键盘都不响应。 |
+| `readOnly` | `boolean` |  | 只读展示：步骤只呈现进度，不可点、不可聚焦、不发事件，也不置灰。 语义从 tablist 换成有序列表（list / listitem，当前步 aria-current="step"），trigger 渲染为普通容器、只排版。 步序仍由 value / setValue 驱动。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只影响水平轴上 ArrowLeft / ArrowRight 的前后语义。 |
 | `translations` | `Partial<StepsTranslations>` |  |  |
@@ -181,6 +190,7 @@
 | `collection` | `readonly StepNodeMeta[]` | 由 collection 推导的步骤元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `complete` | `boolean` | 全部完成（value 到达 count）。此时没有任何一步是 current，作者据此渲染完成页。 |
 | `focusedStep` | `number \| null` | 焦点在组外时为 null。 |
+| `readOnly` | `boolean` | 只读展示：适配器据此把 trigger 渲染为普通容器而不是按钮。 |
 | `getItemState` | `(props: StepsItemProps) => StepsItemState` |  |
 | `setValue` | `(next: number) => void` | 直接跳到某一步；越界会被夹回 [0, count]。 不检查 linear：linear 只拦截界面上的跳转，不拦截作者的命令式调用。 |
 | `goToNextStep` | `() => void` |  |
@@ -220,7 +230,9 @@
 | `list` | `aria-disabled` | 'true' \| 'false' |
 | `list` | `aria-label` | props.translations.list |
 | `list` | `aria-orientation` | props.orientation |
-| `list` | `role` | 'tablist' |
+| `list` | `role` | 'list' |
+| `item` | `aria-current` | 'step' \| undefined |
+| `item` | `role` | 'listitem' \| undefined |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-current` | 'step' \| undefined |
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
@@ -230,8 +242,8 @@
 | `trigger` | `role` | 'tab' |
 | `indicator` | `aria-hidden` | 'true' |
 | `separator` | `aria-hidden` | 'true' |
-| `content` | `aria-labelledby` | `trigger` 部件的 id |
-| `content` | `role` | 'tabpanel' |
+| `content` | `aria-labelledby` | undefined \| `trigger` 部件的 id |
+| `content` | `role` | undefined \| 'tabpanel' |
 
 ## 样式参考
 
@@ -260,6 +272,7 @@
 | `item` | `data-tone` | s.tone |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `trigger` | `data-readonly` | '' |
 | `trigger` | `data-state` | s.status |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
@@ -289,12 +302,12 @@
 | `--xh-steps-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | steps 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-steps-indicator-bg` | `indicator` | `background` | `default` | `--xh-bg-subtle` | steps 的 indicator 部件 background 覆盖槽。 |
 | `--xh-steps-indicator-bg-completed` | `indicator` | `background` | `state=completed` | `--xh-bg-subtle` | steps 的 indicator 部件 background 覆盖槽。 |
-| `--xh-steps-indicator-bg-completed-hover` | `indicator`<br>`trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=completed` | `--xh-_steps-host-bg-hover` | steps 的 indicator、trigger 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-completed-hover` | `indicator`<br>`trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly`<br>`state=completed` | `--xh-_steps-host-bg-hover` | steps 的 indicator、trigger 部件 background 覆盖槽。 |
 | `--xh-steps-indicator-bg-current` | `indicator` | `background` | `state=current` | `--xh-_steps-accent` | steps 的 indicator 部件 background 覆盖槽。 |
-| `--xh-steps-indicator-bg-current-pressed` | `indicator`<br>`trigger` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`pressed`<br>`state=current` | `--xh-_tone-active` | steps 的 indicator、trigger 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-current-pressed` | `indicator`<br>`trigger` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled], [data-readonly])`<br>`pressed`<br>`readonly`<br>`state=current` | `--xh-_tone-active` | steps 的 indicator、trigger 部件 background 覆盖槽。 |
 | `--xh-steps-indicator-bg-disabled` | `indicator`<br>`item` | `background` | `disabled` | `--xh-bg-muted` | steps 的 indicator、item 部件 background 覆盖槽。 |
-| `--xh-steps-indicator-bg-hover` | `indicator`<br>`trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=incomplete` | `--xh-_steps-host-bg-hover` | steps 的 indicator、trigger 部件 background 覆盖槽。 |
-| `--xh-steps-indicator-bg-pressed` | `indicator`<br>`trigger` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`is([data-state='incomplete'], [data-state='completed'])`<br>`not([data-disabled])`<br>`pressed`<br>`state=completed`<br>`state=incomplete` | `--xh-_steps-host-bg-pressed` | steps 的 indicator、trigger 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-hover` | `indicator`<br>`trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly`<br>`state=incomplete` | `--xh-_steps-host-bg-hover` | steps 的 indicator、trigger 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-pressed` | `indicator`<br>`trigger` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`is([data-state='incomplete'], [data-state='completed'])`<br>`not([data-disabled], [data-readonly])`<br>`pressed`<br>`readonly`<br>`state=completed`<br>`state=incomplete` | `--xh-_steps-host-bg-pressed` | steps 的 indicator、trigger 部件 background 覆盖槽。 |
 | `--xh-steps-indicator-bg-toned` | `indicator`<br>`item` | `background` | `state=incomplete`<br>`tone` | `--xh-_tone-subtle` | steps 的 indicator、item 部件 background 覆盖槽。 |
 | `--xh-steps-indicator-border` | `indicator` | `border` | `default` | `transparent` | steps 的 indicator 部件 border 覆盖槽。 |
 | `--xh-steps-indicator-border-completed` | `indicator` | `border-color` | `state=completed` | `transparent` | steps 的 indicator 部件 border-color 覆盖槽。 |
@@ -305,7 +318,7 @@
 | `--xh-steps-indicator-fg-completed` | `indicator` | `color` | `state=completed` | `--xh-_steps-accent-mark` | steps 的 indicator 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-fg-current` | `indicator` | `color` | `state=current` | `--xh-_steps-on-accent` | steps 的 indicator 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-fg-disabled` | `indicator`<br>`item` | `color` | `disabled` | `--xh-fg-disabled` | steps 的 indicator、item 部件 color 覆盖槽。 |
-| `--xh-steps-indicator-fg-hover` | `indicator`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=incomplete` | `--xh-fg-default` | steps 的 indicator、trigger 部件 color 覆盖槽。 |
+| `--xh-steps-indicator-fg-hover` | `indicator`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly`<br>`state=incomplete` | `--xh-fg-default` | steps 的 indicator、trigger 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-fg-toned` | `indicator`<br>`item` | `color` | `state=incomplete`<br>`tone` | `--xh-_steps-accent-text` | steps 的 indicator、item 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-font-size` | `indicator` | `font-size` | `default` | `--xh-_steps-caption-font-size` | steps 的 indicator 部件 font-size 覆盖槽。 |
 | `--xh-steps-indicator-mark-size` | `indicator` | `--xh-icon-size` | `default` | `--xh-control-indicator-size` | steps 的 indicator 部件 --xh-icon-size 覆盖槽。 |
@@ -328,7 +341,7 @@
 | `--xh-steps-trigger-bg-hover` | `trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle` | steps 的 trigger 部件 background-color 覆盖槽。 |
 | `--xh-steps-trigger-bg-pressed` | `trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | steps 的 trigger 部件 background-color 覆盖槽。 |
 | `--xh-steps-trigger-gap` | `trigger` | `column-gap` | `default` | `--xh-control-gap-md` | steps 的 trigger 部件 column-gap 覆盖槽。 |
-| `--xh-steps-trigger-p` | `separator`<br>`trigger` | `margin-inline-start`<br>`padding-block`<br>`padding-inline` | `default`<br>`orientation=vertical`<br>`xh-action-profile=row` | `--xh-control-px-sm`<br>`--xh-space-1` | steps 的 separator、trigger 部件 margin-inline-start、padding-block、padding-inline 覆盖槽。 |
+| `--xh-steps-trigger-p` | `separator`<br>`trigger` | `margin-inline-start`<br>`padding-block`<br>`padding-inline` | `default`<br>`orientation=vertical`<br>`readonly`<br>`xh-action-profile=row` | `--xh-control-px-sm`<br>`--xh-space-1` | steps 的 separator、trigger 部件 margin-inline-start、padding-block、padding-inline 覆盖槽。 |
 | `--xh-steps-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | steps 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
