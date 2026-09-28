@@ -545,7 +545,9 @@
   }
 
   /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中。
-     尺寸读标记盒自己改接过的 --xh-icon-size：与盒同边长，随指示符档换档（见上面标记盒那块） */
+     尺寸读标记盒自己改接过的 --xh-icon-size：与盒同边长，随指示符档换档（见上面标记盒那块）。
+     勾与半选杠叠成两层遮罩，按状态只换两层的尺寸：离开半选淡出的那一段里横杠留着，
+     淡出播完才换回勾——不在淡出途中闪出一枚勾 */
   [data-scope='cascader'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
@@ -553,25 +555,27 @@
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
-    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    -webkit-mask: var(--xh-glyph-mark-check) center / 100% 100% no-repeat, var(--xh-glyph-mark-minus) center / 0 0 no-repeat;
+    mask: var(--xh-glyph-mark-check) center / 100% 100% no-repeat, var(--xh-glyph-mark-minus) center / 0 0 no-repeat;
+    transition:
+      -webkit-mask-size 0s var(--xh-motion-duration-micro),
+      mask-size 0s var(--xh-motion-duration-micro);
+  }
+
+  [data-scope='cascader'][data-part='item-indicator'][data-state='checked']:empty::before {
+    transition-delay: 0s;
   }
 
   /* 级联勾选的半选态只在皮肤自绘（:empty）时露面画横杠：
      作者塞了自己的选中图形时，半选放出来会顶着一个语义相反的勾，表达交还作者 */
   [data-scope='cascader'][data-part='item-indicator'][data-state='indeterminate']:empty {
-    visibility: visible;
+    opacity: 1;
   }
 
   [data-scope='cascader'][data-part='item-indicator'][data-state='indeterminate']:empty::before {
-    content: '';
-    display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    vertical-align: var(--xh-glyph-baseline-shift);
-    background-color: currentColor;
-    -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+    -webkit-mask-size: 0 0, 100% 100%;
+    mask-size: 0 0, 100% 100%;
+    transition-delay: 0s;
   }
 
   /* 家族按行的禁用降级标记色；半选横线也一并跟着 */
@@ -710,19 +714,26 @@
     block-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
     translate: 0 -50%;
     background-color: var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent));
-    visibility: hidden;
-    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    opacity: 0;
+    -webkit-mask: var(--xh-glyph-mark-check) center / 100% 100% no-repeat, var(--xh-glyph-mark-minus) center / 0 0 no-repeat;
+    mask: var(--xh-glyph-mark-check) center / 100% 100% no-repeat, var(--xh-glyph-mark-minus) center / 0 0 no-repeat;
+    /* 与列里的对号同一条淡变；离开半选时横杠留到淡出播完再换回勾 */
+    transition:
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      -webkit-mask-size 0s var(--xh-motion-duration-micro),
+      mask-size 0s var(--xh-motion-duration-micro);
   }
 
   [data-scope='cascader'][data-part='search-item'][data-state='checked']::after {
-    visibility: visible;
+    opacity: 1;
+    transition-delay: 0s;
   }
 
   [data-scope='cascader'][data-part='search-item'][data-state='indeterminate']::after {
-    visibility: visible;
-    -webkit-mask-image: var(--xh-glyph-mark-minus);
-    mask-image: var(--xh-glyph-mark-minus);
+    opacity: 1;
+    -webkit-mask-size: 0 0, 100% 100%;
+    mask-size: 0 0, 100% 100%;
+    transition-delay: 0s;
   }
 
   [data-scope='cascader'][data-part='search-item'][data-disabled]::after {

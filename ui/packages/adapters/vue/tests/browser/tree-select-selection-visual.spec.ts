@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhTreeSelectRoot } from '../../src'
+import { shownMask } from './glyph-mask'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -68,9 +69,9 @@ describe('树选择分支与叶子的统一选择反馈', () => {
         expect(getComputedStyle(one).backgroundColor).toBe('rgba(0, 0, 0, 0)')
         expect(getComputedStyle(one).color).toBe(getComputedStyle(two).color)
         expect(getComputedStyle(one).fontWeight).toBe(getComputedStyle(two).fontWeight)
-        expect(getComputedStyle(mark(one)).visibility).toBe('visible')
-        expect(getComputedStyle(mark(branch)).visibility).toBe(multiple ? 'visible' : 'hidden')
-        const mixedGlyph = getComputedStyle(mark(branch), '::before').maskImage
+        expect(getComputedStyle(mark(one)).opacity).toBe('1')
+        expect(getComputedStyle(mark(branch)).opacity).toBe(multiple ? '1' : '0')
+        const mixedGlyph = shownMask(mark(branch), '::before')
         if (multiple)
           expect(mark(branch).hasAttribute('data-indeterminate')).toBe(true)
         const text = branch.querySelector<HTMLElement>(`[data-part='branch-text']`)!.getBoundingClientRect()
@@ -78,11 +79,14 @@ describe('树选择分支与叶子的统一选择反馈', () => {
         expect(dir === 'ltr' ? box.left >= text.right : box.right <= text.left).toBe(true)
         await userEvent.click(branch)
         await nextTick()
+        // 对号按选中态淡变：读终值前把这一段过渡走完
+        for (const animation of document.getAnimations())
+          animation.finish()
         expect(branch.hasAttribute('data-selected')).toBe(true)
-        expect(getComputedStyle(mark(branch)).visibility).toBe('visible')
+        expect(getComputedStyle(mark(branch)).opacity).toBe('1')
         if (multiple) {
           expect(mark(branch).hasAttribute('data-indeterminate')).toBe(false)
-          expect(getComputedStyle(mark(branch), '::before').maskImage).not.toBe(mixedGlyph)
+          expect(shownMask(mark(branch), '::before')).not.toBe(mixedGlyph)
           expect(two.hasAttribute('data-selected')).toBe(true)
         }
         const trigger = branch.querySelector<HTMLElement>(`[data-part='branch-trigger']`)!
@@ -90,7 +94,7 @@ describe('树选择分支与叶子的统一选择反馈', () => {
         await nextTick()
         expect(row('group', 'branch').getAttribute('aria-expanded')).toBe('false')
         expect(branch.hasAttribute('data-selected')).toBe(true)
-        expect(getComputedStyle(mark(branch)).visibility).toBe('visible')
+        expect(getComputedStyle(mark(branch)).opacity).toBe('1')
       })
     }
   }

@@ -24,6 +24,7 @@ import {
   XhCascaderValueText,
   XhIcon,
 } from '../../src'
+import { shownMask } from './glyph-mask'
 import { pseudoBox } from './pseudo-box'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -174,7 +175,7 @@ describe.each(['comfortable', 'compact'] as const)('级联选择器自绘状态�
     const mark = indicatorOf('shanghai')
     expect(item('shanghai').getAttribute('data-state')).toBe('checked')
     expect(mark.childNodes.length, '空标记盒才由皮肤画兜底的勾').toBe(0)
-    expect(getComputedStyle(mark).visibility).toBe('visible')
+    expect(getComputedStyle(mark).opacity).toBe('1')
     expect(getComputedStyle(mark, '::before').maskImage, '兜底字形是勾').not.toBe('none')
     const rect = mark.getBoundingClientRect()
     expect(rect.width, `标记盒 ${rect.width}×${rect.height}`).toBe(indicator)
@@ -192,8 +193,8 @@ describe.each(['comfortable', 'compact'] as const)('级联选择器自绘状态�
     const mark = indicatorOf('east')
     expect(item('east').getAttribute('data-state')).toBe('indeterminate')
     expect(mark.getAttribute('data-state')).toBe('indeterminate')
-    expect(getComputedStyle(mark).visibility).toBe('visible')
-    expect(getComputedStyle(mark, '::before').maskImage).not.toBe(getComputedStyle(indicatorOf('shanghai'), '::before').maskImage)
+    expect(getComputedStyle(mark).opacity).toBe('1')
+    expect(shownMask(mark, '::before')).not.toBe(shownMask(indicatorOf('shanghai'), '::before'))
     expect(mark.getBoundingClientRect().width).toBe(indicator)
     const minus = pseudoBox(mark, '::before')
     const observed = describeGlyph(mark, '::before')
@@ -243,7 +244,7 @@ describe.each(['comfortable', 'compact'] as const)('级联选择器自绘状态�
     await search('上海')
     const result = searchItem('区域 / 华东 / 上海')
     expect(result.getAttribute('data-state')).toBe('checked')
-    expect(getComputedStyle(result, '::after').visibility).toBe('visible')
+    expect(getComputedStyle(result, '::after').opacity).toBe('1')
     const check = pseudoBox(result, '::after')
     const observed = describeGlyph(result, '::after')
     expect(check.width, observed).toBe(indicator)

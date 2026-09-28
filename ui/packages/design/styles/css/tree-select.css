@@ -562,7 +562,7 @@
   /* 家族只按行的 aria-selected 显示对号：分支行的 aria-selected 在 branch 上、半选没有选中语义，
      这两档按标记自身的 data-selected / data-indeterminate 显形 */
   [data-scope='tree-select'][data-part='item-indicator']:is([data-selected], [data-indeterminate]) {
-    visibility: visible;
+    opacity: 1;
   }
 
   /* 分支行的禁用不在行的 aria-disabled 上（那在 branch 上），标记按自身的 data-disabled 降级 */
@@ -642,6 +642,8 @@
     mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
   }
 
+  /* 勾与半选杠叠成两层遮罩，按状态只换两层的尺寸：离开半选淡出的那一段里横杠留着，
+     淡出播完才换回勾——不在淡出途中闪出一枚勾 */
   [data-scope='tree-select'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
@@ -649,13 +651,21 @@
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
-    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    -webkit-mask: var(--xh-glyph-mark-check) center / 100% 100% no-repeat, var(--xh-glyph-mark-minus) center / 0 0 no-repeat;
+    mask: var(--xh-glyph-mark-check) center / 100% 100% no-repeat, var(--xh-glyph-mark-minus) center / 0 0 no-repeat;
+    transition:
+      -webkit-mask-size 0s var(--xh-motion-duration-micro),
+      mask-size 0s var(--xh-motion-duration-micro);
+  }
+
+  [data-scope='tree-select'][data-part='item-indicator'][data-selected]:empty::before {
+    transition-delay: 0s;
   }
 
   [data-scope='tree-select'][data-part='item-indicator'][data-indeterminate]:not([data-selected]):empty::before {
-    -webkit-mask-image: var(--xh-glyph-mark-minus);
-    mask-image: var(--xh-glyph-mark-minus);
+    -webkit-mask-size: 0 0, 100% 100%;
+    mask-size: 0 0, 100% 100%;
+    transition-delay: 0s;
   }
 
   [data-scope='tree-select'][data-part='branch-trigger']:empty::before,

@@ -20,6 +20,7 @@ import {
   XhTreeRoot,
   XhTreeTree,
 } from '../../src'
+import { shownMask } from './glyph-mask'
 import { pseudoBox } from './pseudo-box'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -144,7 +145,7 @@ describe.each(['comfortable', 'compact'] as const)('树自绘状态字形按指�
     const index = part('item', 0)
     const mark = index.querySelector<HTMLElement>('[data-part="item-indicator"]')!
     expect(index.getAttribute('aria-selected')).toBe('true')
-    expect(getComputedStyle(mark).visibility).toBe('visible')
+    expect(getComputedStyle(mark).opacity).toBe('1')
     expect(mark.getBoundingClientRect().width).toBe(indicator)
     const check = pseudoBox(mark, '::before')
     const observed = describeGlyph(mark, '::before')
@@ -164,11 +165,11 @@ describe.each(['comfortable', 'compact'] as const)('树自绘状态字形按指�
     const leafMark = part('item', 0).querySelector<HTMLElement>('[data-part="item-indicator"]')!
     expect(branchMark.hasAttribute('data-indeterminate')).toBe(true)
     expect(branchMark.hasAttribute('data-selected')).toBe(false)
-    expect(getComputedStyle(branchMark).visibility).toBe('visible')
+    expect(getComputedStyle(branchMark).opacity).toBe('1')
     const bar = pseudoBox(branchMark, '::before')
     expect(bar.width, describeGlyph(branchMark, '::before')).toBe(indicator)
     // 半选画的是横杠，不是勾
-    expect(getComputedStyle(branchMark, '::before').maskImage).not.toBe(getComputedStyle(leafMark, '::before').maskImage)
+    expect(shownMask(branchMark, '::before')).not.toBe(shownMask(leafMark, '::before'))
   })
 
   it('叶子行由行盒补出首格占位，与箭头盒同一把尺；摆没摆对号的叶子文字对齐', async () => {
