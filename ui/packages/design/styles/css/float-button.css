@@ -356,7 +356,7 @@
     cursor: not-allowed;
   }
 
-  /* 交错的间隔：第二条起逐级往后推，第六条起统一钉在第五级，
+  /* 交错的间隔：第二条起逐级往后推，第五条起统一钉在第四级——与收起、与列表动效同一个封顶，
      动作再多也不会拖出一条越来越慢的尾巴 */
   [data-scope='float-button'][data-part='list'] > *:nth-child(2) {
     animation-delay: var(--xh-motion-stagger-step);
@@ -370,12 +370,8 @@
     animation-delay: calc(3 * var(--xh-motion-stagger-step));
   }
 
-  [data-scope='float-button'][data-part='list'] > *:nth-child(5) {
+  [data-scope='float-button'][data-part='list'] > *:nth-child(n + 5) {
     animation-delay: calc(4 * var(--xh-motion-stagger-step));
-  }
-
-  [data-scope='float-button'][data-part='list'] > *:nth-child(n + 6) {
-    animation-delay: calc(5 * var(--xh-motion-stagger-step));
   }
 
   /* 收起：逆着冒出的次序逐条缩回，离触发器最远的先走、最近的最后收，连接层等它们播完才藏起展开组。
@@ -412,6 +408,12 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
     mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
+    /* 原地的小幅转动：展开后「+」转 45° 成「×」，读得出再按一下就收起；减弱动效下即刻到位 */
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='float-button'][data-part='trigger'][data-state='open']:empty::before {
+    rotate: 45deg;
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
