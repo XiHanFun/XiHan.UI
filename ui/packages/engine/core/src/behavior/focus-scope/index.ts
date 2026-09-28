@@ -93,7 +93,10 @@ function dispatchAutoFocus(
 }
 
 export interface FocusScopeHandle extends Disposable {
-  /** 失活后恢复同一个焦点域，不重复派发挂载事件或重建归还资格。 */
+  /**
+   * 失活后恢复同一个焦点域，不重复派发挂载事件或重建归还资格。
+   * 落点依次取这一次的 initialFocus、上次聚焦的控件、第一个可聚焦元素、容器本身。
+   */
   reactivate: () => void
   /**
    * 立即归还焦点，不等卸载。层在退场期间仍要保留资源（遮罩、模态、焦点域本身）时，
@@ -634,7 +637,11 @@ export function createFocusScope(o: FocusScopeOptions): FocusScopeHandle {
       const el = container()
       if (!el?.isConnected)
         return
+      // 重开（退场途中又打开）等于一次新打开：先按这一次的初始焦点落位（菜单按 ArrowUp 打开要落末项），
+      // 没给或给空才回到上次聚焦的控件
+      const initial = o.initialFocus?.() ?? null
       const candidates = [
+        ...(initial?.isConnected && isInScope(initial) ? [initial] : []),
         ...(lastFocused?.isConnected && isInScope(lastFocused) ? [lastFocused] : []),
         ...removeLinks(getTabbables(el)),
         el,
