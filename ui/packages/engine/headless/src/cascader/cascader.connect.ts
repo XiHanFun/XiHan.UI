@@ -852,23 +852,28 @@ export function connectCascader<T extends PropTypes>(
       // 子列的名字取展开它的那个条目；父条目不在任何可见列里时退回组件标题，避免悬空 IDREF
       const above = column.level > 0 ? activePath[column.level - 1] : undefined
       const parent = above != null && isVisible(above) ? above : undefined
+      // 懒分支的子列在途或失败时里面还没有条目，只有状态提示与重试钮：它此刻不是列表框，
+      // listbox 只许拥有 option 与 group，挂着 status / alert / button 就成了坏结构。取回之后才换回列表框
+      const loadStatus = columnLoad(column)?.state.status
+      const listbox = loadStatus !== 'loading' && loadStatus !== 'error'
       return normalize.element({
         ...parts.column.attrs,
         // 一列就是一个列表框，条目的 role=option 需要 listbox 容器
-        'role': 'listbox',
-        'aria-orientation': 'vertical',
+        'role': listbox ? 'listbox' : undefined,
+        'aria-orientation': listbox ? 'vertical' : undefined,
         // 显式输出复选与否，省略时读屏无从区分
-        'aria-multiselectable': multiple ? 'true' : 'false',
-        'aria-disabled': disabled ? 'true' : 'false',
+        'aria-multiselectable': listbox ? (multiple ? 'true' : 'false') : undefined,
+        'aria-disabled': listbox ? (disabled ? 'true' : 'false') : undefined,
         // 没有父条目可指的列（根列，以及展开路径砍短后收起的那几列）名字与 trigger 同源：
         // 标签 + 当前值。指针打开时焦点歇在根列上，读屏此刻只报得出它的名字与角色；
         // 作者没渲染 label / value-text 时两段都是悬空 IDREF，按 accname 规则整条落空，
         // 名字退回下面那个可写的兜底
-        'aria-labelledby': parent == null ? `${ids.label} ${ids['value-text']}` : itemId(parent),
-        'aria-label': parent == null ? translations.column : undefined,
+        // 不是列表框的那一刻不带名字：没有角色的容器不许命名
+        'aria-labelledby': !listbox ? undefined : parent == null ? `${ids.label} ${ids['value-text']}` : itemId(parent),
+        'aria-label': listbox && parent == null ? translations.column : undefined,
         'data-level': String(column.level),
         // 懒分支的子列正在取数：读屏据此知道这一列的条目还在路上
-        'aria-busy': columnLoad(column)?.state.status === 'loading' ? 'true' : undefined,
+        'aria-busy': loadStatus === 'loading' ? 'true' : undefined,
         // 没有锚点条目时（指针打开且无选中值）由根列认领 Tab 位并接住焦点：
         // 它是 role=listbox 且有名字，读屏据此进焦点模式；浮层壳没有角色，接不了这个班。
         // 其余情况一律 -1——可滚动容器会被某些浏览器自动塞进 Tab 序
