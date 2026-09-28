@@ -36,10 +36,15 @@ function running(el: HTMLElement, name: string): Animation {
 }
 
 describe('抽屉的整幅推入', () => {
+  // 挂载之后再打开：挂载即开的那一段属于首帧、直接呈现，量的是用户打开时的推入
   async function openDrawer(): Promise<HTMLElement> {
-    await mount(() => h(XhDrawerRoot, { defaultOpen: true }, () => [
+    const open = ref(false)
+    await mount(() => h(XhDrawerRoot, { 'open': open.value, 'onUpdate:open': (next: boolean) => (open.value = next) }, () => [
       h(XhDrawerContent, null, () => [h(XhDrawerTitle, null, () => '设置')]),
     ]))
+    open.value = true
+    await nextTick()
+    await nextTick()
     return part('drawer', 'content')
   }
 
