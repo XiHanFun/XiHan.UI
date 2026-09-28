@@ -31,6 +31,11 @@ import {
   XhNotificationItemContent,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
+  XhPopconfirmConfirmTrigger,
+  XhPopconfirmContent,
+  XhPopconfirmPositioner,
+  XhPopconfirmRoot,
+  XhPopconfirmTrigger,
   XhSwitch,
 } from '../../src'
 // 皮肤与令牌一起加载：这里查的就是皮肤算出来的取值
@@ -222,6 +227,38 @@ describe('取数与写入在途的转圈', () => {
     expect(beforeOf(trigger, 'transition-delay')).toBe('0s')
     await expect.poll(() => styleOf(trigger, 'color')).toBe(foreground)
     await expect.poll(() => beforeOf(trigger, 'opacity')).toBe('0')
+  })
+
+  it('确认钮挂起：环压在钮正中、等一个 micro 才淡入，确认文案同刻淡出留位；落定不等', async () => {
+    await mount(() => h(XhPopconfirmRoot, { open: true }, () => [
+      h(XhPopconfirmTrigger, null, () => '删'),
+      h(XhPopconfirmPositioner, null, () => [
+        h(XhPopconfirmContent, null, () => [h(XhPopconfirmConfirmTrigger, null, () => '确认')]),
+      ]),
+    ]))
+    // 浮层进场带一段缩放，量宽要等它播完
+    await settled()
+    const trigger = part('popconfirm', 'confirm-trigger')
+    const width = trigger.getBoundingClientRect().width
+    const foreground = styleOf(trigger, 'color')
+    expect(trigger.getAttribute('data-xh-loading-ring')).toBe('overlay')
+    // 挂起由宿主返回的 Promise 决定；这一档皮肤只认属性，直接把连接层挂起时发的几位摆上去
+    const pending = (on: boolean): void => {
+      for (const name of ['aria-busy', 'aria-disabled'])
+        on ? trigger.setAttribute(name, 'true') : trigger.removeAttribute(name)
+      trigger.toggleAttribute('data-loading', on)
+    }
+    pending(true)
+    expect(beforeOf(trigger, 'animation-name')).toBe('xh-spin')
+    expect(beforeOf(trigger, 'position')).toBe('absolute')
+    expect(beforeOf(trigger, 'transition-delay')).toBe('0.12s')
+    expect(beforeOf(trigger, 'border-top-color')).toBe(foreground)
+    await expect.poll(() => Number.parseFloat(beforeOf(trigger, 'opacity'))).toBeGreaterThan(0.9)
+    await expect.poll(() => styleOf(trigger, 'color')).toBe('rgba(0, 0, 0, 0)')
+    expect(trigger.getBoundingClientRect().width).toBeCloseTo(width, 4)
+    pending(false)
+    expect(beforeOf(trigger, 'transition-delay')).toBe('0s')
+    await expect.poll(() => styleOf(trigger, 'color')).toBe(foreground)
   })
 
   it('复制钮的转圈时长认使用者槽', async () => {

@@ -20,7 +20,7 @@
 - 位置、尺寸、语气三轴。
 - 内容与箭头使用与 Popover 同源的 M2 磨砂表面：边界、顶光、背景模糊与投影保持连续；强制色模式撤掉装饰顶光，由系统色接管边界。
 - 标题、说明与末行操作按固定节奏排布，长文案可在可用宽度内断行；说明文字为 13px 说明档。触发器与两个按钮走 Action Control 家族配方：确认是本浮层的主要动作，显式 solid 实心（语气随 content 的 `data-tone`）；取消是中性次要出口，outline 描边；触发器为 text 档中性描边。三者的按压反馈、粗指针命中区与焦点环由配方给出，Space / Enter 与触屏按住期间投影 `data-pressed`。
-- pending 时在确认文案之前显示 spinner，并以 `aria-busy` / `aria-disabled` 报告状态；挂起时按钮不再响应 hover / active 换面，减弱动效下以静止点线圆环表达在途。
+- pending 时确认钮宽不变：一个 micro 之后加载环在钮正中淡入、确认文案同刻淡出留位，快速落定什么都不闪；以 `aria-busy` / `aria-disabled` 报告状态，挂起时按钮不再响应 hover / active 换面，减弱动效下以静止点线圆环表达在途。
 
 ## 组合
 
