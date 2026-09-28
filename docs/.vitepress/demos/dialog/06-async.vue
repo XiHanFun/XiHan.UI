@@ -44,7 +44,7 @@ function submit() {
             取消
           </XhButton>
           <XhButton variant="solid" :loading="submitting" @click="submit">
-            <XhButtonIndicator v-if="submitting" />
+            <XhButtonIndicator />
             <XhButtonLabel>{{ submitting ? "归档中" : "确认归档" }}</XhButtonLabel>
           </XhButton>
         </div>

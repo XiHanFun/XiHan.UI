@@ -84,7 +84,13 @@ export function connectButton<T extends PropTypes>(
       'onPointerCancel': press.onPointerCancel,
     }),
     getLabelProps: () => normalize.element({ ...parts.label.attrs }),
-    getIndicatorProps: () => normalize.element({ ...parts.indicator.attrs, 'aria-hidden': true }),
+    // 在途指示压在钮上：部件空着时由加载环配方画环，进入在途一个 micro 之后才淡入
+    getIndicatorProps: () => normalize.element({
+      ...parts.indicator.attrs,
+      'aria-hidden': true,
+      'data-xh-loading-ring': 'overlay',
+      'data-loading': dataAttr(loading),
+    }),
     getPrefixProps: () => normalize.element({ ...parts.prefix.attrs, 'aria-hidden': true }),
     getSuffixProps: () => normalize.element({ ...parts.suffix.attrs, 'aria-hidden': true }),
   }

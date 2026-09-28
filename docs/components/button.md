@@ -97,14 +97,14 @@
 - 支持四种变体、六种颜色和三种尺寸。
 - 缺省变体是品牌实心 `solid`，这是按钮独有的缺省；其余触发器缺省中性。
 - 支持文字、图标、图标加文字与全宽按钮。
-- `loading` 保留焦点并阻止重复操作。
+- `loading` 保留焦点并阻止重复操作。在途时钮宽不变：进入在途一个 micro 之后，加载环在钮正中淡入、原有内容同刻淡出留位；不到一个 micro 就结束的请求什么都不闪，退出在途时两者交叉淡回。
 - `as="a"` 保留原生链接能力。
 - 应用设为 `data-material="liquid"` 时，实心按钮在细指针悬停的一刻有一道光沿描边扫过一次；光只走描边、不进面，文字对比不受影响。粗指针、减弱动效与强制色下不播。
 
 ### 组合
 
 - 使用 `prefix` 与 `suffix` 放置图标。
-- 使用 `indicator` 提供加载图形。
+- 放一个空的 `indicator`，在途时由库在钮正中画加载环；也可以往里放自己的图形，按同一节拍淡入淡出并转。
 - 使用[按钮组](./button-group)组合相关操作。
 
 ### 最佳实践
@@ -230,6 +230,8 @@
 | `root` | `data-xh-action-size` | props.size |
 | `root` | `data-xh-action-variant` | props.variant |
 | `root` | `data-xh-ink-surface` | ''（条件成立时才出现） |
+| `indicator` | `data-loading` | ''（条件成立时才出现） |
+| `indicator` | `data-xh-loading-ring` | 'overlay' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -252,7 +254,7 @@
 | `--xh-button-radius` | `root` | `border-radius` | `default` | `--xh-_button-radius` | button 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-button-shadow` | `root` | `box-shadow` | `default` | `none` | button 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-button-shadow-hover` | `root` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | button 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-button-spin-duration` | `indicator`<br>`root` | `animation` | `loading` | `--xh-motion-loop-spin` | button 的 indicator、root 部件 animation 覆盖槽。 |
+| `--xh-button-spin-duration` | `indicator` | `animation` | `default` | `--xh-motion-loop-spin` | button 的 indicator 部件 animation 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -261,7 +263,7 @@
 
 可覆盖的动效槽：`--xh-button-glint-duration` · `--xh-button-spin-duration`。
 
-共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

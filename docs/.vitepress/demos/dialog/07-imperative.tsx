@@ -91,7 +91,7 @@ export default function Demo(): ReactNode {
                     取消
                   </XhButton>
                   <XhButton variant="solid" loading={current.loading} onClick={submit}>
-                    {current.loading ? <XhButtonIndicator /> : null}
+                    <XhButtonIndicator />
                     <XhButtonLabel>{current.confirmLabel}</XhButtonLabel>
                   </XhButton>
                 </div>
