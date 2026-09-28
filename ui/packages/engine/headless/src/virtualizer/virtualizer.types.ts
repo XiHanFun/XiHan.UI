@@ -7,12 +7,12 @@
 
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { VirtualizerAlign } from './virtualizer.geometry'
-import type { VirtualizerKernel } from './virtualizer.kernel'
+import type { VirtualizerAnchor, VirtualizerKernel, VirtualizerScrollContainer } from './virtualizer.kernel'
 import type { VirtualizerItemState, VirtualizerSnapshot } from './virtualizer.sizing'
 
 /**
  * 计算内核实例。区间、实测尺寸账本、多列分道全在它那一侧，本组件只负责它的生命周期与接线。
- * 滚动容器与条目都是 HTMLElement，不支持以 window 为滚动容器的形态。
+ * 滚动容器可以是视口节点自己，也可以是整个窗口（scrollContainer）。
  */
 export type VirtualizerCore = VirtualizerKernel
 
@@ -102,8 +102,21 @@ export interface VirtualizerSchema extends MachineSchema {
     paddingEnd?: number
     /** 多列网格的列数，默认 1（单列）。条目按下标轮流落到各列上。 */
     lanes?: number
-    /** viewport 的 Tab 位；独立列表默认 0，组合进有自身焦点模型的集合时设为 -1。 */
+    /** viewport 的 Tab 位；独立列表默认 0，组合进有自身焦点模型的集合时设为 -1。window 形态下视口不滚动，不占 Tab 位。 */
     viewportTabIndex?: number
+    /**
+     * 滚动容器：viewport（缺省）是视口节点自己滚；window 是列表铺在页面里、随整页滚动，
+     * 列表在页面里的起点由内核现量，不必再给 scrollMargin。
+     */
+    scrollContainer?: VirtualizerScrollContainer
+    /**
+     * 条目增删时钉住哪一头。start（缺省）把视口里第一条按身份放回原处：往前插入条目（向上翻出历史）视口不跳，
+     * 需要 getItemKey 给出稳定身份。end 另外从底部看起、已经滚到底时内容再长也继续贴底（聊天流），
+     * 列表不足一屏时条目贴着底部排。
+     */
+    anchor?: VirtualizerAnchor
+    /** 钉在视口起点的条目下标（分组标题）：滚过它之后它一直钉着，直到下一个钉住的条目接替。 */
+    stickyIndices?: number[]
   }
   context: {
     /** 应渲染内容的唯一事实源。连接层只读取它，不涉及任何 DOM。 */

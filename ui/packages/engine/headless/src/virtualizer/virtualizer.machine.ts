@@ -36,6 +36,10 @@ function kernelOptions(p: MachineParams, onChange: () => void): VirtualizerKerne
     paddingEnd: p.prop('paddingEnd') ?? 0,
     scrollMargin: p.prop('scrollMargin') ?? 0,
     getItemKey: p.prop('getItemKey'),
+    scrollContainer: p.prop('scrollContainer') ?? 'viewport',
+    anchor: p.prop('anchor') ?? 'start',
+    stickyIndices: p.prop('stickyIndices'),
+    getContentElement: () => p.refs.get('getContentEl')(),
     onChange,
   }
 }
@@ -103,6 +107,9 @@ export const virtualizerMachine = createMachine({
         () => prop('paddingEnd'),
         () => prop('scrollMargin'),
         () => prop('getItemKey'),
+        () => prop('scrollContainer'),
+        () => prop('anchor'),
+        () => prop('stickyIndices'),
       ],
       () => action(['syncOptions']),
     )

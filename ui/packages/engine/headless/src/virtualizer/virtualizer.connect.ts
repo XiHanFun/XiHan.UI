@@ -29,6 +29,8 @@ export function connectVirtualizer<T extends PropTypes>(
   const lanes = resolveVirtualizerLanes(prop('lanes'))
   const scrolling = state.get() === 'scrolling'
   const orientation = horizontal ? 'horizontal' : 'vertical'
+  const windowScroll = prop('scrollContainer') === 'window'
+  const anchor = prop('anchor') ?? 'start'
 
   /**
    * 计算内核现取，渲染期一次都不问它：connect 在 Vue 的 render 期求值，此刻内核还没建起来。
@@ -127,11 +129,15 @@ export function connectVirtualizer<T extends PropTypes>(
     }),
 
     // 滚动一概不接管：这层是原生的 overflow 容器，滚轮与各滚动键全部走浏览器原生通路。
-    // tabindex=0 让长列表在没有可聚焦元素时也能被键盘落入
+    // tabindex=0 让长列表在没有可聚焦元素时也能被键盘落入。
+    // window 形态下这层不滚动，整页的滚动键本就归页面，不再占 Tab 位
     getViewportProps: () => normalize.element({
       ...parts.viewport.attrs,
-      'tabindex': prop('viewportTabIndex') ?? 0,
+      'tabindex': windowScroll ? undefined : (prop('viewportTabIndex') ?? 0),
       'data-orientation': orientation,
+      'data-scroll-container': windowScroll ? 'window' : undefined,
+      // 缺省的 start 不写：贴底形态才要皮肤把不足一屏的内容推到底部
+      'data-anchor': anchor === 'end' ? 'end' : undefined,
     }),
 
     getContentProps: () => normalize.element({
@@ -153,6 +159,7 @@ export function connectVirtualizer<T extends PropTypes>(
         'data-index': props.index,
         'data-orientation': orientation,
         'data-lane': item ? item.lane : undefined,
+        'data-fixed': dataAttr(item?.sticky),
         // 不在窗口里就只收起来，不卸载作者节点
         'hidden': item ? undefined : true,
         'style': virtualizerItemStyle(item, { horizontal, lanes }),

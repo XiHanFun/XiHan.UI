@@ -5,7 +5,7 @@
 
 // 提供 virtualizer 相关实现。
 
-import type { VirtualizerApi, VirtualizerSchema } from '@xihan-ui/headless'
+import type { VirtualizerAnchor, VirtualizerApi, VirtualizerSchema, VirtualizerScrollContainer } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useRef } from 'react'
@@ -53,6 +53,12 @@ export interface XhVirtualizerRootProps extends Omit<ComponentPropsWithRef<'div'
   lanes?: number
   /** viewport 的 Tab 位；组合进已有焦点模型的集合时设为 -1。 */
   viewportTabIndex?: number
+  /** 滚动容器：viewport 是视口自己滚，window 是列表铺在页面里随整页滚。 */
+  scrollContainer?: VirtualizerScrollContainer
+  /** 条目增删时钉住哪一头：end 从底部看起、贴底时继续贴底。 */
+  anchor?: VirtualizerAnchor
+  /** 钉在视口起点的条目下标（分组标题）。 */
+  stickyIndices?: number[]
   /** 应渲染的内容发生变化。 */
   onRangeChange?: VirtualizerProps['onRangeChange']
   children?: SlotChildren<VirtualizerRootSlotProps>
@@ -70,6 +76,9 @@ export function XhVirtualizerRoot({
   paddingEnd,
   lanes,
   viewportTabIndex,
+  scrollContainer,
+  anchor,
+  stickyIndices,
   onRangeChange,
   children,
   ...rest
@@ -86,6 +95,9 @@ export function XhVirtualizerRoot({
     paddingEnd,
     lanes,
     viewportTabIndex,
+    scrollContainer,
+    anchor,
+    stickyIndices,
     onRangeChange,
   } as VirtualizerProps)
   const api = ctx.api

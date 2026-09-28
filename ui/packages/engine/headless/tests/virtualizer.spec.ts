@@ -24,7 +24,7 @@ type Dict = Record<string, unknown>
 
 // ───────────────────────── 纯函数：不碰 DOM、不认识状态机 ─────────────────────────
 
-const ITEM = { index: 3, key: 3, start: 90, end: 120, size: 30, lane: 0 }
+const ITEM = { index: 3, key: 3, start: 90, end: 120, size: 30, lane: 0, sticky: false }
 
 describe('resolveVirtualizerOverscan', () => {
   it('没给就用默认的 5', () => {
@@ -354,7 +354,7 @@ describe('区间与总尺寸', () => {
     const r = rig({ ...LIST, overscan: 0 })
     await settle()
     r.scroll(300)
-    expect(r.api().virtualItems[0]).toEqual({ index: 10, key: 10, start: 300, end: 330, size: 30, lane: 0 })
+    expect(r.api().virtualItems[0]).toEqual({ sticky: false, index: 10, key: 10, start: 300, end: 330, size: 30, lane: 0 })
   })
 
   it('还没量到视口尺寸时（无 DOM 环境）快照恒为空，不产生 NaN', () => {
@@ -734,5 +734,124 @@ describe('停机', () => {
     await settle()
     expect(r.service.refs.get('getVirtualizer')()).toBe(null)
     expect(addSpy).not.toHaveBeenCalled()
+  })
+})
+
+describe('条目增删时钉住视口', () => {
+  const keyed = (keys: readonly string[]): Props['getItemKey'] => index => keys[index] ?? index
+
+  it('给了 getItemKey：往前插入条目后，视口里第一条按身份放回原处', async () => {
+    const keys = Array.from({ length: 100 }, (_, i) => `m${i}`)
+    const r = rig({ count: 100, estimateSize: 30, overscan: 0, getItemKey: keyed(keys) })
+    await settle()
+    r.scroll(300)
+    expect(r.api().startIndex).toBe(10)
+
+    const older = Array.from({ length: 5 }, (_, i) => `o${i}`)
+    r.setProps({ count: 105, getItemKey: keyed([...older, ...keys]) })
+    // 原来的第 10 条（m10）现在是第 15 条，滚动量跟着挪 150px，它仍停在视口起点
+    expect(r.api().startIndex).toBe(15)
+    expect(r.scrollCalls.at(-1)).toEqual({ top: 450 })
+  })
+
+  it('没给 getItemKey：身份就是下标，往前插入只保住下标、不写滚动量', async () => {
+    const r = rig({ count: 100, estimateSize: 30, overscan: 0 })
+    await settle()
+    r.scroll(300)
+    const calls = r.scrollCalls.length
+    r.setProps({ count: 105 })
+    expect(r.api().startIndex).toBe(10)
+    expect(r.scrollCalls).toHaveLength(calls)
+  })
+
+  it('往后追加条目时视口不动', async () => {
+    const keys = Array.from({ length: 105 }, (_, i) => `m${i}`)
+    const r = rig({ count: 100, estimateSize: 30, overscan: 0, getItemKey: keyed(keys) })
+    await settle()
+    r.scroll(300)
+    const calls = r.scrollCalls.length
+    r.setProps({ count: 105 })
+    expect(r.api().startIndex).toBe(10)
+    expect(r.scrollCalls).toHaveLength(calls)
+  })
+})
+
+describe('anchor: end', () => {
+  it('从底部看起：内核一建起来就把滚动量放到尽头', async () => {
+    const r = rig({ count: 10, estimateSize: 30, overscan: 0, anchor: 'end' })
+    await settle()
+    // 总长 300、视口 100：尽头是 200，可视区首条是第 6 条
+    expect(r.scrollCalls.at(-1)).toEqual({ top: 200 })
+    expect(r.api().startIndex).toBe(6)
+  })
+
+  it('贴着底时追加条目，继续贴到新的尽头', async () => {
+    const r = rig({ count: 10, estimateSize: 30, overscan: 0, anchor: 'end' })
+    await settle()
+    r.scroll(200)
+    r.setProps({ count: 12 })
+    expect(r.scrollCalls.at(-1)).toEqual({ top: 260 })
+    expect(r.api().endIndex).toBe(11)
+  })
+
+  it('用户往上翻离开底部后，追加条目不再把视口拽到底', async () => {
+    const r = rig({ count: 10, estimateSize: 30, overscan: 0, anchor: 'end' })
+    await settle()
+    r.scroll(200)
+    r.scroll(0)
+    const calls = r.scrollCalls.length
+    r.setProps({ count: 12 })
+    expect(r.scrollCalls).toHaveLength(calls)
+    expect(r.api().startIndex).toBe(0)
+  })
+
+  it('视口写 data-anchor="end"，缺省的 start 不写', async () => {
+    const end = rig({ ...LIST, anchor: 'end' })
+    const start = rig(LIST)
+    await settle()
+    expect((end.api().getViewportProps() as Dict)['data-anchor']).toBe('end')
+    expect((start.api().getViewportProps() as Dict)['data-anchor']).toBeUndefined()
+  })
+})
+
+describe('stickyIndices', () => {
+  const STICKY: Props = { count: 100, estimateSize: 30, overscan: 0, stickyIndices: [0, 20, 40] }
+
+  it('滚过分组标题之后，它补在窗口最前、标成钉住，主轴位移交给皮肤', async () => {
+    const r = rig(STICKY)
+    await settle()
+    r.scroll(700)
+    expect(r.api().startIndex).toBe(23)
+    const [first] = r.api().virtualItems
+    expect(first).toMatchObject({ index: 20, sticky: true })
+    const props = itemProps(r, 20)
+    expect(props['data-fixed']).toBe('')
+    expect((props.style as Dict).insetBlockStart).toBe('')
+    expect(props.hidden).toBeUndefined()
+  })
+
+  it('钉住的只有接替到的那一条：窗口里的其余标题照常按位移排', async () => {
+    const r = rig(STICKY)
+    await settle()
+    r.scroll(1150)
+    const sticky = r.api().virtualItems.filter(item => item.sticky).map(item => item.index)
+    expect(sticky).toEqual([20])
+    expect(itemProps(r, 40)['data-fixed']).toBeUndefined()
+  })
+
+  it('还没滚过任何标题时，首个标题就是窗口里的第一条，原地钉着', async () => {
+    const r = rig(STICKY)
+    await settle()
+    expect(r.api().virtualItems[0]).toMatchObject({ index: 0, sticky: true })
+  })
+})
+
+describe('scrollContainer: window', () => {
+  it('视口不滚动，不占 Tab 位，写 data-scroll-container', async () => {
+    const r = rig({ ...LIST, scrollContainer: 'window' })
+    await settle()
+    const viewport = r.api().getViewportProps() as Dict
+    expect(viewport['data-scroll-container']).toBe('window')
+    expect(viewport.tabindex).toBeUndefined()
   })
 })

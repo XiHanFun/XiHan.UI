@@ -72847,10 +72847,36 @@
             },
             {
               "kind": "field",
+              "name": "scrollContainer",
+              "privacy": "public",
+              "type": {
+                "text": "VirtualizerScrollContainer | undefined"
+              },
+              "attribute": "scroll-container"
+            },
+            {
+              "kind": "field",
+              "name": "anchor",
+              "privacy": "public",
+              "type": {
+                "text": "VirtualizerAnchor | undefined"
+              },
+              "attribute": "anchor"
+            },
+            {
+              "kind": "field",
               "name": "getItemKey",
               "privacy": "public",
               "type": {
                 "text": "(index: number) => string | number | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "stickyIndices",
+              "privacy": "public",
+              "type": {
+                "text": "number[] | undefined"
               }
             },
             {
@@ -73101,6 +73127,22 @@
               "fieldName": "lanes"
             },
             {
+              "type": {
+                "text": "VirtualizerScrollContainer | undefined"
+              },
+              "description": "滚动容器：viewport（默认）是视口自己滚，window 是列表铺在页面里随整页滚",
+              "name": "scroll-container",
+              "fieldName": "scrollContainer"
+            },
+            {
+              "type": {
+                "text": "VirtualizerAnchor | undefined"
+              },
+              "description": "条目增删时钉住哪一头；end 从底部看起、贴底时继续贴底，默认 start",
+              "name": "anchor",
+              "fieldName": "anchor"
+            },
+            {
               "name": "viewport-tab-index",
               "type": {
                 "text": "number | undefined"
@@ -73113,7 +73155,15 @@
             "module": "/src/element-base"
           },
           "tagName": "xh-virtualizer",
-          "customElement": true
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-virtualizer-sticky-bg"
+            },
+            {
+              "name": "--xh-virtualizer-sticky-layer"
+            }
+          ]
         }
       ],
       "exports": [

@@ -9,9 +9,11 @@ import type { IdGenerator, Service } from '@xihan-ui/core'
 import type {
   CollectionVirtualizer,
   VirtualizerAlign,
+  VirtualizerAnchor,
   VirtualizerItemState,
   VirtualizerRangeChangeDetails,
   VirtualizerSchema,
+  VirtualizerScrollContainer,
 } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectVirtualizer, virtualizerAnatomy, virtualizerMachine, virtualizerMeta } from '@xihan-ui/headless'
@@ -20,6 +22,7 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
+const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 三态：缺席 = undefined（用默认值），="false" = false，其余（含空串）= true。
 // Lit 自带的 Boolean 转换器是 v !== null，缺省为真的开关用它会永远关不掉
@@ -60,6 +63,8 @@ function wantsMeasure(el: HTMLElement): boolean {
  * @attr {number} padding-start - 列表前内边距（px），默认 0
  * @attr {number} padding-end - 列表后内边距（px），默认 0
  * @attr {number} lanes - 多列网格的列数，默认 1
+ * @attr {'viewport'|'window'} scroll-container - 滚动容器：viewport（默认）是视口自己滚，window 是列表铺在页面里随整页滚
+ * @attr {'start'|'end'} anchor - 条目增删时钉住哪一头；end 从底部看起、贴底时继续贴底，默认 start
  * @fires range-change - 应渲染的区间变化；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }`
  * @csspart root - 组件根容器，承载 data-orientation 与 data-scrolling
  * @csspart viewport - 实际 overflow:auto 的层，带 tabindex=0 使键盘用户可以进入
@@ -81,8 +86,11 @@ export class XhVirtualizerElement extends XhElement {
     paddingEnd: { converter: NUMBER_CONVERTER, attribute: 'padding-end' },
     lanes: { converter: NUMBER_CONVERTER },
     viewportTabIndex: { converter: NUMBER_CONVERTER, attribute: 'viewport-tab-index' },
-    // 函数走不了属性；只作为 property 暴露，与 Vue 侧的同名 prop 对齐
+    scrollContainer: { converter: STRING_CONVERTER, attribute: 'scroll-container' },
+    anchor: { converter: STRING_CONVERTER },
+    // 函数与数组走不了属性；只作为 property 暴露，与 Vue 侧的同名 prop 对齐
     getItemKey: { attribute: false },
+    stickyIndices: { attribute: false },
   }
 
   declare count?: number
@@ -95,7 +103,10 @@ export class XhVirtualizerElement extends XhElement {
   declare paddingEnd?: number
   declare lanes?: number
   declare viewportTabIndex?: number
+  declare scrollContainer?: VirtualizerScrollContainer
+  declare anchor?: VirtualizerAnchor
   declare getItemKey?: (index: number) => string | number
+  declare stickyIndices?: number[]
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly virtualizerScope = createScope(null, this.idGen)
@@ -124,6 +135,9 @@ export class XhVirtualizerElement extends XhElement {
       paddingEnd: this.paddingEnd,
       lanes: this.lanes,
       viewportTabIndex: this.viewportTabIndex,
+      scrollContainer: this.scrollContainer,
+      anchor: this.anchor,
+      stickyIndices: this.stickyIndices,
       getItemKey: this.getItemKey,
       onRangeChange: this.notify,
     }

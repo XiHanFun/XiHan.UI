@@ -4492,6 +4492,7 @@ export type ComponentTokenComponent
     | 'tree-select'
     | 'truncate'
     | 'typography'
+    | 'virtualizer'
     | 'watermark'
 
 export interface ComponentTokenDefinition {
