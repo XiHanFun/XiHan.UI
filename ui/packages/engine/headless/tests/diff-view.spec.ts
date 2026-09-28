@@ -307,3 +307,66 @@ describe('connectDiffView 按压通道：Space / Enter 与触屏按住投影 dat
     controlled.stop()
   })
 })
+
+describe('connectDiffView 行评论', () => {
+  // 第 1 行不动，第 2 行 b 改成 B，末尾新增 d
+  const model = computeTextDiff('a\nb\nc', 'a\nB\nc\nd')
+  const rowOf = (change: string, text: string): number =>
+    makeDiffView({ model }).rows.find(row => row.line?.change === change && row.line.text === text)!.rowIndex
+
+  it('默认关闭：root 不带 data-commentable，评论钮收起', () => {
+    const api = makeDiffView({ model })
+    expect(api.commentable).toBe(false)
+    expect((api.getRootProps() as Dict)['data-commentable']).toBeUndefined()
+    expect((api.getCommentTriggerProps({ rowIndex: 1, side: 'old' }) as Dict).hidden).toBe(true)
+  })
+
+  it('单栏：删除行落旧侧、其余落新侧；名字写侧与行号', () => {
+    const api = makeDiffView({ model, commentable: true })
+    expect(api.commentRefAt({ rowIndex: rowOf('removed', 'b'), side: 'old' })).toEqual({ side: 'old', line: 2 })
+    expect(api.commentRefAt({ rowIndex: rowOf('added', 'B'), side: 'old' })).toEqual({ side: 'new', line: 2 })
+    expect(api.commentRefAt({ rowIndex: rowOf('context', 'a'), side: 'old' })).toEqual({ side: 'new', line: 1 })
+    const trigger = api.getCommentTriggerProps({ rowIndex: rowOf('removed', 'b'), side: 'old' }) as Dict
+    expect(trigger['aria-label']).toBe('Comment on old line 2')
+    expect(trigger['data-value']).toBe('old:2')
+    expect(trigger['data-xh-action-profile']).toBe('icon')
+    expect(trigger.hidden).toBeUndefined()
+  })
+
+  it('并排：按所在侧取行号，空侧没有评论位', () => {
+    const api = makeDiffView({ model, view: 'split', commentable: true })
+    const context = rowOf('context', 'a')
+    expect(api.commentRefAt({ rowIndex: context, side: 'old' })).toEqual({ side: 'old', line: 1 })
+    expect(api.commentRefAt({ rowIndex: context, side: 'new' })).toEqual({ side: 'new', line: 1 })
+    expect(api.commentRefAt({ rowIndex: rowOf('added', 'd'), side: 'old' })).toBeUndefined()
+    expect((api.getCommentTriggerProps({ rowIndex: rowOf('added', 'd'), side: 'old' }) as Dict).hidden).toBe(true)
+  })
+
+  it('点评论钮报出这一行的侧、行号、变更类型与文本，并成为 Tab 停靠点', () => {
+    const requests: unknown[] = []
+    const h = makeDiffViewService({ model, commentable: true, onCommentRequest: details => requests.push(details) })
+    const cell = { rowIndex: rowOf('added', 'B'), side: 'old' as const }
+    expect((h.api().getCommentTriggerProps({ rowIndex: 1, side: 'old' }) as Dict).tabindex).toBe(0)
+    fire(h.api().getCommentTriggerProps(cell) as Dict, 'onClick', {})
+    expect(requests).toEqual([{ side: 'new', line: 2, change: 'added', text: 'B' }])
+    expect((h.api().getCommentTriggerProps(cell) as Dict).tabindex).toBe(0)
+    expect((h.api().getCommentTriggerProps({ rowIndex: 1, side: 'old' }) as Dict).tabindex).toBe(-1)
+    h.stop()
+  })
+
+  it('commentLines 里的行铺出评论容器，别的行收起', () => {
+    const api = makeDiffView({ model, commentable: true, commentLines: [{ side: 'new', line: 2 }] })
+    const added = { rowIndex: rowOf('added', 'B'), side: 'old' as const }
+    expect(api.hasComment(added)).toBe(true)
+    expect(api.getCommentThreadProps(added) as Dict).toMatchObject({ 'data-value': 'new:2', 'data-side': 'new' })
+    expect((api.getCommentThreadProps(added) as Dict).hidden).toBeUndefined()
+    const removed = { rowIndex: rowOf('removed', 'b'), side: 'old' as const }
+    expect(api.hasComment(removed)).toBe(false)
+    expect((api.getCommentThreadProps(removed) as Dict).hidden).toBe(true)
+  })
+
+  it('评论容器不依赖 commentable：只读地展示已有评论也行', () => {
+    const api = makeDiffView({ model, commentLines: [{ side: 'new', line: 2 }] })
+    expect(api.hasComment({ rowIndex: rowOf('added', 'B'), side: 'old' })).toBe(true)
+  })
+})

@@ -15,6 +15,7 @@ const { createMachine } = setup<DiffViewSchema>()
 // 展开是组件内部的呈现态，不做成对外的意图回调——否则每个使用者都要自己维护一个集合。
 // 另承载按压通道：Space / Enter 与触屏按住期间的 context.pressedValue（按折叠格 id 记，gap-trigger 投影
 // data-pressed），让键盘与触屏看见和指针 :active 同一副按压面。折叠格没有禁用态，不设守卫。
+// 开了行评论时还记着评论钮组的 Tab 停靠点。
 export const diffViewMachine = createMachine({
   name: 'diff-view',
   context: ({ prop, cell }) => ({
@@ -26,6 +27,7 @@ export const diffViewMachine = createMachine({
       onChange: value => prop('onExpandedValueChange')?.({ value }),
     })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    commentFocus: cell<string | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
   watch: ({ track, prop, context, action }) => {
@@ -49,6 +51,7 @@ export const diffViewMachine = createMachine({
         'CONTROLLED.EXPANDED.SET': { actions: ['syncExpanded'] },
         'PRESS.START': { actions: ['startPress'] },
         'PRESS.END': { actions: ['endPress'] },
+        'COMMENT.FOCUS': { actions: ['setCommentFocus'] },
       },
     },
   },
@@ -91,6 +94,11 @@ export const diffViewMachine = createMachine({
         const pressed = context.get('pressedValue')
         if (pressed !== null && context.get('expandedValue').includes(pressed))
           context.set('pressedValue', null)
+      },
+      setCommentFocus: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'COMMENT.FOCUS')
+          context.set('commentFocus', e.key)
       },
     },
   },

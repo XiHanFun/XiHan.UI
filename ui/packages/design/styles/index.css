@@ -4298,6 +4298,74 @@
     mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
   }
 
+  /* 行评论：每格正文让出一列（一行高的正方格）给评论钮，没有钮的空侧也让，两侧代码才对得齐 */
+  [data-scope='diff-view'][data-part='root'][data-commentable] {
+    --xh-_diff-view-comment-col: var(--xh-diff-view-comment-col, var(--xh-diff-view-line-height, var(--xh-text-code-leading)));
+  }
+
+  [data-scope='diff-view'][data-part='root'][data-commentable] [data-part='line-content'] {
+    position: relative;
+    padding-inline-start: var(--xh-_diff-view-comment-col);
+  }
+
+  /* 评论钮接 Action Control icon 档、ghost 形态，边长压到一行高 */
+  [data-scope='diff-view'][data-part='comment-trigger'] {
+    --xh-action-visual-size: var(--xh-_diff-view-comment-col);
+    --xh-action-min-inline-size: var(--xh-_diff-view-comment-col);
+    --xh-action-radius: var(--xh-diff-view-comment-trigger-radius, var(--xh-shape-control));
+    --xh-action-fg-rest: var(--xh-diff-view-comment-trigger-fg, var(--xh-fg-muted));
+    --xh-icon-size: var(--xh-diff-view-comment-trigger-icon-size, var(--xh-glyph-size-sm));
+
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    block-size: var(--xh-_diff-view-comment-col);
+  }
+
+  [data-scope='diff-view'][data-part='comment-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='diff-view'][data-part='comment-trigger']::before {
+    content: '';
+    display: block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
+  }
+
+  /* 指针设备上平时透明（仍可聚焦），悬停到这一行或焦点进了视口才显出来；触屏上常显 */
+  @media (hover: hover) and (pointer: fine) {
+    [data-scope='diff-view'][data-part='comment-trigger'] {
+      --xh-action-opacity-rest: 0;
+    }
+
+    [data-scope='diff-view'][data-part='row']:hover [data-part='comment-trigger'],
+    [data-scope='diff-view'][data-part='viewport']:focus-within [data-part='comment-trigger'] {
+      --xh-action-opacity-rest: 1;
+    }
+  }
+
+  /* 挂在正文格里、代码下方的评论：一张静态内容面，文字按正文排，不随代码的变更色 */
+  [data-scope='diff-view'][data-part='comment-thread'] {
+    display: block;
+    box-sizing: border-box;
+    max-inline-size: var(--xh-diff-view-comment-thread-max-w, var(--xh-measure-prose));
+    margin-block: var(--xh-diff-view-comment-thread-my, var(--xh-space-2));
+    padding: var(--xh-diff-view-comment-thread-p, var(--xh-space-3));
+    border: var(--xh-stroke-thin) solid var(--xh-diff-view-comment-thread-border, var(--xh-border-default));
+    border-radius: var(--xh-diff-view-comment-thread-radius, var(--xh-shape-surface));
+    background: var(--xh-diff-view-comment-thread-bg, var(--xh-bg-surface));
+    color: var(--xh-diff-view-comment-thread-fg, var(--xh-fg-default));
+    white-space: normal;
+  }
+
+  [data-scope='diff-view'][data-part='comment-thread'][hidden] {
+    display: none;
+  }
+
   /* 尺寸档改字号、内衬与图标档 */
   [data-scope='diff-view'][data-part='root'][data-size='sm'] {
     --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-sm));
@@ -4365,6 +4433,11 @@
     [data-scope='diff-view'][data-part='row'][data-change='removed'] {
       outline: var(--xh-stroke-thick) dashed currentColor;
       outline-offset: calc(-1 * var(--xh-stroke-thick));
+    }
+
+    /* 纸上按不了评论钮 */
+    [data-scope='diff-view'][data-part='comment-trigger'] {
+      display: none;
     }
   }
 }

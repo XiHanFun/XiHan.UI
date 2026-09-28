@@ -12,6 +12,7 @@ const PUBLIC_EVENTS = {
   'granted-scopes-change': 'onGrantedScopesChange',
   'clamp-toggle': 'onClampToggle',
   'folded-change': 'onFoldedChange',
+  'comment-request': 'onCommentRequest',
   'color-error': 'onColorError',
   'branch-load-start': 'onBranchLoadStart',
   'branch-load': 'onBranchLoad',

@@ -6,7 +6,7 @@
 // 提供 diff view 相关实现。
 
 import type { CodeToken, Size } from '@xihan-ui/core'
-import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
+import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewCommentRequestDetails, DiffViewLineRef, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { diffViewSides } from '@xihan-ui/headless'
@@ -65,9 +65,15 @@ export interface XhDiffViewRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   defaultExpandedValue?: readonly string[]
   /** 长行原地折行，不再横向滚动；默认关闭。 */
   wrap?: boolean
+  /** 每行正文前给一颗评论钮，点它报出 onCommentRequest；默认关闭。 */
+  commentable?: boolean
+  /** 挂着评论的行：这些行在代码下方铺出评论容器，内容由 XhDiffViewBody 的 renderComment 给。 */
+  commentLines?: readonly DiffViewLineRef[]
   size?: Size
   translations?: Partial<DiffViewTranslations>
   onExpandedValueChange?: Props['onExpandedValueChange']
+  /** 在某一行上点了评论钮：宿主据此打开输入框，把这一行加进 commentLines。 */
+  onCommentRequest?: Props['onCommentRequest']
   children?: SlotChildren<DiffViewRootSlotProps>
 }
 
@@ -78,9 +84,12 @@ export function XhDiffViewRoot({
   expandedValue,
   defaultExpandedValue,
   wrap,
+  commentable,
+  commentLines,
   size,
   translations,
   onExpandedValueChange,
+  onCommentRequest,
   children,
   ...rest
 }: XhDiffViewRootProps): ReactNode {
@@ -91,9 +100,12 @@ export function XhDiffViewRoot({
     expandedValue,
     defaultExpandedValue,
     wrap,
+    commentable,
+    commentLines,
     size,
     translations,
     onExpandedValueChange,
+    onCommentRequest,
   }) as Props)
   const { api } = ctx
   return (
@@ -115,7 +127,7 @@ export function XhDiffViewRoot({
   )
 }
 
-XhDiffViewRoot.xhEvents = ['expanded-value-change'] as const
+XhDiffViewRoot.xhEvents = ['expanded-value-change', 'comment-request'] as const
 
 export interface XhDiffViewHeaderProps extends ComponentPropsWithRef<'div'> {}
 export function XhDiffViewHeader({ children, ...rest }: XhDiffViewHeaderProps): ReactNode {
@@ -155,9 +167,12 @@ export function XhDiffViewViewport({ children, ...rest }: XhDiffViewViewportProp
   return <div {...mergeReactProps(ctx.api.getViewportProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
-export interface XhDiffViewBodyProps extends ComponentPropsWithRef<'div'> {}
+export interface XhDiffViewBodyProps extends ComponentPropsWithRef<'div'> {
+  /** 挂着评论的那一行在代码下方铺出评论容器，内容由它给；入参是这一行的侧、行号、变更类型与文本。 */
+  renderComment?: (details: DiffViewCommentRequestDetails) => ReactNode
+}
 /** 行是模型计算得出的派生结构，作者无法写出 N 行，由组件铺设。 */
-export function XhDiffViewBody({ children, ...rest }: XhDiffViewBodyProps): ReactNode {
+export function XhDiffViewBody({ children, renderComment, ...rest }: XhDiffViewBodyProps): ReactNode {
   const ctx = useDiffViewContext()
   const { api } = ctx
   const sides = diffViewSides(api.view)
@@ -179,18 +194,32 @@ export function XhDiffViewBody({ children, ...rest }: XhDiffViewBodyProps): Reac
         const { rowIndex } = row
         return (
           <div key={`row:${rowIndex}`} {...api.getRowProps({ rowIndex }) as Record<string, unknown>}>
-            {sides.map(side => (
-              <Fragment key={side}>
-                <span {...api.getLineNumberProps({ rowIndex, side }) as Record<string, unknown>} />
-                <span {...api.getLineContentProps({ rowIndex, side }) as Record<string, unknown>}>
-                  {/* 变更类型的读屏文字住在内容格里面：变更不能只靠颜色传达 */}
-                  <span {...api.getChangeLabelProps({ change: row.line!.change }) as Record<string, unknown>}>
-                    {api.changeLabel(row.line!.change)}
+            {sides.map((side) => {
+              const cell = { rowIndex, side }
+              const ref = api.commentRefAt(cell)
+              return (
+                <Fragment key={side}>
+                  <span {...api.getLineNumberProps(cell) as Record<string, unknown>} />
+                  <span {...api.getLineContentProps(cell) as Record<string, unknown>}>
+                    {/* 变更类型的读屏文字住在内容格里面：变更不能只靠颜色传达 */}
+                    <span {...api.getChangeLabelProps({ change: row.line!.change }) as Record<string, unknown>}>
+                      {api.changeLabel(row.line!.change)}
+                    </span>
+                    {/* 评论钮放在正文最前面，由皮肤定位到正文让出的那一列里；空侧不建 */}
+                    {api.commentable && ref !== undefined ? <button {...api.getCommentTriggerProps(cell) as Record<string, unknown>} /> : null}
+                    {renderCell(api, rowIndex, side)}
+                    {/* 挂着评论的行在代码下方铺出评论容器，与代码同住一个 cell，行序不受影响 */}
+                    {api.hasComment(cell)
+                      ? (
+                          <div {...api.getCommentThreadProps(cell) as Record<string, unknown>}>
+                            {renderComment?.({ ...ref!, change: row.line!.change, text: row.line!.text })}
+                          </div>
+                        )
+                      : null}
                   </span>
-                  {renderCell(api, rowIndex, side)}
-                </span>
-              </Fragment>
-            ))}
+                </Fragment>
+              )
+            })}
           </div>
         )
       })}

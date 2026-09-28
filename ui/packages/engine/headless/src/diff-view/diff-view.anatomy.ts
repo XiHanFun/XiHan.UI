@@ -14,7 +14,8 @@ import { createAnatomy } from '@xihan-ui/core'
 // line-content 是唯一暴露的内容列，change-label 住在它里面并视觉隐藏——
 // 变更类型不能只靠颜色传达；inline-change 是词级片段，裹住 token；token 是着色片段；
 // gap 是折起来的上下文那一行，gap-cell 裹住它、gap-trigger 展开它；empty 是无变更时的占位；
-// truncation 是「这份差异被砍掉过多少行」的提示条，只在真砍过时露出来。
+// truncation 是「这份差异被砍掉过多少行」的提示条，只在真砍过时露出来；
+// comment-trigger 是开了行评论时正文前的评论钮，comment-thread 是挂在正文格里、代码下方的评论容器（内容由作者写）。
 export const diffViewAnatomy = createAnatomy('diff-view', [
   'root',
   'header',
@@ -32,4 +33,6 @@ export const diffViewAnatomy = createAnatomy('diff-view', [
   'gap-trigger',
   'empty',
   'truncation',
+  'comment-trigger',
+  'comment-thread',
 ])

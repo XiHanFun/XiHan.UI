@@ -6,7 +6,7 @@
 // 提供 diff view 相关实现。
 
 import type { CodeToken, Size } from '@xihan-ui/core'
-import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
+import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewCommentRequestDetails, DiffViewLineRef, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { diffViewSides } from '@xihan-ui/headless'
@@ -32,12 +32,16 @@ export const XhDiffViewRoot = defineComponent({
     expandedValue: { type: Array as PropType<readonly string[]> },
     defaultExpandedValue: { type: Array as PropType<readonly string[]> },
     wrap: { type: Boolean, default: undefined },
+    commentable: { type: Boolean, default: undefined },
+    commentLines: { type: Array as PropType<readonly DiffViewLineRef[]> },
     size: { type: String as PropType<Size> },
     translations: { type: Object as PropType<Partial<DiffViewTranslations>> },
   },
+  // comment-request 携带 { side, line, change, text }
   emits: {
     'expanded-value-change': (_details: PayloadOf<Props, 'onExpandedValueChange'>) => true,
     'update:expandedValue': (_value: string[]) => true,
+    'comment-request': (_details: PayloadOf<Props, 'onCommentRequest'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: DiffViewRootSlotProps) => VNode[]
@@ -46,7 +50,7 @@ export const XhDiffViewRoot = defineComponent({
     const ctx = useDiffView(withXhConfig('diff-view', props) as Props, (details) => {
       emit('expanded-value-change', details)
       emit('update:expandedValue', details.value)
-    })
+    }, details => emit('comment-request', details))
     provideDiffView(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       view: ctx.api.value.view,
@@ -108,6 +112,11 @@ export const XhDiffViewViewport = defineComponent({
 
 export const XhDiffViewBody = defineComponent({
   name: 'XhDiffViewBody',
+  // comment 插槽：挂着评论的那一行在代码下方铺出评论容器，内容由这里写；载荷是这一行的侧、行号、变更类型与文本
+  slots: Object as SlotsType<{
+    default?: () => VNode[]
+    comment?: (props: DiffViewCommentRequestDetails) => VNode[]
+  }>,
   setup(_, { slots }) {
     const ctx = useDiffViewContext()
     // 行是模型算出来的派生结构，作者写不出 N 行，由组件铺
@@ -129,18 +138,28 @@ export const XhDiffViewBody = defineComponent({
             ])
           }
           const { rowIndex } = row
-          return h('div', { ...api.getRowProps({ rowIndex }) as Record<string, unknown>, key: `row:${rowIndex}` }, sides.flatMap(side => [
-            h('span', { ...api.getLineNumberProps({ rowIndex, side }) as Record<string, unknown>, key: `n:${side}` }),
-            h('span', { ...api.getLineContentProps({ rowIndex, side }) as Record<string, unknown>, key: `c:${side}` }, [
-              // 变更类型的读屏文字住在内容格里面：变更不能只靠颜色传达
-              h(
-                'span',
-                api.getChangeLabelProps({ change: row.line!.change }) as Record<string, unknown>,
-                api.changeLabel(row.line!.change),
-              ),
-              ...renderCell(api, rowIndex, side),
-            ]),
-          ]))
+          return h('div', { ...api.getRowProps({ rowIndex }) as Record<string, unknown>, key: `row:${rowIndex}` }, sides.flatMap((side) => {
+            const cell = { rowIndex, side }
+            const ref = api.commentRefAt(cell)
+            return [
+              h('span', { ...api.getLineNumberProps(cell) as Record<string, unknown>, key: `n:${side}` }),
+              h('span', { ...api.getLineContentProps(cell) as Record<string, unknown>, key: `c:${side}` }, [
+                // 变更类型的读屏文字住在内容格里面：变更不能只靠颜色传达
+                h(
+                  'span',
+                  api.getChangeLabelProps({ change: row.line!.change }) as Record<string, unknown>,
+                  api.changeLabel(row.line!.change),
+                ),
+                // 评论钮放在正文最前面，由皮肤定位到正文让出的那一列里；空侧不建
+                api.commentable && ref !== undefined ? h('button', api.getCommentTriggerProps(cell) as Record<string, unknown>) : null,
+                ...renderCell(api, rowIndex, side),
+                // 挂着评论的行在代码下方铺出评论容器，与代码同住一个 cell，行序不受影响
+                api.hasComment(cell)
+                  ? h('div', api.getCommentThreadProps(cell) as Record<string, unknown>, slots.comment?.({ ...ref!, change: row.line!.change, text: row.line!.text }))
+                  : null,
+              ]),
+            ]
+          }))
         }),
         slots.default?.() ?? [],
       ])

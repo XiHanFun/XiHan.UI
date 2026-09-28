@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="diff-view"`：**`root`** · `header` · `summary` · **`viewport`** · **`body`** · `row` · `line-number` · `line-content` · `change-label` · `inline-change` · `token` · `gap` · `gap-cell` · `gap-trigger` · `empty` · `truncation`
+`data-scope="diff-view"`：**`root`** · `header` · `summary` · **`viewport`** · **`body`** · `row` · `line-number` · `line-content` · `change-label` · `inline-change` · `token` · `gap` · `gap-cell` · `gap-trigger` · `empty` · `truncation` · `comment-trigger` · `comment-thread`
 
 ## 示例
 
@@ -48,6 +48,12 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 
 <XhDemo src="diff-view/05-size" />
 
+### 行评论
+
+commentable 在每行正文前给一颗评论钮，点它报出 comment-request；挂在 commentLines 里的行在代码下方铺出评论容器，内容由 comment 插槽写
+
+<XhDemo src="diff-view/06-comments" />
+
 ## 设计指引
 
 ### 何时使用
@@ -71,6 +77,7 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 - 头部自带增删统计位 `summary`，增删各一个，数字取自模型，着色跟随变更类型。
 - `maxLines` 是必需的上限：AI 可能输出超大文件，新旧两侧各自超出时从尾部截断。截断行数由模型带出，`truncation` 提示条向读者说明。
 - 行号与列号一律从模型计算，不从 DOM 反推。
+- 行评论：`commentable` 在每行正文前给一颗评论钮，点它报出 `comment-request`（这一行的侧、行号、变更类型与文本）；挂在 `commentLines` 里的行在代码下方铺出 `comment-thread` 容器，内容由作者写（Vue 用 `comment` 插槽，React 用 `XhDiffViewBody` 的 `renderComment`，Web Components 监听 `comment-mount` 往容器里放）。评论落在哪一行按侧与行号记：单栏里删除行落旧侧、其余落新侧，并排按所在的那一侧。评论与代码同住一个格，表格的行序与列号不受影响。组件只管位置与入口，评论的存储、输入与多条回复都归宿主。
 
 ### 组合
 
@@ -111,9 +118,21 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 | `expandedValue` | `readonly string[]` |  | 展开的折叠格 id 集合，提供即受控。 |
 | `defaultExpandedValue` | `readonly string[]` |  |  |
 | `wrap` | `boolean` |  | 长行原地折行，不再横向滚动；默认关闭。 |
+| `commentable` | `boolean` |  | 每行正文前给一颗评论钮，点它报出 comment-request，默认关闭。 一组钮只占一个 Tab 位，上下方向键在组内走；指针设备上悬停到这一行或键盘聚焦时才露出来。 |
+| `commentLines` | `readonly DiffViewLineRef[]` |  | 挂着评论的行：这些行的正文格里、代码下方铺出 comment-thread 部件，内容由作者写。 |
 | `size` | `Size` |  |  |
 | `translations` | `Partial<DiffViewTranslations>` |  |  |
 | `onExpandedValueChange` | `(details: DiffViewExpandedValueChangeDetails) => void` |  |  |
+| `onCommentRequest` | `(details: DiffViewCommentRequestDetails) => void` |  | 在某一行上点了评论钮：宿主据此打开输入框，把这一行加进 commentLines。 |
+
+### DiffViewLineRef
+
+`commentLines` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `side` | `DiffSide` | 是 |  |
+| `line` | `number` | 是 |  |
 
 ### 事件
 
@@ -129,6 +148,8 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
+| `XhDiffViewBody` | `default` | — |  |
+| `XhDiffViewBody` | `comment` | `DiffViewCommentRequestDetails` |  |
 | `XhDiffViewRoot` | `default` | `DiffViewRootSlotProps` |  |
 | `XhDiffViewSummary` | `default` | `{ count: number }` |  |
 | `XhDiffViewTruncation` | `default` | `{ count: number }` |  |
@@ -139,6 +160,7 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhDiffViewBody` | `renderComment` | `(details: DiffViewCommentRequestDetails) => ReactNode` |  | 挂着评论的那一行在代码下方铺出评论容器，内容由它给；入参是这一行的侧、行号、变更类型与文本。 |
 | `XhDiffViewRoot` | `children` | `SlotChildren<DiffViewRootSlotProps>` |  |  |
 | `XhDiffViewSummary` | `change` | `Extract<DiffChange, 'added' \| 'removed'>` | 是 |  |
 | `XhDiffViewSummary` | `children` | `SlotChildren<{ count: number }>` |  |  |
@@ -150,7 +172,7 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 
 **状态**：`idle`
 
-**事件**：`GAP.EXPAND` · `GAP.COLLAPSE` · `CONTROLLED.EXPANDED.SET` · `PRESS.START` · `PRESS.END`
+**事件**：`GAP.EXPAND` · `GAP.COLLAPSE` · `CONTROLLED.EXPANDED.SET` · `PRESS.START` · `PRESS.END` · `COMMENT.FOCUS`
 
 **判据**：`isExpandedControlled`
 
@@ -170,6 +192,11 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 | `isEmpty` | `boolean` | 没有任何变更。 |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `toggleGap` | `(id: string) => void` |  |
+| `commentable` | `boolean` | 开了行评论；适配器据此决定要不要在正文格里建评论钮。 |
+| `commentRefAt` | `(props: DiffViewCellProps) => DiffViewLineRef \| undefined` | 这一格的评论落在哪一行；空侧与折叠格为 undefined。 |
+| `hasComment` | `(props: DiffViewCellProps) => boolean` | 这一格挂着评论（在 commentLines 里）；适配器据此在代码下方铺出 comment-thread 部件。 |
+| `getCommentTriggerProps` | `(props: DiffViewCellProps) => T['button']` |  |
+| `getCommentThreadProps` | `(props: DiffViewCellProps) => T['element']` | 挂在这一格里的评论容器，内容由作者写。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
 | `getSummaryProps` | `(props: { change: DiffChange }) => T['element']` | 头部右侧的增删统计位，增删各一个。 |
@@ -203,6 +230,10 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 | `Tab` | 差异视图在 Tab 序列中 | 滚动容器自身可聚焦，随后方向键的横纵滚动交给浏览器，组件不接管 |
 | `Enter` / `Space` | 焦点在展开按钮上 | 展开该处折起来的上下文行；组件只接 click，按键走原生 button 的默认行为 |
 | `Enter` / `Space` | 按住展开按钮 | 按住期间该格的 gap-trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或该格展开撤下 |
+| `Tab` | 开了行评论 | 一组评论钮只占一个 Tab 位：落在上次聚焦的那颗，它不在可见行里时落在第一颗 |
+| `Enter` / `Space` | 焦点在评论钮上 | 报出 comment-request（这一行的侧、行号、变更类型与文本），走原生 button 的激活 |
+| `ArrowDown` / `ArrowUp` | 焦点在评论钮上 | 移到下一颗 / 上一颗评论钮，到头不回绕；并排视图按先旧侧后新侧、逐行往下 |
+| `Home` / `End` | 焦点在评论钮上 | 移到第一颗 / 最后一颗评论钮 |
 
 ### ARIA
 
@@ -225,12 +256,14 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 | `gap-cell` | `role` | 'cell' |
 | `gap-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `gap-trigger` | `aria-label` | expandGapLabel(hiddenCountOf(gapId)) |
+| `comment-trigger` | `aria-label` | undefined \| commentLabel(ref.line, ref.side) |
 
 - 表格语义：`role=table` 配 `role=row` 与 `role=cell`，带 `aria-rowcount` / `aria-rowindex` / `aria-colcount` / `aria-colindex`。列数只计算实际暴露的内容列，行号不算列。
 - 每一行都带一段视觉隐藏的变更类型文字，变更不只靠颜色传达。
 - 变更行还有一条非颜色线索：新增绘制实心色条，删除绘制同宽的斜纹条，灰度与高对比度下也可区分。
 - 行号对读屏隐藏，由皮肤用 `attr()` 绘制，复制差异不会带上行号。
 - 不采用表格的行级 roving：只读差异不是网格，吞掉方向键的焦点组会抢走页面滚动，读屏本身也有表格浏览模式。这是显式决定。
+- 评论钮合起来只占一个 Tab 位，上下方向键在钮之间走、Home / End 到首末；方向键只在焦点落在钮上时才被接管，视口本身的滚动不受影响。可访问名写侧与行号（`translations.commentOn`）。指针设备上钮平时透明但仍可聚焦，悬停到这一行或焦点进了视口就显出来。
 
 ## 样式参考
 
@@ -246,6 +279,7 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-commentable` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-truncated` | ''（条件成立时才出现） |
 | `root` | `data-view` | props.view |
@@ -271,6 +305,13 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 | `gap-trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
 | `gap-trigger` | `data-xh-action-size` | props.size |
 | `gap-trigger` | `data-xh-action-variant` | 'ghost' |
+| `comment-trigger` | `data-side` | ref?.side |
+| `comment-trigger` | `data-xh-action-control` | '' |
+| `comment-trigger` | `data-xh-action-display` | 'always' |
+| `comment-trigger` | `data-xh-action-profile` | 'icon' |
+| `comment-trigger` | `data-xh-action-size` | props.size |
+| `comment-trigger` | `data-xh-action-variant` | 'ghost' |
+| `comment-thread` | `data-side` | ref?.side |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -284,7 +325,18 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 | `--xh-diff-view-bg` | `root` | `background` | `default` | `--xh-bg-surface` | diff-view 的 root 部件 background 覆盖槽。 |
 | `--xh-diff-view-border` | `root` | `border` | `default` | `--xh-border-default` | diff-view 的 root 部件 border 覆盖槽。 |
 | `--xh-diff-view-change-bar` | `row` | `background`<br>`box-shadow` | `change=added`<br>`change=removed` | `--xh-stroke-thick` | diff-view 的 row 部件 background、box-shadow 覆盖槽。 |
+| `--xh-diff-view-comment-col` | `comment-trigger`<br>`line-content`<br>`root` | `block-size`<br>`inline-size`<br>`min-block-size`<br>`min-inline-size`<br>`padding-inline-start` | `commentable`<br>`xh-action-profile=disclosure-trigger`<br>`xh-action-profile=icon` | `--xh-diff-view-line-height` | diff-view 的 comment-trigger、line-content、root 部件 block-size、inline-size、min-block-size、min-inline-size、padding-inline-start 覆盖槽。 |
 | `--xh-diff-view-comment-fg` | `token` | `color` | `kind=comment` | `--xh-fg-muted` | diff-view 的 token 部件 color 覆盖槽。 |
+| `--xh-diff-view-comment-thread-bg` | `comment-thread` | `background` | `default` | `--xh-bg-surface` | diff-view 的 comment-thread 部件 background 覆盖槽。 |
+| `--xh-diff-view-comment-thread-border` | `comment-thread` | `border` | `default` | `--xh-border-default` | diff-view 的 comment-thread 部件 border 覆盖槽。 |
+| `--xh-diff-view-comment-thread-fg` | `comment-thread` | `color` | `default` | `--xh-fg-default` | diff-view 的 comment-thread 部件 color 覆盖槽。 |
+| `--xh-diff-view-comment-thread-max-w` | `comment-thread` | `max-inline-size` | `default` | `--xh-measure-prose` | diff-view 的 comment-thread 部件 max-inline-size 覆盖槽。 |
+| `--xh-diff-view-comment-thread-my` | `comment-thread` | `margin-block` | `default` | `--xh-space-2` | diff-view 的 comment-thread 部件 margin-block 覆盖槽。 |
+| `--xh-diff-view-comment-thread-p` | `comment-thread` | `padding` | `default` | `--xh-space-3` | diff-view 的 comment-thread 部件 padding 覆盖槽。 |
+| `--xh-diff-view-comment-thread-radius` | `comment-thread` | `border-radius` | `default` | `--xh-shape-surface` | diff-view 的 comment-thread 部件 border-radius 覆盖槽。 |
+| `--xh-diff-view-comment-trigger-fg` | `comment-trigger` | `color` | `default` | `--xh-fg-muted` | diff-view 的 comment-trigger 部件 color 覆盖槽。 |
+| `--xh-diff-view-comment-trigger-icon-size` | `comment-trigger` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | diff-view 的 comment-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-diff-view-comment-trigger-radius` | `comment-trigger` | `border-radius` | `default` | `--xh-shape-control` | diff-view 的 comment-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-diff-view-divider` | `header`<br>`line-number`<br>`root` | `border-block-end`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 1024px)`<br>`default`<br>`side=new`<br>`view=split` | `--xh-border-subtle` | diff-view 的 header、line-number、root 部件 border-block-end、border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-diff-view-empty-bg` | `line-content` | `background` | `empty` | `--xh-bg-subtle` | diff-view 的 line-content 部件 background 覆盖槽。 |
 | `--xh-diff-view-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | diff-view 的 empty 部件 color 覆盖槽。 |
@@ -301,7 +353,7 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 | `--xh-diff-view-inline-change-radius` | `inline-change` | `border-radius` | `change` | `--xh-shape-inset` | diff-view 的 inline-change 部件 border-radius 覆盖槽。 |
 | `--xh-diff-view-keyword-fg` | `token` | `color` | `kind=keyword` | `--xh-syntax-keyword` | diff-view 的 token 部件 color 覆盖槽。 |
 | `--xh-diff-view-keyword-weight` | `token` | `font-weight` | `kind=keyword` | `--xh-font-weight-semibold` | diff-view 的 token 部件 font-weight 覆盖槽。 |
-| `--xh-diff-view-line-height` | `body`<br>`gap`<br>`gap-trigger`<br>`row` | `block-size`<br>`line-height`<br>`min-block-size` | `default`<br>`xh-action-profile=disclosure-trigger` | `--xh-text-code-leading` | diff-view 的 body、gap、gap-trigger、row 部件 block-size、line-height、min-block-size 覆盖槽。 |
+| `--xh-diff-view-line-height` | `body`<br>`comment-trigger`<br>`gap`<br>`gap-trigger`<br>`line-content`<br>`root`<br>`row` | `block-size`<br>`inline-size`<br>`line-height`<br>`min-block-size`<br>`min-inline-size`<br>`padding-inline-start` | `commentable`<br>`default`<br>`xh-action-profile=disclosure-trigger`<br>`xh-action-profile=icon` | `--xh-text-code-leading` | diff-view 的 body、comment-trigger、gap、gap-trigger、line-content、root、row 部件 block-size、inline-size、line-height、min-block-size、min-inline-size、padding-inline-start 覆盖槽。 |
 | `--xh-diff-view-max-h` | `viewport` | `max-block-size` | `default` | `--xh-viewport-max-h` | diff-view 的 viewport 部件 max-block-size 覆盖槽。 |
 | `--xh-diff-view-number-fg` | `line-number` | `color` | `default` | `--xh-fg-subtle` | diff-view 的 line-number 部件 color 覆盖槽。 |
 | `--xh-diff-view-number-token-fg` | `token` | `color` | `kind=number` | `--xh-syntax-number` | diff-view 的 token 部件 color 覆盖槽。 |
@@ -330,6 +382,8 @@ size 改变字号、行高与行号槽的宽度，三档并列对照
 ### 响应式
 
 皮肤按视口分档：`min-width: 1024px`。
+
+皮肤另按输入能力分档：`hover: hover`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 
