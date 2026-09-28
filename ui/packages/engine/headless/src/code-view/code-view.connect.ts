@@ -146,6 +146,7 @@ export function connectCodeView<T extends PropTypes>(
 
   return {
     lang,
+    filename: prop('filename'),
     lineCount,
     lines,
     lineNumberAt,

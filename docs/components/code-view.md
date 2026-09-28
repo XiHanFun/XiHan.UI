@@ -182,7 +182,7 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhCodeViewCode` | `children` | `SlotChildren<CodeViewLineSlotProps>` |  | 逐行接管该行的正文；未提供时按着色结果铺设。 |
-| `XhCodeViewFilename` | `filename` | `string` |  | 未写 children 时显示它。 |
+| `XhCodeViewFilename` | `filename` | `string` |  | 未写 children 时显示它；也没给时取 XhCodeViewRoot 上的 filename。 |
 | `XhCodeViewRoot` | `children` | `SlotChildren<CodeViewRootSlotProps>` |  |  |
 
 ### 状态
@@ -209,6 +209,7 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `lang` | `string` |  |
+| `filename` | `string \| undefined` | 文件名；filename 部件没写内容时显示它。 |
 | `lineCount` | `number` |  |
 | `lines` | `readonly CodeLine[]` | 逐行切分后的文本与记号片段。 |
 | `lineNumberAt` | `(index: number) => number` | 每行的行号，与 lines 同序。 |

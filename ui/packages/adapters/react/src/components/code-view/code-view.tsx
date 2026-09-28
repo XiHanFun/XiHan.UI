@@ -146,7 +146,7 @@ export function XhCodeViewHeader({ children, ...rest }: XhCodeViewHeaderProps): 
 }
 
 export interface XhCodeViewFilenameProps extends ComponentPropsWithRef<'span'> {
-  /** 未写 children 时显示它。 */
+  /** 未写 children 时显示它；也没给时取 XhCodeViewRoot 上的 filename。 */
   filename?: string
 }
 export function XhCodeViewFilename({ children, filename, ...rest }: XhCodeViewFilenameProps): ReactNode {
@@ -156,7 +156,7 @@ export function XhCodeViewFilename({ children, filename, ...rest }: XhCodeViewFi
   useEffect(() => registerFilename(), [registerFilename])
   return (
     <span {...mergeReactProps(ctx.api.getFilenameProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children ?? filename}
+      {children ?? filename ?? ctx.api.filename}
     </span>
   )
 }

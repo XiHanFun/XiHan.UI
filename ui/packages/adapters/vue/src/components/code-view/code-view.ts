@@ -177,7 +177,7 @@ export const XhCodeViewFilename = defineComponent({
     return () => h(
       'span',
       ctx.api.value.getFilenameProps() as Record<string, unknown>,
-      slots.default?.() ?? props.filename,
+      slots.default?.() ?? props.filename ?? ctx.api.value.filename,
     )
   },
 })

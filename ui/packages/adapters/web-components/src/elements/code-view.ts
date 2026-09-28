@@ -61,7 +61,7 @@ const LINE_LIST_CONVERTER = {
  * @fires folded-change - 语法块的折叠集合变化；detail 为 `{ folded: number[] }`
  * @csspart root - 外壳，承载 data-lang / data-complete / data-clamped / data-digits
  * @csspart header - 文件名与语言角标所在的行
- * @csspart filename - 文件名，渲染后即为 pre 的可访问名
+ * @csspart filename - 文件名，渲染后即为 pre 的可访问名；没写内容时元素写上 filename 属性的值
  * @csspart lang-label - 语言角标，纯装饰且对读屏隐藏
  * @csspart pre - 横向滚动容器；tabindex=0，高度按行数写入内联样式
  * @csspart code - 全部行的容器，内容由本元素铺设
@@ -128,6 +128,8 @@ export class XhCodeViewElement extends XhElement {
   /** 开了按块折叠时记下铺出来的各行，开合变了就地改属性。 */
   #folding: FoldingLine[] = []
   #releaseHighlighter?: () => void
+  /** 元素替作者写进 filename 部件的文字；作者自己写了内容就不再碰它。 */
+  #filenameText?: string
 
   override connectedCallback(): void {
     super.connectedCallback()
@@ -196,12 +198,30 @@ export class XhCodeViewElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('header', api.getHeaderProps() as Record<string, unknown>)
     put('filename', api.getFilenameProps() as Record<string, unknown>)
+    this.#fillFilename(api)
     put('lang-label', api.getLangLabelProps() as Record<string, unknown>)
     put('pre', api.getPreProps() as Record<string, unknown>)
     put('code', api.getCodeProps() as Record<string, unknown>)
     put('fold-trigger', api.getFoldTriggerProps() as Record<string, unknown>)
 
     this.#paint(api)
+  }
+
+  /**
+   * filename 部件没写内容时写上 filename 属性的值，与另两端同一条规则：
+   * pre 的可访问名指向这个节点，它空着读屏就读空。作者自己写了内容就不再碰它。
+   */
+  #fillFilename(api: CodeViewApi): void {
+    const el = this.getPart('filename')
+    if (!el)
+      return
+    const ours = this.#filenameText
+    if (el.childNodes.length > 0 && (ours === undefined || el.textContent !== ours))
+      return
+    const text = api.filename ?? ''
+    if (el.textContent !== text)
+      el.textContent = text
+    this.#filenameText = text
   }
 
   /**

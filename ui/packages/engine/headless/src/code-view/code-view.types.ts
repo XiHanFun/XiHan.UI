@@ -143,6 +143,8 @@ export type CodeViewProps = CodeViewSchema['props']
 
 export interface CodeViewApi<T extends PropTypes = PropTypes> {
   lang: string
+  /** 文件名；filename 部件没写内容时显示它。 */
+  filename: string | undefined
   lineCount: number
   /** 逐行切分后的文本与记号片段。 */
   lines: readonly CodeLine[]

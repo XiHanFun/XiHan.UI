@@ -10613,7 +10613,7 @@
               "name": "header"
             },
             {
-              "description": "文件名，渲染后即为 pre 的可访问名",
+              "description": "文件名，渲染后即为 pre 的可访问名；没写内容时元素写上 filename 属性的值",
               "name": "filename"
             },
             {
@@ -10866,6 +10866,15 @@
               }
             },
             {
+              "kind": "field",
+              "name": "#filenameText",
+              "privacy": "private",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "元素替作者写进 filename 部件的文字；作者自己写了内容就不再碰它。"
+            },
+            {
               "kind": "method",
               "name": "resolvedHighlighter",
               "privacy": "private",
@@ -10895,6 +10904,25 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "#fillFilename",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CodeViewApi"
+                  }
+                }
+              ],
+              "description": "filename 部件没写内容时写上 filename 属性的值，与另两端同一条规则：\npre 的可访问名指向这个节点，它空着读屏就读空。作者自己写了内容就不再碰它。"
             },
             {
               "kind": "method",
