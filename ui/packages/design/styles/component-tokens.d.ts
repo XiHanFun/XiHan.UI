@@ -1968,6 +1968,7 @@ export type ComponentTokenName
     | '--xh-input-group-ring-focus'
     | '--xh-input-group-ring-invalid'
     | '--xh-input-group-shadow'
+    | '--xh-input-group-w'
     | '--xh-json-viewer-bg'
     | '--xh-json-viewer-boolean-fg'
     | '--xh-json-viewer-border'

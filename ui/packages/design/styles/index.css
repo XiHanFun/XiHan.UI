@@ -7582,6 +7582,8 @@
     display: inline-flex;
     box-sizing: border-box;
     align-items: stretch;
+    /* 整组是一个字段：不传尺寸时与单个字段同宽，组里的字段让位占满前后缀之外的那段 */
+    inline-size: var(--xh-input-group-w, var(--xh-control-w));
     border-radius: var(--xh-input-group-radius, var(--xh-shape-control));
     background: var(--xh-input-group-bg, var(--xh-_input-group-bg));
     box-shadow: var(--xh-input-group-shadow, var(--xh-_input-group-shadow));
@@ -7722,6 +7724,14 @@
     border-color: transparent;
     background-color: transparent;
     box-shadow: none;
+  }
+
+  /* 组里的字段（带字段外壳的控件）占满前后缀与动作之外的剩余宽度，自己的缺省宽让位；
+     前后缀、按钮这些段按内容宽，不跟着撑开 */
+  [data-scope='input-group'][data-part='root'] > :is([data-xh-field-chrome], :has([data-xh-field-chrome])) {
+    flex: 1 1 0%;
+    min-inline-size: 0;
+    inline-size: auto;
   }
 
   /* 每一段都是定位元素，动作控件的悬停面可以浮到外轮廓之上。 */

@@ -39034,6 +39034,24 @@
       "description": "input-group 的 root 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-input-group-w",
+      "component": "input-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 root 部件 inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-json-viewer-bg",
       "component": "json-viewer",
       "part": [

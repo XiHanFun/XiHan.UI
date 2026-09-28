@@ -118,4 +118,26 @@ describe('input-group 单一输入表面', () => {
     expect(after.width).toBe(before.width)
     expect(after.height).toBe(before.height)
   })
+
+  it('不传尺寸时整组与单个字段同宽：前缀按内容宽，字段占满剩余，不再是字段缺省宽再加前缀', async () => {
+    host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      render: () => h('div', null, [
+        h(XhInputGroupRoot, { 'data-testid': 'width' }, () => [
+          h(XhInputGroupItem, null, () => '@'),
+          field('邮箱'),
+        ]),
+        h('div', { 'data-testid': 'lone' }, [field('单个字段')]),
+      ]),
+    })
+    app.mount(host)
+    await nextTick()
+    const root = group('width')
+    const lone = host.querySelector<HTMLElement>(`[data-testid='lone'] [data-scope='text-field'][data-part='root']`)!
+    expect(root.getBoundingClientRect().width).toBeCloseTo(lone.getBoundingClientRect().width, 0)
+    const item = root.querySelector<HTMLElement>(`[data-scope='input-group'][data-part='item']`)!
+    const inner = root.querySelector<HTMLElement>(`[data-scope='text-field'][data-part='root']`)!
+    expect(item.getBoundingClientRect().width + inner.getBoundingClientRect().width).toBeCloseTo(root.getBoundingClientRect().width, 0)
+  })
 })
