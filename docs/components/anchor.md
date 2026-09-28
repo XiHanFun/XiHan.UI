@@ -192,6 +192,7 @@
 | `link` | `data-xh-collection-item` | '' |
 | `link` | `data-xh-collection-size` | props.size |
 | `link-text` | `data-xh-collection-slot` | 'text' |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-orientation` | props.orientation |
 | `indicator` | `data-value` | context.get('value') |
 

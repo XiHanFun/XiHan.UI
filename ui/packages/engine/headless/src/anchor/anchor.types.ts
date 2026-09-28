@@ -86,6 +86,11 @@ export interface AnchorSchema extends MachineSchema {
     indicator: AnchorIndicatorRect | null
     /** 液态档下指示器沿主轴比目标长出的比例，皮肤据它在另一个方向上压扁；标准档与停稳时为 0。 */
     indicatorStretch: number
+    /**
+     * 指示器这一落点直接到位、不走皮肤的过渡：首次落位、同一项重量挪动了落点（尺寸变化、换上正式字体）、
+     * 液态档逐帧推着走时为 true；标准档换项时为 false，交给皮肤滑过去。投影为指示器的 data-instant。
+     */
+    indicatorInstant: boolean
     /** 按压通道：Space / Enter 或触屏按住的链接 value。抬起、失焦或指针取消即清空，与激活项互相独立。 */
     pressedValue: string | null
   }
