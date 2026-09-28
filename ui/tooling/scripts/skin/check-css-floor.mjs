@@ -44,6 +44,35 @@ const REJECT = [
   },
 ]
 
+// —— :dir() 方向伪类:Chrome 120 / Firefox 49 / Safari 16.4 起,高于地板 ——
+// 旧引擎不认这个伪类,整条选择器失效、规则静默丢掉:rtl 下的换向在 Chrome 111–119 与 Safari 16.2–16.3 里没了。
+// 祖先 [dir='rtl'] 也不是替代:rtl 里局部写回 ltr 的子树照样命中。换向的写法是逻辑属性,只认物理方向的量
+// (translate、渐变角度、clip-path 左右两侧)乘 --xh-direction-sign——它按就近的 dir 继承。
+// 下面是还没迁走的存量,记皮肤与处数:只减不增,处数变少要跟着下调,迁完即删;不在表里的皮肤出现即失败。
+const DIR_PSEUDO = /:dir\(/g
+const DIR_PSEUDO_SINCE = { chrome: 120, firefox: 49, safari: 16.4 }
+const DIR_PSEUDO_BACKLOG = {
+  'anchor.css': 1,
+  'button.css': 1,
+  'carousel.css': 5,
+  'cascader.css': 1,
+  'color-picker.css': 1,
+  'download-trigger.css': 1,
+  'drawer.css': 1,
+  'file-upload.css': 1,
+  'image-viewer.css': 2,
+  'layout.css': 2,
+  'loading-bar.css': 1,
+  'navigation-menu.css': 1,
+  'notification.css': 1,
+  'progress.css': 4,
+  'resizable.css': 1,
+  'segmented.css': 1,
+  'sortable.css': 1,
+  'tabs.css': 2,
+  'toast.css': 2,
+}
+
 /** .browserslistrc 里 `引擎 >= 版本` 的地板,取不到的引擎不进表。 */
 function floorOf(text) {
   const out = {}
@@ -143,6 +172,8 @@ function declarationsOf(block) {
 const errors = []
 /** 真的用来放行过的皮肤。 */
 const usedAllowlist = new Set()
+/** 每份皮肤里 :dir() 的处数。 */
+const dirSeen = new Map()
 
 // .browserslistrc 必须存在:它是地板的书面记录,拒绝名单逐条与之对账
 let floorText = ''
@@ -185,6 +216,19 @@ for (const file of files) {
       errors.push(`${file}:用了「${item.name}」——${item.reason},会悄悄抬高浏览器硬底线`)
   }
 
+  // :dir() 只许出现在待迁存量里,且处数与登记相符
+  const dirCount = (noComments.match(DIR_PSEUDO) ?? []).length
+  const dirAllowed = DIR_PSEUDO_BACKLOG[file] ?? 0
+  dirSeen.set(file, dirCount)
+  if (dirCount > dirAllowed) {
+    errors.push(dirAllowed === 0
+      ? `${file}:用了 ${dirCount} 处 :dir()——Chrome 120 / Safari 16.4 起,高于浏览器硬底线,旧引擎整条规则丢掉;换向用逻辑属性,物理方向的量乘 --xh-direction-sign`
+      : `${file}:${dirCount} 处 :dir(),比待迁登记的 ${dirAllowed} 处多——存量只减不增`)
+  }
+  else if (dirCount < dirAllowed) {
+    errors.push(`${file}::dir() 已减到 ${dirCount} 处,待迁登记还写着 ${dirAllowed}——跟着下调${dirCount === 0 ? '(删掉这一条)' : ''}`)
+  }
+
   for (const block of ruleBlocks(css)) {
     const prev = new Map()
     for (const decl of declarationsOf(block)) {
@@ -222,6 +266,16 @@ for (const file of ALLOWLIST.keys()) {
     errors.push(`${file}:登记在 ALLOWLIST 里却没被扫到——名单过期了`)
 }
 
+// :dir() 待迁登记里的皮肤没了,这一条就成了空转的通行证
+for (const file of Object.keys(DIR_PSEUDO_BACKLOG)) {
+  if (!dirSeen.has(file))
+    errors.push(`${file}:登记在 :dir() 待迁存量里却没被扫到——名单过期了`)
+}
+
+// 地板抬到三家都认 :dir() 时,待迁存量整张表就该撤掉
+if (Object.keys(DIR_PSEUDO_BACKLOG).length > 0 && coveredByFloor({ since: DIR_PSEUDO_SINCE }, floor))
+  errors.push(':dir() 已被地板包含——撤掉 DIR_PSEUDO_BACKLOG 与这条检查')
+
 // 空转保护:目录层级变了会一个文件都扫不到却照样绿
 if (files.length === 0) {
   console.error('[check-css-floor] ✗ 一份皮肤都没扫到,styles/css 目录层级变了')
@@ -235,4 +289,5 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-css-floor] 通过:${files.length} 份皮肤没有抬底线的特性,增强特性都带级联兜底或 @supports 守卫(守卫 ${GUARDED.length} 档 · 白名单 ${usedAllowlist.size} 条)`)
+const dirLeft = Object.values(DIR_PSEUDO_BACKLOG).reduce((sum, n) => sum + n, 0)
+console.log(`[check-css-floor] 通过:${files.length} 份皮肤没有抬底线的特性,增强特性都带级联兜底或 @supports 守卫(守卫 ${GUARDED.length} 档 · 白名单 ${usedAllowlist.size} 条 · :dir() 待迁 ${Object.keys(DIR_PSEUDO_BACKLOG).length} 份 ${dirLeft} 处)`)
