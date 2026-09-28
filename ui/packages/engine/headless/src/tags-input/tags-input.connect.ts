@@ -12,7 +12,7 @@ import { contains, dataAttr, isComposingEvent, ITEM_VALUE_ATTR, mergeProps } fro
 import { pressHandlers } from '../shared/press'
 import { connectStaticTag, tagVariantForControl } from '../tag'
 import { tagsInputAnatomy, tagsInputEditInputId } from './tags-input.anatomy'
-import { appendTags, isAtMax, isOverflow, splitTags, tagsDelimiter } from './tags-input.machine'
+import { appendTags, editRejection, isAtMax, isOverflow, splitTags, TAGS_INPUT_DELIMITER, tagsDelimiter } from './tags-input.machine'
 
 const parts = tagsInputAnatomy.build()
 
@@ -45,7 +45,10 @@ export function connectTagsInput<T extends PropTypes>(
   const showCount = !!prop('showCount')
   const editable = !disabled && !readOnly
   const canEditTags = editable && !!prop('editable')
-  const delimiter = tagsDelimiter(prop('delimiter'))
+  // 断词用整组（任何一个都断），拼 hidden-input 用第一个
+  const delimiters = prop('delimiter') ?? TAGS_INPUT_DELIMITER
+  const joiner = tagsDelimiter(delimiters)
+  const validate = prop('validate')
   const max = prop('max')
   const allowOverflow = !!prop('allowOverflow')
   const atMax = isAtMax(count, max)
@@ -259,12 +262,12 @@ export function connectTagsInput<T extends PropTypes>(
       'onPaste': (event: ClipboardEvent) => {
         if (!editable || !prop('addOnPaste'))
           return
-        const tags = splitTags(event.clipboardData?.getData('text') ?? '', delimiter)
+        const tags = splitTags(event.clipboardData?.getData('text') ?? '', delimiters)
         // 剪贴板里没有能成标签的内容：交给浏览器照常粘进框里
         if (tags.length === 0)
           return
-        // 顶到上限时也不接管：拦下来又加不进去，让它照常粘进框里
-        if (appendTags(value, tags, { max, allowOverflow }).rejected.length > 0)
+        // 顶到上限或被 validate 拒收时也不接管：拦下来又加不进去，让它照常粘进框里，用户改完再按 Enter
+        if (appendTags(value, tags, { max, allowOverflow, validate }).rejected.length > 0)
           return
         event.preventDefault()
         send({ type: 'TAG.ADD', values: tags })
@@ -296,7 +299,7 @@ export function connectTagsInput<T extends PropTypes>(
             return
           }
           // 框里没有能成标签的内容就不接这个键，Enter 还要用来提交表单
-          if (splitTags(el.value, delimiter).length === 0)
+          if (splitTags(el.value, delimiters).length === 0)
             return
           event.preventDefault()
           // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
@@ -432,15 +435,18 @@ export function connectTagsInput<T extends PropTypes>(
         // 输入框先拿到再送事件：改成空白等于删掉标签，整块节点会随之离开文档
         const back = inputOf(event.currentTarget as HTMLElement)
         event.preventDefault()
+        // 被 validate 拒收的改写留在编辑态：焦点也留在编辑框里，等用户改
+        const rejected = event.key === 'Enter' && editRejection(value, item.value, context.get('editedValue'), validate) != null
         send({ type: event.key === 'Enter' ? 'EDIT.SUBMIT' : 'EDIT.CANCEL' })
         // 编辑框马上收起，焦点先交回输入框，否则会掉到 body 上
-        back?.focus()
+        if (!rejected)
+          back?.focus()
       },
       'onBlur': () => {
         // 判据是本节点正是当下在编辑的那一个，别的编辑框迟到的失焦不该提交这次编辑
         if (editedValue !== item.value)
           return
-        send({ type: 'EDIT.SUBMIT' })
+        send({ type: 'EDIT.SUBMIT', blur: true })
       },
     }),
 
@@ -501,7 +507,7 @@ export function connectTagsInput<T extends PropTypes>(
       // name 缺省即不产出该属性，此时这份输入不参与提交
       name: prop('name'),
       // 按断词符拼成一串，后端按同一个符号拆回
-      value: value.join(delimiter),
+      value: value.join(joiner),
       // 禁用的控件不该提交出值
       disabled: disabled || undefined,
     }),

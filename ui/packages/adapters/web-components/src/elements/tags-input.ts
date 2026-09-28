@@ -12,6 +12,7 @@ import type {
   TagsInputInputValueChangeDetails,
   TagsInputItemProps,
   TagsInputSchema,
+  TagsInputTagRejectDetails,
   TagsInputValueChangeDetails,
 } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
@@ -60,7 +61,7 @@ const ARRAY_CONVERTER = {
  * @attr {boolean} invalid - 校验失败标注
  * @attr {string} name - 表单字段名；提供后 hidden-input 才参与提交（按 delimiter 拼接为一串）
  * @attr {string} placeholder - 输入框占位文案
- * @attr {string} delimiter - 断词符，默认逗号；显式写空串即关闭断词
+ * @attr {string} delimiter - 断词符，默认逗号；显式写空串即关闭断词。要一组断词符（任何一个都断）走 property：`el.delimiter = [',', '，']`
  * @attr {boolean} add-on-paste - 粘贴时按 delimiter 拆分为多个标签
  * @attr {boolean} editable - 允许双击标签就地修改
  * @attr {'add'|'clear'} blur-behavior - 焦点离开整个组件时残留文本的处置方式
@@ -69,6 +70,7 @@ const ARRAY_CONVERTER = {
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 标签集合变化；detail 为 `{ value: string[] }`
  * @fires input-value-change - 输入文本变化；detail 为 `{ inputValue: string }`
+ * @fires tag-reject - 提交里有标签没进集合（重复、到了上限或被 validate 拒收）；detail 为 `{ tags: { tag, reasons }[] }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max / data-overflowing
  * @csspart label - 标题；`for` 恒指向 input，因此须是原生 `<label>` 才可点击
  * @csspart control - role=group 的框，点击其空白处即聚焦输入框
@@ -106,6 +108,8 @@ export class XhTagsInputElement extends XhElement {
     name: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     delimiter: { converter: STRING_CONVERTER },
+    // 作者的准入判定是函数，只走 property
+    validate: { attribute: false },
     addOnPaste: { converter: BOOLEAN_CONVERTER, attribute: 'add-on-paste' },
     editable: { converter: BOOLEAN_CONVERTER },
     blurBehavior: { converter: STRING_CONVERTER, attribute: 'blur-behavior' },
@@ -129,7 +133,8 @@ export class XhTagsInputElement extends XhElement {
   declare invalid?: boolean
   declare name?: string
   declare placeholder?: string
-  declare delimiter?: string
+  declare delimiter?: string | string[]
+  declare validate?: TagsInputSchema['props']['validate']
   declare addOnPaste?: boolean
   declare editable?: boolean
   declare blurBehavior?: TagsInputBlurBehavior | null
@@ -141,6 +146,10 @@ export class XhTagsInputElement extends XhElement {
 
   private readonly notifyValue = (details: TagsInputValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyTagReject = (details: TagsInputTagRejectDetails): void => {
+    this.dispatchEvent(new CustomEvent('tag-reject', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyInputValue = (details: TagsInputInputValueChangeDetails): void => {
@@ -183,6 +192,7 @@ export class XhTagsInputElement extends XhElement {
       name: this.name,
       placeholder: this.placeholder,
       delimiter: this.delimiter,
+      validate: this.validate,
       addOnPaste: this.addOnPaste ?? false,
       editable: this.editable ?? false,
       blurBehavior: this.blurBehavior,
@@ -192,6 +202,7 @@ export class XhTagsInputElement extends XhElement {
       translations: this.translations,
       onValueChange: this.notifyValue,
       onInputValueChange: this.notifyInputValue,
+      onTagReject: this.notifyTagReject,
     }
   }
 

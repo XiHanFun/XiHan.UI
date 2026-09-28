@@ -62353,9 +62353,17 @@
               "name": "delimiter",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
               "attribute": "delimiter"
+            },
+            {
+              "kind": "field",
+              "name": "validate",
+              "privacy": "public",
+              "type": {
+                "text": "TagsInputSchema['props']['validate'] | undefined"
+              }
             },
             {
               "kind": "field",
@@ -62423,6 +62431,12 @@
             {
               "kind": "field",
               "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyTagReject",
               "privacy": "private",
               "readonly": true
             },
@@ -62575,6 +62589,13 @@
               "type": {
                 "text": "TagsInputInputValueChangeDetails"
               }
+            },
+            {
+              "description": "提交里有标签没进集合（重复、到了上限或被 validate 拒收）；detail 为 `{ tags: { tag, reasons }[] }`",
+              "name": "tag-reject",
+              "type": {
+                "text": "TagsInputTagRejectDetails"
+              }
             }
           ],
           "attributes": [
@@ -62684,9 +62705,9 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
-              "description": "断词符，默认逗号；显式写空串即关闭断词",
+              "description": "断词符，默认逗号；显式写空串即关闭断词。要一组断词符（任何一个都断）走 property：`el.delimiter = [',', '，']`",
               "name": "delimiter",
               "fieldName": "delimiter"
             },

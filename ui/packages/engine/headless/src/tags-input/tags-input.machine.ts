@@ -6,7 +6,7 @@
 // 提供 tags input 相关实现。
 
 import type { Params } from '@xihan-ui/core'
-import type { TagsInputSchema } from './tags-input.types'
+import type { TagsInputRejectCode, TagsInputRejection, TagsInputSchema, TagsInputValidateContext } from './tags-input.types'
 import { resetDeclaredValue, setup, trackListMotion } from '@xihan-ui/core'
 import { sameArray } from '../shared/array'
 import { tagsInputEditInputId } from './tags-input.anatomy'
@@ -17,10 +17,26 @@ const { createMachine } = setup<TagsInputSchema>()
 export const TAGS_INPUT_DELIMITER = ','
 
 /**
- * 生效的断词符。显式给空串是关掉断词，因此只能用 ?? 兜底：|| 会把空串当没给。
+ * 生效的断词符列表。显式给空串或空数组是关掉断词，因此只能用 ?? 兜底：|| 会把空串当没给。
  */
-export function tagsDelimiter(delimiter: string | undefined): string {
-  return delimiter ?? TAGS_INPUT_DELIMITER
+export function tagsDelimiters(delimiter: string | readonly string[] | undefined): string[] {
+  const list = typeof delimiter === 'string' ? [delimiter] : delimiter ?? [TAGS_INPUT_DELIMITER]
+  return list.filter(item => item !== '')
+}
+
+/**
+ * hidden-input 拼串用的连接符：给一组断词符时取第一个。关掉断词时为空串。
+ */
+export function tagsDelimiter(delimiter: string | readonly string[] | undefined): string {
+  return tagsDelimiters(delimiter)[0] ?? ''
+}
+
+/** 按任何一个断词符切开，保留空段（断词符连打、首尾断词符都会留下空段，由调用方决定丢不丢）。 */
+function splitRaw(raw: string, delimiters: readonly string[]): string[] {
+  let chunks = [raw]
+  for (const delimiter of delimiters)
+    chunks = chunks.flatMap(chunk => chunk.split(delimiter))
+  return chunks
 }
 
 /** 标签的规范形态：去掉首尾空白。空串代表"这不是一个标签"。 */
@@ -29,12 +45,11 @@ export function normalizeTag(raw: string): string {
 }
 
 /**
- * 按断词符把一段文本拆成若干标签，丢掉空白段。
- * 断词符为空串时整串当一个标签，按空串 split 会把文本劈成单个字符。
+ * 按断词符（一个或一组，任何一个都断）把一段文本拆成若干标签，丢掉空白段。
+ * 断词符为空串或空数组时整串当一个标签，按空串 split 会把文本劈成单个字符。
  */
-export function splitTags(raw: string, delimiter: string): string[] {
-  const chunks = delimiter === '' ? [raw] : raw.split(delimiter)
-  return chunks.map(normalizeTag).filter(tag => tag !== '')
+export function splitTags(raw: string, delimiter: string | readonly string[]): string[] {
+  return splitRaw(raw, tagsDelimiters(delimiter)).map(normalizeTag).filter(tag => tag !== '')
 }
 
 /** 逐项比对：数组每次都是新引用，不比内容的话值没变也会通知一遍。 */
@@ -71,37 +86,73 @@ export function normalizeTags(list: readonly string[]): string[] {
 export interface TagsAppendOptions {
   max?: number
   allowOverflow?: boolean
+  /** 作者的准入判定，见 TagsInputSchema 的同名 prop。 */
+  validate?: (tag: string, context: TagsInputValidateContext) => string | string[] | null | undefined
 }
 
 export interface TagsAppendResult {
   /** 追加之后的集合。rejected 非空时它只是个假设，调用方不该落盘。 */
   value: string[]
-  /** 因上限而进不去的标签。空白项与"本来就在列表里"的不算被拒。 */
+  /** 挡住这一批的标签：到了上限或被 validate 拒收。空白项与"本来就在列表里"的不算。 */
   rejected: string[]
+  /** 没进集合的全部标签与原因：rejected 之外还有照常消费掉的重复项（duplicate）。 */
+  rejections: TagsInputRejection[]
+}
+
+/** 作者 validate 的返回值摊成拒绝码列表：空串、null、undefined 与空数组都是放行。 */
+function rejectCodes(result: string | string[] | null | undefined): TagsInputRejectCode[] {
+  if (result == null)
+    return []
+  return (Array.isArray(result) ? result : [result]).filter(code => typeof code === 'string' && code !== '')
 }
 
 /**
- * 往集合尾部追加一批标签：空白项丢弃、重复项跳过，只有被上限挡住的才进 rejected。
+ * 往集合尾部追加一批标签：空白项丢弃；重复项跳过但记一笔 duplicate；
+ * 其余先问 validate、再看上限，被挡住的进 rejected。
  */
 export function appendTags(
   current: readonly string[],
   incoming: readonly string[],
   options: TagsAppendOptions = {},
 ): TagsAppendResult {
-  const { max, allowOverflow } = options
+  const { max, allowOverflow, validate } = options
+  const batch = incoming.map(normalizeTag).filter(tag => tag !== '')
   const value = [...current]
   const rejected: string[] = []
-  for (const raw of incoming) {
-    const tag = normalizeTag(raw)
-    if (tag === '' || value.includes(tag))
+  const rejections: TagsInputRejection[] = []
+  for (const tag of batch) {
+    if (value.includes(tag)) {
+      rejections.push({ tag, reasons: ['duplicate'] })
       continue
-    if (!allowOverflow && isAtMax(value.length, max)) {
+    }
+    const reasons = validate ? rejectCodes(validate(tag, { value: [...value], tags: batch })) : []
+    if (!reasons.length && !allowOverflow && isAtMax(value.length, max))
+      reasons.push('too-many-tags')
+    if (reasons.length) {
       rejected.push(tag)
+      rejections.push({ tag, reasons })
       continue
     }
     value.push(tag)
   }
-  return { value, rejected }
+  return { value, rejected, rejections }
+}
+
+/**
+ * 就地编辑的准入：改成空白（删掉）、没改、或改成另一个已有标签（并成一个）都不问 validate；
+ * 其余改写后的文本交给 validate，被拒即返回这一笔拒收。
+ */
+export function editRejection(
+  current: readonly string[],
+  from: string,
+  edited: string,
+  validate: TagsAppendOptions['validate'],
+): TagsInputRejection | null {
+  const tag = normalizeTag(edited)
+  if (!validate || tag === '' || tag === from || current.includes(tag))
+    return null
+  const reasons = rejectCodes(validate(tag, { value: current.filter(item => item !== from), tags: [tag] }))
+  return reasons.length ? { tag, reasons } : null
 }
 
 /**
@@ -111,10 +162,13 @@ export function appendTags(
 function commitTags(params: Params<TagsInputSchema>, incoming: readonly string[]): boolean {
   const { context, prop } = params
   const current = context.get('value')
-  const { value: next, rejected } = appendTags(current, incoming, {
+  const { value: next, rejected, rejections } = appendTags(current, incoming, {
     max: prop('max'),
     allowOverflow: prop('allowOverflow'),
+    validate: prop('validate'),
   })
+  if (rejections.length > 0)
+    prop('onTagReject')?.({ tags: rejections })
   if (rejected.length > 0)
     return false
   if (!sameTags(next, current))
@@ -127,6 +181,15 @@ function commitTags(params: Params<TagsInputSchema>, incoming: readonly string[]
  * 下一轮接线才写上部件属性，到达得在插入的那一刻认出来。后者只认容器的直接子节点，标签里嵌的别的组件不算。
  */
 const TAGS_INPUT_ITEM_SELECTOR = '[data-scope="tags-input"][data-part="item"], [data-scope="tags-input"][data-part="control"] > [data-xh-part="item"]'
+
+/** 此刻的编辑会不会被拒：编辑锚点还在集合里时才判。 */
+function pendingEditRejection({ context, prop }: Params<TagsInputSchema>): TagsInputRejection | null {
+  const from = context.get('focusedValue')
+  const current = context.get('value')
+  if (from == null || !current.includes(from))
+    return null
+  return editRejection(current, from, context.get('editedValue'), prop('validate'))
+}
 
 /**
  * 标签集合与输入文本各住在自己的 cell 里，受控/非受控在 cell 收口，不需要影子事件与受控守卫。
@@ -209,7 +272,13 @@ export const tagsInputMachine = createMachine({
       effects: ['focusEditInput'],
       on: {
         'EDIT.CHANGE': { actions: ['setEditedValue'] },
-        'EDIT.SUBMIT': { target: 'idle', actions: ['commitEdit'] },
+        'EDIT.SUBMIT': [
+          // 编辑框失焦时被拒：就此撤销，焦点已经走了，留在编辑态只会剩一个没人管的编辑框
+          { guard: 'isBlurEditRejected', target: 'idle', actions: ['reportEditReject', 'cancelEdit'] },
+          // Enter 时被拒：留在编辑态，文本原样留在编辑框里等用户改
+          { guard: 'isEditRejected', actions: ['reportEditReject'] },
+          { target: 'idle', actions: ['commitEdit'] },
+        ],
         'EDIT.CANCEL': { target: 'idle', actions: ['cancelEdit'] },
         // 编辑途中把这个标签删掉：编辑缓冲一并丢弃，别留下指向已消失标签的锚点
         'TAG.DELETE': { guard: 'canEdit', target: 'idle', actions: ['deleteTag', 'cancelEdit'] },
@@ -238,6 +307,11 @@ export const tagsInputMachine = createMachine({
       },
       canPress: ({ prop, context }) =>
         !prop('disabled') && !prop('readOnly') && (context.get('value').length > 0 || context.get('inputValue') !== ''),
+      isEditRejected: params => pendingEditRejection(params) != null,
+      isBlurEditRejected: (params) => {
+        const e = params.event.current()
+        return e.type === 'EDIT.SUBMIT' && !!e.blur && pendingEditRejection(params) != null
+      },
     },
     actions: {
       resetToDefault: (params) => {
@@ -269,14 +343,14 @@ export const tagsInputMachine = createMachine({
         if (e.type !== 'INPUT.CHANGE')
           return
         const { context, prop } = params
-        const delimiter = tagsDelimiter(prop('delimiter'))
+        const delimiters = tagsDelimiters(prop('delimiter'))
         const raw = e.value
-        if (delimiter === '' || !raw.includes(delimiter)) {
+        if (!delimiters.some(delimiter => raw.includes(delimiter))) {
           context.set('inputValue', raw)
           return
         }
         // 打出断词符即断词：断词符之前的每一段各成一个标签，最后一段留在框里接着打
-        const parts = raw.split(delimiter)
+        const parts = splitRaw(raw, delimiters)
         const trailing = parts.pop() ?? ''
         const tags = parts.map(normalizeTag).filter(tag => tag !== '')
         if (tags.length === 0) {
@@ -290,7 +364,7 @@ export const tagsInputMachine = createMachine({
       commitInput: (params) => {
         const { context, prop } = params
         const raw = context.get('inputValue')
-        const tags = splitTags(raw, tagsDelimiter(prop('delimiter')))
+        const tags = splitTags(raw, prop('delimiter') ?? TAGS_INPUT_DELIMITER)
         if (tags.length === 0) {
           // 框里只有空白，清掉
           if (raw !== '')
@@ -366,6 +440,11 @@ export const tagsInputMachine = createMachine({
       cancelEdit: ({ context }) => {
         context.set('focusedValue', null)
         context.set('editedValue', '')
+      },
+      reportEditReject: (params) => {
+        const rejection = pendingEditRejection(params)
+        if (rejection)
+          params.prop('onTagReject')?.({ tags: [rejection] })
       },
 
       startPress: ({ context }) => context.set('pressed', true),

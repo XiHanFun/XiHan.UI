@@ -19,13 +19,13 @@ export const tagsInputKeyboard: KeyboardTable = {
       id: 'tags-input.kbd.commit',
       keys: ['Enter'],
       when: 'focus in input, 框里有能成标签的内容, not disabled/readOnly',
-      does: '把输入框里的文本变成标签（含 delimiter 时一次进多个）；框里只有空白时不接管，Enter 留给表单提交',
+      does: '把输入框里的文本变成标签（含 delimiter 时一次进多个）；有一个被 validate 拒收或放不下就整体不生效、文本留在框里。框里只有空白时不接管，Enter 留给表单提交',
     },
     {
       id: 'tags-input.kbd.delimiter',
-      keys: ['delimiter（默认 ,）'],
+      keys: ['delimiter（默认 ,，可给一组）'],
       when: 'focus in input, not disabled/readOnly',
-      does: '断词：分隔符之前的每一段各成一个标签，最后一段留在框里接着打',
+      does: '断词：分隔符之前的每一段各成一个标签，最后一段留在框里接着打；被拒时整段原样留在框里',
     },
     {
       id: 'tags-input.kbd.backspace-highlight',
@@ -85,7 +85,7 @@ export const tagsInputKeyboard: KeyboardTable = {
       id: 'tags-input.kbd.edit-submit',
       keys: ['Enter'],
       when: 'focus in item-input（就地编辑中）',
-      does: '提交改写；改成空白等于删掉这个标签，改成另一个已有标签则并成一个。焦点交回输入框',
+      does: '提交改写；改成空白等于删掉这个标签，改成另一个已有标签则并成一个。焦点交回输入框；被 validate 拒收时留在编辑框里',
     },
     {
       id: 'tags-input.kbd.edit-cancel',

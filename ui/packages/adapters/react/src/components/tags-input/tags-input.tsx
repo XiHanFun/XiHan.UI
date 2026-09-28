@@ -65,7 +65,10 @@ export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>,
   /** 表单字段名；提供后隐藏输入才带 name 并参与提交。 */
   name?: string
   placeholder?: string
-  delimiter?: string
+  /** 断词符，默认逗号；给一组即任何一个都断，拼隐藏输入用第一个。 */
+  delimiter?: string | string[]
+  /** 作者的准入判定：返回拒绝码即拒收，这一次提交整体不生效，拒收的进 onTagReject。 */
+  validate?: TagsInputProps['validate']
   addOnPaste?: boolean
   /** 允许双击标签就地改写。 */
   editable?: boolean
@@ -76,6 +79,7 @@ export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>,
   translations?: Partial<TagsInputTranslations>
   onValueChange?: TagsInputProps['onValueChange']
   onInputValueChange?: TagsInputProps['onInputValueChange']
+  onTagReject?: TagsInputProps['onTagReject']
   children?: SlotChildren<TagsInputRootSlotProps>
 }
 
@@ -94,6 +98,7 @@ export function XhTagsInputRoot({
   name,
   placeholder,
   delimiter,
+  validate,
   addOnPaste,
   editable,
   blurBehavior,
@@ -103,6 +108,7 @@ export function XhTagsInputRoot({
   translations,
   onValueChange,
   onInputValueChange,
+  onTagReject,
   children,
   ...rest
 }: XhTagsInputRootProps): ReactNode {
@@ -121,6 +127,7 @@ export function XhTagsInputRoot({
     name,
     placeholder,
     delimiter,
+    validate,
     addOnPaste,
     editable,
     blurBehavior,
@@ -130,6 +137,7 @@ export function XhTagsInputRoot({
     translations,
     onValueChange,
     onInputValueChange,
+    onTagReject,
   })) as TagsInputProps)
   const api = ctx.api
   return (
@@ -164,7 +172,7 @@ export function XhTagsInputRoot({
   )
 }
 
-XhTagsInputRoot.xhEvents = ['value-change', 'input-value-change'] as const
+XhTagsInputRoot.xhEvents = ['value-change', 'input-value-change', 'tag-reject'] as const
 
 export interface XhTagsInputLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 使用原生 label，getLabelProps 的 for 指向输入框。 */

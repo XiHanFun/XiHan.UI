@@ -18,6 +18,33 @@ export interface TagsInputInputValueChangeDetails {
 }
 
 /**
+ * 内建的拒绝原因。duplicate：集合里已有这个标签（同一批里排在前面的也算），它照常被消费掉、不挡这一批；
+ * too-many-tags：到了 max 放不下。
+ */
+export type TagsInputRejectReason = 'duplicate' | 'too-many-tags'
+
+/** 拒绝码：内建原因之外，validate 返回的作者自定义码（如 'invalid-email'）原样并入。 */
+export type TagsInputRejectCode = TagsInputRejectReason | (string & {})
+
+export interface TagsInputRejection {
+  tag: string
+  reasons: TagsInputRejectCode[]
+}
+
+export interface TagsInputTagRejectDetails {
+  /** 这一次提交里没进集合的标签，按提交顺序排列。 */
+  tags: TagsInputRejection[]
+}
+
+/** validate 收到的上下文。 */
+export interface TagsInputValidateContext {
+  /** 此刻的标签集合（同一批里排在它前面、已经通过的也算进去）；就地编辑时不含正被改写的那一个。 */
+  value: readonly string[]
+  /** 本次一起提交的这一批（Enter、断词、粘贴或 addValue）；就地编辑时只有改写后的这一个。 */
+  tags: readonly string[]
+}
+
+/**
  * 焦点离开整个组件时输入框中残留文本的处置方式。
  * 默认（undefined / null）= 原样保留，用户回来后继续输入。
  */
@@ -75,9 +102,17 @@ export interface TagsInputSchema extends MachineSchema {
     placeholder?: string
     /**
      * 断词符，默认逗号。输入它即断词为标签，粘贴时也按它拆分。
-     * 显式提供空串即关闭断词：此时只有 Enter 能把文本变为标签。
+     * 给一组即任何一个都断词（如 [',', '，', ';']），hidden-input 拼串用第一个。
+     * 显式提供空串或空数组即关闭断词：此时只有 Enter 能把文本变为标签。
      */
-    delimiter?: string
+    delimiter?: string | string[]
+    /**
+     * 作者的准入判定：用户提交的每个新标签（Enter、断词、粘贴、失焦加入、addValue 与就地编辑）逐个调用，
+     * 返回拒绝码（一个或一组）即拒收；返回 null / undefined / 空数组即放行。
+     * 有一个被拒这一次提交就整体不生效，文本原样留在框里（就地编辑则留在编辑框里），拒收的连同码一起进 onTagReject。
+     * setValue 的整份替换不经过它。应为纯函数：粘贴时会先判一次决定接不接管。
+     */
+    validate?: (tag: string, context: TagsInputValidateContext) => string | string[] | null | undefined
     /** 粘贴时接管：按 delimiter 拆分为多个标签。默认关闭（交给浏览器照常粘贴进框中）。 */
     addOnPaste?: boolean
     /** 允许双击标签就地修改。默认关闭。 */
@@ -93,6 +128,8 @@ export interface TagsInputSchema extends MachineSchema {
     translations?: Partial<TagsInputTranslations>
     onValueChange?: (details: TagsInputValueChangeDetails) => void
     onInputValueChange?: (details: TagsInputInputValueChangeDetails) => void
+    /** 提交里有标签没进集合：重复（照常消费）、到了上限或被 validate 拒收，逐个报告原因。 */
+    onTagReject?: (details: TagsInputTagRejectDetails) => void
   }
   context: {
     /** 标签集合。受控（value 提供）时 cell 直读 prop，写入只发 onValueChange 不修改内部值。 */
@@ -134,7 +171,8 @@ export interface TagsInputSchema extends MachineSchema {
     | { type: 'TAG.DELETE', value: string }
     | { type: 'TAG.EDIT', value: string }
     | { type: 'EDIT.CHANGE', value: string }
-    | { type: 'EDIT.SUBMIT' }
+    /** 提交就地编辑；blur 标明来自编辑框失焦：被拒时就此撤销而不是留在编辑态。 */
+    | { type: 'EDIT.SUBMIT', blur?: boolean }
     | { type: 'EDIT.CANCEL' }
     /** 适配器补报：承载焦点的标签节点被移出 DOM，浏览器不会为此派发 focusout。 */
     | { type: 'ITEM.FOCUS_LOST' }
@@ -146,7 +184,7 @@ export interface TagsInputSchema extends MachineSchema {
     /** 列表动效接上了标签容器（机器自己发）。 */
     | { type: 'LIST.TRACKED' }
   tag: never
-  guard: 'canEdit' | 'canEditTag' | 'canDeleteWithPrev' | 'hasHighlightTarget' | 'canPress'
+  guard: 'canEdit' | 'canEditTag' | 'canDeleteWithPrev' | 'hasHighlightTarget' | 'canPress' | 'isEditRejected' | 'isBlurEditRejected'
   action:
     | 'setValue'
     | 'addTags'
@@ -161,6 +199,7 @@ export interface TagsInputSchema extends MachineSchema {
     | 'setEditedValue'
     | 'commitEdit'
     | 'cancelEdit'
+    | 'reportEditReject'
     | 'resetToDefault'
     | 'startPress'
     | 'endPress'
@@ -196,7 +235,7 @@ export interface TagsInputApi<T extends PropTypes = PropTypes> {
   canClear: boolean
   /** 整份替换，去重去空白，不受 max 约束。 */
   setValue: (next: string[]) => void
-  /** 追加一个标签，受 max 与 allowOverflow 约束。 */
+  /** 追加一个标签，受 max、allowOverflow 与 validate 约束。 */
   addValue: (next: string) => void
   deleteValue: (value: string) => void
   clear: () => void
