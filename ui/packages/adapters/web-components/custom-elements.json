@@ -59835,6 +59835,9 @@
               "name": "--xh-table-footer-font-weight"
             },
             {
+              "name": "--xh-table-frozen-edge"
+            },
+            {
               "name": "--xh-table-header-bg"
             },
             {

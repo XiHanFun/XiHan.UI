@@ -3361,6 +3361,7 @@ export type ComponentTokenName
     | '--xh-table-footer-bg'
     | '--xh-table-footer-border'
     | '--xh-table-footer-font-weight'
+    | '--xh-table-frozen-edge'
     | '--xh-table-header-bg'
     | '--xh-table-header-border'
     | '--xh-table-icon-size'

@@ -203,6 +203,8 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 - 表头分组：列给出 `children` 即为分组，只在表头占一格、横跨它的全部叶子列，不进列号空间，也不承载数据、排序、改宽与冻结。嵌套几层就有几行表头，按 `headerRows` 逐层渲染：表头行写明 `level`，列头按所在的行定位自己是哪一格；较浅的叶子列（含前缀列）在它起始的那一行出列头、纵向跨到最后一行（`aria-rowspan`），下面各行那一格是对读屏隐藏的占位，照样渲染以保住列宽。行号空间把各层表头都算进去，数据行从表头之后起算。分组内的叶子列要给出宽度，分组格的宽度按它们相加；列偏好把一个分组的叶子列拆开时，分组格按连续的段各出一格。
 - 单元格合并用 `cellSpan`，与 antd 的 `spanMethod` 同一种写法：逐格询问合并区的大小（`rowSpan` / `colSpan`）。表格按它算出起点格的 `aria-rowspan` / `aria-colspan`：与起点同一行、被横向跨过的格子不渲染（`hidden`）；下面行里被纵向跨过的，在合并区最左那一列留一格占位（`data-covered`，对读屏隐藏、只保住宽度），其余不渲染。作者照常逐格渲染，谁显谁藏由表格决定；`cellSpanOf(行, 列)` 可查某一格的合并情形。合并只在可见数据行之间，遇到展开的详情行截断。
 - 纵向合并的起点格（`data-row-span`）挂载后按实测行位铺满合并的几行，压在下面几行之上、底色随起点行；量到之前按普通格子排。
+- 横向滚过之后，冻结列与滚动区之间只在确有内容被压住时出现一道描边：行首冻结列滚离起始端后画在紧挨滚动区那一列的行尾侧，行尾冻结列没滚到末端时画在它的行首侧（`data-frozen-edge` 标出那一列，`root` 以 `data-at-min-horizontal` / `data-at-max-horizontal` 报两端）。滚动容器是 `root` 自己；放进滚动区的表格不画这道边界。
+- 行换位（拖放与 Alt + 方向键）提交之后，宿主按 `ids` 重排的那一次里行从旧位置滑到新位置，详情行随它的数据行一起走；落点线取品牌实心色，与树、排序同一种。
 - 冻结列不必都写数字宽度：同侧多列冻结时，数字宽度直接累加，其余（没写、百分比、`fr`）取挂载后实测的列头宽度；量到之前那一侧从该列起暂时贴边。
 - 行数很大时只渲染窗口内的行：把[虚拟滚动](./virtualizer)的 `collectionVirtualizer` 交给 `virtualizer`，表体里放它的视口，每个虚拟条目装一行数据行（`count` 等于可见数据行的条数，展开的详情行跟在同一个条目里）。行号与 `aria-rowcount` 照旧按完整行序报；上下键与 Home / End 按完整行序求落点，落点不在窗口里时先把它滚进来再交焦点。窗口外的行没有落点，接上后行拖动换位不可用（`rowReorderDisabledReason` 为 `virtualized`）。Web Components 下行隔着一层 `xh-virtualizer`，行节点写 `data-xh-part-owner="table"` 归表格。
 - 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
@@ -573,6 +575,8 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-at-max-horizontal` | ''（条件成立时才出现） |
+| `root` | `data-at-min-horizontal` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-fixed` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
@@ -598,6 +602,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `column-header` | `data-dragging` | ''（条件成立时才出现） |
 | `column-header` | `data-drop` | 'before' \| 'after' |
 | `column-header` | `data-frozen` | undefined |
+| `column-header` | `data-frozen-edge` | ''（条件成立时才出现） |
 | `column-header` | `data-group` | ''（条件成立时才出现） |
 | `column-header` | `data-row-span` | ''（条件成立时才出现） |
 | `column-header` | `data-sort` | 'asc' \| 'desc' |
@@ -608,6 +613,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `cell` | `data-dragging` | ''（条件成立时才出现） |
 | `cell` | `data-drop` | 'before' \| 'after' |
 | `cell` | `data-frozen` | undefined |
+| `cell` | `data-frozen-edge` | ''（条件成立时才出现） |
 | `cell` | `data-row-span` | ''（条件成立时才出现） |
 | `cell` | `data-selected` | ''（条件成立时才出现） \| undefined |
 | `toolbar` | `data-size` | props.size |
@@ -726,6 +732,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `--xh-table-footer-bg` | `footer` | `background` | `default` | `--xh-bg-subtle` | table 的 footer 部件 background 覆盖槽。 |
 | `--xh-table-footer-border` | `footer` | `border-block-start` | `default` | `--xh-border-subtle` | table 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-table-footer-font-weight` | `footer` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 footer 部件 font-weight 覆盖槽。 |
+| `--xh-table-frozen-edge` | `cell`<br>`column-header` | `background` | `frozen-edge`<br>`is([data-part='column-header'], [data-part='cell'])` | `--xh-border-default` | table 的 cell、column-header 部件 background 覆盖槽。 |
 | `--xh-table-header-bg` | `column-header`<br>`header` | `background` | `default`<br>`frozen` | `--xh-bg-subtle-opaque` | table 的 column-header、header 部件 background 覆盖槽。 |
 | `--xh-table-header-border` | `header` | `border-block-end` | `default` | `--xh-border-subtle` | table 的 header 部件 border-block-end 覆盖槽。 |
 | `--xh-table-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | table 的 root 部件 --xh-icon-size 覆盖槽。 |
@@ -788,11 +795,11 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 循环（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-table-loading-duration`。
 
-`-webkit-mask-size` · `background-color` · `mask-size` · `opacity` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`-webkit-mask-size` · `background-color` · `color` · `mask-size` · `opacity` · `rotate` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

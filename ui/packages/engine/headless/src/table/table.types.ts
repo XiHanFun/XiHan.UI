@@ -229,6 +229,15 @@ export interface TableLayout {
   rowBoxes: Record<number, { top: number, bottom: number }>
 }
 
+/**
+ * 横向滚动相对两端的位置，给冻结列的边界提示用：贴着起始端时行首冻结列下面没有被压住的内容，
+ * 贴着末端时行尾冻结列下面没有。挂载前与没有横向溢出时两端都贴着。
+ */
+export interface TableScrollEdges {
+  atStart: boolean
+  atEnd: boolean
+}
+
 /** 可见行序列的元素。展开展平的产物，数据行与详情行都在其中。 */
 export interface TableVisibleRow {
   /** 数据行与它的详情行共用同一个 id。 */
@@ -487,6 +496,8 @@ export interface TableSchema extends MachineSchema {
     pressed: TablePressedKey | null
     /** 挂载后实测的版面；没有需要实测的东西（冻结列都有数字宽度、没有纵向合并）时一直是空的。 */
     layout: TableLayout
+    /** 横向滚动相对两端的位置；只在有冻结列时跟踪，值没变不写。 */
+    scrollEdges: TableScrollEdges
   }
   computed: Record<string, never>
   refs: {
@@ -520,6 +531,11 @@ export interface TableSchema extends MachineSchema {
       /** 拖动源节点。拖动中用它测量版面整体移动的距离，见 snapshotDrift。 */
       source: HTMLElement | null
     } | null
+    /**
+     * 行换位提交之后盯住宿主那一次重排的句柄：宿主按 ids 重排行时，行从旧位置滑到新位置。
+     * 宿主没写回时留到下一次提交前或卸载时停掉。
+     */
+    reorder: (() => void) | null
   }
   /**
    * 排序、选中、展开与列偏好都不编码进状态：它们是随时可读可写的事实，不是过程。
@@ -628,7 +644,7 @@ export interface TableSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'trackResizePointer' | 'trackColumnDragPointer' | 'trackRowDragPointer' | 'measureLayout'
+  effect: 'trackResizePointer' | 'trackColumnDragPointer' | 'trackRowDragPointer' | 'measureLayout' | 'trackScrollEdges'
 }
 
 export interface TableApi<T extends PropTypes = PropTypes> {

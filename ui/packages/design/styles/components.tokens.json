@@ -66655,6 +66655,26 @@
       "description": "table 的 footer 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-table-frozen-edge",
+      "component": "table",
+      "part": [
+        "cell",
+        "column-header"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "frozen-edge",
+        "is([data-part='column-header'], [data-part='cell'])"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "table 的 cell、column-header 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-table-header-bg",
       "component": "table",
       "part": [

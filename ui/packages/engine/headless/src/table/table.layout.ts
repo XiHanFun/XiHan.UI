@@ -5,7 +5,7 @@
 
 // 提供 table.layout 相关实现：挂载后的版面实测。
 
-import type { TableColumnDef, TableColumnPreference, TableLayout } from './table.types'
+import type { TableColumnDef, TableColumnPreference, TableLayout, TableScrollEdges } from './table.types'
 import { tableLeafColumns } from './table.columns'
 
 /** 还没量过、或不需要量时的版面。 */
@@ -76,6 +76,19 @@ export function measureTableLayout(root: HTMLElement, needs: TableLayoutNeeds): 
     }
   }
   return { columnWidths, rowBoxes }
+}
+
+/** 滚动量离端点在这点距离之内就算贴着：缩放与小数像素下 scrollLeft 到不了整数的端点。 */
+const EDGE_EPSILON = 1
+
+/**
+ * 横向滚动相对两端的位置。rtl 下 scrollLeft 从 0 往负数走，按逻辑量取绝对值；
+ * 没有横向溢出时两端都贴着。只在效应里调：渲染期不碰 DOM。
+ */
+export function tableScrollEdges(root: HTMLElement, rtl: boolean): TableScrollEdges {
+  const offset = rtl ? Math.abs(root.scrollLeft) : root.scrollLeft
+  const max = root.scrollWidth - root.clientWidth
+  return { atStart: offset <= EDGE_EPSILON, atEnd: offset >= max - EDGE_EPSILON }
 }
 
 /** 逐项比两份版面：值没变就不写 context，免得每一帧都重渲。 */

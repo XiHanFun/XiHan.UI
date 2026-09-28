@@ -270,9 +270,9 @@ line-height: normal
 font-weight: 400
 color: oklch(0.145 0.005 258)
 background-color: oklab(0 0 0 / 0.043)
-transition-property: all
-transition-duration: 0s
-transition-timing-function: ease
+transition-property: translate
+transition-duration: 0.2s
+transition-timing-function: cubic-bezier(0.2, 0, 0, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease
@@ -480,9 +480,9 @@ line-height: normal
 font-weight: 400
 color: oklch(0.145 0.005 258)
 background-color: rgba(0, 0, 0, 0)
-transition-property: all
-transition-duration: 0s
-transition-timing-function: ease
+transition-property: background-color, color, translate
+transition-duration: 0.12s, 0.12s, 0.2s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.2, 0, 0, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease
