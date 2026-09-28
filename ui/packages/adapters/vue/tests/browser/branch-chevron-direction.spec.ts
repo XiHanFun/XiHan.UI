@@ -17,7 +17,7 @@ function angle(el: HTMLElement): number {
   return value === 'none' ? 0 : Number.parseFloat(value)
 }
 
-describe.each(['tree-select'] as const)('%s 分支箭头朝向', (scope) => {
+describe.each(['tree', 'tree-select'] as const)('%s 分支箭头朝向', (scope) => {
   function mount(): Record<string, HTMLElement> {
     const chevron = (id: string, state: 'open' | 'closed'): string =>
       `<span data-id="${id}" data-scope="${scope}" data-part="branch-indicator" data-state="${state}"></span>`
