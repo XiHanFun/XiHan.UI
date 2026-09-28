@@ -118,13 +118,23 @@ if (motionNames.size === 0) {
   process.exit(1)
 }
 
+/**
+ * 家族配方自己引用的动画名：配方替引入它的皮肤画部件（加载环的转圈），单独引入那份皮肤时关键帧得由它 @import 的
+ * family/motion.css 带到场。皮肤为此引入 motion.css 不是死引入。
+ */
+const familyRefs = new Map()
+for (const file of (await readdir(FAMILY_DIR)).filter(f => f.endsWith('.css') && f !== MOTION_FAMILY))
+  familyRefs.set(file, references(stripComments(await readFile(join(FAMILY_DIR, file), 'utf8'))))
+
 /** 文件 → 定义；以及全局的 名字 → [{ file, body }]。 */
 const defsByFile = new Map()
 const defsByName = new Map()
 for (const file of files) {
   const css = stripComments(await readFile(join(STYLES_DIR, file), 'utf8'))
   const defs = definitions(css)
-  defsByFile.set(file, { defs, refs: references(css), imports: familyImports(css) })
+  const imports = familyImports(css)
+  const recipeRefs = new Set(imports.flatMap(family => [...(familyRefs.get(family) ?? [])]))
+  defsByFile.set(file, { defs, refs: references(css), recipeRefs, imports })
   for (const [name, def] of defs) {
     if (!defsByName.has(name))
       defsByName.set(name, [])
@@ -147,7 +157,7 @@ const redefined = []
 const deadImport = []
 const missingImport = []
 
-for (const [file, { defs, refs, imports }] of defsByFile) {
+for (const [file, { defs, refs, recipeRefs, imports }] of defsByFile) {
   // 本皮肤 @import 的家族文件带到场的名字
   const inScope = new Set()
   for (const [name, def] of familyDefs) {
@@ -171,7 +181,7 @@ for (const [file, { defs, refs, imports }] of defsByFile) {
   // (b) 引入与引用双向对账：死引入与漏引入都判红
   const usesShared = [...refs].some(name => motionNames.has(name))
   const importsMotion = imports.includes(MOTION_FAMILY)
-  if (importsMotion && !usesShared)
+  if (importsMotion && !usesShared && ![...recipeRefs].some(name => motionNames.has(name)))
     deadImport.push(`${file} @import 了 family/${MOTION_FAMILY}，却没有引用其中任何一个关键帧——死引入，删掉那条 @import`)
   if (usesShared && !importsMotion)
     missingImport.push(`${file} 引用了 family/${MOTION_FAMILY} 里的关键帧却没有 ${MOTION_IMPORT}——单独引入本文件时动画不跑`)

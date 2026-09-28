@@ -25,9 +25,9 @@ line-height: normal
 font-weight: 400
 color: oklch(0.145 0.005 258)
 background-color: rgba(0, 0, 0, 0)
-transition-property: all
-transition-duration: 0s
-transition-timing-function: ease
+transition-property: opacity
+transition-duration: 0.12s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease
@@ -176,10 +176,10 @@ outline-offset: 0px
 outline-color: oklch(0.439 0.006 258)
 
 [empty]
-padding-top: 24px
-padding-right: 16px
-padding-bottom: 24px
-padding-left: 16px
+padding-top: 12px
+padding-right: 8px
+padding-bottom: 12px
+padding-left: 8px
 row-gap: 8px
 column-gap: 8px
 border-top-left-radius: 0px
@@ -194,7 +194,7 @@ border-top-color: oklch(0.439 0.006 258)
 border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
 border-left-color: oklch(0.439 0.006 258)
-min-height: 128px
+min-height: 0px
 font-size: 14px
 line-height: normal
 font-weight: 400
@@ -305,9 +305,9 @@ line-height: normal
 font-weight: 500
 color: oklch(0.145 0.005 258)
 background-color: oklab(0 0 0 / 0.043)
-transition-property: all
-transition-duration: 0s
-transition-timing-function: ease
+transition-property: opacity
+transition-duration: 0.12s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease
@@ -386,10 +386,10 @@ outline-offset: 0px
 outline-color: rgb(0, 0, 0)
 
 [loading]
-padding-top: 24px
-padding-right: 16px
-padding-bottom: 24px
-padding-left: 16px
+padding-top: 12px
+padding-right: 8px
+padding-bottom: 12px
+padding-left: 8px
 row-gap: 8px
 column-gap: 8px
 border-top-left-radius: 0px
@@ -404,7 +404,7 @@ border-top-color: oklch(0.439 0.006 258)
 border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
 border-left-color: oklch(0.439 0.006 258)
-min-height: 128px
+min-height: 0px
 font-size: 14px
 line-height: normal
 font-weight: 400
@@ -413,9 +413,9 @@ background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: xh-table-loading-pulse
-animation-duration: 1.6s
-animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.439 0.006 258)

@@ -1474,9 +1474,13 @@ export function connectTable<T extends PropTypes>(
       hidden: !showEmpty || undefined,
     }),
 
+    // 只在还没有行时露面：环走加载环配方，随 data-loading 淡入并转；已有行时的重新取数不换成占位，
+    // 由 root 的 data-loading 让表体保留上一帧淡下
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
-      hidden: !showLoading || undefined,
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(showLoading),
+      'hidden': !showLoading || undefined,
     }),
 
     // 取下一页的入口：摆在表尾，还有没有下一页归作者判定；这里只焊死取数在途点不动。
