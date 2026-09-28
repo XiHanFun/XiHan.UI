@@ -459,6 +459,50 @@ describe('选中值与显示文本', () => {
   })
 })
 
+describe('多选标签', () => {
+  it('已选项按选中先后排成标签，文字取 collection 的 label；maxTagCount 之外的折进 +N', () => {
+    const h = mount({ multiple: true, defaultValue: ['license', 'dom', 'index', 'math'], maxTagCount: 2 })
+    expect(h.api().tags).toEqual([{ value: 'license', label: 'License' }, { value: 'dom', label: 'Dom' }])
+    expect(h.api().overflowCount).toBe(2)
+    expect(h.api().overflowText).toBe('+2')
+  })
+
+  it('不给 maxTagCount 时最多摆 3 枚；+N 的文字走 translations.overflowTag', () => {
+    const h = mount({ multiple: true, defaultValue: ['license', 'dom', 'index', 'math'], translations: { overflowTag: count => `还有 ${count} 项` } })
+    expect(h.api().tags).toHaveLength(3)
+    const overflow = h.api().getOverflowTagProps() as Record<string, unknown>
+    expect(overflow).toMatchObject({ 'data-scope': 'tag', 'data-count': '1' })
+    expect(h.api().overflowText).toBe('还有 1 项')
+  })
+
+  it('标签行投影标签行家族，无选中时收起；每枚标签是 tag 的 root，形态按盒的面派', () => {
+    const h = mount({ multiple: true, variant: 'subtle' })
+    expect(h.api().getTagListProps()).toMatchObject({ 'data-xh-tag-list': '', 'hidden': true })
+    h.api().setValue(['dom'])
+    expect((h.api().getTagListProps() as Record<string, unknown>).hidden).toBeUndefined()
+    expect(h.api().getTagProps({ value: 'dom' })).toMatchObject({ 'data-scope': 'tag', 'data-part': 'root', 'data-value': 'dom', 'data-variant': 'outline' })
+  })
+
+  it('删除钮可及名走 translations.deleteItem，点它摘掉那个值；只读时留位、原生 disabled', () => {
+    const h = mount({ multiple: true, defaultValue: ['index', 'dom'], translations: { deleteItem: label => `移除${label}` } })
+    const button = document.createElement('button')
+    document.body.append(button)
+    spread(button, h.api().getItemDeleteTriggerProps({ value: 'index' }) as Record<string, unknown>)
+    expect(button.getAttribute('aria-label')).toBe('移除Index')
+    click(button)
+    expect(h.value()).toEqual(['dom'])
+
+    const ro = mount({ multiple: true, defaultValue: ['index'], readOnly: true })
+    expect(ro.api().getItemDeleteTriggerProps({ value: 'index' })).toMatchObject({ disabled: true })
+  })
+
+  it('deselect 摘掉一个选中值，其余保持选中先后', () => {
+    const h = mount({ multiple: true, defaultValue: ['index', 'dom', 'license'] })
+    h.api().deselect('dom')
+    expect(h.value()).toEqual(['index', 'license'])
+  })
+})
+
 describe('展开集合（复用 Tree 的摊平模型）', () => {
   it('可见行随展开集合变：收起分支的整棵子树一行不出', () => {
     const h = mount()

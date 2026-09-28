@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`tree`** · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `branch-empty` · `empty` · `loading` · `footer` · `hidden-input`
+`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `tag-list` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`tree`** · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `branch-empty` · `empty` · `loading` · `footer` · `hidden-input`
 
 ## 示例
 
@@ -32,7 +32,7 @@
 
 ### 多选与表单
 
-multiple 下确认键是切换、浮层不收起；写了 hidden-input 才随表单提交，多个值按逗号拼接为一串
+multiple 下已选项在触发器里排成标签，确认键是切换、浮层不收起；写了 hidden-input 才随表单提交，每个值一个同名字段
 
 <XhDemo src="tree-select/03-multiple" />
 
@@ -111,6 +111,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 ### 特性
 
 - 选中与展开两套值各自可受控。
+- 多选的已选项在触发器里排成标签，与[选择器](./select)同一套呈现：超出 `maxTagCount`（默认 3）合并为 `+N`，标签文字取 collection 的 label（收起子树里的选中值同样报得出名字）；Vue / React 的自动结构在多选时直接铺出标签行。
 - 原生表单按每个选中值生成一个同名隐藏字段；`['a,b', 'c']` 用 `FormData.getAll(name)` 读取为两个原值，不使用逗号拼接。零选中没有提交项，禁用不提交，只读仍提交。
 - 声明 `HiddenInput` 部件才参与原生表单。`form` 可指定外部表单 ID，提交与重置使用同一所有者；显式 ID 不存在时不回退祖先表单。非受控 reset 恢复 `defaultValue`，受控值由业务响应重置请求。
 - 单选、多选、分支与叶子统一用末端对号表示选中，级联半选使用横线；正文保持正常颜色和字重，中性底只用于悬停和键盘高亮。展开箭头位于行首，与选择标记分开。
@@ -148,7 +149,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree-select>` |
-| Vue 组件 | `XhTreeSelectBranch` `XhTreeSelectBranchContent` `XhTreeSelectBranchControl` `XhTreeSelectBranchEmpty` `XhTreeSelectBranchError` `XhTreeSelectBranchIndicator` `XhTreeSelectBranchLoading` `XhTreeSelectBranchRetryTrigger` `XhTreeSelectBranchText` `XhTreeSelectBranchTrigger` `XhTreeSelectClearTrigger` `XhTreeSelectContent` `XhTreeSelectControl` `XhTreeSelectEmpty` `XhTreeSelectFooter` `XhTreeSelectHiddenInput` `XhTreeSelectIndicator` `XhTreeSelectItem` `XhTreeSelectItemDescription` `XhTreeSelectItemIndicator` `XhTreeSelectItemSuffix` `XhTreeSelectItemText` `XhTreeSelectLabel` `XhTreeSelectLoading` `XhTreeSelectPositioner` `XhTreeSelectRoot` `XhTreeSelectTree` `XhTreeSelectTrigger` `XhTreeSelectValueText` |
+| Vue 组件 | `XhTreeSelectBranch` `XhTreeSelectBranchContent` `XhTreeSelectBranchControl` `XhTreeSelectBranchEmpty` `XhTreeSelectBranchError` `XhTreeSelectBranchIndicator` `XhTreeSelectBranchLoading` `XhTreeSelectBranchRetryTrigger` `XhTreeSelectBranchText` `XhTreeSelectBranchTrigger` `XhTreeSelectClearTrigger` `XhTreeSelectContent` `XhTreeSelectControl` `XhTreeSelectEmpty` `XhTreeSelectFooter` `XhTreeSelectHiddenInput` `XhTreeSelectIndicator` `XhTreeSelectItem` `XhTreeSelectItemDeleteTrigger` `XhTreeSelectItemDescription` `XhTreeSelectItemIndicator` `XhTreeSelectItemSuffix` `XhTreeSelectItemText` `XhTreeSelectLabel` `XhTreeSelectLoading` `XhTreeSelectOverflowTag` `XhTreeSelectPositioner` `XhTreeSelectRoot` `XhTreeSelectTag` `XhTreeSelectTagLabel` `XhTreeSelectTagList` `XhTreeSelectTree` `XhTreeSelectTrigger` `XhTreeSelectValueText` |
 | 组合式函数 | `useTreeSelect` |
 | 状态机 | `treeSelectMachine` |
 | 皮肤 | `@xihan-ui/styles/tree-select.css` |
@@ -165,7 +166,8 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `defaultExpandedValue` | `string[]` |  |  |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `multiple` | `boolean` |  | 多选：选中为集合，选中后浮层不收起、焦点留在树中以便继续选择。 |
+| `multiple` | `boolean` |  | 多选：选中为集合，选中后浮层不收起、焦点留在树中以便继续选择；已选项在触发器里排成标签。 |
+| `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 |
 | `cascade` | `boolean` |  | 多选下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（朴素切换）；单选下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 使用原生 disabled，表单出口不参与提交。 |
@@ -239,6 +241,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `XhTreeSelectRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
 | `XhTreeSelectRoot` | `clearable` | `boolean` |  | 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 |
 | `XhTreeSelectRoot` | `children` | `SlotChildren<TreeSelectRootSlotProps>` |  |  |
+| `XhTreeSelectTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
 
 ### 状态
 
@@ -297,6 +300,9 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `tags` | `TreeSelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value 同序；文字取自 collection 的 label。 |
+| `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代部分勾选）；非级联恒为 false。 |
 | `isExpanded` | `(value: string) => boolean` |  |
@@ -309,11 +315,17 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `retryBranch` | `(value: string) => void` | 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 |
 | `select` | `(value: string) => void` | 单选替换、多选切换，与点击节点同一语义。 |
 | `clear` | `() => void` |  |
+| `deselect` | `(value: string) => void` | 移除一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
+| `getTagListProps` | `() => T['element']` | 标签行：收纳可见标签与 +N 标签，放在触发器中；无选中时整体 hidden。 |
+| `getTagProps` | `(props: TreeSelectTagProps) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生，另带 data-value 记录代表的值。放在触发器中即纯展示，放在外部配删除按钮可删除。 |
+| `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 |
+| `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
+| `getItemDeleteTriggerProps` | `(props: TreeSelectTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，禁用时保留位置、原生 disabled；点击移除所在标签的选中值；须放在触发器外的标签中。 |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
@@ -451,6 +463,8 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-placeholder` | ''（条件成立时才出现） |
+| `tag-list` | `data-disabled` | ''（条件成立时才出现） |
+| `tag-list` | `data-xh-tag-list` | '' |
 | `indicator` | `data-clearable` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
@@ -604,6 +618,8 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `footer` | `data-state` | 'open' \| 'closed' |
+| `overflow-tag` | `data-count` | String(overflowCount) |
+| `tag` | `data-value` | itemValue(el) |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -689,6 +705,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | tree-select 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-tree-select-placeholder-fg` | `value-text` | `color` | `placeholder` | `--xh-fg-subtle` | tree-select 的 value-text 部件 color 覆盖槽。 |
+| `--xh-tree-select-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | tree-select 的 tag-list 部件 gap 覆盖槽。 |
 | `--xh-tree-select-tree-gap` | `tree` | `gap` | `default` | `--xh-list-option-gap` | tree-select 的 tree 部件 gap 覆盖槽。 |
 | `--xh-tree-select-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | tree-select 的 trigger 部件 color 覆盖槽。 |
 | `--xh-tree-select-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_tree-select-font-size` | tree-select 的 trigger 部件 font-size 覆盖槽。 |
@@ -698,9 +715,9 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `mask-size` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `mask-size` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

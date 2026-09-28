@@ -26,6 +26,8 @@ export type {
   TreeSelectPressedPart,
   TreeSelectRefs,
   TreeSelectSchema,
+  TreeSelectTagMeta,
+  TreeSelectTagProps,
   TreeSelectTranslations,
   TreeSelectValueChangeDetails,
 } from './tree-select.types'

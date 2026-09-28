@@ -2933,7 +2933,7 @@ export type {
 } from './components/transfer/transfer'
 export { useTransfer } from './components/transfer/use-transfer'
 export type { TransferContext } from './components/transfer/use-transfer'
-export { useTreeSelectContext, useTreeSelectNodeContext } from './components/tree-select/context'
+export { useTreeSelectContext, useTreeSelectNodeContext, useTreeSelectTagContext } from './components/tree-select/context'
 export {
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
@@ -2953,14 +2953,19 @@ export {
   XhTreeSelectHiddenInput,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
+  XhTreeSelectItemDeleteTrigger,
   XhTreeSelectItemDescription,
   XhTreeSelectItemIndicator,
   XhTreeSelectItemSuffix,
   XhTreeSelectItemText,
   XhTreeSelectLabel,
   XhTreeSelectLoading,
+  XhTreeSelectOverflowTag,
   XhTreeSelectPositioner,
   XhTreeSelectRoot,
+  XhTreeSelectTag,
+  XhTreeSelectTagLabel,
+  XhTreeSelectTagList,
   XhTreeSelectTree,
   XhTreeSelectTrigger,
   XhTreeSelectValueText,

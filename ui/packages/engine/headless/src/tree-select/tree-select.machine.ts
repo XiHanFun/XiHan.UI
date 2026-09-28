@@ -13,8 +13,9 @@ import { sameArray as sameValues, toArray as toValues, uniqueArray as unique } f
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { trackSelectionTagMotion } from '../shared/selection-tags'
 import { flattenTree } from '../tree'
-import { treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatomy'
+import { TREE_SELECT_TAG_LIST_SELECTOR, treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatomy'
 
 const { createMachine } = setup<TreeSelectSchema>()
 
@@ -258,7 +259,7 @@ export const treeSelectMachine = createMachine({
     track([context.dep('value')], () => action(['releaseWhenInert']))
   },
   // 请求控制器随服务存活，但浮层或分支收起会主动中止；Layer、消解与焦点资源延迟到 Presence 完成。
-  effects: ['trackBranchLoads', 'trackLayer'],
+  effects: ['trackBranchLoads', 'trackLayer', 'trackTagListMotion'],
   // 这几件事与开合无关，两个状态里都得认；展开态另行声明的 NODE.SELECT 会盖过这里那一条。
   on: {
     // 按压通道：三个部件两个状态都认；禁用 / 只读 / 加载不进，清空按钮在清不了时不进
@@ -617,6 +618,14 @@ export const treeSelectMachine = createMachine({
           params.refs.get('branchLoadControllers').clear()
         }
       },
+
+      /**
+       * 多选标签行的到达、离场与换位。标签行在触发器里；触发按钮经适配器的 ref 取。
+       */
+      trackTagListMotion: ({ refs, flush }) => trackSelectionTagMotion({
+        flush,
+        list: () => refs.get('getTriggerEl')()?.querySelector<HTMLElement>(TREE_SELECT_TAG_LIST_SELECTOR),
+      }),
 
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({

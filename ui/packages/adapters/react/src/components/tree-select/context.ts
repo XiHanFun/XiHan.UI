@@ -20,10 +20,12 @@ export interface TreeSelectContentContext {
 const Ctx = createContext<TreeSelectContext | undefined>(undefined)
 const NodeCtx = createContext<TreeSelectNodeProps | undefined>(undefined)
 const ContentCtx = createContext<TreeSelectContentContext | undefined>(undefined)
+const TagCtx = createContext<string | undefined>(undefined)
 
 export const TreeSelectProvider = Ctx
 export const TreeSelectNodeProvider = NodeCtx
 export const TreeSelectContentProvider = ContentCtx
+export const TreeSelectTagProvider = TagCtx
 
 export function useTreeSelectContext(): TreeSelectContext {
   const ctx = useContext(Ctx)
@@ -37,6 +39,13 @@ export function useTreeSelectNodeContext(): TreeSelectNodeProps {
   if (!node)
     throw new Error('节点的子部件要放在 XhTreeSelectItem 或 XhTreeSelectBranch 里')
   return node
+}
+
+export function useTreeSelectTagContext(): string {
+  const value = useContext(TagCtx)
+  if (value === undefined)
+    throw new Error('XhTreeSelectItemDeleteTrigger 要放在 XhTreeSelectTag 里')
+  return value
 }
 
 export function useTreeSelectContentContext(): TreeSelectContentContext {

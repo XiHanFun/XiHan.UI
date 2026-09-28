@@ -10,6 +10,7 @@ import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
 import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectPressedPart, TreeSelectSchema, TreeSelectTranslations } from './tree-select.types'
 import { cascadeState, createPressTracker, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
+import { connectSelectionTags } from '../shared/selection-tags'
 import { flattenTree, indexTree } from '../tree'
 import { treeSelectAnatomy } from './tree-select.anatomy'
 import { findTreeSelectNode, isTreeSelectLazyBranch, resolveTreeSelectCollection, TREE_SELECT_DEFAULT_PLACEMENT, treeSelectNodeEls } from './tree-select.machine'
@@ -76,6 +77,8 @@ export function connectTreeSelect<T extends PropTypes>(
     branchError: prop('translations')?.branchError ?? 'Could not load children',
     retry: prop('translations')?.retry ?? 'Retry',
     branchEmpty: prop('translations')?.branchEmpty ?? 'No children',
+    deleteItem: prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`),
+    overflowTag: prop('translations')?.overflowTag ?? ((count: number) => `+${count}`),
   }
   // 形态默认落 outline：不写时 root 与 positioner 如实投影同一常量，皮肤不再依赖缺省档
   const variant = prop('variant') ?? 'outline'
@@ -130,6 +133,23 @@ export function connectTreeSelect<T extends PropTypes>(
   const valueText = value.length ? value.map(labelOf).join(', ') : null
   const displayText = valueText ?? placeholder ?? ''
   const canClear = interactive && value.length > 0
+
+  // 多选的已选项在触发器里排成标签：套的是库里的 tag，截断与 +N 的做法与 Select 同一套。
+  // 删除钮摘值回到机器：只读与禁用由 tag 挡在钮上
+  const selectionTags = connectSelectionTags({
+    entries: value.map(v => ({ key: v, label: labelOf(v) })),
+    maxTagCount: prop('maxTagCount'),
+    overflowTag: translations.overflowTag,
+    deleteItem: translations.deleteItem,
+    variant,
+    tone: prop('tone'),
+    size: prop('size'),
+    disabled,
+    readOnly,
+    onDelete: v => send({ type: 'VALUE.SET', value: value.filter(x => x !== v) }),
+  }, normalize)
+  const tags = selectionTags.visible.map(tag => ({ value: tag.key, label: tag.label }))
+  const { overflowCount, overflowText } = selectionTags
 
   /** 节点（item 与 branch）共用的 ARIA 与身份属性。 */
   const nodeAttrs = (v: string): Record<string, string | number | undefined> => {
@@ -252,6 +272,9 @@ export function connectTreeSelect<T extends PropTypes>(
     readOnly,
     invalid,
     canClear,
+    tags,
+    overflowCount,
+    overflowText,
     isSelected,
     isIndeterminate,
     isExpanded,
@@ -267,6 +290,7 @@ export function connectTreeSelect<T extends PropTypes>(
     retryBranch: v => send({ type: 'BRANCH.RETRY', value: v }),
     select: v => send({ type: 'NODE.SELECT', value: v }),
     clear: () => send({ type: 'VALUE.CLEAR' }),
+    deselect: v => send({ type: 'VALUE.SET', value: value.filter(x => x !== v) }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -363,6 +387,32 @@ export function connectTreeSelect<T extends PropTypes>(
       'data-placeholder': dataAttr(value.length === 0),
       'data-disabled': dataAttr(disabled),
     }),
+
+    // 标签行：无选中时整个收起，皮肤据此让 value-text 回来显示占位文字；行怎么排归标签行家族配方
+    getTagListProps: () => normalize.element({
+      ...parts['tag-list'].attrs,
+      'data-xh-tag-list': '',
+      'hidden': value.length === 0 || undefined,
+      'data-disabled': dataAttr(disabled),
+    }),
+
+    // 标签本体就是 tag 的 root（data-scope="tag"），只多一个 data-value 记它代表哪个选中值
+    getTagProps: ({ value: v }) => ({
+      ...selectionTags.tag(v).getRootProps() as Record<string, unknown>,
+      'data-value': v,
+    }) as T['element'],
+
+    // 折起来的那些合成一枚：也是 tag 的 root，data-count 记折了几枚；没有折起的就整个收起，不留空位
+    getOverflowTagProps: () => ({
+      ...selectionTags.overflow.getRootProps() as Record<string, unknown>,
+      'data-count': String(overflowCount),
+    }) as T['element'],
+
+    // 两种标签的文字都落在 tag 的 label 上，截断规则挂在那一层
+    getTagLabelProps: () => selectionTags.overflow.getLabelProps(),
+
+    // 删除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用与点按都由 tag 给
+    getItemDeleteTriggerProps: ({ value: v }) => selectionTags.tag(v).getCloseTriggerProps(),
 
     getIndicatorProps: () => normalize.element({
       // 有值时清空钮顶上来，箭头让位：两个图标并排堆在框里，用户分不清点哪个

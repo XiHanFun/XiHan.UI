@@ -18,11 +18,12 @@ import type {
   TreeSelectNodeProps,
   TreeSelectOpenChangeDetails,
   TreeSelectSchema,
+  TreeSelectTagMeta,
   TreeSelectValueChangeDetails,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTreeSelect, resolveFormControlState, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
+import { connectTreeSelect, resolveFormControlState, tagAnatomy, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
@@ -64,7 +65,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {string} default-value - 非受控初始选中值
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在树中
+ * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在树中；已选项在触发器里排成标签
+ * @attr {number} max-tag-count - 多选标签最多显示的数量，其余折叠进 overflowCount 并合成 overflow-tag；默认 3
  * @attr {boolean} cascade - 多选下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} disabled - 整个控件禁用：trigger 使用原生 disabled，表单出口不参与提交
@@ -92,6 +94,10 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart control - 触发按钮与清空按钮的收纳容器：描边、底色与聚焦环都落在这一层
  * @csspart trigger - role=combobox 的触发按钮，同时是定位锚点，须是原生 button
  * @csspart value-text - 选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则由作者负责
+ * @csspart tag-list - 触发器中的标签行：可见标签与 overflow-tag 放在其中；无选中时带 hidden，value-text 恢复显示占位文字
+ * @csspart tag - 多选标签，须自带 value 属性标识选中值；接线为 tag 的 root（data-scope="tag"），语气、尺寸与禁用随本元素、形态按控件的面派生；放在触发器中即纯展示，放在外部配 item-delete-trigger 可删除
+ * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger（data-scope="tag"），禁用时保留位置、原生 disabled；点击移除所在标签的选中值，可及名使用 translations.deleteItem
+ * @csspart overflow-tag - 折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N（文字使用 translations.overflowTag），作者写了内容则由作者负责；没有折叠的标签时带 hidden
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，aria-label 取 translations.clearTrigger，无值时 hidden
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
@@ -121,7 +127,12 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
-  static override partContract = { anatomy: treeSelectAnatomy, meta: treeSelectMeta }
+  // tag / overflow-tag 接的是 tag 的 root，item-delete-trigger 接的是 tag 的 close-trigger：三个作者名都归 tag 那套 scope 管，不在本元素的解剖里
+  static override partContract = {
+    anatomy: treeSelectAnatomy,
+    meta: treeSelectMeta,
+    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }],
+  }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -134,6 +145,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     multiple: { type: Boolean },
+    maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -164,6 +176,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   declare open?: boolean
   declare defaultOpen?: boolean
   declare multiple?: boolean
+  declare maxTagCount?: number
   declare cascade?: boolean
   declare checkedStrategy?: TreeSelectSchema['props']['checkedStrategy']
   declare disabled?: boolean
@@ -199,6 +212,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
+  /** 每枚标签里由元素补出来的那层 label。 */
+  private readonly tagLabels = new WeakMap<HTMLElement, HTMLElement>()
   private readonly ownsFeedbackText = new WeakMap<HTMLElement, boolean>()
   private readonly generatedFeedback = new WeakSet<HTMLElement>()
   private renderedNodeCount = -1
@@ -252,6 +267,46 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   }
 
   /**
+   * 应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序。
+   * 作者据此渲染 tag 部件。状态机尚未建立时返回空数组。
+   */
+  get tags(): TreeSelectTagMeta[] {
+    return this.api()?.tags ?? []
+  }
+
+  /** 被 max-tag-count 折叠的标签数；+N 标签由元素填入 overflow-tag，此处仅供作者读取。状态机尚未建立时为 0。 */
+  get overflowCount(): number {
+    return this.api()?.overflowCount ?? 0
+  }
+
+  /** overflow-tag 显示的文字（由 translations.overflowTag 计算）；没有折叠的标签或状态机尚未建立时为空串。 */
+  get overflowText(): string {
+    return this.api()?.overflowText ?? ''
+  }
+
+  /** 移除一个选中值，其余保持选中先后；状态机尚未建立时不做任何事。 */
+  deselect(value: string): void {
+    this.api()?.deselect(value)
+  }
+
+  /**
+   * 标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，
+   * 返回 null。补出来的那层不打 data-xh-part，不进角色节点表。
+   */
+  private ensureTagLabel(tag: HTMLElement): HTMLElement | null {
+    const existing = this.tagLabels.get(tag)
+    if (existing && existing.parentNode === tag)
+      return existing
+    if (tag.children.length > 0)
+      return null
+    const label = this.ownerDocument.createElement('span')
+    label.append(...Array.from(tag.childNodes))
+    tag.append(label)
+    this.tagLabels.set(tag, label)
+    return label
+  }
+
+  /**
    * 树的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。
    * 两条轴都排布：深层节点依靠缩进向行末推，横向溢出与纵向一样是常态；
    * 横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。
@@ -298,6 +353,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       multiple: this.multiple ?? false,
+      maxTagCount: this.maxTagCount,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
       disabled: control.disabled,
@@ -471,6 +527,30 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    // 标签是多实例 part，接的是 tag 的 root：身份取自己的 value 属性；只有文字的补一层 label
+    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    for (const el of this.getParts('tag')) {
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      const label = this.ensureTagLabel(el)
+      if (label)
+        this.spreader.spread(label, tagLabelProps)
+    }
+    // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
+    for (const el of this.getParts('item-delete-trigger')) {
+      const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    }
+    // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
+    const overflowTag = this.getPart('overflow-tag')
+    if (overflowTag) {
+      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      const label = this.ensureTagLabel(overflowTag)
+      if (label) {
+        this.spreader.spread(label, tagLabelProps)
+        this.fillFeedbackText(label, api.overflowText)
+      }
+    }
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象，spreader 会逐条写成内联样式

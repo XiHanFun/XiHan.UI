@@ -84798,6 +84798,24 @@
       "description": "tree-select 的 value-text 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-tree-select-tag-list-gap",
+      "component": "tree-select",
+      "part": [
+        "tag-list"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "xh-tag-list"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 tag-list 部件 gap 覆盖槽。"
+    },
+    {
       "name": "--xh-tree-select-tree-gap",
       "component": "tree-select",
       "part": [

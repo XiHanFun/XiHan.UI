@@ -181,7 +181,8 @@
         "tag",
         "tag-group",
         "tags-input",
-        "tour"
+        "tour",
+        "tree-select"
       ],
       "relation": "fade"
     },
@@ -355,7 +356,8 @@
         "select",
         "side-nav",
         "tag-group",
-        "tags-input"
+        "tags-input",
+        "tree-select"
       ],
       "relation": "detached"
     },
