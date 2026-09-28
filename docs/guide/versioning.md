@@ -360,6 +360,7 @@ brand  neutral  success  warning  danger  info
 | `text-wrap: balance` | 114 | 121 | 17.5 | 标题按默认换行 |
 | `light-dark()` | 123 | 120 | 17.5 | 代码块语法色退化成单色 |
 | `field-sizing` | 123 | 152 | 26.2 | `prompt-input` 输入框退化成固定行数 |
+| `Intl.Segmenter` | 87 | 125 | 14.1 | `text-field` 的字数与上限退化成按码点计：代理对仍算一个字，组合 emoji 与国旗按码点算成几个 |
 
 Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DOM、`ElementInternals`、`adoptedStyleSheets`，平台要求只到 Custom Elements v1。
 

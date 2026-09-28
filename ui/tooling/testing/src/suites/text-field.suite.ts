@@ -223,24 +223,44 @@ export const textFieldSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'maxLength：原生 maxlength 落到 input 上，超长输入被截断并出 data-at-max',
+      name: 'maxLength：按字素计、不投影原生 maxlength，超长输入被截断并出 data-at-max',
       spec: { apg: HTML_SPEC },
       props: { maxLength: 4 },
       steps: [
         { kind: 'focus', part: 'input' },
         {
           kind: 'raw',
-          // 原生 maxlength 只拦从键盘敲进来这一路，机器侧的截断是兜底那道
-          why: 'maxlength 不在快照的采集清单里；且 jsdom 不对程序写入的 value 施加 maxlength',
+          // 原生 maxlength 按 UTF-16 码元计，一个 emoji 会被算成两个以上，与字数口径对不上
+          why: 'maxlength 不在快照的采集清单里；截断发生在 input 事件里，框里的值是 property',
           run: async (ctx) => {
             const { doc } = ctx
-            expectAttr(doc, INPUT, 'maxlength', '4', '上限应落成原生属性')
+            expectAttr(doc, INPUT, 'maxlength', null, '上限按字素计，不能再落按码元计的原生属性')
             await typeInto(ctx, '一二三四五六')
             expectValue(doc, '一二三四', '超过上限的部分应被截掉')
           },
           expect: {
             parts: { root: { 'data-at-max': '' }, input: { 'data-at-max': '' } },
             events: [{ type: 'value-change', detail: { value: '一二三四' } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'maxLength：组合 emoji 与国旗各算一个字',
+      spec: { apg: HTML_SPEC },
+      props: { maxLength: 2 },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        {
+          kind: 'raw',
+          why: '截断发生在 input 事件里，框里的值是 property',
+          run: async (ctx) => {
+            await typeInto(ctx, '👨‍👩‍👧🇨🇳x')
+            expectValue(ctx.doc, '👨‍👩‍👧🇨🇳', '两个字素正好顶到上限，多出的 x 被截掉')
+          },
+          expect: {
+            parts: { root: { 'data-at-max': '' } },
+            events: [{ type: 'value-change', detail: { value: '👨‍👩‍👧🇨🇳' } }],
           },
         },
       ],

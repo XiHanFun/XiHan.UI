@@ -8,12 +8,16 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TextFieldApi, TextFieldSchema, TextFieldTranslations } from './text-field.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { graphemeLength } from '../shared/grapheme'
 import { pressHandlers } from '../shared/press'
 import { textFieldAnatomy } from './text-field.anatomy'
 import { autoSizeTextarea } from './text-field.autosize'
-import { isAtLimit } from './text-field.machine'
+import { fitToMaxLength, isAtLimit } from './text-field.machine'
 
 const parts = textFieldAnatomy.build()
+
+/** 输入法组合开始时框里的值：组合落定后按它判这一次插入了什么。 */
+const composeBase = new WeakMap<Element, string>()
 
 function resolveTranslations(input: Partial<TextFieldTranslations> | undefined): TextFieldTranslations {
   return {
@@ -42,11 +46,22 @@ export function connectTextField<T extends PropTypes>(
   const showCount = !!prop('showCount')
   // 形态默认落 outline：不写时 root 与 control 都如实投影，皮肤不再依赖缺省档
   const variant = prop('variant') ?? 'outline'
-  const count = [...value].length
+  const count = graphemeLength(value)
   // 与机器里 canClear 守卫同义。两处都要：这里决定按钮长什么样，那里挡住绕过 DOM 的调用
   const canClear = clearable && editable && !empty
   // 清空按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)
+
+  // 用户的一次编辑超出上限：截掉这次新插入的文本里放不下的那一截，光标落回保留下来的文本之后。
+  // 直接改节点：宿主随后按同一个值重渲，值没变就不再挪光标。email 这类不支持选区的类型 selectionStart 为 null，不动光标
+  const fitInput = (el: HTMLInputElement | HTMLTextAreaElement, prev: string): void => {
+    const fit = fitToMaxLength(prev, el.value, maxLength)
+    if (!fit)
+      return
+    el.value = fit.value
+    if (el.selectionStart != null)
+      el.setSelectionRange(fit.caret, fit.caret)
+  }
 
   return {
     value,
@@ -110,8 +125,6 @@ export function connectTextField<T extends PropTypes>(
       'placeholder': prop('placeholder'),
       // 多行宿主首帧先按 minRows 站好，量高补在挂载后
       'rows': (input.as ?? 'input') === 'textarea' && typeof autoSize === 'object' ? autoSize.minRows : undefined,
-      // 原生 maxlength 挡键盘输入，机器侧的截断挡绕过键盘的那一路，两道并存
-      'maxlength': maxLength,
       'disabled': disabled || undefined,
       'readonly': readOnly || undefined,
       'required': prop('required') || undefined,
@@ -131,9 +144,26 @@ export function connectTextField<T extends PropTypes>(
       'data-at-max': dataAttr(atLimit),
       'onInput': (event: Event) => {
         const el = event.target as HTMLInputElement | HTMLTextAreaElement
-        send({ type: 'VALUE.SET', value: el.value })
+        // 输入法组合中（compositionstart 到 compositionend 之间）的中间态原样收下，落定时再按上限收住。
+        // 不读 event.isComposing：React 的合成 input 事件不带它
+        if (composeBase.has(el)) {
+          send({ type: 'VALUE.SET', value: el.value, composing: true })
+        }
+        else {
+          fitInput(el, value)
+          send({ type: 'VALUE.SET', value: el.value })
+        }
         if ((input.as ?? 'input') === 'textarea')
           autoSizeTextarea(el as HTMLTextAreaElement, autoSize)
+      },
+      'onCompositionStart': (event: CompositionEvent) => {
+        composeBase.set(event.currentTarget as Element, value)
+      },
+      'onCompositionEnd': (event: CompositionEvent) => {
+        const el = event.currentTarget as HTMLInputElement | HTMLTextAreaElement
+        fitInput(el, composeBase.get(el) ?? value)
+        composeBase.delete(el)
+        send({ type: 'VALUE.SET', value: el.value })
       },
       'onKeyDown': (event: KeyboardEvent) => {
         // 组合期间的按键属于输入法候选框，组件一律不接
@@ -202,7 +232,7 @@ export function connectTextField<T extends PropTypes>(
       },
     }),
 
-    // 字数：数字由作者用 count / maxLength 渲。对读屏隐藏——它是 maxlength 的视觉镜像，
+    // 字数：数字由作者用 count / maxLength 渲。对读屏隐藏——它是上限的视觉镜像，
     // 每敲一个字就播报一次的活区反而盖住了正在输入的内容
     getCountProps: () => normalize.element({
       ...parts.count.attrs,
