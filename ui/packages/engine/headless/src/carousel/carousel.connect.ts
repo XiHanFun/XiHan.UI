@@ -53,6 +53,11 @@ export function connectCarousel<T extends PropTypes>(
 
   const slideCount = normalizeSlideCount(prop('slideCount'))
   const slidesPerPage = normalizeSlidesPerPage(prop('slidesPerPage'))
+  const effect = prop('effect') ?? 'slide'
+  const fade = effect === 'fade'
+  // 淡变把各张叠在同一格：一页放几张时，两页共有的那几张得在淡变途中换格，读起来是跳
+  if (fade && slidesPerPage !== 1)
+    throw new RangeError(`[xh] Carousel 的 fade 换页一页只放一张：slidesPerPage 须为 1，收到 ${slidesPerPage}`)
   const slidesPerMove = normalizeSlidesPerMove(prop('slidesPerMove'), slidesPerPage)
   const totalPages = carouselPageCount(slideCount, slidesPerPage, slidesPerMove)
   // slideCount 变小后内部 page 会越界，显示用页码一律夹过（不回绕）
@@ -115,6 +120,9 @@ export function connectCarousel<T extends PropTypes>(
    * 写成浏览器序列化后的样子：横排只给横向一支（纵向为 0 时省略），竖排纵向前补 0px。
    */
   const trackStyle = (): Dict => {
+    // 淡变不位移：写空串摘掉内联声明，从 slide 换过来时残留的页位移一并撤下
+    if (fade)
+      return { translate: '' }
     const percent = wrap
       ? carouselWrapPercent(carouselWrapStart(wrap, slideCount, slidesPerPage), slidesPerPage, flipped)
       : carouselTranslatePercent(range.start, slidesPerPage, flipped)
@@ -252,6 +260,8 @@ export function connectCarousel<T extends PropTypes>(
     getListProps: () => normalize.element({
       ...parts.list.attrs,
       'data-orientation': orientation,
+      // 换页方式：fade 下样式层把条目叠进同一格、按 data-inview 淡入淡出
+      'data-effect': effect,
       // 供样式层在拖拽期间与松手落定期间关掉过渡
       'data-dragging': dataAttr(dragging),
       'data-animating': dataAttr(settling && !dragging),

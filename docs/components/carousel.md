@@ -66,9 +66,9 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 
 <XhDemo src="carousel/08-slides-per-move" />
 
-### 更换过渡效果
+### 淡入淡出换页
 
-条目的内联样式只有尺寸与间距，位移之外的表现全部归作者：把条目叠放后按当前页调整透明度与缩放，翻页、键盘与指示点一概照常
+effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张同时淡出，轨道不位移；按钮、键盘、指示点与循环照常，减弱动效下直接换
 
 <XhDemo src="carousel/09-effect" />
 
@@ -90,6 +90,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 - 拖拽松手后轨道带着松手速度落到目标页：轻甩一下也能翻页，往回甩则收回；不循环时首末页往外拖越拉越沉，松手弹回。
 - 分页点为 8px 圆点，当前页拉长为 20px 品牌胶囊；自动播放时胶囊按停留间隔显示进度。悬停、聚焦等临时暂停时进度回到起点，恢复后与计时器一起从头计满一整个间隔。
 - `loop` 下从末页往后翻（或首页往前翻）轨道继续朝同一方向走一张，接到首页（或末页），不倒着刷过全部页。
+- `effect="fade"` 换成淡入淡出：各张叠放在同一格，新一张淡入、旧一张同时淡出，时长与平移同一档，减弱动效下直接换；一页只放一张。
 - 指示点可以配置为悬停即切页。
 - 应用设为 `data-material="liquid"` 时，翻页与播放钮换成液态面，分页点托在一条液态胶囊上：按下层换色调，压在任何媒体上都看得清；按住控制钮时液面随手指形变。
 
@@ -136,6 +137,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 | `autoplay` | `boolean \| number` |  | 自动播放。true 使用默认间隔，数值即毫秒间隔；未提供 / false / 非正数一律不自动播放。 指针悬停或轮播内任一节点获得焦点时暂停计时，离开后重新计满一个完整间隔再翻页。 减弱动效档下不自动起播：提供间隔也停在 idle，需要由用户按下播放开关。 |
 | `allowPointerDrag` | `boolean` |  | 允许指针拖拽切页，默认 false。鼠标、触摸、触控笔一并门控。 开启后沿轨道轴的原生滚动让位给拖拽，关闭则完全没有拖拽、触摸使用原生滚动。 |
 | `spacing` | `string` |  | 张与张之间的间距，任意 CSS 长度（如 '12px'）。落为条目自身的内边距，不影响位移计算。 |
+| `effect` | `CarouselEffect` |  | 换页方式，默认 slide（轨道平移）。fade 时条目叠放、新一页淡入旧一页淡出，与平移同一段时长与曲线， 减弱动效下直接换；loop 回绕也只是一次淡变。拖拽仍按方向与速度决定翻不翻页，画面不跟手位移。 fade 一页只放一张：slidesPerPage 大于 1 时报错。 |
 | `translations` | `Partial<CarouselTranslations>` |  |  |
 | `onPageChange` | `(details: CarouselPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
@@ -287,6 +289,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 | `viewport` | `data-orientation` | props.orientation |
 | `list` | `data-animating` | ''（条件成立时才出现） |
 | `list` | `data-dragging` | ''（条件成立时才出现） |
+| `list` | `data-effect` | props.effect |
 | `list` | `data-orientation` | props.orientation |
 | `list` | `data-snapped` | ''（条件成立时才出现） |
 | `item` | `data-index` | String(index) |
@@ -333,8 +336,8 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-carousel-control-inset` | `autoplay-trigger`<br>`indicator-group`<br>`next-trigger`<br>`prev-trigger`<br>`root` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `default`<br>`orientation=vertical` | `--xh-space-3` | carousel 的 autoplay-trigger、indicator-group、next-trigger、prev-trigger、root 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
-| `--xh-carousel-duration` | `list` | `transition` | `default` | `--xh-motion-duration-slide` | carousel 的 list 部件 transition 覆盖槽。 |
-| `--xh-carousel-ease` | `list` | `transition` | `default` | `--xh-motion-ease-slide` | carousel 的 list 部件 transition 覆盖槽。 |
+| `--xh-carousel-duration` | `item`<br>`list` | `transition`<br>`transition-duration` | `default`<br>`effect=fade` | `--xh-motion-duration-slide` | carousel 的 item、list 部件 transition、transition-duration 覆盖槽。 |
+| `--xh-carousel-ease` | `item`<br>`list` | `transition`<br>`transition-timing-function` | `default`<br>`effect=fade` | `--xh-motion-ease-slide` | carousel 的 item、list 部件 transition、transition-timing-function 覆盖槽。 |
 | `--xh-carousel-icon-size` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-carousel-indicator-bg` | `indicator` | `background` | `@media (pointer: coarse)`<br>`default` | `--xh-bg-subtle-hover-opaque` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-bg-active` | `indicator` | `background` | `@media (pointer: coarse)`<br>`current`<br>`is(:active, [data-pressed])`<br>`not([data-current])`<br>`pressed` | `--xh-fg-default` | carousel 的 indicator 部件 background 覆盖槽。 |
@@ -370,7 +373,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 
 可覆盖的动效槽：`--xh-carousel-duration` · `--xh-carousel-ease`。
 
-关键帧 `xh-carousel-indicator-progress` 随皮肤自带，不引用别处文件里的名字；`background-color` · `block-size` · `border-color` · `box-shadow` · `inline-size` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-carousel-indicator-progress` 随皮肤自带，不引用别处文件里的名字；`background-color` · `block-size` · `border-color` · `box-shadow` · `inline-size` · `opacity` · `scale` · `translate` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。
 

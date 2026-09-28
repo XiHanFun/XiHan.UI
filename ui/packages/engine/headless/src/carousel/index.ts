@@ -30,6 +30,7 @@ export {
 export type { CarouselSlideRange } from './carousel.pages'
 export type {
   CarouselApi,
+  CarouselEffect,
   CarouselIndicatorProps,
   CarouselItemProps,
   CarouselPageChangeDetails,

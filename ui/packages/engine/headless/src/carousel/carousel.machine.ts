@@ -85,6 +85,11 @@ function isHorizontal(prop: PropFn<CarouselSchema>): boolean {
   return (prop('orientation') ?? 'horizontal') === 'horizontal'
 }
 
+/** 淡变换页：轨道不位移，回绕与松手落定都没有可走的路，换页就是一次淡变。 */
+function isFade(prop: PropFn<CarouselSchema>): boolean {
+  return prop('effect') === 'fade'
+}
+
 /** 某一页落定时轨道的位移百分比（相对轨道自身沿轴的尺寸），与连接层的算法同一套。 */
 function trackPercent(prop: PropFn<CarouselSchema>, page: number, wrap: CarouselWrap = null): number {
   const slideCount = normalizeSlideCount(prop('slideCount'))
@@ -101,7 +106,7 @@ function moveTo(context: CarouselContext, prop: PropFn<CarouselSchema>, directio
   const total = pageCount(prop)
   const from = clampCarouselPage(context.get('page'), total)
   const next = step(context.get('page'), direction, total, prop('loop') ?? false)
-  context.set('wrap', carouselWrapOf(from, next, direction, total, prop('loop') ?? false))
+  context.set('wrap', isFade(prop) ? null : carouselWrapOf(from, next, direction, total, prop('loop') ?? false))
   context.set('snapped', false)
   return next
 }
@@ -462,16 +467,19 @@ export const carouselMachine = createMachine({
         const from = context.get('page')
         const to = delta === 0 ? from : step(from, delta, pageCount(prop), prop('loop') ?? false)
         const total = pageCount(prop)
-        settleFrom(refs, context, scope, prop, {
-          // 轨道此刻的位置换算到落定那一页：差的就是两页的位移差加上松手时的拖拽位移
-          from: offset,
-          fromPage: from,
-          toPage: to,
-          wrap: delta === 0 ? null : carouselWrapOf(clampCarouselPage(from, total), to, delta, total, prop('loop') ?? false),
-          velocity,
-          // 在走不动的边界上被拉出去：硬弹簧回弹
-          spring: to === from && blockedToward(prop, from, offset) ? 'stiff' : 'smooth',
-        })
+        // 淡变下画面没跟手位移，也就没有要收回的那一截：只按方向决定翻不翻页
+        if (!isFade(prop)) {
+          settleFrom(refs, context, scope, prop, {
+            // 轨道此刻的位置换算到落定那一页：差的就是两页的位移差加上松手时的拖拽位移
+            from: offset,
+            fromPage: from,
+            toPage: to,
+            wrap: delta === 0 ? null : carouselWrapOf(clampCarouselPage(from, total), to, delta, total, prop('loop') ?? false),
+            velocity,
+            // 在走不动的边界上被拉出去：硬弹簧回弹
+            spring: to === from && blockedToward(prop, from, offset) ? 'stiff' : 'smooth',
+          })
+        }
         if (to !== from)
           send({ type: delta === 1 ? 'PAGE.NEXT' : 'PAGE.PREV' })
       },
