@@ -38965,19 +38965,6 @@
 /* styles/table.css */
 /* 定义 table 样式。 */
 
-/* 加载态自己冒出来，用户没按任何键：一段极轻的呼吸就够，别抢走正在读表的注意力 */
-/* 一次呼吸自带来回：起止两端与中点各写一帧，声明的周期就是一次完整的明暗往返 */
-@keyframes xh-table-loading-pulse {
-  0%,
-  100% {
-    opacity: var(--xh-state-disabled-opacity);
-  }
-
-  50% {
-    opacity: 1;
-  }
-}
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='table'] {
   --xh-table-skin: 1;
@@ -39126,6 +39113,17 @@
 [data-scope='table'][data-part='body'][hidden],
 [data-scope='table'][data-part='footer'][hidden] {
   display: none;
+}
+
+/* 已有行时重新取数（排序、翻页、筛选）：不换成占位，表体与表尾保留上一帧，按 micro 淡到禁用透明度，
+   数据到了再淡回。表头留着——它说的是列，不随这一轮取数变 */
+[data-scope='table'][data-part='body'],
+[data-scope='table'][data-part='footer'] {
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='table'][data-part='root'][data-loading]:not([data-empty]) > :is([data-scope='table'][data-part='body'], [data-scope='table'][data-part='footer']) {
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 /* 表体是行级 roving 的兜底 Tab 位：落焦不画环，环归行 */
@@ -39923,17 +39921,17 @@
   display: none;
 }
 
-/* 两个状态节点常挂，只在表体为空时才显形 */
+/* 两个占位节点常挂，只在表体为空时才显形，占同一个位置、同一副排版：一行文案居中，字号随表格的尺寸档
+   （从 root 继承），次要文字色，块向内距一档、行内与单元格文字对齐，不设最小高——占位不撑出空白 */
 [data-scope='table'][data-part='empty'],
 [data-scope='table'][data-part='loading'] {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--xh-table-state-gap, var(--xh-space-2));
-  min-block-size: var(--xh-table-state-min-h, 8rem);
-  padding-block: var(--xh-table-state-py, var(--xh-space-6));
-  padding-inline: var(--xh-table-state-px, var(--xh-space-4));
+  gap: var(--xh-table-state-gap, var(--xh-control-gap-md));
+  min-block-size: var(--xh-table-state-min-h, 0);
+  padding-block: var(--xh-table-state-py, var(--xh-space-3));
+  padding-inline: var(--xh-table-state-px, var(--xh-control-px-sm));
   color: var(--xh-table-state-fg, var(--xh-fg-muted));
   text-align: center;
 }
@@ -39943,9 +39941,14 @@
   display: none;
 }
 
-[data-scope='table'][data-part='loading'] {
-  animation: xh-table-loading-pulse var(--xh-table-loading-duration, var(--xh-motion-loop-shimmer))
-    var(--xh-motion-ease-sweep) infinite;
+/* 还没有行、正在取：一枚加载环排在文案之前。环由加载环配方画成（轨道 + 起始边、随 data-loading 淡入并转），
+   这里只给它盒子：直径取表格尺寸档的图标档；转一圈的时长走公开槽 */
+[data-scope='table'][data-part='loading']::before {
+  content: '';
+  flex: none;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  animation-duration: var(--xh-table-loading-duration, var(--xh-motion-loop-spin));
 }
 
 /* 取下一页的按钮：铺满一行摆在表尾——铺满一行的独立动作条目，接 Action Control 的 row 档、
@@ -39973,17 +39976,6 @@
   display: none;
 }
 
-/* 减少动效：呼吸停下，加载态只留静止的文案。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
-@media (prefers-reduced-motion: reduce) {
-  [data-scope='table'][data-part='loading'] {
-    animation: none;
-  }
-}
-
-:where([data-motion='reduce']) [data-scope='table'][data-part='loading'] {
-  animation: none;
-}
-
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这条即不命中。三颗勾选框里的勾由勾选标记配方画；
    尺寸读把手自己改接过的 --xh-icon-size：chevron 与方盒同边长（见把手块）。
    flex: none：方盒是 ghost 形态，家族那圈透明描边仍占位，不钉住的话与盒同边长的 chevron 会被挤窄一个描边 */
@@ -40000,13 +39992,7 @@
 }
 
 @media print {
-  /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
-     取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
-     :where([data-motion='reduce']) 的钩子版本与它成对，打印没有对应的钩子可配，
-     并成一条之后这层配对关系在文本上就断了。 */
-  [data-scope='table'][data-part='loading'] {
-    animation: none;
-  }
+  /* 加载环的静止替代（点线环）由加载环配方给，减弱动效与打印同一档 */
 
   /* 底色被丢掉：选中行那层淡底没了，与别的行一模一样。改画一条内收的实线框——
      用 outline 不用 border：行是横排 flex，加边会把单元格整体往里推，没选中的行不加边，

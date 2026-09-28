@@ -58987,7 +58987,7 @@
               "name": "empty"
             },
             {
-              "description": "加载态节点，表体为空且正在加载时显示",
+              "description": "加载态节点，表体为空且正在加载时显示：一枚加载环排在文案之前",
               "name": "loading"
             },
             {
@@ -59620,7 +59620,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "数据加载中：root 报告 aria-busy，表体为空时加载态节点显示",
+              "description": "数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体保留上一帧淡下",
               "name": "loading",
               "fieldName": "loading"
             },

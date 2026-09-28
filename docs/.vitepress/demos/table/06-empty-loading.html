@@ -1,7 +1,8 @@
-<!-- 空态与加载态 | 两个状态节点常驻只依靠 hidden 显隐：表体为空且在取数时显示加载态，取数完成后没有行才显示空态 -->
+<!-- 空态与加载态 | 两个占位节点常驻只依靠 hidden 显隐：表体为空且在取数时显示加载环，取完没有行才显示空态；已有行时重新取数不换占位，表体保留上一帧淡下 -->
 <div id="table-states" style="width: 100%; max-width: 480px; display: grid; gap: 12px">
   <div style="display: flex; gap: 8px">
     <button type="button" id="table-states-load">取数</button>
+    <button type="button" id="table-states-refresh">刷新</button>
     <button type="button" id="table-states-reset">清空</button>
   </div>
 
@@ -38,6 +39,7 @@
 
   // 表体为空与否按 rows 推导，不必另写 empty
   function setTasks(tasks) {
+    current = tasks;
     body.replaceChildren(
       ...tasks.map((task) => {
         const row = document.createElement("div");
@@ -60,6 +62,7 @@
   }
 
   let timer = 0;
+  let current = [];
 
   stage.querySelector("#table-states-load").addEventListener("click", () => {
     window.clearTimeout(timer);
@@ -67,6 +70,19 @@
     table.loading = true;
     timer = window.setTimeout(() => {
       setTasks(source);
+      table.loading = false;
+    }, 1200);
+  });
+
+  stage.querySelector("#table-states-refresh").addEventListener("click", () => {
+    if (current.length === 0) {
+      stage.querySelector("#table-states-load").click();
+      return;
+    }
+    window.clearTimeout(timer);
+    table.loading = true;
+    timer = window.setTimeout(() => {
+      setTasks([...current].reverse());
       table.loading = false;
     }, 1200);
   });

@@ -37792,6 +37792,7 @@
         "item-delete-trigger",
         "item-indicator",
         "last-trigger",
+        "loading",
         "move-down-trigger",
         "move-up-trigger",
         "next-trigger",
@@ -37860,7 +37861,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、last-trigger、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、last-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
@@ -66838,16 +66839,16 @@
         "loading"
       ],
       "property": [
-        "animation"
+        "animation-duration"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-motion-loop-shimmer"
+        "--xh-motion-loop-spin"
       ],
       "visibility": "public",
-      "description": "table 的 loading 部件 animation 覆盖槽。"
+      "description": "table 的 loading 部件 animation-duration 覆盖槽。"
     },
     {
       "name": "--xh-table-max-h",
@@ -67471,7 +67472,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-control-gap-md"
       ],
       "visibility": "public",
       "description": "table 的 empty、loading 部件 gap 覆盖槽。"
@@ -67490,7 +67491,7 @@
         "default"
       ],
       "defaultToken": [
-        "8rem"
+        "0"
       ],
       "visibility": "public",
       "description": "table 的 empty、loading 部件 min-block-size 覆盖槽。"
@@ -67509,7 +67510,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-control-px-sm"
       ],
       "visibility": "public",
       "description": "table 的 empty、loading 部件 padding-inline 覆盖槽。"
@@ -67528,7 +67529,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-6"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "table 的 empty、loading 部件 padding-block 覆盖槽。"

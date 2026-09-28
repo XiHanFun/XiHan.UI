@@ -50,7 +50,7 @@ size 只写为 root 的 data-size，改变的是单元格纵向内边距与字�
 
 ### 空态与加载态
 
-两个状态节点常驻只依靠 hidden 显隐：表体为空且在取数时显示加载态，取数完成后没有行才显示空态
+两个占位节点常驻只依靠 hidden 显隐：表体为空且在取数时显示加载环，取完没有行才显示空态；已有行时重新取数不换占位，表体保留上一帧淡下
 
 <XhDemo src="table/06-empty-loading" />
 
@@ -208,6 +208,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 - 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
 - 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页按钮的行为由作者决定，取数在途时自动停用。
+- 在途分两种：表体为空时 `loading` 占位露面，一枚加载环排在文案之前；已有行时重新取数（排序、翻页、筛选）不换成占位，表体与表尾保留上一帧淡下，取完再淡回。两种都由 `root` 报告 `aria-busy`。
 
 ### 组合
 
@@ -258,7 +259,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `defaultColumnPreference` | `TableColumnPreference` |  |  |
 | `page` | `number` |  | 当前页码与每页条数，只用于计算序号，不参与切片：切片归调用方 （或分页组件的 `api.slice`）。都未提供时序号回退为可见序。 |
 | `pageSize` | `number` |  |  |
-| `loading` | `boolean` |  | 数据加载中：root 报告 aria-busy，表体为空时加载态节点显示。 |
+| `loading` | `boolean` |  | 数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体保留上一帧淡下。 |
 | `empty` | `boolean` |  | 显式声明表体为空；未提供时按 rows 是否为空推导。 |
 | `stickyHeader` | `boolean` |  | 表头吸顶：只写 data-fixed（布尔），固定的实现归皮肤。列冻结使用 data-frozen，两者不同名。 |
 | `striped` | `boolean` |  | 斑马纹：表体偶数行换一层浅底。 |
@@ -562,7 +563,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 
 ### 皮肤
 
-`@xihan-ui/styles/table.css` 使用 `[data-scope="table"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/table.css` 使用 `[data-scope="table"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -671,6 +672,8 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `expand-trigger` | `data-xh-action-variant` | 'ghost' |
 | `expanded-row` | `data-dragging` | ''（条件成立时才出现） |
 | `expanded-row` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
+| `loading` | `data-xh-loading-ring` | '' |
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-xh-action-control` | '' |
@@ -733,7 +736,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `--xh-table-load-more-trigger-px` | `load-more-trigger` | `padding-inline` | `default` | `--xh-space-4` | table 的 load-more-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-table-load-more-trigger-py` | `load-more-trigger` | `padding-block` | `xh-action-profile=row` | `--xh-space-3` | table 的 load-more-trigger 部件 padding-block 覆盖槽。 |
 | `--xh-table-load-more-trigger-radius` | `load-more-trigger` | `border-radius` | `default` | `--xh-shape-control` | table 的 load-more-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-table-loading-duration` | `loading` | `animation` | `default` | `--xh-motion-loop-shimmer` | table 的 loading 部件 animation 覆盖槽。 |
+| `--xh-table-loading-duration` | `loading` | `animation-duration` | `default` | `--xh-motion-loop-spin` | table 的 loading 部件 animation-duration 覆盖槽。 |
 | `--xh-table-max-h` | `root` | `max-block-size` | `default` | `--xh-viewport-h-lg` | table 的 root 部件 max-block-size 覆盖槽。 |
 | `--xh-table-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | table 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-table-resize-fg` | `column-resize-trigger` | `background` | `default` | `--xh-border-default` | table 的 column-resize-trigger 部件 background 覆盖槽。 |
@@ -763,10 +766,10 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `--xh-table-sort-size` | `sort-trigger` | `--xh-icon-size` | `default` | `--xh-_table-trigger-size` | table 的 sort-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-table-span-layer` | `cell`<br>`column-header` | `z-index` | `is([data-part='cell'], [data-part='column-header'])`<br>`row-span` | `1` | table 的 cell、column-header 部件 z-index 覆盖槽。 |
 | `--xh-table-state-fg` | `empty`<br>`loading` | `color` | `default` | `--xh-fg-muted` | table 的 empty、loading 部件 color 覆盖槽。 |
-| `--xh-table-state-gap` | `empty`<br>`loading` | `gap` | `default` | `--xh-space-2` | table 的 empty、loading 部件 gap 覆盖槽。 |
-| `--xh-table-state-min-h` | `empty`<br>`loading` | `min-block-size` | `default` | `8rem` | table 的 empty、loading 部件 min-block-size 覆盖槽。 |
-| `--xh-table-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-space-4` | table 的 empty、loading 部件 padding-inline 覆盖槽。 |
-| `--xh-table-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-6` | table 的 empty、loading 部件 padding-block 覆盖槽。 |
+| `--xh-table-state-gap` | `empty`<br>`loading` | `gap` | `default` | `--xh-control-gap-md` | table 的 empty、loading 部件 gap 覆盖槽。 |
+| `--xh-table-state-min-h` | `empty`<br>`loading` | `min-block-size` | `default` | `0` | table 的 empty、loading 部件 min-block-size 覆盖槽。 |
+| `--xh-table-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-control-px-sm` | table 的 empty、loading 部件 padding-inline 覆盖槽。 |
+| `--xh-table-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-3` | table 的 empty、loading 部件 padding-block 覆盖槽。 |
 | `--xh-table-sticky-column-layer` | `cell`<br>`column-header`<br>`row` | `z-index` | `drop=after`<br>`drop=before`<br>`drop=inside`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])` | `1` | table 的 cell、column-header、row 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-header-layer` | `header` | `z-index` | `fixed` | `--xh-layer-sticky` | table 的 header 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-inset` | `cell`<br>`column-header` | `inset-inline-end`<br>`inset-inline-start` | `frozen=end`<br>`frozen=start` | `0` | table 的 cell、column-header 部件 inset-inline-end、inset-inline-start 覆盖槽。 |
@@ -789,9 +792,9 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 
 可覆盖的动效槽：`--xh-table-loading-duration`。
 
-关键帧 `xh-table-loading-pulse` 随皮肤自带，不引用别处文件里的名字；`-webkit-mask-size` · `background-color` · `mask-size` · `opacity` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`-webkit-mask-size` · `background-color` · `mask-size` · `opacity` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
 

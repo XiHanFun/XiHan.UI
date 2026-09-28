@@ -69,7 +69,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {'none'|'single'|'multiple'} selection-mode - 选择模式，默认 none（未声明则没有选择机制）
  * @attr {boolean} cascade - 树形表在 multiple 下父子级联勾选，与 Tree 的 cascade 同义
  * @attr {'child'|'parent'|'all'} checked-strategy - 级联下对外选中值的收敛策略，默认 child
- * @attr {boolean} loading - 数据加载中：root 报告 aria-busy，表体为空时加载态节点显示
+ * @attr {boolean} loading - 数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体保留上一帧淡下
  * @attr {boolean} empty - 显式声明表体为空；未提供时按 rows 是否为空推导，写 empty="false" 强制不为空
  * @attr {boolean} sticky-header - 表头吸顶，只写 data-fixed（布尔）；列冻结使用 data-frozen
  * @attr {boolean} striped - 斑马纹：表体偶数行换一层浅底
@@ -110,7 +110,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart expand-trigger - 展开把手（aria-hidden 且不占 Tab 位，键盘路径由左右方向键承担）
  * @csspart expanded-row - role=row 详情行，须自带 value 属性与所属的数据行配对，内部须放一个 cell 承载详情；收起时 data-state=closed
  * @csspart empty - 空态节点，表体为空且不在加载时显示
- * @csspart loading - 加载态节点，表体为空且正在加载时显示
+ * @csspart loading - 加载态节点，表体为空且正在加载时显示：一枚加载环排在文案之前
  * @csspart load-more-trigger - 取下一页的按钮，放在表尾；点击后的行为由作者决定，取数在途时自动停用
  */
 export class XhTableElement extends XhElement {

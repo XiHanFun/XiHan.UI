@@ -1,4 +1,4 @@
-// 空态与加载态 | 两个状态节点常驻只依靠 hidden 显隐：表体为空且在取数时显示加载态，取数完成后没有行才显示空态
+// 空态与加载态 | 两个占位节点常驻只依靠 hidden 显隐：表体为空且在取数时显示加载环，取完没有行才显示空态；已有行时重新取数不换占位，表体保留上一帧淡下
 import type { ReactNode } from "react";
 import {
   XhTableBody,
@@ -45,6 +45,19 @@ export default function Demo(): ReactNode {
     }, 1200);
   }
 
+  function refresh(): void {
+    if (tasks.length === 0) {
+      load();
+      return;
+    }
+    window.clearTimeout(timer.current);
+    setLoading(true);
+    timer.current = window.setTimeout(() => {
+      setTasks(current => [...current].reverse());
+      setLoading(false);
+    }, 1200);
+  }
+
   function reset(): void {
     window.clearTimeout(timer.current);
     setTasks([]);
@@ -58,6 +71,7 @@ export default function Demo(): ReactNode {
     <div style={{ width: "100%", maxWidth: "480px", display: "grid", gap: "12px" }}>
       <div style={{ display: "flex", gap: "8px" }}>
         <button type="button" onClick={load}>取数</button>
+        <button type="button" onClick={refresh}>刷新</button>
         <button type="button" onClick={reset}>清空</button>
       </div>
 

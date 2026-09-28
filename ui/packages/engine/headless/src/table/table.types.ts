@@ -399,7 +399,7 @@ export interface TableSchema extends MachineSchema {
      */
     page?: number
     pageSize?: number
-    /** 数据加载中：root 报告 aria-busy，表体为空时加载态节点显示。 */
+    /** 数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体保留上一帧淡下。 */
     loading?: boolean
     /** 显式声明表体为空；未提供时按 rows 是否为空推导。 */
     empty?: boolean
