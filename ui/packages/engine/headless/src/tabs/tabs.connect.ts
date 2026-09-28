@@ -436,6 +436,8 @@ export function connectTabs<T extends PropTypes>(
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
       'aria-hidden': true,
+      // 首次落位与同一项的重量直接到位：皮肤在它身上撤掉几何过渡，只有换项才滑
+      'data-instant': dataAttr(context.get('indicatorInstant')),
       'data-orientation': orientation,
       // 部件自带形态：line 档是一条线、segment 档是整块抬起面，皮肤按它换身份，不必回溯到 root
       'data-variant': variant,

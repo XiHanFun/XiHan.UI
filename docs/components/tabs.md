@@ -303,6 +303,7 @@
 | `close-trigger` | `data-xh-action-profile` | 'icon' |
 | `close-trigger` | `data-xh-action-size` | 'xs' |
 | `close-trigger` | `data-xh-action-variant` | 'ghost' |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-orientation` | props.orientation |
 | `indicator` | `data-value` | item.value |
 | `indicator` | `data-variant` | props.variant |
