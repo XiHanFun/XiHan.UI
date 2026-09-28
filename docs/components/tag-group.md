@@ -174,7 +174,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `ITEM.DELETE` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `ITEM.DELETE` · `LIST.BLUR` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED`
 
 **判据**：`canPress`
 
@@ -263,6 +263,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `list` | `data-orientation` | props.orientation |
 | `cell` | `data-disabled` | ''（条件成立时才出现） |
 | `cell` | `data-highlighted` | ''（条件成立时才出现） |
