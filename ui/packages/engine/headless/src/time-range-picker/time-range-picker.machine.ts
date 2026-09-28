@@ -10,6 +10,7 @@ import type { TimeDraft, TimeGranularity, TimeHourCycle } from '../time-field'
 import type { TimePickerColumn, TimePickerFocusIntent } from '../time-picker'
 import type { TimeRangePickerColumnRef, TimeRangePickerEndIndex, TimeRangePickerPressedKey, TimeRangePickerSchema, TimeRangePickerSegmentRef } from './time-range-picker.types'
 import { canTakeFocus, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import { timeColumnsFor, timeItemValue } from '../shared/time-constraint'
@@ -178,6 +179,8 @@ function commitBoth(params: Params<TimeRangePickerSchema>, next: readonly string
 export const timeRangePickerMachine = createMachine({
   name: 'time-range-picker',
   context: ({ prop, cell }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     value: cell<string[]>(() => ({
       value: prop('value'),
@@ -212,7 +215,7 @@ export const timeRangePickerMachine = createMachine({
     getFloatingEl: () => null,
     getContentEl: () => null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
   watch: ({ track, prop, context, action }) => {
@@ -240,6 +243,8 @@ export const timeRangePickerMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知。
         // 落点意图先记进 context：受控那一拍走 CONTROLLED.OPEN，读不到原按键事件
@@ -313,6 +318,7 @@ export const timeRangePickerMachine = createMachine({
       },
     },
     actions: {
+      clearOpenedAtMount,
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         params.context.reset('drafts')

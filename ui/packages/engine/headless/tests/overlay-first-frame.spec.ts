@@ -17,6 +17,7 @@ import { connectPopconfirm } from '../src/popconfirm'
 import { connectPopover, popoverMachine } from '../src/popover'
 import { connectSelect, selectMachine } from '../src/select'
 import { connectTimePicker, timePickerMachine } from '../src/time-picker'
+import { connectTimeRangePicker, timeRangePickerMachine } from '../src/time-range-picker'
 import { connectTreeSelect, treeSelectMachine } from '../src/tree-select'
 
 type Attrs = Record<string, unknown>
@@ -109,6 +110,10 @@ const CASES: Record<string, Case> = {
   'time-picker': {
     machine: timePickerMachine,
     parts: service => [connectTimePicker(service, normalizeProps).getContentProps() as Attrs],
+  },
+  'time-range-picker': {
+    machine: timeRangePickerMachine,
+    parts: service => [connectTimeRangePicker(service, normalizeProps).getContentProps() as Attrs],
   },
 }
 

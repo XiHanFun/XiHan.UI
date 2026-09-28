@@ -77,6 +77,16 @@ import {
   XhTimePickerPositioner,
   XhTimePickerRoot,
   XhTimePickerSegment,
+  XhTimeRangePickerColumn,
+  XhTimeRangePickerColumnGroup,
+  XhTimeRangePickerContent,
+  XhTimeRangePickerControl,
+  XhTimeRangePickerItem,
+  XhTimeRangePickerPositioner,
+  XhTimeRangePickerRangeSeparator,
+  XhTimeRangePickerRoot,
+  XhTimeRangePickerSegment,
+  XhTimeRangePickerSegmentGroup,
   XhTreeSelectContent,
   XhTreeSelectItem,
   XhTreeSelectItemText,
@@ -215,6 +225,23 @@ const CASES: Record<string, Case> = {
         h(XhTimePickerItem, { value: '09' }),
         h(XhTimePickerItem, { value: '10' }),
       ]))),
+    ]),
+  },
+  'time-range-picker': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhTimeRangePickerRoot, props, () => [
+      h(XhTimeRangePickerControl, null, () => [
+        h(XhTimeRangePickerSegmentGroup, { index: 0 }, () => h(XhTimeRangePickerSegment, { segment: 'hour' })),
+        h(XhTimeRangePickerRangeSeparator),
+        h(XhTimeRangePickerSegmentGroup, { index: 1 }, () => h(XhTimeRangePickerSegment, { segment: 'hour' })),
+      ]),
+      h(XhTimeRangePickerPositioner, null, () => h(XhTimeRangePickerContent, null, () => ([0, 1] as const).map(index =>
+        h(XhTimeRangePickerColumnGroup, { key: index, index }, () => h(XhTimeRangePickerColumn, { unit: 'hour' }, () => [
+          h(XhTimeRangePickerItem, { value: '09' }),
+          h(XhTimeRangePickerItem, { value: '10' }),
+        ])),
+      ))),
     ]),
   },
   'dialog': {
