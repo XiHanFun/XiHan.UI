@@ -60,6 +60,18 @@
 
 <XhDemo src="typography/07-decoration" />
 
+### 渐变字
+
+为标题里的关键词铺品牌渐变
+
+<XhDemo src="typography/07-gradient" />
+
+### 渐变字配色
+
+tone 换成语气色板，覆盖槽改写两端颜色与走向
+
+<XhDemo src="typography/08-gradient-colors" />
+
 ## 设计指引
 
 ### 何时使用
@@ -77,7 +89,7 @@
 ### 特性
 
 - 支持六档标题层级和三档正文尺寸。
-- 支持弱化、强调、代码等文本变体。
+- 支持弱化、强调、代码和渐变等文本变体。
 - 行内文字另有删除线、下划线与标记三个开关，可与变体、语气叠加；需要删除或标出的原生语义时把标签写成 `del` / `s` / `mark`。
 - 支持链接、语义颜色、对齐和字重。
 - 渐变字缺省取品牌渐变，`tone` 换成语气色板；两端颜色与走向由 `--xh-typography-gradient-from`、`--xh-typography-gradient-to` 与 `--xh-typography-gradient-direction` 改写。
