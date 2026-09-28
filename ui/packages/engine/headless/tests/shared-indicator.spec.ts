@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
+import type { IndicatorBox } from '../src/shared/indicator'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../src/shared/indicator'
+import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../src/shared/indicator'
 
 afterEach(() => {
   document.body.innerHTML = ''
@@ -155,5 +156,55 @@ describe('trackIndicatorLayout', () => {
     stop()
     flushFrame()
     expect(onChange).not.toHaveBeenCalled()
+  })
+})
+
+describe('标准档落点的「直接到位」', () => {
+  const box = (inlineStart: number, inlineSize = 60): IndicatorBox => ({ inlineStart, blockStart: 0, inlineSize, blockSize: 28 })
+
+  /** 标准档（宿主不在液态档）：只记每一帧交出去的 instant。 */
+  function standard() {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const frames: boolean[] = []
+    const indicator = createLiquidIndicator({
+      axis: () => 'inline',
+      host: () => host,
+      onFrame: (_box, _stretch, instant) => frames.push(instant),
+    })
+    return { indicator, last: () => frames.at(-1) }
+  }
+
+  it('首次落位直接到位：此前没有落点，没有可滑的起点', () => {
+    const { indicator, last } = standard()
+    indicator.place(box(0), 'a')
+    expect(last()).toBe(true)
+  })
+
+  it('换项交给皮肤过渡；同一项的同步量与推迟量各跑一遍，第二遍落点没变，不把过渡掐掉', () => {
+    const { indicator, last } = standard()
+    indicator.place(box(0), 'a')
+    indicator.place(box(80), 'b')
+    expect(last()).toBe(false)
+    indicator.place(box(80), 'b')
+    expect(last()).toBe(false)
+  })
+
+  it('同一项重量挪动了落点（窗口缩放、换上正式字体）：直接到位，不拖尾', () => {
+    const { indicator, last } = standard()
+    indicator.place(box(0), 'a')
+    indicator.place(box(80), 'b')
+    indicator.place(box(96, 64), 'b')
+    expect(last()).toBe(true)
+    // 之后再换项，照常交给过渡
+    indicator.place(box(0), 'a')
+    expect(last()).toBe(false)
+  })
+
+  it('落点量不到（选中项被移走）：直接到位', () => {
+    const { indicator, last } = standard()
+    indicator.place(box(0), 'a')
+    indicator.place(null, 'b')
+    expect(last()).toBe(true)
   })
 })
