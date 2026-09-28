@@ -200,7 +200,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 | `canScrollPrev` | `boolean` |  |
 | `canScrollNext` | `boolean` |  |
 | `autoplaying` | `boolean` | 自动播放的计时进行中。 |
-| `paused` | `boolean` | 自动播放已开启但被暂停（悬停 / 焦点 / 调用方）。 |
+| `paused` | `boolean` | 自动播放已开启但被暂停（悬停 / 焦点 / 调用方 / 看不见）。 |
 | `autoplayStopped` | `boolean` | 自动播放当前是否由用户停止：计时未进行（idle），或由调用方暂停。 与 `paused` 的差别在于它不计入悬停与焦点两路：这两路一离开即自动恢复， 若用它驱动播放 / 暂停开关的名字与图形，鼠标一碰按钮就会在两态之间跳动。 |
 | `dragging` | `boolean` |  |
 | `isInView` | `(index: number) => boolean` |  |

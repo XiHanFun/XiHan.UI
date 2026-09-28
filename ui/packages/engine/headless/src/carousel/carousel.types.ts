@@ -10,7 +10,11 @@ import type { SpringValue } from '@xihan-ui/motion'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 
 /** 暂停自动播放的来源。可同时存在多个暂停，最后一个解除后才继续。 */
-export type CarouselPauseSource = 'pointer' | 'focus' | 'api'
+/**
+ * 按住自动播放的来源：指针悬停、焦点停留、调用方，以及看不见（轮播滚出视口或页面切到后台）。
+ * 前两路与 visibility 一离开即自动恢复。
+ */
+export type CarouselPauseSource = 'pointer' | 'focus' | 'api' | 'visibility'
 
 export interface CarouselPageChangeDetails {
   /** 变化后的页码，0 基，恒在 [0, totalPages - 1] 内。 */
@@ -188,7 +192,7 @@ export interface CarouselSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'trackAutoplay' | 'trackPointer' | 'respectScopedMotion' | 'trackLiquid' | 'trackWrapSettle'
+  effect: 'trackAutoplay' | 'trackPointer' | 'respectScopedMotion' | 'trackLiquid' | 'trackWrapSettle' | 'trackVisibility'
 }
 
 export interface CarouselApi<T extends PropTypes = PropTypes> {
@@ -208,7 +212,7 @@ export interface CarouselApi<T extends PropTypes = PropTypes> {
   canScrollNext: boolean
   /** 自动播放的计时进行中。 */
   autoplaying: boolean
-  /** 自动播放已开启但被暂停（悬停 / 焦点 / 调用方）。 */
+  /** 自动播放已开启但被暂停（悬停 / 焦点 / 调用方 / 看不见）。 */
   paused: boolean
   /**
    * 自动播放当前是否由用户停止：计时未进行（idle），或由调用方暂停。
