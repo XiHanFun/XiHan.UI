@@ -51,6 +51,11 @@ function part(scope: string, name: string, index = 0): HTMLElement {
 
 const displayOf = (el: HTMLElement): string => getComputedStyle(el).display
 
+/** 收起的错误文案：不可见、不进可及树，也不占位（盒高为 0） */
+function collapsed(el: HTMLElement): boolean {
+  return getComputedStyle(el).visibility === 'hidden' && el.getBoundingClientRect().height === 0
+}
+
 /** 语义令牌解出来的值：颜色令牌解到色值串，尺寸令牌借一个探针元素解到像素。 */
 function tokenColor(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
@@ -78,13 +83,13 @@ describe('field 的辅助文字', () => {
   it('不无效：说明在场，错误由 hidden 收起', () => {
     mount(() => field(false))
     expect(displayOf(part('field', 'description'))).not.toBe('none')
-    expect(displayOf(part('field', 'error-text'))).toBe('none')
+    expect(collapsed(part('field', 'error-text'))).toBe(true)
   })
 
   it('无效：错误顶上来，说明让出这一行', () => {
     mount(() => field(true))
     expect(displayOf(part('field', 'description'))).toBe('none')
-    expect(displayOf(part('field', 'error-text'))).not.toBe('none')
+    expect(collapsed(part('field', 'error-text'))).toBe(false)
   })
 
   it('说明收起了仍留在控件的描述链上：读屏两段照旧都念得到', () => {

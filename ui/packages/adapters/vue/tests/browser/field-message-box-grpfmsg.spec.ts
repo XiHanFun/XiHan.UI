@@ -132,24 +132,25 @@ describe('横排表单里同样不改变高度', () => {
       </div></div>`
     return {
       height: part('root').getBoundingClientRect().height,
-      columnStart: getComputedStyle(part('root'), '::after').gridColumnStart,
+      columnStart: getComputedStyle(part('error-text')).gridColumnStart,
     }
   }
 
   it('报错前后等高，占位落在控件那一列', () => {
     const normal = horizontal(false)
-    // 占位块自己另起一行的话，标签列会被它撑开，高度就对不上了
+    // 占住那一行的是收起的错误文案自己：它另起一行跑到标签列的话，标签列会被撑开，高度就对不上了
     expect(horizontal(true).height).toBe(normal.height)
     expect(normal.columnStart).toBe('2')
   })
 })
 
 describe('读屏那一路没动', () => {
-  it('常态下错误文案仍由 hidden 收起，没有被改成占位用的可见空块', () => {
+  it('常态下错误文案仍带 hidden，占着那一行的盒不可见、不进可及树', () => {
     mount({})
     const el = part('error-text')
     expect(el.hasAttribute('hidden')).toBe(true)
-    expect(getComputedStyle(el).display).toBe('none')
+    expect(getComputedStyle(el).visibility).toBe('hidden')
+    expect(getComputedStyle(el).opacity).toBe('0')
   })
 
   it('报错时说明与错误文案两段都在控件的描述链上', () => {

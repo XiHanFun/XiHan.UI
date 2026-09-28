@@ -60,7 +60,7 @@ line-height: 19.5px
 font-weight: 400
 color: oklch(0.577 0.213 25)
 background-color: rgba(0, 0, 0, 0)
-transition-property: all
+transition-property: none
 transition-duration: 0s
 transition-timing-function: ease
 animation-name: none

@@ -29780,7 +29780,6 @@
       ],
       "state": [
         "default",
-        "has(> [data-scope='field'][data-part='error-text'][hidden])",
         "not(:has(> [data-scope='field'][data-part='description']:not([hidden])"
       ],
       "defaultToken": [
