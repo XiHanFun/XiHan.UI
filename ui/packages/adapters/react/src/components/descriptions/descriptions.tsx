@@ -25,6 +25,11 @@ export interface XhDescriptionsRootProps extends ComponentPropsWithRef<'dl'> {
   size?: Size
   /** 根渲染为哪个标签，默认 dl。 */
   as?: ElementType
+  /**
+   * 列表之前的头部：放 XhDescriptionsHeader（内含 Title 与 Extra）。
+   * 它渲染为根的兄弟排在列表前：根常写成 dl，dl 的子节点只能是成对的 dt / dd。
+   */
+  header?: ReactNode
 }
 
 /** 一组只读的标签与取值：四个轴只落在这一层，各格从这里继承。 */
@@ -34,6 +39,7 @@ export function XhDescriptionsRoot({
   placement,
   size,
   as = 'dl',
+  header,
   children,
   ...rest
 }: XhDescriptionsRootProps): ReactNode {
@@ -42,6 +48,7 @@ export function XhDescriptionsRoot({
   const Tag = as as 'dl'
   return (
     <DescriptionsProvider value={{ api }}>
+      {header}
       <Tag {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {children}
       </Tag>
@@ -94,5 +101,43 @@ export function XhDescriptionsValue({ as = 'dd', children, ...rest }: XhDescript
     <Tag {...mergeReactProps(ctx.api.getValueProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}
     </Tag>
+  )
+}
+
+export interface XhDescriptionsHeaderProps extends ComponentPropsWithRef<'div'> {}
+
+/** 列表之前的头部：左侧标题、右侧附加内容。经 XhDescriptionsRoot 的 header 传入。 */
+export function XhDescriptionsHeader({ children, ...rest }: XhDescriptionsHeaderProps): ReactNode {
+  const ctx = useDescriptionsContext()
+  return (
+    <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </div>
+  )
+}
+
+export interface XhDescriptionsTitleProps extends ComponentPropsWithRef<'div'> {
+  /** 标题渲染为哪个标签，默认 div：组件不往文档大纲里插标题，作者按页面层级改写成 h2 / h3。 */
+  as?: ElementType
+}
+
+export function XhDescriptionsTitle({ as = 'div', children, ...rest }: XhDescriptionsTitleProps): ReactNode {
+  const ctx = useDescriptionsContext()
+  const Tag = as as 'div'
+  return (
+    <Tag {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </Tag>
+  )
+}
+
+export interface XhDescriptionsExtraProps extends ComponentPropsWithRef<'div'> {}
+
+export function XhDescriptionsExtra({ children, ...rest }: XhDescriptionsExtraProps): ReactNode {
+  const ctx = useDescriptionsContext()
+  return (
+    <div {...mergeReactProps(ctx.api.getExtraProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </div>
   )
 }

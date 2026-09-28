@@ -48,3 +48,17 @@ describe('connectDescriptions 的跨列', () => {
     expect((api({ columns: 4 }).getItemProps({ span: 2.7 }) as Props).style).toEqual({ '--xh-_descriptions-item-span': '2' })
   })
 })
+
+describe('connectDescriptions 的头部', () => {
+  it('头部、标题与附加内容各有身份，不写 role；头部自带尺寸档', () => {
+    const it0 = api({ size: 'lg' })
+    expect(it0.getHeaderProps()).toMatchObject({ 'data-scope': 'descriptions', 'data-part': 'header', 'data-size': 'lg' })
+    expect((it0.getHeaderProps() as Props).role).toBeUndefined()
+    expect(it0.getTitleProps()).toMatchObject({ 'data-scope': 'descriptions', 'data-part': 'title' })
+    expect(it0.getExtraProps()).toMatchObject({ 'data-scope': 'descriptions', 'data-part': 'extra' })
+  })
+
+  it('不写尺寸头部就不落 data-size', () => {
+    expect((api().getHeaderProps() as Props)['data-size']).toBeUndefined()
+  })
+})

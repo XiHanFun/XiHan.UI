@@ -427,7 +427,7 @@ export { useDateRangePicker } from './components/date-range-picker/use-date-rang
 export type { DateRangePickerContext } from './components/date-range-picker/use-date-range-picker'
 export { provideDescriptions, useDescriptionsContext } from './components/descriptions/context'
 export type { DescriptionsContext } from './components/descriptions/context'
-export { XhDescriptionsItem, XhDescriptionsLabel, XhDescriptionsRoot, XhDescriptionsValue } from './components/descriptions/descriptions'
+export { XhDescriptionsExtra, XhDescriptionsHeader, XhDescriptionsItem, XhDescriptionsLabel, XhDescriptionsRoot, XhDescriptionsTitle, XhDescriptionsValue } from './components/descriptions/descriptions'
 export {
   XhDialogBody,
   XhDialogCloseTrigger,

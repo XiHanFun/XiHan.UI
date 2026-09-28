@@ -842,15 +842,21 @@ export type { DateRangePickerContext } from './components/date-range-picker/use-
 export { useDescriptionsContext } from './components/descriptions/context'
 export type { DescriptionsContext } from './components/descriptions/context'
 export {
+  XhDescriptionsExtra,
+  XhDescriptionsHeader,
   XhDescriptionsItem,
   XhDescriptionsLabel,
   XhDescriptionsRoot,
+  XhDescriptionsTitle,
   XhDescriptionsValue,
 } from './components/descriptions/descriptions'
 export type {
+  XhDescriptionsExtraProps,
+  XhDescriptionsHeaderProps,
   XhDescriptionsItemProps,
   XhDescriptionsLabelProps,
   XhDescriptionsRootProps,
+  XhDescriptionsTitleProps,
   XhDescriptionsValueProps,
 } from './components/descriptions/descriptions'
 export { useDialogContext } from './components/dialog/context'
