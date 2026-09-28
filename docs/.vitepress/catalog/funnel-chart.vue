@@ -1,22 +1,12 @@
-<script setup lang="ts">
-import { XhFunnelChartRoot } from "@xihan-ui/vue";
-
-const steps = [
-  { stage: "浏览", users: 12800 },
-  { stage: "加购", users: 5200 },
-  { stage: "下单", users: 2300 },
-  { stage: "支付", users: 1850 },
-];
-</script>
-
 <template>
-  <!-- 卡片只有一块可用高：视口高度取卡片下发的那个值，不带标题，不写转化率 -->
-  <XhFunnelChartRoot
-    :data="steps"
-    name-field="stage"
-    value-field="users"
-    conversion="none"
-    aria-label="购买流程"
-    style="inline-size: var(--xh-doc-catalog-w); --xh-funnel-chart-height: var(--xh-doc-catalog-h)"
-  />
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" data-direction="fixed" aria-hidden="true" focusable="false">
+    <path d="M20 24h152l-18 26h-116z" fill="var(--xh-chart-ordinal-1)" />
+    <path d="M186 37h28" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <path d="M38 52h116l-16 26h-84z" fill="var(--xh-chart-ordinal-2)" />
+    <path d="M186 65h24" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <path d="M54 80h84l-16 26h-52z" fill="var(--xh-chart-ordinal-3)" />
+    <path d="M186 93h20" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <path d="M70 108h52l-12 26h-28z" fill="var(--xh-chart-ordinal-4)" />
+    <path d="M186 121h16" stroke="var(--xh-chart-label)" stroke-width="4" />
+  </svg>
 </template>

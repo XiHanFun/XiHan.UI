@@ -1,21 +1,15 @@
-<script setup lang="ts">
-import { XhCartesianChartRoot } from "@xihan-ui/vue";
-
-const sales = [
-  { month: "1月", amount: 12 },
-  { month: "2月", amount: 9 },
-  { month: "3月", amount: 15 },
-  { month: "4月", amount: 13 },
-  { month: "5月", amount: 17 },
-];
-</script>
-
 <template>
-  <!-- 卡片只有一块可用高：视口高度取卡片下发的那个值，不带标题 -->
-  <XhCartesianChartRoot
-    :data="sales"
-    :series="[{ mark: 'bar', x: 'month', y: 'amount', name: '销售额' }]"
-    aria-label="月度销售额"
-    style="inline-size: var(--xh-doc-catalog-w); --xh-cartesian-chart-height: var(--xh-doc-catalog-h)"
-  />
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" data-direction="fixed" aria-hidden="true" focusable="false">
+    <rect x="44" y="8" width="12" height="12" rx="4" fill="var(--xh-chart-categorical-1)" />
+    <path d="M64 14h24" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <path d="M104 14h12" stroke="var(--xh-chart-categorical-2)" stroke-width="2" />
+    <path d="M124 14h24" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <path d="M44 32.5h172M44 55.5h172M44 78.5h172M44 101.5h172" stroke="var(--xh-chart-grid)" />
+    <path d="M26 32h8M26 55h8M26 78h8M26 101h8M30 124h4" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <path d="M56 124V80a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4V124zM90 124V96a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4V124zM124 124V64a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4V124zM158 124V76a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4V124zM192 124V48a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4V124z" fill="var(--xh-chart-categorical-1)" />
+    <path d="M44 124.5h172" stroke="var(--xh-chart-axis)" />
+    <path d="M64 70L98 62L132 66L166 50L200 42" stroke="var(--xh-chart-categorical-2)" stroke-width="2" />
+    <circle cx="200" cy="42" r="4" fill="var(--xh-chart-categorical-2)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+    <path d="M60 140h8M94 140h8M128 140h8M162 140h8M196 140h8" stroke="var(--xh-chart-label)" stroke-width="4" />
+  </svg>
 </template>

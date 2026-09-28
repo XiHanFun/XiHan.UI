@@ -1,18 +1,15 @@
-<script setup lang="ts">
-import type { HeatmapDatum } from "@xihan-ui/headless";
-import { formatHeatmapDate } from "@xihan-ui/headless";
-import { XhHeatmapRoot } from "@xihan-ui/vue";
-
-const DAY_MS = 86_400_000;
-// 十二周的活动量：数值由天序号哈希出来，每次打开都长一样
-const activity: HeatmapDatum[] = [];
-let index = 0;
-for (let time = Date.UTC(2024, 8, 1); time <= Date.UTC(2024, 10, 23); time += DAY_MS) {
-  const noise = ((Math.imul(++index, 2654435761) >>> 8) % 1000) / 1000;
-  activity.push({ date: formatHeatmapDate(time), count: noise < 0.2 ? 0 : Math.round(noise * 8) });
-}
-</script>
-
 <template>
-  <XhHeatmapRoot :value="activity" start-date="2024-09-01" end-date="2024-11-23" style="inline-size: var(--xh-doc-catalog-w)" />
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" data-direction="fixed" aria-hidden="true" focusable="false">
+    <path d="M50 22h12M100 22h12M150 22h12M30 46h8M30 66h8M30 86h8" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <path d="M48 32h8v8h-8zM48 82h8v8h-8zM48 92h8v8h-8zM58 82h8v8h-8zM58 92h8v8h-8zM68 62h8v8h-8zM68 92h8v8h-8zM78 62h8v8h-8zM88 32h8v8h-8zM88 82h8v8h-8zM98 42h8v8h-8zM98 82h8v8h-8zM108 72h8v8h-8zM118 32h8v8h-8zM118 62h8v8h-8zM158 62h8v8h-8zM158 82h8v8h-8zM168 42h8v8h-8zM168 92h8v8h-8zM178 72h8v8h-8zM178 82h8v8h-8zM178 92h8v8h-8zM188 42h8v8h-8zM198 42h8v8h-8zM198 52h8v8h-8zM208 52h8v8h-8zM208 62h8v8h-8zM208 82h8v8h-8zM218 62h8v8h-8z" fill="var(--xh-bg-subtle)" />
+    <path d="M48 62h8v8h-8zM58 32h8v8h-8zM58 42h8v8h-8zM68 32h8v8h-8zM68 52h8v8h-8zM68 82h8v8h-8zM78 32h8v8h-8zM78 82h8v8h-8zM78 92h8v8h-8zM88 72h8v8h-8zM108 52h8v8h-8zM108 62h8v8h-8zM108 82h8v8h-8zM108 92h8v8h-8zM118 52h8v8h-8zM118 72h8v8h-8zM128 32h8v8h-8zM128 42h8v8h-8zM128 62h8v8h-8zM138 52h8v8h-8zM138 62h8v8h-8zM138 72h8v8h-8zM138 92h8v8h-8zM148 52h8v8h-8zM148 82h8v8h-8zM158 32h8v8h-8zM158 92h8v8h-8zM168 32h8v8h-8zM168 82h8v8h-8zM188 32h8v8h-8zM188 62h8v8h-8zM188 72h8v8h-8zM198 72h8v8h-8zM208 42h8v8h-8zM218 42h8v8h-8zM218 52h8v8h-8z" fill="var(--xh-chart-sequential-start)" />
+    <path d="M48 42h8v8h-8zM48 72h8v8h-8zM58 52h8v8h-8zM58 72h8v8h-8zM68 42h8v8h-8zM78 52h8v8h-8zM78 72h8v8h-8zM88 42h8v8h-8zM88 52h8v8h-8zM88 92h8v8h-8zM98 32h8v8h-8zM108 32h8v8h-8zM128 52h8v8h-8zM128 72h8v8h-8zM128 82h8v8h-8zM128 92h8v8h-8zM138 32h8v8h-8zM138 82h8v8h-8zM148 32h8v8h-8zM148 62h8v8h-8zM148 72h8v8h-8zM148 92h8v8h-8zM158 72h8v8h-8zM168 52h8v8h-8zM168 62h8v8h-8zM178 32h8v8h-8zM178 52h8v8h-8zM188 52h8v8h-8zM198 62h8v8h-8zM198 92h8v8h-8zM208 92h8v8h-8zM218 32h8v8h-8z" fill="var(--xh-chart-sequential-mid)" />
+    <path d="M48 52h8v8h-8zM58 62h8v8h-8zM68 72h8v8h-8zM78 42h8v8h-8zM88 62h8v8h-8zM98 52h8v8h-8zM98 62h8v8h-8zM98 72h8v8h-8zM98 92h8v8h-8zM108 42h8v8h-8zM118 42h8v8h-8zM118 82h8v8h-8zM118 92h8v8h-8zM138 42h8v8h-8zM148 42h8v8h-8zM158 42h8v8h-8zM158 52h8v8h-8zM168 72h8v8h-8zM178 42h8v8h-8zM178 62h8v8h-8zM188 82h8v8h-8zM188 92h8v8h-8zM198 32h8v8h-8zM198 82h8v8h-8zM208 32h8v8h-8zM208 72h8v8h-8z" fill="var(--xh-chart-sequential-end)" />
+    <path d="M114 124h12" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <path d="M132 120h8v8h-8z" fill="var(--xh-bg-subtle)" />
+    <path d="M142 120h8v8h-8z" fill="var(--xh-chart-sequential-start)" />
+    <path d="M152 120h8v8h-8z" fill="var(--xh-chart-sequential-mid)" />
+    <path d="M162 120h8v8h-8z" fill="var(--xh-chart-sequential-end)" />
+    <path d="M178 124h12" stroke="var(--xh-chart-label)" stroke-width="4" />
+  </svg>
 </template>

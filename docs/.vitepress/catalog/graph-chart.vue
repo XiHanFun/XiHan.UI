@@ -1,33 +1,18 @@
-<script setup lang="ts">
-import { XhGraphChartRoot } from "@xihan-ui/vue";
-
-const nodes = [
-  { id: "a", group: "甲" },
-  { id: "b", group: "甲" },
-  { id: "c", group: "甲" },
-  { id: "d", group: "乙" },
-  { id: "e", group: "乙" },
-  { id: "f", group: "乙" },
-  { id: "g", group: "丙" },
-];
-const links = [
-  { source: "a", target: "b" },
-  { source: "a", target: "c" },
-  { source: "b", target: "c" },
-  { source: "c", target: "d" },
-  { source: "d", target: "e" },
-  { source: "d", target: "f" },
-  { source: "e", target: "f" },
-  { source: "f", target: "g" },
-];
-</script>
-
 <template>
-  <!-- 卡片只有一块可用高：视口高度取卡片下发的那个值，不带标题；名字是单字母，放不下的自己让位 -->
-  <XhGraphChartRoot
-    :nodes="nodes"
-    :links="links"
-    aria-label="关系图"
-    style="inline-size: var(--xh-doc-catalog-w); --xh-graph-chart-height: var(--xh-doc-catalog-h)"
-  />
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" data-direction="fixed" aria-hidden="true" focusable="false">
+    <circle cx="50" cy="14" r="5" fill="var(--xh-chart-categorical-1)" />
+    <path d="M62 14h12" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <circle cx="94" cy="14" r="5" fill="var(--xh-chart-categorical-2)" />
+    <path d="M106 14h12" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <circle cx="138" cy="14" r="5" fill="var(--xh-chart-categorical-3)" />
+    <path d="M150 14h12" stroke="var(--xh-chart-label)" stroke-width="4" />
+    <path d="M48 100L88 72M48 100L80 128M88 72L80 128M88 72L136 108M136 108L128 56M128 56L180 84M136 108L180 84M180 84L204 128" stroke="var(--xh-fg-subtle)" />
+    <circle cx="48" cy="100" r="6" fill="var(--xh-chart-categorical-1)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+    <circle cx="88" cy="72" r="6" fill="var(--xh-chart-categorical-1)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+    <circle cx="80" cy="128" r="6" fill="var(--xh-chart-categorical-1)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+    <circle cx="136" cy="108" r="6" fill="var(--xh-chart-categorical-2)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+    <circle cx="128" cy="56" r="6" fill="var(--xh-chart-categorical-2)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+    <circle cx="180" cy="84" r="6" fill="var(--xh-chart-categorical-3)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+    <circle cx="204" cy="128" r="6" fill="var(--xh-chart-categorical-3)" stroke="var(--xh-chart-surface)" stroke-width="2" />
+  </svg>
 </template>

@@ -1,22 +1,14 @@
-<script setup lang="ts">
-import { XhHierarchyChartRoot } from "@xihan-ui/vue";
-
-const budget = {
-  name: "预算",
-  children: [
-    { name: "研发", children: [{ name: "平台", value: 42 }, { name: "移动", value: 26 }, { name: "数据", value: 18 }] },
-    { name: "市场", children: [{ name: "品牌", value: 21 }, { name: "渠道", value: 16 }] },
-    { name: "销售", children: [{ name: "华东", value: 24 }, { name: "华南", value: 18 }, { name: "华北", value: 15 }] },
-  ],
-};
-</script>
-
 <template>
-  <!-- 卡片只有一块可用高：视口高度取卡片下发的那个值，不带标题，只画一层 -->
-  <XhHierarchyChartRoot
-    :data="budget"
-    :depth="1"
-    aria-label="预算"
-    style="inline-size: var(--xh-doc-catalog-w); --xh-hierarchy-chart-height: var(--xh-doc-catalog-h)"
-  />
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" data-direction="fixed" aria-hidden="true" focusable="false">
+    <rect x="24" y="20" width="112" height="72" rx="4" fill="var(--xh-chart-categorical-1)" />
+    <path d="M34 32h28" stroke="var(--xh-chart-on-categorical-1)" stroke-width="4" />
+    <rect x="24" y="94" width="112" height="46" rx="4" fill="var(--xh-chart-categorical-3)" />
+    <path d="M34 106h20" stroke="var(--xh-chart-on-categorical-3)" stroke-width="4" />
+    <rect x="138" y="20" width="78" height="56" rx="4" fill="var(--xh-chart-categorical-2)" />
+    <path d="M148 32h24" stroke="var(--xh-chart-on-categorical-2)" stroke-width="4" />
+    <rect x="138" y="78" width="38" height="62" rx="4" fill="var(--xh-chart-categorical-4)" />
+    <path d="M148 90h12" stroke="var(--xh-chart-on-categorical-4)" stroke-width="4" />
+    <rect x="178" y="78" width="38" height="62" rx="4" fill="var(--xh-chart-categorical-5)" />
+    <path d="M188 90h12" stroke="var(--xh-chart-on-categorical-5)" stroke-width="4" />
+  </svg>
 </template>
