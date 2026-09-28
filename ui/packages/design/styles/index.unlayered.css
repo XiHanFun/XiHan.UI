@@ -18889,30 +18889,6 @@
   will-change: translate;
 }
 
-/* 淡变换页：条目叠进同一格，轨道不位移（连接层不写页位移）。
-   当前一张压在上面淡入，离开的那一张同一段淡出、淡完才藏起——visibility 在两端之间插值时取 visible，
-   过渡走到末端才落成 hidden。时长与曲线跟平移同一档：减弱动效下 slide 为 1ms，直接换 */
-[data-scope='carousel'][data-part='list'][data-effect='fade']:not([hidden]) {
-  display: grid;
-  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
-  transition: none;
-}
-
-[data-scope='carousel'][data-part='list'][data-effect='fade'] > [data-scope='carousel'][data-part='item'] {
-  grid-area: 1 / 1;
-  opacity: 0;
-  visibility: hidden;
-  transition-property: opacity, visibility;
-  transition-duration: var(--xh-carousel-duration, var(--xh-motion-duration-slide));
-  transition-timing-function: var(--xh-carousel-ease, var(--xh-motion-ease-slide));
-}
-
-[data-scope='carousel'][data-part='list'][data-effect='fade'] > [data-scope='carousel'][data-part='item'][data-inview] {
-  z-index: 1;
-  opacity: 1;
-  visibility: visible;
-}
-
 /* 一张幻灯片。
    尺寸（flex-basis）与间距（padding）同样归连接层：一屏放几张只有它知道，
    CSS 拿不到那个数（属性值参与不了计算）。这里只补三件配套的事：
