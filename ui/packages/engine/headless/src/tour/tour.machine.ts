@@ -132,9 +132,11 @@ export const tourMachine = createMachine({
     open: {
       // 进入 open：定位 → 高亮 → 消解与焦点。退出 open 时按同序清理。
       effects: ['trackPosition', 'trackSpotlight', 'trackTarget'],
-      // 几何随展开态一起来一起走，留着上一轮坐标会让下次展开先按旧位置闪一帧；
+      // 几何在展开那一刻清掉再量：留着上一轮坐标会让这次展开先按旧位置闪一帧。
+      // 收起时不清——退场要在原处播完，清成 0 气泡与高亮框会一路滑向视口左上角
+      entry: ['clearGeometry'],
       // 收起即松开：按住 Enter 走完末步或跳过，那颗按钮随内容藏起，不会再来 keyup 或 blur
-      exit: ['clearGeometry', 'releasePress'],
+      exit: ['releasePress'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -251,11 +253,9 @@ export const tourMachine = createMachine({
        */
       measureSpotlight: ({ prop, context, scope, state, flush }) => {
         const run = (): void => {
-          // 收起态不留高亮框：退出 open 的那一拍 flush 回调可能还没跑
-          if (state.get() !== 'open') {
-            context.set('spotlight', null)
+          // 收起后不再量：退场在最后一次量到的位置播完，下次展开由 entry 清掉重量
+          if (state.get() !== 'open')
             return
-          }
           const step = currentTourStep(prop('steps'), stepOf(prop, context.get('value')))
           const target = resolveTourTarget(scope, step)
           if (!target) {
