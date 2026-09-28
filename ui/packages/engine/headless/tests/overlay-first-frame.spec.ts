@@ -16,6 +16,7 @@ import { connectMenu, menuMachine } from '../src/menu'
 import { connectPopconfirm } from '../src/popconfirm'
 import { connectPopover, popoverMachine } from '../src/popover'
 import { connectSelect, selectMachine } from '../src/select'
+import { connectTimePicker, timePickerMachine } from '../src/time-picker'
 import { connectTreeSelect, treeSelectMachine } from '../src/tree-select'
 
 type Attrs = Record<string, unknown>
@@ -104,6 +105,10 @@ const CASES: Record<string, Case> = {
   'date-range-picker': {
     machine: dateRangePickerMachine,
     parts: marked,
+  },
+  'time-picker': {
+    machine: timePickerMachine,
+    parts: service => [connectTimePicker(service, normalizeProps).getContentProps() as Attrs],
   },
 }
 

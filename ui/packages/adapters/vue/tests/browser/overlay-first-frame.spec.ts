@@ -70,6 +70,13 @@ import {
   XhSelectRoot,
   XhSelectTrigger,
   XhSelectValueText,
+  XhTimePickerColumn,
+  XhTimePickerContent,
+  XhTimePickerControl,
+  XhTimePickerItem,
+  XhTimePickerPositioner,
+  XhTimePickerRoot,
+  XhTimePickerSegment,
   XhTreeSelectContent,
   XhTreeSelectItem,
   XhTreeSelectItemText,
@@ -197,6 +204,17 @@ const CASES: Record<string, Case> = {
         h(XhDateRangePickerSegmentGroup, { index: 1 }, () => h(XhDateRangePickerSegment, { index: 0 })),
       ]),
       h(XhDateRangePickerPositioner, null, () => h(XhDateRangePickerContent, null, () => h(XhDateRangePickerConfirmTrigger, null, () => '确定'))),
+    ]),
+  },
+  'time-picker': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhTimePickerRoot, { ...props, defaultValue: '09:30' }, () => [
+      h(XhTimePickerControl, null, () => h(XhTimePickerSegment, { segment: 'hour' })),
+      h(XhTimePickerPositioner, null, () => h(XhTimePickerContent, null, () => h(XhTimePickerColumn, { unit: 'hour' }, () => [
+        h(XhTimePickerItem, { value: '09' }),
+        h(XhTimePickerItem, { value: '10' }),
+      ]))),
     ]),
   },
   'dialog': {
