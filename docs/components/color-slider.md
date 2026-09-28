@@ -280,7 +280,7 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 | `--xh-color-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default-opaque` | color-slider 的 thumb 部件 border 覆盖槽。 |
 | `--xh-color-slider-thumb-border-invalid` | `thumb` | `border-color` | `invalid` | `--xh-border-invalid` | color-slider 的 thumb 部件 border-color 覆盖槽。 |
 | `--xh-color-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | color-slider 的 thumb 部件 border-radius 覆盖槽。 |
-| `--xh-color-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-slider 的 thumb 部件 scale 覆盖槽。 |
+| `--xh-color-slider-thumb-scale-dragging` | `thumb`<br>`value-text` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-slider 的 thumb、value-text 部件 scale 覆盖槽。 |
 | `--xh-color-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-color-slider-thumb-shadow-disabled` | `thumb` | `box-shadow` | `disabled` | `none` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-color-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
@@ -310,4 +310,4 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。

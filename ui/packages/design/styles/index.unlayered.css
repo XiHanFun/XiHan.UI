@@ -22923,7 +22923,10 @@
 
 /* 放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动。海拔从 raised 换到 lifted */
 [data-scope='color-slider'][data-part='thumb'][data-dragging] {
-  scale: var(--xh-color-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
+  /* 放大比例落进私有槽：挂在拇指里的值气泡读同一支反向缩回原尺寸 */
+  --xh-_color-slider-thumb-scale: var(--xh-color-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
+
+  scale: var(--xh-_color-slider-thumb-scale);
   cursor: grabbing;
   box-shadow: var(--xh-color-slider-thumb-shadow-dragging, var(--xh-elevation-lifted));
 }
@@ -22943,14 +22946,19 @@
   cursor: not-allowed;
 }
 
-/* 值气泡：挂在拇指里，跟着拇指一起走位。默认只在推动那一刻露面 */
+/* 值气泡：挂在拇指里，跟着拇指一起走位。默认只在推动那一刻露面。
+   气泡宽度由文字撑出，只能靠平移回中：两侧 inset 都钉在 50% 再靠自动外边距回中时可用宽度是 0，
+   气泡比它宽，自动外边距按规范取 0，气泡从拇指中线起排、偏出半个自身宽。平移乘书写方向的符号，
+   rtl 下行内分量掉头。拖动时拇指放大，气泡按同一比例反向缩回、与拇指同一段过渡：文字不跟着放大，
+   缩放原点在贴着拇指那一边 */
 [data-scope='color-slider'][data-part='value-text'] {
   position: absolute;
   inset-block-end: 100%;
-  inset-inline: 50%;
+  inset-inline-start: 50%;
   inline-size: max-content;
   margin-block-end: var(--xh-color-slider-value-text-offset, var(--xh-space-2));
-  margin-inline: auto;
+  translate: calc(-50% * var(--xh-direction-sign)) 0;
+  transform-origin: 50% 100%;
   padding-block: var(--xh-color-slider-value-text-py, var(--xh-space-0_5));
   padding-inline: var(--xh-color-slider-value-text-px, var(--xh-space-2));
   border-radius: var(--xh-color-slider-value-text-radius, var(--xh-shape-control));
@@ -22963,7 +22971,9 @@
   /* 气泡贴在拇指上方，指针要落到拇指上，不能被它挡住 */
   pointer-events: none;
   opacity: 0;
-  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='color-slider'][data-part='value-text'][hidden] {
@@ -22972,15 +22982,18 @@
 
 [data-scope='color-slider'][data-part='value-text'][data-dragging] {
   opacity: 1;
+  scale: calc(1 / var(--xh-_color-slider-thumb-scale, 1));
 }
 
-/* 竖排轨道的气泡挪到行侧：压在拇指上方会挡住上一档的值 */
+/* 竖排轨道的气泡挪到行侧：压在拇指上方会挡住上一档的值；反向缩放的原点换到贴着拇指的行首那一侧 */
 [data-scope='color-slider'][data-part='value-text'][data-orientation='vertical'] {
   inset-block: 50%;
   inset-inline: 100% auto;
   block-size: max-content;
   margin-block: auto;
   margin-inline: var(--xh-color-slider-value-text-offset, var(--xh-space-2)) 0;
+  translate: none;
+  transform-origin: calc(50% - 50% * var(--xh-direction-sign)) 50%;
 }
 
 /* —— 尺寸 —— */
