@@ -18322,7 +18322,9 @@
   display: none;
 }
 
-/* 区间底色：横向铺满格子，相邻两格接成一条；纵向收在格子内衬里，行与行之间留出空当 */
+/* 区间底色：横向铺满格子，相邻两格接成一条；纵向收在格子内衬里，行与行之间留出空当。
+   轨道随 data-in-range 生灭，出现与消失都是当场的；过渡只在同一段轨道换底时走——
+   挑到一半的预览落定成区间，中性淡底淡变到品牌淡底 */
 [data-scope='calendar-range-picker'][data-part='cell'][data-in-range]:not([data-outside-month])::before {
   content: '';
   position: absolute;
@@ -18330,6 +18332,11 @@
   inset-inline: 0;
   background: var(--xh-calendar-range-picker-range-bg, var(--xh-bg-brand-subtle));
   transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 挑到一半的预览还不是选中：品牌淡底专属选中 / 当前，预览铺中性淡底，与已落定的区间分开 */
+[data-scope='calendar-range-picker'][data-part='cell'][data-in-range][data-range-preview]:not([data-outside-month])::before {
+  background: var(--xh-calendar-range-picker-range-preview-bg, var(--xh-bg-subtle));
 }
 
 /* 行首与行尾收圆：区间跨周时每一行各是一条两头圆的横杠。
@@ -18431,6 +18438,12 @@
   --xh-_calendar-range-picker-cell-bg-pressed: var(--xh-calendar-range-picker-range-cell-bg-pressed, var(--xh-bg-brand-subtle-active));
 }
 
+/* 预览中段坐在中性淡底上：交互阶梯按淡底承载走，悬停 200、按下 300 */
+[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range][data-range-preview]:not([data-outside-month], [data-disabled], [data-range-start], [data-range-end]) {
+  --xh-_calendar-range-picker-cell-bg-hover: var(--xh-calendar-range-picker-range-preview-cell-bg-hover, var(--xh-bg-subtle-hover));
+  --xh-_calendar-range-picker-cell-bg-pressed: var(--xh-calendar-range-picker-range-preview-cell-bg-pressed, var(--xh-bg-subtle-active));
+}
+
 /* 今天：1px 品牌环 + 品牌字（brand-subtle 退出 today 语义），底透明、悬停走普通格的阶梯；
    落在区间里时环压在轨道上，选中仍用后面的实心强调面，状态叠加时不会混成同一种反馈 */
 [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-today] {
@@ -18468,6 +18481,11 @@
   /* 强制色下底色被抹平，区间两端只剩描边能说明身份 */
   [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month]):is([data-range-start], [data-range-end]) {
     border-color: Highlight;
+  }
+
+  /* 预览与落定的区间在这一档没有底色可分：还没确认的那一段在轨道上下沿画虚线 */
+  [data-scope='calendar-range-picker'][data-part='cell'][data-in-range][data-range-preview]:not([data-outside-month])::before {
+    border-block: var(--xh-stroke-thin) dashed Highlight;
   }
 
   /* 按下换的底在这一档由家族的按压块换成 Highlight（格子、方向钮与标题钮同走），这里不再另画 */

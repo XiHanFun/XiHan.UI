@@ -6395,6 +6395,84 @@
       "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-calendar-range-picker-range-preview-bg",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "in-range",
+        "not([data-outside-month])",
+        "outside-month",
+        "range-preview"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-range-preview-cell-bg-hover",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "in-range",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])",
+        "outside-month",
+        "range-end",
+        "range-preview",
+        "range-start"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-range-preview-cell-bg-pressed",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "in-range",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])",
+        "outside-month",
+        "pressed",
+        "range-end",
+        "range-preview",
+        "range-start"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-calendar-range-picker-range-row-radius",
       "component": "calendar-range-picker",
       "part": [

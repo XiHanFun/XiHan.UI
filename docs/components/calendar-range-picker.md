@@ -81,7 +81,7 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 
 ### 最佳实践
 
-- 区间中段保持连续淡色带，起止使用实心端点；未完成的预览与已落定的区间外观一致，悬停预览不显示独立的普通悬停样式。
+- 区间中段保持连续淡色带，起止使用实心端点；挑到一半的预览铺中性淡底，落定时淡变成品牌淡底——品牌淡底专属选中，还没确认的一段不借用它。悬停预览不显示独立的普通悬停样式。
 - 今天使用 1px 品牌环 + 品牌字，落在区间里时环压在淡色带上，仍与起止端点的实心面分得开。
 - 周区间按整周格连续预览，月份、季度和年份区间共用同一套 Period 边界判断。
 - 落起点后把焦点移动一格，让键盘用户看出正在选择一段而不是一天。
@@ -375,6 +375,9 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 | `--xh-calendar-range-picker-range-cap-radius` | `cell` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `in-range`<br>`range-end`<br>`range-start` | `--xh-shape-inset` | calendar-range-picker 的 cell 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-calendar-range-picker-range-cell-bg-hover` | `cell-trigger` | `background-color` | `disabled`<br>`hover`<br>`in-range`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])`<br>`outside-month`<br>`range-end`<br>`range-start` | `--xh-bg-brand-subtle-hover` | calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。 |
 | `--xh-calendar-range-picker-range-cell-bg-pressed` | `cell-trigger` | `background-color` | `disabled`<br>`in-range`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])`<br>`outside-month`<br>`pressed`<br>`range-end`<br>`range-start` | `--xh-bg-brand-subtle-active` | calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。 |
+| `--xh-calendar-range-picker-range-preview-bg` | `cell` | `background` | `in-range`<br>`not([data-outside-month])`<br>`outside-month`<br>`range-preview` | `--xh-bg-subtle` | calendar-range-picker 的 cell 部件 background 覆盖槽。 |
+| `--xh-calendar-range-picker-range-preview-cell-bg-hover` | `cell-trigger` | `background-color` | `disabled`<br>`hover`<br>`in-range`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])`<br>`outside-month`<br>`range-end`<br>`range-preview`<br>`range-start` | `--xh-bg-subtle-hover` | calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。 |
+| `--xh-calendar-range-picker-range-preview-cell-bg-pressed` | `cell-trigger` | `background-color` | `disabled`<br>`in-range`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])`<br>`outside-month`<br>`pressed`<br>`range-end`<br>`range-preview`<br>`range-start` | `--xh-bg-subtle-active` | calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。 |
 | `--xh-calendar-range-picker-range-row-radius` | `cell`<br>`week-number`<br>`week-row` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`in-range`<br>`last-child` | `--xh-shape-inset` | calendar-range-picker 的 cell、week-number、week-row 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-calendar-range-picker-row-gap` | `grid-body`<br>`grid-head` | `gap` | `default` | `--xh-space-0` | calendar-range-picker 的 grid-body、grid-head 部件 gap 覆盖槽。 |
 | `--xh-calendar-range-picker-today-bg` | `cell-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`today`<br>`xh-ink-surface` | `transparent` | calendar-range-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
