@@ -124,6 +124,50 @@ export const checkboxGroupSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'max：选满时没选的条目报 aria-disabled 且点不动，摘掉一项后恢复',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: allEnabled,
+      props: { max: 2, defaultValue: ['a', 'b'] },
+      initial: {
+        parts: {
+          item: [{ 'aria-disabled': 'false' }, { 'aria-disabled': 'false' }, { 'aria-disabled': 'true', 'data-disabled': '' }],
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'item[2]', expect: { events: [], parts: { item: [{}, {}, { 'aria-checked': 'false' }] } } },
+        {
+          kind: 'click',
+          part: 'item[0]',
+          expect: {
+            events: [{ type: 'value-change', detail: { value: ['b'] } }],
+            parts: { item: [{ 'aria-checked': 'false' }, {}, { 'aria-disabled': 'false', 'data-disabled': null }] },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: {
+            events: [{ type: 'value-change', detail: { value: ['b', 'c'] } }],
+            parts: { item: [{ 'aria-disabled': 'true' }, {}, { 'aria-checked': 'true' }] },
+          },
+        },
+      ],
+    },
+    {
+      name: 'min：降到下限时已选的条目报 aria-disabled 且摘不掉',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: allEnabled,
+      props: { min: 1, defaultValue: ['a'] },
+      initial: {
+        parts: {
+          item: [{ 'aria-checked': 'true', 'aria-disabled': 'true' }, { 'aria-disabled': 'false' }, { 'aria-disabled': 'false' }],
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'item[0]', expect: { events: [], parts: { item: [{ 'aria-checked': 'true' }] } } },
+      ],
+    },
+    {
       name: 'card 形态的只读：条目投影 data-readonly，卡面据此收回悬停与按下面',
       spec: { apg: `${APG}#roles_states_properties` },
       props: { variant: 'card', readOnly: true },

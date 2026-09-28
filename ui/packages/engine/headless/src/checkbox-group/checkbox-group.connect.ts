@@ -17,6 +17,7 @@ import type {
 import { createPressTracker, dataAttr, isItemDisabled, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { checkboxGroupAnatomy } from './checkbox-group.anatomy'
+import { resolveCheckboxGroupLimits } from './checkbox-group.machine'
 
 const parts = checkboxGroupAnatomy.build()
 
@@ -53,6 +54,10 @@ export function connectCheckboxGroup<T extends PropTypes>(
 
   const editable = !groupDisabled && !readOnly
   const checkedState = resolveCheckedState(value, prop('itemValues') ?? [])
+  // 选中数的上下限：顶到上限时没选的改不动，降到下限时已选的改不动
+  const limits = resolveCheckboxGroupLimits(prop('min'), prop('max'))
+  const atMax = value.length >= limits.max
+  const atMin = limits.min > 0 && value.length <= limits.min
 
   // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
   const collection: CheckboxGroupNodeMeta[] = (prop('collection') ?? []).map(node => ({
@@ -68,15 +73,19 @@ export function connectCheckboxGroup<T extends PropTypes>(
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
 
   const isChecked = (v: string): boolean => value.includes(v)
+  /** 条目被上下限锁住：它这一翻会越过上限或下限。 */
+  const isLocked = (item: CheckboxGroupItemProps): boolean => isChecked(item.value) ? atMin : atMax
   // 组禁用向下传导到每个条目；条目也能单独禁用
   const isDisabled = (item: CheckboxGroupItemProps): boolean => groupDisabled || itemDisabled(item)
-  // 能不能被用户改：整组闸门 + 条目自己的声明
-  const canToggle = (item: CheckboxGroupItemProps): boolean => editable && !itemDisabled(item)
+  // 能不能被用户改：整组闸门 + 条目自己的声明 + 上下限
+  const canToggle = (item: CheckboxGroupItemProps): boolean => editable && !itemDisabled(item) && !isLocked(item)
+  // 条目呈现上的禁用：真禁用之外，被上下限锁住的那一项也按禁用表出（表单影子仍照常提交）
+  const isInert = (item: CheckboxGroupItemProps): boolean => isDisabled(item) || (editable && isLocked(item))
 
   // item / indicator / item-text / hidden-input 共用同一份状态标记
   const stateAttrs = (item: CheckboxGroupItemProps): Record<string, string | undefined> => ({
     'data-state': isChecked(item.value) ? 'checked' : 'unchecked',
-    'data-disabled': dataAttr(isDisabled(item)),
+    'data-disabled': dataAttr(isInert(item)),
   })
 
   const toggle = (item: CheckboxGroupItemProps): void => {
@@ -127,6 +136,8 @@ export function connectCheckboxGroup<T extends PropTypes>(
     disabled: groupDisabled,
     readOnly,
     invalid,
+    atMax,
+    atMin,
     isChecked,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     toggleValue: v => send({ type: 'ITEM.TOGGLE', value: v }),
@@ -150,7 +161,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
     getLabelProps: () => normalize.element({ ...parts.label.attrs, id: ids.label }),
 
     getItemProps: (item) => {
-      const handlers = press('item', item.value, itemDisabled(item))
+      const handlers = press('item', item.value, itemDisabled(item) || isLocked(item))
       return normalize.element({
         ...parts.item.attrs,
         ...stateAttrs(item),
@@ -169,8 +180,8 @@ export function connectCheckboxGroup<T extends PropTypes>(
         'data-readonly': dataAttr(readOnly),
         // 未选中显式输出 false
         'aria-checked': isChecked(item.value) ? 'true' : 'false',
-        // 条目一律用 aria-disabled 而非原生 disabled，保持可聚焦
-        'aria-disabled': isDisabled(item) ? 'true' : 'false',
+        // 条目一律用 aria-disabled 而非原生 disabled，保持可聚焦；被上下限锁住的那一项同样报 disabled
+        'aria-disabled': isInert(item) ? 'true' : 'false',
         'aria-readonly': readOnly ? 'true' : 'false',
         // 校验状态落在每个条目上，role=group 不接受 aria-invalid
         'aria-invalid': invalid ? 'true' : 'false',
@@ -223,6 +234,8 @@ export function connectCheckboxGroup<T extends PropTypes>(
     getHiddenInputProps: item => normalize.input({
       ...parts['hidden-input'].attrs,
       ...stateAttrs(item),
+      // 表单影子只认真禁用：被上下限锁住的已选项照常提交
+      'data-disabled': dataAttr(isDisabled(item)),
       // type 先于 checked 写入：改 type 会重置输入的选中态
       'type': 'checkbox',
       // name 缺省即不产出该属性，此时这份输入不参与提交

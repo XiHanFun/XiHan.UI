@@ -8401,6 +8401,24 @@
             },
             {
               "kind": "field",
+              "name": "min",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "privacy": "public",
               "type": {
@@ -8488,6 +8506,14 @@
               "privacy": "private",
               "default": "false",
               "description": "上一帧是否整组禁用；解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled。"
+            },
+            {
+              "kind": "field",
+              "name": "lockedLastFrame",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakSet<HTMLElement>()",
+              "description": "上一帧被选中数上下限锁住的条目：它们身上的 aria-disabled 是连接层写的，不是作者声明。"
             },
             {
               "kind": "field",
@@ -8599,6 +8625,24 @@
               "description": "取指定角色节点在 item 子树内的实例。"
             },
             {
+              "kind": "field",
+              "name": "atMax",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "选中数到了 max：未选的条目改不动；还没进文档时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "atMin",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "选中数降到 min：已选的条目改不动；还没进文档时为 false。",
+              "readonly": true
+            },
+            {
               "kind": "method",
               "name": "spreadHiddenInput",
               "privacy": "private",
@@ -8666,6 +8710,22 @@
               "description": "组内全部条目的值，逗号分隔；trigger 据此分辨全选与半选",
               "name": "item-values",
               "fieldName": "itemValues"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "至少选几项；降到它时已选的条目改不动",
+              "name": "min",
+              "fieldName": "min"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "至多选几项；到了它时未选的条目改不动，全选只补到它为止",
+              "name": "max",
+              "fieldName": "max"
             },
             {
               "type": {

@@ -31,7 +31,7 @@ type CheckboxGroupProps = CheckboxGroupSchema['props']
 /** 默认插槽的载荷：整组的选中集合与全选态，以及整体替换与翻转单值的方法。 */
 export type CheckboxGroupRootSlotProps = Pick<
   CheckboxGroupApi,
-  'value' | 'checkedState' | 'isChecked' | 'setValue' | 'toggleValue'
+  'value' | 'checkedState' | 'atMax' | 'atMin' | 'isChecked' | 'setValue' | 'toggleValue'
 >
 
 export const XhCheckboxGroupRoot = defineComponent({
@@ -44,6 +44,8 @@ export const XhCheckboxGroupRoot = defineComponent({
     value: { type: Array as PropType<string[]> },
     defaultValue: { type: Array as PropType<string[]> },
     itemValues: { type: Array as PropType<string[]> },
+    min: { type: Number },
+    max: { type: Number },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
@@ -74,6 +76,8 @@ export const XhCheckboxGroupRoot = defineComponent({
       ? slots.default({
           value: ctx.api.value.value,
           checkedState: ctx.api.value.checkedState,
+          atMax: ctx.api.value.atMax,
+          atMin: ctx.api.value.atMin,
           isChecked: ctx.api.value.isChecked,
           setValue: ctx.api.value.setValue,
           toggleValue: ctx.api.value.toggleValue,

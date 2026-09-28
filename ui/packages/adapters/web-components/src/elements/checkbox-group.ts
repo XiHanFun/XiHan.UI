@@ -17,6 +17,9 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
+// 数值：缺席或空串翻成 undefined，由机器按「不设限」处理。
+const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
+
 // 三态布尔：缺席=undefined（走机器默认值）、="false"=false、其余为真。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
@@ -37,6 +40,8 @@ const LIST_CONVERTER = {
  * @attr {string} value - 受控选中值，逗号分隔；未提供该属性即非受控
  * @attr {string} default-value - 非受控初始选中值，逗号分隔
  * @attr {string} item-values - 组内全部条目的值，逗号分隔；trigger 据此分辨全选与半选
+ * @attr {number} min - 至少选几项；降到它时已选的条目改不动
+ * @attr {number} max - 至多选几项；到了它时未选的条目改不动，全选只补到它为止
  * @attr {boolean} disabled - 整组禁用
  * @attr {boolean} read-only - 只读：可聚焦可朗读，不可修改
  * @attr {boolean} invalid - 校验失败标注
@@ -65,6 +70,8 @@ export class XhCheckboxGroupElement extends XhElement {
     value: { converter: LIST_CONVERTER },
     defaultValue: { converter: LIST_CONVERTER, attribute: 'default-value' },
     itemValues: { converter: LIST_CONVERTER, attribute: 'item-values' },
+    min: { converter: NUMBER_CONVERTER },
+    max: { converter: NUMBER_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -79,6 +86,8 @@ export class XhCheckboxGroupElement extends XhElement {
   declare value?: string[]
   declare defaultValue?: string[]
   declare itemValues?: string[]
+  declare min?: number
+  declare max?: number
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -92,6 +101,8 @@ export class XhCheckboxGroupElement extends XhElement {
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
   /** 上一帧是否整组禁用；解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled。 */
   private wasGroupDisabled = false
+  /** 上一帧被选中数上下限锁住的条目：它们身上的 aria-disabled 是连接层写的，不是作者声明。 */
+  private readonly lockedLastFrame = new WeakSet<HTMLElement>()
 
   private readonly notify = (details: CheckboxGroupValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -121,6 +132,8 @@ export class XhCheckboxGroupElement extends XhElement {
       value: this.value,
       defaultValue: this.defaultValue,
       itemValues: this.itemValues,
+      min: this.min,
+      max: this.max,
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
@@ -149,8 +162,8 @@ export class XhCheckboxGroupElement extends XhElement {
       this.declaredDisabled.set(el, own)
       return { value, disabled: own }
     }
-    // 本帧与上一帧都未整组禁用时，节点上的 aria-disabled 才等于作者声明
-    if (!groupDisabled && !this.wasGroupDisabled) {
+    // 本帧与上一帧都未整组禁用、上一帧也没被上下限锁住时，节点上的 aria-disabled 才等于作者声明
+    if (!groupDisabled && !this.wasGroupDisabled && !this.lockedLastFrame.has(el)) {
       const own = isItemDisabled(el)
       this.declaredDisabled.set(el, own)
       return { value, disabled: own }
@@ -162,6 +175,16 @@ export class XhCheckboxGroupElement extends XhElement {
   /** 取指定角色节点在 item 子树内的实例。 */
   private partsIn(item: HTMLElement, name: string): HTMLElement[] {
     return this.getParts(name).filter(el => item.contains(el))
+  }
+
+  /** 选中数到了 max：未选的条目改不动；还没进文档时为 false。 */
+  get atMax(): boolean {
+    return this.ctrl.service ? connectCheckboxGroup(this.ctrl.service, wcNormalize).atMax : false
+  }
+
+  /** 选中数降到 min：已选的条目改不动；还没进文档时为 false。 */
+  get atMin(): boolean {
+    return this.ctrl.service ? connectCheckboxGroup(this.ctrl.service, wcNormalize).atMin : false
   }
 
   // checked 单独落成 DOM property：spread 见到 false 只会 removeAttribute，关不掉选中态。
@@ -188,6 +211,11 @@ export class XhCheckboxGroupElement extends XhElement {
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      // 作者没禁用、整组也没禁用却报了 aria-disabled：那是上下限锁住的，下一帧别当作者声明读回去
+      if (!item.disabled && !this.controlState().disabled && el.getAttribute('aria-disabled') === 'true')
+        this.lockedLastFrame.add(el)
+      else
+        this.lockedLastFrame.delete(el)
       for (const input of this.partsIn(el, 'hidden-input'))
         this.spreadHiddenInput(input as HTMLInputElement, api.getHiddenInputProps(item) as Record<string, unknown>)
       for (const control of this.partsIn(el, 'indicator'))
