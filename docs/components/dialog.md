@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="dialog"`：`trigger` · `backdrop` · `positioner` · **`content`** · `header` · `indicator` · `title` · `description` · `body` · `footer` · `close-trigger`
+`data-scope="dialog"`：`trigger` · `backdrop` · `positioner` · **`content`** · `header` · `drag-trigger` · `indicator` · `title` · `description` · `body` · `footer` · `close-trigger`
 
 ## 示例
 
@@ -60,9 +60,9 @@ header / body / footer 把面板切为三段：头与尾固定在原处，只有
 
 <XhDemo src="dialog/07-imperative" />
 
-### 拖动标题栏移动窗口
+### 可拖动
 
-指针按在标题上，沿 DOM 找到 content 部件，把累计位移写进它的 translate；入场动画使用 transform，两者互不覆盖
+draggable 让标题栏成为拖动区，面板始终夹在视口内；标题栏里的拖动把手让键盘也能挪：方向键挪一步，Enter 回到居中
 
 <XhDemo src="dialog/08-draggable" />
 
@@ -90,7 +90,8 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 - `modal` 决定是否锁住下层：非模态不创建遮罩，页面仍可点击、聚焦和滚动；展开期间切换会同步更新这些约束。
 - 焦点进入时落在 `initialFocus`，关闭后归还触发器。
 - `closeOnEscape` 与 `closeOnInteractOutside` 可分别关闭，避免填写中的表单因误点外部而丢失。
-- 内容区可以内部滚动，标题栏可以拖动移动窗口。Body 是模态滚动面：滚到头不带动页面，内容高度变化时保留稳定的滚动条空道。
+- 内容区可以内部滚动。Body 是模态滚动面：滚到头不带动页面，内容高度变化时保留稳定的滚动条空道。
+- `draggable` 让面板可以挪走：指针按住标题栏（header，没写 header 时是 title）即跟手，落在标题栏里的按钮、链接与表单控件照常点；面板四边始终夹在视口内，每次打开都从居中落点起。键盘经 `drag-trigger` 挪：它是一块透明的把手，放在 header 里时铺满标题栏，焦点落在它上面时方向键挪一步（10px）、Shift 挪一大步（50px）、Enter / Space 回到居中；初始焦点越过它，落到第一个真正的控件上。位移写成 content 上的两个私有槽、按 transform 平移，与进出场的 translate / scale 叠加，拖过的面板从拖到的位置退场。Web Components 侧的属性是 `panel-draggable`：`draggable` 是 HTML 全局属性，写在宿主上会把它变成原生拖放源。
 - 面板走 M4 sheet 三件套（描边、不透明底、投影）。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`。标题为 heading-3，说明文字为 13px 说明档。
 - 关闭时内容立即失活并退出可访问树，内容与遮罩的有限退场动画全部完成后再释放模态资源，并发出 `onExitComplete` / `exit-complete`。重开撤销旧退出，卸载立即清理。
 - 另有命令式服务，业务代码一次调用即可弹出。
@@ -121,7 +122,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-dialog>` |
-| Vue 组件 | `XhDialogBody` `XhDialogCloseTrigger` `XhDialogContent` `XhDialogDescription` `XhDialogFooter` `XhDialogHeader` `XhDialogIndicator` `XhDialogRoot` `XhDialogTitle` `XhDialogTrigger` |
+| Vue 组件 | `XhDialogBody` `XhDialogCloseTrigger` `XhDialogContent` `XhDialogDescription` `XhDialogDragTrigger` `XhDialogFooter` `XhDialogHeader` `XhDialogIndicator` `XhDialogRoot` `XhDialogTitle` `XhDialogTrigger` |
 | 组合式函数 | `useDialog` |
 | 状态机 | `dialogMachine` |
 | 皮肤 | `@xihan-ui/styles/dialog.css` |
@@ -140,6 +141,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `initialFocus` | `string` |  | 展开后先聚焦到 content 内匹配该选择器的元素；选择器不匹配时回退为默认聚焦顺序。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。只影响 content 的最大宽度，写在 content 上（本组件没有 root 部件）。 |
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
+| `draggable` | `boolean` |  | 可拖动：指针按住标题栏（header，没有 header 时是 title）或 drag-trigger 把面板挪走， 键盘在 drag-trigger 上用方向键挪；面板始终夹在视口内。默认 false。每次打开都从居中落点起。 |
 | `translations` | `Partial<DialogTranslations>` |  |  |
 | `onOpenChange` | `(details: DialogOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onExitComplete` | `() => void` |  | 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 |
@@ -185,9 +187,9 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END` · `DRAG.START` · `DRAG.NUDGE` · `DRAG.RESET` · `GESTURE.MOVE` · `GESTURE.END`
 
-**判据**：`isOpenControlled`
+**判据**：`isOpenControlled` · `canDrag`
 
 ### connect API
 
@@ -196,12 +198,15 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
+| `offset` | `DialogOffset` | 当前的拖动位移。 |
+| `dragging` | `boolean` | 正在被指针拖动。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getBackdropProps` | `() => T['element']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
+| `getDragTriggerProps` | `() => T['button']` | 拖动把手：键盘挪动面板的入口；放在 header 里时铺满标题栏。 |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
@@ -222,6 +227,9 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `Tab` | open | 在 content 内向后循环焦点 |
 | `Shift+Tab` | open | 在 content 内向前循环焦点 |
 | `Enter` / `Space` | held in trigger / close-trigger | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或面板收起撤下 |
+| `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | focus in drag-trigger, draggable | 按屏幕方向把面板挪一步（10px），夹在视口内；方向是物理键位，RTL 下不对调 |
+| `Shift+ArrowUp` / `Shift+ArrowDown` / `Shift+ArrowLeft` / `Shift+ArrowRight` | focus in drag-trigger, draggable | 按大步长挪（50px） |
+| `Enter` / `Space` | focus in drag-trigger, draggable | 把面板送回居中落点 |
 
 ### ARIA
 
@@ -237,6 +245,8 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
+| `drag-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `drag-trigger` | `aria-label` | props.translations.dragTrigger |
 | `indicator` | `aria-hidden` | 'true' |
 | `close-trigger` | `aria-label` | props.translations.close |
 
@@ -265,8 +275,14 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `backdrop` | `data-variant` | props.variant |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-draggable` | ''（条件成立时才出现） |
+| `content` | `data-dragging` | ''（条件成立时才出现） |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `header` | `data-draggable` | ''（条件成立时才出现） |
+| `drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
+| `title` | `data-draggable` | ''（条件成立时才出现） |
 | `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
@@ -300,6 +316,8 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `--xh-dialog-content-lens-depth` | `content` | `background` | `default` | `--xh-dialog-header-lens-depth` | dialog 的 content 部件 background 覆盖槽。 |
 | `--xh-dialog-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | dialog 的 description 部件 color 覆盖槽。 |
 | `--xh-dialog-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | dialog 的 description 部件 font-size 覆盖槽。 |
+| `--xh-dialog-drag-trigger-min-h` | `drag-trigger` | `min-block-size` | `default` | `--xh-space-6` | dialog 的 drag-trigger 部件 min-block-size 覆盖槽。 |
+| `--xh-dialog-drag-trigger-radius` | `drag-trigger` | `border-radius` | `default` | `--xh-shape-control` | dialog 的 drag-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-dialog-fg` | `content` | `color` | `default` | `--xh-material-elevated-fg` | dialog 的 content 部件 color 覆盖槽。 |
 | `--xh-dialog-footer-gap` | `footer` | `gap` | `default` | `--xh-control-gap-md` | dialog 的 footer 部件 gap 覆盖槽。 |
 | `--xh-dialog-footer-pt` | `footer` | `padding-block-start` | `default` | `--xh-space-2` | dialog 的 footer 部件 padding-block-start 覆盖槽。 |

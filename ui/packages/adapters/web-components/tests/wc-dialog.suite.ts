@@ -1,8 +1,33 @@
-import type { ConformanceSuite } from '@xihan-ui/testing'
+import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
 import { dialogAnatomy, dialogKeyboard } from '@xihan-ui/headless'
-import { heldPress, nativeActivation } from '@xihan-ui/testing'
+import { expectFocusSkips, expectInlineSlot, heldPress, nativeActivation } from '@xihan-ui/testing'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
+
+/** 标题与说明收进 header，header 里放一个拖动把手。 */
+function withDragTrigger(base: FixtureNode): FixtureNode {
+  const wrap = (node: FixtureNode): FixtureNode => {
+    if (node.part === 'content') {
+      const kids = node.children ?? []
+      return {
+        ...node,
+        children: [
+          {
+            part: 'header',
+            tag: 'header',
+            children: [
+              { part: 'drag-trigger', tag: 'button' },
+              ...kids.filter(kid => kid.part === 'title' || kid.part === 'description'),
+            ],
+          },
+          ...kids.filter(kid => kid.part !== 'title' && kid.part !== 'description'),
+        ],
+      }
+    }
+    return node.children ? { ...node, children: node.children.map(wrap) } : node
+  }
+  return wrap(base)
+}
 
 // WC 专属 dialog 规格：Light DOM 下 content 常驻（不像 Vue 卸载），关闭态用 positioner.hidden 隐藏、
 // data-state=closed 标记。证明 dialog 机器 + connect + 焦点 + 受控在 WC 上跑通。
@@ -148,6 +173,32 @@ export const wcDialogSuite: ConformanceSuite = {
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { attr: { part: 'content', name: 'data-state', value: 'open' } } },
         heldPress('dialog', 'close-trigger'),
+      ],
+    },
+    {
+      name: '可拖动：标题栏与把手是拖动区，初始焦点越过把手；把手上方向键挪面板、Shift 大步、Enter 回到居中',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['dialog.kbd.drag-move', 'dialog.kbd.drag-large', 'dialog.kbd.drag-reset'],
+      props: { defaultOpen: true, panelDraggable: true },
+      fixture: withDragTrigger,
+      initial: {
+        parts: {
+          'content': { 'data-draggable': '' },
+          'header': { 'data-draggable': '' },
+          'title': { 'data-draggable': '' },
+          'drag-trigger': { 'type': 'button', 'aria-label': 'Move dialog', 'aria-disabled': 'false' },
+        },
+      },
+      steps: [
+        { kind: 'settle', until: { activeElement: 'content' } },
+        expectFocusSkips('dialog', 'drag-trigger', 'confirm'),
+        { kind: 'focus', part: 'drag-trigger' },
+        { kind: 'key', key: 'ArrowRight' },
+        expectInlineSlot('dialog', 'content', '--xh-_dialog-drag-x', '10px', '位移写在内联样式的私有槽里，三端的 style 序列化各不相同'),
+        { kind: 'key', key: 'ArrowDown', modifiers: ['Shift'] },
+        expectInlineSlot('dialog', 'content', '--xh-_dialog-drag-y', '50px', '位移写在内联样式的私有槽里，三端的 style 序列化各不相同'),
+        { kind: 'key', key: 'Enter' },
+        expectInlineSlot('dialog', 'content', '--xh-_dialog-drag-x', '0px', '回到居中落点，位移归零'),
       ],
     },
   ],

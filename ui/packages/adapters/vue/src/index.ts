@@ -446,6 +446,7 @@ export {
   XhDialogCloseTrigger,
   XhDialogContent,
   XhDialogDescription,
+  XhDialogDragTrigger,
   XhDialogFooter,
   XhDialogHeader,
   XhDialogIndicator,

@@ -27380,6 +27380,70 @@
   animation: xh-sheet-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
+/* —— 拖动 ——
+   位移由连接层写进两个私有槽，是屏幕坐标：跟着指针与方向键走，RTL 下不翻。
+   进出场关键帧占着 translate 与 scale 两个独立属性，位移只能走 transform：它排在独立属性之后合成，
+   与进出场叠在一起。写进 translate 的话，拖过的面板一收起就先被关键帧拽回居中再退场。
+   位移跟手，不挂过渡 */
+[data-scope='dialog'][data-part='content'][data-draggable] {
+  transform: translate(var(--xh-_dialog-drag-x, 0px), var(--xh-_dialog-drag-y, 0px));
+}
+
+/* 跟手期间才备合成层；拖动中不选中文字 */
+[data-scope='dialog'][data-part='content'][data-dragging] {
+  will-change: transform;
+  user-select: none;
+}
+
+/* 标题栏是拖动区（没写 header 时是标题）：指针按下即跟手，触屏不让浏览器抢走这段手势 */
+[data-scope='dialog'][data-part='header'][data-draggable],
+[data-scope='dialog'][data-part='title'][data-draggable] {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+[data-scope='dialog'][data-part='content'][data-dragging] [data-scope='dialog'][data-part='header'],
+[data-scope='dialog'][data-part='content'][data-dragging] [data-scope='dialog'][data-part='title'] {
+  cursor: grabbing;
+}
+
+/* 拖动把手：一块透明的命中区，给键盘一个挪动面板的落脚点。放在标题栏里时铺满标题栏，
+   焦点环沿标题栏画；单独摆放时是一条满宽的细条 */
+[data-scope='dialog'][data-part='drag-trigger'] {
+  display: block;
+  inline-size: 100%;
+  min-block-size: var(--xh-dialog-drag-trigger-min-h, var(--xh-space-6));
+  border: 0;
+  border-radius: var(--xh-dialog-drag-trigger-radius, var(--xh-shape-control));
+  padding: 0;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+}
+
+[data-scope='dialog'][data-part='header']:has(> [data-scope='dialog'][data-part='drag-trigger']) {
+  position: relative;
+}
+
+[data-scope='dialog'][data-part='header'] > [data-scope='dialog'][data-part='drag-trigger'] {
+  position: absolute;
+  inset: 0;
+  min-block-size: 0;
+}
+
+[data-scope='dialog'][data-part='drag-trigger'][data-dragging] {
+  cursor: grabbing;
+}
+
+[data-scope='dialog'][data-part='drag-trigger'][data-disabled] {
+  cursor: default;
+}
+
+[data-scope='dialog'][data-part='drag-trigger'][hidden] {
+  display: none;
+}
+
 /* —— 面板三段 —— */
 /* header / body / footer 把面板切成「头尾定在原处、正文自己滚」三段，
    与抽屉、浮动面板同一套角色划分：头尾不参与压缩，正文吃掉剩下的高度并自己滚。

@@ -1,9 +1,32 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { dialogAnatomy, dialogKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { expectFocusSkips, expectInlineSlot } from './shared/panel-gesture'
 import { heldPress } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
+
+/** 标题与说明收进 header，header 里放一个拖动把手。 */
+function withDragTrigger(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children?.map(child => child.part !== 'content'
+      ? child
+      : {
+          ...child,
+          children: [
+            {
+              part: 'header',
+              children: [
+                { part: 'drag-trigger', tag: 'button' },
+                ...(child.children ?? []).filter(node => node.part === 'title' || node.part === 'description'),
+              ],
+            },
+            ...(child.children ?? []).filter(node => node.part !== 'title' && node.part !== 'description'),
+          ],
+        }),
+  }
+}
 
 // backdrop / positioner 由 content 组件内部装配，不作为独立 fixture 节点；
 // 采集器仍会从 document 抓到它们。
@@ -207,6 +230,32 @@ export const dialogSuite: ConformanceSuite = {
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { present: 'content' } },
         heldPress('dialog', 'close-trigger'),
+      ],
+    },
+    {
+      name: '可拖动：标题栏与把手是拖动区，初始焦点越过把手；把手上方向键挪面板、Shift 大步、Enter 回到居中',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['dialog.kbd.drag-move', 'dialog.kbd.drag-large', 'dialog.kbd.drag-reset'],
+      props: { defaultOpen: true, draggable: true },
+      fixture: withDragTrigger,
+      initial: {
+        parts: {
+          'content': { 'data-draggable': '' },
+          'header': { 'data-draggable': '' },
+          'title': { 'data-draggable': '' },
+          'drag-trigger': { 'type': 'button', 'aria-label': 'Move dialog', 'aria-disabled': 'false' },
+        },
+      },
+      steps: [
+        { kind: 'settle', until: { activeElement: 'content' } },
+        expectFocusSkips('dialog', 'drag-trigger', 'confirm'),
+        { kind: 'focus', part: 'drag-trigger' },
+        { kind: 'key', key: 'ArrowRight' },
+        expectInlineSlot('dialog', 'content', '--xh-_dialog-drag-x', '10px', '位移写在内联样式的私有槽里，三端的 style 序列化各不相同'),
+        { kind: 'key', key: 'ArrowDown', modifiers: ['Shift'] },
+        expectInlineSlot('dialog', 'content', '--xh-_dialog-drag-y', '50px', '位移写在内联样式的私有槽里，三端的 style 序列化各不相同'),
+        { kind: 'key', key: 'Enter' },
+        expectInlineSlot('dialog', 'content', '--xh-_dialog-drag-x', '0px', '回到居中落点，位移归零'),
       ],
     },
   ],

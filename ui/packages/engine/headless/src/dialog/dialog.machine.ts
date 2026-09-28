@@ -5,12 +5,16 @@
 
 // 提供 dialog 相关实现。
 
-import type { DialogPressedPart, DialogSchema } from './dialog.types'
-import { createDismissLayer, createFocusScope, setup, warn } from '@xihan-ui/core'
+import type { DialogGesture, DialogOffset, DialogPressedPart, DialogSchema } from './dialog.types'
+import { createDismissLayer, createFocusScope, getTabbables, removeLinks, setup, warn } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
+import { clampDialogOffset, dialogDragBounds, startGesturePointer } from './dialog.gesture'
 
 const { createMachine } = setup<DialogSchema>()
+
+/** 居中落点：每次打开都从这里起。 */
+const HOME: DialogOffset = { x: 0, y: 0 }
 
 // 选择器写错时不让异常穿出 rAF 回调，回 null 走默认聚焦顺序
 function queryInContent(content: HTMLElement | null, selector: string): HTMLElement | null {
@@ -30,6 +34,8 @@ export const dialogMachine = createMachine({
   context: ({ cell }) => ({
     // 按压通道：正被按住的那颗按钮，与开合无关
     pressed: cell<DialogPressedPart | null>(() => ({ defaultValue: null })),
+    offset: cell<DialogOffset>(() => ({ defaultValue: HOME })),
+    gesture: cell<DialogGesture | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -40,10 +46,13 @@ export const dialogMachine = createMachine({
     getTriggerEl: () => null,
     branches: () => [],
     partScope: 'dialog',
+    gesture: null,
+    pointer: null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // 资源由机器生命周期持有；逻辑关闭之后继续保留，等 Presence 真正退出再释放。
-  effects: ['trackOverlay'],
+  // 指针手势（拖动、抽屉改尺）的会话跟着 context 里的手势种类挂与拆，同样归机器生命周期
+  effects: ['trackOverlay', 'trackGesture'],
   // 受控时用户事件只发意图回调；宿主写回 open 后由这条 watch 派发 CONTROLLED.* 回写状态。
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
@@ -70,9 +79,17 @@ export const dialogMachine = createMachine({
       },
     },
     open: {
-      // 收起即松开：按住 Enter 关掉面板，里面那颗关闭钮随内容一起藏起，不会再来 keyup 或 blur
-      exit: ['releasePress'],
+      // 每次打开都是一块新面板：拖动位移从居中落点起
+      entry: ['resetOffset'],
+      // 收起即松开：按住 Enter 关掉面板，里面那颗关闭钮随内容一起藏起，不会再来 keyup 或 blur；
+      // 拖到一半收起，手势一并收尾
+      exit: ['releasePress', 'endGesture'],
       on: {
+        'DRAG.START': { guard: 'canDrag', actions: ['startDrag'] },
+        'DRAG.NUDGE': { guard: 'canDrag', actions: ['nudgeDrag'] },
+        'DRAG.RESET': { actions: ['resetOffset'] },
+        'GESTURE.MOVE': { actions: ['moveGesture'] },
+        'GESTURE.END': { actions: ['endGesture'] },
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
           { target: 'closed', actions: ['invokeOnClose'] },
@@ -88,6 +105,8 @@ export const dialogMachine = createMachine({
   implementations: {
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      // 作者开了拖动、且此刻没有别的手势在跑：同一次按下冒泡到标题栏与 header 只算一次
+      canDrag: ({ prop, context }) => !!prop('draggable') && context.get('gesture') == null,
     },
     actions: {
       startPress: ({ context, event }) => {
@@ -102,6 +121,70 @@ export const dialogMachine = createMachine({
           context.set('pressed', null)
       },
       releasePress: ({ context }) => context.set('pressed', null),
+      /**
+       * 冻住这一场拖动的依据：按下那一刻的位移与四个边界。边界量的是面板此刻的矩形与视口，
+       * 拖动途中不再量：面板跟着指针走，每一帧都从按下时的位移加总位移重新算。
+       */
+      startDrag: ({ context, refs, scope, event, send }) => {
+        const e = event.current()
+        if (e.type !== 'DRAG.START')
+          return
+        const content = refs.get('getContentEl')()
+        if (!content)
+          return
+        refs.get('pointer')?.dispose()
+        refs.set('pointer', startGesturePointer(
+          content,
+          e.pointerId,
+          point => send({ type: 'GESTURE.MOVE', point }),
+          () => send({ type: 'GESTURE.END' }),
+        ))
+        const win = scope.getWin()
+        const offset = context.get('offset')
+        refs.set('gesture', {
+          origin: { clientX: e.point.clientX, clientY: e.point.clientY },
+          start: { ...offset },
+          bounds: dialogDragBounds(content.getBoundingClientRect(), offset, { width: win.innerWidth, height: win.innerHeight }),
+          sign: 1,
+          axis: 'x',
+          pointerId: e.pointerId,
+        })
+        context.set('gesture', 'drag')
+      },
+      // 键盘一步：现量矩形求边界，夹进视口
+      nudgeDrag: ({ context, refs, scope, event }) => {
+        const e = event.current()
+        if (e.type !== 'DRAG.NUDGE')
+          return
+        const content = refs.get('getContentEl')()
+        const offset = context.get('offset')
+        const next = { x: offset.x + e.dx, y: offset.y + e.dy }
+        if (!content) {
+          context.set('offset', next)
+          return
+        }
+        const win = scope.getWin()
+        context.set('offset', clampDialogOffset(next, dialogDragBounds(content.getBoundingClientRect(), offset, { width: win.innerWidth, height: win.innerHeight })))
+      },
+      resetOffset: ({ context }) => context.set('offset', HOME),
+      // 基准是按下那一刻的位移，不是上一帧：增量累加在顶到视口边之后回不来
+      moveGesture: ({ context, refs, event }) => {
+        const e = event.current()
+        const session = refs.get('gesture')
+        if (e.type !== 'GESTURE.MOVE' || !session || context.get('gesture') !== 'drag')
+          return
+        context.set('offset', clampDialogOffset({
+          x: session.start.x + e.point.clientX - session.origin.clientX,
+          y: session.start.y + e.point.clientY - session.origin.clientY,
+        }, session.bounds))
+      },
+      endGesture: ({ context, refs }) => {
+        refs.get('pointer')?.dispose()
+        refs.set('pointer', null)
+        refs.set('gesture', null)
+        if (context.get('gesture') != null)
+          context.set('gesture', null)
+      },
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
@@ -114,6 +197,12 @@ export const dialogMachine = createMachine({
       syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
     },
     effects: {
+      // 指针会话由按下那一刻的动作挂上、收尾动作拆掉；机器停止时这里兜底拆掉还没收尾的那一场
+      trackGesture: ({ refs }) => () => {
+        refs.get('pointer')?.dispose()
+        refs.set('pointer', null)
+        refs.set('gesture', null)
+      },
       trackOverlay: ({ refs, prop, scope, send, flush, state, track }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
@@ -169,7 +258,14 @@ export const dialogMachine = createMachine({
                 return queryInContent(getContentEl(), selector)
               // alertdialog 焦点落在 content 容器本身，不预选按钮；
               // 普通 dialog 交给 tabbable 探测选首个可聚焦元素
-              return role === 'alertdialog' ? getContentEl() : null
+              if (role === 'alertdialog')
+                return getContentEl()
+              // 拖动把手只是挪面板的落脚点：初始焦点越过它，落到第一个真正的控件上；除它之外没有可聚焦的，再交回探测
+              const content = getContentEl()
+              if (!prop('draggable') || !content)
+                return null
+              const handle = `[data-scope="${refs.get('partScope')}"][data-part="drag-trigger"]`
+              return removeLinks(getTabbables(content)).find(el => !el.matches(handle)) ?? null
             },
             restoreFocus: () => prop('restoreFocus') ?? true,
             // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），

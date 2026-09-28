@@ -1,74 +1,27 @@
-<!-- 拖动标题栏移动窗口 | 指针按在标题上，沿 DOM 找到 content 部件，把累计位移写进它的 translate；入场动画使用 transform，两者互不覆盖 -->
+<!-- 可拖动 | draggable 让标题栏成为拖动区，面板始终夹在视口内；标题栏里的拖动把手让键盘也能挪：方向键挪一步，Enter 回到居中 -->
 <script setup lang="ts">
 import {
   XhButton,
   XhDialogCloseTrigger,
   XhDialogContent,
   XhDialogDescription,
+  XhDialogDragTrigger,
+  XhDialogHeader,
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const offset = ref({ x: 0, y: 0 });
-const dragging = ref(false);
-let panel: HTMLElement | null = null;
-let startX = 0;
-let startY = 0;
-
-function begin(event: PointerEvent): void {
-  const handle = event.currentTarget as HTMLElement;
-  panel = handle.closest<HTMLElement>("[data-scope=\"dialog\"][data-part=\"content\"]");
-  if (!panel)
-    return;
-  dragging.value = true;
-  startX = event.clientX - offset.value.x;
-  startY = event.clientY - offset.value.y;
-  handle.setPointerCapture(event.pointerId);
-}
-
-function move(event: PointerEvent): void {
-  if (!dragging.value || !panel)
-    return;
-  offset.value = { x: event.clientX - startX, y: event.clientY - startY };
-  panel.style.translate = `${offset.value.x}px ${offset.value.y}px`;
-}
-
-function end(event: PointerEvent): void {
-  if (!dragging.value)
-    return;
-  dragging.value = false;
-  panel = null;
-  (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
-}
-
-// 每次重新展开都是一块新面板，位移从零算起
-function reset(details: { open: boolean }): void {
-  if (details.open)
-    offset.value = { x: 0, y: 0 };
-}
 </script>
 
 <template>
-  <XhDialogRoot v-slot="{ setOpen }" :translations="{ close: '关闭' }" @open-change="reset">
+  <XhDialogRoot v-slot="{ setOpen }" draggable :translations="{ close: '关闭', dragTrigger: '移动对话框' }">
     <XhDialogTrigger>打开可拖动的对话框</XhDialogTrigger>
     <XhDialogContent>
-      <XhDialogTitle
-        style="cursor: move; touch-action: none"
-        @pointerdown="begin"
-        @pointermove="move"
-        @pointerup="end"
-        @pointercancel="end"
-      >
-        拖住这一行挪窗口
-      </XhDialogTitle>
-      <XhDialogDescription>
-        位移是相对居中位置累计的，收起再打开会回到正中。
-      </XhDialogDescription>
-      <p style="margin: 0; color: var(--xh-fg-muted)">
-        当前位移：{{ Math.round(offset.x) }} / {{ Math.round(offset.y) }}
-      </p>
+      <XhDialogHeader>
+        <XhDialogDragTrigger />
+        <XhDialogTitle>拖住标题栏挪窗口</XhDialogTitle>
+        <XhDialogDescription>每次打开都从正中开始；拖出视口的那一截会被夹回来。</XhDialogDescription>
+      </XhDialogHeader>
       <div style="display: flex; justify-content: flex-end">
         <XhButton variant="solid" @click="setOpen(false)">关闭</XhButton>
       </div>

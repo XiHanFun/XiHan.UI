@@ -35,13 +35,15 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {string} initial-focus - 展开后先聚焦到 content 内匹配此选择器的元素
  * @attr {'sm'|'md'|'lg'} size - 尺寸：只影响 content 的最大宽度，写在 content 上
  * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
+ * @attr {boolean} panel-draggable - 可拖动：按住标题栏或拖动把手挪走面板，方向键在把手上挪一步；面板始终夹在视口内。不命名为 draggable：那是 HTML 全局属性，写上后宿主会变成原生拖放源
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires exit-complete - 退出完成且本层资源已释放
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
  * @csspart positioner - 浮层定位容器
  * @csspart content - 对话框内容（role / aria-modal / 焦点陷阱所在）
- * @csspart header - 面板头：标题与说明所在的段，不随正文滚动
+ * @csspart header - 面板头：标题与说明所在的段，不随正文滚动；可拖动时是拖动区
+ * @csspart drag-trigger - 拖动把手：键盘挪动面板的入口，放在 header 里时铺满标题栏
  * @csspart indicator - 语气徽记：未提供内容时由皮肤按节点上的 data-tone 绘制兜底字形
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart description - 描述（aria-describedby 目标）
@@ -65,6 +67,8 @@ export class XhDialogElement extends XhPortalHostElement {
     initialFocus: { converter: STRING_CONVERTER, attribute: 'initial-focus' },
     size: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
+    // 与浮动面板同一个名字：避开原生的 draggable，那是 HTML 全局枚举属性，同名的响应式字段还会与 HTMLElement.draggable 访问器打架
+    panelDraggable: { converter: BOOLEAN_CONVERTER, attribute: 'panel-draggable' },
     // 对象进不了属性，只作为 property 暴露
     translations: { attribute: false },
   }
@@ -77,6 +81,7 @@ export class XhDialogElement extends XhPortalHostElement {
   declare initialFocus?: string
   declare size?: Size
   declare variant?: OverlayBackdropVariant
+  declare panelDraggable?: boolean
   /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上的值会被覆盖，只能从此处提供。 */
   declare translations?: DialogSchema['props']['translations']
 
@@ -120,6 +125,7 @@ export class XhDialogElement extends XhPortalHostElement {
       initialFocus: this.initialFocus,
       size: this.size,
       variant: this.variant,
+      draggable: this.panelDraggable,
       translations: this.translations,
       onOpenChange: this.notify,
       onExitComplete: () => this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true })),
@@ -192,6 +198,7 @@ export class XhDialogElement extends XhPortalHostElement {
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('header', api.getHeaderProps() as Record<string, unknown>)
+    put('drag-trigger', api.getDragTriggerProps() as Record<string, unknown>)
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)

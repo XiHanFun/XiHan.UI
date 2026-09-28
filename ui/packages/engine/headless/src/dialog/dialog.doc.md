@@ -18,7 +18,8 @@
 - `modal` 决定是否锁住下层：非模态不创建遮罩，页面仍可点击、聚焦和滚动；展开期间切换会同步更新这些约束。
 - 焦点进入时落在 `initialFocus`，关闭后归还触发器。
 - `closeOnEscape` 与 `closeOnInteractOutside` 可分别关闭，避免填写中的表单因误点外部而丢失。
-- 内容区可以内部滚动，标题栏可以拖动移动窗口。Body 是模态滚动面：滚到头不带动页面，内容高度变化时保留稳定的滚动条空道。
+- 内容区可以内部滚动。Body 是模态滚动面：滚到头不带动页面，内容高度变化时保留稳定的滚动条空道。
+- `draggable` 让面板可以挪走：指针按住标题栏（header，没写 header 时是 title）即跟手，落在标题栏里的按钮、链接与表单控件照常点；面板四边始终夹在视口内，每次打开都从居中落点起。键盘经 `drag-trigger` 挪：它是一块透明的把手，放在 header 里时铺满标题栏，焦点落在它上面时方向键挪一步（10px）、Shift 挪一大步（50px）、Enter / Space 回到居中；初始焦点越过它，落到第一个真正的控件上。位移写成 content 上的两个私有槽、按 transform 平移，与进出场的 translate / scale 叠加，拖过的面板从拖到的位置退场。Web Components 侧的属性是 `panel-draggable`：`draggable` 是 HTML 全局属性，写在宿主上会把它变成原生拖放源。
 - 面板走 M4 sheet 三件套（描边、不透明底、投影）。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`。标题为 heading-3，说明文字为 13px 说明档。
 - 关闭时内容立即失活并退出可访问树，内容与遮罩的有限退场动画全部完成后再释放模态资源，并发出 `onExitComplete` / `exit-complete`。重开撤销旧退出，卸载立即清理。
 - 另有命令式服务，业务代码一次调用即可弹出。

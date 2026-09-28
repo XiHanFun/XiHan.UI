@@ -26505,6 +26505,42 @@
       "description": "dialog 的 description 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-dialog-drag-trigger-min-h",
+      "component": "dialog",
+      "part": [
+        "drag-trigger"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-6"
+      ],
+      "visibility": "public",
+      "description": "dialog 的 drag-trigger 部件 min-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-dialog-drag-trigger-radius",
+      "component": "dialog",
+      "part": [
+        "drag-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "dialog 的 drag-trigger 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-dialog-fg",
       "component": "dialog",
       "part": [
