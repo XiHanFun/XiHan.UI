@@ -61,7 +61,6 @@ import { XhFloatButtonElement } from './elements/float-button'
 import { XhFloatingPanelElement } from './elements/floating-panel'
 import { XhFormElement } from './elements/form'
 import { XhFunnelChartElement } from './elements/funnel-chart'
-import { XhGradientTextElement } from './elements/gradient-text'
 import { XhGraphChartElement } from './elements/graph-chart'
 import { XhGridElement } from './elements/grid'
 import { XhGridListElement } from './elements/grid-list'
@@ -181,7 +180,6 @@ export function defineXhElements(): void {
   defineElement('xh-float-button', XhFloatButtonElement, VERSION)
   defineElement('xh-floating-panel', XhFloatingPanelElement, VERSION)
   defineElement('xh-funnel-chart', XhFunnelChartElement, VERSION)
-  defineElement('xh-gradient-text', XhGradientTextElement, VERSION)
   defineElement('xh-graph-chart', XhGraphChartElement, VERSION)
   defineElement('xh-grid', XhGridElement, VERSION)
   defineElement('xh-grid-list', XhGridListElement, VERSION)

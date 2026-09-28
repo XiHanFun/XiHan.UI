@@ -87,7 +87,6 @@
       "./forced-colors.css",
       "./form.css",
       "./funnel-chart.css",
-      "./gradient-text.css",
       "./graph-chart.css",
       "./grid-list.css",
       "./grid.css",
@@ -1392,8 +1391,6 @@
       "XhFunnelChartTooltipProps",
       "XhFunnelChartViewport",
       "XhFunnelChartViewportProps",
-      "XhGradientText",
-      "XhGradientTextProps",
       "XhGraphChartCaption",
       "XhGraphChartCaptionProps",
       "XhGraphChartEmpty",
@@ -3781,7 +3778,6 @@
       "XhFunnelChartRoot",
       "XhFunnelChartTooltip",
       "XhFunnelChartViewport",
-      "XhGradientText",
       "XhGraphChartCaption",
       "XhGraphChartEmpty",
       "XhGraphChartLegend",
@@ -6287,10 +6283,6 @@
       "FunnelTooltipRow",
       "GRAPH_TRANSLATIONS",
       "GRID_TIER_NAMES",
-      "GradientTextApi",
-      "GradientTextDirection",
-      "GradientTextProps",
-      "GradientTextTranslations",
       "GraphActive",
       "GraphChartApi",
       "GraphChartSchema",
@@ -7687,7 +7679,6 @@
       "connectFloatingPanel",
       "connectForm",
       "connectFunnelChart",
-      "connectGradientText",
       "connectGraphChart",
       "connectGrid",
       "connectGridList",
@@ -7983,9 +7974,6 @@
       "funnelChartMeta",
       "funnelMarkTag",
       "getFormPathValue",
-      "gradientTextAnatomy",
-      "gradientTextKeyboard",
-      "gradientTextMeta",
       "granularitySegments",
       "graphChartAnatomy",
       "graphChartKeyboard",
@@ -10065,9 +10053,6 @@
       "tooltip-value",
       "viewport"
     ],
-    "gradient-text": [
-      "root"
-    ],
     "graph-chart": [
       "arrow",
       "caption",
@@ -11889,12 +11874,6 @@
       "shape",
       "translations",
       "valueField"
-    ],
-    "gradient-text": [
-      "direction",
-      "from",
-      "to",
-      "tone"
     ],
     "graph-chart": [
       "activeKey",
@@ -16046,8 +16025,6 @@
     "--xh-funnel-chart-tooltip-row-gap",
     "--xh-funnel-chart-tooltip-shadow",
     "--xh-funnel-chart-tooltip-swatch-radius",
-    "--xh-gradient-text-from",
-    "--xh-gradient-text-to",
     "--xh-graph-chart-empty-gap",
     "--xh-graph-chart-gap",
     "--xh-graph-chart-height",
@@ -18580,6 +18557,9 @@
     "--xh-typography-fg",
     "--xh-typography-font-size",
     "--xh-typography-font-weight",
+    "--xh-typography-gradient-direction",
+    "--xh-typography-gradient-from",
+    "--xh-typography-gradient-to",
     "--xh-typography-heading-fg",
     "--xh-typography-heading-font-size",
     "--xh-typography-heading-font-weight",
@@ -19627,15 +19607,6 @@
         "datum-press",
         "hidden-series-change"
       ]
-    },
-    "xh-gradient-text": {
-      "attributes": [
-        "direction",
-        "from",
-        "to",
-        "tone"
-      ],
-      "events": []
     },
     "xh-graph-chart": {
       "attributes": [

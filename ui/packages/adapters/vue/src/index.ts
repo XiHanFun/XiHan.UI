@@ -542,7 +542,6 @@ export { XhFunnelChartCaption, XhFunnelChartEmpty, XhFunnelChartPlot, XhFunnelCh
 export type { FunnelChartRootSlotProps, FunnelChartTooltipSlotProps } from './components/funnel-chart/funnel-chart'
 export { useFunnelChart } from './components/funnel-chart/use-funnel-chart'
 export type { FunnelChartContext, FunnelChartNotifiers } from './components/funnel-chart/use-funnel-chart'
-export { XhGradientText } from './components/gradient-text/gradient-text'
 export { XhGraphChartCaption, XhGraphChartEmpty, XhGraphChartLegend, XhGraphChartPlot, XhGraphChartRoot, XhGraphChartTooltip, XhGraphChartViewport } from './components/graph-chart/graph-chart'
 export type { GraphChartRootSlotProps, GraphChartTooltipSlotProps } from './components/graph-chart/graph-chart'
 export { useGraphChart } from './components/graph-chart/use-graph-chart'

@@ -59,7 +59,6 @@ import type { FloatButtonTranslations } from '../float-button/float-button.types
 import type { FloatingPanelTranslations } from '../floating-panel/floating-panel.types'
 import type { FormTranslations } from '../form/form.types'
 import type { FunnelChartTranslations } from '../funnel-chart/funnel-chart.types'
-import type { GradientTextTranslations } from '../gradient-text/gradient-text.types'
 import type { GraphChartTranslations } from '../graph-chart/graph-chart.types'
 import type { GridListTranslations } from '../grid-list/grid-list.types'
 import type { GridTranslations } from '../grid/grid.types'
@@ -206,7 +205,6 @@ export interface XhTranslationOverrides {
   'floating-panel'?: Partial<FloatingPanelTranslations>
   'form'?: Partial<FormTranslations>
   'funnel-chart'?: Partial<FunnelChartTranslations>
-  'gradient-text'?: Partial<GradientTextTranslations>
   'graph-chart'?: Partial<GraphChartTranslations>
   'grid'?: Partial<GridTranslations>
   'grid-list'?: Partial<GridListTranslations>
