@@ -4030,6 +4030,7 @@ export type ComponentTokenName
     | '--xh-tour-close-radius'
     | '--xh-tour-close-size'
     | '--xh-tour-description-fg'
+    | '--xh-tour-description-font-size'
     | '--xh-tour-fg'
     | '--xh-tour-gap'
     | '--xh-tour-icon-size'

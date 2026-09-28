@@ -338,6 +338,7 @@
 | `--xh-tour-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | tour 的 close-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-tour-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='tour'][data-part='close-trigger'])`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | tour 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
 | `--xh-tour-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | tour 的 description 部件 color 覆盖槽。 |
+| `--xh-tour-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | tour 的 description 部件 font-size 覆盖槽。 |
 | `--xh-tour-fg` | `content`<br>`root` | `color` | `default` | `--xh-fg-default`<br>`--xh-material-elevated-fg` | tour 的 content、root 部件 color 覆盖槽。 |
 | `--xh-tour-gap` | `content` | `gap` | `default` | `--xh-space-2` | tour 的 content 部件 gap 覆盖槽。 |
 | `--xh-tour-icon-size` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`root`<br>`skip-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | tour 的 close-trigger、content、next-trigger、prev-trigger、root、skip-trigger 部件 --xh-icon-size 覆盖槽。 |
