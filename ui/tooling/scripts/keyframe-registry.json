@@ -170,6 +170,7 @@
         "image-viewer",
         "navigation-menu",
         "select",
+        "skeleton",
         "tag",
         "tag-group",
         "tags-input",

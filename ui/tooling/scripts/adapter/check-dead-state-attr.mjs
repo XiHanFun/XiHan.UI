@@ -107,7 +107,6 @@ const HOOKS = {
   'truncate:data-position': '中间省略的视觉由 data-middle-text 在场与否承载（只在真被裁时才写）；档位这一位留给作者按省略方式写样式',
   // 显隐一律由 hidden 承载：收起时留着节点只加 hidden，data-state 是同一件事的同名镜像
   'editable:data-state': '预览与输入的切换由两边各自的 hidden 承载',
-  'skeleton:data-state': '加载完置 hidden，整块骨架收起',
   // 墨色域的取值块写在 tokens.css 里、对全部元素生效，不经组件皮肤
   'image-viewer:data-xh-ink': '看片层整层是白墨域：由 tokens.css 的墨色域取值块消费，控件、焦点环与作者放进来的动作随之取深色档',
   'image-viewer:data-xh-backdrop': '定位层替被模态设成 inert 的遮罩声明「身后是深色遮罩」：由 core 液态面的下层判定读取，不画任何东西',
