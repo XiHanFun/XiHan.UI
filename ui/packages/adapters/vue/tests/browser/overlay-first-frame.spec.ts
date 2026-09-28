@@ -5,6 +5,9 @@ import type { App, Ref, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
+  XhDialogContent,
+  XhDialogRoot,
+  XhDialogTitle,
   XhPopconfirmContent,
   XhPopconfirmPositioner,
   XhPopconfirmRoot,
@@ -49,6 +52,11 @@ const CASES: Record<string, Case> = {
       h(XhPopconfirmTrigger, null, () => '删除'),
       h(XhPopconfirmPositioner, null, () => h(XhPopconfirmContent, null, () => '确定删除？')),
     ]),
+  },
+  dialog: {
+    parts: ['content', 'backdrop'],
+    enter: 'xh-sheet-in',
+    render: props => h(XhDialogRoot, props, () => h(XhDialogContent, null, () => h(XhDialogTitle, null, () => '标题'))),
   },
 }
 

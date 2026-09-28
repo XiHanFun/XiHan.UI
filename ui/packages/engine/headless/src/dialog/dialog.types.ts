@@ -131,6 +131,11 @@ export interface DialogSchema extends MachineSchema {
     offset: DialogOffset
     /** 正在进行的指针手势；没有时为 null。 */
     gesture: DialogGesture | null
+    /**
+     * 挂载时开着、还没收起过：这一段打开属于首帧，content 与遮罩投影 data-instant 直接呈现、不播进场。
+     * 第一次收起时清掉，之后的每一次打开照常进场。
+     */
+    openedAtMount: boolean
   }
   computed: Record<string, never>
   refs: DialogRefs
@@ -157,7 +162,7 @@ export interface DialogSchema extends MachineSchema {
     | { type: 'GESTURE.END' }
   tag: never
   guard: 'isOpenControlled' | 'canDrag'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress' | 'clearOpenedAtMount'
     | 'startDrag' | 'nudgeDrag' | 'resetOffset' | 'moveGesture' | 'endGesture'
   effect: 'trackOverlay' | 'trackGesture'
 }

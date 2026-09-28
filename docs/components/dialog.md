@@ -271,6 +271,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `trigger` | `data-xh-action-profile` | 'text' |
 | `trigger` | `data-xh-action-size` | 'md' |
 | `trigger` | `data-xh-action-variant` | 'outline' |
+| `backdrop` | `data-instant` | ''（条件成立时才出现） |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
 | `backdrop` | `data-variant` | props.variant |
 | `positioner` | `data-positioned` | '' |

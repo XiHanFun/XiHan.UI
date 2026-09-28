@@ -1,6 +1,6 @@
-import type { App } from 'vue'
+import type { App, Ref } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { createApp, h, nextTick } from 'vue'
+import { createApp, h, nextTick, ref } from 'vue'
 import {
   XhButton,
   XhDialogBody,
@@ -26,11 +26,11 @@ function part(name: string): HTMLElement {
   return document.querySelector<HTMLElement>(`[data-scope='dialog'][data-part='${name}']`)!
 }
 
-function mount(): void {
+function mount(open: Ref<boolean> = ref(true)): void {
   const host = document.createElement('div')
   document.body.append(host)
   app = createApp({
-    render: () => h(XhDialogRoot, { open: true, variant: 'blur' }, () =>
+    render: () => h(XhDialogRoot, { open: open.value, variant: 'blur' }, () =>
       h(XhDialogContent, null, () => [
         h(XhDialogHeader, null, () => [
           h(XhDialogTitle, null, () => '发布确认'),
@@ -75,7 +75,11 @@ describe('dialog 的 M4 高层实体面皮肤', () => {
   it('高对比与减弱动效保留实体边界，撤掉光学效果，进出场只剩淡变', async () => {
     document.documentElement.dataset.contrast = 'more'
     document.documentElement.dataset.motion = 'reduce'
-    mount()
+    // 挂载即开的那一次属于首帧、不播进场；量的是挂载之后打开的这一次
+    const open = ref(false)
+    mount(open)
+    await settle()
+    open.value = true
     await settle()
 
     const content = getComputedStyle(part('content'))
