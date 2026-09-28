@@ -214,7 +214,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `item-description` | 'checked' \| 'unchecked' |
 | `item-suffix` | 'checked' \| 'unchecked' |
 | `item-checkbox` | 'checked' \| 'unchecked' |
-| `select-all-trigger` | checkStates[panel.side] |
+| `select-all-trigger` | itemState(item) |
 
 以下名称仅用于内部状态机。
 
@@ -328,6 +328,8 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 
 `@xihan-ui/styles/transfer.css` 使用 `[data-scope="transfer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -385,6 +387,8 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `item-checkbox` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-checkbox` | `data-side` | item.side |
 | `item-checkbox` | `data-state` | 'checked' \| 'unchecked' |
+| `item-checkbox` | `data-xh-check-mark` | state['data-state'] |
+| `item-checkbox` | `data-xh-check-mark-profile` | 'box' |
 | `item-checkbox` | `data-xh-collection-slot` | 'prefix' |
 | `empty` | `data-disabled` | ''（条件成立时才出现） |
 | `empty` | `data-side` | panel.side |
@@ -407,12 +411,14 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-side` | panel.side |
-| `select-all-trigger` | `data-state` | checkStates[panel.side] |
+| `select-all-trigger` | `data-state` | itemState(item) |
 | `select-all-trigger` | `data-xh-action-control` | '' |
 | `select-all-trigger` | `data-xh-action-display` | 'always' |
 | `select-all-trigger` | `data-xh-action-profile` | 'text' |
 | `select-all-trigger` | `data-xh-action-size` | 'xs' |
 | `select-all-trigger` | `data-xh-action-variant` | 'ghost' |
+| `select-all-trigger` | `data-xh-check-mark` | itemState(item) |
+| `select-all-trigger` | `data-xh-check-mark-profile` | 'row' |
 | `panel` | `data-disabled` | ''（条件成立时才出现） |
 | `panel` | `data-side` | panel.side |
 
@@ -429,10 +435,10 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `--xh-transfer-checkbox-border` | `item-checkbox`<br>`select-all-trigger` | `border` | `default` | `--xh-border-control` | transfer 的 item-checkbox、select-all-trigger 部件 border 覆盖槽。 |
 | `--xh-transfer-checkbox-border-checked` | `item-checkbox`<br>`select-all-trigger` | `border-color` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-accent` | transfer 的 item-checkbox、select-all-trigger 部件 border-color 覆盖槽。 |
 | `--xh-transfer-checkbox-border-disabled` | `item-checkbox` | `border-color` | `disabled` | `--xh-border-default` | transfer 的 item-checkbox 部件 border-color 覆盖槽。 |
-| `--xh-transfer-checkbox-fg` | `item-checkbox`<br>`select-all-trigger` | `background-color`<br>`color` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-on-accent` | transfer 的 item-checkbox、select-all-trigger 部件 background-color、color 覆盖槽。 |
-| `--xh-transfer-checkbox-font-size` | `item-checkbox`<br>`select-all-trigger` | `font-size` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 font-size 覆盖槽。 |
+| `--xh-transfer-checkbox-fg` | `item-checkbox`<br>`select-all-trigger` | `--xh-check-mark-fg`<br>`color` | `default` | `--xh-_transfer-on-accent` | transfer 的 item-checkbox、select-all-trigger 部件 --xh-check-mark-fg、color 覆盖槽。 |
+| `--xh-transfer-checkbox-font-size` | `item-checkbox`<br>`select-all-trigger` | `font-size` | `default` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 font-size 覆盖槽。 |
 | `--xh-transfer-checkbox-radius` | `item-checkbox`<br>`select-all-trigger` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 item-checkbox、select-all-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-transfer-checkbox-size` | `item-checkbox`<br>`select-all-trigger` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 --xh-icon-size、block-size、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-transfer-checkbox-size` | `item-checkbox`<br>`select-all-trigger` | `--xh-check-mark-box-size`<br>`--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 --xh-check-mark-box-size、--xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-transfer-empty-fg` | `empty` | `color` | `default` | `--xh-fg-subtle` | transfer 的 empty 部件 color 覆盖槽。 |
 | `--xh-transfer-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-transfer-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 empty 部件 padding-inline 覆盖槽。 |
@@ -506,17 +512,15 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`-webkit-mask-size` · `background-color` · `border-color` · `mask-size` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
 
 皮肤按视口分档：`min-width: 640px`。
-
-皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

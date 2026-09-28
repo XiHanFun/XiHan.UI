@@ -277,13 +277,20 @@ export function connectQuestionFlow<T extends PropTypes>(
       })
     },
 
-    // 勾与点由皮肤画，纯装饰不进可访问名
-    getItemIndicatorProps: item => normalize.element({
-      ...parts['item-indicator'].attrs,
-      'aria-hidden': true,
-      'data-state': isOptionSelected(item.questionId, item.value) ? 'checked' : 'unchecked',
-      'data-select-mode': typeOf(item.questionId) === 'single' ? 'single' : 'multiple',
-    }),
+    // 勾与点纯装饰，不进可访问名。多选的记号是勾选格：勾由勾选标记配方画，常驻、按状态淡变；
+    // 单选的圆点由皮肤画
+    getItemIndicatorProps: (item) => {
+      const state = isOptionSelected(item.questionId, item.value) ? 'checked' : 'unchecked'
+      const single = typeOf(item.questionId) === 'single'
+      return normalize.element({
+        ...parts['item-indicator'].attrs,
+        'aria-hidden': true,
+        'data-state': state,
+        'data-select-mode': single ? 'single' : 'multiple',
+        'data-xh-check-mark': single ? undefined : state,
+        'data-xh-check-mark-profile': single ? undefined : 'box',
+      })
+    },
 
     // 排在选项之内，文本自然构成它的可及名
     getItemTextProps: item => normalize.element({

@@ -302,6 +302,8 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 
 `@xihan-ui/styles/question-flow.css` 使用 `[data-scope="question-flow"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -325,6 +327,8 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `item` | `data-xh-action-variant` | 'ghost' |
 | `item-indicator` | `data-select-mode` | 'single' \| 'multiple' |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
+| `item-indicator` | `data-xh-check-mark` | undefined \| 'checked' \| 'unchecked' |
+| `item-indicator` | `data-xh-check-mark-profile` | undefined \| 'box' |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-value` | item.value |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -449,9 +453,9 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位 · 出现（无锚定弹出） · 列表（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（无锚定弹出） · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-item-in` · `xh-pop-in` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-item-in` · `xh-pop-in` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `block-size` · `border-color` · `color` · `mask-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

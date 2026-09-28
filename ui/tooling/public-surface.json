@@ -13573,6 +13573,8 @@
     "data-xh-chart-pattern",
     "data-xh-chart-scale",
     "data-xh-chart-slot",
+    "data-xh-check-mark",
+    "data-xh-check-mark-profile",
     "data-xh-collection-context",
     "data-xh-collection-item",
     "data-xh-collection-separator",

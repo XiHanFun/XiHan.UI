@@ -77,9 +77,12 @@ export function connectCheckbox<T extends PropTypes>(
       'onPointerUp': press.onPointerUp,
       'onPointerCancel': press.onPointerCancel,
     }),
+    // 指示器铺满方框：勾与半选杠由勾选标记配方画在它身上，常驻、按状态淡变
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
       'data-state': stateAttr,
+      'data-xh-check-mark': stateAttr,
+      'data-xh-check-mark-profile': 'box',
       'aria-hidden': true,
     }),
 

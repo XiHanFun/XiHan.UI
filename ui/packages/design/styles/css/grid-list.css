@@ -167,22 +167,36 @@
     border: var(--xh-stroke-thin) solid var(--xh-grid-list-row-indicator-border, var(--xh-border-control));
     border-radius: var(--xh-grid-list-row-indicator-radius, var(--xh-shape-inset));
     background: var(--xh-grid-list-row-indicator-bg, transparent);
-    color: transparent;
+    color: var(--xh-grid-list-row-indicator-fg-selected, var(--xh-_grid-list-indicator-on-accent));
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='grid-list'][data-part='row-selection-indicator'][data-state='checked'] {
     border-color: var(--xh-grid-list-row-indicator-border-selected, var(--xh-_grid-list-indicator-accent));
     background: var(--xh-grid-list-row-indicator-bg-selected, var(--xh-_grid-list-indicator-accent));
-    color: var(--xh-grid-list-row-indicator-fg-selected, var(--xh-_grid-list-indicator-on-accent));
   }
 
-  [data-scope='grid-list'][data-part='row-selection-indicator'][data-state='checked']:empty::after {
+  /* 方框里的勾与勾选标记配方（Checkbox / CheckboxGroup / Transfer / Table 共用）同一副取值：常驻，
+     未勾时透明并略缩，勾上时淡入（micro）并回到原尺寸（nudge）；作者往方框里塞了自己的图形时不画 */
+  [data-scope='grid-list'][data-part='row-selection-indicator']:empty::before {
     content: '';
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     background-color: currentColor;
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    transition:
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='grid-list'][data-part='row-selection-indicator'][data-state='checked']:empty::before {
+    opacity: 1;
+    scale: 1;
   }
 
   [data-scope='grid-list'][data-part='empty'],

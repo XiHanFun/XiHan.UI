@@ -39,7 +39,7 @@ export function shownMask(el: Element, pseudo: string): string {
   const style = getComputedStyle(el, pseudo)
   const images = layers(style.maskImage || style.webkitMaskImage)
   const sizes = layers(style.maskSize || style.webkitMaskSize)
-  const shown = images.filter((_, index) => !/^0(?:px)? 0(?:px)?$/.test(sizes[index % sizes.length] ?? ''))
+  const shown = images.filter((_, index) => !/^0(?:px|%)? 0(?:px|%)?$/.test(sizes[index % sizes.length] ?? ''))
   if (shown.length !== 1)
     throw new Error(`${pseudo} 露出的遮罩层应只有一层，实际 ${shown.length} 层：${style.maskSize}`)
   return shown[0]!

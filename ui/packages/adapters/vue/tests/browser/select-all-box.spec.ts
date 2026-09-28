@@ -97,10 +97,11 @@ describe('全选格：方框与字形分两层', () => {
     })
   }
 
-  it('没有值时不画字形', async () => {
+  it('没有值时字形常驻但透明', async () => {
     await mountGroup([])
     const trigger = part('select-all-trigger')
     expect(trigger.dataset.state).toBe('unchecked')
-    expect(getComputedStyle(trigger, '::after').content).toBe('none')
+    expect(getComputedStyle(trigger, '::after').content).toBe('""')
+    expect(getComputedStyle(trigger, '::after').opacity).toBe('0')
   })
 })

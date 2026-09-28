@@ -321,7 +321,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `--xh-grid-list-row-indicator-bg-selected` | `row-selection-indicator` | `background` | `state=checked` | `--xh-_grid-list-indicator-accent` | grid-list 的 row-selection-indicator 部件 background 覆盖槽。 |
 | `--xh-grid-list-row-indicator-border` | `row-selection-indicator` | `border` | `default` | `--xh-border-control` | grid-list 的 row-selection-indicator 部件 border 覆盖槽。 |
 | `--xh-grid-list-row-indicator-border-selected` | `row-selection-indicator` | `border-color` | `state=checked` | `--xh-_grid-list-indicator-accent` | grid-list 的 row-selection-indicator 部件 border-color 覆盖槽。 |
-| `--xh-grid-list-row-indicator-fg-selected` | `row-selection-indicator` | `color` | `state=checked` | `--xh-_grid-list-indicator-on-accent` | grid-list 的 row-selection-indicator 部件 color 覆盖槽。 |
+| `--xh-grid-list-row-indicator-fg-selected` | `row-selection-indicator` | `color` | `default` | `--xh-_grid-list-indicator-on-accent` | grid-list 的 row-selection-indicator 部件 color 覆盖槽。 |
 | `--xh-grid-list-row-indicator-glyph-size` | `row-selection-indicator` | `--xh-icon-size` | `default` | `--xh-_grid-list-indicator-glyph` | grid-list 的 row-selection-indicator 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-grid-list-row-indicator-me` | `row-selection-indicator` | `margin-inline-end` | `default` | `--xh-control-gap-md` | grid-list 的 row-selection-indicator 部件 margin-inline-end 覆盖槽。 |
 | `--xh-grid-list-row-indicator-radius` | `row-selection-indicator` | `border-radius` | `default` | `--xh-shape-inset` | grid-list 的 row-selection-indicator 部件 border-radius 覆盖槽。 |
@@ -336,9 +336,11 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换（见[动效规范](../design/motion#角色)）。
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+`background-color` · `border-color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

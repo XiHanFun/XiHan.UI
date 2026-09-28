@@ -253,8 +253,8 @@ export const transferSuite: ConformanceSuite = {
             'disabled': null,
           },
           'item[1]': { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
-          // 勾选方框是前导标记部件，不占家族的 indicator 槽
-          'item-checkbox[0]': { 'data-xh-collection-slot': 'prefix' },
+          // 勾选方框是前导标记部件，不占家族的 indicator 槽；格子里的勾由勾选标记配方画
+          'item-checkbox[0]': { 'data-xh-collection-slot': 'prefix', 'data-xh-check-mark': 'unchecked', 'data-xh-check-mark-profile': 'box' },
           'item-text[0]': { 'data-xh-collection-slot': 'text' },
           // 左侧的 durian 那一份隐去了，它绝不能认领 Tab 位
           'item[3]': { hidden: '', tabindex: '-1' },
@@ -265,6 +265,9 @@ export const transferSuite: ConformanceSuite = {
             'aria-checked': 'false',
             'aria-controls': '@part(list[0])',
             'data-state': 'unchecked',
+            // 方框是行首的 ::before，勾与半选杠由勾选标记配方叠在方框正中
+            'data-xh-check-mark': 'unchecked',
+            'data-xh-check-mark-profile': 'row',
             'data-side': 'source',
             'disabled': null,
             // 「方框 + 文案」的整行命中区：Action Control text 档 ghost 形态、xs 档 24px 命中地板、按下只换面

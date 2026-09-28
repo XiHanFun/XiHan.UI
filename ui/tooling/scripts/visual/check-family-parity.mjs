@@ -182,6 +182,22 @@ const FAMILIES = [
       { part: 'cell-trigger', state: '[data-selected]', props: ['--xh-action-bg-rest', '--xh-action-bg-hover', '--xh-action-bg-pressed', '--xh-action-border-rest', '--xh-action-fg-rest', '--xh-action-ring-color-focus-visible'] },
     ],
   },
+  {
+    // 勾选格里的勾与半选杠由勾选标记配方画（family/check-mark.css）：形状、淡变与缩放只有配方一份，
+    // box 形态的成员皮肤里没有映射可比。row 形态的两家全选格把方框画在行首 ::before，标记叠在方框正中，
+    // 方框边长与标记色经桥接槽交给配方——比的是这两条映射声明；两家方框的使用者槽部件段不同名
+    // （--xh-checkbox-group-indicator-* / --xh-transfer-checkbox-*），slotBy 指明那一段
+    name: '勾选标记族',
+    members: ['checkbox-group', 'transfer'],
+    parts: [
+      {
+        partBy: { 'checkbox-group': 'select-all-trigger', 'transfer': 'select-all-trigger' },
+        slotBy: { 'checkbox-group': 'indicator', 'transfer': 'checkbox' },
+        state: '',
+        props: ['--xh-check-mark-box-size', '--xh-check-mark-fg'],
+      },
+    ],
+  },
   // ——以下家族按设计真源登记，读 family-backlog.json，已迁移成员 ≥ 2 才比——
   {
     // 静态内容面：边界三选一，根面的边、底同源；影只在 Card 之外比——

@@ -1,0 +1,86 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
+ * 勾选格里的勾与半选杠：Checkbox、CheckboxGroup、Transfer、Table、QuestionFlow 多选共用一份标记语言。
+ *
+ * 连接层在画标记的节点上投影两位：data-xh-check-mark 是标记的状态（checked / indeterminate / unchecked），
+ * data-xh-check-mark-profile 说标记画在哪——
+ *   box：节点就是方框（或铺满方框的指示器），标记是它的 ::before；作者往节点里放了自己的图形时不画。
+ *   row：节点是一整行，方框由皮肤画在它的 ::before 上，标记是 ::after，叠在方框正中；
+ *        皮肤写两支桥接槽：--xh-check-mark-box-size（方框边长）与 --xh-check-mark-fg（标记色）。
+ *
+ * 标记常驻，不按状态生成或撤掉：未勾时透明并略缩，勾上时淡入并回到原尺寸——淡变走 micro，
+ * 缩放走 nudge，减弱动效下缩放归一、只剩淡变。勾与半选杠叠成两层遮罩，按状态只换两层的尺寸；
+ * 离开勾选时尺寸的切换延后一个 micro，淡出途中标记保持原来的形状，半选淡出时不会闪出一枚勾。
+ *
+ * 尺寸读节点上的 --xh-icon-size（方框边长 × 0.75，由各皮肤按方框的尺改接）；
+ * 选择器只让 [data-xh-check-mark] 计入特指度，状态与形态包在 :where() 里，皮肤按部件覆盖即可压过。
+ */
+@layer xihan.components {
+  [data-xh-check-mark]:where([data-xh-check-mark-profile='box']):empty::before,
+  [data-xh-check-mark]:where([data-xh-check-mark-profile='row'])::after {
+    content: '';
+    display: inline-block;
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: var(--xh-check-mark-fg, currentColor);
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+    pointer-events: none;
+    -webkit-mask: var(--xh-glyph-mark-check) center / 100% 100% no-repeat, var(--xh-glyph-mark-minus) center / 0 0 no-repeat;
+    mask: var(--xh-glyph-mark-check) center / 100% 100% no-repeat, var(--xh-glyph-mark-minus) center / 0 0 no-repeat;
+    transition:
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
+      -webkit-mask-size 0s var(--xh-motion-duration-micro),
+      mask-size 0s var(--xh-motion-duration-micro);
+  }
+
+  /* 行里的方框是行首那颗 ::before：标记按「方框与标记的边长差之半」内推即落在方框正中，纵向靠
+     inset-block: 0 + margin-block: auto 居中。粗指针下 Action Control 在同一个 ::after 上铺的热区
+     （起点 50%、44px 下限、-50% 平移）在这里逐项钉回，标记不被拖走、也不被撑大 */
+  [data-xh-check-mark]:where([data-xh-check-mark-profile='row'])::after {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    min-inline-size: 0;
+    min-block-size: 0;
+    margin-block: auto;
+    margin-inline-start: calc(
+      (var(--xh-check-mark-box-size, var(--xh-control-indicator-size)) - var(--xh-icon-size, var(--xh-glyph-size-text))) / 2
+    );
+    translate: none;
+  }
+
+  [data-xh-check-mark]:where([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate']):where([data-xh-check-mark-profile='box']):empty::before,
+  [data-xh-check-mark]:where([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate']):where([data-xh-check-mark-profile='row'])::after {
+    opacity: 1;
+    scale: 1;
+    transition-delay: 0s;
+  }
+
+  /* 半选：aria-checked=mixed 在视觉上也得与全选分得开，横杠与勾同走字形令牌 */
+  [data-xh-check-mark]:where([data-xh-check-mark='indeterminate']):where([data-xh-check-mark-profile='box']):empty::before,
+  [data-xh-check-mark]:where([data-xh-check-mark='indeterminate']):where([data-xh-check-mark-profile='row'])::after {
+    -webkit-mask-size: 0 0, 100% 100%;
+    mask-size: 0 0, 100% 100%;
+  }
+
+  /* 强制色：遮罩保留字形轮廓，系统前景接管颜色；禁用取置灰前景 */
+  @media (forced-colors: active) {
+    [data-xh-check-mark]:where([data-xh-check-mark-profile='box']):empty::before,
+    [data-xh-check-mark]:where([data-xh-check-mark-profile='row'])::after {
+      background-color: CanvasText;
+    }
+
+    [data-xh-check-mark]:where([data-disabled]):where([data-xh-check-mark-profile='box']):empty::before,
+    [data-xh-check-mark]:where([data-disabled]):where([data-xh-check-mark-profile='row'])::after {
+      background-color: GrayText;
+    }
+  }
+}

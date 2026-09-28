@@ -442,9 +442,12 @@ export const tableSuite: ConformanceSuite = {
             'data-xh-action-variant': 'outline',
             'data-xh-action-display': 'always',
             'data-xh-action-size': 'md',
+            // 框里的勾与半选杠由勾选标记配方画
+            'data-xh-check-mark': 'unchecked',
+            'data-xh-check-mark-profile': 'box',
           },
           // 行内三个把手都退出可及树与 Tab 序列；勾选框 outline、展开箭头 ghost，都是 icon 档
-          'row-select-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'outline' },
+          'row-select-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'outline', 'data-xh-check-mark': 'unchecked', 'data-xh-check-mark-profile': 'box' },
           'expand-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost' },
           'row-drag-trigger[0]': {
             // 键盘换位由表体上的 Alt + 上下键承担，把手只管指针那一路
@@ -1002,7 +1005,8 @@ export const tableSuite: ConformanceSuite = {
           expect: {
             parts: {
               'row': rowsSelected('a'),
-              'select-all-trigger': { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
+              'select-all-trigger': { 'aria-checked': 'mixed', 'data-state': 'indeterminate', 'data-xh-check-mark': 'indeterminate' },
+              'row-select-trigger[0]': { 'data-xh-check-mark': 'checked' },
             },
           },
         },

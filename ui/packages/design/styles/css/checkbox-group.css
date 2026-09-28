@@ -6,6 +6,7 @@
 /* 定义 checkbox group 样式。 */
 
 @import '../family/action-control.css';
+@import '../family/check-mark.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -26,8 +27,9 @@
     /* 作者塞进指示符槽的图标和皮肤画的兜底字形共用盒比例（与 checkbox 同一把尺）；显式 icon-size 仍可覆盖 */
     --xh-icon-size: var(--xh-checkbox-group-icon-size, var(--xh-_checkbox-group-glyph));
 
-    /* 勾中的填色随语气走；没写 data-tone 时退回品牌色 */
-    --xh-_checkbox-group-accent: var(--xh-_tone, var(--xh-bg-brand));
+    /* 勾中的填色随语气走，与独立 Checkbox 同一支：选中态是小面积控件边界，取保证 3:1 的语气 control 色；
+       没写 data-tone 时退回品牌色 */
+    --xh-_checkbox-group-accent: var(--xh-_tone-border-control, var(--xh-bg-brand));
     --xh-_checkbox-group-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
     /* 方框是字段家族的控制盒（字段静息形态）：透明底 + --xh-border-control 描边 + 无影，不消费海拔与顶光 */
     --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg, transparent);
@@ -203,67 +205,9 @@
     --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg-checked-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
   }
 
-  /* 勾号由皮肤补，作者不必自己往 indicator 里塞字符 */
-  [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before {
-    content: '';
-    display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    vertical-align: var(--xh-glyph-baseline-shift);
-    background-color: currentColor;
-    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-  }
-
-  /* 全选格的三态：checked 打勾、indeterminate 打横杠、unchecked 留空。
-     indeterminate 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state。
-
-     字形走 ::after 而不是画方框的那颗 ::before：mask 会把所在元素的描边与底色一并裁成
-     字形的轮廓，写在 ::before 上就等于把方框本身裁没了，只剩一枚白勾。条目那一侧是
-     真实节点当方框、它的 ::before 当字形的两层结构，这里 anatomy 到 trigger 为止、
-     没有第二个节点，只能用第二个伪元素补上那一层。
-     方框是行首那颗 ::before、宽度即指示符尺寸，所以字形按「盒与字形的宽度差之半」
-     内推即落在圆心；纵向靠 inset-block: 0 + margin-block: auto 居中。
-     font-size 与 ::before 同值，--xh-icon-size 的 1em 兜底才和条目那侧量得一样大 */
-  [data-scope='checkbox-group'][data-part='select-all-trigger'][data-state='checked']::after {
-    content: '';
-    position: absolute;
-    inset-block: 0;
-    inset-inline-start: 0;
-    margin-block: auto;
-    margin-inline-start: calc(
-      (
-        var(--xh-checkbox-group-indicator-size, var(--xh-_checkbox-group-box)) -
-          var(--xh-icon-size, var(--xh-glyph-size-text))
-      ) / 2
-    );
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    background-color: var(--xh-checkbox-group-indicator-fg, var(--xh-_checkbox-group-on-accent));
-    font-size: var(--xh-checkbox-group-indicator-font-size, var(--xh-_checkbox-group-glyph));
-    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-  }
-
-  [data-scope='checkbox-group'][data-part='select-all-trigger'][data-state='indeterminate']::after {
-    content: '';
-    position: absolute;
-    inset-block: 0;
-    inset-inline-start: 0;
-    margin-block: auto;
-    margin-inline-start: calc(
-      (
-        var(--xh-checkbox-group-indicator-size, var(--xh-_checkbox-group-box)) -
-          var(--xh-icon-size, var(--xh-glyph-size-text))
-      ) / 2
-    );
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    background-color: var(--xh-checkbox-group-indicator-fg, var(--xh-_checkbox-group-on-accent));
-    font-size: var(--xh-checkbox-group-indicator-font-size, var(--xh-_checkbox-group-glyph));
-    -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
-  }
+  /* 方框里的勾与全选格的三态标记（checked 打勾、indeterminate 打横杠、unchecked 留空）由勾选标记配方画：
+     常驻、按状态淡变并轻缩放。条目的方框是真实节点，标记是它的 ::before；全选格的 anatomy 到 trigger
+     为止，方框只能是行首那颗 ::before，标记是 ::after、叠在方框正中——两支桥接槽写在 trigger 上 */
 
   /* 校验失败标在每个方框上：root 上的 data-invalid 是唯一出处，条目自己不带这个属性 */
   [data-scope='checkbox-group'][data-part='root'][data-invalid]
@@ -281,6 +225,11 @@
 
     border-color: var(--xh-checkbox-group-indicator-border-disabled, var(--xh-border-default));
     color: var(--xh-checkbox-group-indicator-fg-disabled, var(--xh-fg-disabled));
+  }
+
+  /* 全选格的标记画在 ::after 上，禁用色经桥接槽给，与条目方框里置灰的勾同色 */
+  [data-scope='checkbox-group'][data-part='select-all-trigger'][data-disabled] {
+    --xh-check-mark-fg: var(--xh-checkbox-group-indicator-fg-disabled, var(--xh-fg-disabled));
   }
 
   [data-scope='checkbox-group'][data-part='item-text'] {
@@ -308,6 +257,9 @@
     /* 行自己的面已由上面两支钉住，host 槽只对方框（::before）生效：200 → 300 */
     --xh-action-host-bg-hover: var(--xh-_checkbox-group-host-bg-hover);
     --xh-action-host-bg-pressed: var(--xh-_checkbox-group-host-bg-pressed);
+    /* 勾选标记叠在行首方框正中：方框边长与标记色交给配方 */
+    --xh-check-mark-box-size: var(--xh-checkbox-group-indicator-size, var(--xh-_checkbox-group-box));
+    --xh-check-mark-fg: var(--xh-checkbox-group-indicator-fg, var(--xh-_checkbox-group-on-accent));
 
     position: relative;
     inline-size: auto;
@@ -327,17 +279,11 @@
   }
 
   /* 家族 row 档在粗指针下用 ::after 把热区扩到 44px 高：条目按 24px 行 + 8px 间距密排，热区会压进相邻条目 2px、
-     指针落错行，A 档 24px 由 xs 地板保住（两者都不在 coarse-target 的 B 档名单）；勾中 / 半选时全选格的 ::after
-     是叠在方框上的字形，家族的热区 translate 会把它拖走，钉回原位（同 transfer select-all-trigger） */
+     指针落错行，A 档 24px 由 xs 地板保住（两者都不在 coarse-target 的 B 档名单）；全选格的 ::after 是叠在方框上的
+     勾选标记，热区由勾选标记配方逐项钉回 */
   @media (pointer: coarse) {
-    [data-scope='checkbox-group'][data-part='item']::after,
-    [data-scope='checkbox-group'][data-part='select-all-trigger']::after {
+    [data-scope='checkbox-group'][data-part='item']::after {
       min-block-size: 0;
-    }
-
-    [data-scope='checkbox-group'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::after {
-      min-block-size: 0;
-      translate: none;
     }
   }
 
@@ -357,22 +303,7 @@
     display: none;
   }
 
-  @media (forced-colors: active) {
-    /* 真实描边保留方框，系统前景重绘状态字形。 */
-    [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before,
-    [data-scope='checkbox-group'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::after {
-      background-color: CanvasText;
-    }
-
-    [data-scope='checkbox-group'][data-part='item'][data-disabled]
-      [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before,
-    [data-scope='checkbox-group'][data-part='select-all-trigger'][data-disabled]:is(
-      [data-state='checked'],
-      [data-state='indeterminate']
-    )::after {
-      background-color: GrayText;
-    }
-  }
+  /* 强制色：真实描边保留方框，状态字形的系统前景由勾选标记配方给 */
 
   @media print {
     [data-scope='checkbox-group'][data-part='indicator'][data-state='checked'],

@@ -229,6 +229,8 @@ tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 | `root` | `data-xh-action-size` | props.size |
 | `root` | `data-xh-action-variant` | 'outline' |
 | `indicator` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `indicator` | `data-xh-check-mark` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `indicator` | `data-xh-check-mark-profile` | 'box' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-invalid` | ''（条件成立时才出现） |
 | `label` | `data-readonly` | ''（条件成立时才出现） |
@@ -256,10 +258,10 @@ tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 | `--xh-checkbox-border-hover` | `label`<br>`root` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly` | `--xh-border-control-hover` | checkbox 的 label、root 部件 border-color 覆盖槽。 |
 | `--xh-checkbox-border-invalid` | `label`<br>`root` | `border`<br>`border-color` | `@media (hover: hover)`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`invalid`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`state=indeterminate` | `--xh-border-invalid` | checkbox 的 label、root 部件 border、border-color 覆盖槽。 |
 | `--xh-checkbox-fg` | `root` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_checkbox-on-accent` | checkbox 的 root 部件 color 覆盖槽。 |
-| `--xh-checkbox-fg-disabled` | `indicator`<br>`root` | `background-color`<br>`color` | `disabled`<br>`state=indeterminate` | `--xh-fg-disabled` | checkbox 的 indicator、root 部件 background-color、color 覆盖槽。 |
+| `--xh-checkbox-fg-disabled` | `indicator`<br>`root` | `--xh-check-mark-fg`<br>`color` | `disabled`<br>`state=indeterminate` | `--xh-fg-disabled` | checkbox 的 indicator、root 部件 --xh-check-mark-fg、color 覆盖槽。 |
 | `--xh-checkbox-fg-invalid` | `label`<br>`text` | `color` | `invalid` | `--xh-fg-danger` | checkbox 的 label、text 部件 color 覆盖槽。 |
 | `--xh-checkbox-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_checkbox-glyph` | checkbox 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-checkbox-indicator-fg` | `indicator` | `background-color` | `state=indeterminate` | `--xh-_checkbox-on-accent` | checkbox 的 indicator 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-indicator-fg` | `indicator` | `--xh-check-mark-fg` | `state=indeterminate` | `--xh-_checkbox-on-accent` | checkbox 的 indicator 部件 --xh-check-mark-fg 覆盖槽。 |
 | `--xh-checkbox-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | checkbox 的 label 部件 color 覆盖槽。 |
 | `--xh-checkbox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | checkbox 的 label 部件 color 覆盖槽。 |
 | `--xh-checkbox-label-font-size` | `label` | `font-size` | `default` | `--xh-_checkbox-label-font-size` | checkbox 的 label 部件 font-size 覆盖槽。 |
@@ -273,7 +275,7 @@ tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 
 动效角色：按压 · 状态 · 切换（见[动效规范](../design/motion#角色)）。
 
-`opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`-webkit-mask-size` · `mask-size` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
