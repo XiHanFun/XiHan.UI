@@ -2421,7 +2421,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-badge>`：角标宿主，无状态机。\n\n被标记的对象写入 root，角标本身写入 indicator；角标是挂在其他元素角上的标记，\n行内的状态药丸使用 `<xh-tag>`。",
+          "description": "`<xh-badge>`：角标宿主。显隐与计数由属性算出，状态机只管角标出现与消失的进退场。\n\n被标记的对象写入 root，角标本身写入 indicator；角标是挂在其他元素角上的标记，\n行内的状态药丸使用 `<xh-tag>`。",
           "name": "XhBadgeElement",
           "cssParts": [
             {
@@ -2524,6 +2524,23 @@
                 "text": "string | undefined"
               },
               "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<BadgeSchema>( this, badgeMachine, () => this.machineProps(), )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<BadgeSchema['props']>"
+                }
+              }
             },
             {
               "kind": "method",
