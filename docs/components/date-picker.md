@@ -85,6 +85,7 @@ timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界
 - 周选择直接渲染整周周期格；不再需要 `weekSelection` 特殊开关。
 - `min`、`max` 与 `isDateUnavailable` 限制可选日期。
 - `presets` 提供常用日期快捷项。
+- `firstDayOfWeek`（0 = 星期日 … 6 = 星期六）与 `maxSelected`（多选上限）原样交给浮层里的日历，用法与示例见[日历选择器](./calendar-picker)；输入行的段序仍按 `locale`，带的日期比上限多的快捷选项不可按下。
 - `showTime` 在 `granularity=day + selectionMode=single` 时让输入行显示完整日期时间，并加入时、分或秒选择列。
 - 时间列与时间选择器共用一份约束：`hourCycle={12}` 多出上下午列与上下午段（缺省 24，不随 locale 推断）；`timeStep` 按时、分、秒各设步长；`isTimeUnavailable` 逐格判定，第三个参数带已选的时分与这份时间所属的日期。
 - `min` / `max` 可以带时间段（`2026-09-28T09:30`）：日历按日期段收，与它同一天时界外的时刻留在列里、标为不可选，列长不随所选的日子变。
@@ -141,7 +142,9 @@ timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界
 | `max` | `string` |  | 可选范围上界（含当天），ISO 串。 |
 | `locale` | `string` |  | 决定周首日、月份文案与段位先后（zh-CN 年月日、en-US 月日年）。 未提供时按宿主语言，宿主也没有时按 en-US。 |
 | `timeZone` | `string` |  | 判定今天与格式化文案使用的时区，默认取宿主本地时区。 |
+| `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日 … 6 = 星期六（与日历选择器同一套写法）；不给按 locale。 只改浮层日历的表头、每一行的行首与 Home / End，月份名、星期名与段位先后仍按 locale。 |
 | `selectionMode` | `CalendarPickerSelectionMode` |  | 选择模式，默认 single。区间选择是另一个组件（日期范围选择器）。 |
+| `maxSelected` | `number` |  | multiple 下最多选几个周期，交给内嵌日历：选满后没选中的格子不可再加选，已选的仍可点掉。 带的日期比它多的快捷选项不可按下。非整数向下取整，小于 1 或不是有限数时不设上限。 |
 | `isDateUnavailable` | `(value: string) => boolean` |  | 不可用判定，接收 ISO 串。界外与判定为真的日期同等处理。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列，日历格子全部为 aria-disabled。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、日历照常翻月浏览，但选中值不可修改。 |

@@ -181,9 +181,11 @@ export function connectDatePicker<T extends PropTypes>(
   }
 
   // —— 快捷选项：一条选项就是一次整份写值 ——
-  /** 这条选项带的日期数与选择模式合不合：单选恰一条、多选至少一条。 */
+  /** 这条选项带的日期数与选择模式合不合：单选恰一条、多选至少一条且不超过上限。 */
   const fitsSelection = (dates: readonly string[]): boolean =>
-    selectionMode === 'single' ? dates.length === 1 : dates.length >= 1
+    selectionMode === 'single'
+      ? dates.length === 1
+      : dates.length >= 1 && (calendar.maxSelected == null || dates.length <= calendar.maxSelected)
   const presetInput = prop('presets') ?? []
   const presets: readonly DatePickerPresetState[] = presetInput.map((preset) => {
     const dates = datePickerPresetDates(preset.value)

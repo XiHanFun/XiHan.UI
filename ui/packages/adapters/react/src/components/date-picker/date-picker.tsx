@@ -106,8 +106,12 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   min?: string
   max?: string
   locale?: string
+  /** 周首日，0 = 星期日 … 6 = 星期六；不给按 locale。只改日历的表头、行首与 Home / End，月份名与星期名仍按 locale。 */
+  firstDayOfWeek?: number
   timeZone?: string
   selectionMode?: CalendarPickerSelectionMode
+  /** multiple 下最多选几个周期；选满后日历里没选中的格子不可再加选，已选的仍可点掉。 */
+  maxSelected?: number
   /** 选择粒度；与 selectionMode 正交，输入行铺设哪几段也跟随它。 */
   granularity?: CalendarGranularity
   /** 面板当前所处的层级；给定即受控，默认跟随 granularity。 */
@@ -161,8 +165,10 @@ export function XhDatePickerRoot({
   min,
   max,
   locale,
+  firstDayOfWeek,
   timeZone,
   selectionMode,
+  maxSelected,
   granularity,
   activeView,
   segments,
@@ -204,8 +210,10 @@ export function XhDatePickerRoot({
     min,
     max,
     locale,
+    firstDayOfWeek,
     timeZone,
     selectionMode,
+    maxSelected,
     granularity,
     activeView,
     segments,
