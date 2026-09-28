@@ -1,8 +1,8 @@
 // 树的拖放落下：库只报搬家意图，宿主写回 collection 后行换到新位置——不是瞬移，而是从旧位置滑过去
 // （换位的 translate 过渡，时长 move）；换了父、被宿主重建的节点同样按节点值认回来。
 // 落点线与 Table、Sortable 同一种颜色令牌。translate 的中间帧只有真实浏览器量得出来。
+import type { TreeNode } from '@xihan-ui/headless'
 import type { App } from 'vue'
-import type { TreeNode } from '../../src'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { createApp, defineComponent, h, nextTick, ref } from 'vue'
