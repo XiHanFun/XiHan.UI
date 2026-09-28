@@ -24614,6 +24614,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-field-border-invalid"
+            },
+            {
               "name": "--xh-field-control-bg"
             },
             {
@@ -24699,6 +24702,9 @@
             },
             {
               "name": "--xh-field-label-star"
+            },
+            {
+              "name": "--xh-field-ring-invalid"
             }
           ]
         }
@@ -44881,19 +44887,31 @@
               "name": "--xh-pagination-jumper-bg"
             },
             {
+              "name": "--xh-pagination-jumper-bg-disabled"
+            },
+            {
               "name": "--xh-pagination-jumper-bg-hover"
             },
             {
               "name": "--xh-pagination-jumper-border"
             },
             {
+              "name": "--xh-pagination-jumper-border-focus"
+            },
+            {
               "name": "--xh-pagination-jumper-border-hover"
+            },
+            {
+              "name": "--xh-pagination-jumper-border-invalid"
             },
             {
               "name": "--xh-pagination-jumper-w"
             },
             {
               "name": "--xh-pagination-layer"
+            },
+            {
+              "name": "--xh-pagination-page-size-select-w"
             },
             {
               "name": "--xh-pagination-summary-fg"

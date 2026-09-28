@@ -92,7 +92,7 @@
       "mode": "drawn",
       "overscroll": true,
       "gutter": false,
-      "why": "分页器每页条数下拉的浮层面"
+      "why": "省略页码摊开的面板：一串页码格子横排折行，页数多时在面板里滚；每页条数下拉是库内 Select，浮层面归 select"
     },
     "color-picker:content": {
       "mode": "drawn",

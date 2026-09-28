@@ -511,6 +511,42 @@ for (const comp of COMPONENTS) {
   }
 }
 
+// ⑦ 别的组件改字段的缺省宽：一族一个数，只有登记过的嵌入位才能在自己的挂载点上改写字段的宽度槽，
+// 且必须留自己的使用者槽（作者要还原字段缺省宽时改的是嵌入方的槽，不必知道里头装的是哪个字段）
+const EMBEDDED_WIDTH = {
+  'pagination:page-size-select:select': {
+    slot: '--xh-pagination-page-size-select-w',
+    reason: '分页行里的每页条数控制器，选项是「10 条 / 页」一类短串，字段缺省宽 16rem 在分页行里过宽，按内容定宽',
+  },
+}
+const usedEmbedded = new Set()
+for (const file of [...files].filter(f => f.endsWith('.css')).sort()) {
+  const host = file.replace(/\.css$/, '')
+  for (const rule of parseRules(strip(await readFile(join(STYLES_DIR, file), 'utf8')))) {
+    for (const [name, value] of rule.decls) {
+      const field = /^--xh-([a-z][a-z0-9-]*)-control-w$/.exec(name)?.[1]
+      if (!field || field === host)
+        continue
+      for (const selector of rule.selectors) {
+        const part = [...selector.matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].at(-1)?.[1] ?? '（根）'
+        const key = `${host}:${part}:${field}`
+        const entry = EMBEDDED_WIDTH[key]
+        if (!entry) {
+          problems.set(host, [...(problems.get(host) ?? []), `root-w：${selector} 改写了 ${field} 的缺省宽 ${name}，没登记进 EMBEDDED_WIDTH——字段的缺省宽一族一个数，嵌入位要改先登记理由`])
+          continue
+        }
+        usedEmbedded.add(key)
+        if (!value.startsWith(`var(${entry.slot},`))
+          problems.set(host, [...(problems.get(host) ?? []), `root-w：${selector} 改写 ${name} 没经自己的使用者槽 ${entry.slot}`])
+      }
+    }
+  }
+}
+for (const key of Object.keys(EMBEDDED_WIDTH)) {
+  if (!usedEmbedded.has(key))
+    problems.set(key.split(':')[0], [...(problems.get(key.split(':')[0]) ?? []), `EMBEDDED_WIDTH 里的 ${key} 已经没人改写了——名单过期`])
+}
+
 for (const key of Object.keys(EXEMPT)) {
   if (!usedExempt.has(key))
     problems.set(key.split(' ')[0], [...(problems.get(key.split(' ')[0]) ?? []), `例外 ${key} 已经用不上了，删掉这条`])

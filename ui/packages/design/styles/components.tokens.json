@@ -29769,6 +29769,24 @@
       "description": "empty-state 的 title 部件 line-height 覆盖槽。"
     },
     {
+      "name": "--xh-field-border-invalid",
+      "component": "field",
+      "part": [
+        "jumper"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "user-invalid"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "field 的 jumper 部件 border-color 覆盖槽。"
+    },
+    {
       "name": "--xh-field-control-bg",
       "component": "field",
       "part": [
@@ -30336,6 +30354,25 @@
       ],
       "visibility": "public",
       "description": "field 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-ring-invalid",
+      "component": "field",
+      "part": [
+        "jumper"
+      ],
+      "property": [
+        "outline-color"
+      ],
+      "state": [
+        "focus-within",
+        "user-invalid"
+      ],
+      "defaultToken": [
+        "--xh-ring-invalid"
+      ],
+      "visibility": "public",
+      "description": "field 的 jumper 部件 outline-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-action-gap",
@@ -50397,7 +50434,8 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "pressed"
+        "pressed",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-hover",
@@ -50471,16 +50509,25 @@
         "summary"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "min-block-size"
       ],
       "state": [
-        "default"
+        "default",
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
       ],
       "defaultToken": [
         "--xh-_pagination-item-size"
       ],
       "visibility": "public",
-      "description": "pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger、summary 部件 block-size 覆盖槽。"
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger、summary 部件 block-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-pagination-item-min-size",
@@ -50521,7 +50568,8 @@
         "padding-inline"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_pagination-item-px"
@@ -50545,7 +50593,8 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-shape-control"
@@ -50586,16 +50635,35 @@
         "jumper"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-_field-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "pagination 的 jumper 部件 background 覆盖槽。"
+      "description": "pagination 的 jumper 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-pagination-jumper-bg-disabled",
+      "component": "pagination",
+      "part": [
+        "jumper"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-bg-disabled"
+      ],
+      "visibility": "public",
+      "description": "pagination 的 jumper 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-jumper-bg-hover",
@@ -50604,17 +50672,25 @@
         "jumper"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "invalid",
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_field-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "pagination 的 jumper 部件 background 覆盖槽。"
+      "description": "pagination 的 jumper 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-jumper-border",
@@ -50626,13 +50702,34 @@
         "border"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-_field-variant-border-rest"
       ],
       "visibility": "public",
       "description": "pagination 的 jumper 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-pagination-jumper-border-focus",
+      "component": "pagination",
+      "part": [
+        "jumper"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "focus-within",
+        "not([data-disabled])",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-border-focus"
+      ],
+      "visibility": "public",
+      "description": "pagination 的 jumper 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-pagination-jumper-border-hover",
@@ -50644,11 +50741,39 @@
         "border-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "invalid",
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-border-strong"
+        "--xh-_field-variant-border-hover"
+      ],
+      "visibility": "public",
+      "description": "pagination 的 jumper 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-pagination-jumper-border-invalid",
+      "component": "pagination",
+      "part": [
+        "jumper"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid",
+        "user-invalid",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-border-invalid"
       ],
       "visibility": "public",
       "description": "pagination 的 jumper 部件 border-color 覆盖槽。"
@@ -50688,6 +50813,24 @@
       ],
       "visibility": "public",
       "description": "pagination 的 positioner 部件 z-index 覆盖槽。"
+    },
+    {
+      "name": "--xh-pagination-page-size-select-w",
+      "component": "pagination",
+      "part": [
+        "page-size-select"
+      ],
+      "property": [
+        "--xh-select-control-w"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "max-content"
+      ],
+      "visibility": "public",
+      "description": "pagination 的 page-size-select 部件 --xh-select-control-w 覆盖槽。"
     },
     {
       "name": "--xh-pagination-summary-fg",

@@ -73,6 +73,8 @@
     "menubar [data-part='root'][data-scope='menubar']": "roving tabindex 的兜底落点，焦点转投给 trigger 之后不再停留",
     "number-field [data-part='control'][data-scope='number-field'] [data-part='input'][data-scope='number-field']": "环由 control 的 :focus-within 画在外框上",
     "number-field [data-part='control'][data-scope='number-field'] [data-xh-action-profile='field-inset']": "焦点落到盒内加减钮时 control 已经 :focus-within 起了环",
+    "pagination [data-part='control'][data-scope='pagination'] [data-part='input'][data-scope='pagination']": "家族随皮肤引入的规则：跳页框自身就是字段外壳（input 即 chrome），不在 control 里，这条命不中；环由它自己的 :focus-within 画",
+    "pagination [data-part='control'][data-scope='pagination'] [data-xh-action-profile='field-inset']": "家族随皮肤引入的规则：分页行里没有字段盒与盒内钮，这条命不中",
     "password-input [data-part='control'][data-scope='password-input'] [data-part='input'][data-scope='password-input']": "环由 control 的 :focus-within 画在外框上",
     "password-input [data-part='control'][data-scope='password-input'] [data-xh-action-profile='field-inset']": "家族对不占 Tab 位的内嵌钮关环；切换钮占 Tab 位，本皮肤以更高特异度在 control 内的切换钮上重新画环，盒里两个停靠点才分得开",
     "pin-input [data-part='control'][data-scope='pin-input'] [data-part='input'][data-scope='pin-input']": "家族随皮肤引入的规则：pin-input 每格 input 自身即 chrome、不投影 data-xh-field-input，这条命不中；格子的环由家族 :focus-within 与皮肤的 [data-focus] 画在格子自己身上",

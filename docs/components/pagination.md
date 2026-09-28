@@ -85,6 +85,7 @@
 - 支持首页、上一页、下一页、末页、跳页、每页数量与可展开省略位。
 - 更改 `pageSize` 后自动重算总页数并校正当前页。
 - `disabled` 让整组不可交互（例如数据加载中）：翻页钮、页码与省略位都是原生 disabled，不可聚焦、不接指针与键盘，跳页输入框与每页条数下拉一并禁用，已摊开的省略位收起；当前页仍以淡底标出，位置不丢。
+- 每页条数控制器在分页行里按内容定宽，不取字段缺省宽；跳页框是字段外壳，静息描边、悬停与聚焦换边、越界的页码判校验失败，都与其它字段同一副样子。
 
 ### 组合
 
@@ -285,7 +286,11 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `summary` | `data-empty` | ''（条件成立时才出现） |
+| `jumper` | `data-disabled` | ''（条件成立时才出现） |
 | `jumper` | `data-empty` | ''（条件成立时才出现） |
+| `jumper` | `data-variant` | 'outline' |
+| `jumper` | `data-xh-field-chrome` | '' |
+| `jumper` | `data-xh-field-size` | props.size |
 | `first-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `first-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `first-trigger` | `data-xh-action-control` | '' |
@@ -369,20 +374,24 @@
 | `--xh-pagination-item-border-selected` | `item` | `border`<br>`border-color` | `current`<br>`focus-visible` | `--xh-_pagination-selected-bg` | pagination 的 item 部件 border、border-color 覆盖槽。 |
 | `--xh-pagination-item-border-selected-active` | `item` | `border-color` | `current`<br>`disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_pagination-selected-bg-active` | pagination 的 item 部件 border-color 覆盖槽。 |
 | `--xh-pagination-item-border-selected-hover` | `item` | `border-color` | `current`<br>`disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_pagination-selected-bg-hover` | pagination 的 item 部件 border-color 覆盖槽。 |
-| `--xh-pagination-item-fg` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`jumper`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest`<br>`--xh-fg-default` | pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 color 覆盖槽。 |
+| `--xh-pagination-item-fg` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`jumper`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`xh-field-chrome` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest`<br>`--xh-fg-default` | pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 color 覆盖槽。 |
 | `--xh-pagination-item-fg-selected` | `item` | `color` | `current`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_pagination-selected-fg` | pagination 的 item 部件 color 覆盖槽。 |
 | `--xh-pagination-item-font-weight` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 font-weight 覆盖槽。 |
-| `--xh-pagination-item-h` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`jumper`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger`<br>`summary` | `block-size` | `default` | `--xh-_pagination-item-size` | pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger、summary 部件 block-size 覆盖槽。 |
+| `--xh-pagination-item-h` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`jumper`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger`<br>`summary` | `block-size`<br>`min-block-size` | `default`<br>`has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_pagination-item-size` | pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger、summary 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-pagination-item-min-size` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger` | `min-inline-size` | `default` | `--xh-_pagination-item-size` | pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 min-inline-size 覆盖槽。 |
-| `--xh-pagination-item-px` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`jumper`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger` | `padding-inline` | `default` | `--xh-_pagination-item-px` | pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 padding-inline 覆盖槽。 |
-| `--xh-pagination-item-radius` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`jumper`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-control` | pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-pagination-item-px` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`jumper`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger` | `padding-inline` | `default`<br>`xh-field-chrome` | `--xh-_pagination-item-px` | pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-pagination-item-radius` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`jumper`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger` | `border-radius` | `default`<br>`xh-field-chrome` | `--xh-shape-control` | pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-pagination-item-shadow` | `item` | `box-shadow` | `current`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | pagination 的 item 部件 box-shadow 覆盖槽。 |
-| `--xh-pagination-jumper-bg` | `jumper` | `background` | `default` | `--xh-bg-surface` | pagination 的 jumper 部件 background 覆盖槽。 |
-| `--xh-pagination-jumper-bg-hover` | `jumper` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | pagination 的 jumper 部件 background 覆盖槽。 |
-| `--xh-pagination-jumper-border` | `jumper` | `border` | `default` | `--xh-border-default` | pagination 的 jumper 部件 border 覆盖槽。 |
-| `--xh-pagination-jumper-border-hover` | `jumper` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-border-strong` | pagination 的 jumper 部件 border-color 覆盖槽。 |
+| `--xh-pagination-jumper-bg` | `jumper` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | pagination 的 jumper 部件 background-color 覆盖槽。 |
+| `--xh-pagination-jumper-bg-disabled` | `jumper` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | pagination 的 jumper 部件 background-color 覆盖槽。 |
+| `--xh-pagination-jumper-bg-hover` | `jumper` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | pagination 的 jumper 部件 background-color 覆盖槽。 |
+| `--xh-pagination-jumper-border` | `jumper` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | pagination 的 jumper 部件 border 覆盖槽。 |
+| `--xh-pagination-jumper-border-focus` | `jumper` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | pagination 的 jumper 部件 border-color 覆盖槽。 |
+| `--xh-pagination-jumper-border-hover` | `jumper` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | pagination 的 jumper 部件 border-color 覆盖槽。 |
+| `--xh-pagination-jumper-border-invalid` | `jumper` | `border-color` | `invalid`<br>`user-invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | pagination 的 jumper 部件 border-color 覆盖槽。 |
 | `--xh-pagination-jumper-w` | `jumper` | `inline-size` | `default` | `--xh-space-8` | pagination 的 jumper 部件 inline-size 覆盖槽。 |
 | `--xh-pagination-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | pagination 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-pagination-page-size-select-w` | `page-size-select` | `--xh-select-control-w` | `default` | `max-content` | pagination 的 page-size-select 部件 --xh-select-control-w 覆盖槽。 |
 | `--xh-pagination-summary-fg` | `summary` | `color` | `default` | `--xh-fg-muted` | pagination 的 summary 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
@@ -390,7 +399,7 @@
 
 动效角色：按压 · 状态 · 出现（锚定面板） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
