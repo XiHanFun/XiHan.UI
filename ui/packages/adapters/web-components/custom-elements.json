@@ -71440,7 +71440,7 @@
           "name": "XhTreeElement",
           "cssParts": [
             {
-              "description": "组件根容器，承载 data-variant",
+              "description": "组件根容器，承载 data-variant 与 data-size",
               "name": "root"
             },
             {
@@ -71554,6 +71554,15 @@
                 "text": "TreeSchema['props']['variant'] | undefined"
               },
               "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "TreeSchema['props']['size'] | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -71851,6 +71860,14 @@
               "description": "外框形态：outline 带描边与底色，subtle 淡底无描边，ghost 只保留行；默认 outline",
               "name": "variant",
               "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "TreeSchema['props']['size'] | undefined"
+              },
+              "description": "尺寸，默认 md：行高、行内内衬、字号、指示符盒与层级缩进随档",
+              "name": "size",
+              "fieldName": "size"
             },
             {
               "type": {
