@@ -388,6 +388,12 @@ export const tourMachine = createMachine({
           const step = currentTourStep(prop('steps'), stepOf(prop, context.get('value')))
           if (!step?.target || resolveTourTarget(scope, step))
             return
+          const timeout = prop('targetTimeout') ?? TOUR_TARGET_TIMEOUT
+          // 0 即不等：当场按居中呈现，不起零时长的计时器——那会让各端在挂载那一帧各自停在不同的中间态
+          if (timeout === 0) {
+            send({ type: 'TARGET.MISSING' })
+            return
+          }
           const root = scope.getRootNode()
           const Observer = scope.getWin().MutationObserver
           const observer = Observer
@@ -404,7 +410,7 @@ export const tourMachine = createMachine({
             stop?.()
             stop = undefined
             send({ type: 'TARGET.MISSING' })
-          }, prop('targetTimeout') ?? TOUR_TARGET_TIMEOUT)
+          }, timeout)
           stop = () => {
             observer?.disconnect()
             cancelTimer()
