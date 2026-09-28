@@ -6,13 +6,14 @@
 // 提供 tooltip 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { TooltipOpenChangeDetails, TooltipSchema } from '@xihan-ui/headless'
+import type { TooltipGroup, TooltipOpenChangeDetails, TooltipSchema } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTooltip, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
+import { connectTooltip, createTooltipGroup, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
+import { XhReactiveElement } from '../reactive'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -45,6 +46,7 @@ const NUMBER_CONVERTER = {
  * @attr {number} close-delay - 悬停移出到收起的等待毫秒，默认 300
  * @attr {number} skip-delay-duration - 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与
  * @attr {boolean} disabled - 只关闭提示，被包裹的控件仍可用
+ * @attr {boolean} follow-cursor - 跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
@@ -75,6 +77,7 @@ export class XhTooltipElement extends XhPortalHostElement {
     closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
     skipDelayDuration: { converter: NUMBER_CONVERTER, attribute: 'skip-delay-duration' },
     disabled: { type: Boolean },
+    followCursor: { type: Boolean, attribute: 'follow-cursor' },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
   }
@@ -88,6 +91,7 @@ export class XhTooltipElement extends XhPortalHostElement {
   declare closeDelay?: number
   declare skipDelayDuration?: number
   declare disabled?: boolean
+  declare followCursor?: boolean
   declare tone?: Tone
   declare size?: Size
 
@@ -127,6 +131,7 @@ export class XhTooltipElement extends XhPortalHostElement {
       closeDelay: this.closeDelay,
       skipDelayDuration: this.skipDelayDuration,
       disabled: this.disabled ?? false,
+      followCursor: this.followCursor ?? false,
       tone: this.tone,
       size: this.size,
       onOpenChange: this.notify,
@@ -173,6 +178,16 @@ export class XhTooltipElement extends XhPortalHostElement {
     svc.refs.set('position', this.engine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
+    svc.refs.set('group', this.findGroup())
+  }
+
+  /** 最近的 `<xh-tooltip-provider>` 建的那一组；不在 Provider 里时为 null，归页面级的那一组。 */
+  private findGroup(): TooltipGroup | null {
+    for (let el = this.parentElement; el; el = el.parentElement) {
+      if (isTooltipGroupScope(el))
+        return el.tooltipGroup
+    }
+    return null
   }
 
   /**
@@ -183,6 +198,8 @@ export class XhTooltipElement extends XhPortalHostElement {
   override connectedCallback(): void {
     this.refreshParts()
     super.connectedCallback()
+    // 挪进或挪出 Provider 都要改认所在的那一组：机器没重建时 onBuilt 不会再跑
+    this.ctrl.service.refs.set('group', this.findGroup())
   }
 
   protected wire(): void {
@@ -232,5 +249,57 @@ export class XhTooltipElement extends XhPortalHostElement {
     if (!this.ctrl.service.state.matches('visible'))
       this.setPartHidden(this.getPart('content'), true)
     this.config = null // adopt / 重连必须按宿主此刻所属 Document 重建 registry 与 Portal 落点
+  }
+}
+
+/** `<xh-tooltip-provider>` 认领这个接口：提示沿 DOM 祖先链找它，不必反向依赖元素类。 */
+interface TooltipGroupScope extends Element {
+  readonly tooltipGroup: TooltipGroup
+}
+
+function isTooltipGroupScope(node: Element): node is TooltipGroupScope {
+  return 'tooltipGroup' in node
+}
+
+/**
+ * `<xh-tooltip-provider>`：提示组。包裹一棵子树，其中的 `<xh-tooltip>` 归同一组：共用接替窗口、
+ * 同一时刻只开一个，没写延时的取这里给的缺省。
+ *
+ * 它不渲染任何内容、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，
+ * 布局上它是 display: contents。与 Vue / React 的 XhTooltipProvider 是同一件事：那两家沿组件树找，这里沿 DOM 祖先链找。
+ *
+ * @customElement xh-tooltip-provider
+ * @attr {number} open-delay - 组内提示悬停进入到展开的缺省等待毫秒；提示自己写了就以提示为准
+ * @attr {number} close-delay - 组内提示悬停移出到收起的缺省等待毫秒
+ * @attr {number} skip-delay-duration - 组内提示的缺省接替窗口毫秒；0 表示组内不接替
+ */
+export class XhTooltipProviderElement extends XhReactiveElement implements TooltipGroupScope {
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
+  static override properties = {
+    openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
+    closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
+    skipDelayDuration: { converter: NUMBER_CONVERTER, attribute: 'skip-delay-duration' },
+  }
+
+  declare openDelay?: number
+  declare closeDelay?: number
+  declare skipDelayDuration?: number
+
+  /** 这一组：元素的一生里只建一次；缺省值每次现读，改属性下一次开合即生效。 */
+  readonly tooltipGroup: TooltipGroup = createTooltipGroup(() => ({
+    openDelay: this.openDelay,
+    closeDelay: this.closeDelay,
+    skipDelayDuration: this.skipDelayDuration,
+  }))
+
+  protected override createRenderRoot(): HTMLElement | DocumentFragment {
+    return this // Light DOM，不建 shadowRoot
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback()
+    // 布局上让开：作者的子节点该由外层容器直接排布，不该被这一层挡出一个块
+    if (!this.style.display)
+      this.style.display = 'contents'
   }
 }

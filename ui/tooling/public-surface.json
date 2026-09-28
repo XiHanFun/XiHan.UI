@@ -2538,6 +2538,8 @@
       "XhTooltipContentProps",
       "XhTooltipPositioner",
       "XhTooltipPositionerProps",
+      "XhTooltipProvider",
+      "XhTooltipProviderProps",
       "XhTooltipRoot",
       "XhTooltipRootProps",
       "XhTooltipTrigger",
@@ -4416,6 +4418,7 @@
       "XhTooltipArrow",
       "XhTooltipContent",
       "XhTooltipPositioner",
+      "XhTooltipProvider",
       "XhTooltipRoot",
       "XhTooltipTrigger",
       "XhTourArrow",
@@ -4914,6 +4917,7 @@
       "XhToolCallElement",
       "XhToolbarElement",
       "XhTooltipElement",
+      "XhTooltipProviderElement",
       "XhTourElement",
       "XhTransferElement",
       "XhTranslationOverrides",
@@ -7363,7 +7367,10 @@
       "ToolbarSchema",
       "ToolbarTranslations",
       "TooltipApi",
+      "TooltipGroup",
+      "TooltipGroupOptions",
       "TooltipOpenChangeDetails",
+      "TooltipPoint",
       "TooltipRefs",
       "TooltipSchema",
       "TooltipTranslations",
@@ -7909,6 +7916,7 @@
       "createLoadingBarServiceController",
       "createMenuTreeNode",
       "createReedSolomon",
+      "createTooltipGroup",
       "createVirtualizerKernel",
       "cropToCanvas",
       "currentTourStep",
@@ -13399,6 +13407,7 @@
       "defaultOpen",
       "dir",
       "disabled",
+      "followCursor",
       "offset",
       "onOpenChange",
       "open",
@@ -21487,6 +21496,7 @@
         "default-open",
         "dir",
         "disabled",
+        "follow-cursor",
         "offset",
         "open",
         "open-delay",
@@ -21498,6 +21508,14 @@
       "events": [
         "open-change"
       ]
+    },
+    "xh-tooltip-provider": {
+      "attributes": [
+        "close-delay",
+        "open-delay",
+        "skip-delay-duration"
+      ],
+      "events": []
     },
     "xh-tour": {
       "attributes": [

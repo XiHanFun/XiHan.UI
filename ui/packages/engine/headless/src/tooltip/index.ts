@@ -7,7 +7,9 @@
 
 export { tooltipAnatomy } from './tooltip.anatomy'
 export { connectTooltip } from './tooltip.connect'
+export { createTooltipGroup } from './tooltip.group'
+export type { TooltipGroup, TooltipGroupOptions } from './tooltip.group'
 export { tooltipKeyboard } from './tooltip.keyboard'
 export { TOOLTIP_DEFAULT_PLACEMENT, tooltipMachine } from './tooltip.machine'
 export { tooltipMeta } from './tooltip.meta'
-export type { TooltipApi, TooltipOpenChangeDetails, TooltipRefs, TooltipSchema, TooltipTranslations } from './tooltip.types'
+export type { TooltipApi, TooltipOpenChangeDetails, TooltipPoint, TooltipRefs, TooltipSchema, TooltipTranslations } from './tooltip.types'

@@ -7,9 +7,16 @@
 
 import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { TooltipGroup } from './tooltip.group'
 
 export interface TooltipOpenChangeDetails {
   open: boolean
+}
+
+/** 指针在视口里的落点：跟随鼠标时提示锚在这一点上。 */
+export interface TooltipPoint {
+  x: number
+  y: number
 }
 
 /**
@@ -27,6 +34,12 @@ export interface TooltipRefs {
   getAnchorEl: () => HTMLElement | null
   /** 浮层元素（positioner）。 */
   getFloatingEl: () => HTMLElement | null
+  /** 所在的提示组：Provider 注入它那一组；没有 Provider 时为 null，归页面级的那一组。 */
+  group: TooltipGroup | null
+  /** 跟随鼠标时指针最近一次的落点；触屏或还没有指针落点时为 null，提示锚回 trigger。 */
+  cursor: TooltipPoint | null
+  /** 定位效应交出的重挂句柄：指针移动后调一次，提示按新落点重算一轮。 */
+  reanchor: (() => void) | null
 }
 
 export interface TooltipSchema extends MachineSchema {
@@ -50,6 +63,11 @@ export interface TooltipSchema extends MachineSchema {
     skipDelayDuration?: number
     /** 只关闭提示本身，不影响被包裹控件的可用性。 */
     disabled?: boolean
+    /**
+     * 跟随鼠标：由指针打开的提示锚在指针落点上，随指针在 trigger 上移动而更新，默认 false。
+     * 触屏没有悬停落点、聚焦打开没有指针，这两种情形退回锚定到 trigger。
+     */
+    followCursor?: boolean
     /** 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg，决定内边距与字号档位。 */
@@ -73,7 +91,10 @@ export interface TooltipSchema extends MachineSchema {
    */
   state: 'closed' | 'opening' | 'visible' | 'visible.open' | 'visible.closing'
   event:
-    | { type: 'POINTER.ENTER' }
+    /** 指针进入 trigger；带上落点与指针类型，跟随鼠标时据此落位。 */
+    | { type: 'POINTER.ENTER', point?: TooltipPoint, pointerType?: string }
+    /** 指针在 trigger 上移动：只有跟随鼠标时才派发。 */
+    | { type: 'POINTER.MOVE', point: TooltipPoint, pointerType?: string }
     | { type: 'POINTER.LEAVE' }
     | { type: 'POINTER.DOWN' }
     | { type: 'FOCUS' }
@@ -89,7 +110,7 @@ export interface TooltipSchema extends MachineSchema {
     | { type: 'CONTROLLED.CLOSE' }
   tag: never
   guard: 'isOpenControlled' | 'isDisabled' | 'isFocusOpened'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusOpened' | 'clearFocusOpened' | 'syncInstant' | 'clearInstant'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusOpened' | 'clearFocusOpened' | 'syncInstant' | 'clearInstant' | 'trackCursor'
   effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer' | 'trackGroup'
 }
 

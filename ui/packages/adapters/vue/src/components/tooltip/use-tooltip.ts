@@ -17,6 +17,7 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
+import { useTooltipGroup } from './context'
 
 export interface TooltipContext {
   service: Service<TooltipSchema>
@@ -71,6 +72,8 @@ export function useTooltip(
   }
   service.refs.set('getAnchorEl', () => triggerRef.value)
   service.refs.set('getFloatingEl', () => positionerRef.value)
+  // 放在 XhTooltipProvider 里就归它那一组：共用接替窗口、同组只开一个、延时取组的缺省
+  service.refs.set('group', useTooltipGroup())
 
   const api = computed(() => connectTooltip(service, vueNormalize))
 
