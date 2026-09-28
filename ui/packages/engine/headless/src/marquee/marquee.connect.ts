@@ -19,6 +19,9 @@ const DEFAULT_DIRECTION: MarqueeDirection = 'left'
 const HORIZONTAL: readonly MarqueeDirection[] = ['left', 'right']
 
 /** 每秒像素只收有限正数：0 与负数不是速度，往回走由 direction 表达。 */
+/** 一份内容在滚动轴上的实测长度：写进根的内联样式，皮肤按它换算一圈的时长。 */
+const MEASURED_SPAN = '--xh-_marquee-measured-span'
+
 function speedValue(speed: number | undefined): number | undefined {
   return typeof speed === 'number' && Number.isFinite(speed) && speed > 0 ? speed : undefined
 }
@@ -35,6 +38,12 @@ export function connectMarquee<T extends PropTypes>(
   const autoFill = prop('autoFill') === true
   const speed = speedValue(prop('speed'))
   const paused = context.get('paused')
+  const span = context.get('span')
+  // 根节点的内联 style 归本组件管：速度与实测长度两个变量，作者自己的内联样式写在外层元素上
+  const style = [
+    speed === undefined ? null : `--xh-marquee-speed: ${speed}`,
+    span == null ? null : `${MEASURED_SPAN}: ${span}`,
+  ].filter(Boolean).join('; ')
   const translations = prop('translations')
   const label = {
     autoplayTriggerPause: translations?.autoplayTriggerPause ?? 'Pause scrolling',
@@ -44,7 +53,6 @@ export function connectMarquee<T extends PropTypes>(
   // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)
 
-  // 给了速度时根节点的内联 style 归本组件管，作者自己的内联样式写在外层元素上
   const rootAttrs = {
     ...parts.root.attrs,
     'data-direction': direction,
@@ -54,7 +62,7 @@ export function connectMarquee<T extends PropTypes>(
     'data-paused': dataAttr(paused),
     'data-auto-fill': dataAttr(autoFill),
     'data-fade': dataAttr(prop('fade') === true),
-    ...(speed === undefined ? {} : { style: `--xh-marquee-speed: ${speed}` }),
+    ...(style ? { style } : {}),
   }
 
   return {

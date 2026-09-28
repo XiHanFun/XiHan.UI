@@ -31,9 +31,8 @@ export interface MarqueeSchema extends MachineSchema {
     /** 滚动方向，默认 left。 */
     direction?: MarqueeDirection
     /**
-     * 名义上的每秒像素数。写为根上的内联变量，皮肤用一份内容的长度除以它换算为一圈的时长。
-     * 该长度取自 `--xh-marquee-span`：CSS 无法读取布局尺寸，槽中存放的是一个默认值。
-     * 把它修改为与内容真实长度一致时速度才逐字等于每秒该像素数，否则它是一个成比例的快慢档。
+     * 每秒像素数。写为根上的内联变量，皮肤用一份内容在滚动轴上的长度除以它换算为一圈的时长；
+     * 那段长度挂载后实测、随尺寸变化重量，窗口宽窄不影响速度。
      * 只接受有限正数；其余值不写出，回退为皮肤默认值。
      */
     speed?: number
@@ -60,6 +59,8 @@ export interface MarqueeSchema extends MachineSchema {
     paused: boolean
     /** 暂停开关正被按住：Space / Enter 或触屏手指按下到松开之间，投影 data-pressed。指针按住由 :active 表出。 */
     pressed: boolean
+    /** 一份内容在滚动轴上的实测长度（像素）；没量到（无布局宿主、尚未挂载）为 null，皮肤退回槽里的缺省值。 */
+    span: number | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -72,10 +73,12 @@ export interface MarqueeSchema extends MachineSchema {
     // 按压通道（shared/press）：Space / Enter 或触屏按住与松开
     | { type: 'PRESS.START' }
     | { type: 'PRESS.END' }
+    /** 实测到一份内容在滚动轴上的长度。 */
+    | { type: 'SPAN.MEASURE', span: number }
   tag: never
   guard: never
-  action: 'setPaused' | 'togglePaused' | 'startPress' | 'endPress'
-  effect: never
+  action: 'setPaused' | 'togglePaused' | 'startPress' | 'endPress' | 'setSpan'
+  effect: 'trackSpan'
 }
 
 /** 组件属性：与机器的 props 同一份。 */

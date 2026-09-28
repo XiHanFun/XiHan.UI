@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import type { MarqueeApi, MarqueeDirection, MarqueeProps } from '../src/marquee'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'

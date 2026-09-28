@@ -64,7 +64,7 @@ transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
 animation-name: xh-marquee-x
-animation-duration: 20s
+animation-duration: 13.8s
 animation-timing-function: linear
 outline-width: 3px
 outline-offset: 0px

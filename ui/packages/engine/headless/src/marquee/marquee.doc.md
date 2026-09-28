@@ -14,7 +14,7 @@
 ## 特性
 
 - `autoFill` 自动重复内容铺满容器，接缝处不留空。
-- `direction` 切换方向，`speed` 调整速度；速度按 `--xh-marquee-span` 换算为一圈时长，需要精确对应每秒像素数时把该槽改为内容的真实长度。
+- `direction` 切换方向，`speed` 是每秒像素数：挂载后实测一份内容在滚动轴上的长度，按它换算一圈的时长，窗口宽窄不改变速度；写了 `--xh-marquee-span` 以它为准。
 - `pauseOnHover` 在指针悬停或焦点落入窗口时暂停，缺省开启，设为 `false` 关闭；指针或焦点停在暂停开关上不计入。
 - 暂停开关 `autoplay-trigger` 是窗口行尾的单图标按钮，指针、键盘与触屏都能停住滚动；可及名随状态切换为下一步的动作，文案由 `translations` 覆盖。
 - `paused` / `defaultPaused` 控制暂停状态，变化经 `paused-change` 通知；暂停状态优先于悬停。

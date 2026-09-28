@@ -43209,7 +43209,7 @@
         "default"
       ],
       "defaultToken": [
-        "600"
+        "--xh-_marquee-measured-span"
       ],
       "visibility": "public",
       "description": "marquee 的 content、root 部件 animation-duration 覆盖槽。"

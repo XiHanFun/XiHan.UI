@@ -68,7 +68,7 @@ fade 让内容从窗口一端淡入、从另一端淡出，边缘不再生硬地
 ### 特性
 
 - `autoFill` 自动重复内容铺满容器，接缝处不留空。
-- `direction` 切换方向，`speed` 调整速度；速度按 `--xh-marquee-span` 换算为一圈时长，需要精确对应每秒像素数时把该槽改为内容的真实长度。
+- `direction` 切换方向，`speed` 是每秒像素数：挂载后实测一份内容在滚动轴上的长度，按它换算一圈的时长，窗口宽窄不改变速度；写了 `--xh-marquee-span` 以它为准。
 - `pauseOnHover` 在指针悬停或焦点落入窗口时暂停，缺省开启，设为 `false` 关闭；指针或焦点停在暂停开关上不计入。
 - 暂停开关 `autoplay-trigger` 是窗口行尾的单图标按钮，指针、键盘与触屏都能停住滚动；可及名随状态切换为下一步的动作，文案由 `translations` 覆盖。
 - `paused` / `defaultPaused` 控制暂停状态，变化经 `paused-change` 通知；暂停状态优先于悬停。
@@ -104,7 +104,7 @@ fade 让内容从窗口一端淡入、从另一端淡出，边缘不再生硬地
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `direction` | `MarqueeDirection` |  | 滚动方向，默认 left。 |
-| `speed` | `number` |  | 名义上的每秒像素数。写为根上的内联变量，皮肤用一份内容的长度除以它换算为一圈的时长。 该长度取自 `--xh-marquee-span`：CSS 无法读取布局尺寸，槽中存放的是一个默认值。 把它修改为与内容真实长度一致时速度才逐字等于每秒该像素数，否则它是一个成比例的快慢档。 只接受有限正数；其余值不写出，回退为皮肤默认值。 |
+| `speed` | `number` |  | 每秒像素数。写为根上的内联变量，皮肤用一份内容在滚动轴上的长度除以它换算为一圈的时长； 那段长度挂载后实测、随尺寸变化重量，窗口宽窄不影响速度。 只接受有限正数；其余值不写出，回退为皮肤默认值。 |
 | `pauseOnHover` | `boolean` |  | 指针停在窗口上、或键盘焦点落进窗口时暂停，默认开启；写 false 关掉。 |
 | `paused` | `boolean` |  | 受控暂停：为真即停在当前位置，为假继续移动。给了它，暂停开关只报 onPausedChange，由作者写回。 |
 | `defaultPaused` | `boolean` |  | 非受控暂停的初值，默认 false。 |
@@ -141,7 +141,7 @@ fade 让内容从窗口一端淡入、从另一端淡出，边缘不再生硬地
 
 **状态**：`idle`
 
-**事件**：`PAUSED.SET` · `PAUSED.TOGGLE` · `PRESS.START` · `PRESS.END`
+**事件**：`PAUSED.SET` · `PAUSED.TOGGLE` · `PRESS.START` · `PRESS.END` · `SPAN.MEASURE`
 
 ### connect API
 
@@ -207,7 +207,7 @@ fade 让内容从窗口一端淡入、从另一端淡出，边缘不再生硬地
 | `--xh-marquee-fade-size` | `root` | `-webkit-mask-image`<br>`mask-image` | `fade` | `--xh-space-6` | marquee 的 root 部件 -webkit-mask-image、mask-image 覆盖槽。 |
 | `--xh-marquee-gap` | `content`<br>`root` | `padding-block-end`<br>`padding-inline-end` | `orientation=vertical`<br>`xh-copy` | `--xh-space-6` | marquee 的 content、root 部件 padding-block-end、padding-inline-end 覆盖槽。 |
 | `--xh-marquee-icon-size` | `autoplay-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | marquee 的 autoplay-trigger 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-marquee-span` | `content`<br>`root` | `animation-duration` | `auto-fill`<br>`default` | `600` | marquee 的 content、root 部件 animation-duration 覆盖槽。 |
+| `--xh-marquee-span` | `content`<br>`root` | `animation-duration` | `auto-fill`<br>`default` | `--xh-_marquee-measured-span` | marquee 的 content、root 部件 animation-duration 覆盖槽。 |
 | `--xh-marquee-speed` | `content`<br>`root` | `animation-duration` | `auto-fill`<br>`default` | `60` | marquee 的 content、root 部件 animation-duration 覆盖槽。 |
 | `--xh-marquee-trigger-bg` | `autoplay-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-bg-surface` | marquee 的 autoplay-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-marquee-trigger-bg-active` | `autoplay-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover-opaque` | marquee 的 autoplay-trigger 部件 background-color 覆盖槽。 |
