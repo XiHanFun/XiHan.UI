@@ -5,14 +5,16 @@
 
 // 提供 truncate 相关实现。
 
-import type { Service } from '@xihan-ui/core'
-import type { TruncateOpenChangeDetails, TruncateOverflowChangeDetails, TruncateSchema } from '@xihan-ui/headless'
+import type { IdGenerator, Service } from '@xihan-ui/core'
+import type { TruncateOpenChangeDetails, TruncateOverflowChangeDetails, TruncatePosition, TruncateSchema, TruncateTranslations } from '@xihan-ui/headless'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectTruncate, truncateAnatomy, truncateMachine, truncateMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
+const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 三态：属性缺席 = 非受控，写了才是受控的那个布尔。
 const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
@@ -27,15 +29,20 @@ const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? 
  * 行数写在 root 的内联 style 中（自定义属性只有这一条路径能同时落到各适配器上），
  * 因此 root 的内联 style 归本元素管理，作者自己的内联样式写在外层元素上。
  *
+ * 展开按钮是 root 之外的另一个角色节点（放进 root 会跟着文字一起被裁掉）：作者写一个
+ * `<button data-xh-part="trigger">` 与 root 并排；它留空时元素按展开态写入缺省文案，写了内容则原样保留。
+ *
  * @customElement xh-truncate
  * @attr {number} lines - 截断行数，1 为单行，默认 1
- * @attr {boolean} expandable - 点击展开全文
+ * @attr {'end'|'middle'} position - 省略号落在哪，默认 end；middle 只对单行生效
+ * @attr {boolean} expandable - 在文字旁放一颗展开 / 收起全文的按钮（trigger 部件）
  * @attr {boolean} open - 受控展开；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} tooltip - 实际裁掉内容时才把整段文字交给平台的原生提示
  * @fires open-change - 展开状态变化；detail 为 `{ open: boolean }`
  * @fires overflow-change - 溢出结论翻转；detail 为 `{ overflowing: boolean }`
- * @csspart root - 截断文字的盒子，承载 data-lines / data-multiline / data-expandable / data-state / data-overflowing
+ * @csspart root - 截断文字的盒子，承载 data-lines / data-multiline / data-expandable / data-state / data-overflowing / data-position / data-middle-text
+ * @csspart trigger - 展开 / 收起全文的按钮，与 root 并排；没东西可展开时收起不占位
  */
 export class XhTruncateElement extends XhElement {
   static override partContract = { anatomy: truncateAnatomy, meta: truncateMeta }
@@ -43,17 +50,28 @@ export class XhTruncateElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     lines: { converter: NUMBER_CONVERTER },
+    position: { converter: STRING_CONVERTER },
     expandable: { type: Boolean },
     open: { converter: TRISTATE_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     tooltip: { type: Boolean },
+    // 文案是对象，只走 property
+    translations: { attribute: false },
   }
 
   declare lines?: number
+  declare position?: TruncatePosition
   declare expandable?: boolean
   declare open?: boolean
   declare defaultOpen?: boolean
   declare tooltip?: boolean
+  declare translations?: Partial<TruncateTranslations>
+
+  // 展开按钮以 aria-controls 指回文字盒子，id 要按实例派生
+  private readonly idGen: IdGenerator = createCounterIdGenerator()
+  private readonly truncateScope = createScope(this, this.idGen)
+  /** 作者自己往展开按钮里写了内容：那就原样保留，不拿缺省文案去盖。首见即定。 */
+  private readonly authoredTrigger = new WeakMap<HTMLElement, boolean>()
 
   private readonly notifyOpen = (details: TruncateOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -67,19 +85,21 @@ export class XhTruncateElement extends XhElement {
     this,
     truncateMachine,
     () => this.machineProps(),
-    { onBuilt: svc => this.injectRefs(svc) },
+    { scope: this.truncateScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
   private machineProps(): Partial<TruncateSchema['props']> {
-    return {
+    return this.configured('truncate', {
       lines: this.lines,
+      position: this.position,
       expandable: this.expandable ?? false,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       tooltip: this.tooltip ?? false,
+      translations: this.translations,
       onOpenChange: this.notifyOpen,
       onOverflowChange: this.notifyOverflow,
-    }
+    })
   }
 
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
@@ -94,5 +114,14 @@ export class XhTruncateElement extends XhElement {
     const root = this.getPart('root')
     if (root)
       this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+
+    const trigger = this.getPart('trigger')
+    if (trigger) {
+      this.spreader.spread(trigger, api.getTriggerProps() as Record<string, unknown>)
+      if (!this.authoredTrigger.has(trigger))
+        this.authoredTrigger.set(trigger, (trigger.textContent ?? '').trim() !== '' || trigger.children.length > 0)
+      if (!this.authoredTrigger.get(trigger) && trigger.textContent !== api.triggerLabel)
+        trigger.textContent = api.triggerLabel
+    }
   }
 }

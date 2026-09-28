@@ -201,7 +201,7 @@ describe('prompt-input 的禁用发送钮', () => {
   })
 })
 
-describe('truncate 的展开手型', () => {
+describe('truncate 的展开按钮', () => {
   // 量测挂在 ResizeObserver 上，等它把 data-overflowing 落上再断言
   const settled = async (): Promise<HTMLElement> => {
     const el = part('truncate', 'root')
@@ -215,17 +215,21 @@ describe('truncate 的展开手型', () => {
     ]))
   }
 
-  it('装得下的短文本不摆手型', async () => {
+  it('装得下的短文本：按钮收起不占位，文字盒子不摆手型', async () => {
     mountText('短', '40rem')
     const el = await settled()
     await vi.waitFor(() => expect(el.hasAttribute('data-overflowing')).toBe(false))
+    expect(getComputedStyle(part('truncate', 'trigger')).display).toBe('none')
     expect(cursorOf(el)).not.toBe('pointer')
   })
 
-  it('真被裁了才摆手型', async () => {
+  it('真被裁了才露出按钮；文字盒子仍是一段字，手型只在按钮上', async () => {
     mountText('这一段话长得一行放不下，只能收成省略号', '4rem')
     const el = await settled()
     await vi.waitFor(() => expect(el.hasAttribute('data-overflowing')).toBe(true))
-    expect(cursorOf(el)).toBe('pointer')
+    const trigger = part('truncate', 'trigger')
+    expect(getComputedStyle(trigger).display).not.toBe('none')
+    expect(cursorOf(trigger)).toBe('pointer')
+    expect(cursorOf(el)).not.toBe('pointer')
   })
 })

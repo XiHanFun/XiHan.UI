@@ -1909,7 +1909,8 @@
       "time-range-picker",
       "tool-call",
       "tooltip",
-      "tree-select"
+      "tree-select",
+      "truncate"
     ],
     "trigger-indicator": [
       "navigation-menu"

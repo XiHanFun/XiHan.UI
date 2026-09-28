@@ -11,6 +11,7 @@ import type { RefObject } from 'react'
 import { connectTruncate, truncateMachine } from '@xihan-ui/headless'
 import { useCallback, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface TruncateContext {
@@ -29,6 +30,8 @@ export function useTruncate(props: TruncateSchema['props']): TruncateContext {
     service.refs.set('getRootEl', (() => rootRef.current) as never)
   }, [])
 
-  const service = useMachine(truncateMachine, () => props, { onCreate })
+  // 展开按钮以 aria-controls 指回文字盒子，id 要按实例派生
+  const scope = useReactScope()
+  const service = useMachine(truncateMachine, () => props, { onCreate, scope })
   return { api: connectTruncate(service, reactNormalize), service, rootRef }
 }

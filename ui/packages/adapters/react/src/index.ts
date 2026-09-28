@@ -3011,7 +3011,7 @@ export type {
 export { useTree } from './components/tree/use-tree'
 export type { TreeContext } from './components/tree/use-tree'
 export { XhTruncate } from './components/truncate/truncate'
-export type { TruncateSlotProps, XhTruncateProps } from './components/truncate/truncate'
+export type { TruncateSlotProps, TruncateTriggerSlotProps, XhTruncateProps } from './components/truncate/truncate'
 export { useTruncate } from './components/truncate/use-truncate'
 export type { TruncateContext } from './components/truncate/use-truncate'
 export { useTypographyContext } from './components/typography/context'

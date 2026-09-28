@@ -109,7 +109,7 @@
     "data-kind": "这一段内容是哪一类：代码词法单元的类别、流式块的类别。",
     "data-level": "落在自家那把有序刻度上的第几档：热力格的强度、标题的层级、日志行的级别。",
     "data-placement": "摆在宿主的哪一侧、哪个角。",
-    "data-position": "落在什么位置：浮层贴着锚点还是居中、裁剪手柄在哪个方位。",
+    "data-position": "落在什么位置：浮层贴着锚点还是居中、裁剪手柄在哪个方位、截断的省略号收在中间。",
     "data-state": "当前处在哪一档状态。取值域登记在 data-state 段的族体系里，判据④逐值核对。",
     "data-variant": "取哪一档形态（形态轴，取值域逐组件自定）。",
     "data-xh-action-profile": "这颗离散动作控件接 Action Control 家族的哪一档 profile（text / icon / field-inset / floating / row / disclosure-trigger，决定盒型与按压方式）：由 connect 逐部件投影，一个组件里不同部件各取各的档（image-viewer 的翻页钮 floating、叉与工具条钮 icon；approval 的条目 row、动作钮 text）。",
