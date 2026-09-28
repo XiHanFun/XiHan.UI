@@ -309,6 +309,8 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `timer` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `result` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `result` | `data-tone` | 'success' \| 'danger' \| undefined |
+| `footer` | `data-loading` | ''（条件成立时才出现） |
+| `footer` | `data-xh-loading-ring` | '' |
 | `approve-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `approve-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `approve-trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -337,7 +339,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-approval-action-font-size` | `approve-trigger`<br>`deny-trigger`<br>`footer`<br>`root` | `font-size` | `default`<br>`loading` | `--xh-text-label-size` | approval 的 approve-trigger、deny-trigger、footer、root 部件 font-size 覆盖槽。 |
+| `--xh-approval-action-font-size` | `approve-trigger`<br>`deny-trigger` | `font-size` | `default` | `--xh-text-label-size` | approval 的 approve-trigger、deny-trigger 部件 font-size 覆盖槽。 |
 | `--xh-approval-action-font-weight` | `approve-trigger`<br>`deny-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | approval 的 approve-trigger、deny-trigger 部件 font-weight 覆盖槽。 |
 | `--xh-approval-action-h` | `approve-trigger`<br>`deny-trigger` | `block-size`<br>`min-block-size` | `default`<br>`xh-action-profile=row` | `--xh-_approval-action-h` | approval 的 approve-trigger、deny-trigger 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-approval-action-px` | `approve-trigger`<br>`deny-trigger` | `padding-inline` | `default` | `--xh-_approval-action-px` | approval 的 approve-trigger、deny-trigger 部件 padding-inline 覆盖槽。 |
@@ -377,7 +379,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `--xh-approval-item-radius` | `item` | `border-radius` | `default` | `--xh-_action-profile-radius` | approval 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-approval-item-text-fg` | `item-text` | `color` | `default` | `--xh-fg-muted` | approval 的 item-text 部件 color 覆盖槽。 |
 | `--xh-approval-item-text-fg-checked` | `item`<br>`item-text` | `color` | `state=checked` | `--xh-fg-default` | approval 的 item、item-text 部件 color 覆盖槽。 |
-| `--xh-approval-loading-duration` | `footer`<br>`root` | `animation` | `loading` | `--xh-motion-loop-spin` | approval 的 footer、root 部件 animation 覆盖槽。 |
+| `--xh-approval-loading-duration` | `footer` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | approval 的 footer 部件 animation 覆盖槽。 |
 | `--xh-approval-note-bg` | `note` | `background` | `default` | `--xh-bg-surface` | approval 的 note 部件 background 覆盖槽。 |
 | `--xh-approval-note-border` | `note` | `border` | `default` | `--xh-border-control` | approval 的 note 部件 border 覆盖槽。 |
 | `--xh-approval-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | approval 的 note 部件 color 覆盖槽。 |
@@ -414,7 +416,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 
 可覆盖的动效槽：`--xh-approval-loading-duration`。
 
-共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-pop-in` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

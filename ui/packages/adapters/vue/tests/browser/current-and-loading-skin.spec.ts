@@ -302,12 +302,18 @@ describe('判定闸门在途的那一档', () => {
     expect(styleOf(loading, 'background-color')).toBe(styleOf(live, 'background-color'))
     expect(styleOf(gated, 'background-color')).not.toBe(styleOf(live, 'background-color'))
 
-    // 圆环只在在途那一格转，且真占了一格盒子
+    // 环走加载环配方：只在在途那一行转、露面，且真占了一格盒子；不在途的那一行停着、看不见
     const busyRow = part('approval', 'footer', 1)
+    const idleRow = part('approval', 'footer', 0)
+    expect(busyRow.hasAttribute('data-xh-loading-ring')).toBe(true)
     expect(beforeOf(busyRow, 'animation-name')).toBe('xh-spin')
     expect(beforeOf(busyRow, 'animation-iteration-count')).toBe('infinite')
+    expect(beforeOf(busyRow, 'animation-play-state')).toBe('running')
+    expect(beforeOf(busyRow, 'border-top-width')).toBe(beforeOf(busyRow, 'border-right-width'))
+    expect(beforeOf(busyRow, 'opacity')).toBe('1')
     expect(Number.parseFloat(beforeOf(busyRow, 'width'))).toBeGreaterThan(0)
-    expect(beforeOf(part('approval', 'footer', 0), 'animation-name')).toBe('none')
+    expect(beforeOf(idleRow, 'animation-play-state')).toBe('paused')
+    expect(beforeOf(idleRow, 'opacity')).toBe('0')
 
     // 指针同样分档，只是它在触屏上不存在，所以不能是唯一通道
     expect(styleOf(loading, 'cursor')).toBe('progress')

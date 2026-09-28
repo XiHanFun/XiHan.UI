@@ -1349,22 +1349,19 @@
       "component": "approval",
       "part": [
         "approve-trigger",
-        "deny-trigger",
-        "footer",
-        "root"
+        "deny-trigger"
       ],
       "property": [
         "font-size"
       ],
       "state": [
-        "default",
-        "loading"
+        "default"
       ],
       "defaultToken": [
         "--xh-text-label-size"
       ],
       "visibility": "public",
-      "description": "approval 的 approve-trigger、deny-trigger、footer、root 部件 font-size 覆盖槽。"
+      "description": "approval 的 approve-trigger、deny-trigger 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-approval-action-font-weight",
@@ -2135,20 +2132,19 @@
       "name": "--xh-approval-loading-duration",
       "component": "approval",
       "part": [
-        "footer",
-        "root"
+        "footer"
       ],
       "property": [
         "animation"
       ],
       "state": [
-        "loading"
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-motion-loop-spin"
       ],
       "visibility": "public",
-      "description": "approval 的 footer、root 部件 animation 覆盖槽。"
+      "description": "approval 的 footer 部件 animation 覆盖槽。"
     },
     {
       "name": "--xh-approval-note-bg",

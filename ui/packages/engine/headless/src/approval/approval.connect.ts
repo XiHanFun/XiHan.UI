@@ -222,8 +222,11 @@ export function connectApproval<T extends PropTypes>(
     }),
 
     // 只排布两颗按钮，不承载语义
+    // 判定在途的环挂在两颗钮那一行上：连接层只拿到「有一条判定在途」，拿不到是哪一颗按下的
     getFooterProps: () => normalize.element({
       ...parts.footer.attrs,
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
     }),
 
     // 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦，让读屏念得到为什么按不动。
