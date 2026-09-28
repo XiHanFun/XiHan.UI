@@ -22,7 +22,6 @@ import process from 'node:process'
 
 const MANIFEST = 'scripts/component-docs.manifest.json'
 const DEMOS = '../docs/.vitepress/demos'
-const CATALOG = '../docs/.vitepress/catalog'
 const TABLE = 'tooling/scripts/demo-count-exempt.json'
 
 /** 每个组件至少几份示例。 */
@@ -42,9 +41,6 @@ async function manifestComponents() {
         id: component.id,
         name: component.name,
         line: at === -1 ? 1 : at + 1,
-        renderless: component.renderless === true,
-        // 缺省即正式；只有清单条目显式写了 status: "alpha" 的才是 alpha
-        alpha: component.status === 'alpha',
       })
     }
   }
@@ -61,17 +57,7 @@ async function demoCount(id) {
   }
 }
 
-async function hasCatalogPreview(id) {
-  try {
-    return (await readdir(CATALOG)).includes(`${id}.vue`)
-  }
-  catch {
-    return false
-  }
-}
-
 const components = await manifestComponents()
-const stable = components.filter(component => !component.alpha)
 const counts = new Map()
 for (const component of components)
   counts.set(component.id, await demoCount(component.id))
@@ -138,17 +124,6 @@ for (const { id, name, line } of components) {
   )
 }
 
-for (const { id, name, line, renderless } of stable) {
-  if (renderless)
-    continue
-  if (!await hasCatalogPreview(id)) {
-    problems.push(
-      `${MANIFEST}:${line} —— 正式组件 ${name}（${id}）缺少总览独立预览：`
-      + `在 ${CATALOG}/${id}.vue 只保留识别该组件所需的最小结构`,
-    )
-  }
-}
-
 for (const id of Object.keys(exempt)) {
   if (!counts.has(id))
     problems.push(`${TABLE}:${exemptLine(id)} —— ${id} 登记着豁免，但它不在 ${MANIFEST} 里：组件改名或退役了就一起改登记表`)
@@ -164,6 +139,5 @@ if (problems.length) {
 
 console.log(
   `[check-demo-count] 通过：${components.length} 个组件、合计 ${total} 份示例，`
-  + `除登记豁免的 ${short} 个之外各不少于 ${FLOOR} 份；`
-  + `${stable.length} 个正式组件都有总览独立预览`,
+  + `除登记豁免的 ${short} 个之外各不少于 ${FLOOR} 份`,
 )

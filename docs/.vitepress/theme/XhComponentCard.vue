@@ -125,6 +125,61 @@ onBeforeUnmount(() => observer?.disconnect());
   overflow: hidden;
 }
 
+/*
+ * 示意图：240 × 160 画布的内联 SVG，铺满内容区、按比例缩放。
+ * 画的是界面布局，随书写方向镜像；方向固定的内容（图表绘图区、代码、条码）标 data-direction="fixed"。
+ */
+.xh-component-card__demo > svg {
+  display: block;
+  inline-size: 100%;
+  block-size: var(--xh-doc-catalog-h);
+}
+
+.xh-component-card__demo:dir(rtl) > svg:not([data-direction="fixed"]) {
+  transform: scaleX(-1);
+}
+
+/*
+ * 强制色：示意图转成系统色线稿。有填充的形状画成 Canvas 面 + CanvasText 边，
+ * 线与文字条取 CanvasText；品牌与选中取 Highlight / HighlightText，禁用取 GrayText。
+ */
+@media (forced-colors: active) {
+  .xh-component-card__demo > svg {
+    forced-color-adjust: none;
+  }
+
+  .xh-component-card__demo > svg :where([fill]:not([fill="none"])) {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
+
+  .xh-component-card__demo > svg :where([stroke]:not([stroke="none"])) {
+    stroke: CanvasText;
+  }
+
+  .xh-component-card__demo > svg :is([fill*="brand"], [fill*="focus"]) {
+    fill: Highlight;
+    stroke: Highlight;
+  }
+
+  .xh-component-card__demo > svg :is([stroke*="brand"], [stroke*="focus"]) {
+    stroke: Highlight;
+  }
+
+  .xh-component-card__demo > svg [fill*="on-brand"] {
+    fill: HighlightText;
+    stroke: HighlightText;
+  }
+
+  .xh-component-card__demo > svg [stroke*="on-brand"] {
+    stroke: HighlightText;
+  }
+
+  .xh-component-card__demo > svg [stroke*="disabled"] {
+    stroke: GrayText;
+  }
+}
+
 .xh-component-card__placeholder {
   --xh-demo-block-inline-size: var(--xh-space-8);
   --xh-demo-block-block-size: var(--xh-space-6);
