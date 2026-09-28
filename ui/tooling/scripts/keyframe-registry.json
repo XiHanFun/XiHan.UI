@@ -144,6 +144,7 @@
         "drawer",
         "field-array",
         "form",
+        "image",
         "image-viewer",
         "select",
         "tag",

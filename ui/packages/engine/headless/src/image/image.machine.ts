@@ -7,6 +7,7 @@
 
 import type { ImageSchema } from './image.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
+import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<ImageSchema>()
 
@@ -18,6 +19,16 @@ export function resolveFallbackDelay(delay: number | undefined): number {
   return ms
 }
 
+/** 占位层该不该露面：来源决议前与载入中铺满图位，图片落位或失败即撤下。 */
+export function imagePlaceholderVisible(status: ImageSchema['state']): boolean {
+  return status === 'idle' || status === 'loading'
+}
+
+/** 回退内容该不该露面：失败时恒露面；idle 与 loading 看延迟窗口是否已过。 */
+export function imageFallbackVisible(status: ImageSchema['state'], fallbackVisible: boolean): boolean {
+  return status === 'error' || (status !== 'loaded' && fallbackVisible)
+}
+
 // 异步来源只有 <img> 的 load / error，由适配器回送。
 export const imageMachine = createMachine({
   name: 'image',
@@ -26,7 +37,11 @@ export const imageMachine = createMachine({
     fallbackVisible: cell<boolean>(() => ({
       defaultValue: resolveFallbackDelay(prop('fallbackDelay')) <= 0,
     })),
+    placeholderRendered: cell<boolean>(() => ({ defaultValue: true })),
+    fallbackRendered: cell<boolean>(() => ({ defaultValue: false })),
   }),
+  // 占位层与回退内容撤下时先淡出、与图片的淡入交叉，播完才藏起
+  effects: ['trackPlaceholderPresence', 'trackFallbackPresence'],
   // 首帧一律停在 idle，来源决议推迟到宿主提交一帧之后（见 resolveSrc）
   initialState: () => 'idle',
   watch: ({ track, prop, action }) => track([() => prop('src')], () => action(['syncSrc'])),
@@ -36,6 +51,7 @@ export const imageMachine = createMachine({
       { guard: 'hasSrc', target: 'loading', reenter: true },
       { target: 'error' },
     ],
+    'PART.RENDERED': { actions: ['setPartRendered'] },
   },
   states: {
     idle: {
@@ -79,8 +95,31 @@ export const imageMachine = createMachine({
       showFallback: ({ context }) => {
         context.set('fallbackVisible', true)
       },
+      setPartRendered: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PART.RENDERED')
+          context.set(e.part === 'placeholder' ? 'placeholderRendered' : 'fallbackRendered', e.rendered)
+      },
     },
     effects: {
+      /** 占位层撤下（图片载好或失败）时先淡出，播完才写 hidden：模糊小图与图片交叉，不露一拍底色。 */
+      trackPlaceholderPresence: ({ state, scope, send, track, flush }) => trackPartPresence({
+        scope,
+        id: scope.partId('image', 'placeholder'),
+        open: () => imagePlaceholderVisible(state.get()),
+        track,
+        flush,
+        onRenderedChange: rendered => send({ type: 'PART.RENDERED', part: 'placeholder', rendered }),
+      }),
+      /** 回退内容撤下（图片载好）时浮在图片之上淡出，播完才写 hidden。 */
+      trackFallbackPresence: ({ state, context, scope, send, track, flush }) => trackPartPresence({
+        scope,
+        id: scope.partId('image', 'fallback'),
+        open: () => imageFallbackVisible(state.get(), context.get('fallbackVisible')),
+        track,
+        flush,
+        onRenderedChange: rendered => send({ type: 'PART.RENDERED', part: 'fallback', rendered }),
+      }),
       // 推迟到宿主提交一帧之后再决议；离开 idle（含卸载）后回调作废。
       resolveSrc: ({ send, flush }) => {
         let disposed = false

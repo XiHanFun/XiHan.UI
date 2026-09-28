@@ -29,6 +29,10 @@ export interface ImageSchema extends MachineSchema {
   context: {
     /** 加载期间回退内容当前是否应显示。进入 loading 时按 fallbackDelay 重置，到期由计时器置真。 */
     fallbackVisible: boolean
+    /** 占位层还留着（没有 hidden）：图片载好或失败后先淡出，播完才为假。 */
+    placeholderRendered: boolean
+    /** 回退节点还留着：图片载好后先淡出、与图片交叉，播完才为假。 */
+    fallbackRendered: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -41,10 +45,12 @@ export interface ImageSchema extends MachineSchema {
     | { type: 'IMAGE.ERROR' }
     /** 回退延迟到期，显示回退内容。 */
     | { type: 'after.fallbackDelay' }
+    /** 占位层 / 回退节点留着与否（淡出播完才报 false）。 */
+    | { type: 'PART.RENDERED', part: 'placeholder' | 'fallback', rendered: boolean }
   tag: never
   guard: 'hasSrc'
-  action: 'syncSrc' | 'resetFallback' | 'showFallback' | 'invokeLoading' | 'invokeLoaded' | 'invokeError'
-  effect: 'resolveSrc' | 'trackFallbackDelay'
+  action: 'syncSrc' | 'resetFallback' | 'showFallback' | 'invokeLoading' | 'invokeLoaded' | 'invokeError' | 'setPartRendered'
+  effect: 'resolveSrc' | 'trackFallbackDelay' | 'trackPlaceholderPresence' | 'trackFallbackPresence'
 }
 
 export interface ImageApi<T extends PropTypes = PropTypes> {

@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import type { ImageSchema, ImageStatusChangeDetails } from '../src/image'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
@@ -257,7 +258,21 @@ describe('connectImage 结构与显隐', () => {
     expect((s.api().getFallbackProps() as Dict).hidden).toBeUndefined()
 
     s.service.send({ type: 'IMAGE.LOAD' })
+    // 图片载好：回退内容先淡出（与图片交叉），播完才藏起；jsdom 里没有可等的动画，宿主提交之后即刻藏起
+    expect((s.api().getFallbackProps() as Dict).hidden).toBeUndefined()
+    await vi.advanceTimersByTimeAsync(0)
     expect((s.api().getFallbackProps() as Dict).hidden).toBe(true)
+  })
+
+  it('占位层撤下时先淡出、播完才藏起：图片载好或失败都一样', async () => {
+    const s = makeImage({ src: 'a.png' })
+    await settleSrc()
+    expect((s.api().getPlaceholderProps() as Dict).hidden).toBeUndefined()
+    s.service.send({ type: 'IMAGE.LOAD' })
+    expect((s.api().getPlaceholderProps() as Dict)['data-state']).toBe('loaded')
+    expect((s.api().getPlaceholderProps() as Dict).hidden).toBeUndefined()
+    await settleSrc()
+    expect((s.api().getPlaceholderProps() as Dict).hidden).toBe(true)
   })
 
   it('三个部件都带同一个 data-state', async () => {

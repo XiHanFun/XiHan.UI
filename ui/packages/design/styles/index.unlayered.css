@@ -28506,6 +28506,12 @@
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
+/* 占位层还在（正淡出）时图片不再自己淡入：它在占位层底下直接落位，由占位层的淡出揭开，
+   模糊小图与图片交叉，不先透出一拍底色 */
+[data-scope='image'][data-part='root']:has(> [data-part='placeholder']:not([hidden])) > [data-part='image'] {
+  animation: none;
+}
+
 /* 铺满图位的占位层：加载期间占住画面，作者往里放骨架屏或模糊小图。它叠在图位自己的淡底上，
    取不透明档，不与底下那层叠深 */
 [data-scope='image'][data-part='placeholder'] {
@@ -28518,7 +28524,12 @@
   color: var(--xh-image-placeholder-fg, var(--xh-fg-subtle));
 }
 
-/* display 会盖掉 hidden 属性的 UA 规则：图片落位与失败后都靠这条收起 */
+/* 图片落位或失败：占位层原地淡出（它盖在图位之上），播完连接层才写 hidden */
+[data-scope='image'][data-part='placeholder']:is([data-state='loaded'], [data-state='error']) {
+  animation: xh-fade-out var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) forwards;
+}
+
+/* display 会盖掉 hidden 属性的 UA 规则：淡出播完之后靠这条收起 */
 [data-scope='image'][data-part='placeholder'][hidden] {
   display: none;
 }
@@ -28537,7 +28548,14 @@
   user-select: none;
 }
 
-/* display 会盖掉 hidden 属性的 UA 规则：延迟窗口内与加载完成后都靠这条收起 */
+/* 图片载好：回退内容浮到图片之上原地淡出，与图片的淡入交叉；播完连接层才写 hidden */
+[data-scope='image'][data-part='fallback'][data-state='loaded'] {
+  position: absolute;
+  inset: 0;
+  animation: xh-fade-out var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) forwards;
+}
+
+/* display 会盖掉 hidden 属性的 UA 规则：延迟窗口内与淡出播完之后靠这条收起 */
 [data-scope='image'][data-part='fallback'][hidden] {
   display: none;
 }
