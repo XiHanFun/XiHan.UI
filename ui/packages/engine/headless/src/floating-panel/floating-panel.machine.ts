@@ -5,9 +5,10 @@
 
 // 提供 floating panel 相关实现。
 
-import type { FloatingPanelPressedPart, FloatingPanelSchema } from './floating-panel.types'
+import type { FloatingPanelPressedPart, FloatingPanelSchema, FloatingPanelWindowState } from './floating-panel.types'
 import { setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
+import { floatingPanelAnatomy } from './floating-panel.anatomy'
 import {
   clampFloatingPanelSize,
   fitFloatingPanelToViewport,
@@ -65,6 +66,8 @@ export const floatingPanelMachine = createMachine({
       })),
       // 按压通道：正被按住的那颗按钮，与开合、拖动无关
       pressed: cell<FloatingPanelPressedPart | null>(() => ({ defaultValue: null })),
+      windowAnimating: cell<boolean>(() => ({ defaultValue: false })),
+      settledWindowState: cell<FloatingPanelWindowState>(() => ({ defaultValue: prop('windowState') ?? prop('defaultWindowState') ?? 'default' })),
     }
   },
   refs: () => ({
@@ -74,9 +77,11 @@ export const floatingPanelMachine = createMachine({
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // 受控时用户事件只发意图、不自改状态；宿主写回 open 后由这条 watch 派发影子事件回写。
   // 形态钮按住途中被禁用：aria-disabled 的按钮仍会派 keyup，但守卫已不认它，按压面由机器自己收
-  watch: ({ track, prop, action }) => {
+  watch: ({ track, prop, action, context }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     track([() => prop('disabled')], () => action(['releaseWhenInert']))
+    // 形态变了（用户切换或宿主受控写回）：进出最大化那一段挂几何过渡
+    track([context.dep('windowState')], () => action(['syncWindowAnimation']))
   },
   // 摆位置、改尺寸、切形态与开合无关：面板收起着也能被作者摆好，展开时就在那儿
   on: {
@@ -88,6 +93,7 @@ export const floatingPanelMachine = createMachine({
     'DIMENSIONS.SET': { guard: 'canInteract', actions: ['setDimensions'] },
     'DIMENSIONS.NUDGE': { guard: 'canResize', actions: ['nudgeDimensions'] },
     'WINDOW_STATE.SET': { guard: 'canInteract', actions: ['setWindowState'] },
+    'WINDOW_STATE.SETTLED': { actions: ['clearWindowAnimation'] },
   },
   states: {
     closed: {
@@ -170,6 +176,32 @@ export const floatingPanelMachine = createMachine({
         if (e.type === 'PRESS.END' && context.get('pressed') === e.part)
           context.set('pressed', null)
       },
+      /**
+       * 形态切进或切出最大化：定位层投影 data-animating，皮肤在这一档挂位置与尺寸的过渡；
+       * 宿主把这一帧提交出去之后，等定位层上起播的那几支过渡播完再撤。没有可等的过渡即刻撤。
+       * 最小化与常规之间不补间：收拢的高度是 auto，补不过去。
+       */
+      syncWindowAnimation: ({ context, refs, send, flush }) => {
+        const next = context.get('windowState')
+        const prev = context.get('settledWindowState')
+        if (next === prev)
+          return
+        context.set('settledWindowState', next)
+        if (next !== 'maximized' && prev !== 'maximized')
+          return
+        context.set('windowAnimating', true)
+        flush(() => {
+          const positioner = refs.get('getContentEl')()?.closest<HTMLElement>(floatingPanelAnatomy.build().positioner.selector)
+          const moves = positioner && typeof positioner.getAnimations === 'function'
+            ? positioner.getAnimations().filter(animation => 'transitionProperty' in animation)
+            : []
+          void Promise.allSettled(moves.map(animation => animation.finished)).then(() => {
+            if (context.get('windowState') === next)
+              send({ type: 'WINDOW_STATE.SETTLED' })
+          })
+        })
+      },
+      clearWindowAnimation: ({ context }) => context.set('windowAnimating', false),
       releaseWhenInert: ({ context, prop }) => {
         if (prop('disabled') && context.get('pressed')?.startsWith('window-state:'))
           context.set('pressed', null)

@@ -346,6 +346,25 @@ describe('floatingPanelMachine 形态', () => {
     expect(rig.service.context.get('windowState')).toBe('default')
     expect(rig.windowStates).toEqual([{ windowState: 'maximized' }])
   })
+
+  it('进出最大化时定位层投影 data-animating，过渡播完即撤；最小化与常规之间不补间', async () => {
+    const settle = (): Promise<void> => new Promise(resolve => setTimeout(resolve, 0))
+    const rig = makeRig({ defaultOpen: true })
+    expect(positionerProps(rig.service)['data-animating']).toBeUndefined()
+
+    rig.service.send({ type: 'WINDOW_STATE.SET', windowState: 'maximized' })
+    expect(positionerProps(rig.service)['data-animating']).toBe('')
+    // jsdom 里没有定位层上起播的过渡：宿主提交之后即撤
+    await settle()
+    expect(positionerProps(rig.service)['data-animating']).toBeUndefined()
+
+    rig.service.send({ type: 'WINDOW_STATE.SET', windowState: 'default' })
+    expect(positionerProps(rig.service)['data-animating']).toBe('')
+    await settle()
+
+    rig.service.send({ type: 'WINDOW_STATE.SET', windowState: 'minimized' })
+    expect(positionerProps(rig.service)['data-animating']).toBeUndefined()
+  })
 })
 
 // ══ connect：ARIA 与身份 ══

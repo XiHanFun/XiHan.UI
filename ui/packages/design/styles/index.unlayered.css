@@ -5457,17 +5457,37 @@
   flex-direction: column;
   overflow: hidden;
   border-radius: var(--xh-floating-panel-radius, var(--xh-shape-overlay));
-  /* 铺满那一档要把投影整个撤掉，海拔的这一跳跟着过渡走 */
-  transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  /* 铺满那一档要把投影与描边色整个撤掉，海拔的这一跳跟着过渡走 */
+  transition:
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 最大化时几何层把面板写成铺满视口（left/top 归零、宽高 100%），四条边全贴着视口：
    圆角会在四角把底下的页面露出来，描边缩成一圈贴边的多余框线，投影整块落在视口之外。
-   三样一起撤，与抽屉贴住视口的那条边不圆角是同一回事。 */
+   三样一起撤，与抽屉贴住视口的那条边不圆角是同一回事。描边只撤颜色、不撤宽度，
+   进出最大化时盒子不因描边一收一放跳一像素 */
 [data-scope='floating-panel'][data-part='content'][data-window-state='maximized'] {
-  border: 0;
+  border-color: transparent;
   border-radius: 0;
   box-shadow: none;
+}
+
+/* 进出最大化：位置与尺寸按指示档补过去，圆角同步收放，不再瞬切。只在这一段挂——
+   拖动与改尺寸要跟手，平时的定位层不带过渡；减弱动效下即刻到位 */
+[data-scope='floating-panel'][data-part='positioner'][data-animating] {
+  transition:
+    left var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+    top var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+    width var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+    height var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+}
+
+[data-scope='floating-panel'][data-part='positioner'][data-animating] [data-scope='floating-panel'][data-part='content'] {
+  transition:
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-radius var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
 [data-scope='floating-panel'][data-part='content'][hidden] {
