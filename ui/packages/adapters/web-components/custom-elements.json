@@ -1380,6 +1380,15 @@
             },
             {
               "kind": "field",
+              "name": "requireReason",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "require-reason"
+            },
+            {
+              "kind": "field",
               "name": "live",
               "privacy": "public",
               "type": {
@@ -1476,7 +1485,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, note: this.note, defaultNote: this.defaultNote, loading: this.loading, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, live: this.live, variant: this.variant, tone: this.tone, size: this.size, translations: this.translations, onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, onNoteChange: this.notifyNote, }))"
+              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, note: this.note, defaultNote: this.defaultNote, loading: this.loading, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, requireReason: this.requireReason, live: this.live, variant: this.variant, tone: this.tone, size: this.size, translations: this.translations, onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, onNoteChange: this.notifyNote, }))"
             },
             {
               "kind": "method",
@@ -1603,6 +1612,14 @@
               "description": "卸载时若仍待决则按拒绝派发一次，默认关闭",
               "name": "deny-on-unmount",
               "fieldName": "denyOnUnmount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "用户拒绝时必须写明理由：备注空着时按拒绝或 Escape 只把焦点带到备注框",
+              "name": "require-reason",
+              "fieldName": "requireReason"
             },
             {
               "type": {
@@ -1774,6 +1791,9 @@
               "name": "--xh-approval-note-border"
             },
             {
+              "name": "--xh-approval-note-border-invalid"
+            },
+            {
               "name": "--xh-approval-note-fg"
             },
             {
@@ -1787,6 +1807,9 @@
             },
             {
               "name": "--xh-approval-note-radius"
+            },
+            {
+              "name": "--xh-approval-note-ring-invalid"
             },
             {
               "name": "--xh-approval-p"

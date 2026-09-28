@@ -47,6 +47,7 @@ export const approvalMachine = createMachine({
     })),
     // 按压通道：正被按住的那一个（两颗判定钮各一把键、授权项按 value 记），与勾选、判定无关
     pressed: cell<ApprovalPressedKey | null>(() => ({ defaultValue: null })),
+    reasonPrompted: cell<boolean>(() => ({ defaultValue: false })),
   }),
   initialState: ({ prop }) => prop('status') ?? prop('defaultStatus') ?? 'pending',
   watch: ({ track, prop, action }) => {
@@ -62,7 +63,7 @@ export const approvalMachine = createMachine({
     'CONTROLLED.APPROVE': { target: 'approved' },
     'CONTROLLED.DENY': { target: 'denied' },
     'CONTROLLED.EXPIRE': { target: 'expired' },
-    'REQUEST.RESET': { target: 'pending', reenter: true, actions: ['resetScopes', 'resetNote'] },
+    'REQUEST.RESET': { target: 'pending', reenter: true, actions: ['resetScopes', 'resetNote', 'resetReasonPrompt'] },
     // 程序化写入不挂可编辑守卫：那是给宿主用的入口
     'SCOPE.SET': { actions: ['setScopes'] },
     'NOTE.SET': { actions: ['setNote'] },
@@ -93,6 +94,7 @@ export const approvalMachine = createMachine({
           { target: 'expired', actions: ['invokeExpire'] },
         ],
         'SCOPE.TOGGLE': [{ guard: 'isEditable', actions: ['toggleScope'] }],
+        'REASON.PROMPT': { actions: ['promptReason'] },
       },
     },
     approved: {},
@@ -183,6 +185,8 @@ export const approvalMachine = createMachine({
       resetNote: ({ context, prop }) => {
         context.set('note', prop('defaultNote') ?? '')
       },
+      promptReason: ({ context }) => context.set('reasonPrompted', true),
+      resetReasonPrompt: ({ context }) => context.set('reasonPrompted', false),
       denyIfPending: ({ prop, context, state }) => {
         if (prop('denyOnUnmount') !== true || state.get() !== 'pending')
           return

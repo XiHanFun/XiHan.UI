@@ -71,6 +71,12 @@ export interface ApprovalSchema extends MachineSchema {
      */
     note?: string
     defaultNote?: string
+    /**
+     * 用户拒绝时必须写明理由（备注非空）。备注空着时按拒绝钮或 Escape 不发判定，
+     * 而是把焦点移到备注框并标为无效。只管人手按的这两条路：超时、卸载兜底与宿主的 deny()
+     * 不是用户的判定，照常落地；没渲染备注框时也照常拒绝——写不了理由就不能拦住拒绝。
+     */
+    requireReason?: boolean
     /** 判定在途：只阻止重复批准，不阻止拒绝。 */
     loading?: boolean
     /** Escape 判为拒绝，默认开启。 */
@@ -100,6 +106,8 @@ export interface ApprovalSchema extends MachineSchema {
      * 抬起、失焦、指针取消，或判定落定、转入挂起时撤下；与勾选、判定互相独立。
      */
     pressed: ApprovalPressedKey | null
+    /** 用户在缺理由时按过拒绝：备注框据此标为无效，直到写上理由；换一轮请求时清掉。 */
+    reasonPrompted: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -126,6 +134,8 @@ export interface ApprovalSchema extends MachineSchema {
     | { type: 'PRESS.START', key: ApprovalPressedKey, disabled?: boolean }
     /** 按住的部件抬起、失焦或指针取消；只松开 key 对应的那一个。 */
     | { type: 'PRESS.END', key: ApprovalPressedKey }
+    /** 要求写理由而备注空着时用户按了拒绝：不判定，只把备注框标为无效。 */
+    | { type: 'REASON.PROMPT' }
   tag: never
   guard: 'isStatusControlled' | 'canApprove' | 'isEditable' | 'canApproveControlled' | 'canPress'
   action:
@@ -144,6 +154,8 @@ export interface ApprovalSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
+    | 'promptReason'
+    | 'resetReasonPrompt'
   effect: 'trackTimeout'
 }
 
@@ -157,6 +169,8 @@ export interface ApprovalApi<T extends PropTypes = PropTypes> {
   note: string
   /** 必选项是否全部勾选。 */
   canApprove: boolean
+  /** 要求写理由而备注还空着：此时用户按拒绝只会把焦点带到备注框。 */
+  reasonMissing: boolean
   /** 按 status 选出的播报文本；关闭 announce 时作者不渲染该部件即可。 */
   announcement: string
   approve: () => void
@@ -191,6 +205,8 @@ export interface ApprovalTranslations {
   note: string
   /** 备注字段的占位文字；未提供时不产出 placeholder。 */
   notePlaceholder: string
+  /** 要求写理由时备注字段的名字。 */
+  reason: string
   pending: string
   approved: string
   denied: string

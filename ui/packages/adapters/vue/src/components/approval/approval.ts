@@ -44,6 +44,7 @@ export const XhApprovalRoot = defineComponent({
     // 用 undefined 而非裸 Boolean，缺省值由机器与 connect 给出
     denyOnEscape: { type: Boolean, default: undefined },
     denyOnUnmount: { type: Boolean, default: undefined },
+    requireReason: Boolean,
     live: { type: String as PropType<'polite' | 'assertive'> },
     variant: { type: String as PropType<ControlVariant> },
     tone: { type: String as PropType<Tone> },

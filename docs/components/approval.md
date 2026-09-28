@@ -42,6 +42,18 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 
 <XhDemo src="approval/04-variant-size" />
 
+### 拒绝要写理由
+
+requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或 Escape，焦点落到备注框并标为无效，写上理由再按才拒绝；超时照常按拒绝收口
+
+<XhDemo src="approval/05-require-reason" />
+
+### 批量处理
+
+闸门是单发的，批量是宿主的编排：每条请求一个闸门、判定受控，上面一行放全部批准与全部拒绝；全部批准只收必选项已勾满的那几条（canApproveScopes），没勾满的留着逐条处理
+
+<XhDemo src="approval/06-batch" />
+
 ## 设计指引
 
 ### 何时使用
@@ -61,6 +73,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 - 拒绝路径始终可达：状态机层的拒绝不受必选项和任何闸门限制，超时、卸载兜底与宿主的 `deny()` 入口都能落地。拒绝按钮与 Escape 另有一道挂起闸门：判定在途时与批准按钮一起锁定，避免等待宿主响应期间产生第二条判定。
 - 勾选与判定是原子的：批准的载荷携带已勾选的授权项，不存在已批准但范围未同步的窗口。
 - 备注（`note`）与勾选同批快照，随判定载荷一起发出；为空时不携带该字段。备注不参与必选项是否勾满的判断。
+- `requireReason` 让用户拒绝时必须写明理由：备注空着（或只有空白）就按拒绝钮或 Escape，不发判定，焦点移到备注框并标为无效；写上理由再按即拒绝，理由随载荷的 `note` 发出。它只拦人手按的这两条路：超时、卸载兜底与宿主的 `deny()` 不是用户的判定，照常落地；没渲染备注框时也照常拒绝——写不了理由的地方不能拦住拒绝。
 - `requestId` 变化即重新进入待决并按新时长重启计时；不为上一轮补发拒绝，旧结果由宿主自行作废。重入时勾选与备注回到各自默认值。
 - 判定落定后 `result` 部件才显示，语气随判定变化：批准取成功档，拒绝与超时取危险档。它对读屏隐藏，同一句话由播报区读出一次。
 - 两个按钮位于 `actions` 行内，间距与对齐由库统一处理，使用者不需要另写容器。
@@ -72,6 +85,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 - 需要弹窗时每个闸门一个[对话框](./dialog)：`role="alertdialog"`、关闭 `closeOnEscape`，并把 `initialFocus` 设为本组件导出的 `APPROVAL_DENY_SELECTOR`。浮层只保留批准与拒绝两个出口，Escape 仍冒泡到闸门并判为拒绝。
 - 剩余时间的显示交给[计时器](./timer)，判定权仍由本组件持有。不要把倒计时直接渲染为 `timer` 节点：两套解剖打在同一节点上会互相覆盖，应让 `timer` 作为外层容器。
 - 需要连续询问多件事时，使用[步骤条](./steps)或[走马灯](./carousel)串联多个闸门。本组件是单发闸门，`data-state` 的四个值互斥，不表达序号。
+- 批量处理（一轮里 Agent 提了好几条请求）：每条请求一个闸门，`status` 受控，上面一行放“全部批准 / 全部拒绝”，由宿主直接写各闸门的 `status`。全部批准只收必选项已勾满的那几条，用 `canApproveScopes(scopes, grantedScopes)` 判，没勾满的留给用户逐条处理；受控写回不再派发 `decision`，批量的判定记录由宿主自己写。批量不做成组件内建：哪几条能一起批、批量是否也要理由，都是宿主的安全策略。
 - 需要提供“稍后再说”入口时，该入口由宿主实现，不属于闸门。常见做法是在 `onDecision` 之外另留延后路径，或按上一条把闸门放进对话框；浮层内仍只有批准与拒绝两个出口。
 
 ### 最佳实践
@@ -109,6 +123,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `defaultGrantedScopes` | `readonly string[]` |  |  |
 | `note` | `string` |  | 附在判定上的一段自由文本。提供即受控。 它只随判定载荷发出，不参与必选项是否全部勾选的判断。 |
 | `defaultNote` | `string` |  |  |
+| `requireReason` | `boolean` |  | 用户拒绝时必须写明理由（备注非空）。备注空着时按拒绝钮或 Escape 不发判定， 而是把焦点移到备注框并标为无效。只管人手按的这两条路：超时、卸载兜底与宿主的 deny() 不是用户的判定，照常落地；没渲染备注框时也照常拒绝——写不了理由就不能拦住拒绝。 |
 | `loading` | `boolean` |  | 判定在途：只阻止重复批准，不阻止拒绝。 |
 | `denyOnEscape` | `boolean` |  | Escape 判为拒绝，默认开启。 |
 | `denyOnUnmount` | `boolean` |  | 卸载时若仍待决则按拒绝派发一次，默认关闭。 机制成立不等于默认值成立：列表更换 key、路由切换、热更新的任何一次重挂， 都会替用户发出未做过的判定。 |
@@ -186,7 +201,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 
 **状态**：`pending` · `approved` · `denied` · `expired`
 
-**事件**：`APPROVE` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `NOTE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`APPROVE` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `NOTE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET` · `PRESS.START` · `PRESS.END` · `REASON.PROMPT`
 
 **判据**：`isStatusControlled` · `canApprove` · `isEditable` · `canApproveControlled` · `canPress`
 
@@ -202,6 +217,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `grantedScopes` | `string[]` |  |
 | `note` | `string` | 备注中的文字；未填写时为空串。 |
 | `canApprove` | `boolean` | 必选项是否全部勾选。 |
+| `reasonMissing` | `boolean` | 要求写理由而备注还空着：此时用户按拒绝只会把焦点带到备注框。 |
 | `announcement` | `string` | 按 status 选出的播报文本；关闭 announce 时作者不渲染该部件即可。 |
 | `approve` | `() => void` |  |
 | `deny` | `() => void` |  |
@@ -238,6 +254,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `Enter` / `Space` | 按住批准或拒绝按钮，待决且不在挂起中；批准还要必选项已勾满 | 按住期间该钮投影 data-pressed，与指针 :active 同一副按压面（text 档定尺按钮，按下缩放并换底）；抬起、失焦、判定落定或转入挂起撤下 |
 | `Space` | 按住授权项，待决、不在挂起中且该项未禁用 | 按住期间该行投影 data-pressed，与指针 :active 同一副按压面（row 档只换面不缩放）；抬起或失焦撤下。Enter 不是复选框的激活键，不进按压面 |
 | `Escape` | 焦点在闸门内，待决、未挂起、且开启 denyOnEscape | 判为拒绝。它不是关闭：本组件不提供不作答的出口 |
+| `Enter` / `Space` / `Escape` | 开了 requireReason、备注框在场且还空着，焦点在拒绝按钮上（Escape 则焦点在闸门内） | 不判定，焦点移到备注框并标为无效（aria-invalid）；写上理由后再按即判为拒绝，理由随载荷的 note 发出 |
 
 ### ARIA
 
@@ -258,7 +275,9 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `item` | `aria-required` | 'true' \| 'false' |
 | `item` | `role` | 'checkbox' |
 | `item-indicator` | `aria-hidden` | 'true' |
-| `note` | `aria-label` | translations?.note |
+| `note` | `aria-invalid` | 'true' \| undefined |
+| `note` | `aria-label` | translations?.reason \| translations?.note |
+| `note` | `aria-required` | 'true' \| undefined |
 | `timer` | `aria-hidden` | 'true' |
 | `result` | `aria-hidden` | 'true' |
 | `approve-trigger` | `aria-busy` | 'true' \| undefined |
@@ -272,7 +291,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 - 待决时批准键使用 `aria-disabled` 而不是原生 `disabled`：保持可聚焦，读屏可以读出不可用的原因。
 - 授权项是 `role=checkbox`，各占一个 Tab 停靠点，只响应 `Space`，与原生复选框一致。
 - 剩余时间、结果条与待决的呼吸点都对读屏隐藏：逐秒变化的数字进入活动区域会持续打断，判定结果与截止事件由播报区各读出一次。
-- 备注取 `translations.note` 作为可访问名称（默认 `Note`），占位文字取 `translations.notePlaceholder`。
+- 备注取 `translations.note` 作为可访问名称（默认 `Note`），占位文字取 `translations.notePlaceholder`。开了 `requireReason` 时名字换成 `translations.reason`（默认 `Reason for denial`）并带 `aria-required`，缺理由按过拒绝后带 `aria-invalid`。
 
 ## 样式参考
 
@@ -305,6 +324,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `item` | `data-xh-action-variant` | 'ghost' |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-value` | item.value |
+| `note` | `data-invalid` | ''（条件成立时才出现） |
 | `note` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `timer` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `result` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
@@ -382,11 +402,13 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `--xh-approval-loading-duration` | `footer` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | approval 的 footer 部件 animation 覆盖槽。 |
 | `--xh-approval-note-bg` | `note` | `background` | `default` | `--xh-bg-surface` | approval 的 note 部件 background 覆盖槽。 |
 | `--xh-approval-note-border` | `note` | `border` | `default` | `--xh-border-control` | approval 的 note 部件 border 覆盖槽。 |
+| `--xh-approval-note-border-invalid` | `note` | `border-color` | `invalid` | `--xh-border-invalid` | approval 的 note 部件 border-color 覆盖槽。 |
 | `--xh-approval-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | approval 的 note 部件 color 覆盖槽。 |
 | `--xh-approval-note-font-size` | `note` | `font-size` | `default` | `--xh-_approval-note-font-size` | approval 的 note 部件 font-size 覆盖槽。 |
 | `--xh-approval-note-px` | `note` | `padding-inline` | `default` | `--xh-space-2` | approval 的 note 部件 padding-inline 覆盖槽。 |
 | `--xh-approval-note-py` | `note` | `padding-block` | `default` | `--xh-space-1_5` | approval 的 note 部件 padding-block 覆盖槽。 |
 | `--xh-approval-note-radius` | `note` | `border-radius` | `default` | `--xh-shape-control` | approval 的 note 部件 border-radius 覆盖槽。 |
+| `--xh-approval-note-ring-invalid` | `note` | `--xh-_ring-color` | `invalid` | `--xh-ring-invalid` | approval 的 note 部件 --xh-_ring-color 覆盖槽。 |
 | `--xh-approval-p` | `pending-indicator`<br>`root` | `inset-block-start`<br>`inset-inline-end`<br>`padding` | `default` | `--xh-_approval-p` | approval 的 pending-indicator、root 部件 inset-block-start、inset-inline-end、padding 覆盖槽。 |
 | `--xh-approval-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-_tone` | approval 的 pending-indicator 部件 background 覆盖槽。 |
 | `--xh-approval-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | approval 的 pending-indicator 部件 border-radius 覆盖槽。 |

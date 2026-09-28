@@ -44,6 +44,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {boolean} loading - 判定在途：只阻止重复批准，不阻止拒绝
  * @attr {boolean} deny-on-escape - Escape 判为拒绝，默认开启
  * @attr {boolean} deny-on-unmount - 卸载时若仍待决则按拒绝派发一次，默认关闭
+ * @attr {boolean} require-reason - 用户拒绝时必须写明理由：备注空着时按拒绝或 Escape 只把焦点带到备注框
  * @attr {string} live - 播报档位：polite（默认）或 assertive
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：描边（默认档）/ 底色分区 / 无壳内联
  * @attr {string} tone - 语气
@@ -81,6 +82,7 @@ export class XhApprovalElement extends XhElement {
     loading: { converter: BOOLEAN_CONVERTER },
     denyOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'deny-on-escape' },
     denyOnUnmount: { converter: BOOLEAN_CONVERTER, attribute: 'deny-on-unmount' },
+    requireReason: { converter: BOOLEAN_CONVERTER, attribute: 'require-reason' },
     live: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
@@ -101,6 +103,7 @@ export class XhApprovalElement extends XhElement {
   declare loading?: boolean
   declare denyOnEscape?: boolean
   declare denyOnUnmount?: boolean
+  declare requireReason?: boolean
   declare live?: 'polite' | 'assertive'
   declare variant?: ControlVariant
   declare tone?: Tone
@@ -132,6 +135,7 @@ export class XhApprovalElement extends XhElement {
     loading: this.loading,
     denyOnEscape: this.denyOnEscape,
     denyOnUnmount: this.denyOnUnmount,
+    requireReason: this.requireReason,
     live: this.live,
     variant: this.variant,
     tone: this.tone,

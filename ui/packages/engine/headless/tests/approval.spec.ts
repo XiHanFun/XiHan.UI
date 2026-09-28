@@ -356,3 +356,98 @@ describe('approval 按压通道：按 approve / deny / item:value 记按住的�
     expect(r.deny()['data-pressed']).toBeUndefined()
   })
 })
+
+describe('requireReason：用户拒绝要写理由', () => {
+  /** 闸门的一小段 DOM：拒绝按下时按它找同一道闸门里的备注框。 */
+  function dom(withNote = true): { root: HTMLElement, note: HTMLInputElement | null, deny: HTMLButtonElement } {
+    const root = document.createElement('div')
+    root.setAttribute('data-scope', 'approval')
+    root.setAttribute('data-part', 'root')
+    const deny = document.createElement('button')
+    let note: HTMLInputElement | null = null
+    if (withNote) {
+      note = document.createElement('input')
+      note.setAttribute('data-scope', 'approval')
+      note.setAttribute('data-part', 'note')
+      root.append(note)
+    }
+    root.append(deny)
+    document.body.append(root)
+    return { root, note, deny }
+  }
+  const pressDeny = (r: Rig, target: HTMLElement): void => (r.deny().onClick as (e: unknown) => void)({ currentTarget: target })
+
+  it('备注空着：按拒绝不判定，焦点到备注框、标无效；写上理由再按即拒绝，理由随载荷发出', () => {
+    const r = mount({ requireReason: true })
+    const { root, note, deny } = dom()
+    expect(r.api().reasonMissing).toBe(true)
+    pressDeny(r, deny)
+    expect(r.decisions).toHaveLength(0)
+    expect(document.activeElement).toBe(note)
+    const field = r.api().getNoteProps() as Dict
+    expect(field['aria-invalid']).toBe('true')
+    expect(field['data-invalid']).toBe('')
+    r.api().setNote('范围太大')
+    expect((r.api().getNoteProps() as Dict)['aria-invalid']).toBeUndefined()
+    pressDeny(r, deny)
+    expect(r.decisions).toEqual([expect.objectContaining({ decision: 'denied', source: 'user', note: '范围太大' })])
+    root.remove()
+  })
+
+  it('只有空白不算理由', () => {
+    const r = mount({ requireReason: true, defaultNote: '   ' })
+    expect(r.api().reasonMissing).toBe(true)
+  })
+
+  it('按 Escape 同一条规则：缺理由时焦点到备注框，不判定', () => {
+    const r = mount({ requireReason: true })
+    const { root, note } = dom()
+    ;(r.root().onKeyDown as (e: unknown) => void)({ key: 'Escape', isComposing: false, keyCode: 27, target: note, preventDefault: vi.fn() })
+    expect(r.decisions).toHaveLength(0)
+    expect(document.activeElement).toBe(note)
+    root.remove()
+  })
+
+  it('没渲染备注框：写不了理由就不拦，照常拒绝', () => {
+    const r = mount({ requireReason: true })
+    const { root, deny } = dom(false)
+    pressDeny(r, deny)
+    expect(r.decisions.map(d => d.decision)).toEqual(['denied'])
+    root.remove()
+  })
+
+  it('超时与宿主的 deny() 不是用户的判定，不受限', () => {
+    const r = mount({ requireReason: true })
+    r.api().deny()
+    expect(r.decisions.map(d => d.source)).toEqual(['api'])
+
+    vi.useFakeTimers()
+    try {
+      const t = mount({ requireReason: true, timeoutMs: 1000 })
+      vi.advanceTimersByTime(1000)
+      expect(t.decisions.map(d => d.source)).toEqual(['timeout'])
+    }
+    finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('备注框的名字换成理由并标必填；没开时照旧', () => {
+    const on = mount({ requireReason: true }).api().getNoteProps() as Dict
+    expect(on['aria-label']).toBe('Reason for denial')
+    expect(on['aria-required']).toBe('true')
+    const off = mount().api().getNoteProps() as Dict
+    expect(off['aria-label']).toBe('Note')
+    expect(off['aria-required']).toBeUndefined()
+  })
+
+  it('换一轮请求清掉无效标记', () => {
+    const r = mount({ requireReason: true, requestId: 'a' })
+    const { root, deny } = dom()
+    pressDeny(r, deny)
+    expect((r.api().getNoteProps() as Dict)['aria-invalid']).toBe('true')
+    r.setProps({ requestId: 'b' })
+    expect((r.api().getNoteProps() as Dict)['aria-invalid']).toBeUndefined()
+    root.remove()
+  })
+})
