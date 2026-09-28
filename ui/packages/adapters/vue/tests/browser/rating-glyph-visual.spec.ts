@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { pseudoBox } from './pseudo-box'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -28,6 +29,11 @@ function mount(dir: 'ltr' | 'rtl' = 'ltr') {
   return [...host.querySelectorAll<HTMLElement>('[data-part="item"]')]
 }
 
+/** 点亮那层星形的裁切：换边的两侧由算式给出，计算值里的 0 写作 0%，与 0px 同义，统一成 0px 再比 */
+function clipOf(element: HTMLElement): string {
+  return getComputedStyle(element, '::after').clipPath.replace(/(?<![\d.])0%/g, '0px')
+}
+
 function maskOf(element: HTMLElement, pseudo: '::after' | '::before'): string {
   const style = getComputedStyle(element, pseudo)
   return style.maskImage || style.webkitMaskImage || ''
@@ -45,14 +51,40 @@ describe('rating 默认星形视觉', () => {
       expect(item.offsetWidth).toBe(item.offsetHeight)
     }
 
-    expect(getComputedStyle(full!, '::after').clipPath).toBe('inset(0px)')
-    expect(getComputedStyle(half!, '::after').clipPath).toBe('inset(0px 50% 0px 0px)')
-    expect(getComputedStyle(empty!, '::after').clipPath).toBe('inset(0px 100% 0px 0px)')
+    expect(clipOf(full!)).toBe('inset(0px)')
+    expect(clipOf(half!)).toBe('inset(0px 50% 0px 0px)')
+    expect(clipOf(empty!)).toBe('inset(0px 100% 0px 0px)')
   })
 
   it('rTL 半档从右侧点亮', () => {
     const [, half] = mount('rtl')
-    expect(getComputedStyle(half!, '::after').clipPath).toBe('inset(0px 0px 0px 50%)')
+    expect(clipOf(half!)).toBe('inset(0px 0px 0px 50%)')
+  })
+
+  it('rTL 未点亮的星从行首（右侧）擦出：裁掉的是左侧整幅', () => {
+    const [full, , empty] = mount('rtl')
+    expect(clipOf(empty!)).toBe('inset(0px 0px 0px 100%)')
+    expect(clipOf(full!)).toBe('inset(0px)')
+  })
+
+  it('rtl 里局部写回 ltr 的星带按 ltr 裁', () => {
+    mount('rtl')
+    host!.querySelector<HTMLElement>('[data-part="root"]')!.dir = 'ltr'
+    const [, half, empty] = [...host!.querySelectorAll<HTMLElement>('[data-part="item"]')]
+    expect(clipOf(half!)).toBe('inset(0px 50% 0px 0px)')
+    expect(clipOf(empty!)).toBe('inset(0px 100% 0px 0px)')
+  })
+
+  it.each(['ltr', 'rtl'] as const)('%s：两层星形都落在格子正中', (dir) => {
+    const items = mount(dir).slice(0, 3)
+    for (const item of items) {
+      const box = item.getBoundingClientRect()
+      for (const pseudo of ['::before', '::after'] as const) {
+        const star = pseudoBox(item, pseudo)
+        expect(Math.abs(star.centerX - (box.left + box.width / 2)), `${dir} ${pseudo}`).toBeLessThanOrEqual(0.5)
+        expect(Math.abs(star.centerY - (box.top + box.height / 2)), `${dir} ${pseudo}`).toBeLessThanOrEqual(0.5)
+      }
+    }
   })
 
   it('作者传入图标后皮肤字形让位', () => {

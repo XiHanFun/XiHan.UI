@@ -141,30 +141,32 @@
     }
   }
 
-  /* 空条目使用两层同源星形：底层保持中性轮廓，上层按完整或半档裁出强调色。 */
+  /* 空条目使用两层同源星形：底层保持中性轮廓，上层按完整或半档裁出强调色。
+     两层都铺满格子、四边外边距 auto 回中：定宽定高的定位盒在四边 inset 为 0 时由自动外边距平分余量，
+     与书写方向无关，不用物理平移回拉（粗指针下家族在同一个 ::after 上铺的热区平移一并钉回）。
+     裁切只认物理左右：行首那一侧留着、从行尾那一侧裁，--xh-_rating-end / -start 是行尾 / 行首
+     落在物理右侧的份数（ltr 为 1 / 0，rtl 为 0 / 1），整幅与半档都乘它换边 */
   [data-scope='rating'][data-part='item']:empty::before,
   [data-scope='rating'][data-part='item']:empty::after {
+    --xh-_rating-end: calc((1 + var(--xh-direction-sign)) / 2);
+    --xh-_rating-start: calc((1 - var(--xh-direction-sign)) / 2);
+
     content: '';
     position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 50%;
+    inset: 0;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    translate: -50% -50%;
+    margin: auto;
+    translate: none;
     background-color: var(--xh-rating-item-fg, var(--xh-fg-subtle));
     -webkit-mask: var(--xh-glyph-mark-star) center / contain no-repeat;
     mask: var(--xh-glyph-mark-star) center / contain no-repeat;
     pointer-events: none;
   }
 
-  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，星形才落回格子正中 */
-  [data-scope='rating'][data-part='item']:empty:dir(rtl)::after {
-    translate: 50% -50%;
-  }
-
   [data-scope='rating'][data-part='item']:empty::after {
     background-color: var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent));
-    clip-path: inset(0 100% 0 0);
+    clip-path: inset(0 calc(100% * var(--xh-_rating-end)) 0 calc(100% * var(--xh-_rating-start)));
     transition: clip-path var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
@@ -183,12 +185,14 @@
     clip-path: inset(0);
   }
 
-  /* 半颗：一道 50% 硬边渐变裁到字形上，左半亮右半灰。
+  /* 半颗：一道 50% 硬边渐变裁到字形上，行首那半亮、行尾那半灰。
+     rtl 下"半颗"落在星的右半边（连接层按 1 - offsetX/width 判），亮的那半跟着掉头：渐变方向没有逻辑
+     关键字可用，角度乘书写方向的符号换向（90deg 朝右、-90deg 朝左）。
      必须排在 data-highlighted 之后：半颗那颗星同时带着 data-highlighted，两条选择器特异度相同，
      顺序一反 color 就把 transparent 覆盖回实色，渐变整个看不见。 */
   [data-scope='rating'][data-part='item'][data-half]:not(:empty) {
     background-image: linear-gradient(
-      to right,
+      calc(90deg * var(--xh-direction-sign)),
       var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent)) 50%,
       var(--xh-rating-item-fg, var(--xh-fg-subtle)) 50%
     );
@@ -197,22 +201,8 @@
     color: transparent;
   }
 
-  /* rtl 下"半颗"落在星的右半边（连接层按 1 - offsetX/width 判），亮的那半得跟着掉头。
-     渐变方向没有逻辑关键字可用，只能靠 :dir() 分流，不能指望逻辑属性自动换向。 */
-  [data-scope='rating'][data-part='item'][data-half]:not(:empty):dir(rtl) {
-    background-image: linear-gradient(
-      to left,
-      var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent)) 50%,
-      var(--xh-rating-item-fg, var(--xh-fg-subtle)) 50%
-    );
-  }
-
   [data-scope='rating'][data-part='item'][data-half]:empty::after {
-    clip-path: inset(0 50% 0 0);
-  }
-
-  [data-scope='rating'][data-part='item'][data-half]:empty:dir(rtl)::after {
-    clip-path: inset(0 0 0 50%);
+    clip-path: inset(0 calc(50% * var(--xh-_rating-end)) 0 calc(50% * var(--xh-_rating-start)));
   }
 
   /* 只读仍进得了 Tab 序列、读屏也念得出，只是改不动：收掉手型，别暗示"点这儿能改"；
