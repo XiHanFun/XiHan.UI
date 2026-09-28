@@ -20584,6 +20584,29 @@
     display: none;
   }
 
+  /* 懒分支取数失败不预设错误面：失败由那一列里的提示与重试钮说明，父条目仍是一条可激活的普通条目，
+     与树选择同一口径。家族按 data-error 给的告警面（危险色字压在危险色淡底上，对比不到 4.5:1）在这里映射回常态 */
+  [data-scope='cascader'][data-part='item'][data-error] {
+    --xh-collection-bg-error: transparent;
+    --xh-collection-fg-error: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-description-fg-error: var(--xh-material-frosted-fg-muted);
+    --xh-collection-indicator-fg-error: var(--xh-_cascader-accent);
+    --xh-collection-outline-error: transparent;
+  }
+
+  /* 取数失败的条目仍可激活（点行或 Enter 重试），而家族的悬停、高亮、展开路径与按下几段都排除了 [data-error]：
+     在家族解算点上把同一阶梯接回——悬停、键盘高亮与展开路径 100 档，按下 200 档并走按下时长 */
+  [data-scope='cascader'][data-part='item'][data-error]:not([data-disabled]):is(:hover, [data-highlighted], [data-in-path]) {
+    --xh-_collection-bg: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+  }
+
+  [data-scope='cascader'][data-part='item'][data-error]:not([data-disabled]):is(:active, [data-pressed]) {
+    --xh-_collection-bg: var(--xh-cascader-item-bg-pressed, var(--xh-bg-subtle-hover));
+
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
+  }
+
   /* 一列开幕：条目自上而下逐条淡入。只在列头一次出现时播（浮层展开、此前收着的子列铺出来）；
      列此前就在、展开路径换到同列另一个父项时（悬停扫过），连接层给露面的条目标 data-instant，
      换内容不重播。backwards 让每条在自己那份延迟里保持起始帧 */
