@@ -72903,6 +72903,9 @@
               "name": "--xh-tree-select-branch-content-gap"
             },
             {
+              "name": "--xh-tree-select-branch-error-fg"
+            },
+            {
               "name": "--xh-tree-select-branch-gap"
             },
             {
@@ -72910,6 +72913,18 @@
             },
             {
               "name": "--xh-tree-select-branch-indicator-size"
+            },
+            {
+              "name": "--xh-tree-select-branch-retry-fg"
+            },
+            {
+              "name": "--xh-tree-select-branch-status-fg"
+            },
+            {
+              "name": "--xh-tree-select-branch-status-font-size"
+            },
+            {
+              "name": "--xh-tree-select-branch-status-py"
             },
             {
               "name": "--xh-tree-select-content-backdrop"

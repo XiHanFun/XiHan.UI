@@ -37,6 +37,7 @@ import {
   XhSelectRoot,
   XhSelectTrigger,
   XhSelectValueText,
+  XhTreeSelectRoot,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -104,6 +105,17 @@ const CASES: Case[] = [
     }),
     muted: '--xh-fg-muted',
     dim: 'column',
+  },
+  {
+    scope: 'tree-select',
+    render: ({ loading, items }) => h(XhTreeSelectRoot, {
+      collection: items ? ITEMS : [],
+      loading,
+      open: true,
+      translations: { empty: '没有节点', loading: '正在读取' },
+    }),
+    muted: '--xh-material-frosted-fg-muted',
+    dim: 'tree',
   },
 ]
 

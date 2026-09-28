@@ -37970,7 +37970,9 @@
       "component": "icon",
       "part": [
         "autoplay-trigger",
+        "branch-error",
         "branch-indicator",
+        "branch-loading",
         "branch-trigger",
         "cancel-trigger",
         "caps-lock-indicator",
@@ -83491,6 +83493,24 @@
       "description": "tree-select 的 branch-content 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-tree-select-branch-error-fg",
+      "component": "tree-select",
+      "part": [
+        "branch-error"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 branch-error 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-tree-select-branch-gap",
       "component": "tree-select",
       "part": [
@@ -83547,6 +83567,86 @@
       ],
       "visibility": "public",
       "description": "tree-select 的 branch-indicator、branch-trigger、item 部件 --xh-icon-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-branch-retry-fg",
+      "component": "tree-select",
+      "part": [
+        "branch-retry-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 branch-retry-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-branch-status-fg",
+      "component": "tree-select",
+      "part": [
+        "branch-empty",
+        "branch-error",
+        "branch-loading"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 branch-empty、branch-error、branch-loading 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-branch-status-font-size",
+      "component": "tree-select",
+      "part": [
+        "branch-empty",
+        "branch-error",
+        "branch-loading",
+        "branch-retry-trigger"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default",
+        "is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])"
+      ],
+      "defaultToken": [
+        "--xh-_tree-select-font-size"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 branch-empty、branch-error、branch-loading、branch-retry-trigger 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-branch-status-py",
+      "component": "tree-select",
+      "part": [
+        "branch-empty",
+        "branch-error",
+        "branch-loading"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])"
+      ],
+      "defaultToken": [
+        "--xh-_tree-select-row-py"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 branch-empty、branch-error、branch-loading 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-content-backdrop",
@@ -84325,19 +84425,26 @@
       "name": "--xh-tree-select-indent",
       "component": "tree-select",
       "part": [
-        "branch-content"
+        "branch-content",
+        "branch-empty",
+        "branch-error",
+        "branch-loading",
+        "branch-retry-trigger"
       ],
       "property": [
+        "margin-inline-start",
+        "padding-inline",
         "padding-inline-start"
       ],
       "state": [
-        "default"
+        "default",
+        "is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])"
       ],
       "defaultToken": [
         "--xh-space-4"
       ],
       "visibility": "public",
-      "description": "tree-select 的 branch-content 部件 padding-inline-start 覆盖槽。"
+      "description": "tree-select 的 branch-content、branch-empty、branch-error、branch-loading、branch-retry-trigger 部件 margin-inline-start、padding-inline、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-indicator-fg",

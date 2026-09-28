@@ -133,6 +133,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 - 仅 `{ hasChildren: true, children: undefined }` 触发 `loadChildren({ node, signal })`；`children: []` 是已知为空目录，永不请求。成功子项、可见行、键盘导航与级联选择由 headless 的同一有效树计算，三端不各自缓存结果。
 - 分支状态不互相降级：`api.branchLoadState(value)` 公开 `idle` / `loading` / `loaded` / `error`；`loaded` 的 `empty` 明确区分成功空数组，`error` 保留原始 cause。默认结构提供 `branch-loading`、`branch-error`、`branch-retry-trigger`、`branch-empty`，也可用同名部件替换文案；错误分支行上的 Enter/Space 是不破坏 tree roving 的正式键盘重试入口。
 - `onBranchLoadStart`、`onBranchLoad`、`onBranchLoadError`（三端事件为 `branch-load-start` / `branch-load` / `branch-load-error`）公开有效请求生命周期。分支或整浮层收起、重试、节点移除/同 value 换代、组件卸载都会中止并作废旧请求；迟到兑现或拒绝不能写回当前树，也不发成功/失败事件。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。分支首次展开取子项时同样在子层的位置画这一副：在途一枚加载环 + 文案，失败一枚警示字形 + 说明与重试钮，成功为空一句文案。
 
 ### 组合
 
@@ -610,6 +611,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `branch-loading` | `data-loading` | ''（条件成立时才出现） |
 | `branch-loading` | `data-selected` | ''（条件成立时才出现） |
 | `branch-loading` | `data-state` | 'open' \| 'closed' |
+| `branch-loading` | `data-xh-loading-ring` | '' |
 | `branch-error` | `data-disabled` | ''（条件成立时才出现） |
 | `branch-error` | `data-empty` | ''（条件成立时才出现） |
 | `branch-error` | `data-error` | ''（条件成立时才出现） |
@@ -638,7 +640,9 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `branch-empty` | `data-selected` | ''（条件成立时才出现） |
 | `branch-empty` | `data-state` | 'open' \| 'closed' |
 | `empty` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-xh-loading-ring` | '' |
 | `footer` | `data-state` | 'open' \| 'closed' |
 | `overflow-tag` | `data-count` | String(overflowCount) |
 | `tag` | `data-value` | itemValue(el) |
@@ -659,9 +663,14 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | tree-select 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-tree-select-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | tree-select 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-tree-select-branch-content-gap` | `branch-content` | `gap` | `default` | `--xh-list-option-gap` | tree-select 的 branch-content 部件 gap 覆盖槽。 |
+| `--xh-tree-select-branch-error-fg` | `branch-error` | `background-color` | `default` | `--xh-fg-danger` | tree-select 的 branch-error 部件 background-color 覆盖槽。 |
 | `--xh-tree-select-branch-gap` | `branch` | `gap` | `default` | `--xh-list-option-gap` | tree-select 的 branch 部件 gap 覆盖槽。 |
 | `--xh-tree-select-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-subtle` | tree-select 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-select-branch-indicator-size` | `branch-indicator`<br>`branch-trigger`<br>`item` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | tree-select 的 branch-indicator、branch-trigger、item 部件 --xh-icon-size、inline-size 覆盖槽。 |
+| `--xh-tree-select-branch-retry-fg` | `branch-retry-trigger` | `color` | `default` | `--xh-fg-brand` | tree-select 的 branch-retry-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-select-branch-status-fg` | `branch-empty`<br>`branch-error`<br>`branch-loading` | `color` | `is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])` | `--xh-material-frosted-fg-muted` | tree-select 的 branch-empty、branch-error、branch-loading 部件 color 覆盖槽。 |
+| `--xh-tree-select-branch-status-font-size` | `branch-empty`<br>`branch-error`<br>`branch-loading`<br>`branch-retry-trigger` | `font-size` | `default`<br>`is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])` | `--xh-_tree-select-font-size` | tree-select 的 branch-empty、branch-error、branch-loading、branch-retry-trigger 部件 font-size 覆盖槽。 |
+| `--xh-tree-select-branch-status-py` | `branch-empty`<br>`branch-error`<br>`branch-loading` | `padding-block` | `is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])` | `--xh-_tree-select-row-py` | tree-select 的 branch-empty、branch-error、branch-loading 部件 padding-block 覆盖槽。 |
 | `--xh-tree-select-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `xh-material=frosted` | `--xh-_material-backdrop` | tree-select 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-tree-select-content-bg` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg` | tree-select 的 content 部件 background 覆盖槽。 |
 | `--xh-tree-select-content-border` | `content` | `border` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-border` | tree-select 的 content 部件 border 覆盖槽。 |
@@ -702,7 +711,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | tree-select 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-tree-select-gap` | `root` | `gap` | `default` | `--xh-space-1` | tree-select 的 root 部件 gap 覆盖槽。 |
 | `--xh-tree-select-icon-size` | `branch-control`<br>`control`<br>`item`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_collection-glyph-size`<br>`--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tree-select 的 branch-control、control、item、positioner、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-tree-select-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | tree-select 的 branch-content 部件 padding-inline-start 覆盖槽。 |
+| `--xh-tree-select-indent` | `branch-content`<br>`branch-empty`<br>`branch-error`<br>`branch-loading`<br>`branch-retry-trigger` | `margin-inline-start`<br>`padding-inline`<br>`padding-inline-start` | `default`<br>`is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])` | `--xh-space-4` | tree-select 的 branch-content、branch-empty、branch-error、branch-loading、branch-retry-trigger 部件 margin-inline-start、padding-inline、padding-inline-start 覆盖槽。 |
 | `--xh-tree-select-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | tree-select 的 indicator 部件 color 覆盖槽。 |
 | `--xh-tree-select-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-surface` | tree-select 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-tree-select-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | tree-select 的 input 部件 -webkit-text-fill-color 覆盖槽。 |

@@ -777,6 +777,9 @@ export function connectTreeSelect<T extends PropTypes>(
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
       'role': 'status',
+      // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
       'data-state': stateAttr,
       'hidden': !loading || !empty || undefined,
     }),
@@ -944,8 +947,11 @@ export function connectTreeSelect<T extends PropTypes>(
     getBranchLoadingProps: node => normalize.element({
       ...parts['branch-loading'].attrs,
       ...branchState(node.value),
-      role: 'status',
-      hidden: (!isExpanded(node.value) || branchLoadState(node.value)?.status !== 'loading') || undefined,
+      'role': 'status',
+      // 分支首次取子项：文案前一枚加载环，由加载环配方画
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(branchLoadState(node.value)?.status === 'loading'),
+      'hidden': (!isExpanded(node.value) || branchLoadState(node.value)?.status !== 'loading') || undefined,
     }),
 
     getBranchErrorProps: node => normalize.element({
