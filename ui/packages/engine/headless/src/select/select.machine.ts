@@ -10,6 +10,7 @@ import type { SelectFocusIntent, SelectSchema } from './select.types'
 import { createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { SELECTION_TAG_DEFAULT_MAX, trackSelectionTagMotion } from '../shared/selection-tags'
@@ -37,6 +38,8 @@ function normalizeInput(next: string[] | undefined, multiple: boolean): string[]
 export const selectMachine = createMachine({
   name: 'select',
   context: ({ prop, cell }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 值住在 cell 里，受控/非受控在此收口，不需要影子事件
@@ -69,7 +72,7 @@ export const selectMachine = createMachine({
     // 缓冲随服务存活：收起态在 trigger 上连打、展开态在 content 上连打共用同一份
     typeahead: createTypeahead(),
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 挂载即结算一次显示文本：defaultValue / 受控初值都得在首帧就有文字可显示
   entry: ['syncValueText'],
   // 行为资源由顶层 effect 持有：逻辑关闭后仍等 Presence 结清真实退场才归还。
@@ -101,6 +104,8 @@ export const selectMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控只发意图，非受控落 target 并通知。
         // 落点意图与焦点归还先记进 context：受控那一拍走 CONTROLLED.OPEN，读不到原按键事件。
@@ -163,6 +168,7 @@ export const selectMachine = createMachine({
     },
     actions: {
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
+      clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')

@@ -270,6 +270,8 @@ describe('选择器四向短位移', () => {
       positioner.dataset.placement = item.placement
       expect(directions(positioner), item.placement).toEqual(item.expected)
     }
+    // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户打开时的那条进场
+    delete content.dataset.instant
     content.dataset.state = 'open'
     expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-in')
     // 打开态不常驻合成层：常驻的 will-change 会让静止画面沿用入场动画中途的栅格而发虚

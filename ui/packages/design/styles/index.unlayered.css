@@ -37749,7 +37749,8 @@
   outline: none;
 }
 
-[data-scope='select'][data-part='content'][data-state='open'] {
+/* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
+[data-scope='select'][data-part='content'][data-state='open']:not([data-instant]) {
   animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 

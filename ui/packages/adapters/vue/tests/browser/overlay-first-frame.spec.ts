@@ -32,6 +32,14 @@ import {
   XhPopoverRoot,
   XhPopoverTitle,
   XhPopoverTrigger,
+  XhSelectContent,
+  XhSelectItem,
+  XhSelectItemText,
+  XhSelectList,
+  XhSelectPositioner,
+  XhSelectRoot,
+  XhSelectTrigger,
+  XhSelectValueText,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -91,6 +99,16 @@ const CASES: Record<string, Case> = {
       h(XhContextMenuPositioner, null, () => h(XhContextMenuContent, null, () => FRUITS.map(node =>
         h(XhContextMenuItem, { key: node.value, value: node.value }, () => h(XhContextMenuItemText, null, () => node.label)),
       ))),
+    ]),
+  },
+  'select': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhSelectRoot, props, () => [
+      h(XhSelectTrigger, null, () => h(XhSelectValueText)),
+      h(XhSelectPositioner, null, () => h(XhSelectContent, null, () => h(XhSelectList, null, () => FRUITS.map(node =>
+        h(XhSelectItem, { key: node.value, value: node.value }, () => h(XhSelectItemText, null, () => node.label)),
+      )))),
     ]),
   },
   'dialog': {

@@ -417,6 +417,8 @@ export function connectSelect<T extends PropTypes>(
       // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
       'data-xh-material': 'frosted',
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-placement': placement,
       // Presence 会把视觉节点留到动画结束；逻辑关闭后立即退出交互与可访问树。
       'inert': !open || undefined,
