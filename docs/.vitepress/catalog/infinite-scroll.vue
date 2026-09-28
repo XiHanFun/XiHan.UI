@@ -1,17 +1,13 @@
-<script setup lang="ts">
-import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const scrollEl = ref<HTMLElement | null>(null);
-const items = Array.from({ length: 6 }, (_, i) => `第 ${i + 1} 条`);
-</script>
-
 <template>
-  <div ref="scrollEl" data-xh-scroll style="block-size: var(--xh-doc-catalog-h); inline-size: var(--xh-doc-catalog-w); overflow: auto; border: var(--xh-stroke-thin) solid var(--xh-border-default); border-radius: var(--xh-shape-surface)">
-    <XhInfiniteScrollRoot :target="scrollEl" loading>
-      <div v-for="item in items" :key="item" style="padding: var(--xh-space-1_5) var(--xh-space-3)">{{ item }}</div>
-      <div style="padding: var(--xh-space-1_5) var(--xh-space-3); color: var(--xh-fg-muted)">正在取下一页…</div>
-      <XhInfiniteScrollSentinel />
-    </XhInfiniteScrollRoot>
-  </div>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="40.5" y="16.5" width="159" height="127" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M55 32h66" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M40 47.5h160" stroke="var(--xh-border-subtle)" />
+    <path d="M55 64h82" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M40 79.5h160" stroke="var(--xh-border-subtle)" />
+    <path d="M55 96h58" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <circle cx="102" cy="124" r="6" stroke="var(--xh-bg-subtle-active)" stroke-width="2" />
+    <path d="M102 118a6 6 0 0 1 6 6" stroke="var(--xh-fg-brand)" stroke-width="2" />
+    <path d="M118 124h28" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+  </svg>
 </template>

@@ -1,13 +1,16 @@
-<script setup lang="ts">
-import { XhImageViewerRoot, XhImageViewerTrigger } from "@xihan-ui/vue";
-
-const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Ccircle%20cx=%224%22%20cy=%223%22%20r=%221.4%22%20fill=%22%23fbbf24%22/%3E%3Cpath%20d=%22M0%209%20L5%204.5%20L8%207%20L11%203.5%20L16%209%20Z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E", alt: "示例风景图" }];
-</script>
-
 <template>
-  <XhImageViewerRoot :collection="items">
-    <XhImageViewerTrigger>
-      <img :src="items[0]!.src" :alt="items[0]!.alt" style="display: block; inline-size: var(--xh-doc-catalog-w); border-radius: var(--xh-shape-surface); cursor: zoom-in">
-    </XhImageViewerTrigger>
-  </XhImageViewerRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M8 0h224a8 8 0 0 1 8 8v144a8 8 0 0 1-8 8h-224a8 8 0 0 1-8-8v-144a8 8 0 0 1 8-8z" fill="var(--xh-bg-overlay)" />
+    <rect x="56" y="20" width="128" height="96" rx="4" fill="var(--xh-bg-subtle-hover-opaque)" />
+    <path d="M56 116l44.8 -48l25.6 21.12l25.6 -32.64l32 38.4V112a4 4 0 0 1-4 4H60a4 4 0 0 1-4-4z" fill="var(--xh-bg-subtle-active-opaque)" />
+    <circle cx="86.5" cy="49" r="9.5" fill="var(--xh-bg-subtle-active-opaque)" />
+    <circle cx="216" cy="24" r="12" fill="var(--xh-bg-surface-raised)" />
+    <path d="M212 20l8 8m0-8l-8 8" stroke="var(--xh-fg-default)" stroke-width="2" />
+    <circle cx="28" cy="68" r="12" fill="var(--xh-bg-surface-raised)" />
+    <path d="M30 64l-4 4 4 4" stroke="var(--xh-fg-default)" stroke-width="2" />
+    <circle cx="212" cy="68" r="12" fill="var(--xh-bg-surface-raised)" />
+    <path d="M210 64l4 4-4 4" stroke="var(--xh-fg-default)" stroke-width="2" />
+    <rect x="64" y="124" width="112" height="28" rx="14" fill="var(--xh-bg-surface-raised)" />
+    <path d="M88 137a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5m-9-7h4M112 137a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5m-7-9v4m-2-2h4M127 138a5 5 0 1 1 1.5 3.5m-1.5 2.5v-4h4M161 138a5 5 0 1 1-1.5-3.5m1.5-2.5v4h-4" stroke="var(--xh-fg-default)" stroke-width="2" />
+  </svg>
 </template>

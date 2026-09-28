@@ -1,19 +1,23 @@
-<script setup lang="ts">
-import { XhListItem, XhListItemContent, XhListItemDescription, XhListItemTitle, XhListRoot } from "@xihan-ui/vue";
-
-const people = [
-  { name: "张三", desc: "技术部 · 前端" },
-  { name: "李四", desc: "技术部 · 后端" },
-];
-</script>
-
 <template>
-  <XhListRoot style="inline-size: var(--xh-doc-catalog-w)">
-    <XhListItem v-for="p in people" :key="p.name">
-      <XhListItemContent>
-        <XhListItemTitle>{{ p.name }}</XhListItemTitle>
-        <XhListItemDescription>{{ p.desc }}</XhListItemDescription>
-      </XhListItemContent>
-    </XhListItem>
-  </XhListRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <circle cx="44" cy="40" r="14" fill="var(--xh-bg-subtle-hover)" />
+    <circle cx="44" cy="37" r="4.5" fill="var(--xh-fg-subtle)" />
+    <path d="M35.32 48.68a8.68 7 0 0 1 17.36 0a14 14 0 0 1-17.36 0z" fill="var(--xh-fg-subtle)" />
+    <path d="M71 34h50" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M70 48h84" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M198 36l4 4-4 4" stroke="var(--xh-fg-subtle)" stroke-width="2" />
+    <path d="M28 64.5h184" stroke="var(--xh-border-subtle)" />
+    <circle cx="44" cy="88" r="14" fill="var(--xh-bg-subtle-hover)" />
+    <circle cx="44" cy="85" r="4.5" fill="var(--xh-fg-subtle)" />
+    <path d="M35.32 96.68a8.68 7 0 0 1 17.36 0a14 14 0 0 1-17.36 0z" fill="var(--xh-fg-subtle)" />
+    <path d="M71 82h38" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M70 96h68" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M198 84l4 4-4 4" stroke="var(--xh-fg-subtle)" stroke-width="2" />
+    <path d="M28 112.5h184" stroke="var(--xh-border-subtle)" />
+    <circle cx="44" cy="136" r="14" fill="var(--xh-bg-subtle-hover)" />
+    <circle cx="44" cy="133" r="4.5" fill="var(--xh-fg-subtle)" />
+    <path d="M35.32 144.68a8.68 7 0 0 1 17.36 0a14 14 0 0 1-17.36 0z" fill="var(--xh-fg-subtle)" />
+    <path d="M71 130h54" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M70 144h76" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+  </svg>
 </template>

@@ -1,12 +1,14 @@
-<script setup lang="ts">
-import { XhAccordionRoot } from "@xihan-ui/vue";
-
-const items = [
-  { value: "install", label: "怎么安装", content: "装 @xihan-ui/vue 与 @xihan-ui/styles 两个包。" },
-  { value: "theme", label: "怎么换皮肤", content: "覆写同名令牌即可。" },
-];
-</script>
-
 <template>
-  <XhAccordionRoot :collection="items" :default-value="['install']" style="inline-size: var(--xh-doc-catalog-w)" />
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="24.5" y="16.5" width="191" height="127" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M43 36h66" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M188 38l4-4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M42 56h140M42 68h108" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M24 84.5h192" stroke="var(--xh-border-subtle)" />
+    <path d="M43 100h82" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M188 98l4 4 4-4" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M24 116.5h192" stroke="var(--xh-border-subtle)" />
+    <path d="M43 130h58" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M188 128l4 4 4-4" stroke="var(--xh-fg-muted)" stroke-width="2" />
+  </svg>
 </template>

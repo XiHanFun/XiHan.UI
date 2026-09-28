@@ -1,10 +1,8 @@
-<script setup lang="ts">
-import { XhNumberAnimation } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <div style="display: grid; gap: var(--xh-space-1); justify-items: center">
-    <XhNumberAnimation :from="0" :to="12480" size="lg" />
-    <span style="color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">本月新增</span>
-  </div>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M64 44h16M96 44h16" stroke="var(--xh-fg-disabled)" stroke-width="8" />
+    <path d="M64 72h16M96 72h16M128 72h16M160 72h16" stroke="var(--xh-fg-default)" stroke-width="8" />
+    <path d="M128 100h16M160 100h16" stroke="var(--xh-fg-disabled)" stroke-width="8" />
+    <path d="M86 124h68" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+  </svg>
 </template>

@@ -1,32 +1,13 @@
-<script setup lang="ts">
-import { XhTableBody, XhTableCell, XhTableColumnHeader, XhTableColumnLabel, XhTableHeader, XhTableRoot, XhTableRow } from "@xihan-ui/vue";
-
-const columns = [
-  { id: "name", label: "姓名" },
-  { id: "dept", label: "部门" },
-  { id: "level", label: "职级" },
-];
-const members = [
-  { id: "u1", name: "赵一", dept: "平台研发", level: "P6" },
-  { id: "u2", name: "钱二", dept: "前端体验", level: "P7" },
-  { id: "u3", name: "孙三", dept: "基础架构", level: "P6" },
-];
-const rows = members.map(m => ({ id: m.id }));
-</script>
-
 <template>
-  <XhTableRoot :columns="columns" :rows="rows" style="inline-size: var(--xh-doc-catalog-w)">
-    <XhTableHeader>
-      <XhTableRow>
-        <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id"><XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel></XhTableColumnHeader>
-      </XhTableRow>
-    </XhTableHeader>
-    <XhTableBody>
-      <XhTableRow v-for="m in members" :key="m.id" :value="m.id">
-        <XhTableCell value="name">{{ m.name }}</XhTableCell>
-        <XhTableCell value="dept">{{ m.dept }}</XhTableCell>
-        <XhTableCell value="level">{{ m.level }}</XhTableCell>
-      </XhTableRow>
-    </XhTableBody>
-  </XhTableRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="16.5" y="24.5" width="207" height="111" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M24 24.5h192a7.5 7.5 0 0 1 7.5 7.5v20.5h-207v-20.5a7.5 7.5 0 0 1 7.5-7.5z" fill="var(--xh-bg-subtle)" />
+    <path d="M16 52.5h208" stroke="var(--xh-border-default)" />
+    <path d="M30 38h28M98 38h28M170 38h20" stroke="var(--xh-fg-default)" stroke-width="4" />
+    <path d="M31 66h34M99 66h50M171 66h14" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M16 80.5h208" stroke="var(--xh-border-subtle)" />
+    <path d="M31 94h26M99 94h42M171 94h14" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M16 108.5h208" stroke="var(--xh-border-subtle)" />
+    <path d="M31 122h38M99 122h34M171 122h14" stroke="var(--xh-fg-muted)" stroke-width="6" />
+  </svg>
 </template>

@@ -1,25 +1,21 @@
-<script setup lang="ts">
-import {
-  XhGridListRoot,
-  XhGridListRow,
-  XhGridListRowAction,
-  XhGridListRowActions,
-  XhGridListRowContent,
-  XhGridListRowSelectionIndicator,
-  XhGridListRowText,
-} from "@xihan-ui/vue";
-</script>
-
 <template>
-  <XhGridListRoot default-value="design">
-    <XhGridListRow value="design">
-      <XhGridListRowSelectionIndicator />
-      <XhGridListRowContent><XhGridListRowText>设计规范</XhGridListRowText></XhGridListRowContent>
-      <XhGridListRowActions><XhGridListRowAction>查看</XhGridListRowAction></XhGridListRowActions>
-    </XhGridListRow>
-    <XhGridListRow value="code">
-      <XhGridListRowSelectionIndicator />
-      <XhGridListRowContent><XhGridListRowText>实现代码</XhGridListRowText></XhGridListRowContent>
-    </XhGridListRow>
-  </XhGridListRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="24.5" y="20.5" width="191" height="119" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <rect x="28" y="24" width="184" height="36" rx="4" fill="var(--xh-bg-brand-subtle)" />
+    <rect x="36" y="34" width="16" height="16" rx="4" fill="var(--xh-bg-brand)" />
+    <path d="M40 42l2.5 2.5 5.5-5.5" stroke="var(--xh-fg-on-brand)" stroke-width="2" />
+    <path d="M63 36h66" stroke="var(--xh-fg-on-brand-subtle)" stroke-width="6" />
+    <path d="M62 50h92" stroke="var(--xh-fg-on-brand-subtle)" stroke-width="4" />
+    <path d="M191 42h0m5 0h0m5 0h0" stroke="var(--xh-fg-on-brand-subtle)" stroke-width="2" />
+    <path d="M24 63.5h192" stroke="var(--xh-border-subtle)" />
+    <rect x="36.5" y="74.5" width="15" height="15" rx="4" stroke="var(--xh-border-control)" />
+    <path d="M63 76h50" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M62 90h84" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M191 82h0m5 0h0m5 0h0" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M24 103.5h192" stroke="var(--xh-border-subtle)" />
+    <rect x="36.5" y="114.5" width="15" height="15" rx="4" stroke="var(--xh-border-control)" />
+    <path d="M63 116h58" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M62 130h68" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M191 122h0m5 0h0m5 0h0" stroke="var(--xh-fg-muted)" stroke-width="2" />
+  </svg>
 </template>
