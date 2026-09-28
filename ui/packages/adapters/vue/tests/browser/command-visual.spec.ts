@@ -67,6 +67,18 @@ describe('command 面板与命令', () => {
     expect(Number.parseFloat(content.borderTopLeftRadius)).toBe(12)
   })
 
+  it('进场从上方落下：起点在终点之上一小段，缩放锚在面板顶缘，位移与缩放同向', async () => {
+    await mount()
+    const content = part('content')
+    const [enter] = content.getAnimations().filter(a => (a as CSSAnimation).animationName === 'xh-overlay-pop-in')
+    enter!.pause()
+    enter!.currentTime = 0
+    const style = getComputedStyle(content)
+    const [, y] = style.translate.split(' ')
+    expect(Number.parseFloat(y!)).toBeLessThan(0)
+    expect(style.transformOrigin.split(' ')[1]).toBe('0px')
+  })
+
   it('活动候选与指针悬停同一档中性面、不画对号不留选中底；按下 200 不缩放', async () => {
     await mount()
     const open = item('open')

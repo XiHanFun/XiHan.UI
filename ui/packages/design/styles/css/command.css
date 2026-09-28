@@ -31,9 +31,10 @@
     --xh-_command-font-size: var(--xh-control-font-md);
   }
 
-  /* 面板从上方落下来一小段：方向槽写在定位层上，面板继承过去喂给进场那支动画 */
+  /* 面板从上方落下来一小段：起点在终点之上（up 一侧写 1），与锚在顶缘的缩放同向。
+     方向槽写在定位层上，面板继承过去喂给进场那支动画 */
   [data-scope='command'][data-part='positioner'] {
-    --xh-_overlay-enter-down: 1;
+    --xh-_overlay-enter-up: 1;
   }
 
   /* —— 尺寸 —— */
