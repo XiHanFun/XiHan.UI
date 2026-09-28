@@ -52382,7 +52382,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ToolCallSchema>( this, toolCallMachine, () => ({ running: this.streaming, open: this.open, defaultOpen: this.defaultOpen, autoDisclosure: this.autoDisclosure, disabled: this.disabled, onOpenChange: this.notify, }), { configName: 'reasoning' }, )"
+              "default": "new MachineController<ToolCallSchema>( this, toolCallMachine, () => ({ // 思考中每秒走一次表，已用时据此跟着走 clock: true, running: this.streaming, open: this.open, defaultOpen: this.defaultOpen, autoDisclosure: this.autoDisclosure, disabled: this.disabled, onOpenChange: this.notify, }), { configName: 'reasoning' }, )"
             },
             {
               "kind": "method",

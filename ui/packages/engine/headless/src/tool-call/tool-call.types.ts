@@ -66,6 +66,11 @@ export interface ToolCallSchema extends MachineSchema {
     /** 运行时自动展开、结束时自动收起，默认开启；用户手动开合过一次即永久停用。 */
     autoDisclosure?: boolean
     disabled?: boolean
+    /**
+     * running 期间每秒记一次当前时刻（context.now），给思考过程算已经想了多久；默认关闭。
+     * 只在运行时走表，停下即拆掉计时器——一段会话里的几十个块不会各挂一个空转的计时器。
+     */
+    clock?: boolean
     onOpenChange?: (details: ToolCallOpenChangeDetails) => void
   }
   context: {
@@ -85,11 +90,15 @@ export interface ToolCallSchema extends MachineSchema {
      * 没翻过时文案投影 data-instant，首帧就已想完的直接呈现。
      */
     phaseMoved: boolean
+    /** 开了 clock 且在运行时最近一次走表的时刻（毫秒时间戳）；没走过表时为 null。 */
+    now: number | null
   }
   computed: Record<string, never>
   refs: {
     /** 叶态的 entry 是否已经跑过启动那一次：之后的每一次进入都是开合真的变了。 */
     entered: boolean
+    /** 走表计时器的拆除函数；没在走表时为 null。 */
+    stopClock: (() => void) | null
   }
   state: 'auto.collapsed' | 'auto.expanded' | 'held.collapsed' | 'held.expanded'
   event:
@@ -122,6 +131,8 @@ export interface ToolCallSchema extends MachineSchema {
     | 'endPress'
     | 'releaseWhenInert'
     | 'markMoved'
+    | 'syncClock'
+    | 'stopClock'
   effect: 'trackDisclosureHandoff'
 }
 

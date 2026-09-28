@@ -13366,6 +13366,7 @@
     ],
     "tool-call": [
       "autoDisclosure",
+      "clock",
       "defaultOpen",
       "disabled",
       "endTime",

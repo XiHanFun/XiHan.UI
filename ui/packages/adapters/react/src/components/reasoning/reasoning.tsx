@@ -74,6 +74,8 @@ export function XhReasoningRoot({
   }) as XhReasoningRootProps
   const ctx = useReasoning(
     {
+      // 思考中每秒走一次表，已用时据此跟着走
+      clock: true,
       // 还在写就是还在跑，自动开合据此走
       running: configured.streaming,
       open: configured.open,

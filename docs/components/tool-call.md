@@ -111,6 +111,7 @@
 | `defaultOpen` | `boolean` |  |  |
 | `autoDisclosure` | `boolean` |  | 运行时自动展开、结束时自动收起，默认开启；用户手动开合过一次即永久停用。 |
 | `disabled` | `boolean` |  |  |
+| `clock` | `boolean` |  | running 期间每秒记一次当前时刻（context.now），给思考过程算已经想了多久；默认关闭。 只在运行时走表，停下即拆掉计时器——一段会话里的几十个块不会各挂一个空转的计时器。 |
 | `onOpenChange` | `(details: ToolCallOpenChangeDetails) => void` |  |  |
 | `endTime` | `number` |  | 本次调用结束的时刻。可能缺席：仍在运行，或流被中止时兜底收尾不写该字段。 |
 | `phase` | `ToolCallPhase` |  | 本次调用所处的阶段，默认 input-available。 |

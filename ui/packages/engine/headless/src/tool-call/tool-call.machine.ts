@@ -6,10 +6,13 @@
 // 提供 tool call 相关实现。
 
 import type { ToolCallSchema } from './tool-call.types'
-import { isSSR, setup } from '@xihan-ui/core'
+import { isSSR, setIntervalEffect, setup } from '@xihan-ui/core'
 import { retainDisclosureHandoff } from '../shared/disclosure-handoff'
 
 const { createMachine, guards } = setup<ToolCallSchema>()
+
+/** 走表的间隔：已用时按整秒显示，一秒走一次就够。 */
+const CLOCK_TICK = 1000
 
 /**
  * 自动开合的「锁存」靠转移的放置位置，不靠一个布尔位。
@@ -29,9 +32,13 @@ export const toolCallMachine = createMachine({
     pressed: cell<boolean>(() => ({ defaultValue: false })),
     moved: cell<boolean>(() => ({ defaultValue: false })),
     phaseMoved: cell<boolean>(() => ({ defaultValue: false })),
+    now: cell<number | null>(() => ({ defaultValue: null })),
   }),
-  refs: () => ({ entered: false }),
+  refs: () => ({ entered: false, stopClock: null }),
   effects: ['trackDisclosureHandoff'],
+  // 走表只在运行时：启动时已经在跑就起表，机器停下时拆掉
+  entry: ['syncClock'],
+  exit: ['stopClock'],
   initialState: ({ prop }) => {
     const explicit = prop('open') ?? prop('defaultOpen')
     if (explicit !== undefined)
@@ -41,7 +48,8 @@ export const toolCallMachine = createMachine({
   },
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
-    track([() => prop('running')], () => action(['syncRunning']))
+    track([() => prop('running')], () => action(['syncRunning', 'syncClock']))
+    track([() => prop('clock')], () => action(['syncClock']))
     // 按住途中转禁用：trigger 随即原生 disabled、不会再来 keyup，按压面由机器自己收
     track([() => prop('disabled')], () => action(['releaseWhenInert']))
   },
@@ -185,6 +193,23 @@ export const toolCallMachine = createMachine({
       syncRunning: ({ context, prop, send }) => {
         context.set('phaseMoved', true)
         send(prop('running') ? { type: 'PHASE.ACTIVE' } : { type: 'PHASE.SETTLE' })
+      },
+      // 开了 clock 且在运行就走表，否则拆掉；已在走就不重起，停下时留着最后一次的时刻
+      syncClock: ({ context, prop, refs }) => {
+        const want = prop('clock') === true && prop('running') === true
+        const stop = refs.get('stopClock')
+        if (want && stop === null) {
+          context.set('now', Date.now())
+          refs.set('stopClock', setIntervalEffect(() => context.set('now', Date.now()), CLOCK_TICK))
+        }
+        else if (!want && stop !== null) {
+          stop()
+          refs.set('stopClock', null)
+        }
+      },
+      stopClock: ({ refs }) => {
+        refs.get('stopClock')?.()
+        refs.set('stopClock', null)
       },
     },
   },

@@ -41,6 +41,11 @@ export function connectReasoning<T extends PropTypes>(
   const instant = dataAttr(!context.get('moved'))
   const settledInstant = dataAttr(!context.get('phaseMoved'))
   const durationMs = reasoningDuration(props.startTime, props.endTime)
+  // 思考中按机器每秒走一次的表算已用时（适配器开着 clock）；想完就是时长
+  const now = context.get('now') ?? null
+  const elapsedMs = streaming
+    ? (props.startTime !== undefined && now !== null ? Math.max(0, now - props.startTime) : undefined)
+    : durationMs
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
@@ -52,7 +57,8 @@ export function connectReasoning<T extends PropTypes>(
     streaming,
     disabled,
     durationMs,
-    statusText: reasoningStatusText(streaming, durationMs, props.translations),
+    elapsedMs,
+    statusText: reasoningStatusText(streaming, durationMs, props.translations, elapsedMs),
     setOpen,
 
     // 不发 aria-busy：全族只认会话级的那一个活区

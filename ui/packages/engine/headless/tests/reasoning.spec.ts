@@ -1,7 +1,7 @@
 import type { ToolCallOpenChangeDetails, ToolCallSchema } from '../src/tool-call'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectReasoning, reasoningDuration, reasoningStatusText } from '../src/reasoning'
 import { toolCallMachine } from '../src/tool-call'
 
@@ -241,5 +241,56 @@ describe('connectReasoning 按压通道：读 tool-call 机器的 pressed，Spac
     fire(trigger(), 'onKeyDown', key(' '))
     expect(trigger()['data-pressed']).toBe('')
     r.stop()
+  })
+})
+
+describe('connectReasoning 思考中的已用时', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('开了 clock 且在想：每秒走一次表，文案带上已经想了的整秒数；想完换成时长', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(10_000)
+    const r = makeReasoning({ clock: true, running: true })
+    const view = { streaming: true, startTime: 10_000 }
+    expect(r.api(view).elapsedMs).toBe(0)
+    expect(r.api(view).statusText).toBe('Thinking for 0s')
+    vi.advanceTimersByTime(3_400)
+    expect(r.api(view).elapsedMs).toBe(3_000)
+    expect(r.api(view).statusText).toBe('Thinking for 3s')
+    r.setProps({ running: false })
+    const done = r.api({ streaming: false, startTime: 10_000, endTime: 13_400 })
+    expect(done.elapsedMs).toBe(3_400)
+    expect(done.statusText).toBe('Thought for 3.4s')
+    r.stop()
+  })
+
+  it('只在想的时候走表：停下就拆掉计时器，机器停了也不留', () => {
+    vi.useFakeTimers()
+    const r = makeReasoning({ clock: true, running: true })
+    expect(vi.getTimerCount()).toBe(1)
+    r.setProps({ running: false })
+    expect(vi.getTimerCount()).toBe(0)
+    r.setProps({ running: true })
+    expect(vi.getTimerCount()).toBe(1)
+    r.stop()
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('没开 clock（工具调用）不走表；不知道开始时刻时照旧只说在想', () => {
+    vi.useFakeTimers()
+    const off = makeReasoning({ running: true })
+    expect(vi.getTimerCount()).toBe(0)
+    expect(off.api({ streaming: true, startTime: 0 }).statusText).toBe('Thinking…')
+    off.stop()
+    const noStart = makeReasoning({ clock: true, running: true })
+    expect(noStart.api({ streaming: true }).statusText).toBe('Thinking…')
+    noStart.stop()
+  })
+
+  it('只换了 thinking 没给 thinkingFor 时照旧显示 thinking，不混进英文缺省串', () => {
+    expect(reasoningStatusText(true, undefined, { thinking: '正在思考…' }, 3_000)).toBe('正在思考…')
+    expect(reasoningStatusText(true, undefined, { thinkingFor: '已想了 {seconds} 秒' }, 3_900)).toBe('已想了 3 秒')
   })
 })
