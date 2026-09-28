@@ -44237,8 +44237,9 @@
   pointer-events: none;
 }
 
-/* 入场走 enter 档（锚定列表族的 tooltip 入场 --xh-motion-duration-enter），退场仍是 exit */
-[data-scope='tooltip'][data-part='content'][data-state='open'] {
+/* 入场走 enter 档（锚定列表族的 tooltip 入场 --xh-motion-duration-enter），退场仍是 exit。
+   接替上一个提示打开的（data-instant）直接呈现：横扫一排钮时提示一个个跟上，不再一个个滑入 */
+[data-scope='tooltip'][data-part='content'][data-state='open']:not([data-instant]) {
   animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 

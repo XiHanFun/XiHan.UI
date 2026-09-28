@@ -32,6 +32,8 @@ export interface XhTooltipRootProps {
   dir?: Direction
   openDelay?: number
   closeDelay?: number
+  /** 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与。 */
+  skipDelayDuration?: number
   disabled?: boolean
   tone?: Tone
   size?: Size

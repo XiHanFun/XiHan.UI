@@ -37,6 +37,8 @@ export const tooltipSuite: ConformanceSuite = {
       },
     ],
   },
+  // 同页的提示共用一个接替窗口：会打开提示的用例都把 skipDelayDuration 写成 0，
+  // 前一个用例（或对拍里先跑的另一端）刚收起的提示才不会让这一个直接接替、多投影出 data-instant
   cases: [
     {
       name: '初始收起：content 常挂但带 hidden，trigger 不指向隐藏节点',
@@ -65,7 +67,7 @@ export const tooltipSuite: ConformanceSuite = {
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['tooltip.kbd.tab'],
       // 延时若被误用在聚焦路径上，本用例会因 content 仍 hidden 而失败
-      props: { openDelay: 5000 },
+      props: { openDelay: 5000, skipDelayDuration: 0 },
       steps: [
         {
           kind: 'focus',
@@ -83,6 +85,7 @@ export const tooltipSuite: ConformanceSuite = {
     {
       name: 'aria-describedby 指向 content：tooltip 是描述不是名字',
       spec: { apg: `${APG}#roles_states_properties` },
+      props: { skipDelayDuration: 0 },
       steps: [
         { kind: 'focus', part: 'trigger' },
         {
@@ -100,7 +103,8 @@ export const tooltipSuite: ConformanceSuite = {
     {
       name: '悬停进入：等到 openDelay 到点才展开',
       spec: { apg: APG, zag: 'tooltip.machine#opening' },
-      props: { openDelay: 50 },
+      // 关掉接替：这条守的是等待本身，前一个用例刚收起的提示会让这一个不等就接替
+      props: { openDelay: 50, skipDelayDuration: 0 },
       steps: [
         {
           kind: 'raw',
@@ -125,7 +129,7 @@ export const tooltipSuite: ConformanceSuite = {
       name: 'Escape 立即收起：不等 closeDelay',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['tooltip.kbd.escape'],
-      props: { closeDelay: 5000 },
+      props: { closeDelay: 5000, skipDelayDuration: 0 },
       steps: [
         { kind: 'focus', part: 'trigger' },
         {
@@ -144,7 +148,7 @@ export const tooltipSuite: ConformanceSuite = {
     {
       name: '指针按下：立即收起给真正的操作让位',
       spec: { apg: APG },
-      props: { closeDelay: 5000 },
+      props: { closeDelay: 5000, skipDelayDuration: 0 },
       steps: [
         { kind: 'focus', part: 'trigger' },
         {
@@ -162,7 +166,7 @@ export const tooltipSuite: ConformanceSuite = {
       // 焦点停在 trigger 上时，鼠标路过再移开不收走描述，收起由 BLUR 负责
       name: '聚焦打开后，指针移出不收起（收起归 BLUR 管）',
       spec: { apg: APG },
-      props: { closeDelay: 20 },
+      props: { closeDelay: 20, skipDelayDuration: 0 },
       steps: [
         { kind: 'focus', part: 'trigger' },
         {
@@ -186,7 +190,8 @@ export const tooltipSuite: ConformanceSuite = {
       // 守的是悬停等待期内的命令式展开（opening 态收 OPEN）
       name: '悬停等待期内命令式展开：立即展开，不等 openDelay',
       spec: { apg: APG },
-      props: { openDelay: 5000 },
+      // 关掉接替：先得真的进到等待态，前一个用例刚收起的提示会让悬停不等就接替
+      props: { openDelay: 5000, skipDelayDuration: 0 },
       steps: [
         {
           kind: 'raw',
@@ -229,7 +234,7 @@ export const tooltipSuite: ConformanceSuite = {
     {
       name: '受控 open：聚焦只发 open-change 不自改 DOM，父写回 open 后才展开',
       spec: { adr: 'controlled-uncontrolled' },
-      props: { open: false },
+      props: { open: false, skipDelayDuration: 0 },
       steps: [
         {
           kind: 'focus',

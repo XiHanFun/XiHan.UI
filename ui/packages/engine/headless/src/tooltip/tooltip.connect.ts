@@ -87,6 +87,8 @@ export function connectTooltip<T extends PropTypes>(
       'id': ids.content,
       'role': 'tooltip',
       'data-state': stateAttr,
+      // 热窗口内打开即接替上一个提示：不播进场，一个个跟上而不是一个个滑入
+      'data-instant': dataAttr(open && context.get('instant')),
       // tooltip 没有 root 部件，视觉轴落在浮层树最外层的 content 上，箭头继承它声明的私有槽
       'data-tone': prop('tone'),
       'data-size': prop('size'),

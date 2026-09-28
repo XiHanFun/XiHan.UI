@@ -43,6 +43,11 @@ export interface TooltipSchema extends MachineSchema {
     openDelay?: number
     /** 悬停移出到收起的等待毫秒，默认 300。 */
     closeDelay?: number
+    /**
+     * 跳过等待的窗口毫秒，默认 300：另一个提示还开着，或刚收起一个不到这么久时，指向这一个不等 openDelay、
+     * 也不播进场，直接接替（上一个随之收起）。0 或负数表示不参与接替，每次都等 openDelay。
+     */
+    skipDelayDuration?: number
     /** 只关闭提示本身，不影响被包裹控件的可用性。 */
     disabled?: boolean
     /** 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 */
@@ -57,6 +62,8 @@ export interface TooltipSchema extends MachineSchema {
     position: PositionResult | null
     /** 本次展开是否由聚焦触发：聚焦态的提示不被纯鼠标移出收起。 */
     focusOpened: boolean
+    /** 本次展开是接替上一个提示（热窗口内打开）：浮层投影 data-instant，不播进场。收起即清。 */
+    instant: boolean
   }
   computed: Record<string, never>
   refs: TooltipRefs
@@ -82,8 +89,8 @@ export interface TooltipSchema extends MachineSchema {
     | { type: 'CONTROLLED.CLOSE' }
   tag: never
   guard: 'isOpenControlled' | 'isDisabled' | 'isFocusOpened'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusOpened' | 'clearFocusOpened'
-  effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusOpened' | 'clearFocusOpened' | 'syncInstant' | 'clearInstant'
+  effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer' | 'trackGroup'
 }
 
 export interface TooltipApi<T extends PropTypes = PropTypes> {
