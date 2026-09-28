@@ -7,6 +7,7 @@
 
 /* 共享关键帧由 family/motion.css 提供，命令走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
 @import '../family/collection-item.css';
+@import '../family/field-chrome.css';
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -158,24 +159,23 @@
   }
 
   /* —— 检索框 —— */
-  /* 通栏一行，底下一道线把它与结果分开；框自己不画边不画底，边界归面板 */
+  /* 面板内嵌的搜索框：通栏一行，控件高与字号随尺寸档，底下一道面内分隔（sheet 面的分隔令牌）把它与结果分开；
+     框自己不画边不画底，边界归面板。重置与占位前景由字段家族按 data-xh-field-input 给 */
   [data-scope='command'][data-part='input'] {
+    --xh-field-placeholder-fg: var(--xh-command-placeholder-fg, var(--xh-fg-subtle));
+
     flex: none;
     inline-size: 100%;
     block-size: var(--xh-command-input-h, var(--xh-_command-input-h));
     padding-block: 0;
     padding-inline: var(--xh-command-input-px, var(--xh-_command-px));
     border: 0;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-command-input-border, var(--xh-border-subtle));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-command-input-border, var(--xh-material-elevated-separator));
     border-radius: 0;
     background: transparent;
     color: var(--xh-command-input-fg, var(--xh-fg-default));
     font-family: inherit;
-    font-size: var(--xh-command-input-font-size, var(--xh-text-body-size));
-  }
-
-  [data-scope='command'][data-part='input']::placeholder {
-    color: var(--xh-command-placeholder-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-command-input-font-size, var(--xh-_command-font-size));
   }
 
   /* 自动填充态：浏览器给填过的框强加一套系统色（多数引擎是黄底黑字），
@@ -348,7 +348,7 @@
     gap: var(--xh-command-footer-gap, var(--xh-space-2));
     padding-block: var(--xh-command-footer-py, var(--xh-space-2));
     padding-inline: var(--xh-command-footer-px, var(--xh-_command-px));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-command-footer-border, var(--xh-border-subtle));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-command-footer-border, var(--xh-material-elevated-separator));
     color: var(--xh-command-footer-fg, var(--xh-fg-muted));
     font-size: var(--xh-command-footer-font-size, var(--xh-text-caption-size));
   }

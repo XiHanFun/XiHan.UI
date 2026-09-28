@@ -65,6 +65,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 - 命令可写快捷键提示，贴行尾、与说明同档同色；纯装饰，不进检索串。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 面板默认是模态浮层：捕获焦点、锁定滚动、背景失活，Escape 与点击遮罩收起，收起后焦点归还触发按钮。`modal=false` 时不渲染遮罩、不拦截页面指针，也不启用这些模态约束；展开期间切换会立即同步。
+- 检索框是面板内嵌的搜索框，与级联选择、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，占位文字与其它字段同一支前景。
 - 焦点全程在检索框，活动候选经 `aria-activedescendant` 报告给读屏；活动候选同步 `aria-selected=true`，其余候选显式为 `false`，输入后活动候选自动回到首条。
 - 这里的 `aria-selected` 遵循 [WAI-ARIA 组合框规范](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)中“选中随焦点移动”的模式，只描述当前活动建议；命令执行后不保留持久选中状态，视觉上也不绘制对号或选中底。
 - 两种非条目相位各有部件：空（`empty`）与在途（`loading`）。取数期间显示在途占位，空态让位，两者不同时出现。
@@ -327,6 +328,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `input` | `data-state` | 'open' \| 'closed' |
+| `input` | `data-xh-field-input` | '' |
 | `list` | `data-instant` | ''（条件成立时才出现） |
 | `list` | `data-state` | 'open' \| 'closed' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
@@ -372,7 +374,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_command-px` | command 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-command-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-6` | command 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-command-fg` | `content` | `color` | `default` | `--xh-material-elevated-fg` | command 的 content 部件 color 覆盖槽。 |
-| `--xh-command-footer-border` | `footer` | `border-block-start` | `default` | `--xh-border-subtle` | command 的 footer 部件 border-block-start 覆盖槽。 |
+| `--xh-command-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-elevated-separator` | command 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-command-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | command 的 footer 部件 color 覆盖槽。 |
 | `--xh-command-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-caption-size` | command 的 footer 部件 font-size 覆盖槽。 |
 | `--xh-command-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | command 的 footer 部件 gap 覆盖槽。 |
@@ -388,9 +390,9 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-icon-size` | `content`<br>`positioner` | `--xh-icon-size` | `is([data-part='positioner'], [data-part='content'])`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | command 的 content、positioner 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-command-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-surface` | command 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-command-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | command 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
-| `--xh-command-input-border` | `input` | `border-block-end` | `default` | `--xh-border-subtle` | command 的 input 部件 border-block-end 覆盖槽。 |
+| `--xh-command-input-border` | `input` | `border-block-end` | `default` | `--xh-material-elevated-separator` | command 的 input 部件 border-block-end 覆盖槽。 |
 | `--xh-command-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | command 的 input 部件 color 覆盖槽。 |
-| `--xh-command-input-font-size` | `input` | `font-size` | `default` | `--xh-text-body-size` | command 的 input 部件 font-size 覆盖槽。 |
+| `--xh-command-input-font-size` | `input` | `font-size` | `default` | `--xh-_command-font-size` | command 的 input 部件 font-size 覆盖槽。 |
 | `--xh-command-input-h` | `input` | `block-size` | `default` | `--xh-_command-input-h` | command 的 input 部件 block-size 覆盖槽。 |
 | `--xh-command-input-px` | `input` | `padding-inline` | `default` | `--xh-_command-px` | command 的 input 部件 padding-inline 覆盖槽。 |
 | `--xh-command-inset-block-start` | `positioner` | `padding-block-start` | `default` | `--xh-space-8` | command 的 positioner 部件 padding-block-start 覆盖槽。 |
@@ -414,7 +416,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-6` | command 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-command-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | command 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-command-max-w` | `content` | `max-inline-size` | `default` | `--xh-_command-max-w` | command 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-command-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | command 的 input 部件 color 覆盖槽。 |
+| `--xh-command-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | command 的 input 部件 color 覆盖槽。 |
 | `--xh-command-positioner-pb` | `positioner` | `padding-block-end` | `default` | `--xh-space-4` | command 的 positioner 部件 padding-block-end 覆盖槽。 |
 | `--xh-command-positioner-px` | `positioner` | `padding-inline` | `default` | `--xh-space-4` | command 的 positioner 部件 padding-inline 覆盖槽。 |
 | `--xh-command-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | command 的 content 部件 border-radius 覆盖槽。 |

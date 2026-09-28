@@ -104,7 +104,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 
 ### 特性
 
-- 两栏都可搜索，`filter` 可自定义匹配规则。
+- 两栏都可搜索，`filter` 可自定义匹配规则。搜索框与命令面板、级联选择的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，占位文字与其它字段同一支前景。
 - 勾中的条目铺品牌淡底行面并由行首的方框标记，与表格选中行同一副外观；两侧定高列表挂自绘滚动条。
 - `oneWay` 单向移动：只能移向目标，不可退回。
 - 条目可逐条声明语气，搬到另一侧仍带着自己的那一份。
@@ -365,6 +365,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `panel-count` | `data-count` | String(filtered[panel.side].length) |
 | `panel-count` | `data-side` | panel.side |
 | `search` | `data-side` | panel.side |
+| `search` | `data-xh-field-input` | '' |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-invalid` | ''（条件成立时才出现） |
 | `list` | `data-readonly` | ''（条件成立时才出现） |
@@ -500,11 +501,12 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `--xh-transfer-panel-title-fg` | `panel-title` | `color` | `default` | `--xh-fg-default` | transfer 的 panel-title 部件 color 覆盖槽。 |
 | `--xh-transfer-panel-title-font-size` | `panel-title` | `font-size` | `default` | `--xh-text-label-size` | transfer 的 panel-title 部件 font-size 覆盖槽。 |
 | `--xh-transfer-panel-title-font-weight` | `panel-title` | `font-weight` | `default` | `--xh-font-weight-semibold` | transfer 的 panel-title 部件 font-weight 覆盖槽。 |
+| `--xh-transfer-placeholder-fg` | `search` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | transfer 的 search 部件 color 覆盖槽。 |
 | `--xh-transfer-search-bg` | `search` | `background` | `default` | `transparent` | transfer 的 search 部件 background 覆盖槽。 |
-| `--xh-transfer-search-border` | `search` | `border-block-end` | `default` | `--xh-border-control` | transfer 的 search 部件 border-block-end 覆盖槽。 |
+| `--xh-transfer-search-border` | `search` | `border-block-end` | `default` | `--xh-material-solid-separator` | transfer 的 search 部件 border-block-end 覆盖槽。 |
 | `--xh-transfer-search-fg` | `search` | `color` | `default` | `--xh-fg-default` | transfer 的 search 部件 color 覆盖槽。 |
 | `--xh-transfer-search-font-size` | `search` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 search 部件 font-size 覆盖槽。 |
-| `--xh-transfer-search-h` | `search` | `block-size` | `default` | `--xh-control-h-sm` | transfer 的 search 部件 block-size 覆盖槽。 |
+| `--xh-transfer-search-h` | `search` | `block-size` | `default` | `--xh-_transfer-h` | transfer 的 search 部件 block-size 覆盖槽。 |
 | `--xh-transfer-search-px` | `search` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 search 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-select-all-bg-hover` | `select-all-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | transfer 的 select-all-trigger 部件 background-color 覆盖槽。 |
 | `--xh-transfer-select-all-bg-pressed` | `select-all-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | transfer 的 select-all-trigger 部件 background-color 覆盖槽。 |

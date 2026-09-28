@@ -31,6 +31,7 @@ const headlessDir = path.resolve(cssDir, '../../../engine/headless/src')
 
 /** 通道 ①：`::placeholder` 伪元素，组件 → 承载占位串的部件。 */
 const PSEUDO = {
+  'cascader': 'input',
   'color-field': 'input',
   'combobox': 'input',
   'command': 'input',
@@ -43,6 +44,7 @@ const PSEUDO = {
   'question-flow': 'note',
   'tags-input': 'input',
   'text-field': 'input',
+  'transfer': 'search',
 }
 
 /** 通道 ②：`[data-placeholder]` 属性钩子，组件 → 承载占位文字的部件。 */
