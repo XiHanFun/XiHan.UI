@@ -19,11 +19,12 @@
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入参不参与提交。
 - 浮层内是[日历范围选择器](./calendar-range-picker)：先选起点再选终点，两端都落定后才写值并收起浮层；支持按住拖选与拖动已选区间的一端。
-- `granularity` 支持 day / week / month / quarter / year，输入段、网格和周期边界一起切换。
+- `granularity` 支持 day / week / month / quarter / year，输入段、网格和周期边界一起切换。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
 - `min`、`max`、`isDateUnavailable`（第二个参数是当前起点）与 `allowsNonContiguousRanges` 一并转给日历。
 - `presets` 提供“近 7 天”“本月”等整段快捷项，值使用 ISO 8601 的区间写法拼接两端。
 - 终点早于起点、任一端越界或不可用时整个字段标为不合法，也可以用 `invalid` 显式声明。
 - 输入值、展开状态和聚焦日期均可受控；点击输入行可以继续逐段键入，点击日历图标则把焦点送入日历。
+- 两组输入行的写法随 `locale` 与 `granularity` / `segments` 走，不接受 `formatOptions` 或格式串，理由见[日期字段](./date-field)。
 - `firstDayOfWeek`（0 = 星期日 … 6 = 星期六）原样交给浮层里的日历，只改表头、行首与 Home / End，两组段位的段序仍按 `locale`；用法见[日历选择器](./calendar-picker)的示例。
 - `showTime`（仅 `granularity=day`）让两端都升格为不带时区的 `YYYY-MM-DDTHH:mm[:ss]`：两组段位带上时刻段，浮层里起止各多出一组时间列（`column-group` 里的 `time-column` / `time-item`：列与格与日期选择器的时间部件同名，一端的外壳与小标题与时间范围选择器同名），选完日期不收起，由 `confirm-trigger` 收口。`timeZone` 仍只决定「今天」。
 - `defaultTime`（如 `['00:00:00', '23:59:59']`）在只点日期时给起止各补上对应时刻；已经挑过时刻的一端换日期时时刻原样留着。快捷选项同样是「日期拼上这一端此刻的时刻」，没有就按 `defaultTime`。
@@ -39,7 +40,7 @@
 
 - 使用明确的字段标签，两组段位各自报告“开始日期”“结束日期”。
 - 起止段组之间必须渲染 `range-separator`，不依赖空白区分两端。
-- 起止常跨月时显式传 `visibleCount="2"`，并排查看两页。
+- 起止常跨月时显式传 `visibleCount="2"`，并排查看两页。两页始终联动、一起翻页，不提供解绑，理由见[日历范围选择器](./calendar-range-picker)。
 - 需要统一查询值时，读取 `api.periodValue` 得到周期首尾与回显键。
 - 常用区间优先提供快捷项，日期在 computed / memo 中计算后再传入。
 
