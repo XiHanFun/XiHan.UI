@@ -489,6 +489,7 @@
       "table"
     ],
     "extra": [
+      "descriptions",
       "page-header"
     ],
     "eye-dropper-trigger": [
@@ -625,6 +626,7 @@
       "card",
       "code-view",
       "collapsible",
+      "descriptions",
       "dialog",
       "diff-view",
       "drawer",
@@ -1775,6 +1777,7 @@
       "alert",
       "approval",
       "card",
+      "descriptions",
       "dialog",
       "drawer",
       "empty-state",

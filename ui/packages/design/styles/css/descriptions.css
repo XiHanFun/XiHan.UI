@@ -78,6 +78,46 @@
     --xh-_descriptions-font-size: var(--xh-control-font-lg);
   }
 
+  /* —— 头部 ——
+     列表之前的一行：左标题、右附加内容。它是根的兄弟，继承不到根上的私有槽，尺寸档自己再换一次 */
+  [data-scope='descriptions'][data-part='header'] {
+    --xh-_descriptions-header-mb: var(--xh-space-3);
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--xh-descriptions-header-gap, var(--xh-space-3));
+    margin-block-end: var(--xh-descriptions-header-mb, var(--xh-_descriptions-header-mb));
+  }
+
+  [data-scope='descriptions'][data-part='header'][data-size='sm'] {
+    --xh-_descriptions-header-mb: var(--xh-space-2);
+  }
+
+  [data-scope='descriptions'][data-part='header'][data-size='lg'] {
+    --xh-_descriptions-header-mb: var(--xh-space-4);
+  }
+
+  /* 标题是 Surface 内标题：正文字号 + 半粗；作者写成 h2 / h3 时 UA 的外边距与字号在这里清掉 */
+  [data-scope='descriptions'][data-part='title'] {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    margin: 0;
+    color: var(--xh-descriptions-title-fg, var(--xh-fg-default));
+    font-size: var(--xh-descriptions-title-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-descriptions-title-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-leading-relaxed);
+  }
+
+  /* 附加内容贴在行尾：操作钮或状态标签，一行放不下时整块换到下一行 */
+  [data-scope='descriptions'][data-part='extra'] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--xh-descriptions-extra-gap, var(--xh-space-2));
+    margin-inline-start: auto;
+  }
+
   /* —— 每一格 —— */
   /* 一格自己也是网格：不写 placement 即标签一行、取值一行叠着排。
      窄档每格横跨根上排定的所有列，一行只摆一组，作者写在格上的 span 这一档不认 */
@@ -251,6 +291,8 @@
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='descriptions'][data-part='header'][hidden],
+  [data-scope='descriptions'][data-part='extra'][hidden],
   [data-scope='descriptions'][data-part='item'][hidden] {
     display: none;
   }

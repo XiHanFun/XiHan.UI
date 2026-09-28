@@ -20304,6 +20304,18 @@
               "name": "root"
             },
             {
+              "description": "列表之前的头部，写成 root 的前一个兄弟（root 常是 dl，里面只能放成对的 dt / dd）",
+              "name": "header"
+            },
+            {
+              "description": "头部左侧的标题，作者按页面层级选标题标签",
+              "name": "title"
+            },
+            {
+              "description": "头部右侧的附加内容：操作或状态",
+              "name": "extra"
+            },
+            {
               "description": "一组标签与取值，占网格中的一格；作者在此写 span（该格横跨的列数，窄档不采用）",
               "name": "item"
             },
@@ -20424,6 +20436,9 @@
               "name": "--xh-descriptions-divider"
             },
             {
+              "name": "--xh-descriptions-extra-gap"
+            },
+            {
               "name": "--xh-descriptions-fg"
             },
             {
@@ -20431,6 +20446,12 @@
             },
             {
               "name": "--xh-descriptions-gap"
+            },
+            {
+              "name": "--xh-descriptions-header-gap"
+            },
+            {
+              "name": "--xh-descriptions-header-mb"
             },
             {
               "name": "--xh-descriptions-item-px"
@@ -20455,6 +20476,15 @@
             },
             {
               "name": "--xh-descriptions-radius"
+            },
+            {
+              "name": "--xh-descriptions-title-fg"
+            },
+            {
+              "name": "--xh-descriptions-title-font-size"
+            },
+            {
+              "name": "--xh-descriptions-title-font-weight"
             },
             {
               "name": "--xh-descriptions-value-fg"

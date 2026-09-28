@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="descriptions"`：**`root`** · `item` · `label` · `value`
+`data-scope="descriptions"`：**`root`** · `header` · `title` · `extra` · `item` · `label` · `value`
 
 ## 示例
 
@@ -54,6 +54,12 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 
 <XhDemo src="descriptions/06-span" />
 
+### 标题与附加内容
+
+列表之前的头部放标题与作用于整份描述的操作；它排在 dl 之外，标题标签按页面层级由作者选
+
+<XhDemo src="descriptions/07-header" />
+
 ## 设计指引
 
 ### 何时使用
@@ -73,6 +79,8 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 - 每一格可以通过 `span` 横跨多列，上限是当前列数；窄档一行只放一组时忽略该值。
 
 ### 组合
+
+- 列表之前可放头部：标题与作用于整份描述的操作（编辑、复制）或一枚状态[标签](./tag)。头部排在 `dl` 之外（`dl` 里只能放成对的 `dt` / `dd`）：Vue 写进 `header` 插槽，React 经 `header` 传入，Web Components 写成 `root` 的前一个兄弟。标题缺省是 `div`，按页面层级用 `as` 换成 `h2` / `h3`。
 
 - 放入[卡片](./card)或[页头](./page-header)的页脚。
 
@@ -94,7 +102,7 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-descriptions>` |
-| Vue 组件 | `XhDescriptionsItem` `XhDescriptionsLabel` `XhDescriptionsRoot` `XhDescriptionsValue` |
+| Vue 组件 | `XhDescriptionsExtra` `XhDescriptionsHeader` `XhDescriptionsItem` `XhDescriptionsLabel` `XhDescriptionsRoot` `XhDescriptionsTitle` `XhDescriptionsValue` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/descriptions.css` |
 
@@ -107,6 +115,15 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `variant` | `ControlVariant` |  | 形态：ghost 不画壳（默认），outline 绘制外框并在格与格之间补网格线，subtle 淡底。默认 ghost。 |
 
+### 插槽
+
+仅列出带载荷的插槽。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhDescriptionsRoot` | `default` | — |  |
+| `XhDescriptionsRoot` | `header` | — | 列表之前的头部：放 XhDescriptionsHeader（内含 Title 与 Extra）。 它渲染为根的兄弟排在列表前：根常写成 dl，dl 的子节点只能是成对的 dt / dd。 |
+
 ### React 适配器 props
 
 只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
@@ -117,6 +134,8 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 | `XhDescriptionsItem` | `span` | `number` |  | 该格横跨几列，未写即占一列；上限是根上的 columns。 |
 | `XhDescriptionsLabel` | `as` | `ElementType` |  | 标签渲染为哪个标签，默认 dt。 |
 | `XhDescriptionsRoot` | `as` | `ElementType` |  | 根渲染为哪个标签，默认 dl。 |
+| `XhDescriptionsRoot` | `header` | `ReactNode` |  | 列表之前的头部：放 XhDescriptionsHeader（内含 Title 与 Extra）。 它渲染为根的兄弟排在列表前：根常写成 dl，dl 的子节点只能是成对的 dt / dd。 |
+| `XhDescriptionsTitle` | `as` | `ElementType` |  | 标题渲染为哪个标签，默认 div：组件不往文档大纲里插标题，作者按页面层级改写成 h2 / h3。 |
 | `XhDescriptionsValue` | `as` | `ElementType` |  | 取值渲染为哪个标签，默认 dd。 |
 
 ### connect API
@@ -126,6 +145,9 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
+| `getHeaderProps` | `() => T['element']` | 列表之前的头部：左侧标题、右侧附加内容（操作、状态）。 它排在根之外：根常写成 dl，dl 的子节点只能是成对的 dt / dd。 |
+| `getTitleProps` | `() => T['element']` | 标题。作者按页面层级选标题标签（h2 / h3…），组件不替作者定层级。 |
+| `getExtraProps` | `() => T['element']` | 附加内容：编辑、复制等作用于整份描述的操作，或一枚状态标签。 |
 | `getItemProps` | `(props?: DescriptionsItemProps) => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getValueProps` | `() => T['element']` |  |
@@ -144,6 +166,14 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 
 `@xihan-ui/styles/descriptions.css` 使用 `[data-scope="descriptions"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `header` | `data-size` | props.size |
+
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
@@ -154,9 +184,12 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 | `--xh-descriptions-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | descriptions 的 root 部件 background 覆盖槽。 |
 | `--xh-descriptions-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | descriptions 的 root 部件 border 覆盖槽。 |
 | `--xh-descriptions-divider` | `item`<br>`root` | `border-block-start`<br>`border-inline-start` | `variant=outline` | `--xh-border-subtle` | descriptions 的 item、root 部件 border-block-start、border-inline-start 覆盖槽。 |
+| `--xh-descriptions-extra-gap` | `extra` | `gap` | `default` | `--xh-space-2` | descriptions 的 extra 部件 gap 覆盖槽。 |
 | `--xh-descriptions-fg` | `root` | `color` | `default` | `--xh-fg-default` | descriptions 的 root 部件 color 覆盖槽。 |
 | `--xh-descriptions-font-size` | `root` | `font-size` | `default` | `--xh-_descriptions-font-size` | descriptions 的 root 部件 font-size 覆盖槽。 |
 | `--xh-descriptions-gap` | `root` | `gap` | `default` | `--xh-_descriptions-gap` | descriptions 的 root 部件 gap 覆盖槽。 |
+| `--xh-descriptions-header-gap` | `header` | `gap` | `default` | `--xh-space-3` | descriptions 的 header 部件 gap 覆盖槽。 |
+| `--xh-descriptions-header-mb` | `header` | `margin-block-end` | `default` | `--xh-_descriptions-header-mb` | descriptions 的 header 部件 margin-block-end 覆盖槽。 |
 | `--xh-descriptions-item-px` | `item`<br>`root` | `padding-inline` | `variant=outline` | `--xh-_descriptions-px` | descriptions 的 item、root 部件 padding-inline 覆盖槽。 |
 | `--xh-descriptions-item-py` | `item`<br>`root` | `padding-block` | `variant=outline` | `--xh-_descriptions-py` | descriptions 的 item、root 部件 padding-block 覆盖槽。 |
 | `--xh-descriptions-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | descriptions 的 label 部件 color 覆盖槽。 |
@@ -165,6 +198,9 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 | `--xh-descriptions-label-w` | `item`<br>`root` | `grid-template-columns` | `@media (min-width: 768px)`<br>`placement=left` | `--xh-_descriptions-label-w` | descriptions 的 item、root 部件 grid-template-columns 覆盖槽。 |
 | `--xh-descriptions-pair-gap` | `item` | `gap` | `default` | `--xh-_descriptions-pair-gap` | descriptions 的 item 部件 gap 覆盖槽。 |
 | `--xh-descriptions-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | descriptions 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-descriptions-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | descriptions 的 title 部件 color 覆盖槽。 |
+| `--xh-descriptions-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | descriptions 的 title 部件 font-size 覆盖槽。 |
+| `--xh-descriptions-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | descriptions 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-descriptions-value-fg` | `value` | `color` | `default` | `--xh-fg-default` | descriptions 的 value 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

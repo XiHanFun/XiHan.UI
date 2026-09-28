@@ -25122,6 +25122,24 @@
       "description": "descriptions 的 item、root 部件 border-block-start、border-inline-start 覆盖槽。"
     },
     {
+      "name": "--xh-descriptions-extra-gap",
+      "component": "descriptions",
+      "part": [
+        "extra"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "descriptions 的 extra 部件 gap 覆盖槽。"
+    },
+    {
       "name": "--xh-descriptions-fg",
       "component": "descriptions",
       "part": [
@@ -25174,6 +25192,42 @@
       ],
       "visibility": "public",
       "description": "descriptions 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-descriptions-header-gap",
+      "component": "descriptions",
+      "part": [
+        "header"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "descriptions 的 header 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-descriptions-header-mb",
+      "component": "descriptions",
+      "part": [
+        "header"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_descriptions-header-mb"
+      ],
+      "visibility": "public",
+      "description": "descriptions 的 header 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-descriptions-item-px",
@@ -25325,6 +25379,60 @@
       ],
       "visibility": "public",
       "description": "descriptions 的 root 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-descriptions-title-fg",
+      "component": "descriptions",
+      "part": [
+        "title"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "descriptions 的 title 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-descriptions-title-font-size",
+      "component": "descriptions",
+      "part": [
+        "title"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "descriptions 的 title 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-descriptions-title-font-weight",
+      "component": "descriptions",
+      "part": [
+        "title"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-semibold"
+      ],
+      "visibility": "public",
+      "description": "descriptions 的 title 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-descriptions-value-fg",

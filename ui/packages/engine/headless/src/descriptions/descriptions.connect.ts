@@ -40,6 +40,14 @@ export function connectDescriptions<T extends PropTypes>(
   return {
     getRootProps: () => normalize.element(rootAttrs),
 
+    // 头部与根是兄弟，继承不到根上的尺寸档：自己再落一次
+    getHeaderProps: () => normalize.element({
+      ...parts.header.attrs,
+      'data-size': props.size,
+    }),
+    getTitleProps: () => normalize.element(parts.title.attrs),
+    getExtraProps: () => normalize.element(parts.extra.attrs),
+
     // 跨列数落成一个私有槽交给皮肤，不直接写 grid-column：
     // 内联的 grid-column 盖过皮肤里所有规则，窄档「一行只摆一组」就对带 span 的格失效，
     // 那一格反而比不带 span 的窄。写成槽之后由皮肤逐档决定这个数认不认

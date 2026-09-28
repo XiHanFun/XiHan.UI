@@ -42,6 +42,15 @@ export interface DescriptionsItemProps {
 
 export interface DescriptionsApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
+  /**
+   * 列表之前的头部：左侧标题、右侧附加内容（操作、状态）。
+   * 它排在根之外：根常写成 dl，dl 的子节点只能是成对的 dt / dd。
+   */
+  getHeaderProps: () => T['element']
+  /** 标题。作者按页面层级选标题标签（h2 / h3…），组件不替作者定层级。 */
+  getTitleProps: () => T['element']
+  /** 附加内容：编辑、复制等作用于整份描述的操作，或一枚状态标签。 */
+  getExtraProps: () => T['element']
   getItemProps: (props?: DescriptionsItemProps) => T['element']
   getLabelProps: () => T['element']
   getValueProps: () => T['element']

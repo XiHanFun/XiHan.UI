@@ -64,6 +64,7 @@ const COLLECTION_TITLE = {
 /** Surface / Feedback / 浮层内标题：scope → 标题部件。 */
 const SURFACE_TITLE = {
   'card': 'title',
+  'descriptions': 'title',
   'alert': 'title',
   'toast': 'title',
   'notification': 'item-title',

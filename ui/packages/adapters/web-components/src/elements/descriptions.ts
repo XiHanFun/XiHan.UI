@@ -27,6 +27,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'top'|'left'} placement - 标签在上还是在左；未提供时在上
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定每格的内边距、组与组的间距与整体字号
  * @csspart root - 网格容器，承载 data-columns / data-placement / data-size / data-variant
+ * @csspart header - 列表之前的头部，写成 root 的前一个兄弟（root 常是 dl，里面只能放成对的 dt / dd）
+ * @csspart title - 头部左侧的标题，作者按页面层级选标题标签
+ * @csspart extra - 头部右侧的附加内容：操作或状态
  * @csspart item - 一组标签与取值，占网格中的一格；作者在此写 span（该格横跨的列数，窄档不采用）
  * @csspart label - 标签
  * @csspart value - 取值
@@ -74,5 +77,16 @@ export class XhDescriptionsElement extends XhElement {
     }
     putAll('label', api.getLabelProps() as Record<string, unknown>)
     putAll('value', api.getValueProps() as Record<string, unknown>)
+
+    // 头部排在根之外（根常写成 dl），作者把它写成根的前一个兄弟
+    const header = this.getPart('header')
+    if (header)
+      this.spreader.spread(header, api.getHeaderProps() as Record<string, unknown>)
+    const title = this.getPart('title')
+    if (title)
+      this.spreader.spread(title, api.getTitleProps() as Record<string, unknown>)
+    const extra = this.getPart('extra')
+    if (extra)
+      this.spreader.spread(extra, api.getExtraProps() as Record<string, unknown>)
   }
 }
