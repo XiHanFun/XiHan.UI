@@ -104,7 +104,8 @@ describe.each(['command', 'tooltip'] as const)('react %s 真实退场资源', (s
     expect(getLayerRegistry(document).list()).toHaveLength(1)
     if (scope === 'command') {
       expect(document.body.style.overflow).toBe('hidden')
-      expect(outside.inert).toBe(true)
+      // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+      expect(outside.inert).toBe(false)
     }
     const animations = [
       content,
@@ -119,7 +120,7 @@ describe.each(['command', 'tooltip'] as const)('react %s 真实退场资源', (s
     expect(getLayerRegistry(document).list()).toHaveLength(scope === 'command' ? 1 : 0)
     if (scope === 'command') {
       expect(document.body.style.overflow).toBe('hidden')
-      expect(outside.inert).toBe(true)
+      expect(outside.inert).toBe(false)
       await inAct(() => animations[1]!.finish())
       await settle()
       expect(getLayerRegistry(document).list()).toHaveLength(0)

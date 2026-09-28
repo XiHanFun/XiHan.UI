@@ -85,7 +85,7 @@ describe.each(['dialog', 'drawer'] as const)('wc %s 的行为资源退出合同'
     </div></xh-${scope}>`)
   }
 
-  it('内容全部有限动画和遮罩完成前保留失活与滚动约束', async () => {
+  it('内容全部有限动画和遮罩完成前保留滚动约束，背景在关闭那一刻即解除失活', async () => {
     installLongExit()
     const outside = document.createElement('button')
     document.body.append(outside)
@@ -101,7 +101,8 @@ describe.each(['dialog', 'drawer'] as const)('wc %s 的行为资源退出合同'
     const action = content.querySelector('button')!
     action.focus()
     expect(document.activeElement).not.toBe(action)
-    expect(outside.inert).toBe(true)
+    // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+    expect(outside.inert).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
     const animations = finite(content)
     expect(animations).toHaveLength(2)
@@ -192,7 +193,7 @@ const IMAGE_VIEWER = `
 `
 
 describe('wc image-viewer 的行为资源退出合同', () => {
-  it('内容和遮罩均完成退出租约前保留模态资源', async () => {
+  it('内容和遮罩均完成退出租约前保留层与滚动锁，背景在关闭那一刻即解除失活', async () => {
     const style = document.createElement('style')
     style.textContent = `
       @keyframes test-image-viewer-exit { from { opacity: 1 } to { opacity: 0 } }
@@ -215,7 +216,8 @@ describe('wc image-viewer 的行为资源退出合同', () => {
     const content = part('image-viewer', 'content')!
     expect(content.inert).toBe(true)
     expect(content.getAttribute('aria-hidden')).toBe('true')
-    expect(outside.inert).toBe(true)
+    // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+    expect(outside.inert).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
 
     const finite = content.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
