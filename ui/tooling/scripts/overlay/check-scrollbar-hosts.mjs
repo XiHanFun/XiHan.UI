@@ -363,6 +363,16 @@ async function* walk(dir) {
 
 const problems = []
 
+/**
+ * 宿主替内嵌组件自建的浮层：定位层与列表归内嵌组件的 scope，WC 侧条子的壳与滚动层是元素自己建的节点，
+ * 不是本组件的角色节点；壳的定位上下文、轨道底色与层分支由内嵌组件的皮肤与它自己的宿主承担（它本身也在这里照常核）。
+ * Vue / React 直接渲内嵌组件的部件，条子随内嵌组件的 positioner 接上，所以规则①改为核「三端都用了内嵌组件的条子」。
+ * 键是宿主组件，scope 是内嵌组件；登记了却不再自建条子的判过期。
+ */
+const EMBEDDED_HOSTS = {
+  toolbar: { scope: 'menu', why: '「更多」菜单的定位层与列表由 <xh-toolbar> 自建（归 menu 的 scope）；Vue / React 由 XhToolbarOverflowTrigger 渲 XhMenuRoot，条子随 XhMenuPositioner 接上' },
+}
+
 // Vue 侧：组件名取 components/ 下那一层目录名，直接摆在 components/ 里的取文件名。
 // 值是这个组件全部源文件——层分支写在 use-<comp>.ts 里，与调用点不在同一个文件
 const vueHosts = new Map()
@@ -404,7 +414,27 @@ const suiteCount = (await readdir(SUITES_DIR)).filter(f => f.endsWith('.suite.ts
 // 规则①：一家接了另一家忘了，页面上只会在那一家看出来。
 // React 只算已铺到的组件：没铺到就既不要求它接，也不拿它接了当依据
 const allHosts = [...new Set([...vueHosts.keys(), ...wcHosts.keys(), ...reactHosts.keys()])].sort()
+for (const [comp, { scope, why }] of Object.entries(EMBEDDED_HOSTS)) {
+  if (typeof why !== 'string' || !why.trim())
+    problems.push(`EMBEDDED_HOSTS.${comp}：缺 why`)
+  if (!wcHosts.has(comp)) {
+    // 组件本身不在（门禁的临时夹具只铺了它要核的那几个）就没什么可核的；在却不再自建条子才是登记过期
+    if (await read(join(WC, `${comp}.ts`)) !== null)
+      problems.push(`EMBEDDED_HOSTS.${comp}：Web Components 侧已不再自建条子，登记过期`)
+    continue
+  }
+  // 三端都要落到内嵌组件的条子上：Vue / React 经内嵌组件的部件渲出，WC 的内嵌组件自己也是宿主
+  const embedded = [
+    { label: ADAPTERS.vue.label, has: vueHosts.has(scope), inScope: true },
+    { label: ADAPTERS.wc.label, has: wcHosts.has(scope), inScope: true },
+    { label: ADAPTERS.react.label, has: reactHosts.has(scope), inScope: covered.has(scope) },
+  ].filter(side => side.inScope && !side.has)
+  if (embedded.length > 0)
+    problems.push(`${comp}：内嵌的 ${scope} 在 ${embedded.map(side => side.label).join(' / ')} 侧没配自绘条，${comp} 的浮层跟着缺条子`)
+}
 for (const comp of allHosts) {
+  if (comp in EMBEDDED_HOSTS)
+    continue
   const sides = [
     { label: ADAPTERS.vue.label, has: vueHosts.has(comp), inScope: true },
     { label: ADAPTERS.wc.label, has: wcHosts.has(comp), inScope: true },
@@ -420,6 +450,9 @@ for (const comp of allHosts) {
 const hostInfo = new Map()
 let checkedShells = 0
 for (const [comp, { blocks, src }] of wcHosts) {
+  // 壳与滚动层是自建节点，皮肤那一侧归内嵌组件，已在上面改核内嵌组件
+  if (comp in EMBEDDED_HOSTS)
+    continue
   const routes = []
   let broken = false
   for (const block of blocks) {

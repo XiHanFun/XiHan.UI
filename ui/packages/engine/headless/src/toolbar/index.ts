@@ -5,9 +5,10 @@
 
 // 导出 toolbar 模块的公共接口。
 
-export { toolbarAnatomy, toolbarItemQuery } from './toolbar.anatomy'
+export { toolbarAnatomy, toolbarItemQuery, toolbarOverflowTriggerQuery } from './toolbar.anatomy'
 export { connectToolbar } from './toolbar.connect'
 export { toolbarKeyboard } from './toolbar.keyboard'
 export { toolbarMachine } from './toolbar.machine'
 export { toolbarMeta } from './toolbar.meta'
-export type { ToolbarApi, ToolbarItemProps, ToolbarSchema, ToolbarTranslations } from './toolbar.types'
+export { toolbarOverflowMenuProps } from './toolbar.overflow'
+export type { ToolbarApi, ToolbarItemProps, ToolbarOverflowItem, ToolbarRefs, ToolbarSchema, ToolbarTranslations } from './toolbar.types'

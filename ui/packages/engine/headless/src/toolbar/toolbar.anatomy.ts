@@ -14,8 +14,12 @@ export const toolbarAnatomy = createAnatomy('toolbar', [
   'group',
   'item',
   'separator',
+  'overflow-trigger',
 ])
 
 // 集合只认 item：group 与 separator 虽带 data-scope 但不入导航。
 // 分组里的条目照样查得到，queryItems 按最近的 root 归属过滤，只有嵌套的另一条工具条会被切开。
 export const toolbarItemQuery: ItemQuery = { scope: toolbarAnatomy.name, part: 'item' }
+
+/** 行尾的「更多」钮：同样按最近的 root 归属过滤。 */
+export const toolbarOverflowTriggerQuery: ItemQuery = { scope: toolbarAnatomy.name, part: 'overflow-trigger' }

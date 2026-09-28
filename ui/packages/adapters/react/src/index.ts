@@ -2834,6 +2834,7 @@ export { useToolbarContext } from './components/toolbar/context'
 export {
   XhToolbarGroup,
   XhToolbarItem,
+  XhToolbarOverflowTrigger,
   XhToolbarRoot,
   XhToolbarSeparator,
 } from './components/toolbar/toolbar'
@@ -2841,6 +2842,7 @@ export type {
   ToolbarRootSlotProps,
   XhToolbarGroupProps,
   XhToolbarItemProps,
+  XhToolbarOverflowTriggerProps,
   XhToolbarRootProps,
   XhToolbarSeparatorProps,
 } from './components/toolbar/toolbar'

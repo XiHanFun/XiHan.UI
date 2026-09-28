@@ -39015,6 +39015,7 @@
         "move-up-trigger",
         "next-trigger",
         "next-year-trigger",
+        "overflow-trigger",
         "path",
         "path-item",
         "prev-trigger",
@@ -80990,16 +80991,18 @@
         "item"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
         "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "toolbar 的 item 部件 block-size 覆盖槽。"
+      "description": "toolbar 的 item 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-toolbar-item-px",
@@ -81037,6 +81040,8 @@
         "default",
         "first-of-type",
         "last-of-type",
+        "not(:has(~ [data-scope='toolbar'][data-part='item']:not([hidden])",
+        "not([hidden])",
         "orientation=horizontal",
         "orientation=vertical"
       ],

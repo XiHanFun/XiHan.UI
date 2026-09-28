@@ -1212,6 +1212,9 @@
     "overflow-item": [
       "avatar-group"
     ],
+    "overflow-trigger": [
+      "toolbar"
+    ],
     "page-size-select": [
       "pagination"
     ],

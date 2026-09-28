@@ -1242,6 +1242,7 @@ export type { ToolCallContext } from './components/tool-call/use-tool-call'
 export {
   XhToolbarGroup,
   XhToolbarItem,
+  XhToolbarOverflowTrigger,
   XhToolbarRoot,
   XhToolbarSeparator,
 } from './components/toolbar/toolbar'
