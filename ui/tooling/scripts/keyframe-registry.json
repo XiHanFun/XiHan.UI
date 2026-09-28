@@ -501,6 +501,7 @@
         "popconfirm",
         "radar-chart",
         "sankey-chart",
+        "select",
         "spinner",
         "switch",
         "table",
