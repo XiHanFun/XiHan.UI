@@ -48473,6 +48473,62 @@
       "description": "message-feed 的 unread-count 部件 block-size、line-height、min-inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-navigation-menu-branch-content-indent",
+      "component": "navigation-menu",
+      "part": [
+        "branch-content"
+      ],
+      "property": [
+        "padding-inline-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "navigation-menu 的 branch-content 部件 padding-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-navigation-menu-branch-indicator-size",
+      "component": "navigation-menu",
+      "part": [
+        "branch-indicator"
+      ],
+      "property": [
+        "--xh-icon-size",
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-size"
+      ],
+      "visibility": "public",
+      "description": "navigation-menu 的 branch-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-navigation-menu-branch-trigger-gap",
+      "component": "navigation-menu",
+      "part": [
+        "branch-trigger"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_navigation-menu-trigger-gap"
+      ],
+      "visibility": "public",
+      "description": "navigation-menu 的 branch-trigger 部件 gap 覆盖槽。"
+    },
+    {
       "name": "--xh-navigation-menu-content-bg",
       "component": "navigation-menu",
       "part": [
@@ -48514,6 +48570,7 @@
       "name": "--xh-navigation-menu-content-gap",
       "component": "navigation-menu",
       "part": [
+        "branch-content",
         "content"
       ],
       "property": [
@@ -48526,7 +48583,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 content 部件 gap 覆盖槽。"
+      "description": "navigation-menu 的 branch-content、content 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-content-min-w",
@@ -48789,6 +48846,7 @@
       "name": "--xh-navigation-menu-link-bg-hover",
       "component": "navigation-menu",
       "part": [
+        "branch-trigger",
         "link"
       ],
       "property": [
@@ -48807,12 +48865,13 @@
         "--xh-_navigation-menu-highlight-bg"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 link 部件 background-color 覆盖槽。"
+      "description": "navigation-menu 的 branch-trigger、link 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-link-bg-pressed",
       "component": "navigation-menu",
       "part": [
+        "branch-trigger",
         "link"
       ],
       "property": [
@@ -48830,12 +48889,13 @@
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 link 部件 background-color 覆盖槽。"
+      "description": "navigation-menu 的 branch-trigger、link 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-link-fg",
       "component": "navigation-menu",
       "part": [
+        "branch-trigger",
         "link"
       ],
       "property": [
@@ -48857,7 +48917,7 @@
         "--xh-fg-default"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 link 部件 color 覆盖槽。"
+      "description": "navigation-menu 的 branch-trigger、link 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-link-fg-current",
@@ -48885,6 +48945,7 @@
       "name": "--xh-navigation-menu-link-font-size",
       "component": "navigation-menu",
       "part": [
+        "branch-trigger",
         "link"
       ],
       "property": [
@@ -48897,7 +48958,7 @@
         "--xh-_navigation-menu-link-font-size"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 link 部件 font-size 覆盖槽。"
+      "description": "navigation-menu 的 branch-trigger、link 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-link-font-weight-current",
@@ -48925,6 +48986,7 @@
       "name": "--xh-navigation-menu-link-px",
       "component": "navigation-menu",
       "part": [
+        "branch-trigger",
         "link"
       ],
       "property": [
@@ -48937,12 +48999,13 @@
         "--xh-_navigation-menu-link-px"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 link 部件 padding-inline 覆盖槽。"
+      "description": "navigation-menu 的 branch-trigger、link 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-link-py",
       "component": "navigation-menu",
       "part": [
+        "branch-trigger",
         "link"
       ],
       "property": [
@@ -48955,12 +49018,13 @@
         "--xh-_navigation-menu-link-py"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 link 部件 padding-block 覆盖槽。"
+      "description": "navigation-menu 的 branch-trigger、link 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-link-radius",
       "component": "navigation-menu",
       "part": [
+        "branch-trigger",
         "link"
       ],
       "property": [
@@ -48973,7 +49037,7 @@
         "--xh-shape-control"
       ],
       "visibility": "public",
-      "description": "navigation-menu 的 link 部件 border-radius 覆盖槽。"
+      "description": "navigation-menu 的 branch-trigger、link 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-trigger-bg-active",

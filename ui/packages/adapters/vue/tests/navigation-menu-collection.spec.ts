@@ -3,8 +3,11 @@ import type { NavigationMenuNode, NavigationMenuNodeMeta } from '@xihan-ui/headl
 import type { VNode } from 'vue'
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, nextTick } from 'vue'
 import {
+  XhNavigationMenuBranchContent,
+  XhNavigationMenuBranchIndicator,
+  XhNavigationMenuBranchTrigger,
   XhNavigationMenuContent,
   XhNavigationMenuIndicator,
   XhNavigationMenuItem,
@@ -67,6 +70,7 @@ function mountFromParts(defaultValue?: string) {
                   label: node.label ?? node.value,
                   disabled: !!node.disabled,
                   current: !!node.current,
+                  children: [],
                 })),
               ]
         ))),
@@ -200,5 +204,109 @@ describe('navigation-menu 的 collection', () => {
     expect(triggers.map(el => el.getAttribute('aria-disabled'))).toEqual(['false', 'true'])
     expect(triggers.map(el => el.textContent)).toEqual(['文档', '关于'])
     w.unmount()
+  })
+})
+
+describe('navigation-menu 的 collection 子级', () => {
+  const NESTED: NavigationMenuNode[] = [
+    {
+      value: 'products',
+      label: '产品',
+      children: [
+        { value: 'overview', label: '概览', href: '#/products' },
+        {
+          value: 'frameworks',
+          label: '框架',
+          children: [
+            { value: 'vue', label: 'Vue', href: '#/vue' },
+            { value: 'react', label: 'React', href: '#/react', current: true },
+          ],
+        },
+        { value: 'tools', label: '工具', disabled: true, children: [{ value: 'cli', label: 'CLI', href: '#/cli' }] },
+      ],
+    },
+    { value: 'changelog', label: '更新日志', href: '#/changelog' },
+  ]
+
+  /** 手写全套部件：面板条目带 children 的写成开关 + 箭头 + 子级容器，其余写成链接 */
+  function mountNestedParts(defaultValue?: string) {
+    return mount(defineComponent({
+      setup: () => () => h(XhNavigationMenuRoot, { collection: NESTED, defaultValue }, () => [
+        h(XhNavigationMenuList, () => [
+          h(XhNavigationMenuItem, { key: 'products' }, () => [
+            h(XhNavigationMenuTrigger, { value: 'products' }, () => '产品'),
+            h(XhNavigationMenuContent, { value: 'products' }, () => [
+              h(XhNavigationMenuLink, { href: '#/products' }, () => '概览'),
+              h(XhNavigationMenuBranchTrigger, { value: 'frameworks' }, () => ['框架', h(XhNavigationMenuBranchIndicator, { value: 'frameworks' })]),
+              h(XhNavigationMenuBranchContent, { value: 'frameworks' }, () => [
+                h(XhNavigationMenuLink, { href: '#/vue' }, () => 'Vue'),
+                h(XhNavigationMenuLink, { href: '#/react', current: true }, () => 'React'),
+              ]),
+              h(XhNavigationMenuBranchTrigger, { value: 'tools' }, () => ['工具', h(XhNavigationMenuBranchIndicator, { value: 'tools' })]),
+              h(XhNavigationMenuBranchContent, { value: 'tools' }, () => [
+                h(XhNavigationMenuLink, { href: '#/cli' }, () => 'CLI'),
+              ]),
+            ]),
+          ]),
+          h(XhNavigationMenuItem, { key: 'changelog' }, () => [
+            h(XhNavigationMenuLink, { href: '#/changelog' }, () => '更新日志'),
+          ]),
+          h(XhNavigationMenuIndicator),
+        ]),
+      ]),
+    }), { attachTo: document.body })
+  }
+
+  it('不写插槽时面板按 children 铺开：带 href 的铺为链接，带 children 的铺为一枝子级', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h(XhNavigationMenuRoot, { collection: NESTED }),
+    }), { attachTo: document.body })
+    const content = w.element.querySelector('[data-part="content"]')!
+    expect(partsOf(content)).toEqual([
+      'content',
+      'link',
+      'branch-trigger',
+      'branch-indicator',
+      'branch-content',
+      'link',
+      'link',
+      'branch-trigger',
+      'branch-indicator',
+      'branch-content',
+      'link',
+    ])
+    const branchTriggers = [...content.querySelectorAll('[data-part="branch-trigger"]')]
+    expect(branchTriggers.map(el => el.textContent)).toEqual(['框架', '工具'])
+    // 数据里的禁用落到子级开关上
+    expect(branchTriggers.map(el => el.getAttribute('aria-disabled'))).toEqual(['false', 'true'])
+    const current = content.querySelector('[aria-current="page"]')
+    expect(current?.getAttribute('href')).toBe('#/react')
+    w.unmount()
+  })
+
+  it('给了 panel 插槽就由插槽提供面板内容，children 不再铺', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h(XhNavigationMenuRoot, { collection: NESTED }, {
+        panel: (node: NavigationMenuNodeMeta) => [h(XhNavigationMenuLink, { href: `#/${node.value}` }, () => `${node.label}（${node.children.length}）`)],
+      }),
+    }), { attachTo: document.body })
+    const content = w.element.querySelector('[data-part="content"]')!
+    expect(partsOf(content)).toEqual(['content', 'link'])
+    expect(content.textContent).toBe('产品（3）')
+    w.unmount()
+  })
+
+  it('铺开的结构与手写全套部件完全一致，挂载即展开时当前页所在的那一枝同样展开', async () => {
+    const auto = mount(defineComponent({
+      setup: () => () => h(XhNavigationMenuRoot, { collection: NESTED, defaultValue: 'products' }),
+    }), { attachTo: document.body })
+    const manual = mountNestedParts('products')
+    await nextTick()
+    await nextTick()
+    expect(skeleton(auto.element)).toEqual(skeleton(manual.element))
+    const frameworks = auto.element.querySelector('[data-part="branch-content"]')!
+    expect(frameworks.hasAttribute('hidden')).toBe(false)
+    auto.unmount()
+    manual.unmount()
   })
 })

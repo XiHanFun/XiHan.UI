@@ -171,6 +171,56 @@ export const XhNavigationMenuContent = defineComponent({
   },
 })
 
+/** 面板里一枝子级的开关：展开时紧跟其后的 XhNavigationMenuBranchContent 露出来 */
+export const XhNavigationMenuBranchTrigger = defineComponent({
+  name: 'XhNavigationMenuBranchTrigger',
+  props: {
+    value: { type: String, required: true },
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
+  },
+  setup(props, { slots }) {
+    const ctx = useNavigationMenuContext()
+    return () => h(
+      'button',
+      ctx.api.value.getBranchTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
+      slots.default?.(),
+    )
+  },
+})
+
+/** 子级开关里的展开方向标记，展开时转向；身份与所在的开关同一份声明 */
+export const XhNavigationMenuBranchIndicator = defineComponent({
+  name: 'XhNavigationMenuBranchIndicator',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useNavigationMenuContext()
+    return () => h(
+      'span',
+      ctx.api.value.getBranchIndicatorProps({ value: props.value }) as Record<string, unknown>,
+      slots.default?.(),
+    )
+  },
+})
+
+/** 一枝子级的容器，写在面板里、紧跟自己的开关之后；收着时 hidden */
+export const XhNavigationMenuBranchContent = defineComponent({
+  name: 'XhNavigationMenuBranchContent',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useNavigationMenuContext()
+    return () => h(
+      'div',
+      ctx.api.value.getBranchContentProps({ value: props.value }) as Record<string, unknown>,
+      slots.default?.(),
+    )
+  },
+})
+
 /** 面板内的链接项：href 由作者写，点击不拦截，只收起导航 */
 export const XhNavigationMenuLink = defineComponent({
   name: 'XhNavigationMenuLink',
@@ -215,7 +265,8 @@ export const XhNavigationMenuViewport = defineComponent({
 
 /**
  * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 一项一个 li：带 href 的铺为直达链接，其余铺为 trigger 加面板，面板内容由 panel 插槽提供。
+ * 一项一个 li：带 href 的铺为直达链接，其余铺为 trigger 加面板。面板内容给了 panel 插槽就由它提供，
+ * 否则按这一项的 children 铺开：带 href 的条目铺为链接，带 children 的铺为一枝子级（开关 + 箭头 + 子级里的链接）。
  * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
  */
 function renderDefaultTree(
@@ -226,13 +277,30 @@ function renderDefaultTree(
     h(XhNavigationMenuList, null, () => [
       ...collection.map(node => h(XhNavigationMenuItem, { key: node.value }, () => (
         node.href != null
-          ? [h(XhNavigationMenuLink, { href: node.href, current: node.current }, () => node.label)]
+          ? [renderLink(node)]
           : [
               h(XhNavigationMenuTrigger, { value: node.value }, () => node.label),
-              h(XhNavigationMenuContent, { value: node.value }, () => panelSlot?.(node) ?? []),
+              h(XhNavigationMenuContent, { value: node.value }, () => (panelSlot ? panelSlot(node) : renderPanelEntries(node.children))),
             ]
       ))),
       h(XhNavigationMenuIndicator),
     ]),
   ]
+}
+
+function renderLink(node: NavigationMenuNodeMeta): VNode {
+  return h(XhNavigationMenuLink, { key: node.value, href: node.href, current: node.current }, () => node.label)
+}
+
+/** 面板条目：带 children 的铺为一枝子级，开关与容器相邻；其余铺为链接 */
+function renderPanelEntries(entries: readonly NavigationMenuNodeMeta[]): VNode[] {
+  return entries.flatMap(entry => (entry.children.length > 0
+    ? [
+        h(XhNavigationMenuBranchTrigger, { key: `${entry.value}:trigger`, value: entry.value }, () => [
+          entry.label,
+          h(XhNavigationMenuBranchIndicator, { value: entry.value }),
+        ]),
+        h(XhNavigationMenuBranchContent, { key: `${entry.value}:content`, value: entry.value }, () => entry.children.map(renderLink)),
+      ]
+    : [renderLink(entry)]))
 }

@@ -768,6 +768,9 @@ export type { MessageFeedRootSlotProps } from './components/message-feed/message
 export { useMessageFeed } from './components/message-feed/use-message-feed'
 export type { MessageFeedContext } from './components/message-feed/use-message-feed'
 export {
+  XhNavigationMenuBranchContent,
+  XhNavigationMenuBranchIndicator,
+  XhNavigationMenuBranchTrigger,
   XhNavigationMenuContent,
   XhNavigationMenuIndicator,
   XhNavigationMenuItem,

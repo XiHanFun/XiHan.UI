@@ -109,6 +109,7 @@ const GLYPH_EXEMPT = {
   'tree-select:branch-indicator': '展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
   'tree-select:item-indicator': '行尾的对号 / 半选杠是指示符，与 16px 对号盒同走 --xh-control-indicator-size，不按图标档取',
   'side-nav:branch-indicator': '分支行尾的展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
+  'navigation-menu:branch-indicator': '面板里子级开关行尾的展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
   'json-viewer:branch-trigger': '分支行首的展开方向 chevron 是指示符，与 16px 把手盒同走 --xh-control-indicator-size，不按图标档取',
   'menu:item-indicator': '标记位的盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，作者塞进去的图标与盒同尺，不按图标档取',
   'context-menu:item-indicator': '标记位的盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',

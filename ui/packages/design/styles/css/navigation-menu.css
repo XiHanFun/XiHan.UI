@@ -233,6 +233,68 @@
     display: none;
   }
 
+  /* 面板里一枝子级的开关与链接同一种行，读链接那一组槽，两种行才等高、左缘才齐。
+     展开不换面、不算打开中：由转向的箭头与露出的子级说明；按下只换面不缩放 */
+  [data-scope='navigation-menu'][data-part='branch-trigger'] {
+    --xh-collection-block-padding: var(--xh-navigation-menu-link-py, var(--xh-_navigation-menu-link-py));
+    --xh-collection-inline-padding: var(--xh-navigation-menu-link-px, var(--xh-_navigation-menu-link-px));
+    --xh-collection-radius: var(--xh-navigation-menu-link-radius, var(--xh-shape-control));
+    --xh-collection-font-size: var(--xh-navigation-menu-link-font-size, var(--xh-_navigation-menu-link-font-size));
+    --xh-collection-fg-rest: var(--xh-navigation-menu-link-fg, var(--xh-fg-default));
+    --xh-collection-fg-hover: var(--xh-navigation-menu-link-fg, var(--xh-fg-default));
+    --xh-collection-fg-keyboard-highlight: var(--xh-navigation-menu-link-fg, var(--xh-fg-default));
+    --xh-collection-fg-pressed: var(--xh-navigation-menu-link-fg, var(--xh-fg-default));
+    --xh-collection-bg-hover: var(--xh-navigation-menu-link-bg-hover, var(--xh-_navigation-menu-highlight-bg));
+    --xh-collection-bg-keyboard-highlight: var(--xh-navigation-menu-link-bg-hover, var(--xh-_navigation-menu-highlight-bg));
+    --xh-collection-bg-pressed: var(--xh-navigation-menu-link-bg-pressed, var(--xh-bg-subtle-hover));
+
+    display: flex;
+    align-items: center;
+    gap: var(--xh-navigation-menu-branch-trigger-gap, var(--xh-_navigation-menu-trigger-gap));
+    border: 0;
+    text-align: start;
+  }
+
+  /* 行尾的展开方向标记，与 SideNav / Tree 的分支箭头同一种：盒按指示符档定尺，兜底字形与作者的图标读盒的尺。
+     收着时指向行尾（旋转角乘书写方向的符号，rtl 转半圈），展开时转向下方 */
+  [data-scope='navigation-menu'][data-part='branch-indicator'] {
+    --xh-icon-size: var(--xh-navigation-menu-branch-indicator-size, var(--xh-control-indicator-size));
+
+    margin-inline-start: auto;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-navigation-menu-branch-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-navigation-menu-branch-indicator-size, var(--xh-control-indicator-size));
+    rotate: calc(90deg - 90deg * var(--xh-direction-sign));
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='navigation-menu'][data-part='branch-indicator'][data-state='open'] {
+    rotate: 90deg;
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='navigation-menu'][data-part='branch-indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  }
+
+  /* 子级紧跟在开关之后，靠缩进表出层级、行距同面板；密集披露，不动高度、刻意瞬时 */
+  [data-scope='navigation-menu'][data-part='branch-content'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-navigation-menu-content-gap, var(--xh-space-1));
+    padding-inline-start: var(--xh-navigation-menu-branch-content-indent, var(--xh-space-4));
+  }
+
   /* 入口里表示"底下还有一张面板"的标记，排在入口文字之后，展开时转向 */
   [data-scope='navigation-menu'][data-part='trigger-indicator'] {
     display: inline-flex;
@@ -401,12 +463,31 @@
     inset-inline-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
   }
 
+  /* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，兜底排在这几个部件所有 display 声明之后 */
+  [data-scope='navigation-menu'][data-part='branch-trigger'][hidden],
+  [data-scope='navigation-menu'][data-part='branch-indicator'][hidden],
+  [data-scope='navigation-menu'][data-part='branch-content'][hidden] {
+    display: none;
+  }
+
   @media (forced-colors: active) {
     /* 两条指示线画的都是一块纯底色，这一档里底色被统一换成 Canvas，线整根消失：
        开着的入口只剩转向的箭头、当前页只剩字重。换成系统高亮色画回来 */
     [data-scope='navigation-menu'][data-part='indicator'],
     [data-scope='navigation-menu'][data-part='link'][data-current]::after {
       background: Highlight;
+    }
+
+    /* 子级开关的箭头是 mask 挖出来的一块底色，这一档里底色换成 Canvas、箭头跟着消失，开合只剩读屏听得到。
+       直接写开关按钮的系统前景（不能取 currentColor：退出强制色的伪元素读到的是被系统换掉之前的作者色），
+       禁用的开关取 GrayText，与公共补救层给禁用行的字色一致 */
+    [data-scope='navigation-menu'][data-part='branch-indicator']:empty::before {
+      background-color: ButtonText;
+      forced-color-adjust: none;
+    }
+
+    [data-scope='navigation-menu'][data-part='branch-trigger'][data-disabled] [data-scope='navigation-menu'][data-part='branch-indicator']:empty::before {
+      background-color: GrayText;
     }
   }
 }

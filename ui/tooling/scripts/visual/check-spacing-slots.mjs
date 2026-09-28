@@ -72,6 +72,9 @@ const CROSS_PART = {
   'anchor.indicator': ['link'],
   // 同上：当前页链接在自己的 ::after 上画同规格的静态线，与指开着面板的部件读同一组槽
   'navigation-menu.indicator': ['link'],
+  // 面板里一枝子级的开关与面板里的链接是同一种行：内衬、圆角、字号、字色与悬停 / 按下面读链接那一组槽，
+  // 作者改一处两种行一起改，面板里的行才等高、左缘才齐
+  'navigation-menu.link': ['branch-trigger'],
   // --xh-code-view-line-height 是整块代码的行距，line 只是它头一个词，与行部件无关
   'code-view.line': ['pre'],
   // 折叠条与文件头是同一条横栏的两端，描边与字号取同一族才连成一条
@@ -103,8 +106,9 @@ const CROSS_PART = {
   'menubar.content': ['arrow'],
   'context-menu.content': ['arrow'],
   // 外壳与面板是同一片面的两种形态（单面板直接画在 content 上、多面板共用 viewport），
-  // 底、描边与落影必须同源，否则两种形态并存时看得出接缝
-  'navigation-menu.content': ['viewport'],
+  // 底、描边与落影必须同源，否则两种形态并存时看得出接缝；
+  // 面板里的一枝子级是面板的一段，条目之间的行距读面板的间隙槽，展开前后行距不跳
+  'navigation-menu.content': ['viewport', 'branch-content'],
   // 竖排时连接线要缩进到序号圆点的中轴上，位移由圆点直径与触发区内衬算出来
   'steps.indicator': ['separator'],
   'steps.trigger': ['separator'],
