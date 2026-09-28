@@ -42383,7 +42383,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-navigation-menu>`：Light-DOM 行为宿主：作者写\nroot / list / item / trigger / content / link / indicator / viewport 角色节点，\n元素运行 navigation-menu 状态机并把 connect 产出接上。\n\n与 `<xh-menu>` 的差别：这里的条目是链接不是命令，因此不做 roving tabindex：\n每个 trigger 都保留在 Tab 序列中，面板紧跟在 trigger 之后，Tab 才能进入。\n\n标签由作者编写，且必须正确：root 是 `<nav>`（地标语义只能由标签提供），list 是 `<ul>`，\nitem 与 indicator 都是 `<li>`（`<ul>` 中只能放置 `<li>`），trigger 是 `<button>`，\nlink 是 `<a>`。面板（content）写在同一个 item 中、紧跟 trigger 之后。",
+          "description": "`<xh-navigation-menu>`：Light-DOM 行为宿主：作者写\nroot / list / item / trigger / content / branch-trigger / branch-content / link / indicator / viewport 角色节点，\n元素运行 navigation-menu 状态机并把 connect 产出接上。\n\n与 `<xh-menu>` 的差别：这里的条目是链接不是命令，因此不做 roving tabindex：\n每个 trigger 都保留在 Tab 序列中，面板紧跟在 trigger 之后，Tab 才能进入。\n\n标签由作者编写，且必须正确：root 是 `<nav>`（地标语义只能由标签提供），list 是 `<ul>`，\nitem 与 indicator 都是 `<li>`（`<ul>` 中只能放置 `<li>`），trigger 与 branch-trigger 是 `<button>`，\nlink 是 `<a>`。面板（content）写在同一个 item 中、紧跟 trigger 之后；面板里的一枝子级\n（branch-content）同样紧跟自己的 branch-trigger 之后。",
           "name": "XhNavigationMenuElement",
           "cssParts": [
             {
@@ -42409,6 +42409,18 @@
             {
               "description": "面板，须自带 value 属性与 trigger 配对；收起时 hidden",
               "name": "content"
+            },
+            {
+              "description": "面板里一枝子级的开关，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
+              "name": "branch-trigger"
+            },
+            {
+              "description": "子级开关里的展开方向标记，须自带 value 属性与所在的开关配对；对读屏隐藏",
+              "name": "branch-indicator"
+            },
+            {
+              "description": "一枝子级的容器，须自带 value 属性与开关配对，紧跟在开关之后；收着时 hidden",
+              "name": "branch-content"
             },
             {
               "description": "面板中的链接；指向当前页面的条目写 current 属性，得到 aria-current=\"page\"",
@@ -42846,6 +42858,15 @@
           "tagName": "xh-navigation-menu",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-navigation-menu-branch-content-indent"
+            },
+            {
+              "name": "--xh-navigation-menu-branch-indicator-size"
+            },
+            {
+              "name": "--xh-navigation-menu-branch-trigger-gap"
+            },
             {
               "name": "--xh-navigation-menu-content-bg"
             },

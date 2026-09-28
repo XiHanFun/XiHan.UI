@@ -1730,6 +1730,9 @@ export { useMessageFeed } from './components/message-feed/use-message-feed'
 export type { MessageFeedContext } from './components/message-feed/use-message-feed'
 export { useNavigationMenuContext } from './components/navigation-menu/context'
 export {
+  XhNavigationMenuBranchContent,
+  XhNavigationMenuBranchIndicator,
+  XhNavigationMenuBranchTrigger,
   XhNavigationMenuContent,
   XhNavigationMenuIndicator,
   XhNavigationMenuItem,
@@ -1741,6 +1744,9 @@ export {
   XhNavigationMenuViewport,
 } from './components/navigation-menu/navigation-menu'
 export type {
+  XhNavigationMenuBranchContentProps,
+  XhNavigationMenuBranchIndicatorProps,
+  XhNavigationMenuBranchTriggerProps,
   XhNavigationMenuContentProps,
   XhNavigationMenuIndicatorProps,
   XhNavigationMenuItemProps,

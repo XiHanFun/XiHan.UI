@@ -6,11 +6,42 @@
 // 提供 navigation menu 相关实现。
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { NavigationMenuApi, NavigationMenuNodeMeta, NavigationMenuPressedPart, NavigationMenuSchema, NavigationMenuTriggerProps } from './navigation-menu.types'
+import type { NavigationMenuApi, NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuPressedPart, NavigationMenuSchema, NavigationMenuTriggerProps } from './navigation-menu.types'
 import { contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
-import { navigationMenuAnatomy, navigationMenuTriggerQuery } from './navigation-menu.anatomy'
+import { navigationMenuAnatomy, navigationMenuPartId, navigationMenuTriggerQuery } from './navigation-menu.anatomy'
+import { branchTriggerHoldingFocus } from './navigation-menu.dom'
 
 const parts = navigationMenuAnatomy.build()
+
+/**
+ * collection 推出的元信息，逐层校验，不合法的组合当场报错、不静默修正：
+ * 直达链接没有下一层；面板里的条目要么是链接、要么带一枝子级；子级里只放链接、不再往下嵌套；
+ * value 全树唯一——入口、面板与子级按它逐对互指，重了两处就指到同一个 id 上。
+ * depth 0 是入口，1 是面板条目，2 是子级条目。
+ */
+function toMeta(nodes: readonly NavigationMenuNode[], depth: number, seen: Set<string>): NavigationMenuNodeMeta[] {
+  return nodes.map((node) => {
+    const name = JSON.stringify(node.value)
+    if (seen.has(node.value))
+      throw new RangeError(`[xh] navigation-menu collection 的 value ${name} 重复：入口、面板与子级按 value 逐对互指，须全树唯一`)
+    seen.add(node.value)
+    const children = node.children ?? []
+    if (node.href != null && children.length > 0)
+      throw new RangeError(`[xh] navigation-menu 条目 ${name} 同时给了 href 与 children：直达链接没有下一层`)
+    if (depth === 1 && node.href == null && children.length === 0)
+      throw new RangeError(`[xh] navigation-menu 面板条目 ${name} 既没有 href 也没有 children：面板里的条目要么是链接、要么带一枝子级`)
+    if (depth === 2 && node.href == null)
+      throw new RangeError(`[xh] navigation-menu 子级条目 ${name} 没有 href：子级只展开一层，里面的条目都是链接`)
+    return {
+      value: node.value,
+      label: node.label ?? node.value,
+      disabled: !!node.disabled,
+      href: node.href,
+      current: !!node.current,
+      children: toMeta(children, depth + 1, seen),
+    }
+  })
+}
 
 export function connectNavigationMenu<T extends PropTypes>(
   service: Service<NavigationMenuSchema>,
@@ -29,23 +60,25 @@ export function connectNavigationMenu<T extends PropTypes>(
   const exitPending = context.get('exitPending') ?? false
   const switching = context.get('switching')
   const openedAtMount = context.get('openedAtMount')
+  const branchValue = context.get('branchValue') ?? null
   // 受控 value 的新值先参与宿主渲染，机器 tracker 随后才会写 exitPending。
   // 旧 Layer 尚在即是关闭提交的第一帧；先保住 viewport，动画探测才不会被祖先 display:none 截断。
   const closingCommit = !open && refs.get('layerValue') != null && refs.get('layerDispose') != null
 
-  // collection 推出的入口元信息：入口文本、禁用与直达去处都在这里定案，trigger 部件只报 value
-  const collection: NavigationMenuNodeMeta[] = (prop('collection') ?? []).map(node => ({
-    value: node.value,
-    label: node.label ?? node.value,
-    disabled: !!node.disabled,
-    href: node.href,
-    current: !!node.current,
-  }))
-  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+  // collection 推出的入口元信息：入口文本、禁用与直达去处都在这里定案，trigger / branch-trigger 部件只报 value
+  const collection = toMeta(prop('collection') ?? [], 0, new Set())
+  const metaOf = new Map<string, NavigationMenuNodeMeta>()
+  const index = (metas: readonly NavigationMenuNodeMeta[]): void => {
+    for (const meta of metas) {
+      metaOf.set(meta.value, meta)
+      index(meta.children)
+    }
+  }
+  index(collection)
 
   const navDisabled = !!prop('disabled')
 
-  /** 入口禁用：整套禁用一票通过，否则部件上写的优先，没写就回 collection 里查。 */
+  /** 入口与子级开关的禁用：整套禁用一票通过，否则部件上写的优先，没写就回 collection 里查。 */
   const triggerDisabled = (item: NavigationMenuTriggerProps): boolean =>
     navDisabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
 
@@ -59,8 +92,10 @@ export function connectNavigationMenu<T extends PropTypes>(
     onChange: down => send(down ? { type: 'PRESS.START', part, value, disabled } : { type: 'PRESS.END', part, value }),
   })
 
-  const triggerId = (target: string): string => scope.partId(navigationMenuAnatomy.name, `trigger:${target}`)
-  const contentId = (target: string): string => scope.partId(navigationMenuAnatomy.name, `content:${target}`)
+  const triggerId = (target: string): string => navigationMenuPartId(scope, 'trigger', target)
+  const contentId = (target: string): string => navigationMenuPartId(scope, 'content', target)
+  const branchTriggerId = (target: string): string => navigationMenuPartId(scope, 'branch-trigger', target)
+  const branchContentId = (target: string): string => navigationMenuPartId(scope, 'branch-content', target)
   const stateAttr = (isOpen: boolean): 'open' | 'closed' => (isOpen ? 'open' : 'closed')
 
   /** 在同组 trigger 之间走一步，集合现查不缓存。 */
@@ -74,6 +109,8 @@ export function connectNavigationMenu<T extends PropTypes>(
     collection,
     open,
     isOpen: target => target === value,
+    branchValue,
+    isBranchOpen: target => target === branchValue,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
 
     // 根节点是 nav 地标，指针离开、焦点离场与 Escape 三条收起出口都在这里
@@ -101,11 +138,19 @@ export function connectNavigationMenu<T extends PropTypes>(
           return
         send({ type: 'DISMISS' })
       },
-      // 层在场时 Escape 由消解层按层栈仲裁；这一条是没有 DOM 环境时的兜底，
-      // 覆盖焦点在面板内或仍在 trigger 上两种情形
+      // 层在场时 Escape 由消解层按层栈仲裁（机器的 syncLayer）；这一条是没有 DOM 环境、层没入栈时的兜底，
+      // 覆盖焦点在子级里、在面板内或仍在 trigger 上三种情形。层在场时这里不再动：冒泡上来的同一下
+      // 再处理一遍，会越过刚收起的子级把整张面板也收掉
       'onKeydown': (event: KeyboardEvent) => {
-        if (event.key !== 'Escape' || value == null)
+        if (event.key !== 'Escape' || value == null || refs.get('layerDispose') != null)
           return
+        // 焦点在展开的子级里：只收这一枝、焦点还给它的开关，面板仍开着
+        const branchTrigger = branchTriggerHoldingFocus(scope, context.get('branchValue') ?? null)
+        if (branchTrigger) {
+          send({ type: 'BRANCH.DISMISS' })
+          focusItem(branchTrigger)
+          return
+        }
         const root = event.currentTarget as HTMLElement
         const list = root.querySelector<HTMLElement>(parts.list.selector)
         const trigger = queryItems(list, navigationMenuTriggerQuery).find(el => itemValue(el) === value)
@@ -217,6 +262,76 @@ export function connectNavigationMenu<T extends PropTypes>(
         'data-orientation': orientation,
         'inert': !isOpen || undefined,
         'aria-hidden': !isOpen || undefined,
+        'hidden': !isOpen || undefined,
+      })
+    },
+
+    /**
+     * 面板里一枝子级的开关：原生按钮，aria-expanded / aria-controls 指向紧跟其后的子级容器（APG 的
+     * disclosure 导航：子级是面板里再展开一层的链接列表，Tab 顺着文档序走进去）。行归 Collection Item
+     * 导航当前（nav 语境），与面板里的链接同一种行：悬停 / 键盘聚焦 / 按下面由家族给；展开不换面、不算
+     * 打开中，由行尾转向的箭头与下面展开的子级说明
+     */
+    getBranchTriggerProps: (item) => {
+      const isOpen = item.value === branchValue
+      const disabled = triggerDisabled(item)
+      const handlers = press('branch-trigger', item.value, disabled)
+      return normalize.button({
+        ...parts['branch-trigger'].attrs,
+        [ITEM_VALUE_ATTR]: item.value,
+        'id': branchTriggerId(item.value),
+        'type': 'button',
+        'aria-expanded': isOpen ? 'true' : 'false',
+        'aria-controls': branchContentId(item.value),
+        // 与入口同一取法：aria-disabled 而非原生 disabled，禁用的开关仍留在 Tab 序列里、仍念得出来
+        'aria-disabled': disabled ? 'true' : 'false',
+        'data-state': stateAttr(isOpen),
+        'data-disabled': dataAttr(disabled),
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'nav',
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        'data-pressed': dataAttr(pressedPart === 'branch-trigger' && pressedValue === item.value),
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onClick': () => {
+          if (!disabled)
+            send({ type: 'BRANCH.TOGGLE', value: item.value })
+        },
+        // 同一个 keydown 先过跟踪器再开合：React 把 onKeydown 与 onKeyDown 归成同一个合成事件，两个键会互相覆盖
+        'onKeydown': (event: KeyboardEvent) => {
+          handlers.onKeyDown(event)
+          if (disabled || (event.key !== 'Enter' && event.key !== ' '))
+            return
+          // 吞掉按钮的默认激活，开合只走这一处；按住不放会连发 keydown，这是开合切换，重复执行会来回翻转
+          event.preventDefault()
+          if (!event.repeat)
+            send({ type: 'BRANCH.TOGGLE', value: item.value })
+        },
+      })
+    },
+
+    // 开关里的展开方向标记是纯装饰，开合由开关的 aria-expanded 念出来
+    getBranchIndicatorProps: item => normalize.element({
+      ...parts['branch-indicator'].attrs,
+      'aria-hidden': true,
+      'data-state': stateAttr(item.value === branchValue),
+    }),
+
+    // 子级容器紧跟在开关之后，收着时 hidden：整段跳出 Tab 序列与可访问树。
+    // 密集披露，不动高度，刻意瞬时；只有开关里的箭头转向
+    getBranchContentProps: (item) => {
+      const isOpen = item.value === branchValue
+      return normalize.element({
+        ...parts['branch-content'].attrs,
+        'id': branchContentId(item.value),
+        // 有 role 才能让 aria-labelledby 生效
+        'role': 'group',
+        'aria-labelledby': branchTriggerId(item.value),
+        'data-state': stateAttr(isOpen),
         'hidden': !isOpen || undefined,
       })
     },

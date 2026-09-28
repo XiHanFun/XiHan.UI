@@ -96,6 +96,7 @@
     ],
     "branch-content": [
       "json-viewer",
+      "navigation-menu",
       "side-nav",
       "tree",
       "tree-select"
@@ -114,6 +115,7 @@
     ],
     "branch-indicator": [
       "json-viewer",
+      "navigation-menu",
       "side-nav",
       "tree",
       "tree-select"
@@ -134,6 +136,7 @@
     ],
     "branch-trigger": [
       "json-viewer",
+      "navigation-menu",
       "side-nav",
       "tree",
       "tree-select"

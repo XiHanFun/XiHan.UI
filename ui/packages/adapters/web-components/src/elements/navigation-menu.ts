@@ -47,15 +47,16 @@ function authorDisabled(el: HTMLElement): boolean {
 
 /**
  * `<xh-navigation-menu>`：Light-DOM 行为宿主：作者写
- * root / list / item / trigger / content / link / indicator / viewport 角色节点，
+ * root / list / item / trigger / content / branch-trigger / branch-content / link / indicator / viewport 角色节点，
  * 元素运行 navigation-menu 状态机并把 connect 产出接上。
  *
  * 与 `<xh-menu>` 的差别：这里的条目是链接不是命令，因此不做 roving tabindex：
  * 每个 trigger 都保留在 Tab 序列中，面板紧跟在 trigger 之后，Tab 才能进入。
  *
  * 标签由作者编写，且必须正确：root 是 `<nav>`（地标语义只能由标签提供），list 是 `<ul>`，
- * item 与 indicator 都是 `<li>`（`<ul>` 中只能放置 `<li>`），trigger 是 `<button>`，
- * link 是 `<a>`。面板（content）写在同一个 item 中、紧跟 trigger 之后。
+ * item 与 indicator 都是 `<li>`（`<ul>` 中只能放置 `<li>`），trigger 与 branch-trigger 是 `<button>`，
+ * link 是 `<a>`。面板（content）写在同一个 item 中、紧跟 trigger 之后；面板里的一枝子级
+ * （branch-content）同样紧跟自己的 branch-trigger 之后。
  *
  * @customElement xh-navigation-menu
  * @attr {string} value - 受控展开项；未提供该属性即非受控
@@ -75,6 +76,9 @@ function authorDisabled(el: HTMLElement): boolean {
  * @csspart trigger - 展开面板的按钮，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart trigger-indicator - 入口中的方向标记，须自带 value 属性与所在 trigger 配对；对读屏隐藏
  * @csspart content - 面板，须自带 value 属性与 trigger 配对；收起时 hidden
+ * @csspart branch-trigger - 面板里一枝子级的开关，须自带 value 属性标识身份；禁用写 aria-disabled="true"
+ * @csspart branch-indicator - 子级开关里的展开方向标记，须自带 value 属性与所在的开关配对；对读屏隐藏
+ * @csspart branch-content - 一枝子级的容器，须自带 value 属性与开关配对，紧跟在开关之后；收着时 hidden
  * @csspart link - 面板中的链接；指向当前页面的条目写 current 属性，得到 aria-current="page"
  * @csspart indicator - 指示条，须写为 `<li>` 并位于 list 中；对读屏隐藏，位置由状态机测量后写为内联样式
  * @csspart viewport - 可选的共享面板外壳，放在 root 中；全部收起时 hidden
@@ -286,6 +290,22 @@ export class XhNavigationMenuElement extends XhElement {
       entry.gate.track(el)
       entry.gate.update(open)
       this.setPartHidden(el, !entry.gate.visible)
+    }
+
+    // 面板里的子级：开关与方向标记的身份取节点自报的 value，开关的禁用经 authorDisabled 归一到 aria-disabled
+    for (const el of this.getParts('branch-trigger')) {
+      this.spreader.spread(el, api.getBranchTriggerProps({
+        value: el.getAttribute('value') ?? '',
+        disabled: authorDisabled(el),
+      }) as Record<string, unknown>)
+    }
+    for (const el of this.getParts('branch-indicator'))
+      this.spreader.spread(el, api.getBranchIndicatorProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    // 子级容器收着时 hidden；皮肤给它设了 display，同 content 一样用内联 display 压住
+    for (const el of this.getParts('branch-content')) {
+      const props = api.getBranchContentProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>
+      this.spreader.spread(el, props)
+      this.setPartHidden(el, props.hidden === true)
     }
 
     for (const el of this.getParts('link'))

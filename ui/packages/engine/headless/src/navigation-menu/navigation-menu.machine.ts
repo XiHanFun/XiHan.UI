@@ -11,7 +11,8 @@ import { contains, createDismissLayer, focusItem, itemValue, queryItems, setTime
 import { openedAtMountCell } from '../shared/first-frame'
 import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { setupLayerTransaction } from '../shared/overlay-shell'
-import { navigationMenuTriggerQuery } from './navigation-menu.anatomy'
+import { navigationMenuPartId, navigationMenuTriggerQuery } from './navigation-menu.anatomy'
+import { branchTriggerHoldingFocus, currentBranchIn } from './navigation-menu.dom'
 
 const { createMachine } = setup<NavigationMenuSchema>()
 
@@ -70,6 +71,8 @@ export const navigationMenuMachine = createMachine({
     // 按压通道：正被按住的那一个（入口与链接各按 value 记、分开认），与开合无关
     pressedPart: cell<NavigationMenuPressedPart | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    // 面板里展开着的那一枝子级；每次展开面板按当前页重新落定
+    branchValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: ({ prop }) => ({
     shownValue: initialValue(prop) ?? null,
@@ -84,16 +87,17 @@ export const navigationMenuMachine = createMachine({
     exitDispose: null,
   }),
   initialState: () => 'idle',
-  // 挂载即量一次，让指示条首帧就在位；初始就展开着的那一项同时入栈
-  entry: ['measureIndicator', 'syncLayer'],
+  // 挂载即量一次，让指示条首帧就在位；初始就展开着的那一项同时入栈，它的子级按当前页落定
+  entry: ['measureIndicator', 'syncLayer', 'syncBranch'],
   // 停机时把还在场的层撤掉
   exit: ['dropLayer'],
   // 窗口尺寸变化时重量指示条
   effects: ['trackResize', 'trackIndicatorLayout', 'trackLiquidIndicator'],
   watch: ({ track, context, prop, action }) => {
     // 展开项一变就重量一次，层的进出栈也跟着这一条走；按住 Enter 激活链接后面板随之收起（或换到另一张），
-    // 链接藏进 inert 的面板里不会再来 keyup，按压面由机器收；入口仍在场，它的按压不动
-    track([context.dep('value')], () => action(['syncSwitching', 'measureIndicator', 'syncLayer', 'releaseLinkPress']))
+    // 链接与子级开关藏进 inert 的面板里不会再来 keyup，按压面由机器收；入口仍在场，它的按压不动。
+    // 新展开的那一张按当前页落定子级
+    track([context.dep('value')], () => action(['syncSwitching', 'measureIndicator', 'syncLayer', 'releasePanelPress', 'syncBranch']))
     // 按住途中整套导航转入禁用：不会再来 keyup，按压面由机器自己收
     track([() => prop('disabled')], () => action(['releaseWhenInert']))
   },
@@ -103,6 +107,9 @@ export const navigationMenuMachine = createMachine({
     'PRESENCE.SET': { actions: ['setPresence', 'syncLayer'] },
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
+    // 子级只在展开着的面板里点得到，与计时无关，三个状态都认
+    'BRANCH.TOGGLE': { guard: 'hasValue', actions: ['toggleBranch'] },
+    'BRANCH.DISMISS': { actions: ['clearBranch'] },
   },
   states: {
     idle: {
@@ -185,12 +192,41 @@ export const navigationMenuMachine = createMachine({
         context.set('pressedPart', null)
         context.set('pressedValue', null)
       },
-      releaseLinkPress: ({ context }) => {
-        if (context.get('pressedPart') !== 'link')
+      // 子级开关与链接都住在面板里：面板收起或换张后它们藏进 inert，不会再来 keyup
+      releasePanelPress: ({ context }) => {
+        const part = context.get('pressedPart')
+        if (part !== 'link' && part !== 'branch-trigger')
           return
         context.set('pressedPart', null)
         context.set('pressedValue', null)
       },
+      /**
+       * 展开一张面板时按当前页落定子级：当前页链接所在的那一枝展开，其余收起，打开面板就看得到自己在哪。
+       * 只认展开，面板收起时不动——退场途中的面板先把子级塌下去，会在淡出的同时矮一截。
+       * 同步与推迟各落一遍，后者补上 WC 侧首帧才写入的 id 与 aria-current
+       */
+      syncBranch: ({ context, scope, flush }) => {
+        const run = (): void => {
+          const value = context.get('value') ?? null
+          if (value != null)
+            context.set('branchValue', currentBranchIn(scope, value))
+        }
+        run()
+        flush(run)
+      },
+      /** 同一张面板里只展开一枝：点收着的那一枝展开它、收起另一枝，点展开着的那一枝收起它。 */
+      toggleBranch: ({ context, event, scope }) => {
+        const e = event.current()
+        if (e.type !== 'BRANCH.TOGGLE')
+          return
+        const previous = context.get('branchValue') ?? null
+        // 要收起的那一枝里若还留着焦点（Safari 与 macOS 上的 Firefox 点按钮不给焦点，焦点可能还停在子级链接上），
+        // 先交给这次点到的开关：焦点跟着 hidden 掉出文档，根上的 focusout 会把整张面板一起收掉
+        if (branchTriggerHoldingFocus(scope, previous))
+          focusItem(scope.getById(navigationMenuPartId(scope, 'branch-trigger', e.value)))
+        context.set('branchValue', previous === e.value ? null : e.value)
+      },
+      clearBranch: ({ context }) => context.set('branchValue', null),
       releaseWhenInert: ({ context, prop }) => {
         if (context.get('pressedPart') == null || !prop('disabled'))
           return
@@ -331,6 +367,13 @@ export const navigationMenuMachine = createMachine({
             config,
             layer,
             onDismiss: (reason) => {
+              // 焦点在展开的子级里按 Escape：只收这一枝、焦点还给它的开关，面板仍开着，再按一次才收起面板
+              const branchTrigger = reason === 'escape-key' ? branchTriggerHoldingFocus(scope, context.get('branchValue') ?? null) : null
+              if (branchTrigger) {
+                send({ type: 'BRANCH.DISMISS' })
+                focusItem(branchTrigger)
+                return
+              }
               // Escape 把焦点归还给刚被收起的那个 trigger，焦点本就在导航外时不去抢。
               // 落点要在收起之前查，收起之后 value 就没了
               const holdsFocus = contains(layer.node(), scope.getActiveElement())

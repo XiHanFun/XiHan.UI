@@ -20,17 +20,27 @@ export interface NavigationMenuValueChangeDetails {
   value: string | null
 }
 
-/** 入口数据。提供 collection 时，入口文本、禁用与直达目标以它为准。 */
+/**
+ * 入口数据。提供 collection 时，入口文本、禁用与直达目标以它为准。
+ *
+ * 最多三层：顶层是入口；入口的 children 是面板里的条目；面板条目的 children 是它下面的一枝子级，
+ * 展开在面板里、紧跟在这一条之后。value 全树唯一。
+ */
 export interface NavigationMenuNode {
   value: string
   /** 入口文本；默认回退为 value。 */
   label?: string
-  /** 入口禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
+  /** 入口禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。面板里带子级的条目禁用即展不开。 */
   disabled?: boolean
-  /** 直达目标。提供后该项即为一条链接，没有面板。 */
+  /** 直达目标。提供后该项即为一条链接：顶层没有面板，面板里没有子级。与 children 互斥。 */
   href?: string
-  /** 指向当前页面的直达入口：输出 aria-current="page"。 */
+  /** 指向当前页面的链接：输出 aria-current="page"。 */
   current?: boolean
+  /**
+   * 下一层条目。顶层入口给了它，缺省结构就按它铺开面板（面板插槽 / renderPanel 仍优先）；
+   * 面板条目给了它即为一枝可展开的子级，子级里的条目只能是带 href 的链接，不再往下嵌套。
+   */
+  children?: NavigationMenuNode[]
 }
 
 /** 单个入口的元信息，由 collection 推导，不含展开态。 */
@@ -39,9 +49,11 @@ export interface NavigationMenuNodeMeta {
   /** node.label ?? node.value，恒为字符串。 */
   label: string
   disabled: boolean
-  /** 直达目标；未提供时该项带面板。 */
+  /** 直达目标；未提供时该项带面板（顶层）或子级（面板条目）。 */
   href?: string
   current: boolean
+  /** 下一层条目的元信息，按数据顺序排列；没有下一层时为空数组。 */
+  children: readonly NavigationMenuNodeMeta[]
 }
 
 /**
@@ -69,8 +81,8 @@ export interface NavigationMenuLinkProps {
   current?: boolean
 }
 
-/** 接了按压通道的两个部件：入口与面板链接都按各自的 value 记，同一个值在两个部件上分开认。 */
-export type NavigationMenuPressedPart = 'trigger' | 'link'
+/** 接了按压通道的三个部件：入口、面板里的子级开关与链接都按各自的 value 记，同一个值在不同部件上分开认。 */
+export type NavigationMenuPressedPart = 'trigger' | 'branch-trigger' | 'link'
 
 /** 指示条相对 list 的位置与尺寸（px）；起始缘按逻辑方向计算，RTL 从右边缘测量。 */
 export interface NavigationMenuIndicatorRect {
@@ -106,7 +118,8 @@ export interface NavigationMenuRefs {
 export interface NavigationMenuSchema extends MachineSchema {
   props: {
     /**
-     * 入口数据，入口文本与禁用的事实源。提供后 trigger 部件只需声明 value。
+     * 入口数据，入口文本与禁用的事实源。提供后 trigger / branch-trigger 部件只需声明 value；
+     * 没写结构时按它铺开整套导航：入口的 children 铺成面板，面板条目的 children 铺成一枝子级。
      * 未提供时回到文本与禁用都写在部件上的方式。
      */
     collection?: NavigationMenuNode[]
@@ -158,10 +171,18 @@ export interface NavigationMenuSchema extends MachineSchema {
     indicatorInstant: boolean
     /** 逻辑已经关闭，但最后一个面板仍在视觉退场。 */
     exitPending: boolean
-    /** 按压通道：Space / Enter 或触屏按住的是入口还是面板链接。 */
+    /** 按压通道：Space / Enter 或触屏按住的是入口、子级开关还是面板链接。 */
     pressedPart: NavigationMenuPressedPart | null
-    /** 按压通道：按住的入口 value 或链接 value。抬起、失焦或指针取消即清空，链接随面板收起一并清空。 */
+    /**
+     * 按压通道：按住的那一个的 value。抬起、失焦或指针取消即清空；子级开关与链接住在面板里，随面板收起一并清空。
+     */
     pressedValue: string | null
+    /**
+     * 面板里展开着的那一枝子级（branch-trigger 的 value）；一张面板同时只展开一枝，都收着时为 null。
+     * 每次展开一张面板都按当前页重新落定：当前页链接所在的那一枝展开，其余收起。
+     * 面板收起时不动它，退场途中的面板才不会先塌下去一截。
+     */
+    branchValue: string | null
   }
   computed: Record<string, never>
   refs: NavigationMenuRefs
@@ -179,7 +200,7 @@ export interface NavigationMenuSchema extends MachineSchema {
     | { type: 'TRIGGER.FOCUS', value: string }
     /** 显式激活：点击、Enter、Space。不经延时。 */
     | { type: 'TRIGGER.TOGGLE', value: string }
-    /** 收起：指针离开整个导航、Escape、焦点离场、选中面板里的链接。 */
+    /** 收起：指针离开整个导航、焦点不在展开的子级里时按 Escape、焦点离场、选中面板里的链接。 */
     | { type: 'DISMISS' }
     /** 程序化改写。 */
     | { type: 'VALUE.SET', value: string | null }
@@ -188,10 +209,14 @@ export interface NavigationMenuSchema extends MachineSchema {
     // 定时器到点，名称与对应的 delay prop 同名
     | { type: 'after.delayDuration' }
     | { type: 'after.skipDelayDuration' }
-    /** 入口或面板链接被 Space / Enter 或触屏按住；disabled 是入口自身的禁用事实，由 connect 判定后随事件带入。 */
+    /** 入口、子级开关或面板链接被 Space / Enter 或触屏按住；disabled 是条目自身的禁用事实，由 connect 判定后随事件带入。 */
     | { type: 'PRESS.START', part: NavigationMenuPressedPart, value: string, disabled?: boolean }
     /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
     | { type: 'PRESS.END', part: NavigationMenuPressedPart, value: string }
+    /** 点击或 Enter / Space 激活面板里的子级开关：收着的展开（同时收起同一张面板里另一枝），展开着的收起。 */
+    | { type: 'BRANCH.TOGGLE', value: string }
+    /** 焦点在展开的子级里按 Escape：只收这一枝，面板仍开着。 */
+    | { type: 'BRANCH.DISMISS' }
   tag: never
   guard: 'hasValue' | 'isCurrent' | 'shouldKeepOpen' | 'canPress'
   action:
@@ -208,8 +233,11 @@ export interface NavigationMenuSchema extends MachineSchema {
     | 'dropLayer'
     | 'startPress'
     | 'endPress'
-    | 'releaseLinkPress'
+    | 'releasePanelPress'
     | 'releaseWhenInert'
+    | 'syncBranch'
+    | 'toggleBranch'
+    | 'clearBranch'
   effect: 'waitForOpenDelay' | 'waitForSkipDelay' | 'trackResize' | 'trackIndicatorLayout' | 'trackLiquidIndicator'
 }
 
@@ -221,6 +249,9 @@ export interface NavigationMenuApi<T extends PropTypes = PropTypes> {
   /** 是否有面板展开。 */
   open: boolean
   isOpen: (value: string) => boolean
+  /** 面板里展开着的那一枝子级；都收着时为 null。 */
+  branchValue: string | null
+  isBranchOpen: (value: string) => boolean
   setValue: (next: string | null) => void
   getRootProps: () => T['element']
   getListProps: () => T['element']
@@ -228,6 +259,12 @@ export interface NavigationMenuApi<T extends PropTypes = PropTypes> {
   getTriggerProps: (props: NavigationMenuTriggerProps) => T['button']
   getTriggerIndicatorProps: (props: NavigationMenuTriggerProps) => T['element']
   getContentProps: (props: NavigationMenuContentProps) => T['element']
+  /** 面板里一枝子级的开关：身份与禁用的声明同入口。 */
+  getBranchTriggerProps: (props: NavigationMenuTriggerProps) => T['button']
+  /** 子级开关里的展开方向标记，按 value 与所在的开关配对。 */
+  getBranchIndicatorProps: (props: NavigationMenuContentProps) => T['element']
+  /** 一枝子级的容器，按 value 与它的开关配对，收着时 hidden。 */
+  getBranchContentProps: (props: NavigationMenuContentProps) => T['element']
   getLinkProps: (props: NavigationMenuLinkProps) => T['element']
   getIndicatorProps: () => T['element']
   getViewportProps: () => T['element']

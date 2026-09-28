@@ -226,6 +226,47 @@ export function XhNavigationMenuContent({ value, children, ...rest }: XhNavigati
   )
 }
 
+export interface XhNavigationMenuBranchTriggerProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
+  value: string
+  /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
+  disabled?: boolean
+}
+/** 面板里一枝子级的开关：展开时紧跟其后的 XhNavigationMenuBranchContent 露出来。 */
+export function XhNavigationMenuBranchTrigger({ value, disabled, children, ...rest }: XhNavigationMenuBranchTriggerProps): ReactNode {
+  const ctx = useNavigationMenuContext()
+  return (
+    <button {...mergeReactProps(ctx.api.getBranchTriggerProps({ value, disabled }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </button>
+  )
+}
+
+export interface XhNavigationMenuBranchIndicatorProps extends Omit<ComponentPropsWithRef<'span'>, 'value'> {
+  value: string
+}
+/** 子级开关里的展开方向标记，展开时转向；身份与所在的开关同一份声明。 */
+export function XhNavigationMenuBranchIndicator({ value, children, ...rest }: XhNavigationMenuBranchIndicatorProps): ReactNode {
+  const ctx = useNavigationMenuContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getBranchIndicatorProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </span>
+  )
+}
+
+export interface XhNavigationMenuBranchContentProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
+  value: string
+}
+/** 一枝子级的容器，写在面板里、紧跟自己的开关之后；收着时 hidden。 */
+export function XhNavigationMenuBranchContent({ value, children, ...rest }: XhNavigationMenuBranchContentProps): ReactNode {
+  const ctx = useNavigationMenuContext()
+  return (
+    <div {...mergeReactProps(ctx.api.getBranchContentProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </div>
+  )
+}
+
 export interface XhNavigationMenuLinkProps extends ComponentPropsWithRef<'a'>, AsChildProps {
   current?: boolean
 }
@@ -257,7 +298,8 @@ export function XhNavigationMenuViewport({ children, ...rest }: XhNavigationMenu
 
 /**
  * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 一项一个 li：带 href 的铺为直达链接，其余铺为 trigger 加面板，面板内容由 renderPanel 提供。
+ * 一项一个 li：带 href 的铺为直达链接，其余铺为 trigger 加面板。面板内容给了 renderPanel 就由它提供，
+ * 否则按这一项的 children 铺开：带 href 的条目铺为链接，带 children 的铺为一枝子级（开关 + 箭头 + 子级里的链接）。
  * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
  */
 function DefaultTree(props: {
@@ -273,7 +315,9 @@ function DefaultTree(props: {
             : (
                 <Fragment>
                   <XhNavigationMenuTrigger value={node.value}>{node.label}</XhNavigationMenuTrigger>
-                  <XhNavigationMenuContent value={node.value}>{props.renderPanel?.(node)}</XhNavigationMenuContent>
+                  <XhNavigationMenuContent value={node.value}>
+                    {props.renderPanel ? props.renderPanel(node) : <PanelEntries entries={node.children} />}
+                  </XhNavigationMenuContent>
                 </Fragment>
               )}
         </XhNavigationMenuItem>
@@ -281,4 +325,23 @@ function DefaultTree(props: {
       <XhNavigationMenuIndicator />
     </XhNavigationMenuList>
   )
+}
+
+/** 面板条目：带 children 的铺为一枝子级，开关与容器相邻；其余铺为链接。 */
+function PanelEntries(props: { entries: readonly NavigationMenuNodeMeta[] }): ReactNode {
+  return props.entries.map(entry => (entry.children.length > 0
+    ? (
+        <Fragment key={entry.value}>
+          <XhNavigationMenuBranchTrigger value={entry.value}>
+            {entry.label}
+            <XhNavigationMenuBranchIndicator value={entry.value} />
+          </XhNavigationMenuBranchTrigger>
+          <XhNavigationMenuBranchContent value={entry.value}>
+            {entry.children.map(leaf => (
+              <XhNavigationMenuLink key={leaf.value} href={leaf.href} current={leaf.current}>{leaf.label}</XhNavigationMenuLink>
+            ))}
+          </XhNavigationMenuBranchContent>
+        </Fragment>
+      )
+    : <XhNavigationMenuLink key={entry.value} href={entry.href} current={entry.current}>{entry.label}</XhNavigationMenuLink>))
 }

@@ -52,6 +52,68 @@ function menuTree(disabled?: string): FixtureNode {
   }
 }
 
+/**
+ * 面板里带子级的导航：产品面板里一条直达链接、两枝子级（开关 + 方向标记，子级容器紧跟开关之后），
+ * 文档面板里一条链接。文档序：link[0] 概览、link[1] Vue、link[2] React、link[3] CLI、link[4] 指南。
+ *
+ * current 指向当前页那条链接的 href；disabledBranch 给那一枝的开关写 disabled（Vue / React 侧是 prop，
+ * WC 侧经 authorDisabled 改写成 aria-disabled）。
+ */
+function branchTree(options: { current?: string, disabledBranch?: string } = {}): FixtureNode {
+  const link = (href: string, text: string): FixtureNode => ({
+    part: 'link',
+    tag: 'a',
+    text,
+    attrs: href === options.current ? { href, current: '' } : { href },
+  })
+  const branch = (value: string, text: string, links: FixtureNode[]): FixtureNode[] => [
+    {
+      part: 'branch-trigger',
+      tag: 'button',
+      attrs: value === options.disabledBranch ? { value, disabled: '' } : { value },
+      children: [
+        { tag: 'span', text },
+        { part: 'branch-indicator', tag: 'span', attrs: { value } },
+      ],
+    },
+    { part: 'branch-content', attrs: { value }, children: links },
+  ]
+  return {
+    part: 'root',
+    tag: 'nav',
+    children: [{
+      part: 'list',
+      tag: 'ul',
+      children: [
+        {
+          part: 'item',
+          tag: 'li',
+          children: [
+            { part: 'trigger', tag: 'button', text: 'products', attrs: { value: 'products' } },
+            {
+              part: 'content',
+              attrs: { value: 'products' },
+              children: [
+                link('/products', '概览'),
+                ...branch('frameworks', '框架', [link('/vue', 'Vue'), link('/react', 'React')]),
+                ...branch('tools', '工具', [link('/cli', 'CLI')]),
+              ],
+            },
+          ],
+        },
+        {
+          part: 'item',
+          tag: 'li',
+          children: [
+            { part: 'trigger', tag: 'button', text: 'docs', attrs: { value: 'docs' } },
+            { part: 'content', attrs: { value: 'docs' }, children: [link('/docs', '指南')] },
+          ],
+        },
+      ],
+    }],
+  }
+}
+
 /** 悬停某个 trigger。Step 里没有"悬停"这一档，只能自己派事件。 */
 function hover(index: number): StepWithExpect {
   return {
@@ -477,6 +539,237 @@ export const navigationMenuSuite: ConformanceSuite = {
               throw new Error('面板须紧跟在同一项的 trigger 之后，否则 Tab 走不进去')
           },
         },
+      ],
+    },
+    {
+      name: '面板里的子级：开关与子级容器按 value 逐对互指，收着时容器 hidden、方向标记对读屏隐藏',
+      spec: { apg: APG },
+      fixture: () => branchTree(),
+      props: { defaultValue: 'products' },
+      initial: {
+        order: [
+          'root',
+          'list',
+          'item[0]',
+          'trigger[0]',
+          'content[0]',
+          'link[0]',
+          'branch-trigger[0]',
+          'branch-indicator[0]',
+          'branch-content[0]',
+          'link[1]',
+          'link[2]',
+          'branch-trigger[1]',
+          'branch-indicator[1]',
+          'branch-content[1]',
+          'link[3]',
+          'item[1]',
+          'trigger[1]',
+          'content[1]',
+          'link[4]',
+        ],
+        parts: {
+          'branch-trigger[0]': {
+            'id': '@self',
+            'type': 'button',
+            'data-value': 'frameworks',
+            'aria-expanded': 'false',
+            'aria-controls': '@part(branch-content[0])',
+            'aria-disabled': 'false',
+            'data-state': 'closed',
+            'disabled': null,
+            // 与面板里的链接同一种行：Collection Item 的 nav 语境；展开不算打开中，不投影 data-in-path
+            'data-xh-collection-item': '',
+            'data-xh-collection-context': 'nav',
+            'data-in-path': null,
+          },
+          'branch-trigger[1]': { 'aria-controls': '@part(branch-content[1])' },
+          'branch-indicator[0]': { 'aria-hidden': 'true', 'data-state': 'closed' },
+          'branch-content[0]': { 'id': '@self', 'role': 'group', 'aria-labelledby': '@part(branch-trigger[0])', 'data-state': 'closed', 'hidden': '' },
+          'branch-content[1]': { 'aria-labelledby': '@part(branch-trigger[1])', 'hidden': '' },
+        },
+      },
+    },
+    {
+      name: '点开关展开这一枝、再点收起；同一张面板只展开一枝；面板始终开着，不发 value-change',
+      spec: { apg: APG },
+      fixture: () => branchTree(),
+      props: { defaultValue: 'products' },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger[0]',
+          expect: {
+            parts: {
+              'branch-trigger[0]': { 'aria-expanded': 'true', 'data-state': 'open' },
+              'branch-indicator[0]': { 'data-state': 'open' },
+              'branch-content[0]': { 'hidden': null, 'data-state': 'open' },
+              'content[0]': { hidden: null },
+            },
+            events: [],
+          },
+        },
+        {
+          kind: 'click',
+          part: 'branch-trigger[1]',
+          expect: {
+            parts: {
+              'branch-trigger[0]': { 'aria-expanded': 'false' },
+              'branch-content[0]': { hidden: '' },
+              'branch-trigger[1]': { 'aria-expanded': 'true' },
+              'branch-content[1]': { hidden: null },
+            },
+            events: [],
+          },
+        },
+        {
+          kind: 'click',
+          part: 'branch-trigger[1]',
+          expect: {
+            parts: {
+              'branch-trigger[1]': { 'aria-expanded': 'false' },
+              'branch-content[1]': { hidden: '' },
+              'content[0]': { hidden: null },
+            },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: 'Enter / Space 开合子级：吞掉按钮的默认激活，焦点留在开关上',
+      spec: { apg: `${APG}#kbd_label` },
+      covers: ['navigation-menu.kbd.branch-toggle'],
+      fixture: () => branchTree(),
+      props: { defaultValue: 'products' },
+      steps: [
+        { kind: 'focus', part: 'branch-trigger[0]' },
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            activeElement: { part: 'branch-trigger[0]', exact: true },
+            parts: {
+              'branch-trigger[0]': { 'aria-expanded': 'true' },
+              'branch-content[0]': { hidden: null },
+            },
+            events: [],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Space',
+          expect: {
+            activeElement: { part: 'branch-trigger[0]', exact: true },
+            parts: {
+              'branch-trigger[0]': { 'aria-expanded': 'false' },
+              'branch-content[0]': { hidden: '' },
+            },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: 'Escape：焦点在子级里先只收这一枝、焦点还给开关；再按一次才收起面板、焦点还给入口',
+      spec: { apg: `${APG}#kbd_label` },
+      covers: ['navigation-menu.kbd.branch-escape', 'navigation-menu.kbd.escape'],
+      fixture: () => branchTree(),
+      props: { defaultValue: 'products' },
+      steps: [
+        { kind: 'click', part: 'branch-trigger[0]' },
+        { kind: 'focus', part: 'link[2]' },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            activeElement: { part: 'branch-trigger[0]', exact: true },
+            parts: {
+              'branch-trigger[0]': { 'aria-expanded': 'false' },
+              'branch-content[0]': { hidden: '' },
+              'trigger[0]': { 'aria-expanded': 'true' },
+              'content[0]': { hidden: null },
+            },
+            events: [],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            activeElement: { part: 'trigger[0]', exact: true },
+            parts: {
+              'trigger[0]': { 'aria-expanded': 'false' },
+              'content[0]': { hidden: '' },
+            },
+            events: [{ type: 'value-change', detail: { value: null } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '当前页在子级里：展开面板时那一枝跟着展开，打开就看得到自己在哪',
+      spec: { apg: APG },
+      fixture: () => branchTree({ current: '/react' }),
+      steps: [
+        {
+          kind: 'click',
+          part: 'trigger[0]',
+          expect: {
+            parts: {
+              'content[0]': { hidden: null },
+              'branch-trigger[0]': { 'aria-expanded': 'true' },
+              'branch-content[0]': { hidden: null },
+              'branch-trigger[1]': { 'aria-expanded': 'false' },
+              'link[2]': { 'aria-current': 'page', 'data-current': '' },
+            },
+            events: [{ type: 'value-change', detail: { value: 'products' } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '挂载即展开的面板同样按当前页落定子级',
+      spec: { apg: APG },
+      fixture: () => branchTree({ current: '/cli' }),
+      props: { defaultValue: 'products' },
+      initial: {
+        parts: {
+          'branch-trigger[0]': { 'aria-expanded': 'false' },
+          'branch-content[0]': { hidden: '' },
+          'branch-trigger[1]': { 'aria-expanded': 'true' },
+          'branch-content[1]': { hidden: null },
+        },
+      },
+    },
+    {
+      name: '禁用的子级开关用 aria-disabled 而非原生 disabled，点不开',
+      spec: { apg: APG },
+      fixture: () => branchTree({ disabledBranch: 'frameworks' }),
+      props: { defaultValue: 'products' },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger[0]',
+          expect: {
+            parts: {
+              'branch-trigger[0]': { 'aria-disabled': 'true', 'disabled': null, 'data-disabled': '', 'aria-expanded': 'false' },
+              'branch-content[0]': { hidden: '' },
+            },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: 'Space / Enter 按住子级开关与触屏按下：投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['navigation-menu.kbd.press'],
+      fixture: () => branchTree(),
+      props: { defaultValue: 'products' },
+      steps: [
+        // 失焦落到另一个入口：落到 body 会叫起根上的 focusout 把面板收掉，那由收起的用例证明
+        heldPress('navigation-menu', 'branch-trigger', { value: 'tools', blurTo: '[data-scope="navigation-menu"][data-part="trigger"][data-value="docs"]' }),
       ],
     },
     {
