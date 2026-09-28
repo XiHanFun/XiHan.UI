@@ -5,17 +5,19 @@
 
 // 提供 watermark 相关实现。
 
-import type { WatermarkImageSize, WatermarkProps } from '@xihan-ui/headless'
-import { connectWatermark, watermarkAnatomy, watermarkMeta } from '@xihan-ui/headless'
+import type { WatermarkImageSize, WatermarkSchema } from '@xihan-ui/headless'
+import { connectWatermark, watermarkAnatomy, watermarkMachine, watermarkMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-watermark>`：Light-DOM 行为宿主，无状态机，把 connectWatermark 产出接到 root 与 content 上。
+ * `<xh-watermark>`：Light-DOM 行为宿主，运行 watermark 状态机（地址形式图片的取回与防篡改），
+ * 把 connectWatermark 产出接到 root 与 content 上。
  *
  * 图样是一张按 props 计算的 SVG，整段百分号编码为 data URI 写进 root 的内联 CSS 变量；
  * 铺为一层覆盖在内容之上的伪元素归皮肤管理，因此印记不进入无障碍树、不接收点击、也不可选中。
@@ -32,7 +34,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {number} font-size - 字号（像素），默认 14
  * @attr {number} opacity - 印记的深浅，0 到 1，默认 0.15
  * @attr {string} font-family - 印文字使用的字体，默认 sans-serif；图样无法获取页面字体，字体名需要写全
- * @attr {string} image - 印在文字上方的图片，只接受 data:image/ 开头的内联图片；印出的是剪影
+ * @attr {string} image - 印在文字上方的图片：data:image/ 内联图片，或 http(s)、blob、相对路径的地址（跨域须带 CORS 放行）；印出的是剪影
+ * @attr {boolean} fullscreen - 全屏档：印子固定铺满整个视口，压在页面一切内容之上
  * @csspart root - 覆盖水印的区域，承载 data-state 与图样、步距两个变量
  * @csspart content - 被覆盖的内容
  */
@@ -49,6 +52,7 @@ export class XhWatermarkElement extends XhElement {
     fontFamily: { converter: STRING_CONVERTER, attribute: 'font-family' },
     image: { converter: STRING_CONVERTER },
     imageSize: { attribute: false },
+    fullscreen: { type: Boolean },
   }
 
   declare text?: string | string[]
@@ -60,10 +64,19 @@ export class XhWatermarkElement extends XhElement {
   declare image?: string
   /** 图片尺寸是对象，只能通过 property 设置，不设置特性。 */
   declare imageSize?: WatermarkImageSize
+  declare fullscreen?: boolean
 
-  protected wire(): void {
-    // 读响应式 property，不回读 DOM 特性
-    const api = connectWatermark({
+  // 防篡改的观察器挂在根节点上，取值口经 refs 交进去
+  private readonly ctrl = new MachineController<WatermarkSchema>(
+    this,
+    watermarkMachine,
+    () => this.machineProps(),
+    { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) },
+  )
+
+  // 读响应式 property，不回读 DOM 特性
+  private machineProps(): Partial<WatermarkSchema['props']> {
+    return {
       text: this.text,
       rotate: this.rotate,
       gap: this.gap,
@@ -72,7 +85,12 @@ export class XhWatermarkElement extends XhElement {
       fontFamily: this.fontFamily,
       image: this.image,
       imageSize: this.imageSize,
-    } satisfies WatermarkProps, wcNormalize)
+      fullscreen: this.fullscreen ?? false,
+    }
+  }
+
+  protected wire(): void {
+    const api = connectWatermark(this.ctrl.service, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)

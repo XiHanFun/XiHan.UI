@@ -318,8 +318,8 @@ export { connectTypography, typographyAnatomy, typographyKeyboard, typographyMet
 export type { TypographyAlign, TypographyApi, TypographyHeadingProps, TypographyLevel, TypographyProps, TypographyTextProps, TypographyTranslations, TypographyVariant, TypographyWeight } from './typography'
 export { connectVirtualizer, createVirtualizerKernel, expandVirtualizerRange, findVirtualizerItem, findVirtualizerRange, measureVirtualizerItems, normalizeVirtualizerMetrics, resolveVirtualizerCount, resolveVirtualizerEstimate, resolveVirtualizerLanes, resolveVirtualizerOverscan, VIRTUALIZER_DEFAULT_OVERSCAN, VIRTUALIZER_EMPTY_SNAPSHOT, VIRTUALIZER_INDEX_ATTRIBUTE, VIRTUALIZER_SCROLL_IDLE_DELAY, virtualizerAnatomy, virtualizerContentStyle, virtualizerItemStyle, virtualizerKeyboard, virtualizerMachine, virtualizerMeta, virtualizerOffsetForItem, virtualizerSnapshotEqual, virtualizerTotalSize } from './virtualizer'
 export type { CollectionVirtualizer, CollectionVirtualizerFocusOptions, VirtualizerAlign, VirtualizerApi, VirtualizerCore, VirtualizerItemProps, VirtualizerItemState, VirtualizerKernel, VirtualizerKernelOptions, VirtualizerMeasurement, VirtualizerMetrics, VirtualizerRange, VirtualizerRangeChangeDetails, VirtualizerRefs, VirtualizerSchema, VirtualizerScrollToOptions, VirtualizerSnapshot, VirtualizerTranslations, VirtualizerWindow } from './virtualizer'
-export { connectWatermark, watermarkAnatomy, watermarkKeyboard, watermarkMeta } from './watermark'
+export { connectWatermark, watermarkAnatomy, watermarkKeyboard, watermarkMachine, watermarkMeta } from './watermark'
 
-export type { WatermarkApi, WatermarkImageSize, WatermarkProps, WatermarkState, WatermarkTile, WatermarkTranslations } from './watermark'
+export type { WatermarkApi, WatermarkImageSize, WatermarkProps, WatermarkSchema, WatermarkState, WatermarkTile, WatermarkTranslations } from './watermark'
 // 缓动曲线名。NumberAnimationEasing 由它构成，构成它的那一支就必须公开
 export type { EasingName } from '@xihan-ui/motion'

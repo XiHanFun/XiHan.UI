@@ -217,5 +217,34 @@ export const watermarkSuite: ConformanceSuite = {
         counts: { root: 1, content: 1 },
       },
     },
+    {
+      name: '全屏档：根上投影 data-fullscreen；缺省不写',
+      spec: { apg: APG },
+      props: { text: '曦寒', fullscreen: true },
+      initial: { parts: { root: { 'data-state': 'ready', 'data-fullscreen': '' } } },
+    },
+    {
+      name: '篡改：抹掉根上的状态属性与图样变量，下一拍原样改回',
+      spec: { apg: APG },
+      props: { text: '曦寒' },
+      steps: [
+        {
+          kind: 'raw',
+          why: '防篡改是观察器在 DOM 被改之后的回应，逐个部件的属性期望表达不了「先改坏、再等它改回」',
+          run: async (ctx) => {
+            const root = rootEl(ctx.doc) as HTMLElement
+            const before = readSvg(ctx.doc)
+            root.setAttribute('data-state', 'empty')
+            root.removeAttribute('style')
+            await ctx.flush()
+            await new Promise(resolve => setTimeout(resolve, 0))
+            if (root.getAttribute('data-state') !== 'ready')
+              throw new Error(`${ctx.adapterName}: data-state 被改成 empty 后没改回 ready`)
+            if (readSvg(ctx.doc) !== before)
+              throw new Error(`${ctx.adapterName}: 图样变量被抹掉后没改回原值`)
+          },
+        },
+      ],
+    },
   ],
 }

@@ -5,9 +5,9 @@
 
 // 提供 watermark 相关实现。
 
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { WatermarkApi, WatermarkProps, WatermarkState, WatermarkTile } from './watermark.types'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { WatermarkApi, WatermarkProps, WatermarkSchema, WatermarkState, WatermarkTile } from './watermark.types'
+import { dataAttr, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { watermarkAnatomy } from './watermark.anatomy'
 
 const parts = watermarkAnatomy.build()
@@ -42,8 +42,11 @@ const MAX_IMAGE_SIZE = 512
 /** 图片与文字块之间留的空白，按字号折算。 */
 const IMAGE_TEXT_GAP_RATIO = 0.4
 
-/** 收进图样的图片来源前缀：只认内联的图片 data URI。 */
+/** 直接收进图样的图片来源前缀：内联的图片 data URI。 */
 const IMAGE_PREFIX = 'data:image/'
+
+/** 地址形式的图片可以取回的协议；不带协议的相对路径同样可取。 */
+const IMAGE_ADDRESS_PROTOCOLS = ['http:', 'https:', 'blob:']
 
 /** 窄字按这个比例折算成字宽，宽字按一个字宽算。 */
 const NARROW_ADVANCE = 0.55
@@ -106,46 +109,61 @@ function toFontFamily(value: string | undefined): string {
   return typeof value === 'string' && value.trim() !== '' ? value.trim() : DEFAULT_FONT_FAMILY
 }
 
-/**
- * 收下能印的图片来源：只有 `data:image/` 开头的内联图片进得来。
- *
- * 别的协议一律挡在入口：图样是一张当图片用的 SVG，外部资源在这个位置本就取不到，
- * 而 `javascript:` 这类值放进 `url()` 里是一条不该开的路。
- */
-function toImageSource(value: string | undefined): string | undefined {
+/** 能直接收进图样的内联图片：`data:image/` 开头的串。 */
+function toInlineImage(value: string | undefined): string | undefined {
   if (typeof value !== 'string')
     return undefined
   const src = value.trim()
-  if (src === '')
-    return undefined
   if (src.slice(0, IMAGE_PREFIX.length).toLowerCase() !== IMAGE_PREFIX)
     return undefined
   return src
 }
 
-// Watermark 无状态机：图样由 props 算出来，是一张 SVG 拼成的 data URI。
-// 用 SVG 而不是 canvas：canvas 要一个能绘图的运行时才产得出位图，服务端渲染与判据都拿不到，
-// 而 SVG 是一段可以直接比对的文本，同一份 props 每次算出逐字相同的一张图。
-export function connectWatermark<T extends PropTypes>(
-  props: WatermarkProps,
-  normalize: NormalizeProps<T>,
-): WatermarkApi<T> {
+/**
+ * 地址形式、要先取回再印的图片：http(s)、`blob:` 与不带协议的相对路径。
+ *
+ * 别的协议一律挡在入口：`javascript:` 这类值放进 `url()` 与图片地址里是一条不该开的路；
+ * 内联的 `data:` 由 toInlineImage 收，非图片的 `data:` 不收。
+ */
+export function toWatermarkImageAddress(value: string | undefined): string | undefined {
+  if (typeof value !== 'string')
+    return undefined
+  const src = value.trim()
+  if (src === '')
+    return undefined
+  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(src)?.[1]
+  if (scheme == null)
+    return src
+  return IMAGE_ADDRESS_PROTOCOLS.includes(`${scheme.toLowerCase()}:`) ? src : undefined
+}
+
+/** 一份 props 算出的图样与根节点上归本组件管的那几样：属性与两支内联变量。 */
+export interface WatermarkPlan {
+  lines: string[]
+  tile: WatermarkTile
+  image: string
+  state: WatermarkState
+  fullscreen: boolean
+  /** 根节点上的状态属性：值为 undefined 即不该在场。 */
+  attrs: Record<'data-state' | 'data-fullscreen', string | undefined>
+  /** 根节点上的内联变量；没有图样时为空。 */
+  vars: Record<string, string>
+}
+
+/**
+ * 按 props 算出图样：一张 SVG 拼成的 data URI。用 SVG 而不是 canvas：canvas 要一个能绘图的运行时才产得出位图，
+ * 服务端渲染与判据都拿不到，而 SVG 是一段可以直接比对的文本，同一份 props 每次算出逐字相同的一张图。
+ * 地址形式的图片由机器取回转成内联图片后经 imageData 交进来，取回之前这张图不进图样。
+ */
+export function planWatermark(props: WatermarkProps, imageData: string | null = null): WatermarkPlan {
   const lines = toLines(props.text)
   const fontSize = clamp(props.fontSize, MIN_FONT_SIZE, MAX_FONT_SIZE, DEFAULT_FONT_SIZE)
   const gap = clamp(props.gap, 0, MAX_GAP, DEFAULT_GAP)
   const opacity = clamp(props.opacity, 0, 1, DEFAULT_OPACITY)
   const fontFamily = toFontFamily(props.fontFamily)
-  const imageSource = toImageSource(props.image)
-  // 收了 image 却一张图都印不出来时说一声，免得作者对着一块空地找原因
-  if (imageSource === undefined && typeof props.image === 'string' && props.image.trim() !== '') {
-    reportDiagnostic({
-      code: DIAGNOSTIC_CODES.warn,
-      level: 'warn',
-      scope: watermarkAnatomy.name,
-      message: `水印图片只收 ${IMAGE_PREFIX} 开头的内联图片，这一张不印；图样是当图片用的 SVG，取不到外部资源`,
-      detail: { image: props.image },
-    })
-  }
+  const fullscreen = !!props.fullscreen
+  const address = toWatermarkImageAddress(props.image)
+  const imageSource = toInlineImage(props.image) ?? (address === undefined ? undefined : (imageData ?? undefined))
   // 收进一圈之内：转 400 度与转 40 度画出来是同一张图，而超大的角度值会写成科学计数法，SVG 认不了
   const rotate = round(finite(props.rotate, DEFAULT_ROTATE) % 360)
 
@@ -188,21 +206,71 @@ export function connectWatermark<T extends PropTypes>(
       })
     : ''
 
-  // 图样与步距走根上的内联 CSS 变量：自定义属性是唯一能同时落到两个适配器上的通道。
-  // 给了文字时根节点的内联 style 归本组件管，作者自己的内联样式写在外层元素上
-  const rootAttrs = {
-    ...parts.root.attrs,
-    'data-state': state,
-    ...(state === 'ready'
-      ? { style: `--xh-watermark-image: url("${image}"); --xh-watermark-tile: ${tile.width}px ${tile.height}px` }
-      : {}),
-  }
+  const vars: Record<string, string> = state === 'ready'
+    ? { '--xh-watermark-image': `url("${image}")`, '--xh-watermark-tile': `${tile.width}px ${tile.height}px` }
+    : {}
 
   return {
     lines,
     tile,
     image,
     state,
+    fullscreen,
+    attrs: { 'data-state': state, 'data-fullscreen': dataAttr(fullscreen) },
+    vars,
+  }
+}
+
+/** 收了 image 却一张图都印不出来时说一声，免得作者对着一块空地找原因。 */
+function warnUnusableImage(image: string | undefined): void {
+  if (typeof image !== 'string' || image.trim() === '')
+    return
+  if (toInlineImage(image) !== undefined || toWatermarkImageAddress(image) !== undefined)
+    return
+  reportDiagnostic({
+    code: DIAGNOSTIC_CODES.warn,
+    level: 'warn',
+    scope: watermarkAnatomy.name,
+    message: `水印图片只收 ${IMAGE_PREFIX} 开头的内联图片与 http(s)、blob、相对路径的地址，这一张不印`,
+    detail: { image },
+  })
+}
+
+// 图样由 props 算出；机器只承载地址形式图片的取回与防篡改两件副作用。
+export function connectWatermark<T extends PropTypes>(
+  service: Service<WatermarkSchema>,
+  normalize: NormalizeProps<T>,
+): WatermarkApi<T> {
+  const { prop, context } = service
+  const props: WatermarkProps = {
+    text: prop('text'),
+    rotate: prop('rotate'),
+    gap: prop('gap'),
+    fontSize: prop('fontSize'),
+    opacity: prop('opacity'),
+    fontFamily: prop('fontFamily'),
+    image: prop('image'),
+    imageSize: prop('imageSize'),
+    fullscreen: prop('fullscreen'),
+  }
+  warnUnusableImage(props.image)
+  const plan = planWatermark(props, context.get('imageData') ?? null)
+
+  // 图样与步距走根上的内联 CSS 变量：自定义属性是唯一能同时落到三个适配器上的通道。
+  // 给了文字时根节点的内联 style 归本组件管，作者自己的内联样式写在外层元素上
+  const style = Object.entries(plan.vars).map(([name, value]) => `${name}: ${value}`).join('; ')
+  const rootAttrs = {
+    ...parts.root.attrs,
+    ...plan.attrs,
+    ...(style ? { style } : {}),
+  }
+
+  return {
+    lines: plan.lines,
+    tile: plan.tile,
+    image: plan.image,
+    state: plan.state,
+    fullscreen: plan.fullscreen,
     getRootProps: () => normalize.element(rootAttrs),
     getContentProps: () => normalize.element(parts.content.attrs),
   }

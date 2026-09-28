@@ -72592,7 +72592,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-watermark>`：Light-DOM 行为宿主，无状态机，把 connectWatermark 产出接到 root 与 content 上。\n\n图样是一张按 props 计算的 SVG，整段百分号编码为 data URI 写进 root 的内联 CSS 变量；\n铺为一层覆盖在内容之上的伪元素归皮肤管理，因此印记不进入无障碍树、不接收点击、也不可选中。\n\n多行水印用 text 属性中的换行，或把 text 作为 property 传入一个字符串数组。\n没有可印的文字时 root 写 data-state=\"empty\"，皮肤整层不绘制。\n\n提供文字时 root 的内联 style 归本元素管理，作者自己的内联样式写在宿主元素上。",
+          "description": "`<xh-watermark>`：Light-DOM 行为宿主，运行 watermark 状态机（地址形式图片的取回与防篡改），\n把 connectWatermark 产出接到 root 与 content 上。\n\n图样是一张按 props 计算的 SVG，整段百分号编码为 data URI 写进 root 的内联 CSS 变量；\n铺为一层覆盖在内容之上的伪元素归皮肤管理，因此印记不进入无障碍树、不接收点击、也不可选中。\n\n多行水印用 text 属性中的换行，或把 text 作为 property 传入一个字符串数组。\n没有可印的文字时 root 写 data-state=\"empty\"，皮肤整层不绘制。\n\n提供文字时 root 的内联 style 归本元素管理，作者自己的内联样式写在宿主元素上。",
           "name": "XhWatermarkElement",
           "cssParts": [
             {
@@ -72687,6 +72687,32 @@
               "description": "图片尺寸是对象，只能通过 property 设置，不设置特性。"
             },
             {
+              "kind": "field",
+              "name": "fullscreen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "fullscreen"
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<WatermarkSchema>( this, watermarkMachine, () => this.machineProps(), { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<WatermarkSchema['props']>"
+                }
+              }
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -72750,9 +72776,17 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "印在文字上方的图片，只接受 data:image/ 开头的内联图片；印出的是剪影",
+              "description": "印在文字上方的图片：data:image/ 内联图片，或 http(s)、blob、相对路径的地址（跨域须带 CORS 放行）；印出的是剪影",
               "name": "image",
               "fieldName": "image"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "全屏档：印子固定铺满整个视口，压在页面一切内容之上",
+              "name": "fullscreen",
+              "fieldName": "fullscreen"
             }
           ],
           "superclass": {
@@ -72767,6 +72801,9 @@
             },
             {
               "name": "--xh-watermark-image"
+            },
+            {
+              "name": "--xh-watermark-layer"
             },
             {
               "name": "--xh-watermark-tile"
