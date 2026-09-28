@@ -1740,7 +1740,8 @@
     ],
     "tag-list": [
       "combobox",
-      "select"
+      "select",
+      "tree-select"
     ],
     "target": [
       "progress"

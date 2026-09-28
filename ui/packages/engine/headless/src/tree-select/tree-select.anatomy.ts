@@ -11,12 +11,15 @@ import { createAnatomy } from '@xihan-ui/core'
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // 前半截（trigger/value-text/indicator/positioner/content）是浮层那一套，
 // 后半截（tree 与两类节点部件）是树那一套，两者在 content 里接上。
+// tag-list 是触发器里收着已选值标签的那一行；行里每一枚标签（含折起来的那些合成的 +N）
+// 都是库里的 tag 组件（data-scope="tag"），由连接层套 tag 的连接层产出，本组件不另立部件。
 export const treeSelectAnatomy = createAnatomy('tree-select', [
   'root',
   'label',
   'control',
   'trigger',
   'value-text',
+  'tag-list',
   'indicator',
   'clear-trigger',
   'positioner',
@@ -50,4 +53,7 @@ export const treeSelectAnatomy = createAnatomy('tree-select', [
  * 只有嵌套的另一个 tree-select 会被切开。
  */
 export const treeSelectItemQuery: ItemQuery = { scope: treeSelectAnatomy.name, part: 'item' }
+
+/** 标签行：触发器里收着已选值标签的那一行。 */
+export const TREE_SELECT_TAG_LIST_SELECTOR = treeSelectAnatomy.build()['tag-list'].selector
 export const treeSelectBranchQuery: ItemQuery = { scope: treeSelectAnatomy.name, part: 'branch' }

@@ -52,6 +52,24 @@ export function provideTreeSelectContent(ctx: TreeSelectContentContext): void {
   provide(CONTENT_KEY, ctx)
 }
 
+/** 标签声明的值，供标签中的删除按钮复用同一份声明。 */
+export interface TreeSelectTagContext {
+  value: () => string
+}
+
+const TAG_KEY: InjectionKey<TreeSelectTagContext> = Symbol.for('xh-tree-select-tag')
+
+export function provideTreeSelectTag(ctx: TreeSelectTagContext): void {
+  provide(TAG_KEY, ctx)
+}
+
+export function useTreeSelectTagContext(): TreeSelectTagContext {
+  const ctx = inject(TAG_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] TreeSelect 标签子部件必须用在 XhTreeSelectTag 内')
+  return ctx
+}
+
 export function useTreeSelectContentContext(): TreeSelectContentContext {
   const ctx = inject(CONTENT_KEY, null)
   if (!ctx)

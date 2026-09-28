@@ -1,4 +1,4 @@
-<!-- 多选与表单 | multiple 下确认键是切换、浮层不收起；写了 hidden-input 才随表单提交，多个值按逗号拼接为一串 -->
+<!-- 多选与表单 | multiple 下已选项在触发器里排成标签，确认键是切换、浮层不收起；写了 hidden-input 才随表单提交，每个值一个同名字段 -->
 <script setup lang="ts">
 import {
   XhTreeSelectBranch,
@@ -14,8 +14,11 @@ import {
   XhTreeSelectItemIndicator,
   XhTreeSelectItemText,
   XhTreeSelectLabel,
+  XhTreeSelectOverflowTag,
   XhTreeSelectPositioner,
   XhTreeSelectRoot,
+  XhTreeSelectTag,
+  XhTreeSelectTagList,
   XhTreeSelectTree,
   XhTreeSelectTrigger,
   XhTreeSelectValueText,
@@ -39,6 +42,7 @@ const picked = ref<string[]>(["index"]);
 
 <template>
   <XhTreeSelectRoot
+    v-slot="{ tags }"
     v-model:value="picked"
     :collection="files"
     :default-expanded-value="['src']"
@@ -49,7 +53,12 @@ const picked = ref<string[]>(["index"]);
     <XhTreeSelectLabel>提交范围</XhTreeSelectLabel>
     <XhTreeSelectControl>
       <XhTreeSelectTrigger>
+        <!-- 占位文字与标签行同时写着：有选中时标签行露面、占位让位；触发器里的标签只作展示 -->
         <XhTreeSelectValueText />
+        <XhTreeSelectTagList>
+          <XhTreeSelectTag v-for="t in tags" :key="t.value" :value="t.value">{{ t.label }}</XhTreeSelectTag>
+          <XhTreeSelectOverflowTag />
+        </XhTreeSelectTagList>
         <XhTreeSelectIndicator />
       </XhTreeSelectTrigger>
     </XhTreeSelectControl>

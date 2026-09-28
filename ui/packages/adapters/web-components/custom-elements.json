@@ -71318,6 +71318,22 @@
               "name": "value-text"
             },
             {
+              "description": "触发器中的标签行：可见标签与 overflow-tag 放在其中；无选中时带 hidden，value-text 恢复显示占位文字",
+              "name": "tag-list"
+            },
+            {
+              "description": "多选标签，须自带 value 属性标识选中值；接线为 tag 的 root（data-scope=\"tag\"），语气、尺寸与禁用随本元素、形态按控件的面派生；放在触发器中即纯展示，放在外部配 item-delete-trigger 可删除",
+              "name": "tag"
+            },
+            {
+              "description": "标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger（data-scope=\"tag\"），禁用时保留位置、原生 disabled；点击移除所在标签的选中值，可及名使用 translations.deleteItem",
+              "name": "item-delete-trigger"
+            },
+            {
+              "description": "折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N（文字使用 translations.overflowTag），作者写了内容则由作者负责；没有折叠的标签时带 hidden",
+              "name": "overflow-tag"
+            },
+            {
               "description": "展开指示符（aria-hidden，data-state 随开合）",
               "name": "indicator"
             },
@@ -71430,7 +71446,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: treeSelectAnatomy, meta: treeSelectMeta }"
+              "default": "{ anatomy: treeSelectAnatomy, meta: treeSelectMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -71509,6 +71525,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "multiple"
+            },
+            {
+              "kind": "field",
+              "name": "maxTagCount",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-tag-count"
             },
             {
               "kind": "field",
@@ -71722,6 +71747,14 @@
             },
             {
               "kind": "field",
+              "name": "tagLabels",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, HTMLElement>()",
+              "description": "每枚标签里由元素补出来的那层 label。"
+            },
+            {
+              "kind": "field",
               "name": "ownsFeedbackText",
               "privacy": "private",
               "readonly": true,
@@ -71819,6 +71852,70 @@
               },
               "description": "当前是否显示整树加载态；与作者传入的 loading 属性分开。",
               "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "tags",
+              "type": {
+                "text": "TreeSelectTagMeta[]"
+              },
+              "description": "应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序。\n作者据此渲染 tag 部件。状态机尚未建立时返回空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowCount",
+              "type": {
+                "text": "number"
+              },
+              "description": "被 max-tag-count 折叠的标签数；+N 标签由元素填入 overflow-tag，此处仅供作者读取。状态机尚未建立时为 0。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowText",
+              "type": {
+                "text": "string"
+              },
+              "description": "overflow-tag 显示的文字（由 translations.overflowTag 计算）；没有折叠的标签或状态机尚未建立时为空串。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "deselect",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "移除一个选中值，其余保持选中先后；状态机尚未建立时不做任何事。"
+            },
+            {
+              "kind": "method",
+              "name": "ensureTagLabel",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tag",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，\n返回 null。补出来的那层不打 data-xh-part，不进角色节点表。"
             },
             {
               "kind": "field",
@@ -72157,9 +72254,17 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "多选：选中后浮层不收起，焦点留在树中",
+              "description": "多选：选中后浮层不收起，焦点留在树中；已选项在触发器里排成标签",
               "name": "multiple",
               "fieldName": "multiple"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "多选标签最多显示的数量，其余折叠进 overflowCount 并合成 overflow-tag；默认 3",
+              "name": "max-tag-count",
+              "fieldName": "maxTagCount"
             },
             {
               "type": {
@@ -72527,6 +72632,9 @@
             },
             {
               "name": "--xh-tree-select-placeholder-fg"
+            },
+            {
+              "name": "--xh-tree-select-tag-list-gap"
             },
             {
               "name": "--xh-tree-select-tree-gap"

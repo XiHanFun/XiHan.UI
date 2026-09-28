@@ -4258,6 +4258,7 @@ export type ComponentTokenName
     | '--xh-tree-select-loading-px'
     | '--xh-tree-select-loading-py'
     | '--xh-tree-select-placeholder-fg'
+    | '--xh-tree-select-tag-list-gap'
     | '--xh-tree-select-tree-gap'
     | '--xh-tree-select-trigger-fg'
     | '--xh-tree-select-trigger-font-size'

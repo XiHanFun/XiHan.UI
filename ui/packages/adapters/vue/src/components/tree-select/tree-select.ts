@@ -6,22 +6,23 @@
 // 提供 tree select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { TreeSelectApi, TreeSelectNode, TreeSelectNodeProps, TreeSelectSchema } from '@xihan-ui/headless'
+import type { TreeSelectApi, TreeSelectNode, TreeSelectNodeProps, TreeSelectSchema, TreeSelectTagMeta } from '@xihan-ui/headless'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeSelectContext } from './use-tree-select'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
+import { slotIsPlainText } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
-import { provideTreeSelect, provideTreeSelectContent, provideTreeSelectNode, useTreeSelectContentContext, useTreeSelectContext, useTreeSelectNodeContext } from './context'
+import { provideTreeSelect, provideTreeSelectContent, provideTreeSelectNode, provideTreeSelectTag, useTreeSelectContentContext, useTreeSelectContext, useTreeSelectNodeContext, useTreeSelectTagContext } from './context'
 import { useTreeSelect } from './use-tree-select'
 
 type TreeSelectProps = TreeSelectSchema['props']
 
-/** 默认插槽的载荷：展开与选中状态、可见行序列、节点状态判定与写值方法。 */
+/** 默认插槽的载荷：展开与选中状态、可见行序列、多选的可见标签与折起的个数、节点状态判定与写值方法。 */
 export type TreeSelectRootSlotProps = Pick<
   TreeSelectApi,
   | 'open'
@@ -33,6 +34,9 @@ export type TreeSelectRootSlotProps = Pick<
   | 'loading'
   | 'displayText'
   | 'canClear'
+  | 'tags'
+  | 'overflowCount'
+  | 'overflowText'
   | 'isSelected'
   | 'isIndeterminate'
   | 'isExpanded'
@@ -45,6 +49,7 @@ export type TreeSelectRootSlotProps = Pick<
   | 'retryBranch'
   | 'select'
   | 'clear'
+  | 'deselect'
 >
 
 /** 本节点持有焦点时，value 变更重新报告焦点节点，卸载时上报焦点丢失 */
@@ -100,6 +105,8 @@ export const XhTreeSelectRoot = defineComponent({
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     multiple: Boolean,
+    /** 多选标签最多显示的数量，其余折进 +N；默认 3。 */
+    maxTagCount: { type: Number },
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<TreeSelectProps['checkedStrategy']> },
     disabled: { type: Boolean, default: undefined },
@@ -171,6 +178,9 @@ export const XhTreeSelectRoot = defineComponent({
           loading: ctx.api.value.loading,
           displayText: ctx.api.value.displayText,
           canClear: ctx.api.value.canClear,
+          tags: ctx.api.value.tags,
+          overflowCount: ctx.api.value.overflowCount,
+          overflowText: ctx.api.value.overflowText,
           isSelected: ctx.api.value.isSelected,
           isIndeterminate: ctx.api.value.isIndeterminate,
           isExpanded: ctx.api.value.isExpanded,
@@ -183,10 +193,12 @@ export const XhTreeSelectRoot = defineComponent({
           retryBranch: ctx.api.value.retryBranch,
           select: ctx.api.value.select,
           clear: ctx.api.value.clear,
+          deselect: ctx.api.value.deselect,
         })
       : props.collection
         ? renderDefaultTree(
             ctx.api.value.collection,
+            props.multiple ? ctx.api.value.tags : null,
             slots.label?.() ?? (props.label != null ? [props.label] : null),
             props.clearable,
           )
@@ -240,6 +252,72 @@ export const XhTreeSelectValueText = defineComponent({
       ctx.api.value.getValueTextProps() as Record<string, unknown>,
       slots.default?.() ?? ctx.api.value.displayText,
     )
+  },
+})
+
+export const XhTreeSelectTagList = defineComponent({
+  name: 'XhTreeSelectTagList',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    // 标签行：可见标签与 +N 那一枚在里面并排；无选中时连接层给 hidden，value-text 回来显示占位文字
+    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
+export const XhTreeSelectTagLabel = defineComponent({
+  name: 'XhTreeSelectTagLabel',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 标签内容：只有文字时替它包一层 label：截断规则挂在 label 上，直接展开在 root 上的文字过长会把
+ * 删除按钮挤出；作者自己写了节点则原样放行。与 XhTagRoot 同一规则。
+ * 库自身填入的文字（+N，没有折叠时是空串）恒包 label，三个适配器渲染出同一棵树。
+ */
+function tagChildren(content: VNode[] | string | undefined): VNode[] | string | undefined {
+  if (typeof content === 'string')
+    return [h(XhTreeSelectTagLabel, null, () => content)]
+  return slotIsPlainText(content) ? [h(XhTreeSelectTagLabel, null, () => content)] : content
+}
+
+/** 一个选中值一个标签，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从树选择传下，形态按控件的面派生；触发器内纯展示，触发器外配合 XhTreeSelectItemDeleteTrigger 可删除。 */
+export const XhTreeSelectTag = defineComponent({
+  name: 'XhTreeSelectTag',
+  props: {
+    /** 它代表哪个选中值。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useTreeSelectContext()
+    provideTreeSelectTag({ value: () => props.value })
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+  },
+})
+
+/** 折叠的标签合成的一个标签：同样是 tag 的 root；有插槽时使用插槽，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
+export const XhTreeSelectOverflowTag = defineComponent({
+  name: 'XhTreeSelectOverflowTag',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    return () => h(
+      'span',
+      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
+    )
+  },
+})
+
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem；点按移除所在标签的选中值。 */
+export const XhTreeSelectItemDeleteTrigger = defineComponent({
+  name: 'XhTreeSelectItemDeleteTrigger',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    const tag = useTreeSelectTagContext()
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -596,6 +674,7 @@ function renderNodes(nodes: readonly TreeSelectNode[]): VNode[] {
  */
 function renderDefaultTree(
   collection: readonly TreeSelectNode[],
+  tags: readonly TreeSelectTagMeta[] | null,
   label: (VNode | string)[] | null,
   clearable: boolean,
 ): VNode[] {
@@ -603,7 +682,18 @@ function renderDefaultTree(
     ...(label ? [h(XhTreeSelectLabel, null, () => label)] : []),
     // 盒里放触发器；清空钮是触发器的兄弟（按钮不能套按钮）
     h(XhTreeSelectControl, null, () => [
-      h(XhTreeSelectTrigger, null, () => [h(XhTreeSelectValueText), h(XhTreeSelectIndicator)]),
+      // 多选的已选项在触发器里排成标签：占位文字与标签行同时写着，有选中时标签露面、占位让位；
+      // 触发器里的标签只作展示（按钮不能套按钮），摆不下的折进 +N
+      h(XhTreeSelectTrigger, null, () => [
+        h(XhTreeSelectValueText),
+        ...(tags
+          ? [h(XhTreeSelectTagList, null, () => [
+              ...tags.map(tag => h(XhTreeSelectTag, { key: tag.value, value: tag.value }, () => tag.label)),
+              h(XhTreeSelectOverflowTag),
+            ])]
+          : []),
+        h(XhTreeSelectIndicator),
+      ]),
       ...(clearable ? [h(XhTreeSelectClearTrigger)] : []),
     ]),
     h(XhTreeSelectPositioner, null, () => [
