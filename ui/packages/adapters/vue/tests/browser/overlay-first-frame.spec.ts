@@ -5,6 +5,10 @@ import type { App, Ref, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
+  XhPopconfirmContent,
+  XhPopconfirmPositioner,
+  XhPopconfirmRoot,
+  XhPopconfirmTrigger,
   XhPopoverContent,
   XhPopoverPositioner,
   XhPopoverRoot,
@@ -25,6 +29,8 @@ interface Case {
   parts: string[]
   enter: string
   render: (props: OpenProps) => VNode
+  /** 进场不落在部件本身、而落在它的子节点上时，从部件取真正要量的那几个节点 */
+  targets?: (el: HTMLElement) => Element[]
 }
 
 const CASES: Record<string, Case> = {
@@ -34,6 +40,14 @@ const CASES: Record<string, Case> = {
     render: props => h(XhPopoverRoot, props, () => [
       h(XhPopoverTrigger, null, () => '打开'),
       h(XhPopoverPositioner, null, () => h(XhPopoverContent, null, () => h(XhPopoverTitle, null, () => '标题'))),
+    ]),
+  },
+  popconfirm: {
+    parts: ['content'],
+    enter: 'xh-overlay-pop-in',
+    render: props => h(XhPopconfirmRoot, props, () => [
+      h(XhPopconfirmTrigger, null, () => '删除'),
+      h(XhPopconfirmPositioner, null, () => h(XhPopconfirmContent, null, () => '确定删除？')),
     ]),
   },
 }
@@ -70,45 +84,55 @@ function part(scope: string, name: string): HTMLElement {
   return element
 }
 
-/** 部件上正在播的 CSS 动画名（不含过渡）。 */
+/** 节点上正在播的 CSS 动画名（不含过渡）。 */
 function running(el: Element): string[] {
   return el.getAnimations().filter(a => a instanceof CSSAnimation).map(a => (a as CSSAnimation).animationName)
 }
 
-/** 等部件上的 CSS 动画全部播完。 */
-async function finished(el: Element): Promise<void> {
-  await Promise.all(el.getAnimations().map(animation => animation.finished.catch(() => undefined)))
+/** 部件真正要量的节点：缺省就是部件本身。 */
+function probes(c: Case, scope: string, name: string): Element[] {
+  const el = part(scope, name)
+  return c.targets ? c.targets(el) : [el]
+}
+
+/** 等节点上的 CSS 动画全部播完。 */
+async function finished(els: Element[]): Promise<void> {
+  await Promise.all(els.flatMap(el => el.getAnimations()).map(animation => animation.finished.catch(() => undefined)))
 }
 
 describe.each(Object.entries(CASES))('%s 挂载即开', (scope, c) => {
   it('受控 open 初值为 true：带进场的部件都不播动画', async () => {
     mount(() => c.render({ open: true }))
     await settle()
-    for (const name of c.parts)
-      expect(running(part(scope, name)), `${scope}/${name}`).toEqual([])
+    for (const name of c.parts) {
+      for (const el of probes(c, scope, name))
+        expect(running(el), `${scope}/${name}`).toEqual([])
+    }
   })
 
   it('defaultOpen：带进场的部件都不播动画', async () => {
     mount(() => c.render({ defaultOpen: true }))
     await settle()
-    for (const name of c.parts)
-      expect(running(part(scope, name)), `${scope}/${name}`).toEqual([])
+    for (const name of c.parts) {
+      for (const el of probes(c, scope, name))
+        expect(running(el), `${scope}/${name}`).toEqual([])
+    }
   })
 
   it('第一次收起照常播退场，再打开照常播进场', async () => {
     const open: Ref<boolean> = ref(true)
     mount(() => c.render({ open: open.value }))
     await settle()
-    const content = part(scope, c.parts[0]!)
+    const first = probes(c, scope, c.parts[0]!)
 
     open.value = false
     await settle()
-    expect(running(content).length, '收起播退场').toBeGreaterThan(0)
-    await finished(content)
+    expect(first.flatMap(running).length, '收起播退场').toBeGreaterThan(0)
+    await finished(first)
     await settle()
 
     open.value = true
     await settle()
-    expect(running(part(scope, c.parts[0]!))).toContain(c.enter)
+    expect(probes(c, scope, c.parts[0]!).flatMap(running)).toContain(c.enter)
   })
 })

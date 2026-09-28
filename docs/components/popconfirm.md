@@ -232,6 +232,7 @@ size 改变面板的内边距与最大宽度，三个档位落在 content 上
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
