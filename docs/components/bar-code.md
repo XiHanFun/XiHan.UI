@@ -54,6 +54,12 @@ text 关闭后只剩条；EAN 的守卫条按规范比数据条长 5X，不随�
 
 <XhDemo src="bar-code/06-color" />
 
+### 下载
+
+旁边放一个下载按钮，点下去时按码此刻画出来的样子存成 SVG：底色与前景色一并写进文件
+
+<XhDemo src="bar-code/07-download" />
+
 ## 设计指引
 
 ### 何时使用
