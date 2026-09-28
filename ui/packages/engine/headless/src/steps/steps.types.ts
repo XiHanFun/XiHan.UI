@@ -127,6 +127,11 @@ export interface StepsSchema extends MachineSchema {
     focusedStep: number | null
     /** 按压通道：Space / Enter 或触屏按住的那一步的下标，该 trigger 投影 data-pressed。抬起、失焦或指针取消即清空，与步序、焦点锚点无关。 */
     pressedStep: number | null
+    /**
+     * 首帧就走过、此后一直没被回退到的那几步的上界：下标小于它的步，走过的状态从挂载起没变过，
+     * 序号圆点投影 data-instant，对号直接呈现；此后才走过的步对号淡入。步序退到哪一步它就降到哪一步。
+     */
+    untouchedBelow: number
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -153,6 +158,7 @@ export interface StepsSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
+    | 'lowerUntouched'
   effect: never
 }
 

@@ -145,6 +145,7 @@
         "reasoning",
         "sankey-chart",
         "sparkline",
+        "steps",
         "tour"
       ],
       "relation": "fade"

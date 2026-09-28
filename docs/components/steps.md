@@ -279,6 +279,7 @@
 | `trigger` | `data-xh-action-profile` | 'row' |
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | 'ghost' |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | getItemState(item).status |
 | `title` | `data-state` | getItemState(item).status |
 | `description` | `data-state` | getItemState(item).status |
@@ -329,7 +330,7 @@
 | `--xh-steps-item-min-inline-size` | `item` | `min-inline-size` | `not(:last-child)`<br>`orientation=horizontal` | `--xh-space-0` | steps 的 item 部件 min-inline-size 覆盖槽。 |
 | `--xh-steps-list-gap` | `list` | `gap` | `default` | `--xh-space-0` | steps 的 list 部件 gap 覆盖槽。 |
 | `--xh-steps-separator-bg` | `separator` | `background` | `default` | `--xh-border-default` | steps 的 separator 部件 background 覆盖槽。 |
-| `--xh-steps-separator-bg-completed` | `separator` | `background` | `state=completed` | `--xh-_steps-accent` | steps 的 separator 部件 background 覆盖槽。 |
+| `--xh-steps-separator-bg-completed` | `separator` | `background` | `default` | `--xh-_steps-accent` | steps 的 separator 部件 background 覆盖槽。 |
 | `--xh-steps-separator-min-length` | `separator` | `block-size`<br>`min-inline-size` | `default`<br>`orientation=vertical` | `--xh-space-4`<br>`--xh-space-7` | steps 的 separator 部件 block-size、min-inline-size 覆盖槽。 |
 | `--xh-steps-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | steps 的 separator 部件 border-radius 覆盖槽。 |
 | `--xh-steps-separator-thickness` | `separator` | `block-size`<br>`inline-size`<br>`margin-inline-start`<br>`min-inline-size` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | steps 的 separator 部件 block-size、inline-size、margin-inline-start、min-inline-size 覆盖槽。 |
@@ -347,12 +348,12 @@
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `border-color` · `box-shadow` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `box-shadow` · `clip-path` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。
