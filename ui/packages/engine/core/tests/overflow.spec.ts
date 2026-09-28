@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { fitOverflowCount, measureOverflowLayout, trackOverflowLayout } from '../src/behavior/overflow'
+import { fitOverflowCount, measureOverflowLayout, overflowOutsideWindow, trackOverflowLayout } from '../src/behavior/overflow'
 
 describe('fitOverflowCount', () => {
   it('全部放得下：一个不收，也不给入口让位', () => {
@@ -34,6 +34,32 @@ describe('fitOverflowCount', () => {
       last = count
     }
     expect(last).toBe(ends.length)
+  })
+})
+
+describe('overflowOutsideWindow', () => {
+  // 五个 40 宽的条目首尾相接
+  const spans = [0, 40, 80, 120, 160].map(start => ({ start, end: start + 40 }))
+
+  it('窗口盖住全部条目时一个不列', () => {
+    expect(overflowOutsideWindow(spans, { start: 0, end: 200 })).toEqual([])
+  })
+
+  it('窗口在起头：结束侧没整个露出来的都列出，半露的也算', () => {
+    expect(overflowOutsideWindow(spans, { start: 0, end: 100 })).toEqual([2, 3, 4])
+  })
+
+  it('窗口随位移挪到中段：两侧窗口外的条目都列出，文档序', () => {
+    expect(overflowOutsideWindow(spans, { start: 50, end: 150 })).toEqual([0, 1, 3, 4])
+  })
+
+  it('半个像素以内的舍入不改判：恰好整个露出的那一个不算半露', () => {
+    expect(overflowOutsideWindow(spans, { start: 40.4, end: 119.6 })).toEqual([0, 3, 4])
+    expect(overflowOutsideWindow(spans, { start: 40.6, end: 119.4 })).toEqual([0, 1, 2, 3, 4])
+  })
+
+  it('没有条目时是空数组', () => {
+    expect(overflowOutsideWindow([], { start: 0, end: 100 })).toEqual([])
   })
 })
 

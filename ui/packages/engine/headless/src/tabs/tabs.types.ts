@@ -68,6 +68,19 @@ export interface TabsOverflow {
   end: boolean
 }
 
+/**
+ * 一个列在「更多」下拉里的标签：它此刻没有整个露在标签带的可见区里。
+ * 标签不因此收起，仍在标签带与 tablist 里；下拉只是一份可见区外的索引，事实在量测时从标签上读出。
+ */
+export interface TabsOverflowItem {
+  /** 标签的身份值。 */
+  value: string
+  /** 下拉里的文字：标签的可及名（aria-label、aria-labelledby 指向的文字、自己的文字），都没有时取 collection 里的 label，再没有取 value。 */
+  label: string
+  /** 标签禁用：下拉里同样禁用、选不中。 */
+  disabled: boolean
+}
+
 /** 关闭一个标签：被关闭的标签与关闭后剩余的标签。 */
 export interface TabsCloseDetails {
   value: string
@@ -155,6 +168,11 @@ export interface TabsSchema extends MachineSchema {
     pressedValue: string | null
     /** 被选中过的标签，按首次选中的先后排列；lazyMount / unmountOnExit 据它判面板内容在不在。 */
     visited: string[]
+    /**
+     * 列在「更多」下拉里的标签，文档序：没有整个露在可见区（两端翻页钮里侧之间的那一段）里的标签。
+     * 挂载后量出，标签带位移、放不放得下、标签增减或改写都会重量；放得下时为空数组。不受控、不对外通知。
+     */
+    overflowItems: TabsOverflowItem[]
   }
   computed: Record<string, never>
   refs: {
@@ -245,6 +263,8 @@ export interface TabsSchema extends MachineSchema {
     /** 手指抬起 / 被系统收走。 */
     | { type: 'PAN.END' }
     | { type: 'PAN.CANCEL' }
+    /** 「更多」下拉里选中了一个标签：选中它，并把它挪进可见区。 */
+    | { type: 'OVERFLOW.SELECT', value: string }
   tag: never
   guard: 'isAutomatic' | 'canPress'
   action:
@@ -272,7 +292,10 @@ export interface TabsSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'recordVisited'
-  effect: 'trackPointer' | 'trackResize' | 'trackStrip' | 'trackLiquidIndicator' | 'trackReorder'
+    | 'measureOverflow'
+    | 'refreshOverflow'
+    | 'selectOverflowItem'
+  effect: 'trackPointer' | 'trackResize' | 'trackStrip' | 'trackOverflow' | 'trackLiquidIndicator' | 'trackReorder'
 }
 
 export interface TabsApi<T extends PropTypes = PropTypes> {
@@ -287,6 +310,8 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
   announcement: string
   /** 标签带放不放得下：放得下时为 null，放不下时记两端各还有没有被裁掉的标签。 */
   overflow: TabsOverflow | null
+  /** 列在「更多」下拉里的标签（此刻没有整个露在可见区里的），文档序；放得下时为空数组。 */
+  overflowItems: readonly TabsOverflowItem[]
   /** 传 null 清空选中：context.value 与受控 value 都能表达无选中，写入侧同样接受。 */
   setValue: (next: string | null) => void
   getRootProps: () => T['element']
@@ -312,6 +337,12 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
    */
   getPrevTriggerProps: () => T['button']
   getNextTriggerProps: () => T['button']
+  /**
+   * 标签带之后的「更多」钮，也是「更多」下拉（一张 Menu）的触发器：放不下时露面，放得下时 hidden。
+   * 它在 tablist 之外、自占一个 Tab 位，不是方向键走位的一站。适配器按 asChild 的规则把菜单的开合接线合进来，
+   * 解剖标记归标签页。
+   */
+  getOverflowTriggerProps: () => T['button']
   getContentProps: (props: TabsContentProps) => T['element']
   /**
    * 拖动过程的读屏播报区。视觉隐藏，文本取自 announcement。
@@ -328,7 +359,10 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
 }
 
 /** 读屏文案，默认英文。拖动过程在视觉上很清楚，在读屏中全部依靠这些文案。 */
-export interface TabsTranslations extends Partial<DragTranslations> {}
+export interface TabsTranslations extends Partial<DragTranslations> {
+  /** 「更多」钮的可及名：可见区外的标签都列在它弹出的下拉里。 */
+  overflowTrigger: string
+}
 
 /** 标签换位：从哪一位移到哪一位，以及重排后的整份顺序。 */
 export interface TabsMoveDetails {

@@ -5,5 +5,5 @@
 
 // 导出 overflow 模块的公共接口。
 
-export { fitOverflowCount, measureOverflowLayout, trackOverflowLayout } from './overflow'
-export type { MeasureOverflowOptions, OverflowAxis, OverflowLayout, TrackOverflowOptions } from './overflow'
+export { fitOverflowCount, measureOverflowLayout, overflowOutsideWindow, trackOverflowLayout } from './overflow'
+export type { MeasureOverflowOptions, OverflowAxis, OverflowLayout, OverflowSpan, TrackOverflowOptions } from './overflow'

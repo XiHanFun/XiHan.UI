@@ -1108,6 +1108,7 @@ export {
   XhTabsList,
   XhTabsLiveRegion,
   XhTabsNextTrigger,
+  XhTabsOverflowTrigger,
   XhTabsPrevTrigger,
   XhTabsRoot,
   XhTabsSeparator,

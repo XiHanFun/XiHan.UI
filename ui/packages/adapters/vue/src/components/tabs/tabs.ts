@@ -9,9 +9,12 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsNode, TabsNodeMeta, TabsSchema, TabsVariant } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { tabsOverflowMenuProps } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { mergePartProps } from '../../runtime/merge-props'
 import { slotPaints } from '../../runtime/slot-content'
+import { XhMenuRoot } from '../menu/menu'
 import { provideTabs, useTabsContext } from './context'
 import { useTabs } from './use-tabs'
 
@@ -122,6 +125,24 @@ export const XhTabsNextTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTabsContext()
     return () => h('button', ctx.api.value.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 标签带之后的「更多」钮：标签带放不下时露面，弹出的下拉列出此刻没有整个露在可见区里的标签，
+ * 选中一项即选中那个标签并把它挪进可见区；放得下时收着。放在 root 里、紧跟 XhTabsList 之后（不放进 list：
+ * tablist 只收 tab），自占一个 Tab 位。它同时是一张 Menu 的触发器——下拉的条目与落位由标签页的机器现给
+ * （tabsOverflowMenuProps），钮按 asChild 接菜单的开合接线，自己的解剖不让位。不写内容时由皮肤画一枚横排三点。
+ */
+export const XhTabsOverflowTrigger = defineComponent({
+  name: 'XhTabsOverflowTrigger',
+  // 直通属性合到钮上，而不是落到菜单的根组件上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
+    const ctx = useTabsContext()
+    return () => h(XhMenuRoot, { ...tabsOverflowMenuProps(ctx.service), triggerAsChild: true }, {
+      trigger: () => [h('button', mergePartProps(ctx.api.value.getOverflowTriggerProps() as Record<string, unknown>, attrs), slots.default?.())],
+    })
   },
 })
 
