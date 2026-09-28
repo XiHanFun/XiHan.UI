@@ -192,6 +192,13 @@ export interface FileUploadSchema extends MachineSchema {
      * 没有按住时为 null。抬起、失焦、指针取消，或按住的删除钮随文件一起离开列表时即撤下。
      */
     pressed: FileUploadPressedKey | null
+    /** 列表动效接上之前（含服务端渲染）为 false：这一帧里的条目属于首帧，不播进场。 */
+    listTracked: boolean
+    /**
+     * 传完之后进度条已走满并淡出的文件，键同 uploads：进度条在这之后才藏起。
+     * 传完那一刻进度条先走满、再淡出，播完之前留在行里。
+     */
+    settledProgress: Record<string, true>
   }
   computed: Record<string, never>
   refs: {
@@ -224,10 +231,14 @@ export interface FileUploadSchema extends MachineSchema {
     | { type: 'PRESS.START', key: FileUploadPressedKey }
     /** 按住的按钮抬起、失焦或指针取消；只收自己那一下。 */
     | { type: 'PRESS.END', key: FileUploadPressedKey }
+    /** 列表动效已接上文件列表。 */
+    | { type: 'LIST.TRACKED' }
+    /** 某个文件传完后，进度条走满并淡出播完。 */
+    | { type: 'PROGRESS.SETTLED', id: string }
   tag: never
   guard: 'canChange' | 'canDrop'
-  action: 'setFiles' | 'addFiles' | 'deleteFile' | 'clearFiles' | 'openFilePicker' | 'resetToDefault' | 'syncUploads' | 'startUpload' | 'deleteRemoteFile' | 'startPress' | 'endPress' | 'releaseWhenInert'
-  effect: 'trackUploads'
+  action: 'setFiles' | 'addFiles' | 'deleteFile' | 'clearFiles' | 'openFilePicker' | 'resetToDefault' | 'syncUploads' | 'startUpload' | 'deleteRemoteFile' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markListTracked' | 'settleProgress'
+  effect: 'trackUploads' | 'trackListMotion' | 'trackProgressExit'
 }
 
 export interface FileUploadApi<T extends PropTypes = PropTypes> {

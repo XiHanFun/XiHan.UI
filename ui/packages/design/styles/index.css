@@ -27820,6 +27820,8 @@
 /* styles/file-upload.css */
 /* 定义 file upload 样式。 */
 
+/* 文件行的进场、退场与完成对号的淡入取共享关键帧。 */
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='file-upload'] {
@@ -27974,8 +27976,10 @@
   }
 
   /* 文件条数由用户一次选进来多少给，行数没有尽头：
-     列表到这个高度就不再长，剩下的行在列表内滚出来，投放区与触发钮不会被推出视野 */
+     列表到这个高度就不再长，剩下的行在列表内滚出来，投放区与触发钮不会被推出视野。
+     定位是给列表动效放离场替身用的：删掉的那一行在原排布位上播完退场 */
   [data-scope='file-upload'][data-part='list'] {
+    position: relative;
     display: flex;
     max-block-size: var(--xh-file-upload-list-max-h, var(--xh-viewport-h-md));
     overflow-y: auto;
@@ -28007,6 +28011,23 @@
     font-size: var(--xh-file-upload-item-font-size, var(--xh-text-body-size));
   }
 
+  /* 列表动效：新收下的文件进场，同一批按到达顺序错开；首帧就在的直接呈现（自己或列表带 data-instant）。
+     删掉的那一行由替身留在原处淡出，播完即移除；其余行先按旧位置反向补偿、再沿 translate 过渡滑到新位置 */
+  [data-scope='file-upload'][data-part='item'] {
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  [data-scope='file-upload'][data-part='item']:not([data-instant], [data-instant] > *) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 替身的 data-state 换成了 closed，传输状态从进度条（同一份状态事实）上读回来：
+     失败与传完那一行退场时仍带着行首标记与失败配色，文件名不会在淡出途中往行首一跳 */
+  [data-scope='file-upload'][data-part='item'][data-state='closed'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
   [data-scope='file-upload'][data-part='item'][hidden] {
     display: none;
   }
@@ -28021,12 +28042,14 @@
      警示与下面的勾都是固定状态标记（不是 :empty 兜底，作者塞进条目的部件顶不掉）：按指示符档取尺
      （comfortable 16 / compact 14，随密度换档），不读只管作者图标的 --xh-icon-size——随文 1em 落在
      14 上下，comfortable 下比同一行里的指示符档小一圈、compact 下又不换档 */
-  [data-scope='file-upload'][data-part='item'][data-state='error'] {
+  [data-scope='file-upload'][data-part='item'][data-state='error'],
+  [data-scope='file-upload'][data-part='item'][data-state='closed']:has(> [data-part='item-progress'][data-state='error']) {
     border-color: var(--xh-file-upload-item-border-error, var(--xh-border-invalid));
     color: var(--xh-file-upload-item-fg-error, var(--xh-fg-danger));
   }
 
-  [data-scope='file-upload'][data-part='item'][data-state='error']::before {
+  [data-scope='file-upload'][data-part='item'][data-state='error']::before,
+  [data-scope='file-upload'][data-part='item'][data-state='closed']:has(> [data-part='item-progress'][data-state='error'])::before {
     content: '';
     flex: none;
     inline-size: var(--xh-file-upload-item-mark-size, var(--xh-control-indicator-size));
@@ -28038,7 +28061,8 @@
 
   /* 传完的那一行补一枚对勾，与失败那一枚警示字形对称：
      不标出来的话「传完了」与「还没开始」在这一行上看不出分别 */
-  [data-scope='file-upload'][data-part='item'][data-state='done']::before {
+  [data-scope='file-upload'][data-part='item'][data-state='done']::before,
+  [data-scope='file-upload'][data-part='item'][data-state='closed']:has(> [data-part='item-progress'][data-state='done'])::before {
     content: '';
     flex: none;
     inline-size: var(--xh-file-upload-item-mark-size, var(--xh-control-indicator-size));
@@ -28048,37 +28072,42 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  /* 传输进度条：只在传输中露面，填充按连接层写下的比例平移到位。
-     进度是连续量，走 continuous 曲线，不是入场曲线 */
+  /* 这一会儿才传完的那一行：进度条走满之后与对号交叉——条子淡出、对号淡入。
+     已经落定的与远程附件没有进度条可播，对号直接呈现 */
+  [data-scope='file-upload'][data-part='item'][data-state='done']:has(> [data-part='item-progress']:not([hidden]))::before {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) var(--xh-motion-duration-move) backwards;
+  }
+
+  /* 传输进度条：只在传输中不透明，填充按连接层写下的比例平移到位；进度是连续量，走 continuous 曲线。
+     传完那一刻不当场收起：填充先走满（move），随后整条淡出（exit，延后一个 move），播完连接层才写 hidden。
+     没在传也没刚传完的由连接层写 hidden */
   [data-scope='file-upload'][data-part='item-progress'] {
-    display: none;
+    display: block;
     overflow: hidden;
     flex: none;
     inline-size: var(--xh-file-upload-item-progress-w, calc(var(--xh-control-h-md) * 2));
     block-size: var(--xh-file-upload-item-progress-h, var(--xh-stroke-thick));
     border-radius: var(--xh-file-upload-item-progress-radius, var(--xh-shape-pill));
     background: var(--xh-file-upload-item-progress-track, var(--xh-bg-subtle));
+    opacity: 0;
+    transition: opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) var(--xh-motion-duration-move);
   }
 
   [data-scope='file-upload'][data-part='item-progress'][data-state='uploading'] {
-    display: block;
+    opacity: 1;
   }
 
-  [data-scope='file-upload'][data-part='item-progress'][data-state='uploading']::before {
+  /* 铺满轨道，往行首平移藏起未完成的那一截、由轨道裁掉：推进只走合成，不重排也不重绘。
+     translate 只认物理方向，乘书写方向的符号，RTL 下平移方向翻转 */
+  [data-scope='file-upload'][data-part='item-progress']::before {
     content: '';
     display: block;
     block-size: 100%;
     border-radius: inherit;
     background: var(--xh-file-upload-item-progress-fill, var(--xh-bg-brand));
-    /* 铺满轨道，往行首平移藏起未完成的那一截、由轨道裁掉：推进只走合成，不重排也不重绘 */
     inline-size: 100%;
-    translate: calc((var(--xh-_file-upload-progress, 0) - 1) * 100%) 0;
+    translate: calc((var(--xh-_file-upload-progress, 0) - 1) * 100% * var(--xh-direction-sign)) 0;
     transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
-  }
-
-  /* translate 只认物理方向：RTL 下行首在右边，平移方向翻转 */
-  [data-scope='file-upload'][data-part='item-progress'][data-state='uploading']:dir(rtl)::before {
-    translate: calc((1 - var(--xh-_file-upload-progress, 0)) * 100%) 0;
   }
 
   [data-scope='file-upload'][data-part='item-progress'][hidden] {

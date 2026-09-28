@@ -206,13 +206,13 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | 部件 | 取值 |
 | --- | --- |
 | `item` | uploadOf(file)?.status |
-| `item-progress` | uploadOf(file)?.status |
+| `item-progress` | upload?.status |
 
 以下名称仅用于内部状态机。
 
 **状态**：`idle` · `dragging`
 
-**事件**：`FILES.SET` · `FILES.ADD` · `FILE.DELETE` · `FILES.CLEAR` · `PICKER.OPEN` · `DRAG.OVER` · `DRAG.LEAVE` · `DROP` · `UPLOAD.START` · `REMOTE.DELETE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`FILES.SET` · `FILES.ADD` · `FILE.DELETE` · `FILES.CLEAR` · `PICKER.OPEN` · `DRAG.OVER` · `DRAG.LEAVE` · `DROP` · `UPLOAD.START` · `REMOTE.DELETE` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED` · `PROGRESS.SETTLED`
 
 **判据**：`canChange` · `canDrop`
 
@@ -310,6 +310,7 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-empty` | ''（条件成立时才出现） |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-file-name` | file.name |
 | `item` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |
@@ -321,7 +322,7 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | `item-preview` | `data-disabled` | ''（条件成立时才出现） |
 | `item-preview` | `data-file-type` | (isRemote(file) ? file.type ?? '' : file.type) \|\| 'un… |
 | `item-progress` | `data-disabled` | ''（条件成立时才出现） |
-| `item-progress` | `data-state` | uploadOf(file)?.status |
+| `item-progress` | `data-state` | upload?.status |
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -370,16 +371,16 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 | `--xh-file-upload-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | file-upload 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-file-upload-item-bg` | `item` | `background` | `default` | `--xh-bg-surface` | file-upload 的 item 部件 background 覆盖槽。 |
 | `--xh-file-upload-item-border` | `item` | `border` | `default` | `--xh-border-default` | file-upload 的 item 部件 border 覆盖槽。 |
-| `--xh-file-upload-item-border-error` | `item` | `border-color` | `state=error` | `--xh-border-invalid` | file-upload 的 item 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-item-border-error` | `item` | `border-color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-border-invalid` | file-upload 的 item 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | file-upload 的 item 部件 color 覆盖槽。 |
-| `--xh-file-upload-item-fg-done` | `item` | `background-color` | `state=done` | `--xh-fg-success` | file-upload 的 item 部件 background-color 覆盖槽。 |
-| `--xh-file-upload-item-fg-error` | `item` | `color` | `state=error` | `--xh-fg-danger` | file-upload 的 item 部件 color 覆盖槽。 |
+| `--xh-file-upload-item-fg-done` | `item` | `background-color` | `has(> [data-part='item-progress'][data-state='done'])`<br>`state=closed`<br>`state=done` | `--xh-fg-success` | file-upload 的 item 部件 background-color 覆盖槽。 |
+| `--xh-file-upload-item-fg-error` | `item` | `color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-fg-danger` | file-upload 的 item 部件 color 覆盖槽。 |
 | `--xh-file-upload-item-font-size` | `item` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 item 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-item-gap` | `list` | `gap` | `default` | `--xh-space-2` | file-upload 的 list 部件 gap 覆盖槽。 |
 | `--xh-file-upload-item-inner-gap` | `item` | `gap` | `default` | `--xh-control-gap-md` | file-upload 的 item 部件 gap 覆盖槽。 |
-| `--xh-file-upload-item-mark-size` | `item` | `block-size`<br>`inline-size` | `state=done`<br>`state=error` | `--xh-control-indicator-size` | file-upload 的 item 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-file-upload-item-mark-size` | `item` | `block-size`<br>`inline-size` | `has(> [data-part='item-progress'][data-state='done'])`<br>`has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=done`<br>`state=error` | `--xh-control-indicator-size` | file-upload 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-item-name-min-w` | `item-name` | `min-inline-size` | `default` | `--xh-control-min-w` | file-upload 的 item-name 部件 min-inline-size 覆盖槽。 |
-| `--xh-file-upload-item-progress-fill` | `item-progress` | `background` | `state=uploading` | `--xh-bg-brand` | file-upload 的 item-progress 部件 background 覆盖槽。 |
+| `--xh-file-upload-item-progress-fill` | `item-progress` | `background` | `default` | `--xh-bg-brand` | file-upload 的 item-progress 部件 background 覆盖槽。 |
 | `--xh-file-upload-item-progress-h` | `item-progress` | `block-size` | `default` | `--xh-stroke-thick` | file-upload 的 item-progress 部件 block-size 覆盖槽。 |
 | `--xh-file-upload-item-progress-radius` | `item-progress` | `border-radius` | `default` | `--xh-shape-pill` | file-upload 的 item-progress 部件 border-radius 覆盖槽。 |
 | `--xh-file-upload-item-progress-track` | `item-progress` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 item-progress 部件 background 覆盖槽。 |
@@ -414,12 +415,12 @@ remote-files 承载编辑表单中已存在的附件：与本地文件同列渲�
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `border-color` · `box-shadow` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `box-shadow` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。

@@ -812,3 +812,77 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     runtime.stop()
   })
 })
+
+describe('传输收尾与列表动效的投影', () => {
+  /** 走完机器在宿主提交之后排下的微任务链（flush 以及其中再排的一层）。 */
+  async function drainMicrotasks(): Promise<void> {
+    for (let i = 0; i < 4; i++)
+      await Promise.resolve()
+  }
+
+  it('列表带 id 供机器找回；动效接上之前带 data-instant（首帧），接上之后撤掉', async () => {
+    const m = open({ defaultFiles: [makeFile('a.txt')], maxFiles: 5 })
+    expect(m.group.id).not.toBe('')
+    expect(m.group.hasAttribute('data-instant')).toBe(true)
+    await drainMicrotasks()
+    expect(m.group.hasAttribute('data-instant')).toBe(false)
+  })
+
+  it('没接上传器的本地文件与远程附件都不画进度：进度条恒 hidden', () => {
+    const file = makeFile('a.txt')
+    const m = open({ defaultFiles: [file], defaultRemoteFiles: [{ id: 'r1', name: 'r.png' }], maxFiles: 5 })
+    expect(m.api().getItemProgressProps({ file }).hidden).toBe(true)
+    expect(m.api().getItemProgressProps({ file: m.api().remoteFiles[0]! }).hidden).toBe(true)
+  })
+
+  it('传输中露面；传完那一刻仍留在行里（走满、淡出），淡出落定之后才 hidden', async () => {
+    const file = makeFile('a.txt')
+    let finish: (() => void) | undefined
+    const atComplete: Array<Record<string, unknown>> = []
+    const m = open({
+      defaultFiles: [file],
+      upload: () => new Promise<void>((resolve) => {
+        finish = resolve
+      }),
+      onUploadComplete: () => atComplete.push(m.api().getItemProgressProps({ file }) as Record<string, unknown>),
+    })
+    const progress = (): Record<string, unknown> => m.api().getItemProgressProps({ file }) as Record<string, unknown>
+    await vi.waitFor(() => expect(finish).toBeTypeOf('function'))
+    expect(progress()['data-state']).toBe('uploading')
+    expect(progress().hidden).toBeUndefined()
+    expect(progress().id).toEqual(expect.stringContaining('item-progress'))
+
+    finish!()
+    await vi.waitFor(() => expect(atComplete).toHaveLength(1))
+    expect(atComplete[0]!['data-state']).toBe('done')
+    expect(atComplete[0]!.hidden).toBeUndefined()
+    // 没有可等的过渡（这里没有渲染进度条）即刻落定
+    await vi.waitFor(() => expect(progress().hidden).toBe(true))
+    expect(progress()['data-state']).toBe('done')
+  })
+
+  it('删掉之后再收下同一个文件：落定记录随之清掉，下一次传完照样先留在行里', async () => {
+    const file = makeFile('a.txt')
+    const finishers: Array<() => void> = []
+    const atComplete: unknown[] = []
+    const m = open({
+      maxFiles: 5,
+      upload: () => new Promise<void>((resolve) => {
+        finishers.push(resolve)
+      }),
+      onUploadComplete: () => atComplete.push(m.api().getItemProgressProps({ file }).hidden),
+    })
+    m.api().addFiles([file])
+    await vi.waitFor(() => expect(finishers).toHaveLength(1))
+    finishers[0]!()
+    await vi.waitFor(() => expect(m.api().getItemProgressProps({ file }).hidden).toBe(true))
+
+    m.api().deleteFile(file)
+    m.api().addFiles([file])
+    await vi.waitFor(() => expect(finishers).toHaveLength(2))
+    expect(m.api().getItemProgressProps({ file }).hidden).toBeUndefined()
+    finishers[1]!()
+    await vi.waitFor(() => expect(atComplete).toHaveLength(2))
+    expect(atComplete).toEqual([undefined, undefined])
+  })
+})

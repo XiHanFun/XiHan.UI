@@ -16,9 +16,13 @@ import type {
   FileUploadSnapshot,
   FileUploadValidationResult,
 } from './file-upload.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/core'
+import { resetDeclaredValue, setup, trackListMotion } from '@xihan-ui/core'
 import { sameArray } from '../shared/array'
-import { fileUploadHiddenInputId } from './file-upload.anatomy'
+import { waitForTransition } from '../shared/part-presence'
+import { fileUploadHiddenInputId, fileUploadListId, fileUploadProgressId } from './file-upload.anatomy'
+
+/** 列表动效认的条目：接线之后的部件，以及 Web Components 作者刚放进列表、还没接线的节点。 */
+const FILE_UPLOAD_ITEM_SELECTOR = '[data-scope="file-upload"][data-part="item"], [data-scope="file-upload"][data-part="list"] > [data-xh-part="item"]'
 
 const { createMachine } = setup<FileUploadSchema>()
 
@@ -287,6 +291,8 @@ export const fileUploadMachine = createMachine({
     uploads: cell<Record<string, FileUploadSnapshot>>(() => ({ defaultValue: {} })),
     // 按压通道：被 Space / Enter 或触屏按住的那一个按钮（清空 / 选择 / 逐条删除），按 key 记
     pressed: cell<FileUploadPressedKey | null>(() => ({ defaultValue: null })),
+    listTracked: cell<boolean>(() => ({ defaultValue: false })),
+    settledProgress: cell<Record<string, true>>(() => ({ defaultValue: {} })),
   }),
   refs: () => ({
     fileIds: new WeakMap<File, string>(),
@@ -301,7 +307,7 @@ export const fileUploadMachine = createMachine({
     track([() => prop('disabled'), context.dep('acceptedFiles'), context.dep('remoteFiles')], () => action(['releaseWhenInert']))
   },
   // 传输的生命周期跟机器不跟状态位：拖拽切态不能打断在传的
-  effects: ['trackUploads'],
+  effects: ['trackUploads', 'trackListMotion', 'trackProgressExit'],
   // 增删改与打开选择框在任何状态下行为一致，挂根级
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
@@ -315,6 +321,8 @@ export const fileUploadMachine = createMachine({
     // 按压通道：三种按钮都是原生 disabled，禁用时不派事件；程序化派发由 canChange 再守一次
     'PRESS.START': { guard: 'canChange', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
+    'LIST.TRACKED': { actions: ['markListTracked'] },
+    'PROGRESS.SETTLED': { actions: ['settleProgress'] },
   },
   states: {
     idle: {
@@ -396,6 +404,9 @@ export const fileUploadMachine = createMachine({
         }
         if (dropped)
           context.set('uploads', kept)
+        const settled = context.get('settledProgress')
+        if (Object.keys(settled).some(id => !present.has(id)))
+          context.set('settledProgress', Object.fromEntries(Object.keys(settled).filter(id => present.has(id)).map(id => [id, true as const])))
         if (prop('autoUpload') ?? true) {
           for (const file of files)
             beginUpload(params, file)
@@ -458,6 +469,13 @@ export const fileUploadMachine = createMachine({
       openFilePicker: ({ scope }) => {
         scope.getRootNode().getElementById(fileUploadHiddenInputId(scope))?.click()
       },
+      markListTracked: ({ context }) => context.set('listTracked', true),
+      settleProgress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PROGRESS.SETTLED' || !context.get('uploads')[e.id])
+          return
+        context.set('settledProgress', { ...context.get('settledProgress'), [e.id]: true })
+      },
     },
     effects: {
       // 挂载时对齐一遍（defaultFiles / 受控初值也要开传）；停机中止所有在传的
@@ -467,6 +485,90 @@ export const fileUploadMachine = createMachine({
           const controllers = params.refs.get('uploadControllers')
           for (const controller of controllers.values()) controller.abort()
           controllers.clear()
+        }
+      },
+      /**
+       * 文件的到达、离场与换位：首帧就在的直接呈现，新收下的播进场、同一批按到达顺序错开，
+       * 删掉的在原处播完退场，其余条目滑到新位置。列表可能晚于机器才挂上（作者按有没有文件条件渲染），
+       * 每次文件表变了都在宿主提交之后再找一次；换了一个列表节点就改盯新的，后来才挂上的列表里的条目
+       * 都是这一会儿收下的，照常播进场。挂载那一帧就没有列表时首帧无可保护，直接报已接上。
+       */
+      trackListMotion: ({ scope, context, send, track, flush }) => {
+        let disposed = false
+        let mounted = false
+        let list: Element | null = null
+        let stop: (() => void) | undefined
+        const attach = (): void => {
+          flush(() => {
+            queueMicrotask(() => {
+              if (disposed)
+                return
+              const next = scope.getById(fileUploadListId(scope))
+              const initial = !mounted
+              mounted = true
+              if (next !== list) {
+                stop?.()
+                stop = undefined
+                list = next
+                if (list)
+                  stop = trackListMotion(list, { item: FILE_UPLOAD_ITEM_SELECTOR, initial: initial ? 'instant' : 'arrive' })
+              }
+              if (!context.get('listTracked'))
+                send({ type: 'LIST.TRACKED' })
+            })
+          })
+        }
+        attach()
+        track([context.dep('acceptedFiles'), context.dep('remoteFiles')], attach)
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
+      /**
+       * 传完那一刻进度条不当场收起：先走满、再淡出，播完才藏起。每个刚传完的文件在宿主提交之后
+       * 找到自己那条进度条，等它身上实际起播的淡出播完再报落定；没有可等的过渡（没渲染进度条、
+       * 没有 DOM）即刻落定。
+       */
+      trackProgressExit: ({ scope, context, send, track, flush }) => {
+        let disposed = false
+        const waiting = new Map<string, () => void>()
+        const check = (): void => {
+          if (disposed)
+            return
+          const uploads = context.get('uploads')
+          const settled = context.get('settledProgress')
+          for (const [id, snapshot] of Object.entries(uploads)) {
+            if (snapshot.status !== 'done' || settled[id] || waiting.has(id))
+              continue
+            waiting.set(id, () => {})
+            flush(() => {
+              if (disposed || !waiting.has(id))
+                return
+              const node = scope.getById(fileUploadProgressId(scope, id))
+              const cancel = waitForTransition(node, 'opacity', () => {
+                waiting.delete(id)
+                send({ type: 'PROGRESS.SETTLED', id })
+              })
+              // 没有可等的过渡时上面已同步落定，不再记
+              if (waiting.has(id))
+                waiting.set(id, cancel)
+            })
+          }
+          // 离开列表的文件不再等
+          for (const [id, cancel] of waiting) {
+            if (!uploads[id]) {
+              cancel()
+              waiting.delete(id)
+            }
+          }
+        }
+        check()
+        track([context.dep('uploads')], check)
+        return () => {
+          disposed = true
+          for (const cancel of waiting.values()) cancel()
+          waiting.clear()
         }
       },
     },

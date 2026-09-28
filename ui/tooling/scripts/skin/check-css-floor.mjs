@@ -59,7 +59,6 @@ const DIR_PSEUDO_BACKLOG = {
   'color-picker.css': 1,
   'download-trigger.css': 1,
   'drawer.css': 1,
-  'file-upload.css': 1,
   'image-viewer.css': 2,
   'layout.css': 2,
   'loading-bar.css': 1,

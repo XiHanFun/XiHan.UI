@@ -87,7 +87,9 @@ for (const file of files) {
       continue
     const size = rule[2].match(/inline-size:([^;]+);/)?.[1]?.trim()
     const selector = rule[1].replace(/\s+/g, ' ').trim()
-    const part = [...selector.matchAll(/\[data-part='([\w-]+)'\]/g)].at(-1)?.[1]
+    // 部件取选择器主体上的那个：:has() / :not() 的参数里点到的是别的部件（子项、排除条件），不算
+    const subject = selector.replace(/:(?:has|not)\((?:[^()]|\([^()]*\))*\)/g, '')
+    const part = [...subject.matchAll(/\[data-part='([\w-]+)'\]/g)].at(-1)?.[1]
     const mark = `${name}:${part}`
     if (mark in STATUS_MARKS && /::(?:before|after)\b/.test(selector) && !selector.includes(':empty')) {
       statusMarksSeen.add(mark)
