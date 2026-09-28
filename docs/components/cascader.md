@@ -48,6 +48,12 @@
 
 <XhDemo src="cascader/05-search" />
 
+### 拼音首字母搜索
+
+filter 接管匹配规则：候选是一条完整路径，这里把路径上各段的拼音首字母连起来比，显示名里没有的写法也能搜到
+
+<XhDemo src="cascader/06-custom-filter" />
+
 ## 设计指引
 
 ### 何时使用
@@ -66,7 +72,7 @@
 - `changeOnSelect` 允许选择中间层。
 - `expandTrigger` 支持点击或悬停展开。
 - `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。
-- `searchable` 按完整路径筛选选项。
+- `searchable` 按完整路径筛选选项；`filter` 接管匹配规则，拿到的候选是一条可落值的完整路径（`path` 与逐段的 `labels`），检索词已 trim，空串不调用。
 - 选项可逐条声明语气，不向下传导；搜索结果取整条路径末段的语气。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 选项行尾留一格给作者（计数、徽标）。
@@ -116,6 +122,7 @@
 | `changeOnSelect` | `boolean` |  | 中间层（分支）也可以落值。关闭时点击分支只展开子列，不改变选中值。 |
 | `multiple` | `boolean` |  | 多选：选中为路径集合，选中后浮层不收起、焦点留在列中以便继续选择。 |
 | `searchable` | `boolean` |  | 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图。 |
+| `filter` | `CascaderFilter` |  | 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 |
 | `cascade` | `boolean` |  | 多选下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（按路径原样切换）；单选下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 使用原生 disabled，浮层不可展开。 |

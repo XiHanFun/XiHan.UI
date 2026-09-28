@@ -7,6 +7,7 @@
 
 import type { CascadeStrategy, Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { CascaderFilter } from './cascader.search'
 
 /**
  * 树数据，层级、显示文本与条目禁用的唯一事实源。
@@ -200,6 +201,8 @@ export interface CascaderSchema extends MachineSchema {
     multiple?: boolean
     /** 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图。 */
     searchable?: boolean
+    /** 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 */
+    filter?: CascaderFilter
     /**
      * 多选下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选，
      * 禁用子树整棵冻结。默认 false（按路径原样切换）；单选下无效。

@@ -1355,6 +1355,37 @@ export const cascaderSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '检索档：filter 接管匹配规则——按路径逐段首字母缩写命中，缺省规则搜不到的写法也能落到候选上',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({
+        searchable: true,
+        filter: (candidate: { path: readonly string[] }, query: string) =>
+          candidate.path.map(value => value[0]).join('') === query,
+      }),
+      fixture: searchFixture,
+      skipParity: SEARCH_PARITY,
+      steps: [
+        ...OPEN_AND_FOCUS_INPUT,
+        {
+          kind: 'raw',
+          why: 'type 步骤只派按键、改不动输入框的值，而检索的入口正是原生 input 事件',
+          run: ({ doc, flush }) => typeQuery(doc, 'zhy', flush),
+          expect: { parts: { content: { 'data-searching': '' } } },
+        },
+        expectHighlight(YUHANG),
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            events: [
+              { type: 'value-change', detail: { value: [YUHANG] } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
+            ],
+          },
+        },
+      ],
+    },
+    {
       name: '检索档：只读时候选选不动——检索照常，Enter 一个值都不落',
       spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
       props: props({ searchable: true, readOnly: true }),

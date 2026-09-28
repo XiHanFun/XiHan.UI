@@ -29,7 +29,7 @@ export {
 } from './cascader.machine'
 export { cascaderMeta } from './cascader.meta'
 export { cascaderFilterCandidates, cascaderSearchCandidates } from './cascader.search'
-export type { CascaderSearchCandidate } from './cascader.search'
+export type { CascaderFilter, CascaderSearchCandidate } from './cascader.search'
 export type {
   CascaderApi,
   CascaderColumn,

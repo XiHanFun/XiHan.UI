@@ -62,7 +62,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {'click'|'hover'} expand-trigger - 子列由点击还是悬停展开，默认 click
  * @attr {boolean} change-on-select - 中间层（分支）也可以落值
  * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在列中
- * @attr {boolean} searchable - 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图
+ * @attr {boolean} searchable - 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图；自定义匹配规则经 filter property 给
  * @attr {boolean} cascade - 多选下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} disabled - 整个控件禁用：trigger 使用原生 disabled，浮层不可展开
@@ -125,6 +125,8 @@ export class XhCascaderElement extends XhPortalHostElement {
     changeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'change-on-select' },
     multiple: { type: Boolean },
     searchable: { type: Boolean },
+    // 函数只走 property，属性表达不了
+    filter: { attribute: false },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -154,6 +156,8 @@ export class XhCascaderElement extends XhPortalHostElement {
   declare changeOnSelect?: boolean
   declare multiple?: boolean
   declare searchable?: boolean
+  /** 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 */
+  declare filter?: CascaderSchema['props']['filter']
   declare cascade?: boolean
   declare checkedStrategy?: CascaderSchema['props']['checkedStrategy']
   declare disabled?: boolean
@@ -270,6 +274,7 @@ export class XhCascaderElement extends XhPortalHostElement {
       changeOnSelect: this.changeOnSelect ?? false,
       multiple: this.multiple ?? false,
       searchable: this.searchable ?? false,
+      filter: this.filter,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
       disabled: control.disabled,

@@ -78,6 +78,8 @@ export interface XhCascaderRootProps extends RootElementProps {
   changeOnSelect?: boolean
   multiple?: boolean
   searchable?: boolean
+  /** 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 */
+  filter?: CascaderProps['filter']
   cascade?: boolean
   checkedStrategy?: CascaderProps['checkedStrategy']
   disabled?: boolean
@@ -111,6 +113,7 @@ export function XhCascaderRoot({
   changeOnSelect,
   multiple,
   searchable,
+  filter,
   cascade,
   checkedStrategy,
   disabled,
@@ -144,6 +147,7 @@ export function XhCascaderRoot({
     changeOnSelect,
     multiple,
     searchable,
+    filter,
     cascade,
     checkedStrategy,
     disabled,
