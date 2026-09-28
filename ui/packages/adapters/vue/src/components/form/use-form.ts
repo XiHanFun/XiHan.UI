@@ -23,6 +23,7 @@ export interface FormCallbacks {
   onSubmit?: Props['onSubmit']
   onInvalid?: Props['onInvalid']
   onValidationError?: Props['onValidationError']
+  onSubmitError?: Props['onSubmitError']
 }
 
 export interface FormContext {
@@ -35,6 +36,11 @@ export interface FormContext {
   setFieldError: (name: FormPath, message?: string) => void
   clearErrors: () => void
   submit: () => void
+  /** 整表校验一次但不提交。 */
+  validateAll: FormApi['validateAll']
+  validateField: FormApi['validateField']
+  validateFields: FormApi['validateFields']
+  resetField: (name: FormPath) => void
   reset: () => void
 }
 
@@ -58,6 +64,10 @@ export function useForm(props: Props, callbacks: FormCallbacks = {}): FormContex
     setFieldError: (name, message) => api.value.setFieldError(name, message),
     clearErrors: () => api.value.clearErrors(),
     submit: () => api.value.submit(),
+    validateAll: () => api.value.validateAll(),
+    validateField: name => api.value.validateField(name),
+    validateFields: names => api.value.validateFields(names),
+    resetField: name => api.value.resetField(name),
     reset: () => api.value.reset(),
   }
 }

@@ -27268,6 +27268,20 @@
             },
             {
               "kind": "field",
+              "name": "notifySubmitError",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "submitAction",
+              "type": {
+                "text": "(details: FormSubmitDetails) => void | PromiseLike<unknown> | undefined"
+              },
+              "description": "异步提交动作：事件无法获取监听函数的返回值，异步门经此属性。校验通过后先派发 submit 事件（仅作通知）再调用它：\n返回 thenable 期间 submitting 为真、再提交不发生、提交钮报在途，拒绝经 submit-error 报出。"
+            },
+            {
+              "kind": "field",
               "name": "notifyInvalid",
               "privacy": "private",
               "readonly": true
@@ -27383,6 +27397,124 @@
                 }
               },
               "description": "值与错误都恢复初始；禁用或只读时不做处理。"
+            },
+            {
+              "kind": "method",
+              "name": "validateAll",
+              "return": {
+                "type": {
+                  "text": "Promise<FormValidateResult>"
+                }
+              },
+              "description": "整表校验一次、整表替换错误表，但不提交：不派发 submit / invalid，不显示错误摘要，也不搬焦点。"
+            },
+            {
+              "kind": "method",
+              "name": "validateField",
+              "return": {
+                "type": {
+                  "text": "Promise<FormValidateResult>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "FormPath"
+                  }
+                }
+              ],
+              "description": "只校验一个字段并只写回它的那一条。"
+            },
+            {
+              "kind": "method",
+              "name": "validateFields",
+              "return": {
+                "type": {
+                  "text": "Promise<FormValidateResult>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "names",
+                  "type": {
+                    "text": "readonly FormPath[]"
+                  }
+                }
+              ],
+              "description": "逐字段校验这几个字段并只写回它们。"
+            },
+            {
+              "kind": "method",
+              "name": "resetField",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "FormPath"
+                  }
+                }
+              ],
+              "description": "只重置一个字段：值、错误与触碰标记回到初始；禁用或只读时不做处理。"
+            },
+            {
+              "kind": "method",
+              "name": "isFieldDirty",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "FormPath"
+                  }
+                }
+              ],
+              "description": "该字段的值与 defaultValues 里的不同（按结构比）。"
+            },
+            {
+              "kind": "method",
+              "name": "isFieldTouched",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "FormPath"
+                  }
+                }
+              ],
+              "description": "该字段失焦过一次。"
+            },
+            {
+              "kind": "field",
+              "name": "dirty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "有字段的值与 defaultValues 不同。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "submitting",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "submitAction 返回的 thenable 尚未落定。",
+              "readonly": true
             },
             {
               "kind": "method",
@@ -27508,17 +27640,24 @@
               }
             },
             {
-              "description": "校验通过才派发；detail 为 `{ values }`",
+              "description": "校验通过才派发；detail 为 `{ values }`。异步提交门经 submitAction 属性：事件拿不到监听函数的返回值， 给元素赋 `submitAction = details => thenable` 即在提交通过校验后调用它，期间 submitting 为真、提交钮报在途",
               "name": "submit",
               "type": {
                 "text": "FormSubmitDetails"
               }
             },
             {
+              "description": "submitAction 返回的 thenable 拒绝；detail 为 `{ cause, values }`，保留原始原因",
+              "name": "submit-error",
+              "type": {
+                "text": "FormSubmitErrorDetails"
+              }
+            },
+            {
               "description": "校验不通过时派发；detail 为 `{ errors, values }`",
               "name": "invalid",
               "type": {
-                "text": "FormInvalidDetails"
+                "text": "FormSubmitDetails"
               }
             },
             {
@@ -27611,6 +27750,9 @@
             },
             {
               "name": "--xh-form-label-w"
+            },
+            {
+              "name": "--xh-form-loading-duration"
             },
             {
               "name": "--xh-form-submit-bg"

@@ -1716,6 +1716,7 @@ export type ComponentTokenName
     | '--xh-form-gap'
     | '--xh-form-inline-gap'
     | '--xh-form-label-w'
+    | '--xh-form-loading-duration'
     | '--xh-form-submit-bg'
     | '--xh-form-submit-bg-active'
     | '--xh-form-submit-bg-hover'

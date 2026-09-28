@@ -33970,6 +33970,24 @@
       "description": "form 的 root 部件 grid-template-columns 覆盖槽。"
     },
     {
+      "name": "--xh-form-loading-duration",
+      "component": "form",
+      "part": [
+        "submit-trigger"
+      ],
+      "property": [
+        "animation"
+      ],
+      "state": [
+        "loading"
+      ],
+      "defaultToken": [
+        "--xh-motion-loop-spin"
+      ],
+      "visibility": "public",
+      "description": "form 的 submit-trigger 部件 animation 覆盖槽。"
+    },
+    {
       "name": "--xh-form-submit-bg",
       "component": "form",
       "part": [

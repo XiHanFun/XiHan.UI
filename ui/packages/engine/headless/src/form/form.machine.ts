@@ -7,13 +7,13 @@
 
 import type { Params } from '@xihan-ui/core'
 import type { FormErrors } from './form.errors'
-import type { FormArrayMutation, FormPath } from './form.path'
-import type { FormPressedKey, FormRules, FormSchema, FormValidateOn, FormValidationErrorDetails, FormValidationTask, FormValues } from './form.types'
+import type { FormArrayMutation, FormPath, FormPathRecord } from './form.path'
+import type { FormPressedKey, FormRule, FormRules, FormSchema, FormValidateOn, FormValidationErrorDetails, FormValidationTask, FormValues } from './form.types'
 import { focusFirst, focusSafely, getTabbables, queryItems, setup } from '@xihan-ui/core'
 import { trackPartPresence } from '../shared/part-presence'
 import { formFieldGroupQuery, formFieldName } from './form.anatomy'
 import { firstFormErrorName, formErrorNames, mergeFormErrors, normalizeFormErrors, sameFormErrors } from './form.errors'
-import { cloneFormPathRecord, formPathEntries, formPathKey, getFormPathValue, rebaseFormArrayPath, rebaseFormPathRecord, sameFormPathRecords, setFormPathValue } from './form.path'
+import { cloneFormPathRecord, deleteFormPathValue, formPathEntries, formPathKey, getFormPathValue, rebaseFormArrayPath, rebaseFormPathRecord, sameFormPathRecords, setFormPathValue } from './form.path'
 import { runFormRules } from './form.rules'
 
 const { createMachine, guards } = setup<FormSchema>()
@@ -134,6 +134,66 @@ export function focusFormField(root: HTMLElement | null, name: FormPath): boolea
   return true
 }
 
+/**
+ * 字段值按结构比：数组与普通对象逐项比，Date 比时刻，其余按 Object.is。
+ * FieldArray 每次变更都换一份新数组，按引用比会把改回原样的字段误判成改过。
+ */
+export function sameFormFieldValue(a: unknown, b: unknown): boolean {
+  if (Object.is(a, b))
+    return true
+  if (a instanceof Date && b instanceof Date)
+    return a.getTime() === b.getTime()
+  if (Array.isArray(a) || Array.isArray(b)) {
+    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length)
+      return false
+    return a.every((item, index) => sameFormFieldValue(item, b[index]))
+  }
+  const plain = (value: unknown): value is Record<string, unknown> =>
+    value != null && typeof value === 'object' && Object.getPrototypeOf(value) === Object.prototype
+  if (!plain(a) || !plain(b))
+    return false
+  const keys = Object.keys(a)
+  return keys.length === Object.keys(b).length && keys.every(key => Object.hasOwn(b, key) && sameFormFieldValue(a[key], b[key]))
+}
+
+/** 有字段的值与初值不同：两张表里出现过的路径逐条按结构比。 */
+export function formValuesDirty(values: FormValues, defaults: FormValues | undefined): boolean {
+  const seen = new Set<string>()
+  for (const [name] of [...formPathEntries(values), ...formPathEntries(defaults)]) {
+    const key = formPathKey(name)
+    if (seen.has(key))
+      continue
+    seen.add(key)
+    if (!sameFormFieldValue(getFormPathValue(values, name), getFormPathValue(defaults, name)))
+      return true
+  }
+  return false
+}
+
+/** 规则里声明的依赖：依赖字段的键 → 依赖它的那些字段。 */
+function formDependents(rules: FormRules | undefined): Map<string, FormPath[]> {
+  const out = new Map<string, FormPath[]>()
+  for (const [name, rule] of formPathEntries(rules)) {
+    for (const one of (Array.isArray(rule) ? rule : [rule]) as FormRule[]) {
+      for (const dep of one.deps ?? []) {
+        const key = formPathKey(dep)
+        const list = out.get(key) ?? []
+        if (!list.some(item => formPathKey(item) === formPathKey(name)))
+          list.push(name)
+        out.set(key, list)
+      }
+    }
+  }
+  return out
+}
+
+/** 一次校验的收尾钩子：写回之后、被作废（stale）或校验器出错，三者恰好发生一个。 */
+interface FormValidationHooks {
+  onApplied?: (errors: FormErrors) => void
+  onStale?: () => void
+  onFailed?: (cause: unknown) => void
+}
+
 /** 忙碌状态来自有效任务，单个字段完成不能覆盖其他字段的状态。 */
 function syncValidating({ context, refs }: Params<FormSchema>): void {
   context.set('validating', [...refs.get('validation').values()].some(task => task.pending))
@@ -182,16 +242,20 @@ function executeValidation(
   field: FormPath | null,
   validate: () => FormErrors | Promise<FormErrors>,
   apply: (errors: FormErrors, field: FormPath | null) => void,
+  hooks: FormValidationHooks = {},
 ): void {
   const validation = beginValidation(params, values, field)
   const { task } = validation
   const fail = (cause: unknown): void => {
-    if (!validation.complete())
+    if (!validation.complete()) {
+      hooks.onStale?.()
       return
+    }
     discardValidation(params)
     const details: FormValidationErrorDetails = { cause, values: cloneFormPathRecord(task.values), field: Array.isArray(task.field) ? [...task.field] : task.field }
     params.context.set('validationError', details)
     params.prop('onValidationError')?.(details)
+    hooks.onFailed?.(cause)
   }
   let outcome: FormErrors | Promise<FormErrors>
   try {
@@ -202,8 +266,12 @@ function executeValidation(
     return
   }
   const settle = (errors: FormErrors): void => {
-    if (validation.complete())
-      apply(errors, task.field)
+    if (!validation.complete()) {
+      hooks.onStale?.()
+      return
+    }
+    apply(errors, task.field)
+    hooks.onApplied?.(errors)
   }
   if (outcome instanceof Promise) {
     validation.pending()
@@ -214,13 +282,18 @@ function executeValidation(
   }
 }
 
-/** 跑一次校验（可能读取整表），但只把当前字段写回错误表。 */
-function validateOneField(params: Params<FormSchema>, values: FormValues, name: FormPath): void {
+/**
+ * 跑一次校验（可能读取整表），但只把当前字段写回错误表。
+ * 规则与 validate 都没给就没有东西可算：只回一个空结果，不碰错误表。
+ */
+function validateOneField(params: Params<FormSchema>, values: FormValues, name: FormPath, hooks: FormValidationHooks = {}): void {
   const validate = params.prop('validate')
   const rules = currentFormRules(params)
   const rule = getFormPathValue(rules, name)
-  if (!validate && !rule)
+  if (!validate && !rule) {
+    hooks.onApplied?.({})
     return
+  }
   const settle = (all: FormErrors, field: FormPath | null): void => {
     if (field == null)
       return
@@ -246,7 +319,14 @@ function validateOneField(params: Params<FormSchema>, values: FormValues, name: 
       params.prop('validateMessages'),
     ),
     settle,
+    hooks,
   )
+}
+
+/** 逐字段结果并成一份：只留这几个字段各自算出来的那一条。 */
+function fieldResultErrors(all: FormErrors, name: FormPath): FormErrors {
+  const message = getFormPathValue(all, name)
+  return message ? setFormPathValue({}, name, message) : {}
 }
 
 // 值表与错误表住在 context 的 cell 里（给定 prop 即受控：读直取 prop、写只发回调不落内部值）。
@@ -260,6 +340,7 @@ export const formMachine = createMachine({
     validatedErrors: new Set<string>(),
     rules: prop('rules'),
     rulesSource: prop('rules'),
+    submitSequence: { n: 0 },
   }),
   context: ({ prop, cell }) => ({
     values: cell<FormValues>(() => ({
@@ -281,6 +362,8 @@ export const formMachine = createMachine({
     pressed: cell<FormPressedKey | null>(() => ({ defaultValue: null })),
     summaryRendered: cell<boolean>(() => ({ defaultValue: false })),
     summaryErrors: cell<FormErrors>(() => ({ defaultValue: {} })),
+    touched: cell<FormPathRecord<true>>(() => ({ defaultValue: {}, isEqual: sameFormPathRecords })),
+    submitting: cell<boolean>(() => ({ defaultValue: false })),
   }),
   // 挂载即 idle：作者预置的 defaultErrors 不该让错误摘要一上来就显形
   initialState: () => 'idle',
@@ -291,20 +374,27 @@ export const formMachine = createMachine({
     track([() => prop('rules')], () => action(['syncRules']))
     // 按住途中转入禁用 / 只读、异步校验开跑（提交在途，锁定重复操作），或按住的摘要条目所指字段改好了
     // （条目随之藏起）：不会再来 keyup，按压面由机器自己收
-    track([() => prop('disabled'), () => prop('readOnly'), context.dep('validating'), context.dep('errors')], () => action(['releaseWhenInert']))
+    track([() => prop('disabled'), () => prop('readOnly'), context.dep('validating'), context.dep('submitting'), context.dep('errors')], () => action(['releaseWhenInert']))
   },
   on: {
     'FIELD.SET': [
       // 禁用/只读整条吃掉，连 onValuesChange 都不发：受控宿主收到意图会照写，等于绕过禁用
       { guard: not('isEditable') },
-      { actions: ['setFieldValue', 'clearExternalFieldError', 'validateChangedField'] },
+      { actions: ['setFieldValue', 'clearExternalFieldError', 'validateChangedField', 'validateDependents'] },
     ],
+    'FIELD.RESET': [
+      { guard: not('isEditable') },
+      { actions: ['resetField'] },
+    ],
+    // 不提交的校验：读值写错，与 disabled / readOnly 无关，与错误表的命令式口子同理
+    'VALIDATE': { actions: ['runRequestedValidation'] },
+    'SUBMIT.SETTLED': { actions: ['settleSubmit'] },
     // FieldArray 的有效 disabled/readOnly 已由统一 FormControlState 优先级解析并在自己的机器守住；
     // 这里仅接收结构化路径迁移，不能再次用 Form 根状态覆盖实例或最近 Field 的显式 false。
     'FIELD.ARRAY.MUTATE': { actions: ['mutateFieldArray'] },
     'FIELD.BLUR': [
       { guard: not('isEnabled') },
-      { actions: ['validateBlurredField'] },
+      { actions: ['markTouched', 'validateBlurredField'] },
     ],
     // 错误表是命令式口子，与 disabled/readOnly 无关：服务端返回的错误也要能挂到只读表单上
     'ERROR.SET': { actions: ['setFieldError'] },
@@ -321,6 +411,8 @@ export const formMachine = createMachine({
       on: {
         'SUBMIT': [
           { guard: not('isEnabled') },
+          // 上一轮提交回调还没落定：再提交不发生，防重复提交
+          { guard: 'isSubmitting' },
           // 这里只跑校验，由它送出 PASS / FAIL 再转移。
           // 把跑校验写进守卫的话，同一次提交会把 validate 跑两遍
           { actions: ['runValidation'] },
@@ -337,6 +429,7 @@ export const formMachine = createMachine({
       on: {
         'SUBMIT': [
           { guard: not('isEnabled') },
+          { guard: 'isSubmitting' },
           { actions: ['runValidation'] },
         ],
         // 又没过：状态不变，但错误重报一次、焦点也重新送回第一个错处
@@ -352,6 +445,7 @@ export const formMachine = createMachine({
   implementations: {
     guards: {
       isEnabled: ({ prop }) => !prop('disabled'),
+      isSubmitting: ({ context }) => context.get('submitting'),
       isEditable: ({ prop }) => !prop('disabled') && !prop('readOnly'),
       /**
        * 按压守卫：整体禁用一律不进；异步校验在途（提交或逐字段）时锁定重复操作，也不进；
@@ -359,7 +453,7 @@ export const formMachine = createMachine({
        */
       canPress: ({ prop, context, event }) => {
         const e = event.current()
-        return e.type === 'PRESS.START' && !e.disabled && !prop('disabled') && !context.get('validating')
+        return e.type === 'PRESS.START' && !e.disabled && !prop('disabled') && !context.get('validating') && !context.get('submitting')
       },
       isValidationSnapshotCurrent: ({ context, event }) => {
         const e = event.current()
@@ -406,7 +500,7 @@ export const formMachine = createMachine({
         const pressed = context.get('pressed')
         if (pressed == null)
           return
-        if (prop('disabled') || context.get('validating') || (pressed === 'reset' && prop('readOnly'))) {
+        if (prop('disabled') || context.get('validating') || context.get('submitting') || (pressed === 'reset' && prop('readOnly'))) {
           context.set('pressed', null)
           return
         }
@@ -458,6 +552,8 @@ export const formMachine = createMachine({
 
         rebaseValidatedErrors(params, beforeErrors, e.name, e.mutation)
         rebaseValidation(params, e.name, e.mutation, e.value)
+        // 触碰标记跟着行号走：删掉的那一行一并忘掉
+        context.set('touched', rebaseFormPathRecord(context.get('touched'), e.name, e.mutation))
 
         const previousError = context.get('validationError')
         if (previousError) {
@@ -548,10 +644,154 @@ export const formMachine = createMachine({
         )
       },
 
-      invokeSubmit: ({ prop, event }) => {
+      /**
+       * 校验通过即提交。回调返回 thenable 就进入提交在途：submitting 为真直到它落定，
+       * 落定经 SUBMIT.SETTLED 回到机器，token 对不上最新一轮的不认。同步抛出照常向上抛。
+       */
+      invokeSubmit: ({ prop, event, context, refs, send }) => {
         const e = event.current()
-        if (e.type === 'VALIDATION.PASS')
-          prop('onSubmit')?.({ values: e.values })
+        if (e.type !== 'VALIDATION.PASS')
+          return
+        const outcome = prop('onSubmit')?.({ values: e.values })
+        if (outcome == null || typeof (outcome as PromiseLike<unknown>).then !== 'function')
+          return
+        const token = ++refs.get('submitSequence').n
+        const values = e.values
+        context.set('submitting', true)
+        ;(outcome as PromiseLike<unknown>).then(
+          () => send({ type: 'SUBMIT.SETTLED', token }),
+          (cause: unknown) => send({ type: 'SUBMIT.SETTLED', token, error: { cause, values } }),
+        )
+      },
+
+      settleSubmit: ({ event, context, refs, prop }) => {
+        const e = event.current()
+        if (e.type !== 'SUBMIT.SETTLED' || e.token !== refs.get('submitSequence').n)
+          return
+        context.set('submitting', false)
+        if (e.error)
+          prop('onSubmitError')?.({ cause: e.error.cause, values: e.error.values })
+      },
+
+      markTouched: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'FIELD.BLUR')
+          context.set('touched', setFormPathValue(context.get('touched'), e.name, true as const))
+      },
+
+      /**
+       * 规则里声明了依赖的字段：依赖字段改了值，它在被触碰过（校验时机不是 submit）或正挂着错误时重新校验。
+       * 值按事件重算一份，不回头读 context：值受控时上一条动作只发了回调、没落值。
+       */
+      validateDependents: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'FIELD.SET')
+          return
+        const dependents = formDependents(currentFormRules(params)).get(formPathKey(e.name))
+        if (!dependents?.length)
+          return
+        const next = setFormFieldValue(params.context.get('values'), e.name, e.value)
+        const mode = formValidateOn(params.prop('validateOn'))
+        for (const dependent of dependents) {
+          if (formPathKey(dependent) === formPathKey(e.name))
+            continue
+          const touched = getFormPathValue(params.context.get('touched'), dependent) === true
+          const failing = getFormPathValue(params.context.get('errors'), dependent) !== undefined
+          if ((mode !== 'submit' && touched) || failing)
+            validateOneField(params, next, dependent)
+        }
+      },
+
+      /**
+       * 不提交的校验。整表：跑规则与 validate、整表替换错误表，不转移状态（错误摘要不露面）、不搬焦点。
+       * 逐字段：每个字段各跑一轮，只写回它自己那一条；几轮都落定后把结果并成一份交回。
+       */
+      runRequestedValidation: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'VALIDATE')
+          return
+        const { prop, context, refs } = params
+        const values = context.get('values')
+        const resolve = e.resolve ?? ((): void => {})
+        const reject = e.reject ?? ((): void => {})
+
+        if (e.names == null) {
+          const validate = prop('validate')
+          const rules = currentFormRules(params)
+          if (!validate && !rules) {
+            resolve({ valid: true, errors: {}, stale: false })
+            return
+          }
+          executeValidation(
+            params,
+            values,
+            null,
+            () => runFormRules(rules, validate, values, prop('validateMessages')),
+            (errors) => {
+              const validated = refs.get('validatedErrors')
+              validated.clear()
+              for (const name of formErrorNames(errors))
+                validated.add(formPathKey(name))
+              context.set('errors', errors)
+            },
+            {
+              onApplied: errors => resolve({ valid: formErrorNames(errors).length === 0, errors, stale: false }),
+              onStale: () => resolve({ valid: false, errors: {}, stale: true }),
+              onFailed: reject,
+            },
+          )
+          return
+        }
+
+        const names = e.names
+        if (names.length === 0) {
+          resolve({ valid: true, errors: {}, stale: false })
+          return
+        }
+        let remaining = names.length
+        let errors: FormErrors = {}
+        let stale = false
+        let failed: { cause: unknown } | null = null
+        const done = (): void => {
+          remaining -= 1
+          if (remaining > 0)
+            return
+          if (failed)
+            reject(failed.cause)
+          else
+            resolve({ valid: !stale && formErrorNames(errors).length === 0, errors, stale })
+        }
+        for (const name of names) {
+          validateOneField(params, values, name, {
+            onApplied: (all) => {
+              errors = mergeFormErrors(errors, fieldResultErrors(all, name))
+              done()
+            },
+            onStale: () => {
+              stale = true
+              done()
+            },
+            onFailed: (cause) => {
+              failed ??= { cause }
+              done()
+            },
+          })
+        }
+      },
+
+      /** 只重置一个字段：值回到 defaultValues 里的那一份，错误回到 defaultErrors 里的那一条，触碰标记与在途校验一并撤掉。 */
+      resetField: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'FIELD.RESET')
+          return
+        const { prop, context, refs } = params
+        const key = formPathKey(e.name)
+        if (refs.get('validation').delete(key))
+          syncValidating(params)
+        refs.get('validatedErrors').delete(key)
+        context.set('values', setFormPathValue(context.get('values'), e.name, getFormPathValue(prop('defaultValues'), e.name)))
+        context.set('errors', mergeFormErrors(context.get('errors'), setFormPathValue({}, e.name, getFormPathValue(normalizeFormErrors(prop('defaultErrors')), e.name))))
+        context.set('touched', deleteFormPathValue(context.get('touched'), e.name))
       },
 
       invokeInvalid: ({ prop, event }) => {
@@ -621,6 +861,7 @@ export const formMachine = createMachine({
         refs.get('validatedErrors').clear()
         context.set('values', cloneFormPathRecord(prop('defaultValues')))
         context.set('errors', normalizeFormErrors(prop('defaultErrors')))
+        context.set('touched', {})
       },
     },
   },

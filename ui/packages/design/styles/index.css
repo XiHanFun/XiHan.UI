@@ -29095,6 +29095,34 @@
     --xh-action-shadow-pressed: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
     --xh-action-ring-color-focus-visible: currentColor;
   }
+
+  /* 提交回调在途：文案前转一枚圆环；不是禁用，焦点与对比度都保持，在途指针由家族 loading 面给 */
+  [data-scope='form'][data-part='submit-trigger'][data-loading]::before {
+    content: '';
+    flex: none;
+    inline-size: 1em;
+    block-size: 1em;
+    border: var(--xh-stroke-thin) solid transparent;
+    border-block-start-color: currentcolor;
+    border-radius: var(--xh-shape-circle);
+    animation: xh-spin var(--xh-form-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
+  }
+
+  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='form'][data-part='submit-trigger'][data-loading]::before {
+      border-style: dotted;
+      border-color: currentColor;
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='form'][data-part='submit-trigger'][data-loading]::before {
+    border-style: dotted;
+    border-color: currentColor;
+    animation: none;
+  }
 }
 
 /* styles/funnel-chart.css */

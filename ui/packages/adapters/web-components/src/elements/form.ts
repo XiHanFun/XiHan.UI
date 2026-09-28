@@ -19,7 +19,9 @@ import type {
   FormPath,
   FormSchema,
   FormSubmitDetails,
+  FormSubmitErrorDetails,
   FormValidateOn,
+  FormValidateResult,
   FormValidationErrorDetails,
   FormValues,
   FormValuesChangeDetails,
@@ -119,7 +121,9 @@ function fieldPathOf(el: HTMLElement): FormPath {
  * @attr {boolean} read-only - 只读：写值与重置不发生，但仍可提交
  * @fires values-change - 值表变化；detail 为 `{ values }`
  * @fires errors-change - 错误表变化；detail 为 `{ errors }`
- * @fires submit - 校验通过才派发；detail 为 `{ values }`
+ * @fires submit - 校验通过才派发；detail 为 `{ values }`。异步提交门经 submitAction 属性：事件拿不到监听函数的返回值，
+ *   给元素赋 `submitAction = details => thenable` 即在提交通过校验后调用它，期间 submitting 为真、提交钮报在途
+ * @fires submit-error - submitAction 返回的 thenable 拒绝；detail 为 `{ cause, values }`，保留原始原因
  * @fires invalid - 校验不通过时派发；detail 为 `{ errors, values }`
  * @fires validation-error - 校验器执行异常；detail 为 `{ cause, values, field }`，field 为 null 表示整表提交
  * @csspart root - 表单根容器，必须是原生 `<form>`（承载 data-state / data-disabled / data-readonly / data-invalid）
@@ -181,9 +185,20 @@ export class XhFormElement extends XhElement {
 
   // 与原生 submit 撞不上：连接层已经把那条原生事件的冒泡掐断在 <form> 上，
   // 从本元素冒出去的 submit 只可能是这一条（且只在校验通过时才有）
-  private readonly notifySubmit = (details: FormSubmitDetails): void => {
+  private readonly notifySubmit = (details: FormSubmitDetails): void | PromiseLike<unknown> => {
     this.dispatchEvent(new CustomEvent('submit', { detail: details, bubbles: true, composed: true }))
+    return this.submitAction?.(details)
   }
+
+  private readonly notifySubmitError = (details: FormSubmitErrorDetails): void => {
+    this.dispatchEvent(new CustomEvent('submit-error', { detail: details, bubbles: true, composed: true }))
+  }
+
+  /**
+   * 异步提交动作：事件无法获取监听函数的返回值，异步门经此属性。校验通过后先派发 submit 事件（仅作通知）再调用它：
+   * 返回 thenable 期间 submitting 为真、再提交不发生、提交钮报在途，拒绝经 submit-error 报出。
+   */
+  declare submitAction?: (details: FormSubmitDetails) => void | PromiseLike<unknown>
 
   private readonly notifyInvalid = (details: FormInvalidDetails): void => {
     this.dispatchEvent(new CustomEvent('invalid', { detail: details, bubbles: true, composed: true }))
@@ -229,6 +244,7 @@ export class XhFormElement extends XhElement {
       onSubmit: this.notifySubmit,
       onInvalid: this.notifyInvalid,
       onValidationError: this.notifyValidationError,
+      onSubmitError: this.notifySubmitError,
     }
   }
 
@@ -264,6 +280,46 @@ export class XhFormElement extends XhElement {
   /** 值与错误都恢复初始；禁用或只读时不做处理。 */
   reset(): void {
     this.commands().reset()
+  }
+
+  /** 整表校验一次、整表替换错误表，但不提交：不派发 submit / invalid，不显示错误摘要，也不搬焦点。 */
+  validateAll(): Promise<FormValidateResult> {
+    return this.commands().validateAll()
+  }
+
+  /** 只校验一个字段并只写回它的那一条。 */
+  validateField(name: FormPath): Promise<FormValidateResult> {
+    return this.commands().validateField(name)
+  }
+
+  /** 逐字段校验这几个字段并只写回它们。 */
+  validateFields(names: readonly FormPath[]): Promise<FormValidateResult> {
+    return this.commands().validateFields(names)
+  }
+
+  /** 只重置一个字段：值、错误与触碰标记回到初始；禁用或只读时不做处理。 */
+  resetField(name: FormPath): void {
+    this.commands().resetField(name)
+  }
+
+  /** 该字段的值与 defaultValues 里的不同（按结构比）。 */
+  isFieldDirty(name: FormPath): boolean {
+    return this.commands().isFieldDirty(name)
+  }
+
+  /** 该字段失焦过一次。 */
+  isFieldTouched(name: FormPath): boolean {
+    return this.commands().isFieldTouched(name)
+  }
+
+  /** 有字段的值与 defaultValues 不同。 */
+  get dirty(): boolean {
+    return this.commands().dirty
+  }
+
+  /** submitAction 返回的 thenable 尚未落定。 */
+  get submitting(): boolean {
+    return this.commands().submitting
   }
 
   /** 字段容器的 DOM id：作者需要将其写到自己的控件上时从此处读取，不应自行拼接。 */
