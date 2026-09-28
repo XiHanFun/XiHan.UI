@@ -32,6 +32,7 @@ import type {
   CartesianBrushSelectionChangeDetails,
   CartesianChartTranslations,
   CartesianDrag,
+  CartesianFollowChangeDetails,
   CartesianLegendItem,
   CartesianLegendScale,
   CartesianMarkTag,
@@ -84,6 +85,15 @@ export interface CartesianChartSchema extends MachineSchema {
     /** 滚轮、捏合、拖动、键盘或缩放条改了窗口时通知。 */
     onWindowChange?: (details: CartesianWindowChangeDetails) => void
     /**
+     * 缩放窗口跟随最新的数据（受控）：窗口右端贴着数据末端时，新数据到来窗口随之右移、宽度不变。
+     * 拖动、滚轮或键盘让窗口右端离开数据末端即变为 false，回到末端变回 true；写成 true 时窗口一步跳到末端。
+     */
+    follow?: boolean
+    /** 初始是否跟随（非受控），缺省 true。 */
+    defaultFollow?: boolean
+    /** 跟随的开关变了：用户把窗口拖离或拖回数据末端时通知。 */
+    onFollowChange?: (details: CartesianFollowChangeDetails) => void
+    /**
      * 刷选：x 沿自变量轴、y 沿数值轴、xy 框矩形，缺省 none。开启后在绘图区拖动即刷选（放大后改用缩放条或键盘平移），
      * Shift + 方向键从锚点起沿自变量扩展或收缩，Escape 清掉。
      */
@@ -112,8 +122,15 @@ export interface CartesianChartSchema extends MachineSchema {
     brushing: CartesianBrushing | null
     /** 键盘刷选的锚点：按下 Shift + 方向键那一刻焦点所在的键（下标）；松开 Shift 移动焦点后清掉。 */
     brushAnchor: number | null
+    /** 缩放窗口是否跟着最新的数据走。 */
+    follow: boolean
+    /** 列式数据仓刷新的次数：数据仓原地追加时靠它让连接层与场景跟着重算，同一帧里的多次推送只加一次。 */
+    dataVersion: number
   }
-  computed: ChartBaseComputed
+  computed: ChartBaseComputed & {
+    /** 列式数据自己的问题（自变量列乱序）写成的串：追加数据后出现或消失时再报一遍。 */
+    dataIssues: string
+  }
   refs: ChartBaseRefs & {
     /** 管线：按输入引用分段记忆，悬停与聚焦不会让它重算。 */
     pipeline: CartesianPipeline
@@ -128,6 +145,10 @@ export interface CartesianChartSchema extends MachineSchema {
     getCanvasEl: () => HTMLCanvasElement | null
     /** 画布宿主：机器在状态变化后经它排重绘；未挂载为 null。 */
     canvas: ChartCanvasHost | null
+    /** 撤掉对列式数据仓的订阅与排着的那一帧；没有订阅为 null。 */
+    sourceStop: (() => void) | null
+    /** 上一次数据的最后一个键：新数据到来时窗口右端贴着它才跟过去；没有数据为 null。 */
+    lastKey: ChartKey | null
   }
   state: 'idle'
   event: ChartBaseEvent
@@ -140,10 +161,12 @@ export interface CartesianChartSchema extends MachineSchema {
     | { type: 'BRUSH.END' }
     | { type: 'BRUSH.SET', selection: CartesianBrushSelection | null, data: readonly ChartDatumDetails[] }
     | { type: 'BRUSH.ANCHOR', index: number | null }
+    /** 列式数据仓在这一帧里刷新过：合成一次，重算场景、跟随窗口、按指针位置重新拾取。 */
+    | { type: 'DATA.TICK' }
   tag: never
   guard: never
-  action: ChartBaseAction | 'notifyActive' | 'reportIssues' | 'setWindow' | 'startDrag' | 'endDrag' | 'startBrush' | 'moveBrush' | 'endBrush' | 'setBrush' | 'setBrushAnchor' | 'requestPaint'
-  effect: 'trackViewport' | 'trackCanvas'
+  action: ChartBaseAction | 'notifyActive' | 'reportIssues' | 'setWindow' | 'startDrag' | 'endDrag' | 'startBrush' | 'moveBrush' | 'endBrush' | 'setBrush' | 'setBrushAnchor' | 'requestPaint' | 'syncSource' | 'tickData' | 'followData' | 'repick' | 'syncFollow'
+  effect: 'trackViewport' | 'trackCanvas' | 'trackSource'
 }
 
 export interface CartesianOverlay {

@@ -142,6 +142,11 @@ export interface XhCartesianChartRootProps extends Omit<ComponentPropsWithRef<'f
   /** 初始缩放窗口（非受控）。 */
   defaultWindow?: CartesianWindow
   onWindowChange?: CartesianChartProps['onWindowChange']
+  /** 缩放窗口跟随最新的数据（受控）：窗口右端贴着数据末端时，新数据到来窗口随之右移、宽度不变。 */
+  follow?: boolean
+  /** 初始是否跟随（非受控），缺省 true。 */
+  defaultFollow?: boolean
+  onFollowChange?: CartesianChartProps['onFollowChange']
   /** 刷选：x 沿自变量轴、y 沿数值轴、xy 框矩形，缺省 none。 */
   brush?: CartesianBrush
   /** 刷选范围（受控），null 为没有刷选。 */
@@ -191,6 +196,9 @@ export function XhCartesianChartRoot({
   window,
   defaultWindow,
   onWindowChange,
+  follow,
+  defaultFollow,
+  onFollowChange,
   brush,
   brushSelection,
   defaultBrushSelection,
@@ -228,6 +236,9 @@ export function XhCartesianChartRoot({
     window,
     defaultWindow,
     onWindowChange,
+    follow,
+    defaultFollow,
+    onFollowChange,
     brush,
     brushSelection,
     defaultBrushSelection,

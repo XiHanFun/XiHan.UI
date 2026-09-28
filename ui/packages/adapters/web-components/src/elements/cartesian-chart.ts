@@ -15,6 +15,7 @@ import type {
   CartesianChartApi,
   CartesianChartSchema,
   CartesianChartTranslations,
+  CartesianFollowChangeDetails,
   CartesianLegendItem,
   CartesianOrientation,
   CartesianRenderer,
@@ -53,6 +54,29 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
+/** 一行单元格按位置复用：个数对齐、文字变了才写。scope 为 col 时整行是列头，为 row 时首格是行头。 */
+function syncTableRow(tr: Element, texts: readonly string[], scope: 'col' | 'row'): void {
+  const doc = tr.ownerDocument
+  while (tr.children.length > texts.length)
+    tr.lastElementChild!.remove()
+  texts.forEach((text, c) => {
+    const tag = scope === 'col' || c === 0 ? 'th' : 'td'
+    let cell = tr.children[c] as HTMLTableCellElement | undefined
+    if (!cell || cell.localName !== tag) {
+      const next = doc.createElement(tag)
+      if (tag === 'th')
+        next.scope = scope
+      if (cell)
+        cell.replaceWith(next)
+      else
+        tr.append(next)
+      cell = next
+    }
+    if (cell.textContent !== text)
+      cell.textContent = text
+  })
+}
+
 /**
  * `<xh-cartesian-chart>`：直角坐标图宿主，柱、折线与散点共用一根自变量轴与一根数值轴。
  *
@@ -75,6 +99,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上
  * @attr {boolean} totals - 堆叠柱的合计：每个堆叠组在最外端写出合计
  * @attr {'series'|'descending'|'ascending'} tooltip-order - 提示框里各系列的行序，默认 series（按图例次序）
+ * @attr {boolean} follow - 缩放窗口跟随最新的数据（受控）：窗口右端贴着数据末端时，新数据到来窗口随之右移；未提供该属性即非受控
+ * @attr {boolean} default-follow - 非受控时初始是否跟随，默认 true
  * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
  * @attr {string} locale - 数字、日期与内建文案的语言；未提供时按宿主语言
@@ -82,6 +108,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires hidden-series-change - 图例切换显隐；detail 为 `{ hiddenSeries: string[] }`
  * @fires active-key-change - 指针或键盘换了激活的键；detail 为 `{ activeKey }`，收起时为 null
  * @fires window-change - 滚轮、捏合、拖动、键盘或缩放条改了缩放窗口；detail 为 `{ window }`
+ * @fires follow-change - 用户把窗口拖离或拖回数据末端，跟随的开关变了；detail 为 `{ follow }`
  * @fires brush-selection-change - 刷选范围变了（指针松手时一次，键盘每按一次）；detail 为 `{ selection, data }`
  * @fires datum-active - 悬停或聚焦到某个数据；detail 为数据详情，收起时为 null
  * @fires datum-press - 指针点击、Enter 或 Space 按在某个数据上；detail 为数据详情
@@ -118,6 +145,8 @@ export class XhCartesianChartElement extends XhElement {
     window: { attribute: false },
     defaultWindow: { attribute: false },
     zoom: { converter: STRING_CONVERTER },
+    follow: { converter: BOOLEAN_CONVERTER },
+    defaultFollow: { converter: BOOLEAN_CONVERTER, attribute: 'default-follow' },
     brush: { converter: STRING_CONVERTER },
     brushSelection: { attribute: false },
     defaultBrushSelection: { attribute: false },
@@ -144,6 +173,8 @@ export class XhCartesianChartElement extends XhElement {
   declare window?: CartesianWindow
   declare defaultWindow?: CartesianWindow
   declare zoom?: CartesianZoom
+  declare follow?: boolean
+  declare defaultFollow?: boolean
   declare brush?: CartesianBrush
   declare brushSelection?: CartesianBrushSelection | null
   declare defaultBrushSelection?: CartesianBrushSelection | null
@@ -167,6 +198,10 @@ export class XhCartesianChartElement extends XhElement {
 
   private readonly notifyWindow = (details: CartesianWindowChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('window-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyFollow = (details: CartesianFollowChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('follow-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyBrush = (details: CartesianBrushSelectionChangeDetails): void => {
@@ -204,6 +239,8 @@ export class XhCartesianChartElement extends XhElement {
       zoom: this.zoom,
       window: this.window,
       defaultWindow: this.defaultWindow,
+      follow: this.follow,
+      defaultFollow: this.defaultFollow,
       brush: this.brush,
       brushSelection: this.brushSelection,
       defaultBrushSelection: this.defaultBrushSelection,
@@ -217,6 +254,7 @@ export class XhCartesianChartElement extends XhElement {
       onHiddenSeriesChange: this.notifyHidden,
       onActiveKeyChange: this.notifyKey,
       onWindowChange: this.notifyWindow,
+      onFollowChange: this.notifyFollow,
       onBrushSelectionChange: this.notifyBrush,
       onDatumActive: this.notifyActive,
       onDatumPress: this.notifyPress,
@@ -565,29 +603,20 @@ export class XhCartesianChartElement extends XhElement {
       return
     this.#table = api.table
     this.#tableHost = table
-    const caption = doc.createElement('caption')
-    caption.textContent = api.tableCaption
-    const head = doc.createElement('thead')
-    const headRow = doc.createElement('tr')
-    for (const column of api.table.columns) {
-      const th = doc.createElement('th')
-      th.scope = 'col'
-      th.textContent = column.label
-      headRow.append(th)
+    // 表格按位置复用行与单元格，文字变了才写：流式追加时只有末尾几行在变，整张表不重建，读屏的浏览缓冲不被整个换掉
+    let [caption, head, body] = [...table.children] as HTMLElement[]
+    if (table.children.length !== 3 || !caption || !head || !body) {
+      caption = doc.createElement('caption')
+      head = doc.createElement('thead')
+      body = doc.createElement('tbody')
+      table.replaceChildren(caption, head, body)
     }
-    head.append(headRow)
-    const body = doc.createElement('tbody')
-    for (const row of api.table.rows) {
-      const tr = doc.createElement('tr')
-      row.cells.forEach((cell, c) => {
-        const td = doc.createElement(c === 0 ? 'th' : 'td')
-        if (c === 0)
-          (td as HTMLTableCellElement).scope = 'row'
-        td.textContent = cell.text
-        tr.append(td)
-      })
-      body.append(tr)
-    }
-    table.replaceChildren(caption, head, body)
+    if (caption.textContent !== api.tableCaption)
+      caption.textContent = api.tableCaption
+    syncTableRow(head.firstElementChild ?? head.appendChild(doc.createElement('tr')), api.table.columns.map(column => column.label), 'col')
+    const rows = api.table.rows
+    while (body.children.length > rows.length)
+      body.lastElementChild!.remove()
+    rows.forEach((row, i) => syncTableRow(body.children[i] ?? body.appendChild(doc.createElement('tr')), row.cells.map(cell => cell.text), 'row'))
   }
 }

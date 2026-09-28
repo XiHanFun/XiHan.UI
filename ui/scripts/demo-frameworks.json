@@ -29,6 +29,10 @@
         "symbol": "createColumnStore",
         "reason": "这份示例的主语是列式数据仓 createColumnStore：一百万个采样点装进 Float64Array 列，图表走大数据的那一条管线。不用它就只能写对象数组，而一百万个对象正是这份示例要说明不该走的路。函数只能 import，取不到的原因同 dialog/09-service。列式数据的元素写法（给元素的 data 属性赋一个数据仓）与三端一致性在浏览器用例里验过；要让自定义元素版示例取到这个函数，得先给文档站一条让示例取到包的路。"
       },
+      "cartesian-chart/35-stream": {
+        "symbol": "createColumnStore",
+        "reason": "这份示例的主语是可追加的列式数据仓 createColumnStore：定时 append 新成交、capacity 滑动窗口，图表订阅它按帧合并刷新，窗口靠 follow 跟着末端走。不用它就只能每次换一整个对象数组，那恰是这份示例要说明不该走的路。函数只能 import，取不到的原因同 dialog/09-service。follow 与 follow-change 的元素写法与数据仓的订阅在浏览器用例里验过。"
+      },
       "dialog/09-service": {
         "symbol": "createDialogService",
         "reason": "这份示例的主语是 createDialogService 这个工厂函数：它自己建 <xh-dialog> 节点、挂到浮层落点、多次调用排队顺次弹、onOk 返 Promise 时确认钮自动 pending。函数只能 import，而示例源码经 innerHTML 注入、<script> 逐个重建执行，页面里没有 import map，裸说明符当场抛错——现有九百多份自定义元素示例里没有一份 import 过任何包。同目录的 07-imperative 演的是手搓一个确认框，那是「不用这个服务怎么写」，拿它套上这一份的首行就是拿形似的东西冒充。要答「不用 Vue 怎么调这个服务」，得先给文档站一条让示例取到包的路，那是文档站的能力，不是这一份示例补得上的。"

@@ -222,6 +222,12 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 
 <XhDemo src="cartesian-chart/34-columns" />
 
+### 实时行情流
+
+列式数据仓 append 新成交，同一帧里的多次推送合成一次重画；窗口跟着最新价走，拖离末端即暂停，受控的 follow 一键回到最新
+
+<XhDemo src="cartesian-chart/35-stream" />
+
 ## 设计指引
 
 ### 何时使用
@@ -285,6 +291,8 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 - 列式数据支持的写法：折线（`linear` 与三种阶梯、`area`、区间带、`connectNulls`、`symbols: 'auto'`）、散点（`size`、`color`、`symbol`）、K 线（实体与美国线）、单值柱（`trend`）；x 轴取 time、utc 或 linear，折线、K 线与柱共用同一个升序的自变量列；注释取 `line`、`band` 与 `point`。其余写法（`renderer: 'svg'`、横向、堆叠、瀑布、分箱、区间柱、棒棒糖、箱线、数据标签、`monotone`、`symbols: 'always'`、`endLabel`、`jitter`、`brush`、`totals`、平均线与趋势线）报 `chart.columns-option`，共用的自变量列乱序报 `chart.columns-unsorted`，整张图不画。缩放最窄到窗口里只剩两个点。
 - `xAxis.ordinal`（只用于列式数据）让自变量按数据点等距排列、跳过没有数据的时段（休市、周末）；时间轴的刻度落在跨过整点、整天、月初这些边界之后的第一个点上，缩放窗口仍写自变量的值。写在对象数组上报 `chart.option-conflict`：对象数组要跳过休市，把键写成文字画在类目轴上。`yAxis.fit: 'window'` 让数值轴只按缩放窗口里露出的数据取（连续轴两端各带一个相邻的点），行情放大后价格铺满纵向，两种数据都支持。
 - 柱的 `trend: [from, to]` 按两个字段的涨跌取色：`to ≥ from` 取 `--xh-chart-rise`，否则取 `--xh-chart-fall`，两个字段缺一个的行保持系列色；成交量随 K 线写 `['open', 'close']`。两种数据都支持；与瀑布同写报 `chart.option-conflict`（瀑布已按每一步的增减取色）。
+- 列式数据仓可以一直追加：`append` 追加行，`setLast` 改写末行（还在走的那根 K 线），`shift` 从头部挤掉，`clear` 清空，`capacity` 设最多留多少行（滑动窗口，追加超出时挤掉最旧的）。图表订阅数据仓，同一帧里的多次推送合成一次刷新；指针停在绘图区里时数据流过，准线与提示框跟着指针下面换了的那个数据走。追加出乱序的时间戳时报 `chart.columns-unsorted`。
+- `follow` / `defaultFollow`（缺省 true）/ `onFollowChange` 让缩放窗口跟着最新的数据走：自变量方向放大后，窗口右端贴着数据末端时，新数据到来窗口随之右移、宽度不变（等距轴与类目轴按新增的点数，连续轴按自变量的差）；拖动、滚轮、缩放条或键盘让窗口右端离开末端即变为 false，数据流过时窗口不动；回到末端变回 true，把 `follow` 写成 true 时窗口一步跳到末端。没放大时整条轴本来就包含新数据。对象数组换数据时同样跟随。Vue 用 `v-model:follow`，Web Components 写 `follow` 属性、监听 `follow-change`。
 - `brush` 打开刷选：`x` 沿自变量轴框一段，`y` 沿数值轴框一段，`xy` 框一个矩形，缺省 `none`。开启后在绘图区里拖动即刷选，指针是十字，放大后的平移改用缩放条或键盘。拖着时框已经画出（类目轴取整到首尾类目的整条带），松手才派发一次 `onBrushSelectionChange`，载荷是范围 `selection` 与框里的数据 `data`：锚点（柱顶、点、线上的点、K 线的收盘、箱线的中位数）落在框里即算，按图例次序、再按自变量排。范围 `brushSelection` / `defaultBrushSelection` 的写法同缩放窗口，受控时由作者写回。框垫在数据之下，是选中语义的淡底加一圈聚焦色的细边；框外的柱、点、K 线与箱线淡出到 `--xh-chart-dim-alpha`，折线与面积是整条路径，不分框里框外。点一下（没拖开）或按 Escape 清掉刷选。
 - 提示框缺省按系列推断：只有散点时 `item`，否则 `axis`。`axis` 吸附到最近的键，列出该键上全部可见系列（散点在这个 x 上有点才列一行）；`item` 只报告指针命中的那一个数据，命中取离指针最近的标记，不要求指针正中。气泡的行在数值后面跟着大小，名字取 `translations.sizeLabel`。键盘聚焦与指针悬停显示同样的内容。`tooltipOrder` 改变提示框里各系列的行序：缺省 `series` 按图例次序，`descending` / `ascending` 按数值排，缺失值排在最后；回调里的 `items` 仍按图例次序。
 - 悬停图例项时，其余系列淡出到 `--xh-chart-dim-alpha`，该系列颜色不变；`trigger="item"` 时悬停或聚焦某个数据同样只保留它所在的系列。`axis` 模式不淡出：提示框列出的正是该键上的全部系列。
@@ -343,6 +351,7 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 | `hidden-series-change` | `ChartHiddenSeriesChangeDetails` | 图例切换显隐；detail 为 `{ hiddenSeries: string[] }` |
 | `active-key-change` | `ChartActiveKeyChangeDetails` | 指针或键盘换了激活的键；detail 为 `{ activeKey }`，收起时为 null |
 | `window-change` | `CartesianWindowChangeDetails` | 滚轮、捏合、拖动、键盘或缩放条改了缩放窗口；detail 为 `{ window }` |
+| `follow-change` | `CartesianFollowChangeDetails` | 用户把窗口拖离或拖回数据末端，跟随的开关变了；detail 为 `{ follow }` |
 | `brush-selection-change` | `CartesianBrushSelectionChangeDetails` | 刷选范围变了（指针松手时一次，键盘每按一次）；detail 为 `{ selection, data }` |
 | `datum-active` | `ChartDatumDetails` | 悬停或聚焦到某个数据；detail 为数据详情，收起时为 null |
 | `datum-press` | `ChartDatumDetails` | 指针点击、Enter 或 Space 按在某个数据上；detail 为数据详情 |
@@ -380,6 +389,9 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 | `XhCartesianChartRoot` | `window` | `CartesianWindow` |  | 缩放窗口（受控）。 |
 | `XhCartesianChartRoot` | `defaultWindow` | `CartesianWindow` |  | 初始缩放窗口（非受控）。 |
 | `XhCartesianChartRoot` | `onWindowChange` | `CartesianChartProps['onWindowChange']` |  |  |
+| `XhCartesianChartRoot` | `follow` | `boolean` |  | 缩放窗口跟随最新的数据（受控）：窗口右端贴着数据末端时，新数据到来窗口随之右移、宽度不变。 |
+| `XhCartesianChartRoot` | `defaultFollow` | `boolean` |  | 初始是否跟随（非受控），缺省 true。 |
+| `XhCartesianChartRoot` | `onFollowChange` | `CartesianChartProps['onFollowChange']` |  |  |
 | `XhCartesianChartRoot` | `brush` | `CartesianBrush` |  | 刷选：x 沿自变量轴、y 沿数值轴、xy 框矩形，缺省 none。 |
 | `XhCartesianChartRoot` | `brushSelection` | `CartesianBrushSelection \| null` |  | 刷选范围（受控），null 为没有刷选。 |
 | `XhCartesianChartRoot` | `defaultBrushSelection` | `CartesianBrushSelection \| null` |  | 初始刷选范围（非受控）。 |
@@ -415,7 +427,7 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 
 **状态**：`idle`
 
-**事件**：`WINDOW.SET` · `DRAG.START` · `DRAG.END` · `BRUSH.START` · `BRUSH.MOVE` · `BRUSH.END` · `BRUSH.SET` · `BRUSH.ANCHOR`
+**事件**：`WINDOW.SET` · `DRAG.START` · `DRAG.END` · `BRUSH.START` · `BRUSH.MOVE` · `BRUSH.END` · `BRUSH.SET` · `BRUSH.ANCHOR` · `DATA.TICK`
 
 ### connect API
 
@@ -549,7 +561,7 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 - 每个系列是一个 `role="graphics-object"` 的分组，名称是系列名；每根柱、每个散点、每个焦点代理点是 `role="graphics-symbol"`，名称取 `translations.datumLabel`（缺省“键, 系列名 值”），务必按本地语言改写。
 - 坐标轴、网格、十字准线、注释与焦点环一律 `aria-hidden`：它们的信息由每个数据的名称、摘要与数据表承担。摘要末尾按 `translations.annotationSummary` 写出参考线、参考带与平均线的名字与值（没写标签的取 `referenceLabel`）；标出的点与趋势线不写，前者的值在数据表里，后者由数据推出。
 - 组件在根内生成一段摘要与一张数据表，二者视觉隐藏、对读屏可见，服务端即输出。摘要写系列数、自变量的范围以及每个系列的最小值与最大值，模板是 `translations.summary`；数据表首列是自变量，列名缺省取 x 轴标题，其余每个可见系列一列，缺失值写 `translations.missingValue`。含散点时一个 x 上可以有多个点，数据表改为每个数据一行：系列、x、y 各一列（列名取 `translations.seriesLabel` 与两根轴的标题），有气泡时再加大小一列，按值着色时再加一列。气泡与按值着色的点的缺省名称在末尾补上大小与颜色对应的值；色阶图例只给眼睛看。
-- 绘图区只占一个 Tab 位，进入后焦点落在一个真实的元素上：柱与散点直接获得焦点，散点按 x 的次序走，上下键换到另一个系列里 x 最近的点；折线没有逐点的元素，由绘图区为聚焦的数据生成一个点作为焦点代理，移动时替换并聚焦新点，读屏据此播报新的名称。
+- 绘图区只占一个 Tab 位，进入后焦点落在一个真实的元素上（放大后落在窗口里的第一个数据上，不落在窗外）：柱与散点直接获得焦点，散点按 x 的次序走，上下键换到另一个系列里 x 最近的点；折线没有逐点的元素，由绘图区为聚焦的数据生成一个点作为焦点代理，移动时替换并聚焦新点，读屏据此播报新的名称。
 - 数据层画在画布上时，读屏听到的与 SVG 模式相同：绘图区占一个 Tab 位，进来后焦点落在锚点数据的焦点代理上——就是那根柱、那个点或那根 K 线的 SVG 版本，放回所属系列的分组、叠在画布上，名称、方向键与提示框都与 SVG 模式一致；折线的焦点代理照旧是激活的点。画布与垫层 `aria-hidden`，样式探针 `aria-hidden`、不可聚焦。
 - 列式数据的数据表：行数不超过 500 时逐行写出；超过时按自变量区间聚合成不超过 100 行，区间取整到时间或数值的整刻度，每行写区间与每个系列在区间里的范围（最小 – 最大），K 线写合并后的开高低收，表题按 `translations.aggregatedCaption` 注明多少行聚合成了多少个区间。摘要的最值、首末与变化率由分块极值直接算。焦点代理照样逐点可达：方向键一次走一个点，PageUp / PageDown 跨一成，Home / End 到头。
 - 焦点环是独立的 `focus-ring` 部件，画在标记之外，不依赖 SVG 元素的 outline；只在键盘聚焦时出现。

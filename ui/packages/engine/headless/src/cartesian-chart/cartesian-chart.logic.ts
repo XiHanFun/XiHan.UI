@@ -14,7 +14,8 @@ import type { CartesianModel } from './cartesian-chart.pipeline'
 import type { CartesianChartSchema, CartesianOverlay } from './cartesian-chart.schema'
 import type { CartesianAnnotationSummary, CartesianBrushing, CartesianBrushSelection, CartesianChartTranslations, CartesianLegendScale, CartesianRenderer, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow, CartesianWindowRatio } from './cartesian-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
-import { createPicker, domainToWindow, FULL_WINDOW, lttb } from '@xihan-ui/viz'
+import { createPicker, domainToWindow, FULL_WINDOW, isFullWindow, lttb } from '@xihan-ui/viz'
+import { nearestIndex } from '@xihan-ui/viz/columns'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
 import {
   columnsAnchorAt,
@@ -23,6 +24,7 @@ import {
   columnsFirstRef,
   columnsHitTest,
   columnsKeyAt,
+  columnsKeyNumber,
   columnsMarkKey,
   columnsNavTarget,
   columnsOverlay,
@@ -158,6 +160,7 @@ export function cartesianModelOf(source: CartesianModelSource): CartesianModel {
     metrics: context.get('metrics'),
     measurer: refs.get('measurer'),
     measurerVersion: context.get('measurerVersion'),
+    dataVersion: context.get('dataVersion'),
     locale: resolveLocale(prop('locale'), scope),
     translations: labelled ? axisLabelled(translations, keyLabel, valueLabel) : translations,
   })
@@ -276,9 +279,58 @@ export function cartesianFirstRef(model: CartesianModel): ChartDatumRef | null {
   return null
 }
 
-/** roving 锚点：锚点还有效就用它，否则退回第一个数据。 */
+const firstVisible = new WeakMap<object, ChartDatumRef | null>()
+
+/**
+ * 自变量方向放大后，窗口里的第一个数据（第一个可见系列里锚点落在绘图区里的第一个）；没放大、还没测量或窗口里没有数据时为 null。
+ * 按布局记忆：没有焦点时每次连接都要问它，百万点也只找一遍。
+ */
+function firstVisibleRef(model: CartesianModel): ChartDatumRef | null {
+  const scene = model.scene
+  if (!scene || isFullWindow(scene.layout.window.x))
+    return null
+  const owner = model.columns?.layout ?? scene
+  const hit = firstVisible.get(owner)
+  if (hit !== undefined)
+    return hit
+  const { plot } = scene.layout
+  const vertical = model.spec.orientation === 'vertical'
+  const lo = vertical ? plot.x : plot.y
+  const hi = vertical ? plot.x + plot.width : plot.y + plot.height
+  const along = (a: { x: number, y: number }): number => (vertical ? a.x : a.y)
+  let ref: ChartDatumRef | null = null
+  const c = model.columns
+  if (c?.layout) {
+    const { data, layout } = c
+    for (const s of data.visible) {
+      const sorted = s.x === data.key
+      for (let p = sorted ? Math.max(0, layout.from) : 0; p < data.length && !ref; p++) {
+        const a = columnsAnchorAt(data, layout, s, p)
+        if (a && along(a) >= lo - 0.5 && along(a) <= hi + 0.5)
+          ref = { seriesId: s.spec.id, index: data.start + p }
+        else if (a && sorted && along(a) > hi)
+          break
+      }
+      if (ref)
+        break
+    }
+  }
+  else if (!c) {
+    for (const s of model.derived.visible) {
+      const p = scene.anchors.get(s.spec.id)?.findIndex(a => a != null && along(a) >= lo - 0.5 && along(a) <= hi + 0.5) ?? -1
+      if (p >= 0 && s.values[p] != null) {
+        ref = { seriesId: s.spec.id, index: s.rows[p]! }
+        break
+      }
+    }
+  }
+  firstVisible.set(owner, ref)
+  return ref
+}
+
+/** roving 锚点：锚点还有效就用它，否则退回第一个数据；放大后退回窗口里的第一个数据，Tab 进来不落在窗外。 */
 export function cartesianAnchor(model: CartesianModel, focused: ChartDatumRef | null): ChartDatumRef | null {
-  return cartesianPositionOf(model, focused) >= 0 ? focused : cartesianFirstRef(model)
+  return cartesianPositionOf(model, focused) >= 0 ? focused : firstVisibleRef(model) ?? cartesianFirstRef(model)
 }
 
 function detailsOf(model: CartesianModel, s: CartesianSeriesValues, position: number): ChartDatumDetails {
@@ -1035,6 +1087,12 @@ export interface CartesianKeyDomain {
   readonly kind: 'linear' | 'log'
   /** 键是日期：窗口两端写 Date。 */
   readonly time: boolean
+  /** 窗口一端的键落在第几个键上（按下标缩放时用）：不在数据里时取最近的那个；没有键为 −1。 */
+  readonly indexOf: (key: ChartKey) => number
+  /** 连续轴上键的两端（日期取时间值）；按下标缩放或没有键时为 null。 */
+  readonly extent: readonly [number, number] | null
+  /** 最后一个键：按下标是末位的那个，连续轴是最大的那个；没有键为 null。 */
+  readonly last: ChartKey | null
 }
 
 const keyDomains = new WeakMap<object, CartesianKeyDomain>()
@@ -1045,9 +1103,47 @@ export function cartesianKeyDomain(model: CartesianModel): CartesianKeyDomain {
   if (!domain) {
     const c = model.columns
     const { keys, keyScale } = model.spec
-    domain = c
-      ? { indexed: c.spec.ordinal, count: c.data.length, keyAt: j => columnsKeyAt(c.data, null, j), kind: 'linear', time: c.spec.time }
-      : { indexed: keyScale === 'band' || keyScale === 'point', count: keys.length, keyAt: j => keys[j]!, kind: keyScale === 'log' ? 'log' : 'linear', time: keyScale === 'time' || keyScale === 'utc' }
+    if (c) {
+      const key = c.data.key
+      const n = c.data.length
+      let extent: [number, number] | null = key && n > 0 ? [key[0]!, key[n - 1]!] : null
+      for (const s of c.data.visible) {
+        const e = s.xExtent?.extent(0, n)
+        if (e)
+          extent = extent ? [Math.min(extent[0], e.min), Math.max(extent[1], e.max)] : [e.min, e.max]
+      }
+      domain = {
+        indexed: c.spec.ordinal,
+        count: n,
+        keyAt: j => columnsKeyAt(c.data, null, j),
+        kind: 'linear',
+        time: c.spec.time,
+        indexOf: k => (key && n > 0 ? nearestIndex(key, columnsKeyNumber(k)) : -1),
+        extent: c.spec.ordinal ? null : extent,
+        last: c.spec.ordinal ? (n > 0 ? columnsKeyAt(c.data, null, n - 1) : null) : extent && (c.spec.time ? new Date(extent[1]) : extent[1]),
+      }
+    }
+    else {
+      const indexed = keyScale === 'band' || keyScale === 'point'
+      const numbers = indexed ? [] : keys.map(k => (k instanceof Date ? k.valueOf() : Number(k))).filter(Number.isFinite)
+      domain = {
+        indexed,
+        count: keys.length,
+        keyAt: j => keys[j]!,
+        kind: keyScale === 'log' ? 'log' : 'linear',
+        time: keyScale === 'time' || keyScale === 'utc',
+        indexOf: (k) => {
+          const i = keys.findIndex(key => sameEnd(key, k))
+          return i >= 0 || keys.length === 0 ? i : keys.length - 1
+        },
+        extent: numbers.length > 0 ? [Math.min(...numbers), Math.max(...numbers)] : null,
+        last: null,
+      }
+      if (indexed)
+        domain = { ...domain, last: keys.at(-1) ?? null }
+      else if (domain.extent)
+        domain = { ...domain, last: domain.time ? new Date(domain.extent[1]) : domain.extent[1] }
+    }
     keyDomains.set(owner, domain)
   }
   return domain
@@ -1085,4 +1181,64 @@ export function cartesianRefOfMark(model: CartesianModel, key: string, focused: 
   const info = model.scene?.info.get(key)
   const s = info && info.position >= 0 ? seriesOf(model, info.seriesId) : undefined
   return s ? { seriesId: s.spec.id, index: s.rows[info!.position]! } : null
+}
+
+function keyValue(key: ChartKey): number {
+  return key instanceof Date ? key.valueOf() : Number(key)
+}
+
+/**
+ * 窗口右端是否贴着数据末端：按下标缩放时右端就是最后一个键，连续轴差不到半个平均键距。
+ * 没放大（整条轴）、没有数据时也算在末端。
+ */
+export function cartesianWindowAtEnd(model: CartesianModel, window: CartesianWindow): boolean {
+  const x = window.x
+  const d = cartesianKeyDomain(model)
+  if (!x || d.count === 0)
+    return true
+  if (d.indexed)
+    return Math.max(d.indexOf(x[0]), d.indexOf(x[1])) >= d.count - 1
+  if (!d.extent)
+    return true
+  const [first, last] = d.extent
+  const half = d.count > 1 ? (last - first) / (d.count - 1) / 2 : 0
+  return Math.max(keyValue(x[0]), keyValue(x[1])) >= last - half
+}
+
+/**
+ * 跟随：窗口右端移到数据末端、宽度不变——按下标缩放时按键的个数，连续轴按自变量的差。
+ * reached 给了时只在窗口右端够到它（上一次数据的最后一个键）时才跟：没贴着末端的窗口不因数据变了而跳。
+ * 没放大、没有数据或右端已经在末端（及更远）时为 null。
+ */
+export function cartesianFollowWindow(model: CartesianModel, window: CartesianWindow, reached?: ChartKey | null): CartesianWindow | null {
+  const x = window.x
+  const d = cartesianKeyDomain(model)
+  if (!x || d.count === 0)
+    return null
+  if (reached !== undefined) {
+    if (reached == null)
+      return null
+    const end = d.indexed
+      ? Math.max(d.indexOf(x[0]), d.indexOf(x[1])) >= d.indexOf(reached)
+      : Math.max(keyValue(x[0]), keyValue(x[1])) >= keyValue(reached)
+    if (!end)
+      return null
+  }
+  if (d.indexed) {
+    const a = d.indexOf(x[0])
+    const b = d.indexOf(x[1])
+    const last = d.count - 1
+    if (Math.max(a, b) >= last)
+      return null
+    return { ...window, x: [d.keyAt(Math.max(0, last - Math.abs(b - a))), d.keyAt(last)] }
+  }
+  if (!d.extent)
+    return null
+  const end = d.extent[1]
+  const lo = Math.min(keyValue(x[0]), keyValue(x[1]))
+  const hi = Math.max(keyValue(x[0]), keyValue(x[1]))
+  if (hi >= end)
+    return null
+  const width = hi - lo
+  return { ...window, x: d.time ? [new Date(end - width), new Date(end)] : [end - width, end] }
 }

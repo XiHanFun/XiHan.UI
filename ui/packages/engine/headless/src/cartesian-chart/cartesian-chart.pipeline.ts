@@ -63,6 +63,11 @@ export interface CartesianPipelineInput {
   readonly annotations: readonly CartesianAnnotation[] | undefined
   readonly zoom: CartesianZoom
   readonly window: CartesianWindow
+  /**
+   * 列式数据仓刷新的次数：读它的宿主与计算在数据仓原地追加时跟着重算。列视图按数据仓自己的版本号取，
+   * 刷新还没合进来的那一刻管线也读得到最新的数据。
+   */
+  readonly dataVersion: number
   /** 列式数据要核对的两处写法：列式数据总是画在画布上、不支持刷选。 */
   readonly renderer: CartesianRenderer | undefined
   readonly brush: CartesianBrush | undefined

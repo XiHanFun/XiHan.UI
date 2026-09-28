@@ -126,3 +126,41 @@ describe('列式数据', () => {
     }
   })
 })
+
+describe('流式', () => {
+  it('数据仓追加时窗口跟着末端走；键盘把焦点移回开头后派发 onFollowChange(false)', async () => {
+    const store = createColumnStore({ fields: ['t', 'v'] })
+    for (let i = 0; i < 40; i++)
+      store.append({ t: i, v: i % 7 })
+    const windows: unknown[] = []
+    const follows: boolean[] = []
+    const host = document.createElement('div')
+    host.style.inlineSize = '480px'
+    document.body.append(host)
+    const root = createRoot(host)
+    flushSync(() => root.render(
+      <XhCartesianChartRoot
+        data={store}
+        series={[{ mark: 'line', x: 't', y: 'v', name: '读数' }]}
+        xAxis={{ scale: 'linear' }}
+        zoom="x"
+        defaultWindow={{ x: [30, 39], y: null }}
+        onWindowChange={details => windows.push(details.window.x)}
+        onFollowChange={details => follows.push(details.follow)}
+        animated={false}
+        locale="en-US"
+        caption="读数"
+      />,
+    ))
+    mounted.push({ host, root })
+    await frames()
+    store.append([{ t: 40, v: 1 }, { t: 41, v: 2 }])
+    await frames()
+    expect(windows).toEqual([[32, 41]])
+    part(host, 'plot')[0]!.focus()
+    await frames()
+    await userEvent.keyboard('{Home}')
+    await frames()
+    expect(follows).toEqual([false])
+  })
+})
