@@ -13,6 +13,7 @@ import type {
   ChartBaseContext,
   ChartBaseEvent,
   ChartBaseRefs,
+  ChartCanvasHost,
   ChartCommonProps,
   ChartDatumDetails,
   ChartKey,
@@ -34,6 +35,7 @@ import type {
   CartesianLegendScale,
   CartesianMarkTag,
   CartesianOrientation,
+  CartesianRenderer,
   CartesianSeries,
   CartesianTooltipModel,
   CartesianTooltipOrder,
@@ -54,6 +56,11 @@ export interface CartesianChartSchema extends MachineSchema {
     yAxis?: CartesianAxis
     /** 朝向，缺省 vertical。 */
     orientation?: CartesianOrientation
+    /**
+     * 数据层画在哪：svg、canvas，或 auto（缺省）——数据层逐个成节点的标记超过节点预算时改用画布。
+     * 画布只画数据层：坐标轴、网格、注释、焦点代理、摘要与数据表仍是 SVG / DOM。
+     */
+    renderer?: CartesianRenderer
     /** 提示框汇报什么；缺省含柱或折线时 axis，只有散点时 item。 */
     trigger?: CartesianTrigger
     /** 堆叠柱的合计：每个堆叠组在最外端写出合计，含负值时正负两端各写一个；百分比堆叠不写。缺省 false。 */
@@ -116,6 +123,10 @@ export interface CartesianChartSchema extends MachineSchema {
      * 窗口起算会原地不动；窗口还是那一份时从这里接着算。
      */
     zoomRatio: { ratio: CartesianWindowRatio, window: CartesianWindow } | null
+    /** 画布节点，由适配器注入；svg 渲染或还没挂上时返回 null。 */
+    getCanvasEl: () => HTMLCanvasElement | null
+    /** 画布宿主：机器在状态变化后经它排重绘；未挂载为 null。 */
+    canvas: ChartCanvasHost | null
   }
   state: 'idle'
   event: ChartBaseEvent
@@ -130,8 +141,8 @@ export interface CartesianChartSchema extends MachineSchema {
     | { type: 'BRUSH.ANCHOR', index: number | null }
   tag: never
   guard: never
-  action: ChartBaseAction | 'notifyActive' | 'reportIssues' | 'setWindow' | 'startDrag' | 'endDrag' | 'startBrush' | 'moveBrush' | 'endBrush' | 'setBrush' | 'setBrushAnchor'
-  effect: 'trackViewport'
+  action: ChartBaseAction | 'notifyActive' | 'reportIssues' | 'setWindow' | 'startDrag' | 'endDrag' | 'startBrush' | 'moveBrush' | 'endBrush' | 'setBrush' | 'setBrushAnchor' | 'requestPaint'
+  effect: 'trackViewport' | 'trackCanvas'
 }
 
 export interface CartesianOverlay {
@@ -141,9 +152,21 @@ export interface CartesianOverlay {
   readonly over: readonly Mark[]
 }
 
+/** 按渲染器分好的两层 SVG 标记：画布模式下网格、坐标轴、参考带与准线在垫层（数据之下），其余在绘图区。 */
+export interface CartesianLayers {
+  /** 垫层：只在画布模式下有内容。 */
+  readonly underlay: readonly Mark[]
+  /** 绘图区：svg 模式是全部标记；画布模式是系列分组与样式探针、前景层、焦点代理与焦点环。 */
+  readonly plot: readonly Mark[]
+}
+
 export interface CartesianChartApi<T extends PropTypes = PropTypes> {
   /** 管线产物：比例尺、布局、场景与无障碍模型。 */
   model: CartesianModel
+  /** 解析后的渲染器：数据层画在 SVG 还是画布上。 */
+  renderer: 'svg' | 'canvas'
+  /** 按渲染器分好层的标记：适配器照它画垫层与绘图区，不自己拼层序。 */
+  layers: CartesianLayers
   /** 要画的场景；尚未测量时为空场景。 */
   scene: Scene
   /**
@@ -212,6 +235,10 @@ export interface CartesianChartApi<T extends PropTypes = PropTypes> {
   getLegendScaleValueProps: (edge: 'min' | 'max') => T['element']
   getViewportProps: () => T['element']
   getPlotProps: () => T['element']
+  /** 垫层：画布模式下垫在画布之下的 svg，网格、坐标轴、参考带与准线画在这里。 */
+  getUnderlayProps: () => T['element']
+  /** 画布：画布模式下的数据层；后备尺寸由机器按视口与 DPR 设。 */
+  getCanvasProps: () => T['element']
   /** 绘图区的第一个子节点：各系列的纹理定义在这里。 */
   getDefsProps: () => T['element']
   getPatternProps: (pattern: ChartPattern) => T['element']

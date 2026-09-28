@@ -12,7 +12,7 @@ export { CARTESIAN_TRANSLATIONS, defaultCartesianAnnotationSummary } from './car
 export { cartesianChartMachine } from './cartesian-chart.machine'
 export { cartesianChartMeta } from './cartesian-chart.meta'
 export type { CartesianModel } from './cartesian-chart.model'
-export type { CartesianChartApi, CartesianChartSchema, CartesianOverlay } from './cartesian-chart.schema'
+export type { CartesianChartApi, CartesianChartSchema, CartesianLayers, CartesianOverlay } from './cartesian-chart.schema'
 export type {
   CartesianAnnotation,
   CartesianAnnotationSummary,
@@ -35,6 +35,7 @@ export type {
   CartesianLineSeries,
   CartesianMarkTag,
   CartesianOrientation,
+  CartesianRenderer,
   CartesianScaleKind,
   CartesianScatterSeries,
   CartesianSeries,

@@ -5,6 +5,10 @@
 
 // 导出 shared/chart 模块的公共接口：各图表组件共用的内核。
 
+export { trackChartCanvas } from './canvas'
+export type { ChartCanvasFrame, ChartCanvasHost, ChartCanvasOptions, ChartCanvasSchema } from './canvas'
+export type { ChartSprites } from './canvas-sprite'
+export type { ChartPaint, ChartStyleReader } from './canvas-style'
 export { labelBox, placeWithoutOverlap, settleColumn } from './labels'
 
 export type { ChartLabelBox } from './labels'

@@ -17,6 +17,7 @@ import type {
   CartesianChartTranslations,
   CartesianLegendItem,
   CartesianOrientation,
+  CartesianRenderer,
   CartesianSeries,
   CartesianTooltipModel,
   CartesianTooltipOrder,
@@ -42,6 +43,10 @@ import { MachineController } from '../runtime/machine-controller'
 /** 纹理定义在绘图区生成节点里的 key：标记的 key 都带前缀或是部件名，不会与它相同。 */
 const DEFS_KEY = 'defs'
 
+/** 画布模式下元素在绘图区前面生成的两个节点：垫层 svg 与画布。 */
+const UNDERLAY = 'underlay'
+const CANVAS = 'canvas'
+
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开
@@ -55,11 +60,14 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 按标记的 key 复用节点，只写变化的属性；图例项与按值着色时的色阶生成进 legend；tooltip 留空时写入缺省内容，
  * 作者也可以自行填充（监听 `datum-active`），里面有作者写的节点时元素不碰它。
  * 摘要与数据表由元素追加在 root 末尾，视觉隐藏。
+ * 数据层画在画布上时（renderer 解析为 canvas），元素在绘图区前面生成垫层 `<svg>`（网格、坐标轴、参考带、准线）
+ * 与 `<canvas>`，作者不用写；切回 svg 时撤掉。
  *
  * 数据、系列、坐标轴与注释是对象，只走 JS property。
  *
  * @customElement xh-cartesian-chart
  * @attr {'vertical'|'horizontal'} orientation - 朝向，默认 vertical；horizontal 即条形图
+ * @attr {'svg'|'canvas'|'auto'} renderer - 数据层画在哪，默认 auto：数据层逐个成节点的标记超过节点预算时改用画布
  * @attr {'axis'|'item'} trigger - 提示框汇报什么；默认含柱或折线时 axis（同一个键上的全部系列），只有散点时 item
  * @attr {'none'|'x'|'y'|'xy'} zoom - 缩放的方向，默认 none；开启后 Ctrl（⌘）滚轮、捏合、键盘 + / − 缩放，放大后拖动平移
  * @attr {'none'|'x'|'y'|'xy'} brush - 刷选的方向，默认 none；开启后在绘图区拖动即刷选，Shift + 方向键从锚点起扩展，Escape 清掉
@@ -81,6 +89,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart legend - 图例工具条，项与色阶由元素生成
  * @csspart viewport - 尺寸观测的宿主
  * @csspart plot - 绘图区 `<svg>`，标记由元素生成
+ * @csspart underlay - 画布模式下垫在画布之下的 `<svg>`，由元素生成
+ * @csspart canvas - 画布模式下的数据层 `<canvas>`，由元素生成
  * @csspart zoom-slider - 缩放条外壳，轨道、窗口、两端的手柄与缩略线由元素生成
  * @csspart tooltip - 提示框，留空时由元素写入缺省内容
  * @csspart empty - 没有可画的数据时显示
@@ -111,6 +121,7 @@ export class XhCartesianChartElement extends XhElement {
     brushSelection: { attribute: false },
     defaultBrushSelection: { attribute: false },
     orientation: { converter: STRING_CONVERTER },
+    renderer: { converter: STRING_CONVERTER },
     trigger: { converter: STRING_CONVERTER },
     totals: { converter: BOOLEAN_CONVERTER },
     tooltipOrder: { converter: STRING_CONVERTER, attribute: 'tooltip-order' },
@@ -136,6 +147,7 @@ export class XhCartesianChartElement extends XhElement {
   declare brushSelection?: CartesianBrushSelection | null
   declare defaultBrushSelection?: CartesianBrushSelection | null
   declare orientation?: CartesianOrientation
+  declare renderer?: CartesianRenderer
   declare trigger?: CartesianTrigger
   declare totals?: boolean
   declare tooltipOrder?: CartesianTooltipOrder
@@ -182,6 +194,7 @@ export class XhCartesianChartElement extends XhElement {
       xAxis: this.xAxis,
       yAxis: this.yAxis,
       orientation: this.orientation,
+      renderer: this.renderer,
       trigger: this.trigger,
       totals: this.totals,
       tooltipOrder: this.tooltipOrder,
@@ -213,6 +226,7 @@ export class XhCartesianChartElement extends XhElement {
   private injectRefs(svc: Service<CartesianChartSchema>): void {
     svc.refs.set('getRootEl', () => this.getPart('root'))
     svc.refs.set('getViewportEl', () => this.getPart('viewport'))
+    svc.refs.set('getCanvasEl', () => this.#canvas)
   }
 
   /** 连接层的产出：下面这些只读口都从这里取，机器尚未建立时为 null。 */
@@ -250,6 +264,11 @@ export class XhCartesianChartElement extends XhElement {
     return this.api()?.hiddenSeries ?? []
   }
 
+  /** 数据层此刻画在哪：renderer 是作者递进来的写法，auto 解析的结果读这里。 */
+  get currentRenderer(): 'svg' | 'canvas' {
+    return this.api()?.renderer ?? 'svg'
+  }
+
   /** 此刻激活的键。activeKey 是作者递进来的受控值，非受控时读这里。 */
   get currentActiveKey(): ChartKey | null {
     return this.api()?.activeKey ?? null
@@ -271,6 +290,8 @@ export class XhCartesianChartElement extends XhElement {
   #tooltipKey = ''
   #table: CartesianChartApi['table'] | null = null
   #tableHost: Element | null = null
+  /** 画布模式下生成的画布；svg 模式为 null。 */
+  #canvas: HTMLCanvasElement | null = null
 
   protected wire(): void {
     const api = connectCartesianChart(this.ctrl.service, wcNormalize)
@@ -290,13 +311,8 @@ export class XhCartesianChartElement extends XhElement {
 
     const plot = put('plot', api.getPlotProps() as Record<string, unknown>)
     if (plot) {
-      this.#paintPlot(plot, [
-        ...api.scene.layers.back,
-        ...api.overlay.under,
-        ...api.scene.layers.data,
-        ...api.scene.layers.front,
-        ...api.overlay.over,
-      ], api)
+      this.#paintLayers(plot, api)
+      this.#paintPlot(plot, api.layers.plot, api)
     }
 
     const slider = put('zoom-slider', api.getZoomSliderProps() as Record<string, unknown>)
@@ -313,6 +329,42 @@ export class XhCartesianChartElement extends XhElement {
 
     if (root)
       this.#paintA11y(root, api)
+  }
+
+  /**
+   * 画布模式：绘图区前面依次是垫层 svg 与画布，都是生成节点，与绘图区同一个父节点；svg 模式撤掉。
+   * 画布的后备尺寸由机器按视口与 DPR 设，这里只写部件属性。
+   */
+  #paintLayers(plot: Element, api: CartesianChartApi): void {
+    const parent = plot.parentElement
+    if (!parent)
+      return
+    const doc = plot.ownerDocument
+    const own = generated(parent).filter(node => node.getAttribute(GEN_ATTR) === UNDERLAY || node.getAttribute(GEN_ATTR) === CANVAS)
+    if (api.renderer !== 'canvas') {
+      for (const node of own)
+        node.remove()
+      this.#canvas = null
+      return
+    }
+    let underlay = own.find(node => node.getAttribute(GEN_ATTR) === UNDERLAY)
+    let canvas = own.find(node => node.getAttribute(GEN_ATTR) === CANVAS) as HTMLCanvasElement | undefined
+    if (!underlay) {
+      underlay = doc.createElementNS(SVG_NS, 'svg')
+      underlay.setAttribute(GEN_ATTR, UNDERLAY)
+    }
+    if (!canvas) {
+      canvas = doc.createElement('canvas')
+      canvas.setAttribute(GEN_ATTR, CANVAS)
+    }
+    if (underlay.nextElementSibling !== canvas || canvas.nextElementSibling !== plot) {
+      parent.insertBefore(underlay, plot)
+      parent.insertBefore(canvas, plot)
+    }
+    this.spreader.spread(underlay as HTMLElement, api.getUnderlayProps() as Record<string, unknown>)
+    this.spreader.spread(canvas, api.getCanvasProps() as Record<string, unknown>)
+    this.#paintMarks(underlay, api.layers.underlay, api)
+    this.#canvas = canvas
   }
 
   /** 绘图区：纹理定义排在最前，其后是场景标记；两者同一次排序，重画时一起复用。 */

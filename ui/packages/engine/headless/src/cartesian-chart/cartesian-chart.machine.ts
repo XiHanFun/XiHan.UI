@@ -14,10 +14,12 @@ import {
   chartBaseRefs,
   chartBaseTransitions,
   notifyChartActive,
+  trackChartCanvas,
   trackChartViewport,
 } from '../shared/chart'
-import { cartesianActive, cartesianDetails, cartesianMarkKey, cartesianModelOf, cartesianTrigger, FULL_CARTESIAN_WINDOW, sameSelection, sameWindow } from './cartesian-chart.logic'
+import { cartesianActive, cartesianDetails, cartesianMarkKey, cartesianModelOf, cartesianRenderer, cartesianTrigger, FULL_CARTESIAN_WINDOW, sameSelection, sameWindow } from './cartesian-chart.logic'
 import { cartesianEntryScene, cartesianLabelNumbers, cartesianRevealAt, createCartesianPipeline } from './cartesian-chart.model'
+import { paintCartesianCanvas } from './cartesian-chart.paint'
 
 const { createMachine } = setup<CartesianChartSchema>()
 
@@ -45,14 +47,14 @@ export const cartesianChartMachine = createMachine({
     brushing: params.cell<CartesianBrushing | null>(() => ({ defaultValue: null })),
     brushAnchor: params.cell<number | null>(() => ({ defaultValue: null })),
   }),
-  refs: () => ({ ...chartBaseRefs(), pipeline: createCartesianPipeline(), touches: new Map(), zoomRatio: null }),
+  refs: () => ({ ...chartBaseRefs(), pipeline: createCartesianPipeline(), touches: new Map(), zoomRatio: null, getCanvasEl: () => null, canvas: null }),
   computed: {
     scene: params => cartesianModelOf(params).scene?.scene ?? null,
   },
   initialState: () => 'idle',
   // 建机器就核一遍规格：watch 只在依赖变化时跑，挂载那一刻的不合法组合得在这里报
   entry: ['reportIssues'],
-  effects: ['trackViewport'],
+  effects: ['trackViewport', 'trackCanvas'],
   watch: ({ track, context, action, prop, computed }) => {
     // 激活的数据由这几处合成，任一变都要重算；数据换了而激活的键没换，报出去的数也得跟着变。
     // 合成结果没变时 notifyActive 自己会闭嘴，回调不会重复派
@@ -79,7 +81,18 @@ export const cartesianChartMachine = createMachine({
       context.dep('hiddenSeries'),
     ], () => action(['reportIssues']))
     // 目标场景换了（数据、图例显隐、尺寸、度量）就安排过渡；animated 改了也要重新核一遍
-    track([() => computed('scene'), () => prop('animated')], () => action(['syncTransition']))
+    track([() => computed('scene'), () => prop('animated'), () => prop('renderer')], () => action(['syncTransition']))
+    // 画布上的数据层：场景、渲染器、刷选与淡出（悬停图例、item 模式的强调）一变就排一次重绘，在宿主提交之后画
+    track([
+      () => computed('scene'),
+      () => prop('renderer'),
+      () => prop('palette'),
+      () => prop('brush'),
+      context.dep('brushSelection'),
+      context.dep('brushing'),
+      context.dep('legendHover'),
+      context.dep('hover'),
+    ], () => action(['requestPaint']))
   },
   on: {
     ...chartBaseTransitions<CartesianChartSchema>(),
@@ -110,6 +123,8 @@ export const cartesianChartMachine = createMachine({
           extent: params => params.context.get('window'),
           // 键盘缩放、滚轮一格这类一步到位的换窗补间过去；拖着平移与捏合照旧跟手
           extentStep: params => params.context.get('windowStep'),
+          // 数据层画在画布上时不播几何过渡：画布直接画终态，SVG 的坐标轴与它同步落位
+          geometry: params => cartesianRenderer(params.prop('renderer'), cartesianModelOf(params)) === 'svg',
         },
       }),
       notifyActive: (params) => {
@@ -170,6 +185,7 @@ export const cartesianChartMachine = createMachine({
         if (e.type === 'BRUSH.ANCHOR')
           context.set('brushAnchor', e.index)
       },
+      requestPaint: ({ refs, flush }) => flush(() => refs.get('canvas')?.request()),
       reportIssues: (params) => {
         const model = cartesianModelOf(params)
         for (const issue of model.issues)
@@ -181,6 +197,10 @@ export const cartesianChartMachine = createMachine({
     },
     effects: {
       trackViewport: trackChartViewport<CartesianChartSchema>(),
+      trackCanvas: trackChartCanvas<CartesianChartSchema>({
+        active: params => cartesianRenderer(params.prop('renderer'), cartesianModelOf(params)) === 'canvas',
+        paint: paintCartesianCanvas,
+      }),
     },
   },
 })

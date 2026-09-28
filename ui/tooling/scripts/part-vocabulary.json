@@ -162,6 +162,7 @@
       "cartesian-chart"
     ],
     "canvas": [
+      "cartesian-chart",
       "progress"
     ],
     "caps-lock-indicator": [
@@ -1973,6 +1974,9 @@
     "truncation": [
       "diff-view"
     ],
+    "underlay": [
+      "cartesian-chart"
+    ],
     "undo-trigger": [
       "signature-pad"
     ],
@@ -2222,6 +2226,7 @@
     "trend": true,
     "trigger": true,
     "truncation": true,
+    "underlay": true,
     "value": true,
     "viewport": true,
     "whisker": true,

@@ -15,6 +15,7 @@ import type {
   CartesianChartTranslations,
   CartesianLegendItem,
   CartesianOrientation,
+  CartesianRenderer,
   CartesianSeries,
   CartesianTooltipModel,
   CartesianTooltipOrder,
@@ -121,6 +122,8 @@ export interface XhCartesianChartRootProps extends Omit<ComponentPropsWithRef<'f
   yAxis?: CartesianAxis
   /** 朝向，缺省 vertical。 */
   orientation?: CartesianOrientation
+  /** 数据层画在哪：svg、canvas，或 auto（缺省）——数据层逐个成节点的标记超过节点预算时改用画布。 */
+  renderer?: CartesianRenderer
   /** 提示框汇报什么；缺省含柱或折线时 axis，只有散点时 item。 */
   trigger?: CartesianTrigger
   /** 堆叠柱的合计：每个堆叠组在最外端写出合计。 */
@@ -177,6 +180,7 @@ export function XhCartesianChartRoot({
   xAxis,
   yAxis,
   orientation,
+  renderer,
   trigger,
   totals,
   tooltipOrder,
@@ -213,6 +217,7 @@ export function XhCartesianChartRoot({
     xAxis,
     yAxis,
     orientation,
+    renderer,
     trigger,
     totals,
     tooltipOrder,
@@ -361,26 +366,30 @@ export function XhCartesianChartViewport({ children, ...rest }: XhCartesianChart
 export interface XhCartesianChartPlotProps extends Omit<ComponentPropsWithRef<'svg'>, 'children'> {}
 
 /**
- * 绘图区：按场景生成网格、坐标轴、系列与前景层。
- * 次序是 back → under → data → over：类目带淡底与十字准线在数据之下，激活的点与焦点环在数据之上。
+ * 绘图区：按场景生成网格、坐标轴、系列与前景层，层序由连接层分好。
+ * 数据层画在画布上时前面再垫一层 svg（网格、坐标轴、参考带、准线）与画布；三个位置固定，
+ * 渲染器切换时绘图区不重建，焦点不丢。
  */
 export function XhCartesianChartPlot(props: XhCartesianChartPlotProps): ReactNode {
-  const { api } = useCartesianChartContext()
+  const ctx = useCartesianChartContext()
+  const { api } = ctx
   // 指针离开是不冒泡的事件，改挂原生监听器；滚轮在 React 里是被动监听，拦不下页面的缩放，也改挂原生的。
   // focusin / focusout 留给 React 的 onFocus / onBlur
   const bind = useNativeEvents(api.getPlotProps() as Record<string, unknown>, ['onPointerLeave', 'onWheel'])
-  const marks = [
-    ...api.scene.layers.back,
-    ...api.overlay.under,
-    ...api.scene.layers.data,
-    ...api.scene.layers.front,
-    ...api.overlay.over,
-  ]
+  const canvas = api.renderer === 'canvas'
   return (
-    <svg {...mergeReactProps(bind.attrs, props as Record<string, unknown>, { ref: bind.ref })}>
-      {renderDefs(api)}
-      {marks.map(mark => renderMark(api, mark))}
-    </svg>
+    <>
+      {canvas
+        ? <svg {...api.getUnderlayProps() as Record<string, unknown>}>{api.layers.underlay.map(mark => renderMark(api, mark))}</svg>
+        : null}
+      {canvas
+        ? <canvas {...mergeReactProps(api.getCanvasProps() as Record<string, unknown>, { ref: (el: HTMLCanvasElement | null) => { ctx.canvasRef.current = el } })} />
+        : null}
+      <svg {...mergeReactProps(bind.attrs, props as Record<string, unknown>, { ref: bind.ref })}>
+        {renderDefs(api)}
+        {api.layers.plot.map(mark => renderMark(api, mark))}
+      </svg>
+    </>
   )
 }
 
