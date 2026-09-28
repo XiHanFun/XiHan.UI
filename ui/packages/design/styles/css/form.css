@@ -9,6 +9,7 @@
 @import '../family/motion.css';
 /* Form 独立皮肤同时传递引入提交 / 重置钮的动作控件配方；full bundle 递归去重。 */
 @import '../family/action-control.css';
+@import '../family/loading-ring.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -368,31 +369,17 @@
     --xh-action-ring-color-focus-visible: currentColor;
   }
 
-  /* 提交回调在途：文案前转一枚圆环；不是禁用，焦点与对比度都保持，在途指针由家族 loading 面给 */
-  [data-scope='form'][data-part='submit-trigger'][data-loading]::before {
-    content: '';
-    flex: none;
-    inline-size: 1em;
-    block-size: 1em;
-    border: var(--xh-stroke-thin) solid transparent;
-    border-block-start-color: currentcolor;
-    border-radius: var(--xh-shape-circle);
-    animation: xh-spin var(--xh-form-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
+  /* 提交回调在途：环由加载环配方压在提交钮正中（连接层投影 data-xh-loading-ring="overlay"），直径取钮的图标档，
+     起始边取钮的真实前景、转速认使用者槽。不是禁用，焦点与对比度都保持，在途指针由家族 loading 面给。
+     提交文案随前景淡到透明留位：进入在途等一个 micro 才起淡（快速落定什么都不闪），落定时不等、按 micro 淡回 */
+  [data-scope='form'][data-part='submit-trigger'] {
+    --xh-_loading-ring-fg: var(--xh-form-submit-fg, var(--xh-_action-variant-fg-loading));
+    --xh-_loading-ring-duration: var(--xh-form-loading-duration, var(--xh-motion-loop-spin));
   }
 
-  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
-     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='form'][data-part='submit-trigger'][data-loading]::before {
-      border-style: dotted;
-      border-color: currentColor;
-      animation: none;
-    }
-  }
+  [data-scope='form'][data-part='submit-trigger'][data-loading] {
+    --xh-action-fg-loading: transparent;
 
-  :where([data-motion='reduce']) [data-scope='form'][data-part='submit-trigger'][data-loading]::before {
-    border-style: dotted;
-    border-color: currentColor;
-    animation: none;
+    transition-delay: var(--xh-motion-duration-micro);
   }
 }

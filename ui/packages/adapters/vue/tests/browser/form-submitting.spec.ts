@@ -1,5 +1,5 @@
-// 提交在途的提交钮：文案前转一枚圆环，不置灰（焦点与对比度都保持），在途指针由家族给；
-// 减弱动效时圆环停下换成虚线，静止的形状仍读得出「还没好」。
+// 提交在途的提交钮：加载环配方把环压在钮正中、不进排布，与其余动作钮的在途同一种画法；
+// 不置灰（焦点与对比度都保持），在途指针由家族给；减弱动效时圆环停下换成虚线，静止的形状仍读得出「还没好」。
 //
 // 只有真实浏览器量得出来：伪元素的盒子、动画名与计算出的边框样式都是计算样式。
 import type { App } from 'vue'
@@ -36,10 +36,12 @@ async function mountPending(): Promise<HTMLButtonElement> {
 }
 
 describe('表单提交在途', () => {
-  it('提交钮文案前转一枚圆环，不置灰，指针报在途', async () => {
+  it('提交钮正中压一枚加载环、不进排布，不置灰，指针报在途', async () => {
     const trigger = await mountPending()
     const ring = getComputedStyle(trigger, '::before')
     expect(ring.content).not.toBe('none')
+    expect(ring.position).toBe('absolute')
+    expect(trigger.getAttribute('data-xh-loading-ring')).toBe('overlay')
     expect(Number.parseFloat(ring.inlineSize)).toBeGreaterThan(0)
     expect(ring.animationName).toBe('xh-spin')
     expect(getComputedStyle(trigger).cursor).toBe('progress')
