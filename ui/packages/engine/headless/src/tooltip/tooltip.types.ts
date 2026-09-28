@@ -76,6 +76,11 @@ export interface TooltipSchema extends MachineSchema {
     onOpenChange?: (details: TooltipOpenChangeDetails) => void
   }
   context: {
+    /**
+     * 挂载时开着、还没收起过：这一段打开属于首帧，content 投影 data-instant 直接呈现、不播进场。
+     * 第一次收起时清掉，之后的每一次打开照常进场。
+     */
+    openedAtMount: boolean
     /** 定位引擎回传的最新结果；无引擎时恒为 null。 */
     position: PositionResult | null
     /** 本次展开是否由聚焦触发：聚焦态的提示不被纯鼠标移出收起。 */
@@ -110,7 +115,7 @@ export interface TooltipSchema extends MachineSchema {
     | { type: 'CONTROLLED.CLOSE' }
   tag: never
   guard: 'isOpenControlled' | 'isDisabled' | 'isFocusOpened'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusOpened' | 'clearFocusOpened' | 'syncInstant' | 'clearInstant' | 'trackCursor'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusOpened' | 'clearFocusOpened' | 'syncInstant' | 'clearInstant' | 'trackCursor' | 'clearOpenedAtMount'
   effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer' | 'trackGroup'
 }
 

@@ -9,6 +9,7 @@ import type { PositionResult, Transition, VirtualAnchor } from '@xihan-ui/core'
 import type { TooltipGroup } from './tooltip.group'
 import type { TooltipRefs, TooltipSchema } from './tooltip.types'
 import { createDismissLayer, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { setupLayerTransaction, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { pageTooltipGroup } from './tooltip.group'
@@ -76,7 +77,9 @@ const OPEN_FROM_POINTER = openNow('clearFocusOpened')
 // 延时与定位是本机器独有的副作用。
 export const tooltipMachine = createMachine({
   name: 'tooltip',
-  context: ({ cell }) => ({
+  context: ({ cell, prop }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 记住这次是被聚焦打开的：聚焦态的提示不该被一次纯鼠标移出收走
     focusOpened: cell<boolean>(() => ({ defaultValue: false })),
@@ -93,7 +96,7 @@ export const tooltipMachine = createMachine({
     cursor: null,
     reanchor: null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'visible' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'visible' : 'closed'),
   // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
@@ -103,6 +106,8 @@ export const tooltipMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 悬停先进等待态，到点才展开，避免指针路过就闪一堆提示
         'POINTER.ENTER': [
@@ -178,6 +183,7 @@ export const tooltipMachine = createMachine({
       isFocusOpened: ({ context }) => context.get('focusOpened'),
     },
     actions: {
+      clearOpenedAtMount,
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       markFocusOpened: ({ context }) => context.set('focusOpened', true),
