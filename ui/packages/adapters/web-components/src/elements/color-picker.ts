@@ -5,7 +5,7 @@
 
 // 提供 color picker 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type {
   ColorFormat,
   ColorPickerErrorDetails,
@@ -88,6 +88,7 @@ const STRING_LIST_CONVERTER = {
  * @attr {boolean} alpha - 带透明度，默认关闭；关闭时透明度滑杆与输入框整条禁用
  * @attr {string} swatches - 预设色板，逗号分隔（如 "#ff0000,#00ff00"）
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {'outline'|'subtle'|'ghost'} variant - 盒的形态，默认 outline
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写横轴上左右两键与指针的语义，默认 ltr
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
@@ -141,6 +142,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
     swatches: { converter: STRING_LIST_CONVERTER },
     name: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
@@ -159,6 +161,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
   declare swatches?: string[]
   declare name?: string
   declare size?: Size
+  declare variant?: ControlVariant
   declare direction?: Direction
   declare placement?: Placement
   declare offset?: number
@@ -275,6 +278,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
       swatches: this.swatches,
       name: this.name,
       size: this.size,
+      variant: this.variant,
       dir: this.direction,
       placement: this.placement,
       offset: this.offset,

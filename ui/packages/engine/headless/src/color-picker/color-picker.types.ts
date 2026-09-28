@@ -5,7 +5,7 @@
 
 // 定义 color picker 类型契约。
 
-import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { ColorSliderApi, ColorSliderServices } from '../color-slider'
 import type { ColorSwatchPickerApi, ColorSwatchPickerSchema } from '../color-swatch-picker'
@@ -154,6 +154,8 @@ export interface ColorPickerSchema extends MachineSchema {
     alpha?: boolean
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    /** 盒的形态：outline / subtle / ghost，默认 outline，与同族字段同一套字段外壳。 */
+    variant?: ControlVariant
     /** 文字方向。只改写横轴（取色区的饱和度、通道滑杆）上左右两键与指针的语义。 */
     dir?: Direction
     placement?: Placement

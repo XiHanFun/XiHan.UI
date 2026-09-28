@@ -11465,6 +11465,15 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
               "name": "direction",
               "privacy": "public",
               "type": {
@@ -12033,6 +12042,14 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "盒的形态，默认 outline",
+              "name": "variant",
+              "fieldName": "variant"
             },
             {
               "type": {
