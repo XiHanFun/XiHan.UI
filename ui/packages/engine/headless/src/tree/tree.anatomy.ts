@@ -30,6 +30,11 @@ export const treeAnatomy = createAnatomy('tree', [
   'live-region',
 ])
 
+const parts = treeAnatomy.build()
+
+/** 可见的行：叶子行与分支行各是一整行，互不嵌套（分支行与子层是兄弟），落下后逐行从旧位置滑到新位置。 */
+export const TREE_ROW_SELECTOR = `${parts.item.selector}, ${parts['branch-control'].selector}`
+
 /**
  * 两类节点部件都是 role=treeitem、都自报 data-value，因此都要进导航集合：
  * item 是叶子，branch 是分支。
