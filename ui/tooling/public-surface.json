@@ -825,6 +825,8 @@
       "XhCheckboxGroupIndicator",
       "XhCheckboxGroupIndicatorProps",
       "XhCheckboxGroupItem",
+      "XhCheckboxGroupItemDescription",
+      "XhCheckboxGroupItemDescriptionProps",
       "XhCheckboxGroupItemProps",
       "XhCheckboxGroupItemText",
       "XhCheckboxGroupItemTextProps",
@@ -3472,6 +3474,7 @@
       "XhCheckbox",
       "XhCheckboxGroupIndicator",
       "XhCheckboxGroupItem",
+      "XhCheckboxGroupItemDescription",
       "XhCheckboxGroupItemText",
       "XhCheckboxGroupLabel",
       "XhCheckboxGroupRoot",
@@ -5836,6 +5839,7 @@
       "CheckboxGroupSchema",
       "CheckboxGroupTranslations",
       "CheckboxGroupValueChangeDetails",
+      "CheckboxGroupVariant",
       "CheckboxSchema",
       "CheckboxTranslations",
       "CitationActiveSourceChangeDetails",
@@ -9705,6 +9709,7 @@
       "hidden-input",
       "indicator",
       "item",
+      "item-description",
       "item-text",
       "label",
       "root",
@@ -11343,7 +11348,8 @@
       "readOnly",
       "size",
       "tone",
-      "value"
+      "value",
+      "variant"
     ],
     "citation": [
       "activeSourceId",
@@ -14866,6 +14872,7 @@
     "--xh-checkbox-fg",
     "--xh-checkbox-fg-disabled",
     "--xh-checkbox-fg-invalid",
+    "--xh-checkbox-group-card-title-font-weight",
     "--xh-checkbox-group-gap",
     "--xh-checkbox-group-icon-size",
     "--xh-checkbox-group-indicator-bg",
@@ -14886,11 +14893,15 @@
     "--xh-checkbox-group-indicator-size",
     "--xh-checkbox-group-item-bg-hover",
     "--xh-checkbox-group-item-bg-pressed",
+    "--xh-checkbox-group-item-description-fg",
+    "--xh-checkbox-group-item-description-fg-disabled",
+    "--xh-checkbox-group-item-description-font-size",
     "--xh-checkbox-group-item-fg",
     "--xh-checkbox-group-item-fg-disabled",
     "--xh-checkbox-group-item-font-size",
     "--xh-checkbox-group-item-gap",
     "--xh-checkbox-group-item-radius",
+    "--xh-checkbox-group-item-row-gap",
     "--xh-checkbox-group-label-fg",
     "--xh-checkbox-group-label-fg-disabled",
     "--xh-checkbox-group-label-font-size",
@@ -19027,7 +19038,8 @@
         "read-only",
         "size",
         "tone",
-        "value"
+        "value",
+        "variant"
       ],
       "events": [
         "value-change"

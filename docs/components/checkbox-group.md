@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="checkbox-group"`：**`root`** · `label` · **`item`** · `indicator` · `item-text` · `hidden-input` · `select-all-trigger`
+`data-scope="checkbox-group"`：**`root`** · `label` · **`item`** · `indicator` · `item-text` · `item-description` · `hidden-input` · `select-all-trigger`
 
 ## 示例
 
@@ -48,11 +48,18 @@ size 决定方框与条目文字的几何档位，组标题不随档
 
 <XhDemo src="checkbox-group/05-size" />
 
+### 卡片
+
+variant="card" 把每个选项画成一张可点的卡；collection 里的 description 铺成文案下方的说明行
+
+<XhDemo src="checkbox-group/06-card" />
+
 ## 设计指引
 
 ### 何时使用
 
 - 用于偏好设置、筛选条件和批量选择。
+- 选项之间要靠一两句说明才分得清（通知渠道、附加服务）时，用 `variant="card"` 把每个选项画成一张卡。
 
 ### 何时不用
 
@@ -65,6 +72,8 @@ size 决定方框与条目文字的几何档位，组标题不随档
 - 全选触发器自动计算全选与半选状态。
 - `orientation` 设置横向或纵向排列。
 - 方框是字段家族的控制盒：不填底、描边与无影，勾中后以语气色填充；整行接 Action Control row 档，悬停 / 按下换面不缩放，方框随行换到承载面阶梯的下一档。
+- `variant` 是结构形态：缺省 `list` 是一列「方框 + 文案」的行；`card` 把每个条目画成一张可点的描边卡（surface 圆角，白底承载阶梯悬停 100 → 按下 200），方框在卡的行首，整张卡是命中区。勾中的卡换品牌淡底（写了 `tone` 换语气淡底），与表格选中行、穿梭框选中项同一种标记，描边不换；只读时卡片不给悬停与按下面。竖排时卡片撑满一列，横排时各卡等分一行、放不下就折行。全选触发器在两种形态里都是一行。
+- `item-description` 是文案下方的说明行（13 / `--xh-fg-muted`），与文案一起构成条目的可及名；`collection` 里的 `description` 会自动铺出这一行。
 
 ### 组合
 
@@ -75,6 +84,7 @@ size 决定方框与条目文字的几何档位，组标题不随档
 
 - 使用简短、互不重叠的选项标签。
 - 保持选项顺序稳定。
+- 卡片里只放一两句说明，不放按钮、链接等第二个可点目标：整张卡是一次勾选，内嵌的动作会与勾选抢同一次点击。
 
 ### 反模式
 
@@ -88,7 +98,7 @@ size 决定方框与条目文字的几何档位，组标题不随档
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-checkbox-group>` |
-| Vue 组件 | `XhCheckboxGroupIndicator` `XhCheckboxGroupItem` `XhCheckboxGroupItemText` `XhCheckboxGroupLabel` `XhCheckboxGroupRoot` `XhCheckboxGroupSelectAllTrigger` |
+| Vue 组件 | `XhCheckboxGroupIndicator` `XhCheckboxGroupItem` `XhCheckboxGroupItemDescription` `XhCheckboxGroupItemText` `XhCheckboxGroupLabel` `XhCheckboxGroupRoot` `XhCheckboxGroupSelectAllTrigger` |
 | 组合式函数 | `useCheckboxGroup` |
 | 状态机 | `checkboxGroupMachine` |
 | 皮肤 | `@xihan-ui/styles/checkbox-group.css` |
@@ -108,6 +118,7 @@ size 决定方框与条目文字的几何档位，组标题不随档
 | `orientation` | `Orientation` |  | 视觉排布，默认 vertical。只输出 data-orientation，不输出 aria-orientation。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选方框使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框与文字的几何档位。 |
+| `variant` | `CheckboxGroupVariant` |  | 结构形态，默认 list；card 把每个条目画成一张可点的卡。 |
 | `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### CheckboxGroupNode
@@ -118,6 +129,7 @@ size 决定方框与条目文字的几何档位，组标题不随档
 | --- | --- | --- | --- |
 | `value` | `string` | 是 |  |
 | `label` | `string` |  | 展示文本；默认回退为 value。 |
+| `description` | `string` |  | 说明文字，写入 item-description 部件；未提供时本条不铺该部件。 |
 | `disabled` | `boolean` |  | 条目禁用：仍可聚焦、仍占一个 Tab 停靠点，但不可修改，全选也跳过它。 |
 
 ### 事件
@@ -159,6 +171,7 @@ size 决定方框与条目文字的几何档位，组标题不随档
 | `item` | 'checked' \| 'unchecked' |
 | `indicator` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
+| `item-description` | 'checked' \| 'unchecked' |
 | `hidden-input` | 'checked' \| 'unchecked' |
 | `select-all-trigger` | resolveCheckedState(value, prop('itemValues') ?? []) |
 
@@ -190,6 +203,7 @@ size 决定方框与条目文字的几何档位，组标题不随档
 | `getItemProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
 | `getIndicatorProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: CheckboxGroupItemProps) => T['element']` | 条目的说明：文案下方一行次级文字，常用在 card 形态里。 |
 | `getHiddenInputProps` | `(props: CheckboxGroupItemProps) => T['input']` | 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。 |
 | `getSelectAllTriggerProps` | `() => T['element']` | 全选 / 半选的父复选框。必须写在 root 之内，它依靠祖先链找到本组。 |
 
@@ -247,20 +261,25 @@ size 决定方框与条目文字的几何档位，组标题不随档
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
 | `item` | `data-xh-action-control` | '' |
 | `item` | `data-xh-action-display` | 'always' |
 | `item` | `data-xh-action-profile` | 'row' |
 | `item` | `data-xh-action-size` | 'xs' |
-| `item` | `data-xh-action-variant` | 'ghost' |
+| `item` | `data-xh-action-variant` | 'outline' \| 'ghost' |
+| `item` | `data-xh-choice-card` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `indicator` | `data-xh-check-mark` | 'checked' \| 'unchecked' |
 | `indicator` | `data-xh-check-mark-profile` | 'box' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-state` | 'checked' \| 'unchecked' |
 | `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
 | `hidden-input` | `data-state` | 'checked' \| 'unchecked' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -282,6 +301,7 @@ size 决定方框与条目文字的几何档位，组标题不随档
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-checkbox-group-card-title-font-weight` | `item`<br>`item-text` | `font-weight` | `xh-choice-card` | `--xh-text-label-weight` | checkbox-group 的 item、item-text 部件 font-weight 覆盖槽。 |
 | `--xh-checkbox-group-gap` | `root` | `gap` | `default` | `--xh-space-2` | checkbox-group 的 root 部件 gap 覆盖槽。 |
 | `--xh-checkbox-group-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_checkbox-group-glyph` | checkbox-group 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-checkbox-group-indicator-bg` | `indicator`<br>`root`<br>`select-all-trigger` | `background-color` | `default` | `transparent` | checkbox-group 的 indicator、root、select-all-trigger 部件 background-color 覆盖槽。 |
@@ -302,11 +322,15 @@ size 决定方框与条目文字的几何档位，组标题不随档
 | `--xh-checkbox-group-indicator-size` | `indicator`<br>`select-all-trigger` | `--xh-check-mark-box-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-_checkbox-group-box` | checkbox-group 的 indicator、select-all-trigger 部件 --xh-check-mark-box-size、block-size、inline-size 覆盖槽。 |
 | `--xh-checkbox-group-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle` | checkbox-group 的 item 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-group-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | checkbox-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-group-item-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | checkbox-group 的 item-description 部件 color 覆盖槽。 |
+| `--xh-checkbox-group-item-description-fg-disabled` | `item`<br>`item-description` | `color` | `disabled` | `--xh-fg-disabled` | checkbox-group 的 item、item-description 部件 color 覆盖槽。 |
+| `--xh-checkbox-group-item-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-secondary-size` | checkbox-group 的 item-description 部件 font-size 覆盖槽。 |
 | `--xh-checkbox-group-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | checkbox-group 的 item 部件 color 覆盖槽。 |
 | `--xh-checkbox-group-item-fg-disabled` | `item` | `color` | `disabled` | `--xh-fg-disabled` | checkbox-group 的 item 部件 color 覆盖槽。 |
 | `--xh-checkbox-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_checkbox-group-font-size` | checkbox-group 的 item 部件 font-size 覆盖槽。 |
 | `--xh-checkbox-group-item-gap` | `item` | `gap` | `default` | `--xh-_checkbox-group-gap` | checkbox-group 的 item 部件 gap 覆盖槽。 |
 | `--xh-checkbox-group-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | checkbox-group 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-checkbox-group-item-row-gap` | `item` | `row-gap` | `has(> [data-scope='checkbox-group'][data-part='item-description'])`<br>`not([data-xh-choice-card])`<br>`xh-choice-card` | `--xh-space-1` | checkbox-group 的 item 部件 row-gap 覆盖槽。 |
 | `--xh-checkbox-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | checkbox-group 的 label 部件 color 覆盖槽。 |
 | `--xh-checkbox-group-label-fg-disabled` | `label`<br>`root` | `color` | `disabled` | `--xh-fg-subtle` | checkbox-group 的 label、root 部件 color 覆盖槽。 |
 | `--xh-checkbox-group-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | checkbox-group 的 label 部件 font-size 覆盖槽。 |

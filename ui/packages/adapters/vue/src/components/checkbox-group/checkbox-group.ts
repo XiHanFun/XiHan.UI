@@ -12,6 +12,7 @@ import type {
   CheckboxGroupNode,
   CheckboxGroupNodeMeta,
   CheckboxGroupSchema,
+  CheckboxGroupVariant,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -50,6 +51,7 @@ export const XhCheckboxGroupRoot = defineComponent({
     orientation: { type: String as PropType<Orientation> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
+    variant: { type: String as PropType<CheckboxGroupVariant> },
   },
   // value-change 携带 { value }，update:value 携带裸数组
   emits: {
@@ -132,6 +134,15 @@ export const XhCheckboxGroupItemText = defineComponent({
   },
 })
 
+export const XhCheckboxGroupItemDescription = defineComponent({
+  name: 'XhCheckboxGroupItemDescription',
+  setup(_, { slots }) {
+    const ctx = useCheckboxGroupContext()
+    const { item } = useCheckboxGroupItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhCheckboxGroupSelectAllTrigger = defineComponent({
   name: 'XhCheckboxGroupSelectAllTrigger',
   setup(_, { slots }) {
@@ -157,6 +168,7 @@ function renderDefaultTree(
       h(XhCheckboxGroupItem, { key: node.value, value: node.value }, () => [
         h(XhCheckboxGroupIndicator),
         h(XhCheckboxGroupItemText, null, () => itemSlot?.(node) ?? node.label),
+        ...(node.description != null ? [h(XhCheckboxGroupItemDescription, null, () => node.description)] : []),
       ]),
     ),
   ]

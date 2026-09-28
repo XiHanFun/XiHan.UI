@@ -8342,6 +8342,10 @@
               "name": "item-text"
             },
             {
+              "description": "条目文案下方的说明行，常用在 card 形态里",
+              "name": "item-description"
+            },
+            {
               "description": "条目的表单影子输入（必须是原生 input）",
               "name": "hidden-input"
             },
@@ -8448,6 +8452,15 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "CheckboxGroupVariant | undefined"
+              },
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -8704,6 +8717,14 @@
             },
             {
               "type": {
+                "text": "CheckboxGroupVariant | undefined"
+              },
+              "description": "结构形态，默认 list；card 把每个条目画成一张可点的卡",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
                 "text": "string | undefined"
               },
               "description": "表单字段名；提供后隐藏输入才带 name 并参与提交",
@@ -8718,6 +8739,9 @@
           "tagName": "xh-checkbox-group",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-checkbox-group-card-title-font-weight"
+            },
             {
               "name": "--xh-checkbox-group-gap"
             },
@@ -8779,6 +8803,15 @@
               "name": "--xh-checkbox-group-item-bg-pressed"
             },
             {
+              "name": "--xh-checkbox-group-item-description-fg"
+            },
+            {
+              "name": "--xh-checkbox-group-item-description-fg-disabled"
+            },
+            {
+              "name": "--xh-checkbox-group-item-description-font-size"
+            },
+            {
               "name": "--xh-checkbox-group-item-fg"
             },
             {
@@ -8792,6 +8825,9 @@
             },
             {
               "name": "--xh-checkbox-group-item-radius"
+            },
+            {
+              "name": "--xh-checkbox-group-item-row-gap"
             },
             {
               "name": "--xh-checkbox-group-label-fg"

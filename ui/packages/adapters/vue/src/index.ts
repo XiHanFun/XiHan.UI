@@ -165,6 +165,7 @@ export type { CascaderContext } from './components/cascader/use-cascader'
 export {
   XhCheckboxGroupIndicator,
   XhCheckboxGroupItem,
+  XhCheckboxGroupItemDescription,
   XhCheckboxGroupItemText,
   XhCheckboxGroupLabel,
   XhCheckboxGroupRoot,

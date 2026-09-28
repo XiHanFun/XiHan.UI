@@ -47,6 +47,8 @@ export function connectCheckboxGroup<T extends PropTypes>(
   const invalid = !!prop('invalid')
   const orientation = prop('orientation') ?? 'vertical'
   const name = prop('name')
+  const variant = prop('variant') ?? 'list'
+  const card = variant === 'card'
   const ids = scope.ids('checkbox-group', 'label', 'select-all-trigger')
 
   const editable = !groupDisabled && !readOnly
@@ -56,6 +58,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
   const collection: CheckboxGroupNodeMeta[] = (prop('collection') ?? []).map(node => ({
     value: node.value,
     label: node.label ?? node.value,
+    description: node.description ?? null,
     disabled: !!node.disabled,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
@@ -137,6 +140,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
       // 视觉轴打在根上，条目与方框从这里继承私有槽，子部件不重复标注
       'data-tone': prop('tone'),
       'data-size': prop('size'),
+      'data-variant': variant,
       'data-disabled': dataAttr(groupDisabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
@@ -153,12 +157,16 @@ export function connectCheckboxGroup<T extends PropTypes>(
         'role': 'checkbox',
         // 整行是「方框 + 文案」的行级命中区：接 Action Control row 档、ghost 形态，row 档允许标签折行、
         // 按下只换面不缩放；xs 的 24px 是命中地板，方框 12 / 16 / 20px 居中其间，字号与间距由皮肤按组档位映射，
-        // 与 transfer select-all-trigger 同理。方框是行内 aria-hidden 的标记，随行读宿主的 host 槽换面
+        // 与 transfer select-all-trigger 同理。方框是行内 aria-hidden 的标记，随行读宿主的 host 槽换面；
+        // card 形态换成 outline 描边卡，卡面（形状、内衬、选中面）由选择卡片家族配方给
         'data-xh-action-control': '',
         'data-xh-action-profile': 'row',
-        'data-xh-action-variant': 'ghost',
+        'data-xh-action-variant': card ? 'outline' : 'ghost',
         'data-xh-action-display': 'always',
         'data-xh-action-size': 'xs',
+        'data-xh-choice-card': dataAttr(card),
+        // 卡面在只读时收回悬停与按下面，得在条目自己身上知道只读
+        'data-readonly': dataAttr(readOnly),
         // 未选中显式输出 false
         'aria-checked': isChecked(item.value) ? 'true' : 'false',
         // 条目一律用 aria-disabled 而非原生 disabled，保持可聚焦
@@ -202,6 +210,12 @@ export function connectCheckboxGroup<T extends PropTypes>(
 
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
+      ...stateAttrs(item),
+    }),
+
+    // 说明行在条目之内，与文案一起构成条目的可及名，不另挂 aria-describedby
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
       ...stateAttrs(item),
     }),
 

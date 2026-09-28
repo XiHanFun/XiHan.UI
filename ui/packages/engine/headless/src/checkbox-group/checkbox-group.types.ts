@@ -7,6 +7,13 @@
 
 import type { MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
+/**
+ * 结构形态：list 是一列「方框 + 文案」的行（缺省）；card 是一组可点的描边卡，
+ * 方框在卡的行首，文案与说明排在右侧，选中卡换选中面。与 Tabs 的 line / card / segment 同类，
+ * 不是有框 / 无框的 ControlVariant。
+ */
+export type CheckboxGroupVariant = 'card' | 'list'
+
 export interface CheckboxGroupValueChangeDetails {
   value: string[]
 }
@@ -24,6 +31,8 @@ export interface CheckboxGroupNode {
   value: string
   /** 展示文本；默认回退为 value。 */
   label?: string
+  /** 说明文字，写入 item-description 部件；未提供时本条不铺该部件。 */
+  description?: string
   /** 条目禁用：仍可聚焦、仍占一个 Tab 停靠点，但不可修改，全选也跳过它。 */
   disabled?: boolean
 }
@@ -33,6 +42,8 @@ export interface CheckboxGroupNodeMeta {
   value: string
   /** node.label ?? node.value，恒为字符串。 */
   label: string
+  /** 未提供时为 null。 */
+  description: string | null
   disabled: boolean
 }
 
@@ -75,6 +86,8 @@ export interface CheckboxGroupSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg，决定方框与文字的几何档位。 */
     size?: Size
+    /** 结构形态，默认 list；card 把每个条目画成一张可点的卡。 */
+    variant?: CheckboxGroupVariant
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: CheckboxGroupValueChangeDetails) => void
   }
@@ -133,6 +146,8 @@ export interface CheckboxGroupApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: CheckboxGroupItemProps) => T['element']
   getIndicatorProps: (props: CheckboxGroupItemProps) => T['element']
   getItemTextProps: (props: CheckboxGroupItemProps) => T['element']
+  /** 条目的说明：文案下方一行次级文字，常用在 card 形态里。 */
+  getItemDescriptionProps: (props: CheckboxGroupItemProps) => T['element']
   /** 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。 */
   getHiddenInputProps: (props: CheckboxGroupItemProps) => T['input']
   /** 全选 / 半选的父复选框。必须写在 root 之内，它依靠祖先链找到本组。 */

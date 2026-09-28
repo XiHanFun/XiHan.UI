@@ -49,7 +49,7 @@ export type { CascaderApi, CascaderColumn, CascaderColumnProps, CascaderExpandTr
 export { checkboxAnatomy, checkboxKeyboard, checkboxMachine, checkboxMeta, connectCheckbox } from './checkbox'
 export type { CheckboxApi, CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema, CheckboxTranslations } from './checkbox'
 export { checkboxGroupAnatomy, checkboxGroupKeyboard, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup, resolveCheckedState, toggleAllValues, toggleItemValue } from './checkbox-group'
-export type { CheckboxGroupApi, CheckboxGroupCheckedState, CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupPressedPart, CheckboxGroupSchema, CheckboxGroupTranslations, CheckboxGroupValueChangeDetails } from './checkbox-group'
+export type { CheckboxGroupApi, CheckboxGroupCheckedState, CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupPressedPart, CheckboxGroupSchema, CheckboxGroupTranslations, CheckboxGroupValueChangeDetails, CheckboxGroupVariant } from './checkbox-group'
 export { citationAnatomy, citationKeyboard, citationMachine, citationMeta, citationSourceMetaText, citationSourceQuery, citationSourceText, citationSourceTitle, connectCitation } from './citation'
 export type { CitationActiveSourceChangeDetails, CitationApi, CitationOpenChangeDetails, CitationPreviewProps, CitationSchema, CitationSource, CitationSourceAnchor, CitationSourceItemProps, CitationSourceOpenDetails, CitationTranslations, CitationTriggerProps } from './citation'
 export { CLIPBOARD_TIMEOUT, clipboardAnatomy, clipboardKeyboard, clipboardMachine, clipboardMeta, connectClipboard, resolveClipboardTimeout, writeToClipboard } from './clipboard'
