@@ -7,6 +7,7 @@
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { TypographyApi, TypographyHeadingProps, TypographyProps } from './typography.types'
+import { dataAttr } from '@xihan-ui/core'
 import { typographyAnatomy } from './typography.anatomy'
 
 const parts = typographyAnatomy.build()
@@ -45,12 +46,16 @@ export function connectTypography<T extends PropTypes>(
 
     getParagraphProps: () => normalize.element({ ...parts.paragraph.attrs }),
 
-    // 形态与语气两个轴逐条落在这一段行内文字上，同一块正文里可以各写各的
+    // 形态、语气与字重逐条落在这一段行内文字上，同一块正文里可以各写各的；
+    // 删除线、下划线与标记是三个独立开关，与形态叠加（弱化 + 删除线即"已完成"的那一行）
     getTextProps: (text = {}) => normalize.element({
       ...parts.text.attrs,
       'data-tone': text.tone,
       'data-variant': text.variant,
       'data-weight': text.weight,
+      'data-strikethrough': dataAttr(text.strikethrough),
+      'data-underline': dataAttr(text.underline),
+      'data-marked': dataAttr(text.mark),
     }),
 
     // 链接只拿身份：href、target、rel 与点击行为全归作者

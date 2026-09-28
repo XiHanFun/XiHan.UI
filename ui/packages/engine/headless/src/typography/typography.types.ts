@@ -46,6 +46,12 @@ export interface TypographyTextProps {
   variant?: TypographyVariant
   /** 字重：regular / medium / semibold / bold，只作用于该段行内文字。 */
   weight?: TypographyWeight
+  /** 删除线：只画线，不带删除语义；表达"已删除"时标签写 del 或 s。可与下划线并存。 */
+  strikethrough?: boolean
+  /** 下划线：只画线；与链接的下划线同形，不要给不可点的文字大面积使用。 */
+  underline?: boolean
+  /** 标记：淡底加同族字色，跨行两半各自收边；有 tone 时换成该族。表达"被标出"语义时标签写 mark。 */
+  mark?: boolean
 }
 
 export interface TypographyApi<T extends PropTypes = PropTypes> {

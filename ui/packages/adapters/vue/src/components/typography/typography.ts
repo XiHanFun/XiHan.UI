@@ -60,8 +60,8 @@ export const XhTypographyParagraph = defineComponent({
 })
 
 /**
- * 行内文字：variant 切换形态，tone 切换语气色，weight 切换字重。
- * as 决定渲染为哪个标签，默认 span；需要 code / strong 的原生语义时自行写明。
+ * 行内文字：variant 切换形态，tone 切换语气色，weight 切换字重；删除线、下划线与标记各是一个开关。
+ * as 决定渲染为哪个标签，默认 span；需要 code / strong / del / mark 的原生语义时自行写明。
  */
 export const XhTypographyText = defineComponent({
   name: 'XhTypographyText',
@@ -69,13 +69,26 @@ export const XhTypographyText = defineComponent({
     tone: { type: String as PropType<Tone> },
     variant: { type: String as PropType<TypographyVariant> },
     weight: { type: String as PropType<TypographyWeight> },
+    /** 删除线：只画线，表达"已删除"时 as 写 del 或 s。 */
+    strikethrough: { type: Boolean, default: undefined },
+    /** 下划线：只画线，与链接同形。 */
+    underline: { type: Boolean, default: undefined },
+    /** 标记：淡底加同族字色，有 tone 时换成该族；表达"被标出"时 as 写 mark。 */
+    mark: { type: Boolean, default: undefined },
     as: { type: String, default: 'span' },
   },
   setup(props, { slots }) {
     const ctx = useTypographyContext()
     return () => h(
       props.as,
-      ctx.api.value.getTextProps({ tone: props.tone, variant: props.variant, weight: props.weight }) as Record<string, unknown>,
+      ctx.api.value.getTextProps({
+        tone: props.tone,
+        variant: props.variant,
+        weight: props.weight,
+        strikethrough: props.strikethrough,
+        underline: props.underline,
+        mark: props.mark,
+      }) as Record<string, unknown>,
       slots.default?.(),
     )
   },

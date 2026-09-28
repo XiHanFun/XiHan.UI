@@ -54,6 +54,12 @@
 
 <XhDemo src="typography/06-prose" />
 
+### 删除线、下划线与标记
+
+三个开关与形态、语气叠加；需要删除或标出的原生语义时把标签写成 del、mark
+
+<XhDemo src="typography/07-decoration" />
+
 ## 设计指引
 
 ### 何时使用
@@ -71,6 +77,7 @@
 
 - 支持六档标题层级和三档正文尺寸。
 - 支持弱化、强调、代码等文本变体。
+- 行内文字另有删除线、下划线与标记三个开关，可与变体、语气叠加；需要删除或标出的原生语义时把标签写成 `del` / `s` / `mark`。
 - 支持链接、语义颜色、对齐和字重。
 - `prose` 可直接排版外部 HTML 内容。
 
@@ -119,7 +126,10 @@
 | `XhTypographyText` | `tone` | `Tone` |  | 语气：决定使用哪族颜色。 |
 | `XhTypographyText` | `variant` | `TypographyVariant` |  | 形态：muted 弱化 / strong 加重 / code 等宽。 |
 | `XhTypographyText` | `weight` | `TypographyWeight` |  | 字重：regular / medium / semibold / bold，只作用于该段行内文字。 |
-| `XhTypographyText` | `as` | `ElementType` |  | 渲染为哪个标签，默认 span；需要 code / strong 的原生语义时自行写明。 |
+| `XhTypographyText` | `strikethrough` | `boolean` |  | 删除线：只画线，表达"已删除"时 as 写 del 或 s。 |
+| `XhTypographyText` | `underline` | `boolean` |  | 下划线：只画线，与链接同形。 |
+| `XhTypographyText` | `mark` | `boolean` |  | 标记：淡底加同族字色，有 tone 时换成该族；表达"被标出"时 as 写 mark。 |
+| `XhTypographyText` | `as` | `ElementType` |  | 渲染为哪个标签，默认 span；需要 code / strong / del / mark 的原生语义时自行写明。 |
 
 ### connect API
 
@@ -148,6 +158,8 @@
 
 `@xihan-ui/styles/typography.css` 使用 `[data-scope="typography"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -158,7 +170,10 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-weight` | props.weight |
 | `heading` | `data-level` | levelAttr(heading.level) |
+| `text` | `data-marked` | ''（条件成立时才出现） |
+| `text` | `data-strikethrough` | ''（条件成立时才出现） |
 | `text` | `data-tone` | text.tone |
+| `text` | `data-underline` | ''（条件成立时才出现） |
 | `text` | `data-variant` | text.variant |
 | `text` | `data-weight` | text.weight |
 
@@ -189,6 +204,10 @@
 | `--xh-typography-link-fg-hover` | `link` | `color` | `@media (hover: hover)`<br>`hover` | `--xh-fg-brand-strong` | typography 的 link 部件 color 覆盖槽。 |
 | `--xh-typography-link-radius` | `link`<br>`prose` | `border-radius` | `default`<br>`where(a)` | `--xh-shape-inset` | typography 的 link、prose 部件 border-radius 覆盖槽。 |
 | `--xh-typography-link-underline-offset` | `link`<br>`prose` | `text-underline-offset` | `default`<br>`where(a)` | `--xh-space-0_5` | typography 的 link、prose 部件 text-underline-offset 覆盖槽。 |
+| `--xh-typography-mark-bg` | `text` | `background` | `marked`<br>`tone` | `--xh-_tone-subtle`<br>`--xh-bg-brand-subtle` | typography 的 text 部件 background 覆盖槽。 |
+| `--xh-typography-mark-fg` | `text` | `color` | `marked`<br>`tone` | `--xh-_tone-fg`<br>`--xh-fg-brand-strong` | typography 的 text 部件 color 覆盖槽。 |
+| `--xh-typography-mark-px` | `text` | `padding-inline` | `marked` | `--xh-space-0_5` | typography 的 text 部件 padding-inline 覆盖槽。 |
+| `--xh-typography-mark-radius` | `text` | `border-radius` | `marked` | `--xh-shape-inset` | typography 的 text 部件 border-radius 覆盖槽。 |
 | `--xh-typography-measure` | `root` | `max-inline-size` | `default` | `--xh-_typography-measure` | typography 的 root 部件 max-inline-size 覆盖槽。 |
 | `--xh-typography-prose-block-gap` | `prose` | `margin-block-start` | `where(h1, h2, h3, h4, h5, h6, p, ul, ol, pre, blockquote, table, hr)` | `--xh-_typography-block-gap` | typography 的 prose 部件 margin-block-start 覆盖槽。 |
 | `--xh-typography-prose-cell-border` | `prose` | `border-block-end` | `where(th, td)` | `--xh-border-subtle` | typography 的 prose 部件 border-block-end 覆盖槽。 |
@@ -223,6 +242,7 @@
 | `--xh-typography-text-fg-muted` | `text` | `color` | `variant=muted` | `--xh-fg-muted` | typography 的 text 部件 color 覆盖槽。 |
 | `--xh-typography-text-fg-tone` | `text` | `color` | `tone` | `--xh-_tone-fg` | typography 的 text 部件 color 覆盖槽。 |
 | `--xh-typography-text-font-weight` | `text` | `font-weight` | `variant=strong` | `--xh-font-weight-semibold` | typography 的 text 部件 font-weight 覆盖槽。 |
+| `--xh-typography-text-underline-offset` | `text` | `text-underline-offset` | `underline` | `--xh-space-0_5` | typography 的 text 部件 text-underline-offset 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

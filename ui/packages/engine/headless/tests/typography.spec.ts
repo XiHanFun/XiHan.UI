@@ -64,6 +64,24 @@ describe('connectTypography 各段', () => {
     })
   })
 
+  it('删除线、下划线与标记各是一个开关：开了落空串，关着或不写都不落，与形态叠加', () => {
+    const plain = api().getTextProps() as Record<string, unknown>
+    expect(plain['data-strikethrough']).toBeUndefined()
+    expect(plain['data-underline']).toBeUndefined()
+    expect(plain['data-marked']).toBeUndefined()
+    const off = api().getTextProps({ strikethrough: false, underline: false, mark: false }) as Record<string, unknown>
+    expect(off['data-strikethrough']).toBeUndefined()
+    expect(off['data-underline']).toBeUndefined()
+    expect(off['data-marked']).toBeUndefined()
+    expect(api().getTextProps({ variant: 'muted', strikethrough: true, underline: true, mark: true, tone: 'warning' })).toMatchObject({
+      'data-variant': 'muted',
+      'data-tone': 'warning',
+      'data-strikethrough': '',
+      'data-underline': '',
+      'data-marked': '',
+    })
+  })
+
   it('段落、链接与富文本容器只拿身份：href、target 与内容标签全归作者', () => {
     expect(api().getParagraphProps()).toEqual(parts.paragraph.attrs)
     expect(api().getLinkProps()).toEqual(parts.link.attrs)
