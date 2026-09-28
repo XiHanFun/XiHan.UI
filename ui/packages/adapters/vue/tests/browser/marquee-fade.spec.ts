@@ -18,10 +18,12 @@ afterEach(() => {
   host = null
 })
 
-async function mount(props: Record<string, unknown>, options: { trigger?: boolean, motion?: 'reduce' } = {}): Promise<HTMLElement> {
+async function mount(props: Record<string, unknown>, options: { trigger?: boolean, motion?: 'reduce', dir?: 'rtl' } = {}): Promise<HTMLElement> {
   host = document.createElement('div')
   if (options.motion)
     host.dataset.motion = options.motion
+  if (options.dir)
+    host.dir = options.dir
   host.style.cssText = 'padding: 24px; inline-size: 480px'
   document.body.append(host)
   app = createApp({
@@ -49,7 +51,8 @@ describe('跑马灯两端渐隐', () => {
   it('写了 fade：沿滚动方向两端透明、中段不透明', async () => {
     const root = await mount({ fade: true })
     const value = mask(root)
-    expect(value).toMatch(/^linear-gradient\(to right, rgba\(0, 0, 0, 0\) 0px/)
+    // 横排的角度乘方向符号：ltr 是 90deg，即自左向右
+    expect(value).toMatch(/^linear-gradient\(90deg, rgba\(0, 0, 0, 0\) 0px/)
     expect(value).toContain('rgba(0, 0, 0, 0) 100%')
   })
 
@@ -69,6 +72,28 @@ describe('跑马灯两端渐隐', () => {
     const triggerRect = trigger.getBoundingClientRect()
     // 露出的那一块从开关的起始边一直到窗口尽头
     expect(reserve).toBeCloseTo(rootRect.right - triggerRect.left, 0)
+  })
+
+  it('rtl：渐变自右向左，给暂停开关留的实心块落在左端，与开关同宽', async () => {
+    const root = await mount({ fade: true }, { trigger: true, dir: 'rtl' })
+    expect(mask(root)).toMatch(/^linear-gradient\(-90deg, rgba\(0, 0, 0, 0\) 0px/)
+    const trigger = root.querySelector<HTMLElement>('[data-part="autoplay-trigger"]')!
+    const style = getComputedStyle(root)
+    const position = (style.maskPosition || style.webkitMaskPosition).split(',').map(s => s.trim())
+    expect(position[1]).toBe('0% 50%')
+    const reserve = Number.parseFloat((style.maskSize || style.webkitMaskSize).split(',')[1]!)
+    expect(reserve).toBeCloseTo(trigger.getBoundingClientRect().right - root.getBoundingClientRect().left, 0)
+  })
+
+  it('rtl 里局部写回 ltr 的子树跟着翻回', async () => {
+    const outer = document.createElement('div')
+    outer.dir = 'rtl'
+    document.body.append(outer)
+    const root = await mount({ fade: true }, { dir: undefined })
+    outer.append(host!)
+    host!.dir = 'ltr'
+    expect(mask(root)).toMatch(/^linear-gradient\(90deg,/)
+    outer.remove()
   })
 
   it('减弱动效：轨道停住、窗口可滚，两端不再淡', async () => {

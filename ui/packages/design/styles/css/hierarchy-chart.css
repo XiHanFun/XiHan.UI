@@ -256,15 +256,11 @@
     inline-size: var(--xh-hierarchy-chart-legend-scale-width, var(--xh-chart-legend-scale-width));
     block-size: var(--xh-space-2);
     border-radius: var(--xh-hierarchy-chart-legend-scale-bar-radius, var(--xh-shape-inset));
-    background: linear-gradient(to right, var(--xh-_hierarchy-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
+    /* 低端在行首：角度乘方向符号，rtl 下渐变从右往左 */
+    background: linear-gradient(calc(90deg * var(--xh-direction-sign)), var(--xh-_hierarchy-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
     /* 节点只用色阶上 0.3–1 这一段（最浅的一段压在承载面上看不见）：渐变按同一段画，起点即 0.3 处的颜色，
        中点落在 (0.5 − 0.3) / 0.7 处 */
     --xh-_hierarchy-scale-from: color-mix(in oklch, var(--xh-_chart-seq-mid) 60%, var(--xh-_chart-seq-start));
-  }
-
-  /* 图例随文字方向镜像：低端的值在行首，渐变也从行首起 */
-  :where([dir='rtl']) [data-scope='hierarchy-chart'][data-part='legend-scale-bar'] {
-    background: linear-gradient(to left, var(--xh-_hierarchy-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
   }
 
   /* 强制色：节点改成系统色的面与描边，名字取正文色；路径的尖角取正文色；色阶只留轮廓；焦点环在配方里 */
