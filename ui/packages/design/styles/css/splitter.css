@@ -85,6 +85,12 @@
     outline: none;
   }
 
+  /* 折叠 / 展开（Enter、双击、命令式）时面板尺寸走过渡，与 Layout 侧栏折叠同一种节奏；
+     拖拽与方向键步进跟手，连接层不投影 data-animating，照旧瞬时。尺寸仍由连接层写内联，这里只挂过渡 */
+  [data-scope='splitter'][data-part='root'][data-animating] > [data-scope='splitter'][data-part='panel'] {
+    transition: flex-basis var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
   /* 折叠到 0 时连边框都不该露出来：留一条缝比留一块面板更像坏了 */
   [data-scope='splitter'][data-part='panel'][data-collapsed] {
     border: none;

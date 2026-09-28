@@ -80,6 +80,7 @@ export function connectSplitter<T extends PropTypes>(
     'data-disabled': dataAttr(disabled),
     'data-dragging': dataAttr(dragging),
   })
+  const animating = context.get('animating')
 
   const togglePanel = (index: number): void => {
     const panel = panelAt(index)
@@ -106,6 +107,8 @@ export function connectSplitter<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       ...stateAttrs(),
+      // 折叠 / 展开的那一段：皮肤据此让面板尺寸走过渡，拖拽与步进时不带
+      'data-animating': dataAttr(animating),
       // 一组彼此关联的面板与分隔条，读屏据此知道它们是一伙的
       'role': 'group',
       'aria-label': translations?.root ?? 'Split panels',

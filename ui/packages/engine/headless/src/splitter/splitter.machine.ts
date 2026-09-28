@@ -79,6 +79,7 @@ export const splitterMachine = createMachine({
       }
     }),
     activeIndex: cell<number>(() => ({ defaultValue: 0 })),
+    animating: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     getRootEl: () => null,
@@ -86,13 +87,17 @@ export const splitterMachine = createMachine({
     restore: new Map<number, number>(),
   }),
   initialState: () => 'idle',
-  // 键盘与命令式出口从哪个状态发出都一样（拖动期间也可能有键盘事件），因此挂根级
+  // 折叠 / 展开的面板过渡：播着的时候盯住它播完
+  effects: ['trackPanelTransition'],
+  // 键盘与命令式出口从哪个状态发出都一样（拖动期间也可能有键盘事件），因此挂根级。
+  // 整份赋值、步进与拖拽跟手，打断正在播的折叠过渡
   on: {
-    'SIZES.SET': { guard: 'canResize', actions: ['setSizes'] },
-    'BOUNDARY.STEP': { guard: 'canResize', actions: ['setActiveIndex', 'stepBoundary'] },
-    'BOUNDARY.TO_MIN': { guard: 'canResize', actions: ['setActiveIndex', 'boundaryToMin'] },
-    'BOUNDARY.TO_MAX': { guard: 'canResize', actions: ['setActiveIndex', 'boundaryToMax'] },
-    'BOUNDARY.SET': { guard: 'canResize', actions: ['setActiveIndex', 'setBoundary'] },
+    'SIZES.SET': { guard: 'canResize', actions: ['stopAnimating', 'setSizes'] },
+    'BOUNDARY.STEP': { guard: 'canResize', actions: ['stopAnimating', 'setActiveIndex', 'stepBoundary'] },
+    'BOUNDARY.TO_MIN': { guard: 'canResize', actions: ['stopAnimating', 'setActiveIndex', 'boundaryToMin'] },
+    'BOUNDARY.TO_MAX': { guard: 'canResize', actions: ['stopAnimating', 'setActiveIndex', 'boundaryToMax'] },
+    'BOUNDARY.SET': { guard: 'canResize', actions: ['stopAnimating', 'setActiveIndex', 'setBoundary'] },
+    'ANIMATION.END': { actions: ['stopAnimating'] },
     'BOUNDARY.FOCUS': { actions: ['setActiveIndex'] },
     'PANEL.COLLAPSE': { guard: 'canResize', actions: ['collapse'] },
     'PANEL.EXPAND': { guard: 'canResize', actions: ['expand'] },
@@ -101,7 +106,7 @@ export const splitterMachine = createMachine({
     idle: {
       on: {
         // 按下不改布局：分隔条本来就在指针底下
-        'DRAG.START': { guard: 'canResize', target: 'dragging', actions: ['setActiveIndex'] },
+        'DRAG.START': { guard: 'canResize', target: 'dragging', actions: ['stopAnimating', 'setActiveIndex'] },
       },
     },
     dragging: {
@@ -182,6 +187,7 @@ export const splitterMachine = createMachine({
           return
         // 折叠前记住当前尺寸，展开时照它还原
         refs.get('restore').set(e.index, size)
+        context.set('animating', true)
         context.set('sizes', collapsePanel(sizes, e.index, constraints))
       },
       expand: ({ context, prop, refs, event }) => {
@@ -195,8 +201,10 @@ export const splitterMachine = createMachine({
         if (!c?.collapsible || size == null || !isCollapsed(size, c))
           return
         const restore = restoreSizeOf(refs.get('restore'), e.index, c, sizes.length)
+        context.set('animating', true)
         context.set('sizes', expandPanel(sizes, e.index, constraints, restore))
       },
+      stopAnimating: ({ context }) => context.set('animating', false),
       dragBoundary: ({ context, prop, refs, event }) => {
         const e = event.current()
         if (e.type !== 'DRAG.MOVE')
@@ -233,6 +241,41 @@ export const splitterMachine = createMachine({
       },
     },
     effects: {
+      /**
+       * 折叠 / 展开时面板尺寸走过渡：等宿主提交，按面板上浏览器实际起播的 flex-basis 过渡等它们播完，
+       * 再撤下 animating；没有可等的过渡（减弱动效、无 DOM）即刻撤下。不按声明的时长猜。
+       */
+      trackPanelTransition: ({ context, refs, send, flush, track }) => {
+        let cancel: (() => void) | undefined
+        const watch = (): void => {
+          cancel?.()
+          cancel = undefined
+          if (!context.get('animating'))
+            return
+          flush(() => {
+            const root = refs.get('getRootEl')()
+            const transitions = root
+              ? [...root.querySelectorAll<HTMLElement>('[data-scope="splitter"][data-part="panel"]')]
+                  .flatMap(panel => typeof panel.getAnimations === 'function' ? panel.getAnimations() : [])
+                  .filter(animation => 'transitionProperty' in animation && animation.transitionProperty === 'flex-basis')
+              : []
+            if (!transitions.length) {
+              send({ type: 'ANIMATION.END' })
+              return
+            }
+            let cancelled = false
+            cancel = () => {
+              cancelled = true
+            }
+            void Promise.allSettled(transitions.map(transition => transition.finished)).then(() => {
+              if (!cancelled)
+                send({ type: 'ANIMATION.END' })
+            })
+          })
+        }
+        track([context.dep('animating'), context.dep('sizes')], watch)
+        return () => cancel?.()
+      },
       /**
        * 一场拖拽只量一次容器，拖拽途中容器尺寸不会变。
        * 量在效应里：connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得读 DOM；

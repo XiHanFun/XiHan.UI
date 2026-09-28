@@ -91,6 +91,11 @@ export interface SplitterSchema extends MachineSchema {
     sizes: number[]
     /** 正在被推动的分隔条下标：拖动期间是被抓住的分隔条，键盘操作时是聚焦的分隔条。 */
     activeIndex: number
+    /**
+     * 折叠 / 展开的那一段过渡在播：面板尺寸随之过渡，播完（或被拖拽、键盘步进、整份赋值打断）即撤下。
+     * 拖拽与步进跟手，不走过渡。
+     */
+    animating: boolean
   }
   computed: Record<string, never>
   refs: {
@@ -117,6 +122,8 @@ export interface SplitterSchema extends MachineSchema {
     | { type: 'DRAG.END' }
     /** 中途放弃本场拖拽：布局退回按下时刻，收尾回调不发出。 */
     | { type: 'DRAG.CANCEL' }
+    /** 折叠 / 展开的面板过渡播完。 */
+    | { type: 'ANIMATION.END' }
   tag: never
   guard: 'canResize'
   action:
@@ -132,7 +139,8 @@ export interface SplitterSchema extends MachineSchema {
     | 'invokeChangeEnd'
     | 'clearDrag'
     | 'cancelDrag'
-  effect: 'trackPointer' | 'trackCancelKey'
+    | 'stopAnimating'
+  effect: 'trackPointer' | 'trackCancelKey' | 'trackPanelTransition'
 }
 
 export interface SplitterPanelState {
