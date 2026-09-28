@@ -335,6 +335,7 @@
 | `--xh-navigation-menu-content-bg` | `content`<br>`viewport` | `background` | `default` | `--xh-bg-surface` | navigation-menu 的 content、viewport 部件 background 覆盖槽。 |
 | `--xh-navigation-menu-content-border` | `content`<br>`viewport` | `border` | `default` | `--xh-border-default` | navigation-menu 的 content、viewport 部件 border 覆盖槽。 |
 | `--xh-navigation-menu-content-gap` | `branch-content`<br>`content` | `gap` | `default` | `--xh-space-1` | navigation-menu 的 branch-content、content 部件 gap 覆盖槽。 |
+| `--xh-navigation-menu-content-max-w` | `content`<br>`viewport` | `max-inline-size` | `default` | `--xh-overlay-max-w-xl` | navigation-menu 的 content、viewport 部件 max-inline-size 覆盖槽。 |
 | `--xh-navigation-menu-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | navigation-menu 的 content 部件 min-inline-size 覆盖槽。 |
 | `--xh-navigation-menu-content-offset` | `content`<br>`viewport` | `inset-block-start`<br>`inset-inline-start` | `default`<br>`orientation=vertical` | `--xh-space-1` | navigation-menu 的 content、viewport 部件 inset-block-start、inset-inline-start 覆盖槽。 |
 | `--xh-navigation-menu-content-p` | `content` | `padding` | `default` | `--xh-surface-pad-xs` | navigation-menu 的 content 部件 padding 覆盖槽。 |

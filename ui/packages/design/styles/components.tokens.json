@@ -48588,6 +48588,25 @@
       "description": "navigation-menu 的 branch-content、content 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-navigation-menu-content-max-w",
+      "component": "navigation-menu",
+      "part": [
+        "content",
+        "viewport"
+      ],
+      "property": [
+        "max-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-overlay-max-w-xl"
+      ],
+      "visibility": "public",
+      "description": "navigation-menu 的 content、viewport 部件 max-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-navigation-menu-content-min-w",
       "component": "navigation-menu",
       "part": [
