@@ -6,6 +6,7 @@
 /* 定义 table 样式。 */
 
 @import '../family/action-control.css';
+@import '../family/check-mark.css';
 @import '../family/collection-item.css';
 
 @layer xihan.motion {
@@ -404,8 +405,7 @@
   }
 
   /* 家族 icon 档在粗指针下用 ::after 扩热区到 44px：五颗把手密排在行首与列头里（coarse-target 登记的
-     A 档存量），外扩会与相邻把手和上下行叠上；热区不外扩，全选框的 ::after 又是半选那道横杠、
-     排序钮的 ::after 是多列排序的序号角标 */
+     A 档存量），外扩会与相邻把手和上下行叠上；热区不外扩，排序钮的 ::after 是多列排序的序号角标 */
   @media (pointer: coarse) {
     [data-scope='table'][data-part='select-all-trigger']::after,
     [data-scope='table'][data-part='row-select-trigger']::after,
@@ -465,8 +465,8 @@
     display: none;
   }
 
-  /* 三个勾选把手：未选中时只剩一个空框（描边画出的透明底空框），勾选标记靠前景色显隐，
-     切换选中不引起行宽抖动 */
+  /* 三个勾选把手：未选中时只剩一个空框（描边画出的透明底空框）。框里的勾与半选杠由勾选标记配方画：
+     常驻、按状态淡变并轻缩放，标记色恒为面上的前景，切换选中不引起行宽抖动 */
   [data-scope='table'][data-part='select-all-trigger'],
   [data-scope='table'][data-part='row-select-trigger'],
   [data-scope='table'][data-part='column-visibility-trigger'] {
@@ -492,50 +492,21 @@
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
      那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-     置灰那档不在其列：底已换成淡底、勾也藏成透明，currentColor 取到的是透明，环整个消失；
-     aria-disabled 的把手仍能落焦，环退回默认那一支 */
+     置灰那档不在其列：底已换成淡底，aria-disabled 的把手仍能落焦，环退回默认那一支 */
   [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]),
   [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:not([data-disabled]),
   [data-scope='table'][data-part='row-select-trigger'][data-selected]:not([data-disabled]) {
     --xh-action-ring-color-focus-visible: currentColor;
   }
 
-  /* 半选档的前景是透明的（勾藏起来、横杠由伪元素画），currentColor 取到的是透明；
-     环直接取面配对的那支前景色 */
-  [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']:not([data-disabled]) {
-    --xh-action-ring-color-focus-visible: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
-  }
-
-  /* 未选中时勾不出现，但盒子还在：它是边框画出来的空框 */
-  [data-scope='table'][data-part='select-all-trigger'][data-state='unchecked'],
-  [data-scope='table'][data-part='column-visibility-trigger'][data-state='unchecked'],
-  [data-scope='table'][data-part='row-select-trigger']:not([data-selected]) {
-    --xh-_table-trigger-fg: transparent;
-  }
-
-  /* 半选换一枚横杠字形盖住勾：aria-checked=mixed 在视觉上也得与"全选"分得开。
-     横杠与勾同走字形令牌，作者换掉标记时两态一起换 */
-  [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate'] {
-    --xh-_table-trigger-fg: transparent;
-  }
-
-  [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']::after {
-    position: absolute;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    background-color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
-    content: '';
-    -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
-  }
-
-  /* 禁用：--xh-border-default 描边 + --xh-bg-subtle 底，勾藏起来；家族的禁用块按映射给 */
+  /* 禁用：--xh-border-default 描边 + --xh-bg-subtle 底 + --xh-fg-disabled 勾，与独立 Checkbox 同一档；
+     家族的禁用块按映射给 */
   [data-scope='table'][data-part='select-all-trigger'][data-disabled],
   [data-scope='table'][data-part='column-visibility-trigger'][data-disabled],
   [data-scope='table'][data-part='row-select-trigger'][data-disabled] {
     --xh-action-border-disabled: var(--xh-border-default);
     --xh-action-bg-disabled: var(--xh-bg-subtle);
-    --xh-action-fg-disabled: transparent;
+    --xh-action-fg-disabled: var(--xh-fg-disabled);
   }
 
   /* 行选择把手不占 Tab 位（键盘那一路走 Space），只服务指针 */
@@ -1027,22 +998,9 @@
     animation: none;
   }
 
-  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
-     尺寸读把手自己改接过的 --xh-icon-size：勾是方盒边长 × 0.75、chevron 与方盒同边长（见把手块） */
-  [data-scope='table'][data-part='select-all-trigger']:empty::before,
-  [data-scope='table'][data-part='column-visibility-trigger']:empty::before,
-  [data-scope='table'][data-part='row-select-trigger']:empty::before {
-    content: '';
-    display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    vertical-align: var(--xh-glyph-baseline-shift);
-    background-color: currentColor;
-    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-  }
-
-  /* flex: none：方盒是 ghost 形态，家族那圈透明描边仍占位，不钉住的话与盒同边长的 chevron 会被挤窄一个描边 */
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这条即不命中。三颗勾选框里的勾由勾选标记配方画；
+     尺寸读把手自己改接过的 --xh-icon-size：chevron 与方盒同边长（见把手块）。
+     flex: none：方盒是 ghost 形态，家族那圈透明描边仍占位，不钉住的话与盒同边长的 chevron 会被挤窄一个描边 */
   [data-scope='table'][data-part='expand-trigger']:empty::before {
     content: '';
     display: inline-block;
@@ -1079,14 +1037,9 @@
       border-color: var(--xh-fg-default);
     }
 
-    [data-scope='table'][data-part='select-all-trigger'][data-state='checked'],
+    [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']),
     [data-scope='table'][data-part='row-select-trigger'][data-selected] {
       color: var(--xh-fg-default);
-    }
-
-    /* 半选那枚横杠是伪元素画的，字色照旧留成透明把勾压住，只换横杠自己的颜色 */
-    [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']::after {
-      background-color: var(--xh-fg-default);
     }
   }
 }

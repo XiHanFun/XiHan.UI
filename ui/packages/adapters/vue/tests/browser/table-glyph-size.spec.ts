@@ -22,6 +22,7 @@ import {
   XhTableSelectAllTrigger,
   XhTableSortTrigger,
 } from '../../src'
+import { shownMask } from './glyph-mask'
 import { pseudoBox } from './pseudo-box'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -159,23 +160,22 @@ describe.each(['comfortable', 'compact'] as const)('表格自绘状态字形按�
     }
   })
 
-  it('全选框的半选杠与勾同尺，绝对定位落在居中的盒里', async () => {
+  it('全选框的半选杠与勾同尺、同一层，落在居中的盒里', async () => {
     await mount(density)
     const indicator = indicatorSize()
     const selectAll = part('select-all-trigger')
+    const row = part('row-select-trigger', 1)
     expect(selectAll.getAttribute('data-state')).toBe('indeterminate')
-    const bar = getComputedStyle(selectAll, '::after')
-    const observed = describeGlyph(selectAll, '::after')
+    const bar = getComputedStyle(selectAll, '::before')
+    const observed = describeGlyph(selectAll, '::before')
     expect(bar.content, observed).toBe('""')
-    expect(bar.position, observed).toBe('absolute')
+    // 勾与半选杠叠成两层遮罩，半选露出的是横杠那层
+    expect(shownMask(selectAll, '::before'), observed).not.toBe(shownMask(row, '::before'))
     expect(Number.parseFloat(bar.width), observed).toBe(indicator * CHECK_GLYPH_RATIO)
     expect(Number.parseFloat(bar.height), observed).toBe(indicator * CHECK_GLYPH_RATIO)
     expect(Number.parseFloat(bar.width), observed).toBeLessThanOrEqual(innerSize(selectAll))
-    // 没给起点：静态位置就是居中 flex 容器给的盒中心，计算样式里 top / left 解析成落点，折算回视口后与盒心重合
-    const rect = selectAll.getBoundingClientRect()
-    const box = pseudoBox(selectAll, '::after')
-    expect(box.centerX, observed).toBeCloseTo(rect.left + rect.width / 2, 2)
-    expect(box.centerY, observed).toBeCloseTo(rect.top + rect.height / 2, 2)
+    // 与勾同一层、静态落位：居中由方盒的 flex 居中给
+    expect(bar.position, observed).toBe('static')
     expectCenteredBox(selectAll)
   })
 

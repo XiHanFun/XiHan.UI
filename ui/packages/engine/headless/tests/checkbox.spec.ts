@@ -116,3 +116,17 @@ describe('connectCheckbox 按压通道', () => {
     c.stop()
   })
 })
+
+describe('connectCheckbox 勾选标记', () => {
+  it('指示器投影勾选标记配方：状态随三态走，形态为铺满方框的 box', () => {
+    const c = makeCheckbox({ checked: false })
+    const indicator = (): Record<string, unknown> =>
+      connectCheckbox(c.service, normalizeProps).getIndicatorProps() as Record<string, unknown>
+    expect(indicator()).toMatchObject({ 'data-xh-check-mark': 'unchecked', 'data-xh-check-mark-profile': 'box' })
+    c.setProps({ checked: true })
+    expect(indicator()['data-xh-check-mark']).toBe('checked')
+    c.setProps({ checked: 'indeterminate' })
+    expect(indicator()['data-xh-check-mark']).toBe('indeterminate')
+    c.stop()
+  })
+})

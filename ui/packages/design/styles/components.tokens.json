@@ -10605,7 +10605,7 @@
         "root"
       ],
       "property": [
-        "background-color",
+        "--xh-check-mark-fg",
         "color"
       ],
       "state": [
@@ -10616,7 +10616,7 @@
         "--xh-fg-disabled"
       ],
       "visibility": "public",
-      "description": "checkbox 的 indicator、root 部件 background-color、color 覆盖槽。"
+      "description": "checkbox 的 indicator、root 部件 --xh-check-mark-fg、color 覆盖槽。"
     },
     {
       "name": "--xh-checkbox-fg-invalid",
@@ -10662,7 +10662,7 @@
         "indicator"
       ],
       "property": [
-        "background-color"
+        "--xh-check-mark-fg"
       ],
       "state": [
         "state=indeterminate"
@@ -10671,7 +10671,7 @@
         "--xh-_checkbox-on-accent"
       ],
       "visibility": "public",
-      "description": "checkbox 的 indicator 部件 background-color 覆盖槽。"
+      "description": "checkbox 的 indicator 部件 --xh-check-mark-fg 覆盖槽。"
     },
     {
       "name": "--xh-checkbox-label-fg",
@@ -11080,19 +11080,17 @@
         "select-all-trigger"
       ],
       "property": [
-        "background-color",
+        "--xh-check-mark-fg",
         "color"
       ],
       "state": [
-        "default",
-        "state=checked",
-        "state=indeterminate"
+        "default"
       ],
       "defaultToken": [
         "--xh-_checkbox-group-on-accent"
       ],
       "visibility": "public",
-      "description": "checkbox-group 的 indicator、select-all-trigger 部件 background-color、color 覆盖槽。"
+      "description": "checkbox-group 的 indicator、select-all-trigger 部件 --xh-check-mark-fg、color 覆盖槽。"
     },
     {
       "name": "--xh-checkbox-group-indicator-fg-disabled",
@@ -11104,6 +11102,7 @@
         "select-all-trigger"
       ],
       "property": [
+        "--xh-check-mark-fg",
         "color"
       ],
       "state": [
@@ -11113,7 +11112,7 @@
         "--xh-fg-disabled"
       ],
       "visibility": "public",
-      "description": "checkbox-group 的 indicator、item、root、select-all-trigger 部件 color 覆盖槽。"
+      "description": "checkbox-group 的 indicator、item、root、select-all-trigger 部件 --xh-check-mark-fg、color 覆盖槽。"
     },
     {
       "name": "--xh-checkbox-group-indicator-font-size",
@@ -11126,9 +11125,7 @@
         "font-size"
       ],
       "state": [
-        "default",
-        "state=checked",
-        "state=indeterminate"
+        "default"
       ],
       "defaultToken": [
         "--xh-_checkbox-group-glyph"
@@ -11182,20 +11179,18 @@
         "select-all-trigger"
       ],
       "property": [
+        "--xh-check-mark-box-size",
         "block-size",
-        "inline-size",
-        "margin-inline-start"
+        "inline-size"
       ],
       "state": [
-        "default",
-        "state=checked",
-        "state=indeterminate"
+        "default"
       ],
       "defaultToken": [
         "--xh-_checkbox-group-box"
       ],
       "visibility": "public",
-      "description": "checkbox-group 的 indicator、select-all-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
+      "description": "checkbox-group 的 indicator、select-all-trigger 部件 --xh-check-mark-box-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-checkbox-group-item-bg-hover",
@@ -35360,7 +35355,7 @@
         "color"
       ],
       "state": [
-        "state=checked"
+        "default"
       ],
       "defaultToken": [
         "--xh-_grid-list-indicator-on-accent"
@@ -37283,7 +37278,6 @@
         "caps-lock-indicator",
         "clear-trigger",
         "close-trigger",
-        "column-visibility-trigger",
         "control",
         "decrement-trigger",
         "dismiss-trigger",
@@ -37296,7 +37290,6 @@
         "increment-trigger",
         "indicator",
         "item",
-        "item-checkbox",
         "item-close-trigger",
         "item-delete-trigger",
         "item-indicator",
@@ -37312,10 +37305,8 @@
         "root",
         "rotate-left-trigger",
         "rotate-right-trigger",
-        "row-select-trigger",
         "row-selection-indicator",
         "scroll-to-end-trigger",
-        "select-all-trigger",
         "separator",
         "sort-trigger",
         "submit-trigger",
@@ -37333,8 +37324,7 @@
       "property": [
         "block-size",
         "column-gap",
-        "inline-size",
-        "margin-inline-start"
+        "inline-size"
       ],
       "state": [
         "@media (min-width: 640px)",
@@ -37355,9 +37345,7 @@
         "size=xl",
         "sort=asc",
         "sort=desc",
-        "state=checked",
         "state=completed",
-        "state=indeterminate",
         "state=paused",
         "state=running",
         "state=visible"
@@ -67109,8 +67097,6 @@
         "select-all-trigger"
       ],
       "property": [
-        "--xh-_ring-color",
-        "background-color",
         "color"
       ],
       "state": [
@@ -67122,14 +67108,13 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "pressed",
-        "state=indeterminate"
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-on-brand"
       ],
       "visibility": "public",
-      "description": "table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 --xh-_ring-color、background-color、color 覆盖槽。"
+      "description": "table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-table-trigger-radius",
@@ -80691,19 +80676,17 @@
         "select-all-trigger"
       ],
       "property": [
-        "background-color",
+        "--xh-check-mark-fg",
         "color"
       ],
       "state": [
-        "default",
-        "state=checked",
-        "state=indeterminate"
+        "default"
       ],
       "defaultToken": [
         "--xh-_transfer-on-accent"
       ],
       "visibility": "public",
-      "description": "transfer 的 item-checkbox、select-all-trigger 部件 background-color、color 覆盖槽。"
+      "description": "transfer 的 item-checkbox、select-all-trigger 部件 --xh-check-mark-fg、color 覆盖槽。"
     },
     {
       "name": "--xh-transfer-checkbox-font-size",
@@ -80716,9 +80699,7 @@
         "font-size"
       ],
       "state": [
-        "default",
-        "state=checked",
-        "state=indeterminate"
+        "default"
       ],
       "defaultToken": [
         "--xh-_transfer-box"
@@ -80753,21 +80734,19 @@
         "select-all-trigger"
       ],
       "property": [
+        "--xh-check-mark-box-size",
         "--xh-icon-size",
         "block-size",
-        "inline-size",
-        "margin-inline-start"
+        "inline-size"
       ],
       "state": [
-        "default",
-        "state=checked",
-        "state=indeterminate"
+        "default"
       ],
       "defaultToken": [
         "--xh-_transfer-box"
       ],
       "visibility": "public",
-      "description": "transfer 的 item-checkbox、select-all-trigger 部件 --xh-icon-size、block-size、inline-size、margin-inline-start 覆盖槽。"
+      "description": "transfer 的 item-checkbox、select-all-trigger 部件 --xh-check-mark-box-size、--xh-icon-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-transfer-empty-fg",

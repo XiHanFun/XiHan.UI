@@ -9,6 +9,7 @@
    独立皮肤同时传递引入选项行与四颗钮的动作控件配方，full bundle 递归去重。 */
 @import '../family/motion.css';
 @import '../family/action-control.css';
+@import '../family/check-mark.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -263,26 +264,17 @@
     border-radius: var(--xh-question-flow-indicator-radius-single, var(--xh-shape-circle));
   }
 
-  /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
-  [data-scope='question-flow'][data-part='item-indicator']:empty::before {
+  /* 多选的记号是勾选格：没写内容时勾由勾选标记配方画在 ::before 上，常驻、按状态淡变并轻缩放；
+     作者往部件里塞了自己的图形，配方与下面的圆点都不画。
+     单选那一档画实心点，由伪元素自己的底色画；直径按记号盒的一半量，与其余单选控件的圆点同源——
+     盒换档时点跟着换 */
+  [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    vertical-align: var(--xh-glyph-baseline-shift);
-    background-color: currentColor;
-    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-  }
-
-  /* 单选那一档把勾换成实心点：mask 撤掉，圆点由伪元素自己的底色画。
-     直径按记号盒的一半量，与其余单选控件的圆点同源——盒换档时点跟着换 */
-  [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before {
     inline-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
     block-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
     border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-circle));
-    -webkit-mask: none;
-    mask: none;
+    background-color: currentColor;
   }
 
   [data-scope='question-flow'][data-part='item-indicator'][data-state='checked'] {
@@ -290,8 +282,8 @@
     background: var(--xh-question-flow-indicator-bg-checked, var(--xh-_tone, var(--xh-bg-brand)));
   }
 
-  /* 没选中时把记号隐去而不是撤掉：盒留在原位，翻面时整行不跳 */
-  [data-scope='question-flow'][data-part='item-indicator'][data-state='unchecked'] {
+  /* 单选没选中时把圆点隐去而不是撤掉：盒留在原位，翻面时整行不跳 */
+  [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single'][data-state='unchecked'] {
     color: transparent;
   }
 

@@ -577,6 +577,9 @@ export function connectTable<T extends PropTypes>(
         // 设置区不是 roving 集合：一列一个 Tab 位，Tab 一路走下去即可逐列开关
         'tabindex': 0,
         'data-state': hidden ? 'unchecked' : 'checked',
+        // 方框里的勾由勾选标记配方画，常驻、按状态淡变
+        'data-xh-check-mark': hidden ? 'unchecked' : 'checked',
+        'data-xh-check-mark-profile': 'box',
         'data-disabled': dataAttr(!toggleable),
         'onClick': () => {
           if (toggleable)
@@ -919,6 +922,9 @@ export function connectTable<T extends PropTypes>(
         'aria-disabled': canSelectAll ? 'false' : 'true',
         'tabindex': 0,
         'data-state': selectionState,
+        // 方框里的勾与半选杠由勾选标记配方画，常驻、按状态淡变
+        'data-xh-check-mark': selectionState,
+        'data-xh-check-mark-profile': 'box',
         'data-disabled': dataAttr(!canSelectAll),
         'onClick': () => {
           if (canSelectAll)
@@ -951,6 +957,9 @@ export function connectTable<T extends PropTypes>(
       'data-xh-action-variant': 'outline',
       'data-xh-action-display': 'always',
       'data-xh-action-size': prop('size') ?? 'md',
+      // 方框里的勾由勾选标记配方画，常驻、按行的选中淡变（行的 data-state 另有展开的含义）
+      'data-xh-check-mark': isSelected(row.value) ? 'checked' : 'unchecked',
+      'data-xh-check-mark-profile': 'box',
       'aria-hidden': true,
       'tabindex': -1,
       'onClick': (event: MouseEvent) => {

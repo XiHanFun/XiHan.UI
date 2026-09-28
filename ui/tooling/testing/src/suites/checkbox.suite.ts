@@ -70,7 +70,8 @@ export const checkboxSuite: ConformanceSuite = {
             'data-xh-action-display': 'always',
             'data-xh-action-size': 'md',
           },
-          indicator: { 'data-state': 'unchecked' },
+          // 勾与半选杠由勾选标记配方画：指示器按铺满方框的 box 形态投影，状态随三态走
+          indicator: { 'data-state': 'unchecked', 'data-xh-check-mark': 'unchecked', 'data-xh-check-mark-profile': 'box' },
         },
       },
     },
@@ -84,7 +85,7 @@ export const checkboxSuite: ConformanceSuite = {
           expect: {
             parts: {
               root: { 'aria-checked': 'true', 'data-state': 'checked' },
-              indicator: { 'data-state': 'checked' },
+              indicator: { 'data-state': 'checked', 'data-xh-check-mark': 'checked' },
             },
             events: [{ type: 'checked-change', detail: { checked: true } }],
           },
@@ -121,7 +122,7 @@ export const checkboxSuite: ConformanceSuite = {
       initial: {
         parts: {
           root: { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
-          indicator: { 'data-state': 'indeterminate' },
+          indicator: { 'data-state': 'indeterminate', 'data-xh-check-mark': 'indeterminate' },
         },
       },
     },
@@ -136,7 +137,7 @@ export const checkboxSuite: ConformanceSuite = {
           expect: {
             parts: {
               root: { 'aria-checked': 'true', 'data-state': 'checked' },
-              indicator: { 'data-state': 'checked' },
+              indicator: { 'data-state': 'checked', 'data-xh-check-mark': 'checked' },
             },
             events: [{ type: 'checked-change', detail: { checked: true } }],
           },

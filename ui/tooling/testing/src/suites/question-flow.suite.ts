@@ -183,7 +183,13 @@ export const questionFlowSuite: ConformanceSuite = {
           kind: 'click',
           part: 'item[3]',
           expect: {
-            parts: { item: [{ 'aria-checked': 'false' }, {}, {}, { 'aria-checked': 'true' }] },
+            parts: {
+              'item': [{ 'aria-checked': 'false' }, {}, {}, { 'aria-checked': 'true' }],
+              // 多选的记号是勾选格，勾由勾选标记配方画；单选的圆点不投影配方
+              'item-indicator[0]': { 'data-xh-check-mark': null, 'data-xh-check-mark-profile': null },
+              'item-indicator[3]': { 'data-xh-check-mark': 'checked', 'data-xh-check-mark-profile': 'box' },
+              'item-indicator[4]': { 'data-xh-check-mark': 'unchecked' },
+            },
             events: [{ type: 'answers-change', detail: { answers: { checks: ['unit'] } } }],
           },
         },

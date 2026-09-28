@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhCheckbox } from '../../src'
+import { shownMask } from './glyph-mask'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -170,7 +171,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
       const mixed = getComputedStyle(box(`${tone}-mixed`))
       const offBorder = resolveColor(box(`${tone}-off`), 'var(--xh-checkbox-border, var(--xh-border-control))')
       const check = getComputedStyle(indicator(`${tone}-on`), '::before').backgroundColor
-      const line = getComputedStyle(indicator(`${tone}-mixed`), '::after').backgroundColor
+      const line = getComputedStyle(indicator(`${tone}-mixed`), '::before').backgroundColor
 
       // 未勾方框的描边与浮层面板、卡片的装饰边同一档，3:1 留给高对比档
       expect(offBorder, `${theme}/${tone}/off`).toBe(resolveColor(box(`${tone}-off`), 'var(--xh-border-default)'))
@@ -188,7 +189,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
     expect(off.backdropFilter).toBe('none')
   })
 
-  it('indicator 常驻并只用 opacity/scale 在 120ms 内切换，勾与短横使用同一光学盒', async () => {
+  it('勾常驻并只用 opacity/scale 在 120ms 内切换，勾与短横使用同一光学盒', async () => {
     await mount([
       h(XhCheckbox, { 'data-testid': 'live' }),
       h(XhCheckbox, { 'data-testid': 'mixed', 'defaultChecked': 'indeterminate' }),
@@ -196,23 +197,25 @@ describe('checkbox 字段家族控制盒与三态', () => {
     const live = indicator('live')
     const mixed = indicator('mixed')
     const before = getComputedStyle(live, '::before')
-    const line = getComputedStyle(mixed, '::after')
+    const line = getComputedStyle(mixed, '::before')
     expect(getComputedStyle(live).display).toBe('flex')
-    expect(getComputedStyle(live).opacity).toBe('0')
-    expect(getComputedStyle(live).transitionProperty.split(', ').sort()).toEqual(['opacity', 'scale'])
-    expect(getComputedStyle(live).transitionDuration.split(', ')).toEqual(['0.12s', '0.12s'])
+    expect(before.opacity).toBe('0')
+    const properties = before.transitionProperty.split(', ')
+    const durations = before.transitionDuration.split(', ')
+    expect(durations[properties.indexOf('opacity')]).toBe('0.12s')
+    expect(durations[properties.indexOf('scale')]).toBe('0.12s')
     expect(before.width).toBe(line.width)
     expect(before.height).toBe(line.height)
-    expect(before.maskImage).not.toBe(line.maskImage)
+    expect(shownMask(live, '::before')).not.toBe(shownMask(mixed, '::before'))
 
     box('live').click()
     await finishMotion()
-    expect(getComputedStyle(live).opacity).toBe('1')
-    expect(getComputedStyle(live).scale).toBe('1')
+    expect(getComputedStyle(live, '::before').opacity).toBe('1')
+    expect(getComputedStyle(live, '::before').scale).toBe('1')
     box('live').click()
     await finishMotion()
-    expect(getComputedStyle(live).opacity).toBe('0')
-    expect(getComputedStyle(live).scale).not.toBe('1')
+    expect(getComputedStyle(live, '::before').opacity).toBe('0')
+    expect(getComputedStyle(live, '::before').scale).not.toBe('1')
   })
 
   it('整行 hover 时未勾方框描边升一档，勾中方框不换描边；按下缩放并换底；disabled、readonly 与 invalid 不伪装可操作', async () => {

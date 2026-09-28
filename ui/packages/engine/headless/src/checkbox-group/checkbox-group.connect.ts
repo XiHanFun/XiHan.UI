@@ -191,10 +191,12 @@ export function connectCheckboxGroup<T extends PropTypes>(
       })
     },
 
-    // 视觉方框，条目的可及名来自 item-text
+    // 视觉方框，条目的可及名来自 item-text；方框里的勾由勾选标记配方画，常驻、按状态淡变
     getIndicatorProps: item => normalize.element({
       ...parts.indicator.attrs,
       ...stateAttrs(item),
+      'data-xh-check-mark': isChecked(item.value) ? 'checked' : 'unchecked',
+      'data-xh-check-mark-profile': 'box',
       'aria-hidden': true,
     }),
 
@@ -248,6 +250,9 @@ export function connectCheckboxGroup<T extends PropTypes>(
         'aria-readonly': readOnly ? 'true' : 'false',
         'tabindex': 0,
         'data-state': checkedState,
+        // 方框是皮肤画在行首的 ::before，勾与半选杠由勾选标记配方叠在方框正中
+        'data-xh-check-mark': checkedState,
+        'data-xh-check-mark-profile': 'row',
         'data-disabled': dataAttr(groupDisabled),
         'data-readonly': dataAttr(readOnly),
         // Space 与触屏按住投影 data-pressed，皮肤的按下面同时认它与指针 :active；与全选态互相独立

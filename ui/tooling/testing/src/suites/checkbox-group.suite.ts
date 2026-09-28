@@ -134,6 +134,9 @@ export const checkboxGroupSuite: ConformanceSuite = {
             'aria-disabled': 'false',
             'aria-readonly': 'false',
             'data-state': 'unchecked',
+            // 方框是行首的 ::before，勾与半选杠由勾选标记配方叠在方框正中
+            'data-xh-check-mark': 'unchecked',
+            'data-xh-check-mark-profile': 'row',
             'tabindex': '0',
             'disabled': null,
             // 整行接 Action Control row 档 ghost（行级命中区），xs 是 24px 命中地板；方框随行读宿主 host 槽
@@ -193,10 +196,11 @@ export const checkboxGroupSuite: ConformanceSuite = {
               'disabled': null,
             },
           ],
+          // 方框里的勾由勾选标记配方画：box 形态，状态随勾选态
           'indicator': [
-            { 'aria-hidden': 'true', 'data-state': 'unchecked' },
-            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-disabled': '' },
-            { 'aria-hidden': 'true', 'data-state': 'unchecked' },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-xh-check-mark': 'unchecked', 'data-xh-check-mark-profile': 'box' },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-disabled': '', 'data-xh-check-mark': 'unchecked' },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-xh-check-mark': 'unchecked' },
           ],
           'item-text': [
             // 文本是条目可及名的来源，绝不能对读屏隐藏
@@ -228,7 +232,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
                 { 'aria-checked': 'false' },
                 { 'aria-checked': 'false' },
               ],
-              'indicator': [{ 'data-state': 'checked' }, { 'data-state': 'unchecked' }, { 'data-state': 'unchecked' }],
+              'indicator': [{ 'data-state': 'checked', 'data-xh-check-mark': 'checked' }, { 'data-state': 'unchecked' }, { 'data-state': 'unchecked' }],
               'item-text': [{ 'data-state': 'checked' }, { 'data-state': 'unchecked' }, { 'data-state': 'unchecked' }],
             },
             activeElement: { part: 'item[0]', exact: true },
@@ -472,7 +476,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
                 { 'aria-checked': 'true', 'data-state': 'checked' },
               ],
               // 还差一个 b，因此仍是"半选"而不是"全选"
-              'select-all-trigger': { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
+              'select-all-trigger': { 'aria-checked': 'mixed', 'data-state': 'indeterminate', 'data-xh-check-mark': 'indeterminate' },
             },
             events: [{ type: 'value-change', detail: { value: ['a', 'c'] } }],
           },

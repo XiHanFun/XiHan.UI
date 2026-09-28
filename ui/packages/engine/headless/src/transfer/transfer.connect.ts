@@ -459,6 +459,9 @@ export function connectTransfer<T extends PropTypes>(
         'disabled': off || undefined,
         'data-side': panel.side,
         'data-state': state,
+        // 方框是皮肤画在行首的 ::before，勾与半选杠由勾选标记配方叠在方框正中
+        'data-xh-check-mark': state,
+        'data-xh-check-mark-profile': 'row',
         'data-disabled': dataAttr(off),
         'onClick': () => {
           if (off)
@@ -571,13 +574,19 @@ export function connectTransfer<T extends PropTypes>(
     // 视觉方框，读屏不需要它——勾选态由条目自己的 aria-selected 承担。
     // 它是前导勾选部件、自己就是选中标记（页内持久集合），不占家族的 indicator 槽。
     // oneWay 下的 target 侧勾不了任何东西，这一格也就不该在场
-    getItemCheckboxProps: item => normalize.element({
-      ...parts['item-checkbox'].attrs,
-      ...itemState(item),
-      'data-xh-collection-slot': 'prefix',
-      'aria-hidden': true,
-      'hidden': !selectable[item.side] || undefined,
-    }),
+    getItemCheckboxProps: (item) => {
+      const state = itemState(item)
+      return normalize.element({
+        ...parts['item-checkbox'].attrs,
+        ...state,
+        // 方框里的勾由勾选标记配方画，常驻、按状态淡变
+        'data-xh-check-mark': state['data-state'],
+        'data-xh-check-mark-profile': 'box',
+        'data-xh-collection-slot': 'prefix',
+        'aria-hidden': true,
+        'hidden': !selectable[item.side] || undefined,
+      })
+    },
 
     // 两颗搬运钮是本组件唯一的操作出口，且默认只画一枚箭头、没有可读文字，
     // 名字无条件发：缺了它读屏就只念得出「按钮」，整个组件对读屏不可用。

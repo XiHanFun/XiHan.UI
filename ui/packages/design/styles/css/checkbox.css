@@ -6,6 +6,7 @@
 /* 定义 checkbox 样式。 */
 
 @import '../family/action-control.css';
+@import '../family/check-mark.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -155,61 +156,28 @@
     }
   }
 
+  /* 指示器铺满方框。勾与半选杠由勾选标记配方画在它的 ::before 上（常驻、按状态淡变并轻缩放）；
+     作者往部件里塞了自己的图形时配方不画 */
   [data-scope='checkbox'][data-part='indicator'] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     inline-size: 100%;
     block-size: 100%;
-    opacity: 0;
     line-height: var(--xh-leading-none);
     font-size: var(--xh-_checkbox-glyph);
     pointer-events: none;
-    scale: var(--xh-motion-scale-enter);
-    transition:
-      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
-  /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
-  [data-scope='checkbox'][data-part='indicator']:empty::before {
-    content: '';
-    display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    vertical-align: var(--xh-glyph-baseline-shift);
-    background-color: currentColor;
-    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-  }
-
-  [data-scope='checkbox'][data-part='indicator']:is([data-state='checked'], [data-state='indeterminate']) {
-    opacity: 1;
-    scale: 1;
-  }
-
-  /* 半选换一枚横杠字形盖住勾：aria-checked=mixed 在视觉上也得与「全选」分得开。
-     横杠与勾同走字形令牌，作者换掉标记时两态一起换；此前这条是手画的几何盒
-     （60% × stroke-thick），同一页上会出现两种横杠 */
+  /* 半选横杠另有一支前景槽，缺省与勾同色 */
   [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate'] {
-    position: relative;
-    color: transparent;
+    --xh-check-mark-fg: var(--xh-checkbox-indicator-fg, var(--xh-_checkbox-on-accent));
   }
 
-  [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate']::after {
-    position: absolute;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    background-color: var(--xh-checkbox-indicator-fg, var(--xh-_checkbox-on-accent));
-    content: '';
-    -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
-  }
-
-  /* 禁用时横杠也走置灰色：它自己画底色，不从 root 的 color 继承 */
+  /* 禁用时横杠也走置灰色 */
   [data-scope='checkbox'][data-part='root'][data-disabled]
-    [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate']::after {
-    background-color: var(--xh-checkbox-fg-disabled, var(--xh-fg-disabled));
+    [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate'] {
+    --xh-check-mark-fg: var(--xh-checkbox-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目、switch 的标签同一副样子 ——
@@ -259,16 +227,9 @@
   }
 
   @media (forced-colors: active) {
-    /* 真实 border 保住盒，系统前景重新画出勾与半选横杠。 */
-    [data-scope='checkbox'][data-part='indicator']:empty::before,
-    [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate']::after {
-      background-color: CanvasText;
-    }
-
+    /* 真实 border 保住盒，勾与半选横杠的系统前景由配方给；禁用写在 root 上，指示器自己不带，这里补置灰 */
     [data-scope='checkbox'][data-part='root'][data-disabled]
-      [data-scope='checkbox'][data-part='indicator']:empty::before,
-    [data-scope='checkbox'][data-part='root'][data-disabled]
-      [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate']::after {
+      [data-scope='checkbox'][data-part='indicator']:empty::before {
       background-color: GrayText;
     }
   }

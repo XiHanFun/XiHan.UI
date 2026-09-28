@@ -87,7 +87,7 @@ describe('grid-list 多选视觉', () => {
     const selectedBox = selectedIndicator.getBoundingClientRect()
     const uncheckedStyle = getComputedStyle(uncheckedIndicator)
     const checkedStyle = getComputedStyle(selectedIndicator)
-    const glyphStyle = getComputedStyle(selectedIndicator, '::after')
+    const glyphStyle = getComputedStyle(selectedIndicator, '::before')
 
     expect(selectedBox.width).toBe(16)
     expect(selectedBox.height).toBe(16)

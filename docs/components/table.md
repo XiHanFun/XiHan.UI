@@ -523,6 +523,8 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 
 `@xihan-ui/styles/table.css` 使用 `[data-scope="table"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -571,6 +573,8 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `column-visibility-trigger` | `data-xh-action-profile` | 'icon' |
 | `column-visibility-trigger` | `data-xh-action-size` | props.size |
 | `column-visibility-trigger` | `data-xh-action-variant` | 'outline' |
+| `column-visibility-trigger` | `data-xh-check-mark` | 'unchecked' \| 'checked' |
+| `column-visibility-trigger` | `data-xh-check-mark-profile` | 'box' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-state` | tableSelectionState(selection, selectableIds) |
@@ -579,6 +583,8 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `select-all-trigger` | `data-xh-action-profile` | 'icon' |
 | `select-all-trigger` | `data-xh-action-size` | props.size |
 | `select-all-trigger` | `data-xh-action-variant` | 'outline' |
+| `select-all-trigger` | `data-xh-check-mark` | tableSelectionState(selection, selectableIds) |
+| `select-all-trigger` | `data-xh-check-mark-profile` | 'box' |
 | `row-select-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-highlighted` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -589,6 +595,8 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `row-select-trigger` | `data-xh-action-profile` | 'icon' |
 | `row-select-trigger` | `data-xh-action-size` | props.size |
 | `row-select-trigger` | `data-xh-action-variant` | 'outline' |
+| `row-select-trigger` | `data-xh-check-mark` | 'checked' \| 'unchecked' |
+| `row-select-trigger` | `data-xh-check-mark-profile` | 'box' |
 | `sort-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `sort-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `sort-trigger` | `data-sort` | 'asc' \| 'desc' |
@@ -722,7 +730,7 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `--xh-table-trigger-bg-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
 | `--xh-table-trigger-border` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-table-trigger-border-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-table-trigger-bg-checked` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
-| `--xh-table-trigger-fg` | `column-visibility-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `--xh-_ring-color`<br>`background-color`<br>`color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=indeterminate` | `--xh-fg-on-brand` | table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 --xh-_ring-color、background-color、color 覆盖槽。 |
+| `--xh-table-trigger-fg` | `column-visibility-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-on-brand` | table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 color 覆盖槽。 |
 | `--xh-table-trigger-radius` | `column-drag-trigger`<br>`column-visibility-trigger`<br>`expand-trigger`<br>`row-drag-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border-radius` | `default` | `--xh-shape-control`<br>`--xh-shape-inset` | table 的 column-drag-trigger、column-visibility-trigger、expand-trigger、row-drag-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-table-trigger-size` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`min-block-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon`<br>`xh-action-profile=row` | `--xh-control-indicator-size` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 --xh-icon-size、block-size、inline-size、min-block-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
@@ -733,7 +741,7 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 
 可覆盖的动效槽：`--xh-table-loading-duration`。
 
-关键帧 `xh-table-loading-pulse` 随皮肤自带，不引用别处文件里的名字；`background-color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-table-loading-pulse` 随皮肤自带，不引用别处文件里的名字；`-webkit-mask-size` · `background-color` · `mask-size` · `opacity` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

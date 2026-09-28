@@ -321,6 +321,19 @@ describe('connectCheckboxGroup：全选/半选的 trigger', () => {
     expect((api(s).getSelectAllTriggerProps() as Record<string, unknown>)['data-state']).toBe('indeterminate')
   })
 
+  it('勾选标记：全选格按行投影（方框画在行首），条目方框按 box 投影，状态与勾选态同源', () => {
+    const s = makeService({ itemValues: ALL, defaultValue: ['a'] })
+    expect(api(s).getSelectAllTriggerProps()).toMatchObject({
+      'data-xh-check-mark': 'indeterminate',
+      'data-xh-check-mark-profile': 'row',
+    })
+    expect(api(s).getIndicatorProps({ value: 'a' })).toMatchObject({
+      'data-xh-check-mark': 'checked',
+      'data-xh-check-mark-profile': 'box',
+    })
+    expect((api(s).getIndicatorProps({ value: 'b' }) as Record<string, unknown>)['data-xh-check-mark']).toBe('unchecked')
+  })
+
   it('可及名两段：组标题在前，全选格自己的文本在后（自指那段落在它自己的 id 上）', () => {
     const a = api(makeService({}))
     const trigger = a.getSelectAllTriggerProps() as Record<string, unknown>
