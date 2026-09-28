@@ -592,8 +592,8 @@ function scriptedMotion(id) {
     drivers: MOTION_DRIVERS.filter(name => imported.has(name)),
     prefers: imported.has('resolveMotionPreference'),
     reads: imported.has('readMotion'),
-    // 退场闸门直接建，或者走两个适配器各自的公共封装
-    presence: /createPresence|useOverlayExit|createOverlayExit/.test(adapters),
+    // 退场闸门直接建，或者走两个适配器各自的公共封装；WC 的「更多」菜单经共用的 OverflowMenuController 建
+    presence: /createPresence|useOverlayExit|createOverlayExit|OverflowMenuController/.test(adapters),
   }
 }
 
