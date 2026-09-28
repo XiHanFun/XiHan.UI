@@ -8,9 +8,9 @@
 import type { ComponentMeta } from '../spec/types'
 
 // tree 必需：role=tree、可及名字与键盘入口全在它身上。
-// requiredParts 表达不了 item 与 branch 二选一，因此只钉 item。
-// root/label 与分支五件套可缺省。
+// 条目不算必需：空树、由脚本随后铺出的条目（虚拟化窗口、异步取数）在挂载那一刻都没有条目，
+// 与列表框只钉容器同一口径。root/label、条目与分支五件套都可缺省。
 export const treeMeta: ComponentMeta = {
   component: 'tree',
-  requiredParts: ['tree', 'item'],
+  requiredParts: ['tree'],
 }
