@@ -1,4 +1,4 @@
-// 多选 | 选择多个值
+// 多选 | 已选项在触发器里排成标签
 import type { ReactNode } from "react";
 import { XhSelectRoot } from "@xihan-ui/react";
 import { useState } from "react";

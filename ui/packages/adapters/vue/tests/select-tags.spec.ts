@@ -287,3 +287,31 @@ describe('select 多选标签', () => {
     expect(m.change).not.toHaveBeenCalled()
   })
 })
+
+describe('select 自动结构的多选标签', () => {
+  function mountDefault(props: Record<string, unknown>): HTMLElement {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const app = createApp({ render: () => h(XhSelectRoot, { collection: COLLECTION, placeholder: '请选择', ...props }) })
+    app.mount(host)
+    cleanup.push(() => app.unmount())
+    return host
+  }
+
+  it('多选时触发器里铺出标签行：可见的几枚与 +N，都是只作展示的 tag', async () => {
+    const host = mountDefault({ multiple: true, defaultValue: ['a', 'b', 'c', 'd'] })
+    await tick()
+    const list = host.querySelector('[data-scope="select"][data-part="trigger"] [data-scope="select"][data-part="tag-list"]')!
+    expect(list.hasAttribute('hidden')).toBe(false)
+    const tags = [...list.querySelectorAll('[data-scope="tag"][data-part="root"][data-value]')].map(el => el.textContent)
+    expect(tags).toEqual(['甲', '乙', '丙'])
+    expect(list.querySelector('[data-scope="tag"][data-part="root"][data-count]')!.textContent).toBe('+1')
+    expect(list.querySelector('[data-scope="tag"][data-part="close-trigger"]')).toBeNull()
+  })
+
+  it('单选的自动结构不铺标签行', async () => {
+    const host = mountDefault({ defaultValue: 'a' })
+    await tick()
+    expect(host.querySelector('[data-scope="select"][data-part="tag-list"]')).toBeNull()
+  })
+})
