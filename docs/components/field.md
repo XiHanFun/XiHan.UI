@@ -194,6 +194,7 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-field-border-invalid` | `jumper` | `border-color` | `user-invalid` | `--xh-_field-variant-border-invalid` | field 的 jumper 部件 border-color 覆盖槽。 |
 | `--xh-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | field 的 control 部件 background-color 覆盖槽。 |
@@ -223,6 +224,7 @@
 | `--xh-field-label-gap-block` | `label` | `margin-block-end` | `default` | `--xh-field-gap` | field 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-field-label-leading` | `label`<br>`root` | `line-height`<br>`padding-block` | `layout=horizontal` | `--xh-leading-normal` | field 的 label、root 部件 line-height、padding-block 覆盖槽。 |
 | `--xh-field-label-star` | `label` | `color` | `required` | `--xh-fg-danger` | field 的 label 部件 color 覆盖槽。 |
+| `--xh-field-ring-invalid` | `jumper` | `outline-color` | `focus-within`<br>`user-invalid` | `--xh-ring-invalid` | field 的 jumper 部件 outline-color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

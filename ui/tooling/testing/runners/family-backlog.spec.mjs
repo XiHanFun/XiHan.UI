@@ -11,7 +11,7 @@ const SNAPSHOT = new URL('./__snapshots__/family-backlog.spec.mjs.snap', import.
 const CEILING = {
   edge: 3,
   selection: 0,
-  ladder: 8,
+  ladder: 7,
   shape: 0,
   scroll: 0,
   press: 0,

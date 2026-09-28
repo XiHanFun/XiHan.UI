@@ -147,6 +147,11 @@ export function connectPagination<T extends PropTypes>(
       'aria-label': label.jumper,
       'disabled': totalPages === 0 || disabled || undefined,
       'data-empty': dataAttr(totalPages === 0),
+      // 跳页框自身就是字段家族的外壳：描边、底、圆角、聚焦边与环、禁用面由家族按 data-variant 画
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': 'outline',
+      'data-disabled': dataAttr(totalPages === 0 || disabled),
       'onKeydown': (event: KeyboardEvent) => {
         // 输入法组合中的 Enter 是在选字，不是在跳页
         if (event.key !== 'Enter' || isComposingEvent(event))

@@ -33731,8 +33731,13 @@
   --xh-action-fg-pressed: var(--xh-pagination-ellipsis-trigger-fg, var(--xh-fg-subtle));
 }
 /* 每页条数控制器的挂载点：里头装的是库里的 select，控件本身的描边、底色、聚焦环与
-   浮层都归 select 那份皮肤，这一格只把它摆进分页行 */
+   浮层都归 select 那份皮肤，这一格只把它摆进分页行。
+   在分页行里按内容定宽：选项是「10 条 / 页」一类短串，字段缺省宽在这一行里过宽；
+   地板一并放开，盒子刚好装下回显与箭头 */
 [data-scope='pagination'][data-part='page-size-select'] {
+  --xh-select-control-w: var(--xh-pagination-page-size-select-w, max-content);
+  --xh-select-control-min-w: 0px;
+
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -33758,35 +33763,47 @@
   display: none;
 }
 
-/* 跳页输入框：与每页条数控制器同一副外观，宽度按页码位数留够 */
+/* 跳页输入框自身就是字段外壳（连接层投影 data-xh-field-chrome）：静息描边、悬停升控件悬停边、
+   聚焦换聚焦边加环、禁用面都由字段家族给，这里只把使用者槽映到家族桥接槽，
+   高度、内衬与圆角跟页码格子同一把尺，宽度按页码位数留够 */
 [data-scope='pagination'][data-part='jumper'] {
+  --xh-field-control-height: var(--xh-pagination-item-h, var(--xh-_pagination-item-size));
+  --xh-field-control-padding-inline: var(--xh-pagination-item-px, var(--xh-_pagination-item-px));
+  --xh-field-control-min-inline-size: 0;
+  --xh-field-control-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
+  --xh-field-bg-rest: var(--xh-pagination-jumper-bg, var(--xh-_field-variant-bg-rest));
+  --xh-field-bg-hover: var(--xh-pagination-jumper-bg-hover, var(--xh-_field-variant-bg-hover));
+  --xh-field-bg-disabled: var(--xh-pagination-jumper-bg-disabled, var(--xh-_field-variant-bg-disabled));
+  --xh-field-fg-rest: var(--xh-pagination-item-fg, var(--xh-fg-default));
+  --xh-field-border-rest: var(--xh-pagination-jumper-border, var(--xh-_field-variant-border-rest));
+  --xh-field-border-hover: var(--xh-pagination-jumper-border-hover, var(--xh-_field-variant-border-hover));
+  --xh-field-border-focus: var(--xh-pagination-jumper-border-focus, var(--xh-_field-variant-border-focus));
+  --xh-field-border-invalid: var(--xh-pagination-jumper-border-invalid, var(--xh-_field-variant-border-invalid));
+  --xh-field-ring-focus: var(--xh-ring-focus);
+  --xh-field-ring-invalid: var(--xh-ring-invalid);
+  --xh-field-shadow-rest: none;
+
   flex: none;
   inline-size: var(--xh-pagination-jumper-w, calc(var(--xh-space-8) * 2));
-  block-size: var(--xh-pagination-item-h, var(--xh-_pagination-item-size));
-  padding-inline: var(--xh-pagination-item-px, var(--xh-_pagination-item-px));
-  border: var(--xh-stroke-thin) solid var(--xh-pagination-jumper-border, var(--xh-border-default));
-  border-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
-  background: var(--xh-pagination-jumper-bg, var(--xh-bg-surface));
-  color: var(--xh-pagination-item-fg, var(--xh-fg-default));
+  /* 表单控件不继承页面字体，只给字号会让框里用 UA 默认字族 */
+  font-family: inherit;
   font-size: var(--xh-pagination-font-size, var(--xh-_pagination-font-size));
   line-height: var(--xh-leading-none);
   appearance: none;
-  transition:
-    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='pagination'][data-part='jumper'][hidden] {
   display: none;
 }
 
-[data-scope='pagination'][data-part='jumper']:hover:not(:disabled) {
-  border-color: var(--xh-pagination-jumper-border-hover, var(--xh-border-strong));
-  background: var(--xh-pagination-jumper-bg-hover, var(--xh-bg-subtle-hover));
+/* 越界的页码（超出 1 到总页数）：浏览器的约束校验在用户动过之后判失败，与字段家族的校验失败同一副边与环。
+   家族的失败档认 data-invalid，跳页框的取值不进状态机，失败由原生约束给出 */
+[data-scope='pagination'][data-part='jumper']:user-invalid {
+  border-color: var(--xh-field-border-invalid, var(--xh-_field-variant-border-invalid));
 }
 
-[data-scope='pagination'][data-part='jumper']:disabled {
-  color: var(--xh-fg-disabled);
+[data-scope='pagination'][data-part='jumper']:user-invalid:focus-within {
+  outline-color: var(--xh-field-ring-invalid, var(--xh-ring-invalid));
 }
 
 /* 摊开省略位的定位层。三处坐标系必须同为 fixed：机器交给引擎的 strategy、
