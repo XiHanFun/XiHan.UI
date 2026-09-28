@@ -35,9 +35,9 @@
 ```
 
 ```tsx
-<XhNavigationMenuLink current={pathname === '/docs'} asChild>
+<XhNavigationMenuLink current={pathname === "/docs"} asChild>
   <Link to="/docs">文档</Link>
-</XhNavigationMenuLink>
+</XhNavigationMenuLink>;
 ```
 
 ## 最佳实践
