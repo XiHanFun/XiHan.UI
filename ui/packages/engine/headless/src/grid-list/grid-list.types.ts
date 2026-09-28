@@ -53,6 +53,7 @@ export interface GridListSchema extends MachineSchema {
     disabled?: boolean
     readOnly?: boolean
     invalid?: boolean
+    /** 取数在途：root 报告 aria-busy；还没有行时 loading 占位露面，已有行时行保留上一帧淡下、不接指针。 */
     loading?: boolean
     loop?: boolean
     typeahead?: boolean

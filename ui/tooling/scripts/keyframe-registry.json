@@ -497,6 +497,7 @@
         "download-trigger",
         "funnel-chart",
         "graph-chart",
+        "grid-list",
         "heatmap",
         "hierarchy-chart",
         "notification",

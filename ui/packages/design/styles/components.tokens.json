@@ -35713,7 +35713,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "grid-list 的 empty、loading 部件 color 覆盖槽。"
@@ -35732,10 +35732,29 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-_grid-list-state-font-size"
       ],
       "visibility": "public",
       "description": "grid-list 的 empty、loading 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-state-gap",
+      "component": "grid-list",
+      "part": [
+        "empty",
+        "loading"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-gap-md"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 empty、loading 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-grid-list-state-px",
@@ -35751,7 +35770,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_grid-list-state-px"
       ],
       "visibility": "public",
       "description": "grid-list 的 empty、loading 部件 padding-inline 覆盖槽。"
@@ -35770,7 +35789,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "grid-list 的 empty、loading 部件 padding-block 覆盖槽。"

@@ -63,6 +63,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 - Space 改变选择，Enter 触发行主操作；焦点在 row-action 时完全交给原生按钮。
 - 多选下 Shift 扩选：Shift + 方向键 / Home / End 移动焦点并把锚点到新焦点行那一段并进选中，Shift + Space 与 Shift + 点击扩到那一行。每一次扩选都从扩选开始前的选中集重算，往回扩即收回；禁用行占着位置但不被收进去。
 - row-actions 是独立 gridcell，按钮点击不会冒泡成行选择。
+- 在途分两种：还没有行时 `loading` 占位露面，一枚加载环排在文案之前；已有行时重新取数不换成占位，行保留上一帧淡下，取完再淡回。两种都由 `root` 报告 `aria-busy`。
 - 与 [Sortable](./sortable) 组合即可获得指针拖动、键盘拖动、落点线和读屏播报；GridList 不复制拖拽协议。
 - collection 提供行标题、说明、禁用和语气的事实源；作者仍负责铺设各部件。
 
@@ -95,7 +96,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
-| `loading` | `boolean` |  |  |
+| `loading` | `boolean` |  | 取数在途：root 报告 aria-busy；还没有行时 loading 占位露面，已有行时行保留上一帧淡下、不接指针。 |
 | `loop` | `boolean` |  |  |
 | `typeahead` | `boolean` |  |  |
 | `dir` | `Direction` |  |  |
@@ -298,6 +299,8 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `row-action` | `data-xh-action-profile` | 'text' |
 | `row-action` | `data-xh-action-size` | 'xs' |
 | `row-action` | `data-xh-action-variant` | 'ghost' |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
+| `loading` | `data-xh-loading-ring` | '' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -337,17 +340,18 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `--xh-grid-list-row-indicator-size` | `row-selection-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-_grid-list-indicator` | grid-list 的 row-selection-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-grid-list-row-loading-opacity` | `root`<br>`row` | `opacity` | `loading` | `--xh-state-disabled-opacity` | grid-list 的 root、row 部件 opacity 覆盖槽。 |
 | `--xh-grid-list-row-radius` | `row` | `border-radius` | `default` | `--xh-shape-control` | grid-list 的 row 部件 border-radius 覆盖槽。 |
-| `--xh-grid-list-state-fg` | `empty`<br>`loading` | `color` | `default` | `--xh-fg-subtle` | grid-list 的 empty、loading 部件 color 覆盖槽。 |
-| `--xh-grid-list-state-font-size` | `empty`<br>`loading` | `font-size` | `default` | `--xh-text-body-size` | grid-list 的 empty、loading 部件 font-size 覆盖槽。 |
-| `--xh-grid-list-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-control-px-md` | grid-list 的 empty、loading 部件 padding-inline 覆盖槽。 |
-| `--xh-grid-list-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-4` | grid-list 的 empty、loading 部件 padding-block 覆盖槽。 |
+| `--xh-grid-list-state-fg` | `empty`<br>`loading` | `color` | `default` | `--xh-fg-muted` | grid-list 的 empty、loading 部件 color 覆盖槽。 |
+| `--xh-grid-list-state-font-size` | `empty`<br>`loading` | `font-size` | `default` | `--xh-_grid-list-state-font-size` | grid-list 的 empty、loading 部件 font-size 覆盖槽。 |
+| `--xh-grid-list-state-gap` | `empty`<br>`loading` | `gap` | `default` | `--xh-control-gap-md` | grid-list 的 empty、loading 部件 gap 覆盖槽。 |
+| `--xh-grid-list-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-_grid-list-state-px` | grid-list 的 empty、loading 部件 padding-inline 覆盖槽。 |
+| `--xh-grid-list-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-3` | grid-list 的 empty、loading 部件 padding-block 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
 动效角色：按压 · 状态 · 切换（见[动效规范](../design/motion#角色)）。
 
-`-webkit-mask-size` · `background-color` · `border-color` · `mask-size` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`-webkit-mask-size` · `background-color` · `border-color` · `color` · `mask-size` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

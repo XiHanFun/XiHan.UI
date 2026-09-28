@@ -291,9 +291,16 @@ export function connectGridList<T extends PropTypes>(
       ...parts.empty.attrs,
       hidden: counted ? (loading || collection.length > 0) || undefined : loading || undefined,
     }),
-    getLoadingProps: () => normalize.element({
-      ...parts.loading.attrs,
-      hidden: counted ? (!loading || collection.length > 0) || undefined : !loading || undefined,
-    }),
+    // 还没有行、正在取：环走加载环配方，随 data-loading 淡入并转。已有行时重新取数不换成占位，
+    // 由 root 的 data-loading 让行保留上一帧淡下
+    getLoadingProps: () => {
+      const shown = counted ? loading && collection.length === 0 : loading
+      return normalize.element({
+        ...parts.loading.attrs,
+        'data-xh-loading-ring': '',
+        'data-loading': dataAttr(shown),
+        'hidden': !shown || undefined,
+      })
+    },
   }
 }
