@@ -36,7 +36,6 @@ export const FORM_CONTROL_HOST_SELECTOR = [
   'xh-checkbox-group',
   'xh-slider',
   'xh-rating',
-  'xh-segmented',
   'xh-toggle-group',
   'xh-transfer',
   'xh-field-array',

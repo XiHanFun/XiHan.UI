@@ -451,7 +451,7 @@
       "$value": "50%"
     },
     "pill": {
-      "$description": "胶囊：Badge、Tag、Segmented 轨道等具有胶囊身份的对象。",
+      "$description": "胶囊：Badge、Tag 等状态 chip 与 switch 轨道、滑杆轨道这类一维对象。",
       "$type": "dimension",
       "$value": "{radius.full}"
     }

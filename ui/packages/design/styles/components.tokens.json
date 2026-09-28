@@ -58342,6 +58342,28 @@
       "description": "radio-group 的 root 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-radio-group-icon-size",
+      "component": "radio-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
       "name": "--xh-radio-group-indicator-bg",
       "component": "radio-group",
       "part": [
@@ -58750,37 +58772,41 @@
       "name": "--xh-radio-group-item-font-size",
       "component": "radio-group",
       "part": [
-        "item"
+        "item",
+        "root"
       ],
       "property": [
         "font-size"
       ],
       "state": [
-        "default"
+        "default",
+        "variant=segmented"
       ],
       "defaultToken": [
         "--xh-_radio-group-font-size"
       ],
       "visibility": "public",
-      "description": "radio-group 的 item 部件 font-size 覆盖槽。"
+      "description": "radio-group 的 item、root 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-item-gap",
       "component": "radio-group",
       "part": [
-        "item"
+        "item",
+        "root"
       ],
       "property": [
         "gap"
       ],
       "state": [
-        "default"
+        "default",
+        "variant=segmented"
       ],
       "defaultToken": [
         "--xh-_radio-group-item-gap"
       ],
       "visibility": "public",
-      "description": "radio-group 的 item 部件 gap 覆盖槽。"
+      "description": "radio-group 的 item、root 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-item-radius",
@@ -58892,6 +58918,432 @@
       ],
       "visibility": "public",
       "description": "radio-group 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-bg-hover",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-disabled])",
+        "not([data-readonly])",
+        "not([data-state='checked'])",
+        "readonly",
+        "state=checked",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-bg-pressed",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "not([data-readonly])",
+        "not([data-state='checked'])",
+        "pressed",
+        "readonly",
+        "state=checked",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-fg",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-fg-checked",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "state=checked",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-_radio-group-segment-fg-checked"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-fg-checked-disabled",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "state=checked",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-_radio-group-segment-fg-checked"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-fg-hover",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-disabled])",
+        "not([data-readonly])",
+        "not([data-state='checked'])",
+        "readonly",
+        "state=checked",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-font-weight",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-h",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "block-size",
+        "min-block-size"
+      ],
+      "state": [
+        "orientation=horizontal",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-_radio-group-segment-h"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 block-size、min-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-px",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-_radio-group-segment-px"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-radius",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-thumb-bg",
+      "component": "radio-group",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_radio-group-thumb-bg"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 thumb 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-thumb-border",
+      "component": "radio-group",
+      "part": [
+        "root",
+        "thumb"
+      ],
+      "property": [
+        "border",
+        "border-color"
+      ],
+      "state": [
+        "default",
+        "tone",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-_tone",
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 root、thumb 部件 border、border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-thumb-radius",
+      "component": "radio-group",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 thumb 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-thumb-shadow",
+      "component": "radio-group",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-elevation-raised"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 thumb 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-thumb-shadow-disabled",
+      "component": "radio-group",
+      "part": [
+        "root",
+        "thumb"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "none"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 root、thumb 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-track-bg",
+      "component": "radio-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-track-bg-disabled",
+      "component": "radio-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-bg-muted"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-track-border",
+      "component": "radio-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 root 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-track-border-invalid",
+      "component": "radio-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 root 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-track-padding",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "min-block-size",
+        "padding"
+      ],
+      "state": [
+        "orientation=horizontal",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 min-block-size、padding 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-track-radius",
+      "component": "radio-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-shape-surface"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 root 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-rating-gap",
@@ -60527,485 +60979,6 @@
       ],
       "visibility": "public",
       "description": "scrollbar 的 corner、track 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-bg",
-      "component": "segmented",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 root 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-bg-disabled",
-      "component": "segmented",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-bg-muted"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 root 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-border",
-      "component": "segmented",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "border"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "transparent"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 root 部件 border 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-border-invalid",
-      "component": "segmented",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-border-invalid"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 root 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-font-size",
-      "component": "segmented",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "font-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_segmented-font-size"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 root 部件 font-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-h",
-      "component": "segmented",
-      "part": [
-        "item",
-        "root"
-      ],
-      "property": [
-        "min-block-size"
-      ],
-      "state": [
-        "orientation=horizontal"
-      ],
-      "defaultToken": [
-        "--xh-_segmented-h"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item、root 部件 min-block-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-icon-size",
-      "component": "segmented",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "--xh-icon-size"
-      ],
-      "state": [
-        "default",
-        "size=lg",
-        "size=sm"
-      ],
-      "defaultToken": [
-        "--xh-glyph-size-lg",
-        "--xh-glyph-size-md",
-        "--xh-glyph-size-sm"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 root 部件 --xh-icon-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-indicator-bg",
-      "component": "segmented",
-      "part": [
-        "indicator"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_segmented-indicator-bg"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 indicator 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-indicator-border",
-      "component": "segmented",
-      "part": [
-        "indicator",
-        "root"
-      ],
-      "property": [
-        "border",
-        "border-color"
-      ],
-      "state": [
-        "default",
-        "tone"
-      ],
-      "defaultToken": [
-        "--xh-_tone",
-        "--xh-border-default"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 indicator、root 部件 border、border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-indicator-radius",
-      "component": "segmented",
-      "part": [
-        "indicator"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-inset"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 indicator 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-indicator-shadow",
-      "component": "segmented",
-      "part": [
-        "indicator"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-elevation-raised"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 indicator 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-indicator-shadow-disabled",
-      "component": "segmented",
-      "part": [
-        "indicator",
-        "root"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "none"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 indicator、root 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-item-bg-hover",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "hover",
-        "not([data-disabled])",
-        "not([data-state='checked'])",
-        "state=checked"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle-hover"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-item-bg-pressed",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "not([data-disabled])",
-        "not([data-readonly])",
-        "not([data-state='checked'])",
-        "pressed",
-        "readonly",
-        "state=checked"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle-active"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-item-fg",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-fg-muted"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-item-fg-checked",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "state=checked"
-      ],
-      "defaultToken": [
-        "--xh-_segmented-fg-selected"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-item-fg-checked-disabled",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled",
-        "state=checked"
-      ],
-      "defaultToken": [
-        "--xh-_segmented-fg-selected"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-item-fg-hover",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled",
-        "hover",
-        "not([data-disabled])",
-        "not([data-state='checked'])",
-        "state=checked"
-      ],
-      "defaultToken": [
-        "--xh-fg-default"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-item-font-weight",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "font-weight"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-text-label-weight"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 font-weight 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-item-gap",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "gap"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_segmented-gap"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 gap 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-item-h",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "block-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_segmented-h"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 block-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-item-px",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "padding-inline"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_segmented-px"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 padding-inline 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-item-radius",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-inset"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-radius",
-      "component": "segmented",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-surface"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 root 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-segmented-track-padding",
-      "component": "segmented",
-      "part": [
-        "item",
-        "root"
-      ],
-      "property": [
-        "min-block-size",
-        "padding"
-      ],
-      "state": [
-        "default",
-        "orientation=horizontal"
-      ],
-      "defaultToken": [
-        "--xh-space-0_5"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item、root 部件 min-block-size、padding 覆盖槽。"
     },
     {
       "name": "--xh-select-action-bg",

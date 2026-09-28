@@ -63,7 +63,8 @@ const EXPECTED = {
   // 浮在媒体之上的三颗翻页 / 播放钮：与 back-top / float-button 同属角落浮钮族，面走材质家族配方
   'carousel': { 'prev-trigger': ['frosted'], 'next-trigger': ['frosted'], 'autoplay-trigger': ['frosted'] },
   'color-picker': { 'content': ['floating'], 'area-thumb': ['raised'] },
-  'segmented': { indicator: ['raised'] },
+  // segmented 形态的滑块：有滑块开关的白色抬起面
+  'radio-group': { thumb: ['raised'] },
   // 被指针拎起、跟着手走的条目：lifted（拖起的面是作者内容，不强加描边，raised 条款不适用）
   'sortable': { item: ['lifted'] },
   'cascader': { content: ['floating'] },

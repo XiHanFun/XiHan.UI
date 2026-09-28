@@ -5,9 +5,20 @@
 
 // 导出 radio group 模块的公共接口。
 
-export { radioGroupAnatomy } from './radio-group.anatomy'
+export { radioGroupAnatomy, radioGroupItemQuery } from './radio-group.anatomy'
 export { connectRadioGroup } from './radio-group.connect'
 export { radioGroupKeyboard } from './radio-group.keyboard'
 export { radioGroupMachine } from './radio-group.machine'
 export { radioGroupMeta } from './radio-group.meta'
-export type { RadioGroupApi, RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupTranslations, RadioGroupValueChangeDetails, RadioGroupVariant } from './radio-group.types'
+export type {
+  RadioGroupApi,
+  RadioGroupItemProps,
+  RadioGroupNode,
+  RadioGroupNodeMeta,
+  RadioGroupRefs,
+  RadioGroupSchema,
+  RadioGroupThumbRect,
+  RadioGroupTranslations,
+  RadioGroupValueChangeDetails,
+  RadioGroupVariant,
+} from './radio-group.types'

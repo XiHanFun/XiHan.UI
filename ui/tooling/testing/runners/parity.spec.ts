@@ -283,7 +283,6 @@ const EXCLUDED: Readonly<Record<string, string>> = {
   'menu': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'progress': 'WC 侧 track/range 由作者手写，Vue 版组件内部渲染，fixture 不同构',
   'radio-group': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
-  'segmented': '同集合族：条目的禁用声明两端不同，Vue 是被消费的组件 prop（不落 DOM），WC 落成 DOM 属性',
   'select': '同集合族，另加 WC 要作者手写影子 select',
   'side-nav': '折叠态弹出面板的定位层 Vue 由 branch-content 组件内部装配并搬到浮层落点，WC 由作者手写在 branch 里，fixture 不同构',
   'steps': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',

@@ -7,10 +7,10 @@
 
 import type { Service } from '@xihan-ui/core'
 import type { RadioGroupApi, RadioGroupSchema } from '@xihan-ui/headless'
-import type { ComputedRef } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import { createScope } from '@xihan-ui/core'
 import { connectRadioGroup, radioGroupMachine } from '@xihan-ui/headless'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
@@ -19,6 +19,8 @@ export interface RadioGroupContext {
   api: ComputedRef<RadioGroupApi>
   /** 状态机实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<RadioGroupSchema>
+  /** root 节点：条目集合的查询容器，同时是 segmented 形态滑块测量的参照系。 */
+  rootRef: Ref<HTMLElement | null>
 }
 
 export function useRadioGroup(
@@ -27,7 +29,12 @@ export function useRadioGroup(
 ): RadioGroupContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
+  const rootRef = ref<HTMLElement | null>(null)
   const service = useMachine(radioGroupMachine, () => ({ ...props, onValueChange }), scope)
+
+  // 滑块的量测在机器里跑，DOM 侧的取值口经 refs 交进去
+  service.refs.set('getRootEl', () => rootRef.value)
+
   const api = computed(() => connectRadioGroup(service, vueNormalize))
-  return { api, service }
+  return { api, service, rootRef }
 }

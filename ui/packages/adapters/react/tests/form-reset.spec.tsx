@@ -62,8 +62,6 @@ import {
   XhRatingHiddenInput,
   XhRatingItem,
   XhRatingRoot,
-  XhSegmentedItem,
-  XhSegmentedRoot,
   XhSignaturePadControl,
   XhSignaturePadHiddenInput,
   XhSignaturePadPath,
@@ -202,19 +200,6 @@ describe('组与容器的原生表单重置', () => {
     expect(items('toggle-group').map(el => el.getAttribute('aria-checked'))).toEqual(['false', 'true'])
     act(() => form.reset())
     expect(items('toggle-group').map(el => el.getAttribute('aria-checked'))).toEqual(['true', 'false'])
-  })
-
-  it('分段控件：重置回到 defaultValue', () => {
-    const form = mount(
-      <XhSegmentedRoot name="range" defaultValue="day">
-        <XhSegmentedItem value="day">日</XhSegmentedItem>
-        <XhSegmentedItem value="month">月</XhSegmentedItem>
-      </XhSegmentedRoot>,
-    )
-    act(() => items('segmented')[1]!.click())
-    expect(items('segmented').map(el => el.getAttribute('aria-checked'))).toEqual(['false', 'true'])
-    act(() => form.reset())
-    expect(items('segmented').map(el => el.getAttribute('aria-checked'))).toEqual(['true', 'false'])
   })
 
   it('动态录入：重置回到 defaultValue 的行数', () => {

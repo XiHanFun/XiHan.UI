@@ -6,7 +6,7 @@
 
 | 家族 | 典型组件 | 配方给什么 |
 | --- | --- | --- |
-| Action Control | Button、Toggle、ToggleGroup item、分页按钮、图标按钮、Toolbar item、Segmented item、各类 trigger | 高度、内边距、图标随档、缺省语气（只有 Button 品牌实心）、按承载面的交互阶梯、120 / 200ms 按压、焦点、禁用、加载。六个 profile：`text`、`icon`、`field-inset`（字段内的清空 / 展开小钮）、`floating`（悬浮单图标动作，圆形）、`row` 与 `disclosure-trigger`（铺满一行、只换面） |
+| Action Control | Button、Toggle、ToggleGroup item、分页按钮、图标按钮、Toolbar item、单选组 segmented 形态的段、各类 trigger | 高度、内边距、图标随档、缺省语气（只有 Button 品牌实心）、按承载面的交互阶梯、120 / 200ms 按压、焦点、禁用、加载。六个 profile：`text`、`icon`、`field-inset`（字段内的清空 / 展开小钮）、`floating`（悬浮单图标动作，圆形）、`row` 与 `disclosure-trigger`（铺满一行、只换面） |
 | Field Chrome | Input、Textarea、Select trigger、Date / Time field、Combobox、Cascader、TagsInput、PinInput、PromptInput | 静息描边式外壳（不填底）、`outline / subtle / ghost` 三档 × rest / hover / focus / invalid / disabled / readOnly / loading 七态、占位、前后缀、清空、标签与说明排版、缺省宽 |
 | Collection Item | Menu item、Listbox item、Tree node、Table row、Transfer item、SideNav link、Tabs line trigger、Anchor / Breadcrumb link、NavigationMenu / Menubar trigger | highlighted、按集合语境（`overlay / page / nav`）的 selected / current 标记、pressed 只换面、disabled、缩进、指示器 |
 | Surface | Card、Alert、Panel、CodeView、DiffView、Log、JsonViewer、ToolCall、Reasoning、Approval、QuestionFlow、Accordion / Toolbar / PageHeader 的 outline 档、各类容器面 | 边界三选一、raised 逐部件登记、标题与说明排版、内衬只走 `--xh-surface-*`、层级 |

@@ -366,7 +366,7 @@ const FAMILIES = [
   // 接 Collection Item nav 语境，当前页的透明面 + --xh-fg-brand-strong + medium 由配方给，皮肤只在基础块里把
   // 公开槽映射到 --xh-collection-fg-current / -font-weight-current 桥接槽（公开槽名后缀各随自家状态词汇
   // -active / -current），取值由配方与 check-selection-marker 的映射核保证；开关型的选中面长在不同的结构上——
-  // tabs 的抬起面是 segment 档下的后代规则、segmented 的抬起面是 indicator 部件、toggle-group 的品牌淡底经
+  // tabs 的抬起面是 segment 档下的后代规则、radio-group segmented 形态的抬起面是 thumb 部件、toggle-group 的品牌淡底经
   // Action Control 桥接槽给，原文同值只有改公开槽名才做得到，由 check-selection-marker 按 slider / flat 两类
   // 逐成员核到令牌（surface-raised + border-default + raised、brand-subtle + on-brand-subtle）。
   {

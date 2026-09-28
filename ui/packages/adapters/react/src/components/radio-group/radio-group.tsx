@@ -34,9 +34,13 @@ export interface XhRadioGroupRootProps extends RootElementProps {
   orientation?: Orientation
   dir?: Direction
   name?: string
+  /** 方向键到达末尾是否回绕，默认开启。 */
+  loop?: boolean
+  /** 撑满行宽，各段等分剩余空间；只在 segmented 形态下生效。 */
+  block?: boolean
   tone?: Tone
   size?: Size
-  /** 结构形态，默认 list；card 把每个条目画成一张可点的卡。 */
+  /** 结构形态，默认 list；card 把每个条目画成一张可点的卡，segmented 画成轨道里的一排段。 */
   variant?: RadioGroupVariant
   onValueChange?: RadioGroupProps['onValueChange']
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
@@ -56,6 +60,8 @@ export function XhRadioGroupRoot({
   orientation,
   dir,
   name,
+  loop,
+  block,
   tone,
   size,
   variant,
@@ -75,6 +81,8 @@ export function XhRadioGroupRoot({
     orientation,
     dir,
     name,
+    loop,
+    block,
     tone,
     size,
     variant,
@@ -88,7 +96,7 @@ export function XhRadioGroupRoot({
   const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>, ['onFocus'])
 
   const body = children ?? (collection
-    ? <DefaultTree collection={api.collection} label={label} renderItem={renderItem} />
+    ? <DefaultTree collection={api.collection} segmented={api.variant === 'segmented'} label={label} renderItem={renderItem} />
     : null)
 
   return (
@@ -113,6 +121,13 @@ export interface XhRadioGroupLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhRadioGroupLabel({ children, ...rest }: XhRadioGroupLabelProps): ReactNode {
   const ctx = useRadioGroupContext()
   return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+export interface XhRadioGroupThumbProps extends ComponentPropsWithRef<'span'> {}
+/** segmented 形态里滑动的选中标记，位置由状态机测量后写入内联样式的私有槽；没有落点时收起。须写在条目之前。 */
+export function XhRadioGroupThumb({ children, ...rest }: XhRadioGroupThumbProps): ReactNode {
+  const ctx = useRadioGroupContext()
+  return <span {...mergeReactProps(ctx.api.getThumbProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
 export interface XhRadioGroupItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -171,6 +186,14 @@ export function XhRadioGroupItem({ value, disabled, children, ...rest }: XhRadio
   )
 }
 
+export interface XhRadioGroupItemIconProps extends ComponentPropsWithRef<'span'> {}
+/** 条目文字前的图标位：纯装饰，对读屏隐藏。 */
+export function XhRadioGroupItemIcon({ children, ...rest }: XhRadioGroupItemIconProps): ReactNode {
+  const ctx = useRadioGroupContext()
+  const item = useRadioGroupItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemIconProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhRadioGroupItemTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhRadioGroupItemText({ children, ...rest }: XhRadioGroupItemTextProps): ReactNode {
   const ctx = useRadioGroupContext()
@@ -191,17 +214,21 @@ function noop(): void {}
 /**
  * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
  * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
+ * segmented 形态的滑块排在条目之前：它绝对定位，依靠文档序让后面的条目覆盖在它上面，文字才不会被遮住。
  */
 function DefaultTree(props: {
   collection: readonly RadioGroupNodeMeta[]
+  segmented: boolean
   label?: ReactNode
   renderItem?: (node: RadioGroupNodeMeta) => ReactNode
 }): ReactNode {
   return (
     <>
       {props.label != null ? <XhRadioGroupLabel>{props.label}</XhRadioGroupLabel> : null}
+      {props.segmented ? <XhRadioGroupThumb /> : null}
       {props.collection.map(node => (
         <XhRadioGroupItem key={node.value} value={node.value}>
+          {node.icon != null ? <XhRadioGroupItemIcon>{node.icon}</XhRadioGroupItemIcon> : null}
           <XhRadioGroupItemText>{props.renderItem?.(node) ?? node.label}</XhRadioGroupItemText>
           {node.description != null ? <XhRadioGroupItemDescription>{node.description}</XhRadioGroupItemDescription> : null}
         </XhRadioGroupItem>

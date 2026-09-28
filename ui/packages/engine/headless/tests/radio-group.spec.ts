@@ -106,9 +106,9 @@ describe('connectRadioGroup 投影', () => {
     const g = makeGroup({ collection: [{ value: 'free' }, { value: 'standard', label: '标准版', disabled: true }, { value: 'pro' }] })
     expect(g.api().getRootProps()).toMatchObject({ 'aria-orientation': 'vertical', 'tabindex': 0 })
     expect(g.api().collection).toEqual([
-      { value: 'free', label: 'free', description: null, disabled: false },
-      { value: 'standard', label: '标准版', description: null, disabled: true },
-      { value: 'pro', label: 'pro', description: null, disabled: false },
+      { value: 'free', label: 'free', description: null, icon: null, disabled: false },
+      { value: 'standard', label: '标准版', description: null, icon: null, disabled: true },
+      { value: 'pro', label: 'pro', description: null, icon: null, disabled: false },
     ])
     expect((g.api().getItemProps({ value: 'standard' }) as Record<string, unknown>)['aria-disabled']).toBe('true')
     expect((g.api().getItemProps({ value: 'standard', disabled: false }) as Record<string, unknown>)['aria-disabled']).toBe('false')

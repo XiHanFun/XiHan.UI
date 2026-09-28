@@ -109,7 +109,6 @@ import type { ResizableTranslations } from '../resizable/resizable.types'
 import type { SankeyChartTranslations } from '../sankey-chart/sankey-chart.types'
 import type { ScrollAreaTranslations } from '../scroll-area/scroll-area.types'
 import type { ScrollbarTranslations } from '../scrollbar/scrollbar.types'
-import type { SegmentedTranslations } from '../segmented/segmented.types'
 import type { SelectTranslations } from '../select/select.types'
 import type { SeparatorTranslations } from '../separator/separator.types'
 import type { SideNavTranslations } from '../side-nav/side-nav.types'
@@ -252,7 +251,6 @@ export interface XhTranslationOverrides {
   'sankey-chart'?: Partial<SankeyChartTranslations>
   'scroll-area'?: Partial<ScrollAreaTranslations>
   'scrollbar'?: Partial<ScrollbarTranslations>
-  'segmented'?: Partial<SegmentedTranslations>
   'select'?: Partial<SelectTranslations>
   'separator'?: Partial<SeparatorTranslations>
   'side-nav'?: Partial<SideNavTranslations>

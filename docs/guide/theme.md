@@ -49,7 +49,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 | --- | ---: | --- |
 | `--xh-shape-inset` | 4px | 嵌在控件里的内层：菜单项、标签内部、微型状态块 |
 | `--xh-shape-control` | 4px | 控件本体：Button、Input、Select Trigger、Toggle、分页按钮 |
-| `--xh-shape-surface` | 8px | 成面的静态容器：Card、Alert、Panel、列表容器、Segmented 与 Tabs 轨道 |
+| `--xh-shape-surface` | 8px | 成面的静态容器：Card、Alert、Panel、列表容器、单选组 segmented 形态与 Tabs segment 的轨道 |
 | `--xh-shape-overlay` | 12px | 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification |
 | `--xh-shape-circle` | 50% | 正圆：头像、圆形图标按钮、单选指示器 |
 | `--xh-shape-pill` | 9999px | 胶囊：Badge、Tag 等状态 chip，以及轨道、指示条、手柄、滚动条滑块等一维对象 |
@@ -199,7 +199,7 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等需要透景的锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 0.88 不透明度，16px 模糊，108% 饱和度，1px 可见边界 |
 | M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
 | M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层——浮动钮（FloatButton、BackTop、MessageFeed / Log 的回到底部）、媒体控制（Carousel 控制钮与分页条、ImageViewer 控制层）、吸顶的 Layout 顶栏 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
-| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Segmented、Tabs segment 的滑块，静止的滑杆拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色，一层低海拔投影 |
+| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（单选组 segmented 形态与 Tabs segment 的滑块，静止的滑杆拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色，一层低海拔投影 |
 | floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，中海拔投影 |
 
 | 后缀 | 用途 |

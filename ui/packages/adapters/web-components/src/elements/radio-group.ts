@@ -5,7 +5,7 @@
 
 // 提供 radio group 相关实现。
 
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
+import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails, RadioGroupVariant, ResolvedFormControlState } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta, resolveFormControlState } from '@xihan-ui/headless'
@@ -14,13 +14,19 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
+// 布尔三态：缺席 = undefined（用 connect 的默认值），="false" = false，其余 = true。
+// Lit 自带的 Boolean 转换器是 v !== null，缺省为真的 loop 会因此永远关不掉。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-radio-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，
- * 每个 item 内自带 hidden-input / indicator / item-text，元素运行 radio-group 状态机并把 connect 产出接上。
+ * 每个 item 内自带 hidden-input / indicator / item-icon / item-text，元素运行 radio-group 状态机并把 connect 产出接上。
  * 条目身份取自条目节点上的 value 属性；导航与选中在事件发生时按 data-scope + data-part 查询 DOM，
  * 依赖 connect 回写的 data-value，因此 wire 必须先于交互运行（基类 updated 已保证）。
+ * 条目不要用原生 `<button>`：role=radio 只有 Space 是激活键，按钮会把 Enter 翻成 click。
+ *
+ * segmented 形态里 thumb 是滑动的选中标记，位置由状态机测量后写为内联样式中的私有槽；
+ * 它绝对定位，必须写在条目之前，依靠文档序让条目覆盖在它上面。
  *
  * @customElement xh-radio-group
  * @attr {string} value - 受控选中值；未提供该属性即非受控
@@ -29,19 +35,23 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} read-only - 只读：不可选择，方向键照常移动焦点
  * @attr {boolean} invalid - 校验失败态
  * @attr {boolean} required - 必填
- * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 vertical
- * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
+ * @attr {'horizontal'|'vertical'} orientation - 视觉排布：list / card 缺省 vertical，segmented 缺省 horizontal；四个方向键恒响应，与它无关
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义与滑块的起始缘；未提供时从 DOM 读取祖先链上的方向
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认开启
+ * @attr {boolean} block - 撑满行宽，各段等分剩余空间；只在 segmented 形态下生效
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {'list'|'card'} variant - 结构形态，默认 list；card 把每个条目画成一张可点的卡
+ * @attr {'list'|'card'|'segmented'} variant - 结构形态，默认 list；card 把每个条目画成一张可点的卡，segmented 画成轨道里的一排段
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
- * @csspart root - role=radiogroup 容器（承载 roving tabindex 的兜底位）
- * @csspart label - 组标题（aria-labelledby 目标）
+ * @csspart root - role=radiogroup 容器（承载 roving tabindex 的兜底位）；segmented 形态下就是那条轨道
+ * @csspart label - 组标题（aria-labelledby 目标）；segmented 形态下视觉隐藏、只作可及名
+ * @csspart thumb - segmented 形态里滑动的选中标记，对读屏隐藏；无选中项时收起，须写在条目之前
  * @csspart item - role=radio 条目，作者用 value 属性声明身份
+ * @csspart item-icon - 条目文字前的图标位，对读屏隐藏
  * @csspart item-text - 条目文本
  * @csspart item-description - 条目文案下方的说明行，常用在 card 形态里
- * @csspart indicator - 条目选中标记
+ * @csspart indicator - 条目行首的单选圆圈；segmented 形态不画
  * @csspart hidden-input - 条目的表单影子输入（必须是原生 input）
  */
 export class XhRadioGroupElement extends XhElement {
@@ -60,6 +70,8 @@ export class XhRadioGroupElement extends XhElement {
     orientation: {},
     direction: { attribute: 'dir' },
     name: {},
+    loop: { converter: BOOLEAN_CONVERTER },
+    block: { converter: BOOLEAN_CONVERTER },
     tone: {},
     size: {},
     variant: {},
@@ -75,6 +87,8 @@ export class XhRadioGroupElement extends XhElement {
   declare orientation?: Orientation
   declare direction?: Direction
   declare name?: string
+  declare loop?: boolean
+  declare block?: boolean
   declare tone?: Tone
   declare size?: Size
   declare variant?: RadioGroupVariant
@@ -88,7 +102,13 @@ export class XhRadioGroupElement extends XhElement {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly ctrl = new MachineController<RadioGroupSchema>(this, radioGroupMachine, () => this.machineProps())
+  private readonly ctrl = new MachineController<RadioGroupSchema>(
+    this,
+    radioGroupMachine,
+    () => this.machineProps(),
+    { onBuilt: svc => this.injectRefs(svc) },
+  )
+
   private inheritedControl: FormControlState | undefined
 
   /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
@@ -119,11 +139,18 @@ export class XhRadioGroupElement extends XhElement {
       orientation: this.orientation,
       dir: this.direction,
       name: this.name,
+      loop: this.loop,
+      block: this.block,
       tone: this.tone,
       size: this.size,
       variant: this.variant,
       onValueChange: this.notify,
     }
+  }
+
+  // onBuilt 在 ctrl 构造期就跑，service 由参数传入；root 是 segmented 形态滑块测量的参照系
+  private injectRefs(svc: Service<RadioGroupSchema>): void {
+    svc.refs.set('getRootEl', () => this.getPart('root'))
   }
 
   /** 承载焦点的条目被移出 DOM 时浏览器不派 focusout，这里替 DOM 上报焦点离场，免得焦点锚点停在已消失的值上。 */
@@ -197,10 +224,20 @@ export class XhRadioGroupElement extends XhElement {
         this.spreadHiddenInput(input as HTMLInputElement, api.getHiddenInputProps(item) as Record<string, unknown>)
       for (const indicator of this.partsIn(el, 'indicator'))
         this.spreader.spread(indicator, api.getIndicatorProps(item) as Record<string, unknown>)
+      for (const icon of this.partsIn(el, 'item-icon'))
+        this.spreader.spread(icon, api.getItemIconProps(item) as Record<string, unknown>)
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const description of this.partsIn(el, 'item-description'))
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+    }
+
+    const thumb = this.getPart('thumb')
+    if (thumb) {
+      const props = api.getThumbProps() as Record<string, unknown>
+      this.spreader.spread(thumb, props)
+      // 按本帧产出的 hidden 用内联 display 收起
+      this.setPartHidden(thumb, props.hidden === true)
     }
 
     // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信

@@ -8,7 +8,7 @@
   kind="shadow"
   :names="['--xh-elevation-raised', '--xh-elevation-lifted', '--xh-elevation-floating', '--xh-elevation-sheet']"
   :notes="{
-    '--xh-elevation-raised': '贴在页面上、略抬起的面：Card、Segmented 与 Tabs 的滑块、静止的滑杆拇指、开关拇指。必带 border-default 描边，影只是加成',
+    '--xh-elevation-raised': '贴在页面上、略抬起的面：Card、单选组 segmented 形态与 Tabs segment 的滑块、静止的滑杆拇指、开关拇指。必带 border-default 描边，影只是加成',
     '--xh-elevation-lifted': '被指针拎起来、正跟着手移动的东西：拖动中的滑杆拇指、排序项、取色器拇指。比 raised 高、没到 floating',
     '--xh-elevation-floating': 'portal 出去的锚定浮层里含网格或多列的面板：日期 / 时间选择器面板、NavigationMenu 面板、侧栏弹出层',
     '--xh-elevation-sheet': '模态与强反馈面：Dialog、Drawer、Command、Notification',

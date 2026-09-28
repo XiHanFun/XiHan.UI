@@ -676,7 +676,6 @@
       "pin-input",
       "radio-group",
       "rating",
-      "segmented",
       "signature-pad",
       "slider",
       "switch",
@@ -724,7 +723,6 @@
       "navigation-menu",
       "radio-group",
       "reasoning",
-      "segmented",
       "select",
       "steps",
       "tabs",
@@ -790,7 +788,6 @@
       "question-flow",
       "radio-group",
       "rating",
-      "segmented",
       "select",
       "side-nav",
       "skeleton",
@@ -853,7 +850,7 @@
       "sortable"
     ],
     "item-icon": [
-      "segmented"
+      "radio-group"
     ],
     "item-indicator": [
       "approval",
@@ -939,7 +936,6 @@
       "menubar",
       "question-flow",
       "radio-group",
-      "segmented",
       "select",
       "transfer",
       "tree",
@@ -1515,7 +1511,6 @@
       "sankey-chart",
       "scroll-area",
       "scrollbar",
-      "segmented",
       "select",
       "separator",
       "side-nav",
@@ -1798,6 +1793,7 @@
     ],
     "thumb": [
       "color-slider",
+      "radio-group",
       "scrollbar",
       "slider",
       "switch"

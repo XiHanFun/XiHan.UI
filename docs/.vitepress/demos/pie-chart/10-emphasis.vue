@@ -1,7 +1,7 @@
 <!-- 从外面强调一块 | 受控的 activeKey 写扇区名，图就强调那一块、中心与提示框跟着显示它：图外的筛选、列表或别的图都能这样指给读者看 -->
 <script setup lang="ts">
 import type { ChartKey } from "@xihan-ui/headless";
-import { XhPieChartRoot, XhSegmentedRoot } from "@xihan-ui/vue";
+import { XhPieChartRoot, XhRadioGroupRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 
 const rows = [
@@ -24,7 +24,7 @@ const activeKey = computed<ChartKey | null>(() => (choice.value === "none" ? nul
 
 <template>
   <div style="display: grid; gap: var(--xh-space-3); justify-items: start; width: 100%">
-    <XhSegmentedRoot v-model:value="choice" :collection="choices" aria-label="突出显示的渠道" />
+    <XhRadioGroupRoot v-model:value="choice" variant="segmented" :collection="choices" aria-label="突出显示的渠道" />
     <XhPieChartRoot
       :data="rows"
       name-field="channel"

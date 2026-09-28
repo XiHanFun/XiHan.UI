@@ -81,7 +81,8 @@ const PRESSABLE = {
   // 圆点随触发器读宿主 host 槽换到 300 / 当前步 brand-active，不缩放
   'steps': [{ part: 'trigger', feedback: 'surface' }],
   // 圆圈 + 文字的整行条目：接 Action Control row 档 ghost，换底由家族通用按压块给、几何由 row 档专属块归零；
-  // 圆圈随行读宿主 host 槽换到 300 / 选中圆点 active 档，不缩放。不登 target: 'indicator'——整行自己有面了
+  // 圆圈随行读宿主 host 槽换到 300 / 选中圆点 active 档，不缩放。不登 target: 'indicator'——整行自己有面了。
+  // segmented 形态的段是淡底轨道里铺开的一格（归行级）：不投影配方，皮肤按下换到 300 档中性面，不缩放
   'radio-group': [{ part: 'item', feedback: 'surface' }],
   // 按钮形的控件本体：整颗就是点击目标
   'button': ['root'],
@@ -90,8 +91,6 @@ const PRESSABLE = {
   'toggle': ['root'],
   // 共边相接的分段：接 Action Control text 档换面，皮肤给 --xh-action-scale-pressed: none 保住接缝
   'toggle-group': [{ part: 'item', feedback: 'surface' }],
-  // 淡底轨道里铺开的一段（Segmented item 归行级）：按下换到 300 档中性面，不缩放
-  'segmented': [{ part: 'item', feedback: 'surface' }],
   'back-top': ['trigger'],
   'float-button': ['trigger'],
   // 定尺的独立复制钮：接 Action Control text 档，0.97 缩放与换底由家族按压块给
@@ -276,7 +275,7 @@ const ROW_OR_DISCLOSURE = new Set([
   'approval:item',
   'question-flow:item',
   'tabs:trigger',
-  'segmented:item',
+  'radio-group:item',
   'navigation-menu:trigger',
   'menubar:trigger',
   'listbox:load-more-trigger',

@@ -5,7 +5,7 @@
 
 // 滑动指示器的共用几何：当前项相对列表容器的位置与尺寸，以及几时该重量。
 //
-// Tabs、Segmented、Anchor、NavigationMenu 的指示器都是容器里一个绝对定位的小元素，
+// Tabs、RadioGroup segmented 形态的滑块、Anchor、NavigationMenu 的指示器都是容器里一个绝对定位的小元素，
 // 位置交给 transform、尺寸交给 inline-size / block-size，数值由这里量出、连接层投成私有槽。
 
 import type { Direction } from '@xihan-ui/core'

@@ -52,7 +52,6 @@
 <XhComponentCard src="navigation-menu" name="NavigationMenu" label="导航菜单" href="/components/navigation-menu" />
 <XhComponentCard src="page-header" name="PageHeader" label="页头" href="/components/page-header" />
 <XhComponentCard src="pagination" name="Pagination" label="分页" href="/components/pagination" />
-<XhComponentCard src="segmented" name="Segmented" label="分段控制器" href="/components/segmented" />
 <XhComponentCard src="side-nav" name="SideNav" label="侧栏导航" href="/components/side-nav" />
 <XhComponentCard src="steps" name="Steps" label="步骤条" href="/components/steps" />
 <XhComponentCard src="tabs" name="Tabs" label="标签页" href="/components/tabs" />

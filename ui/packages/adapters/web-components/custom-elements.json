@@ -51458,20 +51458,28 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-radio-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，\n每个 item 内自带 hidden-input / indicator / item-text，元素运行 radio-group 状态机并把 connect 产出接上。\n条目身份取自条目节点上的 value 属性；导航与选中在事件发生时按 data-scope + data-part 查询 DOM，\n依赖 connect 回写的 data-value，因此 wire 必须先于交互运行（基类 updated 已保证）。",
+          "description": "`<xh-radio-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，\n每个 item 内自带 hidden-input / indicator / item-icon / item-text，元素运行 radio-group 状态机并把 connect 产出接上。\n条目身份取自条目节点上的 value 属性；导航与选中在事件发生时按 data-scope + data-part 查询 DOM，\n依赖 connect 回写的 data-value，因此 wire 必须先于交互运行（基类 updated 已保证）。\n条目不要用原生 `<button>`：role=radio 只有 Space 是激活键，按钮会把 Enter 翻成 click。\n\nsegmented 形态里 thumb 是滑动的选中标记，位置由状态机测量后写为内联样式中的私有槽；\n它绝对定位，必须写在条目之前，依靠文档序让条目覆盖在它上面。",
           "name": "XhRadioGroupElement",
           "cssParts": [
             {
-              "description": "role=radiogroup 容器（承载 roving tabindex 的兜底位）",
+              "description": "role=radiogroup 容器（承载 roving tabindex 的兜底位）；segmented 形态下就是那条轨道",
               "name": "root"
             },
             {
-              "description": "组标题（aria-labelledby 目标）",
+              "description": "组标题（aria-labelledby 目标）；segmented 形态下视觉隐藏、只作可及名",
               "name": "label"
+            },
+            {
+              "description": "segmented 形态里滑动的选中标记，对读屏隐藏；无选中项时收起，须写在条目之前",
+              "name": "thumb"
             },
             {
               "description": "role=radio 条目，作者用 value 属性声明身份",
               "name": "item"
+            },
+            {
+              "description": "条目文字前的图标位，对读屏隐藏",
+              "name": "item-icon"
             },
             {
               "description": "条目文本",
@@ -51482,7 +51490,7 @@
               "name": "item-description"
             },
             {
-              "description": "条目选中标记",
+              "description": "条目行首的单选圆圈；segmented 形态不画",
               "name": "indicator"
             },
             {
@@ -51591,6 +51599,24 @@
             },
             {
               "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "block",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "block"
+            },
+            {
+              "kind": "field",
               "name": "tone",
               "privacy": "public",
               "type": {
@@ -51644,7 +51670,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<RadioGroupSchema>(this, radioGroupMachine, () => this.machineProps())"
+              "default": "new MachineController<RadioGroupSchema>( this, radioGroupMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
               "kind": "field",
@@ -51691,6 +51717,24 @@
                   "text": "Partial<RadioGroupSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<RadioGroupSchema>"
+                  }
+                }
+              ]
             },
             {
               "kind": "method",
@@ -51857,7 +51901,7 @@
               "type": {
                 "text": "Orientation | undefined"
               },
-              "description": "视觉排布，默认 vertical",
+              "description": "视觉排布：list / card 缺省 vertical，segmented 缺省 horizontal；四个方向键恒响应，与它无关",
               "name": "orientation",
               "fieldName": "orientation"
             },
@@ -51865,7 +51909,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，只改写左右方向键语义，默认 ltr",
+              "description": "文字方向，只改写左右方向键语义与滑块的起始缘；未提供时从 DOM 读取祖先链上的方向",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -51876,6 +51920,22 @@
               "description": "表单字段名；提供后隐藏输入才带 name 并参与提交",
               "name": "name",
               "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键到达末尾回绕，默认开启",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "撑满行宽，各段等分剩余空间；只在 segmented 形态下生效",
+              "name": "block",
+              "fieldName": "block"
             },
             {
               "type": {
@@ -51897,7 +51957,7 @@
               "type": {
                 "text": "RadioGroupVariant | undefined"
               },
-              "description": "结构形态，默认 list；card 把每个条目画成一张可点的卡",
+              "description": "结构形态，默认 list；card 把每个条目画成一张可点的卡，segmented 画成轨道里的一排段",
               "name": "variant",
               "fieldName": "variant"
             }
@@ -51914,6 +51974,9 @@
             },
             {
               "name": "--xh-radio-group-gap"
+            },
+            {
+              "name": "--xh-radio-group-icon-size"
             },
             {
               "name": "--xh-radio-group-indicator-bg"
@@ -51998,6 +52061,69 @@
             },
             {
               "name": "--xh-radio-group-label-font-weight"
+            },
+            {
+              "name": "--xh-radio-group-segment-bg-hover"
+            },
+            {
+              "name": "--xh-radio-group-segment-bg-pressed"
+            },
+            {
+              "name": "--xh-radio-group-segment-fg"
+            },
+            {
+              "name": "--xh-radio-group-segment-fg-checked"
+            },
+            {
+              "name": "--xh-radio-group-segment-fg-checked-disabled"
+            },
+            {
+              "name": "--xh-radio-group-segment-fg-hover"
+            },
+            {
+              "name": "--xh-radio-group-segment-font-weight"
+            },
+            {
+              "name": "--xh-radio-group-segment-h"
+            },
+            {
+              "name": "--xh-radio-group-segment-px"
+            },
+            {
+              "name": "--xh-radio-group-segment-radius"
+            },
+            {
+              "name": "--xh-radio-group-thumb-bg"
+            },
+            {
+              "name": "--xh-radio-group-thumb-border"
+            },
+            {
+              "name": "--xh-radio-group-thumb-radius"
+            },
+            {
+              "name": "--xh-radio-group-thumb-shadow"
+            },
+            {
+              "name": "--xh-radio-group-thumb-shadow-disabled"
+            },
+            {
+              "name": "--xh-radio-group-track-bg"
+            },
+            {
+              "name": "--xh-radio-group-track-bg-disabled"
+            },
+            {
+              "name": "--xh-radio-group-track-border"
+            },
+            {
+              "name": "--xh-radio-group-track-border-invalid"
+            },
+            {
+              "name": "--xh-radio-group-track-padding"
+            },
+            {
+              "name": "--xh-radio-group-track-radius"
             }
           ]
         }
@@ -54959,559 +55085,6 @@
           "declaration": {
             "name": "XhScrollbarElement",
             "module": "src/elements/scrollbar.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/segmented.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-segmented>`：Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，\n元素运行 segmented 状态机并把 connect 产出接上。段须是原生 `<button>`\n（Enter / Space 的激活由平台负责），身份取写在段上的 value 属性，禁用由段声明 aria-disabled。\n\n一排互斥选项即单选组：root 是 radiogroup，每段 role=radio 并显式报告 aria-checked。\nindicator 是滑动的选中标记，位置由状态机测量后写为内联样式中的四个私有槽；\n它绝对定位，必须写在段之前，依靠文档序让段覆盖在它上面。",
-          "name": "XhSegmentedElement",
-          "cssParts": [
-            {
-              "description": "role=radiogroup 的容器（承载键盘收口与 Tab 兜底位）",
-              "name": "root"
-            },
-            {
-              "description": "一段，须是原生 `<button>` 并自带 value 属性标识身份",
-              "name": "item"
-            },
-            {
-              "description": "段内文字前的图标位，对读屏隐藏",
-              "name": "item-icon"
-            },
-            {
-              "description": "段内文本",
-              "name": "item-text"
-            },
-            {
-              "description": "滑动的选中标记，对读屏隐藏；无选中项时收起",
-              "name": "indicator"
-            },
-            {
-              "description": "表单影子输入（必须是原生 input），整组只需一份；提供 name 却未编写它时，没有任何内容参与提交",
-              "name": "hidden-input"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: segmentedAnatomy, meta: segmentedMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "collection",
-              "privacy": "public",
-              "type": {
-                "text": "SegmentedNode[] | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "value"
-            },
-            {
-              "kind": "field",
-              "name": "defaultValue",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "default-value"
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "disabled"
-            },
-            {
-              "kind": "field",
-              "name": "readOnly",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "read-only"
-            },
-            {
-              "kind": "field",
-              "name": "invalid",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "invalid"
-            },
-            {
-              "kind": "field",
-              "name": "required",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "required"
-            },
-            {
-              "kind": "field",
-              "name": "name",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "name"
-            },
-            {
-              "kind": "field",
-              "name": "orientation",
-              "privacy": "public",
-              "type": {
-                "text": "Orientation | undefined"
-              },
-              "attribute": "orientation"
-            },
-            {
-              "kind": "field",
-              "name": "direction",
-              "privacy": "public",
-              "type": {
-                "text": "Direction | undefined"
-              },
-              "attribute": "dir"
-            },
-            {
-              "kind": "field",
-              "name": "loop",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "loop"
-            },
-            {
-              "kind": "field",
-              "name": "block",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "block"
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "privacy": "public",
-              "type": {
-                "text": "Tone | undefined"
-              },
-              "attribute": "tone"
-            },
-            {
-              "kind": "field",
-              "name": "size",
-              "privacy": "public",
-              "type": {
-                "text": "Size | undefined"
-              },
-              "attribute": "size"
-            },
-            {
-              "kind": "field",
-              "name": "declaredDisabled",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new WeakMap<HTMLElement, boolean>()"
-            },
-            {
-              "kind": "field",
-              "name": "wasGroupDisabled",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false",
-              "description": "上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
-            },
-            {
-              "kind": "field",
-              "name": "notify",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "ctrl",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new MachineController<SegmentedSchema>( this, segmentedMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
-            },
-            {
-              "kind": "method",
-              "name": "controlState",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "ResolvedFormControlState"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "machineProps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "Partial<SegmentedSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "injectRefs",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "svc",
-                  "type": {
-                    "text": "Service<SegmentedSchema>"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "onPartsReleased",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "nodes",
-                  "type": {
-                    "text": "readonly HTMLElement[]"
-                  }
-                }
-              ],
-              "description": "承载焦点的段被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己\"焦点在组内\"退出 Tab 序列，又没有段认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
-            },
-            {
-              "kind": "field",
-              "name": "declaredItemDisabled",
-              "privacy": "private",
-              "readonly": true,
-              "description": "作者声明的段禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
-            },
-            {
-              "kind": "method",
-              "name": "itemProps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "SegmentedItemProps"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "el",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "partsIn",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[]"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "item",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "name",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "description": "选中值变化；detail 为 `{ value: string | null }`",
-              "name": "value-change",
-              "type": {
-                "text": "SegmentedValueChangeDetails"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "受控选中值；未提供该属性即非受控",
-              "name": "value",
-              "fieldName": "value"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "非受控的初始选中值",
-              "name": "default-value",
-              "fieldName": "defaultValue"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "整组禁用",
-              "name": "disabled",
-              "fieldName": "disabled"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "只读：不可选择，方向键照常移动焦点",
-              "name": "read-only",
-              "fieldName": "readOnly"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "校验失败态",
-              "name": "invalid",
-              "fieldName": "invalid"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "必填",
-              "name": "required",
-              "fieldName": "required"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "表单字段名；提供后隐藏输入才带 name 并参与提交",
-              "name": "name",
-              "fieldName": "name"
-            },
-            {
-              "type": {
-                "text": "Orientation | undefined"
-              },
-              "description": "视觉排布，默认 horizontal；四个方向键恒响应，与它无关",
-              "name": "orientation",
-              "fieldName": "orientation"
-            },
-            {
-              "type": {
-                "text": "Direction | undefined"
-              },
-              "description": "文字方向，只改写左右方向键语义与指示器的起始缘；未提供时从 DOM 读取祖先链上的方向",
-              "name": "dir",
-              "fieldName": "direction"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "方向键到达末尾回绕，默认开启",
-              "name": "loop",
-              "fieldName": "loop"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "撑满行宽，各段等分剩余空间",
-              "name": "block",
-              "fieldName": "block"
-            },
-            {
-              "type": {
-                "text": "Tone | undefined"
-              },
-              "description": "语气",
-              "name": "tone",
-              "fieldName": "tone"
-            },
-            {
-              "type": {
-                "text": "Size | undefined"
-              },
-              "description": "尺寸",
-              "name": "size",
-              "fieldName": "size"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-segmented",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-segmented-bg"
-            },
-            {
-              "name": "--xh-segmented-bg-disabled"
-            },
-            {
-              "name": "--xh-segmented-border"
-            },
-            {
-              "name": "--xh-segmented-border-invalid"
-            },
-            {
-              "name": "--xh-segmented-font-size"
-            },
-            {
-              "name": "--xh-segmented-h"
-            },
-            {
-              "name": "--xh-segmented-icon-size"
-            },
-            {
-              "name": "--xh-segmented-indicator-bg"
-            },
-            {
-              "name": "--xh-segmented-indicator-border"
-            },
-            {
-              "name": "--xh-segmented-indicator-radius"
-            },
-            {
-              "name": "--xh-segmented-indicator-shadow"
-            },
-            {
-              "name": "--xh-segmented-indicator-shadow-disabled"
-            },
-            {
-              "name": "--xh-segmented-item-bg-hover"
-            },
-            {
-              "name": "--xh-segmented-item-bg-pressed"
-            },
-            {
-              "name": "--xh-segmented-item-fg"
-            },
-            {
-              "name": "--xh-segmented-item-fg-checked"
-            },
-            {
-              "name": "--xh-segmented-item-fg-checked-disabled"
-            },
-            {
-              "name": "--xh-segmented-item-fg-hover"
-            },
-            {
-              "name": "--xh-segmented-item-font-weight"
-            },
-            {
-              "name": "--xh-segmented-item-gap"
-            },
-            {
-              "name": "--xh-segmented-item-h"
-            },
-            {
-              "name": "--xh-segmented-item-px"
-            },
-            {
-              "name": "--xh-segmented-item-radius"
-            },
-            {
-              "name": "--xh-segmented-radius"
-            },
-            {
-              "name": "--xh-segmented-track-padding"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhSegmentedElement",
-          "declaration": {
-            "name": "XhSegmentedElement",
-            "module": "src/elements/segmented.ts"
           }
         }
       ]

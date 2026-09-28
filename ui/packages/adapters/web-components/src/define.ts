@@ -111,7 +111,6 @@ import { XhResizableElement } from './elements/resizable'
 import { XhSankeyChartElement } from './elements/sankey-chart'
 import { XhScrollAreaElement } from './elements/scroll-area'
 import { XhScrollbarElement } from './elements/scrollbar'
-import { XhSegmentedElement } from './elements/segmented'
 import { XhSelectElement } from './elements/select'
 import { XhSeparatorElement } from './elements/separator'
 import { XhSideNavElement } from './elements/side-nav'
@@ -207,7 +206,6 @@ export function defineXhElements(): void {
   defineElement('xh-reasoning', XhReasoningElement, VERSION)
   defineElement('xh-resizable', XhResizableElement, VERSION)
   defineElement('xh-sankey-chart', XhSankeyChartElement, VERSION)
-  defineElement('xh-segmented', XhSegmentedElement, VERSION)
   defineElement('xh-signature-pad', XhSignaturePadElement, VERSION)
   defineElement('xh-skeleton', XhSkeletonElement, VERSION)
   defineElement('xh-sparkline', XhSparklineElement, VERSION)
@@ -392,7 +390,6 @@ export {
   XhSankeyChartElement,
   XhScrollAreaElement,
   XhScrollbarElement,
-  XhSegmentedElement,
   XhSelectElement,
   XhSeparatorElement,
   XhSideNavElement,

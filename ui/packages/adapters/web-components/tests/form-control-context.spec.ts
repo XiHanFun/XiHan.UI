@@ -19,9 +19,9 @@ function textField(markup = ''): string {
     </xh-text-field>`
 }
 
-type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field' | 'editable' | 'tags-input' | 'checkbox-group' | 'slider' | 'select' | 'cascader' | 'combobox' | 'tree-select' | 'date-picker' | 'time-picker' | 'color-picker' | 'mention' | 'rating' | 'segmented' | 'toggle-group' | 'transfer' | 'field-array' | 'file-upload' | 'image-cropper' | 'signature-pad' | 'listbox' | 'tag-group'
+type AtomicControl = 'checkbox' | 'switch' | 'radio-group' | 'number-field' | 'password-input' | 'pin-input' | 'date-field' | 'time-field' | 'editable' | 'tags-input' | 'checkbox-group' | 'slider' | 'select' | 'cascader' | 'combobox' | 'tree-select' | 'date-picker' | 'time-picker' | 'color-picker' | 'mention' | 'rating' | 'toggle-group' | 'transfer' | 'field-array' | 'file-upload' | 'image-cropper' | 'signature-pad' | 'listbox' | 'tag-group'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field', 'editable', 'tags-input', 'checkbox-group', 'slider', 'select', 'cascader', 'combobox', 'tree-select', 'date-picker', 'time-picker', 'color-picker', 'mention', 'rating', 'segmented', 'toggle-group', 'transfer', 'field-array', 'file-upload', 'image-cropper', 'signature-pad', 'listbox', 'tag-group']
+const ATOMIC_CONTROLS: AtomicControl[] = ['checkbox', 'switch', 'radio-group', 'number-field', 'password-input', 'pin-input', 'date-field', 'time-field', 'editable', 'tags-input', 'checkbox-group', 'slider', 'select', 'cascader', 'combobox', 'tree-select', 'date-picker', 'time-picker', 'color-picker', 'mention', 'rating', 'toggle-group', 'transfer', 'field-array', 'file-upload', 'image-cropper', 'signature-pad', 'listbox', 'tag-group']
 
 function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'checkbox') {
@@ -72,9 +72,6 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'rating') {
     const ratingMarkup = markup.replace(/\binvalid(?:="false")?/g, '')
     return `<xh-rating ${ratingMarkup} count="1"><div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="item" value="1"></span></div></div></xh-rating>`
-  }
-  if (kind === 'segmented') {
-    return `<xh-segmented ${markup}><div data-xh-part="root"><button data-xh-part="item" value="a"><span data-xh-part="item-text">甲</span></button></div></xh-segmented>`
   }
   if (kind === 'toggle-group') {
     const disabledMarkup = markup.replace(/\b(?:read-only|required|invalid)(?:="false")?/g, '')
@@ -167,18 +164,6 @@ async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabl
     })
     expect(control!.getAttribute('aria-readonly')).toBe(String(enabled))
     expect(control!.getAttribute('aria-required')).toBe(String(enabled))
-    return
-  }
-  if (kind === 'segmented') {
-    let root: HTMLElement | null = null
-    await vi.waitFor(() => {
-      root = form.querySelector<HTMLElement>('xh-segmented [data-scope="segmented"][data-part="root"]')
-      expect(root?.getAttribute('aria-readonly')).toBe(String(enabled))
-    })
-    const item = form.querySelector<HTMLElement>('xh-segmented [data-scope="segmented"][data-part="item"]')!
-    expect(item.getAttribute('aria-disabled')).toBe(String(enabled))
-    expect(root!.getAttribute('aria-invalid')).toBe(String(enabled))
-    expect(root!.getAttribute('aria-required')).toBe(String(enabled))
     return
   }
   if (kind === 'toggle-group') {

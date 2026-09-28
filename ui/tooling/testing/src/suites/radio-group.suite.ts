@@ -1,4 +1,4 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { radioGroupAnatomy, radioGroupKeyboard } from '@xihan-ui/headless'
 import { singleTabStop } from './shared/native-activation'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
@@ -6,6 +6,36 @@ import { heldPress, heldPressIgnored } from './shared/press-channel'
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/radio/'
 
 const HIDDEN_INPUT = '[data-scope="radio-group"][data-part="hidden-input"]'
+
+/**
+ * segmented 形态的一段：hidden-input 与 indicator 在 Vue / React 由条目组件自行装配，
+ * WC 要作者手写，顺序与自渲的一致（先输入、再圆圈、再作者内容）；图标位排在文字前。
+ */
+function segment(value: string, text: string, attrs: Record<string, string> = {}): FixtureNode {
+  return {
+    part: 'item',
+    attrs: { value, ...attrs },
+    children: [
+      { part: 'hidden-input', tag: 'input', only: ['wc'] },
+      { part: 'indicator', tag: 'span', only: ['wc'] },
+      { part: 'item-icon', tag: 'span', text: '·' },
+      { part: 'item-text', tag: 'span', text },
+    ],
+  }
+}
+
+/** segmented 形态：滑块排在段之前，它绝对定位，靠文档序让段压在它上面；中间那段禁用。 */
+function segmentedFixture(): FixtureNode {
+  return {
+    part: 'root',
+    children: [
+      { part: 'thumb', tag: 'span' },
+      segment('day', '日'),
+      segment('week', '周', { disabled: '' }),
+      segment('month', '月'),
+    ],
+  }
+}
 
 /** name/value/checked 都不进归一化快照（后两者只落 DOM property），表单出口只能直接读 DOM。 */
 function assertHiddenInputs(doc: Document, expected: readonly (readonly [string, string, boolean])[]): void {
@@ -653,6 +683,160 @@ export const radioGroupSuite: ConformanceSuite = {
         { kind: 'setProps', props: { disabled: false, readOnly: true } },
         heldPressIgnored('radio-group', 'item', '只读时条目不接受按压', { value: 'a' }),
       ],
+    },
+    {
+      name: 'loop=false：方向键走到尽头停住，不回绕也不换值',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['radio-group.kbd.next'],
+      props: { loop: false, defaultValue: 'c' },
+      steps: [
+        { kind: 'focus', part: 'item[2]' },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: {
+            parts: { item: [{ 'aria-checked': 'false' }, { 'aria-checked': 'false' }, { 'aria-checked': 'true', 'tabindex': '0' }] },
+            activeElement: { part: 'item[2]', exact: true },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: 'segmented 形态：根投影 data-variant=segmented、缺省横排；段不投影 Action Control 配方，图标位对读屏隐藏，滑块认领当前值',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { variant: 'segmented', defaultValue: 'day' },
+      fixture: segmentedFixture,
+      initial: {
+        order: [
+          'root',
+          'thumb',
+          'item[0]',
+          'hidden-input[0]',
+          'indicator[0]',
+          'item-icon[0]',
+          'item-text[0]',
+          'item[1]',
+          'hidden-input[1]',
+          'indicator[1]',
+          'item-icon[1]',
+          'item-text[1]',
+          'item[2]',
+          'hidden-input[2]',
+          'indicator[2]',
+          'item-icon[2]',
+          'item-text[2]',
+        ],
+        counts: { 'thumb': 1, 'item': 3, 'item-icon': 3, 'item-text': 3 },
+        parts: {
+          'root': {
+            'role': 'radiogroup',
+            'data-variant': 'segmented',
+            'aria-orientation': 'horizontal',
+            'data-orientation': 'horizontal',
+            'data-block': null,
+          },
+          'item': [
+            {
+              'role': 'radio',
+              'aria-checked': 'true',
+              'data-state': 'checked',
+              'tabindex': '0',
+              // 段是轨道里的一格：面与字由皮肤写在段上，不投影行级配方
+              'data-xh-action-control': null,
+              'data-xh-action-profile': null,
+              'data-xh-action-variant': null,
+              'data-xh-choice-card': null,
+            },
+            { 'aria-checked': 'false', 'aria-disabled': 'true', 'data-disabled': '', 'data-xh-action-control': null },
+            { 'aria-checked': 'false', 'tabindex': '-1', 'data-xh-action-control': null },
+          ],
+          'item-icon': [
+            { 'aria-hidden': 'true', 'data-state': 'checked', 'data-disabled': null },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-disabled': '' },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-disabled': null },
+          ],
+          // 滑块是纯装饰，对读屏隐藏；不发 data-orientation，盒子由私有槽定死
+          'thumb': { 'aria-hidden': 'true', 'data-value': 'day', 'data-orientation': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: {
+            parts: {
+              'item': [{ 'aria-checked': 'false' }, { 'aria-checked': 'false' }, { 'aria-checked': 'true', 'data-state': 'checked' }],
+              'item-icon': [{ 'data-state': 'unchecked' }, { 'data-state': 'unchecked' }, { 'data-state': 'checked' }],
+              'thumb': { 'data-value': 'month' },
+            },
+            events: [{ type: 'value-change', detail: { value: 'month' } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'segmented 形态无选中项：滑块收起，不占位',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { variant: 'segmented' },
+      fixture: segmentedFixture,
+      initial: {
+        parts: { thumb: { 'aria-hidden': 'true', 'hidden': '', 'data-value': null } },
+      },
+    },
+    {
+      name: 'segmented 形态按 APG 的单选组：Enter 与 Home / End 不选中，Space 选中当前段',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['radio-group.kbd.select'],
+      props: { variant: 'segmented', defaultValue: 'day' },
+      fixture: segmentedFixture,
+      steps: [
+        { kind: 'focus', part: 'item[2]' },
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            parts: { item: [{ 'aria-checked': 'true' }, { 'aria-checked': 'false' }, { 'aria-checked': 'false', 'data-pressed': null }] },
+            activeElement: { part: 'item[2]', exact: true },
+            events: [],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Home',
+          expect: {
+            parts: { item: [{ 'aria-checked': 'true' }, { 'aria-checked': 'false' }, { 'aria-checked': 'false' }] },
+            activeElement: { part: 'item[2]', exact: true },
+            events: [],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Space',
+          expect: {
+            parts: { item: [{ 'aria-checked': 'false' }, { 'aria-checked': 'false' }, { 'aria-checked': 'true', 'data-state': 'checked' }] },
+            events: [{ type: 'value-change', detail: { value: 'month' } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'segmented 形态：block 与三轴原样透传到 data-*，显式给的 orientation 压过形态缺省',
+      spec: { apg: APG },
+      props: { variant: 'segmented', tone: 'success', size: 'lg', block: true, orientation: 'vertical' },
+      fixture: segmentedFixture,
+      initial: {
+        parts: {
+          root: {
+            'data-variant': 'segmented',
+            'data-tone': 'success',
+            'data-size': 'lg',
+            'data-block': '',
+            'aria-orientation': 'vertical',
+            'data-orientation': 'vertical',
+          },
+        },
+      },
     },
   ],
 }

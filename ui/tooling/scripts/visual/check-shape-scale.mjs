@@ -146,7 +146,7 @@ const IDENTITY = {
   'steps:separator': 'pill',
   'timeline:connector': 'pill',
   'tabs:indicator': 'pill',
-  // segment 档的部件是整块白色抬起面（与 Segmented 滑块同身份的 control 盒），不是一维对象
+  // segment 档的部件是整块白色抬起面（与 RadioGroup segmented 滑块同身份的盒），不是一维对象
   'tabs:indicator[data-variant=\'segment\']': 'control',
   // line 档没放 indicator 部件时选中标签自画的静态线：与部件同规格的一维对象
   'tabs:trigger::after': 'pill',
@@ -177,8 +177,8 @@ const IDENTITY = {
   'rating:item': 'control',
   'tabs:trigger': 'control',
   'steps:trigger': 'control',
-  // surface：轨道与容器
-  'segmented:root': 'surface',
+  // surface：轨道与容器（RadioGroup segmented 形态的根就是那条轨道）
+  'radio-group:root': 'surface',
   // 看图器底部的工具条外壳：容器不是一维对象，与 toolbar 根面同身份
   'image-viewer:toolbar': 'surface',
   'tabs:list': 'surface',
@@ -195,8 +195,8 @@ const IDENTITY = {
   'transfer:item-checkbox': 'inset',
   'transfer:select-all-trigger': 'inset',
   'color-swatch-picker:item': 'inset',
-  'segmented:item': 'inset',
-  'segmented:indicator': 'inset',
+  // RadioGroup segmented 形态轨道里的滑块：嵌在 surface 轨道内的小块（段与 Tabs segment 的标签同取 control）
+  'radio-group:thumb': 'inset',
 }
 /** 所有 *close-trigger / *clear-trigger 都是 control 档：按部件名后缀登记，不逐组件列。 */
 const IDENTITY_SUFFIX = { 'close-trigger': 'control', 'clear-trigger': 'control' }

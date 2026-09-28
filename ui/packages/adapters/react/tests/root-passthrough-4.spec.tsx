@@ -14,7 +14,6 @@ import {
   XhRadioGroupRoot,
   XhRatingRoot,
   XhReasoningRoot,
-  XhSegmentedRoot,
   XhSelectRoot,
   XhSideNavRoot,
   XhSignaturePadRoot,
@@ -79,7 +78,6 @@ interface RootCase {
 }
 
 const radioNodes = [{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }]
-const segmentedNodes = [{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }]
 const selectNodes = [{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }]
 const sideNavNodes = [{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }]
 const stepNodes = [{ title: '甲' }, { title: '乙' }]
@@ -124,12 +122,6 @@ const cases: RootCase[] = [
     schemaKeys: ['starttime', 'endtime'],
     bare: <XhReasoningRoot startTime={1000} endTime={2000} />,
     probed: <XhReasoningRoot startTime={1000} endTime={2000} className={PROBE_CLASS} style={tokenStyle('reasoning')} />,
-  },
-  {
-    scope: 'segmented',
-    schemaKeys: ['collection', 'defaultvalue'],
-    bare: <XhSegmentedRoot collection={segmentedNodes} defaultValue="a" />,
-    probed: <XhSegmentedRoot collection={segmentedNodes} defaultValue="a" className={PROBE_CLASS} style={tokenStyle('segmented')} />,
   },
   {
     scope: 'select',

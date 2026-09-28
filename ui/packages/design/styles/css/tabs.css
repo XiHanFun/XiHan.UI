@@ -247,7 +247,7 @@
     flex: 0 0 auto;
   }
 
-  /* segment 档是一条轨道里的格子（与 Segmented 同构）：格子按可用宽度等分 */
+  /* segment 档是一条轨道里的格子（与 RadioGroup 的 segmented 形态同构）：格子按可用宽度等分 */
   [data-scope='tabs'][data-part='root'][data-orientation='horizontal'][data-variant='segment']
     [data-scope='tabs'][data-part='trigger'] {
     flex: 1 1 0;
@@ -492,7 +492,7 @@
   }
 
   /* segment 档（有滑块开关）：部件就是那块白色抬起的滑块面，四个几何量都取、整块跟着滑——
-     surface-raised 底 + border-default 描边 + raised 影三件与 Segmented 的滑块同一套；
+     surface-raised 底 + border-default 描边 + raised 影三件与 RadioGroup segmented 形态的滑块同一套；
      描边吃进盒里（border-box），面与标签仍是同一块矩形。标签压在它上面，点击一律交给标签。
      用连续档而不是进场那条：滑块是被推过去的，起步就该有速度；四个几何量同时走，标签宽不等时才不会先变形再挪位 */
   [data-scope='tabs'][data-part='indicator'][data-variant='segment'] {

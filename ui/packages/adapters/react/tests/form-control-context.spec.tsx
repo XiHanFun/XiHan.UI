@@ -43,7 +43,6 @@ import {
   XhRatingControl,
   XhRatingItem,
   XhRatingRoot,
-  XhSegmentedRoot,
   XhSelectRoot,
   XhSelectTrigger,
   XhSignaturePadHiddenInput,
@@ -76,9 +75,9 @@ import {
 } from '../src'
 
 type ControlState = Partial<Record<'disabled' | 'readOnly' | 'required' | 'invalid', boolean>>
-type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention' | 'Rating' | 'Segmented' | 'ToggleGroup' | 'Transfer' | 'FieldArray' | 'FileUpload' | 'ImageCropper' | 'SignaturePad' | 'Listbox' | 'TagGroup'
+type AtomicControl = 'Checkbox' | 'Switch' | 'RadioGroup' | 'NumberField' | 'PasswordInput' | 'PinInput' | 'DateField' | 'TimeField' | 'Editable' | 'TagsInput' | 'CheckboxGroup' | 'Slider' | 'Select' | 'Cascader' | 'Combobox' | 'TreeSelect' | 'DatePicker' | 'TimePicker' | 'ColorPicker' | 'Mention' | 'Rating' | 'ToggleGroup' | 'Transfer' | 'FieldArray' | 'FileUpload' | 'ImageCropper' | 'SignaturePad' | 'Listbox' | 'TagGroup'
 
-const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention', 'Rating', 'Segmented', 'ToggleGroup', 'Transfer', 'FieldArray', 'FileUpload', 'ImageCropper', 'SignaturePad', 'Listbox', 'TagGroup']
+const ATOMIC_CONTROLS: AtomicControl[] = ['Checkbox', 'Switch', 'RadioGroup', 'NumberField', 'PasswordInput', 'PinInput', 'DateField', 'TimeField', 'Editable', 'TagsInput', 'CheckboxGroup', 'Slider', 'Select', 'Cascader', 'Combobox', 'TreeSelect', 'DatePicker', 'TimePicker', 'ColorPicker', 'Mention', 'Rating', 'ToggleGroup', 'Transfer', 'FieldArray', 'FileUpload', 'ImageCropper', 'SignaturePad', 'Listbox', 'TagGroup']
 
 function nonRequiredState(props: ControlState) {
   return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
@@ -159,8 +158,6 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     return <XhMentionRoot {...nonRequiredState(props)}><XhMentionInput /></XhMentionRoot>
   if (kind === 'Rating')
     return <XhRatingRoot {...ratingState(props)} count={1}><XhRatingControl><XhRatingItem value={1} /></XhRatingControl></XhRatingRoot>
-  if (kind === 'Segmented')
-    return <XhSegmentedRoot {...props} collection={[{ value: 'a', label: '甲' }]} />
   if (kind === 'ToggleGroup')
     return <XhToggleGroupRoot {...disabledState(props)} collection={[{ value: 'a', label: '甲' }]} />
   if (kind === 'Transfer') {
@@ -246,15 +243,6 @@ function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled:
     expect(control.getAttribute('aria-disabled')).toBe(String(enabled))
     expect(control.getAttribute('aria-readonly')).toBe(String(enabled))
     expect(control.getAttribute('aria-required')).toBe(String(enabled))
-    return
-  }
-  if (kind === 'Segmented') {
-    const root = container.querySelector<HTMLElement>('[data-scope="segmented"][data-part="root"]')!
-    const item = container.querySelector<HTMLElement>('[data-scope="segmented"][data-part="item"]')!
-    expect(item.getAttribute('aria-disabled')).toBe(String(enabled))
-    expect(root.getAttribute('aria-readonly')).toBe(String(enabled))
-    expect(root.getAttribute('aria-invalid')).toBe(String(enabled))
-    expect(root.getAttribute('aria-required')).toBe(String(enabled))
     return
   }
   if (kind === 'ToggleGroup') {
