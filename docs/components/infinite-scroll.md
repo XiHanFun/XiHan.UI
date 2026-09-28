@@ -48,6 +48,12 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 <XhDemo src="infinite-scroll/05-load-more" />
 
+### 往前翻历史
+
+edge 设为 start：哨兵摆在列表开头，更早的消息插在前面，取数期间视口不跳
+
+<XhDemo src="infinite-scroll/06-edge-start" />
+
 ## 设计指引
 
 ### 何时使用
@@ -64,6 +70,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 - `distance` 是提前量：距底部该距离时触发，用户感觉不到等待。
 - `loading` 与 `disabled` 由组件交给宿主，加载提示与结束语由宿主放置。
 - 加载完成后关闭即可，不会再触发。
+- `edge` 决定取数的那一头：缺省 `end` 在列表末尾往后取；`start` 在列表开头往前取（聊天历史、时间线往回翻），哨兵与按钮摆在列表开头。往前取数时新内容插在已有内容前面，组件在取数期间保持可视区离内容底部的距离不变，视口不跳；这要求宿主如实写 `loading`：写回 `true` 起开始守，写回 `false` 之后再守两帧，框架晚一拍提交的 DOM 也接得住。
 - `load-more-trigger` 是同一通路的另一个入口：一个真实按钮，取数中与关闭时自动停用。它是铺满一行的独立动作条目：宽度由容器给、高度随内容，中性描边与透明底，按下只换面不缩放。
 
 ### 组合
@@ -105,6 +112,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | `disabled` | `boolean` |  | 关闭：不再观察，也不再触发。列表已没有下一页时使用。 |
 | `loading` | `boolean` |  | 正在取数：期间不观察、不重复触发。取完由宿主写回 false。 |
 | `onLoad` | `() => void` |  | 应取下一页。 |
+| `edge` | `InfiniteScrollEdge` |  | 取数的那一头，缺省 end。start 时哨兵摆在列表开头，新的一页插在已有内容前面： 取数期间（loading 为 true 起、写回 false 之后再守两帧）组件保持可视区离内容底部的距离不变， 新内容插进来视口不跳。需要宿主如实写 loading。 |
 
 ### 事件
 

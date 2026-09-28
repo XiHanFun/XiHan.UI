@@ -10,6 +10,9 @@ import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 /** 三段状态，经 api.phase 暴露；DOM 上由 data-loading / data-disabled 布尔属性表达。 */
 export type InfiniteScrollPhase = 'idle' | 'loading' | 'paused'
 
+/** 取数的那一头：end 在列表末尾往后取，start 在列表开头往前取（聊天历史、时间线往回翻）。 */
+export type InfiniteScrollEdge = 'end' | 'start'
+
 /** 适配器在挂载前填入的 DOM 取值器。 */
 export interface InfiniteScrollRefs {
   /** 哨兵节点，观察器观察的目标。 */
@@ -32,6 +35,12 @@ export interface InfiniteScrollSchema extends MachineSchema {
     loading?: boolean
     /** 应取下一页。 */
     onLoad?: () => void
+    /**
+     * 取数的那一头，缺省 end。start 时哨兵摆在列表开头，新的一页插在已有内容前面：
+     * 取数期间（loading 为 true 起、写回 false 之后再守两帧）组件保持可视区离内容底部的距离不变，
+     * 新内容插进来视口不跳。需要宿主如实写 loading。
+     */
+    edge?: InfiniteScrollEdge
   }
   context: {
     /**
@@ -58,7 +67,7 @@ export interface InfiniteScrollSchema extends MachineSchema {
   tag: never
   guard: 'isPaused' | 'isLoading' | 'canPress'
   action: 'syncMode' | 'invokeOnLoad' | 'startPress' | 'endPress' | 'releasePress'
-  effect: 'observeSentinel'
+  effect: 'observeSentinel' | 'keepScrollPosition'
 }
 
 export interface InfiniteScrollApi<T extends PropTypes = PropTypes> {

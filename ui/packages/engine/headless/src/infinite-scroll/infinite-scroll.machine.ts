@@ -60,7 +60,7 @@ export const infiniteScrollMachine = createMachine({
     },
     // 这两段都不挂观察器，哨兵进出可视区一律不响应。
     // 进段即松开：按住 Enter 把「取下一页」报出去、宿主随即写回 loading，按钮转原生 disabled 不会再来 keyup
-    loading: { entry: ['releasePress'] },
+    loading: { entry: ['releasePress'], effects: ['keepScrollPosition'] },
     paused: { entry: ['releasePress'] },
   },
   implementations: {
@@ -101,6 +101,50 @@ export const infiniteScrollMachine = createMachine({
         return () => {
           disposed = true
           entry?.dispose()
+        }
+      },
+
+      /**
+       * 往前取数时保住视口：取数期间盯住滚动容器的子树，内容一插进来就把滚动量补上插入的那截高度，
+       * 保持可视区离内容底部的距离不变。补在 MutationObserver 的回调里：它排在绘制之前，插入与补偿落在同一帧，不闪。
+       * 用户在取数期间自己滚了，就以新的位置为准。
+       * 宿主往往在同一轮里写回 loading=false 并插入新内容，框架的 DOM 提交可能晚于状态转移，离开 loading 后再守两帧。
+       */
+      keepScrollPosition: ({ prop, refs, scope }) => {
+        if (prop('edge') !== 'start')
+          return
+        const doc = scope.getDoc()
+        const win = scope.getWin()
+        const target = refs.get('getTargetEl')() ?? (doc.scrollingElement as HTMLElement | null)
+        if (!target || typeof win.MutationObserver !== 'function')
+          return
+        let distance = target.scrollHeight - target.scrollTop
+        const restore = (): void => {
+          const next = target.scrollHeight - distance
+          if (Math.abs(next - target.scrollTop) >= 1)
+            target.scrollTop = next
+        }
+        const onScroll = (): void => {
+          distance = target.scrollHeight - target.scrollTop
+        }
+        // 整页滚动时 scroll 事件派在窗口上
+        const scroller: EventTarget = target === doc.scrollingElement ? win : target
+        scroller.addEventListener('scroll', onScroll, { passive: true })
+        const observer = new win.MutationObserver(restore)
+        observer.observe(target, { childList: true, subtree: true, characterData: true })
+        const stop = (): void => {
+          observer.disconnect()
+          scroller.removeEventListener('scroll', onScroll)
+        }
+        return () => {
+          if (typeof win.requestAnimationFrame !== 'function') {
+            stop()
+            return
+          }
+          win.requestAnimationFrame(() => win.requestAnimationFrame(() => {
+            restore()
+            stop()
+          }))
         }
       },
     },
