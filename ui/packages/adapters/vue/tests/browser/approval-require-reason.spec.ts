@@ -17,8 +17,13 @@ afterEach(() => {
   host = null
 })
 
-/** 等描边的过渡走完再量。 */
-const settled = (): Promise<unknown> => Promise.all(document.getAnimations().map(animation => animation.finished))
+/**
+ * 等备注框描边的过渡走完再量。只等它自己的过渡：页面上还有常驻的无限循环动画
+ * （加载环配方的转圈停在 paused，从不结束），等整页动画会一直等下去。
+ */
+function settled(note: HTMLElement): Promise<unknown> {
+  return Promise.all(note.getAnimations().filter(animation => animation instanceof CSSTransition).map(animation => animation.finished))
+}
 
 /** 把一个令牌解析成计算后的颜色，用来与描边比对。 */
 function resolve(token: string): string {
@@ -50,7 +55,7 @@ describe('approval 要求写理由', () => {
     deny.click()
     await nextTick()
     expect(document.activeElement).toBe(note)
-    await settled()
+    await settled(note)
     expect(getComputedStyle(note).borderTopColor).toBe(resolve('--xh-border-invalid'))
     // 焦点环压在描边外面：聚焦时无效也要看得出，环换成无效色
     expect(getComputedStyle(note).outlineColor).toBe(resolve('--xh-ring-invalid'))
@@ -58,7 +63,7 @@ describe('approval 要求写理由', () => {
     note.value = '分支上还有没合的提交'
     note.dispatchEvent(new Event('input', { bubbles: true }))
     await nextTick()
-    await settled()
+    await settled(note)
     expect(getComputedStyle(note).borderTopColor).toBe(resolve('--xh-border-control'))
   })
 })
