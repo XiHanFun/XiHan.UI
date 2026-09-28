@@ -6,14 +6,18 @@
 // 提供 use skeleton 相关实现。
 
 import type { SkeletonApi, SkeletonProps } from '@xihan-ui/headless'
-import { connectSkeleton } from '@xihan-ui/headless'
+import { connectSkeleton, skeletonMachine } from '@xihan-ui/headless'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useReactScope } from '../../runtime/react-id'
+import { useMachine } from '../../runtime/use-machine'
 
 export interface SkeletonContext {
   api: SkeletonApi
 }
 
-// Skeleton 没有状态机也不派生部件 id，props 变了就整份重算属性
+// 机器只记容器还留不留着（刚加载完的骨架淡出播完才收起），其余属性随 props 整份重算
 export function useSkeleton(props: SkeletonProps): SkeletonContext {
-  return { api: connectSkeleton(props, reactNormalize) }
+  const scope = useReactScope()
+  const service = useMachine(skeletonMachine, () => props, { scope })
+  return { api: connectSkeleton(service, reactNormalize) }
 }
