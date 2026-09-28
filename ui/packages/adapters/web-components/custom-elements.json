@@ -56658,11 +56658,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-spinner>`：加载指示器宿主，无状态机，把活区语义与可及名接到角色节点上。\n转圈图形由皮肤绘制在 root 的伪元素上，元素不生成任何结构。",
+          "description": "`<xh-spinner>`：加载指示器宿主，把活区语义与可及名接到角色节点上；状态机只管露面前的等待。\n转圈图形由皮肤绘制在 root 的伪元素上，元素不生成任何结构。",
           "name": "XhSpinnerElement",
           "cssParts": [
             {
-              "description": "role=status 的活区容器，承载 aria-live / aria-label / data-size / data-variant / data-tone",
+              "description": "role=status 的活区容器，承载 aria-live / aria-label / data-size / data-variant / data-tone / data-state",
               "name": "root"
             },
             {
@@ -56718,11 +56718,27 @@
             },
             {
               "kind": "field",
+              "name": "delay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "delay"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
                 "text": "Partial<SpinnerTranslations> | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SpinnerSchema>(this, spinnerMachine, () => this.configured('spinner', { label: this.label, size: this.size, variant: this.variant, tone: this.tone, delay: this.delay, translations: this.translations, }))"
             },
             {
               "kind": "method",
@@ -56767,6 +56783,14 @@
               "description": "语气",
               "name": "tone",
               "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "连接后等多少毫秒才露面，默认 0；加载在这之前结束、元素被移除时它从头到尾不出现",
+              "name": "delay",
+              "fieldName": "delay"
             }
           ],
           "superclass": {

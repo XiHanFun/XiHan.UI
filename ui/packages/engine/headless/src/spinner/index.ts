@@ -8,5 +8,6 @@
 export { spinnerAnatomy } from './spinner.anatomy'
 export { connectSpinner, SPINNER_DEFAULT_LABEL } from './spinner.connect'
 export { spinnerKeyboard } from './spinner.keyboard'
+export { spinnerMachine } from './spinner.machine'
 export { spinnerMeta } from './spinner.meta'
-export type { SpinnerApi, SpinnerProps, SpinnerTranslations, SpinnerVariant } from './spinner.types'
+export type { SpinnerApi, SpinnerProps, SpinnerSchema, SpinnerState, SpinnerTranslations, SpinnerVariant } from './spinner.types'

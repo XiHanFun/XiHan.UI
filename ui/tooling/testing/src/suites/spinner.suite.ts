@@ -87,5 +87,27 @@ export const spinnerSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '缺省即刻露面：data-state 为 visible',
+      spec: { apg: APG },
+      initial: {
+        parts: { root: { 'data-state': 'visible' } },
+      },
+    },
+    {
+      name: 'delay：挂载后先藏着，等够时长才露面；活区语义等待期间照旧',
+      spec: { apg: APG },
+      props: { delay: 40 },
+      initial: {
+        parts: { root: { 'data-state': 'hidden', 'role': 'status', 'aria-label': 'Loading' } },
+      },
+      steps: [
+        {
+          kind: 'settle',
+          until: { attr: { part: 'root', name: 'data-state', value: 'visible' } },
+          expect: { parts: { root: { 'data-state': 'visible' } } },
+        },
+      ],
+    },
   ],
 }

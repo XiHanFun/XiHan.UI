@@ -6,14 +6,16 @@
 // 提供 use spinner 相关实现。
 
 import type { SpinnerApi, SpinnerProps } from '@xihan-ui/headless'
-import { connectSpinner } from '@xihan-ui/headless'
+import { connectSpinner, spinnerMachine } from '@xihan-ui/headless'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useMachine } from '../../runtime/use-machine'
 
 export interface SpinnerContext {
   api: SpinnerApi
 }
 
-// Spinner 没有状态机也不派生部件 id，props 变了就整份重算属性
+// 状态机只管露面前的等待；不派生部件 id，用不着 scope
 export function useSpinner(props: SpinnerProps): SpinnerContext {
-  return { api: connectSpinner(props, reactNormalize) }
+  const service = useMachine(spinnerMachine, () => props)
+  return { api: connectSpinner(service, reactNormalize) }
 }

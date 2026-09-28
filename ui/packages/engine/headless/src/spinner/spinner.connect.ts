@@ -5,8 +5,8 @@
 
 // 提供 spinner 相关实现。
 
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { SpinnerApi, SpinnerProps } from './spinner.types'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { SpinnerApi, SpinnerProps, SpinnerSchema } from './spinner.types'
 import { spinnerAnatomy } from './spinner.anatomy'
 
 const parts = spinnerAnatomy.build()
@@ -27,16 +27,26 @@ function resolveLabel(props: SpinnerProps): string {
   return SPINNER_DEFAULT_LABEL
 }
 
-// Spinner 无状态机：一个活区加一段文案，属性全部来自 props。
+// 一个活区加一段文案；状态机只管露面前的那段等待，其余属性全部来自 props。
 export function connectSpinner<T extends PropTypes>(
-  props: SpinnerProps,
+  service: Service<SpinnerSchema>,
   normalize: NormalizeProps<T>,
 ): SpinnerApi<T> {
+  const { state, prop } = service
+  const props: SpinnerProps = {
+    label: prop('label'),
+    size: prop('size'),
+    variant: prop('variant'),
+    tone: prop('tone'),
+    translations: prop('translations'),
+  }
   const label = resolveLabel(props)
   const variant = props.variant ?? 'arc'
+  const visible = state.get() === 'visible'
 
   return {
     label,
+    visible,
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -50,6 +60,8 @@ export function connectSpinner<T extends PropTypes>(
       'data-size': props.size,
       'data-variant': variant,
       'data-tone': props.tone,
+      // 露面前的等待是派生的显隐：皮肤藏起整块但保留位置，布局在露面那一刻不跳
+      'data-state': visible ? 'visible' : 'hidden',
     }),
 
     getLabelProps: () => normalize.element({
