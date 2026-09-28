@@ -194,6 +194,8 @@ describe('日期选择浮层', () => {
       expect(sides.map(side => style.getPropertyValue(`--xh-_overlay-enter-${side}`).trim())).toEqual(expected)
     }
     const content = part('content')
+    // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户开合时的进退场
+    delete content.dataset.instant
     for (const state of ['open', 'closed']) {
       content.dataset.state = state
       const style = getComputedStyle(content)
@@ -206,6 +208,8 @@ describe('日期选择浮层', () => {
     await mount('light')
     part('positioner').dataset.motion = 'reduce'
     const content = part('content')
+    // 撤掉首帧标记：量的是用户开合时的进退场
+    delete content.dataset.instant
     for (const state of ['open', 'closed']) {
       content.dataset.state = state
       const style = getComputedStyle(content)

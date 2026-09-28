@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest'
 import { cascaderMachine, connectCascader } from '../src/cascader'
 import { comboboxMachine, connectCombobox } from '../src/combobox'
 import { connectContextMenu, contextMenuMachine } from '../src/context-menu'
+import { datePickerMachine } from '../src/date-picker'
 import { connectDialog, dialogMachine } from '../src/dialog'
 import { connectDrawer, drawerMachine } from '../src/drawer'
 import { connectMenu, menuMachine } from '../src/menu'
@@ -36,6 +37,14 @@ const FRUITS = [
   { value: 'apple', label: '苹果' },
   { value: 'banana', label: '香蕉' },
 ]
+
+/**
+ * 复合族（日期、日期区间、取色器）的 connect 要连带日历、分段输入与通道滑杆几台服务一起交进去，
+ * 这里只核机器记下的那一格；content 上的投影由各自的组件单测核。
+ */
+function marked(service: Service<any>): Attrs[] {
+  return [{ 'data-instant': service.context.get('openedAtMount') ? '' : undefined }]
+}
 
 const CASES: Record<string, Case> = {
   'popover': {
@@ -86,6 +95,10 @@ const CASES: Record<string, Case> = {
     machine: cascaderMachine,
     props: open => ({ ...open, collection: FRUITS }),
     parts: service => [connectCascader(service, normalizeProps).getContentProps() as Attrs],
+  },
+  'date-picker': {
+    machine: datePickerMachine,
+    parts: marked,
   },
 }
 
