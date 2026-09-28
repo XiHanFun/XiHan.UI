@@ -174,6 +174,12 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 
 <XhDemo src="table/26-cell-span" />
 
+### 导出 CSV
+
+工具条里放一个下载按钮：点击时按当前的排序与列头现拼 CSV，Excel 打开不乱码要带 BOM，字段里的逗号、引号与换行按规则转义
+
+<XhDemo src="table/27-export-csv" />
+
 ## 设计指引
 
 ### 何时使用
@@ -206,6 +212,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 ### 组合
 
 - 单元格内放[就地编辑](./editable)、[徽标](./badge)、[头像](./avatar)；末尾接[分页](./pagination)；空态使用[空状态](./empty-state)。
+- 导出放进工具条：[下载按钮](./download-trigger)的 `data` 给一个取数函数，点击时按当前排序与列头现拼 CSV，导出的就是那一刻看到的顺序。
 
 ### 最佳实践
 
