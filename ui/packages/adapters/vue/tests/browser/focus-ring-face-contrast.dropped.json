@@ -173,6 +173,7 @@
   "[data-scope=\"form\"][data-part=\"error-summary-item\"]:active": "写法挂不出来：:active",
   "[data-scope=\"form\"][data-part=\"error-summary-item\"]:hover": "写法挂不出来：:hover",
   "[data-scope=\"grid-list\"][data-part=\"row-selection-indicator\"]": "部件不接焦点：grid-list/row-selection-indicator",
+  "[data-scope=\"grid-list\"][data-part=\"row-selection-indicator\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"grid-list\"][data-part=\"row-selection-indicator\"][data-state=\"checked\"]": "部件不接焦点：grid-list/row-selection-indicator",
   "[data-scope=\"heatmap\"][data-part=\"legend-item\"]": "部件不接焦点：heatmap/legend-item",
   "[data-scope=\"heatmap\"][data-part=\"root\"][data-variant=\"month\"] [data-scope=\"heatmap\"][data-part=\"week-day\"]": "部件不接焦点：heatmap/week-day",
