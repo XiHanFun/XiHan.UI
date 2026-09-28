@@ -67,6 +67,9 @@ export const DIAGNOSTIC_CODES = {
   chartSankeyShape: "chart.sankey-shape", // 桑基图的流带不合法：成环、自环、端点不存在或节点重复；负值另报 chart.negative-share
   chartGraphShape: "chart.graph-shape", // 关系图的数据不合法：节点重复、连线的端点不存在、自环，或树布局下数据不是一棵树
   chartGraphSize: "chart.graph-size", // 关系图的节点太多：多于 500 个时交互变慢，按提醒报；多于 2000 个时不画，先聚合
+  chartColumnsOption: "chart.columns-option", // 列式数据用了它不支持的写法（堆叠、瀑布、箱线、类目轴、横向、逐点标签、刷选……），或与 svg 渲染器同写
+  chartColumnsUnsorted: "chart.columns-unsorted", // 列式数据里折线、K 线与柱共用的自变量列不是升序（追加了乱序的时间戳）
+  chartOptionConflict: "chart.option-conflict", // 两种写法不能同时用：柱的涨跌取色（trend）与瀑布；等距排列（xAxis.ordinal）与对象数组
 };
 ```
 

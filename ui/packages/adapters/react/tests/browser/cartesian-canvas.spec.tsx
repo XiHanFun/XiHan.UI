@@ -5,7 +5,7 @@ import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { userEvent } from 'vitest/browser'
-import { XhCartesianChartRoot } from '../../src'
+import { createColumnStore, XhCartesianChartRoot } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -93,5 +93,36 @@ describe('画布模式', () => {
     await userEvent.keyboard('{ArrowRight}')
     await frames()
     expect((document.activeElement as HTMLElement).getAttribute('aria-label')).toBe('二月, 线上 200')
+  })
+})
+
+describe('列式数据', () => {
+  it('柱总是画在画布上；焦点代理中心的画布颜色就是它的系列色，方向键逐根走', async () => {
+    const data = createColumnStore({ fields: ['day', 'online'], columns: { day: [1, 2, 3], online: [100, 200, 150] } })
+    const host = document.createElement('div')
+    host.style.inlineSize = '480px'
+    document.body.append(host)
+    const root = createRoot(host)
+    flushSync(() => root.render(
+      <XhCartesianChartRoot data={data} series={[{ mark: 'bar', x: 'day', y: 'online', name: '线上' }]} animated={false} locale="en-US" caption="销售额" />,
+    ))
+    mounted.push({ host, root })
+    await frames()
+    const canvas = part(host, 'canvas')[0] as unknown as HTMLCanvasElement
+    const ctx = canvas.getContext('2d')!
+    const scale = canvas.width / canvas.clientWidth
+    part(host, 'plot')[0]!.focus()
+    await frames()
+    for (const label of ['1, 线上 100', '2, 线上 200']) {
+      const proxy = document.activeElement as HTMLElement
+      expect(proxy.getAttribute('aria-label')).toBe(label)
+      const box = proxy.getBoundingClientRect()
+      const origin = part(host, 'viewport')[0]!.getBoundingClientRect()
+      const got = [...ctx.getImageData(Math.round((box.left + box.width / 2 - origin.left) * scale), Math.round((box.top + box.height / 2 - origin.top) * scale), 1, 1).data]
+      const want = rgba(getComputedStyle(proxy).fill)
+      expect(got.every((v, i) => Math.abs(v - want[i]!) <= 3)).toBe(true)
+      await userEvent.keyboard('{ArrowRight}')
+      await frames()
+    }
   })
 })

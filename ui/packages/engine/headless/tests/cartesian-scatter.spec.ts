@@ -277,7 +277,7 @@ describe('类目轴上的抖动', () => {
     for (const m of monday)
       expect(Math.abs(m.x - center)).toBeLessThanOrEqual(step * 0.3)
     const before = new Map(points(api).map(m => [m.key, m.x]))
-    rig.setProps({ data: [...DOTS.data!].reverse() })
+    rig.setProps({ data: [...(DOTS.data as Dict[])].reverse() })
     await settle()
     for (const m of points(rig.api()))
       expect(m.x).toBeCloseTo(before.get(m.key)!, 6)

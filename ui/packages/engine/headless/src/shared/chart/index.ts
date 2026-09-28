@@ -61,3 +61,6 @@ export type {
   ChartTranslations,
 } from './types'
 export type { NumberFormatSpec } from '@xihan-ui/viz'
+// 列式数据仓：大数据的图表数据由它承载，从 viz 转发，适配器与应用不必另装依赖
+export { createColumnStore, isColumnSource } from '@xihan-ui/viz/columns'
+export type { ColumnRow, ColumnSource, ColumnStore, ColumnStoreOptions, ColumnValue } from '@xihan-ui/viz/columns'

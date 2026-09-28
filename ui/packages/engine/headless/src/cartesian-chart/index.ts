@@ -11,7 +11,7 @@ export { cartesianChartKeyboard } from './cartesian-chart.keyboard'
 export { CARTESIAN_TRANSLATIONS, defaultCartesianAnnotationSummary } from './cartesian-chart.logic'
 export { cartesianChartMachine } from './cartesian-chart.machine'
 export { cartesianChartMeta } from './cartesian-chart.meta'
-export type { CartesianModel } from './cartesian-chart.model'
+export type { CartesianModel } from './cartesian-chart.pipeline'
 export type { CartesianChartApi, CartesianChartSchema, CartesianLayers, CartesianOverlay } from './cartesian-chart.schema'
 export type {
   CartesianAnnotation,

@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 直角坐标图的管线：规格归一 → 派生数据（隐藏系列、堆叠）→ 定义域 → 布局 → 场景 → 索引 → 无障碍。
-// 每段只记住上一次的输入，悬停、聚焦与提示框开合不换任何一段的输入，整条管线走缓存。
+// 直角坐标图对象数组那一条管线的各段：规格归一 → 派生数据（隐藏系列、堆叠）→ 定义域 → 布局 → 场景 → 无障碍。
+// 各段是纯函数，由 pipeline 模块按输入引用记忆着串起来。
 
 import type { Tone } from '@xihan-ui/core'
 import type {
@@ -87,7 +87,7 @@ import {
   waterfall,
   windowToDomain,
 } from '@xihan-ui/viz'
-import { assignChartSeries, buildChartSummary, labelBox, memoizeLast, placeWithoutOverlap, settleColumn } from '../shared/chart'
+import { assignChartSeries, buildChartSummary, labelBox, placeWithoutOverlap, settleColumn } from '../shared/chart'
 import { zonedTimeIntervals } from '../shared/chart/time-zone'
 
 /* ---------- 规格 ---------- */
@@ -140,6 +140,8 @@ export interface CartesianSeriesSpec {
   readonly waterfall: { readonly total: string | null } | null
   /** 折线的线尾标签。 */
   readonly endLabel: boolean
+  /** 柱按两个字段的涨跌取色：[from, to]；不取为 null。 */
+  readonly trend: readonly [string, string] | null
 }
 
 export interface CartesianSpec {
@@ -238,7 +240,7 @@ function isContinuousKind(kind: CartesianScaleKind): kind is CartesianContinuous
  * 按比例尺种类建一条连续数值轴。pow 的指数与 symlog 的常数取自轴配置。
  * 参数无效时规格里已记下问题、整张图不画；这里仍给一条线性轴，只为不在构造时抛错。
  */
-function continuousScaleOf(
+export function continuousScaleOf(
   kind: CartesianContinuousScaleKind,
   domain: readonly [number, number],
   range: readonly number[],
@@ -279,7 +281,7 @@ function scaleParamIssues(axis: CartesianAxis, which: 'x' | 'y'): ChartSpecIssue
 }
 
 /** 时间轴按哪个时区：配置了有效的 IANA 名才用它。 */
-function axisTimeZone(axis: CartesianAxis): string | undefined {
+export function axisTimeZone(axis: CartesianAxis): string | undefined {
   return axis.timeZone != null && zonedTimeIntervals(axis.timeZone) != null ? axis.timeZone : undefined
 }
 
@@ -328,7 +330,7 @@ export function normalizeCartesianSpec(
       const fields = s.mark === 'scatter'
         ? [s.x, s.y, s.size, s.datumId, s.color]
         : s.mark === 'bar'
-          ? [xFieldOf(s), binEndOf(s), lowFieldOf(s), valueFieldOf(s), s.waterfall?.total]
+          ? [xFieldOf(s), binEndOf(s), lowFieldOf(s), valueFieldOf(s), s.waterfall?.total, ...(s.trend ?? [])]
           : s.mark === 'candlestick'
             ? [s.x, s.open, s.high, s.low, s.close]
             : s.mark === 'boxplot' ? [s.x, ...(typeof s.y === 'string' ? [s.y] : Object.values(s.y))] : [s.x, lowFieldOf(s), valueFieldOf(s)]
@@ -339,6 +341,12 @@ export function normalizeCartesianSpec(
           issues.push({ code: DIAGNOSTIC_CODES.chartUnknownField, message: `系列引用的字段「${field}」在数据里不存在`, detail: { field } })
       }
     }
+  }
+
+  // 瀑布按每一步的增减取色，涨跌取色另按两个字段：两种取色不能同时成立
+  for (const s of seriesInput) {
+    if (s.mark === 'bar' && s.waterfall && s.trend)
+      issues.push({ code: DIAGNOSTIC_CODES.chartOptionConflict, message: '柱的涨跌取色（trend）不能与瀑布同写：瀑布已按每一步的增减取色', detail: { series: s.id ?? valueFieldOf(s) } })
   }
 
   // 小提琴要原始值才画得出密度：y 写成算好的五数字段时画不出来
@@ -414,6 +422,7 @@ export function normalizeCartesianSpec(
       connectNulls: s.mark === 'line' && s.connectNulls === true,
       labels: stackable(s) ? s.labels ?? 'none' : 'none',
       endLabel: s.mark === 'line' && s.endLabel === true,
+      trend: s.mark === 'bar' && s.trend ? s.trend : null,
     }
   })
 
@@ -826,15 +835,13 @@ function annotationExtent(annotations: readonly CartesianAnnotation[], axis: 'x'
   return out
 }
 
-export function cartesianDomains(derived: CartesianDerived, annotations: readonly CartesianAnnotation[]): CartesianDomains {
-  const { spec } = derived
-  const issues: ChartSpecIssue[] = []
-  // 柱从 0 长出，长度就是数值：数值轴含 0；浮着的区间柱不从 0 长出，不强制
-  const bars = derived.visible.some(s => s.spec.mark === 'bar' && !s.lows)
-  const percent = derived.visible.length > 0 && derived.visible.every(s => s.spec.stack != null && s.spec.stackOffset === 'expand')
+/** 数值轴要盖住的数据值：可见系列的上沿与柱、K 线、箱线、面积的下沿；keep 给了时只取它留下的位置。 */
+function seriesValues(derived: CartesianDerived, keep?: (s: CartesianSeriesValues, position: number) => boolean): number[] {
   const values: number[] = []
   for (const s of derived.visible) {
     for (let j = 0; j < s.high.length; j++) {
+      if (keep && !keep(s, j))
+        continue
       const hi = s.high[j]
       const lo = s.low[j]
       if (hi != null)
@@ -845,14 +852,23 @@ export function cartesianDomains(derived: CartesianDerived, annotations: readonl
         values.push(lo)
     }
   }
+  return values
+}
+
+/** 由数据值与注释的值推数值轴的定义域：按轴的配置取零、夹到最小最大；不合法时退回缺省并报原因。 */
+function valueDomainOf(derived: CartesianDerived, values: number[], annotations: readonly CartesianAnnotation[], percent: boolean): { value: [number, number], issues: ChartSpecIssue[] } {
+  const { spec } = derived
+  const issues: ChartSpecIssue[] = []
+  // 柱从 0 长出，长度就是数值：数值轴含 0；浮着的区间柱不从 0 长出，不强制
+  const bars = derived.visible.some(s => s.spec.mark === 'bar' && !s.lows)
   // 参考线与参考带的值计入所在轴的定义域：数据范围之外的目标值也看得到
-  values.push(...annotationExtent(annotations, 'y'))
+  const all = [...values, ...annotationExtent(annotations, 'y')]
   const log = spec.valueScale === 'log'
   let value: [number, number]
   try {
     value = percent && spec.yAxis.min == null && spec.yAxis.max == null
       ? [0, 1]
-      : inferDomain(values, {
+      : inferDomain(all, {
           min: toNumber(spec.yAxis.min),
           max: toNumber(spec.yAxis.max),
           zero: !log && (spec.yAxis.zero ?? false),
@@ -869,6 +885,13 @@ export function cartesianDomains(derived: CartesianDerived, annotations: readonl
     issues.push({ code: DIAGNOSTIC_CODES.chartLogDomain, message: '对数轴的定义域必须全为正数', detail: { domain: value } })
     value = [1, 10]
   }
+  return { value, issues }
+}
+
+export function cartesianDomains(derived: CartesianDerived, annotations: readonly CartesianAnnotation[]): CartesianDomains {
+  const { spec } = derived
+  const percent = derived.visible.length > 0 && derived.visible.every(s => s.spec.stack != null && s.spec.stackOffset === 'expand')
+  const { value, issues } = valueDomainOf(derived, seriesValues(derived), annotations, percent)
 
   let key: [number, number] | null = null
   if (spec.keyScale !== 'band' && spec.keyScale !== 'point') {
@@ -909,7 +932,7 @@ export interface CartesianFormats {
   readonly measure: (value: number) => string
 }
 
-function isDateFormat(format: CartesianAxisFormat | undefined): format is Intl.DateTimeFormatOptions {
+export function isDateFormat(format: CartesianAxisFormat | undefined): format is Intl.DateTimeFormatOptions {
   return typeof format === 'object' && format != null && !('style' in format) && !('notation' in format) && !('precision' in format)
 }
 
@@ -1114,11 +1137,37 @@ export function layoutCartesian(
     : Math.max(2, Math.floor(Math.abs(range[1]! - range[0]!) / (vertical ? font.lineHeight * 2.5 : endLabelWidth() + font.lineHeight * 2)))
   // 柱端外侧的标签与合计写在绘图区里：值域两端各收进一截，最高（最低）的那根柱外面也有地方写
   const pad = labelPadding(domains.derived, totals, formats, measurer, font, metrics)
+  // 数值轴只按窗口里露出的键取（fit: window）：连续轴两端各带一个相邻的键，折线从边上连进来时不出界；
+  // 窗口里没有数据时仍按全部数据
+  let fitted: readonly [number, number] | null = null
+  if (spec.yAxis.fit === 'window' && zoomX && zoomWindow.x) {
+    let inWindow: (k: number) => boolean
+    if (category) {
+      inWindow = k => k >= keyRange[0] && k <= keyRange[1]
+    }
+    else {
+      const a = Math.min(keyNumber(zoomWindow.x[0]), keyNumber(zoomWindow.x[1]))
+      const b = Math.max(keyNumber(zoomWindow.x[0]), keyNumber(zoomWindow.x[1]))
+      const numbers = spec.keys.map(keyNumber)
+      let below = -1
+      let above = -1
+      numbers.forEach((v, k) => {
+        if (v < a && (below < 0 || v > numbers[below]!))
+          below = k
+        if (v > b && (above < 0 || v < numbers[above]!))
+          above = k
+      })
+      inWindow = k => (numbers[k]! >= a && numbers[k]! <= b) || k === below || k === above
+    }
+    const values = seriesValues(domains.derived, (s, j) => inWindow(s.keyAt ? s.keyAt[j]! : j))
+    if (values.length > 0)
+      fitted = valueDomainOf(domains.derived, values, annotations, domains.percent).value
+  }
   const valueScaleOf = (plot: Rect): ContinuousScale => {
     const [r0, r1] = across(plot)
     const dir = Math.sign(r1 - r0) || 1
     const range: [number, number] = [r0 + dir * pad.low, r1 - dir * pad.high]
-    const [lo, hi] = domains.value
+    const [lo, hi] = fitted ?? domains.value
     const make = ([a, b]: readonly [number, number]): ContinuousScale => continuousScaleOf(spec.valueScale, [a, b], range, spec.yAxis)
     const base = make([lo, hi])
     const full = spec.yAxis.nice === false || domains.percent ? base : base.nice(valueTickCount(range))
@@ -1418,8 +1467,17 @@ export function cartesianLabelNumbers(scene: CartesianScene | null): ChartNumber
   return numbers
 }
 
+/** 柱按两个字段的涨跌取色：两个都是数时 to ≥ from 为涨、否则为跌；缺一个保持原样。 */
+function withTrend(paint: MarkPaint, trend: readonly [string, string] | null, row: ChartRow | undefined): MarkPaint {
+  if (!trend || !row)
+    return paint
+  const from = numberOf(row[trend[0]])
+  const to = numberOf(row[trend[1]])
+  return from == null || to == null ? paint : { ...paint, trend: to >= from ? 'rise' : 'fall' }
+}
+
 /** 1px 线对齐到像素中心，避免被抗锯齿拉成两像素的灰线。 */
-function crisp(value: number): number {
+export function crisp(value: number): number {
   return Math.round(value) + 0.5
 }
 
@@ -1445,7 +1503,7 @@ export function cartesianDatumId(key: ChartKey): string {
 }
 
 /** 网格线画成两点的折线：过渡里按端点插值，刻度换位时跟着滑过去。 */
-function gridLine(key: string, x1: number, y1: number, x2: number, y2: number): LineMark {
+export function gridLine(key: string, x1: number, y1: number, x2: number, y2: number): LineMark {
   return { kind: 'line', key, part: 'grid-line', curve: 'linear', points: [{ key: 'a', x: x1, y: y1 }, { key: 'b', x: x2, y: y2 }] }
 }
 
@@ -1454,7 +1512,7 @@ function tickId(tick: AxisLayout['ticks'][number]): string {
   return tick.value instanceof Date ? String(tick.value.valueOf()) : String(tick.value)
 }
 
-function axisMarks(
+export function axisMarks(
   prefix: string,
   axis: AxisLayout,
   position: 'bottom' | 'left',
@@ -1663,8 +1721,8 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           // 区间柱两头都是数据、都悬空：四角都圆
           baseline: s.lows ? 'none' : vertical ? (positive ? 'end' : 'start') : (positive ? 'start' : 'end'),
           datum: { seriesId: id, index: rowIndex },
-          // 瀑布的一步按涨跌取色，小计保持系列色
-          paint: s.steps?.[j] && !s.steps[j]!.total ? { ...paint, trend: s.steps[j]!.trend } : paint,
+          // 瀑布的一步按涨跌取色，小计保持系列色；写了 trend 的柱按两个字段的涨跌取色
+          paint: s.steps?.[j] && !s.steps[j]!.total ? { ...paint, trend: s.steps[j]!.trend } : withTrend(paint, s.spec.trend, spec.rows[rowIndex]),
           a11y: { label: '', focusable: true },
         })
         bars.set(key, { ...rect, positive, stacked: s.spec.stack != null, row: rowIndex })
@@ -1834,7 +1892,7 @@ function sampleLine(points: readonly KeyedPoint[], vertical: boolean, plot: Rect
 }
 
 /** 键间距：类目轴取步长，连续轴取相邻两个键中心的最小间距；只有一个键时退回柱厚上限。 */
-function keyStep(layout: CartesianLayout): number {
+export function keyStep(layout: CartesianLayout): number {
   if (isCategoryScale(layout.keyScale))
     return (layout.keyScale as { step?: number }).step ?? layout.bandwidth
   const centers = layout.keyCenters.filter(Number.isFinite).sort((a, b) => a - b)
@@ -2033,6 +2091,13 @@ const ANNOTATION_LABEL_PRIORITY = 4
  * 注释指向的系列不存在、指向的类目不在轴上时报出来：这条注释不画，图照常画。
  * 系列被图例隐藏不算：那是读者的操作，注释随系列一起收起。
  */
+/** 只有列式数据才有的写法写在了对象数组上：等距排列要按有序的数值列取下标。 */
+export function cartesianRowIssues(xAxis: CartesianAxis | undefined): ChartSpecIssue[] {
+  return xAxis?.ordinal
+    ? [{ code: DIAGNOSTIC_CODES.chartOptionConflict, message: '等距排列（xAxis.ordinal）只用于列式数据：对象数组要跳过休市时段，把键写成文字画在类目轴上', detail: { ordinal: true } }]
+    : []
+}
+
 export function cartesianAnnotationIssues(spec: CartesianSpec, annotations: readonly CartesianAnnotation[]): ChartSpecIssue[] {
   const issues: ChartSpecIssue[] = []
   const ids = new Set(spec.series.map(s => s.id))
@@ -2742,74 +2807,5 @@ function pointTable(
       ...(colored ? [{ id: 'color', label: translations.colorLabel }] : []),
     ],
     rows,
-  }
-}
-
-/* ---------- 管线 ---------- */
-
-export interface CartesianPipelineInput {
-  readonly data: readonly ChartRow[] | undefined
-  readonly series: readonly CartesianSeries[] | undefined
-  readonly xAxis: CartesianAxis | undefined
-  readonly yAxis: CartesianAxis | undefined
-  readonly orientation: CartesianOrientation | undefined
-  readonly hiddenSeries: readonly string[]
-  readonly size: ChartSize | null
-  readonly metrics: ChartMetrics
-  readonly measurer: TextMeasurer
-  readonly measurerVersion: number
-  readonly locale: string
-  readonly translations: CartesianChartTranslations
-  readonly totals: boolean | undefined
-  readonly annotations: readonly CartesianAnnotation[] | undefined
-  readonly zoom: CartesianZoom
-  readonly window: CartesianWindow
-}
-
-export interface CartesianModel {
-  readonly spec: CartesianSpec
-  readonly derived: CartesianDerived
-  readonly domains: CartesianDomains
-  readonly formats: CartesianFormats
-  /** 规格不合法的原因；非空时不画标记。 */
-  readonly issues: readonly ChartSpecIssue[]
-  /** 画得出来但有一部分没画的原因（注释指错了目标）：开发期提醒，不挡住整张图。 */
-  readonly warnings: readonly ChartSpecIssue[]
-  /** 尚未测量时为 null。 */
-  readonly scene: CartesianScene | null
-  readonly summary: string
-  readonly table: TableModel
-  /** 合并后的文案：详情里 K 线的四个价按它写成文字。 */
-  readonly translations: CartesianChartTranslations
-}
-
-export type CartesianPipeline = (input: CartesianPipelineInput) => CartesianModel
-
-/** 没有注释：同一个空数组，管线各段的记忆不因作者没写而失效。 */
-const NO_ANNOTATIONS: readonly CartesianAnnotation[] = Object.freeze([])
-
-/** 建一条管线：每个图表实例一条，放在机器的 refs 里。 */
-export function createCartesianPipeline(): CartesianPipeline {
-  const normalize = memoizeLast(normalizeCartesianSpec)
-  const derive = memoizeLast(deriveCartesian)
-  const domainsOf = memoizeLast(cartesianDomains)
-  const layoutOf = memoizeLast(layoutCartesian)
-  let version = 0
-  const sceneOf = memoizeLast((layout: CartesianLayout) => cartesianScene(layout, ++version))
-  const a11yOf = memoizeLast(cartesianA11y)
-  const warningsOf = memoizeLast(cartesianAnnotationIssues)
-  // 隐藏系列按内容记忆：受控时作者可能每次给一个新数组，内容没变不该重算
-  const hiddenOf = memoizeLast((key: string): readonly string[] => JSON.parse(key) as string[])
-  return (input) => {
-    const spec = normalize(input.data, input.series, input.xAxis, input.yAxis, input.orientation)
-    const derived = derive(spec, hiddenOf(JSON.stringify([...input.hiddenSeries].sort())))
-    const annotations = input.annotations ?? NO_ANNOTATIONS
-    const domains = domainsOf(derived, annotations)
-    const a11y = a11yOf(derived, input.locale, input.translations, annotations)
-    const issues = [...spec.issues, ...derived.issues, ...domains.issues]
-    const scene = input.size == null || issues.length > 0
-      ? null
-      : sceneOf(layoutOf(domains, input.size, input.metrics, input.measurer, input.measurerVersion, input.locale, input.totals === true, annotations, input.translations.averageLabel, input.zoom, input.window))
-    return { spec, derived, domains, formats: a11y.formats, issues, warnings: warningsOf(spec, annotations), scene, summary: a11y.summary, table: a11y.table, translations: input.translations }
   }
 }

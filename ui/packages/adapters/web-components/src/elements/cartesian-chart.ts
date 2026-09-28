@@ -32,6 +32,7 @@ import type {
   ChartMark,
   ChartPalette,
   ChartRow,
+  ColumnSource,
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { cartesianChartAnatomy, cartesianChartMachine, cartesianChartMeta, connectCartesianChart } from '@xihan-ui/headless'
@@ -131,7 +132,7 @@ export class XhCartesianChartElement extends XhElement {
     locale: { converter: STRING_CONVERTER },
   }
 
-  declare data?: readonly ChartRow[]
+  declare data?: readonly ChartRow[] | ColumnSource
   declare series?: readonly CartesianSeries[]
   declare xAxis?: CartesianAxis
   declare yAxis?: CartesianAxis

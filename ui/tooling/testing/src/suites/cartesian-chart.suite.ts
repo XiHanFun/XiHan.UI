@@ -1,5 +1,5 @@
 import type { ConformanceCase, ConformanceSuite } from '../conformance/types'
-import { cartesianChartAnatomy, cartesianChartKeyboard } from '@xihan-ui/headless'
+import { cartesianChartAnatomy, cartesianChartKeyboard, createColumnStore } from '@xihan-ui/headless'
 import { chartEnvironment } from './shared/chart-environment'
 import { singleTabStop } from './shared/native-activation'
 
@@ -17,6 +17,12 @@ const SERIES = [
   { mark: 'bar', x: 'month', y: 'online', name: '线上' },
   { mark: 'bar', x: 'month', y: 'store', name: '门店' },
 ] as const
+
+/** 同样的数，写成列式数据：自变量是第几个月。 */
+const COLUMNS = createColumnStore({
+  fields: ['month', 'online', 'store'],
+  columns: { month: [1, 2, 3], online: [120, 150, 90], store: [80, 60, 110] },
+})
 
 // 用例看静止时的 DOM 契约：过渡关掉，另有一条用例单看收场
 const PROPS = { data: DATA, series: SERIES, locale: 'en-US', animated: false } as const
@@ -515,6 +521,29 @@ const cases: readonly ConformanceCase[] = [
         expect: { activeElement: { part: 'bar[1]', exact: true }, parts: { 'bar[1]': { 'aria-label': '二月, 线上 150' } } },
       },
       { kind: 'key', key: 'ArrowUp', expect: { activeElement: { part: 'bar[2]', exact: true }, parts: { 'bar[2]': { 'aria-label': '二月, 门店 60' } } } },
+    ],
+  },
+  {
+    name: '列式数据：总是画在画布上；键盘进来落到焦点代理，方向键逐点走、换系列',
+    spec: { apg: APG, adr: 'chart-canvas' },
+    props: { data: COLUMNS },
+    initial: {
+      counts: { underlay: 1, canvas: 1, series: 2, bar: 2 },
+      parts: {
+        'canvas': { 'aria-hidden': 'true', 'data-empty': null },
+        'plot': { tabindex: '0', role: 'graphics-document' },
+        'bar[0]': { 'aria-hidden': 'true', 'role': null },
+      },
+    },
+    steps: [
+      { kind: 'focus', part: 'plot', via: 'keyboard' },
+      {
+        kind: 'settle',
+        until: { activeElement: 'bar[1]' },
+        expect: { counts: { bar: 3 }, parts: { 'bar[1]': { 'role': 'graphics-symbol', 'aria-label': '1, 线上 120', 'tabindex': '0' } } },
+      },
+      { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'bar[1]', exact: true }, parts: { 'bar[1]': { 'aria-label': '2, 线上 150' } } } },
+      { kind: 'key', key: 'ArrowUp', expect: { activeElement: { part: 'bar[2]', exact: true }, parts: { 'bar[2]': { 'aria-label': '2, 门店 60' } } } },
     ],
   },
 ]

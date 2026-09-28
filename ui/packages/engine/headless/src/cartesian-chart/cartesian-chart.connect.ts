@@ -28,6 +28,7 @@ import { cartesianChartAnatomy } from './cartesian-chart.anatomy'
 import {
   cartesianActive,
   cartesianAnchor,
+  cartesianAnchorOf,
   cartesianBrushedData,
   cartesianBrushedRefs,
   cartesianBrushingSelection,
@@ -36,14 +37,17 @@ import {
   cartesianDetails,
   cartesianHitTest,
   cartesianIsEmpty,
+  cartesianKeyDomain,
   cartesianKeyIndexOf,
+  cartesianKeyOf,
   cartesianLegendScale,
   cartesianMarkKey,
   cartesianModelOf,
   cartesianNavTarget,
   cartesianOverlay,
-  cartesianPositionOf,
   cartesianProbeGroups,
+  cartesianProxyMark,
+  cartesianRefOfMark,
   cartesianRenderer,
   cartesianTooltip,
   cartesianTranslations,
@@ -104,18 +108,6 @@ function pathOf(mark: Mark): string {
   return markPath(mark as ShapeMark)
 }
 
-/** 数据层里某个键的标记与它所在的系列分组；折线（焦点代理在前景里）与找不到时为 null。 */
-function findDataMark(groups: readonly Mark[], key: string): { mark: Mark, group: string } | null {
-  for (const group of groups) {
-    if (group.kind !== 'group')
-      continue
-    const mark = group.children.find(child => child.key === key)
-    if (mark && mark.kind !== 'line' && mark.kind !== 'area')
-      return { mark, group: group.key }
-  }
-  return null
-}
-
 const ROLLED = new WeakMap<ChartFrame, Scene>()
 
 /**
@@ -171,7 +163,7 @@ export function connectCartesianChart<T extends PropTypes>(
   const anchor = cartesianAnchor(model, focused)
   const anchorKey = anchor ? cartesianMarkKey(model, anchor) : null
   // 锚点落在柱或散点上时标记自己占 Tab 位；落在折线上时绘图区占，聚焦时再转投给焦点代理
-  const anchorMark = anchor == null ? undefined : model.derived.visible.find(s => s.spec.id === anchor.seriesId)?.spec.mark
+  const anchorMark = anchor == null ? undefined : model.spec.series.find(s => s.id === anchor.seriesId)?.mark
   const anchorIsBar = !canvas && (anchorMark === 'bar' || anchorMark === 'scatter' || anchorMark === 'candlestick' || anchorMark === 'boxplot')
 
   const active: CartesianActive | null = cartesianActive(model, {
@@ -238,9 +230,8 @@ export function connectCartesianChart<T extends PropTypes>(
     const target = model.scene
     if (!canvas || !target)
       return { underlay: [], plot: [...scene.layers.back, ...overlay.under, ...scene.layers.data, ...scene.layers.front, ...overlay.over] }
-    const focusKey = focusWithin && focused ? cartesianMarkKey(model, focused) : null
-    const own = focusKey == null ? null : findDataMark(target.scene.layers.data, focusKey)
-    const groups = cartesianProbeGroups(target).map((group) => {
+    const own = focusWithin && focused ? cartesianProxyMark(model, focused) : null
+    const groups = cartesianProbeGroups(model).map((group) => {
       if (!own || group.kind !== 'group' || !group.children.length || own.group !== group.key)
         return group
       return { ...group, children: [...group.children, { ...own.mark, a11y: { label: '', focusable: true } }] }
@@ -312,12 +303,14 @@ export function connectCartesianChart<T extends PropTypes>(
   const layout = model.scene?.layout ?? null
   const shown = layout?.window ?? FULL_CARTESIAN_RATIO
   const zoomed = !isFullWindow(shown.x) || !isFullWindow(shown.y)
-  const category = model.spec.keyScale === 'band' || model.spec.keyScale === 'point'
-  const keyCount = model.spec.keys.length
-  const keyKind = model.spec.keyScale === 'log' ? 'log' : 'linear'
+  const keyDomain = cartesianKeyDomain(model)
+  const category = keyDomain.indexed
+  const keyCount = keyDomain.count
+  const keyKind = keyDomain.kind
   const valueKind = model.spec.valueScale === 'log' ? 'log' : 'linear'
-  // 窗口最窄：类目轴至少露出一个类目，连续轴放大到 100 倍为止
-  const limits = { minSpan: category && keyCount > 0 ? Math.min(1, 1 / keyCount) : 0.01 }
+  // 窗口最窄：类目轴至少露出一个类目，连续轴放大到 100 倍为止；列式数据放大到窗口里只剩两个点
+  const fewest = model.columns ? 2 : 1
+  const limits = { minSpan: (category || model.columns) && keyCount > 0 ? Math.min(1, fewest / keyCount) : 0.01 }
   // 手势从上一次算出的比例接着算：类目轴的窗口取整到类目，细小的几次滚轮若都从取整后的窗口起算会原地不动
   const lastRatio = service.refs.get('zoomRatio')
   const base: CartesianWindowRatio = lastRatio && sameWindow(lastRatio.window, win) ? lastRatio.ratio : shown
@@ -327,11 +320,11 @@ export function connectCartesianChart<T extends PropTypes>(
     if (zoomX && layout && keyCount > 0 && !isFullWindow(ratio.x)) {
       if (category) {
         const [first, last] = windowToIndexRange(ratio.x, keyCount)
-        x = first === 0 && last === keyCount - 1 ? null : [model.spec.keys[first]!, model.spec.keys[last]!]
+        x = first === 0 && last === keyCount - 1 ? null : [keyDomain.keyAt(first), keyDomain.keyAt(last)]
       }
       else if (layout.keyExtent) {
         const [a, b] = windowToDomain(ratio.x, layout.keyExtent, keyKind)
-        x = model.spec.keyScale === 'time' || model.spec.keyScale === 'utc' ? [new Date(a), new Date(b)] : [a, b]
+        x = keyDomain.time ? [new Date(a), new Date(b)] : [a, b]
       }
     }
     const y = zoomY && layout && !isFullWindow(ratio.y) ? windowToDomain(ratio.y, layout.valueExtent, valueKind) : null
@@ -381,7 +374,7 @@ export function connectCartesianChart<T extends PropTypes>(
     const [first, last] = layout!.keyRange
     const count = last - first + 1
     const next = factor > 1
-      ? Math.max(1, Math.min(count - 1, Math.floor(count / factor)))
+      ? Math.max(fewest, Math.min(count - 1, Math.floor(count / factor)))
       : Math.min(keyCount, Math.max(count + 1, Math.ceil(count / factor)))
     const pivot = focus >= first && focus <= last ? focus : first + Math.floor(count / 2)
     const start = Math.min(keyCount - next, Math.max(0, Math.round(pivot + 0.5 - ((pivot + 0.5 - first) / count) * next)))
@@ -405,15 +398,16 @@ export function connectCartesianChart<T extends PropTypes>(
   }
   /** 一个数据在整条自变量轴上的位置 0–1：类目取类目的中心，连续轴按取整后的整条轴换算。 */
   const keyRatio = (ref: ChartDatumRef): number | null => {
-    const j = cartesianKeyIndexOf(model, ref)
-    if (j < 0)
-      return null
-    if (category)
-      return (j + 0.5) / keyCount
+    if (category) {
+      const j = cartesianKeyIndexOf(model, ref)
+      return j < 0 ? null : (j + 0.5) / keyCount
+    }
     const extent = layout?.keyExtent
-    const key = model.spec.keys[j]!
+    const key = cartesianKeyOf(model, ref)
+    if (key == null || !extent)
+      return null
     const v = key instanceof Date ? key.valueOf() : Number(key)
-    return extent ? domainToWindow([v, v], extent, keyKind).start : null
+    return domainToWindow([v, v], extent, keyKind).start
   }
   /** 键盘把焦点移出了窗口：窗口平移过去，让焦点落在窗口正中。 */
   const follow = (ref: ChartDatumRef): void => {
@@ -431,13 +425,13 @@ export function connectCartesianChart<T extends PropTypes>(
       return ''
     if (category) {
       const j = edge === 'start' ? Math.floor(r * keyCount + 1e-9) : Math.ceil(r * keyCount - 1e-9) - 1
-      return model.formats.key(model.spec.keys[Math.min(keyCount - 1, Math.max(0, j))]!)
+      return model.formats.key(keyDomain.keyAt(Math.min(keyCount - 1, Math.max(0, j))))
     }
     const extent = layout?.keyExtent
     if (!extent)
       return ''
     const [v] = windowToDomain({ start: r, end: r }, extent, keyKind)
-    return model.formats.key(model.spec.keyScale === 'time' || model.spec.keyScale === 'utc' ? new Date(v) : v)
+    return model.formats.key(keyDomain.time ? new Date(v) : v)
   }
   const touches = service.refs.get('touches')
   const endPointer = (event: PointerEvent): void => {
@@ -475,10 +469,9 @@ export function connectCartesianChart<T extends PropTypes>(
   const clip = model.scene?.clip ?? null
 
   const focusTo = (ref: ChartDatumRef, visible: boolean, focus: boolean): void => {
-    const j = cartesianKeyIndexOf(model, ref)
-    if (j < 0)
-      return
-    send({ type: 'DATUM.FOCUS', ref, key: model.spec.keys[j]!, focus, visible })
+    const key = cartesianKeyOf(model, ref)
+    if (key != null)
+      send({ type: 'DATUM.FOCUS', ref, key, focus, visible })
   }
 
   const legendHandlers = (item: CartesianLegendItem): Record<string, unknown> => {
@@ -513,7 +506,14 @@ export function connectCartesianChart<T extends PropTypes>(
     summary: model.summary,
     table: model.table,
     emptyText: loading ? translations.loadingText : translations.emptyText,
-    tableCaption: translations.tableCaption,
+    // 列式数据的大表按区间聚合：表题注明聚合了多少行
+    tableCaption: model.columns?.aggregated
+      ? translations.aggregatedCaption({
+          caption: translations.tableCaption,
+          rows: model.formats.measure(model.columns.aggregated.rows),
+          ranges: model.formats.measure(model.columns.aggregated.ranges),
+        })
+      : translations.tableCaption,
     activeKey: context.get('activeKey'),
     hiddenSeries: hidden,
     toggleSeries: id => send({ type: 'LEGEND.TOGGLE', id }),
@@ -770,7 +770,7 @@ export function connectCartesianChart<T extends PropTypes>(
         if (zoomable && (event.key === '+' || event.key === '=' || event.key === '-' || event.key === '_')) {
           event.preventDefault()
           const from = focused && focusWithin ? focused : anchor
-          const p = from ? model.scene?.anchors.get(from.seriesId)?.[cartesianPositionOf(model, from)] : null
+          const p = from ? cartesianAnchorOf(model, from) : null
           const factor = event.key === '+' || event.key === '=' ? KEY_ZOOM_STEP : 1 / KEY_ZOOM_STEP
           const at = (p ? ratioAt(p) : null) ?? { key: 0.5, value: 0.5 }
           if (category && zoomX && layout) {
@@ -806,12 +806,9 @@ export function connectCartesianChart<T extends PropTypes>(
           return
         }
         const key = target.getAttribute('data-key')
-        const info = key == null ? undefined : model.scene?.info.get(key)
-        if (!info || info.position < 0)
-          return
-        const s = model.derived.visible.find(v => v.spec.id === info.seriesId)
-        if (s)
-          focusTo({ seriesId: s.spec.id, index: s.rows[info.position]! }, visible, false)
+        const ref = key == null ? null : cartesianRefOfMark(model, key, focused)
+        if (ref)
+          focusTo(ref, visible, false)
       },
       'onFocusOut': (event: FocusEvent) => {
         // 绘图区内部换焦点不算离场，提示框要跟着焦点继续显示

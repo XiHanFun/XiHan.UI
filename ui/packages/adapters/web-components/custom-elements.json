@@ -6119,7 +6119,7 @@
               "name": "data",
               "privacy": "public",
               "type": {
-                "text": "readonly ChartRow[] | undefined"
+                "text": "readonly ChartRow[] | ColumnSource | undefined"
               }
             },
             {

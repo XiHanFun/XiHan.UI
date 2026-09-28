@@ -3,6 +3,7 @@
 import type { XhCartesianChartElement } from '../../src/elements/cartesian-chart'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
+import { createColumnStore } from '../../src'
 import { defineXhElements } from '../../src/define'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -93,5 +94,42 @@ describe('画布模式', () => {
     await userEvent.keyboard('{ArrowRight}')
     await frames()
     expect((document.activeElement as HTMLElement).getAttribute('aria-label')).toBe('二月, 线上 200')
+  })
+})
+
+describe('列式数据', () => {
+  it('列式数据的 K 线总是画在画布上；焦点代理中心的画布颜色就是它自己的涨跌色，方向键逐根走', async () => {
+    const chart = mount('auto')
+    const n = 40
+    const cols = { t: new Float64Array(n), open: new Float64Array(n), high: new Float64Array(n), low: new Float64Array(n), close: new Float64Array(n) }
+    for (let i = 0; i < n; i++) {
+      cols.t[i] = Date.UTC(2026, 0, 5) + i * 86_400_000
+      cols.open[i] = 50 + (i % 9)
+      cols.close[i] = cols.open[i]! + (i % 2 ? 4 : -4)
+      cols.high[i] = Math.max(cols.open[i]!, cols.close[i]!) + 2
+      cols.low[i] = Math.min(cols.open[i]!, cols.close[i]!) - 2
+    }
+    chart.xAxis = { scale: 'utc', ordinal: true }
+    chart.series = [{ mark: 'candlestick', x: 't', open: 'open', high: 'high', low: 'low', close: 'close', name: '收盘' }]
+    chart.data = createColumnStore({ fields: Object.keys(cols), columns: cols })
+    await frames()
+    expect(chart.currentRenderer).toBe('canvas')
+    const canvas = part(chart, 'canvas')[0] as unknown as HTMLCanvasElement
+    const ctx = canvas.getContext('2d')!
+    const scale = canvas.width / canvas.clientWidth
+    part(chart, 'plot')[0]!.focus()
+    await frames()
+    for (const trend of ['fall', 'rise']) {
+      const proxy = document.activeElement as HTMLElement
+      expect(proxy.getAttribute('data-part')).toBe('candle')
+      expect(proxy.getAttribute('data-trend')).toBe(trend)
+      const box = proxy.getBoundingClientRect()
+      const origin = part(chart, 'viewport')[0]!.getBoundingClientRect()
+      const got = [...ctx.getImageData(Math.round((box.left + box.width / 2 - origin.left) * scale), Math.round((box.top + box.height / 2 - origin.top) * scale), 1, 1).data]
+      const want = rgba(getComputedStyle(proxy).fill)
+      expect(got.every((v, i) => Math.abs(v - want[i]!) <= 3)).toBe(true)
+      await userEvent.keyboard('{ArrowRight}')
+      await frames()
+    }
   })
 })
