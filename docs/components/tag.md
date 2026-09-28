@@ -60,6 +60,12 @@ readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本�
 
 <XhDemo src="tag/07-read-only" />
 
+### 自定义色相
+
+语气之外的分类色：在标签上写 --xh-tag-bg / --xh-tag-fg / --xh-tag-border，从基础色板取同一色相的浅底深字；light-dark() 让暗色下换成深底浅字
+
+<XhDemo src="tag/08-custom-hue" />
+
 ## 设计指引
 
 ### 何时使用
