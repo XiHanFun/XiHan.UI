@@ -53,6 +53,7 @@ export function connectMarquee<T extends PropTypes>(
     'data-pause-on-hover': dataAttr(prop('pauseOnHover') ?? true),
     'data-paused': dataAttr(paused),
     'data-auto-fill': dataAttr(autoFill),
+    'data-fade': dataAttr(prop('fade') === true),
     ...(speed === undefined ? {} : { style: `--xh-marquee-speed: ${speed}` }),
   }
 

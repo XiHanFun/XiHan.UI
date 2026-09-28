@@ -42806,6 +42806,25 @@
       "description": "marquee 的 root 部件 block-size 覆盖槽。"
     },
     {
+      "name": "--xh-marquee-fade-size",
+      "component": "marquee",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "-webkit-mask-image",
+        "mask-image"
+      ],
+      "state": [
+        "fade"
+      ],
+      "defaultToken": [
+        "--xh-space-6"
+      ],
+      "visibility": "public",
+      "description": "marquee 的 root 部件 -webkit-mask-image、mask-image 覆盖槽。"
+    },
+    {
       "name": "--xh-marquee-gap",
       "component": "marquee",
       "part": [
@@ -42958,18 +42977,24 @@
         "root"
       ],
       "property": [
+        "-webkit-mask-image",
+        "-webkit-mask-size",
         "inset-block-end",
-        "inset-inline-end"
+        "inset-inline-end",
+        "mask-image",
+        "mask-size"
       ],
       "state": [
         "default",
+        "fade",
+        "has(> [data-scope='marquee'][data-part='autoplay-trigger']:not([hidden])",
         "orientation=vertical"
       ],
       "defaultToken": [
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "marquee 的 autoplay-trigger、root 部件 inset-block-end、inset-inline-end 覆盖槽。"
+      "description": "marquee 的 autoplay-trigger、root 部件 -webkit-mask-image、-webkit-mask-size、inset-block-end、inset-inline-end、mask-image、mask-size 覆盖槽。"
     },
     {
       "name": "--xh-masonry-gap",

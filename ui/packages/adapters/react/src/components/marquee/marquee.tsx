@@ -31,6 +31,8 @@ export interface XhMarqueeRootProps extends ComponentPropsWithRef<'div'> {
   defaultPaused?: boolean
   /** 内容不足时重复铺满：轨道中铺设两份内容。 */
   autoFill?: boolean
+  /** 窗口两端沿滚动方向渐隐；有暂停开关时行尾那一端淡到开关之前。 */
+  fade?: boolean
   /** 暂停开关在两种状态下的可及名，默认英文。 */
   translations?: Partial<MarqueeTranslations>
   onPausedChange?: MarqueeProps['onPausedChange']
@@ -44,6 +46,7 @@ export function XhMarqueeRoot({
   paused,
   defaultPaused,
   autoFill,
+  fade,
   translations,
   onPausedChange,
   children,
@@ -56,6 +59,7 @@ export function XhMarqueeRoot({
     paused,
     defaultPaused,
     autoFill,
+    fade,
     translations,
     onPausedChange,
   }) as MarqueeProps
