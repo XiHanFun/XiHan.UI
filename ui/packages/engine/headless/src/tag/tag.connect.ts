@@ -124,7 +124,9 @@ export function connectTag<T extends PropTypes>(
       get: () => state.get() === 'open',
       set: next => send({ type: next ? 'OPEN' : 'CLOSE' }),
       rendered: context.get('rendered'),
-      rootId: scope.partId('tag', 'root'),
+      // 只有可关闭的标签需要按 id 找回根节点播退场；不可关闭的在 Vue / React 走无机器的快路、
+      // 不带 id，这里跟着不投影，三端同一份 DOM
+      rootId: prop('closable') ? scope.partId('tag', 'root') : undefined,
     },
     {
       // 真源在机器 context，跟踪器只把键盘与粗指针的按住翻成事件
