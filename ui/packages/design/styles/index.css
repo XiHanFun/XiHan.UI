@@ -34708,6 +34708,8 @@
      得允许自己被压缩并把溢出裁掉，否则标签会冲出盒的右缘、把展开箭头挤到盒外；
      展开箭头靠触发器的 space-between 留在末端，行本身不必撑开 */
   [data-scope='select'][data-part='tag-list'] {
+    /* 取消选中的标签由列表动效在原处放一个绝对定位的替身：行自己作定位容器，替身才裁在行里 */
+    position: relative;
     display: inline-flex;
     flex: 0 1 auto;
     align-items: center;
@@ -34733,6 +34735,19 @@
   [data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'] {
     flex: 0 1 auto;
     min-inline-size: 0;
+    /* 选中、取消选中一枚时，其余标签由列表动效先反向补偿、再沿这条滑到新位置 */
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 新选中的标签进场，同一批按到达顺序错开；首帧就在的直接呈现。+N 那一枚不是到达的条目，不播 */
+  [data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'][data-value]:not([data-instant], [data-state='closed']) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 取消选中的标签：替身留在原处淡出，播完即移除 */
+  [data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'][data-state='closed'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'][data-count] {

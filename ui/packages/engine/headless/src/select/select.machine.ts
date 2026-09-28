@@ -7,13 +7,13 @@
 
 import type { PositionResult } from '@xihan-ui/core'
 import type { SelectFocusIntent, SelectSchema } from './select.types'
-import { createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup, trackListMotion } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { virtualCollectionTarget } from '../shared/virtual-collection'
-import { selectItemQuery, selectItemText } from './select.anatomy'
+import { SELECT_TAG_LIST_SELECTOR, SELECT_TAG_SELECTOR, selectItemQuery, selectItemText } from './select.anatomy'
 
 const { createMachine } = setup<SelectSchema>()
 
@@ -70,7 +70,7 @@ export const selectMachine = createMachine({
   // 挂载即结算一次显示文本：defaultValue / 受控初值都得在首帧就有文字可显示
   entry: ['syncValueText'],
   // 行为资源由顶层 effect 持有：逻辑关闭后仍等 Presence 结清真实退场才归还。
-  effects: ['trackLayer'],
+  effects: ['trackLayer', 'trackTagListMotion'],
   // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 无条件回写；值受控走 cell。
   // 值这一路的 watch 只兜宿主侧写入，内部选中当场已同步过文本。
   watch: ({ track, prop, context, action }) => {
@@ -391,6 +391,27 @@ export const selectMachine = createMachine({
       }),
       // Layer、DismissableLayer、FocusScope 与视觉 Presence 共享同一租约：逻辑关闭后内容
       // 已 inert，但资源仍留在顶层，直到真实 CSS 退场结束才逆序释放。
+      /**
+       * 多选标签行的到达、离场与换位：首帧就在的标签直接呈现，之后新选的播进场，
+       * 取消选中的在原处播完退场，其余标签滑到新位置。标签行在触发器里，没有标签行（单选或作者没写）就不接。
+       * React 的祖先 ref 在子组件 layout effect 之后才附着，延到提交后的微任务再取，仍在首帧绘制之前。
+       */
+      trackTagListMotion: ({ scope, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          scope.getWin().queueMicrotask(() => {
+            const list = scope.getById(scope.partId('select', 'trigger'))?.querySelector<HTMLElement>(SELECT_TAG_LIST_SELECTOR)
+            if (disposed || !list)
+              return
+            stop = trackListMotion(list, { item: SELECT_TAG_SELECTOR })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
       trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
         let reactivateFocus: (() => void) | null = null
         return trackPresenceResources({
