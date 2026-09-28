@@ -133,6 +133,8 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     selectionMode: { type: String as PropType<TableSelectionMode> },
     /** 单元格合并：逐格询问合并区的大小，与 antd 的 spanMethod 同一种写法。 */
     cellSpan: { type: Function as PropType<TableProps['cellSpan']> },
+    /** 与 Virtualizer 的正式接线口：传 Virtualizer 的 collectionVirtualizer，count 等于可见数据行的条数。 */
+    virtualizer: { type: Object as PropType<TableProps['virtualizer']> },
     /** 树形表在 multiple 下父子级联勾选，与 Tree 的 cascade 同义。 */
     cascade: { type: Boolean, default: undefined },
     checkedStrategy: { type: String as PropType<CascadeStrategy> },

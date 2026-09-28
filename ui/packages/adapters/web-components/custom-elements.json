@@ -58784,6 +58784,14 @@
             },
             {
               "kind": "field",
+              "name": "virtualizer",
+              "privacy": "public",
+              "type": {
+                "text": "TableSchema['props']['virtualizer'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "prefixColumns",
               "privacy": "public",
               "type": {
@@ -58979,6 +58987,17 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TableSchema>( this, tableMachine, () => this.machineProps(), { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              },
+              "description": "接了 Virtualizer 时行隔着一层 xh-virtualizer：窗口里那几行由它交出来，归表格接线。"
             },
             {
               "kind": "method",

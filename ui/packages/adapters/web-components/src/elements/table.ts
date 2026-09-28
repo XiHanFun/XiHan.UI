@@ -132,6 +132,8 @@ export class XhTableElement extends XhElement {
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     // 合并询问是函数，走不了属性；只作为 property 暴露
     cellSpan: { attribute: false },
+    // Virtualizer 的接线口是对象，只走 property：el.virtualizer = virtualizerEl.collectionVirtualizer
+    virtualizer: { attribute: false },
     // 前缀列是数组，走不了属性；只作为 property 暴露
     prefixColumns: { attribute: false },
     // 列偏好是对象，走不了属性；只作为 property 暴露
@@ -168,6 +170,7 @@ export class XhTableElement extends XhElement {
   declare cascade?: boolean
   declare checkedStrategy?: CascadeStrategy
   declare cellSpan?: TableSchema['props']['cellSpan']
+  declare virtualizer?: TableSchema['props']['virtualizer']
   declare prefixColumns?: TableColumnKind[]
   declare columnPreference?: TableColumnPreference
   declare defaultColumnPreference?: TableColumnPreference
@@ -217,6 +220,11 @@ export class XhTableElement extends XhElement {
     { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) },
   )
 
+  /** 接了 Virtualizer 时行隔着一层 xh-virtualizer：窗口里那几行由它交出来，归表格接线。 */
+  protected override externalPartRoots(): readonly HTMLElement[] {
+    return this.virtualizer?.getRenderedItemRoots() ?? []
+  }
+
   private machineProps(): Partial<TableSchema['props']> {
     return {
       columns: this.columns,
@@ -232,6 +240,7 @@ export class XhTableElement extends XhElement {
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
       cellSpan: this.cellSpan,
+      virtualizer: this.virtualizer,
       prefixColumns: this.prefixColumns,
       columnPreference: this.columnPreference,
       defaultColumnPreference: this.defaultColumnPreference,

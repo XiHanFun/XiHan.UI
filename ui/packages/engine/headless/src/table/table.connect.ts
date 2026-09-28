@@ -17,6 +17,7 @@ import {
   isComposingEvent,
   isItemDisabled,
   ITEM_VALUE_ATTR,
+  itemQuerySelector,
   itemValue,
   navigateItems,
   navIntentFromKey,
@@ -25,6 +26,7 @@ import {
 } from '@xihan-ui/core'
 import { flatMoveIntentFromKey } from '../shared/drag'
 import { isEditableTarget } from '../shared/editable-target'
+import { assertCollectionVirtualizer, virtualCollectionTarget } from '../shared/virtual-collection'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { buildTableHeaderRows, orderColumnIds, resolveTableColumns, tableColumnAncestors, tableLeafColumns } from './table.columns'
@@ -254,6 +256,10 @@ export function connectTable<T extends PropTypes>(
   }
   const rowSetSize = dataRows.length
 
+  // 接了 Virtualizer：方向键按完整行序走，DOM 里只有窗口那一段
+  const virtualizer = prop('virtualizer')
+  assertCollectionVirtualizer('Table', virtualizer, dataRows.length, true)
+
   const rowReorderable = !!prop('rowReorderable')
   const draggingRow = context.get('draggingRow')
   /**
@@ -264,7 +270,7 @@ export function connectTable<T extends PropTypes>(
     // 判据是 nested（有行声明了 parentId）而不是 hierarchical——后者把「有可展开的行」
     // 也算进去了，而展开出的详情行是跟着数据行一起搬的，不妨碍换位
     // cell 初值是 undefined，这里连同收成 null：api 上写的是 | null
-    ? (rowReorderReason(sort.length) ?? context.get('rowReorderBlocked') ?? null)
+    ? (rowReorderReason(sort.length) ?? (virtualizer ? 'virtualized' : null) ?? context.get('rowReorderBlocked') ?? null)
     : null
   /**
    * 这一行此刻是不是落点，落在它的哪一档。
@@ -522,8 +528,19 @@ export function connectTable<T extends PropTypes>(
     send({ type: 'ROW.FOCUS', value: next })
   }
 
-  /** 方向键落点：起点用锚点，终点在可见数据行上算，禁用行自动跳过。 */
+  /**
+   * 方向键落点：起点用锚点，终点在可见数据行上算，禁用行自动跳过。
+   * 接了 Virtualizer 时按完整行序求落点：窗口外的行不在 DOM 里，先记下锚点、让它把那一行滚进来再交焦点。
+   */
   const focusBy = (body: HTMLElement, intent: NavIntent): void => {
+    if (virtualizer) {
+      const target = virtualCollectionTarget(dataRows, anchor, intent, { value: row => row.id, disabled: row => row.disabled, loop })
+      if (!target)
+        return
+      send({ type: 'ROW.FOCUS', value: target.value })
+      virtualizer.focusIndex(target.index, { align: 'auto', selector: itemQuerySelector(tableRowQuery) })
+      return
+    }
     focusValue(navigateItems(rowEls(body), anchor, intent, { loop }))
   }
 

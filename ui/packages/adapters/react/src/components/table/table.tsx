@@ -149,6 +149,8 @@ export interface XhTableRootProps extends RootElementProps {
   checkedStrategy?: CascadeStrategy
   /** 单元格合并：逐格询问合并区的大小，与 antd 的 spanMethod 同一种写法。 */
   cellSpan?: TableProps['cellSpan']
+  /** 与 Virtualizer 的正式接线口：传 Virtualizer 的 collectionVirtualizer，count 等于可见数据行的条数。 */
+  virtualizer?: TableProps['virtualizer']
   /** 需要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插入最前面并占用列号。 */
   prefixColumns?: TableColumnKind[]
   /** 列偏好：给定即受控。持久化归使用者，库只负责把它算进生效列。 */
@@ -200,6 +202,7 @@ export function XhTableRoot({
   cascade,
   checkedStrategy,
   cellSpan,
+  virtualizer,
   prefixColumns,
   columnPreference,
   defaultColumnPreference,
@@ -240,6 +243,7 @@ export function XhTableRoot({
     cascade,
     checkedStrategy,
     cellSpan,
+    virtualizer,
     prefixColumns,
     columnPreference,
     defaultColumnPreference,

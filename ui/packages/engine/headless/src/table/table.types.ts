@@ -7,6 +7,7 @@
 
 import type { CascadeStrategy, ControlVariant, Direction, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
+import type { CollectionVirtualizer } from '../virtualizer'
 
 /**
  * 焦点模型：行级 roving tabindex。
@@ -260,9 +261,10 @@ export interface TableVisibleRow {
 /**
  * 行不可拖动的原因，null 表示可拖动。
  *
- * 三条都是拖动没有意义而不是拖动会出错：
+ * 两条都是拖动没有意义而不是拖动会出错：
  * - `sorted`：排序链非空时顺序由排序键决定，拖出的新序下一帧就被覆盖；
- * - `virtualized`：只渲染窗口内一段时，窗口外的行不在 DOM 中，落点无法计算。
+ * - `virtualized`：只渲染窗口内一段时（接了 `virtualizer`，或宿主自己只渲了一段），
+ *   窗口外的行不在 DOM 中，落点无法计算。
  */
 export type TableRowReorderReason = 'sorted' | 'virtualized'
 
@@ -356,6 +358,12 @@ export interface TableSchema extends MachineSchema {
     defaultExpandedValue?: string[]
     /** 默认 none：未声明则没有选择机制，行也不报告 aria-selected。 */
     selectionMode?: TableSelectionMode
+    /**
+     * 与 Virtualizer 的正式接线口（Virtualizer 的 `collectionVirtualizer`）：count 必须等于可见数据行的条数，
+     * 每个虚拟条目装一行数据行（展开的详情行跟在同一个条目里）。接上后上下键与 Home / End 按完整行序计算，
+     * 落点不在窗口里时先把它滚进来再交焦点；行号照旧按完整行序报；行拖动换位不可用（窗口外的行没有落点）。
+     */
+    virtualizer?: CollectionVirtualizer
     /**
      * 单元格合并（与 antd 的 spanMethod 同一种写法）：逐格询问，返回合并区的大小。
      * 表格按它算出起点格的 aria-rowspan / aria-colspan：同一行里被横向合并的格子不渲染（hidden），

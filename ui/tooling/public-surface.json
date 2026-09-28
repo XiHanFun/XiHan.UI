@@ -12920,7 +12920,8 @@
       "stickyHeader",
       "striped",
       "translations",
-      "variant"
+      "variant",
+      "virtualizer"
     ],
     "tabs": [
       "activationMode",

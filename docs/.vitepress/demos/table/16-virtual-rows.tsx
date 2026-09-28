@@ -1,5 +1,5 @@
-// 只渲染窗口内的行 | 全量 rows 照常交给 root（那只是行序与行号的元信息，不产生 DOM），标记中只渲染可见的一段，首尾用两块空白撑出真实滚动高度
-import type { CSSProperties, ReactNode, UIEvent } from "react";
+// 只渲染窗口内的行 | 一万行交给 Virtualizer：表格经 virtualizer 接上它的 collectionVirtualizer，行号与方向键仍按完整行序走，DOM 里只有窗口那十几行
+import type { CSSProperties, ReactNode } from "react";
 import {
   XhTableBody,
   XhTableCell,
@@ -8,8 +8,11 @@ import {
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
 const columns = [
   { id: "no", label: "编号", width: "6rem" },
@@ -19,66 +22,64 @@ const columns = [
 
 const depts = ["平台研发", "前端体验", "基础架构", "质量保障"];
 
-const people = Array.from({ length: 2000 }, (_, i) => ({
+const people = Array.from({ length: 10000 }, (_, i) => ({
   id: `u${i + 1}`,
   no: `#${i + 1}`,
   name: `员工 ${i + 1}`,
   dept: depts[i % depts.length],
 }));
 
-// 行号与总数按全量算，与渲染了哪几行无关
+// 行号与总数按全量算，与挂了哪几行无关
 const rows = people.map(p => ({ id: p.id }));
 
-// 行高写死才算得出窗口；上下各多渲几行做缓冲
-const ROW_H = 36;
-const WINDOW = 18;
-const OVERSCAN = 4;
-
-const rowStyle: CSSProperties = { blockSize: `${ROW_H}px` };
+// 行之间的分隔线：每行装在各自的虚拟条目里，彼此不是兄弟节点，分隔线写在行上
+const rowStyle: CSSProperties = { blockSize: 36, borderBlockEnd: "1px solid var(--xh-border-subtle)" };
 
 export default function Demo(): ReactNode {
-  const [start, setStart] = useState(0);
-
-  const end = Math.min(people.length, start + WINDOW);
-  const visible = people.slice(start, end);
-
-  const bodyStyle: CSSProperties = {
-    paddingBlockStart: `${start * ROW_H}px`,
-    paddingBlockEnd: `${(people.length - end) * ROW_H}px`,
-  };
-
-  function onScroll(event: UIEvent<HTMLElement>): void {
-    const top = (event.target as HTMLElement).scrollTop;
-    const first = Math.floor(top / ROW_H) - OVERSCAN;
-    setStart(Math.min(Math.max(0, first), Math.max(0, people.length - WINDOW)));
-  }
-
   return (
-    <div style={{ width: "100%", maxWidth: "520px", display: "grid", gap: "12px" }}>
-      {/* root 自己就是那个滚动容器，滚动量直接从它身上读 */}
-      <XhTableRoot columns={columns} rows={rows} stickyHeader onScroll={onScroll}>
-        <XhTableHeader>
-          <XhTableRow style={rowStyle}>
-            {columns.map(col => (
-              <XhTableColumnHeader key={col.id} value={col.id}>
-                <XhTableColumnLabel>{col.label}</XhTableColumnLabel>
-              </XhTableColumnHeader>
-            ))}
-          </XhTableRow>
-        </XhTableHeader>
-        <XhTableBody style={bodyStyle}>
-          {visible.map(p => (
-            <XhTableRow key={p.id} value={p.id} style={rowStyle}>
-              <XhTableCell value="no">{p.no}</XhTableCell>
-              <XhTableCell value="name">{p.name}</XhTableCell>
-              <XhTableCell value="dept">{p.dept}</XhTableCell>
+    // 表体里的视口负责滚动：表格自己不再定高、不再滚；视口不占 Tab 位，键盘归表体
+    <XhVirtualizerRoot
+      count={people.length}
+      estimateSize={36}
+      viewportTabIndex={-1}
+      style={{ inlineSize: "100%", maxInlineSize: 520 }}
+    >
+      {({ virtualItems, collectionVirtualizer }) => (
+        <XhTableRoot
+          columns={columns}
+          rows={rows}
+          virtualizer={collectionVirtualizer}
+          style={{ maxBlockSize: "none", overflow: "visible" }}
+        >
+          <XhTableHeader>
+            <XhTableRow>
+              {columns.map(col => (
+                <XhTableColumnHeader key={col.id} value={col.id}>
+                  <XhTableColumnLabel>{col.label}</XhTableColumnLabel>
+                </XhTableColumnHeader>
+              ))}
             </XhTableRow>
-          ))}
-        </XhTableBody>
-      </XhTableRoot>
-      <span>
-        {`共 ${people.length} 行，此刻在 DOM 里的是第 ${start + 1} – ${end} 行`}
-      </span>
-    </div>
+          </XhTableHeader>
+          <XhTableBody>
+            <XhVirtualizerViewport style={{ blockSize: 320 }}>
+              <XhVirtualizerContent>
+                {virtualItems.map((item) => {
+                  const p = people[item.index]!;
+                  return (
+                    <XhVirtualizerItem key={item.key} value={item.index}>
+                      <XhTableRow value={p.id} style={rowStyle}>
+                        <XhTableCell value="no">{p.no}</XhTableCell>
+                        <XhTableCell value="name">{p.name}</XhTableCell>
+                        <XhTableCell value="dept">{p.dept}</XhTableCell>
+                      </XhTableRow>
+                    </XhVirtualizerItem>
+                  );
+                })}
+              </XhVirtualizerContent>
+            </XhVirtualizerViewport>
+          </XhTableBody>
+        </XhTableRoot>
+      )}
+    </XhVirtualizerRoot>
   );
 }
