@@ -41520,6 +41520,14 @@
               "name": "pending-indicator"
             },
             {
+              "description": "消息之间的分隔（按日期分组），与条目平级放在 list 里，对读屏隐藏",
+              "name": "separator"
+            },
+            {
+              "description": "回到底部按钮上的未读数，放在按钮里；元素写入条数，没有未读时收起",
+              "name": "unread-count"
+            },
+            {
               "description": "视觉隐藏的原子播报区，一份会话只应有一个",
               "name": "live-region"
             }
@@ -41824,6 +41832,36 @@
             },
             {
               "name": "--xh-message-feed-scroll-to-end-trigger-size"
+            },
+            {
+              "name": "--xh-message-feed-separator-fg"
+            },
+            {
+              "name": "--xh-message-feed-separator-font-size"
+            },
+            {
+              "name": "--xh-message-feed-separator-gap"
+            },
+            {
+              "name": "--xh-message-feed-separator-line"
+            },
+            {
+              "name": "--xh-message-feed-unread-count-bg"
+            },
+            {
+              "name": "--xh-message-feed-unread-count-fg"
+            },
+            {
+              "name": "--xh-message-feed-unread-count-font-size"
+            },
+            {
+              "name": "--xh-message-feed-unread-count-px"
+            },
+            {
+              "name": "--xh-message-feed-unread-count-radius"
+            },
+            {
+              "name": "--xh-message-feed-unread-count-size"
             }
           ]
         }

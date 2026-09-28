@@ -41,6 +41,8 @@ export interface MessageFeedTranslations {
   feed: string
   /** 回到底部按钮的可访问名。 */
   scrollToBottom: string
+  /** 离底期间来了新消息时回到底部按钮的可访问名，入参是未读条数。 */
+  scrollToBottomUnread: (count: number) => string
   /**
    * 单条消息的可访问名，入参为第几条、共几条、发送者。
    *
@@ -100,6 +102,10 @@ export interface MessageFeedSchema extends MachineSchema {
      * 期间 data-state 已经是 hidden、退场动画在播。
      */
     triggerRendered: boolean
+    /** 离底期间新到的消息条数：count 增长时累加，回到底部即清零。 */
+    unread: number
+    /** 上一次看到的 count，算增量用。 */
+    lastCount: number | null
   }
   computed: Record<string, never>
   refs: MessageFeedRefs
@@ -123,7 +129,7 @@ export interface MessageFeedSchema extends MachineSchema {
     | { type: 'TRIGGER.RENDERED', rendered: boolean }
   tag: never
   guard: 'canPress'
-  action: 'setStickState' | 'invokeScrollToBottom' | 'setFocusedId' | 'clearFocusedId' | 'startPress' | 'endPress' | 'markArrivalsTracked' | 'setTriggerRendered'
+  action: 'setStickState' | 'invokeScrollToBottom' | 'setFocusedId' | 'clearFocusedId' | 'startPress' | 'endPress' | 'markArrivalsTracked' | 'setTriggerRendered' | 'countUnread'
   effect: 'trackStickToBottom' | 'trackArrivals' | 'trackTriggerPresence' | 'trackLiquid'
 }
 
@@ -135,6 +141,8 @@ export interface MessageFeedApi<T extends PropTypes = PropTypes> {
   focusedId: string | null
   /** 是否显示回到底部按钮：只判断是否在底部，不判断贴附意图。 */
   showScrollToEndTrigger: boolean
+  /** 离底期间新到的消息条数，回到底部即清零。按 count 的增长算，count 缺席时恒为 0。 */
+  unreadCount: number
   scrollToBottom: () => void
   /** 把某条消息滚进可视区；该条不在 DOM 中时不做任何事。 */
   scrollToItem: (id: string) => void
@@ -146,6 +154,13 @@ export interface MessageFeedApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: MessageFeedItemProps) => T['element']
   getItemLabelProps: (props: Pick<MessageFeedItemProps, 'id'>) => T['element']
   getScrollToEndTriggerProps: () => T['button']
+  /** 回到底部按钮上的未读数：没有未读时带 hidden，对读屏隐藏（条数已在按钮的可访问名里）。 */
+  getUnreadCountProps: () => T['element']
+  /**
+   * 消息之间的分隔（按日期分组的「今天」「9 月 27 日」这类）：是内容层的直接子节点、与条目平级，
+   * 对读屏隐藏——role=feed 只认 article 子节点，时间由消息自己的时间戳表达。
+   */
+  getSeparatorProps: () => T['element']
   /** 已发送、等首个片段时的呼吸点：status 为 submitted 时出现，对读屏隐藏。 */
   getPendingIndicatorProps: () => T['element']
   getLiveRegionProps: () => T['element']

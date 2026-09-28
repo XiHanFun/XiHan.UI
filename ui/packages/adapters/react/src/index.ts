@@ -1705,6 +1705,8 @@ export {
   XhMessageFeedPendingIndicator,
   XhMessageFeedRoot,
   XhMessageFeedScrollToEndTrigger,
+  XhMessageFeedSeparator,
+  XhMessageFeedUnreadCount,
   XhMessageFeedViewport,
 } from './components/message-feed/message-feed'
 export type {
@@ -1716,6 +1718,8 @@ export type {
   XhMessageFeedPendingIndicatorProps,
   XhMessageFeedRootProps,
   XhMessageFeedScrollToEndTriggerProps,
+  XhMessageFeedSeparatorProps,
+  XhMessageFeedUnreadCountProps,
   XhMessageFeedViewportProps,
 } from './components/message-feed/message-feed'
 export { useMessageFeed } from './components/message-feed/use-message-feed'
