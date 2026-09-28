@@ -44,6 +44,31 @@ function currentTranslate(el: HTMLElement, win: Window): [number, number] {
   return [Number.parseFloat(x) || 0, Number.parseFloat(y) || 0]
 }
 
+/**
+ * 反向补偿一段位移再交给过渡：先把条目按 (dx, dy) 推回旧位置并关掉过渡，提交这一帧样式后撤掉，
+ * 皮肤里条目的 translate 过渡把它带回新位置；上一段没走完时从当前位置接着走。正在播关键帧的条目不补偿。
+ */
+function shift(el: HTMLElement, dx: number, dy: number, win: Window): void {
+  if (dx === 0 && dy === 0)
+    return
+  const running = el.getAnimations?.().some(animation => 'animationName' in animation && animation.playState === 'running')
+  if (running)
+    return
+  const [cx, cy] = currentTranslate(el, win)
+  const translate = el.style.getPropertyValue('translate')
+  const transition = el.style.getPropertyValue('transition')
+  el.style.setProperty('transition', 'none')
+  el.style.setProperty('translate', `${dx + cx}px ${dy + cy}px`)
+  // 读一次计算样式，让反向补偿这一帧先生效，撤掉之后的变化才会走过渡
+  void win.getComputedStyle(el).translate
+  if (translate)
+    el.style.setProperty('translate', translate)
+  else el.style.removeProperty('translate')
+  if (transition)
+    el.style.setProperty('transition', transition)
+  else el.style.removeProperty('transition')
+}
+
 function byDocumentOrder(a: Element, b: Element): number {
   return a.compareDocumentPosition(b) & 4 /* DOCUMENT_POSITION_FOLLOWING */ ? -1 : 1
 }
@@ -145,26 +170,7 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
     const to = slotOf(el)
     if (to.parent !== from.parent)
       return
-    const dx = from.left - to.left
-    const dy = from.top - to.top
-    if (dx === 0 && dy === 0)
-      return
-    const running = el.getAnimations?.().some(animation => 'animationName' in animation && animation.playState === 'running')
-    if (running)
-      return
-    const [cx, cy] = currentTranslate(el, win!)
-    const translate = el.style.getPropertyValue('translate')
-    const transition = el.style.getPropertyValue('transition')
-    el.style.setProperty('transition', 'none')
-    el.style.setProperty('translate', `${dx + cx}px ${dy + cy}px`)
-    // 读一次计算样式，让反向补偿这一帧先生效，撤掉之后的变化才会走过渡
-    void win!.getComputedStyle(el).translate
-    if (translate)
-      el.style.setProperty('translate', translate)
-    else el.style.removeProperty('translate')
-    if (transition)
-      el.style.setProperty('transition', transition)
-    else el.style.removeProperty('transition')
+    shift(el, from.left - to.left, from.top - to.top, win!)
   }
 
   /** 离场：替身放回原处，播完退场再移除。 */
@@ -267,4 +273,78 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
     for (const finish of ghosts)
       finish()
   }
+}
+
+export interface TrackReorderOptions {
+  /** 条目选择器：容器里匹配它的元素算一个条目，可以不是直接子节点，也可以隔着几层嵌套。 */
+  item: string
+  /**
+   * 条目的身份。宿主换位时可能重建节点（框架把换了父的节点卸掉再挂一个新的），按身份才认得回同一个条目；
+   * 缺省按元素本身认。
+   */
+  key?: (el: HTMLElement) => string | null
+}
+
+/** 条目相对容器的排布位：沿 offsetParent 链累加到容器（或容器之外的第一个定位祖先）为止。 */
+interface LayoutPoint {
+  x: number
+  y: number
+  ref: Element | null
+}
+
+function layoutPoint(el: HTMLElement, container: Element): LayoutPoint {
+  let x = el.offsetLeft
+  let y = el.offsetTop
+  let ref = el.offsetParent
+  while (ref instanceof HTMLElement && ref !== container && container.contains(ref)) {
+    x += ref.offsetLeft
+    y += ref.offsetTop
+    ref = ref.offsetParent
+  }
+  return { x, y, ref }
+}
+
+/**
+ * 盯住下一次换位：先记下条目此刻的排布位，等宿主下一批增删了条目的 DOM 变更，按身份把排布位变了的条目
+ * 反向补偿、交给皮肤的 translate 过渡带回新位置，随即停止。只管换位，不播到达与离场。
+ *
+ * 用在「一次提交之后由宿主重排」的集合上（树与表格的拖放落下）：库只发换位意图，写回归宿主，
+ * 宿主什么时候重渲库不知道，于是盯住容器等那一批变更。排布位沿 offsetParent 链累加到容器，
+ * 条目换了父（嵌套的层级之间）也量得出位移；不在同一参照系里的条目不补偿。
+ * 返回停止的函数：宿主没有写回时，由调用方在下一次提交前或卸载时停掉。
+ */
+export function trackReorder(container: Element, options: TrackReorderOptions): () => void {
+  const win = container.ownerDocument.defaultView
+  const Observer = win?.MutationObserver
+  if (!win || typeof Observer !== 'function')
+    return () => {}
+  const identity = options.key
+  const items = (): HTMLElement[] => [...container.querySelectorAll<HTMLElement>(options.item)].filter(el => el.offsetParent !== null)
+  const keyOf = (el: HTMLElement): unknown => (identity ? identity(el) : el)
+
+  const before = new Map<unknown, LayoutPoint>()
+  for (const el of items()) {
+    const key = keyOf(el)
+    if (key != null)
+      before.set(key, layoutPoint(el, container))
+  }
+
+  const touchesItems = (nodes: NodeList): boolean => [...nodes].some(node =>
+    node.nodeType === 1 && ((node as Element).matches(options.item) || (node as Element).querySelector(options.item) != null))
+
+  const observer = new Observer((records) => {
+    if (!records.some(record => record.type === 'childList' && (touchesItems(record.addedNodes) || touchesItems(record.removedNodes))))
+      return
+    observer.disconnect()
+    for (const el of items()) {
+      const from = before.get(keyOf(el))
+      if (!from)
+        continue
+      const to = layoutPoint(el, container)
+      if (to.ref === from.ref)
+        shift(el, from.x - to.x, from.y - to.y, win)
+    }
+  })
+  observer.observe(container, { childList: true, subtree: true })
+  return () => observer.disconnect()
 }

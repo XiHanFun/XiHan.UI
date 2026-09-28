@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { INSTANT_ATTR, STAGGER_INDEX_PROPERTY, trackListMotion } from '../src/behavior/arrival'
+import { INSTANT_ATTR, STAGGER_INDEX_PROPERTY, trackListMotion, trackReorder } from '../src/behavior/arrival'
 
 let stops: Array<() => void> = []
 
@@ -254,5 +254,72 @@ describe('换位', () => {
     container.append(item('tail'))
     await flush()
     expect(spy.mock.calls.filter(([name]) => name === 'translate')).toHaveLength(0)
+  })
+})
+
+describe('一次换位', () => {
+  /** 记下写进 translate 的每一个值。 */
+  function translateWrites(el: HTMLElement): string[] {
+    const writes: string[] = []
+    const setProperty = el.style.setProperty.bind(el.style)
+    vi.spyOn(el.style, 'setProperty').mockImplementation((name: string, value: string | null, priority?: string) => {
+      if (name === 'translate')
+        writes.push(String(value))
+      setProperty(name, value, priority)
+    })
+    return writes
+  }
+
+  it('宿主重建了节点也按身份认回：新节点从旧排布位反向补偿后交给过渡，随即停止', async () => {
+    const container = list(3)
+    stops.push(trackReorder(container, { item: '[data-part="item"]', key: el => el.id }))
+    // 宿主把第 1 条卸掉、在末尾挂一个同身份的新节点；中间那条跟着上移
+    const moved = item('old-0')
+    const middle = container.children[1] as HTMLElement & { moveTo: (next: number) => void }
+    const movedWrites = translateWrites(moved)
+    const middleWrites = translateWrites(middle)
+    ;(container.children[0] as HTMLElement).remove()
+    container.append(moved)
+    place(moved, container, 80)
+    middle.moveTo(0)
+    await flush()
+
+    expect(movedWrites).toEqual(['0px -80px'])
+    expect(middleWrites).toEqual(['0px 40px'])
+    expect(moved.style.getPropertyValue('translate')).toBe('')
+
+    // 只管这一次：之后的变更不再补偿
+    const again = translateWrites(container.children[1] as HTMLElement)
+    ;(container.children[0] as HTMLElement).remove()
+    ;(container.children[0] as HTMLElement & { moveTo: (next: number) => void }).moveTo(0)
+    await flush()
+    expect(again).toEqual([])
+  })
+
+  it('没有增删条目的变更（加非条目节点）不算那一次换位，接着等', async () => {
+    const container = list(2)
+    stops.push(trackReorder(container, { item: '[data-part="item"]' }))
+    const second = container.children[1] as HTMLElement & { moveTo: (next: number) => void }
+    const writes = translateWrites(second)
+    container.append(document.createElement('span'))
+    await flush()
+    expect(writes).toEqual([])
+
+    container.prepend(second)
+    second.moveTo(0)
+    await flush()
+    expect(writes).toEqual(['0px 40px'])
+  })
+
+  it('停止之后不再补偿', async () => {
+    const container = list(2)
+    const stop = trackReorder(container, { item: '[data-part="item"]' })
+    stop()
+    const second = container.children[1] as HTMLElement & { moveTo: (next: number) => void }
+    const writes = translateWrites(second)
+    container.prepend(second)
+    second.moveTo(0)
+    await flush()
+    expect(writes).toEqual([])
   })
 })

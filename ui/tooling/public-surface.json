@@ -5356,6 +5356,7 @@
       "TrackAppearanceOptions",
       "TrackArrivalsOptions",
       "TrackListMotionOptions",
+      "TrackReorderOptions",
       "Transition",
       "TransitionMap",
       "Transparency",
@@ -5566,6 +5567,7 @@
       "trackLiquidGoo",
       "trackLiquidSurface",
       "trackListMotion",
+      "trackReorder",
       "warn",
       "weeksInMonth",
       "xihanUiBanner"
