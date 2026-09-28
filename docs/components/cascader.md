@@ -224,7 +224,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 
 **状态**：`open` · `closed`
 
-**事件**：`FORM.RESET` · `OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `ITEM.EXPAND` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `PATH.SET` · `INPUT.CHANGE` · `SEARCH.HIGHLIGHT` · `PRESS.START` · `PRESS.END` · `BRANCH.RETRY`
+**事件**：`FORM.RESET` · `OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `ITEM.EXPAND` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `PATH.SET` · `INPUT.CHANGE` · `SEARCH.HIGHLIGHT` · `PRESS.START` · `PRESS.END` · `TAG_LIST.TRACKED` · `BRANCH.RETRY`
 
 **判据**：`isOpenControlled` · `isMultiple` · `staysOpenOnSelect` · `canPress`
 
@@ -370,12 +370,12 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `search-item` | `aria-selected` | 'true' \| 'false' |
 | `search-item` | `role` | 'option' |
 | `column` | `aria-busy` | 'true' \| undefined |
-| `column` | `aria-disabled` | 'true' \| 'false' |
+| `column` | `aria-disabled` | 'true' \| 'false' \| undefined |
 | `column` | `aria-label` | translations.column \| undefined |
-| `column` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `item` 部件的 id |
-| `column` | `aria-multiselectable` | 'true' \| 'false' |
-| `column` | `aria-orientation` | 'vertical' |
-| `column` | `role` | 'listbox' |
+| `column` | `aria-labelledby` | undefined \| `label` 部件的 id `value-text` 部件的 id \| `item` 部件的 id |
+| `column` | `aria-multiselectable` | 'true' \| 'false' \| undefined |
+| `column` | `aria-orientation` | 'vertical' \| undefined |
+| `column` | `role` | 'listbox' \| undefined |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
 | `item` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
@@ -428,6 +428,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-placeholder` | ''（条件成立时才出现） |
 | `tag-list` | `data-disabled` | ''（条件成立时才出现） |
+| `tag-list` | `data-instant` | ''（条件成立时才出现） |
 | `tag-list` | `data-xh-tag-list` | '' |
 | `indicator` | `data-clearable` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
