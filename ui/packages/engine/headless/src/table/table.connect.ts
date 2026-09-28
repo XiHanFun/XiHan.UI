@@ -1175,7 +1175,8 @@ export function connectTable<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': prop('size') ?? 'md',
       // 方框里的勾由勾选标记配方画，常驻、按行的选中淡变（行的 data-state 另有展开的含义）
-      'data-xh-check-mark': isSelected(row.value) ? 'checked' : 'unchecked',
+      // 级联下部分子行勾中的父行画半选横杠，与全选把手同一枚
+      'data-xh-check-mark': isSelected(row.value) ? 'checked' : isIndeterminate(row.value) ? 'indeterminate' : 'unchecked',
       'data-xh-check-mark-profile': 'box',
       'aria-hidden': true,
       'tabindex': -1,

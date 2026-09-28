@@ -39465,7 +39465,7 @@
      置灰那档不在其列：底已换成淡底，aria-disabled 的把手仍能落焦，环退回默认那一支 */
   [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]),
   [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:not([data-disabled]),
-  [data-scope='table'][data-part='row-select-trigger'][data-selected]:not([data-disabled]) {
+  [data-scope='table'][data-part='row-select-trigger']:is([data-selected], [data-indeterminate]):not([data-disabled]) {
     --xh-action-ring-color-focus-visible: currentColor;
   }
 
@@ -40008,7 +40008,7 @@
     }
 
     [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']),
-    [data-scope='table'][data-part='row-select-trigger'][data-selected] {
+    [data-scope='table'][data-part='row-select-trigger']:is([data-selected], [data-indeterminate]) {
       color: var(--xh-fg-default);
     }
   }
