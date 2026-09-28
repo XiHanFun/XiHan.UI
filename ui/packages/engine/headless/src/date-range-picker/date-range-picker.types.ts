@@ -350,6 +350,7 @@ export interface DateRangePickerSchema extends MachineSchema {
   tag: never
   guard: 'isOpenControlled' | 'closesOnSelect' | 'canPress'
   action:
+    | 'followColumnSelection'
     | 'startPress'
     | 'endPress'
     | 'releasePress'
@@ -370,7 +371,7 @@ export interface DateRangePickerSchema extends MachineSchema {
     | 'focusSelectedDay'
     | 'resetToDefault'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer'
+  effect: 'trackPosition' | 'trackLayer' | 'trackColumnScroll'
 }
 
 /**

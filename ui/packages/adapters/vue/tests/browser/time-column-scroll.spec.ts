@@ -9,6 +9,11 @@ import {
   XhDatePickerPositioner,
   XhDatePickerRoot,
   XhDatePickerTimePanel,
+  XhDateRangePickerCalendar,
+  XhDateRangePickerContent,
+  XhDateRangePickerPositioner,
+  XhDateRangePickerRoot,
+  XhDateRangePickerTimePanel,
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
@@ -86,6 +91,20 @@ async function mountDatePicker(): Promise<void> {
       h(XhDatePickerPositioner, null, () => h(XhDatePickerContent, null, () => [
         h(XhDatePickerCalendar),
         h(XhDatePickerTimePanel),
+      ]))),
+  })
+  app.mount(host)
+  await settle()
+}
+
+async function mountDateRangePicker(): Promise<void> {
+  host = document.createElement('div')
+  document.body.append(host)
+  app = createApp({
+    render: () => h(XhDateRangePickerRoot, { defaultOpen: true, defaultValue: ['2026-09-28T09:15', '2026-09-30T18:40'], showTime: true }, () =>
+      h(XhDateRangePickerPositioner, null, () => h(XhDateRangePickerContent, null, () => [
+        h(XhDateRangePickerCalendar),
+        h(XhDateRangePickerTimePanel),
       ]))),
   })
   app.mount(host)
@@ -194,5 +213,15 @@ describe('时间列滚动定位', () => {
     const minute = column('date-picker', 'time-column', 'minute')
     expect(Math.abs(hour.scrollTop - alignedTop(hour, '14'))).toBeLessThanOrEqual(1)
     expect(Math.abs(minute.scrollTop - alignedTop(minute, '35'))).toBeLessThanOrEqual(1)
+  })
+
+  it('日期区间选择的起止两组时间列各停在自己那一端的时刻', async () => {
+    await mountDateRangePicker()
+    for (const [index, hour, minute] of [[0, '09', '15'], [1, '18', '40']] as const) {
+      const hourColumn = groupColumn('date-range-picker', 'time-column', index, 'hour')
+      const minuteColumn = groupColumn('date-range-picker', 'time-column', index, 'minute')
+      expect(Math.abs(hourColumn.scrollTop - alignedTop(hourColumn, hour))).toBeLessThanOrEqual(1)
+      expect(Math.abs(minuteColumn.scrollTop - alignedTop(minuteColumn, minute))).toBeLessThanOrEqual(1)
+    }
   })
 })
