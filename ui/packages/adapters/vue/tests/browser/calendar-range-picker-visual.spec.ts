@@ -53,6 +53,16 @@ function alpha(color: string): number {
   return context.getImageData(0, 0, 1, 1).data[3]!
 }
 
+/** 令牌在当前主题下解析出的底色。 */
+function resolved(token: string): string {
+  const probe = document.createElement('span')
+  probe.style.setProperty('background-color', `var(${token})`)
+  document.body.append(probe)
+  const value = getComputedStyle(probe).backgroundColor
+  probe.remove()
+  return value
+}
+
 async function mountCalendar(defaultValue?: string[], keepMotion = false): Promise<void> {
   host = document.createElement('div')
   document.body.append(host)
@@ -172,7 +182,7 @@ describe('范围日历轨道', () => {
     }
   })
 
-  it('挑到一半的预览与已落定的区间同一副长相：轨道同色，起点与悬停端都是实心圆帽', async () => {
+  it('挑到一半的预览铺中性淡底、起点与悬停端都是实心圆帽；落定后轨道换成品牌淡底，两端逐值不变', async () => {
     await mountCalendar()
     await userEvent.click(trigger('2026-09-07'))
     await userEvent.hover(trigger('2026-09-11'))
@@ -183,21 +193,23 @@ describe('范围日历轨道', () => {
       expect(cell(`2026-09-${day}`).getAttribute('aria-selected')).toBe('true')
     }
 
-    const preview = getComputedStyle(cell('2026-09-09'), '::before')
-    expect(alpha(preview.backgroundColor)).toBe(255)
+    // 品牌淡底专属选中：还没确认的那一段不借用它
+    const preview = getComputedStyle(cell('2026-09-09'), '::before').backgroundColor
+    expect(preview).toBe(resolved('--xh-bg-subtle'))
     expect(alpha(getComputedStyle(trigger('2026-09-09')).backgroundColor)).toBeLessThan(8)
     const startBg = getComputedStyle(trigger('2026-09-07')).backgroundColor
     const endBg = getComputedStyle(trigger('2026-09-11')).backgroundColor
     expect(alpha(startBg)).toBe(255)
     expect(endBg).toBe(startBg)
 
-    // 落下终点后，两端与轨道逐值不变
+    // 落下终点后两端逐值不变，轨道淡变成品牌淡底
     await userEvent.click(trigger('2026-09-11'))
     await nextTick()
     expect(getComputedStyle(trigger('2026-09-07')).backgroundColor).toBe(startBg)
     expect(getComputedStyle(trigger('2026-09-11')).backgroundColor).toBe(endBg)
-    expect(getComputedStyle(cell('2026-09-09'), '::before').backgroundColor).toBe(preview.backgroundColor)
     expect(cell('2026-09-09').hasAttribute('data-range-preview')).toBe(false)
+    await Promise.all(cell('2026-09-09').getAnimations({ subtree: true }).map(animation => animation.finished))
+    expect(getComputedStyle(cell('2026-09-09'), '::before').backgroundColor).toBe(resolved('--xh-bg-brand-subtle'))
   })
 
   it('按住拖过去也能挑出区间，拖动中整张网格保持手型', async () => {
