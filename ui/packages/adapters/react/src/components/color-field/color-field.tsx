@@ -28,7 +28,7 @@ export interface XhColorFieldRootProps extends Omit<ComponentPropsWithRef<'div'>
   /** 颜色串；给定即受控。空串表示没有颜色。 */
   value?: string
   defaultValue?: string
-  /** 值串的写法：hex / rgba / hsla，默认 hex。 */
+  /** 值串的写法：hex / rgba / hsla / oklch，默认 hex。 */
   format?: ColorFormat
   /** 带透明度，默认关闭。 */
   alpha?: boolean

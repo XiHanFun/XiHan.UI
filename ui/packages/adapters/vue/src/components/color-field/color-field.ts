@@ -29,7 +29,7 @@ export const XhColorFieldRoot = defineComponent({
     /** 颜色串；缺席即非受控。空串表示没有颜色。 */
     value: { type: String },
     defaultValue: { type: String },
-    /** 值串的写法：hex / rgba / hsla，默认 hex。 */
+    /** 值串的写法：hex / rgba / hsla / oklch，默认 hex。 */
     format: { type: String as PropType<ColorFormat> },
     /** 带透明度，默认关闭。 */
     alpha: { type: Boolean, default: undefined },

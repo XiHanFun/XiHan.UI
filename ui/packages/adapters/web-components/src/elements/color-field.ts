@@ -27,7 +27,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @customElement xh-color-field
  * @attr {string} value - 受控的颜色串；未提供该属性即非受控。空串表示没有颜色
  * @attr {string} default-value - 非受控初值，默认空串
- * @attr {'hex'|'rgba'|'hsla'} format - 值串的写法，默认 hex；手动输入的任何写法接受后都按它重写
+ * @attr {'hex'|'rgba'|'hsla'|'oklch'} format - 值串的写法，默认 hex；手动输入的任何写法接受后都按它重写
  * @attr {boolean} alpha - 带透明度，默认关闭；关闭时接受的颜色恒为不透明
  * @attr {string} placeholder - 占位文案
  * @attr {boolean} disabled - 禁用：不可聚焦、不可写入

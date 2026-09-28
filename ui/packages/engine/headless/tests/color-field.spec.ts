@@ -34,7 +34,8 @@ describe('colorFieldNormalize', () => {
     expect(colorFieldNormalize('#ff000080', 'hex', true)).toBe('#ff000080')
     expect(colorFieldNormalize('#ff000080', 'hex', false)).toBe('#ff0000')
     expect(colorFieldNormalize('red', 'hex', false)).toBeNull()
-    expect(colorFieldNormalize('#f00', 'oklch', false)).toBeNull()
+    expect(colorFieldNormalize('#f00', 'hsb' as never, false)).toBeNull()
+    expect(colorFieldNormalize('#f00', 'oklch', false)).toBe('oklch(62.8% 0.2577 29.23)')
   })
 })
 

@@ -282,9 +282,9 @@ describe('colorPickerMachine 值', () => {
 
   it('未知 format 是独立错误，修正前不允许静默用 hex 落值', () => {
     const onColorError = vi.fn()
-    const s = makeService({ defaultValue: '#3b82f6', format: 'oklch' as never, onColorError })
-    expect(api(s).errors.format).toEqual({ type: 'format', format: 'oklch' })
-    expect(onColorError).toHaveBeenCalledWith({ type: 'format', format: 'oklch' })
+    const s = makeService({ defaultValue: '#3b82f6', format: 'hsb' as never, onColorError })
+    expect(api(s).errors.format).toEqual({ type: 'format', format: 'hsb' })
+    expect(onColorError).toHaveBeenCalledWith({ type: 'format', format: 'hsb' })
     s.send({ type: 'AREA.STEP', axis: 'x', direction: 1 })
     expect(s.context.get('value')).toBe('#3b82f6')
     expect(onColorError).toHaveBeenCalledTimes(1)

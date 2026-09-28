@@ -8,9 +8,13 @@
 // color-picker / color-slider / color-field / color-swatch(-picker) 共用这一份，各自只加自己的编排。
 import { clamp } from '../number'
 
-export type ColorFormat = 'hex' | 'rgba' | 'hsla'
+/**
+ * 值串的写法。oklch 是 CSS Color 4 的感知均匀写法（与本库令牌同一色空间）；
+ * 工作色恒在 sRGB 内，oklch 串解析时超出 sRGB 的部分按通道夹回。
+ */
+export type ColorFormat = 'hex' | 'rgba' | 'hsla' | 'oklch'
 
-const COLOR_FORMATS: readonly ColorFormat[] = ['hex', 'rgba', 'hsla']
+const COLOR_FORMATS: readonly ColorFormat[] = ['hex', 'rgba', 'hsla', 'oklch']
 
 /** 未指定格式时取 hex；运行期写入未知格式时返回 null，不静默伪装成 hex。 */
 export function colorResolveFormat(format: string | undefined): ColorFormat | null {
@@ -250,6 +254,70 @@ export function colorHslaToRgba(hsla: ColorHsla): ColorRgba {
   }
 }
 
+/** l 是 0-1 的感知明度，c 是彩度（sRGB 内不超过 0.4 上下），h 是 0-360 的角度，a 是 0-1 的小数。 */
+export interface ColorOklch {
+  l: number
+  c: number
+  h: number
+  a: number
+}
+
+/** sRGB 伽马编码的一路（0-1）→ 线性光。 */
+function srgbToLinear(c: number): number {
+  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+}
+
+/** 线性光 → sRGB 伽马编码的一路（0-1），超出 sRGB 的部分夹回。 */
+function linearToSrgb(c: number): number {
+  const encoded = c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055
+  return Number.isFinite(encoded) ? clamp(encoded, 0, 1) : 0
+}
+
+/** 彩度低于它即当作无彩色：色相无定义，交回 hint。 */
+const OKLCH_ACHROMATIC = 0.0001
+
+/**
+ * RGBA → OKLCH（Björn Ottosson 的 OKLab 换算，再转极坐标）。
+ * hueHint 是无彩色处的色相兜底。
+ */
+export function colorRgbaToOklch(rgba: ColorRgba, hueHint = 0): ColorOklch {
+  const { r, g, b, a } = colorNormalizeRgba(rgba)
+  const lr = srgbToLinear(r / 255)
+  const lg = srgbToLinear(g / 255)
+  const lb = srgbToLinear(b / 255)
+  const l = Math.cbrt(0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb)
+  const m = Math.cbrt(0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb)
+  const s = Math.cbrt(0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb)
+  const L = 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s
+  const A = 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s
+  const B = 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s
+  const c = Math.hypot(A, B)
+  return {
+    l: clamp(L, 0, 1),
+    c,
+    h: c < OKLCH_ACHROMATIC ? toDegree(hueHint) : toDegree((Math.atan2(B, A) * 180) / Math.PI),
+    a,
+  }
+}
+
+/** OKLCH → RGBA；落在 sRGB 之外的颜色按通道夹回（不做感知映射）。 */
+export function colorOklchToRgba(oklch: ColorOklch): ColorRgba {
+  const L = Number.isFinite(oklch.l) ? clamp(oklch.l, 0, 1) : 0
+  const c = Number.isFinite(oklch.c) ? Math.max(0, oklch.c) : 0
+  const h = (toDegree(oklch.h) * Math.PI) / 180
+  const A = c * Math.cos(h)
+  const B = c * Math.sin(h)
+  const l = (L + 0.3963377774 * A + 0.2158037573 * B) ** 3
+  const m = (L - 0.1055613458 * A - 0.0638541728 * B) ** 3
+  const s = (L - 0.0894841775 * A - 1.291485548 * B) ** 3
+  return {
+    r: Math.round(linearToSrgb(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s) * 255),
+    g: Math.round(linearToSrgb(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s) * 255),
+    b: Math.round(linearToSrgb(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s) * 255),
+    a: toAlpha01(oklch.a),
+  }
+}
+
 /** 函数式记法里的一个参数：`50%` 按 scale 换算，`210deg` 去掉单位，其余按裸数取。 */
 function functionArg(token: string, scale: number): number {
   const raw = token.trim()
@@ -267,13 +335,17 @@ function splitArgs(body: string): string[] {
 
 /**
  * 任意受支持写法 → RGBA；解析不出返回 null。
- * 支持 `#rgb` / `#rgba` / `#rrggbb` / `#rrggbbaa`、`rgb()` / `rgba()`、`hsl()` / `hsla()`。
+ * 支持 `#rgb` / `#rgba` / `#rrggbb` / `#rrggbbaa`、`rgb()` / `rgba()`、`hsl()` / `hsla()` 与 `oklch()`。
  * 不认颜色关键字（`red`、`transparent`）。
  */
 export function colorParse(input: string): ColorRgba | null {
   const raw = input.trim().toLowerCase()
   if (raw === '')
     return null
+
+  const oklch = /^oklch\(([^)]*)\)$/.exec(raw)
+  if (oklch)
+    return parseOklch(oklch[1]!)
 
   const matched = /^(rgba?|hsla?)\(([^)]*)\)$/.exec(raw)
   if (!matched)
@@ -304,6 +376,32 @@ export function colorParse(input: string): ColorRgba | null {
   return colorHslaToRgba({ h, s, l, a: alpha })
 }
 
+/**
+ * oklch() 的参数：明度写百分数或 0-1 的数，彩度写数或百分数（100% 即 0.4），色相写角度，
+ * 透明度跟在斜杠后面、可省。只认空白分隔（CSS 对 oklch 不定义逗号写法）。
+ */
+function parseOklch(body: string): ColorRgba | null {
+  const [channels, alphaPart, ...rest] = body.split('/')
+  if (rest.length > 0 || channels === undefined)
+    return null
+  const args = channels.trim().split(/\s+/).filter(Boolean)
+  if (args.length !== 3)
+    return null
+  const l = functionArg(args[0]!, 0.01)
+  const c = functionArg(args[1]!, 0.004)
+  const h = functionArg(args[2]!, 1)
+  const alpha = alphaPart === undefined ? 1 : functionArg(alphaPart, 0.01)
+  if (![l, c, h, alpha].every(Number.isFinite) || l < 0 || l > 1 || c < 0 || alpha < 0 || alpha > 1)
+    return null
+  return colorNormalizeRgba(colorOklchToRgba({ l, c, h, a: alpha }))
+}
+
+/** 数值按 digits 位小数取整后去掉尾巴零。 */
+function trimNumber(n: number, digits: number): string {
+  const scale = 10 ** digits
+  return String(Math.round(n * scale) / scale)
+}
+
 /** alpha 文本保留三位小数，避免浮点尾巴让相同操作产出不同的串。 */
 function alphaText(a: number): string {
   return String(Math.round(toAlpha01(a) * 1000) / 1000)
@@ -317,6 +415,12 @@ export function colorToString(rgba: ColorRgba, format: ColorFormat, alpha: boole
   if (format === 'hsla') {
     const hsla = colorRgbaToHsla(color)
     return `hsla(${Math.round(hsla.h)}, ${Math.round(hsla.s)}%, ${Math.round(hsla.l)}%, ${alphaText(color.a)})`
+  }
+  if (format === 'oklch') {
+    // 明度两位百分数、彩度四位、色相两位：往返 8 位 sRGB 不丢一档；不透明时省掉斜杠那一段
+    const oklch = colorRgbaToOklch(color)
+    const body = `${trimNumber(oklch.l * 100, 2)}% ${trimNumber(oklch.c, 4)} ${trimNumber(oklch.h, 2)}`
+    return color.a < 1 ? `oklch(${body} / ${alphaText(color.a)})` : `oklch(${body})`
   }
   // 十六进制：不透明时只写六位
   return colorRgbaToHex(color, alpha && color.a < 1)

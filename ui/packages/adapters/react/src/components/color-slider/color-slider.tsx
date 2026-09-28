@@ -33,7 +33,7 @@ export interface XhColorSliderRootProps extends RootElementProps {
   defaultValue?: string
   /** 调节的通道：hue / saturation / brightness / alpha / red / green / blue，默认 hue。 */
   channel?: ColorChannel
-  /** 值串的写法：hex / rgba / hsla，默认 hex。 */
+  /** 值串的写法：hex / rgba / hsla / oklch，默认 hex。 */
   format?: ColorFormat
   /** 值串是否带透明度；默认时调节透明度通道带、其余不带。 */
   alpha?: boolean

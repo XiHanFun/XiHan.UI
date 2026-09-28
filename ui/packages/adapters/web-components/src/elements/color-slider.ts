@@ -29,7 +29,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} value - 受控的颜色值串；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值，默认 #000000
  * @attr {'hue'|'saturation'|'brightness'|'alpha'|'red'|'green'|'blue'} channel - 推动的通道，默认 hue
- * @attr {'hex'|'rgba'|'hsla'} format - 值串的写法，默认 hex
+ * @attr {'hex'|'rgba'|'hsla'|'oklch'} format - 值串的写法，默认 hex
  * @attr {boolean} alpha - 值串是否带透明度；未提供时推动透明度通道带、其余不带
  * @attr {'horizontal'|'vertical'} orientation - 排布方向
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写水平轨道上左右两键与指针的语义

@@ -16,12 +16,14 @@ import {
   colorHslaToRgba,
   colorHsvaToRgba,
   colorHueCss,
+  colorOklchToRgba,
   colorParse,
   colorResolveFormat,
   colorResolveHsva,
   colorRgbaToHex,
   colorRgbaToHsla,
   colorRgbaToHsva,
+  colorRgbaToOklch,
   colorSameColor,
   colorToRgba,
   colorToString,
@@ -162,7 +164,9 @@ describe('colorResolveFormat', () => {
   it('缺省是 hex，未知格式显式返回 null', () => {
     expect(colorResolveFormat(undefined)).toBe('hex')
     expect(colorResolveFormat('rgba')).toBe('rgba')
-    expect(colorResolveFormat('oklch')).toBeNull()
+    expect(colorResolveFormat('oklch')).toBe('oklch')
+    // hsb 不是 CSS 颜色写法，不收作值串格式
+    expect(colorResolveFormat('hsb')).toBeNull()
   })
 })
 
@@ -366,5 +370,59 @@ describe('colorPickerPercent', () => {
     expect(colorPickerPercent(2)).toBe('100%')
     expect(colorPickerPercent(-1)).toBe('0%')
     expect(colorPickerPercent(Number.NaN)).toBe('0%')
+  })
+})
+
+describe('oklch 写法', () => {
+  const RED = { r: 255, g: 0, b: 0, a: 1 }
+
+  it('sRGB → OKLCH 与公开参照值一致：纯红、纯白、纯黑', () => {
+    const red = colorRgbaToOklch(RED)
+    expect(red.l).toBeCloseTo(0.628, 3)
+    expect(red.c).toBeCloseTo(0.2577, 4)
+    expect(red.h).toBeCloseTo(29.23, 1)
+    expect(colorRgbaToOklch({ r: 255, g: 255, b: 255, a: 1 }).l).toBeCloseTo(1, 4)
+    expect(colorRgbaToOklch({ r: 0, g: 0, b: 0, a: 1 }).l).toBeCloseTo(0, 4)
+  })
+
+  it('无彩色处色相无定义，交回 hint', () => {
+    const gray = colorRgbaToOklch({ r: 128, g: 128, b: 128, a: 1 }, 217)
+    expect(gray.c).toBeLessThan(0.0001)
+    expect(gray.h).toBe(217)
+  })
+
+  it('序列化：明度百分数、彩度、色相，不透明时省掉斜杠；半透明带 / a', () => {
+    expect(colorToString(RED, 'oklch', false)).toBe('oklch(62.8% 0.2577 29.23)')
+    expect(colorToString({ ...RED, a: 0.5 }, 'oklch', true)).toBe('oklch(62.8% 0.2577 29.23 / 0.5)')
+    // alpha 关掉时透明度恒按 1
+    expect(colorToString({ ...RED, a: 0.5 }, 'oklch', false)).toBe('oklch(62.8% 0.2577 29.23)')
+    expect(colorResolveFormat('oklch')).toBe('oklch')
+  })
+
+  it('解析：百分数或 0-1 的明度、百分数彩度、deg 色相与斜杠透明度都认', () => {
+    expect(colorParse('oklch(62.8% 0.2577 29.23)')).toEqual(RED)
+    expect(colorParse('OKLCH(0.628 64.43% 29.23deg / 50%)')).toEqual({ ...RED, a: 0.5 })
+    expect(colorParse('oklch(100% 0 0)')).toEqual({ r: 255, g: 255, b: 255, a: 1 })
+  })
+
+  it('写法错了返回 null：参数个数不对、逗号写法、越界的明度与透明度', () => {
+    expect(colorParse('oklch(62.8% 0.2577)')).toBeNull()
+    expect(colorParse('oklch(62.8%, 0.2577, 29.23)')).toBeNull()
+    expect(colorParse('oklch(120% 0.1 30)')).toBeNull()
+    expect(colorParse('oklch(50% 0.1 30 / 2)')).toBeNull()
+    expect(colorParse('oklch(50% -0.1 30)')).toBeNull()
+  })
+
+  it('超出 sRGB 的 oklch 按通道夹回，仍给出一个 sRGB 颜色', () => {
+    const rgba = colorOklchToRgba({ l: 0.7, c: 0.4, h: 145, a: 1 })
+    for (const channel of [rgba.r, rgba.g, rgba.b]) {
+      expect(channel).toBeGreaterThanOrEqual(0)
+      expect(channel).toBeLessThanOrEqual(255)
+    }
+  })
+
+  it('8 位 sRGB 往返 oklch 串不丢一档', () => {
+    for (const rgba of [BLUE, RED, { r: 17, g: 200, b: 99, a: 1 }, { r: 250, g: 250, b: 3, a: 1 }, { r: 1, g: 2, b: 3, a: 1 }])
+      expect(colorParse(colorToString(rgba, 'oklch', false))).toEqual(rgba)
   })
 })
