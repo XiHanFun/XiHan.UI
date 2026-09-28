@@ -311,6 +311,24 @@ describe('一次换位', () => {
     expect(writes).toEqual(['0px 40px'])
   })
 
+  it('条目里嵌着的条目随外层一起走，不再各补一次', async () => {
+    const container = list(2)
+    const first = container.children[0] as HTMLElement & { moveTo: (next: number) => void }
+    const nested = item('nested')
+    first.append(nested)
+    place(nested, container, 8)
+    stops.push(trackReorder(container, { item: '[data-part="item"]' }))
+    const outerWrites = translateWrites(first)
+    const nestedWrites = translateWrites(nested)
+    container.append(first)
+    first.moveTo(40)
+    nested.moveTo(48)
+    ;(container.children[0] as HTMLElement & { moveTo: (next: number) => void }).moveTo(0)
+    await flush()
+    expect(outerWrites).toEqual(['0px -40px'])
+    expect(nestedWrites).toEqual([])
+  })
+
   it('停止之后不再补偿', async () => {
     const container = list(2)
     const stop = trackReorder(container, { item: '[data-part="item"]' })
