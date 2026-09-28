@@ -146,15 +146,20 @@ export interface LiquidIndicatorOptions {
   /**
    * 要投出去的盒子与拉伸比。拉伸比是指示器沿主轴比目标长出的那一截占目标的比例，
    * 皮肤据它在另一个方向上压扁；直接落定与停稳时为 0。
+   *
+   * instant：这一落点不经皮肤的过渡、直接到位。只有标准档的换项（key 变了）交给皮肤过渡；
+   * 首次落位、同一项的重量（尺寸变化、换上正式字体）与液态档逐帧推着走的都直接到位。
+   * 同一项重量出的落点与上一帧相同（换项的同步量与推迟量各跑一遍）时沿用上一帧的判断，
+   * 不把正在走的过渡掐掉。连接层把它投成指示器的 data-instant，皮肤在它身上撤掉几何过渡。
    */
-  onFrame: (box: IndicatorBox | null, stretch: number) => void
+  onFrame: (box: IndicatorBox | null, stretch: number, instant: boolean) => void
 }
 
 export interface LiquidIndicator {
   /**
    * 落到新盒子。key 是指示器所指的那一项：key 变了、宿主在液态档下、此前已有落点时，
    * 两沿各一支弹簧追过去——去向那一侧的沿用前沿参数，另一侧用后沿参数，途中被拉长、停下时收回；
-   * 其余情形（尺寸变化重量、首次落位、标准档）直接落定，由皮肤的过渡接手。
+   * 其余情形直接落定：标准档的换项由皮肤的过渡接手，尺寸变化重量与首次落位直接到位（见 onFrame 的 instant）。
    */
   place: (box: IndicatorBox | null, key: unknown) => void
   dispose: () => void
@@ -174,6 +179,8 @@ export function createLiquidIndicator(options: LiquidIndicatorOptions): LiquidIn
   let current: IndicatorBox | null = null
   let target: IndicatorBox | null = null
   let lastKey: unknown
+  // 上一帧交出去的「直接到位」：首次落位之前恒为真
+  let instant = true
   let axis: IndicatorAxis = 'inline'
   // 起始沿、结束沿各一支；谁领先按这一轮的去向定
   const edges: [SpringValue | null, SpringValue | null] = [null, null]
@@ -200,7 +207,9 @@ export function createLiquidIndicator(options: LiquidIndicatorOptions): LiquidIn
       ? { ...target, inlineStart: start, inlineSize: size }
       : { ...target, blockStart: start, blockSize: size }
     const stretch = targetSize > 0 ? Math.max(0, size - targetSize) / targetSize : 0
-    options.onFrame(current, Math.round(stretch * 1000) / 1000)
+    // 两沿由弹簧逐帧推着走，皮肤不再补过渡
+    instant = true
+    options.onFrame(current, Math.round(stretch * 1000) / 1000, instant)
   }
 
   return {
@@ -224,9 +233,16 @@ export function createLiquidIndicator(options: LiquidIndicatorOptions): LiquidIn
       if (!box || !current || !moved || !host || !isLiquidMaterial(host)) {
         round++
         stopEdges()
+        // 标准档的换项交给皮肤过渡；首次落位与挪动了落点的重量直接到位；重量没挪动落点时沿用上一帧
+        if (!box || !current)
+          instant = true
+        else if (moved)
+          instant = false
+        else if (!sameIndicatorBox(box, current))
+          instant = true
         target = box
         current = box
-        options.onFrame(box, 0)
+        options.onFrame(box, 0, instant)
         return
       }
       const from = edgesOf(current, axis)
@@ -251,7 +267,7 @@ export function createLiquidIndicator(options: LiquidIndicatorOptions): LiquidIn
         if (id !== round || results.some(result => result !== 'rest'))
           return
         current = target
-        options.onFrame(target, 0)
+        options.onFrame(target, 0, instant)
       })
     },
     dispose: () => {
