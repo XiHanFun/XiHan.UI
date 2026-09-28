@@ -2257,6 +2257,7 @@ export type ComponentTokenName
     | '--xh-mention-loading-px'
     | '--xh-mention-loading-py'
     | '--xh-mention-placeholder-fg'
+    | '--xh-mention-textarea-py'
     | '--xh-menu-arrow-size'
     | '--xh-menu-backdrop'
     | '--xh-menu-border'

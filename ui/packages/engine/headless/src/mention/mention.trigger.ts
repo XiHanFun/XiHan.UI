@@ -5,7 +5,7 @@
 
 // 提供 mention.trigger 相关实现。
 
-import type { MentionTrigger } from './mention.types'
+import type { MentionRange, MentionTrigger } from './mention.types'
 
 /** 缺省前缀。 */
 export const MENTION_DEFAULT_PREFIX = '@'
@@ -51,6 +51,40 @@ export function findMentionTrigger(
     }
   }
   return null
+}
+
+/**
+ * 正文从 from 改成 to 之后，已插入的提及挪到新位置。
+ *
+ * 改动按两版正文的公共前缀与公共后缀定位成一段：整条在这段之前的原样留着，整条在这段之后的按长度差平移，
+ * 与这段有交叠的（改到了提及内部）撤掉。挪完再核一遍文字，对不上的同样撤掉。
+ * 紧贴提及首尾打字不算改到内部：提及原样留着，打的字是它旁边的普通文字。
+ */
+export function remapMentionRanges(ranges: readonly MentionRange[], from: string, to: string): MentionRange[] {
+  if (from === to || ranges.length === 0)
+    return [...ranges]
+  const bound = Math.min(from.length, to.length)
+  let head = 0
+  while (head < bound && from.charCodeAt(head) === to.charCodeAt(head))
+    head++
+  let tail = 0
+  while (tail < bound - head && from.charCodeAt(from.length - 1 - tail) === to.charCodeAt(to.length - 1 - tail))
+    tail++
+  const editEnd = from.length - tail
+  const delta = to.length - from.length
+  const out: MentionRange[] = []
+  for (const range of ranges) {
+    let next: MentionRange
+    if (range.end <= head)
+      next = range
+    else if (range.start >= editEnd)
+      next = { ...range, start: range.start + delta, end: range.end + delta }
+    else
+      continue
+    if (to.slice(next.start, next.end) === range.prefix + range.label)
+      out.push(next)
+  }
+  return out
 }
 
 /**

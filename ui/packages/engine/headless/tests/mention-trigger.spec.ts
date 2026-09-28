@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { findMentionTrigger, insertMention, MENTION_DEFAULT_PREFIX, normalizeMentionPrefixes } from '../src/mention'
+import { remapMentionRanges } from '../src/mention/mention.trigger'
 
 const AT = [MENTION_DEFAULT_PREFIX]
 
@@ -123,5 +124,41 @@ describe('把候选插回正文中间', () => {
     const text = '跑 ::c'
     const trigger = findMentionTrigger(text, text.length, ['::'])!
     expect(insertMention(text, trigger, 'clean')).toEqual({ value: '跑 ::clean ', caret: 10 })
+  })
+})
+
+describe('正文改动后提及跟着挪', () => {
+  /** 正文 hi @Han there 里的那一条提及：起点 3，文本 @Han 之后是 7。 */
+  const HAN = { value: 'han', label: 'Han', prefix: '@', start: 3, end: 7 }
+  const TEXT = 'hi @Han there'
+
+  it('正文没变就原样留着', () => {
+    expect(remapMentionRanges([HAN], TEXT, TEXT)).toEqual([HAN])
+  })
+
+  it('改动在它之前：按长度差整条平移', () => {
+    expect(remapMentionRanges([HAN], TEXT, 'oh hi @Han there')).toEqual([{ ...HAN, start: 6, end: 10 }])
+    expect(remapMentionRanges([HAN], TEXT, 'i @Han there')).toEqual([{ ...HAN, start: 2, end: 6 }])
+  })
+
+  it('改动在它之后：位置不动', () => {
+    expect(remapMentionRanges([HAN], TEXT, 'hi @Han over there')).toEqual([HAN])
+  })
+
+  it('紧贴它的首尾打字不算改到内部：提及原样留着', () => {
+    expect(remapMentionRanges([HAN], TEXT, 'hi x@Han there')).toEqual([{ ...HAN, start: 4, end: 8 }])
+    expect(remapMentionRanges([HAN], TEXT, 'hi @Hanx there')).toEqual([HAN])
+  })
+
+  it('改到内部（插字、删字、整段替换）就撤掉，退回普通文字', () => {
+    expect(remapMentionRanges([HAN], TEXT, 'hi @Hxan there')).toEqual([])
+    expect(remapMentionRanges([HAN], TEXT, 'hi @Hn there')).toEqual([])
+    expect(remapMentionRanges([HAN], TEXT, '全换了')).toEqual([])
+  })
+
+  it('几条提及各算各的：只撤被改到的那一条', () => {
+    const ann = { value: 'ann', label: 'Ann', prefix: '@', start: 8, end: 12 }
+    const from = 'hi @Han @Ann'
+    expect(remapMentionRanges([HAN, ann], from, 'hi @Hxn @Ann')).toEqual([ann])
   })
 })

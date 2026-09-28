@@ -10444,6 +10444,13 @@
   display: none;
 }
 
+/* 多行形态：正文可以换行，框随 rows 定起始高度、不钉单行控件高（家族的多行布局给）；
+   框自己就是 chrome，家族多行布局把上下内衬归零，这里按文本字段多行档同一支令牌补回，只许纵向拉伸 */
+[data-scope='mention'][data-part='input'][data-xh-field-layout='textarea'] {
+  padding-block: var(--xh-mention-textarea-py, var(--xh-space-2));
+  resize: vertical;
+}
+
 /* 输入框自身即 chrome，家族按 data-xh-field-input 给的占位色命不中它，占位色仍由本皮肤给 */
 [data-scope='mention'][data-part='input']::placeholder {
   color: var(--xh-mention-placeholder-fg, var(--xh-fg-subtle));

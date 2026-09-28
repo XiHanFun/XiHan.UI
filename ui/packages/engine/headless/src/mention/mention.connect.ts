@@ -6,16 +6,29 @@
 // 提供 mention 相关实现。
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { MentionApi, MentionInputEl, MentionItemProps, MentionNodeMeta, MentionSchema } from './mention.types'
+import type { MentionApi, MentionInputEl, MentionInputProps, MentionItemProps, MentionNodeMeta, MentionSchema } from './mention.types'
 import { contains, createPressTracker, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { mentionAnatomy, mentionItemQuery, mentionItemText } from './mention.anatomy'
 import { MENTION_DEFAULT_PLACEMENT } from './mention.machine'
+import { remapMentionRanges } from './mention.trigger'
 
 const parts = mentionAnatomy.build()
 
 /** 只有这些键单纯挪光标；正文与它们无关，重算触发才有意义。 */
 const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'])
+
+/**
+ * 输入宿主是不是多行。
+ *
+ * textarea 的允许角色只有它自带的 textbox，写 role="combobox" 是文档一致性违规；
+ * 而 aria-expanded 不在 textbox 的支持属性里。所以多行宿主上 type / role / aria-expanded
+ * 三条一并缺席，「有候选浮层」改由 aria-haspopup、aria-controls、aria-autocomplete
+ * 与 aria-activedescendant 表达——这四条 textbox 都支持。
+ */
+function isMultilineHost(input: MentionInputProps): boolean {
+  return (input.as ?? 'input') === 'textarea'
+}
 
 /** 取光标位置；拿不到就当在末尾。 */
 function caretOf(el: MentionInputEl): number {
@@ -32,6 +45,8 @@ export function connectMention<T extends PropTypes>(
 
   const value = context.get('value')
   const trigger = context.get('trigger')
+  // 插入过的提及：位置按当前正文对齐（受控写回那一拍机器的挪位还没跑，这里先挪一次）
+  const mentions = remapMentionRanges(context.get('mentions'), context.get('mentionsSource'), value)
   // 高亮不承载焦点，只经 aria-activedescendant 上报；收起时为 null
   const highlighted = context.get('highlightedValue') ?? null
   const itemCount = context.get('itemCount')
@@ -136,6 +151,7 @@ export function connectMention<T extends PropTypes>(
     query: trigger?.query ?? null,
     activePrefix: trigger?.prefix ?? null,
     highlightedValue: highlighted,
+    mentions,
     disabled,
     isHighlighted,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
@@ -167,7 +183,7 @@ export function connectMention<T extends PropTypes>(
      * 输出一条空的 aria-label / placeholder 会把作者写在 input 部件上的那份抹掉——
      * WC 侧的属性铺设按「值为 undefined 即删属性」办事。
      */
-    getInputProps: () => normalize.input({
+    getInputProps: (input = {}) => normalize.input({
       ...parts.input.attrs,
       'id': ids.input,
       'name': prop('name'),
@@ -175,8 +191,9 @@ export function connectMention<T extends PropTypes>(
       // 两条同时写时 aria-labelledby 优先，会把作者那句盖掉
       ...(inputLabel === undefined ? { 'aria-labelledby': ids.label } : { 'aria-label': inputLabel }),
       ...(placeholder === undefined ? {} : { placeholder }),
-      'type': 'text',
-      'role': 'combobox',
+      // textarea 没有 type 属性，也不写组合框角色：它的允许角色只有 textbox，组合框语义改由下面几条属性表达
+      'type': isMultilineHost(input) ? undefined : 'text',
+      'role': isMultilineHost(input) ? undefined : 'combobox',
       // 关掉浏览器自带的历史补全，它会盖在候选列表上
       'autocomplete': 'off',
       'value': value,
@@ -185,7 +202,8 @@ export function connectMention<T extends PropTypes>(
       // 显式 true/false：省略是没说，显式 false 是明确说了不是
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-haspopup': 'listbox',
-      'aria-expanded': open ? 'true' : 'false',
+      // aria-expanded 不在 textbox 的支持属性里，多行宿主上整条缺席
+      'aria-expanded': isMultilineHost(input) ? undefined : (open ? 'true' : 'false'),
       'aria-controls': ids.content,
       'aria-autocomplete': 'list',
       // 收起态没有高亮可指，属性整个缺席（aria-activedescendant 没有"假值"写法）
@@ -194,7 +212,8 @@ export function connectMention<T extends PropTypes>(
       // 不投影 data-xh-field-input（那会让家族把它当盒内分段重置掉边框）；size 缺省 md，variant 与 root 同源
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',
-      'data-xh-field-layout': 'single-line',
+      // 多行宿主换家族的多行布局：随行数长高，不钉单行控件高
+      'data-xh-field-layout': isMultilineHost(input) ? 'textarea' : 'single-line',
       'data-variant': variant,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
@@ -226,7 +245,23 @@ export function connectMention<T extends PropTypes>(
         send({ type: 'CLOSE' })
       },
       'onKeyDown': (event: KeyboardEvent) => {
-        // 收起态一条按键都不接管：这是一个正文输入框，抢键就等于抢走了打字
+        // 插入的提及是一个整体：光标紧贴它时 Backspace（在它之后）/ Delete（在它之前）整条删掉，不逐字退格。
+        // 与开合无关；有选区、组合输入、带修饰键（删一个词那类）时照常交给浏览器
+        if ((event.key === 'Backspace' || event.key === 'Delete') && !disabled && !readOnly
+          && !isComposingEvent(event) && !event.ctrlKey && !event.metaKey && !event.altKey) {
+          const el = event.currentTarget as MentionInputEl
+          const caret = el.selectionStart
+          // 框里的字与机器记的正文不一致（受控写回还没落到框上）时位置对不上，不接管
+          if (caret != null && caret === el.selectionEnd && el.value === value) {
+            const hit = mentions.find(m => (event.key === 'Backspace' ? m.end : m.start) === caret)
+            if (hit) {
+              event.preventDefault()
+              send({ type: 'MENTION.DELETE', start: hit.start })
+              return
+            }
+          }
+        }
+        // 收起态其余按键一条都不接管：这是一个正文输入框，抢键就等于抢走了打字
         if (disabled || !open)
           return
         // 组合期间的按键属于输入法候选框，组件一律不接

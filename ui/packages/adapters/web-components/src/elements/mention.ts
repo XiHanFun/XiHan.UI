@@ -13,6 +13,7 @@ import type {
   MentionNode,
   MentionOpenChangeDetails,
   MentionQueryChangeDetails,
+  MentionRange,
   MentionSchema,
   MentionSelectDetails,
   MentionTranslations,
@@ -72,7 +73,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires open-change - 浮层开合；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state / data-disabled 与三个视觉轴）
  * @csspart label - 标题；`for` 恒指向输入框，因此须是原生 `<label>` 才可点击
- * @csspart input - 单行输入框，须写为 `<input>`；未提供 translations.input 时名字取自 label 部件
+ * @csspart input - 输入框：写 `<input>` 即单行，写 `<textarea>` 即多行（撤掉 type、combobox 角色与 aria-expanded，正文可以换行）；未提供 translations.input 时名字取自 label 部件
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=listbox 容器（消解层的根节点），收起时带 hidden
  * @csspart empty - 没有任何候选时显示的空态；须与 content 同级（listbox 内只允许放置 option）
@@ -271,6 +272,11 @@ export class XhMentionElement extends XhPortalHostElement {
     return this.getParts(name).filter(el => owner.contains(el))
   }
 
+  /** 正文里插入过、仍然完整的提及（值、文本、前缀与起止下标），按出现先后排列；状态机尚未建立时为空数组。 */
+  get mentions(): readonly MentionRange[] {
+    return this.ctrl.service ? connectMention(this.ctrl.service, wcNormalize).mentions : []
+  }
+
   protected wire(): void {
     const api = connectMention(this.ctrl.service, wcNormalize)
 
@@ -286,7 +292,8 @@ export class XhMentionElement extends XhPortalHostElement {
     put('loading', api.getLoadingProps() as Record<string, unknown>)
 
     const inputEl = this.getPart('input') as MentionInputEl | null
-    const inputProps = api.getInputProps() as Record<string, unknown>
+    // 宿主标签直接读作者写的标记：作者摆的是 input 还是 textarea，DOM 已经说明白了
+    const inputProps = api.getInputProps({ as: inputEl?.tagName === 'TEXTAREA' ? 'textarea' : 'input' }) as Record<string, unknown>
     // 值一样就别重写：给 value 重新赋值会把光标弹到末尾，正文中间的提及就插不进去了
     if (inputEl && inputEl.value === inputProps.value)
       delete inputProps.value

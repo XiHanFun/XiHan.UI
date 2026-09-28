@@ -25,5 +25,6 @@ export const mentionKeyboard: KeyboardTable = {
     { id: 'mention.kbd.escape', keys: ['Escape'], when: 'open', does: '收起浮层且正文不变；光标不离开这个触发点就不再自动展开' },
     { id: 'mention.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '收起浮层且不拦按键，焦点按 Tab 序列自然离开' },
     { id: 'mention.kbd.caret', keys: ['ArrowLeft', 'ArrowRight', 'Home', 'End'], when: '任意时候', does: '一律不接管：光标照常移动，触发按新的光标位置重算，挪出查询串即收起' },
+    { id: 'mention.kbd.delete-mention', keys: ['Backspace', 'Delete'], when: '光标紧贴一条插入的提及：Backspace 在它之后、Delete 在它之前，且没有选区', does: '整条提及一次删掉，前后文与它旁边的空格不动，光标落在它原来的起点' },
   ],
 }

@@ -477,6 +477,119 @@ describe('把候选插回正文中间', () => {
   })
 })
 
+describe('插入的提及是一个整体', () => {
+  /** 插一条「@李雷」：正文 请 @李雷 看一下，提及占 [2, 5)，后面跟着插入时带的空格。 */
+  async function inserted(): Promise<Harness> {
+    const m = mount({}, { filterOnQuery: true })
+    type(m.input, '请 @li看一下', 5)
+    await tick()
+    press(m.input, 'Enter')
+    await tick()
+    return m
+  }
+
+  it('插入后 api.mentions 记下这一条：值、文本、前缀与起止', async () => {
+    const m = await inserted()
+    expect(m.value()).toBe('请 @李雷 看一下')
+    expect(m.api().mentions).toEqual([{ value: 'lilei', label: '李雷', prefix: '@', start: 2, end: 5 }])
+  })
+
+  it('光标紧贴其后按 Backspace：整条删掉，旁边的空格不动，光标落到它原来的起点', async () => {
+    const m = await inserted()
+    moveCaret(m.input, 5)
+    const event = press(m.input, 'Backspace')
+    expect(event.defaultPrevented).toBe(true)
+    expect(m.value()).toBe('请  看一下')
+    expect(m.api().mentions).toEqual([])
+    await tick()
+    expect(m.input.selectionStart).toBe(2)
+  })
+
+  it('光标紧贴其前按 Delete：同样整条删掉', async () => {
+    const m = await inserted()
+    moveCaret(m.input, 2)
+    const event = press(m.input, 'Delete')
+    expect(event.defaultPrevented).toBe(true)
+    expect(m.value()).toBe('请  看一下')
+  })
+
+  it('不在边上、有选区或带修饰键时照常交给浏览器', async () => {
+    const m = await inserted()
+    moveCaret(m.input, 6)
+    expect(press(m.input, 'Backspace').defaultPrevented).toBe(false)
+    m.input.setSelectionRange(2, 5)
+    expect(press(m.input, 'Backspace').defaultPrevented).toBe(false)
+    moveCaret(m.input, 5)
+    expect(press(m.input, 'Backspace', { ctrlKey: true }).defaultPrevented).toBe(false)
+    expect(m.value()).toBe('请 @李雷 看一下')
+  })
+
+  it('前面加字，提及跟着挪；在它内部改字就退回普通文字', async () => {
+    const m = await inserted()
+    type(m.input, '好的请 @李雷 看一下', 2)
+    expect(m.api().mentions).toEqual([{ value: 'lilei', label: '李雷', prefix: '@', start: 4, end: 7 }])
+    type(m.input, '好的请 @李x雷 看一下', 7)
+    expect(m.api().mentions).toEqual([])
+    moveCaret(m.input, 8)
+    expect(press(m.input, 'Backspace').defaultPrevented).toBe(false)
+  })
+
+  it('光标停在插完的提及末尾不再弹候选：那是一整条引用，不是正在打的查询串', async () => {
+    const m = await inserted()
+    moveCaret(m.input, 5)
+    await tick()
+    expect(m.state()).toBe('closed')
+    expect(m.query()).toBeNull()
+  })
+
+  it('只读与禁用时不接管，正文一个字都不动', async () => {
+    const m = await inserted()
+    m.setProps({ readOnly: true })
+    moveCaret(m.input, 5)
+    expect(press(m.input, 'Backspace').defaultPrevented).toBe(false)
+    m.setProps({ readOnly: false, disabled: true })
+    expect(press(m.input, 'Backspace').defaultPrevented).toBe(false)
+    expect(m.value()).toBe('请 @李雷 看一下')
+  })
+
+  it('受控正文：整条删除只发 onValueChange，宿主写回后提及随之撤掉', async () => {
+    const seen: string[] = []
+    const m = mount({ value: '', onValueChange: d => seen.push(d.value) }, { filterOnQuery: true })
+    m.setProps({ value: '@li' })
+    type(m.input, '@li')
+    await tick()
+    press(m.input, 'Enter')
+    m.setProps({ value: '@李雷 ' })
+    await tick()
+    moveCaret(m.input, 3)
+    press(m.input, 'Backspace')
+    expect(seen.at(-1)).toBe(' ')
+    expect(m.value()).toBe('@李雷 ')
+    m.setProps({ value: ' ' })
+    expect(m.api().mentions).toEqual([])
+  })
+})
+
+describe('多行宿主', () => {
+  it('写 textarea 时撤掉 type、组合框角色与 aria-expanded，候选语义留在另外四条上，换多行布局', () => {
+    const m = mount()
+    const props = m.api().getInputProps({ as: 'textarea' }) as Record<string, unknown>
+    expect(props.type).toBeUndefined()
+    expect(props.role).toBeUndefined()
+    expect(props['aria-expanded']).toBeUndefined()
+    expect(props['aria-haspopup']).toBe('listbox')
+    expect(props['aria-autocomplete']).toBe('list')
+    expect(props['aria-controls']).toBe(m.content.getAttribute('id'))
+    expect(props['data-xh-field-layout']).toBe('textarea')
+  })
+
+  it('不传参与传 input 同一份：单行宿主照旧是组合框', () => {
+    const m = mount()
+    const single = m.api().getInputProps({ as: 'input' }) as Record<string, unknown>
+    expect(single).toMatchObject({ 'type': 'text', 'role': 'combobox', 'aria-expanded': 'false', 'data-xh-field-layout': 'single-line' })
+  })
+})
+
 describe('候选导航与高亮', () => {
   it('展开即高亮首条，方向键跳过禁用候选', async () => {
     const m = mount()

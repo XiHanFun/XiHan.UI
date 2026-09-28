@@ -6,7 +6,7 @@
 // 提供 mention 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { MentionApi, MentionInputEl, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
+import type { MentionApi, MentionInputEl, MentionInputHost, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo } from 'react'
@@ -22,7 +22,7 @@ import { useMention } from './use-mention'
 
 type MentionProps = MentionSchema['props']
 
-/** 函数式 children 的载荷：浮层开合、正文与查询串、高亮候选，以及改写正文与收起浮层的句柄。 */
+/** 函数式 children 的载荷：浮层开合、正文与查询串、高亮候选、正文里仍然完整的提及，以及改写正文与收起浮层的句柄。 */
 export type MentionRootSlotProps = Pick<
   MentionApi,
   | 'open'
@@ -30,6 +30,7 @@ export type MentionRootSlotProps = Pick<
   | 'query'
   | 'activePrefix'
   | 'highlightedValue'
+  | 'mentions'
   | 'setValue'
   | 'close'
 >
@@ -142,6 +143,7 @@ export function XhMentionRoot({
         query: api.query,
         activePrefix: api.activePrefix,
         highlightedValue: api.highlightedValue,
+        mentions: api.mentions,
         setValue: api.setValue,
         close: api.close,
       })
@@ -173,21 +175,30 @@ export function XhMentionLabel({ children, ...rest }: XhMentionLabelProps): Reac
   return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
 }
 
-export interface XhMentionInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue'> {}
-/** 单行输入框；正文写在它上面，候选浮层贴着它落位。 */
-export function XhMentionInput({ ...rest }: XhMentionInputProps): ReactNode {
+/** 多行宿主另认 textarea 自己的几个排版属性（起始行数、列数与折行方式）。 */
+export interface XhMentionInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue'>, Pick<ComponentPropsWithRef<'textarea'>, 'rows' | 'cols' | 'wrap'> {
+  /**
+   * 输入框渲染为哪个标签，默认 input。
+   * 写 textarea 即多行宿主：正文可以换行，connect 随之撤销 type、role 与 aria-expanded。
+   */
+  as?: MentionInputHost
+}
+/** 输入框；正文写在它上面，候选浮层贴着它落位。缺省单行，写 as="textarea" 即多行。 */
+export function XhMentionInput({ as = 'input', ...rest }: XhMentionInputProps): ReactNode {
   const ctx = useMentionContext()
   // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
   const fieldWiring = useFieldStateWiring()
   // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
   const fieldLabel = useFieldLabelWiring()
   const props = mergeReactProps(
-    fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps() as Record<string, unknown> }),
+    fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps({ as }) as Record<string, unknown> }),
     rest as Record<string, unknown>,
     { ref: (el: MentionInputEl | null) => { ctx.inputRef.current = el } },
   )
   // 自己渲染宿主节点，label 的 for 指向它
-  return <input {...props as ComponentPropsWithRef<'input'>} />
+  return as === 'textarea'
+    ? <textarea {...props as ComponentPropsWithRef<'textarea'>} />
+    : <input {...props as ComponentPropsWithRef<'input'>} />
 }
 
 export interface XhMentionPositionerProps extends ComponentPropsWithRef<'div'> {
