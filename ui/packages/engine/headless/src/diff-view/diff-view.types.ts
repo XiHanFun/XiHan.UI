@@ -89,6 +89,11 @@ export interface DiffViewSchema extends MachineSchema {
     /** 长行原地折行，不再横向滚动；默认关闭。 */
     wrap?: boolean
     /**
+     * 作者渲染了 header 部件时置真，由适配器统计。为真且模型带路径时表格的可访问名指向头部；
+     * 否则直接用路径（没有路径时用 translations.diff）作名字——指向未渲染的 id 会让读屏读空。
+     */
+    labelled?: boolean
+    /**
      * 每行正文前给一颗评论钮，点它报出 comment-request，默认关闭。
      * 一组钮只占一个 Tab 位，上下方向键在组内走；指针设备上悬停到这一行或键盘聚焦时才露出来。
      */

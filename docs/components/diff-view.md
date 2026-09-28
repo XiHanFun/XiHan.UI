@@ -54,6 +54,12 @@ commentable 在每行正文前给一颗评论钮，点它报出 comment-request�
 
 <XhDemo src="diff-view/06-comments" />
 
+### 多文件
+
+parseUnifiedPatch 把一份多文件补丁拆成每个文件一份模型；逐份放进折叠面板，标题栏写路径与增删数，差异视图不再写头部，表格直接以路径为名
+
+<XhDemo src="diff-view/07-multi-file" />
+
 ## 设计指引
 
 ### 何时使用
@@ -82,6 +88,7 @@ commentable 在每行正文前给一颗评论钮，点它报出 comment-request�
 ### 组合
 
 - 单栏与并排的切换使用[切换按钮组](./toggle-group)；增删统计已有成品位（只需要数字时可用 `diffStats(model)`）。
+- 多文件：`parseUnifiedPatch` 把一份多文件补丁拆成每个文件一份模型，逐份渲染一个差异视图。文件多时外面套[折叠面板](./accordion)（`multiple`），标题栏写路径与 `diffStats` 算出的增删数；这时差异视图不必再写头部，表格直接以路径为名。git 补丁的路径带 `a/`、`b/` 前缀，展示前自行去掉。组件不内建文件列表：列表的排序、筛选、已读标记与跳转都随产品而变。
 - 放入[工具调用](./tool-call)的详情区，展示本次调用的改动。
 - 需要对 AI 提议的编辑逐条取舍并应用时，使用[表格](./table)的选择机制承载行级取舍，单元格内放[复选框](./checkbox)，页脚的计数与“应用”使用[按钮](./button)。差异视图本身只读，不接这套交互。
 
@@ -118,6 +125,7 @@ commentable 在每行正文前给一颗评论钮，点它报出 comment-request�
 | `expandedValue` | `readonly string[]` |  | 展开的折叠格 id 集合，提供即受控。 |
 | `defaultExpandedValue` | `readonly string[]` |  |  |
 | `wrap` | `boolean` |  | 长行原地折行，不再横向滚动；默认关闭。 |
+| `labelled` | `boolean` |  | 作者渲染了 header 部件时置真，由适配器统计。为真且模型带路径时表格的可访问名指向头部； 否则直接用路径（没有路径时用 translations.diff）作名字——指向未渲染的 id 会让读屏读空。 |
 | `commentable` | `boolean` |  | 每行正文前给一颗评论钮，点它报出 comment-request，默认关闭。 一组钮只占一个 Tab 位，上下方向键在组内走；指针设备上悬停到这一行或键盘聚焦时才露出来。 |
 | `commentLines` | `readonly DiffViewLineRef[]` |  | 挂着评论的行：这些行的正文格里、代码下方铺出 comment-thread 部件，内容由作者写。 |
 | `size` | `Size` |  |  |
@@ -140,7 +148,9 @@ commentable 在每行正文前给一颗评论钮，点它报出 comment-request�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
+| `comment-mount` | `CustomEvent` | 新铺出一个评论容器；detail 为 `{ side, line, change, text, element }` |
 | `expanded-value-change` | `DiffViewExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `comment-request` | `DiffViewCommentRequestDetails` | 在某一行上点了评论钮；detail 为 `{ side, line, change, text }` |
 
 ### 插槽
 
@@ -242,7 +252,7 @@ commentable 在每行正文前给一颗评论钮，点它报出 comment-request�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `body` | `aria-colcount` | 2 \| 1 |
-| `body` | `aria-label` | undefined \| translations?.diff |
+| `body` | `aria-label` | undefined \| model.newPath |
 | `body` | `aria-labelledby` | `header` 部件的 id \| undefined |
 | `body` | `aria-rowcount` | rows.length |
 | `body` | `role` | 'table' |
@@ -259,6 +269,7 @@ commentable 在每行正文前给一颗评论钮，点它报出 comment-request�
 | `comment-trigger` | `aria-label` | undefined \| commentLabel(ref.line, ref.side) |
 
 - 表格语义：`role=table` 配 `role=row` 与 `role=cell`，带 `aria-rowcount` / `aria-rowindex` / `aria-colcount` / `aria-colindex`。列数只计算实际暴露的内容列，行号不算列。
+- 表格的名字：渲染了头部且模型带路径时指向头部；没渲染头部时直接用路径，没有路径时用 `translations.diff`。
 - 每一行都带一段视觉隐藏的变更类型文字，变更不只靠颜色传达。
 - 变更行还有一条非颜色线索：新增绘制实心色条，删除绘制同宽的斜纹条，灰度与高对比度下也可区分。
 - 行号对读屏隐藏，由皮肤用 `attr()` 绘制，复制差异不会带上行号。

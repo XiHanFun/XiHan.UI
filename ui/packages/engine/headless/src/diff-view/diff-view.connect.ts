@@ -155,6 +155,8 @@ export function connectDiffView<T extends PropTypes>(
   const lineAt = (rowIndex: number): DiffLine | undefined => rowAt(rowIndex)?.line
   const stats = diffStats(model)
   const isEmpty = rows.length === 0
+  const path = model.newPath ?? model.oldPath
+  const byHeader = prop('labelled') === true && path !== undefined
 
   // 只数真正暴露的内容列：行号不进列，它对读屏隐藏
   const colCount = split ? 2 : 1
@@ -276,12 +278,13 @@ export function connectDiffView<T extends PropTypes>(
       tabindex: 0,
     }),
 
-    // 行数是折叠之后的可见行数（含折起来的那些格），与每行的 aria-rowindex 同一口径
+    // 行数是折叠之后的可见行数（含折起来的那些格），与每行的 aria-rowindex 同一口径。
+    // 名字：渲了头部且有路径就指向头部；没渲头部就直接用路径，别指向一个不存在的 id
     getBodyProps: () => normalize.element({
       'role': 'table',
       ...parts.body.attrs,
-      'aria-labelledby': model.newPath ?? model.oldPath ? ids.header : undefined,
-      'aria-label': model.newPath ?? model.oldPath ? undefined : (translations?.diff ?? 'Diff'),
+      'aria-labelledby': byHeader ? ids.header : undefined,
+      'aria-label': byHeader ? undefined : (path ?? translations?.diff ?? 'Diff'),
       'aria-rowcount': rows.length,
       'aria-colcount': colCount,
     }),

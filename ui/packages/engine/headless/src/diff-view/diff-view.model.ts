@@ -420,6 +420,12 @@ export function parseUnifiedPatch(patch: string, options: { wordDiff?: boolean }
     // 「\ No newline at end of file」不是内容行
     if (raw.startsWith('\\'))
       continue
+    // hunk 头声明的两侧行数都取够了，后面的行就不属于它：git diff 的输出以换行结尾，
+    // 不收的话末尾那个空串会被当成一行去掉行尾空格的空上下文
+    if (oldNumber - hunk.oldStart >= hunk.oldLines && newNumber - hunk.newStart >= hunk.newLines) {
+      closeHunk()
+      continue
+    }
     const marker = raw[0]
     const text = raw.slice(1)
     if (marker === '+') {

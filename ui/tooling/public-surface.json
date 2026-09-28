@@ -11883,6 +11883,7 @@
       "contextLines",
       "defaultExpandedValue",
       "expandedValue",
+      "labelled",
       "model",
       "onCommentRequest",
       "onExpandedValueChange",

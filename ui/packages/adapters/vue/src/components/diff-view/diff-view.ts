@@ -10,7 +10,7 @@ import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewCommentReque
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { diffViewSides } from '@xihan-ui/headless'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, onBeforeUnmount, onMounted } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideDiffView, useDiffViewContext } from './context'
 import { useDiffView } from './use-diff-view'
@@ -70,6 +70,13 @@ export const XhDiffViewHeader = defineComponent({
   name: 'XhDiffViewHeader',
   setup(_, { slots }) {
     const ctx = useDiffViewContext()
+    // 渲出来了才登记：表格的 aria-labelledby 只在这个节点真在场时才指过来
+    onMounted(() => {
+      ctx.headerCount.value++
+    })
+    onBeforeUnmount(() => {
+      ctx.headerCount.value--
+    })
     return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
   },
 })

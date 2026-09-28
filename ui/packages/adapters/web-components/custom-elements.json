@@ -22318,7 +22318,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<DiffViewSchema>(this, diffViewMachine, () => ({ model: this.model, view: this.view, contextLines: this.contextLines, wrap: this.wrap, commentable: this.commentable, commentLines: this.commentLines, expandedValue: this.expandedValue, defaultExpandedValue: this.defaultExpandedValue, size: this.size, translations: this.translations, onExpandedValueChange: this.notify, onCommentRequest: this.requestComment, }))"
+              "default": "new MachineController<DiffViewSchema>(this, diffViewMachine, () => ({ model: this.model, view: this.view, contextLines: this.contextLines, wrap: this.wrap, // 作者写没写 header 角色节点决定表格的可访问名指哪儿 labelled: this.getPart('header') != null, commentable: this.commentable, commentLines: this.commentLines, expandedValue: this.expandedValue, defaultExpandedValue: this.defaultExpandedValue, size: this.size, translations: this.translations, onExpandedValueChange: this.notify, onCommentRequest: this.requestComment, }))"
             },
             {
               "kind": "field",
