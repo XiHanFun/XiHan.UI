@@ -78,3 +78,78 @@ describe('citation 来源关系', () => {
     })
   })
 })
+
+describe('citation 预览的披露', () => {
+  type Dict = Record<string, unknown>
+  const preview = (api: ReturnType<typeof setup>['api'], sourceId: string): Dict => api().getPreviewProps({ sourceId }) as Dict
+  const settle = (): Promise<void> => new Promise(resolve => setTimeout(resolve, 0))
+
+  /** 按 connect 给的 id 挂一份预览：内容区量得出高度，身上有一段在播的收起动画，finish() 模拟它播完。 */
+  function stubPreview(api: ReturnType<typeof setup>['api'], sourceId: string, content: number): { finish: () => void } {
+    const node = document.createElement('section')
+    node.id = String(preview(api, sourceId).id)
+    // jsdom 不给没写样式的节点算内缩：写成与浏览器首帧一致的 0
+    node.style.padding = '0px'
+    Object.defineProperty(node, 'scrollHeight', { configurable: true, value: content })
+    node.getClientRects = () => [{}] as unknown as DOMRectList
+    let finish!: () => void
+    const finished = new Promise<Animation>((resolve) => {
+      finish = () => resolve({} as Animation)
+    })
+    Object.defineProperty(node, 'getAnimations', {
+      configurable: true,
+      value: () => [{ playState: 'running', effect: { getComputedTiming: () => ({ endTime: 120 }) }, finished }],
+    })
+    document.body.append(node)
+    return { finish }
+  }
+
+  it('首帧就开着的预览投影 data-instant，直接呈现；露面的预览换过之后才播', () => {
+    const { api } = setup({ sources, defaultOpen: true })
+    expect(preview(api, 'web')['data-instant']).toBe('')
+    ;((api().getSourceLinkProps({ sourceId: 'doc' }) as Dict).onClick as () => void)()
+    expect(preview(api, 'doc')['data-instant']).toBeUndefined()
+  })
+
+  it('收起时先量下内容区高度，退场播完才写 hidden；途中不接交互', async () => {
+    const { api } = setup({ sources, defaultOpen: true })
+    const exit = stubPreview(api, 'web', 80)
+    api().setOpen(false)
+
+    const leaving = preview(api, 'web')
+    expect(leaving['data-state']).toBe('closed')
+    expect(leaving.hidden).toBeUndefined()
+    expect(leaving.inert).toBe(true)
+    expect((leaving.style as Dict)['--xh-_citation-preview-block-size']).toBe('80px')
+
+    await settle()
+    expect(preview(api, 'web').hidden).toBeUndefined()
+    exit.finish()
+    await settle()
+    const gone = preview(api, 'web')
+    expect(gone.hidden).toBe(true)
+    expect(gone.inert).toBeUndefined()
+    expect((gone.style as Dict)['--xh-_citation-preview-block-size']).toBe('')
+  })
+
+  it('展开的预览在宿主提交之后量下内容区高度，展开长到它', async () => {
+    const { api } = setup({ sources })
+    stubPreview(api, 'doc', 64)
+    ;((api().getSourceLinkProps({ sourceId: 'doc' }) as Dict).onClick as () => void)()
+    await settle()
+    expect((preview(api, 'doc').style as Dict)['--xh-_citation-preview-block-size']).toBe('64px')
+  })
+
+  it('换来源：旧的一份退场、新的一份展开，同时进行；退场途中重新露面即当场展开', async () => {
+    const { api } = setup({ sources, defaultOpen: true })
+    stubPreview(api, 'web', 80)
+    ;((api().getSourceLinkProps({ sourceId: 'doc' }) as Dict).onClick as () => void)()
+    expect(preview(api, 'web')['data-state']).toBe('closed')
+    expect(preview(api, 'web').hidden).toBeUndefined()
+    expect(preview(api, 'doc')['data-state']).toBe('open')
+
+    ;((api().getSourceLinkProps({ sourceId: 'web' }) as Dict).onClick as () => void)()
+    expect(preview(api, 'web')['data-state']).toBe('open')
+    expect(preview(api, 'web').inert).toBeUndefined()
+  })
+})

@@ -7,6 +7,36 @@
 
 @import '../family/action-control.css';
 
+@layer xihan.motion {
+  /* 预览的披露：内容区高度从 0 长到连接层量下的那一版，内缩与描边一起长回来，
+     它前面那道间距由负的上外距从抵消状态放开；收起反过来收回 0 */
+  @keyframes xh-citation-preview-expand {
+    from {
+      block-size: 0;
+      padding-block: 0;
+      border-block-width: 0;
+      margin-block-start: calc(-1 * var(--xh-_citation-preview-gap));
+    }
+
+    to {
+      block-size: var(--xh-_citation-preview-block-size);
+    }
+  }
+
+  @keyframes xh-citation-preview-collapse {
+    from {
+      block-size: var(--xh-_citation-preview-block-size);
+    }
+
+    to {
+      block-size: 0;
+      padding-block: 0;
+      border-block-width: 0;
+      margin-block-start: calc(-1 * var(--xh-_citation-preview-gap));
+    }
+  }
+}
+
 @layer xihan.components {
   [data-scope='citation'] {
     --xh-citation-skin: 1;
@@ -19,7 +49,9 @@
     --xh-_citation-icon-size: var(--xh-glyph-size-md);
     --xh-icon-size: var(--xh-citation-icon-size, var(--xh-_citation-icon-size));
 
-    display: grid;
+    /* 纵向一列：预览展开的首帧用负的上外距抵掉它前面那道间距，flex 里负外距会把后面的内容一起拉回来 */
+    display: flex;
+    flex-direction: column;
     gap: var(--xh-citation-gap, var(--xh-_citation-gap));
     color: var(--xh-citation-fg, var(--xh-fg-default));
     font-size: var(--xh-citation-font-size, var(--xh-_citation-font-size));
@@ -57,8 +89,14 @@
     --xh-action-bg-rest: var(--xh-_action-variant-bg-hover);
   }
 
-  /* 预览是正文流里的静态 surface，不漂浮、不盖住正文。 */
+  /* 预览是正文流里的静态 surface，不漂浮、不盖住正文。
+     开合是 surface 级披露：高度按内容区（content-box）动，展开与收起途中把长出盒外的内容裁掉 */
   [data-scope='citation'][data-part='preview'] {
+    /* 根上那道间距：展开与收起时用负外距抵掉它 */
+    --xh-_citation-preview-gap: var(--xh-citation-gap, var(--xh-_citation-gap));
+
+    box-sizing: content-box;
+    overflow: clip;
     display: grid;
     gap: var(--xh-citation-preview-gap, var(--xh-space-3));
     padding-block: var(--xh-citation-preview-py, var(--xh-_citation-pad));
@@ -67,6 +105,17 @@
     border-radius: var(--xh-citation-preview-radius, var(--xh-shape-surface));
     background: var(--xh-citation-preview-bg, var(--xh-bg-surface));
     color: var(--xh-citation-preview-fg, var(--xh-fg-default));
+  }
+
+  /* 展开与收起只在开合时播：首帧就开着的预览直接呈现（data-instant）。
+     收起时连接层押后 hidden，收回 0 播完才藏起；forwards 把末态钉住，免得播完到藏起之间弹回原样。
+     减弱动效下两支披露时长瞬时完成 */
+  [data-scope='citation'][data-part='preview'][data-state='open']:not([data-instant]) {
+    animation: xh-citation-preview-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='citation'][data-part='preview'][data-state='closed']:not([data-instant]) {
+    animation: xh-citation-preview-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='citation'][data-part='preview'][hidden] {

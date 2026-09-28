@@ -19,6 +19,7 @@ import {
   queryItems,
 } from '@xihan-ui/core'
 import { citationAnatomy, citationSourceQuery } from './citation.anatomy'
+import { citationPreviewId } from './citation.machine'
 
 const parts = citationAnatomy.build()
 
@@ -56,6 +57,9 @@ export function connectCitation<T extends PropTypes>(
   const activeAnchorIndex = context.get('activeAnchorIndex')
   const activeTriggerId = context.get('activeTriggerId')
   const focusedSourceId = context.get('focusedSourceId')
+  const leavingSourceId = context.get('leavingSourceId')
+  const moved = context.get('moved')
+  const previewBlockSizes = context.get('previewBlockSizes')
   const open = context.get('open')
   const disabled = !!prop('disabled')
   const loop = prop('loop') ?? true
@@ -70,7 +74,7 @@ export function connectCitation<T extends PropTypes>(
     document: translations?.document ?? 'Document',
   }
   const indexOf = (sourceId: string): number => sources.findIndex(source => source.sourceId === sourceId)
-  const previewId = (sourceId: string): string => scope.partId(citationAnatomy.name, `preview:${sourceId}`)
+  const previewId = (sourceId: string): string => citationPreviewId(scope, sourceId)
   const sourceLinkId = (sourceId: string): string => scope.partId(citationAnatomy.name, `source-link:${sourceId}`)
   const triggerId = (item: CitationTriggerProps): string => scope.partId(
     citationAnatomy.name,
@@ -177,6 +181,9 @@ export function connectCitation<T extends PropTypes>(
     },
     getPreviewProps: (item) => {
       const visible = isVisible(item.sourceId)
+      // 收起后先播完退场（收回 0）才藏起：这几帧里预览还留着，但已不接交互
+      const leaving = !visible && leavingSourceId === item.sourceId
+      const blockSize = previewBlockSizes[item.sourceId]
       return normalize.element({
         ...parts.preview.attrs,
         'id': previewId(item.sourceId),
@@ -184,7 +191,14 @@ export function connectCitation<T extends PropTypes>(
         'aria-label': activeTriggerId == null ? labels.preview : undefined,
         'aria-labelledby': visible ? (activeTriggerId ?? sourceLinkId(item.sourceId)) : undefined,
         'data-state': visible ? 'open' : 'closed',
-        'hidden': !visible || undefined,
+        // 首帧就开着（或收着）的预览直接呈现：露面的那一份换过之后才播展开与收起
+        'data-instant': dataAttr(!moved),
+        'hidden': (!visible && !leaving) || undefined,
+        'inert': leaving || undefined,
+        // 展开从 0 长到、收起从它收回 0 的内容区高度
+        'style': {
+          '--xh-_citation-preview-block-size': (visible || leaving) && blockSize != null ? `${blockSize}px` : '',
+        },
       })
     },
     getPreviewHeaderProps: _item => normalize.element({

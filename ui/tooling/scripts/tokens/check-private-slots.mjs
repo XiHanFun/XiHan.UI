@@ -24,6 +24,8 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_toast-progress-steps', 'packages/engine/headless/src/toast/toast.connect.ts'],
   // 提示关闭时收占位的起点：机器在收起前量下整块高度，连接层在退场途中写进根的内联样式，收占位的关键帧只读
   ['--xh-_alert-exit-block-size', 'packages/engine/headless/src/alert/alert.connect.ts'],
+  // 引用预览披露的内容区高度：机器在露面与收起前量下，连接层写进预览的内联样式，展开与收起的关键帧只读
+  ['--xh-_citation-preview-block-size', 'packages/engine/headless/src/citation/citation.connect.ts'],
   // 同一批新到条目的错开序号：条目到达的追踪写进条目的内联样式，皮肤只读
   ['--xh-_stagger-index', 'packages/engine/core/src/behavior/arrival/track-arrivals.ts'],
   // 退场中途重开时进场的起点透明度：退场探测按退场播到的位置写进节点的内联样式，进场关键帧只读

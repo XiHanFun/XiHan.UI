@@ -24,6 +24,7 @@ const LAYOUT = /^(?:(?:min-|max-)?(?:width|height|inline-size|block-size)|grid-t
 const INDICATOR = '选中指示器：绝对定位的独立小元素，尺寸跟着当前项变，不推动其他元素'
 const DOT = '当前点伸长：部件只有几像素大，重排范围只有它自己'
 const DISCLOSURE = '披露内容的高度：grid-template-rows 0fr → 1fr 是唯一能过渡到内容真实高度的写法，内缩随之同步'
+const CITATION_PREVIEW = '引用预览的披露：预览本身就是 surface、里面并排几段作者内容，套不上单格 0fr → 1fr，按连接层量下的内容区高度长到、收回，内缩、描边与它前面那道间距随之同步'
 
 /** 允许做动画的布局属性，值写理由。 */
 const LAYOUT_EXCEPTIONS = {
@@ -50,6 +51,14 @@ const LAYOUT_EXCEPTIONS = {
   'xh-alert-collapse:block-size': 'Alert 关闭后收起占位：提示是正文流里的一整块，淡出后不收高下面的内容会整块跳上来；高度从关闭那一刻量下的像素收到 0，内缩与描边随之同步',
   'xh-alert-collapse:padding-block': 'Alert 关闭后收起占位：内缩随高度一起收掉，否则收到最后还剩一截内缩的高度',
   'xh-alert-collapse:border-block-width': 'Alert 关闭后收起占位：上下描边随高度一起收掉，否则收到最后还剩两道描边的高度',
+  'xh-citation-preview-expand:block-size': CITATION_PREVIEW,
+  'xh-citation-preview-expand:padding-block': CITATION_PREVIEW,
+  'xh-citation-preview-expand:border-block-width': CITATION_PREVIEW,
+  'xh-citation-preview-collapse:block-size': CITATION_PREVIEW,
+  'xh-citation-preview-collapse:padding-block': CITATION_PREVIEW,
+  'xh-citation-preview-collapse:border-block-width': CITATION_PREVIEW,
+  'xh-citation-preview-expand:margin-block-start': CITATION_PREVIEW,
+  'xh-citation-preview-collapse:margin-block-start': CITATION_PREVIEW,
   'xh-disclosure-expand:grid-template-rows': DISCLOSURE,
   'xh-disclosure-expand:padding-block-start': DISCLOSURE,
   'xh-disclosure-expand:padding-block-end': DISCLOSURE,
