@@ -1,5 +1,6 @@
-// 视图设置 | 右键菜单中的 checkbox 与 radio 切换后保持展开
 import type { ContextMenuNode } from "@xihan-ui/headless";
+// 视图设置 | 右键菜单中的 checkbox 与 radio 切换后保持展开
+import type { ReactNode } from "react";
 import { XhContextMenuRoot } from "@xihan-ui/react";
 
 const collection: ContextMenuNode[] = [
@@ -8,7 +9,7 @@ const collection: ContextMenuNode[] = [
   { value: "large", label: "大图标", kind: "radio", group: "size" },
 ];
 
-export function Demo() {
+export default function Demo(): ReactNode {
   return (
     <XhContextMenuRoot
       collection={collection}

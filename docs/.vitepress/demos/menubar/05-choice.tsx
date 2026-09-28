@@ -1,5 +1,6 @@
-// 菜单栏设置 | checkbox 与 radio 的值独立于当前展开菜单
 import type { MenubarNode } from "@xihan-ui/headless";
+// 菜单栏设置 | checkbox 与 radio 的值独立于当前展开菜单
+import type { ReactNode } from "react";
 import { XhMenubarRoot } from "@xihan-ui/react";
 
 const collection: MenubarNode[] = [{
@@ -12,6 +13,6 @@ const collection: MenubarNode[] = [{
   ],
 }];
 
-export function Demo() {
+export default function Demo(): ReactNode {
   return <XhMenubarRoot collection={collection} defaultCheckboxValue={["status"]} defaultRadioValue={{ density: "comfortable" }} />;
 }

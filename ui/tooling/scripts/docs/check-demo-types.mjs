@@ -11,8 +11,10 @@
 // 不依赖 docs/node_modules。唯一例外是 icons：它没有 TS 源码，类型由 build 从 SVG 生成，
 // 所以本门禁不在 `pnpm gate` 里，单列为 `pnpm gate:demo-types`，CI 排在 Build 之后。
 // 零份示例也判失败——示例被挪走或 include 写错时，这张门禁不能悄悄变成空跑。
+// 类型检查管不到导出形态：文档站按 module.default 挂载 React 示例，只有具名导出的那份
+// 类型照样通过、页面上 React 那一栏却什么都不渲染，所以另核每份都有默认导出。
 import { spawnSync } from 'node:child_process'
-import { readdir } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -22,15 +24,21 @@ const reactPkg = join(uiRoot, 'packages/adapters/react')
 const demosDir = join(uiRoot, '..', 'docs/.vitepress/demos')
 const CONFIG = 'tsconfig.demos.json'
 
-/** 各组件目录下的 .tsx 示例份数。 */
+/** 没有默认导出的示例（组件目录/文件名）。 */
+const missingDefault = []
+
+/** 各组件目录下的 .tsx 示例份数；顺带记下没有默认导出的那几份。 */
 async function countDemos() {
   let n = 0
   for (const entry of await readdir(demosDir, { withFileTypes: true })) {
     if (!entry.isDirectory())
       continue
     for (const file of await readdir(join(demosDir, entry.name))) {
-      if (file.endsWith('.tsx'))
-        n++
+      if (!file.endsWith('.tsx'))
+        continue
+      n++
+      if (!/^export default /m.test(await readFile(join(demosDir, entry.name, file), 'utf8')))
+        missingDefault.push(`${entry.name}/${file}`)
     }
   }
   return n
@@ -39,6 +47,14 @@ async function countDemos() {
 const count = await countDemos()
 if (count === 0) {
   console.error('[check-demo-types] ✗ 一份 .tsx 示例都没找到——示例被挪走了，或 tsconfig.demos.json 的 include 写错了')
+  process.exit(1)
+}
+
+if (missingDefault.length > 0) {
+  console.error(`[check-demo-types] ✗ ${missingDefault.length} 份 React 示例没有默认导出，文档站按 module.default 挂载，这几份渲染不出来：`)
+  for (const file of missingDefault)
+    console.error(`  · ${file}`)
+  console.error('\n改法：写成 export default function Demo(): ReactNode，与其余示例同一形态。')
   process.exit(1)
 }
 
