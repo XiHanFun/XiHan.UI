@@ -54,6 +54,18 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 
 <XhDemo src="timeline/06-label" />
 
+### 自定义圆点
+
+圆点是个容器，里面可以放图标；放图标时在根上把 --xh-timeline-indicator-size 调大一档，整列一样大，连线才对得齐
+
+<XhDemo src="timeline/07-custom-indicator" />
+
+### 待定项
+
+还在等的那一步写在末尾：圆点换成转圈、去掉底色，文字说明在等什么；办成后换成普通条目
+
+<XhDemo src="timeline/08-pending" />
+
 ## 设计指引
 
 ### 何时使用
