@@ -100,6 +100,27 @@ describe('保留焦点域的重新激活', () => {
     expect(document.activeElement).toBe(h.outside)
   })
 
+  it('重开时先按这一次的 initialFocus 落位（退场途中重开等于一次新打开），它为空才回到上次聚焦的控件', () => {
+    const h = setup()
+    let trapped = true
+    let initial: HTMLButtonElement | null = null
+    const scope = open(h, { trapped: () => trapped, initialFocus: () => initial })
+    h.buttons[2]!.focus()
+    trapped = false
+    h.outside.focus()
+    trapped = true
+    initial = h.buttons[1]!
+    scope.reactivate()
+    expect(document.activeElement).toBe(h.buttons[1])
+
+    trapped = false
+    h.outside.focus()
+    trapped = true
+    initial = null
+    scope.reactivate()
+    expect(document.activeElement).toBe(h.buttons[1])
+  })
+
   it('旧控件被禁用后聚焦可用控件，不停在不可聚焦节点', () => {
     const h = setup()
     let trapped = true
