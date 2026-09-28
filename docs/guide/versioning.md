@@ -343,11 +343,12 @@ brand  neutral  success  warning  danger  info
 
 低于硬底线不会降级，而是无样式：皮肤中刻意不写兜底值，令牌缺席是缺陷而不是降级。
 
-高于硬底线又无从兜底的特性，皮肤一律不用，由 `check-css-floor` 的拒绝名单拦截（`@scope`、`@starting-style`、嵌套选择器等）。其中容易误写的一条：
+高于硬底线又无从兜底的特性，皮肤一律不用，由 `check-css-floor` 的拒绝名单拦截（`@scope`、`@starting-style`、嵌套选择器等）。其中容易误写的两条：
 
 | 特性 | 最早完整支持 | 底线内的引擎不认时 | 皮肤的写法 |
 | --- | --- | --- | --- |
 | 媒体查询区间写法 `(width < 768px)` | Chrome 104 / Firefox 63 / Safari 16.4 | Safari 16.2 / 16.3 把整条查询判作不成立，块内规则静默丢失 | 断点只写 `(min-width: …)`，窄档专属规则写它的补集 `not all and (min-width: …)` |
+| 方向伪类 `:dir(rtl)` | Chrome 120 / Firefox 49 / Safari 16.4 | Chrome 111–119 与 Safari 16.2 / 16.3 不认，整条规则丢掉，RTL 下的换向没了 | 逻辑属性；只认物理方向的量（`translate`、渐变角度、`clip-path` 左右两侧）乘 `--xh-direction-sign`，它按就近的 `dir` 继承。存量由门禁逐份登记处数，只减不增 |
 
 可选增强层（不支持时按下表退化；新增增强特性不算破坏，前提是同时提供退化路径）：
 
