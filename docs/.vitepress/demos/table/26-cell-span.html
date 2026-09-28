@@ -40,9 +40,9 @@
 
   // 部门列：同一部门的第一行往下合并到这个部门的最后一行；汇总行的 Q1 横跨两列
   function cellSpan({ row, rowIndex, column }) {
-    const person = people[rowIndex]!;
+    const person = people[rowIndex];
     if (column.id === "dept" && row.id !== "sum") {
-      if (rowIndex > 0 && people[rowIndex - 1]!.dept === person.dept)
+      if (rowIndex > 0 && people[rowIndex - 1].dept === person.dept)
         return null;
       let span = 1;
       while (people[rowIndex + span]?.dept === person.dept)

@@ -27,6 +27,10 @@
         </div>
         <div data-xh-part="branch-content"></div>
       </div>
+      <div data-xh-part="item" value="board">
+        <span data-xh-part="item-text">董事办</span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
     </div>
   </div>
 </xh-tree>
@@ -34,11 +38,12 @@
 <script type="module">
   const tree = document.getElementById("tree-async");
 
-  // 空数组也是分支：还没取回子项的部门照样报告 aria-expanded
+  // 空数组也是分支：还没取回子项的部门照样报告 aria-expanded；没有 children 的是叶子，不用取
   const collection = [
     { value: "rd", label: "研发中心", children: [] },
     { value: "ops", label: "运维中心", children: [] },
     { value: "biz", label: "业务中心", children: [] },
+    { value: "board", label: "董事办" },
   ];
   tree.collection = collection;
 

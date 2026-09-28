@@ -21,11 +21,12 @@ interface Node {
   children?: Node[];
 }
 
-// 空数组也是分支：还没取回子项的部门照样报告 aria-expanded
+// 空数组也是分支：还没取回子项的部门照样报告 aria-expanded；没有 children 的是叶子，不用取
 const collection = ref<Node[]>([
   { value: "rd", label: "研发中心", children: [] },
   { value: "ops", label: "运维中心", children: [] },
   { value: "biz", label: "业务中心", children: [] },
+  { value: "board", label: "董事办" },
 ]);
 
 const staff: Record<string, string[]> = {
@@ -68,19 +69,25 @@ function onExpandedValueChange(details: { value: string[] }): void {
   >
     <XhTreeLabel>组织架构</XhTreeLabel>
     <XhTreeTree>
-      <XhTreeBranch v-for="node in collection" :key="node.value" :value="node.value">
-        <XhTreeBranchControl>
-          <XhTreeBranchTrigger />
-          <XhTreeBranchText>{{ node.label }}</XhTreeBranchText>
-          <XhTreeItemIndicator />
-        </XhTreeBranchControl>
-        <XhTreeBranchContent>
-          <XhTreeItem v-for="child in node.children" :key="child.value" :value="child.value">
-            <XhTreeItemText>{{ child.label }}</XhTreeItemText>
+      <template v-for="node in collection" :key="node.value">
+        <XhTreeBranch v-if="node.children" :value="node.value">
+          <XhTreeBranchControl>
+            <XhTreeBranchTrigger />
+            <XhTreeBranchText>{{ node.label }}</XhTreeBranchText>
             <XhTreeItemIndicator />
-          </XhTreeItem>
-        </XhTreeBranchContent>
-      </XhTreeBranch>
+          </XhTreeBranchControl>
+          <XhTreeBranchContent>
+            <XhTreeItem v-for="child in node.children" :key="child.value" :value="child.value">
+              <XhTreeItemText>{{ child.label }}</XhTreeItemText>
+              <XhTreeItemIndicator />
+            </XhTreeItem>
+          </XhTreeBranchContent>
+        </XhTreeBranch>
+        <XhTreeItem v-else :value="node.value">
+          <XhTreeItemText>{{ node.label }}</XhTreeItemText>
+          <XhTreeItemIndicator />
+        </XhTreeItem>
+      </template>
     </XhTreeTree>
   </XhTreeRoot>
 </template>
