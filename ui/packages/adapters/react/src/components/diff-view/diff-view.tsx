@@ -10,7 +10,7 @@ import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewCommentReque
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { diffViewSides } from '@xihan-ui/headless'
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
@@ -132,6 +132,9 @@ XhDiffViewRoot.xhEvents = ['expanded-value-change', 'comment-request'] as const
 export interface XhDiffViewHeaderProps extends ComponentPropsWithRef<'div'> {}
 export function XhDiffViewHeader({ children, ...rest }: XhDiffViewHeaderProps): ReactNode {
   const ctx = useDiffViewContext()
+  // 渲出来了才登记：表格的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerHeader } = ctx
+  useEffect(() => registerHeader(), [registerHeader])
   return <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 

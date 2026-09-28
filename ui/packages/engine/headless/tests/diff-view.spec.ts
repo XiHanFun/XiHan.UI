@@ -153,6 +153,14 @@ describe('parseUnifiedPatch', () => {
     const lines = parseUnifiedPatch(withMarker)[0]!.hunks[0]!.lines
     expect(lines.every(l => !l.text.startsWith('No newline'))).toBe(true)
   })
+
+  it('hunk 头声明的行数取够了就收：git diff 输出末尾的换行不多出一行空的上下文', () => {
+    const lines = parseUnifiedPatch(`${patch}\n`)[0]!.hunks[0]!.lines
+    expect(lines).toHaveLength(5)
+    // 去掉行尾空格的空上下文行照旧认
+    const blank = parseUnifiedPatch('@@ -1,3 +1,3 @@\n a\n\n-b\n+c\n')[0]!.hunks[0]!.lines
+    expect(blank.map(l => `${l.change}:${l.text}`)).toEqual(['context:a', 'context:', 'removed:b', 'added:c'])
+  })
 })
 
 describe('connectDiffView 截断提示', () => {
@@ -368,5 +376,27 @@ describe('connectDiffView 行评论', () => {
   it('评论容器不依赖 commentable：只读地展示已有评论也行', () => {
     const api = makeDiffView({ model, commentLines: [{ side: 'new', line: 2 }] })
     expect(api.hasComment({ rowIndex: rowOf('added', 'B'), side: 'old' })).toBe(true)
+  })
+})
+
+describe('connectDiffView 表格的可访问名', () => {
+  const model = { ...computeTextDiff('a', 'b'), newPath: 'src/a.ts' }
+
+  it('作者渲了头部：表格指向头部', () => {
+    const body = makeDiffView({ model, labelled: true }).getBodyProps() as Dict
+    expect(body['aria-labelledby']).toBeTypeOf('string')
+    expect(body['aria-label']).toBeUndefined()
+  })
+
+  it('没渲头部：不指向渲不出来的 id，直接用文件路径作名字', () => {
+    const body = makeDiffView({ model }).getBodyProps() as Dict
+    expect(body['aria-labelledby']).toBeUndefined()
+    expect(body['aria-label']).toBe('src/a.ts')
+  })
+
+  it('没有路径时用文案兜底，渲没渲头部都一样', () => {
+    const plain = computeTextDiff('a', 'b')
+    expect((makeDiffView({ model: plain, labelled: true }).getBodyProps() as Dict)['aria-label']).toBe('Diff')
+    expect((makeDiffView({ model: plain }).getBodyProps() as Dict)['aria-label']).toBe('Diff')
   })
 })

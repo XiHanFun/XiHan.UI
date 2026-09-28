@@ -131,6 +131,8 @@ export class XhDiffViewElement extends XhElement {
     view: this.view,
     contextLines: this.contextLines,
     wrap: this.wrap,
+    // 作者写没写 header 角色节点决定表格的可访问名指哪儿
+    labelled: this.getPart('header') != null,
     commentable: this.commentable,
     commentLines: this.commentLines,
     expandedValue: this.expandedValue,
