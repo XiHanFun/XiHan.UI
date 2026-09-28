@@ -20259,7 +20259,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-caption-size"
+        "--xh-control-caption-md"
       ],
       "visibility": "public",
       "description": "context-menu 的 item-description 部件 font-size 覆盖槽。"
@@ -44420,7 +44420,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-caption-size"
+        "--xh-control-caption-md"
       ],
       "visibility": "public",
       "description": "menu 的 item-description 部件 font-size 覆盖槽。"
@@ -45291,7 +45291,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-caption-size"
+        "--xh-control-caption-md"
       ],
       "visibility": "public",
       "description": "menubar 的 item-description 部件 font-size 覆盖槽。"
