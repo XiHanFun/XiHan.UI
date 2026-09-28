@@ -5381,6 +5381,15 @@
               "name": "--xh-calendar-range-picker-range-cell-bg-pressed"
             },
             {
+              "name": "--xh-calendar-range-picker-range-preview-bg"
+            },
+            {
+              "name": "--xh-calendar-range-picker-range-preview-cell-bg-hover"
+            },
+            {
+              "name": "--xh-calendar-range-picker-range-preview-cell-bg-pressed"
+            },
+            {
               "name": "--xh-calendar-range-picker-range-row-radius"
             },
             {
