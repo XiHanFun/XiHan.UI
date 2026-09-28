@@ -116,7 +116,9 @@ describe('换张瞬时，首开末收有动画', () => {
   })
 
   it('点开当前这张不算换张', () => {
-    const { service, api } = menubar({ defaultValue: 'file' })
+    // 先收着再点开：挂载时就展开的那一张属于首帧，本就直接呈现，测不出换张与否
+    const { service, api } = menubar()
+    service.send({ type: 'TRIGGER.OPEN', value: 'file' })
     service.send({ type: 'TRIGGER.OPEN', value: 'file' })
     expect(instantOf(api, 'file')).toBeUndefined()
   })
