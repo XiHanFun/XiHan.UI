@@ -40,6 +40,16 @@ export const selectAnatomy = createAnatomy('select', [
 
 const parts = selectAnatomy.build()
 
+/** 标签行：触发器里收着已选值标签的那一行。 */
+export const SELECT_TAG_LIST_SELECTOR = parts['tag-list'].selector
+
+/**
+ * 标签行里的一枚已选值标签（tag 的 root，带 data-value；+N 那一枚带 data-count 不算），
+ * 外加 Web Components 作者刚放进来、尚未接线的标签节点。列表动效只在标签行里认它们。
+ * 不带组合子：刚被移除的节点已经脱离文档，带父级约束的选择器匹配不上它，离场就认不出来。
+ */
+export const SELECT_TAG_SELECTOR = '[data-scope="tag"][data-part="root"][data-value], [data-xh-part="tag"]'
+
 // 集合只认 item：item-text / item-indicator 虽带 data-scope 但不入导航。
 export const selectItemQuery: ItemQuery = { scope: selectAnatomy.name, part: 'item' }
 

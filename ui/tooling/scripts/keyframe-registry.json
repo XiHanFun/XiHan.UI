@@ -144,6 +144,7 @@
         "field-array",
         "form",
         "image-viewer",
+        "select",
         "tag",
         "tag-group",
         "tags-input",
@@ -180,6 +181,7 @@
         "field-array",
         "message-feed",
         "question-flow",
+        "select",
         "tag-group",
         "tags-input",
         "tool-call"

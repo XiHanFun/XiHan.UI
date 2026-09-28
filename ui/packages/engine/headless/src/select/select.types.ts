@@ -241,7 +241,7 @@ export interface SelectSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
-  effect: 'trackPosition' | 'trackLayer'
+  effect: 'trackPosition' | 'trackLayer' | 'trackTagListMotion'
 }
 
 export interface SelectApi<T extends PropTypes = PropTypes> {

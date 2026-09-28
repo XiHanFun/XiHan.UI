@@ -17,6 +17,12 @@ import {
   XhNotificationItem,
   XhNotificationItemTitle,
   XhNotificationRoot,
+  XhSelectControl,
+  XhSelectRoot,
+  XhSelectTag,
+  XhSelectTagList,
+  XhSelectTrigger,
+  XhSelectValueText,
   XhTagGroupRoot,
   XhToolCallLabel,
   XhToolCallRoot,
@@ -241,6 +247,58 @@ describe('tag-group 标签增删', () => {
     expect(getComputedStyle(after).translate).not.toBe('none')
 
     items.value = [...items.value, { value: 'solid', label: 'solid' }]
+    await nextTick()
+    await nextTick()
+    expect(running(tags().at(-1)!)).toContain('xh-item-in')
+  })
+})
+
+describe('select 多选标签行', () => {
+  it('取消选中一枚：替身在行里淡出，后面的标签从旧位置滑过来；新选中的一枚播进场', async () => {
+    const host = document.createElement('div')
+    host.style.inlineSize = '480px'
+    document.body.append(host)
+    const options = ['北京', '上海', '广州', '深圳'].map(label => ({ value: label, label }))
+    const value = ref(['北京', '上海', '广州'])
+    app = createApp({
+      render: () => h(XhSelectRoot, {
+        'collection': options,
+        'multiple': true,
+        'value': value.value,
+        'onUpdate:value': (next: string[]) => {
+          value.value = next
+        },
+      }, {
+        default: ({ tags }: { tags: Array<{ value: string, label: string }> }) => [
+          h(XhSelectControl, null, () => h(XhSelectTrigger, null, () => [
+            h(XhSelectValueText),
+            h(XhSelectTagList, null, () => tags.map(t => h(XhSelectTag, { key: t.value, value: t.value }, () => t.label))),
+          ])),
+        ],
+      }),
+    })
+    app.mount(host)
+    await settle()
+    const tags = (): HTMLElement[] => [...host.querySelectorAll<HTMLElement>('[data-scope="select"][data-part="tag-list"] > [data-scope="tag"][data-part="root"][data-value]:not([inert])')]
+    for (const tag of tags())
+      expect(running(tag)).toEqual([])
+
+    const last = tags()[2]!
+    const left = last.offsetLeft
+    value.value = ['北京', '广州']
+    await nextTick()
+    await nextTick()
+    const ghost = host.querySelector<HTMLElement>('[data-scope="select"][data-part="tag-list"] > [data-state="closed"]')!
+    expect(ghost).not.toBeNull()
+    expect(ghost.textContent).toBe('上海')
+    expect(running(ghost)).toEqual(['xh-fade-out'])
+    // 替身绝对定位、裁在标签行里
+    expect(getComputedStyle(ghost).position).toBe('absolute')
+    expect(ghost.offsetParent).toBe(ghost.parentElement)
+    expect(last.offsetLeft).toBeLessThan(left)
+    expect(getComputedStyle(last).translate).not.toBe('none')
+
+    value.value = ['北京', '广州', '深圳']
     await nextTick()
     await nextTick()
     expect(running(tags().at(-1)!)).toContain('xh-item-in')
