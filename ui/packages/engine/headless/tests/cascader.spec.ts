@@ -1453,6 +1453,8 @@ describe('懒分支', () => {
     expect(h.api().branchLoadState('zhejiang')).toEqual({ status: 'loading' })
     expect(onBranchLoadStart).toHaveBeenCalledWith(expect.objectContaining({ value: 'zhejiang', path: ['zhejiang'], reason: 'expand' }))
     expect(h.api().getColumnProps({ level: 1 })).toMatchObject({ 'aria-busy': 'true' })
+    // 在途时这一列里只有状态提示，不是列表框：listbox 不许拥有 status / alert / button
+    expect((h.api().getColumnProps({ level: 1 }) as Record<string, unknown>).role).toBeUndefined()
     expect((h.api().getBranchLoadingProps({ level: 1 }) as Record<string, unknown>).hidden).toBeUndefined()
     expect(h.api().getItemProps({ value: 'zhejiang' })).toMatchObject({ 'data-load-state': 'loading', 'data-loading': '' })
 
@@ -1462,6 +1464,7 @@ describe('懒分支', () => {
     expect(h.api().branchLoadState('zhejiang')).toEqual({ status: 'loaded', empty: false })
     expect(onBranchLoad).toHaveBeenCalledWith(expect.objectContaining({ value: 'zhejiang', path: ['zhejiang'], children: CHILDREN }))
     expect(h.api().getBranchLoadingProps({ level: 1 })).toMatchObject({ hidden: true })
+    expect(h.api().getColumnProps({ level: 1 })).toMatchObject({ role: 'listbox' })
     // 取回的条目照常可选，回显取得到名字
     h.api().select(['zhejiang', 'ningbo'])
     expect(h.api().valueText).toBe('Zhejiang / Ningbo')

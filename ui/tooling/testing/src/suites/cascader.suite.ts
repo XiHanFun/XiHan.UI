@@ -1855,7 +1855,8 @@ export const cascaderSuite: ConformanceSuite = {
           expect: {
             parts: {
               'item[0]': { 'data-loading': '', 'data-load-state': 'loading', 'aria-haspopup': 'listbox' },
-              'column[1]': { 'aria-busy': 'true', 'hidden': null },
+              // 这一刻列里只有在途提示，不是列表框
+              'column[1]': { 'aria-busy': 'true', 'hidden': null, 'role': null },
               'branch-loading': { role: 'status', hidden: null },
               'branch-error': { hidden: '' },
               'branch-retry-trigger': { hidden: '' },
@@ -1880,6 +1881,7 @@ export const cascaderSuite: ConformanceSuite = {
           expect: {
             parts: {
               'item[0]': { 'data-error': '', 'data-load-state': 'error' },
+              'column[1]': { role: null },
               'branch-loading': { hidden: '' },
               'branch-error': { role: 'alert', hidden: null },
               'branch-retry-trigger': { 'type': 'button', 'tabindex': '-1', 'aria-label': 'Retry', 'hidden': null },
