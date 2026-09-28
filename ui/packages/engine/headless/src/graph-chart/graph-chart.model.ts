@@ -7,13 +7,13 @@
 // 底图（力导 / 环形 / 树 / 径向树，落到布局坐标）→ 摆放（拖动后的位置、画布的平移缩放）→ 场景（连线、箭头、节点，名字先量再放）→ 无障碍。
 // 每段只记住上一次的输入，悬停与聚焦不换任何一段的输入。
 
-import type { FontSpec, LineMark, Mark, NumberFormatSpec, PathMark, Scene, TableModel, TextMark, TextMeasurer } from '@xihan-ui/viz'
+import type { FontSpec, LineMark, Mark, NumberFormatSpec, PathMark, PathSegment, Scene, TableModel, TextMark, TextMeasurer } from '@xihan-ui/viz'
 import type { ForceOptions, ForceSimulation } from '@xihan-ui/viz/graph'
 import type { HierarchyNode } from '@xihan-ui/viz/hierarchy'
 import type { ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../shared/chart'
 import type { GraphChartTranslations, GraphLayout, GraphLinkDatum, GraphNodeDatum, GraphSummary, GraphView } from './graph-chart.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
-import { createNumberFormat, createScene, ellipsize, isVizError } from '@xihan-ui/viz'
+import { createNumberFormat, createScene, ellipsize, isVizError, segmentsPath } from '@xihan-ui/viz'
 import { circular, forceSimulation } from '@xihan-ui/viz/graph'
 import { hierarchy, tree } from '@xihan-ui/viz/hierarchy'
 import { CHART_SLOT_COUNT, memoizeLast } from '../shared/chart'
@@ -375,7 +375,7 @@ export interface GraphLinkGeometry {
   /** 有权重时的线宽；没有权重时为 null，由皮肤决定。 */
   readonly width: number | null
   /** 有向时目标一端的箭头。 */
-  readonly arrow: string | null
+  readonly arrow: PathSegment | null
 }
 
 export interface GraphLayoutResult {
@@ -392,7 +392,8 @@ export interface GraphLayoutResult {
 }
 
 /** 箭头：尖端落在目标节点的边上，沿连线方向。 */
-function arrowPath(from: { x: number, y: number }, to: { x: number, y: number }, length: number): string {
+/** 箭头三角形的三个顶点：尖端在 to，底边垂直于连线。过渡按这三个点插值，与连线同步移动。 */
+function arrowPoints(from: { x: number, y: number }, to: { x: number, y: number }, length: number): PathSegment {
   const dx = to.x - from.x
   const dy = to.y - from.y
   const d = Math.hypot(dx, dy) || 1
@@ -401,7 +402,7 @@ function arrowPath(from: { x: number, y: number }, to: { x: number, y: number },
   const half = length * 0.4
   const bx = to.x - ux * length
   const by = to.y - uy * length
-  return `M${to.x},${to.y}L${bx - uy * half},${by + ux * half}L${bx + uy * half},${by - ux * half}Z`
+  return { points: [{ x: to.x, y: to.y }, { x: bx - uy * half, y: by + ux * half }, { x: bx + uy * half, y: by - ux * half }], closed: true }
 }
 
 export function layoutGraph(base: GraphBase, positions: Readonly<Record<string, { readonly x: number, readonly y: number }>> | null, view: GraphView, directed: boolean, measurer: TextMeasurer): GraphLayoutResult {
@@ -494,7 +495,7 @@ export function layoutGraph(base: GraphBase, positions: Readonly<Record<string, 
     const d = Math.hypot(dx, dy) || 1
     const tip = { x: t.x - (dx / d) * (t.r + metrics.gap), y: t.y - (dy / d) * (t.r + metrics.gap) }
     const end = { x: tip.x - (dx / d) * arrowLength * 0.8, y: tip.y - (dy / d) * arrowLength * 0.8 }
-    return { link, from: { x: s.x, y: s.y }, to: end, width, arrow: arrowPath({ x: s.x, y: s.y }, tip, arrowLength) }
+    return { link, from: { x: s.x, y: s.y }, to: end, width, arrow: arrowPoints({ x: s.x, y: s.y }, tip, arrowLength) }
   })
   return { base, size, view, placed, nodes: final, byId, links, metrics, font }
 }
@@ -527,7 +528,7 @@ export function graphScene(layout: GraphLayoutResult, version: number): GraphSce
   for (const g of layout.links) {
     if (!g.arrow)
       continue
-    const arrow: PathMark = { kind: 'path', key: `arrow:${g.link.index}`, part: 'arrow', datum: { seriesId: 'link', index: g.link.index }, d: g.arrow }
+    const arrow: PathMark = { kind: 'path', key: `arrow:${g.link.index}`, part: 'arrow', datum: { seriesId: 'link', index: g.link.index }, d: segmentsPath([g.arrow]), segments: [g.arrow] }
     data.push(arrow)
   }
   for (const g of layout.nodes) {

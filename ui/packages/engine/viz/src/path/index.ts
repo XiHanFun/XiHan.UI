@@ -167,3 +167,25 @@ export function createSvgPath(digits = 2): SvgPath {
   }
   return Object.freeze(sink)
 }
+
+/** 一段折线：若干个点依次相连；closed 时首尾闭合。 */
+export interface PathSegment {
+  readonly points: readonly { readonly x: number, readonly y: number }[]
+  readonly closed?: boolean
+}
+
+/**
+ * 把若干段折线写成 SVG 路径：每段 M 起、L 连，闭合段以 Z 收尾。
+ * 路径标记带上这组几何参数后，过渡按点插值再经它重新生成路径，而不是去插值路径字符串。
+ */
+export function segmentsPath(segments: readonly PathSegment[]): string {
+  let d = ''
+  for (const segment of segments) {
+    segment.points.forEach((point, index) => {
+      d += `${index === 0 ? 'M' : 'L'}${point.x},${point.y}`
+    })
+    if (segment.closed && segment.points.length > 0)
+      d += 'Z'
+  }
+  return d
+}
