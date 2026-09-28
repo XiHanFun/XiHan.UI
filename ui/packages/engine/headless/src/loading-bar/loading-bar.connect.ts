@@ -72,6 +72,8 @@ export function connectLoadingBar<T extends PropTypes>(
 
     getRangeProps: () => normalize.element({
       ...parts.range.attrs,
+      // 机器按 id 找到它，等冲向满格的平移播完才开始淡出
+      'id': scope.partId('loading-bar', 'range'),
       'data-state': phase,
       // 交出 0–1 的比例，皮肤据此把铺满的进度段平移到位
       'style': { '--xh-_loading-bar-value': String(value / 100) },

@@ -5,6 +5,7 @@
 
 // 提供 loading bar 相关实现。
 
+import type { Scope } from '@xihan-ui/core'
 import type { LoadingBarSchema } from './loading-bar.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { waitForTransition } from '../shared/part-presence'
@@ -38,9 +39,34 @@ export function resolveLoadingBarFadeDuration(ms: number | undefined): number | 
 }
 
 /**
+ * 宿主把这一帧提交出去之后，按 id 取部件，等它身上某个属性正在播的过渡播完再回调。
+ * 过渡在样式提交之后才起播，所以先等 flush；返回的清理函数撤掉还没落定的等待。
+ */
+function waitForPartTransition(
+  scope: Scope,
+  flush: (fn: () => void) => void,
+  part: 'root' | 'range',
+  property: string,
+  done: () => void,
+): () => void {
+  let stop: (() => void) | undefined
+  let disposed = false
+  flush(() => {
+    if (disposed)
+      return
+    stop = waitForTransition(scope.getById(scope.partId('loading-bar', part)), property, done)
+  })
+  return () => {
+    disposed = true
+    stop?.()
+  }
+}
+
+/**
  * 顶部加载条机器。
  *
- * 三段状态：idle（收起）→ loading（走着）→ finishing（冲到 100 正在淡出）→ idle。
+ * 四段状态：idle（收起）→ loading（走着）→ complete（冲向 100）→ finishing（满格停一拍后淡出）→ idle。
+ * 走满与淡出分两段：同一拍里一边冲一边淡，条子还没到头就看不见了。
  * 爬升的每一拍都重入 loading，重入时计时器按最新参数重挂。
  * 进度值走 cell 受控（value / defaultValue / onValueChange），loading 由 watch 同步。
  */
@@ -75,20 +101,29 @@ export const loadingBarMachine = createMachine({
       entry: ['primeValue'],
       effects: ['trackTrickle'],
       on: {
-        'LOADING.END': { target: 'finishing' },
+        'LOADING.END': { target: 'complete' },
         // 到点爬一格，reenter 重挂计时器
         'after.trickleSpeed': { target: 'loading', reenter: true, actions: ['advanceValue'] },
         // 爬升参数改了，重入把计时器按新参数重挂
         'TRICKLE.SYNC': { target: 'loading', reenter: true },
       },
     },
-    finishing: {
+    // 冲向 100：根节点保持不透明，进度段的平移真正播完才进淡出
+    complete: {
       entry: ['completeValue'],
+      effects: ['waitForFill'],
+      on: {
+        'FILL.DONE': { target: 'finishing' },
+        // 收尾途中又开始加载：整条重来，primeValue 把冲到头的值拉回起步值
+        'LOADING.START': { target: 'loading' },
+      },
+    },
+    // 满格停一拍再淡出：停留与淡出都由皮肤的过渡给出，这里只等它播完
+    finishing: {
       effects: ['waitForFade'],
       on: {
         // 淡出走完才归零：早一步归零，用户会看见条子在淡出途中先缩回左边再消失
         'FADE.DONE': { target: 'idle', actions: ['resetValue'] },
-        // 淡出途中又开始加载：整条重来，primeValue 把冲到头的值拉回起步值
         'LOADING.START': { target: 'loading' },
       },
     },
@@ -143,22 +178,17 @@ export const loadingBarMachine = createMachine({
         return setTimeoutEffect(() => send({ type: 'after.trickleSpeed' }), speed)
       },
       /**
-       * 等根节点上的淡出过渡播完：按浏览器实际起播的那一段等，不按毫秒猜——作者改了皮肤的淡出时长槽
-       * 照样对得上。没装皮肤、没有在播的过渡时即刻收尾。
+       * 等进度段冲向 100 的平移过渡播完：按浏览器实际起播的那一段等，不按毫秒猜——作者改了皮肤的
+       * 推进时长槽照样对得上。已经在满格、没装皮肤、没渲染进度段时即刻进淡出。
        */
-      waitForFade: ({ scope, send, flush }) => {
-        let stop: (() => void) | undefined
-        let disposed = false
-        flush(() => {
-          if (disposed)
-            return
-          stop = waitForTransition(scope.getById(scope.partId('loading-bar', 'root')), 'opacity', () => send({ type: 'FADE.DONE' }))
-        })
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
+      waitForFill: ({ scope, send, flush }) =>
+        waitForPartTransition(scope, flush, 'range', 'translate', () => send({ type: 'FILL.DONE' })),
+      /**
+       * 等根节点上的淡出过渡播完（含满格停留的那段延迟）：同样按实际起播的过渡等，
+       * 作者改了皮肤的淡出时长槽照样对得上。没装皮肤、没有在播的过渡时即刻收尾。
+       */
+      waitForFade: ({ scope, send, flush }) =>
+        waitForPartTransition(scope, flush, 'root', 'opacity', () => send({ type: 'FADE.DONE' })),
     },
   },
 })

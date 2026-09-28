@@ -181,19 +181,29 @@ async function settle(): Promise<void> {
 }
 
 /**
- * 给根节点桩一段正在播的 opacity 淡出过渡：jsdom 不跑 CSS 过渡，finish() 模拟它播完。
- * 节点按 connect 给根的 id 挂进文档，机器按同一个 id 找它。
+ * 给部件桩一段正在播的过渡：jsdom 不跑 CSS 过渡，finish() 模拟它播完。
+ * 节点按 connect 给部件的 id 挂进文档，机器按同一个 id 找它。
  */
-function stubFade(bar: ReturnType<typeof makeLoadingBar>): { finish: () => void } {
+function stubTransition(id: unknown, property: string): { finish: () => void } {
   let finish!: () => void
   const finished = new Promise<void>((resolve) => {
     finish = resolve
   })
-  const root = document.createElement('div')
-  root.id = String(bar.root().id)
-  ;(root as unknown as { getAnimations: () => unknown[] }).getAnimations = () => [{ transitionProperty: 'opacity', finished }]
-  document.body.append(root)
+  const node = document.createElement('div')
+  node.id = String(id)
+  ;(node as unknown as { getAnimations: () => unknown[] }).getAnimations = () => [{ transitionProperty: property, finished }]
+  document.body.append(node)
   return { finish }
+}
+
+/** 进度段冲向满格的平移过渡。 */
+function stubFill(bar: ReturnType<typeof makeLoadingBar>): { finish: () => void } {
+  return stubTransition(bar.range().id, 'translate')
+}
+
+/** 根节点的淡出过渡。 */
+function stubFade(bar: ReturnType<typeof makeLoadingBar>): { finish: () => void } {
+  return stubTransition(bar.root().id, 'opacity')
 }
 
 afterEach(() => {
@@ -359,28 +369,51 @@ describe('loadingBarMachine 收尾', () => {
     vi.useRealTimers()
   })
 
-  it('loading 翻 false：先冲到 100，等根节点上的淡出过渡真正播完才归零收起', async () => {
+  it('loading 翻 false：先冲到 100，走满的平移播完才淡出，淡出过渡真正播完才归零收起', async () => {
     const bar = makeLoadingBar({ loading: true, trickleSpeed: 100 })
+    const fill = stubFill(bar)
     const fade = stubFade(bar)
     vi.advanceTimersByTime(100)
 
     bar.setProps({ loading: false })
+    expect(bar.state()).toBe('complete')
+    expect(bar.api().value).toBe(100)
+    expect(bar.root()['data-state']).toBe('complete')
+
+    // 不按毫秒猜：平移没播完，拨再久的时钟也不开始淡出
+    await settle()
+    vi.advanceTimersByTime(60_000)
+    expect(bar.state()).toBe('complete')
+
+    fill.finish()
+    await settle()
     expect(bar.state()).toBe('finishing')
+    expect(bar.root()['data-state']).toBe('finishing')
     expect(bar.api().value).toBe(100)
     // 淡出期间仍露面：早一步收起，那段淡出动画根本没机会跑
     expect(bar.api().visible).toBe(true)
 
-    // 不按毫秒猜：过渡没播完，拨再久的时钟也还在淡出
     await settle()
     vi.advanceTimersByTime(60_000)
     expect(bar.state()).toBe('finishing')
-    expect(bar.api().value).toBe(100)
 
     fade.finish()
     await settle()
     expect(bar.state()).toBe('idle')
     expect(bar.api().value).toBe(0)
     expect(bar.api().visible).toBe(false)
+  })
+
+  it('进度段没渲染或已在满格（没有在播的平移）：提交之后直接进淡出', async () => {
+    const bar = makeLoadingBar({ loading: true, trickle: false })
+    const fade = stubFade(bar)
+    bar.setProps({ loading: false })
+    expect(bar.state()).toBe('complete')
+    await settle()
+    expect(bar.state()).toBe('finishing')
+    fade.finish()
+    await settle()
+    expect(bar.state()).toBe('idle')
   })
 
   it('没有在播的淡出过渡（没装皮肤）：提交之后即刻收尾，值的变化按顺序报出去：先 100 后 0', async () => {
@@ -406,6 +439,22 @@ describe('loadingBarMachine 收尾', () => {
     expect(bar.api().value).toBe(LOADING_BAR_MINIMUM)
 
     fade.finish()
+    await settle()
+    expect(bar.state()).toBe('loading')
+  })
+
+  it('走满途中又开始加载：同样从起步值重来；上一轮的平移播完也不会把新一轮带进淡出', async () => {
+    const bar = makeLoadingBar({ loading: true, trickle: false })
+    const fill = stubFill(bar)
+    bar.setProps({ loading: false })
+    await settle()
+    expect(bar.state()).toBe('complete')
+
+    bar.setProps({ loading: true })
+    expect(bar.state()).toBe('loading')
+    expect(bar.api().value).toBe(LOADING_BAR_MINIMUM)
+
+    fill.finish()
     await settle()
     expect(bar.state()).toBe('loading')
   })
@@ -460,7 +509,7 @@ describe('loadingBarMachine 确定进度', () => {
     expect(bar.state()).toBe('loading')
     bar.setProps({ loading: false })
     // 状态该走的还是要走（淡出照跑），只是值不归它管
-    expect(bar.state()).toBe('finishing')
+    expect(bar.state()).toBe('complete')
     await settle()
     expect(bar.state()).toBe('idle')
 
@@ -527,7 +576,7 @@ describe('connectLoadingBar', () => {
     expect(bar.root()['data-state']).toBe('loading')
 
     bar.setProps({ loading: false })
-    expect(bar.root()['data-state']).toBe('finishing')
+    expect(bar.root()['data-state']).toBe('complete')
     expect(bar.root().hidden).toBeUndefined()
 
     await settle()
