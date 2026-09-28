@@ -41716,7 +41716,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "listbox 的 empty 部件 color 覆盖槽。"
@@ -41824,7 +41824,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "listbox 的 group-label 部件 color 覆盖槽。"
@@ -42476,7 +42476,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "listbox 的 loading 部件 color 覆盖槽。"
