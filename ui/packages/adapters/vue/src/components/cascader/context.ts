@@ -26,7 +26,13 @@ export interface CascaderContentContext {
   registerLoading: () => () => void
 }
 
+/** 标签声明的路径比较键，供标签中的删除按钮复用同一份声明。 */
+export interface CascaderTagContext {
+  value: () => string
+}
+
 const KEY: InjectionKey<CascaderContext> = Symbol.for('xh-cascader')
+const TAG_KEY: InjectionKey<CascaderTagContext> = Symbol.for('xh-cascader-tag')
 const ITEM_KEY: InjectionKey<CascaderItemContext> = Symbol.for('xh-cascader-item')
 const GROUP_KEY: InjectionKey<CascaderGroupContext> = Symbol.for('xh-cascader-group')
 const CONTENT_KEY: InjectionKey<CascaderContentContext> = Symbol.for('xh-cascader-content')
@@ -39,6 +45,17 @@ export function useCascaderContext(): CascaderContext {
   const ctx = inject(KEY, null)
   if (!ctx)
     throw new Error('[xh] Cascader 部件必须用在 XhCascaderRoot 内')
+  return ctx
+}
+
+export function provideCascaderTag(ctx: CascaderTagContext): void {
+  provide(TAG_KEY, ctx)
+}
+
+export function useCascaderTagContext(): CascaderTagContext {
+  const ctx = inject(TAG_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] Cascader 标签子部件必须用在 XhCascaderTag 内')
   return ctx
 }
 

@@ -8,6 +8,8 @@
 import type { ItemQuery } from '@xihan-ui/core'
 import { createAnatomy } from '@xihan-ui/core'
 
+// tag-list 是触发器里收着已选路径标签的那一行；行里每一枚标签（含折起来的那些合成的 +N）
+// 都是库里的 tag 组件（data-scope="tag"），由连接层套 tag 的连接层产出，本组件不另立部件。
 export const cascaderAnatomy = createAnatomy('cascader', [
   'root',
   'hidden-input',
@@ -15,6 +17,7 @@ export const cascaderAnatomy = createAnatomy('cascader', [
   'control',
   'trigger',
   'value-text',
+  'tag-list',
   'indicator',
   'clear-trigger',
   'positioner',
@@ -44,3 +47,6 @@ export const cascaderAnatomy = createAnatomy('cascader', [
  * 中间隔着 column 不影响，而嵌套的另一个级联会被切开，各认各的条目。
  */
 export const cascaderItemQuery: ItemQuery = { scope: cascaderAnatomy.name, part: 'item' }
+
+/** 标签行：触发器里收着已选路径标签的那一行。 */
+export const CASCADER_TAG_LIST_SELECTOR = cascaderAnatomy.build()['tag-list'].selector

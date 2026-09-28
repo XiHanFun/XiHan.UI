@@ -1,4 +1,4 @@
-<!-- 多选 | 选择多个分类路径 -->
+<!-- 多选 | multiple 下已选路径在触发器里排成标签，文字是整条路径；超出 maxTagCount（默认 3）的折进 +N，触发器里的标签只作展示 -->
 <script setup lang="ts">
 import {
   XhCascaderClearTrigger,
@@ -10,8 +10,11 @@ import {
   XhCascaderItemIndicator,
   XhCascaderItemText,
   XhCascaderLabel,
+  XhCascaderOverflowTag,
   XhCascaderPositioner,
   XhCascaderRoot,
+  XhCascaderTag,
+  XhCascaderTagList,
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
@@ -36,12 +39,12 @@ const catalog = [
   },
 ];
 
-const picked = ref<string[][]>([["fruit", "apple"]]);
+const picked = ref<string[][]>([["fruit", "apple"], ["vegetable", "tomato"]]);
 </script>
 
 <template>
   <XhCascaderRoot
-    v-slot="{ levels }"
+    v-slot="{ levels, tags }"
     v-model:value="picked"
     :collection="catalog"
     multiple
@@ -51,6 +54,13 @@ const picked = ref<string[][]>([["fruit", "apple"]]);
     <XhCascaderControl>
       <XhCascaderTrigger>
         <XhCascaderValueText />
+        <!-- 标签行：有选中时露面、占位文字让位；标签身份写路径的比较键 -->
+        <XhCascaderTagList>
+          <XhCascaderTag v-for="tag in tags" :key="tag.key" :value="tag.key">
+            {{ tag.label }}
+          </XhCascaderTag>
+          <XhCascaderOverflowTag />
+        </XhCascaderTagList>
         <XhCascaderIndicator />
       </XhCascaderTrigger>
       <XhCascaderClearTrigger />

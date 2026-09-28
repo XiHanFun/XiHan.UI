@@ -9,6 +9,7 @@ import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } fro
 import type { CascaderApi, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
 import { cascadeState, createPressTracker, dataAttr, focusItem, isComposingEvent, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/core'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { connectSelectionTags } from '../shared/selection-tags'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
@@ -250,7 +251,28 @@ export function connectCascader<T extends PropTypes>(
     searchInput: prop('translations')?.searchInput ?? 'Search',
     searchList: prop('translations')?.searchList ?? 'Search results',
     clearTrigger: prop('translations')?.clearTrigger ?? 'Clear',
+    deleteItem: prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`),
+    overflowTag: prop('translations')?.overflowTag ?? ((count: number) => `+${count}`),
   }
+
+  // 多选的已选路径在触发器里排成标签：套的是库里的 tag，截断与 +N 的做法与 Select 同一套。
+  // 标签身份是整条路径的比较键；删除钮摘值回到机器，只读与禁用由 tag 挡在钮上
+  const pathByKey = new Map(value.map(p => [cascaderPathKey(p), p]))
+  const withoutKey = (key: string): string[][] => value.filter(p => cascaderPathKey(p) !== key)
+  const selectionTags = connectSelectionTags({
+    entries: value.map(p => ({ key: cascaderPathKey(p), label: cascaderPathText(collection, p, separator) })),
+    maxTagCount: prop('maxTagCount'),
+    overflowTag: translations.overflowTag,
+    deleteItem: translations.deleteItem,
+    variant,
+    tone: prop('tone'),
+    size: prop('size'),
+    disabled,
+    readOnly,
+    onDelete: key => send({ type: 'VALUE.SET', value: withoutKey(key) }),
+  }, normalize)
+  const tags = selectionTags.visible.map(tag => ({ path: [...pathByKey.get(tag.key)!], key: tag.key, label: tag.label }))
+  const { overflowCount, overflowText } = selectionTags
 
   return {
     open,
@@ -268,6 +290,9 @@ export function connectCascader<T extends PropTypes>(
     readOnly,
     invalid,
     canClear,
+    tags,
+    overflowCount,
+    overflowText,
     searching,
     inputValue,
     searchResults,
@@ -289,6 +314,7 @@ export function connectCascader<T extends PropTypes>(
       send({ type: 'ITEM.SELECT', path })
     },
     clear: () => send({ type: 'VALUE.CLEAR' }),
+    deselect: target => send({ type: 'VALUE.SET', value: withoutKey(cascaderPathKey(target)) }),
 
     getHiddenInputProps: input => normalize.input({
       type: 'hidden',
@@ -394,6 +420,32 @@ export function connectCascader<T extends PropTypes>(
       'data-placeholder': dataAttr(value.length === 0),
       'data-disabled': dataAttr(disabled),
     }),
+
+    // 标签行：无选中时整个收起，皮肤据此让 value-text 回来显示占位文字；行怎么排归标签行家族配方
+    getTagListProps: () => normalize.element({
+      ...parts['tag-list'].attrs,
+      'data-xh-tag-list': '',
+      'hidden': value.length === 0 || undefined,
+      'data-disabled': dataAttr(disabled),
+    }),
+
+    // 标签本体就是 tag 的 root（data-scope="tag"），只多一个 data-value 记它代表哪条路径
+    getTagProps: ({ value: key }) => ({
+      ...selectionTags.tag(key).getRootProps() as Record<string, unknown>,
+      'data-value': key,
+    }) as T['element'],
+
+    // 折起来的那些合成一枚：也是 tag 的 root，data-count 记折了几枚；没有折起的就整个收起，不留空位
+    getOverflowTagProps: () => ({
+      ...selectionTags.overflow.getRootProps() as Record<string, unknown>,
+      'data-count': String(overflowCount),
+    }) as T['element'],
+
+    // 两种标签的文字都落在 tag 的 label 上，截断规则挂在那一层
+    getTagLabelProps: () => selectionTags.overflow.getLabelProps(),
+
+    // 删除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用与点按都由 tag 给
+    getItemDeleteTriggerProps: ({ value: key }) => selectionTags.tag(key).getCloseTriggerProps(),
 
     getIndicatorProps: () => normalize.element({
       // 有值时清空钮顶上来，箭头让位：两个图标并排堆在框里，用户分不清点哪个

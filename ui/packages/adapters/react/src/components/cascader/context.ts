@@ -20,11 +20,21 @@ const Ctx = createContext<CascaderContext | undefined>(undefined)
 const GroupCtx = createContext<CascaderGroupProps | undefined>(undefined)
 const ItemCtx = createContext<CascaderItemProps | undefined>(undefined)
 const ContentCtx = createContext<CascaderContentContext | undefined>(undefined)
+const TagCtx = createContext<string | undefined>(undefined)
 
 export const CascaderProvider = Ctx
 export const CascaderGroupProvider = GroupCtx
 export const CascaderItemProvider = ItemCtx
 export const CascaderContentProvider = ContentCtx
+export const CascaderTagProvider = TagCtx
+
+/** 标签声明的路径比较键，供标签中的删除按钮复用同一份声明。 */
+export function useCascaderTagContext(): string {
+  const value = useContext(TagCtx)
+  if (value === undefined)
+    throw new Error('XhCascaderItemDeleteTrigger 要放在 XhCascaderTag 里')
+  return value
+}
 
 export function useCascaderContext(): CascaderContext {
   const ctx = useContext(Ctx)

@@ -109,6 +109,19 @@ export type CascaderExpandTrigger = 'click' | 'hover'
  */
 export type CascaderValue = readonly string[] | readonly (readonly string[])[]
 
+/** 标签声明的身份：代表哪条选中路径，写它的比较键（cascaderPathKey，即 tags 里的 key）。 */
+export interface CascaderTagProps {
+  value: string
+}
+
+/** 可见标签的数据：整条路径、它的比较键与显示文本（逐段显示名按 separator 连缀）。 */
+export interface CascaderTagMeta {
+  path: string[]
+  /** cascaderPathKey(path)：列表渲染的 key，也是标签部件的 value。 */
+  key: string
+  label: string
+}
+
 /** 空态占位的内建文案，默认英文。 */
 export interface CascaderTranslations {
   /** collection 为空（根列没有条目）时的占位文案。 */
@@ -125,6 +138,10 @@ export interface CascaderTranslations {
   searchList: string
   /** 清空按钮的可及名。 */
   clearTrigger: string
+  /** 标签删除按钮的可及名，接收标签文本（整条路径）；默认 `Delete <label>`。 */
+  deleteItem: (label: string) => string
+  /** 被折叠的标签（overflow-tag）显示的文字，接收折叠的个数；默认 +N。 */
+  overflowTag: (count: number) => string
 }
 
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；缺省时副作用短路，机器状态照常转移。
@@ -197,8 +214,10 @@ export interface CascaderSchema extends MachineSchema {
     expandTrigger?: CascaderExpandTrigger
     /** 中间层（分支）也可以落值。关闭时点击分支只展开子列，不改变选中值。 */
     changeOnSelect?: boolean
-    /** 多选：选中为路径集合，选中后浮层不收起、焦点留在列中以便继续选择。 */
+    /** 多选：选中为路径集合，选中后浮层不收起、焦点留在列中以便继续选择；已选路径在触发器里排成标签。 */
     multiple?: boolean
+    /** 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 */
+    maxTagCount?: number
     /** 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图。 */
     searchable?: boolean
     /** 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 */
@@ -336,7 +355,7 @@ export interface CascaderSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
-  effect: 'trackPosition' | 'trackLayer'
+  effect: 'trackPosition' | 'trackLayer' | 'trackTagListMotion'
 }
 
 export interface CascaderApi<T extends PropTypes = PropTypes> {
@@ -365,6 +384,12 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   invalid: boolean
   /** 清空按钮当前是否可按。 */
   canClear: boolean
+  /** 可见标签（受 maxTagCount 截断），与 value 同序；文字是整条路径的显示名按 separator 连缀。 */
+  tags: CascaderTagMeta[]
+  /** 被 maxTagCount 折叠的标签数。 */
+  overflowCount: number
+  /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
+  overflowText: string
   /** 该条目是否为某条选中路径的末项。 */
   isSelected: (value: string) => boolean
   /** 级联模式下该分支是否半选（有效叶后代部分勾选）；非级联恒为 false。 */
@@ -390,6 +415,8 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   /** 选中一条路径，与点击条目同一语义（分支是否落值仍取决于 changeOnSelect）。 */
   select: (path: string[]) => void
   clear: () => void
+  /** 移除一条选中路径，其余保持选中先后。 */
+  deselect: (path: readonly string[]) => void
   getRootProps: () => T['element']
   /** 每条路径独立编码，适配器按 value 渲染重复同名字段。 */
   getHiddenInputProps: (props: { path: readonly string[] }) => T['input']
@@ -397,6 +424,16 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   getControlProps: () => T['element']
   getTriggerProps: () => T['button']
   getValueTextProps: () => T['element']
+  /** 标签行：收纳可见标签与 +N 标签，放在触发器中；无选中时整体 hidden。 */
+  getTagListProps: () => T['element']
+  /** 标签：一条选中路径一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生，另带 data-value 记录路径的比较键。放在触发器中即纯展示，放在外部配删除按钮可删除。 */
+  getTagProps: (props: CascaderTagProps) => T['element']
+  /** 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 */
+  getTagLabelProps: () => T['element']
+  /** 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 */
+  getOverflowTagProps: () => T['element']
+  /** 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，禁用时保留位置、原生 disabled；点击移除所在标签的选中路径；须放在触发器外的标签中。 */
+  getItemDeleteTriggerProps: (props: CascaderTagProps) => T['button']
   getIndicatorProps: () => T['element']
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']

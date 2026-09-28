@@ -7,18 +7,20 @@
 
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
+  CascaderApi,
   CascaderExpandTrigger,
   CascaderItemProps,
   CascaderNode,
   CascaderOpenChangeDetails,
   CascaderSchema,
+  CascaderTagMeta,
   CascaderValue,
   CascaderValueChangeDetails,
   FormControlState,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { cascaderAnatomy, cascaderMachine, cascaderMeta, connectCascader, resolveFormControlState } from '@xihan-ui/headless'
+import { cascaderAnatomy, cascaderMachine, cascaderMeta, connectCascader, resolveFormControlState, tagAnatomy } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
@@ -61,7 +63,8 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {'click'|'hover'} expand-trigger - 子列由点击还是悬停展开，默认 click
  * @attr {boolean} change-on-select - 中间层（分支）也可以落值
- * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在列中
+ * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在列中；已选路径在触发器里排成标签
+ * @attr {number} max-tag-count - 多选标签最多显示的数量，其余折叠进 overflowCount 并合成 overflow-tag；默认 3
  * @attr {boolean} searchable - 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图；自定义匹配规则经 filter property 给
  * @attr {boolean} cascade - 多选下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
@@ -86,6 +89,10 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart control - 触发按钮与清空按钮的收纳容器：描边、底色与聚焦环都落在这一层
  * @csspart trigger - role=combobox 的触发按钮，同时是定位锚点，须是原生 button
  * @csspart value-text - 整条路径的显示位；留空即由元素填入，作者写了内容则由作者负责
+ * @csspart tag-list - 触发器中的标签行：可见标签与 overflow-tag 放在其中；无选中时带 hidden，value-text 恢复显示占位文字
+ * @csspart tag - 多选标签，须自带 value 属性写路径的比较键（tags 里的 key，即整条路径的 JSON 数组串）；接线为 tag 的 root（data-scope="tag"），语气、尺寸与禁用随本元素、形态按控件的面派生；放在触发器中即纯展示，放在外部配 item-delete-trigger 可删除
+ * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger（data-scope="tag"），禁用时保留位置、原生 disabled；点击移除所在标签的选中路径，可及名使用 translations.deleteItem
+ * @csspart overflow-tag - 折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N（文字使用 translations.overflowTag），作者写了内容则由作者负责；没有折叠的标签时带 hidden
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，可及名取 translations.clearTrigger
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
@@ -109,7 +116,12 @@ export class XhCascaderElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
-  static override partContract = { anatomy: cascaderAnatomy, meta: cascaderMeta }
+  // tag / overflow-tag 接的是 tag 的 root，item-delete-trigger 接的是 tag 的 close-trigger：三个作者名都归 tag 那套 scope 管，不在本元素的解剖里
+  static override partContract = {
+    anatomy: cascaderAnatomy,
+    meta: cascaderMeta,
+    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }],
+  }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -124,6 +136,7 @@ export class XhCascaderElement extends XhPortalHostElement {
     expandTrigger: { converter: STRING_CONVERTER, attribute: 'expand-trigger' },
     changeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'change-on-select' },
     multiple: { type: Boolean },
+    maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     searchable: { type: Boolean },
     // 函数只走 property，属性表达不了
     filter: { attribute: false },
@@ -155,6 +168,7 @@ export class XhCascaderElement extends XhPortalHostElement {
   declare expandTrigger?: CascaderExpandTrigger
   declare changeOnSelect?: boolean
   declare multiple?: boolean
+  declare maxTagCount?: number
   declare searchable?: boolean
   /** 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 */
   declare filter?: CascaderSchema['props']['filter']
@@ -202,6 +216,69 @@ export class XhCascaderElement extends XhPortalHostElement {
 
   /** 元素自己补出的 Loading；作者运行期加入正式部件时用它精确撤掉自动节点。 */
   private readonly generatedLoading = new WeakSet<HTMLElement>()
+
+  /** 每枚标签里由元素补出来的那层 label。 */
+  private readonly tagLabels = new WeakMap<HTMLElement, HTMLElement>()
+
+  /** +N 标签的文字是否归元素填，判定同 ownsValueText。 */
+  private readonly ownsOverflowText = new WeakMap<HTMLElement, boolean>()
+
+  private api(): CascaderApi | null {
+    const service = this.ctrl?.service as Service<CascaderSchema> | undefined
+    return service ? connectCascader(service, wcNormalize) : null
+  }
+
+  /**
+   * 应显示的标签（整条路径、比较键与显示文本），已按 max-tag-count 截断，与选中先后同序。
+   * 作者据此渲染 tag 部件，value 属性写 key。状态机尚未建立时返回空数组。
+   */
+  get tags(): CascaderTagMeta[] {
+    return this.api()?.tags ?? []
+  }
+
+  /** 被 max-tag-count 折叠的标签数；+N 标签由元素填入 overflow-tag，此处仅供作者读取。状态机尚未建立时为 0。 */
+  get overflowCount(): number {
+    return this.api()?.overflowCount ?? 0
+  }
+
+  /** overflow-tag 显示的文字（由 translations.overflowTag 计算）；没有折叠的标签或状态机尚未建立时为空串。 */
+  get overflowText(): string {
+    return this.api()?.overflowText ?? ''
+  }
+
+  /** 移除一条选中路径，其余保持选中先后；状态机尚未建立时不做任何事。 */
+  deselect(path: readonly string[]): void {
+    this.api()?.deselect(path)
+  }
+
+  /** 从角色节点的 value 属性读整条路径（JSON 数组串，与 cascaderPathKey 同构）；读不出按空路径算。 */
+  private pathOf(el: HTMLElement | null): string[] {
+    const raw = el?.getAttribute('value') ?? '[]'
+    try {
+      const parsed: unknown = JSON.parse(raw)
+      return Array.isArray(parsed) ? parsed.map(String) : []
+    }
+    catch {
+      return []
+    }
+  }
+
+  /**
+   * 标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，
+   * 返回 null。补出来的那层不打 data-xh-part，不进角色节点表。
+   */
+  private ensureTagLabel(tag: HTMLElement): HTMLElement | null {
+    const existing = this.tagLabels.get(tag)
+    if (existing && existing.parentNode === tag)
+      return existing
+    if (tag.children.length > 0)
+      return null
+    const label = this.ownerDocument.createElement('span')
+    label.append(...Array.from(tag.childNodes))
+    tag.append(label)
+    this.tagLabels.set(tag, label)
+    return label
+  }
 
   private readonly notifyValue = (details: CascaderValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -273,6 +350,7 @@ export class XhCascaderElement extends XhPortalHostElement {
       expandTrigger: this.expandTrigger,
       changeOnSelect: this.changeOnSelect ?? false,
       multiple: this.multiple ?? false,
+      maxTagCount: this.maxTagCount,
       searchable: this.searchable ?? false,
       filter: this.filter,
       cascade: this.cascade,
@@ -501,6 +579,30 @@ export class XhCascaderElement extends XhPortalHostElement {
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    // 标签是多实例 part，接的是 tag 的 root：身份取自己的 value 属性（路径的比较键）；只有文字的补一层 label
+    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    for (const el of this.getParts('tag')) {
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      const label = this.ensureTagLabel(el)
+      if (label)
+        this.spreader.spread(label, tagLabelProps)
+    }
+    // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
+    for (const el of this.getParts('item-delete-trigger')) {
+      const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    }
+    // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
+    const overflowTag = this.getPart('overflow-tag')
+    if (overflowTag) {
+      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      const label = this.ensureTagLabel(overflowTag)
+      if (label) {
+        this.spreader.spread(label, tagLabelProps)
+        this.fillOwnedText(this.ownsOverflowText, label, api.overflowText)
+      }
+    }
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
@@ -525,19 +627,8 @@ export class XhCascaderElement extends XhPortalHostElement {
     }
 
     // 候选是多实例 part：身份用 value 属性自报整条路径（JSON 数组串，与 cascaderPathKey 同构）
-    for (const el of this.getParts('search-item')) {
-      const raw = el.getAttribute('value') ?? '[]'
-      let path: string[] = []
-      try {
-        const parsed: unknown = JSON.parse(raw)
-        if (Array.isArray(parsed))
-          path = parsed.map(String)
-      }
-      catch {
-        path = []
-      }
-      this.spreader.spread(el, api.getSearchItemProps({ path }) as Record<string, unknown>)
-    }
+    for (const el of this.getParts('search-item'))
+      this.spreader.spread(el, api.getSearchItemProps({ path: this.pathOf(el) }) as Record<string, unknown>)
 
     // 属性先落，显示文字随后
     const valueText = this.getPart('value-text')

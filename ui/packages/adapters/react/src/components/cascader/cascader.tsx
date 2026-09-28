@@ -22,7 +22,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
-import { renderSlot } from '../../runtime/slot-content'
+import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -31,16 +31,18 @@ import {
   CascaderGroupProvider,
   CascaderItemProvider,
   CascaderProvider,
+  CascaderTagProvider,
   useCascaderContentContext,
   useCascaderContext,
   useCascaderGroupContext,
   useCascaderItemContext,
+  useCascaderTagContext,
 } from './context'
 import { useCascader } from './use-cascader'
 
 type CascaderProps = CascaderSchema['props']
 
-/** 函数式 children 的载荷：级联的展开态、选中态与列数据，以及修改它们的方法。 */
+/** 函数式 children 的载荷：级联的展开态、选中态与列数据、多选的可见标签与折起的个数，以及修改它们的方法。 */
 export type CascaderRootSlotProps = Pick<
   CascaderApi,
   | 'open'
@@ -52,6 +54,9 @@ export type CascaderRootSlotProps = Pick<
   | 'focusedPath'
   | 'displayText'
   | 'canClear'
+  | 'tags'
+  | 'overflowCount'
+  | 'overflowText'
   | 'isSelected'
   | 'isIndeterminate'
   | 'isActive'
@@ -61,6 +66,7 @@ export type CascaderRootSlotProps = Pick<
   | 'setActivePath'
   | 'select'
   | 'clear'
+  | 'deselect'
 >
 
 /** 根上自有的取值；dir 与 defaultValue 与原生的同名属性含义不同，由这里接管。 */
@@ -77,6 +83,8 @@ export interface XhCascaderRootProps extends RootElementProps {
   expandTrigger?: CascaderExpandTrigger
   changeOnSelect?: boolean
   multiple?: boolean
+  /** 多选标签最多显示的数量，其余折进 +N；默认 3。 */
+  maxTagCount?: number
   searchable?: boolean
   /** 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 */
   filter?: CascaderProps['filter']
@@ -112,6 +120,7 @@ export function XhCascaderRoot({
   expandTrigger,
   changeOnSelect,
   multiple,
+  maxTagCount,
   searchable,
   filter,
   cascade,
@@ -146,6 +155,7 @@ export function XhCascaderRoot({
     expandTrigger,
     changeOnSelect,
     multiple,
+    maxTagCount,
     searchable,
     filter,
     cascade,
@@ -182,6 +192,9 @@ export function XhCascaderRoot({
           focusedPath: api.focusedPath,
           displayText: api.displayText,
           canClear: api.canClear,
+          tags: api.tags,
+          overflowCount: api.overflowCount,
+          overflowText: api.overflowText,
           isSelected: api.isSelected,
           isIndeterminate: api.isIndeterminate,
           isActive: api.isActive,
@@ -191,6 +204,7 @@ export function XhCascaderRoot({
           setActivePath: api.setActivePath,
           select: api.select,
           clear: api.clear,
+          deselect: api.deselect,
         })}
         {api.value.map(path => <input key={JSON.stringify(path)} {...api.getHiddenInputProps({ path }) as Record<string, unknown>} />)}
       </div>
@@ -242,6 +256,62 @@ export function XhCascaderValueText({ children, ...rest }: XhCascaderValueTextPr
       {children ?? ctx.api.displayText}
     </span>
   )
+}
+
+export interface XhCascaderTagListProps extends ComponentPropsWithRef<'span'> {}
+/** 标签行：可见标签与 +N 标签在其中并排；无选中时连接层写 hidden，value-text 恢复显示占位文字。 */
+export function XhCascaderTagList({ children, ...rest }: XhCascaderTagListProps): ReactNode {
+  const ctx = useCascaderContext()
+  return <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+export interface XhCascaderTagLabelProps extends ComponentPropsWithRef<'span'> {}
+/** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
+export function XhCascaderTagLabel({ children, ...rest }: XhCascaderTagLabelProps): ReactNode {
+  const ctx = useCascaderContext()
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/**
+ * 标签内容：只有文字时替它包一层 label：截断规则挂在 label 上，直接展开在 root 上的文字过长会把
+ * 删除按钮挤出；作者自己写了节点则原样放行。与 XhTagRoot 同一规则。
+ * 库自身填入的文字（+N，没有折叠时是空串）恒包 label，三个适配器渲染出同一棵树。
+ */
+function tagChildren(children: ReactNode): ReactNode {
+  return typeof children === 'string' || slotIsPlainText(children) ? <XhCascaderTagLabel>{children}</XhCascaderTagLabel> : children
+}
+
+export interface XhCascaderTagProps extends ComponentPropsWithRef<'span'> {
+  /** 它代表哪条选中路径：写路径的比较键，即 tags 里的 key。 */
+  value: string
+}
+/** 一条选中路径一个标签，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从级联传下，形态按控件的面派生；触发器内纯展示，触发器外配合 XhCascaderItemDeleteTrigger 可删除。 */
+export function XhCascaderTag({ value, children, ...rest }: XhCascaderTagProps): ReactNode {
+  const ctx = useCascaderContext()
+  return (
+    <CascaderTagProvider value={value}>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
+    </CascaderTagProvider>
+  )
+}
+
+export interface XhCascaderOverflowTagProps extends ComponentPropsWithRef<'span'> {}
+/** 折叠的标签合成的一个标签：同样是 tag 的 root；有内容时使用内容，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
+export function XhCascaderOverflowTag({ children, ...rest }: XhCascaderOverflowTagProps): ReactNode {
+  const ctx = useCascaderContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {tagChildren(children ?? ctx.api.overflowText)}
+    </span>
+  )
+}
+
+export interface XhCascaderItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem；点按移除所在标签的选中路径。 */
+export function XhCascaderItemDeleteTrigger({ children, ...rest }: XhCascaderItemDeleteTriggerProps): ReactNode {
+  const ctx = useCascaderContext()
+  const value = useCascaderTagContext()
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
 export interface XhCascaderIndicatorProps extends ComponentPropsWithRef<'span'> {}

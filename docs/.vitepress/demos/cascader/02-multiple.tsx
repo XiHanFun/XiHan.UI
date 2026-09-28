@@ -1,4 +1,4 @@
-// 多选 | 选择多个分类路径
+// 多选 | multiple 下已选路径在触发器里排成标签，文字是整条路径；超出 maxTagCount（默认 3）的折进 +N，触发器里的标签只作展示
 import type { ReactNode } from "react";
 import {
   XhCascaderClearTrigger,
@@ -10,8 +10,11 @@ import {
   XhCascaderItemIndicator,
   XhCascaderItemText,
   XhCascaderLabel,
+  XhCascaderOverflowTag,
   XhCascaderPositioner,
   XhCascaderRoot,
+  XhCascaderTag,
+  XhCascaderTagList,
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/react";
@@ -37,7 +40,7 @@ const catalog = [
 ];
 
 export default function Demo(): ReactNode {
-  const [picked, setPicked] = useState<string[][]>([["fruit", "apple"]]);
+  const [picked, setPicked] = useState<string[][]>([["fruit", "apple"], ["vegetable", "tomato"]]);
 
   return (
     <XhCascaderRoot
@@ -47,12 +50,19 @@ export default function Demo(): ReactNode {
       multiple
       placeholder="可以多挑几条"
     >
-      {({ levels }) => (
+      {({ levels, tags }) => (
         <>
           <XhCascaderLabel>采购清单</XhCascaderLabel>
           <XhCascaderControl>
             <XhCascaderTrigger>
               <XhCascaderValueText />
+              {/* 标签行：有选中时露面、占位文字让位；标签身份写路径的比较键 */}
+              <XhCascaderTagList>
+                {tags.map(tag => (
+                  <XhCascaderTag key={tag.key} value={tag.key}>{tag.label}</XhCascaderTag>
+                ))}
+                <XhCascaderOverflowTag />
+              </XhCascaderTagList>
               <XhCascaderIndicator />
             </XhCascaderTrigger>
             <XhCascaderClearTrigger />

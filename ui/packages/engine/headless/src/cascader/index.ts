@@ -47,6 +47,8 @@ export type {
   CascaderSchema,
   CascaderSearchItemProps,
   CascaderSearchResult,
+  CascaderTagMeta,
+  CascaderTagProps,
   CascaderTranslations,
   CascaderValue,
   CascaderValueChangeDetails,
