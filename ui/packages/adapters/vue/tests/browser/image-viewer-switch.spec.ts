@@ -100,7 +100,7 @@ describe('image-viewer 换图', () => {
     expect(at).toBeGreaterThanOrEqual(0)
     expect(style.transitionDuration.split(', ')[at]).toBe(expected.transitionDuration)
     // 曲线里自带逗号：只按括号外的逗号切
-    expect(style.transitionTimingFunction.split(/,\s*(?![^(]*\))/)[at]).toBe(expected.transitionTimingFunction)
+    expect(style.transitionTimingFunction.split(/,(?![^(]*\))\s*/)[at]).toBe(expected.transitionTimingFunction)
 
     image.setAttribute('data-loading', '')
     expect(getComputedStyle(image).opacity).toBe('0')
