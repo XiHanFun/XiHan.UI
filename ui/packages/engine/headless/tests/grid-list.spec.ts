@@ -52,6 +52,46 @@ describe('gridList 选择与动作', () => {
     expect(machine.context.get('value')).toEqual([])
   })
 
+  it('输入法组合中的按键与落在行外输入框上的按键都不归 grid 处理', () => {
+    const onAction = vi.fn()
+    const { machine } = service({ collection: [{ value: 'a', label: 'Alpha' }], onAction })
+    machine.send({ type: 'ROW.FOCUS', value: 'a' })
+    const api = connectGridList(machine, normalizeProps)
+    const onKeyDown = (api.getRootProps() as Record<string, unknown>).onKeyDown as (event: KeyboardEvent) => void
+    const root = document.createElement('div')
+    const row = document.createElement('div')
+    const input = document.createElement('input')
+    root.append(row, input)
+    const press = (key: string, target: HTMLElement, isComposing = false): boolean => {
+      let prevented = false
+      onKeyDown({
+        key,
+        isComposing,
+        keyCode: isComposing ? 229 : 0,
+        shiftKey: false,
+        ctrlKey: false,
+        metaKey: false,
+        altKey: false,
+        repeat: false,
+        currentTarget: root,
+        target,
+        preventDefault: () => { prevented = true },
+      } as unknown as KeyboardEvent)
+      return prevented
+    }
+
+    // 确认候选词的那一下 Enter 不触发焦点行的主操作
+    expect(press('Enter', row, true)).toBe(false)
+    expect(onAction).not.toHaveBeenCalled()
+    // 空态里的输入框：空格与字母照常打进去，不被选中与连打检索吞掉
+    expect(press(' ', input)).toBe(false)
+    expect(press('a', input)).toBe(false)
+    expect(machine.context.get('value')).toEqual([])
+    // 同一行上不在组合中的 Enter 照常触发主操作
+    expect(press('Enter', row)).toBe(true)
+    expect(onAction).toHaveBeenCalledWith({ value: 'a' })
+  })
+
   it('connect 输出 grid/row/gridcell；点击行内按钮不会选择行', () => {
     const { machine } = service({ collection: [{ value: 'a', label: 'Alpha' }] })
     const api = connectGridList(machine, normalizeProps)
