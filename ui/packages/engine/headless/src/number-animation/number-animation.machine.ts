@@ -6,20 +6,40 @@
 // 提供 number animation 相关实现。
 
 import type { Scope } from '@xihan-ui/core'
+import type { EasingFunction } from '@xihan-ui/motion'
 import type { NumberAnimationSchema } from './number-animation.types'
 import { setup } from '@xihan-ui/core'
-import { frameLoop, frameNow, isTweenDone, resolveEasing, resolveMotionPreference, tweenValueAt } from '@xihan-ui/motion'
+import { frameLoop, frameNow, isTweenDone, motionDurations, motionEasings, readMotion, resolveEasing, resolveMotionPreference, tweenValueAt } from '@xihan-ui/motion'
 
 const { createMachine } = setup<NumberAnimationSchema>()
 
-/** 时长缺省毫秒。 */
-export const NUMBER_ANIMATION_DURATION = 1000
+function rootOf(scope: Scope): HTMLElement | null {
+  return scope.getById(scope.partId('number-animation', 'root'))
+}
 
-/** 时长归一：夹到非负，缺省或非有限数退回缺省值。0 表示一步到位。 */
-export function resolveNumberAnimationDuration(ms: number | undefined): number {
-  if (ms == null || !Number.isFinite(ms))
-    return NUMBER_ANIMATION_DURATION
-  return Math.max(0, ms)
+/**
+ * 这一轮的时长与曲线。给了 duration / easing 就用给的（duration 夹到非负，0 即一步到位）；没给按数值角色取令牌，
+ * 与图表里的数字同一口径：首次滚动（挂载、换起点之后的那一轮）是入场，取 reveal 与 enter-strong；
+ * 换目标是更新，取 morph 与 continuous。令牌从根节点所在的作用域读，没有渲染宿主时取令牌表的缺省值。
+ */
+function runTiming(
+  duration: number | undefined,
+  easing: NumberAnimationSchema['props']['easing'],
+  scope: Scope,
+  entry: boolean,
+): { duration: number, ease: EasingFunction } {
+  const root = rootOf(scope)
+  const motion = root ? readMotion(root) : null
+  const durationName = entry ? 'reveal' : 'morph'
+  const easingName = entry ? 'enter-strong' : 'continuous'
+  return {
+    duration: duration != null && Number.isFinite(duration)
+      ? Math.max(0, duration)
+      : (motion?.duration(durationName) ?? motionDurations[durationName]),
+    ease: easing != null
+      ? resolveEasing(easing)
+      : (motion?.easing(easingName) ?? resolveEasing(motionEasings[easingName])),
+  }
 }
 
 /**
@@ -28,11 +48,10 @@ export function resolveNumberAnimationDuration(ms: number | undefined): number {
  * 逐帧补间是 JS 动画，皮肤那条减弱动效通道压不到它——数字照样一路滚过去。
  *
  * 按根节点判断：最近祖先上的 data-motion 优先，与 CSS 的作用域一致；其次应用级 override，最后系统设置。
- * 没有渲染宿主（纯逻辑驱动）时按 scope 所在窗口判断。
+ * 没有渲染宿主（纯逻辑驱动）时按 scope 所在窗口判断。逐帧判断：根节点晚于起跑挂进减弱档的容器也认。
  */
-function effectiveDuration(ms: number | undefined, scope: Scope): number {
-  const root = scope.getById(scope.partId('number-animation', 'root'))
-  return resolveMotionPreference(root ?? scope.getWin()) === 'reduce' ? 0 : resolveNumberAnimationDuration(ms)
+function effectiveDuration(duration: number, scope: Scope): number {
+  return resolveMotionPreference(rootOf(scope) ?? scope.getWin()) === 'reduce' ? 0 : duration
 }
 
 /** 端点归一：非有限数与缺省一律按 0，免得 NaN 一路写进文本。 */
@@ -55,7 +74,7 @@ export const numberAnimationMachine = createMachine({
   context: ({ prop, cell }) => ({
     value: cell<number>(() => ({ defaultValue: resolveNumberAnimationBound(prop('from')) })),
   }),
-  refs: () => ({ origin: 0, startedAt: 0, ease: resolveEasing(undefined) }),
+  refs: () => ({ origin: 0, startedAt: 0, duration: 0, ease: resolveEasing(undefined), entered: false }),
   initialState: ({ prop }) => ((prop('active') ?? true) ? 'running' : 'idle'),
   watch: ({ track, prop, action }) => {
     track([() => prop('active')], () => action(['syncActive']))
@@ -80,6 +99,8 @@ export const numberAnimationMachine = createMachine({
         'RUN.STOP': { target: 'idle' },
         // 换了参数就重入：循环重挂，起点与起跑时刻按当前显示值重取
         'RUN.SYNC': { target: 'running', reenter: true },
+        // 换目标时根节点不在视口里：没人看得见的滚动不播，直接落到终点
+        'RUN.SKIP': { target: 'idle', actions: ['skipToEnd', 'invokeComplete'] },
         // 内部转移，不重挂循环
         'FRAME': [
           { guard: 'isSettled', target: 'idle', actions: ['advance', 'invokeComplete'] },
@@ -91,18 +112,19 @@ export const numberAnimationMachine = createMachine({
   implementations: {
     guards: {
       isActive: ({ prop }) => prop('active') ?? true,
-      isSettled: ({ prop, refs, scope }) => isTweenDone(
+      isSettled: ({ refs, scope }) => isTweenDone(
         frameNow(scope.getWin()) - refs.get('startedAt'),
-        effectiveDuration(prop('duration'), scope),
+        effectiveDuration(refs.get('duration'), scope),
       ),
     },
     actions: {
       syncActive: ({ prop, send }) => {
         send((prop('active') ?? true) ? { type: 'RUN.START' } : { type: 'RUN.STOP' })
       },
-      /** 换起点：显示值先落到新起点，再让这一轮从那里重来。 */
-      resetToFrom: ({ context, prop, send }) => {
+      /** 换起点：显示值先落到新起点，再让这一轮从那里重来；这一轮按入场算。 */
+      resetToFrom: ({ context, prop, refs, send }) => {
         context.set('value', resolveNumberAnimationBound(prop('from')))
+        refs.set('entered', false)
         send({ type: 'RUN.SYNC' })
       },
       syncRun: ({ send }) => send({ type: 'RUN.SYNC' }),
@@ -111,9 +133,12 @@ export const numberAnimationMachine = createMachine({
         context.set('value', tweenValueAt({
           from: refs.get('origin'),
           to: resolveNumberAnimationBound(prop('to')),
-          duration: effectiveDuration(prop('duration'), scope),
+          duration: effectiveDuration(refs.get('duration'), scope),
           easing: refs.get('ease'),
         }, elapsed))
+      },
+      skipToEnd: ({ context, prop }) => {
+        context.set('value', resolveNumberAnimationBound(prop('to')))
       },
       invokeComplete: ({ context, prop }) => {
         prop('onComplete')?.({ value: context.get('value') })
@@ -121,16 +146,55 @@ export const numberAnimationMachine = createMachine({
     },
     effects: {
       /**
-       * 逐帧循环。这一轮的基准（起点、起跑时刻与缓动）在这里取：
+       * 逐帧循环。这一轮的基准（起点、起跑时刻、时长与缓动）在这里取：
        * 效应的挂载与卸载正好对齐"一轮的开始与结束"，重入即自动换基准。
        * 缓动在起跑时解析一次，认不出的写法当场报错，不拖到逐帧推进里一帧一抛。
+       *
+       * 屏幕外不空转：入场那一轮根节点不在视口里时，数字停在起点等它进来再从头滚；
+       * 换目标时不在视口里就直接落到终点。先照常起跑，视口判定回来之后再按它停或跳。
        */
       trackFrames: ({ context, prop, refs, scope, send }) => {
         const win = scope.getWin()
-        refs.set('ease', resolveEasing(prop('easing')))
-        refs.set('origin', context.get('value'))
-        refs.set('startedAt', frameNow(win))
-        return frameLoop(win, () => send({ type: 'FRAME' }))
+        const entry = !refs.get('entered')
+        refs.set('entered', true)
+        const timing = runTiming(prop('duration'), prop('easing'), scope, entry)
+        refs.set('ease', timing.ease)
+        refs.set('duration', timing.duration)
+        const origin = context.get('value')
+        refs.set('origin', origin)
+
+        let stopLoop: (() => void) | null = null
+        const start = (): void => {
+          refs.set('startedAt', frameNow(win))
+          stopLoop = frameLoop(win, () => send({ type: 'FRAME' }))
+        }
+        start()
+
+        const root = rootOf(scope)
+        const Observer = win.IntersectionObserver
+        if (!root || typeof Observer !== 'function')
+          return () => stopLoop?.()
+        const observer = new Observer((entries) => {
+          const visible = entries.some(item => item.isIntersecting)
+          if (visible) {
+            if (!stopLoop)
+              start()
+            return
+          }
+          if (!entry) {
+            send({ type: 'RUN.SKIP' })
+            return
+          }
+          // 入场那一轮滚出视口之前就停：数字回到起点，等进视口再从头滚
+          stopLoop?.()
+          stopLoop = null
+          context.set('value', origin)
+        })
+        observer.observe(root)
+        return () => {
+          observer.disconnect()
+          stopLoop?.()
+        }
       },
     },
   },

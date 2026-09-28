@@ -33,9 +33,15 @@ export interface NumberAnimationSchema extends MachineSchema {
     from?: number
     /** 终点，默认 0。改写它从当前显示值继续走向新终点，不跳回起点。 */
     to?: number
-    /** 时长毫秒，默认 1000；<=0 即一步到位。 */
+    /**
+     * 时长毫秒；<=0 即一步到位。不写按数值角色取令牌：首次滚动与图表数字入场同档（reveal），
+     * 换目标与图表数字更新同档（morph）。
+     */
     duration?: number
-    /** 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串，默认线性；认不出的写法在起跑时报错。 */
+    /**
+     * 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串；认不出的写法在起跑时报错。
+     * 不写按数值角色取令牌：首次滚动取 enter-strong，换目标取 continuous。
+     */
     easing?: NumberAnimationEasing
     /** 小数位，默认 0。夹进 [0, 20]；每一帧都按这个位数铺字。 */
     precision?: number
@@ -72,8 +78,12 @@ export interface NumberAnimationSchema extends MachineSchema {
     origin: number
     /** 本轮的起始时刻。 */
     startedAt: number
+    /** 本轮的时长（未计减弱动效）：起跑时取一次。 */
+    duration: number
     /** 本轮的缓动：起跑时解析一次。 */
     ease: EasingFunction
+    /** 入场那一轮已经起跑过；换起点时撤回，下一轮重新按入场算。 */
+    entered: boolean
   }
   state: 'idle' | 'running'
   event:
@@ -85,9 +95,11 @@ export interface NumberAnimationSchema extends MachineSchema {
     | { type: 'RUN.SYNC' }
     /** 新的一帧到达。 */
     | { type: 'FRAME' }
+    /** 换目标时根节点不在视口里：直接落到终点。 */
+    | { type: 'RUN.SKIP' }
   tag: never
   guard: 'isSettled' | 'isActive'
-  action: 'syncActive' | 'resetToFrom' | 'syncRun' | 'advance' | 'invokeComplete'
+  action: 'syncActive' | 'resetToFrom' | 'syncRun' | 'advance' | 'skipToEnd' | 'invokeComplete'
   effect: 'trackFrames'
 }
 

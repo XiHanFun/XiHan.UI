@@ -15,7 +15,8 @@
 
 - `precision` 小数位、`separator` 分组符，每一帧都按同一个位数铺字，数字不会在滚动中忽长忽短。
 - 文字由 `Intl.NumberFormat` 铺出：`locale` 决定小数点、分组习惯与数字系统（未提供时跟随宿主语言），`formatOptions` 给出货币、百分比、单位与紧凑记数；`formatOptions.useGrouping` 打开即按该语言的习惯分组。
-- `easing` 与 `duration` 决定滚动的节奏。
+- `easing` 与 `duration` 决定滚动的节奏；不写时与图表里的数字同一口径：首次滚动按入场档（reveal、enter-strong），换目标按更新档（morph、continuous）。
+- 屏幕外不空转：首次滚动时不在视口里就停在起点，进了视口再从头滚；换目标时不在视口里直接落到终值。
 - `live` 决定读屏播报方式，通常只播报终值。
 
 ## 组合
