@@ -505,6 +505,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
 | `positioner` | `data-variant` | props.variant |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-xh-material` | 'frosted' |

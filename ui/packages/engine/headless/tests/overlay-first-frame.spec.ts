@@ -13,6 +13,7 @@ import { connectMenu, menuMachine } from '../src/menu'
 import { connectPopconfirm } from '../src/popconfirm'
 import { connectPopover, popoverMachine } from '../src/popover'
 import { connectSelect, selectMachine } from '../src/select'
+import { connectTreeSelect, treeSelectMachine } from '../src/tree-select'
 
 type Attrs = Record<string, unknown>
 
@@ -74,6 +75,11 @@ const CASES: Record<string, Case> = {
     machine: comboboxMachine,
     props: open => ({ ...open, collection: FRUITS }),
     parts: service => [connectCombobox(service, normalizeProps).getContentProps() as Attrs],
+  },
+  'tree-select': {
+    machine: treeSelectMachine,
+    props: open => ({ ...open, collection: FRUITS }),
+    parts: service => [connectTreeSelect(service, normalizeProps).getContentProps() as Attrs],
   },
 }
 

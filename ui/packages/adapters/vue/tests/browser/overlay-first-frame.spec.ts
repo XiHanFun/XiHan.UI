@@ -47,6 +47,14 @@ import {
   XhSelectRoot,
   XhSelectTrigger,
   XhSelectValueText,
+  XhTreeSelectContent,
+  XhTreeSelectItem,
+  XhTreeSelectItemText,
+  XhTreeSelectPositioner,
+  XhTreeSelectRoot,
+  XhTreeSelectTree,
+  XhTreeSelectTrigger,
+  XhTreeSelectValueText,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -126,6 +134,16 @@ const CASES: Record<string, Case> = {
       h(XhComboboxPositioner, null, () => h(XhComboboxContent, null, () => FRUITS.map(node =>
         h(XhComboboxItem, { key: node.value, value: node.value }, () => h(XhComboboxItemText, null, () => node.label)),
       ))),
+    ]),
+  },
+  'tree-select': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhTreeSelectRoot, { ...props, collection: FRUITS }, () => [
+      h(XhTreeSelectTrigger, null, () => h(XhTreeSelectValueText)),
+      h(XhTreeSelectPositioner, null, () => h(XhTreeSelectContent, null, () => h(XhTreeSelectTree, null, () => FRUITS.map(node =>
+        h(XhTreeSelectItem, { key: node.value, value: node.value }, () => h(XhTreeSelectItemText, null, () => node.label)),
+      )))),
     ]),
   },
   'dialog': {

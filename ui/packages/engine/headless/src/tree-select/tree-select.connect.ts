@@ -566,6 +566,8 @@ export function connectTreeSelect<T extends PropTypes>(
       // 浮层壳只是焦点域与消解层的根节点，写 -1 避免可滚动区域被自动纳入 Tab 序列
       'tabindex': -1,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-placement': placement,
       // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
       'inert': !open || undefined,

@@ -11,6 +11,7 @@ import type { TreeSelectBranchLoadSnapshot, TreeSelectFocusIntent, TreeSelectNod
 import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues, uniqueArray as unique } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
@@ -254,6 +255,8 @@ function virtualAnchorIndex(
 export const treeSelectMachine = createMachine({
   name: 'tree-select',
   context: ({ prop, cell }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     value: cell<string[]>(() => ({
@@ -297,7 +300,7 @@ export const treeSelectMachine = createMachine({
     branchLoadSequence: { n: 0 },
     branchLoadOwners: new Map(),
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 无条件回写；
   // 值与展开集合受控走 cell。
   watch: ({ track, prop, context, action }) => {
@@ -335,6 +338,8 @@ export const treeSelectMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控只发意图，非受控落 target 并通知。
         // 落点意图与焦点归还先记进 context：受控那一拍走 CONTROLLED.OPEN，读不到原按键事件。
@@ -393,6 +398,7 @@ export const treeSelectMachine = createMachine({
     },
     actions: {
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
+      clearOpenedAtMount,
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
 
       startPress: ({ context, event }) => {
