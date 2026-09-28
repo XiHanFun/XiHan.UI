@@ -102,6 +102,8 @@ export const tabsMachine = createMachine({
     // 量测结果不受控、不对外通知
     indicator: cell<TabsIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameIndicatorBox })),
     indicatorStretch: cell<number>(() => ({ defaultValue: 0 })),
+    // 指示器这一落点直接到位（首次落位与同一项的重量），还是交给皮肤滑过去（标准档换项）
+    indicatorInstant: cell<boolean>(() => ({ defaultValue: true })),
     // 标签带的位移：放不下时整条标签带沿主轴往起始端挪了多少（px，≥ 0），上限是内容长度超出可见长度的那一截；
     // 放得下时上限为 0。两者都不受控、不对外通知，翻页钮的显隐与禁用由它们推出
     scroll: cell<number>(() => ({ defaultValue: 0 })),
@@ -180,9 +182,10 @@ export const tabsMachine = createMachine({
         const liquid = createLiquidIndicator({
           axis: () => (prop('orientation') === 'vertical' ? 'block' : 'inline'),
           host: () => refs.get('getListEl')(),
-          onFrame: (box, stretch) => {
+          onFrame: (box, stretch, instant) => {
             context.set('indicator', box)
             context.set('indicatorStretch', stretch)
+            context.set('indicatorInstant', instant)
           },
         })
         liquid.place(context.get('indicator'), context.get('value'))
@@ -521,9 +524,14 @@ export const tabsMachine = createMachine({
           // 量到的落点交给液态指示器：液态档下选中项一变，两沿走弹簧过去；其余直接落定
           const place = (box: TabsIndicatorRect | null): void => {
             const liquid = refs.get('liquidIndicator')
-            if (liquid)
+            if (liquid) {
               liquid.place(box, value)
-            else context.set('indicator', box)
+            }
+            else {
+              // 指示器的落位器建起之前（挂载即量的那一次）：首次落位，直接到位
+              context.set('indicator', box)
+              context.set('indicatorInstant', true)
+            }
           }
           if (!list || value == null) {
             place(null)
