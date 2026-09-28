@@ -2919,6 +2919,7 @@ export type ComponentTokenName
     | '--xh-segmented-border-invalid'
     | '--xh-segmented-font-size'
     | '--xh-segmented-h'
+    | '--xh-segmented-icon-size'
     | '--xh-segmented-indicator-bg'
     | '--xh-segmented-indicator-border'
     | '--xh-segmented-indicator-radius'

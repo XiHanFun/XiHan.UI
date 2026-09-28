@@ -48,6 +48,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
  * @csspart root - role=radiogroup 的容器（承载键盘收口与 Tab 兜底位）
  * @csspart item - 一段，须是原生 `<button>` 并自带 value 属性标识身份
+ * @csspart item-icon - 段内文字前的图标位，对读屏隐藏
  * @csspart item-text - 段内文本
  * @csspart indicator - 滑动的选中标记，对读屏隐藏；无选中项时收起
  * @csspart hidden-input - 表单影子输入（必须是原生 input），整组只需一份；提供 name 却未编写它时，没有任何内容参与提交
@@ -218,6 +219,8 @@ export class XhSegmentedElement extends XhElement {
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      for (const icon of this.partsIn(el, 'item-icon'))
+        this.spreader.spread(icon, api.getItemIconProps(item) as Record<string, unknown>)
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
     }

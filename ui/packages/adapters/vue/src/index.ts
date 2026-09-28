@@ -941,7 +941,7 @@ export { useScrollbar } from './components/scrollbar/use-scrollbar'
 export type { ScrollbarContext, ScrollbarSource, ScrollbarTarget } from './components/scrollbar/use-scrollbar'
 export { useSegmentedContext, useSegmentedItemContext } from './components/segmented/context'
 export type { SegmentedItemContext } from './components/segmented/context'
-export { XhSegmentedHiddenInput, XhSegmentedIndicator, XhSegmentedItem, XhSegmentedItemText, XhSegmentedRoot } from './components/segmented/segmented'
+export { XhSegmentedHiddenInput, XhSegmentedIndicator, XhSegmentedItem, XhSegmentedItemIcon, XhSegmentedItemText, XhSegmentedRoot } from './components/segmented/segmented'
 export { useSegmented } from './components/segmented/use-segmented'
 export type { SegmentedContext } from './components/segmented/use-segmented'
 export {

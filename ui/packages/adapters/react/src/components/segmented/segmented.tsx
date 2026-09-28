@@ -165,6 +165,14 @@ export function XhSegmentedItem({ value, disabled, children, ...rest }: XhSegmen
   )
 }
 
+export interface XhSegmentedItemIconProps extends ComponentPropsWithRef<'span'> {}
+/** 段内文字前的图标位：纯装饰，对读屏隐藏。 */
+export function XhSegmentedItemIcon({ children, ...rest }: XhSegmentedItemIconProps): ReactNode {
+  const ctx = useSegmentedContext()
+  const item = useSegmentedItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemIconProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhSegmentedItemTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhSegmentedItemText({ children, ...rest }: XhSegmentedItemTextProps): ReactNode {
   const ctx = useSegmentedContext()
@@ -200,6 +208,7 @@ function DefaultTree(props: {
       <XhSegmentedIndicator />
       {props.collection.map(node => (
         <XhSegmentedItem key={node.value} value={node.value}>
+          {node.icon ? <XhSegmentedItemIcon>{node.icon}</XhSegmentedItemIcon> : null}
           <XhSegmentedItemText>{props.renderItem?.(node) ?? node.label}</XhSegmentedItemText>
         </XhSegmentedItem>
       ))}

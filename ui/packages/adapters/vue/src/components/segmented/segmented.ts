@@ -105,6 +105,16 @@ export const XhSegmentedItem = defineComponent({
   },
 })
 
+/** 段内文字前的图标位：纯装饰，对读屏隐藏。 */
+export const XhSegmentedItemIcon = defineComponent({
+  name: 'XhSegmentedItemIcon',
+  setup(_, { slots }) {
+    const ctx = useSegmentedContext()
+    const { item } = useSegmentedItemContext()
+    return () => h('span', ctx.api.value.getItemIconProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhSegmentedItemText = defineComponent({
   name: 'XhSegmentedItemText',
   setup(_, { slots }) {
@@ -144,6 +154,7 @@ function renderDefaultTree(
   return [
     h(XhSegmentedIndicator),
     ...collection.map(node => h(XhSegmentedItem, { key: node.value, value: node.value }, () => [
+      node.icon ? h(XhSegmentedItemIcon, null, () => node.icon) : null,
       h(XhSegmentedItemText, null, () => itemSlot?.(node) ?? node.label),
     ])),
     h(XhSegmentedHiddenInput),

@@ -29,6 +29,18 @@ function allEnabled(base: FixtureNode): FixtureNode {
   }
 }
 
+/** 每段文字前补一枚图标位：图标部件是可选的，默认夹具不带它。 */
+function withIcons(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children?.map(node =>
+      node.part === 'item'
+        ? { ...node, children: [{ part: 'item-icon', tag: 'span', text: '·' }, ...(node.children ?? [])] }
+        : node,
+    ),
+  }
+}
+
 // 指示器排在段之前：它绝对定位，靠文档序让段压在它上面。
 // 中间那段用 aria-disabled 表达禁用（不是原生 disabled），导航时被跳过但仍可聚焦。
 export const segmentedSuite: ConformanceSuite = {
@@ -135,6 +147,35 @@ export const segmentedSuite: ConformanceSuite = {
           ],
           'item-text': [{ 'data-state': 'checked' }, { 'data-state': 'unchecked' }, { 'data-state': 'unchecked' }],
           'indicator': { 'data-value': 'day' },
+        },
+      },
+    },
+    {
+      name: '段内图标：排在文字前、对读屏隐藏，状态标记与段一致',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { defaultValue: 'day' },
+      fixture: withIcons,
+      initial: {
+        order: [
+          'root',
+          'indicator',
+          'item[0]',
+          'item-icon[0]',
+          'item-text[0]',
+          'item[1]',
+          'item-icon[1]',
+          'item-text[1]',
+          'item[2]',
+          'item-icon[2]',
+          'item-text[2]',
+          'hidden-input',
+        ],
+        parts: {
+          'item-icon': [
+            { 'aria-hidden': 'true', 'data-state': 'checked', 'data-disabled': null },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-disabled': '' },
+            { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-disabled': null },
+          ],
         },
       },
     },

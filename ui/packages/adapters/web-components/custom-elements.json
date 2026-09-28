@@ -52064,6 +52064,10 @@
               "name": "item"
             },
             {
+              "description": "段内文字前的图标位，对读屏隐藏",
+              "name": "item-icon"
+            },
+            {
               "description": "段内文本",
               "name": "item-text"
             },
@@ -52523,6 +52527,9 @@
             },
             {
               "name": "--xh-segmented-h"
+            },
+            {
+              "name": "--xh-segmented-icon-size"
             },
             {
               "name": "--xh-segmented-indicator-bg"

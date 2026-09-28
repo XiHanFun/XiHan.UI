@@ -2166,12 +2166,14 @@ export {
   XhSegmentedHiddenInput,
   XhSegmentedIndicator,
   XhSegmentedItem,
+  XhSegmentedItemIcon,
   XhSegmentedItemText,
   XhSegmentedRoot,
 } from './components/segmented/segmented'
 export type {
   XhSegmentedHiddenInputProps,
   XhSegmentedIndicatorProps,
+  XhSegmentedItemIconProps,
   XhSegmentedItemProps,
   XhSegmentedItemTextProps,
   XhSegmentedRootProps,
