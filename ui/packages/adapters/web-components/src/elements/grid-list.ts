@@ -35,7 +35,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (value: string | null) => (value === 
  * @attr {boolean} disabled - 整体禁用
  * @attr {boolean} read-only - 只读：可浏览和使用行内按钮，不可改变选择
  * @attr {boolean} invalid - 校验失败
- * @attr {boolean} loading - 正在加载
+ * @attr {boolean} loading - 正在加载：还没有行时显示加载占位，已有行时行保留上一帧淡下
  * @attr {boolean} loop - 方向键到边界后是否回绕
  * @attr {boolean} typeahead - 是否启用连打检索
  * @attr {'outline'|'subtle'|'ghost'} variant - 容器形态
@@ -53,7 +53,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (value: string | null) => (value === 
  * @csspart row-actions - 行内按钮所在的 gridcell
  * @csspart row-action - 行内动作按钮
  * @csspart empty - 空态
- * @csspart loading - 加载态
+ * @csspart loading - 加载态：一枚加载环排在文案之前，只在还没有行时显示
  */
 export class XhGridListElement extends XhElement {
   static override partContract = { anatomy: gridListAnatomy, meta: gridListMeta }

@@ -29111,6 +29111,9 @@
     --xh-_grid-list-indicator-accent: var(--xh-_tone-border-control, var(--xh-bg-brand));
     --xh-_grid-list-indicator-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-icon-size: var(--xh-grid-list-icon-size, var(--xh-glyph-size-md));
+    /* 占位文案与条目同档：字号与行内内衬随尺寸档 */
+    --xh-_grid-list-state-font-size: var(--xh-control-font-md);
+    --xh-_grid-list-state-px: var(--xh-control-px-md);
 
     display: flex;
     flex-direction: column;
@@ -29144,11 +29147,15 @@
 
   [data-scope='grid-list'][data-part='root'][data-size='sm'] {
     --xh-_grid-list-indicator: var(--xh-control-indicator-sm);
+    --xh-_grid-list-state-font-size: var(--xh-control-font-sm);
+    --xh-_grid-list-state-px: var(--xh-control-px-sm);
     --xh-icon-size: var(--xh-grid-list-icon-size, var(--xh-glyph-size-sm));
   }
 
   [data-scope='grid-list'][data-part='root'][data-size='lg'] {
     --xh-_grid-list-indicator: var(--xh-control-indicator-lg);
+    --xh-_grid-list-state-font-size: var(--xh-control-font-lg);
+    --xh-_grid-list-state-px: var(--xh-control-px-lg);
     --xh-icon-size: var(--xh-grid-list-icon-size, var(--xh-glyph-size-lg));
   }
 
@@ -29171,6 +29178,12 @@
     --xh-collection-fg-selected-hover: var(--xh-grid-list-row-fg-selected, var(--xh-fg-on-brand-subtle));
     --xh-collection-fg-selected-highlight: var(--xh-grid-list-row-fg-selected, var(--xh-fg-on-brand-subtle));
     --xh-collection-fg-selected-pressed: var(--xh-grid-list-row-fg-selected, var(--xh-fg-on-brand-subtle));
+
+    /* 家族只过渡换面的两支；重新取数时整列淡下同样走 micro，opacity 补进同一份列表 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* Headless 会预先保留下一次 roving focus 的 highlighted 行（指针点过的行也记着）；容器尚未真正获得
@@ -29193,7 +29206,8 @@
     cursor: default;
   }
 
-  /* 重新取数时保留上一帧，整列降档；aria-busy 与这一副可见回执同源。 */
+  /* 已有行时重新取数：不换成占位，行保留上一帧、按 micro 淡到禁用透明度，数据到了再淡回；
+     这一段不接指针——取数在途时选中与行内动作都不生效。aria-busy 与这一副可见回执同源 */
   [data-scope='grid-list'][data-part='root'][data-loading]
   [data-scope='grid-list'][data-part='row'] {
     opacity: var(--xh-grid-list-row-loading-opacity, var(--xh-state-disabled-opacity));
@@ -29269,14 +29283,29 @@
     background: var(--xh-grid-list-row-indicator-bg-selected, var(--xh-_grid-list-indicator-accent));
   }
 
+  /* 空态与加载态占同一个位置、同一副排版：一行文案居中，字号与行内内衬随尺寸档与条目同档，次要文字色，
+     块向内距一档，不设最小高 */
   [data-scope='grid-list'][data-part='empty'],
   [data-scope='grid-list'][data-part='loading'] {
-    padding-block: var(--xh-grid-list-state-py, var(--xh-space-4));
-    padding-inline: var(--xh-grid-list-state-px, var(--xh-control-px-md));
-    color: var(--xh-grid-list-state-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-grid-list-state-font-size, var(--xh-text-body-size));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-grid-list-state-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-grid-list-state-py, var(--xh-space-3));
+    padding-inline: var(--xh-grid-list-state-px, var(--xh-_grid-list-state-px));
+    color: var(--xh-grid-list-state-fg, var(--xh-fg-muted));
+    font-size: var(--xh-grid-list-state-font-size, var(--xh-_grid-list-state-font-size));
     line-height: var(--xh-leading-normal);
     text-align: center;
+  }
+
+  /* 还没有行、正在取：一枚加载环排在文案之前。环由加载环配方画成（轨道 + 起始边、随 data-loading 淡入并转），
+     这里只给它盒子：直径取尺寸档的图标档 */
+  [data-scope='grid-list'][data-part='loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   }
 
   [data-scope='grid-list'][data-part='row-selection-indicator'][hidden],

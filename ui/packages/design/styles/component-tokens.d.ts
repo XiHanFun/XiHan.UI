@@ -1803,6 +1803,7 @@ export type ComponentTokenName
     | '--xh-grid-list-row-radius'
     | '--xh-grid-list-state-fg'
     | '--xh-grid-list-state-font-size'
+    | '--xh-grid-list-state-gap'
     | '--xh-grid-list-state-px'
     | '--xh-grid-list-state-py'
     | '--xh-grid-row-gap'
