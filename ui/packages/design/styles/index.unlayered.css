@@ -8759,10 +8759,9 @@
     color: HighlightText;
   }
 
-  /* 命中片段在系统色下换成 Mark 那一对，停住的那一条换成系统高亮 */
+  /* 系统色下底色统一成 Canvas：命中片段改画一圈正文色的框，停住的那一条换成系统高亮 */
   [data-scope='json-viewer'][data-part='mark'] {
-    background: Mark;
-    color: MarkText;
+    outline: var(--xh-stroke-thin) solid CanvasText;
   }
 
   [data-scope='json-viewer'][data-part='branch'][data-current] > [data-scope='json-viewer'][data-part='branch-control'] > [data-scope='json-viewer'][data-part='branch-text'] > [data-scope='json-viewer'][data-part='mark'],
