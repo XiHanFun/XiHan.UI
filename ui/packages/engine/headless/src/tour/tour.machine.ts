@@ -101,6 +101,8 @@ export const tourMachine = createMachine({
     pressed: cell<TourPressedPart | null>(() => ({ defaultValue: null })),
     // 声明的目标等满时长仍没出现：该步按居中呈现
     missingTarget: cell<boolean>(() => ({ defaultValue: false })),
+    // 换步进行中：气泡与聚光框一起滑，过渡播完即撤
+    stepping: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -110,6 +112,7 @@ export const tourMachine = createMachine({
     getFloatingEl: () => null,
     getContentEl: () => null,
     reanchor: null,
+    stepRound: 0,
   }),
   initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 逻辑收起之后，层、消解与焦点域必须等所有视觉退场租约结清才归还。
@@ -119,7 +122,9 @@ export const tourMachine = createMachine({
     track([() => prop('open')], () => action(['syncOpen']))
     // 步序变了要先把目标滚进视口，再换锚点、重量高亮框；挂在 watch 上，
     // 受控时步序是宿主写进来的，不经过走步动作
-    track([context.dep('value')], () => action(['scrollTargetIntoView', 'reanchorPosition', 'measureSpotlight']))
+    track([context.dep('value')], () => action(['startStepping', 'scrollTargetIntoView', 'reanchorPosition', 'measureSpotlight']))
+    // 换步途中几何更新了：等这一轮起播的位置与尺寸过渡播完再撤换步标记
+    track([context.dep('position'), context.dep('spotlight')], () => action(['awaitStepSettle']))
   },
   states: {
     closed: {
@@ -139,7 +144,7 @@ export const tourMachine = createMachine({
       effects: ['trackPosition', 'trackSpotlight', 'trackTarget'],
       // 几何在展开那一刻清掉再量：留着上一轮坐标会让这次展开先按旧位置闪一帧。
       // 收起时不清——退场要在原处播完，清成 0 气泡与高亮框会一路滑向视口左上角
-      entry: ['clearGeometry'],
+      entry: ['clearGeometry', 'endStepping'],
       // 收起即松开：按住 Enter 走完末步或跳过，那颗按钮随内容藏起，不会再来 keyup 或 blur
       exit: ['releasePress'],
       on: {
@@ -160,6 +165,7 @@ export const tourMachine = createMachine({
           { target: 'closed', actions: ['invokeOnSkip', 'invokeOnClose'] },
         ],
         'GEOMETRY.SYNC': { actions: ['recheckTarget', 'reanchorPosition', 'measureSpotlight'] },
+        'STEP.SETTLED': { actions: ['endStepping'] },
         // 等到了目标：先滚进视口，再挂锚点、量高亮框
         'TARGET.FOUND': { actions: ['scrollTargetIntoView', 'reanchorPosition', 'measureSpotlight'] },
         // 等不到：该步按居中呈现，锚点与高亮框随之撤掉
@@ -222,6 +228,35 @@ export const tourMachine = createMachine({
         context.set('position', null)
         context.set('spotlight', null)
       },
+      /**
+       * 展开着换步：气泡定位层与聚光框投影 data-animating，皮肤只在这一档挂位置与尺寸的过渡，
+       * 两者同一段时长、同一条曲线一起滑过去。还没量到过几何（刚展开、居中步）时不挂：没有起点可滑。
+       */
+      startStepping: ({ context, state }) => {
+        if (state.get() === 'open' && (context.get('position') != null || context.get('spotlight') != null))
+          context.set('stepping', true)
+      },
+      /**
+       * 换步途中几何更新了一回：宿主把这一帧提交出去之后，等两者身上起播的过渡都播完再报落定。
+       * 每回更新各起一轮，只有最新那一轮报——同步量与推迟量、定位引擎的回报先后到，前一轮的过渡还在跑。
+       */
+      awaitStepSettle: ({ context, refs, scope, send, flush }) => {
+        if (!context.get('stepping'))
+          return
+        const round = refs.get('stepRound') + 1
+        refs.set('stepRound', round)
+        flush(() => {
+          const nodes = [refs.get('getFloatingEl')(), scope.getById(scope.partId('tour', 'spotlight'))]
+          const moves = nodes.flatMap(node => node && typeof node.getAnimations === 'function'
+            ? node.getAnimations().filter(animation => 'transitionProperty' in animation)
+            : [])
+          void Promise.allSettled(moves.map(animation => animation.finished)).then(() => {
+            if (refs.get('stepRound') === round && context.get('stepping'))
+              send({ type: 'STEP.SETTLED' })
+          })
+        })
+      },
+      endStepping: ({ context }) => context.set('stepping', false),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')
@@ -356,9 +391,10 @@ export const tourMachine = createMachine({
         let disposed = false
         let frame = 0
         const win = scope.getWin()
+        // 页面滚动与视口缩放是跟手的重量：先撤换步标记，两者直接到位、不拖尾
         const onResize = (): void => {
           if (!disposed)
-            action(['measureSpotlight'])
+            action(['endStepping', 'measureSpotlight'])
         }
         const onScroll = (): void => {
           if (disposed || frame)
@@ -366,7 +402,7 @@ export const tourMachine = createMachine({
           frame = win.requestAnimationFrame(() => {
             frame = 0
             if (!disposed)
-              action(['measureSpotlight'])
+              action(['endStepping', 'measureSpotlight'])
           })
         }
         action(['scrollTargetIntoView', 'measureSpotlight'])

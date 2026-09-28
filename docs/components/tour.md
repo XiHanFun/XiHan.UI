@@ -179,7 +179,7 @@
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `VALUE.SET` · `STEP.PREV` · `STEP.NEXT` · `SKIP` · `GEOMETRY.SYNC` · `TARGET.FOUND` · `TARGET.MISSING` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `CLOSE` · `VALUE.SET` · `STEP.PREV` · `STEP.NEXT` · `SKIP` · `GEOMETRY.SYNC` · `TARGET.FOUND` · `TARGET.MISSING` · `STEP.SETTLED` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isOpenControlled` · `isLastStep` · `isLastStepOpenControlled` · `canPress`
 
@@ -272,9 +272,11 @@
 | `backdrop` | `data-instant` | ''（条件成立时才出现） |
 | `backdrop` | `data-position` | 'anchored' \| 'center' |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
+| `spotlight` | `data-animating` | ''（条件成立时才出现） |
 | `spotlight` | `data-dimmed` | ''（条件成立时才出现） |
 | `spotlight` | `data-instant` | ''（条件成立时才出现） |
 | `spotlight` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-animating` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-position` | 'anchored' \| 'center' |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -377,7 +379,7 @@
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定面板）（见[动效规范](../design/motion#角色)）。
 
-关键帧 `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-radius` · `inline-size` · `inset-block-start` · `inset-inline-start` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-radius` · `inline-size` · `left` · `top` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

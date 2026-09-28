@@ -48,6 +48,7 @@ export function connectTour<T extends PropTypes>(
   // 箭头落点：引擎没算（没要箭头 / 尚未落位）时缺席，皮肤退回居中
   const arrowAt = position?.arrow
   const spotlight = context.get('spotlight')
+  const stepping = context.get('stepping')
   const placement = position?.placement ?? currentStep?.placement ?? prop('placement') ?? TOUR_DEFAULT_PLACEMENT
 
   const translations = prop('translations')
@@ -120,9 +121,13 @@ export function connectTour<T extends PropTypes>(
      */
     getSpotlightProps: () => normalize.element({
       ...parts.spotlight.attrs,
+      // 换步落定要等它身上的过渡播完，机器按 id 现取
+      'id': scope.partId('tour', 'spotlight'),
       'aria-hidden': true,
       'data-state': stateAttr,
       'data-instant': dataAttr(context.get('openedAtMount')),
+      // 换步那一段：与气泡同一段时长、同一条曲线一起滑过去；滚动与缩放时不挂，跟手
+      'data-animating': dataAttr(stepping),
       'data-dimmed': dataAttr(showBackdrop),
       // 收起态与居中步都不画；锚定步在量到框之前也不露面，否则先按 0 几何画出来、再一路滑到目标上
       'hidden': !open || !anchored || !spotlight || undefined,
@@ -146,6 +151,8 @@ export function connectTour<T extends PropTypes>(
       // 居中步交给样式表摆，锚定步的坐标由引擎写内联
       'data-position': anchored ? 'anchored' : 'center',
       'data-placement': placement,
+      // 换步那一段：与聚光框同一段时长、同一条曲线一起滑过去；滚动与缩放时不挂，跟手
+      'data-animating': dataAttr(stepping),
       'hidden': !open || undefined,
       'style': {
         position: 'fixed',
