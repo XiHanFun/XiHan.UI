@@ -57,8 +57,19 @@ const PUBLIC_EVENTS = {
 } as const
 
 function declaredEvents(component: Component): Set<string> {
-  const emits = (component as { emits?: readonly string[] | Record<string, unknown> }).emits
-  return new Set(Array.isArray(emits) ? emits : Object.keys(emits ?? {}))
+  const { emits, props } = component as {
+    emits?: readonly string[] | Record<string, unknown>
+    props?: readonly string[] | Record<string, unknown>
+  }
+  const declared = new Set(Array.isArray(emits) ? emits : Object.keys(emits ?? {}))
+  // 要拿回调返回值的事件落在 prop 上（Form 的 onSubmit 返回 thenable 期间算提交在途）：
+  // 声明了同名监听 prop 的，同样收进事件流
+  const propNames = new Set(Array.isArray(props) ? props : Object.keys(props ?? {}))
+  for (const [event, listener] of Object.entries(PUBLIC_EVENTS)) {
+    if (propNames.has(listener))
+      declared.add(event)
+  }
+  return declared
 }
 
 export function createVueHarness(): AdapterHarness {
