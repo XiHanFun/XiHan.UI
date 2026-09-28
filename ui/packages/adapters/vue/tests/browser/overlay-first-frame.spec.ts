@@ -26,6 +26,13 @@ import {
   XhContextMenuPositioner,
   XhContextMenuRoot,
   XhContextMenuTrigger,
+  XhDatePickerConfirmTrigger,
+  XhDatePickerContent,
+  XhDatePickerControl,
+  XhDatePickerPositioner,
+  XhDatePickerRoot,
+  XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
   XhDialogContent,
   XhDialogRoot,
   XhDialogTitle,
@@ -162,6 +169,14 @@ const CASES: Record<string, Case> = {
       h(XhCascaderPositioner, null, () => h(XhCascaderContent, null, () => h(XhCascaderColumn, { level: 0 }, () => FRUITS.map(node =>
         h(XhCascaderItem, { key: node.value, value: node.value }, () => h(XhCascaderItemText, null, () => node.label)),
       )))),
+    ]),
+  },
+  'date-picker': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhDatePickerRoot, props, () => [
+      h(XhDatePickerControl, null, () => h(XhDatePickerSegmentGroup, null, () => h(XhDatePickerSegment, { index: 0 }))),
+      h(XhDatePickerPositioner, null, () => h(XhDatePickerContent, null, () => h(XhDatePickerConfirmTrigger, null, () => '确定'))),
     ]),
   },
   'dialog': {

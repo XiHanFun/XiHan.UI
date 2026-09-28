@@ -247,6 +247,11 @@ export interface DatePickerSchema extends MachineSchema {
     onActiveViewChange?: (details: CalendarViewChangeDetails) => void
   }
   context: {
+    /**
+     * 挂载时开着、还没收起过：这一段打开属于首帧，content 投影 data-instant 直接呈现、不播进场。
+     * 第一次收起时清掉，之后的每一次打开照常进场。
+     */
+    openedAtMount: boolean
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
     /** 选中集合，恒为数组。受控（value 提供）时直读 prop。 */
@@ -317,6 +322,7 @@ export interface DatePickerSchema extends MachineSchema {
     | 'resetActiveView'
     | 'focusSelectedDay'
     | 'resetToDefault'
+    | 'clearOpenedAtMount'
   effect: 'trackPosition' | 'trackLayer'
 }
 
