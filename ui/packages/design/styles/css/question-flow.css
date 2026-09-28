@@ -267,7 +267,8 @@
   /* 多选的记号是勾选格：没写内容时勾由勾选标记配方画在 ::before 上，常驻、按状态淡变并轻缩放；
      作者往部件里塞了自己的图形，配方与下面的圆点都不画。
      单选那一档画实心点，由伪元素自己的底色画；直径按记号盒的一半量，与其余单选控件的圆点同源——
-     盒换档时点跟着换 */
+     盒换档时点跟着换。圆点与 RadioGroup 同一套动效：没选中时缩放为 0（盒留在原位，翻面时整行不跳），
+     选中时落位略涨过 1 再收回、收起走强减速不过冲，换色走 micro */
   [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before {
     content: '';
     display: inline-block;
@@ -275,16 +276,22 @@
     block-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
     border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-circle));
     background-color: currentColor;
+    scale: 0;
+    transition:
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single'][data-state='checked']:empty::before {
+    scale: 1;
+    transition:
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-settle),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='question-flow'][data-part='item-indicator'][data-state='checked'] {
     border-color: var(--xh-question-flow-indicator-border-checked, var(--xh-_tone, var(--xh-bg-brand)));
     background: var(--xh-question-flow-indicator-bg-checked, var(--xh-_tone, var(--xh-bg-brand)));
-  }
-
-  /* 单选没选中时把圆点隐去而不是撤掉：盒留在原位，翻面时整行不跳 */
-  [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single'][data-state='unchecked'] {
-    color: transparent;
   }
 
   [data-scope='question-flow'][data-part='item-text'] {
