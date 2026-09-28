@@ -19414,6 +19414,9 @@
               "name": "--xh-date-picker-time-item-fg-selected"
             },
             {
+              "name": "--xh-date-picker-time-item-font-size"
+            },
+            {
               "name": "--xh-date-picker-time-item-font-weight-selected"
             },
             {
@@ -20941,6 +20944,9 @@
             },
             {
               "name": "--xh-date-range-picker-time-item-fg-selected"
+            },
+            {
+              "name": "--xh-date-range-picker-time-item-font-size"
             },
             {
               "name": "--xh-date-range-picker-time-item-font-weight-selected"

@@ -176,9 +176,9 @@ outline-offset: 0px
 outline-color: rgb(0, 0, 0)
 
 [item]
-padding-top: 0px
+padding-top: 6px
 padding-right: 18px
-padding-bottom: 0px
+padding-bottom: 6px
 padding-left: 18px
 row-gap: normal
 column-gap: normal
@@ -196,7 +196,7 @@ border-bottom-color: oklch(0.145 0.005 258)
 border-left-color: oklch(0.145 0.005 258)
 min-height: 0px
 font-size: 14px
-line-height: 14px
+line-height: 21px
 font-weight: 400
 color: oklch(0.145 0.005 258)
 background-color: rgba(0, 0, 0, 0)
