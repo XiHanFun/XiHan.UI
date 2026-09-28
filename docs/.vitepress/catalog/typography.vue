@@ -1,10 +1,8 @@
-<script setup lang="ts">
-import { XhTypographyHeading, XhTypographyParagraph, XhTypographyRoot } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <XhTypographyRoot style="inline-size: var(--xh-doc-catalog-w)">
-    <XhTypographyHeading as="h3" :level="3">排印标题</XhTypographyHeading>
-    <XhTypographyParagraph>统一正文的字号与行高。</XhTypographyParagraph>
-  </XhTypographyRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M40 40h96" stroke="var(--xh-fg-default)" stroke-width="8" />
+    <path d="M38 64h164M38 76h152M38 88h124M38 108h48" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M94 108h36" stroke="var(--xh-fg-brand)" stroke-width="4" />
+    <path d="M138 108h60M38 120h140" stroke="var(--xh-fg-muted)" stroke-width="4" />
+  </svg>
 </template>

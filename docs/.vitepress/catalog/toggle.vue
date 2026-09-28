@@ -1,8 +1,10 @@
-<script setup lang="ts">
-import { HeartIcon } from "@xihan-ui/icons";
-import { XhIcon, XhToggle } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <XhToggle><XhIcon :icon="HeartIcon" />点赞</XhToggle>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="48" y="64" width="68" height="32" rx="4" fill="var(--xh-bg-subtle)" />
+    <path d="M62 84h10l-1.5-2.5v-3a3.5 3.5 0 0 0-7 0v3zm3.5 2h3" stroke="var(--xh-fg-default)" stroke-width="2" />
+    <path d="M84 80h18" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <rect x="124" y="64" width="68" height="32" rx="4" fill="var(--xh-bg-brand-subtle)" />
+    <path d="M138 84h10l-1.5-2.5v-3a3.5 3.5 0 0 0-7 0v3zm3.5 2h3" stroke="var(--xh-fg-on-brand-subtle)" stroke-width="2" />
+    <path d="M160 80h18" stroke="var(--xh-fg-on-brand-subtle)" stroke-width="6" />
+  </svg>
 </template>
