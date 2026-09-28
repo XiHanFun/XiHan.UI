@@ -286,7 +286,8 @@ describe('tags-input 纯函数', () => {
   it('validate 可返回一组码；空串、null 与空数组都是放行', () => {
     expect(appendTags([], ['a'], { validate: () => ['too-short', 'no-digit'] }).rejections)
       .toEqual([{ tag: 'a', reasons: ['too-short', 'no-digit'] }])
-    for (const pass of ['', null, undefined, []] as const)
+    const passes: Array<string | string[] | null | undefined> = ['', null, undefined, []]
+    for (const pass of passes)
       expect(appendTags([], ['a'], { validate: () => pass }).value).toEqual(['a'])
   })
 
