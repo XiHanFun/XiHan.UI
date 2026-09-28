@@ -191,7 +191,7 @@
     "data-in-range": "calendar-range-picker 的这一格落在已选区间之内。",
     "data-indeterminate": "取值定不下来：loading-bar 的进度不可知，tree / tree-select 的父节点子项只勾了一部分。两处是同一个意思落在不同主语上——既不是此也不是彼的中间态，与原生 progress 无 value、checkbox.indeterminate 同义，所以共用一个名字。",
     "data-inline": "排在页面流里而不是另起一层：flex / space 排成行内盒而不是块盒；color-picker 的取色面常驻在页面里，不进浮层。",
-    "data-instant": "menubar 正在同一条菜单栏内换张，新开的不播进场、收起的不播退场。",
+    "data-instant": "这一次出现直接呈现、不播进场：首帧就在的内容（默认展开的披露、挂载时已打开的浮层、首次渲染就有的列表条目），以及不算新出现的切换（menubar 在同一条菜单栏内换张、tooltip 在接替窗口内打开）。皮肤的进场写在 :not([data-instant]) 下。",
     "data-interactive": "card 整卡可交互：标题里的 trigger 把点击区铺满整张卡片，悬停抬起、按下换面。",
     "data-invalid": "校验失败。配对 aria-invalid。",
     "data-inview": "carousel 的这一张落在视口里。",
