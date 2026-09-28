@@ -9877,9 +9877,12 @@
         "error",
         "highlighted",
         "hover",
+        "in-path",
         "is(:focus-visible, [data-highlighted])",
+        "is(:hover, [data-highlighted], [data-in-path])",
         "is([aria-selected='true'], [data-selected])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "not([data-disabled])",
         "selected",
         "xh-collection-context=overlay"
       ],
@@ -9905,6 +9908,7 @@
         "is(:active, [data-pressed])",
         "is([aria-selected='true'], [data-selected])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "not([data-disabled])",
         "pressed",
         "selected",
         "xh-collection-context=overlay"
