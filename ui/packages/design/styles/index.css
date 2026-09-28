@@ -11017,6 +11017,27 @@
     --xh-_overlay-enter-left: 1;
   }
 
+  /* 交叉轴原点按对齐取：start / end 对齐时面板与锚点在那一端齐平，缩放从那一端涨开，贴着小触发器的面板
+     才像是从触发器里长出来；居中对齐留在中线。上下两侧的 start / end 是行内轴上的逻辑对齐，RTL 下起始缘在右；
+     左右两侧的 start / end 落在块轴上，不随书写方向翻 */
+  [data-scope='popconfirm'][data-part='positioner']:is([data-placement='top-start'], [data-placement='bottom-start']),
+  [data-scope='popconfirm'][data-part='positioner']:is([data-placement='top-end'], [data-placement='bottom-end']):dir(rtl) {
+    --xh-_overlay-origin-x: 0;
+  }
+
+  [data-scope='popconfirm'][data-part='positioner']:is([data-placement='top-end'], [data-placement='bottom-end']),
+  [data-scope='popconfirm'][data-part='positioner']:is([data-placement='top-start'], [data-placement='bottom-start']):dir(rtl) {
+    --xh-_overlay-origin-x: 100%;
+  }
+
+  [data-scope='popconfirm'][data-part='positioner']:is([data-placement='left-start'], [data-placement='right-start']) {
+    --xh-_overlay-origin-y: 0;
+  }
+
+  [data-scope='popconfirm'][data-part='positioner']:is([data-placement='left-end'], [data-placement='right-end']) {
+    --xh-_overlay-origin-y: 100%;
+  }
+
   /* 面板排成三列：左列吃掉剩余宽度，右两列各摆一颗按钮。
      标题、说明与作者塞进来的内容各占一整行，两颗按钮因此并排落在最后一行的右侧。 */
   [data-scope='popconfirm'][data-part='content'] {
