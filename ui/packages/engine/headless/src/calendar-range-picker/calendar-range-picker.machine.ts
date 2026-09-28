@@ -14,6 +14,7 @@ import {
   calendarBaseContext,
   calendarBaseRefs,
   calendarPeriodOf,
+  compareIso,
   sortIso,
   syncGranularityBase,
   trackLiveness,
@@ -87,8 +88,10 @@ export const calendarRangePickerMachine = createMachine({
   states: {
     idle: {
       on: {
-        // 第一下只落起点、进入 anchored
+        // 只改终点那一档：起点当锚，点在起点当天或之后即收成区间，不进 anchored；
+        // 其余第一下只落起点、进入 anchored
         'CELL.SELECT': [
+          { guard: 'endsFromStart', actions: ['selectEnd'] },
           { guard: 'startsRange', target: 'anchored', actions: ['selectCell'] },
           { actions: ['selectCell'] },
         ],
@@ -115,6 +118,16 @@ export const calendarRangePickerMachine = createMachine({
   implementations: {
     guards: {
       startsRange: ({ context }) => context.get('rangeAnchor') == null,
+      /** activeIndex=1、还没有挑到一半的起点、已有起点，且这一格不早于它：这一下只落终点。 */
+      endsFromStart: ({ prop, context, event }) => {
+        const e = event.current()
+        const start = context.get('value')[0]
+        return e.type === 'CELL.SELECT'
+          && prop('activeIndex') === 1
+          && context.get('rangeAnchor') == null
+          && start != null
+          && compareIso(e.value, start) >= 0
+      },
       anchorsRange: ({ event }) => {
         const e = event.current()
         return e.type === 'RANGE.ANCHOR' && e.value != null
@@ -207,6 +220,16 @@ export const calendarRangePickerMachine = createMachine({
         }
         context.set('value', normalizeRange([anchor, e.value]))
         context.set('rangeAnchor', null)
+        context.set('hoveredValue', null)
+      },
+
+      // 起点原样留着，这一格落成终点
+      selectEnd: ({ context, event }) => {
+        const e = event.current()
+        const start = context.get('value')[0]
+        if (e.type !== 'CELL.SELECT' || start == null)
+          return
+        context.set('value', normalizeRange([start, e.value]))
         context.set('hoveredValue', null)
       },
 

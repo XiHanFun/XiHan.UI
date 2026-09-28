@@ -4713,6 +4713,15 @@
             },
             {
               "kind": "field",
+              "name": "activeIndex",
+              "privacy": "public",
+              "type": {
+                "text": "0 | 1 | undefined"
+              },
+              "attribute": "active-index"
+            },
+            {
+              "kind": "field",
               "name": "granularity",
               "privacy": "public",
               "type": {
@@ -5048,6 +5057,14 @@
               "description": "并排展示的页数",
               "name": "visible-count",
               "fieldName": "visibleCount"
+            },
+            {
+              "type": {
+                "text": "0 | 1 | undefined"
+              },
+              "description": "下一次点选落在哪一端，缺省 0；为 1 且已有起点时只改终点，点在起点之前从那天重新开始挑",
+              "name": "active-index",
+              "fieldName": "activeIndex"
             },
             {
               "name": "value",

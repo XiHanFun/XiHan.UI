@@ -82,6 +82,13 @@ export interface CalendarRangePickerSchema extends MachineSchema {
      * 一段区间内不会夹有不可选的日期；开启时不夹，只是这些日期不铺轨道。
      */
     allowsNonContiguousRanges?: boolean
+    /**
+     * 下一次点选落在区间的哪一端，缺省 0：点一下落起点、再点一下落终点。
+     * 为 1 且已有起点时只改终点：起点当锚，点在起点那一天或之后即落终点、起点原样留着；
+     * 点在起点之前的日子从那一天重新开始挑（它成为新的起点，再点一下落终点）。
+     * 日期范围选择器从终点那组段位展开时就是这一档。
+     */
+    activeIndex?: 0 | 1
     translations?: Partial<CalendarRangePickerTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: CalendarRangePickerValueChangeDetails) => void
@@ -124,11 +131,12 @@ export interface CalendarRangePickerSchema extends MachineSchema {
     | { type: 'PRESS.START', key: CalendarRangePickerPressedKey, disabled?: boolean }
     | { type: 'PRESS.END', key: CalendarRangePickerPressedKey }
   tag: never
-  guard: 'startsRange' | 'anchorsRange' | 'canPress'
+  guard: 'startsRange' | 'endsFromStart' | 'anchorsRange' | 'canPress'
   action:
     | CalendarBaseAction
     | 'setValue'
     | 'selectCell'
+    | 'selectEnd'
     | 'setRangeAnchor'
     | 'commitRange'
     | 'setDragging'

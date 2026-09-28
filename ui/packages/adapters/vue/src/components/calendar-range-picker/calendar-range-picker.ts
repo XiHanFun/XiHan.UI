@@ -51,6 +51,8 @@ export const XhCalendarRangePickerRoot = defineComponent({
     isDateUnavailable: { type: Function as PropType<(value: string, anchor: string | null) => boolean> },
     /** 区间允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止。 */
     allowsNonContiguousRanges: Boolean,
+    /** 下一次点选落在哪一端；为 1 且已有起点时只改终点。 */
+    activeIndex: { type: Number as PropType<0 | 1> },
     /** 校验失败：根带 data-invalid，区间内的格子报告 aria-invalid。 */
     invalid: Boolean,
     locale: { type: String },

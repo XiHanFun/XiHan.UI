@@ -20,6 +20,7 @@ import type {
   CalendarWeekdayFormat,
 } from '@xihan-ui/headless'
 import { calendarRangePickerAnatomy, calendarRangePickerMachine, calendarRangePickerMeta, connectCalendarRangePicker } from '@xihan-ui/headless'
+import { END_INDEX_CONVERTER } from '../dom/end-index'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -63,6 +64,7 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
  * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板当前所在的层级；未提供时跟随 granularity
  * @attr {'day'|'week'|'month'|'quarter'|'year'} default-active-view - 非受控初值，默认同 granularity
  * @attr {number} visible-count - 并排展示的页数
+ * @attr {'0'|'1'} active-index - 下一次点选落在哪一端，缺省 0；为 1 且已有起点时只改终点，点在起点之前从那天重新开始挑
  * @fires value-change - 区间两端都落定；detail 为 `{ value: string[] }`，长度恒为 2
  * @fires focused-value-change - 聚焦日变化；detail 为 `{ focusedValue: string }`
  * @fires active-view-change - 切换到另一层级；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`
@@ -104,6 +106,7 @@ export class XhCalendarRangePickerElement extends XhElement {
     fixedWeeks: { type: Boolean, attribute: 'fixed-weeks' },
     invalid: { type: Boolean },
     allowsNonContiguousRanges: { type: Boolean, attribute: 'allows-non-contiguous-ranges' },
+    activeIndex: { converter: END_INDEX_CONVERTER, attribute: 'active-index' },
     granularity: { converter: STRING_CONVERTER },
     activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },
     defaultActiveView: { converter: STRING_CONVERTER, attribute: 'default-active-view' },
@@ -127,6 +130,7 @@ export class XhCalendarRangePickerElement extends XhElement {
   declare fixedWeeks?: boolean
   declare invalid?: boolean
   declare allowsNonContiguousRanges?: boolean
+  declare activeIndex?: 0 | 1
   declare granularity?: CalendarGranularity
   declare activeView?: CalendarView
   declare defaultActiveView?: CalendarView
@@ -170,6 +174,7 @@ export class XhCalendarRangePickerElement extends XhElement {
       max: this.max,
       isDateUnavailable: this.isDateUnavailable,
       allowsNonContiguousRanges: this.allowsNonContiguousRanges ?? false,
+      activeIndex: this.activeIndex,
       invalid: this.invalid ?? false,
       locale: this.locale,
       timeZone: this.timeZone,

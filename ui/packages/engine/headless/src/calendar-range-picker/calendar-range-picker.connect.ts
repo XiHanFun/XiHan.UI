@@ -63,6 +63,16 @@ export function connectCalendarRangePicker<T extends PropTypes>(
   const anchored = rangeAnchor != null
   const hovered = parseCalendarDate(context.get('hoveredValue'))
   const dragging = !!context.get('dragging')
+  /**
+   * 只改终点那一档的锚：activeIndex=1、还没有挑到一半的起点时，已落定的起点当锚。
+   * 它不进 anchored：不挂文档级的松手监听，焦点离开网格也不就地收口，只影响这一下点选落在哪一端与预览。
+   */
+  const startAnchor = !anchored && prop('activeIndex') === 1 && value[0] ? (periodAt(value[0])?.start ?? null) : null
+  /** 这一格落下去是只改终点：不早于锚。 */
+  const endsFromStart = (v: string): boolean => {
+    const period = periodAt(v)
+    return startAnchor != null && !!period && period.start >= startAnchor
+  }
 
   /**
    * 一个周期挡不挡得住落值：越过 min/max 任一边界即不可选（最终查询范围不能跑出边界），
@@ -144,6 +154,9 @@ export function connectCalendarRangePicker<T extends PropTypes>(
   const highlighted = ((): [PlainDate, PlainDate] | null => {
     if (anchored)
       return bounds(rangeAnchor, hovered?.toString() ?? focusedValue)
+    // 只改终点：悬停在锚之后的格子上时预览「起点 → 悬停」，其余时候仍亮已落定的区间
+    if (hovered && endsFromStart(hovered.toString()))
+      return bounds(startAnchor!, hovered.toString())
     const [a, b] = committed
     if (a && b)
       return bounds(a.start, b.start)
@@ -168,6 +181,9 @@ export function connectCalendarRangePicker<T extends PropTypes>(
     return !!period && within(period) && !unavailableFor(v)
   }
 
+  // 预览中：挑到一半，或只改终点那一档正悬停在锚之后
+  const previewing = anchored || (!!hovered && endsFromStart(hovered.toString()))
+
   const cellState = (item: CalendarCellProps): RangeCellState => {
     const base = frame.cellBaseState(item, unavailableFor(item.value))
     const { period } = base
@@ -181,7 +197,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       // 两端之间的格子都算选中，与 aria-selected 同一口径
       selected: inRange,
       inRange,
-      rangePreview: inRange && anchored,
+      rangePreview: inRange && previewing,
       // 两端也算 in-range
       rangeStart: inRange && !!(highlighted && periodStart && periodStart.equals(highlighted[0])),
       rangeEnd: inRange && !!(highlighted && periodEnd && periodEnd.equals(highlighted[1])),
@@ -223,8 +239,9 @@ export function connectCalendarRangePicker<T extends PropTypes>(
   const commit = (): void => {
     if (readOnly || unavailableFor(focusedValue))
       return
+    const closesRange = anchored || endsFromStart(focusedValue)
     frame.selectAt(focusedValue)
-    if (!anchored)
+    if (!closesRange)
       focusBesideAnchor(focusedValue, periodAt(focusedValue)!.start)
   }
 
@@ -293,8 +310,8 @@ export function connectCalendarRangePicker<T extends PropTypes>(
     const target = event.target
     if (isElement(target) && 'hasPointerCapture' in target && target.hasPointerCapture(event.pointerId))
       target.releasePointerCapture(event.pointerId)
-    // 起点已在：这一下是收尾，松手时落终点
-    if (anchored) {
+    // 起点已在（挑到一半，或只改终点那一档）：这一下是收尾，松手时落终点
+    if (anchored || startAnchor != null) {
       setPress({ value: v, role: 'end', timer: null })
       return
     }
@@ -361,7 +378,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
     // 拖到的那一格必须是指针真扫进去过的：按下那一刻网格换了页，
     // 指针原地没动却压在了另一格上，那一格不算
     const reachedHere = press.value === v || context.get('hoveredValue') === v
-    if (anchored && reachedHere && !(press.role === 'anchor' && press.value === v)) {
+    if ((anchored || press.role === 'end') && reachedHere && !(press.role === 'anchor' && press.value === v)) {
       frame.selectAt(v)
       frame.focusInGrid(v)
       return
@@ -639,7 +656,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       }
       // 聚焦格上提示这一下是在开始挑一段、还是在收尾
       const prompt = state.focused && !readOnly && !state.disabled
-        ? (anchored ? translations.finishRangeSelectionPrompt : translations.startRangeSelectionPrompt)
+        ? (anchored || endsFromStart(item.value) ? translations.finishRangeSelectionPrompt : translations.startRangeSelectionPrompt)
         : undefined
       // 格子按 ISO 键记按住的那一格；不可选（越界 / 作者判定不可用）的格子不进，只读由机器按 prop 挡。
       // 指针的按下 / 抬起先过跟踪器（触屏投影按压面）再走拖选那一路，两者互不打断

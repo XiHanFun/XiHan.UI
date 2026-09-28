@@ -568,6 +568,76 @@ describe('区间模式', () => {
   })
 })
 
+describe('activeIndex=1：只改终点', () => {
+  const RANGE = ['2024-02-10', '2024-02-15']
+
+  it('点在起点之后：起点不动，这一格落成终点，不进挑到一半的状态', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ defaultFocusedValue: '2024-02-15', defaultValue: RANGE, activeIndex: 1, onValueChange })
+    click(h.cell('2024-02-20'))
+    expect(h.value()).toEqual(['2024-02-10', '2024-02-20'])
+    expect(onValueChange).toHaveBeenCalledWith({ value: ['2024-02-10', '2024-02-20'] })
+    expect(h.api().rangeAnchor).toBeNull()
+    // 仍在这一档：再点一下接着改终点
+    click(h.cell('2024-02-12'))
+    expect(h.value()).toEqual(['2024-02-10', '2024-02-12'])
+  })
+
+  it('点在起点那一天：区间收成一天', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15', defaultValue: RANGE, activeIndex: 1 })
+    click(h.cell('2024-02-10'))
+    expect(h.value()).toEqual(['2024-02-10'])
+  })
+
+  it('点在起点之前：从那一天重新开始挑，旧区间先留着', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15', defaultValue: RANGE, activeIndex: 1 })
+    click(h.cell('2024-02-05'))
+    expect(h.value()).toEqual(RANGE)
+    expect(h.api().rangeAnchor).toBe('2024-02-05')
+    click(h.cell('2024-02-08'))
+    expect(h.value()).toEqual(['2024-02-05', '2024-02-08'])
+  })
+
+  it('悬停在起点之后预览「起点 → 悬停」，焦点格提示这一下是收尾；不悬停时仍亮已落定的区间', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15', defaultValue: RANGE, activeIndex: 1 })
+    expect(h.cell('2024-02-12').getAttribute('data-in-range')).toBe('')
+    expect(h.cell('2024-02-12').hasAttribute('data-range-preview')).toBe(false)
+    hover(h.cell('2024-02-18'))
+    expect(h.cell('2024-02-18').getAttribute('data-range-end')).toBe('')
+    expect(h.cell('2024-02-17').getAttribute('data-range-preview')).toBe('')
+    expect(h.cell('2024-02-10').getAttribute('data-range-start')).toBe('')
+    expect(h.cell('2024-02-15').getAttribute('aria-description')).toBe('Click to finish selecting date range')
+  })
+
+  it('键盘确认同一条路：焦点格不早于起点即落终点，焦点留在原地', async () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15', defaultValue: RANGE, activeIndex: 1 })
+    h.cell('2024-02-15').focus()
+    press(h.cell('2024-02-15'), 'ArrowRight')
+    await settle()
+    press(h.cell('2024-02-16'), 'Enter')
+    await settle()
+    expect(h.value()).toEqual(['2024-02-10', '2024-02-16'])
+    expect(focused()).toBe('2024-02-16')
+  })
+
+  it('指针按下与松开落在同一格：只落一次终点', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ defaultFocusedValue: '2024-02-15', defaultValue: RANGE, activeIndex: 1, onValueChange })
+    pointerDown(h.cell('2024-02-19'))
+    pointerUp(h.cell('2024-02-19'))
+    click(h.cell('2024-02-19'))
+    expect(h.value()).toEqual(['2024-02-10', '2024-02-19'])
+    expect(onValueChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('缺省 0：已有区间时点一下照旧是重新起一段', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15', defaultValue: RANGE })
+    click(h.cell('2024-02-20'))
+    expect(h.value()).toEqual(RANGE)
+    expect(h.api().rangeAnchor).toBe('2024-02-20')
+  })
+})
+
 describe('按压通道', () => {
   type Handlers = Record<string, unknown> & {
     onKeyDown: (e: KeyboardEvent) => void
