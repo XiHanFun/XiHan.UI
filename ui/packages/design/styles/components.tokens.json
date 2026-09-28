@@ -59933,7 +59933,7 @@
         "xh-collection-context=page"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "side-nav 的 branch-trigger、link 部件 font-weight 覆盖槽。"

@@ -141,16 +141,16 @@
     --xh-collection-bg-hover: var(--xh-side-nav-row-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-side-nav-row-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-side-nav-row-bg-pressed, var(--xh-bg-subtle-hover));
-    /* 当前页：公开槽名不变，缺省前景由品牌深字改为淡底前景，字重保持 medium；2px 指示条取品牌色 */
+    /* 当前页：页内持久集合的唯一标记是品牌淡底行面 + 淡底前景，字重不变（与静息同为 regular） */
     --xh-collection-bg-current: var(--xh-side-nav-row-bg-active, var(--xh-bg-brand-subtle));
     --xh-collection-fg-current: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
     --xh-collection-fg-current-hover: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
     --xh-collection-fg-current-highlight: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
     --xh-collection-fg-current-pressed: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
-    --xh-collection-font-weight-current: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-medium));
-    --xh-collection-font-weight-current-hover: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-medium));
-    --xh-collection-font-weight-current-highlight: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-medium));
-    --xh-collection-font-weight-current-pressed: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-current: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-current-hover: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-current-highlight: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-current-pressed: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-regular));
     --xh-collection-indicator-fg-current: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
     --xh-collection-indicator-fg-current-hover: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
     --xh-collection-indicator-fg-current-highlight: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
