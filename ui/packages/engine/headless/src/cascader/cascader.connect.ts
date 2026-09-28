@@ -8,7 +8,7 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CascaderApi, CascaderBranchLoadSnapshot, CascaderColumnProps, CascaderLevel, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
 import { cascadeState, createPressTracker, dataAttr, focusItem, isComposingEvent, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/core'
-import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
@@ -535,7 +535,7 @@ export function connectCascader<T extends PropTypes>(
             return
           send({ type: 'VALUE.CLEAR' })
           // 键盘/程序化激活这一路没走 pointerdown，主动把焦点送回 trigger
-          refs.get('getAnchorEl')()?.focus()
+          refs.get('getTriggerEl')()?.focus()
         },
       })
     },
@@ -558,14 +558,14 @@ export function connectCascader<T extends PropTypes>(
       'style': {
         ...overlayFixedStyle(position),
         ...overlayAvailableSpaceVars('cascader', position, null),
+        // 字段盒实测宽度：一级列与它等宽
+        ...overlayAnchorWidthVar('cascader', position?.anchorWidth),
       },
     }),
 
     // 键盘全在 content 上收口，左右键要跨列走。Escape 归消解层管，不在这里收
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
-      // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
-      'data-xh-material': 'frosted',
       'id': ids.content,
       // 浮层壳只是焦点域与消解层的根节点，列表框语义在每一列上，它自己不承载焦点：
       // 有锚点时 Tab 位归锚点条目，没有锚点时归根列（见 getColumnProps）。

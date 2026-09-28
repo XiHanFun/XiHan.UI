@@ -80,6 +80,8 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 - 懒加载：节点写 `hasChildren: true` 不给 `children` 即是懒分支，照样算分支、右边开一列；展开路径走到它时由 `loadChildren({ node, path, signal })` 取回直接子项，结果留在组件里并进 `api.collection` 与 `levels`，宿主不必重建 collection。那一列在途时报 `aria-busy` 并露出 `branch-loading`，失败时露出 `branch-error` 与 `branch-retry-trigger`（不占 Tab 位，父条目上按 Enter / Space 同样重试）；取回空数组即成了叶子，可以落值。三块由适配器在列末自动铺出，文案走 `translations.loading` / `branchError` / `retry`。展开路径离开、浮层收起、重试、节点换代与卸载都会中止在途请求，迟到的结果不写回。`onBranchLoadStart` / `onBranchLoad` / `onBranchLoadError`（三端事件 `branch-load-start` / `branch-load` / `branch-load-error`）公开有效请求的生命周期，`api.branchLoadState(value)` 读取状态。
 - 支持空状态、整浮层加载状态与原生表单提交。
 - 选中项使用末端标记，半选项使用横线。
+- 浮层锚在字段盒上：一级列与字段盒等宽，长选项在条目里截断；后续列按条目的自然宽度，面板随列数伸展，宽过可用区时收成可用宽度并在面内横滚。
+- 面板含多列，取不透景的实体浮起面，与时间选择同一档。
 
 ### 组合
 
@@ -451,7 +453,6 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-searching` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
-| `content` | `data-xh-material` | 'frosted' |
 | `search-list` | `data-empty` | ''（条件成立时才出现） |
 | `search-item` | `data-disabled` | ''（条件成立时才出现） |
 | `search-item` | `data-highlighted` | ''（条件成立时才出现） |
@@ -537,17 +538,16 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-column-divider` | `column` | `border-inline-start` | `default` | `--xh-material-frosted-separator` | cascader 的 column 部件 border-inline-start 覆盖槽。 |
 | `--xh-cascader-column-gap` | `column` | `gap` | `default` | `--xh-list-option-gap` | cascader 的 column 部件 gap 覆盖槽。 |
 | `--xh-cascader-column-h` | `column`<br>`search-list` | `block-size` | `default` | `--xh-viewport-h-sm` | cascader 的 column、search-list 部件 block-size 覆盖槽。 |
-| `--xh-cascader-column-min-w` | `column`<br>`empty`<br>`loading` | `min-inline-size` | `default` | `7rem` | cascader 的 column、empty、loading 部件 min-inline-size 覆盖槽。 |
+| `--xh-cascader-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | cascader 的 column 部件 min-inline-size 覆盖槽。 |
 | `--xh-cascader-column-px` | `column` | `padding-inline` | `default` | `--xh-space-1` | cascader 的 column 部件 padding-inline 覆盖槽。 |
 | `--xh-cascader-column-py` | `column` | `padding-block` | `default` | `--xh-space-1` | cascader 的 column 部件 padding-block 覆盖槽。 |
-| `--xh-cascader-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `xh-material=frosted` | `--xh-_material-backdrop` | cascader 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
-| `--xh-cascader-content-bg` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg` | cascader 的 content 部件 background 覆盖槽。 |
-| `--xh-cascader-content-border` | `content` | `border` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-border` | cascader 的 content 部件 border 覆盖槽。 |
-| `--xh-cascader-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | cascader 的 content 部件 color 覆盖槽。 |
-| `--xh-cascader-content-highlight` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-highlight` | cascader 的 content 部件 background 覆盖槽。 |
-| `--xh-cascader-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w-xl` | cascader 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-cascader-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | cascader 的 content 部件 background 覆盖槽。 |
+| `--xh-cascader-content-border` | `content` | `border` | `default` | `--xh-border-default` | cascader 的 content 部件 border 覆盖槽。 |
+| `--xh-cascader-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | cascader 的 content 部件 color 覆盖槽。 |
+| `--xh-cascader-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-_cascader-available-w` | cascader 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-cascader-content-min-w` | `column`<br>`content` | `inline-size`<br>`min-inline-size` | `default`<br>`level=0` | `--xh-overlay-menu-min-w` | cascader 的 column、content 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-cascader-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | cascader 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-cascader-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | cascader 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-cascader-content-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-floating` | cascader 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-cascader-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | cascader 的 control 部件 background-color 覆盖槽。 |
 | `--xh-cascader-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | cascader 的 control 部件 background-color 覆盖槽。 |
 | `--xh-cascader-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | cascader 的 control 部件 background-color 覆盖槽。 |
@@ -564,7 +564,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | cascader 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | cascader 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-cascader-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | cascader 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
-| `--xh-cascader-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | cascader 的 empty 部件 color 覆盖槽。 |
+| `--xh-cascader-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | cascader 的 empty 部件 color 覆盖槽。 |
 | `--xh-cascader-empty-min-h` | `empty` | `min-block-size` | `default` | `5rem` | cascader 的 empty 部件 min-block-size 覆盖槽。 |
 | `--xh-cascader-empty-p` | `empty` | `padding` | `default` | `--xh-space-3` | cascader 的 empty 部件 padding 覆盖槽。 |
 | `--xh-cascader-footer-border` | `footer` | `border-block-start` | `default` | `--xh-border-subtle` | cascader 的 footer 部件 border-block-start 覆盖槽。 |
@@ -575,7 +575,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | cascader 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-cascader-gap` | `root` | `gap` | `default` | `--xh-space-1` | cascader 的 root 部件 gap 覆盖槽。 |
 | `--xh-cascader-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | cascader 的 group 部件 gap 覆盖槽。 |
-| `--xh-cascader-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | cascader 的 group-label 部件 color 覆盖槽。 |
+| `--xh-cascader-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-muted` | cascader 的 group-label 部件 color 覆盖槽。 |
 | `--xh-cascader-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | cascader 的 group-label 部件 font-size 覆盖槽。 |
 | `--xh-cascader-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | cascader 的 group-label 部件 font-weight 覆盖槽。 |
 | `--xh-cascader-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_cascader-row-px` | cascader 的 group-label 部件 padding-inline 覆盖槽。 |
@@ -610,10 +610,9 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | cascader 的 label 部件 font-size 覆盖槽。 |
 | `--xh-cascader-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | cascader 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-cascader-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | cascader 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-cascader-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | cascader 的 loading 部件 color 覆盖槽。 |
+| `--xh-cascader-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | cascader 的 loading 部件 color 覆盖槽。 |
 | `--xh-cascader-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-cascader-loading-min-h` | `loading` | `min-block-size` | `default` | `5rem` | cascader 的 loading 部件 min-block-size 覆盖槽。 |
-| `--xh-cascader-loading-min-w` | `loading` | `min-inline-size` | `default` | `--xh-cascader-column-min-w` | cascader 的 loading 部件 min-inline-size 覆盖槽。 |
 | `--xh-cascader-loading-p` | `loading` | `padding` | `default` | `--xh-space-3` | cascader 的 loading 部件 padding 覆盖槽。 |
 | `--xh-cascader-placeholder-fg` | `value-text` | `color` | `placeholder` | `--xh-fg-subtle` | cascader 的 value-text 部件 color 覆盖槽。 |
 | `--xh-cascader-search-divider` | `input` | `border-block-end` | `default` | `--xh-material-frosted-separator` | cascader 的 input 部件 border-block-end 覆盖槽。 |

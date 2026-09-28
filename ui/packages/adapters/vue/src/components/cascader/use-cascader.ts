@@ -23,6 +23,7 @@ export interface CascaderContext {
   service: Service<CascaderSchema>
   api: ComputedRef<CascaderApi>
   triggerRef: Ref<HTMLElement | null>
+  controlRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
   /** 当前是否应当渲染：退场动画播完之前仍为真。 */
@@ -37,6 +38,7 @@ export function useCascader(
 ): CascaderContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
+  const controlRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
 
@@ -61,11 +63,13 @@ export function useCascader(
       surfaces: () => [],
     })
 
-    // 定位引擎由适配器注入，机器只经端口驱动；锚点取 trigger
+    // 定位引擎由适配器注入，机器只经端口驱动
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
-    service.refs.set('getAnchorEl', () => triggerRef.value)
+    // 锚点是字段盒：一级列与盒子同宽、面板左缘对齐；作者没写 control 时退回触发器
+    service.refs.set('getAnchorEl', () => controlRef.value ?? triggerRef.value)
+    service.refs.set('getTriggerEl', () => triggerRef.value)
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)
   }
@@ -81,5 +85,5 @@ export function useCascader(
   // 先问全局配置的落点，没有才落 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget }
+  return { visible, service, api, triggerRef, controlRef, positionerRef, contentRef, portalTarget }
 }

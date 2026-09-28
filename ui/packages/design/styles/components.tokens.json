@@ -8736,7 +8736,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-separator"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "cascader 的 column 部件 border-inline-start 覆盖槽。"
@@ -8782,9 +8782,7 @@
       "name": "--xh-cascader-column-min-w",
       "component": "cascader",
       "part": [
-        "column",
-        "empty",
-        "loading"
+        "column"
       ],
       "property": [
         "min-inline-size"
@@ -8793,10 +8791,10 @@
         "default"
       ],
       "defaultToken": [
-        "7rem"
+        "--xh-overlay-menu-min-w"
       ],
       "visibility": "public",
-      "description": "cascader 的 column、empty、loading 部件 min-inline-size 覆盖槽。"
+      "description": "cascader 的 column 部件 min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-cascader-column-px",
@@ -8835,25 +8833,6 @@
       "description": "cascader 的 column 部件 padding-block 覆盖槽。"
     },
     {
-      "name": "--xh-cascader-content-backdrop",
-      "component": "cascader",
-      "part": [
-        "content"
-      ],
-      "property": [
-        "-webkit-backdrop-filter",
-        "backdrop-filter"
-      ],
-      "state": [
-        "xh-material=frosted"
-      ],
-      "defaultToken": [
-        "--xh-_material-backdrop"
-      ],
-      "visibility": "public",
-      "description": "cascader 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
-    },
-    {
       "name": "--xh-cascader-content-bg",
       "component": "cascader",
       "part": [
@@ -8863,11 +8842,10 @@
         "background"
       ],
       "state": [
-        "not([data-xh-action-control])",
-        "xh-material=frosted"
+        "default"
       ],
       "defaultToken": [
-        "--xh-_material-bg"
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 background 覆盖槽。"
@@ -8882,11 +8860,10 @@
         "border"
       ],
       "state": [
-        "not([data-xh-action-control])",
-        "xh-material=frosted"
+        "default"
       ],
       "defaultToken": [
-        "--xh-_material-border"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 border 覆盖槽。"
@@ -8901,33 +8878,13 @@
         "color"
       ],
       "state": [
-        "not([data-xh-action-control])",
-        "xh-material=frosted"
+        "default"
       ],
       "defaultToken": [
-        "--xh-_material-fg"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-cascader-content-highlight",
-      "component": "cascader",
-      "part": [
-        "content"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "not([data-xh-action-control])",
-        "xh-material=frosted"
-      ],
-      "defaultToken": [
-        "--xh-_material-highlight"
-      ],
-      "visibility": "public",
-      "description": "cascader 的 content 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-cascader-content-max-w",
@@ -8942,10 +8899,31 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-max-w-xl"
+        "--xh-_cascader-available-w"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 max-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-content-min-w",
+      "component": "cascader",
+      "part": [
+        "column",
+        "content"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default",
+        "level=0"
+      ],
+      "defaultToken": [
+        "--xh-overlay-menu-min-w"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 column、content 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-cascader-content-radius",
@@ -8975,11 +8953,10 @@
         "box-shadow"
       ],
       "state": [
-        "not([data-xh-action-control])",
-        "xh-material=frosted"
+        "default"
       ],
       "defaultToken": [
-        "--xh-_material-shadow"
+        "--xh-elevation-floating"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 box-shadow 覆盖槽。"
@@ -9320,7 +9297,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg-muted"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "cascader 的 empty 部件 color 覆盖槽。"
@@ -9518,7 +9495,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg-muted"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "cascader 的 group-label 部件 color 覆盖槽。"
@@ -10262,7 +10239,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg-muted"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "cascader 的 loading 部件 color 覆盖槽。"
@@ -10302,24 +10279,6 @@
       ],
       "visibility": "public",
       "description": "cascader 的 loading 部件 min-block-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-cascader-loading-min-w",
-      "component": "cascader",
-      "part": [
-        "loading"
-      ],
-      "property": [
-        "min-inline-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-cascader-column-min-w"
-      ],
-      "visibility": "public",
-      "description": "cascader 的 loading 部件 min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-cascader-loading-p",

@@ -8315,9 +8315,6 @@
               "name": "--xh-cascader-column-py"
             },
             {
-              "name": "--xh-cascader-content-backdrop"
-            },
-            {
               "name": "--xh-cascader-content-bg"
             },
             {
@@ -8327,10 +8324,10 @@
               "name": "--xh-cascader-content-fg"
             },
             {
-              "name": "--xh-cascader-content-highlight"
+              "name": "--xh-cascader-content-max-w"
             },
             {
-              "name": "--xh-cascader-content-max-w"
+              "name": "--xh-cascader-content-min-w"
             },
             {
               "name": "--xh-cascader-content-radius"
@@ -8532,9 +8529,6 @@
             },
             {
               "name": "--xh-cascader-loading-min-h"
-            },
-            {
-              "name": "--xh-cascader-loading-min-w"
             },
             {
               "name": "--xh-cascader-loading-p"
