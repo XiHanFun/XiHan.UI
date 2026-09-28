@@ -207,3 +207,47 @@ describe('collapsibleMachine 按压通道：Space / Enter 与触屏按住投影 
     c.stop()
   })
 })
+
+describe('connectCollapsible 内容挂卸', () => {
+  it('缺省恒挂载：收起只隐藏，退场闸门落下也不卸', () => {
+    const c = makeCollapsible()
+    expect(c.api().isContentMounted(false)).toBe(true)
+    c.stop()
+  })
+
+  it('lazyMount：没展开过不挂，第一次展开起一直挂着', () => {
+    const c = makeCollapsible({ lazyMount: true })
+    expect(c.api().isContentMounted(false)).toBe(false)
+    c.click()
+    expect(c.api().isContentMounted(true)).toBe(true)
+    c.click()
+    // 收起之后闸门落下也照样挂着：只懒一次
+    expect(c.api().isContentMounted(false)).toBe(true)
+    c.stop()
+  })
+
+  it('lazyMount：首帧即展开就算展开过，内容首屏就在', () => {
+    const c = makeCollapsible({ lazyMount: true, defaultOpen: true })
+    expect(c.api().isContentMounted(true)).toBe(true)
+    c.stop()
+  })
+
+  it('unmountOnExit：收起动画播放期间仍挂着，闸门落下才卸，再展开重新挂', () => {
+    const c = makeCollapsible({ unmountOnExit: true, defaultOpen: true })
+    c.click()
+    expect(c.api().open).toBe(false)
+    expect(c.api().isContentMounted(true)).toBe(true)
+    expect(c.api().isContentMounted(false)).toBe(false)
+    c.click()
+    expect(c.api().isContentMounted(true)).toBe(true)
+    c.stop()
+  })
+
+  it('受控展开同样记为展开过', () => {
+    const c = makeCollapsible({ lazyMount: true, open: false })
+    expect(c.api().isContentMounted(false)).toBe(false)
+    c.setProps({ open: true })
+    expect(c.api().isContentMounted(true)).toBe(true)
+    c.stop()
+  })
+})

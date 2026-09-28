@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { CollapsibleApi, CollapsibleSchema } from './collapsible.types'
 import { dataAttr } from '@xihan-ui/core'
+import { disclosureContentMounted } from '../shared/disclosure-mount'
 import { pressHandlers } from '../shared/press'
 import { collapsibleAnatomy } from './collapsible.anatomy'
 
@@ -36,6 +37,12 @@ export function connectCollapsible<T extends PropTypes>(
   return {
     open,
     setOpen,
+    isContentMounted: present => disclosureContentMounted({
+      lazyMount: !!prop('lazyMount'),
+      unmountOnExit: !!prop('unmountOnExit'),
+      opened: context.get('opened'),
+      present,
+    }),
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,

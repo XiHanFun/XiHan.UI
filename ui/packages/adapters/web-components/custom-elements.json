@@ -50,6 +50,14 @@
             },
             {
               "kind": "field",
+              "name": "lazyContents",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Map<string, LazyContent>()",
+              "description": "每个面板里内容的挂卸落点，按条目 value 各持一个。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -161,6 +169,24 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "lazyMount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
             },
             {
               "kind": "field",
@@ -296,6 +322,22 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "条目内容第一次展开时才挂载；内容写在面板里的一个 `<template>` 中时首次展开才实例化",
+              "name": "lazy-mount",
+              "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起动画播完后卸载条目内容，再展开时从 `<template>` 重新克隆（没写模板时原样放回）",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
             }
           ],
           "superclass": {
@@ -10574,6 +10616,32 @@
             },
             {
               "kind": "field",
+              "name": "lazyMount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
+            },
+            {
+              "kind": "field",
+              "name": "lazyContent",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LazyContent()",
+              "description": "content 里内容的挂卸落点。"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -10663,6 +10731,22 @@
               "description": "文字方向，写到 root 上；未提供时继承祖先",
               "name": "dir",
               "fieldName": "textDir"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "内容第一次展开时才挂载；内容写在 content 里的一个 `<template>` 中时首次展开才实例化",
+              "name": "lazy-mount",
+              "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起动画播完后卸载内容，再展开时从 `<template>` 重新克隆（没写模板时原样放回）",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
             }
           ],
           "superclass": {

@@ -344,3 +344,31 @@ describe('accordionMachine 按压通道：Space / Enter 与触屏按住投影 da
     item.stop()
   })
 })
+
+describe('connectAccordion 内容挂卸', () => {
+  it('缺省恒挂载：收起的条目只隐藏', () => {
+    const a = makeAccordion()
+    expect(a.api().isContentMounted({ value: VALUES[0]! }, false)).toBe(true)
+    a.stop()
+  })
+
+  it('lazyMount：条目各自从第一次展开起挂载，首帧即展开的条目首屏就在', () => {
+    const a = makeAccordion({ lazyMount: true, collapsible: true, defaultValue: [VALUES[1]!] })
+    expect(a.api().isContentMounted({ value: VALUES[0]! }, false)).toBe(false)
+    expect(a.api().isContentMounted({ value: VALUES[1]! }, true)).toBe(true)
+    a.triggers[0]!.click()
+    expect(a.api().isContentMounted({ value: VALUES[0]! }, true)).toBe(true)
+    a.triggers[0]!.click()
+    expect(a.api().isContentMounted({ value: VALUES[0]! }, false)).toBe(true)
+    a.stop()
+  })
+
+  it('unmountOnExit：闸门落下才卸，受控改写展开同样重新挂', () => {
+    const a = makeAccordion({ unmountOnExit: true, value: [VALUES[0]!] })
+    expect(a.api().isContentMounted({ value: VALUES[0]! }, true)).toBe(true)
+    a.setProps({ value: [] })
+    expect(a.api().isContentMounted({ value: VALUES[0]! }, true)).toBe(true)
+    expect(a.api().isContentMounted({ value: VALUES[0]! }, false)).toBe(false)
+    a.stop()
+  })
+})

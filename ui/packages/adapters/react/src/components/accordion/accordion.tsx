@@ -33,6 +33,10 @@ export interface XhAccordionRootProps extends RootElementProps {
   dir?: Direction
   tone?: Tone
   size?: Size
+  /** 条目内容第一次展开时才挂载。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载条目内容，再展开时重新挂载。 */
+  unmountOnExit?: boolean
   onValueChange?: AccordionProps['onValueChange']
   /** 每个条目正文的自定义内容；未提供时使用 collection 中的 content。 */
   renderContent?: (node: AccordionNodeMeta) => ReactNode
@@ -52,6 +56,8 @@ export function XhAccordionRoot({
   dir,
   tone,
   size,
+  lazyMount,
+  unmountOnExit,
   onValueChange,
   renderContent,
   children,
@@ -70,6 +76,8 @@ export function XhAccordionRoot({
     dir,
     tone,
     size,
+    lazyMount,
+    unmountOnExit,
     onValueChange,
   } as AccordionProps)
   const body = children ?? (collection
@@ -149,7 +157,7 @@ export function XhAccordionContent({ children, ...rest }: XhAccordionContentProp
         },
       )}
     >
-      {children}
+      {ctx.api.isContentMounted(item, visible) ? children : null}
     </div>
   )
 }

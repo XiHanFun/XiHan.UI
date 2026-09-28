@@ -8,6 +8,7 @@
 import type { ItemQuery, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { AccordionApi, AccordionItemProps, AccordionNodeMeta, AccordionSchema } from './accordion.types'
 import { createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { disclosureContentMounted } from '../shared/disclosure-mount'
 import { accordionAnatomy } from './accordion.anatomy'
 
 const parts = accordionAnatomy.build()
@@ -161,6 +162,12 @@ export function connectAccordion<T extends PropTypes>(
       'data-state': stateAttr(item),
       'data-instant': instant(item),
       'data-disabled': dataAttr(itemDisabled(item)),
+    }),
+    isContentMounted: (item, present) => disclosureContentMounted({
+      lazyMount: !!prop('lazyMount'),
+      unmountOnExit: !!prop('unmountOnExit'),
+      opened: context.get('opened').includes(item.value),
+      present,
     }),
   }
 }

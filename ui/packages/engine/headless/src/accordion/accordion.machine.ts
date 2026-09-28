@@ -21,13 +21,15 @@ export const accordionMachine = createMachine({
     // 按压通道：正被按住的 trigger，与展开集合互相独立（按住途中 Enter 在 keydown 即翻面，按压面不能随之丢）
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
     moved: cell<string[]>(() => ({ defaultValue: [] })),
+    // 首帧即展开的条目也算展开过：lazyMount 下它们的内容照常首屏就在
+    opened: cell<string[]>(() => ({ defaultValue: [...(prop('value') ?? prop('defaultValue') ?? [])] })),
   }),
   refs: ({ prop }) => ({ lastValue: prop('value') ?? prop('defaultValue') ?? [] }),
   initialState: () => 'idle',
   watch: ({ track, prop, context, action }) => {
     // 按住途中整组转禁用：trigger 只是 aria-disabled、仍有焦点，但按压面不该留在禁用面上
     track([() => prop('disabled')], () => action(['releaseWhenInert']))
-    // 开合变了（用户操作或受控值）：变动的条目从此按动效走
+    // 开合变了（用户操作或受控值）：变动的条目从此按动效走，新展开的条目记为展开过
     track([() => context.get('value')], () => action(['markMoved']))
   },
   states: {
@@ -69,6 +71,10 @@ export const accordionMachine = createMachine({
         const fresh = flipped.filter(v => !moved.includes(v))
         if (fresh.length)
           context.set('moved', [...moved, ...fresh])
+        const opened = context.get('opened')
+        const firstOpened = next.filter(v => !opened.includes(v))
+        if (firstOpened.length)
+          context.set('opened', [...opened, ...firstOpened])
       },
       releaseWhenInert: ({ context, prop }) => {
         if (prop('disabled'))

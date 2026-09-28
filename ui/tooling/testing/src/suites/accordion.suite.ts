@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { accordionAnatomy, accordionKeyboard } from '@xihan-ui/headless'
+import { expectPartText } from './shared/content-text'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/accordion/'
@@ -348,6 +349,28 @@ export const accordionSuite: ConformanceSuite = {
       props: { disabled: true },
       steps: [
         heldPressIgnored('accordion', 'trigger', '整组禁用时 trigger aria-disabled，不接受按压'),
+      ],
+    },
+    {
+      name: 'lazyMount：条目内容各自从第一次展开起挂载，首帧即展开的条目首屏就在',
+      spec: { adr: 'disclosure-content-mount' },
+      props: { lazyMount: true, collapsible: true, defaultValue: ['two'] },
+      steps: [
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('accordion', 'content', 0, '') },
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('accordion', 'content', 1, '第二项的内容') },
+        { kind: 'click', part: 'trigger[0]' },
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('accordion', 'content', 0, '第一项的内容') },
+      ],
+    },
+    {
+      name: 'unmountOnExit：收起落定的条目卸下内容，content 节点仍在',
+      spec: { adr: 'disclosure-content-mount' },
+      props: { unmountOnExit: true, collapsible: true, defaultValue: ['one'] },
+      steps: [
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('accordion', 'content', 0, '第一项的内容') },
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('accordion', 'content', 1, '') },
+        { kind: 'click', part: 'trigger[0]', expect: { parts: { 'content[0]': { 'data-state': 'closed' } } } },
+        { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('accordion', 'content', 0, '') },
       ],
     },
   ],

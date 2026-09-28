@@ -13,10 +13,12 @@ const { createMachine } = setup<CollapsibleSchema>()
 // 受控（open 给定）时用户事件只发意图、不自改状态，由 watch 派发 CONTROLLED.* 回写。
 export const collapsibleMachine = createMachine({
   name: 'collapsible',
-  context: ({ cell }) => ({
+  context: ({ cell, prop }) => ({
     // 按压通道：trigger 被 Space / Enter 或触屏按住，与开合互相独立（Enter 在 keydown 即翻面，按压面不能随之丢）
     pressed: cell<boolean>(() => ({ defaultValue: false })),
     moved: cell<boolean>(() => ({ defaultValue: false })),
+    // 首帧即展开也算展开过：lazyMount 下它的内容照常首屏就在
+    opened: cell<boolean>(() => ({ defaultValue: !!(prop('open') ?? prop('defaultOpen')) })),
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   watch: ({ track, prop, action }) => {
@@ -35,13 +37,13 @@ export const collapsibleMachine = createMachine({
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['markMoved', 'invokeOnOpen'] },
+          { target: 'open', actions: ['markMoved', 'markOpened', 'invokeOnOpen'] },
         ],
         'TOGGLE': [
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['markMoved', 'invokeOnOpen'] },
+          { target: 'open', actions: ['markMoved', 'markOpened', 'invokeOnOpen'] },
         ],
-        'CONTROLLED.OPEN': { target: 'open', actions: ['markMoved'] },
+        'CONTROLLED.OPEN': { target: 'open', actions: ['markMoved', 'markOpened'] },
       },
     },
     open: {
@@ -66,6 +68,7 @@ export const collapsibleMachine = createMachine({
     actions: {
       // 第一次开合（用户操作或受控改写）起，内容与箭头按动效走
       markMoved: ({ context }) => context.set('moved', true),
+      markOpened: ({ context }) => context.set('opened', true),
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
       releaseWhenInert: ({ context, prop }) => {

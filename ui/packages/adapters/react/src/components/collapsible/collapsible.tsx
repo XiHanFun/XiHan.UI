@@ -26,6 +26,10 @@ export interface XhCollapsibleRootProps extends RootElementProps {
   tone?: Tone
   size?: Size
   dir?: Direction
+  /** 内容第一次展开时才挂载。 */
+  lazyMount?: boolean
+  /** 收起动画播完后卸载内容，再展开时重新挂载。 */
+  unmountOnExit?: boolean
   onOpenChange?: CollapsibleProps['onOpenChange']
   children?: ReactNode
 }
@@ -37,11 +41,13 @@ export function XhCollapsibleRoot({
   tone,
   size,
   dir,
+  lazyMount,
+  unmountOnExit,
   onOpenChange,
   children,
   ...rest
 }: XhCollapsibleRootProps): ReactNode {
-  const ctx = useCollapsible({ open, defaultOpen, disabled, tone, size, dir, onOpenChange } as CollapsibleProps)
+  const ctx = useCollapsible({ open, defaultOpen, disabled, tone, size, dir, lazyMount, unmountOnExit, onOpenChange } as CollapsibleProps)
   return (
     <CollapsibleProvider value={ctx}>
       <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
@@ -92,7 +98,7 @@ export function XhCollapsibleContent({ children, ...rest }: XhCollapsibleContent
         },
       )}
     >
-      {children}
+      {ctx.api.isContentMounted(ctx.visible) ? children : null}
     </div>
   )
 }

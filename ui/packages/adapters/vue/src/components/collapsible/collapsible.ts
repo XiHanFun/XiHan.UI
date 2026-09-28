@@ -26,6 +26,8 @@ export const XhCollapsibleRoot = defineComponent({
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
     dir: { type: String as PropType<Direction> },
+    lazyMount: Boolean,
+    unmountOnExit: Boolean,
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {
@@ -94,6 +96,6 @@ export const XhCollapsibleContent = defineComponent({
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+    }, ctx.api.value.isContentMounted(ctx.visible.value) ? slots.default?.() : undefined)
   },
 })

@@ -22,6 +22,16 @@ export interface CollapsibleSchema extends MachineSchema {
     size?: Size
     /** 文字方向，只作用于排版；作者未提供时不写入。 */
     dir?: Direction
+    /**
+     * 内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。
+     * 收起的内容很重（图表、长列表、iframe）且多数用户不会展开时打开它。
+     */
+    lazyMount?: boolean
+    /**
+     * 收起动画播完后卸载内容，再展开时重新挂载，默认 false。
+     * 内容里的输入与滚动位置随之丢失；与 lazyMount 一起用即「只在展开期间存在」。
+     */
+    unmountOnExit?: boolean
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: CollapsibleOpenChangeDetails) => void
   }
@@ -36,6 +46,8 @@ export interface CollapsibleSchema extends MachineSchema {
      * 不播展开、收起动画；第一次开合起才按动效走。
      */
     moved: boolean
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下内容从第一次展开起才挂载。 */
+    opened: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -53,7 +65,7 @@ export interface CollapsibleSchema extends MachineSchema {
     | { type: 'PRESS.END' }
   tag: never
   guard: 'isOpenControlled' | 'canPress'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markMoved'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markMoved' | 'markOpened'
   effect: never
 }
 
@@ -65,6 +77,11 @@ export interface CollapsibleApi<T extends PropTypes = PropTypes> {
   getTriggerProps: () => T['button']
   getContentProps: () => T['element']
   getIndicatorProps: () => T['element']
+  /**
+   * content 里的内容此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。
+   * 未打开 lazyMount / unmountOnExit 时恒为真；content 节点本身始终在场，只有它的内容按此挂卸。
+   */
+  isContentMounted: (present: boolean) => boolean
 }
 
 /** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */

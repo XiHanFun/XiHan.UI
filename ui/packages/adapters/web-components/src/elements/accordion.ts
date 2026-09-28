@@ -13,6 +13,7 @@ import { accordionAnatomy, accordionMachine, accordionMeta, connectAccordion } f
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 
 const ITEM_SELECTOR = '[data-xh-part="item"]'
@@ -30,6 +31,8 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 vertical
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {boolean} lazy-mount - 条目内容第一次展开时才挂载；内容写在面板里的一个 `<template>` 中时首次展开才实例化
+ * @attr {boolean} unmount-on-exit - 收起动画播完后卸载条目内容，再展开时从 `<template>` 重新克隆（没写模板时原样放回）
  * @fires value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 手风琴根容器
  * @csspart item - 单个条目容器，作者在此写 value 与可选 disabled
@@ -42,6 +45,8 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
 export class XhAccordionElement extends XhElement {
   // 闸门按面板各持一个：手风琴模式下切换项时，一个进场一个退场是同时发生的
   private readonly exits = new Map<string, OverlayExit>()
+  /** 每个面板里内容的挂卸落点，按条目 value 各持一个。 */
+  private readonly lazyContents = new Map<string, LazyContent>()
 
   static override partContract = { anatomy: accordionAnatomy, meta: accordionMeta }
 
@@ -61,6 +66,8 @@ export class XhAccordionElement extends XhElement {
     textDir: { attribute: 'dir' },
     tone: {},
     size: {},
+    lazyMount: { type: Boolean, attribute: 'lazy-mount' },
+    unmountOnExit: { type: Boolean, attribute: 'unmount-on-exit' },
   }
 
   declare collection?: AccordionNode[]
@@ -75,6 +82,8 @@ export class XhAccordionElement extends XhElement {
   declare textDir?: Direction
   declare tone?: Tone
   declare size?: Size
+  declare lazyMount?: boolean
+  declare unmountOnExit?: boolean
 
   private readonly notify = (details: AccordionValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -100,6 +109,8 @@ export class XhAccordionElement extends XhElement {
       dir: this.textDir,
       tone: this.tone,
       size: this.size,
+      lazyMount: this.lazyMount ?? false,
+      unmountOnExit: this.unmountOnExit ?? false,
       onValueChange: this.notify,
     }
   }
@@ -146,6 +157,12 @@ export class XhAccordionElement extends XhElement {
       exit.track(el)
       exit.update(open)
       this.setPartHidden(el, !exit.visible)
+      let lazy = this.lazyContents.get(item.value)
+      if (!lazy) {
+        lazy = new LazyContent()
+        this.lazyContents.set(item.value, lazy)
+      }
+      lazy.sync(el, api.isContentMounted(item, exit.visible))
     }
     putAll('indicator', item => api.getIndicatorProps(item))
   }
