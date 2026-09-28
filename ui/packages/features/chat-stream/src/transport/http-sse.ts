@@ -59,7 +59,14 @@ export function createHttpSseTransport(options: HttpSseTransportOptions): Transp
           'accept': 'text/event-stream',
           ...options.headers?.(),
         },
-        body: JSON.stringify({ messages: req.messages, threadId: req.threadId, ...req.body }),
+        // trigger 与 messageId 让服务端分得清重新生成、续写与普通提问，缺席时 JSON 里不出现
+        body: JSON.stringify({
+          messages: req.messages,
+          threadId: req.threadId,
+          trigger: req.trigger,
+          messageId: req.messageId,
+          ...req.body,
+        }),
         signal,
       })
     }

@@ -5,7 +5,7 @@
 
 // @xihan-ui/chat-stream 的公开出口：消息模型、Data Stream v1 归一、parts 归约、会话容器与 SSE 传输。
 
-export type { ChatRequest, Role, UIMessage } from './model/message'
+export type { ChatRequest, ChatTrigger, MessageContent, MessageStatus, Role, UIMessage } from './model/message'
 export {
   isDataPart,
   isErrorPart,
@@ -38,7 +38,7 @@ export type { BlockKey, NormalizedEvent } from './reduce/events'
 export { createReduceState, reduceEvent } from './reduce/parts-reducer'
 export type { ReduceState } from './reduce/parts-reducer'
 export { createThreadStore } from './store/thread-store'
-export type { ThreadSnapshot, ThreadStatus, ThreadStore, ThreadStoreOptions } from './store/thread-store'
+export type { ThreadBranch, ThreadRunExtra, ThreadSnapshot, ThreadStatus, ThreadStore, ThreadStoreOptions } from './store/thread-store'
 export { createFrameBatcher } from './store/throttle'
 export type { FrameBatcher, FrameBatcherOptions } from './store/throttle'
 export { TYPEWRITER_DEFAULT_CHARS_PER_SEC, visibleLength } from './store/typewriter'

@@ -83,16 +83,45 @@ const store = createThreadStore({
 });
 
 store.subscribe((snapshot) => {
-  snapshot.messages; // readonly UIMessage[]
+  snapshot.messages; // readonly UIMessage[]：当前路径
   snapshot.status; // 'idle' | 'submitted' | 'streaming' | 'error'
   snapshot.error;
+  snapshot.branches; // 当前路径上每条消息的 { index, count }
 });
 
 store.submit("你好"); // 追加 user 消息并发起运行；已有运行先被取消
-store.stop(); // 取消当前运行，保留已产出的 parts
+store.submit([
+  { type: "text", text: "看看这张图" },
+  { type: "file", url, mediaType: "image/png", filename: "a.png" }, // 附件与 UIMessage 的 parts 同形
+]);
+store.regenerate(messageId); // 同一提问下再要一条候选回复，原回复留作分支
+store.edit(messageId, "改过的问题"); // 改写用户消息后重发，原提问连同回复留作分支
+store.retry(); // 撤掉失败的回复，从同一提问重新发起
+store.stop(); // 取消当前运行，保留已产出的 parts；这条回复记为 aborted
+store.continue(); // 在被截断的回复上接着写
+store.selectBranch(messageId, 0); // 在一组兄弟里切到第 0 条
 store.clear(); // 清空全部消息
 store.dispose();
 ```
+
+### 会话树
+
+会话是一棵树而不是一条线。每条 `UIMessage` 带 `parentId`（第一条为 `null`），同一 `parentId` 下的多条消息互为分支：
+
+```
+u1 「写首诗」
+├─ a1 「第一版」          ← regenerate(a1) 之前
+└─ a2 「第二版」          ← regenerate(a1) 新建，被选中
+```
+
+- `snapshot.messages` 是从根往下、每个分叉取选中那一支连成的路径，渲染时直接铺它；`snapshot.branches[id]` 给出该条在兄弟中的位置与兄弟总数，`count > 1` 时显示「‹ 2 / 3 ›」这类切换器，按钮调 `selectBranch(id, index)`。
+- 切回某一支时，它下面沿用那一支上次选中的路径，不会回到第一条。
+- 重新生成与编辑重发都产生分支；重试不产生分支：失败不是一条候选，失败的回复直接撤掉。
+- 助手消息的 `status` 记录结束方式：`streaming` 生成中、`complete` 正常收尾、`aborted` 被截断（可以 `continue`）、`error` 失败（可以 `retry`）。因长度上限收尾（`metadata.finishReason` 为 `length`）同样可以续写。
+- 请求带上 `trigger`（`submit` / `regenerate` / `retry` / `edit` / `continue`）与 `messageId`，服务端据此区分重新生成与续写；续写时 `messages` 的最后一条就是要接着写的那条助手消息，新产出接在它原有 parts 之后，截断在半句上的正文接着长。
+- `getTree()` 导出整棵树（按创建先后排、每条带 `parentId`），交回 `messages` 选项即可恢复会话；线性历史不写 `parentId` 时按数组顺序相连。
+
+非法操作立即报错，不静默忽略：重新生成指向用户消息、编辑指向助手消息、没有失败的运行时重试、续写一条没被截断的回复、分支下标越界。
 
 两个性能装置：
 

@@ -15,13 +15,34 @@ export interface ReduceState {
   readonly message: UIMessage
   readonly openBlocks: BlockIndex
   readonly openTools: ToolIndex
+  /**
+   * 续写时接着长的那个正文块的下标：本轮第一个 text-start 重开它而不是另起一块，
+   * 续上的字与截断前的半句连成一段。用过即清。
+   */
+  readonly resumeText?: number
 }
 
-export function createReduceState(id: string, role: Role = 'assistant'): ReduceState {
+/**
+ * 建一份归约状态。
+ *
+ * 传入 from 即续写：在那条消息上接着归约，parts 原样留着；它最后一块若是正文，
+ * 本轮第一段正文接到那一块末尾。助手消息一律从 streaming 起步，收尾事件再定结束方式。
+ */
+export function createReduceState(id: string, role: Role = 'assistant', from?: UIMessage): ReduceState {
+  const status = role === 'assistant' ? 'streaming' as const : undefined
+  if (from === undefined) {
+    return {
+      message: status === undefined ? { id, role, parts: [] } : { id, role, parts: [], status },
+      openBlocks: new Map<BlockKey, number>(),
+      openTools: new Map<string, number>(),
+    }
+  }
+  const last = from.parts.length - 1
   return {
-    message: { id, role, parts: [] },
+    message: { ...from, id, role, status },
     openBlocks: new Map<BlockKey, number>(),
     openTools: new Map<string, number>(),
+    resumeText: from.parts[last]?.type === 'text' ? last : undefined,
   }
 }
 
@@ -36,11 +57,19 @@ function replacePart(state: ReduceState, index: number, part: UIMessagePart): Re
   return { ...state, message: { ...state.message, parts } }
 }
 
+/** 追加一块。续写中先到了别的块时，截断前的正文已不在末尾，不再往它上面接。 */
 function appendPart(state: ReduceState, part: UIMessagePart): ReduceState {
-  return { ...state, message: { ...state.message, parts: [...state.message.parts, part] } }
+  return { ...state, resumeText: undefined, message: { ...state.message, parts: [...state.message.parts, part] } }
 }
 
 function openBlock(state: ReduceState, block: BlockKey, part: ReasoningPart | TextPart): ReduceState {
+  const resume = state.resumeText
+  if (resume !== undefined && part.type === 'text') {
+    // 续写的第一段正文接回截断前的那一块：重开它并登记到本轮的块标识下
+    const prev = state.message.parts[resume] as TextPart
+    const next = replacePart({ ...state, resumeText: undefined }, resume, { ...prev, streaming: true })
+    return { ...next, openBlocks: withEntry(next.openBlocks, block, resume) }
+  }
   const index = state.message.parts.length
   const next = appendPart(state, part)
   return { ...next, openBlocks: withEntry(next.openBlocks, block, index) }
@@ -95,10 +124,20 @@ function patchTool(
   return close ? { ...next, openTools: withoutEntry(next.openTools, toolCallId) } : next
 }
 
+/**
+ * 定下助手消息的结束方式：只从 streaming 往下落。已经记为失败的不改，
+ * 已经正常收尾的消息再收到 abort（流随后被关掉）也不算截断。
+ */
+function settleStatus(state: ReduceState, next: 'complete' | 'aborted'): ReduceState {
+  if (state.message.status !== 'streaming')
+    return state
+  return { ...state, message: { ...state.message, status: next } }
+}
+
 /** 收尾所有开着的块与工具调用，并清空两张开放表。 */
 function closeAllBlocks(state: ReduceState): ReduceState {
   if (state.openBlocks.size === 0 && state.openTools.size === 0)
-    return state
+    return state.resumeText === undefined ? state : { ...state, resumeText: undefined }
   const parts = state.message.parts.slice()
   for (const index of state.openBlocks.values()) {
     const part = parts[index]
@@ -117,6 +156,7 @@ function closeAllBlocks(state: ReduceState): ReduceState {
     message: { ...state.message, parts },
     openBlocks: new Map<BlockKey, number>(),
     openTools: new Map<string, number>(),
+    resumeText: undefined,
   }
 }
 
@@ -199,13 +239,16 @@ export function reduceEvent(state: ReduceState, ev: NormalizedEvent): ReduceStat
     case 'message-metadata':
       return { ...state, message: { ...state.message, metadata: ev.metadata } }
 
-    case 'error':
-      return appendPart(state, { type: 'error', errorText: ev.errorText, retryable: ev.retryable })
+    case 'error': {
+      const next = appendPart(state, { type: 'error', errorText: ev.errorText, retryable: ev.retryable })
+      return next.message.status === undefined ? next : { ...next, message: { ...next.message, status: 'error' } }
+    }
 
-    // 结束与取消都只收尾开着的块，不追加 ErrorPart
+    // 结束与取消都只收尾开着的块，不追加 ErrorPart；结束方式分别记为 complete 与 aborted
     case 'finish':
+      return settleStatus(closeAllBlocks(state), 'complete')
     case 'abort':
-      return closeAllBlocks(state)
+      return settleStatus(closeAllBlocks(state), 'aborted')
 
     default:
       // 未知 kind 原样返回
