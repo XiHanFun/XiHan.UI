@@ -7344,6 +7344,7 @@
       "WatermarkApi",
       "WatermarkImageSize",
       "WatermarkProps",
+      "WatermarkSchema",
       "WatermarkState",
       "WatermarkTile",
       "WatermarkTranslations",
@@ -8709,6 +8710,7 @@
       "visibleNotifications",
       "watermarkAnatomy",
       "watermarkKeyboard",
+      "watermarkMachine",
       "watermarkMeta",
       "withXhConfigBase",
       "wrapSegment",
@@ -13265,6 +13267,7 @@
     "watermark": [
       "fontFamily",
       "fontSize",
+      "fullscreen",
       "gap",
       "image",
       "imageSize",
@@ -13354,6 +13357,7 @@
     "data-format",
     "data-frozen",
     "data-full-width",
+    "data-fullscreen",
     "data-gap",
     "data-gutter",
     "data-half",
@@ -18547,6 +18551,7 @@
     "--xh-typography-text-font-weight",
     "--xh-watermark-fg",
     "--xh-watermark-image",
+    "--xh-watermark-layer",
     "--xh-watermark-tile"
   ],
   "keyframes": [
@@ -21139,6 +21144,7 @@
       "attributes": [
         "font-family",
         "font-size",
+        "fullscreen",
         "gap",
         "image",
         "opacity",

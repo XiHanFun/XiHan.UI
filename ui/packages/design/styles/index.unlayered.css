@@ -45823,6 +45823,17 @@
   mask-size: var(--xh-watermark-tile, auto);
 }
 
+/* 全屏档：印子固定铺满整个视口，压在页面一切内容之上（对话框、轻提示、文字提示都在它下面），页面滚动时原地不动。
+   根不再建层叠上下文：隔离了的话，印子的层号只在根里比大小，会被根外那些浮层压住 */
+[data-scope='watermark'][data-part='root'][data-fullscreen] {
+  isolation: auto;
+}
+
+[data-scope='watermark'][data-part='root'][data-state='ready'][data-fullscreen]::after {
+  position: fixed;
+  z-index: var(--xh-watermark-layer, var(--xh-layer-tooltip));
+}
+
 /* 遮罩不支持时整层不画：只剩底色的话，盖上去的会是一整块实心色 */
 @supports not ((mask-image: none) or (-webkit-mask-image: none)) {
   [data-scope='watermark'][data-part='root'][data-state='ready']::after {

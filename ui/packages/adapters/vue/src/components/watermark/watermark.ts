@@ -7,14 +7,16 @@
 
 import type { WatermarkImageSize, WatermarkProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
-import { connectWatermark } from '@xihan-ui/headless'
-import { computed, defineComponent, h } from 'vue'
+import { connectWatermark, watermarkMachine } from '@xihan-ui/headless'
+import { computed, defineComponent, h, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { useMachine } from '../../runtime/use-machine'
 import { provideWatermark, useWatermarkContext } from './context'
 
 /**
  * 水印覆盖的区域。图样由 connect 计算为一张 SVG，写为根上的内联 CSS 变量，
  * 由皮肤铺为一层覆盖在内容之上的伪元素：印记因此不进入无障碍树、不接收点击、也不可选中。
+ * 机器负责地址形式图片的取回与防篡改，根节点经 refs 交给它。
  */
 export const XhWatermarkRoot = defineComponent({
   name: 'XhWatermarkRoot',
@@ -28,11 +30,19 @@ export const XhWatermarkRoot = defineComponent({
     fontFamily: { type: String },
     image: { type: String },
     imageSize: { type: Object as PropType<WatermarkImageSize> },
+    /** 全屏档：印子固定铺满整个视口。 */
+    fullscreen: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectWatermark(props as WatermarkProps, vueNormalize))
+    const rootRef = ref<HTMLElement | null>(null)
+    const service = useMachine(watermarkMachine, () => ({ ...props }) as WatermarkProps)
+    service.refs.set('getRootEl', () => rootRef.value)
+    const api = computed(() => connectWatermark(service, vueNormalize))
     provideWatermark({ api })
-    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', {
+      ...api.value.getRootProps() as Record<string, unknown>,
+      ref: (el: unknown) => { rootRef.value = el as HTMLElement | null },
+    }, slots.default?.())
   },
 })
 

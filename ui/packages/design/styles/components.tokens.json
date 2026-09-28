@@ -85790,6 +85790,25 @@
       "description": "watermark 的 root 部件 -webkit-mask-image、mask-image 覆盖槽。"
     },
     {
+      "name": "--xh-watermark-layer",
+      "component": "watermark",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "z-index"
+      ],
+      "state": [
+        "fullscreen",
+        "state=ready"
+      ],
+      "defaultToken": [
+        "--xh-layer-tooltip"
+      ],
+      "visibility": "public",
+      "description": "watermark 的 root 部件 z-index 覆盖槽。"
+    },
+    {
       "name": "--xh-watermark-tile",
       "component": "watermark",
       "part": [

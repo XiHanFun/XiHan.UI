@@ -1,13 +1,15 @@
 import type { WatermarkApi, WatermarkProps } from '../src/watermark'
-import { normalizeProps } from '@xihan-ui/core'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 // 直接从组件目录导入，不经包主入口
-import { connectWatermark } from '../src/watermark'
+import { connectWatermark, watermarkMachine } from '../src/watermark'
 
 const IMAGE_PREFIX = 'data:image/svg+xml,'
 
 function api(props: WatermarkProps = {}): WatermarkApi {
-  return connectWatermark(props, normalizeProps)
+  const service = createService(watermarkMachine, { runtime: createVanillaRuntime(), props: () => props })
+  return connectWatermark(service, normalizeProps)
 }
 
 /** 图样那张 SVG 的原文。 */
@@ -175,7 +177,7 @@ describe('watermark 的字体与图片', () => {
     expect(new Set(names)).toEqual(new Set(['transform', 'fill', 'fill-opacity', 'font-family', 'font-size', 'text-anchor']))
   })
 
-  it('图片只收内联的图片 data URI，别的来源一张都不印', () => {
+  it('内联的图片 data URI 直接进图样；地址形式的要先取回，其余来源一张都不印', () => {
     expect(svg({ text: '曦寒', image: PNG })).toContain('<image')
     for (const bad of [
       'https://example.test/logo.png',

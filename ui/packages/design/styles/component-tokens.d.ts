@@ -4319,6 +4319,7 @@ export type ComponentTokenName
     | '--xh-typography-text-font-weight'
     | '--xh-watermark-fg'
     | '--xh-watermark-image'
+    | '--xh-watermark-layer'
     | '--xh-watermark-tile'
 
 export type ComponentTokenComponent

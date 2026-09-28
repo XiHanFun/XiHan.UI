@@ -163,6 +163,7 @@
     "data-focus": "键盘焦点所在的条目 / 格子。",
     "data-foldable": "code-view 允许折叠代码段。",
     "data-full-width": "button 撑满容器宽度。",
+    "data-fullscreen": "watermark 的全屏档：印子固定铺满整个视口、压在页面一切内容之上，根不再建层叠上下文。",
     "data-gutter": "scroll-area / scrollbar 常留一条滚动条槽，内容不因滚动条出现而位移。",
     "data-half": "rating 的这一颗是半星。",
     "data-header-fixed": "layout 的根节点转述页头已固定，供整页布局取用。根上两个固定开关并存，带部件名才分得开。",
