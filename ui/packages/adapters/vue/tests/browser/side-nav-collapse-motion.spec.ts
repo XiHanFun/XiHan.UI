@@ -13,6 +13,7 @@ import {
   XhSideNavBranchTrigger,
   XhSideNavGroup,
   XhSideNavGroupLabel,
+  XhSideNavGroupList,
   XhSideNavItem,
   XhSideNavLink,
   XhSideNavLinkText,
@@ -52,12 +53,11 @@ function nav(collapsed: Ref<boolean>) {
     h(XhSideNavList, null, () => [
       h(XhSideNavGroup, { value: 'main' }, () => [
         h(XhSideNavGroupLabel, { value: 'main' }, () => '常用'),
-        link('home', '工作台'),
+        h(XhSideNavGroupList, null, () => [link('home', '工作台')]),
       ]),
       h(XhSideNavGroup, { value: 'admin' }, () => [
         h(XhSideNavGroupLabel, { value: 'admin' }, () => '管理'),
-        link('users', '用户管理'),
-        link('logs', '操作日志'),
+        h(XhSideNavGroupList, null, () => [link('users', '用户管理'), link('logs', '操作日志')]),
       ]),
     ]))
 }

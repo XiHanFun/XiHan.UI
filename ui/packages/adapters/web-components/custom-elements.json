@@ -56446,7 +56446,7 @@
               "name": "input"
             },
             {
-              "description": "顶层列表容器（ul），直接子节点只能是 item 与 branch",
+              "description": "顶层列表容器（ul），直接子节点只能是 item、branch 与 group",
               "name": "list"
             },
             {
@@ -56454,12 +56454,16 @@
               "name": "item"
             },
             {
-              "description": "role=group 分组，须自带 value 属性",
+              "description": "分组（li），是 list 里的一条，须自带 value 属性；里面放 group-label 与 group-list",
               "name": "group"
             },
             {
-              "description": "分组标题（aria-labelledby 目标）",
+              "description": "分组标题，group-list 以 aria-labelledby 指向它",
               "name": "group-label"
+            },
+            {
+              "description": "分组里的列表（ul），组内的 item 与 branch 挂在这里，以 group-label 命名",
+              "name": "group-list"
             },
             {
               "description": "分支行容器，须自带 value 属性；它包裹自己的 branch-content",

@@ -39937,7 +39937,9 @@
     text-align: center;
   }
 
+  /* 三层列表同一副排法：顶层、分组里的与分支的子层都是 ul，行与行之间同一个 gap，不带 UA 的缩进与外边距 */
   [data-scope='side-nav'][data-part='list'],
+  [data-scope='side-nav'][data-part='group-list'],
   [data-scope='side-nav'][data-part='branch-content'] {
     display: flex;
     flex-direction: column;
@@ -39956,6 +39958,7 @@
     display: none;
   }
 
+  /* 分组是上一层列表里的一条：标题与组内列表上下排，间距与行距同一个 gap */
   [data-scope='side-nav'][data-part='group'] {
     display: flex;
     flex-direction: column;
@@ -40235,6 +40238,7 @@
   [data-scope='side-nav'][data-part='root'][hidden],
   [data-scope='side-nav'][data-part='list'][hidden],
   [data-scope='side-nav'][data-part='group'][hidden],
+  [data-scope='side-nav'][data-part='group-list'][hidden],
   [data-scope='side-nav'][data-part='branch'][hidden],
   [data-scope='side-nav'][data-part='branch-trigger'][hidden],
   [data-scope='side-nav'][data-part='item'][hidden],

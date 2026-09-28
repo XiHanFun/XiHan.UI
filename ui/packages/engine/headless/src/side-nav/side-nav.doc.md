@@ -28,7 +28,8 @@
 
 ## 无障碍
 
-- `list` 与 `branch-content` 使用列表语义。
+- `list`、`group-list` 与 `branch-content` 都是列表（`ul`），直接子节点只放列表项：`item` 与 `branch`，`list` 里还可以放 `group`。
+- 分组 `group` 是上一层列表里的一条，本身不带角色；组内的行挂在 `group-list` 里，`group-list` 以 `aria-labelledby` 指向 `group-label`，读屏念作「标题 + 列表」。不写 `role="group"`：列表项的父节点必须是列表。
 - 将文字放入 `branch-text` 或 `link-text`，确保折叠后仍有可访问名称。
 - 装饰图标使用 `aria-hidden="true"`。
 - 搜索框没有可见标签，可及名取 `translations.input`；空态以 `role="status"` 露面即播报。
@@ -37,6 +38,51 @@
 ## 组合
 
 - 放入[布局](./layout)的侧栏区域。
+- 分组：`group` 放在 `list` 里当一条，里面先放 `group-label`，再放 `group-list`，组内的 `item` 与 `branch` 挂在 `group-list` 里。
+- Vue / React 的 `XhSideNavGroupList` 从所在的 `XhSideNavGroup` 取分组身份，不用再写 `value`；Web Components 的 `group-label` 与 `group-list` 都认所在的 `group`。
+
+```vue
+<XhSideNavList>
+  <XhSideNavGroup value="main">
+    <XhSideNavGroupLabel value="main">常用</XhSideNavGroupLabel>
+    <XhSideNavGroupList>
+      <XhSideNavItem>
+        <XhSideNavLink value="home">
+          <XhSideNavLinkText>工作台</XhSideNavLinkText>
+        </XhSideNavLink>
+      </XhSideNavItem>
+    </XhSideNavGroupList>
+  </XhSideNavGroup>
+</XhSideNavList>
+```
+
+```tsx
+<XhSideNavList>
+  <XhSideNavGroup value="main">
+    <XhSideNavGroupLabel value="main">常用</XhSideNavGroupLabel>
+    <XhSideNavGroupList>
+      <XhSideNavItem>
+        <XhSideNavLink value="home">
+          <XhSideNavLinkText>工作台</XhSideNavLinkText>
+        </XhSideNavLink>
+      </XhSideNavItem>
+    </XhSideNavGroupList>
+  </XhSideNavGroup>
+</XhSideNavList>;
+```
+
+```html
+<ul data-xh-part="list">
+  <li data-xh-part="group" value="main">
+    <div data-xh-part="group-label">常用</div>
+    <ul data-xh-part="group-list">
+      <li data-xh-part="item">
+        <a data-xh-part="link" value="home"><span data-xh-part="link-text">工作台</span></a>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
 
 ## 接路由
 

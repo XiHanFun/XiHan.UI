@@ -179,13 +179,19 @@ function withSearch(base: FixtureNode): FixtureNode {
   }
 }
 
-/** 分组用例的结构：顶层链接自成一组，两个分支归另一组；组的成员由各端从组里挂着的部件收集。 */
+/**
+ * 分组用例的结构：顶层链接自成一组，两个分支归另一组；组的成员由各端从组里挂着的部件收集。
+ * 分组是 list 里的一条（li），里面是标题与一层以标题命名的列表（ul），组内的行挂在这层列表里。
+ */
 function withGroups(base: FixtureNode): FixtureNode {
   const group = (value: string, label: string, children: readonly FixtureNode[]): FixtureNode => ({
     part: 'group',
     tag: 'li',
     attrs: { value },
-    children: [{ part: 'group-label', tag: 'div', attrs: { value }, text: label }, ...children],
+    children: [
+      { part: 'group-label', tag: 'div', attrs: { value }, text: label },
+      { part: 'group-list', tag: 'ul', children },
+    ],
   })
   return {
     ...base,
@@ -1046,6 +1052,58 @@ export const sideNavSuite: ConformanceSuite = {
             if (text !== 'No matches')
               throw new Error(`空态文字不符：期望 "No matches"，实际 ${JSON.stringify(text)}`)
           },
+        },
+      ],
+    },
+    {
+      name: '分组：分组是列表里的一条、不挂角色，组内的行挂在以组标题命名的列表里',
+      spec: { apg: APG },
+      fixture: withGroups,
+      props: props(),
+      initial: {
+        counts: { 'group': 2, 'group-label': 2, 'group-list': 2, 'item': 4, 'branch': 2 },
+        parts: {
+          // 列表项的父节点必须是列表：role=group 挂在 li 上会拆散外层列表，挂在 ul 上会拆散组内的行
+          'group': [{ 'role': null, 'aria-labelledby': null, 'hidden': null }, { 'role': null, 'aria-labelledby': null, 'hidden': null }],
+          'group-label': [{ 'id': '@self', 'data-collapsed': null }, { 'id': '@self', 'data-collapsed': null }],
+          'group-list': [
+            { 'role': null, 'aria-labelledby': '@part(group-label[0])' },
+            { 'role': null, 'aria-labelledby': '@part(group-label[1])' },
+          ],
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'link[0]', expect: { activeElement: { part: 'link[0]', exact: true } } },
+        // 方向键跨过分组的边界：上一组的末行下一行就是下一组的首行，标题不占行
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'branch-trigger[0]', exact: true } } },
+        { kind: 'key', key: 'ArrowUp', expect: { activeElement: { part: 'link[0]', exact: true } } },
+        { kind: 'key', key: 'End', expect: { activeElement: { part: 'branch-trigger[1]', exact: true } } },
+        singleSideNavTabStop(),
+      ],
+    },
+    {
+      name: '分组折叠成图标栏：标题带 data-collapsed，组内列表照旧以标题命名，顶层分支换装弹出面板',
+      spec: { apg: APG },
+      fixture: withGroups,
+      props: props({ collapsed: true }),
+      initial: {
+        counts: { 'group-list': 2, 'positioner': 2 },
+        parts: {
+          'group-label': [{ 'data-collapsed': '' }, { 'data-collapsed': '' }],
+          'group-list': [
+            { 'aria-labelledby': '@part(group-label[0])' },
+            { 'aria-labelledby': '@part(group-label[1])' },
+          ],
+          'branch-content': [{ 'data-popout': '', 'hidden': '' }, { 'data-popout': '', 'hidden': '' }],
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'branch-trigger[0]' },
+        { kind: 'key', key: 'ArrowRight' },
+        {
+          kind: 'settle',
+          until: { activeElement: 'link[1]' },
+          expect: { ...popoutOpen(0, true), activeElement: { part: 'link[1]', exact: true } },
         },
       ],
     },

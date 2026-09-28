@@ -176,7 +176,7 @@ export function XhSideNavEmpty({ children, ...rest }: XhSideNavEmptyProps): Reac
 
 /** 把一个值登记进所在分组，值变了换一条，卸下时撤销。 */
 function useJoinGroup(value: string): void {
-  const join = useSideNavGroupContext()
+  const join = useSideNavGroupContext()?.join
   useIsomorphicLayoutEffect(() => join?.(value), [join, value])
 }
 
@@ -194,9 +194,10 @@ export function XhSideNavItem({ children, ...rest }: XhSideNavItemProps): ReactN
 }
 
 export interface XhSideNavGroupProps extends Omit<ComponentPropsWithRef<'li'>, 'value'> {
-  /** 分组身份，与 group-label 依靠它配对。 */
+  /** 分组身份，group-label 与 group-list 依靠它配对。 */
   value: string
 }
+// 分组是上一层列表里的一条（li）：里面放 group-label 与 group-list，组内的行挂在 group-list 里
 export function XhSideNavGroup({ value, children, ...rest }: XhSideNavGroupProps): ReactNode {
   const ctx = useSideNavContext()
   // 成员由组里的链接与分支挂上时登记：搜索时一个成员都没命中就整组收起
@@ -208,8 +209,9 @@ export function XhSideNavGroup({ value, children, ...rest }: XhSideNavGroupProps
       return at === -1 ? current : current.filter((_, i) => i !== at)
     })
   }, [])
+  const group = useMemo(() => ({ value, join }), [value, join])
   return (
-    <SideNavGroupProvider value={join}>
+    <SideNavGroupProvider value={group}>
       <li {...mergeReactProps(ctx.api.getGroupProps({ value, members }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
     </SideNavGroupProvider>
   )
@@ -221,6 +223,16 @@ export interface XhSideNavGroupLabelProps extends Omit<ComponentPropsWithRef<'di
 export function XhSideNavGroupLabel({ value, children, ...rest }: XhSideNavGroupLabelProps): ReactNode {
   const ctx = useSideNavContext()
   return <div {...mergeReactProps(ctx.api.getGroupLabelProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+}
+
+export interface XhSideNavGroupListProps extends ComponentPropsWithRef<'ul'> {}
+/** 分组里的列表：组内的 item 与 branch 挂在这里，以组标题命名；分组身份取自所在的 XhSideNavGroup。 */
+export function XhSideNavGroupList({ children, ...rest }: XhSideNavGroupListProps): ReactNode {
+  const ctx = useSideNavContext()
+  const group = useSideNavGroupContext()
+  if (!group)
+    throw new Error('XhSideNavGroupList 要放在 XhSideNavGroup 里')
+  return <ul {...mergeReactProps(ctx.api.getGroupListProps({ value: group.value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</ul>
 }
 
 export interface XhSideNavBranchProps extends Omit<ComponentPropsWithRef<'li'>, 'value'> {

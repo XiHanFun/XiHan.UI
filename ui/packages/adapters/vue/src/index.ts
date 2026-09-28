@@ -1005,6 +1005,7 @@ export {
   XhSideNavEmpty,
   XhSideNavGroup,
   XhSideNavGroupLabel,
+  XhSideNavGroupList,
   XhSideNavInput,
   XhSideNavItem,
   XhSideNavLink,

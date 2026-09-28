@@ -62984,6 +62984,7 @@
         "branch",
         "branch-content",
         "group",
+        "group-list",
         "list",
         "root"
       ],
@@ -62997,7 +62998,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "side-nav 的 branch、branch-content、group、list、root 部件 gap 覆盖槽。"
+      "description": "side-nav 的 branch、branch-content、group、group-list、list、root 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-group-label-px",
