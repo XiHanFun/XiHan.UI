@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { INSTANT_ATTR, STAGGER_INDEX_PROPERTY, trackListMotion, trackReorder } from '../src/behavior/arrival'
+import { glideBy, glideFrom, INSTANT_ATTR, STAGGER_INDEX_PROPERTY, trackListMotion, trackReorder } from '../src/behavior/arrival'
 
 let stops: Array<() => void> = []
 
@@ -339,5 +339,60 @@ describe('一次换位', () => {
     second.moveTo(0)
     await flush()
     expect(writes).toEqual([])
+  })
+})
+
+/** 给节点装一个会记账的 Element.animate：jsdom 没有 Web Animations。 */
+function stubAnimate(el: HTMLElement): Array<{ keyframes: Keyframe[], options: KeyframeAnimationOptions }> {
+  const calls: Array<{ keyframes: Keyframe[], options: KeyframeAnimationOptions }> = []
+  Object.defineProperty(el, 'animate', {
+    configurable: true,
+    value: (keyframes: Keyframe[], options: KeyframeAnimationOptions) => {
+      calls.push({ keyframes, options })
+      return { finished: new Promise(() => {}), cancel: () => {}, finish: () => {} }
+    },
+  })
+  return calls
+}
+
+describe('沿 transform 换位', () => {
+  it('glideBy：从 (dx, dy) 沿 transform 回到原处，时长取 move、曲线取 continuous', () => {
+    const el = document.createElement('div')
+    document.body.append(el)
+    const calls = stubAnimate(el)
+    glideBy(el, 24, 0)
+    expect(calls).toHaveLength(1)
+    expect(calls[0]!.keyframes).toEqual([{ transform: 'translate(24px, 0px)' }, { transform: 'none' }])
+    expect(calls[0]!.options.duration).toBe(200)
+  })
+
+  it('glideBy：位移为零不播', () => {
+    const el = document.createElement('div')
+    document.body.append(el)
+    const calls = stubAnimate(el)
+    glideBy(el, 0, 0)
+    expect(calls).toHaveLength(0)
+  })
+
+  it('glideFrom：按此前量下的屏幕位置算出位移', () => {
+    const el = document.createElement('div')
+    document.body.append(el)
+    const calls = stubAnimate(el)
+    vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({ left: 100, top: 40 } as DOMRect)
+    glideFrom(el, { left: 60, top: 40 })
+    expect(calls[0]!.keyframes[0]).toEqual({ transform: 'translate(-40px, 0px)' })
+  })
+
+  it('channel: transform 时留下来的条目不写 translate，改播 transform 上的换位', async () => {
+    const container = list(3)
+    stops.push(trackListMotion(container, { item: '[data-part="item"]', channel: 'transform' }))
+    const last = container.children[2] as HTMLElement & { moveTo: (next: number) => void }
+    const calls = stubAnimate(last)
+    const spy = vi.spyOn(last.style, 'setProperty')
+    ;(container.children[0] as HTMLElement).remove()
+    last.moveTo(40)
+    await flush()
+    expect(spy.mock.calls.filter(([name]) => name === 'translate')).toHaveLength(0)
+    expect(calls[0]!.keyframes[0]).toEqual({ transform: 'translate(0px, 40px)' })
   })
 })

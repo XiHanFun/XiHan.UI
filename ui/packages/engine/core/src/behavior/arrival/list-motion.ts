@@ -11,8 +11,11 @@
 // 过渡回到新位置。到达的规则与 trackArrivals 相同：首帧就在的不播进场，之后同一批新到的按到达顺序错开。
 //
 // 时长与曲线全部在皮肤里：进场、退场是关键帧，换位是 translate 过渡；减弱动效由令牌收敛，这里不读时间。
+// 条目的 translate 另有用途（标签带整体位移）、过渡清单又归别处（家族配方）时，换位改走 transform 上的一段
+// Web 动画（glideBy），时长与曲线从元素读 move / continuous 令牌，与同一元素上的 CSS 过渡同步。
 
 import type { TrackArrivalsOptions } from './track-arrivals'
+import { animate, motionEasings, readMotion } from '@xihan-ui/motion'
 import { attachCssExit, createPresence } from '../presence'
 import { INSTANT_ATTR, STAGGER_CAP, STAGGER_INDEX_PROPERTY } from './track-arrivals'
 
@@ -48,12 +51,16 @@ function currentTranslate(el: HTMLElement, win: Window): [number, number] {
  * 反向补偿一段位移再交给过渡：先把条目按 (dx, dy) 推回旧位置并关掉过渡，提交这一帧样式后撤掉，
  * 皮肤里条目的 translate 过渡把它带回新位置；上一段没走完时从当前位置接着走。正在播关键帧的条目不补偿。
  */
-function shift(el: HTMLElement, dx: number, dy: number, win: Window): void {
+function shift(el: HTMLElement, dx: number, dy: number, win: Window, channel: 'translate' | 'transform' = 'translate'): void {
   if (dx === 0 && dy === 0)
     return
   const running = el.getAnimations?.().some(animation => 'animationName' in animation && animation.playState === 'running')
   if (running)
     return
+  if (channel === 'transform') {
+    glideBy(el, dx, dy)
+    return
+  }
   const [cx, cy] = currentTranslate(el, win)
   const translate = el.style.getPropertyValue('translate')
   const transition = el.style.getPropertyValue('transition')
@@ -95,6 +102,63 @@ function standIn(source: HTMLElement): HTMLElement {
   return copy
 }
 
+/** 正在走的换位动画：同一条目再换一次位时先取它此刻的位移，再撤掉。 */
+const glides = new WeakMap<Element, { cancel: () => void }>()
+
+/** transform 此刻叠出的平移（在途的换位动画算进去）；没有平移为 [0, 0]。 */
+function currentShift(el: HTMLElement, win: Window): [number, number] {
+  const value = win.getComputedStyle(el).transform
+  if (!value || value === 'none')
+    return [0, 0]
+  const m = value.match(/^matrix\((.+)\)$/)
+  if (!m)
+    return [0, 0]
+  const parts = m[1]!.split(',').map(Number)
+  return [parts[4] || 0, parts[5] || 0]
+}
+
+/**
+ * 一段换位：条目从相对当前排布位的 (dx, dy) 沿 transform 回到原处。时长与曲线读元素上的 move / continuous 令牌
+ * （作者对槽的覆盖与容器上的 data-motion 一并生效），减弱动效下直接到位；上一段还没走完时从它此刻的位移接着走。
+ * 走 transform 而不是 translate：条目的 translate 另有用途时（标签带整体位移）两者叠加、互不覆盖。
+ */
+export function glideBy(el: HTMLElement, dx: number, dy: number): void {
+  const win = el.ownerDocument.defaultView
+  if (!win)
+    return
+  const [cx, cy] = glides.has(el) ? currentShift(el, win) : [0, 0]
+  glides.get(el)?.cancel()
+  glides.delete(el)
+  const x = dx + cx
+  const y = dy + cy
+  if (x === 0 && y === 0)
+    return
+  const motion = readMotion(el)
+  const easing = win.getComputedStyle(el).getPropertyValue('--xh-motion-ease-continuous').trim() || motionEasings.continuous
+  const handle = animate(el, [{ transform: `translate(${x}px, ${y}px)` }, { transform: 'none' }], {
+    duration: motion.duration('move'),
+    easing,
+  })
+  glides.set(el, handle)
+  void handle.finished.then(() => {
+    if (glides.get(el) === handle)
+      glides.delete(el)
+  })
+}
+
+/**
+ * 按条目此前在屏幕上的位置换位：一次重新排布（宿主重排了顺序、撤掉了拖动时写的位移）之后调用，
+ * 条目从 from 的位置沿 transform 回到它此刻的排布位。量的是边框盒的屏幕矩形，from 由调用方在排布变化之前量下。
+ */
+export function glideFrom(el: HTMLElement, from: { left: number, top: number }): void {
+  const win = el.ownerDocument.defaultView
+  if (!win)
+    return
+  const [cx, cy] = glides.has(el) ? currentShift(el, win) : [0, 0]
+  const rect = el.getBoundingClientRect()
+  glideBy(el, from.left - (rect.left - cx), from.top - (rect.top - cy))
+}
+
 /** 一批到达：按给定顺序排号，撤掉首帧标记。 */
 function arrive(batch: readonly Element[]): void {
   batch.forEach((el, index) => {
@@ -122,11 +186,17 @@ export interface TrackListMotionOptions extends TrackArrivalsOptions {
    * 此时只做到达与换位，被移除的条目直接离开，留下来的条目从旧排布位过渡到新排布位。
    */
   depart?: boolean
+  /**
+   * 换位走哪一路（缺省 translate）：translate 交给皮肤里条目的 translate 过渡；transform 由 glideBy 播一段
+   * Web 动画，给 translate 另有用途、过渡清单又归别处的条目用（Tabs 的标签：标签带整体位移占着 translate）。
+   */
+  channel?: 'translate' | 'transform'
 }
 
 export function trackListMotion(container: Element, options: TrackListMotionOptions): () => void {
   const { item } = options
   const placeholders = options.depart ?? true
+  const channel = options.channel ?? 'translate'
   const win = container.ownerDocument.defaultView
   const departing = new WeakSet<Element>()
   const ghosts = new Set<() => void>()
@@ -170,7 +240,7 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
     const to = slotOf(el)
     if (to.parent !== from.parent)
       return
-    shift(el, from.left - to.left, from.top - to.top, win!)
+    shift(el, from.left - to.left, from.top - to.top, win!, channel)
   }
 
   /** 离场：替身放回原处，播完退场再移除。 */
