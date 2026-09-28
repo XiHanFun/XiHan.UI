@@ -192,6 +192,11 @@ export interface TimeRangePickerSchema extends MachineSchema {
     onOpenChange?: (details: TimeRangePickerOpenChangeDetails) => void
   }
   context: {
+    /**
+     * 挂载时开着、还没收起过：这一段打开属于首帧，content 投影 data-instant 直接呈现、不播进场。
+     * 第一次收起时清掉，之后的每一次打开照常进场。
+     */
+    openedAtMount: boolean
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
     /** 区间两端，按位存放，空缺的一端为空串。受控（value 提供）时 cell 直读 prop。 */
@@ -289,6 +294,7 @@ export interface TimeRangePickerSchema extends MachineSchema {
     | 'clearFocusedSegment'
     | 'syncDrafts'
     | 'resetToDefault'
+    | 'clearOpenedAtMount'
   effect: 'trackPosition' | 'trackLayer'
 }
 
