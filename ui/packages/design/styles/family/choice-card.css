@@ -1,0 +1,97 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
+ * 选择卡片家族配方：RadioGroup 与 CheckboxGroup 的 card 档条目共用一副卡面——一张可点的描边卡，
+ * 行首照旧是圆圈 / 方框，文案与说明排在它右侧，整张卡是命中区。
+ *
+ * 连接层在 card 档条目上投影 data-xh-choice-card，并把 Action Control 的形态换成 outline（row 档照旧：
+ * 宽度由容器给、高度随内容、按下只换面不缩放）。配方只管卡面：
+ *   形状取 surface（8px），内衬 space-3 / space-4；
+ *   未选中是描边卡：透明底 + --xh-border-control，白底承载阶梯 100 → 200，不随语气染色；
+ *   选中是「页内持久集合的选中」那一种标记：卡面换品牌淡底 12 → 悬停 20 → 按压 28、前景 fg-on-brand-subtle，
+ *   写了 data-tone 时换成语气淡底；描边不换，行首的圆点 / 勾照常表达选中；
+ *   只读不给悬停与按下面，选中面照常；禁用走家族禁用面，选中又禁用时底色掺一半中性面，选中信息不丢。
+ *
+ * 选择器带上 [data-scope][data-part]：皮肤里条目的基础规则写的是 (0,2,0)，配方排在皮肤之前，
+ * 同权重时皮肤赢；卡面要压过列表档的那几条（边归零、内衬归零、圆角取 control）。
+ */
+@layer xihan.components {
+  [data-scope][data-part][data-xh-choice-card] {
+    --xh-action-radius: var(--xh-shape-surface);
+    --xh-action-padding-inline: var(--xh-space-4);
+    --xh-action-padding-block: var(--xh-space-3);
+    --xh-action-bg-rest: transparent;
+    --xh-action-bg-hover: var(--xh-bg-subtle);
+    --xh-action-bg-pressed: var(--xh-bg-subtle-hover);
+    --xh-action-bg-focus-visible: transparent;
+    --xh-action-bg-disabled: var(--xh-bg-subtle);
+    --xh-action-border-rest: var(--xh-border-control);
+    --xh-action-border-hover: var(--xh-border-control-hover);
+    --xh-action-border-pressed: var(--xh-border-control-hover);
+    --xh-action-border-focus-visible: var(--xh-border-control);
+    --xh-action-border-disabled: var(--xh-border-default);
+
+    /* 行首标记一列、文案一列；说明落在文案下方同一列（皮肤给说明写 grid-column: 2） */
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    row-gap: var(--xh-space-1);
+    border-width: var(--xh-stroke-thin);
+    line-height: var(--xh-leading-normal);
+  }
+
+  [data-scope][data-part][data-xh-choice-card][data-state='checked'] {
+    --xh-action-bg-rest: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+    --xh-action-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover));
+    --xh-action-bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-brand-subtle-active));
+    --xh-action-bg-focus-visible: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+    /* 掺的是淡底的不透明档：墨色淡底半透明，掺进去整块面会跟着变半透明 */
+    --xh-action-bg-disabled: color-mix(in oklab, var(--xh-_tone-subtle, var(--xh-bg-brand-subtle)) 50%, var(--xh-bg-subtle-opaque));
+    --xh-action-fg-rest: var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle));
+    --xh-action-fg-hover: var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle));
+    --xh-action-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle));
+    --xh-action-fg-focus-visible: var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle));
+  }
+
+  /* 只读改不动：悬停与按下都停在静息面上（选中卡仍是淡底），收回可点的手型 */
+  [data-scope][data-part][data-xh-choice-card][data-readonly]:not([data-disabled]) {
+    --xh-action-bg-hover: transparent;
+    --xh-action-bg-pressed: transparent;
+    --xh-action-border-hover: var(--xh-border-control);
+    --xh-action-border-pressed: var(--xh-border-control);
+    --xh-action-cursor-rest: default;
+    --xh-action-cursor-hover: default;
+    --xh-action-cursor-pressed: default;
+    --xh-action-cursor-focus-visible: default;
+  }
+
+  [data-scope][data-part][data-xh-choice-card][data-readonly][data-state='checked']:not([data-disabled]) {
+    --xh-action-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+    --xh-action-bg-pressed: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  }
+
+  /* 卡面本身已够大：粗指针下不再把命中区外扩到 44px 高，外扩会压进相邻的卡 */
+  @media (pointer: coarse) {
+    [data-scope][data-part][data-xh-choice-card]::after {
+      min-block-size: 0;
+    }
+  }
+
+  /* 强制色：底色一律换成 Canvas，选中卡的淡底看不见了，描边换系统高亮色表出选中 */
+  @media (forced-colors: active) {
+    [data-scope][data-part][data-xh-choice-card][data-state='checked'] {
+      border-color: Highlight;
+    }
+  }
+
+  /* 打印丢底色：选中卡的淡底落不到纸上，描边加粗一档表出选中 */
+  @media print {
+    [data-scope][data-part][data-xh-choice-card][data-state='checked'] {
+      border-width: var(--xh-stroke-thick);
+      border-color: currentColor;
+    }
+  }
+}

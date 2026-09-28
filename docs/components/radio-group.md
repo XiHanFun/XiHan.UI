@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="radio-group"`：`root` · `label` · **`item`** · `item-text` · `indicator` · `hidden-input`
+`data-scope="radio-group"`：`root` · `label` · **`item`** · `item-text` · `item-description` · `indicator` · `hidden-input`
 
 ## 示例
 
@@ -60,11 +60,18 @@ size 改变条目间距与字号，不写即默认中档
 
 <XhDemo src="radio-group/07-options" />
 
+### 卡片
+
+variant="card" 把每个选项画成一张可点的卡，文案下方用说明行交代差别
+
+<XhDemo src="radio-group/08-card" />
+
 ## 设计指引
 
 ### 何时使用
 
 - 二到五个互斥选项，且各选项的文字值得同时展开供用户比较。
+- 选项之间要靠一两句说明才分得清（套餐、配送方式、部署区域）时，用 `variant="card"` 把每个选项画成一张卡。
 
 ### 何时不用
 
@@ -78,16 +85,20 @@ size 改变条目间距与字号，不写即默认中档
 - `hidden-input` 承担表单参与。
 - `collection` 可数据驱动，也可以逐项编写。
 - 圆圈是字段家族的控制盒：不填底、描边与无影，选中后以语气色圆点填充；整行接 Action Control row 档，悬停 / 按下换面不缩放，圆圈随行换到承载面阶梯的下一档。
+- `variant` 是结构形态：缺省 `list` 是一列「圆圈 + 文案」的行；`card` 把每个条目画成一张可点的描边卡（surface 圆角，白底承载阶梯悬停 100 → 按下 200），圆圈在卡的行首，整张卡是命中区。选中卡换品牌淡底（写了 `tone` 换语气淡底），与表格选中行、穿梭框选中项同一种标记，描边不换。竖排时卡片撑满一列，横排时各卡等分一行、放不下就折行。
+- `item-description` 是文案下方的说明行（13 / `--xh-fg-muted`），与文案一起构成条目的可及名；`collection` 里的 `description` 会自动铺出这一行。
 - 与[复选框](./checkbox)的不对称是有意的：一个复选框自身即成立（勾选同意条款），一个单选按钮自身不成立，因此复选框有独立组件、单选按钮没有。
 
 ### 组合
 
-- 外层放[表单字段](./field)；每项的补充说明放进选项内容。
+- 外层放[表单字段](./field)；每项的补充说明放进 `item-description`。
 
 ### 最佳实践
 
 - 提供默认选中项，除非“未选”本身有意义。
 - 选项文字写完整，不依赖共同前缀省略。
+
+- 卡片里只放一两句说明，不放按钮、链接等第二个可点目标：整张卡是一次选择，内嵌的动作会与选择抢同一次点击。
 
 ### 反模式
 
@@ -101,7 +112,7 @@ size 改变条目间距与字号，不写即默认中档
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-radio-group>` |
-| Vue 组件 | `XhRadioGroupItem` `XhRadioGroupItemText` `XhRadioGroupLabel` `XhRadioGroupRoot` |
+| Vue 组件 | `XhRadioGroupItem` `XhRadioGroupItemDescription` `XhRadioGroupItemText` `XhRadioGroupLabel` `XhRadioGroupRoot` |
 | 组合式函数 | `useRadioGroup` |
 | 状态机 | `radioGroupMachine` |
 | 皮肤 | `@xihan-ui/styles/radio-group.css` |
@@ -122,6 +133,7 @@ size 改变条目间距与字号，不写即默认中档
 | `name` | `string` |  | 表单字段名。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `variant` | `RadioGroupVariant` |  | 结构形态，默认 list；card 把每个条目画成一张可点的卡。 |
 | `onValueChange` | `(details: RadioGroupValueChangeDetails) => void` |  | value 变化回调。 |
 
 ### RadioGroupNode
@@ -132,6 +144,7 @@ size 改变条目间距与字号，不写即默认中档
 | --- | --- | --- | --- |
 | `value` | `string` | 是 |  |
 | `label` | `string` |  | 展示文本；默认回退为 value。 |
+| `description` | `string` |  | 说明文字，写入 item-description 部件；未提供时本条不铺该部件。 |
 | `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
 
 ### 事件
@@ -162,6 +175,7 @@ size 改变条目间距与字号，不写即默认中档
 | --- | --- |
 | `item` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
+| `item-description` | 'checked' \| 'unchecked' |
 | `indicator` | 'checked' \| 'unchecked' |
 | `hidden-input` | 'checked' \| 'unchecked' |
 
@@ -187,6 +201,7 @@ size 改变条目间距与字号，不写即默认中档
 | `getLabelProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: RadioGroupItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: RadioGroupItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: RadioGroupItemProps) => T['element']` | 条目的说明：文案下方一行次级文字，常用在 card 形态里。 |
 | `getIndicatorProps` | `(props: RadioGroupItemProps) => T['element']` |  |
 | `getHiddenInputProps` | `(props: RadioGroupItemProps) => T['input']` | 条目对应的隐藏原生 radio 输入，用于表单提交。 |
 
@@ -243,6 +258,7 @@ size 改变条目间距与字号，不写即默认中档
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-invalid` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
@@ -252,11 +268,16 @@ size 改变条目间距与字号，不写即默认中档
 | `item` | `data-xh-action-display` | 'always' |
 | `item` | `data-xh-action-profile` | 'row' |
 | `item` | `data-xh-action-size` | 'xs' |
-| `item` | `data-xh-action-variant` | 'ghost' |
+| `item` | `data-xh-action-variant` | 'outline' \| 'ghost' |
+| `item` | `data-xh-choice-card` | ''（条件成立时才出现） |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-invalid` | ''（条件成立时才出现） |
 | `item-text` | `data-readonly` | ''（条件成立时才出现） |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
+| `item-description` | `data-disabled` | ''（条件成立时才出现） |
+| `item-description` | `data-invalid` | ''（条件成立时才出现） |
+| `item-description` | `data-readonly` | ''（条件成立时才出现） |
+| `item-description` | `data-state` | 'checked' \| 'unchecked' |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-invalid` | ''（条件成立时才出现） |
 | `indicator` | `data-readonly` | ''（条件成立时才出现） |
@@ -273,6 +294,7 @@ size 改变条目间距与字号，不写即默认中档
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-radio-group-card-title-font-weight` | `item`<br>`item-text` | `font-weight` | `xh-choice-card` | `--xh-text-label-weight` | radio-group 的 item、item-text 部件 font-weight 覆盖槽。 |
 | `--xh-radio-group-gap` | `root` | `gap` | `default` | `--xh-space-2` | radio-group 的 root 部件 gap 覆盖槽。 |
 | `--xh-radio-group-indicator-bg` | `indicator` | `background` | `default` | `transparent` | radio-group 的 indicator 部件 background 覆盖槽。 |
 | `--xh-radio-group-indicator-bg-disabled` | `indicator`<br>`item` | `background` | `disabled` | `--xh-bg-subtle` | radio-group 的 indicator、item 部件 background 覆盖槽。 |
@@ -289,11 +311,15 @@ size 改变条目间距与字号，不写即默认中档
 | `--xh-radio-group-indicator-size` | `indicator` | `block-size`<br>`inline-size` | `default` | `--xh-_radio-group-indicator` | radio-group 的 indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-radio-group-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle` | radio-group 的 item 部件 background-color 覆盖槽。 |
 | `--xh-radio-group-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | radio-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-radio-group-item-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | radio-group 的 item-description 部件 color 覆盖槽。 |
+| `--xh-radio-group-item-description-fg-disabled` | `item`<br>`item-description` | `color` | `disabled` | `--xh-fg-disabled` | radio-group 的 item、item-description 部件 color 覆盖槽。 |
+| `--xh-radio-group-item-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-secondary-size` | radio-group 的 item-description 部件 font-size 覆盖槽。 |
 | `--xh-radio-group-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | radio-group 的 item 部件 color 覆盖槽。 |
 | `--xh-radio-group-item-fg-disabled` | `item` | `color` | `disabled` | `--xh-fg-disabled` | radio-group 的 item 部件 color 覆盖槽。 |
 | `--xh-radio-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_radio-group-font-size` | radio-group 的 item 部件 font-size 覆盖槽。 |
 | `--xh-radio-group-item-gap` | `item` | `gap` | `default` | `--xh-_radio-group-item-gap` | radio-group 的 item 部件 gap 覆盖槽。 |
 | `--xh-radio-group-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | radio-group 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-radio-group-item-row-gap` | `item` | `row-gap` | `has(> [data-scope='radio-group'][data-part='item-description'])`<br>`not([data-xh-choice-card])`<br>`xh-choice-card` | `--xh-space-1` | radio-group 的 item 部件 row-gap 覆盖槽。 |
 | `--xh-radio-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | radio-group 的 label 部件 color 覆盖槽。 |
 | `--xh-radio-group-label-fg-disabled` | `label`<br>`root` | `color` | `disabled` | `--xh-fg-subtle` | radio-group 的 label、root 部件 color 覆盖槽。 |
 | `--xh-radio-group-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | radio-group 的 label 部件 font-size 覆盖槽。 |

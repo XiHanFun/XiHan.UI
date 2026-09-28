@@ -325,3 +325,46 @@ describe('connectRadioGroup 按压通道', () => {
     g.stop()
   })
 })
+
+describe('radio-group 结构形态', () => {
+  it('缺省 list：根投影 data-variant=list，条目是 ghost 行、不带卡面标记', () => {
+    const g = makeGroup()
+    expect(g.api().getRootProps()).toMatchObject({ 'data-variant': 'list' })
+    expect(g.api().getItemProps({ value: 'free' })).toMatchObject({
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-choice-card': undefined,
+    })
+    g.stop()
+  })
+
+  it('card：条目换成 outline 描边卡并投影 data-xh-choice-card，选中语义与键盘不变', () => {
+    const g = makeGroup({ variant: 'card', defaultValue: 'standard' })
+    expect(g.api().getRootProps()).toMatchObject({ 'data-variant': 'card' })
+    expect(g.api().getItemProps({ value: 'standard' })).toMatchObject({
+      'role': 'radio',
+      'aria-checked': 'true',
+      'data-state': 'checked',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'outline',
+      'data-xh-choice-card': '',
+    })
+    g.items[1]!.focus()
+    g.key('ArrowDown')
+    expect(g.api().value).toBe('pro')
+    g.stop()
+  })
+
+  it('说明行带条目的状态标记，不另挂可及名关系', () => {
+    const g = makeGroup({ defaultValue: 'free', disabled: true })
+    const props = g.api().getItemDescriptionProps({ value: 'free' }) as Record<string, unknown>
+    expect(props).toMatchObject({
+      'data-scope': 'radio-group',
+      'data-part': 'item-description',
+      'data-state': 'checked',
+      'data-disabled': '',
+    })
+    expect(props.id).toBeUndefined()
+    g.stop()
+  })
+})

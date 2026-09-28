@@ -239,6 +239,7 @@
     "data-zoomed": "已经放大：直角坐标图的缩放窗口不再盖住整条轴，拖动绘图区可以平移。",
     "data-wrap": "允许折行：code-view / diff-view 的长代码原地换行，flex / space 的子项排不下时另起一行。两处是同一个意思落在不同主语上，所以共用一个名字。",
     "data-xh-action-has-value": "Action Control 的 has-value 显示策略当前有真实值可操作。",
+    "data-xh-choice-card": "这个条目是一张选择卡片（RadioGroup / CheckboxGroup 的 card 形态）：皮肤按它接选择卡片家族配方（surface 形状、内衬、描边卡面与选中面由配方给）。只在 card 形态归族，按形态经 dataAttr 发。",
     "data-xh-collection-item": "这个部件归 Collection Item 家族，皮肤按它接家族配方（面、字色、字重、光标与按压时间线由配方按 data-xh-collection-context 给）。常驻归族的部件写常量空串；只在某一形态归族的部件（tabs 的 line 页签，card / segment 档不归族）按形态经 dataAttr 发。",
     "data-xh-collection-terminal": "Collection Item nav 语境里当前页是不可点的终点（面包屑当前页）：家族给透明面 + --xh-fg-default + medium + cursor default，不响应 hover / pressed，并压过 aria-disabled 的禁用面。显式投影而不从 aria-current / href 推断，正是因为它同时带 aria-disabled='true'。",
     "data-xh-field-auto-size": "Field Chrome 的 textarea 高度由内容量高接管。",

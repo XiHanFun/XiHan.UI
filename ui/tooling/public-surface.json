@@ -49,6 +49,7 @@
       "./chart.css",
       "./checkbox-group.css",
       "./checkbox.css",
+      "./choice-card.css",
       "./citation.css",
       "./clipboard.css",
       "./code-view.css",
@@ -1985,6 +1986,8 @@
       "XhRadarChartViewport",
       "XhRadarChartViewportProps",
       "XhRadioGroupItem",
+      "XhRadioGroupItemDescription",
+      "XhRadioGroupItemDescriptionProps",
       "XhRadioGroupItemProps",
       "XhRadioGroupItemText",
       "XhRadioGroupItemTextProps",
@@ -4080,6 +4083,7 @@
       "XhRadarChartTooltip",
       "XhRadarChartViewport",
       "XhRadioGroupItem",
+      "XhRadioGroupItemDescription",
       "XhRadioGroupItemText",
       "XhRadioGroupLabel",
       "XhRadioGroupRoot",
@@ -6830,6 +6834,7 @@
       "RadioGroupSchema",
       "RadioGroupTranslations",
       "RadioGroupValueChangeDetails",
+      "RadioGroupVariant",
       "RatingApi",
       "RatingHoverChangeDetails",
       "RatingItemProps",
@@ -10554,6 +10559,7 @@
       "hidden-input",
       "indicator",
       "item",
+      "item-description",
       "item-text",
       "label",
       "root"
@@ -12574,7 +12580,8 @@
       "required",
       "size",
       "tone",
-      "value"
+      "value",
+      "variant"
     ],
     "rating": [
       "allowClear",
@@ -13599,6 +13606,7 @@
     "data-xh-chart-slot",
     "data-xh-check-mark",
     "data-xh-check-mark-profile",
+    "data-xh-choice-card",
     "data-xh-collection-context",
     "data-xh-collection-item",
     "data-xh-collection-separator",
@@ -17169,6 +17177,7 @@
     "--xh-radar-chart-tooltip-row-gap",
     "--xh-radar-chart-tooltip-shadow",
     "--xh-radar-chart-tooltip-swatch-radius",
+    "--xh-radio-group-card-title-font-weight",
     "--xh-radio-group-gap",
     "--xh-radio-group-indicator-bg",
     "--xh-radio-group-indicator-bg-disabled",
@@ -17185,11 +17194,15 @@
     "--xh-radio-group-indicator-size",
     "--xh-radio-group-item-bg-hover",
     "--xh-radio-group-item-bg-pressed",
+    "--xh-radio-group-item-description-fg",
+    "--xh-radio-group-item-description-fg-disabled",
+    "--xh-radio-group-item-description-font-size",
     "--xh-radio-group-item-fg",
     "--xh-radio-group-item-fg-disabled",
     "--xh-radio-group-item-font-size",
     "--xh-radio-group-item-gap",
     "--xh-radio-group-item-radius",
+    "--xh-radio-group-item-row-gap",
     "--xh-radio-group-label-fg",
     "--xh-radio-group-label-fg-disabled",
     "--xh-radio-group-label-font-size",
@@ -20426,7 +20439,8 @@
         "required",
         "size",
         "tone",
-        "value"
+        "value",
+        "variant"
       ],
       "events": [
         "value-change"

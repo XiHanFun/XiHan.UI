@@ -6,7 +6,7 @@
 // 提供 radio group 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema } from '@xihan-ui/headless'
+import type { RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupVariant } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -33,6 +33,7 @@ export const XhRadioGroupRoot = defineComponent({
     name: { type: String },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
+    variant: { type: String as PropType<RadioGroupVariant> },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: {
@@ -118,6 +119,15 @@ export const XhRadioGroupItemText = defineComponent({
   },
 })
 
+export const XhRadioGroupItemDescription = defineComponent({
+  name: 'XhRadioGroupItemDescription',
+  setup(_, { slots }) {
+    const ctx = useRadioGroupContext()
+    const { item } = useRadioGroupItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /**
  * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
  * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
@@ -132,6 +142,7 @@ function renderDefaultTree(
     // 条目内的 hidden-input 与 indicator 由 XhRadioGroupItem 自行装配
     ...collection.map(node => h(XhRadioGroupItem, { key: node.value, value: node.value }, () => [
       h(XhRadioGroupItemText, null, () => itemSlot?.(node) ?? node.label),
+      ...(node.description != null ? [h(XhRadioGroupItemDescription, null, () => node.description)] : []),
     ])),
   ]
 }

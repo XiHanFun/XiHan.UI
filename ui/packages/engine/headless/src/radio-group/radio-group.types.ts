@@ -7,6 +7,13 @@
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
+/**
+ * 结构形态：list 是一列「圆圈 + 文案」的行（缺省）；card 是一组可点的描边卡，
+ * 圆圈在卡的行首，文案与说明排在右侧，选中卡换选中面。与 Tabs 的 line / card / segment 同类，
+ * 不是有框 / 无框的 ControlVariant。
+ */
+export type RadioGroupVariant = 'card' | 'list'
+
 export interface RadioGroupValueChangeDetails {
   value: string | null
 }
@@ -16,6 +23,8 @@ export interface RadioGroupNode {
   value: string
   /** 展示文本；默认回退为 value。 */
   label?: string
+  /** 说明文字，写入 item-description 部件；未提供时本条不铺该部件。 */
+  description?: string
   /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
 }
@@ -25,6 +34,8 @@ export interface RadioGroupNodeMeta {
   value: string
   /** node.label ?? node.value，恒为字符串。 */
   label: string
+  /** 未提供时为 null。 */
+  description: string | null
   disabled: boolean
 }
 
@@ -63,6 +74,8 @@ export interface RadioGroupSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    /** 结构形态，默认 list；card 把每个条目画成一张可点的卡。 */
+    variant?: RadioGroupVariant
     /** value 变化回调。 */
     onValueChange?: (details: RadioGroupValueChangeDetails) => void
   }
@@ -111,6 +124,8 @@ export interface RadioGroupApi<T extends PropTypes = PropTypes> {
   getLabelProps: () => T['element']
   getItemProps: (props: RadioGroupItemProps) => T['element']
   getItemTextProps: (props: RadioGroupItemProps) => T['element']
+  /** 条目的说明：文案下方一行次级文字，常用在 card 形态里。 */
+  getItemDescriptionProps: (props: RadioGroupItemProps) => T['element']
   getIndicatorProps: (props: RadioGroupItemProps) => T['element']
   /** 条目对应的隐藏原生 radio 输入，用于表单提交。 */
   getHiddenInputProps: (props: RadioGroupItemProps) => T['input']

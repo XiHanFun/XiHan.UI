@@ -7,4 +7,5 @@
 
 import { createAnatomy } from '@xihan-ui/core'
 
-export const radioGroupAnatomy = createAnatomy('radio-group', ['root', 'label', 'item', 'item-text', 'indicator', 'hidden-input'])
+// item-description 是条目文案下方的说明行，card 形态里最常用
+export const radioGroupAnatomy = createAnatomy('radio-group', ['root', 'label', 'item', 'item-text', 'item-description', 'indicator', 'hidden-input'])

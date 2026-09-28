@@ -31,6 +31,54 @@ export const radioGroupSuite: ConformanceSuite = {
   },
   cases: [
     {
+      name: 'card 形态：条目换成 outline 描边卡并投影 data-xh-choice-card，说明行带条目状态；点选与选中语义照旧',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { variant: 'card', defaultValue: 'a' },
+      fixture: () => ({
+        part: 'root',
+        children: [
+          { part: 'label', text: '套餐' },
+          {
+            part: 'item',
+            attrs: { value: 'a' },
+            children: [{ part: 'item-text', text: '基础版' }, { part: 'item-description', text: '适合个人' }],
+          },
+          {
+            part: 'item',
+            attrs: { value: 'c' },
+            children: [{ part: 'item-text', text: '团队版' }, { part: 'item-description', text: '适合团队' }],
+          },
+        ],
+      }),
+      initial: {
+        counts: { 'item': 2, 'item-description': 2 },
+        parts: {
+          'root': { 'data-variant': 'card' },
+          'item': [
+            { 'role': 'radio', 'aria-checked': 'true', 'data-state': 'checked', 'data-xh-action-profile': 'row', 'data-xh-action-variant': 'outline', 'data-xh-choice-card': '' },
+            { 'role': 'radio', 'aria-checked': 'false', 'data-state': 'unchecked', 'data-xh-action-variant': 'outline', 'data-xh-choice-card': '' },
+          ],
+          'item-description': [
+            { 'data-state': 'checked', 'id': null },
+            { 'data-state': 'unchecked' },
+          ],
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item[1]',
+          expect: {
+            parts: {
+              'item': [{ 'aria-checked': 'false', 'data-state': 'unchecked' }, { 'aria-checked': 'true', 'data-state': 'checked' }],
+              'item-description': [{ 'data-state': 'unchecked' }, { 'data-state': 'checked' }],
+            },
+            events: [{ type: 'value-change', detail: { value: 'c' } }],
+          },
+        },
+      ],
+    },
+    {
       // 整组只占一个 Tab 位；无锚点时须由容器兜底
       name: 'roving tabindex：整组只有一个 Tab 停靠点，无锚点时容器兜底',
       spec: { apg: APG },
@@ -64,12 +112,15 @@ export const radioGroupSuite: ConformanceSuite = {
             'aria-labelledby': '@part(label)',
             'aria-orientation': 'vertical',
             'data-orientation': 'vertical',
+            // 缺省是一列「圆圈 + 文案」的行
+            'data-variant': 'list',
             'data-disabled': null,
             'tabindex': '0',
           },
           'item': [
             {
               'role': 'radio',
+              'data-xh-choice-card': null,
               // 整行接 Action Control row 档 ghost（行级命中区），xs 是 24px 命中地板；圆圈随行读宿主 host 槽
               'data-xh-action-control': '',
               'data-xh-action-profile': 'row',

@@ -891,6 +891,7 @@ export { useRadarChart } from './components/radar-chart/use-radar-chart'
 export type { RadarChartContext, RadarChartNotifiers } from './components/radar-chart/use-radar-chart'
 export {
   XhRadioGroupItem,
+  XhRadioGroupItemDescription,
   XhRadioGroupItemText,
   XhRadioGroupLabel,
   XhRadioGroupRoot,

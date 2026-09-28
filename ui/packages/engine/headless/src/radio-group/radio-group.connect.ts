@@ -30,12 +30,15 @@ export function connectRadioGroup<T extends PropTypes>(
   const orientation = prop('orientation') ?? 'vertical'
   const dir = prop('dir') ?? 'ltr'
   const name = prop('name')
+  const variant = prop('variant') ?? 'list'
+  const card = variant === 'card'
   const ids = scope.ids('radio-group', 'label')
 
   // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
   const collection: RadioGroupNodeMeta[] = (prop('collection') ?? []).map(node => ({
     value: node.value,
     label: node.label ?? node.value,
+    description: node.description ?? null,
     disabled: !!node.disabled,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
@@ -88,6 +91,7 @@ export function connectRadioGroup<T extends PropTypes>(
       'data-orientation': orientation,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
+      'data-variant': variant,
       'data-disabled': dataAttr(groupDisabled),
       // role=radiogroup 本身接受这三条，不必像 role=group 那样下放到条目
       'aria-readonly': readOnly ? 'true' : 'false',
@@ -144,11 +148,13 @@ export function connectRadioGroup<T extends PropTypes>(
         // 整行是「圆圈 + 文案」的行级命中区：接 Action Control row 档、ghost 形态，row 档允许标签折行、
         // 按下只换面不缩放；xs 的 24px 是命中地板，圆圈 12 / 16 / 20px 居中其间，字号与间距由皮肤按组档位映射，
         // 与 checkbox-group 的条目同形。圆圈是行内 aria-hidden 的标记，随行读宿主的 host 槽换面
+        // card 形态换成 outline 描边卡，卡面（形状、内衬、选中面）由选择卡片家族配方给
         'data-xh-action-control': '',
         'data-xh-action-profile': 'row',
-        'data-xh-action-variant': 'ghost',
+        'data-xh-action-variant': card ? 'outline' : 'ghost',
         'data-xh-action-display': 'always',
         'data-xh-action-size': 'xs',
+        'data-xh-choice-card': dataAttr(card),
         // 未选中也显式输出 false：省略会让读屏无从区分"未选中"与"不是单选项"
         'aria-checked': isChecked(item) ? 'true' : 'false',
         // 用 aria-disabled 保持禁用条目可聚焦
@@ -180,6 +186,11 @@ export function connectRadioGroup<T extends PropTypes>(
     },
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
+      ...stateAttrs(item),
+    }),
+    // 说明行在条目之内，与文案一起构成条目的可及名，不另挂 aria-describedby
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
       ...stateAttrs(item),
     }),
     getIndicatorProps: item => normalize.element({

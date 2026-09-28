@@ -57,7 +57,7 @@ const FAMILY_ROOT_ATTR = /\[data-xh-(?:action-control|field-chrome|collection-it
  * 先于一切皮肤内联的配方，顺序固定：四个家族互不引用，谁先谁后不影响级联；
  * 顺序定死只为产物可比对。motion.css 只装 @keyframes，提前只为去重。
  */
-const FAMILY_FILES = ['action-control.css', 'field-chrome.css', 'collection-item.css', 'menu-choice.css', 'check-mark.css', 'swatch.css', 'chart.css', 'material.css', 'loading-ring.css', 'motion.css']
+const FAMILY_FILES = ['action-control.css', 'field-chrome.css', 'collection-item.css', 'menu-choice.css', 'check-mark.css', 'choice-card.css', 'swatch.css', 'chart.css', 'material.css', 'loading-ring.css', 'motion.css']
 
 /** 两份产物：主入口保留 @layer 壳；无层版拆壳并把配方抬到皮肤同档。 */
 const ENTRIES = [

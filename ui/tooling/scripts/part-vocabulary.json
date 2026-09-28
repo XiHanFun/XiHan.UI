@@ -821,6 +821,7 @@
       "menu",
       "menubar",
       "notification",
+      "radio-group",
       "select",
       "transfer",
       "tree",

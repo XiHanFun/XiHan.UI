@@ -249,6 +249,7 @@
   ],
   "radar-chart": [],
   "radio-group": [
+    "variant",
     "size"
   ],
   "rating": [
