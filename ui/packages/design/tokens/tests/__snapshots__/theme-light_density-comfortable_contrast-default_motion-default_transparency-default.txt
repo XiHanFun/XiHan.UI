@@ -109,6 +109,7 @@
 --xh-control-indicator-md: 16px
 --xh-control-indicator-size: 16px  ← var(--xh-control-indicator-md)
 --xh-control-indicator-sm: 12px
+--xh-control-input-min-w: 4rem
 --xh-control-min-w: 12rem
 --xh-control-px-lg: 16px  ← var(--xh-space-4)
 --xh-control-px-md: 12px  ← var(--xh-space-3)
