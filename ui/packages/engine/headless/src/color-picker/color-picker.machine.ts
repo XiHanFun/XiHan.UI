@@ -16,6 +16,7 @@ import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { sameArray } from '../shared/array'
 import { COLOR_FALLBACK, colorHsvaToRgba, colorParse, colorResolveFormat, colorResolveHsva, colorRgbaToHsva, colorSameColor, colorToString } from '../shared/color'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import { colorPickerApplyInput, colorPickerWithArea } from './color-picker.color'
@@ -306,6 +307,8 @@ function stepSize(large: boolean): number {
 export const colorPickerMachine = createMachine({
   name: 'color-picker',
   context: ({ prop, cell }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     value: cell<string>(() => ({
       value: prop('value'),
       defaultValue: prop('defaultValue') ?? COLOR_FALLBACK,
@@ -338,7 +341,7 @@ export const colorPickerMachine = createMachine({
     getAreaEl: () => null,
   }),
   // 常驻形态恒为展开态：取色面一直在，拖动与屏幕取色这两段照样挂在展开态下
-  initialState: ({ prop }) => ((prop('inline') || (prop('open') ?? prop('defaultOpen'))) ? 'open' : 'closed'),
+  initialState: ({ prop }) => ((prop('inline') || openAtMount(prop)) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
   // 挂载即问一次环境有没有屏幕取色，按钮从首帧起就要正确禁用
@@ -372,6 +375,8 @@ export const colorPickerMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         'INLINE.SYNC': { guard: 'isInline', target: 'open' },
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
@@ -446,6 +451,7 @@ export const colorPickerMachine = createMachine({
         !prop('disabled') && !prop('readOnly') && context.get('eyeDropperSupported'),
     },
     actions: {
+      clearOpenedAtMount,
       resetToDefault: (params) => {
         if (params.prop('value') === undefined)
           params.context.reset('anchor')

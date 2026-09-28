@@ -268,6 +268,8 @@ export function connectColorPicker<T extends PropTypes>(
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
       ...stateAttrs(),
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'id': ids.content,
       // 常驻形态是页面里的一组控件，不是对话框；浮层形态非模态：Tab 走得出去，走出去即由消解层判定是否收起
       'role': inline ? 'group' : 'dialog',
