@@ -1,18 +1,9 @@
-<script setup lang="ts">
-import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
-
-const cells = ["brand", "success", "info"] as const;
-</script>
-
 <template>
-  <XhGridRoot :cols="3" gap="sm" aria-label="三列栅格预览" style="inline-size: var(--xh-doc-catalog-w)">
-    <XhGridItem
-      v-for="tone in cells"
-      :key="tone"
-      data-demo-block
-      :data-tone="tone"
-      aria-hidden="true"
-      style="--xh-demo-block-block-size: 72px"
-    />
-  </XhGridRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="28" y="32" width="120" height="44" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="156" y="32" width="56" height="44" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="28" y="84" width="56" height="44" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="92" y="84" width="56" height="44" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="156" y="84" width="56" height="44" rx="4" fill="var(--xh-bg-subtle-hover)" />
+  </svg>
 </template>

@@ -1,13 +1,8 @@
-<script setup lang="ts">
-import { XhFlex } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <XhFlex align="center" gap="sm" aria-label="横向与纵向弹性布局预览">
-    <span data-demo-block="square" data-tone="brand" aria-hidden="true" />
-    <XhFlex orientation="vertical" gap="xs" aria-hidden="true" style="inline-size: 96px">
-      <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 88px" />
-      <span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 64px" />
-    </XhFlex>
-  </XhFlex>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="24.5" y="52.5" width="191" height="55" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <rect x="36" y="64" width="40" height="32" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="84" y="64" width="56" height="32" rx="4" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="172" y="64" width="32" height="32" rx="4" fill="var(--xh-bg-subtle-hover)" />
+  </svg>
 </template>

@@ -1,34 +1,7 @@
-<script setup lang="ts">
-import {
-  XhScrollAreaContent,
-  XhScrollAreaRoot,
-  XhScrollAreaScrollbar,
-  XhScrollAreaThumb,
-  XhScrollAreaTrack,
-  XhScrollAreaViewport,
-} from "@xihan-ui/vue";
-
-const items = ["brand", "neutral", "info", "success", "warning", "danger", "brand", "info"] as const;
-</script>
-
 <template>
-  <XhScrollAreaRoot style="block-size: var(--xh-doc-catalog-h); inline-size: var(--xh-doc-catalog-w); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
-    <XhScrollAreaViewport>
-      <XhScrollAreaContent aria-label="可滚动淡色区块" style="display: grid; gap: var(--xh-space-3); padding: var(--xh-space-3)">
-        <span
-          v-for="(tone, index) in items"
-          :key="`${tone}-${index}`"
-          data-demo-block="line"
-          :data-tone="tone"
-          aria-hidden="true"
-          :style="{ '--xh-demo-block-inline-size': `${58 + (index % 3) * 16}%` }"
-        />
-      </XhScrollAreaContent>
-    </XhScrollAreaViewport>
-    <XhScrollAreaScrollbar orientation="vertical">
-      <XhScrollAreaTrack>
-        <XhScrollAreaThumb />
-      </XhScrollAreaTrack>
-    </XhScrollAreaScrollbar>
-  </XhScrollAreaRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="48.5" y="20.5" width="143" height="119" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M66 40h84M66 56h100M66 72h72M66 88h92M66 104h80M66 120h96" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M182 50v36" stroke="var(--xh-fg-scrollbar-thumb-hover)" stroke-width="4" />
+  </svg>
 </template>
