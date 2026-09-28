@@ -95,14 +95,18 @@ describe('复制钮在途的圆环', () => {
       h(XhClipboardControl, null, () => [h(XhClipboardCopyTrigger, null, () => '复制')]),
     ]))
     const trigger = part('clipboard', 'copy-trigger')
-    // 写剪贴板要真实权限，headless 下拿不到；这一档皮肤只认属性，直接把状态摆上去
+    // 写剪贴板要真实权限，headless 下拿不到；这一档皮肤只认属性，直接把连接层在途时发的几位摆上去
     part('clipboard', 'root').setAttribute('data-state', 'copying')
     trigger.setAttribute('data-state', 'copying')
     trigger.setAttribute('aria-busy', 'true')
+    trigger.setAttribute('aria-disabled', 'true')
+    trigger.setAttribute('data-loading', '')
 
     const ring = getComputedStyle(trigger, '::before')
-    expect(ring.animationName).toBe('xh-fade-in')
+    expect(ring.animationName).toBe('none')
     expect(ring.borderTopStyle).toBe('dotted')
+    // 淡入的那一段等待与淡变照常
+    expect(ring.transitionDelay).toBe('0.12s')
     await new Promise<void>(resolve => setTimeout(resolve, 400))
     expect(Number.parseFloat(getComputedStyle(trigger, '::before').opacity)).toBeGreaterThan(0.9)
   })

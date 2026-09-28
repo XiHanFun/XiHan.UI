@@ -12919,9 +12919,13 @@
         "copy-trigger"
       ],
       "property": [
+        "border-block-start-color",
+        "border-color",
         "color"
       ],
       "state": [
+        "@media (prefers-reduced-motion: reduce)",
+        "@media print",
         "copied",
         "default",
         "disabled",
@@ -12929,10 +12933,13 @@
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "motion=reduce",
         "not([data-disabled])",
         "not([data-loading])",
         "pressed",
-        "xh-action-variant=solid"
+        "where([data-motion='reduce'])",
+        "xh-action-variant=solid",
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
@@ -12942,7 +12949,7 @@
         "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "clipboard 的 copy-trigger 部件 color 覆盖槽。"
+      "description": "clipboard 的 copy-trigger 部件 border-block-start-color、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-copy-trigger-fg-copied",
@@ -13406,7 +13413,7 @@
         "animation"
       ],
       "state": [
-        "default"
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-motion-loop-spin"

@@ -2644,7 +2644,8 @@
  * 与皮肤里接替它的那枚字形交叉淡变；不在等时不转。
  *
  * 轨道取 --xh-border-default、环粗取 --xh-stroke-thick；起始边颜色走私有槽 --xh-_loading-ring-fg，
- * 皮肤按自己的语气与公开槽给，没给时取 currentColor。
+ * 皮肤按自己的语气与公开槽给，没给时取 currentColor。转一圈的时长走私有槽 --xh-_loading-ring-duration，
+ * 皮肤把自己的公开时长槽接进来，没给时取 --xh-motion-loop-spin。
  *
  * 进行中的动作钮投影 data-xh-loading-ring="overlay"：环居中压在钮上、不占排布，钮宽不变，直径取钮的图标档。
  * 进入在途要等一个 micro 才起淡，不到一个 micro 就结束的短请求什么都不闪；退出在途不等，按 micro 淡出。
@@ -2667,7 +2668,7 @@
     opacity: 0;
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
     /* 不在等时停在当前角度，淡出途中不先跳回零度 */
-    animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite paused;
+    animation: xh-spin var(--xh-_loading-ring-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite paused;
   }
 
   [data-xh-loading-ring][data-loading]::before {
@@ -22262,49 +22263,22 @@
     display: none;
   }
 
-  /* 快速写入不显示瞬时圆环；超过一个 micro 周期后才平滑换成加载状态。 */
-  [data-scope='clipboard'][data-part='root'][data-state='copying']
-    [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true'] {
-    cursor: progress;
+  /* 写入在途：环由加载环配方压在钮正中（连接层投影 data-xh-loading-ring="overlay"），直径取钮的图标档，
+     起始边取钮的真实前景、转速认使用者槽。进入在途等一个 micro 才起淡，快速写入什么都不闪；
+     钮里原有的文字与字形随前景淡到透明留位，同样等这一个 micro，退出在途不等、按 micro 淡回 */
+  [data-scope='clipboard'][data-part='copy-trigger'] {
+    --xh-_loading-ring-fg: var(--xh-clipboard-copy-trigger-fg, var(--xh-_action-variant-fg-loading));
+    --xh-_loading-ring-duration: var(--xh-clipboard-loading-duration, var(--xh-motion-loop-spin));
   }
 
-  [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    inline-size: 1em;
-    block-size: 1em;
-    margin: auto;
-    border: var(--xh-stroke-thin) solid transparent;
-    border-block-start-color: currentColor;
-    /* 正圆的加载环：正方盒取 circle */
-    border-radius: var(--xh-shape-circle);
-    opacity: 0;
-    animation:
-      xh-spin var(--xh-clipboard-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite,
-      xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
+  [data-scope='clipboard'][data-part='copy-trigger']::before {
+    --xh-icon-size: var(--xh-_action-profile-glyph-size);
   }
 
-  [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']
-    > [data-scope='clipboard'][data-part='indicator']:not([data-copied]) {
-    animation: xh-fade-out var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)
-      var(--xh-motion-duration-micro) forwards;
-  }
+  [data-scope='clipboard'][data-part='copy-trigger'][data-loading] {
+    --xh-action-fg-loading: transparent;
 
-  /* 减弱动效：圆环不转，整圈换成虚线，静止的形状仍然读得出"还没好"；淡入与图标的淡出照常。
-     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']::before {
-      border-style: dotted;
-      border-color: currentColor;
-      animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
-    }
-  }
-
-  :where([data-motion='reduce']) [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true']::before {
-    border-style: dotted;
-    border-color: currentColor;
-    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
+    transition-delay: var(--xh-motion-duration-micro);
   }
 
   /* 复制成功只换前景与内容，轮廓和尺寸保持稳定；各态前景经桥接槽换，悬停与按下不退回平时的字色 */
