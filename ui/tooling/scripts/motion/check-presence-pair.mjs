@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 门禁：有进场即有退场。
 //
-// 部件随开合状态（[data-state='open'] / [data-state='visible']）播一段进场关键帧，收起时却硬消失，
+// 部件随开合状态（[data-state='open'] / [data-state='visible']，Form 错误摘要是 [data-state='invalid']）播一段进场关键帧，收起时却硬消失，
 // 是「一头有动画、一头瞬断」：打开时的那段过渡把人的注意力引过去，收起时画面上的东西凭空不见。
 // 本门禁要求：同一份皮肤里，凡随开合状态播进场关键帧的部件，都得有一条播退场关键帧的规则。
 //
@@ -22,7 +22,7 @@ const BACKLOG = {}
 
 const ENTER = /(?<![-\w])xh-[a-z0-9-]*-in(?![-\w])/
 const EXIT = /(?<![-\w])(?:xh-[a-z0-9-]*-out|xh-disclosure-collapse)(?![-\w])/
-const OPEN_STATE = /\[data-state=['"](?:open|visible)['"]\]/
+const OPEN_STATE = /\[data-state=['"](?:open|visible|invalid)['"]\]/
 
 function stripComments(css) {
   return css.replace(/\/\*[\s\S]*?\*\//g, c => c.replace(/[^\n]/g, ''))

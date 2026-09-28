@@ -142,6 +142,7 @@
         "dialog",
         "drawer",
         "field-array",
+        "form",
         "image-viewer",
         "tags-input",
         "tour"

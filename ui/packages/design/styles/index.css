@@ -27180,6 +27180,11 @@
     animation: xh-drop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
+  /* 错误全改完或重置时淡出，播完连接层才写 hidden。收起态常挂 hidden，这条只在退场途中命中 */
+  [data-scope='form'][data-part='error-summary'][data-state='idle'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
   /* 摘要里的每一条是一个真链接，指向对应字段容器。铺满一行的集合行：悬停 / 按下只换面不缩放，
      底面坐在摘要的 surface 白底上，走白底承载阶梯 100 → 200；换面按下走 press，其余走 micro */
   [data-scope='form'][data-part='error-summary-item'] {

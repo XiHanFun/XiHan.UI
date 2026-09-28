@@ -178,7 +178,7 @@
 
 **状态**：`idle` · `invalid`
 
-**事件**：`SUBMIT` · `RESET` · `VALIDATION.PASS` · `VALIDATION.FAIL` · `FIELD.SET` · `FIELD.ARRAY.MUTATE` · `FIELD.BLUR` · `ERROR.SET` · `ERRORS.CLEAR` · `ERROR.FOCUS` · `PRESS.START` · `PRESS.END`
+**事件**：`SUBMIT` · `RESET` · `VALIDATION.PASS` · `VALIDATION.FAIL` · `FIELD.SET` · `FIELD.ARRAY.MUTATE` · `FIELD.BLUR` · `ERROR.SET` · `ERRORS.CLEAR` · `ERROR.FOCUS` · `PRESS.START` · `PRESS.END` · `SUMMARY.SNAPSHOT` · `SUMMARY.RENDERED`
 
 **判据**：`isEnabled` · `isEditable` · `isValidationSnapshotCurrent` · `canPress`
 
@@ -203,6 +203,10 @@
 | `getFieldId` | `(name: FormPath) => string` | 字段容器的 DOM id；错误摘要的链接指向它。 |
 | `getFieldValue` | `(name: FormPath) => unknown` |  |
 | `getFieldError` | `(name: FormPath) => string \| undefined` | 该字段当前的错误文案；无错时为 undefined。 |
+| `summaryErrors` | `FormErrors` | 错误摘要此刻画的那版错误表：平时就是 errors；错误全改完、摘要播退场的那几帧里是撤下之前的最后一版， 摘要里的文案与条数照它写，才不会先于摘要一起消失。 |
+| `summaryErrorNames` | `FormPath[]` | summaryErrors 里出错的字段名，插入顺序。 |
+| `summaryErrorCount` | `number` |  |
+| `getSummaryError` | `(name: FormPath) => string \| undefined` | 错误摘要此刻给该字段画的文案；摘要里的条目读它而不读 getFieldError。 |
 | `isFieldInvalid` | `(name: FormPath) => boolean` |  |
 | `isFieldRequired` | `(name: FormPath) => boolean` | 该字段的规则中声明了 required：字段的必填标记由此推导。 |
 | `setFieldValue` | `(name: FormPath, value: unknown) => void` | 写一个字段的值；禁用或只读时不生效。 |
@@ -266,7 +270,7 @@
 | `field-group` | `data-invalid` | ''（条件成立时才出现） |
 | `field-group` | `data-readonly` | ''（条件成立时才出现） |
 | `field-group` | `data-span` | fieldSpan(field.span) |
-| `error-summary` | `data-count` | String(errorCount) |
+| `error-summary` | `data-count` | String(summaryErrorNames.length) |
 | `error-summary` | `data-state` | 'invalid' \| 'idle' |
 | `error-summary-item` | `data-invalid` | ''（条件成立时才出现） |
 | `error-summary-item` | `data-pressed` | ''（条件成立时才出现） |
@@ -342,7 +346,7 @@
 
 动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-drop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-drop-in` · `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

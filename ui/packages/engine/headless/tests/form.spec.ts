@@ -688,12 +688,60 @@ describe('connectForm 结构与标注', () => {
     expect(s.api().submitFailed).toBe(false)
   })
 
-  it('错误改完后摘要自己撤下去，不必等到下一次提交', () => {
+  it('错误改完后摘要自己撤下去，不必等到下一次提交', async () => {
     const s = makeService({ validate: () => ({ email: '不能为空' }) })
     s.service.send({ type: 'SUBMIT' })
     expect((s.api().getErrorSummaryProps() as Dict).hidden).toBeUndefined()
     s.service.send({ type: 'ERRORS.CLEAR' })
+    await microtask()
     expect((s.api().getErrorSummaryProps() as Dict).hidden).toBe(true)
+  })
+
+  it('摘要撤下时先退场：退场途中照最后一版错误表画条目与条数，不可交互；播完才藏起', async () => {
+    const s = makeService({ validate: () => ({ email: '不能为空', password: '太短' }) })
+    s.service.send({ type: 'SUBMIT' })
+    s.service.send({ type: 'ERROR.SET', name: 'password' })
+    expect((s.api().getErrorSummaryProps() as Dict)['data-count']).toBe('1')
+
+    // 改完最后一处：摘要翻成 idle、退场开播，条目仍是改完之前那一版
+    s.service.send({ type: 'ERROR.SET', name: 'email' })
+    const exiting = s.api().getErrorSummaryProps() as Dict
+    expect(exiting['data-state']).toBe('idle')
+    expect(exiting.hidden).toBeUndefined()
+    expect(exiting.inert).toBe(true)
+    expect(exiting['data-count']).toBe('1')
+    expect((s.api().getErrorSummaryItemProps({ name: 'email' }) as Dict).hidden).toBeUndefined()
+    expect((s.api().getErrorSummaryItemProps({ name: 'password' }) as Dict).hidden).toBe(true)
+    // 摘要里的文案也照这一版写；字段自己的错误已经清掉
+    expect(s.api().getSummaryError('email')).toBe('不能为空')
+    expect(s.api().summaryErrorCount).toBe(1)
+    expect(s.api().getFieldError('email')).toBeUndefined()
+
+    // jsdom 里没有摘要节点、没有可等的退场动画：宿主提交之后即刻藏起
+    await microtask()
+    const gone = s.api().getErrorSummaryProps() as Dict
+    expect(gone.hidden).toBe(true)
+    expect(gone.inert).toBeUndefined()
+    expect(gone['data-count']).toBe('0')
+    expect((s.api().getErrorSummaryItemProps({ name: 'email' }) as Dict).hidden).toBe(true)
+    expect(s.api().summaryErrors).toEqual({})
+  })
+
+  it('摘要退场途中再次提交失败：立即重新露面，条目按新的错误表', async () => {
+    let result: Record<string, string> = { email: '不能为空' }
+    const s = makeService({ validate: () => result })
+    s.service.send({ type: 'SUBMIT' })
+    s.service.send({ type: 'ERRORS.CLEAR' })
+    expect((s.api().getErrorSummaryProps() as Dict)['data-state']).toBe('idle')
+    result = { password: '太短' }
+    s.service.send({ type: 'SUBMIT' })
+    const again = s.api().getErrorSummaryProps() as Dict
+    expect(again['data-state']).toBe('invalid')
+    expect(again.inert).toBeUndefined()
+    expect((s.api().getErrorSummaryItemProps({ name: 'email' }) as Dict).hidden).toBe(true)
+    expect((s.api().getErrorSummaryItemProps({ name: 'password' }) as Dict).hidden).toBeUndefined()
+    await microtask()
+    expect((s.api().getErrorSummaryProps() as Dict).hidden).toBeUndefined()
   })
 
   it('摘要条目按当下的错误表决定谁露面', () => {

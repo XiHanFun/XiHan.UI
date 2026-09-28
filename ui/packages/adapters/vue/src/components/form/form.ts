@@ -162,10 +162,11 @@ export const XhFormErrorSummary = defineComponent({
   }>,
   setup(_, { slots }) {
     const ctx = useFormContext()
+    // 摘要读它自己那版错误表：退场途中文案与条数照撤下之前的写
     return () => h('div', ctx.api.value.getErrorSummaryProps() as Record<string, unknown>, slots.default?.({
-      errors: ctx.api.value.errors,
-      errorNames: ctx.api.value.errorNames,
-      errorCount: ctx.api.value.errorCount,
+      errors: ctx.api.value.summaryErrors,
+      errorNames: ctx.api.value.summaryErrorNames,
+      errorCount: ctx.api.value.summaryErrorCount,
     }))
   },
 })
@@ -185,7 +186,7 @@ export const XhFormErrorSummaryItem = defineComponent({
     return () => h(
       'a',
       ctx.api.value.getErrorSummaryItemProps({ name: props.name }) as Record<string, unknown>,
-      slots.default?.({ name: props.name, error: ctx.api.value.getFieldError(props.name) }),
+      slots.default?.({ name: props.name, error: ctx.api.value.getSummaryError(props.name) }),
     )
   },
 })

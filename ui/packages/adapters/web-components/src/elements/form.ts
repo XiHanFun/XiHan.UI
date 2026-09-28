@@ -313,7 +313,8 @@ export class XhFormElement extends XhElement {
         this.spreader.spread(el, props)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
-    put('error-summary', api.getErrorSummaryProps() as Record<string, unknown>)
+    const summaryProps = api.getErrorSummaryProps() as Record<string, unknown>
+    put('error-summary', summaryProps)
     put('submit-trigger', api.getSubmitTriggerProps() as Record<string, unknown>)
     put('reset-trigger', api.getResetTriggerProps() as Record<string, unknown>)
 
@@ -338,12 +339,14 @@ export class XhFormElement extends XhElement {
 
     for (const el of this.getParts('error-summary-item')) {
       const name = fieldPathOf(el)
-      this.spreader.spread(el, api.getErrorSummaryItemProps({ name }) as Record<string, unknown>)
+      const itemProps = api.getErrorSummaryItemProps({ name }) as Record<string, unknown>
+      this.spreader.spread(el, itemProps)
       // Light DOM 常驻，WC 自管可见性：作者层若给条目声明了 display，
-      // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来
-      this.setPartHidden(el, api.getFieldError(name) === undefined)
+      // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。显隐照连接层给的 hidden，
+      // 摘要退场途中条目与摘要都还留着
+      this.setPartHidden(el, itemProps.hidden === true)
     }
 
-    this.setPartHidden(this.getPart('error-summary'), !(api.submitFailed && api.invalid))
+    this.setPartHidden(this.getPart('error-summary'), summaryProps.hidden === true)
   }
 }
