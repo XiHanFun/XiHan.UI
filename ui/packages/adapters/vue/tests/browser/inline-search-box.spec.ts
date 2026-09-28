@@ -1,4 +1,4 @@
-// 面板里内嵌的搜索框（Command、Cascader、Transfer）是同一种写法：通栏一行、控件高与字号随尺寸档、
+// 面板里内嵌的搜索框（Command、Cascader、TreeSelect、Transfer）是同一种写法：通栏一行、控件高与字号随尺寸档、
 // 只画一道面内分隔的下划线，占位文字走字段家族（投影 data-xh-field-input）。
 //
 // 判据是计算样式：块尺寸、字号、::placeholder 前景与下划线颜色，jsdom 不算这些。
@@ -23,17 +23,25 @@ import {
   XhTransferSearch,
   XhTransferSourcePanel,
   XhTransferTargetPanel,
+  XhTreeSelectContent,
+  XhTreeSelectControl,
+  XhTreeSelectInput,
+  XhTreeSelectItem,
+  XhTreeSelectPositioner,
+  XhTreeSelectRoot,
+  XhTreeSelectTree,
+  XhTreeSelectTrigger,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-type Scope = 'cascader' | 'command' | 'transfer'
+type Scope = 'cascader' | 'command' | 'transfer' | 'tree-select'
 type Size = 'sm' | 'md' | 'lg'
 
 const PLACEHOLDER = '搜索'
 
 const RENDER: Record<Scope, (size: Size) => VNode> = {
-  cascader: size => h(XhCascaderRoot, {
+  'cascader': size => h(XhCascaderRoot, {
     collection: [{ value: 'zj', label: '浙江' }],
     open: true,
     searchable: true,
@@ -51,14 +59,14 @@ const RENDER: Record<Scope, (size: Size) => VNode> = {
       ]),
     ],
   }),
-  command: size => h(XhCommandRoot, {
+  'command': size => h(XhCommandRoot, {
     defaultOpen: true,
     modal: false,
     size,
     placeholder: PLACEHOLDER,
     collection: [{ value: 'open', label: '打开文档' }],
   }),
-  transfer: size => h(XhTransferRoot, {
+  'transfer': size => h(XhTransferRoot, {
     collection: [{ value: 'a', label: '甲' }],
     searchable: true,
     size,
@@ -66,16 +74,29 @@ const RENDER: Record<Scope, (size: Size) => VNode> = {
     h(XhTransferSourcePanel, null, () => [h(XhTransferSearch, { placeholder: PLACEHOLDER }), h(XhTransferList)]),
     h(XhTransferTargetPanel, null, () => [h(XhTransferSearch, { placeholder: PLACEHOLDER }), h(XhTransferList)]),
   ]),
+  'tree-select': size => h(XhTreeSelectRoot, {
+    collection: [{ value: 'zj', label: '浙江' }],
+    open: true,
+    searchable: true,
+    size,
+  }, () => [
+    h(XhTreeSelectControl, null, () => h(XhTreeSelectTrigger, null, () => '选择省份')),
+    h(XhTreeSelectPositioner, null, () => h(XhTreeSelectContent, null, () => [
+      h(XhTreeSelectInput, { placeholder: PLACEHOLDER }),
+      h(XhTreeSelectTree, null, () => h(XhTreeSelectItem, { value: 'zj' }, () => '浙江')),
+    ])),
+  ]),
 }
 
 /** 各自的搜索框部件名。 */
-const PART: Record<Scope, string> = { cascader: 'input', command: 'input', transfer: 'search' }
+const PART: Record<Scope, string> = { 'cascader': 'input', 'command': 'input', 'transfer': 'search', 'tree-select': 'input' }
 
 /** 下划线是面内分隔：取所在面材质的分隔令牌。 */
 const DIVIDER: Record<Scope, string> = {
-  cascader: '--xh-material-solid-separator',
-  command: '--xh-material-elevated-separator',
-  transfer: '--xh-material-solid-separator',
+  'cascader': '--xh-material-solid-separator',
+  'command': '--xh-material-elevated-separator',
+  'transfer': '--xh-material-solid-separator',
+  'tree-select': '--xh-material-frosted-separator',
 }
 
 let app: App | null = null
@@ -112,7 +133,7 @@ function resolved(on: HTMLElement, property: string, token: string): string {
   return out
 }
 
-describe.each(['cascader', 'command', 'transfer'] as const)('%s 的内嵌搜索框', (scope) => {
+describe.each(['cascader', 'command', 'transfer', 'tree-select'] as const)('%s 的内嵌搜索框', (scope) => {
   it.each(['sm', 'md', 'lg'] as const)('%s 档：控件高与字号随档', async (size) => {
     const input = await mount(scope, size)
     const style = getComputedStyle(input)

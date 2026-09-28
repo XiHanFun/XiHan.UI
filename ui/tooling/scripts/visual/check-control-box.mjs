@@ -120,6 +120,8 @@ const SHARED_FAMILY = {
     boxSelector: '[data-xh-field-chrome]',
     contentSelector: `[data-scope='tree-select'][data-part='trigger']`,
     actionParts: new Set(['clear-trigger']),
+    // data-xh-field-input 投影在浮层面板内嵌的搜索框上（只为家族的重置与占位前景），不在盒里
+    panelSearchInput: true,
   },
   'cascader': {
     boxSelector: '[data-xh-field-chrome]',
