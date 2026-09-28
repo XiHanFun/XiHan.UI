@@ -11,6 +11,7 @@ export { datePickerKeyboard } from './date-picker.keyboard'
 export {
   DATE_PICKER_DEFAULT_PLACEMENT,
   DATE_PICKER_GRANULARITY,
+  datePickerCalendarBound,
   datePickerCalendarProps,
   datePickerFieldProps,
   datePickerFocusedValue,
@@ -33,11 +34,13 @@ export type { DatePickerIndexInput } from './date-picker.projection'
 export {
   datePickerDatePart,
   datePickerJoinDateTime,
+  datePickerNormalizeTime,
   datePickerSetTimeUnit,
+  datePickerTimeModel,
   datePickerTimePart,
   datePickerZeroTime,
 } from './date-picker.time'
-export type { DatePickerTimeGranularity } from './date-picker.time'
+export type { DatePickerTimeGranularity, DatePickerTimeModel, DatePickerTimeModelInput } from './date-picker.time'
 export type {
   DatePickerApi,
   DatePickerFieldApi,

@@ -17118,11 +17118,11 @@
               "name": "calendar"
             },
             {
-              "description": "showTime 的时间列，须自带 unit 属性（hour / minute / second）；未开启时带 hidden",
+              "description": "showTime 的时间列，须自带 unit 属性（hour / minute / second / dayPeriod）；未开启时带 hidden",
               "name": "time-column"
             },
             {
-              "description": "时间选项，须自带 value 属性（两位补零串）；点击把该单位写入值",
+              "description": "时间选项，须自带 value 属性（两位补零串，上下午列写 '00' / '01'）；点击把该单位写入值，内容为空时由元素填字",
               "name": "time-item"
             },
             {
@@ -17495,6 +17495,33 @@
             },
             {
               "kind": "field",
+              "name": "hourCycle",
+              "privacy": "public",
+              "type": {
+                "text": "TimeHourCycle | undefined"
+              },
+              "attribute": "hour-cycle"
+            },
+            {
+              "kind": "field",
+              "name": "timeStep",
+              "privacy": "public",
+              "type": {
+                "text": "TimeStep | undefined"
+              },
+              "attribute": "time-step"
+            },
+            {
+              "kind": "field",
+              "name": "isTimeUnavailable",
+              "privacy": "public",
+              "type": {
+                "text": "TimeUnavailablePredicate"
+              },
+              "description": "showTime 时间列的逐格可选性（函数只能通过 property 设置）"
+            },
+            {
+              "kind": "field",
               "name": "isDateUnavailable",
               "privacy": "public",
               "type": {
@@ -17779,6 +17806,48 @@
                 "text": "DateFieldSegmentState[]"
               },
               "description": "输入行当前应铺设的段（段名、当前文字与占位），段数与段序按 granularity 与 locale 推导。\n作者据此写 segment 节点，不必自行计算段数。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ownsText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "格子上的文字是否归元素填，首次见到该节点时定。"
+            },
+            {
+              "kind": "method",
+              "name": "fillText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "填节点上的文字，归属只在第一次见到这个节点时定一次。"
+            },
+            {
+              "kind": "field",
+              "name": "timeColumns",
+              "type": {
+                "text": "readonly TimePickerColumn<DatePickerTimeUnit>[]"
+              },
+              "description": "showTime 的时间列（时 / 分[/ 秒][/ 上下午]）与每列的格，按步进取样；作者据此铺 time-column 与 time-item。\n状态机尚未建立或没开 showTime 时为空数组。",
               "readonly": true
             },
             {
@@ -18082,18 +18151,36 @@
               "fieldName": "closeOnSelect"
             },
             {
-              "name": "show-time",
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "一体化时间：值升格为日期时间，面板中多出时间列，由确认按钮收口；只在 day + single 下生效",
+              "name": "show-time",
               "fieldName": "showTime"
             },
             {
-              "name": "time-granularity",
               "type": {
                 "text": "DatePickerSchema['props']['timeGranularity'] | undefined"
               },
+              "description": "showTime 的时间段精度，默认 minute",
+              "name": "time-granularity",
               "fieldName": "timeGranularity"
+            },
+            {
+              "type": {
+                "text": "TimeHourCycle | undefined"
+              },
+              "description": "showTime 的小时制，默认 24；12 时多出上下午列与上下午段",
+              "name": "hour-cycle",
+              "fieldName": "hourCycle"
+            },
+            {
+              "type": {
+                "text": "TimeStep | undefined"
+              },
+              "description": "showTime 时间列按单位的步进，JSON 对象（`{\"minute\":15}`）；也可通过 property 传入对象",
+              "name": "time-step",
+              "fieldName": "timeStep"
             }
           ],
           "superclass": {

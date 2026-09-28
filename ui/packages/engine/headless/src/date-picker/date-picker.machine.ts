@@ -95,6 +95,14 @@ export function datePickerTimeGranularity(service: Service<DatePickerSchema>): '
   return service.prop('timeGranularity') ?? 'minute'
 }
 
+/**
+ * 交给日历的界只留日期段：showTime 下 min / max 可以带时间段，日历按天比较、认不出日期时间串。
+ * 时间段由时间列在与它同一天时收。
+ */
+export function datePickerCalendarBound(bound: string | undefined): string | undefined {
+  return bound == null ? undefined : datePickerDatePart(bound)
+}
+
 /** 喂给内嵌日历的那份 props：值与聚焦日受控，选中与聚焦经回调送回编排机。 */
 export function datePickerCalendarProps(service: Service<DatePickerSchema>): CalendarPickerSchema['props'] {
   const { prop, context, send } = service
@@ -111,8 +119,8 @@ export function datePickerCalendarProps(service: Service<DatePickerSchema>): Cal
     visibleCount: prop('visibleCount') ?? 1,
     // 恒六行：翻页时浮层的高度不跟着月份变
     fixedWeeks: prop('fixedWeeks') ?? true,
-    min: prop('min'),
-    max: prop('max'),
+    min: datePickerCalendarBound(prop('min')),
+    max: datePickerCalendarBound(prop('max')),
     locale: prop('locale'),
     timeZone: prop('timeZone'),
     isDateUnavailable: prop('isDateUnavailable'),
@@ -146,6 +154,8 @@ export function datePickerFieldProps(service: Service<DatePickerSchema>): DateFi
     // showTime 下由同一台分段输入承载完整日期时间；日历仍只读取日期段。
     value: firstValue(context.get('value')),
     granularity: withTime ? datePickerTimeGranularity(service) : DATE_PICKER_GRANULARITY,
+    // 时刻段跟时间列同一个小时制：12 时输入行里也多出上下午段
+    hourCycle: withTime ? prop('hourCycle') : undefined,
     // 段集在场时 granularity 让路；不给就走老路，年月日按 locale 排
     segments: prop('segments') ?? datePickerSegmentSet(prop('granularity')),
     min: prop('min'),

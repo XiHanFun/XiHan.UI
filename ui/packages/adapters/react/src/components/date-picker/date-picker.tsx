@@ -19,6 +19,9 @@ import type {
   DatePickerTimeUnit,
   DateSegmentSet,
   DateSegmentType,
+  TimeHourCycle,
+  TimeStep,
+  TimeUnavailablePredicate,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -136,6 +139,12 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   closeOnSelect?: boolean
   showTime?: boolean
   timeGranularity?: DatePickerProps['timeGranularity']
+  /** showTime 的小时制，默认 24；12 时多出上下午列与上下午段。 */
+  hourCycle?: TimeHourCycle
+  /** showTime 时间列按单位的步进：`{ hour?, minute?, second? }`。 */
+  timeStep?: TimeStep
+  /** showTime 时间列的逐格可选性：时列按 24 小时制给值，第三个参数带已选的时分与所属日期。 */
+  isTimeUnavailable?: TimeUnavailablePredicate
   onValueChange?: DatePickerProps['onValueChange']
   onOpenChange?: DatePickerProps['onOpenChange']
   onFocusedValueChange?: DatePickerProps['onFocusedValueChange']
@@ -177,6 +186,9 @@ export function XhDatePickerRoot({
   closeOnSelect,
   showTime,
   timeGranularity,
+  hourCycle,
+  timeStep,
+  isTimeUnavailable,
   onValueChange,
   onOpenChange,
   onFocusedValueChange,
@@ -217,6 +229,9 @@ export function XhDatePickerRoot({
     closeOnSelect,
     showTime,
     timeGranularity,
+    hourCycle,
+    timeStep,
+    isTimeUnavailable,
     onValueChange,
     onOpenChange,
     onFocusedValueChange,
@@ -460,7 +475,7 @@ export function XhDatePickerPreset({ value, children, ...rest }: XhDatePickerPre
   )
 }
 
-/** 时间列整组自动铺设：时/分[/秒]各一列，选项点按写值；未开启 showTime 时整组带 hidden。 */
+/** 时间列整组自动铺设：时/分[/秒][/上下午]各一列，选项点按写值；未开启 showTime 时整组带 hidden。 */
 /** 一列时间选项连同贴在它盒子上的竖条：每列一台滚动条机器，列数随 showSeconds 变时组件实例跟着增减。 */
 function XhDatePickerTimeColumnHost({ unit }: { unit: DatePickerTimeUnit }): ReactNode {
   const ctx = useDatePickerContext()
@@ -481,7 +496,7 @@ function XhDatePickerTimeColumnHost({ unit }: { unit: DatePickerTimeUnit }): Rea
       <div {...mergeReactProps(api.getTimeColumnProps({ unit: column.unit }) as Record<string, unknown>, { ref: timeColumnRef })}>
         {column.options.map(option => (
           <div key={option} {...api.getTimeItemProps({ unit: column.unit, value: option }) as Record<string, unknown>}>
-            {option}
+            {api.getTimeItemText({ unit: column.unit, value: option })}
           </div>
         ))}
       </div>

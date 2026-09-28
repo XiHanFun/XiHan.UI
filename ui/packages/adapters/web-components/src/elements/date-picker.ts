@@ -26,16 +26,22 @@ import type {
   DatePickerPreset,
   DatePickerSchema,
   DatePickerServices,
+  DatePickerTimeUnit,
   DatePickerValueChangeDetails,
   DateSegmentSet,
   DateSegmentType,
   FormControlState,
+  TimeHourCycle,
+  TimePickerColumn,
+  TimeStep,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { calendarPickerAnatomy, calendarPickerMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveDatePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
+import { TIME_STEP_CONVERTER } from '../dom/time-step'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -69,6 +75,14 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
   if (raw && (SEGMENT_TYPES as readonly string[]).includes(raw))
     return { segment: raw as DateSegmentType }
   return { index: declaredIndex(el, position) }
+}
+
+const TIME_UNITS: readonly DatePickerTimeUnit[] = ['hour', 'minute', 'second', 'dayPeriod']
+
+/** 时间列自报的单位；缺席或写错时按时列处理。 */
+function declaredTimeUnit(el: HTMLElement | null): DatePickerTimeUnit {
+  const raw = el?.getAttribute('unit')?.trim()
+  return raw && (TIME_UNITS as readonly string[]).includes(raw) ? raw as DatePickerTimeUnit : 'hour'
 }
 
 /** 取作者写在段位上的 index，缺席或写坏了退回组内文档序。 */
@@ -121,6 +135,11 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @attr {boolean} close-on-select - 选完即收起，默认 true；写 close-on-select="false" 关闭
+ * @attr {boolean} show-time - 一体化时间：值升格为日期时间，面板中多出时间列，由确认按钮收口；只在 day + single 下生效
+ * @attr {'minute'|'second'} time-granularity - showTime 的时间段精度，默认 minute
+ * @attr {'12'|'24'} hour-cycle - showTime 的小时制，默认 24；12 时多出上下午列与上下午段
+ * @attr {string} time-step - showTime 时间列按单位的步进，JSON 对象（`{"minute":15}`）；也可通过 property 传入对象
+ * @prop {TimeUnavailablePredicate} isTimeUnavailable - showTime 时间列的逐格可选性（函数只能通过 property 设置）
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires focused-value-change - 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格
@@ -138,8 +157,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart preset-group - 快捷选项列（role=listbox）；未提供 presets 时带 hidden
  * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据中的 value 逐字一致）
  * @csspart calendar - 内嵌日历的挂载点，同时充当日历的根节点；并排多页时每页各写一个
- * @csspart time-column - showTime 的时间列，须自带 unit 属性（hour / minute / second）；未开启时带 hidden
- * @csspart time-item - 时间选项，须自带 value 属性（两位补零串）；点击把该单位写入值
+ * @csspart time-column - showTime 的时间列，须自带 unit 属性（hour / minute / second / dayPeriod）；未开启时带 hidden
+ * @csspart time-item - 时间选项，须自带 value 属性（两位补零串，上下午列写 '00' / '01'）；点击把该单位写入值，内容为空时由元素填字
  * @csspart confirm-trigger - showTime 的收口按钮；未开启时带 hidden
  * @csspart header - 日历标题栏外壳（data-scope="calendar-picker"）
  * @csspart prev-year-trigger - 快速向前翻一大步（日视图一年、粗粒度十页）；可选
@@ -207,6 +226,9 @@ export class XhDatePickerElement extends XhPortalHostElement {
     closeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-select' },
     showTime: { converter: BOOLEAN_CONVERTER, attribute: 'show-time' },
     timeGranularity: { converter: STRING_CONVERTER, attribute: 'time-granularity' },
+    hourCycle: { converter: HOUR_CYCLE_CONVERTER, attribute: 'hour-cycle' },
+    timeStep: { converter: TIME_STEP_CONVERTER, attribute: 'time-step' },
+    isTimeUnavailable: { attribute: false },
     // 判定函数只走 property
     isDateUnavailable: { attribute: false },
   }
@@ -242,6 +264,9 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare closeOnSelect?: boolean
   declare showTime?: boolean
   declare timeGranularity?: DatePickerSchema['props']['timeGranularity']
+  declare hourCycle?: TimeHourCycle
+  declare timeStep?: TimeStep
+  declare isTimeUnavailable?: DatePickerSchema['props']['isTimeUnavailable']
   declare isDateUnavailable?: (value: string) => boolean
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -386,6 +411,9 @@ export class XhDatePickerElement extends XhPortalHostElement {
       closeOnSelect: this.closeOnSelect,
       showTime: this.showTime,
       timeGranularity: this.timeGranularity,
+      hourCycle: this.hourCycle,
+      timeStep: this.timeStep,
+      isTimeUnavailable: this.isTimeUnavailable,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
       onFocusedValueChange: this.notifyFocus,
@@ -489,6 +517,29 @@ export class XhDatePickerElement extends XhPortalHostElement {
     return this.api()?.field.segments ?? []
   }
 
+  /** 格子上的文字是否归元素填，首次见到该节点时定。 */
+  private readonly ownsText = new WeakMap<HTMLElement, boolean>()
+
+  /** 填节点上的文字，归属只在第一次见到这个节点时定一次。 */
+  private fillText(el: HTMLElement, text: string): void {
+    let owned = this.ownsText.get(el)
+    if (owned === undefined) {
+      owned = (el.textContent ?? '').trim() === ''
+      this.ownsText.set(el, owned)
+    }
+    if (!owned || el.textContent === text)
+      return
+    el.textContent = text
+  }
+
+  /**
+   * showTime 的时间列（时 / 分[/ 秒][/ 上下午]）与每列的格，按步进取样；作者据此铺 time-column 与 time-item。
+   * 状态机尚未建立或没开 showTime 时为空数组。
+   */
+  get timeColumns(): readonly TimePickerColumn<DatePickerTimeUnit>[] {
+    return this.api()?.timeColumns ?? []
+  }
+
   /** 取 owner 子树内指定名字的角色节点。 */
   private partsIn(owner: HTMLElement, name: string): HTMLElement[] {
     return this.getParts(name).filter(el => owner.contains(el))
@@ -541,12 +592,13 @@ export class XhDatePickerElement extends XhPortalHostElement {
 
     // 时间列是多实例 part：列自报 unit、选项自报 unit+value
     for (const el of this.getParts('time-column'))
-      this.spreader.spread(el, api.getTimeColumnProps({ unit: (el.getAttribute('unit') ?? 'hour') as 'hour' | 'minute' | 'second' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getTimeColumnProps({ unit: declaredTimeUnit(el) }) as Record<string, unknown>)
     for (const el of this.getParts('time-item')) {
-      this.spreader.spread(el, api.getTimeItemProps({
-        unit: (el.closest('[data-xh-part="time-column"]')?.getAttribute('unit') ?? 'hour') as 'hour' | 'minute' | 'second',
-        value: el.getAttribute('value') ?? '',
-      }) as Record<string, unknown>)
+      const unit = declaredTimeUnit(el.closest<HTMLElement>('[data-xh-part="time-column"]'))
+      const value = el.getAttribute('value') ?? ''
+      this.spreader.spread(el, api.getTimeItemProps({ unit, value }) as Record<string, unknown>)
+      // 上下午那一格的字按 locale 现译；作者自己写了内容的不动
+      this.fillText(el, api.getTimeItemText({ unit, value }))
     }
 
     // segment-group 可缺省，作者没写就拿宿主自身当归组容器

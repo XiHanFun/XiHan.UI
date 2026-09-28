@@ -1242,6 +1242,87 @@ describe('showTime 的时间列：键盘走得进去', () => {
   })
 })
 
+describe('showTime 的时间约束：小时制、步进、界与逐格判定', () => {
+  it('12 小时制：时列 1-12，末位多出上下午列，输入行也多出上下午段', async () => {
+    const h = await open({ showTime: true, hourCycle: 12, locale: 'en-US', defaultValue: '2026-08-17T21:30' })
+    const api = h.api()
+    expect(api.hourCycle).toBe(12)
+    expect(api.timeColumns.map(column => column.unit)).toEqual(['hour', 'minute', 'dayPeriod'])
+    expect(api.timeColumns[0]!.options[0]).toBe('01')
+    expect(api.timeColumns[0]!.options.at(-1)).toBe('12')
+    expect(api.getTimeItemText({ unit: 'dayPeriod', value: '01' })).toBe('PM')
+    expect(api.field.segments.map(segment => segment.type)).toEqual(['month', 'day', 'year', 'hour', 'minute', 'dayPeriod'])
+    expect(h.timeColumn('hour').items.get('09')!.getAttribute('aria-selected')).toBe('true')
+    expect(h.timeColumn('dayPeriod').items.get('01')!.getAttribute('aria-selected')).toBe('true')
+    expect(h.timeColumn('dayPeriod').col.getAttribute('aria-label')).toBe('AM/PM')
+    // 换到上午：改的是背后 24 小时制的时
+    click(h.timeColumn('dayPeriod').items.get('00')!)
+    expect(h.value()).toEqual(['2026-08-17T09:30'])
+    // 时格写的是显示值，按当前的上下午换算
+    click(h.timeColumn('hour').items.get('11')!)
+    expect(h.value()).toEqual(['2026-08-17T11:30'])
+  })
+
+  it('缺省仍是 24 小时制，不随 locale 推断', () => {
+    const h = mount({ showTime: true, locale: 'en-US' })
+    expect(h.api().hourCycle).toBe(24)
+    expect(h.api().timeColumns.map(column => column.unit)).toEqual(['hour', 'minute'])
+  })
+
+  it('timeStep 按单位取样', () => {
+    const h = mount({ showTime: true, timeGranularity: 'second', timeStep: { hour: 6, minute: 15, second: 30 } })
+    expect(h.api().timeStep).toEqual({ hour: 6, minute: 15, second: 30 })
+    expect(h.api().timeColumns.map(column => column.options)).toEqual([
+      ['00', '06', '12', '18'],
+      ['00', '15', '30', '45'],
+      ['00', '30'],
+    ])
+  })
+
+  it('min 带时间段：与它同一天的时刻按界标不可选，列长不变；别的日子不受约束；日历按日期段收', async () => {
+    const h = await open({ showTime: true, min: '2026-08-17T09:30', defaultValue: '2026-08-17T09:45' })
+    const hour = h.timeColumn('hour')
+    const minute = h.timeColumn('minute')
+    expect(h.api().timeColumns[0]!.options).toHaveLength(24)
+    expect(hour.items.get('08')!.getAttribute('aria-disabled')).toBe('true')
+    expect(hour.items.get('08')!.getAttribute('data-disabled')).toBe('')
+    expect(hour.items.get('09')!.getAttribute('aria-disabled')).toBe('false')
+    // 9 点卡在界上：30 分之前的不可选
+    expect(minute.items.get('15')!.getAttribute('aria-disabled')).toBe('true')
+    expect(minute.items.get('30')!.getAttribute('aria-disabled')).toBe('false')
+    // 按不下去的格点了不写值
+    click(minute.items.get('15')!)
+    expect(h.value()).toEqual(['2026-08-17T09:45'])
+    // 日历认得日期段：前一天不可选，当天可选
+    expect(h.api().calendar.isUnavailable('2026-08-16')).toBe(true)
+    expect(h.api().calendar.isUnavailable('2026-08-17')).toBe(false)
+    // 换到第二天，整列放开
+    h.setProps({ value: ['2026-08-18T09:45'] })
+    expect(h.timeColumn('minute').items.get('15')!.getAttribute('aria-disabled')).toBe('false')
+  })
+
+  it('isTimeUnavailable 收到已选的时与所属日期；落点避开不可选的格，方向键跳过它们', async () => {
+    const calls: unknown[] = []
+    const h = await open({
+      showTime: true,
+      defaultValue: '2026-08-17T09:00',
+      isTimeUnavailable: (value, unit, context) => {
+        calls.push(context)
+        return unit === 'minute' && context.hour === 9 && context.date === '2026-08-17' && Number(value) < 30
+      },
+    })
+    expect(calls).toContainEqual({ hour: 9, minute: 0, date: '2026-08-17', index: null })
+    const { items } = h.timeColumn('minute')
+    expect(items.get('15')!.getAttribute('aria-disabled')).toBe('true')
+    // 选中的 00 按不下去：Tab 位落到头一个按得下的 30
+    expect(items.get('30')!.getAttribute('tabindex')).toBe('0')
+    items.get('59')!.focus()
+    press(items.get('59')!, 'ArrowDown')
+    // 回绕时 00-29 都被跳过
+    expect(active()).toBe(items.get('30'))
+  })
+})
+
 describe('快捷选项', () => {
   const pick = (h: Harness, value: string): void => {
     (h.api().getPresetProps({ value }) as { onClick: () => void }).onClick()
