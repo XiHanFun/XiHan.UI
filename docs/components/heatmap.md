@@ -84,6 +84,24 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 <XhDemo src="heatmap/11-stats" />
 
+### 发散色阶
+
+数据里有负数时以 0 为中点分两侧着色：相关系数矩阵，负相关与正相关各走一种颜色
+
+<XhDemo src="heatmap/12-diverging" />
+
+### 连续色阶
+
+着色按数值的确切比例，不按档位取整：挤在同一档里的几格也分得出高低
+
+<XhDemo src="heatmap/13-continuous" />
+
+### 按下下钻
+
+点一格或焦点在格上按 Enter，报告那一格：据此打开明细
+
+<XhDemo src="heatmap/14-press" />
+
 ## 设计指引
 
 ### 何时使用
@@ -118,6 +136,9 @@ levels 决定分几档，图例与格子共用同一条色阶
 - 行首的星期名隔行绘制：只保留第 0/2/4/6 行之外的三行，周首日是星期一时是“二 / 四 / 六”，是星期日时是“一 / 三 / 五”。一行只有 10px 高而字号是 12px，七个连续书写会上下重叠；隔行后每个保留的字有两行高度可用。三档尺寸一致，不随档位变化。需要七行全部绘制时把 `--xh-heatmap-week-day-skip` 改为可见颜色，例如 `var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`（此时 `sm` 档会较为紧凑）。跳过的是文字着色而不是盒子：节点、文字、盒子与底色都在，固定列的实色底不能缺四行，否则格子会从行首透出，那四行也会不再参与命中测试。
 - 色阶对照条两端各有一个词（默认 `Less` `More`），一排色块本身无法说明哪端表示多。文案使用 `translations.legendLow` / `legendHigh`，部件是 `legend-label`（`value` 为 `low` 或 `high`）；Vue 侧不写默认插槽时两端自动铺出，WC 侧从元素的 `legendText` 属性读取。
 - 配色有两条路径，默认为品牌色。一条是 `tone` 语气轴（brand / neutral / success / warning / danger / info），与其他组件共用；另一条是 `palette` 色板轴（基础色板的十二个色相 red / orange / amber / yellow / lime / green / teal / cyan / blue / indigo / purple / pink，加上 gray），直接按颜色指定，满档取同名色相的 600 档。色板只决定色阶满档一端的实心底，0 档的空格底与中间各档的混合方式不变，也不参与语气层的悬停 / 淡底 / 前景派生；它是装饰性的轴，不是语义轴。两者都写时以色板为准：色板指定了具体颜色，语气只能推导出颜色。
+- 色阶有两种，由 `scale` 切换：`sequential` 顺序色阶从空格底到满档单向加深；`diverging` 发散色阶以 `midpoint`（缺省 0）为界，低于中点兑向负向色、高于中点兑向正向色，中点那一格是中性的中点色。不写 `scale` 时按数据定：出现负数即按发散色阶，相关系数、同比涨跌、盈亏这类有正有负的数据不必额外声明；显式写 `sequential` 时负数照旧落第 0 档。发散色阶取数据色的发散三色（`--xh-chart-diverging-negative` / `-center` / `-positive`，组件槽 `--xh-heatmap-diverging-*` 可单独改写），`tone` 与 `palette` 在这一档不生效：两侧的含义由中点决定，不由语气决定。两侧共用同一套档数，按离中点最远的距离均分，离中点同样远的正负两格深浅相同；格子与详情带 `polarity`（`negative` / `positive`，中点那一格为 null）。对照条随之从负向满档经中点排到正向满档，两端文字缺省是两侧最远的那两个数。打印时两侧同档的环一样粗，负向一侧改用点线区分。
+- `continuous` 打开连续色阶：着色按数值在色阶上的确切比例，不按档位取整，挤在同一档里的几格也分得出高低。档位照常计算，格子的 `data-level`、打印纹理与可访问名称里的档位都不变；对照条仍是分档的色块，作为刻度参照。
+- 一格被按下时（指针点击，或焦点在格上按 Enter）派发 `onCellPress`，载荷与详情同源（日期或行列、原始值、档位、侧别、在色阶中的位置），用来下钻到那一天或那一对行列；事件名 `cell-press`，与图表家族的 `onDatumPress` 同一口径。它只报告按下，不产生选中状态。
 - 档数可调：未提供 `thresholds` 时把有数据的那几档在 (0, 最大值] 上等宽分开（分界取整、逐档至少加 1），提供时以其为准。分档由图表引擎的分档比例尺完成；`thresholds` 里有重复或不是有限数的值时剔除并在诊断通道报 `chart.invalid-range`，档数按剩下的算。
 - 在图外报告“总天数 / 空白天数与占比 / 最大值 / 平均值”不需要再次遍历数据：三张网格都带 `max`（最大值）、`total`（总和）与 `emptyCount`（值为 0 的格子数），格子总数从 `cells.size` 读取。`emptyCount` 统计值为 0 的格子：没有数据的日期与写了 0 的日期都计入。它不是色阶第 0 档的格子数：未提供 `thresholds` 时首个下界始终为 1，两个数相等；提供 `thresholds` 后第 0 档还会包含低于首个下界的非零值，两个数不再相等。
 - 悬停或键盘聚焦到某一格时显示详情条，内容由作者编写；组件只提供身份、位置与该格的数据（日期或行列、原始值、档位、在色阶中的位置）。详情条与对照条走 Chart 家族配方：详情条是与其余图表提示框同一副 frosted 材质、overlay 圆角与正文排版，不反白，`--xh-heatmap-tooltip-bg` / `-fg` / `-border` 只换颜色那一层，顶部的边界光与背景模糊照旧。
@@ -155,6 +176,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 - 一张图只选一条轴：表达“这一族数据是告警”时写 `tone`，表达“这张图使用绿色”时写 `palette`，两者都写会让读者猜测优先级。同一页并排的几张图更要统一，混用会让读者以为颜色有语义。
 - 色板只改变颜色不改变语义：`palette="red"` 的格子不代表这些天出了问题，该含义只能由标题与文案表达。
 - 数据中出现极端值时自行提供 `thresholds`，按最大值均分会把其余格子全部压到第 0、1 档，整张图变成一片空白加一个亮点。
+- 数据有天然的中点时（相关系数的 0、目标完成率的 100%）写 `scale="diverging"` 与 `midpoint`，读者一眼分得出“高于”与“低于”；只有大小没有方向的数据（次数、时长）用顺序色阶，强行分两侧会让读者以为低于中点是坏事。
 - 一屏放不下时让网格横向滚动，不要把格子压到无法辨认。整年在 `md` 档约需 774px，`sm` 档约 660px，容器窄于该值会出现横向滚动条。
 - 键盘移动到视口外的格子时网格会自动滚动，落点已避开固定列；为 root 另加内边距或更换 `--xh-heatmap-gutter` 时不需要再处理，两处读取同一个值。
 - 矩阵的列名与其下一列的格子同宽：标签较长时整体调大 `--xh-heatmap-column-w`，不只撑开标签，否则标签会与格子错位。
@@ -164,7 +186,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 ### 反模式
 
-- 将它用作日期选择器：格子不可点击、没有选中语义。
+- 将它用作日期选择器：格子只报告按下（`onCellPress`），没有选中语义，也不保留按下过哪一格。
 - 一次铺多年：列数上千后既看不出节奏，键盘也无法走到尽头。
 - 只用颜色不提供文案：没有可访问名称的方格阵对读屏用户等于空白。
 - 把详情条作为唯一的信息出口：它对读屏隐藏，只写在那里等于只提供给鼠标用户。
@@ -193,7 +215,10 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `startDate` | `string` |  | 区间起点（含），ISO YYYY-MM-DD。未提供或非法时为空网格。 |
 | `endDate` | `string` |  | 区间终点（含）。早于起点即空网格。 |
 | `levels` | `number` |  | 档数，默认 5；提供 thresholds 时档数由它决定。 |
-| `thresholds` | `number[]` |  | 各档的下界，升序；提供后 levels 不再生效。 |
+| `thresholds` | `number[]` |  | 各档的下界，升序；提供后 levels 不再生效。发散色阶里它是离中点的距离，两侧共用。 |
+| `scale` | `HeatmapScaleMode` |  | 色阶：sequential 从空格底色单向加深；diverging 以 midpoint 为界往两侧各自加深， 低于中点取负向色、高于中点取正向色（相关系数、同比涨跌、盈亏）。缺省按数据定：出现负数即 diverging。 发散色阶取数据色的发散三色，tone 与 palette 不再生效。 |
+| `midpoint` | `number` |  | 发散色阶的中点，缺省 0。 |
+| `continuous` | `boolean` |  | 连续色阶：不分档，按数值在色阶上的确切位置着色；档位照常算，打印与读屏仍按档。缺省 false。 |
 | `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日，默认 1。 |
 | `locale` | `string` |  | 月份名与星期名的书写 locale，未提供时按宿主语言，宿主也没有时按 en-US。 |
 | `dir` | `Direction` |  | 文字方向。只作显式覆盖：未提供时方向从 DOM 读取， 左右方向键的语义跟随视觉次序，上下键与它无关。 |
@@ -204,6 +229,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `translations` | `Partial<HeatmapTranslations>` |  |  |
 | `onCellFocus` | `(details: HeatmapCellFocusDetails) => void` |  | DOM 焦点落到某一格时通知一次；同一格重复聚焦不重复通知。 只由真实的聚焦触发，程序化移动锚点（`setFocusedCell`）不派发该回调。 |
 | `onCellActive` | `(details: HeatmapCellDetails \| null) => void` |  | 详情应显示哪一格：指针悬停或键盘聚焦都会走到这里，收起时为 null。 详情条的内容由作者决定，组件只报告是哪一格、数值多少。 |
+| `onCellPress` | `(details: HeatmapCellDetails) => void` |  | 一格被按下：指针点击，或焦点在格上按 Enter。载荷与 onCellActive 同形， 用来下钻到那一天或那一对行列。Space 不接，照常滚动页面。 |
 
 ### 事件
 
@@ -211,8 +237,9 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `cell-focus` | `HeatmapCellFocusDetails` | 焦点落到某一格；detail 为 `{ date, row, column, count, level, percent }` |
+| `cell-focus` | `HeatmapCellFocusDetails` | 焦点落到某一格；detail 为 `{ date, row, column, count, level, polarity, percent }` |
 | `cell-active` | `HeatmapCellDetails` | 详情应显示哪一格（悬停或聚焦）；收起时 detail 为 null |
+| `cell-press` | `HeatmapCellDetails` | 点按一格，或焦点在格上按 Enter；detail 与 cell-focus 同形 |
 
 ### 插槽
 
@@ -234,6 +261,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `XhHeatmapCell` | `row` | `string` |  | 矩阵形态：行身份；写在行中时不必再写一遍。 |
 | `XhHeatmapColumnLabel` | `value` | `string` | 是 | 列身份。 |
 | `XhHeatmapLegendItem` | `value` | `number \| string` | 是 | 档位，兼收字符串。 |
+| `XhHeatmapLegendItem` | `polarity` | `HeatmapPolarity` |  | 发散色阶下这一格在中点的哪一侧；顺序色阶与中点那一格不写。 |
 | `XhHeatmapLegendLabel` | `value` | `HeatmapLegendBound` | 是 | 挂在哪一端：low 是色阶起点，high 是终点。 |
 | `XhHeatmapMonthBlock` | `value` | `string` | 是 | 月份身份 YYYY-MM。 |
 | `XhHeatmapMonthLabel` | `value` | `string` | 是 | 月份身份 YYYY-MM。 |
@@ -266,6 +294,8 @@ levels 决定分几档，图例与格子共用同一条色阶
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `variant` | `HeatmapVariant` | 当前形态。 |
+| `scaleMode` | `HeatmapScaleMode` | 生效的色阶：显式给的，或按数据定出来的。 |
+| `legendItems` | `readonly HeatmapLegendEntry[]` | 对照条上的一排，作者按它逐个铺 legend-item：顺序色阶从第 0 档到满档， 发散色阶从负向满档经中点到正向满档。 |
 | `grid` | `HeatmapGrid` | 日历网格：行是星期几、列是周次，另带月份段、星期名与档位标尺。其余形态下是一张空网格。 |
 | `monthGrid` | `HeatmapMonthGrid \| null` | 月历网格：按自然月分块；不是 month 形态时为 null。 |
 | `matrixGrid` | `HeatmapMatrixGrid \| null` | 矩阵网格：行列由作者提供；不是 matrix 形态时为 null。 |
@@ -311,6 +341,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `Ctrl+Home` | focus in grid | 焦点移到整张网格文档序的头一格 |
 | `Ctrl+End` | focus in grid | 焦点移到整张网格文档序的末一格 |
 | `Escape` | 详情条显示着 | 收起详情条；焦点留在原处，按键不拦截（外层浮层的关闭仍归它自己管） |
+| `Enter` | focus in grid | 按下焦点那一格：报告它（onCellPress，载荷与详情同源），用来下钻；Space 不接，照常滚动页面 |
 
 ### ARIA
 
@@ -337,7 +368,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `column-label` | `aria-colindex` | meta.index + 2 \| undefined |
 | `column-label` | `role` | 'columnheader' |
 | `cell` | `aria-colindex` | meta.columnIndex + 2 \| undefined |
-| `cell` | `aria-label` | matrixCellLabel({ date: '', row, column, count, level… |
+| `cell` | `aria-label` | matrixCellLabel({ date: '', row, column, count, ...pl… |
 | `cell` | `role` | 'gridcell' |
 | `tooltip` | `aria-hidden` | 'true' |
 | `legend` | `aria-label` | translations?.legendLabel |
@@ -355,6 +386,8 @@ levels 决定分几档，图例与格子共用同一条色阶
 - 各行格子数不一定相同（首行可能少一格），格子上带 `aria-colindex`，读屏报出的列号才正确。
 - 整张网格只占一个 Tab 位，进入后靠方向键移动。键盘聚焦与指针悬停触发同一条详情：只支持悬停会把键盘与读屏用户排除在外。
 - Escape 收起详情条但不拦截按键：外层浮层的关闭仍由其自身处理。
+- Enter 按下焦点那一格（`onCellPress`），与点击同一条路径；Space 不接，照常滚动页面。
+- 发散色阶不只靠颜色区分两侧：每格的可访问名称写的是带符号的原始值，详情条同理；色觉障碍的读者依然读得出正负。
 
 ## 样式参考
 
@@ -372,6 +405,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | --- | --- | --- |
 | `root` | `data-animating` | ''（条件成立时才出现） |
 | `root` | `data-palette` | props.palette |
+| `root` | `data-scale` | 'diverging' \| undefined |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
@@ -388,6 +422,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `legend` | `data-xh-chart-part` | 'legend' |
 | `legend-label` | `data-bound` | label.bound |
 | `legend-item` | `data-level` | String(item.level) |
+| `legend-item` | `data-polarity` | item.polarity |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -405,6 +440,9 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `--xh-heatmap-cell-radius` | `cell`<br>`legend-item` | `border-radius` | `default` | `--xh-shape-inset` | heatmap 的 cell、legend-item 部件 border-radius 覆盖槽。 |
 | `--xh-heatmap-cell-size` | `cell`<br>`legend-item`<br>`month-label`<br>`root`<br>`row`<br>`week-day` | `block-size`<br>`border`<br>`inline-size`<br>`margin-inline-start` | `@media print`<br>`default`<br>`first-child`<br>`level=1`<br>`level=2`<br>`level=3`<br>`size=lg`<br>`size=sm`<br>`variant=month`<br>`week`<br>`week-day` | `--xh-space-2`<br>`--xh-space-2_5`<br>`--xh-space-3` | heatmap 的 cell、legend-item、month-label、root、row、week-day 部件 block-size、border、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-heatmap-column-w` | `cell`<br>`column-label`<br>`root` | `inline-size` | `default`<br>`variant=matrix` | `--xh-_heatmap-row-h` | heatmap 的 cell、column-label、root 部件 inline-size 覆盖槽。 |
+| `--xh-heatmap-diverging-center` | `cell`<br>`legend-item`<br>`root` | `background`<br>`background-color` | `@keyframes xh-heatmap-fill`<br>`scale=diverging` | `--xh-chart-diverging-center` | heatmap 的 cell、legend-item、root 部件 background、background-color 覆盖槽。 |
+| `--xh-heatmap-diverging-negative` | `cell`<br>`legend-item`<br>`root` | `background` | `is([data-scope='heatmap'][data-part='cell'], [data-scope='heatmap'][data-part='legend-item'])`<br>`polarity=negative`<br>`scale=diverging` | `--xh-chart-diverging-negative` | heatmap 的 cell、legend-item、root 部件 background 覆盖槽。 |
+| `--xh-heatmap-diverging-positive` | `cell`<br>`legend-item`<br>`root` | `background` | `is([data-scope='heatmap'][data-part='cell'], [data-scope='heatmap'][data-part='legend-item'])`<br>`polarity=positive`<br>`scale=diverging` | `--xh-chart-diverging-positive` | heatmap 的 cell、legend-item、root 部件 background 覆盖槽。 |
 | `--xh-heatmap-empty` | `cell`<br>`legend-item`<br>`root` | `background`<br>`background-color` | `@keyframes xh-heatmap-fill`<br>`default` | `--xh-bg-subtle-opaque` | heatmap 的 cell、legend-item、root 部件 background、background-color 覆盖槽。 |
 | `--xh-heatmap-fg` | `root` | `color` | `default` | `--xh-fg-muted` | heatmap 的 root 部件 color 覆盖槽。 |
 | `--xh-heatmap-font-size` | `root` | `font-size` | `default` | `--xh-_heatmap-font-size` | heatmap 的 root 部件 font-size 覆盖槽。 |

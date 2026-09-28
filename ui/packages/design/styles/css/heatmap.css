@@ -141,6 +141,23 @@
     --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-neutral-450));
   }
 
+  /* —— 发散色阶 ——
+     以中点为界两侧各自加深：中点那一格是数据色的中性中点，低于中点兑向负向色、高于中点兑向正向色。
+     三色都取数据色的发散三色，语气与色板在这一档不生效。中点是没有色相的中性色，兑色走 oklab
+     （格子的基础规则已是 in oklab），oklch 会绕着色相环走出一段杂色 */
+  [data-scope='heatmap'][data-part='root'][data-scale='diverging'] {
+    --xh-_heatmap-empty: var(--xh-heatmap-diverging-center, var(--xh-chart-diverging-center));
+  }
+
+  /* 两侧的墨色写在格子上而不是根上：根上的语气与色板规则（含暗色的中性色板）不论权重多高都盖不到这里 */
+  [data-scope='heatmap'][data-part='root'][data-scale='diverging'] :is([data-scope='heatmap'][data-part='cell'], [data-scope='heatmap'][data-part='legend-item'])[data-polarity='negative'] {
+    --xh-_heatmap-ink: var(--xh-heatmap-diverging-negative, var(--xh-chart-diverging-negative));
+  }
+
+  [data-scope='heatmap'][data-part='root'][data-scale='diverging'] :is([data-scope='heatmap'][data-part='cell'], [data-scope='heatmap'][data-part='legend-item'])[data-polarity='positive'] {
+    --xh-_heatmap-ink: var(--xh-heatmap-diverging-positive, var(--xh-chart-diverging-positive));
+  }
+
   /* —— 尺寸 —— */
   /* 缺省的 md 档写在上面的基础规则里 */
   [data-scope='heatmap'][data-part='root'][data-size='sm'] {
@@ -501,6 +518,12 @@
     [data-scope='heatmap'][data-part='cell'][data-level='3'],
     [data-scope='heatmap'][data-part='legend-item'][data-level='3'] {
       --xh-_heatmap-ink-ring: calc(var(--xh-_heatmap-cell-size) * 0.4);
+    }
+
+    /* 发散色阶两侧同档的环一样粗，纸上分不出正负：负向一侧改用点线，点线在任何粗细下都认得出 */
+    [data-scope='heatmap'][data-part='cell'][data-polarity='negative'],
+    [data-scope='heatmap'][data-part='legend-item'][data-polarity='negative'] {
+      border-style: dotted;
     }
   }
 

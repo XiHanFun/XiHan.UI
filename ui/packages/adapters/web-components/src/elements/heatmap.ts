@@ -11,17 +11,30 @@ import type {
   HeatmapCellDetails,
   HeatmapCellFocusDetails,
   HeatmapGrid,
+  HeatmapLegendEntry,
   HeatmapMatrixGrid,
   HeatmapMonthGrid,
   HeatmapPalette,
+  HeatmapPolarity,
   HeatmapRowProps,
+  HeatmapScaleMode,
   HeatmapSchema,
   HeatmapTranslations,
   HeatmapValue,
   HeatmapVariant,
 } from '@xihan-ui/headless'
 import { DATA_PART, DATA_SCOPE } from '@xihan-ui/core'
-import { buildHeatmapGrid, connectHeatmap, HEATMAP_LEGEND_TEXT, heatmapAnatomy, heatmapMachine, heatmapMeta, normalizeHeatmapNumber, normalizeHeatmapString } from '@xihan-ui/headless'
+import {
+  buildHeatmapGrid,
+  connectHeatmap,
+  HEATMAP_LEGEND_TEXT,
+  heatmapAnatomy,
+  heatmapLegendEntries,
+  heatmapMachine,
+  heatmapMeta,
+  normalizeHeatmapNumber,
+  normalizeHeatmapString,
+} from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -37,6 +50,12 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 往上找最近的某个角色节点，取它写着的 value：块把月份传给行，行把行身份传给格子。 */
+/** 作者写在 legend-item 上的 polarity 属性；只认两侧，其余一律当顺序色阶或中点那一格。 */
+function legendPolarity(el: HTMLElement): HeatmapPolarity | null {
+  const polarity = el.getAttribute('polarity')
+  return polarity === 'negative' || polarity === 'positive' ? polarity : null
+}
+
 function ancestorValue(el: HTMLElement, part: string): string | undefined {
   const host = el.parentElement?.closest<HTMLElement>(`[${DATA_SCOPE}="heatmap"][${DATA_PART}="${part}"]`)
   return normalizeHeatmapString(host?.getAttribute('value'))
@@ -55,7 +74,8 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * cell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态中 month-block 上是 YYYY-MM、
  * row 上是月内周序（未写即块内的星期名坐标轴）；矩阵形态中 row 与 row-label 上是行身份
  * （未写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。
- * legend-item 上是档位、legend-label 上是 low 或 high（两端的文字，文案读取 `legendText`）。
+ * legend-item 上是档位（发散色阶下另写 polarity 属性标明在中点哪一侧，逐格读取 `legendItems`）、
+ * legend-label 上是 low 或 high（两端的文字，文案读取 `legendText`）。
  *
  * 数据、行列、档位下界与文案只能通过 property 设置（`el.value = [...]`）：HTML 属性无法承载数组与函数。
  *
@@ -64,6 +84,9 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @attr {string} start-date - 区间起点（含），ISO YYYY-MM-DD
  * @attr {string} end-date - 区间终点（含）
  * @attr {number} levels - 档数，默认 5；提供 thresholds 时档数由它决定
+ * @attr {'sequential'|'diverging'} scale - 色阶；缺省时数据里出现负数就按发散色阶（以中点分两侧）
+ * @attr {number} midpoint - 发散色阶的中点，默认 0
+ * @attr {boolean} continuous - 连续色阶：着色按数值的确切比例，不按档位取整
  * @attr {number} first-day-of-week - 周首日，0 = 星期日，默认 1
  * @attr {string} locale - 月份名与星期名的书写 locale；未提供时按宿主语言，宿主也没有时按 en-US
  * @attr {'ltr'|'rtl'} dir - 文字方向；只作显式覆盖，未提供时方向从 DOM 读取
@@ -71,8 +94,9 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 色板，取基础色板同名色相作色阶满档的颜色；同时提供 tone 时以色板为准
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} animated - 播放过渡，默认开；`animated="false"` 时直接画终态
- * @fires cell-focus - 焦点落到某一格；detail 为 `{ date, row, column, count, level, percent }`
+ * @fires cell-focus - 焦点落到某一格；detail 为 `{ date, row, column, count, level, polarity, percent }`
  * @fires cell-active - 详情应显示哪一格（悬停或聚焦）；收起时 detail 为 null
+ * @fires cell-press - 点按一格，或焦点在格上按 Enter；detail 与 cell-focus 同形
  * @csspart root - 承载三轴的最外层节点
  * @csspart grid - role=grid 的网格容器，键盘在它身上收口
  * @csspart month-block - 月历形态中的一个自然月块
@@ -85,7 +109,7 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @csspart tooltip - 悬停或聚焦时显示的详情条，位置由元素测量后写为内联样式
  * @csspart legend - 色阶对照条
  * @csspart legend-label - 对照条一端的文字，value 是 low 或 high
- * @csspart legend-item - 对照条中的一格，value 是档位
+ * @csspart legend-item - 对照条中的一格，value 是档位，发散色阶下 polarity 是 negative 或 positive
  */
 export class XhHeatmapElement extends XhElement {
   static override partContract = { anatomy: heatmapAnatomy, meta: heatmapMeta }
@@ -103,6 +127,9 @@ export class XhHeatmapElement extends XhElement {
     startDate: { converter: STRING_CONVERTER, attribute: 'start-date' },
     endDate: { converter: STRING_CONVERTER, attribute: 'end-date' },
     levels: { converter: NUMBER_CONVERTER },
+    scale: { converter: STRING_CONVERTER },
+    midpoint: { converter: NUMBER_CONVERTER },
+    continuous: { converter: BOOLEAN_CONVERTER },
     firstDayOfWeek: { converter: NUMBER_CONVERTER, attribute: 'first-day-of-week' },
     locale: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -121,6 +148,9 @@ export class XhHeatmapElement extends XhElement {
   declare startDate?: string
   declare endDate?: string
   declare levels?: number
+  declare scale?: HeatmapScaleMode
+  declare midpoint?: number
+  declare continuous?: boolean
   declare firstDayOfWeek?: number
   declare locale?: string
   declare direction?: Direction
@@ -135,6 +165,10 @@ export class XhHeatmapElement extends XhElement {
 
   private readonly notifyActive = (details: HeatmapCellDetails | null): void => {
     this.dispatchEvent(new CustomEvent('cell-active', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyPress = (details: HeatmapCellDetails): void => {
+    this.dispatchEvent(new CustomEvent('cell-press', { detail: details, bubbles: true, composed: true }))
   }
 
   // 过渡的时长与减弱动效从 root 读：取值口惰性读，角色节点要等首次 updated 才发现得到
@@ -155,6 +189,9 @@ export class XhHeatmapElement extends XhElement {
       endDate: this.endDate,
       levels: this.levels,
       thresholds: this.thresholds,
+      scale: this.scale,
+      midpoint: this.midpoint,
+      continuous: this.continuous,
       firstDayOfWeek: this.firstDayOfWeek,
       locale: this.locale,
       dir: this.direction,
@@ -165,6 +202,7 @@ export class XhHeatmapElement extends XhElement {
       translations: this.translations,
       onCellFocus: this.notifyFocus,
       onCellActive: this.notifyActive,
+      onCellPress: this.notifyPress,
     }
   }
 
@@ -191,6 +229,21 @@ export class XhHeatmapElement extends XhElement {
     return this.ctrl.service
       ? connectHeatmap(this.ctrl.service, wcNormalize).legendText
       : HEATMAP_LEGEND_TEXT
+  }
+
+  /** 当前生效的色阶：显式写了 scale 就是它，否则数据里出现负数即 diverging。 */
+  get scaleMode(): HeatmapScaleMode {
+    return this.ctrl.service ? connectHeatmap(this.ctrl.service, wcNormalize).scaleMode : 'sequential'
+  }
+
+  /**
+   * 对照条逐格的档位与侧别，按顺序铺设 legend-item：顺序色阶从第 0 档到满档，
+   * 发散色阶从负向满档经中点到正向满档。状态机尚未建立时按缺省档数给一排。
+   */
+  get legendItems(): readonly HeatmapLegendEntry[] {
+    return this.ctrl.service
+      ? connectHeatmap(this.ctrl.service, wcNormalize).legendItems
+      : heatmapLegendEntries(buildHeatmapGrid().scale)
   }
 
   /** 作者写在行上的身份，按形态转换为连接层识别的坐标。 */
@@ -249,6 +302,6 @@ export class XhHeatmapElement extends XhElement {
       this.spreader.spread(el, api.getLegendLabelProps({ bound: normalizeHeatmapString(el.getAttribute('value')) === 'high' ? 'high' : 'low' }) as Record<string, unknown>)
 
     for (const el of this.getParts('legend-item'))
-      this.spreader.spread(el, api.getLegendItemProps({ level: normalizeHeatmapNumber(el.getAttribute('value')) ?? 0 }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getLegendItemProps({ level: normalizeHeatmapNumber(el.getAttribute('value')) ?? 0, polarity: legendPolarity(el) }) as Record<string, unknown>)
   }
 }

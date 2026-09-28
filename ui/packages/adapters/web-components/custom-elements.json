@@ -29023,7 +29023,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-heatmap>`：Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素运行 heatmap 状态机并把 connect 产出接上。\n\n网格由作者渲染，元素不生成节点：铺设一整年不必手写三百多个格子，读取 `grid` / `monthGrid` /\n`matrixGrid` 三个只读属性，按推导出的行、列、月份段循环生成即可（三种形态各读其中一个）。\n每次读取都重新计算，取一次后保存使用。\n\n角色节点的身份一律取作者写在节点上的 value 属性，解释方式由 variant 决定：\n日历形态中 row 与 week-day 上是行序 0-6（未写即网格之外的月份行与其行首占位）、\ncell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态中 month-block 上是 YYYY-MM、\nrow 上是月内周序（未写即块内的星期名坐标轴）；矩阵形态中 row 与 row-label 上是行身份\n（未写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。\nlegend-item 上是档位、legend-label 上是 low 或 high（两端的文字，文案读取 `legendText`）。\n\n数据、行列、档位下界与文案只能通过 property 设置（`el.value = [...]`）：HTML 属性无法承载数组与函数。",
+          "description": "`<xh-heatmap>`：Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素运行 heatmap 状态机并把 connect 产出接上。\n\n网格由作者渲染，元素不生成节点：铺设一整年不必手写三百多个格子，读取 `grid` / `monthGrid` /\n`matrixGrid` 三个只读属性，按推导出的行、列、月份段循环生成即可（三种形态各读其中一个）。\n每次读取都重新计算，取一次后保存使用。\n\n角色节点的身份一律取作者写在节点上的 value 属性，解释方式由 variant 决定：\n日历形态中 row 与 week-day 上是行序 0-6（未写即网格之外的月份行与其行首占位）、\ncell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态中 month-block 上是 YYYY-MM、\nrow 上是月内周序（未写即块内的星期名坐标轴）；矩阵形态中 row 与 row-label 上是行身份\n（未写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。\nlegend-item 上是档位（发散色阶下另写 polarity 属性标明在中点哪一侧，逐格读取 `legendItems`）、\nlegend-label 上是 low 或 high（两端的文字，文案读取 `legendText`）。\n\n数据、行列、档位下界与文案只能通过 property 设置（`el.value = [...]`）：HTML 属性无法承载数组与函数。",
           "name": "XhHeatmapElement",
           "cssParts": [
             {
@@ -29075,7 +29075,7 @@
               "name": "legend-label"
             },
             {
-              "description": "对照条中的一格，value 是档位",
+              "description": "对照条中的一格，value 是档位，发散色阶下 polarity 是 negative 或 positive",
               "name": "legend-item"
             }
           ],
@@ -29167,6 +29167,33 @@
             },
             {
               "kind": "field",
+              "name": "scale",
+              "privacy": "public",
+              "type": {
+                "text": "HeatmapScaleMode | undefined"
+              },
+              "attribute": "scale"
+            },
+            {
+              "kind": "field",
+              "name": "midpoint",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "midpoint"
+            },
+            {
+              "kind": "field",
+              "name": "continuous",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "continuous"
+            },
+            {
+              "kind": "field",
               "name": "firstDayOfWeek",
               "privacy": "public",
               "type": {
@@ -29242,6 +29269,12 @@
             },
             {
               "kind": "field",
+              "name": "notifyPress",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -29294,6 +29327,24 @@
               "readonly": true
             },
             {
+              "kind": "field",
+              "name": "scaleMode",
+              "type": {
+                "text": "HeatmapScaleMode"
+              },
+              "description": "当前生效的色阶：显式写了 scale 就是它，否则数据里出现负数即 diverging。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "legendItems",
+              "type": {
+                "text": "readonly HeatmapLegendEntry[]"
+              },
+              "description": "对照条逐格的档位与侧别，按顺序铺设 legend-item：顺序色阶从第 0 档到满档，\n发散色阶从负向满档经中点到正向满档。状态机尚未建立时按缺省档数给一排。",
+              "readonly": true
+            },
+            {
               "kind": "method",
               "name": "rowProps",
               "privacy": "private",
@@ -29331,7 +29382,7 @@
           ],
           "events": [
             {
-              "description": "焦点落到某一格；detail 为 `{ date, row, column, count, level, percent }`",
+              "description": "焦点落到某一格；detail 为 `{ date, row, column, count, level, polarity, percent }`",
               "name": "cell-focus",
               "type": {
                 "text": "HeatmapCellFocusDetails"
@@ -29340,6 +29391,13 @@
             {
               "description": "详情应显示哪一格（悬停或聚焦）；收起时 detail 为 null",
               "name": "cell-active",
+              "type": {
+                "text": "HeatmapCellDetails"
+              }
+            },
+            {
+              "description": "点按一格，或焦点在格上按 Enter；detail 与 cell-focus 同形",
+              "name": "cell-press",
               "type": {
                 "text": "HeatmapCellDetails"
               }
@@ -29377,6 +29435,30 @@
               "description": "档数，默认 5；提供 thresholds 时档数由它决定",
               "name": "levels",
               "fieldName": "levels"
+            },
+            {
+              "type": {
+                "text": "HeatmapScaleMode | undefined"
+              },
+              "description": "色阶；缺省时数据里出现负数就按发散色阶（以中点分两侧）",
+              "name": "scale",
+              "fieldName": "scale"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "发散色阶的中点，默认 0",
+              "name": "midpoint",
+              "fieldName": "midpoint"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "连续色阶：着色按数值的确切比例，不按档位取整",
+              "name": "continuous",
+              "fieldName": "continuous"
             },
             {
               "type": {
@@ -29468,6 +29550,15 @@
             },
             {
               "name": "--xh-heatmap-column-w"
+            },
+            {
+              "name": "--xh-heatmap-diverging-center"
+            },
+            {
+              "name": "--xh-heatmap-diverging-negative"
+            },
+            {
+              "name": "--xh-heatmap-diverging-positive"
             },
             {
               "name": "--xh-heatmap-empty"

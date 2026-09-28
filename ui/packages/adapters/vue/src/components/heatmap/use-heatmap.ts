@@ -26,9 +26,10 @@ export function useHeatmap(
   props: HeatmapSchema['props'],
   onCellFocus?: HeatmapSchema['props']['onCellFocus'],
   onCellActive?: HeatmapSchema['props']['onCellActive'],
+  onCellPress?: HeatmapSchema['props']['onCellPress'],
 ): HeatmapContext {
   const rootRef = ref<HTMLElement | null>(null)
-  const service = useMachine(heatmapMachine, () => ({ ...props, onCellFocus, onCellActive }))
+  const service = useMachine(heatmapMachine, () => ({ ...props, onCellFocus, onCellActive, onCellPress }))
   service.refs.set('getRootEl', () => rootRef.value)
   const api = computed(() => connectHeatmap(service, vueNormalize))
   return { api, service, rootRef }

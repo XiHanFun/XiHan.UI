@@ -16,7 +16,9 @@ import type {
   HeatmapMatrixGrid,
   HeatmapMonthGrid,
   HeatmapPalette,
+  HeatmapPolarity,
   HeatmapRowProps,
+  HeatmapScaleMode,
   HeatmapSchema,
   HeatmapTranslations,
   HeatmapValue,
@@ -58,6 +60,8 @@ export type HeatmapRootSlotProps = Pick<
   | 'anchorDate'
   | 'activeCell'
   | 'detailOpen'
+  | 'scaleMode'
+  | 'legendItems'
   | 'cellAt'
   | 'setFocusedCell'
   | 'setFocusedDate'
@@ -83,6 +87,12 @@ export interface XhHeatmapRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   levels?: number
   /** 逐档的分界数值；提供后不按数据自动分档。 */
   thresholds?: number[]
+  /** 色阶：顺序色阶从空到满，发散色阶以中点分两侧；缺省时数据里出现负数就按发散色阶。 */
+  scale?: HeatmapScaleMode
+  /** 发散色阶的中点，默认 0。 */
+  midpoint?: number
+  /** 连续色阶：着色按数值的确切比例，不按档位取整。 */
+  continuous?: boolean
   /** 一周从星期几起算。 */
   firstDayOfWeek?: number
   locale?: string
@@ -97,6 +107,8 @@ export interface XhHeatmapRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   onCellFocus?: HeatmapProps['onCellFocus']
   /** 详情所在的格子变化。 */
   onCellActive?: HeatmapProps['onCellActive']
+  /** 点按一格，或焦点在格上按 Enter。 */
+  onCellPress?: HeatmapProps['onCellPress']
   /** 铺开网格时每一格的内容；未提供时是空格子。 */
   renderCell?: (cell: HeatmapCellSlotProps) => ReactNode
   /** 详情条的内容；提供后才铺设 tooltip 部件。 */
@@ -113,6 +125,9 @@ export function XhHeatmapRoot({
   endDate,
   levels,
   thresholds,
+  scale,
+  midpoint,
+  continuous,
   firstDayOfWeek,
   locale,
   dir,
@@ -123,6 +138,7 @@ export function XhHeatmapRoot({
   translations,
   onCellFocus,
   onCellActive,
+  onCellPress,
   renderCell,
   renderTooltip,
   children,
@@ -137,6 +153,9 @@ export function XhHeatmapRoot({
     endDate,
     levels,
     thresholds,
+    scale,
+    midpoint,
+    continuous,
     firstDayOfWeek,
     locale,
     dir,
@@ -147,6 +166,7 @@ export function XhHeatmapRoot({
     translations,
     onCellFocus,
     onCellActive,
+    onCellPress,
   }) as HeatmapProps)
   const { api } = ctx
   const body = children === undefined
@@ -162,6 +182,8 @@ export function XhHeatmapRoot({
         anchorDate: api.anchorDate,
         activeCell: api.activeCell,
         detailOpen: api.detailOpen,
+        scaleMode: api.scaleMode,
+        legendItems: api.legendItems,
         cellAt: api.cellAt,
         setFocusedCell: api.setFocusedCell,
         setFocusedDate: api.setFocusedDate,
@@ -181,7 +203,7 @@ export function XhHeatmapRoot({
   )
 }
 
-XhHeatmapRoot.xhEvents = ['cell-focus', 'cell-active'] as const
+XhHeatmapRoot.xhEvents = ['cell-focus', 'cell-active', 'cell-press'] as const
 
 export interface XhHeatmapGridProps extends ComponentPropsWithRef<'div'> {}
 
@@ -410,15 +432,17 @@ export function XhHeatmapLegendLabel({ value, children, ...rest }: XhHeatmapLege
 export interface XhHeatmapLegendItemProps extends Omit<ComponentPropsWithRef<'span'>, 'value'> {
   /** 档位，兼收字符串。 */
   value: number | string
+  /** 发散色阶下这一格在中点的哪一侧；顺序色阶与中点那一格不写。 */
+  polarity?: HeatmapPolarity
 }
 
-/** 对照条中的一格，与网格中同档的格子同色。 */
-export function XhHeatmapLegendItem({ value, children, ...rest }: XhHeatmapLegendItemProps): ReactNode {
+/** 对照条中的一格，与网格中同档（发散色阶下同侧同档）的格子同色。 */
+export function XhHeatmapLegendItem({ value, polarity, children, ...rest }: XhHeatmapLegendItemProps): ReactNode {
   const ctx = useHeatmapContext()
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getLegendItemProps({ level: Number(value) || 0 }) as Record<string, unknown>,
+        ctx.api.getLegendItemProps({ level: Number(value) || 0, polarity: polarity ?? null }) as Record<string, unknown>,
         rest as Record<string, unknown>,
       )}
     >
@@ -440,12 +464,11 @@ interface DefaultTreeProps {
  */
 function DefaultTree({ api, renderCell, renderTooltip }: DefaultTreeProps): ReactNode {
   // 两端各一个字：一排色块自己说不出哪头是多
-  const levels = api.monthGrid?.levels ?? api.matrixGrid?.levels ?? api.grid.levels
   const legend = (
     <XhHeatmapLegend>
       <XhHeatmapLegendLabel value="low">{api.legendText.low}</XhHeatmapLegendLabel>
-      {Array.from({ length: levels }, (_, level) => (
-        <XhHeatmapLegendItem key={level} value={level} />
+      {api.legendItems.map(item => (
+        <XhHeatmapLegendItem key={`${item.polarity ?? 'center'}-${item.level}`} value={item.level} polarity={item.polarity ?? undefined} />
       ))}
       <XhHeatmapLegendLabel value="high">{api.legendText.high}</XhHeatmapLegendLabel>
     </XhHeatmapLegend>

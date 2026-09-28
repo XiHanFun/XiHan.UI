@@ -12,8 +12,11 @@ import type {
   HeatmapCellMeta,
   HeatmapCellRef,
   HeatmapGrid,
+  HeatmapLegendEntry,
   HeatmapMatrixGrid,
   HeatmapMonthGrid,
+  HeatmapPolarity,
+  HeatmapScaleMode,
   HeatmapTipRect,
   HeatmapValue,
   HeatmapVariant,
@@ -105,6 +108,8 @@ export interface HeatmapColumnLabelProps {
 export interface HeatmapLegendItemProps {
   /** 该格代表第几档。 */
   level: number
+  /** 发散色阶下这一格在中点的哪一侧；顺序色阶与中点那一格省略。 */
+  polarity?: HeatmapPolarity | null
 }
 
 /** 对照条的哪一端：low 是色阶起点（少），high 是终点（多）。 */
@@ -134,9 +139,9 @@ export interface HeatmapTranslations {
   matrixCellLabel: (details: HeatmapCellDetails) => string
   /** 对照条整体的可及名：一排色块无法自行表达用途。 */
   legendLabel: string
-  /** 对照条起点一端的可见文字，默认 Less。 */
+  /** 对照条起点一端的可见文字，默认 Less；发散色阶下默认是中点减去两侧最远距离的那个数。 */
   legendLow: string
-  /** 对照条终点一端的可见文字，默认 More。 */
+  /** 对照条终点一端的可见文字，默认 More；发散色阶下默认是中点加上两侧最远距离的那个数。 */
   legendHigh: string
 }
 
@@ -156,8 +161,18 @@ export interface HeatmapSchema extends MachineSchema {
     endDate?: string
     /** 档数，默认 5；提供 thresholds 时档数由它决定。 */
     levels?: number
-    /** 各档的下界，升序；提供后 levels 不再生效。 */
+    /** 各档的下界，升序；提供后 levels 不再生效。发散色阶里它是离中点的距离，两侧共用。 */
     thresholds?: number[]
+    /**
+     * 色阶：sequential 从空格底色单向加深；diverging 以 midpoint 为界往两侧各自加深，
+     * 低于中点取负向色、高于中点取正向色（相关系数、同比涨跌、盈亏）。缺省按数据定：出现负数即 diverging。
+     * 发散色阶取数据色的发散三色，tone 与 palette 不再生效。
+     */
+    scale?: HeatmapScaleMode
+    /** 发散色阶的中点，缺省 0。 */
+    midpoint?: number
+    /** 连续色阶：不分档，按数值在色阶上的确切位置着色；档位照常算，打印与读屏仍按档。缺省 false。 */
+    continuous?: boolean
     /** 周首日，0 = 星期日，默认 1。 */
     firstDayOfWeek?: number
     /** 月份名与星期名的书写 locale，未提供时按宿主语言，宿主也没有时按 en-US。 */
@@ -189,6 +204,11 @@ export interface HeatmapSchema extends MachineSchema {
      * 详情条的内容由作者决定，组件只报告是哪一格、数值多少。
      */
     onCellActive?: (details: HeatmapCellDetails | null) => void
+    /**
+     * 一格被按下：指针点击，或焦点在格上按 Enter。载荷与 onCellActive 同形，
+     * 用来下钻到那一天或那一对行列。Space 不接，照常滚动页面。
+     */
+    onCellPress?: (details: HeatmapCellDetails) => void
   }
   context: {
     /**
@@ -247,6 +267,13 @@ export interface HeatmapSchema extends MachineSchema {
 export interface HeatmapApi<T extends PropTypes = PropTypes> {
   /** 当前形态。 */
   variant: HeatmapVariant
+  /** 生效的色阶：显式给的，或按数据定出来的。 */
+  scaleMode: HeatmapScaleMode
+  /**
+   * 对照条上的一排，作者按它逐个铺 legend-item：顺序色阶从第 0 档到满档，
+   * 发散色阶从负向满档经中点到正向满档。
+   */
+  legendItems: readonly HeatmapLegendEntry[]
   /** 日历网格：行是星期几、列是周次，另带月份段、星期名与档位标尺。其余形态下是一张空网格。 */
   grid: HeatmapGrid
   /** 月历网格：按自然月分块；不是 month 形态时为 null。 */

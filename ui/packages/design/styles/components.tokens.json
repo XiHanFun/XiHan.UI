@@ -35822,6 +35822,72 @@
       "description": "heatmap 的 cell、column-label、root 部件 inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-heatmap-diverging-center",
+      "component": "heatmap",
+      "part": [
+        "cell",
+        "legend-item",
+        "root"
+      ],
+      "property": [
+        "background",
+        "background-color"
+      ],
+      "state": [
+        "@keyframes xh-heatmap-fill",
+        "scale=diverging"
+      ],
+      "defaultToken": [
+        "--xh-chart-diverging-center"
+      ],
+      "visibility": "public",
+      "description": "heatmap 的 cell、legend-item、root 部件 background、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-heatmap-diverging-negative",
+      "component": "heatmap",
+      "part": [
+        "cell",
+        "legend-item",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "is([data-scope='heatmap'][data-part='cell'], [data-scope='heatmap'][data-part='legend-item'])",
+        "polarity=negative",
+        "scale=diverging"
+      ],
+      "defaultToken": [
+        "--xh-chart-diverging-negative"
+      ],
+      "visibility": "public",
+      "description": "heatmap 的 cell、legend-item、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-heatmap-diverging-positive",
+      "component": "heatmap",
+      "part": [
+        "cell",
+        "legend-item",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "is([data-scope='heatmap'][data-part='cell'], [data-scope='heatmap'][data-part='legend-item'])",
+        "polarity=positive",
+        "scale=diverging"
+      ],
+      "defaultToken": [
+        "--xh-chart-diverging-positive"
+      ],
+      "visibility": "public",
+      "description": "heatmap 的 cell、legend-item、root 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-heatmap-empty",
       "component": "heatmap",
       "part": [
