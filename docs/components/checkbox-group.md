@@ -54,6 +54,12 @@ variant="card" 把每个选项画成一张可点的卡；collection 里的 descr
 
 <XhDemo src="checkbox-group/06-card" />
 
+### 限定选择数
+
+min / max 约束选中数：选满时没选的项置灰，降到下限时已选的项摘不掉
+
+<XhDemo src="checkbox-group/07-limit" />
+
 ## 设计指引
 
 ### 何时使用
@@ -70,6 +76,7 @@ variant="card" 把每个选项画成一张可点的卡；collection 里的 descr
 
 - `collection` 提供选项文本与禁用状态。
 - 全选触发器自动计算全选与半选状态。
+- `min` / `max` 约束选中数：选满 `max` 时没选的条目报 `aria-disabled` 并置灰、点不动，降到 `min` 时已选的条目摘不掉；全选只补到 `max` 为止，已满时再按是全不选（仍保住 `min`）。被下限锁住的已选项照常随表单提交。约束只落在用户的点选与全选上，程序化的 `setValue` 与初值原样落地；`min` 大于 `max` 或不是非负整数时立即报错。插槽载荷与元素上的 `atMax` / `atMin` 报此刻是否顶到了上下限。
 - `orientation` 设置横向或纵向排列。
 - 方框是字段家族的控制盒：不填底、描边与无影，勾中后以语气色填充；整行接 Action Control row 档，悬停 / 按下换面不缩放，方框随行换到承载面阶梯的下一档。
 - `variant` 是结构形态：缺省 `list` 是一列「方框 + 文案」的行；`card` 把每个条目画成一张可点的描边卡（surface 圆角，白底承载阶梯悬停 100 → 按下 200），方框在卡的行首，整张卡是命中区。勾中的卡换品牌淡底（写了 `tone` 换语气淡底），与表格选中行、穿梭框选中项同一种标记，描边不换；只读时卡片不给悬停与按下面。竖排时卡片撑满一列，横排时各卡等分一行、放不下就折行。全选触发器在两种形态里都是一行。
@@ -84,6 +91,7 @@ variant="card" 把每个选项画成一张可点的卡；collection 里的 descr
 
 - 使用简短、互不重叠的选项标签。
 - 保持选项顺序稳定。
+- 设了 `min` / `max` 就在标题或说明里写明范围（「选 1 到 2 项」），置灰的条目不会自己解释为什么点不动。
 - 卡片里只放一两句说明，不放按钮、链接等第二个可点目标：整张卡是一次勾选，内嵌的动作会与勾选抢同一次点击。
 
 ### 反模式
@@ -111,6 +119,8 @@ variant="card" 把每个选项画成一张可点的卡；collection 里的 descr
 | `value` | `string[]` |  | 选中值集合。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
 | `itemValues` | `string[]` |  | 组内全部条目的值，按书写顺序声明；未提供时 checkedState 退化为 unchecked / indeterminate 两态。 |
+| `min` | `number` |  | 至少选几项，非负整数；选中数降到它时已选的条目改不动（aria-disabled）。 只约束用户的点选与全选，不校验程序化写入与初值。 |
+| `max` | `number` |  | 至多选几项，非负整数；选中数到了它时未选的条目改不动（aria-disabled），全选只补到它为止。 只约束用户的点选与全选，不校验程序化写入与初值。min 大于 max 立即报错。 |
 | `disabled` | `boolean` |  | 整组禁用：每一项随之禁用，且隐藏输入不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦与朗读，但用户不可修改。 |
 | `invalid` | `boolean` |  | 校验失败标注，写入每个条目的 aria-invalid。 |
@@ -195,6 +205,8 @@ variant="card" 把每个选项画成一张可点的卡；collection 里的 descr
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `atMax` | `boolean` | 选中数到了 max：未选的条目改不动。未设 max 时恒为 false。 |
+| `atMin` | `boolean` | 选中数降到 min：已选的条目改不动。未设 min（或为 0）时恒为 false。 |
 | `isChecked` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string[]) => void` | 整体替换选中集合。程序化入口，不受 readOnly 拦截。 |
 | `toggleValue` | `(value: string) => void` | 切换某个值；整组禁用或只读时无效。 |

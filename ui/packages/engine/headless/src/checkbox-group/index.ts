@@ -8,6 +8,7 @@
 export { checkboxGroupAnatomy } from './checkbox-group.anatomy'
 export { connectCheckboxGroup, resolveCheckedState } from './checkbox-group.connect'
 export { checkboxGroupKeyboard } from './checkbox-group.keyboard'
-export { checkboxGroupMachine, toggleAllValues, toggleItemValue } from './checkbox-group.machine'
+export { checkboxGroupMachine, clampCheckboxGroupValue, resolveCheckboxGroupLimits, toggleAllValues, toggleItemValue } from './checkbox-group.machine'
+export type { CheckboxGroupLimits } from './checkbox-group.machine'
 export { checkboxGroupMeta } from './checkbox-group.meta'
 export type { CheckboxGroupApi, CheckboxGroupCheckedState, CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupPressedPart, CheckboxGroupSchema, CheckboxGroupTranslations, CheckboxGroupValueChangeDetails, CheckboxGroupVariant } from './checkbox-group.types'

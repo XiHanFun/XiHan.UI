@@ -10,6 +10,44 @@ import { resetDeclaredValue, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<CheckboxGroupSchema>()
 
+/** 选中数的上下限；未设时下限 0、上限不设防。 */
+export interface CheckboxGroupLimits {
+  min: number
+  max: number
+}
+
+/**
+ * 读出选中数的上下限并校验：必须是非负整数，min 不能大于 max。
+ * 非法值立即报错而不是悄悄夹取：夹取会让作者以为上限生效了，实际放行的是另一个数。
+ */
+export function resolveCheckboxGroupLimits(min: number | undefined, max: number | undefined): CheckboxGroupLimits {
+  for (const [name, n] of [['min', min], ['max', max]] as const) {
+    if (n !== undefined && (!Number.isInteger(n) || n < 0))
+      throw new Error(`[xh] CheckboxGroup 的 ${name} 必须是非负整数，收到 ${String(n)}`)
+  }
+  const limits = { min: min ?? 0, max: max ?? Number.POSITIVE_INFINITY }
+  if (limits.min > limits.max)
+    throw new Error(`[xh] CheckboxGroup 的 min（${limits.min}）不能大于 max（${limits.max}）`)
+  return limits
+}
+
+/**
+ * 按上下限收住一次翻转：多出上限的那部分新值不收，低于下限时保留先选的那几项。
+ * 只在用户意图上用；程序化写入原样落地。
+ */
+export function clampCheckboxGroupValue(prev: readonly string[], next: string[], limits: CheckboxGroupLimits): string[] {
+  if (next.length > limits.max) {
+    const added = next.filter(v => !prev.includes(v))
+    const kept = next.filter(v => prev.includes(v))
+    return [...kept, ...added.slice(0, Math.max(0, limits.max - kept.length))]
+  }
+  if (next.length < limits.min) {
+    const removed = prev.filter(v => !next.includes(v))
+    return [...next, ...removed.slice(0, limits.min - next.length)]
+  }
+  return next
+}
+
 /** 翻转单个值；新值按点击先后追加，不按声明顺序重排。 */
 export function toggleItemValue(list: readonly string[], value: string): string[] {
   return list.includes(value) ? list.filter(v => v !== value) : [...list, value]
@@ -112,15 +150,28 @@ export const checkboxGroupMachine = createMachine({
         if (e.type === 'VALUE.SET')
           context.set('value', [...e.value])
       },
-      toggleItem: ({ context, event }) => {
+      toggleItem: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type === 'ITEM.TOGGLE')
-          context.set('value', toggleItemValue(context.get('value'), e.value))
+        if (e.type !== 'ITEM.TOGGLE')
+          return
+        const prev = context.get('value')
+        const next = clampCheckboxGroupValue(prev, toggleItemValue(prev, e.value), resolveCheckboxGroupLimits(prop('min'), prop('max')))
+        // 顶到上下限的那一下什么都没变：不发通知
+        if (next.length !== prev.length)
+          context.set('value', next)
       },
-      toggleAll: ({ context, event }) => {
+      toggleAll: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type === 'ALL.TOGGLE')
-          context.set('value', toggleAllValues(context.get('value'), e.values))
+        if (e.type !== 'ALL.TOGGLE')
+          return
+        const prev = context.get('value')
+        const limits = resolveCheckboxGroupLimits(prop('min'), prop('max'))
+        // 顶到上限时全选格按「已满」处理：再按一下是全不选，否则它会卡在补不进、也摘不掉的半选态
+        const full = prev.length >= limits.max
+        const toggled = full ? prev.filter(v => !e.values.includes(v)) : toggleAllValues(prev, e.values)
+        const next = clampCheckboxGroupValue(prev, toggled, limits)
+        if (next.length !== prev.length || next.some((v, i) => v !== prev[i]))
+          context.set('value', next)
       },
     },
   },

@@ -26,7 +26,7 @@ type CheckboxGroupProps = CheckboxGroupSchema['props']
 /** 函数式 children 的载荷：整组的选中集合与全选态，以及整体替换与切换单值的方法。 */
 export type CheckboxGroupRootSlotProps = Pick<
   CheckboxGroupApi,
-  'value' | 'checkedState' | 'isChecked' | 'setValue' | 'toggleValue'
+  'value' | 'checkedState' | 'atMax' | 'atMin' | 'isChecked' | 'setValue' | 'toggleValue'
 >
 
 export interface XhCheckboxGroupRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -37,6 +37,10 @@ export interface XhCheckboxGroupRootProps extends Omit<ComponentPropsWithRef<'di
   defaultValue?: string[]
   /** 组内全部条目的值；未提供时全选格只在 unchecked 与 indeterminate 两态之间切换。 */
   itemValues?: string[]
+  /** 至少选几项；降到它时已选的条目改不动。 */
+  min?: number
+  /** 至多选几项；到了它时未选的条目改不动，全选只补到它为止。 */
+  max?: number
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
@@ -58,6 +62,8 @@ export function XhCheckboxGroupRoot({
   value,
   defaultValue,
   itemValues,
+  min,
+  max,
   disabled,
   readOnly,
   invalid,
@@ -76,6 +82,8 @@ export function XhCheckboxGroupRoot({
     value,
     defaultValue,
     itemValues,
+    min,
+    max,
     disabled,
     readOnly,
     invalid,
@@ -92,6 +100,8 @@ export function XhCheckboxGroupRoot({
     ? renderSlot(children, {
         value: api.value,
         checkedState: api.checkedState,
+        atMax: api.atMax,
+        atMin: api.atMin,
         isChecked: api.isChecked,
         setValue: api.setValue,
         toggleValue: api.toggleValue,
