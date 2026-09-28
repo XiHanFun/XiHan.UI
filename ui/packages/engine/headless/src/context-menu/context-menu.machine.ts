@@ -9,6 +9,7 @@ import type { Layer, PositionResult, VirtualAnchor } from '@xihan-ui/core'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
 import { createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from '../shared/menu-choice'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -45,6 +46,8 @@ function triggerOrigin(el: HTMLElement | null): ContextMenuPoint | null {
 export const contextMenuMachine = createMachine({
   name: 'context-menu',
   context: ({ cell, prop }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     point: cell<ContextMenuPoint | null>(() => ({ defaultValue: null, isEqual: samePoint })),
@@ -79,7 +82,7 @@ export const contextMenuMachine = createMachine({
     typeahead: createTypeahead(),
     reanchor: null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
   watch: ({ track, prop, context, action }) => {
@@ -99,6 +102,8 @@ export const contextMenuMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知。
         // 坐标、落焦端、焦点归还策略先记进 context：受控时转移那一拍走 CONTROLLED.OPEN，读不到原事件
@@ -198,6 +203,7 @@ export const contextMenuMachine = createMachine({
       },
     },
     actions: {
+      clearOpenedAtMount,
       startItemPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'ITEM.PRESS.START')
