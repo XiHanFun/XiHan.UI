@@ -1,4 +1,4 @@
-<!-- 多选 | 选择多个城市 -->
+<!-- 多选 | 已选城市在输入框前排成标签 -->
 <script setup lang="ts">
 import { XhComboboxRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
@@ -10,6 +10,7 @@ const cities = [
   { value: "london", label: "London 伦敦" },
 ];
 
+const picked = ref<string[]>(["beijing", "chengdu"]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
@@ -19,6 +20,7 @@ const filtered = computed(() => {
 
 <template>
   <XhComboboxRoot
+    v-model:value="picked"
     v-model:input-value="query"
     :collection="filtered"
     clearable

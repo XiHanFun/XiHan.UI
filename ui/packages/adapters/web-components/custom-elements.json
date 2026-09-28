@@ -13932,7 +13932,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-combobox>`：Light-DOM 行为宿主：作者写 root / label / control / input / trigger / positioner / content / item / ...\n角色节点，元素运行 combobox 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n焦点自始至终在 input 上：候选不可聚焦、也不进入 Tab 序列，高亮经 aria-activedescendant 报告给读屏。\n\n过滤不由本元素完成：输入串变化时派发 input-value-change，作者据此增删 item 节点；\n元素每次接线完成后都会把当前候选条数与悬空高亮重新结算一次，空态节点（empty）据此显示。",
+          "description": "`<xh-combobox>`：Light-DOM 行为宿主：作者写 root / label / control / input / trigger / positioner / content / item / ...\n角色节点，元素运行 combobox 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n焦点自始至终在 input 上：候选不可聚焦、也不进入 Tab 序列，高亮经 aria-activedescendant 报告给读屏。\n\n过滤不由本元素完成：输入串变化时派发 input-value-change，作者据此增删 item 节点；\n元素每次接线完成后都会把当前候选条数与悬空高亮重新结算一次，空态节点（empty）据此显示。\n\n多选的已选项排在盒里、输入框之前的 tag-list 中：作者按 tags 渲染 tag 节点（与 Select 同一写法），\ntag 与 overflow-tag 接线为库内 tag 的 root（data-scope=\"tag\"），语气、尺寸与禁用从本元素传下，\n形态按盒的面派生；节点中只有文字时元素为它包一层 tag 的 label。item-delete-trigger 接线为所在标签\n那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦。overflow-tag 留空即由元素填入 +N。",
           "name": "XhComboboxElement",
           "cssParts": [
             {
@@ -13946,6 +13946,26 @@
             {
               "description": "输入行容器，同时是浮层的定位锚点",
               "name": "control"
+            },
+            {
+              "description": "盒里、输入框之前的标签行：可见标签与 overflow-tag 放在其中；单选或无选中时带 hidden",
+              "name": "tag-list"
+            },
+            {
+              "description": "多选标签，须自带 value 属性标识选中值；接线为 tag 的 root（data-scope=\"tag\"），语气、尺寸与禁用随本元素、形态按盒的面派生",
+              "name": "tag"
+            },
+            {
+              "description": "标签文字，须放在 tag 中；接线为 tag 的 label（截断落在这一层）。标签里只有文字时元素自动包一层，带删除钮时由作者写它包住文字",
+              "name": "tag-label"
+            },
+            {
+              "description": "标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger（data-scope=\"tag\"），不占 Tab 位、按下不夺焦，禁用与只读时保留位置、原生 disabled；点击移除所在标签的选中值，可及名使用 translations.deleteItem",
+              "name": "item-delete-trigger"
+            },
+            {
+              "description": "折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N（文字使用 translations.overflowTag），作者写了内容则由作者负责；没有折叠的标签时带 hidden",
+              "name": "overflow-tag"
             },
             {
               "description": "输入框，整个组合框唯一的 Tab 停靠点；写 input 时带 role=combobox，写 textarea 时保留它自带的 textbox 角色",
@@ -14028,7 +14048,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: comboboxAnatomy, meta: comboboxMeta }"
+              "default": "{ anatomy: comboboxAnatomy, meta: comboboxMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -14116,6 +14136,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "multiple"
+            },
+            {
+              "kind": "field",
+              "name": "maxTagCount",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-tag-count"
             },
             {
               "kind": "field",
@@ -14367,6 +14396,22 @@
             },
             {
               "kind": "field",
+              "name": "ownsText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "overflow-tag 的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
+            },
+            {
+              "kind": "field",
+              "name": "tagLabels",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, HTMLElement>()",
+              "description": "每枚标签里由元素补出来的那层 label。"
+            },
+            {
+              "kind": "field",
               "name": "inheritedControl",
               "type": {
                 "text": "FormControlState | undefined"
@@ -14488,6 +14533,95 @@
             },
             {
               "kind": "method",
+              "name": "fillText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "填入元素代管的文字（overflow-tag 的 +N）；首次见到该节点时若已有内容则归作者，之后不再改写。"
+            },
+            {
+              "kind": "method",
+              "name": "ensureTagLabel",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tag",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，\n返回 null——带删除钮的标签由作者用 tag-label 包住文字。补出来的那层不打 data-xh-part，不进角色节点表。"
+            },
+            {
+              "kind": "field",
+              "name": "tags",
+              "type": {
+                "text": "ComboboxTagMeta[]"
+              },
+              "description": "应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序；单选恒为空数组。\n作者据此渲染 tag 部件。状态机尚未建立时返回空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowCount",
+              "type": {
+                "text": "number"
+              },
+              "description": "被 max-tag-count 折叠的标签数；+N 标签由元素填入 overflow-tag，此处仅供作者读取。状态机尚未建立时为 0。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowText",
+              "type": {
+                "text": "string"
+              },
+              "description": "overflow-tag 显示的文字（由 translations.overflowTag 计算）；没有折叠的标签或状态机尚未建立时为空串。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "deselect",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "移除一个选中值，其余保持选中先后；状态机尚未建立时不做任何事。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -14573,9 +14707,17 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "多选：选中后列表不收起、输入串清空以便继续筛选",
+              "description": "多选：选中后列表不收起、输入串清空以便继续筛选；已选项在输入框前排成标签",
               "name": "multiple",
               "fieldName": "multiple"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "多选标签最多显示的数量，其余折叠进 overflowCount 并合成 overflow-tag；默认 3",
+              "name": "max-tag-count",
+              "fieldName": "maxTagCount"
             },
             {
               "type": {
@@ -14887,6 +15029,9 @@
               "name": "--xh-combobox-input-font-size"
             },
             {
+              "name": "--xh-combobox-input-min-w"
+            },
+            {
               "name": "--xh-combobox-item-bg-hover"
             },
             {
@@ -14957,6 +15102,9 @@
             },
             {
               "name": "--xh-combobox-placeholder-fg"
+            },
+            {
+              "name": "--xh-combobox-tag-list-gap"
             }
           ]
         }

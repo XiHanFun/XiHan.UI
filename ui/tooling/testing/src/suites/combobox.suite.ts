@@ -105,6 +105,65 @@ function tree(items: readonly FixtureNode[] = ITEMS, grouped = false): FixtureNo
   }
 }
 
+/** 盒里的标签都是 tag 的 root；+N 那一枚另带 data-count。 */
+const TAG_ROOT = '[data-scope="combobox"][data-part="tag-list"] [data-scope="tag"][data-part="root"]'
+const OVERFLOW_TAG = `${TAG_ROOT}[data-count]`
+const VALUE_TAG = `${TAG_ROOT}:not([data-count])`
+/** 标签里的删除钮：就是 tag 的 close-trigger，戴 tag 的 scope。 */
+const DELETE_TRIGGER = '[data-scope="combobox"][data-part="tag-list"] [data-scope="tag"][data-part="close-trigger"]'
+
+/**
+ * 标签戴的是 tag 的 scope，快照只采本组件 scope 的部件，采不到它们，只能直接读 DOM。
+ * 逐枚比对属性：期望里写 null 的属性必须缺席。
+ */
+function assertTagAttrs(doc: Document, selector: string, label: string, expected: readonly Record<string, string | null>[]): void {
+  const els = [...doc.querySelectorAll<HTMLElement>(selector)]
+  if (els.length !== expected.length)
+    throw new Error(`${label} 个数不符：期望 ${expected.length}，实际 ${els.length}`)
+  els.forEach((el, i) => {
+    for (const [name, want] of Object.entries(expected[i]!)) {
+      const got = el.getAttribute(name)
+      if (got !== want)
+        throw new Error(`${label}[${i}] 的 ${name} 不符：期望 ${JSON.stringify(want)}，实际 ${JSON.stringify(got)}`)
+    }
+  })
+}
+
+/** +N 那一枚的文字：三侧都由库填（Vue / React 的默认内容、WC 的元素代填）。 */
+function assertOverflowText(doc: Document, expected: string): void {
+  const actual = doc.querySelector<HTMLElement>(OVERFLOW_TAG)?.textContent?.trim() ?? null
+  if (actual !== expected)
+    throw new Error(`overflow-tag 文本不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+}
+
+/** 删除钮戴 tag 的 scope，声明式 click 步找不到它，照 click 步的动作直接点。 */
+function clickDeleteTrigger(doc: Document, index = 0): void {
+  const el = doc.querySelectorAll<HTMLElement>(DELETE_TRIGGER)[index]
+  if (!el)
+    throw new Error('找不到删除钮')
+  el.click()
+}
+
+/**
+ * 标签形态：盒里、输入框之前的标签行（tag-list）收着两枚带删除钮的标签与 +N 那一枚（overflow-tag）。
+ * 标签由作者按 api.tags 渲染，fixture 是静态的，这里直接写死两枚。
+ * tag / tag-label / overflow-tag / item-delete-trigger 是作者侧的写法名，渲出来是 tag 的 root、label 与 close-trigger
+ * （data-scope="tag"），不进本组件的解剖。
+ */
+function withTags(base: FixtureNode): FixtureNode {
+  const tag = (value: string, text: string): FixtureNode => ({
+    part: 'tag',
+    attrs: { value },
+    children: [{ part: 'tag-label', tag: 'span', text }, { part: 'item-delete-trigger', tag: 'button' }],
+  })
+  const children = (base.children ?? []).map(node =>
+    node.part === 'control'
+      ? { ...node, children: [{ part: 'tag-list', children: [tag('apple', 'Apple'), tag('cherry', 'Cherry'), { part: 'overflow-tag' }] }, ...(node.children ?? [])] }
+      : node,
+  )
+  return { ...base, children }
+}
+
 // content 始终在 DOM，展开态靠 hidden 属性显隐，不卸载作者节点。
 // 位置由引擎异步回填，快照不采集 style，因此这里只断言 data-placement 这类语义属性。
 // 不用 defaultOpen：WC 侧首帧候选还没被 wire 打上身份标记，帧序与 Vue 对不齐。
@@ -887,6 +946,108 @@ export const comboboxSuite: ConformanceSuite = {
         heldPressIgnored('combobox', 'clear-trigger', '加载中清空钮不接受按压'),
         { kind: 'setProps', props: { loading: false, value: [], inputValue: '' } },
         heldPressIgnored('combobox', 'clear-trigger', '没有东西可清时清空钮藏着，不接受按压'),
+      ],
+    },
+    {
+      name: '标签：多选时标签行露面并投影标签行家族；每枚是 tag 的 root 带 data-value，删除钮是 tag 的 close-trigger、不占 Tab 位，点它摘值、焦点留在输入框',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, defaultValue: ['apple', 'cherry'], translations: { deleteItem: (label: string) => `移除${label}` } },
+      initial: {
+        counts: { 'tag-list': 1 },
+        parts: { 'tag-list': { 'hidden': null, 'data-xh-tag-list': '', 'data-disabled': null } },
+      },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        {
+          kind: 'raw',
+          why: '标签与删除钮戴 tag 的 scope、+N 的文字不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertTagAttrs(doc, VALUE_TAG, 'tag', [
+              { 'data-value': 'apple', 'data-state': 'open', 'hidden': null, 'data-variant': 'subtle' },
+              { 'data-value': 'cherry', 'data-state': 'open', 'hidden': null, 'data-variant': 'subtle' },
+            ])
+            assertTagAttrs(doc, OVERFLOW_TAG, 'overflow-tag', [{ 'hidden': '', 'data-state': 'closed', 'data-count': '0' }])
+            assertTagAttrs(doc, DELETE_TRIGGER, 'item-delete-trigger', [
+              { 'type': 'button', 'tabindex': '-1', 'aria-label': '移除Apple', 'disabled': null },
+              { 'type': 'button', 'tabindex': '-1', 'aria-label': '移除Cherry', 'disabled': null },
+            ])
+            assertOverflowText(doc, '')
+          },
+        },
+        {
+          kind: 'raw',
+          why: '删除钮戴 tag 的 scope，声明式 click 步找不到它',
+          run: ({ doc }) => clickDeleteTrigger(doc, 0),
+          expect: {
+            activeElement: 'input',
+            events: [{ type: 'value-change', detail: { value: ['cherry'] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '标签：单选时标签行收起，选中项的文字在输入框里',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { defaultValue: 'apple' },
+      initial: {
+        parts: { 'tag-list': { hidden: '' } },
+      },
+    },
+    {
+      name: '标签：maxTagCount 之外的折进 +N，文字走 translations.overflowTag；受控改值后个数跟着变',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, value: ['apple', 'banana', 'cherry'], maxTagCount: 1, translations: { overflowTag: (count: number) => `还有 ${count} 项` } },
+      steps: [
+        {
+          kind: 'raw',
+          why: '+N 戴 tag 的 scope、文字不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertTagAttrs(doc, OVERFLOW_TAG, 'overflow-tag', [{ 'hidden': null, 'data-count': '2' }])
+            assertOverflowText(doc, '还有 2 项')
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { value: [] },
+          expect: { parts: { 'tag-list': { hidden: '' } } },
+        },
+        {
+          kind: 'raw',
+          why: '+N 戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => assertTagAttrs(doc, OVERFLOW_TAG, 'overflow-tag', [{ 'hidden': '', 'data-count': '0' }]),
+        },
+      ],
+    },
+    {
+      name: '标签：禁用与只读时删除钮留位、原生 disabled，点它不动值、不发事件',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withTags,
+      props: { multiple: true, defaultValue: ['apple', 'cherry'], readOnly: true },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签与删除钮戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertTagAttrs(doc, VALUE_TAG, 'tag', [{ 'data-disabled': null }, { 'data-disabled': null }])
+            assertTagAttrs(doc, DELETE_TRIGGER, 'item-delete-trigger', [{ disabled: '', hidden: null }, { disabled: '', hidden: null }])
+            clickDeleteTrigger(doc, 0)
+          },
+          expect: { events: [] },
+        },
+        { kind: 'setProps', props: { readOnly: false, disabled: true } },
+        {
+          kind: 'raw',
+          why: '标签与删除钮戴 tag 的 scope，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertTagAttrs(doc, VALUE_TAG, 'tag', [{ 'data-disabled': '' }, { 'data-disabled': '' }])
+            assertTagAttrs(doc, DELETE_TRIGGER, 'item-delete-trigger', [{ disabled: '', hidden: null }, { disabled: '', hidden: null }])
+            clickDeleteTrigger(doc, 1)
+          },
+          expect: { parts: { 'tag-list': { 'data-disabled': '' } }, events: [] },
+        },
       ],
     },
   ],

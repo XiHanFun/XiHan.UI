@@ -8,10 +8,14 @@
 import type { ItemQuery } from '@xihan-ui/core'
 import { createAnatomy } from '@xihan-ui/core'
 
+// tag-list 是盒里、输入框之前收着已选值标签的那一行；行里每一枚标签（含折起来的那些合成的 +N）
+// 都是库里的 tag 组件（data-scope="tag"），由连接层套 tag 的连接层产出，本组件不另立部件。
+// 标签里的删除钮同样是 tag 的 close-trigger。
 export const comboboxAnatomy = createAnatomy('combobox', [
   'root',
   'label',
   'control',
+  'tag-list',
   'input',
   'trigger',
   'clear-trigger',
@@ -31,6 +35,9 @@ export const comboboxAnatomy = createAnatomy('combobox', [
 ])
 
 const parts = comboboxAnatomy.build()
+
+/** 标签行：盒里收着已选值标签的那一行。 */
+export const COMBOBOX_TAG_LIST_SELECTOR = parts['tag-list'].selector
 
 // 集合只认 item；分组里的条目照样查得到（归属判据是父链上最近的 content 是不是本容器）。
 export const comboboxItemQuery: ItemQuery = { scope: comboboxAnatomy.name, part: 'item' }

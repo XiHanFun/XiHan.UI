@@ -18523,6 +18523,24 @@
       "description": "combobox 的 input 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-combobox-input-min-w",
+      "component": "combobox",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-input-min-w"
+      ],
+      "visibility": "public",
+      "description": "combobox 的 input 部件 min-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-combobox-item-bg-hover",
       "component": "combobox",
       "part": [
@@ -19030,6 +19048,24 @@
       ],
       "visibility": "public",
       "description": "combobox 的 input 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-combobox-tag-list-gap",
+      "component": "combobox",
+      "part": [
+        "tag-list"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "xh-tag-list"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "combobox 的 tag-list 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-command-backdrop-bg",

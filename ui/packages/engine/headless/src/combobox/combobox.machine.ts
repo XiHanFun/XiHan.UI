@@ -11,8 +11,9 @@ import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValu
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { trackSelectionTagMotion } from '../shared/selection-tags'
 import { virtualCollectionTarget } from '../shared/virtual-collection'
-import { comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
+import { COMBOBOX_TAG_LIST_SELECTOR, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 
 const { createMachine } = setup<ComboboxSchema>()
 
@@ -43,6 +44,8 @@ export const comboboxMachine = createMachine({
     })),
     // 显示文本只能从活 DOM 取：条目文本是作者写的插槽内容，prop 里没有
     valueText: cell<string | null>(() => ({ defaultValue: null })),
+    // 已选项见过的文字：候选由调用方过滤，选过的项常常已不在候选里，多选标签的文字只能从这里取
+    valueLabels: cell<Record<string, string>>(() => ({ defaultValue: {} })),
     // 高亮不受控、不对外通知：它只服务 aria-activedescendant 与确认键的落点
     highlightedValue: cell<string | null>(() => ({ defaultValue: null })),
     // null = 还没结算过。默认写 0 会让首帧（DOM 尚未就位）误判为「无匹配项」而闪一下空态
@@ -64,7 +67,7 @@ export const comboboxMachine = createMachine({
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
-  effects: ['trackLayer'],
+  effects: ['trackLayer', 'trackTagListMotion'],
   // 挂载即按选中值结算一次显示文本，并据此把输入框填成选中项的文字
   entry: ['syncValueText', 'prefillInputValue'],
   watch: ({ track, prop, context, action }) => {
@@ -387,6 +390,30 @@ export const comboboxMachine = createMachine({
        * 没给才回到活 DOM 现查那条老路，那条路上首帧条目可能还没挂上身份标记，查不到就推迟一拍再来一次。
        */
       syncValueText: ({ refs, prop, context, flush }) => {
+        // 每个已选项的文字记进 valueLabels：给了 collection 就按数据取，没给才回到活 DOM 现查；
+        // 这一刻查不到的（已被宿主筛出候选）留着上一次记下的，返回 false 让下一拍再试一次
+        const remember = (): boolean => {
+          const known = context.get('valueLabels')
+          const collection = prop('collection')
+          const content = refs.get('getContentEl')()
+          const items = !collection && content ? queryItems(content, comboboxItemQuery) : []
+          let next = known
+          let settled = true
+          for (const v of context.get('value')) {
+            const node = collection?.find(item => item.value === v)
+            const el = node ? null : items.find(item => itemValue(item) === v)
+            const label = node ? (node.label ?? node.value) : el ? comboboxItemText(el) : undefined
+            if (label === undefined) {
+              settled = false
+              continue
+            }
+            if (next[v] !== label)
+              next = { ...next, [v]: label }
+          }
+          if (next !== known)
+            context.set('valueLabels', next)
+          return settled
+        }
         const resolve = (): boolean => {
           const value = context.get('value')
           // 多选没有「那一个」显示文本，恒为空；输入串在多选下只是筛选用的草稿
@@ -411,9 +438,11 @@ export const comboboxMachine = createMachine({
           context.set('valueText', comboboxItemText(el))
           return true
         }
-        if (resolve())
+        const labelsSettled = remember()
+        if (resolve() && labelsSettled)
           return
         flush(() => {
+          remember()
           resolve()
         })
       },
@@ -437,6 +466,9 @@ export const comboboxMachine = createMachine({
         const e = event.current()
         if (e.type !== 'ITEM.SELECT')
           return
+        // 文字在事件那一刻取好带过来：选完这一项常常就被宿主筛出候选，之后查不到了
+        if (e.label != null && context.get('valueLabels')[e.value] !== e.label)
+          context.set('valueLabels', { ...context.get('valueLabels'), [e.value]: e.label })
         const current = context.get('value')
         if (prop('multiple')) {
           context.set('value', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
@@ -528,6 +560,14 @@ export const comboboxMachine = createMachine({
           size: true,
         }),
         onResult: result => context.set('position', result),
+      }),
+
+      /**
+       * 多选标签行的到达、离场与换位。标签行在盒里、输入框之前；盒经适配器的锚点 ref 取。
+       */
+      trackTagListMotion: ({ refs, flush }) => trackSelectionTagMotion({
+        flush,
+        list: () => refs.get('getAnchorEl')()?.querySelector<HTMLElement>(COMBOBOX_TAG_LIST_SELECTOR),
       }),
 
       // Layer 与 DismissableLayer 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。

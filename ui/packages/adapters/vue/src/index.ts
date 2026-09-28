@@ -282,6 +282,7 @@ export {
   XhComboboxHiddenInput,
   XhComboboxInput,
   XhComboboxItem,
+  XhComboboxItemDeleteTrigger,
   XhComboboxItemDescription,
   XhComboboxItemIndicator,
   XhComboboxItemPrefix,
@@ -289,8 +290,12 @@ export {
   XhComboboxItemText,
   XhComboboxLabel,
   XhComboboxLoading,
+  XhComboboxOverflowTag,
   XhComboboxPositioner,
   XhComboboxRoot,
+  XhComboboxTag,
+  XhComboboxTagLabel,
+  XhComboboxTagList,
   XhComboboxTrigger,
 } from './components/combobox/combobox'
 export type { ComboboxRootSlotProps } from './components/combobox/combobox'

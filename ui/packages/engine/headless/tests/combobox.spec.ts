@@ -680,6 +680,103 @@ describe('多选', () => {
   })
 })
 
+describe('多选标签', () => {
+  /** 把一份 props 摊到新建的节点上，读它落下的属性与事件。 */
+  function mountPart(tag: string, props: unknown): HTMLElement {
+    const el = document.createElement(tag)
+    document.body.appendChild(el)
+    spread(el, props as Record<string, unknown>)
+    return el
+  }
+
+  it('多选的已选项按选中先后排成标签，maxTagCount 之外的折进 +N', () => {
+    const h = mount({ multiple: true, defaultValue: ['cherry', 'apple', 'durian', 'banana'], maxTagCount: 2 })
+    expect(h.api().tags).toEqual([{ value: 'cherry', label: 'Cherry' }, { value: 'apple', label: 'Apple' }])
+    expect(h.api().overflowCount).toBe(2)
+    expect(h.api().overflowText).toBe('+2')
+  })
+
+  it('不给 maxTagCount 时最多摆 3 枚；+N 的文字走 translations.overflowTag', () => {
+    const h = mount({
+      multiple: true,
+      defaultValue: ['apple', 'banana', 'cherry', 'durian'],
+      translations: { overflowTag: count => `还有 ${count} 项` },
+    })
+    expect(h.api().tags.map(tag => tag.value)).toEqual(['apple', 'banana', 'cherry'])
+    expect(h.api().overflowText).toBe('还有 1 项')
+    const overflow = h.api().getOverflowTagProps() as Record<string, unknown>
+    expect(overflow['data-scope']).toBe('tag')
+    expect(overflow['data-count']).toBe('1')
+    expect(overflow.hidden).toBeUndefined()
+  })
+
+  it('单选没有标签：选中项的文字在输入框里，标签行收起', () => {
+    const h = mount({ defaultValue: 'apple' })
+    expect(h.api().tags).toEqual([])
+    expect((h.api().getTagListProps() as Record<string, unknown>).hidden).toBe(true)
+  })
+
+  it('标签行投影标签行家族，多选无选中时收起、选中后露面', () => {
+    const h = mount({ multiple: true, defaultOpen: true })
+    const list = (): Record<string, unknown> => h.api().getTagListProps() as Record<string, unknown>
+    expect(list()['data-xh-tag-list']).toBe('')
+    expect(list().hidden).toBe(true)
+    click(h.item('cherry'))
+    expect(list().hidden).toBeUndefined()
+    expect(h.api().tags).toEqual([{ value: 'cherry', label: 'Cherry' }])
+  })
+
+  it('已选项被宿主筛出候选后，标签仍是选中那一刻的文字', () => {
+    const h = mount({ multiple: true, defaultOpen: true }, { filterOnInput: true })
+    click(h.item('apple'))
+    type(h.input, 'ch')
+    expect(h.content.contains(h.item('apple'))).toBe(false)
+    expect(h.api().tags).toEqual([{ value: 'apple', label: 'Apple' }])
+  })
+
+  it('给了 collection 时按数据取文字；数据里筛掉了也留着记下的那份', () => {
+    const all = ITEMS.map(item => ({ value: item.value, label: `${item.text} 果` }))
+    const h = mount({ multiple: true, collection: all, defaultValue: ['durian'] })
+    expect(h.api().tags).toEqual([{ value: 'durian', label: 'Durian 果' }])
+    h.setProps({ collection: all.filter(item => item.value === 'apple') })
+    expect(h.api().tags).toEqual([{ value: 'durian', label: 'Durian 果' }])
+  })
+
+  it('每枚标签是 tag 的 root 并带 data-value；三轴从组合框传下，形态按盒的面派', () => {
+    const h = mount({ multiple: true, defaultValue: ['apple'], variant: 'subtle', tone: 'success', size: 'sm' })
+    const tag = h.api().getTagProps({ value: 'apple' }) as Record<string, unknown>
+    expect(tag).toMatchObject({ 'data-scope': 'tag', 'data-part': 'root', 'data-value': 'apple', 'data-variant': 'outline', 'data-tone': 'success', 'data-size': 'sm' })
+  })
+
+  it('删除钮不占 Tab 位、按下不夺焦，可及名走 translations.deleteItem；点它摘掉那个值、焦点回到输入框', () => {
+    const h = mount({ multiple: true, defaultValue: ['apple', 'cherry'], translations: { deleteItem: label => `移除${label}` } })
+    const button = mountPart('button', h.api().getItemDeleteTriggerProps({ value: 'apple' }))
+    expect(button.getAttribute('tabindex')).toBe('-1')
+    expect(button.getAttribute('aria-label')).toBe('移除Apple')
+    expect(pointerDown(button).defaultPrevented).toBe(true)
+    click(button)
+    expect(h.value()).toEqual(['cherry'])
+    expect(document.activeElement).toBe(h.input)
+  })
+
+  it('禁用与只读时删除钮留位、原生 disabled，点它不摘值', () => {
+    for (const axis of [{ disabled: true }, { readOnly: true }]) {
+      const h = mount({ multiple: true, defaultValue: ['apple'], ...axis })
+      const button = mountPart('button', h.api().getItemDeleteTriggerProps({ value: 'apple' }))
+      expect(button.hasAttribute('disabled')).toBe(true)
+      expect(button.hidden).toBe(false)
+      click(button)
+      expect(h.value()).toEqual(['apple'])
+    }
+  })
+
+  it('deselect 摘掉一个选中值，其余保持选中先后', () => {
+    const h = mount({ multiple: true, defaultValue: ['apple', 'cherry', 'durian'] })
+    h.api().deselect('cherry')
+    expect(h.value()).toEqual(['apple', 'durian'])
+  })
+})
+
 describe('自定义值与失焦复原', () => {
   it('allowCustomValue：回车把列表里没有的输入串收成选中值', () => {
     const h = mount({ allowCustomValue: true })

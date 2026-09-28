@@ -12,10 +12,12 @@ import { createContext, useContext } from 'react'
 const Ctx = createContext<ComboboxContext | undefined>(undefined)
 const GroupCtx = createContext<ComboboxGroupProps | undefined>(undefined)
 const ItemCtx = createContext<ComboboxItemProps | undefined>(undefined)
+const TagCtx = createContext<string | undefined>(undefined)
 
 export const ComboboxProvider = Ctx
 export const ComboboxGroupProvider = GroupCtx
 export const ComboboxItemProvider = ItemCtx
+export const ComboboxTagProvider = TagCtx
 
 export function useComboboxContext(): ComboboxContext {
   const ctx = useContext(Ctx)
@@ -36,4 +38,11 @@ export function useComboboxItemContext(): ComboboxItemProps {
   if (!item)
     throw new Error('候选的子部件要放在 XhComboboxItem 里')
   return item
+}
+
+export function useComboboxTagContext(): string {
+  const value = useContext(TagCtx)
+  if (value === undefined)
+    throw new Error('XhComboboxItemDeleteTrigger 要放在 XhComboboxTag 里')
+  return value
 }
