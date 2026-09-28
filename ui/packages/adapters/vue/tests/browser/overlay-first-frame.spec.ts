@@ -62,6 +62,8 @@ import {
   XhHoverCardRoot,
   XhHoverCardTitle,
   XhHoverCardTrigger,
+  XhImageViewerContent,
+  XhImageViewerRoot,
   XhMenuContent,
   XhMenuItem,
   XhMenuItemText,
@@ -286,6 +288,11 @@ const CASES: Record<string, Case> = {
       h(XhColorPickerControl, null, () => h(XhColorPickerTrigger, null, () => '选择颜色')),
       h(XhColorPickerPositioner, null, () => h(XhColorPickerContent, null, () => h(XhColorPickerHueSlider))),
     ]),
+  },
+  'image-viewer': {
+    parts: ['content', 'backdrop'],
+    enter: 'xh-fade-in',
+    render: props => h(XhImageViewerRoot, { ...props, collection: [{ src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=' }] }, () => h(XhImageViewerContent)),
   },
   'floating-panel': {
     parts: ['positioner'],

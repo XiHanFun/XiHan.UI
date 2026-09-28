@@ -13,6 +13,7 @@ import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { createSpringValue, glideSpring, projectRelease, rubberClamp } from '@xihan-ui/motion'
 import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDoc } from '@xihan-ui/pointer'
 import { closeReasonOf } from '../shared/close-reason'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { trackLiquidPart } from '../shared/liquid'
 import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
 
@@ -201,6 +202,8 @@ function pressedPartInert(
 export const imageViewerMachine = createMachine({
   name: 'image-viewer',
   context: ({ prop, cell }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     index: cell<number>(() => ({
       value: prop('index'),
       defaultValue: prop('defaultIndex') ?? 0,
@@ -223,7 +226,7 @@ export const imageViewerMachine = createMachine({
     gesture: null,
     inertia: null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 退出期间模态资源不能跟着逻辑状态立即拆：Presence 的所有视觉租约清空后才释放。
   effects: ['trackOverlay'],
   watch: ({ track, prop, context, action }) => {
@@ -248,6 +251,8 @@ export const imageViewerMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         'OPEN': [
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
@@ -294,6 +299,7 @@ export const imageViewerMachine = createMachine({
       },
     },
     actions: {
+      clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')

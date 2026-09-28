@@ -129,6 +129,11 @@ export interface ImageViewerSchema extends MachineSchema {
     onIndexChange?: (details: ImageViewerIndexChangeDetails) => void
   }
   context: {
+    /**
+     * 挂载时开着、还没收起过：这一段打开属于首帧，content 与遮罩投影 data-instant 直接呈现、不播进场。
+     * 第一次收起时清掉，之后的每一次打开照常进场。
+     */
+    openedAtMount: boolean
     /** 当前下标。受控（index 提供）时 cell 直读 prop，写入只发 onIndexChange 不修改内部值。 */
     index: number
     /** 当前图片的变换。切换图片与重新打开都归零。 */
@@ -212,6 +217,7 @@ export interface ImageViewerSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
+    | 'clearOpenedAtMount'
   effect: 'trackOverlay' | 'trackPointers' | 'trackLiquid'
 }
 

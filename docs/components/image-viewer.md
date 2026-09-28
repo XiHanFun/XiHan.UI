@@ -277,11 +277,13 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `backdrop` | `data-instant` | ''（条件成立时才出现） |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
 | `backdrop` | `data-variant` | props.variant |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-xh-backdrop` | undefined \| 'dark' |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-xh-ink` | 'light' |
 | `viewport` | `data-dragging` | ''（条件成立时才出现） |

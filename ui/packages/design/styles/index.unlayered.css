@@ -30753,7 +30753,7 @@
   background: transparent;
 }
 
-[data-scope='image-viewer'][data-part='backdrop'][data-state='open'] {
+[data-scope='image-viewer'][data-part='backdrop'][data-state='open']:not([data-instant]) {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
@@ -30793,7 +30793,8 @@
   color: var(--xh-image-viewer-fg, var(--xh-color-neutral-0));
 }
 
-[data-scope='image-viewer'][data-part='content'][data-state='open'] {
+/* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
+[data-scope='image-viewer'][data-part='content'][data-state='open']:not([data-instant]) {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 

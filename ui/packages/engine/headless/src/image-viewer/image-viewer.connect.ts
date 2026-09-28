@@ -148,6 +148,7 @@ export function connectImageViewer<T extends PropTypes>(
       ...parts.backdrop.attrs,
       'aria-hidden': true,
       'data-state': stateAttr,
+      'data-instant': dataAttr(context.get('openedAtMount')),
       // 形态轴落在 backdrop 上：三档换的都是这一层自己的底色与模糊
       'data-variant': prop('variant'),
     }),
@@ -176,6 +177,8 @@ export function connectImageViewer<T extends PropTypes>(
       'inert': !open || undefined,
       'aria-hidden': !open || undefined,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       // 看片层压在深色遮罩上，两种主题下都是深底：整层是白墨域，控件、焦点环与作者放进来的动作
       // 都按深色档取值。这一层自己的面取原语，不受域改写
       'data-xh-ink': 'light',
