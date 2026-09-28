@@ -22,7 +22,8 @@
 
     display: flex;
     align-items: flex-start;
-    gap: var(--xh-alert-gap, var(--xh-space-4));
+    /* 指示符盒自带 --xh-space-1 内衬：与间距合起来，字形到正文 12px，与 Toast、Notification 同一个距离 */
+    gap: var(--xh-alert-gap, var(--xh-space-2));
     padding-block: var(--xh-alert-py, var(--xh-surface-py-sm));
     padding-inline: var(--xh-alert-px, var(--xh-surface-px-sm));
     border: var(--xh-stroke-thin) solid var(--xh-alert-border, var(--xh-border-default));

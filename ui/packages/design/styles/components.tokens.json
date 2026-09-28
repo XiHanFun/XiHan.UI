@@ -758,7 +758,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "alert 的 root 部件 gap 覆盖槽。"
@@ -6940,7 +6940,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-leading-relaxed"
+        "--xh-leading-tight"
       ],
       "visibility": "public",
       "description": "card 的 title 部件 line-height 覆盖槽。"
@@ -75563,7 +75563,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1_5"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 gap 覆盖槽。"
@@ -75994,7 +75994,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-leading"
+        "--xh-leading-tight"
       ],
       "visibility": "public",
       "description": "toast 的 title 部件 line-height 覆盖槽。"

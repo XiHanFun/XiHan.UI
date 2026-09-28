@@ -180,8 +180,8 @@ padding-top: 12px
 padding-right: 16px
 padding-bottom: 12px
 padding-left: 16px
-row-gap: 16px
-column-gap: 16px
+row-gap: 8px
+column-gap: 8px
 border-top-left-radius: 8px
 border-top-right-radius: 8px
 border-bottom-right-radius: 8px

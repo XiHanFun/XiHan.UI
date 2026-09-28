@@ -59,7 +59,7 @@
     color: var(--xh-card-title-fg, var(--xh-fg-default));
     font-size: var(--xh-card-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-card-title-font-weight, var(--xh-font-weight-semibold));
-    line-height: var(--xh-card-title-leading, var(--xh-leading-relaxed));
+    line-height: var(--xh-card-title-leading, var(--xh-leading-tight));
   }
 
   [data-scope='card'][data-part='description'] {
