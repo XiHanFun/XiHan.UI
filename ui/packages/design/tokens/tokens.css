@@ -622,6 +622,17 @@
     --xh-chart-label-gap: var(--xh-space-0_5);
   }
 
+  /* direction 轴：书写方向的符号，给只认物理方向的量换向。就近的 dir 属性决定——dir 写在哪一层就在
+     哪一层重新声明，子树靠继承拿到；局部写回 ltr 的子树跟着翻回，dir="auto" 沿用外层。
+     rtl 块排在后面：<html dir="rtl"> 同时命中两块时靠书写顺序取 rtl */
+  :where(:root), :where([dir='ltr' i]) {
+    --xh-direction-sign: 1;
+  }
+
+  :where([dir='rtl' i]) {
+    --xh-direction-sign: -1;
+  }
+
   /* mode 轴 · 浅色基线与显式取值完全同源；合并选择器避免把整套候选重复输出两次。 */
   :where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {
     color-scheme: light;

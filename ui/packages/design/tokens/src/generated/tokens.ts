@@ -521,6 +521,7 @@ export const tokens = {
   "--xh-chart-link-alpha": "0.35",
   "--xh-chart-dim-alpha": "0.3",
   "--xh-chart-pending-alpha": "0.6",
+  "--xh-direction-sign": "1",
   "--xh-material-solid-bg": "var(--xh-bg-surface)",
   "--xh-material-solid-backdrop": "none",
   "--xh-material-solid-border": "var(--xh-border-default)",

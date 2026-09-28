@@ -13943,6 +13943,7 @@
     "--xh-diff-added-fg",
     "--xh-diff-removed-bg",
     "--xh-diff-removed-fg",
+    "--xh-direction-sign",
     "--xh-duration-fast",
     "--xh-duration-normal",
     "--xh-duration-slow",

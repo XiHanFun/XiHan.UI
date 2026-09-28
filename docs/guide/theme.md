@@ -158,7 +158,7 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 | `data-theme` | 明暗两值各有整套语义取值 |
 | `data-brand` | 注册品牌梯度后切换品牌色 |
 | `data-density='compact'` | 收紧控件高度、内距与间隙，不缩字号和字形 |
-| `dir` | 由逻辑属性驱动 LTR / RTL 布局 |
+| `dir` | 由逻辑属性驱动 LTR / RTL 布局；只认物理方向的量（translate、渐变角度、clip-path 左右两侧）乘 `--xh-direction-sign` 换向——它按就近的 `dir` 继承（ltr 为 1、rtl 为 -1），局部写回 `ltr` 的子树跟着翻回 |
 | `data-contrast` | `more` 加强边界；`default` 显式回到常规档 |
 | `data-motion` | `reduce` 触发局部 CSS 动效降级 |
 | `data-transparency` | `reduce` 把磨砂材质切成实体配方 |
