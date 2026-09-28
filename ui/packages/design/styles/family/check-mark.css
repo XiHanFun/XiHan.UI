@@ -71,11 +71,19 @@
     mask-size: 0 0, 100% 100%;
   }
 
-  /* 强制色：遮罩保留字形轮廓，系统前景接管颜色；禁用取置灰前景 */
+  /* 强制色：遮罩保留字形轮廓，标记退出强制换色、直接写系统前景（不能取 currentColor：退出强制换色的伪元素
+     读到的是被系统换掉之前的作者色）；禁用取置灰前景。
+     节点自己就是一颗动作控件的方框（Table 的勾选把手）：悬停与按下时家族把方框涂成 Highlight，标记跟着换 HighlightText。
+     方框另有实心面的（CheckboxGroup、Transfer 的勾选盒，行档的方框）在这一档里是 Canvas，整行悬停不换面，不在此列 */
   @media (forced-colors: active) {
     [data-xh-check-mark]:where([data-xh-check-mark-profile='box']):empty::before,
     [data-xh-check-mark]:where([data-xh-check-mark-profile='row'])::after {
+      forced-color-adjust: none;
       background-color: CanvasText;
+    }
+
+    [data-xh-check-mark][data-xh-action-control]:where([data-xh-check-mark-profile='box']):where(:not([data-disabled]):not([data-loading])):is(:hover, :active, [data-pressed]):empty::before {
+      background-color: HighlightText;
     }
 
     [data-xh-check-mark]:where([data-disabled]):where([data-xh-check-mark-profile='box']):empty::before,

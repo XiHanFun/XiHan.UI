@@ -921,17 +921,35 @@
   }
 
   @media (forced-colors: active) {
-    /* 蒙版底色会被系统改成 Canvas 而消失；明确用系统前景保住箭头、对号与半选横线。 */
+    /* 蒙版底色会被系统改成 Canvas 而消失；明确用系统前景保住箭头、对号与半选横线。
+       按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形跟着换 HighlightText。
+       触发器里的下拉箭头落在字段面上取 CanvasText，字段禁用时取 GrayText；
+       清除钮是按钮面，取 ButtonText，悬停与按下换 HighlightText，禁用取 GrayText */
     [data-scope='cascader'][data-part='item'][data-branch]::after,
     [data-scope='cascader'][data-part='item-indicator']:empty::before,
-    [data-scope='cascader'][data-part='search-item']::after {
+    [data-scope='cascader'][data-part='search-item']::after,
+    [data-scope='cascader'][data-part='indicator']:empty::before {
       forced-color-adjust: none;
       background-color: CanvasText;
     }
 
+    [data-scope='cascader'][data-part='clear-trigger']:empty::before {
+      forced-color-adjust: none;
+      background-color: ButtonText;
+    }
+
+    [data-scope='cascader'][data-part='item'][data-branch]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
+    [data-scope='cascader'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='cascader'][data-part='item-indicator']:empty::before,
+    [data-scope='cascader'][data-part='search-item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
+    [data-scope='cascader'][data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+      background-color: HighlightText;
+    }
+
     [data-scope='cascader'][data-part='item'][data-branch][data-disabled]::after,
     [data-scope='cascader'][data-part='item-indicator'][data-disabled]:empty::before,
-    [data-scope='cascader'][data-part='search-item'][data-disabled]::after {
+    [data-scope='cascader'][data-part='search-item'][data-disabled]::after,
+    [data-scope='cascader'][data-part='control'][data-disabled] [data-scope='cascader'][data-part='indicator']:empty::before,
+    [data-scope='cascader'][data-part='clear-trigger'][data-disabled]:empty::before {
       background-color: GrayText;
     }
   }

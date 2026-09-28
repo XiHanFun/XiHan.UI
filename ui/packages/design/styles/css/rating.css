@@ -240,11 +240,14 @@
       color: GrayText;
     }
 
+    /* 两层星形都是 mask 挖出来的底色：退出强制换色、直接写系统色，空星 GrayText、点亮的那层 Highlight */
     [data-scope='rating'][data-part='item']:empty::before {
+      forced-color-adjust: none;
       background-color: GrayText;
     }
 
     [data-scope='rating'][data-part='item']:empty::after {
+      forced-color-adjust: none;
       background-color: Highlight;
     }
 

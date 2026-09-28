@@ -36,10 +36,17 @@
     background-color: currentColor;
   }
 
+  /* 强制色：勾与圆点都是伪元素上的一块底色，这一档里会被换成 Canvas 而消失；退出强制换色、直接写系统前景。
+     标记坐在菜单条目里，按下与没被高亮时的悬停，家族把条目涂成 Highlight，标记跟着换 HighlightText；禁用取 GrayText */
   @media (forced-colors: active) {
     [data-xh-menu-choice-indicator]:empty::before {
       forced-color-adjust: none;
       background-color: CanvasText;
+    }
+
+    [data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))
+      [data-xh-menu-choice-indicator]:empty::before {
+      background-color: HighlightText;
     }
 
     [data-xh-menu-choice-indicator][data-disabled]:empty::before {

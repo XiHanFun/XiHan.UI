@@ -211,9 +211,17 @@
   }
 
   @media (forced-colors: active) {
-    /* 选中只由对号表达：遮罩出来的那块底色用系统高亮色画，按下时标签整枚反成 Highlight，对号换成反白 */
+    /* 选中只由对号表达：遮罩出来的那块底色退出强制换色、用系统高亮色画，按下时标签整枚反成 Highlight，对号换成反白；
+       禁用的标签取 GrayText */
     [data-scope='tag-group'][data-part='item-indicator']:empty::before {
+      forced-color-adjust: none;
       background-color: Highlight;
+    }
+
+    [data-scope='tag-group'][data-part='list']
+      > [data-scope='tag'][data-part='root'][data-disabled]
+      [data-scope='tag-group'][data-part='item-indicator']:empty::before {
+      background-color: GrayText;
     }
 
     [data-scope='tag-group'][data-part='list']
