@@ -10,16 +10,15 @@
 //
 // 三种用法，从轻到重：
 //   v-sound          给任意元素或组件按下时配一声，一个字都不用改组件
-//   withToastSound   给命令式反馈服务配上声音，调用点一行都不用改
+//   withNotificationSound  给命令式通知服务配上声音，调用点一行都不用改
 //   getSoundPlayer   自己拿播放器，接偏好开关或调音面板
 
-import type { DialogSoundServiceOptions, SoundPressOptions as SharedSoundPressOptions, SoundPlayer, ToastSoundServiceOptions } from '@xihan-ui/sound'
+import type { DialogSoundServiceOptions, NotificationSoundServiceOptions, NotificationSoundServicePort, SoundPressOptions as SharedSoundPressOptions, SoundPlayer } from '@xihan-ui/sound'
 import type { Directive } from 'vue'
 import type { DialogService } from './services/dialog-service'
-import type { ToastService } from './services/toast-service'
-import { attachDocumentSoundUnlock, createSharedSoundPlayerController, isSoundTargetDisabled, resolveSoundPressOptions, withDialogSoundService, withToastSoundService } from '@xihan-ui/sound'
+import { attachDocumentSoundUnlock, createSharedSoundPlayerController, isSoundTargetDisabled, resolveSoundPressOptions, withDialogSoundService, withNotificationSoundService } from '@xihan-ui/sound'
 
-export type { DialogSoundKey, SoundChoice } from '@xihan-ui/sound'
+export type { DialogSoundKey, NotificationSoundKey, SoundChoice } from '@xihan-ui/sound'
 
 const shared = createSharedSoundPlayerController()
 
@@ -36,7 +35,7 @@ export function setSoundPlayer(player: SoundPlayer): void {
   shared.setPlayer(player)
 }
 
-export interface ToastSoundOptions extends Omit<ToastSoundServiceOptions, 'player' | 'attachUnlock'> {
+export interface NotificationSoundOptions extends Omit<NotificationSoundServiceOptions, 'player' | 'attachUnlock'> {
   /** 使用哪个播放器，默认共享播放器。 */
   player?: SoundPlayer
 }
@@ -45,15 +44,15 @@ export interface ToastSoundOptions extends Omit<ToastSoundServiceOptions, 'playe
  * 为命令式通知服务配上声音：入队即发声，调用点无需修改。
  *
  * ```ts
- * export const toast = withToastSound(createToastService())
- * toast.success('已保存') // 视觉 + 听觉
+ * export const notify = withNotificationSound(createNotificationService())
+ * notify.success('已保存') // 视觉 + 听觉
  * ```
  *
  * `update` 只在类型改变且新类型不是 loading 时发声：上传完成时应当发声，
  * 修改文案不应发声。
  */
-export function withToastSound(service: ToastService, options: ToastSoundOptions = {}): ToastService {
-  return withToastSoundService(service, {
+export function withNotificationSound<Service extends NotificationSoundServicePort>(service: Service, options: NotificationSoundOptions = {}): Service {
+  return withNotificationSoundService(service, {
     ...options,
     player: options.player ?? getSoundPlayer(),
     attachUnlock: attachDocumentSoundUnlock,

@@ -423,6 +423,8 @@
       "NotificationRootSlotProps",
       "NotificationService",
       "NotificationServiceOptions",
+      "NotificationSoundKey",
+      "NotificationSoundOptions",
       "NotificationTranslationsSource",
       "NumberAnimationSlotProps",
       "NumberFieldContext",
@@ -536,7 +538,6 @@
       "ToastRootSlotProps",
       "ToastService",
       "ToastServiceOptions",
-      "ToastSoundOptions",
       "ToastTranslationsSource",
       "ToggleContext",
       "ToggleGroupContext",
@@ -3023,7 +3024,7 @@
       "useWatermarkContext",
       "useXhConfig",
       "withDialogSound",
-      "withToastSound",
+      "withNotificationSound",
       "withXhConfig"
     ],
     "@xihan-ui/vue": [
@@ -3208,6 +3209,8 @@
       "NotificationRootSlotProps",
       "NotificationService",
       "NotificationServiceOptions",
+      "NotificationSoundKey",
+      "NotificationSoundOptions",
       "NumberAnimationSlotProps",
       "NumberFieldContext",
       "NumberFieldRootSlotProps",
@@ -3317,7 +3320,6 @@
       "ToastRootSlotProps",
       "ToastService",
       "ToastServiceOptions",
-      "ToastSoundOptions",
       "ToggleContext",
       "ToggleGroupContext",
       "ToolCallContext",
@@ -4737,7 +4739,7 @@
       "vSound",
       "vueNormalize",
       "withDialogSound",
-      "withToastSound",
+      "withNotificationSound",
       "withXhConfig"
     ],
     "@xihan-ui/web-components": [
@@ -9453,6 +9455,9 @@
       "MAX_LAYERS",
       "MAX_TIME",
       "NoiseLayer",
+      "NotificationSoundKey",
+      "NotificationSoundServiceOptions",
+      "NotificationSoundServicePort",
       "OscillatorLayer",
       "PlayOptions",
       "ResolvedSoundPressOptions",
@@ -9468,9 +9473,6 @@
       "SoundSpec",
       "SoundTheme",
       "SoundUnlockAttacher",
-      "ToastSoundKey",
-      "ToastSoundServiceOptions",
-      "ToastSoundServicePort",
       "attachDocumentSoundUnlock",
       "clampSpec",
       "createSharedSoundPlayerController",
@@ -9489,7 +9491,7 @@
       "specDuration",
       "strike",
       "withDialogSoundService",
-      "withToastSoundService"
+      "withNotificationSoundService"
     ]
   },
   "anatomy": {
