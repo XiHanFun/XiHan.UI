@@ -319,7 +319,12 @@ export function trackReorder(container: Element, options: TrackReorderOptions): 
   if (!win || typeof Observer !== 'function')
     return () => {}
   const identity = options.key
-  const items = (): HTMLElement[] => [...container.querySelectorAll<HTMLElement>(options.item)].filter(el => el.offsetParent !== null)
+  // 只认最外层的条目：条目里嵌着的条目（表格详情行里的另一张表）随外层一起走，各补一次就走了两倍的路
+  const outermost = (el: HTMLElement): boolean => {
+    const outer = el.parentElement?.closest(options.item)
+    return outer == null || !container.contains(outer)
+  }
+  const items = (): HTMLElement[] => [...container.querySelectorAll<HTMLElement>(options.item)].filter(el => el.offsetParent !== null && outermost(el))
   const keyOf = (el: HTMLElement): unknown => (identity ? identity(el) : el)
 
   const before = new Map<unknown, LayoutPoint>()
