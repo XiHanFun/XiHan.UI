@@ -1121,7 +1121,8 @@
       "matrix-code"
     ],
     "mark": [
-      "highlight"
+      "highlight",
+      "json-viewer"
     ],
     "media": [
       "empty-state",

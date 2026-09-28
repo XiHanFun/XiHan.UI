@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `empty`
+`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `empty` · `mark`
 
 ## 示例
 
@@ -72,6 +72,12 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 
 <XhDemo src="json-viewer/09-empty" />
 
+### 搜索
+
+search 标出键名与值里含有搜索词的行并展开它们的祖先，命中的那一段铺成 mark；工具条里的上一条 / 下一条在命中之间逐个走，停住的那一条换成实心并滚进视野
+
+<XhDemo src="json-viewer/10-search" />
+
 ## 设计指引
 
 ### 何时使用
@@ -101,6 +107,8 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 - 自定义元素侧：`value` 属性接受一段 JSON 文本（无法解析时按字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` 没有对应属性，只能通过 property 设置，写成 `expanded-value='["$"]'` 不会生效。
 
 ### 组合
+
+- 搜索：`search` 标出键名与值里含有搜索词的行（不区分大小写），命中行的祖先分支自动展开（写进展开集合，之后照常能收起），命中的那一段铺成 `mark` 部件。搜索框与上一条 / 下一条由作者摆在树之前：Vue 写进 `toolbar` 插槽，React 经 `toolbar` 传入，载荷是 `searchMatches`、`activeMatch`、`nextMatch`、`prevMatch`；Web Components 在元素上取 `searchMatches` / `activeMatch` 并调用 `nextMatch()` / `prevMatch()`。停住的那一条投影 `data-current`、命中片段换成实心，并被滚进视野。
 
 - 放入[标签页](./tabs)或[抽屉](./drawer)作为调试面板；行数多时套一层[滚动区域](./scroll-area)。
 - 配合[剪贴板](./clipboard)提供原始 JSON 的复制。
@@ -145,6 +153,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，只对调左右方向键的展开 / 收起语义；未提供时从 DOM 读取。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `search` | `string` |  | 搜索词：键名与值文本里含有它（不区分大小写）的行即为命中。 命中行的祖先分支自动展开（写进展开集合），命中片段由作者按 `api.segments` 铺成 mark 部件。 空串与只含空白视为没有搜索。 |
 | `translations` | `Partial<JsonViewerTranslations>` |  |  |
 | `onExpandedValueChange` | `(details: JsonViewerExpandedValueChangeDetails) => void` |  |  |
 
@@ -163,6 +172,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhJsonViewerRoot` | `empty` | — |  |
+| `XhJsonViewerRoot` | `toolbar` | `JsonViewerToolbarSlotProps` | 树之前的一条：放搜索框与上一条 / 下一条，渲染为根的前一个兄弟。 |
 
 ### React 适配器 props
 
@@ -171,6 +181,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhJsonViewerRoot` | `empty` | `ReactNode` |  | 空态格子的内容；未写时铺设 translations 中的兜底文案。 |
+| `XhJsonViewerRoot` | `toolbar` | `SlotChildren<JsonViewerToolbarSlotProps>` |  | 树之前的一条：放搜索框与上一条 / 下一条，渲染为根的前一个兄弟。 |
 
 ### 状态
 
@@ -190,7 +201,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 
 **状态**：`idle`
 
-**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `VIEWER.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `VIEWER.BLUR` · `PRESS.START` · `PRESS.END` · `MATCH.SET` · `SEARCH.SYNC`
 
 ### connect API
 
@@ -213,6 +224,13 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `isEmpty` | `boolean` | 无法展开任何一行：value 未提供或为 undefined。空态部件随它显隐。 |
 | `emptyText` | `string` | 空态的兜底文案，作者未向空态部件写入内容时铺设它。 |
 | `text` | `string` | 缩进后的 JSON 原文；键序与环路记号与树档一致。text 档之外也可获取，便于作者实现复制原文。 |
+| `searchMatches` | `readonly string[]` | 命中搜索词的行路径，按树序排列；没有搜索时为空。 |
+| `activeMatch` | `string \| null` | 在命中之间逐个走时停在哪一行；没有时为 null。 |
+| `nextMatch` | `() => void` | 停到下一条命中（走到末尾回到第一条），并把它滚进视野。 |
+| `prevMatch` | `() => void` | 停到上一条命中（走到开头回到最后一条），并把它滚进视野。 |
+| `setActiveMatch` | `(value: string \| null) => void` |  |
+| `keySegments` | `(node: JsonViewerNode) => readonly HighlightSegment[]` | 键名按搜索词切成的片段，依次拼接恒等于键名；命中的片段铺成 mark 部件。 没有搜索或没有键名时整段是一个不命中的片段。 |
+| `valueSegments` | `(node: JsonViewerNode) => readonly HighlightSegment[]` | 值文本（即 valueText）按搜索词切成的片段；截断占位行的文案不参与命中。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
 | `getTextProps` | `() => T['element']` |  |
@@ -227,6 +245,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `getBranchContentProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getPreviewProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
+| `getMarkProps` | `() => T['element']` | 键名与值文本里命中搜索词的那一段。 |
 
 ## 无障碍
 
@@ -296,50 +315,70 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `root` | `data-variant` | props.variant |
 | `root` | `data-view` | props.view |
 | `item` | `data-circular` | ''（条件成立时才出现） |
+| `item` | `data-current` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-match` | ''（条件成立时才出现） |
 | `item` | `data-truncated` | ''（条件成立时才出现） |
 | `item` | `data-value-type` | node?.type |
 | `item-key` | `data-circular` | ''（条件成立时才出现） |
+| `item-key` | `data-current` | ''（条件成立时才出现） |
 | `item-key` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-key` | `data-match` | ''（条件成立时才出现） |
 | `item-key` | `data-truncated` | ''（条件成立时才出现） |
 | `item-key` | `data-value-type` | node?.type |
 | `item-value` | `data-circular` | ''（条件成立时才出现） |
+| `item-value` | `data-current` | ''（条件成立时才出现） |
 | `item-value` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-value` | `data-match` | ''（条件成立时才出现） |
 | `item-value` | `data-truncated` | ''（条件成立时才出现） |
 | `item-value` | `data-value-type` | node?.type |
 | `branch` | `data-circular` | ''（条件成立时才出现） |
+| `branch` | `data-current` | ''（条件成立时才出现） |
 | `branch` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch` | `data-match` | ''（条件成立时才出现） |
 | `branch` | `data-state` | 'open' \| 'closed' |
 | `branch` | `data-truncated` | ''（条件成立时才出现） |
 | `branch` | `data-value-type` | node?.type |
 | `branch-control` | `data-circular` | ''（条件成立时才出现） |
+| `branch-control` | `data-current` | ''（条件成立时才出现） |
 | `branch-control` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-control` | `data-match` | ''（条件成立时才出现） |
 | `branch-control` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-control` | `data-state` | 'open' \| 'closed' |
 | `branch-control` | `data-truncated` | ''（条件成立时才出现） |
 | `branch-control` | `data-value-type` | node?.type |
 | `branch-trigger` | `data-circular` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-current` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-match` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
 | `branch-trigger` | `data-truncated` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-value-type` | node?.type |
 | `branch-indicator` | `data-circular` | ''（条件成立时才出现） |
+| `branch-indicator` | `data-current` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-indicator` | `data-match` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-state` | 'open' \| 'closed' |
 | `branch-indicator` | `data-truncated` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-value-type` | node?.type |
 | `branch-text` | `data-circular` | ''（条件成立时才出现） |
+| `branch-text` | `data-current` | ''（条件成立时才出现） |
 | `branch-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-text` | `data-match` | ''（条件成立时才出现） |
 | `branch-text` | `data-state` | 'open' \| 'closed' |
 | `branch-text` | `data-truncated` | ''（条件成立时才出现） |
 | `branch-text` | `data-value-type` | node?.type |
 | `branch-content` | `data-circular` | ''（条件成立时才出现） |
+| `branch-content` | `data-current` | ''（条件成立时才出现） |
 | `branch-content` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-content` | `data-match` | ''（条件成立时才出现） |
 | `branch-content` | `data-state` | 'open' \| 'closed' |
 | `branch-content` | `data-truncated` | ''（条件成立时才出现） |
 | `branch-content` | `data-value-type` | node?.type |
 | `preview` | `data-circular` | ''（条件成立时才出现） |
+| `preview` | `data-current` | ''（条件成立时才出现） |
 | `preview` | `data-highlighted` | ''（条件成立时才出现） |
+| `preview` | `data-match` | ''（条件成立时才出现） |
 | `preview` | `data-state` | 'open' \| 'closed' |
 | `preview` | `data-truncated` | ''（条件成立时才出现） |
 | `preview` | `data-value-type` | node?.type |
@@ -367,6 +406,11 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `--xh-json-viewer-indicator-size` | `branch-trigger` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | json-viewer 的 branch-trigger 部件 --xh-icon-size、inline-size 覆盖槽。 |
 | `--xh-json-viewer-key-fg` | `branch-text`<br>`item-key` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 branch-text、item-key 部件 color 覆盖槽。 |
 | `--xh-json-viewer-key-font-weight` | `branch-text`<br>`item-key` | `font-weight` | `default` | `--xh-font-weight-medium` | json-viewer 的 branch-text、item-key 部件 font-weight 覆盖槽。 |
+| `--xh-json-viewer-mark-bg` | `mark` | `background` | `default` | `--xh-bg-brand-subtle` | json-viewer 的 mark 部件 background 覆盖槽。 |
+| `--xh-json-viewer-mark-bg-current` | `branch`<br>`branch-control`<br>`branch-text`<br>`item`<br>`item-key`<br>`item-value`<br>`mark` | `background` | `current` | `--xh-bg-brand` | json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 background 覆盖槽。 |
+| `--xh-json-viewer-mark-fg` | `mark` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 mark 部件 color 覆盖槽。 |
+| `--xh-json-viewer-mark-fg-current` | `branch`<br>`branch-control`<br>`branch-text`<br>`item`<br>`item-key`<br>`item-value`<br>`mark` | `color` | `current` | `--xh-fg-on-brand` | json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 color 覆盖槽。 |
+| `--xh-json-viewer-mark-radius` | `mark` | `border-radius` | `default` | `--xh-shape-inset` | json-viewer 的 mark 部件 border-radius 覆盖槽。 |
 | `--xh-json-viewer-max-h` | `text`<br>`tree` | `max-block-size` | `default` | `--xh-viewport-max-h` | json-viewer 的 text、tree 部件 max-block-size 覆盖槽。 |
 | `--xh-json-viewer-null-fg` | `item-value` | `color` | `value-type=null` | `--xh-fg-subtle` | json-viewer 的 item-value 部件 color 覆盖槽。 |
 | `--xh-json-viewer-number-fg` | `item-value` | `color` | `value-type=number` | `--xh-syntax-number` | json-viewer 的 item-value 部件 color 覆盖槽。 |

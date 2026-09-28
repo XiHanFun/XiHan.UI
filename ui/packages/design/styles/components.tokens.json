@@ -39545,6 +39545,108 @@
       "description": "json-viewer 的 branch-text、item-key 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-json-viewer-mark-bg",
+      "component": "json-viewer",
+      "part": [
+        "mark"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 mark 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-json-viewer-mark-bg-current",
+      "component": "json-viewer",
+      "part": [
+        "branch",
+        "branch-control",
+        "branch-text",
+        "item",
+        "item-key",
+        "item-value",
+        "mark"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "current"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-json-viewer-mark-fg",
+      "component": "json-viewer",
+      "part": [
+        "mark"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand-strong"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 mark 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-json-viewer-mark-fg-current",
+      "component": "json-viewer",
+      "part": [
+        "branch",
+        "branch-control",
+        "branch-text",
+        "item",
+        "item-key",
+        "item-value",
+        "mark"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "current"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-json-viewer-mark-radius",
+      "component": "json-viewer",
+      "part": [
+        "mark"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 mark 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-json-viewer-max-h",
       "component": "json-viewer",
       "part": [

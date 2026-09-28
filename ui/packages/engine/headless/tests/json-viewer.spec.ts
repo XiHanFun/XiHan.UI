@@ -14,6 +14,7 @@ import {
   groupJsonViewerNodesByParent,
   jsonChildPath,
   jsonExpandedPathsToDepth,
+  jsonSearch,
   jsonValueText,
   jsonValueType,
   jsonViewerMachine,
@@ -903,5 +904,100 @@ describe('connectJsonViewer 按压通道：Space / Enter 与触屏按住投影 d
     expect(nested.control!.hasAttribute('data-pressed')).toBe(false)
     keyup(deep.host, ' ')
     expect(deep.control!.hasAttribute('data-pressed')).toBe(false)
+  })
+})
+
+describe('json 搜索', () => {
+  function searching(initial: Partial<Props> = {}) {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Partial<Props>>({ value: VALUE, ...initial })
+    const service = createService(jsonViewerMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    return {
+      api: () => connectJsonViewer(service, normalizeProps),
+      setProps: (next: Partial<Props>) => props.set({ ...props.get(), ...next }),
+      stop: () => runtime.stop(),
+    }
+  }
+
+  it('键名与值文本都算命中，不区分大小写，按树序排列；收起的分支里也找得到', () => {
+    const { matches, ancestors } = jsonSearch(VALUE, 'LEAF')
+    expect(matches).toEqual([path('nested', 'deep', 'leaf')])
+    expect(ancestors.sort()).toEqual([ROOT, path('nested'), path('nested', 'deep')].sort())
+    expect(jsonSearch(VALUE, 'xi').matches).toEqual([path('name')])
+    // leaf 的键名里也有 a
+    expect(jsonSearch(VALUE, 'a').matches).toEqual([path('name'), path('tags'), path('tags', '0'), path('nested', 'deep', 'leaf')])
+  })
+
+  it('空串与只含空白视为没有搜索', () => {
+    expect(jsonSearch(VALUE, '   ').matches).toEqual([])
+    expect(jsonSearch(VALUE, undefined).matches).toEqual([])
+  })
+
+  it('搜索词一出现就把命中行的祖先写进展开集合，用户照常能收起', () => {
+    const v = searching()
+    expect(v.api().isExpanded(path('nested'))).toBe(false)
+    v.setProps({ search: 'leaf' })
+    expect(v.api().isExpanded(path('nested'))).toBe(true)
+    expect(v.api().isExpanded(path('nested', 'deep'))).toBe(true)
+    expect(v.api().visibleNodes.some(node => node.value === path('nested', 'deep', 'leaf'))).toBe(true)
+    v.api().collapse(path('nested'))
+    expect(v.api().isExpanded(path('nested'))).toBe(false)
+    v.stop()
+  })
+
+  it('首帧就带着搜索词时命中行同样展开出来', () => {
+    const v = searching({ search: 'leaf' })
+    expect(v.api().isExpanded(path('nested', 'deep'))).toBe(true)
+    v.stop()
+  })
+
+  it('命中行投影 data-match，逐个走时停住的那一行另投 data-current，首尾回绕', () => {
+    const v = searching({ search: 'a' })
+    const item = (value: string): Record<string, unknown> => v.api().getItemProps({ value }) as Record<string, unknown>
+    expect(item(path('name'))['data-match']).toBe('')
+    expect(item(path('count'))['data-match']).toBeUndefined()
+    expect(v.api().activeMatch).toBeNull()
+
+    v.api().nextMatch()
+    expect(v.api().activeMatch).toBe(path('name'))
+    expect(item(path('name'))['data-current']).toBe('')
+    v.api().prevMatch()
+    expect(v.api().activeMatch).toBe(path('nested', 'deep', 'leaf'))
+    v.api().nextMatch()
+    expect(v.api().activeMatch).toBe(path('name'))
+    v.stop()
+  })
+
+  it('搜索词一变就回到未选', () => {
+    const v = searching({ search: 'a' })
+    v.api().nextMatch()
+    v.setProps({ search: 'count' })
+    expect(v.api().activeMatch).toBeNull()
+    expect(v.api().searchMatches).toEqual([path('count')])
+    v.stop()
+  })
+
+  it('键名与值文本按搜索词切段，拼回去恒等于原文；没有搜索时整段不命中', () => {
+    const v = searching({ search: 'HAN' })
+    const name = v.api().visibleNodes.find(node => node.value === path('name'))!
+    expect(v.api().valueSegments(name)).toEqual([
+      { text: '"xi', matched: false },
+      { text: 'han', matched: true },
+      { text: '"', matched: false },
+    ])
+    expect(v.api().keySegments(name)).toEqual([{ text: 'name', matched: false }])
+    v.setProps({ search: '' })
+    expect(v.api().valueSegments(name)).toEqual([{ text: '"xihan"', matched: false }])
+    expect(v.api().getMarkProps()).toMatchObject({ 'data-scope': 'json-viewer', 'data-part': 'mark' })
+    v.stop()
+  })
+
+  it('截断占位行的文案不参与命中', () => {
+    const v = searching({ value: { list: [1, 2, 3, 4] }, maxItems: 2, search: 'more', defaultExpandedDepth: 2 })
+    const placeholder = v.api().visibleNodes.find(node => node.truncated)!
+    expect(v.api().valueSegments(placeholder).every(segment => !segment.matched)).toBe(true)
+    expect(v.api().searchMatches).toEqual([])
+    v.stop()
   })
 })
