@@ -34036,6 +34036,32 @@
 /* styles/scroll-area.css */
 /* 定义 scroll area 样式。 */
 
+/* 边缘渐隐的四条带宽登记成长度：滚到头时带子收起、离开端点时铺开，才能沿过渡淡变。
+   不认 @property 的引擎把它们当普通自定义属性，带子照旧按端点收放，只是没有过渡 */
+@property --xh-_scroll-area-fade-block-start {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --xh-_scroll-area-fade-block-end {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --xh-_scroll-area-fade-inline-start {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --xh-_scroll-area-fade-inline-end {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='scroll-area'] {
   --xh-scroll-area-skin: 1;
@@ -34130,6 +34156,12 @@
     linear-gradient(to right, transparent 0, black var(--xh-_scroll-area-fade-left), black calc(100% - var(--xh-_scroll-area-fade-right)), transparent 100%);
   -webkit-mask-composite: source-in;
   mask-composite: intersect;
+  /* 滚到头时那一侧的带子淡去、离开端点时淡回，不在到端那一帧瞬间消失 */
+  transition:
+    --xh-_scroll-area-fade-block-start var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    --xh-_scroll-area-fade-block-end var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    --xh-_scroll-area-fade-inline-start var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    --xh-_scroll-area-fade-inline-end var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='scroll-area'][data-part='viewport'][data-variant='fade'][data-size='sm'] {
