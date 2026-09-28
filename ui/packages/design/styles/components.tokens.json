@@ -80299,6 +80299,24 @@
       "description": "tour 的 description 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-tour-description-font-size",
+      "component": "tour",
+      "part": [
+        "description"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-secondary-size"
+      ],
+      "visibility": "public",
+      "description": "tour 的 description 部件 font-size 覆盖槽。"
+    },
+    {
       "name": "--xh-tour-fg",
       "component": "tour",
       "part": [

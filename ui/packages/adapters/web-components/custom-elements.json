@@ -70704,6 +70704,9 @@
               "name": "--xh-tour-description-fg"
             },
             {
+              "name": "--xh-tour-description-font-size"
+            },
+            {
               "name": "--xh-tour-fg"
             },
             {
