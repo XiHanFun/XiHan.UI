@@ -85160,6 +85160,82 @@
       "description": "typography 的 link、prose 部件 text-underline-offset 覆盖槽。"
     },
     {
+      "name": "--xh-typography-mark-bg",
+      "component": "typography",
+      "part": [
+        "text"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "marked",
+        "tone"
+      ],
+      "defaultToken": [
+        "--xh-_tone-subtle",
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "typography 的 text 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-typography-mark-fg",
+      "component": "typography",
+      "part": [
+        "text"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "marked",
+        "tone"
+      ],
+      "defaultToken": [
+        "--xh-_tone-fg",
+        "--xh-fg-brand-strong"
+      ],
+      "visibility": "public",
+      "description": "typography 的 text 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-typography-mark-px",
+      "component": "typography",
+      "part": [
+        "text"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "marked"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "typography 的 text 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-typography-mark-radius",
+      "component": "typography",
+      "part": [
+        "text"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "marked"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "typography 的 text 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-typography-measure",
       "component": "typography",
       "part": [
@@ -85773,6 +85849,24 @@
       ],
       "visibility": "public",
       "description": "typography 的 text 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-typography-text-underline-offset",
+      "component": "typography",
+      "part": [
+        "text"
+      ],
+      "property": [
+        "text-underline-offset"
+      ],
+      "state": [
+        "underline"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "typography 的 text 部件 text-underline-offset 覆盖槽。"
     },
     {
       "name": "--xh-watermark-fg",

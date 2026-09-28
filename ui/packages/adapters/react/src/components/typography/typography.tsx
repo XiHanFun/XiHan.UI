@@ -74,16 +74,23 @@ export interface XhTypographyTextProps extends ComponentPropsWithRef<'span'> {
   variant?: TypographyVariant
   /** 字重：regular / medium / semibold / bold，只作用于该段行内文字。 */
   weight?: TypographyWeight
-  /** 渲染为哪个标签，默认 span；需要 code / strong 的原生语义时自行写明。 */
+  /** 删除线：只画线，表达"已删除"时 as 写 del 或 s。 */
+  strikethrough?: boolean
+  /** 下划线：只画线，与链接同形。 */
+  underline?: boolean
+  /** 标记：淡底加同族字色，有 tone 时换成该族；表达"被标出"时 as 写 mark。 */
+  mark?: boolean
+  /** 渲染为哪个标签，默认 span；需要 code / strong / del / mark 的原生语义时自行写明。 */
   as?: ElementType
 }
 
-/** 行内文字：variant 切换形态，tone 切换语气色，weight 切换字重。 */
-export function XhTypographyText({ tone, variant, weight, as = 'span', children, ...rest }: XhTypographyTextProps): ReactNode {
+/** 行内文字：variant 切换形态，tone 切换语气色，weight 切换字重；删除线、下划线与标记各是一个开关。 */
+export function XhTypographyText({ tone, variant, weight, strikethrough, underline, mark, as = 'span', children, ...rest }: XhTypographyTextProps): ReactNode {
   const ctx = useTypographyContext()
   const Tag = as as 'span'
+  const own = ctx.api.getTextProps({ tone, variant, weight, strikethrough, underline, mark })
   return (
-    <Tag {...mergeReactProps(ctx.api.getTextProps({ tone, variant, weight }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <Tag {...mergeReactProps(own as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}
     </Tag>
   )

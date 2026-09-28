@@ -13170,6 +13170,37 @@
   color: var(--xh-typography-text-fg-tone, var(--xh-_tone-fg));
 }
 
+/* 删除线与下划线是同一条装饰线的两个取值，两个开关都开时两条都画 */
+[data-scope='typography'][data-part='text'][data-strikethrough] {
+  text-decoration-line: line-through;
+}
+
+[data-scope='typography'][data-part='text'][data-underline] {
+  text-decoration-line: underline;
+  text-underline-offset: var(--xh-typography-text-underline-offset, var(--xh-space-0_5));
+}
+
+[data-scope='typography'][data-part='text'][data-underline][data-strikethrough] {
+  text-decoration-line: underline line-through;
+}
+
+/* 标记：与文本高亮的命中片段同一副淡底、字色与收边，两处被标出的文字看起来是一回事。
+   排在语气之后：同时写语气时底与字色一起换成该族，只写语气不写标记仍只换字色。
+   跨行时两半各自收边，否则圆角与内边距只画在整段的首尾；两条都写：WebKit 只认带前缀那条 */
+[data-scope='typography'][data-part='text'][data-marked] {
+  padding-inline: var(--xh-typography-mark-px, var(--xh-space-0_5));
+  border-radius: var(--xh-typography-mark-radius, var(--xh-shape-inset));
+  background: var(--xh-typography-mark-bg, var(--xh-bg-brand-subtle));
+  color: var(--xh-typography-mark-fg, var(--xh-fg-brand-strong));
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+[data-scope='typography'][data-part='text'][data-marked][data-tone] {
+  background: var(--xh-typography-mark-bg, var(--xh-_tone-subtle));
+  color: var(--xh-typography-mark-fg, var(--xh-_tone-fg));
+}
+
 /* 字重排在形态之后：与 strong 一起写时，粗到哪一档由字重说了算 */
 [data-scope='typography'][data-part='text'][data-weight='regular'] {
   font-weight: var(--xh-font-weight-regular);
@@ -13362,6 +13393,21 @@
 
 [data-scope='typography'][data-part='prose'] :where(th) {
   font-weight: var(--xh-typography-prose-th-font-weight, var(--xh-font-weight-semibold));
+}
+
+@media (forced-colors: active) {
+  /* 这一档里自定义底色一律被换成 Canvas，标记会与正文分不开；用系统高亮反色把那一段画回来 */
+  [data-scope='typography'][data-part='text'][data-marked] {
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+@media print {
+  /* 打印默认丢底色，标记只剩字色，被标出的那段在纸上就不显眼了 */
+  [data-scope='typography'][data-part='text'][data-marked] {
+    print-color-adjust: exact;
+  }
 }
 
 /* styles/undefined.css */

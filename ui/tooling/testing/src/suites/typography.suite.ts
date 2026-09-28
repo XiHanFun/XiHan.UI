@@ -160,6 +160,33 @@ export const typographySuite: ConformanceSuite = {
       },
     },
     {
+      name: '删除线、下划线与标记是三个独立开关，与形态、语气叠加；没开就不输出',
+      spec: { apg: APG },
+      fixture: base => ({
+        ...base,
+        children: [
+          {
+            part: 'paragraph',
+            tag: 'p',
+            children: [
+              { part: 'text', tag: 'del', text: '原价 ¥199', attrs: { variant: 'muted', strikethrough: '' } },
+              { part: 'text', tag: 'mark', text: '命中词', attrs: { tone: 'warning', mark: '' } },
+              { part: 'text', tag: 'span', text: '两条线', attrs: { underline: '', strikethrough: '' } },
+              { part: 'text', tag: 'span', text: '普通文字' },
+            ],
+          },
+        ],
+      }),
+      initial: {
+        parts: {
+          'text[0]': { 'data-variant': 'muted', 'data-strikethrough': '', 'data-underline': null, 'data-marked': null },
+          'text[1]': { 'data-tone': 'warning', 'data-marked': '', 'data-strikethrough': null, 'data-underline': null },
+          'text[2]': { 'data-underline': '', 'data-strikethrough': '', 'data-marked': null },
+          'text[3]': { 'data-strikethrough': null, 'data-underline': null, 'data-marked': null },
+        },
+      },
+    },
+    {
       name: '链接只拿身份：不补 role、不占 Tab 位，作者写的 href 原样留着',
       spec: { apg: APG },
       initial: {
