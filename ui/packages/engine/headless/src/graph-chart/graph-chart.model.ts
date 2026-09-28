@@ -42,6 +42,9 @@ export interface GraphNodeSpec {
   /** 在节点数据里的位置。 */
   readonly index: number
   readonly value: number | null
+  /** 预设坐标；没写或不是有限数时为 null。 */
+  readonly x: number | null
+  readonly y: number | null
   readonly datum: ChartRow
 }
 
@@ -49,6 +52,8 @@ export interface GraphLinkSpec {
   readonly source: string
   readonly target: string
   readonly value: number | null
+  /** 连线上写的字；没写或是空串时为 null。 */
+  readonly label: string | null
   /** 在连线数据里的位置。 */
   readonly index: number
   readonly datum: ChartRow
@@ -96,7 +101,12 @@ export function normalizeGraphSpec(
       slotOf.set(n.group, groups.length + 1)
       groups.push({ id: n.group, slot: groups.length + 1 })
     }
-    byId.set(n.id, { id: n.id, name: n.name ?? n.id, group: n.group ?? null, slot: n.group == null ? 1 : slotOf.get(n.group)!, index, value: finite(n.value), datum: n as unknown as ChartRow })
+    const x = finite(n.x)
+    const y = finite(n.y)
+    // 预设布局靠节点自己的坐标：缺一个就摆不上去
+    if (layout === 'preset' && (x == null || y == null))
+      return shapeIssue(`预设布局下节点 ${n.id} 缺有限数的 x / y`, { id: n.id, index })
+    byId.set(n.id, { id: n.id, name: n.name ?? n.id, group: n.group ?? null, slot: n.group == null ? 1 : slotOf.get(n.group)!, index, value: finite(n.value), x, y, datum: n as unknown as ChartRow })
   }
   const specLinks: GraphLinkSpec[] = []
   for (const [index, l] of (links ?? []).entries()) {
@@ -104,7 +114,7 @@ export function normalizeGraphSpec(
       return shapeIssue(`连线 ${l.source} → ${l.target} 指向不存在的节点`, { index, source: l.source, target: l.target })
     if (l.source === l.target)
       return shapeIssue(`连线 ${l.source} → ${l.target} 是自环`, { index, node: l.source })
-    specLinks.push({ source: l.source, target: l.target, value: finite(l.value), index, datum: l as unknown as ChartRow })
+    specLinks.push({ source: l.source, target: l.target, value: finite(l.value), label: l.label ? String(l.label) : null, index, datum: l as unknown as ChartRow })
   }
   const issues: ChartSpecIssue[] = []
   const warnings: ChartSpecIssue[] = []
@@ -291,6 +301,28 @@ export function layoutGraphBase(derived: GraphDerived, layout: GraphLayout, size
     return { ...base, center: { x: cx, y: cy } }
   }
 
+  // 预设：按节点自己的坐标等比缩放进视口，四周留的空与力导一样（名字写在节点下面，底边多留一行）
+  if (layout === 'preset') {
+    const padX = rMax + gap + widest / 2
+    const padTop = rMax + gap
+    const padBottom = rMax + gap * 2 + font.lineHeight
+    const availW = Math.max(1, width - padX * 2)
+    const availH = Math.max(1, height - padTop - padBottom)
+    const xs = derived.nodes.map(node => node.x ?? 0)
+    const ys = derived.nodes.map(node => node.y ?? 0)
+    const x0 = Math.min(...xs)
+    const y0 = Math.min(...ys)
+    const spanX = Math.max(...xs) - x0
+    const spanY = Math.max(...ys) - y0
+    // 只有一个点、或全在一条线上：那一向不缩放，摆在正中
+    const scale = Math.min(spanX > 0 ? availW / spanX : Number.POSITIVE_INFINITY, spanY > 0 ? availH / spanY : Number.POSITIVE_INFINITY)
+    const k = Number.isFinite(scale) ? scale : 1
+    const ox = padX + (availW - spanX * k) / 2
+    const oy = padTop + (availH - spanY * k) / 2
+    derived.nodes.forEach((node, i) => positions.set(node.id, { x: ox + (xs[i]! - x0) * k, y: oy + (ys[i]! - y0) * k }))
+    return base
+  }
+
   // 力导：同步跑到收敛，再把结果缩放、平移到视口里；名字写在节点下面，底边多留一行
   const index = new Map(derived.nodes.map((node, i) => [node.id, i]))
   const links = derived.links.map(l => ({ source: index.get(l.source)!, target: index.get(l.target)! }))
@@ -376,6 +408,8 @@ export interface GraphLinkGeometry {
   readonly width: number | null
   /** 有向时目标一端的箭头。 */
   readonly arrow: PathSegment | null
+  /** 连线上的字：写在两端节点圆心连线的中点；和节点、节点名字压在一起或越出绘图区时不写。 */
+  readonly label: { readonly text: string, readonly x: number, readonly y: number } | null
 }
 
 export interface GraphLayoutResult {
@@ -426,7 +460,7 @@ export function layoutGraph(base: GraphBase, positions: Readonly<Record<string, 
     const text = ellipsize(node.name, maxLabel, font, measurer)
     let label: GraphLabelLayout | null = null
     if (text) {
-      if (base.layout === 'force') {
+      if (base.layout === 'force' || base.layout === 'preset') {
         label = { text, x: at.x, y: at.y + r + gap, anchor: 'middle', baseline: 'top' }
       }
       else if (base.layout === 'tree') {
@@ -479,6 +513,33 @@ export function layoutGraph(base: GraphBase, positions: Readonly<Record<string, 
   const final = nodes.map(g => (kept.has(g) ? g : { ...g, label: null }))
   const byId = new Map(final.map(g => [g.node.id, g]))
 
+  /** 连线上的字：放在两端圆心连线的中点，与已放下的名字、或越出绘图区时不写，节点名字优先。 */
+  const linkLabelOf = (link: GraphLinkSpec, s: GraphNodeGeometry, t: GraphNodeGeometry): GraphLinkGeometry['label'] => {
+    if (!link.label)
+      return null
+    const text = ellipsize(link.label, maxLabel, font, measurer)
+    if (!text)
+      return null
+    const x = (s.x + t.x) / 2
+    const y = (s.y + t.y) / 2
+    const w = measurer.measure(text, font).width
+    const box = { x0: x - w / 2, y0: y - lineHeight / 2, x1: x + w / 2, y1: y + lineHeight / 2 }
+    if (box.x0 < 0 || box.y0 < 0 || box.x1 > size.width || box.y1 > size.height)
+      return null
+    if (boxes.some(b => box.x0 < b.x1 && b.x0 < box.x1 && box.y0 < b.y1 && b.y0 < box.y1))
+      return null
+    // 也不压在节点上：两端靠得太近、或中点正好落在别的节点上时不写
+    const hitsNode = final.some((g) => {
+      const dx = g.x - Math.max(box.x0, Math.min(g.x, box.x1))
+      const dy = g.y - Math.max(box.y0, Math.min(g.y, box.y1))
+      return dx * dx + dy * dy < g.r * g.r
+    })
+    if (hitsNode)
+      return null
+    boxes.push(box)
+    return { text, x, y }
+  }
+
   const valued = derived.links.some(l => l.value != null)
   const maxValue = derived.links.reduce((m, l) => Math.max(m, l.value ?? 0), 0)
   const thin = metrics.lineWidth / 2
@@ -488,14 +549,14 @@ export function layoutGraph(base: GraphBase, positions: Readonly<Record<string, 
     const t = byId.get(link.target)!
     const width = valued && maxValue > 0 ? thin + (metrics.lineWidth * 2 - thin) * Math.sqrt(Math.max(0, link.value ?? 0) / maxValue) : null
     if (!directed)
-      return { link, from: { x: s.x, y: s.y }, to: { x: t.x, y: t.y }, width, arrow: null }
+      return { link, from: { x: s.x, y: s.y }, to: { x: t.x, y: t.y }, width, arrow: null, label: linkLabelOf(link, s, t) }
     // 有向：线停在箭头的底边，箭头的尖端停在目标节点的边上，隔一道间隙
     const dx = t.x - s.x
     const dy = t.y - s.y
     const d = Math.hypot(dx, dy) || 1
     const tip = { x: t.x - (dx / d) * (t.r + metrics.gap), y: t.y - (dy / d) * (t.r + metrics.gap) }
     const end = { x: tip.x - (dx / d) * arrowLength * 0.8, y: tip.y - (dy / d) * arrowLength * 0.8 }
-    return { link, from: { x: s.x, y: s.y }, to: end, width, arrow: arrowPoints({ x: s.x, y: s.y }, tip, arrowLength) }
+    return { link, from: { x: s.x, y: s.y }, to: end, width, arrow: arrowPoints({ x: s.x, y: s.y }, tip, arrowLength), label: linkLabelOf(link, s, t) }
   })
   return { base, size, view, placed, nodes: final, byId, links, metrics, font }
 }
@@ -551,6 +612,11 @@ export function graphScene(layout: GraphLayoutResult, version: number): GraphSce
       front.push(text)
     }
   }
+  // 连线上的字压在节点之上：它写在连线中点，节点不会盖到它
+  for (const g of layout.links) {
+    if (g.label)
+      front.push({ kind: 'text', key: `link-label:${g.link.index}`, part: 'link-label', x: g.label.x, y: g.label.y, text: g.label.text, anchor: 'middle', baseline: 'middle' })
+  }
   const scene = createScene({ version, layers: { data, front }, bounds: { x: 0, y: 0, width: layout.size.width, height: layout.size.height } })
   return { layout, scene }
 }
@@ -577,10 +643,12 @@ export function graphA11y(
       hub = { name: n.name, degree: d }
   }
   const valued = links.some(l => l.value != null)
+  const labelled = links.some(l => l.label != null)
   const table: TableModel = {
     columns: [
       { id: 'source', label: translations.sourceLabel },
       { id: 'target', label: translations.targetLabel },
+      ...(labelled ? [{ id: 'label', label: translations.linkLabel }] : []),
       ...(valued ? [{ id: 'value', label: translations.valueLabel }] : []),
     ],
     rows: links.map(l => ({
@@ -588,6 +656,7 @@ export function graphA11y(
       cells: [
         { value: nameOf(l.source), text: nameOf(l.source) },
         { value: nameOf(l.target), text: nameOf(l.target) },
+        ...(labelled ? [{ value: l.label, text: l.label ?? translations.missingValue }] : []),
         ...(valued ? [{ value: l.value, text: l.value == null ? translations.missingValue : formats.value(l.value) }] : []),
       ],
     })),

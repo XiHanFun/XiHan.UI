@@ -17,6 +17,7 @@ import type {
   GraphLinkDatum,
   GraphNodeDatum,
   GraphTooltipModel,
+  GraphView,
   NumberFormatSpec,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
@@ -208,6 +209,9 @@ export interface XhGraphChartRootProps extends Omit<ComponentPropsWithRef<'figur
   draggableNodes?: boolean
   /** 画布可以平移缩放，缺省 false。 */
   zoom?: boolean
+  /** 画布视图：给了即受控，写入只发 onViewChange。 */
+  view?: GraphView
+  defaultView?: GraphView
   /** 数值格式。 */
   format?: NumberFormatSpec | ((value: number) => string)
   /** 隐藏的分组（受控）。 */
@@ -226,6 +230,8 @@ export interface XhGraphChartRootProps extends Omit<ComponentPropsWithRef<'figur
   onActiveKeyChange?: GraphChartProps['onActiveKeyChange']
   onDatumActive?: GraphChartProps['onDatumActive']
   onDatumPress?: GraphChartProps['onDatumPress']
+  /** 画布视图变化（缩放、平移、复位）。 */
+  onViewChange?: GraphChartProps['onViewChange']
   /** 缺省结构里的标题内容。 */
   caption?: ReactNode
   /** 缺省结构里的提示框内容。 */
@@ -244,6 +250,8 @@ export function XhGraphChartRoot({
   directed,
   draggableNodes,
   zoom,
+  view,
+  defaultView,
   format,
   hiddenSeries,
   defaultHiddenSeries,
@@ -256,6 +264,7 @@ export function XhGraphChartRoot({
   onActiveKeyChange,
   onDatumActive,
   onDatumPress,
+  onViewChange,
   caption,
   renderTooltip,
   empty,
@@ -270,6 +279,8 @@ export function XhGraphChartRoot({
     directed,
     draggableNodes,
     zoom,
+    view,
+    defaultView,
     format,
     hiddenSeries,
     defaultHiddenSeries,
@@ -282,6 +293,7 @@ export function XhGraphChartRoot({
     onActiveKeyChange,
     onDatumActive,
     onDatumPress,
+    onViewChange,
   }) as GraphChartProps)
   const { api } = ctx
   const body = children === undefined
@@ -326,4 +338,4 @@ export function XhGraphChartRoot({
   )
 }
 
-XhGraphChartRoot.xhEvents = ['hidden-series-change', 'active-key-change', 'datum-active', 'datum-press'] as const
+XhGraphChartRoot.xhEvents = ['hidden-series-change', 'active-key-change', 'datum-active', 'datum-press', 'view-change'] as const

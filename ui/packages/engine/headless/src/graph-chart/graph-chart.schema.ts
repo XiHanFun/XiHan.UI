@@ -29,6 +29,7 @@ import type {
   GraphTooltipModel,
   GraphTooltipRow,
   GraphView,
+  GraphViewChangeDetails,
 } from './graph-chart.types'
 
 export interface GraphChartSchema extends MachineSchema {
@@ -45,6 +46,13 @@ export interface GraphChartSchema extends MachineSchema {
     draggableNodes?: boolean
     /** 画布可以平移缩放（Ctrl / ⌘ 加滚轮、拖动空白处、+ / − 键），缺省 false。 */
     zoom?: boolean
+    /**
+     * 画布视图（缩放倍数与平移）。提供即受控：写入只发 onViewChange，由宿主写回；
+     * 几张图接同一份视图即联动，也可以把视图存下来、下次打开还原。zoom 关掉时视图不动。
+     */
+    view?: GraphView
+    defaultView?: GraphView
+    onViewChange?: (details: GraphViewChangeDetails) => void
     /** 数值格式：提示框、可及名与数据表共用。 */
     format?: NumberFormatSpec | ((value: number) => string)
     translations?: Partial<GraphChartTranslations>

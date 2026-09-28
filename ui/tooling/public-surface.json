@@ -6310,6 +6310,7 @@
       "GraphTooltipModel",
       "GraphTooltipRow",
       "GraphView",
+      "GraphViewChangeDetails",
       "GridAlign",
       "GridApi",
       "GridBreakpoint",
@@ -10107,6 +10108,7 @@
       "legend-label",
       "legend-swatch",
       "link",
+      "link-label",
       "node",
       "node-label",
       "plot",
@@ -11928,6 +11930,7 @@
       "activeKey",
       "animated",
       "defaultHiddenSeries",
+      "defaultView",
       "directed",
       "draggableNodes",
       "format",
@@ -11940,9 +11943,11 @@
       "onDatumActive",
       "onDatumPress",
       "onHiddenSeriesChange",
+      "onViewChange",
       "pending",
       "root",
       "translations",
+      "view",
       "zoom"
     ],
     "grid": [
@@ -19729,7 +19734,8 @@
         "active-key-change",
         "datum-active",
         "datum-press",
-        "hidden-series-change"
+        "hidden-series-change",
+        "view-change"
       ]
     },
     "xh-grid-list": {

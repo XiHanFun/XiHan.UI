@@ -22,6 +22,7 @@ export const graphChartAnatomy = createAnatomy('graph-chart', [
   'arrow',
   'node',
   'node-label',
+  'link-label',
   'focus-ring',
   'tooltip',
   'tooltip-header',

@@ -29,6 +29,7 @@ import {
   graphOverlay,
   graphTooltip,
   graphTranslations,
+  graphViewOf,
 } from './graph-chart.logic'
 
 const parts = graphChartAnatomy.build()
@@ -89,7 +90,7 @@ export function connectGraphChart<T extends PropTypes>(
   const invalid = model.issues.length > 0
   const empty = !invalid && model.derived.nodes.length === 0
   const layout = model.scene?.layout
-  const view: GraphView = context.get('view') ?? { k: 1, x: 0, y: 0 }
+  const view: GraphView = graphViewOf(prop, context)
   const drag = context.get('drag')
   const zoomable = prop('zoom') === true
   const draggable = model.layout === 'force' && prop('draggableNodes') !== false
@@ -443,7 +444,10 @@ export function connectGraphChart<T extends PropTypes>(
       const base = part ? { ...part.attrs, 'data-xh-chart-part': mark.part === 'focus-ring' ? mark.part : undefined } : {}
       if (mark.kind === 'text') {
         const text = mark as TextMark
-        const id = mark.key.slice('label:'.length)
+        // 连线上的字随它那条线淡出，节点名字随它的节点淡出
+        const dimmed = mark.part === 'link-label'
+          ? !keptLinks.has(Number(mark.key.slice('link-label:'.length)))
+          : !keptNodes.has(mark.key.slice('label:'.length))
         return normalize.element({
           ...base,
           'x': text.x,
@@ -452,7 +456,7 @@ export function connectGraphChart<T extends PropTypes>(
           'dominant-baseline': BASELINE[text.baseline],
           'opacity': mark.opacity,
           'aria-hidden': true,
-          'data-dimmed': dataAttr(emphasis && !keptNodes.has(id)),
+          'data-dimmed': dataAttr(emphasis && dimmed),
         })
       }
       const props: Record<string, unknown> = {

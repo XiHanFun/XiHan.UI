@@ -1067,6 +1067,9 @@
     "link-icon": [
       "breadcrumb"
     ],
+    "link-label": [
+      "graph-chart"
+    ],
     "link-text": [
       "anchor",
       "side-nav"

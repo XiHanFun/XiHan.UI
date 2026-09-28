@@ -21,6 +21,7 @@ import type {
   GraphNodeDatum,
   GraphTooltipModel,
   GraphView,
+  GraphViewChangeDetails,
   NumberFormatSpec,
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
@@ -46,11 +47,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 节点、连线与数值格式是对象或函数，只走 JS property。
  *
  * @customElement xh-graph-chart
- * @attr {'force'|'circular'|'tree'|'radial-tree'} layout - 布局，默认 force
+ * @attr {'force'|'circular'|'tree'|'radial-tree'|'preset'} layout - 布局，默认 force；preset 按节点上写的 x / y 摆放
  * @attr {string} root - 树与径向树的根；不写时取没有入边的节点
  * @attr {boolean} directed - 有向：连线的目标一端画箭头
  * @attr {boolean} draggable-nodes - 力导布局下可以拖动节点，默认开；`draggable-nodes="false"` 时关掉
  * @attr {boolean} zoom - 画布可以平移缩放（Ctrl / ⌘ 加滚轮、拖动空白处、+ / − 键）
+ * @fires view-change - 画布视图变化（缩放、平移、复位）；detail 为 `{ view }`，受控时由宿主写回 view property
  * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
  * @attr {string} locale - 数字与内建文案的语言；未提供时按宿主语言
@@ -83,6 +85,9 @@ export class XhGraphChartElement extends XhElement {
     hiddenSeries: { attribute: false },
     defaultHiddenSeries: { attribute: false },
     translations: { attribute: false },
+    // 视图是对象，只走 property：给了即受控
+    view: { attribute: false },
+    defaultView: { attribute: false },
     layout: { converter: STRING_CONVERTER },
     root: { converter: STRING_CONVERTER },
     directed: { converter: BOOLEAN_CONVERTER },
@@ -105,6 +110,8 @@ export class XhGraphChartElement extends XhElement {
   declare directed?: boolean
   declare draggableNodes?: boolean
   declare zoom?: boolean
+  declare view?: GraphView
+  declare defaultView?: GraphView
   declare activeKey?: ChartKey | null
   declare pending?: boolean
   declare animated?: boolean
@@ -120,6 +127,10 @@ export class XhGraphChartElement extends XhElement {
 
   private readonly notifyActive = (details: ChartDatumDetails | null): void => {
     this.dispatchEvent(new CustomEvent('datum-active', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyView = (details: GraphViewChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('view-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyPress = (details: ChartDatumDetails): void => {
@@ -142,6 +153,9 @@ export class XhGraphChartElement extends XhElement {
       directed: this.directed,
       draggableNodes: this.draggableNodes,
       zoom: this.zoom,
+      view: this.view,
+      defaultView: this.defaultView,
+      onViewChange: this.notifyView,
       format: this.format,
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,
@@ -203,8 +217,8 @@ export class XhGraphChartElement extends XhElement {
     this.api()?.toggleSeries(id)
   }
 
-  /** 画布此刻的平移缩放。 */
-  get view(): GraphView {
+  /** 画布此刻的平移缩放。view 是作者递进来的受控值，非受控时读这里。 */
+  get currentView(): GraphView {
     return this.api()?.view ?? { k: 1, x: 0, y: 0 }
   }
 

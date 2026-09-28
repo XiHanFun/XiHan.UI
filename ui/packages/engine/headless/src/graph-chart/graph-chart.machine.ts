@@ -20,7 +20,7 @@ import {
   notifyChartActive,
   trackChartViewport,
 } from '../shared/chart'
-import { graphActive, graphDetails, graphMarkKey, graphModelOf } from './graph-chart.logic'
+import { GRAPH_HOME_VIEW, graphActive, graphDetails, graphMarkKey, graphModelOf, graphViewOf } from './graph-chart.logic'
 import { createGraphPipeline, createGraphSimulation, graphEntryScene } from './graph-chart.model'
 
 const { createMachine } = setup<GraphChartSchema>()
@@ -29,11 +29,15 @@ const { createMachine } = setup<GraphChartSchema>()
 const DRAG_ALPHA = 0.3
 /** 按下后挪过这么远（px）才算拖动：再近的是点击。 */
 const DRAG_SLOP = 3
-const HOME_VIEW: GraphView = Object.freeze({ k: 1, x: 0, y: 0 })
 
 type GraphParams = Params<GraphChartSchema>
 
 /** 布局坐标：屏幕坐标减去平移、除以缩放。 */
+/** 两份视图等不等：按值比，受控时宿主每次给新对象也不算变化。 */
+function sameView(a: GraphView, b: GraphView | undefined): boolean {
+  return !!b && a.k === b.k && a.x === b.x && a.y === b.y
+}
+
 function toWorld(view: GraphView, at: { x: number, y: number }): { x: number, y: number } {
   return { x: (at.x - view.x) / view.k, y: (at.y - view.y) / view.k }
 }
@@ -66,7 +70,13 @@ export const graphChartMachine = createMachine({
     return {
       ...chartBaseContext(params),
       positions: cell<GraphChartSchema['context']['positions']>(() => ({ defaultValue: null })),
-      view: cell<GraphView>(() => ({ defaultValue: HOME_VIEW })),
+      // 画布视图：给了 view 即受控，写入只发 onViewChange
+      view: cell<GraphView>(() => ({
+        value: params.prop('view'),
+        defaultValue: params.prop('defaultView') ?? GRAPH_HOME_VIEW,
+        isEqual: sameView,
+        onChange: view => params.prop('onViewChange')?.({ view }),
+      })),
       drag: cell<GraphChartSchema['context']['drag']>(() => ({ defaultValue: null })),
     }
   },
@@ -133,7 +143,7 @@ export const graphChartMachine = createMachine({
           stagger: false,
           revealEasing: 'enter-strong',
           // 拖动与平移缩放是直接操纵：画面跟手，不播过渡
-          extent: ({ refs, context }) => refs.get('extent')(context.get('positions'), context.get('view')),
+          extent: ({ refs, context, prop }) => refs.get('extent')(context.get('positions'), graphViewOf(prop, context)),
         },
       }),
 
@@ -242,8 +252,8 @@ export const graphChartMachine = createMachine({
         refs.set('simulation', null)
         if (context.get('positions') != null)
           context.set('positions', null)
-        if (prop('zoom') !== true && context.get('view') !== HOME_VIEW)
-          context.set('view', HOME_VIEW)
+        if (prop('zoom') !== true && !sameView(context.get('view'), GRAPH_HOME_VIEW))
+          context.set('view', GRAPH_HOME_VIEW)
       },
 
       notifyActive: (params) => {
