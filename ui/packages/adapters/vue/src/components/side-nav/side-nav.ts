@@ -144,10 +144,10 @@ export const XhSideNavEmpty = defineComponent({
 
 /** 把一个值登记进所在分组，值变了换一条，卸下时撤销。登记写的是分组的成员表，回调不追踪它，免得自己触发自己。 */
 function joinGroup(value: () => string): void {
-  const join = useSideNavGroupContext()
-  if (!join)
+  const group = useSideNavGroupContext()
+  if (!group)
     return
-  watch(value, (next, _, onCleanup) => onCleanup(join(next)), { immediate: true })
+  watch(value, (next, _, onCleanup) => onCleanup(group.join(next)), { immediate: true })
 }
 
 // 叶子行的列表项：列表容器是 ul，链接得裹在 li 里才是它合法的直接子节点。
@@ -164,23 +164,29 @@ export const XhSideNavItem = defineComponent({
   },
 })
 
+// 分组是上一层列表里的一条（li）：里面放 group-label 与 group-list，组内的行挂在 group-list 里
 export const XhSideNavGroup = defineComponent({
   name: 'XhSideNavGroup',
   props: {
-    /** 分组身份，与 group-label 依靠它配对。 */
+    /** 分组身份，group-label 与 group-list 依靠它配对。 */
     value: { type: String, required: true },
   },
   setup(props, { slots }) {
     const ctx = useSideNavContext()
     // 成员由组里的链接与分支挂上时登记：搜索时一个成员都没命中就整组收起
     const members = shallowRef<readonly string[]>([])
-    provideSideNavGroup((value) => {
-      members.value = [...members.value, value]
-      return () => {
-        const at = members.value.indexOf(value)
-        if (at !== -1)
-          members.value = members.value.filter((_, i) => i !== at)
-      }
+    provideSideNavGroup({
+      get value() {
+        return props.value
+      },
+      join: (value) => {
+        members.value = [...members.value, value]
+        return () => {
+          const at = members.value.indexOf(value)
+          if (at !== -1)
+            members.value = members.value.filter((_, i) => i !== at)
+        }
+      },
     })
     return () => h('li', ctx.api.value.getGroupProps({ value: props.value, members: members.value }) as Record<string, unknown>, slots.default?.())
   },
@@ -194,6 +200,18 @@ export const XhSideNavGroupLabel = defineComponent({
   setup(props, { slots }) {
     const ctx = useSideNavContext()
     return () => h('div', ctx.api.value.getGroupLabelProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 分组里的列表：组内的 item 与 branch 挂在这里，以组标题命名；分组身份取自所在的 XhSideNavGroup。 */
+export const XhSideNavGroupList = defineComponent({
+  name: 'XhSideNavGroupList',
+  setup(_, { slots }) {
+    const ctx = useSideNavContext()
+    const group = useSideNavGroupContext()
+    if (!group)
+      throw new Error('[xh] XhSideNavGroupList 必须用在 XhSideNavGroup 内')
+    return () => h('ul', ctx.api.value.getGroupListProps({ value: group.value }) as Record<string, unknown>, slots.default?.())
   },
 })
 

@@ -627,6 +627,9 @@
       "side-nav",
       "transfer"
     ],
+    "group-list": [
+      "side-nav"
+    ],
     "guide": [
       "signature-pad"
     ],

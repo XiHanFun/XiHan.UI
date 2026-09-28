@@ -56,10 +56,11 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - nav 地标根容器（aria-label 由 translations.root 提供）
  * @csspart input - 搜索框，放在 list 之前：输入即按标签过滤导航树，命中入口的祖先保留并展开，其余收起；可及名由 translations.input 提供
- * @csspart list - 顶层列表容器（ul），直接子节点只能是 item 与 branch
+ * @csspart list - 顶层列表容器（ul），直接子节点只能是 item、branch 与 group
  * @csspart item - 叶子行的列表项（li），包裹一个 link
- * @csspart group - role=group 分组，须自带 value 属性
- * @csspart group-label - 分组标题（aria-labelledby 目标）
+ * @csspart group - 分组（li），是 list 里的一条，须自带 value 属性；里面放 group-label 与 group-list
+ * @csspart group-label - 分组标题，group-list 以 aria-labelledby 指向它
+ * @csspart group-list - 分组里的列表（ul），组内的 item 与 branch 挂在这里，以 group-label 命名
  * @csspart branch - 分支行容器，须自带 value 属性；它包裹自己的 branch-content
  * @csspart branch-trigger - 展开 / 收起按钮（aria-expanded / aria-controls）；落在选中路径上输出 data-in-path
  * @csspart branch-text - 行文字载体，折叠为图标栏时裁剪到不可见但仍参与播报，是按钮在图标栏中的可及名
@@ -407,6 +408,7 @@ export class XhSideNavElement extends XhPortalHostElement {
       this.spreader.spread(el, api.getGroupProps({ ...this.nodeOf(el, GROUP), members }) as Record<string, unknown>)
     }
     putAll('group-label', GROUP, node => api.getGroupLabelProps(node))
+    putAll('group-list', GROUP, node => api.getGroupListProps(node))
     putAll('branch', BRANCH, node => api.getBranchProps(node))
     putAll('branch-trigger', BRANCH, node => api.getBranchTriggerProps(node))
     putAll('branch-indicator', BRANCH, node => api.getBranchIndicatorProps(node))

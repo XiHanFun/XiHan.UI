@@ -237,7 +237,7 @@ export interface SideNavItemProps {
 }
 
 /**
- * 分组：value 与 group-label 配对；members 是分组里各条链接与分支的 value，
+ * 分组：value 是分组身份，group-label 与 group-list 靠它配对；members 是分组里各条链接与分支的 value，
  * 搜索时一个成员都没命中就整组收起。适配器按分组里挂着的部件收集，作者不用逐条列。
  */
 export interface SideNavGroupProps extends SideNavNodeProps {
@@ -287,8 +287,11 @@ export interface SideNavApi<T extends PropTypes = PropTypes> {
   getEmptyProps: () => T['element']
   /** 叶子行的列表项容器：链接与分支一样是列表的一条，作者把 link 包在其中。 */
   getItemProps: (props?: SideNavItemProps) => T['element']
+  /** 分组：上一层列表里的一条（li），装着 group-label 与 group-list；搜索时一个成员都没命中就整组收起。 */
   getGroupProps: (props: SideNavGroupProps) => T['element']
   getGroupLabelProps: (props: SideNavNodeProps) => T['element']
+  /** 分组里的列表（ul）：组内的 item 与 branch 挂在这里，以 group-label 命名。 */
+  getGroupListProps: (props: SideNavNodeProps) => T['element']
   getBranchProps: (props: SideNavNodeProps) => T['element']
   getBranchTriggerProps: (props: SideNavNodeProps) => T['button']
   /** 行文字的载体：折叠为图标栏时由皮肤整体隐藏，不会裁出半个字。 */

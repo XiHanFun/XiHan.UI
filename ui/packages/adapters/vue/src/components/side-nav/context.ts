@@ -49,15 +49,21 @@ export function useSideNavItemContext(): ReportItemValue | null {
   return inject(ITEM_KEY, null)
 }
 
-/** 分组收集成员：链接与分支挂上时登记自己的 value，返回撤销函数。 */
-type JoinGroup = (value: string) => () => void
-const GROUP_KEY: InjectionKey<JoinGroup> = Symbol.for('xh-side-nav-group')
+/**
+ * 分组上下文：value 是分组身份，group-list 据此与 group-label 配对；
+ * join 收集成员：链接与分支挂上时登记自己的 value，返回撤销函数。
+ */
+export interface SideNavGroupContext {
+  readonly value: string
+  join: (value: string) => () => void
+}
+const GROUP_KEY: InjectionKey<SideNavGroupContext> = Symbol.for('xh-side-nav-group')
 
-export function provideSideNavGroup(join: JoinGroup): void {
-  provide(GROUP_KEY, join)
+export function provideSideNavGroup(group: SideNavGroupContext): void {
+  provide(GROUP_KEY, group)
 }
 
 /** 不在分组里的链接与分支取不到，不登记。 */
-export function useSideNavGroupContext(): JoinGroup | null {
+export function useSideNavGroupContext(): SideNavGroupContext | null {
   return inject(GROUP_KEY, null)
 }

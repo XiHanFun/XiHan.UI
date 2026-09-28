@@ -256,10 +256,10 @@ const wcMasonrySuite: ConformanceSuite = {
 
 // side-nav 折叠态弹出面板的定位层在 Vue 版由 branch-content 组件内部装配并搬到浮层落点，
 // WC 版要作者手写在顶层 branch 里、包着 branch-content；平铺态不渲染它（connect 会把它整层藏掉），
-// 面板内嵌套的分支也不要它。故只对 collapsed 且没关掉弹出的用例，把 list 直属分支的
-// branch-content 包进 positioner。
+// 面板内嵌套的分支也不要它。故只对 collapsed 且没关掉弹出的用例，把顶层分支（list 直属的，
+// 或分组里 group-list 直属的）的 branch-content 包进 positioner。
 function withPopoutPositioner(node: FixtureNode, parent?: FixtureNode): FixtureNode {
-  if (node.part === 'branch' && parent?.part === 'list' && node.children) {
+  if (node.part === 'branch' && (parent?.part === 'list' || parent?.part === 'group-list') && node.children) {
     return {
       ...node,
       children: node.children.map(c => (c.part === 'branch-content' ? { part: 'positioner', children: [c] } : c)),

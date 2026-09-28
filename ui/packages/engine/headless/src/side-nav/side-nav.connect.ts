@@ -421,18 +421,23 @@ export function connectSideNav<T extends PropTypes>(
       hidden: (props?.value != null && !isShown(props.value)) || undefined,
     }),
 
+    // 分组是上一层列表里的一条（li），不另挂角色：列表的直接子节点只能是列表项。
     // 搜索时一个成员都没命中就整组收起，标题不孤零零地留着
-    getGroupProps: ({ value: v, members }) => normalize.element({
+    getGroupProps: ({ members }) => normalize.element({
       ...parts.group.attrs,
-      'role': 'group',
-      'aria-labelledby': groupLabelId(v),
-      'hidden': (searching && members != null && !members.some(isShown)) || undefined,
+      hidden: (searching && members != null && !members.some(isShown)) || undefined,
     }),
 
     getGroupLabelProps: ({ value: v }) => normalize.element({
       ...parts['group-label'].attrs,
       'id': groupLabelId(v),
       'data-collapsed': dataAttr(collapsed),
+    }),
+
+    // 组内的行挂在这一层列表里，列表以组标题命名。不写 role=group：列表项的父节点必须是列表
+    getGroupListProps: ({ value: v }) => normalize.element({
+      ...parts['group-list'].attrs,
+      'aria-labelledby': groupLabelId(v),
     }),
 
     getBranchProps: ({ value: v }) => normalize.element({

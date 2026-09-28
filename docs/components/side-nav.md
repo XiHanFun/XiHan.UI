@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="side-nav"`：**`root`** · `input` · **`list`** · **`item`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `positioner` · `branch-content` · **`link`** · `link-text` · `empty`
+`data-scope="side-nav"`：**`root`** · `input` · **`list`** · **`item`** · `group` · `group-label` · `group-list` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `positioner` · `branch-content` · **`link`** · `link-text` · `empty`
 
 ## 示例
 
@@ -83,6 +83,51 @@
 ### 组合
 
 - 放入[布局](./layout)的侧栏区域。
+- 分组：`group` 放在 `list` 里当一条，里面先放 `group-label`，再放 `group-list`，组内的 `item` 与 `branch` 挂在 `group-list` 里。
+- Vue / React 的 `XhSideNavGroupList` 从所在的 `XhSideNavGroup` 取分组身份，不用再写 `value`；Web Components 的 `group-label` 与 `group-list` 都认所在的 `group`。
+
+```vue
+<XhSideNavList>
+  <XhSideNavGroup value="main">
+    <XhSideNavGroupLabel value="main">常用</XhSideNavGroupLabel>
+    <XhSideNavGroupList>
+      <XhSideNavItem>
+        <XhSideNavLink value="home">
+          <XhSideNavLinkText>工作台</XhSideNavLinkText>
+        </XhSideNavLink>
+      </XhSideNavItem>
+    </XhSideNavGroupList>
+  </XhSideNavGroup>
+</XhSideNavList>
+```
+
+```tsx
+<XhSideNavList>
+  <XhSideNavGroup value="main">
+    <XhSideNavGroupLabel value="main">常用</XhSideNavGroupLabel>
+    <XhSideNavGroupList>
+      <XhSideNavItem>
+        <XhSideNavLink value="home">
+          <XhSideNavLinkText>工作台</XhSideNavLinkText>
+        </XhSideNavLink>
+      </XhSideNavItem>
+    </XhSideNavGroupList>
+  </XhSideNavGroup>
+</XhSideNavList>;
+```
+
+```html
+<ul data-xh-part="list">
+  <li data-xh-part="group" value="main">
+    <div data-xh-part="group-label">常用</div>
+    <ul data-xh-part="group-list">
+      <li data-xh-part="item">
+        <a data-xh-part="link" value="home"><span data-xh-part="link-text">工作台</span></a>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
 
 ### 接路由
 
@@ -123,7 +168,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-side-nav>` |
-| Vue 组件 | `XhSideNavBranch` `XhSideNavBranchContent` `XhSideNavBranchIndicator` `XhSideNavBranchText` `XhSideNavBranchTrigger` `XhSideNavEmpty` `XhSideNavGroup` `XhSideNavGroupLabel` `XhSideNavInput` `XhSideNavItem` `XhSideNavLink` `XhSideNavLinkText` `XhSideNavList` `XhSideNavRoot` `XhSideNavTooltip` |
+| Vue 组件 | `XhSideNavBranch` `XhSideNavBranchContent` `XhSideNavBranchIndicator` `XhSideNavBranchText` `XhSideNavBranchTrigger` `XhSideNavEmpty` `XhSideNavGroup` `XhSideNavGroupLabel` `XhSideNavGroupList` `XhSideNavInput` `XhSideNavItem` `XhSideNavLink` `XhSideNavLinkText` `XhSideNavList` `XhSideNavRoot` `XhSideNavTooltip` |
 | 组合式函数 | `useSideNav` |
 | 状态机 | `sideNavMachine` |
 | 皮肤 | `@xihan-ui/styles/side-nav.css` |
@@ -188,7 +233,7 @@
 | --- | --- | --- | --- | --- |
 | `XhSideNavBranch` | `value` | `string` | 是 |  |
 | `XhSideNavBranchContent` | `container` | `() => Element \| null` |  | 本分支弹层的 Portal 容器；优先于应用级配置。 |
-| `XhSideNavGroup` | `value` | `string` | 是 | 分组身份，与 group-label 依靠它配对。 |
+| `XhSideNavGroup` | `value` | `string` | 是 | 分组身份，group-label 与 group-list 依靠它配对。 |
 | `XhSideNavGroupLabel` | `value` | `string` | 是 |  |
 | `XhSideNavLink` | `value` | `string` | 是 |  |
 | `XhSideNavRoot` | `children` | `SlotChildren<SideNavRootSlotProps>` |  |  |
@@ -245,8 +290,9 @@
 | `getInputProps` | `() => T['input']` | 搜索框：放在 root 里、list 之前。输入即按 filter 过滤导航树；下方向键或 Enter 把焦点交给导航行， Escape 先清空检索词。落成图标栏时过滤暂停（皮肤让框留着高度、不可见也不可聚焦），展开回来接着按原来的检索词过滤。 |
 | `getEmptyProps` | `() => T['element']` | 搜索一条都没命中时露面的占位，放在 list 之后；其余时候带 hidden。 |
 | `getItemProps` | `(props?: SideNavItemProps) => T['element']` | 叶子行的列表项容器：链接与分支一样是列表的一条，作者把 link 包在其中。 |
-| `getGroupProps` | `(props: SideNavGroupProps) => T['element']` |  |
+| `getGroupProps` | `(props: SideNavGroupProps) => T['element']` | 分组：上一层列表里的一条（li），装着 group-label 与 group-list；搜索时一个成员都没命中就整组收起。 |
 | `getGroupLabelProps` | `(props: SideNavNodeProps) => T['element']` |  |
+| `getGroupListProps` | `(props: SideNavNodeProps) => T['element']` | 分组里的列表（ul）：组内的 item 与 branch 挂在这里，以 group-label 命名。 |
 | `getBranchProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getBranchTriggerProps` | `(props: SideNavNodeProps) => T['button']` |  |
 | `getBranchTextProps` | `() => T['element']` | 行文字的载体：折叠为图标栏时由皮肤整体隐藏，不会裁出半个字。 |
@@ -295,8 +341,7 @@
 | `root` | `role` | 'navigation' |
 | `input` | `aria-controls` | scope.partId('side-nav', 'list') |
 | `input` | `aria-label` | translations.input |
-| `group` | `aria-labelledby` | `group-label` 部件的 id |
-| `group` | `role` | 'group' |
+| `group-list` | `aria-labelledby` | `group-label` 部件的 id |
 | `branch-trigger` | `aria-controls` | `content` 部件的 id |
 | `branch-trigger` | `aria-disabled` | 'true' \| 'false' |
 | `branch-trigger` | `aria-expanded` | 'true' \| 'false' |
@@ -309,7 +354,8 @@
 | `tooltip-content` | `aria-hidden` | 'true' |
 | `tooltip-content` | `role` | undefined |
 
-- `list` 与 `branch-content` 使用列表语义。
+- `list`、`group-list` 与 `branch-content` 都是列表（`ul`），直接子节点只放列表项：`item` 与 `branch`，`list` 里还可以放 `group`。
+- 分组 `group` 是上一层列表里的一条，本身不带角色；组内的行挂在 `group-list` 里，`group-list` 以 `aria-labelledby` 指向 `group-label`，读屏念作「标题 + 列表」。不写 `role="group"`：列表项的父节点必须是列表。
 - 将文字放入 `branch-text` 或 `link-text`，确保折叠后仍有可访问名称。
 - 装饰图标使用 `aria-hidden="true"`。
 - 搜索框没有可见标签，可及名取 `translations.input`；空态以 `role="status"` 露面即播报。
@@ -388,7 +434,7 @@
 | `--xh-side-nav-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-side-nav-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | side-nav 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-side-nav-fg` | `root` | `color` | `default` | `--xh-fg-default` | side-nav 的 root 部件 color 覆盖槽。 |
-| `--xh-side-nav-gap` | `branch`<br>`branch-content`<br>`group`<br>`list`<br>`root` | `gap` | `default` | `--xh-space-1` | side-nav 的 branch、branch-content、group、list、root 部件 gap 覆盖槽。 |
+| `--xh-side-nav-gap` | `branch`<br>`branch-content`<br>`group`<br>`group-list`<br>`list`<br>`root` | `gap` | `default` | `--xh-space-1` | side-nav 的 branch、branch-content、group、group-list、list、root 部件 gap 覆盖槽。 |
 | `--xh-side-nav-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-side-nav-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | side-nav 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-side-nav-icon-size` | `branch-trigger`<br>`link`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | side-nav 的 branch-trigger、link、positioner、root 部件 --xh-icon-size 覆盖槽。 |

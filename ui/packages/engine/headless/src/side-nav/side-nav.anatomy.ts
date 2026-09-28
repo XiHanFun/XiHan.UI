@@ -10,6 +10,7 @@ import { createAnatomy } from '@xihan-ui/core'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // input 是排在 list 之前的搜索框，empty 是排在 list 之后、搜索一条都没命中时露面的占位，两者都可缺省。
+// 分组是 list 里的一条（group，li），里面是标题 group-label 与一层以标题命名的列表 group-list（ul），组内的行挂在后者里。
 export const sideNavAnatomy = createAnatomy('side-nav', [
   'root',
   'input',
@@ -17,6 +18,7 @@ export const sideNavAnatomy = createAnatomy('side-nav', [
   'item',
   'group',
   'group-label',
+  'group-list',
   'branch',
   'branch-trigger',
   'branch-text',

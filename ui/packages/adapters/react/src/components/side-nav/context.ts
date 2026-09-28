@@ -45,12 +45,20 @@ export function useSideNavItemContext(): ((value: string | null) => void) | null
   return useContext(ItemCtx)
 }
 
-/** 分组收集成员：链接与分支挂上时登记自己的 value，返回撤销函数。 */
-const GroupCtx = createContext<((value: string) => () => void) | null>(null)
+/**
+ * 分组上下文：value 是分组身份，group-list 据此与 group-label 配对；
+ * join 收集成员：链接与分支挂上时登记自己的 value，返回撤销函数。
+ */
+export interface SideNavGroupContext {
+  value: string
+  join: (value: string) => () => void
+}
+
+const GroupCtx = createContext<SideNavGroupContext | null>(null)
 
 export const SideNavGroupProvider = GroupCtx
 
 /** 不在分组里的链接与分支取不到，不登记。 */
-export function useSideNavGroupContext(): ((value: string) => () => void) | null {
+export function useSideNavGroupContext(): SideNavGroupContext | null {
   return useContext(GroupCtx)
 }
