@@ -1,5 +1,6 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { popoverAnatomy, popoverKeyboard } from '@xihan-ui/headless'
+import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
 import { heldPress } from './shared/press-channel'
 
@@ -110,6 +111,31 @@ export const popoverSuite: ConformanceSuite = {
             },
             events: [{ type: 'open-change', detail: { open: true } }],
           },
+        },
+      ],
+    },
+    {
+      name: 'disabled：触发器转原生 disabled，点了不展开也不派 open-change',
+      spec: { adr: 'popover-disabled' },
+      props: { disabled: true },
+      initial: { parts: { trigger: { 'disabled': '', 'data-disabled': '', 'aria-expanded': 'false' } } },
+      steps: [
+        dispatchClickOnDisabled('popover', 'trigger', {
+          parts: { trigger: { 'aria-expanded': 'false' }, content: { hidden: '' } },
+          events: [],
+        }),
+      ],
+    },
+    {
+      name: 'defaultOpen 展开途中转为禁用：收起并派发 open-change',
+      spec: { adr: 'popover-disabled' },
+      props: { defaultOpen: true },
+      steps: [
+        { kind: 'setProps', props: { defaultOpen: true, disabled: true } },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'content', name: 'hidden', value: '' } },
+          expect: { parts: { trigger: { 'aria-expanded': 'false', 'disabled': '' } } },
         },
       ],
     },

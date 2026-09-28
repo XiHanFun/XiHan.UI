@@ -46,6 +46,8 @@ export const popoverMachine = createMachine({
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     track([() => prop('modal')], () => action(['syncModalResources']))
+    // 展开途中转为禁用：收起（受控时只发意图）
+    track([() => prop('disabled')], () => action(['closeWhenDisabled']))
   },
   // 按压通道：trigger 与 close-trigger 都不受开合状态影响，两个状态都认 PRESS.*
   on: {
@@ -55,12 +57,14 @@ export const popoverMachine = createMachine({
   states: {
     closed: {
       on: {
-        // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
+        // 禁用 → 不展开；受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
+          { guard: 'isDisabled' },
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnOpen'] },
           { target: 'open', actions: ['setReturnFocus', 'invokeOnOpen'] },
         ],
         'TOGGLE': [
+          { guard: 'isDisabled' },
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnOpen'] },
           { target: 'open', actions: ['setReturnFocus', 'invokeOnOpen'] },
         ],
@@ -88,6 +92,7 @@ export const popoverMachine = createMachine({
   implementations: {
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      isDisabled: ({ prop }) => !!prop('disabled'),
     },
     actions: {
       startPress: ({ context, event }) => {
@@ -122,6 +127,10 @@ export const popoverMachine = createMachine({
         send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
       syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
+      closeWhenDisabled: ({ prop, state, send }) => {
+        if (prop('disabled') && state.get() === 'open')
+          send({ type: 'CLOSE' })
+      },
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读。

@@ -104,6 +104,7 @@ size 改变面板的内边距与最大宽度，三个档位落在 content 上
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
+| `disabled` | `boolean` |  | 浮层不可打开：触发器转原生 disabled，点按与命令式 setOpen(true) 都不展开；展开途中转为禁用即收起。 与 Tooltip、HoverCard 的 disabled 同名同义：关掉的是浮层这件事。受控写回 open 仍按宿主的意思来。 |
 | `offset` | `number` |  |  |
 | `onCancel` | `() => void` |  | 点击了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发该回调。 |
 | `onConfirm` | `() => void \| PromiseLike<unknown>` |  | 点击了确认按钮。返回 thenable 即挂起确认门：浮层等待它兑现才收起、 确认按钮转圈且再次点击无效，拒绝则留在原地并报告确认错误。同步返回照常立即收起。 |

@@ -64,6 +64,11 @@ export interface PopoverSchema extends MachineSchema {
     modal?: boolean
     closeOnEscape?: boolean
     closeOnInteractOutside?: boolean
+    /**
+     * 浮层不可打开：触发器转原生 disabled，点按与命令式 setOpen(true) 都不展开；展开途中转为禁用即收起。
+     * 与 Tooltip、HoverCard 的 disabled 同名同义：关掉的是浮层这件事。受控写回 open 仍按宿主的意思来。
+     */
+    disabled?: boolean
     translations?: Partial<PopoverTranslations>
     /** 尺寸：sm / md / lg，决定面板的内边距档位。 */
     size?: Size
@@ -95,8 +100,8 @@ export interface PopoverSchema extends MachineSchema {
     | { type: 'PRESS.START', part: PopoverPressedPart }
     | { type: 'PRESS.END', part: PopoverPressedPart }
   tag: never
-  guard: 'isOpenControlled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'setReturnFocus' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress'
+  guard: 'isOpenControlled' | 'isDisabled'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'setReturnFocus' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress' | 'closeWhenDisabled'
   effect: 'trackPosition' | 'trackLayer'
 }
 
