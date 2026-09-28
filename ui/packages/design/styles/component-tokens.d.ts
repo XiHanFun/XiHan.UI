@@ -178,6 +178,8 @@ export type ComponentTokenName
     | '--xh-badge-font-size'
     | '--xh-badge-font-weight'
     | '--xh-badge-min-size'
+    | '--xh-badge-offset-block'
+    | '--xh-badge-offset-inline'
     | '--xh-badge-px'
     | '--xh-badge-radius'
     | '--xh-badge-ring'

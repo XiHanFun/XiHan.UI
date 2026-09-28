@@ -2639,6 +2639,12 @@
               "name": "--xh-badge-min-size"
             },
             {
+              "name": "--xh-badge-offset-block"
+            },
+            {
+              "name": "--xh-badge-offset-inline"
+            },
+            {
               "name": "--xh-badge-px"
             },
             {
