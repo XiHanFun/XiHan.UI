@@ -206,7 +206,8 @@ export const wcDrawerSuite: ConformanceSuite = {
       name: '可调厚度：把手是 role=separator，推向页面那一侧变厚；Shift 大步，Home / End 推到上下限，推一步发一次意图',
       spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/' },
       covers: ['drawer.kbd.resize-step', 'drawer.kbd.resize-large', 'drawer.kbd.resize-bound'],
-      props: { defaultOpen: true, resizable: true, minPanelSize: 200, maxPanelSize: 480 },
+      // 上限取得比任何测试视口都窄：面板上限还受视口（或所在容器）夹取，窄视口里推不到更大的数
+      props: { defaultOpen: true, resizable: true, minPanelSize: 200, maxPanelSize: 360 },
       fixture: withResizeTrigger,
       initial: {
         parts: {
@@ -215,7 +216,7 @@ export const wcDrawerSuite: ConformanceSuite = {
             'aria-orientation': 'vertical',
             'aria-label': 'Resize drawer',
             'aria-valuemin': '200',
-            'aria-valuemax': '480',
+            'aria-valuemax': '360',
             'tabindex': '0',
             'data-side': 'right',
             'hidden': null,
@@ -224,10 +225,10 @@ export const wcDrawerSuite: ConformanceSuite = {
       },
       steps: [
         { kind: 'focus', part: 'resize-trigger' },
-        { kind: 'key', key: 'End', expect: { events: [{ type: 'panel-size-change', detail: { panelSize: 480 } }] } },
-        expectInlineSlot('drawer', 'content', '--xh-_drawer-panel-size', '480px', '厚度写在内联样式的私有槽里，三端的 style 序列化各不相同'),
-        { kind: 'key', key: 'ArrowRight', modifiers: ['Shift'], expect: { events: [{ type: 'panel-size-change', detail: { panelSize: 440 } }] } },
-        { kind: 'key', key: 'ArrowRight', expect: { events: [{ type: 'panel-size-change', detail: { panelSize: 432 } }] } },
+        { kind: 'key', key: 'End', expect: { events: [{ type: 'panel-size-change', detail: { panelSize: 360 } }] } },
+        expectInlineSlot('drawer', 'content', '--xh-_drawer-panel-size', '360px', '厚度写在内联样式的私有槽里，三端的 style 序列化各不相同'),
+        { kind: 'key', key: 'ArrowRight', modifiers: ['Shift'], expect: { events: [{ type: 'panel-size-change', detail: { panelSize: 320 } }] } },
+        { kind: 'key', key: 'ArrowRight', expect: { events: [{ type: 'panel-size-change', detail: { panelSize: 312 } }] } },
         { kind: 'key', key: 'Home', expect: { events: [{ type: 'panel-size-change', detail: { panelSize: 200 } }] } },
         expectInlineSlot('drawer', 'content', '--xh-_drawer-panel-size', '200px', '推到下限'),
       ],
