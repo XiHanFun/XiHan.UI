@@ -29,7 +29,7 @@ function transitions(el: HTMLElement): string[] {
 }
 
 describe('splitter 折叠过渡', () => {
-  it('Enter 折叠：面板尺寸沿过渡让出，播完撤下 data-animating；方向键步进照旧跟手', async () => {
+  it('按 Enter 折叠：面板尺寸沿过渡让出，播完撤下 data-animating；方向键步进照旧跟手', async () => {
     host = document.createElement('div')
     document.body.append(host)
     app = createApp({
