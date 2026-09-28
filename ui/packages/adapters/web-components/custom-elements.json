@@ -28571,6 +28571,23 @@
             },
             {
               "kind": "field",
+              "name": "markupDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()"
+            },
+            {
+              "kind": "field",
+              "name": "wasGridDisabled",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "上一帧是否整体禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -28621,6 +28638,25 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "markupRowDisabled",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "row",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "无 collection 时行的禁用声明。原生 disabled 每轮接线都会被摘掉，还留在节点上就只能是作者刚写的；\naria-disabled 只有在「头一回见到这行」（本帧写回尚未发生）或「本帧与上一帧都没整体禁用」时才等于作者声明，\n其余帧沿用快照——整体禁用那几帧 connect 把每行都写成了 true，解禁当帧 DOM 上还留着这些写回值。"
             },
             {
               "kind": "method",

@@ -100,6 +100,11 @@ export class XhGridListElement extends XhElement {
   }
 
   private readonly declaredRowDisabled = createDeclaredDisabled()
+  // 无 collection 时行自身禁用声明的快照。connect 每帧都把 aria-disabled 写回行，整体禁用更是写满每一行，
+  // 此时回读分不清「作者声明的」还是「自己上一帧写的」，解禁后行就永远解不开。
+  private readonly markupDisabled = new WeakMap<HTMLElement, boolean>()
+  /** 上一帧是否整体禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
+  private wasGridDisabled = false
   private readonly notifyValue = (details: GridListValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -136,11 +141,24 @@ export class XhGridListElement extends XhElement {
     return this.getParts(name).filter(part => owner.contains(part))
   }
 
+  /**
+   * 无 collection 时行的禁用声明。原生 disabled 每轮接线都会被摘掉，还留在节点上就只能是作者刚写的；
+   * aria-disabled 只有在「头一回见到这行」（本帧写回尚未发生）或「本帧与上一帧都没整体禁用」时才等于作者声明，
+   * 其余帧沿用快照——整体禁用那几帧 connect 把每行都写成了 true，解禁当帧 DOM 上还留着这些写回值。
+   */
+  private markupRowDisabled(row: HTMLElement): boolean {
+    if (row.hasAttribute('disabled'))
+      this.markupDisabled.set(row, true)
+    else if (!this.markupDisabled.has(row) || (!this.disabled && !this.wasGridDisabled))
+      this.markupDisabled.set(row, row.getAttribute('aria-disabled') === 'true')
+    return this.markupDisabled.get(row)!
+  }
+
   /** 读行的禁用声明，并摘掉作者写的原生 disabled，禁用态归一到 aria-disabled。 */
   private rowProps(row: HTMLElement): GridListRowProps {
     const disabled = this.collection
       ? this.declaredRowDisabled(row)
-      : row.hasAttribute('disabled') || row.getAttribute('aria-disabled') === 'true'
+      : this.markupRowDisabled(row)
     // row 不是表单控件，原生 disabled 在它上面不是有效属性；摘掉之后由 connect 写回的 aria-disabled 承接，下一轮接线照样读得到
     if (row.hasAttribute('disabled'))
       row.removeAttribute('disabled')
@@ -175,5 +193,8 @@ export class XhGridListElement extends XhElement {
           this.spreader.spread(part, getter(row) as Record<string, unknown>)
       }
     }
+
+    // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
+    this.wasGridDisabled = !!this.disabled
   }
 }
