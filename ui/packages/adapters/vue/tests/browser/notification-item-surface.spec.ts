@@ -16,8 +16,12 @@ async function tick(): Promise<void> {
   await new Promise(r => setTimeout(r, 0))
   await nextTick()
   const item = document.querySelector<HTMLElement>(`[data-scope='notification'][data-part='item']`)
-  if (item)
-    await Promise.all(item.getAnimations({ subtree: true }).map(animation => animation.finished))
+  // 只等有尽头的：加载中那枚环是无限循环，等它就永远等不完
+  if (item) {
+    await Promise.all(item.getAnimations({ subtree: true })
+      .filter(animation => Number.isFinite(Number(animation.effect?.getComputedTiming().endTime)))
+      .map(animation => animation.finished))
+  }
 }
 
 function part(name: string): HTMLElement {
@@ -115,5 +119,40 @@ describe('通知卡片的表面与两颗钮', () => {
     await userEvent.hover(action)
     await expect.poll(() => getComputedStyle(action).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
     expect(getComputedStyle(action).borderTopColor).toBe(tokenColor('--xh-border-control-hover'))
+  })
+})
+
+describe('通知卡片的加载指示', () => {
+  it('加载中画的是与 Spinner 环档同一副加载环：轨道中性、起始边语气色，转起来，语气字形让位', async () => {
+    notify = createNotificationService()
+    notify.create({ title: '正在上传', loading: true, tone: 'info', duration: 0 })
+    await tick()
+    const indicator = part('item-indicator')
+    const ring = getComputedStyle(indicator, '::before')
+    expect(ring.maskImage).toBe('none')
+    expect(ring.borderTopStyle).toBe('solid')
+    expect(ring.borderTopLeftRadius).toBe('50%')
+    expect(ring.borderRightColor).toBe(tokenColor('--xh-border-default'))
+    expect(ring.borderTopColor).toBe(getComputedStyle(indicator).color)
+    expect(ring.animationName).toBe('xh-spin')
+    expect(ring.animationPlayState).toBe('running')
+    expect(ring.opacity).toBe('1')
+    expect(getComputedStyle(indicator, '::after').opacity).toBe('0')
+  })
+
+  it('加载落定时环淡出、语气字形淡入，同一格里交叉淡变', async () => {
+    notify = createNotificationService()
+    const id = notify.create({ title: '正在上传', loading: true, tone: 'info', duration: 0 })
+    await tick()
+    const indicator = part('item-indicator')
+    notify.update(id, { loading: false, tone: 'success', title: '已上传' })
+    await expect.poll(() => part('item').hasAttribute('data-loading')).toBe(false)
+    const fades = (): Animation[] => indicator.getAnimations({ subtree: true })
+      .filter(a => (a as CSSTransition).transitionProperty === 'opacity')
+    expect(fades().map(a => (a.effect as KeyframeEffect).pseudoElement)).toEqual(expect.arrayContaining(['::before', '::after']))
+    await Promise.all(fades().map(a => a.finished))
+    expect(getComputedStyle(indicator, '::before').opacity).toBe('0')
+    expect(getComputedStyle(indicator, '::after').opacity).toBe('1')
+    expect(getComputedStyle(indicator, '::after').maskImage).not.toBe('none')
   })
 })

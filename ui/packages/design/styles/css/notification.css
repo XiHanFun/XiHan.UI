@@ -7,8 +7,9 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
-/* Notification 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方；full bundle 递归去重。 */
+/* Notification 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方与加载环配方；full bundle 递归去重。 */
 @import '../family/action-control.css';
+@import '../family/loading-ring.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -170,6 +171,7 @@
 
     grid-column: 1;
     grid-row: 1;
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -182,52 +184,49 @@
     display: none;
   }
 
-  /* 作者没往指示符里写内容就由皮肤画兜底字形，按语气各画一枚；
-     塞了自己的图形这几条即不命中 */
+  /* 作者没往指示符里写内容就由皮肤画兜底的环与字形，塞了自己的图形这几条即不命中。
+     两层叠在同一格：::before 是加载环（加载环配方画成与 Spinner 环档同一副环，随 data-loading 淡入淡出、
+     转与停，起始边取指示符的语气色），::after 是按语气各画一枚的字形，加载中淡出让位——
+     加载落定时环淡出、字形淡入，同一格里交叉淡变。「在等什么」由卡片上的 role=status 与可见文案承担 */
   [data-scope='notification'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
+  }
+
+  [data-scope='notification'][data-part='item-indicator']:empty::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    margin: auto;
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-info) center / contain no-repeat;
     mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='notification'][data-part='item'][data-tone='success'] [data-part='item-indicator']:empty::before {
+  [data-scope='notification'][data-part='item'][data-tone='success'] [data-part='item-indicator']:empty::after {
     -webkit-mask-image: var(--xh-glyph-mark-check);
     mask-image: var(--xh-glyph-mark-check);
   }
 
-  [data-scope='notification'][data-part='item'][data-tone='warning'] [data-part='item-indicator']:empty::before {
+  [data-scope='notification'][data-part='item'][data-tone='warning'] [data-part='item-indicator']:empty::after {
     -webkit-mask-image: var(--xh-glyph-mark-warning);
     mask-image: var(--xh-glyph-mark-warning);
   }
 
-  [data-scope='notification'][data-part='item'][data-tone='danger'] [data-part='item-indicator']:empty::before {
+  [data-scope='notification'][data-part='item'][data-tone='danger'] [data-part='item-indicator']:empty::after {
     -webkit-mask-image: var(--xh-glyph-mark-close);
     mask-image: var(--xh-glyph-mark-close);
   }
 
-  /* 加载中不是语气：只换字形，颜色沿用当前语气的前景档；写在四档语气之后，转圈压过它们 */
-  [data-scope='notification'][data-part='item'][data-loading] [data-part='item-indicator']:empty::before {
-    -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
-    mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite;
-  }
-
-  /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；
-     "在等什么"由卡片上的 role=status 与可见文案继续承担。
-     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='notification'][data-part='item'][data-loading] [data-part='item-indicator']:empty::before {
-      animation: none;
-    }
-  }
-
-  :where([data-motion='reduce']) [data-scope='notification'][data-part='item'][data-loading] [data-part='item-indicator']:empty::before {
-    animation: none;
+  /* 加载中不是语气：字形淡出让位给环，颜色仍照语气走 */
+  [data-scope='notification'][data-part='item-indicator'][data-loading]:empty::after {
+    opacity: 0;
   }
 
   [data-scope='notification'][data-part='item-title'] {
@@ -393,17 +392,11 @@
   }
 
   @media print {
-    /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
-       取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
-       :where([data-motion='reduce']) 的钩子版本与它成对，打印没有对应的钩子可配，
-       并成一条之后这层配对关系在文本上就断了。 */
     /* 通知组固定在视口上，打印那一刻在场就会盖住正文。 */
     [data-scope='notification'][data-part='group'] {
       display: none;
     }
 
-    [data-scope='notification'][data-part='item'][data-loading] [data-part='item-indicator']:empty::before {
-      animation: none;
-    }
+    /* 加载环的静止替代由加载环配方在打印档给出 */
   }
 }

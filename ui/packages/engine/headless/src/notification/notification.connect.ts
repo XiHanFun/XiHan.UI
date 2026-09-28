@@ -188,6 +188,9 @@ export function connectNotificationItem<T extends PropTypes>(
       ...parts['item-indicator'].attrs,
       // 纯装饰：这条是成功还是出错，标题里已经说了
       'aria-hidden': true,
+      'data-loading': dataAttr(loading),
+      // 兜底的环那一层接加载环配方，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
     }),
 
     getItemTitleProps: () => normalize.element({
