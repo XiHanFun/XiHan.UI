@@ -6,13 +6,12 @@
 // 提供 select 相关实现。
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { TagApi } from '../tag'
 import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
 import { contains, createPressTracker, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { connectSelectionTags } from '../shared/selection-tags'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
-import { connectStaticTag, tagVariantForControl } from '../tag'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
 import { SELECT_DEFAULT_MAX_TAG_COUNT, SELECT_DEFAULT_PLACEMENT } from './select.machine'
 
@@ -63,47 +62,28 @@ export function connectSelect<T extends PropTypes>(
   const placeholder = prop('placeholder') ?? null
   // 多选把各项文本连起来显示；分隔符固定，作者要别的排版就自己渲染 valueText
   const displayText = valueText.length > 0 ? valueText.join(', ') : placeholder ?? ''
-  // 标签形态：与 value/valueText 同序，maxTagCount 只截可见的、余数进 overflowCount 并合成 overflow-tag 那一枚
-  const allTags = value.map((v, i) => ({ value: v, label: valueText[i] ?? v }))
-  const maxTagCount = prop('maxTagCount') ?? SELECT_DEFAULT_MAX_TAG_COUNT
-  const tags = allTags.slice(0, Math.max(0, maxTagCount))
-  const overflowCount = allTags.length - tags.length
-  const overflowText = overflowCount > 0
-    ? (prop('translations')?.overflowTag ?? ((count: number) => `+${count}`))(overflowCount)
-    : ''
-  const tagLabel = (v: string): string => allTags.find(tag => tag.value === v)?.label ?? v
   // roving tabindex 与方向键起点共用这一个锚点；收起时为 null（条目此刻不可达）
   const highlighted = context.get('highlightedValue') ?? null
   const disabled = !!prop('disabled')
-  const deleteItemLabel = prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`)
   const readOnly = !!prop('readOnly')
   // 形态默认落 outline：不写时 root 与 positioner 如实投影，皮肤不再依赖缺省档；标签的形态也从这个常量派
   const variant = prop('variant') ?? 'outline'
-  const tagAxes = { variant: tagVariantForControl(variant), tone: prop('tone'), size: prop('size'), disabled, readOnly }
-  // 标签与 +N 套的是库里的 tag：语气、尺寸、禁用与只读从本控件传下去，形态按控件的面派。
-  // 显隐受控在这里——标签在不在只看选中值在不在，不建机器。
-  // 值标签一枚一份，关闭钮即删除钮：受控 open 下按它只发 onOpenChange，摘值从这里回到机器；
-  // 摆在触发器里时不渲那颗钮（按钮不能套按钮），root 的产出不看 closable
-  const hostedTag = (v: string): TagApi<T> => connectStaticTag(
-    {
-      ...tagAxes,
-      closable: true,
-      open: true,
-      translations: { close: deleteItemLabel(tagLabel(v)) },
-      onOpenChange: ({ open }) => {
-        if (!open)
-          send({ type: 'VALUE.SET', value: value.filter(x => x !== v) })
-      },
-    },
-    { get: () => true, set: () => {} },
-    normalize,
-  )
-  // +N 那一枚不可关闭：没有折起的标签时就是收起态，hidden 由 tag 给
-  const overflowTag = connectStaticTag(
-    { ...tagAxes, closable: false, open: overflowCount > 0 },
-    { get: () => overflowCount > 0, set: () => {} },
-    normalize,
-  )
+  // 标签形态：与 value/valueText 同序，maxTagCount 只截可见的、余数进 overflowCount 并合成 overflow-tag 那一枚。
+  // 删除钮摘值回到机器：只读时 VALUE.SET 被 isReadOnly 守卫挡下
+  const selectionTags = connectSelectionTags({
+    entries: value.map((v, i) => ({ key: v, label: valueText[i] ?? v })),
+    maxTagCount: prop('maxTagCount') ?? SELECT_DEFAULT_MAX_TAG_COUNT,
+    overflowTag: prop('translations')?.overflowTag,
+    deleteItem: prop('translations')?.deleteItem,
+    variant,
+    tone: prop('tone'),
+    size: prop('size'),
+    disabled,
+    readOnly,
+    onDelete: v => send({ type: 'VALUE.SET', value: value.filter(x => x !== v) }),
+  }, normalize)
+  const tags = selectionTags.visible.map(tag => ({ value: tag.key, label: tag.label }))
+  const { overflowCount, overflowText } = selectionTags
   const loading = !!prop('loading')
   // 集合交给库时相位由库判；条目手写时库数不出有几条
   const counted = prop('collection') != null
@@ -339,9 +319,10 @@ export function connectSelect<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
     }),
-    // 标签行：无选中时整个收起，皮肤据此让 value-text 回来显示占位文字
+    // 标签行：无选中时整个收起，皮肤据此让 value-text 回来显示占位文字；行怎么排归标签行家族配方
     getTagListProps: () => normalize.element({
       ...parts['tag-list'].attrs,
+      'data-xh-tag-list': '',
       'hidden': value.length === 0 || undefined,
       'data-disabled': dataAttr(disabled),
       // 列表动效接上之前，首帧的标签直接呈现
@@ -349,19 +330,19 @@ export function connectSelect<T extends PropTypes>(
     }),
     // 标签本体就是 tag 的 root（data-scope="tag"），只多一个 data-value 记它代表哪个选中值
     getTagProps: ({ value: v }) => ({
-      ...hostedTag(v).getRootProps() as Record<string, unknown>,
+      ...selectionTags.tag(v).getRootProps() as Record<string, unknown>,
       'data-value': v,
     }) as T['element'],
     // 折起来的那些合成一枚：也是 tag 的 root，data-count 记折了几枚；没有折起的就整个收起，不留空位
     getOverflowTagProps: () => ({
-      ...overflowTag.getRootProps() as Record<string, unknown>,
+      ...selectionTags.overflow.getRootProps() as Record<string, unknown>,
       'data-count': String(overflowCount),
     }) as T['element'],
     // 两种标签的文字都落在 tag 的 label 上，截断规则挂在那一层
-    getTagLabelProps: () => overflowTag.getLabelProps(),
+    getTagLabelProps: () => selectionTags.overflow.getLabelProps(),
     // 删除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用与点按都由 tag 给，
     // 只读时点按送到机器的 VALUE.SET 被 isReadOnly 守卫挡下
-    getItemDeleteTriggerProps: ({ value: v }) => hostedTag(v).getCloseTriggerProps(),
+    getItemDeleteTriggerProps: ({ value: v }) => selectionTags.tag(v).getCloseTriggerProps(),
     // 清空按钮是 trigger 的兄弟节点（按钮不能套按钮），点按只清值不碰开合；
     // 走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200，按 has-value 显隐
     getClearTriggerProps: () => {

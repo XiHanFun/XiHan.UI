@@ -2687,6 +2687,61 @@
   }
 }
 
+/* family/tag-list.css */
+/*
+ * 标签行家族配方：多选控件把已选值摆成一行标签，Select、Combobox、TreeSelect、Cascader 共用这一份排法。
+ *
+ * 连接层在标签行上投影 data-xh-tag-list。行里每一枚都是库里的 tag（data-scope="tag"），样子归 tag.css，
+ * 这里只管行怎么排、标签怎么进出：
+ *   - 行是弹性子项，只缩不涨：允许被压缩并把溢出裁掉，标签不冲出字段盒、不把盒尾的钮挤出去；
+ *   - 行装不下时各枚标签各自缩短，截断落在 tag 自己的 label 上；+N 那一枚（带 data-count）不缩，始终完整可见；
+ *   - 新选中的标签原地弹出（横排胶囊不用竖向上浮，会探出字段外壳的底边），同一批按到达顺序错开，首帧就在的直接呈现；
+ *     取消选中的由列表动效在原处放一个替身淡出，其余标签沿 translate 滑到新位置。
+ * 行与标签之间的间距经桥接槽 --xh-tag-list-gap 交给皮肤，皮肤把自己的公开槽接进来。
+ *
+ * 进退场的关键帧走 motion.css：引入本配方的皮肤同时 @import 它；家族文件之间不互相引入，
+ * 全量入口里每份家族只内联一次。
+ */
+
+[data-scope][data-xh-tag-list] {
+  /* 取消选中的标签由列表动效在原处放一个绝对定位的替身：行自己作定位容器，替身才裁在行里 */
+  position: relative;
+  display: inline-flex;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: var(--xh-tag-list-gap, var(--xh-space-1));
+  /* 弹性子项默认最小尺寸是内容尺寸，不归零则标签把行撑破、省略号永远轮不到 */
+  min-inline-size: 0;
+  overflow: hidden;
+}
+
+/* 无选中时连接层给 hidden：上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+[data-scope][data-xh-tag-list][hidden] {
+  display: none;
+}
+
+[data-scope][data-xh-tag-list] > [data-scope='tag'][data-part='root'] {
+  flex: 0 1 auto;
+  min-inline-size: 0;
+  /* 选中、取消选中一枚时，其余标签由列表动效先反向补偿、再沿这条滑到新位置 */
+  transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+}
+
+/* 新选中的标签原地弹出，同一批按到达顺序错开；首帧就在的直接呈现。+N 那一枚不是到达的条目，不播 */
+[data-scope][data-xh-tag-list] > [data-scope='tag'][data-part='root'][data-value]:not([data-instant], [data-state='closed']) {
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+}
+
+/* 取消选中的标签：替身留在原处淡出，播完即移除 */
+[data-scope][data-xh-tag-list] > [data-scope='tag'][data-part='root'][data-state='closed'] {
+  animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+}
+
+[data-scope][data-xh-tag-list] > [data-scope='tag'][data-part='root'][data-count] {
+  flex: none;
+}
+
 /* family/motion.css */
 /* 定义 motion 样式。 */
 
@@ -36757,24 +36812,11 @@
   display: none;
 }
 
-/* 标签行：触发器里收着可见标签与 +N 那一枚的一行，行里每一枚都是 tag（data-scope="tag"），
-   样子归 tag.css，这里只管行怎么排。它是弹性子项，只缩不涨：
-   得允许自己被压缩并把溢出裁掉，否则标签会冲出盒的右缘、把展开箭头挤到盒外；
+/* 标签行：触发器里收着可见标签与 +N 那一枚的一行，行里每一枚都是 tag（data-scope="tag"），样子归 tag.css；
+   行怎么排、标签怎么进出归标签行家族配方（family/tag-list.css），这里只把使用者的间距槽接进去。
    展开箭头靠触发器的 space-between 留在末端，行本身不必撑开 */
 [data-scope='select'][data-part='tag-list'] {
-  /* 取消选中的标签由列表动效在原处放一个绝对定位的替身：行自己作定位容器，替身才裁在行里 */
-  position: relative;
-  display: inline-flex;
-  flex: 0 1 auto;
-  align-items: center;
-  gap: var(--xh-select-tag-list-gap, var(--xh-space-1));
-  min-inline-size: 0;
-  overflow: hidden;
-}
-
-/* 无选中时连接层给 hidden，占位文字回来 */
-[data-scope='select'][data-part='tag-list'][hidden] {
-  display: none;
+  --xh-tag-list-gap: var(--xh-select-tag-list-gap, var(--xh-space-1));
 }
 
 /* 标签行露面时 value-text 让位：两者是触发器里的同一格，占位文字与标签不同屏。

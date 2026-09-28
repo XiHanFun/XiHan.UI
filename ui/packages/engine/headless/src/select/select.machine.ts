@@ -7,21 +7,22 @@
 
 import type { PositionResult } from '@xihan-ui/core'
 import type { SelectFocusIntent, SelectSchema } from './select.types'
-import { createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup, trackListMotion } from '@xihan-ui/core'
+import { createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { SELECTION_TAG_DEFAULT_MAX, trackSelectionTagMotion } from '../shared/selection-tags'
 import { virtualCollectionTarget } from '../shared/virtual-collection'
-import { SELECT_TAG_LIST_SELECTOR, SELECT_TAG_SELECTOR, selectItemQuery, selectItemText } from './select.anatomy'
+import { SELECT_TAG_LIST_SELECTOR, selectItemQuery, selectItemText } from './select.anatomy'
 
 const { createMachine } = setup<SelectSchema>()
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const SELECT_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
-/** 未指定 maxTagCount 时多选标签最多摆几枚，其余折进 +N 那一枚。 */
-export const SELECT_DEFAULT_MAX_TAG_COUNT = 3
+/** 未指定 maxTagCount 时多选标签最多摆几枚，其余折进 +N 那一枚；与其余多选控件同一个数。 */
+export const SELECT_DEFAULT_MAX_TAG_COUNT = SELECTION_TAG_DEFAULT_MAX
 
 /** 选中集合的不变量：单选恒为长度 ≤ 1，多选去重。公开 API 与受控入参都经这里收口。 */
 function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
@@ -396,28 +397,13 @@ export const selectMachine = createMachine({
       // Layer、DismissableLayer、FocusScope 与视觉 Presence 共享同一租约：逻辑关闭后内容
       // 已 inert，但资源仍留在顶层，直到真实 CSS 退场结束才逆序释放。
       /**
-       * 多选标签行的到达、离场与换位：首帧就在的标签直接呈现，之后新选的播进场，
-       * 取消选中的在原处播完退场，其余标签滑到新位置。标签行在触发器里，没有标签行（单选或作者没写）就不接。
-       * React 的祖先 ref 在子组件 layout effect 之后才附着，延到提交后的微任务再取，仍在首帧绘制之前。
-       * 触发按钮经适配器的 ref 取：纯逻辑环境（无 DOM）没有它，也就不接。
+       * 多选标签行的到达、离场与换位。标签行在触发器里；触发按钮经适配器的 ref 取。
        */
-      trackTagListMotion: ({ refs, send, flush }) => {
-        let disposed = false
-        let stop: (() => void) | undefined
-        flush(() => {
-          queueMicrotask(() => {
-            const list = refs.get('getTriggerEl')()?.querySelector<HTMLElement>(SELECT_TAG_LIST_SELECTOR)
-            if (disposed || !list)
-              return
-            stop = trackListMotion(list, { item: SELECT_TAG_SELECTOR })
-            send({ type: 'TAG_LIST.TRACKED' })
-          })
-        })
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
+      trackTagListMotion: ({ refs, send, flush }) => trackSelectionTagMotion({
+        flush,
+        list: () => refs.get('getTriggerEl')()?.querySelector<HTMLElement>(SELECT_TAG_LIST_SELECTOR),
+        onTracked: () => send({ type: 'TAG_LIST.TRACKED' }),
+      }),
       trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
         let reactivateFocus: (() => void) | null = null
         return trackPresenceResources({

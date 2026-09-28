@@ -167,6 +167,7 @@
       "./table.css",
       "./tabs.css",
       "./tag-group.css",
+      "./tag-list.css",
       "./tag.css",
       "./tags-input.css",
       "./text-field.css",
@@ -13694,6 +13695,7 @@
     "data-xh-menu-close-on-select",
     "data-xh-swatch",
     "data-xh-swatch-size",
+    "data-xh-tag-list",
     "data-xh-virtualized",
     "data-zoomed"
   ],
