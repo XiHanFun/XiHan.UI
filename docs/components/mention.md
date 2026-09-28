@@ -91,6 +91,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 - 带 `hidden` 的候选不参与计数、高亮、方向键或 Enter；全部隐藏后清除 `aria-activedescendant`，不提交不可见的旧项。
 - `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
 - 输入框投影 Field Chrome，描边式静息无影，唯一候选面使用 M2 磨砂面与细顶光；空态和加载文字位于材质之上，不另绘框。浮层使用四向短位移，不缩放文字；增强对比度时切为实体，减弱动效时取消位移。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
 ### 组合
 
@@ -336,7 +337,9 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-xh-material` | 'frosted' |
 | `empty` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-xh-loading-ring` | '' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |

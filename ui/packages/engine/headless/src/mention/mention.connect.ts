@@ -369,6 +369,9 @@ export function connectMention<T extends PropTypes>(
     // 唤起了才顶上来：没唤起时整块候选浮层都不在场
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
       'role': 'status',
       'data-state': stateAttr,
       // 已有可见候选时列表原样留着，只由 aria-busy 报刷新；零候选才显示状态文字。

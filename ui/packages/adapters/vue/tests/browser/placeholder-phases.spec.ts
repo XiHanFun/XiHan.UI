@@ -6,6 +6,7 @@
 import type { CascaderLevel } from '@xihan-ui/headless'
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick, reactive } from 'vue'
 import {
   XhCascaderColumn,
@@ -26,6 +27,14 @@ import {
   XhComboboxLoading,
   XhComboboxPositioner,
   XhComboboxRoot,
+  XhMentionContent,
+  XhMentionEmpty,
+  XhMentionInput,
+  XhMentionItem,
+  XhMentionItemText,
+  XhMentionLoading,
+  XhMentionPositioner,
+  XhMentionRoot,
   XhSelectContent,
   XhSelectControl,
   XhSelectEmpty,
@@ -50,6 +59,8 @@ interface Case {
   muted: string
   /** 刷新相位里淡下去的那一层。 */
   dim: string
+  /** 挂上之后把浮层打开（没有受控开合的组件靠真实输入唤起）。 */
+  open?: () => Promise<void>
 }
 
 const ITEMS = [
@@ -117,6 +128,25 @@ const CASES: Case[] = [
     muted: '--xh-material-frosted-fg-muted',
     dim: 'tree',
   },
+  {
+    scope: 'mention',
+    render: ({ loading, items }) => h(XhMentionRoot, { collection: items ? ITEMS : [], loading }, () => [
+      h(XhMentionInput),
+      h(XhMentionPositioner, null, () => [
+        h(XhMentionContent, null, () => (items ? ITEMS : []).map(node =>
+          h(XhMentionItem, { key: node.value, value: node.value }, () => h(XhMentionItemText, null, () => node.label)))),
+        h(XhMentionEmpty, null, () => '没有匹配'),
+        h(XhMentionLoading, null, () => '正在检索'),
+      ]),
+    ]),
+    muted: '--xh-material-frosted-fg-muted',
+    dim: 'item',
+    open: async () => {
+      await userEvent.type(document.querySelector<HTMLElement>(`[data-scope='mention'][data-part='input']`)!, '@')
+      await nextTick()
+      await nextTick()
+    },
+  },
 ]
 
 let app: App | null = null
@@ -138,6 +168,7 @@ async function mount(c: Case, initial: { loading: boolean, items: boolean }): Pr
   app.mount(host)
   await nextTick()
   await nextTick()
+  await c.open?.()
   return state
 }
 

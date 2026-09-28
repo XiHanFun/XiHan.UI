@@ -498,6 +498,7 @@
         "grid-list",
         "heatmap",
         "hierarchy-chart",
+        "mention",
         "notification",
         "pie-chart",
         "popconfirm",
