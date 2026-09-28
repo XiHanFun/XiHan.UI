@@ -85,6 +85,11 @@ export interface PopoverSchema extends MachineSchema {
      * 指针按住由 :active 表出。浮层收起时一并清空——按住 Enter 关掉浮层后，里面的按钮不会再来 keyup。
      */
     pressed: PopoverPressedPart | null
+    /**
+     * 挂载时开着、还没收起过：这一段打开属于首帧，content 投影 data-instant 直接呈现、不播进场。
+     * 第一次收起时清掉，之后的每一次打开照常进场。
+     */
+    openedAtMount: boolean
   }
   computed: Record<string, never>
   refs: PopoverRefs
@@ -101,7 +106,7 @@ export interface PopoverSchema extends MachineSchema {
     | { type: 'PRESS.END', part: PopoverPressedPart }
   tag: never
   guard: 'isOpenControlled' | 'isDisabled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'setReturnFocus' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress' | 'closeWhenDisabled'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'setReturnFocus' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress' | 'closeWhenDisabled' | 'clearOpenedAtMount'
   effect: 'trackPosition' | 'trackLayer'
 }
 
