@@ -5812,7 +5812,8 @@
      面板整棵子树都在 positioner 底下，它一收就不生成盒子，退场动画一帧都播不出来。
      真正的收起由宿主在退场结束后落成内联 display:none。 */
 
-  [data-scope='floating-panel'][data-part='positioner'][data-state='open'] {
+  /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
+  [data-scope='floating-panel'][data-part='positioner'][data-state='open']:not([data-instant]) {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 

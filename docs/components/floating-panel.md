@@ -298,6 +298,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `trigger` | `data-xh-action-size` | 'md' |
 | `trigger` | `data-xh-action-variant` | 'outline' |
 | `positioner` | `data-animating` | ''（条件成立时才出现） |
+| `positioner` | `data-instant` | ''（条件成立时才出现） |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-window-state` | context.get('windowState') |

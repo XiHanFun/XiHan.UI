@@ -8,6 +8,7 @@
 import type { FloatingPanelPressedPart, FloatingPanelSchema, FloatingPanelWindowState } from './floating-panel.types'
 import { setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { floatingPanelAnatomy } from './floating-panel.anatomy'
 import {
   clampFloatingPanelSize,
@@ -38,6 +39,8 @@ export const floatingPanelMachine = createMachine({
       floatingPanelViewportFrom(scope),
     )
     return {
+      // 首帧标记：挂载时开着、还没收起过
+      openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
       position: cell(() => ({
         value: prop('position'),
         defaultValue: prop('defaultPosition') ?? home.position,
@@ -74,7 +77,7 @@ export const floatingPanelMachine = createMachine({
     getContentEl: () => null,
     session: null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 受控时用户事件只发意图、不自改状态；宿主写回 open 后由这条 watch 派发影子事件回写。
   // 形态钮按住途中被禁用：aria-disabled 的按钮仍会派 keyup，但守卫已不认它，按压面由机器自己收
   watch: ({ track, prop, action, context }) => {
@@ -97,6 +100,8 @@ export const floatingPanelMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
@@ -165,6 +170,7 @@ export const floatingPanelMachine = createMachine({
       },
     },
     actions: {
+      clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')

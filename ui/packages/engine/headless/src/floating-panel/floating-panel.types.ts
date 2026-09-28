@@ -141,6 +141,11 @@ export interface FloatingPanelSchema extends MachineSchema {
     onWindowStateChange?: (details: FloatingPanelWindowStateChangeDetails) => void
   }
   context: {
+    /**
+     * 挂载时开着、还没收起过：这一段打开属于首帧，定位层投影 data-instant 直接呈现、不播进场。
+     * 第一次收起时清掉，之后的每一次打开照常进场。
+     */
+    openedAtMount: boolean
     /** 面板左上角坐标。受控（position 提供）时 cell 直读 prop，写入只发回调不修改内部值。 */
     position: FloatingPanelPosition
     /** 面板尺寸，恒已夹进 minSize / maxSize。 */
@@ -203,6 +208,7 @@ export interface FloatingPanelSchema extends MachineSchema {
     | 'releaseWhenInert'
     | 'syncWindowAnimation'
     | 'clearWindowAnimation'
+    | 'clearOpenedAtMount'
   effect: 'trackPointer'
 }
 
