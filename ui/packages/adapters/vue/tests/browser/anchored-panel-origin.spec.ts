@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-const scopes = ['popover']
+const scopes = ['popover', 'hover-card']
 let positioner: HTMLElement | null = null
 
 /** 搭一层定位层 + 面板：面板定尺 200 × 100，原点的解析值直接读成像素。 */
