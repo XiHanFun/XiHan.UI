@@ -19,6 +19,8 @@
     --xh-_segmented-px: var(--xh-control-px-md);
     --xh-_segmented-gap: var(--xh-control-gap-md);
     --xh-_segmented-font-size: var(--xh-control-font-md);
+    /* 段内图标跟着尺寸档换直径，放进来的图标组件与裸 svg 都从这一支取 */
+    --xh-icon-size: var(--xh-segmented-icon-size, var(--xh-glyph-size-md));
     /* 指示器（有滑块开关的白色抬起面）的底、描边与选中段的文字色；没写 data-tone 时就是这里的取值 */
     --xh-_segmented-indicator-bg: var(--xh-bg-surface-raised);
     --xh-_segmented-fg-selected: var(--xh-fg-default);
@@ -118,6 +120,7 @@
     --xh-_segmented-px: var(--xh-control-px-sm);
     --xh-_segmented-gap: var(--xh-control-gap-sm);
     --xh-_segmented-font-size: var(--xh-control-font-sm);
+    --xh-icon-size: var(--xh-segmented-icon-size, var(--xh-glyph-size-sm));
   }
 
   [data-scope='segmented'][data-part='root'][data-size='lg'] {
@@ -125,6 +128,7 @@
     --xh-_segmented-px: var(--xh-control-px-lg);
     --xh-_segmented-gap: var(--xh-control-gap-lg);
     --xh-_segmented-font-size: var(--xh-control-font-lg);
+    --xh-icon-size: var(--xh-segmented-icon-size, var(--xh-glyph-size-lg));
   }
 
   /* 段自己也定位，于是与绝对定位的指示器按文档序比高低：
@@ -203,6 +207,23 @@
     color: var(--xh-segmented-item-fg-checked-disabled, var(--xh-_segmented-fg-selected));
   }
 
+  /* 段内图标：纯装饰，可及名全在文字上。直径取根上按尺寸档下发的 --xh-icon-size，
+     放进来的图标组件与裸 svg 取同一直径；颜色随段的前景色，选中、悬停、禁用一并跟着换 */
+  [data-scope='segmented'][data-part='item-icon'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-icon-size);
+    block-size: var(--xh-icon-size);
+    color: inherit;
+  }
+
+  [data-scope='segmented'][data-part='item-icon'] > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
   [data-scope='segmented'][data-part='item-text'] {
     color: inherit;
     user-select: none;
@@ -266,6 +287,7 @@
      不补的话作者给节点加 hidden 后它照样显示 */
   [data-scope='segmented'][data-part='root'][hidden],
   [data-scope='segmented'][data-part='item'][hidden],
+  [data-scope='segmented'][data-part='item-icon'][hidden],
   [data-scope='segmented'][data-part='indicator'][hidden] {
     display: none;
   }

@@ -9,10 +9,12 @@ import type { ItemQuery } from '@xihan-ui/core'
 import { createAnatomy } from '@xihan-ui/core'
 
 // item-text 是可选的文本壳：不写它时文字直接落在条目里，写了它状态标记才铺得到文字上。
+// item-icon 是文字前的图标位，纯装饰，对读屏隐藏。
 // indicator 是那块会滑动的选中标记，hidden-input 是表单出口，两者都可以不渲染。
 export const segmentedAnatomy = createAnatomy('segmented', [
   'root',
   'item',
+  'item-icon',
   'item-text',
   'indicator',
   'hidden-input',

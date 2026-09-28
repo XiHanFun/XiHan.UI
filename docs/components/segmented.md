@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="segmented"`：**`root`** · **`item`** · `item-text` · `indicator` · `hidden-input`
+`data-scope="segmented"`：**`root`** · **`item`** · `item-icon` · `item-text` · `indicator` · `hidden-input`
 
 ## 示例
 
@@ -66,6 +66,12 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 
 <XhDemo src="segmented/08-form" />
 
+### 图标
+
+段内文字前放一枚图标：图标对读屏隐藏，可及名仍是文字；直径与颜色随段走，选中与悬停一并换色
+
+<XhDemo src="segmented/09-icon" />
+
 ## 设计指引
 
 ### 何时使用
@@ -83,6 +89,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 ### 特性
 
 - 集合入口：提供 `collection` 即只传数据，条目文本与禁用都以数据为准；需要改结构时再写部件。
+- 段内图标：`item-icon` 部件排在文字前，对读屏隐藏，直径与颜色随段走；节点的 `icon` 字段写入图标文本，需要放置图形时手写部件，把图标组件或 svg 放进 `item-icon`。
 - 受控与非受控两态齐全：提供 `value` 即受控，只发 `onValueChange` 不自行修改。
 - 参与表单：提供 `name` 后隐藏输入才带上它；宿主表单重置时选中值回落到 `defaultValue`。隐藏输入只在只传 `collection`、由组件铺开结构时自动铺出；自行编写默认插槽排版时需要放一个隐藏输入部件，否则提供 `name` 也没有内容参与提交。
 - 指示器位置由组件测量，横排竖排、ltr 与 rtl 使用同一条规则。
@@ -114,7 +121,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-segmented>` |
-| Vue 组件 | `XhSegmentedHiddenInput` `XhSegmentedIndicator` `XhSegmentedItem` `XhSegmentedItemText` `XhSegmentedRoot` |
+| Vue 组件 | `XhSegmentedHiddenInput` `XhSegmentedIndicator` `XhSegmentedItem` `XhSegmentedItemIcon` `XhSegmentedItemText` `XhSegmentedRoot` |
 | 组合式函数 | `useSegmented` |
 | 状态机 | `segmentedMachine` |
 | 皮肤 | `@xihan-ui/styles/segmented.css` |
@@ -147,6 +154,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | --- | --- | --- | --- |
 | `value` | `string` | 是 |  |
 | `label` | `string` |  | 展示文本；默认回退为 value。 |
+| `icon` | `string` |  | 图标文本，写入文字前的 item-icon 部件，对读屏隐藏；需要放置图形时改为手写部件。 |
 | `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
 
 ### 事件
@@ -184,6 +192,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | 部件 | 取值 |
 | --- | --- |
 | `item` | 'checked' \| 'unchecked' |
+| `item-icon` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
 
 以下名称仅用于内部状态机。
@@ -210,6 +219,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | `measure` | `() => void` | 重新测量指示器。选中值变化与 collection 增删改名都会自动重新测量，根的尺寸变化由尺寸观察器接管； 以下情况需要手动调用：段的文字由部件手写（未经 collection）而后修改，或字体加载完成把段撑宽。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: SegmentedItemProps) => T['button']` |  |
+| `getItemIconProps` | `(props: SegmentedItemProps) => T['element']` | 段内文字前的图标位：纯装饰，对读屏隐藏，状态标记与段一致。 |
 | `getItemTextProps` | `(props: SegmentedItemProps) => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 选中值随这份原生输入提交。 |
@@ -244,6 +254,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `role` | 'radio' |
+| `item-icon` | `aria-hidden` | 'true' |
 | `indicator` | `aria-hidden` | 'true' |
 
 - 根节点是 `radiogroup`，每一段是 `radio` 并显式报告 `aria-checked`。
@@ -279,6 +290,10 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item-icon` | `data-disabled` | ''（条件成立时才出现） |
+| `item-icon` | `data-invalid` | ''（条件成立时才出现） |
+| `item-icon` | `data-readonly` | ''（条件成立时才出现） |
+| `item-icon` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-invalid` | ''（条件成立时才出现） |
 | `item-text` | `data-readonly` | ''（条件成立时才出现） |
@@ -298,6 +313,7 @@ size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 | `--xh-segmented-border-invalid` | `root` | `border-color` | `invalid` | `--xh-border-invalid` | segmented 的 root 部件 border-color 覆盖槽。 |
 | `--xh-segmented-font-size` | `root` | `font-size` | `default` | `--xh-_segmented-font-size` | segmented 的 root 部件 font-size 覆盖槽。 |
 | `--xh-segmented-h` | `item`<br>`root` | `min-block-size` | `orientation=horizontal` | `--xh-_segmented-h` | segmented 的 item、root 部件 min-block-size 覆盖槽。 |
+| `--xh-segmented-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | segmented 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-segmented-indicator-bg` | `indicator` | `background` | `default` | `--xh-_segmented-indicator-bg` | segmented 的 indicator 部件 background 覆盖槽。 |
 | `--xh-segmented-indicator-border` | `indicator`<br>`root` | `border`<br>`border-color` | `default`<br>`tone` | `--xh-_tone`<br>`--xh-border-default` | segmented 的 indicator、root 部件 border、border-color 覆盖槽。 |
 | `--xh-segmented-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-inset` | segmented 的 indicator 部件 border-radius 覆盖槽。 |

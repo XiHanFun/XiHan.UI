@@ -13,12 +13,12 @@ import { segmentedItemQuery } from './segmented.anatomy'
 const { createMachine } = setup<SegmentedSchema>()
 
 /**
- * collection 的指纹：条目的身份与显示文本决定各段排在哪、有多宽，两者一变就得重量。
+ * collection 的指纹：条目的身份、显示文本与图标决定各段排在哪、有多宽，一变就得重量。
  * 取串而不是数组本身，作者每帧新建一个同内容的数组不该白惊动一次量测。
  * 段内与段间的分隔取制表符与换行，段文本里不会出现它们，拼出来的串不会撞车。
  */
 function collectionKeyOf(nodes: SegmentedNode[] | undefined): string {
-  return (nodes ?? []).map(node => `${node.value}\t${node.label ?? ''}`).join('\n')
+  return (nodes ?? []).map(node => `${node.value}\t${node.label ?? ''}\t${node.icon ?? ''}`).join('\n')
 }
 
 // 选中值住在 context 的 cell 里，受控/非受控在 cell 收口，不需要影子事件与受控守卫。

@@ -18,6 +18,8 @@ export interface SegmentedNode {
   value: string
   /** 展示文本；默认回退为 value。 */
   label?: string
+  /** 图标文本，写入文字前的 item-icon 部件，对读屏隐藏；需要放置图形时改为手写部件。 */
+  icon?: string
   /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
 }
@@ -27,6 +29,7 @@ export interface SegmentedNodeMeta {
   value: string
   /** node.label ?? node.value，恒为字符串。 */
   label: string
+  icon?: string
   disabled: boolean
 }
 
@@ -154,6 +157,8 @@ export interface SegmentedApi<T extends PropTypes = PropTypes> {
   measure: () => void
   getRootProps: () => T['element']
   getItemProps: (props: SegmentedItemProps) => T['button']
+  /** 段内文字前的图标位：纯装饰，对读屏隐藏，状态标记与段一致。 */
+  getItemIconProps: (props: SegmentedItemProps) => T['element']
   getItemTextProps: (props: SegmentedItemProps) => T['element']
   getIndicatorProps: () => T['element']
   /** 选中值随这份原生输入提交。 */

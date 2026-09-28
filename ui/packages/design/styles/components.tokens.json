@@ -57821,6 +57821,28 @@
       "description": "segmented 的 item、root 部件 min-block-size 覆盖槽。"
     },
     {
+      "name": "--xh-segmented-icon-size",
+      "component": "segmented",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "segmented 的 root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
       "name": "--xh-segmented-indicator-bg",
       "component": "segmented",
       "part": [

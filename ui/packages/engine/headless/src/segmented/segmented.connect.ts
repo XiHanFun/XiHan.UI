@@ -25,10 +25,11 @@ export function connectSegmented<T extends PropTypes>(
   const indicator = context.get('indicator')
   const indicatorStretch = context.get('indicatorStretch')
 
-  // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
+  // collection 推出的条目元信息：显示文本、图标与禁用都在这里定案，条目部件只报 value
   const collection: SegmentedNodeMeta[] = (prop('collection') ?? []).map(node => ({
     value: node.value,
     label: node.label ?? node.value,
+    ...(node.icon == null ? {} : { icon: node.icon }),
     disabled: !!node.disabled,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
@@ -48,7 +49,7 @@ export function connectSegmented<T extends PropTypes>(
   // roving tabindex 的唯一锚点：焦点在组内跟焦点走，否则跟选中值走
   const anchor = focusedValue ?? value
 
-  // item / item-text 共用的状态标记
+  // item / item-icon / item-text 共用的状态标记
   const stateAttrs = (item: SegmentedItemProps): Record<string, string | undefined> => ({
     'data-state': isSelected(item.value) ? 'checked' : 'unchecked',
     'data-disabled': dataAttr(isDisabled(item)),
@@ -176,6 +177,13 @@ export function connectSegmented<T extends PropTypes>(
         'onPointerCancel': handlers.onPointerCancel,
       })
     },
+
+    // 图标只是文字的陪衬，可及名全在文字上
+    getItemIconProps: item => normalize.element({
+      ...parts['item-icon'].attrs,
+      'aria-hidden': true,
+      ...stateAttrs(item),
+    }),
 
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
