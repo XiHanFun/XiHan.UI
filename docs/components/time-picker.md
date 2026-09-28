@@ -428,6 +428,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
 | `positioner` | `data-variant` | props.variant |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `preset` | `data-disabled` | ''（条件成立时才出现） |
