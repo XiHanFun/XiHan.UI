@@ -236,6 +236,16 @@ describe('按压通道：发送 / 停止按钮 Space / Enter 与触屏按住投�
     expect(pressed(rig)).toBe(false)
   })
 
+  it('身份换过之前按钮投影 data-instant（首帧字形直接呈现），换过一次即撤', () => {
+    const rig = mountWithProps({ defaultValue: '你好' })
+    expect(rig.trigger()['data-instant']).toBe('')
+    rig.setProps({ loading: true })
+    expect(rig.trigger()['data-mode']).toBe('stop')
+    expect(rig.trigger()['data-instant']).toBeUndefined()
+    rig.setProps({ loading: false })
+    expect(rig.trigger()['data-instant']).toBeUndefined()
+  })
+
   it('停止身份（loading）恒可用，按住同样有回执；身份随 loading 切换时松开', () => {
     const rig = mountWithProps({ loading: true })
     expect(rig.trigger()['data-mode']).toBe('stop')

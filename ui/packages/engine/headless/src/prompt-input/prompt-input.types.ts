@@ -60,6 +60,11 @@ export interface PromptInputSchema extends MachineSchema {
      * 抬起、失焦、指针取消，或按钮身份随 loading 切换、提交后清空使按钮转禁用时即撤下。
      */
     pressed: boolean
+    /**
+     * 挂载之后按钮身份（发送 ↔ 停止）换过没有。没换过时按钮投影 data-instant：首帧就在的字形直接呈现，
+     * 换过之后换上来的那一枚淡入。
+     */
+    modeChanged: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -96,6 +101,7 @@ export interface PromptInputSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
+    | 'markModeChanged'
   effect: never
 }
 
