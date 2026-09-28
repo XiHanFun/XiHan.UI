@@ -144,7 +144,7 @@ Card 只提供内容面，方向和媒体尺寸由使用场景决定
 | `--xh-card-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | card 的 title 部件 color 覆盖槽。 |
 | `--xh-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | card 的 title 部件 font-size 覆盖槽。 |
 | `--xh-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | card 的 title 部件 font-weight 覆盖槽。 |
-| `--xh-card-title-leading` | `title` | `line-height` | `default` | `--xh-leading-relaxed` | card 的 title 部件 line-height 覆盖槽。 |
+| `--xh-card-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | card 的 title 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

@@ -280,7 +280,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `--xh-toast-fg` | `root` | `color` | `default` | `--xh-material-elevated-fg` | toast 的 root 部件 color 覆盖槽。 |
 | `--xh-toast-font-size` | `root` | `font-size` | `default` | `--xh-text-label-size` | toast 的 root 部件 font-size 覆盖槽。 |
 | `--xh-toast-front-height` | `root` | `block-size` | `expanded`<br>`frontmost`<br>`not([data-expanded])`<br>`not([data-frontmost])`<br>`stack-index` | `auto` | toast 的 root 部件 block-size 覆盖槽。 |
-| `--xh-toast-gap` | `root` | `gap` | `default` | `--xh-space-1_5` | toast 的 root 部件 gap 覆盖槽。 |
+| `--xh-toast-gap` | `root` | `gap` | `default` | `--xh-space-2` | toast 的 root 部件 gap 覆盖槽。 |
 | `--xh-toast-height` | `root` | `block-size` | `expanded` | `auto` | toast 的 root 部件 block-size 覆盖槽。 |
 | `--xh-toast-icon-fg` | `indicator`<br>`root` | `background-color`<br>`color` | `default` | `--xh-_tone-fg` | toast 的 indicator、root 部件 background-color、color 覆盖槽。 |
 | `--xh-toast-icon-size` | `close-trigger`<br>`root` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | toast 的 close-trigger、root 部件 --xh-icon-size 覆盖槽。 |
@@ -303,7 +303,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `--xh-toast-title-fg` | `title` | `color` | `default` | `--xh-_tone-fg` | toast 的 title 部件 color 覆盖槽。 |
 | `--xh-toast-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | toast 的 title 部件 font-size 覆盖槽。 |
 | `--xh-toast-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | toast 的 title 部件 font-weight 覆盖槽。 |
-| `--xh-toast-title-leading` | `title` | `line-height` | `default` | `--xh-text-body-leading` | toast 的 title 部件 line-height 覆盖槽。 |
+| `--xh-toast-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | toast 的 title 部件 line-height 覆盖槽。 |
 | `--xh-toast-y` | `*` | `translate` | `@keyframes xh-toast-out` | `0px` | toast 的 * 部件 translate 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

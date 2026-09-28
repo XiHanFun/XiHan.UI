@@ -111,7 +111,8 @@
     display: flex;
     flex: none;
     align-items: flex-start;
-    gap: var(--xh-toast-gap, var(--xh-space-1_5));
+    /* 指示符盒自带 --xh-space-1 内衬：与间距合起来，字形到正文 12px，与 Alert、Notification 同一个距离 */
+    gap: var(--xh-toast-gap, var(--xh-space-2));
     inline-size: min(var(--xh-toast-inline-size, 28.75rem), 100%);
     padding-block: var(--xh-toast-py, var(--xh-space-3));
     padding-inline: var(--xh-toast-px, var(--xh-space-4));
@@ -326,7 +327,7 @@
     color: var(--xh-toast-title-fg, var(--xh-_tone-fg));
     font-size: var(--xh-toast-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-toast-title-font-weight, var(--xh-font-weight-semibold));
-    line-height: var(--xh-toast-title-leading, var(--xh-text-body-leading));
+    line-height: var(--xh-toast-title-leading, var(--xh-leading-tight));
   }
 
   [data-scope='toast'][data-part='description'] {

@@ -215,8 +215,8 @@ padding-top: 12px
 padding-right: 16px
 padding-bottom: 12px
 padding-left: 16px
-row-gap: 6px
-column-gap: 6px
+row-gap: 8px
+column-gap: 8px
 border-top-left-radius: 12px
 border-top-right-radius: 12px
 border-bottom-right-radius: 12px
@@ -266,7 +266,7 @@ border-bottom-color: oklab(0.43 -0.0527011 -0.0824687)
 border-left-color: oklab(0.43 -0.0527011 -0.0824687)
 min-height: auto
 font-size: 14px
-line-height: 21px
+line-height: 17.5px
 font-weight: 600
 color: oklab(0.43 -0.0527011 -0.0824687)
 background-color: rgba(0, 0, 0, 0)
