@@ -394,13 +394,15 @@ describe('语义与着色', () => {
 })
 
 describe('入场与无障碍', () => {
-  it('入场：矩形淡入，旭日的扇区从起始角扫开，圆堆积的圆从圆心长出', async () => {
+  it('入场：矩形淡入，旭日的扇区都收在整圈的起始角上、与饼图一样整圈扫开，圆堆积的圆从圆心长出', async () => {
     const treemap = await makeRig(BASE)
     const rects = hierarchyEntryScene(treemap.api().model.scene!.scene).layers.data
     expect(rects.every(m => m.opacity === 0)).toBe(true)
     const sunburst = await makeRig({ ...BASE, layout: 'sunburst' })
     const arcs = hierarchyEntryScene(sunburst.api().model.scene!.scene).layers.data as ArcMark[]
     expect(arcs.every(a => a.endAngle === a.startAngle)).toBe(true)
+    // 不是各扇区在自己的起始角原地展开：全部收在同一个角上，起止角一起按比例放开
+    expect(new Set(arcs.map(a => a.startAngle)).size).toBe(1)
     const pack = await makeRig({ ...BASE, layout: 'pack' })
     const circles = hierarchyEntryScene(pack.api().model.scene!.scene).layers.data as ArcMark[]
     expect(circles.every(c => c.outerRadius === 0)).toBe(true)
