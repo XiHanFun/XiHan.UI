@@ -23533,7 +23533,8 @@
   order: 2;
   min-inline-size: 0;
   color: var(--xh-context-menu-item-description-fg, var(--xh-material-frosted-fg-muted));
-  font-size: var(--xh-context-menu-item-description-font-size, var(--xh-text-caption-size));
+  /* 与同一行的快捷键、Select 等列表的说明同档：控件次级字号，不取 caption 令牌 */
+  font-size: var(--xh-context-menu-item-description-font-size, var(--xh-control-caption-md));
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -29723,7 +29724,8 @@
   order: 2;
   min-inline-size: 0;
   color: var(--xh-menu-item-description-fg, var(--xh-material-frosted-fg-muted));
-  font-size: var(--xh-menu-item-description-font-size, var(--xh-text-caption-size));
+  /* 与同一行的快捷键、Select 等列表的说明同档：控件次级字号，不取 caption 令牌 */
+  font-size: var(--xh-menu-item-description-font-size, var(--xh-control-caption-md));
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -30184,7 +30186,8 @@
   order: 2;
   min-inline-size: 0;
   color: var(--xh-menubar-item-description-fg, var(--xh-material-frosted-fg-muted));
-  font-size: var(--xh-menubar-item-description-font-size, var(--xh-text-caption-size));
+  /* 与同一行的快捷键、Select 等列表的说明同档：控件次级字号，不取 caption 令牌 */
+  font-size: var(--xh-menubar-item-description-font-size, var(--xh-control-caption-md));
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
