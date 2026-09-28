@@ -433,9 +433,12 @@ describe('connectTour 输出', () => {
     expect(open.hidden).toBeUndefined()
   })
 
-  it('锚定步：positioner data-position=anchored，高亮框与箭头显形', () => {
+  it('锚定步：positioner data-position=anchored，箭头显形，高亮框量到之后才露面', () => {
     const t = makeService({ steps: STEPS, defaultOpen: true })
     expect((t.api().getPositionerProps() as Dict)['data-position']).toBe('anchored')
+    // 没有布局环境量不到框：不按 0 几何先画出来
+    expect((t.api().getSpotlightProps() as Dict).hidden).toBe(true)
+    t.service.context.set('spotlight', { x: 8, y: 8, width: 40, height: 20 })
     expect((t.api().getSpotlightProps() as Dict).hidden).toBeUndefined()
     expect((t.api().getArrowProps() as Dict).hidden).toBeUndefined()
     expect(t.api().anchored).toBe(true)
@@ -594,14 +597,20 @@ describe('tour 活 DOM：高亮框与键盘', () => {
     t.stop()
   })
 
-  it('收起后几何清空，不留上一轮的框', async () => {
+  it('收起后几何留在原处供退场播完，再展开时先清掉重量', async () => {
     const t = mount({ defaultOpen: true })
     await settle()
-    expect(t.service.context.get('spotlight')).not.toBeNull()
+    const measured = t.service.context.get('spotlight')
+    expect(measured).not.toBeNull()
     t.api().skip()
     await settle()
-    expect(t.service.context.get('spotlight')).toBeNull()
+    // 退场在最后一次量到的位置播完：清成 0 的话框会一路滑向视口左上角
+    expect(t.service.context.get('spotlight')).toEqual(measured)
     expect(t.spotlight.hasAttribute('hidden')).toBe(true)
+    t.service.context.set('spotlight', { x: 1, y: 1, width: 1, height: 1 })
+    t.api().setOpen(true)
+    await settle()
+    expect(t.service.context.get('spotlight')).toEqual(measured)
     t.stop()
   })
 

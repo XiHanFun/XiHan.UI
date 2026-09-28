@@ -122,8 +122,8 @@ export function connectTour<T extends PropTypes>(
       'aria-hidden': true,
       'data-state': stateAttr,
       'data-dimmed': dataAttr(showBackdrop),
-      // 收起态与居中步都不画；判据用作者声明的 target 而不是量到的框，与量测时机无关
-      'hidden': !open || !anchored || undefined,
+      // 收起态与居中步都不画；锚定步在量到框之前也不露面，否则先按 0 几何画出来、再一路滑到目标上
+      'hidden': !open || !anchored || !spotlight || undefined,
       'style': {
         'position': 'fixed',
         'left': `${spotlight?.x ?? 0}px`,
