@@ -68,7 +68,7 @@ afterEach(() => {
   host = null
 })
 
-describe('GridList 多选视觉', () => {
+describe('grid-list 多选视觉', () => {
   it('选中只由与 Checkbox 同尺度的方框表达，静息行不换面也不画焦点环', async () => {
     await mount()
     const selected = row('docs')

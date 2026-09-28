@@ -69,7 +69,7 @@ describe('三点档错相', () => {
     expect(positions.size).toBe(3)
   })
 
-  it('RTL 下扫向跟着书写方向掉头', async () => {
+  it('rtl 下扫向跟着书写方向掉头', async () => {
     document.documentElement.dir = 'rtl'
     try {
       const root = await mount(undefined, 'dots')

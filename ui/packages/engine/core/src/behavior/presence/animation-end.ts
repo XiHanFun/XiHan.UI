@@ -47,10 +47,12 @@ function splitTopLevel(list: string | undefined = ''): string[] {
   let start = 0
   for (let i = 0; i < list.length; i++) {
     const ch = list[i]
-    if (ch === '(')
+    if (ch === '(') {
       depth++
-    else if (ch === ')')
+    }
+    else if (ch === ')') {
       depth--
+    }
     else if (ch === ',' && depth === 0) {
       out.push(list.slice(start, i).trim())
       start = i + 1

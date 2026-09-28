@@ -14,8 +14,8 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactScope } from '../../runtime/react-id'
-import { useMachine } from '../../runtime/use-machine'
 import { renderSlot } from '../../runtime/slot-content'
+import { useMachine } from '../../runtime/use-machine'
 import { BadgeProvider, useBadgeContext } from './context'
 
 /** 三轴与计数这几项在锚点与一步到位两种写法上是同一份。 */
