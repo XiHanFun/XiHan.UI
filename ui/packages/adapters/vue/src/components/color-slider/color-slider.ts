@@ -30,7 +30,7 @@ export const XhColorSliderRoot = defineComponent({
     defaultValue: { type: String },
     /** 调节的通道：hue / saturation / brightness / alpha / red / green / blue，默认 hue。 */
     channel: { type: String as PropType<ColorChannel> },
-    /** 值串的写法：hex / rgba / hsla，默认 hex。 */
+    /** 值串的写法：hex / rgba / hsla / oklch，默认 hex。 */
     format: { type: String as PropType<ColorFormat> },
     /** 值串是否带透明度；默认时调节透明度通道带、其余不带。 */
     alpha: { type: Boolean, default: undefined },

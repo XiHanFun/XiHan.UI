@@ -121,6 +121,37 @@ export const colorFieldSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'format="oklch"：收下的任何写法都按 oklch 重写，oklch 串本身也能输入',
+      spec: { apg: HTML_SPEC },
+      props: { defaultValue: '#000000', format: 'oklch' },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        {
+          kind: 'raw',
+          why: 'type 步骤只发按键，落不到 value 上；这里要的是真实输入',
+          run: async (ctx) => {
+            await typeInto(ctx, '#ff0000')
+            await press(ctx, 'Enter')
+          },
+          expect: { events: [{ type: 'value-change', detail: { value: 'oklch(62.8% 0.2577 29.23)' } }] },
+        },
+        {
+          kind: 'raw',
+          why: 'type 步骤只发按键，落不到 value 上；这里要的是真实输入',
+          run: async (ctx) => {
+            await typeInto(ctx, 'oklch(100% 0 0)')
+            await press(ctx, 'Enter')
+          },
+          expect: { events: [{ type: 'value-change', detail: { value: 'oklch(100% 0 0)' } }] },
+        },
+        {
+          kind: 'raw',
+          why: '色块的背景是内联样式',
+          run: ({ doc }) => expectSwatchColor(doc, 'rgba(255, 255, 255, 1)', '色块画白色'),
+        },
+      ],
+    },
+    {
       name: '打字只留草稿：root 带 data-editing、值与色块不动、不发事件；回车收下后按 format 重写',
       spec: { apg: HTML_SPEC },
       covers: ['color-field.kbd.commit'],

@@ -80,7 +80,7 @@ const STRING_LIST_CONVERTER = {
  * @customElement xh-color-picker
  * @attr {string} value - 受控颜色值串；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值，默认 #000000
- * @attr {'hex'|'rgba'|'hsla'} format - 值串写法，默认 hex
+ * @attr {'hex'|'rgba'|'hsla'|'oklch'} format - 值串写法，默认 hex
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} disabled - 禁用：触发器与按钮使用原生 disabled，取色区与滑杆退出 Tab 序列
