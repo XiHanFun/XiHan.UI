@@ -42,6 +42,12 @@
 
 <XhDemo src="avatar-group/04-custom" />
 
+### 「+N」展开其余成员
+
+计数那一枚要能点开时换成按钮，作浮层的触发器：浮层里列出没摆出来的人，排成一行的只留前几位
+
+<XhDemo src="avatar-group/05-overflow-popover" />
+
 ## 设计指引
 
 ### 何时使用
