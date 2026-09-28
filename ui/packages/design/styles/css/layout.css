@@ -342,6 +342,14 @@
     transition: opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
   }
 
+  /* 侧栏与遮罩的过渡只给用户的开合：首帧与跨过断点这类环境引起的开合，连接层投影 data-instant，
+     直接落位。三条各压过同一部件上带过渡的那一档（占位 / 覆盖展开、覆盖收起、遮罩收起） */
+  [data-scope='layout']:is([data-part='sider'], [data-part='sider-backdrop'])[data-instant],
+  [data-scope='layout'][data-part='sider'][data-presentation='sheet'][data-collapsed][data-instant],
+  [data-scope='layout'][data-part='sider-backdrop'][data-collapsed][data-instant] {
+    transition: none;
+  }
+
   /* 纸上没有覆盖这回事：遮罩印出来就是盖住正文的一片灰 */
   @media print {
     [data-scope='layout'][data-part='sider-backdrop'] {
