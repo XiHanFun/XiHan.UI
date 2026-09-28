@@ -95,6 +95,45 @@ function channelTransport(): { transport: Transport, runs: Run[], latest: () => 
   return { transport, runs, latest: () => runs.at(-1)! }
 }
 
+/** 取消时不正常收尾、直接抛 AbortError 的传输（宿主自写的传输可能这样做）。 */
+function abortThrowingTransport(): { transport: Transport, runs: Array<{ signal: AbortSignal, push: (ev: NormalizedEvent) => void }> } {
+  const runs: Array<{ signal: AbortSignal, push: (ev: NormalizedEvent) => void }> = []
+  const transport: Transport = {
+    stream: (_req, signal) => {
+      const buffer: NormalizedEvent[] = []
+      let wake: (() => void) | null = null
+      const bump = (): void => {
+        wake?.()
+        wake = null
+      }
+      signal.addEventListener('abort', bump)
+      runs.push({
+        signal,
+        push: (ev) => {
+          buffer.push(ev)
+          bump()
+        },
+      })
+      return {
+        async* [Symbol.asyncIterator]() {
+          while (true) {
+            if (signal.aborted)
+              throw new DOMException('aborted', 'AbortError')
+            if (buffer.length > 0) {
+              yield buffer.shift()!
+              continue
+            }
+            await new Promise<void>((resolve) => {
+              wake = resolve
+            })
+          }
+        },
+      }
+    },
+  }
+  return { transport, runs }
+}
+
 const textStart = (id: string): NormalizedEvent => ({ kind: 'text-start', block: asBlockKey(id), receivedTime: T })
 function textDelta(id: string, delta: string): NormalizedEvent {
   return { kind: 'text-delta', block: asBlockKey(id), delta, receivedTime: T }
@@ -286,6 +325,37 @@ describe('createThreadStore 错误与取消', () => {
     // 旧轮次结束时再发布一次，内容不变
     expect((store.getSnapshot().messages[1]!.parts[0] as TextPart).streaming).toBe(false)
     expect(listener.mock.calls.length).toBe(afterStop + 1)
+  })
+
+  it('传输在取消时直接抛错：stop 之后仍是 idle，不记错误，截断的消息记为 aborted', async () => {
+    const chan = abortThrowingTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+
+    store.submit('你好')
+    chan.runs[0]!.push(textStart('b1'))
+    await tick()
+    store.stop()
+    await tick()
+
+    const snapshot = store.getSnapshot()
+    expect(snapshot.status).toBe('idle')
+    expect(snapshot.error).toBeUndefined()
+    expect(snapshot.messages[1]!.status).toBe('aborted')
+  })
+
+  it('被新一轮顶掉的旧轮次在取消时抛错，不改写新一轮的状态', async () => {
+    const chan = abortThrowingTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+
+    store.submit('第一问')
+    chan.runs[0]!.push(textStart('b1'))
+    await tick()
+    store.submit('第二问')
+    await tick()
+
+    const snapshot = store.getSnapshot()
+    expect(snapshot.status).toBe('submitted')
+    expect(snapshot.error).toBeUndefined()
   })
 
   it('stop 会 abort 掉传输拿到的 signal', async () => {

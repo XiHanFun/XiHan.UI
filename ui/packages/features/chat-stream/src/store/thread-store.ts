@@ -364,6 +364,9 @@ export function createThreadStore(options: ThreadStoreOptions): ThreadStore {
       }
     }
     catch (err) {
+      // 本轮已被 stop 或新一轮顶掉：传输在取消时抛出的异常不算这一轮的失败，也不能改写当前状态
+      if (controller !== ac)
+        return
       // 兜住宿主回调抛出的异常，落进 error 状态
       error = String(err)
       status = 'error'
