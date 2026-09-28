@@ -159,6 +159,7 @@ export function connectFieldArray<T extends PropTypes>(
     canAdd,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     add: () => send({ type: 'ITEM.ADD' }),
+    insert: (index, item) => send({ type: 'ITEM.ADD', index, item: item === undefined ? undefined : { value: item } }),
     remove: index => send({ type: 'ITEM.REMOVE', index }),
     move: (from, to) => send({ type: 'ITEM.MOVE', from, to }),
     moveUp: index => send({ type: 'ITEM.MOVE', from: index, to: index - 1 }),

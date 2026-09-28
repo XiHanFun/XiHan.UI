@@ -42,6 +42,12 @@
 
 <XhDemo src="field-array/04-object-rows" />
 
+### 插入与任意换位
+
+insert(index) 在指定位置插入一行，后面的行往后挪；move(from, to) 一步挪到任意位置，不必逐格上移
+
+<XhDemo src="field-array/05-insert" />
+
 ## 设计指引
 
 ### 何时使用
@@ -58,6 +64,7 @@
 - `min` 与 `max` 限制行数。
 - `movable` 启用上移和下移操作。
 - `createItem` 设置新增行的初始值。
+- `insert(index, item?)` 在指定位置插入一行，后面的行往后挪；`move(from, to)` 一步挪到任意位置。两者与 `add` 同受 `max`、`movable` 与禁用约束。
 - 每行可以包含一个或多个字段。
 - 在 Form 中会同步迁移数组子字段的值、规则和错误。
 - 行的增删与移动有进退场：首次渲染时已有的行直接呈现，新增的行淡入，删掉的行在原处淡出，上移、下移与增删带来的换位滑到新位置。行照常按 `items` 渲染，删掉即卸载。
@@ -65,7 +72,7 @@
 ### 组合
 
 - 每一行放[表单字段](./field)，行内多个字段用行布局排列；整组挂在[表单](./form)下由它迁移值、规则与错误。
-- 行序也可以交给[排序](./sortable)拖拽调整；`movable` 只提供上移、下移两个按钮。
+- 行序也可以交给[排序](./sortable)拖拽调整；`movable` 自带上移、下移两个把手，跳到任意位置用 `move(from, to)` 接作者自己的按钮或拖放。
 
 ### 最佳实践
 
@@ -160,7 +167,8 @@
 | `atMax` | `boolean` | 已到上限：再新增会多于 max。 |
 | `canAdd` | `boolean` |  |
 | `setValue` | `(next: unknown[]) => void` | 整份替换，不受 min / max 约束。 |
-| `add` | `() => void` |  |
+| `add` | `() => void` | 在末尾追加一行，数据由 createItem 造；受 max 约束。 |
+| `insert` | `(index: number, item?: unknown) => void` | 在 index 处插入一行（夹到 0 到行数之间，等于行数即追加），原来在这个位置及之后的行往后挪；受 max 约束。 给了 item 就用它作这一行的数据，缺省（undefined）由 createItem 造。嵌在 Form 里时，后面各行的值、规则与错误随之后移。 |
 | `remove` | `(index: number) => void` |  |
 | `move` | `(from: number, to: number) => void` |  |
 | `moveUp` | `(index: number) => void` |  |

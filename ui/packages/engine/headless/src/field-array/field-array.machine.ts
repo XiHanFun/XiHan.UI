@@ -56,6 +56,13 @@ function mintKeys(refs: RefsFacade<FieldArraySchema>, n: number): string[] {
   return Array.from({ length: n }, (_, i) => rowKey(seq + i))
 }
 
+/** 插入位置的归一：取整后夹到 0 到行数之间；没给或不是有限数即追加在末尾。 */
+export function fieldArrayInsertIndex(raw: number | undefined, length: number): number {
+  if (raw == null || !Number.isFinite(raw))
+    return length
+  return Math.min(length, Math.max(0, Math.trunc(raw)))
+}
+
 /** 把一项从 from 挪到 to；下标越界就原样返回一份拷贝。 */
 export function moveRow<T>(list: readonly T[], from: number, to: number): T[] {
   const out = [...list]
@@ -254,13 +261,19 @@ export const fieldArrayMachine = createMachine({
 
       addItem: (params) => {
         params.action(['syncKeys'])
-        const { context, prop, refs } = params
+        const { context, event, prop, refs } = params
+        const e = event.current()
+        const value = fieldArrayValue(params)
+        const keys = context.get('keys')
+        const index = fieldArrayInsertIndex(e.type === 'ITEM.ADD' ? e.index : undefined, value.length)
         const create = prop('createItem')
         // 没给工厂就补一个 null 而不是 undefined：这份值多半要序列化出去，undefined 在那一步会整项消失
+        const row = e.type === 'ITEM.ADD' && e.item ? e.item.value : create ? create() : null
+        // 新行拿一个从没用过的号插在同一个位置，别的行各自的号原样不动
         commit(params, {
-          value: [...fieldArrayValue(params), create ? create() : null],
-          keys: [...context.get('keys'), ...mintKeys(refs, 1)],
-        }, { type: 'insert', index: fieldArrayValue(params).length })
+          value: [...value.slice(0, index), row, ...value.slice(index)],
+          keys: [...keys.slice(0, index), ...mintKeys(refs, 1), ...keys.slice(index)],
+        }, { type: 'insert', index })
       },
 
       removeItem: (params) => {

@@ -48,3 +48,32 @@ describe('fieldArray 接入 FormPath', () => {
     expect(getFormPathValue(values, middleEmail)).toBe('a@example.com')
   })
 })
+
+describe('fieldArray 命令式方法', () => {
+  it('insert 插在指定位置、move 一步挪到任意位置，都经 value-change 报出', async () => {
+    const array = document.createElement('xh-field-array') as XhFieldArrayElement
+    const onValueChange = vi.fn()
+    array.movable = true
+    array.defaultValue = ['甲', '丙']
+    array.createItem = () => '空'
+    array.addEventListener('value-change', event => onValueChange((event as CustomEvent).detail))
+    array.innerHTML = '<div data-xh-part="root"></div>'
+    document.body.append(array)
+    await tick()
+
+    array.insert(1, '乙')
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['甲', '乙', '丙'] })
+    array.insert(0)
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['空', '甲', '乙', '丙'] })
+    array.move(3, 0)
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['丙', '空', '甲', '乙'] })
+    array.removeItem(1)
+    array.moveDown(0)
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['甲', '丙', '乙'] })
+  })
+
+  it('还没进文档时命令式接口明确报错', () => {
+    const array = document.createElement('xh-field-array') as XhFieldArrayElement
+    expect(() => array.insert(0)).toThrow('还没进文档')
+  })
+})
