@@ -38,8 +38,7 @@
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-xh-field-chrome][data-variant='outline'] {

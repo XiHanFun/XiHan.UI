@@ -159,9 +159,10 @@
     transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  /* 新落下的标签进场，同一批按到达顺序错开；首帧就在的直接呈现（自己或 control 带 data-instant） */
+  /* 新落下的标签原地弹出，同一批按到达顺序错开；首帧就在的直接呈现（自己或 control 带 data-instant）。
+     横排胶囊不用竖向上浮：与来源方向不符，还会探出字段外壳的底边 */
   [data-scope='tags-input'][data-part='item']:not([data-instant], [data-instant] > *) {
-    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }
 

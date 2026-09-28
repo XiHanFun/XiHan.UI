@@ -83,7 +83,8 @@
 
   /* ── 无锚定弹出：原地缩放淡入，没有方向 ──
      NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层；
-     页内浮现的小件也取它：Approval、QuestionFlow 的结果标记，MessageFeed、Log 的回底钮 */
+     页内浮现的小件也取它：Approval、QuestionFlow 的结果标记，MessageFeed、Log 的回底钮；
+     行内横排的胶囊集合（TagsInput、TagGroup、Select 标签行）加入一枚也取它：竖向上浮与来源方向不符，还会探出字段外壳 */
   @keyframes xh-pop-in {
     from {
       opacity: var(--xh-_enter-from-opacity, 0);

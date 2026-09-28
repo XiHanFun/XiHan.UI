@@ -204,6 +204,26 @@ function declaredValue(css, index, prop) {
 }
 
 /**
+ * 声明所在规则落到的节点属于哪个组件：取规则里每条选择器最后一个复合选择器的 data-scope，
+ * 各条不一致或取不到时返回 null（按本组件算）。
+ */
+function ruleTargetScope(css, index) {
+  const open = css.lastIndexOf('{', index)
+  if (open < 0)
+    return null
+  const before = css.slice(0, open)
+  const start = Math.max(before.lastIndexOf('}'), before.lastIndexOf('{')) + 1
+  // 按顶层逗号拆：:not(a, b) 里的逗号不算
+  const selectors = splitTopLevel(before.slice(start).replace(/\/\*[\s\S]*?\*\//g, '')).map(sel => sel.trim()).filter(Boolean)
+  const scopes = new Set(selectors.map((sel) => {
+    // 去掉括号里的内容再拆复合选择器：:not(…) 里的空格与组合子不是这一层的
+    const compounds = sel.replace(/\([^()]*\)/g, '()').split(/\s+|[>+~]/).filter(Boolean)
+    return compounds.at(-1)?.match(/\[data-scope=['"]([\w-]+)['"]\]/)?.[1] ?? null
+  }))
+  return scopes.size === 1 ? [...scopes][0] : null
+}
+
+/**
  * 一项几何过渡是否属于进出场：时长取 enter / exit，且所在规则块里该属性的取值只由幅度令牌驱动。
  * 这样的过渡在减弱动效下只剩淡变，照常取进出场那一对时长与曲线。
  */
@@ -410,8 +430,8 @@ for (const file of files) {
   longhandChecked += longhand.count
 
   const relation = OVERLAY_RELATION[comp]
-  /** 一段动画：自己的关键帧、时长与曲线。一条 animation 并列几段时逐段核。 */
-  const checkAnimation = (line, part) => {
+  /** 一段动画：自己的关键帧、时长与曲线。一条 animation 并列几段时逐段核。own 为假：规则落在别的组件的节点上。 */
+  const checkAnimation = (line, part, own = true) => {
     const value = part.replace(/\s+/g, ' ').trim()
     const name = animationName(value)
     if (!name)
@@ -420,8 +440,9 @@ for (const file of files) {
     const at = `${file}:${line}  animation: ${value}`
 
     // 关系判据：只核共享的进出场关键帧（fade / disclosure 不表达锚定关系）
+    // 锚定关系只管本组件自己的节点：选择框皮肤里给触发器内的标签（tag 的 root）写的出现，不是浮层的进出场
     const nameRelation = SHARED_RELATION[name]
-    if (relation && nameRelation && nameRelation in RELATION_KEYFRAMES) {
+    if (own && relation && nameRelation && nameRelation in RELATION_KEYFRAMES) {
       relationSeen.add(comp)
       if (!RELATION_KEYFRAMES[relation].includes(name))
         problems.push(`${at}\n    —— ${comp} 的锚定关系是 ${relation}，只能用 ${RELATION_KEYFRAMES[relation].join(' / ')}，引用的 ${name} 属于 ${nameRelation}`)
@@ -445,8 +466,9 @@ for (const file of files) {
   }
   for (const m of css.matchAll(ANIMATION_DECL)) {
     const line = css.slice(0, m.index).split('\n').length
+    const scope = ruleTargetScope(css, m.index)
     for (const part of splitTopLevel(m[1]))
-      checkAnimation(line, part)
+      checkAnimation(line, part, scope == null || scope === comp)
   }
 
   for (const m of css.matchAll(TRANSITION_DECL)) {

@@ -768,8 +768,7 @@
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-xh-field-chrome][data-variant='outline'] {
@@ -2520,7 +2519,8 @@
 
   /* ── 无锚定弹出：原地缩放淡入，没有方向 ──
      NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层；
-     页内浮现的小件也取它：Approval、QuestionFlow 的结果标记，MessageFeed、Log 的回底钮 */
+     页内浮现的小件也取它：Approval、QuestionFlow 的结果标记，MessageFeed、Log 的回底钮；
+     行内横排的胶囊集合（TagsInput、TagGroup、Select 标签行）加入一枚也取它：竖向上浮与来源方向不符，还会探出字段外壳 */
   @keyframes xh-pop-in {
     from {
       opacity: var(--xh-_enter-from-opacity, 0);
@@ -34810,9 +34810,10 @@
     transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  /* 新选中的标签进场，同一批按到达顺序错开；首帧就在的直接呈现。+N 那一枚不是到达的条目，不播 */
+  /* 新选中的标签原地弹出（横排胶囊不用竖向上浮，会探出触发器底边），同一批按到达顺序错开；
+     首帧就在的直接呈现。+N 那一枚不是到达的条目，不播 */
   [data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'][data-value]:not([data-instant], [data-state='closed']) {
-    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }
 
@@ -39161,9 +39162,9 @@
       translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  /* 新加的标签进场，同一批按到达顺序错开；首帧就在的直接呈现 */
+  /* 新加的标签原地弹出（横排胶囊不用竖向上浮），同一批按到达顺序错开；首帧就在的直接呈现 */
   [data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root']:not([data-instant]) {
-    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }
 
@@ -39481,9 +39482,10 @@
     transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  /* 新落下的标签进场，同一批按到达顺序错开；首帧就在的直接呈现（自己或 control 带 data-instant） */
+  /* 新落下的标签原地弹出，同一批按到达顺序错开；首帧就在的直接呈现（自己或 control 带 data-instant）。
+     横排胶囊不用竖向上浮：与来源方向不符，还会探出字段外壳的底边 */
   [data-scope='tags-input'][data-part='item']:not([data-instant], [data-instant] > *) {
-    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }
 
