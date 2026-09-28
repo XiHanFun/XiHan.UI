@@ -514,6 +514,9 @@ export function connectSankeyChart<T extends PropTypes>(
       'data-xh-chart-part': 'empty',
       'hidden': !empty || undefined,
       'data-state': loading ? 'loading' : undefined,
+      // 取数中那枚环由加载环配方画，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
     }),
 
     getSummaryProps: () => normalize.element({

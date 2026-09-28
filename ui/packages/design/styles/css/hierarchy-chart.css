@@ -7,7 +7,9 @@
 
 /* 标题、图例容器、视口、提示框、空态、焦点环与顺序色阶走 Chart 家族配方；下钻路径的项归 Collection Item 导航当前（nav 语境），
    面、字色、字重与按压时间线由家族配方给，本皮肤只映射桥接槽。两份都 @import，单独引入仍成立。 */
+@import '../family/motion.css';
 @import '../family/chart.css';
+@import '../family/loading-ring.css';
 @import '../family/collection-item.css';
 
 @layer xihan.components {
