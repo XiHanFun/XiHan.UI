@@ -477,6 +477,46 @@ const cases: readonly ConformanceCase[] = [
       parts: { empty: { hidden: null } },
     },
   },
+  {
+    name: '画布模式：视口里生成垫层与画布，绘图区只留系列分组与样式探针，绘图区占 Tab 位',
+    spec: { apg: GRAPHICS, adr: 'chart-canvas' },
+    props: { renderer: 'canvas' },
+    initial: {
+      counts: { underlay: 1, canvas: 1, grid: 1, series: 2, bar: 2 },
+      parts: {
+        'underlay': { 'aria-hidden': 'true' },
+        'canvas': { 'aria-hidden': 'true', 'data-empty': null },
+        'plot': { tabindex: '0', role: 'graphics-document' },
+        'series': [
+          { 'role': 'graphics-object', 'aria-label': '线上' },
+          { 'role': 'graphics-object', 'aria-label': '门店' },
+        ],
+        'bar[0]': { 'aria-hidden': 'true', 'role': null, 'tabindex': null },
+      },
+    },
+  },
+  {
+    name: '画布模式：键盘进来落到锚点数据的焦点代理（它自己的 SVG 版本，放在所属系列里），方向键换到下一个',
+    spec: { apg: APG, adr: 'chart-canvas' },
+    props: { renderer: 'canvas' },
+    steps: [
+      { kind: 'focus', part: 'plot', via: 'keyboard' },
+      {
+        kind: 'settle',
+        until: { activeElement: 'bar[1]' },
+        expect: {
+          counts: { bar: 3 },
+          parts: { 'bar[1]': { 'role': 'graphics-symbol', 'aria-label': '一月, 线上 120', 'tabindex': '0' } },
+        },
+      },
+      {
+        kind: 'key',
+        key: 'ArrowRight',
+        expect: { activeElement: { part: 'bar[1]', exact: true }, parts: { 'bar[1]': { 'aria-label': '二月, 线上 150' } } },
+      },
+      { kind: 'key', key: 'ArrowUp', expect: { activeElement: { part: 'bar[2]', exact: true }, parts: { 'bar[2]': { 'aria-label': '二月, 门店 60' } } } },
+    ],
+  },
 ]
 
 export const cartesianChartSuite: ConformanceSuite = {

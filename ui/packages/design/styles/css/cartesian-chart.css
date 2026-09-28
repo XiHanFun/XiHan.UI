@@ -144,6 +144,43 @@
     background: linear-gradient(to left, var(--xh-_chart-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
   }
 
+  /* —— 画布模式：数据层画在画布上，三层叠在视口里——垫层 svg（网格、坐标轴、参考带、准线）在最下，
+     画布在中间，绘图区在最上（系列分组、前景、焦点代理与焦点环，指针与键盘都在它上面）。
+     垫层与绘图区同一套排版：刻度标签的字号与等宽数字一致；两层都不接指针 —— */
+  [data-scope='cartesian-chart'][data-part='underlay'] {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+    font-size: var(--xh-_chart-metric-font-size);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+
+  /* 画布铺满视口，后备尺寸按 DPR 由机器设；没有可画的数据时淡出，数据到来淡入 */
+  [data-scope='cartesian-chart'][data-part='canvas'] {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    pointer-events: none;
+    transition: opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='cartesian-chart'][data-part='canvas'][data-empty] {
+    opacity: 0;
+    transition-duration: var(--xh-motion-duration-exit);
+    transition-timing-function: var(--xh-motion-ease-exit);
+  }
+
+  [data-scope='cartesian-chart'][data-part='underlay'][hidden],
+  [data-scope='cartesian-chart'][data-part='canvas'][hidden] {
+    display: none;
+  }
+
   /* —— 缩放与刷选：能缩放或刷选的方向上触屏的拖动与捏合归绘图区，另一个方向照常滚动页面；
      放大后指针是可拖动的手，拖着时是抓住的手；开了刷选时指针是十字，拖动即框选 —— */
   [data-scope='cartesian-chart'][data-part='plot'][data-touch-axis='horizontal'] {

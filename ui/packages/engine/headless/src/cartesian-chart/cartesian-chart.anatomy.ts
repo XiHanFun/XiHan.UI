@@ -19,6 +19,8 @@ import { createAnatomy } from '@xihan-ui/core'
 // box 是箱线的箱（小提琴是密度轮廓），whisker 是须线，median 是中位线，outlier 是离群点；只有 box 可聚焦。
 // clip-path 与 clip-rect 是缩放后的裁剪区（defs 里）；zoom-slider 是作者放置的缩放条，轨道、窗口与两端的手柄由组件生成。
 // annotation 是注释（参考线、参考带、标出的点、平均线、趋势线），annotation-label 是它的标签，都只给眼睛看。
+// underlay 与 canvas 只在数据层画在画布上时出现：underlay 是垫在画布之下的 svg（网格、坐标轴、参考带、准线），
+// canvas 是数据层；绘图区仍在最上面，放系列分组（里面是样式探针）、前景层、焦点代理与焦点环。
 export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'root',
   'caption',
@@ -31,6 +33,8 @@ export const cartesianChartAnatomy = createAnatomy('cartesian-chart', [
   'legend-scale-bar',
   'legend-scale-value',
   'viewport',
+  'underlay',
+  'canvas',
   'plot',
   'defs',
   'pattern',

@@ -263,6 +263,8 @@ function markElement(root: HTMLElement, key: string): HTMLElement | null {
 
 /** 各图表交给内核的过渡设定；numbers 是随过渡滚动的数，按当前数据算出。 */
 export type ChartBaseTransition<S extends ChartBaseSchema> = ChartTransitionOptions & {
+  /** 此刻播不播几何过渡：数据层画在画布上时不播，场景直接落到终态。缺省播（仍受 animated 与减弱动效约束）。 */
+  readonly geometry?: (params: Params<S>) => boolean
   readonly numbers?: (params: Params<S>) => ChartNumbers
   /** 还会改几何、但变化时不该播过渡的输入（直角坐标图的缩放窗口）：它变了，场景直接落到终态。 */
   readonly extent?: (params: Params<S>) => unknown
@@ -275,7 +277,7 @@ function transitionState<S extends ChartBaseSchema>(params: Params<S>, transitio
   const { context, refs, prop, scope, computed, send } = params
   const root = refs.get('getRootEl')()
   return {
-    animated: prop('animated') !== false,
+    animated: prop('animated') !== false && (transition.geometry?.(params) ?? true),
     target: computed('scene'),
     numbers: transition.numbers?.(params) ?? {},
     size: context.get('size'),

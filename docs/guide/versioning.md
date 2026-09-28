@@ -100,8 +100,8 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
 | `data-scope` 取值（组件身份） | 140 | **受约束**（新增第 141 个组件是 minor） |
-| `data-part` 取值（部件名） | 366 个不同名字 / 1328 条「组件 × 部件」配对 | **受约束** |
-| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 366 个 | **受约束** |
+| `data-part` 取值（部件名） | 367 个不同名字 / 1330 条「组件 × 部件」配对 | **受约束** |
+| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 367 个 | **受约束** |
 | `meta.requiredParts`（必备部件） | 314 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
@@ -121,7 +121,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 308 个不同的 `data-*` 属性名、1976 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 308 个不同的 `data-*` 属性名、1977 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -133,7 +133,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 255 个属性名 / 1122 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
+样式钩子。自带皮肤消费了 255 个属性名 / 1123 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -213,8 +213,8 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 144（`defineXhElements()` 注册 143 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1532 条声明 / 472 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 472 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| observed attribute | 1533 条声明 / 473 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 473 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 119 个名字 / 260 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（245 处中 243 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
 | 事件 `detail` 形状 | 219 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
@@ -421,11 +421,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，18228 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，18233 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 210 条子入口、9417 个导出名、140 个 `data-scope` 与 1328 条部件配对、
-140 个组件的 2067 个 prop 名、310 种 `data-*`、33 个 `data-state` 取值、666 个令牌、
+覆盖：包名与 210 条子入口、9419 个导出名、140 个 `data-scope` 与 1330 条部件配对、
+140 个组件的 2068 个 prop 名、310 种 `data-*`、33 个 `data-state` 取值、666 个令牌、
 5 个 `@layer` 名、4440 个组件覆盖槽、143 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改

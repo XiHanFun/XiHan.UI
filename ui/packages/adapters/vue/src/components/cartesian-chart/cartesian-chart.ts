@@ -14,6 +14,7 @@ import type {
   CartesianChartSchema,
   CartesianChartTranslations,
   CartesianOrientation,
+  CartesianRenderer,
   CartesianSeries,
   CartesianTooltipModel,
   CartesianTooltipOrder,
@@ -149,23 +150,27 @@ export const XhCartesianChartViewport = defineComponent({
 })
 
 /**
- * 绘图区：按场景生成网格、坐标轴、系列与前景层。
- * 次序是 back → under → data → over：类目带淡底与十字准线在数据之下，激活的点与焦点环在数据之上。
+ * 绘图区：按场景生成网格、坐标轴、系列与前景层，层序由连接层分好。
+ * 数据层画在画布上时前面再垫一层 svg（网格、坐标轴、参考带、准线）与画布；绘图区始终以同一个 key 在最后，
+ * 渲染器切换时它不重建，焦点不丢。
  */
 export const XhCartesianChartPlot = defineComponent({
   name: 'XhCartesianChartPlot',
   setup() {
     const ctx = useCartesianChartContext()
+    const bindCanvas = (el: unknown): void => {
+      ctx.canvasRef.value = el as HTMLCanvasElement | null
+    }
     return () => {
       const api = ctx.api.value
-      const marks = [
-        ...api.scene.layers.back,
-        ...api.overlay.under,
-        ...api.scene.layers.data,
-        ...api.scene.layers.front,
-        ...api.overlay.over,
+      const plot = h('svg', { ...api.getPlotProps() as Record<string, unknown>, key: 'plot' }, [renderDefs(api), ...api.layers.plot.map(mark => renderMark(api, mark))])
+      if (api.renderer !== 'canvas')
+        return [plot]
+      return [
+        h('svg', { ...api.getUnderlayProps() as Record<string, unknown>, key: 'underlay' }, api.layers.underlay.map(mark => renderMark(api, mark))),
+        h('canvas', { ...api.getCanvasProps() as Record<string, unknown>, key: 'canvas', ref: bindCanvas }),
+        plot,
       ]
-      return h('svg', api.getPlotProps() as Record<string, unknown>, [renderDefs(api), ...marks.map(mark => renderMark(api, mark))])
     }
   },
 })
@@ -228,6 +233,7 @@ export const XhCartesianChartRoot = defineComponent({
     xAxis: { type: Object as PropType<CartesianAxis> },
     yAxis: { type: Object as PropType<CartesianAxis> },
     orientation: { type: String as PropType<CartesianOrientation> },
+    renderer: { type: String as PropType<CartesianRenderer> },
     trigger: { type: String as PropType<CartesianTrigger> },
     totals: { type: Boolean, default: undefined },
     tooltipOrder: { type: String as PropType<CartesianTooltipOrder> },

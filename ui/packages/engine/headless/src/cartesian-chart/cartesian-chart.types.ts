@@ -20,6 +20,12 @@ export type CartesianOrientation = 'vertical' | 'horizontal'
 /** 提示框汇报什么：axis 同一个键上的全部系列，item 只报指针命中的那一个。 */
 export type CartesianTrigger = 'axis' | 'item'
 
+/**
+ * 数据层画在哪：svg 每个标记一个节点；canvas 画在画布上（坐标轴、网格、注释、焦点代理与无障碍 DOM 仍是 SVG / DOM）；
+ * auto 在数据层逐个成节点的标记（柱、点、K 线、箱线……，折线与面积按一条路径计）超过节点预算时改用画布。
+ */
+export type CartesianRenderer = 'svg' | 'canvas' | 'auto'
+
 /** 提示框里各系列的行序：series 按图例次序，descending / ascending 按数值由大到小 / 由小到大。 */
 export type CartesianTooltipOrder = 'series' | 'descending' | 'ascending'
 

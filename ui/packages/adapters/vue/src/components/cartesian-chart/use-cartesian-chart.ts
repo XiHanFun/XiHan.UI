@@ -26,6 +26,8 @@ export interface CartesianChartContext {
   rootRef: Ref<HTMLElement | null>
   /** 视口：尺寸观测的宿主。 */
   viewportRef: Ref<HTMLElement | null>
+  /** 画布：数据层画在画布上时由绘图区部件挂上。 */
+  canvasRef: Ref<HTMLCanvasElement | null>
 }
 
 /** 量测、度量与文字度量器都在状态机的效应里做，DOM 取值口经 refs 交入。 */
@@ -35,10 +37,12 @@ export function useCartesianChart(
 ): CartesianChartContext {
   const rootRef = ref<HTMLElement | null>(null)
   const viewportRef = ref<HTMLElement | null>(null)
+  const canvasRef = ref<HTMLCanvasElement | null>(null)
   // 传响应式 props 对象本身而非快照，供机器每次读时重新展开
   const service = useMachine(cartesianChartMachine, () => ({ ...props, ...notify }))
   service.refs.set('getRootEl', () => rootRef.value)
   service.refs.set('getViewportEl', () => viewportRef.value)
+  service.refs.set('getCanvasEl', () => canvasRef.value)
   const api = computed(() => connectCartesianChart(service, vueNormalize))
-  return { api, service, rootRef, viewportRef }
+  return { api, service, rootRef, viewportRef, canvasRef }
 }

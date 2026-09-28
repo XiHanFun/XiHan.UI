@@ -9,9 +9,9 @@
 import type { PropFn, Scope } from '@xihan-ui/core'
 import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey, ChartNavIntent } from '../shared/chart'
-import type { CartesianModel, CartesianSeriesValues } from './cartesian-chart.model'
+import type { CartesianModel, CartesianScene, CartesianSeriesValues } from './cartesian-chart.model'
 import type { CartesianChartSchema, CartesianOverlay } from './cartesian-chart.schema'
-import type { CartesianAnnotationSummary, CartesianBrushSelection, CartesianChartTranslations, CartesianLegendScale, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow, CartesianWindowRatio } from './cartesian-chart.types'
+import type { CartesianAnnotationSummary, CartesianBrushing, CartesianBrushSelection, CartesianChartTranslations, CartesianLegendScale, CartesianRenderer, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow, CartesianWindowRatio } from './cartesian-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { createPicker, domainToWindow, FULL_WINDOW, lttb } from '@xihan-ui/viz'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
@@ -834,4 +834,136 @@ export function cartesianTooltip(
       }
     }),
   }
+}
+
+/** 数据层逐个成节点的标记超过它就改用画布：与单图 SVG 节点预算同一个数。 */
+export const CARTESIAN_SVG_MARK_BUDGET = 3000
+
+const nodeCounts = new WeakMap<object, number>()
+
+/** 数据层要逐个生成的节点数：分组不算，折线与面积各算一条路径。 */
+function dataNodeCount(marks: readonly Mark[]): number {
+  let count = 0
+  for (const mark of marks)
+    count += mark.kind === 'group' ? dataNodeCount(mark.children) : 1
+  return count
+}
+
+/** 解析渲染器：svg 与 canvas 原样；auto（缺省）在数据层逐个成节点的标记超过预算时用画布，还没测量时按 svg。 */
+export function cartesianRenderer(renderer: CartesianRenderer | undefined, model: CartesianModel): 'svg' | 'canvas' {
+  if (renderer === 'svg' || renderer === 'canvas')
+    return renderer
+  const scene = model.scene
+  if (!scene)
+    return 'svg'
+  let count = nodeCounts.get(scene)
+  if (count === undefined) {
+    count = dataNodeCount(scene.scene.layers.data)
+    nodeCounts.set(scene, count)
+  }
+  return count > CARTESIAN_SVG_MARK_BUDGET ? 'canvas' : 'svg'
+}
+
+/** 没有可画的数据：规格合法、但每个可见系列都没有值。 */
+export function cartesianIsEmpty(model: CartesianModel): boolean {
+  return model.issues.length === 0 && model.derived.visible.every(s => s.values.every(v => v == null))
+}
+
+/** 拖出刷选框的最短距离（px）：更短的算点击，清掉刷选。 */
+export const CARTESIAN_BRUSH_MIN_DRAG = 3
+
+/** 正在拖的框换成范围：拖得太短（点一下）为 null。 */
+export function cartesianBrushingSelection(
+  model: CartesianModel,
+  brushing: CartesianBrushing,
+  dirs: { readonly x: boolean, readonly y: boolean },
+): CartesianBrushSelection | null {
+  return Math.hypot(brushing.to.x - brushing.from.x, brushing.to.y - brushing.from.y) < CARTESIAN_BRUSH_MIN_DRAG
+    ? null
+    : cartesianBrushSelectionOf(model, { x0: brushing.from.x, y0: brushing.from.y, x1: brushing.to.x, y1: brushing.to.y }, dirs)
+}
+
+/** 样式探针要对上的那几个属性：部件、涨跌、画法（K 线的实体与美国线、箱与小提琴）、是否按值着色。 */
+export interface CartesianProbeDescriptor {
+  readonly part: string
+  readonly trend: 'rise' | 'fall' | null
+  readonly style: 'candle' | 'ohlc' | 'box' | 'violin' | null
+  /** 按值着色的点：颜色由三个锚点探针按色阶插值。 */
+  readonly sequential: boolean
+}
+
+/** 一个数据标记对应哪一个样式探针。 */
+export function cartesianProbeDescriptor(mark: Mark): CartesianProbeDescriptor {
+  return {
+    part: mark.part,
+    trend: mark.part === 'bar' || mark.part === 'candle' || mark.part === 'wick' ? mark.paint?.trend ?? null : null,
+    style: mark.part === 'candle' ? (mark.kind === 'rect' ? 'candle' : 'ohlc') : mark.part === 'box' ? (mark.kind === 'rect' ? 'box' : 'violin') : null,
+    sequential: mark.part === 'point' && mark.paint?.t != null,
+  }
+}
+
+/** 按值着色的锚点探针的色阶位置：起点、中点、终点。 */
+export const CARTESIAN_SEQUENTIAL_ANCHORS = [0, 0.5, 1] as const
+
+const probes = new WeakSet<Mark>()
+
+/** 这个标记是不是样式探针：空几何、只给画布读样式，不进可访问树。 */
+export function isCartesianProbe(mark: Mark): boolean {
+  return probes.has(mark)
+}
+
+/** 与真标记同种类、同部件、同着色引用的空几何标记。 */
+function probeOf(mark: Mark, key: string, t?: number): Mark {
+  const paint = t === undefined ? mark.paint : { ...mark.paint, t }
+  const base = { key, part: mark.part, ...(paint ? { paint } : {}) }
+  let probe: Mark
+  switch (mark.kind) {
+    case 'rect':
+      probe = { ...base, kind: 'rect', x: 0, y: 0, width: 0, height: 0 }
+      break
+    case 'line':
+      probe = { ...base, kind: 'line', points: [], curve: 'linear' }
+      break
+    case 'area':
+      probe = { ...base, kind: 'area', points: [], curve: 'linear' }
+      break
+    case 'symbol':
+      probe = { ...base, kind: 'symbol', x: 0, y: 0, size: 0, symbol: mark.symbol }
+      break
+    default:
+      probe = { ...base, kind: 'path', d: '' }
+  }
+  probes.add(probe)
+  return probe
+}
+
+/** 一个系列分组里要放的样式探针：场景里实际出现的每种（部件、涨跌、画法）各一个，按值着色的点另加三个锚点。 */
+function probesOf(group: Mark & { kind: 'group' }): Mark[] {
+  const seen = new Set<string>()
+  const out: Mark[] = []
+  for (const mark of group.children) {
+    const d = cartesianProbeDescriptor(mark)
+    const id = `${d.part}:${d.trend ?? ''}:${d.style ?? ''}:${d.sequential ? 'seq' : ''}`
+    if (seen.has(id))
+      continue
+    seen.add(id)
+    if (d.sequential) {
+      CARTESIAN_SEQUENTIAL_ANCHORS.forEach((t, i) => out.push(probeOf(mark, `${group.key}:probe:${id}:${i}`, t)))
+      continue
+    }
+    out.push(probeOf(mark, `${group.key}:probe:${id}`))
+  }
+  return out
+}
+
+const probeGroups = new WeakMap<object, readonly Mark[]>()
+
+/** 画布模式下绘图区里的系列分组：分组照常输出（可及名、色槽、淡出都在它上面），子标记换成样式探针。 */
+export function cartesianProbeGroups(scene: CartesianScene): readonly Mark[] {
+  let groups = probeGroups.get(scene)
+  if (!groups) {
+    groups = scene.scene.layers.data.map(mark => (mark.kind === 'group' ? { ...mark, children: probesOf(mark) } : mark))
+    probeGroups.set(scene, groups)
+  }
+  return groups
 }

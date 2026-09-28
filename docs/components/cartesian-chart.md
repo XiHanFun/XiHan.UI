@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `clip-path` · `clip-rect` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `stem` · `connector` · `candle` · `wick` · `box` · `whisker` · `median` · `outlier` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `brush` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `zoom-slider` · `zoom-track` · `zoom-window` · `zoom-handle` · `zoom-preview` · `zoom-preview-line` · `summary` · `table`
+`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · `underlay` · `canvas` · **`plot`** · `defs` · `pattern` · `pattern-line` · `clip-path` · `clip-rect` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `stem` · `connector` · `candle` · `wick` · `box` · `whisker` · `median` · `outlier` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `brush` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `zoom-slider` · `zoom-track` · `zoom-window` · `zoom-handle` · `zoom-preview` · `zoom-preview-line` · `summary` · `table`
 
 ## 示例
 
@@ -210,6 +210,12 @@ onBrushSelectionChange 交出框里的数据：旁边的统计跟着框走，清
 
 <XhDemo src="cartesian-chart/32-brush-linked" />
 
+### 画布渲染
+
+两万个点超过节点预算，数据层自动画在画布上；坐标轴、提示框、图例与键盘照常
+
+<XhDemo src="cartesian-chart/33-canvas" />
+
 ## 设计指引
 
 ### 何时使用
@@ -268,6 +274,7 @@ onBrushSelectionChange 交出框里的数据：旁边的统计跟着框走，清
 - 缩放的手势：按住 Ctrl（⌘）滚轮以指针为中心缩放，不按时滚轮照常滚动页面；放大后拖动绘图区平移，内容跟着指针走；触屏双指捏合缩放、单指拖动平移，只在能缩放的方向上拦截，另一个方向照常滚动页面。键盘在绘图区里按 + / − 以聚焦的数据为中心缩放，类目轴上按整个类目增减、每按一次至少多露或少露一个类目；方向键把焦点移出窗口时，窗口平移到以它为中心。窗口最窄到只露出一个类目，连续轴放大到 100 倍为止。
 - 自变量轴能缩放、图是竖向时，绘图区下方有一条缩放条（`zoom-slider`）：淡底的轨道对着整条轴，里面一条弱化色的缩略线画出第一个按键排的系列在整条轴上的走势（点多时降采样），窗口是品牌淡底的选中区，两端各一个手柄。拖窗口平移，拖手柄改一端，按轨道空处把窗口移过去。横向条形图不出缩放条，用滚轮、拖动与键盘缩放。Web Components 侧作者在外壳里放一个空的 `zoom-slider`，轨道、窗口与手柄由元素生成。
 - 折线的点比绘图区的像素多一倍以上时降采样（Largest-Triangle-Three-Buckets，保留峰谷）：线上的点不超过绘图区的宽度，缩放后只采窗口里的那一段；锚点、焦点、提示框与数据表仍是全部数据。
+- `renderer` 决定数据层画在哪：`svg` 每根柱、每个点、每根 K 线一个节点；`canvas` 画在一块画布上（`canvas` 部件），坐标轴、网格、参考带与十字准线移到画布下面的垫层（`underlay` 部件），系列分组、注释、数据标签、激活的点与焦点环仍在最上面的 SVG 绘图区。缺省 `auto`：数据层逐个成节点的标记（柱、点、K 线、箱线……，折线与面积各算一条路径）超过 3000 个时改用画布，以内与 `svg` 完全一样。画布的颜色、线宽、虚线、纹理与淡出全部读绘图区里同部件的计算样式——每个系列分组里放一个同部件、同状态、空几何的样式探针——主题与暗色、强制色（画布上画系统色）、打印、作者对系列色的覆盖都照样生效，悬停图例时其余系列随 CSS 过渡淡出。画布的后备尺寸按设备像素比，浏览器缩放、窗口换屏后重画，打印时按至少 2 倍重画。画布上不播几何过渡：数据更新、图例切换与缩放直接画终态，整块画布随有无数据淡入淡出（取 `--xh-motion-duration-enter` / `-exit`）。Web Components 侧垫层与画布由元素生成，作者照旧只写空的 `<svg>` plot；元素的 `currentRenderer` 读出 auto 解析的结果。
 - `brush` 打开刷选：`x` 沿自变量轴框一段，`y` 沿数值轴框一段，`xy` 框一个矩形，缺省 `none`。开启后在绘图区里拖动即刷选，指针是十字，放大后的平移改用缩放条或键盘。拖着时框已经画出（类目轴取整到首尾类目的整条带），松手才派发一次 `onBrushSelectionChange`，载荷是范围 `selection` 与框里的数据 `data`：锚点（柱顶、点、线上的点、K 线的收盘、箱线的中位数）落在框里即算，按图例次序、再按自变量排。范围 `brushSelection` / `defaultBrushSelection` 的写法同缩放窗口，受控时由作者写回。框垫在数据之下，是选中语义的淡底加一圈聚焦色的细边；框外的柱、点、K 线与箱线淡出到 `--xh-chart-dim-alpha`，折线与面积是整条路径，不分框里框外。点一下（没拖开）或按 Escape 清掉刷选。
 - 提示框缺省按系列推断：只有散点时 `item`，否则 `axis`。`axis` 吸附到最近的键，列出该键上全部可见系列（散点在这个 x 上有点才列一行）；`item` 只报告指针命中的那一个数据，命中取离指针最近的标记，不要求指针正中。气泡的行在数值后面跟着大小，名字取 `translations.sizeLabel`。键盘聚焦与指针悬停显示同样的内容。`tooltipOrder` 改变提示框里各系列的行序：缺省 `series` 按图例次序，`descending` / `ascending` 按数值排，缺失值排在最后；回调里的 `items` 仍按图例次序。
 - 悬停图例项时，其余系列淡出到 `--xh-chart-dim-alpha`，该系列颜色不变；`trigger="item"` 时悬停或聚焦某个数据同样只保留它所在的系列。`axis` 模式不淡出：提示框列出的正是该键上的全部系列。
@@ -353,6 +360,7 @@ onBrushSelectionChange 交出框里的数据：旁边的统计跟着框走，清
 | `XhCartesianChartRoot` | `xAxis` | `CartesianAxis` |  |  |
 | `XhCartesianChartRoot` | `yAxis` | `CartesianAxis` |  |  |
 | `XhCartesianChartRoot` | `orientation` | `CartesianOrientation` |  | 朝向，缺省 vertical。 |
+| `XhCartesianChartRoot` | `renderer` | `CartesianRenderer` |  | 数据层画在哪：svg、canvas，或 auto（缺省）——数据层逐个成节点的标记超过节点预算时改用画布。 |
 | `XhCartesianChartRoot` | `trigger` | `CartesianTrigger` |  | 提示框汇报什么；缺省含柱或折线时 axis，只有散点时 item。 |
 | `XhCartesianChartRoot` | `totals` | `boolean` |  | 堆叠柱的合计：每个堆叠组在最外端写出合计。 |
 | `XhCartesianChartRoot` | `tooltipOrder` | `CartesianTooltipOrder` |  | 提示框里各系列的行序，缺省 series（按图例次序）。 |
@@ -406,6 +414,8 @@ onBrushSelectionChange 交出框里的数据：旁边的统计跟着框走，清
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `model` | `CartesianModel` | 管线产物：比例尺、布局、场景与无障碍模型。 |
+| `renderer` | `'svg' \| 'canvas'` | 解析后的渲染器：数据层画在 SVG 还是画布上。 |
+| `layers` | `CartesianLayers` | 按渲染器分好层的标记：适配器照它画垫层与绘图区，不自己拼层序。 |
 | `scene` | `Scene` | 要画的场景；尚未测量时为空场景。 |
 | `overlay` | `CartesianOverlay` | 前景层：随激活与聚焦变化的标记。绘图区按 back → under → data → over 的次序画： 十字准线与类目带淡底在数据之下，激活的点与焦点环在数据之上。 |
 | `measured` | `boolean` | 视口尚未测量（服务端与首帧）：绘图区只输出空的 svg。 |
@@ -441,6 +451,8 @@ onBrushSelectionChange 交出框里的数据：旁边的统计跟着框走，清
 | `getLegendScaleValueProps` | `(edge: 'min' \| 'max') => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getPlotProps` | `() => T['element']` |  |
+| `getUnderlayProps` | `() => T['element']` | 垫层：画布模式下垫在画布之下的 svg，网格、坐标轴、参考带与准线画在这里。 |
+| `getCanvasProps` | `() => T['element']` | 画布：画布模式下的数据层；后备尺寸由机器按视口与 DPR 设。 |
 | `getDefsProps` | `() => T['element']` | 绘图区的第一个子节点：各系列的纹理定义在这里。 |
 | `getPatternProps` | `(pattern: ChartPattern) => T['element']` |  |
 | `getPatternLineProps` | `(pattern: ChartPattern) => T['element']` |  |
@@ -500,6 +512,8 @@ onBrushSelectionChange 交出框里的数据：旁边的统计跟着框走，清
 | `legend-item` | `aria-pressed` | 'false' \| 'true' |
 | `legend-swatch` | `aria-hidden` | 'true' |
 | `legend-scale` | `aria-hidden` | 'true' |
+| `underlay` | `aria-hidden` | 'true' |
+| `canvas` | `aria-hidden` | 'true' |
 | `plot` | `aria-describedby` | `summary` 部件的 id |
 | `plot` | `aria-labelledby` | `caption` 部件的 id |
 | `plot` | `aria-roledescription` | translations.chartRoleDescription |
@@ -526,6 +540,7 @@ onBrushSelectionChange 交出框里的数据：旁边的统计跟着框走，清
 - 坐标轴、网格、十字准线、注释与焦点环一律 `aria-hidden`：它们的信息由每个数据的名称、摘要与数据表承担。摘要末尾按 `translations.annotationSummary` 写出参考线、参考带与平均线的名字与值（没写标签的取 `referenceLabel`）；标出的点与趋势线不写，前者的值在数据表里，后者由数据推出。
 - 组件在根内生成一段摘要与一张数据表，二者视觉隐藏、对读屏可见，服务端即输出。摘要写系列数、自变量的范围以及每个系列的最小值与最大值，模板是 `translations.summary`；数据表首列是自变量，列名缺省取 x 轴标题，其余每个可见系列一列，缺失值写 `translations.missingValue`。含散点时一个 x 上可以有多个点，数据表改为每个数据一行：系列、x、y 各一列（列名取 `translations.seriesLabel` 与两根轴的标题），有气泡时再加大小一列，按值着色时再加一列。气泡与按值着色的点的缺省名称在末尾补上大小与颜色对应的值；色阶图例只给眼睛看。
 - 绘图区只占一个 Tab 位，进入后焦点落在一个真实的元素上：柱与散点直接获得焦点，散点按 x 的次序走，上下键换到另一个系列里 x 最近的点；折线没有逐点的元素，由绘图区为聚焦的数据生成一个点作为焦点代理，移动时替换并聚焦新点，读屏据此播报新的名称。
+- 数据层画在画布上时，读屏听到的与 SVG 模式相同：绘图区占一个 Tab 位，进来后焦点落在锚点数据的焦点代理上——就是那根柱、那个点或那根 K 线的 SVG 版本，放回所属系列的分组、叠在画布上，名称、方向键与提示框都与 SVG 模式一致；折线的焦点代理照旧是激活的点。画布与垫层 `aria-hidden`，样式探针 `aria-hidden`、不可聚焦。
 - 焦点环是独立的 `focus-ring` 部件，画在标记之外，不依赖 SVG 元素的 outline；只在键盘聚焦时出现。
 - 图例是 `role="toolbar"`，名称取 `translations.legendLabel`；每一项是 `<button aria-pressed>`，按下表示系列可见。图例整体只占一个 Tab 位，进入后左右键在项之间移动。
 - 提示框 `aria-hidden`：它显示的内容与数据的可访问名称是同一份，读两遍反而干扰。
@@ -572,6 +587,7 @@ onBrushSelectionChange 交出框里的数据：旁边的统计跟着框走，清
 | `legend-swatch` | `data-xh-chart-part` | 'legend-swatch' |
 | `legend-scale-value` | `data-edge` | edge |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
+| `canvas` | `data-empty` | ''（条件成立时才出现） |
 | `plot` | `data-dragging` | ''（条件成立时才出现） |
 | `plot` | `data-selectable` | ''（条件成立时才出现） |
 | `plot` | `data-touch-axis` | 'both' \| 'horizontal' \| 'vertical' \| undefined |

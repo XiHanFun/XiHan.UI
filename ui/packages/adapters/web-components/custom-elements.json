@@ -6060,7 +6060,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-cartesian-chart>`：直角坐标图宿主，柱、折线与散点共用一根自变量轴与一根数值轴。\n\n作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part=\"plot\">`、tooltip，\n可选 empty。几何是从数据算出来的，作者写不出：网格、坐标轴、系列与前景层由本元素按场景生成进 plot，\n按标记的 key 复用节点，只写变化的属性；图例项与按值着色时的色阶生成进 legend；tooltip 留空时写入缺省内容，\n作者也可以自行填充（监听 `datum-active`），里面有作者写的节点时元素不碰它。\n摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n\n数据、系列、坐标轴与注释是对象，只走 JS property。",
+          "description": "`<xh-cartesian-chart>`：直角坐标图宿主，柱、折线与散点共用一根自变量轴与一根数值轴。\n\n作者写外壳：root（`<figure>`）、caption、legend、viewport 与其中空的 `<svg data-xh-part=\"plot\">`、tooltip，\n可选 empty。几何是从数据算出来的，作者写不出：网格、坐标轴、系列与前景层由本元素按场景生成进 plot，\n按标记的 key 复用节点，只写变化的属性；图例项与按值着色时的色阶生成进 legend；tooltip 留空时写入缺省内容，\n作者也可以自行填充（监听 `datum-active`），里面有作者写的节点时元素不碰它。\n摘要与数据表由元素追加在 root 末尾，视觉隐藏。\n数据层画在画布上时（renderer 解析为 canvas），元素在绘图区前面生成垫层 `<svg>`（网格、坐标轴、参考带、准线）\n与 `<canvas>`，作者不用写；切回 svg 时撤掉。\n\n数据、系列、坐标轴与注释是对象，只走 JS property。",
           "name": "XhCartesianChartElement",
           "cssParts": [
             {
@@ -6082,6 +6082,14 @@
             {
               "description": "绘图区 `<svg>`，标记由元素生成",
               "name": "plot"
+            },
+            {
+              "description": "画布模式下垫在画布之下的 `<svg>`，由元素生成",
+              "name": "underlay"
+            },
+            {
+              "description": "画布模式下的数据层 `<canvas>`，由元素生成",
+              "name": "canvas"
             },
             {
               "description": "缩放条外壳，轨道、窗口、两端的手柄与缩略线由元素生成",
@@ -6237,6 +6245,15 @@
                 "text": "CartesianOrientation | undefined"
               },
               "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "renderer",
+              "privacy": "public",
+              "type": {
+                "text": "CartesianRenderer | undefined"
+              },
+              "attribute": "renderer"
             },
             {
               "kind": "field",
@@ -6439,6 +6456,15 @@
             },
             {
               "kind": "field",
+              "name": "currentRenderer",
+              "type": {
+                "text": "'svg' | 'canvas'"
+              },
+              "description": "数据层此刻画在哪：renderer 是作者递进来的写法，auto 解析的结果读这里。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "currentActiveKey",
               "type": {
                 "text": "ChartKey | null"
@@ -6522,6 +6548,16 @@
               "default": "null"
             },
             {
+              "kind": "field",
+              "name": "#canvas",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLCanvasElement | null"
+              },
+              "default": "null",
+              "description": "画布模式下生成的画布；svg 模式为 null。"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -6530,6 +6566,31 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "#paintLayers",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "plot",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CartesianChartApi"
+                  }
+                }
+              ],
+              "description": "画布模式：绘图区前面依次是垫层 svg 与画布，都是生成节点，与绘图区同一个父节点；svg 模式撤掉。\n画布的后备尺寸由机器按视口与 DPR 设，这里只写部件属性。"
             },
             {
               "kind": "method",
@@ -6894,6 +6955,14 @@
               "description": "朝向，默认 vertical；horizontal 即条形图",
               "name": "orientation",
               "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "CartesianRenderer | undefined"
+              },
+              "description": "数据层画在哪，默认 auto：数据层逐个成节点的标记超过节点预算时改用画布",
+              "name": "renderer",
+              "fieldName": "renderer"
             },
             {
               "type": {

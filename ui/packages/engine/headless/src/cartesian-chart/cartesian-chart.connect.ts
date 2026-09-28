@@ -10,7 +10,7 @@ import type { AxisWindow, Mark, Scene, ShapeMark, TextMark } from '@xihan-ui/viz
 import type { ChartDatumRef, ChartFrame } from '../shared/chart'
 import type { CartesianActive } from './cartesian-chart.logic'
 import type { CartesianScene } from './cartesian-chart.model'
-import type { CartesianChartApi, CartesianChartSchema } from './cartesian-chart.schema'
+import type { CartesianChartApi, CartesianChartSchema, CartesianLayers } from './cartesian-chart.schema'
 import type {
   CartesianBrushing,
   CartesianBrushSelection,
@@ -30,11 +30,12 @@ import {
   cartesianAnchor,
   cartesianBrushedData,
   cartesianBrushedRefs,
+  cartesianBrushingSelection,
   cartesianBrushRect,
-  cartesianBrushSelectionOf,
   cartesianDatumLabel,
   cartesianDetails,
   cartesianHitTest,
+  cartesianIsEmpty,
   cartesianKeyIndexOf,
   cartesianLegendScale,
   cartesianMarkKey,
@@ -42,11 +43,14 @@ import {
   cartesianNavTarget,
   cartesianOverlay,
   cartesianPositionOf,
+  cartesianProbeGroups,
+  cartesianRenderer,
   cartesianTooltip,
   cartesianTranslations,
   cartesianTrigger,
   cartesianZoomPreview,
   FULL_CARTESIAN_RATIO,
+  isCartesianProbe,
   sameWindow,
 } from './cartesian-chart.logic'
 
@@ -82,8 +86,6 @@ const WHEEL_NOTCH = 50
 
 /** 键盘 + / − 一次缩放的倍数。 */
 const KEY_ZOOM_STEP = 1.5
-/** 拖出刷选框的最短距离（px）：更短的算点击，清掉刷选。 */
-const BRUSH_MIN_DRAG = 3
 /** 刷选时按框里框外淡出的数据标记。 */
 const BRUSHED_PARTS = new Set(['bar', 'point', 'candle', 'wick', 'box', 'whisker', 'median', 'outlier', 'stem'])
 
@@ -100,6 +102,18 @@ function pathOf(mark: Mark): string {
   if (mark.kind === 'path')
     return mark.d
   return markPath(mark as ShapeMark)
+}
+
+/** 数据层里某个键的标记与它所在的系列分组；折线（焦点代理在前景里）与找不到时为 null。 */
+function findDataMark(groups: readonly Mark[], key: string): { mark: Mark, group: string } | null {
+  for (const group of groups) {
+    if (group.kind !== 'group')
+      continue
+    const mark = group.children.find(child => child.key === key)
+    if (mark && mark.kind !== 'line' && mark.kind !== 'area')
+      return { mark, group: group.key }
+  }
+  return null
 }
 
 const ROLLED = new WeakMap<ChartFrame, Scene>()
@@ -145,7 +159,10 @@ export function connectCartesianChart<T extends PropTypes>(
   const frame = context.get('frame')
   const scene = frame ? rolledScene(frame, model.scene) : model.scene?.scene ?? EMPTY_SCENE
   const invalid = model.issues.length > 0
-  const empty = !invalid && model.derived.visible.every(s => s.values.every(v => v == null))
+  const empty = cartesianIsEmpty(model)
+  // 数据层画在哪：画布模式下标记不成节点，绘图区只留系列分组（样式探针）、前景与焦点代理
+  const renderer = cartesianRenderer(prop('renderer'), model)
+  const canvas = renderer === 'canvas'
   // 取数中、还没有可画的数据：空态写「加载中」并转圈，不先报「没有数据」
   const loading = prop('pending') === true && empty
 
@@ -155,7 +172,7 @@ export function connectCartesianChart<T extends PropTypes>(
   const anchorKey = anchor ? cartesianMarkKey(model, anchor) : null
   // 锚点落在柱或散点上时标记自己占 Tab 位；落在折线上时绘图区占，聚焦时再转投给焦点代理
   const anchorMark = anchor == null ? undefined : model.derived.visible.find(s => s.spec.id === anchor.seriesId)?.spec.mark
-  const anchorIsBar = anchorMark === 'bar' || anchorMark === 'scatter' || anchorMark === 'candlestick' || anchorMark === 'boxplot'
+  const anchorIsBar = !canvas && (anchorMark === 'bar' || anchorMark === 'scatter' || anchorMark === 'candlestick' || anchorMark === 'boxplot')
 
   const active: CartesianActive | null = cartesianActive(model, {
     hover: context.get('hover'),
@@ -174,10 +191,7 @@ export function connectCartesianChart<T extends PropTypes>(
   const brushing = context.get('brushing')
   const selection = brushable ? context.get('brushSelection') : null
   /** 拖出的框换成范围：拖得太短（点一下）算清掉。 */
-  const brushedFrom = (b: CartesianBrushing): CartesianBrushSelection | null =>
-    Math.hypot(b.to.x - b.from.x, b.to.y - b.from.y) < BRUSH_MIN_DRAG
-      ? null
-      : cartesianBrushSelectionOf(model, { x0: b.from.x, y0: b.from.y, x1: b.to.x, y1: b.to.y }, { x: brushX, y: brushY })
+  const brushedFrom = (b: CartesianBrushing): CartesianBrushSelection | null => cartesianBrushingSelection(model, b, { x: brushX, y: brushY })
   // 拖着时画拖出的框（类目取整到整条带），松手后画落定的范围
   const shownSelection = brushing ? brushedFrom(brushing) : selection
   const brushRect = cartesianBrushRect(model, shownSelection)
@@ -217,6 +231,22 @@ export function connectCartesianChart<T extends PropTypes>(
     focusWithin && focused != null ? { ref: focused, ring: context.get('focusVisible') } : null,
     brushRect,
   )
+
+  // 分层：svg 模式全部标记都在绘图区；画布模式下网格、坐标轴、参考带与准线在垫层（画布之下），
+  // 系列分组只剩样式探针，键盘聚焦的那个数据把它自己的 SVG 版本放回所属分组当焦点代理（折线的代理是前景里的点）
+  const layers = ((): CartesianLayers => {
+    const target = model.scene
+    if (!canvas || !target)
+      return { underlay: [], plot: [...scene.layers.back, ...overlay.under, ...scene.layers.data, ...scene.layers.front, ...overlay.over] }
+    const focusKey = focusWithin && focused ? cartesianMarkKey(model, focused) : null
+    const own = focusKey == null ? null : findDataMark(target.scene.layers.data, focusKey)
+    const groups = cartesianProbeGroups(target).map((group) => {
+      if (!own || group.kind !== 'group' || !group.children.length || own.group !== group.key)
+        return group
+      return { ...group, children: [...group.children, { ...own.mark, a11y: { label: '', focusable: true } }] }
+    })
+    return { underlay: [...scene.layers.back, ...overlay.under], plot: [...groups, ...scene.layers.front, ...overlay.over] }
+  })()
 
   // 淡出：悬停图例项时其余系列淡出；item 模式下激活一个数据时其余系列淡出
   const emphasis = context.get('legendHover') ?? (trigger === 'item' && active && active.source !== 'linked' ? active.ref.seriesId : null)
@@ -469,6 +499,8 @@ export function connectCartesianChart<T extends PropTypes>(
 
   return {
     model,
+    renderer,
+    layers,
     scene,
     overlay,
     measured,
@@ -790,6 +822,24 @@ export function connectCartesianChart<T extends PropTypes>(
       },
     }),
 
+    // 垫层与画布只给眼睛看、不接指针：指针与键盘都在上面的绘图区上
+    getUnderlayProps: () => normalize.element({
+      ...parts.underlay.attrs,
+      'aria-hidden': true,
+      'focusable': 'false',
+      'width': size?.width,
+      'height': size?.height,
+      'viewBox': size ? `0 0 ${size.width} ${size.height}` : undefined,
+    }),
+
+    // 画布的后备尺寸由机器按视口与 DPR 设，这里不写 width / height：框架重渲染时不去碰它
+    getCanvasProps: () => normalize.element({
+      ...parts.canvas.attrs,
+      'aria-hidden': true,
+      // 没有可画的数据时淡出：画布留着上一帧，淡完为止
+      'data-empty': dataAttr(!measured || empty || invalid),
+    }),
+
     getDefsProps: () => normalize.element({
       ...parts.defs.attrs,
       'data-xh-chart-part': 'defs',
@@ -892,8 +942,8 @@ export function connectCartesianChart<T extends PropTypes>(
         'data-drawing': dataAttr(stroke || at != null),
         ...(at == null ? {} : { style: { '--xh-_chart-reveal-at': at.toFixed(3) } }),
       }
-      // 退出中的标记只剩收场的样子：不可聚焦、不进可访问树
-      if (mark.exiting) {
+      // 退出中的标记只剩收场的样子、样式探针只给画布读样式：都不可聚焦、不进可访问树
+      if (mark.exiting || isCartesianProbe(mark)) {
         props['aria-hidden'] = true
       }
       else if (mark.part === 'bar' || mark.part === 'candle' || mark.part === 'box' || (mark.part === 'point' && mark.a11y?.focusable)) {
@@ -931,7 +981,7 @@ export function connectCartesianChart<T extends PropTypes>(
       if (mark.part === 'crosshair')
         props['data-kind'] = mark.kind === 'rect' ? 'band' : 'line'
       // 刷选时框外的数据标记淡出；折线与面积是整条路径，不分框里框外
-      if (shownSelection && mark.datum && BRUSHED_PARTS.has(mark.part))
+      if (shownSelection && mark.datum && BRUSHED_PARTS.has(mark.part) && !isCartesianProbe(mark))
         props['data-dimmed'] = dataAttr(brushed.get(mark.datum.seriesId)?.has(mark.datum.index) !== true)
       // 注释：参考线与参考带是结构色，跟着系列的（标出的点、平均线、趋势线）取系列色、随系列淡出
       if (mark.part === 'annotation') {
