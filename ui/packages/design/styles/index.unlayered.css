@@ -45714,7 +45714,7 @@
   display: none;
 }
 
-[data-scope='tour'][data-part='backdrop'][data-state='open'] {
+[data-scope='tour'][data-part='backdrop'][data-state='open']:not([data-instant]) {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
@@ -45755,7 +45755,7 @@
   display: none;
 }
 
-[data-scope='tour'][data-part='spotlight'][data-state='open'] {
+[data-scope='tour'][data-part='spotlight'][data-state='open']:not([data-instant]) {
   animation: xh-tour-spotlight-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -45853,7 +45853,8 @@
 /* 焦点落在气泡本身，Enter / Space 落在它身上推进下一步：它是可操作目标，
    环由 focus.css 的默认内收环画，这里不另写 */
 
-[data-scope='tour'][data-part='content'][data-state='open'] {
+/* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
+[data-scope='tour'][data-part='content'][data-state='open']:not([data-instant]) {
   animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 

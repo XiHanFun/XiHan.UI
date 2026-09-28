@@ -112,6 +112,12 @@ import {
   XhTooltipPositioner,
   XhTooltipRoot,
   XhTooltipTrigger,
+  XhTourBackdrop,
+  XhTourContent,
+  XhTourPositioner,
+  XhTourRoot,
+  XhTourSpotlight,
+  XhTourTitle,
   XhTreeSelectContent,
   XhTreeSelectItem,
   XhTreeSelectItemText,
@@ -297,6 +303,18 @@ const CASES: Record<string, Case> = {
     parts: ['content', 'backdrop'],
     enter: 'xh-overlay-pop-in',
     render: props => h(XhCommandRoot, props, () => h(XhCommandContent, null, () => [h(XhCommandInput), h(XhCommandList)])),
+  },
+  'tour': {
+    parts: ['content', 'backdrop', 'spotlight'],
+    enter: 'xh-overlay-pop-in',
+    render: props => h('div', null, [
+      h('div', { id: 'tour-first-frame-target', style: { inlineSize: '120px', blockSize: '40px' } }, '目标'),
+      h(XhTourRoot, { ...props, steps: [{ id: 'one', target: '#tour-first-frame-target', title: '第一步' }] }, () => [
+        h(XhTourBackdrop),
+        h(XhTourSpotlight),
+        h(XhTourPositioner, null, () => h(XhTourContent, null, () => h(XhTourTitle))),
+      ]),
+    ]),
   },
   'image-viewer': {
     parts: ['content', 'backdrop'],

@@ -109,6 +109,7 @@ export function connectTour<T extends PropTypes>(
       ...parts.backdrop.attrs,
       'aria-hidden': true,
       'data-state': stateAttr,
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-position': anchored ? 'anchored' : 'center',
       'hidden': !open || !showBackdrop || undefined,
     }),
@@ -121,6 +122,7 @@ export function connectTour<T extends PropTypes>(
       ...parts.spotlight.attrs,
       'aria-hidden': true,
       'data-state': stateAttr,
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-dimmed': dataAttr(showBackdrop),
       // 收起态与居中步都不画；锚定步在量到框之前也不露面，否则先按 0 几何画出来、再一路滑到目标上
       'hidden': !open || !anchored || !spotlight || undefined,
@@ -165,6 +167,8 @@ export function connectTour<T extends PropTypes>(
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-step': stepAttr,
       'data-placement': placement,
       // 逻辑收起时先退出交互与可访问树；Presence 仅延后视觉节点与行为资源的释放。
