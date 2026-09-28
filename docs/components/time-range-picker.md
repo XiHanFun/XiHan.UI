@@ -498,9 +498,9 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `--xh-time-range-picker-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-time-range-picker-item-fg` | time-range-picker 的 item 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-item-font-size` | `item` | `font-size` | `default` | `--xh-_time-range-picker-font-size` | time-range-picker 的 item 部件 font-size 覆盖槽。 |
 | `--xh-time-range-picker-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | time-range-picker 的 item 部件 font-weight 覆盖槽。 |
-| `--xh-time-range-picker-item-h` | `item` | `block-size` | `default` | `--xh-overlay-column-item-h` | time-range-picker 的 item 部件 block-size 覆盖槽。 |
+| `--xh-time-range-picker-item-h` | `item` | `block-size` | `default` | `auto` | time-range-picker 的 item 部件 block-size 覆盖槽。 |
 | `--xh-time-range-picker-item-px` | `item` | `padding-inline` | `default` | `--xh-space-0_5` | time-range-picker 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-time-range-picker-item-py` | `item` | `padding-block` | `default` | `0` | time-range-picker 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-time-range-picker-item-py` | `item` | `padding-block` | `default` | `--xh-_time-range-picker-item-py` | time-range-picker 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-time-range-picker-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | time-range-picker 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-time-range-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | time-range-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | time-range-picker 的 label 部件 color 覆盖槽。 |

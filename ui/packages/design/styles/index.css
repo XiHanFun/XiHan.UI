@@ -25564,6 +25564,7 @@
     --xh-_date-picker-control-px: var(--xh-control-px-md);
     --xh-_date-picker-gap: var(--xh-control-gap-md);
     --xh-_date-picker-font-size: var(--xh-control-font-md);
+    --xh-_date-picker-item-py: var(--xh-list-option-py-md);
 
     /* 选中对号随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回品牌色 */
     /* 内嵌日期段沿用日期输入的轻强调焦点：当前段是「当前项」，淡底 + 淡底前景，不另画一套实心选择态。 */
@@ -25599,6 +25600,7 @@
     --xh-_date-picker-control-px: var(--xh-control-px-sm);
     --xh-_date-picker-gap: var(--xh-control-gap-sm);
     --xh-_date-picker-font-size: var(--xh-control-font-sm);
+    --xh-_date-picker-item-py: var(--xh-list-option-py-sm);
   }
 
   [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
@@ -25607,6 +25609,7 @@
     --xh-_date-picker-control-px: var(--xh-control-px-lg);
     --xh-_date-picker-gap: var(--xh-control-gap-lg);
     --xh-_date-picker-font-size: var(--xh-control-font-lg);
+    --xh-_date-picker-item-py: var(--xh-list-option-py-lg);
   }
 
   /* 375px 复合面板要同时容下日历与时/分两列；手机档用正式小指示符，平板起恢复16px。 */
@@ -26043,9 +26046,9 @@
       var(--xh-date-picker-time-item-px, var(--xh-space-0_5)),
       calc(var(--xh-date-picker-time-item-check-size, var(--xh-_date-picker-time-item-check-size)) + var(--xh-space-0_5))
     );
-    --xh-collection-block-padding: var(--xh-date-picker-time-item-py, 0);
+    --xh-collection-block-padding: var(--xh-date-picker-time-item-py, var(--xh-_date-picker-item-py));
     --xh-collection-inline-padding: var(--xh-_date-picker-time-item-rail);
-    --xh-collection-font-size: var(--xh-text-secondary-size);
+    --xh-collection-font-size: var(--xh-date-picker-time-item-font-size, var(--xh-_date-picker-font-size));
     --xh-collection-radius: var(--xh-date-picker-time-item-radius, var(--xh-shape-control));
     --xh-collection-fg-rest: var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg));
@@ -26073,8 +26076,9 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    block-size: var(--xh-date-picker-time-item-h, var(--xh-overlay-column-item-h));
+    block-size: var(--xh-date-picker-time-item-h, auto);
     font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-normal);
     text-align: center;
     white-space: nowrap;
     user-select: none;
@@ -26316,6 +26320,7 @@
     --xh-_date-range-picker-control-px: var(--xh-control-px-md);
     --xh-_date-range-picker-gap: var(--xh-control-gap-md);
     --xh-_date-range-picker-font-size: var(--xh-control-font-md);
+    --xh-_date-range-picker-item-py: var(--xh-list-option-py-md);
 
     /* 选中对号随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回品牌色 */
     /* 内嵌日期段沿用日期输入的轻强调焦点：当前段是「当前项」，淡底 + 淡底前景，不另画一套实心选择态。 */
@@ -26360,6 +26365,7 @@
     --xh-_date-range-picker-control-px: var(--xh-control-px-sm);
     --xh-_date-range-picker-gap: var(--xh-control-gap-sm);
     --xh-_date-range-picker-font-size: var(--xh-control-font-sm);
+    --xh-_date-range-picker-item-py: var(--xh-list-option-py-sm);
   }
 
   [data-scope='date-range-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
@@ -26368,6 +26374,7 @@
     --xh-_date-range-picker-control-px: var(--xh-control-px-lg);
     --xh-_date-range-picker-gap: var(--xh-control-gap-lg);
     --xh-_date-range-picker-font-size: var(--xh-control-font-lg);
+    --xh-_date-range-picker-item-py: var(--xh-list-option-py-lg);
   }
 
   /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -26850,9 +26857,9 @@
       var(--xh-date-range-picker-time-item-px, var(--xh-space-0_5)),
       calc(var(--xh-date-range-picker-time-item-check-size, var(--xh-_date-range-picker-time-item-check-size)) + var(--xh-space-0_5))
     );
-    --xh-collection-block-padding: var(--xh-date-range-picker-time-item-py, 0);
+    --xh-collection-block-padding: var(--xh-date-range-picker-time-item-py, var(--xh-_date-range-picker-item-py));
     --xh-collection-inline-padding: var(--xh-_date-range-picker-time-item-rail);
-    --xh-collection-font-size: var(--xh-text-secondary-size);
+    --xh-collection-font-size: var(--xh-date-range-picker-time-item-font-size, var(--xh-_date-range-picker-font-size));
     --xh-collection-radius: var(--xh-date-range-picker-time-item-radius, var(--xh-shape-control));
     --xh-collection-fg-rest: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));
@@ -26880,8 +26887,9 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    block-size: var(--xh-date-range-picker-time-item-h, var(--xh-overlay-column-item-h));
+    block-size: var(--xh-date-range-picker-time-item-h, auto);
     font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-normal);
     text-align: center;
     white-space: nowrap;
     user-select: none;
@@ -42544,6 +42552,7 @@
     --xh-_time-picker-control-px: var(--xh-control-px-md);
     --xh-_time-picker-gap: var(--xh-control-gap-md);
     --xh-_time-picker-font-size: var(--xh-control-font-md);
+    --xh-_time-picker-item-py: var(--xh-list-option-py-md);
 
     /* 段位强调随语气走：当前段是「当前项」，淡底 + 淡底前景；对号使用普通表面上的前景色。
        没写 data-tone 时这几个 --xh-_tone* 没被声明，退回品牌色 */
@@ -42576,6 +42585,7 @@
     --xh-_time-picker-control-px: var(--xh-control-px-sm);
     --xh-_time-picker-gap: var(--xh-control-gap-sm);
     --xh-_time-picker-font-size: var(--xh-control-font-sm);
+    --xh-_time-picker-item-py: var(--xh-list-option-py-sm);
   }
 
   [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
@@ -42584,6 +42594,7 @@
     --xh-_time-picker-control-px: var(--xh-control-px-lg);
     --xh-_time-picker-gap: var(--xh-control-gap-lg);
     --xh-_time-picker-font-size: var(--xh-control-font-lg);
+    --xh-_time-picker-item-py: var(--xh-list-option-py-lg);
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -42955,7 +42966,7 @@
       var(--xh-time-picker-item-px, var(--xh-space-0_5)),
       calc(var(--xh-time-picker-item-check-size, var(--xh-control-indicator-size)) + var(--xh-space-0_5))
     );
-    --xh-collection-block-padding: var(--xh-time-picker-item-py, 0);
+    --xh-collection-block-padding: var(--xh-time-picker-item-py, var(--xh-_time-picker-item-py));
     /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
     --xh-collection-inline-padding: var(--xh-_time-picker-item-rail);
     --xh-collection-font-size: var(--xh-time-picker-item-font-size, var(--xh-_time-picker-font-size));
@@ -42986,9 +42997,9 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    block-size: var(--xh-time-picker-item-h, var(--xh-overlay-column-item-h));
+    block-size: var(--xh-time-picker-item-h, auto);
     /* 居中的单个数字格没有截断层，行高保持紧排，列内多露几格 */
-    line-height: var(--xh-leading-none);
+    line-height: var(--xh-leading-normal);
     white-space: nowrap;
     user-select: none;
   }
@@ -43163,6 +43174,7 @@
     --xh-_time-range-picker-control-px: var(--xh-control-px-md);
     --xh-_time-range-picker-gap: var(--xh-control-gap-md);
     --xh-_time-range-picker-font-size: var(--xh-control-font-md);
+    --xh-_time-range-picker-item-py: var(--xh-list-option-py-md);
 
     /* 段位强调随语气走：当前段是「当前项」，淡底 + 淡底前景；对号使用普通表面上的前景色。
        没写 data-tone 时这几个 --xh-_tone* 没被声明，退回品牌色 */
@@ -43195,6 +43207,7 @@
     --xh-_time-range-picker-control-px: var(--xh-control-px-sm);
     --xh-_time-range-picker-gap: var(--xh-control-gap-sm);
     --xh-_time-range-picker-font-size: var(--xh-control-font-sm);
+    --xh-_time-range-picker-item-py: var(--xh-list-option-py-sm);
   }
 
   [data-scope='time-range-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
@@ -43203,6 +43216,7 @@
     --xh-_time-range-picker-control-px: var(--xh-control-px-lg);
     --xh-_time-range-picker-gap: var(--xh-control-gap-lg);
     --xh-_time-range-picker-font-size: var(--xh-control-font-lg);
+    --xh-_time-range-picker-item-py: var(--xh-list-option-py-lg);
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -43663,7 +43677,7 @@
       var(--xh-time-range-picker-item-px, var(--xh-space-0_5)),
       calc(var(--xh-time-range-picker-item-check-size, var(--xh-control-indicator-size)) + var(--xh-space-0_5))
     );
-    --xh-collection-block-padding: var(--xh-time-range-picker-item-py, 0);
+    --xh-collection-block-padding: var(--xh-time-range-picker-item-py, var(--xh-_time-range-picker-item-py));
     /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
     --xh-collection-inline-padding: var(--xh-_time-range-picker-item-rail);
     --xh-collection-font-size: var(--xh-time-range-picker-item-font-size, var(--xh-_time-range-picker-font-size));
@@ -43694,9 +43708,9 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    block-size: var(--xh-time-range-picker-item-h, var(--xh-overlay-column-item-h));
+    block-size: var(--xh-time-range-picker-item-h, auto);
     /* 居中的单个数字格没有截断层，行高保持紧排，列内多露几格 */
-    line-height: var(--xh-leading-none);
+    line-height: var(--xh-leading-normal);
     white-space: nowrap;
     user-select: none;
   }

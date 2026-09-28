@@ -483,7 +483,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 | 语境 | 组件 | 行高来源 |
 | --- | --- | --- |
-| 候选与菜单 | Menu 族、Listbox、Select / Combobox / Cascader 选项、Tree、Command | `--xh-list-option-py-*` 内距加一行文字撑开，说明行再撑高一行 |
+| 候选与菜单 | Menu 族、Listbox、Select / Combobox / Cascader 选项、Tree、Command、时间列（TimePicker、TimeRangePicker 与 DatePicker / DateRangePicker 的时间格） | `--xh-list-option-py-*` 内距加一行文字撑开，说明行再撑高一行 |
 | 页面级导航 | SideNav | 最小行高取 `--xh-control-h-*`，与折叠窄栏的方形图标位、同档控件等高 |
 | 随文目录 | Anchor | 块向内距 `--xh-space-1`，贴近正文阅读节奏，不按控件高 |
 
