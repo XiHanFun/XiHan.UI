@@ -267,6 +267,8 @@ export function connectForm<T extends PropTypes>(
       'aria-disabled': submitting ? 'true' : undefined,
       'aria-busy': submitting ? 'true' : undefined,
       'data-loading': dataAttr(submitting),
+      // 在途的环由加载环配方压在钮正中
+      'data-xh-loading-ring': 'overlay',
       // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
       // 异步校验开跑或提交回调在途时由机器松开并锁住，不重复给按压回执
       ...press('submit', disabled || submitting),
