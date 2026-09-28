@@ -203,3 +203,7 @@ delay 让转圈挂载后等一段时间才出现：快请求在这之前就回�
 关键帧 `xh-spinner-dots` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+### RTL
+
+另有按 `dir` 分支的规则。

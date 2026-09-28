@@ -458,7 +458,7 @@
       "relation": "loop"
     },
     "xh-spinner-dots": {
-      "content": "50%{opacity:var(--xh-state-disabled-opacity)}",
+      "content": "from{-webkit-mask-position:100% 0;mask-position:100% 0}to{-webkit-mask-position:0 0;mask-position:0 0}",
       "definedIn": [
         "spinner.css"
       ],
