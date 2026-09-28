@@ -42877,6 +42877,9 @@
               "name": "--xh-navigation-menu-content-gap"
             },
             {
+              "name": "--xh-navigation-menu-content-max-w"
+            },
+            {
               "name": "--xh-navigation-menu-content-min-w"
             },
             {

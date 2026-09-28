@@ -32920,7 +32920,9 @@
     flex: 1;
   }
 
-  /* 面板贴着自己那一项落位：横排从 trigger 底下长出来 */
+  /* 面板贴着自己那一项落位：横排从 trigger 底下长出来。面板型浮层按内容的自然宽度排开：
+     它绝对定位在入口那一项（一个窄 li）里，收缩适配的可用宽就是那一项的宽，不给宽度只剩最小宽、
+     一行放得下的文字也折行；超过浮层最大宽才折 */
   [data-scope='navigation-menu'][data-part='content'] {
     position: absolute;
     z-index: var(--xh-navigation-menu-layer, var(--xh-_layer, var(--xh-layer-popover)));
@@ -32929,7 +32931,9 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-navigation-menu-content-gap, var(--xh-space-1));
+    inline-size: max-content;
     min-inline-size: var(--xh-navigation-menu-content-min-w, var(--xh-overlay-menu-min-w));
+    max-inline-size: var(--xh-navigation-menu-content-max-w, var(--xh-overlay-max-w-xl));
     padding: var(--xh-navigation-menu-content-p, var(--xh-surface-pad-xs));
     border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
     border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-overlay));
@@ -33212,6 +33216,9 @@
     inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
     inset-inline-start: 0;
     display: block;
+    /* 外壳同样按装进来的那一张的自然宽度排开，道理同 content */
+    inline-size: max-content;
+    max-inline-size: var(--xh-navigation-menu-content-max-w, var(--xh-overlay-max-w-xl));
     padding: var(--xh-navigation-menu-viewport-p, var(--xh-space-2));
     border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
     border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-overlay));

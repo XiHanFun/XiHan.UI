@@ -2451,6 +2451,7 @@ export type ComponentTokenName
     | '--xh-navigation-menu-content-bg'
     | '--xh-navigation-menu-content-border'
     | '--xh-navigation-menu-content-gap'
+    | '--xh-navigation-menu-content-max-w'
     | '--xh-navigation-menu-content-min-w'
     | '--xh-navigation-menu-content-offset'
     | '--xh-navigation-menu-content-p'
