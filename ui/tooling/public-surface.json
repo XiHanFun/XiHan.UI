@@ -771,6 +771,8 @@
       "XhCardRootProps",
       "XhCardTitle",
       "XhCardTitleProps",
+      "XhCardTrigger",
+      "XhCardTriggerProps",
       "XhCarouselAutoplayTrigger",
       "XhCarouselAutoplayTriggerProps",
       "XhCarouselIndicator",
@@ -3444,6 +3446,7 @@
       "XhCardHeader",
       "XhCardRoot",
       "XhCardTitle",
+      "XhCardTrigger",
       "XhCarouselAutoplayTrigger",
       "XhCarouselIndicator",
       "XhCarouselIndicatorGroup",
@@ -9596,7 +9599,8 @@
       "footer",
       "header",
       "root",
-      "title"
+      "title",
+      "trigger"
     ],
     "carousel": [
       "autoplay-trigger",
@@ -11241,6 +11245,7 @@
       "weekdayFormat"
     ],
     "card": [
+      "interactive",
       "variant"
     ],
     "carousel": [
@@ -13436,6 +13441,7 @@
     "data-inline",
     "data-inline-anchor",
     "data-instant",
+    "data-interactive",
     "data-invalid",
     "data-inview",
     "data-justify",
@@ -14652,6 +14658,8 @@
     "--xh-calendar-range-picker-year-grid-max-h",
     "--xh-calendar-range-picker-year-grid-pe",
     "--xh-card-bg",
+    "--xh-card-bg-hover",
+    "--xh-card-bg-pressed",
     "--xh-card-border",
     "--xh-card-content-gap",
     "--xh-card-description-fg",
@@ -14661,10 +14669,12 @@
     "--xh-card-font-size",
     "--xh-card-footer-gap",
     "--xh-card-gap",
+    "--xh-card-glint-duration",
     "--xh-card-leading",
     "--xh-card-p",
     "--xh-card-radius",
     "--xh-card-shadow",
+    "--xh-card-shadow-hover",
     "--xh-card-title-fg",
     "--xh-card-title-font-size",
     "--xh-card-title-font-weight",
@@ -18942,6 +18952,7 @@
     },
     "xh-card": {
       "attributes": [
+        "interactive",
         "variant"
       ],
       "events": []

@@ -6685,6 +6685,53 @@
       "description": "card 的 root 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-card-bg-hover",
+      "component": "card",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "hover",
+        "interactive",
+        "variant=ghost",
+        "variant=subtle"
+      ],
+      "defaultToken": [
+        "--xh-_card-host-bg-hover",
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "card 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-card-bg-pressed",
+      "component": "card",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "active",
+        "interactive",
+        "not(:has([data-scope='card'][data-part='footer']:active)",
+        "variant=ghost",
+        "variant=outline",
+        "variant=subtle"
+      ],
+      "defaultToken": [
+        "--xh-_card-host-bg-pressed",
+        "--xh-bg-subtle-hover",
+        "--xh-bg-subtle-hover-opaque"
+      ],
+      "visibility": "public",
+      "description": "card 的 root 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-card-border",
       "component": "card",
       "part": [
@@ -6847,6 +6894,28 @@
       "description": "card 的 root 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-card-glint-duration",
+      "component": "card",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "animation"
+      ],
+      "state": [
+        "@media (hover: hover) and (pointer: fine) and (forced-colors: none)",
+        "hover",
+        "interactive",
+        "material=liquid",
+        "where([data-material='liquid'])"
+      ],
+      "defaultToken": [
+        "--xh-motion-duration-glint"
+      ],
+      "visibility": "public",
+      "description": "card 的 root 部件 animation 覆盖槽。"
+    },
+    {
       "name": "--xh-card-leading",
       "component": "card",
       "part": [
@@ -6886,19 +6955,21 @@
       "name": "--xh-card-radius",
       "component": "card",
       "part": [
-        "root"
+        "root",
+        "trigger"
       ],
       "property": [
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "interactive"
       ],
       "defaultToken": [
         "--xh-shape-surface"
       ],
       "visibility": "public",
-      "description": "card 的 root 部件 border-radius 覆盖槽。"
+      "description": "card 的 root、trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-card-shadow",
@@ -6917,6 +6988,26 @@
       "defaultToken": [
         "--xh-elevation-raised",
         "none"
+      ],
+      "visibility": "public",
+      "description": "card 的 root 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-card-shadow-hover",
+      "component": "card",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "hover",
+        "interactive",
+        "variant=outline"
+      ],
+      "defaultToken": [
+        "--xh-elevation-lifted"
       ],
       "visibility": "public",
       "description": "card 的 root 部件 box-shadow 覆盖槽。"

@@ -1882,6 +1882,7 @@
     "trigger": [
       "accordion",
       "back-top",
+      "card",
       "cascader",
       "citation",
       "collapsible",

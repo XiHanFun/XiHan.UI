@@ -8,20 +8,24 @@
 import type { ControlVariant } from '@xihan-ui/core'
 import type { CardProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import type { AsChildProps } from '../../runtime/as-child'
 import { connectCard } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { renderAsChild } from '../../runtime/as-child'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { CardProvider, useCardContext } from './context'
 
 export interface XhCardRootProps extends ComponentPropsWithRef<'div'> {
   /** 形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影。默认 outline。 */
   variant?: ControlVariant
+  /** 整卡可交互：标题里的 trigger 把点击区铺满整张卡片。 */
+  interactive?: boolean
 }
 
 /** 卡片外壳。形态只落在这一层。 */
-export function XhCardRoot({ variant, children, ...rest }: XhCardRootProps): ReactNode {
-  const api = connectCard(withXhConfig('card', { variant }) as CardProps, reactNormalize)
+export function XhCardRoot({ variant, interactive, children, ...rest }: XhCardRootProps): ReactNode {
+  const api = connectCard(withXhConfig('card', { variant, interactive }) as CardProps, reactNormalize)
   return (
     <CardProvider value={{ api }}>
       <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
@@ -51,6 +55,20 @@ export function XhCardTitle({ children, ...rest }: XhCardTitleProps): ReactNode 
       {children}
     </h3>
   )
+}
+
+export interface XhCardTriggerProps extends ComponentPropsWithRef<'a'>, AsChildProps {}
+
+/**
+ * 整卡的触发器，放在 title 里：给了 href 渲染链接，不给渲染 `<button type="button">`；
+ * 路由链接等作者自己的节点用 asChild。卡片 interactive 时它的点击区铺满整张卡片。
+ */
+export function XhCardTrigger({ children, asChild, ...rest }: XhCardTriggerProps): ReactNode {
+  const ctx = useCardContext()
+  const props = mergePartProps(ctx.api.getTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)
+  return renderAsChild(asChild, children, props, 'card', (p, kids) => p.href == null
+    ? <button type="button" {...p}>{kids}</button>
+    : <a {...p}>{kids}</a>)
 }
 
 export interface XhCardDescriptionProps extends ComponentPropsWithRef<'p'> {}

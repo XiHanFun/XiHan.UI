@@ -19,6 +19,7 @@
   "ringless": {
     "calendar-picker [data-part='grid'][data-scope='calendar-picker']": "网格自己不落焦，焦点永远在某一格上，环长在格上",
     "calendar-range-picker [data-part='grid'][data-scope='calendar-range-picker']": "网格自己不落焦，焦点永远在某一格上，环长在格上",
+    "card [data-interactive][data-part='root'][data-scope='card'] [data-part='trigger'][data-scope='card']": "环画在 trigger 的 ::after 上：伪元素铺满整张卡片，环落在卡片外沿，与点击区是同一块轮廓；trigger 本体是标题文字，再画一圈会与卡片的环重叠",
     "carousel [data-part='indicator-group'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；指示点各自有环",
     "carousel [data-part='list'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；两侧按钮与指示点各自有环",
     "carousel [data-part='viewport'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；两侧按钮与指示点各自有环",

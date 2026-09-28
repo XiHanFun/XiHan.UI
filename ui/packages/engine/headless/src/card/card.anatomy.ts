@@ -12,6 +12,7 @@ export const cardAnatomy = createAnatomy('card', [
   'root',
   'header',
   'title',
+  'trigger',
   'description',
   'content',
   'footer',

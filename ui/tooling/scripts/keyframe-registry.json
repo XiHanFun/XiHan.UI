@@ -191,7 +191,8 @@
         "family/motion.css"
       ],
       "consumers": [
-        "button"
+        "button",
+        "card"
       ],
       "relation": "light"
     },

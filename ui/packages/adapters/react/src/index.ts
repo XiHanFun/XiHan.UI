@@ -271,6 +271,7 @@ export {
   XhCardHeader,
   XhCardRoot,
   XhCardTitle,
+  XhCardTrigger,
 } from './components/card/card'
 export type {
   XhCardContentProps,
@@ -279,6 +280,7 @@ export type {
   XhCardHeaderProps,
   XhCardRootProps,
   XhCardTitleProps,
+  XhCardTriggerProps,
 } from './components/card/card'
 export { useCardContext } from './components/card/context'
 export type { CardContext } from './components/card/context'

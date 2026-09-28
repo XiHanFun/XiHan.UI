@@ -854,7 +854,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 类别 | 例子 | 规则 |
 | --- | --- | --- |
 | 状态光 | 思考中文字、骨架屏、工具调用进行中的扫光 | 循环角色，共享 `xh-shimmer` |
-| 交互光 | Button solid 悬停时光沿描边扫过一次（`::after` 只留 1px 描边环，光取面上前景色）；可悬停 Card 的描边随指针亮起 | 只在 liquid 档、`(hover: hover) and (pointer: fine)`、非强制色；不循环；`--xh-motion-duration-glint`（640ms，减弱档 1ms），共享关键帧 `xh-glint` |
+| 交互光 | Button solid 悬停时光沿描边扫过一次（`::after` 只留 1px 描边环，光取面上前景色）；可交互 Card（`interactive`）悬停时同一配方，光取卡片前景色 | 只在 liquid 档、`(hover: hover) and (pointer: fine)`、非强制色；不循环；`--xh-motion-duration-glint`（640ms，减弱档 1ms），共享关键帧 `xh-glint` |
 | 边缘光 | frosted 1px 顶部边界光；liquid 1px 光环 | 材质的一部分（§8.1、§8.5） |
 
 - 光只走描边，不进面：浅色档 Button solid（品牌 600 底、白字）面内叠 8% 白光，文字对比就从 5.08:1 降到 4.46:1。凡是字压在面上的部件，面内都不加光。
@@ -1300,4 +1300,3 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §8.5 liquid | Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
 | §9.11 弹簧 | `--xh-motion-ease-spring` |
-| §9.12 呼吸与光 | 可悬停 Card 的描边光：Card 还没有可交互形态，静态卡片随指针发光会被误认为能点，等可交互 Card 落地再接 |
