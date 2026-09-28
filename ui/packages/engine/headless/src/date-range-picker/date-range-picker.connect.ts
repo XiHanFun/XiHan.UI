@@ -34,7 +34,7 @@ import { sameArray as sameDates } from '../shared/array'
 import { calendarPeriodValue } from '../shared/calendar'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { resolveTimeStep } from '../shared/time-constraint'
-import { TIME_FIELD_HOUR_CYCLE } from '../time-field'
+import { resolveHourCycle } from '../time-field'
 import { dateRangePickerAnatomy } from './date-range-picker.anatomy'
 import {
   compareDateRangeEnds,
@@ -128,8 +128,8 @@ export function connectDateRangePicker<T extends PropTypes>(
   // —— showTime：两端都升格为日期时间，起止各一组时间列，收口交给确认按钮 ——
   const showTime = dateRangePickerShowTime(services.root)
   const timeGranularity = dateRangePickerTimeGranularity(services.root)
-  // 小时制缺省 24，不随 locale 推断
-  const hourCycle = prop('hourCycle') ?? TIME_FIELD_HOUR_CYCLE
+  // 小时制缺省按 locale 推断，与 TimePicker / TimeRangePicker 同一口径
+  const hourCycle = resolveHourCycle(prop('hourCycle'), prop('locale'))
   const timeStep = resolveTimeStep(prop('timeStep'))
   const activeIndex: DateRangePickerEndIndex = context.get('activeIndex') ?? 0
   const ends: readonly [string, string] = [value[0] ?? '', value[1] ?? '']

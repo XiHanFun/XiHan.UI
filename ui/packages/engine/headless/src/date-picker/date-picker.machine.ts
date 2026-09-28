@@ -17,6 +17,7 @@ import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { sortIso } from '../shared/calendar'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { resolveHourCycle } from '../time-field'
 import { datePickerDatePart, datePickerJoinDateTime, datePickerTimePart } from './date-picker.time'
 
 const { createMachine, guards } = setup<DatePickerSchema>()
@@ -157,7 +158,7 @@ export function datePickerFieldProps(service: Service<DatePickerSchema>): DateFi
     value: firstValue(context.get('value')),
     granularity: withTime ? datePickerTimeGranularity(service) : DATE_PICKER_GRANULARITY,
     // 时刻段跟时间列同一个小时制：12 时输入行里也多出上下午段
-    hourCycle: withTime ? prop('hourCycle') : undefined,
+    hourCycle: withTime ? resolveHourCycle(prop('hourCycle'), prop('locale')) : undefined,
     // 段集在场时 granularity 让路；不给就走老路，年月日按 locale 排
     segments: prop('segments') ?? datePickerSegmentSet(prop('granularity')),
     min: prop('min'),

@@ -244,7 +244,7 @@ export interface DateRangePickerSchema extends MachineSchema {
     showTime?: boolean
     /** showTime 的时间段精度，默认 minute。 */
     timeGranularity?: DatePickerTimeGranularity
-    /** showTime 的小时制，默认 24，不随 locale 推断。12 时两组时间列多出上下午列、两组段位多出上下午段。 */
+    /** showTime 的小时制，缺省按 locale 推断（与 TimePicker 同一口径，没给 locale 时 24）。12 时两组时间列多出上下午列、两组段位多出上下午段。 */
     hourCycle?: TimeHourCycle
     /** showTime 时间列按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。 */
     timeStep?: TimeStep

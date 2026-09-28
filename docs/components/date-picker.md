@@ -169,7 +169,7 @@ timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界
 | `closeOnSelect` | `boolean` |  | 选完即收起，默认 true。多选不收起。 |
 | `showTime` | `boolean` |  | 一体化时间：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，面板中多出时间列， 选完日期不收起、由确认按钮收口。只在 day + single 下生效。 此时 min / max 可以带时间段（'2026-09-28T09:30'）：日历按日期段收，时间列在与它同一天时按时间段标不可选。 |
 | `timeGranularity` | `DatePickerTimeGranularity` |  | showTime 的时间段精度，默认 minute。 |
-| `hourCycle` | `TimeHourCycle` |  | showTime 的小时制，默认 24，不随 locale 推断。12 时时间列多出上下午列、输入行的时刻段后面多出上下午段； 值仍是 24 小时制的 ISO 串。 |
+| `hourCycle` | `TimeHourCycle` |  | showTime 的小时制，缺省按 locale 推断（与 TimePicker 同一口径，没给 locale 时 24）。12 时时间列多出上下午列、输入行的时刻段后面多出上下午段； 值仍是 24 小时制的 ISO 串。 |
 | `timeStep` | `TimeStep` |  | showTime 时间列按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。只影响列里的格，不限制段位上手动输入的数。 |
 | `isTimeUnavailable` | `TimeUnavailablePredicate` |  | showTime 时间列的逐格可选性。value 是两位补零的格值，时列恒按 24 小时制给出； context 带已选的时（24 小时制）与分、这份时间所属的日期（date，还没有值时是聚焦日），index 恒为 null。 判定为真的格子仍可聚焦，只是按不下去，与 min / max 之外的时刻同等对待。 |
 | `onValueChange` | `(details: DatePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
