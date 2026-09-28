@@ -26,6 +26,12 @@ export interface TrackArrivalsOptions {
    * `'arrive'` 算作第一批到达，照常进场并按顺序错开——通知这类「每一条都是一件新事」的条目用它。
    */
   initial?: 'instant' | 'arrive'
+  /**
+   * 撤掉 `hidden` 重新露出来的条目怎么算：`'arrive'`（缺省）算新到，照常进场并错开；
+   * `'instant'` 算同一批已有内容换了显隐，打上 data-instant 直接呈现——检索过滤这类随输入即时换一批结果的集合用它，
+   * 逐键重播进场会让列表一直在动、读不稳。新插进 DOM 的条目不受影响，照常算新到。
+   */
+  reveal?: 'arrive' | 'instant'
 }
 
 /**
@@ -34,6 +40,7 @@ export interface TrackArrivalsOptions {
  * 开始时已在的条目打上 `data-instant`：它们属于首帧，进场不播（`initial: 'arrive'` 时改算第一批到达）。
  * 之后每一批到达——插入 DOM，或撤掉 `hidden` 重新露出来（露出来时 CSS 动画会从头播）——按文档顺序排号，写进私有槽
  * `--xh-_stagger-index`（封顶 {@link STAGGER_CAP}），并撤掉它身上可能带着的 `data-instant`。
+ * `reveal: 'instant'` 时重新露出来的条目改打 `data-instant`，不算到达。
  * 同一次 DOM 变更回调收到的算同一批：框架一次提交插入的条目落在同一个微任务里。
  *
  * 标记在插入所在的微任务里写好，赶在样式计算之前，进场动画按新的序号起播。
@@ -52,24 +59,33 @@ export function trackArrivals(container: Element, options: TrackArrivalsOptions)
     return () => {}
 
   const observer = new Observer((records) => {
-    const arrived = new Set<Element>()
-    const collect = (node: Node): void => {
+    const inserted = new Set<Element>()
+    const revealed = new Set<Element>()
+    const collect = (node: Node, into: Set<Element>): void => {
       if (node.nodeType !== 1)
         return
       const el = node as Element
       if (el.matches(item))
-        arrived.add(el)
+        into.add(el)
       for (const inner of el.querySelectorAll(item))
-        arrived.add(inner)
+        into.add(inner)
     }
     for (const record of records) {
       if (record.type === 'childList')
-        record.addedNodes.forEach(collect)
+        record.addedNodes.forEach(node => collect(node, inserted))
       else if (record.oldValue !== null && !(record.target as Element).hasAttribute('hidden'))
-        collect(record.target)
+        collect(record.target, revealed)
+    }
+    const visible = (el: Element): boolean => el.isConnected && container.contains(el) && !el.closest('[hidden]')
+    const arrived = options.reveal === 'instant' ? inserted : new Set([...inserted, ...revealed])
+    if (options.reveal === 'instant') {
+      for (const el of revealed) {
+        if (!inserted.has(el) && visible(el))
+          el.setAttribute(INSTANT_ATTR, '')
+      }
     }
     arrive([...arrived]
-      .filter(el => el.isConnected && container.contains(el) && !el.closest('[hidden]'))
+      .filter(visible)
       .sort((a, b) => (a.compareDocumentPosition(b) & 4 /* DOCUMENT_POSITION_FOLLOWING */ ? -1 : 1)))
   })
   observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden'], attributeOldValue: true })

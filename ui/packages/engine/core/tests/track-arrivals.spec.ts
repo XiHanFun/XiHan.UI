@@ -141,6 +141,28 @@ describe('trackArrivals', () => {
     expect(index(only!)).toBe('')
   })
 
+  it('reveal 取 instant：重新露出来的条目打上 data-instant 直接呈现，同一批里新插进来的照常排号', async () => {
+    const container = list(3)
+    const [first, , third] = [...container.children] as HTMLElement[]
+    stops.push(trackArrivals(container, { item: '[data-part="item"]', reveal: 'instant' }))
+    first!.hidden = true
+    await flush()
+    // 此前以新到身份露过面的条目：再露出来同样直接呈现
+    third!.removeAttribute(INSTANT_ATTR)
+    third!.hidden = true
+    await flush()
+
+    first!.hidden = false
+    third!.hidden = false
+    const fresh = item('fresh')
+    container.append(fresh)
+    await flush()
+    expect([first!, third!].map(el => el.hasAttribute(INSTANT_ATTR))).toEqual([true, true])
+    expect([index(first!), index(third!)]).toEqual(['', ''])
+    expect(fresh.hasAttribute(INSTANT_ATTR)).toBe(false)
+    expect(index(fresh)).toBe('0')
+  })
+
   it('initial 取 arrive：开始时已在的条目算第一批到达，照常排号、不打首帧标记', () => {
     const container = list(3)
     stops.push(trackArrivals(container, { item: '[data-part="item"]', initial: 'arrive' }))
