@@ -57,6 +57,8 @@ export function connectDownloadTrigger<T extends PropTypes>(
       'data-state': status,
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(preparing),
+      // 取数在途：加载环配方把环压在钮正中，进入在途一个 micro 之后才淡入
+      'data-xh-loading-ring': 'overlay',
       // 定尺的独立动作按钮：盒型、四态面与 0.97 按压由家族配方按 data-xh-action-variant 给出
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',

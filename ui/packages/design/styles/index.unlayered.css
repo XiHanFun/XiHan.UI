@@ -4358,13 +4358,6 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* 取数在途时文字原位隐去，只换前景色，不动布局 */
-@keyframes xh-download-trigger-content-hide {
-  to {
-    color: transparent;
-  }
-}
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='download-trigger'] {
   --xh-download-trigger-skin: 1;
@@ -4404,6 +4397,10 @@
   --xh-icon-size: var(--xh-download-trigger-icon-size, var(--xh-_action-profile-glyph-size));
   /* 取数在途那枚圆环的颜色：字被 content-hide 关键帧压成透明，环不能跟着 currentColor 走，取加载态的前景 */
   --xh-_download-trigger-loading-fg: var(--xh-download-trigger-loading-fg, var(--xh-download-trigger-fg, var(--xh-_action-variant-fg-loading)));
+  /* 取数在途的环由加载环配方压在钮正中（连接层投影 data-xh-loading-ring="overlay"），直径取钮的图标档；
+     起始边取钮在途时的真实前景，转速认使用者槽 */
+  --xh-_loading-ring-fg: var(--xh-_download-trigger-loading-fg);
+  --xh-_loading-ring-duration: var(--xh-download-trigger-loading-duration, var(--xh-motion-loop-spin));
 
   /* safe：文案放不下时居中改成靠行首排，裁掉的是末尾那截，开头仍然读得到 */
   justify-content: safe center;
@@ -4428,9 +4425,9 @@
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往按钮里塞了文字或自己的图形，这几条即不命中。
-   字形另起一颗 ::after：::before 是转圈那枚圆环的方框，mask 会把描边裁成字形轮廓、圆环就此消失。
-   取数在途那一档不画字形，那一格让给圆环 */
-[data-scope='download-trigger'][data-part='root']:empty:not([aria-busy='true'])::after {
+   字形另起一颗 ::after：::before 是加载环，mask 会把描边裁成字形轮廓、环就此消失。
+   字形取前景色：取数在途时随前景一起淡到透明，把位置让给环 */
+[data-scope='download-trigger'][data-part='root']:empty::after {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -4441,62 +4438,33 @@
   mask: var(--xh-glyph-mark-download) center / contain no-repeat;
 }
 
-/* 快速取数不显示瞬时圆环；超过一个 micro 周期后才在原位换成加载状态。 */
-[data-scope='download-trigger'][data-part='root'][data-state='preparing'][aria-busy='true'] {
-  cursor: progress;
-  animation: xh-download-trigger-content-hide var(--xh-motion-duration-micro) var(--xh-motion-ease-enter)
-    var(--xh-motion-duration-micro) forwards;
-}
+/* 取数在途：钮里原有的文字与字形随前景淡到透明留位，进入在途等一个 micro 才起淡（快速取数什么都不闪），
+   与环同一段等待；退出在途不等，按 micro 淡回。环的前景另由私有槽给，不跟着透明 */
+[data-scope='download-trigger'][data-part='root'][data-loading] {
+  --xh-action-fg-loading: transparent;
 
-[data-scope='download-trigger'][data-part='root'][aria-busy='true']::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  inline-size: 1em;
-  block-size: 1em;
-  margin: auto;
-  border: var(--xh-stroke-thin) solid transparent;
-  border-block-start-color: var(--xh-_download-trigger-loading-fg);
-  /* 正圆的加载环：正方盒取 circle */
-  border-radius: var(--xh-shape-circle);
-  opacity: 0;
-  animation:
-    xh-spin var(--xh-download-trigger-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite,
-    xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
-}
-
-/* 减弱动效：圆环不转，整圈换成虚线，静止的形状仍然读得出"还没好"；文字的隐去与圆环的淡入照常。
-   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
-@media (prefers-reduced-motion: reduce) {
-  [data-scope='download-trigger'][data-part='root'][aria-busy='true']::before {
-    border-style: dotted;
-    border-color: var(--xh-_download-trigger-loading-fg);
-    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
-  }
-}
-
-:where([data-motion='reduce']) [data-scope='download-trigger'][data-part='root'][aria-busy='true']::before {
-  border-style: dotted;
-  border-color: var(--xh-_download-trigger-loading-fg);
-  animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter) var(--xh-motion-duration-micro) forwards;
+  transition-delay: var(--xh-motion-duration-micro);
 }
 
 /* 手指落点：配方 text 档用 ::after 把块轴命中区扩到 44px；没写内容的按钮 ::after 已被兜底字形占着，
-   这一档改用当时空着的 ::before 扩——取数在途时字形不画、::before 是圆环，配方的 ::after 又能落下来，
-   两颗伪元素轮着用。字形那条只写了尺寸与 mask，配方的定位、44px 下限与 -50% 平移会从同一个
+   这一档改用不在途时的 ::before 扩——取数在途时 ::before 是加载环，钮也按不动，不再需要热区。字形那条只写了尺寸与 mask，配方的定位、44px 下限与 -50% 平移会从同一个
    ::after 漏进来：字形被拎出行内流、盒撑到 44px 高，按钮随之收窄一格字形——这里逐项钉回 */
 @media (pointer: coarse) {
-  [data-scope='download-trigger'][data-part='root']:empty:not([aria-busy='true'])::after {
+  [data-scope='download-trigger'][data-part='root']:empty::after {
     position: static;
     min-block-size: 0;
     translate: none;
   }
 
-  [data-scope='download-trigger'][data-part='root']:empty:not([aria-busy='true'])::before {
+  /* 热区收下加载环的几何：环的描边不画、指针照接；退出在途时环在这一档直接收起，不留一圈放大的环淡出 */
+  [data-scope='download-trigger'][data-part='root']:empty:not([data-loading])::before {
     content: '';
     position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 50%;
+    border-color: transparent;
+    margin: 0;
+    pointer-events: auto;
+    inset-block: 50% auto;
+    inset-inline: 50% auto;
     min-block-size: 44px;
     inline-size: 100%;
     block-size: 100%;
@@ -4504,7 +4472,7 @@
   }
 
   /* 与家族同一笔：起点是逻辑属性、平移是物理通道，rtl 下行内分量掉头，热区才落回按钮中心 */
-  [data-scope='download-trigger'][data-part='root']:empty:not([aria-busy='true']):dir(rtl)::before {
+  [data-scope='download-trigger'][data-part='root']:empty:not([data-loading]):dir(rtl)::before {
     translate: 50% -50%;
   }
 }

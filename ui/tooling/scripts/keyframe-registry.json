@@ -97,15 +97,6 @@
       ],
       "relation": "disclosure"
     },
-    "xh-download-trigger-content-hide": {
-      "content": "to{color:transparent}",
-      "definedIn": [
-        "download-trigger.css"
-      ],
-      "consumers": [
-        "download-trigger"
-      ]
-    },
     "xh-draw": {
       "content": "from{stroke-dashoffset:1}to{stroke-dashoffset:0}",
       "definedIn": [
@@ -139,7 +130,6 @@
         "cascader",
         "command",
         "dialog",
-        "download-trigger",
         "drawer",
         "file-upload",
         "funnel-chart",

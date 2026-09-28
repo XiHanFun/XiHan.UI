@@ -27493,6 +27493,7 @@
       ],
       "state": [
         "@media (prefers-reduced-motion: reduce)",
+        "@media print",
         "default",
         "disabled",
         "focus-visible",
@@ -27503,7 +27504,8 @@
         "not([data-disabled])",
         "not([data-loading])",
         "pressed",
-        "where([data-motion='reduce'])"
+        "where([data-motion='reduce'])",
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
@@ -27615,7 +27617,7 @@
         "animation"
       ],
       "state": [
-        "default"
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-motion-loop-spin"
@@ -27635,9 +27637,10 @@
       ],
       "state": [
         "@media (prefers-reduced-motion: reduce)",
-        "default",
+        "@media print",
         "motion=reduce",
-        "where([data-motion='reduce'])"
+        "where([data-motion='reduce'])",
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-download-trigger-fg"

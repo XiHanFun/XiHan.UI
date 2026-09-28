@@ -159,26 +159,29 @@ describe('「当前项」的三家槽名收成同一副构词', () => {
 // —— 在途：触屏上没有指针，光换 cursor 等于零反馈 ——
 
 describe('取数与写入在途的转圈', () => {
-  it('下载钮取数在途：延迟显示圆环且外框不位移', async () => {
+  it('下载钮取数在途：环压在钮正中、等一个 micro 才淡入，文字同刻淡出留位，外框不位移', async () => {
     // 永不落定的取数函数把状态钉在 preparing 上
     await mount(() => h(XhDownloadTrigger, { data: () => new Promise<string>(() => {}) }, () => '导出'))
     const root = part('download-trigger', 'root')
     const width = root.getBoundingClientRect().width
     const foreground = styleOf(root, 'color')
-    expect(beforeOf(root, 'animation-name')).toBe('none')
+    expect(root.getAttribute('data-xh-loading-ring')).toBe('overlay')
+    // 不在途时环停着、看不见
+    expect(beforeOf(root, 'animation-play-state')).toBe('paused')
+    expect(beforeOf(root, 'opacity')).toBe('0')
 
     await userEvent.click(root)
     await nextTick()
     expect(root.getAttribute('data-state')).toBe('preparing')
     expect(styleOf(root, 'cursor')).toBe('progress')
     expect(root.getBoundingClientRect().width).toBeCloseTo(width, 4)
-    expect(beforeOf(root, 'animation-name')).toContain('xh-spin')
-    expect(beforeOf(root, 'animation-name')).toContain('xh-fade-in')
-    expect(beforeOf(root, 'opacity')).toBe('0')
+    expect(beforeOf(root, 'animation-name')).toBe('xh-spin')
+    expect(beforeOf(root, 'animation-play-state')).toBe('running')
+    expect(beforeOf(root, 'transition-delay')).toBe('0.12s')
     expect(Number.parseFloat(beforeOf(root, 'width'))).toBeGreaterThan(0)
     expect(beforeOf(root, 'border-top-color')).toBe(foreground)
-    await new Promise<void>(resolve => setTimeout(resolve, 300))
-    expect(Number.parseFloat(beforeOf(root, 'opacity'))).toBeGreaterThan(0.9)
+    await expect.poll(() => Number.parseFloat(beforeOf(root, 'opacity'))).toBeGreaterThan(0.9)
+    await expect.poll(() => styleOf(root, 'color')).toBe('rgba(0, 0, 0, 0)')
     expect(root.getBoundingClientRect().width).toBeCloseTo(width, 4)
   })
 
