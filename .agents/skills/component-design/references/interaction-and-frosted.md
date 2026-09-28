@@ -11,7 +11,7 @@
 | inset | 4px | 内嵌项、菜单项、标签内部、微型状态块 |
 | control | 4px | Button、Input、Select Trigger、Toggle、分页按钮 |
 | surface | 8px | Card、Alert、Panel、列表容器、Segmented 与 Tabs segment 轨道 |
-| overlay | 12px | Popover、Menu、Dialog、Drawer、Toast |
+| overlay | 12px | Popover、Menu、Dialog、Drawer、Notification |
 | circle | 50% | 宽高相等的圆形对象（头像、单选指示器、thumb、steps / timeline indicator、加载环）与悬浮于内容之上的单图标动作（FloatButton、BackTop、翻页、回底） |
 | pill | 9999px | 状态 chip（Badge、Tag、ToolCall status、Approval / QuestionFlow result）与一维对象（轨道、track / range、tick、hairline 分隔线、滑动指示条、手柄、scrollbar thumb、skeleton text、位置指示点当前拉长态） |
 
@@ -30,7 +30,7 @@
 
 - 默认 Button 的四角为 4px，不呈胶囊形。
 - Card 和静态容器为 8px。
-- Popover、Dialog、Toast 等浮层不超过 12px。
+- Popover、Dialog、Notification 等浮层不超过 12px。
 - 亮色、暗色和 compact 不改变圆角身份。
 - Tag 为胶囊，与 Button 4px 形成可点 / 不可点识别差。
 - Segmented / Tabs segment 轨道为 8px，滑块 ≥ 4px。
@@ -180,7 +180,7 @@ Frosted 是可读性优先的半透明柔和模糊面。它允许隐约感知背
 - Button、Input、Card、Table、Alert 等常驻内容。
 - 大段正文、表单主体和数据密集列表。
 - Dialog/Drawer 的主要阅读面；它们默认使用稳定的 sheet/elevated 实体面。
-- Toast/Notification；它们默认使用 sheet，避免运动背景影响短时阅读。
+- Notification（卡片与轻提示两种预设）；它默认使用 sheet，避免运动背景影响短时阅读。
 - 嵌套在另一 frosted 面里的子浮层，除非能证明层级仍清楚。
 - 含网格或多列的锚定面板（NavigationMenu content、Date / Time / DateRange / TimeRange picker content）；它们使用 floating：solid 底 + `--xh-border-default` + `--xh-elevation-floating`。
 
