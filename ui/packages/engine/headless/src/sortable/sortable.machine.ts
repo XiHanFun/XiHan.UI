@@ -8,7 +8,7 @@
 import type { ContextFacade, RefsFacade } from '@xihan-ui/core'
 import type { DndRect } from '@xihan-ui/pointer'
 import type { SortableSchema } from './sortable.types'
-import { ITEM_VALUE_ATTR, queryItems, setup } from '@xihan-ui/core'
+import { glideFrom, ITEM_VALUE_ATTR, itemValue, queryItems, setup } from '@xihan-ui/core'
 import { createSpringValue, frameLoop } from '@xihan-ui/motion'
 import {
   createPointerSession,
@@ -106,6 +106,7 @@ export const sortableMachine = createMachine({
     origin: null,
     drop: null,
     settle: null,
+    layout: null,
   }),
   initialState: () => 'idle',
   // 放下归位的弹簧跨状态存在（回到 idle 之后才起），卸载时由它收
@@ -146,12 +147,13 @@ export const sortableMachine = createMachine({
       on: {
         'POINTER.MOVE': { actions: ['trackDelta'] },
         // 放下：先记下被拖项此刻在屏幕上的位置，宿主按新顺序重排之后再把它从这里收进新位置
-        'POINTER.END': { target: 'idle', actions: ['captureDrop', 'commit', 'invokeDragEnd', 'clearSession', 'settleDrop'] },
+        'POINTER.END': { target: 'idle', actions: ['captureLayout', 'captureDrop', 'commit', 'invokeDragEnd', 'clearSession', 'settleDrop', 'glideLayout'] },
         // 系统收走指针按取消算：顺序不动
-        'POINTER.CANCEL': { target: 'idle', actions: ['captureDrop', 'cancel', 'invokeDragEnd', 'clearSession', 'settleDrop'] },
+        'POINTER.CANCEL': { target: 'idle', actions: ['captureLayout', 'captureDrop', 'cancel', 'invokeDragEnd', 'clearSession', 'settleDrop', 'glideLayout'] },
         'KEY.MOVE': { actions: ['stepTo'] },
-        'KEY.DROP': { target: 'idle', actions: ['captureDrop', 'commit', 'invokeDragEnd', 'clearSession', 'settleDrop'] },
-        'KEY.CANCEL': { target: 'idle', actions: ['cancel', 'invokeDragEnd', 'clearSession'] },
+        'KEY.DROP': { target: 'idle', actions: ['captureLayout', 'captureDrop', 'commit', 'invokeDragEnd', 'clearSession', 'settleDrop', 'glideLayout'] },
+        // 键盘取消：被拖那一项也跟邻项一样从此刻的格位滑回原位
+        'KEY.CANCEL': { target: 'idle', actions: ['captureLayout', 'cancel', 'invokeDragEnd', 'clearSession', 'glideLayout'] },
       },
     },
   },
@@ -349,6 +351,41 @@ export const sortableMachine = createMachine({
             if (refs.get('settle') === springs)
               stopSettle(refs, context)
           })
+        })
+      },
+
+      /**
+       * 一场拖动收尾之前量下各项此刻在屏幕上的位置（拖动写的位移算在里面）。指针拖动放下与取消、键盘放下时
+       * 被拖那一项由放下归位的弹簧收进，不在这里算；键盘取消时它也按这里滑回。
+       */
+      captureLayout: ({ context, refs, event }) => {
+        const rects = new Map<string, { left: number, top: number }>()
+        for (const el of itemElements(refs.get('getRootEl')())) {
+          const id = itemValue(el)
+          if (id == null)
+            continue
+          const rect = el.getBoundingClientRect()
+          rects.set(id, { left: rect.left, top: rect.top })
+        }
+        refs.set('layout', { rects, skip: event.current().type === 'KEY.CANCEL' ? null : context.get('activeId') })
+      },
+
+      /**
+       * 宿主按新顺序重排、拖动写的位移撤掉之后：其余各项从量下的位置滑回自己此刻的排布位（换位的 move 一段，
+       * 读元素上的令牌，减弱动效下直接到位）。放下的顺序已被宿主接下时各项本就停在新格位上，几乎不动。
+       */
+      glideLayout: ({ refs, flush }) => {
+        const layout = refs.get('layout')
+        refs.set('layout', null)
+        if (!layout)
+          return
+        flush(() => {
+          for (const el of itemElements(refs.get('getRootEl')())) {
+            const id = itemValue(el)
+            const from = id == null ? undefined : layout.rects.get(id)
+            if (from && id !== layout.skip)
+              glideFrom(el, from)
+          }
         })
       },
 
