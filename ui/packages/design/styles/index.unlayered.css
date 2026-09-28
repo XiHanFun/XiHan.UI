@@ -39053,7 +39053,7 @@
 /* 已勾选的方框是品牌实心面，按下在它之上派生 active 面 */
 [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']),
 [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked'],
-[data-scope='table'][data-part='row-select-trigger'][data-selected] {
+[data-scope='table'][data-part='row-select-trigger']:is([data-selected], [data-indeterminate]) {
   --xh-_table-trigger-bg: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
   --xh-_table-trigger-bg-pressed: var(--xh-table-trigger-bg-checked-pressed, var(--xh-bg-brand-active));
   --xh-_table-trigger-border: var(--xh-table-trigger-border-checked, var(--xh-table-trigger-bg-checked, var(--xh-bg-brand)));
@@ -39602,7 +39602,7 @@
   /* 两个勾选框的实心底也被丢掉，配它的浅色勾落在白纸上就整个不见了——
      勾与框都换成正文色，勾没勾在纸上才分得出 */
   [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']),
-  [data-scope='table'][data-part='row-select-trigger'][data-selected] {
+  [data-scope='table'][data-part='row-select-trigger']:is([data-selected], [data-indeterminate]) {
     border-color: var(--xh-fg-default);
   }
 

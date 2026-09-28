@@ -5,6 +5,7 @@
 
 // 提供 table.rows 相关实现。
 
+import type { CascadeNodeLike } from '@xihan-ui/core'
 import type {
   TableRowDef,
   TableSelection,
@@ -110,6 +111,52 @@ export function flattenTableRows(
   }
 
   walk(roots, 1, '')
+  return out
+}
+
+/**
+ * 把带 parentId 的扁平行摊回树，喂给级联算法：它只认 value / disabled / children。
+ * 指向不存在的父行按根行算，与摊平的口径一致；id 重复只认先出现的那一行。
+ */
+export function tableCascadeRoots(rows: readonly TableRowDef[]): CascadeNodeLike[] {
+  interface Node { value: string, disabled?: boolean, children: Node[] }
+  const nodes = new Map<string, Node>()
+  for (const row of rows) {
+    if (!nodes.has(row.id))
+      nodes.set(row.id, { value: row.id, disabled: row.disabled, children: [] })
+  }
+  const roots: Node[] = []
+  const placed = new Set<string>()
+  for (const row of rows) {
+    if (placed.has(row.id))
+      continue
+    placed.add(row.id)
+    const node = nodes.get(row.id)!
+    const parent = row.parentId != null && row.parentId !== row.id ? nodes.get(row.parentId) : undefined
+    if (parent)
+      parent.children.push(node)
+    else roots.push(node)
+  }
+  return roots
+}
+
+/**
+ * 级联下全选能够得着的叶行：没有子行、自己不禁用、祖先也不禁用。
+ * 禁用行的子树整棵冻结，它的父行因此永远勾不满——全选的基数与三态只能按这些叶行算。
+ */
+export function tableCascadeSelectableLeaves(rows: readonly TableRowDef[]): string[] {
+  const out: string[] = []
+  const walk = (nodes: readonly CascadeNodeLike[]): void => {
+    for (const node of nodes) {
+      if (node.disabled)
+        continue
+      const kids = node.children ?? []
+      if (kids.length === 0)
+        out.push(node.value)
+      else walk(kids)
+    }
+  }
+  walk(tableCascadeRoots(rows))
   return out
 }
 

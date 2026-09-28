@@ -58758,6 +58758,24 @@
             },
             {
               "kind": "field",
+              "name": "cascade",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "cascade"
+            },
+            {
+              "kind": "field",
+              "name": "checkedStrategy",
+              "privacy": "public",
+              "type": {
+                "text": "CascadeStrategy | undefined"
+              },
+              "attribute": "checked-strategy"
+            },
+            {
+              "kind": "field",
               "name": "prefixColumns",
               "privacy": "public",
               "type": {
@@ -59171,6 +59189,22 @@
               "description": "选择模式，默认 none（未声明则没有选择机制）",
               "name": "selection-mode",
               "fieldName": "selectionMode"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "树形表在 multiple 下父子级联勾选，与 Tree 的 cascade 同义",
+              "name": "cascade",
+              "fieldName": "cascade"
+            },
+            {
+              "type": {
+                "text": "CascadeStrategy | undefined"
+              },
+              "description": "级联下对外选中值的收敛策略，默认 child",
+              "name": "checked-strategy",
+              "fieldName": "checkedStrategy"
             },
             {
               "type": {

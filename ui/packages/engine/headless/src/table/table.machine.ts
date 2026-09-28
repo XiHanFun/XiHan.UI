@@ -17,14 +17,14 @@ import type {
   TableSelectionMode,
   TableSortDescriptor,
 } from './table.types'
-import { applySelection, setup } from '@xihan-ui/core'
+import { applySelection, cascadeState, cascadeToggle, collapseChecked, setup } from '@xihan-ui/core'
 import { clampSize, createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { dragAnnouncement, hitAlong, hitAlongNested, insertionIndex } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
 import { orderColumnIds, resolveTableColumns } from './table.columns'
 import { canOwnChildren, draggableColumnIds, reorderTableRows, tableRowMoveOf, toColumnPreferenceIndex } from './table.drag'
-import { flattenTableRows, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
+import { flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
 /** 拖动改列宽时的缺省下限（px）。列定义可用 minWidth 覆盖。 */
@@ -36,6 +36,11 @@ const { createMachine } = setup<TableSchema>()
  * 生效的选择模式，缺省 none：不声明就没有选择这回事。
  * 缺省 multiple 会让普通数据表都报出 aria-multiselectable=true 而实际一行也选不动。
  */
+/** 级联勾选只在复选的树形表里成立：平表没有父子，单选没有「整枝」可言。 */
+export function tableCascades(cascade: boolean | undefined, mode: TableSelectionMode, rows: readonly { parentId?: string }[]): boolean {
+  return !!cascade && mode === 'multiple' && rows.some(row => row.parentId != null)
+}
+
 export function tableSelectionMode(mode: TableSelectionMode | undefined): TableSelectionMode {
   return mode ?? 'none'
 }
@@ -518,10 +523,12 @@ export const tableMachine = createMachine({
           return
         const ids = tableSelectableRowIds(rows)
         const anchor = context.get('selectionAnchor')
+        const cascade = tableCascades(prop('cascade'), mode, rows)
 
         // 按住 Shift：锚点到这一行那一段并进当前选中。表格是复选框语义，
-        // 不像文件管理器那样整份替换——用户先前勾的不该被这一下清掉
-        if (e.extend && mode === 'multiple' && anchor != null) {
+        // 不像文件管理器那样整份替换——用户先前勾的不该被这一下清掉。
+        // 级联那一路不接：勾一行本来就带一整枝，再叠上范围选，选出来什么难以预料
+        if (e.extend && mode === 'multiple' && !cascade && anchor != null) {
           // 第一次按住 Shift 时把当下的选中集拍下来当基线，后面每一下都从它重算
           const baseline = context.get('selectionBaseline') ?? tableSelectionIds(context.get('selection'), ids)
           context.set('selectionBaseline', baseline)
@@ -539,7 +546,15 @@ export const tableMachine = createMachine({
           return
         }
 
-        context.set('selection', tableToggleRowSelection(context.get('selection'), e.value, mode, ids))
+        // 级联：整枝传导后按收敛策略落对外值，与 Tree 同一套算法
+        if (cascade) {
+          const roots = tableCascadeRoots(rows)
+          const state = cascadeToggle(roots, tableSelectionIds(context.get('selection'), ids), e.value)
+          context.set('selection', collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
+        }
+        else {
+          context.set('selection', tableToggleRowSelection(context.get('selection'), e.value, mode, ids))
+        }
         context.set('selectionAnchor', e.value)
         // 非 Shift 的这一下作废基线：下一段 Shift 从这里重新拍
         context.set('selectionBaseline', null)
@@ -548,8 +563,20 @@ export const tableMachine = createMachine({
         // 全选只在复选下成立
         if (tableSelectionMode(prop('selectionMode')) !== 'multiple')
           return
-        const ids = tableSelectableRowIds(prop('rows') ?? [])
-        context.set('selection', tableToggleSelectAll(context.get('selection'), ids))
+        const rows = prop('rows') ?? []
+        const ids = tableSelectableRowIds(rows)
+        if (!tableCascades(prop('cascade'), 'multiple', rows)) {
+          context.set('selection', tableToggleSelectAll(context.get('selection'), ids))
+          return
+        }
+        // 级联下逐棵根整枝传导：直接把父行塞进勾选集会连带禁用子树一起勾上。
+        // 可选行已全勾就整体摘掉，否则整体勾上；结果按收敛策略折叠，形状与逐行勾选一致
+        const roots = tableCascadeRoots(rows)
+        let checked = cascadeState(roots, tableSelectionIds(context.get('selection'), ids)).checked
+        const target = !tableCascadeSelectableLeaves(rows).every(id => checked.has(id))
+        for (const root of roots)
+          checked = cascadeToggle(roots, checked, root.value, target).checked
+        context.set('selection', collapseChecked(roots, checked, prop('checkedStrategy') ?? 'child'))
       },
       setExpanded: ({ context, event }) => {
         const e = event.current()

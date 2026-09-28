@@ -5,7 +5,7 @@
 
 // 定义 table 类型契约。
 
-import type { ControlVariant, Direction, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
+import type { CascadeStrategy, ControlVariant, Direction, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 
 /**
@@ -291,6 +291,14 @@ export interface TableSchema extends MachineSchema {
     defaultExpandedValue?: string[]
     /** 默认 none：未声明则没有选择机制，行也不报告 aria-selected。 */
     selectionMode?: TableSelectionMode
+    /**
+     * 树形表（行声明了 parentId）在 multiple 下父子级联勾选，与 Tree 的 cascade 同一套算法：
+     * 勾父整枝传导、子全勾父勾、部分勾选的父行把手显示半选，禁用行的子树整棵冻结。
+     * 级联下不接 Shift 范围选。默认 false；平表与 single 下无效。
+     */
+    cascade?: boolean
+    /** 级联下对外选中值的收敛策略，默认 child（只收叶行）；parent = 最高整枝，all = 全部勾中的行。与 Tree 同义。 */
+    checkedStrategy?: CascadeStrategy
     /**
      * 需要的前缀列，按给定顺序插在最前面，默认不插入任何列。
      *

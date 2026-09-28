@@ -25,17 +25,9 @@ export {
 } from './table.drag'
 export type { MeasuredRow, TableRowMove } from './table.drag'
 export { tableKeyboard } from './table.keyboard'
-export { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableMachine, tableSelectionMode } from './table.machine'
+export { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableCascades, tableMachine, tableSelectionMode } from './table.machine'
 export { tableMeta } from './table.meta'
-export {
-  flattenTableRows,
-  tableRowSelected,
-  tableSelectableRowIds,
-  tableSelectionIds,
-  tableSelectionState,
-  tableToggleRowSelection,
-  tableToggleSelectAll,
-} from './table.rows'
+export { flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableRowSelected, tableSelectableRowIds, tableSelectionIds, tableSelectionState, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 export {
   tableNormalizeSort,
   tableSortDirectionOf,
