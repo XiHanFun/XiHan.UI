@@ -379,6 +379,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `row` | `data-week-day` | undefined \| String(row.weekDay) |
 | `week-day` | `data-week-day` | undefined \| String(label.weekDay) |
 | `cell` | `data-drawing` | ''（条件成立时才出现） |
+| `cell` | `data-highlighted` | ''（条件成立时才出现） |
 | `cell` | `data-level` | String(level) |
 | `tooltip` | `data-inline-anchor` | undefined \| tip.inlineAnchor |
 | `tooltip` | `data-placement` | undefined \| ((): 'block-start' \| 'block-end' =&gt; { if (activeRef =… |
@@ -400,6 +401,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `--xh-heatmap-block-inner-gap` | `month-block` | `gap` | `default` | `--xh-_heatmap-gap` | heatmap 的 month-block 部件 gap 覆盖槽。 |
 | `--xh-heatmap-cell-bg` | `cell`<br>`legend-item` | `background` | `default` | `--xh-_heatmap-ink` | heatmap 的 cell、legend-item 部件 background 覆盖槽。 |
 | `--xh-heatmap-cell-border` | `cell`<br>`legend-item` | `box-shadow` | `default` | `--xh-border-default` | heatmap 的 cell、legend-item 部件 box-shadow 覆盖槽。 |
+| `--xh-heatmap-cell-border-highlighted` | `cell` | `box-shadow` | `highlighted` | `--xh-fg-default` | heatmap 的 cell 部件 box-shadow 覆盖槽。 |
 | `--xh-heatmap-cell-radius` | `cell`<br>`legend-item` | `border-radius` | `default` | `--xh-shape-inset` | heatmap 的 cell、legend-item 部件 border-radius 覆盖槽。 |
 | `--xh-heatmap-cell-size` | `cell`<br>`legend-item`<br>`month-label`<br>`root`<br>`row`<br>`week-day` | `block-size`<br>`border`<br>`inline-size`<br>`margin-inline-start` | `@media print`<br>`default`<br>`first-child`<br>`level=1`<br>`level=2`<br>`level=3`<br>`size=lg`<br>`size=sm`<br>`variant=month`<br>`week`<br>`week-day` | `--xh-space-2`<br>`--xh-space-2_5`<br>`--xh-space-3` | heatmap 的 cell、legend-item、month-label、root、row、week-day 部件 block-size、border、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-heatmap-column-w` | `cell`<br>`column-label`<br>`root` | `inline-size` | `default`<br>`variant=matrix` | `--xh-_heatmap-row-h` | heatmap 的 cell、column-label、root 部件 inline-size 覆盖槽。 |
@@ -434,7 +436,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 动效角色：状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
-关键帧 `xh-heatmap-fill` 随皮肤自带，不引用别处文件里的名字；`background-color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-heatmap-fill` 随皮肤自带，不引用别处文件里的名字；`background-color` · `box-shadow` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

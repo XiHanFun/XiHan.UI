@@ -34907,6 +34907,24 @@
       "description": "heatmap 的 cell、legend-item 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-heatmap-cell-border-highlighted",
+      "component": "heatmap",
+      "part": [
+        "cell"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "highlighted"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "heatmap 的 cell 部件 box-shadow 覆盖槽。"
+    },
+    {
       "name": "--xh-heatmap-cell-radius",
       "component": "heatmap",
       "part": [

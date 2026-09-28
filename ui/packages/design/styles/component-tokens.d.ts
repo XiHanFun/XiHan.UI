@@ -1769,6 +1769,7 @@ export type ComponentTokenName
     | '--xh-heatmap-block-inner-gap'
     | '--xh-heatmap-cell-bg'
     | '--xh-heatmap-cell-border'
+    | '--xh-heatmap-cell-border-highlighted'
     | '--xh-heatmap-cell-radius'
     | '--xh-heatmap-cell-size'
     | '--xh-heatmap-column-w'

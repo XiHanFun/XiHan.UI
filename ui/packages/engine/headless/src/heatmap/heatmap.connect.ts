@@ -490,6 +490,8 @@ export function connectHeatmap<T extends PropTypes>(
           }),
           'aria-colindex': meta ? meta.columnIndex + 2 : undefined,
           'tabindex': anchorCell?.row === row && anchorCell.column === column ? 0 : -1,
+          // 详情条正在说的那一格：指针停着或焦点落着，皮肤据此给它描一圈
+          'data-highlighted': dataAttr(activeRef != null && activeRef.row === row && activeRef.column === column),
           ...cellPaint(level, () => revealAt({ columnIndex: meta?.columnIndex })),
           ...cellHandlers({ row, column }),
         })
@@ -509,6 +511,8 @@ export function connectHeatmap<T extends PropTypes>(
         'aria-colindex': meta ? (monthGrid ? meta.weekDay + 1 : meta.weekIndex + 1) : undefined,
         // 锚点那一格独占 Tab 序列位
         'tabindex': anchorCell?.date === date ? 0 : -1,
+        // 详情条正在说的那一格：指针停着或焦点落着，皮肤据此给它描一圈
+        'data-highlighted': dataAttr(activeRef != null && activeRef.date === date),
         ...cellPaint(level, () => revealAt({ date })),
         ...cellHandlers({ date }),
       })

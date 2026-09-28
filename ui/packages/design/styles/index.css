@@ -6662,6 +6662,12 @@
     /* 空格与浅档在浅色底上几乎没有边界，描一圈极淡的线把方格勾出来。
        这一档不能取 border-subtle：它与空格底色 bg-subtle 是同一个原色，描了等于没描 */
     box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-heatmap-cell-border, var(--xh-border-default));
+    transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 详情条正在说的那一格（指针停着或焦点落着）描一圈正文色的粗线：扫过一片格子时看得出条说的是哪一格 */
+  [data-scope='heatmap'][data-part='cell'][data-highlighted] {
+    box-shadow: inset 0 0 0 var(--xh-stroke-thick) var(--xh-heatmap-cell-border-highlighted, var(--xh-fg-default));
   }
 
   /* 首次出现：有颜色的格子从空格底色填到自己的档位色，按日期（矩阵按列）的先后扫过去。
@@ -6675,7 +6681,9 @@
   /* 数据变化后的换色：各格从旧档的颜色过渡到新档。只在连接层标出的这一段过渡，
      主题与语气的换色照常一步到位，不被数据的时长拖慢 */
   [data-scope='heatmap'][data-part='root'][data-animating] [data-scope='heatmap'][data-part='cell'] {
-    transition: background-color var(--xh-motion-duration-morph) var(--xh-motion-ease-continuous);
+    transition:
+      background-color var(--xh-motion-duration-morph) var(--xh-motion-ease-continuous),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 错列打在本行第一个格子上：打在行上会连行首的星期名一起往后推，
@@ -6856,11 +6864,6 @@
       color-mix(in oklab, var(--xh-_heatmap-ink) var(--xh-_heatmap-level), var(--xh-_heatmap-empty))
     );
     box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-heatmap-cell-border, var(--xh-border-default));
-  }
-
-  /* 详情条的收起态：没有哪一格是活的时候整条藏起来 */
-  [data-scope='heatmap'][data-part='tooltip'][data-state='hidden'] {
-    display: none;
   }
 
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
