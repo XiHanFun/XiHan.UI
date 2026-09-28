@@ -31634,7 +31634,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-image-cropper>`：Light-DOM 行为宿主：作者写 root / viewport / image / crop-area\n与可选的 crop-handle、grid、hidden-input 角色节点，元素运行 image-cropper 状态机并把 connect 产出接上。\n\n裁切矩形以源图的自然像素记录，坐标换算取 viewport 的矩形：矩形在指针事件发生时才测量，\n连接期一律不涉及 DOM；自然尺寸由 image 部件的 load 事件报告，因此图片必须写为原生 `<img>`。\n视口的尺寸要由图片撑出（图片铺满视口），裁切框的百分比坐标才能对应。\n\n每个把手必须用 position 属性写明拉动的方位（`position=\"se\"`），八个合法值是\n`nw|n|ne|e|se|s|sw|w`；无法解析出合法方位的把手不接行为，控制台留一条诊断。\n缩放与旋转同时作用在图片与裁切框上，两者始终贴合。",
+          "description": "`<xh-image-cropper>`：Light-DOM 行为宿主：作者写 root / viewport / image / crop-area\n与可选的 crop-handle、grid、hidden-input 角色节点，元素运行 image-cropper 状态机并把 connect 产出接上。\n\n裁切矩形以源图的自然像素记录，坐标换算取 viewport 的矩形：矩形在指针事件发生时才测量，\n连接期一律不涉及 DOM；自然尺寸由 image 部件的 load 事件报告，因此图片必须写为原生 `<img>`。\n视口的尺寸要由图片撑出（图片铺满视口），裁切框的百分比坐标才能对应。\n\n每个把手必须用 position 属性写明拉动的方位（`position=\"se\"`），八个合法值是\n`nw|n|ne|e|se|s|sw|w`；无法解析出合法方位的把手不接行为，控制台留一条诊断。\n缩放、旋转与翻转同时作用在图片与裁切框上，两者始终贴合。翻转按钮用 axis 属性写明翻哪条轴\n（`axis=\"horizontal\"` / `axis=\"vertical\"`）。出图调 `toCanvas()`：裁切矩形、旋转、翻转与圆形一并生效，\n像素取自 image 部件。",
           "name": "XhImageCropperElement",
           "cssParts": [
             {
@@ -31668,6 +31668,10 @@
             {
               "description": "旋转滑杆，须是原生 `<input type=\"range\">`；min / max / step / value 由宿主写入",
               "name": "rotate-slider"
+            },
+            {
+              "description": "翻转按钮，须是原生 `<button>` 并自带 axis 属性标识翻哪条轴；aria-pressed 报这条轴翻没翻",
+              "name": "flip-trigger"
             },
             {
               "description": "表单影子（须是原生 input）",
@@ -31839,6 +31843,24 @@
             },
             {
               "kind": "field",
+              "name": "flip",
+              "privacy": "public",
+              "type": {
+                "text": "ImageCropperFlip | undefined"
+              },
+              "attribute": "flip"
+            },
+            {
+              "kind": "field",
+              "name": "defaultFlip",
+              "privacy": "public",
+              "type": {
+                "text": "ImageCropperFlip | undefined"
+              },
+              "attribute": "default-flip"
+            },
+            {
+              "kind": "field",
               "name": "shape",
               "privacy": "public",
               "type": {
@@ -31907,6 +31929,12 @@
             },
             {
               "kind": "field",
+              "name": "notifyFlip",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -31968,6 +31996,100 @@
             },
             {
               "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ReturnType<typeof connectImageCropper> | null"
+                }
+              },
+              "description": "状态机在进入文档（hostConnected）后才建立；还没建立时命令式接口什么都不做、读数给安全空值。"
+            },
+            {
+              "kind": "field",
+              "name": "currentFlip",
+              "type": {
+                "text": "ImageCropperFlip"
+              },
+              "description": "此刻的翻转。flip 是作者递进来的受控值，非受控时读这里；还没进文档时两条轴都不翻。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setFlip",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "ImageCropperFlip"
+                  }
+                }
+              ],
+              "description": "整份设置翻转；受控时只发 flip-change。"
+            },
+            {
+              "kind": "method",
+              "name": "toggleFlip",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "axis",
+                  "type": {
+                    "text": "ImageCropperFlipAxis"
+                  }
+                }
+              ],
+              "description": "翻转一条轴，另一条轴不动；与点翻转按钮同一路径。"
+            },
+            {
+              "kind": "method",
+              "name": "toCanvas",
+              "return": {
+                "type": {
+                  "text": "HTMLCanvasElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "CropToCanvasOptions"
+                  }
+                }
+              ],
+              "description": "把当前裁切结果画到一张新画布上：裁切矩形、旋转、翻转与圆形外形一并生效，像素取自 image 部件。\n图片未加载、没有裁切框或还没进文档时返回 null。"
+            },
+            {
+              "kind": "method",
+              "name": "flipAxis",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ImageCropperFlipAxis | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "翻转按钮声明的轴。作者在节点上写 axis=\"horizontal\"，与 Vue 侧的 `:axis` 是同一份声明。"
+            },
+            {
+              "kind": "method",
               "name": "handlePosition",
               "privacy": "private",
               "return": {
@@ -32023,6 +32145,13 @@
               "name": "rotation-change",
               "type": {
                 "text": "ImageCropperRotationChangeDetails"
+              }
+            },
+            {
+              "description": "翻转变化；detail 为 `{ flip: { horizontal: boolean, vertical: boolean } }`",
+              "name": "flip-change",
+              "type": {
+                "text": "ImageCropperFlipChangeDetails"
               }
             }
           ],
@@ -32162,6 +32291,22 @@
               "description": "旋转滑杆步长，默认 1",
               "name": "rotation-step",
               "fieldName": "rotationStep"
+            },
+            {
+              "type": {
+                "text": "ImageCropperFlip | undefined"
+              },
+              "description": "受控翻转，写为空格分隔的轴名（\"horizontal\"、\"vertical\" 或两者）；未提供该属性即非受控",
+              "name": "flip",
+              "fieldName": "flip"
+            },
+            {
+              "type": {
+                "text": "ImageCropperFlip | undefined"
+              },
+              "description": "非受控初始翻转，写法同 flip；默认两条轴都不翻",
+              "name": "default-flip",
+              "fieldName": "defaultFlip"
             },
             {
               "type": {

@@ -7,6 +7,8 @@
 
 import type {
   ImageCropperApi,
+  ImageCropperFlip,
+  ImageCropperFlipAxis,
   ImageCropperHandlePosition,
   ImageCropperRect,
   ImageCropperSchema,
@@ -22,11 +24,11 @@ import { useImageCropper } from './use-image-cropper'
 
 type ImageCropperProps = ImageCropperSchema['props']
 
-/** 默认插槽的载荷：裁切矩形与图片自然尺寸、缩放与旋转、两种拖动标记，以及修改值、修改倍率与获取结果。 */
+/** 默认插槽的载荷：裁切矩形与图片自然尺寸、缩放、旋转与翻转、两种拖动标记，以及修改值、修改呈现与出图。 */
 export type ImageCropperRootSlotProps = Pick<
   ImageCropperApi,
-  'value' | 'zoom' | 'rotation' | 'natural' | 'dragging' | 'resizing' | 'disabled' | 'readOnly'
-  | 'getCropRect' | 'setValue' | 'setZoom' | 'setRotation'
+  'value' | 'zoom' | 'rotation' | 'flip' | 'natural' | 'dragging' | 'resizing' | 'disabled' | 'readOnly'
+  | 'getCropRect' | 'toCanvas' | 'setValue' | 'setZoom' | 'setRotation' | 'setFlip' | 'toggleFlip'
 >
 
 export const XhImageCropperRoot = defineComponent({
@@ -50,6 +52,8 @@ export const XhImageCropperRoot = defineComponent({
     minRotation: { type: Number },
     maxRotation: { type: Number },
     rotationStep: { type: Number },
+    flip: { type: Object as PropType<ImageCropperFlip> },
+    defaultFlip: { type: Object as PropType<ImageCropperFlip> },
     shape: { type: String as PropType<ImageCropperShape> },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
@@ -68,6 +72,8 @@ export const XhImageCropperRoot = defineComponent({
     'update:zoom': (_zoom: PayloadOf<ImageCropperProps, 'onZoomChange'>['zoom']) => true,
     'rotation-change': (_details: PayloadOf<ImageCropperProps, 'onRotationChange'>) => true,
     'update:rotation': (_rotation: PayloadOf<ImageCropperProps, 'onRotationChange'>['rotation']) => true,
+    'flip-change': (_details: PayloadOf<ImageCropperProps, 'onFlipChange'>) => true,
+    'update:flip': (_flip: PayloadOf<ImageCropperProps, 'onFlipChange'>['flip']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: ImageCropperRootSlotProps) => VNode[]
@@ -88,24 +94,32 @@ export const XhImageCropperRoot = defineComponent({
       emit('rotation-change', details)
       emit('update:rotation', details.rotation)
     }
+    const onFlipChange: ImageCropperProps['onFlipChange'] = (details) => {
+      emit('flip-change', details)
+      emit('update:flip', details.flip)
+    }
     const ctx = useImageCropper(
       withXhConfig('image-cropper', useFormControlProps(props)) as ImageCropperProps,
-      { onValueChange, onValueChangeEnd, onZoomChange, onRotationChange },
+      { onValueChange, onValueChangeEnd, onZoomChange, onRotationChange, onFlipChange },
     )
     provideImageCropper(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,
       zoom: ctx.api.value.zoom,
       rotation: ctx.api.value.rotation,
+      flip: ctx.api.value.flip,
       natural: ctx.api.value.natural,
       dragging: ctx.api.value.dragging,
       resizing: ctx.api.value.resizing,
       disabled: ctx.api.value.disabled,
       readOnly: ctx.api.value.readOnly,
       getCropRect: ctx.api.value.getCropRect,
+      toCanvas: ctx.api.value.toCanvas,
       setValue: ctx.api.value.setValue,
       setZoom: ctx.api.value.setZoom,
       setRotation: ctx.api.value.setRotation,
+      setFlip: ctx.api.value.setFlip,
+      toggleFlip: ctx.api.value.toggleFlip,
     }))
   },
 })
@@ -126,8 +140,11 @@ export const XhImageCropperImage = defineComponent({
   name: 'XhImageCropperImage',
   setup() {
     const ctx = useImageCropperContext()
-    // 用原生 img：自然尺寸与 load 事件都归它。src 与 alt 由根上的同名 prop 写进来
-    return () => h('img', ctx.api.value.getImageProps() as Record<string, unknown>)
+    // 用原生 img：自然尺寸与 load 事件都归它，出图也从它取像素。src 与 alt 由根上的同名 prop 写进来
+    return () => h('img', {
+      ...ctx.api.value.getImageProps() as Record<string, unknown>,
+      ref: ctx.imageRef,
+    })
   },
 })
 
@@ -178,6 +195,22 @@ export const XhImageCropperRotateSlider = defineComponent({
   setup() {
     const ctx = useImageCropperContext()
     return () => h('input', ctx.api.value.getRotateSliderProps() as Record<string, unknown>)
+  },
+})
+
+export const XhImageCropperFlipTrigger = defineComponent({
+  name: 'XhImageCropperFlipTrigger',
+  props: {
+    /** 这颗按钮翻哪条轴，必填。 */
+    axis: { type: String as PropType<ImageCropperFlipAxis>, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useImageCropperContext()
+    return () => h(
+      'button',
+      ctx.api.value.getFlipTriggerProps({ axis: props.axis }) as Record<string, unknown>,
+      slots.default?.(),
+    )
   },
 })
 

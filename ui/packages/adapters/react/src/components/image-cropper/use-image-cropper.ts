@@ -19,6 +19,8 @@ export interface ImageCropperContext {
   api: ImageCropperApi
   /** 视口节点，状态机在指针事件中读取它的矩形。 */
   viewportRef: RefObject<HTMLElement | null>
+  /** 源图节点，出图时从它取像素。 */
+  imageRef: RefObject<HTMLImageElement | null>
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
 }
@@ -26,11 +28,13 @@ export interface ImageCropperContext {
 // 不建 scope：connect 不派生任何 id
 export function useImageCropper(props: ImageCropperSchema['props']): ImageCropperContext {
   const viewportRef = useRef<HTMLElement | null>(null)
+  const imageRef = useRef<HTMLImageElement | null>(null)
   const rootRef = useRef<HTMLElement | null>(null)
 
   // 机器的挂载效应会立刻读 refs，交在 onCreate 里才赶得上；传 getter 而非节点，ref 在挂载后才有值
   const onCreate = useCallback((service: Service<ImageCropperSchema>) => {
     service.refs.set('getViewportEl', () => viewportRef.current)
+    service.refs.set('getImageEl', () => imageRef.current)
   }, [])
 
   const service = useMachine(imageCropperMachine, () => props, { onCreate })
@@ -38,5 +42,5 @@ export function useImageCropper(props: ImageCropperSchema['props']): ImageCroppe
   // 裁切矩形攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置裁切框留在原处
   useFormReset(service, rootRef)
 
-  return { service, api: connectImageCropper(service, reactNormalize), viewportRef, rootRef }
+  return { service, api: connectImageCropper(service, reactNormalize), viewportRef, imageRef, rootRef }
 }

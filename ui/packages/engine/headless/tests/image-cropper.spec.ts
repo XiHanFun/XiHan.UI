@@ -12,6 +12,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   connectImageCropper,
   CROP_HANDLES,
+  cropToCanvas,
   imageCropperMachine,
   initialCropRect,
   moveCropRect,
@@ -19,6 +20,7 @@ import {
   parseCropRect,
   resizeCropRect,
   resolveAspectRatio,
+  screenStepToImage,
   serializeCropRect,
   unprojectDelta,
 } from '../src/image-cropper'
@@ -621,5 +623,203 @@ describe('connectImageCropper 指针拖动', () => {
     rig.cropArea.dispatchEvent(new PointerEvent('pointerdown', { clientX: 0, clientY: 0, button: 2, bubbles: true, cancelable: true }))
     rig.move(40, 20)
     expect(crop(service)).toEqual({ x: 100, y: 50, width: 100, height: 50 })
+  })
+})
+
+describe('image-cropper 翻转', () => {
+  it('缺省两条轴都不翻；toggleFlip 只翻一条轴并发意图，setFlip 整份赋值', () => {
+    const changes: unknown[] = []
+    const service = makeService({ onFlipChange: details => changes.push(details) })
+    expect(api(service).flip).toEqual({ horizontal: false, vertical: false })
+    api(service).toggleFlip('horizontal')
+    expect(api(service).flip).toEqual({ horizontal: true, vertical: false })
+    api(service).setFlip({ horizontal: true, vertical: true })
+    expect(changes).toEqual([
+      { flip: { horizontal: true, vertical: false } },
+      { flip: { horizontal: true, vertical: true } },
+    ])
+  })
+
+  it('受控 flip：内部不自改，只发意图', () => {
+    const changes: unknown[] = []
+    const service = makeService({ flip: { horizontal: false, vertical: false }, onFlipChange: details => changes.push(details) })
+    api(service).toggleFlip('vertical')
+    expect(api(service).flip).toEqual({ horizontal: false, vertical: false })
+    expect(changes).toEqual([{ flip: { horizontal: false, vertical: true } }])
+  })
+
+  it('翻转与缩放、旋转一样只改呈现：禁用与只读都拦不住命令式翻转', () => {
+    const service = makeService({ disabled: true })
+    api(service).toggleFlip('horizontal')
+    expect(api(service).flip.horizontal).toBe(true)
+  })
+
+  it('翻转打在图片与裁切框上：先翻、再缩放、再旋转', () => {
+    const service = makeService({ defaultValue: { x: 100, y: 50, width: 100, height: 50 }, defaultZoom: 2, defaultRotation: 90, defaultFlip: { horizontal: true, vertical: false } })
+    load(service)
+    const image = api(service).getImageProps() as Dict
+    const cropArea = api(service).getCropAreaProps() as Dict
+    expect((image.style as Dict).transform).toBe('rotate(90deg) scale(-2, 2)')
+    expect((cropArea.style as Dict).transform).toBe('rotate(90deg) scale(-2, 2)')
+
+    const plain = makeService({ defaultFlip: { horizontal: false, vertical: true } })
+    expect(((api(plain).getImageProps() as Dict).style as Dict).transform).toBe('rotate(0deg) scale(1, -1)')
+  })
+
+  it('翻转按钮：原生按钮报 aria-pressed，接 Action Control text 档；点一下翻这条轴，禁用时原生 disabled', () => {
+    const service = makeService()
+    const trigger = (): Dict => api(service).getFlipTriggerProps({ axis: 'horizontal' }) as Dict
+    expect(trigger()).toMatchObject({
+      'type': 'button',
+      'aria-label': 'Flip horizontally',
+      'aria-pressed': 'false',
+      'data-axis': 'horizontal',
+      'data-state': 'off',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'outline',
+    })
+    expect((api(service).getFlipTriggerProps({ axis: 'vertical' }) as Dict)['aria-label']).toBe('Flip vertically')
+    ;(trigger().onClick as () => void)()
+    expect(trigger()).toMatchObject({ 'aria-pressed': 'true', 'data-state': 'on' })
+
+    const disabled = makeService({ disabled: true })
+    const off = api(disabled).getFlipTriggerProps({ axis: 'horizontal' }) as Dict
+    expect(off).toMatchObject({ 'disabled': true, 'data-disabled': '' })
+    ;(off.onClick as () => void)()
+    expect(api(disabled).flip.horizontal).toBe(false)
+  })
+
+  it('翻转按钮的按压通道：Space 按住投影 data-pressed；另一颗的 keyup 不松开这颗；禁用按不进', () => {
+    const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+    const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+    const service = makeService()
+    const h = (): Dict => api(service).getFlipTriggerProps({ axis: 'horizontal' }) as Dict
+    const v = (): Dict => api(service).getFlipTriggerProps({ axis: 'vertical' }) as Dict
+    fire(h(), 'onKeyDown', key(' '))
+    expect(h()['data-pressed']).toBe('')
+    expect(v()['data-pressed']).toBeUndefined()
+    fire(v(), 'onKeyUp', key(' '))
+    expect(h()['data-pressed']).toBe('')
+    fire(h(), 'onKeyUp', key(' '))
+    expect(h()['data-pressed']).toBeUndefined()
+
+    const disabled = makeService({ disabled: true })
+    fire(api(disabled).getFlipTriggerProps({ axis: 'horizontal' }) as Dict, 'onKeyDown', key(' '))
+    expect((api(disabled).getFlipTriggerProps({ axis: 'horizontal' }) as Dict)['data-pressed']).toBeUndefined()
+  })
+
+  it('左右翻着时拖动仍跟手：往右拖，框在屏幕上往右走，落到图片上是往左', () => {
+    const service = makeService({ defaultValue: { x: 100, y: 50, width: 100, height: 50 }, defaultFlip: { horizontal: true, vertical: false } })
+    load(service)
+    const rig = mountRig(service)
+    rig.press(rig.cropArea, 0, 0)
+    rig.move(40, 20)
+    expect(crop(service)).toEqual({ x: 60, y: 70, width: 100, height: 50 })
+    rig.release()
+  })
+})
+
+describe('image-cropper 方向键跟随屏幕方向', () => {
+  it('换算表：不转不翻原样；转 90° 时向右是图片的上方向；翻着的轴反号；斜着取最近的直角', () => {
+    expect(screenStepToImage(1, 0, 0)).toEqual({ dx: 1, dy: 0 })
+    expect(screenStepToImage(1, 0, 90)).toEqual({ dx: 0, dy: -1 })
+    expect(screenStepToImage(0, 1, 90)).toEqual({ dx: 1, dy: 0 })
+    expect(screenStepToImage(1, 0, 0, { horizontal: true, vertical: false })).toEqual({ dx: -1, dy: 0 })
+    expect(screenStepToImage(0, 10, 0, { horizontal: false, vertical: true })).toEqual({ dx: 0, dy: -10 })
+    expect(screenStepToImage(1, 0, 30)).toEqual({ dx: 1, dy: 0 })
+    expect(screenStepToImage(1, 0, 60)).toEqual({ dx: 0, dy: -1 })
+    expect(screenStepToImage(1, 0, -180)).toEqual({ dx: -1, dy: 0 })
+  })
+
+  it('裁切框上的方向键按屏幕方向平移：左右翻着时 ArrowRight 让框在图片上往左走', () => {
+    const service = makeService({ defaultValue: { x: 100, y: 50, width: 100, height: 50 }, defaultFlip: { horizontal: true, vertical: false } })
+    load(service)
+    pressOnCropArea(service, 'ArrowRight')
+    expect(crop(service)).toEqual({ x: 99, y: 50, width: 100, height: 50 })
+  })
+
+  it('把手上的方向键同样换算：转 90° 时 ArrowDown 推的是图片的横向那条边', () => {
+    const service = makeService({ defaultValue: { x: 100, y: 50, width: 100, height: 50 }, defaultRotation: 90 })
+    load(service)
+    pressOnHandle(service, 'se', 'ArrowDown')
+    expect(crop(service)).toEqual({ x: 100, y: 50, width: 101, height: 50 })
+  })
+})
+
+/** 记下画布上下文的每一次调用：jsdom 没有 2d 上下文，出图的几何只能这样核。 */
+function recordCanvas(): { calls: [string, unknown[]][], canvas: () => HTMLCanvasElement } {
+  const calls: [string, unknown[]][] = []
+  let last: HTMLCanvasElement | null = null
+  const ctx = new Proxy({} as Record<string, unknown>, {
+    get: (target, key: string) => key in target ? target[key] : (...args: unknown[]) => calls.push([key, args]),
+    set: (target, key: string, value) => {
+      target[key] = value
+      calls.push([`set:${key}`, [value]])
+      return true
+    },
+  })
+  const create = document.createElement.bind(document)
+  vi.spyOn(document, 'createElement').mockImplementation(((tag: string) => {
+    const el = create(tag)
+    if (tag === 'canvas') {
+      ;(el as HTMLCanvasElement).getContext = (() => ctx) as unknown as HTMLCanvasElement['getContext']
+      last = el as HTMLCanvasElement
+    }
+    return el
+  }) as typeof document.createElement)
+  return { calls, canvas: () => last! }
+}
+
+describe('cropToCanvas 出图', () => {
+  const source = document.createElement('img')
+
+  it('不转不翻：画布即裁切矩形的尺寸，按源图像素截取', () => {
+    const rec = recordCanvas()
+    const canvas = cropToCanvas(source, { x: 10, y: 20, width: 200, height: 100 })!
+    expect([canvas.width, canvas.height]).toEqual([200, 100])
+    expect(rec.calls.find(([name]) => name === 'drawImage')![1].slice(1)).toEqual([10, 20, 200, 100, -100, -50, 200, 100])
+  })
+
+  it('旋转 90° 的倍数时画布宽高互换，旋转与翻转都进了画布变换', () => {
+    const rec = recordCanvas()
+    const canvas = cropToCanvas(source, { x: 0, y: 0, width: 200, height: 100 }, { rotation: 90, flip: { horizontal: true, vertical: false } })!
+    expect([canvas.width, canvas.height]).toEqual([100, 200])
+    const names = rec.calls.map(([name]) => name)
+    expect(names.indexOf('rotate')).toBeLessThan(names.indexOf('scale'))
+    expect(rec.calls.find(([name]) => name === 'rotate')![1]).toEqual([Math.PI / 2])
+    expect(rec.calls.find(([name]) => name === 'scale')![1]).toEqual([-1, 1])
+  })
+
+  it('斜角旋转时画布是旋转后的外接矩形', () => {
+    recordCanvas()
+    const canvas = cropToCanvas(source, { x: 0, y: 0, width: 100, height: 100 }, { rotation: 45 })!
+    expect(canvas.width).toBe(141)
+    expect(canvas.height).toBe(141)
+  })
+
+  it('圆形：先裁一个内切于裁切内容的椭圆再画图；给了底色时整张画布先铺底', () => {
+    const rec = recordCanvas()
+    cropToCanvas(source, { x: 0, y: 0, width: 200, height: 100 }, { shape: 'round', background: '#fff', width: 100 })
+    const names = rec.calls.map(([name]) => name)
+    expect(rec.calls.find(([name]) => name === 'fillRect')![1]).toEqual([0, 0, 100, 50])
+    expect(rec.calls.find(([name]) => name === 'ellipse')![1]).toEqual([0, 0, 50, 25, 0, 0, Math.PI * 2])
+    expect(names.indexOf('fillRect')).toBeLessThan(names.indexOf('clip'))
+    expect(names.indexOf('clip')).toBeLessThan(names.indexOf('drawImage'))
+  })
+
+  it('toCanvas 带上此刻的旋转、翻转与外形；图片没加载或没有源图节点时给 null', () => {
+    const rec = recordCanvas()
+    const service = makeService({ shape: 'round', defaultRotation: 180, defaultFlip: { horizontal: false, vertical: true } })
+    expect(api(service).toCanvas()).toBeNull()
+    load(service)
+    expect(api(service).toCanvas()).toBeNull()
+    service.refs.set('getImageEl', () => source)
+    const canvas = api(service).toCanvas({ width: 200 })!
+    expect([canvas.width, canvas.height]).toEqual([200, 100])
+    expect(rec.calls.find(([name]) => name === 'rotate')![1][0]).toBeCloseTo(Math.PI)
+    expect(rec.calls.find(([name]) => name === 'scale')![1]).toEqual([1, -1])
+    expect(rec.calls.some(([name]) => name === 'ellipse')).toBe(true)
   })
 })

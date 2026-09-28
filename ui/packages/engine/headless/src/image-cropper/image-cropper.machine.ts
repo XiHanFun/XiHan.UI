@@ -7,7 +7,7 @@
 
 import type { Params } from '@xihan-ui/core'
 import type { CropConstraints } from './image-cropper.geometry'
-import type { ImageCropperRect, ImageCropperSchema, ImageCropperSize } from './image-cropper.types'
+import type { ImageCropperFlip, ImageCropperRect, ImageCropperSchema, ImageCropperSize } from './image-cropper.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import {
@@ -32,6 +32,14 @@ export const IMAGE_CROPPER_ZOOM = 1
 
 /** 没有旋转的基准角度。 */
 export const IMAGE_CROPPER_ROTATION = 0
+
+/** 两条轴都不翻。身份固定，重置成它不会白涨一次版本号。 */
+export const IMAGE_CROPPER_NO_FLIP: ImageCropperFlip = { horizontal: false, vertical: false }
+
+/** 两条轴的翻转逐一相等即相等：受控时宿主每次都可能交一个新对象。 */
+export function sameCropFlip(a: ImageCropperFlip, b: ImageCropperFlip | undefined): boolean {
+  return b != null && a.horizontal === b.horizontal && a.vertical === b.vertical
+}
 
 /** 两条滑杆的缺省区间与步长。只约束滑杆，命令式赋值不受它们夹取。 */
 export const IMAGE_CROPPER_MIN_ZOOM = 1
@@ -92,15 +100,25 @@ export const imageCropperMachine = createMachine({
       defaultValue: prop('defaultRotation') ?? IMAGE_CROPPER_ROTATION,
       onChange: rotation => prop('onRotationChange')?.({ rotation }),
     })),
+    flip: cell<ImageCropperFlip>(() => ({
+      value: prop('flip'),
+      defaultValue: prop('defaultFlip') ?? IMAGE_CROPPER_NO_FLIP,
+      isEqual: sameCropFlip,
+      onChange: flip => prop('onFlipChange')?.({ flip }),
+    })),
     // 自然尺寸由 image 部件的 load 事件报进来，不受控、不对外通知
     natural: cell<ImageCropperSize>(() => ({ defaultValue: UNKNOWN_IMAGE_SIZE, isEqual: sameCropSize })),
     origin: cell<ImageCropperSchema['context']['origin']>(() => ({ defaultValue: null })),
     activeHandle: cell<ImageCropperSchema['context']['activeHandle']>(() => ({ defaultValue: null })),
+    pressed: cell<ImageCropperSchema['context']['pressed']>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     getViewportEl: () => null,
+    getImageEl: () => null,
   }),
   initialState: () => 'idle',
+  // 按住途中被禁用：原生 disabled 的按钮不再派 keyup / blur，按压面得由机器自己收
+  watch: ({ track, prop, action }) => track([() => prop('disabled')], () => action(['releaseWhenInert'])),
   // 命令式赋值、键盘微调与图片加载在哪个状态发出都一样，因此挂根级
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
@@ -108,6 +126,12 @@ export const imageCropperMachine = createMachine({
     // 缩放与旋转只改呈现、不改数据，禁用与只读都不拦它
     'ZOOM.SET': { actions: ['setZoom'] },
     'ROTATE.SET': { actions: ['setRotation'] },
+    // 翻转同样只改呈现，与缩放、旋转一道不拦
+    'FLIP.SET': { actions: ['setFlip'] },
+    'FLIP.TOGGLE': { actions: ['toggleFlip'] },
+    // 翻转按钮的按压通道：与按钮本身同一道判据，禁用时按不进
+    'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
     'IMAGE.LOAD': { actions: ['setNatural'] },
     'CROP.NUDGE': { guard: 'canEdit', actions: ['nudgeCrop'] },
     'HANDLE.NUDGE': { guard: 'canEdit', actions: ['nudgeHandle'] },
@@ -138,6 +162,8 @@ export const imageCropperMachine = createMachine({
   implementations: {
     guards: {
       canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
+      // 翻转只改呈现，只读也照常可按，禁用才按不动
+      canPress: ({ prop }) => !prop('disabled'),
     },
     actions: {
       // 落回的初值是在图片尺寸还未知时归一化的，只吃了最小尺寸与比例，
@@ -179,6 +205,37 @@ export const imageCropperMachine = createMachine({
         if (!Number.isFinite(e.rotation))
           return
         context.set('rotation', e.rotation)
+      },
+
+      startPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.START')
+          context.set('pressed', e.axis)
+      },
+      // 只收自己那一下：另一颗钮的 keyup 不该把正按着的这颗松开
+      endPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PRESS.END' && context.get('pressed') === e.axis)
+          context.set('pressed', null)
+      },
+      releaseWhenInert: ({ context, prop }) => {
+        if (prop('disabled'))
+          context.set('pressed', null)
+      },
+
+      setFlip: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'FLIP.SET')
+          return
+        context.set('flip', { horizontal: e.flip.horizontal === true, vertical: e.flip.vertical === true })
+      },
+
+      toggleFlip: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'FLIP.TOGGLE')
+          return
+        const flip = context.get('flip')
+        context.set('flip', { ...flip, [e.axis]: !flip[e.axis] })
       },
 
       setNatural: ({ context, prop, event }) => {
@@ -241,7 +298,7 @@ export const imageCropperMachine = createMachine({
         const delta = unprojectDelta(
           e.point.clientX - origin.point.clientX,
           e.point.clientY - origin.point.clientY,
-          { scale, zoom: context.get('zoom'), rotation: context.get('rotation') },
+          { scale, zoom: context.get('zoom'), rotation: context.get('rotation'), flip: context.get('flip') },
         )
         const c = constraints(prop, natural)
         const handle = context.get('activeHandle')

@@ -8119,6 +8119,29 @@
     accent-color: var(--xh-image-cropper-slider-accent, var(--xh-bg-brand));
   }
 
+  /*
+   * 翻转按钮是裁切器旁的独立开关钮：盒型、sm 档几何、outline 四态面、0.97 按压与粗指针命中区由家族配方
+   * 按连接层投影的 data-xh-action-* 给出。翻着（data-state='on'）是无滑块开关的选中面：品牌淡底 12 → 悬停 20
+   * → 按压 28，前景 fg-on-brand-subtle；outline 的描边不换，淡底面上没有描边就与悬停面分不开。
+   */
+  [data-scope='image-cropper'][data-part='flip-trigger'] {
+    /* 作者塞进来的图标随档取字形尺（sm = 16px） */
+    --xh-icon-size: var(--xh-_action-profile-glyph-size);
+  }
+
+  [data-scope='image-cropper'][data-part='flip-trigger'][data-state='on'] {
+    --xh-action-bg-rest: var(--xh-bg-brand-subtle);
+    --xh-action-bg-hover: var(--xh-bg-brand-subtle-hover);
+    --xh-action-bg-pressed: var(--xh-bg-brand-subtle-active);
+    --xh-action-bg-focus-visible: var(--xh-bg-brand-subtle);
+    /* 翻着又被禁用：底色掺一半中性面，选中信息不丢。掺的是淡底的不透明档，墨色淡底半透明 */
+    --xh-action-bg-disabled: color-mix(in oklab, var(--xh-bg-brand-subtle) 50%, var(--xh-bg-subtle-opaque));
+    --xh-action-fg-rest: var(--xh-fg-on-brand-subtle);
+    --xh-action-fg-hover: var(--xh-fg-on-brand-subtle);
+    --xh-action-fg-pressed: var(--xh-fg-on-brand-subtle);
+    --xh-action-fg-focus-visible: var(--xh-fg-on-brand-subtle);
+  }
+
   /* 禁用的整体压暗只做一次，落在最外层：视口、裁切框、把手各自再叠一层会越叠越黑。
      这里只用 opacity、不换前景色：框里是图像，没有文字可换。 */
   [data-scope='image-cropper'][data-part='root'][data-disabled] {

@@ -5,7 +5,7 @@
 
 // 裁切矩形的纯几何：不碰 DOM、不认识状态机。单位一律是源图的自然像素。
 
-import type { ImageCropperHandlePosition, ImageCropperRect, ImageCropperSize } from './image-cropper.types'
+import type { ImageCropperFlip, ImageCropperHandlePosition, ImageCropperRect, ImageCropperSize } from './image-cropper.types'
 
 /** 八个把手的方位，顺序即皮肤与示例里铺开的顺序（先四角、后四边）。 */
 export const CROP_HANDLES: readonly ImageCropperHandlePosition[] = ['nw', 'ne', 'se', 'sw', 'n', 'e', 's', 'w']
@@ -51,6 +51,8 @@ export interface CropProjection {
   zoom: number
   /** 旋转角度，单位度。 */
   rotation: number
+  /** 翻转；缺省两条轴都不翻。 */
+  flip?: ImageCropperFlip
 }
 
 /** 比例只认有限的正数，其余（null / undefined / 0 / NaN）一律当作不锁比例。 */
@@ -186,7 +188,7 @@ export function initialCropRect(c: CropConstraints): ImageCropperRect {
 
 /**
  * 屏幕上的指针位移换算成图片像素的位移。
- * 图片被缩放并旋转过，所以先把位移按 −rotation 转回图片自己的坐标系，再除以总倍率。
+ * 图片先被翻转、再被缩放与旋转，所以倒着拆：位移按 −rotation 转回来，翻着的那条轴反号，再除以总倍率。
  * 尺子还没就位（视口宽度为 0、图片没加载、倍率为 0）时返回零位移，调用方原地不动。
  */
 export function unprojectDelta(dx: number, dy: number, p: CropProjection): { dx: number, dy: number } {
@@ -196,10 +198,23 @@ export function unprojectDelta(dx: number, dy: number, p: CropProjection): { dx:
   const radians = (toFinite(p.rotation) * Math.PI) / 180
   const cos = Math.cos(radians)
   const sin = Math.sin(radians)
+  const x = (toFinite(dx) * cos + toFinite(dy) * sin) / k
+  const y = (-toFinite(dx) * sin + toFinite(dy) * cos) / k
   return {
-    dx: (toFinite(dx) * cos + toFinite(dy) * sin) / k,
-    dy: (-toFinite(dx) * sin + toFinite(dy) * cos) / k,
+    dx: p.flip?.horizontal ? -x : x,
+    dy: p.flip?.vertical ? -y : y,
   }
+}
+
+/**
+ * 方向键的一步换算成图片像素的一步：方向键按屏幕方向走，框在屏幕上往哪边挪，按的就是哪个键。
+ * 旋转取最近的直角（斜着的框按离屏幕方向最近的那条图片轴走），翻着的那条轴反号；步长仍是整数个像素。
+ */
+export function screenStepToImage(dx: number, dy: number, rotation: number, flip?: ImageCropperFlip): { dx: number, dy: number } {
+  const quarter = Math.round(toFinite(rotation) / 90) * 90
+  const step = unprojectDelta(dx, dy, { scale: 1, zoom: 1, rotation: quarter, flip })
+  // 直角的三角函数带 1e-16 级尾巴，取整收掉；再归一掉 -0，免得 -0 一路写进事件载荷
+  return { dx: Math.round(step.dx) + 0, dy: Math.round(step.dy) + 0 }
 }
 
 /** 表单出口的序列化形态：`x,y,width,height`。 */
