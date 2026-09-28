@@ -37,7 +37,7 @@
 | `--xh-glyph-mark-close` | 清空钮、关闭钮、标签与文件条目的删除钮 |
 | `--xh-glyph-mark-chevron-*` · `-chevrons-*` | 展开箭头、树与侧栏的分支把手、翻页、回到顶部 |
 | `--xh-glyph-mark-arrow-up` · `-arrow-down` · `-sort*` | 排序方向 |
-| `--xh-glyph-mark-info` · `-warning` | 命令式 dialog / notification 的类型徽记，toast 的状态字形 |
+| `--xh-glyph-mark-info` · `-warning` | 命令式 dialog 的类型徽记与 notification 的状态字形 |
 | `--xh-glyph-mark-edit` · `-download` · `-star` · `-eye` · `-eye-off` · `-calendar` · `-clock` · `-ellipsis` · `-play` · `-pause` | 就地编辑、下载、评分、密码明暗、日期与时间触发器、更多、轮播播放 |
 | `--xh-glyph-mark-zoom-*` · `-rotate-*` · `-flip-*` · `-maximize` · `-restore` | 图片查看器与浮动面板的工具条 |
 | `--xh-glyph-mark-required` | 必填星号（这是文字 `*`，不是图标） |

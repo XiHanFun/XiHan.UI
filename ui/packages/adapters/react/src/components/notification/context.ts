@@ -6,7 +6,7 @@
 // 提供 context 相关实现。
 
 import type { Service } from '@xihan-ui/core'
-import type { NotificationApi, NotificationItemApi, NotificationOptions, NotificationSchema, ToastSchema } from '@xihan-ui/headless'
+import type { NotificationApi, NotificationItemApi, NotificationItemSchema, NotificationOptions, NotificationSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import { createContext, useContext } from 'react'
 
@@ -24,7 +24,7 @@ export interface NotificationContext {
 
 export interface NotificationItemContext {
   api: NotificationItemApi
-  service: Service<ToastSchema>
+  service: Service<NotificationItemSchema>
   /** 卡片根节点：退场动画从它上面探测。 */
   rootRef: RefObject<HTMLElement | null>
 }

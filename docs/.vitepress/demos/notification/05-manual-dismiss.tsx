@@ -1,11 +1,12 @@
 // 手动关闭 | create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不播退场动画
-import type { NotificationOptions, ToastStatusChangeDetails } from "@xihan-ui/headless";
+import type { NotificationOptions, NotificationStatusChangeDetails } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
   XhButton,
   XhNotificationGroup,
   XhNotificationItem,
   XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
@@ -38,7 +39,7 @@ export default function Demo(): ReactNode {
   }
 
   // 用户自己按叉关掉时，记下的 id 也要作废
-  function settle(details: ToastStatusChangeDetails, dismiss: Dismiss): void {
+  function settle(details: NotificationStatusChangeDetails, dismiss: Dismiss): void {
     if (details.status !== "unmounted") {
       return;
     }
@@ -74,8 +75,10 @@ export default function Demo(): ReactNode {
                 onStatusChange={details => settle(details, dismiss)}
               >
                 <XhNotificationItemIndicator />
-                <XhNotificationItemTitle />
-                <XhNotificationItemDescription />
+                <XhNotificationItemContent>
+                  <XhNotificationItemTitle />
+                  <XhNotificationItemDescription />
+                </XhNotificationItemContent>
                 <XhNotificationItemCloseTrigger />
               </XhNotificationItem>
             )}

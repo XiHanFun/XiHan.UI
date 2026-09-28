@@ -11,7 +11,7 @@
 // Surface / Feedback / 浮层内标题 = --xh-text-label-size + --xh-font-weight-semibold，页面级面板（Dialog / Drawer / Tour）= heading-3；
 // 禁用标签 --xh-fg-subtle；控件内图标 --xh-icon-size 兜底只能是 --xh-glyph-size-sm / md / lg（按 data-size），
 // --xh-glyph-size-text 只许纯行内文字组件（Tag / Kbd / Breadcrumb / Typography / Highlight）；
-// Feedback 指示符（Alert / Toast / Notification）统一 --xh-glyph-size-md。
+// Feedback 指示符（Alert / Notification）统一 --xh-glyph-size-md。
 //
 // 按 scope 列表登记角色（同名部件跨组件语义不同，不通配）；判据看兜底链最内层，私有槽在赋值点判；
 // 只判皮肤里写了的声明——没写的那一条由继承给，不在此列。存量登 family-backlog.json text 段，
@@ -66,7 +66,6 @@ const SURFACE_TITLE = {
   'card': 'title',
   'descriptions': 'title',
   'alert': 'title',
-  'toast': 'title',
   'notification': 'item-title',
   'floating-panel': 'title',
   'approval': 'title',
@@ -97,7 +96,7 @@ const PAGE_TITLE = new Set(['dialog', 'drawer', 'tour', 'page-header'])
  */
 const INLINE_TEXT = new Set(['tag', 'tag-group', 'kbd', 'breadcrumb', 'typography', 'highlight'])
 /** Feedback 指示符：scope → 声明 --xh-icon-size 的部件，统一 md。 */
-const FEEDBACK_INDICATOR = { alert: 'root', toast: 'root', notification: 'item' }
+const FEEDBACK_INDICATOR = { alert: 'root', notification: 'item' }
 /** 不是控件内图标的字形：空状态的主视觉图形按自己的尺度走；方盒里的方向指示符与方盒同边长。 */
 const GLYPH_EXEMPT = {
   'empty-state:indicator': '空状态的主视觉字形，不是控件内图标',
@@ -366,7 +365,7 @@ for (const skin of skins) {
         continue
       }
       if (FEEDBACK_INDICATOR[skin.comp] === part && token !== '--xh-glyph-size-md') {
-        report(`Feedback 指示符落 ${token}——Alert / Toast / Notification 统一 --xh-glyph-size-md`)
+        report(`Feedback 指示符落 ${token}——Alert / Notification 统一 --xh-glyph-size-md`)
         continue
       }
       if (!GLYPH_STEPS.has(token))

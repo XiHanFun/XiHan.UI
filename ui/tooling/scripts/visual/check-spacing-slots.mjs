@@ -91,6 +91,8 @@ const CROSS_PART = {
   'pagination.item': ['summary', 'jumper'],
   // 星星之间的间距由装它们的那一行排
   'rating.item': ['control'],
+  // 叠成一摞时各条在定位面里绝对定位、铺满它的宽：定位面的宽就是每条的宽，读同一个按条目取名的宽度槽
+  'notification.item': ['group'],
   // 文件条目之间的间距由装它们的那一列排
   'file-upload.item': ['list'],
   // 箭头是面板那片面探出来的尖角，底色与 content 同源，接缝处才不会出现两种底

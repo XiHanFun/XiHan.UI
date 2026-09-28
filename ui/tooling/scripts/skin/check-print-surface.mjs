@@ -35,7 +35,6 @@ const REGISTERED = {
   // 钉在视口上的那几处：纸上没有视口，它们会印在页面某处盖住正文
   'float-button.css': ['root'],
   'loading-bar.css': ['root'],
-  'toast.css': ['group'],
   'notification.css': ['group'],
 }
 

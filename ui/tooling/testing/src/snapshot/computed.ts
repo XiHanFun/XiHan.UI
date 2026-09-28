@@ -212,7 +212,7 @@ export function runComputedSnapshot(
           await harness.flush()
           const doc = root.ownerDocument
           await settleAnimations(doc)
-          snap = collectComputedSnapshot({ doc, component: suite.component, anatomy: suite.anatomy })
+          snap = collectComputedSnapshot({ doc, component: suite.anatomy.name, anatomy: suite.anatomy })
           mounted.add(suite.component)
         }
         catch (err) {

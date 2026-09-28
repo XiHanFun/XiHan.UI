@@ -24,6 +24,11 @@ import {
   XhDrawerTitle,
   XhDrawerTrigger,
   XhMenuRoot,
+  XhNotificationItem,
+  XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
+  XhNotificationItemIndicator,
+  XhNotificationItemTitle,
   XhPopoverArrow,
   XhPopoverCloseTrigger,
   XhPopoverContent,
@@ -37,11 +42,6 @@ import {
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
-  XhToastCloseTrigger,
-  XhToastContent,
-  XhToastIndicator,
-  XhToastRoot,
-  XhToastTitle,
 } from '../../src'
 import {
   VISUAL_BASELINE_FONT,
@@ -121,7 +121,7 @@ const COMBOS: Record<string, Axes> = {
   'light-compact': { theme: 'light', density: 'compact' },
   'dark-compact': { theme: 'dark', density: 'compact' },
   // 高对比档只改七支 --xh-border-*，所以只有消费边框令牌的组件会跟着变。
-  // dialog 与 toast 的面板不接这几支（前者面板压根没声明 border，后者的边走语气层），
+  // dialog 与 notification 的面板不接这几支（前者面板压根没声明 border，后者的边走 sheet 面的描边），
   // 这两件的 dark-more 与 dark-comfortable 因此逐字节相同——是库的真实行为，不是轴没施加上。
   // 哪天给这两件的面板接上边框令牌，这两张会跟着分开，那时再看差异即可。
   'dark-more': { theme: 'dark', density: 'comfortable', contrast: 'more' },
@@ -240,18 +240,19 @@ const FIXTURES: Record<string, () => VNode[]> = {
     ]),
   ],
 
-  // duration 给 0 即不起计时器。留着默认时长的话，条子会在某一帧自己退场，
+  // 轻提示预设的一条。duration 给 0 即不起计时器。留着默认时长的话，卡片会在某一帧自己退场，
   // 截图究竟拍在哪一帧就成了赛跑
-  'toast': () => [
-    h(XhToastRoot, {
+  'notification': () => [
+    h(XhNotificationItem, {
+      preset: 'toast',
       title: 'Draft saved',
       duration: 0,
       closable: true,
       translations: { close: 'Close' },
     }, () => [
-      h(XhToastIndicator),
-      h(XhToastContent, null, () => h(XhToastTitle)),
-      h(XhToastCloseTrigger),
+      h(XhNotificationItemIndicator),
+      h(XhNotificationItemContent, null, () => h(XhNotificationItemTitle)),
+      h(XhNotificationItemCloseTrigger),
     ]),
   ],
 }
@@ -388,7 +389,7 @@ async function waitForPositioned(): Promise<void> {
 /**
  * 等动画跑完。
  *
- * 八件的皮肤都带进场动画（xh-sheet-in / xh-slide-in / xh-toast-in / xh-overlay-pop-in / xh-fade-in）。
+ * 八件的皮肤都带进场动画（xh-sheet-in / xh-slide-in / xh-overlay-pop-in / xh-fade-in）。
  * 不能用 data-motion='reduce' 绕开：那会换掉一整块令牌取值，截出来的就不是默认档的样子了。
  *
  * 逐条等 finished，等完再看一拍有没有新动画起来——落位与重排会引出第二批。

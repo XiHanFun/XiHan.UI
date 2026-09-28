@@ -63,13 +63,11 @@ const DIR_PSEUDO_BACKLOG = {
   'layout.css': 2,
   'loading-bar.css': 1,
   'navigation-menu.css': 1,
-  'notification.css': 1,
   'progress.css': 4,
   'resizable.css': 1,
   'segmented.css': 1,
   'sortable.css': 1,
   'tabs.css': 2,
-  'toast.css': 2,
 }
 
 /** .browserslistrc 里 `引擎 >= 版本` 的地板,取不到的引擎不进表。 */

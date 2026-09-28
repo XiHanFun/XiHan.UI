@@ -10,7 +10,6 @@ import { XhButtonElement } from '../elements/button'
 import { XhDialogElement } from '../elements/dialog'
 import { XhLoadingBarElement } from '../elements/loading-bar'
 import { XhNotificationElement, XhNotificationItemElement } from '../elements/notification'
-import { XhToastElement } from '../elements/toast'
 import { defineElement } from '../runtime/registry'
 
 /**
@@ -20,7 +19,6 @@ import { defineElement } from '../runtime/registry'
  * 注册表是幂等的，已经注册过的原样跳过。
  */
 export function defineFeedbackElements(): void {
-  defineElement('xh-toast', XhToastElement, VERSION)
   defineElement('xh-notification', XhNotificationElement, VERSION)
   defineElement('xh-notification-item', XhNotificationItemElement, VERSION)
   defineElement('xh-dialog', XhDialogElement, VERSION)

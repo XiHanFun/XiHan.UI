@@ -5,6 +5,7 @@ import {
   XhNotificationGroup,
   XhNotificationItem,
   XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
@@ -60,8 +61,10 @@ function pop(create: Create, placement: string, label: string): void {
           "
         >
           <XhNotificationItemIndicator />
-          <XhNotificationItemTitle />
-          <XhNotificationItemDescription />
+          <XhNotificationItemContent>
+            <XhNotificationItemTitle />
+            <XhNotificationItemDescription />
+          </XhNotificationItemContent>
           <XhNotificationItemCloseTrigger />
         </XhNotificationItem>
       </template>

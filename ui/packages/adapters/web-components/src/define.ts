@@ -137,7 +137,6 @@ import { XhTimeRangePickerElement } from './elements/time-range-picker'
 import { XhTimelineElement } from './elements/timeline'
 import { XhTimerElement } from './elements/timer'
 import { XhTimestampElement } from './elements/timestamp'
-import { XhToastElement } from './elements/toast'
 import { XhToggleElement } from './elements/toggle'
 import { XhToggleGroupElement } from './elements/toggle-group'
 import { XhToolCallElement } from './elements/tool-call'
@@ -285,7 +284,6 @@ export function defineXhElements(): void {
   defineElement('xh-timeline', XhTimelineElement, VERSION)
   defineElement('xh-timer', XhTimerElement, VERSION)
   defineElement('xh-timestamp', XhTimestampElement, VERSION)
-  defineElement('xh-toast', XhToastElement, VERSION)
   defineElement('xh-toggle', XhToggleElement, VERSION)
   defineElement('xh-toggle-group', XhToggleGroupElement, VERSION)
   defineElement('xh-tool-call', XhToolCallElement, VERSION)
@@ -416,7 +414,6 @@ export {
   XhTimePickerElement,
   XhTimeRangePickerElement,
   XhTimerElement,
-  XhToastElement,
   XhToggleElement,
   XhToggleGroupElement,
   XhToolbarElement,

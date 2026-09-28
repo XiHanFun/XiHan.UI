@@ -1,5 +1,7 @@
 import type { ConformanceSuite } from '../conformance/types'
-import { NOTIFICATION_MAX, notificationAnatomy, notificationKeyboard } from '@xihan-ui/headless'
+import { NOTIFICATION_PRESETS, notificationAnatomy, notificationKeyboard } from '@xihan-ui/headless'
+
+const NOTIFICATION_MAX = NOTIFICATION_PRESETS.card.max
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/alert/'
 
@@ -19,15 +21,13 @@ const BOTTOM = { id: 'c', placement: 'bottom-end' } as const
 export const notificationSuite: ConformanceSuite = {
   component: 'notification',
   anatomy: notificationAnatomy,
-  keyboard: notificationKeyboard,
+  // 键盘表里叠摞的 Escape 归这份套件，卡片那几行归卡片那份（notification-item.suite.ts）
+  keyboard: { ...notificationKeyboard, rows: notificationKeyboard.rows.filter(row => row.id === 'notification.kbd.collapse') },
   // 两个位各一摞，卡片不在这份 fixture 里，也塞不进来：
   // 卡片在 WC 侧是另一个自定义元素（<xh-notification-item>），而一致性夹具只挂一个宿主，
   // item 起的那几个角色节点在这棵树里永远接不到线；Vue 侧的 group 又是按队列渲染子节点的，
   // 空队列一张不出，与 WC 的静态树逐帧比对当场分叉。
-  // 卡片那一帧改由两个适配器各自的用例守：
-  // packages/adapters/vue/tests/feedback-services.spec.ts 与
-  // packages/adapters/web-components/tests/notification-item.spec.ts。
-  // 生命周期（计时、暂停、退场）与 toast 同一台机器，那份行为在 toast 的用例里
+  // 卡片另有一份套件（notification-item.suite.ts），计时、暂停、按压与退场都在那里
   fixture: {
     part: 'root',
     children: [
@@ -49,6 +49,10 @@ export const notificationSuite: ConformanceSuite = {
             'role': 'region',
             'aria-label': 'Notifications',
             'data-placement': 'top',
+            // 缺省是卡片：逐条排开，不叠
+            'data-preset': 'card',
+            'data-stacked': null,
+            'data-expanded': null,
             'data-count': '0',
             'data-empty': '',
           },
@@ -113,7 +117,7 @@ export const notificationSuite: ConformanceSuite = {
       },
     },
     {
-      name: '不给 max：每个位置默认只留 NOTIFICATION_MAX 条，多出来的不再渲染',
+      name: '不给 max：卡片每个位置默认只留 5 条，多出来的不再渲染',
       spec: { apg: APG },
       props: {
         defaultItems: Array.from({ length: NOTIFICATION_MAX + 2 }, (_, i) => ({ id: `n${i}`, placement: 'bottom-end' as const })),
@@ -191,6 +195,81 @@ export const notificationSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: 'preset=toast：没写的几项取轻提示的缺省——落底部居中、叠成一摞、最多 3 条、间距 12',
+      spec: { adr: 'notification-preset' },
+      fixture: () => ({ part: 'root', children: [{ part: 'group' }] }),
+      props: {
+        preset: 'toast',
+        defaultItems: Array.from({ length: 5 }, (_, i) => ({ id: `t${i}` })),
+      },
+      initial: {
+        parts: {
+          root: { 'data-count': '3' },
+          group: {
+            'data-placement': 'bottom',
+            'data-preset': 'toast',
+            'data-stacked': '',
+            'data-expanded': null,
+            'data-count': '3',
+          },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '内联 style 不进归一化快照（快照只收结构与 aria-/data- 属性）',
+          run: ({ doc }) => {
+            const gap = groupEl(doc).style.gap
+            if (gap !== '12px')
+              throw new Error(`轻提示那一摞的间距应为 12px，实际 "${gap}"`)
+          },
+        },
+      ],
+    },
+    {
+      name: 'Escape：叠放的一摞被焦点展开后收起，group 撤下 data-expanded',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['notification.kbd.collapse'],
+      fixture: () => ({ part: 'root', children: [{ part: 'group' }] }),
+      props: { preset: 'toast' },
+      steps: [
+        {
+          kind: 'raw',
+          why: '夹具的 group 里没有卡片可落焦（卡片在 WC 侧是另一个元素），焦点进入这一摞改在 group 上直接派 focusin',
+          run: async ({ doc }) => {
+            // 叠摞的追踪在提交后的微任务里接上
+            await new Promise(resolve => setTimeout(resolve, 0))
+            groupEl(doc).dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+          },
+          expect: { parts: { group: { 'data-stacked': '', 'data-expanded': '' } } },
+        },
+        {
+          kind: 'raw',
+          why: 'Escape 派在展开着的那一摞上：卡片不是层，按键不经焦点所在的节点转发',
+          run: ({ doc }) => {
+            groupEl(doc).dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+          },
+          expect: { parts: { group: { 'data-expanded': null } } },
+        },
+      ],
+    },
+    {
+      name: '预设只管没写的那几项：写了 stacked=false 就逐条排开，写了落位就落在那儿',
+      spec: { adr: 'notification-preset' },
+      fixture: () => ({ part: 'root', children: [{ part: 'group' }] }),
+      props: { preset: 'toast', stacked: false, placement: 'top-end', defaultItems: [FALLBACK] },
+      initial: {
+        parts: {
+          group: {
+            'data-placement': 'top-end',
+            'data-preset': 'toast',
+            'data-stacked': null,
+            'data-count': '1',
+          },
+        },
+      },
     },
   ],
 }

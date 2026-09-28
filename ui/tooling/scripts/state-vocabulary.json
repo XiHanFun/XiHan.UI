@@ -24,7 +24,7 @@
       ]
     },
     "visibility": {
-      "$description": "派生的显隐（没有开合交互、由别的状态算出来）：toast、滚动条、密码明文、回到顶部。",
+      "$description": "派生的显隐（没有开合交互、由别的状态算出来）：滚动条、密码明文、回到顶部。",
       "values": [
         "visible",
         "hidden"
@@ -162,7 +162,7 @@
     "data-error": "异步动作或局部数据源已失败、尚可由作者重试：TreeSelect 懒分支的取子项失败。它与 data-invalid 的校验失败不同，也不复用 tool-call 已落定时专用的 data-errored。",
     "data-errored": "tool-call 这次调用跑砸了：阶段落在 output-error。与 data-settled 成对。",
     "data-expandable": "truncate 的文本超出了容器，给得出展开入口。",
-    "data-expanded": "diff-view 的这段折叠间隙已经展开。",
+    "data-expanded": "已经展开：diff-view 的这段折叠间隙；notification 叠成的一摞被指针或焦点展开，各条按自己的高度排开。",
     "data-first": "field-array 的这一行是第一行。",
     "data-fixed": "这块钉住不随滚动走：layout 的页头与侧栏、table 的吸顶表头、affix 越过判定线后的内容、virtualizer 钉在视口起点的分组标题。layout 的根上同时有页头与侧栏两个开关，各带部件名分开转述。",
     "data-focus": "键盘焦点所在的条目 / 格子。",
@@ -189,7 +189,7 @@
     "data-last": "集合里的最后一个：field-array 的末行、tour 的末步（那颗按钮的语义变成完成）。",
     "data-line-numbers": "code-view 显示行号列。",
     "data-live": "markdown-stream 的这一块还在增长，尚未定稿。",
-    "data-loading": "正在加载、提交，或等外部结果落定：approval、button、image-viewer、infinite-scroll、log、popconfirm、prompt-input、switch、table、tool-call，反馈件的「事情还没完」（notification、toast：字形换成转圈且不自动消失），以及集合件取条目在途（cascader、combobox、listbox、mention、select、transfer、tree、tree-select）。配对 aria-busy。",
+    "data-loading": "正在加载、提交，或等外部结果落定：approval、button、image-viewer、infinite-scroll、log、popconfirm、prompt-input、switch、table、tool-call，反馈件的「事情还没完」（notification：字形换成转圈且不自动消失），以及集合件取条目在途（cascader、combobox、listbox、mention、select、transfer、tree、tree-select）。配对 aria-busy。",
     "data-logo": "matrix-code 的码面上留了 logo 位；皮肤不据此做事，留给作者当选择器。",
     "data-marked": "typography 的这段行内文字被标出：淡底加同族字色。",
     "data-movable": "field-array 允许拖动调整行序。",
@@ -201,7 +201,7 @@
     "data-overflowing": "内容越过了容纳上限：truncate 的文本超出容器正在被省略，tags-input 的标签数越过 max——刚好装满是 data-at-max。",
     "data-passed": "刻度已被滑块越过（slider 的 mark）。",
     "data-pause-on-hover": "marquee 开了悬停暂停。",
-    "data-paused": "carousel / notification / toast 的自动推进已暂停（悬停、页面隐藏或调用 api）；marquee 的滚动被作者受控停住。",
+    "data-paused": "carousel / notification 的自动推进已暂停（悬停、页面隐藏或调用 api）；marquee 的滚动被作者受控停住。",
     "data-placeholder": "显示的是占位文字，不是真值。",
     "data-positioned": "浮层的坐标已经算出来、可以露面；展开头几帧还没算完时不写。",
     "data-pressed": "Space / Enter 或粗指针（触屏）按住期间；与指针 :active 同一副按压面，皮肤写 :is(:active, [data-pressed])。由 Headless 的按压通道投影：button、toggle；其余可按部件随各组件接入。",
@@ -226,6 +226,7 @@
     "data-sider-fixed": "layout 的根节点转述侧栏已固定，供整页布局取用。根上两个固定开关并存，带部件名才分得开。",
     "data-snapped": "轮播回绕刚落定：轨道与条目已无动画地归位到真实页，样式层据此关掉位移过渡，直到下一次翻页才撤。",
     "data-sortable": "table 的这一列可以点表头排序。",
+    "data-stacked": "notification 的这一摞叠放：后到的压在前面，后层按层深收拢，只露出一道边。",
     "data-split": "在相邻块之间画分隔线：list 的条目之间、card 的段之间、table 的列之间、page-header 页头与下方内容之间、layout 各区之间。",
     "data-sticking": "log 正贴着底部跟随新内容，用户往上翻即撤。说的是滚动跟随，不是钉住——钉住走 data-fixed。",
     "data-streaming": "message-feed 的这一条、reasoning 的思考正在流式增长。",

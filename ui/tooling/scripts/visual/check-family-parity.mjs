@@ -230,26 +230,16 @@ const FAMILIES = [
     ],
   },
   {
-    // 反馈面：sheet 三件套
-    name: '反馈面族',
-    backlog: true,
-    members: ['toast', 'notification'],
-    parts: [
-      // toast 的面就是 root，使用者槽不带部件段（--xh-toast-border）；notification 的面是 item（--xh-notification-item-border）
-      { partBy: { toast: 'root', notification: 'item' }, slotBy: { toast: '' }, state: '', props: ['border', 'background', 'box-shadow'] },
-    ],
-  },
-  {
-    // Feedback 三家的排版与指示符：标题 14/600、说明 13/fg-muted，指示符统一 md 档
+    // Feedback 两家的排版与指示符：标题 14/600、说明 13/fg-muted，指示符统一 md 档
     name: 'Feedback 族',
     backlog: true,
-    members: ['alert', 'toast', 'notification'],
+    members: ['alert', 'notification'],
     parts: [
       // notification 的标题 / 说明部件叫 item-title / item-description，使用者槽却按 title / description 取名
       // （--xh-notification-title-*，check-spacing-slots 已登记），槽名的部件段按 slotBy 归一
-      { partBy: { alert: 'title', toast: 'title', notification: 'item-title' }, slotBy: { notification: 'title' }, state: '', props: ['font-size', 'font-weight'] },
-      { partBy: { alert: 'description', toast: 'description', notification: 'item-description' }, slotBy: { notification: 'description' }, state: '', props: ['font-size', 'color'] },
-      { partBy: { alert: 'root', toast: 'root', notification: 'item' }, state: '', props: ['--xh-icon-size'] },
+      { partBy: { alert: 'title', notification: 'item-title' }, slotBy: { notification: 'title' }, state: '', props: ['font-size', 'font-weight'] },
+      { partBy: { alert: 'description', notification: 'item-description' }, slotBy: { notification: 'description' }, state: '', props: ['font-size', 'color'] },
+      { partBy: { alert: 'root', notification: 'item' }, state: '', props: ['--xh-icon-size'] },
     ],
   },
   {
@@ -534,7 +524,7 @@ function normalize(value, comp) {
  * 按部件分别登记（partBy）的条目里，各成员的槽名部件段必然是自己那个部件（check-spacing-slots 要求槽名的
  * 部件段与规则所在部件一致：date-picker 的行是 time-item，别家是 item），比对时把这一段也归一成 <p>，
  * 槽名的后缀仍逐字比。槽名部件段与部件名不同的成员（notification 的 item-title 用 --xh-notification-title-*）
- * 由条目的 slotBy 指明那一段；slotBy 给空串表示这个成员的槽名不带部件段（toast 的面就是 root）。
+ * 由条目的 slotBy 指明那一段；slotBy 给空串表示这个成员的槽名不带部件段（tree 的面就是 root）。
  */
 function normalizePart(value, part) {
   // 槽名不带部件段的成员（面就是 root）：把 <p> 段补进去，与带部件段的成员同形

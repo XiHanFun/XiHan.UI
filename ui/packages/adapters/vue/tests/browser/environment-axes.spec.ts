@@ -202,19 +202,19 @@ describe('打印档', () => {
 
 describe('安全区', () => {
   it('系统没让出任何一段时，贴边就是贴边槽本来的取值', () => {
-    // 通知摞是一整面视口大小的定位面，贴边靠 padding；轻提示摞是定宽的堆叠面，贴边靠落位那一角的 inset
+    // 逐条排开的一摞是一整面视口大小的定位面，贴边靠 padding；叠放的一摞是定宽的堆叠面，贴边靠落位那一角的 inset
     mount(`
-      <div data-scope="notification" data-part="group"></div>
-      <div data-scope="toast" data-part="group" data-placement="top-start"></div>
+      <div data-scope="notification" data-part="group" data-preset="card"></div>
+      <div data-scope="notification" data-part="group" data-preset="toast" data-stacked data-placement="top-start"></div>
     `)
-    const group = styleOf('[data-scope="notification"][data-part="group"]')
+    const group = styleOf('[data-scope="notification"][data-part="group"][data-preset="card"]')
     // --xh-space-6 = 24px；env() 在没有安全区的视口上恒为 0，max() 取的是贴边槽那一头
     expect(group.paddingTop).toBe('24px')
     expect(group.paddingBottom).toBe('24px')
     expect(group.paddingLeft).toBe('24px')
     expect(group.paddingRight).toBe('24px')
-    // --xh-space-4 = 16px
-    const toast = styleOf('[data-scope="toast"][data-part="group"]')
+    // 轻提示预设的贴边 --xh-space-4 = 16px
+    const toast = styleOf('[data-scope="notification"][data-part="group"][data-stacked]')
     expect(toast.top).toBe('16px')
     expect(toast.left).toBe('16px')
   })
@@ -223,24 +223,26 @@ describe('安全区', () => {
     // 四周各占一段：上下比贴边宽，左右比贴边窄
     await emulateSafeArea({ top: 47, bottom: 59, left: 13, right: 17 })
     mount(`
-      <div data-scope="notification" data-part="group"></div>
-      <div data-scope="toast" data-part="group" data-placement="top-start"></div>
-      <div data-scope="toast" data-part="group" data-placement="bottom-end"></div>
+      <div data-scope="notification" data-part="group" data-preset="card"></div>
+      <div data-scope="notification" data-part="group" data-preset="toast" data-stacked data-placement="top-start"></div>
+      <div data-scope="notification" data-part="group" data-preset="toast" data-stacked data-placement="bottom-end"></div>
       <div data-scope="back-top" data-part="root"></div>
       <div data-scope="loading-bar" data-part="root"></div>
     `)
-    const notification = styleOf('[data-scope="notification"][data-part="group"]')
+    const notification = styleOf('[data-scope="notification"][data-part="group"][data-preset="card"]')
     // 上下让到系统那一段外面；左右两段都比 24px 窄，贴边槽那一头仍然赢
     expect(notification.paddingTop).toBe('47px')
     expect(notification.paddingBottom).toBe('59px')
     expect(notification.paddingLeft).toBe('24px')
     expect(notification.paddingRight).toBe('24px')
 
-    // 轻提示摞只让落位那一角的两条边：贴边 --xh-toast-inset 缺省 --xh-space-4 = 16px
-    const toastTopStart = styleOf('[data-scope="toast"][data-placement="top-start"]')
+    // 叠放的一摞只让落位那一角的两条边：贴边 --xh-notification-inset 在轻提示预设下缺省 --xh-space-4 = 16px。
+    // 行内那条边与逐条排开的一摞同一个口径——安全区只有物理方向的名字，起止两侧同取较宽的那一段（17px），
+    // rtl 下落位掉头也不会被切掉
+    const toastTopStart = styleOf('[data-scope="notification"][data-stacked][data-placement="top-start"]')
     expect(toastTopStart.top).toBe('47px')
-    expect(toastTopStart.left).toBe('16px')
-    const toastBottomEnd = styleOf('[data-scope="toast"][data-placement="bottom-end"]')
+    expect(toastTopStart.left).toBe('17px')
+    const toastBottomEnd = styleOf('[data-scope="notification"][data-stacked][data-placement="bottom-end"]')
     expect(toastBottomEnd.bottom).toBe('59px')
     expect(toastBottomEnd.right).toBe('17px')
 

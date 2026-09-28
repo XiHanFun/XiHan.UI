@@ -3,13 +3,13 @@
 //
 // 从 effect 里调用时正处在 React 的提交阶段，mount-host 的 flushSync 只能把宿主树排队，
 // 靠宿主渲染体接端口就会把第一条命令当成「宿主没挂」丢掉。所以机器改由服务自持：
-// 工厂里建好即 mount 并接上端口，createToastService() 返回时命令就能按序到达，宿主只负责渲染。
+// 工厂里建好即 mount 并接上端口，createNotificationService() 返回时命令就能按序到达，宿主只负责渲染。
 // 这条钉的正是这个契约：Vue 侧宿主的 mounted 会被追加到调用方 post-flush 队列的队尾，
 // 三端要在「首次调用在挂载回调里」这一型上同构。
 import { act, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { createDialogService, createLoadingBarService, createNotificationService, createToastService } from '../src'
+import { createDialogService, createLoadingBarService, createNotificationService } from '../src'
 
 const disposers: Array<() => void> = []
 
@@ -56,9 +56,9 @@ async function mountPageWhoseEffectRuns(fn: () => void): Promise<void> {
 }
 
 describe('业务组件 effect 里首次调用命令式服务', () => {
-  it('toast：不抛 SEND_BEFORE_MOUNT，提示最终渲染出来', async () => {
+  it('轻提示预设：不抛 SEND_BEFORE_MOUNT，提示最终渲染出来', async () => {
     await mountPageWhoseEffectRuns(() => {
-      const toast = createToastService()
+      const toast = createNotificationService({ preset: 'toast' })
       disposers.push(() => toast.dispose())
       toast.danger('授权被拒绝')
     })

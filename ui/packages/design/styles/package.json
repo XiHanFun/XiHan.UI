@@ -180,7 +180,6 @@
     "./timeline.css": "./css/timeline.css",
     "./timer.css": "./css/timer.css",
     "./timestamp.css": "./css/timestamp.css",
-    "./toast.css": "./css/toast.css",
     "./toggle-group.css": "./css/toggle-group.css",
     "./toggle.css": "./css/toggle.css",
     "./tone.css": "./css/tone.css",

@@ -113,7 +113,7 @@ interface DomSnapshot {
 
 计算样式不一致会被令牌快照拦截，结构错位会被一致性套件拦截，但值全部正确、外观仍然不同这一档没有其他判据覆盖：层叠顺序、私有槽的覆盖时机、两条规则的先后，只在最终位图上显现。像素基线负责这一档。
 
-受管范围是母组件 `button` / `text-field` / `select` / `menu` / `popover` / `dialog` / `drawer` / `toast`，每件在五组轴上各出一张：`light×comfortable`、`dark×comfortable`、`light×compact`、`dark×compact`、`dark×more`。前四格是主题与密度的笛卡尔积；第五格是层叠最脆弱的一格：两块 `contrast` 取值块必须排在两个 `mode` 块之后，顺序错误即静默回归。`motion=reduce` 不在其中：静止帧与默认档没有差别，该轴由令牌快照与 `check-infinite-motion` 承担。
+受管范围是母组件 `button` / `text-field` / `select` / `menu` / `popover` / `dialog` / `drawer` / `notification`（轻提示预设的一条），每件在五组轴上各出一张：`light×comfortable`、`dark×comfortable`、`light×compact`、`dark×compact`、`dark×more`。前四格是主题与密度的笛卡尔积；第五格是层叠最脆弱的一格：两块 `contrast` 取值块必须排在两个 `mode` 块之后，顺序错误即静默回归。`motion=reduce` 不在其中：静止帧与默认档没有差别，该轴由令牌快照与 `check-infinite-motion` 承担。
 
 基线文件在 `packages/adapters/vue/tests/browser/__screenshots__/` 下，具体数量以该目录为准。
 

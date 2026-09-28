@@ -29,7 +29,7 @@ export interface A11yRunOptions extends AxeCheckOptions {
 
 async function mount(harness: AdapterHarness, suite: ConformanceSuite, props: Readonly<Record<string, unknown>>, tree: ConformanceSuite['fixture']): Promise<ApplyContext> {
   const { root } = await harness.mount({ component: suite.component, props, tree })
-  return { harness, root, doc: root.ownerDocument, component: suite.component, anatomy: suite.anatomy }
+  return { harness, root, doc: root.ownerDocument, component: suite.anatomy.name, anatomy: suite.anatomy }
 }
 
 /**

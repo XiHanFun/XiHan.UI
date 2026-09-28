@@ -135,7 +135,6 @@ const PRESSABLE = {
   'popover': ['close-trigger', 'trigger'],
   // 末行三颗文字按钮与角落的叉都接了 Action Control，同走家族按压块
   'tour': ['close-trigger', 'prev-trigger', 'next-trigger', 'skip-trigger'],
-  'toast': ['close-trigger', 'action-trigger'],
   'alert': ['close-trigger'],
   'floating-panel': ['close-trigger', 'trigger', 'window-state-trigger'],
   // 开合触发器与两颗动作钮都接了 Action Control text 档，同走家族按压块

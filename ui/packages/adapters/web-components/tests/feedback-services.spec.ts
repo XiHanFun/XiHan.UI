@@ -6,7 +6,6 @@ import {
   createDialogService,
   createLoadingBarService,
   createNotificationService,
-  createToastService,
 } from '../src/services'
 
 /** 元素的更新是异步批处理的，让出几拍等它落定。 */
@@ -28,22 +27,22 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-describe('createToastService', () => {
-  it('模块作用域一行调用即渲染出条子', async () => {
-    const toast = createToastService()
+describe('createNotificationService 的轻提示预设', () => {
+  it('模块作用域一行调用即渲染出轻提示', async () => {
+    const toast = createNotificationService({ preset: 'toast' })
     toast.success('已保存')
     await tick()
     expect(document.body.textContent).toContain('已保存')
-    expect(partOf('toast', 'root')?.getAttribute('data-tone')).toBe('success')
+    expect(partOf('notification', 'item')?.getAttribute('data-tone')).toBe('success')
     toast.dispose()
   })
 
-  it('落位是整个服务的口径，一个服务只有一摞', async () => {
-    const toast = createToastService({ placement: 'bottom-end' })
+  it('没写逐条落位时整摞落在服务的 placement，一个位置一摞', async () => {
+    const toast = createNotificationService({ preset: 'toast', placement: 'bottom-end' })
     toast.info('一条')
     toast.info('两条')
     await tick()
-    const groups = [...document.querySelectorAll('[data-scope="toast"][data-part="group"]')]
+    const groups = [...document.querySelectorAll('[data-scope="notification"][data-part="group"]')]
     expect(groups.length).toBe(1)
     expect(groups[0]!.getAttribute('data-placement')).toBe('bottom-end')
     expect(groups[0]!.getAttribute('data-count')).toBe('2')
@@ -51,7 +50,7 @@ describe('createToastService', () => {
   })
 
   it('loading 转 success 就地改写同一条', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     const id = toast.loading('上传中')
     await tick()
     expect(document.body.textContent).toContain('上传中')
@@ -63,7 +62,7 @@ describe('createToastService', () => {
   })
 
   it('max：超出上限挤掉最旧的那条', async () => {
-    const toast = createToastService({ max: 2 })
+    const toast = createNotificationService({ preset: 'toast', max: 2 })
     toast.info('第一条')
     toast.info('第二条')
     toast.info('第三条')
@@ -74,36 +73,36 @@ describe('createToastService', () => {
   })
 
   it('不写 max 缺省留 3 条：连发 20 条只剩最新的三条', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     for (let i = 1; i <= 20; i++)
       toast.info(`第 ${i} 条`, { duration: 0 })
     await tick()
-    const titles = [...document.querySelectorAll('[data-scope="toast"][data-part="title"]')].map(el => el.textContent)
+    const titles = [...document.querySelectorAll('[data-scope="notification"][data-part="item-title"]')].map(el => el.textContent)
     expect(titles).toEqual(['第 18 条', '第 19 条', '第 20 条'])
-    expect(document.querySelector('[data-scope="toast"][data-part="group"]')?.getAttribute('data-count')).toBe('3')
+    expect(document.querySelector('[data-scope="notification"][data-part="group"]')?.getAttribute('data-count')).toBe('3')
     toast.dispose()
   })
 
   it('默认出叉，closable=false 显式去掉关闭入口', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     toast.success('已保存')
     await tick()
-    expect(partOf('toast', 'close-trigger')).not.toBeNull()
+    expect(partOf('notification', 'item-close-trigger')).not.toBeNull()
     toast.dismissAll()
     await wait(400)
 
     toast.danger('导出失败', { duration: 0, closable: false })
     await tick()
-    expect(partOf('toast', 'close-trigger')).toBeNull()
+    expect(partOf('notification', 'item-close-trigger')).toBeNull()
     toast.dispose()
   })
 
   it('行内动作：给了文案才出那颗钮，按下去查回调表', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     let pressed = 0
     toast.info('已删除', { duration: 0, actionLabel: '撤销', onAction: () => void (pressed += 1) })
     await tick()
-    const action = partOf('toast', 'action-trigger')
+    const action = partOf('notification', 'item-action-trigger')
     expect(action?.textContent).toBe('撤销')
     action!.click()
     await tick()
@@ -112,11 +111,11 @@ describe('createToastService', () => {
   })
 
   it('dispose 撤掉宿主容器', async () => {
-    const toast = createToastService()
+    const toast = createNotificationService({ preset: 'toast' })
     toast.success('一条')
     await tick()
     toast.dispose()
-    expect(document.querySelectorAll('[data-scope="toast"]').length).toBe(0)
+    expect(document.querySelectorAll('[data-scope="notification"]').length).toBe(0)
     expect(() => toast.success('再来')).toThrow('已卸载')
   })
 })

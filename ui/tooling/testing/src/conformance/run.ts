@@ -96,7 +96,7 @@ async function recordMountedTrace(
     harness,
     root,
     doc: root.ownerDocument,
-    component: suite.component,
+    component: suite.anatomy.name,
     anatomy: suite.anatomy,
   }
   const frames: DomSnapshot[] = []
@@ -117,7 +117,7 @@ async function recordMountedTrace(
     if (owned()) {
       await harness.unmount()
       await settleTeardown(harness, ctx.doc)
-      assertTraceCleared(ctx.doc, suite.component, harness.adapterName)
+      assertTraceCleared(ctx.doc, ctx.component, harness.adapterName)
     }
   }
   return frames

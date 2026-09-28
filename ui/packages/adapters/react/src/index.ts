@@ -1736,6 +1736,7 @@ export {
   XhNotificationItem,
   XhNotificationItemActionTrigger,
   XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
   XhNotificationItemProgress,
@@ -1749,6 +1750,7 @@ export type {
   XhNotificationGroupProps,
   XhNotificationItemActionTriggerProps,
   XhNotificationItemCloseTriggerProps,
+  XhNotificationItemContentProps,
   XhNotificationItemDescriptionProps,
   XhNotificationItemIndicatorProps,
   XhNotificationItemProgressProps,
@@ -2739,30 +2741,6 @@ export { useTimer } from './components/timer/use-timer'
 export type { TimerContext } from './components/timer/use-timer'
 export { XhTimestamp } from './components/timestamp/timestamp'
 export type { XhTimestampProps } from './components/timestamp/timestamp'
-export { useToastContext } from './components/toast/context'
-export {
-  XhToastActionTrigger,
-  XhToastCloseTrigger,
-  XhToastContent,
-  XhToastDescription,
-  XhToastIndicator,
-  XhToastProgress,
-  XhToastRoot,
-  XhToastTitle,
-} from './components/toast/toast'
-export type {
-  ToastRootSlotProps,
-  XhToastActionTriggerProps,
-  XhToastCloseTriggerProps,
-  XhToastContentProps,
-  XhToastDescriptionProps,
-  XhToastIndicatorProps,
-  XhToastProgressProps,
-  XhToastRootProps,
-  XhToastTitleProps,
-} from './components/toast/toast'
-export { useToast } from './components/toast/use-toast'
-export type { ToastContext } from './components/toast/use-toast'
 export { useToggleGroupContext } from './components/toggle-group/context'
 export {
   XhToggleGroupHiddenInput,
@@ -3095,12 +3073,3 @@ export type {
   NotificationTranslationsSource,
 } from './services/notification-service'
 export type { XhConfigSource } from './services/service-config'
-export { createToastService } from './services/toast-service'
-export type {
-  ToastCreateOptions,
-  ToastMessageOptions,
-  ToastPromiseOptions,
-  ToastService,
-  ToastServiceOptions,
-  ToastTranslationsSource,
-} from './services/toast-service'

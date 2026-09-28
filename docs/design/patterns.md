@@ -11,7 +11,7 @@
 | Collection Item | Menu item、Listbox item、Tree node、Table row、Transfer item、SideNav link、Tabs line trigger、Anchor / Breadcrumb link、NavigationMenu / Menubar trigger | highlighted、按集合语境（`overlay / page / nav`）的 selected / current 标记、pressed 只换面、disabled、缩进、指示器 |
 | Surface | Card、Alert、Panel、CodeView、DiffView、Log、JsonViewer、ToolCall、Reasoning、Approval、QuestionFlow、Accordion / Toolbar / PageHeader 的 outline 档、各类容器面 | 边界三选一、raised 逐部件登记、标题与说明排版、内衬只走 `--xh-surface-*`、层级 |
 | Overlay | Popover、Menu、Select content、Dialog、Drawer、Tooltip、NavigationMenu content、日期 / 时间面板 | Portal、定位、遮罩、材质按内容判定、进退场按锚定关系、浮层滚动面、焦点归还 |
-| Feedback | Toast、Notification、Progress、Skeleton | 状态语气、sheet 面描边、计时、暂停、消除、加载与即时反馈 |
+| Feedback | Notification（卡片与轻提示两种预设）、Progress、Skeleton | 状态语气、sheet 面描边、计时、暂停、消除、加载与即时反馈 |
 
 一个组件可以组合多个家族，但每个部件只有一个主要身份。归族的判据是功能：用户直接触发动作 → Action Control；输入或选择值 → Field Chrome；在集合中导航、选择或操作条目 → Collection Item；长期承载一组内容 → Surface；脱离文档流临时覆盖页面 → Overlay；表达任务过程或结果 → Feedback。
 
@@ -48,7 +48,7 @@
 | [导航](/components/#导航) | 页级切换用 Tabs，站内层级用 SideNav / NavigationMenu / Menubar，位置用 Breadcrumb / Anchor / Steps，右键与更多用 ContextMenu / Menu |
 | [数据录入](/components/#数据录入) | 少于七个互斥项用 RadioGroup，更多用 Select；可输入的候选用 Combobox；多选用 CheckboxGroup 或 TagsInput；日期优先分段输入（DateField）再加日历（DatePicker）；整表用 Form + Field 承担校验与重置 |
 | [数据展示](/components/#数据展示) | 记录用 Table，层级用 Tree，键值对用 Descriptions，长列表用 Virtualizer / InfiniteScroll，状态用 Tag / Badge |
-| [反馈](/components/#反馈) | 页内静态提示用 Alert，操作结果用 Toast（短、自动消失）或 Notification（可停留、可动作），进行中用 Progress / Spinner / Skeleton / LoadingBar |
+| [反馈](/components/#反馈) | 页内静态提示用 Alert，操作结果用 Notification 的轻提示预设（短、自动消失），主动推送的消息用它的卡片预设（可停留、可动作），进行中用 Progress / Spinner / Skeleton / LoadingBar |
 | [浮层](/components/#浮层) | 轻量补充用 Tooltip / HoverCard / Popover，需要确认用 Popconfirm，需要打断用 Dialog，侧边任务流用 Drawer，命令入口用 Command |
 | [AI 对话](/components/#ai-对话) | 输入用 PromptInput，流式正文用 MarkdownStream / MessageFeed，工具与推理用 ToolCall / Reasoning，审批与提问用 Approval / QuestionFlow |
 

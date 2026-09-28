@@ -11,12 +11,12 @@ import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
+  XhNotificationItem,
   XhTagsInputRoot,
   XhTextFieldRoot,
   XhTimeFieldRoot,
   XhTimePickerRoot,
   XhTimerRoot,
-  XhToastRoot,
   XhToggleGroupRoot,
   XhToolbarRoot,
   XhToolCallRoot,
@@ -78,11 +78,12 @@ const CASES: RootCase[] = [
     leakAttrs: ['format', 'precision'],
   },
   {
-    name: 'toast',
-    Root: XhToastRoot as ComponentType<Record<string, unknown>>,
-    schemaProps: { duration: 5000, tone: 'info' },
-    token: '--xh-toast-bg',
-    leakAttrs: ['duration', 'tone'],
+    // 单条通知卡片：轻提示与卡片同一个根，作者写在它上面的属性一样要落到卡片上
+    name: 'notification-item',
+    Root: XhNotificationItem as ComponentType<Record<string, unknown>>,
+    schemaProps: { duration: 5000, tone: 'info', preset: 'toast' },
+    token: '--xh-notification-item-bg',
+    leakAttrs: ['duration', 'tone', 'preset'],
   },
   {
     name: 'toggle-group',

@@ -295,7 +295,7 @@ describe('float-button 开合', () => {
     outside.remove()
   })
 
-  it('后开的 Drawer/Popover 层先消解；Toast 反馈节点不成为可消解父层', async () => {
+  it('后开的 Drawer/Popover 层先消解；通知反馈节点不成为可消解父层', async () => {
     const rig = makeRig()
     ;(rig.trigger().onClick as () => void)()
     await armDismissLayer()
@@ -328,15 +328,15 @@ describe('float-button 开合', () => {
 
     ;(rig.trigger().onClick as () => void)()
     await armDismissLayer()
-    const toast = document.createElement('div')
-    toast.dataset.scope = 'toast'
-    document.body.append(toast)
+    const notice = document.createElement('div')
+    notice.dataset.scope = 'notification'
+    document.body.append(notice)
     expect(rig.registry.list()).toHaveLength(1)
-    pointerDown(toast)
+    pointerDown(notice)
     expect(rig.api().open).toBe(false)
     expect(rig.registry.list()).toHaveLength(0)
     overlay.remove()
-    toast.remove()
+    notice.remove()
   })
 
   it('受控 open：点一下只发意图，父写回才展开', () => {

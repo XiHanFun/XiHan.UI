@@ -5,7 +5,7 @@
 
 // @xihan-ui/web-components/services —— 命令式反馈服务。
 //
-// 与 Vue 侧同名同形：四个 create*Service 工厂，句柄上的命令在任意模块作用域可调
+// 与 Vue 侧同名同形：三个 create*Service 工厂（轻提示是通知服务的 preset: 'toast'），句柄上的命令在任意模块作用域可调
 // （路由守卫、请求拦截器、store），不要求调用点在文档树的某一处。
 //
 // 与 Vue 侧的两点不同都源自 WC 的身份：
@@ -16,7 +16,6 @@
 export { createDialogService } from './services/dialog-service'
 export { createLoadingBarService } from './services/loading-bar-service'
 export { createNotificationService } from './services/notification-service'
-export { createToastService } from './services/toast-service'
 export type {
   AlertOptions,
   ConfirmOptions,
@@ -32,9 +31,4 @@ export type {
   NotificationService,
   NotificationServiceOptions,
   ServiceHostOptions,
-  ToastCreateOptions,
-  ToastMessageOptions,
-  ToastPromiseOptions,
-  ToastService,
-  ToastServiceOptions,
 } from './services/types'

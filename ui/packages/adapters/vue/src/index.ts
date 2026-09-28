@@ -772,13 +772,14 @@ export {
   XhNotificationItem,
   XhNotificationItemActionTrigger,
   XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
   XhNotificationItemProgress,
   XhNotificationItemTitle,
   XhNotificationRoot,
 } from './components/notification/notification'
-export type { NotificationGroupSlotProps, NotificationRootSlotProps } from './components/notification/notification'
+export type { NotificationGroupSlotProps, NotificationItemSlotProps, NotificationRootSlotProps } from './components/notification/notification'
 export { useNotification, useNotificationItem } from './components/notification/use-notification'
 export { XhNumberAnimation } from './components/number-animation/number-animation'
 export type { NumberAnimationSlotProps } from './components/number-animation/number-animation'
@@ -1206,19 +1207,6 @@ export { useTimer } from './components/timer/use-timer'
 export type { TimerContext } from './components/timer/use-timer'
 export { XhTimestamp } from './components/timestamp/timestamp'
 export {
-  XhToastActionTrigger,
-  XhToastCloseTrigger,
-  XhToastContent,
-  XhToastDescription,
-  XhToastIndicator,
-  XhToastProgress,
-  XhToastRoot,
-  XhToastTitle,
-} from './components/toast/toast'
-export type { ToastRootSlotProps } from './components/toast/toast'
-export { useToast } from './components/toast/use-toast'
-export type { ToastContext } from './components/toast/use-toast'
-export {
   XhToggleGroupHiddenInput,
   XhToggleGroupItem,
   XhToggleGroupRoot,
@@ -1385,9 +1373,7 @@ export type { AlertOptions, ConfirmOptions, DialogActionError, DialogBody, Dialo
 export { createLoadingBarService } from './services/loading-bar-service'
 export type { LoadingBarService, LoadingBarServiceOptions } from './services/loading-bar-service'
 export { createNotificationService } from './services/notification-service'
-export type { NotificationMessageOptions, NotificationPromiseOptions, NotificationService, NotificationServiceOptions } from './services/notification-service'
-export { createToastService } from './services/toast-service'
-export type { ToastMessageOptions, ToastService, ToastServiceOptions } from './services/toast-service'
+export type { NotificationCreateOptions, NotificationMessageOptions, NotificationPromiseOptions, NotificationService, NotificationServiceOptions } from './services/notification-service'
 // 使用者写 upload 实现与远程附件时要用的形状，从 headless 转发，docs 与应用不必另装依赖
 export type {
   FileUploadFile,

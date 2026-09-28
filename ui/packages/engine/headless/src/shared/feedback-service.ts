@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/** 带合并计数的反馈标题；Toast 与 Notification 使用同一条显示规则。 */
+/** 带合并计数的反馈标题；通知的两种预设使用同一条显示规则。 */
 export interface FeedbackServiceTitleRecord {
   title?: string
   count?: number

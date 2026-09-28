@@ -12,14 +12,12 @@ import type {
   NotificationDedupe,
   NotificationOptions,
   NotificationPlacement,
+  NotificationPreset,
   NotificationTranslations,
-  ToastOptions,
-  ToastPlacement,
-  ToastTranslations,
 } from '@xihan-ui/headless'
 
 /**
- * 四个服务共有的入参。
+ * 三个服务共有的入参。
  *
  * 这一侧没有 config：全局配置沿 DOM 祖先链解析，服务的宿主容器就挂在文档里，
  * 语言、尺寸、浮层落点直接由 setXhConfig 与外层 `<xh-config>` 说了算。
@@ -29,69 +27,12 @@ export interface ServiceHostOptions {
   target?: HTMLElement
 }
 
-// —— 轻提示 ——
-
-/**
- * create 的入参。`actionLabel` 是提示条上行内动作按钮的文案，`onAction` 是按下它执行的动作：
- * 回调不进入队列记录（该记录要能被整份替换、序列化、比对），服务按 id 单独保存一张表。
- */
-export interface ToastCreateOptions extends ToastOptions {
-  onAction?: () => void
-}
-
-/** 语气糖的入参：只差 tone / loading，其余同 create。 */
-export type ToastMessageOptions = Omit<ToastCreateOptions, 'tone' | 'loading' | 'title'>
-
-/** promise 三态的文案：成功与失败可以给函数，拿到结果再拼话。 */
-export interface ToastPromiseOptions<T> extends Omit<ToastMessageOptions, 'duration'> {
-  loading: string
-  success: string | ((value: T) => string)
-  error: string | ((reason: unknown) => string)
-}
-
-export interface ToastServiceOptions extends ServiceHostOptions {
-  /** 堆叠区的位置，默认 'bottom'。 */
-  placement?: ToastPlacement
-  /** 最多同时留几条，默认 3；超出先挤低优先级的，同级里挤最旧的。 */
-  max?: number
-  /** 重复怎么算，默认 'id'；给 'content' 则同一句话合并成一条并计数。 */
-  dedupe?: NotificationDedupe
-  /** 摞内间距（px），默认 12。 */
-  gap?: number
-  duration?: number
-  pauseOnPageIdle?: boolean
-  /** toast 部件的文案（关闭按钮的读屏名等）。 */
-  toastTranslations?: Partial<ToastTranslations>
-}
-
-export interface ToastService {
-  /** 入队并返回 id；同 id 已存在则就地改写，合并掉的返回被并进的那一条。 */
-  create: (options?: ToastCreateOptions) => string
-  update: (id: string, options: Partial<ToastOptions>) => void
-  /** 立刻从队列里删掉，不播退场动画。条子自己的关闭按钮先播退场动画再移出。 */
-  dismiss: (id: string) => void
-  dismissAll: () => void
-  info: (message: string, options?: ToastMessageOptions) => string
-  success: (message: string, options?: ToastMessageOptions) => string
-  warning: (message: string, options?: ToastMessageOptions) => string
-  danger: (message: string, options?: ToastMessageOptions) => string
-  /** 返回 id，之后用 update(id, { loading: false, tone: 'success', title: … }) 收尾。 */
-  loading: (message: string, options?: ToastMessageOptions) => string
-  /**
-   * 先弹一条 loading，Promise 落定后就地改写成 success / danger。
-   * 返回那一条的 id；Promise 的结果原样交回给调用方，拒绝也照旧拒绝。
-   */
-  promise: <T>(input: Promise<T> | (() => Promise<T>), options: ToastPromiseOptions<T>) => Promise<T>
-  /** 暂停当前堆叠的计时，'service' 这一路与指针、焦点并存。 */
-  pauseAll: () => void
-  resumeAll: () => void
-  /** 撤掉宿主容器并停机。 */
-  dispose: () => void
-}
-
 // —— 通知 ——
 
-/** 同 toast 的处置：文案进记录，回调按 id 存服务侧的表。 */
+/**
+ * create 的入参。`actionLabel` 是卡片上行内动作按钮的文案，`onAction` 是按下它执行的动作：
+ * 回调不进入队列记录（该记录要能被整份替换、序列化、比对），服务按 id 单独保存一张表。
+ */
 export interface NotificationCreateOptions extends NotificationOptions {
   onAction?: () => void
 }
@@ -106,24 +47,31 @@ export interface NotificationPromiseOptions<T> extends Omit<NotificationMessageO
 }
 
 export interface NotificationServiceOptions extends ServiceHostOptions {
-  /** 默认落位，默认 bottom-end；单条可用 options.placement 覆盖。 */
+  /** 形态预设，默认 card；轻提示传 'toast'。决定下面几项没写时的缺省值与卡片排版。 */
+  preset?: NotificationPreset
+  /** 默认落位：card 为 bottom-end，toast 为 bottom；单条可用 options.placement 覆盖。 */
   placement?: NotificationPlacement
-  /** 每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的。默认 5；给 Infinity 即不限。 */
+  /** 每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的：card 为 5、toast 为 3；给 Infinity 即不限。 */
   max?: number
-  /** 重复怎么算，默认 'id'。 */
+  /** 重复怎么算，默认 'id'；给 'content' 则同一句话合并成一条并计数。 */
   dedupe?: NotificationDedupe
-  /** 同一堆叠内的间距（px），默认 16。 */
+  /** 同一堆叠内的间距（px）：card 为 16、toast 为 12。 */
   gap?: number
+  /** 单条未写 duration 时的停留毫秒：card 为 5000、toast 为 4000。 */
   duration?: number
+  /** 同一位置的几条叠成一摞：card 默认不叠，toast 默认叠。 */
+  stacked?: boolean
+  /** 页面切到后台时暂停计时：card 默认关闭，toast 默认开启。 */
   pauseOnPageIdle?: boolean
   /** 通知的文案：堆叠区的读屏名与卡片上关闭按钮的读屏名，统一在一个桶中。 */
   translations?: Partial<NotificationTranslations>
 }
 
 export interface NotificationService {
-  /** 入队并返回 id；同 id 已存在则就地改写，位置不动。 */
+  /** 入队并返回 id；同 id 已存在则就地改写，位置不动；合并掉的返回被并进的那一条。 */
   create: (options?: NotificationCreateOptions) => string
   update: (id: string, options: Partial<NotificationOptions>) => void
+  /** 立刻从队列里删掉，不播退场动画。卡片自己的关闭按钮先播退场动画再移出。 */
   dismiss: (id: string) => void
   dismissAll: () => void
   info: (title: string, options?: NotificationMessageOptions) => string

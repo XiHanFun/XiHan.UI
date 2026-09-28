@@ -3,11 +3,9 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 全局命令式通知服务：自带一个挂到 body 的宿主应用与默认渲染模板。
-//
-// 通知常常不是从组件树里发出来的——推送连接的回调、后台任务的收尾、拦截器里的
-// 一条系统消息，调用点都在组件之外。要它们各自去找一份队列上下文并不现实，
-// 所以队列由本服务持有，业务代码只管发。
+// 全局命令式通知服务：自带一个挂到 body 的宿主应用与默认渲染模板，
+// info/success 等命令在任意模块作用域可调（请求拦截器、推送回调、store），
+// 不要求调用点在组件树内。卡片与轻提示是同一个服务的两种预设，preset 在创建时定下。
 //
 // 队列要长在页面结构里（比如通知中心那一栏自己排版）时，用组件形态的
 // XhNotificationRoot，那是另一条路，两者不共享队列。
@@ -15,6 +13,7 @@ import type {
   NotificationDedupe,
   NotificationOptions,
   NotificationPlacement,
+  NotificationPreset,
   NotificationTranslations,
   ResolvedNotification,
 } from '@xihan-ui/headless'
@@ -22,11 +21,12 @@ import type { App, MaybeRefOrGetter, VNode } from 'vue'
 import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/core'
 import { connectNotification, createFeedbackServiceController, notificationMachine, resolveFeedbackServiceTitle } from '@xihan-ui/headless'
-import { computed, createApp, defineComponent, Fragment, h, shallowRef, toValue } from 'vue'
+import { computed, createApp, defineComponent, Fragment, h, ref, shallowRef, toValue } from 'vue'
 import {
   XhNotificationItem,
   XhNotificationItemActionTrigger,
   XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
@@ -37,15 +37,21 @@ import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
 export interface NotificationServiceOptions {
-  /** 默认落位，默认 bottom-end；单条可用 options.placement 覆盖。 */
+  /** 形态预设，默认 card；轻提示传 'toast'。决定下面几项没写时的缺省值与卡片排版。 */
+  preset?: NotificationPreset
+  /** 默认落位：card 为 bottom-end，toast 为 bottom；单条可用 options.placement 覆盖。 */
   placement?: NotificationPlacement
-  /** 每个位置最多同时保留几条，超出时先移除低优先级的、同级中移除最旧的。默认 5；传 Infinity 即不限。 */
+  /** 每个位置最多同时保留几条，超出时先移除低优先级的、同级中移除最旧的：card 为 5、toast 为 3；传 Infinity 即不限。 */
   max?: number
   /** 重复的判定方式，默认 'id'；传 'content' 则同一内容合并为一条并计数。 */
   dedupe?: NotificationDedupe
-  /** 同一堆叠内的间距（px），默认 16。 */
+  /** 同一堆叠内的间距（px）：card 为 16、toast 为 12。 */
   gap?: number
+  /** 单条未写 duration 时的停留毫秒：card 为 5000、toast 为 4000。 */
   duration?: number
+  /** 同一位置的几条叠成一摞：card 默认不叠，toast 默认叠。 */
+  stacked?: boolean
+  /** 页面切到后台时暂停计时：card 默认关闭，toast 默认开启。 */
   pauseOnPageIdle?: boolean
   /** 通知的文案：堆叠区的读屏名与卡片上关闭按钮的读屏名，统一在一个桶中。 */
   translations?: MaybeRefOrGetter<Partial<NotificationTranslations>>
@@ -67,7 +73,7 @@ export interface NotificationCreateOptions extends NotificationOptions {
   onAction?: () => void
 }
 
-/** 类型糖的入参：只差 type 与 title，其余同 create。 */
+/** 语气糖的入参：只差 tone / loading 与 title，其余同 create。 */
 export type NotificationMessageOptions = Omit<NotificationCreateOptions, 'tone' | 'loading' | 'title'>
 
 /** promise 三态的标题：成功与失败可以传函数，拿到结果后再拼装标题。 */
@@ -81,6 +87,7 @@ export interface NotificationService {
   /** 入队并返回 id；同 id 已存在则就地改写，被合并的返回被并入的那一条。 */
   create: (options?: NotificationCreateOptions) => string
   update: (id: string, options: Partial<NotificationOptions>) => void
+  /** 立即从队列中删除，不播退场动画。卡片自己的关闭按钮先播退场动画再移出。 */
   dismiss: (id: string) => void
   dismissAll: () => void
   info: (title: string, options?: NotificationMessageOptions) => string
@@ -112,6 +119,7 @@ function defaultCard(
 ): VNode {
   return h(XhNotificationItem, {
     id: item.id,
+    preset: item.preset,
     title: resolveFeedbackServiceTitle(item),
     description: item.description,
     tone: item.tone,
@@ -125,16 +133,15 @@ function defaultCard(
       if (status === 'unmounted')
         onUnmounted(id)
     },
-    onAction: () => onAction(item.id),
+    onAction: ({ id }: { id: string }) => onAction(id),
   }, () => [
-    // 四个节点平铺：两列网格与右上角那颗叉都归皮肤，模板套一层行容器只会与它打架。
+    // 两种预设同一份结构，排版归皮肤按 data-preset 给。
     // 指示符与说明都恒渲染——皮肤的 :empty 规则负责把空盒收走，
     // 而 aria-describedby 无条件指着说明那一个，节点缺席就成了悬空引用
     h(XhNotificationItemIndicator),
-    h(XhNotificationItemTitle),
-    h(XhNotificationItemDescription),
+    h(XhNotificationItemContent, () => [h(XhNotificationItemTitle), h(XhNotificationItemDescription)]),
     item.actionLabel ? h(XhNotificationItemActionTrigger, () => item.actionLabel) : null,
-    item.closable !== false ? h(XhNotificationItemCloseTrigger) : null,
+    item.closable ? h(XhNotificationItemCloseTrigger) : null,
   ])
 }
 
@@ -170,6 +177,9 @@ export function createNotificationService(options: NotificationServiceOptions = 
         undefined,
         { start: 'setup' },
       )
+      // 条目到达与叠摞都挂在作用域包装上；机器的追踪在首次提交之后才去取它
+      const rootRef = ref<HTMLElement | null>(null)
+      service.refs.set('getRootEl', () => rootRef.value)
       // 部件不经 provide/inject 取队列：本服务自己收 status-change 把走完退场的那条删掉，
       // 卡片与队列之间因此没有第二条隐式链路
       const api = computed(() => connectNotification(service, vueNormalize))
@@ -182,7 +192,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
       return () => {
         const value = api.value
         controller.syncItems(value.visibleNotifications.map(item => item.id))
-        return h('div', value.getRootProps() as Record<string, unknown>, value.placements.map(placement =>
+        return h('div', { ...value.getRootProps() as Record<string, unknown>, ref: rootRef }, value.placements.map(placement =>
           h(
             'div',
             { key: placement, ...value.getGroupProps({ placement }) as Record<string, unknown> },

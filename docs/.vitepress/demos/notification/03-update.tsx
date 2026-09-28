@@ -6,6 +6,7 @@ import {
   XhNotificationGroup,
   XhNotificationItem,
   XhNotificationItemCloseTrigger,
+  XhNotificationItemContent,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
@@ -64,8 +65,10 @@ export default function Demo(): ReactNode {
                 }}
               >
                 <XhNotificationItemIndicator />
-                <XhNotificationItemTitle />
-                <XhNotificationItemDescription />
+                <XhNotificationItemContent>
+                  <XhNotificationItemTitle />
+                  <XhNotificationItemDescription />
+                </XhNotificationItemContent>
                 <XhNotificationItemCloseTrigger />
               </XhNotificationItem>
             )}

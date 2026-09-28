@@ -12,7 +12,7 @@ const BROWSER_DIR = new URL('./tests/browser/', import.meta.url)
  * Linux 无头 Chromium 上，一张页面只要调过一次 Emulation.setTouchEmulationEnabled({ enabled: false })，
  * 不论之前开没开过，(pointer) 与 (hover) 就永久落成 none，CDP 没有入口改回来。同一 worker 里后面的文件
  * 复用这张页面，挂在 @media (hover: hover) 下的悬停规则整片失效（checkbox-group / list 的悬停断言、
- * menu / toast 的像素基线随之随机判红，红哪几张取决于文件落到哪个 worker）。Windows 上不走这条恢复路径，本机复现不出来。
+ * menu / notification 的像素基线随之随机判红，红哪几张取决于文件落到哪个 worker）。Windows 上不走这条恢复路径，本机复现不出来。
  * 这些文件单开一个项目：项目各开各的页面，排在主池之后跑，坏掉的页面只留给它们自己。
  */
 const TOUCH_SPECS = readdirSync(BROWSER_DIR)

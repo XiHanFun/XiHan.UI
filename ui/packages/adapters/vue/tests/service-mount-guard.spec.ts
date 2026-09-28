@@ -29,7 +29,7 @@ describe('服务宿主的挂载守卫', () => {
     document.body.append(holder)
     const app = { mount: vi.fn(), unmount: vi.fn() }
 
-    expect(mountServiceHost(app as never, holder, 'toast')).toBe(true)
+    expect(mountServiceHost(app as never, holder, 'notification')).toBe(true)
     expect(app.mount).toHaveBeenCalledWith(holder)
   })
 

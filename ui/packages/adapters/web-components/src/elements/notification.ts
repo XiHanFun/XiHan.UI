@@ -6,32 +6,33 @@
 // 提供 notification 相关实现。
 
 import type {
+  NotificationActionDetails,
   NotificationApi,
   NotificationDedupe,
   NotificationItemsChangeDetails,
+  NotificationItemSchema,
   NotificationOptions,
   NotificationPlacement,
+  NotificationPreset,
   NotificationRecord,
   NotificationSchema,
+  NotificationStatusChangeDetails,
   NotificationTone,
   NotificationTranslations,
   ResolvedNotification,
-  ToastActionDetails,
-  ToastSchema,
-  ToastStatusChangeDetails,
 } from '@xihan-ui/headless'
 import {
   connectNotification,
   connectNotificationItem,
   notificationAnatomy,
+  notificationItemMachine,
   notificationMachine,
   notificationMeta,
-  toastMachine,
 } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { NotificationItemExitGate } from '../notification-item-exit'
 import { MachineController } from '../runtime/machine-controller'
-import { ToastExitGate } from '../toast-exit'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -62,15 +63,17 @@ function groupPlacement(el: HTMLElement): NotificationPlacement | undefined {
  * 每条渲染为一个 `<xh-notification-item>`，它走完退场会冒泡一条 status-change，本元素据此删除记录。
  *
  * @customElement xh-notification
- * @attr {'top-start'|'top'|'top-end'|'middle-start'|'middle'|'middle-end'|'bottom-start'|'bottom'|'bottom-end'} placement - 默认落位，默认 bottom-end
- * @attr {number} max - 每个位置最多同时保留几条，超出时先移除低优先级、同级中移除最旧的；默认 5，提供 Infinity 即不限
+ * @attr {'card'|'toast'} preset - 形态预设，默认 card；toast 是轻提示。决定下面几项没写时的缺省值与卡片排版
+ * @attr {'top-start'|'top'|'top-end'|'middle-start'|'middle'|'middle-end'|'bottom-start'|'bottom'|'bottom-end'} placement - 默认落位：card 为 bottom-end，toast 为 bottom
+ * @attr {number} max - 每个位置最多同时保留几条，超出时先移除低优先级、同级中移除最旧的；card 为 5、toast 为 3，提供 Infinity 即不限
  * @attr {'id'|'content'} dedupe - 重复的处理方式，默认 id；content 则同一内容合并为一条并计数
- * @attr {number} gap - 同一组内的间距（px），默认 16
- * @attr {number} duration - 单条未写 duration 时的默认停留毫秒
- * @attr {boolean} pause-on-page-idle - 页面切到后台时暂停计时，逐条下发
+ * @attr {number} gap - 同一组内的间距（px）：card 为 16、toast 为 12
+ * @attr {number} duration - 单条未写 duration 时的默认停留毫秒：card 为 5000、toast 为 4000
+ * @attr {boolean} stacked - 同一位置的几条叠成一摞，指针或焦点进入后展开：card 默认不叠，toast 默认叠；写 stacked="false" 关闭
+ * @attr {boolean} pause-on-page-idle - 页面切到后台时暂停计时，逐条下发：card 默认关闭，toast 默认开启
  * @fires items-change - 队列变化；detail 为 `{ items: NotificationRecord[] }`
  * @csspart root - 队列的作用域包装（display: contents，不占布局），承载 data-count / data-empty
- * @csspart group - role=region 的地标，某一个位置上的一组；可自带 placement 属性，承载 data-placement / data-count / data-empty 与间距
+ * @csspart group - role=region 的地标，某一个位置上的一组；可自带 placement 属性，承载 data-placement / data-preset / data-stacked / data-expanded / data-count / data-empty 与间距
  */
 export class XhNotificationElement extends XhElement {
   static override partContract = { anatomy: notificationAnatomy, meta: notificationMeta }
@@ -81,22 +84,26 @@ export class XhNotificationElement extends XhElement {
     // items 给了即受控：元素内部的写入只发 items-change，等宿主自己写回
     items: { attribute: false },
     defaultItems: { attribute: false },
+    preset: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     max: { converter: NUMBER_CONVERTER },
     dedupe: { converter: STRING_CONVERTER },
     gap: { converter: NUMBER_CONVERTER },
     duration: { converter: NUMBER_CONVERTER },
+    stacked: { converter: BOOLEAN_CONVERTER },
     pauseOnPageIdle: { converter: BOOLEAN_CONVERTER, attribute: 'pause-on-page-idle' },
     translations: { attribute: false },
   }
 
   declare items?: NotificationRecord[]
   declare defaultItems?: NotificationRecord[]
+  declare preset?: NotificationPreset
   declare placement?: NotificationPlacement
   declare max?: number
   declare dedupe?: NotificationDedupe
   declare gap?: number
   declare duration?: number
+  declare stacked?: boolean
   declare pauseOnPageIdle?: boolean
   declare translations?: Partial<NotificationTranslations>
 
@@ -104,7 +111,7 @@ export class XhNotificationElement extends XhElement {
     this.dispatchEvent(new CustomEvent('items-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  // 队列机器只有条目这一份状态，另有一路条目到达的追踪挂在 root 部件上：refs 只装这一个节点 getter。
+  // 条目到达与叠摞的追踪都挂在 root 部件上：refs 只装这一个节点 getter。
   private readonly ctrl = new MachineController<NotificationSchema>(this, notificationMachine, () => this.machineProps(), {
     onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')),
   })
@@ -113,11 +120,13 @@ export class XhNotificationElement extends XhElement {
     return {
       items: this.items,
       defaultItems: this.defaultItems,
+      preset: this.preset,
       placement: this.placement,
       max: this.max,
       dedupe: this.dedupe,
       gap: this.gap,
       duration: this.duration,
+      stacked: this.stacked,
       pauseOnPageIdle: this.pauseOnPageIdle,
       translations: this.translations,
       onItemsChange: this.notify,
@@ -182,7 +191,7 @@ export class XhNotificationElement extends XhElement {
     const target = event.target as Element | null
     if (target?.tagName.toLowerCase() !== 'xh-notification-item')
       return
-    const detail = (event as CustomEvent<ToastStatusChangeDetails>).detail
+    const detail = (event as CustomEvent<NotificationStatusChangeDetails>).detail
     if (detail?.status !== 'unmounted')
       return
     // 整页拆除时可能先停机再收到最后一条：停机后送事件在 dev 下会抛
@@ -219,9 +228,9 @@ export class XhNotificationElement extends XhElement {
 const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notification', requiredParts: ['item'] } }
 
 /**
- * `<xh-notification-item>`：单条通知卡片：作者写 item / item-indicator / item-title /
- * item-description / item-action-trigger / item-close-trigger 角色节点，
- * 元素运行生命周期状态机并把 connect 产出接上。
+ * `<xh-notification-item>`：单条通知卡片：作者写 item / item-indicator / item-content / item-title /
+ * item-description / item-action-trigger / item-progress / item-close-trigger 角色节点，
+ * 元素运行卡片的状态机并把 connect 产出接上。卡片与轻提示是同一种卡片的两种预设。
  *
  * item 承载 role 与 aria-live：默认 status + polite（排队等待读屏的空隙），
  * tone="danger" 换为 alert + assertive（打断当前朗读）。指针停在卡片上、
@@ -232,18 +241,20 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
  *
  * @customElement xh-notification-item
  * @attr {string} id - 队列身份，`<xh-notification>` 按它寻址；未提供时使用实例自身的 scope id
+ * @attr {'card'|'toast'} preset - 形态预设，默认 card；toast 是轻提示：一行排版、叉 xs 排在行尾
  * @attr {string} title - 标题文案；作者未在 item-title 部件中写内容时由元素填入
  * @attr {string} description - 补充说明；作者未在 item-description 部件中写内容时由元素填入
  * @attr {'info'|'success'|'warning'|'danger'} tone - 语气，默认 info；danger 使用 alert + assertive
- * @attr {boolean} loading - 事情尚未完成：图标换为转圈，且不自动消失
- * @attr {number} duration - 停留毫秒，默认 5000；<=0 即关闭自动消失
+ * @attr {boolean} loading - 事情尚未完成：行首换为加载环，且不自动消失
+ * @attr {number} duration - 停留毫秒：card 为 5000、toast 为 4000；<=0 即关闭自动消失
  * @attr {boolean} closable - 是否提供可用的关闭按钮，默认 true；写 closable="false" 关闭
- * @attr {boolean} pause-on-page-idle - 页面切到后台时暂停计时，默认关闭
+ * @attr {boolean} pause-on-page-idle - 页面切到后台时暂停计时：card 默认关闭，toast 默认开启
  * @attr {boolean} paused - 由宿主整组一起暂停计时，默认关闭；与指针、焦点等来源并存
  * @fires status-change - 生命周期落定；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
  * @fires action - 操作按钮被按下；detail 为 `{ id: string }`
- * @csspart item - role=status（danger 时 alert）的卡片，承载 data-tone / data-loading / data-state / data-paused
- * @csspart item-indicator - 语气指示符；留空即由皮肤按卡片上的语气绘制兜底字形，卡片加载中则换为转圈
+ * @csspart item - role=status（danger 时 alert）的卡片，承载 data-preset / data-tone / data-loading / data-state / data-paused
+ * @csspart item-indicator - 语气指示符；留空即由皮肤按卡片上的语气绘制兜底字形，卡片加载中则换为加载环
+ * @csspart item-content - 标题与说明的文本列
  * @csspart item-title - 标题，aria-labelledby 的目标
  * @csspart item-description - 补充说明，aria-describedby 的目标
  * @csspart item-action-trigger - 操作按钮：先发出 action 再进入退场
@@ -258,6 +269,7 @@ export class XhNotificationItemElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     itemId: { converter: STRING_CONVERTER, attribute: 'id' },
+    preset: { converter: STRING_CONVERTER },
     titleText: { converter: STRING_CONVERTER, attribute: 'title' },
     description: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
@@ -271,6 +283,7 @@ export class XhNotificationItemElement extends XhElement {
   }
 
   declare itemId?: string
+  declare preset?: NotificationPreset
   declare titleText?: string
   declare description?: string
   declare tone?: NotificationTone
@@ -281,24 +294,29 @@ export class XhNotificationItemElement extends XhElement {
   declare paused?: boolean
   declare translations?: Partial<NotificationTranslations>
 
-  private readonly notifyStatus = (details: ToastStatusChangeDetails): void => {
+  private readonly notifyStatus = (details: NotificationStatusChangeDetails): void => {
     // 必须冒泡：外层 `<xh-notification>` 就靠这条事件知道该把记录删掉了
     this.dispatchEvent(new CustomEvent('status-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifyAction = (details: ToastActionDetails): void => {
+  private readonly notifyAction = (details: NotificationActionDetails): void => {
     this.dispatchEvent(new CustomEvent('action', { detail: details, bubbles: true, composed: true }))
   }
 
   // 计时器与 visibilitychange 都由机器自己经 scope 拿，不需要 config/layer/定位引擎。
-  // 跑的是 toast 那台机器，文案桶却要跟着通知走：不写 configName 的话，
-  // 改这颗叉的读屏名会连所有轻提示一起改
-  private readonly ctrl = new MachineController<ToastSchema>(this, toastMachine, () => this.machineProps(), { configName: 'notification' })
-  private readonly exitGate = new ToastExitGate(() => this.ctrl.service)
+  // 卡片的机器叫 notification-item，文案却在 notification 那一桶
+  private readonly ctrl = new MachineController<NotificationItemSchema>(this, notificationItemMachine, () => this.machineProps(), {
+    configName: 'notification',
+    // 叠摞展开的追踪从卡片节点找所在的那一摞
+    onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('item')),
+  })
 
-  private machineProps(): Partial<ToastSchema['props']> {
+  private readonly exitGate = new NotificationItemExitGate(() => this.ctrl.service)
+
+  private machineProps(): Partial<NotificationItemSchema['props']> {
     return {
       id: this.itemId,
+      preset: this.preset,
       title: this.titleText,
       description: this.description,
       tone: this.tone,
@@ -351,6 +369,7 @@ export class XhNotificationItemElement extends XhElement {
     }
     put('item', api.getItemProps() as Record<string, unknown>)
     put('item-indicator', api.getItemIndicatorProps() as Record<string, unknown>)
+    put('item-content', api.getItemContentProps() as Record<string, unknown>)
     put('item-title', api.getItemTitleProps() as Record<string, unknown>)
     put('item-description', api.getItemDescriptionProps() as Record<string, unknown>)
     put('item-action-trigger', api.getItemActionTriggerProps() as Record<string, unknown>)

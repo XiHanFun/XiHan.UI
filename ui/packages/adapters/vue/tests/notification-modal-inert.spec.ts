@@ -3,7 +3,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
-  createToastService,
+  createNotificationService,
   XhDialogContent,
   XhDialogRoot,
   XhDialogTitle,
@@ -101,15 +101,15 @@ describe('模态打开时的通知队列', () => {
     expect(inertInChain(document.querySelector('[data-scope="notification"][data-part="item-close-trigger"]'))).toBe(false)
   })
 
-  // 轻提示那一摞没有容器组件，豁免标记由服务档自己打，两条路都得逃得出来
-  it('轻提示服务渲染的那一摞同样逃出 inert', async () => {
-    const toast = createToastService()
+  // 组件形态与服务档两条路都得逃得出来：服务档的那一摞由服务自己的宿主渲染
+  it('轻提示预设的服务渲染的那一摞同样逃出 inert', async () => {
+    const toast = createNotificationService({ preset: 'toast' })
     toast.success('已保存')
     await tick()
     mountModal()
     await tick()
 
-    const group = document.querySelector<HTMLElement>('[data-scope="toast"][data-part="group"]')!
+    const group = document.querySelector<HTMLElement>('[data-scope="notification"][data-part="group"]')!
     expect(inertInChain(group)).toBe(false)
     toast.dispose()
   })

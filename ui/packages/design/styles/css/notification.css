@@ -11,6 +11,37 @@
 @import '../family/action-control.css';
 @import '../family/loading-ring.css';
 
+@layer xihan.motion {
+  /* 叠放的一摞：新卡片从视口边缘外进入，同时落到自己的折叠层级。整幅位移取令牌，减弱动效下归零，只剩淡入 */
+  @keyframes xh-notification-stack-in {
+    from {
+      opacity: var(--xh-_enter-from-opacity, 0);
+      translate: 0 calc(var(--xh-_notification-stack-dir, 1) * (var(--xh-_notification-offset, 0px) - var(--xh-motion-travel)));
+      scale: var(--xh-notification-stack-scale, var(--xh-_notification-stack-scale));
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 calc(var(--xh-_notification-stack-dir, 1) * var(--xh-_notification-offset, 0px));
+      scale: var(--xh-notification-stack-scale, var(--xh-_notification-stack-scale));
+    }
+  }
+
+  @keyframes xh-notification-stack-out {
+    from {
+      opacity: 1;
+      translate: 0 calc(var(--xh-_notification-stack-dir, 1) * var(--xh-_notification-y, 0px));
+      scale: var(--xh-_notification-scale, 1);
+    }
+
+    to {
+      opacity: 0;
+      translate: 0 calc(var(--xh-_notification-stack-dir, 1) * (var(--xh-_notification-y, 0px) - var(--xh-motion-travel)));
+      scale: var(--xh-_notification-scale, 1);
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='notification'] {
@@ -33,7 +64,7 @@
   }
 
   /*
-   * 一摞 = 一整面视口大小的定位面：贴边靠 padding，九个位靠 justify/align 表达。
+   * 逐条排开的一摞 = 一整面视口大小的定位面：贴边靠 padding，九个位靠 justify/align 表达。
    * 不用四角 inset 逐个摆，是因为 column flex 的 align-items 走的是行内轴，
    * RTL 下 start/end 自动跟着翻；写死 inset-inline-start 的话居中那三个位
    * 还得再配一次 translate，方向一变就错。
@@ -46,7 +77,7 @@
     z-index: var(--xh-notification-layer, var(--xh-layer-toast));
     display: flex;
     flex-direction: column;
-    /* 基线按默认落位 bottom-end 写，下面只覆盖跟它不同的那几个位 */
+    /* 基线按卡片的默认落位 bottom-end 写，下面只覆盖跟它不同的那几个位 */
     justify-content: flex-end;
     align-items: center;
     /* 贴边与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出，
@@ -60,11 +91,22 @@
       env(safe-area-inset-left),
       env(safe-area-inset-right)
     );
-    /* 摞内间距由连接层写进内联 style（两个适配器共用同一份），这里绝不重复写：
+    /* 摞内间距由连接层写进内联 style（三个适配器共用同一份），这里绝不重复写：
        写了也会被内联盖掉，只会让人误以为间距归样式层管 */
     /* 整面铺开就等于罩住了整块视口。面本身不吃指针，只有卡片吃（见下），
        否则九个位一叠，底下的页面就再也点不动了 */
     pointer-events: none;
+  }
+
+  /* 轻提示离视口边更近 */
+  [data-scope='notification'][data-part='group'][data-preset='toast']:not([data-stacked]) {
+    padding-block-start: max(var(--xh-notification-inset, var(--xh-space-4)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-notification-inset, var(--xh-space-4)), env(safe-area-inset-bottom));
+    padding-inline: max(
+      var(--xh-notification-inset, var(--xh-space-4)),
+      env(safe-area-inset-left),
+      env(safe-area-inset-right)
+    );
   }
 
   [data-scope='notification'][data-part='group'][hidden] {
@@ -95,12 +137,89 @@
   }
 
   /*
-   * 一张通知卡：左列一枚类型字形，右列「标题 + 说明 + 操作」竖着排，叉钉在右上角。
-   * 用网格而不是竖排 flex：叉要脱离文档流钉到角上，正文要在字形右边成一列——
-   * 竖排 flex 里这两件事都做不到（叉会变成第三行）。
-   * 底与描边一律中性，语气只由左列那枚字形承载：整片兑色是轻提示那条的做法，
-   * 一张有标题有正文的卡片全片染色会把两层文字都压在同一片语气色上。
-   * 面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow，与 toast 同一套）。
+   * 叠成一摞：定位面收成一条固定宽度、零高度的线，贴在落位那一角；卡片在里面绝对定位，
+   * 按叠摞测量写进来的层深与偏移错开。贴边改由 inset 表达，定位面不再整面铺开。
+   */
+  [data-scope='notification'][data-part='group'][data-stacked] {
+    inset: auto;
+    inline-size: min(var(--xh-notification-item-w, var(--xh-overlay-max-w-lg)), calc(100vw - var(--xh-space-8)));
+    block-size: 0;
+    padding: 0;
+  }
+
+  /* 定位面不再是弹性列：卡片各自绝对定位。收起与空摞照旧撤掉 */
+  [data-scope='notification'][data-part='group'][data-stacked]:not([hidden]):not([data-empty]) {
+    display: block;
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked][data-preset='toast'] {
+    inline-size: min(var(--xh-notification-item-w, 28.75rem), calc(100vw - var(--xh-space-8)));
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked][data-placement^='bottom'] {
+    inset-block-end: max(var(--xh-notification-inset, var(--xh-space-6)), env(safe-area-inset-bottom));
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked][data-placement^='top'] {
+    inset-block-start: max(var(--xh-notification-inset, var(--xh-space-6)), env(safe-area-inset-top));
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked][data-preset='toast'][data-placement^='bottom'] {
+    inset-block-end: max(var(--xh-notification-inset, var(--xh-space-4)), env(safe-area-inset-bottom));
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked][data-preset='toast'][data-placement^='top'] {
+    inset-block-start: max(var(--xh-notification-inset, var(--xh-space-4)), env(safe-area-inset-top));
+  }
+
+  /* 中间那一行从视口中线往下叠 */
+  [data-scope='notification'][data-part='group'][data-stacked][data-placement^='middle'] {
+    inset-block-start: 50%;
+  }
+
+  /* 起点是逻辑属性、平移是物理通道：平移乘书写方向的符号，rtl 下居中的那一摞才落回视口正中 */
+  [data-scope='notification'][data-part='group'][data-stacked]:is([data-placement='top'], [data-placement='middle'], [data-placement='bottom']) {
+    inset-inline-start: 50%;
+    translate: calc(-50% * var(--xh-direction-sign)) 0;
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked][data-placement$='-start'] {
+    inset-inline-start: max(
+      var(--xh-notification-inset, var(--xh-space-6)),
+      env(safe-area-inset-left),
+      env(safe-area-inset-right)
+    );
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked][data-placement$='-end'] {
+    inset-inline-end: max(
+      var(--xh-notification-inset, var(--xh-space-6)),
+      env(safe-area-inset-left),
+      env(safe-area-inset-right)
+    );
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked][data-preset='toast'][data-placement$='-start'] {
+    inset-inline-start: max(
+      var(--xh-notification-inset, var(--xh-space-4)),
+      env(safe-area-inset-left),
+      env(safe-area-inset-right)
+    );
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked][data-preset='toast'][data-placement$='-end'] {
+    inset-inline-end: max(
+      var(--xh-notification-inset, var(--xh-space-4)),
+      env(safe-area-inset-left),
+      env(safe-area-inset-right)
+    );
+  }
+
+  /*
+   * 一张通知：底与描边一律中性，面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow，
+   * 亮暗两档同有 1px 描边）。两种预设共用这张面，排版分开写在下面：
+   * 卡片是两列网格，左列一枚类型字形、右列「标题 + 说明 + 操作」、叉钉在右上角；
+   * 轻提示是一行，行首字形、文本列、操作钮与叉依次排开。
    *
    * 卡片的槽带 item 段（--xh-notification-item-*），与摞的 --xh-notification-inset 分开。
    */
@@ -136,8 +255,26 @@
     transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  /* 除指示符外一律落第二列：作者往卡片里塞的任何东西都跟着正文走 */
-  [data-scope='notification'][data-part='item'] > *:not([data-part='item-indicator']) {
+  /* 轻提示：一行排开，行首那一格贴着内容盒的起始角，文本列与两颗钮在行里垂直居中。
+     指示符盒自带 --xh-space-1 内衬：与间距合起来，字形到正文 12px，与卡片、Alert 同一个距离 */
+  [data-scope='notification'][data-part='item'][data-preset='toast'] {
+    flex: none;
+    display: flex;
+    align-items: flex-start;
+    column-gap: var(--xh-notification-item-gap, var(--xh-space-2));
+    inline-size: var(--xh-notification-item-w, 28.75rem);
+    padding-block: var(--xh-notification-item-py, var(--xh-space-3));
+    padding-inline: var(--xh-notification-item-px, var(--xh-space-4));
+    font-size: var(--xh-notification-item-font-size, var(--xh-text-label-size));
+    /* 叠摞几何常驻：单独摆放时是恒等位移与比例，放进叠放的一摞后由那边换成层深，
+       两处用同一套画法，卡片进出一摞时栅格不跳 */
+    translate: 0 calc(var(--xh-_notification-stack-dir, 1) * var(--xh-_notification-y, 0px));
+    scale: var(--xh-_notification-scale, 1);
+    transform-origin: bottom center;
+  }
+
+  /* 卡片：除指示符外一律落第二列，作者往卡片里塞的任何东西都跟着正文走 */
+  [data-scope='notification'][data-part='item'][data-preset='card'] > *:not([data-part='item-indicator']) {
     grid-column: 2;
   }
 
@@ -148,7 +285,7 @@
   }
 
   /* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段。
-     九个位共用同一条进出场，位移不跟着落位走：要按位置分方向，就得从 group 的
+     逐条排开的那几摞共用同一条进出场，位移不跟着落位走：要按位置分方向，就得从 group 的
      data-placement 反向选到卡片上，落位一改名整条动效静默失效。竖向一小段位移在九个位上都说得通。
      同一批新到的几条按到达顺序错开开幕，不按它在那一摞里排第几（序号由条目到达的追踪写进
      --xh-_stagger-index，封顶）。backwards 不能省：等待期间起帧不生效的话，
@@ -164,7 +301,136 @@
     animation: xh-sheet-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
-  /* 独占第一列第一行，并与标题首行顶对齐：盒高取一行标题的行高，
+  /*
+   * 叠放的一摞：最新一条在最前，后层按层深逐层收拢——层深由叠摞测量写进来，每往后一层乘一次
+   * --xh-motion-scale-stack；减弱动效下那支令牌为 1，层与层只靠位移分开。
+   * 收拢比例作者可以用 --xh-notification-stack-scale 整摞改写。
+   */
+  [data-scope='notification'][data-part='group'][data-stacked] [data-scope='notification'][data-part='item'] {
+    --xh-_notification-stack-scale: max(0, 1 - var(--xh-_notification-depth, 0) * (1 - var(--xh-motion-scale-stack)));
+    --xh-_notification-y: var(--xh-_notification-offset, 0px);
+    --xh-_notification-scale: var(--xh-notification-stack-scale, var(--xh-_notification-stack-scale));
+
+    position: absolute;
+    inset-inline: 0;
+    inline-size: 100%;
+    translate: 0 calc(var(--xh-_notification-stack-dir, 1) * var(--xh-_notification-y));
+    scale: var(--xh-_notification-scale);
+    transform-origin: bottom center;
+    transition:
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      scale var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 贴底的几摞往上叠，贴顶与中间那一行往下叠 */
+  [data-scope='notification'][data-part='group'][data-stacked][data-placement^='bottom'] [data-scope='notification'][data-part='item'] {
+    --xh-_notification-stack-dir: -1;
+
+    inset-block-end: 0;
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked]:is([data-placement^='top'], [data-placement^='middle']) [data-scope='notification'][data-part='item'] {
+    --xh-_notification-stack-dir: 1;
+
+    inset-block-start: 0;
+    transform-origin: top center;
+  }
+
+  /* 叠放的卡片从视口边缘推入、沿叠放方向退出，进出场都带着自己那一层的位移与收拢比例 */
+  [data-scope='notification'][data-part='group'][data-stacked] [data-scope='notification'][data-part='item'][data-state='visible'] {
+    animation: xh-notification-stack-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked] [data-scope='notification'][data-part='item'][data-state='dismissing'] {
+    animation: xh-notification-stack-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  /* 收拢的后层只露出一截边：高度压成最前那一条，内容淡出，免得几层字叠在一起 */
+  [data-scope='notification'][data-part='group'][data-stacked] [data-scope='notification'][data-part='item'][data-stack-index]:not([data-frontmost]):not([data-expanded]) {
+    block-size: var(--xh-_notification-front-height, auto);
+    overflow: hidden;
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked] [data-scope='notification'][data-part='item'] > :not([data-part='item-close-trigger']) {
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='notification'][data-part='group'][data-stacked] [data-scope='notification'][data-part='item'][data-stack-index]:not([data-frontmost]):not([data-expanded])
+  > :not([data-part='item-close-trigger']) {
+    opacity: 0;
+  }
+
+  /* 展开：按真实高度排成一列，收拢比例归 1 */
+  [data-scope='notification'][data-part='group'][data-stacked] [data-scope='notification'][data-part='item'][data-expanded] {
+    --xh-_notification-y: var(--xh-_notification-offset-expanded, 0px);
+    --xh-_notification-scale: 1;
+
+    block-size: var(--xh-_notification-height, auto);
+  }
+
+  /*
+   * 语气的非颜色通道。行首字形按 data-tone 区分信息、成功、警告与失败；加载中另由 data-loading 说。
+   * 行首那一格叠着两层：::before 是加载环（加载环家族配方画成与 Spinner 环档同一副环，随 data-loading
+   * 淡入淡出、转与停），::after 是语气字形，加载中淡出让位——加载落定时环淡出、字形淡入，同一格里交叉淡变。
+   * 两层的颜色都照语气走。轻提示没渲染 item-indicator 时由卡片自己的伪元素补上。
+   */
+  [data-scope='notification'][data-part='item'][data-preset='toast'] {
+    --xh-_loading-ring-fg: var(--xh-notification-indicator-fg, var(--xh-_tone-fg));
+  }
+
+  /* 环那一层占着行首那一格，字形那一层叠在它上面 */
+  [data-scope='notification'][data-part='item'][data-preset='toast']::before {
+    content: '';
+    flex: none;
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+  }
+
+  /* 字形那一层按卡片的内衬落在同一格上：行首那一格贴着内容盒的起始角（一行按 flex-start 排列） */
+  [data-scope='notification'][data-part='item'][data-preset='toast']::after {
+    content: '';
+    position: absolute;
+    inset-block-start: var(--xh-notification-item-py, var(--xh-space-3));
+    inset-inline-start: var(--xh-notification-item-px, var(--xh-space-4));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    background-color: var(--xh-notification-indicator-fg, var(--xh-_tone-fg));
+    -webkit-mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='notification'][data-part='item'][data-preset='toast'][data-tone='success']::after {
+    -webkit-mask-image: var(--xh-glyph-mark-check);
+    mask-image: var(--xh-glyph-mark-check);
+  }
+
+  [data-scope='notification'][data-part='item'][data-preset='toast'][data-tone='warning']::after {
+    -webkit-mask-image: var(--xh-glyph-mark-warning);
+    mask-image: var(--xh-glyph-mark-warning);
+  }
+
+  [data-scope='notification'][data-part='item'][data-preset='toast'][data-tone='danger']::after {
+    -webkit-mask-image: var(--xh-glyph-mark-close);
+    mask-image: var(--xh-glyph-mark-close);
+  }
+
+  /* 加载中不是语气：字形淡出让位给环，颜色仍照语气走 */
+  [data-scope='notification'][data-part='item'][data-preset='toast'][data-loading]::after {
+    opacity: 0;
+  }
+
+  /* 作者渲染了指示符部件，行首那两层兜底就让位给它，一行里不出现两枚图形 */
+  [data-scope='notification'][data-part='item'][data-preset='toast']:has([data-part='item-indicator'])::before,
+  [data-scope='notification'][data-part='item'][data-preset='toast']:has([data-part='item-indicator'])::after {
+    content: none;
+  }
+
+  /* 卡片：独占第一列第一行，并与标题首行顶对齐：盒高取一行标题的行高，
      字形在盒里居中，标题字号改了也不会错位 */
   [data-scope='notification'][data-part='item-indicator'] {
     --xh-icon-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-md));
@@ -178,6 +444,15 @@
     block-size: calc(var(--xh-notification-title-font-size, var(--xh-text-label-size)) * var(--xh-leading-tight));
     inline-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-md));
     color: var(--xh-notification-indicator-fg, var(--xh-_tone-fg));
+  }
+
+  /* 轻提示：方盒自带一圈内衬，与间距合起来让出字形到正文的那段距离 */
+  [data-scope='notification'][data-part='item'][data-preset='toast'] [data-part='item-indicator'] {
+    flex: none;
+    box-sizing: content-box;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    padding: var(--xh-notification-indicator-p, var(--xh-space-1));
   }
 
   [data-scope='notification'][data-part='item-indicator'][hidden] {
@@ -229,6 +504,25 @@
     opacity: 0;
   }
 
+  /* 标题与说明的文本列。卡片里它落在第二列，两行之间与网格同一个行距；
+     轻提示里它占满行首字形与两颗钮之间的那一段，在行里垂直居中 */
+  [data-scope='notification'][data-part='item-content'] {
+    display: flex;
+    flex-direction: column;
+    row-gap: var(--xh-notification-item-row-gap, var(--xh-space-2));
+    min-inline-size: 0;
+  }
+
+  [data-scope='notification'][data-part='item'][data-preset='toast'] [data-part='item-content'] {
+    flex: 1 1 auto;
+    align-self: center;
+    row-gap: 0;
+  }
+
+  [data-scope='notification'][data-part='item-content'][hidden] {
+    display: none;
+  }
+
   [data-scope='notification'][data-part='item-title'] {
     /* 作者可能把它写成 h2/p，外边距得先归零，否则卡片内的行距对不上 */
     margin: 0;
@@ -238,9 +532,15 @@
     line-height: var(--xh-notification-title-leading, var(--xh-leading-tight));
   }
 
-  /* 叉钉在右上角，标题得给它让位；说明与操作在第二行往下，不受影响。
+  /* 轻提示的语气落到标题与行首字形：一句话的结果，颜色本身就是信息 */
+  [data-scope='notification'][data-part='item'][data-preset='toast'] [data-part='item-title'] {
+    min-inline-size: 0;
+    color: var(--xh-notification-title-fg, var(--xh-_tone-fg));
+  }
+
+  /* 卡片的叉钉在右上角，标题得给它让位；说明与操作在第二行往下，不受影响。
      让位量与叉的贴边取同一个值，作者改了贴边槽，标题让出的那段跟着走 */
-  [data-scope='notification'][data-part='item']:has([data-part='item-close-trigger']) [data-part='item-title'] {
+  [data-scope='notification'][data-part='item'][data-preset='card']:has([data-part='item-close-trigger']) [data-part='item-title'] {
     padding-inline-end: calc(
       var(--xh-notification-close-size, var(--xh-control-h-sm)) +
       var(--xh-notification-close-inset, var(--xh-surface-action-inset))
@@ -251,6 +551,12 @@
     margin: 0;
     color: var(--xh-notification-description-fg, var(--xh-fg-muted));
     font-size: var(--xh-notification-description-font-size, var(--xh-text-secondary-size));
+  }
+
+  /* 轻提示的说明只是一行短上下文，行高收紧到正文之下 */
+  [data-scope='notification'][data-part='item'][data-preset='toast'] [data-part='item-description'] {
+    min-inline-size: 0;
+    line-height: var(--xh-notification-description-leading, var(--xh-leading-normal));
   }
 
   /* 没给文案的那一个仍然要留在 DOM 里（aria-labelledby / aria-describedby 指着它），
@@ -265,31 +571,36 @@
     display: none;
   }
 
-  /* 倒计时条横跨整张卡片：它不是正文的一部分，不跟着第二列走 */
-  [data-scope='notification'][data-part='item'] > [data-part='item-progress'] {
-    grid-column: 1 / -1;
-  }
-
   /*
    * 倒计时条。总时长由连接层写进 --xh-notification-progress-duration（不自动消失的那些
    * 整条收起），计时被按住时动画一并停住——停表这件事此前没有任何可画的地方。
    * 取装饰档 --xh-_tone-soft：压在卡片底色上仍看得出来。
+   * 裁切只认物理方向：收起的那一侧取书写方向的行尾，rtl 下从左往右收。
    */
   [data-scope='notification'][data-part='item-progress'] {
-    --xh-_countdown-radius: var(--xh-notification-progress-radius, var(--xh-shape-pill));
+    --xh-_countdown-cut-left: var(--xh-direction-start);
+    --xh-_countdown-cut-right: var(--xh-direction-end);
 
     overflow: hidden;
     inline-size: 100%;
     block-size: var(--xh-notification-progress-thickness, var(--xh-space-0_5));
-    border-radius: var(--xh-_countdown-radius);
     background: var(--xh-notification-progress-bg, var(--xh-_tone-soft));
     animation: xh-countdown var(--xh-notification-progress-duration, var(--xh-motion-duration-slide)) var(--xh-motion-ease-loop) forwards;
   }
 
-  /* 裁切只认物理方向：RTL 下行尾在左边，从左往右收 */
-  [data-scope='notification'][data-part='item-progress']:dir(rtl) {
-    --xh-_countdown-cut-left: 100%;
-    --xh-_countdown-cut-right: 0;
+  /* 卡片：横跨整张卡片的一行，它不是正文的一部分，不跟着第二列走；两端取胶囊 */
+  [data-scope='notification'][data-part='item'][data-preset='card'] [data-part='item-progress'] {
+    --xh-_countdown-radius: var(--xh-notification-progress-radius, var(--xh-shape-pill));
+
+    grid-column: 1 / -1;
+    border-radius: var(--xh-_countdown-radius);
+  }
+
+  /* 轻提示：贴着卡片底边走 */
+  [data-scope='notification'][data-part='item'][data-preset='toast'] [data-part='item-progress'] {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 0;
   }
 
   /* 减弱动效：倒计时不连续地缩，按秒一格一格走，段数由连接层随时长交出。
@@ -314,7 +625,7 @@
 
   /* 操作钮是带文案的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、禁用面全由 Action Control
      的 text outline 档给（连接层投 sm；非 Button 的触发器缺省中性描边、透明底），组件只映射既有使用者槽。
-     语气只落到左列字形：这颗钮坐在带 data-tone 的卡片里，底 / 边 / 字钉在中性语义面上，不随语气；
+     语气只落到字形与轻提示的标题：这颗钮坐在带 data-tone 的卡片里，底 / 边 / 字钉在中性语义面上，不随语气；
      卡片是 sheet 白面承载：hover --xh-bg-subtle（100）→ pressed --xh-bg-subtle-hover（200） */
   [data-scope='notification'][data-part='item-action-trigger'] {
     --xh-action-visual-size: var(--xh-notification-action-h, var(--xh-_action-profile-visual-size));
@@ -341,36 +652,73 @@
     font-weight: var(--xh-notification-action-font-weight, var(--xh-font-weight-medium));
   }
 
+  /* 轻提示是单行 flex，按钮不参与伸缩：文案长了该换行的是文字 */
+  [data-scope='notification'][data-part='item'][data-preset='toast'] [data-part='item-action-trigger'] {
+    flex: none;
+    align-self: center;
+  }
+
   /* 家族那条 display 会把 UA 的 [hidden]{display:none} 盖掉 */
   [data-scope='notification'][data-part='item-action-trigger'][hidden] {
     display: none;
   }
 
   /* 关闭钮是只有字形的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、禁用面全由 Action Control
-     的 icon ghost 档给（连接层投 sm：32px 正方盒，面板角上的叉与此前 --xh-control-h-sm 同尺寸），组件只映射既有
-     使用者槽。静息透明，sheet 白面承载 hover 100 → pressed 200，写了语气时悬停底跟着语气走（--xh-_tone-subtle）。
-     钉在右上角的内衬处，不参与网格排布——留在流里它会变成正文下面的第三行 */
+     的 icon ghost 档给（卡片投 sm：32px 正方盒；轻提示投 xs：24px，走行级动作钮那一档），组件只映射既有使用者槽。
+     静息透明，sheet 白面承载 hover 100 → pressed 200，写了语气时悬停底跟着语气走（--xh-_tone-subtle） */
   [data-scope='notification'][data-part='item-close-trigger'] {
     --xh-action-visual-size: var(--xh-notification-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-min-inline-size: var(--xh-notification-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-notification-close-radius, var(--xh-shape-control));
+    --xh-action-bg-rest: var(--xh-notification-close-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-notification-close-bg-hover, var(--xh-_action-variant-bg-hover));
     --xh-action-bg-pressed: var(--xh-notification-close-bg-active, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-notification-close-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-notification-close-fg-hover, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-notification-close-fg-hover, var(--xh-fg-default));
-    --xh-action-border-rest: transparent;
+    --xh-action-border-rest: var(--xh-notification-close-border, var(--xh-_action-variant-border-rest));
     --xh-action-highlight-rest: transparent;
     --xh-action-shadow-rest: none;
     --xh-action-shadow-hover: none;
     --xh-action-shadow-pressed: none;
-    /* 叉的字形按钮档取值（sm → 16px），与左列那枚 md 档的类型字形分开 */
+    /* 叉的字形按钮档取值，与行首那枚 md 档的类型字形分开 */
     --xh-icon-size: var(--xh-notification-icon-size, var(--xh-_action-profile-glyph-size));
+  }
 
+  /* 卡片：钉在右上角的内衬处，不参与网格排布——留在流里它会变成正文下面的第三行 */
+  [data-scope='notification'][data-part='item'][data-preset='card'] [data-part='item-close-trigger'] {
     position: absolute;
     inset-block-start: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
     inset-inline-end: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
-    border-width: 0;
+  }
+
+  /* 轻提示：排在一行短消息的行尾，与文本列一起垂直居中 */
+  [data-scope='notification'][data-part='item'][data-preset='toast'] [data-part='item-close-trigger'] {
+    flex: none;
+    align-self: center;
+  }
+
+  /* 轻提示的叉在有悬停能力的设备上默认静默、指针进入卡片或焦点落进卡片后显现——不走家族的
+     hover-focus 显示策略：那一档用 visibility 收起，这颗叉占 Tab 位，收成 visibility: hidden
+     后键盘就够不到它了；这里只压 opacity 与 pointer-events，焦点仍能落进来 */
+  @media (hover: hover) {
+    [data-scope='notification'][data-part='item'][data-preset='toast'] [data-part='item-close-trigger'] {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    [data-scope='notification'][data-part='item'][data-preset='toast']:hover [data-part='item-close-trigger'],
+    [data-scope='notification'][data-part='item'][data-preset='toast']:focus-within [data-part='item-close-trigger'] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  /* 收拢的后层只允许最前一条露出关闭入口；触屏没有 hover，必须显式收起后层的叉 */
+  [data-scope='notification'][data-part='group'][data-stacked] [data-scope='notification'][data-part='item'][data-stack-index]:not([data-frontmost]):not([data-expanded])
+  [data-part='item-close-trigger'] {
+    opacity: 0;
+    pointer-events: none;
   }
 
   /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半：
@@ -392,11 +740,11 @@
   }
 
   @media print {
-    /* 通知组固定在视口上，打印那一刻在场就会盖住正文。 */
+    /* 通知组固定在视口上，打印那一刻在场就会盖住正文，且它已经错过了被读到的时机。 */
     [data-scope='notification'][data-part='group'] {
       display: none;
     }
 
-    /* 加载环的静止替代由加载环配方在打印档给出 */
+    /* 作者把卡片摆在摞外的用法：加载环的静止替代由加载环配方在打印档给出 */
   }
 }

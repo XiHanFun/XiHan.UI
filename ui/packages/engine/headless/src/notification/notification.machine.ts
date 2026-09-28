@@ -7,15 +7,10 @@
 
 import type { NotificationDedupe, NotificationPlacement, NotificationRecord, NotificationSchema } from './notification.types'
 import { setup, trackListMotion } from '@xihan-ui/core'
+import { NOTIFICATION_PRESETS, notificationPresetOf } from './notification.presets'
+import { trackNotificationStacks } from './notification.stack'
 
 const { createMachine } = setup<NotificationSchema>()
-
-/** 没指定位置时落哪儿。 */
-export const NOTIFICATION_PLACEMENT: NotificationPlacement = 'bottom-end'
-/** 同一摞内的默认间距（px）。 */
-export const NOTIFICATION_GAP = 16
-/** 每个位置默认最多同时留几条。 */
-export const NOTIFICATION_MAX = 5
 
 /** 九个位的固定顺序：placements 与分组遍历都按它走，界面顺序不随插入次序漂。 */
 export const NOTIFICATION_PLACEMENTS: readonly NotificationPlacement[] = [
@@ -71,14 +66,14 @@ export function notificationMergeTarget(
  * create 之后落一次，队列才不会无界地长；connect 读的时候再落一次，受控队列同样只显示窗口内的。
  *
  * 挤的次序是「先低优先级、同优先级里先最旧」：一条报错不该被随后的五条提示顶掉。
+ * 不给 max 用卡片预设的上限；Infinity 即不限，<=0 与 NaN 一并按不限处理。
  */
 export function visibleNotifications(
   list: readonly NotificationRecord[],
   max: number | undefined,
   fallback: NotificationPlacement,
 ): NotificationRecord[] {
-  // 不给 max 用默认上限；Infinity 即不限，<=0 与 NaN 一并按不限处理
-  const limit = max ?? NOTIFICATION_MAX
+  const limit = max ?? NOTIFICATION_PRESETS.card.max
   if (!Number.isFinite(limit) || limit <= 0)
     return [...list]
 
@@ -98,6 +93,9 @@ export function visibleNotifications(
   return list.filter(item => !overflow.has(item))
 }
 
+// 逐条排开的那几摞才做到达与换位：叠放的一摞由叠摞测量自己排位，两套位移叠在一起会打架
+const ARRIVING_ITEM = '[data-scope="notification"][data-part="group"]:not([data-stacked]) [data-scope="notification"][data-part="item"]'
+
 export const notificationMachine = createMachine({
   name: 'notification',
   context: ({ prop, cell }) => ({
@@ -108,16 +106,19 @@ export const notificationMachine = createMachine({
       onChange: items => prop('onItemsChange')?.({ items }),
     })),
     seq: cell<number>(() => ({ defaultValue: 0 })),
+    expanded: cell<NotificationPlacement[]>(() => ({ defaultValue: [] })),
   }),
   refs: () => ({ getRootEl: () => null }),
   initialState: () => 'idle',
-  effects: ['trackArrivals'],
-  // 四个入口从哪个状态发出都一样，因此挂根级
+  effects: ['trackArrivals', 'trackStacks'],
+  // 这几个入口从哪个状态发出都一样，因此挂根级
   on: {
     'ITEMS.CREATE': { actions: ['createItem'] },
     'ITEMS.UPDATE': { actions: ['updateItem'] },
     'ITEMS.DISMISS': { actions: ['dismissItem'] },
     'ITEMS.DISMISS_ALL': { actions: ['dismissAllItems'] },
+    'STACK.EXPAND': { actions: ['expandStack'] },
+    'STACK.COLLAPSE': { actions: ['collapseStack'] },
   },
   states: { idle: {} },
   implementations: {
@@ -138,7 +139,34 @@ export const notificationMachine = createMachine({
               return
             // 卡片自己带退场、播完才收起：不放离场替身，只做到达与换位——一张卡收起或新卡插进来时，
             // 其余卡片从旧位置过渡到新位置，不整张跳位
-            stop = trackListMotion(root, { item: '[data-scope="notification"][data-part="item"]', initial: 'arrive', depart: false })
+            stop = trackListMotion(root, { item: ARRIVING_ITEM, initial: 'arrive', depart: false })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
+      /**
+       * 叠放的那几摞：量每条的高度写成层深与偏移，指针或焦点进入就展开，展开期间整摞的计时按住。
+       * 摞是否叠放由连接层的 data-stacked 说了算，这里跟着 DOM 走，stacked 改了不必重接。
+       */
+      trackStacks: ({ refs, flush, prop, send }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          queueMicrotask(() => {
+            const root = refs.get('getRootEl')()
+            if (disposed || !root)
+              return
+            stop = trackNotificationStacks(root, {
+              gap: () => prop('gap') ?? notificationPresetOf(prop('preset')).gap,
+              // 停机途中收掉的那几摞不再回报：机器已经不收事件了
+              onInteractionChange: (placement, active) => {
+                if (!disposed)
+                  send({ type: active ? 'STACK.EXPAND' : 'STACK.COLLAPSE', placement })
+              },
+            })
           })
         })
         return () => {
@@ -172,8 +200,9 @@ export const notificationMachine = createMachine({
           context.set('items', next)
           return
         }
-        const fallback = prop('placement') ?? NOTIFICATION_PLACEMENT
-        context.set('items', visibleNotifications([...list, e.item], prop('max'), fallback))
+        const preset = notificationPresetOf(prop('preset'))
+        const fallback = prop('placement') ?? preset.placement
+        context.set('items', visibleNotifications([...list, e.item], prop('max') ?? preset.max, fallback))
       },
       updateItem: ({ context, event }) => {
         const e = event.current()
@@ -201,6 +230,22 @@ export const notificationMachine = createMachine({
       dismissAllItems: ({ context }) => {
         if (context.get('items').length)
           context.set('items', [])
+      },
+      expandStack: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'STACK.EXPAND')
+          return
+        const expanded = context.get('expanded')
+        if (!expanded.includes(e.placement))
+          context.set('expanded', [...expanded, e.placement])
+      },
+      collapseStack: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'STACK.COLLAPSE')
+          return
+        const expanded = context.get('expanded')
+        if (expanded.includes(e.placement))
+          context.set('expanded', expanded.filter(placement => placement !== e.placement))
       },
     },
   },

@@ -26,9 +26,10 @@ const STANDALONE = ['file-upload', 'signature-pad']
 /**
  * ③ 浮层角落关闭钮；值是尺寸基准的例外。
  * image-viewer：悬浮在媒体上的叉与翻页钮同走 floating 档 sm（--xh-control-box-md，圆形）。
- * toast：那颗叉排在单行短消息里，不在面板角上——28px 比一行正文的行盒还高，走行级动作钮那一档。
+ * notification：按预设分两档。卡片的叉钉在面板角上，走 --xh-control-h-sm；轻提示的叉排在单行短消息里，
+ * 不在面板角上——28px 比一行正文的行盒还高，走行级动作钮那一档。
  */
-const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'toast': '--xh-control-action-size', 'alert': null, 'floating-panel': null, 'image-viewer': '--xh-control-box-md', 'notification': null }
+const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'alert': null, 'floating-panel': null, 'image-viewer': '--xh-control-box-md', 'notification': ['--xh-control-h-sm', '--xh-control-action-size'] }
 /** 部件名与 close-trigger 不同的，逐条登记（通知的叉在卡片那一层，叫 item-close-trigger）。 */
 const CLOSE_PART = { notification: 'item-close-trigger' }
 /**
@@ -317,10 +318,13 @@ for (const [c, sizeException] of Object.entries(CLOSE)) {
       problems.push(`${c}.css [${part}] 缺 [hidden] { display: none }`)
     if (!/\[data-xh-action-control\]:not\(\[data-disabled\]\):not\(\[data-loading\]\):is\(:active, \[data-pressed\]\)[\s\S]*--xh-motion-scale-press/.test(family))
       problems.push('family/action-control.css 缺共用的 :is(:active, [data-pressed]) 按压反馈')
-    const want = CLOSE_ACTION_SIZE[sizeException ?? '--xh-control-h-sm']
-    const size = /['"]data-xh-action-size['"]\s*:\s*['"]([a-z]+)['"]/.exec(g ?? '')?.[1]
-    if (size !== want)
-      problems.push(`${c}.connect.ts 的 ${part} 投的 data-xh-action-size 是 ${size ?? '（没投）'}，尺寸基准 ${sizeException ?? '--xh-control-h-sm'} 对应 ${want} 档`)
+    // 按预设分档的叉登记一组尺寸基准，连接层投的那个表达式里出现的档位要与它们一一对上
+    const bases = [sizeException ?? '--xh-control-h-sm'].flat()
+    const want = [...new Set(bases.map(base => CLOSE_ACTION_SIZE[base]))].sort()
+    const expr = /['"]data-xh-action-size['"]\s*:\s*([^,\n]+)/.exec(g ?? '')?.[1] ?? ''
+    const sizes = [...new Set([...expr.matchAll(/['"]([a-z]+)['"]/g)].map(m => m[1]))].sort()
+    if (sizes.join() !== want.join())
+      problems.push(`${c}.connect.ts 的 ${part} 投的 data-xh-action-size 是 ${sizes.join(' / ') || '（没投）'}，尺寸基准 ${bases.join(' / ')} 对应 ${want.join(' / ')} 档`)
     checkActionCloseForeground(c, part, css)
     continue
   }

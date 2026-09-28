@@ -8,13 +8,14 @@
 import type {
   NotificationDedupe,
   NotificationItemApi,
+  NotificationItemSchema,
   NotificationOptions,
   NotificationPlacement,
+  NotificationPreset,
   NotificationRecord,
   NotificationSchema,
+  NotificationTone,
   ResolvedNotification,
-  ToastSchema,
-  ToastTone,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -27,6 +28,7 @@ import { NotificationItemProvider, NotificationProvider, useNotificationContext,
 import { useNotification, useNotificationItem } from './use-notification'
 
 type NotificationProps = NotificationSchema['props']
+type NotificationItemProps = NotificationItemSchema['props']
 
 /** 函数式 children 的载荷：当前可见的通知队列与它的落位分组，以及入队、改写、关闭的命令。 */
 export interface NotificationRootSlotProps {
@@ -46,11 +48,13 @@ type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children'>
 export interface XhNotificationRootProps extends RootElementProps {
   items?: NotificationRecord[]
   defaultItems?: NotificationRecord[]
+  preset?: NotificationPreset
   placement?: NotificationPlacement
   max?: number
   dedupe?: NotificationDedupe
   gap?: number
   duration?: number
+  stacked?: boolean
   pauseOnPageIdle?: boolean
   translations?: NotificationProps['translations']
   onItemsChange?: NotificationProps['onItemsChange']
@@ -60,11 +64,13 @@ export interface XhNotificationRootProps extends RootElementProps {
 export function XhNotificationRoot({
   items,
   defaultItems,
+  preset,
   placement,
   max,
   dedupe,
   gap,
   duration,
+  stacked,
   pauseOnPageIdle,
   translations,
   onItemsChange,
@@ -74,11 +80,13 @@ export function XhNotificationRoot({
   const machineProps = {
     items,
     defaultItems,
+    preset,
     placement,
     max,
     dedupe,
     gap,
     duration,
+    stacked,
     pauseOnPageIdle,
     translations,
     onItemsChange,
@@ -143,35 +151,66 @@ export interface NotificationItemSlotProps {
   item: NotificationItemApi
 }
 
-export interface XhNotificationItemProps {
+export interface XhNotificationItemProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'id' | 'title'> {
+  /** 队列身份，不是 DOM id；未提供时回落到实例的 scope id。 */
   id?: string
+  preset?: NotificationPreset
   title?: string
   description?: string
-  tone?: ToastTone
+  tone?: NotificationTone
   loading?: boolean
   duration?: number
   closable?: boolean
   pauseOnPageIdle?: boolean
   /** 由宿主整组一起暂停计时；与指针、焦点等路径并存，最后一个释放后才继续。 */
   paused?: boolean
-  translations?: NotificationProps['translations']
-  onStatusChange?: ToastSchema['props']['onStatusChange']
-  onAction?: ToastSchema['props']['onAction']
+  translations?: NotificationItemProps['translations']
+  onStatusChange?: NotificationItemProps['onStatusChange']
+  onAction?: NotificationItemProps['onAction']
   children?: SlotChildren<NotificationItemSlotProps>
 }
 
-/** 单条卡片。生命周期复用 toast 的状态机：会自动消失的卡片，该行为与消息来源无关。 */
-export function XhNotificationItem({ children, ...props }: XhNotificationItemProps): ReactNode {
-  // 桶名写 notification 而不是 toast：卡片跑的虽然是 toast 那台机器，
-  // 但它的文案该跟着通知走
-  const ctx = useNotificationItem(withXhConfig('notification', props) as ToastSchema['props'])
+/** 单条卡片：到期自行消失的一条消息，计时、暂停、按压与退场都在它自己身上。 */
+export function XhNotificationItem({
+  id,
+  preset,
+  title,
+  description,
+  tone,
+  loading,
+  duration,
+  closable,
+  pauseOnPageIdle,
+  paused,
+  translations,
+  onStatusChange,
+  onAction,
+  children,
+  ...rest
+}: XhNotificationItemProps): ReactNode {
+  const ctx = useNotificationItem(withXhConfig('notification', {
+    id,
+    preset,
+    title,
+    description,
+    tone,
+    loading,
+    duration,
+    closable,
+    pauseOnPageIdle,
+    paused,
+    translations,
+    onStatusChange,
+    onAction,
+  }) as NotificationItemProps)
   const api = ctx.api
   // 指针进出改装成原生监听器：pointerenter / pointerleave 不冒泡，委派在根容器上的合成事件收不到。
-  // 焦点那两路留给合成事件：连接层派的是 focusin / focusout，React 的 onFocus / onBlur 挂的正是它们
+  // 焦点那两路留给合成事件：连接层派的是 focusin / focusout，React 的 onFocus / onBlur 挂的正是它们，
+  // 改装后名字会变回不冒泡的 focus / blur，卡片内部的按钮得焦就按不住计时了
   const bind = useNativeEvents(api.getItemProps() as Record<string, unknown>, ['onPointerEnter', 'onPointerLeave'])
   return (
     <NotificationItemProvider value={ctx}>
-      <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, { ref: ctx.rootRef })}>
+      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref }, { ref: ctx.rootRef })}>
         {renderSlot(children, { item: api })}
       </div>
     </NotificationItemProvider>
@@ -181,10 +220,17 @@ export function XhNotificationItem({ children, ...props }: XhNotificationItemPro
 XhNotificationItem.xhEvents = ['status-change', 'action'] as const
 
 export interface XhNotificationItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 语气指示符：未提供内容时由皮肤按节点上的 data-tone 绘制兜底字形，data-loading 时换为加载指示。 */
+/** 语气指示符：未提供内容时由皮肤按卡片上的 data-tone 绘制兜底字形，data-loading 时换为加载环。 */
 export function XhNotificationItemIndicator({ children, ...rest }: XhNotificationItemIndicatorProps): ReactNode {
   const ctx = useNotificationItemContext()
   return <span {...mergeReactProps(ctx.api.getItemIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+export interface XhNotificationItemContentProps extends ComponentPropsWithRef<'div'> {}
+/** 标题与说明的文本列。 */
+export function XhNotificationItemContent({ children, ...rest }: XhNotificationItemContentProps): ReactNode {
+  const ctx = useNotificationItemContext()
+  return <div {...mergeReactProps(ctx.api.getItemContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
 export interface XhNotificationItemTitleProps extends ComponentPropsWithRef<'div'> {}
@@ -209,6 +255,7 @@ export function XhNotificationItemDescription({ children, ...rest }: XhNotificat
 }
 
 export interface XhNotificationItemActionTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 原生 button，激活行为交给平台。 */
 export function XhNotificationItemActionTrigger({ children, ...rest }: XhNotificationItemActionTriggerProps): ReactNode {
   const ctx = useNotificationItemContext()
   return <button {...mergeReactProps(ctx.api.getItemActionTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>

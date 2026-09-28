@@ -15,7 +15,7 @@ const STYLES_DIR = 'packages/design/styles/css'
 const TOKENS_CSS = 'packages/design/tokens/tokens.css'
 /** 组件总数的分母：一个组件一份套件。 */
 const SUITES_DIR = 'tooling/testing/src/suites'
-/** 适配器里由 JS 拼出来的默认模板（命令式 toast / dialog 的类型徽记）也引这族令牌。 */
+/** 适配器里由 JS 拼出来的默认模板（命令式 notification / dialog 的类型徽记）也引这族令牌。 */
 const ADAPTER_SRC = Object.values(ADAPTERS).map(a => ({ label: a.label, dir: `${a.root}/src`, name: a.name }))
 
 /**

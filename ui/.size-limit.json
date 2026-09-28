@@ -300,9 +300,9 @@
     ]
   },
   {
-    "name": "vue：只用 XhToastRoot",
+    "name": "vue：只用 XhNotificationItem",
     "path": "packages/adapters/vue/dist/index.js",
-    "import": "{ XhToastRoot }",
+    "import": "{ XhNotificationItem }",
     "gzip": true,
     "limit": "15.2 kB",
     "ignore": [
