@@ -48,6 +48,12 @@ speed 是每秒像素；指针停下或焦点落进窗口时暂停，缺省即�
 
 <XhDemo src="marquee/05-autoplay-trigger" />
 
+### 两端渐隐
+
+fade 让内容从窗口一端淡入、从另一端淡出，边缘不再生硬地切断文字；有暂停开关时行尾那一端淡到开关之前
+
+<XhDemo src="marquee/06-fade" />
+
 ## 设计指引
 
 ### 何时使用
@@ -66,6 +72,7 @@ speed 是每秒像素；指针停下或焦点落进窗口时暂停，缺省即�
 - `pauseOnHover` 在指针悬停或焦点落入窗口时暂停，缺省开启，设为 `false` 关闭；指针或焦点停在暂停开关上不计入。
 - 暂停开关 `autoplay-trigger` 是窗口行尾的单图标按钮，指针、键盘与触屏都能停住滚动；可及名随状态切换为下一步的动作，文案由 `translations` 覆盖。
 - `paused` / `defaultPaused` 控制暂停状态，变化经 `paused-change` 通知；暂停状态优先于悬停。
+- `fade` 让窗口两端沿滚动方向渐隐，内容从一端淡入、从另一端淡出，渐隐段长由 `--xh-marquee-fade-size` 调整；有暂停开关时行尾那一端淡到开关之前，开关不被淡掉。减弱动效与打印时轨道停住、窗口改成可滚，两端不再淡。
 
 ### 组合
 
@@ -102,6 +109,7 @@ speed 是每秒像素；指针停下或焦点落进窗口时暂停，缺省即�
 | `paused` | `boolean` |  | 受控暂停：为真即停在当前位置，为假继续移动。给了它，暂停开关只报 onPausedChange，由作者写回。 |
 | `defaultPaused` | `boolean` |  | 非受控暂停的初值，默认 false。 |
 | `autoFill` | `boolean` |  | 内容不足时重复铺满：轨道中铺两份内容，走完一份正好接上第二份。 |
+| `fade` | `boolean` |  | 窗口两端沿滚动方向渐隐，内容从一端淡入、从另一端淡出，默认 false。 有暂停开关时行尾那一端淡到开关之前，开关本身不被淡掉。 |
 | `translations` | `Partial<MarqueeTranslations>` |  | 暂停开关在两种状态下的可及名，默认英文。 |
 | `onPausedChange` | `(details: MarqueePausedChangeDetails) => void` |  | 暂停状态变化时回调：暂停开关、setPaused 与受控写回都经过它。 |
 
@@ -196,6 +204,7 @@ speed 是每秒像素；指针停下或焦点落进窗口时暂停，缺省即�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-marquee-block-size` | `root` | `block-size` | `orientation=vertical` | `10rem` | marquee 的 root 部件 block-size 覆盖槽。 |
+| `--xh-marquee-fade-size` | `root` | `-webkit-mask-image`<br>`mask-image` | `fade` | `--xh-space-6` | marquee 的 root 部件 -webkit-mask-image、mask-image 覆盖槽。 |
 | `--xh-marquee-gap` | `content`<br>`root` | `padding-block-end`<br>`padding-inline-end` | `orientation=vertical`<br>`xh-copy` | `--xh-space-6` | marquee 的 content、root 部件 padding-block-end、padding-inline-end 覆盖槽。 |
 | `--xh-marquee-icon-size` | `autoplay-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | marquee 的 autoplay-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-marquee-span` | `content`<br>`root` | `animation-duration` | `auto-fill`<br>`default` | `600` | marquee 的 content、root 部件 animation-duration 覆盖槽。 |
@@ -203,7 +212,7 @@ speed 是每秒像素；指针停下或焦点落进窗口时暂停，缺省即�
 | `--xh-marquee-trigger-bg` | `autoplay-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-bg-surface` | marquee 的 autoplay-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-marquee-trigger-bg-active` | `autoplay-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover-opaque` | marquee 的 autoplay-trigger 部件 background-color 覆盖槽。 |
 | `--xh-marquee-trigger-bg-hover` | `autoplay-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-opaque` | marquee 的 autoplay-trigger 部件 background-color 覆盖槽。 |
-| `--xh-marquee-trigger-inset` | `autoplay-trigger`<br>`root` | `inset-block-end`<br>`inset-inline-end` | `default`<br>`orientation=vertical` | `--xh-space-1` | marquee 的 autoplay-trigger、root 部件 inset-block-end、inset-inline-end 覆盖槽。 |
+| `--xh-marquee-trigger-inset` | `autoplay-trigger`<br>`root` | `-webkit-mask-image`<br>`-webkit-mask-size`<br>`inset-block-end`<br>`inset-inline-end`<br>`mask-image`<br>`mask-size` | `default`<br>`fade`<br>`has(> [data-scope='marquee'][data-part='autoplay-trigger']:not([hidden])`<br>`orientation=vertical` | `--xh-space-1` | marquee 的 autoplay-trigger、root 部件 -webkit-mask-image、-webkit-mask-size、inset-block-end、inset-inline-end、mask-image、mask-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -222,4 +231,4 @@ speed 是每秒像素；指针停下或焦点落进窗口时暂停，缺省即�
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

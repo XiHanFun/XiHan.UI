@@ -2159,6 +2159,7 @@ export type ComponentTokenName
     | '--xh-markdown-stream-leading'
     | '--xh-markdown-stream-mono'
     | '--xh-marquee-block-size'
+    | '--xh-marquee-fade-size'
     | '--xh-marquee-gap'
     | '--xh-marquee-icon-size'
     | '--xh-marquee-span'

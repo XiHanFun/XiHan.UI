@@ -36151,7 +36151,7 @@
           "name": "XhMarqueeElement",
           "cssParts": [
             {
-              "description": "只显示一段的窗口，承载 data-direction / data-orientation / data-pause-on-hover / data-paused / data-auto-fill",
+              "description": "只显示一段的窗口，承载 data-direction / data-orientation / data-pause-on-hover / data-paused / data-auto-fill / data-fade",
               "name": "root"
             },
             {
@@ -36226,6 +36226,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "auto-fill"
+            },
+            {
+              "kind": "field",
+              "name": "fade",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "fade"
             },
             {
               "kind": "field",
@@ -36344,6 +36353,14 @@
               "description": "轨道中铺两份内容，走完一份正好接上第二份",
               "name": "auto-fill",
               "fieldName": "autoFill"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "窗口两端沿滚动方向渐隐；有暂停开关时行尾那一端淡到开关之前",
+              "name": "fade",
+              "fieldName": "fade"
             }
           ],
           "superclass": {
@@ -36355,6 +36372,9 @@
           "cssProperties": [
             {
               "name": "--xh-marquee-block-size"
+            },
+            {
+              "name": "--xh-marquee-fade-size"
             },
             {
               "name": "--xh-marquee-gap"

@@ -55,6 +55,7 @@ export const marqueeSuite: ConformanceSuite = {
             'data-pause-on-hover': '',
             'data-paused': null,
             'data-auto-fill': null,
+            'data-fade': null,
           },
           // 名字是下一步的动作，不带 aria-pressed：名字与按压态各说各的会念成「暂停 已按下」
           'autoplay-trigger': {
@@ -127,6 +128,16 @@ export const marqueeSuite: ConformanceSuite = {
             'data-pause-on-hover': null,
             'data-auto-fill': '',
           },
+        },
+      },
+    },
+    {
+      name: '两端渐隐写 true 才开，落成根上的 data-fade',
+      spec: { apg: APG },
+      props: { fade: true },
+      initial: {
+        parts: {
+          root: { 'data-fade': '' },
         },
       },
     },

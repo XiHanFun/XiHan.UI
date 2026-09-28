@@ -45,6 +45,11 @@ export interface MarqueeSchema extends MachineSchema {
     defaultPaused?: boolean
     /** 内容不足时重复铺满：轨道中铺两份内容，走完一份正好接上第二份。 */
     autoFill?: boolean
+    /**
+     * 窗口两端沿滚动方向渐隐，内容从一端淡入、从另一端淡出，默认 false。
+     * 有暂停开关时行尾那一端淡到开关之前，开关本身不被淡掉。
+     */
+    fade?: boolean
     /** 暂停开关在两种状态下的可及名，默认英文。 */
     translations?: Partial<MarqueeTranslations>
     /** 暂停状态变化时回调：暂停开关、setPaused 与受控写回都经过它。 */

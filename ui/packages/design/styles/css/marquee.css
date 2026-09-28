@@ -53,6 +53,8 @@
    * 由使用者改写 --xh-marquee-span 对齐真实长度，速度才逐字等于每秒那么多像素。
    */
   [data-scope='marquee'][data-part='root'] {
+    /* 暂停开关的边长：开关用它定尺，两端渐隐按它给开关留出位置，两处同源 */
+    --xh-_marquee-trigger-size: var(--xh-control-h-md);
     --xh-_marquee-span: var(--xh-marquee-span, 600);
     --xh-_marquee-speed: var(--xh-marquee-speed, 60);
 
@@ -141,6 +143,61 @@
   }
 
   /*
+   * 两端渐隐：窗口沿滚动方向两端各留一段遮罩，内容从一端淡入、从另一端淡出。
+   * 遮罩只画在窗口上，轨道照常整段移动；遮罩是静态的，不参与动画。
+   * 遮罩的几层取值都经私有槽下发，真正写 mask 的只有这一条：减弱动效与打印只需在同一特指度上盖掉它。
+   */
+  [data-scope='marquee'][data-part='root'][data-fade] {
+    --xh-_marquee-fade-size: var(--xh-marquee-fade-size, var(--xh-space-6));
+    --xh-_marquee-fade-dir: to right;
+    /* 行尾那一段收到哪里为止：没有暂停开关时收到窗口尽头 */
+    --xh-_marquee-fade-reserve: 0px;
+    --xh-_marquee-fade-reserve-size: 0 0;
+    --xh-_marquee-fade-reserve-at: right center;
+    /* 两层：沿滚动方向的 alpha 坡道，与给暂停开关留出的实心块；两种写法共用这一份 */
+    --xh-_marquee-fade-mask:
+      linear-gradient(var(--xh-_marquee-fade-dir), transparent 0, black var(--xh-_marquee-fade-size), black calc(100% - var(--xh-_marquee-fade-reserve) - var(--xh-_marquee-fade-size)), transparent calc(100% - var(--xh-_marquee-fade-reserve))),
+      linear-gradient(black, black);
+
+    -webkit-mask-image: var(--xh-_marquee-fade-mask);
+    mask-image: var(--xh-_marquee-fade-mask);
+    -webkit-mask-size: 100% 100%, var(--xh-_marquee-fade-reserve-size);
+    mask-size: 100% 100%, var(--xh-_marquee-fade-reserve-size);
+    -webkit-mask-position: 0 0, var(--xh-_marquee-fade-reserve-at);
+    mask-position: 0 0, var(--xh-_marquee-fade-reserve-at);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  [data-scope='marquee'][data-part='root'][data-fade][data-orientation='vertical'] {
+    --xh-_marquee-fade-dir: to bottom;
+  }
+
+  /* rtl 下行首在右：渐变方向跟着翻，两端各自仍是淡入与淡出 */
+  [data-scope='marquee'][data-part='root'][data-fade][data-orientation='horizontal']:dir(rtl) {
+    --xh-_marquee-fade-dir: to left;
+    --xh-_marquee-fade-reserve-at: left center;
+  }
+
+  /*
+   * 暂停开关压在行尾一端：行尾那段渐隐收到开关之前，第二层实心遮罩把开关所在那一块整块露出来，
+   * 开关不被淡掉，开关与淡出段之间也不留一条没淡的缝。竖排时开关在块末那一角，露出的是那一角的方块。
+   */
+  [data-scope='marquee'][data-part='root'][data-fade]:has(> [data-scope='marquee'][data-part='autoplay-trigger']:not([hidden])) {
+    --xh-_marquee-fade-reserve: calc(var(--xh-marquee-trigger-inset, var(--xh-space-1)) + var(--xh-_marquee-trigger-size));
+    --xh-_marquee-fade-reserve-size: var(--xh-_marquee-fade-reserve) 100%;
+  }
+
+  [data-scope='marquee'][data-part='root'][data-fade][data-orientation='vertical']:has(> [data-scope='marquee'][data-part='autoplay-trigger']:not([hidden])) {
+    --xh-_marquee-fade-reserve-size: var(--xh-_marquee-fade-reserve) var(--xh-_marquee-fade-reserve);
+    --xh-_marquee-fade-reserve-at: right bottom;
+  }
+
+  [data-scope='marquee'][data-part='root'][data-fade][data-orientation='vertical']:dir(rtl):has(> [data-scope='marquee'][data-part='autoplay-trigger']:not([hidden])) {
+    --xh-_marquee-fade-reserve-at: left bottom;
+  }
+
+  /*
    * 悬停暂停：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态。
    * 指针停在暂停开关上不算：那里显示的是开关自己的状态，按下「继续」时指针还在开关上，
    * 若照样算悬停，轨道要等指针挪开才动，这一下按了像没按。
@@ -174,6 +231,8 @@
     --xh-action-bg-focus-visible: var(--xh-marquee-trigger-bg, var(--xh-bg-surface));
     /* 作者塞进来的图标跟着 icon 档走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-marquee-icon-size, var(--xh-_action-profile-glyph-size));
+    /* 边长与两端渐隐给开关留的位置同源，都读根上那一支 */
+    --xh-action-visual-size: var(--xh-_marquee-trigger-size);
 
     position: absolute;
     z-index: 1;
@@ -255,6 +314,12 @@
       overflow: auto;
     }
 
+    /* 停下后窗口改成可滚：两端再淡就把可滚内容的首尾藏起来了 */
+    [data-scope='marquee'][data-part='root'][data-fade] {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
     /* 轨道已经停在起点：没有可停的东西，开关只会挡住可滚的内容 */
     [data-scope='marquee'][data-part='autoplay-trigger'] {
       display: none;
@@ -267,6 +332,11 @@
 
   :where([data-motion='reduce']) [data-scope='marquee'][data-part='root'] {
     overflow: auto;
+  }
+
+  :where([data-motion='reduce']) [data-scope='marquee'][data-part='root'][data-fade] {
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 
   :where([data-motion='reduce']) [data-scope='marquee'][data-part='autoplay-trigger'] {
@@ -284,6 +354,11 @@
 
     [data-scope='marquee'][data-part='root'] {
       overflow: auto;
+    }
+
+    [data-scope='marquee'][data-part='root'][data-fade] {
+      -webkit-mask-image: none;
+      mask-image: none;
     }
 
     [data-scope='marquee'][data-part='autoplay-trigger'] {

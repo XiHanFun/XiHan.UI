@@ -31,6 +31,7 @@ export const XhMarqueeRoot = defineComponent({
     paused: { type: Boolean, default: undefined },
     defaultPaused: { type: Boolean, default: undefined },
     autoFill: { type: Boolean, default: undefined },
+    fade: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<MarqueeTranslations>> },
   },
   // paused-change 携带 { paused }，update:paused 携带裸布尔

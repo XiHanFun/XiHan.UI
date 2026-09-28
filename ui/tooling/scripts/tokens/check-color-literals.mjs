@@ -49,6 +49,10 @@ const GEOMETRY = {
     reason: '边缘渐隐的两层遮罩画的是 alpha 坡道，黑与白是不透明与全透两端，换成主题色遮罩就不成形了',
     literals: ['black'],
   },
+  'marquee:root': {
+    reason: '两端渐隐的遮罩画的是 alpha 坡道与给暂停开关留出的实心块，黑是不透明那一端，换成主题色遮罩就不成形了',
+    literals: ['black'],
+  },
 }
 
 /**

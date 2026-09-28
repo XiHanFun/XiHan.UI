@@ -37,8 +37,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} paused - 受控暂停：停在当前位置；给了它，暂停开关只派发 paused-change，由作者写回
  * @attr {boolean} default-paused - 非受控暂停的初值
  * @attr {boolean} auto-fill - 轨道中铺两份内容，走完一份正好接上第二份
+ * @attr {boolean} fade - 窗口两端沿滚动方向渐隐；有暂停开关时行尾那一端淡到开关之前
  * @fires paused-change - 暂停状态变化（暂停开关、setPaused 或受控写回）；detail 为 `{ paused: boolean }`
- * @csspart root - 只显示一段的窗口，承载 data-direction / data-orientation / data-pause-on-hover / data-paused / data-auto-fill
+ * @csspart root - 只显示一段的窗口，承载 data-direction / data-orientation / data-pause-on-hover / data-paused / data-auto-fill / data-fade
  * @csspart content - 在窗口中移动的轨道，动画挂在它身上
  * @csspart autoplay-trigger - 暂停开关，须写为 `<button>`；可及名随状态在 translations 的两条文案间切换，不给内容时皮肤画图标
  */
@@ -53,6 +54,7 @@ export class XhMarqueeElement extends XhElement {
     paused: { converter: BOOLEAN_CONVERTER },
     defaultPaused: { converter: BOOLEAN_CONVERTER, attribute: 'default-paused' },
     autoFill: { type: Boolean, attribute: 'auto-fill' },
+    fade: { type: Boolean },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }
@@ -63,6 +65,7 @@ export class XhMarqueeElement extends XhElement {
   declare paused?: boolean
   declare defaultPaused?: boolean
   declare autoFill?: boolean
+  declare fade?: boolean
   declare translations?: Partial<MarqueeTranslations>
 
   private readonly notify = (details: MarqueePausedChangeDetails): void => {
@@ -79,6 +82,7 @@ export class XhMarqueeElement extends XhElement {
       paused: this.paused,
       defaultPaused: this.defaultPaused,
       autoFill: this.autoFill ?? false,
+      fade: this.fade ?? false,
       translations: this.translations,
       onPausedChange: this.notify,
     }
