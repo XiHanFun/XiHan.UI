@@ -58971,11 +58971,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-sortable>`：Light-DOM 行为宿主：作者写 root / item / item-drag-trigger / live-region 角色节点，\n元素运行 sortable 状态机并把 connect 产出接上。\n\n顺序的唯一真源是 `ids`，DOM 中项的先后必须与它一致：几何按 DOM 测量，事件按 `ids` 计算。\n每个 item 与它的 item-drag-trigger 都要用 `item-id` 属性写明所属的项（与 Vue 侧的 `:item-id` 同一份声明）。\n单独禁用某一项写 `item-disabled`。未提供 item-drag-trigger 时整项可拖动。\n\n拖动落点采用乐观投影：拖动过程中其余项实时让位，松手即确定。让位与跟手的位移由元素每帧\n写入内联 translate，作者的样式表不应再修改该属性。\n\n键盘全部在手柄上：空格或回车拾起、方向键移动一格、再按空格放下、Esc 取消。\n拖动中的 Tab 会被拦截：焦点一旦移走，本场拖动就没有出口。",
+          "description": "`<xh-sortable>`：Light-DOM 行为宿主：作者写 root / item / item-drag-trigger / live-region 角色节点，\n元素运行 sortable 状态机并把 connect 产出接上。\n\n顺序的唯一真源是 `ids`，DOM 中项的先后必须与它一致：几何按 DOM 测量，事件按 `ids` 计算。\n每个 item 与它的 item-drag-trigger 都要用 `item-id` 属性写明所属的项（与 Vue 侧的 `:item-id` 同一份声明）。\n单独禁用某一项写 `item-disabled`。未提供 item-drag-trigger 时整项可拖动。\n\n拖动落点采用乐观投影：拖动过程中其余项实时让位，松手即确定。让位与跟手的位移由元素每帧\n写入内联 translate，作者的样式表不应再修改该属性。\n\n键盘全部在手柄上：空格或回车拾起、方向键移动一格、再按空格放下、Esc 取消。\n拖动中的 Tab 会被拦截：焦点一旦移走，本场拖动就没有出口。\n\n写了同一个 group 的几个 `<xh-sortable>` 组成一组，项可以拖进组里别的列表；键盘拖动中另一条轴上的方向键\n在相邻列表间移动。落进别的列表时源列表发 transfer：作者在回调里把项节点挪进目标列表的 root、\n按 detail 写回两边的 ids；不挪不写时那一项收回原位。",
           "name": "XhSortableElement",
           "cssParts": [
             {
-              "description": "承载 data-orientation / data-disabled / data-dragging 的容器",
+              "description": "承载 data-orientation / data-disabled / data-dragging 的容器；同组别的列表的一项悬在这里时带 data-drop=\"inside\"",
               "name": "root"
             },
             {
@@ -59061,6 +59061,24 @@
             },
             {
               "kind": "field",
+              "name": "group",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "group"
+            },
+            {
+              "kind": "field",
+              "name": "listId",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "list-id"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -59104,6 +59122,12 @@
             {
               "kind": "field",
               "name": "notifySort",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyTransfer",
               "privacy": "private",
               "readonly": true
             },
@@ -59212,6 +59236,13 @@
               }
             },
             {
+              "description": "一项落进了同组另一个列表，由源列表发一次；detail 为 `{ id, fromList, toList, from, to, fromIds, toIds }`，节点挪不挪、ids 写不写回归作者",
+              "name": "transfer",
+              "type": {
+                "text": "SortableTransferDetails"
+              }
+            },
+            {
               "description": "拾起；detail 为 `{ id, from, mode }`",
               "name": "drag-start",
               "type": {
@@ -59219,7 +59250,7 @@
               }
             },
             {
-              "description": "收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }`",
+              "description": "收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }`，入了组时另带 fromList / toList",
               "name": "drag-end",
               "type": {
                 "text": "SortableDragEndDetails"
@@ -59274,6 +59305,22 @@
               "description": "拖到容器边缘时自动滚动，默认开启",
               "name": "auto-scroll",
               "fieldName": "autoScroll"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "所在的组：同一文档里 group 相同的列表可以互相拖入拖出；入组的列表只能单轴排布",
+              "name": "group",
+              "fieldName": "group"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "这个列表在组里的标识，写了 group 就必须写，组内不重复",
+              "name": "list-id",
+              "fieldName": "listId"
             }
           ],
           "superclass": {

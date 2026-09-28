@@ -9,13 +9,33 @@ import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-u
 import type { DndDelta } from '@xihan-ui/pointer'
 import type { SortableApi, SortableItemState, SortableSchema } from './sortable.types'
 import { createPressTracker, dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { sortableOffsets } from '@xihan-ui/pointer'
+import { insertionOffsets, insertionSlot, sortableOffsets } from '@xihan-ui/pointer'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { sortableAnatomy } from './sortable.anatomy'
+import { assertSortableGroupProps } from './sortable.group'
 
 const parts = sortableAnatomy.build()
 
 const ZERO: DndDelta = { x: 0, y: 0 }
+
+/**
+ * 入了组时另一条轴上的方向键：往组里的下一个列表去还是上一个。竖排列表的组横着排（看板的几列），
+ * 左右键换列、rtl 下对调；横排列表的组竖着排，上下键换行。
+ */
+function listStepFromKey(key: string, axis: string, rtl: boolean): number | null {
+  if (axis === 'vertical') {
+    if (key === 'ArrowRight')
+      return rtl ? -1 : 1
+    if (key === 'ArrowLeft')
+      return rtl ? 1 : -1
+    return null
+  }
+  if (key === 'ArrowDown')
+    return 1
+  if (key === 'ArrowUp')
+    return -1
+  return null
+}
 
 /** 方向键的语义：往列表的后面去还是前面去。 */
 function stepFromKey(key: string, axis: string, rtl: boolean): number | null {
@@ -49,6 +69,8 @@ export function connectSortable<T extends PropTypes>(
   const axis = prop('orientation') ?? 'vertical'
   const rtl = prop('dir') === 'rtl'
   const translations = prop('translations')
+  const group = prop('group')
+  assertSortableGroupProps({ group, listId: prop('listId'), orientation: axis })
 
   const dragging = state.matches('dragging')
   const activeId = context.get('activeId')
@@ -56,16 +78,31 @@ export function connectSortable<T extends PropTypes>(
   const to = context.get('to')
   const mode = context.get('mode')
   const settle = context.get('settle')
+  // 被拖项此刻悬在同组别的列表上方
+  const away = dragging && context.get('toList') != null
+  // 同组别的列表的一项此刻悬在这里；自己在拖动时不接
+  const incoming = dragging ? null : context.get('incoming')
+  // 单轴排布里 incoming 只会是这两档：换行网格不能入组
+  const lineAxis: 'horizontal' | 'vertical' = axis === 'horizontal' ? 'horizontal' : 'vertical'
+  const incomingLayout = incoming
+    ? { ...incoming, axis: lineAxis, direction: lineAxis === 'horizontal' && rtl ? -1 as const : 1 as const }
+    : null
 
-  // 让位位移由几何层算，两条路径（指针 / 键盘）共用同一套规则
-  const offsets = dragging
-    ? sortableOffsets({
-        rects: context.get('rects'),
-        from,
-        to,
-        dragDelta: mode === 'pointer' ? context.get('delta') : undefined,
-      })
-    : []
+  const offsets = (() => {
+    const rects = context.get('rects')
+    if (away) {
+      // 被拖项离开了这个列表：它后面的各项合拢，它自己指针拖动时跟手、键盘拖动时平移进目标列表里的那一格
+      const own = rects[from]
+      const slot = context.get('slot')
+      const dragDelta = mode === 'pointer' ? context.get('delta') : own && slot ? { x: slot.x - own.x, y: slot.y - own.y } : ZERO
+      return sortableOffsets({ rects, from, to: rects.length - 1, dragDelta })
+    }
+    // 让位位移由几何层算，两条路径（指针 / 键盘）共用同一套规则
+    if (dragging)
+      return sortableOffsets({ rects, from, to, dragDelta: mode === 'pointer' ? context.get('delta') : undefined })
+    // 别的列表的一项拖进来：插入点及其后的项挪出一格
+    return incomingLayout ? insertionOffsets(incomingLayout) : []
+  })()
 
   const items: SortableItemState[] = ids.map((id, index) => ({
     id,
@@ -111,6 +148,13 @@ export function connectSortable<T extends PropTypes>(
       send({ type: 'KEY.MOVE', step })
       return true
     }
+    // 入了组时另一条轴上的方向键不再放行：它们在相邻列表间挪
+    const listStep = group == null ? null : listStepFromKey(event.key, axis, rtl)
+    if (listStep != null) {
+      event.preventDefault()
+      send({ type: 'KEY.MOVE_LIST', step: listStep })
+      return true
+    }
     return false
   }
 
@@ -131,6 +175,12 @@ export function connectSortable<T extends PropTypes>(
       'data-dragging': dataAttr(dragging),
       // 拖动由什么驱动：指针拖动时被拖那一项跟手，键盘拖动时它逐格挪、与让位的邻项同一段一起滑
       'data-drag-mode': dragging ? mode ?? undefined : undefined,
+      // 同组别的列表的一项正悬在这里、松手会落进来：与树节点、表格行落点的「落进里面」同一个值
+      'data-drop': incoming ? 'inside' : undefined,
+      // 落进来那一格的尺寸：皮肤在容器末尾垫出同样大的一段，让位挪出去的末项不会掉出容器
+      'style': {
+        '--xh-_sortable-incoming-size': incoming ? `${lineAxis === 'horizontal' ? incoming.size.width : incoming.size.height}px` : undefined,
+      },
     }),
 
     getItemProps: ({ id, disabled: itemDisabled }) => {
@@ -263,12 +313,22 @@ export function connectSortable<T extends PropTypes>(
      * 四个键每帧都写全（用不上的写空串清掉）：WC 侧 Object.assign 到 style 上不会撤掉上一帧的旧键。
      */
     getDropIndicatorProps: () => {
-      const rect = dragging ? context.get('rects')[to] : undefined
+      // 被拖项悬在别的列表上方时线归那个列表画，这边收起
+      const rect = dragging && !away ? context.get('rects')[to] : undefined
       const origin = context.get('rootOrigin')
-      const active = !!rect && !!origin && from >= 0 && to !== from
+      let active = !!rect && !!origin && from >= 0 && to !== from
       let offset = ''
       let blockSize = ''
-      if (active && rect && origin) {
+      if (incomingLayout) {
+        // 别的列表的一项拖进来：线画在它落进来那一格的起始缘上
+        const slot = insertionSlot(incomingLayout)
+        const base = incomingLayout.rootOrigin
+        active = true
+        offset = lineAxis === 'vertical'
+          ? translateOf(0, slot.y - base.y)
+          : translateOf((incomingLayout.direction > 0 ? slot.x : slot.x + incomingLayout.size.width) - base.x, 0)
+      }
+      else if (active && rect && origin) {
         const after = to > from
         if (axis === 'vertical') {
           offset = translateOf(0, (after ? rect.y + rect.height : rect.y) - origin.y)

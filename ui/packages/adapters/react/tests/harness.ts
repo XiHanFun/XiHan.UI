@@ -38,6 +38,7 @@ const PUBLIC_EVENTS = {
   'row-move': 'onRowMove',
   'select': 'onSelect',
   'sort': 'onSort',
+  'transfer': 'onTransfer',
   'status-change': 'onStatusChange',
   'stick-change': 'onStickChange',
   'stop': 'onStop',

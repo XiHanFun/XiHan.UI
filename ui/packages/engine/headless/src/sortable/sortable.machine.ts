@@ -5,21 +5,25 @@
 
 // 提供 sortable 相关实现。
 
-import type { ContextFacade, RefsFacade } from '@xihan-ui/core'
+import type { ContextFacade, PropFn, RefsFacade } from '@xihan-ui/core'
 import type { DndRect } from '@xihan-ui/pointer'
-import type { SortableSchema } from './sortable.types'
+import type { SortableAnnounceKind } from './sortable.announce'
+import type { SortableGroupPeer, SortableSchema } from './sortable.types'
 import { glideFrom, ITEM_VALUE_ATTR, itemValue, queryItems, setup } from '@xihan-ui/core'
 import { createSpringValue, frameLoop } from '@xihan-ui/motion'
 import {
   createPointerSession,
   edgeScrollDelta,
+  insertionSlot,
   moveItem,
+  projectInsertion,
   projectSortable,
   resolveSessionDoc,
   shouldActivate,
 } from '@xihan-ui/pointer'
 import { sortableAnatomy } from './sortable.anatomy'
 import { sortableAnnouncement } from './sortable.announce'
+import { joinSortableGroup, measureSortableGroup, peerAt, sortableListName } from './sortable.group'
 
 const { createMachine } = setup<SortableSchema>()
 
@@ -72,12 +76,94 @@ function itemTextOf(root: HTMLElement | null, id: string): string | null {
   return text || null
 }
 
+/** 跨列表那几步共用的动作参数。 */
+interface SessionParams {
+  context: ContextFacade<SortableSchema>
+  prop: PropFn<SortableSchema>
+  refs: RefsFacade<SortableSchema>
+}
+
+/** 让此刻悬着的那个别的列表撤掉让位；没有时什么都不做。 */
+function leaveTarget(refs: RefsFacade<SortableSchema>): void {
+  const session = refs.get('group')
+  if (!session?.target)
+    return
+  session.target.send({ type: 'GROUP.LEAVE' })
+  refs.set('group', { ...session, target: null })
+}
+
+/**
+ * 把落点挪到 target 的第 index 位；target 为 null 即落回自己。换了列表时先让上一个列表撤掉让位，
+ * 新落点送给目标列表去画。落点真变了才播报；换了列表的那一句带上列表名与它在组里排第几。
+ */
+function moveTo(params: SessionParams, target: SortableGroupPeer | null, index: number): void {
+  const { context, prop, refs } = params
+  const session = refs.get('group')
+  if (!session)
+    return
+  const previous = session.target
+  const switched = previous !== target
+  if (previous && switched)
+    previous.send({ type: 'GROUP.LEAVE' })
+  refs.set('group', { ...session, target })
+
+  const rects = context.get('rects')
+  if (!target) {
+    const to = Math.min(Math.max(index, 0), rects.length - 1)
+    if (!switched && to === context.get('to'))
+      return
+    context.set('to', to)
+    context.set('toList', null)
+    context.set('slot', null)
+    say(params, switched ? 'movedToList' : 'moved')
+    return
+  }
+
+  const to = Math.min(Math.max(index, 0), target.rects.length)
+  if (!switched && to === context.get('to'))
+    return
+  const own = rects[context.get('from')]
+  const size = { width: own?.width ?? 0, height: own?.height ?? 0 }
+  context.set('to', to)
+  context.set('toList', target.listId)
+  context.set('slot', insertionSlot({
+    rects: target.rects,
+    index: to,
+    axis: target.axis,
+    size,
+    gap: target.gap,
+    direction: target.direction,
+    box: target.box,
+  }))
+  target.send({
+    type: 'GROUP.OVER',
+    incoming: {
+      id: context.get('activeId') ?? '',
+      fromList: prop('listId') ?? '',
+      mode: context.get('mode') ?? 'pointer',
+      index: to,
+      size,
+      rects: target.rects,
+      box: target.box,
+      gap: target.gap,
+      rootOrigin: target.rootOrigin,
+    },
+  })
+  say(params, switched ? 'movedToList' : 'moved')
+}
+
 export const sortableMachine = createMachine({
   name: 'sortable',
   context: ({ cell }) => ({
     activeId: cell<string | null>(() => ({ defaultValue: null })),
     from: cell<number>(() => ({ defaultValue: -1 })),
     to: cell<number>(() => ({ defaultValue: -1 })),
+    toList: cell<string | null>(() => ({ defaultValue: null })),
+    slot: cell<SortableSchema['context']['slot']>(() => ({
+      defaultValue: null,
+      isEqual: (a, b) => a === b || (!!a && !!b && a.x === b.x && a.y === b.y),
+    })),
+    incoming: cell<SortableSchema['context']['incoming']>(() => ({ defaultValue: null })),
     mode: cell<SortableSchema['context']['mode']>(() => ({ defaultValue: null })),
     delta: cell<SortableSchema['context']['delta']>(() => ({
       defaultValue: ZERO,
@@ -107,10 +193,12 @@ export const sortableMachine = createMachine({
     drop: null,
     settle: null,
     layout: null,
+    group: null,
   }),
   initialState: () => 'idle',
-  // 放下归位的弹簧跨状态存在（回到 idle 之后才起），卸载时由它收
-  effects: ['trackSettle'],
+  // 放下归位的弹簧跨状态存在（回到 idle 之后才起），卸载时由它收；
+  // 组的登记跟着机器走：启动即登记，停止即注销，入不入组按调用时的 props 现读
+  effects: ['trackSettle', 'trackGroup'],
   // 按住途中整体转禁用，或按住的把手所属项离开了 ids：不会再来 keyup，按压面由机器自己收
   watch: ({ track, prop, action }) => {
     track([() => prop('disabled'), () => prop('ids')], () => action(['releaseWhenInert']))
@@ -124,9 +212,15 @@ export const sortableMachine = createMachine({
       on: {
         // 按下先进 pending：还没走够激活距离，这一下可能只是点击
         'ITEM.POINTER_DOWN': { guard: 'canSort', target: 'pending', actions: ['setPending'] },
-        'ITEM.PICKUP': { guard: 'canSort', target: 'dragging', actions: ['startKeyboardDrag'] },
+        'ITEM.PICKUP': { guard: 'canSort', target: 'dragging', actions: ['startKeyboardDrag', 'measureGroup'] },
         // 按压通道：触屏按下的那一帧与 ITEM.POINTER_DOWN 并存，拖动真开始前把手先有按压面
         'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
+        // 同组别的列表把一项拖到了这里：按它送来的落点与几何画让位与落点线
+        'GROUP.OVER': { actions: ['setIncoming'] },
+        // 那一项挪走了：让位撤掉，各项从此刻的位置滑回原位
+        'GROUP.LEAVE': { actions: ['captureLayout', 'clearIncoming', 'glideLayout'] },
+        // 那一项落在了这里：宿主接了转移、在这里渲出它之后，由这边把它从松手处收进新位置
+        'GROUP.DROP': { actions: ['captureLayout', 'clearIncoming', 'receiveDrop', 'settleDrop', 'glideLayout'] },
       },
     },
     pending: {
@@ -135,7 +229,7 @@ export const sortableMachine = createMachine({
       on: {
         'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
         // 守卫不过就原地不动，视觉上完全没有拖动发生
-        'POINTER.MOVE': { guard: 'passedActivation', target: 'dragging', actions: ['startPointerDrag', 'trackDelta'] },
+        'POINTER.MOVE': { guard: 'passedActivation', target: 'dragging', actions: ['startPointerDrag', 'measureGroup', 'trackDelta'] },
         'POINTER.END': { target: 'idle', actions: ['clearSession'] },
         'POINTER.CANCEL': { target: 'idle', actions: ['clearSession'] },
       },
@@ -151,6 +245,7 @@ export const sortableMachine = createMachine({
         // 系统收走指针按取消算：顺序不动
         'POINTER.CANCEL': { target: 'idle', actions: ['captureLayout', 'captureDrop', 'cancel', 'invokeDragEnd', 'clearSession', 'settleDrop', 'glideLayout'] },
         'KEY.MOVE': { actions: ['stepTo'] },
+        'KEY.MOVE_LIST': { actions: ['stepList'] },
         'KEY.DROP': { target: 'idle', actions: ['captureLayout', 'captureDrop', 'commit', 'invokeDragEnd', 'clearSession', 'settleDrop', 'glideLayout'] },
         // 键盘取消：被拖那一项也跟邻项一样从此刻的格位滑回原位
         'KEY.CANCEL': { target: 'idle', actions: ['captureLayout', 'cancel', 'invokeDragEnd', 'clearSession', 'glideLayout'] },
@@ -214,7 +309,7 @@ export const sortableMachine = createMachine({
         context.set('mode', 'pointer')
         context.set('delta', deltaFrom(refs.get('origin'), e.point))
         context.set('to', context.get('from'))
-        say(context, prop, refs, 'picked')
+        say({ context, prop, refs }, 'picked')
         prop('onDragStart')?.({ id: context.get('activeId') ?? '', from: context.get('from'), mode: 'pointer' })
       },
 
@@ -232,7 +327,7 @@ export const sortableMachine = createMachine({
         context.set('delta', ZERO)
         context.set('rects', itemElements(root).map(toDndRect))
         context.set('rootOrigin', rootOriginOf(root))
-        say(context, prop, refs, 'picked')
+        say({ context, prop, refs }, 'picked')
         prop('onDragStart')?.({ id: e.id, from: index, mode: 'keyboard' })
       },
 
@@ -242,15 +337,33 @@ export const sortableMachine = createMachine({
           return
         const delta = deltaFrom(refs.get('origin'), e.point)
         context.set('delta', delta)
+        const params = { context, prop, refs }
+        const own = context.get('rects')[context.get('from')]
         const { to } = projectSortable({
           rects: context.get('rects'),
           from: context.get('from'),
           delta,
           axis: prop('orientation') ?? 'vertical',
         })
+        const session = refs.get('group')
+        if (session && own) {
+          // 落在哪个列表与单列表的落点同一个判据：看被拖项的中心，不看指针
+          const point = { x: own.x + own.width / 2 + delta.x, y: own.y + own.height / 2 + delta.y }
+          const hit = peerAt(session.peers, point)
+          // 中心不在任何列表上方时落点留在上一个列表里，与单列表拖出容器仍按两端算同一个道理
+          const target = hit ? (hit.self ? null : hit) : session.target
+          if (target) {
+            moveTo(params, target, projectInsertion({ rects: target.rects, point, axis: target.axis, direction: target.direction }))
+            return
+          }
+          if (session.target) {
+            moveTo(params, null, to)
+            return
+          }
+        }
         if (to !== context.get('to')) {
           context.set('to', to)
-          say(context, prop, refs, 'moved')
+          say(params, 'moved')
         }
       },
 
@@ -259,27 +372,98 @@ export const sortableMachine = createMachine({
         if (e.type !== 'KEY.MOVE')
           return
         const next = context.get('to') + e.step
+        const target = refs.get('group')?.target
+        // 在别的列表上方时在那个列表里挪：可以排到它的末项之后
+        if (target) {
+          if (next >= 0 && next <= target.rects.length)
+            moveTo({ context, prop, refs }, target, next)
+          return
+        }
         // 夹住不回绕：回绕会让「一直按下去」悄悄绕回原位，看不出到底动没动
         if (next < 0 || next >= context.get('rects').length)
           return
         context.set('to', next)
-        say(context, prop, refs, 'moved')
+        say({ context, prop, refs }, 'moved')
+      },
+
+      /**
+       * 挪到组里相邻的列表（文档序的上一个 / 下一个），位次尽量沿用，超出那个列表的长度就夹到末尾。
+       * 到了组的两头不动，也不回绕，理由同列表内。
+       */
+      stepList: ({ context, prop, refs, event }) => {
+        const e = event.current()
+        const session = refs.get('group')
+        if (e.type !== 'KEY.MOVE_LIST' || !session)
+          return
+        const current = session.target ?? session.peers.find(peer => peer.self)
+        const next = current ? session.peers[session.peers.indexOf(current) + e.step] : undefined
+        if (!next)
+          return
+        moveTo({ context, prop, refs }, next.self ? null : next, context.get('to'))
+      },
+
+      /** 拖动开始那一刻量齐组里各列表；组里只有自己时按单列表走，不留会话。 */
+      measureGroup: ({ prop, refs }) => {
+        const group = prop('group')
+        const root = refs.get('getRootEl')()
+        const peers = group == null || !root ? [] : measureSortableGroup(group, root)
+        refs.set('group', peers.some(peer => !peer.self) ? { peers, target: null } : null)
+      },
+
+      setIncoming: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'GROUP.OVER')
+          context.set('incoming', e.incoming)
+      },
+
+      clearIncoming: ({ context }) => context.set('incoming', null),
+
+      /** 接过源列表量下的松手位置：随后的放下归位按它把落进来的那一项收进新位置。 */
+      receiveDrop: ({ refs, event }) => {
+        const e = event.current()
+        refs.set('drop', e.type === 'GROUP.DROP' ? e.drop : null)
       },
 
       commit: ({ context, prop, refs }) => {
         const from = context.get('from')
         const to = context.get('to')
         const id = context.get('activeId')
-        if (id == null || from < 0 || to < 0 || from === to)
+        const session = refs.get('group')
+        const target = session?.target
+        if (id == null || from < 0 || to < 0)
+          return
+        if (session && target) {
+          // 先让目标列表收下松手位置，再把转移意图交给宿主：宿主同步挪了节点（Web Components 的作者脚本）时，
+          // 目标列表量下的收尾前位置里还没有这一项
+          say({ context, prop, refs }, 'droppedInList')
+          target.send({ type: 'GROUP.DROP', drop: refs.get('drop') })
+          refs.set('group', { ...session, target: null })
+          const ids = prop('ids') ?? []
+          const targetIds = target.ids()
+          prop('onTransfer')?.({
+            id,
+            fromList: prop('listId') ?? '',
+            toList: target.listId,
+            from,
+            to,
+            fromIds: ids.filter((_, index) => index !== from),
+            toIds: [...targetIds.slice(0, to), id, ...targetIds.slice(to)],
+          })
+          return
+        }
+        if (from === to)
           return
         prop('onSort')?.({ from, to, id, ids: moveItem(prop('ids') ?? [], from, to) })
-        say(context, prop, refs, 'dropped')
+        say({ context, prop, refs }, 'dropped')
       },
 
       cancel: ({ context, prop, refs }) => {
-        // 落点退回起点：收尾回调与播报都按「没动过」来说
+        // 落点退回起点：收尾回调与播报都按「没动过」来说；悬着的别的列表撤掉让位
+        leaveTarget(refs)
         context.set('to', context.get('from'))
-        say(context, prop, refs, 'canceled')
+        context.set('toList', null)
+        context.set('slot', null)
+        say({ context, prop, refs }, 'canceled')
       },
 
       invokeDragEnd: ({ context, prop, event }) => {
@@ -287,12 +471,15 @@ export const sortableMachine = createMachine({
         if (id == null)
           return
         const type = event.current().type
+        const listId = prop('group') == null ? undefined : prop('listId')
         prop('onDragEnd')?.({
           id,
           from: context.get('from'),
           to: context.get('to'),
           mode: context.get('mode') ?? 'pointer',
           canceled: type === 'POINTER.CANCEL' || type === 'KEY.CANCEL',
+          // 入了组才带列表：落进别的列表时 toList 是那个列表，其余与 fromList 相同
+          ...(listId == null ? {} : { fromList: listId, toList: context.get('toList') ?? listId }),
         })
       },
 
@@ -367,7 +554,10 @@ export const sortableMachine = createMachine({
           const rect = el.getBoundingClientRect()
           rects.set(id, { left: rect.left, top: rect.top })
         }
-        refs.set('layout', { rects, skip: event.current().type === 'KEY.CANCEL' ? null : context.get('activeId') })
+        const e = event.current()
+        // 落进来的那一项由放下归位的弹簧收进，与自己这边放下时一样不在这里算
+        const skip = e.type === 'KEY.CANCEL' ? null : e.type === 'GROUP.DROP' ? (e.drop?.id ?? null) : context.get('activeId')
+        refs.set('layout', { rects, skip })
       },
 
       /**
@@ -398,10 +588,30 @@ export const sortableMachine = createMachine({
         context.set('delta', ZERO)
         context.set('rects', [])
         context.set('rootOrigin', null)
+        context.set('toList', null)
+        context.set('slot', null)
+        refs.set('group', null)
       },
     },
     effects: {
       trackSettle: ({ refs, context }) => () => stopSettle(refs, context),
+
+      /** 登记进组的名册；停止时注销，拖到一半被卸下时让悬着的别的列表撤掉让位。 */
+      trackGroup: ({ prop, refs, send }) => {
+        const leave = joinSortableGroup({
+          group: () => prop('group'),
+          ids: () => prop('ids') ?? [],
+          listId: () => prop('listId'),
+          orientation: () => prop('orientation') ?? 'vertical',
+          dir: () => prop('dir'),
+          root: () => refs.get('getRootEl')(),
+          send,
+        })
+        return () => {
+          leave()
+          leaveTarget(refs)
+        }
+      },
 
       /** 跟手交给指针会话。pending 与 dragging 共用同一份，升级状态时不会断手。 */
       trackPointer: ({ refs, send }) => {
@@ -450,19 +660,22 @@ function deltaFrom(origin: { clientX: number, clientY: number } | null, point: {
 }
 
 /** 拼一句播报塞进 context，适配器把它渲进 aria-live 区域。 */
-function say(
-  context: { get: <K extends keyof SortableSchema['context']>(k: K) => SortableSchema['context'][K], set: (k: 'announcement', v: string) => void },
-  prop: <K extends keyof SortableSchema['props']>(k: K) => SortableSchema['props'][K],
-  refs: { get: <K extends keyof SortableSchema['refs']>(k: K) => SortableSchema['refs'][K] },
-  kind: 'picked' | 'moved' | 'dropped' | 'canceled',
-): void {
+function say({ context, prop, refs }: SessionParams, kind: SortableAnnounceKind): void {
   const id = context.get('activeId') ?? ''
   const text = itemTextOf(refs.get('getRootEl')(), id)
+  const session = refs.get('group')
+  const target = session?.target ?? null
+  // 说到列表时说的是落点所在的那个：在别的列表上方就是它，否则是自己
+  const listed = target ?? session?.peers.find(peer => peer.self) ?? null
   context.set('announcement', sortableAnnouncement(kind, {
     id,
     // 播报里说的是人类的第几位，从 1 数起；取消那次说的是回到哪儿
     position: context.get(kind === 'picked' || kind === 'canceled' ? 'from' : 'to') + 1,
-    total: context.get('rects').length,
+    // 落在别的列表里时，那个列表连同拖进去的这一项一起数
+    total: target ? target.rects.length + 1 : context.get('rects').length,
+    list: session && listed
+      ? { name: sortableListName(listed.root), position: session.peers.indexOf(listed) + 1, total: session.peers.length }
+      : undefined,
     // 项上写着的字比 id 好听。作者没给 translations.item 时退回它
     translations: { item: () => text ?? id, ...prop('translations') },
   }))

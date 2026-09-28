@@ -6,7 +6,7 @@
 // 提供 sortable 相关实现。
 
 import type { Direction, IdGenerator, Service } from '@xihan-ui/core'
-import type { SortableDragEndDetails, SortableDragStartDetails, SortableSchema, SortableSortDetails } from '@xihan-ui/headless'
+import type { SortableDragEndDetails, SortableDragStartDetails, SortableSchema, SortableSortDetails, SortableTransferDetails } from '@xihan-ui/headless'
 import type { SortableAxis } from '@xihan-ui/pointer'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectSortable, sortableAnatomy, sortableMachine, sortableMeta } from '@xihan-ui/headless'
@@ -44,6 +44,10 @@ const ID_LIST_CONVERTER = {
  * 键盘全部在手柄上：空格或回车拾起、方向键移动一格、再按空格放下、Esc 取消。
  * 拖动中的 Tab 会被拦截：焦点一旦移走，本场拖动就没有出口。
  *
+ * 写了同一个 group 的几个 `<xh-sortable>` 组成一组，项可以拖进组里别的列表；键盘拖动中另一条轴上的方向键
+ * 在相邻列表间移动。落进别的列表时源列表发 transfer：作者在回调里把项节点挪进目标列表的 root、
+ * 按 detail 写回两边的 ids；不挪不写时那一项收回原位。
+ *
  * @customElement xh-sortable
  * @attr {string} ids - 顺序真源，逗号分隔的项标识（如 "a,b,c"）
  * @attr {'horizontal'|'vertical'|'both'} orientation - 排序轴，默认 vertical；换行网格使用 both
@@ -51,10 +55,13 @@ const ID_LIST_CONVERTER = {
  * @attr {boolean} disabled - 禁用：手柄退出 Tab 序列，按下也不进入拖动
  * @attr {number} activation-distance - 按下之后移动多远才视为开始拖动，默认 5；提供 0 表示按下即拖动
  * @attr {boolean} auto-scroll - 拖到容器边缘时自动滚动，默认开启
+ * @attr {string} group - 所在的组：同一文档里 group 相同的列表可以互相拖入拖出；入组的列表只能单轴排布
+ * @attr {string} list-id - 这个列表在组里的标识，写了 group 就必须写，组内不重复
  * @fires sort - 顺序变化；detail 为 `{ from, to, id, ids }`，其中 ids 已重排
+ * @fires transfer - 一项落进了同组另一个列表，由源列表发一次；detail 为 `{ id, fromList, toList, from, to, fromIds, toIds }`，节点挪不挪、ids 写不写回归作者
  * @fires drag-start - 拾起；detail 为 `{ id, from, mode }`
- * @fires drag-end - 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }`
- * @csspart root - 承载 data-orientation / data-disabled / data-dragging 的容器
+ * @fires drag-end - 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }`，入了组时另带 fromList / toList
+ * @csspart root - 承载 data-orientation / data-disabled / data-dragging 的容器；同组别的列表的一项悬在这里时带 data-drop="inside"
  * @csspart item - 一项；位移由内联 translate 给出，被拖动的项带 data-dragging
  * @csspart item-drag-trigger - role=button 的拖拽手柄，指针与键盘交互全部在它身上
  * @csspart drop-indicator - 落点线；拖动中绘制在松手后该项将插入的缝隙上，位置由内联样式给出，节点排在末项之后
@@ -72,6 +79,8 @@ export class XhSortableElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     activationDistance: { converter: NUMBER_CONVERTER, attribute: 'activation-distance' },
     autoScroll: { converter: BOOLEAN_CONVERTER, attribute: 'auto-scroll' },
+    group: { converter: STRING_CONVERTER },
+    listId: { converter: STRING_CONVERTER, attribute: 'list-id' },
     // 对象进不了属性，只作为 property 暴露
     translations: { attribute: false },
     // 跨嵌套 Light DOM 组合时，由作者把显式 data-xh-part-owner="sortable" 的角色根交进来。
@@ -84,6 +93,8 @@ export class XhSortableElement extends XhElement {
   declare disabled?: boolean
   declare activationDistance?: number
   declare autoScroll?: boolean
+  declare group?: string
+  declare listId?: string
   /** 区域名、项名、拖拽把手名，以及拾起 / 移动 / 放下 / 取消四句键盘拖拽播报。 */
   declare translations?: SortableSchema['props']['translations']
   declare partRoots?: HTMLElement[]
@@ -97,6 +108,10 @@ export class XhSortableElement extends XhElement {
 
   private readonly notifySort = (details: SortableSortDetails): void => {
     this.dispatchEvent(new CustomEvent('sort', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyTransfer = (details: SortableTransferDetails): void => {
+    this.dispatchEvent(new CustomEvent('transfer', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyDragStart = (details: SortableDragStartDetails): void => {
@@ -123,7 +138,10 @@ export class XhSortableElement extends XhElement {
       activationDistance: this.activationDistance,
       autoScroll: this.autoScroll,
       translations: this.translations,
+      group: this.group,
+      listId: this.listId,
       onSort: this.notifySort,
+      onTransfer: this.notifyTransfer,
       onDragStart: this.notifyDragStart,
       onDragEnd: this.notifyDragEnd,
     }

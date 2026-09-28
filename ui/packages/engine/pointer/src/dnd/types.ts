@@ -48,6 +48,38 @@ export interface SortableProjection {
   offsets: readonly DndDelta[]
 }
 
+/**
+ * 单轴排布的主方向：沿轴正向排（上到下、左到右）为 1，反向（从右往左的水平排布）为 -1。
+ * 列表里有两项以上时由首尾两项的先后判出，这里只在判不出时兜底。
+ */
+export type DndDirection = 1 | -1
+
+export interface InsertionProjectionInput {
+  /** 目标列表按 DOM 顺序排的项矩形，拖入那一刻的快照。 */
+  rects: readonly DndRect[]
+  /** 拖入项此刻的中心，视口坐标。 */
+  point: DndDelta
+  axis: 'horizontal' | 'vertical'
+  /** 目标列表不足两项、判不出排布方向时按它算，缺省 1。 */
+  direction?: DndDirection
+}
+
+export interface InsertionLayoutInput {
+  /** 目标列表按 DOM 顺序排的项矩形，拖入那一刻的快照。 */
+  rects: readonly DndRect[]
+  /** 插在第几位：0 到项数，等于项数即排到末尾。 */
+  index: number
+  axis: 'horizontal' | 'vertical'
+  /** 拖入项的尺寸：让位与落位都按它算。 */
+  size: { width: number, height: number }
+  /** 目标列表相邻两项之间的间距。 */
+  gap: number
+  /** 目标列表不足两项、判不出排布方向时按它算，缺省 1。 */
+  direction?: DndDirection
+  /** 目标列表的内容盒（容器矩形去掉边框与内边距），列表为空时拖入项落在它的起点上。 */
+  box: DndRect
+}
+
 export interface SortableOffsetsInput {
   /** 按 DOM 顺序排的项矩形，按下那一刻的快照。 */
   rects: readonly DndRect[]

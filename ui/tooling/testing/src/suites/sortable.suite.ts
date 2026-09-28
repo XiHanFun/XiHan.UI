@@ -70,6 +70,58 @@ function itemNode(id: string, text: string): FixtureNode {
   }
 }
 
+const GROUP_WHY = '夹具只能挂一个根组件：同组的第二个列表摆进第一个列表的 root 里，两者的项按最近的 root 各归各'
+
+/**
+ * 同组的第二个列表（B，两项 d / e）。Vue 与 React 侧是同一组件的 root 部件；WC 侧要有自己的 <xh-sortable> 宿主，
+ * ids 按元素的属性写法写成逗号串。
+ */
+function groupedFixture(base: FixtureNode): FixtureNode {
+  const listB: FixtureNode[] = [itemNode('d', '丁'), itemNode('e', '戊'), { part: 'drop-indicator' }, { part: 'live-region' }]
+  return {
+    ...base,
+    children: [
+      ...(base.children ?? []),
+      { part: 'root', only: ['vue', 'react'], attrs: { 'ids': ['d', 'e'], 'group': 'board', 'list-id': 'B' }, children: listB },
+      { tag: 'xh-sortable', only: ['wc'], attrs: { 'ids': 'd,e', 'group': 'board', 'list-id': 'B' }, children: [{ part: 'root', children: listB }] },
+    ],
+  }
+}
+
+/**
+ * 看板的几何：A 列（外层）在 x 0..200，B 列在 x 300..500，每项 200×100。
+ * 各项按最近的 root 归列：B 的 root 在 DOM 里嵌在 A 的 root 里，几何上是并排的两列。
+ */
+function groupLayout({ doc }: RawStepContext): void {
+  const roots = [...doc.querySelectorAll<HTMLElement>('[data-scope="sortable"][data-part="root"]')]
+  roots.forEach((root, column) => {
+    const x = column * 300
+    const items = [...root.querySelectorAll<HTMLElement>('[data-scope="sortable"][data-part="item"]')]
+      .filter(el => el.parentElement?.closest('[data-scope="sortable"][data-part="root"]') === root)
+    items.forEach((el, i) => {
+      el.getBoundingClientRect = (): DOMRect => rect(x, i * 100, 200, 100)
+    })
+    root.getBoundingClientRect = (): DOMRect => rect(x, 0, 200, 300)
+  })
+}
+
+function pressAt(index: number, clientX: number, clientY: number) {
+  return ({ doc }: RawStepContext): void => {
+    handleAt(doc, index).dispatchEvent(
+      new PointerEvent('pointerdown', { clientX, clientY, button: 0, pointerType: 'mouse', bubbles: true, cancelable: true }),
+    )
+  }
+}
+
+function moveTo(clientX: number, clientY: number) {
+  return ({ doc }: RawStepContext): void => {
+    doc.dispatchEvent(new PointerEvent('pointermove', { clientX, clientY, bubbles: true }))
+  }
+}
+
+/** 把 a 放进 B 第 1 位之后，两个列表各自的新顺序。 */
+const TRANSFER_A_TO_B1 = { id: 'a', fromList: 'A', toList: 'B', from: 0, to: 1, fromIds: ['b', 'c'], toIds: ['d', 'a', 'e'] }
+
 export const sortableSuite: ConformanceSuite = {
   component: 'sortable',
   anatomy: sortableAnatomy,
@@ -272,6 +324,69 @@ export const sortableSuite: ConformanceSuite = {
       steps: [
         { kind: 'raw', why: LAYOUT_WHY, run: layout },
         heldPressIgnored('sortable', 'item-drag-trigger', '禁用时手柄 aria-disabled，不接受按压'),
+      ],
+    },
+    {
+      name: '入组：另一条轴上的键在相邻列表间挪，目标列表的根报 data-drop，放下由源列表发 transfer',
+      spec: { apg: APG },
+      covers: ['sortable.kbd.next-list', 'sortable.kbd.prev-list'],
+      fixture: groupedFixture,
+      props: { ids: ['a', 'b', 'c'], group: 'board', listId: 'A' },
+      steps: [
+        { kind: 'raw', why: GROUP_WHY, run: groupLayout },
+        { kind: 'focus', part: 'item-drag-trigger' },
+        { kind: 'key', key: ' ', expect: { parts: { 'root[0]': { 'data-dragging': '' }, 'root[1]': { 'data-drop': null } } } },
+        // 竖排列表的组横着排：右键挪进下一个列表，那边的根报落进里面、落点线露面，这边的线收起
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: { parts: { 'root[1]': { 'data-drop': 'inside', 'data-dragging': null }, 'drop-indicator[0]': { hidden: '' }, 'drop-indicator[1]': { hidden: null } } },
+        },
+        // 左键挪回源列表：那边撤掉让位
+        { kind: 'key', key: 'ArrowLeft', expect: { parts: { 'root[1]': { 'data-drop': null }, 'drop-indicator[1]': { hidden: '' } } } },
+        // 已是组里第一个列表：再往左不动，也不回绕
+        { kind: 'key', key: 'ArrowLeft', expect: { parts: { 'root[1]': { 'data-drop': null } } } },
+        { kind: 'key', key: 'ArrowRight' },
+        { kind: 'key', key: 'ArrowDown' },
+        {
+          kind: 'key',
+          key: ' ',
+          expect: {
+            parts: { 'root[0]': { 'data-dragging': null }, 'root[1]': { 'data-drop': null } },
+            events: [{ type: 'transfer', detail: TRANSFER_A_TO_B1 }],
+          },
+        },
+      ],
+    },
+    {
+      name: '入组：Escape 取消时目标列表撤掉让位，一个事件都不发',
+      spec: { apg: APG },
+      covers: ['sortable.kbd.cancel'],
+      fixture: groupedFixture,
+      props: { ids: ['a', 'b', 'c'], group: 'board', listId: 'A' },
+      steps: [
+        { kind: 'raw', why: GROUP_WHY, run: groupLayout },
+        { kind: 'focus', part: 'item-drag-trigger' },
+        { kind: 'key', key: ' ' },
+        { kind: 'key', key: 'ArrowRight', expect: { parts: { 'root[1]': { 'data-drop': 'inside' } } } },
+        { kind: 'key', key: 'Escape', expect: { parts: { 'root[0]': { 'data-dragging': null }, 'root[1]': { 'data-drop': null } }, events: [] } },
+      ],
+    },
+    {
+      name: '入组：指针把一项拖进别的列表，松手落在中心判出的那一位',
+      spec: { apg: APG },
+      fixture: groupedFixture,
+      props: { ids: ['a', 'b', 'c'], group: 'board', listId: 'A' },
+      steps: [
+        { kind: 'raw', why: GROUP_WHY, run: groupLayout },
+        { kind: 'raw', why: '指针按下要带真实坐标，按键步骤造不出', run: pressAt(0, 100, 50) },
+        {
+          kind: 'raw',
+          why: '中心拖到 (400, 150)：进了 B 列，越过 d 的中心、没越过 e 的',
+          run: moveTo(400, 150),
+          expect: { parts: { 'root[0]': { 'data-dragging': '' }, 'root[1]': { 'data-drop': 'inside' } } },
+        },
+        { kind: 'raw', why: '抬手提交', run: release, expect: { parts: { 'root[1]': { 'data-drop': null } }, events: [{ type: 'transfer', detail: TRANSFER_A_TO_B1 }] } },
       ],
     },
     {

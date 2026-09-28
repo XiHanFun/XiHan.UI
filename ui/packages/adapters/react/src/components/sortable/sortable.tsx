@@ -47,8 +47,14 @@ export interface XhSortableRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   /** 拖到容器边缘时自动滚动，默认开启。 */
   autoScroll?: boolean
   translations?: Partial<SortableTranslations>
+  /** 所在的组：同一文档里 group 相同的列表可以互相拖入拖出。 */
+  group?: string
+  /** 这个列表在组里的标识，写了 group 就必须写。 */
+  listId?: string
   /** 顺序变化意图；取消的一次不触发。 */
   onSort?: SortableProps['onSort']
+  /** 落进同组另一个列表的意图：由源列表发一次，两个列表的新顺序都在载荷里，写回归宿主。 */
+  onTransfer?: SortableProps['onTransfer']
   onDragStart?: SortableProps['onDragStart']
   onDragEnd?: SortableProps['onDragEnd']
   children?: SlotChildren<SortableRootSlotProps>
@@ -62,7 +68,10 @@ export function XhSortableRoot({
   activationDistance,
   autoScroll,
   translations,
+  group,
+  listId,
   onSort,
+  onTransfer,
   onDragStart,
   onDragEnd,
   children,
@@ -76,7 +85,10 @@ export function XhSortableRoot({
     activationDistance,
     autoScroll,
     translations,
+    group,
+    listId,
     onSort,
+    onTransfer,
     onDragStart,
     onDragEnd,
   }) as SortableProps)
@@ -104,7 +116,7 @@ export function XhSortableRoot({
   )
 }
 
-XhSortableRoot.xhEvents = ['sort', 'drag-start', 'drag-end'] as const
+XhSortableRoot.xhEvents = ['sort', 'transfer', 'drag-start', 'drag-end'] as const
 
 export interface XhSortableItemProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 项标识，与 ids 中的值一一对应。 */
