@@ -11,6 +11,12 @@ import {
   XhDrawerContent,
   XhDrawerRoot,
   XhDrawerTitle,
+  XhMenuContent,
+  XhMenuItem,
+  XhMenuItemText,
+  XhMenuPositioner,
+  XhMenuRoot,
+  XhMenuTrigger,
   XhPopconfirmContent,
   XhPopconfirmPositioner,
   XhPopconfirmRoot,
@@ -39,6 +45,11 @@ interface Case {
   targets?: (el: HTMLElement) => Element[]
 }
 
+const FRUITS = [
+  { value: 'apple', label: '苹果' },
+  { value: 'banana', label: '香蕉' },
+]
+
 const CASES: Record<string, Case> = {
   popover: {
     parts: ['content'],
@@ -54,6 +65,16 @@ const CASES: Record<string, Case> = {
     render: props => h(XhPopconfirmRoot, props, () => [
       h(XhPopconfirmTrigger, null, () => '删除'),
       h(XhPopconfirmPositioner, null, () => h(XhPopconfirmContent, null, () => '确定删除？')),
+    ]),
+  },
+  menu: {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhMenuRoot, props, () => [
+      h(XhMenuTrigger, null, () => '打开'),
+      h(XhMenuPositioner, null, () => h(XhMenuContent, null, () => FRUITS.map(node =>
+        h(XhMenuItem, { key: node.value, value: node.value }, () => h(XhMenuItemText, null, () => node.label)),
+      ))),
     ]),
   },
   dialog: {

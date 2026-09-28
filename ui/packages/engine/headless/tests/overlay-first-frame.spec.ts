@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 // 浮层的首帧标记：挂载时已经打开的浮层（受控 open 的初值为 true，或 defaultOpen）属于首帧，
 // content 与带进场的部件投影 data-instant；第一次收起时撤掉，之后的每一次打开都不再带。
 import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/core'
@@ -6,6 +7,7 @@ import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectDialog, dialogMachine } from '../src/dialog'
 import { connectDrawer, drawerMachine } from '../src/drawer'
+import { connectMenu, menuMachine } from '../src/menu'
 import { connectPopconfirm } from '../src/popconfirm'
 import { connectPopover, popoverMachine } from '../src/popover'
 
@@ -47,6 +49,10 @@ const CASES: Record<string, Case> = {
       const api = connectDrawer(service, normalizeProps)
       return [api.getContentProps() as Attrs, api.getBackdropProps() as Attrs]
     },
+  },
+  menu: {
+    machine: menuMachine,
+    parts: service => [connectMenu(service, normalizeProps).getContentProps() as Attrs],
   },
 }
 

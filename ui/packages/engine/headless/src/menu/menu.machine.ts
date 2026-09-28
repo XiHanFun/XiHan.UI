@@ -9,6 +9,7 @@ import type { Layer, Placement, PositionResult } from '@xihan-ui/core'
 import type { MenuFocusIntent, MenuSchema } from './menu.types'
 import { createTypeahead, itemValue, navigateItems, queryItems, setup, trackHoverIntent } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from '../shared/menu-choice'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -29,6 +30,8 @@ export function menuFallbackPlacement(submenu: boolean | undefined, dir: string 
 export const menuMachine = createMachine({
   name: 'menu',
   context: ({ cell, prop }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     // 位置结果由 trackPosition 回填
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 焦点锚点，服务 roving tabindex 与方向键起点
@@ -61,7 +64,7 @@ export const menuMachine = createMachine({
     getHoverBranches: () => [],
     typeahead: createTypeahead(),
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 悬停意图跟机器不跟状态位：关着要接得住进入、开着要接得住离开
   effects: ['trackHover', 'trackLayer'],
   // 受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.*
@@ -79,6 +82,8 @@ export const menuMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控只发意图，非受控落 target；落焦端与焦点归还策略先记进 context
         'OPEN': [
@@ -136,6 +141,7 @@ export const menuMachine = createMachine({
       },
     },
     actions: {
+      clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')

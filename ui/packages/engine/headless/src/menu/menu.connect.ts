@@ -291,6 +291,8 @@ export function connectMenu<T extends PropTypes>(
       // Tab 位归锚点条目，展开却无锚点时由容器兜底
       'tabindex': open && anchor == null ? 0 : -1,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-placement': placement,
       // 菜单没有 root 部件，视觉轴落在浮层树最外层的 content 上，条目继承私有槽
       'data-tone': prop('tone'),
