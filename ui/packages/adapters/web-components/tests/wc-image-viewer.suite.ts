@@ -114,7 +114,7 @@ export const wcImageViewerSuite: ConformanceSuite = {
               'zoom-in-trigger': { 'type': 'button', 'aria-label': 'Zoom in', 'disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' },
               'zoom-out-trigger': { 'type': 'button', 'aria-label': 'Zoom out', 'disabled': null },
               'reset-trigger': { 'type': 'button', 'aria-label': 'Reset' },
-              'close-trigger': { 'type': 'button', 'aria-label': 'Close', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'lg' },
+              'close-trigger': { 'type': 'button', 'aria-label': 'Close', 'data-xh-action-control': '', 'data-xh-action-profile': 'floating', 'data-xh-action-size': 'sm' },
             },
           },
         },
