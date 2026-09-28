@@ -33,6 +33,14 @@ import {
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
+  XhDateRangePickerConfirmTrigger,
+  XhDateRangePickerContent,
+  XhDateRangePickerControl,
+  XhDateRangePickerPositioner,
+  XhDateRangePickerRangeSeparator,
+  XhDateRangePickerRoot,
+  XhDateRangePickerSegment,
+  XhDateRangePickerSegmentGroup,
   XhDialogContent,
   XhDialogRoot,
   XhDialogTitle,
@@ -177,6 +185,18 @@ const CASES: Record<string, Case> = {
     render: props => h(XhDatePickerRoot, props, () => [
       h(XhDatePickerControl, null, () => h(XhDatePickerSegmentGroup, null, () => h(XhDatePickerSegment, { index: 0 }))),
       h(XhDatePickerPositioner, null, () => h(XhDatePickerContent, null, () => h(XhDatePickerConfirmTrigger, null, () => '确定'))),
+    ]),
+  },
+  'date-range-picker': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhDateRangePickerRoot, props, () => [
+      h(XhDateRangePickerControl, null, () => [
+        h(XhDateRangePickerSegmentGroup, { index: 0 }, () => h(XhDateRangePickerSegment, { index: 0 })),
+        h(XhDateRangePickerRangeSeparator),
+        h(XhDateRangePickerSegmentGroup, { index: 1 }, () => h(XhDateRangePickerSegment, { index: 0 })),
+      ]),
+      h(XhDateRangePickerPositioner, null, () => h(XhDateRangePickerContent, null, () => h(XhDateRangePickerConfirmTrigger, null, () => '确定'))),
     ]),
   },
   'dialog': {
