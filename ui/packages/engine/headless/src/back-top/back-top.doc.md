@@ -21,6 +21,7 @@
 ## 组合
 
 - 指定 `target` 后监听并滚动该容器；未指定时作用于页面。
+- 可以作为[浮动按钮](./float-button)展开列表里的一项：根写 `position: static`，由列表排布，钮与列表里的其他动作同一身量；滚过阈值才出现在列表里。Web Components 的宿主元素写 `display: contents`，让根直接成为列表的一项。
 
 ## 最佳实践
 
