@@ -5,11 +5,12 @@
 
 // 提供 date range picker 相关实现。
 
-import type { PositionResult, Service } from '@xihan-ui/core'
+import type { Params, PositionResult, Service } from '@xihan-ui/core'
 import type { CalendarRangePickerSchema } from '../calendar-range-picker'
 import type { DateFieldSchema } from '../date-field'
 import type { DatePickerTimeGranularity } from '../date-picker'
 import type { CalendarView } from '../shared/calendar'
+import type { ColumnScrollTarget } from '../shared/column-scroll'
 import type { DateRangePickerEndIndex, DateRangePickerPressedKey, DateRangePickerSchema, DateRangePickerValueSource } from './date-range-picker.types'
 import { canTakeFocus, itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
 import { getLocalTimeZone, PlainDateTime, today } from '@xihan-ui/core/date'
@@ -25,10 +26,12 @@ import {
 } from '../date-picker'
 import { sameArray } from '../shared/array'
 import { sortIso } from '../shared/calendar'
+import { alignColumnsOnOpen, followColumnSelection } from '../shared/column-scroll'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { resolveHourCycle } from '../time-field'
+import { dateRangePickerAnatomy } from './date-range-picker.anatomy'
 
 const { createMachine, guards } = setup<DateRangePickerSchema>()
 const { and } = guards
@@ -38,6 +41,8 @@ export const DATE_RANGE_PICKER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
 /** 日期格子的 CSS 选择器，取自日历解剖。 */
 const CELL_TRIGGER_SELECTOR = calendarRangePickerAnatomy.build()['cell-trigger'].selector
+/** 时间列的 CSS 选择器，取自本组件解剖。 */
+const TIME_COLUMN_SELECTOR = dateRangePickerAnatomy.build()['time-column'].selector
 
 /**
  * 对外的值：裁掉尾部的空位，前面的空缺原样留着。
@@ -284,6 +289,16 @@ export function findDateRangePickerCellEl(container: HTMLElement | null, value: 
   return cells.find(el => itemValue(el) === value) ?? null
 }
 
+/** 时间列的滚动定位：打开时各列停到选中的那一格，选中换格时那一列平滑滚过去。 */
+function columnScrollTarget(params: Params<DateRangePickerSchema>): ColumnScrollTarget {
+  return {
+    scope: params.scope,
+    flush: params.flush,
+    content: () => params.refs.get('getContentEl')(),
+    columns: content => [...content.querySelectorAll<HTMLElement>(TIME_COLUMN_SELECTOR)],
+  }
+}
+
 // 这台机器只管开合、值同步与焦点去处；日期数学由日历算好后以 ISO 串送进来。
 // 值的受控收口在 cell（给定 prop 即受控）；开合编进 FSM 状态，受控时走守卫对 + CONTROLLED.* 影子事件 + watch。
 export const dateRangePickerMachine = createMachine({
@@ -345,6 +360,8 @@ export const dateRangePickerMachine = createMachine({
     track([() => prop('open')], () => action(['syncOpen']))
     // 按住途中转入禁用 / 只读或值被清空：触发钮随即 disabled、清空钮藏起，不会再来 keyup，按压面由机器自己收
     track([() => prop('disabled'), () => prop('readOnly'), context.dep('value')], () => action(['releaseWhenInert']))
+    // 选中值变了：选中换了格的时间列平滑滚过去（打开时的那一下由展开态的 effect 直接到位）
+    track([context.dep('value')], () => action(['followColumnSelection']))
   },
   // 两个状态都要认；展开态另行声明的 VALUE.SET 会盖过这里这一条
   on: {
@@ -382,7 +399,7 @@ export const dateRangePickerMachine = createMachine({
       // 按住快捷选项 / 确认钮途中收起（Enter 在 keydown 即写值 / 确认收起）：浮层里的部件不会再来 keyup
       exit: ['releasePress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
-      effects: ['trackPosition'],
+      effects: ['trackPosition', 'trackColumnScroll'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
@@ -440,6 +457,10 @@ export const dateRangePickerMachine = createMachine({
       },
     },
     actions: {
+      followColumnSelection: (params) => {
+        if (params.state.matches('open'))
+          followColumnSelection(columnScrollTarget(params))
+      },
       clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
@@ -566,6 +587,7 @@ export const dateRangePickerMachine = createMachine({
       },
     },
     effects: {
+      trackColumnScroll: params => alignColumnsOnOpen(columnScrollTarget(params)),
       // 引擎订阅的返回值即 cleanup；位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
         // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
