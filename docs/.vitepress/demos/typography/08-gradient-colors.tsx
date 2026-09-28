@@ -1,7 +1,7 @@
 // 渐变字配色 | tone 换成语气色板，覆盖槽改写两端颜色与走向
 import type { CSSProperties, ReactNode } from "react";
-import { Fragment } from "react";
 import { XhTypographyHeading, XhTypographyRoot, XhTypographyText } from "@xihan-ui/react";
+import { Fragment } from "react";
 
 const tones = [
   { tone: "success", label: "成功" },
