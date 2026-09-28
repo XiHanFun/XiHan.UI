@@ -8,13 +8,15 @@
 export { citationAnatomy, citationSourceQuery, citationSourceText } from './citation.anatomy'
 export { citationSourceMetaText, citationSourceTitle, connectCitation } from './citation.connect'
 export { citationKeyboard } from './citation.keyboard'
-export { citationMachine } from './citation.machine'
+export { CITATION_DEFAULT_PLACEMENT, citationMachine } from './citation.machine'
 export { citationMeta } from './citation.meta'
 export type {
   CitationActiveSourceChangeDetails,
   CitationApi,
   CitationOpenChangeDetails,
+  CitationPreviewMode,
   CitationPreviewProps,
+  CitationRefs,
   CitationSchema,
   CitationSource,
   CitationSourceAnchor,
@@ -22,4 +24,5 @@ export type {
   CitationSourceOpenDetails,
   CitationTranslations,
   CitationTriggerProps,
+  CitationTriggerTarget,
 } from './citation.types'

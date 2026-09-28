@@ -1160,6 +1160,7 @@
       "calendar-picker",
       "calendar-range-picker",
       "carousel",
+      "citation",
       "image-viewer",
       "pagination",
       "question-flow",
@@ -1256,6 +1257,7 @@
     ],
     "positioner": [
       "cascader",
+      "citation",
       "color-picker",
       "combobox",
       "command",
@@ -1306,6 +1308,7 @@
       "calendar-picker",
       "calendar-range-picker",
       "carousel",
+      "citation",
       "image-viewer",
       "pagination",
       "question-flow",
@@ -1322,6 +1325,9 @@
       "json-viewer"
     ],
     "preview-header": [
+      "citation"
+    ],
+    "preview-index": [
       "citation"
     ],
     "preview-link": [

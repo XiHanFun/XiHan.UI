@@ -270,6 +270,7 @@
         "family/motion.css"
       ],
       "consumers": [
+        "citation",
         "command",
         "hover-card",
         "popconfirm",
@@ -359,6 +360,7 @@
       "consumers": [
         "back-top",
         "badge",
+        "citation",
         "command",
         "float-button",
         "floating-panel",

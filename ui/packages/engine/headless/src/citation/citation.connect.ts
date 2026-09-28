@@ -6,7 +6,15 @@
 // 提供 citation 相关实现。
 
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { CitationApi, CitationPreviewProps, CitationSchema, CitationSource, CitationSourceItemProps, CitationTriggerProps } from './citation.types'
+import type {
+  CitationApi,
+  CitationPreviewProps,
+  CitationSchema,
+  CitationSource,
+  CitationSourceItemProps,
+  CitationTriggerProps,
+  CitationTriggerTarget,
+} from './citation.types'
 import {
   contains,
   dataAttr,
@@ -18,8 +26,9 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/core'
+import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { citationAnatomy, citationSourceQuery } from './citation.anatomy'
-import { citationPreviewId } from './citation.machine'
+import { CITATION_DEFAULT_PLACEMENT, citationPreviewId, citationSourceLinkId } from './citation.machine'
 
 const parts = citationAnatomy.build()
 
@@ -45,11 +54,27 @@ function citationSourceMetaText(source: CitationSource | undefined, documentLabe
   return source.mediaType ?? documentLabel
 }
 
+/** 一处行内引用引到的来源：sourceId 与 sourceIds 只写一个，至少一个来源。 */
+function triggerSourceIds(item: CitationTriggerProps): readonly string[] {
+  if (item.sourceId !== undefined && item.sourceIds !== undefined)
+    throw new Error('[xh] Citation trigger 的 sourceId 与 sourceIds 只能写一个')
+  const ids = item.sourceIds ?? (item.sourceId === undefined ? [] : [item.sourceId])
+  if (ids.length === 0)
+    throw new Error('[xh] Citation trigger 至少要引一个来源：写 sourceId 或 sourceIds')
+  return ids
+}
+
 export function connectCitation<T extends PropTypes>(
   service: Service<CitationSchema>,
   normalize: NormalizeProps<T>,
 ): CitationApi<T> {
-  const { context, prop, scope, send } = service
+  const { context, prop, scope, send, refs } = service
+  const previewMode = prop('previewMode') ?? 'inline'
+  const hover = previewMode === 'hover'
+  // null 缺省的 cell 读出来是 undefined，这里统一成 null
+  const activeGroup = context.get('activeGroup') ?? null
+  const shownSourceId = context.get('shownSourceId')
+  const position = context.get('position') ?? null
   const sources = prop('sources') ?? []
   const sourceOf = new Map(sources.map(source => [source.sourceId, source]))
   const activeSourceId = context.get('activeSourceId')
@@ -70,16 +95,24 @@ export function connectCitation<T extends PropTypes>(
     closePreview: translations?.closePreview ?? 'Close source preview',
     openSource: translations?.openSource ?? ((title: string) => `Open ${title}`),
     citation: translations?.citation ?? ((index: number, title: string) => `Source ${index}: ${title}`),
+    citations: translations?.citations ?? ((indexes: readonly number[]) => `Sources ${indexes.join(', ')}`),
+    previousSource: translations?.previousSource ?? 'Previous source',
+    nextSource: translations?.nextSource ?? 'Next source',
     source: translations?.source ?? ((index: number, title: string) => `Source ${index}: ${title}`),
     document: translations?.document ?? 'Document',
   }
   const indexOf = (sourceId: string): number => sources.findIndex(source => source.sourceId === sourceId)
   const previewId = (sourceId: string): string => citationPreviewId(scope, sourceId)
-  const sourceLinkId = (sourceId: string): string => scope.partId(citationAnatomy.name, `source-link:${sourceId}`)
+  const sourceLinkId = (sourceId: string): string => citationSourceLinkId(scope, sourceId)
   const triggerId = (item: CitationTriggerProps): string => scope.partId(
     citationAnatomy.name,
-    `trigger:${item.citationId ?? `${item.sourceId}:${item.anchorIndex ?? 0}`}`,
+    `trigger:${item.citationId ?? `${triggerSourceIds(item).join('+')}:${item.anchorIndex ?? 0}`}`,
   )
+  const targetOf = (item: CitationTriggerProps): CitationTriggerTarget => ({
+    sourceIds: triggerSourceIds(item),
+    anchorIndex: item.anchorIndex ?? null,
+    triggerId: triggerId(item),
+  })
   const source = (sourceId: string): CitationSource | undefined => sourceOf.get(sourceId)
   const quote = (item: CitationPreviewProps): string => {
     const current = source(item.sourceId)
@@ -91,16 +124,41 @@ export function connectCitation<T extends PropTypes>(
   const listItems = (list: HTMLElement): HTMLElement[] => queryItems(list, citationSourceQuery)
   const anchor = focusedSourceId ?? activeSourceId
 
+  /** 引到的来源里有一个在 sources 里就算可用。 */
+  const usable = (item: CitationTriggerProps): boolean =>
+    !disabled && !item.disabled && triggerSourceIds(item).some(id => sourceOf.has(id))
+
   const activateCitation = (item: CitationTriggerProps): void => {
-    if (disabled || item.disabled || !sourceOf.has(item.sourceId))
+    if (!usable(item))
       return
-    send({
-      type: 'CITATION.ACTIVATE',
-      sourceId: item.sourceId,
-      anchorIndex: item.anchorIndex ?? null,
-      triggerId: triggerId(item),
-      toggle: true,
-    })
+    send({ type: 'CITATION.ACTIVATE', target: targetOf(item), toggle: true })
+  }
+
+  /**
+   * 焦点是否仍在悬停卡片这一侧（引用编号或卡片里）。
+   * 只在事件回调里调用：connect 在渲染期求值，那一刻节点还不存在。
+   */
+  const staysInHover = (related: EventTarget | null): boolean => {
+    const node = related as Node | null
+    if (node === null)
+      return false
+    const floating = refs.get('getFloatingEl')()
+    if (contains(floating, node))
+      return true
+    const el = node.nodeType === 1 ? node as Element : node.parentElement
+    return el?.closest(parts.trigger.selector) != null
+  }
+
+  const onHoverBlur = (event: FocusEvent): void => {
+    if (!staysInHover(event.relatedTarget))
+      send({ type: 'HOVER.BLUR' })
+  }
+
+  /** 该预览在一处多源里的位置；不在当前那组里时为 null。 */
+  const positionOf = (item: CitationPreviewProps): { index: number, total: number } | null => {
+    if (activeGroup === null || !activeGroup.includes(item.sourceId))
+      return null
+    return { index: activeGroup.indexOf(item.sourceId) + 1, total: activeGroup.length }
   }
 
   const activateSource = (item: CitationSourceItemProps): void => {
@@ -127,11 +185,37 @@ export function connectCitation<T extends PropTypes>(
     focusItem(trigger ?? sourceLink)
   }
 
+  const placement = position?.placement ?? prop('placement') ?? CITATION_DEFAULT_PLACEMENT
+  // hover 档卡片在场：有一份预览露面，或收起的那一份退场还没播完
+  const cardRendered = hover && (shownSourceId != null || leavingSourceId != null)
+
+  const pager = (item: CitationPreviewProps, delta: 1 | -1): T['button'] => {
+    const at = positionOf(item)
+    const edge = at !== null && !loop && (delta < 0 ? at.index === 1 : at.index === at.total)
+    return normalize.button({
+      ...parts[delta < 0 ? 'prev-trigger' : 'next-trigger'].attrs,
+      'type': 'button',
+      'hidden': at === null || undefined,
+      'disabled': edge || undefined,
+      'aria-label': delta < 0 ? labels.previousSource : labels.nextSource,
+      'aria-controls': previewId(item.sourceId),
+      'data-disabled': dataAttr(edge),
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-size': 'xs',
+      'data-xh-action-display': 'always',
+      'onClick': () => send({ type: 'GROUP.STEP', delta }),
+    })
+  }
+
   return {
     sources,
     activeSource,
     activeSourceId,
     activeAnchorIndex,
+    activeGroup: activeGroup !== null && activeGroup.length > 1 ? activeGroup : null,
+    previewMode,
     open,
     focusedSourceId,
     setOpen: next => send({ type: 'OPEN.SET', open: next }),
@@ -140,6 +224,7 @@ export function connectCitation<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'dir': prop('dir'),
+      'data-preview-mode': previewMode,
       'data-disabled': dataAttr(disabled),
       'data-size': prop('size'),
       'onKeyDown': (event: KeyboardEvent) => {
@@ -157,18 +242,26 @@ export function connectCitation<T extends PropTypes>(
       ...parts.text.attrs,
     }),
     getTriggerProps: (item) => {
-      const current = source(item.sourceId)
-      const index = indexOf(item.sourceId)
-      const off = disabled || !!item.disabled || !current
-      const expanded = isVisible(item.sourceId)
+      const ids = triggerSourceIds(item)
+      const id = triggerId(item)
+      const off = !usable(item)
+      // 展开的是这一处：当前来源在它引的来源里，且打开它的正是这一处（从来源列表打开时同来源的引用都算）
+      const expanded = open && activeSourceId != null && ids.includes(activeSourceId)
+        && (activeTriggerId == null || activeTriggerId === id)
+      const controls = expanded ? activeSourceId! : ids[0]!
+      const label = ids.length > 1
+        ? labels.citations(ids.map(sourceId => indexOf(sourceId) + 1))
+        : labels.citation(indexOf(ids[0]!) + 1, citationSourceTitle(source(ids[0]!)))
+      // hover 档：指针停留与聚焦打开卡片；触屏没有悬停，交给点按
+      const hoverTarget = hover && !off
       return normalize.button({
         ...parts.trigger.attrs,
-        'id': triggerId(item),
+        'id': id,
         'type': 'button',
         'disabled': off || undefined,
         'aria-expanded': expanded ? 'true' : 'false',
-        'aria-controls': previewId(item.sourceId),
-        'aria-label': labels.citation(index + 1, citationSourceTitle(current)),
+        'aria-controls': previewId(controls),
+        'aria-label': label,
         'data-state': expanded ? 'open' : 'closed',
         'data-disabled': dataAttr(off),
         'data-xh-action-control': '',
@@ -177,8 +270,53 @@ export function connectCitation<T extends PropTypes>(
         'data-xh-action-size': 'xs',
         'data-xh-action-display': 'always',
         'onClick': () => activateCitation(item),
+        'onPointerEnter': hoverTarget
+          ? (event: PointerEvent) => {
+              if (event.pointerType !== 'touch')
+                send({ type: 'TRIGGER.ENTER', target: targetOf(item) })
+            }
+          : undefined,
+        'onPointerLeave': hoverTarget
+          ? (event: PointerEvent) => {
+              if (event.pointerType !== 'touch')
+                send({ type: 'POINTER.LEAVE' })
+            }
+          : undefined,
+        'onFocus': hoverTarget ? () => send({ type: 'TRIGGER.FOCUS', target: targetOf(item) }) : undefined,
+        'onBlur': hoverTarget ? onHoverBlur : undefined,
       })
     },
+    getPositionerProps: () => normalize.element({
+      ...parts.positioner.attrs,
+      // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写
+      'dir': prop('dir'),
+      'data-preview-mode': previewMode,
+      // 被搬到 portal 落点后继承不到根上的尺寸档，壳上自己带一份
+      'data-size': prop('size'),
+      'data-state': hover && open ? 'open' : 'closed',
+      'data-placement': hover ? placement : undefined,
+      'data-hidden': dataAttr(hover && position?.hidden),
+      // 落位才露；inline 档不定位、始终算落位，皮肤把这一层排成 display: contents
+      'data-positioned': dataAttr(!hover || overlayPositioned(position)),
+      'hidden': (hover && !cardRendered) || undefined,
+      'style': hover
+        ? { ...overlayFixedStyle(position), ...overlayAvailableSpaceVars('citation', position) }
+        : {},
+      'onPointerEnter': hover
+        ? (event: PointerEvent) => {
+            if (event.pointerType !== 'touch')
+              send({ type: 'FLOATING.ENTER' })
+          }
+        : undefined,
+      'onPointerLeave': hover
+        ? (event: PointerEvent) => {
+            if (event.pointerType !== 'touch')
+              send({ type: 'POINTER.LEAVE' })
+          }
+        : undefined,
+      'onFocusIn': hover ? () => send({ type: 'FLOATING.FOCUS' }) : undefined,
+      'onFocusOut': hover ? onHoverBlur : undefined,
+    }),
     getPreviewProps: (item) => {
       const visible = isVisible(item.sourceId)
       // 收起后先播完退场（收回 0）才藏起：这几帧里预览还留着，但已不接交互
@@ -191,8 +329,12 @@ export function connectCitation<T extends PropTypes>(
         'aria-label': activeTriggerId == null ? labels.preview : undefined,
         'aria-labelledby': visible ? (activeTriggerId ?? sourceLinkId(item.sourceId)) : undefined,
         'data-state': visible ? 'open' : 'closed',
-        // 首帧就开着（或收着）的预览直接呈现：露面的那一份换过之后才播展开与收起
-        'data-instant': dataAttr(!moved),
+        'data-preview-mode': previewMode,
+        // hover 档是锚定瞬态浮层：材质家族配方画 frosted 面
+        'data-xh-material': hover ? 'frosted' : undefined,
+        // 首帧就开着（或收着）的预览直接呈现：露面的那一份换过之后才播展开与收起；
+        // hover 档在卡片里轮换来源时就地换内容，不再播一次出现
+        'data-instant': dataAttr(!moved || (hover && context.get('swapped'))),
         'hidden': (!visible && !leaving) || undefined,
         'inert': leaving || undefined,
         // 展开从 0 长到、收起从它收回 0 的内容区高度
@@ -250,6 +392,15 @@ export function connectCitation<T extends PropTypes>(
           restoreFocus(root)
       },
     }),
+    getPrevTriggerProps: item => pager(item, -1),
+    getNextTriggerProps: item => pager(item, 1),
+    getPreviewIndexProps: item => normalize.element({
+      ...parts['preview-index'].attrs,
+      // 位置是给眼睛看的；换来源后预览的可及名跟着换，读屏由此知道换到了哪一个
+      'aria-hidden': true,
+      'hidden': positionOf(item) === null || undefined,
+    }),
+    getPreviewPosition: positionOf,
     getListProps: () => normalize.element({
       ...parts.list.attrs,
       'role': 'list',

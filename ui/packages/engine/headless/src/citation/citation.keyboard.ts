@@ -20,6 +20,8 @@ export const citationKeyboard: KeyboardTable = {
     { id: 'citation.kbd.first', keys: ['Home'], when: 'focus in source list', does: '焦点移到第一条可用来源' },
     { id: 'citation.kbd.last', keys: ['End'], when: 'focus in source list', does: '焦点移到最后一条可用来源' },
     { id: 'citation.kbd.open', keys: ['Space', 'Enter'], when: 'focus on source list item, not disabled', does: '将该来源设为当前来源并展开预览' },
-    { id: 'citation.kbd.escape', keys: ['Escape'], when: 'source preview open', does: '收起预览；若焦点位于预览内则归还到打开它的行内引用或来源条目' },
+    { id: 'citation.kbd.hover-focus', keys: ['Tab'], when: 'previewMode 为 hover，焦点落到行内引用上', does: '当场打开该引用的悬停卡片；焦点移进卡片不收起，离开引用与卡片即收起' },
+    { id: 'citation.kbd.step', keys: ['Space', 'Enter'], when: 'focus on previous / next source button in preview, 一处引用引了多个来源', does: '在这几个来源之间换到上一个 / 下一个，尽头按 loop 回绕' },
+    { id: 'citation.kbd.escape', keys: ['Escape'], when: 'source preview open', does: '收起预览；若焦点位于预览内则归还到打开它的行内引用或来源条目；hover 档由消解层收起卡片' },
   ],
 }

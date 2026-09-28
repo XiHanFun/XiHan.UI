@@ -27,7 +27,7 @@ export interface FixtureNode {
   readonly tag?: string
   readonly text?: string
   /** 作者写在节点上的属性：业务标记（data-testid）与标注（aria-label 之类）；不含 data-scope、data-part。 */
-  readonly attrs?: Readonly<Record<string, string>>
+  readonly attrs?: Readonly<Record<string, string | readonly string[]>>
   readonly children?: readonly FixtureNode[]
   /**
    * 只在这些适配器下渲进标记，其余适配器当它没写；省略 = 各侧都渲。

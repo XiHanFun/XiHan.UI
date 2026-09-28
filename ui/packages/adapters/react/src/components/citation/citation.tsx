@@ -5,14 +5,16 @@
 
 // 提供 citation 相关实现。
 
-import type { Direction, Size } from '@xihan-ui/core'
-import type { CitationPreviewProps, CitationSchema, CitationSource, CitationTranslations } from '@xihan-ui/headless'
+import type { Direction, Placement, Size } from '@xihan-ui/core'
+import type { CitationPreviewMode, CitationPreviewProps, CitationSchema, CitationSource, CitationTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import type { PortalContainer } from '../../runtime/portal'
 import { citationSourceMetaText, citationSourceTitle } from '@xihan-ui/headless'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
+import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
 import { CitationProvider, CitationSourceProvider, useCitationContext, useCitationSource } from './context'
 import { useCitation } from './use-citation'
@@ -29,6 +31,18 @@ export interface XhCitationRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   loop?: boolean
   dir?: Direction
   size?: Size
+  /** 预览怎样出现，缺省 inline；hover 档把预览放进 XhCitationPositioner。 */
+  previewMode?: CitationPreviewMode
+  /** hover 档：指针停在引用上到卡片出现的等待毫秒，缺省 700。 */
+  openDelay?: number
+  /** hover 档：指针离开到收起的等待毫秒，缺省 300。 */
+  closeDelay?: number
+  /** hover 档：卡片刚收起的这么久里指向另一处引用直接接替，缺省 300。 */
+  skipDelayDuration?: number
+  /** hover 档：卡片相对引用编号的朝向，缺省 bottom。 */
+  placement?: Placement
+  /** hover 档：卡片与引用编号的间距（px）。 */
+  offset?: number
   translations?: Partial<CitationTranslations>
   onActiveSourceChange?: CitationProps['onActiveSourceChange']
   onOpenChange?: CitationProps['onOpenChange']
@@ -46,6 +60,12 @@ export function XhCitationRoot({
   loop,
   dir,
   size,
+  previewMode,
+  openDelay,
+  closeDelay,
+  skipDelayDuration,
+  placement,
+  offset,
   translations,
   onActiveSourceChange,
   onOpenChange,
@@ -63,6 +83,12 @@ export function XhCitationRoot({
     loop,
     dir,
     size,
+    previewMode,
+    openDelay,
+    closeDelay,
+    skipDelayDuration,
+    placement,
+    offset,
     translations,
     onActiveSourceChange,
     onOpenChange,
@@ -70,7 +96,7 @@ export function XhCitationRoot({
   }) as CitationProps)
   return (
     <CitationProvider value={context}>
-      <div {...mergeReactProps(context.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(context.api.getRootProps() as Record<string, unknown>, { ref: context.rootRef }, rest as Record<string, unknown>)}>{children}</div>
     </CitationProvider>
   )
 }
@@ -84,17 +110,47 @@ export function XhCitationText({ children, ...rest }: XhCitationTextProps): Reac
 }
 
 export interface XhCitationTriggerProps extends ComponentPropsWithRef<'button'> {
-  sourceId: string
+  /** 这一处引用的来源；一处引多个来源时改写 sourceIds，两者只写一个。 */
+  sourceId?: string
+  /** 一处引用多个来源，预览里可以在它们之间轮换。 */
+  sourceIds?: readonly string[]
   citationId?: string
   anchorIndex?: number
 }
-export function XhCitationTrigger({ sourceId, citationId, anchorIndex, disabled, children, ...rest }: XhCitationTriggerProps): ReactNode {
+export function XhCitationTrigger({ sourceId, sourceIds, citationId, anchorIndex, disabled, children, ...rest }: XhCitationTriggerProps): ReactNode {
   const { api } = useCitationContext()
+  // hover 档的指针进出与聚焦装成原生监听器：这三个事件不冒泡，委派在根容器上的合成事件收不到
+  const bind = useNativeEvents(
+    api.getTriggerProps({ sourceId, sourceIds, citationId, anchorIndex, disabled }) as Record<string, unknown>,
+    ['onFocus', 'onPointerEnter', 'onPointerLeave'],
+  )
   return (
-    <button {...mergeReactProps(api.getTriggerProps({ sourceId, citationId, anchorIndex, disabled }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
       {children}
     </button>
   )
+}
+
+export interface XhCitationPositionerProps extends ComponentPropsWithRef<'div'> {
+  /** 本实例的 Portal 容器；优先于应用级配置。 */
+  container?: PortalContainer
+}
+/**
+ * hover 档的浮层定位壳：预览放进它里面，锚定到当前那处引用旁并搬到 portal 落点。
+ * inline 档不搬家，皮肤把它排成 display: contents，里面的预览照常在正文流里。
+ */
+export function XhCitationPositioner({ container, children, ...rest }: XhCitationPositionerProps): ReactNode {
+  const ctx = useCitationContext()
+  // 只摘指针进出：焦点那两个处理器挂的是冒泡的 focusin / focusout，落在 React 的 onFocus / onBlur 上正好
+  const bind = useNativeEvents(ctx.api.getPositionerProps() as Record<string, unknown>, ['onPointerEnter', 'onPointerLeave'])
+  const shell = (
+    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, { ref: ctx.positionerRef }, rest as Record<string, unknown>)}>
+      {children}
+    </div>
+  )
+  if (ctx.api.previewMode !== 'hover')
+    return shell
+  return <XhPortal container={container} source={ctx.rootRef}>{shell}</XhPortal>
 }
 
 export interface XhCitationPreviewProps extends ComponentPropsWithRef<'section'> {
@@ -184,6 +240,7 @@ function DefaultPreview({ item }: { item: CitationPreviewProps }): ReactNode {
   const anchorIndex = api.activeSourceId === item.sourceId ? api.activeAnchorIndex ?? item.anchorIndex ?? 0 : item.anchorIndex ?? 0
   const quote = current.anchors?.[anchorIndex]?.quote
   const linkProps = api.getPreviewLinkProps(item) as Record<string, unknown>
+  const at = api.getPreviewPosition(item)
   return (
     <>
       <header {...api.getPreviewHeaderProps(item)}>
@@ -191,6 +248,10 @@ function DefaultPreview({ item }: { item: CitationPreviewProps }): ReactNode {
           <strong {...api.getPreviewTitleProps(item)}>{citationSourceTitle(current)}</strong>
           <span {...api.getPreviewMetaProps(item)}>{citationSourceMetaText(current, 'Document')}</span>
         </span>
+        {/* 一处多源的轮换：只有一个来源时这三件带 hidden */}
+        <button {...api.getPrevTriggerProps(item)} />
+        <span {...api.getPreviewIndexProps(item)}>{at ? `${at.index} / ${at.total}` : ''}</span>
+        <button {...api.getNextTriggerProps(item)} />
         <button {...api.getDismissTriggerProps(item)} />
       </header>
       <blockquote {...api.getQuoteProps(item)}>{quote}</blockquote>

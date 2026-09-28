@@ -67,6 +67,8 @@ const EXPECTED = {
   // 被指针拎起、跟着手走的条目：lifted（拖起的面是作者内容，不强加描边，raised 条款不适用）
   'sortable': { item: ['lifted'] },
   'cascader': { content: ['floating'] },
+  // hover 档的来源预览是锚定在引用编号上的悬停卡片：与 HoverCard 同一副 frosted 面
+  'citation': { preview: ['frosted'] },
   'combobox': { content: ['frosted'] },
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档
   'command': { content: ['sheet'] },

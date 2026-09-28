@@ -34,6 +34,9 @@ function preview(sourceId: string): FixtureNode {
               { part: 'preview-meta', tag: 'span', text: sourceId === 'web' ? 'example.com' : 'application/pdf' },
             ],
           },
+          { part: 'prev-trigger', tag: 'button' },
+          { part: 'preview-index', tag: 'span' },
+          { part: 'next-trigger', tag: 'button' },
           { part: 'dismiss-trigger', tag: 'button' },
         ],
       },
@@ -82,6 +85,8 @@ export const citationSuite: ConformanceSuite = {
         children: [
           { tag: 'span', text: 'Statement' },
           { part: 'trigger', tag: 'button', attrs: { 'sourceId': 'web', 'citationId': 'first', 'value': 'web', 'name': 'first', 'data-anchor-index': '0' }, text: '1' },
+          // 一处引了两个来源：Vue / React 写 sourceIds，Web Components 在 value 里写成空白分隔的两个
+          { part: 'trigger', tag: 'button', attrs: { sourceIds: ['web', 'doc'], citationId: 'both', value: 'web doc', name: 'both' }, text: '1, 2' },
         ],
       },
       preview('web'),
@@ -98,15 +103,18 @@ export const citationSuite: ConformanceSuite = {
       name: '初始：行内引用与预览建立关系，来源列表是带 roving 按钮的语义列表',
       spec: { apg: `${DISCLOSURE} ${LISTBOX}` },
       initial: {
-        counts: { 'root': 1, 'text': 1, 'trigger': 1, 'preview': 2, 'list': 1, 'source': 2, 'source-link': 2 },
+        counts: { 'root': 1, 'text': 1, 'trigger': 2, 'preview': 2, 'list': 1, 'source': 2, 'source-link': 2 },
         parts: {
-          'trigger': {
+          'trigger[0]': {
             'type': 'button',
             'aria-expanded': 'false',
             'aria-controls': '@part(preview[0])',
             'data-state': 'closed',
           },
-          'preview[0]': { 'role': 'region', 'hidden': '', 'data-state': 'closed' },
+          'trigger[1]': { 'aria-label': 'Sources 1, 2', 'aria-expanded': 'false' },
+          'preview[0]': { 'role': 'region', 'hidden': '', 'data-state': 'closed', 'data-preview-mode': 'inline' },
+          // 只有一个来源（或还没打开）时轮换钮收着
+          'next-trigger[0]': { hidden: '' },
           'list': { 'role': 'list', 'aria-label': 'Sources', 'tabindex': '-1' },
           'source[0]': { 'role': 'listitem', 'data-state': 'active' },
           'source-link[0]': { 'type': 'button', 'aria-current': 'true', 'tabindex': '0' },
@@ -122,11 +130,11 @@ export const citationSuite: ConformanceSuite = {
         nativeActivation('citation', 'trigger'),
         {
           kind: 'click',
-          part: 'trigger',
+          part: 'trigger[0]',
           expect: {
             parts: {
-              'trigger': { 'aria-expanded': 'true', 'data-state': 'open' },
-              'preview[0]': { 'hidden': null, 'aria-labelledby': '@part(trigger)', 'data-state': 'open' },
+              'trigger[0]': { 'aria-expanded': 'true', 'data-state': 'open' },
+              'preview[0]': { 'hidden': null, 'aria-labelledby': '@part(trigger[0])', 'data-state': 'open' },
             },
             events: [{ type: 'open-change', detail: { open: true } }],
           },
@@ -169,6 +177,63 @@ export const citationSuite: ConformanceSuite = {
         },
         { kind: 'focus', part: 'preview-link[1]' },
         { kind: 'key', key: 'Escape', expect: { activeElement: { part: 'source-link[1]', exact: true }, parts: { 'preview[1]': { hidden: '' } } } },
+      ],
+    },
+    {
+      name: '一处多源：预览里的上一个 / 下一个在几个来源之间轮换，位置跟着走',
+      spec: { apg: DISCLOSURE },
+      covers: ['citation.kbd.step'],
+      steps: [
+        {
+          kind: 'click',
+          part: 'trigger[1]',
+          expect: {
+            parts: {
+              'trigger[1]': { 'aria-expanded': 'true' },
+              'preview[0]': { 'hidden': null, 'data-state': 'open' },
+              'next-trigger[0]': { 'hidden': null, 'type': 'button', 'aria-label': 'Next source' },
+              'preview-index[0]': { 'hidden': null, 'aria-hidden': 'true' },
+            },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'next-trigger[0]',
+          expect: {
+            parts: {
+              'preview[1]': { 'data-state': 'open' },
+              'trigger[1]': { 'aria-expanded': 'true', 'aria-controls': '@part(preview[1])' },
+            },
+            events: [{ type: 'active-source-change', detail: { sourceId: 'doc' } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'hover 档：焦点落到行内引用上当场打开，离开引用与卡片即收起',
+      spec: { apg: DISCLOSURE },
+      covers: ['citation.kbd.hover-focus'],
+      steps: [
+        { kind: 'setProps', props: { previewMode: 'hover' } },
+        {
+          kind: 'focus',
+          part: 'trigger[0]',
+          expect: {
+            parts: {
+              'root': { 'data-preview-mode': 'hover' },
+              'trigger[0]': { 'aria-expanded': 'true' },
+              'preview[0]': { 'data-preview-mode': 'hover' },
+            },
+            events: [{ type: 'open-change', detail: { open: true } }],
+          },
+        },
+        {
+          kind: 'blur',
+          expect: {
+            parts: { 'trigger[0]': { 'aria-expanded': 'false' } },
+            events: [{ type: 'open-change', detail: { open: false } }],
+          },
+        },
       ],
     },
   ],
