@@ -65,12 +65,16 @@ function placeRun(parent: Element, nodes: readonly Element[], ref: Element | nul
  * @attr {'progress'|'meter'} semantics - 报告的是进度还是量，默认 progress；meter 发出 role=meter 且不接受 indeterminate
  * @attr {number} target - 目标值：画一道目标刻度；只在 semantics=meter 下生效
  * @attr {'fill'|'needle'} indicator - 仪表盘的指示方式，默认 fill；只在 semantics=meter 下的 dashboard 生效
+ * @attr {number} steps - 分段显示：把线形轨道切成这么多等宽的格，填充按整格走；取不小于 2 的整数，只对线形生效
+ * @attr {boolean} striped - 条纹：填充上铺一层斜纹，进行中沿行向流动；只对线形生效
+ * @attr {number} buffer - 缓冲值：填充之后的第二段浅色填充；只在进度语义的线形下生效
  * @attr {string} locale - 刻度值与读屏文字的语言
  * @attr {boolean} scale - 画出量程刻度与刻度值；要指定刻度数量与数字格式时走 property：`el.scale = { ticks: 4, format }`
  * @csspart root - role=progressbar（semantics=meter 时 role=meter）的容器（承载 aria-valuenow / aria-valuemax / data-state）
  * @csspart canvas - 承载环的 svg（线形不使用）
  * @csspart track - 进度轨道：线形是满长背景，环形是整段弧
  * @csspart range - 已完成区段：线形写内联 inline-size，环形写 stroke-dashoffset
+ * @csspart buffer - 缓冲段，由元素按 buffer 生成在 track 里、range 之前
  * @csspart label - 环心区域，内容由使用者决定（线形不使用）
  * @csspart threshold - 分段色带，由元素按 thresholds 生成：线形在 track 里、环形在 canvas 里，都排在 range 之前
  * @csspart target - 目标刻度，由元素生成：线形在 root 里、环形在 canvas 里
@@ -103,6 +107,9 @@ export class XhProgressElement extends XhElement {
     translations: { attribute: false },
     target: { type: Number },
     indicator: {},
+    steps: { type: Number },
+    striped: { type: Boolean },
+    buffer: { type: Number },
     locale: {},
   }
 
@@ -121,6 +128,9 @@ export class XhProgressElement extends XhElement {
   declare target?: number
   declare scale?: boolean | ProgressScaleOptions
   declare indicator?: ProgressIndicator
+  declare steps?: number
+  declare striped?: boolean
+  declare buffer?: number
   declare locale?: string
   declare translations?: Partial<ProgressTranslations>
 
@@ -146,6 +156,9 @@ export class XhProgressElement extends XhElement {
       target: this.target,
       scale: this.scale,
       indicator: this.indicator,
+      steps: this.steps,
+      striped: this.striped,
+      buffer: this.buffer,
       locale: this.locale,
       translations: this.translations,
     }), wcNormalize)
@@ -197,11 +210,12 @@ export class XhProgressElement extends XhElement {
     const html = (tag: string) => (): Element => doc.createElement(tag)
     const range = this.getPart('range')
 
-    // 色带排在 range 之前：填充要压在色带上面
+    // 色带与缓冲段排在 range 之前：填充要压在它们上面
     const bandHost = ring ? this.getPart('canvas') : this.getPart('track')
     if (bandHost) {
       const bands = this.#group(bandHost, 'threshold', api.bands, band => band.key, ring ? svg('circle') : html('div'), (node, band) => spread(node, api.getThresholdProps(band)))
-      placeRun(bandHost, bands, range?.parentNode === bandHost ? range : null)
+      const buffers = this.#group(bandHost, 'buffer', api.buffer == null ? [] : [null], () => 'buffer', html('div'), node => spread(node, api.getBufferProps()))
+      placeRun(bandHost, [...bands, ...buffers], range?.parentNode === bandHost ? range : null)
     }
 
     // 目标刻度与指针：环形排在 canvas 末尾（刻度线在它们之前），线形的目标刻度排在 root 里

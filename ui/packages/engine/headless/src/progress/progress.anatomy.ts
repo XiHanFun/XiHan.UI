@@ -10,11 +10,13 @@ import { createAnatomy } from '@xihan-ui/core'
 // canvas 是承载环的 <svg>，label 是环心那一块；两个都只在环形下渲染，作者不写也成立。
 // 量（meter）另有几样按数据生成的部件：threshold 是轨道上的分段色带，target 是目标刻度，
 // scale 是刻度值的容器，scale-tick / scale-label 是刻度线与刻度值，needle 是仪表盘的指针。
+// buffer 是线形轨道里填充之前的缓冲段，只在给了缓冲值时渲染。
 export const progressAnatomy = createAnatomy('progress', [
   'root',
   'canvas',
   'track',
   'range',
+  'buffer',
   'label',
   'threshold',
   'target',

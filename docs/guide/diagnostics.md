@@ -37,6 +37,7 @@ export const DIAGNOSTIC_CODES = {
   matrixCodeLogoDamage: "matrix-code.logo-damage", // 中心 logo 挖掉的码字超出纠错级别能恢复的量
   matrixCodeOptionIgnored: "matrix-code.option-ignored", // 二维码收到一个对当前码制没有意义的选项，按没给处理
   barCodeOptionIgnored: "bar-code.option-ignored", // 条形码收到一个对当前码制没有意义的选项，按没给处理
+  progressOptionIgnored: "progress.option-ignored", // 进度条收到一个对当前形态或语义没有意义、或取值不合法的选项，按没给处理
   stylesMissingSkin: "styles.missing-skin", // 页面上出现了组件，但它那份皮肤没被引入
   versionMismatch: "core.version-mismatch", // 适配器与 core 的版本不一致，锁步发版被打破
   ignoredSlot: "core.ignored-slot", // 作者给了默认插槽，但该组件不渲染插槽内容

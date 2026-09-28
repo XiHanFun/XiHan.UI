@@ -241,6 +241,7 @@
     "data-sticking": "log 正贴着底部跟随新内容，用户往上翻即撤。说的是滚动跟随，不是钉住——钉住走 data-fixed。",
     "data-streaming": "message-feed 的这一条、reasoning 的思考正在流式增长。",
     "data-strikethrough": "typography 的这段行内文字画删除线。",
+    "data-stepped": "progress 的线形轨道切成了等宽的格：样式层据此用遮罩在格与格之间留出间隙，格数由连接层写进轨道的内联样式。",
     "data-striped": "table 画斑马纹。",
     "data-today": "calendar-picker / calendar-range-picker 的这一格是今天。",
     "data-truncated": "内容被截断：diff-view 超出行数上限、json-viewer 的值超长。",

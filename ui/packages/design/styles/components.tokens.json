@@ -54914,6 +54914,42 @@
       "description": "popover 的 title 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-progress-buffer",
+      "component": "progress",
+      "part": [
+        "buffer"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_tone-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "progress 的 buffer 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-progress-buffer-radius",
+      "component": "progress",
+      "part": [
+        "buffer"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-progress-range-radius"
+      ],
+      "visibility": "public",
+      "description": "progress 的 buffer 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-progress-indeterminate-duration",
       "component": "progress",
       "part": [
@@ -55029,6 +55065,7 @@
       "name": "--xh-progress-range-radius",
       "component": "progress",
       "part": [
+        "buffer",
         "range"
       ],
       "property": [
@@ -55041,7 +55078,7 @@
         "--xh-shape-pill"
       ],
       "visibility": "public",
-      "description": "progress 的 range 部件 border-radius 覆盖槽。"
+      "description": "progress 的 buffer、range 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-progress-size",
@@ -55066,6 +55103,82 @@
       ],
       "visibility": "public",
       "description": "progress 的 root 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-progress-step-gap",
+      "component": "progress",
+      "part": [
+        "track"
+      ],
+      "property": [
+        "-webkit-mask-image",
+        "mask-image"
+      ],
+      "state": [
+        "stepped"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "progress 的 track 部件 -webkit-mask-image、mask-image 覆盖槽。"
+    },
+    {
+      "name": "--xh-progress-stripe-color",
+      "component": "progress",
+      "part": [
+        "range"
+      ],
+      "property": [
+        "background-image"
+      ],
+      "state": [
+        "striped"
+      ],
+      "defaultToken": [
+        "--xh-_tone-active"
+      ],
+      "visibility": "public",
+      "description": "progress 的 range 部件 background-image 覆盖槽。"
+    },
+    {
+      "name": "--xh-progress-stripe-duration",
+      "component": "progress",
+      "part": [
+        "range"
+      ],
+      "property": [
+        "animation"
+      ],
+      "state": [
+        "state=loading",
+        "striped"
+      ],
+      "defaultToken": [
+        "--xh-motion-loop-shimmer"
+      ],
+      "visibility": "public",
+      "description": "progress 的 range 部件 animation 覆盖槽。"
+    },
+    {
+      "name": "--xh-progress-stripe-size",
+      "component": "progress",
+      "part": [
+        "range"
+      ],
+      "property": [
+        "background-position",
+        "background-size"
+      ],
+      "state": [
+        "@keyframes xh-progress-stripes",
+        "striped"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "progress 的 range 部件 background-position、background-size 覆盖槽。"
     },
     {
       "name": "--xh-progress-target-color",

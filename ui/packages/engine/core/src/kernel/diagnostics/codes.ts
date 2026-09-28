@@ -29,6 +29,8 @@ export const DIAGNOSTIC_CODES = {
   matrixCodeOptionIgnored: 'matrix-code.option-ignored',
   /** 条形码收到一个对当前码制没有意义的选项，按没给处理。 */
   barCodeOptionIgnored: 'bar-code.option-ignored',
+  /** 进度条收到一个对当前形态或语义没有意义、或取值不合法的选项，按没给处理。 */
+  progressOptionIgnored: 'progress.option-ignored',
   /** 页面上出现了某个组件，但它那份皮肤没被引入。 */
   stylesMissingSkin: 'styles.missing-skin',
   /** 适配器与 core 的版本不一致，锁步发版被打破。 */

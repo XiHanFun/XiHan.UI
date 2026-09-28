@@ -53,6 +53,10 @@ const GEOMETRY = {
     reason: '两端渐隐的遮罩画的是 alpha 坡道与给暂停开关留出的实心块，黑是不透明那一端，换成主题色遮罩就不成形了',
     literals: ['black'],
   },
+  'progress:track': {
+    reason: '分段的遮罩画的是格与间隙两档 alpha，黑是不透明的格，换成主题色遮罩就切不出格了',
+    literals: ['black'],
+  },
 }
 
 /**

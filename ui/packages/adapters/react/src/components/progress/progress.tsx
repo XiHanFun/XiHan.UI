@@ -55,6 +55,12 @@ export interface XhProgressProps extends ComponentPropsWithRef<'div'> {
   scale?: boolean | ProgressScaleOptions
   /** 仪表盘的指示方式，默认 fill；只在 meter 语义下的 dashboard 生效。 */
   indicator?: ProgressIndicator
+  /** 分段显示：把线形轨道切成这么多等宽的格，填充按整格走；取不小于 2 的整数，只对线形生效。 */
+  steps?: number
+  /** 条纹：填充上铺一层斜纹，进行中沿行向流动；只对线形生效。 */
+  striped?: boolean
+  /** 缓冲值：填充之后的第二段浅色填充；只在进度语义的线形下生效。 */
+  buffer?: number
   /** 刻度值与读屏文字的语言。 */
   locale?: string
   translations?: Partial<ProgressTranslations>
@@ -95,6 +101,9 @@ export function XhProgress({
   target,
   scale,
   indicator,
+  steps,
+  striped,
+  buffer,
   locale,
   translations,
   children,
@@ -117,6 +126,9 @@ export function XhProgress({
       target,
       scale,
       indicator,
+      steps,
+      striped,
+      buffer,
       locale,
       translations,
     }) as ProgressProps,
@@ -132,6 +144,8 @@ export function XhProgress({
       <div {...rootProps}>
         <div {...api.getTrackProps() as Attrs}>
           {api.bands.map(band => <div key={band.key} {...api.getThresholdProps(band) as Attrs} />)}
+          {/* 缓冲段排在填充之前，被它压住；没有缓冲值时不渲染 */}
+          {api.buffer == null ? null : <div {...api.getBufferProps() as Attrs} />}
           <div {...api.getRangeProps() as Attrs} />
         </div>
         {api.target == null ? null : <div {...api.getTargetProps() as Attrs} />}
