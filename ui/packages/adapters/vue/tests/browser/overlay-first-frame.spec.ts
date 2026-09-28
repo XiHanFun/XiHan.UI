@@ -26,6 +26,10 @@ import {
   XhComboboxItemText,
   XhComboboxPositioner,
   XhComboboxRoot,
+  XhCommandContent,
+  XhCommandInput,
+  XhCommandList,
+  XhCommandRoot,
   XhContextMenuContent,
   XhContextMenuItem,
   XhContextMenuItemText,
@@ -288,6 +292,11 @@ const CASES: Record<string, Case> = {
       h(XhColorPickerControl, null, () => h(XhColorPickerTrigger, null, () => '选择颜色')),
       h(XhColorPickerPositioner, null, () => h(XhColorPickerContent, null, () => h(XhColorPickerHueSlider))),
     ]),
+  },
+  'command': {
+    parts: ['content', 'backdrop'],
+    enter: 'xh-overlay-pop-in',
+    render: props => h(XhCommandRoot, props, () => h(XhCommandContent, null, () => [h(XhCommandInput), h(XhCommandList)])),
   },
   'image-viewer': {
     parts: ['content', 'backdrop'],
