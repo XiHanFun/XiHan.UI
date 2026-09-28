@@ -4,6 +4,11 @@ import type { App, Ref, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
+  XhAnchorIndicator,
+  XhAnchorItem,
+  XhAnchorLink,
+  XhAnchorList,
+  XhAnchorRoot,
   XhSegmentedIndicator,
   XhSegmentedItem,
   XhSegmentedItemText,
@@ -40,6 +45,14 @@ const CASES: Record<string, Case> = {
       h(XhSegmentedIndicator),
       ...ENTRIES.map(entry => h(XhSegmentedItem, { value: entry.value }, () => h(XhSegmentedItemText, null, () => entry.label))),
     ]),
+  },
+  anchor: {
+    item: 'link',
+    render: value => h(XhAnchorRoot, { value: value.value, smooth: false, style: { inlineSize: '360px' } }, () =>
+      h(XhAnchorList, null, () => [
+        ...ENTRIES.map(entry => h(XhAnchorItem, null, () => h(XhAnchorLink, { value: entry.value }, () => entry.label))),
+        h(XhAnchorIndicator),
+      ])),
   },
 }
 
