@@ -34,13 +34,21 @@ export type FormRootSlotProps = Pick<
   | 'invalid'
   | 'submitFailed'
   | 'validating'
+  | 'submitting'
+  | 'dirty'
   | 'validationError'
   | 'getFieldId'
   | 'getFieldError'
+  | 'isFieldDirty'
+  | 'isFieldTouched'
   | 'setFieldValue'
   | 'setFieldError'
   | 'clearErrors'
   | 'submit'
+  | 'validateAll'
+  | 'validateField'
+  | 'validateFields'
+  | 'resetField'
   | 'reset'
 >
 
@@ -87,6 +95,7 @@ export interface XhFormRootProps extends FormElementProps {
   onSubmit?: FormProps['onSubmit']
   onInvalid?: FormProps['onInvalid']
   onValidationError?: FormProps['onValidationError']
+  onSubmitError?: FormProps['onSubmitError']
   children?: SlotChildren<FormRootSlotProps>
 }
 
@@ -111,6 +120,7 @@ export function XhFormRoot({
   onSubmit,
   onInvalid,
   onValidationError,
+  onSubmitError,
   children,
   ...rest
 }: XhFormRootProps): ReactNode {
@@ -131,7 +141,7 @@ export function XhFormRoot({
       disabled,
       readOnly,
     } as FormProps,
-    { onValuesChange, onErrorsChange, onSubmit, onInvalid, onValidationError },
+    { onValuesChange, onErrorsChange, onSubmit, onInvalid, onValidationError, onSubmitError },
   )
   const api = ctx.api
   return (
@@ -150,13 +160,21 @@ export function XhFormRoot({
           invalid: api.invalid,
           submitFailed: api.submitFailed,
           validating: api.validating,
+          submitting: api.submitting,
+          dirty: api.dirty,
           validationError: api.validationError,
           getFieldId: api.getFieldId,
           getFieldError: api.getFieldError,
+          isFieldDirty: api.isFieldDirty,
+          isFieldTouched: api.isFieldTouched,
           setFieldValue: ctx.setFieldValue,
           setFieldError: ctx.setFieldError,
           clearErrors: ctx.clearErrors,
           submit: ctx.submit,
+          validateAll: ctx.validateAll,
+          validateField: ctx.validateField,
+          validateFields: ctx.validateFields,
+          resetField: ctx.resetField,
           reset: ctx.reset,
         })}
       </form>

@@ -7,11 +7,11 @@
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { FormPath } from './form.path'
-import type { FormApi, FormColumns, FormColumnsByBreakpoint, FormFieldSpan, FormPressedKey, FormSchema } from './form.types'
+import type { FormApi, FormColumns, FormColumnsByBreakpoint, FormFieldSpan, FormPressedKey, FormSchema, FormValidateResult } from './form.types'
 import { contains, createPressTracker, dataAttr } from '@xihan-ui/core'
 import { FORM_FIELD_NAME_ATTR, formAnatomy, formFieldId } from './form.anatomy'
 import { formErrorNames } from './form.errors'
-import { formValidateOn } from './form.machine'
+import { formValidateOn, formValuesDirty, sameFormFieldValue } from './form.machine'
 import { formPathKey, getFormPathValue } from './form.path'
 import { hasRequiredRule } from './form.rules'
 
@@ -82,6 +82,13 @@ export function connectForm<T extends PropTypes>(
   const summaryError = (name: FormPath): string | undefined => getFormPathValue(summaryErrors, name)
 
   const fieldError = (name: FormPath): string | undefined => getFormPathValue(errors, name)
+  // 提交回调返回的 thenable 还没落定：提交钮报在途，再提交不发生
+  const submitting = context.get('submitting')
+  const defaultValues = prop('defaultValues')
+  const touched = context.get('touched')
+  // 不提交的校验经事件交给机器，结果由机器在落定时交回
+  const requestValidation = (names: readonly FormPath[] | null): Promise<FormValidateResult> =>
+    new Promise((resolve, reject) => send({ type: 'VALIDATE', names, resolve, reject }))
 
   // 按压通道：三类可按部件各自合成一份跟踪器，真源是机器 context 里「正被按住的那一个」；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
@@ -111,6 +118,8 @@ export function connectForm<T extends PropTypes>(
     invalid,
     submitFailed,
     validating: context.get('validating'),
+    submitting,
+    dirty: formValuesDirty(values, defaultValues),
     validationError: context.get('validationError'),
     disabled,
     readOnly,
@@ -124,11 +133,17 @@ export function connectForm<T extends PropTypes>(
     summaryErrorCount: summaryErrorNames.length,
     getSummaryError: summaryError,
     isFieldInvalid: name => fieldError(name) !== undefined,
+    isFieldDirty: name => !sameFormFieldValue(getFormPathValue(values, name), getFormPathValue(defaultValues, name)),
+    isFieldTouched: name => getFormPathValue(touched, name) === true,
     isFieldRequired: name => hasRequiredRule(getFormPathValue(service.refs.get('rules'), name)),
     setFieldValue: (name, value) => send({ type: 'FIELD.SET', name, value }),
     setFieldError: (name, message) => send({ type: 'ERROR.SET', name, message }),
     clearErrors: () => send({ type: 'ERRORS.CLEAR' }),
     submit: () => send({ type: 'SUBMIT' }),
+    validateAll: () => requestValidation(null),
+    validateField: name => requestValidation([name]),
+    validateFields: names => requestValidation([...names]),
+    resetField: name => send({ type: 'FIELD.RESET', name }),
     reset: () => send({ type: 'RESET' }),
 
     getRootProps: () => {
@@ -154,6 +169,8 @@ export function connectForm<T extends PropTypes>(
         'data-disabled': dataAttr(disabled),
         'data-readonly': dataAttr(readOnly),
         'data-invalid': dataAttr(invalid),
+        // 提交回调在途：整张表报忙，读屏据此知道这一轮还没完
+        'aria-busy': submitting ? 'true' : undefined,
         'onSubmit': (event: Event) => {
           // 一律拦，包括禁用时：不拦则禁用的表单会真的提交出去
           event.preventDefault()
@@ -246,9 +263,13 @@ export function connectForm<T extends PropTypes>(
       // 单体控件用原生 disabled（集合条目才用 aria-disabled）；家族按 data-disabled 给禁用面
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
+      // 提交回调在途：保住可聚焦，用 aria-disabled 锁住再次提交，家族按 data-loading 画在途面
+      'aria-disabled': submitting ? 'true' : undefined,
+      'aria-busy': submitting ? 'true' : undefined,
+      'data-loading': dataAttr(submitting),
       // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
-      // 异步校验开跑（提交在途）时由机器松开并锁住，不重复给按压回执
-      ...press('submit', disabled),
+      // 异步校验开跑或提交回调在途时由机器松开并锁住，不重复给按压回执
+      ...press('submit', disabled || submitting),
     }),
 
     getResetTriggerProps: () => normalize.button({

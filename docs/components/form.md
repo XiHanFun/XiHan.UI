@@ -54,6 +54,18 @@
 
 <XhDemo src="form/06-layout" />
 
+### 字段联动重验
+
+确认密码的规则声明 deps: ['password']：先填确认密码并离开，之后再改密码，确认密码会跟着重新校验
+
+<XhDemo src="form/07-dependencies" />
+
+### 提交在途
+
+提交回调返回 Promise：落定之前 submitting 为真，提交钮报在途、再按也不会重复提交；拒绝经 submit-error 报出
+
+<XhDemo src="form/08-async-submit" />
+
 ## 设计指引
 
 ### 何时使用
@@ -74,6 +86,10 @@
 - 错误汇总可跳转到对应字段。
 - 支持纵向、横向、行内和网格布局。
 - 嵌套字段与字段数组使用显式 `FormPath`。
+- 字段级状态：`api.dirty` 与 `isFieldDirty(name)` 相对 `defaultValues` 按结构比（改回原样即不算改过），`isFieldTouched(name)` 记失焦过一次的字段；`resetField(name)` 只把一个字段的值、错误与触碰标记还原。
+- 不提交的校验：`validateAll()` 整表校验并整表替换错误表，`validateField(name)` / `validateFields(names)` 只写回涉及的字段；三者都返回 `Promise<{ valid, errors, stale }>`，不触发 onSubmit / onInvalid、不显示错误摘要，也不搬焦点。校验结束前值被改则 `stale` 为真、结果不写回；校验器抛错时 Promise 拒绝，同时照常报 `onValidationError`。
+- 字段联动：规则写 `deps: ['password']`，依赖字段一改，本字段在被触碰过（校验时机不是 submit）或正挂着错误时重新校验，validator 的第二个参数读得到依赖字段的新值。
+- 提交在途：`onSubmit` 返回 thenable 时 `submitting` 为真直到它落定，期间再提交不发生，提交钮带 `aria-disabled` 与 `data-loading`、表单报 `aria-busy`；拒绝经 `onSubmitError`（三端事件 `submit-error`）报出原始原因。Web Components 的事件拿不到监听函数的返回值，异步提交交给 `submitAction` property。
 
 ### 组合
 
@@ -86,6 +102,7 @@
 - 首次校验优先放在失焦或提交时。
 - 提交失败后聚焦第一个错误字段。
 - 异步校验期间显示明确的加载状态。
+- 异步提交让 `onSubmit` 直接返回 Promise，用 `submitting` 改提交钮文字，不另外维护一个加载标志。
 
 ### 反模式
 
@@ -124,7 +141,8 @@
 | `readOnly` | `boolean` |  | 只读：写值与重置不发生，但仍可提交。 |
 | `onValuesChange` | `(details: FormValuesChangeDetails) => void` |  | 值表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onErrorsChange` | `(details: FormErrorsChangeDetails) => void` |  | 错误表变化意图回调；受控时是唯一出口。 |
-| `onSubmit` | `(details: FormSubmitDetails) => void` |  | 校验通过才调用。 |
+| `onSubmit` | `(details: FormSubmitDetails) => void \| PromiseLike<unknown>` |  | 校验通过才调用。返回 thenable 时 submitting 为真直到它落定：期间再提交不发生、提交钮报在途； 拒绝经 onSubmitError 报出。同步抛出照常向上抛，不当作提交失败。 |
+| `onSubmitError` | `(details: FormSubmitErrorDetails) => void` |  | 提交回调返回的 thenable 拒绝时调用。 |
 | `onInvalid` | `(details: FormInvalidDetails) => void` |  | 校验不通过时调用，附带拦截的整张错误表。 |
 | `onValidationError` | `(details: FormValidationErrorDetails) => void` |  | 校验器抛错或拒绝 Promise 时调用；不触发 onInvalid 或 onSubmit。 |
 
@@ -136,8 +154,9 @@
 | --- | --- | --- |
 | `values-change` | `FormValuesChangeDetails` | 值表变化；detail 为 `{ values }` |
 | `errors-change` | `FormErrorsChangeDetails` | 错误表变化；detail 为 `{ errors }` |
-| `submit` | `FormSubmitDetails` | 校验通过才派发；detail 为 `{ values }` |
-| `invalid` | `FormInvalidDetails` | 校验不通过时派发；detail 为 `{ errors, values }` |
+| `submit` | `FormSubmitDetails` | 校验通过才派发；detail 为 `{ values }`。异步提交门经 submitAction 属性：事件拿不到监听函数的返回值， 给元素赋 `submitAction = details =&gt; thenable` 即在提交通过校验后调用它，期间 submitting 为真、提交钮报在途 |
+| `submit-error` | `FormSubmitErrorDetails` | submitAction 返回的 thenable 拒绝；detail 为 `{ cause, values }`，保留原始原因 |
+| `invalid` | `FormSubmitDetails` | 校验不通过时派发；detail 为 `{ errors, values }` |
 | `validation-error` | `FormValidationErrorDetails` | 校验器执行异常；detail 为 `{ cause, values, field }`，field 为 null 表示整表提交 |
 
 ### 插槽
@@ -178,9 +197,9 @@
 
 **状态**：`idle` · `invalid`
 
-**事件**：`SUBMIT` · `RESET` · `VALIDATION.PASS` · `VALIDATION.FAIL` · `FIELD.SET` · `FIELD.ARRAY.MUTATE` · `FIELD.BLUR` · `ERROR.SET` · `ERRORS.CLEAR` · `ERROR.FOCUS` · `PRESS.START` · `PRESS.END` · `SUMMARY.SNAPSHOT` · `SUMMARY.RENDERED`
+**事件**：`SUBMIT` · `RESET` · `FIELD.RESET` · `VALIDATE` · `SUBMIT.SETTLED` · `VALIDATION.PASS` · `VALIDATION.FAIL` · `FIELD.SET` · `FIELD.ARRAY.MUTATE` · `FIELD.BLUR` · `ERROR.SET` · `ERRORS.CLEAR` · `ERROR.FOCUS` · `PRESS.START` · `PRESS.END` · `SUMMARY.SNAPSHOT` · `SUMMARY.RENDERED`
 
-**判据**：`isEnabled` · `isEditable` · `isValidationSnapshotCurrent` · `canPress`
+**判据**：`isEnabled` · `isEditable` · `isValidationSnapshotCurrent` · `canPress` · `isSubmitting`
 
 ### connect API
 
@@ -195,6 +214,8 @@
 | `invalid` | `boolean` | 错误表非空。与是否提交失败过无关，挂载时作者预置的错误也计入。 |
 | `submitFailed` | `boolean` | 上一次提交被拦截：错误摘要据此显示。 |
 | `validating` | `boolean` | 异步校验进行中（提交或逐字段都计入）。 |
+| `submitting` | `boolean` | 提交回调返回的 thenable 尚未落定：期间再提交不发生，提交钮报在途。 |
+| `dirty` | `boolean` | 有字段的值与 defaultValues 不同（按结构比，受控时同样以 defaultValues 为基准）。 |
 | `validationError` | `FormValidationErrorDetails \| null` | 校验服务异常；null 表示没有异常，字段错误仍从 errors 读取。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
@@ -208,11 +229,17 @@
 | `summaryErrorCount` | `number` |  |
 | `getSummaryError` | `(name: FormPath) => string \| undefined` | 错误摘要此刻给该字段画的文案；摘要里的条目读它而不读 getFieldError。 |
 | `isFieldInvalid` | `(name: FormPath) => boolean` |  |
+| `isFieldDirty` | `(name: FormPath) => boolean` | 该字段的值与 defaultValues 里的不同（按结构比）。 |
+| `isFieldTouched` | `(name: FormPath) => boolean` | 该字段失焦过一次。 |
 | `isFieldRequired` | `(name: FormPath) => boolean` | 该字段的规则中声明了 required：字段的必填标记由此推导。 |
 | `setFieldValue` | `(name: FormPath, value: unknown) => void` | 写一个字段的值；禁用或只读时不生效。 |
 | `setFieldError` | `(name: FormPath, message?: string) => void` | 写一个字段的错误；未提供文案（或提供空串）即清除该条。 |
 | `clearErrors` | `() => void` |  |
 | `submit` | `() => void` | 执行完整的校验与提交流程，与用户按提交键走同一路径。 |
+| `validateAll` | `() => Promise<FormValidateResult>` | 整表校验一次、整表替换错误表，但不提交：不触发 onSubmit / onInvalid，不显示错误摘要，也不搬焦点。 |
+| `validateField` | `(name: FormPath) => Promise<FormValidateResult>` | 只校验一个字段并只写回它的那一条。 |
+| `validateFields` | `(names: readonly FormPath[]) => Promise<FormValidateResult>` | 逐字段校验这几个字段并只写回它们。 |
+| `resetField` | `(name: FormPath) => void` | 只重置一个字段：值、错误与触碰标记回到初始；禁用或只读时不生效。 |
 | `reset` | `() => void` | 值与错误都回到初始；禁用或只读时不生效。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getFieldGroupProps` | `(props: FormFieldGroupProps) => T['element']` |  |
@@ -237,9 +264,12 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `aria-busy` | 'true' \| undefined |
 | `error-summary` | `aria-atomic` | 'true' |
 | `error-summary` | `aria-live` | 'assertive' |
 | `error-summary` | `role` | 'alert' |
+| `submit-trigger` | `aria-busy` | 'true' \| undefined |
+| `submit-trigger` | `aria-disabled` | 'true' \| undefined |
 
 ## 样式参考
 
@@ -275,6 +305,7 @@
 | `error-summary-item` | `data-invalid` | ''（条件成立时才出现） |
 | `error-summary-item` | `data-pressed` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `submit-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-xh-action-control` | '' |
 | `submit-trigger` | `data-xh-action-display` | 'always' |
@@ -303,6 +334,7 @@
 | `--xh-form-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | form 的 root 部件 gap 覆盖槽。 |
 | `--xh-form-inline-gap` | `root` | `column-gap` | `layout=inline` | `--xh-space-4` | form 的 root 部件 column-gap 覆盖槽。 |
 | `--xh-form-label-w` | `root` | `grid-template-columns` | `layout=horizontal` | `30%` | form 的 root 部件 grid-template-columns 覆盖槽。 |
+| `--xh-form-loading-duration` | `submit-trigger` | `animation` | `loading` | `--xh-motion-loop-spin` | form 的 submit-trigger 部件 animation 覆盖槽。 |
 | `--xh-form-submit-bg` | `submit-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | form 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-form-submit-bg-active` | `submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | form 的 submit-trigger 部件 background-color 覆盖槽。 |
 | `--xh-form-submit-bg-hover` | `submit-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | form 的 submit-trigger 部件 background-color 覆盖槽。 |
@@ -344,11 +376,13 @@
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-drop-in` · `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+可覆盖的动效槽：`--xh-form-loading-duration`。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+共享关键帧 `xh-drop-in` · `xh-fade-out` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### 响应式
 

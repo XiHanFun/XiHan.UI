@@ -14,7 +14,7 @@ import { useForm } from './use-form'
 
 type FormProps = FormSchema['props']
 
-/** 默认插槽的载荷：整表的值与错误、校验态，以及逐字段读写、清错、提交、重置的命令。 */
+/** 默认插槽的载荷：整表的值与错误、校验与提交在途、改动与触碰，以及逐字段读写、清错、校验、提交、重置的命令。 */
 export type FormRootSlotProps = Pick<
   FormApi,
   | 'values'
@@ -23,13 +23,21 @@ export type FormRootSlotProps = Pick<
   | 'invalid'
   | 'submitFailed'
   | 'validating'
+  | 'submitting'
+  | 'dirty'
   | 'validationError'
   | 'getFieldId'
   | 'getFieldError'
+  | 'isFieldDirty'
+  | 'isFieldTouched'
   | 'setFieldValue'
   | 'setFieldError'
   | 'clearErrors'
   | 'submit'
+  | 'validateAll'
+  | 'validateField'
+  | 'validateFields'
+  | 'resetField'
   | 'reset'
 >
 
@@ -71,13 +79,18 @@ export const XhFormRoot = defineComponent({
     labelAlign: { type: String as PropType<FormProps['labelAlign']> },
     disabled: Boolean,
     readOnly: Boolean,
+    /**
+     * 校验通过才调用。返回 thenable 期间 submitting 为真、再提交不发生，拒绝经 submit-error 报出。
+     * 模板中照常写 @submit，Vue 会把它落到该 prop 上。
+     */
+    onSubmit: { type: Function as PropType<FormProps['onSubmit']> },
   },
   // *-change 携带 details 对象，update:* 携带裸表；submit 与 invalid 按校验结果二选一
   emits: {
     'values-change': (_details: PayloadOf<FormProps, 'onValuesChange'>) => true,
     'errors-change': (_details: PayloadOf<FormProps, 'onErrorsChange'>) => true,
-    'submit': (_details: PayloadOf<FormProps, 'onSubmit'>) => true,
     'invalid': (_details: PayloadOf<FormProps, 'onInvalid'>) => true,
+    'submit-error': (_details: PayloadOf<FormProps, 'onSubmitError'>) => true,
     'validation-error': (_details: PayloadOf<FormProps, 'onValidationError'>) => true,
     'update:values': (_values: PayloadOf<FormProps, 'onValuesChange'>['values']) => true,
     'update:errors': (_errors: PayloadOf<FormProps, 'onErrorsChange'>['errors']) => true,
@@ -95,7 +108,9 @@ export const XhFormRoot = defineComponent({
         emit('errors-change', details)
         emit('update:errors', details.errors)
       },
-      onSubmit: details => emit('submit', details),
+      // 返回值要交给机器：thenable 即进入提交在途
+      onSubmit: details => props.onSubmit?.(details),
+      onSubmitError: details => emit('submit-error', details),
       onInvalid: details => emit('invalid', details),
       onValidationError: details => emit('validation-error', details),
     })
@@ -112,13 +127,21 @@ export const XhFormRoot = defineComponent({
       invalid: ctx.api.value.invalid,
       submitFailed: ctx.api.value.submitFailed,
       validating: ctx.api.value.validating,
+      submitting: ctx.api.value.submitting,
+      dirty: ctx.api.value.dirty,
       validationError: ctx.api.value.validationError,
       getFieldId: ctx.api.value.getFieldId,
       getFieldError: ctx.api.value.getFieldError,
+      isFieldDirty: ctx.api.value.isFieldDirty,
+      isFieldTouched: ctx.api.value.isFieldTouched,
       setFieldValue: ctx.setFieldValue,
       setFieldError: ctx.setFieldError,
       clearErrors: ctx.clearErrors,
       submit: ctx.submit,
+      validateAll: ctx.validateAll,
+      validateField: ctx.validateField,
+      validateFields: ctx.validateFields,
+      resetField: ctx.resetField,
       reset: ctx.reset,
     }))
   },

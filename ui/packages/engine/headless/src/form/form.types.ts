@@ -35,6 +35,11 @@ export interface FormRule {
    * 第二个参数是整表值，跨字段规则从这里读取。
    */
   validator?: (value: unknown, values: FormValues) => string | undefined | null | Promise<string | undefined | null>
+  /**
+   * 本字段依赖的字段：它们的值一变，本字段在被触碰过（失焦过一次，且校验时机不是 submit）
+   * 或正挂着错误时重新校验。跨字段比较写在 validator 里，第二个参数读得到依赖字段的新值。
+   */
+  deps?: readonly FormPath[]
   /** 本条规则的文案，优先于模板。 */
   message?: string
 }
@@ -115,6 +120,23 @@ export interface FormSubmitDetails {
   values: FormValues
 }
 
+/** 提交回调返回的 thenable 拒绝时的详情；cause 是未经包装的原始原因。 */
+export interface FormSubmitErrorDetails {
+  cause: unknown
+  /** 这次提交通过校验的值。 */
+  values: FormValues
+}
+
+/** 一次不提交的校验（validate / validateField / validateFields）的结果。 */
+export interface FormValidateResult {
+  /** 这次校验算出来的错误里一条都没有；库外写进来的错误（setFieldError、受控 errors）不在其内。 */
+  valid: boolean
+  /** 这次校验算出来的错误：整表校验是整张表，逐字段校验只含涉及的那几个字段。 */
+  errors: FormErrors
+  /** 校验结束前值被改、表单被重置、另一轮同范围的校验顶掉或组件卸载：结果作废，没有写回错误表。 */
+  stale: boolean
+}
+
 export interface FormInvalidDetails {
   /** 本次提交拦截的全部错误。 */
   errors: FormErrors
@@ -187,6 +209,8 @@ export interface FormRefs {
   /** 当前规则的可迁移副本；props 仍是下一次外部更新的来源。 */
   rules: FormRules | undefined
   rulesSource: FormRules | undefined
+  /** 每次提交回调返回 thenable 就递增一次：迟到的兑现只认最新那一轮。实例私有，不能放模块变量。 */
+  submitSequence: { n: number }
 }
 
 export interface FormSchema extends MachineSchema {
@@ -230,8 +254,13 @@ export interface FormSchema extends MachineSchema {
     onValuesChange?: (details: FormValuesChangeDetails) => void
     /** 错误表变化意图回调；受控时是唯一出口。 */
     onErrorsChange?: (details: FormErrorsChangeDetails) => void
-    /** 校验通过才调用。 */
-    onSubmit?: (details: FormSubmitDetails) => void
+    /**
+     * 校验通过才调用。返回 thenable 时 submitting 为真直到它落定：期间再提交不发生、提交钮报在途；
+     * 拒绝经 onSubmitError 报出。同步抛出照常向上抛，不当作提交失败。
+     */
+    onSubmit?: (details: FormSubmitDetails) => void | PromiseLike<unknown>
+    /** 提交回调返回的 thenable 拒绝时调用。 */
+    onSubmitError?: (details: FormSubmitErrorDetails) => void
     /** 校验不通过时调用，附带拦截的整张错误表。 */
     onInvalid?: (details: FormInvalidDetails) => void
     /** 校验器抛错或拒绝 Promise 时调用；不触发 onInvalid 或 onSubmit。 */
@@ -258,6 +287,10 @@ export interface FormSchema extends MachineSchema {
     summaryRendered: boolean
     /** 摘要最后一次露面时的错误表：退场那几帧里条目与条数照这份画，不随错误表清空一起消失。 */
     summaryErrors: FormErrors
+    /** 失焦过一次的字段（值恒为 true）；FieldArray 换行号时跟着迁移，重置即清空。 */
+    touched: FormPathRecord<true>
+    /** 提交回调返回的 thenable 尚未落定。 */
+    submitting: boolean
   }
   computed: Record<string, never>
   refs: FormRefs
@@ -271,6 +304,15 @@ export interface FormSchema extends MachineSchema {
     | { type: 'SUBMIT' }
     /** 重置意图：值与错误都回到 defaultValues / defaultErrors。 */
     | { type: 'RESET' }
+    /** 只重置一个字段：值、错误与触碰标记回到初始。 */
+    | { type: 'FIELD.RESET', name: FormPath }
+    /**
+     * 不提交的校验：names 为 null 即整表（整表替换错误表），否则逐字段只写回这几个字段。
+     * 结果经 resolve 交回；校验器抛错或拒绝经 reject 交回，同时照常报 onValidationError。
+     */
+    | { type: 'VALIDATE', names: readonly FormPath[] | null, resolve?: (result: FormValidateResult) => void, reject?: (cause: unknown) => void }
+    /** 提交回调返回的 thenable 落定；token 对不上最新一轮的不认。 */
+    | { type: 'SUBMIT.SETTLED', token: number, error?: { cause: unknown, values: FormValues } }
     /** 校验完成且全部通过：附带该时刻的值，回调直接使用它，不再回头读取 context。 */
     | { type: 'VALIDATION.PASS', errors: FormErrors, values: FormValues }
     /**
@@ -302,7 +344,7 @@ export interface FormSchema extends MachineSchema {
     /** 摘要节点留着与否（退场动画播完才报 false）。 */
     | { type: 'SUMMARY.RENDERED', rendered: boolean }
   tag: never
-  guard: 'isEnabled' | 'isEditable' | 'isValidationSnapshotCurrent' | 'canPress'
+  guard: 'isEnabled' | 'isEditable' | 'isValidationSnapshotCurrent' | 'canPress' | 'isSubmitting'
   action:
     | 'setFieldValue'
     | 'mutateFieldArray'
@@ -325,6 +367,11 @@ export interface FormSchema extends MachineSchema {
     | 'releaseWhenInert'
     | 'snapshotSummary'
     | 'setSummaryRendered'
+    | 'markTouched'
+    | 'validateDependents'
+    | 'runRequestedValidation'
+    | 'resetField'
+    | 'settleSubmit'
   effect: 'trackSummaryPresence'
 }
 
@@ -342,6 +389,10 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   submitFailed: boolean
   /** 异步校验进行中（提交或逐字段都计入）。 */
   validating: boolean
+  /** 提交回调返回的 thenable 尚未落定：期间再提交不发生，提交钮报在途。 */
+  submitting: boolean
+  /** 有字段的值与 defaultValues 不同（按结构比，受控时同样以 defaultValues 为基准）。 */
+  dirty: boolean
   /** 校验服务异常；null 表示没有异常，字段错误仍从 errors 读取。 */
   validationError: FormValidationErrorDetails | null
   disabled: boolean
@@ -365,6 +416,10 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   /** 错误摘要此刻给该字段画的文案；摘要里的条目读它而不读 getFieldError。 */
   getSummaryError: (name: FormPath) => string | undefined
   isFieldInvalid: (name: FormPath) => boolean
+  /** 该字段的值与 defaultValues 里的不同（按结构比）。 */
+  isFieldDirty: (name: FormPath) => boolean
+  /** 该字段失焦过一次。 */
+  isFieldTouched: (name: FormPath) => boolean
   /** 该字段的规则中声明了 required：字段的必填标记由此推导。 */
   isFieldRequired: (name: FormPath) => boolean
   /** 写一个字段的值；禁用或只读时不生效。 */
@@ -374,6 +429,14 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   clearErrors: () => void
   /** 执行完整的校验与提交流程，与用户按提交键走同一路径。 */
   submit: () => void
+  /** 整表校验一次、整表替换错误表，但不提交：不触发 onSubmit / onInvalid，不显示错误摘要，也不搬焦点。 */
+  validateAll: () => Promise<FormValidateResult>
+  /** 只校验一个字段并只写回它的那一条。 */
+  validateField: (name: FormPath) => Promise<FormValidateResult>
+  /** 逐字段校验这几个字段并只写回它们。 */
+  validateFields: (names: readonly FormPath[]) => Promise<FormValidateResult>
+  /** 只重置一个字段：值、错误与触碰标记回到初始；禁用或只读时不生效。 */
+  resetField: (name: FormPath) => void
   /** 值与错误都回到初始；禁用或只读时不生效。 */
   reset: () => void
   getRootProps: () => T['element']
