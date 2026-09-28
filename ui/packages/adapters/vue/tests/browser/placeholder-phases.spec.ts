@@ -27,6 +27,12 @@ import {
   XhComboboxLoading,
   XhComboboxPositioner,
   XhComboboxRoot,
+  XhListboxContent,
+  XhListboxEmpty,
+  XhListboxItem,
+  XhListboxItemText,
+  XhListboxLoading,
+  XhListboxRoot,
   XhMentionContent,
   XhMentionEmpty,
   XhMentionInput,
@@ -146,6 +152,17 @@ const CASES: Case[] = [
       await nextTick()
       await nextTick()
     },
+  },
+  {
+    scope: 'listbox',
+    render: ({ loading, items }) => h(XhListboxRoot, { collection: items ? ITEMS : [], loading }, () => [
+      h(XhListboxContent, null, () => (items ? ITEMS : []).map(node =>
+        h(XhListboxItem, { key: node.value, value: node.value }, () => h(XhListboxItemText, null, () => node.label)))),
+      h(XhListboxEmpty, null, () => '没有选项'),
+      h(XhListboxLoading, null, () => '正在读取'),
+    ]),
+    muted: '--xh-fg-muted',
+    dim: 'item',
   },
 ]
 

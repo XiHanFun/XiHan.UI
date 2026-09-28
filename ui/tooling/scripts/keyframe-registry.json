@@ -498,6 +498,7 @@
         "grid-list",
         "heatmap",
         "hierarchy-chart",
+        "listbox",
         "mention",
         "notification",
         "pie-chart",

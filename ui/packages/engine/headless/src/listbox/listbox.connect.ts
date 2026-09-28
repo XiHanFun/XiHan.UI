@@ -354,6 +354,9 @@ export function connectListbox<T extends PropTypes>(
     // 已经有条目可看时不顶上来，翻下一页的回执归 load-more-trigger
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
       'data-disabled': dataAttr(listDisabled),
       'hidden': counted ? (!loading || collection.length > 0) || undefined : !loading || undefined,
     }),
