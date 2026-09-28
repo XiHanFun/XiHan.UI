@@ -909,6 +909,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 文字：字号与所在尺寸档的条目同档（`--xh-control-font-*`），颜色取次要文字：实体面、floating 与 sheet 上 `--xh-fg-muted`，frosted 浮层上取材质的 `--xh-material-frosted-fg-muted`（常规档二者同值，强制色下后者退成 `CanvasText`）。不取 `--xh-fg-subtle`：那一档留给占位字与禁用标签。
 - 排版：块向内距 `--xh-space-3`，行内内距与条目文字对齐（取条目的行内内衬槽），内容居中；不设最小高，占位不撑出空白。浮层与字段盒等宽时占位铺满这一宽度。
 - 加载环：直径取所在尺寸档的图标档 `--xh-icon-size`，与文案的间距取控件间距；减弱动效与打印下换成静止的点线环，淡入淡出照常（配方给）。
+- Spinner 独立成件，环档自己画（它另有渐隐弧与三点两档、语气与延迟露面），但与加载环配方逐项同值：环粗、轨道、起始边、圆角与转圈节拍；三档直径同控件内图标档（sm 16 / md 20 / lg 24）。
 - 进行中的动作钮（Button、Clipboard、DownloadTrigger、Popconfirm 确认钮）是同一种环，只有一种做法：钮宽不变，环居中压在钮上（承载者投影 `data-xh-loading-ring="overlay"`）；进入在途要等一个 `micro` 才起淡，钮里原有的内容同一刻淡出留位，不到一个 `micro` 就结束的短请求什么都不闪；退出在途不等，环与内容按 `micro` 交叉淡回，不硬切。
 - 行内的在途标记（Approval 判定在途、Switch 拇指、Toast / Notification 行首）同样走加载环配方，只是环排在自己的位置上，不压在内容上。
 - 页内整块的等待用 Skeleton。图表的加载与空态走 Chart 家族配方：环同样由加载环配方画在空态部件上（空态部件投影 `data-xh-loading-ring` 与 `data-loading`），刷新相位同本节保留上一帧淡下；图表没有尺寸档，文字取说明档 `--xh-text-secondary-size`、环径取 `--xh-glyph-size-md`。
