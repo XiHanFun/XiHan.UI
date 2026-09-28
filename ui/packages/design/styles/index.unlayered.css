@@ -35899,7 +35899,7 @@
 
 /* 新选中的标签原地弹出（横排胶囊不用竖向上浮，会探出触发器底边），同一批按到达顺序错开；
    首帧就在的直接呈现。+N 那一枚不是到达的条目，不播 */
-[data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'][data-value]:not([data-instant], [data-state='closed']) {
+[data-scope='select'][data-part='tag-list']:not([data-instant]) > [data-scope='tag'][data-part='root'][data-value]:not([data-instant], [data-state='closed']) {
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
 }
@@ -40223,7 +40223,7 @@
 }
 
 /* 新加的标签原地弹出（横排胶囊不用竖向上浮），同一批按到达顺序错开；首帧就在的直接呈现 */
-[data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root']:not([data-instant]) {
+[data-scope='tag-group'][data-part='list']:not([data-instant]) > [data-scope='tag'][data-part='root']:not([data-instant], [data-state='closed']) {
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
 }

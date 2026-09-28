@@ -228,6 +228,8 @@ export function connectTagGroup<T extends PropTypes>(
       'aria-label': label.list,
       'aria-multiselectable': multiselectable ? 'true' : 'false',
       'aria-disabled': groupDisabled ? 'true' : 'false',
+      // 列表动效接上之前，首帧的标签直接呈现
+      'data-instant': dataAttr(!context.get('listTracked')),
       'aria-readonly': readOnly ? 'true' : 'false',
       // 焦点在组外时容器进 Tab 序列，onFocus 再转投给条目。
       // 判据只能用 focusedValue：anchor 可能指向一枚已被摘掉、或压根不在列表里的标签，

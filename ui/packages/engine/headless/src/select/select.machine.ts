@@ -54,6 +54,7 @@ export const selectMachine = createMachine({
     // 按压通道：正被按住的那一个（条目按 value 记，清空按钮只记 part），与开合无关
     pressedPart: cell<'item' | 'clear-trigger' | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    tagListTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -86,6 +87,7 @@ export const selectMachine = createMachine({
     // 按压通道：条目与清空按钮两个状态都认；禁用 / 只读不进，清空按钮在清不了时不进
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
+    'TAG_LIST.TRACKED': { actions: ['markTagListTracked'] },
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': [
       { guard: 'isReadOnly' },
@@ -159,6 +161,7 @@ export const selectMachine = createMachine({
       },
     },
     actions: {
+      markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')
@@ -398,7 +401,7 @@ export const selectMachine = createMachine({
        * React 的祖先 ref 在子组件 layout effect 之后才附着，延到提交后的微任务再取，仍在首帧绘制之前。
        * 触发按钮经适配器的 ref 取：纯逻辑环境（无 DOM）没有它，也就不接。
        */
-      trackTagListMotion: ({ refs, flush }) => {
+      trackTagListMotion: ({ refs, send, flush }) => {
         let disposed = false
         let stop: (() => void) | undefined
         flush(() => {
@@ -407,6 +410,7 @@ export const selectMachine = createMachine({
             if (disposed || !list)
               return
             stop = trackListMotion(list, { item: SELECT_TAG_SELECTOR })
+            send({ type: 'TAG_LIST.TRACKED' })
           })
         })
         return () => {
