@@ -243,10 +243,33 @@
     /* 页码面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
 
+    /* 面板从锚点一侧短移入，方向按实际落位只激活一支 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
+
     position: fixed;
     z-index: var(--xh-pagination-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针：省略位与面板之间那段间隙要能点得穿 */
     pointer-events: none;
+  }
+
+  /* 物理 placement 与定位引擎同一套，不随书写方向翻 */
+  [data-scope='pagination'][data-part='positioner'][data-placement^='top'] {
+    --xh-_overlay-enter-down: 1;
+  }
+
+  [data-scope='pagination'][data-part='positioner'][data-placement^='bottom'] {
+    --xh-_overlay-enter-up: 1;
+  }
+
+  [data-scope='pagination'][data-part='positioner'][data-placement^='left'] {
+    --xh-_overlay-enter-right: 1;
+  }
+
+  [data-scope='pagination'][data-part='positioner'][data-placement^='right'] {
+    --xh-_overlay-enter-left: 1;
   }
 
   /* 锚点被滚出可视区：整个浮层随之收起 */
@@ -278,14 +301,15 @@
     pointer-events: auto;
   }
 
+  /* 摊开的页码面板锚定在省略位上、从中挑一页，与菜单同属锚定列表：从锚点一侧短移淡入，不缩放 */
   [data-scope='pagination'][data-part='content'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='pagination'][data-part='content'][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }：

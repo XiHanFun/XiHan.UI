@@ -67,6 +67,7 @@ export const OVERLAY_RELATION = Object.freeze({
   'tooltip': 'anchored-list',
   'color-picker': 'anchored-list',
   'side-nav': 'anchored-list',
+  'pagination': 'anchored-list',
   'popover': 'anchored-panel',
   'hover-card': 'anchored-panel',
   'popconfirm': 'anchored-panel',
@@ -75,5 +76,4 @@ export const OVERLAY_RELATION = Object.freeze({
   'navigation-menu': 'detached',
   'floating-panel': 'detached',
   'float-button': 'detached',
-  'pagination': 'detached',
 })

@@ -768,13 +768,15 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 | 关系 | 关键帧 | 组件 |
 | --- | --- | --- |
-| 锚定列表 / 菜单 | `xh-overlay-slide-in / out` | Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、ColorPicker、SideNav 弹出分支、Tooltip（入场 `--xh-motion-duration-enter`） |
+| 锚定列表 / 菜单 | `xh-overlay-slide-in / out` | Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、ColorPicker、SideNav 弹出分支、Pagination 省略页码面板、Tooltip（入场 `--xh-motion-duration-enter`） |
 | 锚定面板 | `xh-overlay-pop-in` / `xh-pop-out` | Popover、HoverCard、Popconfirm、Tour、Command |
-| 无锚定弹出 | `xh-pop-in / out` | NavigationMenu、FloatingPanel、FloatButton 列表、Pagination 弹层、BackTop、Log / MessageFeed 回底按钮 |
+| 无锚定弹出 | `xh-pop-in / out` | NavigationMenu、FloatingPanel、FloatButton 列表、BackTop、Log / MessageFeed 回底按钮 |
 | 面板（sheet） | `xh-sheet-in / out`（位移 md + scale-enter） | Dialog、Notification |
 | 整幅滑入（slide） | `xh-slide-in / out`（位移 `--xh-motion-travel`） | Drawer、Layout 抽屉式侧栏：入场 `--xh-motion-duration-slide` + `--xh-motion-ease-slide`，退场 `--xh-motion-duration-exit` + `--xh-motion-ease-exit` |
 
 遮罩与全屏面 `xh-fade-in / out`。皮肤内不得重定义共享关键帧。
+
+锚定关系按面板贴不贴着一个锚点、里面是不是一列可选的去处来判：SideNav 折叠态的弹出分支贴着分支行、是一列导航去处，Pagination 摊开的页码面板贴着省略位、是一组可选的页码，两者都归锚定列表，从锚点一侧短移淡入、不缩放；Pagination 的页大小选择是 Select，归 Select。
 
 - Notification 从视口边缘推入属出现，不属整幅滑入：位移以卡片自身高度计、只在堆叠边缘出入，卡片小、距离短，取 `enter` / `exit`；`slide` 只给以视口尺度移动的面（抽屉、覆盖式侧栏、走马灯翻页）。逐条排开的一摞走 `xh-sheet-in / out`；叠摞（轻提示预设的缺省）的进出场另带层深位移与收拢比例，关键帧由 Notification 皮肤自己定义。
 - 日历翻月、年月视图切换瞬时，不做方向动画：日期格是查阅对象，横移途中读格会读错；方向由标题里的年月文字交代。
