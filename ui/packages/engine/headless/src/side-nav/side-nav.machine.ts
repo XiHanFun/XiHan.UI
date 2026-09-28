@@ -80,6 +80,8 @@ export const sideNavMachine = createMachine({
     // 按压通道：正被按住的那一个（入口按 value 记、链接行与分支行分开认），与选中、展开、弹出无关
     pressedPart: cell<SideNavPressedPart | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    // 落定的排布：首帧就按折叠开关来，之后等整栏宽度的过渡播完才跟上
+    railed: cell<boolean>(() => ({ defaultValue: !!prop('collapsed') })),
   }),
   refs: () => ({
     config: null,
@@ -93,6 +95,7 @@ export const sideNavMachine = createMachine({
     closePopoutLayer: () => {},
     syncPopoutPresence: () => {},
     popoutHoverCancel: null,
+    collapseRound: 0,
   }),
   initialState: () => 'idle',
   // 多分支弹出层的资源会跨逻辑关闭保留，由根级会话管理器按 Presence 身份结清。
@@ -108,6 +111,7 @@ export const sideNavMachine = createMachine({
   },
   on: {
     'PRESENCE.SET': { actions: ['setPresence'] },
+    'COLLAPSE.SETTLED': { actions: ['settleCollapse'] },
     // 按压通道：两个状态都认；侧栏禁用不进，入口自身禁用随事件带入
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
@@ -149,7 +153,8 @@ export const sideNavMachine = createMachine({
   implementations: {
     guards: {
       canChange: ({ prop }) => !prop('disabled'),
-      canPopout: ({ prop }) => !prop('disabled') && !!prop('collapsed') && (prop('collapsedPopout') ?? true),
+      // 只在落成图标栏之后弹出：折叠或展开进行中（宽度还在过渡）不弹
+      canPopout: ({ prop, context }) => !prop('disabled') && !!prop('collapsed') && context.get('railed') && (prop('collapsedPopout') ?? true),
       // 整个侧栏禁用一票否决；入口自身的禁用随事件带入
       canPress: ({ prop, event }) => {
         const e = event.current()
@@ -282,10 +287,29 @@ export const sideNavMachine = createMachine({
           || (e.type === 'POPOUT.CLOSE' && (e.src === 'esc' || e.src === 'keyboard' || e.src === 'select'))
         context.set('popoutReturnFocus', restore)
       },
-      // 折叠开关翻回平铺（或弹出被关掉）时收掉开着的面板
-      syncCollapsed: ({ prop, state, send }) => {
+      // 折叠开关翻回平铺（或弹出被关掉）时收掉开着的面板；
+      // 开关翻了而排布还是旧的：宿主把这一帧提交出去之后，等整栏宽度的过渡播完再换排布，没有过渡即刻换
+      syncCollapsed: ({ prop, state, send, context, refs, scope, flush }) => {
         if (state.get() === 'popout' && !(prop('collapsed') && (prop('collapsedPopout') ?? true)))
           send({ type: 'POPOUT.CLOSE' })
+        if (context.get('railed') === !!prop('collapsed'))
+          return
+        const round = refs.get('collapseRound') + 1
+        refs.set('collapseRound', round)
+        flush(() => {
+          const root = scope.getById(scope.partId('side-nav', 'root'))
+          const moves = root && typeof root.getAnimations === 'function'
+            ? root.getAnimations().filter(animation => 'transitionProperty' in animation)
+            : []
+          void Promise.allSettled(moves.map(animation => animation.finished)).then(() => {
+            send({ type: 'COLLAPSE.SETTLED', round })
+          })
+        })
+      },
+      settleCollapse: ({ prop, context, refs, event }) => {
+        const e = event.current()
+        if (e.type === 'COLLAPSE.SETTLED' && e.round === refs.get('collapseRound'))
+          context.set('railed', !!prop('collapsed'))
       },
       setPresence: ({ refs, event }) => {
         const e = event.current()

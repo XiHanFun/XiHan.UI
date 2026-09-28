@@ -31,6 +31,8 @@ export interface SideNavRefs {
   syncPopoutPresence: (value: string, presence: PresenceHandle, connected: boolean) => void
   /** 悬停弹出还没到点的等待；撤销它的句柄，没有等待时为 null。 */
   popoutHoverCancel: (() => void) | null
+  /** 折叠开关每翻一次起一轮等宽度过渡；只有最新那一轮的落定作数。 */
+  collapseRound: number
 }
 
 /** 读屏文案，默认英文。 */
@@ -127,6 +129,12 @@ export interface SideNavSchema extends MachineSchema {
     pressedPart: SideNavPressedPart | null
     /** 按压通道：按住的入口 value。抬起、失焦或指针取消即清空，弹出面板收起时一并清空。 */
     pressedValue: string | null
+    /**
+     * 落定的排布：图标栏（true）还是平铺（false）。折叠开关一翻，整栏宽度先按过渡收窄或长开，
+     * 宽度的过渡播完才换成新的排布——行文字在这之前只淡出、还在行里，内嵌子层与可见行也按旧排布算；
+     * 与 collapsed 不一致的那一段即折叠进行中，根投影 data-animating。
+     */
+    railed: boolean
   }
   computed: Record<string, never>
   refs: SideNavRefs
@@ -155,6 +163,8 @@ export interface SideNavSchema extends MachineSchema {
     | { type: 'PRESS.START', part: SideNavPressedPart, value: string, disabled?: boolean }
     /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
     | { type: 'PRESS.END', part: SideNavPressedPart, value: string }
+    /** 整栏宽度的过渡播完了：换成与折叠开关一致的排布。round 认的是发起等待的那一轮。 */
+    | { type: 'COLLAPSE.SETTLED', round: number }
   tag: never
   guard: 'canChange' | 'canPopout' | 'canPress'
   action:
@@ -170,6 +180,7 @@ export interface SideNavSchema extends MachineSchema {
     | 'clearPopout'
     | 'setPopoutReturnFocus'
     | 'syncCollapsed'
+    | 'settleCollapse'
     | 'setPresence'
     | 'startPress'
     | 'endPress'

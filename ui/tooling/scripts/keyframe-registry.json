@@ -297,6 +297,7 @@
         "menu",
         "menubar",
         "select",
+        "side-nav",
         "time-picker",
         "time-range-picker",
         "tooltip",
@@ -320,6 +321,7 @@
         "menu",
         "menubar",
         "select",
+        "side-nav",
         "time-picker",
         "time-range-picker",
         "tooltip",
@@ -347,7 +349,6 @@
         "prompt-input",
         "question-flow",
         "select",
-        "side-nav",
         "tag-group",
         "tags-input",
         "tree-select"
@@ -373,7 +374,6 @@
         "pagination",
         "popconfirm",
         "popover",
-        "side-nav",
         "tour"
       ],
       "relation": "anchored-panel"

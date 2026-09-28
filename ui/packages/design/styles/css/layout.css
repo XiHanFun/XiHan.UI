@@ -122,6 +122,11 @@
     --xh-_layout-sider-padding: 0;
   }
 
+  /* 侧栏里的 SideNav 跟着侧栏收放：侧栏这一次开合直接落位（首帧、跨过断点）时，导航的宽度同样直接落位 */
+  [data-scope='layout'][data-part='sider'][data-instant] [data-scope='side-nav'][data-part='root'] {
+    transition: none;
+  }
+
   [data-scope='layout'][data-part='content'] {
     grid-area: content;
     /* 内容列已是 minmax(0, 1fr)，这里再声明一次，宽表格与长串文本才撑不破列 */

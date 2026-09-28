@@ -26,17 +26,20 @@ export function connectSideNav<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const loop = prop('loop') ?? false
   const dir = prop('dir') ?? 'ltr'
-  // 折叠态下顶层分支换装浮层弹出；collapsedPopout 关掉即回到纯图标栏。
+  // 落定的排布：折叠开关翻了之后，整栏宽度的过渡播完才换过来；两者不一致的那一段即折叠进行中
+  const railed = context.get('railed')
+  const collapsing = railed !== collapsed
+  // 排布落成图标栏之后顶层分支换装浮层弹出；collapsedPopout 关掉即回到纯图标栏。
   // 弹出与否看状态位：context 里的 popoutValue 在关闭后留给效应拆除用，不外露
-  const popoutEnabled = collapsed && (prop('collapsedPopout') ?? true)
+  const popoutEnabled = railed && (prop('collapsedPopout') ?? true)
   const popoutValue = popoutEnabled && state.get() === 'popout' ? context.get('popoutValue') : null
   const popoutPlacements = context.get('popoutPlacements')
   /** 事件回调里现读的弹出分支；渲染期快照失效后仍然准确。 */
   const livePopout = (): string | null =>
     state.get() === 'popout' ? context.get('popoutValue') ?? null : null
 
-  // 摊平与索引都是纯函数；折叠成图标栏时内嵌展开整体收起，可见行只剩顶层
-  const rows = flattenTree(collection, collapsed ? [] : expandedValue)
+  // 摊平与索引都是纯函数；排布落成图标栏时内嵌展开整体收起，可见行只剩顶层
+  const rows = flattenTree(collection, railed ? [] : expandedValue)
   const metaIndex = indexTree(collection)
   const visible = new Map(rows.map(row => [row.value, row]))
 
@@ -46,7 +49,7 @@ export function connectSideNav<T extends PropTypes>(
 
   const metaOf = (v: string): ReturnType<typeof metaIndex.get> => metaIndex.get(v)
   const isSelected = (v: string): boolean => value === v
-  const isExpanded = (v: string): boolean => !collapsed && expandedValue.includes(v)
+  const isExpanded = (v: string): boolean => !railed && expandedValue.includes(v)
   const isDisabled = (v: string): boolean => disabled || !!metaOf(v)?.disabled
 
   /**
@@ -249,9 +252,13 @@ export function connectSideNav<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 折叠落定要等它身上的宽度过渡播完，机器按 id 现取
+      'id': scope.partId('side-nav', 'root'),
       'role': 'navigation',
       'aria-label': rootLabel,
       'data-collapsed': dataAttr(collapsed),
+      // 折叠进行中：宽度在过渡，行文字只淡出、还在行里，落定之后才裁成图标栏（展开时落定之后才淡入）
+      'data-animating': dataAttr(collapsing),
       'data-disabled': dataAttr(disabled),
       'data-tone': prop('tone'),
       'data-size': prop('size'),

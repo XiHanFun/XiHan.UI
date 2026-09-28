@@ -43,6 +43,7 @@ const LAYOUT_EXCEPTIONS = {
   'tour:progress-dot:inline-size': DOT,
   'switch:thumb:inline-size': '开关滑块按下伸长：拇指是轨道里绝对定位的小件，伸长不推动轨道外的任何东西',
   'layout:sider:inline-size': '侧栏折叠必须让出内容区宽度：内容区跟着侧栏重排正是这个动作要表达的',
+  'side-nav:root:inline-size': '侧栏导航折叠成图标栏必须让出内容区宽度：与 Layout 侧栏同一段 move、同一条曲线，放在侧栏里时两者一起收放，侧栏直接落位时它也直接落位',
   'splitter:panel:flex-basis': '面板折叠 / 展开必须让出相邻面板的空间：相邻面板跟着重排正是这个动作要表达的（拖拽与步进不带过渡）',
   'question-flow:viewport:block-size': '换题时视口随题目内容增减高度：下面的操作条要跟着挪到新位置',
   'notification:item:block-size': '叠放的一摞展开时各条长回自己的高度：叠放区跟着撑开',
