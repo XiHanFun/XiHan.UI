@@ -21031,6 +21031,15 @@
     display: none;
   }
 
+  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
+     直径取所在尺寸档的图标档 */
+  [data-scope='cascader'][data-part='loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  }
+
   /* 底栏在场时浮层壳允许换行：列照旧并排在第一行，底栏占满一整行落在列下面。
      没写底栏的浮层不命中这条，列多到放不下时仍是整体横向滚动 */
   [data-scope='cascader'][data-part='content']:has(> [data-part='footer']) {
@@ -29037,32 +29046,18 @@
     --xh-action-ring-color-focus-visible: currentColor;
   }
 
-  /* 提交回调在途：文案前转一枚圆环；不是禁用，焦点与对比度都保持，在途指针由家族 loading 面给 */
-  [data-scope='form'][data-part='submit-trigger'][data-loading]::before {
-    content: '';
-    flex: none;
-    inline-size: 1em;
-    block-size: 1em;
-    border: var(--xh-stroke-thin) solid transparent;
-    border-block-start-color: currentcolor;
-    border-radius: var(--xh-shape-circle);
-    animation: xh-spin var(--xh-form-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
+  /* 提交回调在途：环由加载环配方压在提交钮正中（连接层投影 data-xh-loading-ring="overlay"），直径取钮的图标档，
+     起始边取钮的真实前景、转速认使用者槽。不是禁用，焦点与对比度都保持，在途指针由家族 loading 面给。
+     提交文案随前景淡到透明留位：进入在途等一个 micro 才起淡（快速落定什么都不闪），落定时不等、按 micro 淡回 */
+  [data-scope='form'][data-part='submit-trigger'] {
+    --xh-_loading-ring-fg: var(--xh-form-submit-fg, var(--xh-_action-variant-fg-loading));
+    --xh-_loading-ring-duration: var(--xh-form-loading-duration, var(--xh-motion-loop-spin));
   }
 
-  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
-     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='form'][data-part='submit-trigger'][data-loading]::before {
-      border-style: dotted;
-      border-color: currentColor;
-      animation: none;
-    }
-  }
+  [data-scope='form'][data-part='submit-trigger'][data-loading] {
+    --xh-action-fg-loading: transparent;
 
-  :where([data-motion='reduce']) [data-scope='form'][data-part='submit-trigger'][data-loading]::before {
-    border-style: dotted;
-    border-color: currentColor;
-    animation: none;
+    transition-delay: var(--xh-motion-duration-micro);
   }
 }
 
@@ -46522,7 +46517,7 @@
     --xh-collection-inline-padding: var(--xh-tree-row-px, var(--xh-_tree-row-px));
     --xh-collection-gap: 0;
     --xh-collection-font-size: var(--xh-tree-row-font-size, var(--xh-_tree-font-size));
-    --xh-collection-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-tree-row-radius, var(--xh-shape-inset));
     /* 作者的图标尺槽经桥接槽下发到行，家族缺省按 md 档 */
     --xh-collection-glyph-size: var(--xh-tree-icon-size, var(--xh-_collection-glyph-size));
     /* 箭头 / 对号盒与叶子的占位同一把尺：指示符档（md comfortable 16 / compact 14），与同一行里的
@@ -47306,6 +47301,12 @@
     overflow: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 刷新：已有节点时后台在取，保留上一帧，树按 micro 淡下，数据到了再淡回；在途占位此时让位 */
+  [data-scope='tree-select'][data-part='tree'][aria-busy='true'] {
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   [data-scope='tree-select'][data-part='tree'][hidden] {
@@ -47313,12 +47314,17 @@
   }
 
   /* 浮层内搜索框：排在树上方，框自己不画边不画底，只在底下画一道分隔线把它与树分开；边界归面板 */
+  /* 面板内嵌的搜索框：通栏一行，控件高与字号随尺寸档，只画一道面内分隔的下划线（取面材质的分隔令牌）；
+     重置与占位前景由字段家族按 data-xh-field-input 给，占位与值文本的占位同一支组件槽 */
   [data-scope='tree-select'][data-part='input'] {
+    --xh-field-placeholder-fg: var(--xh-tree-select-placeholder-fg, var(--xh-fg-subtle));
+
     flex: none;
     min-inline-size: 0;
+    block-size: var(--xh-tree-select-input-h, var(--xh-_tree-select-h));
     margin-block-end: var(--xh-tree-select-input-gap, var(--xh-space-1));
-    padding-block: var(--xh-tree-select-input-py, var(--xh-space-2));
-    padding-inline: var(--xh-tree-select-input-px, var(--xh-_tree-select-row-px));
+    padding-block: 0;
+    padding-inline: var(--xh-tree-select-input-px, var(--xh-_tree-select-px));
     border: none;
     border-block-end: var(--xh-stroke-thin) solid var(--xh-tree-select-search-divider, var(--xh-material-frosted-separator));
     background: none;

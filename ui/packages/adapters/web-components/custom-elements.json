@@ -73092,10 +73092,10 @@
               "name": "--xh-tree-select-input-gap"
             },
             {
-              "name": "--xh-tree-select-input-px"
+              "name": "--xh-tree-select-input-h"
             },
             {
-              "name": "--xh-tree-select-input-py"
+              "name": "--xh-tree-select-input-px"
             },
             {
               "name": "--xh-tree-select-item-bg-hover"
