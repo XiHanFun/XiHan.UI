@@ -149,6 +149,8 @@ describe('树选择 M2 浮层', () => {
       expect(sides.map(side => style.getPropertyValue(`--xh-_overlay-enter-${side}`).trim())).toEqual(expected)
     }
     const content = part('content')
+    // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户开合时的进退场
+    delete content.dataset.instant
     expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-in')
     expect(getComputedStyle(content).scale).toBe('none')
     content.dataset.state = 'closed'
@@ -160,6 +162,7 @@ describe('树选择 M2 浮层', () => {
     await mount('light')
     part('positioner').dataset.motion = 'reduce'
     const content = part('content')
+    delete content.dataset.instant
     for (const state of ['open', 'closed']) {
       content.dataset.state = state
       const style = getComputedStyle(content)
