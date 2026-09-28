@@ -14953,10 +14953,16 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* 三点档的呼吸：一拍里淡到禁用档再回来 */
+/* 三点档的波：一条亮带沿行扫过三枚点，点依次亮起再暗回禁用档，不再整组同步明暗 */
 @keyframes xh-spinner-dots {
-  50% {
-    opacity: var(--xh-state-disabled-opacity);
+  from {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+
+  to {
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
   }
 }
 
@@ -15041,17 +15047,29 @@
 }
 
 /*
- * 三点：一行三枚圆点，整组一起呼吸。它不转，因此圆角与描边都撤掉，
+ * 三点：一行三枚圆点，依次亮起成一道波。它不转，因此圆角与描边都撤掉，
  * 图形改由三层径向渐变画；点的颜色走 currentColor，语气档只换这一处。
+ * 明暗不靠整组的不透明度（那样三点同步明灭，读起来像整体在闪），而是一层三倍宽的遮罩：
+ * 两端压在禁用档的不透明度，正中一道满不透明度的亮带，遮罩位置从行首外扫到行尾外，
+ * 亮带依次掠过三枚点。
  */
 [data-scope='spinner'][data-part='root'][data-variant='dots']::before {
+  --xh-_spinner-dot-dim: color-mix(in srgb, currentColor calc(var(--xh-state-disabled-opacity) * 100%), transparent);
+
   border: 0;
   border-radius: 0;
   background:
     radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 0 50% / 25% 25% no-repeat,
     radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 50% 50% / 25% 25% no-repeat,
     radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 100% 50% / 25% 25% no-repeat;
-  animation: xh-spinner-dots var(--xh-spinner-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-sweep) infinite;
+  -webkit-mask: linear-gradient(90deg, var(--xh-_spinner-dot-dim) 40%, currentColor 50%, var(--xh-_spinner-dot-dim) 60%) 100% 0 / 300% 100% no-repeat;
+  mask: linear-gradient(90deg, var(--xh-_spinner-dot-dim) 40%, currentColor 50%, var(--xh-_spinner-dot-dim) 60%) 100% 0 / 300% 100% no-repeat;
+  animation: xh-spinner-dots var(--xh-spinner-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
+}
+
+/* 波跟着书写方向走：RTL 下从右往左依次亮起 */
+[data-scope='spinner'][data-part='root'][data-variant='dots']:dir(rtl)::before {
+  animation-direction: reverse;
 }
 
 [data-scope='spinner'][data-part='root'][data-variant='dots'][data-tone]::before {
@@ -15061,20 +15079,26 @@
     radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone)) 100%, transparent) 100% 50% / 25% 25% no-repeat;
 }
 
-/* 三点档的呼吸自带一条动画，压不住上面那两块基础降级里的 animation: none，
-   因此这一档各自再写一份。两组规则是同一件事的两个触发条件 */
+/* 三点档的波自带一条动画，压不住上面那两块基础降级里的 animation: none，
+   因此这一档各自再写一份；遮罩一并撤掉，三点满不透明度静止。两组规则是同一件事的两个触发条件 */
 @media (prefers-reduced-motion: reduce) {
   [data-scope='spinner'][data-part='root'][data-variant='dots']::before {
+    -webkit-mask: none;
+    mask: none;
     animation: none;
   }
 }
 
 :where([data-motion='reduce']) [data-scope='spinner'][data-part='root'][data-variant='dots']::before {
+  -webkit-mask: none;
+  mask: none;
   animation: none;
 }
 
 @media print {
   [data-scope='spinner'][data-part='root'][data-variant='dots']::before {
+    -webkit-mask: none;
+    mask: none;
     animation: none;
   }
 }
@@ -15144,6 +15168,13 @@
     border-block-start-color: Highlight;
     border-radius: var(--xh-spinner-radius, var(--xh-shape-circle));
     background-image: none;
+  }
+
+  /* 三点档退回描边后撤掉扫点的遮罩，改转圆环那一条 */
+  [data-scope='spinner'][data-part='root'][data-variant='dots']::before {
+    -webkit-mask: none;
+    mask: none;
+    animation-name: xh-spin;
   }
 }
 
