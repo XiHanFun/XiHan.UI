@@ -286,7 +286,8 @@ describe('网格圈数与各圈的数值', () => {
     const { cx, cy } = rig.api().model.scene!.layout
     // 写在轴的右侧，越往外离圆心越远
     expect(labels.every(l => l.x > cx)).toBe(true)
-    expect(labels.map(l => cy - l.y)).toEqual([...labels.map(l => cy - l.y)].sort((a, b) => a - b))
+    const distances = labels.map(l => cy - l.y)
+    expect(distances).toEqual([...distances].sort((a, b) => a - b))
   })
 
   it('各指标量程不同时不写：一根轴的刻度代表不了别的轴', async () => {
