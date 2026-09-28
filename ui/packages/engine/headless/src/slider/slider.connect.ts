@@ -9,7 +9,7 @@ import type { ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/co
 import type { SliderApi, SliderMarkMeta, SliderSchema, SliderThumbState } from './slider.types'
 import { dataAttr, focusItem, queryItems } from '@xihan-ui/core'
 import { sliderAnatomy } from './slider.anatomy'
-import { closestThumb, normalizeMarkValues, rangeExtent, thumbBounds, valueToPercent } from './slider.geometry'
+import { closestThumb, displayPercent, normalizeMarkValues, rangeExtent, thumbBounds, valueToPercent } from './slider.geometry'
 import { SLIDER_MAX, SLIDER_MIN, SLIDER_STEP } from './slider.machine'
 
 const parts = sliderAnatomy.build()
@@ -42,8 +42,14 @@ export function connectSlider<T extends PropTypes>(
   const invalid = !!prop('invalid')
   const editable = !disabled && !readOnly
   const vertical = orientation === 'vertical'
-  // 只有水平轨道才翻转左右键：几何换算里竖直轨道已把 dir 短路，键盘须照同一条规矩
-  const flipHorizontal = !vertical && dir === 'rtl'
+  const inverted = !!prop('inverted')
+  const trackFill = prop('trackFill') !== false
+  const dragMode = context.get('dragMode')
+  // 方向键跟随屏幕方向：只有水平轨道看 dir（几何换算里竖直轨道已把 dir 短路），反向时再对调一次
+  const flipHorizontal = !vertical && (dir === 'rtl') !== inverted
+  const flipVertical = vertical && inverted
+  // 整段拖动只在多拇指、且不只认刻度落点时成立
+  const draggableRange = !!prop('draggableRange') && values.length > 1 && !prop('snapToMarks')
 
   const ids = scope.ids('slider', 'label')
   const bounds = { min, max, step, minStepsBetweenThumbs: prop('minStepsBetweenThumbs') }
@@ -53,6 +59,8 @@ export function connectSlider<T extends PropTypes>(
     return { index, value, percent: valueToPercent(value, min, max), min: own.min, max: own.max }
   })
   const range = rangeExtent(values, { min, max })
+  // 反向时区间从末端量起：显示起点是另一端，长度不变
+  const rangeStart = inverted ? 1 - range.end : range.start
 
   /**
    * 把作者报来的下标收成一个真实存在的位置：下标是作者在部件上的声明，可能越界或是小数，
@@ -98,9 +106,10 @@ export function connectSlider<T extends PropTypes>(
   // 刻度：夹进区间、升序去重；active 供分段上色（单滑块＝小于等于当前值，多滑块＝落在区间里）
   const markDefs = prop('marks') ?? []
   const sortedValues = [...values].sort((a, b) => a - b)
-  const markActive = (v: number): boolean => values.length === 1
+  // 关掉填充时没有已选区间可言，刻度一律不上色
+  const markActive = (v: number): boolean => trackFill && (values.length === 1
     ? v <= (values[0] ?? min)
-    : v >= (sortedValues[0] ?? min) && v <= (sortedValues[sortedValues.length - 1] ?? min)
+    : v >= (sortedValues[0] ?? min) && v <= (sortedValues[sortedValues.length - 1] ?? min))
   const marks: SliderMarkMeta[] = normalizeMarkValues(markDefs, min, max).map(v => ({
     value: v,
     label: markDefs.find(mark => mark.value === v)?.label,
@@ -154,7 +163,9 @@ export function connectSlider<T extends PropTypes>(
           return
         // 挡掉文本选中与默认聚焦，否则焦点落在 control 上、松手后方向键没人接
         event.preventDefault()
-        send({ type: 'DRAG.START', point: { clientX: event.clientX, clientY: event.clientY } })
+        // 按在拇指上只推那一个；其余落点由机器判定是跳最近的拇指还是整段平移
+        const onThumb = (event.target as Element | null)?.closest?.(parts.thumb.selector) != null
+        send({ type: 'DRAG.START', point: { clientX: event.clientX, clientY: event.clientY }, onThumb })
         // 抓住哪个拇指由机器写入 activeIndex，这里现查活 DOM 把焦点转投过去
         const control = event.currentTarget as HTMLElement
         focusItem(queryItems(control, THUMB_QUERY)[context.get('activeIndex')] ?? null)
@@ -169,7 +180,11 @@ export function connectSlider<T extends PropTypes>(
     getRangeProps: () => normalize.element({
       ...parts.range.attrs,
       ...stateAttrs(),
-      style: axisStyle(range.start, range.end - range.start),
+      // 关掉填充时不画已选区间：收起而不是透明，免得还占着命中与读屏
+      'hidden': !trackFill || undefined,
+      // 两端拇指之间可以整段拖动，皮肤据此给出「抓得住」的光标
+      'data-draggable': dataAttr(draggableRange),
+      'style': axisStyle(rangeStart, range.end - range.start),
     }),
 
     getThumbProps: (index) => {
@@ -190,18 +205,19 @@ export function connectSlider<T extends PropTypes>(
         'aria-disabled': disabled ? 'true' : 'false',
         'tabindex': disabled ? undefined : 0,
         'data-index': String(thumb.index),
-        // 只有正被推动的那个拇指算 dragging：多拇指时全打上标记，样式层就分不出手在哪一个上
-        'data-dragging': dataAttr(dragging && thumb.index === activeIndex),
-        'style': axisStyle(thumb.percent),
+        // 只有正被推动的那个拇指算 dragging：多拇指时全打上标记，样式层就分不出手在哪一个上；
+        // 整段拖动时每个拇指都在动，一起打上
+        'data-dragging': dataAttr(dragging && (dragMode === 'range' || thumb.index === activeIndex)),
+        'style': axisStyle(displayPercent(thumb.percent, inverted)),
         'onFocus': () => send({ type: 'THUMB.FOCUS', index: thumb.index }),
         'onKeyDown': (event: KeyboardEvent) => {
           // 推不动时不吞键，带修饰键的组合一律放行
           if (!editable || event.ctrlKey || event.metaKey || event.altKey)
             return
           const run: Record<string, (() => void) | undefined> = {
-            // 上下两键恒是"屏幕向上朝 max"，与 dir 无关
-            ArrowUp: () => stepBy(thumb.index, 1),
-            ArrowDown: () => stepBy(thumb.index, -1),
+            // 上下两键按屏幕方向：竖直轨道 max 在上，反向时 max 在下；水平轨道恒是"向上朝 max"
+            ArrowUp: () => stepBy(thumb.index, flipVertical ? -1 : 1),
+            ArrowDown: () => stepBy(thumb.index, flipVertical ? 1 : -1),
             ArrowRight: () => stepBy(thumb.index, flipHorizontal ? -1 : 1),
             ArrowLeft: () => stepBy(thumb.index, flipHorizontal ? 1 : -1),
             PageUp: () => stepBy(thumb.index, 1, true),
@@ -229,8 +245,8 @@ export function connectSlider<T extends PropTypes>(
         ...stateAttrs(),
         'aria-hidden': true,
         'data-index': String(thumb.index),
-        // 只有正被推动的那个拇指算 dragging，皮肤据此决定气泡露不露面
-        'data-dragging': dataAttr(dragging && thumb.index === activeIndex),
+        // 只有正被推动的那个拇指算 dragging，皮肤据此决定气泡露不露面；整段拖动时两端的气泡一起露
+        'data-dragging': dataAttr(dragging && (dragMode === 'range' || thumb.index === activeIndex)),
       })
     },
 
@@ -243,13 +259,13 @@ export function connectSlider<T extends PropTypes>(
       ...parts.tick.attrs,
       'aria-hidden': true,
       'data-passed': dataAttr(markActive(v)),
-      'style': axisStyle(valueToPercent(v, min, max)),
+      'style': axisStyle(displayPercent(valueToPercent(v, min, max), inverted)),
     }),
 
     getTickLabelProps: ({ value: v }) => normalize.element({
       ...parts['tick-label'].attrs,
       'data-passed': dataAttr(markActive(v)),
-      'style': axisStyle(valueToPercent(v, min, max)),
+      'style': axisStyle(displayPercent(valueToPercent(v, min, max), inverted)),
       // 点文案把最近的滑块跳到这一档；禁用/只读由机器守卫拦
       'onClick': () => jumpToMark(v),
     }),

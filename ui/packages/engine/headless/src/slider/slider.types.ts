@@ -22,6 +22,15 @@ export interface SliderPoint {
   clientY: number
 }
 
+/** 一次拖动在推什么：一个拇指，或整段已选区间（两端拇指一起平移）。 */
+export type SliderDragMode = 'range' | 'thumb'
+
+/** 整段拖动的起点快照：按下时指针落点的值与整组值，位移一律从这里算起。 */
+export interface SliderRangeDragOrigin {
+  pointer: number
+  values: number[]
+}
+
 export interface SliderValueTextDetails {
   value: number
   /** 第几个滑块；多滑块时用于区分起点与终点。 */
@@ -55,6 +64,18 @@ export interface SliderSchema extends MachineSchema {
     /** 只接受刻度落点：拖动、点击与键盘都吸附到最近 / 下一档刻度。 */
     snapToMarks?: boolean
     /**
+     * 反向：min 落在轨道的末端（横排在行尾、竖排在顶端），已选区间从末端画起。
+     * 方向键跟随屏幕方向：拇指在屏幕上往哪边挪，按的就是哪个键。默认 false。
+     */
+    inverted?: boolean
+    /**
+     * 多拇指时按住两端拇指之间的轨道拖动，整段区间一起平移、宽度不变；按在拇指上仍只推那一个。
+     * 只认刻度落点（snapToMarks）时不生效：整段平移会把拇指推离刻度。默认 false。
+     */
+    draggableRange?: boolean
+    /** 画出已选区间（range 部件）并给落进区间的刻度上色，默认 true；关掉后轨道只剩底槽与拇指。 */
+    trackFill?: boolean
+    /**
      * 把值转换为可读文字，产出写入拇指的 aria-valuetext。
      * 未提供时不写该属性，读屏回退为朗读 aria-valuenow。
      */
@@ -68,6 +89,10 @@ export interface SliderSchema extends MachineSchema {
     value: number[]
     /** 正在被推动的滑块下标：拖动期间是被抓住的滑块，键盘操作时是聚焦的滑块。 */
     activeIndex: number
+    /** 这一次拖动在推什么；不在拖动时为 null。 */
+    dragMode: SliderDragMode | null
+    /** 整段拖动的起点快照；只推一个拇指时为 null。 */
+    rangeOrigin: SliderRangeDragOrigin | null
   }
   computed: Record<string, never>
   refs: {
@@ -82,7 +107,8 @@ export interface SliderSchema extends MachineSchema {
     | { type: 'THUMB.TO_MAX', index: number }
     | { type: 'THUMB.SET', index: number, value: number }
     | { type: 'THUMB.FOCUS', index: number }
-    | { type: 'DRAG.START', point: SliderPoint }
+    /** onThumb：按在拇指上（只推那一个，不做整段拖动）。 */
+    | { type: 'DRAG.START', point: SliderPoint, onThumb?: boolean }
     | { type: 'DRAG.MOVE', point: SliderPoint }
     | { type: 'DRAG.END' }
     | { type: 'FORM.RESET' }
@@ -97,6 +123,7 @@ export interface SliderSchema extends MachineSchema {
     | 'setActiveIndex'
     | 'grabNearestThumb'
     | 'dragThumb'
+    | 'clearDrag'
     | 'invokeChangeEnd'
     | 'resetToDefault'
   effect: 'trackPointer'

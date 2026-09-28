@@ -52,6 +52,12 @@ export interface XhSliderRootProps extends RootElementProps {
   marks?: SliderMark[]
   /** 只接受刻度落点：拖动、点按与键盘都吸附到最近的刻度。 */
   snapToMarks?: boolean
+  /** 反向：min 落在轨道末端，方向键跟随屏幕方向。 */
+  inverted?: boolean
+  /** 多拇指时按住两端之间的轨道整段平移。 */
+  draggableRange?: boolean
+  /** 画出已选区间，默认 true。 */
+  trackFill?: boolean
   orientation?: Orientation
   /** 文字方向，默认 ltr。 */
   dir?: Direction
@@ -81,6 +87,9 @@ export function XhSliderRoot({
   minStepsBetweenThumbs,
   marks,
   snapToMarks,
+  inverted,
+  draggableRange,
+  trackFill,
   orientation,
   dir,
   disabled,
@@ -105,6 +114,9 @@ export function XhSliderRoot({
     minStepsBetweenThumbs,
     marks,
     snapToMarks,
+    inverted,
+    draggableRange,
+    trackFill,
     orientation,
     dir,
     disabled,

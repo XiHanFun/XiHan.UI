@@ -37691,6 +37691,15 @@
   inline-size: 100%;
 }
 
+/* 两端拇指之间可以整段拖动：区间给出「抓得住」的光标，拖动中换成「抓着」 */
+[data-scope='slider'][data-part='range'][data-draggable] {
+  cursor: grab;
+}
+
+[data-scope='slider'][data-part='range'][data-draggable][data-dragging] {
+  cursor: grabbing;
+}
+
 [data-scope='slider'][data-part='range'][data-invalid] {
   background: var(--xh-slider-range-bg-invalid, var(--xh-border-invalid));
 }

@@ -84,6 +84,24 @@ value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气�
 
 <XhDemo src="slider/11-discrete-steps" />
 
+### 反向
+
+inverted 把 min 放到轨道末端，已选区间从末端画起；竖排时 0 米在上、越往下越深，方向键跟随屏幕方向
+
+<XhDemo src="slider/12-inverted" />
+
+### 整段拖动
+
+draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽度不变地平移；按在拇指上仍只推那一个
+
+<XhDemo src="slider/13-draggable-range" />
+
+### 不填充轨道
+
+取值没有「多少」之分时关掉 trackFill，只留底槽与拇指，免得从一端画起的区间暗示大小
+
+<XhDemo src="slider/14-no-fill" />
+
 ## 设计指引
 
 ### 何时使用
@@ -102,6 +120,9 @@ value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气�
 - `marks` 绘制刻度，`snapToMarks` 让值吸附到刻度。
 - 两个回调：拖动途中连续发出，松手时发出一次；持久化使用后者。
 - `getValueText` 决定读屏读出的内容，不只读数字。
+- `inverted` 把 min 放到轨道末端（横排在行尾、竖排在顶端），已选区间从末端画起；方向键跟随屏幕方向，拇指在屏幕上往哪边挪就按哪个键。插槽里的 `thumbs[i].percent` 与 `range` 仍按值的位置报，自绘内容反向时自己取 `1 - percent`。
+- `draggableRange`：多拇指时按住两端拇指之间的轨道拖动，整段区间一起平移、宽度不变，挪到头就停；按在拇指上仍只推那一个，按在区间外照旧抓最近的拇指。只认刻度落点（`snapToMarks`）时不生效。键盘仍按拇指逐个调整。
+- `trackFill` 关掉后不画已选区间、刻度也不按区间上色，只留底槽与拇指：取值没有「多少」之分（声道平衡、色温中点）时用它，免得从一端画起的区间暗示大小。
 
 ### 组合
 
@@ -150,6 +171,9 @@ value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气�
 | `minStepsBetweenThumbs` | `number` |  | 相邻滑块至少相隔的格数，默认 0（可以贴在一起但不能交换顺序）。 |
 | `marks` | `SliderMark[]` |  | 刻度表：轨道上的圆点与文案，点击文案即跳到该值。 |
 | `snapToMarks` | `boolean` |  | 只接受刻度落点：拖动、点击与键盘都吸附到最近 / 下一档刻度。 |
+| `inverted` | `boolean` |  | 反向：min 落在轨道的末端（横排在行尾、竖排在顶端），已选区间从末端画起。 方向键跟随屏幕方向：拇指在屏幕上往哪边挪，按的就是哪个键。默认 false。 |
+| `draggableRange` | `boolean` |  | 多拇指时按住两端拇指之间的轨道拖动，整段区间一起平移、宽度不变；按在拇指上仍只推那一个。 只认刻度落点（snapToMarks）时不生效：整段平移会把拇指推离刻度。默认 false。 |
+| `trackFill` | `boolean` |  | 画出已选区间（range 部件）并给落进区间的刻度上色，默认 true；关掉后轨道只剩底槽与拇指。 |
 | `getValueText` | `(details: SliderValueTextDetails) => string` |  | 把值转换为可读文字，产出写入拇指的 aria-valuetext。 未提供时不写该属性，读屏回退为朗读 aria-valuenow。 |
 | `onValueChange` | `(details: SliderValueChangeDetails) => void` |  | 每次推动都发出；拖动过程中连续发出。 |
 | `onValueChangeEnd` | `(details: SliderValueChangeEndDetails) => void` |  | 只在一次操作结束时发出一次，适合用于发起请求。 |
@@ -237,7 +261,7 @@ value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气�
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `ArrowRight` / `ArrowUp` | focus in thumb, not disabled/readOnly | 按 step 增大；RTL 与竖直排布下按屏幕方向对调，语义恒是"朝 max 走一格" |
+| `ArrowRight` / `ArrowUp` | focus in thumb, not disabled/readOnly | 按 step 增大；方向跟随屏幕：RTL 对调左右两键，inverted 再对调一次（竖直轨道 inverted 时 ArrowUp 朝 min） |
 | `ArrowLeft` / `ArrowDown` | focus in thumb, not disabled/readOnly | 按 step 减小，同上对调规则 |
 | `PageUp` | focus in thumb, not disabled/readOnly | 按 largeStep 增大（默认 10 倍 step） |
 | `PageDown` | focus in thumb, not disabled/readOnly | 按 largeStep 减小 |
@@ -276,6 +300,7 @@ value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气�
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-inverted` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
@@ -296,6 +321,7 @@ value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气�
 | `track` | `data-orientation` | props.orientation |
 | `track` | `data-readonly` | ''（条件成立时才出现） |
 | `range` | `data-disabled` | ''（条件成立时才出现） |
+| `range` | `data-draggable` | ''（条件成立时才出现） |
 | `range` | `data-dragging` | ''（条件成立时才出现） |
 | `range` | `data-invalid` | ''（条件成立时才出现） |
 | `range` | `data-orientation` | props.orientation |

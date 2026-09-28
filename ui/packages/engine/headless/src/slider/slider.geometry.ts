@@ -23,11 +23,33 @@ export interface TrackRect {
 export interface AxisOptions {
   orientation?: Orientation
   dir?: Direction
+  /** 反向：min 落在轨道末端。 */
+  inverted?: boolean
 }
 
-/** 屏幕坐标增大 = 值减小？竖直轨道恒是（自上而下），水平轨道只在 RTL 下是。 */
+/**
+ * 屏幕坐标增大 = 值减小？竖直轨道恒是（自上而下），水平轨道只在 RTL 下是；反向时整个对调。
+ */
 function isInverted(o: AxisOptions): boolean {
-  return o.orientation === 'vertical' || o.dir === 'rtl'
+  return (o.orientation === 'vertical' || o.dir === 'rtl') !== !!o.inverted
+}
+
+/** 值的位置（0-1）换成它在轨道上的显示位置：反向时从末端量起。 */
+export function displayPercent(percent: number, inverted?: boolean): number {
+  return inverted ? 1 - percent : percent
+}
+
+/**
+ * 整段平移：整组值一起挪 delta，挪到区间尽头就停，宽度不变。
+ * delta 已是 step 的整数倍、原值都在网格上，平移后仍在网格上；只收浮点尾巴。
+ */
+export function shiftThumbValues(values: readonly number[], delta: number, o: { min: number, max: number, step: number }): number[] {
+  if (values.length === 0)
+    return []
+  const lo = Math.min(...values)
+  const hi = Math.max(...values)
+  const d = clamp(delta, o.min - lo, o.max - hi)
+  return values.map(v => snapDecimals(v + d, o.step, v))
 }
 
 /** 值在区间里的位置，0-1。min === max 时退化为 0，不产生 NaN。 */
