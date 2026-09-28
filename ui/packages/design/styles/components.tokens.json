@@ -44762,6 +44762,24 @@
       "description": "mention 的 input 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-mention-textarea-py",
+      "component": "mention",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "xh-field-layout=textarea"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "mention 的 input 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-menu-arrow-size",
       "component": "menu",
       "part": [

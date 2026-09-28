@@ -8,8 +8,34 @@
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 
-/** 输入宿主元素。状态机只使用 value 与 setSelectionRange。 */
-export type MentionInputEl = HTMLInputElement
+/** 输入宿主元素。状态机只使用 value、selectionStart / selectionEnd 与 setSelectionRange，两种标签都提供。 */
+export type MentionInputEl = HTMLInputElement | HTMLTextAreaElement
+
+/** 输入框渲染的标签：单行 input（默认）或多行 textarea。 */
+export type MentionInputHost = 'input' | 'textarea'
+
+/** 输入部件声明宿主标签，connect 据此决定是否写入 type 与组合框角色。 */
+export interface MentionInputProps {
+  /** 默认 input。 */
+  as?: MentionInputHost
+}
+
+/**
+ * 一条插入正文的提及：选中候选时记下，正文改动时跟着挪位置。
+ * 改动碰到它的内部（在中间插字、删掉其中几个字）即不再算提及，退回普通文字。
+ */
+export interface MentionRange {
+  /** 候选的值。 */
+  value: string
+  /** 插入的文本（不含前缀）。 */
+  label: string
+  /** 该条提及使用的前缀。 */
+  prefix: string
+  /** 前缀首字符在正文中的下标。 */
+  start: number
+  /** 提及文本之后的下标；插入时附带的那个空格不算在内。 */
+  end: number
+}
 
 /**
  * 光标处的一次触发。
@@ -180,6 +206,13 @@ export interface MentionSchema extends MachineSchema {
     /** 当前候选条数；null 表示尚未结算。 */
     itemCount: number | null
     /**
+     * 正文里插入过的提及，按出现先后排列。正文每改一次就按改动挪一次位置，被改到内部的那几条撤掉。
+     * 光标紧贴其中一条时，Backspace / Delete 整条删掉，不逐字退格。
+     */
+    mentions: MentionRange[]
+    /** mentions 里的位置对应的是哪一版正文；与当前正文不同时先按两者的差挪位置。 */
+    mentionsSource: string
+    /**
      * 按压通道：触屏按住的候选 value；抬起、指针取消或浮层收起即清空。
      * 焦点恒在输入框，Enter 在同一次 keydown 里插入并收起，键盘那一路没有可见的按住帧，只有触屏进这条通道。
      */
@@ -208,6 +241,8 @@ export interface MentionSchema extends MachineSchema {
      */
     | { type: 'ITEMS.SYNC' }
     | { type: 'FORM.RESET' }
+    /** 把起点在 start 的那条提及整条删掉，光标落到 start。 */
+    | { type: 'MENTION.DELETE', start: number }
     /** 候选被触屏按住；disabled 是候选自身的禁用事实，由 connect 判定后随事件带入。 */
     | { type: 'PRESS.START', value: string, disabled?: boolean }
     /** 按住的候选抬起或指针取消；只松开 value 对应的那一个。 */
@@ -229,6 +264,8 @@ export interface MentionSchema extends MachineSchema {
     | 'clearHighlightedValue'
     | 'dismissHere'
     | 'selectItem'
+    | 'remapMentions'
+    | 'deleteMention'
     | 'startPress'
     | 'endPress'
     | 'releasePress'
@@ -248,6 +285,8 @@ export interface MentionApi<T extends PropTypes = PropTypes> {
   activePrefix: string | null
   /** 高亮候选；收起时为 null。焦点不在它身上，只经 aria-activedescendant 上报。 */
   highlightedValue: string | null
+  /** 正文里插入过、仍然完整的提及，按出现先后排列；宿主据此取出被 @ 到的是哪几条。 */
+  mentions: readonly MentionRange[]
   disabled: boolean
   /** 没有候选可显示：提供了 collection 且没有剩余条目。作者据此显示空态部件。 */
   empty: boolean
@@ -258,8 +297,8 @@ export interface MentionApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   /** 标题；`for` 恒指向 input，因此须是原生 `<label>`。 */
   getLabelProps: () => T['label']
-  /** 单行输入框；正文写在它身上。 */
-  getInputProps: () => T['input']
+  /** 输入框；正文写在它身上。不传参即单行 input，写 textarea 即多行宿主。 */
+  getInputProps: (props?: MentionInputProps) => T['input']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   /** 没有任何候选时显示的空态；有候选时带 hidden 收起。 */

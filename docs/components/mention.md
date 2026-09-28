@@ -54,23 +54,31 @@ variant 更换正文框的描边与底色，候选面板不受影响
 
 <XhDemo src="mention/06-variant" />
 
+### 多行正文
+
+输入框写成 textarea，评论可以换行；插入的引用是一个整体，Backspace 整条删掉
+
+<XhDemo src="mention/07-multiline" />
+
 ## 设计指引
 
 ### 何时使用
 
 - 评论、聊天、任务描述中 @ 某个人或 # 某个条目。
+- 会话输入框里用 `/` 唤起斜杠命令。
 - 需要多种前缀各自对应一份候选。
 
 ### 何时不用
 
 - 整个输入框的值就是选中项时，使用[组合框](./combobox)。
 - 只补全普通词汇时，使用[组合框](./combobox)或原生自动补全。
-- 正文需要跨行时，本组件的输入框是单行的，不提供多行形态。
 
 ### 特性
 
-- 单行输入框，与其他输入控件使用同一档行高与内衬。
+- 输入框缺省单行，与其他输入控件使用同一档行高与内衬；`input` 部件写 `as="textarea"` 即多行形态，正文可以换行，候选浮层贴着整个输入框落位。
 - 多种前缀各自映射一份候选。
+- 插入后的引用是一个整体：光标紧贴它时 Backspace（在它之后）或 Delete（在它之前）整条删掉，不逐字退格；在它内部改字即退回普通文字。光标停在一条插完的引用里不再弹候选。
+- `api.mentions` 列出正文里仍然完整的引用（值、文本、前缀与起止下标），宿主据此取出被 @ 到的是哪几条。
 - 候选可逐条声明语气，已停用或需要留意的那条自带该族字色与高亮底。
 - 候选可写副文本，第 2 行放职位、handle 一类的补充信息。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
@@ -86,14 +94,14 @@ variant 更换正文框的描边与底色，候选面板不受影响
 
 ### 组合
 
-- 正文只有一行，与[文本字段](./text-field)的单行档并排时等高。
-- 在多行正文中 @ 人的场景，本库当前没有对应组件。
+- 单行形态与[文本字段](./text-field)的单行档并排时等高。
+- 会话界面要 @ 提及或斜杠命令时，用多行形态的提及作输入框：候选、查询串与插入都由它负责；[提示输入框](./prompt-input)不内置触发符候选。候选收起时的 Enter 不被本组件接管，宿主在输入框的 `keydown` 上判断 `defaultPrevented` 为假再提交，发送钮用[按钮](./button)。
 
 ### 最佳实践
 
 - 候选按最近使用排序，@ 的对象高度重复。
-- 插入后的引用应能整体删除，不让用户逐字退格。
 - 异步示例应显式组合 `empty` 与 `loading`，不用外部文字代替浮层内的正式状态，也不把状态伪装成 option。
+- 多行形态给 `rows` 定起始高度，正文长时由作者决定是否再限高滚动。
 
 ### 反模式
 
@@ -180,6 +188,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhMentionInput` | `as` | `MentionInputHost` |  | 输入框渲染为哪个标签，默认 input。 写 textarea 即多行宿主：正文可以换行，connect 随之撤销 type、role 与 aria-expanded。 |
 | `XhMentionItem` | `value` | `string` | 是 |  |
 | `XhMentionItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhMentionPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
@@ -206,7 +215,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `ESCAPE` · `INPUT.CHANGE` · `CARET.SYNC` · `VALUE.SET` · `ITEM.HIGHLIGHT` · `ITEM.SELECT` · `ITEMS.SYNC` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `CLOSE` · `ESCAPE` · `INPUT.CHANGE` · `CARET.SYNC` · `VALUE.SET` · `ITEM.HIGHLIGHT` · `ITEM.SELECT` · `ITEMS.SYNC` · `FORM.RESET` · `MENTION.DELETE` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -222,6 +231,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `query` | `string \| null` | 当前查询串；没有触发时为 null。 |
 | `activePrefix` | `string \| null` | 触发本次查询的前缀；没有触发时为 null。 |
 | `highlightedValue` | `string \| null` | 高亮候选；收起时为 null。焦点不在它身上，只经 aria-activedescendant 上报。 |
+| `mentions` | `readonly MentionRange[]` | 正文里插入过、仍然完整的提及，按出现先后排列；宿主据此取出被 @ 到的是哪几条。 |
 | `disabled` | `boolean` |  |
 | `empty` | `boolean` | 没有候选可显示：提供了 collection 且没有剩余条目。作者据此显示空态部件。 |
 | `isHighlighted` | `(value: string) => boolean` |  |
@@ -229,7 +239,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `close` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` | 标题；`for` 恒指向 input，因此须是原生 `&lt;label&gt;`。 |
-| `getInputProps` | `() => T['input']` | 单行输入框；正文写在它身上。 |
+| `getInputProps` | `(props?: MentionInputProps) => T['input']` | 输入框；正文写在它身上。不传参即单行 input，写 textarea 即多行宿主。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` | 没有任何候选时显示的空态；有候选时带 hidden 收起。 |
@@ -257,6 +267,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `Escape` | open | 收起浮层且正文不变；光标不离开这个触发点就不再自动展开 |
 | `Tab` / `Shift+Tab` | open | 收起浮层且不拦按键，焦点按 Tab 序列自然离开 |
 | `ArrowLeft` / `ArrowRight` / `Home` / `End` | 任意时候 | 一律不接管：光标照常移动，触发按新的光标位置重算，挪出查询串即收起 |
+| `Backspace` / `Delete` | 光标紧贴一条插入的提及：Backspace 在它之后、Delete 在它之前，且没有选区 | 整条提及一次删掉，前后文与它旁边的空格不动，光标落在它原来的起点 |
 
 ### ARIA
 
@@ -267,12 +278,12 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `input` | `aria-activedescendant` | `item` 部件的 id \| undefined |
 | `input` | `aria-autocomplete` | 'list' |
 | `input` | `aria-controls` | `content` 部件的 id |
-| `input` | `aria-expanded` | 'true' \| 'false' |
+| `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | props.translations.input |
 | `input` | `aria-labelledby` | `label` 部件的 id |
-| `input` | `role` | 'combobox' |
+| `input` | `role` | undefined \| 'combobox' |
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-label` | props.translations.content |
@@ -311,7 +322,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `input` | `data-state` | 'open' \| 'closed' |
 | `input` | `data-variant` | props.variant |
 | `input` | `data-xh-field-chrome` | '' |
-| `input` | `data-xh-field-layout` | 'single-line' |
+| `input` | `data-xh-field-layout` | 'textarea' \| 'single-line' |
 | `input` | `data-xh-field-size` | props.size |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
@@ -409,6 +420,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `--xh-mention-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | mention 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-mention-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | mention 的 input 部件 color 覆盖槽。 |
+| `--xh-mention-textarea-py` | `input` | `padding-block` | `xh-field-layout=textarea` | `--xh-space-2` | mention 的 input 部件 padding-block 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

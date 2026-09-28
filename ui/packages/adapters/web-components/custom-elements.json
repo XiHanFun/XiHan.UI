@@ -38109,7 +38109,7 @@
               "name": "label"
             },
             {
-              "description": "单行输入框，须写为 `<input>`；未提供 translations.input 时名字取自 label 部件",
+              "description": "输入框：写 `<input>` 即单行，写 `<textarea>` 即多行（撤掉 type、combobox 角色与 aria-expanded，正文可以换行）；未提供 translations.input 时名字取自 label 部件",
               "name": "input"
             },
             {
@@ -38526,6 +38526,15 @@
               ]
             },
             {
+              "kind": "field",
+              "name": "mentions",
+              "type": {
+                "text": "readonly MentionRange[]"
+              },
+              "description": "正文里插入过、仍然完整的提及（值、文本、前缀与起止下标），按出现先后排列；状态机尚未建立时为空数组。",
+              "readonly": true
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -38870,6 +38879,9 @@
             },
             {
               "name": "--xh-mention-placeholder-fg"
+            },
+            {
+              "name": "--xh-mention-textarea-py"
             }
           ]
         }

@@ -6,12 +6,12 @@
 // 提供 mention 相关实现。
 
 import type { PositionResult } from '@xihan-ui/core'
-import type { MentionSchema, MentionTrigger } from './mention.types'
+import type { MentionRange, MentionSchema, MentionTrigger } from './mention.types'
 import { itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { mentionItemQuery } from './mention.anatomy'
-import { findMentionTrigger, insertMention, normalizeMentionPrefixes } from './mention.trigger'
+import { findMentionTrigger, insertMention, normalizeMentionPrefixes, remapMentionRanges } from './mention.trigger'
 
 const { createMachine } = setup<MentionSchema>()
 
@@ -65,6 +65,9 @@ export const mentionMachine = createMachine({
     // 高亮不受控、不对外通知：它只服务 aria-activedescendant 与回车的落点
     highlightedValue: cell<string | null>(() => ({ defaultValue: null })),
     itemCount: cell<number | null>(() => ({ defaultValue: null })),
+    // 插入过的提及与它们的位置所对应的那一版正文：正文变了先按两版的差挪位置，再拿来判断整条删除
+    mentions: cell<MentionRange[]>(() => ({ defaultValue: [] })),
+    mentionsSource: cell<string>(() => ({ defaultValue: prop('value') ?? prop('defaultValue') ?? '' })),
     // 按压通道：正被触屏按住的候选，与开合无关
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
@@ -81,9 +84,11 @@ export const mentionMachine = createMachine({
   initialState: () => 'closed',
   // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
-  // 按住途中转入禁用 / 只读 / 加载：不会再来 pointerup，由机器自己收
-  watch: ({ track, prop, action }) => {
+  // 按住途中转入禁用 / 只读 / 加载：不会再来 pointerup，由机器自己收。
+  // 正文从哪条路变的都一样（打字、插入、程序化改写、受控写回、表单重置），提及的位置跟着挪
+  watch: ({ track, prop, context, action }) => {
     track([() => prop('disabled'), () => prop('readOnly'), () => prop('loading')], () => action(['releaseWhenInert']))
+    track([context.dep('value')], () => action(['remapMentions']))
   },
   on: {
     // 按压通道：两个状态都认；禁用 / 只读 / 加载与候选自身禁用不进
@@ -96,6 +101,7 @@ export const mentionMachine = createMachine({
     'CARET.SYNC': { actions: ['syncTrigger', 'refreshCandidates'] },
     'VALUE.SET': { actions: ['replaceValue'] },
     'ITEMS.SYNC': { actions: ['syncItems', 'ensureHighlight'] },
+    'MENTION.DELETE': { actions: ['deleteMention'] },
   },
   states: {
     closed: {
@@ -186,7 +192,10 @@ export const mentionMachine = createMachine({
         if (e.type === 'CARET.SYNC' && e.value !== context.get('value'))
           return
 
-        const found = findMentionTrigger(e.value, e.caret, normalizeMentionPrefixes(prop('triggerPrefix')))
+        const scanned = findMentionTrigger(e.value, e.caret, normalizeMentionPrefixes(prop('triggerPrefix')))
+        // 光标停在一条插完的提及里面或紧贴其后：那是一整条引用，不是正在打的查询串，不再弹候选
+        const mentions = remapMentionRanges(context.get('mentions'), context.get('mentionsSource'), e.value)
+        const found = scanned && mentions.some(m => m.start === scanned.index && e.caret <= m.end) ? null : scanned
         const dismissed = context.get('dismissedIndex')
         // 触发点换了地方，上一次 Escape 的记录随之作废
         if (!found || found.index !== dismissed)
@@ -277,7 +286,15 @@ export const mentionMachine = createMachine({
         if (!trigger)
           return
         const label = e.label ?? e.value
-        const { value, caret } = insertMention(context.get('value'), trigger, label)
+        const before = context.get('value')
+        const { value, caret } = insertMention(before, trigger, label)
+        // 已有的提及先按这次插入挪位置，再把新插的这一条记进去；位置对应的就是插入后的正文
+        const start = trigger.index
+        const inserted: MentionRange = { value: e.value, label, prefix: trigger.prefix, start, end: start + trigger.prefix.length + label.length }
+        const current = remapMentionRanges(context.get('mentions'), context.get('mentionsSource'), before)
+        const kept = remapMentionRanges(current, before, value)
+        context.set('mentions', [...kept, inserted].sort((a, b) => a.start - b.start))
+        context.set('mentionsSource', value)
         context.set('value', value)
         context.set('trigger', null)
         context.set('dismissedIndex', null)
@@ -291,6 +308,47 @@ export const mentionMachine = createMachine({
           if (el.value !== value)
             el.value = value
           el.setSelectionRange?.(caret, caret)
+        })
+      },
+
+      /** 正文变过之后，提及按两版正文的差挪到新位置；被改到内部的撤掉。 */
+      remapMentions: ({ context }) => {
+        const value = context.get('value')
+        if (value === context.get('mentionsSource'))
+          return
+        context.set('mentions', remapMentionRanges(context.get('mentions'), context.get('mentionsSource'), context.get('value')))
+        context.set('mentionsSource', value)
+      },
+
+      /**
+       * 整条删掉一条提及：光标紧贴它时 Backspace / Delete 走这条，不逐字退格。
+       * 删掉的只是「前缀 + 文本」那一段，旁边的空格与前后文不动，光标落到它原来的起点。
+       */
+      deleteMention: ({ context, prop, event, refs, send, flush }) => {
+        const e = event.current()
+        if (e.type !== 'MENTION.DELETE' || prop('disabled') || prop('readOnly'))
+          return
+        const before = context.get('value')
+        const mentions = remapMentionRanges(context.get('mentions'), context.get('mentionsSource'), context.get('value'))
+        const target = mentions.find(m => m.start === e.start)
+        if (!target)
+          return
+        const value = before.slice(0, target.start) + before.slice(target.end)
+        context.set('mentions', remapMentionRanges(mentions.filter(m => m !== target), before, value))
+        context.set('mentionsSource', value)
+        context.set('value', value)
+        context.set('trigger', null)
+        context.set('dismissedIndex', null)
+        send({ type: 'CLOSE' })
+
+        // 正文落定才移光标。受控宿主没把这次改动写回来时 context 里还是旧文，此时不动框里的东西
+        flush(() => {
+          const el = refs.get('getInputEl')()
+          if (!el || context.get('value') !== value)
+            return
+          if (el.value !== value)
+            el.value = value
+          el.setSelectionRange?.(target.start, target.start)
         })
       },
     },

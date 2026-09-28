@@ -6,7 +6,7 @@
 // 提供 mention 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { MentionApi, MentionInputEl, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
+import type { MentionApi, MentionInputEl, MentionInputHost, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, watch } from 'vue'
@@ -20,7 +20,7 @@ import { useMention } from './use-mention'
 
 type MentionProps = MentionSchema['props']
 
-/** 默认插槽的载荷：浮层开合、正文与查询串、高亮候选，以及改写正文与收起浮层的句柄。 */
+/** 默认插槽的载荷：浮层开合、正文与查询串、高亮候选、正文里仍然完整的提及，以及改写正文与收起浮层的句柄。 */
 export type MentionRootSlotProps = Pick<
   MentionApi,
   | 'open'
@@ -28,6 +28,7 @@ export type MentionRootSlotProps = Pick<
   | 'query'
   | 'activePrefix'
   | 'highlightedValue'
+  | 'mentions'
   | 'setValue'
   | 'close'
 >
@@ -106,6 +107,7 @@ export const XhMentionRoot = defineComponent({
             query: ctx.api.value.query,
             activePrefix: ctx.api.value.activePrefix,
             highlightedValue: ctx.api.value.highlightedValue,
+            mentions: ctx.api.value.mentions,
             setValue: ctx.api.value.setValue,
             close: ctx.api.value.close,
           })
@@ -125,18 +127,25 @@ export const XhMentionLabel = defineComponent({
   },
 })
 
-/** 单行输入框；正文写在它上面，候选浮层贴着它落位。 */
+/** 输入框；正文写在它上面，候选浮层贴着它落位。缺省单行，写 as="textarea" 即多行。 */
 export const XhMentionInput = defineComponent({
   name: 'XhMentionInput',
-  setup() {
+  props: {
+    /**
+     * 输入框渲染为哪个标签，默认 input。
+     * 写 textarea 即多行宿主：正文可以换行，connect 随之撤销 type、role 与 aria-expanded。
+     */
+    as: { type: String as PropType<MentionInputHost>, default: 'input' },
+  },
+  setup(props) {
     // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
     const fieldWiring = useFieldStateWiring()
     // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
     const fieldLabel = useFieldLabelWiring()
     const ctx = useMentionContext()
-    return () => h('input', fieldLabel.value({
+    return () => h(props.as, fieldLabel.value({
       ...fieldWiring.value,
-      ...ctx.api.value.getInputProps() as Record<string, unknown>,
+      ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
       ref: (el: unknown) => { ctx.inputRef.value = el as MentionInputEl },
     }))
   },

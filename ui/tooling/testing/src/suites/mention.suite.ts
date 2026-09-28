@@ -325,6 +325,45 @@ export const mentionSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '插入的提及是一个整体：光标紧贴其后按 Backspace 整条删掉，旁边的空格不动，光标落到它原来的起点',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['mention.kbd.delete-mention'],
+      steps: [
+        {
+          kind: 'raw',
+          why: '打字只能直接派 input 事件；光标停在 li 之后、后面那段之前',
+          run: ({ doc, flush }) => typeInto(doc, '请 @li 看一下', flush, 5),
+        },
+        { kind: 'settle', until: { attr: { part: 'item[0]', name: 'data-highlighted', value: '' } } },
+        { kind: 'key', key: 'Enter' },
+        {
+          kind: 'raw',
+          why: '光标只落 DOM property：挪到「@Lilei」之后（\'请 \' 2 字 + \'@Lilei\' 6 字）',
+          run: async ({ doc, flush }) => {
+            await flush()
+            await moveCaret(doc, 8, flush)
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            parts: { input: { 'data-state': 'closed' } },
+            events: [{ type: 'value-change', detail: { value: '请   看一下' } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '正文与光标都只落 DOM property，不进属性快照',
+          run: async ({ doc, flush }) => {
+            await flush()
+            assertText(doc, '请   看一下')
+            assertCaret(doc, 2)
+          },
+        },
+      ],
+    },
+    {
       name: '点候选与回车走同一条路；禁用候选点不动',
       spec: { apg: APG },
       steps: [
