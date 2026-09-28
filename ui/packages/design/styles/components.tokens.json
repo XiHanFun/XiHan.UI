@@ -38016,6 +38016,7 @@
         "trigger",
         "trigger-indicator",
         "truncation",
+        "viewport",
         "visibility-trigger",
         "window-state-trigger",
         "zoom-in-trigger",
@@ -38031,6 +38032,7 @@
         "default",
         "direction",
         "empty",
+        "error",
         "is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])",
         "mode=send",
         "mode=stop",
@@ -38962,6 +38964,24 @@
       "description": "image-viewer 的 counter 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-image-viewer-error-fg",
+      "component": "image-viewer",
+      "part": [
+        "viewport"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "error"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "image-viewer 的 viewport 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-image-viewer-fg",
       "component": "image-viewer",
       "part": [
@@ -39021,61 +39041,6 @@
       "description": "image-viewer 的 positioner 部件 z-index 覆盖槽。"
     },
     {
-      "name": "--xh-image-viewer-loading-bg",
-      "component": "image-viewer",
-      "part": [
-        "viewport"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "loading"
-      ],
-      "defaultToken": [
-        "--xh-bg-surface-raised"
-      ],
-      "visibility": "public",
-      "description": "image-viewer 的 viewport 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-image-viewer-loading-radius",
-      "component": "image-viewer",
-      "part": [
-        "viewport"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "loading"
-      ],
-      "defaultToken": [
-        "--xh-shape-surface"
-      ],
-      "visibility": "public",
-      "description": "image-viewer 的 viewport 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-image-viewer-loading-size",
-      "component": "image-viewer",
-      "part": [
-        "viewport"
-      ],
-      "property": [
-        "block-size",
-        "inline-size"
-      ],
-      "state": [
-        "loading"
-      ],
-      "defaultToken": [
-        "--xh-control-h-lg"
-      ],
-      "visibility": "public",
-      "description": "image-viewer 的 viewport 部件 block-size、inline-size 覆盖槽。"
-    },
-    {
       "name": "--xh-image-viewer-overlay-radius",
       "component": "image-viewer",
       "part": [
@@ -39101,6 +39066,24 @@
       ],
       "visibility": "public",
       "description": "image-viewer 的 counter、next-trigger、prev-trigger、toolbar 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-viewer-status-size",
+      "component": "image-viewer",
+      "part": [
+        "viewport"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-lg"
+      ],
+      "visibility": "public",
+      "description": "image-viewer 的 viewport 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-toolbar-gap",

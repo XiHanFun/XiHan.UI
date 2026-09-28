@@ -33994,6 +33994,9 @@
               "name": "--xh-image-viewer-counter-radius"
             },
             {
+              "name": "--xh-image-viewer-error-fg"
+            },
+            {
               "name": "--xh-image-viewer-fg"
             },
             {
@@ -34003,16 +34006,10 @@
               "name": "--xh-image-viewer-layer"
             },
             {
-              "name": "--xh-image-viewer-loading-bg"
-            },
-            {
-              "name": "--xh-image-viewer-loading-radius"
-            },
-            {
-              "name": "--xh-image-viewer-loading-size"
-            },
-            {
               "name": "--xh-image-viewer-overlay-radius"
+            },
+            {
+              "name": "--xh-image-viewer-status-size"
             },
             {
               "name": "--xh-image-viewer-toolbar-gap"

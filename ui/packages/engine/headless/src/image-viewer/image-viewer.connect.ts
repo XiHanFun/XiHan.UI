@@ -228,6 +228,10 @@ export function connectImageViewer<T extends PropTypes>(
       // 视口这块在等原图落位，读屏据此不去念一块还没内容的区域
       'aria-busy': imageStatus === 'loading' || undefined,
       'data-loading': dataAttr(imageStatus === 'loading'),
+      // 取图时画面正中那枚环由加载环配方画，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
+      // 取图失败：皮肤在画面正中画一枚警示字形，替掉浏览器的破图
+      'data-error': dataAttr(imageStatus === 'error'),
       // 滚轮就是缩放：向上放大、向下缩小。preventDefault 拦掉页面滚动，
       // 适配器须以 passive:false 绑定这个监听
       'onWheel': (event: WheelEvent) => {
@@ -258,6 +262,7 @@ export function connectImageViewer<T extends PropTypes>(
       // 松手后平移由弹簧逐帧写（惯性滑行或越界回弹），样式层据此让开过渡
       'data-animating': dataAttr(context.get('settling') && !panning),
       'data-loading': dataAttr(imageStatus === 'loading'),
+      'data-error': dataAttr(imageStatus === 'error'),
       // 原图动辄几 MB，取图相位由这张图自己回送
       'onLoad': () => send({ type: 'IMAGE.LOAD' }),
       'onError': () => send({ type: 'IMAGE.ERROR' }),

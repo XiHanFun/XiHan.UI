@@ -1,4 +1,4 @@
-// 看片换图：转过、放大过的旧图不当着用户转回、缩回——换下标那一刻变换直接复位、旧图随即让位给占位面；
+// 看片换图：转过、放大过的旧图不当着用户转回、缩回——换下标那一刻变换直接复位、旧图随即让位给加载环；
 // 新图取到之后淡入。过渡有没有起、不透明度与变换的计算值只有真实浏览器给得出。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -63,7 +63,7 @@ function transitions(image: HTMLElement, property: string): Animation[] {
 }
 
 describe('image-viewer 换图', () => {
-  it('换下标那一刻变换直接复位、不补间，旧图随即让位给占位面；新图取到之后淡入', async () => {
+  it('换下标那一刻变换直接复位、不补间，旧图随即让位给加载环；新图取到之后淡入', async () => {
     const image = await mount()
     part('zoom-in-trigger').click()
     part('rotate-right-trigger').click()
@@ -72,12 +72,12 @@ describe('image-viewer 换图', () => {
 
     part('next-trigger').click()
     await nextTick()
-    // 取图期间：变换当场归位，不起旋转、缩放、平移的过渡；旧图不露面，视口垫着占位面
+    // 取图期间：变换当场归位，不起旋转、缩放、平移的过渡；旧图不露面，视口正中转着加载环
     if (image.hasAttribute('data-loading')) {
       expect(transitions(image, 'rotate')).toHaveLength(0)
       expect(transitions(image, 'scale')).toHaveLength(0)
       expect(getComputedStyle(image).opacity).toBe('0')
-      expect(getComputedStyle(part('viewport'), '::after').content).not.toBe('none')
+      expect(getComputedStyle(part('viewport'), '::before').animationPlayState).toBe('running')
     }
     expect(getComputedStyle(image).rotate).not.toBe('90deg')
 
