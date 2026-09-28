@@ -96,11 +96,13 @@ export class XhTagElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
+    const rootProps = api.getRootProps() as Record<string, unknown>
+    put('root', rootProps)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
 
-    // 收起时用内联 display 隐藏整块标签：光靠 hidden 属性压不住作者层的 display
-    this.setPartHidden(this.getPart('root'), !api.open)
+    // 收起时用内联 display 隐藏整块标签：光靠 hidden 属性压不住作者层的 display。
+    // 照连接层给的 hidden：退场动画播完它才落下
+    this.setPartHidden(this.getPart('root'), rootProps.hidden === true)
   }
 }

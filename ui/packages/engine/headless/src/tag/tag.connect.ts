@@ -28,6 +28,10 @@ type TagProps = TagSchema['props']
 interface TagOpenPort {
   get: () => boolean
   set: (open: boolean) => void
+  /** 收起后根节点是否还留着（退场动画在播）；不给即收起立刻藏起。 */
+  rendered?: boolean
+  /** 根节点的 id：机器路按它找节点等退场播完；快路不写。 */
+  rootId?: string
 }
 
 /** 没有宿主供给按压通道的静态标签：两个部件都不投影、也不合成处理器。 */
@@ -43,6 +47,8 @@ function buildTagApi<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): TagApi<T> {
   const open = port.get()
+  // 收起后先播完退场才写 hidden：期间 data-state 已是 closed，根节点不可交互
+  const exiting = !open && !!port.rendered
   // 标签默认不给关闭钮：多数标签只是身份标记，摘不摘得掉由作者说了算
   const closable = prop('closable') ?? false
   const disabled = !!prop('disabled')
@@ -68,9 +74,11 @@ function buildTagApi<T extends PropTypes>(
       'data-size': prop('size'),
       // 实心档是一块彩色面：面内的图标与作者内容成为墨色域
       'data-xh-ink-surface': dataAttr(prop('variant') === 'solid'),
+      'id': port.rootId,
       'data-state': open ? 'open' : 'closed',
       'data-disabled': dataAttr(disabled),
-      'hidden': !open || undefined,
+      'hidden': (!open && !exiting) || undefined,
+      'inert': exiting || undefined,
       // 按压通道：把标签当可选条目用的宿主（tag-group）按住这一枚时投影；与选中、显隐都无关
       'data-pressed': dataAttr(press.pressed === 'root'),
       ...press.handlers('root'),
@@ -109,12 +117,14 @@ export function connectTag<T extends PropTypes>(
   service: Service<TagSchema>,
   normalize: NormalizeProps<T>,
 ): TagApi<T> {
-  const { state, prop, send, context } = service
+  const { state, prop, send, context, scope } = service
   return buildTagApi(
     prop as never,
     {
       get: () => state.get() === 'open',
       set: next => send({ type: next ? 'OPEN' : 'CLOSE' }),
+      rendered: context.get('rendered'),
+      rootId: scope.partId('tag', 'root'),
     },
     {
       // 真源在机器 context，跟踪器只把键盘与粗指针的按住翻成事件
