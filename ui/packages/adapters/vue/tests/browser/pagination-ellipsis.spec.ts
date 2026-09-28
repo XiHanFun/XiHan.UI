@@ -132,6 +132,16 @@ describe('摊开省略号', () => {
     expect(content().getBoundingClientRect().height).toBeGreaterThan(0)
   })
 
+  it('摊开的页码面板锚定在省略位上：按锚定列表从锚点一侧短移淡入，不缩放', async () => {
+    await mount()
+    ellipses()[1]!.click()
+    await nextTick()
+    await nextTick()
+    const style = getComputedStyle(content())
+    expect(style.animationName).toBe('xh-overlay-slide-in')
+    expect(style.scale).toBe('none')
+  })
+
   it('浮层被搬到统一落点，不留在分页行里', async () => {
     await mount()
     ellipses()[1]!.click()
