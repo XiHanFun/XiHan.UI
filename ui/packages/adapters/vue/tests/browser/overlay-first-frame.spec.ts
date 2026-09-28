@@ -5,6 +5,14 @@ import type { App, Ref, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
+  XhCascaderColumn,
+  XhCascaderContent,
+  XhCascaderItem,
+  XhCascaderItemText,
+  XhCascaderPositioner,
+  XhCascaderRoot,
+  XhCascaderTrigger,
+  XhCascaderValueText,
   XhComboboxContent,
   XhComboboxControl,
   XhComboboxInput,
@@ -143,6 +151,16 @@ const CASES: Record<string, Case> = {
       h(XhTreeSelectTrigger, null, () => h(XhTreeSelectValueText)),
       h(XhTreeSelectPositioner, null, () => h(XhTreeSelectContent, null, () => h(XhTreeSelectTree, null, () => FRUITS.map(node =>
         h(XhTreeSelectItem, { key: node.value, value: node.value }, () => h(XhTreeSelectItemText, null, () => node.label)),
+      )))),
+    ]),
+  },
+  'cascader': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhCascaderRoot, { ...props, collection: FRUITS }, () => [
+      h(XhCascaderTrigger, null, () => h(XhCascaderValueText)),
+      h(XhCascaderPositioner, null, () => h(XhCascaderContent, null, () => h(XhCascaderColumn, { level: 0 }, () => FRUITS.map(node =>
+        h(XhCascaderItem, { key: node.value, value: node.value }, () => h(XhCascaderItemText, null, () => node.label)),
       )))),
     ]),
   },

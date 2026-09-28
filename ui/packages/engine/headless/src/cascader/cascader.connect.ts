@@ -572,6 +572,8 @@ export function connectCascader<T extends PropTypes>(
       // 集合为空时连根列都没有条目可停，才由壳自己兜底，否则浮层里一个 Tab 位都不剩
       'tabindex': open && focusedPath == null && collection.length === 0 ? 0 : -1,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-placement': placement,
       // 皮肤据此把列视图让位给候选列表
       'data-searching': dataAttr(searching),

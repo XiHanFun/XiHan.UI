@@ -5,6 +5,7 @@ import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/core'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
+import { cascaderMachine, connectCascader } from '../src/cascader'
 import { comboboxMachine, connectCombobox } from '../src/combobox'
 import { connectContextMenu, contextMenuMachine } from '../src/context-menu'
 import { connectDialog, dialogMachine } from '../src/dialog'
@@ -80,6 +81,11 @@ const CASES: Record<string, Case> = {
     machine: treeSelectMachine,
     props: open => ({ ...open, collection: FRUITS }),
     parts: service => [connectTreeSelect(service, normalizeProps).getContentProps() as Attrs],
+  },
+  'cascader': {
+    machine: cascaderMachine,
+    props: open => ({ ...open, collection: FRUITS }),
+    parts: service => [connectCascader(service, normalizeProps).getContentProps() as Attrs],
   },
 }
 

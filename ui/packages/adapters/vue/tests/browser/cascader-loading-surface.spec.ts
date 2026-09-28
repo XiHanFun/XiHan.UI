@@ -142,6 +142,8 @@ describe('级联选择首次加载表面', () => {
     expect(['up', 'down', 'left', 'right'].map(side =>
       nestedStyle.getPropertyValue(`--xh-_overlay-enter-${side}`).trim())).toEqual(['0', '0', '1', '0'])
     const content = part('content')
+    // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户开合时的进退场
+    delete content.dataset.instant
     expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-in')
     expect(getComputedStyle(content).scale).toBe('none')
     outer.dataset.motion = 'reduce'
