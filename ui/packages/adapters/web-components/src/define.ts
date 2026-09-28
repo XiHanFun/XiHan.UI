@@ -69,7 +69,6 @@ import { XhHierarchyChartElement } from './elements/hierarchy-chart'
 import { XhHighlightElement } from './elements/highlight'
 import { XhHoverCardElement } from './elements/hover-card'
 import { XhIconElement } from './elements/icon'
-import { XhIconWrapperElement } from './elements/icon-wrapper'
 import { XhImageElement } from './elements/image'
 import { XhImageCropperElement } from './elements/image-cropper'
 import { XhImageViewerElement } from './elements/image-viewer'
@@ -187,7 +186,6 @@ export function defineXhElements(): void {
   defineElement('xh-hierarchy-chart', XhHierarchyChartElement, VERSION)
   defineElement('xh-highlight', XhHighlightElement, VERSION)
   defineElement('xh-kbd', XhKbdElement, VERSION)
-  defineElement('xh-icon-wrapper', XhIconWrapperElement, VERSION)
   defineElement('xh-image-cropper', XhImageCropperElement, VERSION)
   defineElement('xh-infinite-scroll', XhInfiniteScrollElement, VERSION)
   defineElement('xh-input-group', XhInputGroupElement, VERSION)

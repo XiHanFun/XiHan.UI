@@ -30912,133 +30912,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/icon-wrapper.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-icon-wrapper>`：Light-DOM 行为宿主，无状态机，把 connectIconWrapper 产出接到 root 角色节点。\n\n根上不写 role、也不写 aria-hidden：其中的图元是装饰还是信息，由作者按用途声明。",
-          "name": "XhIconWrapperElement",
-          "cssParts": [
-            {
-              "description": "底座容器，承载 data-variant / data-tone / data-size",
-              "name": "root"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: iconWrapperAnatomy, meta: iconWrapperMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "variant",
-              "privacy": "public",
-              "type": {
-                "text": "ActionVariant | undefined"
-              },
-              "attribute": "variant"
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "privacy": "public",
-              "type": {
-                "text": "Tone | undefined"
-              },
-              "attribute": "tone"
-            },
-            {
-              "kind": "field",
-              "name": "size",
-              "privacy": "public",
-              "type": {
-                "text": "Size | undefined"
-              },
-              "attribute": "size"
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "ActionVariant | undefined"
-              },
-              "description": "变体",
-              "name": "variant",
-              "fieldName": "variant"
-            },
-            {
-              "type": {
-                "text": "Tone | undefined"
-              },
-              "description": "颜色",
-              "name": "tone",
-              "fieldName": "tone"
-            },
-            {
-              "type": {
-                "text": "Size | undefined"
-              },
-              "description": "尺寸",
-              "name": "size",
-              "fieldName": "size"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-icon-wrapper",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-icon-wrapper-bg"
-            },
-            {
-              "name": "--xh-icon-wrapper-fg"
-            },
-            {
-              "name": "--xh-icon-wrapper-glyph-size"
-            },
-            {
-              "name": "--xh-icon-wrapper-radius"
-            },
-            {
-              "name": "--xh-icon-wrapper-shadow"
-            },
-            {
-              "name": "--xh-icon-wrapper-size"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhIconWrapperElement",
-          "declaration": {
-            "name": "XhIconWrapperElement",
-            "module": "src/elements/icon-wrapper.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/icon.ts",
       "declarations": [
         {
@@ -31047,7 +30920,7 @@
           "name": "XhIconElement",
           "cssParts": [
             {
-              "description": "根 `<svg>`，承载 viewBox / data-icon / 命名属性 / data-size / data-weight / data-tone / data-rotate / data-flip",
+              "description": "根 `<svg>`，承载 viewBox / data-icon / 命名属性 / data-size / data-weight / data-tone / data-frame / data-rotate / data-flip",
               "name": "root"
             },
             {
@@ -31100,6 +30973,15 @@
                 "text": "Tone | undefined"
               },
               "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "frame",
+              "privacy": "public",
+              "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "attribute": "frame"
             },
             {
               "kind": "field",
@@ -31277,9 +31159,17 @@
               "type": {
                 "text": "Tone | undefined"
               },
-              "description": "颜色",
+              "description": "颜色；加了底框时同时决定框的配色",
               "name": "tone",
               "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "description": "底框，不写即无框；框只是外观，不改可及名",
+              "name": "frame",
+              "fieldName": "frame"
             },
             {
               "type": {
@@ -31307,6 +31197,24 @@
           "cssProperties": [
             {
               "name": "--xh-icon-fg"
+            },
+            {
+              "name": "--xh-icon-frame-bg"
+            },
+            {
+              "name": "--xh-icon-frame-border"
+            },
+            {
+              "name": "--xh-icon-frame-glyph-size"
+            },
+            {
+              "name": "--xh-icon-frame-radius"
+            },
+            {
+              "name": "--xh-icon-frame-shadow"
+            },
+            {
+              "name": "--xh-icon-frame-size"
             },
             {
               "name": "--xh-icon-shift"

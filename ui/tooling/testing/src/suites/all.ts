@@ -58,7 +58,6 @@ import { heatmapSuite } from './heatmap.suite'
 import { hierarchyChartSuite } from './hierarchy-chart.suite'
 import { highlightSuite } from './highlight.suite'
 import { hoverCardSuite } from './hover-card.suite'
-import { iconWrapperSuite } from './icon-wrapper.suite'
 import { iconSuite } from './icon.suite'
 import { imageCropperSuite } from './image-cropper.suite'
 import { imageViewerSuite } from './image-viewer.suite'
@@ -193,7 +192,6 @@ export const allSuites: readonly ConformanceSuite[] = [
   kbdSuite,
   hoverCardSuite,
   iconSuite,
-  iconWrapperSuite,
   imageSuite,
   imageCropperSuite,
   imageViewerSuite,

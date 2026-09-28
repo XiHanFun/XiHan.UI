@@ -5,7 +5,7 @@
 
 // 提供 icon 相关实现。
 
-import type { IconNode, IconRecord, Tone } from '@xihan-ui/core'
+import type { ActionVariant, IconNode, IconRecord, Tone } from '@xihan-ui/core'
 import type { IconApi, IconFlip, IconProps, IconSize, IconWeight } from '@xihan-ui/headless'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { connectIcon, iconAnatomy, iconMeta } from '@xihan-ui/headless'
@@ -46,10 +46,11 @@ function buildNode(doc: Document, node: IconNode): SVGElement {
  * @attr {string} label - 可及名；非空白时输出 role=img + aria-label，否则输出 aria-hidden=true
  * @attr {'text'|'sm'|'md'|'lg'|'xl'|'2xl'|'3xl'|'4xl'} size - 直径档位，默认 md；text 跟随相邻文字的字号
  * @attr {'light'|'regular'|'bold'} weight - 描边粗细档位，默认 regular
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色；加了底框时同时决定框的配色
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} frame - 底框，不写即无框；框只是外观，不改可及名
  * @attr {'90'|'180'|'270'} rotate - 旋转档位，不旋转时不写
  * @attr {'horizontal'|'vertical'|'both'} flip - 翻转轴，不翻转时不写
- * @csspart root - 根 `<svg>`，承载 viewBox / data-icon / 命名属性 / data-size / data-weight / data-tone / data-rotate / data-flip
+ * @csspart root - 根 `<svg>`，承载 viewBox / data-icon / 命名属性 / data-size / data-weight / data-tone / data-frame / data-rotate / data-flip
  * @csspart glyph - 作者留出的空 `<g>`，图元铺设在其内部
  */
 export class XhIconElement extends XhElement {
@@ -66,6 +67,7 @@ export class XhIconElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     weight: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
+    frame: { converter: STRING_CONVERTER },
     rotate: { converter: STRING_CONVERTER },
     flip: { converter: STRING_CONVERTER },
     // 记录是对象，只走 property
@@ -76,6 +78,7 @@ export class XhIconElement extends XhElement {
   declare size?: IconSize
   declare weight?: IconWeight
   declare tone?: Tone
+  declare frame?: ActionVariant
   declare rotate?: string
   declare flip?: IconFlip
   declare icon?: IconRecord
@@ -93,6 +96,7 @@ export class XhIconElement extends XhElement {
       size: this.size,
       weight: this.weight,
       tone: this.tone,
+      frame: this.frame,
       rotate: this.rotate,
       flip: this.flip,
     }

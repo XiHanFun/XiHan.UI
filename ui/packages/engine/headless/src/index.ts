@@ -132,8 +132,6 @@ export { connectHoverCard, HOVER_CARD_DEFAULT_PLACEMENT, hoverCardAnatomy, hover
 export type { HoverCardApi, HoverCardOpenChangeDetails, HoverCardRefs, HoverCardSchema, HoverCardTranslations } from './hover-card'
 export { connectIcon, iconAnatomy, iconKeyboard, iconMeta } from './icon'
 export type { IconApi, IconFlip, IconProps, IconRotate, IconSize, IconTranslations, IconWeight } from './icon'
-export { connectIconWrapper, iconWrapperAnatomy, iconWrapperKeyboard, iconWrapperMeta } from './icon-wrapper'
-export type { IconWrapperApi, IconWrapperProps, IconWrapperTranslations } from './icon-wrapper'
 export { connectImage, imageAnatomy, imageKeyboard, imageMachine, imageMeta, resolveFallbackDelay } from './image'
 export type { ImageApi, ImageSchema, ImageStatus, ImageStatusChangeDetails, ImageTranslations } from './image'
 export { connectImageCropper, CROP_HANDLES, cropToCanvas, EMPTY_CROP_RECT, IMAGE_CROPPER_MAX_ROTATION, IMAGE_CROPPER_MAX_ZOOM, IMAGE_CROPPER_MIN_ROTATION, IMAGE_CROPPER_MIN_ZOOM, IMAGE_CROPPER_ROTATION, IMAGE_CROPPER_ROTATION_STEP, IMAGE_CROPPER_ZOOM, IMAGE_CROPPER_ZOOM_STEP, imageCropperAnatomy, imageCropperKeyboard, imageCropperMachine, imageCropperMeta, initialCropRect, moveCropRect, normalizeCropRect, parseCropRect, resizeCropRect, resolveAspectRatio, sameCropRect, sameCropSize, serializeCropRect, UNKNOWN_IMAGE_SIZE, unprojectDelta } from './image-cropper'

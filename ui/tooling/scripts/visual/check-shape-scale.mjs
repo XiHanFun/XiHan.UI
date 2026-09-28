@@ -71,7 +71,7 @@ const IDENTITY = {
   'citation:source-index': 'circle',
   'avatar:root': 'circle',
   'avatar-group:overflow-item': 'circle',
-  'icon-wrapper:root': 'circle',
+  'icon:root[data-frame]': 'circle',
   'dialog:indicator': 'circle',
   'radio-group:indicator': 'circle',
   'radio-group:indicator::before': 'circle',

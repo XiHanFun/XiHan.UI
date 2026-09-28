@@ -54,4 +54,4 @@
 ## 相关
 
 - [字体](/design/typography) · [组件家族与模式](/design/patterns)
-- 指南：[图标集](/guide/icons) · 组件：[Icon](/components/icon) · [IconWrapper](/components/icon-wrapper)
+- 指南：[图标集](/guide/icons) · 组件：[Icon](/components/icon)

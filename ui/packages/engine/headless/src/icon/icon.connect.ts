@@ -64,6 +64,8 @@ export function connectIcon<T extends PropTypes>(
       'data-size': props.size,
       'data-weight': props.weight,
       'data-tone': props.tone,
+      // 底框只是外观：不写即无框，写了也不碰上面的命名两态
+      'data-frame': props.frame,
       // 旋转与翻转是几何档位，不转不翻就不写属性
       'data-rotate': rotateAttr(props.rotate),
       'data-flip': props.flip,

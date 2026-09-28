@@ -1,18 +1,14 @@
-// 尺寸 | 设置图标块大小
+// 底框尺寸 | sm、md、lg 三档底框与头像同档
 import type { ReactNode } from "react";
 import { FolderIcon } from "@xihan-ui/icons";
-import { XhIcon, XhIconWrapper } from "@xihan-ui/react";
+import { XhIcon } from "@xihan-ui/react";
 
 const sizes = ["sm", "md", "lg"] as const;
 
 export default function Demo(): ReactNode {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-      {sizes.map(size => (
-        <XhIconWrapper key={size} size={size} variant="subtle" tone="brand">
-          <XhIcon icon={FolderIcon} />
-        </XhIconWrapper>
-      ))}
+      {sizes.map(size => <XhIcon key={size} icon={FolderIcon} size={size} frame="subtle" tone="brand" />)}
     </div>
   );
 }
