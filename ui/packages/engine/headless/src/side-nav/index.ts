@@ -13,6 +13,9 @@ export { sideNavMeta } from './side-nav.meta'
 export type {
   SideNavApi,
   SideNavExpandedValueChangeDetails,
+  SideNavFilter,
+  SideNavGroupProps,
+  SideNavItemProps,
   SideNavNode,
   SideNavNodeProps,
   SideNavPressedPart,

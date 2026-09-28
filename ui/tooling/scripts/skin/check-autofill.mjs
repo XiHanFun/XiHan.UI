@@ -327,6 +327,7 @@ function conditionMatches(condition, state) {
 const INPUT_OUTSIDE_CHROME = {
   'cascader': '搜索框排在浮层面里、不在 control 盒内，铺的底取浮起面',
   'command': '检索框排在命令面板里、面板没有字段盒，铺的底取面板面',
+  'side-nav': '搜索框直接排在侧栏 root 里、侧栏没有字段盒，铺的底取侧栏所在的面',
   'tree-select': '搜索框排在浮层面里、不在 control 盒内，铺的底取浮起面',
 }
 

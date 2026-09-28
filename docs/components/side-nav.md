@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="side-nav"`：**`root`** · **`list`** · **`item`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `positioner` · `branch-content` · **`link`** · `link-text`
+`data-scope="side-nav"`：**`root`** · `input` · **`list`** · **`item`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `positioner` · `branch-content` · **`link`** · `link-text` · `empty`
 
 ## 示例
 
@@ -42,6 +42,12 @@
 
 <XhDemo src="side-nav/04-controlled-expand" />
 
+### 搜索过滤
+
+输入即按标签过滤导航树，命中入口的祖先自动展开，其余收起；Escape 清空检索词
+
+<XhDemo src="side-nav/05-search" />
+
 ## 设计指引
 
 ### 何时使用
@@ -61,6 +67,11 @@
 - 入口可逐条声明语气，不向下传导；当前项的品牌淡底压过它。
 - 折叠后保留图标入口，子级在浮层中展示。
 - 方向键上下移动，左右键展开或收起分支。
+- 放一个 `input` 即可按标签过滤导航树：命中入口的祖先保留并展开，没命中的整行、整枝收起，分组的成员一个都没命中就整组收起；`filter` 可换成自定义匹配。
+- 命中的入口整枝留下：分支本身命中时，它的子项照常在里面，不因命中而自动展开。
+- 搜索里的展开收起只记在搜索视图里，不改写 `expandedValue`、也不发 `expanded-value-change`；清空检索词即回到整棵树与原来的展开态。
+- 一条都没命中时 `empty` 露面；没写内容时显示 `translations.noMatch`。
+- 折叠成图标栏时过滤暂停，搜索框留着高度但不可见、不可聚焦，展开回来接着按原词过滤。
 
 ### 组合
 
@@ -105,7 +116,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-side-nav>` |
-| Vue 组件 | `XhSideNavBranch` `XhSideNavBranchContent` `XhSideNavBranchIndicator` `XhSideNavBranchText` `XhSideNavBranchTrigger` `XhSideNavGroup` `XhSideNavGroupLabel` `XhSideNavItem` `XhSideNavLink` `XhSideNavLinkText` `XhSideNavList` `XhSideNavRoot` |
+| Vue 组件 | `XhSideNavBranch` `XhSideNavBranchContent` `XhSideNavBranchIndicator` `XhSideNavBranchText` `XhSideNavBranchTrigger` `XhSideNavEmpty` `XhSideNavGroup` `XhSideNavGroupLabel` `XhSideNavInput` `XhSideNavItem` `XhSideNavLink` `XhSideNavLinkText` `XhSideNavList` `XhSideNavRoot` |
 | 组合式函数 | `useSideNav` |
 | 状态机 | `sideNavMachine` |
 | 皮肤 | `@xihan-ui/styles/side-nav.css` |
@@ -127,6 +138,7 @@
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `filter` | `SideNavFilter` |  | 搜索框的匹配规则：检索词按它判定一条入口是否命中；缺省为标签（缺省退回 value）大小写不敏感包含。 命中的入口整枝留下，没命中但有子孙命中的分支只留命中的那几枝并展开，其余收起。 |
 | `translations` | `Partial<SideNavTranslations>` |  |  |
 | `onValueChange` | `(details: SideNavValueChangeDetails) => void` |  | 选中意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onExpandedValueChange` | `(details: SideNavExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
@@ -190,7 +202,7 @@
 
 **状态**：`idle` · `popout`
 
-**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR` · `POPOUT.OPEN` · `POPOUT.CLOSE` · `POPOUT.HOVER` · `POPOUT.HOVER_END` · `PRESENCE.SET` · `PRESS.START` · `PRESS.END` · `COLLAPSE.SETTLED`
+**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR` · `POPOUT.OPEN` · `POPOUT.CLOSE` · `POPOUT.HOVER` · `POPOUT.HOVER_END` · `PRESENCE.SET` · `PRESS.START` · `PRESS.END` · `COLLAPSE.SETTLED` · `INPUT.CHANGE`
 
 **判据**：`canChange` · `canPopout` · `canPress`
 
@@ -215,10 +227,17 @@
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
+| `inputValue` | `string` | 搜索框里的检索词。 |
+| `setInputValue` | `(next: string) => void` | 改写检索词，与在搜索框里输入同一语义；传空串即回到整棵树与原来的展开态。 |
+| `searching` | `boolean` | 正处于搜索视图：检索词非空且排布没有落成图标栏，可见行只剩命中的那几枝。 |
+| `empty` | `boolean` | 搜索视图里一条都没命中。 |
+| `translations` | `SideNavTranslations` | 合并缺省值之后的读屏文案。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
-| `getItemProps` | `() => T['element']` | 叶子行的列表项容器：链接与分支一样是列表的一条，作者把 link 包在其中。 |
-| `getGroupProps` | `(props: SideNavNodeProps) => T['element']` |  |
+| `getInputProps` | `() => T['input']` | 搜索框：放在 root 里、list 之前。输入即按 filter 过滤导航树；下方向键或 Enter 把焦点交给导航行， Escape 先清空检索词。落成图标栏时过滤暂停（皮肤让框留着高度、不可见也不可聚焦），展开回来接着按原来的检索词过滤。 |
+| `getEmptyProps` | `() => T['element']` | 搜索一条都没命中时露面的占位，放在 list 之后；其余时候带 hidden。 |
+| `getItemProps` | `(props?: SideNavItemProps) => T['element']` | 叶子行的列表项容器：链接与分支一样是列表的一条，作者把 link 包在其中。 |
+| `getGroupProps` | `(props: SideNavGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getBranchProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getBranchTriggerProps` | `(props: SideNavNodeProps) => T['button']` |  |
@@ -249,6 +268,9 @@
 | `End` | focus in 行 | 最后一可见行 |
 | `ArrowRight` / `Enter` / `Space` | focus in 折叠态顶层分支行 | 弹出子级面板并落焦第一行（RTL 与 ArrowLeft 对调） |
 | `ArrowLeft` / `Escape` | focus in 弹出面板 | 收回面板，焦点还给触发按钮（RTL 与 ArrowRight 对调；Escape 归消解层） |
+| `可打印字符` | focus in input | 改写检索词：导航树裁到只剩命中的那几枝，命中入口的祖先自动展开、其余收起；搜索里的展开收起只记在搜索视图里，不改写 expandedValue |
+| `ArrowDown` / `Enter` | focus in input | 焦点交给导航行：搜索中落在剩下的第一行，不在搜索中落在 Tab 锚点 |
+| `Escape` | focus in input, 检索词非空 | 清空检索词，回到整棵树与原来的展开态，焦点留在搜索框；检索词已空时不拦截这一下 |
 
 ### ARIA
 
@@ -256,8 +278,10 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | translations?.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `role` | 'navigation' |
+| `input` | `aria-controls` | scope.partId('side-nav', 'list') |
+| `input` | `aria-label` | translations.input |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
 | `branch-trigger` | `aria-controls` | `content` 部件的 id |
@@ -267,11 +291,13 @@
 | `branch-content` | `aria-hidden` | !open \|\| undefined |
 | `link` | `aria-current` | 'page' \| undefined |
 | `link` | `aria-disabled` | 'true' \| undefined |
+| `empty` | `role` | 'status' |
 | `popout-positioner` | `aria-hidden` | !open \|\| undefined |
 
 - `list` 与 `branch-content` 使用列表语义。
 - 将文字放入 `branch-text` 或 `link-text`，确保折叠后仍有可访问名称。
 - 装饰图标使用 `aria-hidden="true"`。
+- 搜索框没有可见标签，可及名取 `translations.input`；空态以 `role="status"` 露面即播报。
 
 ## 样式参考
 
@@ -292,6 +318,9 @@
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `input` | `data-collapsed` | ''（条件成立时才出现） |
+| `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-xh-field-input` | '' |
 | `list` | `data-collapsed` | ''（条件成立时才出现） |
 | `group-label` | `data-collapsed` | ''（条件成立时才出现） |
 | `branch` | `data-disabled` | ''（条件成立时才出现） |
@@ -338,6 +367,10 @@
 | --- | --- | --- | --- | --- | --- |
 | `--xh-side-nav-branch-indicator-size` | `branch-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | side-nav 的 branch-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-side-nav-collapsed-w` | `root` | `inline-size` | `collapsed` | `--xh-sider-collapsed-w` | side-nav 的 root 部件 inline-size 覆盖槽。 |
+| `--xh-side-nav-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | side-nav 的 empty 部件 color 覆盖槽。 |
+| `--xh-side-nav-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_side-nav-row-font-size` | side-nav 的 empty 部件 font-size 覆盖槽。 |
+| `--xh-side-nav-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 empty 部件 padding-inline 覆盖槽。 |
+| `--xh-side-nav-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | side-nav 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-side-nav-fg` | `root` | `color` | `default` | `--xh-fg-default` | side-nav 的 root 部件 color 覆盖槽。 |
 | `--xh-side-nav-gap` | `branch`<br>`branch-content`<br>`group`<br>`list`<br>`root` | `gap` | `default` | `--xh-space-1` | side-nav 的 branch、branch-content、group、list、root 部件 gap 覆盖槽。 |
 | `--xh-side-nav-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 group-label 部件 padding-inline 覆盖槽。 |
@@ -345,12 +378,18 @@
 | `--xh-side-nav-icon-size` | `branch-trigger`<br>`link`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | side-nav 的 branch-trigger、link、positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-side-nav-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | side-nav 的 branch-content 部件 padding-inline-start 覆盖槽。 |
 | `--xh-side-nav-indicator-color` | `branch-trigger`<br>`link` | `color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
+| `--xh-side-nav-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-surface` | side-nav 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-side-nav-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | side-nav 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-side-nav-input-font-size` | `input` | `font-size` | `default` | `--xh-_side-nav-row-font-size` | side-nav 的 input 部件 font-size 覆盖槽。 |
+| `--xh-side-nav-input-h` | `input` | `block-size` | `default` | `--xh-_side-nav-row-h` | side-nav 的 input 部件 block-size 覆盖槽。 |
+| `--xh-side-nav-input-px` | `input` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 input 部件 padding-inline 覆盖槽。 |
 | `--xh-side-nav-link-font-size` | `branch-trigger`<br>`link` | `font-size` | `default` | `--xh-_side-nav-row-font-size` | side-nav 的 branch-trigger、link 部件 font-size 覆盖槽。 |
 | `--xh-side-nav-link-gap` | `branch-trigger`<br>`link` | `gap` | `default` | `--xh-_side-nav-row-gap` | side-nav 的 branch-trigger、link 部件 gap 覆盖槽。 |
 | `--xh-side-nav-link-h` | `branch-trigger`<br>`link` | `min-block-size` | `default` | `--xh-_side-nav-row-h` | side-nav 的 branch-trigger、link 部件 min-block-size 覆盖槽。 |
 | `--xh-side-nav-link-px` | `branch-trigger`<br>`link` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 branch-trigger、link 部件 padding-inline 覆盖槽。 |
 | `--xh-side-nav-link-radius` | `branch-trigger`<br>`link` | `border-radius` | `default` | `--xh-shape-control` | side-nav 的 branch-trigger、link 部件 border-radius 覆盖槽。 |
 | `--xh-side-nav-p` | `root` | `padding` | `default` | `--xh-space-2` | side-nav 的 root 部件 padding 覆盖槽。 |
+| `--xh-side-nav-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | side-nav 的 input 部件 color 覆盖槽。 |
 | `--xh-side-nav-popout-bg` | `branch-content` | `background` | `popout` | `--xh-bg-surface` | side-nav 的 branch-content 部件 background 覆盖槽。 |
 | `--xh-side-nav-popout-border` | `branch-content` | `border` | `popout` | `--xh-border-default` | side-nav 的 branch-content 部件 border 覆盖槽。 |
 | `--xh-side-nav-popout-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | side-nav 的 positioner 部件 z-index 覆盖槽。 |
@@ -368,6 +407,7 @@
 | `--xh-side-nav-row-fg-active` | `branch-trigger`<br>`link` | `color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
 | `--xh-side-nav-row-fg-in-path` | `branch-trigger`<br>`link` | `color` | `in-path` | `--xh-side-nav-row-fg` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
 | `--xh-side-nav-row-font-weight-active` | `branch-trigger`<br>`link` | `font-weight` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page` | `--xh-font-weight-regular` | side-nav 的 branch-trigger、link 部件 font-weight 覆盖槽。 |
+| `--xh-side-nav-search-divider` | `input` | `border-block-end` | `default` | `--xh-material-solid-separator` | side-nav 的 input 部件 border-block-end 覆盖槽。 |
 | `--xh-side-nav-w` | `root` | `inline-size` | `default` | `--xh-sider-w` | side-nav 的 root 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

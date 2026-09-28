@@ -38300,7 +38300,8 @@
 /* styles/side-nav.css */
 /* 定义 side nav 样式。 */
 
-/* 共享关键帧由 family/motion.css 提供，行走 Collection Item 家族；本皮肤 @import 它们，单独引入仍成立。 */
+/* 共享关键帧由 family/motion.css 提供，行走 Collection Item 家族，搜索框的重置与占位前景走字段家族；
+   本皮肤 @import 它们，单独引入仍成立。 */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='side-nav'] {
@@ -38356,6 +38357,58 @@
 /* 折叠成图标栏：整栏收窄；行文字先淡出，收窄落定之后才裁掉（见下） */
 [data-scope='side-nav'][data-part='root'][data-collapsed] {
   inline-size: var(--xh-side-nav-collapsed-w, var(--xh-sider-collapsed-w));
+}
+
+/* 搜索框：面板内嵌搜索的写法——不画字段外壳，通栏一行，高与字号随尺寸档，只画一道面内分隔的下划线；
+   重置与占位前景由字段家族按 data-xh-field-input 给，行内内衬与行同一支槽 */
+[data-scope='side-nav'][data-part='input'] {
+  --xh-field-placeholder-fg: var(--xh-side-nav-placeholder-fg, var(--xh-fg-subtle));
+
+  flex: none;
+  min-inline-size: 0;
+  block-size: var(--xh-side-nav-input-h, var(--xh-_side-nav-row-h));
+  padding-block: 0;
+  padding-inline: var(--xh-side-nav-input-px, var(--xh-_side-nav-row-px));
+  border: none;
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-side-nav-search-divider, var(--xh-material-solid-separator));
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--xh-side-nav-input-font-size, var(--xh-_side-nav-row-font-size));
+  line-height: var(--xh-leading-normal);
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 自动填充：引擎给填过的框强加一套系统色，盖得过 background 与 color。
+   底改用 inset 阴影铺回来，字改用 -webkit-text-fill-color 接回来；
+   两个选择器名分写两条，一条列表里只要有一个名字不被认识整条就被丢弃 */
+[data-scope='side-nav'][data-part='input']:autofill {
+  box-shadow: inset 0 0 0 100vmax var(--xh-side-nav-input-autofill-bg, var(--xh-bg-surface));
+  -webkit-text-fill-color: var(--xh-side-nav-input-autofill-fg, var(--xh-fg-default));
+}
+
+[data-scope='side-nav'][data-part='input']:-webkit-autofill {
+  box-shadow: inset 0 0 0 100vmax var(--xh-side-nav-input-autofill-bg, var(--xh-bg-surface));
+  -webkit-text-fill-color: var(--xh-side-nav-input-autofill-fg, var(--xh-fg-default));
+}
+
+/* 折叠一开始搜索框就与行文字一起淡出，展开等整栏宽度落定才淡入；落成图标栏之后让位：
+   留着高度、不可见也不可聚焦（过滤此时暂停），下面的行不上下跳 */
+[data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='input'] {
+  opacity: 0;
+}
+
+[data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='input'] {
+  visibility: hidden;
+}
+
+/* 搜索一条都没命中的占位：list 的兄弟，只一句次要文字，面归侧栏所在的宿主 */
+[data-scope='side-nav'][data-part='empty'] {
+  padding-block: var(--xh-side-nav-empty-py, var(--xh-space-3));
+  padding-inline: var(--xh-side-nav-empty-px, var(--xh-_side-nav-row-px));
+  color: var(--xh-side-nav-empty-fg, var(--xh-fg-muted));
+  font-size: var(--xh-side-nav-empty-font-size, var(--xh-_side-nav-row-font-size));
+  text-align: center;
 }
 
 [data-scope='side-nav'][data-part='list'],
@@ -38672,9 +38725,10 @@
 }
 
 @media print {
-  /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
+  /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文；搜索框同理，纸上没法输入。
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
-  [data-scope='side-nav'][data-part='positioner'] {
+  [data-scope='side-nav'][data-part='positioner'],
+  [data-scope='side-nav'][data-part='input'] {
     display: none;
   }
 }

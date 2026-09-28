@@ -56858,12 +56858,16 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-side-nav>`：Light-DOM 行为宿主：管理后台侧栏导航。\n作者写 root / list 与若干 branch / link 角色节点，元素运行 side-nav 状态机并把 connect 产出接上。\n节点身份取自节点上的 value 属性；href 与禁用查询 `collection` 这份树数据。",
+          "description": "`<xh-side-nav>`：Light-DOM 行为宿主：管理后台侧栏导航。\n作者写 root / list 与若干 branch / link 角色节点，元素运行 side-nav 状态机并把 connect 产出接上。\n节点身份取自节点上的 value 属性；href 与禁用查询 `collection` 这份树数据。\n放一个 input 角色节点即可按标签过滤导航树，自定义匹配规则经 filter property 给。",
           "name": "XhSideNavElement",
           "cssParts": [
             {
               "description": "nav 地标根容器（aria-label 由 translations.root 提供）",
               "name": "root"
+            },
+            {
+              "description": "搜索框，放在 list 之前：输入即按标签过滤导航树，命中入口的祖先保留并展开，其余收起；可及名由 translations.input 提供",
+              "name": "input"
             },
             {
               "description": "顶层列表容器（ul），直接子节点只能是 item 与 branch",
@@ -56912,6 +56916,10 @@
             {
               "description": "链接文字载体，折叠为图标栏时裁剪到不可见但仍参与播报，是链接在图标栏中的可及名",
               "name": "link-text"
+            },
+            {
+              "description": "搜索一条都没命中时露面的占位，放在 list 之后；节点为空时填入 translations.noMatch",
+              "name": "empty"
             }
           ],
           "members": [
@@ -57057,6 +57065,15 @@
             },
             {
               "kind": "field",
+              "name": "filter",
+              "privacy": "public",
+              "type": {
+                "text": "SideNavSchema['props']['filter'] | undefined"
+              },
+              "description": "搜索框的匹配规则；缺省为标签（缺省退回 value）大小写不敏感包含。只能作为 property 设置。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -57144,6 +57161,53 @@
             },
             {
               "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "SideNavApi | null"
+                }
+              },
+              "description": "连接层的这一帧；状态机尚未建立时为 null。"
+            },
+            {
+              "kind": "field",
+              "name": "inputValue",
+              "type": {
+                "text": "string"
+              },
+              "description": "搜索框里的检索词；状态机尚未建立时为空串。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "searching",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "正处于搜索视图：检索词非空且排布没有落成图标栏；状态机尚未建立时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setInputValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "改写检索词，与在搜索框里输入同一语义；状态机尚未建立时不做任何事。"
+            },
+            {
+              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -57197,6 +57261,38 @@
                   "name": "svc",
                   "type": {
                     "text": "Service<SideNavSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "ownsEmptyText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "空态节点首次见到时是空的才归元素填字；作者写了内容就一直归作者。"
+            },
+            {
+              "kind": "method",
+              "name": "fillEmptyText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
                   }
                 }
               ]
@@ -57422,6 +57518,18 @@
               "name": "--xh-side-nav-collapsed-w"
             },
             {
+              "name": "--xh-side-nav-empty-fg"
+            },
+            {
+              "name": "--xh-side-nav-empty-font-size"
+            },
+            {
+              "name": "--xh-side-nav-empty-px"
+            },
+            {
+              "name": "--xh-side-nav-empty-py"
+            },
+            {
               "name": "--xh-side-nav-fg"
             },
             {
@@ -57443,6 +57551,21 @@
               "name": "--xh-side-nav-indicator-color"
             },
             {
+              "name": "--xh-side-nav-input-autofill-bg"
+            },
+            {
+              "name": "--xh-side-nav-input-autofill-fg"
+            },
+            {
+              "name": "--xh-side-nav-input-font-size"
+            },
+            {
+              "name": "--xh-side-nav-input-h"
+            },
+            {
+              "name": "--xh-side-nav-input-px"
+            },
+            {
               "name": "--xh-side-nav-link-font-size"
             },
             {
@@ -57459,6 +57582,9 @@
             },
             {
               "name": "--xh-side-nav-p"
+            },
+            {
+              "name": "--xh-side-nav-placeholder-fg"
             },
             {
               "name": "--xh-side-nav-popout-bg"
@@ -57510,6 +57636,9 @@
             },
             {
               "name": "--xh-side-nav-row-font-weight-active"
+            },
+            {
+              "name": "--xh-side-nav-search-divider"
             },
             {
               "name": "--xh-side-nav-w"

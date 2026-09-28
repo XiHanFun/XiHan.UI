@@ -6,7 +6,7 @@
 // 提供 side nav 相关实现。
 
 import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from '@xihan-ui/headless'
+import type { SideNavApi, SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectSideNav, sideNavAnatomy, sideNavMachine, sideNavMeta } from '@xihan-ui/headless'
@@ -29,11 +29,16 @@ const GROUP = 'group'
 const LINK = 'link'
 /** 折叠态弹出面板的定位层。 */
 const POSITIONER_SELECTOR = '[data-xh-part="positioner"]'
+/** 叶子行的列表项，身份取它包着的那条链接。 */
+const ITEM_SELECTOR = '[data-xh-part="item"]'
+/** 分组，成员是组里的链接与分支。 */
+const GROUP_SELECTOR = '[data-xh-part="group"]'
 
 /**
  * `<xh-side-nav>`：Light-DOM 行为宿主：管理后台侧栏导航。
  * 作者写 root / list 与若干 branch / link 角色节点，元素运行 side-nav 状态机并把 connect 产出接上。
  * 节点身份取自节点上的 value 属性；href 与禁用查询 `collection` 这份树数据。
+ * 放一个 input 角色节点即可按标签过滤导航树，自定义匹配规则经 filter property 给。
  *
  * @customElement xh-side-nav
  * @attr {string} value - 受控选中的叶子；未提供该属性即非受控
@@ -49,6 +54,7 @@ const POSITIONER_SELECTOR = '[data-xh-part="positioner"]'
  * @fires value-change - 选中变化；detail 为 `{ value: string | null }`
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - nav 地标根容器（aria-label 由 translations.root 提供）
+ * @csspart input - 搜索框，放在 list 之前：输入即按标签过滤导航树，命中入口的祖先保留并展开，其余收起；可及名由 translations.input 提供
  * @csspart list - 顶层列表容器（ul），直接子节点只能是 item 与 branch
  * @csspart item - 叶子行的列表项（li），包裹一个 link
  * @csspart group - role=group 分组，须自带 value 属性
@@ -61,6 +67,7 @@ const POSITIONER_SELECTOR = '[data-xh-part="positioner"]'
  * @csspart branch-content - 内嵌子层容器，收起时隐藏
  * @csspart link - 目标链接，须自带 value 属性；选中时输出 aria-current="page" 与 data-current
  * @csspart link-text - 链接文字载体，折叠为图标栏时裁剪到不可见但仍参与播报，是链接在图标栏中的可及名
+ * @csspart empty - 搜索一条都没命中时露面的占位，放在 list 之后；节点为空时填入 translations.noMatch
  */
 export class XhSideNavElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -85,6 +92,7 @@ export class XhSideNavElement extends XhPortalHostElement {
     expandedValue: { attribute: false },
     defaultExpandedValue: { attribute: false },
     translations: { attribute: false },
+    filter: { attribute: false },
   }
 
   declare value?: string
@@ -102,6 +110,8 @@ export class XhSideNavElement extends XhPortalHostElement {
   declare expandedValue?: string[]
   declare defaultExpandedValue?: string[]
   declare translations?: Partial<SideNavTranslations>
+  /** 搜索框的匹配规则；缺省为标签（缺省退回 value）大小写不敏感包含。只能作为 property 设置。 */
+  declare filter?: SideNavSchema['props']['filter']
 
   private readonly notifyValue = (details: SideNavValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -155,6 +165,7 @@ export class XhSideNavElement extends XhPortalHostElement {
       tone: this.tone,
       size: this.size,
       translations: this.translations,
+      filter: this.filter,
       onValueChange: this.notifyValue,
       onExpandedValueChange: this.notifyExpanded,
     }
@@ -164,6 +175,27 @@ export class XhSideNavElement extends XhPortalHostElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.navScope, idGenerator: this.idGen })
+  }
+
+  /** 连接层的这一帧；状态机尚未建立时为 null。 */
+  private api(): SideNavApi | null {
+    const service = this.ctrl.service as Service<SideNavSchema> | undefined
+    return service ? connectSideNav(service, wcNormalize) : null
+  }
+
+  /** 搜索框里的检索词；状态机尚未建立时为空串。 */
+  get inputValue(): string {
+    return this.api()?.inputValue ?? ''
+  }
+
+  /** 正处于搜索视图：检索词非空且排布没有落成图标栏；状态机尚未建立时为 false。 */
+  get searching(): boolean {
+    return this.api()?.searching ?? false
+  }
+
+  /** 改写检索词，与在搜索框里输入同一语义；状态机尚未建立时不做任何事。 */
+  setInputValue(next: string): void {
+    this.api()?.setInputValue(next)
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {
@@ -201,6 +233,19 @@ export class XhSideNavElement extends XhPortalHostElement {
     svc.refs.set('getPopoutAnchorEl', value => this.findPopoutPart(value, 'branch-trigger'))
     svc.refs.set('getPopoutContentEl', value => this.findPopoutPart(value, 'branch-content'))
     svc.refs.set('getPopoutPositionerEl', value => this.findPopoutPart(value, 'positioner'))
+  }
+
+  /** 空态节点首次见到时是空的才归元素填字；作者写了内容就一直归作者。 */
+  private readonly ownsEmptyText = new WeakMap<HTMLElement, boolean>()
+
+  private fillEmptyText(el: HTMLElement, text: string): void {
+    let owned = this.ownsEmptyText.get(el)
+    if (owned === undefined) {
+      owned = (el.textContent ?? '').trim() === ''
+      this.ownsEmptyText.set(el, owned)
+    }
+    if (owned && el.textContent !== text)
+      el.textContent = text
   }
 
   /** WC 只报告真实面板 Presence 的接入与离场，资源会话由 Headless 按 value 记账。 */
@@ -264,16 +309,33 @@ export class XhSideNavElement extends XhPortalHostElement {
         this.spreader.spread(el, props)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
+    put('input', api.getInputProps() as Record<string, unknown>)
     put('list', api.getListProps() as Record<string, unknown>)
-    for (const el of this.getParts('item'))
-      this.spreader.spread(el, api.getItemProps() as Record<string, unknown>)
+    const empty = this.getPart('empty')
+    if (empty) {
+      this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
+      this.fillEmptyText(empty, api.translations.noMatch)
+    }
+    // 列表项的身份取它包着的那条链接：搜索时没命中就整行收起
+    const links = this.getParts(LINK)
+    for (const el of this.getParts('item')) {
+      const link = links.find(node => node.closest(ITEM_SELECTOR) === el)
+      this.spreader.spread(el, api.getItemProps({ value: link?.getAttribute('value') ?? undefined }) as Record<string, unknown>)
+    }
 
     // 集合类 part 逐个 spread：身份由节点自报，不依赖下标，节点增删无需记账
     const putAll = (name: string, owner: typeof BRANCH | typeof GROUP | typeof LINK, get: (node: SideNavNodeProps) => unknown): void => {
       for (const el of this.getParts(name))
         this.spreader.spread(el, get(this.nodeOf(el, owner)) as Record<string, unknown>)
     }
-    putAll('group', GROUP, node => api.getGroupProps(node))
+    // 分组的成员是组里的链接与分支：搜索时一个成员都没命中就整组收起
+    const groupMembers = [...links, ...this.getParts(BRANCH)]
+    for (const el of this.getParts(GROUP)) {
+      const members = groupMembers
+        .filter(node => node.closest(GROUP_SELECTOR) === el)
+        .map(node => node.getAttribute('value') ?? '')
+      this.spreader.spread(el, api.getGroupProps({ ...this.nodeOf(el, GROUP), members }) as Record<string, unknown>)
+    }
     putAll('group-label', GROUP, node => api.getGroupLabelProps(node))
     putAll('branch', BRANCH, node => api.getBranchProps(node))
     putAll('branch-trigger', BRANCH, node => api.getBranchTriggerProps(node))

@@ -12,6 +12,7 @@ import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { OVERLAY_OFFSET } from '../shared/overlay'
 import { trackOverlayLayer } from '../shared/overlay-shell'
 import { indexTree } from '../tree'
+import { isSideNavSearching, resolveSideNavSearch } from './side-nav.search'
 
 const { createMachine } = setup<SideNavSchema>()
 
@@ -82,6 +83,9 @@ export const sideNavMachine = createMachine({
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
     // 落定的排布：首帧就按折叠开关来，之后等整栏宽度的过渡播完才跟上
     railed: cell<boolean>(() => ({ defaultValue: !!prop('collapsed') })),
+    // 搜索：检索词与搜索视图自己的展开集合，后者不写回作者的 expandedValue
+    inputValue: cell<string>(() => ({ defaultValue: '' })),
+    searchExpanded: cell<string[]>(() => ({ defaultValue: [], isEqual: sameValues })),
   }),
   refs: () => ({
     config: null,
@@ -112,6 +116,8 @@ export const sideNavMachine = createMachine({
   on: {
     'PRESENCE.SET': { actions: ['setPresence'] },
     'COLLAPSE.SETTLED': { actions: ['settleCollapse'] },
+    // 检索词两个状态都认：弹出只在图标栏里，那时过滤暂停，词照记、展开回来接着用
+    'INPUT.CHANGE': { actions: ['setInputValue'] },
     // 按压通道：两个状态都认；侧栏禁用不进，入口自身禁用随事件带入
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
@@ -229,38 +235,59 @@ export const sideNavMachine = createMachine({
         if (e.type === 'EXPANDED.SET')
           context.set('expandedValue', unique(e.value))
       },
+      // 搜索视图里的展开收起只改它自己的展开集合，不动作者的 expandedValue、也不发通知；
+      // 手风琴只管作者的那份：搜索视图要把命中的几枝同时摊开
       expandBranch: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'BRANCH.EXPAND')
           return
-        const current = context.get('expandedValue')
+        const searching = isSideNavSearching(context.get('inputValue'), context.get('railed'))
+        const key = searching ? 'searchExpanded' : 'expandedValue'
+        const current = context.get(key)
         if (current.includes(e.value))
           return
         const next = [...current, e.value]
         context.set(
-          'expandedValue',
-          prop('accordion') ? accordionSiblings(prop('collection') ?? [], next, e.value) : next,
+          key,
+          !searching && prop('accordion') ? accordionSiblings(prop('collection') ?? [], next, e.value) : next,
         )
       },
       collapseBranch: ({ context, event }) => {
         const e = event.current()
-        if (e.type === 'BRANCH.COLLAPSE')
-          context.set('expandedValue', context.get('expandedValue').filter(v => v !== e.value))
+        if (e.type !== 'BRANCH.COLLAPSE')
+          return
+        const key = isSideNavSearching(context.get('inputValue'), context.get('railed')) ? 'searchExpanded' : 'expandedValue'
+        context.set(key, context.get(key).filter(v => v !== e.value))
       },
       toggleBranch: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'BRANCH.TOGGLE')
           return
-        const current = context.get('expandedValue')
+        const searching = isSideNavSearching(context.get('inputValue'), context.get('railed'))
+        const key = searching ? 'searchExpanded' : 'expandedValue'
+        const current = context.get(key)
         if (current.includes(e.value)) {
-          context.set('expandedValue', current.filter(v => v !== e.value))
+          context.set(key, current.filter(v => v !== e.value))
           return
         }
         const next = [...current, e.value]
         context.set(
-          'expandedValue',
-          prop('accordion') ? accordionSiblings(prop('collection') ?? [], next, e.value) : next,
+          key,
+          !searching && prop('accordion') ? accordionSiblings(prop('collection') ?? [], next, e.value) : next,
         )
+      },
+      /** 换检索词：搜索视图的展开集合重置为「因子孙命中而留下的分支」；词清空即回到作者的展开态。 */
+      setInputValue: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'INPUT.CHANGE')
+          return
+        context.set('inputValue', e.value)
+        const search = resolveSideNavSearch(prop('collection') ?? [], {
+          inputValue: e.value,
+          filter: prop('filter'),
+          railed: false,
+        })
+        context.set('searchExpanded', search?.expanded ?? [])
       },
       setFocusedValue: ({ context, event }) => {
         const e = event.current()

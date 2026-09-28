@@ -171,6 +171,81 @@ function singleSideNavTabStop(): StepWithExpect {
   }
 }
 
+/** 搜索用例的结构：搜索框排在 list 之前，空态排在 list 之后。 */
+function withSearch(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: [{ part: 'input', tag: 'input' }, ...(base.children ?? []), { part: 'empty', tag: 'div' }],
+  }
+}
+
+/** 分组用例的结构：顶层链接自成一组，两个分支归另一组；组的成员由各端从组里挂着的部件收集。 */
+function withGroups(base: FixtureNode): FixtureNode {
+  const group = (value: string, label: string, children: readonly FixtureNode[]): FixtureNode => ({
+    part: 'group',
+    tag: 'li',
+    attrs: { value },
+    children: [{ part: 'group-label', tag: 'div', attrs: { value }, text: label }, ...children],
+  })
+  return {
+    ...base,
+    children: [
+      { part: 'input', tag: 'input' },
+      {
+        part: 'list',
+        tag: 'ul',
+        children: [
+          group('main', 'Main', [link('home', 'Home')]),
+          group('biz', 'Business', [
+            branch('user', 'User', [link('user-list', 'User list'), link('user-role', 'User role')]),
+            branch('order', 'Order', [link('order-list', 'Order list')]),
+          ]),
+        ],
+      },
+    ],
+  }
+}
+
+const SEARCH_INPUT = '[data-scope="side-nav"][data-part="input"]'
+
+/** 打字。type 步骤只派按键、改不动输入框的值，搜索框的入口正是原生 input 事件，只能直接写值再派事件。 */
+function typeInto(text: string): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: '检索词只能直接写进输入框再派 input 事件',
+    run: async ({ doc, flush }) => {
+      const input = doc.querySelector<HTMLInputElement>(SEARCH_INPUT)
+      if (!input)
+        throw new Error('找不到 side-nav 的 input 部件')
+      input.value = text
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+      await flush()
+    },
+  }
+}
+
+function assertSearchText(expected: string): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: '检索词只落 DOM property，不进属性快照',
+    run: ({ doc }) => {
+      const actual = doc.querySelector<HTMLInputElement>(SEARCH_INPUT)?.value ?? null
+      if (actual !== expected)
+        throw new Error(`检索词不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+    },
+  }
+}
+
+/** 四个列表项的收起期望，逐个写全：只写没命中的那条会漏掉「命中的也被收了」。 */
+function itemsHidden(...values: readonly string[]): readonly AttrExpectation[] {
+  return ['home', 'user-list', 'user-role', 'order-list'].map(v => ({ hidden: values.includes(v) ? '' : null }))
+}
+
+/** 两个分支的收起期望。 */
+function branchesHidden(...values: readonly string[]): readonly AttrExpectation[] {
+  return ['user', 'order'].map(v => ({ hidden: values.includes(v) ? '' : null }))
+}
+
 /** 原生的 getComputedStyle，伪造退场动画期间暂存，结束后放回。 */
 let nativeComputedStyle: Window['getComputedStyle'] | null = null
 const animationMocks = new Map<Element, ReturnType<typeof installCssAnimationMock>>()
@@ -807,6 +882,148 @@ export const sideNavSuite: ConformanceSuite = {
         heldPressIgnored('side-nav', 'link', '整个侧栏禁用时链接不接受按压', { value: 'home' }),
         heldPressIgnored('side-nav', 'branch-trigger', '整个侧栏禁用时分支行不接受按压', { value: 'user' }),
       ],
+    },
+    {
+      name: '搜索：输入检索词后没命中的整行、整枝收起，命中入口的祖先展开，不改写 expandedValue；下方向键从搜索框进到剩下的第一行，方向键只走剩下的行',
+      spec: { apg: APG },
+      fixture: withSearch,
+      props: props(),
+      covers: ['side-nav.kbd.search-type', 'side-nav.kbd.search-to-list'],
+      initial: {
+        parts: {
+          input: { 'type': 'text', 'aria-label': 'Filter navigation', 'aria-controls': '@part(list)', 'data-xh-field-input': '', 'disabled': null },
+          list: { id: '@self' },
+          empty: { role: 'status', hidden: '' },
+          item: itemsHidden(),
+          branch: branchesHidden(),
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'input', expect: { activeElement: { part: 'input', exact: true } } },
+        {
+          ...typeInto('list'),
+          expect: {
+            parts: {
+              'item': itemsHidden('home', 'user-role'),
+              'branch': branchesHidden(),
+              'branch-trigger': triggersExpanded('user', 'order'),
+              'branch-content': contentsShown('user', 'order'),
+              'empty': { hidden: '' },
+            },
+            // 搜索里的展开只记在搜索视图里，不报 expanded-value-change
+            events: [],
+          },
+        },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'branch-trigger[0]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'link[1]', exact: true } } },
+        // 没命中的 user-role 收着，方向键跨过它
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'branch-trigger[1]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'link[3]', exact: true } } },
+        { kind: 'key', key: 'Home', expect: { activeElement: { part: 'branch-trigger[0]', exact: true } } },
+        singleSideNavTabStop(),
+      ],
+    },
+    {
+      name: '搜索：不在搜索中时，搜索框里 Enter 把焦点交给 Tab 锚点（可见的选中项）',
+      spec: { apg: APG },
+      fixture: withSearch,
+      props: props({ defaultValue: 'user-role', defaultExpandedValue: ['user'] }),
+      covers: ['side-nav.kbd.search-to-list'],
+      steps: [
+        { kind: 'focus', part: 'input' },
+        { kind: 'key', key: 'Enter', expect: { activeElement: { part: 'link[2]', exact: true } } },
+      ],
+    },
+    {
+      name: '搜索：Escape 先清空检索词，回到整棵树与原来的展开态，焦点留在搜索框',
+      spec: { apg: APG },
+      fixture: withSearch,
+      props: props({ defaultExpandedValue: ['order'] }),
+      covers: ['side-nav.kbd.search-escape'],
+      steps: [
+        { kind: 'focus', part: 'input' },
+        {
+          ...typeInto('role'),
+          expect: {
+            parts: {
+              'item': itemsHidden('home', 'user-list', 'order-list'),
+              'branch': branchesHidden('order'),
+              'branch-trigger': triggersExpanded('user'),
+            },
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            activeElement: { part: 'input', exact: true },
+            parts: {
+              'item': itemsHidden(),
+              'branch': branchesHidden(),
+              'branch-trigger': triggersExpanded('order'),
+              'branch-content': contentsShown('order'),
+            },
+            events: [],
+          },
+        },
+        assertSearchText(''),
+      ],
+    },
+    {
+      name: '搜索：一条都没命中时空态露面，节点为空时文字取 translations.noMatch',
+      spec: { apg: APG },
+      fixture: withSearch,
+      props: props(),
+      steps: [
+        { kind: 'focus', part: 'input' },
+        {
+          ...typeInto('zzz'),
+          expect: {
+            parts: {
+              empty: { hidden: null },
+              item: itemsHidden('home', 'user-list', 'user-role', 'order-list'),
+              branch: branchesHidden('user', 'order'),
+            },
+          },
+        },
+        {
+          kind: 'raw',
+          why: '空态文字是文本节点，不进属性快照',
+          run: ({ doc }) => {
+            const text = doc.querySelector('[data-scope="side-nav"][data-part="empty"]')?.textContent ?? null
+            if (text !== 'No matches')
+              throw new Error(`空态文字不符：期望 "No matches"，实际 ${JSON.stringify(text)}`)
+          },
+        },
+      ],
+    },
+    {
+      name: '搜索：分组的成员一个都没命中就整组收起，有命中的组照常露面',
+      spec: { apg: APG },
+      fixture: withGroups,
+      props: props(),
+      initial: { parts: { group: [{ hidden: null }, { hidden: null }] } },
+      steps: [
+        {
+          ...typeInto('role'),
+          expect: { parts: { group: [{ hidden: '' }, { hidden: null }], item: itemsHidden('home', 'user-list', 'order-list') } },
+        },
+        {
+          ...typeInto('home'),
+          expect: { parts: { group: [{ hidden: null }, { hidden: '' }] } },
+        },
+        {
+          ...typeInto(''),
+          expect: { parts: { group: [{ hidden: null }, { hidden: null }], item: itemsHidden() } },
+        },
+      ],
+    },
+    {
+      name: '搜索：整个侧栏禁用时搜索框原生禁用',
+      spec: { apg: APG },
+      fixture: withSearch,
+      props: props({ disabled: true }),
+      initial: { parts: { input: { 'disabled': '', 'data-disabled': '' } } },
     },
   ],
 }
