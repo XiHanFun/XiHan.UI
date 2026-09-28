@@ -9298,24 +9298,6 @@
       "description": "cascader 的 empty 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-cascader-empty-min-h",
-      "component": "cascader",
-      "part": [
-        "empty"
-      ],
-      "property": [
-        "min-block-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "5rem"
-      ],
-      "visibility": "public",
-      "description": "cascader 的 empty 部件 min-block-size 覆盖槽。"
-    },
-    {
       "name": "--xh-cascader-empty-p",
       "component": "cascader",
       "part": [
@@ -10256,24 +10238,6 @@
       ],
       "visibility": "public",
       "description": "cascader 的 loading 部件 font-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-cascader-loading-min-h",
-      "component": "cascader",
-      "part": [
-        "loading"
-      ],
-      "property": [
-        "min-block-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "5rem"
-      ],
-      "visibility": "public",
-      "description": "cascader 的 loading 部件 min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-cascader-loading-p",

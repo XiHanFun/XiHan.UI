@@ -82,6 +82,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 - 选中项使用末端标记，半选项使用横线。
 - 浮层锚在字段盒上：一级列与字段盒等宽，长选项在条目里截断；后续列按条目的自然宽度，面板随列数伸展，宽过可用区时收成可用宽度并在面内横滚。
 - 面板含多列，取不透景的实体浮起面，与时间选择同一档。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
 ### 组合
 
@@ -566,7 +567,6 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | cascader 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-cascader-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | cascader 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-cascader-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | cascader 的 empty 部件 color 覆盖槽。 |
-| `--xh-cascader-empty-min-h` | `empty` | `min-block-size` | `default` | `5rem` | cascader 的 empty 部件 min-block-size 覆盖槽。 |
 | `--xh-cascader-empty-p` | `empty` | `padding` | `default` | `--xh-space-3` | cascader 的 empty 部件 padding 覆盖槽。 |
 | `--xh-cascader-footer-border` | `footer` | `border-block-start` | `default` | `--xh-border-subtle` | cascader 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-cascader-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | cascader 的 footer 部件 color 覆盖槽。 |
@@ -613,7 +613,6 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | cascader 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-cascader-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | cascader 的 loading 部件 color 覆盖槽。 |
 | `--xh-cascader-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 loading 部件 font-size 覆盖槽。 |
-| `--xh-cascader-loading-min-h` | `loading` | `min-block-size` | `default` | `5rem` | cascader 的 loading 部件 min-block-size 覆盖槽。 |
 | `--xh-cascader-loading-p` | `loading` | `padding` | `default` | `--xh-space-3` | cascader 的 loading 部件 padding 覆盖槽。 |
 | `--xh-cascader-placeholder-fg` | `input`<br>`value-text` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | cascader 的 input、value-text 部件 color 覆盖槽。 |
 | `--xh-cascader-search-divider` | `input` | `border-block-end` | `default` | `--xh-material-solid-separator` | cascader 的 input 部件 border-block-end 覆盖槽。 |
