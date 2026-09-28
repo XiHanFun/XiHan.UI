@@ -1,13 +1,9 @@
-<script setup lang="ts">
-import { XhTooltipContent, XhTooltipRoot, XhTooltipTrigger } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <!-- 展示已打开的静态提示：不包 Positioner，content 就地渲染在触发器下方 -->
-  <div style="display: grid; gap: var(--xh-space-2); justify-items: center">
-    <XhTooltipRoot default-open>
-      <XhTooltipTrigger>保存</XhTooltipTrigger>
-      <XhTooltipContent>写入草稿箱，不会发布</XhTooltipContent>
-    </XhTooltipRoot>
-  </div>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="60" y="44" width="120" height="32" rx="4" fill="var(--xh-fg-default)" />
+    <path d="M113 76l7 7 7-7z" fill="var(--xh-fg-default)" />
+    <path d="M75 60h90" stroke="var(--xh-bg-surface)" stroke-width="6" />
+    <rect x="84.5" y="96.5" width="71" height="31" rx="4" stroke="var(--xh-border-default)" />
+    <path d="M103 112h34" stroke="var(--xh-fg-default)" stroke-width="6" />
+  </svg>
 </template>
