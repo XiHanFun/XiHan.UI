@@ -314,7 +314,7 @@ describe('一次换位', () => {
   it('条目里嵌着的条目随外层一起走，不再各补一次', async () => {
     const container = list(2)
     const first = container.children[0] as HTMLElement & { moveTo: (next: number) => void }
-    const nested = item('nested')
+    const nested = item('nested') as HTMLElement & { moveTo: (next: number) => void }
     first.append(nested)
     place(nested, container, 8)
     stops.push(trackReorder(container, { item: '[data-part="item"]' }))
