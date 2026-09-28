@@ -12923,19 +12923,30 @@
   white-space: normal;
 }
 
+/* 可展开的那一档常备一条透明的下划线，悬停时淡进来。挂在 expandable 上而不是被裁那一档：
+   被裁与否挂载后才量得出，挂在那一档上的话，量出来那一下下划线会从文字色淡到透明，首帧闪一条线 */
+[data-scope='truncate'][data-part='root'][data-expandable] {
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: var(--xh-space-0_5);
+  transition:
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    text-decoration-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
 /* 真被裁了才是那颗按钮：装得下的短文本按下去什么都不变，摆出手型等于许一个按不动的按钮。
    铺开态另收一条——那一档量不出"被裁"，但收回去的入口必须留着 */
 [data-scope='truncate'][data-part='root'][data-expandable][data-overflowing],
 [data-scope='truncate'][data-part='root'][data-expandable][data-state='open'] {
   cursor: pointer;
-  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 是按钮的那一档才提亮：指针停在上面时这段文字与正文分开，
-   按不动的短文本不给这个反馈 */
+/* 是按钮的那一档才给悬停反馈：提亮到正文色之外再淡进一条下划线——
+   正文本来就是这个色时单靠提亮等于零反馈。按不动的短文本不给这个反馈 */
 [data-scope='truncate'][data-part='root'][data-expandable][data-overflowing]:hover,
 [data-scope='truncate'][data-part='root'][data-expandable][data-state='open']:hover {
   color: var(--xh-fg-default);
+  text-decoration-color: currentColor;
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
