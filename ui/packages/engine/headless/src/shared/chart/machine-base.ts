@@ -266,6 +266,8 @@ export type ChartBaseTransition<S extends ChartBaseSchema> = ChartTransitionOpti
   readonly numbers?: (params: Params<S>) => ChartNumbers
   /** 还会改几何、但变化时不该播过渡的输入（直角坐标图的缩放窗口）：它变了，场景直接落到终态。 */
   readonly extent?: (params: Params<S>) => unknown
+  /** 框架这一次是不是一步到位的离散变化（键盘缩放、滚轮一格）：是的话按 move 补间过去。 */
+  readonly extentStep?: (params: Params<S>) => boolean
 }
 
 /** 把机器的几片状态交给过渡。 */
@@ -280,6 +282,7 @@ function transitionState<S extends ChartBaseSchema>(params: Params<S>, transitio
     metrics: context.get('metrics'),
     measurerVersion: context.get('measurerVersion'),
     extent: transition.extent?.(params) ?? null,
+    extentStep: transition.extentStep?.(params) ?? false,
     // 绘图区缺席（作者没写）时退到根：时长与减弱动效按同一条祖先链读
     plot: refs.get('getViewportEl')()?.querySelector('[data-part="plot"]') ?? root,
     win: scope.getWin(),

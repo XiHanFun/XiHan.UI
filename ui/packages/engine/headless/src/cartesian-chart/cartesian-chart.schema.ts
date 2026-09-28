@@ -91,6 +91,11 @@ export interface CartesianChartSchema extends MachineSchema {
   context: ChartBaseContext & {
     /** 缩放窗口。 */
     window: CartesianWindow
+    /**
+     * 最近一次窗口变化是一步到位的（键盘缩放、滚轮一格、点缩放条空处、焦点移出窗口时跟过去）：
+     * 场景按 move 补间过去。拖着平移、捏合与刷选跟手，为假。
+     */
+    windowStep: boolean
     /** 正在拖的是什么：绘图区平移、缩放条的一端或整个窗口；没在拖为 null。 */
     drag: CartesianDrag | null
     /** 刷选的范围；没有刷选为 null。 */
@@ -114,7 +119,8 @@ export interface CartesianChartSchema extends MachineSchema {
   }
   state: 'idle'
   event: ChartBaseEvent
-    | { type: 'WINDOW.SET', window: CartesianWindow }
+    /** step：一步到位的离散变化，场景补间过去；缺省为连续的操作，场景直接跟到终态。 */
+    | { type: 'WINDOW.SET', window: CartesianWindow, step?: boolean }
     | { type: 'DRAG.START', drag: CartesianDrag }
     | { type: 'DRAG.END' }
     | { type: 'BRUSH.START', brushing: CartesianBrushing }

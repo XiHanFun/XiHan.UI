@@ -103,6 +103,11 @@ export interface ChartTransitionState {
   readonly measurerVersion: number
   /** 框架：还会改几何、但变化时不该播过渡的输入（缩放窗口）；没有时为 null。 */
   readonly extent: unknown
+  /**
+   * 框架这一次是一步到位的离散变化（键盘缩放、滚轮一格、点缩放条的空处）：按 move 补间过去。
+   * 拖着平移、捏合与刷选是连续的操作，为假，场景直接跟到终态。
+   */
+  readonly extentStep: boolean
   /** 各图表交给内核的数，按目标场景的数据算出。 */
   readonly numbers: ChartNumbers
   /** 绘图区元素：时长、曲线与减弱动效都从它读；没有渲染宿主时为 null。 */
@@ -243,8 +248,12 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
   }
 
   const base = shown?.scene ?? null
-  const reshaped = base != null && (shown!.size !== state.size || shown!.metrics !== state.metrics || shown!.measurerVersion !== state.measurerVersion || shown!.extent !== state.extent)
-  if (reshaped) {
+  const reframed = base != null && shown!.extent !== state.extent
+  const reshaped = base != null && (reframed || shown!.size !== state.size || shown!.metrics !== state.metrics || shown!.measurerVersion !== state.measurerVersion)
+  // 只是框架一步到位地换了：从正在显示的那一帧补间过去，不跟尺寸与度量的变化混在一起
+  const stepped = reshaped && reframed && state.extentStep
+    && shown!.size === state.size && shown!.metrics === state.metrics && shown!.measurerVersion === state.measurerVersion
+  if (reshaped && !stepped) {
     if (!run) {
       state.setFrame(null)
       return
@@ -273,11 +282,18 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
   const reduced = resolveMotionPreference(plot) === 'reduce' || dataMarkCount(target) > CHART_ANIMATION_MARK_LIMIT
   const motion = readMotion(plot)
   const stagger = options.stagger ? motionStaggerStep : 0
+  // 框架一步到位的换位在减弱动效下直接落到终态：它不是数据的变化，没有要淡变交代的东西
+  if (stepped && reduced) {
+    halt(state)
+    return
+  }
   const timing: TransitionOptions = reduced
     ? { duration: motion.duration('enter'), easing: motion.easing('enter'), reducedMotion: true }
     : entry
       ? { duration: motion.duration('reveal'), easing: motion.easing('enter-strong'), stagger }
-      : { duration: motion.duration('morph'), easing: motion.easing('continuous'), stagger }
+      : stepped
+        ? { duration: motion.duration('move'), easing: motion.easing('continuous') }
+        : { duration: motion.duration('morph'), easing: motion.easing('continuous'), stagger }
   run?.stop()
   // 作者把时长改成 0 就是不要过渡
   if (!(timing.duration > 0)) {

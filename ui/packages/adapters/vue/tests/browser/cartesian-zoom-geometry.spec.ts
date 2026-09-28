@@ -166,4 +166,34 @@ describe('缩放', () => {
     expect(getComputedStyle(part('plot')).touchAction).toBe('pan-x')
     expect(part('zoom-slider').hidden).toBe(true)
   })
+
+  it('键盘一步换窗补间过去：柱的位置在途中介于两端之间，走完落到终态', async () => {
+    host = document.createElement('div')
+    host.style.inlineSize = '480px'
+    // 入场一眨眼就走完，换窗的补间放慢到看得清
+    host.style.setProperty('--xh-motion-duration-reveal', '1ms')
+    host.style.setProperty('--xh-motion-duration-enter', '1ms')
+    host.style.setProperty('--xh-motion-duration-move', '400ms')
+    document.body.append(host)
+    app = createApp({ render: () => h(XhCartesianChartRoot, { ...BARS, defaultWindow: { x: ['一月', '六月'] } }, { caption: () => '缩放' }) })
+    app.mount(host)
+    await settle()
+    await new Promise(resolve => setTimeout(resolve, 100))
+    // 柱宽有上限，窗口收窄时变的是类目间距：量第三根柱的左缘
+    const left = (): number => all('bar')[2]!.getBoundingClientRect().left
+    const before = left()
+
+    const handle = all('zoom-handle')[1] as HTMLElement
+    handle.focus()
+    handle.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true, cancelable: true }))
+    await nextTick()
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+    const mid = left()
+    await new Promise(resolve => setTimeout(resolve, 600))
+    await settle()
+    const after = left()
+    expect(after).toBeGreaterThan(before)
+    expect(mid).toBeGreaterThan(before)
+    expect(mid).toBeLessThan(after)
+  })
 })

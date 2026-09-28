@@ -77,6 +77,8 @@ const WHEEL_ZOOM_RATE = 0.002
 /** 滚轮按行、按页报告滚动量时换算成像素。 */
 const WHEEL_LINE = 16
 const WHEEL_PAGE = 400
+/** 按像素报增量时，一次滚过这么多就算鼠标滚轮的一格：触控板的连续滑动每次只有几像素到十几像素。 */
+const WHEEL_NOTCH = 50
 
 /** 键盘 + / − 一次缩放的倍数。 */
 const KEY_ZOOM_STEP = 1.5
@@ -305,15 +307,17 @@ export function connectCartesianChart<T extends PropTypes>(
     const y = zoomY && layout && !isFullWindow(ratio.y) ? windowToDomain(ratio.y, layout.valueExtent, valueKind) : null
     return { x, y }
   }
-  const setRatio = (ratio: CartesianWindowRatio): void => {
+  /** step：一步到位的离散变化（键盘、滚轮一格、点一下），场景补间过去；拖动与捏合是连续的，跟手。 */
+  const setRatio = (ratio: CartesianWindowRatio, step = false): void => {
     const next = windowOf(ratio)
     service.refs.set('zoomRatio', { ratio, window: next })
     if (!sameWindow(next, win))
-      send({ type: 'WINDOW.SET', window: next })
+      send({ type: 'WINDOW.SET', window: next, step })
   }
+  // 命令式换窗（复位、跳到某一段）是一步到位的
   const setWindow = (next: CartesianWindow): void => {
     if (!sameWindow(next, win))
-      send({ type: 'WINDOW.SET', window: next })
+      send({ type: 'WINDOW.SET', window: next, step: true })
   }
   /** 绘图区里的一点换成两根轴在窗口里的相对位置 0–1：key 沿自变量轴，value 沿数值轴（自下而上、自左而右）。 */
   const ratioAt = (at: { x: number, y: number }): { key: number, value: number } | null => {
@@ -335,10 +339,10 @@ export function connectCartesianChart<T extends PropTypes>(
     const span = from.end - from.start
     return zoomAt(from, span > 0 ? (pivot - from.start) / span : 0.5, factor, bounds)
   }
-  const zoomAround = (anchor: { key: number, value: number }, factor: number): void => setRatio({
+  const zoomAround = (anchor: { key: number, value: number }, factor: number, step = false): void => setRatio({
     x: zoomX ? zoomAxis(base.x, shown.x, anchor.key, factor, limits) : base.x,
     y: zoomY ? zoomAxis(base.y, shown.y, anchor.value, factor) : base.y,
-  })
+  }, step)
   /**
    * 键盘在类目轴上缩放：按整个类目增减，每按一次至少多露或少露一个类目；按比例缩的话，
    * 类目少时一次缩放盖不过一整格，露出的类目不变，这一下就白按了。焦点所在的类目在窗口里的相对位置不变。
@@ -354,7 +358,7 @@ export function connectCartesianChart<T extends PropTypes>(
     setRatio({
       x: indexRangeToWindow(start, start + next - 1, keyCount),
       y: zoomY ? zoomAxis(base.y, shown.y, at.value, factor) : base.y,
-    })
+    }, true)
   }
   /** 拖着绘图区平移：内容跟着指针走，窗口朝反方向挪。 */
   const panTo = (at: { x: number, y: number }): void => {
@@ -389,7 +393,7 @@ export function connectCartesianChart<T extends PropTypes>(
     if (r == null || (r >= shown.x.start && r <= shown.x.end))
       return
     const span = base.x.end - base.x.start
-    setRatio({ ...base, x: clampWindow({ start: r - span / 2, end: r + span / 2 }) })
+    setRatio({ ...base, x: clampWindow({ start: r - span / 2, end: r + span / 2 }) }, true)
   }
   /** 缩放条手柄报给读屏的值：窗口那一端对着的键。 */
   const edgeText = (r: number, edge: 'start' | 'end'): string => {
@@ -617,7 +621,8 @@ export function connectCartesianChart<T extends PropTypes>(
           return
         event.preventDefault()
         const delta = event.deltaMode === 1 ? event.deltaY * WHEEL_LINE : event.deltaMode === 2 ? event.deltaY * WHEEL_PAGE : event.deltaY
-        zoomAround(r, Math.exp(-delta * WHEEL_ZOOM_RATE))
+        // 鼠标滚轮一格（按行、按页计，或一次滚过一整格的像素）补间过去；触控板的细小连续增量跟手
+        zoomAround(r, Math.exp(-delta * WHEEL_ZOOM_RATE), event.deltaMode !== 0 || Math.abs(event.deltaY) >= WHEEL_NOTCH)
       },
       'onPointerDown': (event: PointerEvent) => {
         if (!(zoomable || brushable) || event.button !== 0 || !layout)
@@ -740,7 +745,7 @@ export function connectCartesianChart<T extends PropTypes>(
             zoomKeys(from ? cartesianKeyIndexOf(model, from) : -1, factor, at)
             return
           }
-          zoomAround(at, factor)
+          zoomAround(at, factor, true)
           return
         }
         const intent = chartNavIntentFromKey(event, orientation)
@@ -990,7 +995,7 @@ export function connectCartesianChart<T extends PropTypes>(
           return
         const r = (event.clientX - rect.left) / rect.width
         const span = base.x.end - base.x.start
-        setRatio({ ...base, x: clampWindow({ start: r - span / 2, end: r + span / 2 }) })
+        setRatio({ ...base, x: clampWindow({ start: r - span / 2, end: r + span / 2 }) }, true)
       },
     }),
 
@@ -1038,7 +1043,7 @@ export function connectCartesianChart<T extends PropTypes>(
         if (!x)
           return
         event.preventDefault()
-        setRatio({ ...shown, x })
+        setRatio({ ...shown, x }, true)
       },
     }),
 

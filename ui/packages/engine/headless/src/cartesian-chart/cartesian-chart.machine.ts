@@ -34,6 +34,7 @@ export const cartesianChartMachine = createMachine({
       isEqual: sameWindow,
       onChange: window => params.prop('onWindowChange')?.({ window }),
     })),
+    windowStep: params.cell<boolean>(() => ({ defaultValue: false })),
     drag: params.cell<CartesianDrag | null>(() => ({ defaultValue: null })),
     // 刷选的范围：回调要带上范围里的数据，由 setBrush 在写入时自己派发
     brushSelection: params.cell<CartesianBrushSelection | null>(() => ({
@@ -107,6 +108,8 @@ export const cartesianChartMachine = createMachine({
           numbers: params => cartesianLabelNumbers(cartesianModelOf(params).scene),
           // 缩放与平移是连续的操作：窗口一变场景直接跟到终态，不在两帧之间插值
           extent: params => params.context.get('window'),
+          // 键盘缩放、滚轮一格这类一步到位的换窗补间过去；拖着平移与捏合照旧跟手
+          extentStep: params => params.context.get('windowStep'),
         },
       }),
       notifyActive: (params) => {
@@ -130,6 +133,7 @@ export const cartesianChartMachine = createMachine({
         if (e.type !== 'WINDOW.SET')
           return
         const zoom = prop('zoom') ?? 'none'
+        context.set('windowStep', e.step === true)
         context.set('window', {
           x: zoom === 'x' || zoom === 'xy' ? e.window.x ?? null : null,
           y: zoom === 'y' || zoom === 'xy' ? e.window.y ?? null : null,
