@@ -89,6 +89,19 @@ function rightClickAt(x: number, y: number) {
   }
 }
 
+/**
+ * 右键并回读这一下有没有被 preventDefault：整张菜单禁用时浏览器自己的右键菜单必须照常出现，
+ * 唯一可观察的结果就是事件没被吞。事件显式开 cancelable，否则 defaultPrevented 恒 false，断言咬不住。
+ */
+function rightClickExpectingNative(nativeMenu: boolean) {
+  return ({ doc }: RawStepContext): void => {
+    const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 10, clientY: 10 })
+    requireTrigger(doc).dispatchEvent(event)
+    if (event.defaultPrevented === nativeMenu)
+      throw new Error(nativeMenu ? '禁用时右键被吞掉了，浏览器自己的右键菜单出不来' : '右键没被吞，浏览器自己的右键菜单会与本菜单叠在一起')
+  }
+}
+
 function pointerOn(type: string, init: PointerEventInit) {
   return ({ doc }: RawStepContext): void => {
     requireTrigger(doc).dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, ...init }))
@@ -593,6 +606,58 @@ export const contextMenuSuite: ConformanceSuite = {
               content: { 'hidden': null, 'data-state': 'open' },
             },
             events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: 'disabled：右键不展开、不吞浏览器自己的右键菜单，触发区退出 Tab 序列，条目全部 aria-disabled',
+      spec: { apg: APG },
+      props: { disabled: true },
+      initial: {
+        parts: {
+          'trigger': { 'data-disabled': '', 'tabindex': null, 'aria-haspopup': null, 'aria-keyshortcuts': null },
+          'item[0]': { 'aria-disabled': 'true' },
+          'item[2]': { 'aria-disabled': 'true' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '同上：contextmenu 只能手写；要验的是这一下没被 preventDefault，click 步骤读不到派出去的事件',
+          run: rightClickExpectingNative(true),
+          expect: {
+            parts: { trigger: { 'data-state': 'closed' }, content: { hidden: '' } },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: '解除禁用：条目回到各自的声明，右键照常展开',
+      spec: { apg: APG },
+      props: { disabled: true },
+      steps: [
+        { kind: 'setProps', props: { disabled: false } },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'trigger', name: 'tabindex', value: '0' } },
+          expect: {
+            parts: {
+              'trigger': { 'data-disabled': null, 'aria-haspopup': 'menu' },
+              'item[0]': { 'aria-disabled': 'false' },
+              'item[1]': { 'aria-disabled': 'true' },
+              'item[2]': { 'aria-disabled': 'false' },
+            },
+          },
+        },
+        {
+          kind: 'raw',
+          why: '同上：contextmenu 只能手写；解禁后右键得重新被吞掉，两张菜单才不会叠在一起',
+          run: rightClickExpectingNative(false),
+          expect: {
+            parts: { trigger: { 'data-state': 'open' }, content: { hidden: null } },
+            events: [{ type: 'open-change', detail: { open: true } }],
           },
         },
       ],

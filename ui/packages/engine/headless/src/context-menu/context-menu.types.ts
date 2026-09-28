@@ -173,6 +173,11 @@ export interface ContextMenuSchema extends MachineSchema {
     /** 触摸端长按多久视为触发（ms），默认 700。 */
     longPressDelay?: number
     /**
+     * 整张菜单禁用：右键、长按、菜单键与 Shift+F10 都不再展开，也不拦截浏览器自己的右键菜单；
+     * 触发区退出 Tab 序列，条目全部为 aria-disabled，展开途中转为禁用即收起。与 Menu 的 disabled 同名同义。
+     */
+    disabled?: boolean
+    /**
      * 整张菜单的语气：brand / neutral / success / warning / danger / info。
      * 只为浮层与作者放进来的内容备好该族颜色，不下发给条目——条目保持中性档，
      * 逐条的语气写在 collection 的 `tone` 上（见 ContextMenuNode）。
@@ -237,7 +242,7 @@ export interface ContextMenuSchema extends MachineSchema {
     | { type: 'ITEM.LOST' }
     | { type: 'ITEM.SELECT', value: string, kind: MenuChoiceKind, group?: string, close: boolean }
   tag: never
-  guard: 'isOpenControlled' | 'movedBeyondTolerance' | 'canPressItem' | 'keepsMenuOpen'
+  guard: 'isOpenControlled' | 'movedBeyondTolerance' | 'canPressItem' | 'keepsMenuOpen' | 'isDisabled'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -259,11 +264,14 @@ export interface ContextMenuSchema extends MachineSchema {
     | 'selectChoice'
     | 'setCheckboxValue'
     | 'setRadioValue'
+    | 'closeWhenDisabled'
   effect: 'trackPosition' | 'trackLayer' | 'trackLongPress'
 }
 
 export interface ContextMenuApi<T extends PropTypes = PropTypes> {
   open: boolean
+  /** 整张菜单是否禁用。 */
+  disabled: boolean
   /** 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 */
   collection: readonly ContextMenuNodeMeta[]
   /** 长按计时进行中；触发区据此提供按压反馈。 */

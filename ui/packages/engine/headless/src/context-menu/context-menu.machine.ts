@@ -85,6 +85,8 @@ export const contextMenuMachine = createMachine({
   watch: ({ track, prop, context, action }) => {
     // 受控（open 给定）时用户事件只发意图、不自改状态，由这条 track 派发 CONTROLLED.* 回写
     track([() => prop('open')], () => action(['syncOpen']))
+    // 展开途中转为禁用：收起（受控时只发意图），按住的条目一并松开
+    track([() => prop('disabled')], () => action(['closeWhenDisabled']))
     // 展开期间坐标还会变（在别处再右键）：定位跟着坐标重挂，而层与焦点域原地不动。
     track([context.dep('point')], () => action(['reanchor']))
   },
@@ -101,15 +103,20 @@ export const contextMenuMachine = createMachine({
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知。
         // 坐标、落焦端、焦点归还策略先记进 context：受控时转移那一拍走 CONTROLLED.OPEN，读不到原事件
         'CONTEXT.MENU': [
+          { guard: 'isDisabled' },
           { guard: 'isOpenControlled', actions: ['setPoint', 'setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
           { target: 'open', actions: ['setPoint', 'setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
         ],
         'OPEN': [
+          { guard: 'isDisabled' },
           { guard: 'isOpenControlled', actions: ['setPoint', 'setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
           { target: 'open', actions: ['setPoint', 'setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
         ],
-        // 长按只是"开始计时"，此刻还什么都没发生：不发回调、不动坐标
-        'PRESS.START': { target: 'pressing', actions: ['setPressPoint'] },
+        // 长按只是"开始计时"，此刻还什么都没发生：不发回调、不动坐标；禁用时不计时
+        'PRESS.START': [
+          { guard: 'isDisabled' },
+          { target: 'pressing', actions: ['setPressPoint'] },
+        ],
         'CONTROLLED.OPEN': { target: 'open' },
       },
     },
@@ -118,6 +125,7 @@ export const contextMenuMachine = createMachine({
       effects: ['trackLongPress'],
       on: {
         'after.longPressDelay': [
+          { guard: 'isDisabled', target: 'closed' },
           { guard: 'isOpenControlled', actions: ['setPointFromPress', 'setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
           { target: 'open', actions: ['setPointFromPress', 'setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
         ],
@@ -126,6 +134,7 @@ export const contextMenuMachine = createMachine({
         'PRESS.END': { target: 'closed' },
         // 带鼠标的触摸设备上右键仍可直达，不必等长按走完
         'CONTEXT.MENU': [
+          { guard: 'isDisabled', target: 'closed' },
           { guard: 'isOpenControlled', actions: ['setPoint', 'setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
           { target: 'open', actions: ['setPoint', 'setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
         ],
@@ -166,6 +175,7 @@ export const contextMenuMachine = createMachine({
   implementations: {
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      isDisabled: ({ prop }) => !!prop('disabled'),
       // 条目自身的禁用由 connect 判定后随事件带入
       canPressItem: ({ event }) => {
         const e = event.current()
@@ -200,6 +210,15 @@ export const contextMenuMachine = createMachine({
           context.set('pressedValue', null)
       },
       releaseItemPress: ({ context }) => context.set('pressedValue', null),
+      closeWhenDisabled: ({ prop, context, state, send }) => {
+        if (!prop('disabled'))
+          return
+        context.set('pressedValue', null)
+        if (state.get() === 'open')
+          send({ type: 'CLOSE' })
+        else if (state.get() === 'pressing')
+          send({ type: 'PRESS.END' })
+      },
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       invokeOnSelect: ({ prop, event }) => {

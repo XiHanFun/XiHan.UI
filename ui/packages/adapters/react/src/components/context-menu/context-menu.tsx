@@ -79,6 +79,8 @@ export interface XhContextMenuRootProps extends Omit<ComponentPropsWithRef<'div'
   dir?: Direction
   /** 触摸与触控笔长按到弹出的毫秒数。 */
   longPressDelay?: number
+  /** 整张菜单禁用：不再展开，浏览器自己的右键菜单照常出现。 */
+  disabled?: boolean
   tone?: Tone
   size?: Size
   /** 触发区中放置的内容；只提供 collection 时由它承载。 */
@@ -111,6 +113,7 @@ export function XhContextMenuRoot({
   translations,
   dir,
   longPressDelay,
+  disabled,
   tone,
   size,
   trigger,
@@ -139,6 +142,7 @@ export function XhContextMenuRoot({
     translations,
     dir,
     longPressDelay,
+    disabled,
     tone,
     size,
     onOpenChange,

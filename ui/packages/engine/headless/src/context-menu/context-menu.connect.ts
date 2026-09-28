@@ -54,6 +54,8 @@ export function connectContextMenu<T extends PropTypes>(
   const loop = prop('loop') ?? true
   const dir = prop('dir')
   const typeaheadOn = prop('typeahead') ?? true
+  // 整张菜单禁用：触发区不再展开、不拦浏览器自己的右键菜单，条目全部禁用
+  const menuDisabled = !!prop('disabled')
 
   // collection 推出的条目元信息：显示文本、禁用、语气、标记位与分组都在这里定案，条目部件只报 value
   const collection: ContextMenuNodeMeta[] = (prop('collection') ?? []).map((node) => {
@@ -79,7 +81,7 @@ export function connectContextMenu<T extends PropTypes>(
 
   /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: ContextMenuItemProps): boolean =>
-    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+    menuDisabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
 
   /**
    * 条目语气：只认 collection 里这一条自己写的那族色，菜单级的 tone 不下发。
@@ -231,6 +233,7 @@ export function connectContextMenu<T extends PropTypes>(
 
   return {
     open,
+    disabled: menuDisabled,
     collection,
     pressing,
     point,
@@ -265,14 +268,19 @@ export function connectContextMenu<T extends PropTypes>(
     getTriggerProps: () => normalize.element({
       ...parts.trigger.attrs,
       'id': ids.trigger,
-      'aria-haspopup': 'menu',
-      'aria-controls': ids.content,
-      'aria-keyshortcuts': 'Shift+F10',
+      // 禁用时触发区不再是菜单入口：不报弹出、不占 Tab 位，右键交还浏览器
+      'aria-haspopup': menuDisabled ? undefined : 'menu',
+      'aria-controls': menuDisabled ? undefined : ids.content,
+      'aria-keyshortcuts': menuDisabled ? undefined : 'Shift+F10',
       // 区域上没有 Tab 位，Shift+F10 与 ContextMenu 键就送不到这里
-      'tabindex': 0,
+      'tabindex': menuDisabled ? undefined : 0,
       'data-state': stateAttr,
       'data-pressing': dataAttr(pressing),
+      'data-disabled': dataAttr(menuDisabled),
       'onContextMenu': (event: MouseEvent) => {
+        // 禁用时浏览器自己的右键菜单照常出现
+        if (menuDisabled)
+          return
         // 浏览器自带的右键菜单必须让位，否则两张菜单叠在一起。
         // 指针打开不预落锚点：菜单弹出那一刻不能有条目看着像被选中
         event.preventDefault()
@@ -306,7 +314,7 @@ export function connectContextMenu<T extends PropTypes>(
       'onKeyDown': (event: KeyboardEvent) => {
         // 菜单键与 Shift+F10 是右键的键盘等价物（Windows/Linux 桌面惯例）
         const menuKey = event.key === 'ContextMenu' || (event.key === 'F10' && event.shiftKey)
-        if (!menuKey)
+        if (!menuKey || menuDisabled)
           return
         event.preventDefault()
         // 键盘没有光标坐标，锚点取触发区自身的起始角；这一下读 DOM 发生在事件那一刻，不是连接期

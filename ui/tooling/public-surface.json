@@ -11506,6 +11506,7 @@
       "defaultOpen",
       "defaultRadioValue",
       "dir",
+      "disabled",
       "longPressDelay",
       "loop",
       "offset",
@@ -19169,6 +19170,7 @@
       "attributes": [
         "default-open",
         "dir",
+        "disabled",
         "long-press-delay",
         "loop",
         "offset",
