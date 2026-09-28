@@ -10667,6 +10667,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: var(--xh-_mention-gap);
     grid-area: 1 / 1;
     padding-block: var(--xh-mention-loading-py, var(--xh-space-3));
     padding-inline: var(--xh-mention-loading-px, var(--xh-_mention-item-px));
@@ -10680,9 +10681,24 @@
     display: none;
   }
 
+  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
+     直径取所在尺寸档的图标档 */
+  [data-scope='mention'][data-part='loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  }
+
   [data-scope='mention'][data-part='empty']:empty,
   [data-scope='mention'][data-part='loading']:empty {
     display: none;
+  }
+
+  /* 刷新：已有候选时后台在取，保留上一帧，候选按 micro 淡下，数据到了再淡回；在途占位此时让位。
+     淡的是候选不是面：content 是整块磨砂面，整块淡下去面就透了 */
+  [data-scope='mention'][data-part='content'][aria-busy='true'] [data-scope='mention'][data-part='item'] {
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* 手写结构可以把全部候选留在 DOM 里只加 hidden；没有可见 item 也没有状态文案时，
