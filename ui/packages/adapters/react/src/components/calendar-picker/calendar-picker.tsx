@@ -44,6 +44,8 @@ export interface XhCalendarPickerRootProps extends Omit<ComponentPropsWithRef<'d
   value?: string | string[]
   defaultValue?: string | string[]
   selectionMode?: CalendarPickerSelectionMode
+  /** multiple 下最多选几个周期；选满后没选中的格子不可再加选。 */
+  maxSelected?: number
   focusedValue?: string
   defaultFocusedValue?: string
   min?: string
@@ -79,6 +81,7 @@ export function XhCalendarPickerRoot({
   value,
   defaultValue,
   selectionMode,
+  maxSelected,
   focusedValue,
   defaultFocusedValue,
   min,
@@ -107,6 +110,7 @@ export function XhCalendarPickerRoot({
     value,
     defaultValue,
     selectionMode,
+    maxSelected,
     focusedValue,
     defaultFocusedValue,
     min,

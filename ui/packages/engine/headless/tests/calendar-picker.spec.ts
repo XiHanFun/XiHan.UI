@@ -906,6 +906,44 @@ describe('选中', () => {
     expect(h.grid.getAttribute('aria-multiselectable')).toBe('true')
   })
 
+  it('maxSelected：选满后没选中的格子转 aria-disabled、点击与确认键都加不进去，点掉一个即腾出名额', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15', selectionMode: 'multiple', maxSelected: 2 })
+    expect(h.api().maxSelected).toBe(2)
+    click(h.cell('2024-02-15'))
+    click(h.cell('2024-02-20'))
+    expect(h.value()).toEqual(['2024-02-15', '2024-02-20'])
+    expect(h.cell('2024-02-16').getAttribute('aria-disabled')).toBe('true')
+    expect(h.cell('2024-02-16').hasAttribute('data-disabled')).toBe(true)
+    expect(h.cell('2024-02-15').getAttribute('aria-disabled')).toBe('false')
+    expect(h.api().isUnavailable('2024-02-16')).toBe(true)
+    click(h.cell('2024-02-16'))
+    h.api().focus('2024-02-16')
+    press(h.cell('2024-02-16'), 'Enter')
+    // 公开的 select 同样加不进去：上限拦在机器里，不只是格子的禁用面
+    h.api().select('2024-02-17')
+    expect(h.value()).toEqual(['2024-02-15', '2024-02-20'])
+    click(h.cell('2024-02-15'))
+    expect(h.value()).toEqual(['2024-02-20'])
+    expect(h.cell('2024-02-16').getAttribute('aria-disabled')).toBe('false')
+    click(h.cell('2024-02-16'))
+    expect(h.value()).toEqual(['2024-02-16', '2024-02-20'])
+  })
+
+  it('maxSelected：setValue 与受控 value 原样收下；single 下与写坏的上限都不生效', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15', selectionMode: 'multiple', maxSelected: 1 })
+    h.api().setValue(['2024-02-15', '2024-02-16'])
+    expect(h.value()).toEqual(['2024-02-15', '2024-02-16'])
+    expect(h.cell('2024-02-17').getAttribute('aria-disabled')).toBe('true')
+    const single = mount({ defaultFocusedValue: '2024-02-15', maxSelected: 1, defaultValue: '2024-02-15' })
+    expect(single.api().maxSelected).toBeNull()
+    click(single.cell('2024-02-20'))
+    expect(single.value()).toEqual(['2024-02-20'])
+    const broken = mount({ defaultFocusedValue: '2024-02-15', selectionMode: 'multiple', maxSelected: 0 })
+    expect(broken.api().maxSelected).toBeNull()
+    const fractional = mount({ defaultFocusedValue: '2024-02-15', selectionMode: 'multiple', maxSelected: 2.9 })
+    expect(fractional.api().maxSelected).toBe(2)
+  })
+
   it('min/max 之外与作者判定不可用的日子点不动、确认键也不认', () => {
     const h = mount({
       defaultFocusedValue: '2024-02-15',

@@ -46,6 +46,12 @@ export type CalendarPickerPressedKey
 export interface CalendarPickerSchema extends MachineSchema {
   props: CalendarBaseProps & {
     selectionMode?: CalendarPickerSelectionMode
+    /**
+     * multiple 下最多选几个周期。选满后没选中的格子转 aria-disabled（仍可聚焦），点击与确认键都加不进去；
+     * 已选的照旧可以点掉，点掉一个即腾出名额。只拦用户这一路的加选，setValue 与受控 value 原样收下。
+     * 非整数向下取整，小于 1 或不是有限数时不设上限；single 下不生效。
+     */
+    maxSelected?: number
     /** 作者提供的不可用判定，接收 ISO 串。返回真的日期与界外日期同等处理。 */
     isDateUnavailable?: (value: string) => boolean
     translations?: Partial<CalendarPickerTranslations>
@@ -87,4 +93,6 @@ export interface CalendarPickerSchema extends MachineSchema {
 
 export interface CalendarPickerApi<T extends PropTypes = PropTypes> extends CalendarBaseApi<T> {
   selectionMode: CalendarPickerSelectionMode
+  /** 实际生效的多选上限；single 或没设上限时为 null。 */
+  maxSelected: number | null
 }

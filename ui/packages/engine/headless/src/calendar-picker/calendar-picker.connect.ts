@@ -11,6 +11,7 @@ import type { CalendarPickerApi, CalendarPickerPressedKey, CalendarPickerSchema,
 import { createPressTracker, dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { createCalendarFrame } from '../shared/calendar'
 import { calendarPickerAnatomy } from './calendar-picker.anatomy'
+import { calendarPickerMaxSelected } from './calendar-picker.machine'
 
 const parts = calendarPickerAnatomy.build()
 
@@ -30,6 +31,7 @@ export function connectCalendarPicker<T extends PropTypes>(
   const { periodAt, focusedValue, view, disabled: calendarDisabled, readOnly } = frame
 
   const mode = prop('selectionMode') ?? 'single'
+  const maxSelected = calendarPickerMaxSelected(prop('maxSelected'), mode)
   const value = context.get('value')
   const isDateUnavailable = prop('isDateUnavailable')
   const invalid = !!prop('invalid')
@@ -38,20 +40,22 @@ export function connectCalendarPicker<T extends PropTypes>(
   const blockedBy = (period: CalendarPeriod): boolean =>
     frame.boundsBlocked(period) || !!isDateUnavailable?.(period.start)
 
-  /** 一格可不可选。禁用的日历下恒不可选。 */
-  const isUnavailable = (v: string): boolean => {
-    if (calendarDisabled)
-      return true
-    const period = periodAt(v)
-    return !period || blockedBy(period)
-  }
-
   const selectedStarts = value
     .map(v => periodAt(v)?.start)
     .filter((v): v is string => v != null)
   const isSelected = (v: string): boolean => {
     const period = periodAt(v)
     return !!period && selectedStarts.includes(period.start)
+  }
+  /** 多选已到上限：没选中的格子加不进去，选中的仍能点掉。 */
+  const full = maxSelected != null && value.length >= maxSelected
+
+  /** 一格可不可选。禁用的日历下恒不可选；多选选满时没选中的格子也不可选。 */
+  const isUnavailable = (v: string): boolean => {
+    if (calendarDisabled)
+      return true
+    const period = periodAt(v)
+    return !period || blockedBy(period) || (full && !selectedStarts.includes(period.start))
   }
 
   /** 一格的派生状态：骨架那份之上加选中。 */
@@ -103,6 +107,7 @@ export function connectCalendarPicker<T extends PropTypes>(
   return {
     value,
     selectionMode: mode,
+    maxSelected,
     focusedValue,
     panels: frame.panels,
     visibleMonth: { year: frame.grid.year, month: frame.grid.month, startValue: frame.grid.startValue },
