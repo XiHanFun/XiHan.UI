@@ -42,6 +42,12 @@ open 与 index 双受控；translations 更换工具条的可及名与计数文�
 
 <XhDemo src="image-viewer/04-gesture" />
 
+### 缩略图条与下载
+
+浮层里自己放一排缩略图跳到任一张、一个下载按钮存下当前这张：两者都只读写 index，与翻页同一份状态
+
+<XhDemo src="image-viewer/05-strip-download" />
+
 ## 设计指引
 
 ### 何时使用
