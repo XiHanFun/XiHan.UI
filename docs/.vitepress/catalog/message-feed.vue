@@ -1,21 +1,13 @@
-<script setup lang="ts">
-import { XhMessageFeedItem, XhMessageFeedItemLabel, XhMessageFeedList, XhMessageFeedRoot, XhMessageFeedViewport } from "@xihan-ui/vue";
-
-const messages = [
-  { id: "m1", role: "user" as const, who: "我", text: "这个组件负责什么？" },
-  { id: "m2", role: "assistant" as const, who: "助手", text: "集合语义、粘底跟随与统一播报区。" },
-];
-</script>
-
 <template>
-  <XhMessageFeedRoot :count="messages.length" style="inline-size: var(--xh-doc-catalog-w); block-size: var(--xh-doc-catalog-h)">
-    <XhMessageFeedViewport>
-      <XhMessageFeedList>
-        <XhMessageFeedItem v-for="(message, index) in messages" :key="message.id" :item-id="message.id" :item-index="index" :item-role="message.role">
-          <XhMessageFeedItemLabel>{{ message.who }}</XhMessageFeedItemLabel>
-          <div>{{ message.text }}</div>
-        </XhMessageFeedItem>
-      </XhMessageFeedList>
-    </XhMessageFeedViewport>
-  </XhMessageFeedRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M190 20h16" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <rect x="88" y="28" width="128" height="32" rx="12" fill="var(--xh-bg-subtle)" />
+    <path d="M103 44h98" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <circle cx="34" cy="78" r="10" fill="var(--xh-bg-brand-subtle)" />
+    <path d="M34 72q1 5 6 6q-5 1-6 6q-1-5-6-6q5-1 6-6z" stroke="var(--xh-fg-on-brand-subtle)" stroke-width="2" />
+    <path d="M54 76h152M54 88h136M54 100h92" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <rect x="120" y="112" width="96" height="28" rx="12" fill="var(--xh-bg-subtle)" />
+    <path d="M135 126h66" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <circle cx="38" cy="140" r="4" fill="var(--xh-fg-brand)" />
+  </svg>
 </template>

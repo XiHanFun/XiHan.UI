@@ -1,50 +1,17 @@
-<script setup lang="ts">
-import type { QuestionFlowQuestion } from "@xihan-ui/headless";
-import {
-  XhQuestionFlowCounter,
-  XhQuestionFlowFooter,
-  XhQuestionFlowGroup,
-  XhQuestionFlowItem,
-  XhQuestionFlowItemIndicator,
-  XhQuestionFlowItemText,
-  XhQuestionFlowLiveRegion,
-  XhQuestionFlowNextTrigger,
-  XhQuestionFlowPrevTrigger,
-  XhQuestionFlowPrompt,
-  XhQuestionFlowQuestion,
-  XhQuestionFlowRoot,
-  XhQuestionFlowTrack,
-  XhQuestionFlowViewport,
-} from "@xihan-ui/vue";
-
-const questions: QuestionFlowQuestion[] = [
-  { id: "scope", prompt: "这次改动动到哪一层？", type: "single", options: [{ value: "ui", label: "只改界面" }, { value: "api", label: "改到接口" }] },
-  { id: "branch", prompt: "落到哪条分支？", type: "single", options: [{ value: "main", label: "主干" }, { value: "feature", label: "特性分支" }] },
-];
-</script>
-
 <template>
-  <XhQuestionFlowRoot :questions="questions" style="inline-size: var(--xh-doc-catalog-w)">
-    <XhQuestionFlowViewport>
-      <XhQuestionFlowTrack>
-        <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
-          <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
-          <XhQuestionFlowGroup :question-id="question.id">
-            <XhQuestionFlowItem v-for="option in question.options" :key="option.value" :question-id="question.id" :option-value="option.value">
-              <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
-              <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">{{ option.label }}</XhQuestionFlowItemText>
-            </XhQuestionFlowItem>
-          </XhQuestionFlowGroup>
-        </XhQuestionFlowQuestion>
-      </XhQuestionFlowTrack>
-    </XhQuestionFlowViewport>
-    <XhQuestionFlowFooter>
-      <div style="display: flex; align-items: center; gap: var(--xh-space-1)">
-        <XhQuestionFlowPrevTrigger />
-        <XhQuestionFlowCounter />
-        <XhQuestionFlowNextTrigger />
-      </div>
-    </XhQuestionFlowFooter>
-    <XhQuestionFlowLiveRegion />
-  </XhQuestionFlowRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="28.5" y="16.5" width="183" height="127" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M47 36h106" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <circle cx="52" cy="60" r="7.5" stroke="var(--xh-border-control)" />
+    <path d="M71 60h58" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <circle cx="52" cy="84" r="7.5" stroke="var(--xh-fg-brand)" />
+    <circle cx="52" cy="84" r="4" fill="var(--xh-bg-brand)" />
+    <path d="M71 84h74" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M28 103.5h184" stroke="var(--xh-border-subtle)" />
+    <path d="M50 120l-4 4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M64 124h16" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M92 120l4 4-4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <rect x="148" y="112" width="48" height="24" rx="4" fill="var(--xh-bg-brand)" />
+    <path d="M162 124h20" stroke="var(--xh-fg-on-brand)" stroke-width="4" />
+  </svg>
 </template>

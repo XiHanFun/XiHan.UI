@@ -1,16 +1,11 @@
-<script setup lang="ts">
-import { XhReasoningContent, XhReasoningIndicator, XhReasoningLabel, XhReasoningRoot, XhReasoningTrigger } from "@xihan-ui/vue";
-
-// 已经想完的一段：起止时刻钉死，标签上恒显示同一句
-const translations = { label: "思考过程", thinking: "正在思考…", thoughtFor: "想了 {seconds} 秒" };
-</script>
-
 <template>
-  <XhReasoningRoot :streaming="false" :start-time="1_000" :end-time="4_000" :translations="translations" default-open style="inline-size: var(--xh-doc-catalog-w)">
-    <XhReasoningTrigger>
-      <XhReasoningIndicator />
-      <XhReasoningLabel />
-    </XhReasoningTrigger>
-    <XhReasoningContent>先看约束：只读一次文件，别改它。再看目标：找出导出面。</XhReasoningContent>
-  </XhReasoningRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="24.5" y="28.5" width="191" height="103" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M44 42q1 5 6 6q-5 1-6 6q-1-5-6-6q5-1 6-6z" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M61 48h58" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M130 48h20" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M192 50l4-4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M41 68v48" stroke="var(--xh-border-default)" stroke-width="2" />
+    <path d="M54 76h136M54 88h144M54 100h100" stroke="var(--xh-fg-muted)" stroke-width="4" />
+  </svg>
 </template>
