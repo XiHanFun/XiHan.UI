@@ -1058,6 +1058,9 @@
       "code-view",
       "diff-view"
     ],
+    "line-fold-trigger": [
+      "code-view"
+    ],
     "line-number": [
       "code-view",
       "diff-view"

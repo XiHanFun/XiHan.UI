@@ -13716,6 +13716,34 @@
       "description": "code-view 的 fold-trigger 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-code-view-fold-col",
+      "component": "code-view",
+      "part": [
+        "line-content",
+        "line-fold-trigger",
+        "root"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "min-block-size",
+        "min-inline-size",
+        "padding-inline-start"
+      ],
+      "state": [
+        "block-folding",
+        "line-numbers",
+        "not([data-line-numbers])",
+        "xh-action-profile=disclosure-trigger",
+        "xh-action-profile=icon"
+      ],
+      "defaultToken": [
+        "--xh-code-view-line-height"
+      ],
+      "visibility": "public",
+      "description": "code-view 的 line-content、line-fold-trigger、root 部件 block-size、inline-size、min-block-size、min-inline-size、padding-inline-start 覆盖槽。"
+    },
+    {
       "name": "--xh-code-view-fold-fg",
       "component": "code-view",
       "part": [
@@ -13750,6 +13778,42 @@
       ],
       "visibility": "public",
       "description": "code-view 的 fold-trigger 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-code-view-folded-fg",
+      "component": "code-view",
+      "part": [
+        "line-content"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "folded"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "code-view 的 line-content 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-code-view-folded-gap",
+      "component": "code-view",
+      "part": [
+        "line-content"
+      ],
+      "property": [
+        "margin-inline-start"
+      ],
+      "state": [
+        "folded"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "code-view 的 line-content 部件 margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-code-view-font",
@@ -14020,6 +14084,24 @@
       "description": "code-view 的 line 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-code-view-icon-size",
+      "component": "code-view",
+      "part": [
+        "line-fold-trigger"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "code-view 的 line-fold-trigger 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
       "name": "--xh-code-view-keyword-fg",
       "component": "code-view",
       "part": [
@@ -14092,24 +14174,72 @@
       "description": "code-view 的 lang-label 部件 font-size 覆盖槽。"
     },
     {
-      "name": "--xh-code-view-line-height",
+      "name": "--xh-code-view-line-fold-trigger-fg",
       "component": "code-view",
       "part": [
-        "line",
-        "pre"
+        "line-fold-trigger"
       ],
       "property": [
-        "line-height",
-        "min-block-size"
+        "color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "code-view 的 line-fold-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-code-view-line-fold-trigger-radius",
+      "component": "code-view",
+      "part": [
+        "line-fold-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "code-view 的 line-fold-trigger 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-code-view-line-height",
+      "component": "code-view",
+      "part": [
+        "line",
+        "line-content",
+        "line-fold-trigger",
+        "pre",
+        "root"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "line-height",
+        "min-block-size",
+        "min-inline-size",
+        "padding-inline-start"
+      ],
+      "state": [
+        "block-folding",
+        "default",
+        "line-numbers",
+        "not([data-line-numbers])",
+        "xh-action-profile=disclosure-trigger",
+        "xh-action-profile=icon"
+      ],
+      "defaultToken": [
         "--xh-text-code-leading"
       ],
       "visibility": "public",
-      "description": "code-view 的 line、pre 部件 line-height、min-block-size 覆盖槽。"
+      "description": "code-view 的 line、line-content、line-fold-trigger、pre、root 部件 block-size、inline-size、line-height、min-block-size、min-inline-size、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-code-view-number-fg",
@@ -14190,15 +14320,18 @@
         "fold-trigger",
         "line",
         "line-content",
+        "line-fold-trigger",
         "line-number",
         "root"
       ],
       "property": [
+        "inset-inline-start",
         "padding-inline",
         "padding-inline-end",
         "padding-inline-start"
       ],
       "state": [
+        "block-folding",
         "default",
         "line-numbers",
         "not([data-line-numbers])"
@@ -14207,7 +14340,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "code-view 的 fold-trigger、line、line-content、line-number、root 部件 padding-inline、padding-inline-end、padding-inline-start 覆盖槽。"
+      "description": "code-view 的 fold-trigger、line、line-content、line-fold-trigger、line-number、root 部件 inset-inline-start、padding-inline、padding-inline-end、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-code-view-py",

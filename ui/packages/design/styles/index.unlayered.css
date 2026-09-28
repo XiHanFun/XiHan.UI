@@ -22568,6 +22568,75 @@
   display: none;
 }
 
+/* 按块折叠：每行正文都让出一列（一行高的正方格），块头的折叠钮定位在这一列里；
+   没有钮的行也让，缩进才对得齐 */
+[data-scope='code-view'][data-part='root'][data-block-folding] {
+  --xh-_code-view-fold-col: var(--xh-code-view-fold-col, var(--xh-code-view-line-height, var(--xh-text-code-leading)));
+}
+
+[data-scope='code-view'][data-part='root'][data-block-folding] [data-part='line-content'] {
+  position: relative;
+  padding-inline-start: var(--xh-_code-view-fold-col);
+}
+
+[data-scope='code-view'][data-part='root'][data-block-folding]:not([data-line-numbers]) [data-part='line-content'] {
+  padding-inline-start: calc(var(--xh-code-view-px, var(--xh-space-3)) + var(--xh-_code-view-fold-col));
+}
+
+/* 行首折叠钮是 disclosure trigger：接 Action Control icon 档、ghost 形态，边长压到一行高，
+   按下只换面不缩放；静息取次级字色，不和正文抢 */
+[data-scope='code-view'][data-part='line-fold-trigger'] {
+  --xh-action-visual-size: var(--xh-_code-view-fold-col);
+  --xh-action-min-inline-size: var(--xh-_code-view-fold-col);
+  --xh-action-radius: var(--xh-code-view-line-fold-trigger-radius, var(--xh-shape-control));
+  --xh-action-fg-rest: var(--xh-code-view-line-fold-trigger-fg, var(--xh-fg-subtle));
+  --xh-action-scale-pressed: none;
+  --xh-icon-size: var(--xh-code-view-icon-size, var(--xh-glyph-size-sm));
+
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  block-size: var(--xh-_code-view-fold-col);
+}
+
+[data-scope='code-view'][data-part='root'][data-block-folding]:not([data-line-numbers]) [data-part='line-fold-trigger'] {
+  inset-inline-start: var(--xh-code-view-px, var(--xh-space-3));
+}
+
+[data-scope='code-view'][data-part='line-fold-trigger'][hidden] {
+  display: none;
+}
+
+/* 展开时朝下；收起时转向行尾那一侧（RTL 跟着换向） */
+[data-scope='code-view'][data-part='line-fold-trigger']::before {
+  content: '';
+  display: block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
+}
+
+[data-scope='code-view'][data-part='line-fold-trigger'][data-state='closed']::before {
+  rotate: calc(-90deg * var(--xh-direction-sign));
+  transition-duration: var(--xh-motion-duration-collapse);
+}
+
+/* 折叠着的块头：正文后面一枚省略号，示意下面收起了几行；画上去的，复制不带它 */
+[data-scope='code-view'][data-part='line-content'][data-folded]::after {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+  margin-inline-start: var(--xh-code-view-folded-gap, var(--xh-space-1));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: var(--xh-code-view-folded-fg, var(--xh-fg-subtle));
+  -webkit-mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
+}
+
 /* 尺寸档写私有槽、由 root 基础规则消费一次：缺省与阶梯是同一个口子，
    作者设的 --xh-code-view-font-size 排在读处首选，不会被这三条盖掉。
    行号槽宽以 ch 计，随字号一起走 */

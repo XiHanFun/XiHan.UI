@@ -51,6 +51,14 @@ export interface XhCodeViewRootProps extends RootElementProps {
   clamp?: number
   /** 折叠态，纯受控：没有 defaultClamped，需要非受控时包裹 collapsible。 */
   clamped?: boolean
+  /** 按缩进找出语法块，块头那一行的行首给一颗折叠钮，默认关闭。 */
+  blockFolding?: boolean
+  /** 折叠着的语法块，写块头的行号；受控。 */
+  folded?: readonly number[]
+  /** 非受控时一开始就折叠着的块。 */
+  defaultFolded?: readonly number[]
+  /** 语法块的折叠集合变化。 */
+  onFoldedChange?: CodeViewProps['onFoldedChange']
   /** 替换着色实现（典型是接入 Shiki）；显式传 null 则关闭着色。 */
   highlighter?: HighlighterPort | null
   /** 块尚未闭合时也着色，默认关闭。 */
@@ -74,6 +82,10 @@ export function XhCodeViewRoot({
   highlightLines,
   clamp,
   clamped,
+  blockFolding,
+  folded,
+  defaultFolded,
+  onFoldedChange,
   highlighter,
   highlightWhileStreaming,
   size,
@@ -93,6 +105,10 @@ export function XhCodeViewRoot({
     highlightLines,
     clamp,
     clamped,
+    blockFolding,
+    folded,
+    defaultFolded,
+    onFoldedChange,
     highlightWhileStreaming,
     size,
     translations,
@@ -121,7 +137,7 @@ export function XhCodeViewRoot({
   )
 }
 
-XhCodeViewRoot.xhEvents = ['clamp-toggle'] as const
+XhCodeViewRoot.xhEvents = ['clamp-toggle', 'folded-change'] as const
 
 export interface XhCodeViewHeaderProps extends ComponentPropsWithRef<'div'> {}
 export function XhCodeViewHeader({ children, ...rest }: XhCodeViewHeaderProps): ReactNode {
@@ -177,6 +193,8 @@ export function XhCodeViewCode({ children, ...rest }: XhCodeViewCodeProps): Reac
           {/* 行号槽不开就不建节点，两个适配器同一条判据 */}
           {api.lineNumbers ? <span {...api.getLineNumberProps({ index }) as Record<string, unknown>} /> : null}
           <span {...api.getLineContentProps({ index }) as Record<string, unknown>}>
+            {/* 块头的折叠钮放在正文最前面，由皮肤定位到正文让出的那一列里；不是块头的行不建 */}
+            {api.isFoldStart(index) ? <button {...api.getLineFoldTriggerProps({ index }) as Record<string, unknown>} /> : null}
             {children === undefined
               // 没有着色结果就一个文本节点，别平白多包一层 span
               ? (line.tokens.length === 0
