@@ -8444,6 +8444,7 @@
       "resolveAspectRatio",
       "resolveAutoplayInterval",
       "resolveBackTopVisibilityHeight",
+      "resolveCascaderCollection",
       "resolveCheckboxGroupLimits",
       "resolveCheckedState",
       "resolveClipboardTimeout",

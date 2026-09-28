@@ -2727,8 +2727,8 @@
   transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
-/* 新选中的标签原地弹出，同一批按到达顺序错开；首帧就在的直接呈现。+N 那一枚不是到达的条目，不播 */
-[data-scope][data-xh-tag-list] > [data-scope='tag'][data-part='root'][data-value]:not([data-instant], [data-state='closed']) {
+/* 新选中的标签原地弹出，同一批按到达顺序错开；首帧就在的直接呈现（列表动效接上之前行带 data-instant）。+N 那一枚不是到达的条目，不播 */
+[data-scope][data-xh-tag-list]:not([data-instant]) > [data-scope='tag'][data-part='root'][data-value]:not([data-instant], [data-state='closed']) {
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
 }
@@ -36905,32 +36905,6 @@
    value-text 留在 DOM 里，trigger 的可及名仍从它取到完整的选中项文本 */
 [data-scope='select'][data-part='trigger']:has([data-part='tag-list']:not([hidden])) [data-part='value-text'] {
   display: none;
-}
-
-/* 行里的标签：行装不下时各自缩短，截断落在 tag 自己的 label 上；弹性子项默认最小尺寸是内容尺寸，
-   不归零则长标签把行撑破、省略号永远轮不到。+N 那一枚（带 data-count）不缩，始终完整可见。
-   标签里的删除钮是 tag 的 close-trigger，样子全归 tag.css，这里不画 */
-[data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'] {
-  flex: 0 1 auto;
-  min-inline-size: 0;
-  /* 选中、取消选中一枚时，其余标签由列表动效先反向补偿、再沿这条滑到新位置 */
-  transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
-}
-
-/* 新选中的标签原地弹出（横排胶囊不用竖向上浮，会探出触发器底边），同一批按到达顺序错开；
-   首帧就在的直接呈现。+N 那一枚不是到达的条目，不播 */
-[data-scope='select'][data-part='tag-list']:not([data-instant]) > [data-scope='tag'][data-part='root'][data-value]:not([data-instant], [data-state='closed']) {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
-  animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
-}
-
-/* 取消选中的标签：替身留在原处淡出，播完即移除 */
-[data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'][data-state='closed'] {
-  animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-}
-
-[data-scope='select'][data-part='tag-list'] > [data-scope='tag'][data-part='root'][data-count] {
-  flex: none;
 }
 
 /* 环画在盒上，按钮自己不再画：两圈套着的环读起来像两个控件 */

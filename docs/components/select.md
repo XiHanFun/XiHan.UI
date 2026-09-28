@@ -476,6 +476,7 @@ outline、subtle 和 ghost
 | `clear-trigger` | `data-xh-action-variant` | 'ghost' |
 | `tag-list` | `data-disabled` | ''（条件成立时才出现） |
 | `tag-list` | `data-instant` | ''（条件成立时才出现） |
+| `tag-list` | `data-xh-tag-list` | '' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
