@@ -33,6 +33,35 @@ export interface MarkdownBlock {
   readonly lang?: string
   /** 块正文原文，仅 code 与 math 块有。 */
   readonly source?: string
+  /** 块正文里的行内挂点（行内引用与行内公式），按在 html 里出现的先后排；没有时缺席。 */
+  readonly inlines?: readonly MarkdownInline[]
+}
+
+/**
+ * 一个行内挂点，与 `@xihan-ui/markdown` 的 `RenderedInline` 逐字同形。
+ *
+ * - citation：正文里 `[@来源]` / `[@甲; @乙]` 写成的行内引用。
+ * - math：`$…$` 行内公式；行内写的 `$$…$$` 记 display。
+ */
+export type MarkdownInline
+  = | { readonly kind: 'citation', readonly sourceIds: readonly string[] }
+    | { readonly kind: 'math', readonly source: string, readonly display: boolean }
+
+/**
+ * 占位节点上写挂点下标的属性名，与 `@xihan-ui/markdown` 产出的 html 逐字相同。
+ * 占位节点里放着降级内容（引用写来源 id，公式写 TeX 原文）。
+ */
+export const MARKDOWN_INLINE_ATTR = 'data-md-inline'
+
+/** 一处要接管的行内挂点：占位节点、所在块与它在块里的下标。 */
+export interface MarkdownInlineMount {
+  /** 稳定身份：块 key 加块内下标。块定型后不变，生长块里随内容走。 */
+  readonly key: string
+  readonly element: HTMLElement
+  readonly block: MarkdownBlock
+  /** 该挂点在块内的 0 基下标。 */
+  readonly index: number
+  readonly inline: MarkdownInline
 }
 
 export interface MarkdownStreamProps {

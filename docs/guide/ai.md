@@ -137,7 +137,7 @@ const renderer = createStreamRenderer();
 
 // 幂等：传入截至当前的全文，返回带稳定 key 的块列表
 const blocks = renderer.render(fullText, { ended: false });
-// [{ key, kind: 'markdown' | 'code' | 'math' | 'html', html, complete, lang, source }]
+// [{ key, kind: 'markdown' | 'code' | 'math' | 'html', html, complete, lang, source, inlines }]
 ```
 
 两条设计要点：
@@ -151,6 +151,16 @@ const blocks = renderer.render(fullText, { ended: false });
 `complete` 标记该块是否已闭合。未闭合的块随时会变，宿主据此决定是否执行高亮这类昂贵渲染。
 
 `html` 一律已消毒，可以直接插入 DOM。渲染器只暴露这一个工厂，中间态（解析结果、切块、冻结缓存）一概不暴露：暴露后消费方迟早会绕过缓存直接修改块，增量渲染的保证随之失效。
+
+生长块不露原始符号。还在生长的最后一块做行内容错：没写完的 `**粗` 先按闭合显示成粗体，开符号后面还没有字时先不显示；写到一半的链接只显示文字，图片、行内引用与脚注写到一半时整段先不显示。块定型或流结束（`ended`）后按原文严格解析。
+
+GFM 扩展：任务列表、脚注与裸地址自动成链。脚注锚点 id 带前缀，同一页上几条消息各传一个 `idPrefix`；要严格按 CommonMark 渲染时传 `bareLinks: false`。
+
+```ts
+const renderer = createStreamRenderer({ idPrefix: `${message.id}-` });
+```
+
+行内挂点：正文里的 `[@来源]`（一处多源 `[@甲; @乙]`）与 `$…$` 公式渲成带 `data-md-inline` 的占位节点，块的 `inlines` 按出现先后给出 `{ kind: 'citation', sourceIds }` 或 `{ kind: 'math', source, display }`。[流式正文](../components/markdown-stream)组件的 `citation` / `math` 插槽把引用角标与公式引擎的产物渲进占位节点。
 
 ::: tip CommonMark 覆盖面
 实现的是 CommonMark 的一个子集，官方用例通过 489/652。仓库中有一道一致率棘轮监测这个数字，只允许上升不允许下降。

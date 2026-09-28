@@ -9,7 +9,7 @@ export interface BlockRange {
   readonly endLine: number
 }
 
-export type BlockType = 'code' | 'indented-code' | 'math' | 'heading' | 'setext' | 'thematic' | 'quote' | 'list' | 'table' | 'paragraph'
+export type BlockType = 'code' | 'indented-code' | 'math' | 'heading' | 'setext' | 'thematic' | 'quote' | 'list' | 'table' | 'footnote' | 'paragraph'
 
 /**
  * Setext 下划线：整行只有等号或只有短横。
@@ -76,6 +76,8 @@ const ATX_HEADING = /^ {0,3}#{1,6}(?:\s|$)/
 /** 分隔线：三个星号、三个以上短横或下划线、或标记之间带空格的写法。 */
 const THEMATIC_BREAK = /^ {0,3}(?:\*{3}|-{3,}|_{3,}|(?:([*\-_])[ \t]+){2,}\1)[ \t]*$/
 const BLOCK_QUOTE = /^ {0,3}>/
+/** 脚注定义的起始行。 */
+const FOOTNOTE_DEF = /^ {0,3}\[\^[^\]\s]+\]:/
 /** 表格分隔行的单元格：可带对齐冒号的一串短横。 */
 const DELIM_CELL = /^:?-+:?$/
 
@@ -139,6 +141,8 @@ function typeAt(lines: readonly string[], index: number): BlockType {
     return 'quote'
   if (LIST_ITEM.test(line))
     return 'list'
+  if (FOOTNOTE_DEF.test(line))
+    return 'footnote'
   if (isTableHead(lines, index))
     return 'table'
   return 'paragraph'

@@ -5,14 +5,16 @@
 
 // 提供 renderer 相关实现。
 
-import type { LinkDef, LinkDefs } from './refs'
-import type { RenderedBlock, RenderOpts, StreamRenderer } from './types'
+import type { RenderContext } from './context'
+import type { LinkDef } from './refs'
+import type { RenderedBlock, RenderOpts, StreamRenderer, StreamRendererOptions } from './types'
 import { blockKind, fenceBody, fenceLang, isFenceClosed, mathBody } from './blocks'
 import { unescapeBackslash } from './escape'
 import { cheapHash } from './hash'
 import { blockDefinitions, normalizeLabel, splitDefinitions } from './refs'
 import { renderBlockHtml } from './render'
 import { topLevelRanges } from './scan'
+import { tolerateTail } from './tail'
 import { LIVE_BLOCK_KEY } from './types'
 
 /** 超过这个长度的标签查不到定义，不必收。 */
@@ -22,7 +24,12 @@ const MAX_LABEL = 999
 interface FrozenBlock {
   readonly src: string
   block: RenderedBlock
+  /** 在这一块里首次出现的脚注标签：重渲时它们的角标仍要带回链找的 id。 */
+  readonly firstRefs: ReadonlySet<string>
 }
+
+/** 一块渲染所需的共享状态：定义表、扩展开关与脚注编号。 */
+type BlockState = Omit<RenderContext, 'inlines'>
 
 /** 只有 code 与 math 两种块带正文原文，其余块的 html 就是全部产出。 */
 function blockSource(kind: 'markdown' | 'code' | 'math', src: string): string | undefined {
@@ -31,10 +38,17 @@ function blockSource(kind: 'markdown' | 'code' | 'math', src: string): string | 
   return kind === 'math' ? mathBody(src) : undefined
 }
 
-function renderBlock(src: string, defs: LinkDefs, key: string, complete: boolean): RenderedBlock {
+/**
+ * 渲一块。live 为真是还在生长的最后一块：行尾没写完的行内标记先按闭合处理（见 tail.ts），
+ * 块的种类与正文原文仍按原文算。
+ */
+function renderBlock(src: string, state: BlockState, key: string, complete: boolean, live = false): RenderedBlock {
   const kind = blockKind(src)
   const lang = kind === 'code' ? fenceLang(src) : undefined
-  return { key, kind, html: renderBlockHtml(src, defs), complete, lang, source: blockSource(kind, src) }
+  const ctx: RenderContext = { ...state, inlines: [] }
+  const html = renderBlockHtml(live ? tolerateTail(src) : src, ctx)
+  const block: RenderedBlock = { key, kind, html, complete, lang, source: blockSource(kind, src) }
+  return ctx.inlines.length === 0 ? block : { ...block, inlines: ctx.inlines }
 }
 
 /** 取块正文里每一对方括号的内容，即这块可能拿去查定义表的标签。 */
@@ -74,12 +88,17 @@ function refLabels(src: string): ReadonlySet<string> {
  * 全文若不是上一轮全文的延长（宿主换了一整段、或者重放了另一条消息），整个缓存连同定义表一起
  * 作废重来。宁可白扔一次缓存，也不能拿另一条消息的块或者链接目标糊在这条上。
  */
-export function createStreamRenderer(): StreamRenderer {
+export function createStreamRenderer(options: StreamRendererOptions = {}): StreamRenderer {
+  const bareLinks = options.bareLinks !== false
+  const idPrefix = options.idPrefix ?? 'md-'
   let frozen: FrozenBlock[] = []
   let frozenLineCount = 0
   /** 标签到引用了它的冻结块下标。 */
   let frozenByLabel = new Map<string, number[]>()
   let defs = new Map<string, LinkDef>()
+  /** 冻结块里分出去的脚注序号与出过角标的标签；尾段每轮在它们的副本上接着分。 */
+  let footnotes = new Map<string, number>()
+  let referenced = new Set<string>()
   /** 上一轮的全文与它带的结束标记。 */
   let lastText = ''
   let lastEnded = false
@@ -90,7 +109,12 @@ export function createStreamRenderer(): StreamRenderer {
     frozenLineCount = 0
     frozenByLabel = new Map()
     defs = new Map()
+    footnotes = new Map()
+    referenced = new Set()
   }
+
+  /** 冻结块共用的渲染状态：脚注编号直接记进冻结表。 */
+  const frozenState = (): BlockState => ({ defs, bareLinks, idPrefix, footnotes, referenced })
 
   /**
    * 收下这一轮尾段里的引用定义，返回每个标签在收之前的取值。
@@ -119,7 +143,9 @@ export function createStreamRenderer(): StreamRenderer {
         continue
       for (const index of targets) {
         const entry = frozen[index]!
-        entry.block = renderBlock(entry.src, defs, entry.block.key, true)
+        // 这块首次引用的脚注重渲时仍是首次引用，不能因为标签已经记过就丢掉回链 id
+        const seen = new Set([...referenced].filter(label => !entry.firstRefs.has(label)))
+        entry.block = renderBlock(entry.src, { ...frozenState(), referenced: seen }, entry.block.key, true)
       }
     }
   }
@@ -134,7 +160,9 @@ export function createStreamRenderer(): StreamRenderer {
       else
         targets.push(index)
     }
-    frozen.push({ src, block: renderBlock(src, defs, `${index}:${cheapHash(src)}`, true) })
+    const before = new Set(referenced)
+    const block = renderBlock(src, frozenState(), `${index}:${cheapHash(src)}`, true)
+    frozen.push({ src, block, firstRefs: new Set([...referenced].filter(label => !before.has(label))) })
   }
 
   const run = (lines: readonly string[], ended: boolean): readonly RenderedBlock[] => {
@@ -173,14 +201,15 @@ export function createStreamRenderer(): StreamRenderer {
     if (freezeCount > 0)
       frozenLineCount = base + ranges[freezeCount]!.startLine
 
-    // 冻结线之后的块每轮重渲，边界还可能被后续行改写
+    // 冻结线之后的块每轮重渲，边界还可能被后续行改写；脚注编号在冻结表的副本上接着分
     const out: RenderedBlock[] = frozen.map(entry => entry.block)
+    const state: BlockState = { defs, bareLinks, idPrefix, footnotes: new Map(footnotes), referenced: new Set(referenced) }
     for (let i = freezeCount; i < ranges.length; i++) {
       const src = srcAt(i)
       const live = i === ranges.length - 1 && !ended
       // 围栏一闭合这块就不会再变了，消费方可以立刻上高亮，不必等整个流结束
       const complete = !live || (blockKind(src) === 'code' && isFenceClosed(src))
-      out.push(renderBlock(src, defs, live ? LIVE_BLOCK_KEY : `${out.length}:${cheapHash(src)}`, complete))
+      out.push(renderBlock(src, state, live ? LIVE_BLOCK_KEY : `${out.length}:${cheapHash(src)}`, complete, live))
     }
     return out
   }

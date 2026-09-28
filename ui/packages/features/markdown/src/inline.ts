@@ -5,9 +5,12 @@
 
 // 提供 inline 相关实现。
 
+import type { RenderContext } from './context'
 import type { LinkDefs } from './refs'
+import type { RenderedInline } from './types'
+import { footnoteNumber, footnoteSlug } from './context'
 import { encodeHref, escapeAttr, escapeText, safeUrl, unescapeBackslash } from './escape'
-import { NO_DEFS, normalizeLabel } from './refs'
+import { normalizeLabel } from './refs'
 
 const ESCAPABLE = /[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/
 const AUTOLINK_URI = /^<([a-z][a-z0-9+.-]{1,31}:[^\s<>]*)>/i
@@ -386,8 +389,121 @@ function matchEntity(src: string, start: number): { value: string, end: number }
   return value === undefined ? null : { value, end: start + found[0]!.length }
 }
 
+/** 行内引用 `[@甲]`、`[@甲; @乙]`：来源 id 不含空白、分号、逗号与右方括号，分隔用分号或逗号。 */
+const CITATION = /\[@([^\s;,\]]+)((?:[ \t]*[;,][ \t]*@[^\s;,\]]+)*)\]/y
+const CITATION_ID = /@([^\s;,\]]+)/g
+/** 脚注引用 `[^标签]`。 */
+const FOOTNOTE_REF = /\[\^([^\]\s]+)\]/y
+/** 行内公式最长扫这么远：再长的不是行内公式，也免得满屏美元符号时来回扫。 */
+const MAX_INLINE_MATH = 2000
+/** GFM 扩展自动链接：http(s):// 或 www. 起头，到空白或 `<` 为止。 */
+const BARE_LINK = /(?:https?:\/\/|www\.)[\p{L}\p{N}_-][^\s<]*/iuy
+/** 裸地址末尾不算进链接的标点：GFM 那一串，加上全角与中文标点（句号、右括号等）。 */
+const BARE_TRAILING = /(?:[?!.,:*_~'"]|(?![\0-\x7F])\p{P})$/u
+const BARE_TRAILING_ENTITY = /&[a-z0-9]+;$/i
+/** 裸地址只在这些字符之后起头：行首、空白与强调符、左圆括号。 */
+const BARE_BEFORE = /[\s*_~(]/
+
+/** 匹配 start 处的行内引用，返回来源 id 列表。 */
+function matchCitation(src: string, start: number): { ids: string[], end: number } | null {
+  CITATION.lastIndex = start
+  const found = CITATION.exec(src)
+  if (found === null)
+    return null
+  const ids = [found[1]!, ...[...found[2]!.matchAll(CITATION_ID)].map(match => match[1]!)]
+  return { ids, end: start + found[0]!.length }
+}
+
+/** 匹配 start 处的脚注引用。 */
+function matchFootnoteRef(src: string, start: number): { label: string, end: number } | null {
+  FOOTNOTE_REF.lastIndex = start
+  const found = FOOTNOTE_REF.exec(src)
+  return found === null ? null : { label: normalizeLabel(found[1]!), end: start + found[0]!.length }
+}
+
+/**
+ * 匹配 start 处的行内公式：`$…$` 或行内的 `$$…$$`。
+ * 开符号后不能是空白；单个美元符号的闭符号前不能是空白、后面不能紧跟数字，
+ * 「花了 $5 和 $10」这类金额不成公式。公式不跨行。
+ */
+function matchMath(src: string, start: number): { tex: string, display: boolean, end: number } | null {
+  const display = src[start + 1] === '$'
+  const from = start + (display ? 2 : 1)
+  if (from >= src.length || WHITESPACE.test(src[from]!))
+    return null
+  const limit = Math.min(src.length, from + MAX_INLINE_MATH)
+  for (let i = from; i < limit; i++) {
+    const ch = src[i]!
+    if (ch === '\\') {
+      i++
+      continue
+    }
+    if (ch === '\n')
+      return null
+    if (ch !== '$')
+      continue
+    if (display) {
+      if (src[i + 1] === '$')
+        return i > from ? { tex: src.slice(from, i), display, end: i + 2 } : null
+      continue
+    }
+    if (!WHITESPACE.test(src[i - 1]!) && !/\d/.test(src[i + 1] ?? ''))
+      return { tex: src.slice(from, i), display, end: i + 1 }
+  }
+  return null
+}
+
+/** 匹配 start 处的裸地址，末尾的标点与多出来的右圆括号不算进去。 */
+function matchBareLink(src: string, start: number): { url: string, end: number } | null {
+  if (start > 0 && !BARE_BEFORE.test(src[start - 1]!))
+    return null
+  BARE_LINK.lastIndex = start
+  const found = BARE_LINK.exec(src)
+  if (found === null)
+    return null
+  let url = found[0]!
+  while (true) {
+    if (BARE_TRAILING.test(url)) {
+      url = url.slice(0, -1)
+      continue
+    }
+    const entity = BARE_TRAILING_ENTITY.exec(url)
+    if (entity !== null) {
+      url = url.slice(0, -entity[0]!.length)
+      continue
+    }
+    if (url.endsWith(')') && url.split(')').length > url.split('(').length) {
+      url = url.slice(0, -1)
+      continue
+    }
+    break
+  }
+  // www. 之后至少还得有一段带点的域名
+  if (/^www\.[^.]*$/i.test(url) || /^https?:\/\/$/i.test(url))
+    return null
+  return { url, end: start + url.length }
+}
+
+/** 在占位节点里放一个行内挂点，节点带下标与降级内容。 */
+function inlineSlot(ctx: RenderContext, inline: RenderedInline, attrs: string, fallback: string): string {
+  const index = ctx.inlines.length
+  ctx.inlines.push(inline)
+  return `<span data-md-inline="${index}"${attrs}>${escapeText(fallback)}</span>`
+}
+
+/** 脚注角标：链到定义，首次引用带回链要找的 id。 */
+function footnoteRef(ctx: RenderContext, label: string): string {
+  const n = footnoteNumber(ctx, label)
+  const slug = escapeAttr(footnoteSlug(label))
+  const prefix = escapeAttr(ctx.idPrefix)
+  const first = !ctx.referenced.has(label)
+  ctx.referenced.add(label)
+  const id = first ? ` id="${prefix}fnref-${slug}"` : ''
+  return `<sup data-footnote-ref><a href="#${prefix}fn-${slug}"${id}>${n}</a></sup>`
+}
+
 /** 一段强调标记：还没被吃掉的标记字符数，以及要吐在这段两侧的标签。 */
-interface DelimRun {
+export interface DelimRun {
   readonly ch: string
   /** 这段的原始长度，配对的三倍数规则按它算。 */
   readonly origin: number
@@ -411,7 +527,7 @@ function isPunctuationAt(src: string, index: number): boolean {
 }
 
 /** 建一段强调标记，两侧字符决定它能开、能闭还是两者都不能。 */
-function makeDelim(src: string, start: number, end: number): DelimRun {
+export function makeDelim(src: string, start: number, end: number): DelimRun {
   const beforeSpace = isWhitespaceAt(src, start - 1)
   const beforePunct = isPunctuationAt(src, start - 1)
   const afterSpace = isWhitespaceAt(src, end)
@@ -491,7 +607,7 @@ interface Parsed {
 }
 
 /** 行内语法转 HTML：文本先转义再插标记，强调标记攒到最后统一配对。 */
-function parseInline(src: string, defs: LinkDefs, depth: number): Parsed {
+function parseInline(src: string, ctx: RenderContext, depth: number, inLink = false): Parsed {
   if (depth > MAX_DEPTH)
     return { html: escapeText(src), hasLink: false }
   const sc = createScanner(src)
@@ -579,8 +695,58 @@ function parseInline(src: string, defs: LinkDefs, depth: number): Parsed {
         continue
       }
     }
+    if (ch === '[' && src[i + 1] === '@') {
+      const citation = matchCitation(src, i)
+      if (citation !== null) {
+        emit(inlineSlot(
+          ctx,
+          { kind: 'citation', sourceIds: citation.ids },
+          ` data-md-citation="${escapeAttr(citation.ids.join(' '))}"`,
+          `[${citation.ids.join(', ')}]`,
+        ))
+        i = citation.end
+        continue
+      }
+    }
+    if (ch === '[' && src[i + 1] === '^') {
+      const ref = matchFootnoteRef(src, i)
+      if (ref !== null) {
+        emit(footnoteRef(ctx, ref.label))
+        i = ref.end
+        continue
+      }
+    }
+    if (ch === '$') {
+      const math = matchMath(src, i)
+      if (math !== null) {
+        emit(inlineSlot(
+          ctx,
+          { kind: 'math', source: math.tex, display: math.display },
+          ` data-md-math="${math.display ? 'display' : 'inline'}"`,
+          math.tex,
+        ))
+        i = math.end
+        continue
+      }
+      // 配不上的美元符号连着的一串整段按字面量收下，`$$` 不会被拆成两次试探
+      const run = src[i + 1] === '$' ? 2 : 1
+      text += src.slice(i, i + run)
+      spaces = 0
+      i += run
+      continue
+    }
+    if (ctx.bareLinks && !inLink && (ch === 'h' || ch === 'H' || ch === 'w' || ch === 'W')) {
+      const bare = matchBareLink(src, i)
+      const href = bare === null ? null : safeUrl(/^www\./i.test(bare.url) ? `http://${bare.url}` : bare.url)
+      if (bare !== null && href !== null) {
+        emit(`<a href="${escapeAttr(encodeHref(href))}">${escapeText(bare.url)}</a>`)
+        hasLink = true
+        i = bare.end
+        continue
+      }
+    }
     if (ch === '!' && src[i + 1] === '[') {
-      const link = matchLink(sc, i + 1, defs)
+      const link = matchLink(sc, i + 1, ctx.defs)
       const html = link === null ? null : renderImage(link)
       if (html !== null && link !== null) {
         emit(html)
@@ -589,10 +755,10 @@ function parseInline(src: string, defs: LinkDefs, depth: number): Parsed {
       }
     }
     if (ch === '[') {
-      const link = matchLink(sc, i, defs)
+      const link = matchLink(sc, i, ctx.defs)
       const href = link === null ? null : safeUrl(link.dest)
       if (link !== null && href !== null) {
-        const inner = parseInline(link.label, defs, depth + 1)
+        const inner = parseInline(link.label, ctx, depth + 1, true)
         if (inner.hasLink) {
           // 链接不许套链接：外层退回字面方括号，里层那条链接照常留着
           emit(`[${inner.html}]`)
@@ -638,6 +804,6 @@ function parseInline(src: string, defs: LinkDefs, depth: number): Parsed {
 }
 
 /** 行内语法转 HTML。 */
-export function renderInline(src: string, defs: LinkDefs = NO_DEFS, depth = 0): string {
-  return parseInline(src, defs, depth).html
+export function renderInline(src: string, ctx: RenderContext, depth = 0): string {
+  return parseInline(src, ctx, depth).html
 }

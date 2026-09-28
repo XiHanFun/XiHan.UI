@@ -11,4 +11,4 @@
 export { blockKind, fenceLang, isFenceClosed } from './blocks'
 export { createStreamRenderer } from './renderer'
 export { LIVE_BLOCK_KEY } from './types'
-export type { RenderedBlock, RenderOpts, StreamRenderer } from './types'
+export type { RenderedBlock, RenderedInline, RenderOpts, StreamRenderer, StreamRendererOptions } from './types'

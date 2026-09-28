@@ -26,7 +26,7 @@
 
 ### 流式增长
 
-只有生长中的块每帧重渲，定型的块 key 不变、节点原地保留，选区与滚动位置才能保持
+只有生长中的块每帧重渲，定型的块 key 不变、节点原地保留，选区与滚动位置才能保持；生长块里没写完的加粗先按闭合显示，不露出星号
 
 <XhDemo src="markdown-stream/02-streaming" />
 
@@ -48,6 +48,18 @@ size 改变正文字号与块间距，三档共用同一份块列表
 
 <XhDemo src="markdown-stream/05-size" />
 
+### GFM 扩展
+
+任务列表、脚注与裸地址自动成链：渲染器按 GFM 认出它们，脚注角标按首次引用编号并链到文末定义
+
+<XhDemo src="markdown-stream/06-gfm" />
+
+### 行内引用与公式
+
+正文里的 [@来源] 与 $…$ 在 html 里是占位节点，citation / math 插槽把引用角标与公式渲进去；角标就是引用来源组件的 trigger
+
+<XhDemo src="markdown-stream/07-inline-slots" />
+
 ## 设计指引
 
 ### 何时使用
@@ -67,12 +79,16 @@ size 改变正文字号与块间距，三档共用同一份块列表
 - `html` 只对 markdown 块有效。代码块取 `source` 交给[代码视图](./code-view)，公式块取 `source` 交给宿主选择的公式引擎；不接管时的降级结果是把原文作为正文显示。
 - 流式光标是皮肤的 `::after`，不做成组件。它绘制在带 `data-caret` 的部件上：正文增长时是生长中的块，尚无任何块时是外壳，因此请求刚发出、尚无内容时页面上也有反馈。`caret` 设为 `false` 时两处都不发该属性。
 - 光标在等待第一个字时闪烁，出字后停为实心：正文本身在变化，继续闪烁只是噪声。
+- 生长块不露原始符号：渲染器对还在生长的最后一块做行内容错，没写完的 `**粗`、`*斜`、`~~删`、`` `代码 `` 先按闭合显示，开符号后面还没有字时先不显示这个符号；写到一半的链接只显示文字，图片、行内引用与脚注写到一半时整段先不显示。块定型或流结束后按原文严格解析，没闭合的符号原样显示。
+- 渲染器认 GFM 的任务列表（`- [ ]` / `- [x]`，渲成只读勾选框，`li` 带 `data-task`）、脚注（`[^标签]` 角标按首次引用编号，`[^标签]:` 定义渲成带回链的脚注列表）与裸地址自动成链（`https://…`、`www.…`）。同一页上有几段正文带脚注时，给各自的渲染器传不同的 `idPrefix`。
+- 行内引用 `[@来源]`（一处多源写 `[@甲; @乙]`）与行内公式 `$…$` 在 html 里是占位节点（带 `data-md-inline`），块的 `inlines` 按出现先后给出挂点内容。`citation` / `math` 插槽（React 为 `renderCitation` / `renderMath`，Web Components 为 `inline-mount` 事件）把引用角标与公式引擎的产物渲进占位节点；不接管时占位节点显示降级内容（来源 id、TeX 原文）。金额里的美元符号（`$5 和 $10`）不成公式。
 
 ### 组合
 
 - 代码块交给[代码视图](./code-view)，整段正文放入[消息流](./message-feed)的一条消息。
 - 逐字输出的节奏由使用者驱动：`@xihan-ui/chat-stream` 的 `visibleLength` 是纯函数，时间原点与 rAF 循环由持有方编写。
-- 正文中需要嵌入行内来源角标、脚注等节点时，用 `block` 插槽接管该块自行渲染。组件不向已消毒的 html 中插入节点，这个插槽就是为此保留的位置。
+- 行内来源角标接[引用来源](./citation)：把流式正文放进引用来源的 `text` 部件，`citation` 插槽里渲 `XhCitationTrigger`，角标与来源预览、来源列表共用同一套可访问关系。Web Components 在 `inline-mount` 里放一个 `data-xh-part="trigger"` 并声明 `data-xh-part-owner="citation"`，外层 `xh-citation` 即认领并接线。
+- 行内公式交给宿主选的公式引擎：`math` 插槽拿到未经转义的 TeX 原文与 `display`，块级 `$$` 公式仍走 `block` 插槽。组件不向已消毒的 html 里插入别的节点，挂点只有这些占位节点。
 
 ### 最佳实践
 
@@ -119,6 +135,15 @@ size 改变正文字号与块间距，三档共用同一份块列表
 | `complete` | `boolean` | 是 | 该块是否已闭合。 |
 | `lang` | `string` |  | 围栏语言标注，仅 code 块有。 |
 | `source` | `string` |  | 块正文原文，仅 code 与 math 块有。 |
+| `inlines` | `readonly MarkdownInline[]` |  | 块正文里的行内挂点（行内引用与行内公式），按在 html 里出现的先后排；没有时缺席。 |
+
+### 事件
+
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `inline-mount` | `CustomEvent` | 新铺出一个行内挂点的占位节点；detail 为 `{ key, element, block, index, inline }` |
 
 ### 插槽
 
@@ -127,6 +152,8 @@ size 改变正文字号与块间距，三档共用同一份块列表
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhMarkdownStreamContent` | `block` | `MarkdownStreamBlockSlotProps` |  |
+| `XhMarkdownStreamContent` | `citation` | `MarkdownStreamCitationSlotProps` |  |
+| `XhMarkdownStreamContent` | `math` | `MarkdownStreamMathSlotProps` |  |
 | `XhMarkdownStreamRoot` | `default` | `MarkdownStreamRootSlotProps` |  |
 
 ### React 适配器 props
@@ -136,6 +163,8 @@ size 改变正文字号与块间距，三档共用同一份块列表
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhMarkdownStreamContent` | `children` | `SlotChildren<MarkdownStreamBlockSlotProps>` |  | 逐块接管该块的正文；未提供时按块类型铺设。 |
+| `XhMarkdownStreamContent` | `renderCitation` | `(props: MarkdownStreamCitationSlotProps) => ReactNode` |  | 渲染行内引用：渲进 html 里的占位节点，未提供时占位节点显示来源 id。 |
+| `XhMarkdownStreamContent` | `renderMath` | `(props: MarkdownStreamMathSlotProps) => ReactNode` |  | 渲染行内公式：渲进 html 里的占位节点，未提供时占位节点显示 TeX 原文。 |
 | `XhMarkdownStreamRoot` | `children` | `SlotChildren<MarkdownStreamRootSlotProps>` |  |  |
 
 ### 状态

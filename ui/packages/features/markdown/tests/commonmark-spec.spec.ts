@@ -65,8 +65,12 @@ function normalizeHtml(html: string): string {
     .trim()
 }
 
+/**
+ * 裸地址自动成链是 GFM 的扩展，CommonMark 本身不认（官方 Autolinks 一节里有两条正是在断言
+ * 裸地址留作文本），量 CommonMark 一致率时关掉它；缺省开着的行为另有专门用例。
+ */
 function render(markdown: string): string {
-  const renderer = createStreamRenderer()
+  const renderer = createStreamRenderer({ bareLinks: false })
   const out = renderer.render(markdown, { ended: true })
   renderer.dispose()
   return out.map(block => block.html).join('\n')

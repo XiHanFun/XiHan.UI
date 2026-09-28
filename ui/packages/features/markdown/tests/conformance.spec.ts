@@ -779,7 +779,9 @@ describe('链接与图片', () => {
 
   it('未闭合的链接只当文本', () => {
     const html = htmlOf('[未闭合](https://example.com')
-    expect(hasTag(html, 'a')).toBe(false)
+    // 圆括号后的裸地址按 GFM 扩展自动链接成链，但方括号里的文字不成链接
+    expect(openTags(html, 'a').every(a => a.attrs.href === 'https://example.com')).toBe(true)
+    expect(html).not.toMatch(/<a[^>]*>[^<]*未闭合/)
     expect(textOf(html)).toContain('[未闭合]')
   })
 
@@ -838,7 +840,7 @@ describe('转义与硬换行', () => {
       ['\\*不是斜体\\*', ['em', 'i'], '*不是斜体*'],
       ['\\*\\*不是粗体\\*\\*', ['strong', 'b'], '**不是粗体**'],
       ['\\`不是代码\\`', ['code'], '`不是代码`'],
-      ['\\[不是链接\\](https://example.com)', ['a'], '[不是链接]'],
+      ['\\[不是链接\\](/docs)', ['a'], '[不是链接]'],
       ['\\# 不是标题', ['h1'], '# 不是标题'],
       ['\\- 不是列表', ['ul', 'li'], '- 不是列表'],
     ] as const) {
@@ -1022,9 +1024,8 @@ describe('流式截断', () => {
     }
   }, 30_000)
 
-  it('半个标记不会提前渲成标签', () => {
+  it('半截的链接、图片与表头不会提前渲成标签', () => {
     const r = createStreamRenderer()
-    expect(hasAnyTag(r.render('**未完').at(-1)!.html, ['strong', 'b'])).toBe(false)
     expect(hasTag(r.render('[未完](https://exa').at(-1)!.html, 'a')).toBe(false)
     expect(hasTag(r.render('![未完](https://exa').at(-1)!.html, 'img')).toBe(false)
     expect(hasTag(r.render('| 甲 | 乙 |\n| --').at(-1)!.html, 'table')).toBe(false)
