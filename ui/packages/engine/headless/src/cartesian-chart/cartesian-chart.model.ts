@@ -42,6 +42,7 @@ import type {
   CartesianBarSeries,
   CartesianBoxplotFields,
   CartesianChartTranslations,
+  CartesianContinuousScaleKind,
   CartesianCurve,
   CartesianLineSeries,
   CartesianOrientation,
@@ -74,6 +75,9 @@ import {
   scaleLinear,
   scaleLog,
   scalePoint,
+  scalePow,
+  scaleSqrt,
+  scaleSymlog,
   scaleTime,
   scaleUtc,
   segmentsPath,
@@ -84,6 +88,7 @@ import {
   windowToDomain,
 } from '@xihan-ui/viz'
 import { assignChartSeries, buildChartSummary, labelBox, memoizeLast, placeWithoutOverlap, settleColumn } from '../shared/chart'
+import { zonedTimeIntervals } from '../shared/chart/time-zone'
 
 /* ---------- 规格 ---------- */
 
@@ -145,7 +150,7 @@ export interface CartesianSpec {
   /** 自变量轴的比例尺。 */
   readonly keyScale: CartesianScaleKind
   /** 数值轴的比例尺。 */
-  readonly valueScale: 'linear' | 'log'
+  readonly valueScale: CartesianContinuousScaleKind
   /** 自变量键，按轴上的次序。 */
   readonly keys: readonly ChartKey[]
   /** 键的身份串 → 在 keys 里的位置。 */
@@ -222,6 +227,60 @@ function xFieldOf(s: CartesianSeries): string {
 /** 分箱的柱：区间的止点字段；不分箱为 null。 */
 function binEndOf(s: CartesianSeries): string | null {
   return s.mark === 'bar' && typeof s.x !== 'string' ? s.x[1] : null
+}
+
+/** 连续数值轴的几种比例尺。 */
+function isContinuousKind(kind: CartesianScaleKind): kind is CartesianContinuousScaleKind {
+  return kind === 'linear' || kind === 'log' || kind === 'sqrt' || kind === 'pow' || kind === 'symlog'
+}
+
+/**
+ * 按比例尺种类建一条连续数值轴。pow 的指数与 symlog 的常数取自轴配置。
+ * 参数无效时规格里已记下问题、整张图不画；这里仍给一条线性轴，只为不在构造时抛错。
+ */
+function continuousScaleOf(
+  kind: CartesianContinuousScaleKind,
+  domain: readonly [number, number],
+  range: readonly number[],
+  axis: CartesianAxis,
+): ContinuousScale {
+  switch (kind) {
+    case 'log':
+      return scaleLog({ domain, range })
+    case 'sqrt':
+      return scaleSqrt({ domain, range })
+    case 'pow':
+      return validExponent(axis.exponent) ? scalePow({ domain, range, exponent: axis.exponent ?? 1 }) : scaleLinear({ domain, range })
+    case 'symlog':
+      return validConstant(axis.constant) ? scaleSymlog({ domain, range, constant: axis.constant ?? 1 }) : scaleLinear({ domain, range })
+    default:
+      return scaleLinear({ domain, range })
+  }
+}
+
+function validExponent(value: number | undefined): boolean {
+  return value == null || (Number.isFinite(value) && value > 0)
+}
+
+function validConstant(value: number | undefined): boolean {
+  return value == null || (Number.isFinite(value) && value > 0)
+}
+
+/** 轴配置里的比例尺参数有没有问题：幂指数、对称对数常数与时区。 */
+function scaleParamIssues(axis: CartesianAxis, which: 'x' | 'y'): ChartSpecIssue[] {
+  const out: ChartSpecIssue[] = []
+  if (axis.scale === 'pow' && !validExponent(axis.exponent))
+    out.push({ code: DIAGNOSTIC_CODES.chartScaleParam, message: '幂轴的指数必须是正的有限数', detail: { axis: which, exponent: axis.exponent } })
+  if (axis.scale === 'symlog' && !validConstant(axis.constant))
+    out.push({ code: DIAGNOSTIC_CODES.chartScaleParam, message: '对称对数轴的常数必须是正数', detail: { axis: which, constant: axis.constant } })
+  if (axis.timeZone != null && zonedTimeIntervals(axis.timeZone) == null)
+    out.push({ code: DIAGNOSTIC_CODES.chartScaleParam, message: `时区「${axis.timeZone}」不是有效的 IANA 名`, detail: { axis: which, timeZone: axis.timeZone } })
+  return out
+}
+
+/** 时间轴按哪个时区：配置了有效的 IANA 名才用它。 */
+function axisTimeZone(axis: CartesianAxis): string | undefined {
+  return axis.timeZone != null && zonedTimeIntervals(axis.timeZone) != null ? axis.timeZone : undefined
 }
 
 function inferKeyScale(rows: readonly ChartRow[], series: readonly CartesianSeries[], axis: CartesianAxis): CartesianScaleKind {
@@ -382,19 +441,20 @@ export function normalizeCartesianSpec(
       }
     }
     // 连续轴按数值排序，类目轴保持首次出现的次序
-    if (keyScale === 'linear' || keyScale === 'log' || keyScale === 'time' || keyScale === 'utc')
+    if (keyScale === 'time' || keyScale === 'utc' || isContinuousKind(keyScale))
       seen.sort((a, b) => Number(a instanceof Date ? a.valueOf() : a) - Number(b instanceof Date ? b.valueOf() : b))
     for (const value of seen)
       add(value)
   }
 
+  issues.push(...scaleParamIssues(xa, 'x'), ...scaleParamIssues(ya, 'y'))
   return {
     rows,
     series,
     issues,
     orientation: orientation ?? 'vertical',
     keyScale,
-    valueScale: ya.scale === 'log' ? 'log' : 'linear',
+    valueScale: ya.scale && isContinuousKind(ya.scale) ? ya.scale : 'linear',
     keys,
     keyIndex,
     xAxis: xa,
@@ -863,7 +923,10 @@ export function formatBin(formats: CartesianFormats, key: ChartKey, end: number)
 export function cartesianFormats(spec: CartesianSpec, locale: string): CartesianFormats {
   const keyFormat = spec.xAxis.format
   const valueFormat = spec.yAxis.format
-  const dates = new Intl.DateTimeFormat(locale, isDateFormat(keyFormat) ? keyFormat : DATE_DEFAULT)
+  const zone = axisTimeZone(spec.xAxis)
+  const dateOptions = isDateFormat(keyFormat) ? keyFormat : DATE_DEFAULT
+  // 时间轴给了时区：提示框、可及名与数据表里的日期同样按那个时区的墙上时间写
+  const dates = new Intl.DateTimeFormat(locale, zone ? { ...dateOptions, timeZone: zone } : dateOptions)
   const keyNumbers = createNumberFormat(locale, typeof keyFormat === 'object' && !isDateFormat(keyFormat) ? keyFormat : {})
   const values = typeof valueFormat === 'function'
     ? (v: number) => valueFormat(v)
@@ -1012,11 +1075,14 @@ export function layoutCartesian(
     const [lo, hi] = domains.key ?? [0, 1]
     const inner = inset(range)
     const make = ([a, b]: readonly [number, number]): AxisScale => {
-      if (spec.keyScale === 'time')
-        return scaleTime({ domain: [new Date(a), new Date(b)], range: inner })
-      if (spec.keyScale === 'utc')
-        return scaleUtc({ domain: [new Date(a), new Date(b)], range: inner })
-      return spec.keyScale === 'log' ? scaleLog({ domain: [a, b], range: inner }) : scaleLinear({ domain: [a, b], range: inner })
+      if (spec.keyScale === 'time' || spec.keyScale === 'utc') {
+        // 给了时区：整点、整天与月初按那个时区的墙上时间排，标签也按它写
+        const zone = axisTimeZone(spec.xAxis)
+        const zoned = zone ? { intervals: zonedTimeIntervals(zone)!, timeZone: zone } : {}
+        const domain = [new Date(a), new Date(b)]
+        return spec.keyScale === 'time' ? scaleTime({ domain, range: inner, ...zoned }) : scaleUtc({ domain, range: inner, ...zoned })
+      }
+      return continuousScaleOf(isContinuousKind(spec.keyScale) ? spec.keyScale : 'linear', [a, b], inner, spec.xAxis)
     }
     let full = make([lo, hi])
     // 只有散点时自变量是一个量而不是序列：两端缺省取整到刻度上，与数值轴一致
@@ -1053,7 +1119,7 @@ export function layoutCartesian(
     const dir = Math.sign(r1 - r0) || 1
     const range: [number, number] = [r0 + dir * pad.low, r1 - dir * pad.high]
     const [lo, hi] = domains.value
-    const make = ([a, b]: readonly [number, number]): ContinuousScale => (spec.valueScale === 'log' ? scaleLog({ domain: [a, b], range }) : scaleLinear({ domain: [a, b], range }))
+    const make = ([a, b]: readonly [number, number]): ContinuousScale => continuousScaleOf(spec.valueScale, [a, b], range, spec.yAxis)
     const base = make([lo, hi])
     const full = spec.yAxis.nice === false || domains.percent ? base : base.nice(valueTickCount(range))
     const valueKind = spec.valueScale === 'log' ? 'log' : 'linear'
@@ -1077,7 +1143,7 @@ export function layoutCartesian(
       return spec.xAxis.format(value)
     if (scale.kind === 'time' || scale.kind === 'utc') {
       if (isDateFormat(spec.xAxis.format))
-        return new Intl.DateTimeFormat(locale, spec.xAxis.format).format(value as Date)
+        return new Intl.DateTimeFormat(locale, { ...spec.xAxis.format, timeZone: axisTimeZone(spec.xAxis) ?? spec.xAxis.format.timeZone }).format(value as Date)
       return (scale as TimeScale).tickFormat(locale)(value as Date)
     }
     return (scale as ContinuousScale).tickFormat(locale)(value as number)

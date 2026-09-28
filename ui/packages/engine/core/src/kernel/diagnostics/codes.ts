@@ -57,6 +57,8 @@ export const DIAGNOSTIC_CODES = {
   chartStackOffsetConflict: 'chart.stack-offset-conflict',
   /** 对数轴的定义域含 0 或跨越正负。 */
   chartLogDomain: 'chart.log-domain',
+  /** 坐标轴的比例尺参数无效：幂轴的指数不是正的有限数、对称对数轴的常数不是正数，或时区不是有效的 IANA 名。 */
+  chartScaleParam: 'chart.scale-param',
   /** 柱系列所在的值轴不含 0。 */
   chartBarBaseline: 'chart.bar-baseline',
   /** 占比类图表出现负值。 */

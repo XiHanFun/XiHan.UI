@@ -51,6 +51,7 @@ export const DIAGNOSTIC_CODES = {
   chartInvalidSlot: "chart.invalid-slot", // 固定色槽越界，或两个系列固定到同一槽
   chartStackOffsetConflict: "chart.stack-offset-conflict", // 同一堆叠组的 stackOffset 不一致
   chartLogDomain: "chart.log-domain", // 对数轴的定义域含 0 或跨越正负
+  chartScaleParam: "chart.scale-param", // 坐标轴的比例尺参数无效：幂指数、对称对数常数或时区
   chartBarBaseline: "chart.bar-baseline", // 柱系列所在的值轴不含 0
   chartNegativeShare: "chart.negative-share", // 占比类图表出现负值
   chartInvalidRange: "chart.invalid-range", // 区间不合法：两端不是有限数，或下界大于上界

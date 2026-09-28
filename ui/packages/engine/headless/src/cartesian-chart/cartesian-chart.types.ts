@@ -23,8 +23,15 @@ export type CartesianTrigger = 'axis' | 'item'
 /** 提示框里各系列的行序：series 按图例次序，descending / ascending 按数值由大到小 / 由小到大。 */
 export type CartesianTooltipOrder = 'series' | 'descending' | 'ascending'
 
-/** 坐标轴的比例尺；缺省按数据类型与系列推断。 */
-export type CartesianScaleKind = 'band' | 'point' | 'linear' | 'log' | 'time' | 'utc'
+/**
+ * 坐标轴的比例尺；缺省按数据类型与系列推断。
+ * 连续数值轴除线性与对数外还有 sqrt（平方根，面积感的量）、pow（幂，指数由 exponent 给）
+ * 与 symlog（对称对数：跨越正负、含 0 的长尾数据）。
+ */
+export type CartesianScaleKind = 'band' | 'point' | 'linear' | 'log' | 'sqrt' | 'pow' | 'symlog' | 'time' | 'utc'
+
+/** 连续数值轴的比例尺。 */
+export type CartesianContinuousScaleKind = 'linear' | 'log' | 'sqrt' | 'pow' | 'symlog'
 
 /** 折线的插值：linear 折线，monotone 单调平滑（不越过数据点），step 系列为阶梯。 */
 export type CartesianCurve = 'linear' | 'monotone' | 'step' | 'step-before' | 'step-after'
@@ -293,6 +300,15 @@ export interface CartesianAxis {
   labelOverflow?: CartesianLabelOverflow
   /** 反向。 */
   reverse?: boolean
+  /** pow 轴的指数，正的有限数，缺省 1。 */
+  exponent?: number
+  /** symlog 轴 `sign(x) · log1p(|x| / c)` 里的 c，正数，缺省 1。越小越靠近对数，越大越靠近线性。 */
+  constant?: number
+  /**
+   * 时间轴按哪个时区（IANA 名，如 `Asia/Shanghai`）排刻度、写标签：整点、整天、月初都落在这个时区的墙上时间上，
+   * 提示框与数据表里的日期同样按它写。缺省 time 轴按运行环境所在时区、utc 轴按 UTC。
+   */
+  timeZone?: string
 }
 
 /** 图例里的一项。 */
