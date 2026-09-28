@@ -13996,17 +13996,7 @@
 /* styles/skeleton.css */
 /* 定义 skeleton 样式。 */
 
-/* 一条比底色略亮的窄带从头扫到尾。背景图比自身宽一倍，靠移动背景位置扫过去，
-   不动 transform 也不动布局，整段动画只在合成层上跑 */
-@keyframes xh-skeleton-shimmer {
-  from {
-    background-position: 200% 0;
-  }
-
-  to {
-    background-position: -200% 0;
-  }
-}
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 /* 呼吸档：整根条子在原色与禁用档之间来回淡。往返由 alternate 给，帧里只写一端 */
 @keyframes xh-skeleton-pulse {
@@ -14051,7 +14041,8 @@
   );
   background-repeat: no-repeat;
   background-size: 200% 100%;
-  animation: xh-skeleton-shimmer var(--xh-skeleton-duration, var(--xh-motion-loop-shimmer)) var(--xh-motion-ease-loop) infinite;
+  /* 扫光与思考中文字、工具调用进行中同一段共享关键帧：同屏时亮带扫过的距离与节奏一致 */
+  animation: xh-shimmer var(--xh-skeleton-duration, var(--xh-motion-loop-shimmer)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */

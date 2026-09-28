@@ -369,21 +369,13 @@
       ],
       "consumers": [
         "reasoning",
+        "skeleton",
         "tool-call"
       ],
       "relation": "loop"
     },
     "xh-skeleton-pulse": {
       "content": "to{opacity:var(--xh-state-disabled-opacity)}",
-      "definedIn": [
-        "skeleton.css"
-      ],
-      "consumers": [
-        "skeleton"
-      ]
-    },
-    "xh-skeleton-shimmer": {
-      "content": "from{background-position:200% 0}to{background-position:-200% 0}",
       "definedIn": [
         "skeleton.css"
       ],
@@ -513,6 +505,7 @@
     }
   },
   "retired": {
+    "xh-skeleton-shimmer": "并入 xh-shimmer（family/motion.css）",
     "xh-accordion-expand": "并入 xh-disclosure-expand（family/motion.css）",
     "xh-accordion-collapse": "并入 xh-disclosure-collapse（family/motion.css）",
     "xh-collapsible-expand": "并入 xh-disclosure-expand（family/motion.css）",

@@ -28,7 +28,7 @@ background-color: oklab(0 0 0 / 0.043)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: xh-skeleton-shimmer
+animation-name: xh-shimmer
 animation-duration: 1.6s
 animation-timing-function: linear
 outline-width: 3px
