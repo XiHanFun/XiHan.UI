@@ -45,6 +45,7 @@ function transitionState(params: Params<SparklineSchema>): ChartTransitionState 
     measurerVersion: 0,
     // 迷你图没有缩放窗口一类的框架
     extent: null,
+    extentStep: false,
     plot: refs.get('getRootEl')(),
     win: scope.getWin(),
     shown: refs.get('shown'),
