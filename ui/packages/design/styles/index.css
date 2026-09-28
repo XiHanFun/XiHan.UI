@@ -24138,7 +24138,8 @@
     --xh-_date-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle));
     /* 对号画在普通面上，取语气前景角色，不能拿确认按钮的实心背景色充当前景。 */
     --xh-_date-picker-check-fg: var(--xh-_tone, var(--xh-fg-brand));
-    --xh-_date-picker-time-item-check-size: var(--xh-glyph-size-sm);
+    /* 时间列与预设的对号与 Select 等列表的对号同一把尺：指示符档，随密度收放 */
+    --xh-_date-picker-time-item-check-size: var(--xh-control-indicator-size);
   }
 
   /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
@@ -24528,7 +24529,7 @@
     /* 对号的末端轨始终留着，切换选中时文字与整列宽度都不移动。 */
     padding-inline-end: calc(
       var(--xh-date-picker-preset-px, var(--xh-space-3)) +
-        var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm)) +
+        var(--xh-date-picker-preset-check-size, var(--xh-control-indicator-size)) +
         var(--xh-space-1)
     );
     white-space: nowrap;
@@ -24553,8 +24554,8 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: var(--xh-date-picker-preset-px, var(--xh-space-3));
-    inline-size: var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm));
-    block-size: var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm));
+    inline-size: var(--xh-date-picker-preset-check-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-date-picker-preset-check-size, var(--xh-control-indicator-size));
     translate: 0 -50%;
     background-color: var(--xh-date-picker-preset-check-fg, var(--xh-_date-picker-check-fg));
     opacity: 0;
@@ -24889,7 +24890,8 @@
     --xh-_date-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle));
     /* 对号画在普通面上，取语气前景角色，不拿实心强调底色充当前景。 */
     --xh-_date-range-picker-check-fg: var(--xh-_tone, var(--xh-fg-brand));
-    --xh-_date-range-picker-time-item-check-size: var(--xh-glyph-size-sm);
+    /* 时间列与预设的对号与 Select 等列表的对号同一把尺：指示符档，随密度收放 */
+    --xh-_date-range-picker-time-item-check-size: var(--xh-control-indicator-size);
   }
 
   /* 375px 复合面板要同时容下日历与两组时间列；手机档用正式小指示符，平板起恢复 16px。 */
@@ -25279,7 +25281,7 @@
     /* 对号的末端轨始终留着，切换选中时文字与整列宽度都不移动。 */
     padding-inline-end: calc(
       var(--xh-date-range-picker-preset-px, var(--xh-space-3)) +
-        var(--xh-date-range-picker-preset-check-size, var(--xh-glyph-size-sm)) +
+        var(--xh-date-range-picker-preset-check-size, var(--xh-control-indicator-size)) +
         var(--xh-space-1)
     );
     white-space: nowrap;
@@ -25304,8 +25306,8 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: var(--xh-date-range-picker-preset-px, var(--xh-space-3));
-    inline-size: var(--xh-date-range-picker-preset-check-size, var(--xh-glyph-size-sm));
-    block-size: var(--xh-date-range-picker-preset-check-size, var(--xh-glyph-size-sm));
+    inline-size: var(--xh-date-range-picker-preset-check-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-date-range-picker-preset-check-size, var(--xh-control-indicator-size));
     translate: 0 -50%;
     background-color: var(--xh-date-range-picker-preset-check-fg, var(--xh-_date-range-picker-check-fg));
     opacity: 0;
@@ -40689,7 +40691,7 @@
     /* 对号的末端轨始终留着，切换选中时文字与整列宽度都不移动。 */
     padding-inline-end: calc(
       var(--xh-time-picker-preset-px, var(--xh-space-3))
-      + var(--xh-time-picker-preset-check-size, var(--xh-glyph-size-sm))
+      + var(--xh-time-picker-preset-check-size, var(--xh-control-indicator-size))
       + var(--xh-space-1)
     );
     white-space: nowrap;
@@ -40710,8 +40712,8 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: var(--xh-time-picker-preset-px, var(--xh-space-3));
-    inline-size: var(--xh-time-picker-preset-check-size, var(--xh-glyph-size-sm));
-    block-size: var(--xh-time-picker-preset-check-size, var(--xh-glyph-size-sm));
+    inline-size: var(--xh-time-picker-preset-check-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-time-picker-preset-check-size, var(--xh-control-indicator-size));
     background-color: var(--xh-time-picker-preset-check-fg, var(--xh-_time-picker-check-fg));
     opacity: 0;
     translate: 0 -50%;
@@ -40780,7 +40782,7 @@
   [data-scope='time-picker'][data-part='item'] {
     --xh-_time-picker-item-rail: max(
       var(--xh-time-picker-item-px, var(--xh-space-0_5)),
-      calc(var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm)) + var(--xh-space-0_5))
+      calc(var(--xh-time-picker-item-check-size, var(--xh-control-indicator-size)) + var(--xh-space-0_5))
     );
     --xh-collection-block-padding: var(--xh-time-picker-item-py, 0);
     /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
@@ -40838,8 +40840,8 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: var(--xh-space-0_5);
-    inline-size: var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm));
-    block-size: var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm));
+    inline-size: var(--xh-time-picker-item-check-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-time-picker-item-check-size, var(--xh-control-indicator-size));
     background-color: var(--xh-time-picker-item-check-fg, var(--xh-_time-picker-check-fg));
     opacity: 0;
     translate: 0 -50%;
@@ -41340,7 +41342,7 @@
     /* 对号的末端轨始终留着，切换选中时文字与整列宽度都不移动。 */
     padding-inline-end: calc(
       var(--xh-time-range-picker-preset-px, var(--xh-space-3))
-      + var(--xh-time-range-picker-preset-check-size, var(--xh-glyph-size-sm))
+      + var(--xh-time-range-picker-preset-check-size, var(--xh-control-indicator-size))
       + var(--xh-space-1)
     );
     white-space: nowrap;
@@ -41361,8 +41363,8 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: var(--xh-time-range-picker-preset-px, var(--xh-space-3));
-    inline-size: var(--xh-time-range-picker-preset-check-size, var(--xh-glyph-size-sm));
-    block-size: var(--xh-time-range-picker-preset-check-size, var(--xh-glyph-size-sm));
+    inline-size: var(--xh-time-range-picker-preset-check-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-time-range-picker-preset-check-size, var(--xh-control-indicator-size));
     background-color: var(--xh-time-range-picker-preset-check-fg, var(--xh-_time-range-picker-check-fg));
     opacity: 0;
     translate: 0 -50%;
@@ -41488,7 +41490,7 @@
   [data-scope='time-range-picker'][data-part='item'] {
     --xh-_time-range-picker-item-rail: max(
       var(--xh-time-range-picker-item-px, var(--xh-space-0_5)),
-      calc(var(--xh-time-range-picker-item-check-size, var(--xh-glyph-size-sm)) + var(--xh-space-0_5))
+      calc(var(--xh-time-range-picker-item-check-size, var(--xh-control-indicator-size)) + var(--xh-space-0_5))
     );
     --xh-collection-block-padding: var(--xh-time-range-picker-item-py, 0);
     /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
@@ -41546,8 +41548,8 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: var(--xh-space-0_5);
-    inline-size: var(--xh-time-range-picker-item-check-size, var(--xh-glyph-size-sm));
-    block-size: var(--xh-time-range-picker-item-check-size, var(--xh-glyph-size-sm));
+    inline-size: var(--xh-time-range-picker-item-check-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-time-range-picker-item-check-size, var(--xh-control-indicator-size));
     background-color: var(--xh-time-range-picker-item-check-fg, var(--xh-_time-range-picker-check-fg));
     opacity: 0;
     translate: 0 -50%;

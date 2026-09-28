@@ -80,7 +80,8 @@
     --xh-_date-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle));
     /* 对号画在普通面上，取语气前景角色，不能拿确认按钮的实心背景色充当前景。 */
     --xh-_date-picker-check-fg: var(--xh-_tone, var(--xh-fg-brand));
-    --xh-_date-picker-time-item-check-size: var(--xh-glyph-size-sm);
+    /* 时间列与预设的对号与 Select 等列表的对号同一把尺：指示符档，随密度收放 */
+    --xh-_date-picker-time-item-check-size: var(--xh-control-indicator-size);
   }
 
   /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
@@ -470,7 +471,7 @@
     /* 对号的末端轨始终留着，切换选中时文字与整列宽度都不移动。 */
     padding-inline-end: calc(
       var(--xh-date-picker-preset-px, var(--xh-space-3)) +
-        var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm)) +
+        var(--xh-date-picker-preset-check-size, var(--xh-control-indicator-size)) +
         var(--xh-space-1)
     );
     white-space: nowrap;
@@ -495,8 +496,8 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: var(--xh-date-picker-preset-px, var(--xh-space-3));
-    inline-size: var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm));
-    block-size: var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm));
+    inline-size: var(--xh-date-picker-preset-check-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-date-picker-preset-check-size, var(--xh-control-indicator-size));
     translate: 0 -50%;
     background-color: var(--xh-date-picker-preset-check-fg, var(--xh-_date-picker-check-fg));
     opacity: 0;
