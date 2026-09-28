@@ -276,6 +276,7 @@
 | `indicator` | `data-orientation` | props.orientation |
 | `indicator` | `data-state` | 'open' \| 'closed' |
 | `indicator` | `data-value` | context.get('value') |
+| `viewport` | `data-instant` | ''（条件成立时才出现） |
 | `viewport` | `data-orientation` | props.orientation |
 | `viewport` | `data-state` | 'open' \| 'closed' |
 
@@ -327,7 +328,7 @@
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定面板） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `inline-size` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `inline-size` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

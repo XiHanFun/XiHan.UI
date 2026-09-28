@@ -832,6 +832,32 @@ describe('navigationMenu 受控 value', () => {
     expect(c.value()).toBeNull()
   })
 
+  it('换张瞬时：两张之间换，两侧 content 都带 data-instant；首开与末收不带', () => {
+    const c = makeMenu()
+    const instant = (i: number): unknown => (c.api().getContentProps({ value: VALUES[i]! }) as Record<string, unknown>)['data-instant']
+    c.api().setValue('products')
+    expect(instant(0), '首开照常进场').toBeUndefined()
+    c.api().setValue('docs')
+    expect([instant(0), instant(1)], '换张两侧都不播').toEqual(['', ''])
+    c.api().setValue(null)
+    expect(instant(1), '末收照常退场').toBeUndefined()
+    c.api().setValue('company')
+    expect(instant(2), '再首开照常进场').toBeUndefined()
+  })
+
+  it('挂载即展开：外壳与那一张直接呈现，换张不撤外壳的标记，全部收起才撤', () => {
+    const c = makeMenu({ defaultValue: 'products' })
+    const viewport = (): unknown => (c.api().getViewportProps() as Record<string, unknown>)['data-instant']
+    expect(viewport()).toBe('')
+    c.api().setValue('docs')
+    // 外壳一直开着：撤了标记等于把外壳的弹出补播一遍
+    expect(viewport()).toBe('')
+    c.api().setValue(null)
+    expect(viewport()).toBeUndefined()
+    c.api().setValue('products')
+    expect(viewport(), '收起之后再展开，外壳照常弹出').toBeUndefined()
+  })
+
   it('程序化改写会把正在跑的展开等待一并撤掉', () => {
     const c = makeMenu()
     c.hover(0)

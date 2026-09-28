@@ -33214,13 +33214,14 @@
     inset-inline-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
   }
 
-  /* 挂载时就展开着的那一项（data-instant）属于首帧，直接呈现 */
+  /* 首开弹出、末收收回；在两张之间换张时两侧都带 data-instant，瞬时换张——与菜单栏同一条成规，
+     交叉的进退场读起来就是闪烁。挂载时就展开着的那一项同样带它，直接呈现 */
   [data-scope='navigation-menu'][data-part='content'][data-state='open']:not([data-instant]) {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来 */
-  [data-scope='navigation-menu'][data-part='content'][data-state='closed'] {
+  [data-scope='navigation-menu'][data-part='content'][data-state='closed']:not([data-instant]) {
     animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
@@ -33232,6 +33233,16 @@
     border-radius: 0;
     background: transparent;
     box-shadow: none;
+  }
+
+  /* 外壳里的面板不自己弹出：弹出与收回归外壳，面板只随之淡入淡出，时长与外壳同档——
+     末收时面板的淡出与外壳的收回同时播完，外壳等它播完才藏起 */
+  [data-scope='navigation-menu'][data-part='viewport'] [data-scope='navigation-menu'][data-part='content'][data-state='open']:not([data-instant]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='navigation-menu'][data-part='viewport'] [data-scope='navigation-menu'][data-part='content'][data-state='closed']:not([data-instant]) {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 面板里的链接归 Collection Item 导航当前（nav 语境）：悬停 / 键盘高亮（白底承载 100）与按下（200）面由家族
@@ -33414,6 +33425,16 @@
 
   [data-scope='navigation-menu'][data-part='viewport'][hidden] {
     display: none;
+  }
+
+  /* 共享外壳是面板那一面：首开弹出、末收收回，换张时外壳留在原处、高度即刻换成新的一张。
+     挂载时就展开着的那一段（data-instant）属于首帧，直接呈现 */
+  [data-scope='navigation-menu'][data-part='viewport'][data-state='open']:not([data-instant]) {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='navigation-menu'][data-part='viewport'][data-state='closed'] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 竖排导航：共享外壳跟着面板改从侧边长出来 */
