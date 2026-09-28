@@ -13687,6 +13687,7 @@
     "data-focus",
     "data-foldable",
     "data-folded",
+    "data-follow-cursor",
     "data-form-path",
     "data-format",
     "data-frame",
