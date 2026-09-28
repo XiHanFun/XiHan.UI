@@ -85,7 +85,7 @@
   <Link to="/orders">
     <XhSideNavLinkText>订单</XhSideNavLinkText>
   </Link>
-</XhSideNavLink>
+</XhSideNavLink>;
 ```
 
 ### 最佳实践
