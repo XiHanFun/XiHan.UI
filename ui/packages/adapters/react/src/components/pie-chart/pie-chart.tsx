@@ -14,6 +14,8 @@ import type {
   PieChartApi,
   PieChartSchema,
   PieChartTranslations,
+  PieLabelContent,
+  PieLabelDetails,
   PieLabels,
   PieLegendItem,
   PieSort,
@@ -250,6 +252,8 @@ export interface XhPieChartRootProps extends Omit<ComponentPropsWithRef<'figure'
   maxSlices?: number
   /** 扇区标签，缺省 outside。 */
   labels?: PieLabels
+  /** 扇区标签写什么：内建写法之一，或自己拼的函数；缺省外侧名字加占比、内侧只写占比。 */
+  labelContent?: PieLabelContent | ((details: PieLabelDetails) => string)
   /** 数值格式。 */
   format?: NumberFormatSpec | ((value: number) => string)
   /** 隐藏的扇区（受控）。 */
@@ -290,6 +294,7 @@ export function XhPieChartRoot({
   sort,
   maxSlices,
   labels,
+  labelContent,
   format,
   hiddenSeries,
   defaultHiddenSeries,
@@ -319,6 +324,7 @@ export function XhPieChartRoot({
     sort,
     maxSlices,
     labels,
+    labelContent,
     format,
     hiddenSeries,
     defaultHiddenSeries,

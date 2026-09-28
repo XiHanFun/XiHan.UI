@@ -77,6 +77,7 @@ export function pieModelOf(source: PieModelSource): PieModel {
     rose: prop('rose'),
     sweep: prop('sweep'),
     labels: prop('labels'),
+    labelContent: prop('labelContent'),
     format: prop('format'),
     hiddenSeries: context.get('hiddenSeries'),
     size: context.get('size'),

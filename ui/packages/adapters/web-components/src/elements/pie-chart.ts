@@ -17,6 +17,8 @@ import type {
   PieChartApi,
   PieChartSchema,
   PieChartTranslations,
+  PieLabelContent,
+  PieLabelDetails,
   PieLabels,
   PieLegendItem,
   PieSort,
@@ -59,6 +61,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'none'|'descending'} sort - 扇区次序，默认 descending（自 12 点顺时针由大到小）
  * @attr {number} max-slices - 最多保留几个扇区（含「其他」），默认 6
  * @attr {'none'|'inside'|'outside'} labels - 扇区标签，默认 outside（带引导线）
+ * @attr {'name-share'|'name-value'|'name'|'share'|'value'} label-content - 扇区标签写什么；自己拼时给 labelContent property 赋函数
  * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
  * @attr {string} locale - 数字与内建文案的语言；未提供时按宿主语言
@@ -99,6 +102,7 @@ export class XhPieChartElement extends XhElement {
     sort: { converter: STRING_CONVERTER },
     maxSlices: { converter: NUMBER_CONVERTER, attribute: 'max-slices' },
     labels: { converter: STRING_CONVERTER },
+    labelContent: { converter: STRING_CONVERTER, attribute: 'label-content' },
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
     pending: { converter: BOOLEAN_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
@@ -118,6 +122,7 @@ export class XhPieChartElement extends XhElement {
   declare sort?: PieSort
   declare maxSlices?: number
   declare labels?: PieLabels
+  declare labelContent?: PieLabelContent | ((details: PieLabelDetails) => string)
   declare activeKey?: ChartKey | null
   declare pending?: boolean
   declare animated?: boolean
@@ -157,6 +162,7 @@ export class XhPieChartElement extends XhElement {
       sort: this.sort,
       maxSlices: this.maxSlices,
       labels: this.labels,
+      labelContent: this.labelContent,
       format: this.format,
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,

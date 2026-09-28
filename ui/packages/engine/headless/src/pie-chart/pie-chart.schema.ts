@@ -22,6 +22,8 @@ import type {
 import type { PieModel, PiePipeline } from './pie-chart.model'
 import type {
   PieChartTranslations,
+  PieLabelContent,
+  PieLabelDetails,
   PieLabels,
   PieLegendItem,
   PieMarkTag,
@@ -52,6 +54,11 @@ export interface PieChartSchema extends MachineSchema {
     maxSlices?: number
     /** 扇区标签，缺省 outside。 */
     labels?: PieLabels
+    /**
+     * 扇区标签写什么：取一种内建写法，或给一个函数自己拼（返回空串的扇区不写）。
+     * 缺省外侧写名字加占比、内侧只写占比。
+     */
+    labelContent?: PieLabelContent | ((details: PieLabelDetails) => string)
     /** 数值格式：提示框、标签、中心合计与数据表共用。 */
     format?: NumberFormatSpec | ((value: number) => string)
     translations?: Partial<PieChartTranslations>

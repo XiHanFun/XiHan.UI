@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-// 饼图：规格归一与「其他」合并、角度次序与隐藏、环形 / 半环 / 玫瑰的几何、外侧标签避让、命中与提示框、键盘与图例、无障碍。
+// 饼图：规格归一与「其他」合并、角度次序与隐藏、环形 / 半环 / 玫瑰的几何、外侧标签避让与标签内容、命中与提示框、键盘与图例、无障碍。
 import type { DiagnosticRecord, Service } from '@xihan-ui/core'
-import type { ArcMark, Mark } from '@xihan-ui/viz'
+import type { ArcMark, Mark, TextMark } from '@xihan-ui/viz'
 import type { PieChartApi, PieChartSchema } from '../src/pie-chart'
 import { createService, DIAGNOSTIC_CODES, normalizeProps, onDiagnostic } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
@@ -194,6 +194,37 @@ describe('几何', () => {
       for (let i = 1; i < ys.length; i++)
         expect(ys[i]! - ys[i - 1]!).toBeGreaterThanOrEqual(lineHeight - 0.01)
     }
+  })
+
+  it('标签内容：缺省外侧写名字加占比、内侧只写占比；labelContent 换成内建的别种写法', async () => {
+    const texts = (api: PieChartApi): string[] => api.scene.layers.front.filter(m => m.part === 'slice-label').map(m => (m as TextMark).text)
+    const plain = await makeRig({ ...BASE, locale: 'en-US' })
+    expect(texts(plain.api())[0]).toBe('华东 40.0%')
+    const inside = await makeRig({ ...BASE, labels: 'inside', locale: 'en-US' })
+    expect(texts(inside.api())[0]).toBe('40.0%')
+    const valued = await makeRig({ ...BASE, labelContent: 'name-value', locale: 'en-US' })
+    expect(texts(valued.api())[0]).toBe('华东 40')
+    const named = await makeRig({ ...BASE, labelContent: 'name' })
+    expect(texts(named.api()).sort()).toEqual(['华东', '华南', '华北', '西部', '东北'].sort())
+    const insideValue = await makeRig({ ...BASE, labels: 'inside', labelContent: 'value', locale: 'en-US' })
+    expect(texts(insideValue.api())[0]).toBe('40')
+  })
+
+  it('labelContent 给函数：拿到写好的数值与占比自己拼；返回空串的扇区不写标签也不画引导线', async () => {
+    const seen: unknown[] = []
+    const rig = await makeRig({
+      ...BASE,
+      locale: 'en-US',
+      labelContent: (details) => {
+        seen.push(details)
+        return details.share < 0.1 ? '' : `${details.name}（${details.formatted.value} 万）`
+      },
+    })
+    const front = rig.api().scene.layers.front
+    // 标签按左右两列排，次序不是数据次序
+    expect(front.filter(m => m.part === 'slice-label').map(m => (m as TextMark).text).sort()).toEqual(['华东（40 万）', '华南（25 万）', '华北（20 万）', '西部（10 万）'].sort())
+    expect(front.filter(m => m.part === 'leader-line')).toHaveLength(4)
+    expect(seen).toContainEqual({ id: '华东', name: '华东', value: 40, share: 0.4, formatted: { value: '40', share: '40.0%' }, other: false })
   })
 
   it('视口太窄放不下外侧标签时不画，饼本身保住', async () => {

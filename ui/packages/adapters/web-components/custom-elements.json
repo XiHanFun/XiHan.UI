@@ -44205,6 +44205,15 @@
             },
             {
               "kind": "field",
+              "name": "labelContent",
+              "privacy": "public",
+              "type": {
+                "text": "PieLabelContent | ((details: PieLabelDetails) => string) | undefined"
+              },
+              "attribute": "label-content"
+            },
+            {
+              "kind": "field",
               "name": "activeKey",
               "privacy": "public",
               "type": {
@@ -44692,7 +44701,7 @@
               "description": "图例切换显隐；detail 为 `{ hiddenSeries: string[] }`",
               "name": "hidden-series-change",
               "type": {
-                "text": "ChartHiddenSeriesChangeDetails"
+                "text": "PieLabelDetails"
               }
             },
             {
@@ -44781,6 +44790,14 @@
               "description": "扇区标签，默认 outside（带引导线）",
               "name": "labels",
               "fieldName": "labels"
+            },
+            {
+              "type": {
+                "text": "PieLabelContent | ((details: PieLabelDetails) => string) | undefined"
+              },
+              "description": "扇区标签写什么；自己拼时给 labelContent property 赋函数",
+              "name": "label-content",
+              "fieldName": "labelContent"
             },
             {
               "type": {

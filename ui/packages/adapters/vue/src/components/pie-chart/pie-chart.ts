@@ -14,6 +14,8 @@ import type {
   PieChartApi,
   PieChartSchema,
   PieChartTranslations,
+  PieLabelContent,
+  PieLabelDetails,
   PieLabels,
   PieSort,
   PieSweep,
@@ -201,6 +203,8 @@ export const XhPieChartRoot = defineComponent({
     sort: { type: String as PropType<PieSort> },
     maxSlices: { type: Number },
     labels: { type: String as PropType<PieLabels> },
+    /** 扇区标签写什么：内建写法之一，或自己拼的函数。 */
+    labelContent: { type: [String, Function] as PropType<PieLabelContent | ((details: PieLabelDetails) => string)> },
     format: { type: [Object, Function] as PropType<NumberFormatSpec | ((value: number) => string)> },
     hiddenSeries: { type: Array as PropType<string[]> },
     defaultHiddenSeries: { type: Array as PropType<string[]> },
