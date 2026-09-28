@@ -6,6 +6,7 @@
 // 提供 carousel 相关实现。
 
 import type { ContextFacade, PropFn, RefsFacade, Scope } from '@xihan-ui/core'
+import type { CarouselWrap } from './carousel.pages'
 import type { CarouselPauseSource, CarouselPressedKey, CarouselSchema } from './carousel.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { createSpringValue, projectRelease, resolveMotionPreference, rubberBand } from '@xihan-ui/motion'
@@ -16,6 +17,9 @@ import {
   carouselPageCount,
   carouselSlideRange,
   carouselTranslatePercent,
+  carouselWrapOf,
+  carouselWrapPercent,
+  carouselWrapStart,
   clampCarouselPage,
   normalizeSlideCount,
   normalizeSlidesPerMove,
@@ -82,12 +86,32 @@ function isHorizontal(prop: PropFn<CarouselSchema>): boolean {
 }
 
 /** 某一页落定时轨道的位移百分比（相对轨道自身沿轴的尺寸），与连接层的算法同一套。 */
-function trackPercent(prop: PropFn<CarouselSchema>, page: number): number {
+function trackPercent(prop: PropFn<CarouselSchema>, page: number, wrap: CarouselWrap = null): number {
   const slideCount = normalizeSlideCount(prop('slideCount'))
   const perPage = normalizeSlidesPerPage(prop('slidesPerPage'))
+  if (wrap)
+    return carouselWrapPercent(carouselWrapStart(wrap, slideCount, perPage), perPage, isFlipped(prop))
   const perMove = normalizeSlidesPerMove(prop('slidesPerMove'), perPage)
   const range = carouselSlideRange(clampCarouselPage(page, carouselPageCount(slideCount, perPage, perMove)), slideCount, perPage, perMove)
   return carouselTranslatePercent(range.start, perPage, isFlipped(prop))
+}
+
+/** 翻一步并记下是否回绕；回绕之外的翻页一律撤掉「已归位」的过渡开关，让新一步照常走过渡。 */
+function moveTo(context: CarouselContext, prop: PropFn<CarouselSchema>, direction: 1 | -1): number {
+  const total = pageCount(prop)
+  const from = clampCarouselPage(context.get('page'), total)
+  const next = step(context.get('page'), direction, total, prop('loop') ?? false)
+  context.set('wrap', carouselWrapOf(from, next, direction, total, prop('loop') ?? false))
+  context.set('snapped', false)
+  return next
+}
+
+/** 回绕落定：轨道与条目无动画地归位到真实页；过渡开关留到下一次翻页才撤。 */
+function settleWrap(context: CarouselContext): void {
+  if (context.get('wrap') == null)
+    return
+  context.set('wrap', null)
+  context.set('snapped', true)
 }
 
 /** 轨道节点：位移百分比按它沿轴的尺寸算；落定弹簧也按它判断减弱动效。 */
@@ -160,6 +184,8 @@ interface SettleFrom {
   from: number
   fromPage: number
   toPage: number
+  /** 这一步是回绕：弹簧收向虚拟页，不倒卷过全部页。 */
+  wrap: CarouselWrap
   velocity: number
   spring: 'smooth' | 'stiff'
 }
@@ -174,7 +200,7 @@ function settleFrom(refs: CarouselRefs, context: CarouselContext, scope: Scope, 
   const size = track ? (isHorizontal(prop) ? track.offsetWidth : track.offsetHeight) : 0
   if (!track || size <= 0)
     return
-  const gap = o.from + ((trackPercent(prop, o.fromPage) - trackPercent(prop, o.toPage)) / 100) * size
+  const gap = o.from + ((trackPercent(prop, o.fromPage) - trackPercent(prop, o.toPage, o.wrap)) / 100) * size
   if (Math.abs(gap) < 0.5 && Math.abs(o.velocity) < 5)
     return
   const spring = createSpringValue({
@@ -187,8 +213,11 @@ function settleFrom(refs: CarouselRefs, context: CarouselContext, scope: Scope, 
   context.set('settleOffset', gap)
   context.set('settling', true)
   void spring.to(0, { velocity: o.velocity }).then((result) => {
-    if (result === 'rest' && refs.get('settle')?.spring === spring)
+    if (result === 'rest' && refs.get('settle')?.spring === spring) {
       stopSettle(refs, context)
+      // 弹簧收向的是虚拟页：落定即归位，与撤掉 data-animating 同一拍，归位这一下不走过渡
+      settleWrap(context)
+    }
   })
 }
 
@@ -209,6 +238,8 @@ export const carouselMachine = createMachine({
     dragBase: cell<number>(() => ({ defaultValue: 0 })),
     settleOffset: cell<number>(() => ({ defaultValue: 0 })),
     settling: cell<boolean>(() => ({ defaultValue: false })),
+    wrap: cell<CarouselWrap>(() => ({ defaultValue: null })),
+    snapped: cell<boolean>(() => ({ defaultValue: false })),
     // 按压通道：正被按住的那个按钮，与自动播放的开合互相独立（按住播放开关时计时会停 / 起，按压面不随之丢）
     pressed: cell<CarouselPressedKey | null>(() => ({ defaultValue: null })),
   }),
@@ -217,7 +248,7 @@ export const carouselMachine = createMachine({
   initialState: ({ prop }) => (resolveAutoplayInterval(prop('autoplay')) > 0 ? 'playing' : 'idle'),
   // 跟手的会话整个生命周期都在。它不按拖动状态挂卸——常驻的代价只是几个早退的
   // pointermove，换来的是不必为了「有拆卸时机」去改状态树
-  effects: ['trackPointer', 'respectScopedMotion', 'trackLiquid'],
+  effects: ['trackPointer', 'respectScopedMotion', 'trackLiquid', 'trackWrapSettle'],
   refs: () => ({
     gesture: null,
     settle: null,
@@ -244,6 +275,7 @@ export const carouselMachine = createMachine({
     'DRAG.START': { actions: ['startDrag'] },
     'DRAG.MOVE': { actions: ['moveDrag'] },
     'DRAG.END': { actions: ['endDrag'] },
+    'WRAP.SETTLE': { actions: ['settleWrap'] },
     // 按压通道同样挂根级：按住播放开关时状态在 idle / playing 之间切，按压面不能随状态丢
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
@@ -342,18 +374,22 @@ export const carouselMachine = createMachine({
           return
         const next = clampCarouselPage(e.page, pageCount(prop), prop('loop') ?? false)
         yieldSettle(refs, context, next)
+        // 直接跳页不回绕：按页码的远近走
+        context.set('wrap', null)
+        context.set('snapped', false)
         context.set('page', next)
       },
       goPrev: ({ context, prop, refs }) => {
-        const next = step(context.get('page'), -1, pageCount(prop), prop('loop') ?? false)
+        const next = moveTo(context, prop, -1)
         yieldSettle(refs, context, next)
         context.set('page', next)
       },
       goNext: ({ context, prop, refs }) => {
-        const next = step(context.get('page'), 1, pageCount(prop), prop('loop') ?? false)
+        const next = moveTo(context, prop, 1)
         yieldSettle(refs, context, next)
         context.set('page', next)
       },
+      settleWrap: ({ context }) => settleWrap(context),
 
       addPauseSource: ({ context, event }) => {
         const e = event.current()
@@ -388,6 +424,8 @@ export const carouselMachine = createMachine({
           return
         const caught = context.get('settleOffset')
         stopSettle(refs, context)
+        // 回绕途中又按下：先无动画地归位到真实页，再从这里接着拖
+        settleWrap(context)
         context.set('dragStart', e.position)
         context.set('dragBase', caught)
         context.set('dragOffset', caught)
@@ -423,11 +461,13 @@ export const carouselMachine = createMachine({
         const delta = canceled || reversed ? 0 : carouselDragDelta(projected, CAROUSEL_DRAG_THRESHOLD, isFlipped(prop))
         const from = context.get('page')
         const to = delta === 0 ? from : step(from, delta, pageCount(prop), prop('loop') ?? false)
+        const total = pageCount(prop)
         settleFrom(refs, context, scope, prop, {
           // 轨道此刻的位置换算到落定那一页：差的就是两页的位移差加上松手时的拖拽位移
           from: offset,
           fromPage: from,
           toPage: to,
+          wrap: delta === 0 ? null : carouselWrapOf(clampCarouselPage(from, total), to, delta, total, prop('loop') ?? false),
           velocity,
           // 在走不动的边界上被拉出去：硬弹簧回弹
           spring: to === from && blockedToward(prop, from, offset) ? 'stiff' : 'smooth',
@@ -437,6 +477,25 @@ export const carouselMachine = createMachine({
       },
     },
     effects: {
+      /**
+       * 回绕那一步的轨道过渡播完即归位。过渡结束事件在三端经框架合成事件的命名各不相同，
+       * 这里在文档上挂原生监听，按事件目标认出自己的轨道；没有过渡（作者关掉、减弱动效下 1ms 也照样触发）
+       * 时下一次翻页同样会清掉回绕态。
+       */
+      trackWrapSettle: ({ scope, send, context }) => {
+        const doc = scope.getDoc()
+        const onEnd = (event: TransitionEvent): void => {
+          if (context.get('wrap') == null || event.propertyName !== 'translate')
+            return
+          const target = event.target as Element | null
+          const viewport = scope.getById<HTMLElement>(scope.partId('carousel', 'viewport'))
+          if (!target || !viewport || target.parentElement !== viewport)
+            return
+          send({ type: 'WRAP.SETTLE' })
+        }
+        doc.addEventListener('transitionend', onEnd, true)
+        return () => doc.removeEventListener('transitionend', onEnd, true)
+      },
       /** 三颗控制钮与分页条浮在媒体之上：材质轴为 liquid 时按下层换色调、亮边随指针 */
       trackLiquid: ({ scope, flush }) => {
         const stops = ['prev-trigger', 'next-trigger', 'autoplay-trigger', 'indicator-group']

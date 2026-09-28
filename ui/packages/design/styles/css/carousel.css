@@ -79,6 +79,11 @@
   }
 
   /* 松手后由弹簧带着松手速度逐帧把轨道收到落定位置，同样不能再叠一层过渡；落定即撤 */
+  /* 回绕落定后轨道已无动画地归位：下一次翻页撤掉这个标记，过渡照常 */
+  [data-scope='carousel'][data-part='list'][data-snapped] {
+    transition: none;
+  }
+
   [data-scope='carousel'][data-part='list'][data-animating] {
     transition: none;
     will-change: translate;
@@ -253,8 +258,8 @@
     overflow: hidden;
     cursor: pointer;
     transition:
-      inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
@@ -320,7 +325,8 @@
   }
 
   /* 自动播放的进度：胶囊是品牌淡底当轨道（仍是「当前」语义；淡底上公共环够对比，不灌环色），
-     品牌填充条从起点沿轨道方向长满这一页的时长；暂停时定住 */
+     品牌填充条从起点沿轨道方向长满这一页的时长。计时器每次恢复都重计一整个间隔，
+     进度条跟它同一口径：暂停时回到起点，恢复时从头走 */
   [data-scope='carousel'][data-part='root'][data-autoplay]
     [data-scope='carousel'][data-part='indicator'][data-current],
   [data-scope='carousel'][data-part='root'][data-paused]
@@ -343,7 +349,8 @@
 
   [data-scope='carousel'][data-part='root'][data-paused]
     [data-scope='carousel'][data-part='indicator'][data-current]::before {
-    animation-play-state: paused;
+    animation: none;
+    scale: var(--xh-_carousel-progress-from);
   }
 
   /* 纵轨：胶囊沿块轴拉长，进度条从上往下长 */

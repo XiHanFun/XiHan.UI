@@ -216,6 +216,7 @@
     "data-sequential": "masonry 按顺序铺列，不按最短列填。",
     "data-settled": "tool-call 这次调用已经落定：跑完了，或者跑砸了。与 data-errored 成对。",
     "data-sider-fixed": "layout 的根节点转述侧栏已固定，供整页布局取用。根上两个固定开关并存，带部件名才分得开。",
+    "data-snapped": "轮播回绕刚落定：轨道与条目已无动画地归位到真实页，样式层据此关掉位移过渡，直到下一次翻页才撤。",
     "data-sortable": "table 的这一列可以点表头排序。",
     "data-split": "在相邻块之间画分隔线：list 的条目之间、card 的段之间、table 的列之间、page-header 页头与下方内容之间、layout 各区之间。",
     "data-sticking": "log 正贴着底部跟随新内容，用户往上翻即撤。说的是滚动跟随，不是钉住——钉住走 data-fixed。",
