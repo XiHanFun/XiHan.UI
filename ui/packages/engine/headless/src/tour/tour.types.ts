@@ -74,6 +74,8 @@ export interface TourRefs {
    * 步序变化时要把引擎从上一步的目标上卸下重新挂载，保留旧订阅会使两套坐标轮流写入。
    */
   reanchor: (() => void) | null
+  /** 换步落定的轮次：每回几何更新各起一轮等过渡播完，只有最新那一轮报落定。 */
+  stepRound: number
 }
 
 /**
@@ -157,6 +159,11 @@ export interface TourSchema extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
+    /**
+     * 换步进行中：气泡定位层与聚光框投影 data-animating，皮肤只在这一档挂位置与尺寸的过渡，两者同一段时长、
+     * 同一条曲线一起滑到下一个目标。两者的过渡播完即撤；页面滚动、视口缩放与展开时不挂，照旧跟手。
+     */
+    stepping: boolean
     /** 当前步序。受控（value 提供）时 cell 直读 prop，写入只发 onValueChange 不修改内部值。 */
     value: number
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
@@ -187,6 +194,8 @@ export interface TourSchema extends MachineSchema {
     | { type: 'TARGET.FOUND' }
     /** 等满 targetTimeout 目标仍没出现。 */
     | { type: 'TARGET.MISSING' }
+    /** 换步那一段的位置与尺寸过渡播完了。 */
+    | { type: 'STEP.SETTLED' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
@@ -214,6 +223,9 @@ export interface TourSchema extends MachineSchema {
     | 'markTargetMissing'
     | 'recheckTarget'
     | 'clearOpenedAtMount'
+    | 'startStepping'
+    | 'awaitStepSettle'
+    | 'endStepping'
   effect: 'trackPosition' | 'trackSpotlight' | 'trackOverlay' | 'trackTarget'
 }
 

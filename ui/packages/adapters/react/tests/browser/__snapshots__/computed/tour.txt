@@ -480,9 +480,9 @@ line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
 background-color: rgba(0, 0, 0, 0)
-transition-property: inset-inline-start, inset-block-start, inline-size, block-size, border-radius
-transition-duration: 0.2s, 0.2s, 0.2s, 0.2s, 0.2s
-transition-timing-function: cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
 animation-name: xh-tour-spotlight-out
 animation-duration: 0.12s
 animation-timing-function: cubic-bezier(0.4, 0, 1, 1)

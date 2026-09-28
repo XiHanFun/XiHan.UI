@@ -46130,13 +46130,23 @@
     box-shadow:
       0 0 0 var(--xh-stroke-thick) var(--xh-tour-spotlight-ring, var(--xh-ring-focus)),
       0 0 0 100vmax var(--xh-_tour-spotlight-shroud);
-    /* 换步时框自己滑过去，用户的视线跟得上；逻辑属性照样可过渡 */
+  }
+
+  /* 换步那一段（data-animating）：聚光框与气泡同一段时长、同一条曲线一起滑到下一个目标，视线跟得上；
+     页面滚动与视口缩放时不挂，两者跟手、不拖尾。坐标由连接层按物理 left / top 写进内联，过渡跟着写物理轴 */
+  [data-scope='tour'][data-part='spotlight'][data-animating] {
     transition:
-      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
-      inset-block-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      left var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      top var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
-      border-radius var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      border-radius var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  [data-scope='tour'][data-part='positioner'][data-animating] {
+    transition:
+      left var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      top var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='tour'][data-part='spotlight'][data-dimmed] {

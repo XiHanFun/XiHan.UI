@@ -25,6 +25,7 @@ const INDICATOR = '选中指示器：绝对定位的独立小元素，尺寸跟�
 const DOT = '当前点伸长：部件只有几像素大，重排范围只有它自己'
 const DISCLOSURE = '披露内容的高度：grid-template-rows 0fr → 1fr 是唯一能过渡到内容真实高度的写法，内缩随之同步'
 const FLOATING_PANEL_MAXIMIZE = '浮动面板进出最大化：定位层是 position: fixed 的独立框、按内联的 left / top / width / height 摆放，补过去不推动其他元素；只在进出最大化那一段挂，拖动与改尺寸照旧跟手'
+const TOUR_STEP = '漫游换步：聚光框与气泡定位层都是 position: fixed 的独立框、按内联的坐标摆放，不在文档流里，补过去不推动其他元素；只在换步那一段挂（data-animating），两者同一段时长一起滑，页面滚动与视口缩放时照旧跟手'
 const CITATION_PREVIEW = '引用预览的披露：预览本身就是 surface、里面并排几段作者内容，套不上单格 0fr → 1fr，按连接层量下的内容区高度长到、收回，内缩、描边与它前面那道间距随之同步'
 
 /** 允许做动画的布局属性，值写理由。 */
@@ -49,10 +50,12 @@ const LAYOUT_EXCEPTIONS = {
   'floating-panel:positioner:top': FLOATING_PANEL_MAXIMIZE,
   'floating-panel:positioner:width': FLOATING_PANEL_MAXIMIZE,
   'floating-panel:positioner:height': FLOATING_PANEL_MAXIMIZE,
-  'tour:spotlight:inline-size': '聚光框是 position: fixed 的独立框，跟着目标换位换尺寸，不在文档流里，不推动其他元素',
-  'tour:spotlight:block-size': '聚光框是 position: fixed 的独立框，跟着目标换位换尺寸，不在文档流里，不推动其他元素',
-  'tour:spotlight:inset-inline-start': '聚光框是 position: fixed 的独立框，跟着目标换位换尺寸，不在文档流里，不推动其他元素',
-  'tour:spotlight:inset-block-start': '聚光框是 position: fixed 的独立框，跟着目标换位换尺寸，不在文档流里，不推动其他元素',
+  'tour:spotlight:inline-size': TOUR_STEP,
+  'tour:spotlight:block-size': TOUR_STEP,
+  'tour:spotlight:left': TOUR_STEP,
+  'tour:spotlight:top': TOUR_STEP,
+  'tour:positioner:left': TOUR_STEP,
+  'tour:positioner:top': TOUR_STEP,
   'xh-alert-collapse:block-size': 'Alert 关闭后收起占位：提示是正文流里的一整块，淡出后不收高下面的内容会整块跳上来；高度从关闭那一刻量下的像素收到 0，内缩与描边随之同步',
   'xh-alert-collapse:padding-block': 'Alert 关闭后收起占位：内缩随高度一起收掉，否则收到最后还剩一截内缩的高度',
   'xh-alert-collapse:border-block-width': 'Alert 关闭后收起占位：上下描边随高度一起收掉，否则收到最后还剩两道描边的高度',

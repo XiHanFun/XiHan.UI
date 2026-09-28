@@ -317,6 +317,27 @@ describe('tourMachine 开合与走步', () => {
     expect(t.api().value).toBe(0)
   })
 
+  it('展开着换步：气泡定位层与聚光框投影 data-animating，过渡播完（STEP.SETTLED）即撤', () => {
+    const t = makeService({ steps: STEPS, defaultOpen: true })
+    const animating = (): unknown[] => [
+      (t.api().getPositionerProps() as Record<string, unknown>)['data-animating'],
+      (t.api().getSpotlightProps() as Record<string, unknown>)['data-animating'],
+    ]
+    // 已经量到过几何：有起点可滑
+    t.service.context.set('position', { x: 10, y: 20, placement: 'bottom', hidden: false })
+    expect(animating()).toEqual([undefined, undefined])
+    t.service.send({ type: 'STEP.NEXT' })
+    expect(animating()).toEqual(['', ''])
+    t.service.send({ type: 'STEP.SETTLED' })
+    expect(animating()).toEqual([undefined, undefined])
+  })
+
+  it('刚展开、还没量到几何时换步不挂 data-animating：没有起点可滑，按落位直接呈现', () => {
+    const t = makeService({ steps: STEPS, defaultOpen: true })
+    t.service.send({ type: 'STEP.NEXT' })
+    expect((t.api().getPositionerProps() as Record<string, unknown>)['data-animating']).toBeUndefined()
+  })
+
   it('sTEP.SET 越界被夹住', () => {
     const t = makeService({ steps: STEPS, defaultOpen: true })
     t.api().setValue(99)
