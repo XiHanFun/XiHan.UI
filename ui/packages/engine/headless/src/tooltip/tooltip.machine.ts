@@ -10,6 +10,7 @@ import type { TooltipSchema } from './tooltip.types'
 import { createDismissLayer, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
+import { isTooltipGroupWarm, joinTooltipGroup } from './tooltip.group'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
 export const TOOLTIP_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
@@ -20,6 +21,14 @@ const { createMachine } = setup<TooltipSchema>()
 const OPEN_DELAY = 700
 /** 悬停移出到收起的默认等待毫秒。 */
 const CLOSE_DELAY = 300
+/** 跳过等待的默认窗口毫秒：另一个提示开着或刚收起不到这么久时，下一个直接接替。 */
+const SKIP_DELAY = 300
+
+/** 跳过等待的窗口归一：没给取缺省，非有限数与负数按不参与接替处理。 */
+function resolveSkipDelay(ms: number | undefined): number {
+  const value = ms ?? SKIP_DELAY
+  return Number.isFinite(value) && value > 0 ? value : 0
+}
 
 // 展开态收起：受控只发意图、停在原地等宿主写回；非受控直接落到 closed 并一并通知。
 const CLOSE_FROM_OPEN: Array<Transition<TooltipSchema>> = [
@@ -39,8 +48,8 @@ const CLOSE_FROM_CLOSING: Array<Transition<TooltipSchema>> = [
 function openNow(mark: 'markFocusOpened' | 'clearFocusOpened'): Array<Transition<TooltipSchema>> {
   return [
     { guard: 'isDisabled', target: 'closed' },
-    { guard: 'isOpenControlled', target: 'closed', actions: [mark, 'invokeOnOpen'] },
-    { target: 'visible.open', actions: [mark, 'invokeOnOpen'] },
+    { guard: 'isOpenControlled', target: 'closed', actions: [mark, 'syncInstant', 'invokeOnOpen'] },
+    { target: 'visible.open', actions: [mark, 'syncInstant', 'invokeOnOpen'] },
   ]
 }
 
@@ -55,6 +64,7 @@ export const tooltipMachine = createMachine({
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 记住这次是被聚焦打开的：聚焦态的提示不该被一次纯鼠标移出收走
     focusOpened: cell<boolean>(() => ({ defaultValue: false })),
+    instant: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -101,7 +111,8 @@ export const tooltipMachine = createMachine({
     // 复合态：两个子态下浮层都可见，定位挂在这一层，指针在两态间来回不重挂
     visible: {
       initial: 'open',
-      effects: ['trackPosition'],
+      effects: ['trackPosition', 'trackGroup'],
+      exit: ['clearInstant'],
       on: {
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
@@ -148,6 +159,9 @@ export const tooltipMachine = createMachine({
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       markFocusOpened: ({ context }) => context.set('focusOpened', true),
       clearFocusOpened: ({ context }) => context.set('focusOpened', false),
+      // 热窗口内打开即接替：不播进场。打开那一刻判，收起即清
+      syncInstant: ({ context, prop, scope }) => context.set('instant', isTooltipGroupWarm(scope.id, resolveSkipDelay(prop('skipDelayDuration')))),
+      clearInstant: ({ context }) => context.set('instant', false),
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制收起
       syncOpen: ({ prop, send }) => {
         const open = prop('open')
@@ -157,8 +171,11 @@ export const tooltipMachine = createMachine({
       },
     },
     effects: {
-      waitForOpenDelay: ({ prop, send }) =>
-        setTimeoutEffect(() => send({ type: 'after.openDelay' }), prop('openDelay') ?? OPEN_DELAY),
+      // 热窗口内（另一个提示开着或刚收起）不等：下一拍即展开
+      waitForOpenDelay: ({ prop, send, scope }) => setTimeoutEffect(
+        () => send({ type: 'after.openDelay' }),
+        isTooltipGroupWarm(scope.id, resolveSkipDelay(prop('skipDelayDuration'))) ? 0 : prop('openDelay') ?? OPEN_DELAY,
+      ),
       waitForCloseDelay: ({ prop, send }) =>
         setTimeoutEffect(() => send({ type: 'after.closeDelay' }), prop('closeDelay') ?? CLOSE_DELAY),
       // 引擎经 refs 注入；缺引擎或缺元素时静默跳过，状态转移不受影响
@@ -204,6 +221,8 @@ export const tooltipMachine = createMachine({
           stop?.()
         }
       },
+      /** 露面即登记进同页提示的热窗口：别的开着的提示随之收起；收起时撤下并记下收起时刻。 */
+      trackGroup: ({ scope, send }) => joinTooltipGroup(scope.id, () => send({ type: 'CLOSE' })),
       /** 浮层退场完成前保留原栈位；关闭后不再响应消解，不建焦点域、不锁滚动。 */
       trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
         presence: () => refs.get('presence'),

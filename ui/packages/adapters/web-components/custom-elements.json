@@ -68098,6 +68098,15 @@
             },
             {
               "kind": "field",
+              "name": "skipDelayDuration",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "skip-delay-duration"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "privacy": "public",
               "type": {
@@ -68306,6 +68315,14 @@
               "description": "悬停移出到收起的等待毫秒，默认 300",
               "name": "close-delay",
               "fieldName": "closeDelay"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与",
+              "name": "skip-delay-duration",
+              "fieldName": "skipDelayDuration"
             },
             {
               "type": {

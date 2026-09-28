@@ -32,6 +32,8 @@ export const XhTooltipRoot = defineComponent({
     dir: { type: String as PropType<Direction> },
     openDelay: { type: Number },
     closeDelay: { type: Number },
+    /** 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与。 */
+    skipDelayDuration: { type: Number },
     disabled: Boolean,
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },

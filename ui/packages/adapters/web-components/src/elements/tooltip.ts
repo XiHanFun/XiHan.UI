@@ -43,6 +43,7 @@ const NUMBER_CONVERTER = {
  * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @attr {number} open-delay - 悬停进入到展开的等待毫秒，默认 700
  * @attr {number} close-delay - 悬停移出到收起的等待毫秒，默认 300
+ * @attr {number} skip-delay-duration - 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与
  * @attr {boolean} disabled - 只关闭提示，被包裹的控件仍可用
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -72,6 +73,7 @@ export class XhTooltipElement extends XhPortalHostElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
     closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
+    skipDelayDuration: { converter: NUMBER_CONVERTER, attribute: 'skip-delay-duration' },
     disabled: { type: Boolean },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -84,6 +86,7 @@ export class XhTooltipElement extends XhPortalHostElement {
   declare direction?: Direction
   declare openDelay?: number
   declare closeDelay?: number
+  declare skipDelayDuration?: number
   declare disabled?: boolean
   declare tone?: Tone
   declare size?: Size
@@ -122,6 +125,7 @@ export class XhTooltipElement extends XhPortalHostElement {
       dir: this.direction,
       openDelay: this.openDelay,
       closeDelay: this.closeDelay,
+      skipDelayDuration: this.skipDelayDuration,
       disabled: this.disabled ?? false,
       tone: this.tone,
       size: this.size,

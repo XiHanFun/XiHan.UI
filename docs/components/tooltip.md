@@ -82,6 +82,7 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 ### 特性
 
 - `openDelay` / `closeDelay` 防止指针经过时连续闪烁。
+- 同页的提示共用一个接替窗口（`skipDelayDuration`，默认 300ms）：另一个提示还开着、或刚收起一个不到这么久时，指向下一个不再等 `openDelay`、也不播进场，直接接替，上一个随之收起。横扫一排工具栏钮时提示一个个跟上。
 - 聚焦也能触发，键盘用户可以访问。
 - 语气与尺寸两轴。
 - 默认保持反白的小型 M2 表面（compact 档 frosted），与承载操作的 Popover 分开；六种语气都使用高遮蔽 tint 与不透明文字，箭头和气泡同色同边。边界由 on 色 20% 的拼色描边承担（frosted 的透明深边压在反白底上看不见），不画顶部高光；圆角取 4px 控件档。
@@ -99,7 +100,7 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 
 ### 当前边界
 
-- 当前尚无 TooltipProvider，多个目标间的统一 delay、skip-delay、同组互斥与触发器滚动关闭仍是后续独立行为功能；本次不以样式模拟这些时序。
+- 没有 TooltipProvider：接替窗口按页面共用，不分组；触发器滚动关闭仍是后续独立行为功能。
 - 共享浮层位移原语当前最小档是 4px；Tooltip 先与 Menu 使用同一 `xh-overlay-slide-in/out` 定义。规格中的 2px 需要新增公共 motion distance 档后统一接入，不能局部改写现有语义令牌。
 
 ### 反模式
@@ -130,6 +131,7 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 | `offset` | `number` |  | 浮层与锚点的间距（px）。 |
 | `openDelay` | `number` |  | 悬停进入到展开的等待毫秒，默认 700。 |
 | `closeDelay` | `number` |  | 悬停移出到收起的等待毫秒，默认 300。 |
+| `skipDelayDuration` | `number` |  | 跳过等待的窗口毫秒，默认 300：另一个提示还开着，或刚收起一个不到这么久时，指向这一个不等 openDelay、 也不播进场，直接接替（上一个随之收起）。0 或负数表示不参与接替，每次都等 openDelay。 |
 | `disabled` | `boolean` |  | 只关闭提示本身，不影响被包裹控件的可用性。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定内边距与字号档位。 |
@@ -233,6 +235,7 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-tone` | props.tone |

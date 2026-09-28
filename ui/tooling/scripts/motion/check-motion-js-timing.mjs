@@ -30,6 +30,7 @@ const TIMING_CONSTANTS = {
   'headless/src/avatar/avatar.machine.ts:AVATAR_FALLBACK_DELAY': '停留：载入中的回退内容露面前的等待，属性 fallbackDelay 的缺省值；图片在这段里载好就不闪首字母',
   'headless/src/tooltip/tooltip.machine.ts:OPEN_DELAY': '停留：悬停与聚焦到打开的等待，属性 openDelay 的缺省值',
   'headless/src/tooltip/tooltip.machine.ts:CLOSE_DELAY': '停留：离开后的保留，属性 closeDelay 的缺省值',
+  'headless/src/tooltip/tooltip.machine.ts:SKIP_DELAY': '停留：另一个提示开着或刚收起的这段窗口内，下一个不等 openDelay 直接接替，属性 skipDelayDuration 的缺省值',
   'headless/src/hover-card/hover-card.machine.ts:OPEN_DELAY': '停留：悬停到打开的等待，属性 openDelay 的缺省值',
   'headless/src/hover-card/hover-card.machine.ts:CLOSE_DELAY': '停留：离开后的保留，属性 closeDelay 的缺省值',
   'headless/src/navigation-menu/navigation-menu.machine.ts:NAVIGATION_MENU_DELAY': '停留：悬停到展开的等待，属性 delayDuration 的缺省值',

@@ -13163,6 +13163,7 @@
       "openDelay",
       "placement",
       "size",
+      "skipDelayDuration",
       "tone"
     ],
     "tour": [
@@ -21077,6 +21078,7 @@
         "open-delay",
         "placement",
         "size",
+        "skip-delay-duration",
         "tone"
       ],
       "events": [
