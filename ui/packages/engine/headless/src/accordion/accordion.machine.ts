@@ -6,7 +6,8 @@
 // 提供 accordion 相关实现。
 
 import type { AccordionSchema } from './accordion.types'
-import { setup } from '@xihan-ui/core'
+import { isSSR, setup } from '@xihan-ui/core'
+import { retainDisclosureHandoff } from '../shared/disclosure-handoff'
 
 const { createMachine } = setup<AccordionSchema>()
 
@@ -25,6 +26,7 @@ export const accordionMachine = createMachine({
     opened: cell<string[]>(() => ({ defaultValue: [...(prop('value') ?? prop('defaultValue') ?? [])] })),
   }),
   refs: ({ prop }) => ({ lastValue: prop('value') ?? prop('defaultValue') ?? [] }),
+  effects: ['trackDisclosureHandoff'],
   initialState: () => 'idle',
   watch: ({ track, prop, context, action }) => {
     // 按住途中整组转禁用：trigger 只是 aria-disabled、仍有焦点，但按压面不该留在禁用面上
@@ -43,6 +45,23 @@ export const accordionMachine = createMachine({
     },
   },
   implementations: {
+    effects: {
+      /** 展开到一半点收起（或反过来）时，新一段关键帧从此刻的开合程度接着走。没有 DOM 的宿主不接。 */
+      trackDisclosureHandoff: ({ scope, flush }) => {
+        if (isSSR())
+          return undefined
+        let release: (() => void) | undefined
+        let disposed = false
+        flush(() => {
+          if (!disposed)
+            release = retainDisclosureHandoff(scope.getDoc())
+        })
+        return () => {
+          disposed = true
+          release?.()
+        }
+      },
+    },
     guards: {
       // 整组禁用一票否决；条目自己的禁用只有 connect 知道，随 PRESS.START 带进来
       canPress: ({ prop, event }) => {
