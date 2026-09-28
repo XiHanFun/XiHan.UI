@@ -7917,6 +7917,7 @@
       "expandVirtualizerRange",
       "fieldAnatomy",
       "fieldArrayAnatomy",
+      "fieldArrayInsertIndex",
       "fieldArrayKeyboard",
       "fieldArrayMachine",
       "fieldArrayMeta",

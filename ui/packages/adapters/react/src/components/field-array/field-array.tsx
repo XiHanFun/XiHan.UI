@@ -31,6 +31,7 @@ export type FieldArrayRootSlotProps = Pick<
   | 'canAdd'
   | 'setValue'
   | 'add'
+  | 'insert'
   | 'remove'
   | 'move'
   | 'moveUp'
@@ -107,6 +108,7 @@ export function XhFieldArrayRoot({
           canAdd: api.canAdd,
           setValue: api.setValue,
           add: api.add,
+          insert: api.insert,
           remove: api.remove,
           move: api.move,
           moveUp: api.moveUp,

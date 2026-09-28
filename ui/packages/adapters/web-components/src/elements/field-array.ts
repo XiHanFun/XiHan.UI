@@ -6,7 +6,7 @@
 // 提供 field array 相关实现。
 
 import type { Service } from '@xihan-ui/core'
-import type { FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema } from '@xihan-ui/headless'
 import { connectFieldArray, fieldArrayAnatomy, fieldArrayMachine, fieldArrayMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -131,6 +131,48 @@ export class XhFieldArrayElement extends XhElement {
       translations: this.translations,
       onValueChange: this.notifyValue,
     }
+  }
+
+  /** 命令式入口共用的取法；状态机在进入文档（hostConnected）后才建立，未建立则抛错。 */
+  private commands(): FieldArrayApi {
+    if (!this.ctrl.service)
+      throw new Error('[xh] <xh-field-array> 还没进文档，命令式接口此时不可用')
+    return connectFieldArray(this.ctrl.service, wcNormalize)
+  }
+
+  /** 整份替换，不受 min / max 约束。 */
+  setValue(next: unknown[]): void {
+    this.commands().setValue(next)
+  }
+
+  /** 在末尾追加一行，数据由 createItem 造；受 max 约束。 */
+  add(): void {
+    this.commands().add()
+  }
+
+  /** 在 index 处插入一行（夹到 0 到行数之间），后面的行往后挪；给了 item 就用它作这一行的数据，缺省由 createItem 造。受 max 约束。 */
+  insert(index: number, item?: unknown): void {
+    this.commands().insert(index, item)
+  }
+
+  /** 删掉第 index 行；受 min 约束。不叫 remove：那是 Element 自己把元素移出文档的方法。 */
+  removeItem(index: number): void {
+    this.commands().remove(index)
+  }
+
+  /** 把第 from 行挪到第 to 行的位置；要求开启 movable。 */
+  move(from: number, to: number): void {
+    this.commands().move(from, to)
+  }
+
+  /** 第 index 行上移一格。 */
+  moveUp(index: number): void {
+    this.commands().moveUp(index)
+  }
+
+  /** 第 index 行下移一格。 */
+  moveDown(index: number): void {
+    this.commands().moveDown(index)
   }
 
   // 行内的子部件：getParts 收的是整个元素范围，按子树过滤才归得对。

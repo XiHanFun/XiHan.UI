@@ -100,7 +100,7 @@ export { connectEmptyState, emptyStateAnatomy, emptyStateKeyboard, emptyStateMac
 export type { EmptyStateApi, EmptyStateLive, EmptyStateProps, EmptyStateRefs, EmptyStateSchema, EmptyStateStatus, EmptyStateTranslations } from './empty-state'
 export { connectField, fieldAnatomy, fieldKeyboard, fieldMeta } from './field'
 export type { FieldApi, FieldProps, FieldTranslations } from './field'
-export { connectFieldArray, fieldArrayAnatomy, fieldArrayKeyboard, fieldArrayMachine, fieldArrayMeta, fieldArrayTriggerId } from './field-array'
+export { connectFieldArray, fieldArrayAnatomy, fieldArrayInsertIndex, fieldArrayKeyboard, fieldArrayMachine, fieldArrayMeta, fieldArrayTriggerId } from './field-array'
 export type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArrayPressedKey, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails } from './field-array'
 export { connectFieldset, fieldsetAnatomy, fieldsetKeyboard, fieldsetMeta } from './fieldset'
 export type { FieldsetApi, FieldsetProps, FieldsetTranslations } from './fieldset'

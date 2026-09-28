@@ -29,6 +29,7 @@ export type FieldArrayRootSlotProps = Pick<
   | 'canAdd'
   | 'setValue'
   | 'add'
+  | 'insert'
   | 'remove'
   | 'move'
   | 'moveUp'
@@ -79,6 +80,7 @@ export const XhFieldArrayRoot = defineComponent({
       canAdd: ctx.api.value.canAdd,
       setValue: ctx.api.value.setValue,
       add: ctx.api.value.add,
+      insert: ctx.api.value.insert,
       remove: ctx.api.value.remove,
       move: ctx.api.value.move,
       moveUp: ctx.api.value.moveUp,

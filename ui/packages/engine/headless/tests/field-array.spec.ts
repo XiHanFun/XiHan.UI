@@ -5,7 +5,7 @@ import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectFieldArray, fieldArrayMachine, fieldArrayTriggerId } from '../src/field-array'
-import { atRowMax, atRowMin, moveRow, rowBound, sameRows } from '../src/field-array/field-array.machine'
+import { atRowMax, atRowMin, fieldArrayInsertIndex, moveRow, rowBound, sameRows } from '../src/field-array/field-array.machine'
 import { connectForm, createFormPathRecord, formMachine, formPathKey, getFormPathValue } from '../src/form'
 
 type Props = FieldArraySchema['props']
@@ -592,5 +592,88 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
       expect(pressed(add(service))).toBe(false)
       runtime.stop()
     }
+  })
+})
+
+describe('在指定位置插入', () => {
+  it('fieldArrayInsertIndex 取整后夹到 0 到行数之间；没给或非有限数即追加', () => {
+    expect(fieldArrayInsertIndex(1, 3)).toBe(1)
+    expect(fieldArrayInsertIndex(1.8, 3)).toBe(1)
+    expect(fieldArrayInsertIndex(-2, 3)).toBe(0)
+    expect(fieldArrayInsertIndex(9, 3)).toBe(3)
+    expect(fieldArrayInsertIndex(undefined, 3)).toBe(3)
+    expect(fieldArrayInsertIndex(Number.NaN, 3)).toBe(3)
+  })
+
+  it('insert 在中间插一行：新行拿新号，前后各行的号原样不动', () => {
+    const service = makeService({ defaultValue: ['甲', '丙'], createItem: () => '空' })
+    const before = keys(service)
+    api(service).insert(1, '乙')
+    expect(api(service).value).toEqual(['甲', '乙', '丙'])
+    const after = keys(service)
+    expect([after[0], after[2]]).toEqual(before)
+    expect(before).not.toContain(after[1])
+
+    // 不给 item 就由 createItem 造；插在最前
+    api(service).insert(0)
+    expect(api(service).value).toEqual(['空', '甲', '乙', '丙'])
+  })
+
+  it('insert 受 max 与禁用约束，越界的下标夹到两端', () => {
+    const onValueChange = vi.fn()
+    const full = makeService({ defaultValue: ['甲'], max: 1, onValueChange })
+    api(full).insert(0, '乙')
+    expect(api(full).value).toEqual(['甲'])
+    expect(onValueChange).not.toHaveBeenCalled()
+
+    const disabled = makeService({ defaultValue: ['甲'], disabled: true })
+    api(disabled).insert(0, '乙')
+    expect(api(disabled).value).toEqual(['甲'])
+
+    const clamped = makeService({ defaultValue: ['甲'] })
+    api(clamped).insert(99, '尾')
+    api(clamped).insert(-5, '头')
+    expect(api(clamped).value).toEqual(['头', '甲', '尾'])
+  })
+
+  it('受控时只发意图：宿主不写回则值与行号都不动', () => {
+    const onValueChange = vi.fn()
+    const service = makeService({ value: ['甲', '丙'], onValueChange })
+    const before = keys(service)
+    api(service).insert(1, '乙')
+    expect(onValueChange).toHaveBeenCalledWith({ value: ['甲', '乙', '丙'] })
+    expect(api(service).value).toEqual(['甲', '丙'])
+    expect(keys(service)).toEqual(before)
+  })
+
+  it('move 可以一步挪到任意位置，号跟着行走', () => {
+    const service = makeService({ defaultValue: ['甲', '乙', '丙', '丁'], movable: true })
+    const before = keys(service)
+    api(service).move(3, 0)
+    expect(api(service).value).toEqual(['丁', '甲', '乙', '丙'])
+    expect(keys(service)).toEqual([before[3], before[0], before[1], before[2]])
+  })
+
+  it('嵌在 Form 里插在中间：后面各行的值、规则与错误一起后移', () => {
+    const users = ['users'] as const
+    const secondEmail = ['users', 1, 'email'] as const
+    const form = makeFormService({
+      defaultValues: createFormPathRecord<unknown>([
+        [users, [{ id: 'a' }, { id: 'c' }]],
+        [secondEmail, 'c@example.com'],
+      ]),
+      rules: createFormPathRecord<FormRule>([[secondEmail, { required: true }]]),
+    })
+    const rows = makeService({ name: users })
+    rows.refs.set('form', form)
+    form.send({ type: 'ERROR.SET', name: secondEmail, message: '随行后移' })
+
+    api(rows).insert(1, { id: 'b' })
+    const formApi = connectForm(form, normalizeProps)
+    expect(api(rows).value).toEqual([{ id: 'a' }, { id: 'b' }, { id: 'c' }])
+    expect(getFormPathValue(formApi.values, ['users', 2, 'email'])).toBe('c@example.com')
+    expect(formApi.getFieldError(['users', 2, 'email'])).toBe('随行后移')
+    expect(formApi.isFieldRequired(['users', 2, 'email'])).toBe(true)
+    expect(formApi.getFieldError(secondEmail)).toBeFalsy()
   })
 })

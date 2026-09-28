@@ -128,8 +128,11 @@ export interface FieldArraySchema extends MachineSchema {
   event:
     /** 整份替换（公开 API 与受控写回都经过它）。 */
     | { type: 'VALUE.SET', value: unknown[] }
-    /** 在末尾追加一行。 */
-    | { type: 'ITEM.ADD' }
+    /**
+     * 新增一行：index 缺省即追加在末尾，给了就插在那个位置（夹到 0 到行数之间）；
+     * item 给了就用它的 value 作这一行的数据，缺省由 createItem 造（没给工厂即 null）。
+     */
+    | { type: 'ITEM.ADD', index?: number, item?: { value: unknown } }
     /** 删除某一行；restoreFocus 为真时把焦点移到接位的行上。 */
     | { type: 'ITEM.REMOVE', index: number, restoreFocus?: boolean }
     /** 把某一行移到另一个位置；restoreFocus 为真时焦点随该行移动。 */
@@ -167,7 +170,13 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   canAdd: boolean
   /** 整份替换，不受 min / max 约束。 */
   setValue: (next: unknown[]) => void
+  /** 在末尾追加一行，数据由 createItem 造；受 max 约束。 */
   add: () => void
+  /**
+   * 在 index 处插入一行（夹到 0 到行数之间，等于行数即追加），原来在这个位置及之后的行往后挪；受 max 约束。
+   * 给了 item 就用它作这一行的数据，缺省（undefined）由 createItem 造。嵌在 Form 里时，后面各行的值、规则与错误随之后移。
+   */
+  insert: (index: number, item?: unknown) => void
   remove: (index: number) => void
   move: (from: number, to: number) => void
   moveUp: (index: number) => void

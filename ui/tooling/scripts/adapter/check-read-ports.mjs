@@ -77,7 +77,7 @@ const PENDING = {
   'dialog': ['open', 'setOpen'],
   'diff-view': ['view', 'rows', 'expandedValue', 'stats', 'truncated', 'truncatedLines', 'isEmpty', 'toggleGap', 'setExpandedValue'],
   'drawer': ['open', 'side', 'setOpen'],
-  'field-array': ['items', 'value', 'count', 'empty', 'atMin', 'atMax', 'canAdd', 'setValue', 'add', 'remove', 'move', 'moveUp', 'moveDown'],
+  'field-array': ['items', 'value', 'count', 'empty', 'atMin', 'atMax', 'canAdd'],
   'editable': ['value', 'displayValue', 'editing', 'empty', 'setValue', 'edit', 'submit', 'cancel'],
   'file-upload': ['remoteFiles', 'allFiles', 'dragging', 'empty', 'disabled', 'maxFiles', 'getFileSizeText'],
   'float-button': ['open', 'setOpen'],
