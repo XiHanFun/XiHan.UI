@@ -11539,7 +11539,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-circle"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "citation 的 dismiss-trigger 部件 border-radius 覆盖槽。"
@@ -37561,8 +37561,7 @@
         "xh-liquid"
       ],
       "defaultToken": [
-        "--xh-shape-circle",
-        "--xh-shape-control"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "image-viewer 的 close-trigger 部件 border-radius 覆盖槽。"

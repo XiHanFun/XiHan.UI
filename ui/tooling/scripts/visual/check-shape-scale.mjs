@@ -68,7 +68,6 @@ const NO_SLOT = {
  */
 const IDENTITY = {
   // circle：宽高相等的圆形对象
-  'citation:dismiss-trigger': 'circle',
   'citation:source-index': 'circle',
   'avatar:root': 'circle',
   'avatar-group:overflow-item': 'circle',
@@ -115,6 +114,7 @@ const IDENTITY = {
   // 角标圆点档是宽高同槽的正方盒：计数档是胶囊，圆点档必须取 circle
   'badge:indicator[data-dot]': 'circle',
   // liquid 档的媒体控制钮：看图的叉是 40px 正方盒，液态档取 circle（standard 档仍是控件档）
+  'image-viewer:close-trigger': { shape: 'circle', floating: true },
   'image-viewer:close-trigger[data-xh-liquid]': 'circle',
   // 等待中的呼吸点：宽高同槽的正方盒
   'message-feed:pending-indicator': 'circle',

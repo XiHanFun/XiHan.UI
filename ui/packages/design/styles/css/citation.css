@@ -117,9 +117,10 @@
     display: none;
   }
 
+  /* 预览面里的收起钮与其它面板内的关闭钮同一身份：控件圆角 */
   [data-scope='citation'][data-part='dismiss-trigger'] {
     --xh-action-padding-inline: 0;
-    --xh-action-radius: var(--xh-citation-dismiss-trigger-radius, var(--xh-shape-circle));
+    --xh-action-radius: var(--xh-citation-dismiss-trigger-radius, var(--xh-shape-control));
     flex: none;
   }
 

@@ -20401,9 +20401,10 @@
     display: none;
   }
 
+  /* 预览面里的收起钮与其它面板内的关闭钮同一身份：控件圆角 */
   [data-scope='citation'][data-part='dismiss-trigger'] {
     --xh-action-padding-inline: 0;
-    --xh-action-radius: var(--xh-citation-dismiss-trigger-radius, var(--xh-shape-circle));
+    --xh-action-radius: var(--xh-citation-dismiss-trigger-radius, var(--xh-shape-control));
     flex: none;
   }
 
@@ -28715,7 +28716,8 @@
     translate: 0 -50%;
   }
 
-  /* 右上角的关闭钮：接 Action Control icon 档 lg（40px，触控靶走 lg），圆角走控件档；面与翻页钮同一层深色 chrome */
+  /* 右上角的关闭钮：悬浮在媒体上的单图标动作，与翻页钮同走 Action Control floating 档（sm = 40px、圆形）；
+     面与翻页钮同一层深色 chrome */
   [data-scope='image-viewer'][data-part='close-trigger'] {
     --xh-action-bg-rest: var(--xh-_image-viewer-chrome-bg);
     --xh-action-bg-hover: var(--xh-image-viewer-close-bg-hover, var(--xh-_image-viewer-chrome-bg-hover));
@@ -28733,7 +28735,7 @@
     --xh-action-border-pressed: transparent;
     --xh-action-border-focus-visible: transparent;
     --xh-action-border-disabled: transparent;
-    --xh-action-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-control));
+    --xh-action-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-circle));
     --xh-action-visual-size: var(--xh-image-viewer-close-size, var(--xh-_action-profile-visual-size));
     --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-_action-profile-glyph-size));
 
@@ -32399,9 +32401,10 @@
     /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-popover-icon-size, var(--xh-_action-profile-glyph-size));
 
+    /* 与 Dialog、Drawer、Tour、Notification 的叉同一个内缩：面板右上角的关闭钮落点一致 */
     position: absolute;
-    inset-block-start: var(--xh-space-2);
-    inset-inline-end: var(--xh-space-2);
+    inset-block-start: var(--xh-surface-action-inset);
+    inset-inline-end: var(--xh-surface-action-inset);
   }
 
   [data-scope='popover'][data-part='close-trigger'][hidden] {

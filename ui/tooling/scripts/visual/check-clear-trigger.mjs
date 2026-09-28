@@ -25,10 +25,10 @@ const EMBEDDED = ['cascader', 'tree-select', 'combobox', 'date-picker', 'date-ra
 const STANDALONE = ['file-upload', 'signature-pad']
 /**
  * ③ 浮层角落关闭钮；值是尺寸基准的例外。
- * image-viewer：全屏看片的 chrome 钮按触控靶走 lg。
+ * image-viewer：悬浮在媒体上的叉与翻页钮同走 floating 档 sm（--xh-control-box-md，圆形）。
  * toast：那颗叉排在单行短消息里，不在面板角上——28px 比一行正文的行盒还高，走行级动作钮那一档。
  */
-const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'toast': '--xh-control-action-size', 'alert': null, 'floating-panel': null, 'image-viewer': '--xh-control-h-lg', 'notification': null }
+const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'toast': '--xh-control-action-size', 'alert': null, 'floating-panel': null, 'image-viewer': '--xh-control-box-md', 'notification': null }
 /** 部件名与 close-trigger 不同的，逐条登记（通知的叉在卡片那一层，叫 item-close-trigger）。 */
 const CLOSE_PART = { notification: 'item-close-trigger' }
 /**
@@ -263,7 +263,7 @@ for (const c of STANDALONE) {
 }
 
 /** ③ 尺寸基准与 Action Control 档位的对应：接了家族的叉由连接层投 data-xh-action-size，档位得与基准同高。 */
-const CLOSE_ACTION_SIZE = { '--xh-control-h-sm': 'sm', '--xh-control-action-size': 'xs', '--xh-control-h-lg': 'lg' }
+const CLOSE_ACTION_SIZE = { '--xh-control-h-sm': 'sm', '--xh-control-action-size': 'xs', '--xh-control-h-lg': 'lg', '--xh-control-box-md': 'sm' }
 
 /** 基础块里某条桥接槽的取值（选择器尾巴为空的那些规则）。 */
 function bridgeIn(rules, name) {
@@ -298,19 +298,21 @@ for (const [c, sizeException] of Object.entries(CLOSE)) {
   const part = CLOSE_PART[c] ?? 'close-trigger'
   const src = await connect(c)
   const g = src ? getter(src, `get${part.replace(/(?:^|-)([a-z])/g, (_, ch) => ch.toUpperCase())}Props`) : null
-  // 投影了 Action Control icon 档的叉：尺寸、圆角、按压与粗指针热区由家族给，皮肤只映射使用者槽——
-  // 查映射声明、[hidden]、家族按压面，以及连接层投的档位与尺寸基准同高（同 ① / ④ 的 sharedAction 分支）
-  const sharedAction = /@import\s+['"]\.\.\/family\/action-control\.css['"]/.test(css)
-    && /['"]data-xh-action-profile['"]\s*:\s*['"]icon['"]/.test(g ?? '')
+  // 投影了 Action Control icon 档（面板里的叉）或 floating 档（悬浮在媒体上的叉）的关闭钮：尺寸、圆角、
+  // 按压与粗指针热区由家族给，皮肤只映射使用者槽——查映射声明、[hidden]、家族按压面，
+  // 以及连接层投的档位与尺寸基准同高（同 ① / ④ 的 sharedAction 分支）
+  const profile = /['"]data-xh-action-profile['"]\s*:\s*['"](icon|floating)['"]/.exec(g ?? '')?.[1]
+  const sharedAction = /@import\s+['"]\.\.\/family\/action-control\.css['"]/.test(css) && profile !== undefined
   if (sharedAction) {
     const family = await readFile(ACTION_FAMILY, 'utf8')
     const rules = rulesOf(css, c, part)
     const sizeRe = new RegExp(`--xh-action-visual-size:\\s*var\\(--xh-${esc(c)}-close-size,\\s*var\\(--xh-_action-profile-visual-size\\)\\)`)
     if (!has(rules, (t, b) => t.trim() === '' && sizeRe.test(b)))
       problems.push(`${c}.css [${part}] 没把 --xh-${c}-close-size 映到家族正方盒（--xh-action-visual-size）`)
-    const radiusRe = new RegExp(`--xh-action-radius:\\s*var\\(--xh-${esc(c)}-close-radius,\\s*var\\(--xh-shape-control\\)\\)`)
+    const shape = profile === 'floating' ? '--xh-shape-circle' : '--xh-shape-control'
+    const radiusRe = new RegExp(`--xh-action-radius:\\s*var\\(--xh-${esc(c)}-close-radius,\\s*var\\(${shape}\\)\\)`)
     if (!has(rules, (t, b) => t.trim() === '' && radiusRe.test(b)))
-      problems.push(`${c}.css [${part}] 圆角该映到 --xh-shape-control（--xh-action-radius: var(--xh-${c}-close-radius, var(--xh-shape-control))）`)
+      problems.push(`${c}.css [${part}] 圆角该映到 ${shape}（--xh-action-radius: var(--xh-${c}-close-radius, var(${shape}))）`)
     if (!has(rules, (t, b) => t.trim().startsWith('[hidden]') && /display:\s*none/.test(b)))
       problems.push(`${c}.css [${part}] 缺 [hidden] { display: none }`)
     if (!/\[data-xh-action-control\]:not\(\[data-disabled\]\):not\(\[data-loading\]\):is\(:active, \[data-pressed\]\)[\s\S]*--xh-motion-scale-press/.test(family))
