@@ -70670,7 +70670,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_tags-input-item-font-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "tags-input 的 count 部件 font-size 覆盖槽。"

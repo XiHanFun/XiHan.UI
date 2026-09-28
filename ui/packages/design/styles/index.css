@@ -42046,11 +42046,11 @@
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
 
-  /* 计数：排在控件行下面靠尾端的一行小字，与标题分列 root 的两端 */
+  /* 计数：排在控件行下面靠尾端的一行小字，与标题分列 root 的两端。它是次级标注，取说明档字号，不随控件档 */
   [data-scope='tags-input'][data-part='count'] {
     align-self: flex-end;
     color: var(--xh-tags-input-count-fg, var(--xh-fg-muted));
-    font-size: var(--xh-tags-input-count-font-size, var(--xh-_tags-input-item-font-size));
+    font-size: var(--xh-tags-input-count-font-size, var(--xh-text-caption-size));
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-normal);
   }
