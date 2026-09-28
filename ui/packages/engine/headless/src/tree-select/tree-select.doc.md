@@ -24,6 +24,7 @@
 - 节点可写副文本，第 2 行放一句解释，不进连打检索串。
 - 节点行尾留一格给作者（计数、徽标）；行首那一格归勾选框与展开箭头。
 - `searchable` 在浮层顶部放一个搜索框（`input` 部件，排在 `tree` 之前），展开时焦点先落在框上。输入即按 `filter`（缺省为标签大小写不敏感包含）裁树：命中节点连同整棵子树留下，祖先保留并自动展开；搜索里的展开单独记，不改写 `expandedValue`。手写的整棵树里没命中的节点由连接层带 `hidden` 收起，没有命中时空态改说 `translations.noMatch`。树里打可打印字符会接到检索词末尾并把焦点交回搜索框，下方向键从框进树，Escape 先清空检索词；收起浮层即清空。
+- 大树接 [虚拟列表](./virtualizer)：把展开后的可见行数（`flattenTree(collection, expandedValue)` 的长度）交给它的 `count`，再把它的 `collectionVirtualizer` 回传给 `virtualizer`，展开收起后同步更新 `count`。键盘、连打检索与展开时的锚点都按完整可见行的数据算，焦点由桥把目标行滚进窗口再交接。窗口里的行平铺渲染，层级缩进按行的 `level` 由作者补上；`virtualizer` 与 `searchable` 不能同开。
 - 支持只选叶子不选分支、子节点异步加载：节点用 `hasChildren: true` 声明懒分支，首次展开由 `loadChildren({ node, signal })` 获取直接子项；失败保留 cause，默认 `branch-error` 与 `branch-retry-trigger` 直接可用。
 - 整树空（`empty`）与在途（`loading`）默认自动渲染；collection 看有效树长度，手写节点由适配器只上报挂载事实、Headless 统一判空。`loading` 为真时树报 `aria-busy`，空态让位；作者写同名部件时保留作者结构与文案。
 - 输入框保持实体；浮层使用 M2 磨砂材质、内侧顶光和四向短位移，不缩放树中文字。树、空态与加载态共用一个外壳，底部操作使用同材质分隔线；滚动归树，搜索框与底部操作区钉在树的上下沿不随行滚走；增强对比度时材质自动实体化。面板与字段盒等宽，长节点在行里截断、不撑宽面板；字段盒比可用区还宽时收成可用宽度。
@@ -37,7 +38,7 @@
 
 ## 最佳实践
 
-- 大树开启 `searchable`，逐级展开查找节点很慢。
+- 大树开启 `searchable` 或接虚拟列表（两者择一），逐级展开查找节点很慢。
 - 无头用法需要按 `api.value` 遍历，为每个值调用 `api.getHiddenInputProps({ value })` 并渲染原生 input；旧的无参调用与 CSV 提交合同已删除。Vue/React 的 `HiddenInput` 部件自动铺开，Web Components 仍只需声明一个原生 `input[data-xh-part="hidden-input"]`，额外字段由宿主管理。
 - 明确只能选叶子还是分支也可选，并在界面上让分支的可点性可见。
 - 自定义 `branch-control` 与 `item` 都应包含 `item-indicator`，分支标记直接读取所属分支的选择与半选状态，不另写状态判定或自绘复选框。Vue / React 自动结构已提供此部件。

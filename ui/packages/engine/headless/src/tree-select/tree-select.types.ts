@@ -8,6 +8,7 @@
 import type { CascadeStrategy, Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { TreeNode, TreeVisibleNode } from '../tree'
+import type { CollectionVirtualizer } from '../virtualizer'
 
 /**
  * TreeSelect 专用节点。`hasChildren` 在未提供 `children` 时声明这是一个尚未取回子项的分支；
@@ -165,6 +166,11 @@ export interface TreeSelectSchema extends MachineSchema {
   props: {
     /** 树数据，层级元信息与显示文本的唯一事实源。`hasChildren` 且未提供 children 是懒分支；已提供 children 时它优先。默认为空树。 */
     collection?: TreeSelectNode[]
+    /**
+     * 完整 collection 与 Virtualizer 的焦点桥：键盘、检索与展开时的锚点按可见行的数据算，DOM 只承载窗口里那几行。
+     * count 必须等于当前 visibleNodes.length（展开收起后同步更新）；与 searchable 不能同开。
+     */
+    virtualizer?: CollectionVirtualizer
     /**
      * 取回 `hasChildren: true` 分支的直接子项。首次展开自动调用，失败后用 api.retryBranch
      * 显式重试。旧请求的兑现或拒绝不会覆盖更新的一轮，也不会写回已移除的分支。

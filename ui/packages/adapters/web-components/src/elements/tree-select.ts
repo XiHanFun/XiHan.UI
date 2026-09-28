@@ -7,6 +7,7 @@
 
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
+  CollectionVirtualizer,
   FormControlState,
   TreeSelectApi,
   TreeSelectBranchLoadDetails,
@@ -140,6 +141,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     collection: { attribute: false },
+    virtualizer: { attribute: false },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     expandedValue: { attribute: false },
@@ -172,6 +174,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   }
 
   declare collection?: TreeSelectNode[]
+  /** 完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。只能作为 property 设置。 */
+  declare virtualizer?: CollectionVirtualizer
   /** 懒分支的取数函数；只能作为 property 设置。 */
   declare loadChildren?: TreeSelectSchema['props']['loadChildren']
   declare value?: string | string[]
@@ -336,7 +340,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
    */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
-    scrollable: () => this.getPart('tree'),
+    // 虚拟窗口的滚动层是 Virtualizer 的视口，条子跟着它走
+    scrollable: () => this.virtualizer?.getViewportElement() ?? this.getPart('tree'),
     axes: ['vertical', 'horizontal'],
     // 条子走浮层 4px 档
     props: () => ({ dir: this.direction, size: 'sm' }),
@@ -367,6 +372,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     }, this.inheritedControl)
     return {
       collection: this.collection,
+      virtualizer: this.virtualizer,
       loadChildren: this.loadChildren,
       value: this.value,
       defaultValue: this.defaultValue,
@@ -412,7 +418,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {
-    return this.portal.roots
+    // 虚拟窗口里的节点住在 xh-virtualizer 的条目外壳里，嵌套元素的边界挡住了常规的角色扫描
+    return [...this.portal.roots, ...(this.virtualizer?.getRenderedItemRoots() ?? [])]
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。

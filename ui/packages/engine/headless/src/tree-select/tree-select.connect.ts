@@ -11,9 +11,10 @@ import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectPressedPart
 import { cascadeState, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
+import { assertCollectionVirtualizer, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { flattenTree, indexTree } from '../tree'
 import { treeSelectAnatomy } from './tree-select.anatomy'
-import { findTreeSelectNode, isTreeSelectLazyBranch, resolveTreeSelectCollection, TREE_SELECT_DEFAULT_PLACEMENT, treeSelectNodeEls } from './tree-select.machine'
+import { findTreeSelectNode, isTreeSelectLazyBranch, resolveTreeSelectCollection, TREE_SELECT_DEFAULT_PLACEMENT, TREE_SELECT_NODE_SELECTOR, treeSelectNodeEls } from './tree-select.machine'
 import { resolveTreeSelectSearch } from './tree-select.search'
 
 const parts = treeSelectAnatomy.build()
@@ -106,6 +107,13 @@ export function connectTreeSelect<T extends PropTypes>(
 
   // 摊平与索引是 (collection, 展开集合) 的纯函数，不访问 DOM
   const rows = flattenTree(collection, viewExpanded)
+  // 虚拟窗口：键盘与检索按这份可见行算，DOM 只承载窗口里那几行。搜索视图的可见行由组件自己裁，
+  // 外部 Virtualizer 的 count 对不上，两者不能同开
+  const virtualizer = prop('virtualizer')
+  if (virtualizer && searchable)
+    throw new Error('[xh] TreeSelect 的 virtualizer 与 searchable 不能同时开启：搜索视图的可见行由组件裁剪，Virtualizer.count 无从对齐')
+  assertCollectionVirtualizer('TreeSelect', virtualizer, rows.length, prop('collection') != null)
+  const rowIndex = new Map(rows.map((row, index) => [row.value, index]))
   // 标签、禁用与语气按整棵树查；层级三件套按此刻摊平的那棵树给，搜索视图里的位次与同级数才对得上
   const metaIndex = indexTree(fullCollection)
   const viewIndex = search ? indexTree(collection) : metaIndex
@@ -234,13 +242,34 @@ export function connectTreeSelect<T extends PropTypes>(
     send({ type: 'NODE.FOCUS', value: next })
   }
 
+  /** 虚拟窗口里的落点：先记锚点，再由桥把那一行滚进窗口、挂上后交接焦点。 */
+  const focusVirtualTarget = (target: { index: number, value: string } | null): void => {
+    if (!target || !virtualizer)
+      return
+    send({ type: 'NODE.FOCUS', value: target.value })
+    virtualizer.focusIndex(target.index, { align: 'auto', selector: TREE_SELECT_NODE_SELECTOR })
+  }
+
   /** 方向键落点：起点用锚点，终点在可见行上算，禁用节点自动跳过。 */
   const focusBy = (container: HTMLElement, intent: NavIntent): void => {
+    if (virtualizer) {
+      focusVirtualTarget(virtualCollectionTarget(rows, focusedValue, intent, {
+        value: row => row.value,
+        disabled: row => isDisabled(row.value),
+        loop,
+      }))
+      return
+    }
     focusValue(navigateItems(treeSelectNodeEls(container, rows), focusedValue, intent, { loop }))
   }
 
   /** 按值把焦点搬到某一行。 */
   const focusOn = (container: HTMLElement, v: string): void => {
+    if (virtualizer) {
+      const index = rowIndex.get(v)
+      focusVirtualTarget(index == null ? null : { index, value: v })
+      return
+    }
     focusValue(treeSelectNodeEls(container, rows).find(el => itemValue(el) === v) ?? null)
   }
 
@@ -252,6 +281,15 @@ export function connectTreeSelect<T extends PropTypes>(
 
   /** 连打检索落点：从当前锚点的下一个绕一圈找，禁用节点跳过；未命中保持原状。 */
   const focusMatch = (container: HTMLElement, query: string): void => {
+    if (virtualizer) {
+      focusVirtualTarget(virtualCollectionMatch(rows, focusedValue, query, {
+        value: row => row.value,
+        text: row => labelOf(row.value),
+        disabled: row => isDisabled(row.value),
+        loop: true,
+      }))
+      return
+    }
     const list = treeSelectNodeEls(container, rows)
     focusValue(matchTypeahead(list, indexOfValue(list, focusedValue), query, {
       text: nodeText,
