@@ -6,6 +6,7 @@ import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 import { cascaderMachine, connectCascader } from '../src/cascader'
+import { colorPickerMachine } from '../src/color-picker'
 import { comboboxMachine, connectCombobox } from '../src/combobox'
 import { connectContextMenu, contextMenuMachine } from '../src/context-menu'
 import { datePickerMachine } from '../src/date-picker'
@@ -114,6 +115,10 @@ const CASES: Record<string, Case> = {
   'time-range-picker': {
     machine: timeRangePickerMachine,
     parts: service => [connectTimeRangePicker(service, normalizeProps).getContentProps() as Attrs],
+  },
+  'color-picker': {
+    machine: colorPickerMachine,
+    parts: marked,
   },
 }
 

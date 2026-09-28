@@ -13,6 +13,12 @@ import {
   XhCascaderRoot,
   XhCascaderTrigger,
   XhCascaderValueText,
+  XhColorPickerContent,
+  XhColorPickerControl,
+  XhColorPickerHueSlider,
+  XhColorPickerPositioner,
+  XhColorPickerRoot,
+  XhColorPickerTrigger,
   XhComboboxContent,
   XhComboboxControl,
   XhComboboxInput,
@@ -242,6 +248,14 @@ const CASES: Record<string, Case> = {
           h(XhTimeRangePickerItem, { value: '10' }),
         ])),
       ))),
+    ]),
+  },
+  'color-picker': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhColorPickerRoot, { ...props, defaultValue: '#ff0000' }, () => [
+      h(XhColorPickerControl, null, () => h(XhColorPickerTrigger, null, () => '选择颜色')),
+      h(XhColorPickerPositioner, null, () => h(XhColorPickerContent, null, () => h(XhColorPickerHueSlider))),
     ]),
   },
   'dialog': {

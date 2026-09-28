@@ -194,6 +194,11 @@ export interface ColorPickerSchema extends MachineSchema {
     onColorError?: (details: ColorPickerErrorDetails) => void
   }
   context: {
+    /**
+     * 挂载时开着、还没收起过：这一段打开属于首帧，content 投影 data-instant 直接呈现、不播进场。
+     * 第一次收起时清掉，之后的每一次打开照常进场。
+     */
+    openedAtMount: boolean
     /** 值串。受控（value 提供）时 cell 直读 prop。 */
     value: string
     /** 工作色的锚：上一次由内部操作产出的 HSVA 与对应的串，灰度处的色相依靠它保留。 */
@@ -296,6 +301,7 @@ export interface ColorPickerSchema extends MachineSchema {
     | 'recordRecent'
     | 'clearRecent'
     | 'syncInline'
+    | 'clearOpenedAtMount'
   effect: 'trackPosition' | 'trackLayer' | 'trackPointer' | 'runEyeDropper'
 }
 

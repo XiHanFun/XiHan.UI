@@ -139,6 +139,8 @@ describe('颜色选择器浮层：floating 实体面', () => {
       const style = getComputedStyle(inner)
       expect(sides.map(side => style.getPropertyValue(`--xh-_overlay-enter-${side}`).trim())).toEqual(expected)
     }
+    // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户打开时的那条进场
+    delete part('content').dataset.instant
     expect(getComputedStyle(part('content')).animationName).toBe('xh-overlay-slide-in')
     expect(getComputedStyle(part('content')).scale).toBe('none')
   })
@@ -146,6 +148,8 @@ describe('颜色选择器浮层：floating 实体面', () => {
   it('减弱动效进出场只剩 120ms 淡变，没有空间位移', async () => {
     await mount('light')
     part('positioner').dataset.motion = 'reduce'
+    // 撤掉首帧标记：量的是用户开合时的进退场
+    delete part('content').dataset.instant
     for (const state of ['open', 'closed']) {
       part('content').dataset.state = state
       const style = getComputedStyle(part('content'))
