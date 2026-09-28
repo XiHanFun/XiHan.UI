@@ -45772,7 +45772,8 @@
     --xh-_toolbar-root-bg: transparent;
     --xh-_toolbar-root-bg-disabled: transparent;
 
-    /* 一行排不下就折行：条目宽度由各自的控件决定，硬撑一行会把整条顶出容器 */
+    /* 一行排不下就折行：条目宽度由各自的控件决定，硬撑一行会把整条顶出容器。
+       放了「更多」钮时改为收纳，见下方收纳一节 */
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -45930,6 +45931,8 @@
     --xh-action-radius: 0;
     --xh-action-scale-pressed: none;
     --xh-action-bg-disabled: var(--xh-toolbar-item-bg-disabled, var(--xh-bg-subtle));
+    /* 组末端补回的控件圆角：尾部几段收进「更多」菜单后，由留下的最后一段接过去 */
+    --xh-_toolbar-segment-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
 
     position: relative;
   }
@@ -45998,6 +46001,80 @@
 
   [data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='separator'][data-orientation='horizontal'] {
     margin-block-start: calc(-1 * var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin)));
+  }
+
+  /* —— 收纳 —— */
+  /* 放了「更多」钮就不折行：放不下的条目按次序收进它弹出的菜单。条目与分组不压缩——压缩了，
+     量到的就不是自然长度；root 在 flex 父容器里可以被压到比内容窄，可用长度由外面给 */
+  [data-scope='toolbar'][data-part='root']:has(> [data-scope='toolbar'][data-part='overflow-trigger']) {
+    flex-wrap: nowrap;
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  [data-scope='toolbar'][data-part='root']:has(> [data-scope='toolbar'][data-part='overflow-trigger'])
+    > :is([data-scope='toolbar'][data-part='item'], [data-scope='toolbar'][data-part='group']) {
+    flex-shrink: 0;
+  }
+
+  /* 收起的条目之前的分隔线与整组收空的分组一并让开：它们分隔的那一侧已经没有露着的条目，
+     留着会在「更多」钮前多出一道线、多出一截间距 */
+  [data-scope='toolbar'][data-part='root']:has(> [data-scope='toolbar'][data-part='overflow-trigger']:not([hidden]))
+    > [data-scope='toolbar'][data-part='separator']:not(
+      :has(
+        ~ [data-scope='toolbar'][data-part='item']:not([hidden]),
+        ~ [data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='item']:not([hidden])
+      )
+    ),
+  [data-scope='toolbar'][data-part='root']:has(> [data-scope='toolbar'][data-part='overflow-trigger']:not([hidden]))
+    > [data-scope='toolbar'][data-part='group']:not(:has(> [data-scope='toolbar'][data-part='item']:not([hidden]))),
+  [data-scope='toolbar'][data-part='root']:has(> [data-scope='toolbar'][data-part='overflow-trigger']:not([hidden]))
+    > [data-scope='toolbar'][data-part='group']
+    > [data-scope='toolbar'][data-part='separator']:not(:has(~ [data-scope='toolbar'][data-part='item']:not([hidden]))) {
+    display: none;
+  }
+
+  /* 组的尾部几段收进菜单后，留下的最后一段补回末端圆角 */
+  [data-scope='toolbar'][data-part='group'][data-orientation='horizontal']
+    > [data-scope='toolbar'][data-part='item']:not([hidden]):not(:has(~ [data-scope='toolbar'][data-part='item']:not([hidden]))) {
+    border-start-end-radius: var(--xh-_toolbar-segment-end-radius);
+    border-end-end-radius: var(--xh-_toolbar-segment-end-radius);
+  }
+
+  [data-scope='toolbar'][data-part='group'][data-orientation='vertical']
+    > [data-scope='toolbar'][data-part='item']:not([hidden]):not(:has(~ [data-scope='toolbar'][data-part='item']:not([hidden]))) {
+    border-end-start-radius: var(--xh-_toolbar-segment-end-radius);
+    border-end-end-radius: var(--xh-_toolbar-segment-end-radius);
+  }
+
+  /* 「更多」钮：行尾一枚单图标钮，接 Action Control icon 档 ghost 面，与条目同档（连接层投影 profile /
+     variant / size）。盒取条目同高的正方形，四态面、0.97 按压、焦点环与粗指针 44px 命中区由家族配方给；
+     承载面的阶梯随根的 variant 经 host 槽下发（ghost 根白底 100 → 200，subtle 根淡底 200 → 300） */
+  [data-scope='toolbar'][data-part='overflow-trigger'] {
+    touch-action: manipulation;
+  }
+
+  /* 菜单开着：与悬停同档的中性面，不用品牌色、不另画环；收起的是哪几条由菜单本身说明 */
+  [data-scope='toolbar'][data-part='overflow-trigger'][data-state='open'] {
+    --xh-action-bg-rest: var(--xh-_action-variant-bg-hover);
+    --xh-action-bg-focus-visible: var(--xh-_action-variant-bg-hover);
+  }
+
+  /* 没写内容就由皮肤画兜底字形：横排三点。作者塞了自己的图标这条即不命中；
+     字形与条目里的图标同一把尺（根按尺寸档下发的 --xh-icon-size） */
+  [data-scope='toolbar'][data-part='overflow-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
+  }
+
+  /* 全部放得下时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
+  [data-scope='toolbar'][data-part='overflow-trigger'][hidden] {
+    display: none;
   }
 
   @media (forced-colors: active) {

@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="toolbar"`：**`root`** · `group` · **`item`** · `separator`
+`data-scope="toolbar"`：**`root`** · `group` · **`item`** · `separator` · `overflow-trigger`
 
 ## 示例
 
@@ -42,6 +42,12 @@
 
 <XhDemo src="toolbar/04-variant" />
 
+### 收进更多菜单
+
+放不下的操作按次序收进行尾的更多按钮
+
+<XhDemo src="toolbar/05-overflow" />
+
 ## 设计指引
 
 ### 何时使用
@@ -62,21 +68,26 @@
 - 独立条目是接入 Action Control text 档的无描边工具按钮，组内条目使用中性操作面；`aria-pressed` 表示选中状态。
 - 支持水平、垂直、分组、分隔线与整体禁用。
 - 方向键在条目间移动，禁用项会被跳过。
+- 放了 `overflow-trigger` 时不折行：宽度不够时，放不下的条目按次序收进行尾的「更多」按钮，点开是一张菜单，选中其中一项即触发该条目自己的点击；宽度够时「更多」按钮收起。容器变宽变窄、条目增减或改写后自动重新计算。
 
 ### 组合
 
 - 使用 `group` 收紧相关操作。
 - 使用 `separator` 区分操作组。
+- 使用 `overflow-trigger` 放在 `root` 的最后，承接放不下的条目。菜单里的文字取条目的 `aria-label`（没有时取条目文字），写了 `aria-pressed` 的开关条目在菜单里显示为勾选项，工具条上的分组与分隔线在菜单里画成分隔线。不写内容时由皮肤画一枚横排三点，可及名缺省为 `More`，用 `translations.overflowTrigger` 换成本地文案。
+- Web Components 只写一颗空的 `<button data-xh-part="overflow-trigger">`，菜单的浮层与条目由元素自己建。
 
 ### 最佳实践
 
-- 仅图标条目必须提供 `aria-label`。
+- 仅图标条目必须提供 `aria-label`：它也是条目收进菜单后显示的文字。
 - 使用 `aria-pressed` 表示可切换工具的当前状态。
+- 常用的操作排在前面：收纳从尾部开始，排在最后的最先收进菜单。
 
 ### 反模式
 
 - 不要在工具栏中放置文本输入控件。
 - 不要将整页所有操作放入同一工具栏。
+- 不要在放不下时让工具条横向滚动：用 `overflow-trigger` 收进菜单。
 
 ## API 参考
 
@@ -85,7 +96,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-toolbar>` |
-| Vue 组件 | `XhToolbarGroup` `XhToolbarItem` `XhToolbarRoot` `XhToolbarSeparator` |
+| Vue 组件 | `XhToolbarGroup` `XhToolbarItem` `XhToolbarOverflowTrigger` `XhToolbarRoot` `XhToolbarSeparator` |
 | 组合式函数 | `useToolbar` |
 | 状态机 | `toolbarMachine` |
 | 皮肤 | `@xihan-ui/styles/toolbar.css` |
@@ -100,6 +111,7 @@
 | `disabled` | `boolean` |  | 整条禁用：条目全部为 aria-disabled，方向键不再接管。 |
 | `variant` | `ControlVariant` |  | 形态：ghost 只组织控件不画面（默认），outline 为附着式工具面，subtle 为淡底。默认 ghost。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，同时调整排布与默认条目尺寸。 |
+| `translations` | `Partial<ToolbarTranslations>` |  | 读屏文案：「更多」钮的可及名，缺省 More。 |
 
 ### 插槽
 
@@ -126,7 +138,7 @@
 
 **状态**：`idle`
 
-**事件**：`ITEM.FOCUS` · `TOOLBAR.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`ITEM.FOCUS` · `OVERFLOW_TRIGGER.FOCUS` · `TOOLBAR.BLUR` · `PRESS.START` · `PRESS.END` · `OVERFLOW.SELECT`
 
 **判据**：`canPress`
 
@@ -136,14 +148,16 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `focusedValue` | `string \| null` | 焦点锚点；焦点不在工具条内时为 null。 |
+| `focusedValue` | `string \| null` | 焦点锚点；焦点不在工具条内、或停在「更多」钮上时为 null。 |
 | `orientation` | `Orientation` | 生效的主轴。 |
 | `separatorOrientation` | `Orientation` | 分隔线的朝向：恒与主轴垂直（横向工具条中的分隔线是竖线）。 |
 | `disabled` | `boolean` |  |
+| `overflowItems` | `readonly ToolbarOverflowItem[]` | 收进「更多」菜单的条目，文档序；全部放得下时为空数组。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getGroupProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: ToolbarItemProps) => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
+| `getOverflowTriggerProps` | `() => T['button']` | 行尾的「更多」钮，也是「更多」菜单的触发器：适配器按 asChild 的规则把菜单的开合接线合进来，解剖标记归工具条，工具条的处理器先跑。 |
 
 ## 无障碍
 
@@ -154,12 +168,14 @@
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Tab` / `Shift+Tab` | roving tabindex（恒开） | 整条只占一个 Tab 位：焦点落到锚点条目，无锚点时先落容器再由它转投给第一个可停留条目 |
-| `ArrowRight` / `ArrowDown` | 焦点在条内且未整条禁用；横排收 ArrowRight、竖排收 ArrowDown | 焦点移到下一个可停留条目（禁用项跳过、尽头按 loop 回绕）；dir=rtl 时水平主轴改由 ArrowLeft 承担 |
-| `ArrowLeft` / `ArrowUp` | 焦点在条内且未整条禁用；横排收 ArrowLeft、竖排收 ArrowUp | 焦点移到上一个可停留条目（禁用项跳过、尽头按 loop 回绕）；dir=rtl 时水平主轴改由 ArrowRight 承担 |
+| `ArrowRight` / `ArrowDown` | 焦点在条内且未整条禁用；横排收 ArrowRight、竖排收 ArrowDown | 焦点移到下一个可停留条目（禁用项与收进菜单的条目跳过、放不下时「更多」钮排在最后、尽头按 loop 回绕）；dir=rtl 时水平主轴改由 ArrowLeft 承担 |
+| `ArrowLeft` / `ArrowUp` | 焦点在条内且未整条禁用；横排收 ArrowLeft、竖排收 ArrowUp | 焦点移到上一个可停留条目（禁用项与收进菜单的条目跳过、尽头按 loop 回绕）；dir=rtl 时水平主轴改由 ArrowRight 承担 |
 | `Home` | 焦点在条内且未整条禁用 | 焦点移到首个可停留条目 |
-| `End` | 焦点在条内且未整条禁用 | 焦点移到末个可停留条目 |
+| `End` | 焦点在条内且未整条禁用 | 焦点移到末个可停留条目；放不下时是「更多」钮 |
 | `Enter` / `Space` | held on item, 整条未禁用且条目未禁用 | 按住期间该条目投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或转禁用撤下。激活语义仍归条目自身（原生 button 的 click） |
-| `交叉轴的两个方向键` | 焦点在条内（横排按上下、竖排按左右） | 不归工具条管：原样放行给页面滚动与读屏，绝不 preventDefault |
+| `Enter` / `Space` / `ArrowDown` / `ArrowUp` | 焦点在「更多」钮上；竖排工具条里上下键仍归工具条走位，只收 Enter 与 Space | 展开「更多」菜单：Enter / Space / ArrowDown 落到首项，ArrowUp 落到末项；菜单里选中一项即替收起的条目触发它自己的点击，菜单收起 |
+| `Escape` | 「更多」菜单展开 | 收起菜单，焦点回到「更多」钮 |
+| `交叉轴的两个方向键` | 焦点在条内（横排按上下、竖排按左右） | 不归工具条管：原样放行给页面滚动与读屏，绝不 preventDefault；落在菜单触发器（含「更多」钮）上时由触发器展开菜单 |
 
 ### ARIA
 
@@ -174,6 +190,8 @@
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `separator` | `aria-orientation` | 'vertical' \| 'horizontal' |
 | `separator` | `role` | 'separator' |
+| `overflow-trigger` | `aria-disabled` | 'true' \| 'false' |
+| `overflow-trigger` | `aria-label` | props.translations.overflowTrigger |
 
 ## 样式参考
 
@@ -203,6 +221,12 @@
 | `item` | `data-xh-action-size` | props.size |
 | `item` | `data-xh-action-variant` | 'ghost' |
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
+| `overflow-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `overflow-trigger` | `data-xh-action-control` | '' |
+| `overflow-trigger` | `data-xh-action-display` | 'always' |
+| `overflow-trigger` | `data-xh-action-profile` | 'icon' |
+| `overflow-trigger` | `data-xh-action-size` | props.size |
+| `overflow-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -230,9 +254,9 @@
 | `--xh-toolbar-item-font-size` | `item` | `font-size` | `default` | `--xh-_action-profile-font-size` | toolbar 的 item 部件 font-size 覆盖槽。 |
 | `--xh-toolbar-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toolbar 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-toolbar-item-gap` | `item` | `gap` | `default` | `--xh-control-gap-sm` | toolbar 的 item 部件 gap 覆盖槽。 |
-| `--xh-toolbar-item-h` | `item` | `block-size` | `default` | `--xh-_action-profile-visual-size` | toolbar 的 item 部件 block-size 覆盖槽。 |
+| `--xh-toolbar-item-h` | `item` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | toolbar 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-toolbar-item-px` | `item` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | toolbar 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-toolbar-item-radius` | `group`<br>`item` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-of-type`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-_action-profile-radius`<br>`--xh-shape-control` | toolbar 的 group、item 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-toolbar-item-radius` | `group`<br>`item` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-of-type`<br>`last-of-type`<br>`not(:has(~ [data-scope='toolbar'][data-part='item']:not([hidden])`<br>`not([hidden])`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-_action-profile-radius`<br>`--xh-shape-control` | toolbar 的 group、item 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-toolbar-px` | `root` | `padding-inline` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-toolbar-py` | `root` | `padding-block` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-toolbar-radius` | `root` | `border-radius` | `default`<br>`variant=outline` | `--xh-shape-surface` | toolbar 的 root 部件 border-radius 覆盖槽。 |
@@ -250,6 +274,8 @@
 动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
 
 `background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

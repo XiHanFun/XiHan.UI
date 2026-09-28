@@ -70317,7 +70317,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-toolbar>`：Light-DOM 行为宿主：作者写 root、若干 item，可选的 group 与 separator，\n元素运行 toolbar 状态机并把 connect 产出接上。\n\n工具条只负责两件事：整条一个 Tab 位的方向键导航，以及 role=toolbar / role=group /\nrole=separator 这套 ARIA。条目自身是按钮、切换按钮还是下拉触发器，各自的角色、按下态与\n点击行为一律归条目自身：元素不覆盖条目的 role，也不接管条目的 click。\n条目身份取写在条目上的 value 属性；禁用由条目声明 aria-disabled\n（集合条目一律如此，原生 disabled 不可聚焦、无法作为方向键的起点）。\n位于 form 中的按钮式条目需自行写 type=\"button\"，否则回车会直接提交表单。\n\n导航在事件发生时按 data-scope + data-part 查询 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互运行（基类 updated 已保证）。",
+          "description": "`<xh-toolbar>`：Light-DOM 行为宿主：作者写 root、若干 item，可选的 group、separator 与\n行尾的 overflow-trigger，元素运行 toolbar 状态机并把 connect 产出接上。\n\n工具条只负责三件事：整条一个 Tab 位的方向键导航，role=toolbar / role=group /\nrole=separator 这套 ARIA，以及放不下时把条目按次序收进「更多」菜单。条目自身是按钮、\n切换按钮还是下拉触发器，各自的角色、按下态与点击行为一律归条目自身：元素不覆盖条目的 role，\n也不接管条目的 click。条目身份取写在条目上的 value 属性；禁用由条目声明 aria-disabled\n（集合条目一律如此，原生 disabled 不可聚焦、无法作为方向键的起点）。\n位于 form 中的按钮式条目需自行写 type=\"button\"，否则回车会直接提交表单。\n\n「更多」菜单的定位层、列表与条目由元素自己建（与每页条数下拉、自绘滚动条同一条路）：\n作者只在 root 末尾写一颗 overflow-trigger。建出来的节点归 menu 的 scope，不写 data-xh-part。\n\n导航在事件发生时按 data-scope + data-part 查询 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互运行（基类 updated 已保证）。",
           "name": "XhToolbarElement",
           "cssParts": [
             {
@@ -70335,9 +70335,21 @@
             {
               "description": "role=separator 分隔线，朝向恒与主轴垂直",
               "name": "separator"
+            },
+            {
+              "description": "行尾的「更多」钮，写一个空 `<button>` 放在 root 末尾即可；放不下的条目收进它弹出的菜单，全部放得下时收着",
+              "name": "overflow-trigger"
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
             {
               "kind": "field",
               "name": "partContract",
@@ -70403,6 +70415,14 @@
             },
             {
               "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<ToolbarTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
@@ -70420,10 +70440,77 @@
             },
             {
               "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "menuScope",
+              "privacy": "private",
+              "readonly": true,
+              "description": "「更多」菜单的 id 由它派生：触发器与列表靠 aria-controls / aria-labelledby 互相认领。"
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ToolbarSchema>(this, toolbarMachine, () => this.machineProps())"
+              "default": "new MachineController<ToolbarSchema>(this, toolbarMachine, () => this.machineProps(), { // 收纳量测在机器的挂载效应里跑，root 的取值口要赶在那之前交出去 onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')), })"
+            },
+            {
+              "kind": "field",
+              "name": "menuCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<MenuSchema>( this, menuMachine, () => toolbarOverflowMenuProps(this.ctrl.service as Service<ToolbarSchema>), { scope: this.menuScope, onBuilt: svc => this.injectMenuRefs(svc) }, )",
+              "description": "「更多」菜单：一台 menu 机器，props 从工具条的机器现读，故必须排在 ctrl 之后建。"
+            },
+            {
+              "kind": "field",
+              "name": "menuNodes",
+              "type": {
+                "text": "OverflowMenuNodes | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "「更多」菜单那一套节点；overflow-trigger 缺席时不建。"
+            },
+            {
+              "kind": "field",
+              "name": "menuExit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
+              "name": "menuPortal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.menuNodes?.positioner ?? null, scrollable: () => this.menuNodes?.content ?? null, props: () => ({ size: 'sm' }), })",
+              "description": "条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；浮层里的条子走 4px 档"
             },
             {
               "kind": "method",
@@ -70434,6 +70521,58 @@
                   "text": "Partial<ToolbarSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureMenuExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "OverlayExit"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "open",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "registerMenuLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectMenuRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<MenuSchema>"
+                  }
+                }
+              ]
             },
             {
               "kind": "method",
@@ -70481,6 +70620,89 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "wireOverflowMenu",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "triggerProps",
+                  "type": {
+                    "text": "Record<string, unknown>"
+                  }
+                }
+              ],
+              "description": "「更多」钮与它弹出的菜单。钮是作者写的工具条部件，菜单的开合接线按 asChild 的规则合进它的属性\n（菜单的解剖标记让位、工具条的处理器先跑），与 Vue / React 落到节点上的一模一样；\n菜单的定位层、列表与条目由元素自己建。"
+            },
+            {
+              "kind": "method",
+              "name": "ensureMenuNodes",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "OverflowMenuNodes"
+                }
+              },
+              "description": "定位层与列表：建一次，挂在宿主里 root 之后；展开时由 Portal 搬到落点。"
+            },
+            {
+              "kind": "method",
+              "name": "wireMenuEntries",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "menu",
+                  "type": {
+                    "text": "MenuApi"
+                  }
+                },
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "OverflowMenuNodes"
+                  }
+                }
+              ],
+              "description": "按菜单的条目元信息铺条目：已有的复用、缺的新建、多的移除，次序与收纳一致。"
+            },
+            {
+              "kind": "method",
+              "name": "removeEntry",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "entry",
+                  "type": {
+                    "text": "OverflowEntry"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "releaseMenuNodes",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             }
           ],
           "attributes": [
@@ -70512,7 +70734,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整条禁用：条目全部为 aria-disabled，方向键不再接管",
+              "description": "整条禁用：条目全部为 aria-disabled，方向键不再接管，「更多」菜单打不开",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -70534,8 +70756,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-toolbar",
           "customElement": true,

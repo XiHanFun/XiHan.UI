@@ -6,9 +6,13 @@
 // 提供 toolbar 相关实现。
 
 import type { ControlVariant, Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ToolbarApi, ToolbarSchema } from '@xihan-ui/headless'
+import type { ToolbarApi, ToolbarSchema, ToolbarTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import { toolbarOverflowMenuProps } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
+import { mergePartProps } from '../../runtime/merge-props'
+import { XhMenuRoot } from '../menu/menu'
 import { provideToolbar, useToolbarContext } from './context'
 import { useToolbar } from './use-toolbar'
 
@@ -27,15 +31,19 @@ export const XhToolbarRoot = defineComponent({
     disabled: { type: Boolean, default: undefined },
     variant: { type: String as PropType<ControlVariant> },
     size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<ToolbarTranslations>> },
   },
   slots: Object as SlotsType<{
     default?: (props: ToolbarRootSlotProps) => VNode[]
   }>,
   // 无对外事件，条目的点击与切换由条目自行派发
   setup(props, { slots }) {
-    const ctx = useToolbar(props as ToolbarProps)
+    const ctx = useToolbar(withXhConfig('toolbar', props) as ToolbarProps)
     provideToolbar(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', {
+      ...ctx.api.value.getRootProps() as Record<string, unknown>,
+      ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement | null },
+    }, slots.default?.({
       focusedValue: ctx.api.value.focusedValue,
       orientation: ctx.api.value.orientation,
       disabled: ctx.api.value.disabled,
@@ -95,5 +103,23 @@ export const XhToolbarItem = defineComponent({
       { ...ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>, ref: itemEl },
       slots.default?.(),
     )
+  },
+})
+
+/**
+ * 行尾的「更多」钮：放不下的条目按次序收进它弹出的菜单，全部放得下时它收着。
+ * 放在 root 的最后。它同时是一张 Menu 的触发器——菜单的条目、勾选态与落位都由工具条的机器现给
+ * （toolbarOverflowMenuProps），钮按 asChild 接菜单的开合接线，自己的解剖与工具条的处理器不让位。
+ * 不写内容时由皮肤画一枚横排三点。
+ */
+export const XhToolbarOverflowTrigger = defineComponent({
+  name: 'XhToolbarOverflowTrigger',
+  // 直通属性合到钮上，而不是落到菜单的根组件上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
+    const ctx = useToolbarContext()
+    return () => h(XhMenuRoot, { ...toolbarOverflowMenuProps(ctx.service), triggerAsChild: true }, {
+      trigger: () => [h('button', mergePartProps(ctx.api.value.getOverflowTriggerProps() as Record<string, unknown>, attrs), slots.default?.())],
+    })
   },
 })

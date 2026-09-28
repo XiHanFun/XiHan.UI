@@ -1,4 +1,4 @@
-import type { ConformanceSuite, FixtureNode } from '../conformance/types'
+import type { ConformanceCase, ConformanceSuite, FixtureNode } from '../conformance/types'
 import { toolbarAnatomy, toolbarKeyboard } from '@xihan-ui/headless'
 import { singleTabStop } from './shared/native-activation'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
@@ -21,6 +21,144 @@ function stripDisabled(node: FixtureNode): FixtureNode {
 /** 条目全部放开：默认 fixture 的第二个禁用，条目一被跳过，左右各走哪边就分不出来了。 */
 function allEnabled(base: FixtureNode): FixtureNode {
   return stripDisabled(base)
+}
+
+/**
+ * root 末尾放一颗「更多」钮。只在收纳的用例里出现：作者不写这个部件就不收纳，
+ * 其余用例的 order / counts 因此一条都不用改。
+ */
+function withOverflowTrigger(base: FixtureNode): FixtureNode {
+  return { ...base, children: [...(base.children ?? []), { part: 'overflow-trigger', tag: 'button' }] }
+}
+
+const ITEM_SIZE = 40
+const TRIGGER_SIZE = 32
+
+/**
+ * 收纳要量排布，jsdom 没有排版：把工具条伪造成一排定长的格子。露着的条目（40）与「更多」钮（32）
+ * 按文档序沿主轴从 root 的起始缘排开，分隔线与分组不占长度；root 两个方向都是 length。
+ * 主轴随 root 的 data-orientation 走。机器在挂载那一刻就量，所以要先于挂载装上、卸载后原样放回。
+ */
+function overflowRow(length: number): NonNullable<ConformanceCase['environment']> {
+  return (win) => {
+    const proto = win.HTMLElement.prototype
+    const element = win.Element.prototype
+    const saved = {
+      offsetWidth: Object.getOwnPropertyDescriptor(proto, 'offsetWidth'),
+      offsetHeight: Object.getOwnPropertyDescriptor(proto, 'offsetHeight'),
+      clientWidth: Object.getOwnPropertyDescriptor(element, 'clientWidth'),
+      clientHeight: Object.getOwnPropertyDescriptor(element, 'clientHeight'),
+      rect: Object.getOwnPropertyDescriptor(element, 'getBoundingClientRect'),
+    }
+    const originalRect = saved.rect?.value as ((this: Element) => DOMRect) | undefined
+    if (!originalRect)
+      throw new Error('环境里没有 Element.prototype.getBoundingClientRect，伪造不了排版')
+    const isPart = (el: Element, part: string): boolean =>
+      el.getAttribute('data-scope') === 'toolbar' && el.getAttribute('data-part') === part
+    const rootOf = (el: Element): Element | null => el.closest('[data-scope="toolbar"][data-part="root"]')
+    const flowing = (el: Element): boolean => isPart(el, 'item') || isPart(el, 'overflow-trigger')
+    const sizeOf = (el: Element): number => (isPart(el, 'overflow-trigger') ? TRIGGER_SIZE : ITEM_SIZE)
+    /** 条目在主轴上的起点；藏着的返回 null。 */
+    const startOf = (el: Element): number | null => {
+      const root = rootOf(el)
+      if (!root || (el as HTMLElement).hidden)
+        return null
+      let start = 0
+      for (const other of root.querySelectorAll('[data-scope="toolbar"]')) {
+        if (other === el)
+          return start
+        if (flowing(other) && !(other as HTMLElement).hidden)
+          start += sizeOf(other)
+      }
+      return null
+    }
+    const mainSize = (el: Element): number | undefined => {
+      if (isPart(el, 'root'))
+        return length
+      if (flowing(el))
+        return startOf(el) == null ? 0 : sizeOf(el)
+      return undefined
+    }
+    const define = (target: object, key: string, fallback: PropertyDescriptor | undefined): void => {
+      Object.defineProperty(target, key, {
+        configurable: true,
+        get(this: Element) {
+          return mainSize(this) ?? fallback?.get?.call(this) ?? 0
+        },
+      })
+    }
+    define(proto, 'offsetWidth', saved.offsetWidth)
+    define(proto, 'offsetHeight', saved.offsetHeight)
+    define(element, 'clientWidth', saved.clientWidth)
+    define(element, 'clientHeight', saved.clientHeight)
+    Object.defineProperty(element, 'getBoundingClientRect', {
+      configurable: true,
+      writable: true,
+      value(this: Element): DOMRect {
+        const size = mainSize(this)
+        if (size == null)
+          return originalRect.call(this)
+        const start = isPart(this, 'root') ? 0 : (startOf(this) ?? 0)
+        const vertical = rootOf(this)?.getAttribute('data-orientation') === 'vertical'
+        const [left, top, width, height] = isPart(this, 'root')
+          ? [0, 0, length, length]
+          : vertical ? [0, start, size, size] : [start, 0, size, size]
+        return { left, top, width, height, right: left + width, bottom: top + height, x: left, y: top, toJSON: () => ({}) } as DOMRect
+      },
+    })
+    const restore = (target: object, key: string, descriptor: PropertyDescriptor | undefined): void => {
+      if (descriptor)
+        Object.defineProperty(target, key, descriptor)
+      else
+        delete (target as Record<string, unknown>)[key]
+    }
+    return () => {
+      restore(proto, 'offsetWidth', saved.offsetWidth)
+      restore(proto, 'offsetHeight', saved.offsetHeight)
+      restore(element, 'clientWidth', saved.clientWidth)
+      restore(element, 'clientHeight', saved.clientHeight)
+      restore(element, 'getBoundingClientRect', saved.rect)
+    }
+  }
+}
+
+/** 收起的条目在「更多」菜单里的那一项（菜单浮层在 Vue / React 里被搬到 body 下，从整个文档查）。 */
+function overflowMenuItem(doc: Document, value: string): HTMLElement | null {
+  return doc.querySelector<HTMLElement>(`[data-scope="menu"][data-part="item"][data-value="${value}"]`)
+}
+
+/**
+ * 等焦点落进菜单：菜单展开后由焦点域在动画帧上落焦，真实浏览器里这一步晚于适配器的提交。
+ * 逐帧等，落到了就返回；等满几帧还没落到，交给调用处按原样判红。
+ */
+async function focusSettled(doc: Document, flush: () => Promise<void>, target: () => Element | null): Promise<boolean> {
+  return settled(doc, flush, () => doc.activeElement != null && doc.activeElement === target())
+}
+
+/** 逐帧等一个条件成立；等满帧数还不成立返回 false。 */
+async function settled(doc: Document, flush: () => Promise<void>, done: () => boolean, frames = 10): Promise<boolean> {
+  const win = doc.defaultView!
+  for (let round = 0; round < frames; round++) {
+    if (done())
+      return true
+    await flush()
+    await new Promise<void>(resolve => win.requestAnimationFrame(() => resolve()))
+  }
+  return done()
+}
+
+/**
+ * 等「更多」菜单的退场播完：content 收成 display none。真实浏览器里退场要播一段动画，
+ * 这条用例测的是从收起状态重新展开，不测退场途中的打断。
+ */
+async function menuExited(doc: Document, flush: () => Promise<void>): Promise<void> {
+  const content = (): HTMLElement | null => doc.querySelector<HTMLElement>('[data-scope="menu"][data-part="content"]')
+  const hidden = (): boolean => {
+    const el = content()
+    return el == null || doc.defaultView!.getComputedStyle(el).display === 'none'
+  }
+  if (!await settled(doc, flush, hidden, 60))
+    throw new Error('「更多」菜单收起后退场没有播完')
 }
 
 /**
@@ -372,6 +510,176 @@ export const toolbarSuite: ConformanceSuite = {
         { kind: 'setProps', props: { disabled: true }, expect: { parts: { item: [{ 'aria-disabled': 'true', 'data-pressed': null }] } } },
         heldPressIgnored('toolbar', 'item', '整条禁用时条目不接受按压', { value: 'bold' }),
         heldPressIgnored('toolbar', 'item', '整条禁用时分组里的条目也不接受按压', { value: 'left' }),
+      ],
+    },
+    {
+      name: '全部放得下：「更多」钮收着，条目一个不收',
+      spec: { apg: ARIA },
+      fixture: withOverflowTrigger,
+      environment: overflowRow(400),
+      initial: {
+        order: ['root', 'item[0]', 'item[1]', 'separator', 'group', 'item[2]', 'item[3]', 'overflow-trigger'],
+        parts: {
+          'item': [{ hidden: null }, { hidden: null }, { hidden: null }, { hidden: null }],
+          'overflow-trigger': { 'hidden': '', 'type': 'button', 'aria-label': 'More', 'aria-expanded': 'false' },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'item[0]' },
+        { kind: 'key', key: 'End', expect: { activeElement: { part: 'item[3]', exact: true } } },
+      ],
+    },
+    {
+      name: '放不下：尾部条目收进「更多」菜单，钮露面并接上菜单触发器的接线',
+      spec: { apg: ARIA },
+      fixture: withOverflowTrigger,
+      // 4 × 40 = 160 放不进 130；给钮让出 32 后剩 98，前两个放得下
+      environment: overflowRow(130),
+      initial: {
+        parts: {
+          'item': [{ hidden: null }, { hidden: null }, { hidden: '', tabindex: '-1' }, { hidden: '', tabindex: '-1' }],
+          'overflow-trigger': {
+            'hidden': null,
+            'type': 'button',
+            'aria-label': 'More',
+            'aria-haspopup': 'menu',
+            'aria-expanded': 'false',
+            'aria-controls': '@extern(menu:*:content)',
+            'aria-disabled': 'false',
+            'data-state': 'closed',
+            'tabindex': '-1',
+            // 与条目同档的单图标钮：Action Control icon 档、ghost 形态，档位随工具条 size 走
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+          },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '菜单条目归 menu 的 scope，不进工具条的快照',
+          run: ({ doc }) => {
+            const left = overflowMenuItem(doc, 'left')
+            const right = overflowMenuItem(doc, 'right')
+            if (!left || !right || overflowMenuItem(doc, 'bold'))
+              throw new Error('「更多」菜单里应当恰好是收起的 left 与 right')
+            if (left.textContent?.trim() !== '左对齐' || left.getAttribute('role') !== 'menuitem')
+              throw new Error('菜单项取条目的文字、角色是 menuitem')
+          },
+        },
+      ],
+    },
+    {
+      name: '方向键把「更多」钮当最后一站：收起的条目跳过，End 落到钮上，尽头回绕',
+      spec: { apg: KBD },
+      covers: ['toolbar.kbd.next', 'toolbar.kbd.prev', 'toolbar.kbd.last'],
+      fixture: withOverflowTrigger,
+      environment: overflowRow(130),
+      steps: [
+        { kind: 'focus', part: 'item[0]' },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: {
+            // 禁用的 italic 跳过，收起的 left / right 跳过
+            activeElement: { part: 'overflow-trigger', exact: true },
+            parts: {
+              'root': { tabindex: '-1' },
+              'item': [{ tabindex: '-1' }, { tabindex: '-1' }, { tabindex: '-1' }, { tabindex: '-1' }],
+              'overflow-trigger': { tabindex: '0' },
+            },
+            events: [],
+          },
+        },
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'item[0]', exact: true } } },
+        { kind: 'key', key: 'End', expect: { activeElement: { part: 'overflow-trigger', exact: true } } },
+        { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'item[0]', exact: true } } },
+      ],
+    },
+    {
+      name: '「更多」钮展开菜单、Escape 收起并把焦点还给钮；菜单里选中一项即替收起的条目触发点击',
+      spec: { apg: KBD },
+      covers: ['toolbar.kbd.overflow-open', 'toolbar.kbd.overflow-close'],
+      fixture: withOverflowTrigger,
+      environment: overflowRow(130),
+      steps: [
+        { kind: 'focus', part: 'overflow-trigger' },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: { parts: { 'overflow-trigger': { 'aria-expanded': 'true', 'data-state': 'open' } } },
+        },
+        {
+          kind: 'raw',
+          why: '焦点落进了 menu 的 scope，工具条的快照里看不到它',
+          run: async ({ doc, flush }) => {
+            if (!await focusSettled(doc, flush, () => overflowMenuItem(doc, 'left')))
+              throw new Error('ArrowDown 展开后焦点应落在菜单首项 left 上')
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            parts: { 'overflow-trigger': { 'aria-expanded': 'false', 'data-state': 'closed' } },
+            activeElement: { part: 'overflow-trigger', exact: true },
+          },
+        },
+        {
+          kind: 'raw',
+          why: '条目的点击由条目自己的处理器接住，工具条不派对外事件',
+          run: async ({ doc, flush }) => {
+            const right = doc.querySelector<HTMLElement>('[data-scope="toolbar"][data-part="item"][data-value="right"]')!
+            let clicks = 0
+            const count = (): void => {
+              clicks += 1
+            }
+            right.addEventListener('click', count)
+            try {
+              const trigger = doc.querySelector<HTMLElement>('[data-scope="toolbar"][data-part="overflow-trigger"]')!
+              await menuExited(doc, flush)
+              trigger.focus()
+              trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true }))
+              if (!await focusSettled(doc, flush, () => overflowMenuItem(doc, 'right')))
+                throw new Error('ArrowUp 展开后焦点应落在菜单末项 right 上')
+              overflowMenuItem(doc, 'right')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+              await flush()
+              if (clicks !== 1)
+                throw new Error(`菜单里选中 right 应替它触发一次点击，实际 ${clicks} 次`)
+              if (trigger.getAttribute('aria-expanded') !== 'false')
+                throw new Error('选中后菜单应收起')
+              // 收起后焦点回到钮上，下一条断言在它落定之后读
+              await focusSettled(doc, flush, () => trigger)
+            }
+            finally {
+              right.removeEventListener('click', count)
+            }
+          },
+          expect: { activeElement: { part: 'overflow-trigger', exact: true } },
+        },
+      ],
+    },
+    {
+      name: '竖排：钮上的上下键归工具条走位，不展开菜单',
+      spec: { apg: KBD },
+      fixture: withOverflowTrigger,
+      environment: overflowRow(130),
+      props: { orientation: 'vertical' },
+      steps: [
+        { kind: 'focus', part: 'overflow-trigger' },
+        {
+          kind: 'key',
+          key: 'ArrowUp',
+          expect: {
+            // italic 禁用跳过，回到 bold
+            activeElement: { part: 'item[0]', exact: true },
+            parts: { 'overflow-trigger': { 'aria-expanded': 'false' } },
+          },
+        },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'overflow-trigger', exact: true } } },
       ],
     },
   ],

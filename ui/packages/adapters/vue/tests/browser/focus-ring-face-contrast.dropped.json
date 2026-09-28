@@ -480,6 +480,7 @@
   "[data-scope=\"tool-call\"][data-part=\"summary\"]": "部件不接焦点：tool-call/summary",
   "[data-scope=\"toolbar\"][data-part=\"group\"]": "部件不接焦点：toolbar/group",
   "[data-scope=\"toolbar\"][data-part=\"group\"] > [data-scope=\"toolbar\"][data-part=\"separator\"]": "部件不接焦点：toolbar/separator",
+  "[data-scope=\"toolbar\"][data-part=\"overflow-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"toolbar\"][data-part=\"separator\"]": "部件不接焦点：toolbar/separator",
   "[data-scope=\"tooltip\"][data-part=\"arrow\"]": "部件不接焦点：tooltip/arrow",
   "[data-scope=\"tooltip\"][data-part=\"content\"]": "部件不接焦点：tooltip/content",
