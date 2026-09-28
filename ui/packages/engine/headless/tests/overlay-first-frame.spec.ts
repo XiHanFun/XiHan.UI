@@ -13,6 +13,7 @@ import { datePickerMachine } from '../src/date-picker'
 import { dateRangePickerMachine } from '../src/date-range-picker'
 import { connectDialog, dialogMachine } from '../src/dialog'
 import { connectDrawer, drawerMachine } from '../src/drawer'
+import { connectFloatingPanel, floatingPanelMachine } from '../src/floating-panel'
 import { connectHoverCard, hoverCardMachine } from '../src/hover-card'
 import { connectMenu, menuMachine } from '../src/menu'
 import { connectPopconfirm } from '../src/popconfirm'
@@ -121,6 +122,10 @@ const CASES: Record<string, Case> = {
   'color-picker': {
     machine: colorPickerMachine,
     parts: marked,
+  },
+  'floating-panel': {
+    machine: floatingPanelMachine,
+    parts: service => [connectFloatingPanel(service, normalizeProps).getPositionerProps() as Attrs],
   },
   'hover-card': {
     machine: hoverCardMachine,

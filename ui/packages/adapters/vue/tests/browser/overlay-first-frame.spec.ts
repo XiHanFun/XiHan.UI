@@ -53,6 +53,10 @@ import {
   XhDrawerContent,
   XhDrawerRoot,
   XhDrawerTitle,
+  XhFloatingPanelContent,
+  XhFloatingPanelPositioner,
+  XhFloatingPanelRoot,
+  XhFloatingPanelTitle,
   XhHoverCardContent,
   XhHoverCardPositioner,
   XhHoverCardRoot,
@@ -282,6 +286,11 @@ const CASES: Record<string, Case> = {
       h(XhColorPickerControl, null, () => h(XhColorPickerTrigger, null, () => '选择颜色')),
       h(XhColorPickerPositioner, null, () => h(XhColorPickerContent, null, () => h(XhColorPickerHueSlider))),
     ]),
+  },
+  'floating-panel': {
+    parts: ['positioner'],
+    enter: 'xh-pop-in',
+    render: props => h(XhFloatingPanelRoot, props, () => h(XhFloatingPanelPositioner, null, () => h(XhFloatingPanelContent, null, () => h(XhFloatingPanelTitle, null, () => '面板')))),
   },
   'dialog': {
     parts: ['content', 'backdrop'],

@@ -177,6 +177,8 @@ export function connectFloatingPanel<T extends PropTypes>(
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-window-state': windowState,
       // 进出最大化的那一段几何补间正在播：皮肤只在这一档挂位置与尺寸的过渡，拖动与改尺寸照旧跟手
       'data-animating': dataAttr(context.get('windowAnimating')),
