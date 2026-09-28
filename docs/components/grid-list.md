@@ -246,6 +246,8 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 
 `@xihan-ui/styles/grid-list.css` 使用 `[data-scope="grid-list"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -271,6 +273,8 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `row-selection-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `row-selection-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `row-selection-indicator` | `data-state` | 'checked' \| 'unchecked' |
+| `row-selection-indicator` | `data-xh-check-mark` | 'checked' \| 'unchecked' |
+| `row-selection-indicator` | `data-xh-check-mark-profile` | 'box' |
 | `row-selection-indicator` | `data-xh-collection-slot` | 'prefix' |
 | `row-content` | `data-disabled` | ''（条件成立时才出现） |
 | `row-content` | `data-highlighted` | ''（条件成立时才出现） |
@@ -317,9 +321,11 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `--xh-grid-list-row-action-font-size` | `row-action` | `font-size` | `default` | `--xh-control-font-sm` | grid-list 的 row-action 部件 font-size 覆盖槽。 |
 | `--xh-grid-list-row-actions-gap` | `row-actions` | `gap` | `default` | `--xh-space-1` | grid-list 的 row-actions 部件 gap 覆盖槽。 |
 | `--xh-grid-list-row-actions-ms` | `row-actions` | `margin-inline-start` | `default` | `--xh-control-gap-md` | grid-list 的 row-actions 部件 margin-inline-start 覆盖槽。 |
+| `--xh-grid-list-row-bg-selected` | `row` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not(:focus-visible)`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=page` | `--xh-bg-brand-subtle` | grid-list 的 row 部件 background-color 覆盖槽。 |
 | `--xh-grid-list-row-content-gap` | `row-content` | `gap` | `default` | `--xh-space-1` | grid-list 的 row-content 部件 gap 覆盖槽。 |
 | `--xh-grid-list-row-description-fg` | `row-description` | `color` | `default` | `--xh-fg-muted` | grid-list 的 row-description 部件 color 覆盖槽。 |
 | `--xh-grid-list-row-description-font-size` | `row-description` | `font-size` | `default` | `--xh-control-caption-md` | grid-list 的 row-description 部件 font-size 覆盖槽。 |
+| `--xh-grid-list-row-fg-selected` | `row` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | grid-list 的 row 部件 color 覆盖槽。 |
 | `--xh-grid-list-row-indicator-bg` | `row-selection-indicator` | `background` | `default` | `transparent` | grid-list 的 row-selection-indicator 部件 background 覆盖槽。 |
 | `--xh-grid-list-row-indicator-bg-selected` | `row-selection-indicator` | `background` | `state=checked` | `--xh-_grid-list-indicator-accent` | grid-list 的 row-selection-indicator 部件 background 覆盖槽。 |
 | `--xh-grid-list-row-indicator-border` | `row-selection-indicator` | `border` | `default` | `--xh-border-control` | grid-list 的 row-selection-indicator 部件 border 覆盖槽。 |
@@ -341,7 +347,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 
 动效角色：按压 · 状态 · 切换（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `border-color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`-webkit-mask-size` · `background-color` · `border-color` · `mask-size` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

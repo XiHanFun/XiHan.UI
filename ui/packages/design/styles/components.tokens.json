@@ -35392,6 +35392,32 @@
       "description": "grid-list 的 row-actions 部件 margin-inline-start 覆盖槽。"
     },
     {
+      "name": "--xh-grid-list-row-bg-selected",
+      "component": "grid-list",
+      "part": [
+        "row"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "highlighted",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not(:focus-visible)",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
+        "xh-collection-context=page"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-grid-list-row-content-gap",
       "component": "grid-list",
       "part": [
@@ -35444,6 +35470,34 @@
       ],
       "visibility": "public",
       "description": "grid-list 的 row-description 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-list-row-fg-selected",
+      "component": "grid-list",
+      "part": [
+        "row"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "xh-collection-context=page"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "grid-list 的 row 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-grid-list-row-indicator-bg",
@@ -37749,7 +37803,6 @@
         "root",
         "rotate-left-trigger",
         "rotate-right-trigger",
-        "row-selection-indicator",
         "scroll-to-end-trigger",
         "separator",
         "sort-trigger",
@@ -37807,7 +37860,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、last-trigger、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-selection-indicator、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、last-trigger、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",

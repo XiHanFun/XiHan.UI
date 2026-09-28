@@ -246,9 +246,12 @@ export function connectGridList<T extends PropTypes>(
       })
     },
 
+    // 行首方框里的勾归勾选标记配方：与 Checkbox、Transfer、Table 同一副标记语言
     getRowSelectionIndicatorProps: row => normalize.element({
       ...parts['row-selection-indicator'].attrs,
       ...stateAttrs(row),
+      'data-xh-check-mark': isSelected(row.value) ? 'checked' : 'unchecked',
+      'data-xh-check-mark-profile': 'box',
       'data-xh-collection-slot': 'prefix',
       'aria-hidden': true,
       'hidden': !selectable || undefined,
