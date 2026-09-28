@@ -20,7 +20,7 @@ const SIZE_CASES = [
   { density: 'comfortable', size: 'sm', control: 32, trigger: 24 },
   { density: 'comfortable', size: 'md', control: 36, trigger: 32 },
   { density: 'comfortable', size: 'lg', control: 40, trigger: 36 },
-  { density: 'compact', size: 'sm', control: 28, trigger: 24 },
+  { density: 'compact', size: 'sm', control: 28, trigger: 20 },
   { density: 'compact', size: 'md', control: 32, trigger: 28 },
   { density: 'compact', size: 'lg', control: 36, trigger: 32 },
 ] as const
