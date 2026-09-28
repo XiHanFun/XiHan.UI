@@ -6,6 +6,7 @@
 // 提供 time picker 相关实现。
 
 import type { Params, PositionResult } from '@xihan-ui/core'
+import type { ColumnScrollTarget } from '../shared/column-scroll'
 import type { TimeColumn } from '../shared/time-constraint'
 import type { TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
 import type {
@@ -14,7 +15,8 @@ import type {
   TimePickerPressedKey,
   TimePickerSchema,
 } from './time-picker.types'
-import { canTakeFocus, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { canTakeFocus, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { alignColumnsOnOpen, followColumnSelection } from '../shared/column-scroll'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
@@ -36,7 +38,7 @@ import {
   setTimeSegment,
   TIME_FIELD_GRANULARITY,
 } from '../time-field'
-import { findTimePickerColumn, findTimePickerItem } from './time-picker.anatomy'
+import { findTimePickerColumn, findTimePickerItem, timePickerColumnQuery } from './time-picker.anatomy'
 
 const { createMachine, guards } = setup<TimePickerSchema>()
 const { and } = guards
@@ -81,6 +83,16 @@ function commitDraft(params: Params<TimePickerSchema>, next: TimeDraft): void {
  * 开合编进 FSM 状态，走守卫对加 CONTROLLED.* 影子事件加 watch 那一套。
  * 分段输入的每一条语义都直接调 time-field 导出的纯函数，不在这里另写一份。
  */
+/** 时间列的滚动定位：打开时各列停到选中的那一格，选中换格时那一列平滑滚过去。 */
+function columnScrollTarget(params: Params<TimePickerSchema>): ColumnScrollTarget {
+  return {
+    scope: params.scope,
+    flush: params.flush,
+    content: () => params.refs.get('getContentEl')(),
+    columns: content => queryItems(content, timePickerColumnQuery),
+  }
+}
+
 export const timePickerMachine = createMachine({
   name: 'time-picker',
   context: ({ prop, cell }) => ({
@@ -129,6 +141,8 @@ export const timePickerMachine = createMachine({
     track([context.dep('value')], () => action(['syncDraft']))
     // 按住途中转入禁用 / 只读或值被清空：触发钮随即 disabled、清空钮藏起，不会再来 keyup，按压面由机器自己收
     track([() => prop('disabled'), () => prop('readOnly'), context.dep('value'), context.dep('draft')], () => action(['releaseWhenInert']))
+    // 选中值变了：选中换了格的时间列平滑滚过去（打开时的那一下由展开态的 effect 直接到位）
+    track([context.dep('value'), context.dep('draft')], () => action(['followColumnSelection']))
   },
   // 分段输入与值这几件事与开合无关，两个状态里都得认
   on: {
@@ -169,7 +183,7 @@ export const timePickerMachine = createMachine({
       // 按住快捷选项途中收起（Enter 在 keydown 即写值收起）或按住格子时 Escape：浮层里的部件不会再来 keyup
       exit: ['clearFocusedItem', 'releasePress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
-      effects: ['trackPosition'],
+      effects: ['trackPosition', 'trackColumnScroll'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
@@ -222,6 +236,10 @@ export const timePickerMachine = createMachine({
       },
     },
     actions: {
+      followColumnSelection: (params) => {
+        if (params.state.matches('open'))
+          followColumnSelection(columnScrollTarget(params))
+      },
       clearOpenedAtMount,
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
@@ -426,6 +444,7 @@ export const timePickerMachine = createMachine({
       },
     },
     effects: {
+      trackColumnScroll: params => alignColumnsOnOpen(columnScrollTarget(params)),
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => {
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。

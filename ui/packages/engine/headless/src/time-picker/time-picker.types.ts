@@ -254,6 +254,7 @@ export interface TimePickerSchema extends MachineSchema {
   tag: never
   guard: 'isOpenControlled' | 'canEdit' | 'closesOnPreset' | 'canPress'
   action:
+    | 'followColumnSelection'
     | 'startPress'
     | 'endPress'
     | 'releasePress'
@@ -279,7 +280,7 @@ export interface TimePickerSchema extends MachineSchema {
     | 'syncDraft'
     | 'resetToDefault'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer'
+  effect: 'trackPosition' | 'trackLayer' | 'trackColumnScroll'
 }
 
 export interface TimePickerApi<T extends PropTypes = PropTypes> {
