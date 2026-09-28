@@ -90,6 +90,18 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 
 <XhDemo src="tags-input/12-option-value" />
 
+### 准入判定
+
+validate 逐个判定新标签，返回拒绝码即拒收：这一次提交整体不生效、文本留在框里改；tag-reject 报告拒收的标签与原因，重复的照常消费但也会报
+
+<XhDemo src="tags-input/13-validate" />
+
+### 一组断词符
+
+delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号、分号都行，粘贴多行清单时换行也算；随表单提交的整串用第一个拼接
+
+<XhDemo src="tags-input/14-delimiters" />
+
 ## 设计指引
 
 ### 何时使用
@@ -104,7 +116,9 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 
 ### 特性
 
-- `delimiter` 与 `addOnPaste` 一起处理粘贴拆分。
+- `delimiter` 与 `addOnPaste` 一起处理粘贴拆分；`delimiter` 给一组时其中任何一个都断词（如半角与全角逗号），提交串用第一个。
+- `validate` 逐个判定新标签，返回拒绝码即拒收：这一次提交整体不生效、文本留在框里；拒收的标签连同原因（重复、放不下或自定义码）经 `onTagReject` 报告。
+- 标签是一个集合：已有的标签再输入一次照常被消费、值不变，只报一笔 `duplicate`。
 - 每个标签都是库内的 tag：预览、文字与删除按钮就是它的 root、label 与 close-trigger，语气与尺寸随控件，形态按控件的面派生。
 - `editable` 让已有标签双击就地修改。
 - `max` 与 `allowOverflow` 成对：超出上限时拒绝还是标记。
@@ -156,7 +170,8 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 | `showCount` | `boolean` |  | 显示计数部件：关闭时 count 部件带 hidden 收起。 |
 | `name` | `string` |  | 表单字段名；提供后 hidden-input 才带 name，此时整份标签按 delimiter 拼接为一串提交。 |
 | `placeholder` | `string` |  |  |
-| `delimiter` | `string` |  | 断词符，默认逗号。输入它即断词为标签，粘贴时也按它拆分。 显式提供空串即关闭断词：此时只有 Enter 能把文本变为标签。 |
+| `delimiter` | `string \| string[]` |  | 断词符，默认逗号。输入它即断词为标签，粘贴时也按它拆分。 给一组即任何一个都断词（如 [',', '，', ';']），hidden-input 拼串用第一个。 显式提供空串或空数组即关闭断词：此时只有 Enter 能把文本变为标签。 |
+| `validate` | `(tag: string, context: TagsInputValidateContext) => string \| string[] \| null \| undefined` |  | 作者的准入判定：用户提交的每个新标签（Enter、断词、粘贴、失焦加入、addValue 与就地编辑）逐个调用， 返回拒绝码（一个或一组）即拒收；返回 null / undefined / 空数组即放行。 有一个被拒这一次提交就整体不生效，文本原样留在框里（就地编辑则留在编辑框里），拒收的连同码一起进 onTagReject。 setValue 的整份替换不经过它。应为纯函数：粘贴时会先判一次决定接不接管。 |
 | `addOnPaste` | `boolean` |  | 粘贴时接管：按 delimiter 拆分为多个标签。默认关闭（交给浏览器照常粘贴进框中）。 |
 | `editable` | `boolean` |  | 允许双击标签就地修改。默认关闭。 |
 | `blurBehavior` | `TagsInputBlurBehavior \| null` |  | 焦点离开整个组件时输入框中残留文本的处置方式。 |
@@ -166,6 +181,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 | `translations` | `Partial<TagsInputTranslations>` |  |  |
 | `onValueChange` | `(details: TagsInputValueChangeDetails) => void` |  |  |
 | `onInputValueChange` | `(details: TagsInputInputValueChangeDetails) => void` |  |  |
+| `onTagReject` | `(details: TagsInputTagRejectDetails) => void` |  | 提交里有标签没进集合：重复（照常消费）、到了上限或被 validate 拒收，逐个报告原因。 |
 
 ### 事件
 
@@ -175,6 +191,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 | --- | --- | --- |
 | `value-change` | `TagsInputValueChangeDetails` | 标签集合变化；detail 为 `{ value: string[] }` |
 | `input-value-change` | `TagsInputInputValueChangeDetails` | 输入文本变化；detail 为 `{ inputValue: string }` |
+| `tag-reject` | `TagsInputTagRejectDetails` | 提交里有标签没进集合（重复、到了上限或被 validate 拒收）；detail 为 `{ tags: { tag, reasons }[] }` |
 
 ### 插槽
 
@@ -203,7 +220,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 
 **事件**：`VALUE.SET` · `TAG.ADD` · `VALUE.CLEAR` · `INPUT.CHANGE` · `INPUT.COMMIT` · `INPUT.BLUR` · `TAG.HIGHLIGHT` · `TAG.DELETE` · `TAG.EDIT` · `EDIT.CHANGE` · `EDIT.SUBMIT` · `EDIT.CANCEL` · `ITEM.FOCUS_LOST` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED`
 
-**判据**：`canEdit` · `canEditTag` · `canDeleteWithPrev` · `hasHighlightTarget` · `canPress`
+**判据**：`canEdit` · `canEditTag` · `canDeleteWithPrev` · `hasHighlightTarget` · `canPress` · `isEditRejected` · `isBlurEditRejected`
 
 ### connect API
 
@@ -227,7 +244,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 | `editedValue` | `string \| null` | 正被就地改写的标签；不在编辑态时为 null。 |
 | `canClear` | `boolean` | 清空按钮当前是否可用（可编辑，且标签或输入文本至少有一项）。 |
 | `setValue` | `(next: string[]) => void` | 整份替换，去重去空白，不受 max 约束。 |
-| `addValue` | `(next: string) => void` | 追加一个标签，受 max 与 allowOverflow 约束。 |
+| `addValue` | `(next: string) => void` | 追加一个标签，受 max、allowOverflow 与 validate 约束。 |
 | `deleteValue` | `(value: string) => void` |  |
 | `clear` | `() => void` |  |
 | `setInputValue` | `(next: string) => void` |  |
@@ -254,8 +271,8 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `Enter` | focus in input, 框里有能成标签的内容, not disabled/readOnly | 把输入框里的文本变成标签（含 delimiter 时一次进多个）；框里只有空白时不接管，Enter 留给表单提交 |
-| `delimiter（默认 ,）` | focus in input, not disabled/readOnly | 断词：分隔符之前的每一段各成一个标签，最后一段留在框里接着打 |
+| `Enter` | focus in input, 框里有能成标签的内容, not disabled/readOnly | 把输入框里的文本变成标签（含 delimiter 时一次进多个）；有一个被 validate 拒收或放不下就整体不生效、文本留在框里。框里只有空白时不接管，Enter 留给表单提交 |
+| `delimiter（默认 ,，可给一组）` | focus in input, not disabled/readOnly | 断词：分隔符之前的每一段各成一个标签，最后一段留在框里接着打；被拒时整段原样留在框里 |
 | `Backspace` | 输入框为空且没有标签被高亮, 至少有一个标签 | 高亮最后一个标签（这一下不删任何东西） |
 | `Backspace` | 输入框为空且已有标签被高亮 | 删掉高亮的标签，光标落到前一个上；删的是第一个就交回输入框 |
 | `Delete` | 已有标签被高亮 | 同上，删掉高亮的标签 |
@@ -265,7 +282,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 | `End` | 已有标签被高亮 | 交回输入框 |
 | `Escape` | 已有标签被高亮 | 取消高亮，光标交回输入框；没在标签间走时不接管该键 |
 | `Enter` | 已有标签被高亮, editable 开启 | 就地编辑这个标签，焦点进编辑框并整段选中 |
-| `Enter` | focus in item-input（就地编辑中） | 提交改写；改成空白等于删掉这个标签，改成另一个已有标签则并成一个。焦点交回输入框 |
+| `Enter` | focus in item-input（就地编辑中） | 提交改写；改成空白等于删掉这个标签，改成另一个已有标签则并成一个。焦点交回输入框；被 validate 拒收时留在编辑框里 |
 | `Escape` | focus in item-input（就地编辑中） | 撤销这次改写，标签保持原样，焦点交回输入框 |
 | `Enter` / `Space` | held in clear-trigger, 有标签或框里有文本, not disabled/readOnly | 按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面 |
 

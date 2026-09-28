@@ -25,7 +25,7 @@ export interface TagsInputContext {
 
 export function useTagsInput(
   props: TagsInputSchema['props'],
-  handlers: Pick<TagsInputSchema['props'], 'onValueChange' | 'onInputValueChange'> = {},
+  handlers: Pick<TagsInputSchema['props'], 'onValueChange' | 'onInputValueChange' | 'onTagReject'> = {},
 ): TagsInputContext {
   // scope id 走 Vue 的 useId，保证同页多实例的 IDREF 不相撞
   const idGen = createVueIdGenerator()

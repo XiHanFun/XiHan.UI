@@ -13,6 +13,7 @@ import {
   sameTags,
   splitTags,
   tagsDelimiter,
+  tagsDelimiters,
   tagsInputMachine,
 } from '../src/tags-input'
 
@@ -233,15 +234,60 @@ describe('tags-input 纯函数', () => {
     expect(tagsDelimiter('')).toBe('')
   })
 
+  it('tagsDelimiters 摊成一组：给一组取其中的非空项，拼串的 tagsDelimiter 取第一个', () => {
+    expect(tagsDelimiters(undefined)).toEqual([','])
+    expect(tagsDelimiters(['', ';', '，'])).toEqual([';', '，'])
+    expect(tagsDelimiters([])).toEqual([])
+    expect(tagsDelimiter([';', '，'])).toBe(';')
+    expect(tagsDelimiter([])).toBe('')
+  })
+
+  it('splitTags 给一组断词符时任何一个都断', () => {
+    expect(splitTags('a，b;c , d', [',', '，', ';'])).toEqual(['a', 'b', 'c', 'd'])
+    expect(splitTags('a;b', [])).toEqual(['a;b'])
+  })
+
   it('appendTags 跳过空白与重复项，只有被上限挡住的才进 rejected', () => {
-    expect(appendTags(['a'], ['  ', 'b', 'a'])).toEqual({ value: ['a', 'b'], rejected: [] })
-    // 已经在列表里的不算被拒：用户的意图本来就已经达成
-    expect(appendTags(['a'], ['a'], { max: 1 })).toEqual({ value: ['a'], rejected: [] })
-    expect(appendTags(['a'], ['b', 'c'], { max: 2 })).toEqual({ value: ['a', 'b'], rejected: ['c'] })
+    expect(appendTags(['a'], ['  ', 'b', 'a']))
+      .toEqual({ value: ['a', 'b'], rejected: [], rejections: [{ tag: 'a', reasons: ['duplicate'] }] })
+    // 已经在列表里的不算被拒：用户的意图本来就已经达成，只记一笔 duplicate
+    expect(appendTags(['a'], ['a'], { max: 1 }))
+      .toEqual({ value: ['a'], rejected: [], rejections: [{ tag: 'a', reasons: ['duplicate'] }] })
+    expect(appendTags(['a'], ['b', 'c'], { max: 2 }))
+      .toEqual({ value: ['a', 'b'], rejected: ['c'], rejections: [{ tag: 'c', reasons: ['too-many-tags'] }] })
     expect(appendTags(['a'], ['b', 'c'], { max: 2, allowOverflow: true }))
-      .toEqual({ value: ['a', 'b', 'c'], rejected: [] })
+      .toEqual({ value: ['a', 'b', 'c'], rejected: [], rejections: [] })
     // max 为 0：一个也加不进去
-    expect(appendTags([], ['a'], { max: 0 })).toEqual({ value: [], rejected: ['a'] })
+    expect(appendTags([], ['a'], { max: 0 }))
+      .toEqual({ value: [], rejected: ['a'], rejections: [{ tag: 'a', reasons: ['too-many-tags'] }] })
+  })
+
+  it('appendTags 先问 validate 再看上限：拒绝码原样并入，被拒的不占名额，validate 看得到此刻的集合与整批', () => {
+    const seen: Array<[string, readonly string[], readonly string[]]> = []
+    const validate = (tag: string, ctx: { value: readonly string[], tags: readonly string[] }): string | null => {
+      seen.push([tag, ctx.value, ctx.tags])
+      return tag.includes('@') ? null : 'invalid-email'
+    }
+    const result = appendTags(['a@x'], ['b@x', 'nope', 'c@x', 'a@x'], { max: 3, validate })
+    expect(result.value).toEqual(['a@x', 'b@x', 'c@x'])
+    expect(result.rejected).toEqual(['nope'])
+    expect(result.rejections).toEqual([
+      { tag: 'nope', reasons: ['invalid-email'] },
+      { tag: 'a@x', reasons: ['duplicate'] },
+    ])
+    // 重复项不再问 validate；前面通过的算进 value
+    expect(seen).toEqual([
+      ['b@x', ['a@x'], ['b@x', 'nope', 'c@x', 'a@x']],
+      ['nope', ['a@x', 'b@x'], ['b@x', 'nope', 'c@x', 'a@x']],
+      ['c@x', ['a@x', 'b@x'], ['b@x', 'nope', 'c@x', 'a@x']],
+    ])
+  })
+
+  it('validate 可返回一组码；空串、null 与空数组都是放行', () => {
+    expect(appendTags([], ['a'], { validate: () => ['too-short', 'no-digit'] }).rejections)
+      .toEqual([{ tag: 'a', reasons: ['too-short', 'no-digit'] }])
+    for (const pass of ['', null, undefined, []] as const)
+      expect(appendTags([], ['a'], { validate: () => pass }).value).toEqual(['a'])
   })
 
   it('normalizeTags 去空白、丢空项、按首次出现去重', () => {
@@ -1106,5 +1152,147 @@ describe('清空按钮的按压通道：Space / Enter 与触屏按住投影 data
       expect(trigger()['data-pressed']).toBeUndefined()
       runtime.stop()
     }
+  })
+})
+
+describe('多个断词符', () => {
+  it('给一组时打出其中任何一个都断词，拼 hidden-input 用第一个', () => {
+    const h = mount({ delimiter: [',', '，', ';'], name: 'tags' })
+    typeInto(h.input, 'a，b;c')
+    expect(h.value()).toEqual(['a', 'b'])
+    expect(h.input.value).toBe('c')
+    press(h.input, 'Enter')
+    expect(h.value()).toEqual(['a', 'b', 'c'])
+    expect(h.hidden.value).toBe('a,b,c')
+  })
+
+  it('粘贴与 Enter 同样认整组', () => {
+    const h = mount({ delimiter: ['\n', ';'], addOnPaste: true })
+    expect(paste(h.input, 'a\nb;c')).toBe(true)
+    expect(h.value()).toEqual(['a', 'b', 'c'])
+    typeInto(h.input, 'd;e')
+    expect(h.value()).toEqual(['a', 'b', 'c', 'd'])
+  })
+
+  it('空数组即关掉断词', () => {
+    const h = mount({ delimiter: [] })
+    typeInto(h.input, 'a,b')
+    expect(h.value()).toEqual([])
+    press(h.input, 'Enter')
+    expect(h.value()).toEqual(['a,b'])
+  })
+})
+
+describe('准入判定 validate 与 onTagReject', () => {
+  const email = (tag: string): string | null => (tag.includes('@') ? null : 'invalid-email')
+
+  it('enter 提交被拒：整体不生效、文本留在框里，拒收连同码进 onTagReject', () => {
+    const onTagReject = vi.fn()
+    const h = mount({ validate: email, onTagReject })
+    typeInto(h.input, 'a@x, nope')
+    // 断词那一下 a@x 已经进去，nope 留在框里
+    expect(h.value()).toEqual(['a@x'])
+    press(h.input, 'Enter')
+    expect(h.value()).toEqual(['a@x'])
+    expect(h.input.value).toBe(' nope')
+    expect(onTagReject).toHaveBeenLastCalledWith({ tags: [{ tag: 'nope', reasons: ['invalid-email'] }] })
+  })
+
+  it('断词时一批里有一个被拒，整段原样留在框里', () => {
+    const onTagReject = vi.fn()
+    const h = mount({ validate: email, onTagReject })
+    h.api().setInputValue('b@x,nope,')
+    expect(h.value()).toEqual([])
+    expect(h.inputValue()).toBe('b@x,nope,')
+    expect(onTagReject).toHaveBeenCalledWith({ tags: [{ tag: 'nope', reasons: ['invalid-email'] }] })
+  })
+
+  it('重复项照常被消费掉、不挡这一批，但报一笔 duplicate', () => {
+    const onTagReject = vi.fn()
+    const h = mount({ defaultValue: ['vue'], onTagReject })
+    typeInto(h.input, 'vue')
+    press(h.input, 'Enter')
+    expect(h.value()).toEqual(['vue'])
+    expect(h.input.value).toBe('')
+    expect(onTagReject).toHaveBeenCalledWith({ tags: [{ tag: 'vue', reasons: ['duplicate'] }] })
+  })
+
+  it('到了上限报 too-many-tags', () => {
+    const onTagReject = vi.fn()
+    const h = mount({ defaultValue: ['a'], max: 1, onTagReject })
+    h.api().addValue('b')
+    expect(h.value()).toEqual(['a'])
+    expect(onTagReject).toHaveBeenCalledWith({ tags: [{ tag: 'b', reasons: ['too-many-tags'] }] })
+  })
+
+  it('粘贴里有被拒的就不接管：照常粘进框里，用户改完再提交', () => {
+    const h = mount({ addOnPaste: true, validate: email })
+    expect(paste(h.input, 'a@x,nope')).toBe(false)
+    expect(h.value()).toEqual([])
+    expect(paste(h.input, 'a@x,b@x')).toBe(true)
+    expect(h.value()).toEqual(['a@x', 'b@x'])
+  })
+
+  it('setValue 的整份替换不经过 validate', () => {
+    const validate = vi.fn(email)
+    const h = mount({ validate })
+    h.api().setValue(['nope'])
+    expect(h.value()).toEqual(['nope'])
+    expect(validate).not.toHaveBeenCalled()
+  })
+
+  it('就地编辑：Enter 被拒时留在编辑态、焦点留在编辑框，改对了再提交', async () => {
+    const onTagReject = vi.fn()
+    const h = mount({ defaultValue: ['a@x', 'b@x'], editable: true, validate: email, onTagReject })
+    h.api().edit('a@x')
+    await flush()
+    const n = h.nodes('a@x')
+    typeInto(n.editInput, 'broken')
+    const event = press(n.editInput, 'Enter')
+    expect(event.defaultPrevented).toBe(true)
+    expect(h.stateOf()).toBe('editing')
+    expect(h.value()).toEqual(['a@x', 'b@x'])
+    expect(document.activeElement).toBe(n.editInput)
+    expect(n.editInput.value).toBe('broken')
+    expect(onTagReject).toHaveBeenCalledWith({ tags: [{ tag: 'broken', reasons: ['invalid-email'] }] })
+
+    typeInto(n.editInput, 'c@x')
+    press(n.editInput, 'Enter')
+    expect(h.stateOf()).toBe('idle')
+    expect(h.value()).toEqual(['c@x', 'b@x'])
+  })
+
+  it('就地编辑：validate 看到的集合不含正被改写的那一个；改成已有标签照旧并成一个、不问 validate', () => {
+    const seen: Array<readonly string[]> = []
+    const validate = (_tag: string, ctx: { value: readonly string[] }): null => {
+      seen.push(ctx.value)
+      return null
+    }
+    const h = mount({ defaultValue: ['a', 'b'], editable: true, validate })
+    h.api().edit('a')
+    typeInto(h.nodes('a').editInput, 'c')
+    press(h.nodes('a').editInput, 'Enter')
+    expect(h.value()).toEqual(['c', 'b'])
+    // 连接层判一次要不要把焦点留在编辑框，机器再判一次：纯函数被问两遍，看到的都是去掉 a 的集合
+    expect(seen.length).toBeGreaterThan(0)
+    expect(seen.every(value => sameTags(value, ['b']))).toBe(true)
+    const asked = seen.length
+    h.api().edit('c')
+    typeInto(h.nodes('c').editInput, 'b')
+    press(h.nodes('c').editInput, 'Enter')
+    expect(h.value()).toEqual(['b'])
+    expect(seen).toHaveLength(asked)
+  })
+
+  it('就地编辑：编辑框失焦时被拒就此撤销，标签保持原样', () => {
+    const onTagReject = vi.fn()
+    const h = mount({ defaultValue: ['a@x'], editable: true, validate: email, onTagReject })
+    h.api().edit('a@x')
+    const n = h.nodes('a@x')
+    typeInto(n.editInput, 'broken')
+    n.editInput.dispatchEvent(new FocusEvent('blur'))
+    expect(h.stateOf()).toBe('idle')
+    expect(h.value()).toEqual(['a@x'])
+    expect(onTagReject).toHaveBeenCalledTimes(1)
   })
 })

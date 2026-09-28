@@ -10,6 +10,7 @@ export { connectTagsInput } from './tags-input.connect'
 export { tagsInputKeyboard } from './tags-input.keyboard'
 export {
   appendTags,
+  editRejection,
   isAtMax,
   isOverflow,
   normalizeTag,
@@ -18,6 +19,7 @@ export {
   splitTags,
   TAGS_INPUT_DELIMITER,
   tagsDelimiter,
+  tagsDelimiters,
   tagsInputMachine,
 } from './tags-input.machine'
 export type { TagsAppendOptions, TagsAppendResult } from './tags-input.machine'
@@ -27,7 +29,12 @@ export type {
   TagsInputBlurBehavior,
   TagsInputInputValueChangeDetails,
   TagsInputItemProps,
+  TagsInputRejectCode,
+  TagsInputRejection,
+  TagsInputRejectReason,
   TagsInputSchema,
+  TagsInputTagRejectDetails,
   TagsInputTranslations,
+  TagsInputValidateContext,
   TagsInputValueChangeDetails,
 } from './tags-input.types'

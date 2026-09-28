@@ -60,7 +60,8 @@ export const XhTagsInputRoot = defineComponent({
     showCount: Boolean,
     name: { type: String },
     placeholder: { type: String },
-    delimiter: { type: String },
+    delimiter: { type: [String, Array] as PropType<string | string[]> },
+    validate: { type: Function as PropType<TagsInputProps['validate']> },
     addOnPaste: Boolean,
     editable: Boolean,
     blurBehavior: { type: String as PropType<TagsInputBlurBehavior | null> },
@@ -75,6 +76,7 @@ export const XhTagsInputRoot = defineComponent({
     'update:value': (_value: PayloadOf<TagsInputProps, 'onValueChange'>['value']) => true,
     'input-value-change': (_details: PayloadOf<TagsInputProps, 'onInputValueChange'>) => true,
     'update:inputValue': (_inputValue: PayloadOf<TagsInputProps, 'onInputValueChange'>['inputValue']) => true,
+    'tag-reject': (_details: PayloadOf<TagsInputProps, 'onTagReject'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: TagsInputRootSlotProps) => VNode[]
@@ -88,7 +90,8 @@ export const XhTagsInputRoot = defineComponent({
       emit('input-value-change', details)
       emit('update:inputValue', details.inputValue)
     }
-    const ctx = useTagsInput(withXhConfig('tags-input', useFormControlProps(props)) as TagsInputProps, { onValueChange, onInputValueChange })
+    const onTagReject: TagsInputProps['onTagReject'] = details => emit('tag-reject', details)
+    const ctx = useTagsInput(withXhConfig('tags-input', useFormControlProps(props)) as TagsInputProps, { onValueChange, onInputValueChange, onTagReject })
     provideTagsInput(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

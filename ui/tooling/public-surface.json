@@ -7153,8 +7153,13 @@
       "TagsInputBlurBehavior",
       "TagsInputInputValueChangeDetails",
       "TagsInputItemProps",
+      "TagsInputRejectCode",
+      "TagsInputRejectReason",
+      "TagsInputRejection",
       "TagsInputSchema",
+      "TagsInputTagRejectDetails",
       "TagsInputTranslations",
+      "TagsInputValidateContext",
       "TagsInputValueChangeDetails",
       "TextFieldApi",
       "TextFieldAutoSize",
@@ -7895,6 +7900,7 @@
       "drawerKeyboard",
       "drawerMachine",
       "drawerMeta",
+      "editRejection",
       "editableAnatomy",
       "editableInputSize",
       "editableKeyboard",
@@ -8582,6 +8588,7 @@
       "tagMeta",
       "tagVariantForControl",
       "tagsDelimiter",
+      "tagsDelimiters",
       "tagsInputAnatomy",
       "tagsInputEditInputId",
       "tagsInputKeyboard",
@@ -13009,6 +13016,7 @@
       "max",
       "name",
       "onInputValueChange",
+      "onTagReject",
       "onValueChange",
       "placeholder",
       "readOnly",
@@ -13017,6 +13025,7 @@
       "size",
       "tone",
       "translations",
+      "validate",
       "value",
       "variant"
     ],
@@ -20939,6 +20948,7 @@
       ],
       "events": [
         "input-value-change",
+        "tag-reject",
         "value-change"
       ]
     },

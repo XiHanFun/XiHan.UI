@@ -628,7 +628,8 @@ export const tagsInputSuite: ConformanceSuite = {
           kind: 'raw',
           why: '断词与上限判定都发生在 input 事件里',
           run: async ctx => typeInto(ctx, 'react,'),
-          expect: { events: [] },
+          // 值没变，只报一笔放不下
+          expect: { events: [{ type: 'tag-reject', detail: { tags: [{ tag: 'react', reasons: ['too-many-tags'] }] } }] },
         },
         {
           kind: 'raw',
@@ -851,6 +852,72 @@ export const tagsInputSuite: ConformanceSuite = {
           kind: 'raw',
           why: 'hidden-input 的 value 是 property',
           run: ({ doc }) => expectSubmitValue(doc, 'vue;react', '提交串用的是同一个分隔符'),
+        },
+      ],
+    },
+    {
+      name: '一组分隔符：打出其中任何一个都断词，提交串用第一个',
+      spec: { apg: APG },
+      fixture: withTags('vue'),
+      props: { defaultValue: ['vue'], delimiter: [';', '，'], name: 'stack' },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        {
+          kind: 'raw',
+          why: '断词发生在 input 事件里',
+          run: async ctx => typeInto(ctx, 'react，'),
+          expect: { events: [{ type: 'value-change', detail: { value: ['vue', 'react'] } }] },
+        },
+        {
+          kind: 'raw',
+          why: '断词发生在 input 事件里',
+          run: async ctx => typeInto(ctx, 'svelte;'),
+          expect: { events: [{ type: 'value-change', detail: { value: ['vue', 'react', 'svelte'] } }] },
+        },
+        {
+          kind: 'raw',
+          why: 'hidden-input 的 value 是 property',
+          run: ({ doc }) => expectSubmitValue(doc, 'vue;react;svelte', '提交串用第一个分隔符'),
+        },
+      ],
+    },
+    {
+      name: 'validate：被拒的这一次整体不生效、文本原样留着，拒收连同拒绝码报 tag-reject',
+      spec: { apg: APG },
+      fixture: withTags('vue'),
+      props: { defaultValue: ['vue'], validate: (tag: string) => (/^[a-z]+$/.test(tag) ? null : 'lowercase-only') },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        {
+          kind: 'raw',
+          why: '断词与准入判定都发生在 input 事件里',
+          run: async ctx => typeInto(ctx, 'React,'),
+          expect: { events: [{ type: 'tag-reject', detail: { tags: [{ tag: 'React', reasons: ['lowercase-only'] }] } }] },
+        },
+        {
+          kind: 'raw',
+          why: '"文本没被吞掉"是 property 上的事实',
+          run: ({ doc }) => expectInputValue(doc, 'React,', '被拒时不许悄悄吃掉用户打的字'),
+        },
+      ],
+    },
+    {
+      name: '重复的标签照常被消费掉，值不变，只报一笔 duplicate',
+      spec: { apg: APG },
+      fixture: withTags('vue'),
+      props: { defaultValue: ['vue'] },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        {
+          kind: 'raw',
+          why: '断词发生在 input 事件里',
+          run: async ctx => typeInto(ctx, 'vue,'),
+          expect: { events: [{ type: 'tag-reject', detail: { tags: [{ tag: 'vue', reasons: ['duplicate'] }] } }] },
+        },
+        {
+          kind: 'raw',
+          why: '输入框被清空是 property 上的事实',
+          run: ({ doc }) => expectInputValue(doc, '', '已有的标签算作达成，框里清空'),
         },
       ],
     },

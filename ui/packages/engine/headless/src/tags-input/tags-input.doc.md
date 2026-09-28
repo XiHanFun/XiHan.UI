@@ -14,7 +14,9 @@
 
 ## 特性
 
-- `delimiter` 与 `addOnPaste` 一起处理粘贴拆分。
+- `delimiter` 与 `addOnPaste` 一起处理粘贴拆分；`delimiter` 给一组时其中任何一个都断词（如半角与全角逗号），提交串用第一个。
+- `validate` 逐个判定新标签，返回拒绝码即拒收：这一次提交整体不生效、文本留在框里；拒收的标签连同原因（重复、放不下或自定义码）经 `onTagReject` 报告。
+- 标签是一个集合：已有的标签再输入一次照常被消费、值不变，只报一笔 `duplicate`。
 - 每个标签都是库内的 tag：预览、文字与删除按钮就是它的 root、label 与 close-trigger，语气与尺寸随控件，形态按控件的面派生。
 - `editable` 让已有标签双击就地修改。
 - `max` 与 `allowOverflow` 成对：超出上限时拒绝还是标记。

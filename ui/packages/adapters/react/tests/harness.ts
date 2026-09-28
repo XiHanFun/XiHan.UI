@@ -40,6 +40,7 @@ const PUBLIC_EVENTS = {
   'stop': 'onStop',
   'submit': 'onSubmit',
   'tab-close': 'onTabClose',
+  'tag-reject': 'onTagReject',
   'scroll-change': 'onScrollChange',
   'reach-end': 'onReachEnd',
   'tab-move': 'onTabMove',
