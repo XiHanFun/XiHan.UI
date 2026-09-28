@@ -21,9 +21,13 @@ function outsideButton(): HTMLButtonElement {
   return button
 }
 
+/**
+ * 命中测页面按钮的上沿一带：面板进场从上方落下，途中会短暂盖到终点上方那一小段（按钮下半截），
+ * 这里量的是模态约束，不是进场几何。
+ */
 function hit(node: HTMLElement): Element | null {
   const rect = node.getBoundingClientRect()
-  return document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
+  return document.elementFromPoint(rect.left + rect.width / 2, rect.top + 4)
 }
 
 function part(name: string): HTMLElement {
