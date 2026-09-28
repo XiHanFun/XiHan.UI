@@ -7,8 +7,19 @@
 
 export { timestampAnatomy } from './timestamp.anatomy'
 export { connectTimestamp } from './timestamp.connect'
-export { formatRelativeTime, formatTimePattern, TIMESTAMP_RELATIVE_LIMIT, timestampMachineStamp, toTimeDate } from './timestamp.format'
+export {
+  formatRelativeTime,
+  formatTimePattern,
+  formatTimestampDate,
+  isTimestampTimeZone,
+  TIMESTAMP_RELATIVE_LIMIT,
+  timestampJustNow,
+  timestampMachineStamp,
+  timestampRefreshDelay,
+  toTimeDate,
+} from './timestamp.format'
 export type { TimestampType, TimestampValue } from './timestamp.format'
 export { timestampKeyboard } from './timestamp.keyboard'
+export { timestampMachine, timestampNextRefresh } from './timestamp.machine'
 export { timestampMeta } from './timestamp.meta'
-export type { TimestampApi, TimestampProps, TimestampState, TimestampTranslations } from './timestamp.types'
+export type { TimestampApi, TimestampProps, TimestampSchema, TimestampState, TimestampTranslations } from './timestamp.types'

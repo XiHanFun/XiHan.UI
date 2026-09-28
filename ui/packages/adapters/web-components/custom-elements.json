@@ -65446,7 +65446,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-timestamp>`：Light-DOM 行为宿主，无状态机，把 connectTimestamp 产出接到 root 角色节点。\n\n作者写一个空的 `<time data-xh-part=\"root\"></time>`：datetime 与显示文本都是计算得出的，\n两者取自同一个墙钟，元素不做时区换算。作者若自行在该节点中写了文本，该文本原样保留，\n元素只覆盖自己上一次铺入的内容。\n\n无法识别的时刻写 `data-state=\"invalid\"`，此时不写 datetime：\n与其提供一个错误的机读时间戳，不如不提供。\n\n数字时间戳只能通过 property 设置（`el.value = 1786000000000`）：属性中的一串数字与年份写法无法区分。",
+          "description": "`<xh-timestamp>`：Light-DOM 行为宿主，把 connectTimestamp 产出接到 root 角色节点。\n\n作者写一个空的 `<time data-xh-part=\"root\"></time>`：datetime 与显示文本都是计算得出的，\n两者取自同一个墙钟（给了 time-zone 时是那个时区的墙钟）。作者若自行在该节点中写了文本，\n该文本原样保留，元素只覆盖自己上一次铺入的内容。\n\n相对型在没给 now 时按距今远近自动刷新：文字只在跨过分钟、小时、天的边界时才变，就只在那一刻刷新；\n页面隐藏或元素离开视口时暂停，回来时立即刷新一次。\n\n无法识别的时刻或时区写 `data-state=\"invalid\"`，此时不写 datetime：\n与其提供一个错误的机读时间戳，不如不提供。\n\n数字时间戳只能通过 property 设置（`el.value = 1786000000000`）：属性中的一串数字与年份写法无法区分。",
           "name": "XhTimestampElement",
           "cssParts": [
             {
@@ -65502,6 +65502,15 @@
             },
             {
               "kind": "field",
+              "name": "timeZone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "time-zone"
+            },
+            {
+              "kind": "field",
               "name": "now",
               "privacy": "public",
               "type": {
@@ -65511,12 +65520,37 @@
             },
             {
               "kind": "field",
+              "name": "refreshInterval",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "refresh-interval"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<TimestampTranslations>"
+              },
+              "description": "界面文案：justNow 替换一分钟以内的说法；只能通过 property 设置"
+            },
+            {
+              "kind": "field",
               "name": "#painted",
               "privacy": "private",
               "type": {
                 "text": "string | undefined"
               },
               "description": "上一次铺进 root 的那份文本。"
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<TimestampSchema>(this, timestampMachine, () => ({ value: this.value, type: this.type, format: this.format, locale: this.locale, timeZone: this.timeZone, now: this.now, refreshInterval: this.refreshInterval, translations: this.translations, }))"
             },
             {
               "kind": "method",
@@ -65559,7 +65593,7 @@
               "type": {
                 "text": "TimestampValue | undefined"
               },
-              "description": "要显示的时刻；只写年月日的串按本地零点解读",
+              "description": "要显示的时刻；只写年月日的串按零点解读，不带偏移量的串按 time-zone 的墙钟解读",
               "name": "value",
               "fieldName": "value"
             },
@@ -65583,17 +65617,33 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "BCP 47 语言标记，zh 开头使用中文用词、其余英文；未提供时按宿主语言，宿主也没有时按 en-US。只切换面向用户的文本",
+              "description": "BCP 47 语言标记，决定相对说法的用词与缺省的日期写法（由 Intl 给出）；未提供时按宿主语言，宿主也没有时按 en-US。只切换面向用户的文本",
               "name": "locale",
               "fieldName": "locale"
             },
             {
               "type": {
+                "text": "string | undefined"
+              },
+              "description": "IANA 时区名；给了就按这个时区的墙钟显示，datetime 带上偏移量，认不出的时区落 invalid",
+              "name": "time-zone",
+              "fieldName": "timeZone"
+            },
+            {
+              "type": {
                 "text": "TimestampValue | undefined"
               },
-              "description": "计算相对表述时的参照时刻，默认取当前时刻",
+              "description": "计算相对说法时的参照时刻，默认取当前时刻并自动刷新；提供后不再刷新",
               "name": "now",
               "fieldName": "now"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "相对型的刷新间隔（毫秒）；缺省按距今远近自适应，给 0 不刷新",
+              "name": "refresh-interval",
+              "fieldName": "refreshInterval"
             }
           ],
           "superclass": {

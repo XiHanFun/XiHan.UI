@@ -77,7 +77,7 @@ export const timestampSuite: ConformanceSuite = {
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T09:30:05') },
-        { kind: 'raw', why: WHY, run: expectText('08/11/2026 09:30:05') },
+        { kind: 'raw', why: WHY, run: expectText('08/11/2026, 09:30:05') },
       ],
     },
     {
@@ -95,7 +95,7 @@ export const timestampSuite: ConformanceSuite = {
     {
       name: '自定义格式串只改给人看的那段，戳不跟着变',
       spec: { apg: HTML },
-      props: { value: AT, format: 'YYYY 年 M 月 D 日 H 时' },
+      props: { value: AT, format: 'YYYY 年 M 月 D 日 H 时', locale: 'en-US' },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T09:30:05') },
         { kind: 'raw', why: WHY, run: expectText('2026 年 8 月 11 日 9 时') },
@@ -131,7 +131,39 @@ export const timestampSuite: ConformanceSuite = {
       props: { value: '2026-08-11T09:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'zh-CN' },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T09:00:00') },
-        { kind: 'raw', why: WHY, run: expectText('30 分钟前') },
+        { kind: 'raw', why: WHY, run: expectText('30分钟前') },
+      ],
+    },
+    {
+      name: '将来的时刻说成「几分钟后」，同样立 data-relative',
+      spec: { apg: HTML },
+      props: { value: '2026-08-11T10:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' },
+      initial: {
+        parts: { root: { 'data-format': 'relative', 'data-state': 'ready', 'data-relative': '' } },
+      },
+      steps: [
+        { kind: 'raw', why: WHY, run: expectText('in 30 minutes') },
+      ],
+    },
+    {
+      name: '给了时区：文本与戳都按那个时区的墙钟，戳带偏移量',
+      spec: { apg: HTML },
+      props: { value: '2026-08-11T09:30:05Z', timeZone: 'Asia/Tokyo', locale: 'en-US' },
+      steps: [
+        { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T18:30:05+09:00') },
+        { kind: 'raw', why: WHY, run: expectText('08/11/2026, 18:30:05') },
+      ],
+    },
+    {
+      name: '认不出的时区落 invalid，不拿本地时间冒充',
+      spec: { apg: HTML },
+      props: { value: AT, timeZone: 'Mars/Olympus' },
+      initial: {
+        parts: { root: { 'data-state': 'invalid' } },
+      },
+      steps: [
+        { kind: 'raw', why: WHY, run: expectStamp(null) },
+        { kind: 'raw', why: WHY, run: expectText('') },
       ],
     },
     {
