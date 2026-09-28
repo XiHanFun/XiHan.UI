@@ -343,7 +343,7 @@ value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气�
 | `--xh-slider-thumb-bg-invalid` | `thumb` | `background` | `invalid` | `--xh-border-invalid` | slider 的 thumb 部件 background 覆盖槽。 |
 | `--xh-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default-opaque` | slider 的 thumb 部件 border 覆盖槽。 |
 | `--xh-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | slider 的 thumb 部件 border-radius 覆盖槽。 |
-| `--xh-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | slider 的 thumb 部件 scale 覆盖槽。 |
+| `--xh-slider-thumb-scale-dragging` | `thumb`<br>`value-text` | `scale` | `dragging` | `--xh-motion-scale-drag` | slider 的 thumb、value-text 部件 scale 覆盖槽。 |
 | `--xh-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-slider-thumb-shadow-disabled` | `thumb` | `box-shadow` | `disabled` | `none` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
@@ -385,4 +385,4 @@ value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气�
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。
