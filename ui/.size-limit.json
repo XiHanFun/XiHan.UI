@@ -73,6 +73,18 @@
     "limit": "3.5 kB"
   },
   {
+    "name": "viz/columns",
+    "path": "packages/engine/viz/dist/columns.js",
+    "gzip": true,
+    "limit": "5.3 kB"
+  },
+  {
+    "name": "viz/canvas",
+    "path": "packages/engine/viz/dist/canvas.js",
+    "gzip": true,
+    "limit": "2.8 kB"
+  },
+  {
     "name": "code-highlight",
     "path": "packages/features/code-highlight/dist/index.js",
     "gzip": true,
