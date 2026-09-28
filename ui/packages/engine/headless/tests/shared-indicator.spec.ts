@@ -201,6 +201,13 @@ describe('标准档落点的「直接到位」', () => {
     expect(last()).toBe(false)
   })
 
+  it('条目换了位（宿主重排）：同一项挪动了落点也跟着滑，不直接到位', () => {
+    const { indicator, last } = standard()
+    indicator.place(box(0), 'a')
+    indicator.place(box(80), 'a', { glide: true })
+    expect(last()).toBe(false)
+  })
+
   it('落点量不到（选中项被移走）：直接到位', () => {
     const { indicator, last } = standard()
     indicator.place(box(0), 'a')
