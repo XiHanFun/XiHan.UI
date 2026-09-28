@@ -134,6 +134,11 @@ export interface NavigationMenuSchema extends MachineSchema {
   context: {
     /** 当前展开项，受控时 cell 直读 prop。 */
     value: string | null
+    /**
+     * 挂载时就有一项展开着、展开项还没变过：那一项的 content 投影 data-instant 直接呈现、不播进场。
+     * 展开项第一次变化时清掉，之后的每一次展开照常进场。
+     */
+    openedAtMount: boolean
     /** 等待展开的项，延时结束后才落到 value 上。 */
     pendingValue: string | null
     /** 最近一次由悬停 / 聚焦自动展开的项，用于判定紧随其后的激活是保持展开还是收起。 */
@@ -181,6 +186,7 @@ export interface NavigationMenuSchema extends MachineSchema {
   tag: never
   guard: 'hasValue' | 'isCurrent' | 'shouldKeepOpen' | 'canPress'
   action:
+    | 'clearOpenedAtMount'
     | 'setValue'
     | 'clearValue'
     | 'setPendingValue'

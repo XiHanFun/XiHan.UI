@@ -20,6 +20,7 @@ import { connectHoverCard, hoverCardMachine } from '../src/hover-card'
 import { connectImageViewer, imageViewerMachine } from '../src/image-viewer'
 import { connectMenu, menuMachine } from '../src/menu'
 import { connectMenubar, menubarMachine } from '../src/menubar'
+import { connectNavigationMenu, navigationMenuMachine } from '../src/navigation-menu'
 import { connectPopconfirm } from '../src/popconfirm'
 import { connectPopover, popoverMachine } from '../src/popover'
 import { connectSelect, selectMachine } from '../src/select'
@@ -179,6 +180,11 @@ const CASES: Record<string, Case> = {
     machine: menubarMachine,
     props: valueOf,
     parts: service => [connectMenubar(service, normalizeProps).getContentProps({ value: 'file' }) as Attrs],
+  },
+  'navigation-menu': {
+    machine: navigationMenuMachine,
+    props: valueOf,
+    parts: service => [connectNavigationMenu(service, normalizeProps).getContentProps({ value: 'file' }) as Attrs],
   },
 }
 
