@@ -38,7 +38,7 @@ const remote: Record<string, CascaderNode[]> = {
 // 浮层收起或展开路径离开这一支时 signal 中止，把定时器一起撤掉
 function loadChildren({ node, signal }: CascaderLoadChildrenRequest): Promise<CascaderNode[]> {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => resolve(remote[node.value] ?? []), 800);
+    const timer = setTimeout(resolve, 800, remote[node.value] ?? []);
     signal.addEventListener("abort", () => {
       clearTimeout(timer);
       reject(signal.reason);
