@@ -1,10 +1,11 @@
-<script setup lang="ts">
-import { XhStatisticLabel, XhStatisticRoot, XhStatisticValue } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <XhStatisticRoot>
-    <XhStatisticLabel>本月新增用户</XhStatisticLabel>
-    <XhStatisticValue>12,480</XhStatisticValue>
-  </XhStatisticRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M58 48h68" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M60 76h80" stroke="var(--xh-fg-default)" stroke-width="8" />
+    <g data-tone="success">
+      <path d="M160 82v-12m-5 5l5-5 5 5" stroke="var(--xh-tone-fg)" stroke-width="2" />
+      <path d="M174 76h12" stroke="var(--xh-tone-fg)" stroke-width="4" />
+    </g>
+    <path d="M58 104h100" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+  </svg>
 </template>

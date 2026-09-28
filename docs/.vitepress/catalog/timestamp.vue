@@ -1,13 +1,8 @@
-<script setup lang="ts">
-import { XhTimestamp } from "@xihan-ui/vue";
-
-const at = new Date(2026, 7, 11, 9, 30, 5);
-</script>
-
 <template>
-  <div style="display: grid; gap: var(--xh-space-1_5)">
-    <XhTimestamp :value="at" />
-    <XhTimestamp :value="at" type="date" />
-    <XhTimestamp :value="at" type="relative" :now="new Date(2026, 7, 11, 11, 0, 0)" />
-  </div>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M51 56h138" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M51 80h90" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M62 104a6 6 0 1 1-12 0a6 6 0 1 1 12 0m-6-3v3l2 2" stroke="var(--xh-fg-subtle)" stroke-width="2" />
+    <path d="M72 104h52" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+  </svg>
 </template>
