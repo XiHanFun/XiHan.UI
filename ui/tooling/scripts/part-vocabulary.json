@@ -267,6 +267,12 @@
     "column-visibility-trigger": [
       "table"
     ],
+    "comment-thread": [
+      "diff-view"
+    ],
+    "comment-trigger": [
+      "diff-view"
+    ],
     "confirm-trigger": [
       "date-picker",
       "date-range-picker",
@@ -2182,6 +2188,7 @@
     "table": true,
     "target": true,
     "text": true,
+    "thread": true,
     "threshold": true,
     "thumb": true,
     "tick": true,

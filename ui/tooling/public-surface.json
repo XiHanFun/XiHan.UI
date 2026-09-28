@@ -6155,9 +6155,11 @@
       "DiffSide",
       "DiffViewApi",
       "DiffViewCellProps",
+      "DiffViewCommentRequestDetails",
       "DiffViewExpandedValueChangeDetails",
       "DiffViewGapProps",
       "DiffViewInlineChangeProps",
+      "DiffViewLineRef",
       "DiffViewMode",
       "DiffViewRow",
       "DiffViewRowProps",
@@ -10083,6 +10085,8 @@
     "diff-view": [
       "body",
       "change-label",
+      "comment-thread",
+      "comment-trigger",
       "empty",
       "gap",
       "gap-cell",
@@ -11874,10 +11878,13 @@
       "variant"
     ],
     "diff-view": [
+      "commentLines",
+      "commentable",
       "contextLines",
       "defaultExpandedValue",
       "expandedValue",
       "model",
+      "onCommentRequest",
       "onExpandedValueChange",
       "size",
       "translations",
@@ -13590,6 +13597,7 @@
     "data-columns-md",
     "data-columns-sm",
     "data-columns-xl",
+    "data-commentable",
     "data-complete",
     "data-contained",
     "data-controlled",
@@ -15915,7 +15923,18 @@
     "--xh-diff-view-bg",
     "--xh-diff-view-border",
     "--xh-diff-view-change-bar",
+    "--xh-diff-view-comment-col",
     "--xh-diff-view-comment-fg",
+    "--xh-diff-view-comment-thread-bg",
+    "--xh-diff-view-comment-thread-border",
+    "--xh-diff-view-comment-thread-fg",
+    "--xh-diff-view-comment-thread-max-w",
+    "--xh-diff-view-comment-thread-my",
+    "--xh-diff-view-comment-thread-p",
+    "--xh-diff-view-comment-thread-radius",
+    "--xh-diff-view-comment-trigger-fg",
+    "--xh-diff-view-comment-trigger-icon-size",
+    "--xh-diff-view-comment-trigger-radius",
     "--xh-diff-view-divider",
     "--xh-diff-view-empty-bg",
     "--xh-diff-view-empty-fg",
@@ -19740,12 +19759,15 @@
     },
     "xh-diff-view": {
       "attributes": [
+        "commentable",
         "context-lines",
         "size",
         "view",
         "wrap"
       ],
       "events": [
+        "comment-mount",
+        "comment-request",
         "expanded-value-change"
       ]
     },

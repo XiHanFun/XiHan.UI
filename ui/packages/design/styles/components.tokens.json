@@ -27047,6 +27047,32 @@
       "description": "diff-view 的 row 部件 background、box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-diff-view-comment-col",
+      "component": "diff-view",
+      "part": [
+        "comment-trigger",
+        "line-content",
+        "root"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "min-block-size",
+        "min-inline-size",
+        "padding-inline-start"
+      ],
+      "state": [
+        "commentable",
+        "xh-action-profile=disclosure-trigger",
+        "xh-action-profile=icon"
+      ],
+      "defaultToken": [
+        "--xh-diff-view-line-height"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 comment-trigger、line-content、root 部件 block-size、inline-size、min-block-size、min-inline-size、padding-inline-start 覆盖槽。"
+    },
+    {
       "name": "--xh-diff-view-comment-fg",
       "component": "diff-view",
       "part": [
@@ -27063,6 +27089,186 @@
       ],
       "visibility": "public",
       "description": "diff-view 的 token 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-diff-view-comment-thread-bg",
+      "component": "diff-view",
+      "part": [
+        "comment-thread"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 comment-thread 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-diff-view-comment-thread-border",
+      "component": "diff-view",
+      "part": [
+        "comment-thread"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 comment-thread 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-diff-view-comment-thread-fg",
+      "component": "diff-view",
+      "part": [
+        "comment-thread"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 comment-thread 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-diff-view-comment-thread-max-w",
+      "component": "diff-view",
+      "part": [
+        "comment-thread"
+      ],
+      "property": [
+        "max-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-measure-prose"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 comment-thread 部件 max-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-diff-view-comment-thread-my",
+      "component": "diff-view",
+      "part": [
+        "comment-thread"
+      ],
+      "property": [
+        "margin-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 comment-thread 部件 margin-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-diff-view-comment-thread-p",
+      "component": "diff-view",
+      "part": [
+        "comment-thread"
+      ],
+      "property": [
+        "padding"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 comment-thread 部件 padding 覆盖槽。"
+    },
+    {
+      "name": "--xh-diff-view-comment-thread-radius",
+      "component": "diff-view",
+      "part": [
+        "comment-thread"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-surface"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 comment-thread 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-diff-view-comment-trigger-fg",
+      "component": "diff-view",
+      "part": [
+        "comment-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 comment-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-diff-view-comment-trigger-icon-size",
+      "component": "diff-view",
+      "part": [
+        "comment-trigger"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 comment-trigger 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-diff-view-comment-trigger-radius",
+      "component": "diff-view",
+      "part": [
+        "comment-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 comment-trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-diff-view-divider",
@@ -27376,24 +27582,32 @@
       "component": "diff-view",
       "part": [
         "body",
+        "comment-trigger",
         "gap",
         "gap-trigger",
+        "line-content",
+        "root",
         "row"
       ],
       "property": [
         "block-size",
+        "inline-size",
         "line-height",
-        "min-block-size"
+        "min-block-size",
+        "min-inline-size",
+        "padding-inline-start"
       ],
       "state": [
+        "commentable",
         "default",
-        "xh-action-profile=disclosure-trigger"
+        "xh-action-profile=disclosure-trigger",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
         "--xh-text-code-leading"
       ],
       "visibility": "public",
-      "description": "diff-view 的 body、gap、gap-trigger、row 部件 block-size、line-height、min-block-size 覆盖槽。"
+      "description": "diff-view 的 body、comment-trigger、gap、gap-trigger、line-content、root、row 部件 block-size、inline-size、line-height、min-block-size、min-inline-size、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-diff-view-max-h",
@@ -38479,6 +38693,7 @@
         "caps-lock-indicator",
         "clear-trigger",
         "close-trigger",
+        "comment-trigger",
         "control",
         "decrement-trigger",
         "dismiss-trigger",

@@ -20,10 +20,14 @@ export interface DiffViewContext {
   api: ComputedRef<DiffViewApi>
 }
 
-export function useDiffView(props: Props, onExpandedValueChange?: Props['onExpandedValueChange']): DiffViewContext {
+export function useDiffView(
+  props: Props,
+  onExpandedValueChange?: Props['onExpandedValueChange'],
+  onCommentRequest?: Props['onCommentRequest'],
+): DiffViewContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(diffViewMachine, () => ({ ...props, onExpandedValueChange }), scope)
+  const service = useMachine(diffViewMachine, () => ({ ...props, onExpandedValueChange, onCommentRequest }), scope)
   const api = computed(() => connectDiffView(service, vueNormalize))
   return { api }
 }

@@ -7,12 +7,28 @@
 
 import type { CodeToken, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { DiffChange, DiffLine, DiffModel } from './diff-view.model'
-import type { DiffSide, DiffViewApi, DiffViewCellProps, DiffViewRow, DiffViewSchema, DiffViewSegment } from './diff-view.types'
-import { createPressTracker, dataAttr } from '@xihan-ui/core'
+import type { DiffSide, DiffViewApi, DiffViewCellProps, DiffViewLineRef, DiffViewRow, DiffViewSchema, DiffViewSegment } from './diff-view.types'
+import {
+  createPressTracker,
+  dataAttr,
+  focusItem,
+  ITEM_VALUE_ATTR,
+  itemQuerySelector,
+  navigateItems,
+  navIntentFromKey,
+  queryItems,
+} from '@xihan-ui/core'
 import { diffViewAnatomy } from './diff-view.anatomy'
 import { diffStats } from './diff-view.model'
+import { diffViewSides } from './diff-view.projection'
 
 const parts = diffViewAnatomy.build()
+
+const BODY_QUERY = { scope: diffViewAnatomy.name, part: 'body' }
+const COMMENT_TRIGGER_QUERY = { scope: diffViewAnatomy.name, part: 'comment-trigger' }
+
+/** 评论钮与评论容器的身份：`侧:行号`。 */
+const refKey = (ref: DiffViewLineRef): string => `${ref.side}:${ref.line}`
 
 const EMPTY_MODEL: DiffModel = { hunks: [] }
 const NO_TOKENS: readonly CodeToken[] = []
@@ -189,6 +205,35 @@ export function connectDiffView<T extends PropTypes>(
     return sliceSegments(line!.segments, line!.tokens)
   }
 
+  // 行评论：单栏只有一列，删除行落旧侧、其余落新侧；并排按所在的那一侧
+  const commentable = prop('commentable') === true
+  const commentRefAt = ({ rowIndex, side }: DiffViewCellProps): DiffViewLineRef | undefined => {
+    const line = lineAt(rowIndex)
+    if (!hasSide(line, side, split))
+      return undefined
+    const onOld = split ? side === 'old' : line!.change === 'removed'
+    const number = onOld ? line!.oldNumber : line!.newNumber
+    return number === undefined ? undefined : { side: onOld ? 'old' : 'new', line: number }
+  }
+  const commented = new Set((prop('commentLines') ?? []).map(refKey))
+  const hasComment = (cell: DiffViewCellProps): boolean => {
+    const ref = commentRefAt(cell)
+    return ref !== undefined && commented.has(refKey(ref))
+  }
+  // Tab 停靠点：记下的那颗钮还在可见行里就留在它上面，否则落在第一颗
+  const commentKeys = commentable
+    ? rows.flatMap(row => (row.kind === 'line'
+        ? diffViewSides(view).flatMap((side) => {
+            const ref = commentRefAt({ rowIndex: row.rowIndex, side })
+            return ref === undefined ? [] : [refKey(ref)]
+          })
+        : []))
+    : []
+  const commentFocus = context.get('commentFocus') ?? null
+  const commentStop = commentFocus !== null && commentKeys.includes(commentFocus) ? commentFocus : commentKeys[0]
+  const commentLabel = translations?.commentOn
+    ?? ((line: number, side: DiffSide) => `Comment on ${side === 'old' ? 'old' : 'new'} line ${line}`)
+
   return {
     view,
     rows,
@@ -200,6 +245,9 @@ export function connectDiffView<T extends PropTypes>(
     isEmpty,
     setExpandedValue: next => send({ type: 'CONTROLLED.EXPANDED.SET', value: next }),
     toggleGap: id => send({ type: expandedValue.includes(id) ? 'GAP.COLLAPSE' : 'GAP.EXPAND', id }),
+    commentable,
+    commentRefAt,
+    hasComment,
 
     // 不发 aria-busy：族级规则
     getRootProps: () => normalize.element({
@@ -208,6 +256,7 @@ export function connectDiffView<T extends PropTypes>(
       'data-size': prop('size'),
       'data-wrap': dataAttr(prop('wrap') === true),
       'data-truncated': dataAttr(truncated),
+      'data-commentable': dataAttr(commentable),
     }),
 
     getHeaderProps: () => normalize.element({
@@ -320,6 +369,61 @@ export function connectDiffView<T extends PropTypes>(
         'onPointerDown': handlers.onPointerDown,
         'onPointerUp': handlers.onPointerUp,
         'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
+
+    // 评论钮：接 Action Control icon 档、ghost 形态；一组只占一个 Tab 位，上下方向键在组内走，
+    // Home / End 到首末。指针设备上平时透明，悬停到这一行或焦点进了视口才显出来（皮肤管）
+    getCommentTriggerProps: (cell) => {
+      const ref = commentRefAt(cell)
+      const key = ref === undefined ? undefined : refKey(ref)
+      return normalize.button({
+        ...parts['comment-trigger'].attrs,
+        'type': 'button',
+        [ITEM_VALUE_ATTR]: key,
+        'data-side': ref?.side,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'icon',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'aria-label': ref === undefined ? undefined : commentLabel(ref.line, ref.side),
+        'tabindex': key !== undefined && key === commentStop ? 0 : -1,
+        // 空侧没有行可评论；适配器按 commentRefAt 本就不建，这里再兜一层
+        'hidden': !commentable || ref === undefined || undefined,
+        'onClick': () => {
+          const line = lineAt(cell.rowIndex)
+          if (ref === undefined || key === undefined || line === undefined)
+            return
+          send({ type: 'COMMENT.FOCUS', key })
+          prop('onCommentRequest')?.({ side: ref.side, line: ref.line, change: line.change, text: line.text })
+        },
+        'onKeyDown': (event: KeyboardEvent) => {
+          const intent = navIntentFromKey(event, { axis: 'vertical' })
+          if (intent === null || key === undefined)
+            return
+          // 吞掉方向键：焦点在钮上时它们是组内导航，不该再滚动视口
+          event.preventDefault()
+          const body = (event.currentTarget as HTMLElement).closest<HTMLElement>(itemQuerySelector(BODY_QUERY))
+          const target = navigateItems(queryItems(body, COMMENT_TRIGGER_QUERY), key, intent, { loop: false })
+          if (target === null)
+            return
+          const next = target.getAttribute(ITEM_VALUE_ATTR)
+          if (next !== null)
+            send({ type: 'COMMENT.FOCUS', key: next })
+          focusItem(target)
+        },
+      })
+    },
+
+    // 挂在这一格里的评论：住在代码下方、同一个 cell 里，行序与列号都不受影响
+    getCommentThreadProps: (cell) => {
+      const ref = commentRefAt(cell)
+      return normalize.element({
+        ...parts['comment-thread'].attrs,
+        [ITEM_VALUE_ATTR]: ref === undefined ? undefined : refKey(ref),
+        'data-side': ref?.side,
+        'hidden': !hasComment(cell) || undefined,
       })
     },
 

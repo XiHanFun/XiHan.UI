@@ -148,6 +148,7 @@
     "data-clearable": "cascader / select / tree-select 当前有值可清空，清空钮顶上来、箭头让位。",
     "data-closable": "这一项可以关掉：tabs 的页签在焦点上按 Delete / Backspace 即发关闭意图。",
     "data-collapsed": "折叠：layout 的根、侧栏与把手，side-nav，splitter 的面板。",
+    "data-commentable": "diff-view 开了行评论：每格正文让出一列给评论钮。",
     "data-complete": "已经收尾：code-view / markdown-stream 的流已结束，date-field / date-picker / pin-input 的各段已填满，steps 的全部步骤已走完。三处是同一个意思落在不同主语上——这件东西该填的都填完了，所以共用一个名字。",
     "data-contained": "drawer 开在局部容器里，不铺满整个视口。",
     "data-controlled": "timer 走的是受控通道：给了 value 或 active，状态归这两个 prop，起停按钮不改状态。",

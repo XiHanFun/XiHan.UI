@@ -54,6 +54,22 @@ export interface DiffViewGapProps {
   gapId: string
 }
 
+/**
+ * 差异里的一行位置：哪一侧、第几行（行号）。评论按它挂：
+ * 单栏下删除行落旧侧、其余落新侧；并排按所在的那一侧。
+ */
+export interface DiffViewLineRef {
+  side: DiffSide
+  line: number
+}
+
+export interface DiffViewCommentRequestDetails extends DiffViewLineRef {
+  /** 这一行的变更类型。 */
+  change: DiffChange
+  /** 这一行的文本。 */
+  text: string
+}
+
 export interface DiffViewInlineChangeProps {
   rowIndex: number
   /** 该段是否为变更处。 */
@@ -72,9 +88,18 @@ export interface DiffViewSchema extends MachineSchema {
     defaultExpandedValue?: readonly string[]
     /** 长行原地折行，不再横向滚动；默认关闭。 */
     wrap?: boolean
+    /**
+     * 每行正文前给一颗评论钮，点它报出 comment-request，默认关闭。
+     * 一组钮只占一个 Tab 位，上下方向键在组内走；指针设备上悬停到这一行或键盘聚焦时才露出来。
+     */
+    commentable?: boolean
+    /** 挂着评论的行：这些行的正文格里、代码下方铺出 comment-thread 部件，内容由作者写。 */
+    commentLines?: readonly DiffViewLineRef[]
     size?: Size
     translations?: Partial<DiffViewTranslations>
     onExpandedValueChange?: (details: DiffViewExpandedValueChangeDetails) => void
+    /** 在某一行上点了评论钮：宿主据此打开输入框，把这一行加进 commentLines。 */
+    onCommentRequest?: (details: DiffViewCommentRequestDetails) => void
   }
   context: {
     expandedValue: string[]
@@ -83,6 +108,11 @@ export interface DiffViewSchema extends MachineSchema {
      * 抬起、失焦、指针取消，或按住途中那一格被展开（折叠格离开行序、节点被卸下）时清空。
      */
     pressedValue: string | null
+    /**
+     * 评论钮组的 Tab 停靠点：上一次聚焦的那颗钮（`侧:行号`）。
+     * 为 null、或它已不在可见行里时，停靠点落在第一颗钮上。
+     */
+    commentFocus: string | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -96,9 +126,11 @@ export interface DiffViewSchema extends MachineSchema {
     | { type: 'PRESS.START', value: string }
     /** 按住的展开按钮抬起、失焦或指针取消；只松开 value 对应的那一格。 */
     | { type: 'PRESS.END', value: string }
+    /** 焦点落到某颗评论钮上（`侧:行号`），记下它作为这组钮的 Tab 停靠点。 */
+    | { type: 'COMMENT.FOCUS', key: string }
   tag: never
   guard: 'isExpandedControlled'
-  action: 'toggleGap' | 'invokeExpandedChange' | 'syncExpanded' | 'startPress' | 'endPress' | 'releaseWhenExpanded'
+  action: 'toggleGap' | 'invokeExpandedChange' | 'syncExpanded' | 'startPress' | 'endPress' | 'releaseWhenExpanded' | 'setCommentFocus'
   effect: never
 }
 
@@ -119,6 +151,15 @@ export interface DiffViewApi<T extends PropTypes = PropTypes> {
   isEmpty: boolean
   setExpandedValue: (next: string[]) => void
   toggleGap: (id: string) => void
+  /** 开了行评论；适配器据此决定要不要在正文格里建评论钮。 */
+  commentable: boolean
+  /** 这一格的评论落在哪一行；空侧与折叠格为 undefined。 */
+  commentRefAt: (props: DiffViewCellProps) => DiffViewLineRef | undefined
+  /** 这一格挂着评论（在 commentLines 里）；适配器据此在代码下方铺出 comment-thread 部件。 */
+  hasComment: (props: DiffViewCellProps) => boolean
+  getCommentTriggerProps: (props: DiffViewCellProps) => T['button']
+  /** 挂在这一格里的评论容器，内容由作者写。 */
+  getCommentThreadProps: (props: DiffViewCellProps) => T['element']
   getRootProps: () => T['element']
   getHeaderProps: () => T['element']
   /** 头部右侧的增删统计位，增删各一个。 */
@@ -167,4 +208,6 @@ export interface DiffViewTranslations {
   noChanges: string
   /** 截断提示条的文案，入参为被截断的源文本行数。 */
   truncated: (count: number) => string
+  /** 评论钮的可访问名，入参为行号与所在侧。 */
+  commentOn: (line: number, side: DiffSide) => string
 }

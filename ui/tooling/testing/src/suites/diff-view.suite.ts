@@ -223,5 +223,78 @@ export const diffViewSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '行评论：每行正文前一颗评论钮，名字写侧与行号，一组只有一颗在 Tab 序列里',
+      spec: { apg: WCAG },
+      props: { model: SMALL, commentable: true },
+      initial: {
+        counts: { 'comment-trigger': 4, 'comment-thread': 0 },
+        parts: {
+          'root': { 'data-commentable': '' },
+          'comment-trigger': [
+            { 'aria-label': 'Comment on new line 1', 'data-side': 'new', 'tabindex': '0', 'data-xh-action-profile': 'icon' },
+            // 单栏里删除行落旧侧
+            { 'aria-label': 'Comment on old line 2', 'data-side': 'old', 'tabindex': '-1' },
+            { 'aria-label': 'Comment on new line 2', 'data-side': 'new', 'tabindex': '-1' },
+            { 'aria-label': 'Comment on new line 3', 'data-side': 'new', 'tabindex': '-1' },
+          ],
+        },
+      },
+    },
+    {
+      name: '点评论钮报出这一行，并成为这组钮的 Tab 停靠点；挂上评论后代码下方铺出评论容器',
+      spec: { apg: WCAG },
+      covers: ['diff-view.kbd.comment-request', 'diff-view.kbd.comment-tab'],
+      props: { model: SMALL, commentable: true },
+      steps: [
+        {
+          kind: 'click',
+          part: 'comment-trigger[1]',
+          expect: {
+            events: [{ type: 'comment-request', detail: { side: 'old', line: 2, change: 'removed', text: 'b' } }],
+            parts: { 'comment-trigger': [{ tabindex: '-1' }, { tabindex: '0' }, { tabindex: '-1' }, { tabindex: '-1' }] },
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { model: SMALL, commentable: true, commentLines: [{ side: 'old', line: 2 }] },
+          expect: {
+            counts: { 'comment-thread': 1 },
+            parts: { 'comment-thread': { 'data-value': 'old:2', 'data-side': 'old', 'hidden': null } },
+          },
+        },
+      ],
+    },
+    {
+      name: '上下方向键在评论钮之间走、到头不回绕，Home / End 到首末',
+      spec: { apg: WCAG },
+      covers: ['diff-view.kbd.comment-move', 'diff-view.kbd.comment-edge'],
+      props: { model: SMALL, commentable: true },
+      steps: [
+        { kind: 'focus', part: 'comment-trigger[0]', expect: { activeElement: { part: 'comment-trigger[0]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'comment-trigger[1]', exact: true } } },
+        { kind: 'key', key: 'End', expect: { activeElement: { part: 'comment-trigger[3]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'comment-trigger[3]', exact: true } } },
+        { kind: 'key', key: 'Home', expect: { activeElement: { part: 'comment-trigger[0]', exact: true }, parts: { 'comment-trigger': [{ tabindex: '0' }, { tabindex: '-1' }, { tabindex: '-1' }, { tabindex: '-1' }] } } },
+      ],
+    },
+    {
+      name: '并排：空侧不建评论钮，旧侧与新侧按各自的行号',
+      spec: { apg: WCAG },
+      props: { model: SMALL, view: 'split', commentable: true },
+      initial: {
+        counts: { 'comment-trigger': 6 },
+        parts: {
+          'comment-trigger': [
+            { 'aria-label': 'Comment on old line 1' },
+            { 'aria-label': 'Comment on new line 1' },
+            { 'aria-label': 'Comment on old line 2' },
+            { 'aria-label': 'Comment on new line 2' },
+            { 'aria-label': 'Comment on old line 3' },
+            { 'aria-label': 'Comment on new line 3' },
+          ],
+        },
+      },
+    },
   ],
 }

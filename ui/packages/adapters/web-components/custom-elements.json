@@ -22128,7 +22128,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-diff-view>`：Light-DOM 行为宿主：作者写 root / viewport / body 三个角色节点，\n行由本元素按模型铺进 body。\n\n行是模型计算得出的派生结构，作者无法编写 N 行，因此 body 部件的内容由本元素接管；\n其余各处一律不替作者生成节点。",
+          "description": "`<xh-diff-view>`：Light-DOM 行为宿主：作者写 root / viewport / body 三个角色节点，\n行由本元素按模型铺进 body。\n\n行是模型计算得出的派生结构，作者无法编写 N 行，因此 body 部件的内容由本元素接管；\n其余各处一律不替作者生成节点。\n\n行评论：挂在 commentLines 里的行，本元素在代码下方铺一个评论容器，新铺出来一个就派发一次\n`comment-mount`，作者往 detail.element 里放评论内容。",
           "name": "XhDiffViewElement",
           "cssParts": [
             {
@@ -22194,6 +22194,14 @@
             {
               "description": "截断提示条，文字由本元素填入；未截断时带 hidden",
               "name": "truncation"
+            },
+            {
+              "description": "评论钮，由本元素铺在正文最前面；一组只占一个 Tab 位，上下方向键在组内走",
+              "name": "comment-trigger"
+            },
+            {
+              "description": "挂在正文格里、代码下方的评论容器，由本元素铺、内容由作者经 comment-mount 放",
+              "name": "comment-thread"
             }
           ],
           "members": [
@@ -22232,6 +22240,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "wrap"
+            },
+            {
+              "kind": "field",
+              "name": "commentable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "commentable"
+            },
+            {
+              "kind": "field",
+              "name": "commentLines",
+              "privacy": "public",
+              "type": {
+                "text": "DiffViewLineRef[]"
+              },
+              "description": "挂着评论的行，写 `{ side, line }`"
             },
             {
               "kind": "field",
@@ -22283,10 +22309,16 @@
             },
             {
               "kind": "field",
+              "name": "requestComment",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<DiffViewSchema>(this, diffViewMachine, () => ({ model: this.model, view: this.view, contextLines: this.contextLines, wrap: this.wrap, expandedValue: this.expandedValue, defaultExpandedValue: this.defaultExpandedValue, size: this.size, translations: this.translations, onExpandedValueChange: this.notify, }))"
+              "default": "new MachineController<DiffViewSchema>(this, diffViewMachine, () => ({ model: this.model, view: this.view, contextLines: this.contextLines, wrap: this.wrap, commentable: this.commentable, commentLines: this.commentLines, expandedValue: this.expandedValue, defaultExpandedValue: this.defaultExpandedValue, size: this.size, translations: this.translations, onExpandedValueChange: this.notify, onCommentRequest: this.requestComment, }))"
             },
             {
               "kind": "field",
@@ -22296,6 +22328,16 @@
                 "text": "string | undefined"
               },
               "description": "上一次铺进 body 的那份行序，用来判断要不要重铺。"
+            },
+            {
+              "kind": "field",
+              "name": "#cells",
+              "privacy": "private",
+              "type": {
+                "text": "PaintedCell[]"
+              },
+              "default": "[]",
+              "description": "上一次铺出来的正文格，评论钮与评论容器就地更新。"
             },
             {
               "kind": "method",
@@ -22325,6 +22367,62 @@
                 }
               ],
               "description": "把行序铺进 body。\n内容未变时不重铺：每次更新都重建节点会丢失用户正在拖动的选区。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "content",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "DiffViewApi"
+                  }
+                },
+                {
+                  "name": "rowIndex",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "side",
+                  "type": {
+                    "text": "DiffViewCellProps['side']"
+                  }
+                }
+              ],
+              "description": "一格的正文：算了词级差异就先按片段裹一层，否则整行按记号铺；都没有就一个文本节点。"
+            },
+            {
+              "kind": "method",
+              "name": "#syncComments",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "DiffViewApi"
+                  }
+                }
+              ],
+              "description": "评论钮刷一遍属性（Tab 停靠点在机器里）；挂着评论的格补上评论容器、没挂的撤掉。\n新铺出来的容器在这一拍收尾后派发 comment-mount，作者往里放内容。"
             },
             {
               "kind": "method",
@@ -22360,10 +22458,24 @@
           ],
           "events": [
             {
+              "name": "comment-mount",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "新铺出一个评论容器；detail 为 `{ side, line, change, text, element }`"
+            },
+            {
               "description": "展开集合变化；detail 为 `{ value: string[] }`",
               "name": "expanded-value-change",
               "type": {
                 "text": "DiffViewExpandedValueChangeDetails"
+              }
+            },
+            {
+              "description": "在某一行上点了评论钮；detail 为 `{ side, line, change, text }`",
+              "name": "comment-request",
+              "type": {
+                "text": "DiffViewCommentRequestDetails"
               }
             }
           ],
@@ -22391,6 +22503,14 @@
               "description": "长行原地折行，默认关闭（长行横向滚动）",
               "name": "wrap",
               "fieldName": "wrap"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "每行正文前给一颗评论钮，点它派发 comment-request；默认关闭",
+              "name": "commentable",
+              "fieldName": "commentable"
             },
             {
               "type": {
@@ -22424,7 +22544,40 @@
               "name": "--xh-diff-view-change-bar"
             },
             {
+              "name": "--xh-diff-view-comment-col"
+            },
+            {
               "name": "--xh-diff-view-comment-fg"
+            },
+            {
+              "name": "--xh-diff-view-comment-thread-bg"
+            },
+            {
+              "name": "--xh-diff-view-comment-thread-border"
+            },
+            {
+              "name": "--xh-diff-view-comment-thread-fg"
+            },
+            {
+              "name": "--xh-diff-view-comment-thread-max-w"
+            },
+            {
+              "name": "--xh-diff-view-comment-thread-my"
+            },
+            {
+              "name": "--xh-diff-view-comment-thread-p"
+            },
+            {
+              "name": "--xh-diff-view-comment-thread-radius"
+            },
+            {
+              "name": "--xh-diff-view-comment-trigger-fg"
+            },
+            {
+              "name": "--xh-diff-view-comment-trigger-icon-size"
+            },
+            {
+              "name": "--xh-diff-view-comment-trigger-radius"
             },
             {
               "name": "--xh-diff-view-divider"
