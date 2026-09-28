@@ -1338,6 +1338,8 @@ export type ComponentTokenName
     | '--xh-dialog-content-lens-depth'
     | '--xh-dialog-description-fg'
     | '--xh-dialog-description-font-size'
+    | '--xh-dialog-drag-trigger-min-h'
+    | '--xh-dialog-drag-trigger-radius'
     | '--xh-dialog-fg'
     | '--xh-dialog-footer-gap'
     | '--xh-dialog-footer-pt'

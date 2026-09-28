@@ -18,5 +18,8 @@ export const dialogKeyboard: KeyboardTable = {
     { id: 'dialog.kbd.tab', keys: ['Tab'], when: 'open', does: '在 content 内向后循环焦点' },
     { id: 'dialog.kbd.shift-tab', keys: ['Shift+Tab'], when: 'open', does: '在 content 内向前循环焦点' },
     { id: 'dialog.kbd.press', keys: ['Enter', 'Space'], when: 'held in trigger / close-trigger', does: '按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或面板收起撤下' },
+    { id: 'dialog.kbd.drag-move', keys: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'], when: 'focus in drag-trigger, draggable', does: '按屏幕方向把面板挪一步（10px），夹在视口内；方向是物理键位，RTL 下不对调' },
+    { id: 'dialog.kbd.drag-large', keys: ['Shift+ArrowUp', 'Shift+ArrowDown', 'Shift+ArrowLeft', 'Shift+ArrowRight'], when: 'focus in drag-trigger, draggable', does: '按大步长挪（50px）' },
+    { id: 'dialog.kbd.drag-reset', keys: ['Enter', 'Space'], when: 'focus in drag-trigger, draggable', does: '把面板送回居中落点' },
   ],
 }

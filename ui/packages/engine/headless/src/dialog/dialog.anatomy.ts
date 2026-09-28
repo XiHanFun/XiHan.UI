@@ -14,6 +14,8 @@ export const dialogAnatomy = createAnatomy('dialog', [
   'positioner',
   'content',
   'header',
+  // 拖动把手：键盘挪动面板的入口，放在 header 里时铺满标题栏
+  'drag-trigger',
   'indicator',
   'title',
   'description',

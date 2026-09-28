@@ -429,6 +429,7 @@
       "sparkline"
     ],
     "drag-trigger": [
+      "dialog",
       "floating-panel"
     ],
     "drop-indicator": [

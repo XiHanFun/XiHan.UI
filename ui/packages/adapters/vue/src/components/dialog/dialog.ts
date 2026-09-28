@@ -35,6 +35,8 @@ export const XhDialogRoot = /* @__PURE__ */ defineComponent({
     initialFocus: { type: String },
     size: { type: String as PropType<Size> },
     variant: { type: String as PropType<OverlayBackdropVariant> },
+    /** 可拖动：按住标题栏或拖动把手挪走面板，方向键在把手上挪一步；面板始终夹在视口内。 */
+    draggable: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<DialogProps['translations']> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
@@ -120,6 +122,15 @@ export const XhDialogHeader = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useDialogContext()
     return () => h('header', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 拖动把手：键盘挪动面板的入口；放在 XhDialogHeader 里时铺满标题栏。 */
+export const XhDialogDragTrigger = /* @__PURE__ */ defineComponent({
+  name: 'XhDialogDragTrigger',
+  setup(_, { slots }) {
+    const ctx = useDialogContext()
+    return () => h('button', ctx.api.value.getDragTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

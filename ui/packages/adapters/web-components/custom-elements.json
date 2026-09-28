@@ -21636,8 +21636,12 @@
               "name": "content"
             },
             {
-              "description": "面板头：标题与说明所在的段，不随正文滚动",
+              "description": "面板头：标题与说明所在的段，不随正文滚动；可拖动时是拖动区",
               "name": "header"
+            },
+            {
+              "description": "拖动把手：键盘挪动面板的入口，放在 header 里时铺满标题栏",
+              "name": "drag-trigger"
             },
             {
               "description": "语气徽记：未提供内容时由皮肤按节点上的 data-tone 绘制兜底字形",
@@ -21753,6 +21757,15 @@
                 "text": "OverlayBackdropVariant | undefined"
               },
               "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "panelDraggable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "panel-draggable"
             },
             {
               "kind": "field",
@@ -22004,6 +22017,14 @@
               "description": "遮罩形态：只影响 backdrop 的底色与模糊",
               "name": "variant",
               "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "可拖动：按住标题栏或拖动把手挪走面板，方向键在把手上挪一步；面板始终夹在视口内。不命名为 draggable：那是 HTML 全局属性，写上后宿主会变成原生拖放源",
+              "name": "panel-draggable",
+              "fieldName": "panelDraggable"
             }
           ],
           "superclass": {
@@ -22069,6 +22090,12 @@
             },
             {
               "name": "--xh-dialog-description-font-size"
+            },
+            {
+              "name": "--xh-dialog-drag-trigger-min-h"
+            },
+            {
+              "name": "--xh-dialog-drag-trigger-radius"
             },
             {
               "name": "--xh-dialog-fg"

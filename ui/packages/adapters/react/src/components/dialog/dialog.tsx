@@ -34,6 +34,8 @@ export interface XhDialogRootProps {
   initialFocus?: string
   size?: Size
   variant?: OverlayBackdropVariant
+  /** 可拖动：按住标题栏或拖动把手挪走面板，方向键在把手上挪一步；面板始终夹在视口内。 */
+  draggable?: boolean
   translations?: DialogProps['translations']
   onOpenChange?: DialogProps['onOpenChange']
   onExitComplete?: DialogProps['onExitComplete']
@@ -104,6 +106,13 @@ export interface XhDialogHeaderProps extends ComponentPropsWithRef<'header'> {}
 export function XhDialogHeader({ children, ...rest }: XhDialogHeaderProps): ReactNode {
   const ctx = useDialogContext()
   return <header {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</header>
+}
+
+export interface XhDialogDragTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 拖动把手：键盘挪动面板的入口；放在 XhDialogHeader 里时铺满标题栏。 */
+export function XhDialogDragTrigger({ children, ...rest }: XhDialogDragTriggerProps): ReactNode {
+  const ctx = useDialogContext()
+  return <button {...mergeReactProps(ctx.api.getDragTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
 export interface XhDialogIndicatorProps extends ComponentPropsWithRef<'span'> {}
