@@ -3378,6 +3378,50 @@
       "description": "badge 的 indicator 部件 block-size、min-inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-badge-offset-block",
+      "component": "badge",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "inset-block-end",
+        "inset-block-start"
+      ],
+      "state": [
+        "placement=bottom-end",
+        "placement=bottom-start",
+        "placement=top-end",
+        "placement=top-start"
+      ],
+      "defaultToken": [
+        "--xh-space-0"
+      ],
+      "visibility": "public",
+      "description": "badge 的 indicator 部件 inset-block-end、inset-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-badge-offset-inline",
+      "component": "badge",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "inset-inline-end",
+        "inset-inline-start"
+      ],
+      "state": [
+        "placement=bottom-end",
+        "placement=bottom-start",
+        "placement=top-end",
+        "placement=top-start"
+      ],
+      "defaultToken": [
+        "--xh-space-0"
+      ],
+      "visibility": "public",
+      "description": "badge 的 indicator 部件 inset-inline-end、inset-inline-start 覆盖槽。"
+    },
+    {
       "name": "--xh-badge-px",
       "component": "badge",
       "part": [

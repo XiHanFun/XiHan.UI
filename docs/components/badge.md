@@ -48,6 +48,12 @@ pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态�
 
 <XhDemo src="badge/05-pulse" />
 
+### 偏移
+
+离角多远用两个组件槽微调，不设 prop：圆形头像角上留白多，把状态点往里收一点才贴得住轮廓
+
+<XhDemo src="badge/06-offset" />
+
 ## 设计指引
 
 ### 何时使用
@@ -69,6 +75,7 @@ pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态�
 - 语气与尺寸两轴与其他组件同源；角标只有一种形态，没有形态轴。
 - 默认使用 neutral；未读、错误等强提醒显式使用 danger。
 - `placement` 决定挂在哪个角，四角可选，跟随文字方向。
+- 离角多远由两个组件槽微调，不设 prop：`--xh-badge-offset-inline` 与 `--xh-badge-offset-block`，正值朝行内末端、块末端挪（RTL 下行内末端在左），四个角同一个值朝同一个方向；圆形头像这类角上留白多的宿主往里收一点即可。
 - `count` 输出数字，超过 `max`（默认 99）时显示为“99+”。
 - 计数为 0 时整个收起，需要显示 0 时开启 `showZero`。
 - `dot` 收成一个圆点，只表示存在，不表示数量。
@@ -194,6 +201,8 @@ pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态�
 | `--xh-badge-font-size` | `indicator` | `font-size` | `default` | `--xh-_badge-font` | badge 的 indicator 部件 font-size 覆盖槽。 |
 | `--xh-badge-font-weight` | `indicator` | `font-weight` | `default` | `--xh-font-weight-medium` | badge 的 indicator 部件 font-weight 覆盖槽。 |
 | `--xh-badge-min-size` | `indicator` | `block-size`<br>`min-inline-size` | `default` | `--xh-_badge-min` | badge 的 indicator 部件 block-size、min-inline-size 覆盖槽。 |
+| `--xh-badge-offset-block` | `indicator` | `inset-block-end`<br>`inset-block-start` | `placement=bottom-end`<br>`placement=bottom-start`<br>`placement=top-end`<br>`placement=top-start` | `--xh-space-0` | badge 的 indicator 部件 inset-block-end、inset-block-start 覆盖槽。 |
+| `--xh-badge-offset-inline` | `indicator` | `inset-inline-end`<br>`inset-inline-start` | `placement=bottom-end`<br>`placement=bottom-start`<br>`placement=top-end`<br>`placement=top-start` | `--xh-space-0` | badge 的 indicator 部件 inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-badge-px` | `indicator` | `padding-inline` | `default` | `--xh-_badge-px` | badge 的 indicator 部件 padding-inline 覆盖槽。 |
 | `--xh-badge-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | badge 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-badge-ring` | `indicator` | `border` | `default` | `--xh-bg-surface` | badge 的 indicator 部件 border 覆盖槽。 |

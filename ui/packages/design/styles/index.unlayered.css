@@ -16193,28 +16193,30 @@
 }
 
 /* —— 落点 —— */
-/* 用 inset 的逻辑属性写，rtl 下 end 自动落到左边；translate 让角标压住宿主的角 */
+/* 用 inset 的逻辑属性写，rtl 下 end 自动落到左边；translate 让角标压住宿主的角。
+   两个偏移槽微调角标离角多远：正值朝行内末端、块末端挪（rtl 下行内末端在左），
+   宿主是圆形头像、角上留白多时往里收一点。四个角各按贴哪条边换正负号，同一个值在哪个角都朝同一个方向挪 */
 [data-scope='badge'][data-part='indicator'][data-placement='top-end'] {
-  inset-block-start: 0;
-  inset-inline-end: 0;
+  inset-block-start: var(--xh-badge-offset-block, var(--xh-space-0));
+  inset-inline-end: calc(-1 * var(--xh-badge-offset-inline, var(--xh-space-0)));
   translate: 25% -25%;
 }
 
 [data-scope='badge'][data-part='indicator'][data-placement='top-start'] {
-  inset-block-start: 0;
-  inset-inline-start: 0;
+  inset-block-start: var(--xh-badge-offset-block, var(--xh-space-0));
+  inset-inline-start: var(--xh-badge-offset-inline, var(--xh-space-0));
   translate: -25% -25%;
 }
 
 [data-scope='badge'][data-part='indicator'][data-placement='bottom-end'] {
-  inset-block-end: 0;
-  inset-inline-end: 0;
+  inset-block-end: calc(-1 * var(--xh-badge-offset-block, var(--xh-space-0)));
+  inset-inline-end: calc(-1 * var(--xh-badge-offset-inline, var(--xh-space-0)));
   translate: 25% 25%;
 }
 
 [data-scope='badge'][data-part='indicator'][data-placement='bottom-start'] {
-  inset-block-end: 0;
-  inset-inline-start: 0;
+  inset-block-end: calc(-1 * var(--xh-badge-offset-block, var(--xh-space-0)));
+  inset-inline-start: var(--xh-badge-offset-inline, var(--xh-space-0));
   translate: -25% 25%;
 }
 
