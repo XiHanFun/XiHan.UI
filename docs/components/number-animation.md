@@ -63,7 +63,8 @@ locale 决定小数点与分组习惯，formatOptions 交给 Intl.NumberFormat �
 
 - `precision` 小数位、`separator` 分组符，每一帧都按同一个位数铺字，数字不会在滚动中忽长忽短。
 - 文字由 `Intl.NumberFormat` 铺出：`locale` 决定小数点、分组习惯与数字系统（未提供时跟随宿主语言），`formatOptions` 给出货币、百分比、单位与紧凑记数；`formatOptions.useGrouping` 打开即按该语言的习惯分组。
-- `easing` 与 `duration` 决定滚动的节奏。
+- `easing` 与 `duration` 决定滚动的节奏；不写时与图表里的数字同一口径：首次滚动按入场档（reveal、enter-strong），换目标按更新档（morph、continuous）。
+- 屏幕外不空转：首次滚动时不在视口里就停在起点，进了视口再从头滚；换目标时不在视口里直接落到终值。
 - `live` 决定读屏播报方式，通常只播报终值。
 
 ### 组合
@@ -97,8 +98,8 @@ locale 决定小数点与分组习惯，formatOptions 交给 Intl.NumberFormat �
 | --- | --- | --- | --- |
 | `from` | `number` |  | 起点，默认 0。改写它会把显示值立即落到新起点，并从那里重新运行本轮。 |
 | `to` | `number` |  | 终点，默认 0。改写它从当前显示值继续走向新终点，不跳回起点。 |
-| `duration` | `number` |  | 时长毫秒，默认 1000；&lt;=0 即一步到位。 |
-| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串，默认线性；认不出的写法在起跑时报错。 |
+| `duration` | `number` |  | 时长毫秒；&lt;=0 即一步到位。不写按数值角色取令牌：首次滚动与图表数字入场同档（reveal）， 换目标与图表数字更新同档（morph）。 |
+| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串；认不出的写法在起跑时报错。 不写按数值角色取令牌：首次滚动取 enter-strong，换目标取 continuous。 |
 | `precision` | `number` |  | 小数位，默认 0。夹进 [0, 20]；每一帧都按这个位数铺字。 |
 | `separator` | `string` |  | 分组符。给了就分组并把该语言的分组符换成它；默认不分组。 |
 | `locale` | `string` |  | BCP 47 语言标记，决定小数点、分组习惯、数字系统与货币写法。 未提供时按宿主语言，宿主也没有时按 en-US。 |
@@ -145,7 +146,7 @@ locale 决定小数点与分组习惯，formatOptions 交给 Intl.NumberFormat �
 
 **状态**：`idle` · `running`
 
-**事件**：`RUN.START` · `RUN.STOP` · `RUN.SYNC` · `FRAME`
+**事件**：`RUN.START` · `RUN.STOP` · `RUN.SYNC` · `FRAME` · `RUN.SKIP`
 
 **判据**：`isSettled` · `isActive`
 
@@ -207,6 +208,6 @@ locale 决定小数点与分组习惯，formatOptions 交给 Intl.NumberFormat �
 
 ### 动效
 
-皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。时长与缓动由组件属性给出。
+皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。时长与缓动从元素读[动效令牌](../guide/motion)。
 
 系统开启减弱动效时由内核按元素判断后自行降级，不经令牌层。

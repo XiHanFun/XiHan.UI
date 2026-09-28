@@ -2,15 +2,14 @@
 import type { NumberAnimationSchema } from '../src/number-animation'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
+import { motionDurations } from '@xihan-ui/motion'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // 直接指到组件目录：包主入口的导出由接线一并补，测试不等它
 import {
   connectNumberAnimation,
   formatNumberAnimation,
-  NUMBER_ANIMATION_DURATION,
   numberAnimationMachine,
   resolveNumberAnimationBound,
-  resolveNumberAnimationDuration,
   resolveNumberAnimationPrecision,
 } from '../src/number-animation'
 
@@ -30,19 +29,6 @@ describe('resolveNumberAnimationPrecision', () => {
     expect(resolveNumberAnimationPrecision(-3)).toBe(0)
     expect(resolveNumberAnimationPrecision(99)).toBe(20)
     expect(resolveNumberAnimationPrecision(Number.NaN)).toBe(0)
-  })
-})
-
-describe('resolveNumberAnimationDuration', () => {
-  it('缺省 1000，负数收到 0，非有限数退回缺省', () => {
-    expect(resolveNumberAnimationDuration(undefined)).toBe(NUMBER_ANIMATION_DURATION)
-    expect(resolveNumberAnimationDuration(250)).toBe(250)
-    expect(resolveNumberAnimationDuration(-5)).toBe(0)
-    expect(resolveNumberAnimationDuration(Number.NaN)).toBe(NUMBER_ANIMATION_DURATION)
-  })
-
-  it('0 是"一步到位"这个明确意图，不能被当成"没给"', () => {
-    expect(resolveNumberAnimationDuration(0)).toBe(0)
   })
 })
 
@@ -204,6 +190,34 @@ describe('numberAnimationMachine', () => {
 
     vi.advanceTimersByTime(200)
     expect(n.api().value).toBe(200)
+  })
+
+  it('不写时长按数值角色取令牌：首次滚动按入场档走完，换目标按更新档走完', () => {
+    const n = makeNumberAnimation({ from: 0, to: 100 })
+    vi.advanceTimersByTime(motionDurations.reveal - 2 * FRAME)
+    expect(n.state()).toBe('running')
+    vi.advanceTimersByTime(3 * FRAME)
+    expect(n.state()).toBe('idle')
+    expect(n.api().value).toBe(100)
+
+    n.setProps({ to: 200 })
+    vi.advanceTimersByTime(motionDurations.morph - 2 * FRAME)
+    expect(n.state()).toBe('running')
+    vi.advanceTimersByTime(3 * FRAME)
+    expect(n.state()).toBe('idle')
+    expect(n.api().value).toBe(200)
+    n.stop()
+  })
+
+  it('负数时长收到 0，一步到位；非有限数按没写处理', () => {
+    const n = makeNumberAnimation({ from: 0, to: 9, duration: -5 })
+    vi.advanceTimersByTime(FRAME)
+    expect(n.api().value).toBe(9)
+    n.stop()
+    const m = makeNumberAnimation({ from: 0, to: 9, duration: Number.NaN })
+    vi.advanceTimersByTime(FRAME)
+    expect(m.state()).toBe('running')
+    m.stop()
   })
 
   it('改起点是"换起点"：数字当场落到新起点再重跑', () => {

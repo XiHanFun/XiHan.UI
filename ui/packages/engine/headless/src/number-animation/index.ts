@@ -16,10 +16,8 @@ export {
 export type { NumberAnimationFormatOptions, NumberAnimationIntl } from './number-animation.format'
 export { numberAnimationKeyboard } from './number-animation.keyboard'
 export {
-  NUMBER_ANIMATION_DURATION,
   numberAnimationMachine,
   resolveNumberAnimationBound,
-  resolveNumberAnimationDuration,
 } from './number-animation.machine'
 export { numberAnimationMeta } from './number-animation.meta'
 export type { NumberAnimationApi, NumberAnimationCompleteDetails, NumberAnimationEasing, NumberAnimationLive, NumberAnimationPhase, NumberAnimationSchema, NumberAnimationTranslations } from './number-animation.types'
