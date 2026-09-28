@@ -95,12 +95,12 @@ afterEach(async () => {
 
 describe('password-input Field Chrome 细节', () => {
   it('三尺寸与 compact 同步缩放高度与间距，切换钮取 field-inset 档正方盒并带半高分隔', async () => {
-    // 钮走 field-inset 档：sm 固定 24px，md / lg 取小一档的控件高
+    // 钮走 field-inset 档：sm 取控件内动作档（comfortable 24px、compact 20px），md / lg 取小一档的控件高
     const cases = [
       ['comfortable-sm', 'comfortable', 'sm', 32, 4, 24],
       ['comfortable-md', 'comfortable', 'md', 36, 8, 32],
       ['comfortable-lg', 'comfortable', 'lg', 40, 12, 36],
-      ['compact-sm', 'compact', 'sm', 28, 4, 24],
+      ['compact-sm', 'compact', 'sm', 28, 4, 20],
       ['compact-md', 'compact', 'md', 32, 6, 28],
       ['compact-lg', 'compact', 'lg', 36, 8, 32],
     ] as const

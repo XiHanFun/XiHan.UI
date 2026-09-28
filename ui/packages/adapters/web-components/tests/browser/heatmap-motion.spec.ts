@@ -85,13 +85,15 @@ describe('热力图的过渡', () => {
     const target = cell(heatmap, '2024-01-03')
     const root = heatmap.querySelector<HTMLElement>('[data-part="root"]')!
     expect(root.hasAttribute('data-animating')).toBe(false)
-    expect(getComputedStyle(target).transitionDuration).toBe('0s')
+    // 底色不在过渡清单里（描圈的 box-shadow 照常按 micro 淡变）
+    expect(getComputedStyle(target).transitionProperty.split(', ')).not.toContain('background-color')
 
     heatmap.value = [{ date: '2024-01-03', count: 8 }, { date: '2024-01-04', count: 2 }]
     await heatmap.updateComplete
     await frames()
     expect(root.hasAttribute('data-animating')).toBe(true)
-    expect(getComputedStyle(target).transitionDuration).toBe('3s')
+    const during = getComputedStyle(target)
+    expect(during.transitionDuration.split(', ')[during.transitionProperty.split(', ').indexOf('background-color')]).toBe('3s')
     expect(target.hasAttribute('data-drawing')).toBe(false)
   })
 })
