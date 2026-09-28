@@ -305,6 +305,7 @@ export interface DatePickerSchema extends MachineSchema {
   tag: never
   guard: 'isOpenControlled' | 'closesOnSelect' | 'canPress'
   action:
+    | 'followColumnSelection'
     | 'startPress'
     | 'endPress'
     | 'releasePress'
@@ -323,7 +324,7 @@ export interface DatePickerSchema extends MachineSchema {
     | 'focusSelectedDay'
     | 'resetToDefault'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer'
+  effect: 'trackPosition' | 'trackLayer' | 'trackColumnScroll'
 }
 
 /**
