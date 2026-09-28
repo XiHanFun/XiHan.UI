@@ -332,6 +332,16 @@ describe('tourMachine 开合与走步', () => {
     expect(animating()).toEqual([undefined, undefined])
   })
 
+  it('两步的几何恰好相同：换步后没有几何更新来收尾，见不到起播的过渡就当帧落定，不留 data-animating', async () => {
+    const t = makeService({ steps: STEPS, defaultOpen: true })
+    t.service.context.set('position', { x: 10, y: 20, placement: 'bottom', hidden: false })
+    t.service.send({ type: 'STEP.NEXT' })
+    expect((t.api().getPositionerProps() as Record<string, unknown>)['data-animating']).toBe('')
+    await settle()
+    expect((t.api().getPositionerProps() as Record<string, unknown>)['data-animating']).toBeUndefined()
+    expect((t.api().getSpotlightProps() as Record<string, unknown>)['data-animating']).toBeUndefined()
+  })
+
   it('刚展开、还没量到几何时换步不挂 data-animating：没有起点可滑，按落位直接呈现', () => {
     const t = makeService({ steps: STEPS, defaultOpen: true })
     t.service.send({ type: 'STEP.NEXT' })

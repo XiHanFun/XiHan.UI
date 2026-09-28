@@ -121,8 +121,9 @@ export const tourMachine = createMachine({
     // 受控时用户事件只发意图回调、不自改状态；宿主写回 open 后由这里派发 CONTROLLED.* 无条件回写
     track([() => prop('open')], () => action(['syncOpen']))
     // 步序变了要先把目标滚进视口，再换锚点、重量高亮框；挂在 watch 上，
-    // 受控时步序是宿主写进来的，不经过走步动作
-    track([context.dep('value')], () => action(['startStepping', 'scrollTargetIntoView', 'reanchorPosition', 'measureSpotlight']))
+    // 受控时步序是宿主写进来的，不经过走步动作。换步本身也排一轮落定：
+    // 两步的几何恰好相同时不会再有几何更新来收尾，这一轮见不到起播的过渡就当帧落定
+    track([context.dep('value')], () => action(['startStepping', 'scrollTargetIntoView', 'reanchorPosition', 'measureSpotlight', 'awaitStepSettle']))
     // 换步途中几何更新了：等这一轮起播的位置与尺寸过渡播完再撤换步标记
     track([context.dep('position'), context.dep('spotlight')], () => action(['awaitStepSettle']))
   },
@@ -250,10 +251,16 @@ export const tourMachine = createMachine({
           const moves = nodes.flatMap(node => node && typeof node.getAnimations === 'function'
             ? node.getAnimations().filter(animation => 'transitionProperty' in animation)
             : [])
-          void Promise.allSettled(moves.map(animation => animation.finished)).then(() => {
+          const settle = (): void => {
             if (refs.get('stepRound') === round && context.get('stepping'))
               send({ type: 'STEP.SETTLED' })
-          })
+          }
+          // 两者身上都没有起播的过渡（减弱动效、没有皮肤、宿主没有 Web Animations）：这一帧就是落定
+          if (moves.length === 0) {
+            settle()
+            return
+          }
+          void Promise.allSettled(moves.map(animation => animation.finished)).then(settle)
         })
       },
       endStepping: ({ context }) => context.set('stepping', false),
