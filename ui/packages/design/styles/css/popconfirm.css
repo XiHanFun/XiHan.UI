@@ -8,6 +8,7 @@
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
 @import '../family/action-control.css';
+@import '../family/loading-ring.css';
 @import '../family/material.css';
 
 @layer xihan.components {
@@ -260,16 +261,18 @@
     --xh-action-ring-color-focus-visible: currentColor;
   }
 
-  /* 异步确认挂起：确认文案前转一枚圆环；不是禁用，焦点与对比度都保持，在途指针由家族 loading 面给 */
-  [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
-    content: '';
-    inline-size: 1em;
-    block-size: 1em;
-    margin-inline-end: var(--xh-space-1);
-    border: var(--xh-stroke-thin) solid transparent;
-    border-block-start-color: currentcolor;
-    border-radius: var(--xh-shape-circle);
-    animation: xh-spin var(--xh-popconfirm-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
+  /* 异步确认挂起：环由加载环配方压在确认钮正中（连接层投影 data-xh-loading-ring="overlay"），直径取钮的图标档，
+     起始边取钮的真实前景、转速认使用者槽。不是禁用，焦点与对比度都保持，在途指针由家族 loading 面给。
+     确认文案随前景淡到透明留位：进入挂起等一个 micro 才起淡（快速落定什么都不闪），落定时不等、按 micro 淡回 */
+  [data-scope='popconfirm'][data-part='confirm-trigger'] {
+    --xh-_loading-ring-fg: var(--xh-popconfirm-confirm-fg, var(--xh-_action-variant-fg-loading));
+    --xh-_loading-ring-duration: var(--xh-popconfirm-loading-duration, var(--xh-motion-loop-spin));
+  }
+
+  [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading] {
+    --xh-action-fg-loading: transparent;
+
+    transition-delay: var(--xh-motion-duration-micro);
   }
 
   /* 取消是中性的次要出口，不参与语气：content 上的 data-tone 会把 --xh-_tone-* 一路继承下来，
@@ -289,22 +292,6 @@
     --xh-action-border-hover: var(--xh-popconfirm-cancel-border-hover, var(--xh-border-control-hover));
     --xh-action-border-pressed: var(--xh-popconfirm-cancel-border-hover, var(--xh-border-control-hover));
     --xh-action-border-focus-visible: var(--xh-popconfirm-cancel-border, var(--xh-border-control));
-  }
-
-  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
-     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
-      border-style: dotted;
-      border-color: currentColor;
-      animation: none;
-    }
-  }
-
-  :where([data-motion='reduce']) [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
-    border-style: dotted;
-    border-color: currentColor;
-    animation: none;
   }
 
   @media (forced-colors: active) {

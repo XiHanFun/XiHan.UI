@@ -376,6 +376,8 @@ export function connectPopconfirm<T extends PropTypes>(
       'aria-busy': isPending() ? 'true' : undefined,
       'aria-disabled': isPending() ? 'true' : undefined,
       'data-loading': dataAttr(isPending()),
+      // 异步确认挂起：加载环配方把环压在确认钮正中，挂起一个 micro 之后才淡入
+      'data-xh-loading-ring': 'overlay',
       // 确认是本浮层的主要动作，与 Button 主动作同待遇：text 档 sm、显式 solid，
       // 语气由 content 上的 data-tone 经 --xh-_tone 下发；挂起期间家族的 loading 面接管 hover / pressed
       'data-xh-action-control': '',

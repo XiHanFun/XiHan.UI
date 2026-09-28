@@ -52850,18 +52850,25 @@
         "confirm-trigger"
       ],
       "property": [
+        "border-block-start-color",
+        "border-color",
         "color"
       ],
       "state": [
+        "@media (prefers-reduced-motion: reduce)",
+        "@media print",
         "default",
         "disabled",
         "focus-visible",
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "motion=reduce",
         "not([data-disabled])",
         "not([data-loading])",
-        "pressed"
+        "pressed",
+        "where([data-motion='reduce'])",
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
@@ -52871,7 +52878,7 @@
         "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "popconfirm 的 confirm-trigger 部件 color 覆盖槽。"
+      "description": "popconfirm 的 confirm-trigger 部件 border-block-start-color、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-popconfirm-confirm-shadow",
@@ -53014,7 +53021,7 @@
         "animation"
       ],
       "state": [
-        "loading"
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-motion-loop-spin"
