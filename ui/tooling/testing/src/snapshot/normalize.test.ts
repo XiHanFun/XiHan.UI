@@ -22,11 +22,12 @@ describe('normalizeAttrs', () => {
   })
 
   it('保留跨端 family recipe 语义，其他 data-xh 内部标记仍过滤', () => {
-    const e = el('<button data-xh-action-control="" data-xh-field-size="md" data-xh-collection-slot="text" data-xh-internal="x"></button>')
+    const e = el('<button data-xh-action-control="" data-xh-field-size="md" data-xh-collection-slot="text" data-xh-choice-card="" data-xh-internal="x"></button>')
     const attrs = normalizeAttrs(e, new Map())
     expect(attrs['data-xh-action-control']).toBe('')
     expect(attrs['data-xh-field-size']).toBe('md')
     expect(attrs['data-xh-collection-slot']).toBe('text')
+    expect(attrs['data-xh-choice-card']).toBe('')
     expect('data-xh-internal' in attrs).toBe(false)
   })
 

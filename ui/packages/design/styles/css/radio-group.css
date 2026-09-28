@@ -6,6 +6,7 @@
 /* 定义 radio group 样式。 */
 
 @import '../family/action-control.css';
+@import '../family/choice-card.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -42,6 +43,17 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+  }
+
+  /* card 形态：卡片撑满竖排的一列；横排时各卡等分一行、按内容等高，窄到放不下两张就折到下一行 */
+  [data-scope='radio-group'][data-part='root'][data-variant='card'] {
+    align-items: stretch;
+  }
+
+  [data-scope='radio-group'][data-part='root'][data-variant='card'][data-orientation='horizontal']
+    > [data-scope='radio-group'][data-part='item'] {
+    flex: 1 1 0;
+    min-inline-size: min(var(--xh-control-min-w), 100%);
   }
 
   /* —— 尺寸 —— */
@@ -105,7 +117,7 @@
   /* 只读整组都改不动，但不是禁用：颜色照常，把整行的悬停 / 按下面与"可点"这个暗示一起收回来。
      家族的 :hover / 按压块不排 readonly，只能从槽上收回；排掉禁用项是因为这条选择器权重高过家族的禁用块，
      不排就会把 not-allowed 覆盖回 default */
-  [data-scope='radio-group'][data-part='item'][data-readonly]:not([data-disabled]) {
+  [data-scope='radio-group'][data-part='item'][data-readonly]:not([data-disabled]):not([data-xh-choice-card]) {
     --xh-action-bg-hover: transparent;
     --xh-action-bg-pressed: transparent;
     --xh-action-cursor-rest: default;
@@ -207,6 +219,33 @@
   [data-scope='radio-group'][data-part='item-text'] {
     color: inherit;
     user-select: none;
+  }
+
+  /* 卡片的文案是卡的标题：取标签字重，与说明拉开层级 */
+  [data-scope='radio-group'][data-part='item'][data-xh-choice-card] > [data-scope='radio-group'][data-part='item-text'] {
+    font-weight: var(--xh-radio-group-card-title-font-weight, var(--xh-text-label-weight));
+  }
+
+  /* 说明是次级文字：13 / fg-muted / 正文行高，不随选中与语气换色；落在文案下方同一列。
+     列表形态的条目带了说明时同样排成两行，行首的圆圈对齐第一行 */
+  [data-scope='radio-group'][data-part='item-description'] {
+    grid-column: 2;
+    color: var(--xh-radio-group-item-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-radio-group-item-description-font-size, var(--xh-text-secondary-size));
+    font-weight: var(--xh-font-weight-regular);
+    line-height: var(--xh-leading-normal);
+    user-select: none;
+  }
+
+  [data-scope='radio-group'][data-part='item']:not([data-xh-choice-card]):has(> [data-scope='radio-group'][data-part='item-description']) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    row-gap: var(--xh-radio-group-item-row-gap, var(--xh-space-1));
+  }
+
+  [data-scope='radio-group'][data-part='item'][data-disabled] > [data-scope='radio-group'][data-part='item-description'] {
+    color: var(--xh-radio-group-item-description-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 家族 row 档在粗指针下用 ::after 把热区扩到 44px 高：条目按 24px 行 + 8px 间距密排，热区会压进相邻条目、

@@ -203,7 +203,7 @@ export type { QuestionFlowAnswers, QuestionFlowAnswersChangeDetails, QuestionFlo
 export { connectRadarChart, defaultRadarSummary, RADAR_TRANSLATIONS, radarChartAnatomy, radarChartKeyboard, radarChartMachine, radarChartMeta, radarMarkTag } from './radar-chart'
 export type { RadarActive, RadarChartApi, RadarChartSchema, RadarChartTranslations, RadarCurve, RadarIndicator, RadarLegendItem, RadarMarkTag, RadarModel, RadarOverlay, RadarScale, RadarShape, RadarSummary, RadarTooltipModel, RadarTooltipRow } from './radar-chart'
 export { connectRadioGroup, radioGroupAnatomy, radioGroupKeyboard, radioGroupMachine, radioGroupMeta } from './radio-group'
-export type { RadioGroupApi, RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupTranslations, RadioGroupValueChangeDetails } from './radio-group'
+export type { RadioGroupApi, RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupTranslations, RadioGroupValueChangeDetails, RadioGroupVariant } from './radio-group'
 export { clampRating, connectRating, RATING_COUNT, ratingAnatomy, ratingIntentFromKey, ratingKeyboard, ratingMachine, ratingMax, ratingMeta, ratingStep, ratingValueAtPointer, stepRating } from './rating'
 export type { RatingApi, RatingHoverChangeDetails, RatingItemProps, RatingItemState, RatingKeyEventLike, RatingKeyIntent, RatingSchema, RatingTranslations, RatingValueChangeDetails } from './rating'
 export { connectReasoning, reasoningAnatomy, reasoningDuration, reasoningKeyboard, reasoningMeta, reasoningStatusText } from './reasoning'

@@ -56345,6 +56345,25 @@
       "description": "radar-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-radio-group-card-title-font-weight",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "item-text"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "xh-choice-card"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、item-text 部件 font-weight 覆盖槽。"
+    },
+    {
       "name": "--xh-radio-group-gap",
       "component": "radio-group",
       "part": [
@@ -56669,6 +56688,61 @@
       "description": "radio-group 的 item 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-radio-group-item-description-fg",
+      "component": "radio-group",
+      "part": [
+        "item-description"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item-description 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-item-description-fg-disabled",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "item-description"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、item-description 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-item-description-font-size",
+      "component": "radio-group",
+      "part": [
+        "item-description"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-secondary-size"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item-description 部件 font-size 覆盖槽。"
+    },
+    {
       "name": "--xh-radio-group-item-fg",
       "component": "radio-group",
       "part": [
@@ -56765,6 +56839,26 @@
       ],
       "visibility": "public",
       "description": "radio-group 的 item 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-item-row-gap",
+      "component": "radio-group",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "row-gap"
+      ],
+      "state": [
+        "has(> [data-scope='radio-group'][data-part='item-description'])",
+        "not([data-xh-choice-card])",
+        "xh-choice-card"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item 部件 row-gap 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-label-fg",

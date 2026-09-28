@@ -2050,11 +2050,13 @@ export type { RadarChartContext } from './components/radar-chart/use-radar-chart
 export { useRadioGroupContext, useRadioGroupItemContext } from './components/radio-group/context'
 export {
   XhRadioGroupItem,
+  XhRadioGroupItemDescription,
   XhRadioGroupItemText,
   XhRadioGroupLabel,
   XhRadioGroupRoot,
 } from './components/radio-group/radio-group'
 export type {
+  XhRadioGroupItemDescriptionProps,
   XhRadioGroupItemProps,
   XhRadioGroupItemTextProps,
   XhRadioGroupLabelProps,

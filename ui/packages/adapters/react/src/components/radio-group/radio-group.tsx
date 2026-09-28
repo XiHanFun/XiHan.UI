@@ -6,7 +6,7 @@
 // 提供 radio group 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema } from '@xihan-ui/headless'
+import type { RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { useEffect, useMemo, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
@@ -36,6 +36,8 @@ export interface XhRadioGroupRootProps extends RootElementProps {
   name?: string
   tone?: Tone
   size?: Size
+  /** 结构形态，默认 list；card 把每个条目画成一张可点的卡。 */
+  variant?: RadioGroupVariant
   onValueChange?: RadioGroupProps['onValueChange']
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: RadioGroupNodeMeta) => ReactNode
@@ -56,6 +58,7 @@ export function XhRadioGroupRoot({
   name,
   tone,
   size,
+  variant,
   onValueChange,
   renderItem,
   children,
@@ -74,6 +77,7 @@ export function XhRadioGroupRoot({
     name,
     tone,
     size,
+    variant,
     onValueChange,
   } as RadioGroupProps))
   const api = ctx.api
@@ -174,6 +178,14 @@ export function XhRadioGroupItemText({ children, ...rest }: XhRadioGroupItemText
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhRadioGroupItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
+/** 条目文案下方的说明行，常用在 card 形态里。 */
+export function XhRadioGroupItemDescription({ children, ...rest }: XhRadioGroupItemDescriptionProps): ReactNode {
+  const ctx = useRadioGroupContext()
+  const item = useRadioGroupItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 function noop(): void {}
 
 /**
@@ -191,6 +203,7 @@ function DefaultTree(props: {
       {props.collection.map(node => (
         <XhRadioGroupItem key={node.value} value={node.value}>
           <XhRadioGroupItemText>{props.renderItem?.(node) ?? node.label}</XhRadioGroupItemText>
+          {node.description != null ? <XhRadioGroupItemDescription>{node.description}</XhRadioGroupItemDescription> : null}
         </XhRadioGroupItem>
       ))}
     </>

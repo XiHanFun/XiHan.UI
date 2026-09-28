@@ -35,6 +35,7 @@
     },
     "./action-control.css": "./family/action-control.css",
     "./chart.css": "./family/chart.css",
+    "./choice-card.css": "./family/choice-card.css",
     "./collection-item.css": "./family/collection-item.css",
     "./field-chrome.css": "./family/field-chrome.css",
     "./loading-ring.css": "./family/loading-ring.css",

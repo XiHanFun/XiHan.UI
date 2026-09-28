@@ -6,7 +6,7 @@
 // 提供 radio group 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails, ResolvedFormControlState } from '@xihan-ui/headless'
+import type { FormControlState, RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails, RadioGroupVariant, ResolvedFormControlState } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
@@ -34,11 +34,13 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {'list'|'card'} variant - 结构形态，默认 list；card 把每个条目画成一张可点的卡
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
  * @csspart root - role=radiogroup 容器（承载 roving tabindex 的兜底位）
  * @csspart label - 组标题（aria-labelledby 目标）
  * @csspart item - role=radio 条目，作者用 value 属性声明身份
  * @csspart item-text - 条目文本
+ * @csspart item-description - 条目文案下方的说明行，常用在 card 形态里
  * @csspart indicator - 条目选中标记
  * @csspart hidden-input - 条目的表单影子输入（必须是原生 input）
  */
@@ -60,6 +62,7 @@ export class XhRadioGroupElement extends XhElement {
     name: {},
     tone: {},
     size: {},
+    variant: {},
   }
 
   declare collection?: RadioGroupNode[]
@@ -74,6 +77,7 @@ export class XhRadioGroupElement extends XhElement {
   declare name?: string
   declare tone?: Tone
   declare size?: Size
+  declare variant?: RadioGroupVariant
 
   // 整组禁用期间的条目自身声明快照：connect 每帧把 aria-disabled 写回条目，回读分不清作者声明与自己的写回
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
@@ -117,6 +121,7 @@ export class XhRadioGroupElement extends XhElement {
       name: this.name,
       tone: this.tone,
       size: this.size,
+      variant: this.variant,
       onValueChange: this.notify,
     }
   }
@@ -194,6 +199,8 @@ export class XhRadioGroupElement extends XhElement {
         this.spreader.spread(indicator, api.getIndicatorProps(item) as Record<string, unknown>)
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+      for (const description of this.partsIn(el, 'item-description'))
+        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
     }
 
     // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
