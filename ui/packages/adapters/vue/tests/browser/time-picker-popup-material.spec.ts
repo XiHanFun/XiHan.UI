@@ -124,8 +124,9 @@ describe('时间选择浮层', () => {
     const columns = document.querySelectorAll<HTMLElement>(`[data-scope='time-picker'][data-part='column']`)
     const preset = getComputedStyle(part('preset-group'))
     const secondColumn = getComputedStyle(columns[1]!)
+    // 面板是 floating 材质（实体面），面内分隔取实体面的分隔令牌
     const expected = document.createElement('span')
-    expected.style.color = 'var(--xh-material-frosted-separator)'
+    expected.style.color = 'var(--xh-material-solid-separator)'
     part('content').append(expected)
     const separator = getComputedStyle(expected).color
     expect(preset.borderInlineEndColor).toBe(separator)
@@ -183,7 +184,13 @@ describe('时间选择浮层', () => {
     const hours = columns[0]!
     const minutes = columns[1]!
     expect(hours.getBoundingClientRect().width).toBeLessThanOrEqual(64)
-    expect(part('item').getBoundingClientRect().height).toBe(28)
+    // 时间格是 md 档的候选行：list-option-py-md 内距加一行 control-font-md 文字撑开
+    const row = document.createElement('div')
+    row.style.cssText = 'padding-block: var(--xh-list-option-py-md); font-size: var(--xh-control-font-md); line-height: var(--xh-leading-normal)'
+    row.textContent = '00'
+    document.body.append(row)
+    expect(part('item').getBoundingClientRect().height).toBe(row.getBoundingClientRect().height)
+    row.remove()
     expect(hours.scrollHeight).toBeGreaterThan(hours.clientHeight)
     const minuteScroll = minutes.scrollTop
     hours.scrollTop = 80
