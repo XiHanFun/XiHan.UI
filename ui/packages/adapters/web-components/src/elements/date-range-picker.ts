@@ -129,6 +129,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} min - 可选范围下界（含当天），日历与分段输入共用
  * @attr {string} max - 可选范围上界（含当天）
  * @attr {string} locale - 决定周首日、月份文案与段位先后；未提供时按宿主语言，宿主也没有时按 en-US
+ * @attr {number} first-day-of-week - 周首日，0 = 星期日 … 6 = 星期六；未提供时按 locale
  * @attr {string} time-zone - 判定今天与格式化使用的时区，默认宿主本地时区
  * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；两组输入行铺设的段随之决定
  * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板当前所在的层级；未提供时跟随 granularity
@@ -220,6 +221,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     min: { converter: STRING_CONVERTER },
     max: { converter: STRING_CONVERTER },
     locale: { converter: STRING_CONVERTER },
+    firstDayOfWeek: { converter: NUMBER_CONVERTER, attribute: 'first-day-of-week' },
     timeZone: { converter: STRING_CONVERTER, attribute: 'time-zone' },
     granularity: { converter: STRING_CONVERTER },
     activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },
@@ -266,6 +268,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
   declare min?: string
   declare max?: string
   declare locale?: string
+  declare firstDayOfWeek?: number
   declare timeZone?: string
   declare granularity?: CalendarGranularity
   declare activeView?: CalendarView
@@ -431,6 +434,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
       min: this.min,
       max: this.max,
       locale: this.locale,
+      firstDayOfWeek: this.firstDayOfWeek,
       timeZone: this.timeZone,
       granularity: this.granularity,
       activeView: this.activeView,

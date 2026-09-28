@@ -5,7 +5,7 @@ import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { DatePickerTimeUnit } from '../src/date-picker'
 import type { DateRangePickerApi, DateRangePickerEndIndex, DateRangePickerSchema, DateRangePickerServices } from '../src/date-range-picker'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
-import { today } from '@xihan-ui/core/date'
+import { PlainDate, today } from '@xihan-ui/core/date'
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -1134,6 +1134,13 @@ describe('日历面板数量', () => {
 })
 
 describe('内嵌范围日历原样复用，不重写一条', () => {
+  it('firstDayOfWeek 转给日历：en-US 下写 1，表头与行首从星期一排起，两组段位的段序仍按 locale', () => {
+    const h = mount({ defaultOpen: true, defaultValue: RANGE, locale: 'en-US', firstDayOfWeek: 1 })
+    expect(h.api().calendar.weekDays[0]!.long).toBe('Monday')
+    expect(PlainDate.from(h.rendered()[0]!).dayOfWeek).toBe(1)
+    expect(h.api().field.segments.map(segment => segment.type)).toEqual(['month', 'day', 'year'])
+  })
+
   it('翻月按钮与方向键都归日历，编排机只是跟着记聚焦日', () => {
     const h = mount({ defaultOpen: true, defaultValue: RANGE })
     click(h.next)

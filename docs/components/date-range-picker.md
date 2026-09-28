@@ -84,6 +84,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 - `presets` 提供“近 7 天”“本月”等整段快捷项，值使用 ISO 8601 的区间写法拼接两端。
 - 终点早于起点、任一端越界或不可用时整个字段标为不合法，也可以用 `invalid` 显式声明。
 - 输入值、展开状态和聚焦日期均可受控；点击输入行可以继续逐段键入，点击日历图标则把焦点送入日历。
+- `firstDayOfWeek`（0 = 星期日 … 6 = 星期六）原样交给浮层里的日历，只改表头、行首与 Home / End，两组段位的段序仍按 `locale`；用法见[日历选择器](./calendar-picker)的示例。
 - `showTime`（仅 `granularity=day`）让两端都升格为不带时区的 `YYYY-MM-DDTHH:mm[:ss]`：两组段位带上时刻段，浮层里起止各多出一组时间列（`column-group` 里的 `time-column` / `time-item`：列与格与日期选择器的时间部件同名，一端的外壳与小标题与时间范围选择器同名），选完日期不收起，由 `confirm-trigger` 收口。`timeZone` 仍只决定「今天」。
 - `defaultTime`（如 `['00:00:00', '23:59:59']`）在只点日期时给起止各补上对应时刻；已经挑过时刻的一端换日期时时刻原样留着。快捷选项同样是「日期拼上这一端此刻的时刻」，没有就按 `defaultTime`。
 - 时间列与时间选择器共用一份约束：`hourCycle`、按单位的 `timeStep`、带上下文的 `isTimeUnavailable`（`context.index` 是哪一端、`context.date` 是这一端的日期）；`min` / `max` 可以带时间段，同一天界外的时刻标为不可选。起止落在同一天时，终点列早于起点时刻的格自动不可选；两端按日期时间比先后，终点早于起点即整份标为不合法。
@@ -132,6 +133,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `max` | `string` |  | 可选范围上界（含当天），ISO 串。 |
 | `locale` | `string` |  | 决定周首日、月份文案与段位先后（zh-CN 年月日、en-US 月日年）。 未提供时按宿主语言，宿主也没有时按 en-US。 |
 | `timeZone` | `string` |  | 判定今天与格式化文案使用的时区，默认取宿主本地时区。 |
+| `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日 … 6 = 星期六（与日历选择器同一套写法）；不给按 locale。 只改浮层日历的表头、每一行的行首与 Home / End，月份名、星期名与段位先后仍按 locale。 |
 | `isDateUnavailable` | `(value: string, anchor: string \| null) => boolean` |  | 不可用判定，接收 ISO 串。界外与判定为真的日期同等处理。 第二个参数是区间选到一半时的起点，其余时候为 null。 |
 | `allowsNonContiguousRanges` | `boolean` |  | 区间允许跨过不可用的日期，默认关闭；关闭时落下起点之后只能选到两侧最近的不可用日为止。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列，日历格子全部为 aria-disabled。 |

@@ -210,6 +210,7 @@ export function dateRangePickerCalendarProps(service: Service<DateRangePickerSch
     min: datePickerCalendarBound(prop('min')),
     max: datePickerCalendarBound(prop('max')),
     locale: prop('locale'),
+    firstDayOfWeek: prop('firstDayOfWeek'),
     timeZone: prop('timeZone'),
     isDateUnavailable: prop('isDateUnavailable'),
     allowsNonContiguousRanges: prop('allowsNonContiguousRanges'),
