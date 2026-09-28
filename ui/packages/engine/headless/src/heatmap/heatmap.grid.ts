@@ -46,11 +46,20 @@ export const HEATMAP_LEGEND_TEXT: { low: string, high: string } = { low: 'Less',
 /** 三种形态：连续周列的日历、按自然月分块的月历、行列由作者给的矩阵。 */
 export type HeatmapVariant = 'calendar' | 'month' | 'matrix'
 
+/**
+ * 色阶：sequential 从空格底色单向加深到满档；diverging 以中点为界往两侧各自加深，
+ * 低于中点走负向那一色、高于中点走正向那一色（相关系数、同比涨跌、盈亏）。
+ */
+export type HeatmapScaleMode = 'sequential' | 'diverging'
+
+/** 发散色阶下一格落在中点的哪一侧；恰在中点上与顺序色阶里都是 null。 */
+export type HeatmapPolarity = 'negative' | 'positive'
+
 /** 一天的数据。 */
 export interface HeatmapDatum {
   /** ISO 日期串 YYYY-MM-DD。 */
   date: string
-  /** 当天的计数；负数与非数字按 0 计。 */
+  /** 当天的计数；非数字按 0 计。负数照原样收下：顺序色阶里与 0 同落第 0 档，发散色阶按中点分两侧着色。 */
   count: number
 }
 
@@ -60,7 +69,7 @@ export interface HeatmapMatrixDatum {
   row: string
   /** 列身份，与 columns 里的取值对应。 */
   column: string
-  /** 该格的值；负数与非数字按 0 计。 */
+  /** 该格的值；非数字按 0 计。负数照原样收下：顺序色阶里与 0 同落第 0 档，发散色阶按中点分两侧着色。 */
   value: number
 }
 
@@ -93,8 +102,14 @@ export interface HeatmapGridOptions {
   columns?: readonly HeatmapAxisInput[]
   /** 档数，缺省 5；给了 thresholds 则档数由它定。 */
   levels?: number
-  /** 各档的下界，升序；给了它 levels 不再起作用。 */
+  /** 各档的下界，升序；给了它 levels 不再起作用。发散色阶里它是离中点的距离，两侧共用。 */
   thresholds?: readonly number[]
+  /** 色阶；缺省按数据定：出现负数即 diverging，否则 sequential。 */
+  scale?: HeatmapScaleMode
+  /** 发散色阶的中点，缺省 0。 */
+  midpoint?: number
+  /** 连续色阶：不分档，按数值在色阶上的确切位置着色；档位仍照常算，打印与读屏仍按档。缺省 false。 */
+  continuous?: boolean
   /** 周首日，0 = 星期日；缺省 1。 */
   firstDayOfWeek?: number
   /** 月份名与星期名的书写 locale。 */
@@ -110,8 +125,12 @@ function isDateDatum(item: HeatmapValue): item is HeatmapDatum {
 export interface HeatmapCellMeta {
   date: string
   count: number
-  /** 0 到 levels-1；0 表示当天没有数据。 */
+  /** 0 到 levels-1；0 表示当天没有数据（发散色阶里是恰在中点上）。 */
   level: number
+  /** 发散色阶下落在中点的哪一侧；顺序色阶与恰在中点上为 null。 */
+  polarity: HeatmapPolarity | null
+  /** 在色阶上的位置，0-100：分档时是档位的位置，连续色阶是数值的确切位置。 */
+  percent: number
   /** 第几列，0 起；一列是一周。 */
   weekIndex: number
   /** 第几行，0 起；行序相对周首日。 */
@@ -149,21 +168,42 @@ export interface HeatmapWeekDayMeta {
   long: string
 }
 
-/** 一格的计数与档位，附带当时的档数（算色阶位置要用）。 */
+/** 一格的计数与档位，附带当时的档数与色阶上的位置。 */
 export interface HeatmapCellStats {
   count: number
   level: number
   levels: number
+  polarity: HeatmapPolarity | null
+  percent: number
 }
 
 /** 档位标尺。 */
 export interface HeatmapScale {
   levels: number
+  /** 各档的下界；发散色阶里是离中点的距离。 */
   thresholds: number[]
-  /** 区间内的最大计数。 */
+  /** 区间内的最大计数（不小于 0）。 */
   max: number
+  /** 区间内的最小计数（不大于 0）。 */
+  min: number
   /** 区间内的计数总和。 */
   total: number
+  mode: HeatmapScaleMode
+  /** 发散色阶的中点；顺序色阶恒为 0。 */
+  midpoint: number
+  /** 色阶满档一端对应的量：顺序色阶是最大计数，发散色阶是离中点最远的距离。 */
+  extent: number
+  /** 按数值确切位置着色。 */
+  continuous: boolean
+  /** 分界是作者给的：发散色阶按它分档，不再按距离均分。 */
+  declared: boolean
+}
+
+/** 对照条里的一格：第几档、落在哪一侧、色阶上的位置。 */
+export interface HeatmapLegendEntry {
+  level: number
+  polarity: HeatmapPolarity | null
+  percent: number
 }
 
 /** 一整张网格。 */
@@ -178,6 +218,8 @@ export interface HeatmapGrid {
   thresholds: number[]
   max: number
   total: number
+  /** 这张网格用的档位标尺：色阶、中点与满档一端。 */
+  scale: HeatmapScale
   /**
    * 值为 0 的格子数：没有数据的日子与写了 0 的日子都算。
    * 格子总数从 `cells.size` 读，两个数一比就是空白占比。
@@ -273,7 +315,7 @@ export function heatmapCountsOf(value: readonly HeatmapValue[] | undefined): Map
       continue
     if (parseHeatmapDate(item.date) == null)
       continue
-    const count = Number.isFinite(item.count) ? Math.max(0, item.count) : 0
+    const count = Number.isFinite(item.count) ? item.count : 0
     out.set(item.date, (out.get(item.date) ?? 0) + count)
   }
   return out
@@ -332,25 +374,93 @@ export function heatmapLevelPercent(level: number, levels: number): number {
  * 三种形态共用这一处，只是喂进来的数值来路不同。
  */
 export function heatmapScaleOfValues(
-  options: Pick<HeatmapGridOptions, 'levels' | 'thresholds'>,
+  options: Pick<HeatmapGridOptions, 'levels' | 'thresholds' | 'scale' | 'midpoint' | 'continuous'>,
   values: Iterable<number>,
 ): HeatmapScale {
   let max = 0
+  let min = 0
   let total = 0
+  const seen: number[] = []
   for (const value of values) {
     total += value
+    seen.push(value)
     if (value > max)
       max = value
+    if (value < min)
+      min = value
   }
+  // 出现负数即按中点分两侧：负数全落进第 0 档会把相关系数矩阵的一半画成「没有数据」
+  const mode: HeatmapScaleMode = options.scale ?? (min < 0 ? 'diverging' : 'sequential')
+  const midpoint = mode === 'diverging' && options.midpoint != null && Number.isFinite(options.midpoint) ? options.midpoint : 0
+  const extent = mode === 'diverging'
+    ? seen.reduce((far, value) => Math.max(far, Math.abs(value - midpoint)), 0)
+    : max
+  const continuous = !!options.continuous
   const declared = options.thresholds ? normalizeHeatmapThresholds(options.thresholds) : []
   if (declared.length > 0)
-    return { levels: declared.length + 1, thresholds: declared, max, total }
+    return { levels: declared.length + 1, thresholds: declared, max, min, total, mode, midpoint, extent, continuous, declared: true }
   // 档数非数字（属性写成 levels="abc" 就是 NaN）时退回缺省：
   // Math.max(2, NaN) 还是 NaN，一路漏下去会让标尺为空、内联样式写成 NaN%
   const declaredLevels = options.levels
   const requested = declaredLevels != null && Number.isFinite(declaredLevels) ? Math.floor(declaredLevels) : HEATMAP_LEVELS
   const levels = Math.max(2, requested)
-  return { levels, thresholds: buildHeatmapThresholds(max, levels), max, total }
+  // 发散色阶的量是离中点的距离，常是小数（相关系数在 ±1 之间）：两侧各自把 (0, 最远距离] 等宽分档，不取整
+  const thresholds = mode === 'diverging'
+    ? Array.from({ length: levels - 1 }, (_, i) => (extent * i) / (levels - 1)).map((edge, i) => (i === 0 ? Number.MIN_VALUE : edge))
+    : buildHeatmapThresholds(max, levels)
+  return { levels, thresholds, max, min, total, mode, midpoint, extent, continuous, declared: false }
+}
+
+/** 0-100，留两位小数；满档一端为 0 时恒为 0。 */
+function positionOf(amount: number, extent: number): number {
+  if (!(extent > 0) || !(amount > 0))
+    return 0
+  return Math.round(Math.min(1, amount / extent) * 10000) / 100
+}
+
+/**
+ * 一个数值落在色阶的哪里：第几档、哪一侧、色阶上的位置。三种形态、格子与对照条共用这一处。
+ *
+ * 顺序色阶：不大于 0 即第 0 档。发散色阶：按离中点的距离分档，恰在中点上是第 0 档（中点色），
+ * 低于中点走负向一侧、高于中点走正向一侧。连续色阶不改档位，只让位置跟着数值走。
+ */
+export function heatmapPlaceOf(value: number, scale: HeatmapScale): { level: number, polarity: HeatmapPolarity | null, percent: number } {
+  if (scale.mode === 'diverging') {
+    const offset = value - scale.midpoint
+    const distance = Math.abs(offset)
+    const level = heatmapLevelOf(distance, scale.thresholds)
+    const polarity: HeatmapPolarity | null = offset < 0 ? 'negative' : offset > 0 ? 'positive' : null
+    return {
+      level,
+      polarity,
+      percent: scale.continuous ? positionOf(distance, scale.extent) : heatmapLevelPercent(level, scale.levels),
+    }
+  }
+  const level = heatmapLevelOf(value, scale.thresholds)
+  return {
+    level,
+    polarity: null,
+    percent: scale.continuous ? positionOf(value, scale.extent) : heatmapLevelPercent(level, scale.levels),
+  }
+}
+
+/**
+ * 对照条上的一排：顺序色阶从第 0 档排到满档；发散色阶从负向满档经中点排到正向满档，
+ * 两侧对称，中间那一格是中点色。
+ */
+export function heatmapLegendEntries(scale: HeatmapScale): HeatmapLegendEntry[] {
+  const top = Math.max(1, scale.levels - 1)
+  const at = (level: number): number => heatmapLevelPercent(level, scale.levels)
+  if (scale.mode === 'diverging') {
+    const out: HeatmapLegendEntry[] = []
+    for (let level = top; level >= 1; level--)
+      out.push({ level, polarity: 'negative', percent: at(level) })
+    out.push({ level: 0, polarity: null, percent: 0 })
+    for (let level = 1; level <= top; level++)
+      out.push({ level, polarity: 'positive', percent: at(level) })
+    return out
+  }
+  return Array.from({ length: top + 1 }, (_, level) => ({ level, polarity: null, percent: at(level) }))
 }
 
 /** 档位标尺：只把落在区间内的那些天喂给标尺，区间外的数据不该把标尺顶高。 */
@@ -387,9 +497,9 @@ export function heatmapStatsOf(options: HeatmapGridOptions, date: string): Heatm
     || time < startTime
     || time > endTime
   if (outside)
-    return { count: 0, level: 0, levels: scale.levels }
+    return { count: 0, level: 0, levels: scale.levels, polarity: null, percent: 0 }
   const count = counts.get(date) ?? 0
-  return { count, level: heatmapLevelOf(count, scale.thresholds), levels: scale.levels }
+  return { count, levels: scale.levels, ...heatmapPlaceOf(count, scale) }
 }
 
 /** 七行的星期名，行序相对周首日。 */
@@ -437,6 +547,7 @@ export function buildHeatmapGrid(options: HeatmapGridOptions = {}): HeatmapGrid 
       thresholds: scale.thresholds,
       max: scale.max,
       total: scale.total,
+      scale,
       emptyCount: 0,
       rows: [],
       months: [],
@@ -465,7 +576,7 @@ export function buildHeatmapGrid(options: HeatmapGridOptions = {}): HeatmapGrid 
         break
       const date = formatHeatmapDate(time)
       const count = counts.get(date) ?? 0
-      const meta: HeatmapCellMeta = { date, count, level: heatmapLevelOf(count, scale.thresholds), weekIndex, weekDay }
+      const meta: HeatmapCellMeta = { date, count, ...heatmapPlaceOf(count, scale), weekIndex, weekDay }
       if (count === 0)
         emptyCount += 1
       rowCells.push(meta)
@@ -513,6 +624,7 @@ export function buildHeatmapGrid(options: HeatmapGridOptions = {}): HeatmapGrid 
     thresholds: scale.thresholds,
     max: scale.max,
     total: scale.total,
+    scale,
     emptyCount,
     rows,
     months,
@@ -643,6 +755,7 @@ export interface HeatmapMonthGrid {
   thresholds: number[]
   max: number
   total: number
+  scale: HeatmapScale
   /**
    * 值为 0 的格子数；格子总数从 `cells.size` 读，两个数一比就是空白占比。
    * 数的只是 0，不是色阶的第 0 档——给了 `thresholds` 时两个数不相等。
@@ -695,6 +808,7 @@ export function buildHeatmapMonthGrid(options: HeatmapGridOptions = {}): Heatmap
     thresholds: scale.thresholds,
     max: scale.max,
     total: scale.total,
+    scale,
     weekDays,
   }
 
@@ -748,7 +862,7 @@ export function buildHeatmapMonthGrid(options: HeatmapGridOptions = {}): Heatmap
       const meta: HeatmapCellMeta = {
         date,
         count,
-        level: heatmapLevelOf(count, scale.thresholds),
+        ...heatmapPlaceOf(count, scale),
         weekIndex: week,
         weekDay,
       }
@@ -804,6 +918,8 @@ export interface HeatmapMatrixCellMeta {
   column: string
   count: number
   level: number
+  polarity: HeatmapPolarity | null
+  percent: number
   rowIndex: number
   columnIndex: number
 }
@@ -816,6 +932,7 @@ export interface HeatmapMatrixGrid {
   thresholds: number[]
   max: number
   total: number
+  scale: HeatmapScale
   /**
    * 值为 0 的格子数；格子总数从 `cells.size` 读，两个数一比就是空白占比。
    * 数的只是 0，不是色阶的第 0 档——给了 `thresholds` 时两个数不相等。
@@ -859,7 +976,7 @@ export function heatmapMatrixValuesOf(value: readonly HeatmapValue[] | undefined
       continue
     if (typeof item.row !== 'string' || typeof item.column !== 'string')
       continue
-    const amount = Number.isFinite(item.value) ? Math.max(0, item.value) : 0
+    const amount = Number.isFinite(item.value) ? item.value : 0
     const key = heatmapMatrixKey(item.row, item.column)
     out.set(key, (out.get(key) ?? 0) + amount)
   }
@@ -894,7 +1011,7 @@ export function buildHeatmapMatrixGrid(options: HeatmapGridOptions = {}): Heatma
         row: row.value,
         column: column.value,
         count,
-        level: heatmapLevelOf(count, scale.thresholds),
+        ...heatmapPlaceOf(count, scale),
         rowIndex: row.index,
         columnIndex: column.index,
       }
@@ -913,6 +1030,7 @@ export function buildHeatmapMatrixGrid(options: HeatmapGridOptions = {}): Heatma
     thresholds: scale.thresholds,
     max: scale.max,
     total: scale.total,
+    scale,
     emptyCount,
     cells,
     firstCell,
@@ -973,9 +1091,11 @@ export interface HeatmapCellDetails {
   column: string
   /** 原始值：日期形态是当天计数，矩阵形态是该格的值。 */
   count: number
-  /** 0 到 levels-1；0 表示这一格没有数据。 */
+  /** 0 到 levels-1；0 表示这一格没有数据（发散色阶里是恰在中点上）。 */
   level: number
-  /** 档位在色阶上的位置，0-100。 */
+  /** 发散色阶下落在中点的哪一侧；顺序色阶与恰在中点上为 null。 */
+  polarity: HeatmapPolarity | null
+  /** 在色阶上的位置，0-100：分档时是档位的位置，连续色阶是数值的确切位置。 */
   percent: number
 }
 
@@ -1006,9 +1126,9 @@ export function heatmapMatrixStatsOf(options: HeatmapGridOptions, row: string, c
   const scale = heatmapScaleOfValues(options, inGrid)
   const known = rows.some(item => item.value === row) && columns.some(item => item.value === column)
   if (!known)
-    return { count: 0, level: 0, levels: scale.levels }
+    return { count: 0, level: 0, levels: scale.levels, polarity: null, percent: 0 }
   const count = values.get(heatmapMatrixKey(row, column)) ?? 0
-  return { count, level: heatmapLevelOf(count, scale.thresholds), levels: scale.levels }
+  return { count, levels: scale.levels, ...heatmapPlaceOf(count, scale) }
 }
 
 /**
@@ -1026,7 +1146,8 @@ export function heatmapDetailsOf(options: HeatmapGridOptions, ref: HeatmapCellRe
       column,
       count: stats.count,
       level: stats.level,
-      percent: heatmapLevelPercent(stats.level, stats.levels),
+      polarity: stats.polarity,
+      percent: stats.percent,
     }
   }
   const date = ref.date ?? ''
@@ -1037,7 +1158,8 @@ export function heatmapDetailsOf(options: HeatmapGridOptions, ref: HeatmapCellRe
     column: '',
     count: stats.count,
     level: stats.level,
-    percent: heatmapLevelPercent(stats.level, stats.levels),
+    polarity: stats.polarity,
+    percent: stats.percent,
   }
 }
 

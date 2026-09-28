@@ -25,7 +25,7 @@ import {
   buildHeatmapMonthGrid,
   HEATMAP_LEGEND_TEXT,
   heatmapDetailsOf,
-  heatmapLevelPercent,
+  heatmapLegendEntries,
   heatmapMatrixKey,
   heatmapMatrixNavTarget,
   heatmapMonthNavTarget,
@@ -105,13 +105,19 @@ export function connectHeatmap<T extends PropTypes>(
     : buildHeatmapGrid({
         levels: options.levels,
         thresholds: options.thresholds,
+        scale: options.scale,
+        midpoint: options.midpoint,
+        continuous: options.continuous,
         firstDayOfWeek: options.firstDayOfWeek,
         locale: options.locale,
       })
   const monthGrid: HeatmapMonthGrid | null = variant === 'month' ? buildHeatmapMonthGrid(options) : null
   const matrixGrid: HeatmapMatrixGrid | null = variant === 'matrix' ? buildHeatmapMatrixGrid(options) : null
 
-  const levels = monthGrid?.levels ?? matrixGrid?.levels ?? grid.levels
+  // 当前形态那一张网格用的标尺：色阶、中点与满档一端，格子与对照条都从它取色
+  const scale = monthGrid?.scale ?? matrixGrid?.scale ?? grid.scale
+  const diverging = scale.mode === 'diverging'
+  const legendItems = heatmapLegendEntries(scale)
 
   const translations = prop('translations')
   const gridLabel = translations?.gridLabel ?? 'Activity heatmap'
@@ -120,9 +126,11 @@ export function connectHeatmap<T extends PropTypes>(
   const matrixCellLabel = translations?.matrixCellLabel
     ?? ((details: HeatmapCellDetails) => `${details.count} at ${details.row} ${details.column}`)
   const legendLabel = translations?.legendLabel ?? 'Activity level'
-  // 对照条两端是写进界面的可见文字，缺省跟着月份名、星期名那条 locale 的缺省走
-  const legendLow = translations?.legendLow ?? HEATMAP_LEGEND_TEXT.low
-  const legendHigh = translations?.legendHigh ?? HEATMAP_LEGEND_TEXT.high
+  // 对照条两端是写进界面的可见文字，缺省跟着月份名、星期名那条 locale 的缺省走。
+  // 发散色阶两端各代表中点两侧最远的那个数，「少 / 多」说不清哪端是负，缺省改写两端的数值
+  const bound = (value: number): string => new Intl.NumberFormat(options.locale, { maximumFractionDigits: 2 }).format(value)
+  const legendLow = translations?.legendLow ?? (diverging ? bound(scale.midpoint - scale.extent) : HEATMAP_LEGEND_TEXT.low)
+  const legendHigh = translations?.legendHigh ?? (diverging ? bound(scale.midpoint + scale.extent) : HEATMAP_LEGEND_TEXT.high)
 
   const monthOf = new Map(grid.months.map(month => [month.value, month]))
   const monthBlockOf = new Map((monthGrid?.blocks ?? []).map(block => [block.value, block]))
@@ -188,9 +196,9 @@ export function connectHeatmap<T extends PropTypes>(
     return heatmapTipPlacement(at?.weekDay ?? 0, grid.rows.length)
   })()
 
-  /** 档位换成色阶上的位置，皮肤按它兑色；档数随便改都不必再写选择器。 */
-  const levelStyle = (level: number): Record<string, string> => ({
-    '--xh-_heatmap-level': `${heatmapLevelPercent(level, levels)}%`,
+  /** 色阶上的位置，皮肤按它兑色；分档时是档位的位置，连续色阶是数值的确切位置，档数随便改都不必再写选择器。 */
+  const levelStyle = (percent: number): Record<string, string> => ({
+    '--xh-_heatmap-level': `${percent}%`,
   })
 
   const transition = context.get('transition')
@@ -210,14 +218,20 @@ export function connectHeatmap<T extends PropTypes>(
     return cell => (first == null || !(span > 0) ? 0 : ((parseHeatmapDate(cell.date) ?? first) - first) / span)
   })()
 
-  /** 格子的颜色：档位，以及首次出现时有颜色的格子要等扫描扫到才填色。 */
-  const cellPaint = (level: number, at: () => number): Record<string, unknown> => {
-    const drawing = transition === 'entry' && level > 0
+  /** 格子的颜色：档位、落在中点哪一侧，以及首次出现时有颜色的格子要等扫描扫到才填色。 */
+  const cellPaint = (place: { level: number, polarity: string | null, percent: number }, at: () => number): Record<string, unknown> => {
+    const drawing = transition === 'entry' && place.level > 0
     return {
-      'data-level': String(level),
+      'data-level': String(place.level),
+      'data-polarity': place.polarity ?? undefined,
       'data-drawing': dataAttr(drawing),
-      'style': drawing ? { ...levelStyle(level), '--xh-_chart-reveal-at': at().toFixed(3) } : levelStyle(level),
+      'style': drawing ? { ...levelStyle(place.percent), '--xh-_chart-reveal-at': at().toFixed(3) } : levelStyle(place.percent),
     }
+  }
+
+  /** 一格被按下：点击与 Enter / Space 走同一条路，载荷与详情同源。 */
+  const pressCell = (ref: HeatmapCellRef): void => {
+    prop('onCellPress')?.(heatmapDetailsOf(options, ref))
   }
 
   /** 一步走到哪一格；走不动给 null（焦点原地不动）。 */
@@ -259,11 +273,14 @@ export function connectHeatmap<T extends PropTypes>(
       // 指针被系统抢走（拖拽、右键菜单）时也要收起，否则详情会一直挂着
       onPointerCancel: () => send({ type: 'CELL.LEAVE' }),
       onFocus: event => open(event, 'CELL.FOCUS'),
+      onClick: () => pressCell(ref),
     }
   }
 
   return {
     variant,
+    scaleMode: scale.mode,
+    legendItems,
     grid,
     monthGrid,
     matrixGrid,
@@ -288,6 +305,8 @@ export function connectHeatmap<T extends PropTypes>(
       // 皮肤里消费它的规则排在语气那条之后，两个都写时色板压过语气
       'data-palette': prop('palette'),
       'data-size': prop('size'),
+      // 发散色阶：格子与对照条按中点两侧取负向 / 正向色，中点取中性色；顺序色阶不写
+      'data-scale': diverging ? 'diverging' : undefined,
       // 数据变化后的换色进行中：格子的颜色按数据角色的时长过渡，主题与语气换色不受它拖慢
       'data-animating': dataAttr(transition === 'update'),
     }),
@@ -312,6 +331,15 @@ export function connectHeatmap<T extends PropTypes>(
         if (event.key === 'Escape') {
           if (activeRef != null)
             send({ type: 'DETAIL.DISMISS' })
+          return
+        }
+        // Enter 按下焦点那一格，载荷与图表家族的按下同一口径。Space 不接：网格是只读的，
+        // 它照常滚动页面（热力图常常整页铺开，读者边走格边翻页）
+        if (event.key === 'Enter' && anchorCell != null
+          && !event.ctrlKey && !event.metaKey && !event.altKey) {
+          event.preventDefault()
+          if (!event.repeat)
+            pressCell(anchorCell)
           return
         }
         // 横轴沿 inline 排开，视觉次序由祖先链上任意一处 dir 或 CSS direction 决定，
@@ -473,7 +501,7 @@ export function connectHeatmap<T extends PropTypes>(
         const column = cell.column ?? ''
         const meta = matrixGrid.cells.get(heatmapMatrixKey(row, column))
         const count = meta?.count ?? 0
-        const level = meta?.level ?? 0
+        const place = { level: meta?.level ?? 0, polarity: meta?.polarity ?? null, percent: meta?.percent ?? 0 }
         return normalize.element({
           ...parts.cell.attrs,
           // 列身份占 data-value，行身份另开一个：两者合起来才定位得到一格
@@ -485,14 +513,13 @@ export function connectHeatmap<T extends PropTypes>(
             row,
             column,
             count,
-            level,
-            percent: heatmapLevelPercent(level, levels),
+            ...place,
           }),
           'aria-colindex': meta ? meta.columnIndex + 2 : undefined,
           'tabindex': anchorCell?.row === row && anchorCell.column === column ? 0 : -1,
           // 详情条正在说的那一格：指针停着或焦点落着，皮肤据此给它描一圈
           'data-highlighted': dataAttr(activeRef != null && activeRef.row === row && activeRef.column === column),
-          ...cellPaint(level, () => revealAt({ columnIndex: meta?.columnIndex })),
+          ...cellPaint(place, () => revealAt({ columnIndex: meta?.columnIndex })),
           ...cellHandlers({ row, column }),
         })
       }
@@ -500,20 +527,20 @@ export function connectHeatmap<T extends PropTypes>(
       const date = cell.date ?? ''
       const meta = (monthGrid?.cells ?? grid.cells).get(date)
       const count = meta?.count ?? 0
-      const level = meta?.level ?? 0
+      const place = { level: meta?.level ?? 0, polarity: meta?.polarity ?? null, percent: meta?.percent ?? 0 }
       return normalize.element({
         ...parts.cell.attrs,
         // 导航与锚点都以此为格子身份
         [ITEM_VALUE_ATTR]: date,
         'role': 'gridcell',
-        'aria-label': cellLabel({ date, row: '', column: '', count, level, percent: heatmapLevelPercent(level, levels) }),
+        'aria-label': cellLabel({ date, row: '', column: '', count, ...place }),
         // 各行的格子数不一样齐（首行可能少一格），列号显式给出来才对得上
         'aria-colindex': meta ? (monthGrid ? meta.weekDay + 1 : meta.weekIndex + 1) : undefined,
         // 锚点那一格独占 Tab 序列位
         'tabindex': anchorCell?.date === date ? 0 : -1,
         // 详情条正在说的那一格：指针停着或焦点落着，皮肤据此给它描一圈
         'data-highlighted': dataAttr(activeRef != null && activeRef.date === date),
-        ...cellPaint(level, () => revealAt({ date })),
+        ...cellPaint(place, () => revealAt({ date })),
         ...cellHandlers({ date }),
       })
     },
@@ -560,12 +587,17 @@ export function connectHeatmap<T extends PropTypes>(
       'data-bound': label.bound,
     }),
 
-    getLegendItemProps: item => normalize.element({
-      ...parts['legend-item'].attrs,
-      // 色块是对照条，每格自己念得出计数，读屏再念一遍档位没有信息量
-      'aria-hidden': true,
-      'data-level': String(item.level),
-      'style': levelStyle(item.level),
-    }),
+    getLegendItemProps: (item) => {
+      const polarity = item.polarity ?? null
+      const entry = legendItems.find(candidate => candidate.level === item.level && candidate.polarity === polarity)
+      return normalize.element({
+        ...parts['legend-item'].attrs,
+        // 色块是对照条，每格自己念得出计数，读屏再念一遍档位没有信息量
+        'aria-hidden': true,
+        'data-level': String(item.level),
+        'data-polarity': polarity ?? undefined,
+        'style': levelStyle(entry?.percent ?? 0),
+      })
+    },
   }
 }

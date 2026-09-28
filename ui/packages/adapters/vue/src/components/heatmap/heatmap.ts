@@ -16,7 +16,9 @@ import type {
   HeatmapMatrixGrid,
   HeatmapMonthGrid,
   HeatmapPalette,
+  HeatmapPolarity,
   HeatmapRowProps,
+  HeatmapScaleMode,
   HeatmapSchema,
   HeatmapTranslations,
   HeatmapValue,
@@ -56,6 +58,8 @@ export type HeatmapRootSlotProps = Pick<
   | 'anchorDate'
   | 'activeCell'
   | 'detailOpen'
+  | 'scaleMode'
+  | 'legendItems'
   | 'cellAt'
   | 'setFocusedCell'
   | 'setFocusedDate'
@@ -79,6 +83,9 @@ export const XhHeatmapRoot = defineComponent({
     endDate: { type: String },
     levels: { type: Number },
     thresholds: { type: Array as PropType<number[]> },
+    scale: { type: String as PropType<HeatmapScaleMode> },
+    midpoint: { type: Number },
+    continuous: { type: Boolean, default: undefined },
     firstDayOfWeek: { type: Number },
     locale: { type: String },
     dir: { type: String as PropType<Direction> },
@@ -88,10 +95,11 @@ export const XhHeatmapRoot = defineComponent({
     animated: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<HeatmapTranslations>> },
   },
-  // 只读事件，没有双向绑定：热力图不产生值，只报焦点与详情落在哪一格
+  // 只读事件，没有双向绑定：热力图不产生值，只报焦点、详情与按下落在哪一格
   emits: {
     'cell-focus': (_details: PayloadOf<HeatmapProps, 'onCellFocus'>) => true,
     'cell-active': (_details: PayloadOf<HeatmapProps, 'onCellActive'>) => true,
+    'cell-press': (_details: PayloadOf<HeatmapProps, 'onCellPress'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: HeatmapRootSlotProps) => VNode[]
@@ -103,7 +111,8 @@ export const XhHeatmapRoot = defineComponent({
   setup(props, { slots, emit }) {
     const notifyFocus: HeatmapProps['onCellFocus'] = details => emit('cell-focus', details)
     const notifyActive: HeatmapProps['onCellActive'] = details => emit('cell-active', details)
-    const ctx = useHeatmap(withXhConfig('heatmap', props) as HeatmapProps, notifyFocus, notifyActive)
+    const notifyPress: HeatmapProps['onCellPress'] = details => emit('cell-press', details)
+    const ctx = useHeatmap(withXhConfig('heatmap', props) as HeatmapProps, notifyFocus, notifyActive, notifyPress)
     provideHeatmap(ctx)
     return () => {
       const api = ctx.api.value
@@ -125,6 +134,8 @@ export const XhHeatmapRoot = defineComponent({
               anchorDate: api.anchorDate,
               activeCell: api.activeCell,
               detailOpen: api.detailOpen,
+              scaleMode: api.scaleMode,
+              legendItems: api.legendItems,
               cellAt: api.cellAt,
               setFocusedCell: api.setFocusedCell,
               setFocusedDate: api.setFocusedDate,
@@ -286,17 +297,19 @@ export const XhHeatmapLegendLabel = defineComponent({
   },
 })
 
-/** 对照条中的一格，与网格中同档的格子同色。 */
+/** 对照条中的一格，与网格中同档（发散色阶下同侧同档）的格子同色。 */
 export const XhHeatmapLegendItem = defineComponent({
   name: 'XhHeatmapLegendItem',
   props: {
     /** 档位，兼收字符串。 */
     value: { type: [Number, String] as PropType<number | string>, required: true },
+    /** 发散色阶下这一格在中点的哪一侧；顺序色阶与中点那一格不写。 */
+    polarity: { type: String as PropType<HeatmapPolarity> },
   },
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
     const level = computed(() => Number(props.value) || 0)
-    return () => h('span', ctx.api.value.getLegendItemProps({ level: level.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLegendItemProps({ level: level.value, polarity: props.polarity ?? null }) as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -316,10 +329,7 @@ function renderDefaultTree(
     null,
     () => [
       h(XhHeatmapLegendLabel, { value: 'low' }, () => api.legendText.low),
-      ...Array.from(
-        { length: api.monthGrid?.levels ?? api.matrixGrid?.levels ?? api.grid.levels },
-        (_, level) => h(XhHeatmapLegendItem, { key: level, value: level }),
-      ),
+      ...api.legendItems.map(item => h(XhHeatmapLegendItem, { key: `${item.polarity ?? 'center'}-${item.level}`, value: item.level, polarity: item.polarity ?? undefined })),
       h(XhHeatmapLegendLabel, { value: 'high' }, () => api.legendText.high),
     ],
   )

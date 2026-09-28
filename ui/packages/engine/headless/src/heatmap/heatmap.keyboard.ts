@@ -26,5 +26,6 @@ export const heatmapKeyboard: KeyboardTable = {
     { id: 'heatmap.kbd.grid-start', keys: ['Ctrl+Home'], when: 'focus in grid', does: '焦点移到整张网格文档序的头一格' },
     { id: 'heatmap.kbd.grid-end', keys: ['Ctrl+End'], when: 'focus in grid', does: '焦点移到整张网格文档序的末一格' },
     { id: 'heatmap.kbd.dismiss', keys: ['Escape'], when: '详情条显示着', does: '收起详情条；焦点留在原处，按键不拦截（外层浮层的关闭仍归它自己管）' },
+    { id: 'heatmap.kbd.press', keys: ['Enter'], when: 'focus in grid', does: '按下焦点那一格：报告它（onCellPress，载荷与详情同源），用来下钻；Space 不接，照常滚动页面' },
   ],
 }

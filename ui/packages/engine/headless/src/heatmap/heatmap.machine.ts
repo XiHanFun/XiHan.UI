@@ -37,6 +37,9 @@ export function heatmapGridOptions(prop: PropFn<HeatmapSchema>, scope?: Scope): 
     columns: prop('columns'),
     levels: prop('levels'),
     thresholds: prop('thresholds'),
+    scale: prop('scale'),
+    midpoint: prop('midpoint'),
+    continuous: prop('continuous'),
     firstDayOfWeek: prop('firstDayOfWeek'),
     locale: resolveLocale(prop('locale'), scope),
   }

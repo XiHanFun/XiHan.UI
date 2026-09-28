@@ -21,6 +21,7 @@ import {
   heatmapActiveSource,
   heatmapActiveTip,
   heatmapDetailsOf,
+  heatmapLegendEntries,
   heatmapLevelOf,
   heatmapLevelPercent,
   heatmapMachine,
@@ -29,6 +30,8 @@ import {
   heatmapMonthNavTarget,
   heatmapNavIntentFromKey,
   heatmapNavTarget,
+  heatmapPlaceOf,
+  heatmapScaleOfValues,
   heatmapStatsOf,
   heatmapTipPlacement,
   parseHeatmapDate,
@@ -213,9 +216,9 @@ describe('heatmap 分档', () => {
 
   it('区间外的日期单独查也给 0 档 0 计数，与网格里查不到那一格的取值一致', () => {
     const options = { ...RANGE, value: [...VALUE, { date: '2024-06-01', count: 99 }] }
-    expect(heatmapStatsOf(options, '2024-01-02')).toEqual({ count: 10, level: 4, levels: 5 })
-    expect(heatmapStatsOf(options, '2024-06-01')).toEqual({ count: 0, level: 0, levels: 5 })
-    expect(heatmapStatsOf(options, '不是日期')).toEqual({ count: 0, level: 0, levels: 5 })
+    expect(heatmapStatsOf(options, '2024-01-02')).toEqual({ count: 10, level: 4, levels: 5, polarity: null, percent: 100 })
+    expect(heatmapStatsOf(options, '2024-06-01')).toEqual({ count: 0, level: 0, levels: 5, polarity: null, percent: 0 })
+    expect(heatmapStatsOf(options, '不是日期')).toEqual({ count: 0, level: 0, levels: 5, polarity: null, percent: 0 })
   })
 
   it('给了 thresholds 就以它为准，档数随之定死，levels 不再起作用', () => {
@@ -541,7 +544,7 @@ describe('connectHeatmap 键盘走格', () => {
     const harness = mount({ ...RANGE, value: VALUE })
     harness.cell('2024-01-02').focus()
     harness.render()
-    expect(harness.focuses).toEqual([{ date: '2024-01-02', row: '', column: '', count: 10, level: 4, percent: 100 }])
+    expect(harness.focuses).toEqual([{ date: '2024-01-02', row: '', column: '', count: 10, level: 4, polarity: null, percent: 100 }])
 
     harness.cell('2024-01-02').focus()
     harness.render()
@@ -549,7 +552,7 @@ describe('connectHeatmap 键盘走格', () => {
 
     press(harness, 'ArrowDown')
     expect(harness.focuses).toHaveLength(2)
-    expect(harness.focuses[1]).toEqual({ date: '2024-01-03', row: '', column: '', count: 0, level: 0, percent: 0 })
+    expect(harness.focuses[1]).toEqual({ date: '2024-01-03', row: '', column: '', count: 0, level: 0, polarity: null, percent: 0 })
   })
 
   it('程序化挪锚点只改锚点，不报「焦点落到了这一天」：DOM 焦点根本没动', () => {
@@ -562,7 +565,7 @@ describe('connectHeatmap 键盘走格', () => {
     // 焦点真的落上去才通知
     harness.cell('2024-01-01').focus()
     harness.render()
-    expect(harness.focuses).toEqual([{ date: '2024-01-01', row: '', column: '', count: 1, level: 1, percent: 25 }])
+    expect(harness.focuses).toEqual([{ date: '2024-01-01', row: '', column: '', count: 1, level: 1, polarity: null, percent: 25 }])
   })
 
   it('区间换掉后锚点悬空，Tab 位退回文档序头一格：不然一个停靠点都没有，键盘再也进不来', () => {
@@ -745,7 +748,7 @@ describe('heatmapMatrixNavTarget 矩阵落点', () => {
 describe('heatmapDetailsOf 一格的全部数据', () => {
   it('日期形态报日期、计数、档位与色阶位置', () => {
     const details = heatmapDetailsOf({ startDate: '2024-01-01', endDate: '2024-01-31', value: VALUE }, { date: '2024-01-02' })
-    expect(details).toEqual({ date: '2024-01-02', row: '', column: '', count: 10, level: 4, percent: 100 })
+    expect(details).toEqual({ date: '2024-01-02', row: '', column: '', count: 10, level: 4, polarity: null, percent: 100 })
   })
 
   it('矩阵形态报行列身份，日期是空串', () => {
@@ -1499,5 +1502,118 @@ describe('过渡', () => {
     expect(at('甲', '下午')).toBe(0.5)
     expect(at('乙', '夜里')).toBe(1)
     stop()
+  })
+})
+
+describe('发散色阶与连续色阶', () => {
+  // 相关系数矩阵：对角线是 1，其余在 ±1 之间
+  const CORR: Props = {
+    variant: 'matrix',
+    rows: ['a', 'b', 'c'],
+    columns: ['a', 'b', 'c'],
+    value: [
+      { row: 'a', column: 'a', value: 1 },
+      { row: 'a', column: 'b', value: -0.8 },
+      { row: 'a', column: 'c', value: 0.3 },
+      { row: 'b', column: 'a', value: -0.8 },
+      { row: 'b', column: 'b', value: 1 },
+      { row: 'b', column: 'c', value: 0 },
+      { row: 'c', column: 'a', value: 0.3 },
+      { row: 'c', column: 'b', value: 0 },
+      { row: 'c', column: 'c', value: 1 },
+    ],
+  }
+
+  it('出现负数即按中点 0 分两侧：负数不再落进第 0 档', () => {
+    const matrix = buildHeatmapMatrixGrid(CORR)
+    expect(matrix.scale.mode).toBe('diverging')
+    expect(matrix.scale.extent).toBe(1)
+    const negative = matrix.cells.get(heatmapMatrixKey('a', 'b'))!
+    expect(negative.polarity).toBe('negative')
+    expect(negative.level).toBe(4)
+    const center = matrix.cells.get(heatmapMatrixKey('b', 'c'))!
+    expect(center).toMatchObject({ level: 0, polarity: null, percent: 0 })
+    const positive = matrix.cells.get(heatmapMatrixKey('a', 'c'))!
+    expect(positive).toMatchObject({ polarity: 'positive', level: 2 })
+  })
+
+  it('显式 sequential 时负数照旧落第 0 档；显式 diverging 可换中点', () => {
+    const sequential = buildHeatmapMatrixGrid({ ...CORR, scale: 'sequential' })
+    expect(sequential.cells.get(heatmapMatrixKey('a', 'b'))!.level).toBe(0)
+    const scale = heatmapScaleOfValues({ scale: 'diverging', midpoint: 50 }, [20, 50, 90])
+    expect(scale.midpoint).toBe(50)
+    expect(scale.extent).toBe(40)
+    expect(heatmapPlaceOf(20, scale).polarity).toBe('negative')
+    expect(heatmapPlaceOf(90, scale)).toMatchObject({ polarity: 'positive', level: 4 })
+  })
+
+  it('连续色阶：档位照常算，位置按数值的确切比例', () => {
+    const scale = heatmapScaleOfValues({ continuous: true }, [0, 10, 25, 100])
+    expect(heatmapPlaceOf(25, scale)).toMatchObject({ percent: 25 })
+    expect(heatmapPlaceOf(25, scale).level).toBeGreaterThan(0)
+    const diverging = heatmapScaleOfValues({ continuous: true }, [-0.5, 1])
+    expect(heatmapPlaceOf(-0.5, diverging)).toMatchObject({ polarity: 'negative', percent: 50 })
+  })
+
+  it('对照条：顺序色阶从第 0 档到满档，发散色阶从负向满档经中点到正向满档', () => {
+    const sequential = heatmapLegendEntries(heatmapScaleOfValues({}, [0, 4]))
+    expect(sequential.map(entry => entry.level)).toEqual([0, 1, 2, 3, 4])
+    const diverging = heatmapLegendEntries(heatmapScaleOfValues({ levels: 3 }, [-1, 1]))
+    expect(diverging).toEqual([
+      { level: 2, polarity: 'negative', percent: 100 },
+      { level: 1, polarity: 'negative', percent: 50 },
+      { level: 0, polarity: null, percent: 0 },
+      { level: 1, polarity: 'positive', percent: 50 },
+      { level: 2, polarity: 'positive', percent: 100 },
+    ])
+  })
+
+  it('connect：根投影 data-scale，格子投影 data-polarity，对照条两端缺省写两侧最远的数', () => {
+    const harness = mountMatrix(CORR)
+    const api = apiOf(harness.service)
+    expect(api.scaleMode).toBe('diverging')
+    expect((api.getRootProps() as Record<string, unknown>)['data-scale']).toBe('diverging')
+    expect(harness.cell('a/b').getAttribute('data-polarity')).toBe('negative')
+    expect(harness.cell('b/c').hasAttribute('data-polarity')).toBe(false)
+    expect(api.legendText).toEqual({ low: '-1', high: '1' })
+    const item = api.getLegendItemProps({ level: 4, polarity: 'negative' }) as Record<string, unknown>
+    expect(item['data-polarity']).toBe('negative')
+  })
+
+  it('顺序色阶不写 data-scale', () => {
+    const api = apiOf(mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE }).service)
+    expect((api.getRootProps() as Record<string, unknown>)['data-scale']).toBeUndefined()
+  })
+})
+
+describe('onCellPress', () => {
+  it('点一格与焦点在格上按 Enter 都派发，载荷与详情同源', () => {
+    const presses: unknown[] = []
+    const harness = mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE, onCellPress: details => presses.push(details) })
+    harness.cell(`${MATRIX_ROWS[0]}/${MATRIX_COLUMNS[0]}`).click()
+    expect(presses).toHaveLength(1)
+    expect(presses[0]).toMatchObject({ row: MATRIX_ROWS[0], column: MATRIX_COLUMNS[0] })
+
+    const first = harness.cell(`${MATRIX_ROWS[0]}/${MATRIX_COLUMNS[0]}`)
+    first.focus()
+    harness.render()
+    const enter = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })
+    first.dispatchEvent(enter)
+    expect(presses).toHaveLength(2)
+    expect(enter.defaultPrevented).toBe(true)
+  })
+
+  it('空格键不报告也不拦截，留给页面滚动；按住 Enter 的重复按键不再报告', () => {
+    const presses: unknown[] = []
+    const harness = mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE, onCellPress: details => presses.push(details) })
+    const first = harness.cell(`${MATRIX_ROWS[0]}/${MATRIX_COLUMNS[0]}`)
+    first.focus()
+    harness.render()
+    const space = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true })
+    first.dispatchEvent(space)
+    expect(space.defaultPrevented).toBe(false)
+    expect(presses).toHaveLength(0)
+    first.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true, repeat: true }))
+    expect(presses).toHaveLength(0)
   })
 })

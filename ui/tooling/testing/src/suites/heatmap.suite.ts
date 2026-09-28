@@ -752,6 +752,39 @@ export const heatmapSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '按下：焦点在格上按 Enter 报告那一格，点按同样报告；Space 留给页面滚动',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['heatmap.kbd.press'],
+      props: RANGE,
+      steps: [
+        { kind: 'focus', part: `cell[${at('2024-01-02')}]` },
+        { kind: 'key', key: 'Enter', expect: { events: [{ type: 'cell-press' }] } },
+        { kind: 'key', key: 'Space', expect: { events: [] } },
+        { kind: 'click', part: `cell[${at('2024-01-03')}]`, expect: { events: [{ type: 'cell-press' }] } },
+      ],
+    },
+    {
+      name: '矩阵形态：数据里有负数就按发散色阶，格子写明落在中点哪一侧，中点那一格不写',
+      spec: { adr: 'visual-axes' },
+      fixture: buildMatrixFixture,
+      props: {
+        ...MATRIX_RANGE,
+        value: [
+          { row: '甲', column: '上午', value: -4 },
+          { row: '甲', column: '下午', value: 0 },
+          { row: '乙', column: '夜里', value: 8 },
+        ],
+      },
+      initial: {
+        parts: {
+          root: { 'data-scale': 'diverging' },
+          [`cell[${matrixAt('甲', '上午')}]`]: { 'data-polarity': 'negative' },
+          [`cell[${matrixAt('甲', '下午')}]`]: { 'data-polarity': null },
+          [`cell[${matrixAt('乙', '夜里')}]`]: { 'data-polarity': 'positive' },
+        },
+      },
+    },
+    {
       name: '不写 variant 时 root 上不产出 data-variant：默认那一档的行为逐字不变',
       spec: { adr: 'visual-axes' },
       props: RANGE,
