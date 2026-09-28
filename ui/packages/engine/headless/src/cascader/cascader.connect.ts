@@ -40,6 +40,7 @@ export function connectCascader<T extends PropTypes>(
 
   const collection = prop('collection') ?? []
   const activePath = context.get('activePath')
+  const settledColumns = context.get('settledColumns')
   const value = context.get('value')
   const multiple = !!prop('multiple')
   const disabled = !!prop('disabled')
@@ -823,6 +824,8 @@ export function connectCascader<T extends PropTypes>(
         'tabindex': focused ? 0 : -1,
         // 这一轮不属于任何一列，常挂在 DOM 里只收起不占位
         'hidden': !visible || undefined,
+        // 所在列在展开路径这次改动之前就铺开着：换了一批内容，不重播列的进场（淡入与错开）
+        'data-instant': dataAttr(!!meta && meta.level < settledColumns),
         'onKeyDown': handlers.onKeyDown,
         'onKeyUp': handlers.onKeyUp,
         'onBlur': handlers.onBlur,

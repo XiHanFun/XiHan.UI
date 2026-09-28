@@ -249,6 +249,11 @@ export interface CascaderSchema extends MachineSchema {
      * 打开落点不预展开：没有选中值时它为空，锚点条目只作方向键起点，不带出子列。
      */
     activePath: string[]
+    /**
+     * 展开路径上一次改动之前铺开的列数：这几列此前就在，换成另一批条目时标 data-instant、不重播列的进场。
+     * 收起即归零，下次展开时每一列都算头一次出现。
+     */
+    settledColumns: number
     /** roving tabindex 的锚点，同时是方向键与确认键的起点；收起即清空。 */
     focusedPath: string[] | null
     /** 本次展开的落点意图；受控回写经 CONTROLLED.OPEN 时也可读取。 */
