@@ -50,17 +50,28 @@ export function connectCalendarPicker<T extends PropTypes>(
   /** 多选已到上限：没选中的格子加不进去，选中的仍能点掉。 */
   const full = maxSelected != null && value.length >= maxSelected
 
-  /** 一格可不可选。禁用的日历下恒不可选；多选选满时没选中的格子也不可选。 */
+  /** 一格可不可选：界外或作者判定不可用。禁用的日历下恒不可选。选没选满与它无关，另由 blockedByLimit 管。 */
   const isUnavailable = (v: string): boolean => {
     if (calendarDisabled)
       return true
     const period = periodAt(v)
-    return !period || blockedBy(period) || (full && !selectedStarts.includes(period.start))
+    return !period || blockedBy(period)
   }
+
+  /** 选满之后没选中的格子加不进去；点掉选中的那一下照常。 */
+  const blockedByLimit = (v: string): boolean => {
+    if (!full)
+      return false
+    const period = periodAt(v)
+    return !!period && !selectedStarts.includes(period.start)
+  }
+
+  /** 这一格此刻按下去能不能改值：格子的禁用面、点击与确认键都按它。 */
+  const cannotPick = (v: string): boolean => isUnavailable(v) || blockedByLimit(v)
 
   /** 一格的派生状态：骨架那份之上加选中。 */
   const cellState = (item: CalendarCellProps): CalendarCellBaseState & { selected: boolean } => {
-    const base = frame.cellBaseState(item, isUnavailable(item.value))
+    const base = frame.cellBaseState(item, cannotPick(item.value))
     return {
       ...base,
       selected: !base.ownedElsewhere && !!base.period && selectedStarts.includes(base.period.start),
@@ -99,7 +110,7 @@ export function connectCalendarPicker<T extends PropTypes>(
 
   /** 确认键：选中聚焦日。只读与不可用的日子不认，禁用的日历整条不进来。 */
   const commit = (): void => {
-    if (readOnly || isUnavailable(focusedValue))
+    if (readOnly || cannotPick(focusedValue))
       return
     frame.selectAt(focusedValue)
   }

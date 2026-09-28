@@ -915,7 +915,8 @@ describe('选中', () => {
     expect(h.cell('2024-02-16').getAttribute('aria-disabled')).toBe('true')
     expect(h.cell('2024-02-16').hasAttribute('data-disabled')).toBe(true)
     expect(h.cell('2024-02-15').getAttribute('aria-disabled')).toBe('false')
-    expect(h.api().isUnavailable('2024-02-16')).toBe(true)
+    // isUnavailable 只报界外与作者判定：选满只禁格子，快捷选项这类整份替换的入口不受它牵连
+    expect(h.api().isUnavailable('2024-02-16')).toBe(false)
     click(h.cell('2024-02-16'))
     h.api().focus('2024-02-16')
     press(h.cell('2024-02-16'), 'Enter')
