@@ -249,6 +249,9 @@ describe('每份浮层皮肤都消费落位后的可用宽度', () => {
   /** 引擎算出的那个数由测试直接给：这里查的是皮肤有没有把它接到行内轴上，与引擎无关。 */
   const AVAILABLE = 120
 
+  /** 列表型浮层与字段盒等宽：可用宽度夹在宽度本身上，上界缺省不封顶。 */
+  const LIST = new Set(['select', 'combobox', 'tree-select'])
+
   let host: HTMLElement | null = null
 
   afterEach(() => {
@@ -271,6 +274,7 @@ describe('每份浮层皮肤都消费落位后的可用宽度', () => {
     host.append(positioner)
     document.body.append(host)
 
-    expect(getComputedStyle(content).maxInlineSize).toBe(`${AVAILABLE}px`)
+    const style = getComputedStyle(content)
+    expect(LIST.has(scope) ? style.inlineSize : style.maxInlineSize).toBe(`${AVAILABLE}px`)
   })
 })
