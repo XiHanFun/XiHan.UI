@@ -1359,6 +1359,12 @@
       "date-range-picker",
       "time-range-picker"
     ],
+    "recent-swatch-picker": [
+      "color-picker"
+    ],
+    "redo-trigger": [
+      "signature-pad"
+    ],
     "reference-line": [
       "sparkline"
     ],
