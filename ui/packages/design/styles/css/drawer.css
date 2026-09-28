@@ -120,7 +120,8 @@
     background: transparent;
   }
 
-  [data-scope='drawer'][data-part='backdrop'][data-state='open'] {
+  /* 挂载时就开着的那一段（data-instant）属于首帧，遮罩与面板都直接呈现 */
+  [data-scope='drawer'][data-part='backdrop'][data-state='open']:not([data-instant]) {
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
@@ -290,7 +291,7 @@
      退场仍走 exit 档。并列的一段淡变取淡变档：缺省起止都是不透明、看不出来，减弱动效下
      整幅位移归零、进出场由它表达。退场一律 forwards：presence 要等 animationend 才卸载，
      不定住终态，面板会在最后一帧弹回原位再消失。 */
-  [data-scope='drawer'][data-part='content'][data-state='open'] {
+  [data-scope='drawer'][data-part='content'][data-state='open']:not([data-instant]) {
     animation:
       xh-slide-in var(--xh-motion-duration-slide) var(--xh-motion-ease-slide),
       xh-slide-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);

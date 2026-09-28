@@ -277,6 +277,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `trigger` | `data-xh-action-size` | 'md' |
 | `trigger` | `data-xh-action-variant` | 'outline' |
 | `backdrop` | `data-contained` | ''（条件成立时才出现） |
+| `backdrop` | `data-instant` | ''（条件成立时才出现） |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
 | `backdrop` | `data-variant` | props.variant |
 | `positioner` | `data-contained` | ''（条件成立时才出现） |
