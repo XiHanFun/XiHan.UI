@@ -19,7 +19,7 @@ const FIXTURE: FixtureNode = {
 function withTrigger(base: FixtureNode): FixtureNode {
   return {
     ...base,
-    children: [...(base.children ?? []), { part: 'trigger', tag: 'button', slot: 'trigger', only: ['wc'] }],
+    children: [...(base.children ?? []), { part: 'trigger', tag: 'button', slot: 'trigger', slotAfter: true, only: ['wc'] }],
   }
 }
 

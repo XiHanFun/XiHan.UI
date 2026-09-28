@@ -141,10 +141,13 @@ export function createWcHarness(): AdapterHarness {
         await this.unmount()
       const el = document.createElement(`xh-${fixture.component}`) as Updatable
       // 写进具名插槽的节点没有插槽可进：按文档序摆在 root 之前，仍是宿主的直接子节点
-      // （table 的工具条在三侧都渲成 role=grid 的兄弟）
-      for (const slotted of fixture.tree.children?.filter(c => rendersHere(c) && c.slot != null) ?? [])
-        el.appendChild(renderNode(slotted, document))
+      // （table 的工具条在三侧都渲成 role=grid 的兄弟）；标了 slotAfter 的摆在 root 之后
+      const slotted = fixture.tree.children?.filter(c => rendersHere(c) && c.slot != null) ?? []
+      for (const node of slotted.filter(c => !c.slotAfter))
+        el.appendChild(renderNode(node, document))
       el.appendChild(renderNode(fixture.tree, document))
+      for (const node of slotted.filter(c => c.slotAfter))
+        el.appendChild(renderNode(node, document))
       applyInputs(el, fixture.props as Record<string, unknown>)
       for (const t of PUBLIC_EVENTS) el.addEventListener(t, onEvent)
       attachHost(el)

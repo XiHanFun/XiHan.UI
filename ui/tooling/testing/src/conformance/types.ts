@@ -40,6 +40,11 @@ export interface FixtureNode {
    * 渲成 role=grid 的兄弟）；WC 侧没有插槽，节点按文档序摆在 root 之前、仍是宿主的直接子节点。
    */
   readonly slot?: string
+  /**
+   * 只对写了 slot 的节点有效：WC 侧把它摆在 root 之后而不是之前。
+   * 给 Vue 与 React 由根组件铺在 root 之后的兄弟节点用（truncate 的展开按钮），三侧的文档序才对得上。
+   */
+  readonly slotAfter?: boolean
 }
 
 export interface Fixture {
