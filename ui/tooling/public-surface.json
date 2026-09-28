@@ -18624,6 +18624,7 @@
     "--xh-watermark-tile"
   ],
   "keyframes": [
+    "xh-alert-collapse",
     "xh-breathe",
     "xh-breathe-halo",
     "xh-carousel-indicator-progress",

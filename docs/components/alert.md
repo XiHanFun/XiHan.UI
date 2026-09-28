@@ -66,6 +66,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 - 默认使用中性描边表面，语气只强调标题与图标，说明保持次级前景。
 - `content` 是标题与说明共用的必需文本列，操作和关闭入口排在尾端。
 - `closable` 显示关闭按钮，关闭状态可受控。
+- 关闭时先淡出、再收起占位，下方内容随之平移上来；退场播完才藏起，途中不再响应交互。
 
 ### 组合
 
@@ -131,7 +132,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END` · `ROOT.RENDERED`
 
 **判据**：`isOpenControlled` · `canPress`
 
@@ -182,7 +183,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 ### 皮肤
 
-`@xihan-ui/styles/alert.css` 使用 `[data-scope="alert"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/alert.css` 使用 `[data-scope="alert"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -240,9 +241,11 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 披露 · 出现（见[动效规范](../design/motion#角色)）。
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+关键帧 `xh-alert-collapse` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

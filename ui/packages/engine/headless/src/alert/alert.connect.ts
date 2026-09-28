@@ -41,6 +41,9 @@ export function connectAlert<T extends PropTypes>(
   const closable = prop('closable') ?? true
   const ids = scope.ids('alert', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'
+  // 收起后先播完退场（淡出、再收起占位）才藏起：这几帧里根还留着，但已不接交互
+  const exiting = !open && context.get('rendered')
+  const exitBlockSize = context.get('exitBlockSize')
   const { role, live } = liveOf(tone)
 
   const setOpen = (next: boolean): void => {
@@ -62,10 +65,19 @@ export function connectAlert<T extends PropTypes>(
       'aria-atomic': 'true',
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
+      // 机器按 id 找到它：收起前量高度，并等它的退场动画播完再藏起
+      'id': scope.partId('alert', 'root'),
       // 语气轴只挂在 root 上，子部件靠继承拿到语气槽
       'data-tone': tone,
       'data-state': stateAttr,
-      'hidden': !open || undefined,
+      // 退场动画播完才写 hidden
+      'hidden': (!open && !exiting) || undefined,
+      // 退场途中的关闭钮与作者操作不再可点、可聚焦
+      'inert': exiting || undefined,
+      // 退场收占位的起点：收起那一刻量下的整块高度
+      'style': {
+        '--xh-_alert-exit-block-size': exiting && exitBlockSize != null ? `${exitBlockSize}px` : '',
+      },
     }),
 
     // 图标只是把语气再画一遍，读屏念出来是重复信息

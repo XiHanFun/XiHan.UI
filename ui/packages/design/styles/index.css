@@ -14589,6 +14589,22 @@
 /* 定义 alert 样式。 */
 
 /* Alert 独立皮肤同时传递引入关闭钮的动作控件配方；full bundle 递归去重。 */
+/* 淡出的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+@layer xihan.motion {
+  /* 关闭时收起占位：从连接层量下的整块高度收到 0，内缩与描边一起收掉 */
+  @keyframes xh-alert-collapse {
+    from {
+      block-size: var(--xh-_alert-exit-block-size);
+    }
+
+    to {
+      block-size: 0;
+      padding-block: 0;
+      border-block-width: 0;
+    }
+  }
+}
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -14615,6 +14631,17 @@
     color: var(--xh-alert-fg, var(--xh-fg-default));
     font-size: var(--xh-alert-font-size, var(--xh-text-body-size));
     line-height: var(--xh-alert-leading, var(--xh-leading-normal));
+  }
+
+  /* 关闭的退场：先淡出，再把占位收起——下面的内容跟着一路平移上来，而不是整块跳上来。
+     收占位接在淡出之后（延迟一个 exit），播完连接层才写 hidden。收起态常挂 hidden，这条只在退场途中命中；
+     减弱动效下收占位瞬时完成，淡出照常 */
+  [data-scope='alert'][data-part='root'][data-state='closed'] {
+    box-sizing: border-box;
+    overflow: hidden;
+    animation:
+      xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards,
+      xh-alert-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) var(--xh-motion-duration-exit) forwards;
   }
 
   /* 收起态连接层给的是 hidden 属性，而上面声明了 display——
