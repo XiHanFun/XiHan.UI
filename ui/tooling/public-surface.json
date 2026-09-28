@@ -7044,6 +7044,7 @@
       "TOUR_DEFAULT_OFFSET",
       "TOUR_DEFAULT_PLACEMENT",
       "TOUR_DEFAULT_SPOTLIGHT_PADDING",
+      "TOUR_TARGET_TIMEOUT",
       "TREE_SELECT_DEFAULT_PLACEMENT",
       "TRUNCATE_DEFAULT_LINES",
       "TableApi",
@@ -7252,6 +7253,7 @@
       "TourSkipDetails",
       "TourSpotlightRect",
       "TourStep",
+      "TourTarget",
       "TourTranslations",
       "TourValueChangeDetails",
       "TrackRect",
@@ -13145,6 +13147,7 @@
       "showBackdrop",
       "spotlightPadding",
       "steps",
+      "targetTimeout",
       "translations",
       "value"
     ],
@@ -21010,6 +21013,7 @@
         "placement",
         "show-backdrop",
         "spotlight-padding",
+        "target-timeout",
         "value"
       ],
       "events": [

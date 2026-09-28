@@ -39,6 +39,7 @@ const TIMING_CONSTANTS = {
   'headless/src/context-menu/context-menu.machine.ts:CONTEXT_MENU_LONG_PRESS_DELAY': '停留：触屏长按到打开菜单的判定，属性 longPressDelay 的缺省值',
   'headless/src/carousel/carousel.machine.ts:CAROUSEL_AUTOPLAY_INTERVAL': '停留：自动轮播的间隔，属性 autoplay 写 true 时的缺省值；减弱动效下不自动起播',
   'headless/src/clipboard/clipboard.machine.ts:CLIPBOARD_TIMEOUT': '停留：复制成功态保留多久，属性 timeout 的缺省值',
+  'headless/src/tour/tour.machine.ts:TOUR_TARGET_TIMEOUT': '停留：步骤目标缺席时等它出现多久，属性 targetTimeout 的缺省值',
   'headless/src/question-flow/question-flow.machine.ts:AUTO_ADVANCE_DELAY': '停留：单选选定后到下一题的等待，属性 autoAdvanceDelay 的缺省值',
   'headless/src/scrollbar/scrollbar.machine.ts:SCROLLBAR_HIDE_DELAY': '停留：停手与离开后多久隐藏，属性 hideDelay 的缺省值',
   'headless/src/scrollbar/scrollbar.machine.ts:SCROLLBAR_SCROLL_END_DELAY': '判定：停手多久算一段滚动结束，内部取值：它决定的是事件何时发出，不是作者要调的观感',

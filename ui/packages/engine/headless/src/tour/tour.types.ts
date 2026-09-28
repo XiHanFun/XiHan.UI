@@ -8,15 +8,22 @@
 import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 
+/**
+ * 一步引导的高亮目标：CSS 选择器、元素，或返回元素的函数（每次取目标时现调，适合路由切换后才挂上的节点）。
+ * 选择器经组件所在的根节点查，组件在 shadow root 里时只查那棵树；非法选择器按查不到处理。
+ */
+export type TourTarget = string | HTMLElement | (() => HTMLElement | null)
+
 /** 一步引导的声明。整份清单由作者提供，组件只按下标取用，不反查 DOM。 */
 export interface TourStep {
   /** 稳定标识，写入 data-step-id；作者据此对应（埋点、按步定制渲染）。 */
   id: string
   /**
-   * 高亮目标的 CSS 选择器。null / 省略 / 查询不到节点都视为该步不锚定任何元素：
-   * 浮层居中、不绘制高亮框、不显示箭头。
+   * 高亮目标。null / 省略即该步不锚定任何元素：浮层居中、不绘制高亮框、不显示箭头。
+   * 声明了目标而进入该步时还取不到（节点尚未挂上、元素已脱离文档），就盯住文档等它出现，
+   * 期间气泡不露面；等到了即定位高亮，等满 targetTimeout 仍没有则该步按居中呈现。
    */
-  target?: string | null
+  target?: TourTarget | null
   title?: string
   description?: string
   /** 该步的首选放置位；未提供时沿用整份引导的 placement。 */
@@ -129,6 +136,11 @@ export interface TourSchema extends MachineSchema {
     spotlightPadding?: number
     /** 展开与换步时自动把目标滚进视口（nearest，已可见时不动），默认 true。 */
     autoScroll?: boolean
+    /**
+     * 目标缺席时等它出现的时长（ms），默认 3000；只收有限非负数，0 即不等。
+     * 超时后该步按居中呈现、不再等待；之后目标挂上来了，调用 remeasure 重新锚定。
+     */
+    targetTimeout?: number
     translations?: Partial<TourTranslations>
     /** 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: TourValueChangeDetails) => void
@@ -151,6 +163,8 @@ export interface TourSchema extends MachineSchema {
      * 指针按住由 :active 表出。气泡收起时一并清空——按住 Enter 走完末步或跳过后，那颗按钮随内容藏起，不会再来 keyup。
      */
     pressed: TourPressedPart | null
+    /** 当前步声明的目标等满 targetTimeout 仍没出现：该步按居中呈现。换步、重开与目标重新取到时清空。 */
+    missingTarget: boolean
   }
   computed: Record<string, never>
   refs: TourRefs
@@ -164,6 +178,10 @@ export interface TourSchema extends MachineSchema {
     | { type: 'SKIP' }
     /** 重新测量几何：目标节点被外部改动（换位、变尺寸）后由宿主触发。 */
     | { type: 'GEOMETRY.SYNC' }
+    /** 等待中的目标出现了。 */
+    | { type: 'TARGET.FOUND' }
+    /** 等满 targetTimeout 目标仍没出现。 */
+    | { type: 'TARGET.MISSING' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
@@ -188,7 +206,9 @@ export interface TourSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releasePress'
-  effect: 'trackPosition' | 'trackSpotlight' | 'trackOverlay'
+    | 'markTargetMissing'
+    | 'recheckTarget'
+  effect: 'trackPosition' | 'trackSpotlight' | 'trackOverlay' | 'trackTarget'
 }
 
 export interface TourApi<T extends PropTypes = PropTypes> {
@@ -202,7 +222,7 @@ export interface TourApi<T extends PropTypes = PropTypes> {
   firstStep: boolean
   /** 停在末步：下一步按钮据此更换文案（完成）。 */
   lastStep: boolean
-  /** 该步锚定了页面元素：居中步为 false，此时不绘制高亮框也不显示箭头。 */
+  /** 该步锚定了页面元素：居中步与等不到目标的步为 false，此时不绘制高亮框也不显示箭头。 */
   anchored: boolean
   /** 「第 m 步，共 n 步」。作者未编写 progress-text 的内容时由适配器填入。 */
   progressText: string
@@ -214,7 +234,7 @@ export interface TourApi<T extends PropTypes = PropTypes> {
   goToPrevStep: () => void
   /** 放弃引导：先发 onSkip，再关闭。 */
   skip: () => void
-  /** 重新测量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调用它校准。 */
+  /** 重新测量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）或超时后才挂上来时调用它校准。 */
   remeasure: () => void
   getRootProps: () => T['element']
   getBackdropProps: () => T['element']

@@ -53,6 +53,8 @@ export const XhTourRoot = defineComponent({
     showBackdrop: { type: Boolean, default: undefined },
     spotlightPadding: { type: Number },
     autoScroll: { type: Boolean, default: undefined },
+    /** 目标缺席时等它出现的时长（ms），默认 3000；0 即不等。 */
+    targetTimeout: { type: Number },
     translations: { type: Object as PropType<TourProps['translations']> },
     /** 本实例三张 Tour 浮层的 Portal 容器；优先于应用级配置。 */
     container: { type: Object as PropType<Element> },
