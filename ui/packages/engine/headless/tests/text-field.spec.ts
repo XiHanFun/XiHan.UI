@@ -3,7 +3,7 @@ import type { TextFieldSchema, TextFieldValueChangeDetails } from '../src/text-f
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
-import { clampToMaxLength, connectTextField, isAtLimit, textFieldMachine } from '../src/text-field/index'
+import { clampToMaxLength, connectTextField, fitToMaxLength, isAtLimit, textFieldMachine } from '../src/text-field/index'
 
 type Props = TextFieldSchema['props']
 type Dict = Record<string, unknown>
@@ -203,12 +203,12 @@ describe('connectTextField 结构与标注', () => {
     expect(label.id).not.toBe(input.id)
   })
 
-  it('input 落 type/name/placeholder/maxlength 与显式 aria-invalid', () => {
+  it('input 落 type/name/placeholder 与显式 aria-invalid；上限按字素计，不投影按码元计的原生 maxlength', () => {
     const input = makeService({ name: 'nickname', placeholder: '请输入', maxLength: 8 }).api().getInputProps() as Dict
     expect(input.type).toBe('text')
     expect(input.name).toBe('nickname')
     expect(input.placeholder).toBe('请输入')
-    expect(input.maxlength).toBe(8)
+    expect(input.maxlength).toBeUndefined()
     // 省略等于"没说"，显式 false 是"明确说了不是"
     expect(input['aria-invalid']).toBe('false')
     expect(input.value).toBe('')
@@ -438,5 +438,64 @@ describe('清空按钮的按压通道：Space / Enter 与触屏按住投影 data
       expect(api()['data-pressed']).toBeUndefined()
       runtime.stop()
     }
+  })
+})
+
+describe('字数按字素计', () => {
+  const FAMILY = '👨‍👩‍👧'
+  const FLAG = '🇨🇳'
+
+  it('count 与 isAtLimit 把组合 emoji、国旗与带变音符的字母各算一个', () => {
+    const api = makeService({ defaultValue: `${FAMILY}${FLAG}é` }).api()
+    expect(api.count).toBe(3)
+    expect(isAtLimit(`${FAMILY}${FLAG}`, 2)).toBe(true)
+    expect(isAtLimit(FAMILY, 2)).toBe(false)
+  })
+
+  it('clampToMaxLength 按字素截尾巴，不会把一个 emoji 劈成半个', () => {
+    expect(clampToMaxLength(`a${FAMILY}b`, 2)).toBe(`a${FAMILY}`)
+    expect(clampToMaxLength('😀😀', 1)).toBe('😀')
+  })
+
+  it('fitToMaxLength 截的是这次新插入的文本，光标前后原有的内容不动', () => {
+    // 在中间插入：原生 maxlength 的做法是只收得下的那一截
+    expect(fitToMaxLength('abcd', 'abXYZcd', 5)).toEqual({ value: 'abXcd', caret: 3 })
+    // 末尾粘贴一长串
+    expect(fitToMaxLength('', '一二三四五六', 4)).toEqual({ value: '一二三四', caret: 4 })
+    // 插入的是 emoji：按字素截，光标落在 UTF-16 下标上
+    expect(fitToMaxLength('a', `a${FAMILY}${FLAG}`, 2)).toEqual({ value: `a${FAMILY}`, caret: 1 + FAMILY.length })
+    // 没超出上限就不插手
+    expect(fitToMaxLength('ab', 'abc', 3)).toBeNull()
+    expect(fitToMaxLength('ab', 'abc', undefined)).toBeNull()
+  })
+
+  it('fitToMaxLength 编辑前就越过上限时退回截尾巴', () => {
+    expect(fitToMaxLength('abcdef', 'abcdefg', 3)).toEqual({ value: 'abc', caret: 3 })
+  })
+
+  it('onInput 超出上限时改写节点的值与光标，再把收住的值送进机器', () => {
+    const s = makeService({ defaultValue: 'abcd', maxLength: 5 })
+    const el = document.createElement('input')
+    el.value = 'abXYZcd'
+    el.setSelectionRange(5, 5)
+    fire(s.api().getInputProps() as Dict, 'onInput', { target: el })
+    expect(el.value).toBe('abXcd')
+    expect(el.selectionStart).toBe(3)
+    expect(s.value()).toBe('abXcd')
+  })
+
+  it('输入法组合中不截：compositionstart 之后的中间态原样收下，落定时按组合开始前的值收住', () => {
+    const s = makeService({ defaultValue: '一二', maxLength: 3 })
+    const el = document.createElement('input')
+    const props = (): Dict => s.api().getInputProps() as Dict
+    fire(props(), 'onCompositionStart', { currentTarget: el })
+    el.value = '一二zhong'
+    fire(props(), 'onInput', { target: el })
+    expect(s.value()).toBe('一二zhong')
+    el.value = '一二中国'
+    fire(props(), 'onInput', { target: el })
+    fire(props(), 'onCompositionEnd', { currentTarget: el })
+    expect(el.value).toBe('一二中')
+    expect(s.value()).toBe('一二中')
   })
 })

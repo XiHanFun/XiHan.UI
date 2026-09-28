@@ -50,7 +50,11 @@ export interface TextFieldSchema extends MachineSchema {
     invalid?: boolean
     /** 表单字段名；提供后才参与提交。 */
     name?: string
-    /** 字符数上限。同时落为原生 maxlength 与状态机侧的截断，两者都需要。 */
+    /**
+     * 字数上限，按字素计（组合 emoji、国旗、带变音符的字母都算一个），与 count 同一口径。
+     * 原生 maxlength 按 UTF-16 码元计，会把一个 emoji 算成两个以上，因此不投影；
+     * 超出的部分由连接层从这次新插入的文本里截掉（与原生 maxlength 同样的做法），输入法组合期间不截、落定时再截。
+     */
     maxLength?: number
     /** 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 */
     clearable?: boolean
@@ -78,8 +82,8 @@ export interface TextFieldSchema extends MachineSchema {
   /** 单态：本组件没有任何随时间推移的过程，值本身存放在 context cell 中。 */
   state: 'idle'
   event:
-    /** 用户输入或作者调用 setValue；超过 maxLength 的部分在这里截断。 */
-    | { type: 'VALUE.SET', value: string }
+    /** 用户输入或作者调用 setValue；超过 maxLength 的部分在这里截断。composing 为输入法组合中：这一段先不截，落定时再截。 */
+    | { type: 'VALUE.SET', value: string, composing?: boolean }
     /** 清空意图（Escape 或清空按钮）；不满足清空条件时整条被守卫拦截。 */
     | { type: 'VALUE.CLEAR' }
     | { type: 'FORM.RESET' }
@@ -103,7 +107,7 @@ export interface TextFieldApi<T extends PropTypes = PropTypes> {
   clearable: boolean
   /** 已到达 maxLength：无法再输入，作者据此把字数提示标红。 */
   atLimit: boolean
-  /** 当前字数，即 value 的长度。作者用它渲染 count 部件中的数字。 */
+  /** 当前字数，按字素计（一个组合 emoji 算一个）。作者用它渲染 count 部件中的数字。 */
   count: number
   /** 字数上限的原样透传；未设上限时为 undefined，此时只渲染当前字数。 */
   maxLength: number | undefined
