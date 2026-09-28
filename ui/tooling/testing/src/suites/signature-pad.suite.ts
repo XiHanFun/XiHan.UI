@@ -3,7 +3,7 @@ import { signaturePadAnatomy, signaturePadKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
-// 签名板没有对应的 APG 模式：画布是一张图、不接键盘，组件里唯一的键盘落点是清空按钮。
+// 签名板没有对应的 APG 模式：画布是一张图、不接键盘，组件里的键盘落点是撤销、重做与清空三颗按钮。
 // 出处取 APG 的按钮模式，可达性的正文写在 doc.md 的无障碍段。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 const NAMING = 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/'
@@ -131,6 +131,25 @@ function assertSubmitted(match: (value: string) => boolean, message: string): St
   }
 }
 
+/** 一份存下来的签名：坐标系比套件的画布（300×120）大一倍。 */
+const SAVED = {
+  strokes: [{ points: [{ x: 20, y: 20, pressure: 0.5 }, { x: 120, y: 80, pressure: 0.5 }] }],
+  surface: { width: 600, height: 240 },
+}
+
+/** 画布上写的视窗：几何属性不在快照采集的属性集里。 */
+function assertViewBox(box: string | null): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: 'viewBox 是几何属性，不在快照采集的属性集里',
+    run: ({ doc }) => {
+      const actual = findPart(doc, 'control').getAttribute('viewBox')
+      if (actual !== box)
+        throw new Error(`画布的视窗该是 ${JSON.stringify(box)}，实际是 ${JSON.stringify(actual)}`)
+    },
+  }
+}
+
 export const signaturePadSuite: ConformanceSuite = {
   component: 'signature-pad',
   anatomy: signaturePadAnatomy,
@@ -147,6 +166,8 @@ export const signaturePadSuite: ConformanceSuite = {
           { part: 'path', tag: 'path' },
         ],
       },
+      { part: 'undo-trigger', tag: 'button', text: '撤销' },
+      { part: 'redo-trigger', tag: 'button', text: '重做' },
       { part: 'clear-trigger', tag: 'button', text: '清空' },
       { part: 'status', tag: 'span' },
       { part: 'hidden-input', tag: 'input' },
@@ -157,8 +178,8 @@ export const signaturePadSuite: ConformanceSuite = {
       name: '默认：画布报 role=img 并从标题取名，空画布带 data-empty，谁都不占 Tab 位',
       spec: { apg: NAMING },
       initial: {
-        order: ['root', 'label', 'control', 'guide', 'path', 'clear-trigger', 'status', 'hidden-input'],
-        counts: { 'root': 1, 'label': 1, 'control': 1, 'guide': 1, 'path': 1, 'clear-trigger': 1, 'status': 1, 'hidden-input': 1 },
+        order: ['root', 'label', 'control', 'guide', 'path', 'undo-trigger', 'redo-trigger', 'clear-trigger', 'status', 'hidden-input'],
+        counts: { 'root': 1, 'label': 1, 'control': 1, 'guide': 1, 'path': 1, 'undo-trigger': 1, 'redo-trigger': 1, 'clear-trigger': 1, 'status': 1, 'hidden-input': 1 },
         parts: {
           'root': {
             'data-empty': '',
@@ -194,6 +215,26 @@ export const signaturePadSuite: ConformanceSuite = {
             'data-xh-action-display': 'always',
             'data-xh-action-size': 'sm',
             'data-xh-action-variant': 'outline',
+          },
+          // 没有可撤销、可重做的一步：aria-disabled 留住焦点，原生 disabled 会把焦点丢回 body
+          'undo-trigger': {
+            'type': 'button',
+            'aria-label': 'Undo last stroke',
+            'aria-disabled': 'true',
+            'disabled': null,
+            'data-disabled': '',
+            'data-pressed': null,
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-size': 'sm',
+            'data-xh-action-variant': 'outline',
+          },
+          'redo-trigger': {
+            'type': 'button',
+            'aria-label': 'Redo stroke',
+            'aria-disabled': 'true',
+            'disabled': null,
+            'data-disabled': '',
           },
           // 画布是 role=img、名字恒定，签没签只能从这块活区域听出来
           'status': {
@@ -333,6 +374,98 @@ export const signaturePadSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '撤销与重做：一步一撤，重做按原样放回；没东西可做的那颗 aria-disabled',
+      spec: { apg: APG },
+      steps: [
+        layoutStep,
+        penDown(20, 20),
+        penMove(60, 40),
+        penUp({
+          parts: {
+            'undo-trigger': { 'aria-disabled': null, 'data-disabled': null },
+            'redo-trigger': { 'aria-disabled': 'true' },
+          },
+        }),
+        {
+          kind: 'click',
+          part: 'undo-trigger',
+          expect: {
+            parts: {
+              'root': { 'data-empty': '' },
+              'undo-trigger': { 'aria-disabled': 'true', 'data-disabled': '' },
+              'redo-trigger': { 'aria-disabled': null, 'data-disabled': null },
+            },
+          },
+        },
+        assertInk(false),
+        {
+          kind: 'click',
+          part: 'redo-trigger',
+          expect: {
+            parts: {
+              'root': { 'data-empty': null },
+              'undo-trigger': { 'aria-disabled': null },
+              'redo-trigger': { 'aria-disabled': 'true' },
+            },
+          },
+        },
+        assertInk(true),
+        assertSubmitted(v => v.includes('viewBox="0 0 300 120"'), '重做之后表单影子该交回那份 SVG'),
+      ],
+    },
+    {
+      name: '清空也是一步：误清之后撤销把整份签名找回来',
+      spec: { apg: APG },
+      steps: [
+        layoutStep,
+        penDown(20, 20),
+        penMove(60, 40),
+        penUp(),
+        { kind: 'click', part: 'clear-trigger', expect: { parts: { root: { 'data-empty': '' } } } },
+        { kind: 'click', part: 'undo-trigger', expect: { parts: { root: { 'data-empty': null } } } },
+        assertInk(true),
+      ],
+    },
+    {
+      name: '回显：defaultValue 交回存下的签名，画布按存下的坐标系写视窗，表单影子提交这一份',
+      spec: { apg: HTML_SPEC },
+      props: { defaultValue: SAVED, name: 'sign' },
+      initial: {
+        parts: {
+          'root': { 'data-empty': null },
+          'path': { 'data-empty': null },
+          'status': { 'data-empty': null },
+          // 回显的那份不是这次写的：没有可撤销的一步
+          'undo-trigger': { 'aria-disabled': 'true' },
+        },
+      },
+      steps: [
+        assertInk(true),
+        assertViewBox('0 0 600 240'),
+        assertStatusText('Signed'),
+        assertSubmitted(v => v.includes('viewBox="0 0 600 240"'), '表单影子该提交回显的那份 SVG'),
+      ],
+    },
+    {
+      name: '受控：宿主不写回时画面停在宿主那一份，定稿只经 value-change 送出',
+      spec: { apg: APG },
+      props: { value: SAVED },
+      steps: [
+        layoutStep,
+        penDown(20, 20),
+        penMove(60, 40),
+        penUp(),
+        assertViewBox('0 0 600 240'),
+        assertVertices(2, '宿主没写回，画面该只剩宿主那一笔'),
+      ],
+    },
+    {
+      name: 'Enter / Space 靠原生按钮的激活行为，撤销与重做按钮必须是 <button type="button">',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['signature-pad.kbd.undo', 'signature-pad.kbd.redo'],
+      steps: [nativeActivation('signature-pad', 'undo-trigger'), nativeActivation('signature-pad', 'redo-trigger')],
+    },
+    {
       name: '禁用：一笔都落不下，清空按钮走原生 disabled',
       spec: { apg: APG },
       props: { disabled: true },
@@ -341,6 +474,8 @@ export const signaturePadSuite: ConformanceSuite = {
           'root': { 'data-disabled': '' },
           'control': { 'data-disabled': '' },
           'clear-trigger': { 'disabled': '', 'data-disabled': '' },
+          'undo-trigger': { 'disabled': '', 'aria-disabled': null, 'data-disabled': '' },
+          'redo-trigger': { 'disabled': '', 'aria-disabled': null, 'data-disabled': '' },
           'hidden-input': { disabled: '' },
         },
       },
@@ -414,13 +549,15 @@ export const signaturePadSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '文案可覆盖：画布与清空按钮的读屏名字都走 translations',
+      name: '文案可覆盖：画布与三颗按钮的读屏名字都走 translations',
       spec: { apg: NAMING },
-      props: { translations: { label: '手写签名', clearTrigger: '清空签名' } },
+      props: { translations: { label: '手写签名', clearTrigger: '清空签名', undoTrigger: '撤销一笔', redoTrigger: '重做一笔' } },
       initial: {
         parts: {
           'control': { 'aria-label': '手写签名' },
           'clear-trigger': { 'aria-label': '清空签名' },
+          'undo-trigger': { 'aria-label': '撤销一笔' },
+          'redo-trigger': { 'aria-label': '重做一笔' },
         },
       },
     },

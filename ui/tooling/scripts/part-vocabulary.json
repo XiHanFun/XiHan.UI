@@ -1923,6 +1923,9 @@
     "truncation": [
       "diff-view"
     ],
+    "undo-trigger": [
+      "signature-pad"
+    ],
     "value": [
       "descriptions",
       "statistic"

@@ -1,6 +1,6 @@
 # 签名板
 
-用指针书写的画布：按下落笔、移动成迹、抬起收笔，输出可缩放、可直接提交的 SVG。
+用指针书写的画布：按下落笔、移动成迹、抬起收笔，输出可缩放、可直接提交的 SVG；签名数据可存下后原样回显，逐步撤销与重做。
 
 ## 何时使用
 
@@ -18,12 +18,15 @@
 - 笔迹是 SVG 填充路径，放大不模糊；每一笔是同一条路径上的一条子路径。
 - 第一笔落下时测量一次画布并固定这套坐标，画布的 `viewBox` 与导出的 SVG 都使用它：容器变宽变窄时，已有笔迹跟随缩放而不是停留在原像素上错位。清空后重新测量。
 - `drawing` 一组选项调整笔画外形：`size` 决定粗细，`thinning` 让粗细随压感变化，`simulatePressure` 决定压感取设备值还是按落笔速度计算。
-- 带 `name` 即参与表单提交，提交的是一份独立的 SVG 文档；表单重置会清空画布。
-- 笔迹变化时发出 `draw`，签名定稿时发出 `draw-end`：抬笔、点击清空、表单重置三条路径都发出。按 `draw-end` 缓存待提交的 SVG 不会取到过期版本。
+- 签名数据 `value` 是逐笔的点加上笔迹坐标系（`{ strokes, surface }`），无损：原样存下，编辑页交回 `defaultValue` 即回显，之后照常续写、撤销与重做；提供 `value` 即受控，定稿只经 `value-change` 送出。导出的 SVG 是它的一种画法，轮廓已偏移成填充面，读不回逐笔的点，所以回显要存数据而不是 SVG。
+- 撤销与重做以一步为单位：一笔、一次清空都是一步，误清之后撤销能找回整份签名。再落一笔或清空后重做栈作废；宿主从外面换了一份签名（受控写回另一条记录、换了 `defaultValue` 后重置）时撤销与重做栈一并作废。落笔途中不认撤销与重做。
+- 带 `name` 即参与表单提交，提交的是一份独立的 SVG 文档；表单重置回到 `defaultValue`（未提供时清空画布）并清掉撤销历史。
+- 笔迹变化时发出 `draw`，签名定稿时发出 `draw-end` 与 `value-change`：抬笔、清空、撤销、重做、表单重置都发出，落笔途中逐点只发 `draw`。按 `draw-end` 缓存待提交的 SVG 不会取到过期版本。
 - 指针划出画布甚至划出窗口都持续跟随，抬起即收笔；落笔的指针被捕获，手掌与第二根手指的移动不会续进这一笔。
 - 画布是一块字段外壳：静息不填底 + `--xh-border-control` 描边 + 4px 控件圆角、无影；落笔时描边加深，只读只换淡底，禁用退到 `--xh-border-default` + `--xh-bg-subtle`。画布按宽高比撑高，吃不下字段家族配方钉死的控件行高，因此外壳按同一套字段规则自绘。
 - 标签走字段标签档（14 / 500 / `--xh-fg-default`），贴画布 `--xh-space-1`；状态句是说明角色（13 / `--xh-fg-muted`）。
 - 清空按钮走 Action Control text 档 sm：缺省 `outline` 描边，白底承载阶梯悬停 100 → 按下 200，按下缩放并换底；空画布时只把静息前景压淡，按钮照常可按。
+- 撤销与重做按钮与清空按钮同一身份；没有可撤销、可重做的一步时投影 `aria-disabled` 与家族置灰面，焦点仍留在钮上。
 
 ## 无障碍
 
@@ -32,7 +35,8 @@
 - 画布的名称来自 `label` 部件；未渲染标题时退回 `translations.label`。
 - 是否已签名由 `status` 部件播报。画布是 `role="img"`，名称固定，签名、清空、表单重置后读屏读出的都是同一句，用户无法确认笔迹是否保留。`status` 是 `role="status"` 的活动区域，值每变一次播报一次，文案使用 `translations.statusEmpty` / `translations.statusSigned`。要求签名的表单请渲染它。
 - 基准线是纯画面，带 `aria-hidden`，读屏不读。没有 `translations.guide` 文案：给装饰线命名只会增加无信息量的播报。
-- 清空按钮是原生 `<button>`，Enter / Space 由平台激活；按钮内只有图标时读屏读 `translations.clearTrigger`。
+- 撤销、重做与清空按钮都是原生 `<button>`，Enter / Space 由平台激活；按钮内只有图标时读屏读 `translations.undoTrigger` / `translations.redoTrigger` / `translations.clearTrigger`。
+- 撤销、重做没东西可做时用 `aria-disabled` 而不是原生 `disabled`：刚把最后一笔撤掉的那颗钮若变成原生禁用，焦点会掉回 `<body>`，键盘用户每撤到头一次就丢失一次位置。整块禁用或只读时三颗按钮才走原生 `disabled`。
 
 ## RTL
 
@@ -58,14 +62,14 @@
 - `control` 必须是 `<svg>`；
 - `guide` 必须是 `control` 内的 `<line>`；
 - `path` 必须是 `control` 内的 `<path>`；
-- `clear-trigger` 必须是原生 `<button>`，`hidden-input` 必须是原生 `<input>`。
+- `undo-trigger`、`redo-trigger`、`clear-trigger` 必须是原生 `<button>`，`hidden-input` 必须是原生 `<input>`。
 
 `viewBox` 由组件写入，作者不要在 `control` 上再写。
 
 ### 两个适配器的分工
 
-- Vue：`XhSignaturePadRoot` 的默认插槽给出 `empty` / `paths` / `drawing` / `statusText` 与 `toSvg()` / `clear()`；也可以用 `useSignaturePad()` 自行获取。`XhSignaturePadGuide` 与 `XhSignaturePadPath` 必须写在 `XhSignaturePadControl` 内：SVG 命名空间由该子树带下，移出后会成为 HTML 元素，无法绘制。
-- Web Components：结构由作者编写（Light DOM，不投影插槽）。`<xh-signature-pad>` 上有 `clear()`、`toSvg()` 与只读的 `empty`；提交前取签名用 `toSvg()`，不需要缓存上一次 `draw-end`。
+- Vue：`XhSignaturePadRoot` 的默认插槽给出 `value` / `empty` / `paths` / `drawing` / `canUndo` / `canRedo` / `statusText` 与 `toSvg()` / `clear()` / `undo()` / `redo()`，签名数据走 `v-model:value`；也可以用 `useSignaturePad()` 自行获取。`XhSignaturePadGuide` 与 `XhSignaturePadPath` 必须写在 `XhSignaturePadControl` 内：SVG 命名空间由该子树带下，移出后会成为 HTML 元素，无法绘制。
+- Web Components：结构由作者编写（Light DOM，不投影插槽）。`<xh-signature-pad>` 上有 `clear()`、`undo()`、`redo()`、`toSvg()` 与只读的 `empty` / `canUndo` / `canRedo`；`value` / `defaultValue` 是对象，只走 property。提交前取签名用 `toSvg()`，不需要缓存上一次 `draw-end`。
 - 两侧的 `status` 部件内都不需要自行写文字：节点为空时由适配器填入内建文案；写了文字则以作者的为准。
 
 ## 最佳实践
@@ -75,6 +79,7 @@
 - 提交前用 `empty` 拦截：空签名与潦草签名是两回事，前者应在客户端拦截。
 - 需要缓存待提交的 SVG 时按 `draw-end` 缓存：清空与表单重置同样会发出它，缓存不会停留在旧版本。不要嗅探清空按钮的点击。
 - 存储的是 SVG 文本，不是位图。需要位图时在服务端渲染，不在前端截屏。
+- 需要在编辑页回显、续写的签名，同时存下 `value-change` 给出的数据；只存 SVG 的签名只能展示，不能再改。
 
 ## 反模式
 

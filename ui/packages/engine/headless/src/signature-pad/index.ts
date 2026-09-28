@@ -16,10 +16,11 @@ export {
   strokesToPaths,
 } from './signature-pad.geometry'
 export { signaturePadKeyboard } from './signature-pad.keyboard'
-export { signaturePadMachine } from './signature-pad.machine'
+export { EMPTY_SIGNATURE, signaturePadMachine } from './signature-pad.machine'
 export { signaturePadMeta } from './signature-pad.meta'
 export type {
   SignaturePadApi,
+  SignaturePadDraft,
   SignaturePadDrawDetails,
   SignaturePadDrawEndDetails,
   SignaturePadDrawingOptions,
@@ -29,4 +30,7 @@ export type {
   SignaturePadStroke,
   SignaturePadSurface,
   SignaturePadTranslations,
+  SignaturePadTrigger,
+  SignaturePadValue,
+  SignaturePadValueChangeDetails,
 } from './signature-pad.types'

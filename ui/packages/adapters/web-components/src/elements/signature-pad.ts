@@ -6,8 +6,18 @@
 // 提供 signature pad 相关实现。
 
 import type { Service } from '@xihan-ui/core'
-import type { FormControlState, SignaturePadApi, SignaturePadDrawDetails, SignaturePadDrawEndDetails, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations } from '@xihan-ui/headless'
-import { connectSignaturePad, resolveFormControlState, signaturePadAnatomy, signaturePadMachine, signaturePadMeta } from '@xihan-ui/headless'
+import type {
+  FormControlState,
+  SignaturePadApi,
+  SignaturePadDrawDetails,
+  SignaturePadDrawEndDetails,
+  SignaturePadDrawingOptions,
+  SignaturePadSchema,
+  SignaturePadTranslations,
+  SignaturePadValue,
+  SignaturePadValueChangeDetails,
+} from '@xihan-ui/headless'
+import { connectSignaturePad, EMPTY_SIGNATURE, resolveFormControlState, signaturePadAnatomy, signaturePadMachine, signaturePadMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -20,7 +30,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 
 /**
  * `<xh-signature-pad>`：Light-DOM 行为宿主：作者写 root / control / path 三个必需角色节点
- * （可再写 label、guide、clear-trigger 与 hidden-input），元素运行 signature-pad 状态机并把 connect 产出接上。
+ * （可再写 label、guide、undo-trigger、redo-trigger、clear-trigger、status 与 hidden-input），
+ * 元素运行 signature-pad 状态机并把 connect 产出接上。
  *
  * control 必须是 `<svg>`，guide 是其中的 `<line>`、path 是其中的 `<path>`：
  * 笔迹是一条填充轮廓，粗细随压感变化，描边无法实现该效果。viewBox 由元素按第一笔落下时
@@ -28,8 +39,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *
  * 画布本身不接受键盘。签名天然依赖指针，要求签名的流程必须另提供一条不依赖指针的替代路径。
  *
- * 笔迹外形（drawing）与读屏文案（translations）是对象，只能通过 property 设置。
- * 清空与获取 SVG 另有 `clear()` / `toSvg()` 两个方法。
+ * 签名数据（value / defaultValue）、笔迹外形（drawing）与读屏文案（translations）是对象，只能通过 property 设置。
+ * 回显已存的签名把存下的数据赋给 `defaultValue`；清空、撤销、重做与获取 SVG 另有
+ * `clear()` / `undo()` / `redo()` / `toSvg()` 四个方法，此刻的签名数据读 `currentValue`。
  *
  * @customElement xh-signature-pad
  * @attr {boolean} disabled - 整块不可交互：不响应落笔，清空按钮也不可按下
@@ -37,13 +49,16 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} required - 必填标注；表单影子据此参与原生校验
  * @attr {boolean} invalid - 校验未通过的标记，只改变外观与表单影子上的 aria-invalid
  * @attr {string} name - 表单字段名；提供后表单影子才带 name 并参与提交
- * @fires draw - 笔迹变化时通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }`
- * @fires draw-end - 签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接存储
+ * @fires draw - 笔迹变化时通知一次（含清空、撤销、重做与表单重置）；detail 为 `{ paths: string[], path: string }`
+ * @fires draw-end - 签名定稿时通知一次（抬笔、清空、撤销、重做、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接存储
+ * @fires value-change - 签名数据定稿，时机同 draw-end；detail 为 `{ value: { strokes, surface } }`，可原样存下再赋回 defaultValue 回显
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-drawing 的外壳
  * @csspart label - 画布标题（aria-labelledby 目标）
  * @csspart control - role=img 的画布，必须是 `<svg>`，指针落笔全部在它身上
  * @csspart guide - 基准线，必须是 control 中的 `<line>`；落位由连接层按百分比给出
  * @csspart path - 全部笔迹，必须是 control 中的 `<path>`；每一笔是它的一条子路径
+ * @csspart undo-trigger - 撤销按钮，必须是原生 `<button>`；没有可撤销的一步时 aria-disabled
+ * @csspart redo-trigger - 重做按钮，必须是原生 `<button>`；没有可重做的一步时 aria-disabled
  * @csspart clear-trigger - 清空按钮，必须是原生 `<button>`
  * @csspart status - 签名状态的活区域（role=status）；节点中未写文字时由元素填入内建文案
  * @csspart hidden-input - 表单影子输入（必须是原生 input），提交的是一份独立 SVG 文档
@@ -59,6 +74,8 @@ export class XhSignaturePadElement extends XhElement {
     invalid: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     // 对象进不了属性，只作为 property 暴露
+    value: { attribute: false },
+    defaultValue: { attribute: false },
     drawing: { attribute: false },
     translations: { attribute: false },
   }
@@ -68,6 +85,8 @@ export class XhSignaturePadElement extends XhElement {
   declare required?: boolean
   declare invalid?: boolean
   declare name?: string
+  declare value?: SignaturePadValue
+  declare defaultValue?: SignaturePadValue
   declare drawing?: SignaturePadDrawingOptions
   declare translations?: Partial<SignaturePadTranslations>
 
@@ -77,6 +96,10 @@ export class XhSignaturePadElement extends XhElement {
 
   private readonly notifyDrawEnd = (details: SignaturePadDrawEndDetails): void => {
     this.dispatchEvent(new CustomEvent('draw-end', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyValue = (details: SignaturePadValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<SignaturePadSchema>(
@@ -107,10 +130,13 @@ export class XhSignaturePadElement extends XhElement {
       required: control.required,
       invalid: control.invalid,
       name: this.name,
+      value: this.value,
+      defaultValue: this.defaultValue,
       drawing: this.drawing,
       translations: this.translations,
       onDraw: this.notifyDraw,
       onDrawEnd: this.notifyDrawEnd,
+      onValueChange: this.notifyValue,
     }
   }
 
@@ -130,6 +156,34 @@ export class XhSignaturePadElement extends XhElement {
   /** 清除全部笔迹，与点击清空按钮同一路径（照常触发 draw / draw-end）。 */
   clear(): void {
     this.commands().clear()
+  }
+
+  /** 撤销最近一步（一笔或一次清空），与点击撤销按钮同一路径；没有可撤销的一步时什么都不做。 */
+  undo(): void {
+    this.commands().undo()
+  }
+
+  /** 重做最近撤销的一步；没有可重做的一步时什么都不做。 */
+  redo(): void {
+    this.commands().redo()
+  }
+
+  /** 是否有可撤销的一步；还没进文档时为 false。 */
+  get canUndo(): boolean {
+    return this.ctrl.service ? this.commands().canUndo : false
+  }
+
+  /** 是否有被撤销、还能重做的一步；还没进文档时为 false。 */
+  get canRedo(): boolean {
+    return this.ctrl.service ? this.commands().canRedo : false
+  }
+
+  /**
+   * 此刻已定稿的签名数据，可原样存下、再赋回 defaultValue 回显。
+   * value 是作者递进来的受控值，非受控时读这里；还没进文档时为空签名。
+   */
+  get currentValue(): SignaturePadValue {
+    return this.ctrl.service ? this.commands().value : EMPTY_SIGNATURE
   }
 
   /** 当前签名的独立 SVG 文档，与表单影子提交的是同一份；空签名为空串。 */
@@ -172,6 +226,8 @@ export class XhSignaturePadElement extends XhElement {
     put('control', api.getControlProps() as Record<string, unknown>)
     put('guide', api.getGuideProps() as Record<string, unknown>)
     put('path', api.getPathProps() as Record<string, unknown>)
+    put('undo-trigger', api.getUndoTriggerProps() as Record<string, unknown>)
+    put('redo-trigger', api.getRedoTriggerProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     put('status', api.getStatusProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)

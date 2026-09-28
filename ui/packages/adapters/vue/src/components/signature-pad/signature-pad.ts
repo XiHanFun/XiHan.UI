@@ -5,7 +5,7 @@
 
 // 提供 signature pad 相关实现。
 
-import type { SignaturePadApi, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations } from '@xihan-ui/headless'
+import type { SignaturePadApi, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations, SignaturePadValue } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -16,10 +16,22 @@ import { useSignaturePad } from './use-signature-pad'
 
 type SignaturePadProps = SignaturePadSchema['props']
 
-/** 默认插槽的载荷：笔迹路径与空态、落笔中标记，以及导出与清空的动作。 */
+/** 默认插槽的载荷：签名数据、笔迹路径与空态、落笔中标记，以及导出、清空、撤销与重做的动作。 */
 export type SignaturePadRootSlotProps = Pick<
   SignaturePadApi,
-  'paths' | 'empty' | 'drawing' | 'disabled' | 'readOnly' | 'statusText' | 'toSvg' | 'clear'
+  | 'value'
+  | 'paths'
+  | 'empty'
+  | 'drawing'
+  | 'disabled'
+  | 'readOnly'
+  | 'canUndo'
+  | 'canRedo'
+  | 'statusText'
+  | 'toSvg'
+  | 'clear'
+  | 'undo'
+  | 'redo'
 >
 
 export const XhSignaturePadRoot = defineComponent({
@@ -31,13 +43,18 @@ export const XhSignaturePadRoot = defineComponent({
     required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     name: { type: String },
+    // 缺席值 undefined 表示非受控
+    value: { type: Object as PropType<SignaturePadValue> },
+    defaultValue: { type: Object as PropType<SignaturePadValue> },
     drawing: { type: Object as PropType<SignaturePadDrawingOptions> },
     translations: { type: Object as PropType<Partial<SignaturePadTranslations>> },
   },
-  // 两条都是只读通知，签名写不回来，因此没有 v-model
+  // draw / draw-end 是笔迹通知；value-change 携带 { value }，update:value 携带裸值
   emits: {
     'draw': (_details: PayloadOf<SignaturePadProps, 'onDraw'>) => true,
     'draw-end': (_details: PayloadOf<SignaturePadProps, 'onDrawEnd'>) => true,
+    'value-change': (_details: PayloadOf<SignaturePadProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<SignaturePadProps, 'onValueChange'>['value']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: SignaturePadRootSlotProps) => VNode[]
@@ -45,17 +62,26 @@ export const XhSignaturePadRoot = defineComponent({
   setup(props, { slots, emit }) {
     const onDraw: SignaturePadProps['onDraw'] = details => emit('draw', details)
     const onDrawEnd: SignaturePadProps['onDrawEnd'] = details => emit('draw-end', details)
-    const ctx = useSignaturePad(withXhConfig('signature-pad', useFormControlProps(props)) as SignaturePadProps, { onDraw, onDrawEnd })
+    const onValueChange: SignaturePadProps['onValueChange'] = (details) => {
+      emit('value-change', details)
+      emit('update:value', details.value)
+    }
+    const ctx = useSignaturePad(withXhConfig('signature-pad', useFormControlProps(props)) as SignaturePadProps, { onDraw, onDrawEnd, onValueChange })
     provideSignaturePad(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+      value: ctx.api.value.value,
       paths: ctx.api.value.paths,
       empty: ctx.api.value.empty,
       drawing: ctx.api.value.drawing,
       disabled: ctx.api.value.disabled,
       readOnly: ctx.api.value.readOnly,
+      canUndo: ctx.api.value.canUndo,
+      canRedo: ctx.api.value.canRedo,
       statusText: ctx.api.value.statusText,
       toSvg: ctx.api.value.toSvg,
       clear: ctx.api.value.clear,
+      undo: ctx.api.value.undo,
+      redo: ctx.api.value.redo,
     }))
   },
 })
@@ -104,6 +130,22 @@ export const XhSignaturePadClearTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useSignaturePadContext()
     return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSignaturePadUndoTrigger = defineComponent({
+  name: 'XhSignaturePadUndoTrigger',
+  setup(_, { slots }) {
+    const ctx = useSignaturePadContext()
+    return () => h('button', ctx.api.value.getUndoTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSignaturePadRedoTrigger = defineComponent({
+  name: 'XhSignaturePadRedoTrigger',
+  setup(_, { slots }) {
+    const ctx = useSignaturePadContext()
+    return () => h('button', ctx.api.value.getRedoTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
