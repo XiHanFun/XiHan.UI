@@ -162,4 +162,44 @@ describe('notification 条目到达', () => {
     expect(fresh).toHaveLength(2)
     expect(fresh.map(staggerSteps)).toEqual([0, 1])
   })
+
+  it('一张卡收起后，其余卡片从旧位置过渡到新位置，不整张跳位', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    let dismiss: ((id: string) => void) | undefined
+    const initial = [0, 1, 2].map(i => ({ id: `m${i}`, title: `第 ${i} 条`, duration: Number.POSITIVE_INFINITY }))
+    app = createApp({
+      render: () => h(XhNotificationRoot, { defaultItems: initial, max: 20 }, {
+        default: (scope: { dismiss: typeof dismiss }) => {
+          dismiss = scope.dismiss
+          return [h(XhNotificationGroup, null, {
+            default: ({ item }: { item: { id: string, title?: string } }) => [
+              h(XhNotificationItem, { key: item.id, id: item.id, title: item.title }, () => [h(XhNotificationItemTitle)]),
+            ],
+          })]
+        },
+      }),
+    })
+    app.mount(host)
+    await settle()
+    const card = (id: string): HTMLElement => document.querySelector<HTMLElement>(`[data-scope="notification"][data-part="item"][data-id="${id}"]`)
+      ?? [...document.querySelectorAll<HTMLElement>('[data-scope="notification"][data-part="item"]')].find(el => el.textContent?.includes(id.replace('m', '第 ')))!
+    for (const el of document.querySelectorAll<HTMLElement>('[data-scope="notification"][data-part="item"]'))
+      await Promise.all(el.getAnimations().map(a => a.finished.catch(() => undefined)))
+
+    // 缺省落位 bottom-end 从底部往上摞：收起最底下那张，上面的卡片才往下挪
+    const survivors = [card('m0'), card('m1')]
+    const tops = survivors.map(el => el.offsetTop)
+    dismiss!('m2')
+    // 等收起那张的退场播完、被收起
+    const first = card('m2')
+    await Promise.all(first.getAnimations().map(a => a.finished.catch(() => undefined)))
+    await settle()
+    // 排布位变了的那张：换位中途带着反向补偿的 translate，而不是已经在新位置上
+    const moved = survivors.find((el, i) => el.offsetTop !== tops[i])!
+    expect(moved).toBeDefined()
+    expect(getComputedStyle(moved).translate).not.toBe('none')
+    await Promise.all(moved.getAnimations().map(a => a.finished.catch(() => undefined)))
+    expect(['none', '0px'].includes(getComputedStyle(moved).translate)).toBe(true)
+  })
 })

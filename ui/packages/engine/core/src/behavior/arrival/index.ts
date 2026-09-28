@@ -6,6 +6,7 @@
 // 导出 arrival 模块的公共接口。
 
 export { trackListMotion } from './list-motion'
+export type { TrackListMotionOptions } from './list-motion'
 export { trackAppearance } from './track-appearance'
 export type { TrackAppearanceOptions } from './track-appearance'
 export { INSTANT_ATTR, STAGGER_CAP, STAGGER_INDEX_PROPERTY, trackArrivals } from './track-arrivals'
