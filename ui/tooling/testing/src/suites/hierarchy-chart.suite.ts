@@ -36,6 +36,7 @@ const cases: readonly ConformanceCase[] = [
           { 'aria-label': 'Shenzhen, 60, 60.0% of South', 'aria-level': '2', 'aria-setsize': '2', 'aria-posinset': '1', 'aria-expanded': null },
         ],
         path: { hidden: '' },
+        legend: { 'hidden': '', 'aria-hidden': 'true' },
         tooltip: { 'aria-hidden': 'true', 'data-state': 'hidden' },
         empty: { hidden: '' },
       },
@@ -197,6 +198,23 @@ const cases: readonly ConformanceCase[] = [
     ],
   },
   {
+    name: 'colorBy="value"：图例每个看得见的层一条色阶，下钻后跟着换',
+    spec: { adr: 'chart-variant' },
+    props: { colorBy: 'value' },
+    initial: {
+      counts: { 'legend-scale': 2, 'legend-scale-bar': 2 },
+      parts: {
+        'legend': { 'hidden': null, 'aria-hidden': 'true' },
+        'legend-scale': [{ 'data-level': '1' }, { 'data-level': '2' }],
+        'legend-scale-value': [{ 'data-edge': 'min' }, { 'data-edge': 'max' }],
+      },
+    },
+    steps: [
+      { kind: 'focus', part: 'node[0]', via: 'keyboard' },
+      { kind: 'key', key: 'Enter', expect: { counts: { 'legend-scale': 1 }, parts: { 'legend-scale': [{ 'data-level': '1' }] } } },
+    ],
+  },
+  {
     name: 'depth=1：只看得见第一层，有子节点的节点是收起的',
     spec: { adr: 'chart-variant' },
     props: { depth: 1 },
@@ -227,6 +245,7 @@ export const hierarchyChartSuite: ConformanceSuite = {
     children: [
       { part: 'caption', tag: 'figcaption', text: 'Sales by region' },
       { part: 'path', tag: 'nav' },
+      { part: 'legend' },
       {
         part: 'viewport',
         children: [

@@ -5,7 +5,7 @@
 
 /* 定义 hierarchy chart 样式。 */
 
-/* 标题、视口、提示框、空态、焦点环与顺序色阶走 Chart 家族配方；下钻路径的项归 Collection Item 导航当前（nav 语境），
+/* 标题、图例容器、视口、提示框、空态、焦点环与顺序色阶走 Chart 家族配方；下钻路径的项归 Collection Item 导航当前（nav 语境），
    面、字色、字重与按压时间线由家族配方给，本皮肤只映射桥接槽。两份都 @import，单独引入仍成立。 */
 @import '../family/chart.css';
 @import '../family/collection-item.css';
@@ -37,6 +37,10 @@
      对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都生效 —— */
   [data-scope='hierarchy-chart'][data-part='viewport'] {
     --xh-_chart-height: var(--xh-hierarchy-chart-height, var(--xh-chart-height));
+  }
+
+  [data-scope='hierarchy-chart'][data-part='legend'] {
+    --xh-_chart-legend-gap: var(--xh-hierarchy-chart-legend-gap, var(--xh-space-4));
   }
 
   [data-scope='hierarchy-chart'][data-part='tooltip'] {
@@ -233,7 +237,37 @@
     font-weight: var(--xh-font-weight-medium);
   }
 
-  /* 强制色：节点改成系统色的面与描边，名字取正文色；路径的尖角取正文色；焦点环在配方里 */
+  /* 色阶图例：每层一条，名字、低端的值、渐变条、高端的值排成一行；值是标注字色、等宽数字 */
+  [data-scope='hierarchy-chart'][data-part='legend-scale'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-hierarchy-chart-legend-scale-gap, var(--xh-space-2));
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-text-caption-size);
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='hierarchy-chart'][data-part='legend-scale-name'] {
+    color: var(--xh-fg-default);
+    font-size: var(--xh-text-body-size);
+  }
+
+  [data-scope='hierarchy-chart'][data-part='legend-scale-bar'] {
+    inline-size: var(--xh-hierarchy-chart-legend-scale-width, var(--xh-chart-legend-scale-width));
+    block-size: var(--xh-space-2);
+    border-radius: var(--xh-hierarchy-chart-legend-scale-bar-radius, var(--xh-shape-inset));
+    background: linear-gradient(to right, var(--xh-_hierarchy-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
+    /* 节点只用色阶上 0.3–1 这一段（最浅的一段压在承载面上看不见）：渐变按同一段画，起点即 0.3 处的颜色，
+       中点落在 (0.5 − 0.3) / 0.7 处 */
+    --xh-_hierarchy-scale-from: color-mix(in oklch, var(--xh-_chart-seq-mid) 60%, var(--xh-_chart-seq-start));
+  }
+
+  /* 图例随文字方向镜像：低端的值在行首，渐变也从行首起 */
+  :where([dir='rtl']) [data-scope='hierarchy-chart'][data-part='legend-scale-bar'] {
+    background: linear-gradient(to left, var(--xh-_hierarchy-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
+  }
+
+  /* 强制色：节点改成系统色的面与描边，名字取正文色；路径的尖角取正文色；色阶只留轮廓；焦点环在配方里 */
   @media (forced-colors: active) {
     [data-scope='hierarchy-chart'][data-part='node'],
     [data-scope='hierarchy-chart'][data-part='node'][data-seg] {
@@ -251,5 +285,16 @@
       forced-color-adjust: none;
       background-color: CanvasText;
     }
+
+    /* 色阶在系统色下画不出来：只留轮廓，两端的值照常可读 */
+    [data-scope='hierarchy-chart'][data-part='legend-scale-bar'] {
+      border: var(--xh-stroke-thin) solid CanvasText;
+      background: Canvas;
+    }
+  }
+
+  /* 色阶声明了 display：作者写 hidden 时照样收起 */
+  [data-scope='hierarchy-chart'][data-part='legend-scale'][hidden] {
+    display: none;
   }
 }

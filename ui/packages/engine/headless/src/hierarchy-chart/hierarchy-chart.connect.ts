@@ -11,7 +11,7 @@ import type { ChartDatumRef } from '../shared/chart'
 import type { HierarchyActive } from './hierarchy-chart.logic'
 import type { HierarchyTreeNode } from './hierarchy-chart.model'
 import type { HierarchyChartApi, HierarchyChartSchema } from './hierarchy-chart.schema'
-import type { HierarchyMarkTag, HierarchyPathItem, HierarchyTooltipRow } from './hierarchy-chart.types'
+import type { HierarchyLegendScale, HierarchyMarkTag, HierarchyPathItem, HierarchyTooltipRow } from './hierarchy-chart.types'
 import { contains, createPressTracker, dataAttr } from '@xihan-ui/core'
 import { createScene, markPath } from '@xihan-ui/viz'
 import { placeChartTooltip } from '../shared/chart'
@@ -23,6 +23,8 @@ import {
   hierarchyFirstRef,
   hierarchyHitTest,
   hierarchyInHole,
+  hierarchyLegendScales,
+  hierarchyLevelMax,
   hierarchyMarkKey,
   hierarchyModelOf,
   hierarchyNavTarget,
@@ -109,12 +111,9 @@ export function connectHierarchyChart<T extends PropTypes>(
     activeNode.ancestors().forEach(n => related.add(n))
     activeNode.descendants().forEach(n => related.add(n))
   }
-  // 按值着色：同一层里按最大值归一，色阶只用从 30% 起的一段
-  const levelMax = new Map<number, number>()
-  if (model.colorBy === 'value') {
-    for (const node of model.derived.visible)
-      levelMax.set(node.depth, Math.max(levelMax.get(node.depth) ?? 0, node.value ?? 0))
-  }
+  // 按值着色：同一层里按最大值归一，色阶只用从 30% 起的一段；图例每层一条色阶
+  const levelMax = hierarchyLevelMax(model)
+  const legendScales = invalid ? [] : hierarchyLegendScales(model, translations, levelMax)
   const toneOf = (node: HierarchyTreeNode): Record<string, unknown> => {
     if (model.colorBy === 'value') {
       const max = levelMax.get(node.depth) ?? 0
@@ -197,6 +196,7 @@ export function connectHierarchyChart<T extends PropTypes>(
     measured,
     empty,
     path,
+    legendScales,
     rootKey,
     active: details,
     tooltip,
@@ -248,6 +248,32 @@ export function connectHierarchyChart<T extends PropTypes>(
         if (!item.current)
           send({ type: 'ROOT.SET', key: item.key })
       },
+    }),
+
+    // 图例只给眼睛看：每个节点的可及名与数据表里都有它的值。没有色阶时收起
+    getLegendProps: () => normalize.element({
+      ...parts.legend.attrs,
+      'data-xh-chart-part': 'legend',
+      'aria-hidden': true,
+      'hidden': legendScales.length === 0 || undefined,
+    }),
+
+    getLegendScaleProps: (scale: HierarchyLegendScale) => normalize.element({
+      ...parts['legend-scale'].attrs,
+      'data-level': scale.level,
+    }),
+
+    getLegendScaleNameProps: () => normalize.element({
+      ...parts['legend-scale-name'].attrs,
+    }),
+
+    getLegendScaleBarProps: () => normalize.element({
+      ...parts['legend-scale-bar'].attrs,
+    }),
+
+    getLegendScaleValueProps: edge => normalize.element({
+      ...parts['legend-scale-value'].attrs,
+      'data-edge': edge,
     }),
 
     getViewportProps: () => normalize.element({

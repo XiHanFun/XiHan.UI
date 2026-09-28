@@ -10,7 +10,7 @@ import type { PropFn, Scope } from '@xihan-ui/core'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartNavIntent } from '../shared/chart'
 import type { HierarchyModel, HierarchyNodeGeometry, HierarchyTreeNode } from './hierarchy-chart.model'
 import type { HierarchyChartSchema, HierarchyOverlay } from './hierarchy-chart.schema'
-import type { HierarchyChartTranslations, HierarchyPathItem, HierarchySummary, HierarchyTooltipModel } from './hierarchy-chart.types'
+import type { HierarchyChartTranslations, HierarchyLegendScale, HierarchyPathItem, HierarchySummary, HierarchyTooltipModel } from './hierarchy-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { CHART_TRANSLATIONS, chartActiveSource, resolveChartTranslations } from '../shared/chart'
 import { hierarchyNodeKey } from './hierarchy-chart.model'
@@ -36,6 +36,7 @@ export const HIERARCHY_TRANSLATIONS: HierarchyChartTranslations = Object.freeze(
   pathLabel: 'Path',
   nameLabel: 'Path',
   valueLabel: 'Value',
+  levelLabel: (level: number) => `Level ${level}`,
   parentShareLabel: 'Share of parent',
   rootShareLabel: 'Share of total',
   summary: defaultHierarchySummary,
@@ -305,6 +306,28 @@ export function hierarchyTooltip(model: HierarchyModel, active: HierarchyActive 
 }
 
 /** 下钻路径：从最顶层到当前的根。 */
+/** 按值着色时每一层的最大值：颜色在同一层里按它归一。键是节点在整棵树里的深度；不按值着色时为空。 */
+export function hierarchyLevelMax(model: HierarchyModel): ReadonlyMap<number, number> {
+  const levelMax = new Map<number, number>()
+  if (model.colorBy !== 'value')
+    return levelMax
+  for (const node of model.derived.visible)
+    levelMax.set(node.depth, Math.max(levelMax.get(node.depth) ?? 0, node.value ?? 0))
+  return levelMax
+}
+
+/** 按值着色时图例里的色阶：每个看得见的层一条，自上而下；低端是 0，高端是这一层的最大值。 */
+export function hierarchyLegendScales(model: HierarchyModel, translations: HierarchyChartTranslations, levelMax: ReadonlyMap<number, number>): HierarchyLegendScale[] {
+  const base = model.derived.current?.depth ?? 0
+  const depths = [...levelMax.keys()].sort((a, b) => a - b)
+  return depths.map(depth => ({
+    level: depth - base,
+    name: depths.length === 1 ? translations.valueLabel : translations.levelLabel(depth - base),
+    min: model.formats.value(0),
+    max: model.formats.value(levelMax.get(depth)!),
+  }))
+}
+
 export function hierarchyPath(model: HierarchyModel): HierarchyPathItem[] {
   const current = model.derived.current
   if (!current)

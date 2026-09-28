@@ -24,6 +24,7 @@ import type {
   HierarchyChartTranslations,
   HierarchyColorBy,
   HierarchyLayout,
+  HierarchyLegendScale,
   HierarchyMarkTag,
   HierarchyPathItem,
   HierarchyRootKeyChangeDetails,
@@ -104,6 +105,8 @@ export interface HierarchyChartApi<T extends PropTypes = PropTypes> {
   empty: boolean
   /** 下钻路径：从最顶层到当前的根。 */
   path: readonly HierarchyPathItem[]
+  /** 按值着色时图例里的色阶，每个看得见的层一条；不按值着色时为空。 */
+  legendScales: readonly HierarchyLegendScale[]
   /** 当前的根的身份；null 是最顶层。 */
   rootKey: string | null
   /** 激活的节点；没有时为 null。 */
@@ -127,6 +130,11 @@ export interface HierarchyChartApi<T extends PropTypes = PropTypes> {
   getCaptionProps: () => T['element']
   getPathProps: () => T['element']
   getPathItemProps: (item: HierarchyPathItem) => T['button']
+  getLegendProps: () => T['element']
+  getLegendScaleProps: (scale: HierarchyLegendScale) => T['element']
+  getLegendScaleNameProps: () => T['element']
+  getLegendScaleBarProps: () => T['element']
+  getLegendScaleValueProps: (edge: 'min' | 'max') => T['element']
   getViewportProps: () => T['element']
   getPlotProps: () => T['element']
   getMarkProps: (mark: Mark) => T['element']

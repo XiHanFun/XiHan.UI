@@ -43,8 +43,9 @@ const TOP_KEY = '\u0000top'
 /**
  * `<xh-hierarchy-chart>`：层级图宿主，看层级数据中各部分的占比，并逐层下钻。
  *
- * 作者写外壳：root（`<figure>`）、caption、path、viewport 与其中空的 `<svg data-xh-part="plot">`，可选 empty 与 tooltip。
- * 路径项、节点、节点名与分组标题由本元素生成：路径项生成进 path，其余按场景生成进 plot，按 key 复用节点；
+ * 作者写外壳：root（`<figure>`）、caption、path、viewport 与其中空的 `<svg data-xh-part="plot">`，可选 legend、empty 与 tooltip。
+ * 路径项、色阶、节点、节点名与分组标题由本元素生成：路径项生成进 path，按值着色时每层一条色阶生成进 legend，
+ * 其余按场景生成进 plot，按 key 复用节点；
  * tooltip 留空时写入缺省内容（路径、数值与两种占比），里面有作者写的节点时元素不碰它。摘要与数据表由元素追加在
  * root 末尾，视觉隐藏。
  *
@@ -75,6 +76,7 @@ const TOP_KEY = '\u0000top'
  * @csspart root - `<figure>`，承载 pending、错误状态与色板
  * @csspart caption - `<figcaption>`，图表的可及名来源
  * @csspart path - 下钻路径，路径项由元素生成；还在最顶层时收起
+ * @csspart legend - 图例：按值着色时每个看得见的层一条色阶，由元素生成；其余着色方式收起
  * @csspart viewport - 尺寸观测的宿主
  * @csspart plot - 绘图区 `<svg>`，节点与标签由元素生成
  * @csspart tooltip - 提示框，留空时由元素写入缺省内容
@@ -263,6 +265,10 @@ export class XhHierarchyChartElement extends XhElement {
     if (path)
       this.#paintPath(path, api)
 
+    const legend = put('legend', api.getLegendProps() as Record<string, unknown>)
+    if (legend)
+      this.#paintLegend(legend, api)
+
     put('viewport', api.getViewportProps() as Record<string, unknown>)
 
     const plot = put('plot', api.getPlotProps() as Record<string, unknown>)
@@ -311,6 +317,27 @@ export class XhHierarchyChartElement extends XhElement {
       if (button.textContent !== item.name)
         button.textContent = item.name
       return button
+    })
+  }
+
+  /** 图例：每个看得见的层一条色阶（名字、低端的值、渐变条、高端的值），按层号复用。 */
+  #paintLegend(legend: Element, api: HierarchyChartApi): void {
+    const doc = legend.ownerDocument
+    reconcile(legend, api.legendScales, this.#keys, scale => `level:${scale.level}`, (scale, reuse) => {
+      const node = reuse ?? makeGen(doc, 'div')
+      if (node.children.length !== 4)
+        node.replaceChildren(...Array.from({ length: 4 }, () => doc.createElement('span')))
+      const [name, min, bar, max] = Array.from(node.children) as HTMLElement[]
+      this.spreader.spread(node as HTMLElement, api.getLegendScaleProps(scale) as Record<string, unknown>)
+      this.spreader.spread(name!, api.getLegendScaleNameProps() as Record<string, unknown>)
+      this.spreader.spread(min!, api.getLegendScaleValueProps('min') as Record<string, unknown>)
+      this.spreader.spread(bar!, api.getLegendScaleBarProps() as Record<string, unknown>)
+      this.spreader.spread(max!, api.getLegendScaleValueProps('max') as Record<string, unknown>)
+      for (const [el, text] of [[name!, scale.name], [min!, scale.min], [max!, scale.max]] as const) {
+        if (el.textContent !== text)
+          el.textContent = text
+      }
+      return node
     })
   }
 

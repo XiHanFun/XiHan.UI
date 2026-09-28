@@ -7948,7 +7948,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-8"
+        "--xh-chart-legend-scale-width"
       ],
       "visibility": "public",
       "description": "cartesian-chart 的 legend-scale-bar 部件 inline-size 覆盖槽。"
@@ -36568,6 +36568,78 @@
       ],
       "visibility": "public",
       "description": "hierarchy-chart 的 root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-legend-gap",
+      "component": "hierarchy-chart",
+      "part": [
+        "legend"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 legend 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-legend-scale-bar-radius",
+      "component": "hierarchy-chart",
+      "part": [
+        "legend-scale-bar"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 legend-scale-bar 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-legend-scale-gap",
+      "component": "hierarchy-chart",
+      "part": [
+        "legend-scale"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 legend-scale 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-hierarchy-chart-legend-scale-width",
+      "component": "hierarchy-chart",
+      "part": [
+        "legend-scale-bar"
+      ],
+      "property": [
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-legend-scale-width"
+      ],
+      "visibility": "public",
+      "description": "hierarchy-chart 的 legend-scale-bar 部件 inline-size 覆盖槽。"
     },
     {
       "name": "--xh-hierarchy-chart-node-gap",

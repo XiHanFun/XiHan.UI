@@ -129,7 +129,7 @@
   }
 
   [data-scope='cartesian-chart'][data-part='legend-scale-bar'] {
-    inline-size: var(--xh-cartesian-chart-legend-scale-width, calc(var(--xh-space-8) * 3));
+    inline-size: var(--xh-cartesian-chart-legend-scale-width, var(--xh-chart-legend-scale-width));
     block-size: var(--xh-space-2);
     border-radius: var(--xh-cartesian-chart-legend-scale-bar-radius, var(--xh-shape-inset));
     background: linear-gradient(to right, var(--xh-_chart-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));

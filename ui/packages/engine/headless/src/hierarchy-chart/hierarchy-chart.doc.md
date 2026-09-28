@@ -23,13 +23,14 @@
 - `layout` 决定空间怎么填：`treemap`（缺省）按 `tile` 铺矩形（`squarify` 缺省、`binary`、`slice-dice`），看得见子节点的分组顶部留一条标题；`sunburst` 从中间的空洞往外一层一环；`icicle` 一层一条带，`orientation="horizontal"` 时层自左而右；`pack` 用圆套圆，只看层级与相对大小。
 - `depth`（缺省 2）是同时看得见的层数。到了这个深度还有子节点的节点画成一整块，下钻才看得到里面。
 - 着色由 `colorBy` 决定：`branch`（缺省）按数据次序给第一层分支分配分类色 1–8，后代继承分支的颜色、按层向承载面混色变浅；第一层多于 8 个分支时报 `chart.too-many-series`，改用 `value` 或 `uniform`。`value` 按值取顺序色阶（`palette` 换色相），同一层里按最大值归一；`uniform` 全部用色槽 1，靠标签区分。
+- 按值着色时图例（部件 `legend`）给每个看得见的层一条色阶：名字、低端的值（0）、渐变条、高端的值（这一层的最大值）。颜色在同一层里各自归一，所以一层一条，同一种深浅在不同层代表的数不一样；只看得见一层时色阶的名字取 `translations.valueLabel`，多于一层时取 `translations.levelLabel(层号)`（缺省 `Level 1`、`Level 2`，层号从当前的根数起），务必按本地语言与数据的层级名改写。下钻、上钻后色阶跟着换。其余着色方式图例收起。
 - 标签先量再放：矩形树图的分组标题写在顶部的标题条里，放不下时截断；叶子与旭日、冰柱、圆堆积的节点名只在整段放得下时写，放不下的交给提示框与数据表。
 - 下钻：点有子节点的节点，或键盘聚焦后按 Enter，把它设为当前的根；点叶子报告按下（`onDatumPress`）。下钻路径（`path`）列出从最顶层到当前的根，点上层的项回到那一层；还在最顶层时路径收起。旭日图点中间的空洞上钻一层。`rootKey` / `defaultRootKey` / `onRootKeyChange` 让宿主受控或记住下钻的位置；`api.drillTo(key)` 与 `api.drillUp()` 供作者从外部下钻。
 - 悬停取指针下最深的节点：提示框的头部是从当前的根到这个节点的路径，下面是数值、占上一层与占总体；与它不在同一条祖孙链上的节点淡出到 `--xh-chart-dim-alpha`。
 - `format` 指定数值格式（数字格式或函数），标签、提示框、可及名与数据表共用。
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有数据时，空态写 `translations.loadingText` 并转一个圈，取完仍没有数据才写 `emptyText`。
 - 首次出现时矩形淡入，旭日的扇区顺着扫开，圆堆积的圆从圆心长出，标签淡入，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场。下钻与上钻从当前的画面插值到新画面：留下的节点从原位放大或缩回，新露出的节点出现、离开的淡出。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
-- 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、下钻路径、视口与绘图区、空态、提示框），提示框内容可由作用域插槽 / 函数式 children 替换；Web Components 侧作者写外壳（root、caption、path、viewport 与其中空的 `<svg>` plot，可选 empty 与 tooltip），路径项、节点与提示框的缺省内容由元素生成进去。
+- 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、下钻路径、图例、视口与绘图区、空态、提示框），提示框内容可由作用域插槽 / 函数式 children 替换；Web Components 侧作者写外壳（root、caption、path、viewport 与其中空的 `<svg>` plot，可选 legend、empty 与 tooltip），路径项、色阶、节点与提示框的缺省内容由元素生成进去。
 - Web Components 侧的数据与数值格式只走 JS property；字段名、布局、铺法、层数、着色、色板、方向与 `root-key` 另有同名属性。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
 
 ## 最佳实践
@@ -53,7 +54,7 @@
 - 绘图区是 `role="tree"`，`aria-describedby` 指向组件生成的摘要；每个看得见的节点是 `role="treeitem"`，带 `aria-level`、`aria-setsize` 与 `aria-posinset`。有子节点的节点带 `aria-expanded`：子节点看得见时为 `true`，到了可见层数的底为 `false`，按 Enter 下钻才看得到。节点的名称取 `translations.datumLabel`（缺省「名字, 数值, 占比 of 上一层」），务必按本地语言改写。
 - 绘图区只占一个 Tab 位，焦点落在节点上：左右键在同一层的兄弟之间走（矩形树图与圆堆积按阅读序，旭日图顺时针，冰柱图按排列次序），下键进入第一个子节点，上键回到父节点，Home / End 到同一层的头尾。Enter 下钻、Backspace 上钻，焦点跟着落到新的一层。焦点环画在节点之外，只在键盘聚焦时出现。
 - 下钻路径是一组按钮（与面包屑的链接同一身份），当前的根写 `aria-current="location"`、不可按。
-- 标签与焦点环一律 `aria-hidden`；提示框同样 `aria-hidden`：它显示的内容与节点的名称是同一份。
+- 标签与焦点环一律 `aria-hidden`；提示框同样 `aria-hidden`：它显示的内容与节点的名称是同一份。图例的色阶也 `aria-hidden`：每个节点的可及名与数据表里都写着它的值。
 - 组件在根内生成一段摘要与一张数据表，视觉隐藏、对读屏可见：摘要写当前的根、下面一层的项数、合计与最大的一项（模板是 `translations.summary`）；数据表列出整棵树，首列是路径（列名取 `translations.nameLabel`），其余两列是数值与占上一层的比例。
 - 颜色不是区分分支的唯一线索：路径、标签、提示框与可及名都写出名字。
 - 过渡只改画面：节点的名称、摘要与数据表在数据或根变化的那一刻就更新；收场中的节点 `aria-hidden`、不可聚焦。

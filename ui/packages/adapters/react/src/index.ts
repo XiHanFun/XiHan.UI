@@ -1267,6 +1267,7 @@ export { useHierarchyChartContext } from './components/hierarchy-chart/context'
 export {
   XhHierarchyChartCaption,
   XhHierarchyChartEmpty,
+  XhHierarchyChartLegend,
   XhHierarchyChartPath,
   XhHierarchyChartPlot,
   XhHierarchyChartRoot,
@@ -1278,6 +1279,7 @@ export type {
   HierarchyChartTooltipSlotProps,
   XhHierarchyChartCaptionProps,
   XhHierarchyChartEmptyProps,
+  XhHierarchyChartLegendProps,
   XhHierarchyChartPathProps,
   XhHierarchyChartPlotProps,
   XhHierarchyChartRootProps,

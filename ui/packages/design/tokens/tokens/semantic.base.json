@@ -1162,6 +1162,11 @@
       "$type": "dimension",
       "$value": "{space.1}"
     },
+    "legend-scale-width": {
+      "$description": "按值着色时图例里色阶渐变条的长度。",
+      "$type": "dimension",
+      "$value": "calc({space.8} * 3)"
+    },
     "area-alpha": {
       "$description": "面积淡洗的不透明度：系列色按它铺在面积下，上沿仍是实色折线。",
       "$type": "number",

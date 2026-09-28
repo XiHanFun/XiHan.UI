@@ -1,4 +1,4 @@
-<!-- 按值着色 | colorBy="value" 让颜色深浅对应数值：不关心属于哪个分支、只看哪里大时用它，palette 换色相 -->
+<!-- 按值着色 | colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层一条色阶，translations.levelLabel 给各层起名 -->
 <script setup lang="ts">
 import { XhHierarchyChartRoot } from "@xihan-ui/vue";
 
@@ -32,6 +32,9 @@ const budget = {
     ] },
   ],
 };
+
+// 颜色在同一层里按最大值归一：图例每层一条色阶，给层起个读者认得的名字
+const translations = { levelLabel: (level: number) => (level === 1 ? "部门" : "项目") };
 </script>
 
 <template>
@@ -39,6 +42,7 @@ const budget = {
     :data="budget"
     color-by="value"
     palette="teal"
+    :translations="translations"
   >
     <template #caption>全年预算（万元）</template>
   </XhHierarchyChartRoot>

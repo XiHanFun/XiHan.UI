@@ -1000,6 +1000,7 @@
       "fieldset",
       "graph-chart",
       "heatmap",
+      "hierarchy-chart",
       "pie-chart",
       "radar-chart",
       "sankey-chart"
@@ -1021,16 +1022,20 @@
       "sankey-chart"
     ],
     "legend-scale": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "hierarchy-chart"
     ],
     "legend-scale-bar": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "hierarchy-chart"
     ],
     "legend-scale-name": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "hierarchy-chart"
     ],
     "legend-scale-value": [
-      "cartesian-chart"
+      "cartesian-chart",
+      "hierarchy-chart"
     ],
     "legend-swatch": [
       "cartesian-chart",
