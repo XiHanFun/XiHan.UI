@@ -59,6 +59,14 @@ function isSurfaceBranch(selector: string): boolean {
   return attrs.some(attr => SURFACE_ATTRS.has(attr))
 }
 
+/**
+ * 书写方向不是这 32 格的轴：矩阵模拟的是没写 dir 的文档，方向符号由 :root 那一支给出。
+ * 写给 [dir] 的分支在矩阵里永不命中，rtl 的取值与就近继承由浏览器用例对账。
+ */
+function isDirectionBranch(selector: string): boolean {
+  return /\[dir=/.test(selector)
+}
+
 function combinations(): Combination[] {
   const out: Combination[] = []
   for (const theme of AXES.theme) {
@@ -118,7 +126,7 @@ function toMatcher(selector: string): Partial<Record<Axis, string>> {
   return req
 }
 
-interface Parsed { blocks: Block[], mediaConditions: string[], supportsConditions: string[], surfaceSelectors: string[] }
+interface Parsed { blocks: Block[], mediaConditions: string[], supportsConditions: string[], surfaceSelectors: string[], directionSelectors: string[] }
 
 /**
  * 逐行扫 tokens.css。产物的形状是固定的：一行一条声明，选择器与开花括号同行，
@@ -132,6 +140,7 @@ function parse(source: string): Parsed {
   const mediaConditions: string[] = []
   const supportsConditions: string[] = []
   const surfaceSelectors: string[] = []
+  const directionSelectors: string[] = []
   let inComment = false
   let inMedia = 0
   let depth = 0
@@ -190,8 +199,9 @@ function parse(source: string): Parsed {
         continue
       }
       const branches = selector.split(',').map(s => s.trim())
-      const environment = branches.filter(branch => !isSurfaceBranch(branch))
+      const environment = branches.filter(branch => !isSurfaceBranch(branch) && !isDirectionBranch(branch))
       surfaceSelectors.push(...branches.filter(isSurfaceBranch))
+      directionSelectors.push(...branches.filter(isDirectionBranch))
       if (environment.length === 0) {
         // 只写给墨色域的块：不进矩阵，花括号照样配平
         current = { index: -1, selector, matchers: [], decls: [], plain: [] }
@@ -222,10 +232,10 @@ function parse(source: string): Parsed {
   }
 
   // @media 里那些块占了 index -1，不参与层叠
-  return { blocks: blocks.filter(b => b.index > 0), mediaConditions, supportsConditions, surfaceSelectors }
+  return { blocks: blocks.filter(b => b.index > 0), mediaConditions, supportsConditions, surfaceSelectors, directionSelectors }
 }
 
-const { blocks, mediaConditions, supportsConditions, surfaceSelectors } = parse(css)
+const { blocks, mediaConditions, supportsConditions, surfaceSelectors, directionSelectors } = parse(css)
 
 /* ---------- 层叠 ---------- */
 
@@ -448,6 +458,17 @@ describe('快照的前提', () => {
       `:where([data-xh-ink='light'][data-xh-ink-margin='ample'])`,
       `:where([data-xh-ink])`,
     ])
+  })
+
+  it('书写方向只有 ltr / rtl 两支，矩阵里取 :root 那一支', () => {
+    // 方向符号按就近的 dir 属性继承，不是这 32 格的轴：新的 [dir] 分支冒出来时这里判红
+    expect([...new Set(directionSelectors)].sort()).toEqual([
+      `:where([dir='ltr' i])`,
+      `:where([dir='rtl' i])`,
+    ])
+    const root = blocks.filter(b => b.decls.some(d => d.name === '--xh-direction-sign'))
+    expect(root).toHaveLength(1)
+    expect(root[0]!.decls.find(d => d.name === '--xh-direction-sign')!.value).toBe('1')
   })
 
   it('不带 data-theme 的默认档与浅色档逐条同名同值', () => {

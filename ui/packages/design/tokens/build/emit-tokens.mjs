@@ -115,6 +115,7 @@ async function main() {
   const primitive = flatten(primitiveSource)
   const base = flatten(await load('semantic.base.json', materials.fragments['semantic.base.json']))
   const compact = flatten(await load('semantic.compact.json'))
+  const rtl = flatten(await load('semantic.rtl.json'))
   const chartPalette = await load('chart.palette.json')
   const lightAll = flatten(attachChartPalette(await load('semantic.light.json', materials.fragments['semantic.light.json']), chartPalette.light, 'semantic.light.json'))
   const darkAll = flatten(attachChartPalette(await load('semantic.dark.json', materials.fragments['semantic.dark.json']), chartPalette.dark, 'semantic.dark.json'))
@@ -125,7 +126,7 @@ async function main() {
   const reduce = flatten(await load('semantic.reduce.json'))
   const print = flatten(await load('semantic.print.json', materials.fragments['semantic.print.json']))
 
-  for (const e of [...primitive, ...base, ...compact, ...lightAll, ...darkAll, ...lightMore, ...darkMore, ...transparencyReduce, ...forcedColors, ...reduce, ...print])
+  for (const e of [...primitive, ...base, ...compact, ...rtl, ...lightAll, ...darkAll, ...lightMore, ...darkMore, ...transparencyReduce, ...forcedColors, ...reduce, ...print])
     declared.add(e.name)
 
   // 两条轴可以落在不同祖先上。主题保存自己的候选值，对比度标记独立继承，
@@ -187,7 +188,15 @@ async function main() {
   // M0 实体材质写在 base 真源里，同样是指向主题语义的引用，与上面一起挂到主题边界上
   const isMaterial = entry => entry.name.startsWith('--xh-material-')
   const boundaryMaterial = [...base.filter(isMaterial), ...sharedMaterial]
-  const basePlain = base.filter(entry => !isMaterial(entry))
+  // 书写方向的符号有自己的轴（就近的 dir 属性），不进密度基线合并块：那一块也挂在 [data-density] 上，
+  // 会把子树从 rtl 祖先继承来的符号重置回 ltr
+  const isDirection = entry => entry.name.startsWith('--xh-direction-')
+  const direction = base.filter(isDirection)
+  const basePlain = base.filter(entry => !isMaterial(entry) && !isDirection(entry))
+  for (const entry of rtl) {
+    if (!direction.some(ltr => ltr.name === entry.name))
+      throw new Error(`[emit-tokens] semantic.rtl.json 的 ${entry.name} 在 semantic.base.json 的 direction 组里没有 ltr 基线`)
+  }
   const light = lightAll.filter(entry => !sharedMaterialNames.has(entry.name))
   const dark = darkAll.filter(entry => !sharedMaterialNames.has(entry.name))
   const selection = [...routes].map(([name, value]) => `    ${name}: ${value};`).join('\n')
@@ -262,6 +271,17 @@ ${await declarations(boundaryMaterial)}
      同为零特指度时靠书写顺序压过基线；嵌套换档靠元素自身声明压过继承 */
   :where([data-density='compact']) {
 ${await declarations(compact)}
+  }
+
+  /* direction 轴：书写方向的符号，给只认物理方向的量换向。就近的 dir 属性决定——dir 写在哪一层就在
+     哪一层重新声明，子树靠继承拿到；局部写回 ltr 的子树跟着翻回，dir="auto" 沿用外层。
+     rtl 块排在后面：<html dir="rtl"> 同时命中两块时靠书写顺序取 rtl */
+  :where(:root), :where([dir='ltr' i]) {
+${await declarations(direction)}
+  }
+
+  :where([dir='rtl' i]) {
+${await declarations(rtl)}
   }
 
   /* mode 轴 · 浅色基线与显式取值完全同源；合并选择器避免把整套候选重复输出两次。 */
@@ -370,7 +390,7 @@ export type TokenName = keyof typeof tokens
     applyFileHeader(join(ROOT, 'src', 'generated', 'tokens.ts'), generatedTs),
   )
 
-  console.log(`[emit-tokens] material recipes ${materials.recipes} × ${materials.targets} modes · shared ${sharedMaterial.length} · primitive ${primitive.length} · base ${base.length} · compact ${compact.length} · light ${light.length} · dark ${dark.length} · transparency ${transparencyReduce.length} · forced-colors ${forcedColors.length} · reduce ${reduce.length} · print ${print.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
+  console.log(`[emit-tokens] material recipes ${materials.recipes} × ${materials.targets} modes · shared ${sharedMaterial.length} · primitive ${primitive.length} · base ${base.length} · compact ${compact.length} · rtl ${rtl.length} · light ${light.length} · dark ${dark.length} · transparency ${transparencyReduce.length} · forced-colors ${forcedColors.length} · reduce ${reduce.length} · print ${print.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
 }
 
 main()

@@ -1,0 +1,6 @@
+{
+  "$description": "direction 轴 · rtl 档：只写与 ltr 基线不同的覆盖项。挂在 [dir='rtl'] 上，靠继承传到子树。",
+  "direction": {
+    "sign": { "$type": "number", "$value": -1 }
+  }
+}

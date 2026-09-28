@@ -1182,5 +1182,13 @@
       "$type": "number",
       "$value": 0.6
     }
+  },
+  "direction": {
+    "$description": "书写方向。逻辑属性自己会随方向换边；只认物理方向的量（translate、渐变角度、clip-path 的左右两侧）乘上这个符号换向。",
+    "sign": {
+      "$description": "书写方向的符号：从左往右为 1、从右往左为 -1。由就近的 dir 属性决定、靠继承传到子树：dir 写在哪一层就在哪一层翻转，局部写回 ltr 的子树跟着翻回；dir=\"auto\" 沿用外层。",
+      "$type": "number",
+      "$value": 1
+    }
   }
 }
