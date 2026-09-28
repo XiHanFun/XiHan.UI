@@ -42,6 +42,7 @@
     "./material.css": "./family/material.css",
     "./motion.css": "./family/motion.css",
     "./swatch.css": "./family/swatch.css",
+    "./tag-list.css": "./family/tag-list.css",
     "./components.tokens.json": "./components.tokens.json",
     "./accordion.css": "./css/accordion.css",
     "./affix.css": "./css/affix.css",

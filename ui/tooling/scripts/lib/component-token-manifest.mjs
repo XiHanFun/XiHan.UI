@@ -17,7 +17,7 @@ const FAMILY_STYLES_DIR = join(UI_ROOT, 'packages/design/styles/family')
 const HEADLESS_DIR = join(UI_ROOT, 'packages/engine/headless/src')
 
 const PRIVATE_PREFIX = '--xh-_'
-const FAMILY_BRIDGE_PREFIXES = ['--xh-action-', '--xh-collection-', '--xh-field-', '--xh-frosted-']
+const FAMILY_BRIDGE_PREFIXES = ['--xh-action-', '--xh-collection-', '--xh-field-', '--xh-frosted-', '--xh-tag-list-']
 const isFamilyBridge = name => FAMILY_BRIDGE_PREFIXES.some(prefix => name.startsWith(prefix))
 const TOKEN_VERSION = 1
 
