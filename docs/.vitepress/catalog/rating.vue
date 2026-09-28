@@ -1,12 +1,12 @@
-<script setup lang="ts">
-import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <XhRatingRoot v-slot="{ items }" :default-value="3">
-    <XhRatingLabel>整体满意度</XhRatingLabel>
-    <XhRatingControl>
-      <XhRatingItem v-for="i in items" :key="i" :value="i" />
-    </XhRatingControl>
-  </XhRatingRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M58 52h60" stroke="var(--xh-fg-default)" stroke-width="4" />
+    <g data-tone="warning">
+      <path d="M64 73L66.91 80L74.46 80.6L68.71 85.53L70.47 92.9L64 88.95L57.53 92.9L59.29 85.53L53.54 80.6L61.09 80z" fill="var(--xh-tone-solid)" />
+      <path d="M92 73L94.91 80L102.46 80.6L96.71 85.53L98.47 92.9L92 88.95L85.53 92.9L87.29 85.53L81.54 80.6L89.09 80z" fill="var(--xh-tone-solid)" />
+      <path d="M120 73L122.91 80L130.46 80.6L124.71 85.53L126.47 92.9L120 88.95L113.53 92.9L115.29 85.53L109.54 80.6L117.09 80z" fill="var(--xh-tone-solid)" />
+    </g>
+    <path d="M148 73L150.91 80L158.46 80.6L152.71 85.53L154.47 92.9L148 88.95L141.53 92.9L143.29 85.53L137.54 80.6L145.09 80z" fill="var(--xh-bg-subtle-active)" />
+    <path d="M176 73L178.91 80L186.46 80.6L180.71 85.53L182.47 92.9L176 88.95L169.53 92.9L171.29 85.53L165.54 80.6L173.09 80z" fill="var(--xh-bg-subtle-active)" />
+  </svg>
 </template>

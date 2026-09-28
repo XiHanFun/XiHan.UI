@@ -1,14 +1,28 @@
-<!-- 提供 color-slider 相关实现。 -->
-
-<script setup lang="ts">
-import { XhColorSliderControl, XhColorSliderRoot, XhColorSliderThumb, XhColorSliderTrack } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <XhColorSliderRoot default-value="#3b82f6" style="inline-size: var(--xh-doc-catalog-w-narrow)">
-    <XhColorSliderControl>
-      <XhColorSliderTrack />
-      <XhColorSliderThumb />
-    </XhColorSliderControl>
-  </XhColorSliderRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="color-slider-hue" x2="1">
+        <stop stop-color="var(--xh-color-red-500)" />
+        <stop offset="0.17" stop-color="var(--xh-color-yellow-500)" />
+        <stop offset="0.33" stop-color="var(--xh-color-green-500)" />
+        <stop offset="0.5" stop-color="var(--xh-color-cyan-500)" />
+        <stop offset="0.67" stop-color="var(--xh-color-blue-500)" />
+        <stop offset="0.83" stop-color="var(--xh-color-purple-500)" />
+        <stop offset="1" stop-color="var(--xh-color-red-500)" />
+      </linearGradient>
+      <linearGradient id="color-slider-alpha" x2="1">
+        <stop stop-color="var(--xh-color-blue-500)" stop-opacity="0" />
+        <stop offset="1" stop-color="var(--xh-color-blue-500)" />
+      </linearGradient>
+    </defs>
+    <path d="M42 44h36" stroke="var(--xh-fg-default)" stroke-width="4" />
+    <path d="M178 44h20" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <rect x="40" y="56" width="160" height="12" rx="6" fill="url(#color-slider-hue)" />
+    <circle cx="124" cy="62" r="7.5" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M42 92h44" stroke="var(--xh-fg-default)" stroke-width="4" />
+    <path d="M178 92h20" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M46 104h6v6h-6zM52 110h6v6h-6zM58 104h6v6h-6zM64 110h6v6h-6zM70 104h6v6h-6zM76 110h6v6h-6zM82 104h6v6h-6zM88 110h6v6h-6zM94 104h6v6h-6zM100 110h6v6h-6zM106 104h6v6h-6zM112 110h6v6h-6zM118 104h6v6h-6zM124 110h6v6h-6zM130 104h6v6h-6zM136 110h6v6h-6zM142 104h6v6h-6zM148 110h6v6h-6zM154 104h6v6h-6zM160 110h6v6h-6zM166 104h6v6h-6zM172 110h6v6h-6zM178 104h6v6h-6zM184 110h6v6h-6zM190 104h6v6h-6z" fill="var(--xh-bg-subtle-hover)" />
+    <rect x="40" y="104" width="160" height="12" rx="6" fill="url(#color-slider-alpha)" />
+    <circle cx="172" cy="110" r="7.5" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+  </svg>
 </template>

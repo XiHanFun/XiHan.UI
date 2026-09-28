@@ -1,45 +1,13 @@
-<!-- 提供 calendar-picker 相关实现。 -->
-
-<script setup lang="ts">
-import {
-  XhCalendarPickerCell,
-  XhCalendarPickerCellTrigger,
-  XhCalendarPickerGrid,
-  XhCalendarPickerGridBody,
-  XhCalendarPickerGridHead,
-  XhCalendarPickerHeader,
-  XhCalendarPickerHeading,
-  XhCalendarPickerRoot,
-  XhCalendarPickerWeekDay,
-  XhCalendarPickerWeekRow,
-} from "@xihan-ui/vue";
-</script>
-
 <template>
-  <XhCalendarPickerRoot
-    v-slot="{ weeks, weekDays }"
-    default-value="2026-09-10"
-    default-focused-value="2026-09-13"
-    locale="zh-CN"
-    weekday-format="narrow"
-    style="max-inline-size: var(--xh-doc-catalog-w)"
-  >
-    <XhCalendarPickerHeader>
-      <XhCalendarPickerHeading />
-    </XhCalendarPickerHeader>
-    <XhCalendarPickerGrid>
-      <XhCalendarPickerGridHead>
-        <XhCalendarPickerWeekRow>
-          <XhCalendarPickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
-        </XhCalendarPickerWeekRow>
-      </XhCalendarPickerGridHead>
-      <XhCalendarPickerGridBody>
-        <XhCalendarPickerWeekRow v-for="week in weeks.slice(0, 2)" :key="week[0].start">
-          <XhCalendarPickerCell v-for="day in week" :key="day.start" :value="day.start">
-            <XhCalendarPickerCellTrigger>{{ day.day }}</XhCalendarPickerCellTrigger>
-          </XhCalendarPickerCell>
-        </XhCalendarPickerWeekRow>
-      </XhCalendarPickerGridBody>
-    </XhCalendarPickerGrid>
-  </XhCalendarPickerRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M46 20l-4 4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M99 24h42" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M194 20l4 4-4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M46 44h4M70 44h4M94 44h4M118 44h4M142 44h4M166 44h4M190 44h4" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <rect x="85.5" y="77.5" width="21" height="19" rx="4" stroke="var(--xh-fg-brand)" />
+    <rect x="133" y="99" width="22" height="20" rx="4" fill="var(--xh-bg-brand)" />
+    <path d="M46 65h4M70 65h4" stroke="var(--xh-fg-disabled)" stroke-width="4" />
+    <path d="M94 65h4M118 65h4M142 65h4M166 65h4M190 65h4M46 87h4M70 87h4M94 87h4M118 87h4M142 87h4M166 87h4M190 87h4M46 109h4M70 109h4M94 109h4M118 109h4M166 109h4M190 109h4M46 131h4M70 131h4M94 131h4M118 131h4M142 131h4M166 131h4M190 131h4" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M142 109h4" stroke="var(--xh-fg-on-brand)" stroke-width="4" />
+  </svg>
 </template>
