@@ -8,6 +8,7 @@
 import type { Cleanup, Transition } from '@xihan-ui/core'
 import type { NavigationMenuIndicatorRect, NavigationMenuPressedPart, NavigationMenuSchema } from './navigation-menu.types'
 import { contains, createDismissLayer, focusItem, itemValue, queryItems, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { clearOpenedAtMount, openedAtMountCell } from '../shared/first-frame'
 import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { setupLayerTransaction } from '../shared/overlay-shell'
 import { navigationMenuTriggerQuery } from './navigation-menu.anatomy'
@@ -47,6 +48,8 @@ export const navigationMenuMachine = createMachine({
       defaultValue: prop('defaultValue') ?? null,
       onChange: value => prop('onValueChange')?.({ value }),
     })),
+    // 首帧标记：挂载时就有一项展开着、展开项还没变过
+    openedAtMount: openedAtMountCell(cell, (prop('value') !== undefined ? prop('value') : prop('defaultValue')) != null),
     pendingValue: cell<string | null>(() => ({ defaultValue: null })),
     // 记录刚自动展开的那一项；受控下 value 在宿主写回前是旧值，认不出来
     autoValue: cell<string | null>(() => ({ defaultValue: null })),
@@ -80,7 +83,7 @@ export const navigationMenuMachine = createMachine({
   watch: ({ track, context, prop, action }) => {
     // 展开项一变就重量一次，层的进出栈也跟着这一条走；按住 Enter 激活链接后面板随之收起（或换到另一张），
     // 链接藏进 inert 的面板里不会再来 keyup，按压面由机器收；入口仍在场，它的按压不动
-    track([context.dep('value')], () => action(['measureIndicator', 'syncLayer', 'releaseLinkPress']))
+    track([context.dep('value')], () => action(['clearOpenedAtMount', 'measureIndicator', 'syncLayer', 'releaseLinkPress']))
     // 按住途中整套导航转入禁用：不会再来 keyup，按压面由机器自己收
     track([() => prop('disabled')], () => action(['releaseWhenInert']))
   },
@@ -145,6 +148,8 @@ export const navigationMenuMachine = createMachine({
       },
     },
     actions: {
+      // 展开项第一次变化即撤首帧标记：之后的每一次展开都是用户操作带来的
+      clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')

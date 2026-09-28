@@ -210,6 +210,8 @@ export function connectNavigationMenu<T extends PropTypes>(
         'role': 'group',
         'aria-labelledby': triggerId(item.value),
         'data-state': stateAttr(isOpen),
+        // 挂载时就展开着的那一项直接呈现，不播进场
+        'data-instant': dataAttr(isOpen && context.get('openedAtMount')),
         'data-orientation': orientation,
         'inert': !isOpen || undefined,
         'aria-hidden': !isOpen || undefined,

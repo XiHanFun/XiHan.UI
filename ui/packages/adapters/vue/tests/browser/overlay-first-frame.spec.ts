@@ -83,6 +83,12 @@ import {
   XhMenuPositioner,
   XhMenuRoot,
   XhMenuTrigger,
+  XhNavigationMenuContent,
+  XhNavigationMenuItem,
+  XhNavigationMenuLink,
+  XhNavigationMenuList,
+  XhNavigationMenuRoot,
+  XhNavigationMenuTrigger,
   XhPopconfirmContent,
   XhPopconfirmPositioner,
   XhPopconfirmRoot,
@@ -228,6 +234,18 @@ const CASES: Record<string, Case> = {
       h(XhMenubarPositioner, { value: 'file' }, () => h(XhMenubarContent, null, () => [
         h(XhMenubarItem, { value: 'new' }, () => h(XhMenubarItemText, null, () => '新建')),
       ])),
+    ]),
+  },
+  'navigation-menu': {
+    parts: ['content'],
+    enter: 'xh-pop-in',
+    render: props => h(XhNavigationMenuRoot, valueOf(props), () => [
+      h(XhNavigationMenuList, null, () => [
+        h(XhNavigationMenuItem, null, () => [
+          h(XhNavigationMenuTrigger, { value: 'file' }, () => '产品'),
+          h(XhNavigationMenuContent, { value: 'file' }, () => h(XhNavigationMenuLink, { href: '#products' }, () => '产品入口')),
+        ]),
+      ]),
     ]),
   },
   'select': {

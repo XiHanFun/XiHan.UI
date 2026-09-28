@@ -264,6 +264,7 @@
 | `trigger-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger-indicator` | `data-orientation` | props.orientation |
 | `trigger-indicator` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-orientation` | props.orientation |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `link` | `data-current` | ''（条件成立时才出现） |
