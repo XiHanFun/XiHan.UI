@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest'
 import { cascaderMachine, connectCascader } from '../src/cascader'
 import { colorPickerMachine } from '../src/color-picker'
 import { comboboxMachine, connectCombobox } from '../src/combobox'
+import { commandMachine, connectCommand } from '../src/command'
 import { connectContextMenu, contextMenuMachine } from '../src/context-menu'
 import { datePickerMachine } from '../src/date-picker'
 import { dateRangePickerMachine } from '../src/date-range-picker'
@@ -123,6 +124,13 @@ const CASES: Record<string, Case> = {
   'color-picker': {
     machine: colorPickerMachine,
     parts: marked,
+  },
+  'command': {
+    machine: commandMachine,
+    parts: (service) => {
+      const api = connectCommand(service, normalizeProps)
+      return [api.getContentProps() as Attrs, api.getBackdropProps() as Attrs]
+    },
   },
   'image-viewer': {
     machine: imageViewerMachine,

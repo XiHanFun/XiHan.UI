@@ -8,6 +8,7 @@
 import type { CommandNodeMeta, CommandSchema } from './command.types'
 import { createDismissLayer, createFocusScope, setup, trackArrivals } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { createModalLayerResources, setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
 import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
 import { hiddenCommandValues } from './command.visibility'
@@ -37,6 +38,8 @@ function commandResults(
 export const commandMachine = createMachine({
   name: 'command',
   context: ({ prop, cell }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     inputValue: cell<string>(() => ({
       value: prop('inputValue'),
       defaultValue: prop('defaultInputValue') ?? '',
@@ -60,7 +63,7 @@ export const commandMachine = createMachine({
     syncListVisibility: null,
     getInputEl: () => null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // Layer、消解、焦点与模态资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackOverlay'],
   watch: ({ track, prop, context, action }) => {
@@ -87,6 +90,8 @@ export const commandMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
@@ -142,6 +147,7 @@ export const commandMachine = createMachine({
       },
     },
     actions: {
+      clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')

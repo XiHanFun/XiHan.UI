@@ -1,7 +1,7 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
-import { createApp, h, nextTick } from 'vue'
+import { createApp, h, nextTick, ref } from 'vue'
 import { XhCommandRoot } from '../../src'
 import { pressPointer, releasePointer } from './pointer-press'
 import '@xihan-ui/tokens/tokens.css'
@@ -37,7 +37,8 @@ function item(value: string): HTMLElement {
   return document.querySelector<HTMLElement>(`[data-scope='command'][data-part='item'][data-value='${value}']`)!
 }
 
-async function mount(options: { many?: boolean } = {}): Promise<void> {
+/** openAfterMount：挂载时收着、挂完再打开——挂载即开的那一次属于首帧，不播进场。 */
+async function mount(options: { many?: boolean, openAfterMount?: boolean } = {}): Promise<void> {
   host = document.createElement('div')
   document.body.append(host)
   const collection = options.many
@@ -47,10 +48,16 @@ async function mount(options: { many?: boolean } = {}): Promise<void> {
         { value: 'save', label: '保存' },
         { value: 'blocked', label: '不可用', disabled: true },
       ]
-  app = createApp({ render: () => h(XhCommandRoot, { defaultOpen: true, modal: false, collection }) })
+  const open = ref(!options.openAfterMount)
+  app = createApp({ render: () => h(XhCommandRoot, { open: open.value, modal: false, collection }) })
   app.mount(host)
   await nextTick()
   await nextTick()
+  if (options.openAfterMount) {
+    open.value = true
+    await nextTick()
+    await nextTick()
+  }
   for (const el of document.querySelectorAll<HTMLElement>('[data-scope="command"][data-part="item"]'))
     el.style.transition = 'none'
 }
@@ -68,7 +75,7 @@ describe('command 面板与命令', () => {
   })
 
   it('进场从上方落下：起点在终点之上一小段，缩放锚在面板顶缘，位移与缩放同向', async () => {
-    await mount()
+    await mount({ openAfterMount: true })
     const content = part('content')
     const [enter] = content.getAnimations().filter(a => (a as CSSAnimation).animationName === 'xh-overlay-pop-in')
     enter!.pause()

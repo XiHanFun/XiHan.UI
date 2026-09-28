@@ -162,6 +162,7 @@ export function connectCommand<T extends PropTypes>(
     getBackdropProps: () => normalize.element({
       ...parts.backdrop.attrs,
       'data-state': stateAttr,
+      'data-instant': dataAttr(context.get('openedAtMount')),
       // 形态轴落在 backdrop 上：三档换的都是这一层自己的底色与模糊
       'data-variant': prop('variant'),
       // 非模态不激活遮罩；Vue/React 据此不创建节点，WC 隐藏作者节点。
@@ -189,6 +190,8 @@ export function connectCommand<T extends PropTypes>(
       // 面板里没有标题栏，名字只能从文案表给
       'aria-label': translations?.title ?? 'Command palette',
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       // 尺寸轴落在 content 上：解剖里没有 root，positioner 非必需，且 content 会被 portal 走
       'data-size': prop('size'),
       // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。

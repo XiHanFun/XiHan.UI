@@ -157,6 +157,11 @@ export interface CommandSchema extends MachineSchema {
     onSelect?: (details: CommandSelectDetails) => void
   }
   context: {
+    /**
+     * 挂载时开着、还没收起过：这一段打开属于首帧，content 与遮罩投影 data-instant 直接呈现、不播进场。
+     * 第一次收起时清掉，之后的每一次打开照常进场。
+     */
+    openedAtMount: boolean
     /** 检索串；提供 inputValue 即受控。 */
     inputValue: string
     /** 键盘锚点，不承载焦点，只经 aria-activedescendant 上报；收起时为 null。 */
@@ -216,6 +221,7 @@ export interface CommandSchema extends MachineSchema {
     | 'releaseWhenInert'
     | 'markArrivalsTracked'
     | 'resetArrivals'
+    | 'clearOpenedAtMount'
   effect: 'trackOverlay' | 'trackItemVisibility'
 }
 
