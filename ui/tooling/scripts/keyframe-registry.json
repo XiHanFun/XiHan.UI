@@ -165,6 +165,7 @@
         "family/motion.css"
       ],
       "consumers": [
+        "alert",
         "avatar",
         "clipboard",
         "command",
