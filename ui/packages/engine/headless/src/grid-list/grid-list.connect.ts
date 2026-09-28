@@ -13,6 +13,7 @@ import {
   dataAttr,
   focusItem,
   indexOfValue,
+  isComposingEvent,
   isItemDisabled,
   ITEM_VALUE_ATTR,
   itemValue,
@@ -21,6 +22,7 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/core'
+import { isEditableTarget } from '../shared/editable-target'
 import { gridListAnatomy, gridListRowQuery, gridListRowText } from './grid-list.anatomy'
 
 const parts = gridListAnatomy.build()
@@ -161,7 +163,10 @@ export function connectGridList<T extends PropTypes>(
       'data-invalid': dataAttr(invalid),
       'data-loading': dataAttr(loading),
       'onKeyDown': (event: KeyboardEvent) => {
-        if (disabled)
+        // 输入法组合中的按键归候选框；落在可编辑控件上的按键归那个控件——行外的也算
+        // （空态、加载态里作者放的输入框同在 grid 之内），不放行的话打字会被连打检索吃掉，
+        // 确认候选的那一下 Enter 会触发焦点行的主操作
+        if (disabled || isComposingEvent(event) || isEditableTarget(event.target))
           return
         const root = event.currentTarget as HTMLElement
         const target = event.target as HTMLElement
