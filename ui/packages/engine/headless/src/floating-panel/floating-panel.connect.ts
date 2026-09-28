@@ -178,6 +178,8 @@ export function connectFloatingPanel<T extends PropTypes>(
       ...parts.positioner.attrs,
       'data-state': stateAttr,
       'data-window-state': windowState,
+      // 进出最大化的那一段几何补间正在播：皮肤只在这一档挂位置与尺寸的过渡，拖动与改尺寸照旧跟手
+      'data-animating': dataAttr(context.get('windowAnimating')),
       // 坐标由自己的拖拽状态每帧写死，不问引擎、没有「还没量完」的窗口：恒已落位
       'data-positioned': '',
       // 落位与尺寸每帧写死，皮肤不要再碰这四个属性

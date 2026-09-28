@@ -151,6 +151,13 @@ export interface FloatingPanelSchema extends MachineSchema {
      * 指针按住由 :active 表出。
      */
     pressed: FloatingPanelPressedPart | null
+    /**
+     * 进出最大化的那一段几何补间正在播：形态切进或切出 maximized 时为真，定位层上的过渡播完才撤。
+     * 定位层投影 data-animating，皮肤只在这一档挂位置与尺寸的过渡，拖动与改尺寸照旧跟手。
+     */
+    windowAnimating: boolean
+    /** 上一次落定的形态：与 windowState 对照，判出这一次切换有没有进出最大化。 */
+    settledWindowState: FloatingPanelWindowState
   }
   computed: Record<string, never>
   refs: FloatingPanelRefs
@@ -176,6 +183,8 @@ export interface FloatingPanelSchema extends MachineSchema {
     // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，part 说的是哪颗按钮
     | { type: 'PRESS.START', part: FloatingPanelPressedPart }
     | { type: 'PRESS.END', part: FloatingPanelPressedPart }
+    /** 进出最大化的几何过渡播完。 */
+    | { type: 'WINDOW_STATE.SETTLED' }
   tag: never
   guard: 'canDrag' | 'canInteract' | 'canResize' | 'isOpenControlled' | 'canPress'
   action:
@@ -192,6 +201,8 @@ export interface FloatingPanelSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
+    | 'syncWindowAnimation'
+    | 'clearWindowAnimation'
   effect: 'trackPointer'
 }
 

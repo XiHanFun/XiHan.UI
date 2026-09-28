@@ -24,6 +24,7 @@ const LAYOUT = /^(?:(?:min-|max-)?(?:width|height|inline-size|block-size)|grid-t
 const INDICATOR = '选中指示器：绝对定位的独立小元素，尺寸跟着当前项变，不推动其他元素'
 const DOT = '当前点伸长：部件只有几像素大，重排范围只有它自己'
 const DISCLOSURE = '披露内容的高度：grid-template-rows 0fr → 1fr 是唯一能过渡到内容真实高度的写法，内缩随之同步'
+const FLOATING_PANEL_MAXIMIZE = '浮动面板进出最大化：定位层是 position: fixed 的独立框、按内联的 left / top / width / height 摆放，补过去不推动其他元素；只在进出最大化那一段挂，拖动与改尺寸照旧跟手'
 const CITATION_PREVIEW = '引用预览的披露：预览本身就是 surface、里面并排几段作者内容，套不上单格 0fr → 1fr，按连接层量下的内容区高度长到、收回，内缩、描边与它前面那道间距随之同步'
 
 /** 允许做动画的布局属性，值写理由。 */
@@ -44,6 +45,10 @@ const LAYOUT_EXCEPTIONS = {
   'splitter:panel:flex-basis': '面板折叠 / 展开必须让出相邻面板的空间：相邻面板跟着重排正是这个动作要表达的（拖拽与步进不带过渡）',
   'question-flow:viewport:block-size': '换题时视口随题目内容增减高度：下面的操作条要跟着挪到新位置',
   'toast:root:block-size': '轻提示叠放展开时卡片长回自己的高度：叠放区跟着撑开',
+  'floating-panel:positioner:left': FLOATING_PANEL_MAXIMIZE,
+  'floating-panel:positioner:top': FLOATING_PANEL_MAXIMIZE,
+  'floating-panel:positioner:width': FLOATING_PANEL_MAXIMIZE,
+  'floating-panel:positioner:height': FLOATING_PANEL_MAXIMIZE,
   'tour:spotlight:inline-size': '聚光框是 position: fixed 的独立框，跟着目标换位换尺寸，不在文档流里，不推动其他元素',
   'tour:spotlight:block-size': '聚光框是 position: fixed 的独立框，跟着目标换位换尺寸，不在文档流里，不推动其他元素',
   'tour:spotlight:inset-inline-start': '聚光框是 position: fixed 的独立框，跟着目标换位换尺寸，不在文档流里，不推动其他元素',
