@@ -20,7 +20,7 @@
   /* 行高是本组件的定尺基准：视口按行数定高、每行排版，都从这一个槽位来。
      它的兜底值须与连接层内联高度里用的那份逐字一致，否则 rows 算出来的高度对不上行。 */
   [data-scope='log'][data-part='root'] {
-    --xh-_log-line-h: var(--xh-log-line-height, 1.25rem);
+    --xh-_log-line-h: var(--xh-log-line-height, var(--xh-text-code-leading));
 
     /* 尺寸缺省档：不写 data-size 时的取值。三档只改这两个私有槽，
        公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明。

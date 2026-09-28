@@ -20,7 +20,7 @@ border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
 border-left-color: oklch(0.439 0.006 258)
 min-height: 0px
-font-size: 13px
+font-size: 14px
 line-height: 24px
 font-weight: 400
 color: oklch(0.439 0.006 258)
@@ -195,7 +195,7 @@ border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
 border-left-color: oklch(0.439 0.006 258)
 min-height: 24px
-font-size: 13px
+font-size: 14px
 line-height: 24px
 font-weight: 400
 color: oklch(0.439 0.006 258)
@@ -230,7 +230,7 @@ border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
 border-left-color: oklch(0.439 0.006 258)
 min-height: auto
-font-size: 13px
+font-size: 14px
 line-height: 24px
 font-weight: 400
 color: oklch(0.439 0.006 258)
@@ -265,7 +265,7 @@ border-right-color: oklch(0.439 0.006 258)
 border-bottom-color: oklch(0.439 0.006 258)
 border-left-color: oklch(0.439 0.006 258)
 min-height: 24px
-font-size: 13px
+font-size: 14px
 line-height: 24px
 font-weight: 400
 color: oklch(0.439 0.006 258)
@@ -300,7 +300,7 @@ border-right-color: oklab(0 0 0 / 0.102)
 border-bottom-color: oklab(0 0 0 / 0.102)
 border-left-color: oklab(0 0 0 / 0.102)
 min-height: 0px
-font-size: 13px
+font-size: 14px
 line-height: normal
 font-weight: 400
 color: oklch(0.439 0.006 258)

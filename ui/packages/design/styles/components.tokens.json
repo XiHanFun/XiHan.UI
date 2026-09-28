@@ -13326,7 +13326,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-border-subtle"
       ],
       "visibility": "public",
       "description": "code-view 的 line-number 部件 border-inline-end 覆盖槽。"
@@ -13521,7 +13521,7 @@
         "highlighted"
       ],
       "defaultToken": [
-        "--xh-bg-brand-subtle"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "code-view 的 line 部件 background 覆盖槽。"
@@ -13539,7 +13539,7 @@
         "highlighted"
       ],
       "defaultToken": [
-        "--xh-bg-brand"
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "code-view 的 line 部件 box-shadow 覆盖槽。"
@@ -41421,7 +41421,7 @@
         "default"
       ],
       "defaultToken": [
-        "1.25rem"
+        "--xh-text-code-leading"
       ],
       "visibility": "public",
       "description": "log 的 line、root、viewport 部件 block-size、line-height 覆盖槽。"

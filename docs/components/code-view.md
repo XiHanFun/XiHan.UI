@@ -291,7 +291,7 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `--xh-code-view-fold-py` | `fold-trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-space-2` | code-view 的 fold-trigger 部件 padding-block 覆盖槽。 |
 | `--xh-code-view-font` | `code`<br>`filename` | `font-family` | `default` | `--xh-font-family-mono` | code-view 的 code、filename 部件 font-family 覆盖槽。 |
 | `--xh-code-view-font-size` | `root` | `font-size` | `default` | `--xh-_code-view-font-size` | code-view 的 root 部件 font-size 覆盖槽。 |
-| `--xh-code-view-gutter-border` | `line-number` | `border-inline-end` | `default` | `--xh-border-default` | code-view 的 line-number 部件 border-inline-end 覆盖槽。 |
+| `--xh-code-view-gutter-border` | `line-number` | `border-inline-end` | `default` | `--xh-border-subtle` | code-view 的 line-number 部件 border-inline-end 覆盖槽。 |
 | `--xh-code-view-gutter-gap` | `line-number` | `padding-inline-end` | `default` | `--xh-space-1` | code-view 的 line-number 部件 padding-inline-end 覆盖槽。 |
 | `--xh-code-view-header-border` | `fold-trigger`<br>`header` | `border`<br>`border-block-end`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-subtle` | code-view 的 fold-trigger、header 部件 border、border-block-end、border-color 覆盖槽。 |
 | `--xh-code-view-header-fg` | `header` | `color` | `default` | `--xh-fg-muted` | code-view 的 header 部件 color 覆盖槽。 |
@@ -301,8 +301,8 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `--xh-code-view-header-px` | `header` | `padding-inline` | `default` | `--xh-space-4` | code-view 的 header 部件 padding-inline 覆盖槽。 |
 | `--xh-code-view-header-py` | `header` | `padding-block` | `default` | `--xh-space-2` | code-view 的 header 部件 padding-block 覆盖槽。 |
 | `--xh-code-view-highlight-bar` | `line` | `box-shadow`<br>`outline`<br>`outline-offset` | `@media print`<br>`highlighted` | `--xh-stroke-thick` | code-view 的 line 部件 box-shadow、outline、outline-offset 覆盖槽。 |
-| `--xh-code-view-highlight-bg` | `line` | `background` | `highlighted` | `--xh-bg-brand-subtle` | code-view 的 line 部件 background 覆盖槽。 |
-| `--xh-code-view-highlight-fg` | `line` | `box-shadow` | `highlighted` | `--xh-bg-brand` | code-view 的 line 部件 box-shadow 覆盖槽。 |
+| `--xh-code-view-highlight-bg` | `line` | `background` | `highlighted` | `--xh-bg-subtle` | code-view 的 line 部件 background 覆盖槽。 |
+| `--xh-code-view-highlight-fg` | `line` | `box-shadow` | `highlighted` | `--xh-border-strong` | code-view 的 line 部件 box-shadow 覆盖槽。 |
 | `--xh-code-view-keyword-fg` | `token` | `color` | `kind=keyword` | `--xh-syntax-keyword` | code-view 的 token 部件 color 覆盖槽。 |
 | `--xh-code-view-keyword-weight` | `token` | `font-weight` | `kind=keyword` | `--xh-font-weight-semibold` | code-view 的 token 部件 font-weight 覆盖槽。 |
 | `--xh-code-view-label-fg` | `lang-label` | `color` | `default` | `--xh-fg-subtle` | code-view 的 lang-label 部件 color 覆盖槽。 |

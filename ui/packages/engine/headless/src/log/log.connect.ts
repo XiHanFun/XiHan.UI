@@ -17,7 +17,7 @@ const parts = logAnatomy.build()
  * 行高槽位与它的兜底值，兜底须与皮肤里 --xh-log-line-height 的兜底逐字一致，
  * 否则按行数算出的视口高度对不上行。
  */
-const LINE_HEIGHT = 'var(--xh-log-line-height, 1.25rem)'
+const LINE_HEIGHT = 'var(--xh-log-line-height, var(--xh-text-code-leading))'
 
 /**
  * 日志视图的连接层。机器只管粘底与"回到底部"，行数、载入态与文案都是视图属性走第二参。

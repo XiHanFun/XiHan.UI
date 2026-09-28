@@ -3609,7 +3609,7 @@
 
     /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
        公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
-    --xh-_diff-view-font-size: var(--xh-control-font-sm);
+    --xh-_diff-view-font-size: var(--xh-control-font-md);
     --xh-_diff-view-px: var(--xh-space-3);
     --xh-_diff-view-py: var(--xh-space-2);
 
@@ -8651,7 +8651,7 @@
   /* 行高是本组件的定尺基准：视口按行数定高、每行排版，都从这一个槽位来。
      它的兜底值须与连接层内联高度里用的那份逐字一致，否则 rows 算出来的高度对不上行。 */
   [data-scope='log'][data-part='root'] {
-    --xh-_log-line-h: var(--xh-log-line-height, 1.25rem);
+    --xh-_log-line-h: var(--xh-log-line-height, var(--xh-text-code-leading));
 
     /* 尺寸缺省档：不写 data-size 时的取值。三档只改这两个私有槽，
        公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明。
@@ -20892,11 +20892,11 @@
 
   /* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（边界只由描边承担），
      overflow: hidden 让内部 <pre> 的滚动内容沿圆角收边；不设 display，排布由作者决定。
-     color 给整段未着色的代码定基线，字号在这里消费一次，缺省即 sm 档。 */
+     color 给整段未着色的代码定基线，字号在这里消费一次，缺省即 md 档（与面内按钮同档）。 */
   [data-scope='code-view'][data-part='root'] {
     /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这个私有槽，
        公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
-    --xh-_code-view-font-size: var(--xh-control-font-sm);
+    --xh-_code-view-font-size: var(--xh-control-font-md);
 
     overflow: hidden;
     border: var(--xh-stroke-thin) solid var(--xh-code-view-border, var(--xh-border-default));
@@ -20995,9 +20995,10 @@
     display: none;
   }
 
+  /* 高亮行是强调不是选中：中性淡底 + 行首强调条，不用品牌淡底（品牌淡底只表达选中 / 当前） */
   [data-scope='code-view'][data-part='line'][data-highlighted] {
-    background: var(--xh-code-view-highlight-bg, var(--xh-bg-brand-subtle));
-    box-shadow: inset var(--xh-code-view-highlight-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-code-view-highlight-fg, var(--xh-bg-brand));
+    background: var(--xh-code-view-highlight-bg, var(--xh-bg-subtle));
+    box-shadow: inset var(--xh-code-view-highlight-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-code-view-highlight-fg, var(--xh-border-strong));
   }
 
   /* 行号是画上去的不是写上去的：复制代码不带它，读屏也不逐行念数字。
@@ -21009,7 +21010,7 @@
     flex: 0 0 auto;
     padding-inline-start: var(--xh-code-view-px, var(--xh-space-3));
     padding-inline-end: var(--xh-code-view-gutter-gap, var(--xh-space-1));
-    border-inline-end: var(--xh-stroke-thin) solid var(--xh-code-view-gutter-border, var(--xh-border-default));
+    border-inline-end: var(--xh-stroke-thin) solid var(--xh-code-view-gutter-border, var(--xh-border-subtle));
     color: var(--xh-code-view-number-fg, var(--xh-fg-subtle));
     font-size: var(--xh-code-view-number-font-size, var(--xh-text-caption-size));
     inline-size: var(--xh-_code-view-gutter);
