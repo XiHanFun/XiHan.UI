@@ -82,6 +82,18 @@ export interface ProgressProps {
   scale?: boolean | ProgressScaleOptions
   /** 仪表盘的指示方式，缺省 fill。只在 meter 语义下生效，只对 dashboard 形态有意义。 */
   indicator?: ProgressIndicator
+  /**
+   * 分段显示：把线形轨道切成这么多等宽的格，格与格之间留一道间隙。填充按整格走，不足一格的部分不画；
+   * 读屏报的仍是实际值。取不小于 2 的整数，只对线形生效；取值不合法或写在环形上时报错、按没给处理。
+   */
+  steps?: number
+  /** 条纹：填充上铺一层斜纹，进行中沿行向流动，完成后静止；减弱动效下始终静止。只对线形生效。 */
+  striped?: boolean
+  /**
+   * 缓冲值：在填充之后画第二段浅色填充，表示已经就绪、还没用到的那一截（如视频已缓冲到的位置），
+   * 越界夹到 [0, max]，低于 value 的部分被填充盖住。只在进度语义的线形下生效；进度未知时不画。
+   */
+  buffer?: number
   /** 刻度值与读屏文字的语言；未提供时按宿主语言。 */
   locale?: string
   translations?: Partial<ProgressTranslations>
@@ -113,11 +125,17 @@ export interface ProgressApi<T extends PropTypes = PropTypes> {
   ratio: number
   /** 进度百分比，取整。 */
   percent: number
+  /** 落定后的分段数：没分段时为 0。 */
+  steps: number
+  /** 缓冲值占满值的比例；没有缓冲值或不画缓冲时为 null。 */
+  buffer: number | null
   getRootProps: () => T['element']
   /** 承载环的 <svg>；线形不渲染它。 */
   getCanvasProps: () => T['element']
   getTrackProps: () => T['element']
   getRangeProps: () => T['element']
+  /** 缓冲段：线形画在轨道里、填充之前；没有缓冲值时带 hidden。 */
+  getBufferProps: () => T['element']
   /** 环心区域：落位归皮肤，内容归作者。线形不使用。 */
   getLabelProps: () => T['element']
   /** 分段色带；不在 meter 语义下或没有分段时为空。 */

@@ -155,6 +155,43 @@ export const progressSuite: ConformanceSuite = {
       },
     },
     {
+      name: 'steps：轨道切成等宽的格，读屏仍报实际值',
+      spec: { apg: APG },
+      fixture: LINE_SHELL,
+      props: { value: 35, steps: 10 },
+      initial: {
+        parts: {
+          root: { 'role': 'progressbar', 'aria-valuenow': '35' },
+          track: { 'data-stepped': '' },
+          range: { 'data-empty': null },
+        },
+      },
+    },
+    {
+      name: 'striped：填充带上条纹标记，进行中照常是 loading',
+      spec: { apg: APG },
+      fixture: LINE_SHELL,
+      props: { value: 40, striped: true },
+      initial: {
+        parts: {
+          range: { 'data-striped': '', 'data-state': 'loading' },
+        },
+      },
+    },
+    {
+      name: 'buffer：轨道里多一段缓冲，取填充那一族，读屏只报进度值',
+      spec: { apg: APG },
+      fixture: LINE_SHELL,
+      props: { value: 30, buffer: 60, tone: 'success' },
+      initial: {
+        counts: { buffer: 1 },
+        parts: {
+          root: { 'aria-valuenow': '30', 'aria-valuetext': null },
+          buffer: { 'data-tone': 'success' },
+        },
+      },
+    },
+    {
       name: '进度语义下的分段与目标不生效：一样都不画，根仍是 progressbar',
       spec: { apg: APG },
       fixture: LINE_SHELL,

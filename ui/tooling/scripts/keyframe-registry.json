@@ -385,6 +385,15 @@
         "progress"
       ]
     },
+    "xh-progress-stripes": {
+      "content": "from{background-position:0 0}to{background-position:calc(var(--xh-_progress-stripe-size) * var(--xh-direction-sign)) 0}",
+      "definedIn": [
+        "progress.css"
+      ],
+      "consumers": [
+        "progress"
+      ]
+    },
     "xh-rise-in": {
       "content": "from{opacity:var(--xh-_enter-from-opacity,0);translate:0 var(--xh-motion-distance-sm)}to{opacity:1;translate:0 0}",
       "definedIn": [

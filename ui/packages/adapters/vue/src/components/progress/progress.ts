@@ -54,6 +54,9 @@ export const XhProgress = defineComponent({
     target: { type: Number },
     scale: { type: [Boolean, Object] as PropType<boolean | ProgressScaleOptions>, default: undefined },
     indicator: { type: String as PropType<ProgressIndicator> },
+    steps: { type: Number },
+    striped: { type: Boolean, default: undefined },
+    buffer: { type: Number },
     locale: { type: String },
     translations: { type: Object as PropType<Partial<ProgressTranslations>> },
   },
@@ -67,6 +70,8 @@ export const XhProgress = defineComponent({
         return h('div', rootProps, [
           h('div', a.getTrackProps() as Attrs, [
             ...a.bands.map(band => h('div', { ...a.getThresholdProps(band) as Attrs, key: band.key })),
+            // 缓冲段排在填充之前，被它压住；没有缓冲值时不渲染
+            ...(a.buffer == null ? [] : [h('div', a.getBufferProps() as Attrs)]),
             h('div', a.getRangeProps() as Attrs),
           ]),
           ...(a.target == null ? [] : [h('div', a.getTargetProps() as Attrs)]),

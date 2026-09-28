@@ -20,7 +20,7 @@ value 与 max 共同决定百分比
 
 加粗的是必需部件。
 
-`data-scope="progress"`：**`root`** · `canvas` · `track` · `range` · `label` · `threshold` · `target` · `scale` · `scale-tick` · `scale-label` · `needle`
+`data-scope="progress"`：**`root`** · `canvas` · `track` · `range` · `buffer` · `label` · `threshold` · `target` · `scale` · `scale-tick` · `scale-label` · `needle`
 
 ## 示例
 
@@ -90,6 +90,24 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 
 <XhDemo src="progress/12-bullet" />
 
+### 分段
+
+steps 把轨道切成等宽的格，填充按整格亮起；读屏报的仍是实际值
+
+<XhDemo src="progress/13-steps" />
+
+### 条纹
+
+striped 在填充上铺一层斜纹，进行中沿行向流动，完成后静止；减弱动效下不流动
+
+<XhDemo src="progress/14-striped" />
+
+### 缓冲
+
+buffer 在填充之后画第二段浅色填充，表示已经就绪、还没用到的那一截，如视频已缓冲到的位置
+
+<XhDemo src="progress/15-buffer" />
+
 ## 设计指引
 
 ### 何时使用
@@ -111,6 +129,10 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 - `indeterminate` 表达进行中但剩余量未知。
 - `valueText` 决定读屏读出的内容：“3 个文件中的第 2 个”比“66%”更有用。
 - 环心可以放置文字。
+- 线形另有三样外观，写在环形上会报 `progress.option-ignored` 并按没给处理：
+  - `steps` 把轨道切成等宽的格，格间留一道间隙；填充按整格亮起，不足一格的部分不画，读屏报的仍是实际值。取不小于 2 的整数，取值不合法同样报错。
+  - `striped` 在填充上铺一层斜纹：进行中沿行向流动，完成后静止；减弱动效下始终静止，强制色下退掉斜纹、只留高亮色填充。
+  - `buffer` 在填充之后画第二段浅色填充，表示已经就绪、还没用到的那一截（视频已缓冲到的位置）。它只属于进度：`semantics="meter"` 下报错不画，进度未知时也不画；低于 `value` 的部分被填充盖住。缓冲段由 Vue 与 React 直接渲染，Web Components 侧由元素生成进 track、排在 range 之前。
 - `semantics="meter"` 报告的是量而不是进度：根是 `role="meter"`，不接受 `indeterminate`。量另有四样刻画，在进度语义下写了会报 `chart.meter-only` 并按没给处理：
   - `thresholds` 分段：按上界升序排列，每段带语气与名字，画成轨道上同族淡色的色带；当前值所在的那一段决定填充色。第一段从 0 起、含 0，其余每段含上界、不含下界，超出最后一段上界的值不属于任何一段、填充取 `tone`。上界不升序、不是有限数或越出 `(0, max]` 时报 `chart.invalid-range`，整组不画。
   - `target` 目标值：线形是一道横穿轨道、上下各探出一点的竖线，环形是一道横穿弧的短线。不在 `[0, max]` 内时报错不画。
@@ -129,6 +151,8 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 - 长任务给出剩余时间或剩余数量，只有百分比难以判断等待时长。
 - 到 100% 后要有明确的完成态，不停留在满格。
 - 分段写上名字（「正常」「警戒」）：读屏据此在数值后补上所在的分段，颜色不是唯一线索。
+- 用 `steps` 表达「第几步」时同时给 `valueText`（「第 3 步，共 5 步」），读屏才念得出步数而不是百分比。
+- 条纹只用来提示「仍在进行」，不拿它区分语气或类别。
 - 分段的语气只表达好坏；没有好坏之分的区间用同一种语气，不要为了好看换颜色。
 
 ### 反模式
@@ -153,6 +177,7 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `buffer` | `number` |  | 缓冲值：在填充之后画第二段浅色填充，表示已经就绪、还没用到的那一截（如视频已缓冲到的位置）， 越界夹到 [0, max]，低于 value 的部分被填充盖住。只在进度语义的线形下生效；进度未知时不画。 |
 | `gapDegree` | `number` |  | 缺口角度，默认 75。只对 dashboard 生效。 |
 | `gapPosition` | `ProgressGapPosition` |  | 缺口朝向，默认 bottom。只对 dashboard 生效。 |
 | `indeterminate` | `boolean` |  | 进度未知：进度条改为往复动画，读屏侧不报数。 置真时 aria-valuenow 整体不发出：ARIA 规定不确定进度以该属性缺席表达。 |
@@ -162,6 +187,8 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 | `scale` | `boolean \| ProgressScaleOptions` |  | 量程刻度与刻度值：true 取缺省，也可以给刻度数量与数字格式。只在 meter 语义下生效。 |
 | `semantics` | `ProgressSemantics` |  | 报告的是进度还是量，默认 progress。meter 档发出 role="meter"，且 indeterminate 不再生效。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。线形影响轨道厚度，环形影响直径 |
+| `steps` | `number` |  | 分段显示：把线形轨道切成这么多等宽的格，格与格之间留一道间隙。填充按整格走，不足一格的部分不画； 读屏报的仍是实际值。取不小于 2 的整数，只对线形生效；取值不合法或写在环形上时报错、按没给处理。 |
+| `striped` | `boolean` |  | 条纹：填充上铺一层斜纹，进行中沿行向流动，完成后静止；减弱动效下始终静止。只对线形生效。 |
 | `strokeWidth` | `number` |  | 环的线宽，使用 viewBox 单位（整个环绘制在 100×100 中），默认 6。 只对 circle / dashboard 生效：它修改的是几何（半径随之向内收缩），因此是 prop 而不是令牌； 线形的厚度仍使用 --xh-progress-thickness。 |
 | `target` | `number` |  | 目标值：画一道目标刻度。只在 meter 语义下生效；不在 [0, max] 内时报错、不画。 |
 | `thresholds` | `readonly ProgressThreshold[]` |  | 分段：升序的上界，每段带语气与名字，画成轨道上的色带；当前值所在的那一段决定填充色。 只在 meter 语义下生效。上界不升序、不是有限数或落在 (0, max] 之外时报错，整组不画。 |
@@ -200,10 +227,13 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 | `semantics` | `ProgressSemantics` | 落定后的语义。 |
 | `ratio` | `number` | 进度比例，[0,1]。 |
 | `percent` | `number` | 进度百分比，取整。 |
+| `steps` | `number` | 落定后的分段数：没分段时为 0。 |
+| `buffer` | `number \| null` | 缓冲值占满值的比例；没有缓冲值或不画缓冲时为 null。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getCanvasProps` | `() => T['element']` | 承载环的 &lt;svg&gt;；线形不渲染它。 |
 | `getTrackProps` | `() => T['element']` |  |
 | `getRangeProps` | `() => T['element']` |  |
+| `getBufferProps` | `() => T['element']` | 缓冲段：线形画在轨道里、填充之前；没有缓冲值时带 hidden。 |
 | `getLabelProps` | `() => T['element']` | 环心区域：落位归皮肤，内容归作者。线形不使用。 |
 | `bands` | `readonly ProgressBand[]` | 分段色带；不在 meter 语义下或没有分段时为空。 |
 | `ticks` | `readonly ProgressTick[]` | 量程刻度；没开刻度时为空。 |
@@ -264,9 +294,13 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `canvas` | `data-variant` | props.variant |
+| `track` | `data-stepped` | ''（条件成立时才出现） |
 | `range` | `data-empty` | ''（条件成立时才出现） |
 | `range` | `data-indicator` | 'needle' \| undefined |
+| `range` | `data-striped` | ''（条件成立时才出现） |
 | `range` | `data-tone` | active?.tone |
+| `buffer` | `data-tone` | props.tone |
+| `buffer` | `data-variant` | props.variant |
 | `label` | `data-indicator` | 'needle' \| undefined |
 | `label` | `data-state` | 'complete' \| 'loading' |
 | `label` | `data-variant` | props.variant |
@@ -284,14 +318,20 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-progress-buffer` | `buffer` | `background` | `default` | `--xh-_tone-subtle-active` | progress 的 buffer 部件 background 覆盖槽。 |
+| `--xh-progress-buffer-radius` | `buffer` | `border-radius` | `default` | `--xh-progress-range-radius` | progress 的 buffer 部件 border-radius 覆盖槽。 |
 | `--xh-progress-indeterminate-duration` | `range` | `animation` | `state=indeterminate` | `--xh-motion-loop-shimmer` | progress 的 range 部件 animation 覆盖槽。 |
 | `--xh-progress-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | progress 的 label 部件 color 覆盖槽。 |
 | `--xh-progress-label-font-size` | `label` | `font-size` | `default` | `--xh-text-body-size` | progress 的 label 部件 font-size 覆盖槽。 |
 | `--xh-progress-linecap` | `range` | `stroke-linecap` | `variant=circle`<br>`variant=dashboard` | `round` | progress 的 range 部件 stroke-linecap 覆盖槽。 |
 | `--xh-progress-needle-color` | `needle` | `fill` | `default` | `--xh-fg-default` | progress 的 needle 部件 fill 覆盖槽。 |
 | `--xh-progress-range` | `range` | `background`<br>`stroke` | `default`<br>`variant=circle`<br>`variant=dashboard` | `--xh-_tone` | progress 的 range 部件 background、stroke 覆盖槽。 |
-| `--xh-progress-range-radius` | `range` | `border-radius` | `default` | `--xh-shape-pill` | progress 的 range 部件 border-radius 覆盖槽。 |
+| `--xh-progress-range-radius` | `buffer`<br>`range` | `border-radius` | `default` | `--xh-shape-pill` | progress 的 buffer、range 部件 border-radius 覆盖槽。 |
 | `--xh-progress-size` | `root` | `block-size`<br>`inline-size` | `size=lg`<br>`size=sm`<br>`variant=circle`<br>`variant=dashboard` | `10rem`<br>`5rem`<br>`7.5rem` | progress 的 root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-progress-step-gap` | `track` | `-webkit-mask-image`<br>`mask-image` | `stepped` | `--xh-space-0_5` | progress 的 track 部件 -webkit-mask-image、mask-image 覆盖槽。 |
+| `--xh-progress-stripe-color` | `range` | `background-image` | `striped` | `--xh-_tone-active` | progress 的 range 部件 background-image 覆盖槽。 |
+| `--xh-progress-stripe-duration` | `range` | `animation` | `state=loading`<br>`striped` | `--xh-motion-loop-shimmer` | progress 的 range 部件 animation 覆盖槽。 |
+| `--xh-progress-stripe-size` | `range` | `background-position`<br>`background-size` | `@keyframes xh-progress-stripes`<br>`striped` | `--xh-space-4` | progress 的 range 部件 background-position、background-size 覆盖槽。 |
 | `--xh-progress-target-color` | `target` | `background`<br>`stroke` | `variant=circle`<br>`variant=dashboard`<br>`variant=line` | `--xh-fg-default` | progress 的 target 部件 background、stroke 覆盖槽。 |
 | `--xh-progress-target-radius` | `target` | `border-radius` | `variant=line` | `--xh-shape-pill` | progress 的 target 部件 border-radius 覆盖槽。 |
 | `--xh-progress-thickness` | `root`<br>`target`<br>`track` | `block-size` | `banded`<br>`default`<br>`size=lg`<br>`size=sm`<br>`variant=line` | `--xh-space-1`<br>`--xh-space-2`<br>`--xh-space-3`<br>`--xh-space-4`<br>`--xh-track-thickness` | progress 的 root、target、track 部件 block-size 覆盖槽。 |
@@ -304,12 +344,12 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 
 动效角色：指示与换位 · 循环（见[动效规范](../design/motion#角色)）。
 
-可覆盖的动效槽：`--xh-progress-indeterminate-duration`。
+可覆盖的动效槽：`--xh-progress-indeterminate-duration` · `--xh-progress-stripe-duration`。
 
-关键帧 `xh-progress-indeterminate` 随皮肤自带，不引用别处文件里的名字；`rotate` · `stroke-dashoffset` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-progress-indeterminate` · `xh-progress-stripes` 随皮肤自带，不引用别处文件里的名字；`rotate` · `stroke-dashoffset` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走；另有按 `dir` 分支的规则。

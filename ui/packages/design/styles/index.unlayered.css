@@ -35019,6 +35019,17 @@
   }
 }
 
+/* 条纹沿行向流动：每轮挪过一整格纹理，首尾两帧的图案重合，循环无缝。RTL 下行尾在左，位移随方向符号翻转 */
+@keyframes xh-progress-stripes {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: calc(var(--xh-_progress-stripe-size) * var(--xh-direction-sign)) 0;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='progress'] {
   --xh-progress-skin: 1;
@@ -35069,6 +35080,54 @@
   --xh-_progress-sweep-to: -250%;
 
   translate: calc((1 - var(--xh-_progress-value, 0)) * 100%) 0;
+}
+
+/* —— 线形的三样外观：分段、条纹与缓冲 —— */
+/* 分段：遮罩把轨道切成等宽的格，格间留一道间隙，填充、缓冲与色带随轨道一起被切开。
+   周期是（全长 + 一道间隙）÷ 格数，最后一格恰好收在行尾，图案左右对称，RTL 下不必翻转 */
+[data-scope='progress'][data-part='track'][data-stepped] {
+  --xh-_progress-step-gap: var(--xh-progress-step-gap, var(--xh-space-0_5));
+  --xh-_progress-step-period: calc((100% + var(--xh-_progress-step-gap)) / var(--xh-_progress-steps, 1));
+  --xh-_progress-step-mask: repeating-linear-gradient(
+    to right,
+    black 0 calc(var(--xh-_progress-step-period) - var(--xh-_progress-step-gap)),
+    transparent 0 var(--xh-_progress-step-period)
+  );
+
+  -webkit-mask-image: var(--xh-_progress-step-mask);
+  mask-image: var(--xh-_progress-step-mask);
+}
+
+/* 条纹：填充上铺一层 45° 斜纹，颜色取填充同族更深一档。纹理是正方形平铺，45° 才能首尾相接；
+   RTL 下斜向随方向符号镜像 */
+[data-scope='progress'][data-part='range'][data-striped] {
+  --xh-_progress-stripe: var(--xh-progress-stripe-color, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+  --xh-_progress-stripe-size: var(--xh-progress-stripe-size, var(--xh-space-4));
+
+  background-image: linear-gradient(
+    calc(45deg * var(--xh-direction-sign)),
+    var(--xh-_progress-stripe) 25%,
+    transparent 25% 50%,
+    var(--xh-_progress-stripe) 50% 75%,
+    transparent 75%
+  );
+  background-size: var(--xh-_progress-stripe-size) var(--xh-_progress-stripe-size);
+}
+
+/* 只在进行中流动：完成了就停下；进度未知时整段已在往复扫，不再叠一层流动 */
+[data-scope='progress'][data-part='range'][data-striped][data-state='loading'] {
+  animation: xh-progress-stripes var(--xh-progress-stripe-duration, var(--xh-motion-loop-shimmer)) var(--xh-motion-ease-loop) infinite;
+}
+
+/* 缓冲段与填充同一种画法：铺满轨道、按缓冲比例往行首平移、由轨道裁掉，只走合成。
+   颜色取填充那一族的淡色，排在填充之前、被它压住。物理方向的平移量乘方向符号，RTL 下往右收 */
+[data-scope='progress'][data-part='buffer'] {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--xh-progress-buffer-radius, var(--xh-progress-range-radius, var(--xh-shape-pill)));
+  background: var(--xh-progress-buffer, var(--xh-_tone-subtle-active));
+  translate: calc((var(--xh-_progress-buffer, 0) - 1) * 100% * var(--xh-direction-sign)) 0;
+  transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
 /* —— 尺寸 —— */
@@ -35307,6 +35366,11 @@
     translate: none;
     animation: none;
   }
+
+  /* 条纹留着、不再流动：纹理本身是静态的非颜色通道 */
+  [data-scope='progress'][data-part='range'][data-striped][data-state='loading'] {
+    animation: none;
+  }
 }
 
 :where([data-motion='reduce']) [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
@@ -35314,6 +35378,10 @@
   inline-size: 100%;
   opacity: 0.5;
   translate: none;
+  animation: none;
+}
+
+:where([data-motion='reduce']) [data-scope='progress'][data-part='range'][data-striped][data-state='loading'] {
   animation: none;
 }
 
@@ -35396,6 +35464,17 @@
   [data-scope='progress'][data-part='needle'] {
     fill: CanvasText;
   }
+
+  /* 条纹在这一档里退掉：填充整段取高亮色才读得出走到哪儿，斜纹会把它切碎 */
+  [data-scope='progress'][data-part='range'][data-striped] {
+    background-image: none;
+  }
+
+  /* 缓冲段取灰：与底槽的 Canvas、填充的高亮色三者分得开 */
+  [data-scope='progress'][data-part='buffer'] {
+    forced-color-adjust: none;
+    background: GrayText;
+  }
 }
 
 @media print {
@@ -35408,6 +35487,10 @@
     inline-size: 100%;
     opacity: 0.5;
     translate: none;
+    animation: none;
+  }
+
+  [data-scope='progress'][data-part='range'][data-striped][data-state='loading'] {
     animation: none;
   }
 }

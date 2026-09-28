@@ -48668,6 +48668,10 @@
               "name": "range"
             },
             {
+              "description": "缓冲段，由元素按 buffer 生成在 track 里、range 之前",
+              "name": "buffer"
+            },
+            {
               "description": "环心区域，内容由使用者决定（线形不使用）",
               "name": "label"
             },
@@ -48839,6 +48843,33 @@
                 "text": "ProgressIndicator | undefined"
               },
               "attribute": "indicator"
+            },
+            {
+              "kind": "field",
+              "name": "steps",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "steps"
+            },
+            {
+              "kind": "field",
+              "name": "striped",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "striped"
+            },
+            {
+              "kind": "field",
+              "name": "buffer",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "buffer"
             },
             {
               "kind": "field",
@@ -49062,6 +49093,30 @@
             },
             {
               "type": {
+                "text": "number | undefined"
+              },
+              "description": "分段显示：把线形轨道切成这么多等宽的格，填充按整格走；取不小于 2 的整数，只对线形生效",
+              "name": "steps",
+              "fieldName": "steps"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "条纹：填充上铺一层斜纹，进行中沿行向流动；只对线形生效",
+              "name": "striped",
+              "fieldName": "striped"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "缓冲值：填充之后的第二段浅色填充；只在进度语义的线形下生效",
+              "name": "buffer",
+              "fieldName": "buffer"
+            },
+            {
+              "type": {
                 "text": "string | undefined"
               },
               "description": "刻度值与读屏文字的语言",
@@ -49085,6 +49140,12 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-progress-buffer"
+            },
+            {
+              "name": "--xh-progress-buffer-radius"
+            },
+            {
               "name": "--xh-progress-indeterminate-duration"
             },
             {
@@ -49107,6 +49168,18 @@
             },
             {
               "name": "--xh-progress-size"
+            },
+            {
+              "name": "--xh-progress-step-gap"
+            },
+            {
+              "name": "--xh-progress-stripe-color"
+            },
+            {
+              "name": "--xh-progress-stripe-duration"
+            },
+            {
+              "name": "--xh-progress-stripe-size"
             },
             {
               "name": "--xh-progress-target-color"

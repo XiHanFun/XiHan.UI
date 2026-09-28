@@ -130,6 +130,7 @@ const IDENTITY = {
   'color-slider:track': 'pill',
   'progress:track': 'pill',
   'progress:range': 'pill',
+  'progress:buffer': 'pill',
   // 目标刻度是一道细竖线：一维对象，两端取整圆
   'progress:target': 'pill',
   'password-input:strength-meter': 'pill',
