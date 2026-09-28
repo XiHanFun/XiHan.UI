@@ -78,6 +78,12 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 
 <XhDemo src="prompt-input/10-tone" />
 
+### 附件
+
+选中的文件以可关闭的标签排在输入行下方，发送时与正文一起交给宿主；文件选择器是宿主自己的原生 input，框里只放触发它的按钮
+
+<XhDemo src="prompt-input/11-attachments" />
+
 ## 设计指引
 
 ### 何时使用

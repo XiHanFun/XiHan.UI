@@ -20,7 +20,7 @@ collection 是层级元信息的唯一事实源，标记只负责外观；缩进
 
 加粗的是必需部件。
 
-`data-scope="tree"`：`root` · `label` · **`tree`** · **`item`** · `item-indicator` · `item-text` · `item-description` · `item-suffix` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
+`data-scope="tree"`：`root` · `label` · **`tree`** · `item` · `item-indicator` · `item-text` · `item-description` · `item-suffix` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
 
 ## 示例
 
