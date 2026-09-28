@@ -93,14 +93,16 @@ describe('xh-notification-item 的角色节点', () => {
     expect(item.getAttribute('data-tone')).toBe('danger')
   })
 
-  it('loading 落到卡片上，语气位不受它影响；指示符靠祖先选择器换字形', async () => {
+  it('loading 落到卡片上，语气位不受它影响；指示符同样带上 loading，加载环配方据此淡入环、转起来', async () => {
     const el = mount('loading tone="success"')
     await settle(el)
 
     const item = part(el, 'item')
     expect(item.hasAttribute('data-loading')).toBe(true)
     expect(item.getAttribute('data-tone')).toBe('success')
-    expect(part(el, 'item-indicator').hasAttribute('data-loading')).toBe(false)
+    const indicator = part(el, 'item-indicator')
+    expect(indicator.hasAttribute('data-loading')).toBe(true)
+    expect(indicator.hasAttribute('data-xh-loading-ring')).toBe(true)
   })
 
   it('closable="false"：叉转原生 disabled 并收起', async () => {
