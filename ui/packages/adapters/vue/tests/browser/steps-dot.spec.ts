@@ -121,6 +121,12 @@ function contrast(first: string, second: string): number {
 
 const DOT = { sm: '--xh-space-2', md: '--xh-space-2_5', lg: '--xh-space-3' } as const
 
+/** 环是一层角向渐变：取出弧与轨道两段的颜色。点状形态的环不带比例，两段同色即整圈实心。 */
+function ringColors(el: Element): string[] {
+  const image = getComputedStyle(el, '::after').backgroundImage
+  return [...image.matchAll(/(?:oklch|oklab|rgba?)\([^)]*\)/g)].map(match => match[0])
+}
+
 describe.each(['comfortable', 'compact'] as const)('点状形态的尺寸档（%s）', (density) => {
   it.each(['sm', 'md', 'lg'] as const)('%s 档的圆点走空间尺、不随密度换档，也不取 control-h', async (size) => {
     document.documentElement.dataset.density = density
@@ -183,7 +189,7 @@ describe('点状形态的三态', () => {
     const dot = current!.getBoundingClientRect().width
 
     expect(ring.opacity).toBe('1')
-    expect(ring.backgroundColor).toBe(token('--xh-bg-brand'))
+    expect(ringColors(current!)).toEqual([token('--xh-bg-brand'), token('--xh-bg-brand')])
     expect(Number.parseFloat(ring.width)).toBe(dot + 2 * (gap + thick))
     expect(Number.parseFloat(ring.height)).toBe(dot + 2 * (gap + thick))
     expect(getComputedStyle(completed!, '::after').opacity).toBe('0')
@@ -216,7 +222,7 @@ describe('点状形态的三态', () => {
     await nextTick()
     const current = getComputedStyle(toned)
     expect(current.backgroundColor).not.toBe(token('--xh-bg-brand'))
-    expect(getComputedStyle(toned, '::after').backgroundColor).toBe(current.backgroundColor)
+    expect(ringColors(toned)).toEqual([current.backgroundColor, current.backgroundColor])
   })
 
   it('linear 未解锁的那几步禁用：空心圈退到禁用墨色，仍是空心', async () => {
@@ -261,7 +267,7 @@ describe('点状形态的强制色', () => {
     await userEvent.hover(triggers[1]!)
     const row = getComputedStyle(triggers[1]!).backgroundColor
     expect(getComputedStyle(indicators[1]!).backgroundColor).not.toBe(row)
-    expect(getComputedStyle(indicators[1]!, '::after').backgroundColor).not.toBe(row)
+    expect(ringColors(indicators[1]!)).not.toContain(row)
     await userEvent.unhover(triggers[1]!)
   })
 })

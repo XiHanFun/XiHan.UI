@@ -40160,6 +40160,14 @@
 
 /* 走过那一步时对号的淡入取共享关键帧。 */
 
+/* 当前步的完成比例（0–1）由连接层写进圆点的内联样式。登记成数值，进度环的弧才能沿过渡走到新比例；
+   要继承：画弧的是圆点的 ::after。不认 @property 的引擎把它当普通自定义属性，弧照旧落到新比例，只是没有过渡 */
+@property --xh-_steps-progress {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='steps'] {
@@ -40495,27 +40503,42 @@
     background: var(--xh-_steps-dot);
   }
 
-  /* 当前步那圈环：离圆点边一道缝、一道粗描边宽，叠在圆点外面、不接指针；环面由整圈底色经环形遮罩挖空中心得来。
-     静息收着，点状形态的当前步才亮出来，走到 / 离开这一步时按状态角色淡入淡出 */
+  /* 当前步那圈环：离圆点边一道缝、一道粗描边宽，叠在圆点外面、不接指针；环面由一圈角向渐变经环形遮罩挖空中心得来。
+     弧（arc）从 12 点顺时针走到完成比例，其余是轨道（track）：点状形态不带比例，轨道与弧同色，就是整圈实心环；
+     序号圆点带了比例（data-progress），轨道取连接线的底色，弧就是这一步走了多少。时钟式的走向是稳定身份，不随书写方向镜像。
+     静息收着，点状形态的当前步与带比例的当前步才亮出来，走到 / 离开这一步时按状态角色淡入淡出；
+     比例变化时弧按数值角色走（move / continuous），首帧直接落位 */
   [data-scope='steps'][data-part='indicator']::after {
+    --xh-_steps-ring-arc: var(--xh-steps-indicator-ring-bg, var(--xh-_steps-accent));
+    --xh-_steps-ring-track: var(--xh-_steps-ring-arc);
+
     content: '';
     position: absolute;
     inset: calc(-1 * (var(--xh-_steps-indicator-border-width) + var(--xh-_steps-ring-gap) + var(--xh-_steps-ring-thickness)));
     border-radius: inherit;
-    background: var(--xh-steps-indicator-ring-bg, var(--xh-_steps-accent));
+    background: conic-gradient(
+      var(--xh-_steps-ring-arc) calc(var(--xh-_steps-progress) * 100%),
+      var(--xh-_steps-ring-track) 0%
+    );
     -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--xh-_steps-ring-thickness)), currentColor 0);
     mask: radial-gradient(farthest-side, transparent calc(100% - var(--xh-_steps-ring-thickness)), currentColor 0);
     opacity: 0;
     pointer-events: none;
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      --xh-_steps-progress var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  [data-scope='steps'][data-part='indicator'][data-variant='dot'][data-state='current']::after {
+  [data-scope='steps'][data-part='indicator'][data-state='current']:is([data-variant='dot'], [data-progress])::after {
     opacity: 1;
   }
 
+  [data-scope='steps'][data-part='indicator'][data-progress]::after {
+    --xh-_steps-ring-track: var(--xh-steps-indicator-ring-track, var(--xh-border-default));
+  }
+
   [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator']::after {
-    background: var(--xh-steps-indicator-ring-bg-disabled, var(--xh-fg-disabled));
+    --xh-_steps-ring-arc: var(--xh-steps-indicator-ring-bg-disabled, var(--xh-fg-disabled));
   }
 
   /* 单步语气：tones / collection 给某一步标了 data-tone，四个强调槽在这一步重新从语气层取值，
@@ -40684,8 +40707,7 @@
     /* 点状形态的点靠底色画实心，这一档里底色被换成 Canvas，走过与当前步的点会与空心的圈混成一样。
        实心的点与当前步那圈环换成 CanvasText：整行悬停涂成 Highlight 时照样看得见，走过与当前步靠那圈环分开；
        动不了的取 GrayText */
-    [data-scope='steps'][data-part='trigger'] [data-scope='steps'][data-part='indicator'][data-variant='dot']:not([data-state='incomplete']),
-    [data-scope='steps'][data-part='indicator']::after {
+    [data-scope='steps'][data-part='trigger'] [data-scope='steps'][data-part='indicator'][data-variant='dot']:not([data-state='incomplete']) {
       border-color: CanvasText;
       background: CanvasText;
     }
@@ -40695,9 +40717,29 @@
     }
 
     [data-scope='steps'][data-part='item'][data-disabled]
-      [data-scope='steps'][data-part='trigger'] [data-scope='steps'][data-part='indicator'][data-variant='dot']:not([data-state='incomplete']),
-    [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator']::after {
+      [data-scope='steps'][data-part='trigger'] [data-scope='steps'][data-part='indicator'][data-variant='dot']:not([data-state='incomplete']) {
       background: GrayText;
+    }
+
+    /* 环是一层角向渐变，这一档里渐变会被当作背景图丢掉：环自己不让系统接管配色，弧与轨道改取系统色——
+       弧 CanvasText、进度环的轨道 GrayText（两者分得开，才读得出走了多少）；动不了的弧 GrayText，
+       轨道退到 Canvas，免得与弧同色读不出比例 */
+    [data-scope='steps'][data-part='indicator']::after {
+      --xh-_steps-ring-arc: CanvasText;
+
+      forced-color-adjust: none;
+    }
+
+    [data-scope='steps'][data-part='indicator'][data-progress]::after {
+      --xh-_steps-ring-track: GrayText;
+    }
+
+    [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator']::after {
+      --xh-_steps-ring-arc: GrayText;
+    }
+
+    [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'][data-progress]::after {
+      --xh-_steps-ring-track: Canvas;
     }
   }
 

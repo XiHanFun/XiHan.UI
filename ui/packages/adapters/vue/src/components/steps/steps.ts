@@ -44,6 +44,8 @@ export const XhStepsRoot = defineComponent({
     size: { type: String as PropType<Size> },
     /** 标记形态：number 序号圆点（缺省）/ dot 不盛内容的小圆点。 */
     variant: { type: String as PropType<StepsVariant> },
+    /** 当前这一步自己的完成比例（0–100）：当前步的序号圆点外画一圈进度环。 */
+    percent: { type: Number },
   },
   // value-change 携带 { value }，update:value 携带裸下标
   emits: {

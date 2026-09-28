@@ -3385,6 +3385,7 @@ export type ComponentTokenName
     | '--xh-steps-indicator-radius'
     | '--xh-steps-indicator-ring-bg'
     | '--xh-steps-indicator-ring-bg-disabled'
+    | '--xh-steps-indicator-ring-track'
     | '--xh-steps-indicator-shadow'
     | '--xh-steps-indicator-size'
     | '--xh-steps-item-gap'

@@ -218,6 +218,7 @@
     "data-positioned": "浮层的坐标已经算出来、可以露面；展开头几帧还没算完时不写。",
     "data-pressed": "Space / Enter 或粗指针（触屏）按住期间；与指针 :active 同一副按压面，皮肤写 :is(:active, [data-pressed])。由 Headless 的按压通道投影：button、toggle；其余可按部件随各组件接入。",
     "data-pressing": "context-menu 的触发区正在被长按，还没到唤出阈值。",
+    "data-progress": "steps 的当前步报了自己的完成比例：序号圆点外画一圈进度环，比例由连接层写进圆点的内联样式。",
     "data-pulse": "badge 圆点在呼吸：表达正在进行、给不出进度的状态（直播、录制、通话中）。只在圆点档发出。",
     "data-range-end": "calendar-range-picker 的这一格是已选区间的末端。",
     "data-range-preview": "calendar-range-picker 的这一格落在尚未确认的区间预览内。",

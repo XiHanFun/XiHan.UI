@@ -54,12 +54,14 @@ function stepIndexOf(el: HTMLElement): number {
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'number'|'dot'} variant - 标记形态：number 序号圆点（缺省）/ dot 不盛内容的小圆点，此时 indicator 留空
+ * @attr {number} percent - 当前这一步自己的完成比例（0–100）：当前步的序号圆点外画一圈进度环
  * @fires value-change - 步序变化；detail 为 `{ value: number }`
  * @csspart root - 组件根容器（承载 data-orientation / data-complete / data-empty）
  * @csspart list - role=tablist 容器（方向键与 Tab 序列在此收口）
  * @csspart item - 单个步骤容器；作者在此写 value（身份）与可选 disabled
  * @csspart trigger - role=tab 的步骤按钮（roving tabindex 落在它身上）；read-only 下是只排版的 div
- * @csspart indicator - 序号 / 对勾圆点（dot 形态下是不盛内容的小圆点），对读屏隐藏
+ * @csspart indicator - 序号 / 对勾圆点（dot 形态下是不盛内容的小圆点），对读屏隐藏；给了 percent 时当前步的圆点外画进度环，
+ *   可操作时它供给触发器的描述，read-only 下是一个 progressbar
  * @csspart title - 步骤标题
  * @csspart description - 步骤说明
  * @csspart separator - 指向下一步的连接线，对读屏隐藏
@@ -89,6 +91,7 @@ export class XhStepsElement extends XhElement {
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
+    percent: { converter: NUMBER_CONVERTER },
   }
 
   declare value?: number
@@ -107,6 +110,7 @@ export class XhStepsElement extends XhElement {
   declare tone?: Tone
   declare size?: Size
   declare variant?: StepsVariant
+  declare percent?: number
 
   private readonly notify = (details: StepsValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -134,6 +138,7 @@ export class XhStepsElement extends XhElement {
       tone: this.tone,
       size: this.size,
       variant: this.variant,
+      percent: this.percent,
       onValueChange: this.notify,
     }
   }

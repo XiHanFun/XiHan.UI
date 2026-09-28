@@ -15,6 +15,8 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   // 线形的分段数与缓冲比例：连接层写进轨道与缓冲段的内联样式，皮肤只读
   ['--xh-_progress-steps', 'packages/engine/headless/src/progress/progress.connect.ts'],
   ['--xh-_progress-buffer', 'packages/engine/headless/src/progress/progress.connect.ts'],
+  // 步骤条当前步的完成比例（0–1）：连接层写进序号圆点的内联样式，皮肤按它画进度环的弧
+  ['--xh-_steps-progress', 'packages/engine/headless/src/steps/steps.connect.ts'],
   // 量的刻画：色带的起止、目标与刻度的位置（占满值的比例 0–1）、刻度值的对齐比例与环形坐标、指针的角度，
   // 都由连接层按几何写进部件的内联样式，皮肤只读
   ['--xh-_progress-from', 'packages/engine/headless/src/progress/progress.connect.ts'],

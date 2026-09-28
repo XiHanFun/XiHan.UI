@@ -129,6 +129,12 @@ export interface StepsSchema extends MachineSchema {
      * 没走到的空心；indicator 留空，不放序号与图标。
      */
     variant?: StepsVariant
+    /**
+     * 当前这一步自己的完成比例（0–100），越界夹回。当前步的序号圆点外画一圈进度环；
+     * 可操作时比例作为触发器的描述读出，只读展示下圆点是一个 progressbar。
+     * 只画在序号圆点上：点状形态画不下进度环，给了会报 steps.option-ignored 并按没给处理；非有限数同样报错并按没给处理。
+     */
+    percent?: number
     /** 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: StepsValueChangeDetails) => void
   }
@@ -210,4 +216,8 @@ export interface StepsApi<T extends PropTypes = PropTypes> {
 export interface StepsTranslations {
   /** 步骤列表容器的 aria-label，用于区分同页的多条步骤条。 */
   list: string
+  /** 只读展示下当前步进度环（progressbar）的名字，缺省 "Step progress"。 */
+  progressLabel: string
+  /** 当前步完成比例的读法，入参是取整后的百分数；可操作时是触发器的描述，只读展示下是进度环的 aria-valuetext。缺省 "60% complete"。 */
+  progressValueText: (percent: number) => string
 }

@@ -52,6 +52,8 @@ export interface XhStepsRootProps extends RootElementProps {
   size?: Size
   /** 标记形态：number 序号圆点（缺省）/ dot 不盛内容的小圆点。 */
   variant?: StepsVariant
+  /** 当前这一步自己的完成比例（0–100）：当前步的序号圆点外画一圈进度环。 */
+  percent?: number
   onValueChange?: StepsProps['onValueChange']
   children?: SlotChildren<StepsRootSlotProps>
 }
@@ -73,6 +75,7 @@ export function XhStepsRoot({
   tone,
   size,
   variant,
+  percent,
   onValueChange,
   children,
   ...rest
@@ -94,6 +97,7 @@ export function XhStepsRoot({
     tone,
     size,
     variant,
+    percent,
     onValueChange,
   }) as StepsProps)
   const api = ctx.api
