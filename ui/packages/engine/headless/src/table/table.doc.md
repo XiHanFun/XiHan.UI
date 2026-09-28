@@ -24,7 +24,7 @@
 - 单元格合并用 `cellSpan`，与 antd 的 `spanMethod` 同一种写法：逐格询问合并区的大小（`rowSpan` / `colSpan`）。表格按它算出起点格的 `aria-rowspan` / `aria-colspan`：与起点同一行、被横向跨过的格子不渲染（`hidden`）；下面行里被纵向跨过的，在合并区最左那一列留一格占位（`data-covered`，对读屏隐藏、只保住宽度），其余不渲染。作者照常逐格渲染，谁显谁藏由表格决定；`cellSpanOf(行, 列)` 可查某一格的合并情形。合并只在可见数据行之间，遇到展开的详情行截断。
 - 纵向合并的起点格（`data-row-span`）挂载后按实测行位铺满合并的几行，压在下面几行之上、底色随起点行；量到之前按普通格子排。
 - 冻结列不必都写数字宽度：同侧多列冻结时，数字宽度直接累加，其余（没写、百分比、`fr`）取挂载后实测的列头宽度；量到之前那一侧从该列起暂时贴边。
-- 行数很大时只渲染窗口内的行。
+- 行数很大时只渲染窗口内的行：把[虚拟滚动](./virtualizer)的 `collectionVirtualizer` 交给 `virtualizer`，表体里放它的视口，每个虚拟条目装一行数据行（`count` 等于可见数据行的条数，展开的详情行跟在同一个条目里）。行号与 `aria-rowcount` 照旧按完整行序报；上下键与 Home / End 按完整行序求落点，落点不在窗口里时先把它滚进来再交焦点。窗口外的行没有落点，接上后行拖动换位不可用（`rowReorderDisabledReason` 为 `virtualized`）。Web Components 下行隔着一层 `xh-virtualizer`，行节点写 `data-xh-part-owner="table"` 归表格。
 - 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
 - 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页按钮的行为由作者决定，取数在途时自动停用。

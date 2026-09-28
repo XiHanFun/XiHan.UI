@@ -24,7 +24,7 @@
 
 ## 组合
 
-- `collectionVirtualizer` 是正式集合接线口：[树](./tree)、[列表框](./listbox)、[选择器](./select)、[组合框](./combobox)与[穿梭框](./transfer)把完整 collection 交给各自状态机，只用 `virtualItems` 裁剪 DOM。
+- `collectionVirtualizer` 是正式集合接线口：[树](./tree)、[列表框](./listbox)、[选择器](./select)、[组合框](./combobox)、[穿梭框](./transfer)与[表格](./table)把完整 collection 交给各自状态机，只用 `virtualItems` 裁剪 DOM。表格按可见数据行计数，每个虚拟条目装一行数据行。
 - 集合接线时 `count` 必须等于当前语义序列长度；不一致会明确抛错，避免方向键与可见窗口指向两份数据。
 - 集合自身已有焦点模型，把 `viewportTabIndex` 设为 `-1`，不要让虚拟视口额外占一个 Tab 位。
 - 与[无限滚动](./infinite-scroll)组合为边滚边取的长列表：哨兵放在内容层之后，取数目标指向视口层。
