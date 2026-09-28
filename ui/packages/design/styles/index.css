@@ -30378,11 +30378,12 @@
     display: none;
   }
 
-  /* 冲到 100 之后进入淡出：机器会在淡出窗口走完之前一直停在 finishing，这段过渡才有时间跑完。
-     窗口（machine 的 LOADING_BAR_FADE_DURATION，200ms）比过渡本身（motion-duration-exit，120ms）
-     宽出一截是有意的余量；两者不是同一个数，改窗口时只要保证它仍不短于过渡 */
+  /* 走满之后才淡出：complete 期间根节点保持不透明，进度段冲到头的平移播完，机器才进 finishing。
+     满格先停一拍（延迟一个 micro）再淡：用户要看清「走完了」，一到头就开始淡读起来像中途断掉。
+     机器等的是浏览器实际起播的这段过渡（含延迟），不按毫秒猜 */
   [data-scope='loading-bar'][data-part='root'][data-state='finishing'] {
     opacity: 0;
+    transition-delay: var(--xh-motion-duration-micro);
   }
 
   /* 背景槽。默认透明：顶部加载条通常直接压在页面顶边上，一条贯穿整屏的浅色底

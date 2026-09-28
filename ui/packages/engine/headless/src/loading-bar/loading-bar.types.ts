@@ -7,8 +7,8 @@
 
 import type { MachineSchema, PropTypes, Tone } from '@xihan-ui/core'
 
-/** 三段式：未加载 / 加载中 / 到达终点正在淡出，同时是 data-state 的取值。 */
-export type LoadingBarPhase = 'idle' | 'loading' | 'finishing'
+/** 四段：未加载 / 加载中 / 冲向满格 / 满格停一拍后淡出，同时是 data-state 的取值。 */
+export type LoadingBarPhase = 'idle' | 'loading' | 'complete' | 'finishing'
 
 export interface LoadingBarValueChangeDetails {
   /** 已夹进 [0, 100] 的进度值；不确定进度时是组件自行爬升的模拟进度。 */
@@ -26,7 +26,7 @@ export interface LoadingBarSchema extends MachineSchema {
     value?: number
     /** 非受控初值，默认 0。 */
     defaultValue?: number
-    /** 加载开关：true 开始，false 结束（到达 100 后淡出归零）。只由宿主写入，无配套回调。 */
+    /** 加载开关：true 开始，false 结束（走满 100 后淡出归零）。只由宿主写入，无配套回调。 */
     loading?: boolean
     /** 进度条厚度：数字按像素，字符串按任意 CSS 长度。默认 2px。 */
     height?: string | number
@@ -38,7 +38,7 @@ export interface LoadingBarSchema extends MachineSchema {
     trickleSpeed?: number
     /** 起步值，默认 8：开始加载时先跳到该值。 */
     minimum?: number
-    /** 到达 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽 --xh-loading-bar-fade，不给按退场令牌；淡出过渡真正播完才归零并收起。 */
+    /** 走满 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽 --xh-loading-bar-fade，不给按退场令牌；淡出过渡真正播完才归零并收起。 */
     fadeDuration?: number
     translations?: Partial<LoadingBarTranslations>
     /** 进度值变化。不确定进度下每爬升一步、到达 100、归零各通知一次。 */
@@ -52,20 +52,22 @@ export interface LoadingBarSchema extends MachineSchema {
   refs: Record<string, never>
   state: LoadingBarPhase
   event:
-    /** loading prop 变为 true，或淡出途中再次开始加载。 */
+    /** loading prop 变为 true，或收尾途中再次开始加载。 */
     | { type: 'LOADING.START' }
-    /** loading prop 变为 false：到达 100 进入淡出。 */
+    /** loading prop 变为 false：进度段冲向 100。 */
     | { type: 'LOADING.END' }
     /** 爬升参数（trickle / trickleSpeed / value）被改写，计时器按新参数重新挂载。 */
     | { type: 'TRICKLE.SYNC' }
     /** 爬升节拍到期。 */
     | { type: 'after.trickleSpeed' }
+    /** 进度段冲向 100 的平移过渡播完，开始淡出。 */
+    | { type: 'FILL.DONE' }
     /** 根节点上的淡出过渡播完，归零收起。 */
     | { type: 'FADE.DONE' }
   tag: never
   guard: never
   action: 'syncLoading' | 'syncTrickle' | 'primeValue' | 'advanceValue' | 'completeValue' | 'resetValue'
-  effect: 'trackTrickle' | 'waitForFade'
+  effect: 'trackTrickle' | 'waitForFill' | 'waitForFade'
 }
 
 export interface LoadingBarApi<T extends PropTypes = PropTypes> {

@@ -118,6 +118,35 @@ describe('加载条的填充', () => {
     expect(dir === 'ltr' ? peg.right : peg.left).toBeCloseTo(front, 0)
   })
 
+  it('收尾先把条子走满、满格停一拍再淡出：填充到头之前根节点一直不透明', async () => {
+    const loading = ref(true)
+    await mount(() => h(XhLoadingBarRoot, { loading: loading.value, trickle: false }, () => [
+      h(XhLoadingBarTrack, null, () => [h(XhLoadingBarRange, null, () => [h(XhLoadingBarPeg)])]),
+    ]))
+    const root = part('loading-bar', 'root')
+    const track = part('loading-bar', 'track')
+    const range = part('loading-bar', 'range')
+    const hold = Number.parseFloat(getComputedStyle(root).getPropertyValue('--xh-motion-duration-micro'))
+
+    loading.value = false
+    await nextTick()
+    // 逐帧取样到条子收起：每一帧记下露出的比例、根节点的不透明度与时刻
+    const samples: Array<{ ratio: number, opacity: number, at: number }> = []
+    for (let frame = 0; frame < 240 && !root.hidden; frame++) {
+      samples.push({ ratio: visible(track, range).ratio, opacity: Number(getComputedStyle(root).opacity), at: performance.now() })
+      await new Promise(resolve => requestAnimationFrame(resolve))
+    }
+    expect(root.hidden).toBe(true)
+
+    // 没走满的那些帧里条子不许开始变淡
+    expect(samples.filter(s => s.ratio < 0.999).every(s => s.opacity === 1)).toBe(true)
+    // 走满之后不透明地停留一拍，才开始淡出
+    const full = samples.find(s => s.ratio >= 0.999)!
+    const fading = samples.find(s => s.opacity < 1)!
+    expect(full.opacity).toBe(1)
+    expect(fading.at - full.at).toBeGreaterThanOrEqual(hold * 0.8)
+  })
+
   it('收尾时留在满格等淡出过渡真正播完才归零：淡出时长给多长就等多长', async () => {
     const loading = ref(true)
     await mount(() => h(XhLoadingBarRoot, { loading: loading.value, trickle: false, fadeDuration: 400 }, () => [
@@ -126,8 +155,9 @@ describe('加载条的填充', () => {
     const root = part('loading-bar', 'root')
     loading.value = false
     await nextTick()
+    expect(root.dataset.state).toBe('complete')
+    await expect.poll(() => root.dataset.state, { timeout: 2000 }).toBe('finishing')
     const started = performance.now()
-    expect(root.dataset.state).toBe('finishing')
     // 淡出时长写进了皮肤的时长槽，过渡按它播
     expect(getComputedStyle(root).transitionDuration.split(', ')[0]).toBe('0.4s')
 

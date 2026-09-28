@@ -103,13 +103,13 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 | --- | --- | --- | --- |
 | `value` | `number` |  | 受控进度值（0-100）。提供后即为确定进度：宽度按它显示，内部爬升停止。 |
 | `defaultValue` | `number` |  | 非受控初值，默认 0。 |
-| `loading` | `boolean` |  | 加载开关：true 开始，false 结束（到达 100 后淡出归零）。只由宿主写入，无配套回调。 |
+| `loading` | `boolean` |  | 加载开关：true 开始，false 结束（走满 100 后淡出归零）。只由宿主写入，无配套回调。 |
 | `height` | `string \| number` |  | 进度条厚度：数字按像素，字符串按任意 CSS 长度。默认 2px。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定进度段使用哪族颜色。需要其他颜色时修改皮肤槽 --xh-loading-bar-range。 |
 | `trickle` | `boolean` |  | 不确定进度时自行向前爬升，默认开启。关闭则停在起步值等待宿主收尾。 |
 | `trickleSpeed` | `number` |  | 爬升节拍毫秒，默认 200；&lt;=0 或非有限数等同于关闭爬升。 |
 | `minimum` | `number` |  | 起步值，默认 8：开始加载时先跳到该值。 |
-| `fadeDuration` | `number` |  | 到达 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽 --xh-loading-bar-fade，不给按退场令牌；淡出过渡真正播完才归零并收起。 |
+| `fadeDuration` | `number` |  | 走满 100 之后的淡出时长毫秒，写进皮肤的淡出时长槽 --xh-loading-bar-fade，不给按退场令牌；淡出过渡真正播完才归零并收起。 |
 | `translations` | `Partial<LoadingBarTranslations>` |  |  |
 | `onValueChange` | `(details: LoadingBarValueChangeDetails) => void` |  | 进度值变化。不确定进度下每爬升一步、到达 100、归零各通知一次。 |
 
@@ -143,16 +143,16 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'idle' \| 'loading' \| 'finishing' |
-| `track` | 'idle' \| 'loading' \| 'finishing' |
-| `range` | 'idle' \| 'loading' \| 'finishing' |
-| `peg` | 'idle' \| 'loading' \| 'finishing' |
+| `root` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
+| `track` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
+| `range` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
+| `peg` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
 
 以下名称仅用于内部状态机。
 
-**状态**：`idle` · `loading` · `finishing`
+**状态**：`idle` · `loading` · `complete` · `finishing`
 
-**事件**：`LOADING.START` · `LOADING.END` · `TRICKLE.SYNC` · `after.trickleSpeed` · `FADE.DONE`
+**事件**：`LOADING.START` · `LOADING.END` · `TRICKLE.SYNC` · `after.trickleSpeed` · `FILL.DONE` · `FADE.DONE`
 
 ### connect API
 
@@ -203,11 +203,11 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-indeterminate` | ''（条件成立时才出现） |
-| `root` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
+| `root` | `data-state` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
 | `root` | `data-tone` | props.tone |
-| `track` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
-| `range` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
-| `peg` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
+| `track` | `data-state` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
+| `range` | `data-state` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
+| `peg` | `data-state` | 'idle' \| 'loading' \| 'complete' \| 'finishing' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -227,7 +227,7 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 
 ### 动效
 
-动效角色：指示与换位 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 指示与换位 · 出现（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-loading-bar-fade` · `--xh-loading-bar-speed`。
 
