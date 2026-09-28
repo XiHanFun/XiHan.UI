@@ -22,9 +22,6 @@
 //   data-direction="fixed"，其余不写；两侧反查。
 // - 每份文件对应清单里的一个组件或一条跨分类引用，名单外的文件判红。
 //
-// 仍挂真实组件的实例预览（文件里有 <script>）另按实例判据核对：md 默认档、默认 variant，
-// tone 只给语气即用途的组件，内联尺寸与间距只引令牌，没有裸 overflow，文字不用 p / li / a。
-//
 // 用法：node tooling/scripts/docs/check-catalog-preview.mjs
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -78,64 +75,7 @@ const ROOT_ATTRS = {
 const CHART_NON_COLOR = /-(?:alpha|bar-max|height|gap|line-width|point-size|tick-length|hit-min|label-gap|node-width)$/
 const OPACITY_TOKENS = new Set(['--xh-chart-area-alpha', '--xh-chart-link-alpha'])
 
-/** 实例预览：以尺寸本身为身份的组件，允许的那一档。 */
-const SIZE_EXEMPT = {
-  'color-swatch': 'lg',
-  'icon': 'lg',
-  'number-animation': 'lg',
-}
-/** 实例预览：核心用途即语气的组件，允许一个非 neutral 的 tone。 */
-const TONE_ALLOWED = new Set(['alert', 'toast', 'notification', 'badge', 'progress'])
-
 const problems = []
-
-/** 实例预览的起始标签（含属性），属性值里的 > 按引号配对跳过。 */
-function* instanceTags(template, offset) {
-  const re = /<([A-Z][\w-]*)((?:\s(?:[^<>"']|"[^"]*"|'[^']*')*)?)>/gi
-  for (const m of template.matchAll(re))
-    yield { name: m[1], attrs: m[2] ?? '', line: offset + template.slice(0, m.index).split('\n').length - 1 }
-}
-
-function checkInstancePreview(id, path, source, usedExempt) {
-  const where = line => `${path}:${line}`
-  const m = source.match(/<template>([\s\S]*)<\/template>/)
-  const template = m ? m[1] : ''
-  const offset = lineAt(source, source.indexOf('<template>'))
-  const hostsScrollbar = /<XhScrollbarRoot\b[^>]*:scrollable=/.test(template)
-  const styleOf = attrs => attrs.match(/\sstyle="([^"]*)"/)?.[1] ?? ''
-  let root = true
-  for (const { name, attrs, line } of instanceTags(template, offset)) {
-    const style = styleOf(attrs)
-    if (root) {
-      root = false
-      for (const w of style.matchAll(/(?:^|;)\s*(max-)?inline-size\s*:\s*([^;]+)/g)) {
-        if (!/^var\(--xh-doc-catalog-w(?:-narrow)?\)$/.test(w[2].trim()))
-          problems.push(`${where(line)}  预览根 ${w[1] ?? ''}inline-size: ${w[2].trim()} —— 宽度由卡片以 --xh-doc-catalog-w / --xh-doc-catalog-w-narrow 下发，预览根只引这两个变量`)
-      }
-    }
-    if (/^(?:p|li|a)$/.test(name))
-      problems.push(`${where(line)}  <${name}> —— 总览预览的文字用 span / div，不用 p / li / a`)
-    const size = attrs.match(/\ssize="(sm|lg|xs|xl)"/)
-    if (size) {
-      if (SIZE_EXEMPT[id] === size[1])
-        usedExempt.add(id)
-      else
-        problems.push(`${where(line)}  <${name} size="${size[1]}"> —— 总览预览一律 md 默认档；以尺寸为身份的组件登记进 SIZE_EXEMPT`)
-    }
-    if (/\svariant="/.test(attrs))
-      problems.push(`${where(line)}  <${name} variant> —— 总览预览一律默认 variant，删掉这个属性`)
-    if (/\s:?tone="/.test(attrs) && !TONE_ALLOWED.has(id))
-      problems.push(`${where(line)}  <${name} tone> —— 只有 ${[...TONE_ALLOWED].join(' / ')} 的总览预览允许非 neutral 的 tone`)
-    if (!style)
-      continue
-    for (const s of style.matchAll(/(?:^|;)\s*((?:font-size|padding|gap|margin)[a-z-]*)\s*:([^;]*\dpx[^;]*)/g))
-      problems.push(`${where(line)}  ${s[1]}: ${s[2].trim()} —— 预览里的字号、内衬与间距只引令牌，不写 px 字面值`)
-    if (/overflow(?:-x|-y)?\s*:\s*(?:auto|scroll)\b/.test(style) && !/\sdata-xh-scroll\b/.test(attrs) && !(hostsScrollbar && /\sref=/.test(attrs)))
-      problems.push(`${where(line)}  <${name}> 裸 overflow: auto | scroll —— 加 data-xh-scroll 取 reset 层的细条，或改用 ScrollArea`)
-    if (/scrollbar-width\s*:/.test(style))
-      problems.push(`${where(line)}  scrollbar-width —— 细条由 reset 层统一给，自绘条宿主的原生条由 [data-xh-scrollbar] 隐藏，预览不手写`)
-  }
-}
 
 // ── 事实：令牌、清单 ─────────────────────────────────────────────────────────
 
@@ -201,8 +141,6 @@ const num = value => Number(value)
 const files = (await readdir(CATALOG)).filter(file => file.endsWith('.vue')).sort()
 let elements = 0
 let widest = { id: '', count: 0 }
-const instances = new Set()
-const usedExempt = new Set()
 
 for (const file of files) {
   const id = file.slice(0, -'.vue'.length)
@@ -213,12 +151,6 @@ for (const file of files) {
 
   if (!expected.has(id))
     report(1, `${id} 不在 ${MANIFEST} 的组件或跨分类引用里——组件改名或退役了就一起删掉这份示意图`)
-
-  if (/<script\b/.test(source)) {
-    instances.add(id)
-    checkInstancePreview(id, path, source, usedExempt)
-    continue
-  }
 
   const outer = source.replace(/\s+/g, ' ').trim()
   if (!/^<template>[\s\S]*<\/template>$/.test(outer)) {
@@ -394,10 +326,6 @@ for (const id of COLOR_SAMPLES) {
   if (!files.includes(`${id}.vue`))
     problems.push(`COLOR_SAMPLES 登记了 ${id}，但 ${CATALOG}/${id}.vue 不存在——名单过期了，删掉这条`)
 }
-for (const [id, size] of Object.entries(SIZE_EXEMPT)) {
-  if (instances.has(id) && !usedExempt.has(id))
-    problems.push(`SIZE_EXEMPT 登记了 ${id} 的 size="${size}"，但实例预览里没用到——名单过期了，删掉这条`)
-}
 
 if (problems.length) {
   console.error('[check-catalog-preview] ✗ 组件总览示意图偏离书写规范：')
@@ -407,7 +335,6 @@ if (problems.length) {
 }
 
 console.log(
-  `[check-catalog-preview] 通过：${files.length - instances.size} 张总览示意图都是 ${VIEW_BOX} 画布上的纯 SVG，颜色只取语义令牌，`
-  + `合计 ${elements} 个元素（最多的 ${widest.id || '—'} ${widest.count} 个）；`
-  + `另有 ${instances.size} 份实例预览按 md 默认档与令牌判据核对`,
+  `[check-catalog-preview] 通过：${files.length} 张总览示意图都是 ${VIEW_BOX} 画布上的纯 SVG，颜色只取语义令牌，`
+  + `合计 ${elements} 个元素（最多的 ${widest.id} ${widest.count} 个）；方向固定 ${fixedDirection.size} 张`,
 )
