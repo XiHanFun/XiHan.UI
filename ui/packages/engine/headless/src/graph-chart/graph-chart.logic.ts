@@ -10,7 +10,7 @@ import type { PropFn, Scope } from '@xihan-ui/core'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef } from '../shared/chart'
 import type { GraphModel, GraphNodeGeometry } from './graph-chart.model'
 import type { GraphChartSchema, GraphOverlay } from './graph-chart.schema'
-import type { GraphChartTranslations, GraphSummary, GraphTooltipModel, GraphTooltipRow } from './graph-chart.types'
+import type { GraphChartTranslations, GraphSummary, GraphTooltipModel, GraphTooltipRow, GraphView } from './graph-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { CHART_TRANSLATIONS, chartActiveSource, resolveChartTranslations } from '../shared/chart'
 import { graphNodeKey } from './graph-chart.model'
@@ -38,6 +38,7 @@ export const GRAPH_TRANSLATIONS: GraphChartTranslations = Object.freeze({
   sourceLabel: 'Source',
   targetLabel: 'Target',
   valueLabel: 'Value',
+  linkLabel: 'Label',
   linksLabel: 'Links',
   incomingLabel: 'Incoming',
   outgoingLabel: 'Outgoing',
@@ -56,6 +57,14 @@ export function graphTranslations(overrides: Partial<GraphChartTranslations> | u
     translationsCache.set(overrides, hit)
   }
   return hit
+}
+
+/** 不缩放、不平移。 */
+export const GRAPH_HOME_VIEW: GraphView = Object.freeze({ k: 1, x: 0, y: 0 })
+
+/** 画面按的视图：zoom 关着时恒是原样，受控递进来的视图也不生效。 */
+export function graphViewOf(prop: PropFn<GraphChartSchema>, context: GraphModelSource['context']): GraphView {
+  return prop('zoom') === true ? context.get('view') ?? GRAPH_HOME_VIEW : GRAPH_HOME_VIEW
 }
 
 /** 取模型要读的那几处：机器的参数与连接层的服务都满足它。 */
@@ -78,7 +87,7 @@ export function graphModelOf(source: GraphModelSource): GraphModel {
     hiddenSeries: context.get('hiddenSeries'),
     format: prop('format'),
     positions: context.get('positions') ?? null,
-    view: context.get('view') ?? { k: 1, x: 0, y: 0 },
+    view: graphViewOf(prop, context),
     size: context.get('size'),
     metrics: context.get('metrics'),
     measurer: refs.get('measurer'),

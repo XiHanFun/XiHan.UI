@@ -119,6 +119,17 @@ const cases: readonly ConformanceCase[] = [
     ],
   },
   {
+    name: '受控 view：缩放只派发 view-change，宿主写回后才放大',
+    spec: { adr: 'controlled-uncontrolled' },
+    props: { zoom: true, view: { k: 1, x: 0, y: 0 } },
+    steps: [
+      { kind: 'focus', part: 'node[0]', via: 'keyboard' },
+      { kind: 'key', key: '+', expect: { parts: { plot: { 'data-zoomed': null } }, events: [{ type: 'view-change' }] } },
+      { kind: 'setProps', props: { view: { k: 1.25, x: 0, y: 0 } } },
+      { kind: 'settle', until: { attr: { part: 'plot', name: 'data-zoomed', value: '' } } },
+    ],
+  },
+  {
     name: 'Escape：收起提示框，焦点留在原处',
     spec: { apg: APG },
     covers: ['graph-chart.kbd.dismiss'],
@@ -203,6 +214,19 @@ const cases: readonly ConformanceCase[] = [
     initial: {
       counts: { 'node': 4, 'link': 3, 'legend-item': 0 },
       parts: { node: [{ 'aria-label': 'Root, 2 links' }, { 'aria-label': 'X, 2 links' }, { 'aria-label': 'X1, 1 link' }, { 'aria-label': 'Y, 1 link' }] },
+    },
+  },
+  {
+    name: 'layout="preset"：按节点上的坐标摆放；连线上的字对读屏隐藏，数据表多一列',
+    spec: { adr: 'chart-variant' },
+    props: {
+      layout: 'preset',
+      nodes: [{ id: 'a', name: 'Alpha', x: 0, y: 0 }, { id: 'b', name: 'Beta', x: 100, y: 0 }],
+      links: [{ source: 'a', target: 'b', label: 'owns' }],
+    },
+    initial: {
+      counts: { 'node': 2, 'link': 1, 'link-label': 1 },
+      parts: { 'link-label': [{ 'aria-hidden': 'true' }] },
     },
   },
   {

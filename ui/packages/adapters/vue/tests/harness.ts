@@ -47,6 +47,7 @@ const PUBLIC_EVENTS = {
   'datum-active': 'onDatumActive',
   'datum-press': 'onDatumPress',
   'cell-press': 'onCellPress',
+  'view-change': 'onViewChange',
   'window-change': 'onWindowChange',
   'brush-selection-change': 'onBrushSelectionChange',
   'root-key-change': 'onRootKeyChange',

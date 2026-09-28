@@ -26,4 +26,5 @@ export type {
   GraphTooltipModel,
   GraphTooltipRow,
   GraphView,
+  GraphViewChangeDetails,
 } from './graph-chart.types'

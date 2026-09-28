@@ -17,6 +17,12 @@ export interface GraphNodeDatum {
   readonly group?: string
   /** 数值：经平方根比例尺决定节点面积；不写时节点一样大。 */
   readonly value?: number
+  /**
+   * 预设坐标：layout 为 preset 时节点按它摆放。单位随意（经纬度、设计稿像素都行），
+   * 整体等比缩放到绘图区里，纵轴向下为正。其余布局不读它。
+   */
+  readonly x?: number
+  readonly y?: number
 }
 
 /** 一条连线：两端节点的身份，可选的权重决定线的粗细。 */
@@ -24,16 +30,26 @@ export interface GraphLinkDatum {
   readonly source: string
   readonly target: string
   readonly value?: number
+  /** 连线上写的字（关系名）：画在连线中点，数据表里多一列。 */
+  readonly label?: string
 }
 
-/** 布局：force 力导（缺省），circular 环形，tree 树（根在左、自左而右），radial-tree 径向树（根在中间）。 */
-export type GraphLayout = 'force' | 'circular' | 'tree' | 'radial-tree'
+/**
+ * 布局：force 力导（缺省），circular 环形，tree 树（根在左、自左而右），radial-tree 径向树（根在中间），
+ * preset 按节点上写的 x / y 摆放（等比缩放到绘图区）。
+ */
+export type GraphLayout = 'force' | 'circular' | 'tree' | 'radial-tree' | 'preset'
 
 /** 画布的平移缩放：k 是缩放倍数，(x, y) 是平移；节点的位置跟着变，大小与文字不变。 */
 export interface GraphView {
   readonly k: number
   readonly x: number
   readonly y: number
+}
+
+/** 画布视图变化时对外报告的详情。 */
+export interface GraphViewChangeDetails {
+  view: GraphView
 }
 
 /** 图例里的一项：一个分组一项。 */
@@ -70,6 +86,8 @@ export interface GraphChartTranslations extends ChartTranslations {
   sourceLabel: string
   targetLabel: string
   valueLabel: string
+  /** 数据表里连线上的字那一列的列名。 */
+  linkLabel: string
   /** 提示框里连线数一行的名字。 */
   linksLabel: string
   /** 有向时入边与出边的名字。 */

@@ -27692,6 +27692,22 @@
             },
             {
               "kind": "field",
+              "name": "view",
+              "privacy": "public",
+              "type": {
+                "text": "GraphView | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultView",
+              "privacy": "public",
+              "type": {
+                "text": "GraphView | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "activeKey",
               "privacy": "public",
               "type": {
@@ -27741,6 +27757,12 @@
             {
               "kind": "field",
               "name": "notifyActive",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyView",
               "privacy": "private",
               "readonly": true
             },
@@ -27870,11 +27892,11 @@
             },
             {
               "kind": "field",
-              "name": "view",
+              "name": "currentView",
               "type": {
                 "text": "GraphView"
               },
-              "description": "画布此刻的平移缩放。",
+              "description": "画布此刻的平移缩放。view 是作者递进来的受控值，非受控时读这里。",
               "readonly": true
             },
             {
@@ -28124,6 +28146,13 @@
           ],
           "events": [
             {
+              "description": "画布视图变化（缩放、平移、复位）；detail 为 `{ view }`，受控时由宿主写回 view property",
+              "name": "view-change",
+              "type": {
+                "text": "GraphViewChangeDetails"
+              }
+            },
+            {
               "description": "图例切换显隐；detail 为 `{ hiddenSeries: string[] }`",
               "name": "hidden-series-change",
               "type": {
@@ -28157,7 +28186,7 @@
               "type": {
                 "text": "GraphLayout | undefined"
               },
-              "description": "布局，默认 force",
+              "description": "布局，默认 force；preset 按节点上写的 x / y 摆放",
               "name": "layout",
               "fieldName": "layout"
             },

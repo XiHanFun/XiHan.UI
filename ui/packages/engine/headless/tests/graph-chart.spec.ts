@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// 关系图：规格与诊断、阅读序与图例显隐、四种布局的几何、节点面积、有向箭头、命中与强调、按方向的键盘、拖动、平移缩放、入场、无障碍。
+// 关系图：规格与诊断、阅读序与图例显隐、五种布局的几何、节点面积、有向箭头、连线上的字、命中与强调、按方向的键盘、拖动、平移缩放与受控视图、入场、无障碍。
 import type { DiagnosticRecord, Service } from '@xihan-ui/core'
 import type { ArcMark, LineMark, Mark, TextMark } from '@xihan-ui/viz'
 import type { GraphChartApi, GraphChartSchema } from '../src/graph-chart'
@@ -237,6 +237,39 @@ describe('几何', () => {
     expect(d('x1')).toBeGreaterThan(d('x'))
   })
 
+  it('预设：按节点上的 x / y 等比缩放进绘图区，纵轴向下；名字写在节点下面，节点不能拖', async () => {
+    const nodes = [{ id: 'a', x: 0, y: 0 }, { id: 'b', x: 100, y: 0 }, { id: 'c', x: 0, y: 50 }]
+    const rig = await makeRig({ nodes, links: [{ source: 'a', target: 'b' }], layout: 'preset' })
+    const api = rig.api()
+    const [a, b, c] = ['a', 'b', 'c'].map(id => node(api, id))
+    expect(a!.cy).toBeCloseTo(b!.cy)
+    expect(a!.cx).toBeCloseTo(c!.cx)
+    expect(c!.cy).toBeGreaterThan(a!.cy)
+    // 等比：横向 100、纵向 50 的跨度画出来仍是 2 比 1
+    expect((b!.cx - a!.cx) / (c!.cy - a!.cy)).toBeCloseTo(2)
+    for (const m of [a!, b!, c!]) {
+      expect(m.cx).toBeGreaterThan(0)
+      expect(m.cx).toBeLessThan(640)
+      expect(m.cy).toBeGreaterThan(0)
+      expect(m.cy).toBeLessThan(400)
+    }
+    const label = byPart(api, 'node-label').find(m => m.key === 'label:a') as TextMark
+    expect(label.y).toBeGreaterThan(a!.cy + a!.outerRadius)
+    expect((api.getPlotProps() as Dict)['data-draggable']).toBeUndefined()
+  })
+
+  it('预设：只有一个点时摆在正中；有节点缺 x / y 报 chart.graph-shape', async () => {
+    const one = await makeRig({ nodes: [{ id: 'a', x: 7, y: 9 }], layout: 'preset' })
+    const a = node(one.api(), 'a')
+    expect(a.cx).toBeCloseTo(320)
+    const seen: DiagnosticRecord[] = []
+    stops.push(onDiagnostic(r => seen.push(r)))
+    const bad = await makeRig({ nodes: [{ id: 'a', x: 0, y: 0 }, { id: 'b', x: 1 }], layout: 'preset' })
+    expect(seen.map(r => r.code)).toContain(DIAGNOSTIC_CODES.chartGraphShape)
+    expect(seen.at(-1)?.message).toMatch(/b/)
+    expect((bad.api().getRootProps() as Dict)['data-state']).toBe('error')
+  })
+
   it('数值按平方根比例尺定面积：大的节点半径大', async () => {
     const rig = await makeRig({ nodes: [{ id: 'a', value: 100 }, { id: 'b', value: 25 }, { id: 'c' }], links: [], layout: 'circular' })
     const api = rig.api()
@@ -253,6 +286,46 @@ describe('几何', () => {
     expect(Math.hypot(link.points[1]!.x - target.cx, link.points[1]!.y - target.cy)).toBeGreaterThan(target.outerRadius)
     await focus(rig, 'c')
     expect(rig.api().tooltip).toEqual({ header: 'Gamma', rows: [{ key: 'incoming', name: 'Incoming', value: '2' }, { key: 'outgoing', name: 'Outgoing', value: '1' }] })
+  })
+})
+
+describe('连线上的字', () => {
+  const FAR = [{ id: 'a', name: 'A', x: 0, y: 0 }, { id: 'b', name: 'B', x: 400, y: 0 }, { id: 'c', name: 'C', x: 0, y: 300 }]
+
+  it('写在两端圆心连线的中点，压在节点之上，对读屏隐藏', async () => {
+    const rig = await makeRig({ nodes: FAR, links: [{ source: 'a', target: 'b', label: 'owns' }, { source: 'a', target: 'c' }], layout: 'preset' })
+    const api = rig.api()
+    const labels = byPart(api, 'link-label') as TextMark[]
+    expect(labels.map(l => l.text)).toEqual(['owns'])
+    const [a, b] = [node(api, 'a'), node(api, 'b')]
+    expect(labels[0]!.x).toBeCloseTo((a.cx + b.cx) / 2)
+    expect(labels[0]!.y).toBeCloseTo((a.cy + b.cy) / 2)
+    expect(api.scene.layers.front).toContain(labels[0])
+    expect((api.getMarkProps(labels[0]!) as Dict)['aria-hidden']).toBe(true)
+  })
+
+  it('中点压在别的节点上时不写：节点优先', async () => {
+    const nodes = [{ id: 'a', x: 0, y: 0 }, { id: 'm', x: 100, y: 0 }, { id: 'b', x: 200, y: 0 }]
+    const rig = await makeRig({ nodes, links: [{ source: 'a', target: 'b', label: 'across' }], layout: 'preset' })
+    expect(byPart(rig.api(), 'link-label')).toHaveLength(0)
+  })
+
+  it('随它那条线淡出：指着别的节点时不连着它的线上的字淡出', async () => {
+    const links = [{ source: 'a', target: 'b', label: 'ab' }, { source: 'a', target: 'c', label: 'ac' }]
+    const rig = await makeRig({ nodes: [...FAR, { id: 'd', x: 400, y: 300 }], links: [...links, { source: 'b', target: 'd' }], layout: 'preset' })
+    const b = node(rig.api(), 'b')
+    ;(rig.api().getPlotProps() as Dict).onPointerMove({ clientX: b.cx, clientY: b.cy, currentTarget: plotRect(rig.api()), pointerId: 1 })
+    await settle()
+    const api = rig.api()
+    const dim = (text: string): unknown => (api.getMarkProps(byPart(api, 'link-label').find(m => (m as TextMark).text === text)!) as Dict)['data-dimmed']
+    expect([dim('ab'), dim('ac')]).toEqual([undefined, ''])
+  })
+
+  it('数据表多一列关系，没写的格写缺失', async () => {
+    const rig = await makeRig({ nodes: FAR, links: [{ source: 'a', target: 'b', label: 'owns' }, { source: 'a', target: 'c' }], layout: 'preset' })
+    const { table } = rig.api()
+    expect(table.columns.map(c => c.label)).toEqual(['Source', 'Target', 'Label'])
+    expect(table.rows.map(r => r.cells[2]!.text)).toEqual(['owns', 'No value'])
   })
 })
 
@@ -353,6 +426,40 @@ describe('拖动与平移缩放', () => {
     off.api().zoomBy(2)
     await settle()
     expect(off.api().view.k).toBe(1)
+  })
+})
+
+describe('受控视图', () => {
+  it('给了 view 即受控：缩放只发 onViewChange，宿主写回才生效', async () => {
+    const onViewChange = vi.fn()
+    const rig = await makeRig({ ...BASE, layout: 'circular', zoom: true, view: { k: 1, x: 0, y: 0 }, onViewChange })
+    const before = node(rig.api(), 'a')
+    rig.api().zoomBy(2, { x: 320, y: 200 })
+    await settle()
+    expect(onViewChange).toHaveBeenCalledWith({ view: { k: 2, x: -320, y: -200 } })
+    expect(rig.api().view).toEqual({ k: 1, x: 0, y: 0 })
+    expect(node(rig.api(), 'a').cx).toBe(before.cx)
+    rig.setProps({ view: { k: 2, x: -320, y: -200 } })
+    await settle()
+    expect(rig.api().view.k).toBe(2)
+    expect(node(rig.api(), 'a').cx - 320).toBeCloseTo((before.cx - 320) * 2)
+  })
+
+  it('宿主每次给新对象、值没变时不算变化；defaultView 是初始视图', async () => {
+    const onViewChange = vi.fn()
+    const rig = await makeRig({ ...BASE, layout: 'circular', zoom: true, view: { k: 2, x: 0, y: 0 }, onViewChange })
+    rig.setProps({ view: { k: 2, x: 0, y: 0 } })
+    await settle()
+    expect(onViewChange).not.toHaveBeenCalled()
+    const initial = await makeRig({ ...BASE, layout: 'circular', zoom: true, defaultView: { k: 1.5, x: -10, y: 0 } })
+    expect(initial.api().view).toEqual({ k: 1.5, x: -10, y: 0 })
+  })
+
+  it('zoom 关着时受控视图不生效，画面按原样', async () => {
+    const plain = await makeRig({ ...BASE, layout: 'circular' })
+    const rig = await makeRig({ ...BASE, layout: 'circular', view: { k: 3, x: -50, y: 0 } })
+    expect(rig.api().view).toEqual({ k: 1, x: 0, y: 0 })
+    expect(node(rig.api(), 'a').cx).toBeCloseTo(node(plain.api(), 'a').cx)
   })
 })
 

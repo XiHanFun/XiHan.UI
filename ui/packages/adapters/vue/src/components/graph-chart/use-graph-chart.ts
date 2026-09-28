@@ -16,7 +16,7 @@ import { useMachine } from '../../runtime/use-machine'
 /** 对外的回调：由外壳（emit）或组合式调用方提供，随 props 一并喂给机器。 */
 export type GraphChartNotifiers = Pick<
   GraphChartSchema['props'],
-  'onHiddenSeriesChange' | 'onActiveKeyChange' | 'onDatumActive' | 'onDatumPress'
+  'onHiddenSeriesChange' | 'onActiveKeyChange' | 'onDatumActive' | 'onDatumPress' | 'onViewChange'
 >
 
 export interface GraphChartContext {

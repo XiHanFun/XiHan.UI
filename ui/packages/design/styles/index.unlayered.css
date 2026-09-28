@@ -28808,13 +28808,25 @@
 [data-scope='graph-chart'][data-part='link'][data-dimmed],
 [data-scope='graph-chart'][data-part='arrow'][data-dimmed],
 [data-scope='graph-chart'][data-part='node'][data-dimmed],
-[data-scope='graph-chart'][data-part='node-label'][data-dimmed] {
+[data-scope='graph-chart'][data-part='node-label'][data-dimmed],
+[data-scope='graph-chart'][data-part='link-label'][data-dimmed] {
   opacity: var(--xh-chart-dim-alpha);
 }
 
 /* 节点名可能压在连线上：正文色，描一圈承载面色，交叠处也读得清。名字不接指针，命中归节点 */
 [data-scope='graph-chart'][data-part='node-label'] {
   fill: var(--xh-fg-default);
+  stroke: var(--xh-chart-surface);
+  stroke-width: var(--xh-stroke-thick);
+  stroke-linejoin: round;
+  paint-order: stroke;
+  pointer-events: none;
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 连线上的字就压在线上：次级文字色与节点名分出主次，同样描一圈承载面色把线从字底下断开 */
+[data-scope='graph-chart'][data-part='link-label'] {
+  fill: var(--xh-fg-muted);
   stroke: var(--xh-chart-surface);
   stroke-width: var(--xh-stroke-thick);
   stroke-linejoin: round;
@@ -28859,7 +28871,8 @@
     --xh-_graph-link: Highlight;
   }
 
-  [data-scope='graph-chart'][data-part='node-label'] {
+  [data-scope='graph-chart'][data-part='node-label'],
+  [data-scope='graph-chart'][data-part='link-label'] {
     fill: CanvasText;
     stroke: Canvas;
   }

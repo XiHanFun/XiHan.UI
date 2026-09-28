@@ -16,6 +16,7 @@ import type {
   GraphLinkDatum,
   GraphNodeDatum,
   GraphTooltipModel,
+  GraphView,
   NumberFormatSpec,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
@@ -162,6 +163,9 @@ export const XhGraphChartRoot = defineComponent({
     directed: { type: Boolean, default: undefined },
     draggableNodes: { type: Boolean, default: undefined },
     zoom: { type: Boolean, default: undefined },
+    /** 画布视图：给了即受控，配合 v-model:view。 */
+    view: { type: Object as PropType<GraphView> },
+    defaultView: { type: Object as PropType<GraphView> },
     format: { type: [Object, Function] as PropType<NumberFormatSpec | ((value: number) => string)> },
     hiddenSeries: { type: Array as PropType<string[]> },
     defaultHiddenSeries: { type: Array as PropType<string[]> },
@@ -179,6 +183,8 @@ export const XhGraphChartRoot = defineComponent({
     'update:activeKey': (_key: PayloadOf<GraphChartProps, 'onActiveKeyChange'>['activeKey']) => true,
     'datum-active': (_details: PayloadOf<GraphChartProps, 'onDatumActive'>) => true,
     'datum-press': (_details: PayloadOf<GraphChartProps, 'onDatumPress'>) => true,
+    'view-change': (_details: PayloadOf<GraphChartProps, 'onViewChange'>) => true,
+    'update:view': (_view: PayloadOf<GraphChartProps, 'onViewChange'>['view']) => true,
   },
   slots: Object as SlotsType<{
     /** 自行摆放部件；不写时铺开缺省结构：图例、视口（绘图区与空态）、提示框。 */
@@ -202,6 +208,10 @@ export const XhGraphChartRoot = defineComponent({
       },
       onDatumActive: details => emit('datum-active', details),
       onDatumPress: details => emit('datum-press', details),
+      onViewChange: (details) => {
+        emit('view-change', details)
+        emit('update:view', details.view)
+      },
     })
     provideGraphChart(ctx)
     return () => {
