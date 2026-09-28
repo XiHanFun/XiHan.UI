@@ -78,6 +78,19 @@ describe('环形', () => {
   })
 })
 
+describe('仪表盘的数值动效', () => {
+  it('指针转动与圆弧填充同属数值角色：同一次值变化两者同一档时长与曲线，指针不领先于弧', async () => {
+    mount({ variant: 'dashboard', semantics: 'meter', value: 50, thresholds: ZONES, indicator: 'needle' }, '50%')
+    await settle()
+    const needle = getComputedStyle(one('needle'))
+    const arc = getComputedStyle(one('range'))
+    expect(needle.transitionProperty).toBe('rotate')
+    expect(arc.transitionProperty).toBe('stroke-dashoffset')
+    expect(needle.transitionDuration).toBe(arc.transitionDuration)
+    expect(needle.transitionTimingFunction).toBe(arc.transitionTimingFunction)
+  })
+})
+
 describe('子弹图', () => {
   it('色带按上界比例落位，填充收窄压在色带正中，目标刻度落在目标值上', async () => {
     mount({ semantics: 'meter', value: 72, thresholds: ZONES, target: 80 })

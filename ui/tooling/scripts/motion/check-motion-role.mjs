@@ -121,6 +121,7 @@ const ROLE_OVERRIDE = {
   'toast:scale': '叠放重排：往后一层的收拢比例与位移是同一次换位，随位移走 move + continuous，不是形变',
   'image-viewer:rotate': '看片的旋转与平移、缩放同属一次视图变换，随平移走 nudge + continuous，不是部件原地形变',
   'image-viewer:scale': '看片的缩放与平移、旋转同属一次视图变换，随平移走 nudge + continuous，不是部件原地形变',
+  'progress:rotate': '仪表盘指针转到当前值是数值变化，与圆弧填充同属数值角色，随圆弧走 move + continuous，不是部件原地形变',
 }
 
 /** 去掉块注释但保留换行，报错行号才对得上源文件。 */

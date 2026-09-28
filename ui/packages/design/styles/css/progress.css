@@ -271,13 +271,14 @@
     translate: -50% -50%;
   }
 
-  /* 仪表盘的指针：朝 3 点钟画好，按当前值的角度绕环心转过去；数值变化时转动，与填充同一档时长 */
+  /* 仪表盘的指针：朝 3 点钟画好，按当前值的角度绕环心转过去。转动是数值变化，不是部件原地形变：
+     与圆弧填充同一档时长与曲线，同一次值变化两者一起起步一起落定 */
   [data-scope='progress'][data-part='needle'] {
     fill: var(--xh-progress-needle-color, var(--xh-fg-default));
     transform-box: view-box;
     transform-origin: 50% 50%;
     rotate: var(--xh-_progress-needle-angle, 0deg);
-    transition: rotate var(--xh-motion-duration-move) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 指针从环心伸出：环心内容让到缺口那一侧 */
