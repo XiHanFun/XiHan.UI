@@ -19506,9 +19506,10 @@
       border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
       background: var(--xh-carousel-indicator-bg, var(--xh-bg-subtle-hover-opaque));
       translate: -50% -50%;
+      /* 当前点伸长是跨尺寸的换位（move），与细指针下盒子本身的伸长同一档 */
       transition:
-        inline-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
-        block-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
+        inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+        block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
         background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
     }
 

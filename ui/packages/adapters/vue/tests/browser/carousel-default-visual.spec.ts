@@ -145,4 +145,17 @@ describe('carousel 默认视觉', () => {
     const otherMark = getComputedStyle(indicators[1]!, '::after')
     expect([otherMark.width, otherMark.height]).toEqual(['8px', '8px'])
   })
+
+  it('粗指针下点的伸长与细指针同一档：尺寸变化走 move，不走 nudge', async () => {
+    await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
+    const carousel = mount()
+    const fine = getComputedStyle(document.documentElement).getPropertyValue('--xh-motion-duration-move').trim()
+    const mark = getComputedStyle(carousel.current, '::after')
+    const props = mark.transitionProperty.split(', ')
+    const durations = mark.transitionDuration.split(', ')
+    for (const name of ['width', 'height']) {
+      const at = props.findIndex(prop => prop === name || prop === (name === 'width' ? 'inline-size' : 'block-size'))
+      expect(durations[at], name).toBe(`${Number.parseFloat(fine) / 1000}s`)
+    }
+  })
 })
