@@ -17558,7 +17558,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-max-h"
+        "--xh-overlay-menu-max-h"
       ],
       "visibility": "public",
       "description": "combobox 的 content 部件 max-block-size 覆盖槽。"
@@ -17576,7 +17576,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-max-w"
+        "none"
       ],
       "visibility": "public",
       "description": "combobox 的 content 部件 max-inline-size 覆盖槽。"
@@ -17606,16 +17606,16 @@
         "content"
       ],
       "property": [
-        "min-inline-size"
+        "inline-size"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-min-w"
+        "--xh-overlay-menu-min-w"
       ],
       "visibility": "public",
-      "description": "combobox 的 content 部件 min-inline-size 覆盖槽。"
+      "description": "combobox 的 content 部件 inline-size 覆盖槽。"
     },
     {
       "name": "--xh-combobox-content-px",
@@ -58552,7 +58552,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-max-w"
+        "none"
       ],
       "visibility": "public",
       "description": "select 的 content 部件 max-inline-size 覆盖槽。"
@@ -58564,7 +58564,7 @@
         "content"
       ],
       "property": [
-        "min-inline-size"
+        "inline-size"
       ],
       "state": [
         "default"
@@ -58573,7 +58573,7 @@
         "--xh-overlay-menu-min-w"
       ],
       "visibility": "public",
-      "description": "select 的 content 部件 min-inline-size 覆盖槽。"
+      "description": "select 的 content 部件 inline-size 覆盖槽。"
     },
     {
       "name": "--xh-select-content-px",
@@ -83520,7 +83520,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-max-h"
+        "--xh-overlay-menu-max-h"
       ],
       "visibility": "public",
       "description": "tree-select 的 content 部件 max-block-size 覆盖槽。"
@@ -83538,7 +83538,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-max-w"
+        "none"
       ],
       "visibility": "public",
       "description": "tree-select 的 content 部件 max-inline-size 覆盖槽。"
@@ -83550,16 +83550,16 @@
         "content"
       ],
       "property": [
-        "min-inline-size"
+        "inline-size"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-min-w"
+        "--xh-overlay-menu-min-w"
       ],
       "visibility": "public",
-      "description": "tree-select 的 content 部件 min-inline-size 覆盖槽。"
+      "description": "tree-select 的 content 部件 inline-size 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-content-px",

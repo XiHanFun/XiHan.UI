@@ -23,6 +23,7 @@ export interface TreeSelectContext {
   service: Service<TreeSelectSchema>
   api: ComputedRef<TreeSelectApi>
   triggerRef: Ref<HTMLElement | null>
+  controlRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
   /** 当前是否应当渲染：退场动画播完之前仍为真。 */
@@ -37,6 +38,7 @@ export function useTreeSelect(
 ): TreeSelectContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
+  const controlRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
 
@@ -66,7 +68,9 @@ export function useTreeSelect(
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
-    service.refs.set('getAnchorEl', () => triggerRef.value)
+    // 锚点是字段盒：列表面板与盒子同宽、左缘对齐；作者没写 control 时退回触发器
+    service.refs.set('getAnchorEl', () => controlRef.value ?? triggerRef.value)
+    service.refs.set('getTriggerEl', () => triggerRef.value)
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)
   }
@@ -82,5 +86,5 @@ export function useTreeSelect(
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget }
+  return { visible, service, api, triggerRef, controlRef, positionerRef, contentRef, portalTarget }
 }

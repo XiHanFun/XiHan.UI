@@ -178,7 +178,7 @@ outline、subtle 和 ghost
 - 选项可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
-- 控件使用 Field Chrome，浮层使用 M2 磨砂表面。
+- 控件使用 Field Chrome，浮层使用 M2 磨砂表面；候选面板与字段盒等宽，长选项在条目里截断。
 - 选中项保留普通文字，通过末端对号表示状态。
 - 关闭时立即退出交互，资源在退场动画结束后释放。
 
@@ -536,8 +536,8 @@ outline、subtle 和 ghost
 | `--xh-select-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | select 的 content 部件 color 覆盖槽。 |
 | `--xh-select-content-highlight` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-highlight` | select 的 content 部件 background 覆盖槽。 |
 | `--xh-select-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | select 的 content 部件 max-block-size 覆盖槽。 |
-| `--xh-select-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | select 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-select-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | select 的 content 部件 min-inline-size 覆盖槽。 |
+| `--xh-select-content-max-w` | `content` | `max-inline-size` | `default` | `none` | select 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-select-content-min-w` | `content` | `inline-size` | `default` | `--xh-overlay-menu-min-w` | select 的 content 部件 inline-size 覆盖槽。 |
 | `--xh-select-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | select 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-select-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | select 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-select-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | select 的 content 部件 border-radius 覆盖槽。 |

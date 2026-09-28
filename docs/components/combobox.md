@@ -94,6 +94,7 @@
 - 输入值、选中值与展开状态均可独立受控。
 - `loading` 与 `empty` 分别表示加载和空结果。
 - 支持自定义过滤、异步候选和自定义条目内容。
+- 候选面板与输入框所在的字段盒等宽，长候选在条目里截断。
 - 通过隐藏输入参与原生表单提交。
 
 ### 组合
@@ -455,10 +456,10 @@
 | `--xh-combobox-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | combobox 的 content 部件 color 覆盖槽。 |
 | `--xh-combobox-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | combobox 的 content 部件 gap 覆盖槽。 |
 | `--xh-combobox-content-highlight` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-highlight` | combobox 的 content 部件 background 覆盖槽。 |
-| `--xh-combobox-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | combobox 的 content 部件 max-block-size 覆盖槽。 |
-| `--xh-combobox-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | combobox 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-combobox-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | combobox 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-combobox-content-max-w` | `content` | `max-inline-size` | `default` | `none` | combobox 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-combobox-content-min-h` | `content` | `min-block-size` | `default` | `--xh-_combobox-h` | combobox 的 content 部件 min-block-size 覆盖槽。 |
-| `--xh-combobox-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` | combobox 的 content 部件 min-inline-size 覆盖槽。 |
+| `--xh-combobox-content-min-w` | `content` | `inline-size` | `default` | `--xh-overlay-menu-min-w` | combobox 的 content 部件 inline-size 覆盖槽。 |
 | `--xh-combobox-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | combobox 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | combobox 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | combobox 的 content 部件 border-radius 覆盖槽。 |

@@ -105,6 +105,7 @@ export function usePagination(
   }
 
   pageSizeSelect.refs.set('getAnchorEl', () => pageSizeTriggerRef.value)
+  pageSizeSelect.refs.set('getTriggerEl', () => pageSizeTriggerRef.value)
   pageSizeSelect.refs.set('getFloatingEl', () => pageSizePositionerRef.value)
   pageSizeSelect.refs.set('getContentEl', () => pageSizeContentRef.value)
 

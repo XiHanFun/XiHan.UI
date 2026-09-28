@@ -409,7 +409,7 @@ export function connectTreeSelect<T extends PropTypes>(
             return
           send({ type: 'VALUE.CLEAR' })
           // 键盘/程序化激活这一路主动把焦点送回 trigger
-          refs.get('getAnchorEl')()?.focus()
+          refs.get('getTriggerEl')()?.focus()
         },
       })
     },

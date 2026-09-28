@@ -98,6 +98,7 @@ export function usePagination(props: PaginationSchema['props']): PaginationConte
       service.refs.set('position', createPositionEngine())
     }
     service.refs.set('getAnchorEl', () => pageSizeTriggerRef.current)
+    service.refs.set('getTriggerEl', () => pageSizeTriggerRef.current)
     service.refs.set('getFloatingEl', () => pageSizePositionerRef.current)
     service.refs.set('getContentEl', () => pageSizeContentRef.current)
   }, [config])

@@ -360,7 +360,9 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     svc.refs.set('registerLayer', this.registerLayer)
     svc.refs.set('presence', this.exit.presence)
     svc.refs.set('position', this.positionEngine)
-    svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
+    // 锚点是字段盒：列表面板与盒子同宽、左缘对齐；作者没写 control 时退回触发器
+    svc.refs.set('getAnchorEl', () => this.getPart('control') ?? this.getPart('trigger'))
+    svc.refs.set('getTriggerEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
   }

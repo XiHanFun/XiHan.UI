@@ -72,7 +72,9 @@ export function useSelect(
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
-    service.refs.set('getAnchorEl', () => triggerRef.value)
+    // 锚点是字段盒：列表面板与盒子同宽、左缘对齐；作者没写 control 时退回触发器
+    service.refs.set('getAnchorEl', () => controlRef.value ?? triggerRef.value)
+    service.refs.set('getTriggerEl', () => triggerRef.value)
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)
   }

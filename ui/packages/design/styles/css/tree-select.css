@@ -26,8 +26,8 @@
     /* 落定那一侧的可用宽度，同样由定位引擎经内联自定义属性写进来，行内轴据此夹取；
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
     --xh-_tree-select-available-w: 100vw;
-    /* 触发器实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
-       引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
+    /* 字段盒实测宽度，由定位引擎经内联自定义属性写进来，内容层与它等宽；
+       引擎没算（尚未落位 / 无引擎）时为 0，面板取下界 */
     --xh-_tree-select-anchor-w: 0px;
     /* 独立浮层先截断祖先方向，再按自身 placement 开启一侧。 */
     --xh-_overlay-enter-up: 0;
@@ -288,14 +288,14 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    /* min 优先于 max，锚点与静态下界也必须受可用宽度约束。 */
-    min-inline-size: min(
-      max(var(--xh-tree-select-content-min-w, var(--xh-overlay-min-w)), var(--xh-_tree-select-anchor-w)),
+    /* 列表型浮层与字段盒等宽：长选项在条目里截断，面板不随最长的一条变宽。锚点比下界还窄时取下界，
+       比可用区还宽时收成可用宽度；要封顶由作者另写上界槽 */
+    inline-size: min(
+      max(var(--xh-tree-select-content-min-w, var(--xh-overlay-menu-min-w)), var(--xh-_tree-select-anchor-w)),
       var(--xh-_tree-select-available-w)
     );
-    /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
-    max-inline-size: min(var(--xh-tree-select-content-max-w, var(--xh-overlay-max-w)), var(--xh-_tree-select-available-w));
-    max-block-size: min(var(--xh-tree-select-content-max-h, var(--xh-overlay-max-h)), var(--xh-_tree-select-available-h));
+    max-inline-size: var(--xh-tree-select-content-max-w, none);
+    max-block-size: min(var(--xh-tree-select-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_tree-select-available-h));
     padding-block: var(--xh-tree-select-content-py, var(--xh-space-1));
     padding-inline: var(--xh-tree-select-content-px, var(--xh-space-1));
     border-radius: var(--xh-tree-select-content-radius, var(--xh-shape-overlay));
