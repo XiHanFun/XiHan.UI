@@ -7,6 +7,8 @@
 
 export { flexAnatomy } from './flex.anatomy'
 export { connectFlex } from './flex.connect'
+export { FLEX_TIER_NAMES, normalizeFlexTier } from './flex.input'
+export type { FlexTierName } from './flex.input'
 export { flexKeyboard } from './flex.keyboard'
 export { flexMeta } from './flex.meta'
-export type { FlexAlign, FlexApi, FlexGap, FlexJustify, FlexProps, FlexTranslations } from './flex.types'
+export type { FlexAlign, FlexApi, FlexBreakpoint, FlexByBreakpoint, FlexGap, FlexJustify, FlexProps, FlexResponsive, FlexTranslations } from './flex.types'

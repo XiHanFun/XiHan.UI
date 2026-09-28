@@ -54,6 +54,12 @@
 
 <XhDemo src="flex/06-split" />
 
+### 响应式排布
+
+方向、对齐、分布与间距都可以按视口逐档书写：窄屏竖排、md 起横排并拉开间距
+
+<XhDemo src="flex/07-responsive" />
+
 ## 设计指引
 
 ### 何时使用
@@ -73,6 +79,7 @@
 - 支持水平、垂直和行内布局。
 - 支持五档间距、对齐和主轴分布。
 - 支持换行和自动分隔符。
+- 方向、对齐、分布与间距都接受断点对象 `{ base, sm, md, lg, xl }`，与[栅格](./grid)同一套档位按视口逐档接管；没写对齐时交叉轴的缺省对齐跟着当档的方向走。Web Components 在特性上写 JSON 对象。
 
 ### 组合
 
@@ -105,11 +112,11 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `align` | `FlexAlign` |  | 交叉轴对齐：start / center / end / stretch / baseline，未提供时横向按中线对齐、纵向拉伸。 |
-| `gap` | `FlexGap` |  | 子项间距档位：xs / sm / md / lg / xl，未提供时不留间距。档位对应的数值由皮肤决定。 |
+| `align` | `FlexResponsive<FlexAlign>` |  | 交叉轴对齐：start / center / end / stretch / baseline，未提供时横向按中线对齐、纵向拉伸。 也接受断点对象逐档书写，没写的档沿用更窄的一档。 |
+| `gap` | `FlexResponsive<FlexGap>` |  | 子项间距档位：xs / sm / md / lg / xl，未提供时不留间距。档位对应的数值由皮肤决定。也接受断点对象逐档书写。 |
 | `inline` | `boolean` |  | 容器按行内盒排版，宽度收缩到内容。 |
-| `justify` | `FlexJustify` |  | 主轴分布：start / center / end / between / around / evenly，未提供时子项从主轴起点排列。 |
-| `orientation` | `Orientation` |  | 主轴方向：horizontal 横向、vertical 纵向，默认 horizontal。 |
+| `justify` | `FlexResponsive<FlexJustify>` |  | 主轴分布：start / center / end / between / around / evenly，未提供时子项从主轴起点排列。也接受断点对象逐档书写。 |
+| `orientation` | `FlexResponsive<Orientation>` |  | 主轴方向：horizontal 横向、vertical 纵向，默认 horizontal。 也接受断点对象 `{ base, sm, md, lg, xl }`：窄屏竖排、宽屏横排这类切换逐档书写； 没写 align 时交叉轴的缺省对齐跟着当档的方向走。 |
 | `wrap` | `boolean` |  | 一行放不下时换行。 |
 
 ### 插槽
@@ -169,11 +176,27 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-align` | props.align |
-| `root` | `data-gap` | props.gap |
+| `root` | `data-align` | align.base |
+| `root` | `data-align-lg` | align.lg |
+| `root` | `data-align-md` | align.md |
+| `root` | `data-align-sm` | align.sm |
+| `root` | `data-align-xl` | align.xl |
+| `root` | `data-gap` | gap.base |
+| `root` | `data-gap-lg` | gap.lg |
+| `root` | `data-gap-md` | gap.md |
+| `root` | `data-gap-sm` | gap.sm |
+| `root` | `data-gap-xl` | gap.xl |
 | `root` | `data-inline` | ''（条件成立时才出现） |
-| `root` | `data-justify` | props.justify |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-justify` | justify.base |
+| `root` | `data-justify-lg` | justify.lg |
+| `root` | `data-justify-md` | justify.md |
+| `root` | `data-justify-sm` | justify.sm |
+| `root` | `data-justify-xl` | justify.xl |
+| `root` | `data-orientation` | orientation.base |
+| `root` | `data-orientation-lg` | orientation.lg |
+| `root` | `data-orientation-md` | orientation.md |
+| `root` | `data-orientation-sm` | orientation.sm |
+| `root` | `data-orientation-xl` | orientation.xl |
 | `root` | `data-wrap` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
@@ -183,12 +206,16 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-flex-gap` | `root` | `gap` | `default`<br>`gap=lg`<br>`gap=md`<br>`gap=sm`<br>`gap=xl`<br>`gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs`<br>`--xh-space-0` | flex 的 root 部件 gap 覆盖槽。 |
+| `--xh-flex-gap` | `root` | `gap` | `@media (min-width: 1024px)`<br>`@media (min-width: 1280px)`<br>`@media (min-width: 640px)`<br>`@media (min-width: 768px)`<br>`default`<br>`gap-lg=lg`<br>`gap-lg=md`<br>`gap-lg=sm`<br>`gap-lg=xl`<br>`gap-lg=xs`<br>`gap-md=lg`<br>`gap-md=md`<br>`gap-md=sm`<br>`gap-md=xl`<br>`gap-md=xs`<br>`gap-sm=lg`<br>`gap-sm=md`<br>`gap-sm=sm`<br>`gap-sm=xl`<br>`gap-sm=xs`<br>`gap-xl=lg`<br>`gap-xl=md`<br>`gap-xl=sm`<br>`gap-xl=xl`<br>`gap-xl=xs`<br>`gap=lg`<br>`gap=md`<br>`gap=sm`<br>`gap=xl`<br>`gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs`<br>`--xh-space-0` | flex 的 root 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
+### 响应式
+
+皮肤按视口分档：`min-width: 1024px` · `min-width: 1280px` · `min-width: 640px` · `min-width: 768px`。
 
 ### RTL
 

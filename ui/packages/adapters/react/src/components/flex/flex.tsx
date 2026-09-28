@@ -6,7 +6,7 @@
 // 提供 flex 相关实现。
 
 import type { Orientation } from '@xihan-ui/core'
-import type { FlexAlign, FlexGap, FlexJustify, FlexProps } from '@xihan-ui/headless'
+import type { FlexAlign, FlexGap, FlexJustify, FlexProps, FlexResponsive } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { connectFlex } from '@xihan-ui/headless'
 import { Children, Fragment } from 'react'
@@ -30,14 +30,14 @@ export function XhFlexSplit({ children, ...rest }: XhFlexSplitProps): ReactNode 
 }
 
 export interface XhFlexProps extends ComponentPropsWithRef<'div'> {
-  /** 主轴方向：horizontal 横排、vertical 竖排，默认 horizontal。 */
-  orientation?: Orientation
-  /** 交叉轴对齐：start / center / end / stretch / baseline。 */
-  align?: FlexAlign
-  /** 主轴分布：start / center / end / between / around / evenly。 */
-  justify?: FlexJustify
-  /** 子项间距档位：xs / sm / md / lg / xl。 */
-  gap?: FlexGap
+  /** 主轴方向：horizontal 横排、vertical 竖排，默认 horizontal；也接受断点对象逐档书写。 */
+  orientation?: FlexResponsive<Orientation>
+  /** 交叉轴对齐：start / center / end / stretch / baseline；也接受断点对象逐档书写。 */
+  align?: FlexResponsive<FlexAlign>
+  /** 主轴分布：start / center / end / between / around / evenly；也接受断点对象逐档书写。 */
+  justify?: FlexResponsive<FlexJustify>
+  /** 子项间距档位：xs / sm / md / lg / xl；也接受断点对象逐档书写。 */
+  gap?: FlexResponsive<FlexGap>
   /** 一行放不下时换行。 */
   wrap?: boolean
   /** 容器按行内盒排版，宽度收缩到内容。 */
