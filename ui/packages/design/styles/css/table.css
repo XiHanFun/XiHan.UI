@@ -185,7 +185,8 @@
     --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
     --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
 
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
+    /* 表头与表体之间是内部分隔，与行间横线同一支：外边才取 default */
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-table-header-border, var(--xh-border-subtle));
     background: var(--xh-table-header-bg, var(--xh-bg-subtle-opaque));
   }
 
@@ -198,7 +199,8 @@
   }
 
   [data-scope='table'][data-part='footer'] {
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
+    /* 表尾与表体之间同样是内部分隔 */
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-table-footer-border, var(--xh-border-subtle));
     background: var(--xh-table-footer-bg, var(--xh-bg-subtle));
     font-weight: var(--xh-table-footer-font-weight, var(--xh-font-weight-medium));
   }
@@ -356,8 +358,9 @@
     background: var(--xh-table-bg, var(--xh-bg-surface));
   }
 
-  /* 淡底档：不画描边，surface 圆角 + subtle 底 */
+  /* 淡底档：描边退成透明占位（不去掉），与 outline 档同盒尺寸，换档不跳 1px；surface 圆角 + subtle 底 */
   [data-scope='table'][data-part='root'][data-variant='subtle'] {
+    border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-table-radius, var(--xh-shape-surface));
     background: var(--xh-table-bg, var(--xh-bg-subtle));
   }

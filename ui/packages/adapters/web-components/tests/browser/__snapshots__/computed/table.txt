@@ -295,7 +295,7 @@ border-top-width: 1px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklab(0 0 0 / 0.102)
+border-top-color: oklab(0 0 0 / 0.043)
 border-right-color: oklch(0.145 0.005 258)
 border-bottom-color: oklch(0.145 0.005 258)
 border-left-color: oklch(0.145 0.005 258)
@@ -332,7 +332,7 @@ border-bottom-width: 1px
 border-left-width: 0px
 border-top-color: oklch(0.145 0.005 258)
 border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklab(0 0 0 / 0.102)
+border-bottom-color: oklab(0 0 0 / 0.043)
 border-left-color: oklch(0.145 0.005 258)
 min-height: auto
 font-size: 14px
