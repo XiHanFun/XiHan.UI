@@ -37,6 +37,47 @@ export interface CascaderNode {
   description?: string
   /** 子节点。非空数组才视为分支（右侧可以再打开一列）。 */
   children?: CascaderNode[]
+  /**
+   * 声明它有子项但 children 尚未给出：它照样是分支，展开路径走到它时由 loadChildren 取回直接子项。
+   * 已写了 children 时以 children 为准；取回空数组即成了叶子，可以落值。
+   */
+  hasChildren?: boolean
+}
+
+/** 懒分支的取数状态。loaded 的 empty 区分成功取回的空数组；error 保留 loader 给出的原始 error。 */
+export type CascaderBranchLoadSnapshot
+  = | { status: 'idle' }
+    | { status: 'loading' }
+    | { status: 'loaded', empty: boolean }
+    | { status: 'error', error: unknown }
+
+/** 一次分支取数。signal 在重试、分支离开展开路径、浮层收起、节点从 collection 移除或组件卸载时中止。 */
+export interface CascaderLoadChildrenRequest {
+  node: CascaderNode
+  /** 从根到这个分支（含自身）的完整路径。 */
+  path: string[]
+  signal: AbortSignal
+}
+
+export interface CascaderBranchLoadStartDetails {
+  value: string
+  path: string[]
+  node: CascaderNode
+  reason: 'expand' | 'retry'
+}
+
+export interface CascaderBranchLoadDetails {
+  value: string
+  path: string[]
+  node: CascaderNode
+  children: CascaderNode[]
+}
+
+export interface CascaderBranchLoadErrorDetails {
+  value: string
+  path: string[]
+  node: CascaderNode
+  error: unknown
 }
 
 /** 候选部件的声明：代表哪条完整路径。 */
@@ -128,8 +169,12 @@ export interface CascaderTranslations {
   empty: string
   /** 搜索无匹配（候选为空）时的占位文案。 */
   noMatch: string
-  /** 首次取数且当前视图没有候选时的在途文案。 */
+  /** 首次取数且当前视图没有候选时的在途文案；懒分支那一列在途时同样用它。 */
   loading: string
+  /** 懒分支取数失败时那一列里的提示。 */
+  branchError: string
+  /** 懒分支取数失败后的重试按钮文字与可及名。 */
+  retry: string
   /** 没有父条目可指向的列（根列与收起的列）的兜底名字，两个名字部件都未渲染时才使用。 */
   column: string
   /** 检索框的可及名：字段标签命名的是整个控件，浮层中的该框需要单独命名。 */
@@ -159,6 +204,12 @@ export interface CascaderRefs {
   getFloatingEl: () => HTMLElement | null
   /** 焦点域容器、消解层节点，同时是条目集合的查询容器（各列都位于其中）。 */
   getContentEl: () => HTMLElement | null
+  /** 仍在途的分支请求；只存放运行时资源，不进入可渲染 context。 */
+  branchLoadControllers: Map<string, { controller: AbortController, token: number, node: CascaderNode }>
+  /** 每次开新请求递增，用于拒绝过期回调。实例私有，不能放模块变量。 */
+  branchLoadSequence: { n: number }
+  /** load 状态与成功 children 所属的原始节点对象；同 value 换节点时据此作废旧结果。 */
+  branchLoadOwners: Map<string, CascaderNode>
 }
 
 export interface CascaderOpenChangeDetails {
@@ -195,8 +246,13 @@ export type CascaderPressedPart = 'item' | 'search-item' | 'clear-trigger'
 
 export interface CascaderSchema extends MachineSchema {
   props: {
-    /** 树数据，层级元信息与显示文本的唯一事实源。默认为空树。 */
+    /** 树数据，层级元信息与显示文本的唯一事实源。`hasChildren` 且未提供 children 是懒分支。默认为空树。 */
     collection?: CascaderNode[]
+    /**
+     * 取回懒分支的直接子项：展开路径走到它时自动调用，结果留在组件里，宿主不必为此重建 collection。
+     * 失败后在它那一列里给出重试入口；旧请求的兑现或拒绝不会覆盖更新的一轮，也不会写回已移除的分支。
+     */
+    loadChildren?: (request: CascaderLoadChildrenRequest) => Promise<CascaderNode[] | undefined | void> | CascaderNode[] | undefined | void
     /**
      * 选中路径。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。
      * 单条路径是简写，内部一律归一为路径集合。
@@ -259,6 +315,12 @@ export interface CascaderSchema extends MachineSchema {
     onValueChange?: (details: CascaderValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: CascaderOpenChangeDetails) => void
+    /** 一轮有效分支请求开始；reason 区分展开路径走到它与显式重试。 */
+    onBranchLoadStart?: (details: CascaderBranchLoadStartDetails) => void
+    /** 一轮有效分支请求成功；children 为空仍是成功，这个分支随之成了叶子。 */
+    onBranchLoad?: (details: CascaderBranchLoadDetails) => void
+    /** 一轮有效分支请求失败；保留 loader 给出的原始 error。 */
+    onBranchLoadError?: (details: CascaderBranchLoadErrorDetails) => void
   }
   context: {
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
@@ -290,6 +352,10 @@ export interface CascaderSchema extends MachineSchema {
     pressedPart: CascaderPressedPart | null
     /** 按压通道：按住的条目 value 或候选路径键；clear-trigger 没有值，记 null。抬起、失焦或浮层收起即清空。 */
     pressedValue: string | null
+    /** 懒分支取回的直接子项，按分支 value 记；与 collection 合成有效树。 */
+    loadedChildren: Record<string, CascaderNode[]>
+    /** 懒分支的取数状态，按分支 value 记。 */
+    branchLoads: Record<string, CascaderBranchLoadSnapshot>
   }
   computed: Record<string, never>
   refs: CascaderRefs
@@ -331,6 +397,8 @@ export interface CascaderSchema extends MachineSchema {
     | { type: 'PRESS.START', part: CascaderPressedPart, value?: string, disabled?: boolean }
     /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
     | { type: 'PRESS.END', part: CascaderPressedPart, value?: string }
+    /** 重新取这个懒分支的直接子项（失败后的显式重试）。 */
+    | { type: 'BRANCH.RETRY', value: string }
   tag: never
   guard: 'isOpenControlled' | 'isMultiple' | 'staysOpenOnSelect' | 'canPress'
   action:
@@ -355,12 +423,16 @@ export interface CascaderSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
-  effect: 'trackPosition' | 'trackLayer' | 'trackTagListMotion'
+    | 'syncBranchLoads'
+    | 'loadActiveBranches'
+    | 'retryBranch'
+    | 'cancelBranchLoads'
+  effect: 'trackPosition' | 'trackLayer' | 'trackTagListMotion' | 'trackBranchLoads'
 }
 
 export interface CascaderApi<T extends PropTypes = PropTypes> {
   open: boolean
-  /** 作者提供的原始树数据。 */
+  /** 有效树：作者的 collection 并上懒分支已取回的子项。 */
   collection: readonly CascaderNode[]
   /** 当前并排打开的列（含每列的条目）：列数 = 展开路径可走通的段数 + 1。 */
   columns: readonly CascaderColumn[]
@@ -398,6 +470,10 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   isActive: (value: string) => boolean
   /** 该条目当前是否落在某个可见列中。 */
   isVisible: (value: string) => boolean
+  /** 懒分支的取数状态；不是懒分支时为 null。 */
+  branchLoadState: (value: string) => CascaderBranchLoadSnapshot | null
+  /** 第 level 列所属懒分支的取数状态；根列、收起的列与非懒分支的子列为 null。适配器据此决定要不要在列里铺三块状态部件。 */
+  columnLoadState: (level: number) => CascaderBranchLoadSnapshot | null
   /** 正处于搜索视图（开启 searchable 且输入非空）：列视图让位给候选列表。 */
   searching: boolean
   /** 搜索框中的原始串。 */
@@ -415,6 +491,8 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   /** 选中一条路径，与点击条目同一语义（分支是否落值仍取决于 changeOnSelect）。 */
   select: (path: string[]) => void
   clear: () => void
+  /** 重新取这个懒分支的直接子项，与失败提示里的重试按钮同一语义。 */
+  retryBranch: (value: string) => void
   /** 移除一条选中路径，其余保持选中先后。 */
   deselect: (path: readonly string[]) => void
   getRootProps: () => T['element']
@@ -458,6 +536,12 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   /** 分组标题：不是条目、不进入导航，只作为本组的可及名。 */
   getGroupLabelProps: (props: CascaderGroupProps) => T['element']
   getColumnProps: (props: CascaderColumnProps) => T['element']
+  /** 懒分支在途：住在它那一列里，那一列此刻没有条目；不在途时 hidden。 */
+  getBranchLoadingProps: (props: CascaderColumnProps) => T['element']
+  /** 懒分支取数失败：住在它那一列里，给一句提示；没失败时 hidden。 */
+  getBranchErrorProps: (props: CascaderColumnProps) => T['element']
+  /** 懒分支取数失败后的重试按钮：不占 Tab 位，键盘从父条目上按 Enter / Space 重试；没失败时 hidden。 */
+  getBranchRetryTriggerProps: (props: CascaderColumnProps) => T['button']
   getItemProps: (props: CascaderItemProps) => T['element']
   getItemTextProps: (props: CascaderItemProps) => T['element']
   getItemDescriptionProps: (props: CascaderItemProps) => T['element']

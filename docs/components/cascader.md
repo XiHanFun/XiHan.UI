@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="cascader"`：`root` · `hidden-input` · `label` · `control` · **`trigger`** · `value-text` · `tag-list` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `footer`
+`data-scope="cascader"`：`root` · `hidden-input` · `label` · `control` · **`trigger`** · `value-text` · `tag-list` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `footer`
 
 ## 示例
 
@@ -38,7 +38,7 @@ multiple 下已选路径在触发器里排成标签，文字是整条路径；�
 
 ### 懒加载
 
-展开分支时加载下一层数据
+节点写 hasChildren 不给 children，展开路径走到它时由 loadChildren 取回直接子项；在途与失败都显示在它那一列里，失败在父条目上按 Enter 或点重试钮再取
 
 <XhDemo src="cascader/04-lazy-load" />
 
@@ -77,7 +77,8 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 - 选项可逐条声明语气，不向下传导；搜索结果取整条路径末段的语气。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 选项行尾留一格给作者（计数、徽标）。
-- 支持按需加载、空状态、加载状态与原生表单提交。
+- 懒加载：节点写 `hasChildren: true` 不给 `children` 即是懒分支，照样算分支、右边开一列；展开路径走到它时由 `loadChildren({ node, path, signal })` 取回直接子项，结果留在组件里并进 `api.collection` 与 `levels`，宿主不必重建 collection。那一列在途时报 `aria-busy` 并露出 `branch-loading`，失败时露出 `branch-error` 与 `branch-retry-trigger`（不占 Tab 位，父条目上按 Enter / Space 同样重试）；取回空数组即成了叶子，可以落值。三块由适配器在列末自动铺出，文案走 `translations.loading` / `branchError` / `retry`。展开路径离开、浮层收起、重试、节点换代与卸载都会中止在途请求，迟到的结果不写回。`onBranchLoadStart` / `onBranchLoad` / `onBranchLoadError`（三端事件 `branch-load-start` / `branch-load` / `branch-load-error`）公开有效请求的生命周期，`api.branchLoadState(value)` 读取状态。
+- 支持空状态、整浮层加载状态与原生表单提交。
 - 选中项使用末端标记，半选项使用横线。
 
 ### 组合
@@ -112,7 +113,8 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `CascaderNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。默认为空树。 |
+| `collection` | `CascaderNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。`hasChildren` 且未提供 children 是懒分支。默认为空树。 |
+| `loadChildren` | `(request: CascaderLoadChildrenRequest) => Promise<CascaderNode[] \| undefined \| void> \| CascaderNode[] \| undefined \| void` |  | 取回懒分支的直接子项：展开路径走到它时自动调用，结果留在组件里，宿主不必为此重建 collection。 失败后在它那一列里给出重试入口；旧请求的兑现或拒绝不会覆盖更新的一轮，也不会写回已移除的分支。 |
 | `value` | `CascaderValue` |  | 选中路径。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单条路径是简写，内部一律归一为路径集合。 |
 | `defaultValue` | `CascaderValue` |  |  |
 | `name` | `string` |  | 原生字段名，每条选中路径提交一项 JSON 字符串数组。 |
@@ -143,6 +145,9 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的进入子列 / 返回上一列语义。 |
 | `onValueChange` | `(details: CascaderValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: CascaderOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onBranchLoadStart` | `(details: CascaderBranchLoadStartDetails) => void` |  | 一轮有效分支请求开始；reason 区分展开路径走到它与显式重试。 |
+| `onBranchLoad` | `(details: CascaderBranchLoadDetails) => void` |  | 一轮有效分支请求成功；children 为空仍是成功，这个分支随之成了叶子。 |
+| `onBranchLoadError` | `(details: CascaderBranchLoadErrorDetails) => void` |  | 一轮有效分支请求失败；保留 loader 给出的原始 error。 |
 
 ### CascaderNode
 
@@ -156,6 +161,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `tone` | `Tone` |  | 该条选项自身的性质：已失效的写 danger、需要留意的写 warning。不写即与同列其余条目同档， 也不向下传导给子节点——每一层各自声明。只换字色与悬停 / 按下的面，不表达选中与校验； 展开路径的面、选中的对号与禁用都压过它。搜索结果里取整条路径末段的语气。 |
 | `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
 | `children` | `CascaderNode[]` |  | 子节点。非空数组才视为分支（右侧可以再打开一列）。 |
+| `hasChildren` | `boolean` |  | 声明它有子项但 children 尚未给出：它照样是分支，展开路径走到它时由 loadChildren 取回直接子项。 已写了 children 时以 children 为准；取回空数组即成了叶子，可以落值。 |
 
 ### 事件
 
@@ -165,6 +171,9 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | --- | --- | --- |
 | `value-change` | `CascaderValueChangeDetails` | 选中路径集合变化；detail 为 `{ value: string[][] }` |
 | `open-change` | `CascaderOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `branch-load-start` | `CascaderBranchLoadStartDetails` | 懒分支请求开始；detail 为 `{ value, path, node, reason }` |
+| `branch-load` | `CascaderBranchLoadDetails` | 懒分支请求成功；detail 为 `{ value, path, node, children }` |
+| `branch-load-error` | `CascaderBranchLoadErrorDetails` | 懒分支请求失败；detail 为 `{ value, path, node, error }` |
 
 ### 插槽
 
@@ -215,7 +224,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 
 **状态**：`open` · `closed`
 
-**事件**：`FORM.RESET` · `OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `ITEM.EXPAND` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `PATH.SET` · `INPUT.CHANGE` · `SEARCH.HIGHLIGHT` · `PRESS.START` · `PRESS.END`
+**事件**：`FORM.RESET` · `OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `ITEM.EXPAND` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `PATH.SET` · `INPUT.CHANGE` · `SEARCH.HIGHLIGHT` · `PRESS.START` · `PRESS.END` · `BRANCH.RETRY`
 
 **判据**：`isOpenControlled` · `isMultiple` · `staysOpenOnSelect` · `canPress`
 
@@ -226,7 +235,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `collection` | `readonly CascaderNode[]` | 作者提供的原始树数据。 |
+| `collection` | `readonly CascaderNode[]` | 有效树：作者的 collection 并上懒分支已取回的子项。 |
 | `columns` | `readonly CascaderColumn[]` | 当前并排打开的列（含每列的条目）：列数 = 展开路径可走通的段数 + 1。 |
 | `levels` | `readonly CascaderLevel[]` | 按深度展开的静态列，与展开路径无关；不应显示的条目由连接层加 hidden 收起。 |
 | `value` | `string[][]` | 选中路径集合；单选下长度 ≤ 1，形状不随模式变化。 |
@@ -247,6 +256,8 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代部分勾选）；非级联恒为 false。 |
 | `isActive` | `(value: string) => boolean` | 该条目是否落在展开路径上（它的子列已打开，或它自身即为最后一站）。 |
 | `isVisible` | `(value: string) => boolean` | 该条目当前是否落在某个可见列中。 |
+| `branchLoadState` | `(value: string) => CascaderBranchLoadSnapshot \| null` | 懒分支的取数状态；不是懒分支时为 null。 |
+| `columnLoadState` | `(level: number) => CascaderBranchLoadSnapshot \| null` | 第 level 列所属懒分支的取数状态；根列、收起的列与非懒分支的子列为 null。适配器据此决定要不要在列里铺三块状态部件。 |
 | `searching` | `boolean` | 正处于搜索视图（开启 searchable 且输入非空）：列视图让位给候选列表。 |
 | `inputValue` | `string` | 搜索框中的原始串。 |
 | `searchResults` | `readonly CascaderSearchResult[]` | 过滤后的候选：整条路径连缀匹配，带 pathKey 与禁用标记。 |
@@ -258,6 +269,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `setActivePath` | `(next: string[]) => void` |  |
 | `select` | `(path: string[]) => void` | 选中一条路径，与点击条目同一语义（分支是否落值仍取决于 changeOnSelect）。 |
 | `clear` | `() => void` |  |
+| `retryBranch` | `(value: string) => void` | 重新取这个懒分支的直接子项，与失败提示里的重试按钮同一语义。 |
 | `deselect` | `(path: readonly string[]) => void` | 移除一条选中路径，其余保持选中先后。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getHiddenInputProps` | `(props: { path: readonly string[] }) => T['input']` | 每条路径独立编码，适配器按 value 渲染重复同名字段。 |
@@ -283,6 +295,9 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `getGroupProps` | `(props: CascaderGroupProps) => T['element']` | 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 |
 | `getGroupLabelProps` | `(props: CascaderGroupProps) => T['element']` | 分组标题：不是条目、不进入导航，只作为本组的可及名。 |
 | `getColumnProps` | `(props: CascaderColumnProps) => T['element']` |  |
+| `getBranchLoadingProps` | `(props: CascaderColumnProps) => T['element']` | 懒分支在途：住在它那一列里，那一列此刻没有条目；不在途时 hidden。 |
+| `getBranchErrorProps` | `(props: CascaderColumnProps) => T['element']` | 懒分支取数失败：住在它那一列里，给一句提示；没失败时 hidden。 |
+| `getBranchRetryTriggerProps` | `(props: CascaderColumnProps) => T['button']` | 懒分支取数失败后的重试按钮：不占 Tab 位，键盘从父条目上按 Enter / Space 重试；没失败时 hidden。 |
 | `getItemProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: CascaderItemProps) => T['element']` |  |
@@ -309,6 +324,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `ArrowRight` | open, 焦点条目有子节点（dir=rtl 时改由 ArrowLeft 承担） | 子列没开时先把它铺出来（焦点不动），已开时焦点移进它的首个可用条目；叶子上什么都不做且不吞键 |
 | `ArrowLeft` | open, 焦点不在根列（dir=rtl 时改由 ArrowRight 承担） | 焦点退回上一列的父条目，当前这一列随之收起；根列上什么都不做且不吞键 |
 | `Enter` / `Space` | open, 焦点条目未禁用 | 叶子：落值并收起浮层、焦点归还 trigger。分支：展开它的子列且浮层不收起，changeOnSelect 打开时同时落值 |
+| `Enter` / `Space` | open, 焦点条目是取数失败的懒分支 | 重新取它的直接子项：展开路径停在它上面，那一列回到在途提示；不落值、浮层不收起 |
 | `Enter` / `Space` | held in item / clear-trigger, 未禁用、未只读、未加载 | 按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，条目随浮层收起一并撤下；没有值可清时清空按钮不进 |
 | `Escape` | open | 收起浮层并把焦点归还 trigger，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |
@@ -353,6 +369,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `search-item` | `aria-disabled` | 'true' \| 'false' |
 | `search-item` | `aria-selected` | 'true' \| 'false' |
 | `search-item` | `role` | 'option' |
+| `column` | `aria-busy` | 'true' \| undefined |
 | `column` | `aria-disabled` | 'true' \| 'false' |
 | `column` | `aria-label` | translations.column \| undefined |
 | `column` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `item` 部件的 id |
@@ -369,6 +386,9 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `item-indicator` | `aria-hidden` | 'true' |
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |
+| `branch-loading` | `role` | 'status' |
+| `branch-error` | `role` | 'alert' |
+| `branch-retry-trigger` | `aria-label` | translations.retry |
 
 ## 样式参考
 
@@ -446,10 +466,13 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-branch` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-error` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-in-path` | ''（条件成立时才出现） |
 | `item` | `data-instant` | ''（条件成立时才出现） |
 | `item` | `data-level` | String(meta.level) \| undefined |
+| `item` | `data-load-state` | branchLoadState(item.value)?.status |
+| `item` | `data-loading` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item` | `data-tone` | undefined \| metaOf(v)?.tone |
@@ -476,6 +499,15 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `item-indicator` | `data-in-path` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
+| `branch-loading` | `data-level` | String(column.level) |
+| `branch-error` | `data-level` | String(column.level) |
+| `branch-retry-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-retry-trigger` | `data-level` | String(column.level) |
+| `branch-retry-trigger` | `data-xh-action-control` | '' |
+| `branch-retry-trigger` | `data-xh-action-display` | 'always' |
+| `branch-retry-trigger` | `data-xh-action-profile` | 'text' |
+| `branch-retry-trigger` | `data-xh-action-size` | props.size |
+| `branch-retry-trigger` | `data-xh-action-variant` | 'ghost' |
 | `footer` | `data-state` | 'open' \| 'closed' |
 | `overflow-tag` | `data-count` | String(overflowCount) |
 | `tag` | `data-value` | cascaderPathKey(path) |
@@ -497,6 +529,10 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | cascader 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-cascader-branch-arrow-fg` | `item` | `background-color` | `branch` | `--xh-fg-subtle` | cascader 的 item 部件 background-color 覆盖槽。 |
 | `--xh-cascader-branch-arrow-size` | `item` | `block-size`<br>`inline-size` | `branch` | `--xh-control-indicator-size` | cascader 的 item 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-cascader-branch-status-fg` | `branch-error`<br>`branch-loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | cascader 的 branch-error、branch-loading 部件 color 覆盖槽。 |
+| `--xh-cascader-branch-status-font-size` | `branch-error`<br>`branch-loading` | `font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 branch-error、branch-loading 部件 font-size 覆盖槽。 |
+| `--xh-cascader-branch-status-px` | `branch-error`<br>`branch-loading` | `padding-inline` | `default` | `--xh-_cascader-row-px` | cascader 的 branch-error、branch-loading 部件 padding-inline 覆盖槽。 |
+| `--xh-cascader-branch-status-py` | `branch-error`<br>`branch-loading` | `padding-block` | `default` | `--xh-space-3` | cascader 的 branch-error、branch-loading 部件 padding-block 覆盖槽。 |
 | `--xh-cascader-column-divider` | `column` | `border-inline-start` | `default` | `--xh-material-frosted-separator` | cascader 的 column 部件 border-inline-start 覆盖槽。 |
 | `--xh-cascader-column-gap` | `column` | `gap` | `default` | `--xh-list-option-gap` | cascader 的 column 部件 gap 覆盖槽。 |
 | `--xh-cascader-column-h` | `column`<br>`search-list` | `block-size` | `default` | `--xh-viewport-h-sm` | cascader 的 column、search-list 部件 block-size 覆盖槽。 |

@@ -7108,6 +7108,18 @@
               "name": "search-item"
             },
             {
+              "description": "懒分支那一列的在途提示；这一列属于懒分支时由元素在列末补齐并填入 translations.loading",
+              "name": "branch-loading"
+            },
+            {
+              "description": "懒分支那一列的失败提示；由元素在列末补齐并填入 translations.branchError",
+              "name": "branch-error"
+            },
+            {
+              "description": "懒分支取数失败后的重试按钮，不占 Tab 位；由元素在列末补齐并填入 translations.retry",
+              "name": "branch-retry-trigger"
+            },
+            {
               "description": "在途占位，与空态占位同一位置；标记中未编写时由元素补充一个并填入 translations.loading，作者编写后由作者负责",
               "name": "loading"
             },
@@ -7177,6 +7189,15 @@
               "type": {
                 "text": "CascaderNode[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "loadChildren",
+              "privacy": "public",
+              "type": {
+                "text": "CascaderSchema['props']['loadChildren'] | undefined"
+              },
+              "description": "取回懒分支（hasChildren 且没给 children）的直接子项；展开路径走到它时自动调用。只能作为 property 设置。"
             },
             {
               "kind": "field",
@@ -7635,6 +7656,63 @@
             },
             {
               "kind": "field",
+              "name": "notifyBranchLoadStart",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyBranchLoad",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyBranchLoadError",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "generatedBranchFeedback",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakSet<HTMLElement>()",
+              "description": "元素在懒分支那一列里补出来的三块状态节点。"
+            },
+            {
+              "kind": "method",
+              "name": "ensureColumnFeedback",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "column",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "tag",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "列里取一块状态节点：只认这一列自己的直接子节点，没有就在列末补一个。"
+            },
+            {
+              "kind": "field",
               "name": "notifyOpen",
               "privacy": "private",
               "readonly": true
@@ -7952,6 +8030,27 @@
               "type": {
                 "text": "CascaderOpenChangeDetails"
               }
+            },
+            {
+              "description": "懒分支请求开始；detail 为 `{ value, path, node, reason }`",
+              "name": "branch-load-start",
+              "type": {
+                "text": "CascaderBranchLoadStartDetails"
+              }
+            },
+            {
+              "description": "懒分支请求成功；detail 为 `{ value, path, node, children }`",
+              "name": "branch-load",
+              "type": {
+                "text": "CascaderBranchLoadDetails"
+              }
+            },
+            {
+              "description": "懒分支请求失败；detail 为 `{ value, path, node, error }`",
+              "name": "branch-load-error",
+              "type": {
+                "text": "CascaderBranchLoadErrorDetails"
+              }
             }
           ],
           "attributes": [
@@ -8184,6 +8283,18 @@
             },
             {
               "name": "--xh-cascader-branch-arrow-size"
+            },
+            {
+              "name": "--xh-cascader-branch-status-fg"
+            },
+            {
+              "name": "--xh-cascader-branch-status-font-size"
+            },
+            {
+              "name": "--xh-cascader-branch-status-px"
+            },
+            {
+              "name": "--xh-cascader-branch-status-py"
             },
             {
               "name": "--xh-cascader-column-divider"

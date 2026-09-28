@@ -8648,6 +8648,82 @@
       "description": "cascader 的 item 部件 block-size、inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-cascader-branch-status-fg",
+      "component": "cascader",
+      "part": [
+        "branch-error",
+        "branch-loading"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 branch-error、branch-loading 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-branch-status-font-size",
+      "component": "cascader",
+      "part": [
+        "branch-error",
+        "branch-loading"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_cascader-font-size"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 branch-error、branch-loading 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-branch-status-px",
+      "component": "cascader",
+      "part": [
+        "branch-error",
+        "branch-loading"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_cascader-row-px"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 branch-error、branch-loading 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-branch-status-py",
+      "component": "cascader",
+      "part": [
+        "branch-error",
+        "branch-loading"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 branch-error、branch-loading 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-cascader-column-divider",
       "component": "cascader",
       "part": [

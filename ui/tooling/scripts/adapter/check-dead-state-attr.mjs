@@ -98,6 +98,7 @@ const HOOKS = {
   'back-top:data-size': '回顶钮的尺寸由触发器身上的 data-xh-action-size 交给 Action Control floating 档；root 上的 data-size 保留为作者按整件尺寸写样式的钩子',
   'clipboard:data-variant': '复制钮的形态由它自己身上的 data-xh-action-variant 交给 Action Control 形态矩阵；root 上的 data-variant 保留为作者按整件形态写样式的钩子',
   'toggle:data-icon-only': '图标按钮几何由同节点的 data-xh-action-profile=icon 交给 Action Control 配方；data-icon-only 保留为作者样式钩子',
+  'cascader:data-load-state': '懒分支的标准视觉由 data-loading、data-error 与它那一列里的状态部件承载；完整状态值保留为作者样式钩子',
   'tree-select:data-load-state': '分支的标准视觉分别由 data-loading、data-error、data-empty 与对应状态部件承载；完整状态值保留为作者样式钩子',
   'pagination:data-placement': '省略页码弹层暴露定位引擎实际落点，供自定义皮肤读取；标准皮肤没有箭头，坐标由 positioner 内联值承载',
   'truncate:data-expandable': '展开入口是文字盒子旁那颗按钮，它的显隐由按钮自己的 hidden 承载；文字盒子上这一位留给作者按可展开写样式的钩子',

@@ -109,6 +109,7 @@
       "tree-select"
     ],
     "branch-error": [
+      "cascader",
       "tree-select"
     ],
     "branch-indicator": [
@@ -118,9 +119,11 @@
       "tree-select"
     ],
     "branch-loading": [
+      "cascader",
       "tree-select"
     ],
     "branch-retry-trigger": [
+      "cascader",
       "tree-select"
     ],
     "branch-text": [

@@ -74,6 +74,8 @@ type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'default
 
 export interface XhCascaderRootProps extends RootElementProps {
   collection?: CascaderNode[]
+  /** 取回懒分支（hasChildren 且没给 children）的直接子项；展开路径走到它时自动调用。 */
+  loadChildren?: CascaderProps['loadChildren']
   value?: CascaderValue
   defaultValue?: CascaderValue
   name?: string
@@ -106,11 +108,15 @@ export interface XhCascaderRootProps extends RootElementProps {
   dir?: Direction
   onValueChange?: CascaderProps['onValueChange']
   onOpenChange?: CascaderProps['onOpenChange']
+  onBranchLoadStart?: CascaderProps['onBranchLoadStart']
+  onBranchLoad?: CascaderProps['onBranchLoad']
+  onBranchLoadError?: CascaderProps['onBranchLoadError']
   children?: SlotChildren<CascaderRootSlotProps>
 }
 
 export function XhCascaderRoot({
   collection,
+  loadChildren,
   value,
   defaultValue,
   name,
@@ -141,11 +147,15 @@ export function XhCascaderRoot({
   dir,
   onValueChange,
   onOpenChange,
+  onBranchLoadStart,
+  onBranchLoad,
+  onBranchLoadError,
   children,
   ...rest
 }: XhCascaderRootProps): ReactNode {
   const ctx = useCascader(withXhConfig('cascader', useFormControlProps({
     collection,
+    loadChildren,
     value,
     defaultValue,
     name,
@@ -176,6 +186,9 @@ export function XhCascaderRoot({
     dir,
     onValueChange,
     onOpenChange,
+    onBranchLoadStart,
+    onBranchLoad,
+    onBranchLoadError,
   })) as CascaderProps)
   const api = ctx.api
   return (
@@ -212,7 +225,7 @@ export function XhCascaderRoot({
   )
 }
 
-XhCascaderRoot.xhEvents = ['value-change', 'open-change'] as const
+XhCascaderRoot.xhEvents = ['value-change', 'open-change', 'branch-load-start', 'branch-load', 'branch-load-error'] as const
 
 export interface XhCascaderLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhCascaderLabel({ children, ...rest }: XhCascaderLabelProps): ReactNode {
@@ -502,8 +515,26 @@ export function XhCascaderColumn({ level, children, ...rest }: XhCascaderColumnP
         )}
       >
         {children}
+        <CascaderBranchFeedback level={Number(level)} />
       </div>
       {bars.render()}
+    </>
+  )
+}
+
+/**
+ * 懒分支那一列里的三块状态：在途、失败提示与重试钮。只在这一列属于懒分支时铺，露哪一块归连接层；
+ * 文案走 translations.loading / branchError / retry。
+ */
+function CascaderBranchFeedback({ level }: { level: number }): ReactNode {
+  const { api } = useCascaderContext()
+  if (api.columnLoadState(level) == null)
+    return null
+  return (
+    <>
+      <div {...api.getBranchLoadingProps({ level }) as Record<string, unknown>}>{api.translations.loading}</div>
+      <div {...api.getBranchErrorProps({ level }) as Record<string, unknown>}>{api.translations.branchError}</div>
+      <button {...api.getBranchRetryTriggerProps({ level }) as Record<string, unknown>}>{api.translations.retry}</button>
     </>
   )
 }

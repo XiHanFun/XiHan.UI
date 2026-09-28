@@ -5,6 +5,7 @@
 
 // 搜索候选的纯运算：把树摊平成整条路径，按连缀文本过滤。不碰 DOM、不看状态机。
 import type { CascaderNode } from './cascader.types'
+import { isCascaderLazyBranch } from './cascader.columns'
 
 export interface CascaderSearchCandidate {
   path: string[]
@@ -35,6 +36,11 @@ export function cascaderSearchCandidates(
         if (changeOnSelect)
           out.push({ path: nextPath, labels: nextLabels, disabled: nextDisabled })
         walk(node.children, nextPath, nextLabels, nextDisabled)
+      }
+      else if (isCascaderLazyBranch(node)) {
+        // 懒分支还没取回：子项未知，只有它本身能落值时才算一条
+        if (changeOnSelect)
+          out.push({ path: nextPath, labels: nextLabels, disabled: nextDisabled })
       }
       else {
         out.push({ path: nextPath, labels: nextLabels, disabled: nextDisabled })

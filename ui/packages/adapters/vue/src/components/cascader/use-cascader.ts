@@ -33,7 +33,7 @@ export interface CascaderContext {
 
 export function useCascader(
   props: CascaderSchema['props'],
-  handlers: Pick<CascaderSchema['props'], 'onValueChange' | 'onOpenChange'> = {},
+  handlers: Pick<CascaderSchema['props'], 'onValueChange' | 'onOpenChange' | 'onBranchLoadStart' | 'onBranchLoad' | 'onBranchLoadError'> = {},
 ): CascaderContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)

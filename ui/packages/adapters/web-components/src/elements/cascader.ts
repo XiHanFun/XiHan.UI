@@ -8,6 +8,9 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   CascaderApi,
+  CascaderBranchLoadDetails,
+  CascaderBranchLoadErrorDetails,
+  CascaderBranchLoadStartDetails,
   CascaderExpandTrigger,
   CascaderItemProps,
   CascaderNode,
@@ -83,6 +86,9 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的进入子列 / 返回上一列语义，默认 ltr
  * @fires value-change - 选中路径集合变化；detail 为 `{ value: string[][] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires branch-load-start - 懒分支请求开始；detail 为 `{ value, path, node, reason }`
+ * @fires branch-load - 懒分支请求成功；detail 为 `{ value, path, node, children }`
+ * @fires branch-load-error - 懒分支请求失败；detail 为 `{ value, path, node, error }`
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid）
  * @csspart hidden-input - 宿主自动生成的逐路径原生表单出口，无需作者手写
  * @csspart label - 标题（aria-labelledby 目标）
@@ -100,6 +106,9 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart input - 搜索框（content 顶部）；未开启 searchable 时带 hidden。上下键移动候选、Enter 选中、Escape 先清除输入
  * @csspart search-list - 候选列表容器；不在搜索视图时带 hidden，无候选时带 data-empty
  * @csspart search-item - 一条候选，须用 value 属性写整条路径的 JSON 数组串（如 value='["a","b"]'）；与输入不匹配的带 hidden
+ * @csspart branch-loading - 懒分支那一列的在途提示；这一列属于懒分支时由元素在列末补齐并填入 translations.loading
+ * @csspart branch-error - 懒分支那一列的失败提示；由元素在列末补齐并填入 translations.branchError
+ * @csspart branch-retry-trigger - 懒分支取数失败后的重试按钮，不占 Tab 位；由元素在列末补齐并填入 translations.retry
  * @csspart loading - 在途占位，与空态占位同一位置；标记中未编写时由元素补充一个并填入 translations.loading，作者编写后由作者负责
  * @csspart empty - 空态占位：搜索无候选或 collection 为空时显示，其余时候带 hidden。标记中未编写时由元素在 content 末尾补充一个并填入默认文案；编写后使用作者的节点，文案也由作者负责
  * @csspart column - role=listbox 的一列，须自带 level 属性标识列序；被移除时带 hidden
@@ -127,6 +136,8 @@ export class XhCascaderElement extends XhPortalHostElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     collection: { attribute: false },
+    // 函数只走 property，属性表达不了
+    loadChildren: { attribute: false },
     value: { attribute: false },
     defaultValue: { attribute: false },
     name: { converter: STRING_CONVERTER },
@@ -159,6 +170,8 @@ export class XhCascaderElement extends XhPortalHostElement {
   }
 
   declare collection?: CascaderNode[]
+  /** 取回懒分支（hasChildren 且没给 children）的直接子项；展开路径走到它时自动调用。只能作为 property 设置。 */
+  declare loadChildren?: CascaderSchema['props']['loadChildren']
   declare value?: CascaderValue
   declare defaultValue?: CascaderValue
   declare name?: string
@@ -284,6 +297,33 @@ export class XhCascaderElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
+  private readonly notifyBranchLoadStart = (details: CascaderBranchLoadStartDetails): void => {
+    this.dispatchEvent(new CustomEvent('branch-load-start', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyBranchLoad = (details: CascaderBranchLoadDetails): void => {
+    this.dispatchEvent(new CustomEvent('branch-load', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyBranchLoadError = (details: CascaderBranchLoadErrorDetails): void => {
+    this.dispatchEvent(new CustomEvent('branch-load-error', { detail: details, bubbles: true, composed: true }))
+  }
+
+  /** 元素在懒分支那一列里补出来的三块状态节点。 */
+  private readonly generatedBranchFeedback = new WeakSet<HTMLElement>()
+
+  /** 列里取一块状态节点：只认这一列自己的直接子节点，没有就在列末补一个。 */
+  private ensureColumnFeedback(column: HTMLElement, name: string, tag: string): HTMLElement {
+    const existing = [...column.children].find(el => el.getAttribute(PART_ATTR) === name) as HTMLElement | undefined
+    if (existing)
+      return existing
+    const el = this.ownerDocument.createElement(tag)
+    el.setAttribute(PART_ATTR, name)
+    this.generatedBranchFeedback.add(el)
+    column.append(el)
+    return el
+  }
+
   private readonly notifyOpen = (details: CascaderOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -341,6 +381,7 @@ export class XhCascaderElement extends XhPortalHostElement {
     }, this.inheritedControl)
     return {
       collection: this.collection,
+      loadChildren: this.loadChildren,
       value: this.value,
       defaultValue: this.defaultValue,
       name: this.name,
@@ -371,6 +412,9 @@ export class XhCascaderElement extends XhPortalHostElement {
       translations: this.translations,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
+      onBranchLoadStart: this.notifyBranchLoadStart,
+      onBranchLoad: this.notifyBranchLoad,
+      onBranchLoadError: this.notifyBranchLoadError,
     }
   }
 
@@ -640,7 +684,23 @@ export class XhCascaderElement extends XhPortalHostElement {
     // 集合类 part 逐个 spread，身份由节点自报，不依赖下标。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供连接层现查。
     this.getParts('column').forEach((el, position) => {
-      this.spreader.spread(el, api.getColumnProps({ level: this.levelOf(el, position) }) as Record<string, unknown>)
+      const level = this.levelOf(el, position)
+      this.spreader.spread(el, api.getColumnProps({ level }) as Record<string, unknown>)
+      // 这一列属于懒分支：列末补上在途、失败与重试三块，露哪一块归连接层；补过的留着，换了父条目照样由连接层收起
+      const hasFeedback = [...el.children].some(child => this.generatedBranchFeedback.has(child as HTMLElement))
+      if (api.columnLoadState(level) == null && !hasFeedback)
+        return
+      const feedback = [
+        ['branch-loading', 'div', api.getBranchLoadingProps({ level }), api.translations.loading],
+        ['branch-error', 'div', api.getBranchErrorProps({ level }), api.translations.branchError],
+        ['branch-retry-trigger', 'button', api.getBranchRetryTriggerProps({ level }), api.translations.retry],
+      ] as const
+      for (const [name, tag, props, text] of feedback) {
+        const node = this.ensureColumnFeedback(el, name, tag)
+        this.spreader.spread(node, props as Record<string, unknown>)
+        if (node.textContent !== text)
+          node.textContent = text
+      }
     })
     // 分组是多实例 part：身份取自己的 value 属性，组内标题跟着同一份身份
     for (const el of this.getParts('group')) {

@@ -35,6 +35,9 @@ export const cascaderAnatomy = createAnatomy('cascader', [
   'item-indicator',
   'empty',
   'loading',
+  'branch-loading',
+  'branch-error',
+  'branch-retry-trigger',
   'footer',
 ])
 

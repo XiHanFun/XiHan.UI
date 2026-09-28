@@ -94,6 +94,8 @@ export const XhCascaderRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<CascaderNode[]> },
+    /** 取回懒分支（hasChildren 且没给 children）的直接子项；展开路径走到它时自动调用。 */
+    loadChildren: { type: Function as PropType<CascaderProps['loadChildren']> },
     value: { type: Array as PropType<CascaderValue> },
     defaultValue: { type: Array as PropType<CascaderValue> },
     name: { type: String },
@@ -131,6 +133,9 @@ export const XhCascaderRoot = defineComponent({
     'open-change': (_details: PayloadOf<CascaderProps, 'onOpenChange'>) => true,
     'update:value': (_value: PayloadOf<CascaderProps, 'onValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<CascaderProps, 'onOpenChange'>['open']) => true,
+    'branch-load-start': (_details: PayloadOf<CascaderProps, 'onBranchLoadStart'>) => true,
+    'branch-load': (_details: PayloadOf<CascaderProps, 'onBranchLoad'>) => true,
+    'branch-load-error': (_details: PayloadOf<CascaderProps, 'onBranchLoadError'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: CascaderRootSlotProps) => VNode[]
@@ -147,6 +152,9 @@ export const XhCascaderRoot = defineComponent({
     const ctx = useCascader(withXhConfig('cascader', useFormControlProps(props)) as CascaderProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
+      onBranchLoadStart: details => emit('branch-load-start', details),
+      onBranchLoad: details => emit('branch-load', details),
+      onBranchLoadError: details => emit('branch-load-error', details),
     })
     provideCascader(ctx)
 
@@ -458,6 +466,21 @@ export const XhCascaderSearchList = defineComponent({
   },
 })
 
+/**
+ * 懒分支那一列里的三块状态：在途、失败提示与重试钮。只在这一列属于懒分支时铺，露哪一块归连接层；
+ * 文案走 translations.loading / branchError / retry。
+ */
+function renderBranchFeedback(ctx: CascaderContext, level: number): VNode[] {
+  const api = ctx.api.value
+  if (api.columnLoadState(level) == null)
+    return []
+  return [
+    h('div', { ...api.getBranchLoadingProps({ level }) as Record<string, unknown>, key: 'branch-loading' }, api.translations.loading),
+    h('div', { ...api.getBranchErrorProps({ level }) as Record<string, unknown>, key: 'branch-error' }, api.translations.branchError),
+    h('button', { ...api.getBranchRetryTriggerProps({ level }) as Record<string, unknown>, key: 'branch-retry-trigger' }, api.translations.retry),
+  ]
+}
+
 export const XhCascaderColumn = defineComponent({
   name: 'XhCascaderColumn',
   props: {
@@ -485,7 +508,7 @@ export const XhCascaderColumn = defineComponent({
           ...mergeProps(ctx.api.value.getColumnProps({ level: Number(props.level) }) as Record<string, unknown>, attrs),
           ref: (el: unknown) => { columnRef.value = el as HTMLElement },
         },
-        slots.default?.(),
+        [...(slots.default?.() ?? []), ...renderBranchFeedback(ctx, Number(props.level))],
       ),
       ...bars.render(),
     ]

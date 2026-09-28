@@ -20828,6 +20828,32 @@
   display: none;
 }
 
+/* 懒分支那一列：条目还没取回时列里只有一句次要文字（在途或失败），失败时下面跟一颗重试钮；
+   三块同一时刻至多露一种，露哪一块归连接层。文字的观感与整浮层的在途占位同一档 */
+[data-scope='cascader'][data-part='branch-loading'],
+[data-scope='cascader'][data-part='branch-error'] {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding-block: var(--xh-cascader-branch-status-py, var(--xh-space-3));
+  padding-inline: var(--xh-cascader-branch-status-px, var(--xh-_cascader-row-px));
+  color: var(--xh-cascader-branch-status-fg, var(--xh-material-frosted-fg-muted));
+  font-size: var(--xh-cascader-branch-status-font-size, var(--xh-_cascader-font-size));
+  text-align: center;
+}
+
+/* 重试钮是 Action Control 家族的 text ghost 档，盒与按压都归家族；这里只让它在列里居中 */
+[data-scope='cascader'][data-part='branch-retry-trigger'] {
+  align-self: center;
+}
+
+[data-scope='cascader'][data-part='branch-loading'][hidden],
+[data-scope='cascader'][data-part='branch-error'][hidden],
+[data-scope='cascader'][data-part='branch-retry-trigger'][hidden] {
+  display: none;
+}
+
 /* 底栏在场时浮层壳允许换行：列照旧并排在第一行，底栏占满一整行落在列下面。
    没写底栏的浮层不命中这条，列多到放不下时仍是整体横向滚动 */
 [data-scope='cascader'][data-part='content']:has(> [data-part='footer']) {

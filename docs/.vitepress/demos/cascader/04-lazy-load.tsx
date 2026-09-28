@@ -1,4 +1,5 @@
-// 懒加载 | 展开分支时加载下一层数据
+// 懒加载 | 节点写 hasChildren 不给 children，展开路径走到它时由 loadChildren 取回直接子项；在途与失败都显示在它那一列里，失败在父条目上按 Enter 或点重试钮再取
+import type { CascaderLoadChildrenRequest, CascaderNode } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
   XhCascaderColumn,
@@ -14,17 +15,15 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
-interface RegionNode {
-  value: string;
-  label: string;
-  disabled?: boolean;
-  children?: RegionNode[];
-}
+// 只写到省一级：下一层等展开时再取
+const regions: CascaderNode[] = [
+  { value: "zhejiang", label: "浙江", hasChildren: true },
+  { value: "jiangsu", label: "江苏", hasChildren: true },
+];
 
 // 下一层的数据在后端，这里用定时器代替一次请求
-const remote: Record<string, RegionNode[]> = {
+const remote: Record<string, CascaderNode[]> = {
   zhejiang: [
     { value: "hangzhou", label: "杭州" },
     { value: "ningbo", label: "宁波" },
@@ -36,37 +35,20 @@ const remote: Record<string, RegionNode[]> = {
   ],
 };
 
-// 占位子节点：children 非空才算分支，子列才开得出来；禁用让方向键跳过它，也点不动
-function pending(parent: string): RegionNode {
-  return { value: `${parent}:pending`, label: "加载中…", disabled: true };
+// 浮层收起或展开路径离开这一支时 signal 中止，把定时器一起撤掉
+function loadChildren({ node, signal }: CascaderLoadChildrenRequest): Promise<CascaderNode[]> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => resolve(remote[node.value] ?? []), 800);
+    signal.addEventListener("abort", () => {
+      clearTimeout(timer);
+      reject(signal.reason);
+    });
+  });
 }
 
 export default function Demo(): ReactNode {
-  const [regions, setRegions] = useState<RegionNode[]>([
-    { value: "zhejiang", label: "浙江", children: [pending("zhejiang")] },
-    { value: "jiangsu", label: "江苏", children: [pending("jiangsu")] },
-  ]);
-  const [loading, setLoading] = useState<string[]>([]);
-  const [loaded, setLoaded] = useState<string[]>([]);
-
-  // 点开或键盘走到这一支时才取它的子节点，取回来把占位那一条整个换掉
-  function load(value: string): void {
-    const children = remote[value];
-    if (!children || loading.includes(value) || loaded.includes(value)) {
-      return;
-    }
-    setLoading(list => [...list, value]);
-    setTimeout(() => {
-      setRegions(list =>
-        list.map(item => (item.value === value ? { ...item, children } : item)),
-      );
-      setLoading(list => list.filter(v => v !== value));
-      setLoaded(list => [...list, value]);
-    }, 800);
-  }
-
   return (
-    <XhCascaderRoot collection={regions} placeholder="请选择地区">
+    <XhCascaderRoot collection={regions} loadChildren={loadChildren} placeholder="请选择地区">
       {({ levels }) => (
         <>
           <XhCascaderLabel>收货地区</XhCascaderLabel>
@@ -78,15 +60,11 @@ export default function Demo(): ReactNode {
           </XhCascaderControl>
           <XhCascaderPositioner>
             <XhCascaderContent>
+              {/* levels 含取回的那一层；还没取回时也有一个空层，在途提示铺在它里面 */}
               {levels.map(lv => (
                 <XhCascaderColumn key={lv.level} level={lv.level}>
                   {lv.items.map(node => (
-                    <XhCascaderItem
-                      key={node.value}
-                      value={node.value}
-                      onClick={() => load(node.value)}
-                      onFocus={() => load(node.value)}
-                    >
+                    <XhCascaderItem key={node.value} value={node.value}>
                       <XhCascaderItemText>{node.label}</XhCascaderItemText>
                       <XhCascaderItemIndicator />
                     </XhCascaderItem>
