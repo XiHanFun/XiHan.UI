@@ -41,6 +41,20 @@ export interface Spreader {
  */
 const owners = new WeakMap<Element, symbol>()
 
+/**
+ * 一个角色节点上由连接层写着的内联样式键，不分是哪一台 spreader 写的：节点被作者挪进另一台同类宿主时，
+ * 接管方按这份记录撤掉前一台留下、自己不再写的那几条（拖动时写的位移一类），否则它们会一直钉在节点上。
+ * 连接层给 undefined 表示「这一条我不给」：只撤写过的，作者自己写在节点上的内联样式不碰。
+ */
+const writtenStyles = new WeakMap<Element, Set<string>>()
+
+function clearStyle(node: HTMLElement, key: string): void {
+  if (key.startsWith('--'))
+    node.style.removeProperty(key)
+  else
+    (node.style as unknown as Record<string, string>)[key] = ''
+}
+
 export function createSpreader(): Spreader {
   const owner = Symbol('spreader')
   const state = new WeakMap<Element, NodeState>()
@@ -54,6 +68,7 @@ export function createSpreader(): Spreader {
     }
     const nextAttrs = new Set<string>()
     const nextEvents = new Set<string>()
+    const nextStyles = new Set<string>()
 
     for (const [key, value] of Object.entries(props)) {
       const ev = eventName(key)
@@ -74,8 +89,11 @@ export function createSpreader(): Spreader {
       // style 传对象时逐条写内联样式；自定义属性（--开头）走 setProperty，Object.assign 写不进去
       if (key === 'style' && value !== null && typeof value === 'object') {
         for (const [styleKey, styleValue] of Object.entries(value as Record<string, string | undefined>)) {
+          // undefined 是「这一条不给」：写过的由下面的对账撤掉，没写过的（作者自己的）不碰
+          if (styleValue == null)
+            continue
           if (styleKey.startsWith('--')) {
-            if (styleValue == null || styleValue === '')
+            if (styleValue === '')
               node.style.removeProperty(styleKey)
             else
               node.style.setProperty(styleKey, String(styleValue))
@@ -83,6 +101,8 @@ export function createSpreader(): Spreader {
           else {
             (node.style as unknown as Record<string, unknown>)[styleKey] = styleValue
           }
+          if (styleValue !== '')
+            nextStyles.add(styleKey)
         }
         continue
       }
@@ -118,6 +138,12 @@ export function createSpreader(): Spreader {
       }
     }
     s.attrs = nextAttrs
+    // 上一帧写着、这一帧不再给的内联样式撤掉；上一帧可能是另一台宿主写的（节点刚被挪进来）
+    for (const key of writtenStyles.get(node) ?? []) {
+      if (!nextStyles.has(key))
+        clearStyle(node, key)
+    }
+    writtenStyles.set(node, nextStyles)
   }
 
   function release(node: HTMLElement): void {
@@ -128,6 +154,8 @@ export function createSpreader(): Spreader {
     // 节点已被另一台宿主接管时只摘监听器，属性归接管方
     if (owners.get(node) === owner) {
       for (const key of s.attrs) node.removeAttribute(key)
+      for (const key of writtenStyles.get(node) ?? []) clearStyle(node, key)
+      writtenStyles.delete(node)
       owners.delete(node)
     }
     state.delete(node)

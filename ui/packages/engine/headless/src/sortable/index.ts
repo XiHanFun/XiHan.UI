@@ -16,10 +16,13 @@ export type {
   SortableApi,
   SortableDragEndDetails,
   SortableDragStartDetails,
+  SortableGroupPeer,
+  SortableIncoming,
   SortableItemState,
   SortableMode,
   SortableRefs,
   SortableSchema,
   SortableSortDetails,
+  SortableTransferDetails,
   SortableTranslations,
 } from './sortable.types'

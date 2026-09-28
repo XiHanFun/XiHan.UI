@@ -48,9 +48,18 @@
 
   /* 让位期间关掉过渡，跟手的那一项才不会慢半拍粘在指针后面。
      其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。
-     键盘拖动时被拖那一项不跟手、逐格挪，与让位的邻项同一段一起滑；抓起时的抬升照常淡变 */
-  [data-scope='sortable'][data-part='root'][data-dragging] [data-part='item']:not([data-dragging]) {
+     键盘拖动时被拖那一项不跟手、逐格挪，与让位的邻项同一段一起滑；抓起时的抬升照常淡变。
+     同组别的列表的一项悬在这里（data-drop='inside'）时，插入点及其后的项同样是被让开的 */
+  [data-scope='sortable'][data-part='root']:is([data-dragging], [data-drop='inside']) [data-part='item']:not([data-dragging]) {
     transition: translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
+  }
+
+  /* 让位把末项挪出了原来的末端：容器末尾垫出落进来那一格的大小（连接层写进 --xh-_sortable-incoming-size），
+     容器随之长出一格，末项不会掉出容器的面。垫块是一个 flex 子项，沿主轴取那一格的尺寸、与各项之间同样隔一个 gap；
+     列表为空时它是唯一的子项，不带 gap，正好是那一格 */
+  [data-scope='sortable'][data-part='root'][data-drop='inside']::after {
+    content: '';
+    flex: 0 0 var(--xh-_sortable-incoming-size);
   }
 
   [data-scope='sortable'][data-part='root'][data-drag-mode='keyboard'] [data-part='item'][data-dragging] {
@@ -187,6 +196,14 @@
   [data-scope='sortable'][data-part='drop-indicator'][data-orientation='both'] {
     inline-size: var(--xh-sortable-drop-indicator-size, var(--xh-stroke-thick));
     block-size: 100%;
+  }
+
+  /* 落点线是一块纯底色，高对比档里底色被统一换成 Canvas，整根消失：换成系统高亮色画回来。
+     跨列表时落在哪个列表只靠这条线与让出的那一格表出，这一档里同样要看得见 */
+  @media (forced-colors: active) {
+    [data-scope='sortable'][data-part='drop-indicator'] {
+      background: Highlight;
+    }
   }
 
   /* 活动区域只说给读屏听，不占版面。声明与 shared/visually-hidden.ts 逐条同值。 */

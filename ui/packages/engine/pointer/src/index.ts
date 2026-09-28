@@ -7,9 +7,20 @@
 
 export { DEFAULT_EDGE_SPEED, DEFAULT_EDGE_THRESHOLD, edgeScrollDelta } from './dnd/autoscroll'
 export type { EdgeScrollInput } from './dnd/autoscroll'
+export { insertionOffsets, insertionSlot, projectInsertion } from './dnd/insertion'
 export { moveItem } from './dnd/move-item'
 export { projectSortable, sortableOffsets } from './dnd/sortable'
-export type { DndDelta, DndRect, SortableAxis, SortableOffsetsInput, SortableProjection, SortableProjectionInput } from './dnd/types'
+export type {
+  DndDelta,
+  DndDirection,
+  DndRect,
+  InsertionLayoutInput,
+  InsertionProjectionInput,
+  SortableAxis,
+  SortableOffsetsInput,
+  SortableProjection,
+  SortableProjectionInput,
+} from './dnd/types'
 export { createMultiPointerSession } from './gesture/multi-session'
 export type { MultiPointerSession, MultiPointerSessionOptions, TrackedPoint } from './gesture/multi-session'
 export { pinchChange, pinchSnapshot } from './gesture/pinch'

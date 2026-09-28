@@ -25,6 +25,7 @@ export interface SortableContext {
 export function useSortable(
   props: SortableSchema['props'],
   onSort?: SortableSchema['props']['onSort'],
+  onTransfer?: SortableSchema['props']['onTransfer'],
   onDragStart?: SortableSchema['props']['onDragStart'],
   onDragEnd?: SortableSchema['props']['onDragEnd'],
 ): SortableContext {
@@ -32,7 +33,7 @@ export function useSortable(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(sortableMachine, () => ({ ...props, onSort, onDragStart, onDragEnd }), scope)
+  const service = useMachine(sortableMachine, () => ({ ...props, onSort, onTransfer, onDragStart, onDragEnd }), scope)
 
   // 传 getter 而非节点，ref 在挂载后才有值
   service.refs.set('getRootEl', () => rootRef.value)

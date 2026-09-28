@@ -43,11 +43,17 @@ export const XhSortableRoot = defineComponent({
     activationDistance: { type: Number },
     autoScroll: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<SortableTranslations>> },
+    /** 所在的组：同一文档里 group 相同的列表可以互相拖入拖出。 */
+    group: { type: String },
+    /** 这个列表在组里的标识，写了 group 就必须写。 */
+    listId: { type: String },
   },
   // sort 携带 { from, to, id, ids }，update:ids 携带重排好的裸数组，可直接 v-model:ids
   emits: {
     'sort': (_details: PayloadOf<SortableProps, 'onSort'>) => true,
     'update:ids': (_ids: PayloadOf<SortableProps, 'onSort'>['ids']) => true,
+    // 落进同组另一个列表：由源列表发一次，两个列表的新顺序都在载荷里，写回归宿主
+    'transfer': (_details: PayloadOf<SortableProps, 'onTransfer'>) => true,
     'drag-start': (_details: PayloadOf<SortableProps, 'onDragStart'>) => true,
     'drag-end': (_details: PayloadOf<SortableProps, 'onDragEnd'>) => true,
   },
@@ -62,6 +68,7 @@ export const XhSortableRoot = defineComponent({
     const ctx = useSortable(
       withXhConfig('sortable', props) as SortableProps,
       notifySort,
+      details => emit('transfer', details),
       details => emit('drag-start', details),
       details => emit('drag-end', details),
     )
