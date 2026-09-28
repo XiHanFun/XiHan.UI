@@ -25823,6 +25823,10 @@
     user-select: none;
     /* 触屏上连点两下不该被当成缩放手势 */
     touch-action: manipulation;
+    /* 反白随当前段换色：状态角色的 micro 淡变，与 TimeField 同一档；焦点环画在 control 上，不进过渡 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* granularity 用不上的段带 hidden 留在文档里（不卸载作者节点）。
