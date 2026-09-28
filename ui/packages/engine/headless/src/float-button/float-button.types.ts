@@ -76,6 +76,11 @@ export interface FloatButtonRefs {
 export interface FloatButtonSchema extends MachineSchema {
   props: FloatButtonDisclosureProps & FloatButtonNotifiers & Pick<FloatButtonAppearance, 'expandTrigger'>
   context: {
+    /**
+     * 挂载时开着、还没收起过：这一段打开属于首帧，展开组投影 data-instant 直接呈现、不播进场。
+     * 第一次收起时清掉，之后的每一次打开照常进场。
+     */
+    openedAtMount: boolean
     /** 触发器正被按住：Space / Enter 或触屏手指按下到松开之间，投影 data-pressed。指针按住由 :active 表出。 */
     pressed: boolean
     /** 液态档收起后动作正融回触发器：展开组留在原处、不可交互，融回落定才藏起来。 */
@@ -109,6 +114,7 @@ export interface FloatButtonSchema extends MachineSchema {
     | 'releaseWhenInert'
     | 'startMerge'
     | 'endMerge'
+    | 'clearOpenedAtMount'
   effect: 'trackLayer' | 'trackLiquid' | 'trackLiquidGroup' | 'trackListExit'
 }
 

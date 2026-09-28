@@ -5602,7 +5602,12 @@
     inline-size: var(--xh-float-button-size, var(--xh-_float-button-size));
     block-size: var(--xh-float-button-size, var(--xh-_float-button-size));
     border-radius: var(--xh-float-button-radius, var(--xh-shape-circle));
-    /* 逐条依次冒出来，离触发器最近的那条先到。backwards 让每条在自己那份延迟里保持起始帧 */
+  }
+
+  /* 逐条依次冒出来，离触发器最近的那条先到。backwards 让每条在自己那份延迟里保持起始帧。
+     挂载时就展开着的那一段（data-instant）属于首帧，直接呈现。守卫包在 :where 里不加特异性：
+     后面的交错延迟、液态分离块与收起那几条要照旧压得过这一条 */
+  [data-scope='float-button'][data-part='list']:where(:not([data-instant])) > * {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   }
 

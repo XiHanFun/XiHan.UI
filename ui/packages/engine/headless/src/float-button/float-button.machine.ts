@@ -8,11 +8,17 @@
 import type { FloatButtonSchema } from './float-button.types'
 import { setup } from '@xihan-ui/core'
 import { trackLiquidGoo } from '@xihan-ui/core/visual-environment'
+import { clearOpenedAtMount, openedAtMountCell } from '../shared/first-frame'
 import { trackLiquidPart } from '../shared/liquid'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import { waitForSubtreeAnimations } from '../shared/part-presence'
 
 const { createMachine } = setup<FloatButtonSchema>()
+
+/** 挂载时开没开：受控值始终由父级决定；非受控 defaultOpen 在禁用时不建立展开态。 */
+function openAtMount(prop: (key: 'open' | 'defaultOpen' | 'disabled') => boolean | undefined): boolean {
+  return prop('open') !== undefined ? !!prop('open') : !!prop('defaultOpen') && !prop('disabled')
+}
 
 /**
  * FloatButton 的专用行为真源。
@@ -23,7 +29,9 @@ const { createMachine } = setup<FloatButtonSchema>()
 export const floatButtonMachine = createMachine({
   name: 'float-button',
   // 按压通道（context.pressed）与开合无关：两个状态都认 PRESS.*，禁用时按住的一律松开
-  context: ({ cell }) => ({
+  context: ({ cell, prop }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     pressed: cell<boolean>(() => ({ defaultValue: false })),
     merging: cell<boolean>(() => ({ defaultValue: false })),
   }),
@@ -33,10 +41,7 @@ export const floatButtonMachine = createMachine({
     getRootEl: () => null,
     liquidGroup: null,
   }),
-  // 受控值始终由父级决定；非受控 defaultOpen 在禁用时不建立展开态。
-  initialState: ({ prop }) => prop('open') !== undefined
-    ? (prop('open') ? 'open' : 'closed')
-    : (prop('defaultOpen') && !prop('disabled') ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   effects: ['trackLayer', 'trackLiquid', 'trackLiquidGroup', 'trackListExit'],
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
@@ -48,6 +53,8 @@ export const floatButtonMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         'OPEN': [
           { guard: 'isDisabled' },
@@ -90,6 +97,7 @@ export const floatButtonMachine = createMachine({
       canPress: ({ prop }) => !prop('disabled'),
     },
     actions: {
+      clearOpenedAtMount,
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
       // 按住途中被禁用：原生 disabled 的按钮不再派 keyup / blur，按压面得由机器自己收

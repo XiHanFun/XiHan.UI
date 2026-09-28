@@ -57,6 +57,9 @@ import {
   XhDrawerContent,
   XhDrawerRoot,
   XhDrawerTitle,
+  XhFloatButtonList,
+  XhFloatButtonRoot,
+  XhFloatButtonTrigger,
   XhFloatingPanelContent,
   XhFloatingPanelPositioner,
   XhFloatingPanelRoot,
@@ -325,6 +328,15 @@ const CASES: Record<string, Case> = {
     parts: ['positioner'],
     enter: 'xh-pop-in',
     render: props => h(XhFloatingPanelRoot, props, () => h(XhFloatingPanelPositioner, null, () => h(XhFloatingPanelContent, null, () => h(XhFloatingPanelTitle, null, () => '面板')))),
+  },
+  'float-button': {
+    parts: ['list'],
+    enter: 'xh-pop-in',
+    targets: list => [...list.children],
+    render: props => h(XhFloatButtonRoot, props, () => [
+      h(XhFloatButtonTrigger, null, () => '操作'),
+      h(XhFloatButtonList, null, () => [h('button', { type: 'button' }, '编辑'), h('button', { type: 'button' }, '分享')]),
+    ]),
   },
   'dialog': {
     parts: ['content', 'backdrop'],
