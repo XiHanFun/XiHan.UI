@@ -37257,6 +37257,12 @@
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 刷新：已有候选时后台在取，保留上一帧，列表按 micro 淡下，数据到了再淡回；在途占位此时让位 */
+  [data-scope='select'][data-part='list'][aria-busy='true'] {
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* 底部操作区：贴在列表下沿，用一道分隔线与条目断开。
@@ -37318,7 +37324,10 @@
 
   /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   [data-scope='select'][data-part='loading'] {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-_select-gap);
     flex: none;
     padding-block: var(--xh-select-loading-py, var(--xh-space-3));
     padding-inline: var(--xh-select-loading-px, var(--xh-_select-item-px));
@@ -37330,6 +37339,15 @@
 
   [data-scope='select'][data-part='loading'][hidden] {
     display: none;
+  }
+
+  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
+     直径取所在尺寸档的图标档 */
+  [data-scope='select'][data-part='loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   }
 
   [data-scope='select'][data-part='group'] {
