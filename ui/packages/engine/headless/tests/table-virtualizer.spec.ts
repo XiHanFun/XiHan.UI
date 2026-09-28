@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import type { Mock } from 'vitest'
 import type { TableSchema } from '../src/table'
 import type { CollectionVirtualizer } from '../src/virtualizer'
 import { createService, normalizeProps } from '@xihan-ui/core'
@@ -10,11 +11,11 @@ type Props = TableSchema['props']
 
 const ROWS = Array.from({ length: 100 }, (_, i) => ({ id: `r${i}`, disabled: i === 99 }))
 
-function fakeVirtualizer(count: number): CollectionVirtualizer & { focusIndex: ReturnType<typeof vi.fn> } {
+function fakeVirtualizer(count: number): CollectionVirtualizer & { focusIndex: Mock<CollectionVirtualizer['focusIndex']> } {
   return {
     count,
     scrollToIndex: vi.fn(),
-    focusIndex: vi.fn(),
+    focusIndex: vi.fn<CollectionVirtualizer['focusIndex']>(),
     getRenderedItemRoots: () => [],
     getViewportElement: () => null,
   }

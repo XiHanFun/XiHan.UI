@@ -247,7 +247,7 @@ describe('根与摘要', () => {
   })
 
   it('缺省摘要：一个点、首值为 0 时不报变化率', () => {
-    const base = { variant: 'line', min: '0', max: '5', first: '0', last: '5', wins: 0, losses: 0, ties: 0 } as const
+    const base = { variant: 'line', min: '0', max: '5', first: '0', last: '5', wins: 0, losses: 0, ties: 0, reference: null } as const
     expect(defaultSparklineSummary({ ...base, count: 1, change: null, direction: null })).toBe('1 point: 5.')
     expect(defaultSparklineSummary({ ...base, count: 2, change: null, direction: 'up' })).toBe('2 points, ranging from 0 to 5. Last 5.')
   })

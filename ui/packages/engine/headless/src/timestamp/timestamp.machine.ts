@@ -90,7 +90,7 @@ export const timestampMachine = createMachine({
         const win = scope.getWin()
         const doc = scope.getDoc()
         const delay = timestampNextRefresh(prop, Date.now())
-        let timer: ReturnType<typeof win.setTimeout> | undefined
+        let timer: ReturnType<Window['setTimeout']> | undefined
         let pageVisible = doc.visibilityState !== 'hidden'
         let inView = true
 
