@@ -3896,6 +3896,15 @@
             },
             {
               "kind": "field",
+              "name": "maxSelected",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-selected"
+            },
+            {
+              "kind": "field",
               "name": "focusedValue",
               "privacy": "public",
               "type": {
@@ -4218,6 +4227,14 @@
               "description": "选择模式，默认 single；区间选择是 `<xh-calendar-range-picker>`",
               "name": "selection-mode",
               "fieldName": "selectionMode"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "multiple 下最多选几个周期；选满后没选中的格子不可再加选，已选的仍可点掉",
+              "name": "max-selected",
+              "fieldName": "maxSelected"
             },
             {
               "type": {

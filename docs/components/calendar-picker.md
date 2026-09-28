@@ -48,6 +48,12 @@ firstDayOfWeek 单独改周首日：locale 仍是 en-US，月份与星期名照�
 
 <XhDemo src="calendar-picker/05-first-day-of-week" />
 
+### 限定多选数量
+
+max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名额
+
+<XhDemo src="calendar-picker/06-max-selected" />
+
 ## 设计指引
 
 ### 何时使用
@@ -68,6 +74,7 @@ firstDayOfWeek 单独改周首日：locale 仍是 en-US，月份与星期名照�
 - 五种粒度统一产出 `CalendarPeriod`：稳定键、周期首尾、标签与相邻容器标记都来自同一份数据。
 - `week` 是一级粒度，使用一行一个整周的网格；不通过日格高亮模拟整周选择。
 - `isDateUnavailable` 与 `min` / `max` 只阻止取值，不阻止聚焦；粗粒度周期越过任一边界时整格不可选。
+- 多选时 `maxSelected` 限定最多选几个周期：选满后没选中的格子转为不可用（仍可聚焦），已选的点掉一个即腾出名额。它只拦用户的加选，`setValue` 与受控值原样收下。
 - 支持固定六行与显式多面板；翻页时整个视窗一起移动。
 - 日期、月份与年份格按下时轻微缩放，松开后复原；减弱动效下自动收敛。
 - 年份网格采用三列紧凑滚动面，可由作者按业务上下界铺入连续年份，复用日历格的选中与键盘语义。
@@ -86,6 +93,7 @@ firstDayOfWeek 单独改周首日：locale 仍是 en-US，月份与星期名照�
 
 - 今天使用 1px 品牌环 + 品牌字，选中使用实心强调面，两种状态必须能同时辨认。
 - 多选时使用 `aria-multiselectable` 告知读屏用户可以多选，不依赖视觉提示。
+- 设了 `maxSelected` 时在日历旁写明「已选几个 / 上限」：选满后格子只是转为不可用，本身不说明原因。
 - 格子中的内容超出时收起，避免某一行明显高于其他行。
 
 ### 反模式
@@ -139,6 +147,7 @@ firstDayOfWeek 单独改周首日：locale 仍是 en-US，月份与星期名照�
 | `XhCalendarPickerRoot` | `value` | `string \| string[]` |  |  |
 | `XhCalendarPickerRoot` | `defaultValue` | `string \| string[]` |  |  |
 | `XhCalendarPickerRoot` | `selectionMode` | `CalendarPickerSelectionMode` |  |  |
+| `XhCalendarPickerRoot` | `maxSelected` | `number` |  | multiple 下最多选几个周期；选满后没选中的格子不可再加选。 |
 | `XhCalendarPickerRoot` | `focusedValue` | `string` |  |  |
 | `XhCalendarPickerRoot` | `defaultFocusedValue` | `string` |  |  |
 | `XhCalendarPickerRoot` | `min` | `string` |  |  |
@@ -181,6 +190,7 @@ firstDayOfWeek 单独改周首日：locale 仍是 en-US，月份与星期名照�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `selectionMode` | `CalendarPickerSelectionMode` |  |
+| `maxSelected` | `number \| null` | 实际生效的多选上限；single 或没设上限时为 null。 |
 
 ## 无障碍
 

@@ -518,6 +518,40 @@ export const calendarPickerSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'maxSelected：多选选满后没选中的格子转 aria-disabled、点不进去，点掉一个即腾出名额',
+      spec: { apg: APG },
+      props: { ...BASE_PROPS, selectionMode: 'multiple', maxSelected: 1, defaultValue: [ANCHOR] },
+      initial: {
+        parts: {
+          [`cell-trigger[${at('2024-02-18')}]`]: { 'aria-disabled': 'true', 'data-disabled': '' },
+          [`cell-trigger[${at(ANCHOR)}]`]: { 'aria-disabled': 'false', 'data-disabled': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: `cell-trigger[${at('2024-02-18')}]`,
+          expect: { parts: selection(ANCHOR), events: [] },
+        },
+        {
+          kind: 'click',
+          part: `cell-trigger[${at(ANCHOR)}]`,
+          expect: {
+            parts: {
+              ...selection(),
+              [`cell-trigger[${at('2024-02-18')}]`]: { 'aria-selected': null, 'data-selected': null, 'aria-disabled': 'false', 'data-disabled': null },
+            },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+        {
+          kind: 'click',
+          part: `cell-trigger[${at('2024-02-18')}]`,
+          expect: { parts: selection('2024-02-18'), events: [{ type: 'value-change', detail: { value: ['2024-02-18'] } }] },
+        },
+      ],
+    },
+    {
       name: 'min/max 之外的日子转 aria-disabled：仍可聚焦、仍是方向键起点，但选不动',
       spec: { apg: APG },
       props: { ...BASE_PROPS, min: '2024-02-10', max: '2024-02-20' },

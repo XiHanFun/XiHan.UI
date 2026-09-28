@@ -24,6 +24,17 @@ function isCellKey(key: CalendarPickerPressedKey): boolean {
   return key.startsWith('cell:')
 }
 
+/**
+ * 多选上限归一：只在 multiple 下生效；非整数向下取整，小于 1 或不是有限数即不设上限。
+ * 连接层与机器共用这一条，格子的禁用面与点击拦截才对得上。
+ */
+export function calendarPickerMaxSelected(raw: number | undefined, mode: CalendarPickerSelectionMode): number | null {
+  if (mode !== 'multiple' || raw == null || !Number.isFinite(raw))
+    return null
+  const max = Math.floor(raw)
+  return max >= 1 ? max : null
+}
+
 /** 选中集合的不变量：单选长度 ≤ 1，多选去重升序。 */
 function normalizeSelection(next: readonly string[], mode: CalendarPickerSelectionMode): string[] {
   return mode === 'single' ? next.slice(0, 1) : sortIso(next)
@@ -111,16 +122,20 @@ export const calendarPickerMachine = createMachine({
         context.set('value', normalizeSelection(e.value, prop('selectionMode') ?? 'single'))
       },
 
-      // 单选替换、多选切换
+      // 单选替换、多选切换；选满后只能点掉，不能再加
       selectCell: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'CELL.SELECT')
           return
-        if ((prop('selectionMode') ?? 'single') === 'single') {
+        const mode = prop('selectionMode') ?? 'single'
+        if (mode === 'single') {
           context.set('value', [e.value])
           return
         }
         const current = context.get('value')
+        const max = calendarPickerMaxSelected(prop('maxSelected'), mode)
+        if (!current.includes(e.value) && max != null && current.length >= max)
+          return
         const next = current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value]
         context.set('value', normalizeSelection(next, 'multiple'))
       },

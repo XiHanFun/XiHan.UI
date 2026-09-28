@@ -44,6 +44,8 @@ export const XhCalendarPickerRoot = defineComponent({
     value: { type: [String, Array] as PropType<string | string[]> },
     defaultValue: { type: [String, Array] as PropType<string | string[]> },
     selectionMode: { type: String as PropType<CalendarPickerSelectionMode> },
+    /** multiple 下最多选几个周期；选满后没选中的格子不可再加选。 */
+    maxSelected: { type: Number },
     focusedValue: { type: String },
     defaultFocusedValue: { type: String },
     min: { type: String },

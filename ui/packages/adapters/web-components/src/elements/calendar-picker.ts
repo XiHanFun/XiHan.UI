@@ -48,6 +48,7 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
  * @attr {string} value - 受控选中值（单选简写，ISO 串）；未提供即非受控，多选使用 property
  * @attr {string} default-value - 非受控初始选中值
  * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single；区间选择是 `<xh-calendar-range-picker>`
+ * @attr {number} max-selected - multiple 下最多选几个周期；选满后没选中的格子不可再加选，已选的仍可点掉
  * @attr {string} focused-value - 受控聚焦日（ISO 串），同时决定展示哪个月
  * @attr {string} default-focused-value - 非受控初始聚焦日；未提供时回退为首个选中值，再回退为今天
  * @attr {string} min - 可选范围下界（含当天），界外的日期为 aria-disabled 但仍可聚焦
@@ -94,6 +95,7 @@ export class XhCalendarPickerElement extends XhElement {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
     focusedValue: { converter: STRING_CONVERTER, attribute: 'focused-value' },
     defaultFocusedValue: { converter: STRING_CONVERTER, attribute: 'default-focused-value' },
     min: { converter: STRING_CONVERTER },
@@ -119,6 +121,7 @@ export class XhCalendarPickerElement extends XhElement {
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare selectionMode?: CalendarPickerSelectionMode
+  declare maxSelected?: number
   declare focusedValue?: string
   declare defaultFocusedValue?: string
   declare min?: string
@@ -167,6 +170,7 @@ export class XhCalendarPickerElement extends XhElement {
       value: this.value,
       defaultValue: this.defaultValue,
       selectionMode: this.selectionMode,
+      maxSelected: this.maxSelected,
       focusedValue: this.focusedValue,
       defaultFocusedValue: this.defaultFocusedValue,
       min: this.min,
