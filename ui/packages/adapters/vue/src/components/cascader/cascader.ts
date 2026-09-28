@@ -99,6 +99,8 @@ export const XhCascaderRoot = defineComponent({
     changeOnSelect: Boolean,
     multiple: Boolean,
     searchable: { type: Boolean, default: undefined },
+    /** 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 */
+    filter: { type: Function as PropType<CascaderProps['filter']> },
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<CascaderProps['checkedStrategy']> },
     disabled: { type: Boolean, default: undefined },

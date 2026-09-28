@@ -14,6 +14,12 @@ export interface CascaderSearchCandidate {
   disabled: boolean
 }
 
+/**
+ * 自定义搜索匹配：candidate 是一条可落值的完整路径，query 已 trim 且非空（空搜索不调用谓词）。
+ * 缺省按整条路径的显示名以「/」连缀后大小写不敏感包含。
+ */
+export type CascaderFilter = (candidate: CascaderSearchCandidate, query: string) => boolean
+
 /** 摊平成候选：叶子恒在；changeOnSelect 打开时分支路径也算一条（它本身就能落值）。 */
 export function cascaderSearchCandidates(
   collection: readonly CascaderNode[],
@@ -39,15 +45,19 @@ export function cascaderSearchCandidates(
   return out
 }
 
-/** 大小写不敏感的连缀包含过滤；空串给全量。 */
+/** 按 filter 过滤候选，缺省为大小写不敏感的连缀包含；空串给全量，不调用谓词。 */
 export function cascaderFilterCandidates(
   candidates: readonly CascaderSearchCandidate[],
   query: string,
+  filter?: CascaderFilter,
 ): CascaderSearchCandidate[] {
-  const q = query.trim().toLowerCase()
+  const q = query.trim()
   if (!q)
     return [...candidates]
-  return candidates.filter(candidate => candidate.labels.join('/').toLowerCase().includes(q))
+  if (filter)
+    return candidates.filter(candidate => filter(candidate, q))
+  const needle = q.toLowerCase()
+  return candidates.filter(candidate => candidate.labels.join('/').toLowerCase().includes(needle))
 }
 
 /** 候选高亮的最小形状：这两个助手只看禁用与否。 */

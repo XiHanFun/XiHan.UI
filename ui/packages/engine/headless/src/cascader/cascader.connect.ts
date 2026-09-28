@@ -181,7 +181,7 @@ export function connectCascader<T extends PropTypes>(
   const inputValue = context.get('inputValue')
   const searching = searchable && inputValue.trim() !== ''
   const searchResults: CascaderSearchResult[] = searching
-    ? cascaderFilterCandidates(cascaderSearchCandidates(collection, !!prop('changeOnSelect')), inputValue)
+    ? cascaderFilterCandidates(cascaderSearchCandidates(collection, !!prop('changeOnSelect')), inputValue, prop('filter'))
         .map(candidate => ({ ...candidate, key: cascaderPathKey(candidate.path) }))
     : []
   // 高亮只落在可选候选上：禁用整条的候选轮不到它；整控件禁用时即使宿主强制保持

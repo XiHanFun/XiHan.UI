@@ -1269,6 +1269,41 @@ describe('搜索候选与列项共用选择状态', () => {
   })
 })
 
+describe('自定义搜索匹配', () => {
+  it('filter 接管匹配规则：拿到整条路径与逐段显示名，query 已 trim', () => {
+    const seen: string[] = []
+    const h = mount({
+      searchable: true,
+      defaultOpen: true,
+      // 按路径上任一段的值前缀匹配：显示名里没有的写法也能搜到
+      filter: (candidate, query) => {
+        seen.push(query)
+        return candidate.path.some(value => value.startsWith(query))
+      },
+    })
+    h.send({ type: 'INPUT.CHANGE', value: '  xi ' })
+    expect(h.api().searchResults.map(result => result.path.join('/'))).toEqual(['zhejiang/hangzhou/xihu'])
+    expect(new Set(seen)).toEqual(new Set(['xi']))
+    const candidate = h.api().searchResults[0]!
+    expect(candidate.labels).toEqual(['Zhejiang', 'Hangzhou', 'Xihu'])
+  })
+
+  it('检索词为空不调用 filter，候选列表收起', () => {
+    const filter = vi.fn(() => true)
+    const h = mount({ searchable: true, defaultOpen: true, filter })
+    h.send({ type: 'INPUT.CHANGE', value: '   ' })
+    expect(filter).not.toHaveBeenCalled()
+    expect(h.api().searching).toBe(false)
+    expect(h.api().searchResults).toEqual([])
+  })
+
+  it('不给 filter 时照旧按整条路径的显示名连缀、大小写不敏感包含', () => {
+    const h = mount({ searchable: true, defaultOpen: true })
+    h.send({ type: 'INPUT.CHANGE', value: 'hangzhou/XI' })
+    expect(h.api().searchResults.map(result => result.path.join('/'))).toEqual(['zhejiang/hangzhou/xihu'])
+  })
+})
+
 /** 记账用的假定位引擎：每次 attach 的入参原样收下，撤订阅也记一笔。 */
 function fakeEngine(): {
   port: PositionEnginePort
