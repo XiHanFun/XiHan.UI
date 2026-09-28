@@ -8,10 +8,12 @@
 import type { Service } from '@xihan-ui/core'
 import type { ImageApi, ImageSchema } from '@xihan-ui/headless'
 import type { ComputedRef } from 'vue'
+import { createScope } from '@xihan-ui/core'
 import { connectImage, imageMachine } from '@xihan-ui/headless'
 import { computed } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ImageContext {
   service: Service<ImageSchema>
@@ -22,7 +24,8 @@ export function useImage(
   props: ImageSchema['props'],
   onStatusChange?: ImageSchema['props']['onStatusChange'],
 ): ImageContext {
-  const service = useMachine(imageMachine, () => ({ ...props, onStatusChange }))
+  // 占位层与回退节点带 scope 派生的 id：撤下时按它找到节点，等淡出播完再藏起
+  const service = useMachine(imageMachine, () => ({ ...props, onStatusChange }), createScope(null, createVueIdGenerator()))
   const api = computed(() => connectImage(service, vueNormalize))
   return { service, api }
 }

@@ -100,15 +100,18 @@ export class XhImageElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     // src 写在 onLoad/onError 之前也不漏事件：图片的 load/error 一律异步派发，
     // 而这两个监听器在同一段同步代码里就挂上了。
-    put('image', api.getImageProps() as Record<string, unknown>)
+    const imageProps = api.getImageProps() as Record<string, unknown>
+    const fallbackProps = api.getFallbackProps() as Record<string, unknown>
+    put('image', imageProps)
     put('placeholder', api.getPlaceholderProps() as Record<string, unknown>)
-    put('fallback', api.getFallbackProps() as Record<string, unknown>)
+    put('fallback', fallbackProps)
 
     // 两个节点都常挂、互斥显隐，WC 自管可见性。connect 已置 hidden，但宿主不能指望作者装了
     // styles 那份样式：任何一句 `img { display: block }`、`[data-part=fallback] { display: flex }`
     // 都是 author 层，优先级高于 UA 的 [hidden]{display:none}，hidden 压不住；内联样式才压得住。
-    this.setPartHidden(this.getPart('image'), !api.loaded)
-    this.setPartHidden(this.getPart('fallback'), !api.showFallback)
+    // 显隐照连接层给的 hidden：回退内容撤下时先淡出、与图片交叉，播完 hidden 才落下
+    this.setPartHidden(this.getPart('image'), imageProps.hidden === true)
+    this.setPartHidden(this.getPart('fallback'), fallbackProps.hidden === true)
 
     // 属性与监听器都已落到 image 上，此刻才问得出"它是不是早就加载完了"
     this.syncSettledImage(api.status)

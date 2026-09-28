@@ -98,9 +98,9 @@ background-color: color(srgb 0.897884 0.898048 0.898063)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: none
-animation-duration: 0s
-animation-timing-function: ease
+animation-name: xh-fade-out
+animation-duration: 0.2s
+animation-timing-function: cubic-bezier(0, 0, 0.2, 1)
 outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.52 0.006 258)

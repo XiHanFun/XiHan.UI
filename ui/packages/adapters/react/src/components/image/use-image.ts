@@ -9,6 +9,7 @@ import type { Service } from '@xihan-ui/core'
 import type { ImageApi, ImageSchema } from '@xihan-ui/headless'
 import { connectImage, imageMachine } from '@xihan-ui/headless'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface ImageContext {
@@ -17,6 +18,7 @@ export interface ImageContext {
 }
 
 export function useImage(props: ImageSchema['props']): ImageContext {
-  const service = useMachine(imageMachine, () => props)
+  // 占位层与回退节点带 scope 派生的 id：撤下时按它找到节点，等淡出播完再藏起
+  const service = useMachine(imageMachine, () => props, { scope: useReactScope() })
   return { service, api: connectImage(service, reactNormalize) }
 }
