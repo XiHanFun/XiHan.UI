@@ -20,6 +20,7 @@ import { connectPopover, popoverMachine } from '../src/popover'
 import { connectSelect, selectMachine } from '../src/select'
 import { connectTimePicker, timePickerMachine } from '../src/time-picker'
 import { connectTimeRangePicker, timeRangePickerMachine } from '../src/time-range-picker'
+import { connectTooltip, tooltipMachine } from '../src/tooltip'
 import { connectTreeSelect, treeSelectMachine } from '../src/tree-select'
 
 type Attrs = Record<string, unknown>
@@ -124,6 +125,10 @@ const CASES: Record<string, Case> = {
   'hover-card': {
     machine: hoverCardMachine,
     parts: service => [connectHoverCard(service, normalizeProps).getContentProps() as Attrs],
+  },
+  'tooltip': {
+    machine: tooltipMachine,
+    parts: service => [connectTooltip(service, normalizeProps).getContentProps() as Attrs],
   },
 }
 

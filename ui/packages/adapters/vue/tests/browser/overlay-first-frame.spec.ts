@@ -98,6 +98,10 @@ import {
   XhTimeRangePickerRoot,
   XhTimeRangePickerSegment,
   XhTimeRangePickerSegmentGroup,
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
   XhTreeSelectContent,
   XhTreeSelectItem,
   XhTreeSelectItemText,
@@ -153,6 +157,14 @@ const CASES: Record<string, Case> = {
     render: props => h(XhHoverCardRoot, props, () => [
       h(XhHoverCardTrigger, null, () => '资料'),
       h(XhHoverCardPositioner, null, () => h(XhHoverCardContent, null, () => h(XhHoverCardTitle, null, () => '标题'))),
+    ]),
+  },
+  'tooltip': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhTooltipRoot, props, () => [
+      h(XhTooltipTrigger, null, () => '说明'),
+      h(XhTooltipPositioner, null, () => h(XhTooltipContent, null, () => '提示内容')),
     ]),
   },
   'menu': {
