@@ -19,5 +19,6 @@ export const approvalKeyboard: KeyboardTable = {
     { id: 'approval.kbd.press', keys: ['Enter', 'Space'], when: '按住批准或拒绝按钮，待决且不在挂起中；批准还要必选项已勾满', does: '按住期间该钮投影 data-pressed，与指针 :active 同一副按压面（text 档定尺按钮，按下缩放并换底）；抬起、失焦、判定落定或转入挂起撤下' },
     { id: 'approval.kbd.item-press', keys: ['Space'], when: '按住授权项，待决、不在挂起中且该项未禁用', does: '按住期间该行投影 data-pressed，与指针 :active 同一副按压面（row 档只换面不缩放）；抬起或失焦撤下。Enter 不是复选框的激活键，不进按压面' },
     { id: 'approval.kbd.escape', keys: ['Escape'], when: '焦点在闸门内，待决、未挂起、且开启 denyOnEscape', does: '判为拒绝。它不是关闭：本组件不提供不作答的出口' },
+    { id: 'approval.kbd.deny-reason', keys: ['Enter', 'Space', 'Escape'], when: '开了 requireReason、备注框在场且还空着，焦点在拒绝按钮上（Escape 则焦点在闸门内）', does: '不判定，焦点移到备注框并标为无效（aria-invalid）；写上理由后再按即判为拒绝，理由随载荷的 note 发出' },
   ],
 }

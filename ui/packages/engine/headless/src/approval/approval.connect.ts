@@ -7,11 +7,20 @@
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ApprovalApi, ApprovalPressedKey, ApprovalSchema, ApprovalScope, ApprovalStatus } from './approval.types'
-import { createPressTracker, dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { createPressTracker, dataAttr, isComposingEvent, itemQuerySelector } from '@xihan-ui/core'
 import { approvalAnatomy } from './approval.anatomy'
 import { canApproveScopes } from './approval.types'
 
 const parts = approvalAnatomy.build()
+
+const ROOT_SELECTOR = itemQuerySelector({ scope: approvalAnatomy.name, part: 'root' })
+const NOTE_SELECTOR = itemQuerySelector({ scope: approvalAnatomy.name, part: 'note' })
+
+/** 从按下的那个节点找到同一道闸门里的备注框；作者没渲染它时为 null。 */
+function noteNear(from: EventTarget | null): HTMLElement | null {
+  const el = from as HTMLElement | null
+  return el?.closest?.(ROOT_SELECTOR)?.querySelector<HTMLElement>(NOTE_SELECTOR) ?? null
+}
 
 function announcementOf(status: ApprovalStatus, translations: ApprovalSchema['props']['translations']): string {
   switch (status) {
@@ -44,6 +53,24 @@ export function connectApproval<T extends PropTypes>(
   // 必选项没勾满的那一档：aria 上与在途同为 aria-disabled，家族按 data-disabled 给置灰面、按 data-loading 给在途面
   const gated = !loading && !canApprove
   const size = prop('size') ?? 'md'
+  // 拒绝要写理由：只拦人手按的拒绝钮与 Escape，超时、卸载与宿主的 deny() 不是用户的判定
+  const requireReason = prop('requireReason') === true
+  const reasonMissing = requireReason && note.trim() === ''
+  const reasonInvalid = reasonMissing && context.get('reasonPrompted') === true
+
+  /**
+   * 用户要拒绝：缺理由且备注框在场就把焦点带过去、标出无效，不发判定；
+   * 备注框没渲染时照常拒绝——写不了理由的地方不能拦住拒绝这条路。
+   */
+  const denyByUser = (from: EventTarget | null, source: 'user' | 'escape'): void => {
+    const field = reasonMissing ? noteNear(from) : null
+    if (field) {
+      send({ type: 'REASON.PROMPT' })
+      field.focus()
+      return
+    }
+    send({ type: 'DENY', source })
+  }
 
   const isScopeGranted = (value: string): boolean => granted.includes(value)
   const scopeDisabled = (item: ApprovalScope): boolean => settled || loading || item.disabled === true
@@ -64,6 +91,7 @@ export function connectApproval<T extends PropTypes>(
     grantedScopes: granted,
     note,
     canApprove,
+    reasonMissing,
     announcement: announcementOf(status, translations),
     approve: () => send({ type: 'APPROVE' }),
     deny: () => send({ type: 'DENY', source: 'api' }),
@@ -93,7 +121,7 @@ export function connectApproval<T extends PropTypes>(
           return
         // 这不是「关闭」：本组件不提供不作答的出口
         event.preventDefault()
-        send({ type: 'DENY', source: 'escape' })
+        denyByUser(event.target, 'escape')
       },
     }),
 
@@ -179,15 +207,19 @@ export function connectApproval<T extends PropTypes>(
       'data-value': item.value,
     }),
 
-    // 只随判定载荷发出，不参与 canApprove。判过了就跟着两颗按钮一起禁用
+    // 只随判定载荷发出，不参与 canApprove。判过了就跟着两颗按钮一起禁用。
+    // 要求写理由时它就是拒绝的理由：名字换成理由、标必填，缺理由时按过拒绝就标无效
     getNoteProps: () => normalize.input({
       ...parts.note.attrs,
       'type': 'text',
       'value': note,
-      'aria-label': translations?.note ?? 'Note',
+      'aria-label': requireReason ? translations?.reason ?? 'Reason for denial' : translations?.note ?? 'Note',
+      'aria-required': requireReason ? 'true' : undefined,
+      'aria-invalid': reasonInvalid ? 'true' : undefined,
       'placeholder': translations?.notePlaceholder,
       'disabled': settled || undefined,
       'data-state': status,
+      'data-invalid': dataAttr(reasonInvalid),
       'onInput': (event: Event) => {
         send({ type: 'NOTE.SET', value: (event.target as HTMLInputElement).value })
       },
@@ -283,9 +315,9 @@ export function connectApproval<T extends PropTypes>(
       // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；在途不进
       'data-pressed': dataAttr(pressed === 'deny'),
       ...press('deny'),
-      'onClick': () => {
+      'onClick': (event?: MouseEvent) => {
         if (!settled && !loading)
-          send({ type: 'DENY', source: 'user' })
+          denyByUser(event?.currentTarget ?? null, 'user')
       },
     }),
   }

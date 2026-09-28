@@ -2183,6 +2183,24 @@
       "description": "approval 的 note 部件 border 覆盖槽。"
     },
     {
+      "name": "--xh-approval-note-border-invalid",
+      "component": "approval",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "approval 的 note 部件 border-color 覆盖槽。"
+    },
+    {
       "name": "--xh-approval-note-fg",
       "component": "approval",
       "part": [
@@ -2271,6 +2289,24 @@
       ],
       "visibility": "public",
       "description": "approval 的 note 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-approval-note-ring-invalid",
+      "component": "approval",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "--xh-_ring-color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-ring-invalid"
+      ],
+      "visibility": "public",
+      "description": "approval 的 note 部件 --xh-_ring-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-p",

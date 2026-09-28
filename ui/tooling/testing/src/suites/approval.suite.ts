@@ -32,6 +32,13 @@ function withDisabledWrite(base: FixtureNode): FixtureNode {
   }
 }
 
+/** 在两颗按钮之前加一个备注框：要求写理由的用例要它。 */
+function withNote(base: FixtureNode): FixtureNode {
+  const children = base.children ?? []
+  const at = children.findIndex(node => node.part === 'approve-trigger')
+  return { ...base, children: [...children.slice(0, at), { part: 'note', tag: 'input' }, ...children.slice(at)] }
+}
+
 /** 授权项的身份写在作者自己的节点上；两侧同一套 scope-* 属性。 */
 export const approvalSuite: ConformanceSuite = {
   component: 'approval',
@@ -369,6 +376,50 @@ export const approvalSuite: ConformanceSuite = {
         { kind: 'click', part: 'deny-trigger', expect: { parts: { 'root': { 'data-state': 'denied' }, 'deny-trigger': { 'disabled': '', 'data-pressed': null } } } },
         heldPressIgnored('approval', 'approve-trigger', '落定后两颗钮原生 disabled'),
         heldPressIgnored('approval', 'item', '落定后授权项 aria-disabled', { value: 'read' }),
+      ],
+    },
+    {
+      name: '要求写理由：备注空着时按拒绝或 Escape 不判定，焦点到备注框并标无效；写上理由再按才拒绝',
+      spec: { apg: APG },
+      covers: ['approval.kbd.deny', 'approval.kbd.deny-reason'],
+      props: { requireReason: true },
+      fixture: withNote,
+      initial: {
+        parts: { note: { 'aria-label': 'Reason for denial', 'aria-required': 'true', 'aria-invalid': null } },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'deny-trigger',
+          expect: {
+            events: [],
+            activeElement: { part: 'note', exact: true },
+            parts: { root: { 'data-state': 'pending' }, note: { 'aria-invalid': 'true', 'data-invalid': '' } },
+          },
+        },
+        { kind: 'focus', part: 'deny-trigger' },
+        { kind: 'key', key: 'Escape', expect: { events: [], activeElement: { part: 'note', exact: true } } },
+        {
+          kind: 'raw',
+          why: '`type` 步骤只发按键，落不到输入框的 value 上：直接改值再派发 input',
+          run: async ({ doc, flush }: RawStepContext) => {
+            const note = doc.querySelector<HTMLInputElement>('[data-scope="approval"][data-part="note"]')
+            if (!note)
+              throw new Error('找不到 approval 的 note 部件')
+            note.value = '范围太大'
+            note.dispatchEvent(new Event('input', { bubbles: true }))
+            await flush()
+          },
+          expect: { parts: { note: { 'aria-invalid': null } } },
+        },
+        {
+          kind: 'click',
+          part: 'deny-trigger',
+          expect: {
+            parts: { root: { 'data-state': 'denied' } },
+            events: [{ type: 'decision', detail: { decision: 'denied', source: 'user', scopes: [], note: '范围太大' } }],
+          },
+        },
       ],
     },
   ],

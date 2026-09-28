@@ -50,6 +50,8 @@ export interface XhApprovalRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   denyOnEscape?: boolean
   /** 卸载时若仍待决则按拒绝派发一次，默认关闭。 */
   denyOnUnmount?: boolean
+  /** 用户拒绝时必须写明理由：备注空着时按拒绝或 Escape 只把焦点带到备注框。超时、卸载与 deny() 不受限。 */
+  requireReason?: boolean
   /** 播报档位，默认 polite。 */
   live?: 'polite' | 'assertive'
   /** 形态：outline 描边、subtle 底色分区、ghost 无壳内联。 */
@@ -76,6 +78,7 @@ export function XhApprovalRoot({
   loading,
   denyOnEscape,
   denyOnUnmount,
+  requireReason,
   live,
   variant,
   tone,
@@ -100,6 +103,7 @@ export function XhApprovalRoot({
     loading,
     denyOnEscape,
     denyOnUnmount,
+    requireReason,
     live,
     variant,
     tone,

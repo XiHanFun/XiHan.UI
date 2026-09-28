@@ -16600,6 +16600,13 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 要求写理由而空着就按了拒绝：描边换成无效色；焦点也已带到这里，焦点环压在描边外面，一并换色 */
+  [data-scope='approval'][data-part='note'][data-invalid] {
+    --xh-_ring-color: var(--xh-approval-note-ring-invalid, var(--xh-ring-invalid));
+
+    border-color: var(--xh-approval-note-border-invalid, var(--xh-border-invalid));
+  }
+
   /* 剩余时间：等宽数字，逐秒跳字时不左右晃 */
   [data-scope='approval'][data-part='timer'] {
     display: block;
