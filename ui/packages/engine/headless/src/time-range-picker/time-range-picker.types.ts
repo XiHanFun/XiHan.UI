@@ -270,6 +270,7 @@ export interface TimeRangePickerSchema extends MachineSchema {
   tag: never
   guard: 'isOpenControlled' | 'canEdit' | 'closesOnPreset' | 'canPress'
   action:
+    | 'followColumnSelection'
     | 'startPress'
     | 'endPress'
     | 'releasePress'
@@ -295,7 +296,7 @@ export interface TimeRangePickerSchema extends MachineSchema {
     | 'syncDrafts'
     | 'resetToDefault'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer'
+  effect: 'trackPosition' | 'trackLayer' | 'trackColumnScroll'
 }
 
 export interface TimeRangePickerApi<T extends PropTypes = PropTypes> {

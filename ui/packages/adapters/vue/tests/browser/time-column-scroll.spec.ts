@@ -12,6 +12,12 @@ import {
   XhTimePickerRoot,
   XhTimePickerSegment,
   XhTimePickerSegmentGroup,
+  XhTimeRangePickerColumn,
+  XhTimeRangePickerColumnGroup,
+  XhTimeRangePickerContent,
+  XhTimeRangePickerItem,
+  XhTimeRangePickerPositioner,
+  XhTimeRangePickerRoot,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -50,6 +56,23 @@ async function mountTimePicker(motion?: 'reduce'): Promise<void> {
   await settle()
 }
 
+async function mountTimeRangePicker(): Promise<void> {
+  host = document.createElement('div')
+  document.body.append(host)
+  app = createApp({
+    render: () => h(XhTimeRangePickerRoot, { defaultOpen: true, defaultValue: ['09:15', '18:40'] }, () =>
+      h(XhTimeRangePickerPositioner, null, () => h(XhTimeRangePickerContent, null, () => [0, 1].map(index =>
+        h(XhTimeRangePickerColumnGroup, { index, key: index }, () => (['hour', 'minute'] as const).map(unit =>
+          h(XhTimeRangePickerColumn, { unit, key: unit }, {
+            default: ({ options }: { options: readonly string[] }) => options.map(value => h(XhTimeRangePickerItem, { key: value, value }, () => value)),
+          }),
+        )),
+      )))),
+  })
+  app.mount(host)
+  await settle()
+}
+
 function frames(count: number): Promise<void> {
   return new Promise((resolve) => {
     const step = (left: number): void => {
@@ -72,6 +95,16 @@ function column(scope: string, part: string, unit: string): HTMLElement {
   const found = columns.find(el => el.getAttribute('data-value') === unit || el.getAttribute('data-unit') === unit)
   if (!found)
     throw new Error(`找不到 ${unit} 列`)
+  return found
+}
+
+/** 起止两组里第 index 组的某一列。 */
+function groupColumn(scope: string, part: string, index: number, unit: string): HTMLElement {
+  const group = host!.ownerDocument.querySelectorAll<HTMLElement>(`[data-scope='${scope}'][data-part='column-group']`)[index]
+  const found = [...(group?.querySelectorAll<HTMLElement>(`[data-scope='${scope}'][data-part='${part}']`) ?? [])]
+    .find(el => el.getAttribute('data-value') === unit || el.getAttribute('data-unit') === unit)
+  if (!found)
+    throw new Error(`找不到第 ${index} 组的 ${unit} 列`)
   return found
 }
 
@@ -124,5 +157,15 @@ describe('时间列滚动定位', () => {
     await nextTick()
     await frames(2)
     expect(Math.abs(minute.scrollTop - alignedTop(minute, '05'))).toBeLessThanOrEqual(1)
+  })
+
+  it('时间区间选择的起止两组各停在自己那一端的时刻', async () => {
+    await mountTimeRangePicker()
+    for (const [index, hour, minute] of [[0, '09', '15'], [1, '18', '40']] as const) {
+      const hourColumn = groupColumn('time-range-picker', 'column', index, 'hour')
+      const minuteColumn = groupColumn('time-range-picker', 'column', index, 'minute')
+      expect(Math.abs(hourColumn.scrollTop - alignedTop(hourColumn, hour))).toBeLessThanOrEqual(1)
+      expect(Math.abs(minuteColumn.scrollTop - alignedTop(minuteColumn, minute))).toBeLessThanOrEqual(1)
+    }
   })
 })
