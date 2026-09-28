@@ -42,6 +42,12 @@ granularity=week：一行一个整周，格子直接铺进网格；值是两端�
 
 <XhDemo src="calendar-range-picker/04-granularity" />
 
+### 只改终点
+
+activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之前从那一天重新开始挑
+
+<XhDemo src="calendar-range-picker/05-edit-end" />
+
 ## 设计指引
 
 ### 何时使用
@@ -59,6 +65,7 @@ granularity=week：一行一个整周，格子直接铺进网格；值是两端�
 - 先选起点再选终点：起点只记录在组件内，两端都落定后才写值；Escape 撤销起点后原区间保持不变。
 - 支持按住拖选：按下即落起点，拖到另一格松开即完成；按住已选区间的一端拖动可以直接改写该端；触屏按住片刻才开始拖动，轻点仍是普通点选。
 - 焦点离开网格时，未完成的区间在起点到聚焦日之间就地收口，不留悬空的起点。
+- `activeIndex={1}` 时只改终点：已有起点当锚，点在起点当天或之后即落终点、起点不动；点在起点之前的日子从那一天重新开始挑。与 antd 的「从终点输入框继续改」一致；React Aria 的区间日历每次点选都重新开始，没有这一档。
 - 落起点后可选范围默认被夹在两侧最近的不可用日之间，`allowsNonContiguousRanges` 允许跨过它们；`isDateUnavailable` 的第二个参数是当前起点，可据此限制区间长度。
 - 已选区间的任一端越界或不可用即标记为不合法，也可以用 `invalid` 显式声明。
 - `granularity` 决定周期格的生成方式；周、月、季度和年区间共用同一套 Period 边界判断。
@@ -134,6 +141,7 @@ granularity=week：一行一个整周，格子直接铺进网格；值是两端�
 | `XhCalendarRangePickerRoot` | `max` | `string` |  |  |
 | `XhCalendarRangePickerRoot` | `isDateUnavailable` | `(value: string, anchor: string \| null) => boolean` |  |  |
 | `XhCalendarRangePickerRoot` | `allowsNonContiguousRanges` | `boolean` |  | 区间允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止。 |
+| `XhCalendarRangePickerRoot` | `activeIndex` | `0 \| 1` |  | 下一次点选落在哪一端；为 1 且已有起点时只改终点。 |
 | `XhCalendarRangePickerRoot` | `invalid` | `boolean` |  | 校验失败：根带 data-invalid，区间内的格子报告 aria-invalid。 |
 | `XhCalendarRangePickerRoot` | `locale` | `string` |  |  |
 | `XhCalendarRangePickerRoot` | `timeZone` | `string` |  |  |
@@ -161,7 +169,7 @@ granularity=week：一行一个整周，格子直接铺进网格；值是两端�
 
 **事件**：`RANGE.ANCHOR` · `RANGE.COMMIT` · `DRAG.SET` · `HOVER.SET` · `HOVER.CLEAR` · `PRESS.START` · `PRESS.END`
 
-**判据**：`startsRange` · `anchorsRange` · `canPress`
+**判据**：`startsRange` · `endsFromStart` · `anchorsRange` · `canPress`
 
 ### connect API
 

@@ -11131,6 +11131,7 @@
       "weekdayFormat"
     ],
     "calendar-range-picker": [
+      "activeIndex",
       "activeView",
       "allowsNonContiguousRanges",
       "defaultActiveView",
@@ -18687,6 +18688,7 @@
     },
     "xh-calendar-range-picker": {
       "attributes": [
+        "active-index",
         "active-view",
         "allows-non-contiguous-ranges",
         "default-active-view",

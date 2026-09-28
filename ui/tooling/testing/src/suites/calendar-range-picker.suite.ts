@@ -329,6 +329,42 @@ export const calendarRangePickerSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'activeIndex=1 只改终点：点在起点之后即落终点、起点不动；点在起点之前从那一天重新开始挑',
+      spec: { apg: APG },
+      props: { ...BASE_PROPS, defaultValue: ['2024-02-05', '2024-02-07'], activeIndex: 1 },
+      steps: [
+        {
+          kind: 'click',
+          part: `cell-trigger[${at('2024-02-12')}]`,
+          expect: {
+            parts: {
+              [`cell-trigger[${at('2024-02-05')}]`]: { 'data-range-start': '' },
+              [`cell-trigger[${at('2024-02-09')}]`]: { 'data-in-range': '' },
+              [`cell-trigger[${at('2024-02-12')}]`]: { 'data-range-end': '' },
+            },
+            events: [{ type: 'value-change', detail: { value: ['2024-02-05', '2024-02-12'] } }],
+          },
+        },
+        {
+          // 早于起点：从这一天重新开始，值先留着
+          kind: 'click',
+          part: `cell-trigger[${at('2024-02-02')}]`,
+          expect: {
+            parts: {
+              [`cell-trigger[${at('2024-02-02')}]`]: { 'data-range-start': '', 'data-range-end': '' },
+              [`cell-trigger[${at('2024-02-09')}]`]: { 'data-in-range': null },
+            },
+            events: [],
+          },
+        },
+        {
+          kind: 'click',
+          part: `cell-trigger[${at('2024-02-03')}]`,
+          expect: { events: [{ type: 'value-change', detail: { value: ['2024-02-02', '2024-02-03'] } }] },
+        },
+      ],
+    },
+    {
       name: '区间：Escape 撤掉起点，原来的区间原样还在',
       spec: { apg: `${APG}#kbd_label` },
       props: { ...BASE_PROPS, defaultValue: ['2024-02-05', '2024-02-07'] },
