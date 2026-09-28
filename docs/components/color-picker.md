@@ -353,6 +353,7 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-disabled` | ''（条件成立时才出现） |
 | `content` | `data-inline` | ''（条件成立时才出现） |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | undefined \| 定位引擎算出的实际落位 |
 | `content` | `data-readonly` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
