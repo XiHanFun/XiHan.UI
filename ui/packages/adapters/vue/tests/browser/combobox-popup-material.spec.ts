@@ -138,6 +138,8 @@ describe('组合框 M2 浮层', () => {
       expect(sides.map(side => style.getPropertyValue(`--xh-_overlay-enter-${side}`).trim())).toEqual(expected)
     }
     const content = part('content')
+    // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户打开时的那条进场
+    delete content.dataset.instant
     expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-in')
     expect(getComputedStyle(content).scale).toBe('none')
     content.dataset.state = 'closed'
@@ -147,6 +149,8 @@ describe('组合框 M2 浮层', () => {
   it('减弱动效进退场只剩 120ms 淡变，位移归零', async () => {
     await mount('light')
     part('positioner').dataset.motion = 'reduce'
+    // 撤掉首帧标记：量的是用户开合时的进退场
+    delete part('content').dataset.instant
     for (const state of ['open', 'closed']) {
       part('content').dataset.state = state
       const style = getComputedStyle(part('content'))

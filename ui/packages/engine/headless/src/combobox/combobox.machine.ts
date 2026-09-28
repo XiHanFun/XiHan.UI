@@ -9,6 +9,7 @@ import type { PositionResult } from '@xihan-ui/core'
 import type { ComboboxFocusIntent, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
 import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
@@ -30,6 +31,8 @@ function normalizeSelection(next: readonly string[], multiple: boolean): string[
 export const comboboxMachine = createMachine({
   name: 'combobox',
   context: ({ prop, cell }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     value: cell<string[]>(() => ({
       value: toValues(prop('value')),
@@ -66,7 +69,7 @@ export const comboboxMachine = createMachine({
     getContentEl: () => null,
     getInputEl: () => null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer', 'trackTagListMotion'],
   // 挂载即按选中值结算一次显示文本，并据此把输入框填成选中项的文字
@@ -94,6 +97,8 @@ export const comboboxMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知。
         // 落点意图先记进 context：受控时转移那一拍走 CONTROLLED.OPEN，读不到当初那个按键事件
@@ -174,6 +179,7 @@ export const comboboxMachine = createMachine({
     },
     actions: {
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
+      clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')

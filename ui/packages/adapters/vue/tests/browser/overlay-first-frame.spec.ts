@@ -5,6 +5,13 @@ import type { App, Ref, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
+  XhComboboxContent,
+  XhComboboxControl,
+  XhComboboxInput,
+  XhComboboxItem,
+  XhComboboxItemText,
+  XhComboboxPositioner,
+  XhComboboxRoot,
   XhContextMenuContent,
   XhContextMenuItem,
   XhContextMenuItemText,
@@ -109,6 +116,16 @@ const CASES: Record<string, Case> = {
       h(XhSelectPositioner, null, () => h(XhSelectContent, null, () => h(XhSelectList, null, () => FRUITS.map(node =>
         h(XhSelectItem, { key: node.value, value: node.value }, () => h(XhSelectItemText, null, () => node.label)),
       )))),
+    ]),
+  },
+  'combobox': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhComboboxRoot, { ...props, collection: FRUITS }, () => [
+      h(XhComboboxControl, null, () => h(XhComboboxInput)),
+      h(XhComboboxPositioner, null, () => h(XhComboboxContent, null, () => FRUITS.map(node =>
+        h(XhComboboxItem, { key: node.value, value: node.value }, () => h(XhComboboxItemText, null, () => node.label)),
+      ))),
     ]),
   },
   'dialog': {

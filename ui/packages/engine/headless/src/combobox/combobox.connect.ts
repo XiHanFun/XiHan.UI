@@ -577,6 +577,8 @@ export function connectCombobox<T extends PropTypes>(
       // tabindex 写 -1 不能省：可滚动容器会被某些浏览器自动塞进 Tab 序列
       'tabindex': -1,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-placement': placement,
       // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
       'inert': !open || undefined,
