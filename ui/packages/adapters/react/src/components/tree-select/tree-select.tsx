@@ -24,10 +24,12 @@ import { useTreeSelect } from './use-tree-select'
 
 type TreeSelectProps = TreeSelectSchema['props']
 
-/** 函数式 children 的载荷：展开与选中状态、可见行序列、多选的可见标签与折起的个数、节点状态判定与写值方法。 */
+/** 函数式 children 的载荷：展开与选中状态、可见行序列、搜索视图、多选的可见标签与折起的个数、节点状态判定与写值方法。 */
 export type TreeSelectRootSlotProps = Pick<
   TreeSelectApi,
   | 'open'
+  | 'searching'
+  | 'inputValue'
   | 'value'
   | 'expandedValue'
   | 'visibleNodes'
@@ -46,6 +48,7 @@ export type TreeSelectRootSlotProps = Pick<
   | 'setOpen'
   | 'setValue'
   | 'setExpandedValue'
+  | 'setInputValue'
   | 'expand'
   | 'collapse'
   | 'retryBranch'
@@ -106,6 +109,10 @@ export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>
   multiple?: boolean
   /** 多选标签最多显示的数量，其余折进 +N；默认 3。 */
   maxTagCount?: number
+  /** 浮层内搜索：展开时焦点先落在搜索框上，输入即把树裁到只剩命中的那几枝。 */
+  searchable?: boolean
+  /** 自定义匹配规则；缺省为标签大小写不敏感包含。 */
+  filter?: TreeSelectProps['filter']
   cascade?: boolean
   checkedStrategy?: TreeSelectProps['checkedStrategy']
   disabled?: boolean
@@ -146,6 +153,8 @@ export function XhTreeSelectRoot({
   defaultOpen,
   multiple,
   maxTagCount,
+  searchable,
+  filter,
   cascade,
   checkedStrategy,
   disabled,
@@ -184,6 +193,8 @@ export function XhTreeSelectRoot({
     defaultOpen,
     multiple,
     maxTagCount,
+    searchable,
+    filter,
     cascade,
     checkedStrategy,
     disabled,
@@ -213,6 +224,8 @@ export function XhTreeSelectRoot({
   const body = children != null
     ? renderSlot(children, {
         open: api.open,
+        searching: api.searching,
+        inputValue: api.inputValue,
         value: api.value,
         expandedValue: api.expandedValue,
         visibleNodes: api.visibleNodes,
@@ -231,6 +244,7 @@ export function XhTreeSelectRoot({
         setOpen: api.setOpen,
         setValue: api.setValue,
         setExpandedValue: api.setExpandedValue,
+        setInputValue: api.setInputValue,
         expand: api.expand,
         collapse: api.collapse,
         retryBranch: api.retryBranch,
@@ -239,7 +253,7 @@ export function XhTreeSelectRoot({
         deselect: api.deselect,
       })
     : collection
-      ? <DefaultTree collection={api.collection} tags={multiple ? api.tags : null} label={label} clearable={clearable} />
+      ? <DefaultTree collection={api.collection} tags={multiple ? api.tags : null} searchable={!!searchable} label={label} clearable={clearable} />
       : null
 
   return (
@@ -392,7 +406,7 @@ export function XhTreeSelectPositioner({ children, container, ...rest }: XhTreeS
   // 两条轴都摆：深层节点靠缩进往行末推，横向溢出与纵向一样是常态。
   // 横条的正负按排版方向算，而组件不读计算样式，把 positioner 上那份显式交过去
   const bars = useScrollbars({
-    scrollable: () => ctx.contentRef.current,
+    scrollable: () => ctx.treeRef.current,
     axes: ['vertical', 'horizontal'],
     // 条子走浮层 4px 档
     props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
@@ -419,7 +433,7 @@ function TreeSelectAutoEmpty({ content }: { content: ReturnType<typeof useTreeSe
   const ctx = useTreeSelectContext()
   if (content.renderRegistration.authoredEmpty || content.authoredEmptyCount > 0)
     return null
-  return <div {...ctx.api.getEmptyProps() as Record<string, unknown>} data-xh-tree-select-auto-empty="">{ctx.api.translations.empty}</div>
+  return <div {...ctx.api.getEmptyProps() as Record<string, unknown>} data-xh-tree-select-auto-empty="">{ctx.api.searching ? ctx.api.translations.noMatch : ctx.api.translations.empty}</div>
 }
 
 function TreeSelectAutoLoading({ content }: { content: ReturnType<typeof useTreeSelectContentContext> }): ReactNode {
@@ -475,10 +489,27 @@ export function XhTreeSelectContent({ children, ...rest }: XhTreeSelectContentPr
   )
 }
 
+export interface XhTreeSelectInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue'> {}
+/** 浮层内搜索框：放在 content 中、tree 之前；没开 searchable 时带 hidden。 */
+export function XhTreeSelectInput({ ...rest }: XhTreeSelectInputProps): ReactNode {
+  const ctx = useTreeSelectContext()
+  return <input {...mergeReactProps(ctx.api.getInputProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+}
+
 export interface XhTreeSelectTreeProps extends ComponentPropsWithRef<'div'> {}
 export function XhTreeSelectTree({ children, ...rest }: XhTreeSelectTreeProps): ReactNode {
   const ctx = useTreeSelectContext()
-  return <div {...mergeReactProps(ctx.api.getTreeProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return (
+    <div
+      {...mergeReactProps(
+        ctx.api.getTreeProps() as Record<string, unknown>,
+        rest as Record<string, unknown>,
+        { ref: (el: HTMLDivElement | null) => { ctx.treeRef.current = el } },
+      )}
+    >
+      {children}
+    </div>
+  )
 }
 
 export interface XhTreeSelectItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -651,7 +682,7 @@ export function XhTreeSelectEmpty({ children, ...rest }: XhTreeSelectEmptyProps)
   const content = useTreeSelectContentContext()
   content.renderRegistration.authoredEmpty = true
   useIsomorphicLayoutEffect(() => content.registerEmpty(), [content.registerEmpty])
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.empty}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? (ctx.api.searching ? ctx.api.translations.noMatch : ctx.api.translations.empty)}</div>
 }
 
 export interface XhTreeSelectLoadingProps extends ComponentPropsWithRef<'div'> {}
@@ -719,6 +750,7 @@ function renderNodes(nodes: readonly TreeSelectNode[]): ReactNode[] {
 function DefaultTree(props: {
   collection: readonly TreeSelectNode[]
   tags: readonly TreeSelectTagMeta[] | null
+  searchable: boolean
   label?: ReactNode
   clearable?: boolean
 }): ReactNode {
@@ -745,6 +777,8 @@ function DefaultTree(props: {
       </XhTreeSelectControl>
       <XhTreeSelectPositioner>
         <XhTreeSelectContent>
+          {/* 开了搜索时搜索框排在树之前；collection 此刻已是裁剪后的树 */}
+          {props.searchable ? <XhTreeSelectInput /> : null}
           <XhTreeSelectTree>{renderNodes(props.collection)}</XhTreeSelectTree>
         </XhTreeSelectContent>
       </XhTreeSelectPositioner>

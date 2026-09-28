@@ -181,6 +181,7 @@ const BOX_AREA_PARTS = new Set(['control', 'input', 'trigger', 'value-text', 'se
 const OUTSIDE_BOX = {
   list: 'select 的列表在浮层里撑满面板高度',
   empty: 'cascader 空态铺满面板',
+  tree: 'tree-select 的树在浮层里撑满面板高度',
 }
 
 /**

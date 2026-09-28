@@ -2952,6 +2952,7 @@ export {
   XhTreeSelectFooter,
   XhTreeSelectHiddenInput,
   XhTreeSelectIndicator,
+  XhTreeSelectInput,
   XhTreeSelectItem,
   XhTreeSelectItemDeleteTrigger,
   XhTreeSelectItemDescription,

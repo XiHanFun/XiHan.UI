@@ -26,6 +26,8 @@ export interface TreeSelectContext {
   controlRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
+  /** 树部件：浮层里的滚动面，自绘条接在它上面。 */
+  treeRef: Ref<HTMLElement | null>
   /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
   /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
@@ -41,6 +43,7 @@ export function useTreeSelect(
   const controlRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
+  const treeRef = ref<HTMLElement | null>(null)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
@@ -86,5 +89,5 @@ export function useTreeSelect(
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, controlRef, positionerRef, contentRef, portalTarget }
+  return { visible, service, api, triggerRef, controlRef, positionerRef, contentRef, treeRef, portalTarget }
 }

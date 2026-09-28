@@ -39,11 +39,12 @@
       "gutter": false,
       "why": "级联搜索态的扁平候选列表，与列区互斥"
     },
-    "tree-select:content": {
+    "tree-select:tree": {
       "mode": "drawn",
       "overscroll": true,
       "gutter": false,
-      "why": "树选择浮层面，深层缩进横向溢出是常态，两轴都滚"
+      "layerNode": "content",
+      "why": "树选择浮层里的树，深层缩进横向溢出是常态，两轴都滚；层注册的 node 是包着它的 content，搜索框与底部操作区钉在它上下沿"
     },
     "menu:content": {
       "mode": "drawn",

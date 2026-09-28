@@ -737,7 +737,8 @@
       "prompt-input",
       "tags-input",
       "text-field",
-      "tool-call"
+      "tool-call",
+      "tree-select"
     ],
     "item": [
       "accordion",

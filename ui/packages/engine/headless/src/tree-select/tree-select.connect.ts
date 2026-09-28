@@ -8,12 +8,13 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
 import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectPressedPart, TreeSelectSchema, TreeSelectTranslations } from './tree-select.types'
-import { cascadeState, createPressTracker, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
+import { cascadeState, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { flattenTree, indexTree } from '../tree'
 import { treeSelectAnatomy } from './tree-select.anatomy'
 import { findTreeSelectNode, isTreeSelectLazyBranch, resolveTreeSelectCollection, TREE_SELECT_DEFAULT_PLACEMENT, treeSelectNodeEls } from './tree-select.machine'
+import { resolveTreeSelectSearch } from './tree-select.search'
 
 const parts = treeSelectAnatomy.build()
 
@@ -52,13 +53,21 @@ export function connectTreeSelect<T extends PropTypes>(
 ): TreeSelectApi<T> {
   const { state, prop, send, context, refs, scope } = service
   const open = state.get() === 'open'
-  const ids = scope.ids('tree-select', 'label', 'trigger', 'value-text', 'content', 'tree')
+  const ids = scope.ids('tree-select', 'label', 'trigger', 'value-text', 'content', 'tree', 'input')
 
   const sourceCollection = prop('collection') ?? []
   // 异步分支的成功结果只活在 headless context；所有派生状态必须看这份有效树，
   // 不能让适配器各自拼 children，否则级联、键盘与三端首帧会分叉。
-  const collection = resolveTreeSelectCollection(sourceCollection, context.get('loadedChildren'))
+  const fullCollection = resolveTreeSelectCollection(sourceCollection, context.get('loadedChildren'))
   const expandedValue = context.get('expandedValue')
+  // 浮层内搜索：开了 searchable 且检索词非空时，摊平、导航与空态都按裁剪后的树算，展开集合换成搜索视图自己那一份；
+  // 选中语义（级联、标签文字）仍按整棵树算
+  const searchable = !!prop('searchable')
+  const inputValue = context.get('inputValue')
+  const search = resolveTreeSelectSearch(fullCollection, { searchable, inputValue, filter: prop('filter') })
+  const searching = search != null
+  const collection = search?.nodes ?? fullCollection
+  const viewExpanded = search ? context.get('searchExpanded') : expandedValue
   const value = context.get('value')
   const multiple = !!prop('multiple')
   const disabled = !!prop('disabled')
@@ -77,6 +86,8 @@ export function connectTreeSelect<T extends PropTypes>(
     branchError: prop('translations')?.branchError ?? 'Could not load children',
     retry: prop('translations')?.retry ?? 'Retry',
     branchEmpty: prop('translations')?.branchEmpty ?? 'No children',
+    searchInput: prop('translations')?.searchInput ?? 'Search',
+    noMatch: prop('translations')?.noMatch ?? 'No matches',
     deleteItem: prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`),
     overflowTag: prop('translations')?.overflowTag ?? ((count: number) => `+${count}`),
   }
@@ -94,8 +105,14 @@ export function connectTreeSelect<T extends PropTypes>(
   const placement = position?.placement ?? prop('placement') ?? TREE_SELECT_DEFAULT_PLACEMENT
 
   // 摊平与索引是 (collection, 展开集合) 的纯函数，不访问 DOM
-  const rows = flattenTree(collection, expandedValue)
-  const metaIndex = indexTree(collection)
+  const rows = flattenTree(collection, viewExpanded)
+  // 标签、禁用与语气按整棵树查；层级三件套按此刻摊平的那棵树给，搜索视图里的位次与同级数才对得上
+  const metaIndex = indexTree(fullCollection)
+  const viewIndex = search ? indexTree(collection) : metaIndex
+  // 搜索视图里不在裁剪后那棵树上的节点：手写整棵树的结构里它们照样在 DOM 上，连接层替作者收起。
+  // 只在搜索时才发 hidden 这一位，平时不碰作者自己写的 hidden
+  const outOfView = (v: string): Record<string, true | undefined> =>
+    search ? { hidden: viewIndex.has(v) ? undefined : true } : {}
   const visible = new Map(rows.map(row => [row.value, row]))
 
   // 焦点锚点投影成可见节点，祖先收起后的节点不再认领 tabindex=0
@@ -105,10 +122,10 @@ export function connectTreeSelect<T extends PropTypes>(
   const metaOf = (v: string): TreeNodeMeta | undefined => metaIndex.get(v)
   // 级联模式下选中态从值集聚合得出：父随子勾、部分勾中半选
   const cascade = multiple && !!prop('cascade')
-  const cascaded = cascade ? cascadeState(collection, value) : null
+  const cascaded = cascade ? cascadeState(fullCollection, value) : null
   const isSelected = (v: string): boolean => (cascaded ? cascaded.checked.has(v) : value.includes(v))
   const isIndeterminate = (v: string): boolean => cascaded?.indeterminate.has(v) ?? false
-  const isExpanded = (v: string): boolean => expandedValue.includes(v)
+  const isExpanded = (v: string): boolean => viewExpanded.includes(v)
   const branchLoadState = (v: string): TreeSelectBranchLoadSnapshot | null => {
     const node = findTreeSelectNode(sourceCollection, v, context.get('loadedChildren'))
     if (!node || !isTreeSelectLazyBranch(node))
@@ -153,7 +170,7 @@ export function connectTreeSelect<T extends PropTypes>(
 
   /** 节点（item 与 branch）共用的 ARIA 与身份属性。 */
   const nodeAttrs = (v: string): Record<string, string | number | undefined> => {
-    const meta = metaOf(v)
+    const meta = viewIndex.get(v)
     return {
       // 导航、检索、选中与展开都以此为节点身份
       [ITEM_VALUE_ATTR]: v,
@@ -255,6 +272,10 @@ export function connectTreeSelect<T extends PropTypes>(
     send({ type: 'NODE.SELECT', value: row.value })
   }
 
+  /** 从浮层里任一节点找到搜索框：键盘在壳上收口，焦点换去搜索框时现查。 */
+  const inputElOf = (el: HTMLElement): HTMLInputElement | null =>
+    el.closest<HTMLElement>(parts.content.selector)?.querySelector<HTMLInputElement>(parts.input.selector) ?? null
+
   return {
     open,
     collection,
@@ -266,6 +287,8 @@ export function connectTreeSelect<T extends PropTypes>(
     focusedValue,
     empty,
     loading,
+    searching,
+    inputValue,
     translations,
     multiple,
     disabled,
@@ -285,6 +308,7 @@ export function connectTreeSelect<T extends PropTypes>(
     },
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     setExpandedValue: next => send({ type: 'EXPANDED.SET', value: next }),
+    setInputValue: next => send({ type: 'INPUT.CHANGE', value: next }),
     expand: v => send({ type: 'BRANCH.EXPAND', value: v }),
     collapse: v => send({ type: 'BRANCH.COLLAPSE', value: v }),
     retryBranch: v => send({ type: 'BRANCH.RETRY', value: v }),
@@ -512,6 +536,9 @@ export function connectTreeSelect<T extends PropTypes>(
         // 收起态不响应按键
         if (!open || disabled)
           return
+        // 搜索框里的按键归它自己的处理器，壳上不再接
+        if ((event.target as HTMLElement | null)?.matches?.(parts.input.selector))
+          return
         const container = event.currentTarget as HTMLElement
         const key = event.key
         // 带 Ctrl/Cmd/Alt 的组合不归树管，也不进连打检索
@@ -592,8 +619,25 @@ export function connectTreeSelect<T extends PropTypes>(
           if (!siblings.length)
             return
           event.preventDefault()
+          // 搜索视图里逐个展开：改的是它自己的展开集合，不动作者的 expandedValue
+          if (searching) {
+            for (const sibling of siblings)
+              send({ type: 'BRANCH.EXPAND', value: sibling })
+            return
+          }
           send({ type: 'EXPANDED.SET', value: [...expandedValue, ...siblings] })
           return
+        }
+
+        // 开了搜索：可打印字符接到检索词末尾、焦点回到搜索框，不做连打检索；空格仍是确认键
+        if (searchable && key.length === 1 && key !== ' ') {
+          const input = inputElOf(container)
+          if (input) {
+            event.preventDefault()
+            send({ type: 'INPUT.CHANGE', value: inputValue + key })
+            input.focus()
+            return
+          }
         }
 
         // 连打检索只搬焦点、不改选中；缓冲区空时空格落到下方按确认键处理
@@ -608,6 +652,53 @@ export function connectTreeSelect<T extends PropTypes>(
             return
           event.preventDefault()
           activate(row)
+        }
+      },
+    }),
+
+    // 浮层内搜索框：content 里、tree 之前；没开 searchable 就整个藏掉，作者不必条件渲染
+    getInputProps: () => normalize.input({
+      ...parts.input.attrs,
+      'id': ids.input,
+      'type': 'text',
+      'value': inputValue,
+      'disabled': disabled || undefined,
+      'hidden': !searchable || undefined,
+      'autocomplete': 'off',
+      'autocapitalize': 'none',
+      // 字段标签名的是整个控件（trigger 指着它），浮层里这个框只能自带一句
+      'aria-label': translations.searchInput,
+      'aria-controls': ids.tree,
+      'onInput': (event: Event) => {
+        send({ type: 'INPUT.CHANGE', value: (event.target as HTMLInputElement).value })
+      },
+      'onKeyDown': (event: KeyboardEvent) => {
+        // 组合期间的按键属于输入法候选框，组件一律不接；带修饰键的组合归浏览器
+        if (isComposingEvent(event) || event.ctrlKey || event.metaKey || event.altKey)
+          return
+        // 壳让开了搜索框里的按键，Tab 收起只能在这里收口；不 preventDefault，焦点按 Tab 序列自然离开
+        if (event.key === 'Tab') {
+          send({ type: 'CLOSE', src: 'tab' })
+          return
+        }
+        if (event.key === 'Escape') {
+          // 词非空就先清词回整棵树。消解层在 document 上按同一判据分过一次岔，这一支管没挂消解层的宿主
+          if (inputValue !== '') {
+            event.stopPropagation()
+            send({ type: 'INPUT.CHANGE', value: '' })
+          }
+          return
+        }
+        // 下方向键与 Enter 把焦点交给树：有锚点落回锚点，没有就落首个可用行；Enter 不落到表单上
+        if (event.key === 'ArrowDown' || event.key === 'Enter') {
+          event.preventDefault()
+          const container = (event.currentTarget as HTMLElement).closest<HTMLElement>(parts.content.selector)
+          if (!container)
+            return
+          if (focusedValue != null)
+            focusOn(container, focusedValue)
+          else
+            focusBy(container, 'first')
         }
       },
     }),
@@ -664,6 +755,7 @@ export function connectTreeSelect<T extends PropTypes>(
         ...parts.item.attrs,
         ...nodeAttrs(node.value),
         ...nodeState(node.value),
+        ...outOfView(node.value),
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'overlay',
@@ -725,6 +817,7 @@ export function connectTreeSelect<T extends PropTypes>(
         ...parts.branch.attrs,
         ...nodeAttrs(node.value),
         ...branchState(node.value),
+        ...outOfView(node.value),
         'aria-expanded': isExpanded(node.value) ? 'true' : 'false',
         'aria-busy': branchLoadState(node.value)?.status === 'loading' ? 'true' : undefined,
         // 分支裹着整棵子树，可及名字显式取 collection 的 label（缺省退回 value）

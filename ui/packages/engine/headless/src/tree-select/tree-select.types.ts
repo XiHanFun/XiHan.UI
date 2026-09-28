@@ -20,6 +20,12 @@ export interface TreeSelectNode extends Omit<TreeNode, 'children'> {
 
 export type TreeSelectBranchLoadStatus = 'idle' | 'loading' | 'loaded' | 'error'
 
+/**
+ * 浮层内搜索的匹配规则：节点命中即连同整棵子树留下。
+ * query 传入时已 trim，且保证非空（空搜索不调用谓词）。缺省为标签大小写不敏感包含。
+ */
+export type TreeSelectFilter = (node: TreeSelectNode, query: string) => boolean
+
 /** 分支异步相位；成功空结果与失败是两个独立终态，不能互相降级。 */
 export type TreeSelectBranchLoadSnapshot
   = | { status: 'idle' }
@@ -142,6 +148,10 @@ export interface TreeSelectTranslations {
   retry: string
   /** 懒分支成功返回空数组时的默认文案。 */
   branchEmpty: string
+  /** 浮层里搜索框的可及名：字段标签命名的是整个控件，浮层中的该框需要单独命名。 */
+  searchInput: string
+  /** 搜索无匹配时空态的默认文案。 */
+  noMatch: string
   /** 标签删除按钮的可及名，接收标签文本；默认 `Delete <label>`。 */
   deleteItem: (label: string) => string
   /** 被折叠的标签（overflow-tag）显示的文字，接收折叠的个数；默认 +N。 */
@@ -176,6 +186,13 @@ export interface TreeSelectSchema extends MachineSchema {
     multiple?: boolean
     /** 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 */
     maxTagCount?: number
+    /**
+     * 浮层内搜索：input 部件可用，展开时焦点先落在搜索框上，输入即按 filter 把树裁到只剩命中的那几枝，
+     * 命中节点的祖先自动展开。关闭时搜索框仍在 DOM 中但带 hidden。收起浮层即清空检索词。
+     */
+    searchable?: boolean
+    /** 自定义匹配规则；缺省为标签大小写不敏感包含。 */
+    filter?: TreeSelectFilter
     /**
      * 多选下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选，
      * 禁用子树整棵冻结。默认 false（朴素切换）；单选下无效。
@@ -246,6 +263,13 @@ export interface TreeSelectSchema extends MachineSchema {
     loadedChildren: Record<string, TreeSelectNode[]>
     /** 三端只上报实际挂载的 item/branch 数量；手写节点是否为空由 Headless 据此判断。 */
     renderedNodeCount: number
+    /** 搜索框中的原始串；searchable 下 trim 后非空即进入搜索视图。收起浮层即清空。 */
+    inputValue: string
+    /**
+     * 搜索视图里的展开集合：每换一次检索词重置为「因子孙命中而留下的分支」，之后的展开收起只改它，
+     * 不动作者的 expandedValue，清空检索词即回到原来的展开态。
+     */
+    searchExpanded: string[]
     /** 按压通道：Space / Enter 或触屏按住的是叶子行、分支行还是清空按钮。 */
     pressedPart: TreeSelectPressedPart | null
     /** 按压通道：按住的节点 value；clear-trigger 没有值，记 null。抬起、失焦或浮层收起即清空。 */
@@ -279,6 +303,8 @@ export interface TreeSelectSchema extends MachineSchema {
     | { type: 'NODE.MOUNT', value: string }
     | { type: 'NODE.UNMOUNT', value: string }
     | { type: 'NODES.SYNC', values: string[] }
+    /** 搜索框输入：换检索词，搜索视图的展开集合随之重置。 */
+    | { type: 'INPUT.CHANGE', value: string }
     | { type: 'FORM.RESET' }
     /**
      * 叶子行、分支行或清空按钮被 Space / Enter 或触屏按住。分支行的键盘按压由 branch 代发（焦点落在 branch
@@ -314,6 +340,8 @@ export interface TreeSelectSchema extends MachineSchema {
     | 'syncRenderedNodes'
     | 'cancelBranchLoads'
     | 'resetToDefault'
+    | 'setInputValue'
+    | 'clearInput'
     | 'startPress'
     | 'endPress'
     | 'releasePress'
@@ -343,6 +371,10 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   empty: boolean
   /** 外部整树 loading 状态。懒分支 loading 由 branchLoadState 单独表达。 */
   loading: boolean
+  /** 正处于搜索视图（开启 searchable 且检索词非空）：collection 与 visibleNodes 都是裁剪后的树。 */
+  searching: boolean
+  /** 搜索框中的原始串。 */
+  inputValue: string
   translations: TreeSelectTranslations
   multiple: boolean
   disabled: boolean
@@ -365,6 +397,8 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   setOpen: (next: boolean) => void
   setValue: (next: string[]) => void
   setExpandedValue: (next: string[]) => void
+  /** 改写检索词，与在搜索框里输入同一语义。 */
+  setInputValue: (next: string) => void
   expand: (value: string) => void
   collapse: (value: string) => void
   /** 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 */
@@ -393,6 +427,11 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
+  /**
+   * 搜索框：放在 content 中、tree 之前；没开 searchable 时带 hidden。输入即过滤，
+   * 下方向键或 Enter 把焦点交给树，Escape 先清空检索词，Tab 收起浮层。
+   */
+  getInputProps: () => T['input']
   getTreeProps: () => T['element']
   getItemProps: (props: TreeSelectNodeProps) => T['element']
   getItemTextProps: (props: TreeSelectNodeProps) => T['element']

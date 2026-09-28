@@ -8,7 +8,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, createServi
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { connectTreeSelect, treeSelectMachine } from '../src/tree-select'
+import { connectTreeSelect, defaultTreeSelectFilter, filterTreeSelectNodes, treeSelectMachine } from '../src/tree-select'
 
 type Props = TreeSelectSchema['props']
 
@@ -262,6 +262,9 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     spread(positioner, api.getPositionerProps() as Record<string, unknown>)
     spread(content, api.getContentProps() as Record<string, unknown>)
     spread(treeEl, api.getTreeProps() as Record<string, unknown>)
+    // 开了搜索时作者放的那个框就是搜索框部件；没开时它只是个普通输入框，钉住「落点是树而不是它」
+    if (props.get().searchable)
+      spread(searchBox, api.getInputProps() as Record<string, unknown>)
     spread(hiddenInput, api.value.length
       ? api.getHiddenInputProps({ value: api.value[0]! }) as Record<string, unknown>
       : { type: 'hidden', name: undefined, disabled: true, value: '' })
@@ -500,6 +503,106 @@ describe('多选标签', () => {
     const h = mount({ multiple: true, defaultValue: ['index', 'dom', 'license'] })
     h.api().deselect('dom')
     expect(h.value()).toEqual(['index', 'license'])
+  })
+})
+
+describe('浮层内搜索', () => {
+  const rowsOf = (h: Harness): string[] => h.api().visibleNodes.map(row => row.value)
+
+  it('裁剪规则：命中的节点整枝留下；只有子孙命中的分支只留命中的那几枝并展开；一枝不剩的去掉', () => {
+    const view = filterTreeSelectNodes(COLLECTION, 'dom', defaultTreeSelectFilter)
+    expect(view.nodes.map(n => n.value)).toEqual(['src'])
+    expect(view.nodes[0]!.children!.map(n => n.value)).toEqual(['utils'])
+    expect(view.expanded.sort()).toEqual(['src', 'utils'])
+    const branchHit = filterTreeSelectNodes(COLLECTION, 'utils', defaultTreeSelectFilter)
+    expect(branchHit.nodes[0]!.children![0]!.children!.map(n => n.value)).toEqual(['dom', 'math'])
+    expect(filterTreeSelectNodes(COLLECTION, 'zzz', defaultTreeSelectFilter).nodes).toEqual([])
+  })
+
+  it('没开 searchable 时搜索框带 hidden；开了之后照常露面并自带可及名', () => {
+    expect(mount().api().getInputProps()).toMatchObject({ hidden: true })
+    const h = mount({ searchable: true })
+    expect(h.searchBox.hidden).toBe(false)
+    expect(h.searchBox.getAttribute('aria-label')).toBe('Search')
+    expect(h.searchBox.getAttribute('aria-controls')).toBe(h.treeEl.id)
+  })
+
+  it('输入检索词：可见行只剩命中的节点与它们的祖先，祖先自动展开，作者的 expandedValue 不动', async () => {
+    const h = mount({ searchable: true, defaultOpen: true })
+    await settle()
+    h.searchBox.value = 'dom'
+    h.searchBox.dispatchEvent(new Event('input', { bubbles: true }))
+    expect(h.api().searching).toBe(true)
+    expect(rowsOf(h)).toEqual(['src', 'utils', 'dom'])
+    expect(h.api().isExpanded('utils')).toBe(true)
+    expect(h.expanded()).toEqual([])
+  })
+
+  it('自定义 filter 接管匹配规则；query 已 trim', () => {
+    const seen: string[] = []
+    const h = mount({
+      searchable: true,
+      filter: (node, query) => {
+        seen.push(query)
+        return node.value === query
+      },
+    })
+    h.api().setInputValue('  license ')
+    expect(rowsOf(h)).toEqual(['license'])
+    expect(new Set(seen)).toEqual(new Set(['license']))
+  })
+
+  it('搜索视图里的展开收起只改它自己的展开集合；清空检索词回到原来的展开态', () => {
+    const h = mount({ searchable: true, defaultExpandedValue: ['src'] })
+    h.api().setInputValue('utils')
+    expect(rowsOf(h)).toEqual(['src', 'utils'])
+    h.api().expand('utils')
+    expect(rowsOf(h)).toEqual(['src', 'utils', 'dom', 'math'])
+    expect(h.expanded()).toEqual(['src'])
+    h.api().setInputValue('')
+    expect(h.api().searching).toBe(false)
+    expect(rowsOf(h)).toEqual(['src', 'index', 'utils', 'readme', 'docs', 'license'])
+  })
+
+  it('没有命中时整树判空，空态让出来', () => {
+    const h = mount({ searchable: true })
+    h.api().setInputValue('zzz')
+    expect(h.api().empty).toBe(true)
+    expect((h.api().getEmptyProps() as Record<string, unknown>).hidden).toBeUndefined()
+  })
+
+  it('展开时焦点先落在搜索框上；下方向键把焦点交给树的首个可用行', async () => {
+    const h = mount({ searchable: true })
+    h.trigger.focus()
+    click(h.trigger)
+    await settle()
+    expect(document.activeElement).toBe(h.searchBox)
+    expect(press(h.searchBox, 'ArrowDown').defaultPrevented).toBe(true)
+    expect(focusedValue()).toBe('src')
+  })
+
+  it('搜索框里 Escape 先清词、浮层不收；收起浮层即清空检索词', async () => {
+    const h = mount({ searchable: true, defaultOpen: true })
+    await settle()
+    h.api().setInputValue('dom')
+    h.searchBox.focus()
+    press(h.searchBox, 'Escape')
+    await settle()
+    expect(h.api().inputValue).toBe('')
+    expect(h.state()).toBe('open')
+    h.api().setInputValue('dom')
+    h.api().setOpen(false)
+    expect(h.api().inputValue).toBe('')
+  })
+
+  it('开了搜索时树里的可打印字符接到检索词末尾、焦点回到搜索框，不做连打检索', async () => {
+    const h = mount({ searchable: true, defaultOpen: true, defaultValue: 'license' })
+    await settle()
+    h.node('license').focus()
+    const event = press(h.node('license'), 'd')
+    expect(event.defaultPrevented).toBe(true)
+    expect(h.api().inputValue).toBe('d')
+    expect(document.activeElement).toBe(h.searchBox)
   })
 })
 

@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `tag-list` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`tree`** · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `branch-empty` · `empty` · `loading` · `footer` · `hidden-input`
+`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `tag-list` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · **`tree`** · `item` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `branch-empty` · `empty` · `loading` · `footer` · `hidden-input`
 
 ## 示例
 
@@ -78,9 +78,9 @@ multiple 加 cascade 内建父子传导：点击分支整枝勾选、子全勾�
 
 <XhDemo src="tree-select/10-checkable" />
 
-### 浮层内关键词过滤
+### 浮层内搜索
 
-输入框是树的兄弟节点，树的键盘处理器挂在 tree 上，输入不会被连打检索接管；更换 collection 后可见行与方向键顺序随之重算
+searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树裁到只剩命中的那几枝，命中节点的祖先自动展开，没命中的节点带 hidden 收起；Escape 先清空检索词
 
 <XhDemo src="tree-select/11-filter" />
 
@@ -119,9 +119,10 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 - 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
 - 节点可写副文本，第 2 行放一句解释，不进连打检索串。
 - 节点行尾留一格给作者（计数、徽标）；行首那一格归勾选框与展开箭头。
-- 支持只选叶子不选分支、浮层内关键词过滤、子节点异步加载：节点用 `hasChildren: true` 声明懒分支，首次展开由 `loadChildren({ node, signal })` 获取直接子项；失败保留 cause，默认 `branch-error` 与 `branch-retry-trigger` 直接可用。
+- `searchable` 在浮层顶部放一个搜索框（`input` 部件，排在 `tree` 之前），展开时焦点先落在框上。输入即按 `filter`（缺省为标签大小写不敏感包含）裁树：命中节点连同整棵子树留下，祖先保留并自动展开；搜索里的展开单独记，不改写 `expandedValue`。手写的整棵树里没命中的节点由连接层带 `hidden` 收起，没有命中时空态改说 `translations.noMatch`。树里打可打印字符会接到检索词末尾并把焦点交回搜索框，下方向键从框进树，Escape 先清空检索词；收起浮层即清空。
+- 支持只选叶子不选分支、子节点异步加载：节点用 `hasChildren: true` 声明懒分支，首次展开由 `loadChildren({ node, signal })` 获取直接子项；失败保留 cause，默认 `branch-error` 与 `branch-retry-trigger` 直接可用。
 - 整树空（`empty`）与在途（`loading`）默认自动渲染；collection 看有效树长度，手写节点由适配器只上报挂载事实、Headless 统一判空。`loading` 为真时树报 `aria-busy`，空态让位；作者写同名部件时保留作者结构与文案。
-- 输入框保持实体；浮层使用 M2 磨砂材质、内侧顶光和四向短位移，不缩放树中文字。树、空态与加载态共用一个外壳，底部操作使用同材质分隔线；增强对比度时材质自动实体化。面板与字段盒等宽，长节点在行里截断、不撑宽面板；字段盒比可用区还宽时收成可用宽度。
+- 输入框保持实体；浮层使用 M2 磨砂材质、内侧顶光和四向短位移，不缩放树中文字。树、空态与加载态共用一个外壳，底部操作使用同材质分隔线；滚动归树，搜索框与底部操作区钉在树的上下沿不随行滚走；增强对比度时材质自动实体化。面板与字段盒等宽，长节点在行里截断、不撑宽面板；字段盒比可用区还宽时收成可用宽度。
 - 仅 `{ hasChildren: true, children: undefined }` 触发 `loadChildren({ node, signal })`；`children: []` 是已知为空目录，永不请求。成功子项、可见行、键盘导航与级联选择由 headless 的同一有效树计算，三端不各自缓存结果。
 - 分支状态不互相降级：`api.branchLoadState(value)` 公开 `idle` / `loading` / `loaded` / `error`；`loaded` 的 `empty` 明确区分成功空数组，`error` 保留原始 cause。默认结构提供 `branch-loading`、`branch-error`、`branch-retry-trigger`、`branch-empty`，也可用同名部件替换文案；错误分支行上的 Enter/Space 是不破坏 tree roving 的正式键盘重试入口。
 - `onBranchLoadStart`、`onBranchLoad`、`onBranchLoadError`（三端事件为 `branch-load-start` / `branch-load` / `branch-load-error`）公开有效请求生命周期。分支或整浮层收起、重试、节点移除/同 value 换代、组件卸载都会中止并作废旧请求；迟到兑现或拒绝不能写回当前树，也不发成功/失败事件。
@@ -132,7 +133,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 ### 最佳实践
 
-- 大树必须开启浮层内过滤，逐级展开查找节点很慢。
+- 大树开启 `searchable`，逐级展开查找节点很慢。
 - 无头用法需要按 `api.value` 遍历，为每个值调用 `api.getHiddenInputProps({ value })` 并渲染原生 input；旧的无参调用与 CSV 提交合同已删除。Vue/React 的 `HiddenInput` 部件自动铺开，Web Components 仍只需声明一个原生 `input[data-xh-part="hidden-input"]`，额外字段由宿主管理。
 - 明确只能选叶子还是分支也可选，并在界面上让分支的可点性可见。
 - 自定义 `branch-control` 与 `item` 都应包含 `item-indicator`，分支标记直接读取所属分支的选择与半选状态，不另写状态判定或自绘复选框。Vue / React 自动结构已提供此部件。
@@ -149,7 +150,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree-select>` |
-| Vue 组件 | `XhTreeSelectBranch` `XhTreeSelectBranchContent` `XhTreeSelectBranchControl` `XhTreeSelectBranchEmpty` `XhTreeSelectBranchError` `XhTreeSelectBranchIndicator` `XhTreeSelectBranchLoading` `XhTreeSelectBranchRetryTrigger` `XhTreeSelectBranchText` `XhTreeSelectBranchTrigger` `XhTreeSelectClearTrigger` `XhTreeSelectContent` `XhTreeSelectControl` `XhTreeSelectEmpty` `XhTreeSelectFooter` `XhTreeSelectHiddenInput` `XhTreeSelectIndicator` `XhTreeSelectItem` `XhTreeSelectItemDeleteTrigger` `XhTreeSelectItemDescription` `XhTreeSelectItemIndicator` `XhTreeSelectItemSuffix` `XhTreeSelectItemText` `XhTreeSelectLabel` `XhTreeSelectLoading` `XhTreeSelectOverflowTag` `XhTreeSelectPositioner` `XhTreeSelectRoot` `XhTreeSelectTag` `XhTreeSelectTagLabel` `XhTreeSelectTagList` `XhTreeSelectTree` `XhTreeSelectTrigger` `XhTreeSelectValueText` |
+| Vue 组件 | `XhTreeSelectBranch` `XhTreeSelectBranchContent` `XhTreeSelectBranchControl` `XhTreeSelectBranchEmpty` `XhTreeSelectBranchError` `XhTreeSelectBranchIndicator` `XhTreeSelectBranchLoading` `XhTreeSelectBranchRetryTrigger` `XhTreeSelectBranchText` `XhTreeSelectBranchTrigger` `XhTreeSelectClearTrigger` `XhTreeSelectContent` `XhTreeSelectControl` `XhTreeSelectEmpty` `XhTreeSelectFooter` `XhTreeSelectHiddenInput` `XhTreeSelectIndicator` `XhTreeSelectInput` `XhTreeSelectItem` `XhTreeSelectItemDeleteTrigger` `XhTreeSelectItemDescription` `XhTreeSelectItemIndicator` `XhTreeSelectItemSuffix` `XhTreeSelectItemText` `XhTreeSelectLabel` `XhTreeSelectLoading` `XhTreeSelectOverflowTag` `XhTreeSelectPositioner` `XhTreeSelectRoot` `XhTreeSelectTag` `XhTreeSelectTagLabel` `XhTreeSelectTagList` `XhTreeSelectTree` `XhTreeSelectTrigger` `XhTreeSelectValueText` |
 | 组合式函数 | `useTreeSelect` |
 | 状态机 | `treeSelectMachine` |
 | 皮肤 | `@xihan-ui/styles/tree-select.css` |
@@ -168,6 +169,8 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `defaultOpen` | `boolean` |  |  |
 | `multiple` | `boolean` |  | 多选：选中为集合，选中后浮层不收起、焦点留在树中以便继续选择；已选项在触发器里排成标签。 |
 | `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 |
+| `searchable` | `boolean` |  | 浮层内搜索：input 部件可用，展开时焦点先落在搜索框上，输入即按 filter 把树裁到只剩命中的那几枝， 命中节点的祖先自动展开。关闭时搜索框仍在 DOM 中但带 hidden。收起浮层即清空检索词。 |
+| `filter` | `TreeSelectFilter` |  | 自定义匹配规则；缺省为标签大小写不敏感包含。 |
 | `cascade` | `boolean` |  | 多选下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（朴素切换）；单选下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 使用原生 disabled，表单出口不参与提交。 |
@@ -274,7 +277,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `NODE.FOCUS` · `NODE.LOST` · `NODE.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `BRANCH.RETRY` · `NODE.MOUNT` · `NODE.UNMOUNT` · `NODES.SYNC` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `NODE.FOCUS` · `NODE.LOST` · `NODE.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `BRANCH.RETRY` · `NODE.MOUNT` · `NODE.UNMOUNT` · `NODES.SYNC` · `INPUT.CHANGE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isOpenControlled` · `isMultiple` · `canPress`
 
@@ -294,6 +297,8 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `focusedValue` | `string \| null` | 焦点锚点；收起、或它已被收起而不可见时为 null。 |
 | `empty` | `boolean` | 整树当前是否没有任何节点；collection 与手写节点统一由 Headless 判定。 |
 | `loading` | `boolean` | 外部整树 loading 状态。懒分支 loading 由 branchLoadState 单独表达。 |
+| `searching` | `boolean` | 正处于搜索视图（开启 searchable 且检索词非空）：collection 与 visibleNodes 都是裁剪后的树。 |
+| `inputValue` | `string` | 搜索框中的原始串。 |
 | `translations` | `TreeSelectTranslations` |  |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
@@ -310,6 +315,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `setExpandedValue` | `(next: string[]) => void` |  |
+| `setInputValue` | `(next: string) => void` | 改写检索词，与在搜索框里输入同一语义。 |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
 | `retryBranch` | `(value: string) => void` | 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 |
@@ -330,6 +336,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
+| `getInputProps` | `() => T['input']` | 搜索框：放在 content 中、tree 之前；没开 searchable 时带 hidden。输入即过滤， 下方向键或 Enter 把焦点交给树，Escape 先清空检索词，Tab 收起浮层。 |
 | `getTreeProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
@@ -374,7 +381,11 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `Enter` / `Space` | held in item / branch / clear-trigger, 未禁用、未只读、未加载 | 按住期间叶子行、分支行（branch-control）或清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，节点随浮层收起一并撤下；没有值可清时清空按钮不进 |
 | `Enter` / `Space` | open, focus on branch, 分支加载失败 | 重试该分支，焦点留在分支行；不改变选中值与展开集合 |
 | `*` | open, focus in content | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
-| `单个可打印字符` | open, focus in content | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
+| `单个可打印字符` | open, focus in content, 未开 searchable | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
+| `单个可打印字符` | open, searchable, focus in tree | 字符接到检索词末尾、焦点回到搜索框；开了搜索就不做连打检索 |
+| `可打印字符` | open, searchable, focus in input | 改写检索词：树裁到只剩命中的那几枝，命中节点的祖先自动展开；展开浮层时焦点先落在这里 |
+| `ArrowDown` / `Enter` | open, searchable, focus in input | 焦点交给树：落在锚点行，没有锚点就落首个可用行 |
+| `Escape` | open, searchable, focus in input, 检索词非空 | 先清空检索词回到整棵树与原来的展开态，浮层不收起；检索词已空再按才收起 |
 | `Escape` | open | 收起浮层并把焦点归还 trigger，选中值与展开集合都不变 |
 | `Tab` / `Shift+Tab` | open | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |
 
@@ -394,6 +405,8 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `indicator` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
+| `input` | `aria-controls` | `tree` 部件的 id |
+| `input` | `aria-label` | translations.searchInput |
 | `tree` | `aria-busy` | 'true' \| undefined |
 | `tree` | `aria-disabled` | 'true' \| 'false' |
 | `tree` | `aria-label` | translations.tree |
@@ -682,6 +695,12 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-icon-size` | `branch-control`<br>`control`<br>`item`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_collection-glyph-size`<br>`--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tree-select 的 branch-control、control、item、positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tree-select-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | tree-select 的 branch-content 部件 padding-inline-start 覆盖槽。 |
 | `--xh-tree-select-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | tree-select 的 indicator 部件 color 覆盖槽。 |
+| `--xh-tree-select-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-surface` | tree-select 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-tree-select-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | tree-select 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-tree-select-input-font-size` | `input` | `font-size` | `default` | `--xh-_tree-select-font-size` | tree-select 的 input 部件 font-size 覆盖槽。 |
+| `--xh-tree-select-input-gap` | `input` | `margin-block-end` | `default` | `--xh-space-1` | tree-select 的 input 部件 margin-block-end 覆盖槽。 |
+| `--xh-tree-select-input-px` | `input` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 input 部件 padding-inline 覆盖槽。 |
+| `--xh-tree-select-input-py` | `input` | `padding-block` | `default` | `--xh-space-2` | tree-select 的 input 部件 padding-block 覆盖槽。 |
 | `--xh-tree-select-item-bg-hover` | `branch`<br>`branch-control`<br>`item` | `background-color` | `disabled`<br>`error`<br>`focus-visible`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is(:hover, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`not([data-disabled])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | tree-select 的 branch、branch-control、item 部件 background-color 覆盖槽。 |
 | `--xh-tree-select-item-bg-pressed` | `branch-control`<br>`item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`not([data-disabled])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | tree-select 的 branch-control、item 部件 background-color 覆盖槽。 |
 | `--xh-tree-select-item-check-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-tree-select-item-indicator-fg` | tree-select 的 branch-control、item 部件 color 覆盖槽。 |
@@ -705,6 +724,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | tree-select 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-tree-select-placeholder-fg` | `value-text` | `color` | `placeholder` | `--xh-fg-subtle` | tree-select 的 value-text 部件 color 覆盖槽。 |
+| `--xh-tree-select-search-divider` | `input` | `border-block-end` | `default` | `--xh-material-frosted-separator` | tree-select 的 input 部件 border-block-end 覆盖槽。 |
 | `--xh-tree-select-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | tree-select 的 tag-list 部件 gap 覆盖槽。 |
 | `--xh-tree-select-tree-gap` | `tree` | `gap` | `default` | `--xh-list-option-gap` | tree-select 的 tree 部件 gap 覆盖槽。 |
 | `--xh-tree-select-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | tree-select 的 trigger 部件 color 覆盖槽。 |

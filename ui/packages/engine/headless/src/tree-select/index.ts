@@ -10,6 +10,8 @@ export { connectTreeSelect } from './tree-select.connect'
 export { treeSelectKeyboard } from './tree-select.keyboard'
 export { findTreeSelectNode, findTreeSelectNodeEl, isTreeSelectLazyBranch, resolveTreeSelectCollection, TREE_SELECT_DEFAULT_PLACEMENT, treeSelectMachine, treeSelectNodeEls } from './tree-select.machine'
 export { treeSelectMeta } from './tree-select.meta'
+export { defaultTreeSelectFilter, filterTreeSelectNodes } from './tree-select.search'
+export type { TreeSelectSearchView } from './tree-select.search'
 export type {
   TreeSelectApi,
   TreeSelectBranchLoadDetails,
@@ -18,6 +20,7 @@ export type {
   TreeSelectBranchLoadStartDetails,
   TreeSelectBranchLoadStatus,
   TreeSelectExpandedValueChangeDetails,
+  TreeSelectFilter,
   TreeSelectFocusIntent,
   TreeSelectLoadChildrenRequest,
   TreeSelectNode,

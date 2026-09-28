@@ -28,6 +28,8 @@ export interface TreeSelectContext extends OverlayWiring {
   controlRef: RefObject<HTMLElement | null>
   positionerRef: RefObject<HTMLElement | null>
   contentRef: RefObject<HTMLElement | null>
+  /** 树部件：浮层里的滚动面，自绘条接在它上面。 */
+  treeRef: RefObject<HTMLElement | null>
 }
 
 export function useTreeSelect(props: TreeSelectSchema['props']): TreeSelectContext {
@@ -38,6 +40,7 @@ export function useTreeSelect(props: TreeSelectSchema['props']): TreeSelectConte
   const controlRef = useRef<HTMLElement | null>(null)
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
+  const treeRef = useRef<HTMLElement | null>(null)
   const serviceRef = useRef<Service<TreeSelectSchema> | null>(null)
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
@@ -86,5 +89,6 @@ export function useTreeSelect(props: TreeSelectSchema['props']): TreeSelectConte
     controlRef,
     positionerRef,
     contentRef,
+    treeRef,
   }
 }
