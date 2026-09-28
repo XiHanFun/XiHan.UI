@@ -88,7 +88,7 @@ describe('steps 默认视觉', () => {
     expect(mark.backgroundColor).toBe(getComputedStyle(completed).color)
   })
 
-  it('compact 下兜底对号随指示符档收到 14px，圆点仍是 32px', () => {
+  it('compact 下兜底对号随指示符档收到 14px，圆点随 control-h-md 收到 32px', () => {
     document.documentElement.dataset.density = 'compact'
     const steps = mount()
     const completed = steps.indicators[0]!

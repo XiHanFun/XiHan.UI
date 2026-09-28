@@ -299,7 +299,7 @@
 | `--xh-steps-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | steps 的 description 部件 color 覆盖槽。 |
 | `--xh-steps-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | steps 的 description 部件 font-size 覆盖槽。 |
 | `--xh-steps-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | steps 的 root 部件 gap 覆盖槽。 |
-| `--xh-steps-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | steps 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-steps-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | steps 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-steps-indicator-bg` | `indicator` | `background` | `default` | `--xh-bg-subtle` | steps 的 indicator 部件 background 覆盖槽。 |
 | `--xh-steps-indicator-bg-completed` | `indicator` | `background` | `state=completed` | `--xh-bg-subtle` | steps 的 indicator 部件 background 覆盖槽。 |
 | `--xh-steps-indicator-bg-completed-hover` | `indicator`<br>`trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly`<br>`state=completed` | `--xh-_steps-host-bg-hover` | steps 的 indicator、trigger 部件 background 覆盖槽。 |

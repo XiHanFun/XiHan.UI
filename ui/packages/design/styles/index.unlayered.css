@@ -38579,14 +38579,17 @@
 }
 
 [data-scope='steps'][data-part='root'] {
-  /* 作者放进标题 / 说明里的图标按档取尺，缺省 sm。走过的步里皮肤画的兜底对号不读这支：
-     它是指示符，与序号圆点同走 --xh-control-indicator-* 一族——圆点在自己身上把 --xh-icon-size
-     改接到 --xh-steps-indicator-mark-size，兜底对号与作者塞进圆点里的 XhIcon 读同一把尺 */
-  --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-sm));
+  /* 作者放进标题 / 说明里的图标是控件内图标，随尺寸档取 glyph-size-sm / md / lg，缺省 md；
+     每一档都把 --xh-steps-icon-size 排在档值前面，外层统一改尺的通道不被档值挡住。
+     走过的步里皮肤画的兜底对号不读这支：它是指示符，与序号圆点同走 --xh-control-indicator-* 一族——
+     圆点在自己身上把 --xh-icon-size 改接到 --xh-steps-indicator-mark-size，兜底对号与作者塞进圆点里的
+     XhIcon 读同一把尺 */
+  --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-md));
 
   /* 尺寸档只换这三个私有槽，序号圆点、标题与圆点里的序号都从 root 继承它们，
-     换档不必给每个部件各写一条选择器；说明走说明角色（13px），不随档 */
-  --xh-_steps-indicator-size: var(--xh-space-8);
+     换档不必给每个部件各写一条选择器；说明走说明角色（13px），不随档。
+     圆点与 Avatar、带框 Icon 同一把尺：control-h 的 sm / md / lg，随密度换档 */
+  --xh-_steps-indicator-size: var(--xh-control-h-md);
   --xh-_steps-title-font-size: var(--xh-control-font-md);
   --xh-_steps-caption-font-size: var(--xh-text-caption-size);
 
@@ -38629,15 +38632,16 @@
 }
 
 /* —— 尺寸 —— */
-/* 缺省档写在上面的基础规则里。圆点直径不在 control-h 那把尺上（缺省是 sm 档的 28px），
-   两侧改从 space 档取，缺省档才留得住 */
+/* 缺省档写在上面的基础规则里 */
 [data-scope='steps'][data-part='root'][data-size='sm'] {
-  --xh-_steps-indicator-size: var(--xh-space-7);
+  --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-sm));
+  --xh-_steps-indicator-size: var(--xh-control-h-sm);
   --xh-_steps-title-font-size: var(--xh-control-font-sm);
   /* 字号档最小就是 xs，序号不再往下走，故不重声明 caption */
 }
 
 [data-scope='steps'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-lg));
   --xh-_steps-indicator-size: var(--xh-control-h-lg);
   --xh-_steps-title-font-size: var(--xh-control-font-lg);
   --xh-_steps-caption-font-size: var(--xh-text-secondary-size);
@@ -38759,7 +38763,7 @@
 [data-scope='steps'][data-part='indicator'] {
   /* 圆点里的字形是指示符：对号按指示符档取尺、随密度换档（comfortable 16 / compact 14），
      不读 root 上只管作者标题 / 说明图标的 --xh-steps-icon-size；作者塞进圆点的 XhIcon 与兜底对号同一把尺。
-     圆点自己走 space / control-h 的尺（最小 28px），不随密度，两档字形在三档圆点里都留得出边距 */
+     圆点自己走 control-h 的尺（最小 compact sm 的 28px），两档字形在三档圆点里都留得出边距 */
   --xh-icon-size: var(--xh-steps-indicator-mark-size, var(--xh-control-indicator-size));
 
   display: inline-flex;
