@@ -140,6 +140,19 @@ describe('数值轴', () => {
 
   it('负的间距参数报错', () => {
     expect(() => layoutAxis({ ...base, minLabelGap: -1, scale: scaleLinear(), position: 'bottom', labelOverflow: 'auto' })).toThrow(/minLabelGap/)
+    expect(() => layoutAxis({ ...base, minThickness: -1, scale: scaleLinear(), position: 'left', labelOverflow: 'auto' })).toThrow(/minThickness/)
+  })
+
+  it('最小厚度：内容更薄时取它，更厚时按内容；标签短长不同的两根纵轴写同一个值就一样厚', () => {
+    const narrow = scaleLinear({ domain: [0, 10], range: [200, 0] })
+    const wide = scaleLinear({ domain: [0, 1_000_000], range: [200, 0] })
+    const floor = 4 + 4 + widthOf('1000000') + 6
+    const a = layoutAxis({ ...base, scale: narrow, position: 'left', labelOverflow: 'auto', minThickness: floor })
+    const b = layoutAxis({ ...base, scale: wide, position: 'left', labelOverflow: 'auto', minThickness: floor })
+    expect(a.thickness).toBe(floor)
+    expect(b.thickness).toBe(floor)
+    const tight = layoutAxis({ ...base, scale: wide, position: 'left', labelOverflow: 'auto', minThickness: 1 })
+    expect(tight.thickness).toBeGreaterThan(1)
   })
 })
 

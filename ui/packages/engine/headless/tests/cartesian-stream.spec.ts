@@ -201,3 +201,15 @@ describe('放大后的键盘落点', () => {
     expect(bars.filter(m => (rows.api().getMarkProps(m) as Dict).tabindex === 0).map(m => m.datum!.index)).toEqual([20])
   })
 })
+
+describe('窗口落在数据之外', () => {
+  it('数据还没到时写了时间窗口：不抛错，自变量轴按整条画；数据到了窗口照常生效', async () => {
+    const window = { x: [new Date(T0 + 10 * STEP), new Date(T0 + 19 * STEP)] as [Date, Date], y: null }
+    const rig = await makeRig({ series: [{ mark: 'line', x: 't', y: 'p' }], xAxis: { scale: 'utc' }, zoom: 'x', defaultWindow: window })
+    expect(cartesianModelOf(rig.service).scene!.layout.window.x).toEqual({ start: 0, end: 1 })
+    rig.setProps({ data: prices(40) })
+    await settle()
+    const w = cartesianModelOf(rig.service).scene!.layout.window.x
+    expect(w.end - w.start).toBeLessThan(0.5)
+  })
+})

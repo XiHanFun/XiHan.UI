@@ -183,10 +183,11 @@ export function createCartesianPipeline(): CartesianPipeline {
     measurer: TextMeasurer,
     measurerVersion: number,
     locale: string,
+    formats: CartesianFormats,
     zoom: CartesianZoom,
     window: CartesianWindow,
     annotations: readonly CartesianAnnotation[],
-  ) => layoutColumns(columns, { size, metrics, measurer, measurerVersion, locale, zoom, window, annotations }))
+  ) => layoutColumns(columns, { size, metrics, measurer, measurerVersion, locale, formats, zoom, window, annotations }))
   const columnsSceneOf = memoizeLast((columns: CartesianColumns, layout: CartesianColumnsLayout, annotations: readonly CartesianAnnotation[]) => columnsScene(columns, layout, annotations, ++version))
   const facadeOf = memoizeLast(columnsFacade)
   const rasterOf = memoizeLast(columnsRaster)
@@ -207,7 +208,7 @@ export function createCartesianPipeline(): CartesianPipeline {
     const a11y = columnsA11yOf(data, formats, input.translations)
     const layout = input.size == null || issues.length > 0
       ? null
-      : columnsLayoutOf(data, input.size, input.metrics, input.measurer, input.measurerVersion, input.locale, input.zoom, input.window, annotations)
+      : columnsLayoutOf(data, input.size, input.metrics, input.measurer, input.measurerVersion, input.locale, formats, input.zoom, input.window, annotations)
     const target = layout ? columnsSceneOf(data, layout, annotations) : null
     return {
       spec: cspec.base,

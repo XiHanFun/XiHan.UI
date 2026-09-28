@@ -318,3 +318,22 @@ describe('对象数组上的 fit、trend 与 ordinal', () => {
     expect(cartesianModelOf(rig.service).issues.map(i => i.code)).toContain(DIAGNOSTIC_CODES.chartOptionConflict)
   })
 })
+
+describe('坐标轴的最小厚度', () => {
+  it('标签宽窄不同的两张图写同一个 minSize：绘图区左边对齐；对象数组与列式数据一样', async () => {
+    const small = Array.from({ length: 10 }, (_, i) => ({ day: `D${i}`, v: i }))
+    const large = Array.from({ length: 10 }, (_, i) => ({ day: `D${i}`, v: 1_000_000 + i * 1000 }))
+    const plotX = async (props: Props): Promise<number> => cartesianModelOf((await makeRig(props)).service).scene!.layout.plot.x
+    const series = [{ mark: 'bar', x: 'day', y: 'v' }] as const
+    expect(await plotX({ data: small, series })).not.toBe(await plotX({ data: large, series }))
+    const aligned = [await plotX({ data: small, series, yAxis: { minSize: 72 } }), await plotX({ data: large, series, yAxis: { minSize: 72 } })]
+    expect(aligned[0]).toBe(aligned[1])
+    const k = await plotX({ ...candles(50), yAxis: { minSize: 72 } })
+    expect(k).toBe(aligned[0])
+  })
+
+  it('不是非负有限数时报 chart.scale-param', async () => {
+    const rig = await makeRig({ data: [{ d: 'a', v: 1 }], series: [{ mark: 'bar', x: 'd', y: 'v' }], yAxis: { minSize: -4 } })
+    expect(cartesianModelOf(rig.service).issues.map(i => i.code)).toContain(DIAGNOSTIC_CODES.chartScaleParam)
+  })
+})

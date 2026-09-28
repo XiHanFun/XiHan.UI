@@ -170,3 +170,10 @@ describe('统计布局', () => {
     expect(movingAverage([null, null], 2)).toEqual([null, null])
   })
 })
+
+describe('整段落在完整定义域之外的窗口', () => {
+  it('夹成贴着那一端的零宽窗口，不抛错', () => {
+    expect(domainToWindow([150, 200], [0, 100])).toEqual({ start: 1, end: 1 })
+    expect(domainToWindow([-50, -10], [0, 100])).toEqual({ start: 0, end: 0 })
+  })
+})

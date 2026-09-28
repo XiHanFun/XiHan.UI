@@ -51,6 +51,17 @@ interface Fields {
 
 /** 日期在目标时区里的月、日、时、分、秒、毫秒；判断落在哪一级边界只需要这些。 */
 function fieldReader(timeZone: string | undefined): (date: Date) => Fields {
+  // UTC 不必经 Intl 拆字段：日期自带 UTC 的读法，逐个刻度都省一次 formatToParts
+  if (timeZone === 'UTC' || timeZone === 'Etc/UTC') {
+    return date => ({
+      month: date.getUTCMonth(),
+      day: date.getUTCDate(),
+      hour: date.getUTCHours(),
+      minute: date.getUTCMinutes(),
+      second: date.getUTCSeconds(),
+      millisecond: date.getUTCMilliseconds(),
+    })
+  }
   if (timeZone === undefined) {
     return date => ({
       month: date.getMonth(),
@@ -93,8 +104,25 @@ function alignedLevel(f: Fields): TimeIntervalName {
   return f.month !== 0 ? 'month' : 'year'
 }
 
+/** 建过的时间格式：同一语言与时区共用一份，刻度格式器每次布局都要一份，现建一份要构造好几个 Intl 实例。 */
+const built = new Map<string, TimeFormat>()
+/** 记住的语言与时区组合的上限：超出时丢掉最早的那份。 */
+const BUILT_LIMIT = 16
+
 /** 按语言与时区返回时间格式；timeZone 缺省为运行环境所在时区。 */
 export function createTimeFormat(locale: string, timeZone?: string): TimeFormat {
+  const key = `${locale}|${timeZone ?? ''}`
+  let format = built.get(key)
+  if (!format) {
+    format = buildTimeFormat(locale, timeZone)
+    if (built.size >= BUILT_LIMIT)
+      built.delete(built.keys().next().value!)
+    built.set(key, format)
+  }
+  return format
+}
+
+function buildTimeFormat(locale: string, timeZone: string | undefined): TimeFormat {
   const formats = new Map<string, Intl.DateTimeFormat>()
   const formatWith = (options: Intl.DateTimeFormatOptions, key: string): Intl.DateTimeFormat => {
     let format = formats.get(key)
