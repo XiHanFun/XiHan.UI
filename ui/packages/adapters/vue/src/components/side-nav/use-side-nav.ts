@@ -6,12 +6,12 @@
 // 提供 use side nav 相关实现。
 
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { SideNavApi, SideNavSchema } from '@xihan-ui/headless'
-import type { ComputedRef } from 'vue'
+import type { SideNavApi, SideNavSchema, TooltipSchema } from '@xihan-ui/headless'
+import type { ComputedRef, ShallowRef } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectSideNav, sideNavMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { computed } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
@@ -25,6 +25,8 @@ export interface SideNavContext {
   config: RuntimeConfig | null
   /** 弹出面板的定位层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
+  /** 图标栏名称提示的内嵌 Tooltip 机器：XhSideNavTooltip 挂上时交进来，卸下时撤回；没有即没有名称提示。 */
+  tooltip: ShallowRef<Service<TooltipSchema> | null>
 }
 
 export function useSideNav(
@@ -67,8 +69,9 @@ export function useSideNav(
     service.refs.set('getPopoutContentEl', value => popoutEl('content', value))
   }
 
-  const api = computed(() => connectSideNav(service, vueNormalize))
+  const tooltip = shallowRef<Service<TooltipSchema> | null>(null)
+  const api = computed(() => connectSideNav(service, vueNormalize, tooltip.value ?? undefined))
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? runtimeConfig?.portalContainer() ?? 'body')
-  return { api, service, config: runtimeConfig, portalTarget }
+  return { api, service, config: runtimeConfig, portalTarget, tooltip }
 }

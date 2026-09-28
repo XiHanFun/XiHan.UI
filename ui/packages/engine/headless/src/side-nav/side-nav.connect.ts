@@ -6,9 +6,11 @@
 // 提供 side nav 相关实现。
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { TooltipSchema } from '../tooltip'
 import type { SideNavApi, SideNavNode, SideNavPressedPart, SideNavSchema, SideNavTranslations } from './side-nav.types'
-import { createPressTracker, dataAttr, focusItem, isComposingEvent, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { createPressTracker, dataAttr, focusItem, isComposingEvent, itemValue, navigateItems, navIntentFromKey, normalizeProps, queryItems } from '@xihan-ui/core'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { connectTooltip } from '../tooltip'
 import { flattenTree, indexTree } from '../tree'
 import { sideNavAnatomy, sideNavLinkQuery, sideNavTriggerQuery } from './side-nav.anatomy'
 import { resolveSideNavSearch } from './side-nav.search'
@@ -24,9 +26,14 @@ function resolveTranslations(input: Partial<SideNavTranslations> | undefined): S
   }
 }
 
+/**
+ * tooltip 是图标栏名称提示的那台内嵌 Tooltip 机器（props 取 sideNavTooltipProps）：适配器在作者放了 tooltip 部件时交进来，
+ * 行上的指针与焦点据此转给它；不交即没有名称提示。
+ */
 export function connectSideNav<T extends PropTypes>(
   service: Service<SideNavSchema>,
   normalize: NormalizeProps<T>,
+  tooltip?: Service<TooltipSchema>,
 ): SideNavApi<T> {
   const { context, prop, send, scope, state } = service
   const collection = prop('collection') ?? []
@@ -117,6 +124,66 @@ export function connectSideNav<T extends PropTypes>(
   const isPopoutTrigger = (v: string): boolean => popoutEnabled && isTopLevel(v)
   /** 该子层容器在折叠态下渲染成弹出面板（顶层）；面板内的嵌套子层静态常开。 */
   const isPopoutPanel = isPopoutTrigger
+
+  // 名称提示：落成图标栏后只剩图标的那几行（顶层叶子；弹出关掉时也含顶层分支）悬停或聚焦时显示行的标签。
+  // 弹出分支的面板自己就是去处，不再叠一层提示；折叠进行中（宽度还在过渡）文字还在，也不提示
+  const tooltipValue = context.get('tooltipValue')
+  const tooltipText = tooltipValue != null ? metaOf(tooltipValue)?.label ?? tooltipValue : ''
+  const hintable = (v: string): boolean =>
+    tooltip != null && collapsed && railed && isTopLevel(v) && !(metaOf(v)?.branch && isPopoutTrigger(v))
+
+  /** 行上的指针与焦点转给内嵌提示机，与 Tooltip 的 trigger 同一套事件；换行时先改对着的那一行，开着就原地换锚。 */
+  interface RowHint {
+    enter: () => void
+    leave: () => void
+    down: () => void
+    focus: () => void
+    blur: () => void
+    keydown: (event: KeyboardEvent) => void
+  }
+  const rowHint = (v: string): RowHint | null => {
+    if (!tooltip || !hintable(v))
+      return null
+    const target = (): void => {
+      if (context.get('tooltipValue') === v)
+        return
+      send({ type: 'TOOLTIP.TARGET', value: v })
+      if (tooltip.state.matches('visible'))
+        tooltip.refs.get('reanchor')?.()
+    }
+    return {
+      enter: () => {
+        target()
+        tooltip.send({ type: 'POINTER.ENTER' })
+      },
+      leave: () => tooltip.send({ type: 'POINTER.LEAVE' }),
+      // 按下即让位给真正的操作
+      down: () => tooltip.send({ type: 'POINTER.DOWN' }),
+      focus: () => {
+        const shown = tooltip.state.matches('visible')
+        target()
+        tooltip.send({ type: 'FOCUS' })
+        // 焦点从上一行挪过来：那一行失焦刚报了收起，宿主把受控值写回之前提示还开着、不再认这次聚焦；
+        // 这里接着报「开」，提示原地换到这一行，不在两行之间收一下又开
+        if (shown)
+          send({ type: 'TOOLTIP.OPEN_CHANGE', open: true })
+      },
+      blur: () => tooltip.send({ type: 'BLUR' }),
+      // 提示露面之后 Escape 归消解层按层栈仲裁；这里只管还在等延时的那一段
+      keydown: (event) => {
+        if (event.key === 'Escape' && tooltip.state.matches('opening'))
+          tooltip.send({ type: 'ESCAPE' })
+      },
+    }
+  }
+
+  // 内嵌提示机的两个部件取 Tooltip 连接层的原样产出，再改成对读屏隐藏
+  const tooltipParts = tooltip ? connectTooltip(tooltip, normalizeProps) : null
+  const requireTooltip = (): NonNullable<typeof tooltipParts> => {
+    if (!tooltipParts)
+      throw new Error('[xh] SideNav 的名称提示需要内嵌的提示机：connectSideNav 的第三个参数没给')
+    return tooltipParts
+  }
 
   /** 面板里的行集合：分支按钮与链接按文档序混排。 */
   const panelRows = (panel: HTMLElement): HTMLElement[] =>
@@ -383,6 +450,8 @@ export function connectSideNav<T extends PropTypes>(
       const staticOpen = popoutEnabled && !isTopLevel(v)
       const expandedAttr = popoutTrigger ? popoutValue === v : (staticOpen || isExpanded(v))
       const handlers = press('branch-trigger', v)
+      // 弹出关掉的图标栏里，分支行同样只剩图标，名称提示与叶子同一套
+      const hint = rowHint(v)
       return normalize.button({
         ...parts['branch-trigger'].attrs,
         // 分支行走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面与展开路径的中性面
@@ -422,23 +491,35 @@ export function connectSideNav<T extends PropTypes>(
         },
         // 悬停延时弹出，等待归机器；触摸没有悬停，tap 走 click
         'onPointerenter': (event: PointerEvent) => {
+          hint?.enter()
           if (!popoutTrigger || event.pointerType === 'touch' || isDisabled(v))
             return
           send({ type: 'POPOUT.HOVER', value: v })
         },
         'onPointerleave': () => {
+          hint?.leave()
           if (popoutTrigger)
             send({ type: 'POPOUT.HOVER_END' })
         },
-        'onFocus': () => send({ type: 'NODE.FOCUS', value: v }),
+        'onFocus': () => {
+          send({ type: 'NODE.FOCUS', value: v })
+          hint?.focus()
+        },
         // 同一个 keydown 先过跟踪器再走导航：React 把 onKeydown 与 onKeyDown 归成同一个合成事件，两个键会互相覆盖
         'onKeydown': (event: KeyboardEvent) => {
           handlers.onKeyDown(event)
+          hint?.keydown(event)
           onNodeKeydown(event, v)
         },
         'onKeyUp': handlers.onKeyUp,
-        'onBlur': handlers.onBlur,
-        'onPointerDown': handlers.onPointerDown,
+        'onBlur': () => {
+          handlers.onBlur()
+          hint?.blur()
+        },
+        'onPointerDown': (event: PointerEvent) => {
+          handlers.onPointerDown(event)
+          hint?.down()
+        },
         'onPointerUp': handlers.onPointerUp,
         'onPointerCancel': handlers.onPointerCancel,
       })
@@ -534,6 +615,7 @@ export function connectSideNav<T extends PropTypes>(
       const handlers = press('link', v)
       // 没有 href 就不写这个键：asChild 把属性合到路由链接上时，一个值为空的 href 会盖掉它自己算出的地址
       const href = metaOf(v) ? collectionHref(collection, v) : undefined
+      const hint = rowHint(v)
       return normalize.element({
         ...parts.link.attrs,
         'data-xh-collection-item': '',
@@ -560,16 +642,29 @@ export function connectSideNav<T extends PropTypes>(
           }
           send({ type: 'LINK.SELECT', value: v })
         },
-        'onFocus': () => send({ type: 'NODE.FOCUS', value: v }),
+        // 图标栏里只剩图标的叶子：悬停或聚焦显示名称提示
+        'onPointerenter': () => hint?.enter(),
+        'onPointerleave': () => hint?.leave(),
+        'onFocus': () => {
+          send({ type: 'NODE.FOCUS', value: v })
+          hint?.focus()
+        },
         // 同一个 keydown 先过跟踪器再走导航：React 把 onKeydown 与 onKeyDown 归成同一个合成事件，两个键会互相覆盖
         'onKeydown': (event: KeyboardEvent) => {
           handlers.onKeyDown(event)
+          hint?.keydown(event)
           // 链接上按 Enter 走原生激活；方向键交给共用处理
           onNodeKeydown(event, v)
         },
         'onKeyUp': handlers.onKeyUp,
-        'onBlur': handlers.onBlur,
-        'onPointerDown': handlers.onPointerDown,
+        'onBlur': () => {
+          handlers.onBlur()
+          hint?.blur()
+        },
+        'onPointerDown': (event: PointerEvent) => {
+          handlers.onPointerDown(event)
+          hint?.down()
+        },
         'onPointerUp': handlers.onPointerUp,
         'onPointerCancel': handlers.onPointerCancel,
       })
@@ -578,6 +673,19 @@ export function connectSideNav<T extends PropTypes>(
     getLinkTextProps: () => normalize.element({
       ...parts['link-text'].attrs,
       'data-xh-collection-slot': 'text',
+    }),
+
+    tooltipText,
+
+    // 定位层原样取 Tooltip 的：坐标、落定朝向、落位才露与锚点滚出视区时收起都由它给
+    getTooltipPositionerProps: () => normalize.element(requireTooltip().getPositionerProps() as Record<string, unknown>),
+
+    // 提示本体原样取 Tooltip 的（反白面、进退场、接替时不播进场都随它），只改两处：
+    // 不当 role=tooltip、整块对读屏隐藏——行上的文字已是可及名，提示只给看得见的人补上被裁掉的那段字
+    getTooltipContentProps: () => normalize.element({
+      ...requireTooltip().getContentProps() as Record<string, unknown>,
+      'role': undefined,
+      'aria-hidden': true,
     }),
   }
 }

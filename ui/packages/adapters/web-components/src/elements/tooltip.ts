@@ -183,11 +183,7 @@ export class XhTooltipElement extends XhPortalHostElement {
 
   /** 最近的 `<xh-tooltip-provider>` 建的那一组；不在 Provider 里时为 null，归页面级的那一组。 */
   private findGroup(): TooltipGroup | null {
-    for (let el = this.parentElement; el; el = el.parentElement) {
-      if (isTooltipGroupScope(el))
-        return el.tooltipGroup
-    }
-    return null
+    return findTooltipGroup(this)
   }
 
   /**
@@ -259,6 +255,18 @@ interface TooltipGroupScope extends Element {
 
 function isTooltipGroupScope(node: Element): node is TooltipGroupScope {
   return 'tooltipGroup' in node
+}
+
+/**
+ * 从 from 的父节点起沿 DOM 祖先链找最近的 `<xh-tooltip-provider>`，取它那一组；不在 Provider 里时为 null，归页面级的那一组。
+ * 自己跑一台提示机的宿主（侧栏图标栏的名称提示）也经这里认组，与 `<xh-tooltip>` 同一个判据。
+ */
+export function findTooltipGroup(from: Element): TooltipGroup | null {
+  for (let el = from.parentElement; el; el = el.parentElement) {
+    if (isTooltipGroupScope(el))
+      return el.tooltipGroup
+  }
+  return null
 }
 
 /**

@@ -38595,6 +38595,223 @@
 /* 共享关键帧由 family/motion.css 提供，行走 Collection Item 家族，搜索框的重置与占位前景走字段家族；
    本皮肤 @import 它们，单独引入仍成立。 */
 
+/* 图标栏的名称提示就是库内的 Tooltip（data-scope="tooltip" 的 positioner 与 content），
+   反白面、进退场与各环境档都由它的皮肤给；本皮肤 @import 它，单独引入仍成立 */
+
+/* css/tooltip.css */
+/* 定义 tooltip 样式。 */
+
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='tooltip'] {
+    --xh-tooltip-skin: 1;
+  }
+
+  [data-scope='tooltip'][data-part='trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-tooltip-trigger-gap, var(--xh-control-gap-sm));
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: inherit;
+  }
+
+  /* 这里的 data-disabled 关掉的是提示，不是宿主控件：光标仍旧交给宿主 */
+  [data-scope='tooltip'][data-part='trigger'][data-disabled] {
+    cursor: inherit;
+  }
+
+  /* 坐标由定位引擎写在行内 style 上，这里只兜底 SSR 首帧 */
+  [data-scope='tooltip'][data-part='positioner'] {
+    /* 先截断祖先浮层的方向，再按本次实际 placement 只启用一侧。 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
+
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    z-index: var(--xh-tooltip-layer, var(--xh-_layer, var(--xh-layer-tooltip)));
+    /* 浮层不承载交互：指针必须能穿过去点到底下的东西 */
+    pointer-events: none;
+  }
+
+  /* 锚点滚出可视区时连浮层一起隐藏 */
+  [data-scope='tooltip'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  /* 进退位移按落定的那一侧给。placement 与 translate 都是物理方向，不随书写方向翻。 */
+  [data-scope='tooltip'][data-part='positioner'][data-placement^='top'] {
+    --xh-_overlay-enter-down: 1;
+  }
+
+  [data-scope='tooltip'][data-part='positioner'][data-placement^='bottom'] {
+    --xh-_overlay-enter-up: 1;
+  }
+
+  [data-scope='tooltip'][data-part='positioner'][data-placement^='left'] {
+    --xh-_overlay-enter-right: 1;
+  }
+
+  [data-scope='tooltip'][data-part='positioner'][data-placement^='right'] {
+    --xh-_overlay-enter-left: 1;
+  }
+
+  [data-scope='tooltip'][data-part='content'] {
+    /* 尺寸档只换这三个私有槽。tooltip 没有 root 部件，两轴都落在浮层树最外层的 content 上，
+       箭头是它的后代，语气槽一并继承 */
+    --xh-_tooltip-py: var(--xh-space-1);
+    --xh-_tooltip-px: var(--xh-space-2);
+    --xh-_tooltip-font-size: var(--xh-control-caption-md);
+    /* Tooltip 保留反白身份（登记的反白 compact frosted）：短提示要与可交互的普通主题浮层一眼分开。
+       94% 是六种 tone 在纯黑/纯白最坏底色上仍托住 4.5:1 正文的首个安全档。
+       边不取 --xh-material-frosted-border：那是深色 14% 的透明边，压在反白深底上看不见，
+       浮层要的 1px 可见边界由 on 色 20% 拼色承担；浮层不用玻璃高光，顶光缺省不画 */
+    --xh-_tooltip-solid: var(--xh-_tone, var(--xh-fg-default));
+    --xh-_tooltip-on: var(--xh-_tone-on, var(--xh-bg-surface));
+    --xh-_tooltip-border: color-mix(in oklab, var(--xh-_tooltip-on) 20%, transparent);
+
+    /* 与 positioner 相反：浮层本体要能接指针，指针停在提示上就不该收起
+       （长文案需要停留细看）。positioner 仍是 none，空白区域照样点得穿。 */
+    /* 显式声明 display 是为了盖掉 UA 的 [hidden]{display:none}：收起那一帧 content 仍带 hidden，
+       盒子得先在,退场动画才播得出来。真正的收起由宿主在退场结束后落成内联 display */
+    display: block;
+    position: relative;
+    isolation: isolate;
+    pointer-events: auto;
+    max-inline-size: var(--xh-tooltip-max-w, var(--xh-overlay-max-w));
+    padding-block: var(--xh-tooltip-py, var(--xh-_tooltip-py));
+    padding-inline: var(--xh-tooltip-px, var(--xh-_tooltip-px));
+    /* 这里刻意用 control 而不是浮层那档 surface：提示气泡通常只有一行字、高度接近控件，
+       8px 圆角在这个尺寸上占比过大，看着会发胖。档位定义里为此单列了一条 */
+    border-radius: var(--xh-tooltip-radius, var(--xh-shape-control));
+    border: var(--xh-stroke-thin) solid var(--xh-tooltip-border, var(--xh-_tooltip-border));
+    background: transparent;
+    color: var(--xh-tooltip-fg, var(--xh-_tooltip-on));
+    font-size: var(--xh-tooltip-font-size, var(--xh-_tooltip-font-size));
+    line-height: var(--xh-leading-normal);
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+    --xh-_tooltip-elevation-shadow: var(--xh-tooltip-shadow, var(--xh-material-frosted-compact-shadow));
+
+    /* 顶光槽缺省透明（不用顶部高光），使用者要加自行灌色 */
+    box-shadow:
+      inset 0 var(--xh-stroke-thin) 0 var(--xh-tooltip-highlight, transparent),
+      var(--xh-_tooltip-elevation-shadow);
+    -webkit-backdrop-filter: var(--xh-tooltip-backdrop, var(--xh-material-frosted-compact-backdrop));
+    backdrop-filter: var(--xh-tooltip-backdrop, var(--xh-material-frosted-compact-backdrop));
+  }
+
+  /* 跟随鼠标的提示压在指针旁边、随指针挪：它接了指针就会挡住 trigger 上的移动，指针一滑进去便算离开了 trigger。
+     这一档浮层本体同样让指针穿过去，停留细看交给 trigger 本身 */
+  [data-scope='tooltip'][data-part='positioner'][data-follow-cursor] [data-scope='tooltip'][data-part='content'] {
+    pointer-events: none;
+  }
+
+  /* 反白面是一块彩色面（连接层打 data-xh-ink-surface）：面内的作者内容按这块底取墨色。
+     底色取自被墨色域改写的令牌，所以域只落在面内的子元素上，这里的取值仍按外层主题解析 */
+  [data-scope='tooltip'][data-part='content'][data-xh-ink-surface] {
+    --xh-ink-surface: var(--xh-tooltip-bg, var(--xh-_tooltip-solid));
+  }
+
+  /* 光学层单独承载 tint 与透明度；backdrop-filter 只采样元素背后，不处理正文。 */
+  [data-scope='tooltip'][data-part='content']::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--xh-tooltip-bg, var(--xh-_tooltip-solid));
+    opacity: var(--xh-material-frosted-compact-alpha);
+    pointer-events: none;
+  }
+
+  /* 入场走 enter 档（锚定列表族的 tooltip 入场 --xh-motion-duration-enter），退场仍是 exit。
+     接替上一个提示打开的（data-instant）直接呈现：横扫一排钮时提示一个个跟上，不再一个个滑入 */
+  [data-scope='tooltip'][data-part='content'][data-state='open']:not([data-instant]) {
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+     免得动画结束到真收起之间闪一下原样 */
+  [data-scope='tooltip'][data-part='content'][data-state='closed'] {
+    will-change: opacity, translate;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在 content 的基础规则里。提示的内边距与字号本就不在 control-* 那把尺上
+     （它是浮层不是控件），故按 space / font-size 档上下各挪一级 */
+  [data-scope='tooltip'][data-part='content'][data-size='sm'] {
+    --xh-_tooltip-py: var(--xh-space-0_5);
+    --xh-_tooltip-px: var(--xh-space-1_5);
+    --xh-_tooltip-font-size: var(--xh-control-caption-sm);
+  }
+
+  [data-scope='tooltip'][data-part='content'][data-size='lg'] {
+    --xh-_tooltip-py: var(--xh-space-1_5);
+    --xh-_tooltip-px: var(--xh-space-2_5);
+    --xh-_tooltip-font-size: var(--xh-control-caption-lg);
+  }
+
+  /* 箭头的底色与描边色，几何在 overlay-arrow.css。
+     交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
+  [data-scope='tooltip'][data-part='arrow'] {
+    --xh-_tooltip-arrow-x: 50%;
+    --xh-_tooltip-arrow-y: 50%;
+    --xh-_overlay-arrow-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
+    --xh-_overlay-arrow-x: var(--xh-_tooltip-arrow-x);
+    --xh-_overlay-arrow-y: var(--xh-_tooltip-arrow-y);
+
+    background: var(--xh-tooltip-bg, var(--xh-_tooltip-solid));
+    border: var(--xh-stroke-thin) solid var(--xh-tooltip-border, var(--xh-_tooltip-border));
+    opacity: var(--xh-material-frosted-compact-alpha);
+  }
+
+  /* 高对比仍保持反白语义：compact 配方已把 tint / blur / shadow 换成实体档，此处只加强同色边界。 */
+  :is([data-contrast='more'] *, [data-contrast='more'])[data-scope='tooltip'][data-part='content'] {
+    --xh-_tooltip-border: var(--xh-_tooltip-on);
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='tooltip'][data-part='content'],
+    [data-scope='tooltip'][data-part='arrow'] {
+      border-color: CanvasText;
+      background: Canvas;
+      color: CanvasText;
+      box-shadow: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+
+    [data-scope='tooltip'][data-part='content']::before {
+      background: Canvas;
+      opacity: 1;
+    }
+  }
+
+  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='tooltip'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  @media print {
+    /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
+       收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
+    [data-scope='tooltip'][data-part='positioner'] {
+      display: none;
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='side-nav'] {
@@ -46239,218 +46456,6 @@
 }
 
 /* styles/tooltip.css */
-/* 定义 tooltip 样式。 */
-
-/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
-
-@layer xihan.components {
-  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-  [data-scope='tooltip'] {
-    --xh-tooltip-skin: 1;
-  }
-
-  [data-scope='tooltip'][data-part='trigger'] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-tooltip-trigger-gap, var(--xh-control-gap-sm));
-    border: 0;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    cursor: inherit;
-  }
-
-  /* 这里的 data-disabled 关掉的是提示，不是宿主控件：光标仍旧交给宿主 */
-  [data-scope='tooltip'][data-part='trigger'][data-disabled] {
-    cursor: inherit;
-  }
-
-  /* 坐标由定位引擎写在行内 style 上，这里只兜底 SSR 首帧 */
-  [data-scope='tooltip'][data-part='positioner'] {
-    /* 先截断祖先浮层的方向，再按本次实际 placement 只启用一侧。 */
-    --xh-_overlay-enter-up: 0;
-    --xh-_overlay-enter-down: 0;
-    --xh-_overlay-enter-left: 0;
-    --xh-_overlay-enter-right: 0;
-
-    position: fixed;
-    inset-block-start: 0;
-    inset-inline-start: 0;
-    z-index: var(--xh-tooltip-layer, var(--xh-_layer, var(--xh-layer-tooltip)));
-    /* 浮层不承载交互：指针必须能穿过去点到底下的东西 */
-    pointer-events: none;
-  }
-
-  /* 锚点滚出可视区时连浮层一起隐藏 */
-  [data-scope='tooltip'][data-part='positioner'][data-hidden] {
-    visibility: hidden;
-  }
-
-  /* 进退位移按落定的那一侧给。placement 与 translate 都是物理方向，不随书写方向翻。 */
-  [data-scope='tooltip'][data-part='positioner'][data-placement^='top'] {
-    --xh-_overlay-enter-down: 1;
-  }
-
-  [data-scope='tooltip'][data-part='positioner'][data-placement^='bottom'] {
-    --xh-_overlay-enter-up: 1;
-  }
-
-  [data-scope='tooltip'][data-part='positioner'][data-placement^='left'] {
-    --xh-_overlay-enter-right: 1;
-  }
-
-  [data-scope='tooltip'][data-part='positioner'][data-placement^='right'] {
-    --xh-_overlay-enter-left: 1;
-  }
-
-  [data-scope='tooltip'][data-part='content'] {
-    /* 尺寸档只换这三个私有槽。tooltip 没有 root 部件，两轴都落在浮层树最外层的 content 上，
-       箭头是它的后代，语气槽一并继承 */
-    --xh-_tooltip-py: var(--xh-space-1);
-    --xh-_tooltip-px: var(--xh-space-2);
-    --xh-_tooltip-font-size: var(--xh-control-caption-md);
-    /* Tooltip 保留反白身份（登记的反白 compact frosted）：短提示要与可交互的普通主题浮层一眼分开。
-       94% 是六种 tone 在纯黑/纯白最坏底色上仍托住 4.5:1 正文的首个安全档。
-       边不取 --xh-material-frosted-border：那是深色 14% 的透明边，压在反白深底上看不见，
-       浮层要的 1px 可见边界由 on 色 20% 拼色承担；浮层不用玻璃高光，顶光缺省不画 */
-    --xh-_tooltip-solid: var(--xh-_tone, var(--xh-fg-default));
-    --xh-_tooltip-on: var(--xh-_tone-on, var(--xh-bg-surface));
-    --xh-_tooltip-border: color-mix(in oklab, var(--xh-_tooltip-on) 20%, transparent);
-
-    /* 与 positioner 相反：浮层本体要能接指针，指针停在提示上就不该收起
-       （长文案需要停留细看）。positioner 仍是 none，空白区域照样点得穿。 */
-    /* 显式声明 display 是为了盖掉 UA 的 [hidden]{display:none}：收起那一帧 content 仍带 hidden，
-       盒子得先在,退场动画才播得出来。真正的收起由宿主在退场结束后落成内联 display */
-    display: block;
-    position: relative;
-    isolation: isolate;
-    pointer-events: auto;
-    max-inline-size: var(--xh-tooltip-max-w, var(--xh-overlay-max-w));
-    padding-block: var(--xh-tooltip-py, var(--xh-_tooltip-py));
-    padding-inline: var(--xh-tooltip-px, var(--xh-_tooltip-px));
-    /* 这里刻意用 control 而不是浮层那档 surface：提示气泡通常只有一行字、高度接近控件，
-       8px 圆角在这个尺寸上占比过大，看着会发胖。档位定义里为此单列了一条 */
-    border-radius: var(--xh-tooltip-radius, var(--xh-shape-control));
-    border: var(--xh-stroke-thin) solid var(--xh-tooltip-border, var(--xh-_tooltip-border));
-    background: transparent;
-    color: var(--xh-tooltip-fg, var(--xh-_tooltip-on));
-    font-size: var(--xh-tooltip-font-size, var(--xh-_tooltip-font-size));
-    line-height: var(--xh-leading-normal);
-    overflow-wrap: anywhere;
-    text-wrap: pretty;
-    --xh-_tooltip-elevation-shadow: var(--xh-tooltip-shadow, var(--xh-material-frosted-compact-shadow));
-
-    /* 顶光槽缺省透明（不用顶部高光），使用者要加自行灌色 */
-    box-shadow:
-      inset 0 var(--xh-stroke-thin) 0 var(--xh-tooltip-highlight, transparent),
-      var(--xh-_tooltip-elevation-shadow);
-    -webkit-backdrop-filter: var(--xh-tooltip-backdrop, var(--xh-material-frosted-compact-backdrop));
-    backdrop-filter: var(--xh-tooltip-backdrop, var(--xh-material-frosted-compact-backdrop));
-  }
-
-  /* 跟随鼠标的提示压在指针旁边、随指针挪：它接了指针就会挡住 trigger 上的移动，指针一滑进去便算离开了 trigger。
-     这一档浮层本体同样让指针穿过去，停留细看交给 trigger 本身 */
-  [data-scope='tooltip'][data-part='positioner'][data-follow-cursor] [data-scope='tooltip'][data-part='content'] {
-    pointer-events: none;
-  }
-
-  /* 反白面是一块彩色面（连接层打 data-xh-ink-surface）：面内的作者内容按这块底取墨色。
-     底色取自被墨色域改写的令牌，所以域只落在面内的子元素上，这里的取值仍按外层主题解析 */
-  [data-scope='tooltip'][data-part='content'][data-xh-ink-surface] {
-    --xh-ink-surface: var(--xh-tooltip-bg, var(--xh-_tooltip-solid));
-  }
-
-  /* 光学层单独承载 tint 与透明度；backdrop-filter 只采样元素背后，不处理正文。 */
-  [data-scope='tooltip'][data-part='content']::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-    border-radius: inherit;
-    background: var(--xh-tooltip-bg, var(--xh-_tooltip-solid));
-    opacity: var(--xh-material-frosted-compact-alpha);
-    pointer-events: none;
-  }
-
-  /* 入场走 enter 档（锚定列表族的 tooltip 入场 --xh-motion-duration-enter），退场仍是 exit。
-     接替上一个提示打开的（data-instant）直接呈现：横扫一排钮时提示一个个跟上，不再一个个滑入 */
-  [data-scope='tooltip'][data-part='content'][data-state='open']:not([data-instant]) {
-    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-  }
-
-  /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
-     免得动画结束到真收起之间闪一下原样 */
-  [data-scope='tooltip'][data-part='content'][data-state='closed'] {
-    will-change: opacity, translate;
-    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-  }
-
-  /* —— 尺寸 —— */
-  /* 缺省档写在 content 的基础规则里。提示的内边距与字号本就不在 control-* 那把尺上
-     （它是浮层不是控件），故按 space / font-size 档上下各挪一级 */
-  [data-scope='tooltip'][data-part='content'][data-size='sm'] {
-    --xh-_tooltip-py: var(--xh-space-0_5);
-    --xh-_tooltip-px: var(--xh-space-1_5);
-    --xh-_tooltip-font-size: var(--xh-control-caption-sm);
-  }
-
-  [data-scope='tooltip'][data-part='content'][data-size='lg'] {
-    --xh-_tooltip-py: var(--xh-space-1_5);
-    --xh-_tooltip-px: var(--xh-space-2_5);
-    --xh-_tooltip-font-size: var(--xh-control-caption-lg);
-  }
-
-  /* 箭头的底色与描边色，几何在 overlay-arrow.css。
-     交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
-  [data-scope='tooltip'][data-part='arrow'] {
-    --xh-_tooltip-arrow-x: 50%;
-    --xh-_tooltip-arrow-y: 50%;
-    --xh-_overlay-arrow-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
-    --xh-_overlay-arrow-x: var(--xh-_tooltip-arrow-x);
-    --xh-_overlay-arrow-y: var(--xh-_tooltip-arrow-y);
-
-    background: var(--xh-tooltip-bg, var(--xh-_tooltip-solid));
-    border: var(--xh-stroke-thin) solid var(--xh-tooltip-border, var(--xh-_tooltip-border));
-    opacity: var(--xh-material-frosted-compact-alpha);
-  }
-
-  /* 高对比仍保持反白语义：compact 配方已把 tint / blur / shadow 换成实体档，此处只加强同色边界。 */
-  :is([data-contrast='more'] *, [data-contrast='more'])[data-scope='tooltip'][data-part='content'] {
-    --xh-_tooltip-border: var(--xh-_tooltip-on);
-  }
-
-  @media (forced-colors: active) {
-    [data-scope='tooltip'][data-part='content'],
-    [data-scope='tooltip'][data-part='arrow'] {
-      border-color: CanvasText;
-      background: Canvas;
-      color: CanvasText;
-      box-shadow: none;
-      -webkit-backdrop-filter: none;
-      backdrop-filter: none;
-    }
-
-    [data-scope='tooltip'][data-part='content']::before {
-      background: Canvas;
-      opacity: 1;
-    }
-  }
-
-  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
-     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-  [data-scope='tooltip'][data-part='trigger'][hidden] {
-    display: none;
-  }
-
-  @media print {
-    /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
-       收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
-    [data-scope='tooltip'][data-part='positioner'] {
-      display: none;
-    }
-  }
-}
 
 /* styles/tour.css */
 /* 定义 tour 样式。 */

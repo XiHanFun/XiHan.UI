@@ -86,6 +86,9 @@ export const sideNavMachine = createMachine({
     // 搜索：检索词与搜索视图自己的展开集合，后者不写回作者的 expandedValue
     inputValue: cell<string>(() => ({ defaultValue: '' })),
     searchExpanded: cell<string[]>(() => ({ defaultValue: [], isEqual: sameValues })),
+    // 图标栏里的名称提示：对着哪一行、开没开；延时、接替与定位归内嵌的提示机
+    tooltipValue: cell<string | null>(() => ({ defaultValue: null })),
+    tooltipOpen: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -118,6 +121,9 @@ export const sideNavMachine = createMachine({
     'COLLAPSE.SETTLED': { actions: ['settleCollapse'] },
     // 检索词两个状态都认：弹出只在图标栏里，那时过滤暂停，词照记、展开回来接着用
     'INPUT.CHANGE': { actions: ['setInputValue'] },
+    // 名称提示两个状态都认：弹出某一枝期间，指针照样可能停到别的叶子上
+    'TOOLTIP.TARGET': { actions: ['setTooltipTarget'] },
+    'TOOLTIP.OPEN_CHANGE': { actions: ['setTooltipOpen'] },
     // 按压通道：两个状态都认；侧栏禁用不进，入口自身禁用随事件带入
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
@@ -289,6 +295,18 @@ export const sideNavMachine = createMachine({
         })
         context.set('searchExpanded', search?.expanded ?? [])
       },
+      setTooltipTarget: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'TOOLTIP.TARGET')
+          context.set('tooltipValue', e.value)
+      },
+      // 只有落成图标栏时才认「开」：等待途中折叠开关翻回平铺，到点的开合意图不留成下一次折叠时的残账
+      setTooltipOpen: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'TOOLTIP.OPEN_CHANGE')
+          return
+        context.set('tooltipOpen', e.open && !!prop('collapsed') && context.get('railed'))
+      },
       setFocusedValue: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'NODE.FOCUS')
@@ -319,6 +337,8 @@ export const sideNavMachine = createMachine({
       syncCollapsed: ({ prop, state, send, context, refs, scope, flush }) => {
         if (state.get() === 'popout' && !(prop('collapsed') && (prop('collapsedPopout') ?? true)))
           send({ type: 'POPOUT.CLOSE' })
+        // 名称提示只属于图标栏：开关一翻就收，行文字要么回来了，要么还没落成图标栏
+        context.set('tooltipOpen', false)
         if (context.get('railed') === !!prop('collapsed'))
           return
         const round = refs.get('collapseRound') + 1

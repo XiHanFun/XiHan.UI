@@ -1014,6 +1014,7 @@ export {
   XhSideNavLinkText,
   XhSideNavList,
   XhSideNavRoot,
+  XhSideNavTooltip,
 } from './components/side-nav/side-nav'
 export type { SideNavRootSlotProps } from './components/side-nav/side-nav'
 export { useSideNav } from './components/side-nav/use-side-nav'

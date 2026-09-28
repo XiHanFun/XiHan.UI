@@ -26,6 +26,8 @@ export const sideNavKeyboard: KeyboardTable = {
     { id: 'side-nav.kbd.popout-close', keys: ['ArrowLeft', 'Escape'], when: 'focus in 弹出面板', does: '收回面板，焦点还给触发按钮（RTL 与 ArrowRight 对调；Escape 归消解层）', restoresFocus: true },
     { id: 'side-nav.kbd.search-type', keys: ['可打印字符'], when: 'focus in input', does: '改写检索词：导航树裁到只剩命中的那几枝，命中入口的祖先自动展开、其余收起；搜索里的展开收起只记在搜索视图里，不改写 expandedValue' },
     { id: 'side-nav.kbd.search-to-list', keys: ['ArrowDown', 'Enter'], when: 'focus in input', does: '焦点交给导航行：搜索中落在剩下的第一行，不在搜索中落在 Tab 锚点' },
+    { id: 'side-nav.kbd.tooltip-show', keys: ['Tab', 'ArrowDown', 'ArrowUp', 'Home', 'End'], when: 'collapsed 落成图标栏、放了 tooltip 部件，焦点落到只剩图标的行（顶层叶子；collapsedPopout 关掉时也含顶层分支）', does: '立即显示该行的名称提示，不走悬停延时；焦点离开即收。提示对读屏隐藏，可及名仍由行文字承担' },
+    { id: 'side-nav.kbd.tooltip-escape', keys: ['Escape'], when: '名称提示显示中', does: '收起名称提示，焦点留在行上（Escape 归消解层按层栈仲裁）' },
     { id: 'side-nav.kbd.search-escape', keys: ['Escape'], when: 'focus in input, 检索词非空', does: '清空检索词，回到整棵树与原来的展开态，焦点留在搜索框；检索词已空时不拦截这一下' },
   ],
 }

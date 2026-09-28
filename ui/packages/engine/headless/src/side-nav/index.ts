@@ -10,6 +10,7 @@ export { connectSideNav } from './side-nav.connect'
 export { sideNavKeyboard } from './side-nav.keyboard'
 export { accordionSiblings, sideNavMachine } from './side-nav.machine'
 export { sideNavMeta } from './side-nav.meta'
+export { findSideNavRowEl, sideNavTooltipProps } from './side-nav.tooltip'
 export type {
   SideNavApi,
   SideNavExpandedValueChangeDetails,
