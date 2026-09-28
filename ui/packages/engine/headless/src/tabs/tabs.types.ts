@@ -162,6 +162,8 @@ export interface TabsSchema extends MachineSchema {
     getListEl: () => HTMLElement | null
     /** 液态档的双沿指示器：由效应建好放进来，量到的落点交给它。 */
     liquidIndicator?: LiquidIndicator | null
+    /** 下一次量指示条是因为标签换了位：选中标签正沿同一段 move 滑过去，指示条跟着滑，不直接到位。量完即撤。 */
+    indicatorGlide?: boolean
     /** 跟手的会话，整个生命周期存在。调用方在按下时把该指针传入。 */
     gesture: MultiPointerSession | null
     /**
@@ -270,7 +272,7 @@ export interface TabsSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'recordVisited'
-  effect: 'trackPointer' | 'trackResize' | 'trackStrip' | 'trackLiquidIndicator'
+  effect: 'trackPointer' | 'trackResize' | 'trackStrip' | 'trackLiquidIndicator' | 'trackReorder'
 }
 
 export interface TabsApi<T extends PropTypes = PropTypes> {

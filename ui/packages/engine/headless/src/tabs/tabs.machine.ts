@@ -8,7 +8,7 @@
 import type { ItemQuery, Params } from '@xihan-ui/core'
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
 import type { TabsIndicatorRect, TabsSchema } from './tabs.types'
-import { itemValue, queryItems, setup } from '@xihan-ui/core'
+import { itemValue, queryItems, setup, trackListMotion } from '@xihan-ui/core'
 import { frameLoop, frameNow, isTweenDone, readMotion, resolveMotionPreference, tweenValueAt } from '@xihan-ui/motion'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlong, reorderFlat } from '../shared/drag'
@@ -17,6 +17,9 @@ import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox } from '..
 import { tabsAnatomy, tabsTriggerQuery } from './tabs.anatomy'
 
 const { createMachine } = setup<TabsSchema>()
+
+/** 换位时随之挪动的标签带孩子：标签与标签之间的分隔线。指示条与两端翻页钮不在其列。 */
+const TABS_REORDER_ITEMS = `[data-scope='${tabsAnatomy.name}']:is([data-part='trigger'], [data-part='separator'])`
 
 /** 一页翻多远：标签带可见长度的八成，翻页前后总有一截重叠，用户看得出接上了哪一段。 */
 const SCROLL_PAGE_RATIO = 0.8
@@ -127,7 +130,8 @@ export const tabsMachine = createMachine({
   },
   // 跟手的会话整个生命周期都在，不按拖动状态挂卸。常驻的代价只是几个早退的
   // pointermove，换来的是状态树一行都不用改
-  effects: ['trackPointer', 'trackResize', 'trackStrip', 'trackLiquidIndicator'],
+  // trackReorder 排在 trackStrip 之前：同一批重排里它的观察器先回调，指示条先按「跟着换位滑」量这一次
+  effects: ['trackPointer', 'trackResize', 'trackReorder', 'trackStrip', 'trackLiquidIndicator'],
   refs: () => ({
     getListEl: () => null,
     liquidIndicator: null,
@@ -274,6 +278,40 @@ export const tabsMachine = createMachine({
           mutationObserver?.disconnect()
           refs.get('scrollTween')?.stop()
           refs.set('scrollTween', null)
+        }
+      },
+
+      /**
+       * 标签换位：宿主按新顺序重排标签（拖动放下、键盘挪位、增删）之后，挪了位置的标签与分隔线从原处滑到新位置，
+       * 与指示条同一段 move / continuous，减弱动效下直接到位。标签带整体位移占着它们的 translate、过渡清单归家族，
+       * 换位走 transform 上的一段动画；删掉的标签直接离开，不放离场替身。list 首轮渲染后才在，挂法同标签带。
+       */
+      trackReorder: ({ refs, scope, action }) => {
+        const win = scope.getWin()
+        let observed: HTMLElement | null = null
+        let stop: (() => void) | undefined
+        const attach = (): void => {
+          const list = refs.get('getListEl')()
+          if (!list || list === observed)
+            return
+          stop?.()
+          observed = list
+          stop = trackListMotion(list, {
+            item: TABS_REORDER_ITEMS,
+            depart: false,
+            channel: 'transform',
+            // 选中的标签若跟着挪了，指示条与它同一段 move 一起滑过去
+            onReflow: () => {
+              refs.set('indicatorGlide', true)
+              action(['measureIndicator'])
+            },
+          })
+        }
+        attach()
+        const raf = win.requestAnimationFrame(attach)
+        return () => {
+          win.cancelAnimationFrame(raf)
+          stop?.()
         }
       },
 
@@ -524,8 +562,10 @@ export const tabsMachine = createMachine({
           // 量到的落点交给液态指示器：液态档下选中项一变，两沿走弹簧过去；其余直接落定
           const place = (box: TabsIndicatorRect | null): void => {
             const liquid = refs.get('liquidIndicator')
+            const glide = !!refs.get('indicatorGlide')
+            refs.set('indicatorGlide', false)
             if (liquid) {
-              liquid.place(box, value)
+              liquid.place(box, value, { glide })
             }
             else {
               // 指示器的落位器建起之前（挂载即量的那一次）：首次落位，直接到位
