@@ -1274,5 +1274,23 @@ export const dateRangePickerSuite: ConformanceSuite = {
         heldPressIgnored('date-range-picker', 'preset', '作者禁用的快捷选项不接受按压', { value: '2024-02-20/2024-02-29', keyboardHost: null }),
       ],
     },
+    {
+      name: 'firstDayOfWeek 交给内嵌日历：写 0 时压过 zh-CN 的星期一，表头第一列读作星期日',
+      spec: { apg: APG },
+      props: { ...BASE_PROPS, firstDayOfWeek: 0 },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '表头列戴的是内嵌日历的 scope，按本组件的 scope 采不进快照',
+          run: ({ doc }) => {
+            const first = doc.querySelector<HTMLElement>(`${CALENDAR}[data-part="week-day"]`)
+            if (first?.getAttribute('aria-label') !== '星期日')
+              throw new Error(`表头第一列该读作星期日，实际是 ${first?.getAttribute('aria-label')}`)
+          },
+        },
+      ],
+    },
   ],
 }

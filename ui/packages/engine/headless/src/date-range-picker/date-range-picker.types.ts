@@ -170,6 +170,11 @@ export interface DateRangePickerSchema extends MachineSchema {
     /** 判定今天与格式化文案使用的时区，默认取宿主本地时区。 */
     timeZone?: string
     /**
+     * 周首日，0 = 星期日 … 6 = 星期六（与日历选择器同一套写法）；不给按 locale。
+     * 只改浮层日历的表头、每一行的行首与 Home / End，月份名、星期名与段位先后仍按 locale。
+     */
+    firstDayOfWeek?: number
+    /**
      * 不可用判定，接收 ISO 串。界外与判定为真的日期同等处理。
      * 第二个参数是区间选到一半时的起点，其余时候为 null。
      */

@@ -113,6 +113,8 @@ export interface XhDateRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   min?: string
   max?: string
   locale?: string
+  /** 周首日，0 = 星期日 … 6 = 星期六；不给按 locale。只改日历的表头、行首与 Home / End，月份名与星期名仍按 locale。 */
+  firstDayOfWeek?: number
   timeZone?: string
   /** 选择粒度；两组输入行铺设哪几段也跟随它。 */
   granularity?: CalendarGranularity
@@ -178,6 +180,7 @@ export function XhDateRangePickerRoot({
   min,
   max,
   locale,
+  firstDayOfWeek,
   timeZone,
   granularity,
   activeView,
@@ -225,6 +228,7 @@ export function XhDateRangePickerRoot({
     min,
     max,
     locale,
+    firstDayOfWeek,
     timeZone,
     granularity,
     activeView,
