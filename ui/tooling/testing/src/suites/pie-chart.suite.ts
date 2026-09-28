@@ -177,6 +177,12 @@ const cases: readonly ConformanceCase[] = [
     ],
   },
   {
+    name: 'labelContent 给函数：返回空串的扇区不写标签，也不画引导线',
+    spec: { adr: 'chart-variant' },
+    props: { labelContent: (details: { share: number, name: string }) => (details.share < 0.25 ? '' : details.name) },
+    initial: { counts: { 'slice': 4, 'slice-label': 2, 'leader-line': 2 } },
+  },
+  {
     name: 'variant="pie"：实心饼没有环形中心',
     spec: { adr: 'chart-variant' },
     props: { variant: 'pie' },

@@ -16,6 +16,8 @@ export type { PieModel } from './pie-chart.model'
 export type { PieChartApi, PieChartSchema, PieOverlay } from './pie-chart.schema'
 export type {
   PieChartTranslations,
+  PieLabelContent,
+  PieLabelDetails,
   PieLabels,
   PieLegendItem,
   PieMarkTag,

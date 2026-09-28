@@ -60,6 +60,12 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 
 <XhDemo src="pie-chart/07-transition" />
 
+### 标签内容
+
+labelContent 决定标签写什么：取 name-value 等内建写法，或给函数自己拼；返回空串的扇区不写标签
+
+<XhDemo src="pie-chart/08-label-content" />
+
 ## 设计指引
 
 ### 何时使用
@@ -86,6 +92,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 - 颜色不可用或不可靠时改用纹理区分扇区：强制色与打印下总是开启，作者在任意祖先上写 `data-xh-chart-patterns` 也会开启。扇区改用本色槽的斜线纹理填充并描出轮廓，图例与提示框的色标画成同一副纹理；「其他」不带纹理，仍是它自己的中性色。
 - `sweep="half"` 画成上半环（自 9 点扫到 3 点），适合放在指标卡上方；`rose` 画成南丁格尔玫瑰图：角度均分，半径按数值的平方根，面积与数值成正比。两者可以同时使用。
 - 扇区标签由 `labels` 控制：`outside`（缺省）画在外侧、带两段式引导线，两侧各排一列，自上而下推开避免重叠，放不下时去掉最小扇区的标签；`inside` 把占比写在扇区里，扇区装不下时不写；`none` 不画。视口太窄、外侧标签会把饼挤得太小时，外侧标签整体不画，只靠图例与提示框。
+- 标签写什么由 `labelContent` 决定：`name-share` 名字加占比（外侧缺省）、`share` 只写占比（内侧缺省）、`name-value` 名字加数值、`name` 只写名字、`value` 只写数值。也可以给一个函数自己拼：它拿到扇区的 `id`、`name`（「其他」已换成文案）、原始的 `value` 与 `share`、按 `locale` 与 `format` 写好的 `formatted.value` / `formatted.share`，以及是不是「其他」；返回空串的扇区不写标签，外侧也不画它的引导线。内侧标签照样先量再放，写得越长越容易装不下。
 - 相邻扇区之间留 `--xh-chart-gap`（2px）的表面缝，靠缝区分扇区而不是靠描边；缝宽沿半径保持不变。
 - 悬停或键盘聚焦一个扇区时，其余扇区淡出到 `--xh-chart-dim-alpha`；被指着的扇区不位移、不放大，位移会改变读者对面积的判断。
 - 图例一个扇区一项，点击切换显隐；隐藏的扇区从合计中移除，其余扇区的占比随之重新计算。
@@ -97,7 +104,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 - `animated={false}`（Web Components 写 `animated="false"`）关闭过渡，数据一变直接画终态。系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。视口尺寸变化后的重排不播过渡。
 - 过渡的快慢由动效令牌决定，组件从绘图区的计算样式读取：入场取 `--xh-motion-duration-reveal`（缺省 640ms），数据更新与图例切换取 `--xh-motion-duration-morph`（缺省 400ms）。在图或它的容器上改写它们，例如 `style="--xh-motion-duration-reveal: 1s"`，只影响这张图；入场的曲线取 `--xh-motion-ease-enter-strong`，更新取 `--xh-motion-ease-continuous`。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、图例、视口与绘图区、环形中心、空态、提示框）；Web Components 侧作者写外壳（root、caption、legend、viewport 与其中空的 `<svg>` plot，可选 center、empty 与 tooltip），扇区、标签与图例项由元素生成进去。
-- Web Components 侧的数据与数值格式只走 JS property；字段名、形态、次序、`max-slices`、标签与 `active-key` 另有同名属性。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
+- Web Components 侧的数据与数值格式只走 JS property；字段名、形态、次序、`max-slices`、标签、标签内容（`label-content`，内建写法）与 `active-key` 另有同名属性；自己拼标签的函数给 `labelContent` property 赋值。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
 
 ### 最佳实践
 
@@ -132,7 +139,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `hidden-series-change` | `ChartHiddenSeriesChangeDetails` | 图例切换显隐；detail 为 `{ hiddenSeries: string[] }` |
+| `hidden-series-change` | `PieLabelDetails` | 图例切换显隐；detail 为 `{ hiddenSeries: string[] }` |
 | `active-key-change` | `ChartActiveKeyChangeDetails` | 指针或键盘换了激活的扇区；detail 为 `{ activeKey }`，收起时为 null |
 | `datum-active` | `ChartDatumDetails` | 悬停或聚焦到某个扇区；detail 为扇区详情，收起时为 null |
 | `datum-press` | `ChartDatumDetails` | 指针点击、Enter 或 Space 按在某个扇区上；detail 为扇区详情 |
@@ -167,6 +174,7 @@ sweep="half" 自 9 点扫到 3 点，高度只要一半，适合放在指标卡�
 | `XhPieChartRoot` | `sort` | `PieSort` |  | 扇区次序，缺省 descending。 |
 | `XhPieChartRoot` | `maxSlices` | `number` |  | 最多保留几个扇区（含「其他」），缺省 6。 |
 | `XhPieChartRoot` | `labels` | `PieLabels` |  | 扇区标签，缺省 outside。 |
+| `XhPieChartRoot` | `labelContent` | `PieLabelContent \| ((details: PieLabelDetails) => string)` |  | 扇区标签写什么：内建写法之一，或自己拼的函数；缺省外侧名字加占比、内侧只写占比。 |
 | `XhPieChartRoot` | `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式。 |
 | `XhPieChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的扇区（受控）。 |
 | `XhPieChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的扇区（非受控）。 |

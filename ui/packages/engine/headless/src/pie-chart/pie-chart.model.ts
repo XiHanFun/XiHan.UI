@@ -8,7 +8,7 @@
 
 import type { ArcMark, FontSpec, LineMark, Mark, NumberFormatSpec, Scene, TableModel, TextMark, TextMeasurer } from '@xihan-ui/viz'
 import type { ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../shared/chart'
-import type { PieChartTranslations, PieLabels, PieSort, PieSummary, PieSweep, PieVariant } from './pie-chart.types'
+import type { PieChartTranslations, PieLabelContent, PieLabelDetails, PieLabels, PieSort, PieSummary, PieSweep, PieVariant } from './pie-chart.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import { createNumberFormat, createScene, ellipsize, foldSmall, pie, pointRadial } from '@xihan-ui/viz'
 import { CHART_SLOT_COUNT, memoizeLast, settleColumn } from '../shared/chart'
@@ -183,11 +183,16 @@ export interface PieLabelLayout {
   readonly inside: boolean
 }
 
+/** 扇区标签写什么：内建写法之一，或作者给的函数。 */
+export type PieLabelContentSpec = PieLabelContent | ((details: PieLabelDetails) => string)
+
 export interface PieLayoutOptions {
   readonly variant: PieVariant
   readonly rose: boolean
   readonly sweep: PieSweep
   readonly labels: PieLabels
+  /** 不写时外侧写名字加占比、内侧只写占比。 */
+  readonly labelContent: PieLabelContentSpec | undefined
 }
 
 export interface PieLayout {
@@ -224,13 +229,28 @@ export function layoutPie(
   const half = options.sweep === 'half'
   const nameOf = (s: PieSliceSpec): string => (s.other ? otherLabel : s.name)
   const shareOf = (s: PieSliceSpec): number => (derived.total > 0 ? s.value / derived.total : 0)
-  const textOf = (s: PieSliceSpec): string => `${nameOf(s)} ${formats.share(shareOf(s))}`
+  /** 一个扇区的标签文字：按 labelContent 拼，不写时按位置取缺省写法。 */
+  const textOf = (s: PieSliceSpec, fallback: PieLabelContent): string => {
+    const content = options.labelContent ?? fallback
+    const name = nameOf(s)
+    const share = shareOf(s)
+    const formatted = { value: formats.value(s.value), share: formats.share(share) }
+    if (typeof content === 'function')
+      return content({ id: s.id, name, value: s.value, share, formatted, other: s.other })
+    switch (content) {
+      case 'name': return name
+      case 'share': return formatted.share
+      case 'value': return formatted.value
+      case 'name-value': return `${name} ${formatted.value}`
+      case 'name-share': return `${name} ${formatted.share}`
+    }
+  }
 
   // 外侧标签的引导线：先沿半径伸出一段，再横着接到标签列
   const radialLeg = metrics.pointSize
   const flatLeg = metrics.pointSize + metrics.labelGap
   const maxLabel = Math.max(0, width * LABEL_WIDTH_SHARE)
-  const labelWidth = Math.min(maxLabel, Math.max(0, ...derived.visible.map(s => measurer.measure(textOf(s), font).width)))
+  const labelWidth = Math.min(maxLabel, Math.max(0, ...derived.visible.map(s => measurer.measure(textOf(s, 'name-share'), font).width)))
   const radiusFor = (outside: boolean): number => {
     const side = outside ? labelWidth + radialLeg + flatLeg + metrics.labelGap : metrics.gap
     const vertical = outside ? lineHeight / 2 : metrics.gap
@@ -289,10 +309,14 @@ export function layoutPie(
         .filter(item => (Math.sin(item.mid) >= 0) === right)
       const x = right ? cx + radius + radialLeg + flatLeg : cx - radius - radialLeg - flatLeg
       for (const item of settleColumn(column, top, bottom, lineHeight)) {
+        const text = textOf(item.g.slice, 'name-share')
+        // 函数返回空串的扇区不写：不画引导线，也不占标签列的位置
+        if (!text)
+          continue
         const from = point(cx, cy, item.mid, item.g.outerRadius)
         labels.push({
           id: item.g.slice.id,
-          text: ellipsize(textOf(item.g.slice), labelWidth, font, measurer),
+          text: ellipsize(text, labelWidth, font, measurer),
           x: right ? x + metrics.labelGap : x - metrics.labelGap,
           y: item.y,
           anchor: right ? 'start' : 'end',
@@ -307,7 +331,9 @@ export function layoutPie(
       // 「其他」是中性灰，没有配对的前景色，不在它上面写字
       if (g.slice.other)
         continue
-      const text = formats.share(g.share)
+      const text = textOf(g.slice, 'share')
+      if (!text)
+        continue
       const textWidth = measurer.measure(text, font).width
       const radiusMid = g.innerRadius > 0 ? (g.innerRadius + g.outerRadius) / 2 : g.outerRadius * DONUT_RATIO
       const arcLength = (g.endAngle - g.startAngle - g.padAngle) * radiusMid
@@ -480,6 +506,7 @@ export interface PiePipelineInput {
   readonly rose: boolean | undefined
   readonly sweep: PieSweep | undefined
   readonly labels: PieLabels | undefined
+  readonly labelContent: PieLabelContentSpec | undefined
   readonly format: NumberFormatSpec | ((value: number) => string) | undefined
   readonly hiddenSeries: readonly string[]
   readonly size: ChartSize | null
@@ -508,7 +535,7 @@ export function createPiePipeline(): PiePipeline {
   const normalize = memoizeLast(normalizePieSpec)
   const derive = memoizeLast(derivePie)
   const formatsOf = memoizeLast(pieFormats)
-  const optionsOf = memoizeLast((variant: PieVariant, rose: boolean, sweep: PieSweep, labels: PieLabels): PieLayoutOptions => ({ variant, rose, sweep, labels }))
+  const optionsOf = memoizeLast((variant: PieVariant, rose: boolean, sweep: PieSweep, labels: PieLabels, labelContent: PieLabelContentSpec | undefined): PieLayoutOptions => ({ variant, rose, sweep, labels, labelContent }))
   const layoutOf = memoizeLast(layoutPie)
   let version = 0
   const sceneOf = memoizeLast((layout: PieLayout) => pieScene(layout, ++version))
@@ -520,7 +547,7 @@ export function createPiePipeline(): PiePipeline {
     const derived = derive(spec, hiddenOf(JSON.stringify([...input.hiddenSeries].sort())), input.sort)
     const formats = formatsOf(input.locale, input.format)
     const a11y = a11yOf(derived, formats, input.translations)
-    const options = optionsOf(input.variant ?? 'donut', input.rose ?? false, input.sweep ?? 'full', input.labels ?? 'outside')
+    const options = optionsOf(input.variant ?? 'donut', input.rose ?? false, input.sweep ?? 'full', input.labels ?? 'outside', input.labelContent)
     const scene = input.size == null || spec.issues.length > 0
       ? null
       : sceneOf(layoutOf(derived, options, input.size, input.metrics, input.measurer, input.measurerVersion, formats, input.translations.otherLabel))

@@ -21,6 +21,25 @@ export type PieSort = 'none' | 'descending'
 /** 扇区标签：outside 画在外侧、带引导线（缺省），inside 画在扇区里，none 不画。 */
 export type PieLabels = 'none' | 'inside' | 'outside'
 
+/**
+ * 扇区标签写什么：name-share 名字加占比，name-value 名字加数值，name 只写名字，
+ * share 只写占比，value 只写数值。缺省外侧是 name-share、内侧是 share。
+ */
+export type PieLabelContent = 'name-share' | 'name-value' | 'name' | 'share' | 'value'
+
+/** 自己拼扇区标签时拿到的事实：数值与占比按 locale 与 format 写好了。 */
+export interface PieLabelDetails {
+  readonly id: string
+  /** 扇区名；「其他」取 translations.otherLabel。 */
+  readonly name: string
+  readonly value: number
+  /** 占可见合计的比例，0–1。 */
+  readonly share: number
+  readonly formatted: { readonly value: string, readonly share: string }
+  /** 是不是合并出来的「其他」。 */
+  readonly other: boolean
+}
+
 /** 图例里的一项：一个扇区一项，「其他」也是一项。 */
 export interface PieLegendItem {
   readonly id: string
