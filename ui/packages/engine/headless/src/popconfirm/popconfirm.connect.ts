@@ -361,6 +361,8 @@ export function connectPopconfirm<T extends PropTypes>(
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-placement': placement,
       // 尺寸落在浮层树最外层的 content 上：positioner 是定位空壳，root 留在触发器那边
       'data-size': prop('size'),
