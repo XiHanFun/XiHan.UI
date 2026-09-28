@@ -19191,7 +19191,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "command 的 empty 部件 color 覆盖槽。"
@@ -19245,7 +19245,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-6"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "command 的 empty 部件 padding-block 覆盖槽。"
@@ -19407,7 +19407,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "command 的 group-label 部件 color 覆盖槽。"
@@ -19962,7 +19962,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "command 的 loading 部件 color 覆盖槽。"
@@ -20016,7 +20016,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-6"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "command 的 loading 部件 padding-block 覆盖槽。"

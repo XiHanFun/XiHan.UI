@@ -27,6 +27,14 @@ import {
   XhComboboxLoading,
   XhComboboxPositioner,
   XhComboboxRoot,
+  XhCommandContent,
+  XhCommandEmpty,
+  XhCommandInput,
+  XhCommandItem,
+  XhCommandItemText,
+  XhCommandList,
+  XhCommandLoading,
+  XhCommandRoot,
   XhListboxContent,
   XhListboxEmpty,
   XhListboxItem,
@@ -163,6 +171,20 @@ const CASES: Case[] = [
     ]),
     muted: '--xh-fg-muted',
     dim: 'item',
+  },
+  {
+    scope: 'command',
+    render: ({ loading, items }) => h(XhCommandRoot, { collection: items ? ITEMS : [], loading, defaultOpen: true, modal: false }, () => [
+      h(XhCommandContent, null, () => [
+        h(XhCommandInput),
+        h(XhCommandList, null, () => (items ? ITEMS : []).map(node =>
+          h(XhCommandItem, { key: node.value, value: node.value }, () => h(XhCommandItemText, null, () => node.label)))),
+        h(XhCommandEmpty, null, () => '没有匹配的命令'),
+        h(XhCommandLoading, null, () => '正在检索'),
+      ]),
+    ]),
+    muted: '--xh-fg-muted',
+    dim: 'list',
   },
 ]
 

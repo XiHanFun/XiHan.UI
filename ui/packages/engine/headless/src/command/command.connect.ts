@@ -399,11 +399,16 @@ export function connectCommand<T extends PropTypes>(
       'hidden': !empty || loading || undefined,
     }),
 
+    // 在途占位只接管首次加载：清单里已有看得见的命令时列表原样留着、按 aria-busy 淡下，
+    // 占位让位。没给清单时库这一层判不出有没有候选，在途即露面
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
       'role': 'status',
       'data-state': stateAttr,
-      'hidden': !(open && loading) || undefined,
+      // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
+      'hidden': !(open && loading) || (hasCollection && !empty) || undefined,
     }),
 
     getFooterProps: () => normalize.element({

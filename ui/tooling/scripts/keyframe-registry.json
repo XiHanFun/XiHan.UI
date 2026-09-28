@@ -491,6 +491,7 @@
         "cascader",
         "clipboard",
         "combobox",
+        "command",
         "download-trigger",
         "form",
         "funnel-chart",
