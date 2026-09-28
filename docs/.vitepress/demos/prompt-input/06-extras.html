@@ -2,9 +2,6 @@
 <div style="display: grid; gap: 12px">
   <xh-prompt-input id="prompt-input-extras">
     <div data-xh-part="root">
-      <xh-button variant="ghost" size="sm">
-        <button data-xh-part="root">附件</button>
-      </xh-button>
       <!-- maxlength 是原生属性，直接写在 textarea 上 -->
       <textarea
         data-xh-part="input"
@@ -46,5 +43,5 @@
     log.textContent = `提交：${event.detail.value}`;
   });
 
-  setValue("输入框两侧各放了一颗自己的按钮");
+  setValue("框里放了自己的计数与清空钮");
 </script>

@@ -16,13 +16,12 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ display: "grid", gap: "12px" }}>
       <XhPromptInputRoot
-        defaultValue="输入框两侧各放了一颗自己的按钮"
+        defaultValue="框里放了自己的计数与清空钮"
         translations={{ input: "给助手写点什么" }}
         onSubmit={details => setLog(`提交：${details.value}`)}
       >
         {({ value, setValue }) => (
           <>
-            <XhButton variant="ghost" size="sm">附件</XhButton>
             {/* maxlength 是原生属性，直接落到 textarea 上 */}
             <XhPromptInputInput maxLength={max} rows={1} placeholder="最多 40 个字" />
             <span style={{ fontSize: "13px", whiteSpace: "nowrap" }}>{`${value.length} / ${max}`}</span>
