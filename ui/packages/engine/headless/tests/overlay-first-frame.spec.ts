@@ -5,6 +5,7 @@ import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/core'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
+import { comboboxMachine, connectCombobox } from '../src/combobox'
 import { connectContextMenu, contextMenuMachine } from '../src/context-menu'
 import { connectDialog, dialogMachine } from '../src/dialog'
 import { connectDrawer, drawerMachine } from '../src/drawer'
@@ -28,6 +29,11 @@ interface Case {
   /** 带进场的那几个部件此刻的属性。 */
   parts: (service: Service<any>) => Attrs[]
 }
+
+const FRUITS = [
+  { value: 'apple', label: '苹果' },
+  { value: 'banana', label: '香蕉' },
+]
 
 const CASES: Record<string, Case> = {
   'popover': {
@@ -63,6 +69,11 @@ const CASES: Record<string, Case> = {
   'select': {
     machine: selectMachine,
     parts: service => [connectSelect(service, normalizeProps).getContentProps() as Attrs],
+  },
+  'combobox': {
+    machine: comboboxMachine,
+    props: open => ({ ...open, collection: FRUITS }),
+    parts: service => [connectCombobox(service, normalizeProps).getContentProps() as Attrs],
   },
 }
 
