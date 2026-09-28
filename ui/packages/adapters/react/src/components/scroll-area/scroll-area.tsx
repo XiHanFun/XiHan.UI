@@ -77,6 +77,8 @@ export function XhScrollAreaRoot({
   )
 }
 
+XhScrollAreaRoot.xhEvents = ['scroll-change', 'reach-end'] as const
+
 export interface XhScrollAreaViewportProps extends ComponentPropsWithRef<'div'> {}
 
 /** 视口节点交给两台状态机，尺寸与滚动量在效应与事件中现测。 */
