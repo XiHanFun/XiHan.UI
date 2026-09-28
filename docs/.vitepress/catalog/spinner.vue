@@ -1,9 +1,10 @@
-<script setup lang="ts">
-import { XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <XhSpinner label="加载中">
-    <XhSpinnerLabel />
-  </XhSpinner>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <circle cx="64" cy="80" r="10" stroke="var(--xh-bg-subtle-active)" stroke-width="2" />
+    <path d="M64 70a10 10 0 0 1 10 10" stroke="var(--xh-bg-brand)" stroke-width="2" />
+    <path d="M87 80h34" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <rect x="140" y="64" width="72" height="32" rx="4" fill="var(--xh-bg-brand)" />
+    <path d="M160 74a6 6 0 1 1-6 6" stroke="var(--xh-fg-on-brand)" stroke-width="2" />
+    <path d="M175 80h22" stroke="var(--xh-fg-on-brand)" stroke-width="6" />
+  </svg>
 </template>

@@ -1,15 +1,8 @@
-<script setup lang="ts">
-import { XhLoadingBarRange, XhLoadingBarRoot, XhLoadingBarTrack } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <!-- 真用法是钉在视口上沿；预览里给它一块小页面，条子改成相对定位贴在这块的顶边 -->
-  <div style="position: relative; inline-size: var(--xh-doc-catalog-w); block-size: var(--xh-doc-catalog-h); overflow: hidden; border: var(--xh-stroke-thin) solid var(--xh-border-default); border-radius: var(--xh-shape-surface); background: var(--xh-bg-surface)">
-    <XhLoadingBarRoot loading :value="62" style="position: absolute; inset: 0 0 auto">
-      <XhLoadingBarTrack>
-        <XhLoadingBarRange />
-      </XhLoadingBarTrack>
-    </XhLoadingBarRoot>
-    <div style="padding: var(--xh-space-5) var(--xh-space-4) 0; color: var(--xh-fg-muted)">页面正在切换…</div>
-  </div>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="24.5" y="20.5" width="191" height="119" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M28 22h108" stroke="var(--xh-bg-brand)" stroke-width="2" />
+    <path d="M43 44h74" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M42 64h148M42 76h124M42 88h140M42 108h92" stroke="var(--xh-fg-muted)" stroke-width="4" />
+  </svg>
 </template>
