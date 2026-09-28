@@ -17405,25 +17405,50 @@
     block-size: var(--xh-icon-size);
   }
 
-  /* indicator 常驻占位；loading 只切换绘制，不靠删节点改变按钮宽度。 */
+  /* 在途指示压在钮上、不进排布，钮宽不变。部件空着时环由加载环配方画在 ::before 上（连接层投影
+     data-xh-loading-ring="overlay"），进入在途一个 micro 之后才淡入，退出不等 */
   [data-scope='button'][data-part='indicator'] {
-    visibility: hidden;
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    pointer-events: none;
   }
 
-  [data-scope='button'][data-part='root'][data-loading] [data-scope='button'][data-part='indicator'] {
-    visibility: visible;
-    animation: xh-spin var(--xh-button-spin-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
+  /* 作者往部件里放了自己的图形：环让位，作者图形按同一节拍淡入淡出并转 */
+  [data-scope='button'][data-part='indicator']:not(:empty)::before {
+    content: none;
+  }
+
+  [data-scope='button'][data-part='indicator'] > * {
+    opacity: 0;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    animation: xh-spin var(--xh-button-spin-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite paused;
+  }
+
+  [data-scope='button'][data-part='root'][data-loading] > [data-scope='button'][data-part='indicator'] > * {
+    opacity: 1;
+    transition-delay: var(--xh-motion-duration-micro);
+    animation-play-state: running;
+  }
+
+  /* 钮里原有的内容与环交叉：进入在途同样等一个 micro 才淡出、留位不塌，退出不等 */
+  [data-scope='button']:is([data-part='label'], [data-part='prefix'], [data-part='suffix']) {
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='button'][data-part='root'][data-loading]:has(> [data-scope='button'][data-part='indicator'])
+    > [data-scope='button']:is([data-part='label'], [data-part='prefix'], [data-part='suffix']) {
+    opacity: 0;
+    transition-delay: var(--xh-motion-duration-micro);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [data-scope='button'][data-part='root'][data-loading] [data-scope='button'][data-part='indicator'] {
+    [data-scope='button'][data-part='indicator'] > * {
       animation: none;
     }
   }
 
-  :where([data-motion='reduce'])
-    [data-scope='button'][data-part='root'][data-loading]
-    [data-scope='button'][data-part='indicator'] {
+  :where([data-motion='reduce']) [data-scope='button'][data-part='indicator'] > * {
     animation: none;
   }
 
@@ -17446,7 +17471,7 @@
       box-shadow: none;
     }
 
-    [data-scope='button'][data-part='root'][data-loading] [data-scope='button'][data-part='indicator'] {
+    [data-scope='button'][data-part='indicator'] > * {
       animation: none;
     }
   }

@@ -13,7 +13,7 @@
           </xh-button>
           <xh-button variant="solid" id="dialog-async-submit">
             <button data-xh-part="root">
-              <span data-xh-part="indicator" style="display: none"></span>
+              <span data-xh-part="indicator"></span>
               <span data-xh-part="label">确认归档</span>
             </button>
           </xh-button>
@@ -30,20 +30,18 @@
   const text = dialog.querySelector('[data-xh-part="description"]');
   const cancel = document.getElementById("dialog-async-cancel");
   const submit = document.getElementById("dialog-async-submit");
-  const spinner = submit.querySelector('[data-xh-part="indicator"]');
   const label = submit.querySelector('[data-xh-part="label"]');
   const state = document.getElementById("dialog-async-state");
 
   let submitting = false;
 
-  // 提交态一并写进正文、两颗按钮与转圈指示器
+  // 提交态一并写进正文与两颗按钮
   function render() {
     text.textContent = submitting
       ? "正在归档，先别走开。"
       : "归档后项目转为只读，随时可以恢复。";
     cancel.disabled = submitting;
     submit.loading = submitting;
-    spinner.style.display = submitting ? "" : "none";
     label.textContent = submitting ? "归档中" : "确认归档";
   }
 

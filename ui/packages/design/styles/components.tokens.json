@@ -4252,20 +4252,19 @@
       "name": "--xh-button-spin-duration",
       "component": "button",
       "part": [
-        "indicator",
-        "root"
+        "indicator"
       ],
       "property": [
         "animation"
       ],
       "state": [
-        "loading"
+        "default"
       ],
       "defaultToken": [
         "--xh-motion-loop-spin"
       ],
       "visibility": "public",
-      "description": "button 的 indicator、root 部件 animation 覆盖槽。"
+      "description": "button 的 indicator 部件 animation 覆盖槽。"
     },
     {
       "name": "--xh-button-group-outline-color",

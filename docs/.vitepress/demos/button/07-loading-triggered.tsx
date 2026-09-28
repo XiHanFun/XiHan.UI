@@ -1,7 +1,6 @@
 // 异步操作 | 点击后显示加载状态
 import type { ReactNode } from "react";
-import { LoaderIcon } from "@xihan-ui/icons";
-import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/react";
+import { XhButton, XhButtonIndicator, XhButtonLabel } from "@xihan-ui/react";
 import { useState } from "react";
 
 export default function Demo(): ReactNode {
@@ -15,7 +14,7 @@ export default function Demo(): ReactNode {
 
   return (
     <XhButton loading={loading} onClick={save}>
-      <XhButtonIndicator><XhIcon icon={LoaderIcon} /></XhButtonIndicator>
+      <XhButtonIndicator />
       <XhButtonLabel>保存</XhButtonLabel>
     </XhButton>
   );

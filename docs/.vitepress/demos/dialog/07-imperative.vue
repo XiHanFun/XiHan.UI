@@ -85,7 +85,7 @@ function submit(): void {
             取消
           </XhButton>
           <XhButton variant="solid" :loading="current.loading" @click="submit">
-            <XhButtonIndicator v-if="current.loading" />
+            <XhButtonIndicator />
             <XhButtonLabel>{{ current.confirmLabel }}</XhButtonLabel>
           </XhButton>
         </div>

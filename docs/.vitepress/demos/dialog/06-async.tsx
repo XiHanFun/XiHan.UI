@@ -45,7 +45,7 @@ export default function Demo(): ReactNode {
               取消
             </XhButton>
             <XhButton variant="solid" loading={submitting} onClick={submit}>
-              {submitting ? <XhButtonIndicator /> : null}
+              <XhButtonIndicator />
               <XhButtonLabel>{submitting ? "归档中" : "确认归档"}</XhButtonLabel>
             </XhButton>
           </div>
