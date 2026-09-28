@@ -523,10 +523,7 @@
     gap: var(--xh-date-picker-time-column-gap, 0);
     min-inline-size: var(--xh-date-picker-time-column-min-w, var(--xh-overlay-column-min-w));
     /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
-    block-size: var(
-      --xh-date-picker-time-column-h,
-      min(var(--xh-viewport-h-md), calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7)))
-    );
+    block-size: var(--xh-date-picker-time-column-h, var(--xh-overlay-calendar-column-h));
     margin-block-start: var(
       --xh-date-picker-time-column-offset,
       calc(var(--xh-control-h-sm) + var(--xh-date-picker-calendar-gap, var(--xh-space-2)))
@@ -584,7 +581,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    block-size: var(--xh-date-picker-time-item-h, calc(var(--xh-control-h-sm) - var(--xh-space-1)));
+    block-size: var(--xh-date-picker-time-item-h, var(--xh-overlay-column-item-h));
     font-variant-numeric: tabular-nums;
     text-align: center;
     white-space: nowrap;

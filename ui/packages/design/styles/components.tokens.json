@@ -22791,7 +22791,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-md"
+        "--xh-overlay-calendar-column-h"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-column 部件 block-size 覆盖槽。"
@@ -23093,7 +23093,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-overlay-column-item-h"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-item 部件 block-size 覆盖槽。"
