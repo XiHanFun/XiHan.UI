@@ -56,6 +56,8 @@ export const navigationMenuMachine = createMachine({
     // 量测结果只服务指示条的内联样式
     indicator: cell<NavigationMenuIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameIndicatorBox })),
     indicatorStretch: cell<number>(() => ({ defaultValue: 0 })),
+    // 指示器这一落点直接到位（首次落位与同一项的重量），还是交给皮肤滑过去（标准档换项）
+    indicatorInstant: cell<boolean>(() => ({ defaultValue: true })),
     // 逻辑关闭后，最后一个面板完成视觉退场之前仍须保留 viewport 与行为资源
     exitPending: cell<boolean>(() => ({ defaultValue: false })),
     // 按压通道：正被按住的那一个（入口与链接各按 value 记、分开认），与开合无关
@@ -342,9 +344,14 @@ export const navigationMenuMachine = createMachine({
           // 量到的落点交给液态指示器：液态档下选中项一变，两沿走弹簧过去；其余直接落定
           const place = (box: NavigationMenuIndicatorRect | null): void => {
             const liquid = refs.get('liquidIndicator')
-            if (liquid)
+            if (liquid) {
               liquid.place(box, value)
-            else context.set('indicator', box)
+            }
+            else {
+              // 指示器的落位器建起之前（挂载即量的那一次）：首次落位，直接到位
+              context.set('indicator', box)
+              context.set('indicatorInstant', true)
+            }
           }
           if (!list || value == null) {
             place(null)
@@ -369,9 +376,10 @@ export const navigationMenuMachine = createMachine({
         const liquid = createLiquidIndicator({
           axis: () => (prop('orientation') === 'vertical' ? 'block' : 'inline'),
           host: () => refs.get('getListEl')(),
-          onFrame: (box, stretch) => {
+          onFrame: (box, stretch, instant) => {
             context.set('indicator', box)
             context.set('indicatorStretch', stretch)
+            context.set('indicatorInstant', instant)
           },
         })
         liquid.place(context.get('indicator'), context.get('value'))
