@@ -70319,31 +70319,6 @@
             },
             {
               "kind": "field",
-              "name": "idGen",
-              "type": {
-                "text": "IdGenerator"
-              },
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "menuScope",
-              "privacy": "private",
-              "readonly": true,
-              "description": "「更多」菜单的 id 由它派生：触发器与列表靠 aria-controls / aria-labelledby 互相认领。"
-            },
-            {
-              "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -70351,45 +70326,11 @@
             },
             {
               "kind": "field",
-              "name": "menuCtrl",
+              "name": "overflowMenu",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<MenuSchema>( this, menuMachine, () => toolbarOverflowMenuProps(this.ctrl.service as Service<ToolbarSchema>), { scope: this.menuScope, onBuilt: svc => this.injectMenuRefs(svc) }, )",
-              "description": "「更多」菜单：一台 menu 机器，props 从工具条的机器现读，故必须排在 ctrl 之后建。"
-            },
-            {
-              "kind": "field",
-              "name": "menuNodes",
-              "type": {
-                "text": "OverflowMenuNodes | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "「更多」菜单那一套节点；overflow-trigger 缺席时不建。"
-            },
-            {
-              "kind": "field",
-              "name": "menuExit",
-              "type": {
-                "text": "OverlayExit | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
-              "name": "menuPortal",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "bars",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.menuNodes?.positioner ?? null, scrollable: () => this.menuNodes?.content ?? null, props: () => ({ size: 'sm' }), })",
-              "description": "条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；浮层里的条子走 4px 档"
+              "default": "new OverflowMenuController(this, { name: 'Toolbar overflow menu', spreader: this.spreader, trigger: () => this.getPart('overflow-trigger'), props: () => toolbarOverflowMenuProps(this.ctrl.service as Service<ToolbarSchema>), createPortal: options => this.createAnchoredPortalController(options), })",
+              "description": "「更多」菜单：菜单机器的 props 从工具条的机器现读，故必须排在 ctrl 之后建。"
             },
             {
               "kind": "method",
@@ -70400,58 +70341,6 @@
                   "text": "Partial<ToolbarSchema['props']>"
                 }
               }
-            },
-            {
-              "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureMenuExit",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "OverlayExit"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "open",
-                  "type": {
-                    "text": "boolean"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "registerMenuLayer",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "method",
-              "name": "injectMenuRefs",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "svc",
-                  "type": {
-                    "text": "Service<MenuSchema>"
-                  }
-                }
-              ]
             },
             {
               "kind": "method",
@@ -70494,89 +70383,6 @@
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "wireOverflowMenu",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "triggerProps",
-                  "type": {
-                    "text": "Record<string, unknown>"
-                  }
-                }
-              ],
-              "description": "「更多」钮与它弹出的菜单。钮是作者写的工具条部件，菜单的开合接线按 asChild 的规则合进它的属性\n（菜单的解剖标记让位、工具条的处理器先跑），与 Vue / React 落到节点上的一模一样；\n菜单的定位层、列表与条目由元素自己建。"
-            },
-            {
-              "kind": "method",
-              "name": "ensureMenuNodes",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "OverflowMenuNodes"
-                }
-              },
-              "description": "定位层与列表：建一次，挂在宿主里 root 之后；展开时由 Portal 搬到落点。"
-            },
-            {
-              "kind": "method",
-              "name": "wireMenuEntries",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "menu",
-                  "type": {
-                    "text": "MenuApi"
-                  }
-                },
-                {
-                  "name": "nodes",
-                  "type": {
-                    "text": "OverflowMenuNodes"
-                  }
-                }
-              ],
-              "description": "按菜单的条目元信息铺条目：已有的复用、缺的新建、多的移除，次序与收纳一致。"
-            },
-            {
-              "kind": "method",
-              "name": "removeEntry",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "entry",
-                  "type": {
-                    "text": "OverflowEntry"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "releaseMenuNodes",
-              "privacy": "private",
               "return": {
                 "type": {
                   "text": "void"
