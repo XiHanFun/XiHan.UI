@@ -308,6 +308,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `note` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `timer` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `result` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `result` | `data-tone` | 'success' \| 'danger' \| undefined |
 | `approve-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `approve-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `approve-trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -389,15 +390,15 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `--xh-approval-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | approval 的 pending-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-approval-pending-indicator-size` | `pending-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | approval 的 pending-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-approval-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | approval 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-approval-result-bg` | `result` | `background` | `default` | `--xh-fg-success` | approval 的 result 部件 background 覆盖槽。 |
-| `--xh-approval-result-bg-denied` | `result` | `background` | `is([data-state='denied'], [data-state='expired'])`<br>`state=denied`<br>`state=expired` | `--xh-fg-danger` | approval 的 result 部件 background 覆盖槽。 |
-| `--xh-approval-result-fg` | `result` | `color` | `default` | `--xh-fg-success` | approval 的 result 部件 color 覆盖槽。 |
-| `--xh-approval-result-fg-denied` | `result` | `color` | `is([data-state='denied'], [data-state='expired'])`<br>`state=denied`<br>`state=expired` | `--xh-fg-danger` | approval 的 result 部件 color 覆盖槽。 |
+| `--xh-approval-result-bg` | `result` | `background` | `default` | `--xh-_tone-subtle` | approval 的 result 部件 background 覆盖槽。 |
+| `--xh-approval-result-bg-denied` | `result` | `background` | `is([data-state='denied'], [data-state='expired'])`<br>`state=denied`<br>`state=expired` | `--xh-_tone-subtle` | approval 的 result 部件 background 覆盖槽。 |
+| `--xh-approval-result-fg` | `result` | `color` | `default` | `--xh-_tone-fg` | approval 的 result 部件 color 覆盖槽。 |
+| `--xh-approval-result-fg-denied` | `result` | `color` | `is([data-state='denied'], [data-state='expired'])`<br>`state=denied`<br>`state=expired` | `--xh-_tone-fg` | approval 的 result 部件 color 覆盖槽。 |
 | `--xh-approval-result-font-size` | `result` | `font-size` | `default` | `--xh-text-caption-size` | approval 的 result 部件 font-size 覆盖槽。 |
-| `--xh-approval-result-font-weight` | `result` | `font-weight` | `default` | `--xh-text-label-weight` | approval 的 result 部件 font-weight 覆盖槽。 |
-| `--xh-approval-result-gap` | `result` | `gap` | `default` | `--xh-space-1_5` | approval 的 result 部件 gap 覆盖槽。 |
-| `--xh-approval-result-px` | `result` | `padding-inline` | `default` | `--xh-space-2` | approval 的 result 部件 padding-inline 覆盖槽。 |
-| `--xh-approval-result-py` | `result` | `padding-block` | `default` | `--xh-space-1` | approval 的 result 部件 padding-block 覆盖槽。 |
+| `--xh-approval-result-font-weight` | `result` | `font-weight` | `default` | `--xh-font-weight-medium` | approval 的 result 部件 font-weight 覆盖槽。 |
+| `--xh-approval-result-gap` | `result` | `gap` | `default` | `--xh-space-1` | approval 的 result 部件 gap 覆盖槽。 |
+| `--xh-approval-result-px` | `result` | `padding-inline` | `default` | `--xh-space-1_5` | approval 的 result 部件 padding-inline 覆盖槽。 |
+| `--xh-approval-result-py` | `result` | `padding-block` | `default` | `--xh-space-0_5` | approval 的 result 部件 padding-block 覆盖槽。 |
 | `--xh-approval-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | approval 的 result 部件 border-radius 覆盖槽。 |
 | `--xh-approval-shadow` | `root` | `box-shadow` | `default` | `none` | approval 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-approval-timer-fg` | `timer` | `color` | `default` | `--xh-fg-muted` | approval 的 timer 部件 color 覆盖槽。 |

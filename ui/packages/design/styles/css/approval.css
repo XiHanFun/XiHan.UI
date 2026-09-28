@@ -303,14 +303,16 @@
     display: inline-flex;
     align-self: flex-start;
     align-items: center;
-    gap: var(--xh-approval-result-gap, var(--xh-space-1_5));
-    padding-inline: var(--xh-approval-result-px, var(--xh-space-2));
-    padding-block: var(--xh-approval-result-py, var(--xh-space-1));
+    gap: var(--xh-approval-result-gap, var(--xh-space-1));
+    padding-inline: var(--xh-approval-result-px, var(--xh-space-1_5));
+    padding-block: var(--xh-approval-result-py, var(--xh-space-0_5));
+    border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-approval-result-radius, var(--xh-shape-pill));
-    background: var(--xh-approval-result-bg, color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)));
-    color: var(--xh-approval-result-fg, var(--xh-fg-success));
+    background: var(--xh-approval-result-bg, var(--xh-_tone-subtle));
+    color: var(--xh-approval-result-fg, var(--xh-_tone-fg));
     font-size: var(--xh-approval-result-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-approval-result-font-weight, var(--xh-text-label-weight));
+    font-weight: var(--xh-approval-result-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-control-indicator-md);
   }
 
   /* 落定结果弹出；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
@@ -322,10 +324,10 @@
     display: none;
   }
 
-  /* 超时按拒绝收口，两者同档：视觉上不该看着像第三种结果 */
+  /* 超时按拒绝收口，两者同档（连接层同投 danger 语气）：视觉上不该看着像第三种结果 */
   [data-scope='approval'][data-part='result']:is([data-state='denied'], [data-state='expired']) {
-    background: var(--xh-approval-result-bg-denied, color-mix(in oklab, var(--xh-fg-danger) 12%, var(--xh-bg-surface)));
-    color: var(--xh-approval-result-fg-denied, var(--xh-fg-danger));
+    background: var(--xh-approval-result-bg-denied, var(--xh-_tone-subtle));
+    color: var(--xh-approval-result-fg-denied, var(--xh-_tone-fg));
   }
 
   /* 动作行：两颗按钮靠右排，间距归库管。

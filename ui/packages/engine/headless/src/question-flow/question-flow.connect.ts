@@ -408,11 +408,13 @@ export function connectQuestionFlow<T extends PropTypes>(
     }),
 
     // 交卷之后才露出的那一格。文字由播报区念，这里只给眼睛看
+    // 交卷即完成：语气 success
     getResultProps: () => normalize.element({
       ...parts.result.attrs,
       'aria-hidden': true,
       'hidden': !submitted || undefined,
       'data-state': status,
+      'data-tone': submitted ? 'success' : undefined,
     }),
 
     // 不写 role：本仓统一走两条 aria-*，role=status 是同一件事的简写

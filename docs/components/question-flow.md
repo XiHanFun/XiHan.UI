@@ -359,6 +359,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `submit-trigger` | `data-xh-action-variant` | 'solid' |
 | `submit-trigger` | `data-xh-ink-surface` | '' |
 | `result` | `data-state` | 'answering' \| 'submitted' |
+| `result` | `data-tone` | 'success' \| undefined |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -415,13 +416,13 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-prompt-font-weight` | `prompt` | `font-weight` | `default` | `--xh-font-weight-semibold` | question-flow 的 prompt 部件 font-weight 覆盖槽。 |
 | `--xh-question-flow-question-gap` | `question` | `gap` | `default` | `--xh-space-2` | question-flow 的 question 部件 gap 覆盖槽。 |
 | `--xh-question-flow-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | question-flow 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-question-flow-result-bg` | `result` | `background` | `default` | `--xh-bg-subtle` | question-flow 的 result 部件 background 覆盖槽。 |
-| `--xh-question-flow-result-fg` | `result` | `color` | `default` | `--xh-fg-success` | question-flow 的 result 部件 color 覆盖槽。 |
+| `--xh-question-flow-result-bg` | `result` | `background` | `default` | `--xh-_tone-subtle` | question-flow 的 result 部件 background 覆盖槽。 |
+| `--xh-question-flow-result-fg` | `result` | `color` | `default` | `--xh-_tone-fg` | question-flow 的 result 部件 color 覆盖槽。 |
 | `--xh-question-flow-result-font-size` | `result` | `font-size` | `default` | `--xh-text-caption-size` | question-flow 的 result 部件 font-size 覆盖槽。 |
-| `--xh-question-flow-result-font-weight` | `result` | `font-weight` | `default` | `--xh-text-label-weight` | question-flow 的 result 部件 font-weight 覆盖槽。 |
-| `--xh-question-flow-result-gap` | `result` | `gap` | `default` | `--xh-space-1_5` | question-flow 的 result 部件 gap 覆盖槽。 |
-| `--xh-question-flow-result-px` | `result` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 result 部件 padding-inline 覆盖槽。 |
-| `--xh-question-flow-result-py` | `result` | `padding-block` | `default` | `--xh-space-1` | question-flow 的 result 部件 padding-block 覆盖槽。 |
+| `--xh-question-flow-result-font-weight` | `result` | `font-weight` | `default` | `--xh-font-weight-medium` | question-flow 的 result 部件 font-weight 覆盖槽。 |
+| `--xh-question-flow-result-gap` | `result` | `gap` | `default` | `--xh-space-1` | question-flow 的 result 部件 gap 覆盖槽。 |
+| `--xh-question-flow-result-px` | `result` | `padding-inline` | `default` | `--xh-space-1_5` | question-flow 的 result 部件 padding-inline 覆盖槽。 |
+| `--xh-question-flow-result-py` | `result` | `padding-block` | `default` | `--xh-space-0_5` | question-flow 的 result 部件 padding-block 覆盖槽。 |
 | `--xh-question-flow-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | question-flow 的 result 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-shadow` | `root` | `box-shadow` | `default` | `none` | question-flow 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-question-flow-skip-bg` | `skip-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | question-flow 的 skip-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |

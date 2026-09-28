@@ -460,14 +460,16 @@
     display: inline-flex;
     align-self: flex-start;
     align-items: center;
-    gap: var(--xh-question-flow-result-gap, var(--xh-space-1_5));
-    padding-inline: var(--xh-question-flow-result-px, var(--xh-space-2));
-    padding-block: var(--xh-question-flow-result-py, var(--xh-space-1));
+    gap: var(--xh-question-flow-result-gap, var(--xh-space-1));
+    padding-inline: var(--xh-question-flow-result-px, var(--xh-space-1_5));
+    padding-block: var(--xh-question-flow-result-py, var(--xh-space-0_5));
+    border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-question-flow-result-radius, var(--xh-shape-pill));
-    background: var(--xh-question-flow-result-bg, var(--xh-bg-subtle));
-    color: var(--xh-question-flow-result-fg, var(--xh-fg-success));
+    background: var(--xh-question-flow-result-bg, var(--xh-_tone-subtle));
+    color: var(--xh-question-flow-result-fg, var(--xh-_tone-fg));
     font-size: var(--xh-question-flow-result-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-question-flow-result-font-weight, var(--xh-text-label-weight));
+    font-weight: var(--xh-question-flow-result-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-control-indicator-md);
   }
 
   /* 落定结果弹出；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */

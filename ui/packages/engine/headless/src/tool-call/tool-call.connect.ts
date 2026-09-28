@@ -5,8 +5,8 @@
 
 // 提供 tool call 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { ToolCallApi, ToolCallProps, ToolCallSchema } from './tool-call.types'
+import type { NormalizeProps, PropTypes, Service, Tone } from '@xihan-ui/core'
+import type { ToolCallApi, ToolCallPhase, ToolCallProps, ToolCallSchema } from './tool-call.types'
 import { dataAttr } from '@xihan-ui/core'
 import { pressHandlers } from '../shared/press'
 import { toolCallAnatomy } from './tool-call.anatomy'
@@ -18,6 +18,17 @@ const parts = toolCallAnatomy.build()
  * 视图属性走第二参而不是机器 props：Web Components 侧按机器名给全局文案分桶，
  * 而本族两个组件共用一台机器，走机器 props 的话文案会全取到 tool-call 那一格。
  */
+/** 状态 chip 的语气：落定的阶段各有一族颜色，在跑的阶段不带语气。 */
+function statusTone(phase: ToolCallPhase): Tone | undefined {
+  if (phase === 'awaiting-approval')
+    return 'warning'
+  if (phase === 'output-available')
+    return 'success'
+  if (phase === 'output-error')
+    return 'danger'
+  return undefined
+}
+
 export function connectToolCall<T extends PropTypes>(
   service: Service<ToolCallSchema>,
   props: ToolCallProps,
@@ -127,9 +138,11 @@ export function connectToolCall<T extends PropTypes>(
       'data-state': phase,
     }),
 
+    // 落定的三档收成状态 chip，语气随阶段：等审批 warning、有结果 success、出错 danger；在跑的两档不带语气
     getStatusProps: () => normalize.element({
       ...parts.status.attrs,
       'data-state': phase,
+      'data-tone': statusTone(phase),
     }),
 
     // 秒数由宿主现场代入 ranFor 模板串，这一格只负责排版与阶段
