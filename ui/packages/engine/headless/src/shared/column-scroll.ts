@@ -44,7 +44,8 @@ function liveColumns(target: ColumnScrollTarget): HTMLElement[] {
 /** 各列直接停到选中的那一格。列还没有布局（高度为 0）时返回 false，等量得出尺寸再来。 */
 function alignAll(target: ColumnScrollTarget): boolean {
   const columns = liveColumns(target)
-  if (columns.length === 0 || columns.every(column => column.clientHeight === 0))
+  // 一列都没有时 every 也为真：同样算还没法对齐
+  if (columns.every(column => column.clientHeight === 0))
     return false
   for (const column of columns) {
     const option = selectedOption(column)
