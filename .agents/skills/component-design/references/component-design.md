@@ -797,6 +797,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 错开步长 `--xh-motion-stagger-step`，只对同一批到达的条目按到达顺序计数，最多 5 步；不按 DOM 位置（`nth-child`）计数。
 - 首帧规则：初始渲染时已存在的内容（默认展开的披露、默认打开的浮层、历史消息、初始列表）直接呈现，只有用户操作或新数据导致的出现才播进场。headless 以共享状态属性 `data-instant` 标记这类内容，皮肤的进场写在 `:not([data-instant])` 下。
 - 启用列表增删动效的集合：TagsInput、FieldArray，以及已有的 Notification、MessageFeed、Command、Cascader 等；Transfer（两侧同时变化）与 InfiniteScroll（批量追加）不启用。
+- 检索过滤不算到达：Command 这类随输入即时换一批结果的集合，筛掉又露出来的条目直接呈现，不重播进场与错开（逐键重播会让列表一直在动、读不稳）；只有新插进列表的条目（宿主追加、异步取回的一批）才上浮错开。
 - 换位的条目 translate 另有用途、过渡清单又归家族配方时（Tabs 的标签：标签带整体位移占着 translate），换位改走 transform 上的一段 Web 动画（core `glideBy`），时长与曲线同样读 `move` / `continuous`；Tabs 拖动放下、键盘挪位之后挪了位置的标签与分隔线这样滑到新位置，选中标签跟着挪时指示条同一段一起滑。Sortable 放下或取消之后，撤掉拖动位移的那几项按撤之前的屏幕位置同样滑回（`glideFrom`），指针拖动放下的那一项仍由弹簧带着松手速度收进。
 
 ### 9.7 数值
