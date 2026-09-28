@@ -5,13 +5,16 @@
 
 /**
  * 虚拟滚动内核：把几何计算接到一个真实的滚动容器上。
- * 它持有实测尺寸账本、视口尺寸与滚动量，挂视口的 scroll 监听与两处 ResizeObserver，
+ * 它持有实测尺寸账本、视口尺寸与滚动量，挂滚动容器的 scroll 监听与 ResizeObserver，
  * 算出"此刻该渲哪几条、各自落在哪儿"，变了就回调一次。
+ *
+ * 滚动容器有两种：视口节点自己（overflow 容器），或整个窗口。两者只在"读滚动量、量可视尺寸、
+ * 写回滚动量、列表起点在滚动坐标系里的位置"这四件事上不同，收在 ScrollTarget 里；其余逻辑共用。
  */
 
 import type { Scope } from '@xihan-ui/core'
 import type { VirtualizerAlign, VirtualizerMeasurement, VirtualizerMetrics, VirtualizerRange } from './virtualizer.geometry'
-import type { VirtualizerSnapshot } from './virtualizer.sizing'
+import type { VirtualizerItemState, VirtualizerSnapshot } from './virtualizer.sizing'
 import {
   expandVirtualizerRange,
   findVirtualizerRange,
@@ -29,12 +32,32 @@ export const VIRTUALIZER_SCROLL_IDLE_DELAY = 150
 /** 条目节点自报下标用的属性，内核按它反查节点是第几条。 */
 export const VIRTUALIZER_INDEX_ATTRIBUTE = 'data-index'
 
+/** 滚动容器：视口节点自己滚，或者列表铺在页面里、随窗口滚。 */
+export type VirtualizerScrollContainer = 'viewport' | 'window'
+
+/** 内容增减时钉住哪一头：start 钉住视口里第一条，end 在已经滚到底时继续贴底（聊天流）。 */
+export type VirtualizerAnchor = 'start' | 'end'
+
+/** 贴底判定的容差（px）：滚动量是小数、各引擎取整不同，差一像素也算在底。 */
+const END_TOLERANCE = 1
+
 export interface VirtualizerKernelOptions extends VirtualizerMetrics {
   overscan: number
   /** 主轴是行内轴。决定读 scrollLeft 还是 scrollTop、量 offsetWidth 还是 offsetHeight。 */
   horizontal: boolean
-  /** 惰性取滚动容器：适配器提交完这一帧节点才存在。 */
+  /** 滚动容器，缺省 viewport。 */
+  scrollContainer?: VirtualizerScrollContainer
+  /** 内容增减时钉住哪一头，缺省 start。 */
+  anchor?: VirtualizerAnchor
+  /** 分组标题等要钉在视口起点的条目下标。 */
+  stickyIndices?: readonly number[]
+  /**
+   * 惰性取视口节点：适配器提交完这一帧节点才存在。
+   * viewport 形态下它就是滚动容器；window 形态下只用来量列表在页面里的起点。
+   */
   getScrollElement: () => HTMLElement | null
+  /** 惰性取撑出总长的那层：它长高之后，被浏览器夹住的滚动写回才能补上。 */
+  getContentElement?: () => HTMLElement | null
   /** 该渲什么变了。同步调用。 */
   onChange: () => void
 }
@@ -57,6 +80,95 @@ export interface VirtualizerKernel {
   dispose: () => void
 }
 
+/** 滚动容器的四件事。元素与窗口各一份实现，其余逻辑不分形态。 */
+interface ScrollTarget {
+  /** 容器身份：换了容器要重新接线。 */
+  readonly node: object
+  offset: () => number
+  /** 可视区的主轴尺寸与交叉轴尺寸。 */
+  viewport: () => { width: number, height: number }
+  /** 滚动行程上限。 */
+  max: () => number
+  scrollTo: (offset: number) => void
+  /** 列表起点在滚动坐标系里的位置：窗口形态量视口节点在文档里的位置，元素形态恒 0。 */
+  listStart: () => number
+  /** 挂滚动与尺寸监听，返回摘除函数。 */
+  listen: (onScroll: () => void, onResize: () => void) => () => void
+}
+
+function finite(value: number): number {
+  return Number.isFinite(value) ? value : 0
+}
+
+function elementTarget(el: HTMLElement, horizontal: boolean, scope: Scope): ScrollTarget {
+  return {
+    node: el,
+    offset: () => finite(horizontal ? el.scrollLeft : el.scrollTop),
+    viewport: () => ({ width: Math.round(el.offsetWidth), height: Math.round(el.offsetHeight) }),
+    max: () => {
+      const span = horizontal ? el.scrollWidth - el.clientWidth : el.scrollHeight - el.clientHeight
+      return Number.isFinite(span) && span > 0 ? span : 0
+    },
+    scrollTo: (offset) => {
+      const axis = horizontal ? 'left' : 'top'
+      if (typeof el.scrollTo === 'function')
+        el.scrollTo({ [axis]: offset })
+      else if (horizontal)
+        el.scrollLeft = offset
+      else
+        el.scrollTop = offset
+    },
+    listStart: () => 0,
+    listen: (onScroll, onResize) => {
+      // 不拦滚动、不 preventDefault，用 passive 监听
+      el.addEventListener('scroll', onScroll, { passive: true })
+      // 无布局环境没有 ResizeObserver：视口尺寸不再自动跟随，显式重排仍会重量
+      const win = scope.getWin()
+      const observer = typeof win.ResizeObserver === 'function' ? new win.ResizeObserver(onResize) : null
+      observer?.observe(el)
+      return () => {
+        el.removeEventListener('scroll', onScroll)
+        observer?.disconnect()
+      }
+    },
+  }
+}
+
+/**
+ * 窗口形态：列表铺在页面里，滚的是整页。
+ * 列表起点每次滚动都现量：页头折叠、上方内容加载完都会挪动它，量一次的值很快就过期。
+ */
+function windowTarget(win: Window, list: HTMLElement, horizontal: boolean): ScrollTarget {
+  const root = (): HTMLElement => win.document.documentElement
+  return {
+    node: win,
+    offset: () => finite(horizontal ? win.scrollX : win.scrollY),
+    viewport: () => ({ width: Math.round(root().clientWidth || win.innerWidth), height: Math.round(root().clientHeight || win.innerHeight) }),
+    max: () => {
+      const span = horizontal ? root().scrollWidth - root().clientWidth : root().scrollHeight - root().clientHeight
+      return Number.isFinite(span) && span > 0 ? span : 0
+    },
+    scrollTo: (offset) => {
+      if (typeof win.scrollTo === 'function')
+        win.scrollTo(horizontal ? { left: offset } : { top: offset })
+    },
+    listStart: () => {
+      if (!list.isConnected)
+        return 0
+      const rect = list.getBoundingClientRect()
+      return Math.max(0, Math.round(horizontal ? rect.left + win.scrollX : rect.top + win.scrollY))
+    },
+    listen: (onScroll, onResize) => {
+      win.addEventListener('scroll', onScroll, { passive: true })
+      win.addEventListener('resize', onResize)
+      return () => {
+        win.removeEventListener('scroll', onScroll)
+        win.removeEventListener('resize', onResize)
+      }
+    },
+  }
+}
+
 /** 干净标记：没有任何下标需要重排。 */
 const CLEAN = Number.POSITIVE_INFINITY
 
@@ -69,17 +181,38 @@ function layoutChanged(a: VirtualizerMetrics, b: VirtualizerMetrics): boolean {
     || a.getItemKey !== b.getItemKey
 }
 
+/** 钉在起点的条目下标：去重、去掉非法值、升序。 */
+function normalizeSticky(indices: readonly number[] | undefined, count: number): number[] {
+  if (!indices || indices.length === 0)
+    return []
+  const out = new Set<number>()
+  for (const raw of indices) {
+    if (Number.isFinite(raw) && raw >= 0 && raw < count)
+      out.add(Math.trunc(raw))
+  }
+  return [...out].sort((a, b) => a - b)
+}
+
 export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope: Scope): VirtualizerKernel {
   let options = initial
-  let metrics = normalizeVirtualizerMetrics(initial)
+  /** 列表起点在滚动坐标系里的位置，窗口形态才非 0；计入 scrollMargin。 */
+  let listStart = 0
+  let metrics = normalizeVirtualizerMetrics({ ...initial, scrollMargin: initial.scrollMargin + listStart })
 
-  let scrollEl: HTMLElement | null = null
+  let target: ScrollTarget | null = null
   let viewportWidth = 0
   let viewportHeight = 0
   let scrollOffset = 0
   /** 上一次滚动的方向，重排补偿据此决定要不要动滚动量。 */
   let backward = false
   let scrolling = false
+  /** end 形态下此刻贴着底：内容再长也继续贴底。起始即贴底，列表从最新那条看起。 */
+  let pinnedToEnd = (initial.anchor ?? 'start') === 'end'
+  /**
+   * 还没落地的滚动写回：内容层长高之前写进去的值会被浏览器夹到旧的尽头，
+   * 等内容层长高（ResizeObserver 回报）再补一次，落地即清。
+   */
+  let pendingOffset: number | null = null
 
   /** 实测尺寸账本，按条目身份记账，条目增删也跟得住。 */
   const sizes = new Map<string | number, number>()
@@ -93,13 +226,16 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
     endIndex: null,
   }
 
-  let detachViewport: (() => void) | undefined
+  let detachTarget: (() => void) | undefined
+  let contentEl: HTMLElement | null = null
+  let contentObserver: ResizeObserver | null = null
   let idleTimer: ReturnType<typeof setTimeout> | undefined
   let itemObserver: ResizeObserver | null = null
   const observedItems = new Set<HTMLElement>()
   let disposed = false
 
   const viewportSize = (): number => (options.horizontal ? viewportWidth : viewportHeight)
+  const anchoredToEnd = (): boolean => (options.anchor ?? 'start') === 'end'
 
   function markDirty(from: number): void {
     if (from < dirtyFrom)
@@ -144,39 +280,68 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
     options.onChange()
   }
 
-  function readScrollOffset(el: HTMLElement): number {
-    const raw = options.horizontal ? el.scrollLeft : el.scrollTop
-    return Number.isFinite(raw) ? raw : 0
+  /** 按账本算出的滚动行程上限：浏览器的 scrollHeight 要等内容层重绘才跟上，这里先算出来。 */
+  function endOffset(): number {
+    const total = virtualizerTotalSize(getMeasurements(), metrics) + metrics.scrollMargin
+    return Math.max(0, total - viewportSize())
   }
 
-  /** 滚动行程的上限。滚过头的目标位置由它夹住。 */
-  function maxScrollOffset(): number {
-    if (!scrollEl)
-      return 0
-    const span = options.horizontal
-      ? scrollEl.scrollWidth - scrollEl.clientWidth
-      : scrollEl.scrollHeight - scrollEl.clientHeight
-    return Number.isFinite(span) && span > 0 ? span : 0
-  }
-
-  function scrollTo(offset: number): void {
-    if (!scrollEl)
+  /** 写回滚动量。被浏览器夹住的那部分记成待补，内容层长高后再补。 */
+  function requestScroll(offset: number): void {
+    scrollOffset = offset
+    if (!target)
       return
-    const axis = options.horizontal ? 'left' : 'top'
-    if (typeof scrollEl.scrollTo === 'function')
-      scrollEl.scrollTo({ [axis]: offset })
-    else if (options.horizontal)
-      scrollEl.scrollLeft = offset
-    else
-      scrollEl.scrollTop = offset
+    pendingOffset = offset
+    target.scrollTo(offset)
+    if (Math.abs(target.offset() - offset) <= END_TOLERANCE)
+      pendingOffset = null
   }
 
-  /** 量视口的边框盒。没有 ResizeObserver 的环境靠每次显式重排调它跟上尺寸变化。 */
+  /**
+   * 以容器上的实际滚动量为准：scroll 事件要等下一帧才到，在那之前改了条目、重新接线，
+   * 手里的滚动量还是旧的，拿它找锚点、判贴底都会错。自己的写回还没落地时不读。
+   */
+  function syncLiveOffset(): void {
+    if (!target || pendingOffset != null)
+      return
+    const live = target.offset()
+    if (live === scrollOffset)
+      return
+    backward = live < scrollOffset
+    scrollOffset = live
+    if (anchoredToEnd())
+      pinnedToEnd = live >= target.max() - END_TOLERANCE
+  }
+
+  /** end 形态且贴着底：把滚动量推到新的尽头。 */
+  function followEnd(): void {
+    syncLiveOffset()
+    if (!anchoredToEnd() || !pinnedToEnd || !target)
+      return
+    const next = endOffset()
+    if (Math.abs(next - scrollOffset) > END_TOLERANCE || pendingOffset != null)
+      requestScroll(next)
+  }
+
+  /** 列表起点挪了（窗口形态）：连带 scrollMargin 一起换，整份重排。 */
+  function refreshListStart(): boolean {
+    const next = target ? target.listStart() : 0
+    if (next === listStart)
+      return false
+    listStart = next
+    const nextMetrics = normalizeVirtualizerMetrics({ ...options, scrollMargin: options.scrollMargin + listStart })
+    metrics = nextMetrics
+    markDirty(0)
+    return true
+  }
+
+  /** 量可视区。没有 ResizeObserver 的环境靠每次显式重排调它跟上尺寸变化。 */
   function measureViewport(): void {
-    if (!scrollEl)
+    if (!target)
       return
-    viewportWidth = Math.round(scrollEl.offsetWidth)
-    viewportHeight = Math.round(scrollEl.offsetHeight)
+    const size = target.viewport()
+    viewportWidth = size.width
+    viewportHeight = size.height
   }
 
   function stopIdleTimer(): void {
@@ -195,45 +360,101 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
     }, VIRTUALIZER_SCROLL_IDLE_DELAY)
   }
 
-  function attach(el: HTMLElement): void {
-    scrollEl = el
+  function onScroll(): void {
+    if (!target)
+      return
+    const next = target.offset()
+    if (pendingOffset != null) {
+      // 自己写回引起的滚动：落地了就清；被夹在旧尽头的那一下不算用户在滚，等内容层长高再补
+      if (Math.abs(next - pendingOffset) <= END_TOLERANCE) {
+        pendingOffset = null
+      }
+      else if (next >= target.max() - END_TOLERANCE && next < pendingOffset) {
+        return
+      }
+      else {
+        pendingOffset = null
+      }
+    }
+    if (next !== scrollOffset)
+      backward = next < scrollOffset
+    scrollOffset = next
+    if (anchoredToEnd())
+      pinnedToEnd = next >= target.max() - END_TOLERANCE
+    refreshListStart()
+    scrolling = true
+    restartIdleTimer()
+    maybeNotify()
+  }
+
+  function onResize(): void {
     measureViewport()
-    scrollOffset = readScrollOffset(el)
-
-    const onScroll = (): void => {
-      const next = readScrollOffset(el)
-      if (next !== scrollOffset)
-        backward = next < scrollOffset
-      scrollOffset = next
-      scrolling = true
-      restartIdleTimer()
+    const moved = refreshListStart()
+    followEnd()
+    if (moved)
+      notify()
+    else
       maybeNotify()
-    }
-    // 不拦滚动、不 preventDefault，用 passive 监听
-    el.addEventListener('scroll', onScroll, { passive: true })
+  }
 
-    // 无布局环境没有 ResizeObserver：视口尺寸不再自动跟随，显式重排仍会重量
+  /** 内容层长高了：补上被夹住的写回，贴底的继续贴底。 */
+  function onContentResize(): void {
+    if (!target || disposed)
+      return
+    if (pendingOffset != null) {
+      target.scrollTo(pendingOffset)
+      if (Math.abs(target.offset() - pendingOffset) <= END_TOLERANCE)
+        pendingOffset = null
+    }
+    followEnd()
+  }
+
+  function observeContent(): void {
+    const next = options.getContentElement?.() ?? null
+    if (next === contentEl)
+      return
+    contentObserver?.disconnect()
+    contentObserver = null
+    contentEl = next
+    if (!next)
+      return
     const win = scope.getWin()
-    const observer = typeof win.ResizeObserver === 'function'
-      ? new win.ResizeObserver(() => {
-          measureViewport()
-          maybeNotify()
-        })
-      : null
-    observer?.observe(el)
+    if (typeof win.ResizeObserver !== 'function')
+      return
+    contentObserver = new win.ResizeObserver(onContentResize)
+    contentObserver.observe(next)
+  }
 
-    detachViewport = () => {
-      el.removeEventListener('scroll', onScroll)
-      observer?.disconnect()
-    }
+  function attach(next: ScrollTarget): void {
+    target = next
+    measureViewport()
+    refreshListStart()
+    scrollOffset = next.offset()
+    detachTarget = next.listen(onScroll, onResize)
+    observeContent()
+    followEnd()
   }
 
   function detach(): void {
     stopIdleTimer()
-    detachViewport?.()
-    detachViewport = undefined
-    scrollEl = null
+    detachTarget?.()
+    detachTarget = undefined
+    contentObserver?.disconnect()
+    contentObserver = null
+    contentEl = null
+    target = null
+    pendingOffset = null
     scrolling = false
+  }
+
+  /** 按当前选项解出滚动容器。窗口形态下视口节点还没挂上就先不接。 */
+  function resolveTarget(): ScrollTarget | null {
+    const el = options.getScrollElement()
+    if (!el)
+      return null
+    if ((options.scrollContainer ?? 'viewport') === 'window')
+      return target && target.node === scope.getWin() ? target : windowTarget(scope.getWin(), el, options.horizontal)
+    return target && target.node === el ? target : elementTarget(el, options.horizontal, scope)
   }
 
   function indexFromElement(el: HTMLElement): number | null {
@@ -248,10 +469,36 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
     return Math.round(options.horizontal ? el.offsetWidth : el.offsetHeight)
   }
 
+  /** 视口里第一条的身份与它离视口起点的距离：条目增删之后按身份找回它、放回原处。 */
+  function captureAnchor(): { key: string | number, delta: number } | null {
+    if (!target || metrics.count === 0)
+      return null
+    const range = currentRange()
+    if (!range)
+      return null
+    const item = getMeasurements()[range.startIndex]
+    return item ? { key: item.key, delta: item.start - scrollOffset } : null
+  }
+
+  /**
+   * 按身份找回锚点条目，把它放回原来离视口起点的距离：往前插了条目（向上翻出历史）时视口不跳。
+   * 身份默认就是下标，没给 getItemKey 时插在前面的条目会把锚点顶走，只能保住下标不保住内容。
+   */
+  function restoreAnchor(anchor: { key: string | number, delta: number }): void {
+    const items = getMeasurements()
+    const item = items.find(candidate => candidate.key === anchor.key)
+    if (!item)
+      return
+    const next = Math.max(0, item.start - anchor.delta)
+    if (Math.abs(next - scrollOffset) > END_TOLERANCE)
+      requestScroll(next)
+  }
+
   /**
    * 把一条的实测尺寸记进账本。
    * 整条都在视口上方的那些条变了尺寸要同步补偿滚动量，否则下方内容会当场跳一下。
    * 往回滚时不补偿：补偿本身会改滚动量，与用户的上滚方向打架，一路追下去就成了停不住的跳动。
+   * 贴底时也不补偿：内容长多少都整体推到新的尽头。
    */
   function resizeItem(index: number, size: number): void {
     if (!Number.isFinite(size) || size < 0)
@@ -273,11 +520,10 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
     sizes.set(item.key, size)
     markDirty(index)
 
-    if (aboveFold && scrollEl) {
-      const next = Math.max(0, scrollOffset + delta)
-      scrollOffset = next
-      scrollTo(next)
-    }
+    if (anchoredToEnd() && pinnedToEnd)
+      followEnd()
+    else if (aboveFold && target)
+      requestScroll(Math.max(0, scrollOffset + delta))
 
     notify()
   }
@@ -312,28 +558,40 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
     setOptions: (next) => {
       if (disposed)
         return
-      const nextMetrics = normalizeVirtualizerMetrics(next)
+      syncLiveOffset()
+      const anchor = captureAnchor()
+      const nextMetrics = normalizeVirtualizerMetrics({ ...next, scrollMargin: next.scrollMargin + listStart })
+      const reshaped = nextMetrics.count !== metrics.count || nextMetrics.getItemKey !== metrics.getItemKey
       if (layoutChanged(metrics, nextMetrics))
         markDirty(0)
       else if (nextMetrics.count !== metrics.count)
         markDirty(Math.min(nextMetrics.count, metrics.count))
+      const becameEnd = (next.anchor ?? 'start') === 'end' && (options.anchor ?? 'start') !== 'end'
       options = next
       metrics = nextMetrics
+      if (becameEnd)
+        pinnedToEnd = true
+      // 条目增删：贴底的继续贴底，否则把视口里第一条放回原处
+      if (reshaped && anchoredToEnd() && pinnedToEnd)
+        followEnd()
+      else if (reshaped && anchor)
+        restoreAnchor(anchor)
     },
 
     sync: () => {
       if (disposed)
         return
-      const next = options.getScrollElement()
-      if (next !== scrollEl) {
+      const next = resolveTarget()
+      if (next !== target) {
         detach()
         if (next)
           attach(next)
         return
       }
       measureViewport()
-      if (scrollEl)
-        scrollOffset = readScrollOffset(scrollEl)
+      refreshListStart()
+      observeContent()
+      followEnd()
     },
 
     read: () => {
@@ -347,20 +605,32 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
 
       const window = expandVirtualizerRange(range, resolveVirtualizerOverscan(options.overscan), metrics.count)
       const margin = metrics.scrollMargin
-      const visible = []
+      // 钉在起点的那一条：可视区首条之前（含首条）最后一个登记过的下标，滚过它之后它一直钉着
+      const sticky = normalizeSticky(options.stickyIndices, metrics.count)
+      let active: number | null = null
+      for (const index of sticky) {
+        if (index > range.startIndex)
+          break
+        active = index
+      }
+      const toState = (item: VirtualizerMeasurement, pinned: boolean): VirtualizerItemState => ({
+        // 对外一律报"距 content 起点"的位移，作者不必自己减 scrollMargin
+        index: item.index,
+        key: item.key,
+        start: item.start - margin,
+        end: item.end - margin,
+        size: item.size,
+        lane: item.lane,
+        sticky: pinned,
+      })
+      const visible: VirtualizerItemState[] = []
+      // 钉住的那条已滚出窗口时补在最前：它的下标比窗口里任何一条都小，升序不乱
+      if (active != null && active < window.from && items[active])
+        visible.push(toState(items[active]!, true))
       for (let index = window.from; index <= window.to; index++) {
         const item = items[index]
-        if (!item)
-          continue
-        // 对外一律报"距 content 起点"的位移，作者不必自己减 scrollMargin
-        visible.push({
-          index: item.index,
-          key: item.key,
-          start: item.start - margin,
-          end: item.end - margin,
-          size: item.size,
-          lane: item.lane,
-        })
+        if (item)
+          visible.push(toState(item, index === active))
       }
       return { items: visible, totalSize: total, startIndex: range.startIndex, endIndex: range.endIndex }
     },
@@ -368,7 +638,7 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
     isScrolling: () => scrolling,
 
     scrollToIndex: (index, align) => {
-      if (disposed || !scrollEl || !Number.isFinite(index))
+      if (disposed || !target || !Number.isFinite(index))
         return
       const items = getMeasurements()
       if (items.length === 0)
@@ -376,14 +646,15 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
       const item = items[Math.max(0, Math.min(Math.trunc(index), items.length - 1))]
       if (!item)
         return
-      const next = virtualizerOffsetForItem(item, align, scrollOffset, viewportSize(), maxScrollOffset())
+      const next = virtualizerOffsetForItem(item, align, scrollOffset, viewportSize(), Math.max(target.max(), endOffset()))
       if (next === scrollOffset)
         return
       backward = next < scrollOffset
-      scrollOffset = next
+      if (anchoredToEnd())
+        pinnedToEnd = next >= endOffset() - END_TOLERANCE
       scrolling = true
       restartIdleTimer()
-      scrollTo(next)
+      requestScroll(next)
       // 程序化滚动不能等浏览器稍后派 scroll 才发布窗口：集合焦点要在同一轮提交里等到目标条目。
       maybeNotify()
     },
@@ -403,6 +674,7 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
         return
       sizes.clear()
       markDirty(0)
+      followEnd()
       notify()
     },
 

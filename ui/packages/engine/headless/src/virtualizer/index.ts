@@ -32,7 +32,7 @@ export {
   VIRTUALIZER_INDEX_ATTRIBUTE,
   VIRTUALIZER_SCROLL_IDLE_DELAY,
 } from './virtualizer.kernel'
-export type { VirtualizerKernel, VirtualizerKernelOptions } from './virtualizer.kernel'
+export type { VirtualizerAnchor, VirtualizerKernel, VirtualizerKernelOptions, VirtualizerScrollContainer } from './virtualizer.kernel'
 export { virtualizerKeyboard } from './virtualizer.keyboard'
 export { virtualizerMachine } from './virtualizer.machine'
 export { virtualizerMeta } from './virtualizer.meta'

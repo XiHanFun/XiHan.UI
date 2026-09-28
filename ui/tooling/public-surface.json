@@ -7354,6 +7354,7 @@
       "VIRTUALIZER_SCROLL_IDLE_DELAY",
       "VISUALLY_HIDDEN_STYLE",
       "VirtualizerAlign",
+      "VirtualizerAnchor",
       "VirtualizerApi",
       "VirtualizerCore",
       "VirtualizerItemProps",
@@ -7366,6 +7367,7 @@
       "VirtualizerRangeChangeDetails",
       "VirtualizerRefs",
       "VirtualizerSchema",
+      "VirtualizerScrollContainer",
       "VirtualizerScrollToOptions",
       "VirtualizerSnapshot",
       "VirtualizerTranslations",
@@ -13307,6 +13309,7 @@
       "weight"
     ],
     "virtualizer": [
+      "anchor",
       "count",
       "estimateSize",
       "gap",
@@ -13317,7 +13320,9 @@
       "overscan",
       "paddingEnd",
       "paddingStart",
+      "scrollContainer",
       "scrollMargin",
+      "stickyIndices",
       "viewportTabIndex"
     ],
     "watermark": [
@@ -13528,6 +13533,7 @@
     "data-row-span-xl",
     "data-rows",
     "data-scale",
+    "data-scroll-container",
     "data-scrolling",
     "data-searching",
     "data-section",
@@ -21256,6 +21262,7 @@
     },
     "xh-virtualizer": {
       "attributes": [
+        "anchor",
         "count",
         "estimate-size",
         "gap",
@@ -21264,6 +21271,7 @@
         "overscan",
         "padding-end",
         "padding-start",
+        "scroll-container",
         "scroll-margin",
         "viewport-tab-index"
       ],

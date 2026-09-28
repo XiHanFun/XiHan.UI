@@ -295,5 +295,24 @@ export const virtualizerSuite: ConformanceSuite = {
         assertStyle('content', 0, { 'block-size': '60px' }),
       ],
     },
+    {
+      name: '随整页滚动：视口标 data-scroll-container，不再占 Tab 位',
+      spec: { apg: WCAG },
+      props: { ...BASE, scrollContainer: 'window' },
+      initial: {
+        parts: { viewport: { 'data-scroll-container': 'window', 'tabindex': null } },
+      },
+    },
+    {
+      name: '贴底形态：视口标 data-anchor="end"；缺省的 start 不写',
+      spec: { apg: WCAG },
+      props: { ...BASE, anchor: 'end' },
+      initial: {
+        parts: { viewport: { 'data-anchor': 'end' } },
+      },
+      steps: [
+        { kind: 'setProps', props: { anchor: 'start' }, expect: { parts: { viewport: { 'data-anchor': null } } } },
+      ],
+    },
   ],
 }

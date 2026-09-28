@@ -5,7 +5,7 @@
 
 // 提供 virtualizer 相关实现。
 
-import type { VirtualizerApi, VirtualizerRangeChangeDetails, VirtualizerSchema } from '@xihan-ui/headless'
+import type { VirtualizerAnchor, VirtualizerApi, VirtualizerRangeChangeDetails, VirtualizerSchema, VirtualizerScrollContainer } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
@@ -44,6 +44,9 @@ export const XhVirtualizerRoot = defineComponent({
     paddingEnd: { type: Number },
     lanes: { type: Number },
     viewportTabIndex: { type: Number },
+    scrollContainer: { type: String as PropType<VirtualizerScrollContainer> },
+    anchor: { type: String as PropType<VirtualizerAnchor> },
+    stickyIndices: { type: Array as PropType<number[]> },
   },
   // change 携带当前该渲染哪些条目的详情
   emits: {

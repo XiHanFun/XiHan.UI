@@ -46956,6 +46956,33 @@
   overflow-y: hidden;
 }
 
+/* 随整页滚动：这层不再是滚动容器，高度随内容撑开，两向都不裁 */
+[data-scope='virtualizer'][data-part='viewport'][data-scroll-container='window'] {
+  block-size: auto;
+  overflow-x: visible;
+  overflow-y: visible;
+}
+
+/* 贴底：不足一屏时把内容推到尽头那一侧，最新的一条贴着底；超过一屏时自动外距归零，照常滚动 */
+[data-scope='virtualizer'][data-part='viewport'][data-anchor='end'] {
+  display: flex;
+  flex-direction: column;
+}
+
+[data-scope='virtualizer'][data-part='viewport'][data-anchor='end'][data-orientation='horizontal'] {
+  flex-direction: row;
+}
+
+[data-scope='virtualizer'][data-part='viewport'][data-anchor='end'] > [data-scope='virtualizer'][data-part='content'] {
+  flex-shrink: 0;
+  margin-block-start: auto;
+}
+
+[data-scope='virtualizer'][data-part='viewport'][data-anchor='end'][data-orientation='horizontal'] > [data-scope='virtualizer'][data-part='content'] {
+  margin-block-start: 0;
+  margin-inline-start: auto;
+}
+
 /* 撑出总长的那层，同时是条目的定位上下文——条目是绝对定位的，
    没有它就会以最近的定位祖先（多半是页面某处）为参照，整列飘走。 */
 [data-scope='virtualizer'][data-part='content'] {
@@ -46988,6 +47015,24 @@
   block-size: 100%;
 }
 
+/* 钉住的分组标题：留在文档流里按 sticky 钉在视口起点（连接层不给它写主轴位移），
+   压在滚过去的条目上面，所以要一块实底 */
+[data-scope='virtualizer'][data-part='item'][data-fixed] {
+  position: sticky;
+  z-index: var(--xh-virtualizer-sticky-layer, var(--xh-layer-sticky));
+  background: var(--xh-virtualizer-sticky-bg, var(--xh-bg-surface));
+}
+
+[data-scope='virtualizer'][data-part='item'][data-fixed][data-orientation='vertical'] {
+  inset-block-start: 0;
+}
+
+/* 横向时留在文档流里的块会铺满整条内容层，收成自身宽度 */
+[data-scope='virtualizer'][data-part='item'][data-fixed][data-orientation='horizontal'] {
+  inset-inline-start: 0;
+  inline-size: fit-content;
+}
+
 /* 除视口外全是纯容器：既不进 Tab 序列也不承载焦点，作者若给它们加了 tabindex，
    该显形的也该是视口那圈环，不是这里再多画一圈。
    条目内部的可聚焦内容（按钮、链接）有它们自己的焦点环，不受这条影响。 */
@@ -47000,6 +47045,17 @@
 /* root 上还有一个 data-scrolling 标记（手正在滚时在场）。这份皮肤刻意不用它：
    滚动期间关掉 pointer-events 之类的常见招数会让"滚一下就点"落空，
    留给作者按自己的取舍去接。 */
+
+/* 高对比档里实底换成系统底色、与滚过去的条目同色：钉住的标题补一条系统描边，与下面的内容分开 */
+@media (forced-colors: active) {
+  [data-scope='virtualizer'][data-part='item'][data-fixed][data-orientation='vertical'] {
+    border-block-end: var(--xh-stroke-thin) solid CanvasText;
+  }
+
+  [data-scope='virtualizer'][data-part='item'][data-fixed][data-orientation='horizontal'] {
+    border-inline-end: var(--xh-stroke-thin) solid CanvasText;
+  }
+}
 
 /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位。
    连接层只在条目上写 hidden（不在窗口里的那些），其余三个是防作者自己写 hidden */

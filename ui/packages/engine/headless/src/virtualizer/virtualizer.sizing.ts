@@ -24,6 +24,8 @@ export interface VirtualizerItemState {
   size: number
   /** 多列网格里落在第几道；lanes 为 1 时恒 0。 */
   lane: number
+  /** 此刻钉在视口起点（stickyIndices 里当前接替到的那一条）。 */
+  sticky: boolean
 }
 
 /** 某一刻该渲什么的完整答案。连接层只读它，不回头问内核。 */
@@ -54,6 +56,7 @@ function sameItem(a: VirtualizerItemState, b: VirtualizerItemState): boolean {
     && a.end === b.end
     && a.size === b.size
     && a.lane === b.lane
+    && a.sticky === b.sticky
 }
 
 /**
@@ -116,6 +119,7 @@ function laneSpan(lane: number, lanes: number): { start: string, size: string } 
  * 只写位移、不写主轴尺寸：写了会把测量钉死在估算值上，measureElement 永远收敛不了。
  * 交叉轴只在多列（lanes > 1）时归连接层，单列写空串交还给样式表。
  * item 为 undefined 即这条此刻不在窗口里，四个键全清空，否则复用的节点会带着上一轮的位移。
+ * 钉住的那条不写主轴位移：它按 position: sticky 留在文档流里，由皮肤钉在视口起点。
  */
 export function virtualizerItemStyle(
   item: VirtualizerItemState | undefined,
@@ -126,15 +130,16 @@ export function virtualizerItemStyle(
 
   const lanes = resolveVirtualizerLanes(options.lanes)
   const cross = lanes > 1 ? laneSpan(item.lane, lanes) : { start: '', size: '' }
+  const main = item.sticky ? '' : px(item.start)
   return options.horizontal
     ? {
-        insetInlineStart: px(item.start),
+        insetInlineStart: main,
         insetBlockStart: cross.start,
         blockSize: cross.size,
         inlineSize: '',
       }
     : {
-        insetBlockStart: px(item.start),
+        insetBlockStart: main,
         insetInlineStart: cross.start,
         inlineSize: cross.size,
         blockSize: '',
