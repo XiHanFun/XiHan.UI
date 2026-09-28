@@ -53,6 +53,11 @@ import {
   XhDrawerContent,
   XhDrawerRoot,
   XhDrawerTitle,
+  XhHoverCardContent,
+  XhHoverCardPositioner,
+  XhHoverCardRoot,
+  XhHoverCardTitle,
+  XhHoverCardTrigger,
   XhMenuContent,
   XhMenuItem,
   XhMenuItemText,
@@ -140,6 +145,14 @@ const CASES: Record<string, Case> = {
     render: props => h(XhPopconfirmRoot, props, () => [
       h(XhPopconfirmTrigger, null, () => '删除'),
       h(XhPopconfirmPositioner, null, () => h(XhPopconfirmContent, null, () => '确定删除？')),
+    ]),
+  },
+  'hover-card': {
+    parts: ['content'],
+    enter: 'xh-overlay-pop-in',
+    render: props => h(XhHoverCardRoot, props, () => [
+      h(XhHoverCardTrigger, null, () => '资料'),
+      h(XhHoverCardPositioner, null, () => h(XhHoverCardContent, null, () => h(XhHoverCardTitle, null, () => '标题'))),
     ]),
   },
   'menu': {

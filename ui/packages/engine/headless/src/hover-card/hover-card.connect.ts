@@ -118,6 +118,8 @@ export function connectHoverCard<T extends PropTypes>(
       'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-placement': placement,
       // 尺寸轴落在 content 上而非 root：root 是可选部件，面板几何也长在 content 上
       'data-size': prop('size'),
