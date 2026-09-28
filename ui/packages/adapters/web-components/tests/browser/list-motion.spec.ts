@@ -63,7 +63,7 @@ describe('web components 标签输入的列表动效', () => {
     const added = tag('Svelte')
     control.insertBefore(added, control.querySelector('input'))
     await settle(element)
-    expect(running(added)).toEqual(['xh-item-in'])
+    expect(running(added)).toEqual(['xh-pop-in'])
   })
 
   it('作者删掉的标签由替身在原处淡出：作者脚本查不到它，接线之后它的外观也不变', async () => {

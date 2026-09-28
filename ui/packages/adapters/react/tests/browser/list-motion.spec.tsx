@@ -85,7 +85,7 @@ describe('react 标签输入的列表动效', () => {
     await render(['丙', '甲', '丁', '戊'])
     expect(live()).toEqual(['丙', '甲', '丁', '戊'])
     const added = control().querySelector<HTMLElement>(`${ITEM}[data-value='丁']`)!
-    expect(running(added)).toEqual(['xh-item-in'])
+    expect(running(added)).toEqual(['xh-pop-in'])
     // 挪到最前的那枚是换位，不重播进场
     expect(running(control().querySelector(`${ITEM}[data-value='丙']`)!)).toEqual([])
     // 输入框仍在最后
