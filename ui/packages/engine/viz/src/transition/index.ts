@@ -7,9 +7,11 @@
 // 计时、缓动与减弱动效判断由调用方提供（取自动效包），这里只按经过的毫秒数给出那一帧的场景。
 
 import type { KeyedPoint } from '../interpolate/points'
-import type { ArcMark, AreaMark, LineMark, Mark, RectMark, Scene, SceneLayer, SymbolMark, TextMark } from '../scene/types'
+import type { PathSegment } from '../path'
+import type { ArcMark, AreaMark, LineMark, Mark, PathMark, RectMark, Scene, SceneLayer, SymbolMark, TextMark } from '../scene/types'
 import { invalidArgument } from '../errors'
 import { interpolatePoints } from '../interpolate/points'
+import { segmentsPath } from '../path'
 import { LAYERS } from '../scene/scene'
 
 export type EnterStyle = 'baseline' | 'center' | 'fade'
@@ -133,9 +135,33 @@ function between(from: Mark, to: Mark, options: PlanOptions): (t: number) => Mar
       // 终点精确等于新点序，删除的点在这一刻移除
       return t => ({ ...to, points: t >= 1 ? to.points : points(t) as KeyedPoint[], opacity: opacity(t) })
     }
+    case 'path': {
+      // 按几何参数插值：段数与每段点数都相同才逐点插值并重新生成路径，形状变了只淡变
+      const a = (from as PathMark).segments
+      const b = to.segments
+      if (!a || !b || !sameShape(a, b))
+        return t => ({ ...to, opacity: opacity(t) })
+      return (t) => {
+        if (t >= 1)
+          return { ...to, opacity: opacity(t) }
+        const segments = b.map((segment, i) => ({
+          closed: segment.closed,
+          points: segment.points.map((point, j) => ({
+            x: lerp(a[i]!.points[j]!.x, point.x, t),
+            y: lerp(a[i]!.points[j]!.y, point.y, t),
+          })),
+        }))
+        return { ...to, segments, d: segmentsPath(segments), opacity: opacity(t) }
+      }
+    }
     default:
       return t => ({ ...to, opacity: opacity(t) })
   }
+}
+
+/** 两组折线段能否逐点插值：段数、每段点数与闭合与否都相同。 */
+function sameShape(a: readonly PathSegment[], b: readonly PathSegment[]): boolean {
+  return a.length === b.length && a.every((segment, i) => segment.points.length === b[i]!.points.length && Boolean(segment.closed) === Boolean(b[i]!.closed))
 }
 
 /** 一条轨迹：给局部进度 0–1 返回那一刻的标记；null 表示已经移除。 */

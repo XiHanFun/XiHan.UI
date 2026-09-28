@@ -17,6 +17,18 @@ const PRICES: Props = {
   series: [{ mark: 'candlestick', x: 'day', open: 'open', high: 'high', low: 'low', close: 'close', name: '股价' }],
 }
 
+describe('k 线的折线段几何', () => {
+  it('影线与美国线带着折线段几何：值域变化时按点插值，不只淡变', async () => {
+    const rig = await makeRig(PRICES)
+    const wick = (marksOf(rig.api(), 'wick') as PathMark[])[0]!
+    expect(wick.segments).toHaveLength(1)
+    expect(wick.segments![0]!.points).toHaveLength(2)
+    const ohlc = await makeRig({ ...PRICES, series: [{ ...PRICES.series![0]!, style: 'ohlc' }] } as Props)
+    const bar = (marksOf(ohlc.api(), 'candle') as PathMark[])[0]!
+    expect(bar.segments).toHaveLength(3)
+  })
+})
+
 describe('k 线', () => {
   it('系列 id 缺省取收盘字段；定义域盖住最低价与最高价，不强制含 0', async () => {
     const rig = await makeRig(PRICES)

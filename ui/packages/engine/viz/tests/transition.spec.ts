@@ -1,6 +1,6 @@
-import type { ArcMark, GroupMark, LineMark, Mark, RectMark, Scene } from '../src'
+import type { ArcMark, GroupMark, LineMark, Mark, PathMark, RectMark, Scene } from '../src'
 import { describe, expect, it } from 'vitest'
-import { createScene, planTransition, sceneAt } from '../src'
+import { createScene, planTransition, sceneAt, segmentsPath } from '../src'
 import { between, forAll, integer } from './helpers/property'
 
 const bounds = { x: 0, y: 0, width: 100, height: 100 }
@@ -82,6 +82,26 @@ describe('过渡计划', () => {
     const plan = planTransition(scene([a]), scene([b], 2), { duration: 100, easing: linear })
     expect(find<LineMark>(sceneAt(plan, 50), 'l')!.points.map(p => p.key)).toEqual(['x', 'y', 'z'])
     expect(sceneAt(plan, 100)).toBe(plan.to)
+  })
+
+  it('路径带折线段几何时按点插值并重新生成路径；形状不同只淡变', () => {
+    const stem = (y: number): PathMark => ({
+      kind: 'path',
+      key: 's',
+      part: 'stem',
+      d: segmentsPath([{ points: [{ x: 10, y: 100 }, { x: 10, y }] }]),
+      segments: [{ points: [{ x: 10, y: 100 }, { x: 10, y }] }],
+    })
+    const plan = planTransition(scene([stem(80)]), scene([stem(40)], 2), { duration: 100, easing: linear })
+    const mid = find<PathMark>(sceneAt(plan, 50), 's')!
+    expect(mid.segments![0]!.points[1]).toEqual({ x: 10, y: 60 })
+    expect(mid.d).toBe('M10,100L10,60')
+    expect(find<PathMark>(sceneAt(plan, 100), 's')!.d).toBe('M10,100L10,40')
+
+    // 段数变了：几何直接落到终态，只淡变
+    const two: PathMark = { ...stem(40), segments: [...stem(40).segments!, { points: [{ x: 0, y: 0 }, { x: 1, y: 1 }] }] }
+    const reshaped = planTransition(scene([stem(80)]), scene([two], 2), { duration: 100, easing: linear })
+    expect(find<PathMark>(sceneAt(reshaped, 50), 's')!.d).toBe(two.d)
   })
 
   it('中间帧带着进度与新场景的版本，终点返回新场景本身', () => {

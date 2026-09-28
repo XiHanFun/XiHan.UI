@@ -22,6 +22,7 @@ import type {
   MarkPaint,
   NumberFormatSpec,
   PathMark,
+  PathSegment,
   Rect,
   Scene,
   SymbolMark,
@@ -75,6 +76,7 @@ import {
   scalePoint,
   scaleTime,
   scaleUtc,
+  segmentsPath,
   solvePlotRect,
   stack,
   SYMBOL_NAMES,
@@ -1355,8 +1357,16 @@ function crisp(value: number): number {
   return Math.round(value) + 0.5
 }
 
+/**
+ * 由折线段拼成的路径标记：几何参数随标记一起给出，过渡按点插值、重新生成路径，
+ * 杆、须、影线、连接线与刻度才能和同一数据的点、实体、刻度字一起移动。
+ */
+function segmentsMark(base: Omit<PathMark, 'kind' | 'd' | 'segments'>, segments: PathSegment[]): PathMark {
+  return { ...base, kind: 'path', d: segmentsPath(segments), segments }
+}
+
 function line(key: string, part: string, x1: number, y1: number, x2: number, y2: number): PathMark {
-  return { kind: 'path', key, part, d: `M${x1},${y1}L${x2},${y2}` }
+  return segmentsMark({ key, part }, [{ points: [{ x: x1, y: y1 }, { x: x2, y: y2 }] }])
 }
 
 /**
@@ -1395,15 +1405,16 @@ function axisMarks(
       ? line(`${prefix}:line`, 'axis-line', plot.x, crisp(bottom), plot.x + plot.width, crisp(bottom))
       : line(`${prefix}:line`, 'axis-line', crisp(plot.x), plot.y, crisp(plot.x), bottom))
   }
+  // 每个刻度一条独立的线，键随刻度值：值域变化时与同一刻度的刻度字一起滑到新位置
   if (options.ticks && tickLength > 0) {
-    const d = axis.ticks
-      .filter(t => Number.isFinite(t.offset))
-      .map(t => (position === 'bottom'
-        ? `M${crisp(t.offset)},${bottom}L${crisp(t.offset)},${bottom + tickLength}`
-        : `M${plot.x},${crisp(t.offset)}L${plot.x - tickLength},${crisp(t.offset)}`))
-      .join('')
-    if (d)
-      marks.push({ kind: 'path', key: `${prefix}:ticks`, part: 'tick', d })
+    for (const t of axis.ticks) {
+      if (!Number.isFinite(t.offset))
+        continue
+      const at = crisp(t.offset)
+      marks.push(position === 'bottom'
+        ? line(`${prefix}:tick:${tickId(t)}`, 'tick', at, bottom, at, bottom + tickLength)
+        : line(`${prefix}:tick:${tickId(t)}`, 'tick', plot.x, at, plot.x - tickLength, at))
+    }
   }
   const shift = (options.ticks ? tickLength : 0) + labelGap
   for (const tick of axis.ticks) {
@@ -1565,7 +1576,7 @@ export function cartesianScene(layout: CartesianLayout, version: number): Cartes
           const c = crisp(start + width / 2)
           const datum = cartesianDatumId(spec.keys[j]!)
           const head = (at: number): { x: number, y: number } => (vertical ? { x: c, y: at } : { x: at, y: c })
-          children.push({ kind: 'path', key: `${id}:stem:${datum}`, part: 'stem', d: vertical ? `M${c},${a}L${c},${b}` : `M${a},${c}L${b},${c}`, paint })
+          children.push(segmentsMark({ key: `${id}:stem:${datum}`, part: 'stem', paint }, [{ points: [head(a), head(b)] }]))
           if (s.lows)
             children.push({ kind: 'symbol', key: `${id}:low:${datum}`, part: 'point', ...head(a), size: Math.PI * r * r, symbol: 'circle', paint, a11y: { label: '', focusable: false } })
           children.push({ kind: 'symbol', key, part: 'point', ...head(b), size: Math.PI * r * r, symbol: 'circle', datum: { seriesId: id, index: rowIndex }, paint, a11y: { label: '', focusable: true } })
@@ -1785,7 +1796,7 @@ function boxMarks(
   const id = s.spec.id
   const width = Math.max(1, Math.min(metrics.barMax * 2, keyStep(layout) * 0.6))
   const toValue = (v: number): number => layout.valueScale.map(v) ?? Number.NaN
-  const at = (along: number, across: number): string => (vertical ? `${along},${across}` : `${across},${along}`)
+  const at = (along: number, across: number): { x: number, y: number } => (vertical ? { x: along, y: across } : { x: across, y: along })
   const maxDensity = Math.max(0, ...s.boxes!.flatMap(b => b?.density?.map(p => p.density) ?? []))
   const outlierSize = Math.PI * (metrics.pointSize / 3) ** 2
   const marks: Mark[] = []
@@ -1804,19 +1815,18 @@ function boxMarks(
     if (b.density && maxDensity > 0) {
       const left = b.density.map(p => at(c - (p.density / maxDensity) * (width / 2), toValue(p.value)))
       const right = [...b.density].reverse().map(p => at(c + (p.density / maxDensity) * (width / 2), toValue(p.value)))
-      marks.push({ kind: 'path', key, part: 'box', d: `M${left.join('L')}L${right.join('L')}Z`, datum: ref, paint, a11y: { label: '', focusable: true } })
-      marks.push({ kind: 'path', key: `${id}:median:${datum}`, part: 'median', d: `M${at(c - width / 4, mid)}L${at(c + width / 4, mid)}`, paint })
+      marks.push(segmentsMark({ key, part: 'box', datum: ref, paint, a11y: { label: '', focusable: true } }, [{ points: [...left, ...right], closed: true }]))
+      marks.push(segmentsMark({ key: `${id}:median:${datum}`, part: 'median', paint }, [{ points: [at(c - width / 4, mid), at(c + width / 4, mid)] }]))
       return
     }
     const [lo, q1, q3, hi] = [toValue(b.min), toValue(b.q1), toValue(b.q3), toValue(b.max)]
     const cap = width / 4
-    marks.push({
-      kind: 'path',
-      key: `${id}:whisker:${datum}`,
-      part: 'whisker',
-      d: `M${at(c, hi)}L${at(c, q3)}M${at(c, q1)}L${at(c, lo)}M${at(c - cap, crisp(hi))}L${at(c + cap, crisp(hi))}M${at(c - cap, crisp(lo))}L${at(c + cap, crisp(lo))}`,
-      paint,
-    })
+    marks.push(segmentsMark({ key: `${id}:whisker:${datum}`, part: 'whisker', paint }, [
+      { points: [at(c, hi), at(c, q3)] },
+      { points: [at(c, q1), at(c, lo)] },
+      { points: [at(c - cap, crisp(hi)), at(c + cap, crisp(hi))] },
+      { points: [at(c - cap, crisp(lo)), at(c + cap, crisp(lo))] },
+    ]))
     const [top, bottom] = [Math.min(q1, q3), Math.max(q1, q3)]
     const span = Math.max(1, bottom - top)
     marks.push({
@@ -1832,7 +1842,7 @@ function boxMarks(
       paint,
       a11y: { label: '', focusable: true },
     })
-    marks.push({ kind: 'path', key: `${id}:median:${datum}`, part: 'median', d: `M${at(c - width / 2, mid)}L${at(c + width / 2, mid)}`, paint })
+    marks.push(segmentsMark({ key: `${id}:median:${datum}`, part: 'median', paint }, [{ points: [at(c - width / 2, mid), at(c + width / 2, mid)] }]))
     b.outliers.forEach((v, i) => {
       const across = toValue(v)
       marks.push({ kind: 'symbol', key: `${id}:outlier:${datum}:${i}`, part: 'outlier', ...(vertical ? { x: center, y: across } : { x: across, y: center }), size: outlierSize, symbol: 'circle', paint })
@@ -1860,7 +1870,7 @@ function candleMarks(
   const ohlc = s.spec.ohlc!
   const width = Math.max(1, Math.min(metrics.barMax, keyStep(layout) * 0.7))
   const toValue = (v: number): number => layout.valueScale.map(v) ?? Number.NaN
-  const at = (along: number, across: number): string => (vertical ? `${along},${across}` : `${across},${along}`)
+  const at = (along: number, across: number): { x: number, y: number } => (vertical ? { x: along, y: across } : { x: across, y: along })
   const marks: Mark[] = []
   s.ohlc!.forEach((o, j) => {
     const center = keyCenters[j]!
@@ -1879,11 +1889,14 @@ function candleMarks(
     // 影线对齐到像素中心，实体与短横以同一个中心摆放：两者严格对中
     const c = crisp(center)
     if (ohlc.style === 'ohlc') {
-      const d = `M${at(c, high)}L${at(c, low)}M${at(c - width / 2, open)}L${at(c, open)}M${at(c, close)}L${at(c + width / 2, close)}`
-      marks.push({ kind: 'path', key, part: 'candle', d, datum: ref, paint: own, a11y: { label: '', focusable: true } })
+      marks.push(segmentsMark({ key, part: 'candle', datum: ref, paint: own, a11y: { label: '', focusable: true } }, [
+        { points: [at(c, high), at(c, low)] },
+        { points: [at(c - width / 2, open), at(c, open)] },
+        { points: [at(c, close), at(c + width / 2, close)] },
+      ]))
       return
     }
-    marks.push({ kind: 'path', key: `${id}:wick:${datum}`, part: 'wick', d: `M${at(c, high)}L${at(c, low)}`, paint: own })
+    marks.push(segmentsMark({ key: `${id}:wick:${datum}`, part: 'wick', paint: own }, [{ points: [at(c, high), at(c, low)] }]))
     const [lo, hi] = [Math.min(open, close), Math.max(open, close)]
     const span = Math.max(1, hi - lo)
     const start = c - width / 2
@@ -1923,12 +1936,11 @@ function waterfallConnectors(
     if (previous) {
       const at = crisp(previous.level)
       const from = previous.box
-      marks.push({
-        kind: 'path',
-        key: `${id}:link:${previous.datum}`,
-        part: 'connector',
-        d: vertical ? `M${from.x + from.width},${at}L${box.x},${at}` : `M${at},${from.y + from.height}L${at},${box.y}`,
-      })
+      marks.push(segmentsMark({ key: `${id}:link:${previous.datum}`, part: 'connector' }, [{
+        points: vertical
+          ? [{ x: from.x + from.width, y: at }, { x: box.x, y: at }]
+          : [{ x: at, y: from.y + from.height }, { x: at, y: box.y }],
+      }]))
     }
     previous = { box, level: toValue(step.end), datum }
   })

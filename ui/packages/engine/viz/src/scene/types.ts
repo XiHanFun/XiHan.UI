@@ -7,6 +7,7 @@
 
 import type { Rect } from '../geometry'
 import type { KeyedPoint } from '../interpolate/points'
+import type { PathSegment } from '../path'
 import type { SymbolName } from '../shape/symbol'
 
 /** 标记对应的数据：系列与它在原始数据里的位置。 */
@@ -117,10 +118,14 @@ export interface SymbolMark extends MarkBase {
   readonly symbol: SymbolName
 }
 
-/** 现成的路径；过渡时只做淡入淡出。 */
+/**
+ * 现成的路径。带 segments（由折线段拼成的几何参数）时，前后两帧段数与每段点数都相同就按点插值、
+ * 重新生成 d；没带或形状不同时只做淡入淡出。
+ */
 export interface PathMark extends MarkBase {
   readonly kind: 'path'
   readonly d: string
+  readonly segments?: readonly PathSegment[]
 }
 
 export interface TextMark extends MarkBase {
