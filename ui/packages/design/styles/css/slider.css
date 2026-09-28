@@ -195,7 +195,10 @@
      海拔从静态的 raised 换到 lifted：跟着手走的东西比贴在页面上的抬得高一档，
      又不到锚定浮层那一层——用 floating 会让拇指和下拉面板一样重。 */
   [data-scope='slider'][data-part='thumb'][data-dragging] {
-    scale: var(--xh-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
+    /* 放大比例落进私有槽：挂在拇指里的值气泡读同一支反向缩回原尺寸 */
+    --xh-_slider-thumb-scale: var(--xh-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
+
+    scale: var(--xh-_slider-thumb-scale);
     cursor: grabbing;
     box-shadow: var(--xh-slider-thumb-shadow-dragging, var(--xh-elevation-lifted));
   }
@@ -219,6 +222,8 @@
   /* 值气泡：挂在拇指里，跟着拇指一起走位。
      气泡宽度由文字撑出，只能靠平移回中。不能两侧 inset 都钉在 50% 再靠自动外边距回中：
      那样可用宽度是 0，气泡比它宽，自动外边距按规范取 0，气泡从拇指中线起排、偏出半个自身宽。
+     起点是逻辑属性、平移是物理通道：平移乘书写方向的符号，rtl 下行内分量掉头，气泡才落回拇指正上方。
+     拖动时拇指放大，气泡按同一比例反向缩回、与拇指同一段过渡：文字不跟着放大，缩放原点在贴着拇指那一边。
      默认只在推动那一刻露面，静止时留在 DOM 里但不占视线 */
   [data-scope='slider'][data-part='value-text'] {
     position: absolute;
@@ -226,7 +231,8 @@
     inset-inline-start: 50%;
     inline-size: max-content;
     margin-block-end: var(--xh-slider-value-text-offset, var(--xh-space-2));
-    translate: -50% 0;
+    translate: calc(-50% * var(--xh-direction-sign)) 0;
+    transform-origin: 50% 100%;
     padding-block: var(--xh-slider-value-text-py, var(--xh-space-0_5));
     padding-inline: var(--xh-slider-value-text-px, var(--xh-space-2));
     border-radius: var(--xh-slider-value-text-radius, var(--xh-shape-control));
@@ -238,12 +244,9 @@
     /* 气泡贴在拇指上方，指针要落到拇指上，不能被它挡住 */
     pointer-events: none;
     opacity: 0;
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-  }
-
-  /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，气泡才落回拇指正上方 */
-  [data-scope='slider'][data-part='value-text']:dir(rtl) {
-    translate: 50% 0;
+    transition:
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='slider'][data-part='value-text'][hidden] {
@@ -253,15 +256,17 @@
   /* 只有手真正推着的那一个拇指带 data-dragging，多拇指时气泡不会全组一起冒出来 */
   [data-scope='slider'][data-part='value-text'][data-dragging] {
     opacity: 1;
+    scale: calc(1 / var(--xh-_slider-thumb-scale, 1));
   }
 
-  /* 竖排轨道的气泡挪到行侧：压在拇指上方会挡住上一档的值 */
+  /* 竖排轨道的气泡挪到行侧：压在拇指上方会挡住上一档的值；反向缩放的原点换到贴着拇指的行首那一侧 */
   [data-scope='slider'][data-part='value-text'][data-orientation='vertical'] {
     inset-block: 50%;
     inset-inline: 100% auto;
     block-size: max-content;
     margin-block: auto;
     margin-inline: var(--xh-slider-value-text-offset, var(--xh-space-2)) 0;
+    transform-origin: calc(50% - 50% * var(--xh-direction-sign)) 50%;
   }
 
   /* —— 尺寸 —— */
@@ -292,12 +297,8 @@
     block-size: var(--xh-slider-tick-size, var(--xh-space-1));
     border-radius: var(--xh-slider-tick-radius, var(--xh-shape-circle));
     background: var(--xh-slider-tick-bg, var(--xh-border-strong));
-    translate: -50% -50%;
-  }
-
-  /* 连接层把比例点写在 inset-inline-start 上：rtl 下平移的行内分量掉头，刻度点才以比例点为中心 */
-  [data-scope='slider'][data-part='tick']:dir(rtl) {
-    translate: 50% -50%;
+    /* 连接层把比例点写在 inset-inline-start 上：平移的行内分量乘书写方向的符号，rtl 下掉头，刻度点才以比例点为中心 */
+    translate: calc(-50% * var(--xh-direction-sign)) -50%;
   }
 
   /* 落进已选区间的刻度点跟 range 同色 */
@@ -313,14 +314,10 @@
     font-size: var(--xh-slider-tick-label-font-size, var(--xh-text-caption-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
-    translate: -50% 0;
+    translate: calc(-50% * var(--xh-direction-sign)) 0;
     cursor: pointer;
     pointer-events: auto;
     user-select: none;
-  }
-
-  [data-scope='slider'][data-part='tick-label']:dir(rtl) {
-    translate: 50% 0;
   }
 
   [data-scope='slider'][data-part='tick-label'][data-passed] {
@@ -346,11 +343,7 @@
   [data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick'] {
     inset-block-start: auto;
     inset-inline-start: 50%;
-    translate: -50% 50%;
-  }
-
-  [data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick']:dir(rtl) {
-    translate: 50% 50%;
+    translate: calc(-50% * var(--xh-direction-sign)) 50%;
   }
 
   [data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick-label'] {

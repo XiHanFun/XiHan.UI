@@ -61916,7 +61916,8 @@
       "name": "--xh-slider-thumb-scale-dragging",
       "component": "slider",
       "part": [
-        "thumb"
+        "thumb",
+        "value-text"
       ],
       "property": [
         "scale"
@@ -61928,7 +61929,7 @@
         "--xh-motion-scale-drag"
       ],
       "visibility": "public",
-      "description": "slider 的 thumb 部件 scale 覆盖槽。"
+      "description": "slider 的 thumb、value-text 部件 scale 覆盖槽。"
     },
     {
       "name": "--xh-slider-thumb-shadow",
