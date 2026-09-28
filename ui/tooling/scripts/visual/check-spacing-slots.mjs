@@ -43,8 +43,9 @@ const CROSS_PART = {
   // segment 档的白色抬起面：放了 indicator 部件时长在部件上跟着滑，没放长在选中标签上；
   // 两处必须同一块面，描边 / 圆角 / 底 / 影读同一组按标签取名的槽，作者改一处两处一起变
   // 两端的翻页钮是与标签同高的正方形，高读标签的高度槽（两只钮合写一条规则，按选择器组的末一个部件记为 next-trigger）；
-  // 贴在标签带内衬盒的两端，落点读标签带的内衬槽
-  'tabs.trigger': ['indicator', 'next-trigger'],
+  // 贴在标签带内衬盒的两端，落点读标签带的内衬槽；
+  // 标签带之后的「更多」钮与翻页钮同一身份，同样是与标签同高的正方形，高读同一支标签高度槽
+  'tabs.trigger': ['indicator', 'next-trigger', 'overflow-trigger'],
   'tabs.list': ['prev-trigger', 'next-trigger'],
   // 摆了周序号的那一行是「序号列 + 七天」的网格，行首那一列的宽度按被排的那一列取名
   'calendar-picker.week-number': ['week-row'],

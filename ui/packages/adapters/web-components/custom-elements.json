@@ -62363,7 +62363,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tabs>`：Light-DOM 行为宿主，运行 tabs 状态机并把 connect 产出接到 root / list / trigger / content\n角色节点上。条目身份取作者写在 trigger / content 上的 value 属性，trigger 的禁用由部件声明。\n\n读屏文案 `translations` 是对象，属性无法表达，只能通过 property 设置（`el.translations = {...}`）。\n\n开启 reorderable 后标签可以拖动换位：整个标签都是拖动源。拖动中被拖的标签原地不动，\n只写 data-dragging；落点绘制在参照标签上，data-drop 为 before / after 即插在该标签前后。触屏路径经 tab-drag-trigger 把手。\n键盘使用 Alt + 主轴方向键（横向是左右、纵向是上下，横向 rtl 下左右对调），按一次即一次完整提交。\n顺序不由元素保管：换位只发出 tab-move，标签序由使用方写回自己的数据源。",
+          "description": "`<xh-tabs>`：Light-DOM 行为宿主，运行 tabs 状态机并把 connect 产出接到 root / list / trigger / content\n角色节点上。条目身份取作者写在 trigger / content 上的 value 属性，trigger 的禁用由部件声明。\n\n读屏文案 `translations` 是对象，属性无法表达，只能通过 property 设置（`el.translations = {...}`）。\n\n开启 reorderable 后标签可以拖动换位：整个标签都是拖动源。拖动中被拖的标签原地不动，\n只写 data-dragging；落点绘制在参照标签上，data-drop 为 before / after 即插在该标签前后。触屏路径经 tab-drag-trigger 把手。\n键盘使用 Alt + 主轴方向键（横向是左右、纵向是上下，横向 rtl 下左右对调），按一次即一次完整提交。\n顺序不由元素保管：换位只发出 tab-move，标签序由使用方写回自己的数据源。\n\n标签带放不下时，root 里紧跟 list 之后的 overflow-trigger 露面，弹出的下拉列出可见区外的标签。\n下拉的定位层、列表与条目由元素自己建（与工具条的「更多」菜单同一套）：作者只写一颗空的 overflow-trigger，\n建出来的节点归 menu 的 scope，不写 data-xh-part。",
           "name": "XhTabsElement",
           "cssParts": [
             {
@@ -62395,6 +62395,10 @@
               "name": "next-trigger"
             },
             {
+              "description": "标签带放不下时的「更多」钮，写一个空 `<button>` 放在 root 里、紧跟 list 之后（不放进 list）；弹出的下拉列出可见区外的标签，选中一项即选中并挪进可见区；自占一个 Tab 位，放得下时 hidden",
+              "name": "overflow-trigger"
+            },
+            {
               "description": "role=tab 的标签按钮，须自带 value 属性标识身份",
               "name": "trigger"
             },
@@ -62412,6 +62416,14 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器（「更多」下拉浮层的落点）；显式解析失败不回退配置默认。"
+            },
             {
               "kind": "field",
               "name": "partContract",
@@ -62578,6 +62590,14 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TabsSchema>( this, tabsMachine, () => this.machineProps(), // 指示条量测在机器的 action 里跑，DOM 侧的取值口经 refs 交进去 { onBuilt: svc => svc.refs.set('getListEl', () => this.getPart('list')) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "overflowMenu",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new OverflowMenuController(this, { name: 'Tabs overflow menu', spreader: this.spreader, trigger: () => this.getPart('overflow-trigger'), props: () => tabsOverflowMenuProps(this.ctrl.service as Service<TabsSchema>), createPortal: options => this.createAnchoredPortalController(options), })",
+              "description": "「更多」下拉：菜单机器的 props 从标签页的机器现读，故必须排在 ctrl 之后建。"
             },
             {
               "kind": "field",
@@ -62808,8 +62828,8 @@
             }
           ],
           "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
           },
           "tagName": "xh-tabs",
           "customElement": true,

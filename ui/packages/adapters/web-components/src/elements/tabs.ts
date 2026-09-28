@@ -5,14 +5,15 @@
 
 // 提供 tabs 相关实现。
 
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
+import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsNode, TabsSchema, TabsTranslations, TabsValueChangeDetails, TabsVariant } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta } from '@xihan-ui/headless'
+import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta, tabsOverflowMenuProps } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+import { OverflowMenuController } from '../runtime/overflow-menu-controller'
+import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -38,6 +39,10 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
  * 键盘使用 Alt + 主轴方向键（横向是左右、纵向是上下，横向 rtl 下左右对调），按一次即一次完整提交。
  * 顺序不由元素保管：换位只发出 tab-move，标签序由使用方写回自己的数据源。
  *
+ * 标签带放不下时，root 里紧跟 list 之后的 overflow-trigger 露面，弹出的下拉列出可见区外的标签。
+ * 下拉的定位层、列表与条目由元素自己建（与工具条的「更多」菜单同一套）：作者只写一颗空的 overflow-trigger，
+ * 建出来的节点归 menu 的 scope，不写 data-xh-part。
+ *
  * @customElement xh-tabs
  * @attr {string} value - 受控选中值；未提供该属性即非受控
  * @attr {string} default-value - 非受控的初始选中值
@@ -62,12 +67,16 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
  * @csspart separator - 标签之间的细分隔线，对读屏隐藏
  * @csspart prev-trigger - 标签带放不下时的往前翻页钮，须位于 list 中；对读屏隐藏、不占 Tab 位，放得下时 hidden
  * @csspart next-trigger - 标签带放不下时的往后翻页钮，与 prev-trigger 成对
+ * @csspart overflow-trigger - 标签带放不下时的「更多」钮，写一个空 `<button>` 放在 root 里、紧跟 list 之后（不放进 list）；弹出的下拉列出可见区外的标签，选中一项即选中并挪进可见区；自占一个 Tab 位，放得下时 hidden
  * @csspart trigger - role=tab 的标签按钮，须自带 value 属性标识身份
  * @csspart close-trigger - 标签的关闭钮，紧跟在所属 trigger 之后、与它平级，须自带与它相同的 value 属性；对读屏隐藏、不占 Tab 位，closable 关闭时 hidden
  * @csspart content - role=tabpanel 的面板，须自带 value 属性与 trigger 配对；未选中时 hidden
  * @csspart tab-drag-trigger - 标签拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由标签带上的 Alt + 方向键承担
  */
-export class XhTabsElement extends XhElement {
+export class XhTabsElement extends XhPortalHostElement {
+  /** 本实例的 Portal 容器（「更多」下拉浮层的落点）；显式解析失败不回退配置默认。 */
+  declare portalContainer?: () => Element | null
+
   static override partContract = { anatomy: tabsAnatomy, meta: tabsMeta }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
@@ -129,6 +138,15 @@ export class XhTabsElement extends XhElement {
     // 指示条量测在机器的 action 里跑，DOM 侧的取值口经 refs 交进去
     { onBuilt: svc => svc.refs.set('getListEl', () => this.getPart('list')) },
   )
+
+  /** 「更多」下拉：菜单机器的 props 从标签页的机器现读，故必须排在 ctrl 之后建。 */
+  private readonly overflowMenu = new OverflowMenuController(this, {
+    name: 'Tabs overflow menu',
+    spreader: this.spreader,
+    trigger: () => this.getPart('overflow-trigger'),
+    props: () => tabsOverflowMenuProps(this.ctrl.service as Service<TabsSchema>),
+    createPortal: options => this.createAnchoredPortalController(options),
+  })
 
   /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
@@ -285,5 +303,15 @@ export class XhTabsElement extends XhElement {
       this.spreader.spread(el, props as Record<string, unknown>)
       this.syncTemplateContent(el, api.isContentMounted(value))
     }
+
+    // 「更多」钮与它弹出的下拉：钮是作者写的标签页部件，下拉那一套由共用的控制器自建
+    this.overflowMenu.wire(api.getOverflowTriggerProps() as Record<string, unknown>)
+  }
+
+  override disconnectedCallback(): void {
+    this.overflowMenu.disposePortal()
+    super.disconnectedCallback()
+    // 退场没播完就离场：立刻结清并收起；重连时按需重建
+    this.overflowMenu.release()
   }
 }

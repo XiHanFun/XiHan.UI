@@ -43,6 +43,7 @@ export function connectTabs<T extends PropTypes>(
   const scroll = context.get('scroll')
   const scrollMax = context.get('scrollMax')
   const overflow: TabsOverflow | null = scrollMax > 0 ? { start: scroll > 0, end: scroll < scrollMax } : null
+  const overflowItems = context.get('overflowItems')
   const rtl = dir === 'rtl'
 
   // collection 推出的条目元信息：标签文本与禁用都在这里定案，trigger 部件只报 value
@@ -201,6 +202,7 @@ export function connectTabs<T extends PropTypes>(
     dropTarget,
     announcement: context.get('announcement'),
     overflow,
+    overflowItems,
     collection,
     focusedValue,
     setValue,
@@ -498,6 +500,23 @@ export function connectTabs<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': prop('size') ?? 'md',
       'onClick': () => send({ type: 'SCROLL.NEXT' }),
+    }),
+
+    // 标签带之后的「更多」钮：放不下时露面，弹出的下拉列出此刻没有整个露在可见区里的标签；放得下时收着。
+    // 它不在 tablist 里（tablist 只收 tab），是 root 的孩子、排在标签带之后，自占一个 Tab 位——方向键只在标签间走，
+    // 与两端翻页钮一样不进 roving。开合的键盘（Enter / Space / 上下键展开、Escape 收起回到钮上）归它合进来的菜单触发器。
+    // 接 Action Control icon 档 ghost 面、与翻页钮同档，字形由皮肤兜底
+    getOverflowTriggerProps: () => normalize.button({
+      ...parts['overflow-trigger'].attrs,
+      'type': 'button',
+      'aria-label': prop('translations')?.overflowTrigger ?? 'More tabs',
+      'hidden': overflowItems.length === 0 || undefined,
+      'data-orientation': orientation,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
     }),
 
     // panel 节点常挂，靠 hidden 显隐：tab 的 aria-controls 始终指得到它。里面的内容渲不渲染由 isContentMounted 定，

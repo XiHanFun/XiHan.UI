@@ -1,6 +1,7 @@
-import type { ConformanceSuite, FixtureNode } from '../conformance/types'
+import type { ConformanceCase, ConformanceSuite, FixtureNode } from '../conformance/types'
 import { tabsAnatomy, tabsKeyboard } from '@xihan-ui/headless'
 import { singleTabStop } from './shared/native-activation'
+import { focusSettled, menuExited, overflowMenuItem, settled } from './shared/overflow-menu'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/tabs/'
@@ -62,6 +63,95 @@ function tabsTree(disabled?: string): FixtureNode {
       })),
       { part: 'live-region' },
     ],
+  }
+}
+
+/**
+ * root 里、紧跟标签带之后放一颗「更多」钮。只在溢出下拉的用例里出现：作者不写这个部件就没有下拉，
+ * 其余用例的 order / counts 因此一条都不用改。
+ */
+function withOverflowTrigger(base: FixtureNode): FixtureNode {
+  const children = [...(base.children ?? [])]
+  const at = children.findIndex(node => node.part === 'list')
+  children.splice(at + 1, 0, { part: 'overflow-trigger', tag: 'button' })
+  return { ...base, children }
+}
+
+const TAB_SPAN = 100
+const ARROW_SIZE = 36
+const MORE_SIZE = 32
+const TAB_HEIGHT = 36
+
+/**
+ * 溢出下拉要量排布，jsdom 没有排版：把标签带伪造成一排横排的格子。标签宽 100，按在标签带里的次序首尾相接；
+ * 两端翻页钮 36、「更多」钮 32，收着（hidden）时两边都是 0，收起的关闭钮同样是 0；标签带的可见长度是 length。
+ * 机器在挂载那一刻就量，所以要先于挂载装上、卸载后原样放回。
+ */
+function tabStrip(length: number): NonNullable<ConformanceCase['environment']> {
+  return (win) => {
+    const proto = win.HTMLElement.prototype
+    const element = win.Element.prototype
+    const keys = ['offsetWidth', 'offsetHeight', 'offsetLeft', 'offsetTop'] as const
+    const saved = {
+      ...Object.fromEntries(keys.map(key => [key, Object.getOwnPropertyDescriptor(proto, key)])),
+      clientWidth: Object.getOwnPropertyDescriptor(element, 'clientWidth'),
+      clientHeight: Object.getOwnPropertyDescriptor(element, 'clientHeight'),
+    } as Record<(typeof keys)[number] | 'clientWidth' | 'clientHeight', PropertyDescriptor | undefined>
+    const partOf = (el: Element): string | null => (el.getAttribute('data-scope') === 'tabs' ? el.getAttribute('data-part') : null)
+    const square = (el: Element, size: number): { start: number, main: number, cross: number } =>
+      (el as HTMLElement).hidden ? { start: 0, main: 0, cross: 0 } : { start: 0, main: size, cross: size }
+    /** 伪造的盒：主轴起点、主轴长与交叉轴长；不归这里管的节点返回 null，取原值。 */
+    const box = (el: Element): { start: number, main: number, cross: number } | null => {
+      switch (partOf(el)) {
+        case 'list':
+          return { start: 0, main: length, cross: TAB_HEIGHT }
+        case 'trigger': {
+          const tabs = [...(el.parentElement?.children ?? [])].filter(other => partOf(other) === 'trigger')
+          return { start: tabs.indexOf(el) * TAB_SPAN, main: TAB_SPAN, cross: TAB_HEIGHT }
+        }
+        case 'prev-trigger':
+        case 'next-trigger':
+          return square(el, ARROW_SIZE)
+        case 'overflow-trigger':
+          return square(el, MORE_SIZE)
+        case 'close-trigger':
+          return square(el, 0)
+        default:
+          return null
+      }
+    }
+    const define = (target: object, key: keyof typeof saved, read: (b: { start: number, main: number, cross: number }) => number): void => {
+      const fallback = saved[key]
+      Object.defineProperty(target, key, {
+        configurable: true,
+        get(this: Element) {
+          const b = box(this)
+          return b ? read(b) : (fallback?.get?.call(this) ?? 0)
+        },
+      })
+    }
+    define(proto, 'offsetWidth', b => b.main)
+    define(proto, 'offsetHeight', b => b.cross)
+    define(proto, 'offsetLeft', b => b.start)
+    define(proto, 'offsetTop', () => 0)
+    define(element, 'clientWidth', b => b.main)
+    define(element, 'clientHeight', b => b.cross)
+    return () => {
+      for (const key of keys) {
+        const descriptor = saved[key]
+        if (descriptor)
+          Object.defineProperty(proto, key, descriptor)
+        else
+          delete (proto as unknown as Record<string, unknown>)[key]
+      }
+      for (const key of ['clientWidth', 'clientHeight'] as const) {
+        const descriptor = saved[key]
+        if (descriptor)
+          Object.defineProperty(element, key, descriptor)
+        else
+          delete (element as unknown as Record<string, unknown>)[key]
+      }
+    }
   }
 }
 
@@ -749,6 +839,165 @@ export const tabsSuite: ConformanceSuite = {
       fixture: () => tabsTree('two'),
       props: { defaultValue: 'one' },
       steps: [heldPressIgnored('tabs', 'trigger', '禁用的 trigger 不接受按压', { value: 'two' })],
+    },
+    {
+      name: '标签带放得下：「更多」钮收着，排在标签带之后、面板之前',
+      spec: { apg: APG },
+      fixture: withOverflowTrigger,
+      environment: tabStrip(600),
+      props: { defaultValue: 'one' },
+      initial: {
+        order: [
+          'root',
+          'list',
+          'prev-trigger',
+          'trigger[0]',
+          'tab-drag-trigger[0]',
+          'close-trigger[0]',
+          'trigger[1]',
+          'tab-drag-trigger[1]',
+          'close-trigger[1]',
+          'trigger[2]',
+          'tab-drag-trigger[2]',
+          'close-trigger[2]',
+          'next-trigger',
+          'overflow-trigger',
+          'content[0]',
+          'content[1]',
+          'content[2]',
+          'live-region',
+        ],
+        parts: {
+          'overflow-trigger': { 'hidden': '', 'type': 'button', 'aria-label': 'More tabs', 'aria-expanded': 'false' },
+          'prev-trigger': { hidden: '' },
+          'next-trigger': { hidden: '' },
+        },
+      },
+    },
+    {
+      name: '标签带放不下：「更多」钮露面并接上菜单触发器的接线，下拉列出没有整个露在可见区里的标签',
+      spec: { apg: APG },
+      fixture: withOverflowTrigger,
+      // 三枚标签共 300 放不进 200；起头时结束侧让出翻页钮 36，可见区 [0, 164]：one 整个露着，two 半露
+      environment: tabStrip(200),
+      props: { defaultValue: 'one' },
+      initial: {
+        parts: {
+          'overflow-trigger': {
+            'hidden': null,
+            'type': 'button',
+            'aria-label': 'More tabs',
+            'aria-haspopup': 'menu',
+            'aria-expanded': 'false',
+            'aria-controls': '@extern(menu:*:content)',
+            'data-state': 'closed',
+            // 在 tablist 之外、自占一个 Tab 位：不写 tabindex、不对读屏隐藏
+            'tabindex': null,
+            'aria-hidden': null,
+            'data-orientation': 'horizontal',
+            // 与翻页钮同一身份：Action Control icon 档、ghost 形态，档位随标签页 size 走
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+          },
+          'next-trigger': { hidden: null },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '下拉条目归 menu 的 scope，不进标签页的快照；Web Components 的条目由元素在量完之后的那一轮接线里自建',
+          run: async ({ doc, flush }) => {
+            await settled(doc, flush, () => overflowMenuItem(doc, 'two') != null)
+            const two = overflowMenuItem(doc, 'two')
+            const three = overflowMenuItem(doc, 'three')
+            if (!two || !three || overflowMenuItem(doc, 'one'))
+              throw new Error('「更多」下拉里应当恰好是可见区外的 two 与 three')
+            if (two.textContent?.trim() !== '标签 two' || two.getAttribute('role') !== 'menuitem')
+              throw new Error('下拉项取标签的文字、角色是 menuitem')
+          },
+        },
+      ],
+    },
+    {
+      name: '「更多」钮不是方向键走位的一站：End 落到末个标签，尽头回绕到首个标签，钮保持自己的 Tab 位',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['tabs.kbd.overflow-stop', 'tabs.kbd.last', 'tabs.kbd.next'],
+      fixture: withOverflowTrigger,
+      environment: tabStrip(200),
+      props: { defaultValue: 'one' },
+      steps: [
+        { kind: 'focus', part: 'trigger[0]' },
+        {
+          kind: 'key',
+          key: 'End',
+          expect: {
+            activeElement: { part: 'trigger[2]', exact: true },
+            parts: { 'overflow-trigger': { 'tabindex': null, 'aria-hidden': null } },
+          },
+        },
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'trigger[0]', exact: true } } },
+      ],
+    },
+    {
+      name: '「更多」钮展开下拉、Escape 收起并把焦点还给钮；下拉里选中一项即选中那个标签，焦点回到钮上',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['tabs.kbd.overflow-open', 'tabs.kbd.overflow-close'],
+      fixture: withOverflowTrigger,
+      environment: tabStrip(200),
+      props: { defaultValue: 'one' },
+      steps: [
+        // 钮在量完之后露面，下拉的条目随之建好；没有条目时菜单受控关着，展开不了
+        { kind: 'settle', until: { attr: { part: 'overflow-trigger', name: 'hidden', value: null } } },
+        { kind: 'focus', part: 'overflow-trigger' },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: { parts: { 'overflow-trigger': { 'aria-expanded': 'true', 'data-state': 'open' } }, events: [] },
+        },
+        {
+          kind: 'raw',
+          why: '焦点落进了 menu 的 scope，标签页的快照里看不到它',
+          run: async ({ doc, flush }) => {
+            if (!await focusSettled(doc, flush, () => overflowMenuItem(doc, 'two')))
+              throw new Error('ArrowDown 展开后焦点应落在下拉首项 two 上')
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            parts: { 'overflow-trigger': { 'aria-expanded': 'false', 'data-state': 'closed' } },
+            activeElement: { part: 'overflow-trigger', exact: true },
+            events: [],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '下拉条目归 menu 的 scope，选中那一下要在它身上按键',
+          run: async ({ doc, flush }) => {
+            const trigger = doc.querySelector<HTMLElement>('[data-scope="tabs"][data-part="overflow-trigger"]')!
+            await menuExited(doc, flush)
+            trigger.focus()
+            trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true }))
+            if (!await focusSettled(doc, flush, () => overflowMenuItem(doc, 'three')))
+              throw new Error('ArrowUp 展开后焦点应落在下拉末项 three 上')
+            overflowMenuItem(doc, 'three')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await flush()
+            if (trigger.getAttribute('aria-expanded') !== 'false')
+              throw new Error('选中后下拉应收起')
+            // 收起后焦点回到钮上，下一条断言在它落定之后读
+            await focusSettled(doc, flush, () => trigger)
+          },
+          expect: {
+            parts: { 'trigger[0]': { 'aria-selected': 'false' }, 'trigger[2]': { 'aria-selected': 'true' }, 'content[2]': { hidden: null } },
+            events: [{ type: 'value-change', detail: { value: 'three' } }],
+            activeElement: { part: 'overflow-trigger', exact: true },
+          },
+        },
+      ],
     },
   ],
 }

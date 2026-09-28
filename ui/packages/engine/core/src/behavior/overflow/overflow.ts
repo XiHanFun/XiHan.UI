@@ -47,6 +47,28 @@ export function fitOverflowCount(layout: OverflowLayout): number {
   return fit
 }
 
+/** 主轴上的一段区间，与 OverflowLayout 同一坐标系：从内衬盒的起始缘量起，按书写方向取逻辑值。 */
+export interface OverflowSpan {
+  start: number
+  end: number
+}
+
+/**
+ * 落在可见窗口之外的条目下标，文档序：没有整个露在窗口里的都算，半露的也算。
+ *
+ * 给条目不收起、整条沿主轴位移露出的滚动带用（Tabs 的标签带）：窗口随位移走，
+ * 窗口外的条目交给行尾的入口列出；收起式的一排（Toolbar）用 fitOverflowCount。
+ * 两端各让半个像素的余量，与 fitOverflowCount 同一把尺：量测带小数，恰好整个露出的那一个不该被判成半露。
+ */
+export function overflowOutsideWindow(spans: readonly OverflowSpan[], window: OverflowSpan): number[] {
+  const outside: number[] = []
+  spans.forEach((span, index) => {
+    if (span.start < window.start - TOLERANCE || span.end > window.end + TOLERANCE)
+      outside.push(index)
+  })
+  return outside
+}
+
 export interface MeasureOverflowOptions {
   /** 条目排在它的内衬盒里；主轴上的可用长度取它。 */
   container: HTMLElement

@@ -42578,6 +42578,98 @@
   mask-image: var(--xh-glyph-mark-chevron-down);
 }
 
+/* —— 「更多」钮 —— */
+/* 放了「更多」钮：钮排在标签带之后、同一行（竖排是同一列的列尾）。它不能放进标签带——tablist 只收 tab，
+   所以是 root 的孩子；root 换成两轨网格，标签带占能伸缩的那一轨、钮占按内容的那一轨，面板等其余孩子横跨两轨排在
+   下面（竖排排在右侧）。钮收着（hidden）时那一轨是 0，标签带铺满；钮与标签带之间的间距挂在钮自己身上，
+   收着时一并让开。标签带的可用长度因此随钮的有无变：放不放得下由机器按让回钮那一截算，钮不会自己把自己留住 */
+[data-scope='tabs'][data-part='root']:has(> [data-scope='tabs'][data-part='overflow-trigger']) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 0;
+  row-gap: var(--xh-tabs-gap, var(--xh-stack-gap-md));
+}
+
+[data-scope='tabs'][data-part='root']:has(> [data-scope='tabs'][data-part='overflow-trigger']) > * {
+  grid-column: 1 / -1;
+}
+
+[data-scope='tabs'][data-part='root']:has(> [data-scope='tabs'][data-part='overflow-trigger'])
+  > [data-scope='tabs'][data-part='list'] {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+[data-scope='tabs'][data-part='root']:has(> [data-scope='tabs'][data-part='overflow-trigger'])
+  > [data-scope='tabs'][data-part='overflow-trigger'] {
+  grid-row: 1;
+  grid-column: 2;
+  align-self: center;
+  margin-inline-start: var(--xh-space-1);
+}
+
+/* 竖排：标签带与钮上下叠成左侧一列（钮在列尾），面板占右侧那一轨、跨两行 */
+[data-scope='tabs'][data-part='root'][data-orientation='vertical']:has(> [data-scope='tabs'][data-part='overflow-trigger']) {
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--xh-tabs-gap, var(--xh-stack-gap-md));
+  row-gap: 0;
+}
+
+[data-scope='tabs'][data-part='root'][data-orientation='vertical']:has(> [data-scope='tabs'][data-part='overflow-trigger']) > * {
+  grid-row: 1 / -1;
+  grid-column: 2;
+}
+
+[data-scope='tabs'][data-part='root'][data-orientation='vertical']:has(> [data-scope='tabs'][data-part='overflow-trigger'])
+  > [data-scope='tabs'][data-part='list'] {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+[data-scope='tabs'][data-part='root'][data-orientation='vertical']:has(> [data-scope='tabs'][data-part='overflow-trigger'])
+  > [data-scope='tabs'][data-part='overflow-trigger'] {
+  grid-row: 2;
+  grid-column: 1;
+  align-self: auto;
+  margin-inline-start: 0;
+  margin-block-start: var(--xh-space-1);
+}
+
+/* 钮本身：接 Action Control icon 档 ghost 面（连接层投影 profile / variant / size），盒取标签同高的正方形，
+   与两端翻页钮同一身份；四态面、0.97 按压、焦点环与粗指针 44px 命中区由家族配方给。它坐在 root 的面上
+   （不在标签带里），承载面阶梯走家族缺省的白底 100 → 200；字取次要色，与静息的标签、翻页钮同档 */
+[data-scope='tabs'][data-part='overflow-trigger'] {
+  --xh-action-visual-size: var(--xh-tabs-trigger-h, var(--xh-_tabs-trigger-h));
+  --xh-action-fg-rest: var(--xh-fg-muted);
+  /* 作者塞进来的图标跟着 icon 档走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
+  touch-action: manipulation;
+}
+
+/* 竖排：与竖排的翻页钮一样躺平成横贯标签带那一列的一条 */
+[data-scope='tabs'][data-part='overflow-trigger'][data-orientation='vertical'] {
+  inline-size: auto;
+}
+
+/* 下拉开着：与悬停同档的中性面，不用品牌色、不另画环；列的是哪几个标签由下拉本身说明 */
+[data-scope='tabs'][data-part='overflow-trigger'][data-state='open'] {
+  --xh-action-bg-rest: var(--xh-_action-variant-bg-hover);
+  --xh-action-bg-focus-visible: var(--xh-_action-variant-bg-hover);
+}
+
+/* 没写内容就由皮肤画兜底字形：横排三点（与工具条的「更多」同一枚）。作者塞了自己的图标这条即不命中 */
+[data-scope='tabs'][data-part='overflow-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-ellipsis) center / contain no-repeat;
+}
+
 /* —— 关闭钮 —— */
 /* 关闭钮与所属标签平级、紧跟其后（不嵌进 role=tab 的按钮里），画面上收进标签面的行尾：标签在行尾让出一格
    （钮的边长 + 与行尾的留白 + 与文字的间距），钮以负的起始外边距退回这一格，结束外边距补回同样的留白，
@@ -42638,6 +42730,7 @@
 [data-scope='tabs'][data-part='separator'][hidden],
 [data-scope='tabs'][data-part='prev-trigger'][hidden],
 [data-scope='tabs'][data-part='next-trigger'][hidden],
+[data-scope='tabs'][data-part='overflow-trigger'][hidden],
 [data-scope='tabs'][data-part='tab-drag-trigger'][hidden] {
   display: none;
 }
@@ -42691,9 +42784,10 @@
     text-decoration: underline;
   }
 
-  /* 纸上翻不了页、也关不了标签，这几只钮不上纸 */
+  /* 纸上翻不了页、关不了标签、也弹不出下拉，这几只钮不上纸 */
   [data-scope='tabs'][data-part='prev-trigger'],
   [data-scope='tabs'][data-part='next-trigger'],
+  [data-scope='tabs'][data-part='overflow-trigger'],
   [data-scope='tabs'][data-part='close-trigger'] {
     display: none;
   }

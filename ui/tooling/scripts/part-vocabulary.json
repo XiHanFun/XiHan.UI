@@ -1214,6 +1214,7 @@
       "avatar-group"
     ],
     "overflow-trigger": [
+      "tabs",
       "toolbar"
     ],
     "page-size-select": [

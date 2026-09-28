@@ -70497,16 +70497,20 @@
         "root"
       ],
       "property": [
-        "gap"
+        "column-gap",
+        "gap",
+        "row-gap"
       ],
       "state": [
-        "default"
+        "default",
+        "has(> [data-scope='tabs'][data-part='overflow-trigger'])",
+        "orientation=vertical"
       ],
       "defaultToken": [
         "--xh-stack-gap-md"
       ],
       "visibility": "public",
-      "description": "tabs 的 root 部件 gap 覆盖槽。"
+      "description": "tabs 的 root 部件 column-gap、gap、row-gap 覆盖槽。"
     },
     {
       "name": "--xh-tabs-indicator-color",
@@ -71216,6 +71220,7 @@
       "part": [
         "close-trigger",
         "next-trigger",
+        "overflow-trigger",
         "prev-trigger",
         "root",
         "trigger"
@@ -71239,7 +71244,7 @@
         "--xh-_tabs-trigger-h"
       ],
       "visibility": "public",
-      "description": "tabs 的 close-trigger、next-trigger、prev-trigger、root、trigger 部件 block-size、inline-size、margin-block-end、margin-block-start、margin-inline-end、margin-inline-start、padding-inline-end 覆盖槽。"
+      "description": "tabs 的 close-trigger、next-trigger、overflow-trigger、prev-trigger、root、trigger 部件 block-size、inline-size、margin-block-end、margin-block-start、margin-inline-end、margin-inline-start、padding-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-tabs-trigger-px",

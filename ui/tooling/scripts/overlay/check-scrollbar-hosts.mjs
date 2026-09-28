@@ -374,6 +374,7 @@ const problems = []
  */
 const EMBEDDED_HOSTS = {
   toolbar: { scope: 'menu', why: '「更多」菜单的定位层与列表由 <xh-toolbar> 经共用的 OverflowMenuController 自建（归 menu 的 scope）；Vue / React 由 XhToolbarOverflowTrigger 渲 XhMenuRoot，条子随 XhMenuPositioner 接上' },
+  tabs: { scope: 'menu', why: '「更多」下拉的定位层与列表由 <xh-tabs> 经共用的 OverflowMenuController 自建（归 menu 的 scope）；Vue / React 由 XhTabsOverflowTrigger 渲 XhMenuRoot，条子随 XhMenuPositioner 接上' },
 }
 
 // Vue 侧：组件名取 components/ 下那一层目录名，直接摆在 components/ 里的取文件名。
@@ -403,6 +404,11 @@ for (const name of await readdir(WC)) {
   if (!src.includes(WC_CALL))
     continue
   wcHosts.set(basename(name, '.ts'), { blocks: callBlocks(src), src })
+}
+// 经控制器自建浮层的元素都得登记成内嵌宿主：它的条子归 menu，不登记就没人核三端都接上了 menu 的条子
+for (const comp of wcOverflowMenuHosts) {
+  if (!(comp in EMBEDDED_HOSTS))
+    problems.push(`${comp}：Web Components 侧经 OverflowMenuController 自建「更多」菜单，却没登记进 EMBEDDED_HOSTS`)
 }
 // 控制器自己得真接了条子：元素经它自建浮层，就靠它那一处调用配条子
 if (wcOverflowMenuHosts.size > 0) {

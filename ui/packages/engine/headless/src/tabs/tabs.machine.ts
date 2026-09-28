@@ -7,14 +7,15 @@
 
 import type { ItemQuery, Params } from '@xihan-ui/core'
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
-import type { TabsIndicatorRect, TabsSchema } from './tabs.types'
-import { itemValue, queryItems, setup, trackListMotion } from '@xihan-ui/core'
+import type { TabsIndicatorRect, TabsOverflowItem, TabsSchema } from './tabs.types'
+import { isItemDisabled, itemQuerySelector, itemValue, overflowOutsideWindow, queryItems, setup, trackListMotion, trackOverflowLayout } from '@xihan-ui/core'
 import { frameLoop, frameNow, isTweenDone, readMotion, resolveMotionPreference, tweenValueAt } from '@xihan-ui/motion'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlong, reorderFlat } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
 import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox } from '../shared/indicator'
-import { tabsAnatomy, tabsTriggerQuery } from './tabs.anatomy'
+import { tabsAnatomy, tabsOverflowTriggerQuery, tabsTriggerQuery } from './tabs.anatomy'
+import { describeOverflowTab, sameTabsOverflowItems } from './tabs.overflow'
 
 const { createMachine } = setup<TabsSchema>()
 
@@ -27,6 +28,8 @@ const SCROLL_PAGE_RATIO = 0.8
 /** 两端的翻页钮：贴在标签带两端、不随标签位移，露出标签时要把它们盖住的那一截也让开。 */
 const PREV_TRIGGER_QUERY: ItemQuery = { scope: tabsAnatomy.name, part: 'prev-trigger' }
 const NEXT_TRIGGER_QUERY: ItemQuery = { scope: tabsAnatomy.name, part: 'next-trigger' }
+
+const ROOT_SELECTOR = itemQuerySelector({ scope: tabsAnatomy.name, part: 'root' })
 
 /**
  * 标签带里不随位移走的部件：翻页钮贴在两端不动；指示条是绝对定位的部件，不占排布位，
@@ -88,6 +91,38 @@ function isHorizontal(orientation: 'horizontal' | 'vertical' | undefined): boole
   return (orientation ?? 'horizontal') === 'horizontal'
 }
 
+function px(value: string | undefined): number {
+  return Number.parseFloat(value ?? '') || 0
+}
+
+/**
+ * 一只翻页钮在主轴上盖住标签带的那一截：它贴在标签带一端、浮在标签上。
+ * 首帧翻页钮还没露面、量不到宽，按 fallback 算（翻页钮是与标签同高的正方形）；没放翻页钮时是 0。
+ */
+function pageTriggerReserve(list: HTMLElement, query: ItemQuery, horizontal: boolean, fallback: number): number {
+  const el = queryItems(list, query)[0]
+  if (!el)
+    return 0
+  return (horizontal ? el.offsetWidth : el.offsetHeight) || fallback
+}
+
+/**
+ * 「更多」钮露着时从标签带那里占走的一截：钮排在标签带之后，露面时标签带跟着让出它的长度与它前面的间距。
+ * 收着（hidden）或没放钮时是 0。钮是 root 的孩子，从标签带往上找自己的 root 再按归属取。
+ */
+function overflowTriggerReserve(list: HTMLElement, horizontal: boolean): number {
+  const root = list.closest<HTMLElement>(ROOT_SELECTOR)
+  const trigger = root ? queryItems(root, tabsOverflowTriggerQuery)[0] : undefined
+  if (!trigger || trigger.hidden)
+    return 0
+  const size = horizontal ? trigger.offsetWidth : trigger.offsetHeight
+  if (size === 0)
+    return 0
+  const style = trigger.ownerDocument.defaultView?.getComputedStyle(trigger)
+  const margin = horizontal ? px(style?.marginLeft) + px(style?.marginRight) : px(style?.marginTop) + px(style?.marginBottom)
+  return size + margin
+}
+
 // 选中值住在 context 的 cell 里，受控/非受控在 cell 收口，不需要影子事件与受控守卫。
 export const tabsMachine = createMachine({
   name: 'tabs',
@@ -118,20 +153,25 @@ export const tabsMachine = createMachine({
       const initial = prop('value') ?? prop('defaultValue') ?? null
       return { defaultValue: initial == null ? [] : [initial] }
     }),
+    // 「更多」下拉里列的标签：可见区外的那几个，随位移与量测重算；不受控、不对外通知
+    overflowItems: cell<TabsOverflowItem[]>(() => ({ defaultValue: [], isEqual: sameTabsOverflowItems })),
   }),
-  // 挂载即量一次，让指示条首帧就在位、翻页钮首帧就知道要不要露面
-  entry: ['measureStrip', 'measureIndicator'],
-  watch: ({ track, context, action }) => {
+  // 挂载即量一次，让指示条首帧就在位、翻页钮与「更多」钮首帧就知道要不要露面
+  entry: ['measureStrip', 'measureOverflow', 'measureIndicator'],
+  watch: ({ track, context, prop, action }) => {
     // 选中值一变：先记进被选中过的标签，再把被裁掉的选中标签挪进视野，最后重量指示条。指示条量的是排布位、
     // 与位移无关，先后顺序只为让几次更新落在同一轮
     track([context.dep('value')], () => action(['recordVisited', 'revealSelected', 'measureIndicator']))
     // 焦点落到被裁掉的标签上，标签带自己挪过去：标签带不是滚动容器，浏览器不会替它做这件事
     track([context.dep('focusedValue')], () => action(['revealFocused']))
+    // 可见区随位移走：标签带挪了（翻页、滚轮、手指、补间的每一帧）、位移上限变了、数据里的文字换了，
+    // 「更多」下拉里列哪几个标签跟着重算。这一路可能正跑在尺寸观察的回调里，只换项、不改钮的有无（见 refreshOverflow）
+    track([context.dep('scroll'), context.dep('scrollMax'), () => prop('collection')], () => action(['refreshOverflow']))
   },
   // 跟手的会话整个生命周期都在，不按拖动状态挂卸。常驻的代价只是几个早退的
   // pointermove，换来的是状态树一行都不用改
   // trackReorder 排在 trackStrip 之前：同一批重排里它的观察器先回调，指示条先按「跟着换位滑」量这一次
-  effects: ['trackPointer', 'trackResize', 'trackReorder', 'trackStrip', 'trackLiquidIndicator'],
+  effects: ['trackPointer', 'trackResize', 'trackReorder', 'trackStrip', 'trackOverflow', 'trackLiquidIndicator'],
   refs: () => ({
     getListEl: () => null,
     liquidIndicator: null,
@@ -176,6 +216,8 @@ export const tabsMachine = createMachine({
         'PAN.MOVE': { actions: ['trackPan'] },
         'PAN.END': { actions: ['endPan'] },
         'PAN.CANCEL': { actions: ['cancelPan'] },
+        // 「更多」下拉里选中一个标签：选中它并挪进可见区
+        'OVERFLOW.SELECT': { actions: ['selectOverflowItem'] },
       },
     },
   },
@@ -278,6 +320,45 @@ export const tabsMachine = createMachine({
           mutationObserver?.disconnect()
           refs.get('scrollTween')?.stop()
           refs.set('scrollTween', null)
+        }
+      },
+
+      /**
+       * 盯住「更多」下拉该列哪几个标签（core 的溢出观察，与 Toolbar 收纳同一套）：标签带与标签的尺寸、
+       * 标签增减与改写（文字、可及名、禁用）、字体加载完成、窗口尺寸，都排到下一帧重算一次。
+       * 钮的露面与收起只走这一路（与挂载那一次）：钮一露面标签带就短一截、一收起就长一截，
+       * 在尺寸观察的回调里当场改，浏览器会报 ResizeObserver 循环；排到下一帧再写，标签带的变化在下一轮量测里照常接住。
+       * list 首轮渲染后才在：挂上那一刻、这一轮渲染落定时与下一帧各量一次——Web Components 的标签要等首轮接线
+       * 才带上身份标记，落定时那一次让钮首帧就露面，下一帧那一次兜住首轮渲染时还没有 list 的宿主。
+       */
+      trackOverflow: ({ refs, scope, action, flush }) => {
+        const win = scope.getWin() as Window & typeof globalThis
+        let observed: HTMLElement | null = null
+        let stop: (() => void) | null = null
+        const attach = (): void => {
+          const list = refs.get('getListEl')()
+          if (list && list !== observed) {
+            stop?.()
+            observed = list
+            stop = trackOverflowLayout(win, {
+              container: list,
+              nodes: () => queryItems(list, tabsTriggerQuery),
+              onChange: () => action(['measureOverflow']),
+            })
+          }
+          action(['measureOverflow'])
+        }
+        let disposed = false
+        attach()
+        flush(() => {
+          if (!disposed)
+            attach()
+        })
+        const raf = win.requestAnimationFrame(attach)
+        return () => {
+          disposed = true
+          win.cancelAnimationFrame(raf)
+          stop?.()
         }
       },
 
@@ -465,10 +546,14 @@ export const tabsMachine = createMachine({
       /** 量标签带放不放得下：内容超出可见长度的那一截就是位移上限；上限缩了，已有的位移跟着夹回来。 */
       measureStrip: ({ refs, prop, context }) => {
         const list = refs.get('getListEl')()
-        const m = list && measureStrip(list, isHorizontal(prop('orientation')))
+        const horizontal = isHorizontal(prop('orientation'))
+        const m = list && measureStrip(list, horizontal)
         // 亚像素误差留 1px 余量：不然一个标签带在某些缩放比下会永远"差一点点"放不下
         const excess = m ? m.extent - m.viewport : 0
-        const scrollMax = excess <= 1 ? 0 : excess
+        // 「更多」钮露着时占走了标签带的一截：放不放得下按让回这一截算。钮的有无只取决于全部标签放不放得下，
+        // 不会因为钮自己把标签带挤窄了一截就一直留着（放得下时钮收起，标签带随之变回原长）
+        const fits = !list || excess - overflowTriggerReserve(list, horizontal) <= 1
+        const scrollMax = fits ? 0 : excess
         context.set('scrollMax', scrollMax)
         // 上限缩到位移之下：正在走的补间停掉，直接夹回来
         if (context.get('scroll') > scrollMax) {
@@ -554,6 +639,38 @@ export const tabsMachine = createMachine({
       /** 焦点落到被裁掉的标签上（方向键走到那里），标签带挪过去露出它。 */
       revealFocused: (params) => {
         revealTab(params, params.context.get('focusedValue') ?? null)
+      },
+      /** 量「更多」下拉该列哪几个标签并写回；列表由空变有、由有变空（钮露面 / 收起）也照写。 */
+      measureOverflow: (params) => {
+        const next = overflowTabs(params)
+        if (next)
+          params.context.set('overflowItems', next)
+      },
+      /**
+       * 同样量一次，但只换项、不改钮的有无：位移与上限的变化可能正出在尺寸观察的回调里，钮在这里露面或收起会让标签带
+       * 当场变长变短，浏览器报 ResizeObserver 循环。有无变了就先留着，由 trackOverflow 排到下一帧的那一次写回。
+       * 位移只在放不下时变，项从不因为位移由有变空，翻页、滚轮与补间的每一帧照常换项。
+       */
+      refreshOverflow: (params) => {
+        const next = overflowTabs(params)
+        if (next && (next.length === 0) === (params.context.get('overflowItems').length === 0))
+          params.context.set('overflowItems', next)
+      },
+      /**
+       * 「更多」下拉里选中一个标签：与点它同一个意图——选中（受控时只发 onValueChange），并把它挪进可见区。
+       * 受控下宿主没写回时选中不变，标签仍挪进视野：它就是用户要去的那一个。禁用的标签在下拉里同样禁用、选不中，
+       * 这里再按标签当下的禁用守一道。
+       */
+      selectOverflowItem: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'OVERFLOW.SELECT')
+          return
+        const list = params.refs.get('getListEl')()
+        const tab = list ? queryItems(list, tabsTriggerQuery).find(el => itemValue(el) === e.value) : undefined
+        if (!tab || isItemDisabled(tab))
+          return
+        params.context.set('value', e.value)
+        revealTab(params, e.value)
       },
       measureIndicator: ({ refs, prop, context, flush }) => {
         const run = (): void => {
@@ -648,20 +765,44 @@ function revealTab(params: ScrollParams, value: string | null): void {
   const m = trigger && measureStrip(list, horizontal)
   if (!trigger || !m)
     return
-  const reserve = (query: ItemQuery): number => {
-    const el = queryItems(list, query)[0]
-    if (!el)
-      return 0
-    return (horizontal ? el.offsetWidth : el.offsetHeight) || trigger.offsetHeight
-  }
   const [start, end] = logicalBounds(trigger, m, horizontal, (prop('dir') ?? 'ltr') === 'rtl')
   const scroll = scrollTarget(params)
-  const visibleStart = scroll + reserve(PREV_TRIGGER_QUERY)
-  const visibleEnd = scroll + m.viewport - reserve(NEXT_TRIGGER_QUERY)
+  const visibleStart = scroll + pageTriggerReserve(list, PREV_TRIGGER_QUERY, horizontal, trigger.offsetHeight)
+  const visibleEnd = scroll + m.viewport - pageTriggerReserve(list, NEXT_TRIGGER_QUERY, horizontal, trigger.offsetHeight)
   if (start >= visibleStart && end <= visibleEnd)
     return
   // 起点在前就对齐起点；否则对齐终点。比可见区还宽的标签也对齐起点：标签名的开头比结尾要紧
   startScroll(params, start < visibleStart ? scroll - (visibleStart - start) : scroll + (end - visibleEnd))
+}
+
+/**
+ * 「更多」下拉该列的标签：没有整个露在可见区里的，文档序。
+ * 可见区从位移处起、长一个标签带的可见长度，两端让出翻页钮盖住的那一截——挪到头那一侧的钮已收起（透明、不接指针），
+ * 那一侧不让。量的是排布位（offset*），与位移中途的 translate 无关，补间的每一帧都按此刻的位移算。
+ * 放得下时一个不列；作者自己藏起来的标签（display: none）不在标签带里，也不列。标签带没有排布时返回 null，保留上一轮。
+ */
+function overflowTabs({ refs, prop, context }: Pick<Params<TabsSchema>, 'refs' | 'prop' | 'context'>): TabsOverflowItem[] | null {
+  const list = refs.get('getListEl')()
+  const scrollMax = context.get('scrollMax')
+  if (!list || scrollMax <= 0)
+    return []
+  const horizontal = isHorizontal(prop('orientation'))
+  const m = measureStrip(list, horizontal)
+  if (!m)
+    return null
+  const rtl = (prop('dir') ?? 'ltr') === 'rtl'
+  const tabs = queryItems(list, tabsTriggerQuery).filter(el => el.offsetWidth > 0 || el.offsetHeight > 0)
+  const spans = tabs.map((el) => {
+    const [start, end] = logicalBounds(el, m, horizontal, rtl)
+    return { start, end }
+  })
+  const scroll = context.get('scroll')
+  const fallback = tabs[0]?.offsetHeight ?? 0
+  const start = scroll + (scroll > 0 ? pageTriggerReserve(list, PREV_TRIGGER_QUERY, horizontal, fallback) : 0)
+  const end = scroll + m.viewport - (scroll < scrollMax ? pageTriggerReserve(list, NEXT_TRIGGER_QUERY, horizontal, fallback) : 0)
+  const collection = prop('collection') ?? []
+  const labelOf = (value: string): string | undefined => collection.find(node => node.value === value)?.label
+  return overflowOutsideWindow(spans, { start, end }).map(index => describeOverflowTab(tabs[index]!, labelOf))
 }
 
 /** 播报与提交两处都要写 announcement，抽一个最小接口，别把整个 service 拖进来。 */

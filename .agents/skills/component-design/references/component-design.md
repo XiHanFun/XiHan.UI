@@ -137,6 +137,7 @@ Vue、React、Web Components 只负责：
 | RadioGroup segmented 形态的段 | 行级（只换面） | 不投影 Action Control 配方（与 Tabs segment 同）：面与字写在段上，淡底承载阶梯 200 → 300，选中段由滑块标出、不叠按下面；不画行首圆圈，组标题视觉隐藏只作可及名 |
 | Toggle、ToggleGroup item、Toolbar `aria-pressed` 项 | Action Control（无滑块开关） | 选中 = 品牌淡底；见 §7.3 |
 | Toolbar 「更多」钮（overflow-trigger） | Action Control `icon` profile、ghost、与条目同档 | 不写内容时画横排三点；菜单开着时与悬停同档的中性面；见 §6.6 |
+| Tabs 「更多」钮（overflow-trigger） | Action Control `icon` profile、ghost、与两端翻页钮同档 | root 的孩子、排在 list 之后（不进 tablist），自占一个 Tab 位、不是方向键走位的一站；盒取标签同高的正方形（竖排横贯列宽），不写内容时画横排三点；菜单开着时与悬停同档的中性面；见 §6.6 |
 | Tabs line trigger、Anchor link、SideNav link、NavigationMenu trigger / 面板 link | Collection Item（导航当前） | 当前 = 指示条 / 字色；SideNav link 投影 `data-xh-collection-context='page'`，其余投影 `'nav'`（Tabs 只在 line 档投影，另投 `data-current`；NavigationMenu trigger 展开时投影 `data-in-path`）；见 §7.3 |
 | Breadcrumb link | Collection Item（导航当前） | 当前页是不可点位置：`aria-current="page"`，`--xh-fg-default` + medium，无指示条；投影 `data-xh-collection-context='nav'`，当前页再投影 `data-xh-collection-terminal`（它同时带 `aria-disabled`，不显式标会被家族禁用面吃掉）；见 §7.3 |
 | Menubar trigger | Collection Item（展开路径 / 打开中） | 没有当前态：open 与家族 hover 同档的中性面，不用品牌色、不加粗；投影 `data-xh-collection-context='nav'`，展开时投影 `data-in-path`；见 §7.3 |
@@ -369,7 +370,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 边缘渐隐只在 ScrollArea 的 fade 变体与 Marquee 提供；粘底只由 Core `createStickToBottom` 提供。
 - 滑块色阶维持 15 / 25 / 35% 三级；文档站页面滚动条与组件滚动条同一 `type`，不另写覆写。
 - 声明了 `--xh-scrollbar-track-bg` 却未接线为宿主的皮肤视为死声明。
-- 横向控件带排不下时分三路：Menubar / NavigationMenu / RadioGroup segmented 形态折行；Toolbar 放了行尾的「更多」钮（`overflow-trigger`）时不折行——条目按文档序从尾部起收进它弹出的 Menu，量测由 Headless 在挂载后按自然排布做（容器变宽变窄、条目增减或改写即重量），全部放得下时钮收起、一个不收；收起的条目在菜单里按可及名取文字，写了 `aria-pressed` 的是勾选项，工具条上的分组与分隔线在菜单里画成分隔线，选中一项即替条目触发它自己的点击；钮接 Action Control icon 档 ghost 面、与条目同档，是方向键走位的最后一站，焦点所在的条目被收起时焦点交给它；它前面收空的分组与多出的分隔线一并让开；没放钮的 Toolbar 仍折行。Tabs 不折行——标签带只裁主轴（`overflow: clip visible`，不是滚动容器，交叉轴上的焦点环、粗指针外扩与 raised 影都不被裁），标签整体沿主轴 `translate` 位移（机器按 continuous 档补间写进 `--xh-_tabs-scroll`），两端 `prev-trigger` / `next-trigger` 接 Action Control icon 档 ghost 面、静息底换成所在面的盖底（`--xh-tabs-scroll-trigger-bg`，缺省 surface、segment 轨道取 subtle）、挪到头那一侧 `opacity: 0`（与 Carousel 同），横向滚轮按量位移、竖滚轮留给页面，触屏手指沿主轴拖即跟手平移（放不下时 `list` 写 `touch-action: pan-y pinch-zoom`，交叉轴仍归页面），选中 / 聚焦的标签被裁时自动挪进视野；不铺边缘渐隐。
+- 横向控件带排不下时分三路：Menubar / NavigationMenu / RadioGroup segmented 形态折行；Toolbar 放了行尾的「更多」钮（`overflow-trigger`）时不折行——条目按文档序从尾部起收进它弹出的 Menu，量测由 Headless 在挂载后按自然排布做（容器变宽变窄、条目增减或改写即重量），全部放得下时钮收起、一个不收；收起的条目在菜单里按可及名取文字，写了 `aria-pressed` 的是勾选项，工具条上的分组与分隔线在菜单里画成分隔线，选中一项即替条目触发它自己的点击；钮接 Action Control icon 档 ghost 面、与条目同档，是方向键走位的最后一站，焦点所在的条目被收起时焦点交给它；它前面收空的分组与多出的分隔线一并让开；没放钮的 Toolbar 仍折行。Tabs 不折行——标签带只裁主轴（`overflow: clip visible`，不是滚动容器，交叉轴上的焦点环、粗指针外扩与 raised 影都不被裁），标签整体沿主轴 `translate` 位移（机器按 continuous 档补间写进 `--xh-_tabs-scroll`），两端 `prev-trigger` / `next-trigger` 接 Action Control icon 档 ghost 面、静息底换成所在面的盖底（`--xh-tabs-scroll-trigger-bg`，缺省 surface、segment 轨道取 subtle）、挪到头那一侧 `opacity: 0`（与 Carousel 同），横向滚轮按量位移、竖滚轮留给页面，触屏手指沿主轴拖即跟手平移（放不下时 `list` 写 `touch-action: pan-y pinch-zoom`，交叉轴仍归页面），选中 / 聚焦的标签被裁时自动挪进视野；root 里紧跟 list 放了「更多」钮（`overflow-trigger`）时，放不下即在标签带行尾（竖排为列尾）露面，弹出的 Menu 列出没有整个露在可见区（标签带露出的那一段，扣掉两端显示着的翻页钮）里的标签、半露的也列，选中一项即选中并挪进可见区；标签不收起，下拉只是可见区外标签的索引，项随位移换；钮的有无与翻页钮同进同退，放不放得下按让回钮那一截算（钮挤窄了标签带也不会自己把自己留住）；不铺边缘渐隐。
 
 ### 6.7 数据标记与图表家具
 

@@ -8,12 +8,14 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsNode, TabsNodeMeta, TabsSchema, TabsVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import { tabsOverflowMenuProps } from '@xihan-ui/headless'
 import { Fragment, useEffect, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { slotPaints } from '../../runtime/slot-content'
+import { XhMenuRoot } from '../menu/menu'
 import { TabsProvider, useTabsContext } from './context'
 import { useTabs } from './use-tabs'
 
@@ -162,6 +164,23 @@ export interface XhTabsNextTriggerProps extends ComponentPropsWithRef<'button'> 
 export function XhTabsNextTrigger({ children, ...rest }: XhTabsNextTriggerProps): ReactNode {
   const ctx = useTabsContext()
   return <button {...mergeReactProps(ctx.api.getNextTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
+export interface XhTabsOverflowTriggerProps extends ComponentPropsWithRef<'button'> {}
+/**
+ * 标签带之后的「更多」钮：标签带放不下时露面，弹出的下拉列出此刻没有整个露在可见区里的标签，
+ * 选中一项即选中那个标签并把它挪进可见区；放得下时收着。放在 root 里、紧跟 XhTabsList 之后（不放进 list：
+ * tablist 只收 tab），自占一个 Tab 位。它同时是一张 Menu 的触发器——下拉的条目与落位由标签页的机器现给
+ * （tabsOverflowMenuProps），钮按 asChild 接菜单的开合接线，自己的解剖不让位。不写内容时由皮肤画一枚横排三点。
+ */
+export function XhTabsOverflowTrigger({ children, ...rest }: XhTabsOverflowTriggerProps): ReactNode {
+  const ctx = useTabsContext()
+  const trigger = (
+    <button {...mergePartProps(ctx.api.getOverflowTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </button>
+  )
+  return <XhMenuRoot {...tabsOverflowMenuProps(ctx.service)} triggerAsChild trigger={trigger} />
 }
 
 export interface XhTabsLiveRegionProps extends ComponentPropsWithRef<'div'> {}
