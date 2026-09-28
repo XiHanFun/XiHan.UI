@@ -56,6 +56,8 @@ export interface XhCalendarRangePickerRootProps extends Omit<ComponentPropsWithR
   /** 校验失败：根带 data-invalid，区间内的格子报告 aria-invalid。 */
   invalid?: boolean
   locale?: string
+  /** 周首日，0 = 星期日 … 6 = 星期六；不给按 locale。 */
+  firstDayOfWeek?: number
   timeZone?: string
   disabled?: boolean
   readOnly?: boolean
@@ -89,6 +91,7 @@ export function XhCalendarRangePickerRoot({
   activeIndex,
   invalid,
   locale,
+  firstDayOfWeek,
   timeZone,
   disabled,
   readOnly,
@@ -117,6 +120,7 @@ export function XhCalendarRangePickerRoot({
     activeIndex,
     invalid,
     locale,
+    firstDayOfWeek,
     timeZone,
     disabled,
     readOnly,

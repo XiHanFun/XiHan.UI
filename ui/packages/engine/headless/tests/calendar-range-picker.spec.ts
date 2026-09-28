@@ -28,6 +28,18 @@ describe('周选预览', () => {
   })
 })
 
+describe('firstDayOfWeek：周首日', () => {
+  it('给了就压过 locale：en-US 下写 1，格子与表头都从星期一排起，Home 落到星期一', async () => {
+    const h = mount({ defaultFocusedValue: '2026-08-13', locale: 'en-US', firstDayOfWeek: 1 })
+    expect(h.rendered()[0]).toBe('2026-07-27')
+    expect(h.api().weekDays[0]!.long).toBe('Monday')
+    h.cell('2026-08-13').focus()
+    press(h.cell('2026-08-13'), 'Home')
+    await settle()
+    expect(focused()).toBe('2026-08-10')
+  })
+})
+
 describe('周粒度区间', () => {
   it('周粒度与区间模式正交：选择状态只存两端周期的首日', () => {
     const h = mountDrill({ defaultFocusedValue: '2026-08-13', granularity: 'week', locale: 'zh-CN' })

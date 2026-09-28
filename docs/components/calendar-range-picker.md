@@ -71,7 +71,8 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 - `granularity` 决定周期格的生成方式；周、月、季度和年区间共用同一套 Period 边界判断。
 - `visibleCount` 并排展示连续的月份，翻页时整个视窗一起移动；起止常跨月时建议为 2。
 - `calendarPeriodValue` 将两端转换为 `{ granularity, start, end, keys }`，可直接用于查询参数。
-- 周首日、月份名与星期名跟随 `locale`，与日历选择器使用同一套解析链。
+- 周首日、月份名与星期名跟随 `locale`，与日历选择器使用同一套解析链；`firstDayOfWeek`（0 = 星期日 … 6 = 星期六）单独改周首日，月份名与星期名仍按 `locale`。
+- `week` 粒度按 ISO 周（星期一到星期日）成段，周序号也按 ISO 周计，与 `locale` 和 `firstDayOfWeek` 都无关。以星期日开头的 locale（如 `en-US`）下，日视图的一行比 ISO 周早一天开始，行首的周序号取这一行中间那天所在的 ISO 周；要让日视图的每一行正好是一个 ISO 周，把 `firstDayOfWeek` 设为 1。
 
 ### 组合
 
@@ -144,6 +145,7 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 | `XhCalendarRangePickerRoot` | `activeIndex` | `0 \| 1` |  | 下一次点选落在哪一端；为 1 且已有起点时只改终点。 |
 | `XhCalendarRangePickerRoot` | `invalid` | `boolean` |  | 校验失败：根带 data-invalid，区间内的格子报告 aria-invalid。 |
 | `XhCalendarRangePickerRoot` | `locale` | `string` |  |  |
+| `XhCalendarRangePickerRoot` | `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日 … 6 = 星期六；不给按 locale。 |
 | `XhCalendarRangePickerRoot` | `timeZone` | `string` |  |  |
 | `XhCalendarRangePickerRoot` | `disabled` | `boolean` |  |  |
 | `XhCalendarRangePickerRoot` | `readOnly` | `boolean` |  |  |

@@ -53,6 +53,7 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
  * @attr {string} min - 可选范围下界（含当天），界外的日期为 aria-disabled 但仍可聚焦
  * @attr {string} max - 可选范围上界（含当天）
  * @attr {string} locale - 决定周首日与文案；未提供时按宿主语言，宿主也没有时按 en-US
+ * @attr {number} first-day-of-week - 周首日，0 = 星期日 … 6 = 星期六；未提供时按 locale
  * @attr {string} time-zone - 判定今天与格式化使用的时区，默认宿主本地时区
  * @attr {boolean} disabled - 整张禁用：翻月按钮为原生 disabled，格子全部为 aria-disabled
  * @attr {boolean} read-only - 只读：翻月与移动焦点照常，只是不可选择值
@@ -98,6 +99,7 @@ export class XhCalendarPickerElement extends XhElement {
     min: { converter: STRING_CONVERTER },
     max: { converter: STRING_CONVERTER },
     locale: { converter: STRING_CONVERTER },
+    firstDayOfWeek: { converter: NUMBER_CONVERTER, attribute: 'first-day-of-week' },
     timeZone: { converter: STRING_CONVERTER, attribute: 'time-zone' },
     weekdayFormat: { converter: STRING_CONVERTER, attribute: 'weekday-format' },
     // 三个开关缺省为假，属性在场即真
@@ -122,6 +124,7 @@ export class XhCalendarPickerElement extends XhElement {
   declare min?: string
   declare max?: string
   declare locale?: string
+  declare firstDayOfWeek?: number
   declare timeZone?: string
   declare weekdayFormat?: CalendarWeekdayFormat
   declare disabled?: boolean
@@ -171,6 +174,7 @@ export class XhCalendarPickerElement extends XhElement {
       isDateUnavailable: this.isDateUnavailable,
       invalid: this.invalid ?? false,
       locale: this.locale,
+      firstDayOfWeek: this.firstDayOfWeek,
       timeZone: this.timeZone,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
