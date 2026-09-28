@@ -1,5 +1,5 @@
-<!-- 浮层内关键词过滤 | 输入框是树的兄弟节点，树的键盘处理器挂在 tree 上，输入不会被连打检索接管；更换 collection 后可见行与方向键顺序随之重算 -->
-<xh-tree-select id="tree-select-filter" placeholder="选一个城市">
+<!-- 浮层内搜索 | searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树裁到只剩命中的那几枝，命中节点的祖先自动展开，没命中的节点带 hidden 收起；Escape 先清空检索词 -->
+<xh-tree-select id="tree-select-search" searchable placeholder="选一个城市">
   <div data-xh-part="root">
     <span data-xh-part="label">投放城市</span>
     <div data-xh-part="control">
@@ -10,14 +10,7 @@
     </div>
     <div data-xh-part="positioner">
       <div data-xh-part="content">
-        <!-- 浮层里的输入框不算点在外面，浮层不会因此收起 -->
-        <input
-          id="tree-select-filter-keyword"
-          type="search"
-          aria-label="城市关键词"
-          placeholder="输入关键词"
-          style="inline-size: 100%; margin-block-end: 6px"
-        />
+        <input data-xh-part="input" aria-label="搜索城市" placeholder="搜索城市" />
         <div data-xh-part="tree">
           <div data-xh-part="branch" value="east">
             <div data-xh-part="branch-control">
@@ -75,19 +68,17 @@
             </div>
           </div>
         </div>
-        <p id="tree-select-filter-empty" style="margin: 0; padding: 4px; display: none"></p>
+        <!-- 一个都没命中时露面 -->
+        <div data-xh-part="empty">没有匹配的城市</div>
       </div>
     </div>
   </div>
 </xh-tree-select>
 
 <script type="module">
-  const treeSelect = document.getElementById("tree-select-filter");
-  const keyword = document.getElementById("tree-select-filter-keyword");
-  const empty = document.getElementById("tree-select-filter-empty");
-  const tree = treeSelect.querySelector('[data-xh-part="tree"]');
-
-  const source = [
+  // 搜索按这份树数据的 label 匹配，标记只管长相
+  const treeSelect = document.getElementById("tree-select-search");
+  treeSelect.collection = [
     {
       value: "east",
       label: "华东",
@@ -114,78 +105,4 @@
       ],
     },
   ];
-
-  treeSelect.collection = source;
-  treeSelect.expandedValue = [];
-  treeSelect.addEventListener(
-    "expanded-value-change",
-    (event) => (treeSelect.expandedValue = event.detail.value),
-  );
-
-  function part(tag, name, text) {
-    const node = document.createElement(tag);
-    node.dataset.xhPart = name;
-    if (text !== undefined) node.textContent = text;
-    return node;
-  }
-
-  // 树数据换了，标记跟着重铺
-  function renderTree(regions) {
-    tree.replaceChildren(
-      ...regions.map((region) => {
-        const branch = part("div", "branch");
-        branch.setAttribute("value", region.value);
-        const control = part("div", "branch-control");
-        control.append(
-          part("span", "branch-trigger"),
-          part("span", "branch-text", region.label),
-          part("span", "item-indicator"),
-        );
-        const content = part("div", "branch-content");
-        content.append(
-          ...region.children.map((city) => {
-            const item = part("div", "item");
-            item.setAttribute("value", city.value);
-            item.append(part("span", "item-indicator"), part("span", "item-text", city.label));
-            return item;
-          }),
-        );
-        branch.append(control, content);
-        return branch;
-      }),
-    );
-  }
-
-  // 分区名命中就整枝留下，否则只留命中的城市；一个都不剩的分区整枝去掉
-  function filter(key) {
-    if (!key) return source;
-    return source
-      .map((region) => ({
-        ...region,
-        children: region.label.includes(key)
-          ? region.children
-          : region.children.filter((city) => city.label.includes(key)),
-      }))
-      .filter((region) => region.children.length > 0);
-  }
-
-  keyword.addEventListener("input", () => {
-    const key = keyword.value.trim();
-    const regions = filter(key);
-    treeSelect.collection = regions;
-    renderTree(regions);
-    treeSelect.expandedValue = key ? regions.map((region) => region.value) : [];
-    empty.textContent = `没有匹配「${key}」的城市`;
-    empty.style.display = regions.length ? "none" : "block";
-  });
-
-  // 收起浮层顺手把关键词清掉，下次展开还是整棵树
-  treeSelect.addEventListener("open-change", (event) => {
-    if (event.detail.open) return;
-    keyword.value = "";
-    treeSelect.collection = source;
-    renderTree(source);
-    treeSelect.expandedValue = [];
-    empty.style.display = "none";
-  });
 </script>

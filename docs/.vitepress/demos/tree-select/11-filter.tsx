@@ -1,4 +1,4 @@
-// 浮层内关键词过滤 | 输入框是树的兄弟节点，树的键盘处理器挂在 tree 上，输入不会被连打检索接管；更换 collection 后可见行与方向键顺序随之重算
+// 浮层内搜索 | searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树裁到只剩命中的那几枝，命中节点的祖先自动展开，没命中的节点带 hidden 收起；Escape 先清空检索词
 import type { ReactNode } from "react";
 import {
   XhTreeSelectBranch,
@@ -8,7 +8,9 @@ import {
   XhTreeSelectBranchTrigger,
   XhTreeSelectContent,
   XhTreeSelectControl,
+  XhTreeSelectEmpty,
   XhTreeSelectIndicator,
+  XhTreeSelectInput,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
   XhTreeSelectItemText,
@@ -19,20 +21,8 @@ import {
   XhTreeSelectTrigger,
   XhTreeSelectValueText,
 } from "@xihan-ui/react";
-import { useMemo, useState } from "react";
 
-interface City {
-  value: string;
-  label: string;
-}
-
-interface Region {
-  value: string;
-  label: string;
-  children: City[];
-}
-
-const source: Region[] = [
+const regions = [
   {
     value: "east",
     label: "华东",
@@ -60,47 +50,9 @@ const source: Region[] = [
   },
 ];
 
-// 分区名命中就整枝留下，否则只留命中的城市；一个都不剩的分区整枝去掉
-function filter(keyword: string): Region[] {
-  const key = keyword.trim();
-  if (!key)
-    return source;
-  return source
-    .map(region => ({
-      ...region,
-      children: region.label.includes(key)
-        ? region.children
-        : region.children.filter(city => city.label.includes(key)),
-    }))
-    .filter(region => region.children.length > 0);
-}
-
 export default function Demo(): ReactNode {
-  const [keyword, setKeyword] = useState("");
-  const [expanded, setExpanded] = useState<string[]>([]);
-
-  const collection = useMemo(() => filter(keyword), [keyword]);
-
-  // 关键词一改，命中的分区全部摊开；清空又回到整棵树收起的样子
-  function onKeywordChange(next: string): void {
-    setKeyword(next);
-    setExpanded(next.trim() ? filter(next).map(region => region.value) : []);
-  }
-
-  // 收起浮层顺手把关键词清掉，下次展开还是整棵树
-  function onOpenChange(details: { open: boolean }): void {
-    if (!details.open)
-      onKeywordChange("");
-  }
-
   return (
-    <XhTreeSelectRoot
-      expandedValue={expanded}
-      onExpandedValueChange={details => setExpanded(details.value)}
-      collection={collection}
-      placeholder="选一个城市"
-      onOpenChange={onOpenChange}
-    >
+    <XhTreeSelectRoot collection={regions} searchable placeholder="选一个城市">
       <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>
       <XhTreeSelectControl>
         <XhTreeSelectTrigger>
@@ -110,17 +62,9 @@ export default function Demo(): ReactNode {
       </XhTreeSelectControl>
       <XhTreeSelectPositioner>
         <XhTreeSelectContent>
-          {/* 浮层里的输入框不算点在外面，浮层不会因此收起 */}
-          <input
-            value={keyword}
-            type="search"
-            aria-label="城市关键词"
-            placeholder="输入关键词"
-            style={{ inlineSize: "100%", marginBlockEnd: "6px" }}
-            onChange={event => onKeywordChange(event.target.value)}
-          />
+          <XhTreeSelectInput aria-label="搜索城市" placeholder="搜索城市" />
           <XhTreeSelectTree>
-            {collection.map(region => (
+            {regions.map(region => (
               <XhTreeSelectBranch key={region.value} value={region.value}>
                 <XhTreeSelectBranchControl>
                   <XhTreeSelectBranchTrigger />
@@ -138,13 +82,8 @@ export default function Demo(): ReactNode {
               </XhTreeSelectBranch>
             ))}
           </XhTreeSelectTree>
-          {collection.length
-            ? null
-            : (
-                <p style={{ margin: 0, padding: "4px" }}>
-                  {`没有匹配「${keyword}」的城市`}
-                </p>
-              )}
+          {/* 一个都没命中时露面 */}
+          <XhTreeSelectEmpty>没有匹配的城市</XhTreeSelectEmpty>
         </XhTreeSelectContent>
       </XhTreeSelectPositioner>
     </XhTreeSelectRoot>

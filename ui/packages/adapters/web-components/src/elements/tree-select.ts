@@ -67,6 +67,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在树中；已选项在触发器里排成标签
  * @attr {number} max-tag-count - 多选标签最多显示的数量，其余折叠进 overflowCount 并合成 overflow-tag；默认 3
+ * @attr {boolean} searchable - 浮层内搜索：展开时焦点先落在 input 上，输入即按 filter 把树裁到只剩命中的那几枝；自定义匹配规则经 filter property 给
  * @attr {boolean} cascade - 多选下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} disabled - 整个控件禁用：trigger 使用原生 disabled，表单出口不参与提交
@@ -102,6 +103,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，aria-label 取 translations.clearTrigger，无值时 hidden
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - 浮层壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
+ * @csspart input - 浮层内搜索框，须是原生 input，放在 content 中、tree 之前；没开 searchable 时带 hidden。搜索视图里不在命中那几枝上的节点由元素加 hidden 收起
  * @csspart tree - role=tree 容器，没有锚点时的 Tab 兜底位与落焦点
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
@@ -146,6 +148,9 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     multiple: { type: Boolean },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
+    searchable: { type: Boolean },
+    // 函数只走 property，属性表达不了
+    filter: { attribute: false },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -177,6 +182,9 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   declare defaultOpen?: boolean
   declare multiple?: boolean
   declare maxTagCount?: number
+  declare searchable?: boolean
+  /** 自定义匹配规则；缺省为标签大小写不敏感包含。 */
+  declare filter?: TreeSelectSchema['props']['filter']
   declare cascade?: boolean
   declare checkedStrategy?: TreeSelectSchema['props']['checkedStrategy']
   declare disabled?: boolean
@@ -284,6 +292,21 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     return this.api()?.overflowText ?? ''
   }
 
+  /** 正处于搜索视图（开启 searchable 且检索词非空）；状态机尚未建立时为 false。 */
+  get searching(): boolean {
+    return this.api()?.searching ?? false
+  }
+
+  /** 搜索框中的原始串；状态机尚未建立时为空串。 */
+  get inputValue(): string {
+    return this.api()?.inputValue ?? ''
+  }
+
+  /** 改写检索词，与在搜索框里输入同一语义；状态机尚未建立时不做任何事。 */
+  setInputValue(next: string): void {
+    this.api()?.setInputValue(next)
+  }
+
   /** 移除一个选中值，其余保持选中先后；状态机尚未建立时不做任何事。 */
   deselect(value: string): void {
     this.api()?.deselect(value)
@@ -313,7 +336,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
    */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
-    scrollable: () => this.getPart('content'),
+    scrollable: () => this.getPart('tree'),
     axes: ['vertical', 'horizontal'],
     // 条子走浮层 4px 档
     props: () => ({ dir: this.direction, size: 'sm' }),
@@ -354,6 +377,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       multiple: this.multiple ?? false,
       maxTagCount: this.maxTagCount,
+      searchable: this.searchable ?? false,
+      filter: this.filter,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
       disabled: control.disabled,
@@ -556,12 +581,14 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
+    put('input', api.getInputProps() as Record<string, unknown>)
     put('tree', api.getTreeProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
     const empty = this.ensureFeedback(this.getPart('content'), 'empty')
     if (empty) {
       this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
-      this.fillFeedbackText(empty, api.translations.empty)
+      // 搜索视图里的空是「没有匹配」，与整棵树没有节点分开说
+      this.fillFeedbackText(empty, api.searching ? api.translations.noMatch : api.translations.empty)
     }
     const loading = this.ensureFeedback(this.getPart('content'), 'loading')
     if (loading) {

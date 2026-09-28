@@ -71350,6 +71350,10 @@
               "name": "content"
             },
             {
+              "description": "浮层内搜索框，须是原生 input，放在 content 中、tree 之前；没开 searchable 时带 hidden。搜索视图里不在命中那几枝上的节点由元素加 hidden 收起",
+              "name": "input"
+            },
+            {
               "description": "role=tree 容器，没有锚点时的 Tab 兜底位与落焦点",
               "name": "tree"
             },
@@ -71534,6 +71538,24 @@
                 "text": "number | undefined"
               },
               "attribute": "max-tag-count"
+            },
+            {
+              "kind": "field",
+              "name": "searchable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "searchable"
+            },
+            {
+              "kind": "field",
+              "name": "filter",
+              "privacy": "public",
+              "type": {
+                "text": "TreeSelectSchema['props']['filter'] | undefined"
+              },
+              "description": "自定义匹配规则；缺省为标签大小写不敏感包含。"
             },
             {
               "kind": "field",
@@ -71881,6 +71903,42 @@
               "readonly": true
             },
             {
+              "kind": "field",
+              "name": "searching",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "正处于搜索视图（开启 searchable 且检索词非空）；状态机尚未建立时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "inputValue",
+              "type": {
+                "text": "string"
+              },
+              "description": "搜索框中的原始串；状态机尚未建立时为空串。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setInputValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "改写检索词，与在搜索框里输入同一语义；状态机尚未建立时不做任何事。"
+            },
+            {
               "kind": "method",
               "name": "deselect",
               "return": {
@@ -71922,7 +71980,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('tree'), axes: ['vertical', 'horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "树的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。\n两条轴都排布：深层节点依靠缩进向行末推，横向溢出与纵向一样是常态；\n横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。"
             },
             {
@@ -72270,6 +72328,14 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "浮层内搜索：展开时焦点先落在 input 上，输入即按 filter 把树裁到只剩命中的那几枝；自定义匹配规则经 filter property 给",
+              "name": "searchable",
+              "fieldName": "searchable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "多选下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false",
               "name": "cascade",
               "fieldName": "cascade"
@@ -72565,6 +72631,24 @@
               "name": "--xh-tree-select-indicator-fg"
             },
             {
+              "name": "--xh-tree-select-input-autofill-bg"
+            },
+            {
+              "name": "--xh-tree-select-input-autofill-fg"
+            },
+            {
+              "name": "--xh-tree-select-input-font-size"
+            },
+            {
+              "name": "--xh-tree-select-input-gap"
+            },
+            {
+              "name": "--xh-tree-select-input-px"
+            },
+            {
+              "name": "--xh-tree-select-input-py"
+            },
+            {
               "name": "--xh-tree-select-item-bg-hover"
             },
             {
@@ -72632,6 +72716,9 @@
             },
             {
               "name": "--xh-tree-select-placeholder-fg"
+            },
+            {
+              "name": "--xh-tree-select-search-divider"
             },
             {
               "name": "--xh-tree-select-tag-list-gap"

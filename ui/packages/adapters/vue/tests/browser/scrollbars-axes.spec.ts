@@ -10,7 +10,6 @@ import { createApp, h, nextTick } from 'vue'
 import {
   XhTreeSelectContent,
   XhTreeSelectControl,
-  XhTreeSelectFooter,
   XhTreeSelectItem,
   XhTreeSelectPositioner,
   XhTreeSelectRoot,
@@ -79,8 +78,8 @@ async function scrollTo(el: HTMLElement, top: number, left = 0): Promise<void> {
 }
 
 /**
- * 面板限高 120px、限宽 240px、选项多到装不下：竖轴溢出。
- * 横轴由页脚里一块固定宽度的内容撑破——树行的文字自己省略号收边，横向本就撑不破。
+ * 面板限高 120px、限宽 240px、选项多到装不下：竖轴溢出。滚动面是树，面板只是外壳。
+ * 横轴由树里一块固定宽度的内容撑破——树行的文字自己省略号收边，横向本就撑不破。
  */
 async function mountTreeSelect(wide = false): Promise<HTMLElement> {
   const items = Array.from({ length: 30 }, (_, i) => ({ value: `key${i}`, label: `选项 ${i}` }))
@@ -92,13 +91,15 @@ async function mountTreeSelect(wide = false): Promise<HTMLElement> {
     h(XhTreeSelectPositioner, {
       style: '--xh-tree-select-content-max-h: 120px; --xh-tree-select-content-max-w: 240px',
     }, () => h(XhTreeSelectContent, null, () => [
-      h(XhTreeSelectTree, null, () => items.map(item => h(XhTreeSelectItem, { key: item.value, value: item.value }, () => item.label))),
-      wide ? h(XhTreeSelectFooter, null, () => h('div', { style: 'flex: none; inline-size: 600px' }, '很宽的一段页脚')) : null,
+      h(XhTreeSelectTree, null, () => [
+        ...items.map(item => h(XhTreeSelectItem, { key: item.value, value: item.value }, () => item.label)),
+        wide ? h('div', { key: 'wide', style: 'flex: none; inline-size: 600px; block-size: 1px' }) : null,
+      ]),
     ])),
   ]))
   await tick()
   await expect.poll(() => part('tree-select', 'content').getBoundingClientRect().width).toBeGreaterThan(0)
-  return part('tree-select', 'content')
+  return part('tree-select', 'tree')
 }
 
 /** 边框占的那几像素不是滚动条留的槽，量让位时要先减掉。 */

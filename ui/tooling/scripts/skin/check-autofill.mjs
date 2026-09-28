@@ -324,7 +324,8 @@ function conditionMatches(condition, state) {
  * 每条都要真被用到（组件没引入字段家族或 input 已投影 field-input 即过期）。
  */
 const INPUT_OUTSIDE_CHROME = {
-  cascader: '搜索框排在浮层面里、不在 control 盒内，铺的底取浮起面',
+  'cascader': '搜索框排在浮层面里、不在 control 盒内，铺的底取浮起面',
+  'tree-select': '搜索框排在浮层面里、不在 control 盒内，铺的底取浮起面',
 }
 
 /** getInputProps 这一段 getter 自己投影了 data-xh-field-chrome（input 即视觉盒），且全文件没投影 data-xh-field-input。 */

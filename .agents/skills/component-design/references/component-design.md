@@ -635,7 +635,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 字段静息形态 = 描边：`transparent` 底 + `--xh-border-control` + `--xh-shape-control` + 无影；hover 升 `--xh-border-control-hover` 并在透明上罩 `color-mix(--xh-bg-subtle 45%, transparent)`，focus-within 换 `--xh-border-control-focus` + `--xh-ring-focus`，invalid 用 `--xh-border-invalid` + `--xh-ring-invalid`；readOnly / disabled 才填 `--xh-bg-subtle`。字段家族不消费 `--xh-elevation-raised`。
 - 所有带边框的控件盒同一条规则（2026-09-22 起）：输入框壳、Checkbox / CheckboxGroup / Transfer / Table 的方框、RadioGroup / QuestionFlow 的圆圈、Switch 轨道描边、InputGroup 组壳、ColorPicker 控件、FileUpload 拖放区、SignaturePad 画布——静息不填底、描边取 `--xh-border-control`，它在缺省档与浮层面板、卡片的 `--xh-border-default` 同色（页面里只有一种边线重量），`prefers-contrast: more` 才换到 3:1 的 neutral 600 / 400。`--xh-bg-canvas` 保留给自动填充遮罩、色块选中环等必须不透明的地方，不再是控件盒的底。
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
-- 刻意例外（须登记）：浮层面板内嵌搜索（Command、Cascader 搜索框）允许 `border-block-end` 下划线式；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `transparent` 底 + `--xh-border-control` + `--xh-shape-control` + 无影，落笔升 `--xh-border-control-hover`，disabled / readOnly 按 §7.2 第 9 条）。
+- 刻意例外（须登记）：浮层面板内嵌搜索（Command、Cascader 与 TreeSelect 搜索框）允许 `border-block-end` 下划线式；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `transparent` 底 + `--xh-border-control` + `--xh-shape-control` + 无影，落笔升 `--xh-border-control-hover`，disabled / readOnly 按 §7.2 第 9 条）。
 - Form 内外字段同形；InputGroup 组壳画 outline 描边，子字段压平为透明。
 
 ### 8.4 浮层材质判据

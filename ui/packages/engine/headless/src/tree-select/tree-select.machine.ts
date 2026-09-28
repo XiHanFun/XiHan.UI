@@ -16,6 +16,7 @@ import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPr
 import { trackSelectionTagMotion } from '../shared/selection-tags'
 import { flattenTree } from '../tree'
 import { TREE_SELECT_TAG_LIST_SELECTOR, treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatomy'
+import { resolveTreeSelectSearch } from './tree-select.search'
 
 const { createMachine } = setup<TreeSelectSchema>()
 
@@ -70,6 +71,25 @@ export function resolveTreeSelectCollection(
 }
 
 type TreeSelectActionParams = Parameters<ActionFn<TreeSelectSchema>>[0]
+
+/**
+ * 此刻摊平用的那份树与展开集合：搜索视图里是裁剪后的树与它自己的展开集合，
+ * 否则是有效树与作者的 expandedValue。connect 与动作都经这里取，两边算出的可见行才一致。
+ */
+function treeSelectView(
+  prop: TreeSelectActionParams['prop'],
+  context: TreeSelectActionParams['context'],
+): { nodes: TreeSelectNode[], expanded: string[], searching: boolean } {
+  const nodes = resolveTreeSelectCollection(prop('collection') ?? [], context.get('loadedChildren'))
+  const search = resolveTreeSelectSearch(nodes, {
+    searchable: !!prop('searchable'),
+    inputValue: context.get('inputValue'),
+    filter: prop('filter'),
+  })
+  return search
+    ? { nodes: search.nodes, expanded: context.get('searchExpanded'), searching: true }
+    : { nodes, expanded: context.get('expandedValue'), searching: false }
+}
 
 function setBranchLoad(
   context: TreeSelectActionParams['context'],
@@ -227,6 +247,9 @@ export const treeSelectMachine = createMachine({
     branchLoads: cell(() => ({ defaultValue: {} })),
     loadedChildren: cell(() => ({ defaultValue: {} })),
     renderedNodeCount: cell<number>(() => ({ defaultValue: 0 })),
+    // 检索词与搜索视图的展开集合：都不受控，收起浮层即清空
+    inputValue: cell<string>(() => ({ defaultValue: '' })),
+    searchExpanded: cell<string[]>(() => ({ defaultValue: [], isEqual: sameValues })),
     // 按压通道：正被按住的那一个（节点按 value 记、叶子行与分支行分开认，清空按钮只记部件），与开合无关
     pressedPart: cell<TreeSelectPressedPart | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
@@ -278,6 +301,7 @@ export const treeSelectMachine = createMachine({
     'NODES.SYNC': { actions: ['syncRenderedNodes'] },
     'NODE.FOCUS': { actions: ['setFocusedValue'] },
     'NODE.SELECT': { actions: ['selectNode'] },
+    'INPUT.CHANGE': { actions: ['setInputValue'] },
   },
   states: {
     closed: {
@@ -300,7 +324,8 @@ export const treeSelectMachine = createMachine({
       entry: ['setInitialFocusedValue'],
       // 收起就丢缓冲，否则下次展开首字母会拼进上一轮查询串。
       // 收起即松开：按住 Enter 选中后节点随浮层藏起，不会再来 keyup
-      exit: ['clearFocusedValue', 'clearTypeahead', 'releasePress'],
+      // 收起即清掉检索词：下次展开还是整棵树
+      exit: ['clearFocusedValue', 'clearTypeahead', 'releasePress', 'clearInput'],
       // 定位只服务逻辑展开；Layer、消解与焦点资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
       on: {
@@ -457,10 +482,8 @@ export const treeSelectMachine = createMachine({
           // 无 DOM 环境：锚点留空，状态转移不受影响
           if (!content)
             return
-          const rows = flattenTree(
-            resolveTreeSelectCollection(prop('collection') ?? [], context.get('loadedChildren')),
-            context.get('expandedValue'),
-          )
+          const view = treeSelectView(prop, context)
+          const rows = flattenTree(view.nodes, view.expanded)
           const els = treeSelectNodeEls(content, rows)
           const intent = context.get('focusIntent')
           const selected = context.get('value')
@@ -534,12 +557,32 @@ export const treeSelectMachine = createMachine({
         context.set('expandedValue', unique(e.value))
       },
 
+      /** 换检索词：搜索视图的展开集合重置为「因子孙命中而留下的分支」。 */
+      setInputValue: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'INPUT.CHANGE')
+          return
+        context.set('inputValue', e.value)
+        const search = resolveTreeSelectSearch(
+          resolveTreeSelectCollection(prop('collection') ?? [], context.get('loadedChildren')),
+          { searchable: !!prop('searchable'), inputValue: e.value, filter: prop('filter') },
+        )
+        context.set('searchExpanded', search?.expanded ?? [])
+      },
+
+      clearInput: ({ context }) => {
+        if (context.get('inputValue') !== '')
+          context.set('inputValue', '')
+        if (context.get('searchExpanded').length > 0)
+          context.set('searchExpanded', [])
+      },
+
       // 在真正写入 expandedValue 前看旧值：重复 expand 与收起动作都不会悄悄再发请求。
       loadExpandedBranch: (params) => {
         const e = params.event.current()
         if (e.type !== 'BRANCH.EXPAND' && e.type !== 'BRANCH.TOGGLE')
           return
-        if (!params.context.get('expandedValue').includes(e.value))
+        if (!treeSelectView(params.prop, params.context).expanded.includes(e.value))
           beginBranchLoad(params, e.value, false)
       },
 
@@ -567,14 +610,16 @@ export const treeSelectMachine = createMachine({
         }))
       },
 
-      expandBranch: ({ context, event }) => {
+      // 搜索视图里的展开收起只改它自己的展开集合，不动作者的 expandedValue
+      expandBranch: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'BRANCH.EXPAND')
           return
-        const current = context.get('expandedValue')
+        const key = treeSelectView(prop, context).searching ? 'searchExpanded' : 'expandedValue'
+        const current = context.get(key)
         if (current.includes(e.value))
           return
-        context.set('expandedValue', [...current, e.value])
+        context.set(key, [...current, e.value])
       },
 
       collapseBranch: (params) => {
@@ -583,7 +628,8 @@ export const treeSelectMachine = createMachine({
         if (e.type !== 'BRANCH.COLLAPSE')
           return
         cancelBranchLoad(params, e.value)
-        context.set('expandedValue', context.get('expandedValue').filter(v => v !== e.value))
+        const key = treeSelectView(params.prop, context).searching ? 'searchExpanded' : 'expandedValue'
+        context.set(key, context.get(key).filter(v => v !== e.value))
       },
 
       toggleBranch: (params) => {
@@ -591,11 +637,12 @@ export const treeSelectMachine = createMachine({
         const e = params.event.current()
         if (e.type !== 'BRANCH.TOGGLE')
           return
-        const current = context.get('expandedValue')
+        const key = treeSelectView(params.prop, context).searching ? 'searchExpanded' : 'expandedValue'
+        const current = context.get(key)
         if (current.includes(e.value))
           cancelBranchLoad(params, e.value)
         context.set(
-          'expandedValue',
+          key,
           current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value],
         )
       },
@@ -651,7 +698,7 @@ export const treeSelectMachine = createMachine({
       }),
 
       // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
-      trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
+      trackLayer: ({ refs, prop, context, send, flush, scope, state, track }) => {
         let reactivateFocus: (() => void) | null = null
         return trackPresenceResources({
           presence: () => refs.get('presence'),
@@ -663,7 +710,14 @@ export const treeSelectMachine = createMachine({
             registerLayer: refs.get('registerLayer'),
             flush,
             active: () => state.get() === 'open',
-            onDismiss: overlayCloseOnDismiss(send),
+            // Escape 分两拍：检索词还在就先清词回整棵树，词已空才收浮层
+            onDismiss: (reason) => {
+              if (reason === 'escape-key' && context.get('inputValue') !== '') {
+                send({ type: 'INPUT.CHANGE', value: '' })
+                return
+              }
+              overlayCloseOnDismiss(send)(reason)
+            },
             focusScope: {
               // 每次读最新 ref，容器晚一拍就位也能命中
               container: () => refs.get('getContentEl')(),
@@ -676,6 +730,9 @@ export const treeSelectMachine = createMachine({
                 const content = refs.get('getContentEl')()
                 if (!content)
                   return null
+                // 开了搜索：焦点先落在搜索框上，打字即过滤；下方向键再把焦点交给树
+                if (prop('searchable'))
+                  return content.querySelector<HTMLElement>(treeSelectAnatomy.build().input.selector)
                 const anchor = context.get('focusedValue')
                 if (anchor != null)
                   return findTreeSelectNodeEl(content, anchor)

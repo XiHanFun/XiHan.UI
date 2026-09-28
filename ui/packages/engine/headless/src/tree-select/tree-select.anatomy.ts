@@ -24,6 +24,7 @@ export const treeSelectAnatomy = createAnatomy('tree-select', [
   'clear-trigger',
   'positioner',
   'content',
+  'input',
   'tree',
   'item',
   'item-text',

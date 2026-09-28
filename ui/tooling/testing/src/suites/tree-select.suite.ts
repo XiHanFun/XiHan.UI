@@ -235,6 +235,39 @@ function withTags(base: FixtureNode): FixtureNode {
   return { ...base, children }
 }
 
+/** 浮层内搜索：搜索框放在 content 里、tree 之前。 */
+function withSearch(base: FixtureNode): FixtureNode {
+  const children = (base.children ?? []).map(node =>
+    node.part === 'positioner'
+      ? {
+          ...node,
+          children: (node.children ?? []).map(child =>
+            child.part === 'content'
+              ? { ...child, children: [{ part: 'input', tag: 'input' }, ...(child.children ?? [])] }
+              : child,
+          ),
+        }
+      : node,
+  )
+  return { ...base, children }
+}
+
+const SEARCH_INPUT = `${SCOPE}[data-part="input"]`
+
+/** 打字。type 步骤只派按键、改不动输入框的值，搜索框的入口正是原生 input 事件，只能直接写值再派事件。 */
+async function typeInto(doc: Document, text: string, flush: () => Promise<void>): Promise<void> {
+  const input = doc.querySelector<HTMLInputElement>(SEARCH_INPUT)!
+  input.value = text
+  input.dispatchEvent(new Event('input', { bubbles: true }))
+  await flush()
+}
+
+function assertSearchText(doc: Document, expected: string): void {
+  const actual = doc.querySelector<HTMLInputElement>(SEARCH_INPUT)?.value ?? null
+  if (actual !== expected)
+    throw new Error(`检索词不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+}
+
 // content 与 branch-content 始终在 DOM；content 的显隐靠 hidden，branch-content 靠 data-state。
 // 浮层坐标异步回填且快照不采 style，data-placement / data-hidden 只在初始帧断言。
 export const treeSelectSuite: ConformanceSuite = {
@@ -1554,6 +1587,126 @@ export const treeSelectSuite: ConformanceSuite = {
         heldPressIgnored('tree-select', 'clear-trigger', '加载中清空钮不接受按压'),
         { kind: 'setProps', props: { loading: false, value: [] } },
         heldPressIgnored('tree-select', 'clear-trigger', '没有值可清时清空钮藏着，不接受按压'),
+      ],
+    },
+    {
+      name: '搜索：展开时焦点先落在搜索框；输入检索词后不在命中那几枝上的节点收起，命中节点的祖先自动展开',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      fixture: withSearch,
+      props: props({ searchable: true }),
+      covers: ['tree-select.kbd.search-type'],
+      initial: {
+        parts: { input: { 'hidden': null, 'aria-label': 'Search', 'aria-controls': '@part(tree)' } },
+      },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
+        { kind: 'settle', until: { activeElement: 'input' } },
+        {
+          kind: 'raw',
+          why: '检索词只能直接写进输入框再派 input 事件',
+          run: ({ doc, flush }) => typeInto(doc, 'dom', flush),
+          expect: {
+            parts: {
+              branch: [
+                { 'hidden': null, 'aria-expanded': 'true' },
+                { 'hidden': null, 'aria-expanded': 'true' },
+                { hidden: '' },
+              ],
+              item: [{ hidden: '' }, { hidden: null }, { hidden: '' }, { hidden: '' }],
+            },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: '搜索：一个都没命中时空态露面，文字换成 translations.noMatch',
+      spec: { apg: APG_TREE },
+      fixture: withSearch,
+      props: props({ searchable: true, defaultOpen: true }),
+      steps: [
+        {
+          kind: 'raw',
+          why: '检索词只能直接写进输入框再派 input 事件',
+          run: ({ doc, flush }) => typeInto(doc, 'zzz', flush),
+          expect: { parts: { 'tree': { 'data-empty': '' }, 'empty': { hidden: null }, 'branch[0]': { hidden: '' } } },
+        },
+        {
+          kind: 'raw',
+          why: '空态文字是文本节点，不进属性快照',
+          run: ({ doc }) => {
+            const text = doc.querySelector(`${SCOPE}[data-part="empty"]`)?.textContent ?? null
+            if (text !== 'No matches')
+              throw new Error(`空态文字不符：期望 "No matches"，实际 ${JSON.stringify(text)}`)
+          },
+        },
+      ],
+    },
+    {
+      name: '搜索：下方向键把焦点从搜索框交给树的首个可用行',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      fixture: withSearch,
+      props: props({ searchable: true }),
+      covers: ['tree-select.kbd.search-to-tree'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
+        { kind: 'settle', until: { activeElement: 'input' } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'branch[0]', exact: true } } },
+      ],
+    },
+    {
+      name: '搜索：Escape 先清空检索词回到整棵树，浮层不收',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      fixture: withSearch,
+      props: props({ searchable: true }),
+      covers: ['tree-select.kbd.search-escape'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
+        { kind: 'settle', until: { activeElement: 'input' } },
+        {
+          kind: 'raw',
+          why: '检索词只能直接写进输入框再派 input 事件',
+          run: ({ doc, flush }) => typeInto(doc, 'dom', flush),
+        },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            parts: {
+              content: { hidden: null },
+              item: [{ hidden: null }, { hidden: null }, { hidden: null }, { hidden: null }],
+            },
+            events: [],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '检索词只落 DOM property，不进属性快照',
+          run: ({ doc }) => assertSearchText(doc, ''),
+        },
+      ],
+    },
+    {
+      name: '搜索：树里的可打印字符接到检索词末尾、焦点回到搜索框，不做连打检索',
+      spec: { apg: `${APG_TREE}#keyboardinteraction` },
+      fixture: withSearch,
+      props: props({ searchable: true }),
+      covers: ['tree-select.kbd.type-to-search'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
+        { kind: 'settle', until: { activeElement: 'input' } },
+        { kind: 'key', key: 'ArrowDown' },
+        { kind: 'settle', until: { activeElement: 'branch[0]' } },
+        { kind: 'type', text: 'd', expect: { activeElement: { part: 'input', exact: true } } },
+        {
+          kind: 'raw',
+          why: '检索词只落 DOM property，不进属性快照',
+          run: ({ doc }) => assertSearchText(doc, 'd'),
+        },
       ],
     },
     {

@@ -169,14 +169,16 @@ describe('树选择 M2 浮层', () => {
     }
   })
 
-  it('增加磨砂后仍由 content 滚动，Esc 关闭并归还触发器焦点', async () => {
+  it('增加磨砂后由树滚动、面板不滚，Esc 关闭并归还触发器焦点', async () => {
     await mount('light')
     const content = part('content')
+    const tree = part('tree')
     content.style.setProperty('--xh-tree-select-content-max-h', '100px')
-    part('tree').style.minBlockSize = '400px'
-    expect(content.scrollHeight).toBeGreaterThan(content.clientHeight)
-    content.scrollTop = 80
-    expect(content.scrollTop).toBe(80)
+    part('item').style.minBlockSize = '400px'
+    expect(tree.scrollHeight).toBeGreaterThan(tree.clientHeight)
+    tree.scrollTop = 80
+    expect(tree.scrollTop).toBe(80)
+    expect(content.scrollTop).toBe(0)
     part('item').focus()
     await userEvent.keyboard('{Escape}')
     await expect.poll(() => content.getBoundingClientRect().height).toBe(0)

@@ -1,4 +1,4 @@
-<!-- 浮层内关键词过滤 | 输入框是树的兄弟节点，树的键盘处理器挂在 tree 上，输入不会被连打检索接管；更换 collection 后可见行与方向键顺序随之重算 -->
+<!-- 浮层内搜索 | searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树裁到只剩命中的那几枝，命中节点的祖先自动展开，没命中的节点带 hidden 收起；Escape 先清空检索词 -->
 <script setup lang="ts">
 import {
   XhTreeSelectBranch,
@@ -8,7 +8,9 @@ import {
   XhTreeSelectBranchTrigger,
   XhTreeSelectContent,
   XhTreeSelectControl,
+  XhTreeSelectEmpty,
   XhTreeSelectIndicator,
+  XhTreeSelectInput,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
   XhTreeSelectItemText,
@@ -19,20 +21,8 @@ import {
   XhTreeSelectTrigger,
   XhTreeSelectValueText,
 } from "@xihan-ui/vue";
-import { computed, ref, watch } from "vue";
 
-interface City {
-  value: string;
-  label: string;
-}
-
-interface Region {
-  value: string;
-  label: string;
-  children: City[];
-}
-
-const source: Region[] = [
+const regions = [
   {
     value: "east",
     label: "华东",
@@ -59,46 +49,10 @@ const source: Region[] = [
     ],
   },
 ];
-
-const keyword = ref("");
-
-// 分区名命中就整枝留下，否则只留命中的城市；一个都不剩的分区整枝去掉
-const collection = computed<Region[]>(() => {
-  const key = keyword.value.trim();
-  if (!key)
-    return source;
-  return source
-    .map(region => ({
-      ...region,
-      children: region.label.includes(key)
-        ? region.children
-        : region.children.filter(city => city.label.includes(key)),
-    }))
-    .filter(region => region.children.length > 0);
-});
-
-const expanded = ref<string[]>([]);
-
-watch(keyword, () => {
-  expanded.value = keyword.value.trim()
-    ? collection.value.map(region => region.value)
-    : [];
-});
-
-// 收起浮层顺手把关键词清掉，下次展开还是整棵树
-function onOpenChange(details: { open: boolean }): void {
-  if (!details.open)
-    keyword.value = "";
-}
 </script>
 
 <template>
-  <XhTreeSelectRoot
-    v-model:expanded-value="expanded"
-    :collection="collection"
-    placeholder="选一个城市"
-    @open-change="onOpenChange"
-  >
+  <XhTreeSelectRoot :collection="regions" searchable placeholder="选一个城市">
     <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>
     <XhTreeSelectControl>
       <XhTreeSelectTrigger>
@@ -108,17 +62,10 @@ function onOpenChange(details: { open: boolean }): void {
     </XhTreeSelectControl>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
-        <!-- 浮层里的输入框不算点在外面，浮层不会因此收起 -->
-        <input
-          v-model="keyword"
-          type="search"
-          aria-label="城市关键词"
-          placeholder="输入关键词"
-          style="inline-size: 100%; margin-block-end: 6px"
-        >
+        <XhTreeSelectInput aria-label="搜索城市" placeholder="搜索城市" />
         <XhTreeSelectTree>
           <XhTreeSelectBranch
-            v-for="region in collection"
+            v-for="region in regions"
             :key="region.value"
             :value="region.value"
           >
@@ -139,9 +86,8 @@ function onOpenChange(details: { open: boolean }): void {
             </XhTreeSelectBranchContent>
           </XhTreeSelectBranch>
         </XhTreeSelectTree>
-        <p v-if="!collection.length" style="margin: 0; padding: 4px">
-          没有匹配「{{ keyword }}」的城市
-        </p>
+        <!-- 一个都没命中时露面 -->
+        <XhTreeSelectEmpty>没有匹配的城市</XhTreeSelectEmpty>
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>

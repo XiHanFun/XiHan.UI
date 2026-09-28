@@ -22,10 +22,12 @@ import { useTreeSelect } from './use-tree-select'
 
 type TreeSelectProps = TreeSelectSchema['props']
 
-/** 默认插槽的载荷：展开与选中状态、可见行序列、多选的可见标签与折起的个数、节点状态判定与写值方法。 */
+/** 默认插槽的载荷：展开与选中状态、可见行序列、搜索视图、多选的可见标签与折起的个数、节点状态判定与写值方法。 */
 export type TreeSelectRootSlotProps = Pick<
   TreeSelectApi,
   | 'open'
+  | 'searching'
+  | 'inputValue'
   | 'value'
   | 'expandedValue'
   | 'visibleNodes'
@@ -44,6 +46,7 @@ export type TreeSelectRootSlotProps = Pick<
   | 'setOpen'
   | 'setValue'
   | 'setExpandedValue'
+  | 'setInputValue'
   | 'expand'
   | 'collapse'
   | 'retryBranch'
@@ -107,6 +110,10 @@ export const XhTreeSelectRoot = defineComponent({
     multiple: Boolean,
     /** 多选标签最多显示的数量，其余折进 +N；默认 3。 */
     maxTagCount: { type: Number },
+    /** 浮层内搜索：展开时焦点先落在搜索框上，输入即把树裁到只剩命中的那几枝。 */
+    searchable: Boolean,
+    /** 自定义匹配规则；缺省为标签大小写不敏感包含。 */
+    filter: { type: Function as PropType<TreeSelectProps['filter']> },
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<TreeSelectProps['checkedStrategy']> },
     disabled: { type: Boolean, default: undefined },
@@ -170,6 +177,8 @@ export const XhTreeSelectRoot = defineComponent({
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
       ? slots.default({
           open: ctx.api.value.open,
+          searching: ctx.api.value.searching,
+          inputValue: ctx.api.value.inputValue,
           value: ctx.api.value.value,
           expandedValue: ctx.api.value.expandedValue,
           visibleNodes: ctx.api.value.visibleNodes,
@@ -188,6 +197,7 @@ export const XhTreeSelectRoot = defineComponent({
           setOpen: ctx.api.value.setOpen,
           setValue: ctx.api.value.setValue,
           setExpandedValue: ctx.api.value.setExpandedValue,
+          setInputValue: ctx.api.value.setInputValue,
           expand: ctx.api.value.expand,
           collapse: ctx.api.value.collapse,
           retryBranch: ctx.api.value.retryBranch,
@@ -199,6 +209,7 @@ export const XhTreeSelectRoot = defineComponent({
         ? renderDefaultTree(
             ctx.api.value.collection,
             props.multiple ? ctx.api.value.tags : null,
+            props.searchable,
             slots.label?.() ?? (props.label != null ? [props.label] : null),
             props.clearable,
           )
@@ -351,7 +362,7 @@ export const XhTreeSelectPositioner = defineComponent({
     // 两条轴都摆：深层节点靠缩进往行末推，横向溢出与纵向一样是常态。
     // 横条的正负按排版方向算，而组件不读计算样式，把 positioner 上那份显式交过去
     const bars = useScrollbars({
-      scrollable: () => ctx.contentRef.value,
+      scrollable: () => ctx.treeRef.value,
       axes: ['vertical', 'horizontal'],
       // 条子走浮层 4px 档
       props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
@@ -371,12 +382,13 @@ const XhTreeSelectAutoEmpty = defineComponent({
   setup() {
     const ctx = useTreeSelectContext()
     const content = useTreeSelectContentContext()
+    // 搜索视图里的空是「没有匹配」，与整棵树没有节点分开说
     return () => content.authoredEmptyCount.value > 0
       ? null
       : h('div', {
           ...ctx.api.value.getEmptyProps() as Record<string, unknown>,
           'data-xh-tree-select-auto-empty': '',
-        }, ctx.api.value.translations.empty)
+        }, ctx.api.value.searching ? ctx.api.value.translations.noMatch : ctx.api.value.translations.empty)
   },
 })
 
@@ -427,11 +439,23 @@ export const XhTreeSelectContent = defineComponent({
   },
 })
 
+/** 浮层内搜索框：放在 content 中、tree 之前；没开 searchable 时带 hidden。 */
+export const XhTreeSelectInput = defineComponent({
+  name: 'XhTreeSelectInput',
+  setup() {
+    const ctx = useTreeSelectContext()
+    return () => h('input', ctx.api.value.getInputProps() as Record<string, unknown>)
+  },
+})
+
 export const XhTreeSelectTree = defineComponent({
   name: 'XhTreeSelectTree',
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
-    return () => h('div', ctx.api.value.getTreeProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', {
+      ...ctx.api.value.getTreeProps() as Record<string, unknown>,
+      ref: (el: unknown) => { ctx.treeRef.value = el as HTMLElement | null },
+    }, slots.default?.())
   },
 })
 
@@ -612,7 +636,7 @@ export const XhTreeSelectEmpty = defineComponent({
     const content = useTreeSelectContentContext()
     const unregister = content.registerEmpty()
     onBeforeUnmount(unregister)
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.empty)
+    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.() ?? (ctx.api.value.searching ? ctx.api.value.translations.noMatch : ctx.api.value.translations.empty))
   },
 })
 
@@ -675,6 +699,7 @@ function renderNodes(nodes: readonly TreeSelectNode[]): VNode[] {
 function renderDefaultTree(
   collection: readonly TreeSelectNode[],
   tags: readonly TreeSelectTagMeta[] | null,
+  searchable: boolean,
   label: (VNode | string)[] | null,
   clearable: boolean,
 ): VNode[] {
@@ -697,7 +722,11 @@ function renderDefaultTree(
       ...(clearable ? [h(XhTreeSelectClearTrigger)] : []),
     ]),
     h(XhTreeSelectPositioner, null, () => [
-      h(XhTreeSelectContent, null, () => h(XhTreeSelectTree, null, () => renderNodes(collection))),
+      // 开了搜索时搜索框排在树之前；collection 此刻已是裁剪后的树
+      h(XhTreeSelectContent, null, () => [
+        ...(searchable ? [h(XhTreeSelectInput)] : []),
+        h(XhTreeSelectTree, null, () => renderNodes(collection)),
+      ]),
     ]),
   ]
 }
