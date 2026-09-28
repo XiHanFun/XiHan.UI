@@ -8,7 +8,7 @@
 import type { Cleanup, Transition } from '@xihan-ui/core'
 import type { NavigationMenuIndicatorRect, NavigationMenuPressedPart, NavigationMenuSchema } from './navigation-menu.types'
 import { contains, createDismissLayer, focusItem, itemValue, queryItems, setTimeoutEffect, setup } from '@xihan-ui/core'
-import { clearOpenedAtMount, openedAtMountCell } from '../shared/first-frame'
+import { openedAtMountCell } from '../shared/first-frame'
 import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { setupLayerTransaction } from '../shared/overlay-shell'
 import { navigationMenuTriggerQuery } from './navigation-menu.anatomy'
@@ -39,6 +39,11 @@ const TOGGLE_FROM_IDLE: Array<Transition<NavigationMenuSchema>> = [
   { actions: ['setValue'] },
 ]
 
+/** 挂载时展开的那一项：受控判据同 cell，显式给了 value 就以它为准，否则看 defaultValue。 */
+function initialValue(prop: (key: 'value' | 'defaultValue') => string | null | undefined): string | null | undefined {
+  return prop('value') !== undefined ? prop('value') : prop('defaultValue')
+}
+
 // 展开项存在 context.value，三个状态只管计时。
 export const navigationMenuMachine = createMachine({
   name: 'navigation-menu',
@@ -48,8 +53,10 @@ export const navigationMenuMachine = createMachine({
       defaultValue: prop('defaultValue') ?? null,
       onChange: value => prop('onValueChange')?.({ value }),
     })),
-    // 首帧标记：挂载时就有一项展开着、展开项还没变过
-    openedAtMount: openedAtMountCell(cell, (prop('value') !== undefined ? prop('value') : prop('defaultValue')) != null),
+    // 首帧标记：挂载时就有一项展开着、还没全部收起过
+    openedAtMount: openedAtMountCell(cell, initialValue(prop) != null),
+    // 换张进行中：在两张之间换，两侧面板都不播进退场
+    switching: cell<boolean>(() => ({ defaultValue: false })),
     pendingValue: cell<string | null>(() => ({ defaultValue: null })),
     // 记录刚自动展开的那一项；受控下 value 在宿主写回前是旧值，认不出来
     autoValue: cell<string | null>(() => ({ defaultValue: null })),
@@ -64,7 +71,8 @@ export const navigationMenuMachine = createMachine({
     pressedPart: cell<NavigationMenuPressedPart | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
-  refs: () => ({
+  refs: ({ prop }) => ({
+    shownValue: initialValue(prop) ?? null,
     getListEl: () => null,
     liquidIndicator: null,
     config: null,
@@ -85,7 +93,7 @@ export const navigationMenuMachine = createMachine({
   watch: ({ track, context, prop, action }) => {
     // 展开项一变就重量一次，层的进出栈也跟着这一条走；按住 Enter 激活链接后面板随之收起（或换到另一张），
     // 链接藏进 inert 的面板里不会再来 keyup，按压面由机器收；入口仍在场，它的按压不动
-    track([context.dep('value')], () => action(['clearOpenedAtMount', 'measureIndicator', 'syncLayer', 'releaseLinkPress']))
+    track([context.dep('value')], () => action(['syncSwitching', 'measureIndicator', 'syncLayer', 'releaseLinkPress']))
     // 按住途中整套导航转入禁用：不会再来 keyup，按压面由机器自己收
     track([() => prop('disabled')], () => action(['releaseWhenInert']))
   },
@@ -150,8 +158,18 @@ export const navigationMenuMachine = createMachine({
       },
     },
     actions: {
-      // 展开项第一次变化即撤首帧标记：之后的每一次展开都是用户操作带来的
-      clearOpenedAtMount,
+      /**
+       * 展开项变了：两张之间换是换张，两侧面板都不播进退场（与菜单栏同一条成规）；从全收起展开是首开、
+       * 收到全收起是末收，照常进退场。全部收起即撤首帧标记，之后的每一次展开都是用户操作带来的。
+       */
+      syncSwitching: ({ context, refs }) => {
+        const next = context.get('value') ?? null
+        const previous = refs.get('shownValue')
+        refs.set('shownValue', next)
+        context.set('switching', previous != null && next != null && previous !== next)
+        if (next == null)
+          context.set('openedAtMount', false)
+      },
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')

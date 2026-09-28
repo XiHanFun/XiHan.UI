@@ -82,6 +82,8 @@ export interface NavigationMenuIndicatorRect {
 
 /** 适配器在挂载前填入 DOM 侧的取值器，未提供时无法测量指示条的位置、也不进入层栈。 */
 export interface NavigationMenuRefs {
+  /** 上一次落定的展开项：展开项变化时据它分辨换张与首开末收。 */
+  shownValue: string | null
   /** trigger 集合的查询容器，同时是指示条定位的参照系。 */
   getListEl: () => HTMLElement | null
   /** 液态档的双沿指示器：由效应建好放进来，量到的落点交给它。 */
@@ -135,10 +137,12 @@ export interface NavigationMenuSchema extends MachineSchema {
     /** 当前展开项，受控时 cell 直读 prop。 */
     value: string | null
     /**
-     * 挂载时就有一项展开着、展开项还没变过：那一项的 content 投影 data-instant 直接呈现、不播进场。
-     * 展开项第一次变化时清掉，之后的每一次展开照常进场。
+     * 挂载时就有一项展开着、还没全部收起过：展开着的 content 与共享外壳投影 data-instant 直接呈现、不播进场。
+     * 全部收起时清掉，之后的每一次展开照常进场。
      */
     openedAtMount: boolean
+    /** 换张进行中：展开项在两张之间换，两侧的 content 都投影 data-instant，不播进退场。 */
+    switching: boolean
     /** 等待展开的项，延时结束后才落到 value 上。 */
     pendingValue: string | null
     /** 最近一次由悬停 / 聚焦自动展开的项，用于判定紧随其后的激活是保持展开还是收起。 */
@@ -191,7 +195,7 @@ export interface NavigationMenuSchema extends MachineSchema {
   tag: never
   guard: 'hasValue' | 'isCurrent' | 'shouldKeepOpen' | 'canPress'
   action:
-    | 'clearOpenedAtMount'
+    | 'syncSwitching'
     | 'setValue'
     | 'clearValue'
     | 'setPendingValue'

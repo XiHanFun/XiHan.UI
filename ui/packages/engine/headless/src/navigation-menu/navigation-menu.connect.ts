@@ -27,6 +27,8 @@ export function connectNavigationMenu<T extends PropTypes>(
   const label = prop('translations')?.root ?? 'Main navigation'
   const open = value != null
   const exitPending = context.get('exitPending') ?? false
+  const switching = context.get('switching')
+  const openedAtMount = context.get('openedAtMount')
   // 受控 value 的新值先参与宿主渲染，机器 tracker 随后才会写 exitPending。
   // 旧 Layer 尚在即是关闭提交的第一帧；先保住 viewport，动画探测才不会被祖先 display:none 截断。
   const closingCommit = !open && refs.get('layerValue') != null && refs.get('layerDispose') != null
@@ -210,8 +212,8 @@ export function connectNavigationMenu<T extends PropTypes>(
         'role': 'group',
         'aria-labelledby': triggerId(item.value),
         'data-state': stateAttr(isOpen),
-        // 挂载时就展开着的那一项直接呈现，不播进场
-        'data-instant': dataAttr(isOpen && context.get('openedAtMount')),
+        // 换张时两侧都不播进退场，瞬时换张；挂载时就展开着的那一项直接呈现。首开与末收照常播
+        'data-instant': dataAttr(switching || (isOpen && openedAtMount)),
         'data-orientation': orientation,
         'inert': !isOpen || undefined,
         'aria-hidden': !isOpen || undefined,
@@ -272,6 +274,8 @@ export function connectNavigationMenu<T extends PropTypes>(
     getViewportProps: () => normalize.element({
       ...parts.viewport.attrs,
       'data-state': stateAttr(open),
+      // 外壳承担首开与末收的进退场；挂载时就展开着的那一段直接呈现
+      'data-instant': dataAttr(open && openedAtMount),
       'data-orientation': orientation,
       'inert': !open || undefined,
       'aria-hidden': !open || undefined,
