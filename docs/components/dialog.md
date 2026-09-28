@@ -278,6 +278,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-draggable` | ''（条件成立时才出现） |
 | `content` | `data-dragging` | ''（条件成立时才出现） |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `header` | `data-draggable` | ''（条件成立时才出现） |

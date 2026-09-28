@@ -284,6 +284,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-contained` | ''（条件成立时才出现） |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-resizing` | ''（条件成立时才出现） |
 | `content` | `data-side` | props.side |
 | `content` | `data-size` | props.size |
