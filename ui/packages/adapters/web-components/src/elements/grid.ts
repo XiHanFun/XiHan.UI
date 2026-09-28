@@ -39,10 +39,10 @@ function authorTier(el: HTMLElement, name: string): number | Record<string, numb
  * 列数可以逐档书写：`cols='{"base":1,"md":3}'` 写为 data-cols 与 data-cols-md，
  * 窄视口分一列、达到 md 断点后分三列。
  *
- * 每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上：
- * span 接受 1 至 12、offset 接受 1 至 11，范围外的值按未写处理；两者同样接受 JSON 对象逐档书写
+ * 每一格的跨列、错列与跨行写在 item 角色节点自己的 `span` / `offset` / `row-span` 属性上：
+ * span 与 row-span 接受 1 至 12、offset 接受 1 至 11，范围外的值按未写处理；三者同样接受 JSON 对象逐档书写
  * （`span='{"base":1,"md":6}'`）。
- * 运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。
+ * 运行期改写这三个属性不触发重新接线，需作者自行 requestUpdate。
  *
  * 根上不写 role：容器只做排布，其中放置的是列表还是一组卡片由作者自行声明。
  *
@@ -56,7 +56,7 @@ function authorTier(el: HTMLElement, name: string): number | Record<string, numb
  * @attr {'start'|'center'|'end'|'stretch'|'baseline'} align - 每一项在所在格中的块向对齐
  * @attr {'start'|'center'|'end'|'stretch'} justify-items - 每一项在所在格中的行内对齐
  * @csspart root - 排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-rows / data-min-col / data-gap / data-row-gap / data-column-gap / data-align / data-justify-items
- * @csspart item - 一格，承载声明的 data-span / data-offset（及各自逐档的 -sm/-md/-lg/-xl）
+ * @csspart item - 一格，承载声明的 data-span / data-offset / data-row-span（及各自逐档的 -sm/-md/-lg/-xl）
  */
 export class XhGridElement extends XhElement {
   static override partContract = { anatomy: gridAnatomy, meta: gridMeta }
@@ -99,11 +99,12 @@ export class XhGridElement extends XhElement {
     if (root)
       this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
 
-    // 多实例 part 逐个打，每一格的占位取作者写的 span 与 offset
+    // 多实例 part 逐个打，每一格的占位取作者写的 span、offset 与 row-span
     for (const el of this.getParts('item')) {
       const attrs = api.getItemProps({
         span: authorTier(el, 'span') as GridItemProps['span'],
         offset: authorTier(el, 'offset') as GridItemProps['offset'],
+        rowSpan: authorTier(el, 'row-span') as GridItemProps['rowSpan'],
       })
       this.spreader.spread(el, attrs as Record<string, unknown>)
     }

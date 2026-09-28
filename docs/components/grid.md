@@ -48,6 +48,12 @@
 
 <XhDemo src="grid/05-responsive" />
 
+### 跨行
+
+row-span 让一格占几条行轨道，常用来放一块比同行其余格子更高的主内容
+
+<XhDemo src="grid/06-row-span" />
+
 ## 设计指引
 
 ### 何时使用
@@ -66,6 +72,7 @@
 - 支持自适应最小列宽。
 - 支持统一或独立的行列间距。
 - 支持跨列、错列和格内对齐。
+- 每一格可用 `rowSpan` 跨 1 至 12 行，与跨列一样接受断点对象逐档书写；Web Components 写在 item 节点的 `row-span` 属性上。
 
 ### 组合
 
@@ -113,6 +120,7 @@
 | --- | --- | --- | --- | --- |
 | `XhGridItem` | `span` | `GridColumnCount \| string \| GridSpanByBreakpoint` |  | 跨几列：1 至 12 的整数，或逐档写的断点对象；也接受字符串与 JSON 串。 |
 | `XhGridItem` | `offset` | `GridColumnOffset \| string \| GridOffsetByBreakpoint` |  | 向后偏移几列：1 至 11 的整数，或逐档写的断点对象；也接受字符串与 JSON 串。 |
+| `XhGridItem` | `rowSpan` | `GridRowCount \| string \| GridRowSpanByBreakpoint` |  | 跨几行：1 至 12 的整数，或逐档写的断点对象；也接受字符串与 JSON 串。 |
 
 ### connect API
 
@@ -160,6 +168,11 @@
 | `item` | `data-offset-md` | offset.md |
 | `item` | `data-offset-sm` | offset.sm |
 | `item` | `data-offset-xl` | offset.xl |
+| `item` | `data-row-span` | rowSpan.base |
+| `item` | `data-row-span-lg` | rowSpan.lg |
+| `item` | `data-row-span-md` | rowSpan.md |
+| `item` | `data-row-span-sm` | rowSpan.sm |
+| `item` | `data-row-span-xl` | rowSpan.xl |
 | `item` | `data-span` | span.base |
 | `item` | `data-span-lg` | span.lg |
 | `item` | `data-span-md` | span.md |

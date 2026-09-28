@@ -28805,7 +28805,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-grid>`：Light-DOM 行为宿主，无状态机，把 connectGrid 产出接到 root 与各 item 角色节点。\n列数、间距档位与两条对齐轴原样写为 data-*，排布规则写在皮肤中。\n列数可以逐档书写：`cols='{\"base\":1,\"md\":3}'` 写为 data-cols 与 data-cols-md，\n窄视口分一列、达到 md 断点后分三列。\n\n每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上：\nspan 接受 1 至 12、offset 接受 1 至 11，范围外的值按未写处理；两者同样接受 JSON 对象逐档书写\n（`span='{\"base\":1,\"md\":6}'`）。\n运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。\n\n根上不写 role：容器只做排布，其中放置的是列表还是一组卡片由作者自行声明。",
+          "description": "`<xh-grid>`：Light-DOM 行为宿主，无状态机，把 connectGrid 产出接到 root 与各 item 角色节点。\n列数、间距档位与两条对齐轴原样写为 data-*，排布规则写在皮肤中。\n列数可以逐档书写：`cols='{\"base\":1,\"md\":3}'` 写为 data-cols 与 data-cols-md，\n窄视口分一列、达到 md 断点后分三列。\n\n每一格的跨列、错列与跨行写在 item 角色节点自己的 `span` / `offset` / `row-span` 属性上：\nspan 与 row-span 接受 1 至 12、offset 接受 1 至 11，范围外的值按未写处理；三者同样接受 JSON 对象逐档书写\n（`span='{\"base\":1,\"md\":6}'`）。\n运行期改写这三个属性不触发重新接线，需作者自行 requestUpdate。\n\n根上不写 role：容器只做排布，其中放置的是列表还是一组卡片由作者自行声明。",
           "name": "XhGridElement",
           "cssParts": [
             {
@@ -28813,7 +28813,7 @@
               "name": "root"
             },
             {
-              "description": "一格，承载声明的 data-span / data-offset（及各自逐档的 -sm/-md/-lg/-xl）",
+              "description": "一格，承载声明的 data-span / data-offset / data-row-span（及各自逐档的 -sm/-md/-lg/-xl）",
               "name": "item"
             }
           ],

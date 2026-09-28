@@ -17,6 +17,7 @@ import type {
   GridOffsetByBreakpoint,
   GridProps,
   GridRowCount,
+  GridRowSpanByBreakpoint,
   GridSpanByBreakpoint,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
@@ -81,14 +82,17 @@ export interface XhGridItemProps extends ComponentPropsWithRef<'div'> {
   span?: GridColumnCount | string | GridSpanByBreakpoint
   /** 向后偏移几列：1 至 11 的整数，或逐档写的断点对象；也接受字符串与 JSON 串。 */
   offset?: GridColumnOffset | string | GridOffsetByBreakpoint
+  /** 跨几行：1 至 12 的整数，或逐档写的断点对象；也接受字符串与 JSON 串。 */
+  rowSpan?: GridRowCount | string | GridRowSpanByBreakpoint
 }
 
-/** 一格：跨列与偏移由每一格自行声明，落在自身上。 */
-export function XhGridItem({ span, offset, children, ...rest }: XhGridItemProps): ReactNode {
+/** 一格：跨列、偏移与跨行由每一格自行声明，落在自身上。 */
+export function XhGridItem({ span, offset, rowSpan, children, ...rest }: XhGridItemProps): ReactNode {
   const ctx = useGridContext()
   const props = ctx.api.getItemProps({
     span: normalizeGridTier(span) as GridItemProps['span'],
     offset: normalizeGridTier(offset) as GridItemProps['offset'],
+    rowSpan: normalizeGridTier(rowSpan) as GridItemProps['rowSpan'],
   }) as Record<string, unknown>
   return (
     <div {...mergeReactProps(props, rest as Record<string, unknown>)}>
