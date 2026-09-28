@@ -3,20 +3,16 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 浮层内搜索的纯运算：按检索词把树裁成只剩命中的那几枝。不碰 DOM、不看状态机。
+// 浮层内搜索：按检索词把树裁成只剩命中的那几枝。裁剪本身是与 SideNav 共用的树形检索，这里只接上本组件的节点类型与开关。
 
+import type { TreeSearchView } from '../shared/tree-search'
 import type { TreeSelectFilter, TreeSelectNode } from './tree-select.types'
+import { filterTreeNodes, matchTreeNodeLabel, resolveTreeSearch } from '../shared/tree-search'
 
 /** 缺省匹配规则：标签（缺省退回值）大小写不敏感包含。 */
-export const defaultTreeSelectFilter: TreeSelectFilter = (node, query) =>
-  (node.label ?? node.value).toLowerCase().includes(query.toLowerCase())
+export const defaultTreeSelectFilter: TreeSelectFilter = matchTreeNodeLabel
 
-export interface TreeSelectSearchView {
-  /** 裁剪后的树：命中的节点连同整棵子树留下；没命中但有子孙命中的分支只留命中的那几枝。 */
-  nodes: TreeSelectNode[]
-  /** 因子孙命中而留下的分支：搜索视图里缺省展开它们，命中的节点一眼就看得到。 */
-  expanded: string[]
-}
+export type TreeSelectSearchView = TreeSearchView<TreeSelectNode>
 
 /**
  * 按检索词裁剪树。query 传入前已 trim 且非空。
@@ -28,23 +24,7 @@ export function filterTreeSelectNodes(
   query: string,
   match: TreeSelectFilter,
 ): TreeSelectSearchView {
-  const expanded: string[] = []
-  const walk = (list: readonly TreeSelectNode[]): TreeSelectNode[] => {
-    const out: TreeSelectNode[] = []
-    for (const node of list) {
-      if (match(node, query)) {
-        out.push(node)
-        continue
-      }
-      const children = node.children ? walk(node.children) : []
-      if (children.length > 0) {
-        out.push({ ...node, children })
-        expanded.push(node.value)
-      }
-    }
-    return out
-  }
-  return { nodes: walk(nodes), expanded }
+  return filterTreeNodes(nodes, query, match)
 }
 
 /** 当前是否处于搜索视图：开了 searchable 且检索词 trim 后非空时给出裁剪后的树，否则为 null。 */
@@ -52,8 +32,7 @@ export function resolveTreeSelectSearch(
   nodes: readonly TreeSelectNode[],
   options: { searchable: boolean, inputValue: string, filter: TreeSelectFilter | undefined },
 ): TreeSelectSearchView | null {
-  const query = options.inputValue.trim()
-  if (!options.searchable || query === '')
+  if (!options.searchable)
     return null
-  return filterTreeSelectNodes(nodes, query, options.filter ?? defaultTreeSelectFilter)
+  return resolveTreeSearch(nodes, options.inputValue, options.filter ?? defaultTreeSelectFilter)
 }

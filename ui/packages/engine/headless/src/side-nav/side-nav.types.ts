@@ -39,7 +39,14 @@ export interface SideNavRefs {
 export interface SideNavTranslations {
   /** 根节点的 aria-label，用于区分同页的多个 nav 地标。 */
   root: string
+  /** 搜索框的可及名：框里没有可见标签，只能自带一句。 */
+  input: string
+  /** 搜索一条都没命中时，空态的默认文案。 */
+  noMatch: string
 }
+
+/** 自定义匹配：一条入口与 trim 过、非空的检索词，返回是否命中。 */
+export type SideNavFilter = (node: SideNavNode, query: string) => boolean
 
 /**
  * 一条入口。children 是数组即为分支（内嵌展开的子级）；
@@ -104,6 +111,11 @@ export interface SideNavSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    /**
+     * 搜索框的匹配规则：检索词按它判定一条入口是否命中；缺省为标签（缺省退回 value）大小写不敏感包含。
+     * 命中的入口整枝留下，没命中但有子孙命中的分支只留命中的那几枝并展开，其余收起。
+     */
+    filter?: SideNavFilter
     translations?: Partial<SideNavTranslations>
     /** 选中意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: SideNavValueChangeDetails) => void
@@ -135,6 +147,13 @@ export interface SideNavSchema extends MachineSchema {
      * 与 collapsed 不一致的那一段即折叠进行中，根投影 data-animating。
      */
     railed: boolean
+    /** 搜索框里的原始串；trim 后非空、且排布没有落成图标栏，即进入搜索视图。 */
+    inputValue: string
+    /**
+     * 搜索视图里的展开集合：每换一次检索词重置为「因子孙命中而留下的分支」，之后的展开收起只改它，
+     * 不动作者的 expandedValue，清空检索词即回到原来的展开态。
+     */
+    searchExpanded: string[]
   }
   computed: Record<string, never>
   refs: SideNavRefs
@@ -165,6 +184,8 @@ export interface SideNavSchema extends MachineSchema {
     | { type: 'PRESS.END', part: SideNavPressedPart, value: string }
     /** 整栏宽度的过渡播完了：换成与折叠开关一致的排布。round 认的是发起等待的那一轮。 */
     | { type: 'COLLAPSE.SETTLED', round: number }
+    /** 搜索框里的检索词变了；换词即按新词重置搜索视图的展开集合。 */
+    | { type: 'INPUT.CHANGE', value: string }
   tag: never
   guard: 'canChange' | 'canPopout' | 'canPress'
   action:
@@ -188,12 +209,26 @@ export interface SideNavSchema extends MachineSchema {
     | 'releaseWhenInert'
     | 'schedulePopoutHover'
     | 'cancelPopoutHover'
+    | 'setInputValue'
   effect: 'trackPopoutSessions' | 'releasePopoutHover' | 'trackPopoutPosition' | 'trackPopoutLayer' | 'trackPopoutHover'
 }
 
 /** 分支与叶子共用的身份声明。 */
 export interface SideNavNodeProps {
   value: string
+}
+
+/** 叶子行的列表项：value 是它包着的那条链接，搜索时没命中就整行收起。适配器从链接上取，作者不用再写一遍。 */
+export interface SideNavItemProps {
+  value?: string
+}
+
+/**
+ * 分组：value 与 group-label 配对；members 是分组里各条链接与分支的 value，
+ * 搜索时一个成员都没命中就整组收起。适配器按分组里挂着的部件收集，作者不用逐条列。
+ */
+export interface SideNavGroupProps extends SideNavNodeProps {
+  members?: readonly string[]
 }
 
 export interface SideNavApi<T extends PropTypes = PropTypes> {
@@ -218,11 +253,28 @@ export interface SideNavApi<T extends PropTypes = PropTypes> {
   setExpandedValue: (next: string[]) => void
   expand: (value: string) => void
   collapse: (value: string) => void
+  /** 搜索框里的检索词。 */
+  inputValue: string
+  /** 改写检索词，与在搜索框里输入同一语义；传空串即回到整棵树与原来的展开态。 */
+  setInputValue: (next: string) => void
+  /** 正处于搜索视图：检索词非空且排布没有落成图标栏，可见行只剩命中的那几枝。 */
+  searching: boolean
+  /** 搜索视图里一条都没命中。 */
+  empty: boolean
+  /** 合并缺省值之后的读屏文案。 */
+  translations: SideNavTranslations
   getRootProps: () => T['element']
   getListProps: () => T['element']
+  /**
+   * 搜索框：放在 root 里、list 之前。输入即按 filter 过滤导航树；下方向键或 Enter 把焦点交给导航行，
+   * Escape 先清空检索词。落成图标栏时过滤暂停（皮肤让框留着高度、不可见也不可聚焦），展开回来接着按原来的检索词过滤。
+   */
+  getInputProps: () => T['input']
+  /** 搜索一条都没命中时露面的占位，放在 list 之后；其余时候带 hidden。 */
+  getEmptyProps: () => T['element']
   /** 叶子行的列表项容器：链接与分支一样是列表的一条，作者把 link 包在其中。 */
-  getItemProps: () => T['element']
-  getGroupProps: (props: SideNavNodeProps) => T['element']
+  getItemProps: (props?: SideNavItemProps) => T['element']
+  getGroupProps: (props: SideNavGroupProps) => T['element']
   getGroupLabelProps: (props: SideNavNodeProps) => T['element']
   getBranchProps: (props: SideNavNodeProps) => T['element']
   getBranchTriggerProps: (props: SideNavNodeProps) => T['button']

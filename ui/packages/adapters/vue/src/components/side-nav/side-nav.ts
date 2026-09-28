@@ -7,21 +7,21 @@
 
 import type { Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { SideNavApi, SideNavNode, SideNavSchema } from '@xihan-ui/headless'
+import type { SideNavApi, SideNavFilter, SideNavNode, SideNavSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, nextTick, onMounted, ref } from 'vue'
+import { defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
-import { provideSideNav, provideSideNavNode, useSideNavContext, useSideNavNodeContext } from './context'
+import { provideSideNav, provideSideNavGroup, provideSideNavItem, provideSideNavNode, useSideNavContext, useSideNavGroupContext, useSideNavItemContext, useSideNavNodeContext } from './context'
 import { useSideNav } from './use-side-nav'
 
 type SideNavProps = SideNavSchema['props']
 
-/** 默认插槽的载荷：选中项、展开集合、折叠与浮层状态、逐节点的状态判定，以及选中、展开、折叠、弹出等命令。 */
+/** 默认插槽的载荷：选中项、展开集合、折叠与浮层状态、检索词与搜索状态、逐节点的状态判定，以及选中、展开、折叠、弹出、改写检索词等命令。 */
 export type SideNavRootSlotProps = Pick<
   SideNavApi,
   | 'value'
@@ -38,6 +38,9 @@ export type SideNavRootSlotProps = Pick<
   | 'collapse'
   | 'openPopout'
   | 'closePopout'
+  | 'inputValue'
+  | 'setInputValue'
+  | 'searching'
 >
 
 export const XhSideNavRoot = defineComponent({
@@ -57,6 +60,8 @@ export const XhSideNavRoot = defineComponent({
     dir: { type: String as PropType<SideNavProps['dir']> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
+    /** 搜索框的匹配规则；缺省为标签（缺省退回 value）大小写不敏感包含。 */
+    filter: { type: Function as PropType<SideNavFilter> },
     translations: { type: Object as PropType<SideNavProps['translations']> },
   },
   // *-change 携带 details 对象，update:* 携带裸值，支持 v-model:value 与 v-model:expanded-value
@@ -97,6 +102,9 @@ export const XhSideNavRoot = defineComponent({
       collapse: ctx.api.value.collapse,
       openPopout: ctx.api.value.openPopout,
       closePopout: ctx.api.value.closePopout,
+      inputValue: ctx.api.value.inputValue,
+      setInputValue: ctx.api.value.setInputValue,
+      searching: ctx.api.value.searching,
     }))
   },
 })
@@ -109,12 +117,43 @@ export const XhSideNavList = defineComponent({
   },
 })
 
-// 叶子行的列表项：列表容器是 ul，链接得裹在 li 里才是它合法的直接子节点
+/** 搜索框：放在 list 之前，输入即按标签过滤导航树。 */
+export const XhSideNavInput = defineComponent({
+  name: 'XhSideNavInput',
+  setup() {
+    const ctx = useSideNavContext()
+    return () => h('input', ctx.api.value.getInputProps() as Record<string, unknown>)
+  },
+})
+
+/** 搜索一条都没命中时露面的占位；没写内容时显示 translations.noMatch。 */
+export const XhSideNavEmpty = defineComponent({
+  name: 'XhSideNavEmpty',
+  setup(_, { slots }) {
+    const ctx = useSideNavContext()
+    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.noMatch)
+  },
+})
+
+/** 把一个值登记进所在分组，值变了换一条，卸下时撤销。登记写的是分组的成员表，回调不追踪它，免得自己触发自己。 */
+function joinGroup(value: () => string): void {
+  const join = useSideNavGroupContext()
+  if (!join)
+    return
+  watch(value, (next, _, onCleanup) => onCleanup(join(next)), { immediate: true })
+}
+
+// 叶子行的列表项：列表容器是 ul，链接得裹在 li 里才是它合法的直接子节点。
+// 身份取它包着的那条链接报上来的值：搜索时没命中就整行收起
 export const XhSideNavItem = defineComponent({
   name: 'XhSideNavItem',
   setup(_, { slots }) {
     const ctx = useSideNavContext()
-    return () => h('li', ctx.api.value.getItemProps() as Record<string, unknown>, slots.default?.())
+    const linkValue = shallowRef<string | null>(null)
+    provideSideNavItem((value) => {
+      linkValue.value = value
+    })
+    return () => h('li', ctx.api.value.getItemProps({ value: linkValue.value ?? undefined }) as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -126,7 +165,17 @@ export const XhSideNavGroup = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useSideNavContext()
-    return () => h('li', ctx.api.value.getGroupProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+    // 成员由组里的链接与分支挂上时登记：搜索时一个成员都没命中就整组收起
+    const members = shallowRef<readonly string[]>([])
+    provideSideNavGroup((value) => {
+      members.value = [...members.value, value]
+      return () => {
+        const at = members.value.indexOf(value)
+        if (at !== -1)
+          members.value = members.value.filter((_, i) => i !== at)
+      }
+    })
+    return () => h('li', ctx.api.value.getGroupProps({ value: props.value, members: members.value }) as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -149,6 +198,7 @@ export const XhSideNavBranch = defineComponent({
   setup(props, { slots }) {
     const ctx = useSideNavContext()
     provideSideNavNode(props)
+    joinGroup(() => props.value)
     return () => h('li', ctx.api.value.getBranchProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
   },
 })
@@ -255,6 +305,13 @@ export const XhSideNavLink = defineComponent({
   },
   setup(props, { slots, attrs }) {
     const ctx = useSideNavContext()
+    // 身份报给外面的列表项与分组：搜索时它们据此决定整行、整组收不收
+    const reportItem = useSideNavItemContext()
+    if (reportItem) {
+      watch(() => props.value, next => reportItem(next), { immediate: true })
+      onBeforeUnmount(() => reportItem(null))
+    }
+    joinGroup(() => props.value)
     return () => {
       const part = mergePartProps(ctx.api.value.getLinkProps({ value: props.value }) as Record<string, unknown>, attrs)
       const children = slots.default?.()

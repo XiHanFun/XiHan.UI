@@ -34,3 +34,23 @@ export function useSideNavNodeContext(): SideNavNodeContext {
     throw new Error('XhSideNav 的分支部件要放在 XhSideNavBranch 里')
   return node
 }
+
+/** 列表项接住它包着的那条链接报上来的身份：搜索时按它决定整行收不收。链接卸下时报 null。 */
+const ItemCtx = createContext<((value: string | null) => void) | null>(null)
+
+export const SideNavItemProvider = ItemCtx
+
+/** 链接没包在列表项里时取不到，即不报。 */
+export function useSideNavItemContext(): ((value: string | null) => void) | null {
+  return useContext(ItemCtx)
+}
+
+/** 分组收集成员：链接与分支挂上时登记自己的 value，返回撤销函数。 */
+const GroupCtx = createContext<((value: string) => () => void) | null>(null)
+
+export const SideNavGroupProvider = GroupCtx
+
+/** 不在分组里的链接与分支取不到，不登记。 */
+export function useSideNavGroupContext(): ((value: string) => () => void) | null {
+  return useContext(GroupCtx)
+}

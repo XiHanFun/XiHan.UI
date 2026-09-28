@@ -24,5 +24,8 @@ export const sideNavKeyboard: KeyboardTable = {
     { id: 'side-nav.kbd.end', keys: ['End'], when: 'focus in 行', does: '最后一可见行' },
     { id: 'side-nav.kbd.popout-open', keys: ['ArrowRight', 'Enter', 'Space'], when: 'focus in 折叠态顶层分支行', does: '弹出子级面板并落焦第一行（RTL 与 ArrowLeft 对调）' },
     { id: 'side-nav.kbd.popout-close', keys: ['ArrowLeft', 'Escape'], when: 'focus in 弹出面板', does: '收回面板，焦点还给触发按钮（RTL 与 ArrowRight 对调；Escape 归消解层）', restoresFocus: true },
+    { id: 'side-nav.kbd.search-type', keys: ['可打印字符'], when: 'focus in input', does: '改写检索词：导航树裁到只剩命中的那几枝，命中入口的祖先自动展开、其余收起；搜索里的展开收起只记在搜索视图里，不改写 expandedValue' },
+    { id: 'side-nav.kbd.search-to-list', keys: ['ArrowDown', 'Enter'], when: 'focus in input', does: '焦点交给导航行：搜索中落在剩下的第一行，不在搜索中落在 Tab 锚点' },
+    { id: 'side-nav.kbd.search-escape', keys: ['Escape'], when: 'focus in input, 检索词非空', does: '清空检索词，回到整棵树与原来的展开态，焦点留在搜索框；检索词已空时不拦截这一下' },
   ],
 }

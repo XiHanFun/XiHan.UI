@@ -62890,6 +62890,78 @@
       "description": "side-nav 的 root 部件 inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-side-nav-empty-fg",
+      "component": "side-nav",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 empty 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-empty-font-size",
+      "component": "side-nav",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_side-nav-row-font-size"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 empty 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-empty-px",
+      "component": "side-nav",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_side-nav-row-px"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 empty 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-empty-py",
+      "component": "side-nav",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 empty 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-side-nav-fg",
       "component": "side-nav",
       "part": [
@@ -63040,6 +63112,98 @@
       "description": "side-nav 的 branch-trigger、link 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-side-nav-input-autofill-bg",
+      "component": "side-nav",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "-webkit-autofill",
+        "autofill"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 input 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-input-autofill-fg",
+      "component": "side-nav",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "-webkit-text-fill-color"
+      ],
+      "state": [
+        "-webkit-autofill",
+        "autofill"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 input 部件 -webkit-text-fill-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-input-font-size",
+      "component": "side-nav",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_side-nav-row-font-size"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 input 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-input-h",
+      "component": "side-nav",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_side-nav-row-h"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 input 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-input-px",
+      "component": "side-nav",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_side-nav-row-px"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 input 部件 padding-inline 覆盖槽。"
+    },
+    {
       "name": "--xh-side-nav-link-font-size",
       "component": "side-nav",
       "part": [
@@ -63151,6 +63315,25 @@
       ],
       "visibility": "public",
       "description": "side-nav 的 root 部件 padding 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-placeholder-fg",
+      "component": "side-nav",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "placeholder",
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 input 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-popout-bg",
@@ -63505,6 +63688,24 @@
       ],
       "visibility": "public",
       "description": "side-nav 的 branch-trigger、link 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-search-divider",
+      "component": "side-nav",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "border-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-solid-separator"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 input 部件 border-block-end 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-w",

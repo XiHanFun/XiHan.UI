@@ -7,24 +7,25 @@
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { SideNavApi, SideNavNode, SideNavSchema, SideNavTranslations } from '@xihan-ui/headless'
+import type { SideNavApi, SideNavFilter, SideNavNode, SideNavSchema, SideNavTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
+import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
-import { SideNavNodeProvider, SideNavProvider, useSideNavContext, useSideNavNodeContext } from './context'
+import { SideNavGroupProvider, SideNavItemProvider, SideNavNodeProvider, SideNavProvider, useSideNavContext, useSideNavGroupContext, useSideNavItemContext, useSideNavNodeContext } from './context'
 import { useSideNav } from './use-side-nav'
 
 type SideNavProps = SideNavSchema['props']
 
-/** 函数式 children 的载荷：选中项、展开集合、折叠与浮层状态、逐节点的状态判定，以及选中、展开、折叠、弹出等命令。 */
+/** 函数式 children 的载荷：选中项、展开集合、折叠与浮层状态、检索词与搜索状态、逐节点的状态判定，以及选中、展开、折叠、弹出、改写检索词等命令。 */
 export type SideNavRootSlotProps = Pick<
   SideNavApi,
   | 'value'
@@ -41,6 +42,9 @@ export type SideNavRootSlotProps = Pick<
   | 'collapse'
   | 'openPopout'
   | 'closePopout'
+  | 'inputValue'
+  | 'setInputValue'
+  | 'searching'
 >
 
 /** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
@@ -60,6 +64,8 @@ export interface XhSideNavRootProps extends RootElementProps {
   dir?: Direction
   tone?: Tone
   size?: Size
+  /** 搜索框的匹配规则；缺省为标签（缺省退回 value）大小写不敏感包含。 */
+  filter?: SideNavFilter
   translations?: Partial<SideNavTranslations>
   onValueChange?: SideNavProps['onValueChange']
   onExpandedValueChange?: SideNavProps['onExpandedValueChange']
@@ -80,6 +86,7 @@ export function XhSideNavRoot({
   dir,
   tone,
   size,
+  filter,
   translations,
   onValueChange,
   onExpandedValueChange,
@@ -100,6 +107,7 @@ export function XhSideNavRoot({
     dir,
     tone,
     size,
+    filter,
     translations,
     onValueChange,
     onExpandedValueChange,
@@ -124,6 +132,9 @@ export function XhSideNavRoot({
           collapse: api.collapse,
           openPopout: api.openPopout,
           closePopout: api.closePopout,
+          inputValue: api.inputValue,
+          setInputValue: api.setInputValue,
+          searching: api.searching,
         })}
       </nav>
     </SideNavProvider>
@@ -138,11 +149,41 @@ export function XhSideNavList({ children, ...rest }: XhSideNavListProps): ReactN
   return <ul {...mergeReactProps(ctx.api.getListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</ul>
 }
 
+export interface XhSideNavInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'children'> {}
+/** 搜索框：放在 list 之前，输入即按标签过滤导航树。 */
+export function XhSideNavInput(rest: XhSideNavInputProps): ReactNode {
+  const ctx = useSideNavContext()
+  return <input {...mergeReactProps(ctx.api.getInputProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+}
+
+export interface XhSideNavEmptyProps extends ComponentPropsWithRef<'div'> {}
+/** 搜索一条都没命中时露面的占位；没写内容时显示 translations.noMatch。 */
+export function XhSideNavEmpty({ children, ...rest }: XhSideNavEmptyProps): ReactNode {
+  const ctx = useSideNavContext()
+  return (
+    <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children ?? ctx.api.translations.noMatch}
+    </div>
+  )
+}
+
+/** 把一个值登记进所在分组，值变了换一条，卸下时撤销。 */
+function useJoinGroup(value: string): void {
+  const join = useSideNavGroupContext()
+  useIsomorphicLayoutEffect(() => join?.(value), [join, value])
+}
+
 export interface XhSideNavItemProps extends ComponentPropsWithRef<'li'> {}
-// 叶子行的列表项：列表容器是 ul，链接得裹在 li 里才是它合法的直接子节点
+// 叶子行的列表项：列表容器是 ul，链接得裹在 li 里才是它合法的直接子节点。
+// 身份取它包着的那条链接报上来的值：搜索时没命中就整行收起
 export function XhSideNavItem({ children, ...rest }: XhSideNavItemProps): ReactNode {
   const ctx = useSideNavContext()
-  return <li {...mergeReactProps(ctx.api.getItemProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+  const [linkValue, setLinkValue] = useState<string | null>(null)
+  return (
+    <SideNavItemProvider value={setLinkValue}>
+      <li {...mergeReactProps(ctx.api.getItemProps({ value: linkValue ?? undefined }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+    </SideNavItemProvider>
+  )
 }
 
 export interface XhSideNavGroupProps extends Omit<ComponentPropsWithRef<'li'>, 'value'> {
@@ -151,7 +192,20 @@ export interface XhSideNavGroupProps extends Omit<ComponentPropsWithRef<'li'>, '
 }
 export function XhSideNavGroup({ value, children, ...rest }: XhSideNavGroupProps): ReactNode {
   const ctx = useSideNavContext()
-  return <li {...mergeReactProps(ctx.api.getGroupProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+  // 成员由组里的链接与分支挂上时登记：搜索时一个成员都没命中就整组收起
+  const [members, setMembers] = useState<readonly string[]>([])
+  const join = useCallback((member: string) => {
+    setMembers(current => [...current, member])
+    return () => setMembers((current) => {
+      const at = current.indexOf(member)
+      return at === -1 ? current : current.filter((_, i) => i !== at)
+    })
+  }, [])
+  return (
+    <SideNavGroupProvider value={join}>
+      <li {...mergeReactProps(ctx.api.getGroupProps({ value, members }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+    </SideNavGroupProvider>
+  )
 }
 
 export interface XhSideNavGroupLabelProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -168,6 +222,7 @@ export interface XhSideNavBranchProps extends Omit<ComponentPropsWithRef<'li'>, 
 export function XhSideNavBranch({ value, children, ...rest }: XhSideNavBranchProps): ReactNode {
   const ctx = useSideNavContext()
   const node = useMemo(() => ({ value }), [value])
+  useJoinGroup(value)
   return (
     <SideNavNodeProvider value={node}>
       <li {...mergeReactProps(ctx.api.getBranchProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
@@ -282,6 +337,15 @@ export interface XhSideNavLinkProps extends Omit<ComponentPropsWithRef<'a'>, 'va
 /** 导航链接。asChild 借用作者的子节点（如路由链接）作为链接，不再渲染自己的 `<a>`。 */
 export function XhSideNavLink({ value, asChild, children, ...rest }: XhSideNavLinkProps): ReactNode {
   const ctx = useSideNavContext()
+  // 身份报给外面的列表项与分组：搜索时它们据此决定整行、整组收不收
+  const reportItem = useSideNavItemContext()
+  useIsomorphicLayoutEffect(() => {
+    if (!reportItem)
+      return
+    reportItem(value)
+    return () => reportItem(null)
+  }, [reportItem, value])
+  useJoinGroup(value)
   // 链接的聚焦上报不冒泡，改装成原生监听器
   const bind = useNativeEvents(
     ctx.api.getLinkProps({ value }) as Record<string, unknown>,

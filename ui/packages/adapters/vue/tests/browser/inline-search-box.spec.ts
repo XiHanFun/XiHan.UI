@@ -1,4 +1,4 @@
-// 面板里内嵌的搜索框（Command、Cascader、TreeSelect、Transfer）是同一种写法：通栏一行、控件高与字号随尺寸档、
+// 面板里内嵌的搜索框（Command、Cascader、TreeSelect、Transfer、SideNav）是同一种写法：通栏一行、控件高与字号随尺寸档、
 // 只画一道面内分隔的下划线，占位文字走字段家族（投影 data-xh-field-input）。
 //
 // 判据是计算样式：块尺寸、字号、::placeholder 前景与下划线颜色，jsdom 不算这些。
@@ -18,6 +18,12 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
   XhCommandRoot,
+  XhSideNavInput,
+  XhSideNavItem,
+  XhSideNavLink,
+  XhSideNavLinkText,
+  XhSideNavList,
+  XhSideNavRoot,
   XhTransferList,
   XhTransferRoot,
   XhTransferSearch,
@@ -35,7 +41,7 @@ import {
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-type Scope = 'cascader' | 'command' | 'transfer' | 'tree-select'
+type Scope = 'cascader' | 'command' | 'side-nav' | 'transfer' | 'tree-select'
 type Size = 'sm' | 'md' | 'lg'
 
 const PLACEHOLDER = '搜索'
@@ -66,6 +72,11 @@ const RENDER: Record<Scope, (size: Size) => VNode> = {
     placeholder: PLACEHOLDER,
     collection: [{ value: 'open', label: '打开文档' }],
   }),
+  'side-nav': size => h(XhSideNavRoot, { collection: [{ value: 'home', label: '首页' }], size }, () => [
+    h(XhSideNavInput, { placeholder: PLACEHOLDER }),
+    h(XhSideNavList, null, () => h(XhSideNavItem, null, () =>
+      h(XhSideNavLink, { value: 'home' }, () => h(XhSideNavLinkText, null, () => '首页')))),
+  ]),
   'transfer': size => h(XhTransferRoot, {
     collection: [{ value: 'a', label: '甲' }],
     searchable: true,
@@ -89,12 +100,13 @@ const RENDER: Record<Scope, (size: Size) => VNode> = {
 }
 
 /** 各自的搜索框部件名。 */
-const PART: Record<Scope, string> = { 'cascader': 'input', 'command': 'input', 'transfer': 'search', 'tree-select': 'input' }
+const PART: Record<Scope, string> = { 'cascader': 'input', 'command': 'input', 'side-nav': 'input', 'transfer': 'search', 'tree-select': 'input' }
 
 /** 下划线是面内分隔：取所在面材质的分隔令牌。 */
 const DIVIDER: Record<Scope, string> = {
   'cascader': '--xh-material-solid-separator',
   'command': '--xh-material-elevated-separator',
+  'side-nav': '--xh-material-solid-separator',
   'transfer': '--xh-material-solid-separator',
   'tree-select': '--xh-material-frosted-separator',
 }
@@ -133,7 +145,7 @@ function resolved(on: HTMLElement, property: string, token: string): string {
   return out
 }
 
-describe.each(['cascader', 'command', 'transfer', 'tree-select'] as const)('%s 的内嵌搜索框', (scope) => {
+describe.each(['cascader', 'command', 'side-nav', 'transfer', 'tree-select'] as const)('%s 的内嵌搜索框', (scope) => {
   it.each(['sm', 'md', 'lg'] as const)('%s 档：控件高与字号随档', async (size) => {
     const input = await mount(scope, size)
     const style = getComputedStyle(input)

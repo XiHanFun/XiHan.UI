@@ -6,13 +6,23 @@
 // 提供 side nav 相关实现。
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { SideNavApi, SideNavNode, SideNavPressedPart, SideNavSchema } from './side-nav.types'
-import { createPressTracker, dataAttr, focusItem, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import type { SideNavApi, SideNavNode, SideNavPressedPart, SideNavSchema, SideNavTranslations } from './side-nav.types'
+import { createPressTracker, dataAttr, focusItem, isComposingEvent, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { flattenTree, indexTree } from '../tree'
 import { sideNavAnatomy, sideNavLinkQuery, sideNavTriggerQuery } from './side-nav.anatomy'
+import { resolveSideNavSearch } from './side-nav.search'
 
 const parts = sideNavAnatomy.build()
+
+/** 读屏文案补齐缺省值；缺省为英文。 */
+function resolveTranslations(input: Partial<SideNavTranslations> | undefined): SideNavTranslations {
+  return {
+    root: input?.root ?? 'Sidebar',
+    input: input?.input ?? 'Filter navigation',
+    noMatch: input?.noMatch ?? 'No matches',
+  }
+}
 
 export function connectSideNav<T extends PropTypes>(
   service: Service<SideNavSchema>,
@@ -38,8 +48,19 @@ export function connectSideNav<T extends PropTypes>(
   const livePopout = (): string | null =>
     state.get() === 'popout' ? context.get('popoutValue') ?? null : null
 
-  // 摊平与索引都是纯函数；排布落成图标栏时内嵌展开整体收起，可见行只剩顶层
-  const rows = flattenTree(collection, railed ? [] : expandedValue)
+  // 搜索视图：检索词非空时树裁到只剩命中的那几枝，展开取搜索视图自己的那份；落成图标栏时暂停
+  const inputValue = context.get('inputValue')
+  const search = resolveSideNavSearch(collection, { inputValue, filter: prop('filter'), railed })
+  const searching = search != null
+  // 裁剪后还留在树里的入口；不在搜索视图时为 null，一条都不藏
+  const shown = search ? new Set(indexTree(search.nodes).keys()) : null
+  const isShown = (v: string): boolean => shown == null || shown.has(v)
+  const empty = searching && search.nodes.length === 0
+  const viewExpanded = railed ? [] : searching ? context.get('searchExpanded') : expandedValue
+
+  // 摊平与索引都是纯函数；排布落成图标栏时内嵌展开整体收起，可见行只剩顶层。
+  // 索引始终取整棵树：禁用、语气、链接地址与层级不因裁剪而变
+  const rows = flattenTree(search?.nodes ?? collection, viewExpanded)
   const metaIndex = indexTree(collection)
   const visible = new Map(rows.map(row => [row.value, row]))
 
@@ -49,7 +70,7 @@ export function connectSideNav<T extends PropTypes>(
 
   const metaOf = (v: string): ReturnType<typeof metaIndex.get> => metaIndex.get(v)
   const isSelected = (v: string): boolean => value === v
-  const isExpanded = (v: string): boolean => !railed && expandedValue.includes(v)
+  const isExpanded = (v: string): boolean => viewExpanded.includes(v)
   const isDisabled = (v: string): boolean => disabled || !!metaOf(v)?.disabled
 
   /**
@@ -82,10 +103,10 @@ export function connectSideNav<T extends PropTypes>(
     ?? rows[0]?.value
     ?? null
 
-  const translations = prop('translations')
-  const rootLabel = translations?.root ?? 'Sidebar'
+  const translations = resolveTranslations(prop('translations'))
 
   // 配对 id 由 scope 派生，同页多实例不相撞
+  const listId = scope.partId('side-nav', 'list')
   const groupLabelId = (v: string): string => scope.partId('side-nav', `group-label-${v}`)
   const contentId = (v: string): string => scope.partId('side-nav', `content-${v}`)
   const positionerId = (v: string): string => scope.partId('side-nav', `positioner-${v}`)
@@ -249,13 +270,18 @@ export function connectSideNav<T extends PropTypes>(
         openPopout(v, 'none')
     },
     closePopout: () => send({ type: 'POPOUT.CLOSE' }),
+    inputValue,
+    setInputValue: next => send({ type: 'INPUT.CHANGE', value: next }),
+    searching,
+    empty,
+    translations,
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       // 折叠落定要等它身上的宽度过渡播完，机器按 id 现取
       'id': scope.partId('side-nav', 'root'),
       'role': 'navigation',
-      'aria-label': rootLabel,
+      'aria-label': translations.root,
       'data-collapsed': dataAttr(collapsed),
       // 折叠进行中：宽度在过渡，行文字只淡出、还在行里，落定之后才裁成图标栏（展开时落定之后才淡入）
       'data-animating': dataAttr(collapsing),
@@ -267,17 +293,73 @@ export function connectSideNav<T extends PropTypes>(
 
     getListProps: () => normalize.element({
       ...parts.list.attrs,
+      // 搜索框按 id 指着它：框里的检索词改的就是这一列
+      'id': listId,
       'data-collapsed': dataAttr(collapsed),
     }),
 
-    getItemProps: () => normalize.element({
-      ...parts.item.attrs,
+    // 面板内嵌的搜索框：不画字段外壳，重置与占位前景走字段家族，下划线与高度由皮肤给
+    getInputProps: () => normalize.input({
+      ...parts.input.attrs,
+      'type': 'text',
+      'value': inputValue,
+      'disabled': disabled || undefined,
+      'autocomplete': 'off',
+      'autocapitalize': 'none',
+      // 框里没有可见标签，只能自带一句
+      'aria-label': translations.input,
+      'aria-controls': listId,
+      'data-xh-field-input': '',
+      'data-collapsed': dataAttr(collapsed),
+      'data-disabled': dataAttr(disabled),
+      'onInput': (event: Event) => {
+        send({ type: 'INPUT.CHANGE', value: (event.target as HTMLInputElement).value })
+      },
+      'onKeyDown': (event: KeyboardEvent) => {
+        // 组合期间的按键属于输入法候选框，组件一律不接；带修饰键的组合归浏览器
+        if (isComposingEvent(event) || event.ctrlKey || event.metaKey || event.altKey)
+          return
+        if (event.key === 'Escape') {
+          // 词非空就先清词回整棵树；拦下默认行为，外层的抽屉之类不跟着这一下收起。词已空就放行
+          if (inputValue !== '') {
+            event.preventDefault()
+            send({ type: 'INPUT.CHANGE', value: '' })
+          }
+          return
+        }
+        // 下方向键与 Enter 把焦点交给导航行：搜索中落在剩下的第一行，否则落回 Tab 锚点；Enter 不落到表单上
+        if (event.key === 'ArrowDown' || event.key === 'Enter') {
+          event.preventDefault()
+          const root = rootElOf(event.currentTarget as HTMLElement)
+          if (!root)
+            return
+          if (searching)
+            focusBy(root, 'first')
+          else if (anchor != null)
+            focusOn(root, anchor)
+        }
+      },
     }),
 
-    getGroupProps: ({ value: v }) => normalize.element({
+    // 空态占位：list 的兄弟（ul 只许装列表项）。只在搜索一条都没命中时露面，露面即播报
+    getEmptyProps: () => normalize.element({
+      ...parts.empty.attrs,
+      role: 'status',
+      hidden: !empty || undefined,
+    }),
+
+    // 身份取它包着的那条链接：搜索时没命中就整行收起，不在列表里留一格空行
+    getItemProps: props => normalize.element({
+      ...parts.item.attrs,
+      hidden: (props?.value != null && !isShown(props.value)) || undefined,
+    }),
+
+    // 搜索时一个成员都没命中就整组收起，标题不孤零零地留着
+    getGroupProps: ({ value: v, members }) => normalize.element({
       ...parts.group.attrs,
       'role': 'group',
       'aria-labelledby': groupLabelId(v),
+      'hidden': (searching && members != null && !members.some(isShown)) || undefined,
     }),
 
     getGroupLabelProps: ({ value: v }) => normalize.element({
@@ -291,6 +373,8 @@ export function connectSideNav<T extends PropTypes>(
       'data-state': isExpanded(v) ? 'open' : 'closed',
       'data-in-path': dataAttr(isActiveBranch(v)),
       'data-disabled': dataAttr(isDisabled(v)),
+      // 搜索时自己没命中、子孙也一个没命中的分支整枝收起
+      'hidden': !isShown(v) || undefined,
     }),
 
     getBranchTriggerProps: ({ value: v }) => {
