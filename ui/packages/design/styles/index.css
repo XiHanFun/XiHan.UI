@@ -21300,6 +21300,17 @@
     align-items: center;
   }
 
+  /* card 形态：卡片撑满竖排的一列；横排时各卡等分一行、按内容等高，窄到放不下两张就折到下一行 */
+  [data-scope='checkbox-group'][data-part='root'][data-variant='card'] {
+    align-items: stretch;
+  }
+
+  [data-scope='checkbox-group'][data-part='root'][data-variant='card'][data-orientation='horizontal']
+    > [data-scope='checkbox-group'][data-part='item'] {
+    flex: 1 1 0;
+    min-inline-size: min(var(--xh-control-min-w), 100%);
+  }
+
   /* 集合标题：14 / 500 / fg-muted，字号不随 size 档 */
   [data-scope='checkbox-group'][data-part='label'] {
     color: var(--xh-checkbox-group-label-fg, var(--xh-fg-muted));
@@ -21351,7 +21362,7 @@
      家族的 :hover / 按压块不排 readonly，只能从槽上收回；排掉禁用项是因为这条选择器权重高过家族的禁用块，
      不排就会把 not-allowed 覆盖回 default */
   [data-scope='checkbox-group'][data-part='root'][data-readonly]
-    [data-scope='checkbox-group'][data-part='item']:not([data-disabled]) {
+    [data-scope='checkbox-group'][data-part='item']:not([data-disabled]):not([data-xh-choice-card]) {
     --xh-action-bg-hover: transparent;
     --xh-action-bg-pressed: transparent;
     --xh-action-cursor-rest: default;
@@ -21462,6 +21473,33 @@
   [data-scope='checkbox-group'][data-part='item-text'] {
     color: inherit;
     user-select: none;
+  }
+
+  /* 卡片的文案是卡的标题：取标签字重，与说明拉开层级 */
+  [data-scope='checkbox-group'][data-part='item'][data-xh-choice-card] > [data-scope='checkbox-group'][data-part='item-text'] {
+    font-weight: var(--xh-checkbox-group-card-title-font-weight, var(--xh-text-label-weight));
+  }
+
+  /* 说明是次级文字：13 / fg-muted / 正文行高，不随选中与语气换色；落在文案下方同一列。
+     列表形态的条目带了说明时同样排成两行，行首的方框对齐第一行 */
+  [data-scope='checkbox-group'][data-part='item-description'] {
+    grid-column: 2;
+    color: var(--xh-checkbox-group-item-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-checkbox-group-item-description-font-size, var(--xh-text-secondary-size));
+    font-weight: var(--xh-font-weight-regular);
+    line-height: var(--xh-leading-normal);
+    user-select: none;
+  }
+
+  [data-scope='checkbox-group'][data-part='item']:not([data-xh-choice-card]):has(> [data-scope='checkbox-group'][data-part='item-description']) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    row-gap: var(--xh-checkbox-group-item-row-gap, var(--xh-space-1));
+  }
+
+  [data-scope='checkbox-group'][data-part='item'][data-disabled] > [data-scope='checkbox-group'][data-part='item-description'] {
+    color: var(--xh-checkbox-group-item-description-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 全选格与条目同形（接 Action Control row 档 ghost、xs 命中地板、按下只换面不缩放，方框读宿主 host 槽），

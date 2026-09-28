@@ -812,6 +812,7 @@
     ],
     "item-description": [
       "cascader",
+      "checkbox-group",
       "combobox",
       "command",
       "context-menu",

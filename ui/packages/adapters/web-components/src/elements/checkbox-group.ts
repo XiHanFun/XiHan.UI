@@ -6,7 +6,7 @@
 // 提供 checkbox group 相关实现。
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, FormControlState, ResolvedFormControlState } from '@xihan-ui/headless'
+import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, CheckboxGroupVariant, FormControlState, ResolvedFormControlState } from '@xihan-ui/headless'
 import { isItemDisabled } from '@xihan-ui/core'
 import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup, resolveFormControlState } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
@@ -43,6 +43,7 @@ const LIST_CONVERTER = {
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 vertical
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {'list'|'card'} variant - 结构形态，默认 list；card 把每个条目画成一张可点的卡
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
  * @fires value-change - 选中值变化；detail 为 `{ value: string[] }`
  * @csspart root - role=group 容器
@@ -50,6 +51,7 @@ const LIST_CONVERTER = {
  * @csspart item - role=checkbox 条目，作者用 value 属性声明身份
  * @csspart indicator - 条目的视觉方框（对读屏隐藏）
  * @csspart item-text - 条目文本，条目的可及名来源
+ * @csspart item-description - 条目文案下方的说明行，常用在 card 形态里
  * @csspart hidden-input - 条目的表单影子输入（必须是原生 input）
  * @csspart trigger - 全选 / 半选的父复选框，须写在 root 之内
  */
@@ -69,6 +71,7 @@ export class XhCheckboxGroupElement extends XhElement {
     orientation: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
     name: { converter: STRING_CONVERTER },
   }
 
@@ -82,6 +85,7 @@ export class XhCheckboxGroupElement extends XhElement {
   declare orientation?: Orientation
   declare tone?: Tone
   declare size?: Size
+  declare variant?: CheckboxGroupVariant
   declare name?: string
 
   /** 条目自身 disabled 声明的快照，整组禁用期间 DOM 上的 aria-disabled 不可信。 */
@@ -123,6 +127,7 @@ export class XhCheckboxGroupElement extends XhElement {
       orientation: this.orientation,
       tone: this.tone,
       size: this.size,
+      variant: this.variant,
       name: this.name,
       onValueChange: this.notify,
     }
@@ -189,6 +194,8 @@ export class XhCheckboxGroupElement extends XhElement {
         this.spreader.spread(control, api.getIndicatorProps(item) as Record<string, unknown>)
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+      for (const description of this.partsIn(el, 'item-description'))
+        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
     }
 
     this.wasGroupDisabled = this.controlState().disabled

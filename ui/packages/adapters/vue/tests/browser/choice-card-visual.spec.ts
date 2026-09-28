@@ -5,6 +5,11 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
+  XhCheckboxGroupIndicator,
+  XhCheckboxGroupItem,
+  XhCheckboxGroupItemDescription,
+  XhCheckboxGroupItemText,
+  XhCheckboxGroupRoot,
   XhRadioGroupItem,
   XhRadioGroupItemDescription,
   XhRadioGroupItemText,
@@ -28,12 +33,15 @@ interface Kit {
   item: Component
   text: Component
   description: Component
+  /** 行首标记由条目自己装配时不写；复选框组的方框要作者写出来。 */
+  indicator?: Component
   scope: string
   selected: Record<string, unknown>
 }
 
 const KITS: Kit[] = [
   { root: XhRadioGroupRoot, item: XhRadioGroupItem, text: XhRadioGroupItemText, description: XhRadioGroupItemDescription, scope: 'radio-group', selected: { defaultValue: 'basic' } },
+  { root: XhCheckboxGroupRoot, item: XhCheckboxGroupItem, text: XhCheckboxGroupItemText, description: XhCheckboxGroupItemDescription, indicator: XhCheckboxGroupIndicator, scope: 'checkbox-group', selected: { defaultValue: ['basic'] } },
 ]
 
 async function mount(kit: Kit, props: Record<string, unknown> = {}, width = 360): Promise<HTMLElement[]> {
@@ -41,6 +49,7 @@ async function mount(kit: Kit, props: Record<string, unknown> = {}, width = 360)
   host.style.inlineSize = `${width}px`
   document.body.prepend(host)
   const card = (value: string, title: string, note: string) => h(kit.item, { value }, () => [
+    ...(kit.indicator ? [h(kit.indicator)] : []),
     h(kit.text, null, () => title),
     h(kit.description, null, () => note),
   ])

@@ -76,6 +76,64 @@ export const checkboxGroupSuite: ConformanceSuite = {
   },
   cases: [
     {
+      name: 'card 形态：条目换成 outline 描边卡并投影 data-xh-choice-card，说明行带条目状态；勾选语义照旧',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { variant: 'card', defaultValue: ['a'] },
+      fixture: () => ({
+        part: 'root',
+        children: [
+          { part: 'label', text: '通知' },
+          {
+            part: 'item',
+            attrs: { value: 'a' },
+            children: [{ part: 'indicator' }, { part: 'item-text', text: '邮件' }, { part: 'item-description', text: '每日汇总' }],
+          },
+          {
+            part: 'item',
+            attrs: { value: 'c' },
+            children: [{ part: 'indicator' }, { part: 'item-text', text: '短信' }, { part: 'item-description', text: '只发紧急事项' }],
+          },
+        ],
+      }),
+      initial: {
+        counts: { 'item': 2, 'item-description': 2 },
+        parts: {
+          'root': { 'data-variant': 'card' },
+          'item': [
+            { 'role': 'checkbox', 'aria-checked': 'true', 'data-state': 'checked', 'data-xh-action-profile': 'row', 'data-xh-action-variant': 'outline', 'data-xh-choice-card': '', 'data-readonly': null },
+            { 'role': 'checkbox', 'aria-checked': 'false', 'data-state': 'unchecked', 'data-xh-action-variant': 'outline', 'data-xh-choice-card': '' },
+          ],
+          'item-description': [
+            { 'data-state': 'checked', 'id': null },
+            { 'data-state': 'unchecked' },
+          ],
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item[1]',
+          expect: {
+            parts: {
+              'item': [{ 'aria-checked': 'true' }, { 'aria-checked': 'true', 'data-state': 'checked' }],
+              'item-description': [{ 'data-state': 'checked' }, { 'data-state': 'checked' }],
+            },
+            events: [{ type: 'value-change', detail: { value: ['a', 'c'] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'card 形态的只读：条目投影 data-readonly，卡面据此收回悬停与按下面',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { variant: 'card', readOnly: true },
+      initial: {
+        parts: {
+          item: [{ 'data-readonly': '', 'aria-readonly': 'true' }, { 'data-readonly': '' }, { 'data-readonly': '' }],
+        },
+      },
+    },
+    {
       name: 'Tab 停靠点：每一项各占一个，容器不占（与单选组正相反）',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['checkbox-group.kbd.tab'],

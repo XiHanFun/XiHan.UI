@@ -6,7 +6,7 @@
 // 提供 checkbox group 相关实现。
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CheckboxGroupApi, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema } from '@xihan-ui/headless'
+import type { CheckboxGroupApi, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema, CheckboxGroupVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useMemo } from 'react'
@@ -44,6 +44,8 @@ export interface XhCheckboxGroupRootProps extends Omit<ComponentPropsWithRef<'di
   orientation?: Orientation
   tone?: Tone
   size?: Size
+  /** 结构形态，默认 list；card 把每个条目画成一张可点的卡。 */
+  variant?: CheckboxGroupVariant
   onValueChange?: CheckboxGroupProps['onValueChange']
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: CheckboxGroupNodeMeta) => ReactNode
@@ -63,6 +65,7 @@ export function XhCheckboxGroupRoot({
   orientation,
   tone,
   size,
+  variant,
   onValueChange,
   renderItem,
   children,
@@ -80,6 +83,7 @@ export function XhCheckboxGroupRoot({
     orientation,
     tone,
     size,
+    variant,
     onValueChange,
   } as CheckboxGroupProps))
   const api = ctx.api
@@ -158,6 +162,14 @@ export function XhCheckboxGroupItemText({ children, ...rest }: XhCheckboxGroupIt
   return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhCheckboxGroupItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
+/** 条目文案下方的说明行，常用在 card 形态里。 */
+export function XhCheckboxGroupItemDescription({ children, ...rest }: XhCheckboxGroupItemDescriptionProps): ReactNode {
+  const ctx = useCheckboxGroupContext()
+  const item = useCheckboxGroupItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhCheckboxGroupSelectAllTriggerProps extends ComponentPropsWithRef<'div'> {}
 /** 与条目同形的 role=checkbox 节点，渲染为 div，Space 由 connect 接管。 */
 export function XhCheckboxGroupSelectAllTrigger({ children, ...rest }: XhCheckboxGroupSelectAllTriggerProps): ReactNode {
@@ -184,6 +196,7 @@ function DefaultTree(props: {
         <XhCheckboxGroupItem key={node.value} value={node.value}>
           <XhCheckboxGroupIndicator />
           <XhCheckboxGroupItemText>{props.renderItem?.(node) ?? node.label}</XhCheckboxGroupItemText>
+          {node.description != null ? <XhCheckboxGroupItemDescription>{node.description}</XhCheckboxGroupItemDescription> : null}
         </XhCheckboxGroupItem>
       ))}
     </>

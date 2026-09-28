@@ -571,3 +571,41 @@ describe('connectCheckboxGroup：按压通道', () => {
     expect(allPressed(s)).toBeUndefined()
   })
 })
+
+describe('connectCheckboxGroup：结构形态', () => {
+  it('缺省 list：根投影 data-variant=list，条目是 ghost 行、不带卡面标记', () => {
+    const service = makeService()
+    expect(api(service).getRootProps()).toMatchObject({ 'data-variant': 'list' })
+    expect(itemProps(service, { value: 'a' })).toMatchObject({
+      'data-xh-action-variant': 'ghost',
+      'data-xh-choice-card': undefined,
+    })
+  })
+
+  it('card：条目换成 outline 描边卡并投影 data-xh-choice-card，只读落到条目上供卡面收回悬停面', () => {
+    const service = makeService({ variant: 'card', readOnly: true, defaultValue: ['a'] })
+    expect(api(service).getRootProps()).toMatchObject({ 'data-variant': 'card' })
+    expect(itemProps(service, { value: 'a' })).toMatchObject({
+      'role': 'checkbox',
+      'aria-checked': 'true',
+      'data-state': 'checked',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'outline',
+      'data-xh-choice-card': '',
+      'data-readonly': '',
+    })
+  })
+
+  it('说明行带条目的状态标记；collection 的 description 进条目元信息，没写时为 null', () => {
+    const service = makeService({
+      defaultValue: ['a'],
+      collection: [{ value: 'a', label: '邮件', description: '每日汇总' }, { value: 'b' }],
+    })
+    expect(api(service).getItemDescriptionProps({ value: 'a' })).toMatchObject({
+      'data-scope': 'checkbox-group',
+      'data-part': 'item-description',
+      'data-state': 'checked',
+    })
+    expect(api(service).collection.map(node => node.description)).toEqual(['每日汇总', null])
+  })
+})

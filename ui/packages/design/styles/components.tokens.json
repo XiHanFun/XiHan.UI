@@ -10899,6 +10899,25 @@
       "description": "checkbox 的 root 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-checkbox-group-card-title-font-weight",
+      "component": "checkbox-group",
+      "part": [
+        "item",
+        "item-text"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "xh-choice-card"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "checkbox-group 的 item、item-text 部件 font-weight 覆盖槽。"
+    },
+    {
       "name": "--xh-checkbox-group-gap",
       "component": "checkbox-group",
       "part": [
@@ -11329,6 +11348,61 @@
       "description": "checkbox-group 的 item 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-checkbox-group-item-description-fg",
+      "component": "checkbox-group",
+      "part": [
+        "item-description"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "checkbox-group 的 item-description 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-checkbox-group-item-description-fg-disabled",
+      "component": "checkbox-group",
+      "part": [
+        "item",
+        "item-description"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "checkbox-group 的 item、item-description 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-checkbox-group-item-description-font-size",
+      "component": "checkbox-group",
+      "part": [
+        "item-description"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-secondary-size"
+      ],
+      "visibility": "public",
+      "description": "checkbox-group 的 item-description 部件 font-size 覆盖槽。"
+    },
+    {
       "name": "--xh-checkbox-group-item-fg",
       "component": "checkbox-group",
       "part": [
@@ -11425,6 +11499,26 @@
       ],
       "visibility": "public",
       "description": "checkbox-group 的 item 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-checkbox-group-item-row-gap",
+      "component": "checkbox-group",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "row-gap"
+      ],
+      "state": [
+        "has(> [data-scope='checkbox-group'][data-part='item-description'])",
+        "not([data-xh-choice-card])",
+        "xh-choice-card"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "checkbox-group 的 item 部件 row-gap 覆盖槽。"
     },
     {
       "name": "--xh-checkbox-group-label-fg",
