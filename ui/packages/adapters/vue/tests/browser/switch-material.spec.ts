@@ -233,7 +233,7 @@ describe('switch 实体轨道与 raised 滑块', () => {
     expect(restShadow).not.toBe('none')
     expect(getComputedStyle(thumbs[1]!).boxShadow).toBe('none')
     expect(getComputedStyle(thumbs[2]!).boxShadow).toBe('none')
-    expect(getComputedStyle(thumbs[3]!, '::after').animationName).toBe('xh-spin')
+    expect(getComputedStyle(thumbs[3]!, '::before').animationPlayState).toBe('running')
     expect(roots[3]!.getBoundingClientRect().width).toBeCloseTo(roots[0]!.getBoundingClientRect().width, 1)
     expect(roots[3]!.getBoundingClientRect().height).toBeCloseTo(roots[0]!.getBoundingClientRect().height, 1)
     expect(thumbs[3]!.getBoundingClientRect().width).toBeCloseTo(thumbs[0]!.getBoundingClientRect().width, 1)

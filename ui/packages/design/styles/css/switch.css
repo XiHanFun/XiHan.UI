@@ -8,6 +8,7 @@
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
 @import '../family/action-control.css';
+@import '../family/loading-ring.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -218,15 +219,18 @@
     --xh-action-cursor-focus-visible: progress;
   }
 
-  [data-scope='switch'][data-part='thumb'][data-loading]::after {
+  /* 滑块里那枚环由加载环配方画在 ::before 上（连接层投影 data-xh-loading-ring），随 data-loading 淡入淡出、
+     转与停；起始边取强调色、转速认使用者槽。环叠在滑块正中那一格，不挤开作者放进滑块的图形 */
+  [data-scope='switch'][data-part='thumb'] {
+    --xh-_loading-ring-fg: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
+    --xh-_loading-ring-duration: var(--xh-switch-loading-duration, var(--xh-motion-loop-spin));
+  }
+
+  [data-scope='switch'][data-part='thumb']::before {
     content: '';
+    grid-area: 1 / 1;
     inline-size: 60%;
     block-size: 60%;
-    border: var(--xh-stroke-thin) solid transparent;
-    border-block-start-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
-    /* 加载环是等宽高的圆（全部加载环取 circle） */
-    border-radius: var(--xh-shape-circle);
-    animation: xh-spin var(--xh-switch-loading-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox 的标签、checkbox-group 的条目同一副样子 ——
@@ -282,23 +286,12 @@
     [data-scope='switch'][data-part='root'] {
       --xh-_switch-thumb-press-stretch: var(--xh-motion-distance-sm);
     }
-
-    [data-scope='switch'][data-part='thumb'][data-loading]::after {
-      border-style: dotted;
-      border-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
-      animation: none;
-    }
   }
 
   :where([data-motion='reduce']) [data-scope='switch'][data-part='root'] {
     --xh-_switch-thumb-press-stretch: var(--xh-motion-distance-sm);
   }
 
-  :where([data-motion='reduce']) [data-scope='switch'][data-part='thumb'][data-loading]::after {
-    border-style: dotted;
-    border-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
-    animation: none;
-  }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
@@ -354,14 +347,5 @@
       box-shadow: none;
     }
 
-    /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
-       取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
-       :where([data-motion='reduce']) 的钩子版本与它成对，打印没有对应的钩子可配，
-       并成一条之后这层配对关系在文本上就断了。 */
-    [data-scope='switch'][data-part='thumb'][data-loading]::after {
-      border-style: dotted;
-      border-color: var(--xh-switch-loading-fg, var(--xh-_switch-accent));
-      animation: none;
-    }
   }
 }

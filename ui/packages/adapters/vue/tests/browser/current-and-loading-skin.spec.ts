@@ -261,6 +261,28 @@ describe('取数与写入在途的转圈', () => {
     await expect.poll(() => styleOf(trigger, 'color')).toBe(foreground)
   })
 
+  it('开关提交中：滑块里的环走加载环配方，与 Spinner 环档同一副画法', async () => {
+    await mount(() => [h(XhSwitch, { loading: true }), h(XhSwitch)])
+    const busy = part('switch', 'thumb', 0)
+    const idle = part('switch', 'thumb', 1)
+    expect(busy.hasAttribute('data-xh-loading-ring')).toBe(true)
+    expect(beforeOf(busy, 'animation-name')).toBe('xh-spin')
+    expect(beforeOf(busy, 'animation-play-state')).toBe('running')
+    // 一整圈轨道 + 粗环，不是只画起始边的细线
+    expect(beforeOf(busy, 'border-top-width')).toBe(beforeOf(busy, 'border-right-width'))
+    expect(beforeOf(busy, 'border-right-style')).toBe('solid')
+    await expect.poll(() => beforeOf(busy, 'opacity')).toBe('1')
+    expect(Number.parseFloat(beforeOf(busy, 'width'))).toBeCloseTo(busy.clientWidth * 0.6, 0)
+    expect(beforeOf(idle, 'animation-play-state')).toBe('paused')
+    expect(beforeOf(idle, 'opacity')).toBe('0')
+  })
+
+  it('开关的转圈时长认使用者槽', async () => {
+    setSlot('--xh-switch-loading-duration', '3s')
+    await mount(() => h(XhSwitch, { loading: true }))
+    expect(beforeOf(part('switch', 'thumb'), 'animation-duration')).toBe('3s')
+  })
+
   it('复制钮的转圈时长认使用者槽', async () => {
     setSlot('--xh-clipboard-loading-duration', '3s')
     await mount(() => h(XhClipboardRoot, { value: 'xh' }, () => [
