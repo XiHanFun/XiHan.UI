@@ -16,10 +16,10 @@ import {
   XhNavigationMenuList,
   XhNavigationMenuRoot,
   XhNavigationMenuTrigger,
-  XhSegmentedIndicator,
-  XhSegmentedItem,
-  XhSegmentedItemText,
-  XhSegmentedRoot,
+  XhRadioGroupItem,
+  XhRadioGroupItemText,
+  XhRadioGroupRoot,
+  XhRadioGroupThumb,
   XhTabsIndicator,
   XhTabsList,
   XhTabsRoot,
@@ -37,6 +37,8 @@ const ENTRIES = [
 interface Case {
   /** 指示器所指的那一项的部件名。 */
   item: string
+  /** 指示器自己的部件名；缺省 indicator。 */
+  marker?: string
   render: (value: Ref<string>) => VNode
 }
 
@@ -46,11 +48,12 @@ const CASES: Record<string, Case> = {
     render: value => h(XhTabsRoot, { 'value': value.value, 'onUpdate:value': (next: string | null) => (value.value = next ?? '') }, () =>
       h(XhTabsList, null, () => [h(XhTabsIndicator), ...ENTRIES.map(entry => h(XhTabsTrigger, { value: entry.value }, () => entry.label))])),
   },
-  'segmented': {
+  'radio-group': {
     item: 'item',
-    render: value => h(XhSegmentedRoot, { 'value': value.value, 'onUpdate:value': (next: string | null) => (value.value = next ?? '') }, () => [
-      h(XhSegmentedIndicator),
-      ...ENTRIES.map(entry => h(XhSegmentedItem, { value: entry.value }, () => h(XhSegmentedItemText, null, () => entry.label))),
+    marker: 'thumb',
+    render: value => h(XhRadioGroupRoot, { 'variant': 'segmented', 'value': value.value, 'onUpdate:value': (next: string | null) => (value.value = next ?? '') }, () => [
+      h(XhRadioGroupThumb),
+      ...ENTRIES.map(entry => h(XhRadioGroupItem, { value: entry.value }, () => h(XhRadioGroupItemText, null, () => entry.label))),
     ]),
   },
   'anchor': {
@@ -115,14 +118,14 @@ describe.each(Object.entries(CASES))('%s 的指示器', (scope, c) => {
 
   it('首次落位直接到位，不从行首滑过来', async () => {
     await mount()
-    expect(sliding(part('indicator'))).toEqual([])
+    expect(sliding(part(c.marker ?? 'indicator'))).toEqual([])
   })
 
   it('换项才滑；落定后选中项变宽，重量直接到位、不拖尾', async () => {
     const value = await mount()
     value.value = 'c'
     await frames(1)
-    const indicator = part('indicator')
+    const indicator = part(c.marker ?? 'indicator')
     expect(sliding(indicator).length, '换项走皮肤过渡').toBeGreaterThan(0)
     for (const animation of indicator.getAnimations())
       animation.finish()

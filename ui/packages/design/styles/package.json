@@ -156,7 +156,6 @@
     "./sankey-chart.css": "./css/sankey-chart.css",
     "./scroll-area.css": "./css/scroll-area.css",
     "./scrollbar.css": "./css/scrollbar.css",
-    "./segmented.css": "./css/segmented.css",
     "./select.css": "./css/select.css",
     "./separator.css": "./css/separator.css",
     "./side-nav.css": "./css/side-nav.css",

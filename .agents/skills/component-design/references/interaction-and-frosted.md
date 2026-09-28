@@ -10,7 +10,7 @@
 | --- | ---: | --- |
 | inset | 4px | 内嵌项、菜单项、标签内部、微型状态块 |
 | control | 4px | Button、Input、Select Trigger、Toggle、分页按钮 |
-| surface | 8px | Card、Alert、Panel、列表容器、Segmented 与 Tabs segment 轨道 |
+| surface | 8px | Card、Alert、Panel、列表容器、RadioGroup segmented 形态与 Tabs segment 轨道 |
 | overlay | 12px | Popover、Menu、Dialog、Drawer、Notification |
 | circle | 50% | 宽高相等的圆形对象（头像、单选指示器、thumb、steps / timeline indicator、加载环）与悬浮于内容之上的单图标动作（FloatButton、BackTop、翻页、回底） |
 | pill | 9999px | 状态 chip（Badge、Tag、ToolCall status、Approval / QuestionFlow result）与一维对象（轨道、track / range、tick、hairline 分隔线、滑动指示条、手柄、scrollbar thumb、skeleton text、位置指示点当前拉长态） |
@@ -33,7 +33,7 @@
 - Popover、Dialog、Notification 等浮层不超过 12px。
 - 亮色、暗色和 compact 不改变圆角身份。
 - Tag 为胶囊，与 Button 4px 形成可点 / 不可点识别差。
-- Segmented / Tabs segment 轨道为 8px，滑块 ≥ 4px。
+- RadioGroup segmented 形态 / Tabs segment 轨道为 8px，滑块 ≥ 4px。
 
 ## 2. 统一点击触感
 
@@ -74,7 +74,7 @@ rest
 
 - Menu Item、Listbox Item、Tree Node、Table Row、Transfer Item、SideNav link、Tabs line trigger、Anchor link、Breadcrumb link、NavigationMenu / Menubar trigger（投影 `data-xh-collection-item`；横向导航这五件投影 `nav` 语境）。
 - Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger（`disclosure-trigger` profile）。
-- Tabs card / segment trigger、Segmented item、load-more trigger。
+- Tabs card / segment trigger、RadioGroup segmented 形态的段、load-more trigger。
 - 共边相接的分段：ButtonGroup 段、ToggleGroup item、Toolbar group 里的 item（定尺但零间距相接，缩放会撕开接缝，皮肤写 `--xh-action-scale-pressed: none`）。
 - 大面积 Card Action、导航项、可选择列表行。
 

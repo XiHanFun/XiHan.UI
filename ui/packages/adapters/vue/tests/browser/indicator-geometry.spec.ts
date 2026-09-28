@@ -3,7 +3,7 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
-import { XhAnchorIndicator, XhAnchorItem, XhAnchorLink, XhAnchorList, XhAnchorRoot, XhNavigationMenuContent, XhNavigationMenuIndicator, XhNavigationMenuItem, XhNavigationMenuLink, XhNavigationMenuList, XhNavigationMenuRoot, XhNavigationMenuTrigger, XhSegmentedIndicator, XhSegmentedItem, XhSegmentedItemText, XhSegmentedRoot, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../../src'
+import { XhAnchorIndicator, XhAnchorItem, XhAnchorLink, XhAnchorList, XhAnchorRoot, XhNavigationMenuContent, XhNavigationMenuIndicator, XhNavigationMenuItem, XhNavigationMenuLink, XhNavigationMenuList, XhNavigationMenuRoot, XhNavigationMenuTrigger, XhRadioGroupItem, XhRadioGroupItemText, XhRadioGroupRoot, XhRadioGroupThumb, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -22,16 +22,18 @@ const ITEMS = [
   { value: 'month', label: '月' },
 ]
 
-async function mountSegmented(options: { scale?: number, value?: string } = {}): Promise<{ value: ReturnType<typeof ref<string>> }> {
+async function mountSegmented(options: { scale?: number, value?: string, block?: boolean, width?: string } = {}): Promise<{ value: ReturnType<typeof ref<string>> }> {
   const value = ref(options.value ?? 'week')
   const host = document.createElement('div')
   if (options.scale)
     host.style.transform = `scale(${options.scale})`
+  if (options.width)
+    host.style.inlineSize = options.width
   document.body.append(host)
   app = createApp({
-    render: () => h(XhSegmentedRoot, { 'value': value.value, 'onUpdate:value': (next: string | null) => (value.value = next ?? '') }, () => [
-      h(XhSegmentedIndicator),
-      ...ITEMS.map(item => h(XhSegmentedItem, { value: item.value }, () => [h(XhSegmentedItemText, null, () => item.label)])),
+    render: () => h(XhRadioGroupRoot, { 'variant': 'segmented', 'block': options.block, 'value': value.value, 'onUpdate:value': (next: string | null) => (value.value = next ?? '') }, () => [
+      h(XhRadioGroupThumb),
+      ...ITEMS.map(item => h(XhRadioGroupItem, { value: item.value }, () => [h(XhRadioGroupItemText, null, () => item.label)])),
     ]),
   })
   app.mount(host)
@@ -43,28 +45,28 @@ async function settle(): Promise<void> {
   await nextTick()
   await new Promise(resolve => requestAnimationFrame(resolve))
   await new Promise(resolve => requestAnimationFrame(resolve))
-  for (const el of document.querySelectorAll<HTMLElement>('[data-part="indicator"]')) {
+  for (const el of document.querySelectorAll<HTMLElement>('[data-part="indicator"], [data-part="thumb"]')) {
     for (const animation of el.getAnimations())
       animation.finish()
   }
 }
 
 function part(name: string, value?: string): HTMLElement {
-  const selector = value ? `[data-scope='segmented'][data-part='${name}'][data-value='${value}']` : `[data-scope='segmented'][data-part='${name}']`
+  const selector = value ? `[data-scope='radio-group'][data-part='${name}'][data-value='${value}']` : `[data-scope='radio-group'][data-part='${name}']`
   return document.querySelector<HTMLElement>(selector)!
 }
 
-/** 指示器的屏幕矩形与选中段重合（祖先缩放同样作用于两者）。 */
+/** 滑块的屏幕矩形与选中段重合（祖先缩放同样作用于两者）。 */
 function expectCovers(value: string): void {
-  const indicator = part('indicator').getBoundingClientRect()
+  const thumb = part('thumb').getBoundingClientRect()
   const item = part('item', value).getBoundingClientRect()
-  expect(indicator.left).toBeCloseTo(item.left, 0)
-  expect(indicator.top).toBeCloseTo(item.top, 0)
-  expect(indicator.width).toBeCloseTo(item.width, 0)
-  expect(indicator.height).toBeCloseTo(item.height, 0)
+  expect(thumb.left).toBeCloseTo(item.left, 0)
+  expect(thumb.top).toBeCloseTo(item.top, 0)
+  expect(thumb.width).toBeCloseTo(item.width, 0)
+  expect(thumb.height).toBeCloseTo(item.height, 0)
 }
 
-describe('segmented 的滑块几何', () => {
+describe('radio-group segmented 形态的滑块几何', () => {
   it('祖先带 scale(0.5) 时量排布位，滑块与选中段重合而不是再缩一半', async () => {
     await mountSegmented({ scale: 0.5 })
     expectCovers('week')
@@ -76,15 +78,35 @@ describe('segmented 的滑块几何', () => {
     expectCovers('week')
   })
 
-  it('换段只动 translate 与尺寸，不动 inset', async () => {
+  it('换段只动 translate 与尺寸，不动 inset；滑过去之后与新选中段重合', async () => {
     const { value } = await mountSegmented()
     value.value = 'month'
     await nextTick()
     await new Promise(resolve => requestAnimationFrame(resolve))
-    const style = getComputedStyle(part('indicator'))
+    const thumb = part('thumb')
+    expect(thumb.hasAttribute('data-instant')).toBe(false)
+    const style = getComputedStyle(thumb)
     expect(style.transitionProperty.split(', ')).toEqual(['translate', 'inline-size', 'block-size', 'box-shadow'])
     await settle()
     expectCovers('month')
+  })
+
+  it('block：整组撑满容器行宽，各段等分，滑块跟着等分后的段宽', async () => {
+    await mountSegmented({ block: true, width: '480px' })
+    const root = part('root')
+    const inner = root.clientWidth - Number.parseFloat(getComputedStyle(root).paddingInlineStart) - Number.parseFloat(getComputedStyle(root).paddingInlineEnd)
+    expect(root.getBoundingClientRect().width).toBeCloseTo(480, 0)
+    const widths = [...document.querySelectorAll<HTMLElement>(`[data-scope='radio-group'][data-part='item']`)].map(el => el.getBoundingClientRect().width)
+    for (const width of widths)
+      expect(width).toBeCloseTo(inner / ITEMS.length, 0)
+    expectCovers('week')
+  })
+
+  it('不写 block：轨道按内容收宽，各段按文字长短各自定宽', async () => {
+    await mountSegmented({ width: '480px' })
+    expect(part('root').getBoundingClientRect().width).toBeLessThan(480)
+    const [day, week] = [...document.querySelectorAll<HTMLElement>(`[data-scope='radio-group'][data-part='item']`)].map(el => el.getBoundingClientRect().width)
+    expect(week!).toBeGreaterThan(day!)
   })
 })
 

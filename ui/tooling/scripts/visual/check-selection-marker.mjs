@@ -9,7 +9,7 @@
 // 导航当前页（Tabs line / Anchor / NavigationMenu）= 指示条 + --xh-fg-brand-strong + medium，
 //   Breadcrumb 当前页是不可点位置，保留 --xh-fg-default + medium；两者都是 Collection Item 的 nav 语境；
 // 格状当前（Pagination item / Steps indicator / Calendar 选中格）= 实心 --xh-bg-brand + --xh-fg-on-brand，不加粗；
-// 有滑块开关（Segmented / Tabs segment）的 indicator = --xh-bg-surface-raised + --xh-border-default + --xh-elevation-raised；
+// 有滑块开关（RadioGroup segmented 的 thumb / Tabs segment 的 indicator）= --xh-bg-surface-raised + --xh-border-default + --xh-elevation-raised；
 // 无滑块开关（Toggle / ToggleGroup item / Toolbar aria-pressed）= --xh-bg-brand-subtle + --xh-fg-on-brand-subtle；
 // 展开路径 / 打开中不是选中：与所在家族 hover 同档的中性面，不用品牌色、不加粗。
 //
@@ -80,8 +80,8 @@ const SEMANTIC = {
   'steps:indicator': [{ kind: 'grid', state: '[data-state=\'current\']' }],
   'calendar-picker:cell-trigger': [{ kind: 'grid', state: '[data-selected]' }],
   'calendar-range-picker:cell-trigger': [{ kind: 'grid', state: '[data-selected]' }],
-  // 有滑块开关：白色抬起 indicator
-  'segmented:indicator': [{ kind: 'slider' }],
+  // 有滑块开关：白色抬起的滑块（RadioGroup segmented 形态的 thumb）
+  'radio-group:thumb': [{ kind: 'slider' }],
   // 无滑块开关：品牌淡底
   'toggle:root': [{ kind: 'flat', state: '[data-state=\'on\']' }],
   'toggle-group:item': [{ kind: 'flat', state: '[data-state=\'on\']' }],

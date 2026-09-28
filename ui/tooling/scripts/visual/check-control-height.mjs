@@ -21,7 +21,8 @@ const CONTROL_BODY = {
   'button': ['root'],
   'toggle': ['root'],
   'toggle-group': ['item'],
-  'segmented': ['root', 'item'],
+  // segmented 形态：轨道是一档控件高，段是轨道内侧的那一截
+  'radio-group': ['root', 'item'],
   'pagination': ['item', 'prev-trigger', 'next-trigger', 'first-trigger', 'last-trigger'],
 }
 

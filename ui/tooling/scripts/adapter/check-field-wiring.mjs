@@ -8,7 +8,7 @@
 // 而这种失效不报任何错，text-field 的文档里推荐的正是「外面套表单字段拿标签与错误文本」。
 //
 // 判据：带 invalid 轴、且解剖里有单一可聚焦控件的组件，它的封装必须调 useFieldStateWiring()
-// 与 useFieldLabelWiring()。分组型（radio-group / checkbox-group / segmented）与分段型
+// 与 useFieldLabelWiring()。分组型（radio-group / checkbox-group）与分段型
 // （date-field / pin-input 之类）不在此列——它们的根本身有分组角色或多个焦点目标，
 // 属性落在根上读屏进组时就会念出来。
 import { readdir, readFile } from 'node:fs/promises'
@@ -46,7 +46,6 @@ const NOT_SINGLE_CONTROL = {
   'transfer': '分组：两侧各一个 role=listbox，没有单一可聚焦控件',
   'radio-group': '分组：根是 role=radiogroup',
   'color-swatch-picker': '分组：根是 role=radiogroup',
-  'segmented': '分组：根是 role=radiogroup',
   'date-field': '分段输入：焦点在各段上，没有单一可聚焦控件',
   'time-field': '同 date-field',
   'pin-input': '分段输入：每格一个 input',

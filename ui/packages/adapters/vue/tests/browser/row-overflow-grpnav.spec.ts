@@ -1,8 +1,8 @@
 // 横向控件带排不下时不许顶出容器。
 //
-// tabs / toolbar / menubar / navigation-menu / segmented 五条带子都是一行 flex，
+// tabs / toolbar / menubar / navigation-menu / radio-group segmented 五条带子都是一行 flex，
 // 条目一律 white-space: nowrap，条目多了整条就从容器里顶出去——末尾几项既看不见也点不到。
-// toolbar / menubar / navigation-menu / segmented 的兜底是折行，一条规则同时管住窄视口与窄容器两种情形，
+// toolbar / menubar / navigation-menu / radio-group segmented 的兜底是折行，一条规则同时管住窄视口与窄容器两种情形，
 // 不掺任何宽度查询；tabs 不折行：标签带只裁主轴，放不下的那截由位移（两端翻页钮 / 滚轮 / 焦点）露出，
 // 位移本身归 tabs-scroll.spec，这里只钉它裁得住、条目一个不少。
 // toggle-group 与 button-group 是焊成一条的连续分段，不折行：窄容器由作者改竖排或全宽。
@@ -107,8 +107,8 @@ const NAVIGATION_MENU = `<nav data-scope="navigation-menu" data-part="root">
   </ul>
 </nav>`
 
-const SEGMENTED = `<div data-scope="segmented" data-part="root" data-orientation="horizontal" role="radiogroup">
-  ${items(['日视图', '周视图', '月视图', '季度视图', '年度视图'], t => `<label data-scope="segmented" data-part="item"><span data-scope="segmented" data-part="item-text">${t}</span></label>`)}
+const SEGMENTED = `<div data-scope="radio-group" data-part="root" data-variant="segmented" data-orientation="horizontal" role="radiogroup">
+  ${items(['日视图', '周视图', '月视图', '季度视图', '年度视图'], t => `<div data-scope="radio-group" data-part="item" role="radio"><span data-scope="radio-group" data-part="item-text">${t}</span></div>`)}
 </div>`
 
 // [名字, 标记, 数行数用的部件]
@@ -117,7 +117,7 @@ const BARS: [string, string, string][] = [
   ['toolbar', TOOLBAR, 'item'],
   ['menubar', MENUBAR, 'trigger'],
   ['navigation-menu', NAVIGATION_MENU, 'trigger'],
-  ['segmented', SEGMENTED, 'item'],
+  ['radio-group segmented', SEGMENTED, 'item'],
 ]
 
 /** 靠折行收住的那几条；tabs 靠位移，另测 */
@@ -168,10 +168,10 @@ describe('横向控件带排不下时的兜底', () => {
 })
 
 describe('折行不改单行时的几何', () => {
-  it('segmented 排得下时轨道仍是一档控件高，折了行每行仍是同一个段高', () => {
+  it('radio-group segmented 排得下时轨道仍是一档控件高，折了行每行仍是同一个段高', () => {
     const wide = mount(1280, SEGMENTED)
-    const track = wide.querySelector('[data-scope="segmented"][data-part="root"]') as HTMLElement
-    const segment = wide.querySelector('[data-scope="segmented"][data-part="item"]') as HTMLElement
+    const track = wide.querySelector('[data-scope="radio-group"][data-part="root"]') as HTMLElement
+    const segment = wide.querySelector('[data-scope="radio-group"][data-part="item"]') as HTMLElement
     const trackHeight = track.offsetHeight
     const segmentHeight = segment.offsetHeight
     // 一档控件高：min-block-size 与原先的 block-size 在这一档上逐值相同；
@@ -181,11 +181,11 @@ describe('折行不改单行时的几何', () => {
     expect(segmentHeight).toBe(controlHeight - 2 * tokenPx(wide, '--xh-space-0_5') - 2 * tokenPx(wide, '--xh-stroke-thin'))
 
     const narrow = mount(260, SEGMENTED)
-    const segments = [...narrow.querySelectorAll('[data-scope="segmented"][data-part="item"]')] as HTMLElement[]
+    const segments = [...narrow.querySelectorAll('[data-scope="radio-group"][data-part="item"]')] as HTMLElement[]
     for (const seg of segments)
       expect(seg.offsetHeight).toBe(segmentHeight)
     // 轨道跟着往下长，不是把两行挤进原来那一档高度里
-    expect(narrow.querySelector('[data-scope="segmented"][data-part="root"]')!.clientHeight)
+    expect(narrow.querySelector('[data-scope="radio-group"][data-part="root"]')!.clientHeight)
       .toBeGreaterThan(trackHeight)
   })
 

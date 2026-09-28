@@ -161,7 +161,7 @@
 - 进度类填充（Progress、LoadingBar、FileUpload 进度）不动 `inline-size`：填充铺满轨道、按比例 `translate`，由轨道裁掉，只走合成。倒计时条自己就是填充，用 `clip-path` 裁切收起；减弱动效下按秒分段。
 - 不定进度以固定宽度的一段做 `translate` 往复。
 - 数值补间（NumberAnimation）的时长由属性给出，减弱动效下直接落到终值。
-- 滑动指示器（Tabs、Segmented、Anchor、NavigationMenu）取当前项相对列表容器的 `offset*` 排布位：不用 `getBoundingClientRect`，祖先的进场缩放会让测量值失真。位置用 `translate`，尺寸用 `inline-size` / `block-size`。Tabs 的标签带滚动已经占了 `translate`，指示条的位置叠在 `transform` 上，两者互不覆盖。
+- 滑动指示器（Tabs、单选组 segmented 形态的滑块、Anchor、NavigationMenu）取当前项相对列表容器的 `offset*` 排布位：不用 `getBoundingClientRect`，祖先的进场缩放会让测量值失真。位置用 `translate`，尺寸用 `inline-size` / `block-size`。Tabs 的标签带滚动已经占了 `translate`，指示条的位置叠在 `transform` 上，两者互不覆盖。
 
 ## 布局动画例外与 will-change
 

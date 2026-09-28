@@ -102,7 +102,6 @@ import { resizableSuite } from './resizable.suite'
 import { sankeyChartSuite } from './sankey-chart.suite'
 import { scrollAreaSuite } from './scroll-area.suite'
 import { scrollbarSuite } from './scrollbar.suite'
-import { segmentedSuite } from './segmented.suite'
 import { selectSuite } from './select.suite'
 import { separatorSuite } from './separator.suite'
 import { sideNavSuite } from './side-nav.suite'
@@ -228,7 +227,6 @@ export const allSuites: readonly ConformanceSuite[] = [
   resizableSuite,
   scrollAreaSuite,
   scrollbarSuite,
-  segmentedSuite,
   selectSuite,
   separatorSuite,
   sideNavSuite,

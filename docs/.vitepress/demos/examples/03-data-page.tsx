@@ -16,7 +16,7 @@ import {
   XhPaginationPrevTrigger,
   XhPaginationRoot,
   XhPaginationSummary,
-  XhSegmentedRoot,
+  XhRadioGroupRoot,
   XhSelectRoot,
   XhSeparator,
   XhSpinner,
@@ -223,7 +223,8 @@ export default function Demo(): ReactNode {
           onValueChange={details => setStatus(details.value)}
         />
 
-        <XhSegmentedRoot
+        <XhRadioGroupRoot
+          variant="segmented"
           value={range}
           collection={ranges}
           aria-label="时间粒度"

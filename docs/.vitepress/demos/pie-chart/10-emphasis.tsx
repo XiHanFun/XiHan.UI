@@ -1,6 +1,6 @@
 // 从外面强调一块 | 受控的 activeKey 写扇区名，图就强调那一块、中心与提示框跟着显示它：图外的筛选、列表或别的图都能这样指给读者看
 import type { ReactNode } from "react";
-import { XhPieChartRoot, XhSegmentedRoot } from "@xihan-ui/react";
+import { XhPieChartRoot, XhRadioGroupRoot } from "@xihan-ui/react";
 import { useState } from "react";
 
 const rows = [
@@ -21,7 +21,8 @@ export default function Demo(): ReactNode {
   const [choice, setChoice] = useState<string | null>("none");
   return (
     <div style={{ display: "grid", gap: "var(--xh-space-3)", justifyItems: "start", width: "100%" }}>
-      <XhSegmentedRoot
+      <XhRadioGroupRoot
+        variant="segmented"
         value={choice}
         onValueChange={details => setChoice(details.value)}
         collection={choices}

@@ -251,6 +251,7 @@
   "radar-chart": [],
   "radio-group": [
     "variant",
+    "tone",
     "size"
   ],
   "rating": [
@@ -268,10 +269,6 @@
     "size"
   ],
   "scrollbar": [
-    "size"
-  ],
-  "segmented": [
-    "tone",
     "size"
   ],
   "select": [

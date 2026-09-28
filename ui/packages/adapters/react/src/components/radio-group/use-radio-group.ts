@@ -19,7 +19,7 @@ export interface RadioGroupContext {
   api: RadioGroupApi
   /** 状态机实例，供条目上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<RadioGroupSchema>
-  /** 表单重置的锚点：接在根节点上。 */
+  /** root 节点：条目集合的查询容器，segmented 形态滑块测量的参照系，也是表单重置的锚点。 */
   rootRef: RefObject<HTMLElement | null>
 }
 
@@ -27,7 +27,13 @@ export function useRadioGroup(props: RadioGroupSchema['props']): RadioGroupConte
   // connect 要按 scope 派生 label 的 id，同页多实例的 IDREF 才不相撞
   const scope = useReactScope()
   const rootRef = useRef<HTMLElement | null>(null)
-  const service = useMachine(radioGroupMachine, () => props, { scope })
+  const service = useMachine(radioGroupMachine, () => props, {
+    scope,
+    // 滑块的量测在机器的挂载效应里跑，DOM 侧的取值口要赶在那之前交出去
+    onCreate: (svc: Service<RadioGroupSchema>) => {
+      svc.refs.set('getRootEl', () => rootRef.current)
+    },
+  })
 
   // 选中值攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生
   useFormReset(service, rootRef)

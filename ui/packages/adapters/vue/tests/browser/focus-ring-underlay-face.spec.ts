@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 // 环内侧紧挨着的就是「这块地方画出来的底」。部件自己 background: transparent 时，
 // 那块底来自别处，两种来路都在 focus-ring-face-contrast 的量法之外——那一份只顺着
 // parentElement 往上叠底色：
-//   · 分段控件的选中段：底是指示器，一个绝对定位、与选中段同一块矩形的兄弟节点
+//   · 单选组 segmented 形态的选中段：底是滑块，一个绝对定位、与选中段同一块矩形的兄弟节点
 //   · 标签组里实心标签上的摘除钮：标签是 tag 的 root，叉是它的 close-trigger，底是外面那枚标签，
 //     祖先链上叠得到，但那一份没有「同一个元素上形态与状态两条规则叠出来的档」这种组合
 //
@@ -139,19 +139,19 @@ afterEach(() => {
 })
 
 /**
- * 一条分段控件，指示器按选中段的矩形摆好。
+ * 一条 segmented 形态的单选组，滑块按选中段的矩形摆好。
  * 位置与尺寸在真实组件里由机器量出选中段的排布位、连接层写成私有槽，
  * 皮肤只给了没量到时的落点；这里照同一条做一遍。
  */
 function 分段(tone: string | null, 带指示器 = true): { root: HTMLElement, item: HTMLElement, indicator: HTMLElement | null } {
   const root = mount(`
-    <div data-scope="segmented" data-part="root" data-orientation="horizontal"${tone ? ` data-tone="${tone}"` : ''}>
-      ${带指示器 ? '<span data-scope="segmented" data-part="indicator"></span>' : ''}
-      <button type="button" data-scope="segmented" data-part="item" data-state="checked">甲</button>
-      <button type="button" data-scope="segmented" data-part="item">乙</button>
+    <div data-scope="radio-group" data-part="root" data-variant="segmented" data-orientation="horizontal" role="radiogroup"${tone ? ` data-tone="${tone}"` : ''}>
+      ${带指示器 ? '<span data-scope="radio-group" data-part="thumb"></span>' : ''}
+      <div data-scope="radio-group" data-part="item" role="radio" tabindex="0" data-state="checked">甲</div>
+      <div data-scope="radio-group" data-part="item" role="radio" tabindex="-1">乙</div>
     </div>`)
   const item = root.querySelector<HTMLElement>('[data-part=\'item\'][data-state=\'checked\']')!
-  const indicator = root.querySelector<HTMLElement>('[data-part=\'indicator\']')
+  const indicator = root.querySelector<HTMLElement>('[data-part=\'thumb\']')
   if (!indicator) {
     settle()
     return { root, item, indicator }
@@ -159,10 +159,10 @@ function 分段(tone: string | null, 带指示器 = true): { root: HTMLElement, 
   const box = item.getBoundingClientRect()
   const track = root.getBoundingClientRect()
   // 绝对定位的偏移量的起算点是包含块的内边距盒，轨道那圈描边要减掉
-  indicator.style.setProperty('--xh-_segmented-indicator-x', `${box.left - track.left - root.clientLeft}px`)
-  indicator.style.setProperty('--xh-_segmented-indicator-y', `${box.top - track.top - root.clientTop}px`)
-  indicator.style.setProperty('--xh-_segmented-indicator-w', `${box.width}px`)
-  indicator.style.setProperty('--xh-_segmented-indicator-h', `${box.height}px`)
+  indicator.style.setProperty('--xh-_radio-group-thumb-x', `${box.left - track.left - root.clientLeft}px`)
+  indicator.style.setProperty('--xh-_radio-group-thumb-y', `${box.top - track.top - root.clientTop}px`)
+  indicator.style.setProperty('--xh-_radio-group-thumb-w', `${box.width}px`)
+  indicator.style.setProperty('--xh-_radio-group-thumb-h', `${box.height}px`)
   settle()
   return { root, item, indicator }
 }
@@ -199,16 +199,16 @@ describe('环内侧那块面不长在部件自己身上', () => {
     expect(contrast(composite([resolve('var(--xh-fg-on-brand)')]), composite([resolve('var(--xh-color-brand-600)')]))).toBeGreaterThanOrEqual(3)
   })
 
-  it('判据前提：指示器与选中段占同一块矩形，选中段自己透空', () => {
+  it('判据前提：滑块与选中段占同一块矩形，选中段自己透空', () => {
     const { item, indicator } = 分段(null)
     const a = item.getBoundingClientRect()
     const b = indicator!.getBoundingClientRect()
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     for (const [名, x, y] of [['left', a.left, b.left], ['top', a.top, b.top], ['width', a.width, b.width], ['height', a.height, b.height]] as const)
-      expect(Math.abs(x - y), `指示器与选中段的 ${名} 对不上`).toBeLessThan(1)
+      expect(Math.abs(x - y), `滑块与选中段的 ${名} 对不上`).toBeLessThan(1)
   })
 
-  it.each(档位)('分段控件的选中段压着指示器那块底 · $tone · $theme', async ({ theme, tone }) => {
+  it.each(档位)('segmented 形态的选中段压着滑块那块底 · $tone · $theme', async ({ theme, tone }) => {
     document.documentElement.dataset.theme = theme
     const { item, indicator } = 分段(tone)
     await focus(item)
@@ -217,9 +217,9 @@ describe('环内侧那块面不长在部件自己身上', () => {
     expect(ratio, `${标注({ theme, tone })}｜${说明}`).toBeGreaterThanOrEqual(3)
   })
 
-  // 指示器是可选部件：作者写默认插槽自己铺部件时可以不渲染它，选中段就直接坐在轨道底上。
-  // 那一档的面不是指示器那块实心底，环不跟着选中段的前景走
-  it.each(档位)('没渲染指示器时选中段坐在轨道底上 · $tone · $theme', async ({ theme, tone }) => {
+  // 滑块是可选部件：作者写默认插槽自己铺部件时可以不渲染它，选中段就直接坐在轨道底上。
+  // 那一档的面不是滑块那块实心底，环不跟着选中段的前景走
+  it.each(档位)('没渲染滑块时选中段坐在轨道底上 · $tone · $theme', async ({ theme, tone }) => {
     document.documentElement.dataset.theme = theme
     const { item } = 分段(tone, false)
     await focus(item)

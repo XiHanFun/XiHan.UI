@@ -148,10 +148,6 @@
           "name": "分页"
         },
         {
-          "id": "segmented",
-          "name": "分段控制器"
-        },
-        {
           "id": "side-nav",
           "name": "侧栏导航"
         },

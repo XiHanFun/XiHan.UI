@@ -4,7 +4,7 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
-import { XhSegmentedRoot, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../../src'
+import { XhRadioGroupRoot, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -34,7 +34,8 @@ async function mount(attrs: Record<string, string>): Promise<{ value: ReturnType
   document.body.append(host)
   const value = ref('day')
   app = createApp({
-    render: () => h(XhSegmentedRoot, {
+    render: () => h(XhRadioGroupRoot, {
+      'variant': 'segmented',
       'collection': RANGES,
       'value': value.value,
       'aria-label': '时间粒度',
@@ -47,21 +48,21 @@ async function mount(attrs: Record<string, string>): Promise<{ value: ReturnType
   await nextTick()
   await frame()
   await frame()
-  return { value, indicator: () => host!.querySelector<HTMLElement>('[data-scope="segmented"][data-part="indicator"]')! }
+  return { value, indicator: () => host!.querySelector<HTMLElement>('[data-scope="radio-group"][data-part="thumb"]')! }
 }
 
 /** 指示器这一刻画出来的宽度（连接层逐帧写的私有槽）与压扁比例。 */
 function sample(indicator: HTMLElement): { width: number, squash: number, stretch: number } {
   const style = getComputedStyle(indicator)
   return {
-    width: Number.parseFloat(indicator.style.getPropertyValue('--xh-_segmented-indicator-w')),
+    width: Number.parseFloat(indicator.style.getPropertyValue('--xh-_radio-group-thumb-w')),
     squash: Number.parseFloat(style.scale.split(' ')[1] ?? '1'),
-    stretch: Number.parseFloat(indicator.style.getPropertyValue('--xh-_segmented-indicator-stretch')),
+    stretch: Number.parseFloat(indicator.style.getPropertyValue('--xh-_radio-group-thumb-stretch')),
   }
 }
 
 function targetWidth(value: string): number {
-  const item = [...host!.querySelectorAll<HTMLElement>('[data-scope="segmented"][data-part="item"]')]
+  const item = [...host!.querySelectorAll<HTMLElement>('[data-scope="radio-group"][data-part="item"]')]
     .find(el => el.getAttribute('data-value') === value)!
   return item.offsetWidth
 }

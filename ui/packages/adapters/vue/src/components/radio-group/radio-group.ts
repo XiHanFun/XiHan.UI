@@ -31,6 +31,8 @@ export const XhRadioGroupRoot = defineComponent({
     orientation: { type: String as PropType<Orientation> },
     dir: { type: String as PropType<Direction> },
     name: { type: String },
+    loop: { type: Boolean, default: undefined },
+    block: { type: Boolean, default: undefined },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
     variant: { type: String as PropType<RadioGroupVariant> },
@@ -49,12 +51,13 @@ export const XhRadioGroupRoot = defineComponent({
     provideRadioGroup(ctx)
     return () => h(
       'div',
-      ctx.api.value.getRootProps() as Record<string, unknown>,
+      { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef },
       slots.default
         ? slots.default()
         : props.collection
           ? renderDefaultTree(
               ctx.api.value.collection,
+              ctx.api.value.variant === 'segmented',
               slots.label?.() ?? (props.label != null ? [props.label] : null),
               slots.item,
             )
@@ -68,6 +71,15 @@ export const XhRadioGroupLabel = defineComponent({
   setup(_, { slots }) {
     const ctx = useRadioGroupContext()
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** segmented 形态里滑动的选中标记，位置由状态机测量后写入内联样式的私有槽；没有落点时收起。须写在条目之前。 */
+export const XhRadioGroupThumb = defineComponent({
+  name: 'XhRadioGroupThumb',
+  setup() {
+    const ctx = useRadioGroupContext()
+    return () => h('span', ctx.api.value.getThumbProps() as Record<string, unknown>)
   },
 })
 
@@ -110,6 +122,16 @@ export const XhRadioGroupItem = defineComponent({
   },
 })
 
+/** 条目文字前的图标位：纯装饰，对读屏隐藏。 */
+export const XhRadioGroupItemIcon = defineComponent({
+  name: 'XhRadioGroupItemIcon',
+  setup(_, { slots }) {
+    const ctx = useRadioGroupContext()
+    const { item } = useRadioGroupItemContext()
+    return () => h('span', ctx.api.value.getItemIconProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhRadioGroupItemText = defineComponent({
   name: 'XhRadioGroupItemText',
   setup(_, { slots }) {
@@ -131,16 +153,20 @@ export const XhRadioGroupItemDescription = defineComponent({
 /**
  * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
  * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * segmented 形态的滑块排在条目之前：它绝对定位，依靠文档序让后面的条目覆盖在它上面，文字才不会被遮住。
  */
 function renderDefaultTree(
   collection: readonly RadioGroupNodeMeta[],
+  segmented: boolean,
   label: (VNode | string)[] | null,
   itemSlot?: (node: RadioGroupNodeMeta) => VNode[],
 ): VNode[] {
   return [
     ...(label ? [h(XhRadioGroupLabel, null, () => label)] : []),
+    ...(segmented ? [h(XhRadioGroupThumb)] : []),
     // 条目内的 hidden-input 与 indicator 由 XhRadioGroupItem 自行装配
     ...collection.map(node => h(XhRadioGroupItem, { key: node.value, value: node.value }, () => [
+      ...(node.icon != null ? [h(XhRadioGroupItemIcon, null, () => node.icon)] : []),
       h(XhRadioGroupItemText, null, () => itemSlot?.(node) ?? node.label),
       ...(node.description != null ? [h(XhRadioGroupItemDescription, null, () => node.description)] : []),
     ])),

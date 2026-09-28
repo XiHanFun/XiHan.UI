@@ -16,7 +16,7 @@ import {
   XhPaginationPrevTrigger,
   XhPaginationRoot,
   XhPaginationSummary,
-  XhSegmentedRoot,
+  XhRadioGroupRoot,
   XhSelectRoot,
   XhSeparator,
   XhSpinner,
@@ -181,7 +181,7 @@ function refresh(): void {
         placeholder="全部状态"
       />
 
-      <XhSegmentedRoot v-model:value="range" :collection="ranges" aria-label="时间粒度" />
+      <XhRadioGroupRoot v-model:value="range" variant="segmented" :collection="ranges" aria-label="时间粒度" />
 
       <XhSeparator orientation="vertical" class="data-page__divider" />
 

@@ -12677,332 +12677,6 @@
   }
 }
 
-/* styles/segmented.css */
-/* 定义 segmented 样式。 */
-
-@layer xihan.components {
-  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-  [data-scope='segmented'] {
-    --xh-segmented-skin: 1;
-  }
-
-  /* 一条轨道装着若干段，指示器在轨道里滑。指示器是绝对定位的，
-     root 必须是它的定位参照系；段与段之间不留缝，所以不设 gap */
-  [data-scope='segmented'][data-part='root'] {
-    /* 尺寸档只换这四个私有槽，段与文字从 root 继承它们，换档不必给每个部件各写一条选择器 */
-    --xh-_segmented-h: var(--xh-control-h-md);
-    --xh-_segmented-px: var(--xh-control-px-md);
-    --xh-_segmented-gap: var(--xh-control-gap-md);
-    --xh-_segmented-font-size: var(--xh-control-font-md);
-    /* 段内图标跟着尺寸档换直径，放进来的图标组件与裸 svg 都从这一支取 */
-    --xh-icon-size: var(--xh-segmented-icon-size, var(--xh-glyph-size-md));
-    /* 指示器（有滑块开关的白色抬起面）的底、描边与选中段的文字色；没写 data-tone 时就是这里的取值 */
-    --xh-_segmented-indicator-bg: var(--xh-bg-surface-raised);
-    --xh-_segmented-fg-selected: var(--xh-fg-default);
-    /* 轨道是淡底承载面：段坐在它上面，悬停 200 → 按下 300，host 槽向内下发同一副阶梯 */
-    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
-    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
-
-    /* 一行排不下就折行：每个选项都必须看得见、点得到，硬撑一行会把末尾几段顶出容器。
-       段各自带圆角，折行不会切角；不改成横向滚动是因为段离轨道内沿只有一格衬距，
-       轨道一旦成为滚动容器，段的焦点环（画在段外侧 2px 处）会被裁掉。
-       轨道是一块淡底面：--xh-bg-subtle 底 + 同宽透明占位边 + 无影，边界由滑块的描边与轨道底色的落差承担 */
-    position: relative;
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    padding: var(--xh-segmented-track-padding, var(--xh-space-0_5));
-    border: var(--xh-stroke-thin) solid var(--xh-segmented-border, transparent);
-    border-radius: var(--xh-segmented-radius, var(--xh-shape-surface));
-    background: var(--xh-segmented-bg, var(--xh-bg-subtle));
-    font-size: var(--xh-segmented-font-size, var(--xh-_segmented-font-size));
-  }
-
-  /* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平。
-     写下限而非定值：排得下时两者逐值相同，排不下折了行才让轨道往下长 */
-  [data-scope='segmented'][data-part='root'][data-orientation='horizontal'] {
-    flex-direction: row;
-    min-block-size: var(--xh-segmented-h, var(--xh-_segmented-h));
-  }
-
-  /* 段的高度交给轨道：一行时被 stretch 撑满轨道内侧。
-     下限按「一档控件高减掉轨道上下的衬距与描边」算，折了行每一行仍是这个高度，
-     不写的话多行会被 align-content 均分成一叠扁条 */
-  [data-scope='segmented'][data-part='root'][data-orientation='horizontal'] [data-scope='segmented'][data-part='item'] {
-    block-size: auto;
-    min-block-size: calc(
-      var(--xh-segmented-h, var(--xh-_segmented-h)) - 2 * var(--xh-segmented-track-padding, var(--xh-space-0_5)) - 2 *
-        var(--xh-stroke-thin)
-    );
-  }
-
-  [data-scope='segmented'][data-part='root'][data-orientation='vertical'] {
-    flex-direction: column;
-    flex-wrap: nowrap;
-  }
-
-  /* 撑满行宽：各段等分剩余空间，长短不一的文字也排得齐 */
-  [data-scope='segmented'][data-part='root'][data-block] {
-    display: flex;
-    inline-size: 100%;
-  }
-
-  /* 等分只在横排成立：竖排的主轴是块轴，flex-basis: 0 会顶掉段自己的高度档，
-     段高改由「等分容器高度」决定，三档控件高度从此对它没有作用。
-     竖排下段本来就靠上面那条 inline-size: 100% 与 align-items: stretch 撑满宽度 */
-  [data-scope='segmented'][data-part='root'][data-block][data-orientation='horizontal']
-    > [data-scope='segmented'][data-part='item'] {
-    flex: 1 1 0;
-  }
-
-  /* root 会短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给段，
-     在它身上画环只会闪一下就跳走，高亮要长在段上 */
-  [data-scope='segmented'][data-part='root']:focus-visible {
-    outline: none;
-  }
-
-  [data-scope='segmented'][data-part='root'][data-invalid] {
-    border-color: var(--xh-segmented-border-invalid, var(--xh-border-invalid));
-  }
-
-  [data-scope='segmented'][data-part='root'][data-disabled] {
-    background: var(--xh-segmented-bg-disabled, var(--xh-bg-muted));
-  }
-
-  /* 整组禁用时指示器落回轨道平面（不再浮起），但底色一点不兑淡：
-     它上面压着选中段的文字，往 muted 兑哪怕一成，brand 的对比度就从 5.08 掉到 4.24 */
-  [data-scope='segmented'][data-part='root'][data-disabled]
-    [data-scope='segmented'][data-part='indicator'] {
-    box-shadow: var(--xh-segmented-indicator-shadow-disabled, none);
-  }
-
-  /* —— 语气 —— */
-  /* 选择器带 [data-tone] 限定：不限定的话，放在语气容器里的分段控件会跟着改色 */
-  [data-scope='segmented'][data-part='root'][data-tone] {
-    --xh-_segmented-indicator-bg: var(--xh-_tone, var(--xh-bg-surface-raised));
-    --xh-_segmented-fg-selected: var(--xh-_tone-on, var(--xh-fg-default));
-  }
-
-  /* 语气档的滑块是实心语气面，描边与底同色：raised 面必带描边，这里的描边只是把边位补齐，不另画一圈 */
-  [data-scope='segmented'][data-part='root'][data-tone] [data-scope='segmented'][data-part='indicator'] {
-    border-color: var(--xh-segmented-indicator-border, var(--xh-_tone, var(--xh-border-default)));
-  }
-
-  /* —— 尺寸 —— */
-  /* 缺省的 md 档写在上面的基础规则里 */
-  [data-scope='segmented'][data-part='root'][data-size='sm'] {
-    --xh-_segmented-h: var(--xh-control-h-sm);
-    --xh-_segmented-px: var(--xh-control-px-sm);
-    --xh-_segmented-gap: var(--xh-control-gap-sm);
-    --xh-_segmented-font-size: var(--xh-control-font-sm);
-    --xh-icon-size: var(--xh-segmented-icon-size, var(--xh-glyph-size-sm));
-  }
-
-  [data-scope='segmented'][data-part='root'][data-size='lg'] {
-    --xh-_segmented-h: var(--xh-control-h-lg);
-    --xh-_segmented-px: var(--xh-control-px-lg);
-    --xh-_segmented-gap: var(--xh-control-gap-lg);
-    --xh-_segmented-font-size: var(--xh-control-font-lg);
-    --xh-icon-size: var(--xh-segmented-icon-size, var(--xh-glyph-size-lg));
-  }
-
-  /* 段自己也定位，于是与绝对定位的指示器按文档序比高低：
-     指示器写在段之前，段与它的焦点环便压在指示器上面，不必动层号 */
-  [data-scope='segmented'][data-part='item'] {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-segmented-item-gap, var(--xh-_segmented-gap));
-    block-size: var(--xh-segmented-item-h, var(--xh-_segmented-h));
-    padding-inline: var(--xh-segmented-item-px, var(--xh-_segmented-px));
-    border: 0;
-    border-radius: var(--xh-segmented-item-radius, var(--xh-shape-inset));
-    background: transparent;
-    color: var(--xh-segmented-item-fg, var(--xh-fg-muted));
-    /* 按钮不继承宿主字体，尺寸档在 root 上，两者都要显式接过来 */
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: var(--xh-segmented-item-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-    /* 段是轨道里铺开的一段（Segmented item 归行级），按下只换面不缩放：transition 里没有 scale */
-    transition:
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-  }
-
-  /* 选中态：单选是 role=radio + aria-checked，样式一律读 data-state，不读 ARIA。
-     文字色也要跟着变——指示器是可选部件，作者不渲染它时"当前是哪一段"仍然要看得出来 */
-  [data-scope='segmented'][data-part='item'][data-state='checked'] {
-    color: var(--xh-segmented-item-fg-checked, var(--xh-_segmented-fg-selected));
-  }
-
-  /* 指示器在场时选中段自己透空，环紧挨着的是压在它底下、与它同一块矩形的指示器实心底；
-     环色与那块底同族就看不出来，改取选中段自己的前景色——那一支本来就配着这块底定的。
-     指示器是可选部件，作者没渲染它时选中段直接坐在轨道底上，那一档的环仍取默认那一支 */
-  [data-scope='segmented'][data-part='root']:has([data-scope='segmented'][data-part='indicator']:not([hidden]))
-    [data-scope='segmented'][data-part='item'][data-state='checked']:focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
-  /* 悬停只提亮未选中的那几段：选中段的底下压着指示器，再变色就成了两套强调。
-     底色用中性的悬停档——它是「指哪一段」的轻反馈，不表达选中；段坐在淡底轨道里，悬停取 200 */
-  [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-state='checked']):hover {
-    background-color: var(--xh-segmented-item-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-segmented-item-fg-hover, var(--xh-fg-default));
-  }
-
-  /* 按下去要有回应：未选中段换到按下面（淡底承载 300），几何不动；只读段不压。
-     选中段不叠按下面：它压着的白色滑块本身就是选中身份（有滑块开关无叠加态） */
-  [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-readonly]):not([data-state='checked']):is(:active, [data-pressed]) {
-    background-color: var(--xh-segmented-item-bg-pressed, var(--xh-bg-subtle-active));
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 只读：值改不动，但对比度不降，光标也不摆出"禁止"的样子 */
-  [data-scope='segmented'][data-part='item'][data-readonly]:not([data-disabled]) {
-    cursor: default;
-  }
-
-  /* 集合条目一律 aria-disabled 而非原生 disabled（禁用段仍要能当方向键的起点），
-     所以这里读 data-disabled，写 :disabled 永远不命中。
-     用了 fg-disabled 就不再叠 opacity：半透明会把底下的指示器透出来 */
-  [data-scope='segmented'][data-part='item'][data-disabled] {
-    color: var(--xh-fg-disabled);
-  }
-
-  /* 禁用且选中的那一段不换文字色：它压着的是指示器的实心底，换成 fg-disabled 后
-     六族语气实测只剩 1.04–3.01 的对比度，「当前选的是哪一段」当场看不见。
-     禁用由轨道底色、未选中段的文字色与光标表达，选中段保持可读 */
-  [data-scope='segmented'][data-part='item'][data-disabled][data-state='checked'] {
-    color: var(--xh-segmented-item-fg-checked-disabled, var(--xh-_segmented-fg-selected));
-  }
-
-  /* 段内图标：纯装饰，可及名全在文字上。直径取根上按尺寸档下发的 --xh-icon-size，
-     放进来的图标组件与裸 svg 取同一直径；颜色随段的前景色，选中、悬停、禁用一并跟着换 */
-  [data-scope='segmented'][data-part='item-icon'] {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--xh-icon-size);
-    block-size: var(--xh-icon-size);
-    color: inherit;
-  }
-
-  [data-scope='segmented'][data-part='item-icon'] > svg {
-    inline-size: 100%;
-    block-size: 100%;
-  }
-
-  [data-scope='segmented'][data-part='item-text'] {
-    color: inherit;
-    user-select: none;
-  }
-
-  [data-scope='segmented'][data-part='indicator'] {
-    /* 位置与尺寸由机器量好、连接层写成私有槽（它量得到，样式表量不到）；
-       这四个是还没量到时的落点，量到即被内联的私有槽盖过 */
-    --xh-_segmented-indicator-x: 0;
-    --xh-_segmented-indicator-y: 0;
-    --xh-_segmented-indicator-w: 0;
-    --xh-_segmented-indicator-h: 0;
-    --xh-_segmented-indicator-stretch: 0;
-
-    /* 摆在行首块首，位置交给 translate（只走合成），尺寸跟着段宽走 */
-    position: absolute;
-    display: block;
-    inset-inline-start: 0;
-    inset-block-start: 0;
-    inline-size: var(--xh-_segmented-indicator-w);
-    block-size: var(--xh-_segmented-indicator-h);
-    translate: var(--xh-_segmented-indicator-x) var(--xh-_segmented-indicator-y);
-    /* 白色抬起面三件（有滑块开关）：surface-raised 底 + border-default 描边 + raised 影，描边必须在，影只是加成。
-       尺寸由连接层按段的盒量出，描边吃进盒里（border-box），滑块与段仍是同一块矩形 */
-    border: var(--xh-stroke-thin) solid var(--xh-segmented-indicator-border, var(--xh-border-default));
-    border-radius: var(--xh-segmented-indicator-radius, var(--xh-shape-inset));
-    background: var(--xh-segmented-indicator-bg, var(--xh-_segmented-indicator-bg));
-    box-shadow: var(--xh-segmented-indicator-shadow, var(--xh-elevation-raised));
-    /* 段压在它上面，点击一律交给段；作者把它写在段之后时也不至于吞掉点击 */
-    pointer-events: none;
-    /* 用连续档而不是进场那条：滑块是被推过去的，起步就该有速度，
-       纯减速曲线看着像自己飘过去。四个几何量同时走，段宽不等时才不会先变形再挪位。
-       投影单列一项：整组禁用时滑块落回轨道平面，那层投影跟着收 */
-    transition:
-      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
-      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-  }
-
-  /* translate 只认物理方向：RTL 下行首在右边，起始缘量出的距离往左推 */
-  [data-scope='segmented'][data-part='indicator']:dir(rtl) {
-    translate: calc(-1 * var(--xh-_segmented-indicator-x)) var(--xh-_segmented-indicator-y);
-  }
-
-  /* 首次落位与同一项的重量（窗口缩放、换上正式字体）直接到位，只有换项才滑：连接层在这一落点投影
-     data-instant。投影的淡变照留，整组禁用时滑块落回轨道平面仍是淡变 */
-  [data-scope='segmented'][data-part='indicator'][data-instant] {
-    transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-  }
-
-  /* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
-     被拉长时在另一个方向上压扁，表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
-  :where([data-material='liquid']) [data-scope='segmented'][data-part='indicator'] {
-    --xh-_segmented-indicator-squash: max(var(--xh-motion-scale-squash), calc(1 - var(--xh-_segmented-indicator-stretch) * (1 - var(--xh-motion-scale-squash))));
-
-    scale: 1 var(--xh-_segmented-indicator-squash);
-    transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-  }
-
-  :where([data-material='liquid']) [data-scope='segmented'][data-part='root'][data-orientation='vertical']
-    [data-scope='segmented'][data-part='indicator'] {
-    scale: var(--xh-_segmented-indicator-squash) 1;
-  }
-
-  /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
-     不补的话作者给节点加 hidden 后它照样显示 */
-  [data-scope='segmented'][data-part='root'][hidden],
-  [data-scope='segmented'][data-part='item'][hidden],
-  [data-scope='segmented'][data-part='item-icon'][hidden],
-  [data-scope='segmented'][data-part='indicator'][hidden] {
-    display: none;
-  }
-
-  @media print {
-    /* 打印默认丢背景色：滑块那块底与它的落影都不画，「当前选的是哪一段」在纸上没了。
-       选中段改画一圈实边、字加粗，两条都不吃底色 */
-    [data-scope='segmented'][data-part='item'][data-state='checked'] {
-      border: var(--xh-stroke-thin) solid currentColor;
-      font-weight: var(--xh-font-weight-bold);
-    }
-  }
-
-  @media (forced-colors: active) {
-    /* 按下：常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
-    [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-readonly]):not([data-state='checked']):is(:active, [data-pressed]) {
-      background-color: Highlight;
-      color: HighlightText;
-    }
-  }
-
-  @media (pointer: coarse) {
-    /* 手指的落点比一段高：命中区由伪元素向块轴两侧外扩，段的盒与轨道内的分格一点不动。
-       只扩块轴——段与段在行内轴上首尾相接，往两侧扩会与相邻段的命中区叠上。
-       取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
-    [data-scope='segmented'][data-part='item']::before {
-      content: '';
-      position: absolute;
-      inset-block: -8px;
-      inset-inline: 0;
-    }
-  }
-}
-
 /* styles/signature-pad.css */
 /* 定义 signature pad 样式。 */
 
@@ -36933,10 +36607,15 @@
   }
 
   [data-scope='radio-group'][data-part='root'] {
-    /* 尺寸档只换这两个私有槽，标题与条目都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+    /* 尺寸档只换这几个私有槽，标题与条目都从 root 继承它们，换档不必给每个部件各写一条选择器；
+       segment-h / segment-px 只给 segmented 形态的段用 */
     --xh-_radio-group-item-gap: var(--xh-control-gap-md);
     --xh-_radio-group-font-size: var(--xh-control-font-md);
     --xh-_radio-group-indicator: var(--xh-control-indicator-md);
+    --xh-_radio-group-segment-h: var(--xh-control-h-md);
+    --xh-_radio-group-segment-px: var(--xh-control-px-md);
+    /* 条目图标跟着尺寸档换直径，放进来的图标组件与裸 svg 都从这一支取 */
+    --xh-icon-size: var(--xh-radio-group-icon-size, var(--xh-glyph-size-md));
     /* 选中色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
     --xh-_radio-group-accent: var(--xh-_tone, var(--xh-bg-brand));
     /* 条目是圆圈的承载面：行自己坐画布走 100 → 200，行面上的圆圈按淡底容器阶梯再上一档（200 → 300）。
@@ -36979,12 +36658,18 @@
     --xh-_radio-group-item-gap: var(--xh-control-gap-sm);
     --xh-_radio-group-font-size: var(--xh-control-font-sm);
     --xh-_radio-group-indicator: var(--xh-control-indicator-sm);
+    --xh-_radio-group-segment-h: var(--xh-control-h-sm);
+    --xh-_radio-group-segment-px: var(--xh-control-px-sm);
+    --xh-icon-size: var(--xh-radio-group-icon-size, var(--xh-glyph-size-sm));
   }
 
   [data-scope='radio-group'][data-part='root'][data-size='lg'] {
     --xh-_radio-group-item-gap: var(--xh-control-gap-lg);
     --xh-_radio-group-font-size: var(--xh-control-font-lg);
     --xh-_radio-group-indicator: var(--xh-control-indicator-lg);
+    --xh-_radio-group-segment-h: var(--xh-control-h-lg);
+    --xh-_radio-group-segment-px: var(--xh-control-px-lg);
+    --xh-icon-size: var(--xh-radio-group-icon-size, var(--xh-glyph-size-lg));
   }
 
   /* 集合标题：14 / 500 / fg-muted，字号不随 size 档——随档的是条目文字 */
@@ -37166,18 +36851,303 @@
     color: var(--xh-radio-group-item-description-fg-disabled, var(--xh-fg-disabled));
   }
 
+  /* 条目图标：纯装饰，可及名全在文字上。直径取根上按尺寸档下发的 --xh-icon-size，
+     放进来的图标组件与裸 svg 取同一直径；颜色随条目的前景色，选中、悬停、禁用一并跟着换 */
+  [data-scope='radio-group'][data-part='item-icon'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-icon-size);
+    block-size: var(--xh-icon-size);
+    color: inherit;
+  }
+
+  [data-scope='radio-group'][data-part='item-icon'] > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  /* 两行排版（卡片、带说明的列表行）里图标自成一列，排在圆圈与文案之间；说明仍落在文案下方同一列 */
+  [data-scope='radio-group'][data-part='item']:has(> [data-scope='radio-group'][data-part='item-icon']):is(
+      [data-xh-choice-card],
+      :has(> [data-scope='radio-group'][data-part='item-description'])
+    ) {
+    grid-template-columns: auto auto minmax(0, 1fr);
+  }
+
+  [data-scope='radio-group'][data-part='item']:has(> [data-scope='radio-group'][data-part='item-icon'])
+    > [data-scope='radio-group'][data-part='item-description'] {
+    grid-column: 3;
+  }
+
+  /* —— segmented 形态 ——
+     一条淡底轨道装着首尾相接的若干段，选中段由 thumb 部件标出：一块白色抬起的滑块，换段时滑过去。
+     轨道就是 root：滑块绝对定位于它，段与段之间不留缝，所以 gap 归零。
+     轨道是一块淡底面：--xh-bg-subtle 底 + 同宽透明占位边 + 无影，边界由滑块的描边与轨道底色的落差承担。
+     一行排不下就折行：每个选项都必须看得见、点得到；不改成横向滚动是因为段离轨道内沿只有一格衬距，
+     轨道一旦成为滚动容器，段的焦点环（画在段外侧 2px 处）会被裁掉 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'] {
+    /* 滑块（有滑块开关的白色抬起面）的底与选中段的文字色；没写 data-tone 时就是这里的取值 */
+    --xh-_radio-group-thumb-bg: var(--xh-bg-surface-raised);
+    --xh-_radio-group-segment-fg-checked: var(--xh-fg-default);
+    /* 轨道是淡底承载面：段坐在它上面，悬停 200 → 按下 300，host 槽向内下发同一副阶梯 */
+    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+
+    position: relative;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0;
+    padding: var(--xh-radio-group-track-padding, var(--xh-space-0_5));
+    border: var(--xh-stroke-thin) solid var(--xh-radio-group-track-border, transparent);
+    border-radius: var(--xh-radio-group-track-radius, var(--xh-shape-surface));
+    background: var(--xh-radio-group-track-bg, var(--xh-bg-subtle));
+    font-size: var(--xh-radio-group-item-font-size, var(--xh-_radio-group-font-size));
+  }
+
+  /* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平。
+     写下限而非定值：排得下时两者逐值相同，排不下折了行才让轨道往下长 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-orientation='horizontal'] {
+    align-items: stretch;
+    min-block-size: var(--xh-radio-group-segment-h, var(--xh-_radio-group-segment-h));
+  }
+
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-orientation='vertical'] {
+    flex-wrap: nowrap;
+  }
+
+  /* 撑满行宽：各段等分剩余空间，长短不一的文字也排得齐 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-block] {
+    display: flex;
+    inline-size: 100%;
+  }
+
+  /* 等分只在横排成立：竖排的主轴是块轴，flex-basis: 0 会顶掉段自己的高度档，
+     竖排下段本来就靠上面那条 inline-size: 100% 与 align-items: stretch 撑满宽度 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-block][data-orientation='horizontal']
+    > [data-scope='radio-group'][data-part='item'] {
+    flex: 1 1 0;
+  }
+
+  /* 轨道里不排标题：组标题在这一形态下视觉隐藏，只作可及名（aria-labelledby 的目标仍在）。
+     要可见标题放进表单字段。刻意不写 display：display:none 的节点读屏取不到名字 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'] > [data-scope='radio-group'][data-part='label'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* root 会短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给段，在它身上画环只会闪一下就跳走 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-invalid] {
+    border-color: var(--xh-radio-group-track-border-invalid, var(--xh-border-invalid));
+  }
+
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-disabled] {
+    background: var(--xh-radio-group-track-bg-disabled, var(--xh-bg-muted));
+  }
+
+  /* 语气：选择器带 [data-tone] 限定，不限定的话放在语气容器里的分段会跟着改色。
+     语气档的滑块是实心语气面，选中段的字取语气面上的前景 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-tone] {
+    --xh-_radio-group-thumb-bg: var(--xh-_tone, var(--xh-bg-surface-raised));
+    --xh-_radio-group-segment-fg-checked: var(--xh-_tone-on, var(--xh-fg-default));
+  }
+
+  /* 段：轨道里铺开的一格，不投影 Action Control 家族（与 Tabs segment 档同），面与字写在段自己身上。
+     段自己也定位，于是与绝对定位的滑块按文档序比高低：滑块写在段之前，段与它的焦点环便压在滑块上面 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'] > [data-scope='radio-group'][data-part='item'] {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-radio-group-item-gap, var(--xh-_radio-group-item-gap));
+    block-size: var(--xh-radio-group-segment-h, var(--xh-_radio-group-segment-h));
+    padding-inline: var(--xh-radio-group-segment-px, var(--xh-_radio-group-segment-px));
+    border: 0;
+    border-radius: var(--xh-radio-group-segment-radius, var(--xh-shape-control));
+    background: transparent;
+    color: var(--xh-radio-group-segment-fg, var(--xh-fg-muted));
+    font-weight: var(--xh-radio-group-segment-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    /* 段归行级：按下只换面不缩放，transition 里没有 scale */
+    transition:
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 段的高度交给轨道：一行时被 stretch 撑满轨道内侧。下限按「一档控件高减掉轨道上下的衬距与描边」算，
+     折了行每一行仍是这个高度，不写的话多行会被 align-content 均分成一叠扁条 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-orientation='horizontal']
+    > [data-scope='radio-group'][data-part='item'] {
+    block-size: auto;
+    min-block-size: calc(
+      var(--xh-radio-group-segment-h, var(--xh-_radio-group-segment-h)) - 2 *
+        var(--xh-radio-group-track-padding, var(--xh-space-0_5)) - 2 * var(--xh-stroke-thin)
+    );
+  }
+
+  /* 这一形态的选中由滑块标出，不画行首圆圈 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented']
+    > [data-scope='radio-group'][data-part='item']
+    > [data-scope='radio-group'][data-part='indicator'] {
+    display: none;
+  }
+
+  /* 选中态读 data-state，不读 ARIA。文字色也要跟着变——滑块是可选部件，作者不渲染它时"当前是哪一段"仍然要看得出来 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented']
+    > [data-scope='radio-group'][data-part='item'][data-state='checked'] {
+    color: var(--xh-radio-group-segment-fg-checked, var(--xh-_radio-group-segment-fg-checked));
+  }
+
+  /* 滑块在场时选中段自己透空，环紧挨着的是压在它底下、与它同一块矩形的滑块实心底；
+     环色与那块底同族就看不出来，改取选中段自己的前景色——那一支本来就配着这块底定的 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented']:has(> [data-scope='radio-group'][data-part='thumb']:not([hidden]))
+    > [data-scope='radio-group'][data-part='item'][data-state='checked']:focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
+  /* 悬停只提亮未选中的那几段：选中段的底下压着滑块，再变色就成了两套强调。
+     底色用中性的悬停档：段坐在淡底轨道里，悬停取 200；只读收回悬停，与列表形态同一个决定 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented']
+    > [data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):not([data-state='checked']):hover {
+    background-color: var(--xh-radio-group-segment-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-radio-group-segment-fg-hover, var(--xh-fg-default));
+  }
+
+  /* 按下去要有回应：未选中段换到按下面（淡底承载 300），几何不动。
+     选中段不叠按下面：它压着的白色滑块本身就是选中身份（有滑块开关无叠加态） */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented']
+    > [data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):not([data-state='checked']):is(:active, [data-pressed]) {
+    background-color: var(--xh-radio-group-segment-bg-pressed, var(--xh-bg-subtle-active));
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
+  }
+
+  /* 只读：值改不动，但对比度不降，光标也不摆出"禁止"的样子 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented']
+    > [data-scope='radio-group'][data-part='item'][data-readonly]:not([data-disabled]) {
+    cursor: default;
+  }
+
+  /* 条目一律 aria-disabled 而非原生 disabled（禁用段仍要能当方向键的起点），这里读 data-disabled。
+     用了 fg-disabled 就不再叠 opacity：半透明会把底下的滑块透出来 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented']
+    > [data-scope='radio-group'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 禁用且选中的那一段不换文字色：它压着的是滑块的实心底，换成 fg-disabled 后六族语气只剩 1.04–3.01 的对比度，
+     「当前选的是哪一段」当场看不见。禁用由轨道底色、未选中段的文字色与光标表达，选中段保持可读 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented']
+    > [data-scope='radio-group'][data-part='item'][data-disabled][data-state='checked'] {
+    color: var(--xh-radio-group-segment-fg-checked-disabled, var(--xh-_radio-group-segment-fg-checked));
+  }
+
+  [data-scope='radio-group'][data-part='thumb'] {
+    /* 位置与尺寸由机器量好、连接层写成私有槽（它量得到，样式表量不到）；
+       这几个是还没量到时的落点，量到即被内联的私有槽盖过 */
+    --xh-_radio-group-thumb-x: 0;
+    --xh-_radio-group-thumb-y: 0;
+    --xh-_radio-group-thumb-w: 0;
+    --xh-_radio-group-thumb-h: 0;
+    --xh-_radio-group-thumb-stretch: 0;
+
+    /* 摆在行首块首，位置交给 translate（只走合成），尺寸跟着段宽走。起始缘是按书写方向量的，
+       translate 只认物理方向：乘上 --xh-direction-sign，RTL 下从右缘往左推 */
+    position: absolute;
+    display: block;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: var(--xh-_radio-group-thumb-w);
+    block-size: var(--xh-_radio-group-thumb-h);
+    translate: calc(var(--xh-_radio-group-thumb-x) * var(--xh-direction-sign)) var(--xh-_radio-group-thumb-y);
+    /* 白色抬起面三件（有滑块开关）：surface-raised 底 + border-default 描边 + raised 影，描边必须在，影只是加成。
+       尺寸由连接层按段的盒量出，描边吃进盒里（border-box），滑块与段仍是同一块矩形 */
+    border: var(--xh-stroke-thin) solid var(--xh-radio-group-thumb-border, var(--xh-border-default));
+    border-radius: var(--xh-radio-group-thumb-radius, var(--xh-shape-inset));
+    background: var(--xh-radio-group-thumb-bg, var(--xh-_radio-group-thumb-bg));
+    box-shadow: var(--xh-radio-group-thumb-shadow, var(--xh-elevation-raised));
+    /* 段压在它上面，点击一律交给段；作者把它写在段之后时也不至于吞掉点击 */
+    pointer-events: none;
+    /* 用连续档而不是进场那条：滑块是被推过去的，起步就该有速度，纯减速曲线看着像自己飘过去。
+       四个几何量同时走，段宽不等时才不会先变形再挪位。投影单列一项：整组禁用时滑块落回轨道平面，那层投影跟着收 */
+    transition:
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 语气档的滑块是实心语气面，描边与底同色：raised 面必带描边，这里的描边只是把边位补齐，不另画一圈 */
+  [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-tone] > [data-scope='radio-group'][data-part='thumb'] {
+    border-color: var(--xh-radio-group-thumb-border, var(--xh-_tone, var(--xh-border-default)));
+  }
+
+  /* 整组禁用时滑块落回轨道平面（不再浮起），但底色一点不兑淡：
+     它上面压着选中段的文字，往 muted 兑哪怕一成，brand 的对比度就从 5.08 掉到 4.24 */
+  [data-scope='radio-group'][data-part='root'][data-disabled] > [data-scope='radio-group'][data-part='thumb'] {
+    box-shadow: var(--xh-radio-group-thumb-shadow-disabled, none);
+  }
+
+  /* 首次落位与同一项的重量（窗口缩放、换上正式字体）直接到位，只有换项才滑：连接层在这一落点投影
+     data-instant。投影的淡变照留，整组禁用时滑块落回轨道平面仍是淡变 */
+  [data-scope='radio-group'][data-part='thumb'][data-instant] {
+    transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
+     被拉长时在另一个方向上压扁，表达体积守恒，拉长到目标的两倍时压到 --xh-motion-scale-squash */
+  :where([data-material='liquid']) [data-scope='radio-group'][data-part='thumb'] {
+    --xh-_radio-group-thumb-squash: max(var(--xh-motion-scale-squash), calc(1 - var(--xh-_radio-group-thumb-stretch) * (1 - var(--xh-motion-scale-squash))));
+
+    scale: 1 var(--xh-_radio-group-thumb-squash);
+    transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  :where([data-material='liquid']) [data-scope='radio-group'][data-part='root'][data-orientation='vertical']
+    > [data-scope='radio-group'][data-part='thumb'] {
+    scale: var(--xh-_radio-group-thumb-squash) 1;
+  }
+
   /* 家族 row 档在粗指针下用 ::after 把热区扩到 44px 高：条目按 24px 行 + 8px 间距密排，热区会压进相邻条目、
      指针落错行，A 档 24px 由 xs 地板保住（同 checkbox-group 条目） */
   @media (pointer: coarse) {
     [data-scope='radio-group'][data-part='item']::after {
       min-block-size: 0;
     }
+
+    /* segmented 的段不归家族：手指的落点比一段高，命中区由伪元素向块轴两侧外扩，段的盒与轨道内的分格一点不动。
+       只扩块轴——段与段在行内轴上首尾相接，往两侧扩会与相邻段的命中区叠上。
+       外扩一格 space-2 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
+    [data-scope='radio-group'][data-part='root'][data-variant='segmented'] > [data-scope='radio-group'][data-part='item']::before {
+      content: '';
+      position: absolute;
+      inset-block: calc(-1 * var(--xh-space-2));
+      inset-inline: 0;
+    }
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   [data-scope='radio-group'][data-part='root'][hidden],
+  [data-scope='radio-group'][data-part='thumb'][hidden],
   [data-scope='radio-group'][data-part='item'][hidden],
+  [data-scope='radio-group'][data-part='item-icon'][hidden],
   [data-scope='radio-group'][data-part='indicator'][hidden] {
     display: none;
   }
@@ -37194,6 +37164,13 @@
       > [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
       background: GrayText;
     }
+
+    /* segmented 的段按下：常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
+    [data-scope='radio-group'][data-part='root'][data-variant='segmented']
+      > [data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):not([data-state='checked']):is(:active, [data-pressed]) {
+      background-color: Highlight;
+      color: HighlightText;
+    }
   }
 
   @media print {
@@ -37201,6 +37178,13 @@
        圆点改画成一圈实边——边框印得出来，直径与圆心都不动（描边吃进盒里）。 */
     [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
       border: var(--xh-stroke-thick) solid currentColor;
+    }
+
+    /* segmented 的滑块那块底与它的落影都不画，「当前选的是哪一段」在纸上没了：选中段改画一圈实边、字加粗 */
+    [data-scope='radio-group'][data-part='root'][data-variant='segmented']
+      > [data-scope='radio-group'][data-part='item'][data-state='checked'] {
+      border: var(--xh-stroke-thin) solid currentColor;
+      font-weight: var(--xh-font-weight-bold);
     }
   }
 }
@@ -42449,7 +42433,7 @@
     flex: 0 0 auto;
   }
 
-  /* segment 档是一条轨道里的格子（与 Segmented 同构）：格子按可用宽度等分 */
+  /* segment 档是一条轨道里的格子（与 RadioGroup 的 segmented 形态同构）：格子按可用宽度等分 */
   [data-scope='tabs'][data-part='root'][data-orientation='horizontal'][data-variant='segment']
     [data-scope='tabs'][data-part='trigger'] {
     flex: 1 1 0;
@@ -42694,7 +42678,7 @@
   }
 
   /* segment 档（有滑块开关）：部件就是那块白色抬起的滑块面，四个几何量都取、整块跟着滑——
-     surface-raised 底 + border-default 描边 + raised 影三件与 Segmented 的滑块同一套；
+     surface-raised 底 + border-default 描边 + raised 影三件与 RadioGroup segmented 形态的滑块同一套；
      描边吃进盒里（border-box），面与标签仍是同一块矩形。标签压在它上面，点击一律交给标签。
      用连续档而不是进场那条：滑块是被推过去的，起步就该有速度；四个几何量同时走，标签宽不等时才不会先变形再挪位 */
   [data-scope='tabs'][data-part='indicator'][data-variant='segment'] {

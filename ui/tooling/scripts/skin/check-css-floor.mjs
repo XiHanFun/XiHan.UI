@@ -65,7 +65,6 @@ const DIR_PSEUDO_BACKLOG = {
   'navigation-menu.css': 1,
   'progress.css': 4,
   'resizable.css': 1,
-  'segmented.css': 1,
   'sortable.css': 1,
   'tabs.css': 2,
 }
