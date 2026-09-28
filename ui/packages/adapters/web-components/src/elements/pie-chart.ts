@@ -214,6 +214,11 @@ export class XhPieChartElement extends XhElement {
     return this.api()?.empty ?? true
   }
 
+  /** 数据表模型：与根里视觉隐藏的那张表同一份，要可见的表格视图时交给表格组件。 */
+  get table(): PieChartApi['table'] {
+    return this.api()?.table ?? { columns: [], rows: [] }
+  }
+
   /** 此刻隐藏的扇区。hiddenSeries 是作者递进来的受控值，非受控时读这里。 */
   get currentHiddenSeries(): string[] {
     return this.api()?.hiddenSeries ?? []

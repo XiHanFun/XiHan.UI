@@ -6355,6 +6355,15 @@
             },
             {
               "kind": "field",
+              "name": "table",
+              "type": {
+                "text": "CartesianChartApi['table']"
+              },
+              "description": "数据表模型：与根里视觉隐藏的那张表同一份，要可见的表格视图时交给表格组件。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "currentHiddenSeries",
               "type": {
                 "text": "string[]"
@@ -27117,6 +27126,15 @@
             },
             {
               "kind": "field",
+              "name": "table",
+              "type": {
+                "text": "FunnelChartApi['table']"
+              },
+              "description": "数据表模型：与根里视觉隐藏的那张表同一份，要可见的表格视图时交给表格组件。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "currentHiddenSeries",
               "type": {
                 "text": "string[]"
@@ -27852,6 +27870,15 @@
                 "text": "boolean"
               },
               "description": "没有可画的数据。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "table",
+              "type": {
+                "text": "GraphChartApi['table']"
+              },
+              "description": "数据表模型：与根里视觉隐藏的那张表同一份，要可见的表格视图时交给表格组件。",
               "readonly": true
             },
             {
@@ -30035,6 +30062,15 @@
                 "text": "boolean"
               },
               "description": "没有可画的节点。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "table",
+              "type": {
+                "text": "HierarchyChartApi['table']"
+              },
+              "description": "数据表模型：与根里视觉隐藏的那张表同一份，要可见的表格视图时交给表格组件。",
               "readonly": true
             },
             {
@@ -44406,6 +44442,15 @@
             },
             {
               "kind": "field",
+              "name": "table",
+              "type": {
+                "text": "PieChartApi['table']"
+              },
+              "description": "数据表模型：与根里视觉隐藏的那张表同一份，要可见的表格视图时交给表格组件。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "currentHiddenSeries",
               "type": {
                 "text": "string[]"
@@ -48489,6 +48534,15 @@
             },
             {
               "kind": "field",
+              "name": "table",
+              "type": {
+                "text": "RadarChartApi['table']"
+              },
+              "description": "数据表模型：与根里视觉隐藏的那张表同一份，要可见的表格视图时交给表格组件。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "currentHiddenSeries",
               "type": {
                 "text": "string[]"
@@ -51127,6 +51181,15 @@
                 "text": "boolean"
               },
               "description": "没有可画的数据。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "table",
+              "type": {
+                "text": "SankeyChartApi['table']"
+              },
+              "description": "数据表模型：与根里视觉隐藏的那张表同一份，要可见的表格视图时交给表格组件。",
               "readonly": true
             },
             {

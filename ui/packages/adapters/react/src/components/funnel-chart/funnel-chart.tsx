@@ -35,7 +35,7 @@ import { useFunnelChart } from './use-funnel-chart'
 type FunnelChartProps = FunnelChartSchema['props']
 
 /** 函数式 children 的载荷：自行摆放部件时用得上的状态与动作。 */
-export type FunnelChartRootSlotProps = Pick<FunnelChartApi, 'active' | 'tooltip' | 'empty' | 'hiddenSeries' | 'activeKey' | 'toggleSeries' | 'setFocusedDatum'>
+export type FunnelChartRootSlotProps = Pick<FunnelChartApi, 'active' | 'tooltip' | 'empty' | 'hiddenSeries' | 'activeKey' | 'toggleSeries' | 'setFocusedDatum' | 'table'>
 
 /** 提示框内容的载荷：激活的阶段与缺省的内容模型。 */
 export interface FunnelChartTooltipSlotProps {
@@ -286,6 +286,7 @@ export function XhFunnelChartRoot({
         active: api.active,
         tooltip: api.tooltip,
         empty: api.empty,
+        table: api.table,
         hiddenSeries: api.hiddenSeries,
         activeKey: api.activeKey,
         toggleSeries: api.toggleSeries,

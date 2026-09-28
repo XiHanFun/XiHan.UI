@@ -32,7 +32,7 @@ import { usePieChart } from './use-pie-chart'
 type PieChartProps = PieChartSchema['props']
 
 /** 默认插槽的载荷：自行摆放部件时用得上的状态与动作。 */
-export type PieChartRootSlotProps = Pick<PieChartApi, 'legendItems' | 'active' | 'tooltip' | 'center' | 'empty' | 'hiddenSeries' | 'activeKey' | 'toggleSeries' | 'setFocusedDatum'>
+export type PieChartRootSlotProps = Pick<PieChartApi, 'legendItems' | 'active' | 'tooltip' | 'center' | 'empty' | 'hiddenSeries' | 'activeKey' | 'toggleSeries' | 'setFocusedDatum' | 'table'>
 
 /** 提示框插槽的载荷：激活的扇区与缺省的内容模型。 */
 export interface PieChartTooltipSlotProps {
@@ -258,6 +258,7 @@ export const XhPieChartRoot = defineComponent({
             tooltip: api.tooltip,
             center: api.center,
             empty: api.empty,
+            table: api.table,
             hiddenSeries: api.hiddenSeries,
             activeKey: api.activeKey,
             toggleSeries: api.toggleSeries,

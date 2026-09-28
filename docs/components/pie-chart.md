@@ -66,6 +66,18 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 
 <XhDemo src="pie-chart/08-label-content" />
 
+### 可见的数据表
+
+根的作用域交出 table：交给表格组件就是一张看得见的数据表，列名、数值格式与占比口径都与图同一份，不必在图下另写一遍数据
+
+<XhDemo src="pie-chart/09-table" />
+
+### 从外面强调一块
+
+受控的 activeKey 写扇区名，图就强调那一块、中心与提示框跟着显示它：图外的筛选、列表或别的图都能这样指给读者看
+
+<XhDemo src="pie-chart/10-emphasis" />
+
 ## 设计指引
 
 ### 何时使用
@@ -110,7 +122,7 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 
 - 为图写标题：`caption` 是图的可访问名称，饼图尤其需要说明「整体」是什么。
 - 扇区保持在 5 个以内；更多的类目交给「其他」，或者换成条形图。
-- 需要读出准确数字时，把 `labels` 留在 `outside`，或者在旁边放一张[表格](./table)。
+- 需要读出准确数字时，把 `labels` 留在 `outside`，或者把 `api.table` 交给[表格](./table)组件（Vue 与 React 从根的作用域插槽 / 函数式 children 取 `table`，Web Components 读元素的 `table`），列名、数值格式与占比口径都与图同一份。
 - 环形中心写整体的合计或一个结论（如「完成 72%」），不要再放一张小图。
 - 同一页的几张饼图要比较时，保持相同的 `sort` 与颜色次序，读者才能按位置对照。
 
