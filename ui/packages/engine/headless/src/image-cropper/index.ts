@@ -19,6 +19,7 @@ export {
   resolveAspectRatio,
   sameCropRect,
   sameCropSize,
+  screenStepToImage,
   serializeCropRect,
   unprojectDelta,
 } from './image-cropper.geometry'
@@ -30,17 +31,23 @@ export {
   IMAGE_CROPPER_MAX_ZOOM,
   IMAGE_CROPPER_MIN_ROTATION,
   IMAGE_CROPPER_MIN_ZOOM,
+  IMAGE_CROPPER_NO_FLIP,
   IMAGE_CROPPER_ROTATION,
   IMAGE_CROPPER_ROTATION_STEP,
   IMAGE_CROPPER_ZOOM,
   IMAGE_CROPPER_ZOOM_STEP,
   imageCropperMachine,
+  sameCropFlip,
   UNKNOWN_IMAGE_SIZE,
 } from './image-cropper.machine'
 export { imageCropperMeta } from './image-cropper.meta'
 export type {
   ImageCropperApi,
   ImageCropperDragOrigin,
+  ImageCropperFlip,
+  ImageCropperFlipAxis,
+  ImageCropperFlipChangeDetails,
+  ImageCropperFlipTriggerProps,
   ImageCropperHandlePosition,
   ImageCropperHandleProps,
   ImageCropperPoint,

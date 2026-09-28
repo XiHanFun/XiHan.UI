@@ -1318,6 +1318,7 @@ export { useImageCropperContext } from './components/image-cropper/context'
 export {
   XhImageCropperCropArea,
   XhImageCropperCropHandle,
+  XhImageCropperFlipTrigger,
   XhImageCropperGrid,
   XhImageCropperHiddenInput,
   XhImageCropperImage,
@@ -1330,6 +1331,7 @@ export type {
   ImageCropperRootSlotProps,
   XhImageCropperCropAreaProps,
   XhImageCropperCropHandleProps,
+  XhImageCropperFlipTriggerProps,
   XhImageCropperGridProps,
   XhImageCropperHiddenInputProps,
   XhImageCropperImageProps,

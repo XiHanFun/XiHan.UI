@@ -5,11 +5,19 @@
 
 // 提供 image cropper 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { ImageCropperApi, ImageCropperHandlePosition, ImageCropperRect, ImageCropperSchema, ImageCropperTranslations } from './image-cropper.types'
-import { dataAttr, focusItem } from '@xihan-ui/core'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type {
+  ImageCropperApi,
+  ImageCropperFlipAxis,
+  ImageCropperHandlePosition,
+  ImageCropperRect,
+  ImageCropperSchema,
+  ImageCropperTranslations,
+} from './image-cropper.types'
+import { createPressTracker, dataAttr, focusItem } from '@xihan-ui/core'
 import { imageCropperAnatomy } from './image-cropper.anatomy'
-import { serializeCropRect } from './image-cropper.geometry'
+import { cropToCanvas } from './image-cropper.canvas'
+import { screenStepToImage, serializeCropRect } from './image-cropper.geometry'
 import {
   IMAGE_CROPPER_MAX_ROTATION,
   IMAGE_CROPPER_MAX_ZOOM,
@@ -26,7 +34,10 @@ const parts = imageCropperAnatomy.build()
 const NUDGE_STEP = 1
 const NUDGE_STEP_LARGE = 10
 
-/** 四个方向键对应的位移方向，恒是物理方向：裁切矩形描述的是图片像素，与文字方向无关。 */
+/**
+ * 四个方向键在屏幕上的位移方向，恒是物理方向：裁切矩形描述的是图片像素，与文字方向无关。
+ * 落到图片上之前还要按旋转与翻转换算，框在屏幕上往哪边挪，按的就是哪个键。
+ */
 const ARROW_DELTA: Record<string, readonly [number, number] | undefined> = {
   ArrowLeft: [-1, 0],
   ArrowRight: [1, 0],
@@ -67,12 +78,13 @@ export function connectImageCropper<T extends PropTypes>(
   service: Service<ImageCropperSchema>,
   normalize: NormalizeProps<T>,
 ): ImageCropperApi<T> {
-  const { context, prop, send, state } = service
+  const { context, prop, refs, send, state } = service
 
   const value = context.get('value')
   const natural = context.get('natural')
   const zoom = context.get('zoom')
   const rotation = context.get('rotation')
+  const flip = context.get('flip')
   const dragging = state.matches('dragging')
   const resizing = state.matches('resizing')
   const disabled = !!prop('disabled')
@@ -97,6 +109,9 @@ export function connectImageCropper<T extends PropTypes>(
     },
     zoomSlider: translations?.zoomSlider ?? 'Zoom',
     rotateSlider: translations?.rotateSlider ?? 'Rotate',
+    flip: (axis: ImageCropperFlipAxis): string => axis === 'horizontal'
+      ? translations?.flipHorizontal ?? 'Flip horizontally'
+      : translations?.flipVertical ?? 'Flip vertically',
     // 二维控件只报得出一个 aria-valuenow，另外三个数只能写进播报文本
     valueText: translations?.valueText
       ?? ((rect: ImageCropperRect) => `X ${rect.x}, Y ${rect.y}, width ${rect.width}, height ${rect.height}`),
@@ -109,9 +124,14 @@ export function connectImageCropper<T extends PropTypes>(
   const widthRatio = known ? value.width / natural.width : 0
   const heightRatio = known ? value.height / natural.height : 0
 
-  // 缩放与旋转同时作用在图片与裁切框上，两者因此始终贴合；恒等变换写空串，让样式表接手
-  const identity = rotation === 0 && zoom === IMAGE_CROPPER_ZOOM
-  const transform = identity ? '' : `rotate(${rotation}deg) scale(${zoom})`
+  // 缩放、旋转与翻转同时作用在图片与裁切框上，两者因此始终贴合；恒等变换写空串，让样式表接手。
+  // 翻转先作用（最右一项），再缩放、再旋转：镜像是图片自己的，不随旋转后的屏幕轴走
+  const flipped = flip.horizontal || flip.vertical
+  const identity = rotation === 0 && zoom === IMAGE_CROPPER_ZOOM && !flipped
+  const scale = flipped
+    ? `scale(${flip.horizontal ? -zoom : zoom}, ${flip.vertical ? -zoom : zoom})`
+    : `scale(${zoom})`
+  const transform = identity ? '' : `rotate(${rotation}deg) ${scale}`
   /**
    * 裁切框要绕**视口中心**转，而 transform-origin 是按自己的盒子算的，
    * 所以把视口中心换算成裁切框自身宽高的百分比。宽高为 0 时退回自身中心。
@@ -128,6 +148,17 @@ export function connectImageCropper<T extends PropTypes>(
     'data-resizing': dataAttr(resizing),
   })
 
+  /** 方向键的一步按屏幕方向换算成图片像素的一步。 */
+  const keyStep = (delta: readonly [number, number], step: number): { dx: number, dy: number } =>
+    screenStepToImage(delta[0] * step, delta[1] * step, rotation, flip)
+
+  // 翻转按钮的按压通道：真源是机器 context 里「正被按住的那一颗」，各按钮按自己的轴合成一份跟踪器
+  const pressed = context.get('pressed')
+  const press = (axis: ImageCropperFlipAxis): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressed') === axis,
+    onChange: down => send(down ? { type: 'PRESS.START', axis } : { type: 'PRESS.END', axis }),
+  })
+
   /** 按下即开拖：挡掉浏览器的图片拖拽与文本选中，再把焦点显式转投过去。 */
   const grab = (event: PointerEvent): boolean => {
     if (!editable || event.button !== 0)
@@ -141,15 +172,25 @@ export function connectImageCropper<T extends PropTypes>(
     value,
     zoom,
     rotation,
+    flip,
     natural,
     dragging,
     resizing,
     disabled,
     readOnly,
     getCropRect: () => ({ ...value }),
+    // 出图是作者点名调的命令，此刻才去取源图节点；连接期不碰 DOM
+    toCanvas: (options = {}) => {
+      const image = refs.get('getImageEl')()
+      if (!image || !known)
+        return null
+      return cropToCanvas(image, value, { ...options, rotation, flip, shape })
+    },
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     setZoom: next => send({ type: 'ZOOM.SET', zoom: next }),
     setRotation: next => send({ type: 'ROTATE.SET', rotation: next }),
+    setFlip: next => send({ type: 'FLIP.SET', flip: next }),
+    toggleFlip: axis => send({ type: 'FLIP.TOGGLE', axis }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -214,8 +255,8 @@ export function connectImageCropper<T extends PropTypes>(
           return
         // 认下的键都得拦住，否则方向键会滚页面
         event.preventDefault()
-        const step = event.shiftKey ? NUDGE_STEP_LARGE : NUDGE_STEP
-        send({ type: 'CROP.NUDGE', dx: delta[0] * step, dy: delta[1] * step })
+        const { dx, dy } = keyStep(delta, event.shiftKey ? NUDGE_STEP_LARGE : NUDGE_STEP)
+        send({ type: 'CROP.NUDGE', dx, dy })
       },
     }),
 
@@ -256,8 +297,8 @@ export function connectImageCropper<T extends PropTypes>(
         // 把手住在裁切框里，不掐断冒泡的话同一次按键会既改尺寸又整体平移。
         // 只掐自己认下的那些键，其余照常冒上去
         event.stopPropagation()
-        const step = event.shiftKey ? NUDGE_STEP_LARGE : NUDGE_STEP
-        send({ type: 'HANDLE.NUDGE', position, dx: delta[0] * step, dy: delta[1] * step })
+        const { dx, dy } = keyStep(delta, event.shiftKey ? NUDGE_STEP_LARGE : NUDGE_STEP)
+        send({ type: 'HANDLE.NUDGE', position, dx, dy })
       },
     }),
 
@@ -300,6 +341,42 @@ export function connectImageCropper<T extends PropTypes>(
         send({ type: 'ROTATE.SET', rotation: Number(el.value) })
       },
     }),
+
+    // 两颗翻转按钮：每颗管一条轴，aria-pressed 报这条轴此刻翻没翻。翻转只改呈现，只读也照常可按，禁用才按不动
+    getFlipTriggerProps: ({ axis }) => {
+      const on = flip[axis]
+      const handlers = press(axis)
+      return normalize.button({
+        ...parts['flip-trigger'].attrs,
+        // 少了 type，按钮落在 form 里会变成 submit
+        'type': 'button',
+        // 按钮里通常只有一个镜像图标，读屏念不出它翻的是哪条轴
+        'aria-label': label.flip(axis),
+        'aria-pressed': on ? 'true' : 'false',
+        'disabled': disabled || undefined,
+        'data-disabled': dataAttr(disabled),
+        'data-axis': axis,
+        'data-state': on ? 'on' : 'off',
+        // 裁切器旁的独立开关钮：盒型、四态面、0.97 按压与粗指针命中区由家族配方按 text 档给出；
+        // 缺省 outline 描边，翻着时的选中面（品牌淡底）由皮肤在 data-state='on' 上桥接
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'text',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': 'sm',
+        'data-xh-action-variant': 'outline',
+        'data-pressed': dataAttr(pressed === axis),
+        'onClick': () => {
+          if (!disabled)
+            send({ type: 'FLIP.TOGGLE', axis })
+        },
+        'onKeyDown': handlers.onKeyDown,
+        'onKeyUp': handlers.onKeyUp,
+        'onBlur': handlers.onBlur,
+        'onPointerDown': handlers.onPointerDown,
+        'onPointerUp': handlers.onPointerUp,
+        'onPointerCancel': handlers.onPointerCancel,
+      })
+    },
 
     // 表单出口：裁切矩形靠这份原生输入随表单提交，序列化成 `x,y,width,height`
     getHiddenInputProps: () => normalize.input({

@@ -18,9 +18,11 @@ export interface ImageCropperContext {
   service: Service<ImageCropperSchema>
   /** 视口节点，状态机在指针事件中读取它的矩形。 */
   viewportRef: Ref<HTMLElement | null>
+  /** 源图节点，出图时从它取像素。 */
+  imageRef: Ref<HTMLImageElement | null>
 }
 
-type Handlers = Pick<ImageCropperSchema['props'], 'onValueChange' | 'onValueChangeEnd' | 'onZoomChange' | 'onRotationChange'>
+type Handlers = Pick<ImageCropperSchema['props'], 'onValueChange' | 'onValueChangeEnd' | 'onZoomChange' | 'onRotationChange' | 'onFlipChange'>
 
 // 不建 scope：connect 不派生任何 id
 export function useImageCropper(
@@ -28,11 +30,13 @@ export function useImageCropper(
   handlers: Handlers = {},
 ): ImageCropperContext {
   const viewportRef = ref<HTMLElement | null>(null)
+  const imageRef = ref<HTMLImageElement | null>(null)
   const service = useMachine(imageCropperMachine, () => ({ ...props, ...handlers }))
 
   // 传 getter 而非节点，ref 在挂载后才有值
   service.refs.set('getViewportEl', () => viewportRef.value)
+  service.refs.set('getImageEl', () => imageRef.value)
 
   const api = computed(() => connectImageCropper(service, vueNormalize))
-  return { api, service, viewportRef }
+  return { api, service, viewportRef, imageRef }
 }

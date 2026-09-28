@@ -7,6 +7,8 @@
 
 import type {
   ImageCropperApi,
+  ImageCropperFlip,
+  ImageCropperFlipAxis,
   ImageCropperHandlePosition,
   ImageCropperRect,
   ImageCropperSchema,
@@ -25,11 +27,11 @@ type ImageCropperProps = ImageCropperSchema['props']
 
 function noop(): void {}
 
-/** 函数式 children 的载荷：裁切矩形与图片自然尺寸、缩放与旋转、两种拖动标记，以及修改值、修改倍率与获取结果。 */
+/** 函数式 children 的载荷：裁切矩形与图片自然尺寸、缩放、旋转与翻转、两种拖动标记，以及修改值、修改呈现与出图。 */
 export type ImageCropperRootSlotProps = Pick<
   ImageCropperApi,
-  'value' | 'zoom' | 'rotation' | 'natural' | 'dragging' | 'resizing' | 'disabled' | 'readOnly'
-  | 'getCropRect' | 'setValue' | 'setZoom' | 'setRotation'
+  'value' | 'zoom' | 'rotation' | 'flip' | 'natural' | 'dragging' | 'resizing' | 'disabled' | 'readOnly'
+  | 'getCropRect' | 'toCanvas' | 'setValue' | 'setZoom' | 'setRotation' | 'setFlip' | 'toggleFlip'
 >
 
 export interface XhImageCropperRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
@@ -50,6 +52,9 @@ export interface XhImageCropperRootProps extends Omit<ComponentPropsWithRef<'div
   minRotation?: number
   maxRotation?: number
   rotationStep?: number
+  /** 翻转；提供即受控。 */
+  flip?: ImageCropperFlip
+  defaultFlip?: ImageCropperFlip
   shape?: ImageCropperShape
   disabled?: boolean
   readOnly?: boolean
@@ -61,6 +66,7 @@ export interface XhImageCropperRootProps extends Omit<ComponentPropsWithRef<'div
   onValueChangeEnd?: ImageCropperProps['onValueChangeEnd']
   onZoomChange?: ImageCropperProps['onZoomChange']
   onRotationChange?: ImageCropperProps['onRotationChange']
+  onFlipChange?: ImageCropperProps['onFlipChange']
   children?: SlotChildren<ImageCropperRootSlotProps>
 }
 
@@ -82,6 +88,8 @@ export function XhImageCropperRoot({
   minRotation,
   maxRotation,
   rotationStep,
+  flip,
+  defaultFlip,
   shape,
   disabled,
   readOnly,
@@ -91,6 +99,7 @@ export function XhImageCropperRoot({
   onValueChangeEnd,
   onZoomChange,
   onRotationChange,
+  onFlipChange,
   children,
   ...rest
 }: XhImageCropperRootProps): ReactNode {
@@ -112,6 +121,8 @@ export function XhImageCropperRoot({
     minRotation,
     maxRotation,
     rotationStep,
+    flip,
+    defaultFlip,
     shape,
     disabled,
     readOnly,
@@ -121,6 +132,7 @@ export function XhImageCropperRoot({
     onValueChangeEnd,
     onZoomChange,
     onRotationChange,
+    onFlipChange,
   })) as ImageCropperProps)
   const api = ctx.api
   return (
@@ -136,15 +148,19 @@ export function XhImageCropperRoot({
           value: api.value,
           zoom: api.zoom,
           rotation: api.rotation,
+          flip: api.flip,
           natural: api.natural,
           dragging: api.dragging,
           resizing: api.resizing,
           disabled: api.disabled,
           readOnly: api.readOnly,
           getCropRect: api.getCropRect,
+          toCanvas: api.toCanvas,
           setValue: api.setValue,
           setZoom: api.setZoom,
           setRotation: api.setRotation,
+          setFlip: api.setFlip,
+          toggleFlip: api.toggleFlip,
         })}
       </div>
     </ImageCropperProvider>
@@ -171,10 +187,18 @@ export function XhImageCropperViewport({ children, ...rest }: XhImageCropperView
 }
 
 export interface XhImageCropperImageProps extends Omit<ComponentPropsWithRef<'img'>, 'children' | 'src' | 'alt'> {}
-/** 使用原生 img：自然尺寸与 load 事件都归它。src 与 alt 由根上的同名 prop 写入。 */
+/** 使用原生 img：自然尺寸与 load 事件都归它，出图也从它取像素。src 与 alt 由根上的同名 prop 写入。 */
 export function XhImageCropperImage({ ...rest }: XhImageCropperImageProps): ReactNode {
   const ctx = useImageCropperContext()
-  return <img {...mergeReactProps(ctx.api.getImageProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return (
+    <img
+      {...mergeReactProps(
+        ctx.api.getImageProps() as Record<string, unknown>,
+        rest as Record<string, unknown>,
+        { ref: (el: HTMLImageElement | null) => { ctx.imageRef.current = el } },
+      )}
+    />
+  )
 }
 
 export interface XhImageCropperCropAreaProps extends ComponentPropsWithRef<'div'> {}
@@ -244,6 +268,25 @@ export function XhImageCropperRotateSlider({ ...rest }: XhImageCropperRotateSlid
         rest as Record<string, unknown>,
       )}
     />
+  )
+}
+
+export interface XhImageCropperFlipTriggerProps extends ComponentPropsWithRef<'button'> {
+  /** 这颗按钮翻哪条轴。 */
+  axis: ImageCropperFlipAxis
+}
+/** 使用原生 button：aria-pressed 报这条轴此刻翻没翻。 */
+export function XhImageCropperFlipTrigger({ axis, children, ...rest }: XhImageCropperFlipTriggerProps): ReactNode {
+  const ctx = useImageCropperContext()
+  return (
+    <button
+      {...mergeReactProps(
+        ctx.api.getFlipTriggerProps({ axis }) as Record<string, unknown>,
+        rest as Record<string, unknown>,
+      )}
+    >
+      {children}
+    </button>
   )
 }
 

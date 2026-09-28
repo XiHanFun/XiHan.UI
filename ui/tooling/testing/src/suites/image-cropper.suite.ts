@@ -1,9 +1,12 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { imageCropperAnatomy, imageCropperKeyboard } from '@xihan-ui/headless'
+import { nativeActivation } from './shared/native-activation'
+import { heldPress } from './shared/press-channel'
 
 // APG 没有裁切这个模式，键盘约定借的是滑块那一套（见 headless 的键盘表说明）。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/slider/'
 const APG_KBD = `${APG}#keyboardinteraction`
+const BUTTON = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 
 const SCOPE = '[data-scope="image-cropper"]'
 
@@ -81,6 +84,8 @@ export const imageCropperSuite: ConformanceSuite = {
       },
       { part: 'zoom-slider', tag: 'input' },
       { part: 'rotate-slider', tag: 'input' },
+      { part: 'flip-trigger', tag: 'button', attrs: { axis: 'horizontal' }, text: '左右翻转' },
+      { part: 'flip-trigger', tag: 'button', attrs: { axis: 'vertical' }, text: '上下翻转' },
       { part: 'hidden-input', tag: 'input' },
     ],
   },
@@ -90,8 +95,8 @@ export const imageCropperSuite: ConformanceSuite = {
       spec: { apg: `${APG}#roles_states_properties` },
       covers: ['image-cropper.kbd.tab'],
       initial: {
-        order: ['root', 'viewport', 'image', 'crop-area', 'grid', 'crop-handle[0]', 'crop-handle[1]', 'zoom-slider', 'rotate-slider', 'hidden-input'],
-        counts: { 'root': 1, 'viewport': 1, 'image': 1, 'crop-area': 1, 'grid': 1, 'crop-handle': 2, 'zoom-slider': 1, 'rotate-slider': 1, 'hidden-input': 1 },
+        order: ['root', 'viewport', 'image', 'crop-area', 'grid', 'crop-handle[0]', 'crop-handle[1]', 'zoom-slider', 'rotate-slider', 'flip-trigger[0]', 'flip-trigger[1]', 'hidden-input'],
+        counts: { 'root': 1, 'viewport': 1, 'image': 1, 'crop-area': 1, 'grid': 1, 'crop-handle': 2, 'zoom-slider': 1, 'rotate-slider': 1, 'flip-trigger': 2, 'hidden-input': 1 },
         parts: {
           'root': {
             'data-shape': 'rect',
@@ -131,10 +136,96 @@ export const imageCropperSuite: ConformanceSuite = {
           ],
           'zoom-slider': { 'type': 'range', 'aria-label': 'Zoom', 'data-disabled': null, 'disabled': null },
           'rotate-slider': { 'type': 'range', 'aria-label': 'Rotate', 'data-disabled': null, 'disabled': null },
+          // 两颗翻转按钮是开关钮：aria-pressed 报这条轴翻没翻，接 Action Control text 档 sm、缺省 outline
+          'flip-trigger': [
+            {
+              'type': 'button',
+              'aria-label': 'Flip horizontally',
+              'aria-pressed': 'false',
+              'data-axis': 'horizontal',
+              'data-state': 'off',
+              'disabled': null,
+              'data-pressed': null,
+              'data-xh-action-control': '',
+              'data-xh-action-profile': 'text',
+              'data-xh-action-size': 'sm',
+              'data-xh-action-variant': 'outline',
+            },
+            { 'aria-label': 'Flip vertically', 'aria-pressed': 'false', 'data-axis': 'vertical' },
+          ],
           'hidden-input': { type: 'hidden', name: null },
         },
         activeElement: null,
       },
+    },
+    {
+      // flip-change 不在三个 harness 的事件白名单里（与 zoom-change / rotation-change 同），载荷由 headless 单测把守
+      name: '翻转按钮：点一下翻这条轴，aria-pressed 跟着翻，另一条轴不动；翻转落到图片与裁切框的同一份变换上',
+      spec: { apg: BUTTON },
+      steps: [
+        {
+          kind: 'click',
+          part: 'flip-trigger[0]',
+          expect: {
+            parts: {
+              'flip-trigger': [
+                { 'aria-pressed': 'true', 'data-state': 'on' },
+                { 'aria-pressed': 'false', 'data-state': 'off' },
+              ],
+            },
+          },
+        },
+        {
+          kind: 'raw',
+          why: 'transform 是内联样式，归一化快照不采集 style',
+          run: ({ doc }) => {
+            const image = findPart(doc, 'image').style.transform
+            const crop = findPart(doc, 'crop-area').style.transform
+            if (image !== 'rotate(0deg) scale(-1, 1)' || crop !== image)
+              throw new Error(`左右翻转该落成 scale(-1, 1)，图片是 ${image}，裁切框是 ${crop}`)
+          },
+        },
+        {
+          kind: 'click',
+          part: 'flip-trigger[0]',
+          expect: {
+            parts: { 'flip-trigger': [{ 'aria-pressed': 'false', 'data-state': 'off' }] },
+          },
+        },
+      ],
+    },
+    {
+      name: '方向键跟随屏幕方向：左右翻着时 ArrowRight 让框在图片上往左走',
+      spec: { apg: APG_KBD },
+      props: { defaultValue: { x: 100, y: 50, width: 100, height: 50 }, defaultFlip: { horizontal: true, vertical: false } },
+      steps: [
+        {
+          kind: 'raw',
+          why: '先把图片尺寸报进去，否则没有可平移的边界',
+          run: async ({ doc, flush }) => {
+            loadImage(doc)
+            await flush()
+          },
+        },
+        { kind: 'focus', part: 'crop-area' },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: { events: [{ type: 'value-change', detail: { value: { x: 99, y: 50, width: 100, height: 50 } } }] },
+        },
+      ],
+    },
+    {
+      name: 'Enter / Space 靠原生按钮的激活行为，翻转按钮必须是 <button type="button">',
+      spec: { apg: `${BUTTON}#keyboardinteraction` },
+      covers: ['image-cropper.kbd.flip'],
+      steps: [nativeActivation('image-cropper', 'flip-trigger')],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：翻转按钮投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['image-cropper.kbd.flip-press'],
+      steps: [heldPress('image-cropper', 'flip-trigger')],
     },
     {
       name: '两条滑杆改的是呈现：缩放与旋转都落到图片与裁切框的同一份变换上',
@@ -343,6 +434,11 @@ export const imageCropperSuite: ConformanceSuite = {
           'crop-handle': [
             { 'aria-disabled': 'true', 'data-disabled': '', 'tabindex': '-1', 'disabled': null },
             { 'aria-disabled': 'true', 'data-disabled': '', 'tabindex': '-1', 'disabled': null },
+          ],
+          // 翻转按钮是单体按钮，禁用走原生 disabled
+          'flip-trigger': [
+            { 'disabled': '', 'data-disabled': '' },
+            { 'disabled': '', 'data-disabled': '' },
           ],
         },
       },

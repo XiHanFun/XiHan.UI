@@ -7,7 +7,11 @@
 
 import type { Service } from '@xihan-ui/core'
 import type {
+  CropToCanvasOptions,
   FormControlState,
+  ImageCropperFlip,
+  ImageCropperFlipAxis,
+  ImageCropperFlipChangeDetails,
   ImageCropperHandlePosition,
   ImageCropperRect,
   ImageCropperRotationChangeDetails,
@@ -18,7 +22,7 @@ import type {
   ImageCropperZoomChangeDetails,
 } from '@xihan-ui/headless'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
-import { connectImageCropper, imageCropperAnatomy, imageCropperMachine, imageCropperMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { connectImageCropper, IMAGE_CROPPER_NO_FLIP, imageCropperAnatomy, imageCropperMachine, imageCropperMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -44,6 +48,27 @@ const RECT_CONVERTER = {
   },
 }
 
+/**
+ * 翻转写成空格分隔的轴名：`horizontal`、`vertical` 或两者都写；空串即两条轴都不翻。
+ * 认不出的词当没写：翻错一条轴比不翻更难察觉。
+ */
+const FLIP_CONVERTER = {
+  fromAttribute: (v: string | null): ImageCropperFlip | undefined => {
+    if (v == null)
+      return undefined
+    const words = v.trim().split(/\s+/).filter(Boolean)
+    if (words.some(word => word !== 'horizontal' && word !== 'vertical'))
+      return undefined
+    return { horizontal: words.includes('horizontal'), vertical: words.includes('vertical') }
+  },
+}
+
+/** 翻转按钮合法的轴名。 */
+const FLIP_AXES: Record<ImageCropperFlipAxis, true> = {
+  horizontal: true,
+  vertical: true,
+}
+
 /** 合法方位的查表用集合，属性值不在表里即视为没写。 */
 const HANDLE_POSITIONS: Record<ImageCropperHandlePosition, true> = {
   nw: true,
@@ -66,7 +91,9 @@ const HANDLE_POSITIONS: Record<ImageCropperHandlePosition, true> = {
  *
  * 每个把手必须用 position 属性写明拉动的方位（`position="se"`），八个合法值是
  * `nw|n|ne|e|se|s|sw|w`；无法解析出合法方位的把手不接行为，控制台留一条诊断。
- * 缩放与旋转同时作用在图片与裁切框上，两者始终贴合。
+ * 缩放、旋转与翻转同时作用在图片与裁切框上，两者始终贴合。翻转按钮用 axis 属性写明翻哪条轴
+ * （`axis="horizontal"` / `axis="vertical"`）。出图调 `toCanvas()`：裁切矩形、旋转、翻转与圆形一并生效，
+ * 像素取自 image 部件。
  *
  * @customElement xh-image-cropper
  * @attr {string} src - 图片地址，原样写到 image 部件上
@@ -86,6 +113,8 @@ const HANDLE_POSITIONS: Record<ImageCropperHandlePosition, true> = {
  * @attr {number} min-rotation - 旋转滑杆下限，默认 -180
  * @attr {number} max-rotation - 旋转滑杆上限，默认 180
  * @attr {number} rotation-step - 旋转滑杆步长，默认 1
+ * @attr {string} flip - 受控翻转，写为空格分隔的轴名（"horizontal"、"vertical" 或两者）；未提供该属性即非受控
+ * @attr {string} default-flip - 非受控初始翻转，写法同 flip；默认两条轴都不翻
  * @attr {'rect'|'round'} shape - 裁切框外形，默认 rect
  * @attr {boolean} disabled - 禁用：裁切框与把手退出 Tab 序列、不可修改、不参与表单提交
  * @attr {boolean} read-only - 只读：仍可聚焦与被读屏朗读，不可修改
@@ -94,6 +123,7 @@ const HANDLE_POSITIONS: Record<ImageCropperHandlePosition, true> = {
  * @fires value-change-end - 一次指针拖动松开时发出一次，一次方向键微调也发出一次；detail 为 `{ value: { x, y, width, height } }`
  * @fires zoom-change - 缩放倍率变化；detail 为 `{ zoom: number }`
  * @fires rotation-change - 旋转角度变化；detail 为 `{ rotation: number }`
+ * @fires flip-change - 翻转变化；detail 为 `{ flip: { horizontal: boolean, vertical: boolean } }`
  * @csspart root - 承载 data-disabled / data-readonly / data-dragging / data-resizing / data-shape 的容器
  * @csspart viewport - 测量坐标的盒子，图片铺满它、裁切框绝对定位在其中
  * @csspart image - 源图，须是原生 `<img>`；自然尺寸与加载完成都由它报告，src / alt 由宿主写入（作者不应自行编写，会被覆盖或清除）
@@ -102,6 +132,7 @@ const HANDLE_POSITIONS: Record<ImageCropperHandlePosition, true> = {
  * @csspart grid - 裁切框中的构图参考线，纯装饰
  * @csspart zoom-slider - 缩放滑杆，须是原生 `<input type="range">`；min / max / step / value 由宿主写入
  * @csspart rotate-slider - 旋转滑杆，须是原生 `<input type="range">`；min / max / step / value 由宿主写入
+ * @csspart flip-trigger - 翻转按钮，须是原生 `<button>` 并自带 axis 属性标识翻哪条轴；aria-pressed 报这条轴翻没翻
  * @csspart hidden-input - 表单影子（须是原生 input）
  */
 export class XhImageCropperElement extends XhElement {
@@ -126,6 +157,8 @@ export class XhImageCropperElement extends XhElement {
     minRotation: { converter: NUMBER_CONVERTER, attribute: 'min-rotation' },
     maxRotation: { converter: NUMBER_CONVERTER, attribute: 'max-rotation' },
     rotationStep: { converter: NUMBER_CONVERTER, attribute: 'rotation-step' },
+    flip: { converter: FLIP_CONVERTER },
+    defaultFlip: { converter: FLIP_CONVERTER, attribute: 'default-flip' },
     shape: { converter: STRING_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
@@ -151,6 +184,8 @@ export class XhImageCropperElement extends XhElement {
   declare minRotation?: number
   declare maxRotation?: number
   declare rotationStep?: number
+  declare flip?: ImageCropperFlip
+  declare defaultFlip?: ImageCropperFlip
   declare shape?: ImageCropperShape
   declare disabled?: boolean
   declare readOnly?: boolean
@@ -171,6 +206,10 @@ export class XhImageCropperElement extends XhElement {
 
   private readonly notifyRotation = (details: ImageCropperRotationChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('rotation-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyFlip = (details: ImageCropperFlipChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('flip-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<ImageCropperSchema>(
@@ -211,6 +250,8 @@ export class XhImageCropperElement extends XhElement {
       minRotation: this.minRotation,
       maxRotation: this.maxRotation,
       rotationStep: this.rotationStep,
+      flip: this.flip,
+      defaultFlip: this.defaultFlip,
       shape: this.shape,
       disabled: control.disabled,
       readOnly: control.readOnly,
@@ -220,6 +261,7 @@ export class XhImageCropperElement extends XhElement {
       onValueChangeEnd: this.notifyValueEnd,
       onZoomChange: this.notifyZoom,
       onRotationChange: this.notifyRotation,
+      onFlipChange: this.notifyFlip,
     }
   }
 
@@ -227,6 +269,46 @@ export class XhImageCropperElement extends XhElement {
   // 视口懒读：角色节点要等首次 updated 才发现得到，机器建起来的那一刻 partMap 还空着。
   private injectRefs(svc: Service<ImageCropperSchema>): void {
     svc.refs.set('getViewportEl', () => this.getPart('viewport'))
+    svc.refs.set('getImageEl', () => {
+      const image = this.getPart('image')
+      return image instanceof HTMLImageElement ? image : null
+    })
+  }
+
+  /** 状态机在进入文档（hostConnected）后才建立；还没建立时命令式接口什么都不做、读数给安全空值。 */
+  private api(): ReturnType<typeof connectImageCropper> | null {
+    return this.ctrl.service ? connectImageCropper(this.ctrl.service, wcNormalize) : null
+  }
+
+  /**
+   * 此刻的翻转。flip 是作者递进来的受控值，非受控时读这里；还没进文档时两条轴都不翻。
+   */
+  get currentFlip(): ImageCropperFlip {
+    return this.api()?.flip ?? IMAGE_CROPPER_NO_FLIP
+  }
+
+  /** 整份设置翻转；受控时只发 flip-change。 */
+  setFlip(next: ImageCropperFlip): void {
+    this.api()?.setFlip(next)
+  }
+
+  /** 翻转一条轴，另一条轴不动；与点翻转按钮同一路径。 */
+  toggleFlip(axis: ImageCropperFlipAxis): void {
+    this.api()?.toggleFlip(axis)
+  }
+
+  /**
+   * 把当前裁切结果画到一张新画布上：裁切矩形、旋转、翻转与圆形外形一并生效，像素取自 image 部件。
+   * 图片未加载、没有裁切框或还没进文档时返回 null。
+   */
+  toCanvas(options?: CropToCanvasOptions): HTMLCanvasElement | null {
+    return this.api()?.toCanvas(options) ?? null
+  }
+
+  /** 翻转按钮声明的轴。作者在节点上写 axis="horizontal"，与 Vue 侧的 `:axis` 是同一份声明。 */
+  private flipAxis(el: HTMLElement): ImageCropperFlipAxis | null {
+    const raw = el.getAttribute('axis')
+    return raw != null && Object.hasOwn(FLIP_AXES, raw) ? raw as ImageCropperFlipAxis : null
   }
 
   /**
@@ -272,6 +354,23 @@ export class XhImageCropperElement extends XhElement {
         continue
       }
       this.spreader.spread(el, api.getCropHandleProps({ position }) as Record<string, unknown>)
+    }
+
+    // 翻转按钮同样是多实例 part，身份取节点自报的 axis 属性；报不出合法轴就不接行为
+    for (const el of this.getParts('flip-trigger')) {
+      const axis = this.flipAxis(el)
+      if (axis == null) {
+        reportDiagnostic({
+          code: DIAGNOSTIC_CODES.warn,
+          level: 'warn',
+          message: '翻转按钮没写出合法的 axis（horizontal|vertical），这一颗按钮不接行为',
+          scope: imageCropperAnatomy.name,
+          part: 'flip-trigger',
+          node: el,
+        })
+        continue
+      }
+      this.spreader.spread(el, api.getFlipTriggerProps({ axis }) as Record<string, unknown>)
     }
   }
 }
