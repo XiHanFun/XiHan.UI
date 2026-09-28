@@ -482,7 +482,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `--xh-transfer-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | transfer 的 item 部件 line-height 覆盖槽。 |
 | `--xh-transfer-item-px` | `item` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-item-py` | `item` | `padding-block` | `default` | `--xh-_transfer-item-py` | transfer 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-transfer-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | transfer 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-transfer-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-transfer-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | transfer 的 list 部件 gap 覆盖槽。 |
 | `--xh-transfer-list-h` | `list` | `block-size` | `default` | `--xh-viewport-h-md` | transfer 的 list 部件 block-size 覆盖槽。 |
 | `--xh-transfer-list-px` | `list` | `padding-inline` | `default` | `--xh-space-1` | transfer 的 list 部件 padding-inline 覆盖槽。 |

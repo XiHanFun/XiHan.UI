@@ -354,7 +354,7 @@
     --xh-collection-inline-padding: var(--xh-transfer-item-px, var(--xh-_transfer-px));
     --xh-collection-gap: 0;
     --xh-collection-font-size: var(--xh-transfer-item-font-size, var(--xh-_transfer-font-size));
-    --xh-collection-radius: var(--xh-transfer-item-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-transfer-item-radius, var(--xh-shape-inset));
     /* 作者的图标尺槽经桥接槽下发到条目，家族缺省按 data-xh-collection-size 取档 */
     --xh-collection-glyph-size: var(--xh-transfer-icon-size, var(--xh-_collection-glyph-size));
     --xh-collection-fg-rest: var(--xh-transfer-item-fg, var(--xh-fg-default));

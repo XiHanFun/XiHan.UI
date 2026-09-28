@@ -362,7 +362,7 @@
      手机档两张月历折行堆叠，线画在块起始边 */
   [data-scope='date-range-picker'][data-part='calendar'] + [data-scope='date-range-picker'][data-part='calendar'] {
     padding-block-start: var(--xh-date-range-picker-panel-gap, var(--xh-space-3));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-date-range-picker-panel-divider, var(--xh-material-frosted-separator));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-date-range-picker-panel-divider, var(--xh-material-solid-separator));
   }
 
   /* 平板起两张月历并排放得下，线改画在行内起始边 */
@@ -371,7 +371,7 @@
       padding-block-start: 0;
       padding-inline-start: var(--xh-date-range-picker-panel-gap, var(--xh-space-3));
       border-block-start: none;
-      border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-range-picker-panel-divider, var(--xh-material-frosted-separator));
+      border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-range-picker-panel-divider, var(--xh-material-solid-separator));
     }
   }
 
@@ -422,7 +422,7 @@
     overflow-y: hidden;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-date-range-picker-column-divider, var(--xh-material-frosted-separator));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-date-range-picker-column-divider, var(--xh-material-solid-separator));
   }
 
   /* 平板起：换成贴在日历行内起始一侧的竖列，滚动轴与分隔线一起转过来 */
@@ -432,7 +432,7 @@
       flex-direction: column;
       overflow: auto;
       border-block-end: none;
-      border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-range-picker-column-divider, var(--xh-material-frosted-separator));
+      border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-range-picker-column-divider, var(--xh-material-solid-separator));
     }
   }
 
@@ -447,7 +447,7 @@
     --xh-collection-block-padding: var(--xh-date-range-picker-preset-py, var(--xh-space-1));
     --xh-collection-inline-padding: var(--xh-date-range-picker-preset-px, var(--xh-space-3));
     --xh-collection-font-size: var(--xh-text-secondary-size);
-    --xh-collection-radius: var(--xh-date-range-picker-preset-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-date-range-picker-preset-radius, var(--xh-shape-inset));
     /* 面板是实体面（floating），正文取页面前景 */
     --xh-collection-fg-rest: var(--xh-fg-default);
     --xh-collection-fg-hover: var(--xh-fg-default);
@@ -595,7 +595,7 @@
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-range-picker-column-divider, var(--xh-material-frosted-separator));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-range-picker-column-divider, var(--xh-material-solid-separator));
   }
 
   [data-scope='date-range-picker'][data-part='time-column'][hidden] {
@@ -613,7 +613,7 @@
     --xh-collection-block-padding: var(--xh-date-range-picker-time-item-py, var(--xh-_date-range-picker-item-py));
     --xh-collection-inline-padding: var(--xh-_date-range-picker-time-item-rail);
     --xh-collection-font-size: var(--xh-date-range-picker-time-item-font-size, var(--xh-_date-range-picker-font-size));
-    --xh-collection-radius: var(--xh-date-range-picker-time-item-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-date-range-picker-time-item-radius, var(--xh-shape-inset));
     --xh-collection-fg-rest: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-keyboard-highlight: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));

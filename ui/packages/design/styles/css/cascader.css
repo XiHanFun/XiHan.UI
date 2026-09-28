@@ -446,7 +446,7 @@
     --xh-collection-inline-padding: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
     --xh-collection-gap: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
     --xh-collection-font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
-    --xh-collection-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-cascader-item-radius, var(--xh-shape-inset));
     --xh-collection-glyph-size: var(--xh-cascader-icon-size, var(--xh-_collection-glyph-size));
     --xh-collection-fg-rest: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
@@ -703,7 +703,7 @@
     --xh-collection-inline-padding: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
     --xh-collection-gap: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
     --xh-collection-font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
-    --xh-collection-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-cascader-item-radius, var(--xh-shape-inset));
     --xh-collection-fg-rest: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-keyboard-highlight: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));

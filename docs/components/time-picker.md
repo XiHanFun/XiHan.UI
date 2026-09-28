@@ -461,7 +461,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `--xh-time-picker-action-font-size` | `clear-trigger`<br>`trigger` | `font-size` | `default` | `--xh-text-secondary-size` | time-picker 的 clear-trigger、trigger 部件 font-size 覆盖槽。 |
 | `--xh-time-picker-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-inset` | time-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-time-picker-action-size` | `clear-trigger`<br>`trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | time-picker 的 clear-trigger、trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
-| `--xh-time-picker-column-divider` | `column`<br>`preset-group` | `border-inline-end`<br>`border-inline-start` | `default` | `--xh-material-frosted-separator` | time-picker 的 column、preset-group 部件 border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-time-picker-column-divider` | `column`<br>`preset-group` | `border-inline-end`<br>`border-inline-start` | `default` | `--xh-material-solid-separator` | time-picker 的 column、preset-group 部件 border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-time-picker-column-gap` | `column` | `gap` | `default` | `0` | time-picker 的 column 部件 gap 覆盖槽。 |
 | `--xh-time-picker-column-h` | `column` | `block-size` | `default` | `--xh-viewport-h-sm` | time-picker 的 column 部件 block-size 覆盖槽。 |
 | `--xh-time-picker-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | time-picker 的 column 部件 min-inline-size 覆盖槽。 |
@@ -504,7 +504,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `--xh-time-picker-item-h` | `item` | `block-size` | `default` | `auto` | time-picker 的 item 部件 block-size 覆盖槽。 |
 | `--xh-time-picker-item-px` | `item` | `padding-inline` | `default` | `--xh-space-0_5` | time-picker 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-item-py` | `item` | `padding-block` | `default` | `--xh-_time-picker-item-py` | time-picker 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-time-picker-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | time-picker 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-time-picker-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | time-picker 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-time-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | time-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-time-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | time-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-time-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | time-picker 的 label 部件 font-size 覆盖槽。 |
@@ -524,7 +524,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `--xh-time-picker-preset-group-px` | `preset-group` | `padding-inline` | `default` | `--xh-space-1` | time-picker 的 preset-group 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-preset-px` | `preset` | `inset-inline-end`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-space-3` | time-picker 的 preset 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。 |
 | `--xh-time-picker-preset-py` | `preset` | `padding-block` | `default` | `--xh-space-1` | time-picker 的 preset 部件 padding-block 覆盖槽。 |
-| `--xh-time-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-control` | time-picker 的 preset 部件 border-radius 覆盖槽。 |
+| `--xh-time-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-inset` | time-picker 的 preset 部件 border-radius 覆盖槽。 |
 | `--xh-time-picker-segment-bg-focus` | `segment` | `background` | `disabled`<br>`focus`<br>`focus-visible`<br>`not([data-disabled])` | `--xh-_time-picker-segment-bg` | time-picker 的 segment 部件 background 覆盖槽。 |
 | `--xh-time-picker-segment-bg-hover` | `segment` | `background` | `disabled`<br>`focus`<br>`hover`<br>`not([data-focus], [data-disabled])` | `--xh-bg-subtle` | time-picker 的 segment 部件 background 覆盖槽。 |
 | `--xh-time-picker-segment-bg-invalid-focus` | `segment` | `background` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-bg-subtle` | time-picker 的 segment 部件 background 覆盖槽。 |

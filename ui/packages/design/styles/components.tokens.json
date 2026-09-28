@@ -10108,7 +10108,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "cascader 的 item、search-item 部件 border-radius 覆盖槽。"
@@ -18884,7 +18884,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "combobox 的 item 部件 border-radius 覆盖槽。"
@@ -19854,7 +19854,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "command 的 item 部件 border-radius 覆盖槽。"
@@ -20756,7 +20756,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "context-menu 的 item 部件 border-radius 覆盖槽。"
@@ -21979,7 +21979,7 @@
         "has(+ [data-part='time-column'])"
       ],
       "defaultToken": [
-        "--xh-material-frosted-separator"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "date-picker 的 calendar、preset-group、time-column 部件 background、border-block-end、border-inline-end、border-inline-start 覆盖槽。"
@@ -22811,7 +22811,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-separator"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "date-picker 的 calendar 部件 border-block-start、border-inline-start 覆盖槽。"
@@ -23079,7 +23079,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "date-picker 的 preset 部件 border-radius 覆盖槽。"
@@ -23490,7 +23490,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-item 部件 border-radius 覆盖槽。"
@@ -23706,7 +23706,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-separator"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 preset-group、time-column 部件 border-block-end、border-inline-end、border-inline-start 覆盖槽。"
@@ -24647,7 +24647,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-separator"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 calendar 部件 border-block-start、border-inline-start 覆盖槽。"
@@ -24915,7 +24915,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 preset 部件 border-radius 覆盖槽。"
@@ -25345,7 +25345,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 time-item 部件 border-radius 覆盖槽。"
@@ -42388,7 +42388,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "listbox 的 item 部件 border-radius 覆盖槽。"
@@ -44724,7 +44724,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "mention 的 item 部件 border-radius 覆盖槽。"
@@ -45552,7 +45552,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "menu 的 item 部件 border-radius 覆盖槽。"
@@ -46424,7 +46424,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "menubar 的 item 部件 border-radius 覆盖槽。"
@@ -60869,7 +60869,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "select 的 item 部件 border-radius 覆盖槽。"
@@ -72992,7 +72992,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-separator"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "time-picker 的 column、preset-group 部件 border-inline-end、border-inline-start 覆盖槽。"
@@ -73858,7 +73858,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "time-picker 的 item 部件 border-radius 覆盖槽。"
@@ -74260,7 +74260,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "time-picker 的 preset 部件 border-radius 覆盖槽。"
@@ -74612,7 +74612,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-separator"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 column、preset-group 部件 border-inline-end、border-inline-start 覆盖槽。"
@@ -74648,7 +74648,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-separator"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 column-group 部件 border-inline-start 覆盖槽。"
@@ -75595,7 +75595,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 item 部件 border-radius 覆盖槽。"
@@ -75997,7 +75997,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset 部件 border-radius 覆盖槽。"
@@ -81531,7 +81531,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "transfer 的 item 部件 border-radius 覆盖槽。"
@@ -83487,7 +83487,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "tree 的 branch-control、item 部件 border-radius 覆盖槽。"
@@ -85143,7 +85143,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "tree-select 的 branch-control、item 部件 border-radius 覆盖槽。"

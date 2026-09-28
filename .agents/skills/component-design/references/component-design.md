@@ -296,7 +296,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 角色 | 圆角 | 给谁 |
 | --- | ---: | --- |
-| inset | 4px | 嵌在 control 内的小块：checkbox 系方框、菜单项、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
+| inset | 4px | 嵌在 control 内的小块：checkbox 系方框、菜单项与候选行（Menu 族、Select / Combobox / Cascader / TreeSelect / Listbox / Command / Transfer / Mention / Tree 的行，日期与时间面板的预设项与时间格）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
 | control | 4px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger |
 | surface | 8px | Card、Alert、Panel、列表容器、Segmented 与 Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
 | overlay | 12px | Popover、Menu、Dialog、Drawer、Notification |

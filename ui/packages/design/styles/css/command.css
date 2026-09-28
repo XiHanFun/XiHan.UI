@@ -261,7 +261,7 @@
     --xh-collection-inline-padding: var(--xh-command-item-px, var(--xh-_command-px));
     --xh-collection-gap: 0;
     --xh-collection-font-size: var(--xh-command-item-font-size, var(--xh-_command-font-size));
-    --xh-collection-radius: var(--xh-command-item-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-command-item-radius, var(--xh-shape-inset));
     --xh-collection-fg-rest: var(--xh-command-item-fg, var(--xh-fg-default));
     --xh-collection-fg-hover: var(--xh-command-item-fg, var(--xh-fg-default));
     --xh-collection-fg-keyboard-highlight: var(--xh-command-item-fg, var(--xh-fg-default));
