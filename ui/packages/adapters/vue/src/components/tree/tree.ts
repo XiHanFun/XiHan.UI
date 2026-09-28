@@ -64,6 +64,8 @@ export const XhTreeRoot = defineComponent({
     virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 */
     variant: { type: String as PropType<TreeProps['variant']> },
+    /** 尺寸：sm / md / lg，默认 md。行高、行内内衬、字号、指示符盒与层级缩进随档。 */
+    size: { type: String as PropType<TreeProps['size']> },
     expandedValue: { type: Array as PropType<string[]> },
     defaultExpandedValue: { type: Array as PropType<string[]> },
     selection: { type: Array as PropType<string[]> },

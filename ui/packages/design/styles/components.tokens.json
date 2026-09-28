@@ -82079,7 +82079,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-indicator-size"
+        "--xh-_tree-indicator"
       ],
       "visibility": "public",
       "description": "tree 的 node-drag-trigger 部件 block-size、inline-size 覆盖槽。"
@@ -82294,11 +82294,15 @@
         "--xh-icon-size"
       ],
       "state": [
-        "default"
+        "default",
+        "size=lg",
+        "size=sm"
       ],
       "defaultToken": [
         "--xh-_collection-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "tree 的 branch-control、item、root 部件 --xh-icon-size 覆盖槽。"
@@ -82316,7 +82320,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-_tree-indent"
       ],
       "visibility": "public",
       "description": "tree 的 branch-content 部件 padding-inline-start 覆盖槽。"
@@ -82345,7 +82349,7 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-control-indicator-size"
+        "--xh-_tree-indicator"
       ],
       "visibility": "public",
       "description": "tree 的 branch-content、branch-control、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。"
@@ -82773,7 +82777,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-_tree-font-size"
       ],
       "visibility": "public",
       "description": "tree 的 branch-control、item 部件 font-size 覆盖槽。"
@@ -82794,7 +82798,7 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-control-gap-md"
+        "--xh-_tree-row-gap"
       ],
       "visibility": "public",
       "description": "tree 的 branch-control、item 部件 gap、padding-inline-start 覆盖槽。"
@@ -82838,7 +82842,7 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_tree-row-px"
       ],
       "visibility": "public",
       "description": "tree 的 branch-content、branch-control、item、tree 部件 inset-inline-start、padding-inline、padding-inline-start 覆盖槽。"
@@ -82857,7 +82861,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-list-option-py-md"
+        "--xh-_tree-row-py"
       ],
       "visibility": "public",
       "description": "tree 的 branch-control、item 部件 padding-block 覆盖槽。"

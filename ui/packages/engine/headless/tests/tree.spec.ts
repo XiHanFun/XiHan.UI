@@ -461,6 +461,19 @@ describe('connectTree 属性输出', () => {
     expect(h.treeEl.hasAttribute('data-variant')).toBe(false)
     expect(mount({ variant: 'ghost' }).root.getAttribute('data-variant')).toBe('ghost')
   })
+
+  it('尺寸恒有值：不写 size 时根落 md，行按同一档投影家族尺寸；sm / lg 如实落到根与每一行', () => {
+    const plain = mount({ defaultExpandedValue: ['src'] })
+    expect(plain.root.getAttribute('data-size')).toBe('md')
+    expect(plain.item('index').item.dataset.xhCollectionSize).toBe('md')
+    for (const size of ['sm', 'lg'] as const) {
+      const h = mount({ size, defaultExpandedValue: ['src'] })
+      expect(h.root.getAttribute('data-size')).toBe(size)
+      expect(h.treeEl.hasAttribute('data-size')).toBe(false)
+      expect(h.item('index').item.dataset.xhCollectionSize).toBe(size)
+      expect(h.branch('src').control.dataset.xhCollectionSize).toBe(size)
+    }
+  })
 })
 
 /**

@@ -71,6 +71,8 @@ export function connectTree<T extends PropTypes>(
   const counted = prop('collection') != null
   // 形态恒有值：缺省 outline，读一眼 DOM 就知道这棵树有没有外框
   const variant = prop('variant') ?? 'outline'
+  // 尺寸恒有值：行、指示符盒与缩进都按这一档取尺，缺省 md
+  const size = prop('size') ?? 'md'
   const dir = prop('dir') ?? 'ltr'
   // 横排只开给末端那一层；其余一律竖排，层级得靠竖排读出来
   const leafOrientation = prop('leafOrientation') ?? 'vertical'
@@ -375,6 +377,7 @@ export function connectTree<T extends PropTypes>(
       ...parts.root.attrs,
       'data-orientation': 'vertical',
       'data-variant': variant,
+      'data-size': size,
       'data-disabled': dataAttr(treeDisabled),
       'data-loading': dataAttr(loading),
     }),
@@ -637,9 +640,9 @@ export function connectTree<T extends PropTypes>(
         ...nodeAttrs(node.value),
         ...itemState(node.value),
         // 行走 Collection Item 的 overlay 语境，与树选择同一种选中读法：悬停 / 高亮 / 按下只换面，
-        // 选中是透明底 + 行尾对号，由家族按 aria-selected / aria-disabled 给出。树没有 size 轴，行固定走 md 尺
+        // 选中是透明底 + 行尾对号，由家族按 aria-selected / aria-disabled 给出；行高、内衬与字号随尺寸档
         'data-xh-collection-item': '',
-        'data-xh-collection-size': 'md',
+        'data-xh-collection-size': size,
         'data-xh-collection-context': 'overlay',
         // 该节点自身的性质；家族据此换字与悬停 / 按下的面，选中与禁用压过它
         'data-tone': nodeTone(node.value),
@@ -722,7 +725,7 @@ export function connectTree<T extends PropTypes>(
         ...parts['branch-control'].attrs,
         ...branchState(node.value),
         'data-xh-collection-item': '',
-        'data-xh-collection-size': 'md',
+        'data-xh-collection-size': size,
         'data-xh-collection-context': 'overlay',
         // 该节点自身的性质；家族据此换字与悬停 / 按下的面，选中与禁用压过它
         'data-tone': nodeTone(node.value),

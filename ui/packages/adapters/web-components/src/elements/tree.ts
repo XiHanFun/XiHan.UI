@@ -48,6 +48,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  *
  * @customElement xh-tree
  * @attr {'outline'|'subtle'|'ghost'} variant - 外框形态：outline 带描边与底色，subtle 淡底无描边，ghost 只保留行；默认 outline
+ * @attr {'sm'|'md'|'lg'} size - 尺寸，默认 md：行高、行内内衬、字号、指示符盒与层级缩进随档
  * @attr {boolean} multiple - 复选，默认关闭
  * @attr {'horizontal'|'vertical'} leaf-orientation - 末端层的排布方式，默认 vertical；horizontal 使子节点全是叶子的层并排铺开
  * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
@@ -63,7 +64,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires node-move - 节点已移动；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正）
- * @csspart root - 组件根容器，承载 data-variant
+ * @csspart root - 组件根容器，承载 data-variant 与 data-size
  * @csspart label - 树标题（aria-labelledby 目标）
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 中、与 tree 部件平级（root 自身不带角色，无法进入 role=tree 的子节点集合）
  * @csspart tree - role=tree 容器，键盘在此收口，也是 roving tabindex 的兜底位
@@ -95,6 +96,7 @@ export class XhTreeElement extends XhElement {
     collection: { attribute: false },
     virtualizer: { attribute: false },
     variant: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     expandedValue: { attribute: false },
     defaultExpandedValue: { attribute: false },
     selection: { attribute: false },
@@ -122,6 +124,7 @@ export class XhTreeElement extends XhElement {
   declare collection?: TreeNode[]
   declare virtualizer?: CollectionVirtualizer
   declare variant?: TreeSchema['props']['variant']
+  declare size?: TreeSchema['props']['size']
   declare expandedValue?: string[]
   declare defaultExpandedValue?: string[]
   declare selection?: string[]
@@ -167,6 +170,7 @@ export class XhTreeElement extends XhElement {
       collection: this.collection,
       virtualizer: this.virtualizer,
       variant: this.variant,
+      size: this.size,
       expandedValue: this.expandedValue,
       // 机器自己兜 undefined，这里不补 []：props 每次读都新建数组会造成无谓的引用变动
       defaultExpandedValue: this.defaultExpandedValue,

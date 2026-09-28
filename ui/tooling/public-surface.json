@@ -13211,6 +13211,7 @@
       "onNodeMove",
       "onSelectionChange",
       "selection",
+      "size",
       "translations",
       "typeahead",
       "variant",
@@ -21154,6 +21155,7 @@
         "loop",
         "multiple",
         "node-draggable",
+        "size",
         "typeahead",
         "variant"
       ],

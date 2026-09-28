@@ -370,7 +370,8 @@
     "size"
   ],
   "tree": [
-    "variant"
+    "variant",
+    "size"
   ],
   "tree-select": [
     "size"
