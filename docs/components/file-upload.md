@@ -191,6 +191,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `remote-files-change` | `FileUploadRemoteFilesChangeDetails` | 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }` |
 | `upload-complete` | `FileUploadCompleteDetails` | 单个文件传输完成；detail 为 `{ file, url? }` |
 | `upload-error` | `FileUploadErrorDetails` | 单个文件传输失败；detail 为 `{ file, error }` |
+| `upload-cancel` | `FileUploadCancelDetails` | 单个文件的传输被 cancelUpload 取消（文件留在列表里）；detail 为 `{ file }` |
 | `file-accept` | `FileUploadFileAcceptDetails` | 本次接受了哪些文件；detail 为 `{ files: File[] }` |
 | `file-reject` | `FileUploadFileRejectDetails` | 本次拒绝了哪些文件及各自的原因；detail 为 `{ files: { file, reasons }[] }` |
 
