@@ -452,7 +452,7 @@ package.json 的 version 与其余不同，门禁直接失败。`check-wiring` �
 check 脚本未接入 `pnpm gate` 等同于未编写，死引用同样被拦截。
 
 三条视觉轴已收敛为联合类型，`tone` / `size` / `variant` 不再是裸 `string`，
-写错取值在编译期报错。Vue 事件载荷已有类型，108 个组件的 `emits` 全是对象式，
+写错取值在编译期报错。Vue 事件载荷已有类型，109 个组件的 `emits` 全是对象式，
 产物 `.d.ts` 中不再出现 `(...args: any[]) => any`。
 
 ### 尚无门禁的条款

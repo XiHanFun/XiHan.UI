@@ -6,7 +6,7 @@
 // 提供 scroll area 相关实现。
 
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaVariant, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaScrollDetails, ScrollAreaScrollToOptions, ScrollAreaVariant, ScrollbarType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -18,8 +18,8 @@ import {
 } from './context'
 import { useScrollArea } from './use-scroll-area'
 
-/** 默认插槽的载荷：两条轴的滚动条状态、正被拖动的轴，以及右下角补丁是否应当显示。 */
-export type ScrollAreaRootSlotProps = Pick<ScrollAreaApi, 'vertical' | 'horizontal' | 'draggingAxis' | 'cornerVisible'>
+/** 默认插槽的载荷：两条轴的滚动条状态、正被拖动的轴、右下角补丁是否应当显示，以及滚动视口的命令。 */
+export type ScrollAreaRootSlotProps = Pick<ScrollAreaApi, 'vertical' | 'horizontal' | 'draggingAxis' | 'cornerVisible' | 'scrollTo'>
 
 export const XhScrollAreaRoot = defineComponent({
   name: 'XhScrollAreaRoot',
@@ -34,18 +34,32 @@ export const XhScrollAreaRoot = defineComponent({
     /** 触屏（粗指针）上也绘制自绘滚动条；默认交给原生滚动。 */
     forceVisible: Boolean,
   },
+  emits: {
+    /** 某条轴的滚动量变了，按轴分别通知。 */
+    'scroll-change': (_details: ScrollAreaScrollDetails) => true,
+    /** 某条轴滚到了末端，只在跨过末端那一下通知。 */
+    'reach-end': (_details: ScrollAreaScrollDetails) => true,
+  },
   slots: Object as SlotsType<{
     default?: (props: ScrollAreaRootSlotProps) => VNode[]
   }>,
-  // 组件不对外报事件，滚动是原生的，宿主直接在视口上监听
-  setup(props, { slots }) {
-    const ctx = useScrollArea(withXhConfig('scroll-area', props) as ScrollAreaProps)
+  // 滚动本身是原生的；滚动量变化与到头由两台 scrollbar 机器按轴报出来
+  setup(props, { slots, emit, expose }) {
+    const source = withXhConfig('scroll-area', props) as ScrollAreaProps
+    const ctx = useScrollArea(() => ({
+      ...source,
+      onScrollChange: details => emit('scroll-change', details),
+      onReachEnd: details => emit('reach-end', details),
+    }))
     provideScrollArea(ctx)
+    const scrollTo = (options: ScrollAreaScrollToOptions): void => ctx.api.value.scrollTo(options)
+    expose({ scrollTo })
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       vertical: ctx.api.value.vertical,
       horizontal: ctx.api.value.horizontal,
       draggingAxis: ctx.api.value.draggingAxis,
       cornerVisible: ctx.api.value.cornerVisible,
+      scrollTo,
     }))
   },
 })

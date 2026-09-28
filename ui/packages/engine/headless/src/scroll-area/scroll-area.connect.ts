@@ -8,7 +8,7 @@
 import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/core'
 import type { ScrollbarApi, ScrollbarSchema } from '../scrollbar/scrollbar.types'
 import type { ScrollAreaApi, ScrollAreaAxisState, ScrollAreaProps, ScrollAreaServices } from './scroll-area.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr, resolveScrollBehavior } from '@xihan-ui/core'
 import { connectScrollbar } from '../scrollbar/scrollbar.connect'
 import { SCROLLBAR_DEFAULT_TYPE } from '../scrollbar/scrollbar.machine'
 import { scrollAreaAnatomy } from './scroll-area.anatomy'
@@ -30,6 +30,8 @@ function axisEnabled(props: Pick<ScrollAreaProps, 'orientation'>, axis: Orientat
  * 交叉口的让位（gutter）不在这里给：它取决于另一条轴此刻显不显形，由 connect 按帧算。
  */
 export function scrollAreaScrollbarProps(props: ScrollAreaProps, axis: Orientation): ScrollbarSchema['props'] {
+  const enabled = axisEnabled(props, axis)
+  const { onScrollChange, onReachEnd } = props
   return {
     orientation: axis,
     type: props.type,
@@ -37,7 +39,10 @@ export function scrollAreaScrollbarProps(props: ScrollAreaProps, axis: Orientati
     size: props.size,
     dir: props.dir,
     forceVisible: props.forceVisible,
-    disabled: !axisEnabled(props, axis),
+    disabled: !enabled,
+    // 两台机器各报各的轴，通知里带上轴向；没管的那条轴视口那一向不滚，也就不接通知
+    onScrollChange: enabled && onScrollChange ? details => onScrollChange({ orientation: axis, ...details }) : undefined,
+    onReachEnd: enabled && onReachEnd ? details => onReachEnd({ orientation: axis, ...details }) : undefined,
   }
 }
 
@@ -104,6 +109,22 @@ export function connectScrollArea<T extends PropTypes>(
     horizontal,
     draggingAxis,
     cornerVisible,
+
+    // 滚动交给视口的原生 scrollTo：越界夹取与 RTL 坐标都由浏览器照原生语义处理
+    scrollTo: (options) => {
+      const viewport = services.vertical.refs.get('getScrollableEl')()
+      if (!viewport)
+        return
+      const target: ScrollToOptions = {}
+      if (options.top != null && axisEnabled(props, 'vertical'))
+        target.top = options.top
+      if (options.left != null && axisEnabled(props, 'horizontal'))
+        target.left = options.left
+      if (target.top == null && target.left == null)
+        return
+      target.behavior = resolveScrollBehavior(options.behavior ?? 'auto', services.vertical.scope, viewport)
+      viewport.scrollTo(target)
+    },
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,

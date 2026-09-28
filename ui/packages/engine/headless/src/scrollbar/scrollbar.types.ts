@@ -129,6 +129,10 @@ export interface ScrollbarSchema extends MachineSchema {
     onDragStart?: (details: ScrollbarScrollDetails) => void
     /** 松开滑块。 */
     onDragEnd?: (details: ScrollbarScrollDetails) => void
+    /** 本轴的滚动量变了（滚轮、键盘、拖动与命令式滚动都算），每次滚动事件至多一次。 */
+    onScrollChange?: (details: ScrollbarScrollDetails) => void
+    /** 本轴滚到了末端：只在从"没到头"变成"到头"那一下通知，停在末端不重复；内容不溢出时不通知。 */
+    onReachEnd?: (details: ScrollbarScrollDetails) => void
   }
   context: {
     /** 本轴测得的尺寸；connect 只读取它，不涉及 DOM。 */
@@ -147,6 +151,8 @@ export interface ScrollbarSchema extends MachineSchema {
     scrollableId: string | null
     /** 作者已提供根节点。滚动区据此判断某条轴的滚动条是否在场。 */
     rootMounted: boolean
+    /** 上一次通知出去的滚动量：滚动变化与到头都相对它判定，不重复通知同一个位置。 */
+    reportedScroll: number
   }
   computed: Record<string, never>
   refs: ScrollbarRefs
@@ -191,6 +197,7 @@ export interface ScrollbarSchema extends MachineSchema {
     | 'scrollToTrackPoint'
     | 'stepScroll'
     | 'scrollToOffset'
+    | 'reportScroll'
   effect: 'trackScrollable' | 'trackPointerType' | 'waitForHideDelay' | 'trackPointer'
 }
 

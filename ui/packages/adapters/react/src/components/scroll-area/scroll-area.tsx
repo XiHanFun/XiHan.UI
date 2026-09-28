@@ -6,7 +6,7 @@
 // 提供 scroll area 相关实现。
 
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaVariant, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollDetails, ScrollAreaVariant, ScrollbarType } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
@@ -15,8 +15,8 @@ import { renderSlot } from '../../runtime/slot-content'
 import { ScrollAreaProvider, ScrollAreaScrollbarProvider, useScrollAreaContext, useScrollAreaScrollbarContext } from './context'
 import { useScrollArea } from './use-scroll-area'
 
-/** 函数式 children 的载荷：两条轴的滚动条状态、正被拖动的轴，以及右下角补丁是否应当显示。 */
-export type ScrollAreaRootSlotProps = Pick<ScrollAreaApi, 'vertical' | 'horizontal' | 'draggingAxis' | 'cornerVisible'>
+/** 函数式 children 的载荷：两条轴的滚动条状态、正被拖动的轴、右下角补丁是否应当显示，以及滚动视口的命令。 */
+export type ScrollAreaRootSlotProps = Pick<ScrollAreaApi, 'vertical' | 'horizontal' | 'draggingAxis' | 'cornerVisible' | 'scrollTo'>
 
 export interface XhScrollAreaRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'> {
   type?: ScrollbarType
@@ -28,10 +28,14 @@ export interface XhScrollAreaRootProps extends Omit<ComponentPropsWithRef<'div'>
   dir?: Direction
   /** 触屏（粗指针）上也绘制自绘滚动条；默认交给原生滚动。 */
   forceVisible?: boolean
+  /** 某条轴的滚动量变了，按轴分别通知。 */
+  onScrollChange?: (details: ScrollAreaScrollDetails) => void
+  /** 某条轴滚到了末端，只在跨过末端那一下通知。 */
+  onReachEnd?: (details: ScrollAreaScrollDetails) => void
   children?: SlotChildren<ScrollAreaRootSlotProps>
 }
 
-// 组件不对外报事件，滚动是原生的，宿主直接在视口上监听
+// 滚动本身是原生的；滚动量变化与到头由两台 scrollbar 机器按轴报出来
 export function XhScrollAreaRoot({
   type,
   hideDelay,
@@ -40,6 +44,8 @@ export function XhScrollAreaRoot({
   size,
   dir,
   forceVisible,
+  onScrollChange,
+  onReachEnd,
   children,
   ...rest
 }: XhScrollAreaRootProps): ReactNode {
@@ -51,6 +57,8 @@ export function XhScrollAreaRoot({
     size,
     dir,
     forceVisible,
+    onScrollChange,
+    onReachEnd,
   }) as ScrollAreaProps)
   const api = ctx.api
 
@@ -62,6 +70,7 @@ export function XhScrollAreaRoot({
           horizontal: api.horizontal,
           draggingAxis: api.draggingAxis,
           cornerVisible: api.cornerVisible,
+          scrollTo: api.scrollTo,
         })}
       </div>
     </ScrollAreaProvider>
