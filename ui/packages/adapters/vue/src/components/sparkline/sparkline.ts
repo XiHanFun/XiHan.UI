@@ -10,6 +10,7 @@ import type {
   NumberFormatSpec,
   SparklineCurve,
   SparklineMarkers,
+  SparklineReference,
   SparklineSchema,
   SparklineTranslations,
   SparklineVariant,
@@ -36,6 +37,8 @@ export const XhSparkline = defineComponent({
     curve: { type: String as PropType<SparklineCurve> },
     markers: { type: String as PropType<SparklineMarkers> },
     band: { type: Array as unknown as PropType<readonly [number, number]> },
+    /** 参考线：固定值，或 mean / median 按数据算出。 */
+    reference: { type: [Number, String] as PropType<SparklineReference> },
     tone: { type: String as PropType<Tone> },
     format: { type: [Object, Function] as PropType<NumberFormatSpec | ((value: number) => string)> },
     animated: { type: Boolean, default: undefined },

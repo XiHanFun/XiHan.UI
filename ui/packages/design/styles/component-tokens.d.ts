@@ -3199,6 +3199,7 @@ export type ComponentTokenName
     | '--xh-sparkline-height'
     | '--xh-sparkline-line-width'
     | '--xh-sparkline-marker-size'
+    | '--xh-sparkline-reference-color'
     | '--xh-sparkline-width'
     | '--xh-spinner-duration'
     | '--xh-spinner-fg'

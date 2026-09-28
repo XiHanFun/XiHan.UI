@@ -37564,6 +37564,14 @@
   stroke: none;
 }
 
+/* 参考线：读数据的尺子，取标注色的细虚线，压在数据底下 */
+[data-scope='sparkline'][data-part='reference-line'] {
+  fill: none;
+  stroke: var(--xh-sparkline-reference-color, var(--xh-chart-label));
+  stroke-width: var(--xh-stroke-thin);
+  stroke-dasharray: calc(var(--xh-stroke-thick) * 2) calc(var(--xh-stroke-thick) * 2);
+}
+
 [data-scope='sparkline'][data-part='line'] {
   fill: none;
   stroke: var(--xh-_sparkline-color);
@@ -37635,6 +37643,10 @@
     fill: none;
     stroke: GrayText;
     stroke-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='sparkline'][data-part='reference-line'] {
+    stroke: CanvasText;
   }
 
   [data-scope='sparkline'][data-part='line'] {

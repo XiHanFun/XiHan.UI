@@ -9,7 +9,7 @@ import type { MachineSchema, PropTypes, Tone } from '@xihan-ui/core'
 import type { Mark, NumberFormatSpec, Scene } from '@xihan-ui/viz'
 import type { ChartFrame, ChartMetrics, ChartOffset, ChartRow, ChartShown, ChartSize, ChartTransitionRun } from '../shared/chart'
 import type { SparklineModel, SparklinePipeline } from './sparkline.model'
-import type { SparklineCurve, SparklineMarkers, SparklineTranslations, SparklineVariant } from './sparkline.types'
+import type { SparklineCurve, SparklineMarkers, SparklineReference, SparklineTranslations, SparklineVariant } from './sparkline.types'
 
 export interface SparklineSchema extends MachineSchema {
   props: {
@@ -27,6 +27,11 @@ export interface SparklineSchema extends MachineSchema {
     markers?: SparklineMarkers
     /** 参考带 [下界, 上界]：正常区间画成一条淡底，纵向范围扩到把它包进来。盈亏形态不画。 */
     band?: readonly [number, number]
+    /**
+     * 参考线：一条横贯的虚线，写一个固定值（目标、阈值），或 mean / median 按数据算出均值 / 中位数。
+     * 纵向范围扩到把它包进来；摘要里一并读出它的值。盈亏形态不画。
+     */
+    reference?: SparklineReference
     /** 语气，缺省 neutral：线与柱取弱化色、标记取品牌色；其余语气整条取语气色。 */
     tone?: Tone
     /** 数值格式：摘要里的数值用它写。 */

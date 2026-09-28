@@ -250,7 +250,7 @@ export type { AxisOptions, SliderApi, SliderMark, SliderMarkMeta, SliderPoint, S
 export { connectSortable, sortableAnatomy, sortableAnnouncement, sortableKeyboard, sortableMachine, sortableMeta } from './sortable'
 export type { SortableAnnounceInput, SortableAnnounceKind, SortableApi, SortableDragEndDetails, SortableDragStartDetails, SortableItemState, SortableMode, SortableRefs, SortableSchema, SortableSortDetails, SortableTranslations } from './sortable'
 export { connectSparkline, defaultSparklineSummary, SPARKLINE_TRANSLATIONS, sparklineAnatomy, sparklineKeyboard, sparklineMachine, sparklineMeta } from './sparkline'
-export type { SparklineApi, SparklineCurve, SparklineMarkerKind, SparklineMarkers, SparklineModel, SparklineSchema, SparklineSummary, SparklineTranslations, SparklineVariant } from './sparkline'
+export type { SparklineApi, SparklineCurve, SparklineMarkerKind, SparklineMarkers, SparklineModel, SparklineReference, SparklineSchema, SparklineSummary, SparklineTranslations, SparklineVariant } from './sparkline'
 export type { ComponentMeta, KeyboardRow, KeyboardTable } from './spec'
 export { connectSpinner, SPINNER_DEFAULT_LABEL, spinnerAnatomy, spinnerKeyboard, spinnerMachine, spinnerMeta } from './spinner'
 export type { SpinnerApi, SpinnerProps, SpinnerSchema, SpinnerState, SpinnerTranslations, SpinnerVariant } from './spinner'

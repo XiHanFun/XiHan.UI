@@ -17,6 +17,7 @@ export type {
   SparklineCurve,
   SparklineMarkerKind,
   SparklineMarkers,
+  SparklineReference,
   SparklineSummary,
   SparklineTranslations,
   SparklineVariant,

@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="radar-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid-ring` · `spoke` · `indicator-label` · `series` · `area-fill` · `line` · `point` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="radar-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid-ring` · `ring-label` · `spoke` · `indicator-label` · `series` · `area-fill` · `line` · `point` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
 
 ## 示例
 

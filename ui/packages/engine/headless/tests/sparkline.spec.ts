@@ -303,3 +303,34 @@ describe('过渡', () => {
     expect(lineOf(rig.api()).points[0]!.y).toBeCloseTo(1)
   })
 })
+
+describe('参考线', () => {
+  it('固定值：一条横贯的线落在那个值上，纵向范围扩到把它包进来', async () => {
+    const rig = await makeRig({ data: [2, 3], reference: 10, markers: 'none' })
+    const line = marks(rig.api(), 'reference-line')[0] as LineMark
+    expect(line.points.map(p => p.x)).toEqual([0, 100])
+    // 10 是最大值：落在上沿留出线宽一半的位置
+    expect(line.points[0]!.y).toBeCloseTo(1)
+    expect(rig.api().scene.layers.back).toContain(line)
+  })
+
+  it('mean / median 按有值的点算：缺失不计', async () => {
+    const mean = await makeRig({ data: [1, null, 3, 8], reference: 'mean', markers: 'none', locale: 'en-US' })
+    expect(mean.api().model.spec.reference).toBe(4)
+    const median = await makeRig({ data: [1, null, 3, 8], reference: 'median', markers: 'none' })
+    expect(median.api().model.spec.reference).toBe(3)
+  })
+
+  it('摘要里读出参考线的值；盈亏形态不画也不读', async () => {
+    const rig = await makeRig({ data: [1, 5, 2], reference: 4, locale: 'en-US' })
+    expect(rig.api().summary).toContain('Reference 4.')
+    const winLoss = await makeRig({ data: [1, -1, 2], variant: 'win-loss', reference: 0, locale: 'en-US' })
+    expect(marks(winLoss.api(), 'reference-line')).toHaveLength(0)
+    expect(winLoss.api().summary).not.toContain('Reference')
+  })
+
+  it('不是有限数也不是 mean / median：报出区间问题', async () => {
+    const rig = await makeRig({ data: [1, 2], reference: Number.NaN })
+    expect(rig.api().model.issues.map(i => i.code)).toContain(DIAGNOSTIC_CODES.chartInvalidRange)
+  })
+})

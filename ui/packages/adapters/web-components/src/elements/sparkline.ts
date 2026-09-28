@@ -12,6 +12,7 @@ import type {
   SparklineApi,
   SparklineCurve,
   SparklineMarkers,
+  SparklineReference,
   SparklineSchema,
   SparklineTranslations,
   SparklineVariant,
@@ -30,6 +31,16 @@ const SUMMARY_KEY = 'summary'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+// 参考线：mean / median 原样，其余按数读；读不成数的也原样交给机器，由它报出规格问题
+const REFERENCE_CONVERTER = {
+  fromAttribute: (v: string | null): SparklineReference | undefined => {
+    if (v == null || v === '')
+      return undefined
+    if (v === 'mean' || v === 'median')
+      return v
+    return Number(v)
+  },
+}
 
 /**
  * `<xh-sparkline>`：迷你图宿主，随文画出一组数的趋势形状。
@@ -46,6 +57,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'line'|'area'|'bar'|'win-loss'} variant - 形态，默认 line
  * @attr {'linear'|'monotone'} curve - 折线与面积的插值，默认 linear
  * @attr {'none'|'last'|'extremes'} markers - 标记点，默认 last
+ * @attr {string} reference - 参考线：一个数（目标、阈值），或 mean / median 按数据算出
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，默认 neutral
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
  * @attr {string} locale - 摘要里数字与文案的语言；未提供时按宿主语言
@@ -63,6 +75,7 @@ export class XhSparklineElement extends XhElement {
   static override properties = {
     data: { attribute: false },
     band: { attribute: false },
+    reference: { converter: REFERENCE_CONVERTER },
     format: { attribute: false },
     translations: { attribute: false },
     x: { converter: STRING_CONVERTER },
@@ -77,6 +90,7 @@ export class XhSparklineElement extends XhElement {
 
   declare data?: SparklineSchema['props']['data']
   declare band?: readonly [number, number]
+  declare reference?: SparklineReference
   declare format?: NumberFormatSpec | ((value: number) => string)
   declare translations?: Partial<SparklineTranslations>
   declare x?: string
@@ -104,6 +118,7 @@ export class XhSparklineElement extends XhElement {
       curve: this.curve,
       markers: this.markers,
       band: this.band,
+      reference: this.reference,
       tone: this.tone,
       format: this.format,
       animated: this.animated,
