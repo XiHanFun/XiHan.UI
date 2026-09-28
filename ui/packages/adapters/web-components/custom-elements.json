@@ -42441,6 +42441,24 @@
             },
             {
               "kind": "field",
+              "name": "minChangeInterval",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min-change-interval"
+            },
+            {
+              "kind": "field",
+              "name": "clampValueOnBlur",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "clamp-value-on-blur"
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "privacy": "public",
               "type": {
@@ -42532,6 +42550,15 @@
                   "text": "Partial<NumberFieldSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "outOfRange",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "值是合法数字但落在 [min, max] 之外；还没进文档时为 false。",
+              "readonly": true
             },
             {
               "kind": "method",
@@ -42654,9 +42681,25 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "连发间隔，默认 50ms",
+              "description": "连发开始时的间隔，默认 50ms；按住越久间隔越短",
               "name": "change-interval",
               "fieldName": "changeInterval"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "按住加速后连发的最短间隔，默认 10ms；与 change-interval 相同即关掉加速",
+              "name": "min-change-interval",
+              "fieldName": "minChangeInterval"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "失焦时把越界的值夹回区间，默认开启；写 \"false\" 关掉",
+              "name": "clamp-value-on-blur",
+              "fieldName": "clampValueOnBlur"
             },
             {
               "type": {

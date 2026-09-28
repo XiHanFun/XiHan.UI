@@ -22,7 +22,7 @@ type NumberFieldProps = NumberFieldSchema['props']
 /** 函数式 children 的载荷：原始输入串与其数值、增减是否仍可进行，以及写值、增减的命令。 */
 export type NumberFieldRootSlotProps = Pick<
   NumberFieldApi,
-  'value' | 'valueAsNumber' | 'empty' | 'canIncrement' | 'canDecrement' | 'setValue' | 'increment' | 'decrement'
+  'value' | 'valueAsNumber' | 'empty' | 'canIncrement' | 'canDecrement' | 'outOfRange' | 'setValue' | 'increment' | 'decrement'
 >
 
 /** 根上自有的取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
@@ -44,6 +44,10 @@ export interface XhNumberFieldRootProps extends RootElementProps {
   name?: string
   changeDelay?: number
   changeInterval?: number
+  /** 按住加速后连发的最短间隔，默认 10ms；与 changeInterval 相同即关掉加速。 */
+  minChangeInterval?: number
+  /** 失焦时把越界的值夹回区间，默认开启。 */
+  clampValueOnBlur?: boolean
   variant?: ControlVariant
   tone?: Tone
   size?: Size
@@ -67,6 +71,8 @@ export function XhNumberFieldRoot({
   name,
   changeDelay,
   changeInterval,
+  minChangeInterval,
+  clampValueOnBlur,
   variant,
   tone,
   size,
@@ -90,6 +96,8 @@ export function XhNumberFieldRoot({
     name,
     changeDelay,
     changeInterval,
+    minChangeInterval,
+    clampValueOnBlur,
     variant,
     tone,
     size,
@@ -113,6 +121,7 @@ export function XhNumberFieldRoot({
           empty: api.empty,
           canIncrement: api.canIncrement,
           canDecrement: api.canDecrement,
+          outOfRange: api.outOfRange,
           setValue: api.setValue,
           increment: api.increment,
           decrement: api.decrement,

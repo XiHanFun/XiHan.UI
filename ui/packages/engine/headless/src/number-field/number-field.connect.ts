@@ -35,6 +35,8 @@ export function connectNumberField<T extends PropTypes>(
   const editable = !disabled && !readOnly
   const canIncrement = editable && (empty || max == null || valueAsNumber < max)
   const canDecrement = editable && (empty || min == null || valueAsNumber > min)
+  // 合法数字落在区间外：失焦夹取关掉后留给表单层提示
+  const outOfRange = !empty && ((min != null && valueAsNumber < min) || (max != null && valueAsNumber > max))
 
   const stepBy = (direction: 1 | -1, large = false): void => {
     send({ type: 'VALUE.STEP', direction, large })
@@ -95,6 +97,7 @@ export function connectNumberField<T extends PropTypes>(
     invalid,
     canIncrement,
     canDecrement,
+    outOfRange,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     increment: () => stepBy(1),
     decrement: () => stepBy(-1),
@@ -106,6 +109,7 @@ export function connectNumberField<T extends PropTypes>(
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
+      'data-out-of-range': dataAttr(outOfRange),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'data-empty': dataAttr(empty),

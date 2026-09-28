@@ -9,8 +9,10 @@ export { numberFieldAnatomy } from './number-field.anatomy'
 export { connectNumberField } from './number-field.connect'
 export { numberFieldKeyboard } from './number-field.keyboard'
 export {
+  NUMBER_FIELD_CHANGE_ACCELERATION,
   NUMBER_FIELD_CHANGE_DELAY,
   NUMBER_FIELD_CHANGE_INTERVAL,
+  NUMBER_FIELD_MIN_CHANGE_INTERVAL,
   NUMBER_FIELD_STEP,
   numberFieldMachine,
 } from './number-field.machine'
