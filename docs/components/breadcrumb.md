@@ -86,7 +86,7 @@
   <XhBreadcrumbLink value="orders" asChild>
     <Link to="/orders">订单</Link>
   </XhBreadcrumbLink>
-</XhBreadcrumbItem>
+</XhBreadcrumbItem>;
 ```
 
 ### 最佳实践
