@@ -9,10 +9,12 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { BadgePlacement, BadgeProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { connectBadge } from '@xihan-ui/headless'
+import { badgeMachine, connectBadge } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useReactScope } from '../../runtime/react-id'
+import { useMachine } from '../../runtime/use-machine'
 import { renderSlot } from '../../runtime/slot-content'
 import { BadgeProvider, useBadgeContext } from './context'
 
@@ -58,7 +60,9 @@ export function XhBadgeRoot({
   ...rest
 }: XhBadgeRootProps): ReactNode {
   const configured = withXhConfig('badge', { tone, size, placement, count, max, showZero, dot, pulse, label } as BadgeProps)
-  const api = connectBadge(configured, reactNormalize)
+  const scope = useReactScope()
+  const service = useMachine(badgeMachine, () => configured, { scope })
+  const api = connectBadge(service, reactNormalize)
   return (
     <BadgeProvider value={{ api }}>
       <span {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>

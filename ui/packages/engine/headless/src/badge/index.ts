@@ -8,5 +8,6 @@
 export { badgeAnatomy } from './badge.anatomy'
 export { connectBadge } from './badge.connect'
 export { badgeKeyboard } from './badge.keyboard'
+export { BADGE_DEFAULT_MAX, badgeMachine, badgeText, badgeVisible } from './badge.machine'
 export { badgeMeta } from './badge.meta'
-export type { BadgeApi, BadgePlacement, BadgeProps, BadgeTranslations } from './badge.types'
+export type { BadgeApi, BadgePlacement, BadgeProps, BadgeSchema, BadgeTranslations } from './badge.types'

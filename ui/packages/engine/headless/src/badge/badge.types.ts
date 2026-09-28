@@ -5,7 +5,7 @@
 
 // 定义 badge 类型契约。
 
-import type { PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 角标挂在宿主的哪个角。取值与 badge.css 的选择器一一对应。 */
 export type BadgePlacement = 'top-end' | 'top-start' | 'bottom-end' | 'bottom-start'
@@ -41,6 +41,33 @@ export interface BadgeProps {
    * 角标挂在按钮、头像上时只朗读数字无法表达含义，需要由宿主提供「3 条未读」这类完整语句。
    */
   label?: string
+}
+
+export interface BadgeSchema extends MachineSchema {
+  props: BadgeProps
+  context: {
+    /**
+     * 角标是否还留着（没有 hidden）。露面时立即为真；收起后等 indicator 的退场动画播完才为假，
+     * 期间 data-state 已经是 hidden。
+     */
+    rendered: boolean
+    /** 上一次同步时是否露面：与 props 算出的显隐对照，判出这一次有没有出现或消失。 */
+    shown: boolean
+    /** 挂载之后显隐换过没有。没换过时 indicator 投影 data-instant：首帧就在的角标直接呈现，不播进场。 */
+    moved: boolean
+    /** 最后一次露面时的计数文本：退场那几帧照它写，不随计数清零一起变空。 */
+    shownText: string
+  }
+  computed: Record<string, never>
+  refs: Record<string, never>
+  state: 'idle'
+  event:
+    /** indicator 留着与否（退场动画播完才报 false）。 */
+    | { type: 'INDICATOR.RENDERED', rendered: boolean }
+  tag: never
+  guard: never
+  action: 'syncShown' | 'setRendered'
+  effect: 'trackIndicatorPresence'
 }
 
 export interface BadgeApi<T extends PropTypes = PropTypes> {

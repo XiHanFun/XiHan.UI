@@ -78,6 +78,7 @@ pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态�
 - 离角多远由两个组件槽微调，不设 prop：`--xh-badge-offset-inline` 与 `--xh-badge-offset-block`，正值朝行内末端、块末端挪（RTL 下行内末端在左），四个角同一个值朝同一个方向；圆形头像这类角上留白多的宿主往里收一点即可。
 - `count` 输出数字，超过 `max`（默认 99）时显示为“99+”。
 - 计数为 0 时整个收起，需要显示 0 时开启 `showZero`。
+- 计数从无到有时原地弹出，清零时缩小淡出、播完才收起，退场途中仍显示清零前的数字；首帧就在的角标直接呈现。
 - `dot` 收成一个圆点，只表示存在，不表示数量。
 - 计数盒三档最小尺寸为 14 / 20 / 24px，字号为 12 / 13 / 14px，角标只探出宿主四分之一，保持与宿主的视觉连接；sm 是贴在图标按钮角上的小号。
 - `label` 为读屏提供完整语句，避免只读出一个数字。
@@ -106,7 +107,7 @@ pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态�
 | --- | --- |
 | 自定义元素 | `<xh-badge>` |
 | Vue 组件 | `XhBadge` `XhBadgeIndicator` `XhBadgeRoot` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `badgeMachine` |
 | 皮肤 | `@xihan-ui/styles/badge.css` |
 
 ### Props
@@ -139,6 +140,20 @@ pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态�
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhBadgeIndicator` | `children` | `SlotChildren<BadgeIndicatorSlotProps>` |  |  |
+
+### 状态
+
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `indicator` | 'visible' \| 'hidden' |
+
+以下名称仅用于内部状态机。
+
+**状态**：`idle`
+
+**事件**：`INDICATOR.RENDERED`
 
 ### connect API
 
@@ -182,9 +197,11 @@ pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态�
 | --- | --- | --- |
 | `root` | `data-placement` | props.placement |
 | `indicator` | `data-dot` | ''（条件成立时才出现） |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-placement` | props.placement |
 | `indicator` | `data-pulse` | ''（条件成立时才出现） |
 | `indicator` | `data-size` | props.size |
+| `indicator` | `data-state` | 'visible' \| 'hidden' |
 | `indicator` | `data-tone` | props.tone |
 
 <!-- xh-component-tokens:start -->
@@ -210,9 +227,9 @@ pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态�
 
 ### 动效
 
-动效角色：循环（见[动效规范](../design/motion#角色)）。
+动效角色：出现（锚定面板） · 出现（无锚定弹出） · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-breathe` · `xh-breathe-halo` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

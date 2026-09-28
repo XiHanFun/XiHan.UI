@@ -6,13 +6,14 @@
 // 提供 badge 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { BadgePlacement, BadgeProps } from '@xihan-ui/headless'
-import { badgeAnatomy, badgeMeta, connectBadge } from '@xihan-ui/headless'
+import type { BadgePlacement, BadgeSchema } from '@xihan-ui/headless'
+import { badgeAnatomy, badgeMachine, badgeMeta, connectBadge } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { MachineController } from '../runtime/machine-controller'
 
 /**
- * `<xh-badge>`：角标宿主，无状态机。
+ * `<xh-badge>`：角标宿主。显隐与计数由属性算出，状态机只管角标出现与消失的进退场。
  *
  * 被标记的对象写入 root，角标本身写入 indicator；角标是挂在其他元素角上的标记，
  * 行内的状态药丸使用 `<xh-tag>`。
@@ -57,12 +58,15 @@ export class XhBadgeElement extends XhElement {
   declare pulse?: boolean
   declare label?: string
 
-  protected wire(): void {
-    const root = this.getPart('root')
-    if (!root)
-      return
-    // 读响应式 property，不回读 DOM 特性
-    const api = connectBadge(this.configured('badge', {
+  private readonly ctrl = new MachineController<BadgeSchema>(
+    this,
+    badgeMachine,
+    () => this.machineProps(),
+  )
+
+  // 读响应式 property，不回读 DOM 特性
+  private machineProps(): Partial<BadgeSchema['props']> {
+    return this.configured('badge', {
       placement: this.placement,
       tone: this.tone,
       size: this.size,
@@ -72,7 +76,14 @@ export class XhBadgeElement extends XhElement {
       dot: this.dot,
       pulse: this.pulse,
       label: this.label,
-    } as BadgeProps), wcNormalize)
+    })
+  }
+
+  protected wire(): void {
+    const root = this.getPart('root')
+    if (!root)
+      return
+    const api = connectBadge(this.ctrl.service, wcNormalize)
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
 
     const indicator = this.getPart('indicator')

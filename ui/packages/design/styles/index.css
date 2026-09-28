@@ -16560,6 +16560,17 @@
     animation: none;
   }
 
+  /* 出现与消失：计数从无到有时原地弹出；清零时缩小淡出，播完连接层才写 hidden，退场那几帧照清零前的数字写。
+     首帧就在的角标直接呈现（data-instant）；呼吸的圆点不叠进场，两段明暗会打架。
+     写在呼吸之后：退场压过呼吸。减弱动效下缩放归一、只剩淡变 */
+  [data-scope='badge'][data-part='indicator'][data-state='visible']:not([data-instant], [data-pulse]) {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='badge'][data-part='indicator'][data-state='hidden'] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
   /* —— 落点 —— */
   /* 用 inset 的逻辑属性写，rtl 下 end 自动落到左边；translate 让角标压住宿主的角。
      两个偏移槽微调角标离角多远：正值朝行内末端、块末端挪（rtl 下行内末端在左），

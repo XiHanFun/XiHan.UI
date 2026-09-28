@@ -8,10 +8,13 @@
 import type { Size, Tone } from '@xihan-ui/core'
 import type { BadgePlacement, BadgeProps } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
-import { connectBadge } from '@xihan-ui/headless'
+import { createScope } from '@xihan-ui/core'
+import { badgeMachine, connectBadge } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { useMachine } from '../../runtime/use-machine'
+import { createVueIdGenerator } from '../../runtime/vue-id'
 import { provideBadge, useBadgeContext } from './context'
 
 const badgeProps = {
@@ -45,7 +48,9 @@ export const XhBadgeRoot = defineComponent({
   setup(props, { slots }) {
     // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
     const configured = withXhConfig('badge', props)
-    const api = computed(() => connectBadge(configured as BadgeProps, vueNormalize))
+    const scope = createScope(null, createVueIdGenerator())
+    const service = useMachine(badgeMachine, () => ({ ...configured }) as BadgeProps, scope)
+    const api = computed(() => connectBadge(service, vueNormalize))
     provideBadge({ api })
     return () => h('span', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

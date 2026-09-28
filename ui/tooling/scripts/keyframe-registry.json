@@ -319,6 +319,7 @@
       "consumers": [
         "approval",
         "back-top",
+        "badge",
         "float-button",
         "floating-panel",
         "log",
@@ -341,6 +342,7 @@
       ],
       "consumers": [
         "back-top",
+        "badge",
         "command",
         "float-button",
         "floating-panel",
