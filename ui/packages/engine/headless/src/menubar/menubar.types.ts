@@ -187,6 +187,11 @@ export interface MenubarSchema extends MachineSchema {
     onRadioValueChange?: (details: MenuRadioValueChangeDetails) => void
   }
   context: {
+    /**
+     * 挂载时就有一张展开着、还没整条收起过：展开着的那张 content 投影 data-instant 直接呈现、不播进场。
+     * 整条收起时清掉，之后的每一次展开照常进场。
+     */
+    openedAtMount: boolean
     /** 当前展开项，受控时 cell 直读 prop。 */
     value: string | null
     /** 定位引擎回填的最新结果。 */
@@ -290,6 +295,7 @@ export interface MenubarSchema extends MachineSchema {
     | 'endPress'
     | 'releaseItemPress'
     | 'releaseWhenDisabled'
+    | 'clearOpenedAtMount'
   effect: 'trackPosition' | 'trackLayer'
 }
 
