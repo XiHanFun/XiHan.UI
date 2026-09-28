@@ -497,12 +497,16 @@ export function connectTransfer<T extends PropTypes>(
       'hidden': loading || filtered[panel.side].length > 0 || undefined,
     }),
 
-    // 在途占位：与空态占位同一个位置、同一副观感，两者不同屏
+    // 在途占位：与空态占位同一个位置、同一副观感，两者不同屏。只接管这一侧的首次加载：
+    // 已有看得见的条目时列表原样留着、按 aria-busy 淡下，占位让位
     getLoadingProps: panel => normalize.element({
       ...parts.loading.attrs,
       'data-side': panel.side,
       'data-disabled': dataAttr(disabled),
-      'hidden': !loading || undefined,
+      // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
+      'hidden': !loading || visible[panel.side].length > 0 || undefined,
     }),
 
     // 分组容器：role=group 是 role=listbox 允许拥有的两种子节点之一，条目照常挂在它里面，

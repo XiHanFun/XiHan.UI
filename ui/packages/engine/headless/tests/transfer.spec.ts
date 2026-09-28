@@ -922,17 +922,22 @@ describe('连接层：空态与在途两个占位', () => {
     expect(h.side('source').empty.hasAttribute('hidden')).toBe(false)
   })
 
-  it('取数在途：两侧列表报 aria-busy，在途占位顶上来、空态让位', () => {
+  it('取数在途：两侧列表报 aria-busy，没有条目的那一侧在途占位顶上来、空态让位', () => {
     const h = mount({ loading: true })
     expect(h.root.getAttribute('data-loading')).toBe('')
     for (const side of ['source', 'target'] as const) {
       expect(h.side(side).list.getAttribute('aria-busy')).toBe('true')
-      expect(h.side(side).loading.hasAttribute('hidden')).toBe(false)
-      // 两者不同屏：右侧本来没有条目，空态仍要让位给在途
+      // 两者不同屏：右侧本来没有条目，空态让位给在途
       expect(h.side(side).empty.hasAttribute('hidden')).toBe(true)
     }
-    // 在途占位不看有没有条目：左侧四条都在，它照样顶着
+    // 右侧没有条目：首次加载，在途占位顶上来，文案前的环由加载环配方画
+    const target = h.side('target').loading
+    expect(target.hasAttribute('hidden')).toBe(false)
+    expect(target.getAttribute('data-xh-loading-ring')).toBe('')
+    expect(target.getAttribute('data-loading')).toBe('')
+    // 左侧四条都在：后台刷新保留上一帧，列表按 aria-busy 淡下，在途占位让位
     expect(shownOn(h, 'source')).toHaveLength(4)
+    expect(h.side('source').loading.hasAttribute('hidden')).toBe(true)
   })
 
   it('不在取数时 aria-busy 整个缺席，不写 false', () => {
