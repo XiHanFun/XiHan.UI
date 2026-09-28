@@ -1405,6 +1405,9 @@ export { createLoadingBarService } from './services/loading-bar-service'
 export type { LoadingBarService, LoadingBarServiceOptions } from './services/loading-bar-service'
 export { createNotificationService } from './services/notification-service'
 export type { NotificationCreateOptions, NotificationMessageOptions, NotificationPromiseOptions, NotificationService, NotificationServiceOptions } from './services/notification-service'
+// 列式数据仓：图表的大数据（行情、采集）由它承载，从 headless 转发，docs 与应用不必另装依赖
+export { createColumnStore } from '@xihan-ui/headless'
+export type { ColumnRow, ColumnSource, ColumnStore, ColumnStoreOptions, ColumnValue } from '@xihan-ui/headless'
 // 使用者写 upload 实现与远程附件时要用的形状，从 headless 转发，docs 与应用不必另装依赖
 export type {
   FileUploadFile,

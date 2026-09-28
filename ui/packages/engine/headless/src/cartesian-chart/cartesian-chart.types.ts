@@ -91,6 +91,11 @@ export interface CartesianBarSeries extends CartesianSeriesBase {
    * 它的 y 被忽略。相邻两步之间连一道细线。瀑布不参与堆叠。
    */
   waterfall?: { total?: string }
+  /**
+   * 按两个字段的涨跌取色：to ≥ from 为涨、否则为跌，取涨跌色（成交量随 K 线写 ['open', 'close']）；
+   * 两个字段缺一个的行保持系列色。瀑布按每一步的增减取色，不与它同写。
+   */
+  trend?: readonly [string, string]
 }
 
 /** 折线系列。 */
@@ -315,6 +320,16 @@ export interface CartesianAxis {
    * 提示框与数据表里的日期同样按它写。缺省 time 轴按运行环境所在时区、utc 轴按 UTC。
    */
   timeZone?: string
+  /**
+   * 只用于 x 轴：按数据点等距排列、跳过没有数据的时段（休市、周末），刻度仍取整点、整天、月初这些时间边界之后的第一个点。
+   * 比例尺须为 time、utc 或 linear；缩放窗口仍写自变量的值。
+   */
+  ordinal?: boolean
+  /**
+   * 只用于 y 轴：定义域按全部数据（all，缺省）还是只按缩放窗口里露出的数据（window）算；
+   * 放大行情后价格铺满纵向用 window。
+   */
+  fit?: 'all' | 'window'
 }
 
 /** 图例里的一项。 */
@@ -388,6 +403,8 @@ export interface CartesianChartTranslations extends ChartTranslations {
   zoomEndLabel: string
   /** 箱线数据表的列名：五数与离群点。 */
   boxColumns: { min: string, q1: string, median: string, q3: string, max: string, outliers: string }
+  /** 列式数据的数据表按自变量区间聚合时的表题：原表题、总行数与区间数（数已按区域格式写好）。 */
+  aggregatedCaption: (values: { caption: string, rows: string, ranges: string }) => string
   /** 摘要末尾写注释的模板：参考线、参考带与平均线逐条写出名字与值。 */
   annotationSummary: (items: readonly CartesianAnnotationSummary[]) => string
   /** 摘要模板。 */

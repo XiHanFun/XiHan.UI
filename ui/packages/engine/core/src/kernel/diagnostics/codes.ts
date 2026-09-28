@@ -89,6 +89,12 @@ export const DIAGNOSTIC_CODES = {
   chartGraphShape: 'chart.graph-shape',
   /** 关系图的节点太多：多于 500 个时交互变慢，按提醒报；多于 2000 个时不画，先聚合。 */
   chartGraphSize: 'chart.graph-size',
+  /** 列式数据用了它不支持的写法（堆叠、瀑布、箱线、类目轴、横向、逐点标签、刷选……），或与 svg 渲染器同写。 */
+  chartColumnsOption: 'chart.columns-option',
+  /** 列式数据里折线、K 线与柱共用的自变量列不是升序（追加了乱序的时间戳）。 */
+  chartColumnsUnsorted: 'chart.columns-unsorted',
+  /** 两种写法不能同时用：柱的涨跌取色（trend）与瀑布；等距排列（xAxis.ordinal）与对象数组。 */
+  chartOptionConflict: 'chart.option-conflict',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]

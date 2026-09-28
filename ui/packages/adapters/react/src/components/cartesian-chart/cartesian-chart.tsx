@@ -27,6 +27,7 @@ import type {
   ChartMark,
   ChartPalette,
   ChartRow,
+  ColumnSource,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -115,8 +116,8 @@ function A11y({ api }: { api: CartesianChartApi }): ReactNode {
 }
 
 export interface XhCartesianChartRootProps extends Omit<ComponentPropsWithRef<'figure'>, 'children'> {
-  /** 数据：对象数组，系列用字段名把列映射到通道。 */
-  data?: readonly ChartRow[]
+  /** 数据：对象数组，系列用字段名把列映射到通道；或 createColumnStore 建的列式数据，走大数据的管线、总是画在画布上。 */
+  data?: readonly ChartRow[] | ColumnSource
   series?: readonly CartesianSeries[]
   xAxis?: CartesianAxis
   yAxis?: CartesianAxis

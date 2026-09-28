@@ -9,13 +9,34 @@
 import type { PropFn, Scope } from '@xihan-ui/core'
 import type { Mark } from '@xihan-ui/viz'
 import type { ChartBaseContext, ChartDatumDetails, ChartDatumRef, ChartKey, ChartNavIntent } from '../shared/chart'
-import type { CartesianModel, CartesianScene, CartesianSeriesValues } from './cartesian-chart.model'
+import type { CartesianSeriesValues } from './cartesian-chart.model'
+import type { CartesianModel } from './cartesian-chart.pipeline'
 import type { CartesianChartSchema, CartesianOverlay } from './cartesian-chart.schema'
 import type { CartesianAnnotationSummary, CartesianBrushing, CartesianBrushSelection, CartesianChartTranslations, CartesianLegendScale, CartesianRenderer, CartesianTooltipModel, CartesianTooltipOrder, CartesianTrigger, CartesianWindow, CartesianWindowRatio } from './cartesian-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
 import { createPicker, domainToWindow, FULL_WINDOW, lttb } from '@xihan-ui/viz'
 import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
+import {
+  columnsAnchorAt,
+  columnsColorDomain,
+  columnsDetails,
+  columnsFirstRef,
+  columnsHitTest,
+  columnsKeyAt,
+  columnsMarkKey,
+  columnsNavTarget,
+  columnsOverlay,
+  columnsPositionOf,
+  columnsProxyMark,
+  columnsRefAtKey,
+  columnsSeriesOf,
+  columnsZoomPreview,
+} from './cartesian-chart.columns'
 import { cartesianDatumId, cartesianKeyId, colorPosition } from './cartesian-chart.model'
+import { cartesianProbesOf } from './cartesian-chart.probe'
+
+export { CARTESIAN_SEQUENTIAL_ANCHORS, cartesianProbeDescriptor, isCartesianProbe } from './cartesian-chart.probe'
+export type { CartesianProbeDescriptor } from './cartesian-chart.probe'
 
 /** 缺省的注释摘要：每条一句「名字（系列）：值。」。 */
 export function defaultCartesianAnnotationSummary(items: readonly CartesianAnnotationSummary[]): string {
@@ -25,6 +46,11 @@ export function defaultCartesianAnnotationSummary(items: readonly CartesianAnnot
 /** 缺省的开高低收写法：四个价依次写出。 */
 function defaultOhlcLabel({ open, high, low, close }: { open: string, high: string, low: string, close: string }): string {
   return `Open ${open}, High ${high}, Low ${low}, Close ${close}`
+}
+
+/** 缺省的聚合表题：原表题后注明多少行聚合成了多少个区间。 */
+function defaultAggregatedCaption({ caption, rows, ranges }: { caption: string, rows: string, ranges: string }): string {
+  return `${caption} (${rows} rows in ${ranges} ranges)`
 }
 
 /** 整条轴：两个方向都没缩放。 */
@@ -74,6 +100,7 @@ export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze(
   ohlcColumns: { open: 'Open', high: 'High', low: 'Low', close: 'Close' },
   boxLabel: defaultBoxLabel,
   boxColumns: { min: 'Min', q1: 'Q1', median: 'Median', q3: 'Q3', max: 'Max', outliers: 'Outliers' },
+  aggregatedCaption: defaultAggregatedCaption,
   referenceLabel: 'Reference',
   averageLabel: 'Average',
   annotationSummary: defaultCartesianAnnotationSummary,
@@ -121,6 +148,8 @@ export function cartesianModelOf(source: CartesianModelSource): CartesianModel {
     orientation: prop('orientation'),
     totals: prop('totals'),
     annotations: prop('annotations'),
+    renderer: prop('renderer'),
+    brush: prop('brush'),
     // 没开缩放时窗口不进管线：作者写了窗口也不裁轴
     zoom: prop('zoom') ?? 'none',
     window: context.get('window'),
@@ -150,6 +179,9 @@ function seriesOf(model: CartesianModel, id: string): CartesianSeriesValues | un
 export function cartesianPositionOf(model: CartesianModel, ref: ChartDatumRef | null): number {
   if (!ref)
     return -1
+  const columns = model.columns?.data
+  if (columns)
+    return columnsPositionOf(columns, columnsSeriesOf(columns, ref.seriesId), ref)
   return model.derived.keyOfRow.get(ref.seriesId)?.get(ref.index) ?? -1
 }
 
@@ -160,9 +192,40 @@ function keyIndexAt(s: CartesianSeriesValues, position: number): number {
 
 /** 数据引用的 x 在 keys 里的位置；引用失效时为 −1。 */
 export function cartesianKeyIndexOf(model: CartesianModel, ref: ChartDatumRef | null): number {
+  // 列式数据：共用的有序自变量上的位置就是下标；散点自己的 x 不在上面
+  const columns = model.columns?.data
+  if (columns) {
+    const s = ref ? columnsSeriesOf(columns, ref.seriesId) : undefined
+    return s && s.x === columns.key ? columnsPositionOf(columns, s, ref) : -1
+  }
   const p = cartesianPositionOf(model, ref)
   const s = p < 0 || !ref ? undefined : seriesOf(model, ref.seriesId)
   return s ? keyIndexAt(s, p) : -1
+}
+
+/** 数据引用的自变量（键）；引用失效时为 null。 */
+export function cartesianKeyOf(model: CartesianModel, ref: ChartDatumRef | null): ChartKey | null {
+  const columns = model.columns?.data
+  if (columns) {
+    const s = ref ? columnsSeriesOf(columns, ref.seriesId) : undefined
+    const p = columnsPositionOf(columns, s, ref)
+    return s && p >= 0 ? columnsKeyAt(columns, s, p) : null
+  }
+  const j = cartesianKeyIndexOf(model, ref)
+  return j < 0 ? null : model.spec.keys[j]!
+}
+
+/** 数据在绘图区里的锚点；尚未测量或引用失效时为 null。 */
+export function cartesianAnchorOf(model: CartesianModel, ref: ChartDatumRef | null): { x: number, y: number } | null {
+  const p = cartesianPositionOf(model, ref)
+  if (!ref || p < 0)
+    return null
+  const c = model.columns
+  if (c) {
+    const s = columnsSeriesOf(c.data, ref.seriesId)
+    return c.layout && s ? columnsAnchorAt(c.data, c.layout, s, p) : null
+  }
+  return model.scene?.anchors.get(ref.seriesId)?.[p] ?? null
 }
 
 /** 系列在某个键上的位置：柱与折线即键的位置，散点取这个 x 上的第一个点；没有时为 −1。 */
@@ -172,6 +235,11 @@ function positionAtKey(s: CartesianSeriesValues, keyIndex: number): number {
 
 /** 某个系列在某个位置上的数据引用；没有值时为 null。 */
 export function cartesianRefAt(model: CartesianModel, seriesId: string, position: number): ChartDatumRef | null {
+  const columns = model.columns?.data
+  if (columns) {
+    const c = columnsSeriesOf(columns, seriesId)
+    return c && position >= 0 && position < columns.length && Number.isFinite(c.y[position] as number) ? { seriesId, index: columns.start + position } : null
+  }
   const s = seriesOf(model, seriesId)
   if (!s || position < 0 || s.values[position] == null)
     return null
@@ -185,6 +253,12 @@ function markKeyAt(model: CartesianModel, s: CartesianSeriesValues, position: nu
 
 /** 标记与焦点代理写在 data-key 上的身份。 */
 export function cartesianMarkKey(model: CartesianModel, ref: ChartDatumRef): string | null {
+  const columns = model.columns?.data
+  if (columns) {
+    const c = columnsSeriesOf(columns, ref.seriesId)
+    const at = columnsPositionOf(columns, c, ref)
+    return c && at >= 0 ? columnsMarkKey(columns, c, at) : null
+  }
   const p = cartesianPositionOf(model, ref)
   const s = seriesOf(model, ref.seriesId)
   return p < 0 || !s ? null : markKeyAt(model, s, p)
@@ -192,6 +266,8 @@ export function cartesianMarkKey(model: CartesianModel, ref: ChartDatumRef): str
 
 /** 第一个可见系列的第一个有值的数据：键盘首次进入时的落点。 */
 export function cartesianFirstRef(model: CartesianModel): ChartDatumRef | null {
+  if (model.columns)
+    return columnsFirstRef(model.columns.data)
   for (const s of model.derived.visible) {
     const p = s.values.findIndex(v => v != null)
     if (p >= 0)
@@ -261,6 +337,9 @@ function detailsOf(model: CartesianModel, s: CartesianSeriesValues, position: nu
  * 散点取这个 x 上的第一个点，这个 x 上没有点的散点系列不列），提示框与联动据此显示；item 模式只报这一个。
  */
 export function cartesianDetails(model: CartesianModel, ref: ChartDatumRef, trigger: CartesianTrigger): ChartDatumDetails | null {
+  const c = model.columns
+  if (c)
+    return columnsDetails(c.data, c.layout, model.formats, model.translations, ref, trigger)
   const p = cartesianPositionOf(model, ref)
   const s = seriesOf(model, ref.seriesId)
   if (p < 0 || !s)
@@ -280,6 +359,8 @@ export function cartesianDetails(model: CartesianModel, ref: ChartDatumRef, trig
 
 /** 第一个在该键上有值的可见系列：联动（受控 activeKey）时的落点。 */
 function refAtKey(model: CartesianModel, key: ChartKey): ChartDatumRef | null {
+  if (model.columns)
+    return columnsRefAtKey(model.columns.data, key)
   const id = cartesianKeyId(key)
   const j = id == null ? undefined : model.spec.keyIndex.get(id)
   if (j == null)
@@ -318,6 +399,8 @@ export function cartesianActive(model: CartesianModel, context: Pick<ChartBaseCo
  * 换到散点系列时落在 x 最近的那个点上。
  */
 export function cartesianNavTarget(model: CartesianModel, from: ChartDatumRef, intent: ChartNavIntent): ChartDatumRef | null {
+  if (model.columns)
+    return columnsNavTarget(model.columns.data, from, intent)
   const visible = model.derived.visible
   const at = visible.findIndex(s => s.spec.id === from.seriesId)
   const j = cartesianPositionOf(model, from)
@@ -385,6 +468,9 @@ export function cartesianHitTest(
   trigger: CartesianTrigger,
   pointerType: string,
 ): { ref: ChartDatumRef, key: ChartKey } | null {
+  const c = model.columns
+  if (c)
+    return c.layout && c.raster ? columnsHitTest(c.data, c.layout, c.raster, x, y, trigger, pointerType) : null
   const scene = model.scene
   if (!scene)
     return null
@@ -449,6 +535,11 @@ export function cartesianOverlay(
   focused: { ref: ChartDatumRef, ring: boolean } | null,
   brush: PlotBox | null = null,
 ): CartesianOverlay {
+  const c = model.columns
+  if (c) {
+    // 列式数据不刷选：只有准线、激活的点与焦点环
+    return c.layout && (active || focused) ? columnsOverlay(c.data, c.layout, active, trigger, focused) : EMPTY_OVERLAY
+  }
   const scene = model.scene
   if (!scene || (!active && !focused && !brush))
     return EMPTY_OVERLAY
@@ -588,7 +679,7 @@ function brushKeyPixels(model: CartesianModel, x: readonly [ChartKey, ChartKey])
  */
 export function cartesianBrushRect(model: CartesianModel, selection: CartesianBrushSelection | null): PlotBox | null {
   const scene = model.scene
-  if (!scene || !selection || (selection.x == null && selection.y == null))
+  if (!scene || model.columns || !selection || (selection.x == null && selection.y == null))
     return null
   const { plot, valueScale } = scene.layout
   const vertical = model.spec.orientation === 'vertical'
@@ -626,7 +717,7 @@ export function cartesianBrushSelectionOf(
   dirs: { readonly x: boolean, readonly y: boolean },
 ): CartesianBrushSelection | null {
   const scene = model.scene
-  if (!scene)
+  if (!scene || model.columns)
     return null
   const { plot, keyScale, valueScale, keyCenters } = scene.layout
   const vertical = model.spec.orientation === 'vertical'
@@ -661,7 +752,7 @@ export function cartesianBrushSelectionOf(
 /** 落在刷选范围里的可见数据的引用：锚点落在框里即算，按图例次序、再按位置排。 */
 export function cartesianBrushedRefs(model: CartesianModel, selection: CartesianBrushSelection | null): ChartDatumRef[] {
   const scene = model.scene
-  if (!scene || !selection || (selection.x == null && selection.y == null))
+  if (!scene || model.columns || !selection || (selection.x == null && selection.y == null))
     return []
   const vertical = model.spec.orientation === 'vertical'
   const category = isCategoryKeys(model)
@@ -726,6 +817,15 @@ const previews = new WeakMap<object, { extent: string, d: string | null }>()
  * （横向是整条轴上的位置，纵向上下各留一成）；点多时降采样。没有这样的系列时为 null。
  */
 export function cartesianZoomPreview(model: CartesianModel): string | null {
+  const c = model.columns
+  if (c) {
+    const hit = previews.get(c.data)
+    if (hit)
+      return hit.d
+    const d = columnsZoomPreview(c.data)
+    previews.set(c.data, { extent: '', d })
+    return d
+  }
   const layout = model.scene?.layout
   if (!layout)
     return null
@@ -790,9 +890,24 @@ export function cartesianDatumLabel(details: ChartDatumDetails, translations: Ca
   return [label, ...extraMeasures(details, translations)].join(', ')
 }
 
+const colorDomains = new WeakMap<object, readonly [number, number] | null>()
+
+/** 按值着色的值域：全部可见的按值着色系列共用一把尺；没有按值着色为 null。 */
+export function cartesianColorDomain(model: CartesianModel): readonly [number, number] | null {
+  const columns = model.columns?.data
+  if (!columns)
+    return model.domains.color
+  let domain = colorDomains.get(columns)
+  if (domain === undefined) {
+    domain = columnsColorDomain(columns)
+    colorDomains.set(columns, domain)
+  }
+  return domain
+}
+
 /** 色阶图例：名字与两端的值；没有按值着色的系列时为 null。 */
 export function cartesianLegendScale(model: CartesianModel, translations: CartesianChartTranslations): CartesianLegendScale | null {
-  const domain = model.domains.color
+  const domain = cartesianColorDomain(model)
   if (!domain)
     return null
   return { name: translations.colorLabel, min: model.formats.measure(domain[0]), max: model.formats.measure(domain[1]) }
@@ -818,7 +933,7 @@ export function cartesianTooltip(
   return {
     header: details.formatted.key ?? '',
     rows: rows.map((item) => {
-      const spec = model.derived.visible.find(s => s.spec.id === item.seriesId)?.spec
+      const spec = model.spec.series.find(s => s.id === item.seriesId)
       // 气泡的大小、按值着色的值跟在数值后面：同一个点的几个量，一行读完
       const extra = extraMeasures(item, translations).map(text => ` · ${text}`).join('')
       return {
@@ -830,7 +945,7 @@ export function cartesianTooltip(
         mark: spec?.mark ?? 'bar',
         area: spec?.area ?? false,
         symbol: spec?.symbol ?? null,
-        t: colorPosition(model.domains.color, typeof item.values.color === 'number' ? item.values.color : null),
+        t: colorPosition(cartesianColorDomain(model), typeof item.values.color === 'number' ? item.values.color : null),
       }
     }),
   }
@@ -851,6 +966,9 @@ function dataNodeCount(marks: readonly Mark[]): number {
 
 /** 解析渲染器：svg 与 canvas 原样；auto（缺省）在数据层逐个成节点的标记超过预算时用画布，还没测量时按 svg。 */
 export function cartesianRenderer(renderer: CartesianRenderer | undefined, model: CartesianModel): 'svg' | 'canvas' {
+  // 列式数据总是画在画布上（写 svg 是规格错误，由管线报出）
+  if (model.columns)
+    return 'canvas'
   if (renderer === 'svg' || renderer === 'canvas')
     return renderer
   const scene = model.scene
@@ -866,6 +984,9 @@ export function cartesianRenderer(renderer: CartesianRenderer | undefined, model
 
 /** 没有可画的数据：规格合法、但每个可见系列都没有值。 */
 export function cartesianIsEmpty(model: CartesianModel): boolean {
+  const columns = model.columns?.data
+  if (columns)
+    return model.issues.length === 0 && columns.visible.every(s => s.extent.extent(0, columns.length) == null)
   return model.issues.length === 0 && model.derived.visible.every(s => s.values.every(v => v == null))
 }
 
@@ -883,87 +1004,85 @@ export function cartesianBrushingSelection(
     : cartesianBrushSelectionOf(model, { x0: brushing.from.x, y0: brushing.from.y, x1: brushing.to.x, y1: brushing.to.y }, dirs)
 }
 
-/** 样式探针要对上的那几个属性：部件、涨跌、画法（K 线的实体与美国线、箱与小提琴）、是否按值着色。 */
-export interface CartesianProbeDescriptor {
-  readonly part: string
-  readonly trend: 'rise' | 'fall' | null
-  readonly style: 'candle' | 'ohlc' | 'box' | 'violin' | null
-  /** 按值着色的点：颜色由三个锚点探针按色阶插值。 */
-  readonly sequential: boolean
-}
-
-/** 一个数据标记对应哪一个样式探针。 */
-export function cartesianProbeDescriptor(mark: Mark): CartesianProbeDescriptor {
-  return {
-    part: mark.part,
-    trend: mark.part === 'bar' || mark.part === 'candle' || mark.part === 'wick' ? mark.paint?.trend ?? null : null,
-    style: mark.part === 'candle' ? (mark.kind === 'rect' ? 'candle' : 'ohlc') : mark.part === 'box' ? (mark.kind === 'rect' ? 'box' : 'violin') : null,
-    sequential: mark.part === 'point' && mark.paint?.t != null,
-  }
-}
-
-/** 按值着色的锚点探针的色阶位置：起点、中点、终点。 */
-export const CARTESIAN_SEQUENTIAL_ANCHORS = [0, 0.5, 1] as const
-
-const probes = new WeakSet<Mark>()
-
-/** 这个标记是不是样式探针：空几何、只给画布读样式，不进可访问树。 */
-export function isCartesianProbe(mark: Mark): boolean {
-  return probes.has(mark)
-}
-
-/** 与真标记同种类、同部件、同着色引用的空几何标记。 */
-function probeOf(mark: Mark, key: string, t?: number): Mark {
-  const paint = t === undefined ? mark.paint : { ...mark.paint, t }
-  const base = { key, part: mark.part, ...(paint ? { paint } : {}) }
-  let probe: Mark
-  switch (mark.kind) {
-    case 'rect':
-      probe = { ...base, kind: 'rect', x: 0, y: 0, width: 0, height: 0 }
-      break
-    case 'line':
-      probe = { ...base, kind: 'line', points: [], curve: 'linear' }
-      break
-    case 'area':
-      probe = { ...base, kind: 'area', points: [], curve: 'linear' }
-      break
-    case 'symbol':
-      probe = { ...base, kind: 'symbol', x: 0, y: 0, size: 0, symbol: mark.symbol }
-      break
-    default:
-      probe = { ...base, kind: 'path', d: '' }
-  }
-  probes.add(probe)
-  return probe
-}
-
-/** 一个系列分组里要放的样式探针：场景里实际出现的每种（部件、涨跌、画法）各一个，按值着色的点另加三个锚点。 */
-function probesOf(group: Mark & { kind: 'group' }): Mark[] {
-  const seen = new Set<string>()
-  const out: Mark[] = []
-  for (const mark of group.children) {
-    const d = cartesianProbeDescriptor(mark)
-    const id = `${d.part}:${d.trend ?? ''}:${d.style ?? ''}:${d.sequential ? 'seq' : ''}`
-    if (seen.has(id))
-      continue
-    seen.add(id)
-    if (d.sequential) {
-      CARTESIAN_SEQUENTIAL_ANCHORS.forEach((t, i) => out.push(probeOf(mark, `${group.key}:probe:${id}:${i}`, t)))
-      continue
-    }
-    out.push(probeOf(mark, `${group.key}:probe:${id}`))
-  }
-  return out
-}
-
 const probeGroups = new WeakMap<object, readonly Mark[]>()
 
-/** 画布模式下绘图区里的系列分组：分组照常输出（可及名、色槽、淡出都在它上面），子标记换成样式探针。 */
-export function cartesianProbeGroups(scene: CartesianScene): readonly Mark[] {
+/**
+ * 画布模式下绘图区里的系列分组：分组照常输出（可及名、色槽、淡出都在它上面），子标记换成样式探针。
+ * 列式数据的场景里分组本来就只有探针。
+ */
+export function cartesianProbeGroups(model: CartesianModel): readonly Mark[] {
+  const scene = model.scene
+  if (!scene)
+    return []
+  if (model.columns)
+    return scene.scene.layers.data
   let groups = probeGroups.get(scene)
   if (!groups) {
-    groups = scene.scene.layers.data.map(mark => (mark.kind === 'group' ? { ...mark, children: probesOf(mark) } : mark))
+    groups = scene.scene.layers.data.map(mark => (mark.kind === 'group' ? { ...mark, children: cartesianProbesOf(mark.children, mark.key) } : mark))
     probeGroups.set(scene, groups)
   }
   return groups
+}
+
+/** 自变量轴按什么缩放：类目轴与等距排列的列式数据按下标，连续轴按取整后的整条定义域。 */
+export interface CartesianKeyDomain {
+  /** 按下标：窗口取整到键，缩放条一步走一个键。 */
+  readonly indexed: boolean
+  /** 键的个数：类目数，或列式数据的行数。 */
+  readonly count: number
+  /** 第 j 个键。 */
+  readonly keyAt: (j: number) => ChartKey
+  readonly kind: 'linear' | 'log'
+  /** 键是日期：窗口两端写 Date。 */
+  readonly time: boolean
+}
+
+const keyDomains = new WeakMap<object, CartesianKeyDomain>()
+
+export function cartesianKeyDomain(model: CartesianModel): CartesianKeyDomain {
+  const owner = model.columns?.data ?? model.spec
+  let domain = keyDomains.get(owner)
+  if (!domain) {
+    const c = model.columns
+    const { keys, keyScale } = model.spec
+    domain = c
+      ? { indexed: c.spec.ordinal, count: c.data.length, keyAt: j => columnsKeyAt(c.data, null, j), kind: 'linear', time: c.spec.time }
+      : { indexed: keyScale === 'band' || keyScale === 'point', count: keys.length, keyAt: j => keys[j]!, kind: keyScale === 'log' ? 'log' : 'linear', time: keyScale === 'time' || keyScale === 'utc' }
+    keyDomains.set(owner, domain)
+  }
+  return domain
+}
+
+/**
+ * 画布模式下聚焦的那个数据在 SVG 里的替身（焦点代理）与它所属的系列分组：同部件、同画法，叠在画布上同一处。
+ * 折线没有逐点的标记（代理是前景里的点）、引用失效时为 null。
+ */
+export function cartesianProxyMark(model: CartesianModel, ref: ChartDatumRef): { mark: Mark, group: string } | null {
+  const c = model.columns
+  if (c)
+    return c.layout ? columnsProxyMark(c.data, c.layout, ref) : null
+  const key = cartesianMarkKey(model, ref)
+  const scene = model.scene
+  if (key == null || !scene)
+    return null
+  for (const group of scene.scene.layers.data) {
+    if (group.kind !== 'group')
+      continue
+    const mark = group.children.find(child => child.key === key)
+    if (mark && mark.kind !== 'line' && mark.kind !== 'area')
+      return { mark, group: group.key }
+  }
+  return null
+}
+
+/**
+ * 标记的 data-key 换回数据引用：对象数组按场景的归属表；列式数据只有聚焦的那个数据有 SVG 替身，
+ * 对上它的键即是。对不上时为 null。
+ */
+export function cartesianRefOfMark(model: CartesianModel, key: string, focused: ChartDatumRef | null): ChartDatumRef | null {
+  if (model.columns)
+    return focused && cartesianMarkKey(model, focused) === key ? focused : null
+  const info = model.scene?.info.get(key)
+  const s = info && info.position >= 0 ? seriesOf(model, info.seriesId) : undefined
+  return s ? { seriesId: s.spec.id, index: s.rows[info!.position]! } : null
 }

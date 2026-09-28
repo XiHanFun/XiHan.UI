@@ -4,6 +4,7 @@ import type { Mark } from '@xihan-ui/viz'
 import type { Dict, Props } from './cartesian-rig'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CARTESIAN_SVG_MARK_BUDGET, isCartesianProbe } from '../src/cartesian-chart/cartesian-chart.logic'
+import { FakePath2D, mountProbes, recordingContext } from './cartesian-canvas-rig'
 import { makeRig, settle, walk } from './cartesian-rig'
 
 const SALES = [
@@ -164,43 +165,6 @@ describe('过渡', () => {
 
 // —— 画上画布：用记录调用的上下文与伪造的计算样式，核对画法取自探针、相邻同画法的标记合成一批 ——
 
-interface Call { name: string, args: unknown[], fillStyle?: unknown, globalAlpha?: number }
-
-function recordingContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D & { calls: Call[] } {
-  const calls: Call[] = []
-  const state: Record<string, unknown> = { fillStyle: '#000000', strokeStyle: '#000000', globalAlpha: 1, lineWidth: 1 }
-  const ctx = new Proxy({ calls, canvas } as Record<string | symbol, unknown>, {
-    get(target, key) {
-      if (key in target)
-        return target[key]
-      if (typeof key === 'string' && key in state)
-        return state[key]
-      return (...args: unknown[]) => {
-        calls.push({ name: String(key), args, fillStyle: state.fillStyle, globalAlpha: state.globalAlpha as number })
-      }
-    },
-    set(_, key, value) {
-      // 画布不认的颜色写法赋不上去：这里的桩什么都认
-      state[key as string] = value
-      return true
-    },
-  })
-  return ctx as unknown as CanvasRenderingContext2D & { calls: Call[] }
-}
-
-class FakePath2D {
-  readonly ops: string[] = []
-  moveTo(): void { this.ops.push('M') }
-  lineTo(): void { this.ops.push('L') }
-  bezierCurveTo(): void { this.ops.push('C') }
-  quadraticCurveTo(): void { this.ops.push('Q') }
-  arc(): void { this.ops.push('A') }
-  arcTo(): void { this.ops.push('T') }
-  rect(): void { this.ops.push('R') }
-  closePath(): void { this.ops.push('Z') }
-  addPath(): void { this.ops.push('P') }
-}
-
 afterEach(() => {
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
@@ -224,27 +188,7 @@ describe('画上画布', () => {
     })
     const rig = await makeRig({ ...BARS, renderer: 'canvas' })
     rig.service.refs.set('getCanvasEl', () => canvas)
-    // 把系列分组与探针按连接层的属性放进根：画布从 DOM 读样式
-    const root = rig.service.refs.get('getRootEl')() as HTMLElement
-    const api = rig.api()
-    for (const group of groups(api.layers.plot)) {
-      if (group.kind !== 'group')
-        continue
-      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-      for (const [k, v] of Object.entries(api.getMarkProps(group) as Dict)) {
-        if (typeof v === 'string')
-          g.setAttribute(k, v)
-      }
-      for (const probe of group.children) {
-        const p = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-        for (const [k, v] of Object.entries(api.getMarkProps(probe) as Dict)) {
-          if (typeof v === 'string')
-            p.setAttribute(k, v)
-        }
-        g.append(p)
-      }
-      root.append(g)
-    }
+    mountProbes(rig)
     rig.service.refs.get('canvas')!.request()
     await settle()
     const fills = ctx.calls.filter(c => c.name === 'fill')

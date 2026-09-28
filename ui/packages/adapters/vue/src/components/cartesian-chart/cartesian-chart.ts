@@ -26,6 +26,7 @@ import type {
   ChartMark,
   ChartPalette,
   ChartRow,
+  ColumnSource,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -228,7 +229,7 @@ export const XhCartesianChartRoot = defineComponent({
   name: 'XhCartesianChartRoot',
   // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    data: { type: Array as PropType<readonly ChartRow[]> },
+    data: { type: [Array, Object] as PropType<readonly ChartRow[] | ColumnSource> },
     series: { type: Array as PropType<readonly CartesianSeries[]> },
     xAxis: { type: Object as PropType<CartesianAxis> },
     yAxis: { type: Object as PropType<CartesianAxis> },

@@ -18,8 +18,9 @@ import {
   trackChartViewport,
 } from '../shared/chart'
 import { cartesianActive, cartesianDetails, cartesianMarkKey, cartesianModelOf, cartesianRenderer, cartesianTrigger, FULL_CARTESIAN_WINDOW, sameSelection, sameWindow } from './cartesian-chart.logic'
-import { cartesianEntryScene, cartesianLabelNumbers, cartesianRevealAt, createCartesianPipeline } from './cartesian-chart.model'
+import { cartesianEntryScene, cartesianLabelNumbers, cartesianRevealAt } from './cartesian-chart.model'
 import { paintCartesianCanvas } from './cartesian-chart.paint'
+import { createCartesianPipeline } from './cartesian-chart.pipeline'
 
 const { createMachine } = setup<CartesianChartSchema>()
 

@@ -7,6 +7,7 @@
 
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { Mark, Scene, TableModel } from '@xihan-ui/viz'
+import type { ColumnSource } from '@xihan-ui/viz/columns'
 import type {
   ChartBaseAction,
   ChartBaseComputed,
@@ -21,7 +22,7 @@ import type {
   ChartPattern,
   ChartRow,
 } from '../shared/chart'
-import type { CartesianModel, CartesianPipeline } from './cartesian-chart.model'
+import type { CartesianModel, CartesianPipeline } from './cartesian-chart.pipeline'
 import type {
   CartesianAnnotation,
   CartesianAxis,
@@ -49,8 +50,8 @@ import type {
 
 export interface CartesianChartSchema extends MachineSchema {
   props: ChartCommonProps & {
-    /** 数据：对象数组，系列用字段名把列映射到通道。 */
-    data?: readonly ChartRow[]
+    /** 数据：对象数组，系列用字段名把列映射到通道；或 createColumnStore 建的列式数据，走大数据的管线、总是画在画布上。 */
+    data?: readonly ChartRow[] | ColumnSource
     series?: readonly CartesianSeries[]
     xAxis?: CartesianAxis
     yAxis?: CartesianAxis
