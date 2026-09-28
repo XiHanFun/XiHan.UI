@@ -9854,11 +9854,12 @@
    */
   [data-scope='marquee'][data-part='root'][data-fade] {
     --xh-_marquee-fade-size: var(--xh-marquee-fade-size, var(--xh-space-6));
-    --xh-_marquee-fade-dir: to right;
+    /* 横排沿行内方向：角度乘方向符号，rtl 下行首在右，两端各自仍是淡入与淡出 */
+    --xh-_marquee-fade-dir: calc(90deg * var(--xh-direction-sign));
     /* 行尾那一段收到哪里为止：没有暂停开关时收到窗口尽头 */
     --xh-_marquee-fade-reserve: 0px;
     --xh-_marquee-fade-reserve-size: 0 0;
-    --xh-_marquee-fade-reserve-at: right center;
+    --xh-_marquee-fade-reserve-at: var(--xh-direction-end) center;
     /* 两层：沿滚动方向的 alpha 坡道，与给暂停开关留出的实心块；两种写法共用这一份 */
     --xh-_marquee-fade-mask:
       linear-gradient(var(--xh-_marquee-fade-dir), transparent 0, black var(--xh-_marquee-fade-size), black calc(100% - var(--xh-_marquee-fade-reserve) - var(--xh-_marquee-fade-size)), transparent calc(100% - var(--xh-_marquee-fade-reserve))),
@@ -9878,12 +9879,6 @@
     --xh-_marquee-fade-dir: to bottom;
   }
 
-  /* rtl 下行首在右：渐变方向跟着翻，两端各自仍是淡入与淡出 */
-  [data-scope='marquee'][data-part='root'][data-fade][data-orientation='horizontal']:dir(rtl) {
-    --xh-_marquee-fade-dir: to left;
-    --xh-_marquee-fade-reserve-at: left center;
-  }
-
   /*
    * 暂停开关压在行尾一端：行尾那段渐隐收到开关之前，第二层实心遮罩把开关所在那一块整块露出来，
    * 开关不被淡掉，开关与淡出段之间也不留一条没淡的缝。竖排时开关在块末那一角，露出的是那一角的方块。
@@ -9895,11 +9890,7 @@
 
   [data-scope='marquee'][data-part='root'][data-fade][data-orientation='vertical']:has(> [data-scope='marquee'][data-part='autoplay-trigger']:not([hidden])) {
     --xh-_marquee-fade-reserve-size: var(--xh-_marquee-fade-reserve) var(--xh-_marquee-fade-reserve);
-    --xh-_marquee-fade-reserve-at: right bottom;
-  }
-
-  [data-scope='marquee'][data-part='root'][data-fade][data-orientation='vertical']:dir(rtl):has(> [data-scope='marquee'][data-part='autoplay-trigger']:not([hidden])) {
-    --xh-_marquee-fade-reserve-at: left bottom;
+    --xh-_marquee-fade-reserve-at: var(--xh-direction-end) bottom;
   }
 
   /*
@@ -18544,11 +18535,8 @@
         linear-gradient(currentColor 0 0) padding-box exclude,
         linear-gradient(currentColor 0 0);
       animation: xh-glint var(--xh-card-glint-duration, var(--xh-motion-duration-glint)) var(--xh-motion-ease-enter) both;
-    }
-
-    /* 从右往左书写时光从行首（右缘）扫起 */
-    :where([data-material='liquid']) [data-scope='card'][data-part='root'][data-interactive]:dir(rtl):hover::after {
-      animation-direction: reverse;
+      /* 光从行首扫向行尾：rtl 下按方向符号把这一圈水平镜像，扫向跟着掉头，缓动不变 */
+      scale: var(--xh-direction-sign) 1;
     }
   }
 
@@ -29583,15 +29571,11 @@
     inline-size: var(--xh-hierarchy-chart-legend-scale-width, var(--xh-chart-legend-scale-width));
     block-size: var(--xh-space-2);
     border-radius: var(--xh-hierarchy-chart-legend-scale-bar-radius, var(--xh-shape-inset));
-    background: linear-gradient(to right, var(--xh-_hierarchy-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
+    /* 低端在行首：角度乘方向符号，rtl 下渐变从右往左 */
+    background: linear-gradient(calc(90deg * var(--xh-direction-sign)), var(--xh-_hierarchy-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
     /* 节点只用色阶上 0.3–1 这一段（最浅的一段压在承载面上看不见）：渐变按同一段画，起点即 0.3 处的颜色，
        中点落在 (0.5 − 0.3) / 0.7 处 */
     --xh-_hierarchy-scale-from: color-mix(in oklch, var(--xh-_chart-seq-mid) 60%, var(--xh-_chart-seq-start));
-  }
-
-  /* 图例随文字方向镜像：低端的值在行首，渐变也从行首起 */
-  :where([dir='rtl']) [data-scope='hierarchy-chart'][data-part='legend-scale-bar'] {
-    background: linear-gradient(to left, var(--xh-_hierarchy-scale-from), var(--xh-_chart-seq-mid) 28.6%, var(--xh-_chart-seq-end));
   }
 
   /* 强制色：节点改成系统色的面与描边，名字取正文色；路径的尖角取正文色；色阶只留轮廓；焦点环在配方里 */

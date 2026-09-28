@@ -149,11 +149,8 @@
         linear-gradient(currentColor 0 0) padding-box exclude,
         linear-gradient(currentColor 0 0);
       animation: xh-glint var(--xh-card-glint-duration, var(--xh-motion-duration-glint)) var(--xh-motion-ease-enter) both;
-    }
-
-    /* 从右往左书写时光从行首（右缘）扫起 */
-    :where([data-material='liquid']) [data-scope='card'][data-part='root'][data-interactive]:dir(rtl):hover::after {
-      animation-direction: reverse;
+      /* 光从行首扫向行尾：rtl 下按方向符号把这一圈水平镜像，扫向跟着掉头，缓动不变 */
+      scale: var(--xh-direction-sign) 1;
     }
   }
 

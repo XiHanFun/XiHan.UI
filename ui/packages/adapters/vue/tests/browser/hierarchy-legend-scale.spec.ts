@@ -57,6 +57,14 @@ describe('层级图的色阶图例', () => {
     expect(getComputedStyle(bar).backgroundImage).toContain('linear-gradient')
   })
 
+  it('渐变低端在行首：ltr 自左向右，rtl 自右向左', async () => {
+    await mount({ colorBy: 'value' })
+    await expect.poll(() => part('legend-scale-bar').length).toBe(2)
+    expect(getComputedStyle(part('legend-scale-bar')[0]!).backgroundImage).toMatch(/^linear-gradient\(90deg,/)
+    host!.dir = 'rtl'
+    expect(getComputedStyle(part('legend-scale-bar')[0]!).backgroundImage).toMatch(/^linear-gradient\(-90deg,/)
+  })
+
   it('按分支着色时图例收起，不占位置', async () => {
     await mount({})
     const [legend] = part('legend')

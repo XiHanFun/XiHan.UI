@@ -169,6 +169,19 @@ describe('可交互卡片', () => {
     expect(light.animationIterationCount).toBe('1')
     expect(light.borderTopWidth).toBe('1px')
     expect(light.pointerEvents).toBe('none')
+    // ltr 不镜像：光从左缘扫向右缘
+    expect(light.scale).toBe('1')
+    app!.unmount()
+    host!.remove()
+
+    // rtl：这一圈按方向符号水平镜像，光从行首（右缘）扫起
+    document.documentElement.dir = 'rtl'
+    const mirrored = await mount()
+    const mirroredRect = mirrored.getBoundingClientRect()
+    await moveTo(mirroredRect.left + mirroredRect.width / 2, mirroredRect.top + mirroredRect.height / 2)
+    await expect.poll(() => mirrored.matches(':hover')).toBe(true)
+    expect(getComputedStyle(mirrored, '::after').scale).toBe('-1 1')
+    document.documentElement.removeAttribute('dir')
     app!.unmount()
     host!.remove()
 
