@@ -69,6 +69,13 @@ export interface GridListSchema extends MachineSchema {
     value: string[]
     focusedValue: string | null
     pressedValue: string | null
+    /** 范围选的起点：裸选中与切换挪到那一行，Shift 扩选不挪。 */
+    anchorValue: string | null
+    /**
+     * 第一次按住 Shift 扩选之前的选中集。每一次扩选都从它重算「基线 ∪ 锚点到这一行」，
+     * 往回扩才收得回来；任何非 Shift 的选中操作都会使它作废。
+     */
+    selectionBaseline: string[] | null
   }
   computed: Record<string, never>
   refs: { typeahead: Typeahead }
@@ -77,6 +84,11 @@ export interface GridListSchema extends MachineSchema {
     | { type: 'VALUE.SET', value: string[] }
     | { type: 'ROW.SELECT', value: string }
     | { type: 'ROW.TOGGLE', value: string }
+    /**
+     * Shift 扩选到这一行（只在多选下）。行的全序与禁用集由连接层按当下的行现取后带入：
+     * 顺序是 DOM 的事，范围与基线归机器算。
+     */
+    | { type: 'ROW.EXTEND', value: string, items: string[], disabled: string[] }
     | { type: 'ROW.ACTION', value: string }
     | { type: 'ROW.FOCUS', value: string }
     | { type: 'GRID.BLUR' }
@@ -84,7 +96,7 @@ export interface GridListSchema extends MachineSchema {
     | { type: 'PRESS.END', value: string }
   tag: never
   guard: 'canPress'
-  action: 'setValue' | 'selectRow' | 'toggleRow' | 'invokeAction' | 'setFocusedValue' | 'clearFocus' | 'startPress' | 'endPress' | 'releaseWhenInert'
+  action: 'setValue' | 'selectRow' | 'toggleRow' | 'extendRow' | 'invokeAction' | 'setFocusedValue' | 'clearFocus' | 'startPress' | 'endPress' | 'releaseWhenInert'
   effect: never
 }
 

@@ -26,7 +26,7 @@
 
 ### 多选
 
-Space 切换当前行，Ctrl 或 Cmd+A 选择或清空全部可用行
+Space 切换当前行，Shift + 方向键、Shift + Space 与 Shift + 点击把锚点到那一行的一段并进选中，Ctrl 或 Cmd+A 选择或清空全部可用行
 
 <XhDemo src="grid-list/02-multiple" />
 
@@ -61,6 +61,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 - selectionMode 支持 none、single 与 multiple；none 是 Action List 模式。
 - 整组只有一个行级 Tab 停靠点；上下方向键、Home/End 与连打检索只在行焦点上工作。
 - Space 改变选择，Enter 触发行主操作；焦点在 row-action 时完全交给原生按钮。
+- 多选下 Shift 扩选：Shift + 方向键 / Home / End 移动焦点并把锚点到新焦点行那一段并进选中，Shift + Space 与 Shift + 点击扩到那一行。每一次扩选都从扩选开始前的选中集重算，往回扩即收回；禁用行占着位置但不被收进去。
 - row-actions 是独立 gridcell，按钮点击不会冒泡成行选择。
 - 与 [Sortable](./sortable) 组合即可获得指针拖动、键盘拖动、落点线和读屏播报；GridList 不复制拖拽协议。
 - collection 提供行标题、说明、禁用和语气的事实源；作者仍负责铺设各部件。
@@ -162,7 +163,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ROW.SELECT` · `ROW.TOGGLE` · `ROW.ACTION` · `ROW.FOCUS` · `GRID.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`VALUE.SET` · `ROW.SELECT` · `ROW.TOGGLE` · `ROW.EXTEND` · `ROW.ACTION` · `ROW.FOCUS` · `GRID.BLUR` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -211,6 +212,8 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `Home` | focus on row | 焦点移到第一行 |
 | `End` | focus on row | 焦点移到最后一行 |
 | `Space` | focus on selectable row | 单选时选中这一行，多选时切换这一行；不触发行内按钮 |
+| `Shift+ArrowDown` / `Shift+ArrowUp` / `Shift+Home` / `Shift+End` | focus on row, selectionMode=multiple | 焦点移动，并把锚点到新焦点行那一段并进扩选开始前的选中；往回扩即收回，禁用行不被收进去 |
+| `Shift+Space` | focus on row, selectionMode=multiple | 把锚点到焦点行那一段并进扩选开始前的选中；没有锚点时切换这一行并记为锚点 |
 | `Enter` | focus on row | 触发行主操作；未提供主操作且允许选择时改为选中这一行 |
 | `Ctrl+A` / `Cmd+A` | focus on multiple grid list | 选中全部可选行；已经全选时取消全部可选行 |
 | `单个可打印字符` | focus on row, typeahead 未关闭 | 按行标题连打检索，只移动焦点 |

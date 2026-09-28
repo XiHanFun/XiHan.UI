@@ -1,4 +1,4 @@
-<!-- 多选 | Space 切换当前行，Ctrl 或 Cmd+A 选择或清空全部可用行 -->
+<!-- 多选 | Space 切换当前行，Shift + 方向键、Shift + Space 与 Shift + 点击把锚点到那一行的一段并进选中，Ctrl 或 Cmd+A 选择或清空全部可用行 -->
 <script setup lang="ts">
 import {
   XhGridListRoot,

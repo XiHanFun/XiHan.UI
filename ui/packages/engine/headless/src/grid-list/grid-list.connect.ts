@@ -93,6 +93,22 @@ export function connectGridList<T extends PropTypes>(
       : { type: 'ROW.SELECT', value: rowValue })
   }
 
+  /**
+   * Shift 扩选：从锚点到这一行那一段并进扩选开始前的选中集，只在多选下生效。
+   * 全序取当下可见的行（有 collection 时取数据序），禁用行占着位置但不被收进去。
+   */
+  const extendTo = (root: HTMLElement, rowValue: string): void => {
+    if (!editable || selectionMode !== 'multiple')
+      return
+    const items = collection.length
+      ? collection.map(item => item.value)
+      : rows(root).map(itemValue).filter((item): item is string => item != null)
+    const off = collection.length
+      ? collection.filter(item => item.disabled).map(item => item.value)
+      : rows(root).filter(row => isItemDisabled(row)).map(itemValue).filter((item): item is string => item != null)
+    send({ type: 'ROW.EXTEND', value: rowValue, items, disabled: off })
+  }
+
   const selectAll = (root: HTMLElement): void => {
     if (!editable || selectionMode !== 'multiple')
       return
@@ -165,7 +181,10 @@ export function connectGridList<T extends PropTypes>(
         const intent = command || event.altKey ? null : navIntentFromKey(event.key, { axis: 'vertical', dir: prop('dir') ?? 'ltr' })
         if (intent) {
           event.preventDefault()
-          focusBy(root, intent)
+          const next = focusBy(root, intent)
+          // Shift + 方向键 / Home / End：焦点照常移动，锚点到新焦点行那一段并进选中
+          if (next != null && event.shiftKey)
+            extendTo(root, next)
           return
         }
         if (event.key === 'Enter' && rowValue != null) {
@@ -188,7 +207,12 @@ export function connectGridList<T extends PropTypes>(
         }
         if (event.key === ' ' && rowValue != null) {
           event.preventDefault()
-          if (!event.repeat)
+          if (event.repeat)
+            return
+          // Shift + Space：锚点到焦点行那一段并进选中（只在多选下；单选照常选中这一行）
+          if (event.shiftKey && selectionMode === 'multiple')
+            extendTo(root, rowValue)
+          else
             commitSelection(rowValue)
         }
       },
@@ -238,6 +262,14 @@ export function connectGridList<T extends PropTypes>(
             return
           if (selectionMode === 'none') {
             send({ type: 'ROW.ACTION', value: row.value })
+            return
+          }
+          // Shift + 点击：锚点到这一行那一段并进选中（只在多选下）
+          const root = event.shiftKey && selectionMode === 'multiple'
+            ? (event.currentTarget as HTMLElement).closest<HTMLElement>(parts.root.selector)
+            : null
+          if (root) {
+            extendTo(root, row.value)
             return
           }
           commitSelection(row.value)

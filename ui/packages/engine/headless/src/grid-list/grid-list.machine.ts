@@ -6,7 +6,7 @@
 // 提供 grid list 相关实现。
 
 import type { GridListSchema, GridListSelectionMode } from './grid-list.types'
-import { createTypeahead, setup } from '@xihan-ui/core'
+import { applySelection, createTypeahead, setup } from '@xihan-ui/core'
 import { sameArray, toArray } from '../shared/array'
 
 const { createMachine } = setup<GridListSchema>()
@@ -28,6 +28,8 @@ export const gridListMachine = createMachine({
     })),
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    anchorValue: cell<string | null>(() => ({ defaultValue: null })),
+    selectionBaseline: cell<string[] | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({ typeahead: createTypeahead() }),
   initialState: () => 'idle',
@@ -40,6 +42,7 @@ export const gridListMachine = createMachine({
         'VALUE.SET': { actions: ['setValue'] },
         'ROW.SELECT': { actions: ['selectRow'] },
         'ROW.TOGGLE': { actions: ['toggleRow'] },
+        'ROW.EXTEND': { actions: ['extendRow'] },
         'ROW.ACTION': { actions: ['invokeAction'] },
         'ROW.FOCUS': { actions: ['setFocusedValue'] },
         'GRID.BLUR': { actions: ['clearFocus'] },
@@ -58,14 +61,18 @@ export const gridListMachine = createMachine({
     actions: {
       setValue: ({ context, prop, event }) => {
         const current = event.current()
-        if (current.type === 'VALUE.SET')
-          context.set('value', normalizeValue(current.value, prop('selectionMode') ?? 'single'))
+        if (current.type !== 'VALUE.SET')
+          return
+        context.set('value', normalizeValue(current.value, prop('selectionMode') ?? 'single'))
+        context.set('selectionBaseline', null)
       },
       selectRow: ({ context, prop, event }) => {
         const current = event.current()
         if (current.type !== 'ROW.SELECT')
           return
         context.set('value', normalizeValue([current.value], prop('selectionMode') ?? 'single'))
+        context.set('anchorValue', current.value)
+        context.set('selectionBaseline', null)
       },
       toggleRow: ({ context, prop, event }) => {
         const current = event.current()
@@ -78,6 +85,38 @@ export const gridListMachine = createMachine({
         context.set('value', normalizeValue(value.includes(current.value)
           ? value.filter(item => item !== current.value)
           : [...value, current.value], mode))
+        context.set('anchorValue', current.value)
+        context.set('selectionBaseline', null)
+      },
+      extendRow: ({ context, prop, event }) => {
+        const current = event.current()
+        if (current.type !== 'ROW.EXTEND' || (prop('selectionMode') ?? 'single') !== 'multiple')
+          return
+        const anchor = context.get('anchorValue')
+        const disabled = new Set(current.disabled)
+        // 还没有起点时，扩选退化成切换这一行，并把它记为起点
+        if (anchor == null) {
+          if (disabled.has(current.value))
+            return
+          const value = context.get('value')
+          context.set('value', value.includes(current.value) ? value.filter(item => item !== current.value) : [...value, current.value])
+          context.set('anchorValue', current.value)
+          context.set('selectionBaseline', null)
+          return
+        }
+        // 基线在第一次扩选时拍下，之后每一下都从它重算：往回扩收得回来
+        const baseline = context.get('selectionBaseline') ?? context.get('value')
+        const next = applySelection({
+          state: { selected: baseline, anchor },
+          mode: 'multiple',
+          value: current.value,
+          extend: true,
+          additive: true,
+          items: current.items,
+          isDisabled: item => disabled.has(item),
+        })
+        context.set('value', [...next.selected])
+        context.set('selectionBaseline', baseline)
       },
       invokeAction: ({ prop, event }) => {
         const current = event.current()

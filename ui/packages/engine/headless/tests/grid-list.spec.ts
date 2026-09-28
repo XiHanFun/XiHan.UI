@@ -67,3 +67,114 @@ describe('gridList 选择与动作', () => {
     expect(machine.context.get('value')).toEqual([])
   })
 })
+
+describe('gridList Shift 范围选', () => {
+  const ITEMS = ['a', 'b', 'c', 'd', 'e']
+
+  function extend(machine: ReturnType<typeof service>['machine'], value: string, disabled: string[] = []): void {
+    machine.send({ type: 'ROW.EXTEND', value, items: ITEMS, disabled })
+  }
+
+  it('锚点到这一行那一段并进扩选开始前的选中，锚点不动', () => {
+    const { machine } = service({ selectionMode: 'multiple' })
+    machine.send({ type: 'ROW.TOGGLE', value: 'e' })
+    machine.send({ type: 'ROW.TOGGLE', value: 'b' })
+    extend(machine, 'd')
+    expect([...machine.context.get('value')].sort()).toEqual(['b', 'c', 'd', 'e'])
+    expect(machine.context.get('anchorValue')).toBe('b')
+  })
+
+  it('往回扩收得回来：每一下都从基线重算，不在上一次的结果上继续并', () => {
+    const { machine } = service({ selectionMode: 'multiple' })
+    machine.send({ type: 'ROW.TOGGLE', value: 'a' })
+    extend(machine, 'd')
+    expect(machine.context.get('value')).toEqual(['a', 'b', 'c', 'd'])
+    extend(machine, 'b')
+    expect(machine.context.get('value')).toEqual(['a', 'b'])
+  })
+
+  it('禁用行占着位置但不被收进去', () => {
+    const { machine } = service({ selectionMode: 'multiple' })
+    machine.send({ type: 'ROW.TOGGLE', value: 'a' })
+    extend(machine, 'd', ['c'])
+    expect(machine.context.get('value')).toEqual(['a', 'b', 'd'])
+  })
+
+  it('没有锚点时扩选退化成切换这一行，并把它记为锚点', () => {
+    const { machine } = service({ selectionMode: 'multiple' })
+    extend(machine, 'c')
+    expect(machine.context.get('value')).toEqual(['c'])
+    expect(machine.context.get('anchorValue')).toBe('c')
+  })
+
+  it('非 Shift 的选中操作作废基线：下一次扩选从新的选中集起算', () => {
+    const { machine } = service({ selectionMode: 'multiple' })
+    machine.send({ type: 'ROW.TOGGLE', value: 'a' })
+    extend(machine, 'c')
+    machine.send({ type: 'ROW.TOGGLE', value: 'e' })
+    extend(machine, 'd')
+    expect([...machine.context.get('value')].sort()).toEqual(['a', 'b', 'c', 'd', 'e'])
+  })
+
+  it('单选与不可选时扩选不生效', () => {
+    const single = service()
+    single.machine.send({ type: 'ROW.SELECT', value: 'a' })
+    extend(single.machine, 'c')
+    expect(single.machine.context.get('value')).toEqual(['a'])
+  })
+
+  it('connect：Shift + 方向键移动焦点并扩选，Shift + 点击扩选到点中的行', () => {
+    const { machine } = service({ selectionMode: 'multiple', collection: ITEMS.map(value => ({ value, label: value.toUpperCase() })) })
+    const root = document.createElement('div')
+    const rowEls = ITEMS.map((value) => {
+      const el = document.createElement('div')
+      root.append(el)
+      return el
+    })
+    document.body.append(root)
+    const wire = (): void => {
+      const api = connectGridList(machine, normalizeProps)
+      const spread = (el: HTMLElement, props: Record<string, unknown>): void => {
+        for (const [key, value] of Object.entries(props)) {
+          if (key.startsWith('on') || value == null)
+            continue
+          el.setAttribute(key, String(value))
+        }
+      }
+      spread(root, api.getRootProps() as Record<string, unknown>)
+      rowEls.forEach((el, i) => spread(el, api.getRowProps({ value: ITEMS[i]! }) as Record<string, unknown>))
+    }
+    wire()
+    const api = (): ReturnType<typeof connectGridList> => connectGridList(machine, normalizeProps)
+
+    // 先点第二行立起锚点
+    const clickRow = (i: number, shiftKey = false): void => {
+      wire()
+      const onClick = (api().getRowProps({ value: ITEMS[i]! }) as Record<string, unknown>).onClick as (event: MouseEvent) => void
+      onClick({ currentTarget: rowEls[i], target: rowEls[i], shiftKey } as unknown as MouseEvent)
+    }
+    clickRow(1)
+    expect(machine.context.get('value')).toEqual(['b'])
+
+    clickRow(3, true)
+    expect(machine.context.get('value')).toEqual(['b', 'c', 'd'])
+
+    // Shift + ArrowUp 从焦点行往上一行：锚点到 c 那一段
+    machine.send({ type: 'ROW.FOCUS', value: 'd' })
+    wire()
+    const onKeyDown = (api().getRootProps() as Record<string, unknown>).onKeyDown as (event: KeyboardEvent) => void
+    onKeyDown({
+      key: 'ArrowUp',
+      shiftKey: true,
+      ctrlKey: false,
+      metaKey: false,
+      altKey: false,
+      repeat: false,
+      currentTarget: root,
+      target: rowEls[3],
+      preventDefault: () => {},
+    } as unknown as KeyboardEvent)
+    expect(machine.context.get('value')).toEqual(['b', 'c'])
+    root.remove()
+  })
+})
