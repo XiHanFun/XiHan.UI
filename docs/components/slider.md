@@ -300,7 +300,6 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
-| `root` | `data-inverted` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
