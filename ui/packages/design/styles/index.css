@@ -9183,6 +9183,11 @@
     --xh-_layout-sider-padding: 0;
   }
 
+  /* 侧栏里的 SideNav 跟着侧栏收放：侧栏这一次开合直接落位（首帧、跨过断点）时，导航的宽度同样直接落位 */
+  [data-scope='layout'][data-part='sider'][data-instant] [data-scope='side-nav'][data-part='root'] {
+    transition: none;
+  }
+
   [data-scope='layout'][data-part='content'] {
     grid-area: content;
     /* 内容列已是 minmax(0, 1fr)，这里再声明一次，宽表格与长串文本才撑不破列 */
@@ -38477,9 +38482,11 @@
     gap: var(--xh-side-nav-gap, var(--xh-space-1));
     padding: var(--xh-side-nav-p, var(--xh-space-2));
     color: var(--xh-side-nav-fg, var(--xh-fg-default));
+    /* 占位式侧栏折叠是屏内的尺寸变化：与 Layout 侧栏同一段 move、同一条曲线，放在侧栏里时两者一起收放 */
+    transition: inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  /* 折叠成图标栏：整栏收窄，文字随行宽被裁掉 */
+  /* 折叠成图标栏：整栏收窄；行文字先淡出，收窄落定之后才裁掉（见下） */
   [data-scope='side-nav'][data-part='root'][data-collapsed] {
     inline-size: var(--xh-side-nav-collapsed-w, var(--xh-sider-collapsed-w));
   }
@@ -38511,17 +38518,31 @@
   }
 
   [data-scope='side-nav'][data-part='group-label'] {
+    position: relative;
     padding-block: var(--xh-side-nav-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-side-nav-group-label-px, var(--xh-_side-nav-row-px));
     font-size: var(--xh-text-caption-size);
     font-weight: var(--xh-text-label-weight);
     color: var(--xh-fg-subtle);
     user-select: none;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 折叠时分组标题没有落点，藏掉 */
-  [data-scope='side-nav'][data-part='group-label'][data-collapsed] {
-    display: none;
+  /* 图标栏里分组标题没有落点：字淡成透明、仍参与播报，标题留着自己的高度，下面的行不上下跳；
+     折叠一开始就淡出，展开等整栏宽度落定才淡入。落成图标栏之后在这一格里画一道细分隔，分组仍看得出来 */
+  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='group-label'] {
+    overflow: hidden;
+    color: transparent;
+    white-space: nowrap;
+  }
+
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='group-label']::after {
+    content: '';
+    position: absolute;
+    inset-inline: var(--xh-_side-nav-row-px);
+    inset-block-start: calc(50% - var(--xh-stroke-thin) / 2);
+    block-size: var(--xh-stroke-thin);
+    background: var(--xh-border-subtle);
   }
 
   [data-scope='side-nav'][data-part='branch'] {
@@ -38608,15 +38629,24 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 折叠成图标栏：行文字裁到看不见但仍参与播报，行内容居中，不裁半个字。
+  /* 行文字与展开箭头的淡变：折叠一开始就淡出，此时仍在行里、由收窄的行宽裁着；展开时等整栏宽度落定才淡入。
+     弹出面板里的行不在此列 */
+  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='branch-text']:not([data-popout] *),
+  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='link-text']:not([data-popout] *),
+  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='branch-indicator']:not([data-popout] *) {
+    opacity: 0;
+  }
+
+  /* 落成图标栏（收窄落定）：行文字裁到看不见但仍参与播报，行内容居中，不裁半个字。
      用 clip-path 而不是 display:none——图标栏里按钮与链接的可及名就是这段文字，
      藏成 display:none 它们就一个名字都没有了。
      white-space: nowrap 防止 1px 宽把文本挤成竖排。
      弹出面板里的行不在此列——面板是正常宽度的浮层，文字照常显示 */
-  [data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-text']:not([data-popout] *),
-  [data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='link-text']:not([data-popout] *) {
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-text']:not([data-popout] *),
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='link-text']:not([data-popout] *) {
     position: absolute;
     inline-size: 1px;
     block-size: 1px;
@@ -38628,13 +38658,13 @@
     border: 0;
   }
 
-  /* 展开指示是纯装饰（aria-hidden），折叠态整个不占位 */
-  [data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-indicator']:not([data-popout] *) {
+  /* 展开指示是纯装饰（aria-hidden），落成图标栏之后整个不占位 */
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-indicator']:not([data-popout] *) {
     display: none;
   }
 
-  [data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-trigger']:not([data-popout] *),
-  [data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='link']:not([data-popout] *) {
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-trigger']:not([data-popout] *),
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='link']:not([data-popout] *) {
     --xh-collection-inline-padding: 0;
 
     justify-content: center;
@@ -38651,9 +38681,32 @@
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
     --xh-_side-nav-available-w: 100vw;
 
+    /* 弹出面板从锚点一侧短移入，方向按实际落位只激活一支；先清零，截断父层定位层的方向继承 */
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
+
     position: fixed;
     z-index: var(--xh-side-nav-popout-layer, var(--xh-_layer, var(--xh-layer-popover)));
     pointer-events: auto;
+  }
+
+  /* 物理 placement 与定位引擎同一套，不随书写方向翻 */
+  [data-scope='side-nav'][data-part='positioner'][data-placement^='top'] {
+    --xh-_overlay-enter-down: 1;
+  }
+
+  [data-scope='side-nav'][data-part='positioner'][data-placement^='bottom'] {
+    --xh-_overlay-enter-up: 1;
+  }
+
+  [data-scope='side-nav'][data-part='positioner'][data-placement^='left'] {
+    --xh-_overlay-enter-right: 1;
+  }
+
+  [data-scope='side-nav'][data-part='positioner'][data-placement^='right'] {
+    --xh-_overlay-enter-left: 1;
   }
 
   /* 还没落位就先藏着：visibility 而非 display，display:none 会让引擎量不到面板尺寸 */
@@ -38680,14 +38733,15 @@
     overscroll-behavior: contain;
   }
 
+  /* 弹出分支是锚定在分支行旁侧的一列导航，与菜单同属锚定列表：从锚点一侧短移淡入，不缩放 */
   [data-scope='side-nav'][data-part='branch-content'][data-popout][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到收起落下来之间闪一下原样 */
   [data-scope='side-nav'][data-part='branch-content'][data-popout][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 箭头是行尾的后缀：auto 外边距把它顶到行尾，家族按 suffix 槽下发的外边距已在行上归零。
@@ -38705,7 +38759,12 @@
     justify-content: center;
     inline-size: var(--xh-side-nav-branch-indicator-size, var(--xh-control-indicator-size));
     block-size: var(--xh-side-nav-branch-indicator-size, var(--xh-control-indicator-size));
-    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+    /* 收起时指向行尾、展开时转向下方，与逻辑书写方向一致：rtl 下行尾在左侧，收起的箭头转半圈；
+       旋转角乘书写方向的符号（ltr 0deg、rtl 180deg），按就近的 dir 走 */
+    rotate: calc(90deg - 90deg * var(--xh-direction-sign));
+    transition:
+      rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='side-nav'][data-part='branch-indicator'][data-state='open'] {
@@ -38736,6 +38795,13 @@
   [data-scope='side-nav'][data-part='link'][hidden],
   [data-scope='side-nav'][data-part='branch-indicator'][hidden] {
     display: none;
+  }
+
+  @media (forced-colors: active) {
+    /* 图标栏里分组之间那道细分隔画的是一块底色，这一档里底色被统一换成 Canvas、整道消失；换成 GrayText 画回来 */
+    [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='group-label']::after {
+      background: GrayText;
+    }
   }
 
   @media print {

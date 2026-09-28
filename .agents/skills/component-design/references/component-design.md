@@ -768,9 +768,9 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 | 关系 | 关键帧 | 组件 |
 | --- | --- | --- |
-| 锚定列表 / 菜单 | `xh-overlay-slide-in / out` | Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、ColorPicker、Tooltip（入场 `--xh-motion-duration-enter`） |
+| 锚定列表 / 菜单 | `xh-overlay-slide-in / out` | Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、ColorPicker、SideNav 弹出分支、Tooltip（入场 `--xh-motion-duration-enter`） |
 | 锚定面板 | `xh-overlay-pop-in` / `xh-pop-out` | Popover、HoverCard、Popconfirm、Tour、Command |
-| 无锚定弹出 | `xh-pop-in / out` | NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层、BackTop、Log / MessageFeed 回底按钮 |
+| 无锚定弹出 | `xh-pop-in / out` | NavigationMenu、FloatingPanel、FloatButton 列表、Pagination 弹层、BackTop、Log / MessageFeed 回底按钮 |
 | 面板（sheet） | `xh-sheet-in / out`（位移 md + scale-enter） | Dialog、Notification |
 | 整幅滑入（slide） | `xh-slide-in / out`（位移 `--xh-motion-travel`） | Drawer、Layout 抽屉式侧栏：入场 `--xh-motion-duration-slide` + `--xh-motion-ease-slide`，退场 `--xh-motion-duration-exit` + `--xh-motion-ease-exit` |
 
@@ -805,7 +805,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 - 滑动指示器（Tabs、Segmented、Anchor、NavigationMenu）共用一套测量：取当前项相对列表容器的 `offset*` 几何，投影为私有槽。只有换项才滑：首次落位、同一项的重量（容器与条目尺寸变化、换上正式字体）直接到位，连接层在这一落点投影 `data-instant`，皮肤在它身上撤掉几何过渡；连续缩放窗口时指示器不拖尾。不用 `getBoundingClientRect`，因为祖先的进场缩放会让测量值失真。位置用 `translate`，尺寸用 `inline-size` / `block-size`；Tabs 的标签带滚动已占用 `translate`，指示条的位置叠在 `transform` 上，两者互不覆盖。Tour 聚光框是 `position: fixed` 的视口坐标，按目标的屏幕矩形定位；换步时聚光框与气泡定位层同一段时长、同一条曲线一起滑（只在换步那一段投影 `data-animating`，两者的过渡播完即撤），页面滚动与视口缩放时两者跟手、不补过渡。
 - 优先动可合成属性：`translate`、`scale`、`rotate`、`opacity`；`clip-path` 只触发重绘，可以使用。
-- 布局属性动画只允许下列登记例外：披露内容的 `grid-template-rows` 与 padding；指示器尺寸（绝对定位、`contain: layout` 的独立小元素）；Switch 滑块按下伸长；Carousel 当前指示点与 Tour 进度点伸长；Layout 侧栏折叠；Splitter 面板折叠与展开（拖拽与步进跟手，不带过渡）；QuestionFlow 视口与 Notification 叠摞的高度；Tour 换步时聚光框的位置与尺寸、气泡定位层的位置（`position: fixed` 的独立框，只在换步那一段挂）。新增例外须登记理由（门禁 `check-motion-layout`）。
+- 布局属性动画只允许下列登记例外：披露内容的 `grid-template-rows` 与 padding；指示器尺寸（绝对定位、`contain: layout` 的独立小元素）；Switch 滑块按下伸长；Carousel 当前指示点与 Tour 进度点伸长；Layout 侧栏与 SideNav 折叠（同一段 `move`，SideNav 放在侧栏里时随侧栏直接落位；行文字先淡出、宽度落定才裁成图标栏，分组标题留着高度）；Splitter 面板折叠与展开（拖拽与步进跟手，不带过渡）；QuestionFlow 视口与 Notification 叠摞的高度；Tour 换步时聚光框的位置与尺寸、气泡定位层的位置（`position: fixed` 的独立框，只在换步那一段挂）。新增例外须登记理由（门禁 `check-motion-layout`）。
 - `will-change` 只写在动画进行中的状态下：拖拽中（`data-dragging`）、机器驱动的补间进行中（`data-animating`），以及 Presence 管理的部件的收起态（`data-state='closed'`，只在退场那一段留在屏上）。开态常驻会使文字模糊；不可合成的属性不写 `will-change`。
 - transition 列表写长名：`background-color`、`border-color`、`outline-color`、`box-shadow`、`opacity`、`translate`、`scale`、`rotate`；不写 `background`、`border`、`outline` 与 `transform` 简写。需要一次性组合多个变换、且顺序是独立属性表达不了的，才写 `transform`，并登记理由。
 - liquid 档的双沿指示器：起始沿与结束沿各由一支弹簧驱动，去向那一侧用 `spring-lead`、另一侧用 `spring-trail`，移动中被拉长、停下时收回；拉长时块向收到不低于 `--xh-motion-scale-squash`（0.86）。测量与绘制沿用上面的共享几何与登记例外；新的点击从当前位置与速度改向。standard 档保持曲线。

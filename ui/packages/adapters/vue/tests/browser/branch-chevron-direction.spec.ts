@@ -1,4 +1,4 @@
-// 树族分支箭头的朝向随书写方向：收起时指向行尾（ltr 朝右、rtl 朝左），展开时统一朝下。
+// 树族与侧栏导航分支箭头的朝向随书写方向：收起时指向行尾（ltr 朝右、rtl 朝左），展开时统一朝下。
 // 方向按就近的 dir 走——rtl 页面里局部写回 ltr 的树按 ltr 朝向，不被外层的 rtl 翻过去。
 import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
@@ -17,7 +17,7 @@ function angle(el: HTMLElement): number {
   return value === 'none' ? 0 : Number.parseFloat(value)
 }
 
-describe.each(['tree', 'tree-select'] as const)('%s 分支箭头朝向', (scope) => {
+describe.each(['tree', 'tree-select', 'side-nav'] as const)('%s 分支箭头朝向', (scope) => {
   function mount(): Record<string, HTMLElement> {
     const chevron = (id: string, state: 'open' | 'closed'): string =>
       `<span data-id="${id}" data-scope="${scope}" data-part="branch-indicator" data-state="${state}"></span>`

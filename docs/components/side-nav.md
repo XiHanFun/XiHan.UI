@@ -190,7 +190,7 @@
 
 **状态**：`idle` · `popout`
 
-**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR` · `POPOUT.OPEN` · `POPOUT.CLOSE` · `POPOUT.HOVER` · `POPOUT.HOVER_END` · `PRESENCE.SET` · `PRESS.START` · `PRESS.END`
+**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR` · `POPOUT.OPEN` · `POPOUT.CLOSE` · `POPOUT.HOVER` · `POPOUT.HOVER_END` · `PRESENCE.SET` · `PRESS.START` · `PRESS.END` · `COLLAPSE.SETTLED`
 
 **判据**：`canChange` · `canPopout` · `canPress`
 
@@ -279,12 +279,15 @@
 
 `@xihan-ui/styles/side-nav.css` 使用 `[data-scope="side-nav"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-animating` | ''（条件成立时才出现） |
 | `root` | `data-collapsed` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
@@ -370,9 +373,9 @@
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 出现（锚定面板） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `inline-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -380,4 +383,4 @@
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。
