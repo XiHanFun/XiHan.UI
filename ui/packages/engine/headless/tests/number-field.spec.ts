@@ -4,8 +4,10 @@ import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   connectNumberField,
+  NUMBER_FIELD_CHANGE_ACCELERATION,
   NUMBER_FIELD_CHANGE_DELAY,
   NUMBER_FIELD_CHANGE_INTERVAL,
+  NUMBER_FIELD_MIN_CHANGE_INTERVAL,
   NUMBER_FIELD_STEP,
   numberFieldMachine,
 } from '../src/number-field'
@@ -412,5 +414,73 @@ describe('加减钮的按压通道：Space / Enter 与触屏按住投影 data-pr
       expect(dec(f)['data-pressed']).toBeUndefined()
       f.stop()
     }
+  })
+})
+
+describe('numberFieldMachine 按住加速', () => {
+  it('按住越久连发越快：每拍间隔缩到上一拍的 0.85，收到 minChangeInterval 为止', () => {
+    vi.useFakeTimers()
+    const f = makeField({ defaultValue: '0' })
+    f.service.send({ type: 'PRESS.START', direction: 1 })
+    vi.advanceTimersByTime(NUMBER_FIELD_CHANGE_DELAY)
+    // 头一拍按 changeInterval，第二拍已缩到 0.85 倍
+    vi.advanceTimersByTime(NUMBER_FIELD_CHANGE_INTERVAL)
+    expect(f.api().value).toBe('2')
+    vi.advanceTimersByTime(NUMBER_FIELD_CHANGE_INTERVAL * NUMBER_FIELD_CHANGE_ACCELERATION)
+    expect(f.api().value).toBe('3')
+    // 再按住 1 秒：固定节奏只够 20 拍，加速后收到 10ms 一拍，远超这个数
+    vi.advanceTimersByTime(1000)
+    expect(Number(f.api().value)).toBeGreaterThan(60)
+    f.service.send({ type: 'PRESS.END' })
+    f.stop()
+  })
+
+  it('minChangeInterval 写成与 changeInterval 相同即关掉加速，按固定节奏连发', () => {
+    vi.useFakeTimers()
+    const f = makeField({ defaultValue: '0', minChangeInterval: NUMBER_FIELD_CHANGE_INTERVAL })
+    f.service.send({ type: 'PRESS.START', direction: 1 })
+    vi.advanceTimersByTime(NUMBER_FIELD_CHANGE_DELAY + NUMBER_FIELD_CHANGE_INTERVAL * 10)
+    expect(f.api().value).toBe('11')
+    f.service.send({ type: 'PRESS.END' })
+    f.stop()
+  })
+
+  it('最短间隔比起始间隔还长时按起始间隔走，不会越按越慢', () => {
+    vi.useFakeTimers()
+    const f = makeField({ defaultValue: '0', minChangeInterval: NUMBER_FIELD_MIN_CHANGE_INTERVAL * 100 })
+    f.service.send({ type: 'PRESS.START', direction: 1 })
+    vi.advanceTimersByTime(NUMBER_FIELD_CHANGE_DELAY + NUMBER_FIELD_CHANGE_INTERVAL * 4)
+    expect(f.api().value).toBe('5')
+    f.service.send({ type: 'PRESS.END' })
+    f.stop()
+  })
+})
+
+describe('numberFieldMachine 失焦夹取开关', () => {
+  it('clampValueOnBlur 关掉后越界值原样留下，仍按 format 规范显示，outOfRange 与 data-out-of-range 报出来', () => {
+    const f = makeField({ min: 0, max: 10, clampValueOnBlur: false, format: value => value.toFixed(1) })
+    f.api().setValue('42')
+    f.service.send({ type: 'INPUT.BLUR' })
+    expect(f.api().value).toBe('42.0')
+    expect(f.api().outOfRange).toBe(true)
+    expect(f.api().getRootProps()).toMatchObject({ 'data-out-of-range': '' })
+    // 步进照旧不越界：从越界值往下走一步落回区间
+    f.api().decrement()
+    expect(f.api().value).toBe('10.0')
+    expect(f.api().outOfRange).toBe(false)
+    f.stop()
+  })
+
+  it('缺省开启：失焦夹回区间，空值与非法串不算越界', () => {
+    const f = makeField({ min: 0, max: 10 })
+    expect(f.api().outOfRange).toBe(false)
+    f.api().setValue('abc')
+    expect(f.api().outOfRange).toBe(false)
+    f.api().setValue('-5')
+    expect(f.api().outOfRange).toBe(true)
+    f.service.send({ type: 'INPUT.BLUR' })
+    expect(f.api().value).toBe('0')
+    expect(f.api().getRootProps()).toMatchObject({ 'data-out-of-range': undefined })
+    f.stop()
   })
 })

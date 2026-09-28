@@ -35,8 +35,18 @@ export interface NumberFieldSchema extends MachineSchema {
     name?: string
     /** 按住加减按钮多久开始连发，默认 300ms。 */
     changeDelay?: number
-    /** 连发间隔，默认 50ms。 */
+    /** 连发开始时的间隔，默认 50ms；按住越久间隔越短，逐次收到 minChangeInterval。 */
     changeInterval?: number
+    /**
+     * 连发加速后的最短间隔，默认 10ms：按住越久步进越快，每连发一次间隔缩到上一次的 0.85，缩到这里为止。
+     * 写成与 changeInterval 相同的数即关掉加速，按固定节奏连发。
+     */
+    minChangeInterval?: number
+    /**
+     * 失焦时把越界的值夹回 [min, max]，默认开启。关掉后越界值原样留在框里（仍按 format 规范显示），
+     * 由 outOfRange 与 data-out-of-range 报出来，交给表单层提示；步进照旧不会越界。
+     */
+    clampValueOnBlur?: boolean
     /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 */
@@ -101,6 +111,8 @@ export interface NumberFieldApi<T extends PropTypes = PropTypes> {
   invalid: boolean
   canIncrement: boolean
   canDecrement: boolean
+  /** 值是合法数字但落在 [min, max] 之外。只有关掉 clampValueOnBlur 或受控写入时才会在失焦后仍为真。 */
+  outOfRange: boolean
   setValue: (next: string) => void
   increment: () => void
   decrement: () => void

@@ -20,7 +20,7 @@ type NumberFieldProps = NumberFieldSchema['props']
 /** 默认插槽的载荷：原始输入串与其数值、增减是否仍可进行，以及写值、增减的命令。 */
 export type NumberFieldRootSlotProps = Pick<
   NumberFieldApi,
-  'value' | 'valueAsNumber' | 'empty' | 'canIncrement' | 'canDecrement' | 'setValue' | 'increment' | 'decrement'
+  'value' | 'valueAsNumber' | 'empty' | 'canIncrement' | 'canDecrement' | 'outOfRange' | 'setValue' | 'increment' | 'decrement'
 >
 
 export const XhNumberFieldRoot = defineComponent({
@@ -40,6 +40,8 @@ export const XhNumberFieldRoot = defineComponent({
     name: { type: String },
     changeDelay: { type: Number },
     changeInterval: { type: Number },
+    minChangeInterval: { type: Number },
+    clampValueOnBlur: { type: Boolean, default: undefined },
     variant: { type: String as PropType<ControlVariant> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
@@ -67,6 +69,7 @@ export const XhNumberFieldRoot = defineComponent({
       empty: ctx.api.value.empty,
       canIncrement: ctx.api.value.canIncrement,
       canDecrement: ctx.api.value.canDecrement,
+      outOfRange: ctx.api.value.outOfRange,
       setValue: ctx.api.value.setValue,
       increment: ctx.api.value.increment,
       decrement: ctx.api.value.decrement,

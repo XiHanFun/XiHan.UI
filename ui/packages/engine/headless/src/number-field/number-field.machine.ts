@@ -8,7 +8,7 @@
 import type { Params } from '@xihan-ui/core'
 import type { NumberCodec } from '../shared/number'
 import type { NumberFieldPressedPart, NumberFieldSchema } from './number-field.types'
-import { resetDeclaredValue, setIntervalEffect, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { resetDeclaredValue, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { decodeNumber, encodeNumber, normalizeValue, stepValue } from '../shared/number'
 
 const { createMachine } = setup<NumberFieldSchema>()
@@ -21,6 +21,10 @@ function codecOf(prop: Params<NumberFieldSchema>['prop']): NumberCodec {
 export const NUMBER_FIELD_STEP = 1
 export const NUMBER_FIELD_CHANGE_DELAY = 300
 export const NUMBER_FIELD_CHANGE_INTERVAL = 50
+export const NUMBER_FIELD_MIN_CHANGE_INTERVAL = 10
+
+/** 每连发一次，下一次的间隔缩到这一次的多少：按住约 0.5s 后从 50ms 收到 10ms。 */
+export const NUMBER_FIELD_CHANGE_ACCELERATION = 0.85
 
 /**
  * 这一侧的按钮此刻能不能按：可编辑且没贴住这一侧的端点；空值时两个方向都还能走（会落到 min 或 0）。
@@ -146,27 +150,34 @@ export const numberFieldMachine = createMachine({
         if (pressed != null && !canPressTrigger(prop, context.get('value'), pressed))
           context.set('pressed', null)
       },
-      // 只在失焦时规范化，避免打断输入途中的中间态（如 "1."）
+      // 只在失焦时规范化，避免打断输入途中的中间态（如 "1."）；关掉夹取时只补格式，越界值原样留下
       normalize: ({ context, prop }) => {
-        const next = normalizeValue(context.get('value'), { min: prop('min'), max: prop('max'), ...codecOf(prop) })
+        const clampOnBlur = prop('clampValueOnBlur') !== false
+        const next = normalizeValue(context.get('value'), {
+          min: clampOnBlur ? prop('min') : undefined,
+          max: clampOnBlur ? prop('max') : undefined,
+          ...codecOf(prop),
+        })
         if (next !== context.get('value'))
           context.set('value', next)
       },
     },
     effects: {
-      // 先等 changeDelay 再按 changeInterval 连发；两个定时器同属一个副作用，出 spinning 一并撤掉
+      // 先等 changeDelay 再按 changeInterval 连发，按住越久间隔越短，逐次收到 minChangeInterval；
+      // 下一拍总在这一拍之后才排，同一时刻只有一个定时器，出 spinning 一并撤掉
       spin: ({ send, prop }) => {
-        let stopInterval: VoidFunction | null = null
-        const stopDelay = setTimeoutEffect(() => {
-          stopInterval = setIntervalEffect(
-            () => send({ type: 'after.changeInterval' }),
-            prop('changeInterval') ?? NUMBER_FIELD_CHANGE_INTERVAL,
-          )
-        }, prop('changeDelay') ?? NUMBER_FIELD_CHANGE_DELAY)
-        return () => {
-          stopDelay()
-          stopInterval?.()
+        let interval = prop('changeInterval') ?? NUMBER_FIELD_CHANGE_INTERVAL
+        const floor = Math.min(interval, prop('minChangeInterval') ?? NUMBER_FIELD_MIN_CHANGE_INTERVAL)
+        let stop: VoidFunction
+        const tick = (): void => {
+          send({ type: 'after.changeInterval' })
+          interval = Math.max(floor, interval * NUMBER_FIELD_CHANGE_ACCELERATION)
+          stop = setTimeoutEffect(tick, interval)
         }
+        stop = setTimeoutEffect(() => {
+          stop = setTimeoutEffect(tick, interval)
+        }, prop('changeDelay') ?? NUMBER_FIELD_CHANGE_DELAY)
+        return () => stop()
       },
     },
   },

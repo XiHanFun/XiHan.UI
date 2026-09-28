@@ -204,6 +204,17 @@ export const numberFieldSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '关掉失焦夹取：越界输入原样留下，root 投影 data-out-of-range 交给表单层提示',
+      spec: { apg: APG },
+      props: { min: 0, max: 100, clampValueOnBlur: false },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        { kind: 'raw', why: '真实输入需要写 value 并派发 input', run: ({ doc }) => typeInto(doc, '999') },
+        { kind: 'blur', expect: { parts: { root: { 'data-out-of-range': '' } } } },
+        { kind: 'raw', why: 'value 是 property', run: ({ doc }) => expectValue(doc, '999', '关掉夹取后越界值应原样留下') },
+      ],
+    },
+    {
       // 函数交不成 attribute，两个适配器都按 property 下发（harness 的 applyInputs 已按类型分流）
       name: '自定义换算：千位分隔符的串照样读得出数、走得动步进',
       spec: { apg: APG },

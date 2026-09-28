@@ -37,7 +37,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} invalid - 校验失败标注
  * @attr {string} name - 表单字段名；提供后才参与提交
  * @attr {number} change-delay - 按住加减按钮多久后开始连发，默认 300ms
- * @attr {number} change-interval - 连发间隔，默认 50ms
+ * @attr {number} change-interval - 连发开始时的间隔，默认 50ms；按住越久间隔越短
+ * @attr {number} min-change-interval - 按住加速后连发的最短间隔，默认 10ms；与 change-interval 相同即关掉加速
+ * @attr {boolean} clamp-value-on-blur - 失焦时把越界的值夹回区间，默认开启；写 "false" 关掉
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -71,6 +73,8 @@ export class XhNumberFieldElement extends XhElement {
     name: { converter: STRING_CONVERTER },
     changeDelay: { converter: NUMBER_CONVERTER, attribute: 'change-delay' },
     changeInterval: { converter: NUMBER_CONVERTER, attribute: 'change-interval' },
+    minChangeInterval: { converter: NUMBER_CONVERTER, attribute: 'min-change-interval' },
+    clampValueOnBlur: { converter: BOOLEAN_CONVERTER, attribute: 'clamp-value-on-blur' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -92,6 +96,8 @@ export class XhNumberFieldElement extends XhElement {
   declare name?: string
   declare changeDelay?: number
   declare changeInterval?: number
+  declare minChangeInterval?: number
+  declare clampValueOnBlur?: boolean
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
@@ -132,6 +138,8 @@ export class XhNumberFieldElement extends XhElement {
       name: this.name,
       changeDelay: this.changeDelay,
       changeInterval: this.changeInterval,
+      minChangeInterval: this.minChangeInterval,
+      clampValueOnBlur: this.clampValueOnBlur,
       variant: this.variant,
       tone: this.tone,
       size: this.size,
@@ -139,6 +147,11 @@ export class XhNumberFieldElement extends XhElement {
       format: this.format,
       onValueChange: this.notify,
     }
+  }
+
+  /** 值是合法数字但落在 [min, max] 之外；还没进文档时为 false。 */
+  get outOfRange(): boolean {
+    return this.ctrl.service ? connectNumberField(this.ctrl.service, wcNormalize).outOfRange : false
   }
 
   protected wire(): void {
