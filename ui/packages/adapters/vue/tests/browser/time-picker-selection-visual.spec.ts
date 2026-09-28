@@ -146,6 +146,24 @@ describe('time-picker 统一选中反馈', () => {
     expect(checkStyle(plainItem).opacity).toBe('0')
   })
 
+  it('对号与 Select 等列表的对号同一把尺：指示符档，compact 下随之收小', async () => {
+    const size = (): number[] => [byTestId('selected-preset'), byTestId('hour-09')].map(el => Number.parseFloat(checkStyle(el).width))
+    const indicator = (): number => Number.parseFloat(getComputedStyle(byTestId('hour-09')).getPropertyValue('--xh-control-indicator-size'))
+    await mountTimePicker()
+    expect(size()).toEqual([indicator(), indicator()])
+    app?.unmount()
+    host?.remove()
+    document.documentElement.dataset.density = 'compact'
+    try {
+      await mountTimePicker()
+      expect(indicator()).toBeLessThan(16)
+      expect(size()).toEqual([indicator(), indicator()])
+    }
+    finally {
+      delete document.documentElement.dataset.density
+    }
+  })
+
   it('hover 与键盘焦点增加中性状态底，选中叠加 hover 与普通项同档，按下再深一档且不缩放', async () => {
     await mountTimePicker()
     const selected = byTestId('hour-09')

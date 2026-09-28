@@ -22597,7 +22597,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-sm"
+        "--xh-control-indicator-size"
       ],
       "visibility": "public",
       "description": "date-picker 的 preset 部件 block-size、inline-size、padding-inline-end 覆盖槽。"
@@ -24415,7 +24415,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-sm"
+        "--xh-control-indicator-size"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 preset 部件 block-size、inline-size、padding-inline-end 覆盖槽。"
@@ -72185,7 +72185,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-sm"
+        "--xh-control-indicator-size"
       ],
       "visibility": "public",
       "description": "time-picker 的 item 部件 block-size、inline-size、padding-inline 覆盖槽。"
@@ -72575,7 +72575,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-sm"
+        "--xh-control-indicator-size"
       ],
       "visibility": "public",
       "description": "time-picker 的 preset 部件 block-size、inline-size、padding-inline-end 覆盖槽。"
@@ -73922,7 +73922,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-sm"
+        "--xh-control-indicator-size"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 item 部件 block-size、inline-size、padding-inline 覆盖槽。"
@@ -74312,7 +74312,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-sm"
+        "--xh-control-indicator-size"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset 部件 block-size、inline-size、padding-inline-end 覆盖槽。"

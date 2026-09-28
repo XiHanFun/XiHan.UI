@@ -420,7 +420,7 @@
     /* 对号的末端轨始终留着，切换选中时文字与整列宽度都不移动。 */
     padding-inline-end: calc(
       var(--xh-time-range-picker-preset-px, var(--xh-space-3))
-      + var(--xh-time-range-picker-preset-check-size, var(--xh-glyph-size-sm))
+      + var(--xh-time-range-picker-preset-check-size, var(--xh-control-indicator-size))
       + var(--xh-space-1)
     );
     white-space: nowrap;
@@ -441,8 +441,8 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: var(--xh-time-range-picker-preset-px, var(--xh-space-3));
-    inline-size: var(--xh-time-range-picker-preset-check-size, var(--xh-glyph-size-sm));
-    block-size: var(--xh-time-range-picker-preset-check-size, var(--xh-glyph-size-sm));
+    inline-size: var(--xh-time-range-picker-preset-check-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-time-range-picker-preset-check-size, var(--xh-control-indicator-size));
     background-color: var(--xh-time-range-picker-preset-check-fg, var(--xh-_time-range-picker-check-fg));
     opacity: 0;
     translate: 0 -50%;
@@ -568,7 +568,7 @@
   [data-scope='time-range-picker'][data-part='item'] {
     --xh-_time-range-picker-item-rail: max(
       var(--xh-time-range-picker-item-px, var(--xh-space-0_5)),
-      calc(var(--xh-time-range-picker-item-check-size, var(--xh-glyph-size-sm)) + var(--xh-space-0_5))
+      calc(var(--xh-time-range-picker-item-check-size, var(--xh-control-indicator-size)) + var(--xh-space-0_5))
     );
     --xh-collection-block-padding: var(--xh-time-range-picker-item-py, 0);
     /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
@@ -626,8 +626,8 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: var(--xh-space-0_5);
-    inline-size: var(--xh-time-range-picker-item-check-size, var(--xh-glyph-size-sm));
-    block-size: var(--xh-time-range-picker-item-check-size, var(--xh-glyph-size-sm));
+    inline-size: var(--xh-time-range-picker-item-check-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-time-range-picker-item-check-size, var(--xh-control-indicator-size));
     background-color: var(--xh-time-range-picker-item-check-fg, var(--xh-_time-range-picker-check-fg));
     opacity: 0;
     translate: 0 -50%;

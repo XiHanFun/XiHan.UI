@@ -381,7 +381,7 @@
     /* 对号的末端轨始终留着，切换选中时文字与整列宽度都不移动。 */
     padding-inline-end: calc(
       var(--xh-time-picker-preset-px, var(--xh-space-3))
-      + var(--xh-time-picker-preset-check-size, var(--xh-glyph-size-sm))
+      + var(--xh-time-picker-preset-check-size, var(--xh-control-indicator-size))
       + var(--xh-space-1)
     );
     white-space: nowrap;
@@ -402,8 +402,8 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: var(--xh-time-picker-preset-px, var(--xh-space-3));
-    inline-size: var(--xh-time-picker-preset-check-size, var(--xh-glyph-size-sm));
-    block-size: var(--xh-time-picker-preset-check-size, var(--xh-glyph-size-sm));
+    inline-size: var(--xh-time-picker-preset-check-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-time-picker-preset-check-size, var(--xh-control-indicator-size));
     background-color: var(--xh-time-picker-preset-check-fg, var(--xh-_time-picker-check-fg));
     opacity: 0;
     translate: 0 -50%;
@@ -472,7 +472,7 @@
   [data-scope='time-picker'][data-part='item'] {
     --xh-_time-picker-item-rail: max(
       var(--xh-time-picker-item-px, var(--xh-space-0_5)),
-      calc(var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm)) + var(--xh-space-0_5))
+      calc(var(--xh-time-picker-item-check-size, var(--xh-control-indicator-size)) + var(--xh-space-0_5))
     );
     --xh-collection-block-padding: var(--xh-time-picker-item-py, 0);
     /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
@@ -530,8 +530,8 @@
     position: absolute;
     inset-block-start: 50%;
     inset-inline-end: var(--xh-space-0_5);
-    inline-size: var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm));
-    block-size: var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm));
+    inline-size: var(--xh-time-picker-item-check-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-time-picker-item-check-size, var(--xh-control-indicator-size));
     background-color: var(--xh-time-picker-item-check-fg, var(--xh-_time-picker-check-fg));
     opacity: 0;
     translate: 0 -50%;
