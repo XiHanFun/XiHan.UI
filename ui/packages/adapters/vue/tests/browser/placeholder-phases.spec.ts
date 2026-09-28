@@ -3,10 +3,20 @@
 // 刷新 = 已有条目时保留上一帧、内容按 micro 淡下，在途占位让位。
 //
 // 判据是伪元素、计算样式与过渡结果，jsdom 不给这些。
+import type { CascaderLevel } from '@xihan-ui/headless'
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, reactive } from 'vue'
 import {
+  XhCascaderColumn,
+  XhCascaderContent,
+  XhCascaderControl,
+  XhCascaderItem,
+  XhCascaderItemText,
+  XhCascaderPositioner,
+  XhCascaderRoot,
+  XhCascaderTrigger,
+  XhCascaderValueText,
   XhComboboxContent,
   XhComboboxControl,
   XhComboboxEmpty,
@@ -74,6 +84,26 @@ const CASES: Case[] = [
     ]),
     muted: '--xh-material-frosted-fg-muted',
     dim: 'item',
+  },
+  {
+    scope: 'cascader',
+    render: ({ loading, items }) => h(XhCascaderRoot, {
+      collection: items ? ITEMS : [],
+      loading,
+      open: true,
+      translations: { empty: '没有选项', loading: '正在读取' },
+    }, {
+      default: ({ levels }: { levels: CascaderLevel[] }) => [
+        h(XhCascaderControl, null, () => h(XhCascaderTrigger, null, () => h(XhCascaderValueText))),
+        h(XhCascaderPositioner, null, () => h(XhCascaderContent, null, () => [
+          ...levels.map(level => h(XhCascaderColumn, { key: level.level, level: level.level }, () =>
+            level.items.map(node => h(XhCascaderItem, { key: node.value, value: node.value }, () =>
+              h(XhCascaderItemText, null, () => node.label))))),
+        ])),
+      ],
+    }),
+    muted: '--xh-fg-muted',
+    dim: 'column',
   },
 ]
 

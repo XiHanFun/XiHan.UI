@@ -8387,9 +8387,6 @@
               "name": "--xh-cascader-empty-fg"
             },
             {
-              "name": "--xh-cascader-empty-min-h"
-            },
-            {
               "name": "--xh-cascader-empty-p"
             },
             {
@@ -8526,9 +8523,6 @@
             },
             {
               "name": "--xh-cascader-loading-font-size"
-            },
-            {
-              "name": "--xh-cascader-loading-min-h"
             },
             {
               "name": "--xh-cascader-loading-p"

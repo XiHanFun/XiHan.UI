@@ -824,8 +824,11 @@ export function connectCascader<T extends PropTypes>(
     // content 上的 aria-busy 已足以表达后台刷新，不再往列尾额外塞一块状态区。
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
-      role: 'status',
-      hidden: !(loading && (searching ? searchResults.length === 0 : collection.length === 0)) || undefined,
+      'role': 'status',
+      // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
+      'hidden': !(loading && (searching ? searchResults.length === 0 : collection.length === 0)) || undefined,
     }),
 
     // 浮层底部的操作区：作者往里放「清空」「确定」这类按钮。

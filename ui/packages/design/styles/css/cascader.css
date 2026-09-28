@@ -7,6 +7,7 @@
 @import '../family/field-chrome.css';
 @import '../family/action-control.css';
 @import '../family/collection-item.css';
+@import '../family/loading-ring.css';
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
@@ -366,6 +367,13 @@
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 刷新：已有候选时后台在取，保留上一帧，列与候选列表按 micro 淡下，数据到了再淡回；在途占位此时让位。
+     淡的是列不是面：content 是整块浮起面，整块淡下去面就透了 */
+  [data-scope='cascader'][data-part='content'][aria-busy='true'] > [data-scope='cascader']:is([data-part='column'], [data-part='search-list']) {
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* 一级列与字段盒等宽：扣掉面板两侧的描边，只有这一列时整块面板恰好与盒齐宽。
@@ -670,6 +678,7 @@
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='cascader'][data-part='search-list'][hidden] {
@@ -790,7 +799,6 @@
     flex: 1 1 100%;
     align-items: center;
     justify-content: center;
-    min-block-size: var(--xh-cascader-empty-min-h, 5rem);
     padding: var(--xh-cascader-empty-p, var(--xh-space-3));
     color: var(--xh-cascader-empty-fg, var(--xh-fg-muted));
     font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
@@ -806,7 +814,7 @@
     flex: 0 0 100%;
     align-items: center;
     justify-content: center;
-    min-block-size: var(--xh-cascader-loading-min-h, 5rem);
+    gap: var(--xh-_cascader-gap);
     padding: var(--xh-cascader-loading-p, var(--xh-space-3));
     color: var(--xh-cascader-loading-fg, var(--xh-fg-muted));
     font-size: var(--xh-cascader-loading-font-size, var(--xh-_cascader-font-size));
@@ -840,6 +848,15 @@
   [data-scope='cascader'][data-part='branch-error'][hidden],
   [data-scope='cascader'][data-part='branch-retry-trigger'][hidden] {
     display: none;
+  }
+
+  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
+     直径取所在尺寸档的图标档 */
+  [data-scope='cascader'][data-part='loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   }
 
   /* 底栏在场时浮层壳允许换行：列照旧并排在第一行，底栏占满一整行落在列下面。
