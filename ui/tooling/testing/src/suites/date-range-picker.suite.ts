@@ -260,6 +260,66 @@ function presetGroupFixture(base: FixtureNode, presets: readonly { value: string
   }
 }
 
+/**
+ * showTime 的起止两组时间列与确认钮：Vue / React 的时间组整组自动铺（time-panel），Web Components 由作者自己写
+ * 组、小标题、列与格，两种写法在 DOM 里落成同一副 column-group / column-group-label / time-column / time-item 部件。
+ * 精度取缺省的 minute，每组只铺时、分两列。
+ */
+function showTimeFixture(base: FixtureNode): FixtureNode {
+  const pad = (n: number): string => String(n).padStart(2, '0')
+  const timeColumn = (unit: string, values: readonly string[]): FixtureNode => ({
+    part: 'time-column',
+    attrs: { unit },
+    children: values.map(value => ({ part: 'time-item', attrs: { value }, text: value })),
+  })
+  const columnGroup = (index: 0 | 1, label: string): FixtureNode => ({
+    part: 'column-group',
+    attrs: { index: String(index) },
+    only: ['wc'],
+    children: [
+      { part: 'column-group-label', text: label },
+      timeColumn('hour', Array.from({ length: 24 }, (_, i) => pad(i))),
+      timeColumn('minute', Array.from({ length: 60 }, (_, i) => pad(i))),
+    ],
+  })
+  const extra: FixtureNode[] = [
+    { part: 'time-panel', only: ['vue', 'react'] },
+    columnGroup(0, 'Start time'),
+    columnGroup(1, 'End time'),
+    { part: 'confirm-trigger', tag: 'button', text: '确定' },
+  ]
+  return {
+    ...base,
+    children: base.children?.map((node) => {
+      if (node.part !== 'positioner')
+        return node
+      return {
+        ...node,
+        children: node.children?.map(content => ({
+          ...content,
+          children: [...(content.children ?? []), ...extra],
+        })),
+      }
+    }),
+  }
+}
+
+/** showTime 下某一端某一列的一格：组按 data-index、列按 data-unit、格按 data-value 认。 */
+function timeItemAt(doc: Document, index: 0 | 1, unit: string, value: string): HTMLElement {
+  const el = doc.querySelector<HTMLElement>(
+    `[data-scope="date-range-picker"][data-part="time-column"][data-index="${index}"][data-unit="${unit}"] [data-part="time-item"][data-value="${value}"]`,
+  )
+  if (!el)
+    throw new Error(`没有第 ${index} 端 ${unit} 列的 ${value}`)
+  return el
+}
+
+function expectTimeItem(doc: Document, index: 0 | 1, unit: string, value: string, name: string, want: string | null, why: string): void {
+  const got = timeItemAt(doc, index, unit, value).getAttribute(name)
+  if (got !== want)
+    throw new Error(`${why}：第 ${index} 端 ${unit}:${value} 的 ${name} 期望 ${want}，实际 ${got}`)
+}
+
 export const dateRangePickerSuite: ConformanceSuite = {
   component: 'date-range-picker',
   anatomy: dateRangePickerAnatomy,
@@ -671,6 +731,63 @@ export const dateRangePickerSuite: ConformanceSuite = {
               { type: 'value-change', detail: { value: ['2024-02-10', '2024-02-20'] } },
               { type: 'open-change', detail: { open: false } },
             ],
+          },
+        },
+      ],
+    },
+    {
+      name: 'showTime：只点日期时起止按 defaultTime 各补时刻，选完不收起，由确认钮收口',
+      spec: { apg: APG },
+      fixture: showTimeFixture,
+      props: { ...EMPTY_PROPS, showTime: true, defaultTime: ['00:00', '23:59'] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '格子是内嵌日历的部件',
+          run: async (ctx) => {
+            await pickDay(ctx, '2024-02-05')
+            await pickDay(ctx, '2024-02-08')
+          },
+          expect: {
+            parts: { content: { hidden: null } },
+            events: [{ type: 'value-change', detail: { value: ['2024-02-05T00:00', '2024-02-08T23:59'] } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '隐藏输入是内嵌分段输入的部件，value 是 property',
+          run: ({ doc }) => {
+            expectRange(doc, '2024-02-05T00:00', '2024-02-08T23:59', '两份表单出口各带时刻')
+            expectTimeItem(doc, 1, 'hour', '23', 'aria-selected', 'true', '终点那组选中 23 点')
+          },
+        },
+        {
+          kind: 'click',
+          part: 'confirm-trigger',
+          expect: {
+            parts: { content: { hidden: '' } },
+            events: [{ type: 'open-change', detail: { open: false } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'showTime：起止同一天时终点列早于起点的时刻标为不可选，起点那组不受终点约束',
+      spec: { apg: APG },
+      fixture: showTimeFixture,
+      props: { ...EMPTY_PROPS, showTime: true, defaultValue: ['2024-02-10T09:30', '2024-02-10T18:00'] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '格按端、单位与值认',
+          run: ({ doc }) => {
+            expectTimeItem(doc, 1, 'hour', '08', 'aria-disabled', 'true', '8 点早于起点 9:30')
+            expectTimeItem(doc, 1, 'hour', '09', 'aria-disabled', 'false', '9 点里还有不早于起点的分')
+            expectTimeItem(doc, 0, 'hour', '20', 'aria-disabled', 'false', '起点那组不被终点收窄')
           },
         },
       ],

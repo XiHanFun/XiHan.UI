@@ -17,6 +17,9 @@ import { createAnatomy } from '@xihan-ui/core'
  *
  * range-separator 是两组段位之间的视觉分隔；preset-group 是浮层里的快捷选项列
  * （「近 7 天」「本月」这类），preset 是其中一项，选项的身份由作者写在节点上。
+ *
+ * showTime 下起止各一组时间列：column-group 是一端的外壳（带 index），column-group-label 是它的小标题，
+ * time-column / time-item 与日期选择器的时间部件同名，confirm-trigger 收口。
  */
 export const dateRangePickerAnatomy = createAnatomy('date-range-picker', [
   'root',
@@ -31,4 +34,9 @@ export const dateRangePickerAnatomy = createAnatomy('date-range-picker', [
   'preset-group',
   'preset',
   'calendar',
+  'column-group',
+  'column-group-label',
+  'time-column',
+  'time-item',
+  'confirm-trigger',
 ])

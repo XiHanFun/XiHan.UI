@@ -2,7 +2,8 @@
 import type { Anchor, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
 import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
-import type { DateRangePickerApi, DateRangePickerSchema, DateRangePickerServices } from '../src/date-range-picker'
+import type { DatePickerTimeUnit } from '../src/date-picker'
+import type { DateRangePickerApi, DateRangePickerEndIndex, DateRangePickerSchema, DateRangePickerServices } from '../src/date-range-picker'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
 import { today } from '@xihan-ui/core/date'
 import { createPresence } from '@xihan-ui/core/presence'
@@ -25,7 +26,7 @@ import {
 type Props = DateRangePickerSchema['props']
 
 /** 段位节点数：作者写足六个，精度用不上的那几个由连接层收起、不卸载。 */
-const SEGMENT_NODES = 6
+const SEGMENT_NODES = 7
 
 const listeners = new WeakMap<HTMLElement, Map<string, EventListener>>()
 const BOOLEAN_ATTRS = new Set(['disabled', 'hidden', 'readonly', 'required'])
@@ -126,6 +127,11 @@ interface Harness {
   position: () => PositionResult | null
   /** 换掉锚点 / 浮层 ref，用来验它们缺席时不挂订阅。 */
   setRef: (key: 'getAnchorEl' | 'getFloatingEl', value: () => HTMLElement | null) => void
+  /** showTime 的一端时间组外壳与小标题。 */
+  columnGroup: (index: DateRangePickerEndIndex) => { group: HTMLElement, label: HTMLElement }
+  /** showTime 的某一端某一列：容器与逐格节点。 */
+  timeColumn: (index: DateRangePickerEndIndex, unit: DatePickerTimeUnit) => { col: HTMLElement, items: Map<string, HTMLElement> }
+  confirm: HTMLButtonElement
 }
 
 const runtimes: VanillaRuntime[] = []
@@ -180,6 +186,11 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   grid.append(gridHead, gridBody)
   calendarEl.append(header, grid)
   content.appendChild(calendarEl)
+  // showTime 的起止两组时间列：作者照 timeColumnGroups 铺，收起时由连接层打 hidden
+  const timeWrap = doc.createElement('div')
+  content.appendChild(timeWrap)
+  const confirm = doc.createElement('button')
+  content.appendChild(confirm)
   positioner.appendChild(content)
   root.append(label, control, hiddenInput, hiddenInputEnd, positioner)
   doc.body.appendChild(root)
@@ -242,6 +253,9 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   const triggers = new Map<string, HTMLElement>()
   const cells = new Map<string, HTMLElement>()
   let painted = ''
+  const columnGroups = new Map<DateRangePickerEndIndex, { group: HTMLElement, label: HTMLElement }>()
+  const timeEls = new Map<string, { col: HTMLElement, items: Map<string, HTMLElement> }>()
+  let timePainted = ''
 
   const rebuild = (weeks: readonly (readonly { start: string }[])[]): void => {
     gridBody.textContent = ''
@@ -288,6 +302,46 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
       spread(el, api.fieldEnd.getSegmentProps({ index }) as Record<string, unknown>)
       el.textContent = api.fieldEnd.segments[index]?.text ?? ''
     })
+    // 两组时间列逐组铺：列与格随精度、小时制与步进变，变了就重建
+    const timeKey = api.timeColumnGroups.map(g => g.columns.map(c => `${c.unit}:${c.options.join(',')}`).join('|')).join('/')
+    if (timeKey !== timePainted) {
+      timePainted = timeKey
+      timeWrap.textContent = ''
+      columnGroups.clear()
+      timeEls.clear()
+      for (const group of api.timeColumnGroups) {
+        const groupEl = doc.createElement('div')
+        const labelEl = doc.createElement('div')
+        labelEl.textContent = group.label
+        groupEl.appendChild(labelEl)
+        for (const column of group.columns) {
+          const col = doc.createElement('div')
+          const items = new Map<string, HTMLElement>()
+          for (const option of column.options) {
+            const item = doc.createElement('div')
+            item.textContent = api.getTimeItemText({ unit: column.unit, value: option })
+            col.appendChild(item)
+            items.set(option, item)
+          }
+          groupEl.appendChild(col)
+          timeEls.set(`${group.index}:${column.unit}`, { col, items })
+        }
+        timeWrap.appendChild(groupEl)
+        columnGroups.set(group.index, { group: groupEl, label: labelEl })
+      }
+    }
+    for (const [index, { group, label: groupLabel }] of columnGroups) {
+      spread(group, api.getColumnGroupProps({ index }) as Record<string, unknown>)
+      spread(groupLabel, api.getColumnGroupLabelProps({ index }) as Record<string, unknown>)
+    }
+    for (const [key, { col, items }] of timeEls) {
+      const [at, unit] = key.split(':') as [string, DatePickerTimeUnit]
+      const index: DateRangePickerEndIndex = at === '1' ? 1 : 0
+      spread(col, api.getTimeColumnProps({ index, unit }) as Record<string, unknown>)
+      for (const [value, el] of items)
+        spread(el, api.getTimeItemProps({ index, unit, value }) as Record<string, unknown>)
+    }
+    spread(confirm, api.getConfirmTriggerProps() as Record<string, unknown>)
     spread(positioner, api.getPositionerProps() as Record<string, unknown>)
     spread(content, api.getContentProps() as Record<string, unknown>)
     spread(calendarEl, api.getCalendarProps() as Record<string, unknown>)
@@ -363,6 +417,19 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     positioner,
     position: () => rootService.context.get('position'),
     setRef: (key, value) => rootService.refs.set(key, value),
+    columnGroup: (index) => {
+      const hit = columnGroups.get(index)
+      if (!hit)
+        throw new Error(`没铺第 ${index} 端的时间组`)
+      return hit
+    },
+    timeColumn: (index, unit) => {
+      const hit = timeEls.get(`${index}:${unit}`)
+      if (!hit)
+        throw new Error(`没铺第 ${index} 端的 ${unit} 列`)
+      return hit
+    },
+    confirm: confirm as HTMLButtonElement,
   }
 }
 
@@ -1640,6 +1707,199 @@ describe('层的拆除顺序', () => {
     h.api().setOpen(false)
     spy.mockRestore()
     expect(order).toEqual(['focus-scope', 'dismiss', 'layer'])
+  })
+})
+
+describe('showTime：日期加时间的区间', () => {
+  const AUG = { defaultFocusedValue: '2026-08-10', timeZone: 'UTC' }
+
+  it('两组段位带上时刻段，起止各一组时间列，确认钮在场', async () => {
+    const h = await open({ ...AUG, showTime: true, defaultValue: ['2026-08-10T09:30', '2026-08-12T18:00'] })
+    const api = h.api()
+    expect(api.showTime).toBe(true)
+    expect(api.field.segments.map(segment => segment.type)).toEqual(['year', 'month', 'day', 'hour', 'minute'])
+    expect(api.fieldEnd.segments.map(segment => segment.type)).toEqual(['year', 'month', 'day', 'hour', 'minute'])
+    expect(api.timeValues).toEqual(['09:30', '18:00'])
+    expect(api.timeColumnGroups.map(group => [group.index, group.label, group.columns.map(c => c.unit)])).toEqual([
+      [0, 'Start time', ['hour', 'minute']],
+      [1, 'End time', ['hour', 'minute']],
+    ])
+    expect(h.columnGroup(0).group.getAttribute('role')).toBe('group')
+    expect(h.columnGroup(1).group.getAttribute('aria-label')).toBe('End time')
+    expect(h.columnGroup(0).label.getAttribute('aria-hidden')).toBe('true')
+    expect(h.timeColumn(1, 'hour').items.get('18')!.getAttribute('aria-selected')).toBe('true')
+    expect(h.confirm.hasAttribute('hidden')).toBe(false)
+    expect(h.hiddenInputEnd.value).toBe('2026-08-12T18:00')
+  })
+
+  it('只在 granularity=day 下生效；没开时时间组与确认钮收起', () => {
+    const month = mount({ showTime: true, granularity: 'month' })
+    expect(month.api().showTime).toBe(false)
+    expect(month.columnGroup(0).group.hasAttribute('hidden')).toBe(true)
+    const off = mount({})
+    expect(off.api().timeColumnGroups.every(group => group.columns.length === 0)).toBe(true)
+    expect(off.confirm.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('defaultTime：只点日期时起止各补上对应时刻，选完不收起、由确认钮收口', async () => {
+    const onValueChange = vi.fn()
+    const h = await open({ ...AUG, showTime: true, timeGranularity: 'second', defaultTime: ['00:00:00', '23:59:59'], onValueChange })
+    pickRange(h, '2026-08-10', '2026-08-14')
+    expect(h.value()).toEqual(['2026-08-10T00:00:00', '2026-08-14T23:59:59'])
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['2026-08-10T00:00:00', '2026-08-14T23:59:59'] })
+    expect(h.state()).toBe('open')
+    click(h.confirm)
+    expect(h.state()).toBe('closed')
+  })
+
+  it('起止同一天：日历收成一天时拆回两端，各补各的时刻', async () => {
+    const h = await open({ ...AUG, showTime: true, defaultTime: ['08:00', '20:00'] })
+    pickRange(h, '2026-08-11', '2026-08-11')
+    expect(h.value()).toEqual(['2026-08-11T08:00', '2026-08-11T20:00'])
+  })
+
+  it('已挑过时刻的一端换日期时时刻原样留着，defaultTime 只补还没有时刻的那一端', async () => {
+    const h = await open({ ...AUG, showTime: true, defaultValue: ['2026-08-03T09:15', ''], defaultTime: ['00:00', '23:59'] })
+    pickRange(h, '2026-08-10', '2026-08-12')
+    expect(h.value()).toEqual(['2026-08-10T09:15', '2026-08-12T23:59'])
+  })
+
+  it('点时间格只改那一端的时刻：还没有日期的一端借另一端的日期', async () => {
+    const h = await open({ ...AUG, showTime: true, defaultValue: ['2026-08-10T09:00', ''] })
+    click(h.timeColumn(1, 'hour').items.get('17')!)
+    expect(h.value()).toEqual(['2026-08-10T09:00', '2026-08-10T17:00'])
+    // 点了终点那一组，当前编辑的一端随之是终点
+    expect(h.api().activeIndex).toBe(1)
+    expect(h.columnGroup(1).group.getAttribute('data-editing')).toBe('')
+    expect(h.columnGroup(0).group.hasAttribute('data-editing')).toBe(false)
+    click(h.timeColumn(0, 'minute').items.get('30')!)
+    expect(h.value()).toEqual(['2026-08-10T09:30', '2026-08-10T17:00'])
+    expect(h.api().activeIndex).toBe(0)
+  })
+
+  it('起止同一天时终点列早于起点的时刻不可选；换到不同的日子即放开', async () => {
+    const h = await open({ ...AUG, showTime: true, defaultValue: ['2026-08-10T09:30', '2026-08-10T18:00'] })
+    const endHour = h.timeColumn(1, 'hour')
+    expect(endHour.items.get('08')!.getAttribute('aria-disabled')).toBe('true')
+    expect(endHour.items.get('09')!.getAttribute('aria-disabled')).toBe('false')
+    expect(endHour.items.get('09')!.getAttribute('data-disabled')).toBeNull()
+    // 起点那组不受终点约束
+    expect(h.timeColumn(0, 'hour').items.get('20')!.getAttribute('aria-disabled')).toBe('false')
+    // 终点的时仍是 18 点：分列不收窄；把终点改到 9 点后，30 分之前不可选
+    click(endHour.items.get('09')!)
+    expect(h.value()).toEqual(['2026-08-10T09:30', '2026-08-10T09:00'])
+    expect(h.timeColumn(1, 'minute').items.get('15')!.getAttribute('aria-disabled')).toBe('true')
+    expect(h.timeColumn(1, 'minute').items.get('30')!.getAttribute('aria-disabled')).toBe('false')
+    // 9:00 早于 9:30：按日期时间比，区间颠倒，整份标不合法
+    expect(h.api().invalid).toBe(true)
+    h.setProps({ value: ['2026-08-10T09:30', '2026-08-11T08:00'] })
+    expect(h.timeColumn(1, 'hour').items.get('08')!.getAttribute('aria-disabled')).toBe('false')
+    expect(h.api().invalid).toBe(false)
+  })
+
+  it('12 小时制与按单位步进：两组时间列都多出上下午列，格按步进取样', async () => {
+    const h = await open({ ...AUG, showTime: true, hourCycle: 12, timeStep: { minute: 15 }, locale: 'en-US', defaultValue: ['2026-08-10T21:15', ''] })
+    const group = h.api().timeColumnGroups[0]
+    expect(group.columns.map(c => c.unit)).toEqual(['hour', 'minute', 'dayPeriod'])
+    expect(group.columns[1]!.options).toEqual(['00', '15', '30', '45'])
+    expect(h.timeColumn(0, 'dayPeriod').items.get('01')!.textContent).toBe('PM')
+    expect(h.api().field.segments.at(-1)!.type).toBe('dayPeriod')
+    click(h.timeColumn(0, 'dayPeriod').items.get('00')!)
+    // 按位写：空着的终点留一个空串占位
+    expect(h.value()).toEqual(['2026-08-10T09:15', ''])
+  })
+
+  it('isTimeUnavailable 的上下文带端号与这一端所属的日期', async () => {
+    const calls: unknown[] = []
+    const h = await open({
+      ...AUG,
+      showTime: true,
+      defaultValue: ['2026-08-10T09:00', '2026-08-12T10:00'],
+      isTimeUnavailable: (value, unit, context) => {
+        calls.push(context)
+        return context.index === 1 && unit === 'hour' && Number(value) > 17
+      },
+    })
+    expect(calls).toContainEqual({ hour: 10, minute: 0, date: '2026-08-12', index: 1 })
+    expect(calls).toContainEqual({ hour: 9, minute: 0, date: '2026-08-10', index: 0 })
+    expect(h.timeColumn(1, 'hour').items.get('18')!.getAttribute('aria-disabled')).toBe('true')
+    expect(h.timeColumn(0, 'hour').items.get('18')!.getAttribute('aria-disabled')).toBe('false')
+  })
+
+  it('快捷选项的日期拼上各端此刻的时刻，没有就按 defaultTime；选中判定只看日期段', async () => {
+    const h = await open({
+      ...AUG,
+      showTime: true,
+      defaultValue: ['2026-08-03T09:15', ''],
+      defaultTime: ['00:00', '23:59'],
+      presets: [{ value: '2026-08-10/2026-08-16', label: '那一周' }],
+    })
+    // 夹具没铺快捷选项列：直接走那一条的点击处理
+    const props = h.api().getPresetProps({ value: '2026-08-10/2026-08-16' }) as { onClick: () => void }
+    props.onClick()
+    expect(h.value()).toEqual(['2026-08-10T09:15', '2026-08-16T23:59'])
+    expect(h.api().presets[0]!.selected).toBe(true)
+  })
+
+  it('min 带时间段：日历按日期段收，同一天的界外时刻不可选', async () => {
+    const h = await open({ ...AUG, showTime: true, min: '2026-08-10T09:30', defaultValue: ['2026-08-10T10:00', '2026-08-12T10:00'] })
+    expect(h.api().calendar.isUnavailable('2026-08-09')).toBe(true)
+    expect(h.api().calendar.isUnavailable('2026-08-10')).toBe(false)
+    expect(h.timeColumn(0, 'hour').items.get('09')!.getAttribute('aria-disabled')).toBe('false')
+    expect(h.timeColumn(0, 'hour').items.get('08')!.getAttribute('aria-disabled')).toBe('true')
+    // 终点在后一天，不受 min 的时间段约束
+    expect(h.timeColumn(1, 'hour').items.get('08')!.getAttribute('aria-disabled')).toBe('false')
+  })
+})
+
+describe('activeIndex：当前编辑哪一端', () => {
+  it('从终点那组段位展开即编辑终点：日历只改终点，起点不动', async () => {
+    const onActiveIndexChange = vi.fn()
+    const h = mount({ defaultValue: RANGE, onActiveIndexChange })
+    const segment = h.segmentsEnd()[0]!
+    segment.focus()
+    click(segment)
+    await settle()
+    await tick()
+    expect(h.state()).toBe('open')
+    expect(h.api().activeIndex).toBe(1)
+    expect(onActiveIndexChange).toHaveBeenCalledWith({ activeIndex: 1 })
+    expect(h.api().calendar.rangeAnchor).toBeNull()
+    click(h.cell('2026-08-05'))
+    expect(h.value()).toEqual(['2026-07-28', '2026-08-05'])
+    // 两端都落定即收起（没开 showTime）
+    expect(h.state()).toBe('closed')
+  })
+
+  it('从触发钮展开是起点：点一下照旧是重新起一段', async () => {
+    const h = await open({ defaultValue: RANGE })
+    expect(h.api().activeIndex).toBe(0)
+    click(h.cell('2026-08-05'))
+    expect(h.value()).toEqual(RANGE)
+    expect(h.api().calendar.rangeAnchor).toBe('2026-08-05')
+  })
+
+  it('终点那组段位上按 Alt+ArrowDown 展开同样是编辑终点', async () => {
+    const h = mount({ defaultValue: RANGE })
+    const segment = h.segmentsEnd()[0]!
+    segment.focus()
+    press(segment, 'ArrowDown', { altKey: true })
+    await settle()
+    await tick()
+    expect(h.api().activeIndex).toBe(1)
+  })
+
+  it('受控：宿主不写回就不动，回调照发', async () => {
+    const onActiveIndexChange = vi.fn()
+    const h = mount({ defaultValue: RANGE, activeIndex: 0, onActiveIndexChange })
+    const segment = h.segmentsEnd()[0]!
+    segment.focus()
+    click(segment)
+    await settle()
+    expect(onActiveIndexChange).toHaveBeenCalledWith({ activeIndex: 1 })
+    expect(h.api().activeIndex).toBe(0)
+    h.setProps({ activeIndex: 1 })
+    expect(h.api().activeIndex).toBe(1)
   })
 })
 

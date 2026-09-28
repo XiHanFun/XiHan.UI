@@ -9,14 +9,20 @@ import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placemen
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { CalendarRangePickerApi, CalendarRangePickerSchema, CalendarRangePickerTranslations } from '../calendar-range-picker'
 import type { DateFieldSchema, DateSegmentSet } from '../date-field'
-import type { DatePickerFieldApi, DatePickerPreset, DatePickerPresetProps, DatePickerPresetState } from '../date-picker'
+import type { DatePickerFieldApi, DatePickerPreset, DatePickerPresetProps, DatePickerPresetState, DatePickerTimeGranularity, DatePickerTimeUnit } from '../date-picker'
 import type { CalendarGranularity, CalendarPeriodValue, CalendarView, CalendarViewChangeDetails } from '../shared/calendar'
+import type { ResolvedTimeStep, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
+import type { TimeHourCycle } from '../time-field'
+import type { TimePickerColumn } from '../time-picker'
 
 /**
  * 值的来源；calendar 与 preset 两路参与选完即收起的判定。
- * field 是起点段位组，field-end 是终点段位组。
+ * field 是起点段位组，field-end 是终点段位组，time 是 showTime 的时间列（按位写一端的时刻）。
  */
-export type DateRangePickerValueSource = 'calendar' | 'preset' | 'field' | 'field-end' | 'api'
+export type DateRangePickerValueSource = 'calendar' | 'preset' | 'field' | 'field-end' | 'time' | 'api'
+
+/** 区间的哪一端：0 起点、1 终点。段位组、时间组与表单出口都按它归属。 */
+export type DateRangePickerEndIndex = 0 | 1
 
 /**
  * 读屏文案，默认英文。两组段位各是一个 role=group，各需要一个名字；
@@ -31,6 +37,18 @@ export interface DateRangePickerTranslations extends CalendarRangePickerTranslat
   presets: string
   /** 清空按钮的名字。 */
   clearTrigger: string
+  /** showTime 下起点那组时间列的名字，也是那一组的小标题。 */
+  startTime: string
+  /** showTime 下终点那组时间列的名字，也是那一组的小标题。 */
+  endTime: string
+  /** 小时列的名字。 */
+  hour: string
+  /** 分钟列的名字。 */
+  minute: string
+  /** 秒列的名字。 */
+  second: string
+  /** 上下午列的名字（12 小时制下才有这一列）。 */
+  dayPeriod: string
 }
 
 /**
@@ -42,10 +60,52 @@ export type DateRangePickerPresetState = DatePickerPresetState
 export type DateRangePickerPresetProps = DatePickerPresetProps
 
 /**
- * 接了按压通道的部件，按 key 记住正被按住的那一个：清空钮、触发钮各一，快捷选项按其值。
- * 日历里的部件由 calendar-range-picker 自己的机器记。
+ * 接了按压通道的部件，按 key 记住正被按住的那一个：清空钮、触发钮、确认钮各一，快捷选项按其值、
+ * 时间格按「端:列:值」。日历里的部件由 calendar-range-picker 自己的机器记。
  */
-export type DateRangePickerPressedKey = 'clear' | 'trigger' | `preset:${string}`
+export type DateRangePickerPressedKey
+  = | 'clear'
+    | 'trigger'
+    | 'confirm'
+    | `preset:${string}`
+    | `time-item:${DateRangePickerEndIndex}:${DatePickerTimeUnit}:${string}`
+
+/** 时间组声明自己是哪一端。 */
+export interface DateRangePickerColumnGroupProps {
+  index: DateRangePickerEndIndex
+}
+
+/** 时间列声明所属的端与单位。 */
+export interface DateRangePickerTimeColumnProps {
+  index: DateRangePickerEndIndex
+  unit: DatePickerTimeUnit
+}
+
+/** 时间选项声明所属的端、列与自身的值（两位补零的显示串；上下午列写 '00' / '01'）。 */
+export interface DateRangePickerTimeItemProps {
+  index: DateRangePickerEndIndex
+  unit: DatePickerTimeUnit
+  value: string
+}
+
+/** 格子上显示的内容与端无关，只取决于单位与值。 */
+export interface DateRangePickerTimeItemTextProps {
+  unit: DatePickerTimeUnit
+  value: string
+}
+
+/** 一端的时间列：起点组与终点组各自成组并排在浮层中。 */
+export interface DateRangePickerTimeColumnGroup {
+  readonly index: DateRangePickerEndIndex
+  /** 这一组的小标题，取 translations.startTime / endTime。 */
+  readonly label: string
+  /** 时 / 分[/ 秒][/ 上下午]，格按步进取样；未开启 showTime 时为空数组。 */
+  readonly columns: readonly TimePickerColumn<DatePickerTimeUnit>[]
+}
+
+export interface DateRangePickerActiveIndexChangeDetails {
+  activeIndex: DateRangePickerEndIndex
+}
 
 /** 分段容器声明身份：0 是起点组、1 是终点组。 */
 export interface DateRangePickerSegmentGroupProps {
@@ -169,8 +229,41 @@ export interface DateRangePickerSchema extends MachineSchema {
     dir?: Direction
     offset?: number
     translations?: Partial<DateRangePickerTranslations>
-    /** 选完即收起，默认 true。两端都落定才视为选完。 */
+    /** 选完即收起，默认 true。两端都落定才视为选完；showTime 下不收，由确认按钮收口。 */
     closeOnSelect?: boolean
+    /**
+     * 一体化时间：两端都升格为 'YYYY-MM-DDTHH:mm[:ss]'（不带时区），输入行两组段位带上时刻段，
+     * 浮层里起止各多出一组时间列，选完日期不收起、由确认按钮收口。只在 granularity=day 下生效。
+     * 此时 min / max 可以带时间段：日历按日期段收，时间列在与它同一天时按时间段标不可选。
+     */
+    showTime?: boolean
+    /** showTime 的时间段精度，默认 minute。 */
+    timeGranularity?: DatePickerTimeGranularity
+    /** showTime 的小时制，默认 24，不随 locale 推断。12 时两组时间列多出上下午列、两组段位多出上下午段。 */
+    hourCycle?: TimeHourCycle
+    /** showTime 时间列按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。 */
+    timeStep?: TimeStep
+    /**
+     * showTime 时间列的逐格可选性。value 是两位补零的格值，时列恒按 24 小时制给出；
+     * context 带这一端已选的时（24 小时制）与分、这一端所属的日期与端号（index）。
+     * 判定为真的格子仍可聚焦，只是按不下去。起止同一天时，终点列早于起点的时刻另由组件自己标不可选。
+     */
+    isTimeUnavailable?: TimeUnavailablePredicate
+    /**
+     * showTime 下只点日期时两端各补的时刻，例如 `['00:00:00', '23:59:59']`（区间查询最常用）。
+     * 只补还没有时刻的那一端：已挑过时刻的一端换日期时时刻原样留着。按 timeGranularity 归一，写坏的一端按零点补。
+     */
+    defaultTime?: [string, string]
+    /**
+     * 当前编辑区间的哪一端。提供即受控；未提供时每次展开都重新定：从终点那组段位展开为 1，其余为 0。
+     * 聚焦某一组段位、点某一端的时间格时随之改写。为 1 且已有起点时日历只改终点：
+     * 点在起点那一天或之后即落终点、起点不动，点在起点之前从那一天重新开始挑。
+     *
+     * 没有配套的 defaultActiveIndex：它每次展开都会重定，非受控初值没有生效时刻。
+     */
+    activeIndex?: DateRangePickerEndIndex
+    /** 当前编辑的一端变化；受控时是唯一出口。 */
+    onActiveIndexChange?: (details: DateRangePickerActiveIndexChangeDetails) => void
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: DateRangePickerValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
@@ -210,14 +303,19 @@ export interface DateRangePickerSchema extends MachineSchema {
      * 没有按住时为 null。抬起、失焦、指针取消或浮层收起时即撤下。
      */
     pressed: DateRangePickerPressedKey | null
+    /** 当前编辑区间的哪一端。受控（activeIndex 提供）时 cell 直读 prop。 */
+    activeIndex: DateRangePickerEndIndex
+    /** 最近一次写值的来源；时间列只改时刻，交给日历的日期不跟着换数组。 */
+    writeSource: DateRangePickerValueSource | null
   }
   computed: Record<string, never>
   refs: DateRangePickerRefs
   state: 'open' | 'closed'
   event:
-    // src 记下这次是从哪儿展开的：点输入行那一路不把焦点搬进浮层（用户点段位是为了打字）
-    | { type: 'OPEN', src?: 'trigger' | 'control' }
-    | { type: 'TOGGLE', src?: 'trigger' | 'control' }
+    // src 记下这次是从哪儿展开的：点输入行那一路不把焦点搬进浮层（用户点段位是为了打字）；
+    // index 是从哪一组段位展开的，定下本轮先编辑哪一端
+    | { type: 'OPEN', src?: 'trigger' | 'control', index?: DateRangePickerEndIndex }
+    | { type: 'TOGGLE', src?: 'trigger' | 'control', index?: DateRangePickerEndIndex }
     | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
@@ -229,6 +327,8 @@ export interface DateRangePickerSchema extends MachineSchema {
     | { type: 'FOCUSED.SET', value: string }
     /** 切换到另一层级：点击标题向上、点击格子向下，都由日历经它回到编排状态机。 */
     | { type: 'VIEW.SET', activeView: CalendarView }
+    /** 改写当前编辑的一端：聚焦段位组、点时间格都经它。 */
+    | { type: 'ACTIVE_INDEX.SET', activeIndex: DateRangePickerEndIndex }
     | { type: 'FORM.RESET' }
     /**
      * 按压通道（shared/press）：某个部件被 Space / Enter 或触屏按住，key 说的是哪一个；
@@ -255,6 +355,8 @@ export interface DateRangePickerSchema extends MachineSchema {
     | 'syncFocusedValue'
     | 'setActiveView'
     | 'resetActiveView'
+    | 'setActiveIndex'
+    | 'setEntryIndex'
     | 'focusSelectedDay'
     | 'resetToDefault'
   effect: 'trackPosition' | 'trackLayer'
@@ -305,6 +407,24 @@ export interface DateRangePickerApi<T extends PropTypes = PropTypes> {
   setActiveView: (next: CalendarView) => void
   /** 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 */
   presets: readonly DateRangePickerPresetState[]
+  /** 当前编辑区间的哪一端。 */
+  activeIndex: DateRangePickerEndIndex
+  /** 直接改写当前编辑的一端。 */
+  setActiveIndex: (next: DateRangePickerEndIndex) => void
+  /** showTime 生效（已开启且 granularity=day）。 */
+  showTime: boolean
+  /** 起止两组时间列；未开启 showTime 时两组的列都是空数组。 */
+  timeColumnGroups: readonly [DateRangePickerTimeColumnGroup, DateRangePickerTimeColumnGroup]
+  /** 两端各自的时间段（'HH:mm[:ss]'）；那一端还没有时刻时为 null。 */
+  timeValues: readonly [string | null, string | null]
+  /** 时间列与时刻段实际生效的小时制。 */
+  hourCycle: TimeHourCycle
+  /** 实际生效的按单位步进。 */
+  timeStep: ResolvedTimeStep
+  /** 某一格显示的文字：数字列即格值，上下午列按 locale 给出「上午 / 下午」。各适配器都用它填字。 */
+  getTimeItemText: (props: DateRangePickerTimeItemTextProps) => string
+  /** 某一格按不下去：界外、被 isTimeUnavailable 判为不可用、终点早于同一天的起点，或整个控件禁用。 */
+  isTimeItemDisabled: (props: DateRangePickerTimeItemProps) => boolean
   /** 内嵌日历：选区间、翻月、键盘导航都在它身上。 */
   calendar: CalendarRangePickerApi<T>
   /** 起点分段输入。 */
@@ -328,4 +448,14 @@ export interface DateRangePickerApi<T extends PropTypes = PropTypes> {
   getPresetProps: (props: DateRangePickerPresetProps) => T['element']
   /** 内嵌日历的挂载点，同时充当日历的根节点。 */
   getCalendarProps: () => T['element']
+  /** 一端的时间列外壳（role=group）：起止各一个并排，data-index 区分，各报「开始时间」「结束时间」；未开启 showTime 时带 hidden。 */
+  getColumnGroupProps: (props: DateRangePickerColumnGroupProps) => T['element']
+  /** 时间组顶部的小标题，纯视觉，退出可访问树。 */
+  getColumnGroupLabelProps: (props: DateRangePickerColumnGroupProps) => T['element']
+  /** 一端的一列（role=listbox）：时 / 分[/ 秒][/ 上下午]。 */
+  getTimeColumnProps: (props: DateRangePickerTimeColumnProps) => T['element']
+  /** 时间选项：点击把该单位写进这一端的时刻（那一端还没有日期时借另一端的日期，再没有就用聚焦日）。 */
+  getTimeItemProps: (props: DateRangePickerTimeItemProps) => T['element']
+  /** 确认按钮：showTime 的收口；未开启 showTime 时带 hidden。 */
+  getConfirmTriggerProps: () => T['button']
 }

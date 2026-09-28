@@ -8,12 +8,15 @@
 import type { Dict, NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CalendarRangePickerTranslations } from '../calendar-range-picker'
 import type { DateFieldApi, DateFieldSchema, DateSegmentType } from '../date-field'
+import type { DatePickerTimeModel, DatePickerTimeUnit } from '../date-picker'
 import type {
   DateRangePickerApi,
+  DateRangePickerEndIndex,
   DateRangePickerFieldApi,
   DateRangePickerPresetState,
   DateRangePickerPressedKey,
   DateRangePickerServices,
+  DateRangePickerTimeColumnGroup,
   DateRangePickerTranslations,
 } from './date-range-picker.types'
 import { createPressTracker, dataAttr, focusSafely, navIntentFromKey, normalizeProps, readDirection, stepIndex } from '@xihan-ui/core'
@@ -26,12 +29,20 @@ import {
   parseBoundary,
   segmentMaxDigits,
 } from '../date-field'
-import { datePickerPresetDates } from '../date-picker'
+import { datePickerDatePart, datePickerJoinDateTime, datePickerPresetDates, datePickerTimeModel, datePickerTimePart } from '../date-picker'
 import { sameArray as sameDates } from '../shared/array'
 import { calendarPeriodValue } from '../shared/calendar'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { resolveTimeStep } from '../shared/time-constraint'
+import { TIME_FIELD_HOUR_CYCLE } from '../time-field'
 import { dateRangePickerAnatomy } from './date-range-picker.anatomy'
-import { DATE_RANGE_PICKER_DEFAULT_PLACEMENT } from './date-range-picker.machine'
+import {
+  compareDateRangeEnds,
+  DATE_RANGE_PICKER_DEFAULT_PLACEMENT,
+  dateRangePickerDefaultTime,
+  dateRangePickerShowTime,
+  dateRangePickerTimeGranularity,
+} from './date-range-picker.machine'
 
 const parts = dateRangePickerAnatomy.build()
 /** 段位的 CSS 选择器，取自分段输入那一份解剖。 */
@@ -52,6 +63,13 @@ function resolveTranslations(input: Partial<DateRangePickerTranslations> | undef
     endDate: input?.endDate ?? 'End date',
     presets: input?.presets ?? 'Shortcuts',
     clearTrigger: input?.clearTrigger ?? 'Clear',
+    startTime: input?.startTime ?? 'Start time',
+    endTime: input?.endTime ?? 'End time',
+    // 内建英文与时间选择器那份逐字相同：同一页上的两个组件不该把同一列念成两个名字
+    hour: input?.hour ?? 'hour',
+    minute: input?.minute ?? 'minute',
+    second: input?.second ?? 'second',
+    dayPeriod: input?.dayPeriod ?? 'AM/PM',
   }
 }
 
@@ -102,18 +120,120 @@ export function connectDateRangePicker<T extends PropTypes>(
 
   // 内嵌日历：整份 api 原样转发
   const calendar = connectCalendarRangePicker(services.calendar, normalize)
-  // 两端都在才有连续区间可言
+  // 两端都在才有连续区间可言；showTime 下周期只看日期段
   const periodValue = value[0] && value[1]
-    ? calendarPeriodValue(calendar.granularity, 'range', [value[0], value[1]], { locale: prop('locale') })
+    ? calendarPeriodValue(calendar.granularity, 'range', [datePickerDatePart(value[0]), datePickerDatePart(value[1])], { locale: prop('locale') })
     : null
+
+  // —— showTime：两端都升格为日期时间，起止各一组时间列，收口交给确认按钮 ——
+  const showTime = dateRangePickerShowTime(services.root)
+  const timeGranularity = dateRangePickerTimeGranularity(services.root)
+  // 小时制缺省 24，不随 locale 推断
+  const hourCycle = prop('hourCycle') ?? TIME_FIELD_HOUR_CYCLE
+  const timeStep = resolveTimeStep(prop('timeStep'))
+  const activeIndex: DateRangePickerEndIndex = context.get('activeIndex') ?? 0
+  const ends: readonly [string, string] = [value[0] ?? '', value[1] ?? '']
+  const timeValues: readonly [string | null, string | null] = showTime
+    ? [datePickerTimePart(ends[0]), datePickerTimePart(ends[1])]
+    : [null, null]
+  const endDates: readonly [string | null, string | null] = [
+    ends[0] ? datePickerDatePart(ends[0]) : null,
+    ends[1] ? datePickerDatePart(ends[1]) : null,
+  ]
+  /** 一端的时刻落在哪一天：有值取它的日期段，没有借另一端的，再没有用聚焦日。 */
+  const timeDateOf = (index: DateRangePickerEndIndex): string =>
+    endDates[index] ?? endDates[index === 0 ? 1 : 0] ?? calendar.focusedValue
+  // 起止落在同一天：终点列早于起点时刻的格不可选
+  const sameDay = endDates[0] != null && endDates[0] === timeDateOf(1)
+  const timeModelAt = (index: DateRangePickerEndIndex): DatePickerTimeModel => datePickerTimeModel({
+    time: timeValues[index],
+    date: timeDateOf(index),
+    granularity: timeGranularity,
+    hourCycle,
+    timeStep: prop('timeStep'),
+    min: prop('min'),
+    max: prop('max'),
+    timeMin: index === 1 && sameDay ? (timeValues[0] ?? undefined) : undefined,
+    isTimeUnavailable: prop('isTimeUnavailable'),
+    index,
+    locale: prop('locale'),
+  })
+  const timeModels: readonly [DatePickerTimeModel, DatePickerTimeModel] = [timeModelAt(0), timeModelAt(1)]
+  const timeColumnGroups: readonly [DateRangePickerTimeColumnGroup, DateRangePickerTimeColumnGroup] = [
+    { index: 0, label: label.startTime, columns: showTime ? timeModels[0].columns : [] },
+    { index: 1, label: label.endTime, columns: showTime ? timeModels[1].columns : [] },
+  ]
+
+  /** 一格按不下去：整个控件禁用，或落在界外 / 早于同一天的起点 / 被作者判为不可用。 */
+  const timeItemDisabled = (index: DateRangePickerEndIndex, unit: DatePickerTimeUnit, option: string): boolean =>
+    disabled || timeModels[index].isUnavailable(unit, option)
+
+  /**
+   * 一列此刻的 Tab 落点：选中且按得下的那一项，否则头一个按得下的项。
+   * 不另立「聚焦到哪一项」的状态：落点由这一端的时刻推得出来，焦点本身交给 DOM。
+   */
+  const timeAnchorOf = (index: DateRangePickerEndIndex, unit: DatePickerTimeUnit): string | null =>
+    (showTime ? timeModels[index].anchorOf(unit) : null)
+
+  /** 一列里的全部选项，文档序。事件那一刻现查，不缓存节点数组。 */
+  const timeItemsIn = (column: HTMLElement | null): HTMLElement[] =>
+    column ? [...column.querySelectorAll<HTMLElement>(parts['time-item'].selector)] : []
+
+  /** 格自报的不可选：方向键在列内走时跳过它们。 */
+  const timeItemInert = (el: HTMLElement): boolean => el.getAttribute('aria-disabled') === 'true'
+
+  /** 同一份浮层里露出来的全部时间列，两组连着排，文档序。收起的列（没开 showTime）不算一站。 */
+  const timeColumnsIn = (from: HTMLElement): HTMLElement[] => {
+    const content = from.closest<HTMLElement>(parts.content.selector)
+      ?? from.closest<HTMLElement>(parts.root.selector)
+    return content
+      ? [...content.querySelectorAll<HTMLElement>(parts['time-column'].selector)].filter(el => !el.hasAttribute('hidden'))
+      : []
+  }
+
+  /** 换列：两组连着走，落到目标列的 Tab 落点上（选中项，没有就头一个按得下的项）。 */
+  const moveTimeColumn = (from: HTMLElement, intent: NavIntent): void => {
+    const live = timeColumnsIn(from)
+    const at = stepIndex(live.length, live.indexOf(from), intent, { loop: false })
+    if (at < 0)
+      return
+    const target = live[at]!
+    const items = timeItemsIn(target)
+    const unit = target.getAttribute('data-unit') as DatePickerTimeUnit | null
+    const index: DateRangePickerEndIndex = target.getAttribute('data-index') === '1' ? 1 : 0
+    const anchor = unit ? timeAnchorOf(index, unit) : null
+    focusSafely(items.find(el => el.getAttribute('data-value') === anchor) ?? items[0])
+  }
+
+  /**
+   * 点时间选项：该单位写进这一端的时刻（12 小时制下按这一端当前的上下午换算），另一端原样留着；
+   * 这一端还没有日期时借另一端的日期，再没有用聚焦日。
+   */
+  const pickTime = (index: DateRangePickerEndIndex, unit: DatePickerTimeUnit, option: string): void => {
+    if (!interactive || timeItemDisabled(index, unit, option))
+      return
+    const next: [string, string] = [ends[0], ends[1]]
+    next[index] = datePickerJoinDateTime(timeDateOf(index), timeModels[index].pick(unit, option), timeGranularity)
+    if (activeIndex !== index)
+      send({ type: 'ACTIVE_INDEX.SET', activeIndex: index })
+    send({ type: 'VALUE.SET', value: next, src: 'time' })
+  }
+
+  /** 改写当前编辑的一端；与现值相同时不发，免得每次聚焦都惊动一遍。 */
+  const activate = (index: DateRangePickerEndIndex): void => {
+    if (activeIndex !== index)
+      send({ type: 'ACTIVE_INDEX.SET', activeIndex: index })
+  }
 
   // —— 快捷选项：一条选项就是一次整份写值 ——
   const presetInput = prop('presets') ?? []
+  // 选中判定只看日期段：showTime 下值里带着时间
+  const filledDates = filled.map(datePickerDatePart)
   const presets: readonly DateRangePickerPresetState[] = presetInput.map((preset) => {
     const dates = datePickerPresetDates(preset.value)
     // 不是恰好两端、或有哪一天落在 min/max 之外 / 被作者判为不可用的，按下不写值
     const presetDisabled = !!preset.disabled || dates.length !== 2 || dates.some(d => calendar.isUnavailable(d))
-    const selected = dates.length > 0 && sameDates(filled, dates)
+    const selected = dates.length > 0 && sameDates(filledDates, dates)
     return { ...preset, dates, disabled: presetDisabled, selected }
   })
 
@@ -132,12 +252,21 @@ export function connectDateRangePicker<T extends PropTypes>(
     ?? presets[0]?.value
     ?? null
 
-  /** 点快捷选项：两端一次写进去，收不收浮层由 closeOnSelect 那条守卫决定。 */
+  /**
+   * 点快捷选项：两端一次写进去，收不收浮层由 closeOnSelect 那条守卫决定。
+   * showTime 下日期拼上这一端此刻的时刻（没有就按 defaultTime 那一端，再没有零点），不然会把挑好的时刻抹掉。
+   */
   const pickPreset = (v: string): void => {
     const preset = presets.find(p => p.value === v)
     if (!interactive || !preset || preset.disabled)
       return
-    send({ type: 'VALUE.SET', value: preset.dates, src: 'preset' })
+    const next = showTime
+      ? preset.dates.map((date, i) => {
+          const index = i as DateRangePickerEndIndex
+          return datePickerJoinDateTime(date, timeValues[index] ?? dateRangePickerDefaultTime(services.root, index), timeGranularity)
+        })
+      : preset.dates
+    send({ type: 'VALUE.SET', value: next, src: 'preset' })
   }
 
   /**
@@ -152,7 +281,7 @@ export function connectDateRangePicker<T extends PropTypes>(
   // 整份控件的不合法态照它发，只标出错的那一组段位等于把反馈藏在输入行里的一小块。
   // 两端各是一份分段输入，任一端越界整份就都算越界；
   // 两端都填了却终点早于起点，同样不合法：两组段位各写各的，顺序只能在这里把关
-  const reversed = !!value[0] && !!value[1] && value[1] < value[0]
+  const reversed = !!value[0] && !!value[1] && compareDateRangeEnds(value[1], value[0]) < 0
   const flagged = invalid || !!fieldRaw.outOfRange || !!fieldEndRaw.outOfRange || reversed
 
   /**
@@ -279,6 +408,15 @@ export function connectDateRangePicker<T extends PropTypes>(
     invalid: flagged,
     canClear,
     presets,
+    activeIndex,
+    setActiveIndex: activate,
+    showTime,
+    timeColumnGroups,
+    timeValues,
+    hourCycle,
+    timeStep,
+    getTimeItemText: ({ unit, value: option }) => timeModels[0].itemText(unit, option),
+    isTimeItemDisabled: ({ index, unit, value: option }) => timeItemDisabled(index, unit, option),
     calendar,
     field,
     fieldEnd,
@@ -340,8 +478,10 @@ export function connectDateRangePicker<T extends PropTypes>(
           send({ type: 'CLOSE' })
           return
         }
-        // src=control：这一下的用意是编辑段位，焦点得留在段上，不搬进浮层
-        send({ type: 'OPEN', src: 'control' })
+        // src=control：这一下的用意是编辑段位，焦点得留在段上，不搬进浮层；
+        // 点在终点那组段位上就从终点开始编辑
+        const group = el?.closest(parts['segment-group'].selector)
+        send({ type: 'OPEN', src: 'control', index: group?.getAttribute('data-index') === '1' ? 1 : 0 })
       },
     }),
 
@@ -365,15 +505,17 @@ export function connectDateRangePicker<T extends PropTypes>(
         'data-empty': dataAttr(raw.empty),
         'data-complete': dataAttr(raw.complete),
         'data-out-of-range': dataAttr(outOfRange),
+        // 聚焦到哪一组段位，就是在编辑哪一端
+        'onFocusIn': () => activate(index),
         // 触发钮是可选部件，键盘那条入口不能只挂在它身上：Alt+ArrowDown 是下拉类控件通用的展开键。
         // 挂在分段容器而不是段位上——段位属于分段输入那份解剖，keydown 冒到这儿一样收得到
         'onKeyDown': (event: KeyboardEvent) => {
           if (disabled)
             return
-          // Alt+ArrowDown 展开：下拉类控件通用的展开键，段位原本就不认它
+          // Alt+ArrowDown 展开：下拉类控件通用的展开键，段位原本就不认它；从哪一组展开就先编辑哪一端
           if (!open && event.altKey && event.key === 'ArrowDown') {
             event.preventDefault()
-            send({ type: 'OPEN', src: 'trigger' })
+            send({ type: 'OPEN', src: 'trigger', index })
             return
           }
           // Enter 收起:段位里敲出来的值不触发"选完即收"(那时人还在打字),
@@ -575,5 +717,128 @@ export function connectDateRangePicker<T extends PropTypes>(
       'data-readonly': dataAttr(readOnly),
     }),
 
+    // 一端的时间列外壳：起止各一个并排，各报「开始时间」「结束时间」；正在编辑的那一端投影 data-editing，
+    // 小标题据此强调，看得出日历下一次点选改的是哪一端
+    getColumnGroupProps: ({ index }) => normalize.element({
+      ...parts['column-group'].attrs,
+      'role': 'group',
+      'aria-label': index === 1 ? label.endTime : label.startTime,
+      'data-index': String(index),
+      'data-editing': dataAttr(activeIndex === index),
+      'hidden': !showTime || undefined,
+    }),
+
+    // 小标题只是给眼睛看的，名字已经由外壳的 aria-label 报过
+    getColumnGroupLabelProps: ({ index }) => normalize.element({
+      ...parts['column-group-label'].attrs,
+      'aria-hidden': true,
+      'data-index': String(index),
+      'data-editing': dataAttr(activeIndex === index),
+      'hidden': !showTime || undefined,
+    }),
+
+    // 键盘在列上收口，选项只管声明自己。挂列不挂 content：同一份浮层里还有日历那张网格，
+    // 它自己吃方向键，两个处理器挂同一个节点会互相抢
+    getTimeColumnProps: ({ index, unit }) => normalize.element({
+      ...parts['time-column'].attrs,
+      'role': 'listbox',
+      // unit 是内部枚举，直接当名字读屏就把标识符念出来了；名字走文案桶，哪一端由外壳的名字说
+      'aria-label': label[unit],
+      'aria-orientation': 'vertical',
+      // 单选与否必须显式说，省略只是「没说」
+      'aria-multiselectable': 'false',
+      'aria-disabled': disabled ? 'true' : 'false',
+      'data-index': String(index),
+      'data-unit': unit,
+      'hidden': !showTime || undefined,
+      // 列里一格都没有时由列自己接住焦点——它是 role=listbox 且有名字，
+      // 否则这一列连一个 Tab 停靠点都没有
+      'tabindex': showTime && timeAnchorOf(index, unit) == null ? 0 : -1,
+      // 焦点进了哪一端的列，就是在编辑哪一端
+      'onFocusIn': () => activate(index),
+      'onKeyDown': (event: KeyboardEvent) => {
+        if (disabled || hasModifier(event))
+          return
+        const column = event.currentTarget as HTMLElement
+        const items = timeItemsIn(column)
+        // 焦点在哪一格：事件从那一格冒上来。落在列自己身上时从头一格起步
+        const current = (event.target as HTMLElement | null)?.closest<HTMLElement>(parts['time-item'].selector) ?? null
+
+        // 上下键与 Home/End 在列内走，到头回绕——一列就是一圈数；按不下去的格跳过
+        const within = navIntentFromKey(event, { axis: 'vertical' })
+        if (within) {
+          event.preventDefault()
+          const at = stepIndex(items.length, current ? items.indexOf(current) : -1, within, {
+            loop: true,
+            skip: i => timeItemInert(items[i]!),
+          })
+          if (at >= 0)
+            focusSafely(items[at])
+          return
+        }
+
+        // 左右键换列，两组连着走，两端停住
+        const across = navIntentFromKey(event, { axis: 'horizontal', home: false, dir: readDirection(event.currentTarget as Element) })
+        if (across) {
+          event.preventDefault()
+          moveTimeColumn(column, across)
+          return
+        }
+
+        if (event.key === 'Enter' || event.key === ' ') {
+          // 焦点还在列上（这一列是空的）时没有可落的格
+          if (!current)
+            return
+          event.preventDefault()
+          const option = current.getAttribute('data-value')
+          if (option != null)
+            pickTime(index, unit, option)
+        }
+      },
+    }),
+
+    getTimeItemProps: ({ index, unit, value: option }) => {
+      const selected = showTime && timeModels[index].selectedOf(unit) === option
+      const itemDisabled = timeItemDisabled(index, unit, option)
+      // 时间格同走 Collection Item 的 overlay 语境：选中只留行尾对号，不再上品牌淡底
+      return normalize.element({
+        ...parts['time-item'].attrs,
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
+        'role': 'option',
+        'aria-selected': selected ? 'true' : 'false',
+        // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
+        'aria-disabled': itemDisabled ? 'true' : 'false',
+        'data-index': String(index),
+        'data-unit': unit,
+        'data-value': option,
+        // 与其余 role=option 组件同一套选中编码
+        'data-state': selected ? 'checked' : 'unchecked',
+        'data-disabled': dataAttr(itemDisabled),
+        // roving tabindex：每列只有落点那一格留在 Tab 序列内，其余靠方向键到达
+        'tabindex': timeAnchorOf(index, unit) === option ? 0 : -1,
+        // 按住的回执与写值同一道门：只读、界外、早于起点与作者判为不可用的格都不进
+        ...press(`time-item:${index}:${unit}:${option}`, readOnly || itemDisabled),
+        'onClick': () => pickTime(index, unit, option),
+      })
+    },
+
+    // showTime 的收口：挑完日子与时刻由它收浮层。面板里唯一的主要动作，走 Action Control 的 text solid 档
+    // （与 Button 缺省同为品牌实心）；面板内部件不随字段尺寸档，钮取 sm
+    getConfirmTriggerProps: () => normalize.button({
+      ...parts['confirm-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'solid',
+      'data-xh-ink-surface': '',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'type': 'button',
+      'hidden': !showTime || undefined,
+      // 藏起的确认钮不接受按压；只读仍可收口，照有回执。Enter 在 keydown 即收起浮层，随后由展开态的 exit 松开
+      ...press('confirm', !showTime),
+      'onClick': () => send({ type: 'CLOSE' }),
+    }),
   }
 }

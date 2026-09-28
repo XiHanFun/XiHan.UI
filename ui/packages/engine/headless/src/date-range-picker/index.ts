@@ -9,13 +9,18 @@ export { dateRangePickerAnatomy } from './date-range-picker.anatomy'
 export { connectDateRangePicker } from './date-range-picker.connect'
 export { dateRangePickerKeyboard } from './date-range-picker.keyboard'
 export {
+  compareDateRangeEnds,
   DATE_RANGE_PICKER_DEFAULT_PLACEMENT,
   dateRangePickerCalendarProps,
+  dateRangePickerDefaultTime,
   dateRangePickerFieldEndProps,
   dateRangePickerFieldProps,
   dateRangePickerFocusedValue,
+  dateRangePickerJoinTimes,
   dateRangePickerLocale,
   dateRangePickerMachine,
+  dateRangePickerShowTime,
+  dateRangePickerTimeGranularity,
   findDateRangePickerCellEl,
 } from './date-range-picker.machine'
 export { dateRangePickerMeta } from './date-range-picker.meta'
@@ -27,7 +32,10 @@ export {
 export { dateRangePickerFieldAt, resolveDateRangePickerFieldIndex, resolveDateRangePickerPanelIndex } from './date-range-picker.projection'
 export type { DateRangePickerFieldIndex } from './date-range-picker.projection'
 export type {
+  DateRangePickerActiveIndexChangeDetails,
   DateRangePickerApi,
+  DateRangePickerColumnGroupProps,
+  DateRangePickerEndIndex,
   DateRangePickerFieldApi,
   DateRangePickerFocusChangeDetails,
   DateRangePickerOpenChangeDetails,
@@ -39,6 +47,10 @@ export type {
   DateRangePickerSchema,
   DateRangePickerSegmentGroupProps,
   DateRangePickerServices,
+  DateRangePickerTimeColumnGroup,
+  DateRangePickerTimeColumnProps,
+  DateRangePickerTimeItemProps,
+  DateRangePickerTimeItemTextProps,
   DateRangePickerTranslations,
   DateRangePickerValueChangeDetails,
   DateRangePickerValueSource,

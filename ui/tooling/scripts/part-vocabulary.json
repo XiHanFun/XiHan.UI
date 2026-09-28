@@ -244,9 +244,11 @@
       "table"
     ],
     "column-group": [
+      "date-range-picker",
       "time-range-picker"
     ],
     "column-group-label": [
+      "date-range-picker",
       "time-range-picker"
     ],
     "column-header": [
@@ -267,6 +269,7 @@
     ],
     "confirm-trigger": [
       "date-picker",
+      "date-range-picker",
       "popconfirm"
     ],
     "connector": [
@@ -1749,10 +1752,12 @@
       "timeline"
     ],
     "time-column": [
-      "date-picker"
+      "date-picker",
+      "date-range-picker"
     ],
     "time-item": [
-      "date-picker"
+      "date-picker",
+      "date-range-picker"
     ],
     "timer": [
       "approval"

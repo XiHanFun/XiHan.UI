@@ -8,12 +8,22 @@
 import type { PositionResult, Service } from '@xihan-ui/core'
 import type { CalendarRangePickerSchema } from '../calendar-range-picker'
 import type { DateFieldSchema } from '../date-field'
+import type { DatePickerTimeGranularity } from '../date-picker'
 import type { CalendarView } from '../shared/calendar'
-import type { DateRangePickerPressedKey, DateRangePickerSchema, DateRangePickerValueSource } from './date-range-picker.types'
+import type { DateRangePickerEndIndex, DateRangePickerPressedKey, DateRangePickerSchema, DateRangePickerValueSource } from './date-range-picker.types'
 import { canTakeFocus, itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
-import { getLocalTimeZone, today } from '@xihan-ui/core/date'
+import { getLocalTimeZone, PlainDateTime, today } from '@xihan-ui/core/date'
 import { calendarRangePickerAnatomy } from '../calendar-range-picker'
-import { DATE_PICKER_GRANULARITY, datePickerSegmentSet } from '../date-picker'
+import {
+  DATE_PICKER_GRANULARITY,
+  datePickerCalendarBound,
+  datePickerDatePart,
+  datePickerJoinDateTime,
+  datePickerNormalizeTime,
+  datePickerSegmentSet,
+  datePickerTimePart,
+} from '../date-picker'
+import { sameArray } from '../shared/array'
 import { sortIso } from '../shared/calendar'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -44,6 +54,33 @@ function normalizeRange(next: readonly string[]): string[] {
   return sortIso(next.filter(v => v !== '')).slice(0, 2)
 }
 
+/** 解析日期（时间）串；写坏的给 null。 */
+function parseDateTime(value: string): PlainDateTime | null {
+  try {
+    return PlainDateTime.from(value)
+  }
+  catch {
+    return null
+  }
+}
+
+/** 两端按日期时间比先后：a 早于 b 为负。解析不了的排在后面，写坏的值不挡住另一端。 */
+export function compareDateRangeEnds(a: string, b: string): number {
+  const pa = parseDateTime(a)
+  const pb = parseDateTime(b)
+  if (!pa || !pb)
+    return pa ? -1 : pb ? 1 : 0
+  return PlainDateTime.compare(pa, pb)
+}
+
+/**
+ * showTime 下整份写入的区间：空串占位丢掉、按日期时间升序、最多两端。
+ * 不去重：起止同一刻（一天之内的同一时刻）也是一段合法的区间。
+ */
+function normalizeDateTimeRange(next: readonly string[]): string[] {
+  return next.filter(v => v !== '').sort(compareDateRangeEnds).slice(0, 2)
+}
+
 // 数组按位比：受控时每次读都归一成新数组，用默认的 Object.is 会把每次读写都判成变更。
 // 空串是占位，与该位缺席算同一件事：对外通知过滤掉空串，回写的那一份短一截
 function sameValues(a: string[], b: string[] | undefined): boolean {
@@ -58,22 +95,28 @@ function sameValues(a: string[], b: string[] | undefined): boolean {
 }
 
 /**
- * 交给日历的那份值：空串占位剔掉。按底层数组缓存，同一份值每次读到的都是同一个数组——
- * 日历盯着它的引用判「值被宿主整份改写」，每读一次就 filter 出新数组会让刚落的起点当场作废。
+ * 交给日历的那份值：空串占位剔掉，showTime 下只留日期段（日历只认日期）。按底层数组缓存，同一份值每次读到的
+ * 都是同一个数组——日历盯着它的引用判「值被宿主整份改写」，每读一次就出一个新数组会让刚落的起点当场作废。
+ * 时间列只改时刻、不动日子：那一下交回上一次的数组，挑到一半的起点照旧留着。
  */
-const filledCache = new WeakMap<readonly string[], string[]>()
-function filledOf(value: string[]): string[] {
-  let hit = filledCache.get(value)
-  if (!hit) {
-    hit = value.includes('') ? value.filter(v => v !== '') : value
-    filledCache.set(value, hit)
-  }
-  return hit
+const filledByValue = new WeakMap<readonly string[], string[]>()
+const filledByOwner = new WeakMap<object, string[]>()
+function filledOf(owner: object, value: readonly string[], keepSameDates: boolean): string[] {
+  const cached = filledByValue.get(value)
+  if (cached)
+    return cached
+  const dates = value.filter(v => v !== '').map(datePickerDatePart)
+  const last = filledByOwner.get(owner)
+  const next = keepSameDates && last && sameArray(last, dates) ? last : dates
+  filledByValue.set(value, next)
+  filledByOwner.set(owner, next)
+  return next
 }
 
-/** 首个真实存在的选中值；空串是占位不算数。 */
+/** 首个真实存在的选中值的日期段；空串是占位不算数。 */
 function firstValue(values: readonly string[]): string | null {
-  return values.find(v => v !== '') ?? null
+  const first = values.find(v => v !== '')
+  return first == null ? null : datePickerDatePart(first)
 }
 
 /** 取区间某一端；空串占位视同没有值。 */
@@ -106,6 +149,42 @@ export function dateRangePickerFocusedValue(service: Service<DateRangePickerSche
     ?? today(timeZoneOf(service)).toString()
 }
 
+/** showTime 生效：只在按天挑时有时刻可言。 */
+export function dateRangePickerShowTime(service: Pick<Service<DateRangePickerSchema>, 'prop'>): boolean {
+  return !!service.prop('showTime') && (service.prop('granularity') ?? 'day') === 'day'
+}
+
+/** showTime 的时间段精度，默认分钟。 */
+export function dateRangePickerTimeGranularity(service: Pick<Service<DateRangePickerSchema>, 'prop'>): DatePickerTimeGranularity {
+  return service.prop('timeGranularity') ?? 'minute'
+}
+
+/** defaultTime 里某一端的时刻，按精度归一；没给或写坏时为 null（按零点补）。 */
+export function dateRangePickerDefaultTime(
+  service: Pick<Service<DateRangePickerSchema>, 'prop'>,
+  index: DateRangePickerEndIndex,
+): string | null {
+  return datePickerNormalizeTime(service.prop('defaultTime')?.[index], dateRangePickerTimeGranularity(service))
+}
+
+/**
+ * 日历挑出来的日期拼上时刻：每一端先认它原来的时刻，没有再用 defaultTime 那一端，再没有补零点。
+ * 日历把同一天的起止收成一个值，这里拆回两端。
+ */
+export function dateRangePickerJoinTimes(
+  service: Pick<Service<DateRangePickerSchema>, 'prop' | 'context'>,
+  dates: readonly string[],
+): string[] {
+  const current = service.context.get('value')
+  const granularity = dateRangePickerTimeGranularity(service)
+  const both = dates.length === 1 ? [dates[0]!, dates[0]!] : dates.slice(0, 2)
+  return both.map((date, i) => {
+    const index = i as DateRangePickerEndIndex
+    const time = datePickerTimePart(current[index] ?? '') ?? dateRangePickerDefaultTime(service, index)
+    return datePickerJoinDateTime(date, time, granularity)
+  })
+}
+
 /** 这台编排机此刻用的语言标记：作者给的优先，没给按宿主语言，宿主也没有时按 en-US。 */
 export function dateRangePickerLocale(service: Service<DateRangePickerSchema>): string {
   return resolveLocale(service.prop('locale'), service.scope)
@@ -114,9 +193,11 @@ export function dateRangePickerLocale(service: Service<DateRangePickerSchema>): 
 /** 喂给内嵌日历的那份 props：两端与聚焦日受控，选中与聚焦经回调送回编排机。 */
 export function dateRangePickerCalendarProps(service: Service<DateRangePickerSchema>): CalendarRangePickerSchema['props'] {
   const { prop, context, send } = service
+  const withTime = dateRangePickerShowTime(service)
+  const hasStart = !!context.get('value')[0]
   return {
     // 空串占位不交给日历：它只认真实存在的两端
-    value: filledOf(context.get('value')),
+    value: filledOf(service, context.get('value'), context.get('writeSource') === 'time'),
     focusedValue: dateRangePickerFocusedValue(service),
     granularity: prop('granularity'),
     // 钻到哪一层由编排机持有：日历是内嵌的，收起再展开要回到作者要的那一档
@@ -125,17 +206,25 @@ export function dateRangePickerCalendarProps(service: Service<DateRangePickerSch
     visibleCount: prop('visibleCount') ?? 1,
     // 恒六行：翻页时浮层的高度不跟着月份变
     fixedWeeks: prop('fixedWeeks') ?? true,
-    min: prop('min'),
-    max: prop('max'),
+    // 日历按天比较，认不出带时间段的界：只交日期段，时间段由时间列在同一天时收
+    min: datePickerCalendarBound(prop('min')),
+    max: datePickerCalendarBound(prop('max')),
     locale: prop('locale'),
     timeZone: prop('timeZone'),
     isDateUnavailable: prop('isDateUnavailable'),
     allowsNonContiguousRanges: prop('allowsNonContiguousRanges'),
+    // 正在编辑终点且已有起点：日历只改终点
+    activeIndex: context.get('activeIndex') === 1 && hasStart ? 1 : 0,
     disabled: prop('disabled'),
     readOnly: prop('readOnly'),
     // 日历那几句读屏文案从同一份文案桶里取
     translations: prop('translations'),
-    onValueChange: ({ value }) => send({ type: 'VALUE.SET', value, src: 'calendar' }),
+    onValueChange: ({ value }) => send({
+      type: 'VALUE.SET',
+      // showTime 下日期拼上时刻：原来有的留着，没有的按 defaultTime 那一端补
+      value: withTime ? dateRangePickerJoinTimes(service, value) : value,
+      src: 'calendar',
+    }),
     onFocusedValueChange: ({ focusedValue }) => send({ type: 'FOCUSED.SET', value: focusedValue }),
   }
 }
@@ -147,9 +236,12 @@ function dateRangePickerFieldPropsAt(
 ): DateFieldSchema['props'] {
   const { prop, context, send } = service
   const src: DateRangePickerValueSource = index === 0 ? 'field' : 'field-end'
+  const withTime = dateRangePickerShowTime(service)
   return {
     value: valueAt(context.get('value'), index),
-    granularity: DATE_PICKER_GRANULARITY,
+    // showTime 下一组段位承载完整的日期时间；日历仍只读日期段
+    granularity: withTime ? dateRangePickerTimeGranularity(service) : DATE_PICKER_GRANULARITY,
+    hourCycle: withTime ? prop('hourCycle') : undefined,
     // 段集在场时 granularity 让路；不给就走老路，年月日按 locale 排
     segments: prop('segments') ?? datePickerSegmentSet(prop('granularity')),
     min: prop('min'),
@@ -221,6 +313,14 @@ export const dateRangePickerMachine = createMachine({
     moveFocusIn: cell<boolean>(() => ({ defaultValue: true })),
     // 按压通道：被 Space / Enter 或触屏按住的那一个部件（清空钮 / 触发钮 / 快捷选项），按 key 记
     pressed: cell<DateRangePickerPressedKey | null>(() => ({ defaultValue: null })),
+    // 最近一次写值的来源：时间列那一路只改时刻，交给日历的日期数组照旧
+    writeSource: cell<DateRangePickerValueSource | null>(() => ({ defaultValue: null })),
+    // 当前编辑哪一端：缺省起点，每次展开按入口重定
+    activeIndex: cell<DateRangePickerEndIndex>(() => ({
+      value: prop('activeIndex'),
+      defaultValue: 0,
+      onChange: activeIndex => prop('onActiveIndexChange')?.({ activeIndex }),
+    })),
   }),
   refs: () => ({
     config: null,
@@ -248,7 +348,8 @@ export const dateRangePickerMachine = createMachine({
     'VALUE.CLEAR': { actions: ['clearValue'] },
     'FOCUSED.SET': { actions: ['setFocusedValue'] },
     'VIEW.SET': { actions: ['setActiveView'] },
-    // 按压通道：触发钮与清空钮在收起态按、快捷选项在展开态按，两个状态都认
+    'ACTIVE_INDEX.SET': { actions: ['setActiveIndex'] },
+    // 按压通道：触发钮与清空钮在收起态按、快捷选项 / 时间格 / 确认钮在展开态按，两个状态都认
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
   },
@@ -256,13 +357,14 @@ export const dateRangePickerMachine = createMachine({
     closed: {
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
+        // 先编辑哪一端按入口定：从终点那组段位展开是终点，其余是起点
         'OPEN': [
-          { guard: 'isOpenControlled', actions: ['setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
-          { target: 'open', actions: ['setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
+          { guard: 'isOpenControlled', actions: ['setMoveFocusIn', 'setReturnFocus', 'setEntryIndex', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setMoveFocusIn', 'setReturnFocus', 'setEntryIndex', 'invokeOnOpen'] },
         ],
         'TOGGLE': [
-          { guard: 'isOpenControlled', actions: ['setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
-          { target: 'open', actions: ['setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
+          { guard: 'isOpenControlled', actions: ['setMoveFocusIn', 'setReturnFocus', 'setEntryIndex', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setMoveFocusIn', 'setReturnFocus', 'setEntryIndex', 'invokeOnOpen'] },
         ],
         'CONTROLLED.OPEN': { target: 'open' },
       },
@@ -270,7 +372,7 @@ export const dateRangePickerMachine = createMachine({
     open: {
       // 焦点域靠这个值去活 DOM 里找落点格子；钻到哪一层也一并拨回作者要的那一档
       entry: ['focusSelectedDay', 'resetActiveView'],
-      // 按住快捷选项途中收起（Enter 在 keydown 即写值收起）：浮层里的部件不会再来 keyup
+      // 按住快捷选项 / 确认钮途中收起（Enter 在 keydown 即写值 / 确认收起）：浮层里的部件不会再来 keyup
       exit: ['releasePress'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
@@ -304,10 +406,15 @@ export const dateRangePickerMachine = createMachine({
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
 
-      /** 这一次写值该不该收起浮层：只认日历与快捷选项两路，且要两端都落定。 */
+      /**
+       * 这一次写值该不该收起浮层：只认日历与快捷选项两路，且要两端都落定。
+       * showTime 下挑完日子还要挑时刻，收口交给确认按钮。
+       */
       closesOnSelect: ({ prop, event }) => {
         const e = event.current()
         if (e.type !== 'VALUE.SET' || (e.src !== 'calendar' && e.src !== 'preset'))
+          return false
+        if (prop('showTime') && (prop('granularity') ?? 'day') === 'day')
           return false
         if ((prop('closeOnSelect') ?? true) === false)
           return false
@@ -315,14 +422,14 @@ export const dateRangePickerMachine = createMachine({
       },
 
       /**
-       * 按压守卫：整体禁用一律不进；触发钮只读仍可展开查看，照有回执；其余（清空钮、快捷选项）与它们各自的
-       * 写值同一道门——只读改不动值，逐条禁用的事实由 connect 随事件带来。
+       * 按压守卫：整体禁用一律不进；触发钮与确认钮只管开合，只读仍可展开查看 / 收口，照有回执；其余（清空钮、
+       * 快捷选项、时间格）与它们各自的写值同一道门——只读改不动值，逐条禁用的事实由 connect 随事件带来。
        */
       canPress: ({ prop, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START' || e.disabled || prop('disabled'))
           return false
-        return e.key === 'trigger' || !prop('readOnly')
+        return e.key === 'trigger' || e.key === 'confirm' || !prop('readOnly')
       },
     },
     actions: {
@@ -338,13 +445,14 @@ export const dateRangePickerMachine = createMachine({
           context.set('pressed', null)
       },
       releasePress: ({ context }) => context.set('pressed', null),
-      // 转入禁用一律松开；只读松开触发钮以外的；清空钮在两端都清空时藏起，随之松开（与 connect 的 canClear 同口径）
+      // 转入禁用一律松开；只读松开触发钮与确认钮以外的；清空钮在两端都清空时藏起，随之松开（与 connect 的 canClear 同口径）
       releaseWhenInert: ({ context, prop }) => {
         const pressed = context.get('pressed')
         if (pressed == null)
           return
         const empty = context.get('value').every(v => v === '')
-        if (prop('disabled') || (prop('readOnly') && pressed !== 'trigger') || (pressed === 'clear' && empty))
+        const readOnlyHit = prop('readOnly') && pressed !== 'trigger' && pressed !== 'confirm'
+        if (prop('disabled') || readOnlyHit || (pressed === 'clear' && empty))
           context.set('pressed', null)
       },
 
@@ -378,13 +486,20 @@ export const dateRangePickerMachine = createMachine({
         context.set('returnFocus', !handedOff)
       },
 
-      // 段位来的值按位落：不排序也不去重，两端各自对应一组输入框；其余来源整份归一
-      setValue: ({ context, event }) => {
+      // 段位与时间列来的值按位落：不排序也不去重，两端各自对应一组输入框 / 一组时间列；其余来源整份归一，
+      // showTime 下按日期时间排、不去重（同一刻的起止也是一段区间）
+      setValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'VALUE.SET')
           return
-        const fromField = e.src === 'field' || e.src === 'field-end'
-        context.set('value', fromField ? e.value.slice(0, 2) : normalizeRange(e.value))
+        context.set('writeSource', e.src ?? null)
+        const positional = e.src === 'field' || e.src === 'field-end' || e.src === 'time'
+        if (positional) {
+          context.set('value', e.value.slice(0, 2))
+          return
+        }
+        const withTime = !!prop('showTime') && (prop('granularity') ?? 'day') === 'day'
+        context.set('value', withTime ? normalizeDateTimeRange(e.value) : normalizeRange(e.value))
       },
 
       clearValue: ({ context }) => context.set('value', []),
@@ -398,14 +513,16 @@ export const dateRangePickerMachine = createMachine({
       /**
        * 值变了，日历跟着翻到那一天所在的月：终点那组段位跟终点，其余跟首个选中值。
        *
-       * 不认日历那一路：日历点选时已先发过 FOCUSED.SET，这里再改一遍会把区间终点的焦点拽回起点。
+       * 不认日历与时间列两路：日历点选时已先发过 FOCUSED.SET，这里再改一遍会把区间终点的焦点拽回起点；
+       * 时间列只改时刻，日子没动。
        */
       syncFocusedValue: ({ context, event }) => {
         const e = event.current()
-        if (e.type !== 'VALUE.SET' || e.src === 'calendar')
+        if (e.type !== 'VALUE.SET' || e.src === 'calendar' || e.src === 'time')
           return
         const values = context.get('value')
-        const next = e.src === 'field-end' ? valueAt(values, 1) : firstValue(values)
+        const end = valueAt(values, 1)
+        const next = e.src === 'field-end' ? (end == null ? null : datePickerDatePart(end)) : firstValue(values)
         if (next != null)
           context.set('focusedValue', next)
       },
@@ -419,6 +536,19 @@ export const dateRangePickerMachine = createMachine({
       /** 展开那一刻回到作者要的那一档：上次钻上去看年份，这次展开不该还停在十年格上。 */
       resetActiveView: ({ context, prop }) => {
         context.set('activeView', prop('granularity') ?? 'day')
+      },
+
+      setActiveIndex: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'ACTIVE_INDEX.SET')
+          context.set('activeIndex', e.activeIndex)
+      },
+
+      /** 展开的入口定下先编辑哪一端：从终点那组段位展开是终点，其余（触发钮、起点那组、命令式）是起点。 */
+      setEntryIndex: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'OPEN' || e.type === 'TOGGLE')
+          context.set('activeIndex', e.index ?? 0)
       },
 
       /** 展开那一刻把聚焦日拉回当前选中值；没有选中就落作者给的起始页，再没有才落到今天。 */
