@@ -27,6 +27,7 @@ const TIMING_CONSTANTS = {
   'headless/src/toast/toast.machine.ts:TOAST_DURATION': '停留：轻提示停多久才自动收起，属性 duration 的缺省值',
   'headless/src/number-animation/number-animation.machine.ts:NUMBER_ANIMATION_DURATION': '补间缺省：数值补间走多久，属性 duration 的缺省值；减弱档按根节点所在的作用域取 0',
   'headless/src/heatmap/heatmap.grid.ts:DAY_MS': '单位：一天的毫秒数，日期换算用，不是时长',
+  'headless/src/avatar/avatar.machine.ts:AVATAR_FALLBACK_DELAY': '停留：载入中的回退内容露面前的等待，属性 fallbackDelay 的缺省值；图片在这段里载好就不闪首字母',
   'headless/src/tooltip/tooltip.machine.ts:OPEN_DELAY': '停留：悬停与聚焦到打开的等待，属性 openDelay 的缺省值',
   'headless/src/tooltip/tooltip.machine.ts:CLOSE_DELAY': '停留：离开后的保留，属性 closeDelay 的缺省值',
   'headless/src/hover-card/hover-card.machine.ts:OPEN_DELAY': '停留：悬停到打开的等待，属性 openDelay 的缺省值',

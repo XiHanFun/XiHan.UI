@@ -69,9 +69,9 @@ export const avatarSuite: ConformanceSuite = {
       },
     },
     {
-      name: '有 src：停在 loading，image 仍隐藏、fallback 顶着不闪白',
+      name: '有 src、fallbackDelay 为 0：停在 loading，image 仍隐藏、fallback 立即顶着不闪白',
       spec: { apg: APG, zag: 'avatar.machine#resolveSrc' },
-      props: { src: SRC, alt: '谁的头像' },
+      props: { src: SRC, alt: '谁的头像', fallbackDelay: 0 },
       initial: {
         parts: {
           root: { 'data-state': 'loading' },
@@ -86,6 +86,18 @@ export const avatarSuite: ConformanceSuite = {
           run: assertImageSource(SRC, '谁的头像'),
         },
       ],
+    },
+    {
+      name: '有 src、缺省 fallbackDelay：载入中 fallback 先收着，等过这段才露面，缓存命中不闪首字母',
+      spec: { apg: APG, zag: 'avatar.machine#resolveSrc' },
+      props: { src: SRC, alt: '谁的头像' },
+      initial: {
+        parts: {
+          root: { 'data-state': 'loading' },
+          image: { 'data-state': 'loading', 'hidden': '' },
+          fallback: { 'data-state': 'loading', 'hidden': '' },
+        },
+      },
     },
     {
       name: '图片就绪：image 显出、fallback 收起',
@@ -148,7 +160,7 @@ export const avatarSuite: ConformanceSuite = {
     {
       name: 'src 换人：从 loaded 重回 loading，fallback 重新顶上',
       spec: { zag: 'avatar.machine#syncSrc' },
-      props: { src: SRC },
+      props: { src: SRC, fallbackDelay: 0 },
       steps: [
         {
           kind: 'raw',

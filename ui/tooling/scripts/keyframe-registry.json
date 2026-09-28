@@ -137,6 +137,7 @@
         "family/motion.css"
       ],
       "consumers": [
+        "avatar",
         "clipboard",
         "command",
         "dialog",

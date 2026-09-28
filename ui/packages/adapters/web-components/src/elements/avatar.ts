@@ -14,6 +14,7 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
+const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-avatar>`：头像行为宿主，src / alt 写入 image 节点，加载成败回送状态机，image 与 fallback 互斥显隐。
@@ -22,6 +23,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {string} src - 图片地址；未提供时直接落到回退态
  * @attr {string} alt - 图片替代文本，原样写到 image 节点上
  * @attr {'sm'|'md'|'lg'} size - 尺寸档位，默认 md
+ * @attr {number} fallback-delay - 回退内容延迟多久才露面（毫秒），默认 300；图片在这段时间里载好就不闪首字母
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气：切换淡底与回退字的配色族
  * @fires status-change - 加载状态变化；detail 为 `{ status: 'loading' | 'loaded' | 'error' }`
  * @csspart root - 头像根容器，承载 data-state/data-size/data-tone
@@ -37,12 +39,14 @@ export class XhAvatarElement extends XhElement {
     alt: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
+    fallbackDelay: { converter: NUMBER_CONVERTER, attribute: 'fallback-delay' },
   }
 
   declare src?: string
   declare alt?: string
   declare size?: Size
   declare tone?: Tone
+  declare fallbackDelay?: number
 
   private readonly notify = (details: AvatarStatusChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('status-change', { detail: details, bubbles: true, composed: true }))
@@ -56,6 +60,7 @@ export class XhAvatarElement extends XhElement {
       alt: this.alt,
       size: this.size,
       tone: this.tone,
+      fallbackDelay: this.fallbackDelay,
       onStatusChange: this.notify,
     }
   }
@@ -84,13 +89,16 @@ export class XhAvatarElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
+    const imageProps = api.getImageProps() as Record<string, unknown>
+    const fallbackProps = api.getFallbackProps() as Record<string, unknown>
     put('root', api.getRootProps() as Record<string, unknown>)
-    put('image', api.getImageProps() as Record<string, unknown>)
-    put('fallback', api.getFallbackProps() as Record<string, unknown>)
+    put('image', imageProps)
+    put('fallback', fallbackProps)
 
-    // 用内联 display 互斥显隐
-    this.setPartHidden(this.getPart('image'), !api.loaded)
-    this.setPartHidden(this.getPart('fallback'), api.loaded)
+    // 用内联 display 收起，照连接层给的 hidden：回退内容等过 fallbackDelay 才露面，
+    // 图片载好后它先淡出、与图片的淡入交叉，淡出播完 hidden 才落下
+    this.setPartHidden(this.getPart('image'), imageProps.hidden === true)
+    this.setPartHidden(this.getPart('fallback'), fallbackProps.hidden === true)
 
     // 属性与监听器落到 image 之后，再判断它是否早已加载完
     this.syncSettledImage(api.status)

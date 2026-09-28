@@ -17,7 +17,7 @@ export { ANCHOR_DEFAULT_BOUNDS, ANCHOR_DEFAULT_OFFSET, anchorAnatomy, anchorItem
 export type { AnchorApi, AnchorIndicatorRect, AnchorLinkProps, AnchorRefs, AnchorSchema, AnchorTargetOffset, AnchorTranslations, AnchorValueChangeDetails } from './anchor'
 export { APPROVAL_DENY_SELECTOR, approvalAnatomy, approvalKeyboard, approvalMachine, approvalMeta, canApproveScopes, connectApproval } from './approval'
 export type { ApprovalApi, ApprovalDecisionDetails, ApprovalNoteChangeDetails, ApprovalPressedKey, ApprovalSchema, ApprovalScope, ApprovalScopesChangeDetails, ApprovalStatus, ApprovalTranslations } from './approval'
-export { avatarAnatomy, avatarKeyboard, avatarMachine, avatarMeta, connectAvatar } from './avatar'
+export { AVATAR_FALLBACK_DELAY, avatarAnatomy, avatarKeyboard, avatarMachine, avatarMeta, connectAvatar } from './avatar'
 export type { AvatarApi, AvatarSchema, AvatarStatus, AvatarStatusChangeDetails, AvatarTranslations } from './avatar'
 export { avatarGroupAnatomy, avatarGroupKeyboard, avatarGroupMeta, connectAvatarGroup } from './avatar-group'
 export type { AvatarGroupApi, AvatarGroupProps, AvatarGroupTranslations } from './avatar-group'

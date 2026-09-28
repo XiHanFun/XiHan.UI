@@ -1,8 +1,9 @@
+// @vitest-environment jsdom
 import type { AvatarSchema, AvatarStatusChangeDetails } from '../src/avatar'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
-import { avatarMachine, connectAvatar } from '../src/avatar'
+import { AVATAR_FALLBACK_DELAY, avatarMachine, connectAvatar } from '../src/avatar'
 
 type Props = AvatarSchema['props']
 
@@ -29,7 +30,8 @@ function makeAvatar(initial: Props = {}) {
 
 describe('avatarMachine 来源决议', () => {
   it('给了 src：挂上后进 loading 并通知，图片藏着、兜底露着；onload 进 loaded 换过来', async () => {
-    const a = makeAvatar({ src: '/a.png', alt: '曦寒' })
+    // 不等：载入中兜底立即露面
+    const a = makeAvatar({ src: '/a.png', alt: '曦寒', fallbackDelay: 0 })
     await settle()
     expect(a.state()).toBe('loading')
     expect(a.changes).toEqual([{ status: 'loading' }])
@@ -41,8 +43,43 @@ describe('avatarMachine 来源决议', () => {
     expect(a.state()).toBe('loaded')
     expect(a.api().loaded).toBe(true)
     expect(a.image().hidden).toBeUndefined()
+    // 兜底先淡出、与图片的淡入交叉：jsdom 里没有可等的动画，宿主提交之后即刻藏起
+    expect(a.fallback()).toMatchObject({ 'hidden': undefined, 'data-state': 'loaded' })
+    await settle()
     expect(a.fallback()).toMatchObject({ 'hidden': true, 'data-state': 'loaded' })
     expect(a.changes).toEqual([{ status: 'loading' }, { status: 'loaded' }])
+    a.stop()
+  })
+
+  it('fallbackDelay：载入中兜底等过这段才露面，期间载好就直接出图、不闪首字母', async () => {
+    const wait = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
+    // 缺省等 AVATAR_FALLBACK_DELAY：载入中兜底先藏着，这段时间里载好就再也不露
+    expect(AVATAR_FALLBACK_DELAY).toBeGreaterThan(0)
+    const quick = makeAvatar({ src: '/a.png' })
+    await settle()
+    expect(quick.state()).toBe('loading')
+    expect(quick.fallback().hidden).toBe(true)
+    ;(quick.image().onLoad as () => void)()
+    await settle()
+    expect(quick.fallback().hidden).toBe(true)
+    quick.stop()
+
+    // 等过了还没载好：兜底露面
+    const slow = makeAvatar({ src: '/b.png', fallbackDelay: 40 })
+    await wait(10)
+    expect(slow.fallback().hidden).toBe(true)
+    await wait(60)
+    expect(slow.fallback().hidden).toBeUndefined()
+    slow.stop()
+  })
+
+  it('没有 src 或载入失败时兜底立即露面，不等 fallbackDelay', async () => {
+    const a = makeAvatar({ src: '/a.png' })
+    await settle()
+    expect(a.fallback().hidden).toBe(true)
+    ;(a.image().onError as () => void)()
+    expect(a.state()).toBe('error')
+    expect(a.fallback().hidden).toBeUndefined()
     a.stop()
   })
 

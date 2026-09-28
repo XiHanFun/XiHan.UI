@@ -21,6 +21,8 @@ export interface XhAvatarRootProps extends ComponentPropsWithRef<'span'> {
   alt?: string
   size?: Size
   tone?: Tone
+  /** 回退内容延迟多久才露面（毫秒），默认 300；图片在这段时间里载好就不闪首字母。 */
+  fallbackDelay?: number
   /** 状态落位时通知，过渡态 idle 不通知。 */
   onStatusChange?: AvatarProps['onStatusChange']
 }
@@ -30,11 +32,12 @@ export function XhAvatarRoot({
   alt,
   size,
   tone,
+  fallbackDelay,
   onStatusChange,
   children,
   ...rest
 }: XhAvatarRootProps): ReactNode {
-  const ctx = useAvatar({ src, alt, size, tone, onStatusChange })
+  const ctx = useAvatar({ src, alt, size, tone, fallbackDelay, onStatusChange })
   return (
     <AvatarProvider value={ctx}>
       <span {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>

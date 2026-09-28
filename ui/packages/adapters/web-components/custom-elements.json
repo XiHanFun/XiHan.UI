@@ -2013,6 +2013,15 @@
             },
             {
               "kind": "field",
+              "name": "fallbackDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "fallback-delay"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -2097,6 +2106,14 @@
               "description": "尺寸档位，默认 md",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "回退内容延迟多久才露面（毫秒），默认 300；图片在这段时间里载好就不闪首字母",
+              "name": "fallback-delay",
+              "fieldName": "fallbackDelay"
             },
             {
               "type": {
