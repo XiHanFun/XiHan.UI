@@ -93,6 +93,16 @@ export interface CitationSchema extends MachineSchema {
     focusedSourceId: string | null
     activeAnchorIndex: number | null
     activeTriggerId: string | null
+    /** 此刻露面的那一份预览（open 且是当前来源）；没有为 null。 */
+    shownSourceId: string | null
+    /** 正在收起、退场还没播完的那一份预览；播完即清。 */
+    leavingSourceId: string | null
+    /**
+     * 挂载之后露面的预览换过没有。没换过时预览投影 data-instant：首帧就开着的预览直接呈现，不播展开。
+     */
+    moved: boolean
+    /** 各份预览量下的内容区高度（像素）：展开从 0 长到它、收起从它收回 0。 */
+    previewBlockSizes: Readonly<Record<string, number>>
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -104,9 +114,22 @@ export interface CitationSchema extends MachineSchema {
     | { type: 'SOURCE.FOCUS', sourceId: string }
     | { type: 'LIST.BLUR' }
     | { type: 'OPEN.SET', open: boolean }
+    /** 量下某份预览的内容区高度。 */
+    | { type: 'PREVIEW.MEASURED', sourceId: string, blockSize: number }
+    /** 收起的那一份退场播完。 */
+    | { type: 'PREVIEW.LEFT', sourceId: string }
   tag: never
   guard: never
-  action: 'activateCitation' | 'activateSource' | 'invokeSourceOpen' | 'setFocusedSource' | 'clearFocus' | 'setOpen'
+  action:
+    | 'activateCitation'
+    | 'activateSource'
+    | 'invokeSourceOpen'
+    | 'setFocusedSource'
+    | 'clearFocus'
+    | 'setOpen'
+    | 'syncPreview'
+    | 'setPreviewBlockSize'
+    | 'clearLeaving'
   effect: never
 }
 

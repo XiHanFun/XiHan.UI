@@ -43,6 +43,24 @@
         "carousel"
       ]
     },
+    "xh-citation-preview-collapse": {
+      "content": "from{block-size:var(--xh-_citation-preview-block-size)}to{block-size:0;padding-block:0;border-block-width:0;margin-block-start:calc(-1 * var(--xh-_citation-preview-gap))}",
+      "definedIn": [
+        "citation.css"
+      ],
+      "consumers": [
+        "citation"
+      ]
+    },
+    "xh-citation-preview-expand": {
+      "content": "from{block-size:0;padding-block:0;border-block-width:0;margin-block-start:calc(-1 * var(--xh-_citation-preview-gap))}to{block-size:var(--xh-_citation-preview-block-size)}",
+      "definedIn": [
+        "citation.css"
+      ],
+      "consumers": [
+        "citation"
+      ]
+    },
     "xh-countdown": {
       "content": "from{clip-path:inset(0 0 0 0 round var(--xh-_countdown-radius,0))}to{clip-path:inset(0 var(--xh-_countdown-cut-right,100%) 0 var(--xh-_countdown-cut-left,0) round var(--xh-_countdown-radius,0))}",
       "definedIn": [

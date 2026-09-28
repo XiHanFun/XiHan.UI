@@ -16,6 +16,7 @@
 
 - 行内 trigger 用 `aria-controls` / `aria-expanded` 指向唯一 preview region；预览再以 `aria-labelledby` 指回打开入口。
 - 来源列表只占一个 Tab 位，支持 ↑ / ↓、Home、End 与 Enter / Space；`Escape` 收起预览并按需归还焦点。
+- 预览是正文流里的一块面：展开时从 0 长到整块、收起时收回 0，后面的段落随之平移；首帧就开着的预览直接呈现。
 - URL 来源保留原生链接导航；文档来源通过 `source-open` 把 `SourcePart` 与当前 anchor 交回宿主。
 - `activeSourceId` 与 `open` 可分别受控，受控时只有宿主写回才改变可见状态。
 

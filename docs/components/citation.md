@@ -58,6 +58,7 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 
 - 行内 trigger 用 `aria-controls` / `aria-expanded` 指向唯一 preview region；预览再以 `aria-labelledby` 指回打开入口。
 - 来源列表只占一个 Tab 位，支持 ↑ / ↓、Home、End 与 Enter / Space；`Escape` 收起预览并按需归还焦点。
+- 预览是正文流里的一块面：展开时从 0 长到整块、收起时收回 0，后面的段落随之平移；首帧就开着的预览直接呈现。
 - URL 来源保留原生链接导航；文档来源通过 `source-open` 把 `SourcePart` 与当前 anchor 交回宿主。
 - `activeSourceId` 与 `open` 可分别受控，受控时只有宿主写回才改变可见状态。
 
@@ -137,7 +138,7 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 
 **状态**：`idle`
 
-**事件**：`CITATION.ACTIVATE` · `SOURCE.ACTIVATE` · `SOURCE.OPEN` · `SOURCE.FOCUS` · `LIST.BLUR` · `OPEN.SET`
+**事件**：`CITATION.ACTIVATE` · `SOURCE.ACTIVATE` · `SOURCE.OPEN` · `SOURCE.FOCUS` · `LIST.BLUR` · `OPEN.SET` · `PREVIEW.MEASURED` · `PREVIEW.LEFT`
 
 ### connect API
 
@@ -213,7 +214,7 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 
 ### 皮肤
 
-`@xihan-ui/styles/citation.css` 使用 `[data-scope="citation"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/citation.css` 使用 `[data-scope="citation"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -232,6 +233,7 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | `trigger` | `data-xh-action-profile` | 'text' |
 | `trigger` | `data-xh-action-size` | 'xs' |
 | `trigger` | `data-xh-action-variant` | 'subtle' |
+| `preview` | `data-instant` | ''（条件成立时才出现） |
 | `preview` | `data-state` | 'open' \| 'closed' |
 | `preview-link` | `data-xh-action-control` | '' |
 | `preview-link` | `data-xh-action-display` | 'always' \| undefined |
@@ -265,7 +267,7 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 | `--xh-citation-dismiss-trigger-radius` | `dismiss-trigger` | `border-radius` | `default` | `--xh-shape-control` | citation 的 dismiss-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-citation-fg` | `root` | `color` | `default` | `--xh-fg-default` | citation 的 root 部件 color 覆盖槽。 |
 | `--xh-citation-font-size` | `root` | `font-size` | `default` | `--xh-_citation-font-size` | citation 的 root 部件 font-size 覆盖槽。 |
-| `--xh-citation-gap` | `root` | `gap` | `default` | `--xh-_citation-gap` | citation 的 root 部件 gap 覆盖槽。 |
+| `--xh-citation-gap` | `preview`<br>`root` | `gap`<br>`margin-block-start` | `@keyframes xh-citation-preview-collapse`<br>`@keyframes xh-citation-preview-expand`<br>`default` | `--xh-_citation-gap` | citation 的 preview、root 部件 gap、margin-block-start 覆盖槽。 |
 | `--xh-citation-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_citation-icon-size` | citation 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-citation-index-active-bg` | `source`<br>`source-index` | `background` | `state=active` | `--xh-bg-brand` | citation 的 source、source-index 部件 background 覆盖槽。 |
 | `--xh-citation-index-active-fg` | `source`<br>`source-index` | `color` | `state=active` | `--xh-fg-on-brand` | citation 的 source、source-index 部件 color 覆盖槽。 |
@@ -312,9 +314,9 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 披露（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-citation-preview-collapse` · `xh-citation-preview-expand` 随皮肤自带，不引用别处文件里的名字；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

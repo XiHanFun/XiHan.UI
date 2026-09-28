@@ -11632,19 +11632,23 @@
       "name": "--xh-citation-gap",
       "component": "citation",
       "part": [
+        "preview",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-start"
       ],
       "state": [
+        "@keyframes xh-citation-preview-collapse",
+        "@keyframes xh-citation-preview-expand",
         "default"
       ],
       "defaultToken": [
         "--xh-_citation-gap"
       ],
       "visibility": "public",
-      "description": "citation 的 root 部件 gap 覆盖槽。"
+      "description": "citation 的 preview、root 部件 gap、margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-citation-icon-size",
