@@ -56,7 +56,7 @@ function isGroupActive(group: {
       align-items: start;
     "
   >
-    <XhAnchorRoot v-model:value="active" :scroll-element="scrollEl" smooth>
+    <XhAnchorRoot v-model:value="active" :target="scrollEl" smooth>
       <XhAnchorList>
         <XhAnchorItem
           v-for="g in groups"

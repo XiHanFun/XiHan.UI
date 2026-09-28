@@ -31,7 +31,7 @@ export interface XhAnchorRootProps extends RootElementProps {
   tone?: Tone
   size?: Size
   /** 判定线所依附的滚动容器取值器，默认挂在窗口上；挂载效应执行时求值。 */
-  scrollElement?: () => HTMLElement | null
+  target?: () => HTMLElement | null
   onValueChange?: AnchorProps['onValueChange']
   children?: ReactNode
 }
@@ -49,7 +49,7 @@ export function XhAnchorRoot({
   translations,
   tone,
   size,
-  scrollElement,
+  target,
   onValueChange,
   children,
   ...rest
@@ -67,7 +67,7 @@ export function XhAnchorRoot({
     tone,
     size,
     onValueChange,
-  }) as AnchorProps, scrollElement)
+  }) as AnchorProps, target)
   return (
     <AnchorProvider value={ctx}>
       <nav {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>

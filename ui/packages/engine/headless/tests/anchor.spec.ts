@@ -159,7 +159,7 @@ function makeAnchor(initial: Props = {}, options: AnchorFixtureOptions = {}) {
   ;(options.scrollEl ?? document.body).append(...sections)
 
   service.refs.set('getListEl', () => list)
-  service.refs.set('getScrollEl', () => options.scrollEl ?? null)
+  service.refs.set('getTargetEl', () => options.scrollEl ?? null)
 
   runtime.start()
 

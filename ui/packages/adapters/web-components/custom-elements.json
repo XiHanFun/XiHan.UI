@@ -959,7 +959,7 @@
             },
             {
               "kind": "field",
-              "name": "scrollElement",
+              "name": "target",
               "privacy": "public",
               "type": {
                 "text": "HTMLElement | null | undefined"

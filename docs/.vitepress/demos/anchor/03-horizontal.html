@@ -55,6 +55,6 @@
 <script type="module">
   const template = document.getElementById("anchor-h-nav");
   const anchor = template.content.firstElementChild;
-  anchor.scrollElement = document.getElementById("anchor-h-scroll");
+  anchor.target = document.getElementById("anchor-h-scroll");
   template.replaceWith(anchor);
 </script>

@@ -41,7 +41,7 @@ function Demo(): ReactNode {
   const scrollEl = useRef<HTMLDivElement>(null)
   return (
     <div ref={scrollEl} data-testid="scroller">
-      <XhAnchorRoot collection={['anchor-target']} scrollElement={() => scrollEl.current}>
+      <XhAnchorRoot collection={['anchor-target']} target={() => scrollEl.current}>
         <XhAnchorList>
           <XhAnchorItem>
             <XhAnchorLink value="anchor-target">目标章节</XhAnchorLink>

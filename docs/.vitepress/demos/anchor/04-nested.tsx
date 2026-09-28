@@ -68,7 +68,7 @@ export default function Demo(): ReactNode {
     <div style={layout}>
       <XhAnchorRoot
         value={active}
-        scrollElement={() => scrollEl.current}
+        target={() => scrollEl.current}
         smooth
         onValueChange={details => setActive(details.value)}
       >

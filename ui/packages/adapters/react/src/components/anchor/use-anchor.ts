@@ -20,21 +20,21 @@ export interface AnchorContext {
   listRef: RefObject<HTMLElement | null>
 }
 
-/** Anchor 不派生 part id，故不另建 scope；getScrollEl 返回判定线所依附的滚动容器，null 即挂在窗口上。 */
+/** Anchor 不派生 part id，故不另建 scope；getTargetEl 返回判定线所依附的滚动容器，null 即挂在窗口上。 */
 export function useAnchor(
   props: AnchorSchema['props'],
-  getScrollEl: () => HTMLElement | null = () => null,
+  getTargetEl: () => HTMLElement | null = () => null,
 ): AnchorContext {
   const listRef = useRef<HTMLElement | null>(null)
 
   // 取值器每帧换、接线只建一次：拿 ref 转一道，别让它成为重建的理由
-  const scrollEl = useRef(getScrollEl)
-  scrollEl.current = getScrollEl
+  const targetEl = useRef(getTargetEl)
+  targetEl.current = getTargetEl
 
   // 观察器与量测都在机器的挂载效应里跑，DOM 侧的取值口要赶在那之前交出去
   const onCreate = useCallback((service: Service<AnchorSchema>) => {
     service.refs.set('getListEl', () => listRef.current)
-    service.refs.set('getScrollEl', () => scrollEl.current())
+    service.refs.set('getTargetEl', () => targetEl.current())
   }, [])
 
   const service = useMachine(anchorMachine, () => props, { onCreate })

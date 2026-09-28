@@ -33,7 +33,7 @@ export const XhAnchorRoot = defineComponent({
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
     /** 判定线所依附的滚动容器，默认挂在窗口上；经 refs 交给观察器。 */
-    scrollElement: { type: Object as PropType<HTMLElement | null> },
+    target: { type: Object as PropType<HTMLElement | null> },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: {
@@ -46,7 +46,7 @@ export const XhAnchorRoot = defineComponent({
       emit('update:value', details.value)
     }
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开
-    const ctx = useAnchor(withXhConfig('anchor', props) as AnchorProps, notify, () => props.scrollElement ?? null)
+    const ctx = useAnchor(withXhConfig('anchor', props) as AnchorProps, notify, () => props.target ?? null)
     provideAnchor(ctx)
     return () => h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },
