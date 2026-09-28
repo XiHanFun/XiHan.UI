@@ -57,7 +57,7 @@
 ### 特性
 
 - 只读输入框在聚焦时自动选中文本。
-- 复制状态依次为 `idle`、`copying` 与 `copied`。
+- 复制状态依次为 `idle`、`copying` 与 `copied`。写入在途时钮宽不变：一个 micro 之后加载环在钮正中淡入、原有内容同刻淡出留位，快速写入什么都不闪；落定后两者交叉淡回。
 - `timeout` 控制成功状态的停留时间。
 - 输入框、标签与状态提示均可按场景省略。
 - 复制按钮缺省是中性淡底 `subtle`，只有 `solid` 才是品牌实心；按下有统一的缩放与换底反馈。
@@ -230,6 +230,7 @@
 | `copy-trigger` | `data-xh-action-size` | props.size |
 | `copy-trigger` | `data-xh-action-variant` | props.variant |
 | `copy-trigger` | `data-xh-ink-surface` | ''（条件成立时才出现） |
+| `copy-trigger` | `data-xh-loading-ring` | 'overlay' |
 | `indicator` | `data-copied` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 | `status` | `data-state` | 'idle' \| 'copying' \| 'copied' |
@@ -253,7 +254,7 @@
 | `--xh-clipboard-copy-trigger-border` | `control`<br>`copy-trigger` | `border`<br>`border-color` | `default`<br>`focus-visible`<br>`not(:first-child)` | `--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest`<br>`--xh-border-control` | clipboard 的 control、copy-trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-border-disabled` | `copy-trigger` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | clipboard 的 copy-trigger 部件 border-color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-border-hover` | `control`<br>`copy-trigger` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:first-child)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed`<br>`--xh-border-control-hover` | clipboard 的 control、copy-trigger 部件 border-color 覆盖槽。 |
-| `--xh-clipboard-copy-trigger-fg` | `copy-trigger` | `color` | `copied`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`xh-action-variant=solid` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | clipboard 的 copy-trigger 部件 color 覆盖槽。 |
+| `--xh-clipboard-copy-trigger-fg` | `copy-trigger` | `border-block-start-color`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`copied`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`motion=reduce`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-motion='reduce'])`<br>`xh-action-variant=solid`<br>`xh-loading-ring` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | clipboard 的 copy-trigger 部件 border-block-start-color、border-color、color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-fg-copied` | `copy-trigger` | `color` | `copied`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-success` | clipboard 的 copy-trigger 部件 color 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-font-size` | `copy-trigger` | `font-size` | `default` | `--xh-_clipboard-font-size` | clipboard 的 copy-trigger 部件 font-size 覆盖槽。 |
 | `--xh-clipboard-copy-trigger-font-weight` | `copy-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | clipboard 的 copy-trigger 部件 font-weight 覆盖槽。 |
@@ -278,18 +279,18 @@
 | `--xh-clipboard-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | clipboard 的 label 部件 color 覆盖槽。 |
 | `--xh-clipboard-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | clipboard 的 label 部件 font-size 覆盖槽。 |
 | `--xh-clipboard-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | clipboard 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-clipboard-loading-duration` | `copy-trigger` | `animation` | `default` | `--xh-motion-loop-spin` | clipboard 的 copy-trigger 部件 animation 覆盖槽。 |
+| `--xh-clipboard-loading-duration` | `copy-trigger` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | clipboard 的 copy-trigger 部件 animation 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 循环（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-clipboard-loading-duration`。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

@@ -154,7 +154,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 份数低不等于使用少：`data-tone` 的规则集中在 `tone.css` 一份文件中，浮层的 `data-placement`
 同样集中在定位块中，逐份皮肤只在需要额外微调时才单独选中它们。属性名与取值的约束不按份数区分。
 
-取值同样受约束。属性名变更会破坏皮肤，取值变更同样破坏且更隐蔽：`[data-state='open']` 在取值改为 `expanded` 之后仍是合法 CSS，只是永远不匹配。自带皮肤当前用到的 35 个 `data-state` 取值全部受约束：
+取值同样受约束。属性名变更会破坏皮肤，取值变更同样破坏且更隐蔽：`[data-state='open']` 在取值改为 `expanded` 之后仍是合法 CSS，只是永远不匹配。自带皮肤当前用到的 34 个 `data-state` 取值全部受约束：
 
 ```
 open  closed  checked  unchecked  indeterminate  on

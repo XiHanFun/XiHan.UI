@@ -178,7 +178,7 @@ for (const [file, { defs, refs, recipeRefs, imports }] of defsByFile) {
     if (motionNames.has(name))
       redefined.push(`${file} 重定义了 ${name}——共享关键帧只许住在 family/${MOTION_FAMILY}，皮肤改成 @import 它`)
   }
-  // (b) 引入与引用双向对账：死引入与漏引入都判红
+  // (b) 引入与引用双向对账：死引入与漏引入都判红。引入的家族配方里的引用一并算上
   const usesShared = [...refs].some(name => motionNames.has(name))
   const importsMotion = imports.includes(MOTION_FAMILY)
   if (importsMotion && !usesShared && ![...recipeRefs].some(name => motionNames.has(name)))

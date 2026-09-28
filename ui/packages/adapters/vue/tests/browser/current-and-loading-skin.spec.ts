@@ -191,23 +191,42 @@ describe('取数与写入在途的转圈', () => {
     expect(beforeOf(root, 'animation-duration').split(',')[0]!.trim()).toBe('3s')
   })
 
-  it('复制钮写入在途：圆环延迟出现，不闪动快速写入', async () => {
+  it('复制钮写入在途：环压在钮正中、等一个 micro 才淡入，文字同刻淡出留位；退出不等', async () => {
     await mount(() => h(XhClipboardRoot, { value: 'xh' }, () => [
       h(XhClipboardControl, null, () => [h(XhClipboardCopyTrigger, null, () => '复制')]),
     ]))
     const trigger = part('clipboard', 'copy-trigger')
-    // 写剪贴板要真实权限，headless 下拿不到；这一档皮肤本来就只认属性，直接把状态摆上去
-    part('clipboard', 'root').setAttribute('data-state', 'copying')
-    trigger.setAttribute('data-state', 'copying')
-    trigger.setAttribute('aria-busy', 'true')
+    const width = trigger.getBoundingClientRect().width
+    const foreground = styleOf(trigger, 'color')
+    expect(trigger.getAttribute('data-xh-loading-ring')).toBe('overlay')
+    // 写剪贴板要真实权限，headless 下拿不到；这一档皮肤只认属性，直接把连接层在途时发的几位摆上去
+    const busy = (on: boolean): void => {
+      part('clipboard', 'root').setAttribute('data-state', on ? 'copying' : 'idle')
+      trigger.setAttribute('data-state', on ? 'copying' : 'idle')
+      for (const name of ['aria-busy', 'aria-disabled'])
+        on ? trigger.setAttribute(name, 'true') : trigger.removeAttribute(name)
+      trigger.toggleAttribute('data-loading', on)
+    }
+    busy(true)
     expect(styleOf(trigger, 'cursor')).toBe('progress')
-    expect(styleOf(trigger, 'opacity')).toBe('1')
-    expect(beforeOf(trigger, 'animation-name')).toContain('xh-spin')
-    expect(beforeOf(trigger, 'animation-name')).toContain('xh-fade-in')
-    expect(beforeOf(trigger, 'opacity')).toBe('0')
-    expect(Number.parseFloat(beforeOf(trigger, 'width'))).toBeGreaterThan(0)
-    await new Promise<void>(resolve => setTimeout(resolve, 300))
-    expect(Number.parseFloat(beforeOf(trigger, 'opacity'))).toBeGreaterThan(0.9)
+    expect(beforeOf(trigger, 'animation-name')).toBe('xh-spin')
+    expect(beforeOf(trigger, 'transition-delay')).toBe('0.12s')
+    expect(beforeOf(trigger, 'border-top-color')).toBe(foreground)
+    await expect.poll(() => Number.parseFloat(beforeOf(trigger, 'opacity'))).toBeGreaterThan(0.9)
+    await expect.poll(() => styleOf(trigger, 'color')).toBe('rgba(0, 0, 0, 0)')
+    expect(trigger.getBoundingClientRect().width).toBeCloseTo(width, 4)
+    busy(false)
+    expect(beforeOf(trigger, 'transition-delay')).toBe('0s')
+    await expect.poll(() => styleOf(trigger, 'color')).toBe(foreground)
+    await expect.poll(() => beforeOf(trigger, 'opacity')).toBe('0')
+  })
+
+  it('复制钮的转圈时长认使用者槽', async () => {
+    setSlot('--xh-clipboard-loading-duration', '3s')
+    await mount(() => h(XhClipboardRoot, { value: 'xh' }, () => [
+      h(XhClipboardControl, null, () => [h(XhClipboardCopyTrigger, null, () => '复制')]),
+    ]))
+    expect(beforeOf(part('clipboard', 'copy-trigger'), 'animation-duration')).toBe('3s')
   })
 })
 

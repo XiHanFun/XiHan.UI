@@ -13,7 +13,8 @@
  * 与皮肤里接替它的那枚字形交叉淡变；不在等时不转。
  *
  * 轨道取 --xh-border-default、环粗取 --xh-stroke-thick；起始边颜色走私有槽 --xh-_loading-ring-fg，
- * 皮肤按自己的语气与公开槽给，没给时取 currentColor。
+ * 皮肤按自己的语气与公开槽给，没给时取 currentColor。转一圈的时长走私有槽 --xh-_loading-ring-duration，
+ * 皮肤把自己的公开时长槽接进来，没给时取 --xh-motion-loop-spin。
  *
  * 进行中的动作钮投影 data-xh-loading-ring="overlay"：环居中压在钮上、不占排布，钮宽不变，直径取钮的图标档。
  * 进入在途要等一个 micro 才起淡，不到一个 micro 就结束的短请求什么都不闪；退出在途不等，按 micro 淡出。
@@ -36,7 +37,7 @@
     opacity: 0;
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
     /* 不在等时停在当前角度，淡出途中不先跳回零度 */
-    animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite paused;
+    animation: xh-spin var(--xh-_loading-ring-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite paused;
   }
 
   [data-xh-loading-ring][data-loading]::before {
