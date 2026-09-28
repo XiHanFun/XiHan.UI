@@ -24850,11 +24850,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-flex>`：Light-DOM 行为宿主，无状态机，把 connectFlex 产出接到 root 角色节点。\n六个排版参数原样写为 data-*，排布规则写在皮肤中。\n\n分隔符是一个角色节点：作者把它写在 root 中、夹在两个子项之间，元素为它写上 aria-hidden。\n本元素不生成任何结构，因此无法替作者复制节点；Vue 版的 split 插槽是同一件事的另一种写法，\n展开后的 DOM 形状一致。\n\n根上不写 role：容器只做排布，其中放置的是列表还是一组按钮由作者自行声明。",
+          "description": "`<xh-flex>`：Light-DOM 行为宿主，无状态机，把 connectFlex 产出接到 root 角色节点。\n六个排版参数原样写为 data-*，排布规则写在皮肤中。\n方向、对齐、分布与间距可以逐档书写：`orientation='{\"base\":\"vertical\",\"md\":\"horizontal\"}'`\n写为 data-orientation 与 data-orientation-md，窄视口竖排、达到 md 断点后横排；解析不出对象时当没写。\n\n分隔符是一个角色节点：作者把它写在 root 中、夹在两个子项之间，元素为它写上 aria-hidden。\n本元素不生成任何结构，因此无法替作者复制节点；Vue 版的 split 插槽是同一件事的另一种写法，\n展开后的 DOM 形状一致。\n\n根上不写 role：容器只做排布，其中放置的是列表还是一组按钮由作者自行声明。",
           "name": "XhFlexElement",
           "cssParts": [
             {
-              "description": "排布容器，承载 data-orientation / data-align / data-justify / data-gap / data-wrap / data-inline",
+              "description": "排布容器，承载 data-orientation / data-align / data-justify / data-gap（及各自逐档的 -sm/-md/-lg/-xl）/ data-wrap / data-inline",
               "name": "root"
             },
             {
@@ -24877,7 +24877,7 @@
               "name": "orientation",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "FlexProps['orientation'] | undefined"
               },
               "attribute": "orientation"
             },
@@ -24886,7 +24886,7 @@
               "name": "align",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "FlexProps['align'] | undefined"
               },
               "attribute": "align"
             },
@@ -24895,7 +24895,7 @@
               "name": "justify",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "FlexProps['justify'] | undefined"
               },
               "attribute": "justify"
             },
@@ -24904,7 +24904,7 @@
               "name": "gap",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "FlexProps['gap'] | undefined"
               },
               "attribute": "gap"
             },
@@ -24940,33 +24940,33 @@
           "attributes": [
             {
               "type": {
-                "text": "string | undefined"
+                "text": "FlexProps['orientation'] | undefined"
               },
-              "description": "主轴方向，默认 horizontal",
+              "description": "主轴方向，默认 horizontal；写 JSON 对象则逐档提供（base / sm / md / lg / xl）",
               "name": "orientation",
               "fieldName": "orientation"
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "FlexProps['align'] | undefined"
               },
-              "description": "交叉轴对齐",
+              "description": "交叉轴对齐；写 JSON 对象则逐档提供",
               "name": "align",
               "fieldName": "align"
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "FlexProps['justify'] | undefined"
               },
-              "description": "主轴分布",
+              "description": "主轴分布；写 JSON 对象则逐档提供",
               "name": "justify",
               "fieldName": "justify"
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "FlexProps['gap'] | undefined"
               },
-              "description": "子项间距档位，逐档对应一个间距令牌",
+              "description": "子项间距档位，逐档对应一个间距令牌；写 JSON 对象则逐档提供",
               "name": "gap",
               "fieldName": "gap"
             },

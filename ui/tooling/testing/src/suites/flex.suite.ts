@@ -66,6 +66,31 @@ export const flexSuite: ConformanceSuite = {
       },
     },
     {
+      name: '断点对象逐档落 data-<轴>-<档>：base 落不带档位的那个，没写的档不输出',
+      spec: { apg: APG },
+      props: {
+        orientation: { base: 'vertical', md: 'horizontal' },
+        align: { lg: 'baseline' },
+        justify: { sm: 'between' },
+        gap: { base: 'xs', xl: 'xl' },
+      },
+      initial: {
+        parts: {
+          root: {
+            'data-orientation': 'vertical',
+            'data-orientation-sm': null,
+            'data-orientation-md': 'horizontal',
+            'data-align': null,
+            'data-align-lg': 'baseline',
+            'data-justify': null,
+            'data-justify-sm': 'between',
+            'data-gap': 'xs',
+            'data-gap-xl': 'xl',
+          },
+        },
+      },
+    },
+    {
       name: '两个开关落成 data-*，关掉时不留空属性',
       spec: { apg: APG },
       props: { wrap: true, inline: false },

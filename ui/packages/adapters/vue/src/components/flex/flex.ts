@@ -67,10 +67,11 @@ export const XhFlex = defineComponent({
   name: 'XhFlex',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    orientation: { type: String as PropType<FlexProps['orientation']> },
-    align: { type: String as PropType<FlexProps['align']> },
-    justify: { type: String as PropType<FlexProps['justify']> },
-    gap: { type: String as PropType<FlexProps['gap']> },
+    // 四条排版轴都兼收断点对象，逐档写各自的取值
+    orientation: { type: [String, Object] as PropType<FlexProps['orientation']> },
+    align: { type: [String, Object] as PropType<FlexProps['align']> },
+    justify: { type: [String, Object] as PropType<FlexProps['justify']> },
+    gap: { type: [String, Object] as PropType<FlexProps['gap']> },
     wrap: Boolean,
     inline: Boolean,
   },

@@ -12,8 +12,15 @@
   }
 
   [data-scope='flex'][data-part='root'] {
+    /* 交叉轴对齐收在两个私有槽里：缺省那一支跟着当档的方向走，写了 align 的档改的是另一支。
+       分两支是因为逐档切方向时，缺省对齐要跟着换，而作者显式写的对齐不能被换掉。
+       每一层都声明一遍，嵌套时内层不吃外层的值 */
+    --xh-_flex-align-default: center;
+    --xh-_flex-align: var(--xh-_flex-align-default);
+
     display: flex;
     flex-wrap: nowrap;
+    align-items: var(--xh-_flex-align);
     /* 不写 gap 档位就不留间距；使用者槽位排在档位之前，写死一个值即盖过所有档 */
     gap: var(--xh-flex-gap, var(--xh-space-0));
   }
@@ -34,13 +41,13 @@
   /* 横排时按中线对齐：一排里混着文字、按钮、标签，高度本就不齐，居中最不容易看出错位 */
   [data-scope='flex'][data-part='root'][data-orientation='horizontal'] {
     flex-direction: row;
-    align-items: center;
+    --xh-_flex-align-default: center;
   }
 
   /* 竖排时拉伸：一列里的块级子项该占满容器宽度 */
   [data-scope='flex'][data-part='root'][data-orientation='vertical'] {
     flex-direction: column;
-    align-items: stretch;
+    --xh-_flex-align-default: stretch;
   }
 
   /* —— 折行 —— */
@@ -49,25 +56,25 @@
   }
 
   /* —— 交叉轴对齐 —— */
-  /* 排在方向之后：两者特指度相同，写了 align 就该压过随方向来的那份缺省 */
+  /* 写的是显式那一支：特指度比根上那条缺省高，方向怎么换都盖不掉它 */
   [data-scope='flex'][data-part='root'][data-align='start'] {
-    align-items: flex-start;
+    --xh-_flex-align: flex-start;
   }
 
   [data-scope='flex'][data-part='root'][data-align='center'] {
-    align-items: center;
+    --xh-_flex-align: center;
   }
 
   [data-scope='flex'][data-part='root'][data-align='end'] {
-    align-items: flex-end;
+    --xh-_flex-align: flex-end;
   }
 
   [data-scope='flex'][data-part='root'][data-align='stretch'] {
-    align-items: stretch;
+    --xh-_flex-align: stretch;
   }
 
   [data-scope='flex'][data-part='root'][data-align='baseline'] {
-    align-items: baseline;
+    --xh-_flex-align: baseline;
   }
 
   /* —— 主轴分布 —— */
@@ -115,6 +122,315 @@
 
   [data-scope='flex'][data-part='root'][data-gap='xl'] {
     gap: var(--xh-flex-gap, var(--xh-layout-gap-xl));
+  }
+
+  /* —— 逐档的方向、对齐、分布与间距 —— */
+  /* 移动优先：先按不带档位的那几个属性排定，视口每宽到一档就换成那一档的取值，没写的档沿用比它窄的那一档。
+     四档自窄到宽依次写，只用 min-width：媒体查询不改选择器权重，宽视口上同时命中好几档时由源码序决定谁生效。
+     宽度写字面量：自定义属性在 @media 条件里不参与求值，令牌变量写在这里等于没写条件。
+     方向换档时只换缺省对齐那一支，作者写过的对齐仍由显式那一支说了算 */
+  @media (min-width: 640px) {
+    [data-scope='flex'][data-part='root'][data-orientation-sm='horizontal'] {
+      flex-direction: row;
+      --xh-_flex-align-default: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-orientation-sm='vertical'] {
+      flex-direction: column;
+      --xh-_flex-align-default: stretch;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-sm='start'] {
+      --xh-_flex-align: flex-start;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-sm='center'] {
+      --xh-_flex-align: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-sm='end'] {
+      --xh-_flex-align: flex-end;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-sm='stretch'] {
+      --xh-_flex-align: stretch;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-sm='baseline'] {
+      --xh-_flex-align: baseline;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-sm='start'] {
+      justify-content: flex-start;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-sm='center'] {
+      justify-content: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-sm='end'] {
+      justify-content: flex-end;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-sm='between'] {
+      justify-content: space-between;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-sm='around'] {
+      justify-content: space-around;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-sm='evenly'] {
+      justify-content: space-evenly;
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-sm='xs'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-xs));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-sm='sm'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-sm));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-sm='md'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-md));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-sm='lg'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-lg));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-sm='xl'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-xl));
+    }
+  }
+
+  @media (min-width: 768px) {
+    [data-scope='flex'][data-part='root'][data-orientation-md='horizontal'] {
+      flex-direction: row;
+      --xh-_flex-align-default: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-orientation-md='vertical'] {
+      flex-direction: column;
+      --xh-_flex-align-default: stretch;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-md='start'] {
+      --xh-_flex-align: flex-start;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-md='center'] {
+      --xh-_flex-align: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-md='end'] {
+      --xh-_flex-align: flex-end;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-md='stretch'] {
+      --xh-_flex-align: stretch;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-md='baseline'] {
+      --xh-_flex-align: baseline;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-md='start'] {
+      justify-content: flex-start;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-md='center'] {
+      justify-content: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-md='end'] {
+      justify-content: flex-end;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-md='between'] {
+      justify-content: space-between;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-md='around'] {
+      justify-content: space-around;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-md='evenly'] {
+      justify-content: space-evenly;
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-md='xs'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-xs));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-md='sm'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-sm));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-md='md'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-md));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-md='lg'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-lg));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-md='xl'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-xl));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    [data-scope='flex'][data-part='root'][data-orientation-lg='horizontal'] {
+      flex-direction: row;
+      --xh-_flex-align-default: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-orientation-lg='vertical'] {
+      flex-direction: column;
+      --xh-_flex-align-default: stretch;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-lg='start'] {
+      --xh-_flex-align: flex-start;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-lg='center'] {
+      --xh-_flex-align: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-lg='end'] {
+      --xh-_flex-align: flex-end;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-lg='stretch'] {
+      --xh-_flex-align: stretch;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-lg='baseline'] {
+      --xh-_flex-align: baseline;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-lg='start'] {
+      justify-content: flex-start;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-lg='center'] {
+      justify-content: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-lg='end'] {
+      justify-content: flex-end;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-lg='between'] {
+      justify-content: space-between;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-lg='around'] {
+      justify-content: space-around;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-lg='evenly'] {
+      justify-content: space-evenly;
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-lg='xs'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-xs));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-lg='sm'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-sm));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-lg='md'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-md));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-lg='lg'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-lg));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-lg='xl'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-xl));
+    }
+  }
+
+  @media (min-width: 1280px) {
+    [data-scope='flex'][data-part='root'][data-orientation-xl='horizontal'] {
+      flex-direction: row;
+      --xh-_flex-align-default: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-orientation-xl='vertical'] {
+      flex-direction: column;
+      --xh-_flex-align-default: stretch;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-xl='start'] {
+      --xh-_flex-align: flex-start;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-xl='center'] {
+      --xh-_flex-align: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-xl='end'] {
+      --xh-_flex-align: flex-end;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-xl='stretch'] {
+      --xh-_flex-align: stretch;
+    }
+
+    [data-scope='flex'][data-part='root'][data-align-xl='baseline'] {
+      --xh-_flex-align: baseline;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-xl='start'] {
+      justify-content: flex-start;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-xl='center'] {
+      justify-content: center;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-xl='end'] {
+      justify-content: flex-end;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-xl='between'] {
+      justify-content: space-between;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-xl='around'] {
+      justify-content: space-around;
+    }
+
+    [data-scope='flex'][data-part='root'][data-justify-xl='evenly'] {
+      justify-content: space-evenly;
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-xl='xs'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-xs));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-xl='sm'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-sm));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-xl='md'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-md));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-xl='lg'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-lg));
+    }
+
+    [data-scope='flex'][data-part='root'][data-gap-xl='xl'] {
+      gap: var(--xh-flex-gap, var(--xh-layout-gap-xl));
+    }
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
