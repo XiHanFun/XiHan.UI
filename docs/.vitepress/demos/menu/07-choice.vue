@@ -1,6 +1,5 @@
 <!-- 选择型条目 | CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开 -->
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   XhMenuCheckboxItem,
   XhMenuContent,
@@ -12,6 +11,7 @@ import {
   XhMenuRoot,
   XhMenuTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const checkboxValue = ref(["wrap"]);
 const radioValue = ref({ density: "comfortable" });

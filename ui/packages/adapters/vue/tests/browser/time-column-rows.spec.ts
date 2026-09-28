@@ -62,23 +62,29 @@ function first(scope: string, part: string): HTMLElement {
   return el
 }
 
-const time = (size: Size): VNode => h(XhTimePickerRoot, { open: true, size, value: '09:30' }, () => [
-  h(XhTimePickerControl, null, () => h(XhTimePickerSegmentGroup, null, () => [h(XhTimePickerSegment, { segment: 'hour' })])),
-  h(XhTimePickerPositioner, null, () => h(XhTimePickerContent, null, () =>
-    h(XhTimePickerColumn, { unit: 'hour' }, () => ['08', '09', '10'].map(value =>
-      h(XhTimePickerItem, { key: value, value }, () => value))))),
-])
+function time(size: Size): VNode {
+  return h(XhTimePickerRoot, { open: true, size, value: '09:30' }, () => [
+    h(XhTimePickerControl, null, () => h(XhTimePickerSegmentGroup, null, () => [h(XhTimePickerSegment, { segment: 'hour' })])),
+    h(XhTimePickerPositioner, null, () => h(XhTimePickerContent, null, () =>
+      h(XhTimePickerColumn, { unit: 'hour' }, () => ['08', '09', '10'].map(value =>
+        h(XhTimePickerItem, { key: value, value }, () => value))))),
+  ])
+}
 
-const date = (size: Size): VNode => h(XhDatePickerRoot, { open: true, size, showTime: true, value: ['2026-09-11T09:30'] }, () => [
-  h(XhDatePickerControl, null, () => h(XhDatePickerTrigger)),
-  h(XhDatePickerPositioner, null, () => h(XhDatePickerContent, null, () => h(XhDatePickerTimePanel))),
-])
+function date(size: Size): VNode {
+  return h(XhDatePickerRoot, { open: true, size, showTime: true, value: ['2026-09-11T09:30'] }, () => [
+    h(XhDatePickerControl, null, () => h(XhDatePickerTrigger)),
+    h(XhDatePickerPositioner, null, () => h(XhDatePickerContent, null, () => h(XhDatePickerTimePanel))),
+  ])
+}
 
-const select = (size: Size): VNode => h(XhSelectRoot, { collection: [{ value: 'a', label: '09' }], defaultOpen: true, size }, () => [
-  h(XhSelectControl, null, () => h(XhSelectTrigger)),
-  h(XhSelectPositioner, null, () => h(XhSelectContent, null, () => h(XhSelectList, null, () =>
-    h(XhSelectItem, { value: 'a' }, () => h(XhSelectItemText, null, () => '09'))))),
-])
+function select(size: Size): VNode {
+  return h(XhSelectRoot, { collection: [{ value: 'a', label: '09' }], defaultOpen: true, size }, () => [
+    h(XhSelectControl, null, () => h(XhSelectTrigger)),
+    h(XhSelectPositioner, null, () => h(XhSelectContent, null, () => h(XhSelectList, null, () =>
+      h(XhSelectItem, { value: 'a' }, () => h(XhSelectItemText, null, () => '09'))))),
+  ])
+}
 
 async function measure(render: () => VNode, scope: string, part: string): Promise<{ height: number, font: string }> {
   await mount(render)
@@ -93,7 +99,7 @@ async function measure(render: () => VNode, scope: string, part: string): Promis
 }
 
 describe.each(['sm', 'md', 'lg'] as const)('%s 档的时间行', (size) => {
-  it('TimePicker 与 DatePicker 的时间格与 Select 的候选行同高、同字号', async () => {
+  it('timePicker 与 DatePicker 的时间格与 Select 的候选行同高、同字号', async () => {
     const option = await measure(() => select(size), 'select', 'item')
     const timeItem = await measure(() => time(size), 'time-picker', 'item')
     const dateItem = await measure(() => date(size), 'date-picker', 'time-item')

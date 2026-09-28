@@ -1,10 +1,21 @@
 <!-- 候选虚拟化 | 过滤后的完整 collection 与 count 同步，高亮仍可跨窗口移动 -->
 <script setup lang="ts">
 import {
-  XhComboboxContent, XhComboboxControl, XhComboboxEmpty, XhComboboxInput,
-  XhComboboxItem, XhComboboxItemIndicator, XhComboboxItemText, XhComboboxLabel,
-  XhComboboxPositioner, XhComboboxRoot, XhComboboxTrigger, XhVirtualizerContent,
-  XhVirtualizerItem, XhVirtualizerRoot, XhVirtualizerViewport,
+  XhComboboxContent,
+  XhComboboxControl,
+  XhComboboxEmpty,
+  XhComboboxInput,
+  XhComboboxItem,
+  XhComboboxItemIndicator,
+  XhComboboxItemText,
+  XhComboboxLabel,
+  XhComboboxPositioner,
+  XhComboboxRoot,
+  XhComboboxTrigger,
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
 } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 

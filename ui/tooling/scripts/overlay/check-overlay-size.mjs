@@ -212,7 +212,7 @@ for (const family of families) {
     missing.push(`${name}.connect.ts 没发 ${anchorSlot}（面板量不到字段盒多宽）`)
   const shape = LIST_FIRST_COLUMN[name]
   const lead = shape ? `${shape.slot}:` : 'inline-size:'
-  const width = new RegExp(`(?<![\\w-])${lead.replace(/[-]/g, '\\-')}\\s*min\\(\\s*max\\(var\\(--xh-${name}-content-min-w, var\\(--xh-overlay-menu-min-w\\)\\), var\\(${anchorSlot}\\)\\),\\s*var\\(--xh-_${name}-available-w\\)\\s*\\)`)
+  const width = new RegExp(`(?<![\\w-])${lead.replace(/-/g, '\\-')}\\s*min\\(\\s*max\\(var\\(--xh-${name}-content-min-w, var\\(--xh-overlay-menu-min-w\\)\\), var\\(${anchorSlot}\\)\\),\\s*var\\(--xh-_${name}-available-w\\)\\s*\\)`)
   if (!width.test(css ?? ''))
     missing.push(`${name}.css 没写 ${lead} min(max(下界, ${anchorSlot}), 可用宽)——面板会随最长的选项变宽，不与字段盒等宽`)
   if (shape) {

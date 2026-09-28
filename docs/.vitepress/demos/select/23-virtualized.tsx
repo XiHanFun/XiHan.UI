@@ -1,10 +1,22 @@
 // 长选项虚拟化 | 完整 collection 负责选择语义，Virtualizer 负责浮层中的窗口
 import type { CSSProperties, ReactNode } from "react";
 import {
-  XhSelectContent, XhSelectControl, XhSelectIndicator, XhSelectItem, XhSelectItemIndicator,
-  XhSelectItemText, XhSelectLabel, XhSelectList, XhSelectPositioner, XhSelectRoot,
-  XhSelectTrigger, XhSelectValueText, XhVirtualizerContent, XhVirtualizerItem,
-  XhVirtualizerRoot, XhVirtualizerViewport,
+  XhSelectContent,
+  XhSelectControl,
+  XhSelectIndicator,
+  XhSelectItem,
+  XhSelectItemIndicator,
+  XhSelectItemText,
+  XhSelectLabel,
+  XhSelectList,
+  XhSelectPositioner,
+  XhSelectRoot,
+  XhSelectTrigger,
+  XhSelectValueText,
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
 } from "@xihan-ui/react";
 
 const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${index + 1}`, label: `选项 ${index + 1}` }));
@@ -18,7 +30,12 @@ export default function Demo(): ReactNode {
       {({ virtualItems, collectionVirtualizer }) => (
         <XhSelectRoot collection={options} virtualizer={collectionVirtualizer} placeholder="请选择">
           <XhSelectLabel>长列表</XhSelectLabel>
-          <XhSelectControl><XhSelectTrigger><XhSelectValueText /><XhSelectIndicator /></XhSelectTrigger></XhSelectControl>
+          <XhSelectControl>
+            <XhSelectTrigger>
+              <XhSelectValueText />
+              <XhSelectIndicator />
+            </XhSelectTrigger>
+          </XhSelectControl>
           <XhSelectPositioner>
             <XhSelectContent>
               <XhVirtualizerViewport style={viewportStyle}>
