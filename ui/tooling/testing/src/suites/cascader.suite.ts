@@ -399,6 +399,11 @@ function withTags(base: FixtureNode): FixtureNode {
   return { ...base, children }
 }
 
+/** 懒分支：浙江只声明有子项，子项由 loadChildren 取；其余根条目照旧。 */
+const LAZY_ZHEJIANG = { value: 'zhejiang', label: 'Zhejiang', hasChildren: true }
+const LAZY_COLLECTION: CascaderNode[] = [LAZY_ZHEJIANG, ...COLLECTION.slice(1)]
+const BRANCH_LOAD_ERROR = new Error('offline')
+
 export const cascaderSuite: ConformanceSuite = {
   component: 'cascader',
   anatomy: cascaderAnatomy,
@@ -1836,6 +1841,66 @@ export const cascaderSuite: ConformanceSuite = {
           kind: 'setProps',
           props: { value: [] },
           expect: { parts: { 'tag-list': { hidden: '' } } },
+        },
+      ],
+    },
+    {
+      name: '懒分支在途：展开路径走到它时右边开一列，列里公开在途提示，开始事件带整条路径与原因',
+      spec: { apg: APG_LISTBOX },
+      props: { collection: LAZY_COLLECTION, defaultOpen: true, loadChildren: () => new Promise(() => {}) },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item[0]',
+          expect: {
+            parts: {
+              'item[0]': { 'data-loading': '', 'data-load-state': 'loading', 'aria-haspopup': 'listbox' },
+              'column[1]': { 'aria-busy': 'true', 'hidden': null },
+              'branch-loading': { role: 'status', hidden: null },
+              'branch-error': { hidden: '' },
+              'branch-retry-trigger': { hidden: '' },
+            },
+            events: [{
+              type: 'branch-load-start',
+              detail: { value: 'zhejiang', path: ['zhejiang'], node: LAZY_ZHEJIANG, reason: 'expand' },
+            }],
+          },
+        },
+      ],
+    },
+    {
+      name: '懒分支失败与重试：那一列给出提示与重试钮；父条目上按 Enter 重试，不落值、浮层不收',
+      spec: { apg: APG_LISTBOX },
+      covers: ['cascader.kbd.retry'],
+      props: { collection: LAZY_COLLECTION, defaultOpen: true, loadChildren: () => Promise.reject(BRANCH_LOAD_ERROR) },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item[0]',
+          expect: {
+            parts: {
+              'item[0]': { 'data-error': '', 'data-load-state': 'error' },
+              'branch-loading': { hidden: '' },
+              'branch-error': { role: 'alert', hidden: null },
+              'branch-retry-trigger': { 'type': 'button', 'tabindex': '-1', 'aria-label': 'Retry', 'hidden': null },
+            },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'zhejiang', path: ['zhejiang'], node: LAZY_ZHEJIANG, reason: 'expand' } },
+              { type: 'branch-load-error', detail: { value: 'zhejiang', path: ['zhejiang'], node: LAZY_ZHEJIANG, error: BRANCH_LOAD_ERROR } },
+            ],
+          },
+        },
+        { kind: 'focus', part: 'item[0]' },
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            parts: { 'item[0]': { 'data-error': '', 'data-load-state': 'error' }, 'content': { hidden: null } },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'zhejiang', path: ['zhejiang'], node: LAZY_ZHEJIANG, reason: 'retry' } },
+              { type: 'branch-load-error', detail: { value: 'zhejiang', path: ['zhejiang'], node: LAZY_ZHEJIANG, error: BRANCH_LOAD_ERROR } },
+            ],
+          },
         },
       ],
     },

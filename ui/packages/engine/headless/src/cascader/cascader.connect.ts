@@ -6,7 +6,7 @@
 // 提供 cascader 相关实现。
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { CascaderApi, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
+import type { CascaderApi, CascaderBranchLoadSnapshot, CascaderColumnProps, CascaderLevel, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
 import { cascadeState, createPressTracker, dataAttr, focusItem, isComposingEvent, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/core'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
@@ -19,6 +19,9 @@ import {
   cascaderPathText,
   cascaderSamePath,
   cascaderStepColumn,
+  findCascaderNode,
+  isCascaderLazyBranch,
+  resolveCascaderCollection,
 } from './cascader.columns'
 import { CASCADER_DEFAULT_PLACEMENT, CASCADER_DEFAULT_SEPARATOR, findCascaderItemEl } from './cascader.machine'
 import {
@@ -39,7 +42,10 @@ export function connectCascader<T extends PropTypes>(
   const open = state.get() === 'open'
   const ids = scope.ids('cascader', 'label', 'trigger', 'value-text', 'content', 'input', 'search-list')
 
-  const collection = prop('collection') ?? []
+  // 有效树：懒分支取回的子项并进来，列、索引与回显都按它算；取数状态回原始节点上查
+  const sourceCollection = prop('collection') ?? []
+  const loadedChildren = context.get('loadedChildren')
+  const collection = resolveCascaderCollection(sourceCollection, loadedChildren)
   const activePath = context.get('activePath')
   const settledColumns = context.get('settledColumns')
   const value = context.get('value')
@@ -64,7 +70,11 @@ export function connectCascader<T extends PropTypes>(
   // columns 是当下并排开着的列，levels 是写标记用的
   // 静态层，index 覆盖全树（收起的列里那些条目也要产出属性）
   const columns = cascaderBuildColumns(collection, activePath)
-  const levels = cascaderBuildLevels(collection)
+  // 懒分支还没取回时它那一列没有条目，静态层里也就没有这一层；补一个空层，作者照 levels 写的列才铺得出来
+  const builtLevels = cascaderBuildLevels(collection)
+  const levels: CascaderLevel[] = columns.length > builtLevels.length
+    ? [...builtLevels, ...columns.slice(builtLevels.length).map(column => ({ level: column.level, items: [] }))]
+    : builtLevels
   const index = cascaderIndexNodes(collection)
 
   // 当下露面的条目：按值取本轮的元信息，不在其中即该被 hidden 收起
@@ -129,6 +139,23 @@ export function connectCascader<T extends PropTypes>(
   // 分组标题的 id：group 与 group-label 靠这一个值互相认领
   const groupLabelId = (group: string): string => scope.partId(cascaderAnatomy.name, `group-label:${encodeURIComponent(group)}`)
 
+  /** 懒分支的取数状态；不是懒分支时为 null。 */
+  const branchLoadState = (v: string): CascaderBranchLoadSnapshot | null => {
+    const node = findCascaderNode(sourceCollection, v, loadedChildren)
+    if (!node || !(isCascaderLazyBranch(node)))
+      return null
+    return context.get('branchLoads')[v] ?? { status: 'idle' as const }
+  }
+
+  /** 第 level 列是哪个懒分支的子列、它此刻的取数状态；根列、收起的列与非懒分支的子列都是 null。 */
+  const columnLoad = (column: CascaderColumnProps): { parent: string, state: CascaderBranchLoadSnapshot } | null => {
+    if (column.level <= 0 || column.level >= columns.length)
+      return null
+    const parent = activePath[column.level - 1]
+    const state = parent == null ? null : branchLoadState(parent)
+    return parent != null && state ? { parent, state } : null
+  }
+
   /**
    * 把焦点交给某个条目。落点由 collection 算出，元素在事件那一刻按值现查活 DOM。
    * 展开路径随焦点一并落到这条路径上。
@@ -154,7 +181,16 @@ export function connectCascader<T extends PropTypes>(
    * 分支是否落值由机器按 changeOnSelect 判定。
    */
   const activate = (meta: CascaderNodeMeta): void => {
-    if (!interactive || isDisabled(meta))
+    if (isDisabled(meta))
+      return
+    // 取数失败的懒分支：确认键就是重试，展开路径停在它上面，不落值；只读照样能浏览，也能重试
+    if (meta.branch && branchLoadState(meta.value)?.status === 'error') {
+      send({ type: 'ITEM.FOCUS', level: meta.level, value: meta.value })
+      send({ type: 'ITEM.EXPAND', level: meta.level, value: meta.value })
+      send({ type: 'BRANCH.RETRY', value: meta.value })
+      return
+    }
+    if (!interactive)
       return
     send({ type: 'ITEM.FOCUS', level: meta.level, value: meta.value })
     send({ type: 'ITEM.EXPAND', level: meta.level, value: meta.value })
@@ -247,6 +283,8 @@ export function connectCascader<T extends PropTypes>(
     empty: prop('translations')?.empty ?? 'No data',
     noMatch: prop('translations')?.noMatch ?? 'No matches',
     loading: prop('translations')?.loading ?? 'Loading',
+    branchError: prop('translations')?.branchError ?? 'Could not load children',
+    retry: prop('translations')?.retry ?? 'Retry',
     column: prop('translations')?.column ?? 'Options',
     searchInput: prop('translations')?.searchInput ?? 'Search',
     searchList: prop('translations')?.searchList ?? 'Search results',
@@ -302,6 +340,8 @@ export function connectCascader<T extends PropTypes>(
     isIndeterminate,
     isActive,
     isVisible,
+    branchLoadState,
+    columnLoadState: level => columnLoad({ level })?.state ?? null,
     setInputValue: next => send({ type: 'INPUT.CHANGE', value: next }),
     setOpen: (next) => {
       if (next !== open)
@@ -314,6 +354,7 @@ export function connectCascader<T extends PropTypes>(
       send({ type: 'ITEM.SELECT', path })
     },
     clear: () => send({ type: 'VALUE.CLEAR' }),
+    retryBranch: v => send({ type: 'BRANCH.RETRY', value: v }),
     deselect: target => send({ type: 'VALUE.SET', value: withoutKey(cascaderPathKey(target)) }),
 
     getHiddenInputProps: input => normalize.input({
@@ -826,6 +867,8 @@ export function connectCascader<T extends PropTypes>(
         'aria-labelledby': parent == null ? `${ids.label} ${ids['value-text']}` : itemId(parent),
         'aria-label': parent == null ? translations.column : undefined,
         'data-level': String(column.level),
+        // 懒分支的子列正在取数：读屏据此知道这一列的条目还在路上
+        'aria-busy': columnLoad(column)?.state.status === 'loading' ? 'true' : undefined,
         // 没有锚点条目时（指针打开且无选中值）由根列认领 Tab 位并接住焦点：
         // 它是 role=listbox 且有名字，读屏据此进焦点模式；浮层壳没有角色，接不了这个班。
         // 其余情况一律 -1——可滚动容器会被某些浏览器自动塞进 Tab 序
@@ -833,6 +876,51 @@ export function connectCascader<T extends PropTypes>(
         'data-state': stateAttr,
         // 展开路径砍短后右边这些列收起，只加 hidden 不卸载
         'hidden': column.level >= columns.length || undefined,
+      })
+    },
+
+    // 懒分支那一列里的三块状态：在途、失败提示与重试钮，同一时刻至多露一种
+    getBranchLoadingProps: column => normalize.element({
+      ...parts['branch-loading'].attrs,
+      'role': 'status',
+      'data-level': String(column.level),
+      'hidden': columnLoad(column)?.state.status !== 'loading' || undefined,
+    }),
+
+    getBranchErrorProps: column => normalize.element({
+      ...parts['branch-error'].attrs,
+      'role': 'alert',
+      'data-level': String(column.level),
+      'hidden': columnLoad(column)?.state.status !== 'error' || undefined,
+    }),
+
+    // 重试钮不占 Tab 位：列里的焦点走条目的 roving，键盘从父条目上按确认键重试
+    getBranchRetryTriggerProps: (column) => {
+      const load = columnLoad(column)
+      return normalize.button({
+        ...parts['branch-retry-trigger'].attrs,
+        'type': 'button',
+        // 一颗文字动作钮：盒、悬停 / 按下与按压、焦点环、禁用面由 Action Control 家族的 text ghost 档给
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'text',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'data-disabled': dataAttr(disabled),
+        'tabindex': -1,
+        'aria-label': translations.retry,
+        'data-level': String(column.level),
+        'disabled': disabled || undefined,
+        'hidden': load?.state.status !== 'error' || undefined,
+        // 按下不抢焦点：焦点留在条目上，roving 锚点不丢
+        'onPointerDown': (event: PointerEvent) => {
+          if (event.button === 0)
+            event.preventDefault()
+        },
+        'onClick': () => {
+          if (!disabled && load)
+            send({ type: 'BRANCH.RETRY', value: load.parent })
+        },
       })
     },
 
@@ -870,6 +958,10 @@ export function connectCascader<T extends PropTypes>(
         'aria-haspopup': meta?.branch ? 'listbox' : undefined,
         // 分支与否只驱动样式，不再进可及树
         'data-branch': dataAttr(!!meta?.branch),
+        // 懒分支的取数状态：皮肤与测试据此区分在途、失败与已取回
+        'data-load-state': branchLoadState(item.value)?.status,
+        'data-loading': dataAttr(branchLoadState(item.value)?.status === 'loading'),
+        'data-error': dataAttr(branchLoadState(item.value)?.status === 'error'),
         // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
         'data-pressed': dataAttr(pressedPart === 'item' && pressedValue === item.value),
         // roving tabindex：整个浮层只有锚点条目留在 Tab 序列内

@@ -1,5 +1,6 @@
-<!-- 懒加载 | 展开分支时加载下一层数据 -->
+<!-- 懒加载 | 节点写 hasChildren 不给 children，展开路径走到它时由 loadChildren 取回直接子项；在途与失败都显示在它那一列里，失败在父条目上按 Enter 或点重试钮再取 -->
 <script setup lang="ts">
+import type { CascaderLoadChildrenRequest, CascaderNode } from "@xihan-ui/headless";
 import {
   XhCascaderColumn,
   XhCascaderContent,
@@ -14,17 +15,15 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-interface RegionNode {
-  value: string;
-  label: string;
-  disabled?: boolean;
-  children?: RegionNode[];
-}
+// 只写到省一级：下一层等展开时再取
+const regions: CascaderNode[] = [
+  { value: "zhejiang", label: "浙江", hasChildren: true },
+  { value: "jiangsu", label: "江苏", hasChildren: true },
+];
 
 // 下一层的数据在后端，这里用定时器代替一次请求
-const remote: Record<string, RegionNode[]> = {
+const remote: Record<string, CascaderNode[]> = {
   zhejiang: [
     { value: "hangzhou", label: "杭州" },
     { value: "ningbo", label: "宁波" },
@@ -36,34 +35,15 @@ const remote: Record<string, RegionNode[]> = {
   ],
 };
 
-// 占位子节点：children 非空才算分支，子列才开得出来；禁用让方向键跳过它，也点不动
-function pending(parent: string): RegionNode {
-  return { value: `${parent}:pending`, label: "加载中…", disabled: true };
-}
-
-const regions = ref<RegionNode[]>([
-  { value: "zhejiang", label: "浙江", children: [pending("zhejiang")] },
-  { value: "jiangsu", label: "江苏", children: [pending("jiangsu")] },
-]);
-
-const loading = ref<string[]>([]);
-const loaded = ref<string[]>([]);
-
-// 点开或键盘走到这一支时才取它的子节点，取回来把占位那一条整个换掉
-function load(value: string) {
-  const children = remote[value];
-  if (!children || loading.value.includes(value) || loaded.value.includes(value)) {
-    return;
-  }
-  loading.value = [...loading.value, value];
-  setTimeout(() => {
-    const node = regions.value.find(item => item.value === value);
-    if (node) {
-      node.children = children;
-    }
-    loading.value = loading.value.filter(v => v !== value);
-    loaded.value = [...loaded.value, value];
-  }, 800);
+// 浮层收起或展开路径离开这一支时 signal 中止，把定时器一起撤掉
+function loadChildren({ node, signal }: CascaderLoadChildrenRequest): Promise<CascaderNode[]> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => resolve(remote[node.value] ?? []), 800);
+    signal.addEventListener("abort", () => {
+      clearTimeout(timer);
+      reject(signal.reason);
+    });
+  });
 }
 </script>
 
@@ -71,6 +51,7 @@ function load(value: string) {
   <XhCascaderRoot
     v-slot="{ levels }"
     :collection="regions"
+    :load-children="loadChildren"
     placeholder="请选择地区"
   >
     <XhCascaderLabel>收货地区</XhCascaderLabel>
@@ -82,14 +63,9 @@ function load(value: string) {
     </XhCascaderControl>
     <XhCascaderPositioner>
       <XhCascaderContent>
+        <!-- levels 含取回的那一层；还没取回时也有一个空层，在途提示铺在它里面 -->
         <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
-          <XhCascaderItem
-            v-for="node in lv.items"
-            :key="node.value"
-            :value="node.value"
-            @click="load(node.value)"
-            @focus="load(node.value)"
-          >
+          <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
             <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
             <XhCascaderItemIndicator />
           </XhCascaderItem>

@@ -5,8 +5,8 @@
 
 // 提供 cascader 相关实现。
 
-import type { ContextFacade, PositionResult } from '@xihan-ui/core'
-import type { CascaderFocusIntent, CascaderNode, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderValue } from './cascader.types'
+import type { ActionFn, ContextFacade, PositionResult } from '@xihan-ui/core'
+import type { CascaderBranchLoadSnapshot, CascaderFocusIntent, CascaderNode, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderValue } from './cascader.types'
 import { cascadeToggle, collapseChecked, itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
@@ -21,6 +21,8 @@ import {
   cascaderSamePath,
   cascaderStepColumn,
   cascaderTruncatePath,
+  isCascaderLazyBranch,
+  resolveCascaderCollection,
 } from './cascader.columns'
 import { assertCascaderPath } from './cascader.value'
 
@@ -91,6 +93,155 @@ function moveActivePath(context: ContextFacade<CascaderSchema>, collection: read
   context.set('activePath', next)
 }
 
+type CascaderActionParams = Parameters<ActionFn<CascaderSchema>>[0]
+
+/** 有效树：作者的 collection 并上懒分支已取回的子项。动作与连接层都经它取，两边算出的列才一致。 */
+function effectiveCollection(
+  prop: CascaderActionParams['prop'],
+  context: Pick<CascaderActionParams['context'], 'get'>,
+): CascaderNode[] {
+  return resolveCascaderCollection(prop('collection') ?? [], context.get('loadedChildren'))
+}
+
+/** 沿路径逐段取原始节点：懒分支已取回的子项也走得进去；中途断了返回 null。 */
+function cascaderNodeAlong(
+  collection: readonly CascaderNode[],
+  path: readonly string[],
+  loadedChildren: Readonly<Record<string, CascaderNode[]>>,
+): CascaderNode | null {
+  let nodes: readonly CascaderNode[] = collection
+  let node: CascaderNode | null = null
+  for (const value of path) {
+    node = nodes.find(item => item.value === value) ?? null
+    if (!node)
+      return null
+    nodes = node.children ?? loadedChildren[node.value] ?? []
+  }
+  return node
+}
+
+/** 树里此刻所有的懒分支（已取回子项的也算，子项里再有懒分支一并收），按 value 记原始节点。 */
+function lazyBranches(
+  nodes: readonly CascaderNode[],
+  loadedChildren: Readonly<Record<string, CascaderNode[]>>,
+  out = new Map<string, CascaderNode>(),
+): Map<string, CascaderNode> {
+  for (const node of nodes) {
+    if (isCascaderLazyBranch(node))
+      out.set(node.value, node)
+    const children = node.children ?? loadedChildren[node.value]
+    if (children)
+      lazyBranches(children, loadedChildren, out)
+  }
+  return out
+}
+
+function setBranchLoad(context: CascaderActionParams['context'], value: string, snapshot: CascaderBranchLoadSnapshot): void {
+  context.set('branchLoads', { ...context.get('branchLoads'), [value]: snapshot })
+}
+
+/**
+ * 开一轮分支取数。已取回、正在取（非重试）或上一轮失败（非重试）的都不再发；
+ * 迟到的兑现或拒绝对不上这一轮（被重试顶掉、分支离开展开路径、节点换代）就丢掉，不写回也不发事件。
+ */
+function beginBranchLoad(params: CascaderActionParams, path: readonly string[], force: boolean): void {
+  const { context, prop, refs, scope } = params
+  const source = prop('collection') ?? []
+  const node = cascaderNodeAlong(source, path, context.get('loadedChildren'))
+  if (!node || !isCascaderLazyBranch(node))
+    return
+  const value = node.value
+  if (value in context.get('loadedChildren'))
+    return
+  if (!force && context.get('branchLoads')[value]?.status === 'error')
+    return
+  const loadChildren = prop('loadChildren')
+  if (!loadChildren) {
+    const error = new Error(`Cascader lazy branch "${value}" requires loadChildren`)
+    refs.get('branchLoadOwners').set(value, node)
+    setBranchLoad(context, value, { status: 'error', error })
+    prop('onBranchLoadError')?.({ value, path: [...path], node, error })
+    return
+  }
+
+  const controllers = refs.get('branchLoadControllers')
+  const previous = controllers.get(value)
+  if (previous && !force)
+    return
+  previous?.controller.abort()
+
+  const token = ++refs.get('branchLoadSequence').n
+  const controller = new (scope.getWin().AbortController)()
+  controllers.set(value, { controller, token, node })
+  refs.get('branchLoadOwners').set(value, node)
+  setBranchLoad(context, value, { status: 'loading' })
+  prop('onBranchLoadStart')?.({ value, path: [...path], node, reason: force ? 'retry' : 'expand' })
+
+  const current = (): boolean => {
+    const entry = controllers.get(value)
+    return entry?.controller === controller
+      && entry.token === token
+      && cascaderNodeAlong(prop('collection') ?? [], path, context.get('loadedChildren')) === node
+  }
+
+  Promise.resolve()
+    .then(() => loadChildren({ node, path: [...path], signal: controller.signal }))
+    .then((children) => {
+      if (!current() || controller.signal.aborted)
+        return
+      const resolved = children ? [...children] : []
+      controllers.delete(value)
+      context.set('loadedChildren', { ...context.get('loadedChildren'), [value]: resolved })
+      setBranchLoad(context, value, { status: 'loaded', empty: resolved.length === 0 })
+      prop('onBranchLoad')?.({ value, path: [...path], node, children: resolved })
+    }, (error: unknown) => {
+      if (!current() || controller.signal.aborted)
+        return
+      controllers.delete(value)
+      setBranchLoad(context, value, { status: 'error', error })
+      prop('onBranchLoadError')?.({ value, path: [...path], node, error })
+    })
+}
+
+/** 中止一个在途请求，状态退回 idle；失败与已取回的不动。 */
+function cancelBranchLoad(params: CascaderActionParams, value: string): void {
+  const entry = params.refs.get('branchLoadControllers').get(value)
+  if (!entry)
+    return
+  entry.controller.abort()
+  params.refs.get('branchLoadControllers').delete(value)
+  setBranchLoad(params.context, value, { status: 'idle' })
+}
+
+function cancelBranchLoads(params: CascaderActionParams, keep: ReadonlySet<string> = new Set()): void {
+  for (const value of [...params.refs.get('branchLoadControllers').keys()]) {
+    if (!keep.has(value))
+      cancelBranchLoad(params, value)
+  }
+}
+
+/**
+ * 展开路径上的懒分支逐个开取；离开展开路径的在途请求一律中止。
+ * 只在展开态做：收起的浮层里没有列可铺，请求发出去也没人看。
+ */
+function loadActiveBranches(params: CascaderActionParams): void {
+  if (params.state.get() !== 'open')
+    return
+  const source = params.prop('collection') ?? []
+  const active = params.context.get('activePath')
+  const onPath = new Set<string>()
+  for (let i = 0; i < active.length; i++) {
+    const path = active.slice(0, i + 1)
+    const node = cascaderNodeAlong(source, path, params.context.get('loadedChildren'))
+    if (!node)
+      break
+    onPath.add(node.value)
+    if (isCascaderLazyBranch(node))
+      beginBranchLoad(params, path, false)
+  }
+  cancelBranchLoads(params, onPath)
+}
+
 /** 按值取条目元素，不问它此刻可不可见；只在事件那一刻读活 DOM。 */
 export function findCascaderItemEl(container: HTMLElement | null, value: string | null): HTMLElement | null {
   if (!container || value == null)
@@ -127,6 +278,9 @@ export const cascaderMachine = createMachine({
     // 按压通道：正被按住的那一个（条目按 value、候选按路径键记，清空按钮只记部件），与开合无关
     pressedPart: cell<CascaderPressedPart | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    // 懒分支取回的子项与取数状态，按分支 value 记
+    loadedChildren: cell<Record<string, CascaderNode[]>>(() => ({ defaultValue: {} })),
+    branchLoads: cell<Record<string, CascaderBranchLoadSnapshot>>(() => ({ defaultValue: {} })),
   }),
   refs: () => ({
     config: null,
@@ -136,16 +290,23 @@ export const cascaderMachine = createMachine({
     getAnchorEl: () => null,
     getFloatingEl: () => null,
     getContentEl: () => null,
+    branchLoadControllers: new Map(),
+    branchLoadSequence: { n: 0 },
+    branchLoadOwners: new Map(),
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
-  effects: ['trackLayer', 'trackTagListMotion'],
+  // 请求控制器随服务存活，展开路径离开、浮层收起与卸载都会中止在途的那几个
+  effects: ['trackLayer', 'trackTagListMotion', 'trackBranchLoads'],
   // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 回写
   watch: ({ track, prop, context, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     // 值清空时清空按钮随之藏起，按住它的那一下不会再来 keyup：与禁用 / 只读 / 加载一道由机器自己收
     track([() => prop('disabled'), () => prop('readOnly'), () => prop('loading')], () => action(['releaseWhenInert']))
     track([context.dep('value')], () => action(['releaseWhenInert']))
+    // 展开路径走到懒分支就开取，离开的在途请求中止；collection 换了就把对不上的结果与请求一并作废
+    track([context.dep('activePath')], () => action(['loadActiveBranches']))
+    track([() => prop('collection')], () => action(['syncBranchLoads']))
   },
   // 与开合无关、两个状态都认的事件；展开态另行声明的 ITEM.SELECT 会盖过这里那一条
   on: {
@@ -159,6 +320,7 @@ export const cascaderMachine = createMachine({
     'ITEM.FOCUS': { actions: ['setFocusedPath'] },
     'ITEM.EXPAND': { actions: ['expandPath'] },
     'ITEM.SELECT': { actions: ['selectPath'] },
+    'BRANCH.RETRY': { actions: ['retryBranch'] },
   },
   states: {
     closed: {
@@ -178,9 +340,9 @@ export const cascaderMachine = createMachine({
     },
     open: {
       // 展开那一刻把列一路铺到选中路径上并挑好焦点锚点，全程纯计算
-      entry: ['setInitialFocusedPath'],
-      // 收起即松开：按住 Enter 选中叶子后浮层收起，条目随内容一起藏起，不会再来 keyup
-      exit: ['clearFocusedPath', 'clearInput', 'releasePress'],
+      entry: ['setInitialFocusedPath', 'loadActiveBranches'],
+      // 收起即松开：按住 Enter 选中叶子后浮层收起，条目随内容一起藏起，不会再来 keyup；在途的分支请求一并中止
+      exit: ['clearFocusedPath', 'clearInput', 'releasePress', 'cancelBranchLoads'],
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
       on: {
@@ -213,11 +375,11 @@ export const cascaderMachine = createMachine({
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
       isMultiple: ({ prop }) => !!prop('multiple'),
       // 选中的是分支：不收起
-      staysOpenOnSelect: ({ prop, event }) => {
+      staysOpenOnSelect: ({ prop, context, event }) => {
         const e = event.current()
         if (e.type !== 'ITEM.SELECT')
           return false
-        return !!cascaderNodeAt(prop('collection') ?? [], e.path)?.branch
+        return !!cascaderNodeAt(effectiveCollection(prop, context), e.path)?.branch
       },
       // 禁用、只读与加载都改不了值，一票否决；条目自身的禁用随事件带入；清空按钮没有值可清时不进
       canPress: ({ prop, context, event }) => {
@@ -308,7 +470,7 @@ export const cascaderMachine = createMachine({
        * 退回本列首个可停留条目。first/last 两个意图从根列进，不理会选中值。
        */
       setInitialFocusedPath: ({ prop, context, event }) => {
-        const collection = prop('collection') ?? []
+        const collection = effectiveCollection(prop, context)
         const intent = context.get('focusIntent')
         const selected = context.get('value')[0] ?? []
         // 锚点条目离场后的重挑：只在此前真有过锚点时补，判据取自机器自己的状态而不是事件类型——
@@ -373,7 +535,7 @@ export const cascaderMachine = createMachine({
         // 锚点间的真实移动才拖动展开路径；落地（此前无锚点）与回落到既有锚点都只记锚点，
         // 打开后的首次落焦不带出子列——展开由导航移动、点选与右方向键各自声明
         if (anchored && !cascaderSamePath(path, anchored))
-          moveActivePath(context, prop('collection') ?? [], path)
+          moveActivePath(context, effectiveCollection(prop, context), path)
         context.set('focusedPath', path)
       },
 
@@ -381,13 +543,13 @@ export const cascaderMachine = createMachine({
       expandPath: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type === 'ITEM.EXPAND')
-          moveActivePath(context, prop('collection') ?? [], cascaderTruncatePath(context.get('activePath'), e.level, e.value))
+          moveActivePath(context, effectiveCollection(prop, context), cascaderTruncatePath(context.get('activePath'), e.level, e.value))
       },
 
       setActivePath: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type === 'PATH.SET')
-          moveActivePath(context, prop('collection') ?? [], [...e.path])
+          moveActivePath(context, effectiveCollection(prop, context), [...e.path])
       },
 
       // 收起只清焦点锚点，展开路径留着：它是本次浏览的痕迹，下次展开由 entry 按选中值重算；
@@ -402,7 +564,7 @@ export const cascaderMachine = createMachine({
         if (e.type !== 'ITEM.SELECT')
           return
         assertCascaderPath(e.path)
-        const meta = cascaderNodeAt(prop('collection') ?? [], e.path)
+        const meta = cascaderNodeAt(effectiveCollection(prop, context), e.path)
         // 分支只有在 changeOnSelect 或级联勾选打开时才落值；否则点分支纯粹是展开子列
         if (meta?.branch && !prop('changeOnSelect') && !(prop('multiple') && prop('cascade')))
           return
@@ -411,7 +573,7 @@ export const cascaderMachine = createMachine({
         if (prop('multiple')) {
           // 级联：按尾值走级联原语，再把收敛后的值映射回各自的完整路径
           if (prop('cascade')) {
-            const roots = prop('collection') ?? []
+            const roots = effectiveCollection(prop, context)
             const state = cascadeToggle(roots, current.map(p => p[p.length - 1]!), path[path.length - 1]!)
             const collapsed = collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child')
             const index = cascaderIndexNodes(roots)
@@ -438,6 +600,53 @@ export const cascaderMachine = createMachine({
       },
 
       clearValue: ({ context }) => context.set('value', []),
+
+      loadActiveBranches,
+
+      retryBranch: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'BRANCH.RETRY')
+          return
+        const meta = cascaderIndexNodes(effectiveCollection(params.prop, params.context)).get(e.value)
+        if (meta)
+          beginBranchLoad(params, meta.path, true)
+      },
+
+      cancelBranchLoads: params => cancelBranchLoads(params),
+
+      /**
+       * collection 换了：同 value 换了节点对象、或节点整个没了的那几支，取回的结果、状态与在途请求一并作废；
+       * 仍对得上的原样留着。随后按展开路径把该取的补上。
+       */
+      syncBranchLoads: (params) => {
+        const { context, prop, refs } = params
+        const source = prop('collection') ?? []
+        const owners = refs.get('branchLoadOwners')
+        const currentChildren = context.get('loadedChildren')
+        const initialLive = lazyBranches(source, currentChildren)
+        const children = Object.fromEntries(
+          Object.entries(currentChildren).filter(([value]) => initialLive.get(value) === owners.get(value)),
+        )
+        const live = lazyBranches(source, children)
+        const controllers = refs.get('branchLoadControllers')
+        for (const [value, entry] of [...controllers]) {
+          if (live.get(value) !== entry.node) {
+            entry.controller.abort()
+            controllers.delete(value)
+          }
+        }
+        const keep = (value: string): boolean => live.get(value) === owners.get(value)
+        const loads = Object.fromEntries(Object.entries(context.get('branchLoads')).filter(([value]) => keep(value)))
+        if (Object.keys(loads).length !== Object.keys(context.get('branchLoads')).length)
+          context.set('branchLoads', loads)
+        if (Object.keys(children).length !== Object.keys(currentChildren).length)
+          context.set('loadedChildren', children)
+        for (const value of [...owners.keys()]) {
+          if (!keep(value))
+            owners.delete(value)
+        }
+        loadActiveBranches(params)
+      },
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
@@ -463,13 +672,23 @@ export const cascaderMachine = createMachine({
         onResult: result => context.set('position', result),
       }),
 
-      // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
       /** 多选标签行的到达、离场与换位。标签行在触发器里；触发按钮即定位锚点，经适配器的 ref 取。 */
       trackTagListMotion: ({ refs, flush }) => trackSelectionTagMotion({
         flush,
         list: () => refs.get('getAnchorEl')()?.querySelector<HTMLElement>(CASCADER_TAG_LIST_SELECTOR),
       }),
 
+      // 初始即展开时展开路径上的懒分支补一次取数；卸载时中止所有在途请求
+      trackBranchLoads: (params) => {
+        params.flush(() => params.scope.getWin().queueMicrotask(() => loadActiveBranches(params)))
+        return () => {
+          for (const { controller } of params.refs.get('branchLoadControllers').values())
+            controller.abort()
+          params.refs.get('branchLoadControllers').clear()
+        }
+      },
+
+      // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
       trackLayer: ({ refs, context, send, flush, scope, state, track, prop }) => {
         let reactivateFocus: (() => void) | null = null
         return trackPresenceResources({

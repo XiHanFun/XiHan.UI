@@ -12,9 +12,52 @@ import { sameArray } from '../shared/array'
 
 // 级联的纯算法层：不碰 DOM、不认识状态机（connect 在 render 期求值，此时 DOM 尚不存在）。
 
-/** children 是非空数组才算分支；空数组与缺省都是叶子。 */
+/** 懒分支的唯一判据：声明了有子项，但 children 还没给出。 */
+export function isCascaderLazyBranch(node: CascaderNode): boolean {
+  return node.hasChildren === true && node.children === undefined
+}
+
+/** children 是非空数组才算分支；空数组与缺省都是叶子。懒分支在取回之前也算分支，右边照样开一列。 */
 function isBranch(node: CascaderNode): boolean {
-  return Array.isArray(node.children) && node.children.length > 0
+  return (Array.isArray(node.children) && node.children.length > 0) || isCascaderLazyBranch(node)
+}
+
+/** 按值找原始节点：懒分支已取回的子项也找得进去。value 重复时以先出现的为准。 */
+export function findCascaderNode(
+  collection: readonly CascaderNode[],
+  value: string,
+  loadedChildren: Readonly<Record<string, CascaderNode[]>> = {},
+): CascaderNode | null {
+  for (const node of collection) {
+    if (node.value === value)
+      return node
+    const children = node.children ?? loadedChildren[node.value]
+    if (children) {
+      const found = findCascaderNode(children, value, loadedChildren)
+      if (found)
+        return found
+    }
+  }
+  return null
+}
+
+/**
+ * 有效树：懒分支取回的直接子项并进它的 children，宿主无需为单个分支的结果重建 collection。
+ * 没取回的懒分支原样留着（仍是分支、children 缺省），取回空数组的即成了叶子。
+ */
+export function resolveCascaderCollection(
+  collection: readonly CascaderNode[],
+  loadedChildren: Readonly<Record<string, CascaderNode[]>>,
+): CascaderNode[] {
+  return collection.map((node) => {
+    const source = node.children ?? (isCascaderLazyBranch(node) ? loadedChildren[node.value] : undefined)
+    if (source === undefined)
+      return node
+    const children = resolveCascaderCollection(source, loadedChildren)
+    if (node.children && children.length === node.children.length && children.every((child, index) => child === node.children![index]))
+      return node
+    return { ...node, children }
+  })
 }
 
 function toMeta(node: CascaderNode, level: number, parentPath: readonly string[]): CascaderNodeMeta {
@@ -65,7 +108,8 @@ export function cascaderBuildColumns(
 
     ancestors.add(next)
     parentPath.push(next)
-    nodes = node.children!
+    // 懒分支还没取回：右边照样开一列，列里暂时没有条目，由连接层给出在途或失败的提示
+    nodes = node.children ?? []
     level += 1
   }
 }
@@ -86,10 +130,10 @@ export function cascaderBuildLevels(collection: readonly CascaderNode[]): Cascad
       const bucket = levels[level]!
       const meta = toMeta(node, level, parentPath)
       bucket.push(meta)
-      // 环路防护按祖先链判定，同一个值出现在两条不相干分支上不算环
-      if (!meta.branch || ancestors.has(node.value))
+      // 环路防护按祖先链判定，同一个值出现在两条不相干分支上不算环；懒分支还没有子项可摊
+      if (!meta.branch || !node.children || ancestors.has(node.value))
         continue
-      walk(node.children!, level + 1, meta.path, new Set([...ancestors, node.value]))
+      walk(node.children, level + 1, meta.path, new Set([...ancestors, node.value]))
     }
   }
 

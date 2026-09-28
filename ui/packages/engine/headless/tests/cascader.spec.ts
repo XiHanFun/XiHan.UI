@@ -1255,7 +1255,7 @@ describe('空态占位', () => {
     const h = mount()
     // 两个函数型文案单独验：toEqual 比不了函数的身份
     const { deleteItem, overflowTag, ...texts } = h.api().translations
-    expect(texts).toEqual({ empty: 'No data', noMatch: 'No matches', loading: 'Loading', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: 'Clear' })
+    expect(texts).toEqual({ empty: 'No data', noMatch: 'No matches', loading: 'Loading', branchError: 'Could not load children', retry: 'Retry', column: 'Options', searchInput: 'Search', searchList: 'Search results', clearTrigger: 'Clear' })
     expect(deleteItem('Xihu')).toBe('Delete Xihu')
     expect(overflowTag(2)).toBe('+2')
     h.setProps({ translations: { empty: '暂无数据', loading: '正在加载', clearTrigger: '清空' } })
@@ -1407,6 +1407,146 @@ function pointerDown(el: HTMLElement): void {
 }
 
 const RESULT: PositionResult = { x: 12, y: 34, placement: 'bottom-start', hidden: false }
+
+describe('懒分支', () => {
+  const LAZY: CascaderNode[] = [
+    { value: 'zhejiang', label: 'Zhejiang', hasChildren: true },
+    { value: 'macau', label: 'Macau' },
+  ]
+  const CHILDREN: CascaderNode[] = [
+    { value: 'hangzhou', label: 'Hangzhou' },
+    { value: 'ningbo', label: 'Ningbo' },
+  ]
+
+  /** 可控的取数：每一次调用都留下 resolve / reject 与 signal，由用例决定何时兑现。 */
+  function deferredLoader(): {
+    loadChildren: NonNullable<Props['loadChildren']>
+    calls: { path: string[], signal: AbortSignal, resolve: (children: CascaderNode[]) => void, reject: (error: unknown) => void }[]
+  } {
+    const calls: { path: string[], signal: AbortSignal, resolve: (children: CascaderNode[]) => void, reject: (error: unknown) => void }[] = []
+    return {
+      calls,
+      loadChildren: ({ path, signal }) => new Promise<CascaderNode[]>((resolve, reject) => {
+        calls.push({ path, signal, resolve, reject })
+      }),
+    }
+  }
+
+  it('没取回之前它照样是分支：展开路径走到它时右边开一列空列，静态层补上这一层', () => {
+    const { loadChildren } = deferredLoader()
+    const h = mount({ collection: LAZY, defaultOpen: true, loadChildren })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    expect(h.api().columns).toHaveLength(2)
+    expect(h.api().columns[1]!.items).toEqual([])
+    expect(h.api().levels.map(level => level.level)).toEqual([0, 1])
+    expect(h.api().getItemProps({ value: 'zhejiang' })).toMatchObject({ 'aria-haspopup': 'listbox', 'data-branch': '' })
+  })
+
+  it('展开路径走到懒分支即开取：那一列报在途，取回后条目铺进列里、状态落 loaded、事件带整条路径', async () => {
+    const { loadChildren, calls } = deferredLoader()
+    const onBranchLoadStart = vi.fn()
+    const onBranchLoad = vi.fn()
+    const h = mount({ collection: LAZY, defaultOpen: true, loadChildren, onBranchLoadStart, onBranchLoad })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    await tick()
+    expect(calls.map(call => call.path)).toEqual([['zhejiang']])
+    expect(h.api().branchLoadState('zhejiang')).toEqual({ status: 'loading' })
+    expect(onBranchLoadStart).toHaveBeenCalledWith(expect.objectContaining({ value: 'zhejiang', path: ['zhejiang'], reason: 'expand' }))
+    expect(h.api().getColumnProps({ level: 1 })).toMatchObject({ 'aria-busy': 'true' })
+    expect((h.api().getBranchLoadingProps({ level: 1 }) as Record<string, unknown>).hidden).toBeUndefined()
+    expect(h.api().getItemProps({ value: 'zhejiang' })).toMatchObject({ 'data-load-state': 'loading', 'data-loading': '' })
+
+    calls[0]!.resolve(CHILDREN)
+    await tick()
+    expect(h.api().columns[1]!.items.map(item => item.value)).toEqual(['hangzhou', 'ningbo'])
+    expect(h.api().branchLoadState('zhejiang')).toEqual({ status: 'loaded', empty: false })
+    expect(onBranchLoad).toHaveBeenCalledWith(expect.objectContaining({ value: 'zhejiang', path: ['zhejiang'], children: CHILDREN }))
+    expect(h.api().getBranchLoadingProps({ level: 1 })).toMatchObject({ hidden: true })
+    // 取回的条目照常可选，回显取得到名字
+    h.api().select(['zhejiang', 'ningbo'])
+    expect(h.api().valueText).toBe('Zhejiang / Ningbo')
+  })
+
+  it('取回空数组即成了叶子：不再开列，可以落值', async () => {
+    const h = mount({ collection: LAZY, defaultOpen: true, loadChildren: () => [] })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    await tick()
+    expect(h.api().branchLoadState('zhejiang')).toEqual({ status: 'loaded', empty: true })
+    expect(h.api().columns).toHaveLength(1)
+    h.api().select(['zhejiang'])
+    expect(h.value()).toEqual([['zhejiang']])
+  })
+
+  it('失败时那一列给出提示与重试钮，事件保留原始 error；在父条目上按确认键重试，不落值', async () => {
+    const { loadChildren, calls } = deferredLoader()
+    const onBranchLoadError = vi.fn()
+    const onBranchLoadStart = vi.fn()
+    const h = mount({ collection: LAZY, defaultOpen: true, loadChildren, onBranchLoadError, onBranchLoadStart })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    await tick()
+    const cause = new Error('network')
+    calls[0]!.reject(cause)
+    await tick()
+    expect(h.api().branchLoadState('zhejiang')).toEqual({ status: 'error', error: cause })
+    expect(onBranchLoadError).toHaveBeenCalledWith(expect.objectContaining({ value: 'zhejiang', path: ['zhejiang'], error: cause }))
+    expect((h.api().getBranchErrorProps({ level: 1 }) as Record<string, unknown>).hidden).toBeUndefined()
+    expect(h.api().getBranchRetryTriggerProps({ level: 1 })).toMatchObject({ 'type': 'button', 'tabindex': -1, 'aria-label': 'Retry' })
+
+    click(h.item('zhejiang').item)
+    await tick()
+    expect(onBranchLoadStart).toHaveBeenLastCalledWith(expect.objectContaining({ value: 'zhejiang', reason: 'retry' }))
+    expect(h.api().branchLoadState('zhejiang')).toEqual({ status: 'loading' })
+    expect(h.value()).toEqual([])
+    calls[1]!.resolve(CHILDREN)
+    await tick()
+    expect(h.api().branchLoadState('zhejiang')).toEqual({ status: 'loaded', empty: false })
+  })
+
+  it('展开路径离开在途的懒分支即中止请求，迟到的兑现不写回也不发事件', async () => {
+    const { loadChildren, calls } = deferredLoader()
+    const onBranchLoad = vi.fn()
+    const h = mount({ collection: LAZY, defaultOpen: true, loadChildren, onBranchLoad })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    await tick()
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'macau' })
+    expect(calls[0]!.signal.aborted).toBe(true)
+    expect(h.api().branchLoadState('zhejiang')).toEqual({ status: 'idle' })
+    calls[0]!.resolve(CHILDREN)
+    await tick()
+    expect(onBranchLoad).not.toHaveBeenCalled()
+    expect(h.api().branchLoadState('zhejiang')).toEqual({ status: 'idle' })
+  })
+
+  it('收起浮层中止在途请求', async () => {
+    const { loadChildren, calls } = deferredLoader()
+    const h = mount({ collection: LAZY, defaultOpen: true, loadChildren })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    await tick()
+    h.send({ type: 'CLOSE' })
+    expect(calls[0]!.signal.aborted).toBe(true)
+  })
+
+  it('没给 loadChildren 时懒分支直接落失败', () => {
+    const h = mount({ collection: LAZY, defaultOpen: true })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    expect(h.api().branchLoadState('zhejiang')?.status).toBe('error')
+  })
+
+  it('collection 换了节点对象：旧结果作废，展开路径还停在它上面就重新取', async () => {
+    const { loadChildren, calls } = deferredLoader()
+    const h = mount({ collection: LAZY, defaultOpen: true, loadChildren })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    await tick()
+    calls[0]!.resolve(CHILDREN)
+    await tick()
+    expect(h.api().columns[1]!.items).toHaveLength(2)
+    h.setProps({ collection: [{ value: 'zhejiang', label: 'Zhejiang', hasChildren: true }, { value: 'macau', label: 'Macau' }] })
+    await tick()
+    expect(h.api().columns[1]!.items).toEqual([])
+    expect(calls).toHaveLength(2)
+    expect(h.api().branchLoadState('zhejiang')).toEqual({ status: 'loading' })
+  })
+})
 
 describe('cascader 浮层定位', () => {
   it('等 DOM 落定才挂：进入展开态那一刻还没碰引擎，一拍之后才把锚点与浮层交进去', async () => {

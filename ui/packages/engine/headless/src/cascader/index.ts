@@ -18,6 +18,9 @@ export {
   cascaderSamePath,
   cascaderStepColumn,
   cascaderTruncatePath,
+  findCascaderNode,
+  isCascaderLazyBranch,
+  resolveCascaderCollection,
 } from './cascader.columns'
 export { connectCascader } from './cascader.connect'
 export { cascaderKeyboard } from './cascader.keyboard'
@@ -32,6 +35,10 @@ export { cascaderFilterCandidates, cascaderSearchCandidates } from './cascader.s
 export type { CascaderFilter, CascaderSearchCandidate } from './cascader.search'
 export type {
   CascaderApi,
+  CascaderBranchLoadDetails,
+  CascaderBranchLoadErrorDetails,
+  CascaderBranchLoadSnapshot,
+  CascaderBranchLoadStartDetails,
   CascaderColumn,
   CascaderColumnProps,
   CascaderExpandTrigger,
@@ -39,6 +46,7 @@ export type {
   CascaderGroupProps,
   CascaderItemProps,
   CascaderLevel,
+  CascaderLoadChildrenRequest,
   CascaderNode,
   CascaderNodeMeta,
   CascaderOpenChangeDetails,
