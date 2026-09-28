@@ -352,6 +352,50 @@ describe('carouselMachine 自动播放', () => {
     expect(c.api().page).toBe(2)
   })
 
+  it('看不见就按住：视口滚出可视区或页面切到后台时停表，看得见了从头计一整个间隔', async () => {
+    let report: ((entries: Array<{ isIntersecting: boolean }>) => void) | undefined
+    vi.stubGlobal('IntersectionObserver', class {
+      constructor(callback: (entries: Array<{ isIntersecting: boolean }>) => void) {
+        report = callback
+      }
+
+      observe(): void {}
+      disconnect(): void {}
+    })
+    const c = makeCarousel({ ...SIX, autoplay: true })
+    const viewport = document.createElement('div')
+    viewport.id = (c.api().getViewportProps() as Dict).id as string
+    document.body.append(viewport)
+    // 观察器在宿主提交之后才挂
+    await Promise.resolve()
+    expect(report).toBeDefined()
+
+    report!([{ isIntersecting: false }])
+    expect(c.state()).toBe('playing.paused')
+    expect(c.api().paused).toBe(true)
+    // 不是用户停的：播放开关仍说在播
+    expect(c.api().autoplayStopped).toBe(false)
+    vi.advanceTimersByTime(CAROUSEL_AUTOPLAY_INTERVAL * 3)
+    expect(c.api().page).toBe(0)
+
+    report!([{ isIntersecting: true }])
+    expect(c.state()).toBe('playing.running')
+    vi.advanceTimersByTime(CAROUSEL_AUTOPLAY_INTERVAL)
+    expect(c.api().page).toBe(1)
+
+    // 页面切到后台
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' })
+    document.dispatchEvent(new Event('visibilitychange'))
+    expect(c.state()).toBe('playing.paused')
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' })
+    document.dispatchEvent(new Event('visibilitychange'))
+    expect(c.state()).toBe('playing.running')
+    viewport.remove()
+    c.stop()
+    vi.unstubAllGlobals()
+    Reflect.deleteProperty(document, 'visibilityState')
+  })
+
   it('根节点把自动播放间隔投影为分页进度时长', () => {
     const timed = makeCarousel({ ...SIX, autoplay: 2500 }).api().getRootProps() as Dict
     expect(timed.style).toEqual({ '--xh-_carousel-autoplay-duration': '2500ms' })

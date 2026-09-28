@@ -248,7 +248,7 @@ export const carouselMachine = createMachine({
   initialState: ({ prop }) => (resolveAutoplayInterval(prop('autoplay')) > 0 ? 'playing' : 'idle'),
   // 跟手的会话整个生命周期都在。它不按拖动状态挂卸——常驻的代价只是几个早退的
   // pointermove，换来的是不必为了「有拆卸时机」去改状态树
-  effects: ['trackPointer', 'respectScopedMotion', 'trackLiquid', 'trackWrapSettle'],
+  effects: ['trackPointer', 'respectScopedMotion', 'trackLiquid', 'trackWrapSettle', 'trackVisibility'],
   refs: () => ({
     gesture: null,
     settle: null,
@@ -477,6 +477,44 @@ export const carouselMachine = createMachine({
       },
     },
     effects: {
+      /**
+       * 看不见就不翻页：视口滚出可视区、或页面切到后台时按住自动播放，看得见了再从头计一整个间隔。
+       * 页面上没人看的时候照样翻页，回来看到的是翻到半路的页与对不上的进度条。
+       */
+      trackVisibility: ({ scope, state, send, flush, track }) => {
+        const doc = scope.getDoc()
+        let intersecting = true
+        let observer: IntersectionObserver | undefined
+        let disposed = false
+        const sync = (): void => {
+          const visible = intersecting && doc.visibilityState !== 'hidden'
+          if (!visible && state.matches('playing.running'))
+            send({ type: 'AUTOPLAY.PAUSE', src: 'visibility' })
+          else if (visible && state.matches('playing.paused'))
+            send({ type: 'AUTOPLAY.RESUME', src: 'visibility' })
+        }
+        flush(() => {
+          const viewport = scope.getById(scope.partId('carousel', 'viewport'))
+          const Observer = scope.getWin().IntersectionObserver
+          if (disposed || !viewport || typeof Observer !== 'function')
+            return
+          observer = new Observer((entries) => {
+            const last = entries.at(-1)
+            if (!last)
+              return
+            intersecting = last.isIntersecting
+            sync()
+          })
+          observer.observe(viewport)
+        })
+        doc.addEventListener('visibilitychange', sync)
+        track([() => state.matches('playing.running')], sync)
+        return () => {
+          disposed = true
+          observer?.disconnect()
+          doc.removeEventListener('visibilitychange', sync)
+        }
+      },
       /**
        * 回绕那一步的轨道过渡播完即归位。过渡结束事件在三端经框架合成事件的命名各不相同，
        * 这里在文档上挂原生监听，按事件目标认出自己的轨道；没有过渡（作者关掉、减弱动效下 1ms 也照样触发）
