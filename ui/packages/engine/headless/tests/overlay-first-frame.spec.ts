@@ -19,6 +19,7 @@ import { connectFloatingPanel, floatingPanelMachine } from '../src/floating-pane
 import { connectHoverCard, hoverCardMachine } from '../src/hover-card'
 import { connectImageViewer, imageViewerMachine } from '../src/image-viewer'
 import { connectMenu, menuMachine } from '../src/menu'
+import { connectMenubar, menubarMachine } from '../src/menubar'
 import { connectPopconfirm } from '../src/popconfirm'
 import { connectPopover, popoverMachine } from '../src/popover'
 import { connectSelect, selectMachine } from '../src/select'
@@ -55,6 +56,14 @@ const FRUITS = [
  */
 function marked(service: Service<any>): Attrs[] {
   return [{ 'data-instant': service.context.get('openedAtMount') ? '' : undefined }]
+}
+
+/** 按展开项开合的族：开着即展开 file 那一项。 */
+function valueOf(open: OpenProps): Record<string, unknown> {
+  return {
+    ...(open.open === undefined ? {} : { value: open.open ? 'file' : null }),
+    ...(open.defaultOpen ? { defaultValue: 'file' } : {}),
+  }
 }
 
 const CASES: Record<string, Case> = {
@@ -165,6 +174,11 @@ const CASES: Record<string, Case> = {
   'float-button': {
     machine: floatButtonMachine,
     parts: service => [connectFloatButton(service, {}, normalizeProps).getListProps() as Attrs],
+  },
+  'menubar': {
+    machine: menubarMachine,
+    props: valueOf,
+    parts: service => [connectMenubar(service, normalizeProps).getContentProps({ value: 'file' }) as Attrs],
   },
 }
 

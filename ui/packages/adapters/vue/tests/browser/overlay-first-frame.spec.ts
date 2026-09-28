@@ -71,6 +71,12 @@ import {
   XhHoverCardTrigger,
   XhImageViewerContent,
   XhImageViewerRoot,
+  XhMenubarContent,
+  XhMenubarItem,
+  XhMenubarItemText,
+  XhMenubarPositioner,
+  XhMenubarRoot,
+  XhMenubarTrigger,
   XhMenuContent,
   XhMenuItem,
   XhMenuItemText,
@@ -153,6 +159,14 @@ const FRUITS = [
   { value: 'banana', label: '香蕉' },
 ]
 
+/** 按展开项开合的族（菜单栏、导航菜单）：开着即展开 file 那一张。 */
+function valueOf(props: OpenProps): { value?: string | null, defaultValue?: string | null } {
+  return {
+    ...(props.open === undefined ? {} : { value: props.open ? 'file' : null }),
+    ...(props.defaultOpen ? { defaultValue: 'file' } : {}),
+  }
+}
+
 const CASES: Record<string, Case> = {
   'popover': {
     parts: ['content'],
@@ -204,6 +218,16 @@ const CASES: Record<string, Case> = {
       h(XhContextMenuPositioner, null, () => h(XhContextMenuContent, null, () => FRUITS.map(node =>
         h(XhContextMenuItem, { key: node.value, value: node.value }, () => h(XhContextMenuItemText, null, () => node.label)),
       ))),
+    ]),
+  },
+  'menubar': {
+    parts: ['content'],
+    enter: 'xh-overlay-slide-in',
+    render: props => h(XhMenubarRoot, valueOf(props), () => [
+      h(XhMenubarTrigger, { value: 'file' }, () => '文件'),
+      h(XhMenubarPositioner, { value: 'file' }, () => h(XhMenubarContent, null, () => [
+        h(XhMenubarItem, { value: 'new' }, () => h(XhMenubarItemText, null, () => '新建')),
+      ])),
     ]),
   },
   'select': {

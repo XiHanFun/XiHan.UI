@@ -15,6 +15,7 @@ import {
   queryItems,
   setup,
 } from '@xihan-ui/core'
+import { clearOpenedAtMount, openedAtMountCell } from '../shared/first-frame'
 import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from '../shared/menu-choice'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -38,9 +39,16 @@ function clearPlacement(context: { get: (k: 'placements') => Record<string, Posi
   context.set('placements', rest)
 }
 
+/** 挂载时展开的那一张：受控判据同 cell，显式给了 value 就以它为准，否则看 defaultValue。 */
+function initialValue(prop: (key: 'value' | 'defaultValue') => string | null | undefined): string | null | undefined {
+  return prop('value') !== undefined ? prop('value') : prop('defaultValue')
+}
+
 export const menubarMachine = createMachine({
   name: 'menubar',
   context: ({ prop, cell }) => ({
+    // 首帧标记：挂载时开着、还没收起过
+    openedAtMount: openedAtMountCell(cell, initialValue(prop) != null),
     value: cell<string | null>(() => ({
       value: prop('value'),
       defaultValue: prop('defaultValue') ?? null,
@@ -93,11 +101,7 @@ export const menubarMachine = createMachine({
     typeahead: createTypeahead(),
     reanchor: null,
   }),
-  // 受控判据同 cell：显式给了 value 就以它为准，否则看 defaultValue
-  initialState: ({ prop }) => {
-    const value = prop('value') !== undefined ? prop('value') : prop('defaultValue')
-    return value != null ? 'open' : 'idle'
-  },
+  initialState: ({ prop }) => (initialValue(prop) != null ? 'open' : 'idle'),
   // 一排菜单共用一份行为层，但退出等待按当前 owner 的 Presence 精确配对。
   effects: ['trackLayer'],
   // 展开项变化后统一重算状态跳转、定位重挂与条目锚点
@@ -120,6 +124,8 @@ export const menubarMachine = createMachine({
   },
   states: {
     idle: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         'TRIGGER.TOGGLE': { actions: ['openFromEvent'] },
         'TRIGGER.OPEN': { actions: ['openFromEvent'] },
@@ -196,6 +202,7 @@ export const menubarMachine = createMachine({
       },
     },
     actions: {
+      clearOpenedAtMount,
       /** 状态跟随展开项的唯一出口；换项时状态不重入，只重挂定位与条目锚点。 */
       syncOpenState: ({ context, state, send, action }) => {
         const value = context.get('value') ?? null

@@ -128,7 +128,9 @@ describe('menubar M2 菜单面与条目几何', () => {
     const submenu = byTestId('submenu')
     const arrow = getComputedStyle(submenu, '::after')
     const raw = byTestId('raw-item')
+    // 量的是各档落定的底色，不量换面的过渡：两条都关掉过渡，读到的就是终值
     raw.style.transition = 'none'
+    submenu.style.transition = 'none'
     await userEvent.hover(raw)
     const hovered = getComputedStyle(raw).backgroundColor
 
@@ -161,6 +163,8 @@ describe('menubar M2 菜单面与条目几何', () => {
 
     expect(style.getPropertyValue(active).trim()).toBe('1')
     expect(directions.filter(name => style.getPropertyValue(name).trim() === '1')).toEqual([active])
+    // 挂载时就展开着的这一张属于首帧、不播进场；撤掉首帧标记，量的是用户展开时的那条进场
+    delete part('content').dataset.instant
     const content = getComputedStyle(part('content'))
     expect(content.animationName).toContain('xh-overlay-slide-in')
     expect(content.getPropertyValue('scale')).toBe('none')

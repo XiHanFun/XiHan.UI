@@ -44,6 +44,7 @@ export function connectMenubar<T extends PropTypes>(
   const position = context.get('position')
   const placements = context.get('placements')
   const switching = context.get('switching')
+  const openedAtMount = context.get('openedAtMount')
   const handoffValue = context.get('handoffValue')
   const placement = position?.placement ?? prop('placement') ?? MENUBAR_DEFAULT_PLACEMENT
   const focusedValue = context.get('focusedValue') ?? null
@@ -473,8 +474,8 @@ export function connectMenubar<T extends PropTypes>(
         [ITEM_VALUE_ATTR]: item.value,
         'id': contentId(item.value),
         // 换张进行中两侧都带上：新开的不播进场、收起的不播退场，瞬时换张。
-        // 首次展开与末次收起不带，动画照常
-        'data-instant': dataAttr(switching),
+        // 挂载时就展开着的那张属于首帧，同样直接呈现；首次展开与末次收起不带，动画照常
+        'data-instant': dataAttr(switching || (isOpen && openedAtMount)),
         'role': 'menu',
         'aria-labelledby': triggerId(item.value),
         // Tab 位归锚点条目，展开却无锚点时由容器兜底
