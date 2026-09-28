@@ -126,7 +126,7 @@ describe('gridList Shift 范围选', () => {
   it('connect：Shift + 方向键移动焦点并扩选，Shift + 点击扩选到点中的行', () => {
     const { machine } = service({ selectionMode: 'multiple', collection: ITEMS.map(value => ({ value, label: value.toUpperCase() })) })
     const root = document.createElement('div')
-    const rowEls = ITEMS.map((value) => {
+    const rowEls = ITEMS.map(() => {
       const el = document.createElement('div')
       root.append(el)
       return el
