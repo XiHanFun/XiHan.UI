@@ -7,6 +7,15 @@ import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, reactive } from 'vue'
 import {
+  XhComboboxContent,
+  XhComboboxControl,
+  XhComboboxEmpty,
+  XhComboboxInput,
+  XhComboboxItem,
+  XhComboboxItemText,
+  XhComboboxLoading,
+  XhComboboxPositioner,
+  XhComboboxRoot,
   XhSelectContent,
   XhSelectControl,
   XhSelectEmpty,
@@ -51,6 +60,20 @@ const CASES: Case[] = [
     ]),
     muted: '--xh-material-frosted-fg-muted',
     dim: 'list',
+  },
+  {
+    scope: 'combobox',
+    render: ({ loading, items }) => h(XhComboboxRoot, { collection: items ? ITEMS : [], loading, defaultOpen: true }, () => [
+      h(XhComboboxControl, null, () => h(XhComboboxInput)),
+      h(XhComboboxPositioner, null, () => [
+        h(XhComboboxContent, null, () => (items ? ITEMS : []).map(node =>
+          h(XhComboboxItem, { key: node.value, value: node.value }, () => h(XhComboboxItemText, null, () => node.label)))),
+        h(XhComboboxEmpty, null, () => '没有匹配'),
+        h(XhComboboxLoading, null, () => '正在检索'),
+      ]),
+    ]),
+    muted: '--xh-material-frosted-fg-muted',
+    dim: 'item',
   },
 ]
 

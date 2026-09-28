@@ -97,6 +97,7 @@
 - 支持自定义过滤、异步候选和自定义条目内容。
 - 候选面板与输入框所在的字段盒等宽，长候选在条目里截断。
 - 通过隐藏输入参与原生表单提交。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
 ### 组合
 
@@ -447,6 +448,7 @@
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `empty` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `overflow-tag` | `data-count` | String(overflowCount) |
 | `tag` | `data-value` | v |
@@ -498,14 +500,14 @@
 | `--xh-combobox-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | combobox 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-combobox-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 empty 部件 color 覆盖槽。 |
 | `--xh-combobox-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 empty 部件 font-size 覆盖槽。 |
-| `--xh-combobox-empty-px` | `empty` | `padding-inline` | `default` | `--xh-control-px-md` | combobox 的 empty 部件 padding-inline 覆盖槽。 |
+| `--xh-combobox-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | combobox 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-gap` | `root` | `gap` | `default` | `--xh-space-1` | combobox 的 root 部件 gap 覆盖槽。 |
 | `--xh-combobox-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | combobox 的 group 部件 gap 覆盖槽。 |
 | `--xh-combobox-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 group-label 部件 color 覆盖槽。 |
 | `--xh-combobox-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | combobox 的 group-label 部件 font-size 覆盖槽。 |
 | `--xh-combobox-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | combobox 的 group-label 部件 font-weight 覆盖槽。 |
-| `--xh-combobox-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-control-px-md` | combobox 的 group-label 部件 padding-inline 覆盖槽。 |
+| `--xh-combobox-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | combobox 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-group-spacing` | `group` | `margin-block-start` | `default` | `--xh-space-1_5` | combobox 的 group 部件 margin-block-start 覆盖槽。 |
 | `--xh-combobox-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | combobox 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
@@ -535,7 +537,7 @@
 | `--xh-combobox-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | combobox 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-combobox-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 loading 部件 color 覆盖槽。 |
 | `--xh-combobox-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 loading 部件 font-size 覆盖槽。 |
-| `--xh-combobox-loading-px` | `loading` | `padding-inline` | `default` | `--xh-control-px-md` | combobox 的 loading 部件 padding-inline 覆盖槽。 |
+| `--xh-combobox-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | combobox 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | combobox 的 input 部件 color 覆盖槽。 |
 | `--xh-combobox-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | combobox 的 tag-list 部件 gap 覆盖槽。 |

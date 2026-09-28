@@ -18310,7 +18310,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_combobox-item-px"
       ],
       "visibility": "public",
       "description": "combobox 的 empty 部件 padding-inline 覆盖槽。"
@@ -18436,7 +18436,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_combobox-item-px"
       ],
       "visibility": "public",
       "description": "combobox 的 group-label 部件 padding-inline 覆盖槽。"
@@ -19064,7 +19064,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_combobox-item-px"
       ],
       "visibility": "public",
       "description": "combobox 的 loading 部件 padding-inline 覆盖槽。"

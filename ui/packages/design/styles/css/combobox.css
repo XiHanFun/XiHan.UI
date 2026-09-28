@@ -7,6 +7,7 @@
 @import '../family/field-chrome.css';
 @import '../family/action-control.css';
 @import '../family/collection-item.css';
+@import '../family/loading-ring.css';
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
@@ -351,12 +352,19 @@
   [data-scope='combobox'][data-part='group-label'] {
     display: block;
     padding-block: var(--xh-combobox-group-label-py, var(--xh-space-1));
-    padding-inline: var(--xh-combobox-group-label-px, var(--xh-control-px-md));
+    padding-inline: var(--xh-combobox-group-label-px, var(--xh-_combobox-item-px));
     color: var(--xh-combobox-group-label-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-combobox-group-label-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-combobox-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 刷新：已有候选时后台在取，保留上一帧，条目与分组标题按 micro 淡下，数据到了再淡回；在途占位此时让位。
+     淡的是内容不是面：content 是整块磨砂面，整块淡下去面就透了 */
+  [data-scope='combobox'][data-part='content'][aria-busy='true'] [data-scope='combobox']:is([data-part='item'], [data-part='group-label']) {
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   [data-scope='combobox'][data-part='group-label'][hidden] {
@@ -463,7 +471,7 @@
     justify-content: center;
     grid-area: 1 / 1;
     padding-block: var(--xh-combobox-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-combobox-empty-px, var(--xh-control-px-md));
+    padding-inline: var(--xh-combobox-empty-px, var(--xh-_combobox-item-px));
     color: var(--xh-combobox-empty-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-combobox-empty-font-size, var(--xh-_combobox-font-size));
     line-height: var(--xh-leading-none);
@@ -482,9 +490,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: var(--xh-_combobox-gap);
     grid-area: 1 / 1;
     padding-block: var(--xh-combobox-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-combobox-loading-px, var(--xh-control-px-md));
+    padding-inline: var(--xh-combobox-loading-px, var(--xh-_combobox-item-px));
     color: var(--xh-combobox-loading-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-combobox-loading-font-size, var(--xh-_combobox-font-size));
     line-height: var(--xh-leading-none);
@@ -494,6 +503,15 @@
 
   [data-scope='combobox'][data-part='loading'][hidden] {
     display: none;
+  }
+
+  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
+     直径取所在尺寸档的图标档 */
+  [data-scope='combobox'][data-part='loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   }
 
   /* 自动结构没收到状态文案时，空 status 不生成盒；打开着的空 listbox 也不画无意义表面。
