@@ -61,7 +61,7 @@ describe('avatar 载入交叉淡变', () => {
   it('载入中回退内容等过 fallbackDelay 才露面：这段里载好就直接出图，回退内容一次都不露', async () => {
     host = document.createElement('div')
     document.body.append(host)
-    const seen: boolean[] = []
+    const seen: Array<boolean | 'until-found'> = []
     app = createApp({
       render: () => h(XhAvatarRoot, { src: PIXEL }, () => [h(XhAvatarImage), h(XhAvatarFallback, null, () => '曦')]),
     })
@@ -73,6 +73,6 @@ describe('avatar 载入交叉淡变', () => {
     await expect.poll(() => part('root').dataset.state).toBe('loaded')
     await new Promise(resolve => setTimeout(resolve, 50))
     observer.disconnect()
-    expect(seen.every(hidden => hidden)).toBe(true)
+    expect(seen.every(hidden => hidden === true)).toBe(true)
   })
 })
