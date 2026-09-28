@@ -82,6 +82,13 @@ describe('connectTypography 各段', () => {
     })
   })
 
+  it('渐变字是行内文字的一档形态：与语气同写时两个轴各落各的，两端颜色与走向不占属性', () => {
+    const text = api().getTextProps({ variant: 'gradient', tone: 'success' }) as Record<string, unknown>
+    expect(text).toMatchObject({ ...parts.text.attrs, 'data-variant': 'gradient', 'data-tone': 'success' })
+    expect(text.style).toBeUndefined()
+    expect(Object.keys(text).filter(key => /from|to$|direction/.test(key))).toEqual([])
+  })
+
   it('段落、链接与富文本容器只拿身份：href、target 与内容标签全归作者', () => {
     expect(api().getParagraphProps()).toEqual(parts.paragraph.attrs)
     expect(api().getLinkProps()).toEqual(parts.link.attrs)

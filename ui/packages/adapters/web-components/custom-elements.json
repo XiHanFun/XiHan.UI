@@ -27404,138 +27404,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/gradient-text.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-gradient-text>`：Light-DOM 行为宿主，无状态机，把 connectGradientText 产出接到 root 角色节点。\n\n两端颜色写为 root 上的内联 CSS 变量，渐变的绘制方式、默认使用哪族颜色都在皮肤中；\n走向按档位写为 data-direction，皮肤逐档换算为 `to <边或角>`。\n\n提供 from 或 to 时 root 的内联 style 归本元素管理，作者自己的内联样式写在宿主元素上。",
-          "name": "XhGradientTextElement",
-          "cssParts": [
-            {
-              "description": "被上色的文字容器，承载 data-direction、data-tone 与两端颜色变量",
-              "name": "root"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: gradientTextAnatomy, meta: gradientTextMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "from",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "from"
-            },
-            {
-              "kind": "field",
-              "name": "to",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "to"
-            },
-            {
-              "kind": "field",
-              "name": "direction",
-              "privacy": "public",
-              "type": {
-                "text": "GradientTextDirection | undefined"
-              },
-              "attribute": "direction"
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "privacy": "public",
-              "type": {
-                "text": "Tone | undefined"
-              },
-              "attribute": "tone"
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "起点颜色，写为 root 上的 --xh-gradient-text-from",
-              "name": "from",
-              "fieldName": "from"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "终点颜色，写为 root 上的 --xh-gradient-text-to",
-              "name": "to",
-              "fieldName": "to"
-            },
-            {
-              "type": {
-                "text": "GradientTextDirection | undefined"
-              },
-              "description": "渐变走向档位，默认 to-right",
-              "name": "direction",
-              "fieldName": "direction"
-            },
-            {
-              "type": {
-                "text": "Tone | undefined"
-              },
-              "description": "颜色；显式 from / to 优先",
-              "name": "tone",
-              "fieldName": "tone"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-gradient-text",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-gradient-text-from"
-            },
-            {
-              "name": "--xh-gradient-text-to"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhGradientTextElement",
-          "declaration": {
-            "name": "XhGradientTextElement",
-            "module": "src/elements/gradient-text.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/graph-chart.ts",
       "declarations": [
         {
@@ -72324,6 +72192,15 @@
             },
             {
               "name": "--xh-typography-font-weight"
+            },
+            {
+              "name": "--xh-typography-gradient-direction"
+            },
+            {
+              "name": "--xh-typography-gradient-from"
+            },
+            {
+              "name": "--xh-typography-gradient-to"
             },
             {
               "name": "--xh-typography-heading-fg"

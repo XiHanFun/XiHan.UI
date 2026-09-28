@@ -7,8 +7,12 @@
 
 import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
-/** 文本变体。 */
-export type TypographyVariant = 'code' | 'muted' | 'strong'
+/**
+ * 文本变体。
+ * gradient 把一段字画成渐变：两端颜色缺省取品牌渐变，写了 tone 取该语气的色板；
+ * 两端颜色与走向由皮肤的覆盖槽改写，不经 props。
+ */
+export type TypographyVariant = 'code' | 'gradient' | 'muted' | 'strong'
 
 /** 标题字号档位，1 最大、6 最小。 */
 export type TypographyLevel = 1 | 2 | 3 | 4 | 5 | 6
@@ -42,7 +46,7 @@ export interface TypographyHeadingProps {
 export interface TypographyTextProps {
   /** 颜色：brand / neutral / success / warning / danger / info。 */
   tone?: Tone
-  /** 变体：muted 弱化 / strong 强调 / code 等宽。 */
+  /** 变体：muted 弱化 / strong 强调 / code 等宽 / gradient 渐变。 */
   variant?: TypographyVariant
   /** 字重：regular / medium / semibold / bold，只作用于该段行内文字。 */
   weight?: TypographyWeight

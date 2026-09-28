@@ -70,7 +70,7 @@ export function XhTypographyParagraph({ children, ...rest }: XhTypographyParagra
 export interface XhTypographyTextProps extends ComponentPropsWithRef<'span'> {
   /** 语气：决定使用哪族颜色。 */
   tone?: Tone
-  /** 形态：muted 弱化 / strong 加重 / code 等宽。 */
+  /** 形态：muted 弱化 / strong 加重 / code 等宽 / gradient 渐变。 */
   variant?: TypographyVariant
   /** 字重：regular / medium / semibold / bold，只作用于该段行内文字。 */
   weight?: TypographyWeight

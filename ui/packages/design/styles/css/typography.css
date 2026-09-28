@@ -6,6 +6,17 @@
 /* 定义 typography 样式。 */
 
 @layer xihan.components {
+  /* 渐变字的前景：缺省透明，透出裁进字形的渐变；高对比作用域里换成实色，盖住渐变。
+     轴边界上只路由这一个简单值，渐变本身仍在文字上按本地的两端颜色与走向求值，
+     内层 default / more 能双向重置，也不会把未解析的组件变量冻结在祖先上。 */
+  :where(:root, [data-contrast='default']) {
+    --xh-_typography-gradient-fg: transparent;
+  }
+
+  :where([data-contrast='more']) {
+    --xh-_typography-gradient-fg: var(--xh-fg-default);
+  }
+
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='typography'] {
     --xh-typography-skin: 1;
@@ -229,6 +240,42 @@
 
   [data-scope='typography'][data-part='text'][data-weight='bold'] {
     font-weight: var(--xh-font-weight-bold);
+  }
+
+  /* —— 渐变字 —— */
+  /* 渐变画在背景上，再用 background-clip 把背景裁进字形里；前景必须透明才透得出底下的渐变。
+     两条 background-clip 都写：WebKit 只认带前缀那条。
+     -webkit-text-fill-color 在 WebKit 里决定字形填充色并盖过 color，跟着 color 走。
+     排在语气之后：语气写的是前景色，渐变字的前景要留给上面那支透明槽 */
+  [data-scope='typography'][data-part='text'][data-variant='gradient'] {
+    /* 两端颜色各收一个私有槽：语气档换的是这两支，使用者槽仍排在它们前面 */
+    --xh-_typography-gradient-from: var(--xh-gradient-brand-from);
+    --xh-_typography-gradient-to: var(--xh-gradient-brand-to);
+
+    background-image: linear-gradient(
+      var(--xh-typography-gradient-direction, to right),
+      var(--xh-typography-gradient-from, var(--xh-_typography-gradient-from)),
+      var(--xh-typography-gradient-to, var(--xh-_typography-gradient-to))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--xh-_typography-gradient-fg);
+    -webkit-text-fill-color: currentColor;
+  }
+
+  /* 语气换的是两端颜色：取该族主色与它压深一档的取值，深浅两态自动跟随 */
+  [data-scope='typography'][data-part='text'][data-variant='gradient'][data-tone] {
+    --xh-_typography-gradient-from: var(--xh-_tone);
+    --xh-_typography-gradient-to: var(--xh-_tone-active);
+  }
+
+  /* 无 JS 时的系统高对比、强制色与打印统一退回单色；显式局部轴由文件头那支前景槽负责 */
+  @media (prefers-contrast: more), (forced-colors: active), print {
+    [data-scope='typography'][data-part='text'][data-variant='gradient'] {
+      background-image: none;
+      color: inherit;
+      -webkit-text-fill-color: currentColor;
+    }
   }
 
   /* —— 行内链接 —— */

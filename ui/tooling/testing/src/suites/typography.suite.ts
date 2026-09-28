@@ -28,6 +28,17 @@ const typographyTree: FixtureNode = {
   ],
 }
 
+/** 一行标题里两个渐变词：一个取缺省的品牌渐变，一个带语气。 */
+const gradientHeading: FixtureNode = {
+  part: 'heading',
+  tag: 'h2',
+  attrs: { level: '1' },
+  children: [
+    { part: 'text', tag: 'span', text: '曦寒', attrs: { variant: 'gradient' } },
+    { part: 'text', tag: 'span', text: '组件库', attrs: { variant: 'gradient', tone: 'success' } },
+  ],
+}
+
 export const typographySuite: ConformanceSuite = {
   component: 'typography',
   anatomy: typographyAnatomy,
@@ -183,6 +194,17 @@ export const typographySuite: ConformanceSuite = {
           'text[1]': { 'data-tone': 'warning', 'data-marked': '', 'data-strikethrough': null, 'data-underline': null },
           'text[2]': { 'data-underline': '', 'data-strikethrough': '', 'data-marked': null },
           'text[3]': { 'data-strikethrough': null, 'data-underline': null, 'data-marked': null },
+        },
+      },
+    },
+    {
+      name: '渐变字是行内文字的一档形态：与语气同写时各落一个属性，不补 role',
+      spec: { apg: APG },
+      fixture: base => ({ ...base, children: [gradientHeading] }),
+      initial: {
+        parts: {
+          'text[0]': { 'data-variant': 'gradient', 'data-tone': null, 'role': null },
+          'text[1]': { 'data-variant': 'gradient', 'data-tone': 'success', 'role': null },
         },
       },
     },

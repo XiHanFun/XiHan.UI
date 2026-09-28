@@ -1168,8 +1168,6 @@ export type {
 } from './components/funnel-chart/funnel-chart'
 export { useFunnelChart } from './components/funnel-chart/use-funnel-chart'
 export type { FunnelChartContext } from './components/funnel-chart/use-funnel-chart'
-export { XhGradientText } from './components/gradient-text/gradient-text'
-export type { XhGradientTextProps } from './components/gradient-text/gradient-text'
 export { useGraphChartContext } from './components/graph-chart/context'
 export {
   XhGraphChartCaption,

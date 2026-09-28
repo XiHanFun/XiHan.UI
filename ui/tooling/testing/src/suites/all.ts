@@ -51,7 +51,6 @@ import { floatButtonSuite } from './float-button.suite'
 import { floatingPanelSuite } from './floating-panel.suite'
 import { formSuite } from './form.suite'
 import { funnelChartSuite } from './funnel-chart.suite'
-import { gradientTextSuite } from './gradient-text.suite'
 import { graphChartSuite } from './graph-chart.suite'
 import { gridListSuite } from './grid-list.suite'
 import { gridSuite } from './grid.suite'
@@ -188,7 +187,6 @@ export const allSuites: readonly ConformanceSuite[] = [
   floatButtonSuite,
   floatingPanelSuite,
   formSuite,
-  gradientTextSuite,
   gridSuite,
   heatmapSuite,
   highlightSuite,

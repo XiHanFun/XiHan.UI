@@ -34474,42 +34474,6 @@
       "description": "funnel-chart 的 tooltip-swatch 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-gradient-text-from",
-      "component": "gradient-text",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background-image"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_gradient-text-from"
-      ],
-      "visibility": "public",
-      "description": "gradient-text 的 root 部件 background-image 覆盖槽。"
-    },
-    {
-      "name": "--xh-gradient-text-to",
-      "component": "gradient-text",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background-image"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_gradient-text-to"
-      ],
-      "visibility": "public",
-      "description": "gradient-text 的 root 部件 background-image 覆盖槽。"
-    },
-    {
       "name": "--xh-graph-chart-empty-gap",
       "component": "graph-chart",
       "part": [
@@ -85027,6 +84991,60 @@
       ],
       "visibility": "public",
       "description": "typography 的 root 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-typography-gradient-direction",
+      "component": "typography",
+      "part": [
+        "text"
+      ],
+      "property": [
+        "background-image"
+      ],
+      "state": [
+        "variant=gradient"
+      ],
+      "defaultToken": [
+        "to right"
+      ],
+      "visibility": "public",
+      "description": "typography 的 text 部件 background-image 覆盖槽。"
+    },
+    {
+      "name": "--xh-typography-gradient-from",
+      "component": "typography",
+      "part": [
+        "text"
+      ],
+      "property": [
+        "background-image"
+      ],
+      "state": [
+        "variant=gradient"
+      ],
+      "defaultToken": [
+        "--xh-_typography-gradient-from"
+      ],
+      "visibility": "public",
+      "description": "typography 的 text 部件 background-image 覆盖槽。"
+    },
+    {
+      "name": "--xh-typography-gradient-to",
+      "component": "typography",
+      "part": [
+        "text"
+      ],
+      "property": [
+        "background-image"
+      ],
+      "state": [
+        "variant=gradient"
+      ],
+      "defaultToken": [
+        "--xh-_typography-gradient-to"
+      ],
+      "visibility": "public",
+      "description": "typography 的 text 部件 background-image 覆盖槽。"
     },
     {
       "name": "--xh-typography-heading-fg",

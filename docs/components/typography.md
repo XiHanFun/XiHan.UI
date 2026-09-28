@@ -66,6 +66,7 @@
 
 - 展示文章、说明、条款或消息正文。
 - 统一标题层级、段落间距和行宽。
+- 为标题、品牌名称或关键词铺渐变强调。
 
 ### 何时不用
 
@@ -79,6 +80,8 @@
 - 支持弱化、强调、代码等文本变体。
 - 行内文字另有删除线、下划线与标记三个开关，可与变体、语气叠加；需要删除或标出的原生语义时把标签写成 `del` / `s` / `mark`。
 - 支持链接、语义颜色、对齐和字重。
+- 渐变字缺省取品牌渐变，`tone` 换成语气色板；两端颜色与走向由 `--xh-typography-gradient-from`、`--xh-typography-gradient-to` 与 `--xh-typography-gradient-direction` 改写。
+- 高对比、强制色和打印环境下渐变字退回实色文字。
 - `prose` 可直接排版外部 HTML 内容。
 
 ### 组合
@@ -89,11 +92,13 @@
 
 - 使用 `root` 控制正文最大行宽。
 - 根据文档结构选择标题标签，使用 `level` 调整视觉大小。
+- 渐变字的两端颜色取明度接近的一对，每个视图只留少量渐变强调。
 
 ### 反模式
 
 - 不要仅为了放大文字而改变标题语义。
 - 不要在正文中密集放置交互控件。
+- 不要给正文、表单标签或长段落铺渐变。
 
 ## API 参考
 
@@ -124,7 +129,7 @@
 | `XhTypographyHeading` | `as` | `ElementType` |  | 渲染为哪个标签，默认 p；需要进入文档大纲时写 h2（或 hN）。 |
 | `XhTypographyProse` | `as` | `ElementType` |  | 渲染为哪个标签，默认 div。 |
 | `XhTypographyText` | `tone` | `Tone` |  | 语气：决定使用哪族颜色。 |
-| `XhTypographyText` | `variant` | `TypographyVariant` |  | 形态：muted 弱化 / strong 加重 / code 等宽。 |
+| `XhTypographyText` | `variant` | `TypographyVariant` |  | 形态：muted 弱化 / strong 加重 / code 等宽 / gradient 渐变。 |
 | `XhTypographyText` | `weight` | `TypographyWeight` |  | 字重：regular / medium / semibold / bold，只作用于该段行内文字。 |
 | `XhTypographyText` | `strikethrough` | `boolean` |  | 删除线：只画线，表达"已删除"时 as 写 del 或 s。 |
 | `XhTypographyText` | `underline` | `boolean` |  | 下划线：只画线，与链接同形。 |
@@ -194,6 +199,9 @@
 | `--xh-typography-fg` | `root` | `color` | `default` | `--xh-fg-default` | typography 的 root 部件 color 覆盖槽。 |
 | `--xh-typography-font-size` | `root` | `font-size` | `default` | `--xh-_typography-body-size` | typography 的 root 部件 font-size 覆盖槽。 |
 | `--xh-typography-font-weight` | `root` | `font-weight` | `default`<br>`weight=bold`<br>`weight=medium`<br>`weight=regular`<br>`weight=semibold` | `--xh-font-weight-bold`<br>`--xh-font-weight-medium`<br>`--xh-font-weight-regular`<br>`--xh-font-weight-semibold`<br>`--xh-text-body-weight` | typography 的 root 部件 font-weight 覆盖槽。 |
+| `--xh-typography-gradient-direction` | `text` | `background-image` | `variant=gradient` | `to right` | typography 的 text 部件 background-image 覆盖槽。 |
+| `--xh-typography-gradient-from` | `text` | `background-image` | `variant=gradient` | `--xh-_typography-gradient-from` | typography 的 text 部件 background-image 覆盖槽。 |
+| `--xh-typography-gradient-to` | `text` | `background-image` | `variant=gradient` | `--xh-_typography-gradient-to` | typography 的 text 部件 background-image 覆盖槽。 |
 | `--xh-typography-heading-fg` | `heading` | `color` | `default` | `--xh-fg-default` | typography 的 heading 部件 color 覆盖槽。 |
 | `--xh-typography-heading-font-size` | `heading` | `font-size` | `default`<br>`level=1`<br>`level=2`<br>`level=3`<br>`level=4`<br>`level=5`<br>`level=6` | `--xh-_typography-h1`<br>`--xh-_typography-h2`<br>`--xh-_typography-h3`<br>`--xh-_typography-h4`<br>`--xh-_typography-h5`<br>`--xh-_typography-h6` | typography 的 heading 部件 font-size 覆盖槽。 |
 | `--xh-typography-heading-font-weight` | `heading` | `font-weight` | `default` | `--xh-font-weight-semibold` | typography 的 heading 部件 font-weight 覆盖槽。 |
