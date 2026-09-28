@@ -61,6 +61,33 @@ function typeInto(doc: Document, index: number, text: string): void {
   input.dispatchEvent(new Event('input', { bubbles: true }))
 }
 
+/** 在浮层内容末尾补一个最近使用色的挂载点；格子由各端自己铺（Vue / React 按列表自动铺，WC 由作者按事件铺），这里不写。 */
+function withRecentMount(base: FixtureNode): FixtureNode {
+  const addToContent = (node: FixtureNode): FixtureNode => node.part === 'content'
+    ? { ...node, children: [...(node.children ?? []), { part: 'recent-swatch-picker' }] }
+    : { ...node, children: node.children?.map(addToContent) }
+  return addToContent(base)
+}
+
+/**
+ * 常驻形态的结构：没有 control / trigger / positioner，取色面直接写在 root 里。
+ * 最近使用色的格子按初值由作者写好（三端同一份 DOM）。
+ */
+const INLINE_FIXTURE: FixtureNode = {
+  part: 'root',
+  children: [
+    { part: 'label', tag: 'label', text: '主题色' },
+    {
+      part: 'content',
+      children: [
+        { part: 'saturation-area', children: [{ part: 'area-thumb' }] },
+        sliderMount('hue-slider'),
+        { part: 'recent-swatch-picker', children: [swatchNode('#ff0000')] },
+      ],
+    },
+  ],
+}
+
 /** 表单影子由作者写在 root 里，只有需要提交的用例才声明它。 */
 function withHiddenInput(base: FixtureNode): FixtureNode {
   return { ...base, children: [...(base.children ?? []), { part: 'hidden-input', tag: 'input' }] }
@@ -352,6 +379,62 @@ export const colorPickerSuite: ConformanceSuite = {
           kind: 'settle',
           until: { activeElement: 'trigger' },
           expect: { activeElement: 'trigger' },
+        },
+      ],
+    },
+    {
+      name: '最近使用色：一轮里换了色，收起那一刻记进最近使用色，挂载点随之露出',
+      spec: { apg: `${APG_DIALOG}#keyboardinteraction` },
+      fixture: withRecentMount,
+      props: { defaultValue: '#0000ff', defaultOpen: true },
+      initial: { parts: { 'recent-swatch-picker': { 'hidden': '', 'role': 'radiogroup', 'aria-label': 'Recent colors' } } },
+      steps: [
+        {
+          kind: 'raw',
+          why: '色板的格子戴 color-swatch-picker 的 scope，只能直接点',
+          run: async (ctx) => {
+            swatchItem(ctx.doc, 0).dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+            await ctx.flush()
+          },
+          expect: { events: [{ type: 'value-change', detail: { value: '#ff0000' } }] },
+        },
+        { kind: 'focus', part: 'area-thumb' },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            parts: { 'content': { hidden: '' }, 'recent-swatch-picker': { hidden: null } },
+            events: [
+              { type: 'recent-colors-change', detail: { recentColors: ['#ff0000'] } },
+              { type: 'open-change', detail: { open: false } },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      name: '常驻形态：没有触发钮与浮层，取色面恒在、是 role=group，Escape 不收；最近使用色可点',
+      spec: { apg: APG_SLIDER },
+      fixture: () => INLINE_FIXTURE,
+      props: { inline: true, defaultValue: '#3b82f6', defaultRecentColors: ['#ff0000'] },
+      initial: {
+        parts: {
+          'root': { 'data-inline': '', 'data-state': 'open' },
+          'content': { 'role': 'group', 'data-inline': '', 'hidden': null, 'aria-modal': null, 'tabindex': null },
+          'recent-swatch-picker': { hidden: null, role: 'radiogroup' },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'area-thumb' },
+        { kind: 'key', key: 'Escape', expect: { parts: { content: { hidden: null } }, events: [] } },
+        {
+          kind: 'raw',
+          why: '色板的格子戴 color-swatch-picker 的 scope，只能直接点',
+          run: async (ctx) => {
+            swatchItem(ctx.doc, 0).dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+            await ctx.flush()
+          },
+          expect: { events: [{ type: 'value-change', detail: { value: '#ff0000' } }] },
         },
       ],
     },

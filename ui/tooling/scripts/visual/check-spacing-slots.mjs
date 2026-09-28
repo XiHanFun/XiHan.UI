@@ -55,6 +55,9 @@ const CROSS_PART = {
   // 色块描边按格子的状态换（静息 / 悬停 / 按下 / 选中），四档赋值写在格子上的私有槽里、色块面只读它；
   // 槽仍按画描边的色块面取名，作者不必知道这层转接
   'color-swatch-picker.swatch': ['item'],
+  // 最近使用色与预设色板是同一台色块选择器、并排在同一块取色面里：格子边长、间距与图标尺必须同一族，
+  // 作者改预设色板的格子，最近使用色一起变，不另立一套只给最近使用色的槽
+  'color-picker.swatch': ['recent-swatch-picker'],
   'cascader.column': ['search-list', 'empty'],
   // 搜索候选与列内条目排的是同一套行度量，空态文字与条目同一档字号
   'cascader.item': ['search-item', 'empty'],

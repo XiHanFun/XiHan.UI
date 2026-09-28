@@ -41,6 +41,8 @@ export interface ColorPickerTranslations {
   swatch: (value: string) => string
   /** 预设色板整组的名字。 */
   swatchGroup: string
+  /** 最近使用色整组的名字。 */
+  recentSwatchGroup: string
   /** 屏幕取色按钮的名字。 */
   eyeDropperTrigger: string
 }
@@ -80,6 +82,8 @@ export interface ColorPickerServices {
   alphaSlider: ColorSliderServices
   /** 预设色板：从一组固定颜色中选择一个。 */
   swatchPicker: Service<ColorSwatchPickerSchema>
+  /** 最近使用色：与预设色板同一台色块选择器，格子取 recentColors。 */
+  recentSwatchPicker: Service<ColorSwatchPickerSchema>
 }
 
 export interface ColorPickerValueChangeDetails {
@@ -89,6 +93,11 @@ export interface ColorPickerValueChangeDetails {
 
 export interface ColorPickerOpenChangeDetails {
   open: boolean
+}
+
+export interface ColorPickerRecentColorsChangeDetails {
+  /** 变化后的最近使用色，最新的在最前。 */
+  recentColors: string[]
 }
 
 export interface ColorPickerFormatErrorDetails {
@@ -148,6 +157,20 @@ export interface ColorPickerSchema extends MachineSchema {
     readOnly?: boolean
     /** 预设色板：交给内嵌的色块选择器铺格，选中的格按颜色比较。 */
     swatches?: string[]
+    /**
+     * 常驻形态：取色面直接铺在页面里，不经触发钮与浮层，与浮层形态共用同一台机器与同一组部件。
+     * 开着时恒为展开态，open / defaultOpen / onOpenChange 不起作用，也不接管焦点与点外关闭。
+     */
+    inline?: boolean
+    /**
+     * 最近使用色（最新的在最前）。提供即受控：内部只发 onRecentColorsChange，由宿主写回（也由宿主持久化）。
+     * 一次取色结束时记一笔：浮层形态在收起那一刻，常驻形态在焦点离开取色面那一刻；
+     * 这一轮里颜色没变、或只经 api.setValue 改过就不记。
+     */
+    recentColors?: string[]
+    defaultRecentColors?: string[]
+    /** 最近使用色最多留几个，默认 8；写 0 即不记。 */
+    maxRecentColors?: number
     /** 表单字段名；提供后表单影子才带 name 并参与提交。 */
     name?: string
     /** 带透明度，默认关闭。关闭时值串恒为不透明，透明度滑杆与输入框整条禁用。 */
@@ -165,6 +188,8 @@ export interface ColorPickerSchema extends MachineSchema {
     onValueChange?: (details: ColorPickerValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: ColorPickerOpenChangeDetails) => void
+    /** 最近使用色变化意图回调；受控时是唯一出口。 */
+    onRecentColorsChange?: (details: ColorPickerRecentColorsChangeDetails) => void
     /** 格式、文本、颜色解析或屏幕取色失败；与 value / open 事件独立。 */
     onColorError?: (details: ColorPickerErrorDetails) => void
   }
@@ -183,6 +208,10 @@ export interface ColorPickerSchema extends MachineSchema {
     eyeDropperSupported: boolean
     /** 格式、文本、颜色解析与屏幕取色四路错误。 */
     errors: ColorPickerErrors
+    /** 最近使用色，最新的在最前。受控（recentColors 提供）时 cell 直读 prop。 */
+    recentColors: string[]
+    /** 这一轮取色开始前的值串：第一次由用户改色时记下，一轮结束时与当前值比较决定记不记最近使用色。 */
+    sessionValue: string | null
     /**
      * 按压通道：取色按钮被 Space / Enter 或触屏手指按住期间为 true，该部件投影 data-pressed。
      * 抬起、失焦、指针取消，或屏幕取色开始（窗口随即失焦）、浮层收起时即撤下。
@@ -223,13 +252,21 @@ export interface ColorPickerSchema extends MachineSchema {
     | { type: 'EYE_DROPPER.CANCEL' }
     | { type: 'EYE_DROPPER.ERROR', cause: unknown }
     | { type: 'ERROR.CLEAR' }
+    /** 常驻形态下焦点离开取色面：一轮取色结束。 */
+    | { type: 'SESSION.END' }
+    /** 清空最近使用色。 */
+    | { type: 'RECENT.CLEAR' }
+    /** 常驻形态打开（watch 派发）：落展开态。 */
+    | { type: 'INLINE.SYNC' }
+    /** 常驻形态关掉、open 又没受控为真（watch 派发）：收起。 */
+    | { type: 'INLINE.CLOSE' }
     | { type: 'FORM.RESET' }
     /** 按压通道（shared/press）：取色按钮被 Space / Enter 或触屏按住。 */
     | { type: 'PRESS.START' }
     /** 取色按钮抬起、失焦或指针取消。 */
     | { type: 'PRESS.END' }
   tag: never
-  guard: 'isOpenControlled' | 'canInteract' | 'canPick'
+  guard: 'isOpenControlled' | 'canInteract' | 'canPick' | 'isInline'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -256,6 +293,9 @@ export interface ColorPickerSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
+    | 'recordRecent'
+    | 'clearRecent'
+    | 'syncInline'
   effect: 'trackPosition' | 'trackLayer' | 'trackPointer' | 'runEyeDropper'
 }
 
@@ -279,18 +319,26 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   errors: ColorPickerErrors
   /** 预设色板（原样透传 swatches prop，默认为空数组）。 */
   swatches: string[]
+  /** 常驻形态。 */
+  inline: boolean
+  /** 最近使用色，最新的在最前。 */
+  recentColors: string[]
   /** 色相颜色滑块的 api：部件属性与取值都从这里获取，DOM 带 data-scope="color-slider"。 */
   hueSlider: ColorSliderApi<T>
   /** 透明度颜色滑块的 api。 */
   alphaSlider: ColorSliderApi<T>
   /** 预设色板的 api，DOM 带 data-scope="color-swatch-picker"。 */
   swatchPicker: ColorSwatchPickerApi<T>
+  /** 最近使用色那台色块选择器的 api。 */
+  recentSwatchPicker: ColorSwatchPickerApi<T>
   /** 某个数值框当前应显示的文字（有草稿显示草稿，否则显示规范文本）。 */
   inputText: (channel: ColorPickerInputChannel) => string
   setOpen: (next: boolean) => void
   setValue: (next: string) => void
   /** 清除四路显式错误；屏幕取色重试也会先清除自己那一路。 */
   clearError: () => void
+  /** 清空最近使用色。 */
+  clearRecentColors: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
   getControlProps: () => T['element']
@@ -309,6 +357,8 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   getEyeDropperTriggerProps: () => T['button']
   /** 预设色板的挂载点，同时充当色板的根节点（role=radiogroup 与键盘处理都在它身上）。 */
   getSwatchPickerProps: () => T['element']
+  /** 最近使用色的挂载点，同上；还没有最近使用色时收起。 */
+  getRecentSwatchPickerProps: () => T['element']
   /** 表单影子：值随表单提交。提供 name 后才带 name，未提供时不参与提交。 */
   getHiddenInputProps: () => T['input']
 }

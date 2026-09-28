@@ -14,7 +14,8 @@ import type { ColorPickerPoint } from './color-picker.geometry'
 import type { ColorPickerDragTarget, ColorPickerErrorDetails, ColorPickerErrors, ColorPickerSchema } from './color-picker.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
-import { COLOR_FALLBACK, colorHsvaToRgba, colorParse, colorResolveFormat, colorResolveHsva, colorRgbaToHsva, colorToString } from '../shared/color'
+import { sameArray } from '../shared/array'
+import { COLOR_FALLBACK, colorHsvaToRgba, colorParse, colorResolveFormat, colorResolveHsva, colorRgbaToHsva, colorSameColor, colorToString } from '../shared/color'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import { colorPickerApplyInput, colorPickerWithArea } from './color-picker.color'
@@ -24,6 +25,24 @@ const { createMachine } = setup<ColorPickerSchema>()
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const COLOR_PICKER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
+
+/** 最近使用色缺省留几个。 */
+export const COLOR_PICKER_MAX_RECENT_COLORS = 8
+
+/** 最近使用色上限的归一：没给、负数与非有限数都按缺省；写 0 即不记。 */
+export function colorPickerMaxRecent(max: number | undefined): number {
+  return max != null && Number.isFinite(max) && max >= 0 ? Math.floor(max) : COLOR_PICKER_MAX_RECENT_COLORS
+}
+
+/**
+ * 把一个颜色推到最近使用色的最前：同一个颜色（写法不同也算）只留这一份，超出上限的从尾部丢掉。
+ * 解析不出的串不记。
+ */
+export function colorPickerPushRecent(list: readonly string[], value: string, max: number): string[] {
+  if (max <= 0 || !colorParse(value))
+    return [...list].slice(0, Math.max(0, max))
+  return [value, ...list.filter(item => !colorSameColor(item, value))].slice(0, max)
+}
 
 /** 屏幕取色接口的最小形状。DOM 类型库尚未收录它，这里只声明用得着的那一点。 */
 interface EyeDropperLike {
@@ -137,7 +156,7 @@ function currentHsva(params: MachineParams): ColorHsva {
  *
  * 受控时 context.set('value') 只发回调不落内部值，锚与当前值对不上，connect 退回按当前值反解。
  */
-function applyHsva(params: MachineParams, next: ColorHsva): void {
+function applyHsva(params: MachineParams, next: ColorHsva, fromApi = false): void {
   const { context, prop } = params
   const format = colorResolveFormat(prop('format') as string | undefined)
   if (!format) {
@@ -151,8 +170,27 @@ function applyHsva(params: MachineParams, next: ColorHsva): void {
   clearError(params, 'format')
   clearError(params, 'input')
   clearError(params, 'parse')
+  // 一轮取色从用户第一次改色算起，记下改之前的值；作者经 api 改值不算用户取色
+  if (!fromApi && context.get('sessionValue') == null)
+    context.set('sessionValue', context.get('value'))
   context.set('anchor', { value, hsva })
   context.set('value', value)
+}
+
+/** 一轮取色结束：颜色确实变了就记进最近使用色，然后清掉这一轮。 */
+function recordRecent(params: MachineParams): void {
+  const { context, prop } = params
+  const start = context.get('sessionValue')
+  if (start == null)
+    return
+  context.set('sessionValue', null)
+  const value = context.get('value')
+  if (colorSameColor(start, value))
+    return
+  const current = context.get('recentColors')
+  const next = colorPickerPushRecent(current, value, colorPickerMaxRecent(prop('maxRecentColors')))
+  if (!sameArray(next, current))
+    context.set('recentColors', next)
 }
 
 /** 把一个外来的串收成工作色；解析不出时保留原值并显式报告来源。 */
@@ -162,7 +200,7 @@ function applyValueString(params: MachineParams, raw: string, source: 'external'
     setError(params, 'parse', { type: 'parse', source, value: raw })
     return
   }
-  applyHsva(params, colorRgbaToHsva(rgba, currentHsva(params).h))
+  applyHsva(params, colorRgbaToHsva(rgba, currentHsva(params).h), source === 'api')
 }
 
 /** 取色区的拖动落点 → 工作色。矩形在事件那一刻现量，connect 不得读 DOM。 */
@@ -227,17 +265,28 @@ export function colorPickerAlphaSliderProps(service: Service<ColorPickerSchema>)
  * 挑一格经 VALUE.SET 送回来。只读与禁用都不改值；色板整组禁用时格子仍可聚焦，与色板单独用时一致。
  */
 export function colorPickerSwatchPickerProps(service: Service<ColorPickerSchema>): ColorSwatchPickerSchema['props'] {
+  const translations = service.prop('translations')
+  return swatchPickerProps(service, service.prop('swatches') ?? [], translations?.swatchGroup ?? 'Color swatches')
+}
+
+/** 最近使用色那台色块选择器的 props：格子取 recentColors，其余与预设色板同一套。 */
+export function colorPickerRecentSwatchPickerProps(service: Service<ColorPickerSchema>): ColorSwatchPickerSchema['props'] {
+  const translations = service.prop('translations')
+  return swatchPickerProps(service, service.context.get('recentColors'), translations?.recentSwatchGroup ?? 'Recent colors')
+}
+
+function swatchPickerProps(service: Service<ColorPickerSchema>, swatches: readonly string[], group: string): ColorSwatchPickerSchema['props'] {
   const { prop, context, send } = service
   const translations = prop('translations')
   return {
-    swatches: (prop('swatches') ?? []).map(value => ({ value })),
+    swatches: swatches.map(value => ({ value })),
     value: context.get('value'),
     disabled: !!prop('disabled'),
     readOnly: !!prop('readOnly'),
     dir: prop('dir'),
     size: prop('size'),
     translations: {
-      group: translations?.swatchGroup ?? 'Color swatches',
+      group,
       swatch: translations?.swatch ?? (value => `Color ${value}`),
     },
     onValueChange: ({ value }) => {
@@ -268,6 +317,13 @@ export const colorPickerMachine = createMachine({
     dragTarget: cell<ColorPickerDragTarget | null>(() => ({ defaultValue: null })),
     eyeDropperSupported: cell<boolean>(() => ({ defaultValue: false })),
     errors: cell<ColorPickerErrors>(() => ({ defaultValue: emptyErrors() })),
+    recentColors: cell<string[]>(() => ({
+      value: prop('recentColors'),
+      defaultValue: prop('defaultRecentColors') ?? [],
+      isEqual: sameArray,
+      onChange: recentColors => prop('onRecentColorsChange')?.({ recentColors }),
+    })),
+    sessionValue: cell<string | null>(() => ({ defaultValue: null })),
     // 按压通道：取色按钮被 Space / Enter 或触屏按住
     pressed: cell<boolean>(() => ({ defaultValue: false })),
   }),
@@ -281,7 +337,8 @@ export const colorPickerMachine = createMachine({
     getContentEl: () => null,
     getAreaEl: () => null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // 常驻形态恒为展开态：取色面一直在，拖动与屏幕取色这两段照样挂在展开态下
+  initialState: ({ prop }) => ((prop('inline') || (prop('open') ?? prop('defaultOpen'))) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
   effects: ['trackLayer'],
   // 挂载即问一次环境有没有屏幕取色，按钮从首帧起就要正确禁用
@@ -289,6 +346,7 @@ export const colorPickerMachine = createMachine({
   // 开合受控时用户事件只发意图、不自改状态；宿主写回 open 后由这里派发影子事件无条件回写
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
+    track([() => prop('inline')], () => action(['syncInline']))
     track([() => prop('value')], () => action(['syncValueError']))
     track([() => prop('format')], () => action(['syncFormatError']))
     // 按住途中转入禁用 / 只读：按钮随即 disabled、不会再来 keyup，按压面由机器自己收
@@ -306,6 +364,8 @@ export const colorPickerMachine = createMachine({
     'INPUT.CHANGE': { actions: ['setDraft'] },
     'INPUT.COMMIT': { actions: ['commitDraft'] },
     'ERROR.CLEAR': { actions: ['clearErrors'] },
+    'SESSION.END': { actions: ['recordRecent'] },
+    'RECENT.CLEAR': { actions: ['clearRecent'] },
     // 按压通道：取色按钮是原生 disabled，程序化派发由 canPick 再守一次（禁用 / 只读 / 环境没有 EyeDropper 不进）
     'PRESS.START': { guard: 'canPick', actions: ['startPress'] },
     'PRESS.END': { actions: ['endPress'] },
@@ -313,6 +373,7 @@ export const colorPickerMachine = createMachine({
   states: {
     closed: {
       on: {
+        'INLINE.SYNC': { guard: 'isInline', target: 'open' },
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
@@ -329,18 +390,24 @@ export const colorPickerMachine = createMachine({
       initial: 'idle',
       // 定位只服务逻辑展开；行为资源由顶层 effect 延后到真实退场释放。
       effects: ['trackPosition'],
-      // 收起时丢掉没收下的草稿，再展开时输入框显示当前颜色；取色按钮随浮层一起离场，按压面一并撤下
-      exit: ['clearDraft', 'endPress'],
+      // 收起时丢掉没收下的草稿，再展开时输入框显示当前颜色；取色按钮随浮层一起离场，按压面一并撤下。
+      // 收起即一轮取色结束：颜色变了就记进最近使用色
+      exit: ['clearDraft', 'endPress', 'recordRecent'],
       on: {
+        // 常驻形态不收起：点外、Esc、触发钮与 setOpen(false) 都不起作用
         'CLOSE': [
+          { guard: 'isInline' },
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
           { target: 'closed', actions: ['invokeOnClose'] },
         ],
         'TOGGLE': [
+          { guard: 'isInline' },
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
           { target: 'closed', actions: ['invokeOnClose'] },
         ],
         'CONTROLLED.CLOSE': { target: 'closed' },
+        // 常驻形态关掉、open 又没受控为真：收起
+        'INLINE.CLOSE': { target: 'closed' },
       },
       states: {
         idle: {
@@ -373,6 +440,7 @@ export const colorPickerMachine = createMachine({
   implementations: {
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      isInline: ({ prop }) => !!prop('inline'),
       canInteract: ({ prop }) => !prop('disabled') && !prop('readOnly'),
       canPick: ({ prop, context }) =>
         !prop('disabled') && !prop('readOnly') && context.get('eyeDropperSupported'),
@@ -383,6 +451,7 @@ export const colorPickerMachine = createMachine({
           params.context.reset('anchor')
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         params.context.reset('draft')
+        params.context.reset('sessionValue')
         clearAllErrors(params)
         syncValueError(params)
         syncFormatError(params)
@@ -391,12 +460,29 @@ export const colorPickerMachine = createMachine({
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
 
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
+      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭。常驻形态不认 open
       syncOpen: ({ prop, send }) => {
         const open = prop('open')
-        if (open === undefined)
+        if (open === undefined || prop('inline'))
           return
         send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
+      },
+
+      // 常驻形态开关：打开即落展开态；关掉时 open 受控为真就留着，否则收起回到浮层形态
+      syncInline: ({ prop, send }) => {
+        if (prop('inline')) {
+          send({ type: 'INLINE.SYNC' })
+          return
+        }
+        if (!prop('open'))
+          send({ type: 'INLINE.CLOSE' })
+      },
+
+      recordRecent,
+
+      clearRecent: ({ context }) => {
+        if (context.get('recentColors').length > 0)
+          context.set('recentColors', [])
       },
 
       syncValueError,
@@ -536,6 +622,9 @@ export const colorPickerMachine = createMachine({
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
         context.set('position', null)
+        // 常驻形态没有浮层可定位
+        if (prop('inline'))
+          return undefined
         const engine = refs.get('position')
         // 无引擎时不定位，其余照常
         if (!engine)
@@ -576,11 +665,12 @@ export const colorPickerMachine = createMachine({
       },
 
       // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
-      trackLayer: ({ refs, send, flush, scope, state, track }) => {
+      trackLayer: ({ refs, send, flush, scope, state, track, prop }) => {
         let reactivateFocus: (() => void) | null = null
         return trackPresenceResources({
           presence: () => refs.get('presence'),
-          open: () => state.matches('open'),
+          // 常驻形态不入层栈：不抢焦点、不点外关闭
+          open: () => state.matches('open') && !prop('inline'),
           track,
           acquire: () => trackOverlayLayer({
             // 无 DOM 环境不挂副作用，状态机照常转移

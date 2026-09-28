@@ -11560,7 +11560,7 @@
               "name": "positioner"
             },
             {
-              "description": "role=dialog 容器（焦点域与消解层的根节点），收起时带 hidden",
+              "description": "role=dialog 容器（焦点域与消解层的根节点），收起时带 hidden；常驻形态下是 role=group 的取色面",
               "name": "content"
             },
             {
@@ -11598,6 +11598,10 @@
             {
               "description": "预设色板的挂载点，同时是色板的根节点（role=radiogroup）；其中写 color-swatch-picker 的 item / swatch / indicator / hidden-input，每格自带 value 属性",
               "name": "swatch-picker"
+            },
+            {
+              "description": "最近使用色的挂载点，与 swatch-picker 同一套；格子由作者按 recent-colors-change 铺，还没有最近使用色时收起",
+              "name": "recent-swatch-picker"
             },
             {
               "description": "色板中 role=radio 的一格（data-scope=\"color-swatch-picker\"），须自带 value 属性声明颜色串",
@@ -11710,6 +11714,42 @@
                 "text": "string[] | undefined"
               },
               "attribute": "swatches"
+            },
+            {
+              "kind": "field",
+              "name": "inline",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "inline"
+            },
+            {
+              "kind": "field",
+              "name": "recentColors",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              },
+              "attribute": "recent-colors"
+            },
+            {
+              "kind": "field",
+              "name": "defaultRecentColors",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              },
+              "attribute": "default-recent-colors"
+            },
+            {
+              "kind": "field",
+              "name": "maxRecentColors",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-recent-colors"
             },
             {
               "kind": "field",
@@ -11842,6 +11882,12 @@
             },
             {
               "kind": "field",
+              "name": "notifyRecent",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -11881,6 +11927,13 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController( this, colorSwatchPickerMachine, () => colorPickerSwatchPickerProps(this.ctrl.service), { scope: this.pickerScope }, )"
+            },
+            {
+              "kind": "field",
+              "name": "recentSwatchCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController( this, colorSwatchPickerMachine, () => colorPickerRecentSwatchPickerProps(this.ctrl.service), { scope: this.pickerScope }, )"
             },
             {
               "kind": "method",
@@ -11971,7 +12024,7 @@
                   "text": "HTMLElement[]"
                 }
               },
-              "description": "三个挂载点：里面的角色节点归内嵌组件管，宿主自己的同名部件（label / control / value-text / hidden-input / swatch）不算它们。"
+              "description": "四个挂载点：里面的角色节点归内嵌组件管，宿主自己的同名部件（label / control / value-text / hidden-input / swatch）不算它们。"
             },
             {
               "kind": "method",
@@ -12082,6 +12135,25 @@
                 }
               },
               "description": "清除四路显式错误；屏幕取色重试时也会自动先清除该路错误。"
+            },
+            {
+              "kind": "field",
+              "name": "currentRecentColors",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "此刻的最近使用色，最新的在最前；状态机尚未建立时为空。recentColors 这个名字已被作者写的属性占着。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "clearRecentColors",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "清空最近使用色（照常触发 recent-colors-change）。"
             },
             {
               "kind": "field",
@@ -12196,6 +12268,37 @@
             },
             {
               "kind": "method",
+              "name": "wireSwatchPicker",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "mountName",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "mountProps",
+                  "type": {
+                    "text": "Record<string, unknown>"
+                  }
+                },
+                {
+                  "name": "picker",
+                  "type": {
+                    "text": "ColorSwatchPickerApi"
+                  }
+                }
+              ],
+              "description": "一台内嵌色块选择器：挂载点顶替它的 root，里面的 label / item / swatch / indicator / hidden-input 逐个打。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -12225,6 +12328,13 @@
               "name": "color-error",
               "type": {
                 "text": "ColorPickerErrorDetails"
+              }
+            },
+            {
+              "description": "一轮取色结束、颜色变了，最近使用色随之变化；detail 为 `{ recentColors: string[] }`",
+              "name": "recent-colors-change",
+              "type": {
+                "text": "ColorPickerRecentColorsChangeDetails"
               }
             }
           ],
@@ -12300,6 +12410,38 @@
               "description": "预设色板，逗号分隔（如 \"#ff0000,#00ff00\"）",
               "name": "swatches",
               "fieldName": "swatches"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "常驻形态：取色面直接铺在页面里，不经触发钮与浮层；此时不写 control / trigger / positioner",
+              "name": "inline",
+              "fieldName": "inline"
+            },
+            {
+              "type": {
+                "text": "string[] | undefined"
+              },
+              "description": "受控的最近使用色，逗号分隔，最新的在最前；未提供该属性即非受控",
+              "name": "recent-colors",
+              "fieldName": "recentColors"
+            },
+            {
+              "type": {
+                "text": "string[] | undefined"
+              },
+              "description": "非受控的最近使用色初值，同样逗号分隔",
+              "name": "default-recent-colors",
+              "fieldName": "defaultRecentColors"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "最近使用色最多留几个，默认 8；写 0 即不记",
+              "name": "max-recent-colors",
+              "fieldName": "maxRecentColors"
             },
             {
               "type": {

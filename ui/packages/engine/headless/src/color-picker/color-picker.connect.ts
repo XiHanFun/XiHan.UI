@@ -13,7 +13,7 @@ import type {
   ColorPickerServices,
   ColorPickerTranslations,
 } from './color-picker.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { contains, dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { connectColorSlider } from '../color-slider'
 import { connectColorSwatchPicker } from '../color-swatch-picker'
 import { colorCss, colorHsvaToRgba, colorHueCss, colorParse, colorResolveFormat, colorResolveHsva } from '../shared/color'
@@ -47,6 +47,7 @@ function resolveTranslations(input: Partial<ColorPickerTranslations> | undefined
     input: input?.input ?? (channel => INPUT_NAME[channel]),
     swatch: input?.swatch ?? (value => `Color ${value}`),
     swatchGroup: input?.swatchGroup ?? 'Color swatches',
+    recentSwatchGroup: input?.recentSwatchGroup ?? 'Recent colors',
     eyeDropperTrigger: input?.eyeDropperTrigger ?? 'Pick a color from the screen',
   }
 }
@@ -77,6 +78,7 @@ export function connectColorPicker<T extends PropTypes>(
   const hueSlider = connectColorSlider(services.hueSlider, normalize)
   const alphaSlider = connectColorSlider(services.alphaSlider, normalize)
   const swatchPicker = connectColorSwatchPicker(services.swatchPicker, normalize)
+  const recentSwatchPicker = connectColorSwatchPicker(services.recentSwatchPicker, normalize)
   const dragging = areaDragging || hueSlider.dragging || alphaSlider.dragging
 
   const ids = scope.ids('color-picker', 'label', 'trigger', 'content', 'value-text')
@@ -97,6 +99,8 @@ export function connectColorPicker<T extends PropTypes>(
   const readOnly = !!prop('readOnly')
   const dir = prop('dir') ?? 'ltr'
   const swatches = prop('swatches') ?? []
+  const inline = !!prop('inline')
+  const recentColors = context.get('recentColors')
   const label = resolveTranslations(prop('translations'))
   // 只读与禁用都不改值；区别在于浮层还开不开得了、控件还聚不聚得上焦
   const interactive = !disabled && !readOnly
@@ -167,9 +171,12 @@ export function connectColorPicker<T extends PropTypes>(
     eyeDropperSupported,
     errors,
     swatches,
+    inline,
+    recentColors,
     hueSlider,
     alphaSlider,
     swatchPicker,
+    recentSwatchPicker,
     inputText,
     setOpen: (next) => {
       if (next !== open)
@@ -177,10 +184,12 @@ export function connectColorPicker<T extends PropTypes>(
     },
     setValue: next => send({ type: 'VALUE.SET', value: next, source: 'api' }),
     clearError: () => send({ type: 'ERROR.CLEAR' }),
+    clearRecentColors: () => send({ type: 'RECENT.CLEAR' }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-size': prop('size'),
+      'data-inline': dataAttr(inline),
       ...stateAttrs(),
     }),
 
@@ -260,13 +269,19 @@ export function connectColorPicker<T extends PropTypes>(
       ...parts.content.attrs,
       ...stateAttrs(),
       'id': ids.content,
-      'role': 'dialog',
-      // 非模态：Tab 走得出去，走出去即由消解层判定是否收起
-      'aria-modal': 'false',
+      // 常驻形态是页面里的一组控件，不是对话框；浮层形态非模态：Tab 走得出去，走出去即由消解层判定是否收起
+      'role': inline ? 'group' : 'dialog',
+      'aria-modal': inline ? undefined : 'false',
       'aria-labelledby': ids.label,
-      // tabindex 写 -1 不能省：焦点域在无可聚焦子控件时会退回聚焦容器本身
-      'tabindex': -1,
-      'data-placement': placement,
+      // 浮层形态的 tabindex 写 -1 不能省：焦点域在无可聚焦子控件时会退回聚焦容器本身；常驻形态没有焦点域
+      'tabindex': inline ? undefined : -1,
+      'data-placement': inline ? undefined : placement,
+      'data-inline': dataAttr(inline),
+      // 常驻形态没有收起这一刻：焦点离开取色面即一轮取色结束，颜色变了就记进最近使用色
+      'onFocusOut': (event: FocusEvent) => {
+        if (inline && !contains(event.currentTarget as HTMLElement, event.relatedTarget as Node | null))
+          send({ type: 'SESSION.END' })
+      },
       // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
       'inert': !open || undefined,
       'aria-hidden': !open || undefined,
@@ -419,6 +434,12 @@ export function connectColorPicker<T extends PropTypes>(
      */
     getSwatchPickerProps: () => normalize.element(mountAttrs(swatchPicker.getRootProps() as Dict, {
       ...parts['swatch-picker'].attrs,
+    })),
+
+    // 最近使用色的挂载点：与预设色板同一套，还没有最近使用色时收起而不是卸载，节点是作者写的
+    getRecentSwatchPickerProps: () => normalize.element(mountAttrs(recentSwatchPicker.getRootProps() as Dict, {
+      ...parts['recent-swatch-picker'].attrs,
+      hidden: recentColors.length === 0 || undefined,
     })),
 
     getHiddenInputProps: () => normalize.input({

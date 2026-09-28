@@ -8,8 +8,8 @@
 import { createAnatomy } from '@xihan-ui/core'
 
 /**
- * hue-slider / alpha-slider / swatch-picker 是三个挂载点，内部分别是两条颜色滑块（data-scope="color-slider"）
- * 与一台色块选择器（data-scope="color-swatch-picker"）的部件。内嵌 DOM 须保留各自的 scope：
+ * hue-slider / alpha-slider / swatch-picker / recent-swatch-picker 是四个挂载点，内部分别是两条颜色滑块（data-scope="color-slider"）
+ * 与两台色块选择器（data-scope="color-swatch-picker"：预设色板与最近使用色）的部件。内嵌 DOM 须保留各自的 scope：
  * 色板的方向键按 color-swatch-picker 的 item 查活 DOM，改了 scope 就查不到。
  * 挂载点同时充当各自的根节点，内嵌组件自己的 root 部件不再出现。
  */
@@ -29,5 +29,6 @@ export const colorPickerAnatomy = createAnatomy('color-picker', [
   'channel-input',
   'eye-dropper-trigger',
   'swatch-picker',
+  'recent-swatch-picker',
   'hidden-input',
 ])

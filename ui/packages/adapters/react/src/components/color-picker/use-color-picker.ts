@@ -15,6 +15,7 @@ import {
   colorPickerAlphaSliderProps,
   colorPickerHueSliderProps,
   colorPickerMachine,
+  colorPickerRecentSwatchPickerProps,
   colorPickerSwatchPickerProps,
   colorSliderMachine,
   colorSliderSliderProps,
@@ -50,6 +51,8 @@ export interface ColorPickerContext extends OverlayWiring {
   hueSlider: ColorSliderContext
   alphaSlider: ColorSliderContext
   swatchPicker: ColorSwatchPickerContext
+  /** 最近使用色那台色块选择器。 */
+  recentSwatchPicker: ColorSwatchPickerContext
 }
 
 export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerContext {
@@ -65,7 +68,8 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
   const hueTrackRef = useRef<HTMLElement | null>(null)
   const alphaTrackRef = useRef<HTMLElement | null>(null)
 
-  const initialOpen = (props.open ?? props.defaultOpen) ?? false
+  // 常驻形态恒为展开态：退场闸门从首帧起就是开着的
+  const initialOpen = !!props.inline || ((props.open ?? props.defaultOpen) ?? false)
 
   const layer = useCallback((): Omit<Layer, 'id' | 'node' | 'surfaces'> => ({
     kind: 'popover',
@@ -114,11 +118,13 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
   const alphaRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => colorPickerAlphaSliderProps(service), { scope })
   const alphaSliderMachine = useMachine(sliderMachine, () => colorSliderSliderProps(alphaRoot), { scope, onCreate: onAlphaCreate })
   const swatchPickerService = useMachine(colorSwatchPickerMachine, () => colorPickerSwatchPickerProps(service), { scope })
+  const recentSwatchPickerService = useMachine(colorSwatchPickerMachine, () => colorPickerRecentSwatchPickerProps(service), { scope })
   const services: ColorPickerServices = {
     root: service,
     hueSlider: { root: hueRoot, slider: hueSliderMachine },
     alphaSlider: { root: alphaRoot, slider: alphaSliderMachine },
     swatchPicker: swatchPickerService,
+    recentSwatchPicker: recentSwatchPickerService,
   }
 
   // 颜色攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置颜色不变
@@ -129,6 +135,7 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
   const hueSlider: ColorSliderContext = { api: api.hueSlider, service: hueRoot, trackRef: hueTrackRef, rootRef }
   const alphaSlider: ColorSliderContext = { api: api.alphaSlider, service: alphaRoot, trackRef: alphaTrackRef, rootRef }
   const swatchPicker: ColorSwatchPickerContext = { api: api.swatchPicker, service: swatchPickerService, rootRef }
+  const recentSwatchPicker: ColorSwatchPickerContext = { api: api.recentSwatchPicker, service: recentSwatchPickerService, rootRef }
 
   return {
     ...overlay,
@@ -142,5 +149,6 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
     hueSlider,
     alphaSlider,
     swatchPicker,
+    recentSwatchPicker,
   }
 }

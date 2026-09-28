@@ -49,7 +49,7 @@ export const colorPickerKeyboard: KeyboardTable = {
       id: 'color-picker.kbd.escape',
       keys: ['Escape'],
       when: 'open（本层在层栈顶）',
-      does: '收起浮层，焦点归还触发器',
+      does: '收起浮层，焦点归还触发器；常驻形态不入层栈，不接管这个键',
       restoresFocus: true,
     },
     {

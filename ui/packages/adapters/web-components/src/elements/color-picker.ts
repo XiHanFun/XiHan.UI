@@ -11,12 +11,14 @@ import type {
   ColorPickerErrorDetails,
   ColorPickerErrors,
   ColorPickerOpenChangeDetails,
+  ColorPickerRecentColorsChangeDetails,
   ColorPickerSchema,
   ColorPickerServices,
   ColorPickerTranslations,
   ColorPickerValueChangeDetails,
   ColorSliderApi,
   ColorSliderSchema,
+  ColorSwatchPickerApi,
   ColorSwatchPickerItemProps,
   FormControlState,
   SliderSchema,
@@ -29,6 +31,7 @@ import {
   colorPickerHueSliderProps,
   colorPickerMachine,
   colorPickerMeta,
+  colorPickerRecentSwatchPickerProps,
   colorPickerSwatchPickerProps,
   colorPickerToInputChannel,
   colorSliderAnatomy,
@@ -87,6 +90,10 @@ const STRING_LIST_CONVERTER = {
  * @attr {boolean} read-only - 只读：浮层照常打开，其中内容不可修改
  * @attr {boolean} alpha - 带透明度，默认关闭；关闭时透明度滑杆与输入框整条禁用
  * @attr {string} swatches - 预设色板，逗号分隔（如 "#ff0000,#00ff00"）
+ * @attr {boolean} inline - 常驻形态：取色面直接铺在页面里，不经触发钮与浮层；此时不写 control / trigger / positioner
+ * @attr {string} recent-colors - 受控的最近使用色，逗号分隔，最新的在最前；未提供该属性即非受控
+ * @attr {string} default-recent-colors - 非受控的最近使用色初值，同样逗号分隔
+ * @attr {number} max-recent-colors - 最近使用色最多留几个，默认 8；写 0 即不记
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'outline'|'subtle'|'ghost'} variant - 盒的形态，默认 outline
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写横轴上左右两键与指针的语义，默认 ltr
@@ -96,6 +103,7 @@ const STRING_LIST_CONVERTER = {
  * @fires value-change - 颜色变化；detail 为 `{ value: string }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires color-error - 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象
+ * @fires recent-colors-change - 一轮取色结束、颜色变了，最近使用色随之变化；detail 为 `{ recentColors: string[] }`
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly）
  * @csspart label - 组标题（触发器 aria-labelledby 的目标之一）
  * @csspart control - 触发按钮的收纳容器：描边、底色与聚焦环都落在这一层
@@ -103,7 +111,7 @@ const STRING_LIST_CONVERTER = {
  * @csspart value-text - 当前值串的显示位；留空即由元素填入，作者写了内容则由作者负责
  * @csspart swatch - 当前颜色的色块（aria-hidden，背景由连接层写为内联样式）
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
- * @csspart content - role=dialog 容器（焦点域与消解层的根节点），收起时带 hidden
+ * @csspart content - role=dialog 容器（焦点域与消解层的根节点），收起时带 hidden；常驻形态下是 role=group 的取色面
  * @csspart saturation-area - 二维取色区，横轴饱和度、纵轴明度；底色是当前色相
  * @csspart area-thumb - role=slider 的取色区拇指，两条轴的位置由连接层写为内联样式
  * @csspart hue-slider - 色相滑块的挂载点，同时是该滑块的根节点；其中写 color-slider 的 control / track / thumb
@@ -113,6 +121,7 @@ const STRING_LIST_CONVERTER = {
  * @csspart channel-input - 数值输入框，须是原生 input 且自带 channel 属性（hex / r / g / b / a）
  * @csspart eye-dropper-trigger - 屏幕取色按钮，须是原生 button；环境不支持时自动禁用
  * @csspart swatch-picker - 预设色板的挂载点，同时是色板的根节点（role=radiogroup）；其中写 color-swatch-picker 的 item / swatch / indicator / hidden-input，每格自带 value 属性
+ * @csspart recent-swatch-picker - 最近使用色的挂载点，与 swatch-picker 同一套；格子由作者按 recent-colors-change 铺，还没有最近使用色时收起
  * @csspart item - 色板中 role=radio 的一格（data-scope="color-swatch-picker"），须自带 value 属性声明颜色串
  * @csspart indicator - 色板格子的选中标记（data-scope="color-swatch-picker"）
  * @csspart hidden-input - type=hidden 的表单出口，值是当前颜色串；作者未编写该部件时不参与提交
@@ -140,6 +149,10 @@ export class XhColorPickerElement extends XhPortalHostElement {
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     alpha: { converter: BOOLEAN_CONVERTER },
     swatches: { converter: STRING_LIST_CONVERTER },
+    inline: { converter: BOOLEAN_CONVERTER },
+    recentColors: { converter: STRING_LIST_CONVERTER, attribute: 'recent-colors' },
+    defaultRecentColors: { converter: STRING_LIST_CONVERTER, attribute: 'default-recent-colors' },
+    maxRecentColors: { converter: NUMBER_CONVERTER, attribute: 'max-recent-colors' },
     name: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
@@ -159,6 +172,10 @@ export class XhColorPickerElement extends XhPortalHostElement {
   declare readOnly?: boolean
   declare alpha?: boolean
   declare swatches?: string[]
+  declare inline?: boolean
+  declare recentColors?: string[]
+  declare defaultRecentColors?: string[]
+  declare maxRecentColors?: number
   declare name?: string
   declare size?: Size
   declare variant?: ControlVariant
@@ -191,6 +208,10 @@ export class XhColorPickerElement extends XhPortalHostElement {
 
   private readonly notifyColorError = (details: ColorPickerErrorDetails): void => {
     this.dispatchEvent(new CustomEvent('color-error', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyRecent = (details: ColorPickerRecentColorsChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('recent-colors-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<ColorPickerSchema>(
@@ -237,6 +258,13 @@ export class XhColorPickerElement extends XhPortalHostElement {
     { scope: this.pickerScope },
   )
 
+  private readonly recentSwatchCtrl = new MachineController(
+    this,
+    colorSwatchPickerMachine,
+    () => colorPickerRecentSwatchPickerProps(this.ctrl.service),
+    { scope: this.pickerScope },
+  )
+
   /** 连接层要的整份服务表。 */
   private services(): ColorPickerServices {
     return {
@@ -244,6 +272,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
       hueSlider: { root: this.hueCtrl.service, slider: this.hueSliderCtrl.service },
       alphaSlider: { root: this.alphaCtrl.service, slider: this.alphaSliderCtrl.service },
       swatchPicker: this.swatchCtrl.service,
+      recentSwatchPicker: this.recentSwatchCtrl.service,
     }
   }
 
@@ -276,6 +305,10 @@ export class XhColorPickerElement extends XhPortalHostElement {
       readOnly: control.readOnly,
       alpha: this.alpha ?? false,
       swatches: this.swatches,
+      inline: this.inline ?? false,
+      recentColors: this.recentColors,
+      defaultRecentColors: this.defaultRecentColors,
+      maxRecentColors: this.maxRecentColors,
       name: this.name,
       size: this.size,
       variant: this.variant,
@@ -286,6 +319,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
       onColorError: this.notifyColorError,
+      onRecentColorsChange: this.notifyRecent,
     }
   }
 
@@ -314,9 +348,9 @@ export class XhColorPickerElement extends XhPortalHostElement {
     })
   }
 
-  /** 三个挂载点：里面的角色节点归内嵌组件管，宿主自己的同名部件（label / control / value-text / hidden-input / swatch）不算它们。 */
+  /** 四个挂载点：里面的角色节点归内嵌组件管，宿主自己的同名部件（label / control / value-text / hidden-input / swatch）不算它们。 */
   private mounts(): HTMLElement[] {
-    return [...this.getParts('hue-slider'), ...this.getParts('alpha-slider'), ...this.getParts('swatch-picker')]
+    return [...this.getParts('hue-slider'), ...this.getParts('alpha-slider'), ...this.getParts('swatch-picker'), ...this.getParts('recent-swatch-picker')]
   }
 
   /** 挂载点里的某个角色节点（内嵌组件的部件）。 */
@@ -335,7 +369,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
   private injectRefs(svc: Service<ColorPickerSchema>): void {
     this.ensureConfig()
     this.exit ??= createOverlayExit({
-      open: (this.open ?? this.defaultOpen) ?? false,
+      // 常驻形态恒为展开态：退场闸门从首帧起就是开着的
+      open: !!this.inline || ((this.open ?? this.defaultOpen) ?? false),
       onExitComplete: () => this.requestUpdate(),
     })
     svc.refs.set('config', this.config)
@@ -377,6 +412,16 @@ export class XhColorPickerElement extends XhPortalHostElement {
   /** 清除四路显式错误；屏幕取色重试时也会自动先清除该路错误。 */
   clearError(): void {
     this.api()?.clearError()
+  }
+
+  /** 此刻的最近使用色，最新的在最前；状态机尚未建立时为空。recentColors 这个名字已被作者写的属性占着。 */
+  get currentRecentColors(): string[] {
+    return this.api()?.recentColors ?? []
+  }
+
+  /** 清空最近使用色（照常触发 recent-colors-change）。 */
+  clearRecentColors(): void {
+    this.api()?.clearRecentColors()
   }
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（读到的会是自己写的字）。 */
@@ -429,6 +474,26 @@ export class XhColorPickerElement extends XhPortalHostElement {
     }
   }
 
+  /** 一台内嵌色块选择器：挂载点顶替它的 root，里面的 label / item / swatch / indicator / hidden-input 逐个打。 */
+  private wireSwatchPicker(mountName: string, mountProps: Record<string, unknown>, picker: ColorSwatchPickerApi): void {
+    const mount = this.getPart(mountName)
+    if (!mount)
+      return
+    this.spreader.spread(mount, mountProps)
+    for (const el of this.partsIn(mount, 'label'))
+      this.spreader.spread(el, picker.getLabelProps() as Record<string, unknown>)
+    for (const el of this.partsIn(mount, 'item')) {
+      const item: ColorSwatchPickerItemProps = { value: el.getAttribute('value') ?? '' }
+      this.spreader.spread(el, picker.getItemProps(item) as Record<string, unknown>)
+      for (const input of this.partsIn(el, 'hidden-input'))
+        this.spreadHiddenInput(input as HTMLInputElement, picker.getHiddenInputProps(item) as Record<string, unknown>)
+      for (const swatch of this.partsIn(el, 'swatch'))
+        this.spreader.spread(swatch, picker.getSwatchProps(item) as Record<string, unknown>)
+      for (const indicator of this.partsIn(el, 'indicator'))
+        this.spreader.spread(indicator, picker.getIndicatorProps(item) as Record<string, unknown>)
+    }
+  }
+
   protected wire(): void {
     const api = connectColorPicker(this.services(), wcNormalize)
 
@@ -469,23 +534,9 @@ export class XhColorPickerElement extends XhPortalHostElement {
       this.spreader.spread(el, api.getChannelInputProps({ channel }) as Record<string, unknown>)
     }
 
-    // 预设色板：挂载点顶替色板的 root；每格身份取作者写的 value 属性，名字与禁用回 swatches 数据里查
-    const swatchMount = this.getPart('swatch-picker')
-    if (swatchMount) {
-      this.spreader.spread(swatchMount, api.getSwatchPickerProps() as Record<string, unknown>)
-      for (const el of this.partsIn(swatchMount, 'label'))
-        this.spreader.spread(el, api.swatchPicker.getLabelProps() as Record<string, unknown>)
-      for (const el of this.partsIn(swatchMount, 'item')) {
-        const item: ColorSwatchPickerItemProps = { value: el.getAttribute('value') ?? '' }
-        this.spreader.spread(el, api.swatchPicker.getItemProps(item) as Record<string, unknown>)
-        for (const input of this.partsIn(el, 'hidden-input'))
-          this.spreadHiddenInput(input as HTMLInputElement, api.swatchPicker.getHiddenInputProps(item) as Record<string, unknown>)
-        for (const swatch of this.partsIn(el, 'swatch'))
-          this.spreader.spread(swatch, api.swatchPicker.getSwatchProps(item) as Record<string, unknown>)
-        for (const indicator of this.partsIn(el, 'indicator'))
-          this.spreader.spread(indicator, api.swatchPicker.getIndicatorProps(item) as Record<string, unknown>)
-      }
-    }
+    // 预设色板与最近使用色：挂载点顶替色板的 root；每格身份取作者写的 value 属性，名字与禁用回各自的数据里查
+    this.wireSwatchPicker('swatch-picker', api.getSwatchPickerProps() as Record<string, unknown>, api.swatchPicker)
+    this.wireSwatchPicker('recent-swatch-picker', api.getRecentSwatchPickerProps() as Record<string, unknown>, api.recentSwatchPicker)
 
     // Light DOM 常驻，WC 自管可见性：作者层若给 content 声明了 display，
     // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。

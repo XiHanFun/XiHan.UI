@@ -15,6 +15,7 @@ import {
   colorPickerAlphaSliderProps,
   colorPickerHueSliderProps,
   colorPickerMachine,
+  colorPickerRecentSwatchPickerProps,
   colorPickerSwatchPickerProps,
   colorSliderMachine,
   colorSliderSliderProps,
@@ -48,13 +49,15 @@ export interface ColorPickerContext {
   hueSlider: ColorSliderContext
   alphaSlider: ColorSliderContext
   swatchPicker: ColorSwatchPickerContext
+  /** 最近使用色那台色块选择器。 */
+  recentSwatchPicker: ColorSwatchPickerContext
   /** 浮层迁移到的位置：全局配置的 portalContainer > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 
 export function useColorPicker(
   props: ColorPickerSchema['props'],
-  handlers: Pick<ColorPickerSchema['props'], 'onValueChange' | 'onOpenChange' | 'onColorError'> = {},
+  handlers: Pick<ColorPickerSchema['props'], 'onValueChange' | 'onOpenChange' | 'onColorError' | 'onRecentColorsChange'> = {},
 ): ColorPickerContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
@@ -79,11 +82,13 @@ export function useColorPicker(
   const hue = colorSlider(colorPickerHueSliderProps)
   const alpha = colorSlider(colorPickerAlphaSliderProps)
   const swatchPicker = useMachine(colorSwatchPickerMachine, () => colorPickerSwatchPickerProps(service), scope)
+  const recentSwatchPicker = useMachine(colorSwatchPickerMachine, () => colorPickerRecentSwatchPickerProps(service), scope)
   const services: ColorPickerServices = {
     root: service,
     hueSlider: { root: hue.root, slider: hue.slider },
     alphaSlider: { root: alpha.root, slider: alpha.slider },
     swatchPicker,
+    recentSwatchPicker,
   }
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
@@ -130,6 +135,7 @@ export function useColorPicker(
   const hueSlider: ColorSliderContext = { api: computed(() => api.value.hueSlider), service: hue.root, trackRef: hue.trackRef }
   const alphaSlider: ColorSliderContext = { api: computed(() => api.value.alphaSlider), service: alpha.root, trackRef: alpha.trackRef }
   const swatchPickerCtx: ColorSwatchPickerContext = { api: computed(() => api.value.swatchPicker), service: swatchPicker }
+  const recentSwatchPickerCtx: ColorSwatchPickerContext = { api: computed(() => api.value.recentSwatchPicker), service: recentSwatchPicker }
 
   return {
     visible,
@@ -142,6 +148,7 @@ export function useColorPicker(
     hueSlider,
     alphaSlider,
     swatchPicker: swatchPickerCtx,
+    recentSwatchPicker: recentSwatchPickerCtx,
     portalTarget,
   }
 }
