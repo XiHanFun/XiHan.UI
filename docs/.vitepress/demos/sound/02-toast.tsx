@@ -1,15 +1,15 @@
-// 为通知配声 | withToastSound 包一层现成服务，调用点无需修改；loading 不发声，转为 success 时才发声
+// 为通知配声 | withNotificationSound 包一层现成服务，调用点无需修改；loading 不发声，转为 success 时才发声
 import type { ToastService } from "@xihan-ui/react";
 import type { ReactNode } from "react";
 import { createToastService, XhButton } from "@xihan-ui/react";
-import { withToastSound } from "@xihan-ui/react/sound";
+import { withNotificationSound } from "@xihan-ui/react/sound";
 import { useEffect, useRef } from "react";
 
 export default function Demo(): ReactNode {
   // 惰性建单例：服务要 document，等到第一次调用（必然在客户端）再建
   const toast = useRef<ToastService | undefined>(undefined);
   function use(): ToastService {
-    toast.current ??= withToastSound(createToastService({ placement: "top" }));
+    toast.current ??= withNotificationSound(createToastService({ placement: "top" }));
     return toast.current;
   }
   useEffect(() => () => toast.current?.dispose(), []);

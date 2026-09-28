@@ -199,10 +199,10 @@ import { useBackground, vBackground, XhBackground } from "@xihan-ui/vue/backgrou
 
 ## 声音层
 
-同样是单独的子入口。`withToastSound` / `withDialogSound` 为命令式反馈服务配置声音，调用点不需要修改；`v-sound` 为单个元素配置声音：
+同样是单独的子入口。`withNotificationSound` / `withDialogSound` 为命令式反馈服务配置声音，调用点不需要修改；`v-sound` 为单个元素配置声音：
 
 ```ts
-import { setSoundPlayer, vSound, withToastSound } from "@xihan-ui/vue/sound";
+import { setSoundPlayer, vSound, withNotificationSound } from "@xihan-ui/vue/sound";
 ```
 
 默认映射与开关见[声音层](../guide/sound#在-vue-里用)。

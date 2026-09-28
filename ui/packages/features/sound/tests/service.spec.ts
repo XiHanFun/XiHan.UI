@@ -1,6 +1,6 @@
 import type { PlayOptions, SoundPlayer, SoundSpec } from '../src'
 import { describe, expect, it, vi } from 'vitest'
-import { createSharedSoundPlayerController, createSoundServiceController, withDialogSoundService, withToastSoundService } from '../src'
+import { createSharedSoundPlayerController, createSoundServiceController, withDialogSoundService, withNotificationSoundService } from '../src'
 
 interface Recorder extends SoundPlayer {
   played: string[]
@@ -118,7 +118,7 @@ describe('toast 声音服务装饰器', () => {
       dispose: () => calls.push('service.dispose'),
     }
     const player = recorder()
-    const decorated = withToastSoundService(service, { player, autoUnlock: false })
+    const decorated = withNotificationSoundService(service, { player, autoUnlock: false })
 
     expect(decorated.marker).toBe('toast')
     expect(decorated.create({ title: '默认' })).toBe('id-1')
@@ -152,7 +152,7 @@ describe('toast 声音服务装饰器', () => {
       loading: () => 'id',
       dispose: () => order.push('service'),
     }
-    const decorated = withToastSoundService(service, {
+    const decorated = withNotificationSoundService(service, {
       player,
       sounds: { success: 'complete', danger: null },
       attachUnlock: () => () => order.push('unlock'),

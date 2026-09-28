@@ -174,10 +174,10 @@ toast.success("已保存");
 
 ## 声音层
 
-`@xihan-ui/react/sound` 是单独的子入口。`withToastSound` / `withDialogSound` 为上述两个命令式服务配置声音，调用点不需要修改；`useSoundOnPress` 为单个元素配置声音，返回值挂到该元素的 `ref` 上：
+`@xihan-ui/react/sound` 是单独的子入口。`withNotificationSound` / `withDialogSound` 为上述两个命令式服务配置声音，调用点不需要修改；`useSoundOnPress` 为单个元素配置声音，返回值挂到该元素的 `ref` 上：
 
 ```tsx
-import { setSoundPlayer, useSoundOnPress, withToastSound } from "@xihan-ui/react/sound";
+import { setSoundPlayer, useSoundOnPress, withNotificationSound } from "@xihan-ui/react/sound";
 ```
 
 Vue 侧由 `v-sound` 指令完成同一件事。React 没有指令介质，改为返回 ref 回调的 hook；两侧的服务包装名与选项完全同名同形。默认映射与开关见[声音层](../guide/sound#在-react-里用)。

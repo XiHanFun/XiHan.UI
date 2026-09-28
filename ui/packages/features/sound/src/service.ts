@@ -81,8 +81,8 @@ export function createSoundServiceController<Key extends PropertyKey>(
 
 type ServiceMethod = (...args: never[]) => unknown
 
-/** Toast 服务所需的最小结构；其余方法与状态通过泛型原样保留。 */
-export interface ToastSoundServicePort {
+/** 通知服务（卡片与轻提示两种预设同一形状）所需的最小结构；其余方法与状态通过泛型原样保留。 */
+export interface NotificationSoundServicePort {
   create: ServiceMethod
   update: ServiceMethod
   info: ServiceMethod
@@ -104,13 +104,13 @@ export interface DialogSoundServicePort {
 }
 
 /** 四档语气各一把，外加 loading 一把：语气决定声，加载中压过语气（缺省静音）。 */
-export type ToastSoundKey = 'info' | 'success' | 'warning' | 'danger' | 'loading'
+export type NotificationSoundKey = 'info' | 'success' | 'warning' | 'danger' | 'loading'
 export type DialogSoundKey = 'confirm' | 'info' | 'success' | 'warning' | 'error'
 
-export interface ToastSoundServiceOptions extends Omit<SoundServiceControllerOptions<ToastSoundKey>, 'defaults'> {}
+export interface NotificationSoundServiceOptions extends Omit<SoundServiceControllerOptions<NotificationSoundKey>, 'defaults'> {}
 export interface DialogSoundServiceOptions extends Omit<SoundServiceControllerOptions<DialogSoundKey>, 'defaults'> {}
 
-const TOAST_SOUND_DEFAULTS: Readonly<Record<ToastSoundKey, SoundChoice>> = {
+const NOTIFICATION_SOUND_DEFAULTS: Readonly<Record<NotificationSoundKey, SoundChoice>> = {
   info: 'info',
   success: 'success',
   warning: 'warning',
@@ -148,34 +148,34 @@ function soundMethod<Service extends object, Key extends keyof Service>(
 }
 
 /** 一条入参对应哪把声：打开 loading 时压过语气，否则按 tone；两样都没写就没有声可发。 */
-function toastSoundKeyOf(input: { tone?: Exclude<ToastSoundKey, 'loading'>, loading?: boolean } | undefined): ToastSoundKey | undefined {
+function notificationSoundKeyOf(input: { tone?: Exclude<NotificationSoundKey, 'loading'>, loading?: boolean } | undefined): NotificationSoundKey | undefined {
   if (input?.loading)
     return 'loading'
   return input?.tone
 }
 
 /**
- * 给结构化 Toast 服务加声音，保留服务自身类型与返回值。
+ * 给结构化通知服务加声音，保留服务自身类型与返回值。
  * create 缺省按 info；update 只在显式改 tone 或打开 loading 时发声；loading 映射为静音。
  */
-export function withToastSoundService<Service extends ToastSoundServicePort>(
+export function withNotificationSoundService<Service extends NotificationSoundServicePort>(
   service: Service,
-  options: ToastSoundServiceOptions,
+  options: NotificationSoundServiceOptions,
 ): Service {
   const controller = createSoundServiceController({
     ...options,
-    defaults: TOAST_SOUND_DEFAULTS,
+    defaults: NOTIFICATION_SOUND_DEFAULTS,
   })
 
   return {
     ...service,
     create: (...args: Parameters<Service['create']>) => {
-      controller.play(toastSoundKeyOf(args[0] as Parameters<typeof toastSoundKeyOf>[0]) ?? 'info')
+      controller.play(notificationSoundKeyOf(args[0] as Parameters<typeof notificationSoundKeyOf>[0]) ?? 'info')
       return call(service, service.create, args)
     },
     update: (...args: Parameters<Service['update']>) => {
       // 只改文案不响；loading 收尾成别的语气时那一刻才响
-      const key = toastSoundKeyOf(args[1] as Parameters<typeof toastSoundKeyOf>[0])
+      const key = notificationSoundKeyOf(args[1] as Parameters<typeof notificationSoundKeyOf>[0])
       if (key)
         controller.play(key)
       return call(service, service.update, args)
