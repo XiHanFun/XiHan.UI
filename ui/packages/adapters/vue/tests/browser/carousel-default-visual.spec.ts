@@ -102,7 +102,7 @@ describe('carousel 默认视觉', () => {
     expect(getComputedStyle(carousel.prev).rotate).toBe('90deg')
   })
 
-  it('自动播放时当前分页按间隔显示进度，暂停时冻结', () => {
+  it('自动播放时当前分页按间隔显示进度，暂停时回到起点', () => {
     const carousel = mount('horizontal', true)
     const running = getComputedStyle(carousel.current, '::before')
 
@@ -110,9 +110,12 @@ describe('carousel 默认视觉', () => {
     expect(running.animationDuration).toBe('2.5s')
     expect(running.animationPlayState).toBe('running')
 
+    // 计时器每次恢复都重计一整个间隔：按住时进度条不走并回到起点，恢复时从头走
     carousel.root.removeAttribute('data-autoplay')
     carousel.root.setAttribute('data-paused', '')
-    expect(getComputedStyle(carousel.current, '::before').animationPlayState).toBe('paused')
+    const paused = getComputedStyle(carousel.current, '::before')
+    expect(paused.animationName).toBe('none')
+    expect(paused.scale).toBe(getComputedStyle(carousel.current).getPropertyValue('--xh-_carousel-progress-from').trim())
   })
 
   it.each(['horizontal', 'vertical'] as const)('%s 粗指针分页划成不重叠的 44px 分区，圆点与胶囊的视觉尺寸不变', async (orientation) => {

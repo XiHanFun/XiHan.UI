@@ -122,6 +122,13 @@ export interface CarouselSchema extends MachineSchema {
     /** 松手后的弹簧正在把轨道收到落定位置，投影 data-animating（样式层据此关掉过渡）。 */
     settling: boolean
     /**
+     * 回绕途中：loop 下从末页走回首页（forward）或从首页走回末页（backward）的那一步，
+     * 轨道走到虚拟一页、相应条目临时平移过去，落定后清空。
+     */
+    wrap: 'forward' | 'backward' | null
+    /** 回绕刚落定、轨道已无动画地归位：投影 data-snapped，样式层据此关掉过渡，直到下一次翻页。 */
+    snapped: boolean
+    /**
      * 按压通道：Space / Enter 或触屏手指按下到松开之间正被按住的那一个按钮，该部件投影 data-pressed；
      * 没有按住时为 null。抬起、失焦、指针取消，或按住途中该按钮转为禁用时撤下；与自动播放的开合互相独立。
      */
@@ -147,6 +154,8 @@ export interface CarouselSchema extends MachineSchema {
     | { type: 'AUTOPLAY.PAUSE', src: CarouselPauseSource }
     | { type: 'AUTOPLAY.RESUME', src: CarouselPauseSource }
     | { type: 'after.autoplay' }
+    /** 回绕那一步的轨道过渡播完：归位到真实页。 */
+    | { type: 'WRAP.SETTLE' }
     /** 拖拽起点，position 是沿轨道轴的坐标。 */
     | { type: 'DRAG.START', position: number }
     | { type: 'DRAG.MOVE', position: number }
@@ -175,10 +184,11 @@ export interface CarouselSchema extends MachineSchema {
     | 'startDrag'
     | 'moveDrag'
     | 'endDrag'
+    | 'settleWrap'
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'trackAutoplay' | 'trackPointer' | 'respectScopedMotion' | 'trackLiquid'
+  effect: 'trackAutoplay' | 'trackPointer' | 'respectScopedMotion' | 'trackLiquid' | 'trackWrapSettle'
 }
 
 export interface CarouselApi<T extends PropTypes = PropTypes> {

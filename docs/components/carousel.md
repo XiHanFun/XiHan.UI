@@ -88,7 +88,8 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 - `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次移动一张。
 - 支持纵向轨道、指针拖拽、循环与自动播放。
 - 拖拽松手后轨道带着松手速度落到目标页：轻甩一下也能翻页，往回甩则收回；不循环时首末页往外拖越拉越沉，松手弹回。
-- 分页点为 8px 圆点，当前页拉长为 20px 品牌胶囊；自动播放时胶囊按停留间隔显示进度，临时暂停时同步冻结。
+- 分页点为 8px 圆点，当前页拉长为 20px 品牌胶囊；自动播放时胶囊按停留间隔显示进度。悬停、聚焦等临时暂停时进度回到起点，恢复后与计时器一起从头计满一整个间隔。
+- `loop` 下从末页往后翻（或首页往前翻）轨道继续朝同一方向走一张，接到首页（或末页），不倒着刷过全部页。
 - 指示点可以配置为悬停即切页。
 - 应用设为 `data-material="liquid"` 时，翻页与播放钮换成液态面，分页点托在一条液态胶囊上：按下层换色调，压在任何媒体上都看得清；按住控制钮时液面随手指形变。
 
@@ -178,7 +179,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 
 **状态**：`idle` · `playing` · `playing.running` · `playing.paused`
 
-**事件**：`PAGE.SET` · `PAGE.PREV` · `PAGE.NEXT` · `AUTOPLAY.START` · `AUTOPLAY.STOP` · `AUTOPLAY.PAUSE` · `AUTOPLAY.RESUME` · `after.autoplay` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `PRESS.START` · `PRESS.END`
+**事件**：`PAGE.SET` · `PAGE.PREV` · `PAGE.NEXT` · `AUTOPLAY.START` · `AUTOPLAY.STOP` · `AUTOPLAY.PAUSE` · `AUTOPLAY.RESUME` · `after.autoplay` · `WRAP.SETTLE` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isLastPauseSource` · `canAdvance` · `hasAutoplay` · `canPress`
 
@@ -287,6 +288,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 | `list` | `data-animating` | ''（条件成立时才出现） |
 | `list` | `data-dragging` | ''（条件成立时才出现） |
 | `list` | `data-orientation` | props.orientation |
+| `list` | `data-snapped` | ''（条件成立时才出现） |
 | `item` | `data-index` | String(index) |
 | `item` | `data-inview` | ''（条件成立时才出现） |
 | `item` | `data-orientation` | props.orientation |
@@ -364,7 +366,7 @@ slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 导航（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 导航（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-carousel-duration` · `--xh-carousel-ease`。
 

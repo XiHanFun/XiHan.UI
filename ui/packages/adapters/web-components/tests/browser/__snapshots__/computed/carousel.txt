@@ -61,7 +61,7 @@ font-weight: 400
 color: platform
 background-color: color(srgb 0.897884 0.898048 0.898063)
 transition-property: inline-size, block-size, background-color, scale
-transition-duration: 0.12s, 0.12s, 0.12s, 0.2s
+transition-duration: 0.2s, 0.2s, 0.12s, 0.2s
 transition-timing-function: cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
 animation-name: none
 animation-duration: 0s

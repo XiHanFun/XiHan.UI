@@ -15,6 +15,9 @@ import {
   carouselPageSnapPoints,
   carouselSlideRange,
   carouselTranslatePercent,
+  carouselWrapPercent,
+  carouselWrapShift,
+  carouselWrapStart,
   clampCarouselPage,
   normalizeSlideCount,
   normalizeSlidesPerMove,
@@ -62,6 +65,9 @@ export function connectCarousel<T extends PropTypes>(
   const dragOffset = context.get('dragOffset')
   // 松手后弹簧正把轨道收到落定位置：这段位移由弹簧逐帧写，样式层的过渡让开
   const settling = context.get('settling')
+  // 回绕途中轨道落在虚拟页、相应条目临时平移；刚归位时关掉过渡直到下一次翻页
+  const wrap = context.get('wrap')
+  const snapped = context.get('snapped')
 
   const autoplaying = state.matches('playing.running')
   const paused = state.matches('playing.paused')
@@ -88,6 +94,20 @@ export function connectCarousel<T extends PropTypes>(
 
   const isInView = (index: number): boolean => index >= range.start && index <= range.end
 
+  /**
+   * 回绕途中条目的平移：按张数写在独立的 translate 上，横排 rtl 反向。只在回绕途中与刚归位时写出，
+   * 归位那一拍写空串摘掉内联声明（自定义元素按键写样式，不写这一键就摘不掉）；平时不带这一键。
+   */
+  const itemShift = (index: number): Dict => {
+    if (wrap == null && !snapped)
+      return {}
+    const shift = carouselWrapShift(index, wrap, slideCount, slidesPerPage)
+    if (shift === 0)
+      return { translate: '' }
+    const percent = `${(flipped ? -shift : shift) * 100}%`
+    return { translate: horizontal ? percent : `0px ${percent}` }
+  }
+
   const pointerPosition = (event: PointerEvent): number => (horizontal ? event.clientX : event.clientY)
 
   /**
@@ -95,7 +115,9 @@ export function connectCarousel<T extends PropTypes>(
    * 写成浏览器序列化后的样子：横排只给横向一支（纵向为 0 时省略），竖排纵向前补 0px。
    */
   const trackStyle = (): Dict => {
-    const percent = carouselTranslatePercent(range.start, slidesPerPage, flipped)
+    const percent = wrap
+      ? carouselWrapPercent(carouselWrapStart(wrap, slideCount, slidesPerPage), slidesPerPage, flipped)
+      : carouselTranslatePercent(range.start, slidesPerPage, flipped)
     const offset = dragging ? dragOffset : settling ? context.get('settleOffset') : 0
     // calc 里 `+ -60px` 各家解析不一致，符号拆成 `- 60px`
     const shift = offset === 0
@@ -233,6 +255,7 @@ export function connectCarousel<T extends PropTypes>(
       // 供样式层在拖拽期间与松手落定期间关掉过渡
       'data-dragging': dataAttr(dragging),
       'data-animating': dataAttr(settling && !dragging),
+      'data-snapped': dataAttr(snapped),
       'style': trackStyle(),
     }),
 
@@ -247,10 +270,11 @@ export function connectCarousel<T extends PropTypes>(
         'data-index': String(index),
         'data-orientation': orientation,
         'data-inview': dataAttr(inView),
-        // 间距落成条目内边距而非轨道 gap，gap 会破坏「一张 = 100%/slidesPerPage」的位移前提
-        'style': horizontal
+        // 间距落成条目内边距而非轨道 gap，gap 会破坏「一张 = 100%/slidesPerPage」的位移前提；
+        // 回绕途中首屏（或末屏）的条目按张数整体平移到末尾之后（或开头之前），轨道走一步就衔接上
+        'style': { ...(horizontal
           ? { flexBasis: `calc(100% / ${slidesPerPage})`, paddingInline: gutter }
-          : { flexBasis: `calc(100% / ${slidesPerPage})`, paddingBlock: gutter },
+          : { flexBasis: `calc(100% / ${slidesPerPage})`, paddingBlock: gutter }), ...itemShift(index) },
       })
     },
 

@@ -1267,3 +1267,49 @@ describe('connectCarousel 按压通道：Space / Enter 与触屏按住投影 dat
     playing.stop()
   })
 })
+
+describe('carouselMachine 无缝回绕', () => {
+  const style = (c: ReturnType<typeof makeCarousel>, index: number): Dict => (c.api().getItemProps({ index }) as Dict).style as Dict
+
+  it('末页往后翻：轨道走到末尾之后的虚拟一页，首屏条目平移过去，过渡结束再归位', () => {
+    const c = makeCarousel({ slideCount: 3, loop: true, defaultPage: 2 })
+    c.service.send({ type: 'PAGE.NEXT' })
+    expect(c.service.context.get('page')).toBe(0)
+    // 虚拟一页：起点下标 3，不倒卷回 0%
+    expect((c.api().getListProps() as Dict).style).toEqual({ translate: '-300%' })
+    expect(style(c, 0).translate).toBe('300%')
+    expect(style(c, 1).translate).toBe('')
+
+    c.service.send({ type: 'WRAP.SETTLE' })
+    const list = c.api().getListProps() as Dict
+    expect(list.style).toEqual({ translate: '0%' })
+    // 归位这一下不走过渡：标记留到下一次翻页
+    expect(list['data-snapped']).toBe('')
+    expect(style(c, 0).translate).toBe('')
+
+    c.service.send({ type: 'PAGE.NEXT' })
+    expect((c.api().getListProps() as Dict)['data-snapped']).toBeUndefined()
+    expect('translate' in style(c, 0)).toBe(false)
+    c.stop()
+  })
+
+  it('首页往前翻：末屏条目平移到开头之前，轨道走到首页之前的虚拟一页', () => {
+    const c = makeCarousel({ slideCount: 3, loop: true })
+    c.service.send({ type: 'PAGE.PREV' })
+    expect(c.service.context.get('page')).toBe(2)
+    expect((c.api().getListProps() as Dict).style).toEqual({ translate: '100%' })
+    expect(style(c, 2).translate).toBe('-300%')
+    c.stop()
+  })
+
+  it('直接跳页不回绕；不回绕的轮播不产生回绕态', () => {
+    const c = makeCarousel({ slideCount: 3, loop: true, defaultPage: 2 })
+    c.service.send({ type: 'PAGE.SET', page: 0 })
+    expect(c.service.context.get('wrap')).toBeNull()
+    const plain = makeCarousel({ slideCount: 3, defaultPage: 2 })
+    plain.service.send({ type: 'PAGE.NEXT' })
+    expect(plain.service.context.get('wrap')).toBeNull()
+    c.stop()
+    plain.stop()
+  })
+})

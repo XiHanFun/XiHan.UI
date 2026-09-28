@@ -148,3 +148,46 @@ export function carouselDragDelta(offset: number, threshold: number, flipped = f
   // 手往起始缘方向推 = 把后面的内容拉过来 = 下一页
   return (flipped ? offset > 0 : offset < 0) ? 1 : -1
 }
+
+/**
+ * 回绕方向：loop 下从末页往后走回首页为 forward，从首页往前走回末页为 backward；其余为 null。
+ * 回绕那一步轨道不倒卷过全部页，而是走到「末页之后 / 首页之前」的虚拟一页，落定后再无动画地归位。
+ */
+export type CarouselWrap = 'forward' | 'backward' | null
+
+export function carouselWrapOf(from: number, to: number, direction: 1 | -1, totalPages: number, loop: boolean): CarouselWrap {
+  if (!loop || totalPages <= 1)
+    return null
+  if (direction === 1 && from === totalPages - 1 && to === 0)
+    return 'forward'
+  if (direction === -1 && from === 0 && to === totalPages - 1)
+    return 'backward'
+  return null
+}
+
+/**
+ * 回绕途中轨道的虚拟起点下标：forward 为 slideCount（首屏条目平移到末尾之后），
+ * backward 为 -slidesPerPage（末屏条目平移到开头之前）。
+ */
+export function carouselWrapStart(wrap: 'forward' | 'backward', slideCount: number, slidesPerPage: number): number {
+  return wrap === 'forward' ? slideCount : -slidesPerPage
+}
+
+/**
+ * 回绕途中某个条目要平移几张：forward 把首屏的条目挪到末尾之后（+slideCount），backward 把末屏的条目
+ * 挪到开头之前（-slideCount），其余不动。
+ */
+export function carouselWrapShift(index: number, wrap: CarouselWrap, slideCount: number, slidesPerPage: number): number {
+  if (wrap === 'forward' && index < slidesPerPage)
+    return slideCount
+  if (wrap === 'backward' && index >= slideCount - slidesPerPage)
+    return -slideCount
+  return 0
+}
+
+/** 允许负起点的轨道位移百分比：回绕途中的虚拟页会落在首页之前。 */
+export function carouselWrapPercent(start: number, slidesPerPage: number, flipped: boolean): number {
+  const percent = Math.round((start / slidesPerPage) * 100 * 1e4) / 1e4
+  const signed = flipped ? percent : -percent
+  return signed === 0 ? 0 : signed
+}
