@@ -78131,6 +78131,24 @@
       "description": "tool-call 的 label、summary 部件 font-family 覆盖槽。"
     },
     {
+      "name": "--xh-tool-call-label-font-weight",
+      "component": "tool-call",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "tool-call 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
       "name": "--xh-tool-call-px",
       "component": "tool-call",
       "part": [

@@ -75,6 +75,17 @@ const SURFACE_TITLE = {
   'hover-card': 'title',
   'popconfirm': 'title',
   'empty-state': 'title',
+  'citation': 'preview-title',
+}
+/**
+ * 面级披露（Accordion、Collapsible、Reasoning、ToolCall）的触发条文字：标签角色，四件同一档字重。
+ * 键是 scope，值是写字重的那个部件；没写字重（落回按钮的常规字重）同样判红。
+ */
+const DISCLOSURE_LABEL = {
+  'accordion': 'trigger',
+  'collapsible': 'trigger',
+  'reasoning': 'label',
+  'tool-call': 'label',
 }
 /** 页面级标题：heading-3（Dialog / Drawer / Tour 的面板标题与 PageHeader 的页面标题）。 */
 const PAGE_TITLE = new Set(['dialog', 'drawer', 'tour', 'page-header'])
@@ -318,6 +329,15 @@ for (const [scope, part] of [...Object.entries(SURFACE_TITLE), ...[...PAGE_TITLE
     expect(scope, part, title, 'font-size', '--xh-text-label-size', 'Surface / Feedback / 浮层内标题')
     expect(scope, part, title, 'font-weight', '--xh-font-weight-semibold', 'Surface / Feedback / 浮层内标题')
   }
+}
+
+for (const [scope, part] of Object.entries(DISCLOSURE_LABEL)) {
+  const decls = declsFor(scope, part)
+  if (!decls.has('font-weight')) {
+    problems.push(`${scope}.css  ${scope}:${part}  没写字重——面级披露的触发条文字取标签角色 --xh-text-label-weight，落回按钮的常规字重就与同族对不上`)
+    continue
+  }
+  expect(scope, part, decls, 'font-weight', '--xh-text-label-weight', '面级披露的触发条文字')
 }
 
 // 图标尺寸：--xh-icon-size 的兜底只能是三档之一；随文档只给纯行内文字组件；Feedback 指示符统一 md
