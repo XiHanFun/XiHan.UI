@@ -63,10 +63,11 @@ export const radarChartMachine = createMachine({
     actions: {
       ...chartBaseActions<RadarChartSchema>({
         markKeyOf: (params, ref) => radarMarkKey(radarModelOf(params), ref),
-        // 各系列从圆心一起张开：一张图里的几个实体本就要放在一起比，不错开
+        // 各系列从圆心张开，按系列次序错开一步：与直角坐标图的多系列同一种入场，叠在一起的几块多边形
+        // 看得出谁是谁；错开封顶，系列再多整段入场也不随之拉长
         transition: {
           entry: radarEntryScene,
-          stagger: false,
+          stagger: true,
           revealEasing: 'enter-strong',
         },
       }),
