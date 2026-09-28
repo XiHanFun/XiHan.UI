@@ -2818,6 +2818,8 @@ export type ComponentTokenName
     | '--xh-radar-chart-legend-swatch-radius'
     | '--xh-radar-chart-line-width'
     | '--xh-radar-chart-point-size'
+    | '--xh-radar-chart-ring-label-fg'
+    | '--xh-radar-chart-ring-label-opacity'
     | '--xh-radar-chart-series-color'
     | '--xh-radar-chart-tooltip-gap'
     | '--xh-radar-chart-tooltip-px'

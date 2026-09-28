@@ -119,6 +119,12 @@
     fill: var(--xh-chart-label);
   }
 
+  /* 各圈的数值：比指标名再退一层，只作量程的参照 */
+  [data-scope='radar-chart'][data-part='ring-label'] {
+    fill: var(--xh-radar-chart-ring-label-fg, var(--xh-chart-label));
+    opacity: var(--xh-radar-chart-ring-label-opacity, 0.8);
+  }
+
   /* 激活的指标那根轴：准线色，压在网格之上、数据之下 */
   [data-scope='radar-chart'][data-part='crosshair'] {
     fill: none;
@@ -178,7 +184,8 @@
       stroke: CanvasText;
     }
 
-    [data-scope='radar-chart'][data-part='indicator-label'] {
+    [data-scope='radar-chart'][data-part='indicator-label'],
+    [data-scope='radar-chart'][data-part='ring-label'] {
       fill: CanvasText;
     }
 

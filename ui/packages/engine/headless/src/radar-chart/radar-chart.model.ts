@@ -133,22 +133,29 @@ export interface RadarDerived {
   readonly domains: readonly (readonly [number, number])[]
 }
 
+/** 网格圈数：取整数，夹在 2–10 之间，缺省 4。 */
+export function radarRingCount(rings: number | undefined): number {
+  if (rings == null || !Number.isFinite(rings))
+    return RING_LEVELS
+  return Math.min(10, Math.max(2, Math.round(rings)))
+}
+
 /** 取整到刻度上：上限按圈数取整，下限不动（缺省是 0）。 */
-function niceMax(lo: number, hi: number): number {
+function niceMax(lo: number, hi: number, rings: number): number {
   if (!(hi > lo))
     return lo + 1
-  const [, top] = scaleLinear({ domain: [lo, hi], range: [0, 1] }).nice(RING_LEVELS).domain
+  const [, top] = scaleLinear({ domain: [lo, hi], range: [0, 1] }).nice(rings).domain
   return top!
 }
 
-export function deriveRadar(spec: RadarSpec, hidden: readonly string[], scale: RadarScale): RadarDerived {
+export function deriveRadar(spec: RadarSpec, hidden: readonly string[], scale: RadarScale, rings = RING_LEVELS): RadarDerived {
   const off = new Set(hidden)
   const visible = spec.series.filter(s => !off.has(s.id))
   const valuesAt = (j: number): number[] => spec.series.flatMap(s => (s.values[j] == null ? [] : [s.values[j]!]))
   const own = spec.indicators.map((ind, j): [number, number] => {
     const values = valuesAt(j)
     const lo = ind.min ?? Math.min(0, ...values)
-    const hi = ind.max ?? niceMax(lo, Math.max(lo, ...values))
+    const hi = ind.max ?? niceMax(lo, Math.max(lo, ...values), rings)
     return [lo, hi]
   })
   if (scale === 'independent' || own.length === 0)
@@ -156,7 +163,7 @@ export function deriveRadar(spec: RadarSpec, hidden: readonly string[], scale: R
   // 共用量程：取各指标量程的并，上限再取整一次；作者写了上下限的指标以写的为准
   const lo = Math.min(...own.map(d => d[0]))
   const hiRaw = Math.max(...own.map(d => d[1]))
-  const hi = spec.indicators.every(ind => ind.max != null) ? hiRaw : niceMax(lo, hiRaw)
+  const hi = spec.indicators.every(ind => ind.max != null) ? hiRaw : niceMax(lo, hiRaw, rings)
   return { spec, visible, domains: spec.indicators.map(ind => [ind.min ?? lo, ind.max ?? hi] as const) }
 }
 
@@ -182,6 +189,18 @@ export interface RadarLayoutOptions {
   readonly shape: RadarShape
   readonly area: boolean
   readonly curve: RadarCurve
+  /** 网格圈数。 */
+  readonly rings: number
+  /** 在 12 点方向那根轴上写每一圈的数值。 */
+  readonly ringLabels: boolean
+}
+
+/** 一圈的数值标注：写在 12 点方向那根轴的右侧，贴着这一圈。 */
+export interface RadarRingLabel {
+  readonly level: number
+  readonly text: string
+  readonly x: number
+  readonly y: number
 }
 
 export interface RadarLabelLayout {
@@ -202,6 +221,8 @@ export interface RadarLayout {
   /** 各指标轴的角度：0 在 12 点方向、顺时针为正。 */
   readonly angles: readonly number[]
   readonly labels: readonly RadarLabelLayout[]
+  /** 各圈的数值标注；没打开、或各指标量程不同时为空。 */
+  readonly ringLabels: readonly RadarRingLabel[]
   /** 系列 id → 各指标上的点；缺失的值落在圆心。 */
   readonly points: ReadonlyMap<string, readonly RadarPoint[]>
   readonly metrics: ChartMetrics
@@ -213,6 +234,14 @@ function at(cx: number, cy: number, angle: number, radius: number): RadarPoint {
   return { x: cx + x, y: cy + y }
 }
 
+/** 各指标的量程是不是同一个：只有这时一根轴上的刻度才代表全部轴。 */
+function sharedDomain(domains: readonly (readonly [number, number])[]): readonly [number, number] | null {
+  const first = domains[0]
+  if (!first)
+    return null
+  return domains.every(d => d[0] === first[0] && d[1] === first[1]) ? first : null
+}
+
 export function layoutRadar(
   derived: RadarDerived,
   options: RadarLayoutOptions,
@@ -220,6 +249,7 @@ export function layoutRadar(
   metrics: ChartMetrics,
   measurer: TextMeasurer,
   _measurerVersion: number,
+  formats?: RadarFormats,
 ): RadarLayout {
   const { width, height } = size
   const font = metrics.font
@@ -257,7 +287,15 @@ export function layoutRadar(
       return at(cx, cy, angles[j]!, radius * t)
     }))
   }
-  return { derived, options, size, cx, cy, radius, angles, labels, points, metrics, font }
+  const domain = options.ringLabels && formats ? sharedDomain(derived.domains) : null
+  const ringLabels: RadarRingLabel[] = domain
+    ? Array.from({ length: options.rings }, (_, i) => {
+        const level = i + 1
+        const r = (radius * level) / options.rings
+        return { level, text: formats!.value(domain[0] + ((domain[1] - domain[0]) * level) / options.rings), x: cx + metrics.labelGap, y: cy - r }
+      })
+    : []
+  return { derived, options, size, cx, cy, radius, angles, labels, ringLabels, points, metrics, font }
 }
 
 /* ---------- 场景 ---------- */
@@ -283,8 +321,9 @@ export function radarScene(layout: RadarLayout, version: number): RadarScene {
   const back: Mark[] = []
   const data: Mark[] = []
   // 网格：等分的几圈与每个指标一根轴，都只给眼睛看
-  for (let k = 1; k <= RING_LEVELS; k++) {
-    const r = (radius * k) / RING_LEVELS
+  const rings = layout.options.rings
+  for (let k = 1; k <= rings; k++) {
+    const r = (radius * k) / rings
     const ring: LineMark | PathMark = layout.options.shape === 'circle'
       ? { kind: 'path', key: `ring:${k}`, part: 'grid-ring', d: circlePath(cx, cy, r) }
       : { kind: 'line', key: `ring:${k}`, part: 'grid-ring', curve: 'linearClosed', points: angles.map((a, j) => ({ key: indicators[j]!.key, ...at(cx, cy, a, r) })) }
@@ -297,6 +336,9 @@ export function radarScene(layout: RadarLayout, version: number): RadarScene {
     const text: TextMark = { kind: 'text', key: `indicator:${indicators[j]!.key}`, part: 'indicator-label', x: label.x, y: label.y, text: label.text, anchor: label.anchor, baseline: label.baseline }
     back.push(text)
   })
+  // 各圈的数值压在轴线之上：12 点方向那根轴的右侧，贴着这一圈
+  for (const label of layout.ringLabels)
+    back.push({ kind: 'text', key: `ring-label:${label.level}`, part: 'ring-label', x: label.x, y: label.y, text: label.text, anchor: 'start', baseline: 'middle' })
 
   const curve = layout.options.curve === 'catmull-rom' ? 'catmullRomClosed' : 'linearClosed'
   const pointSize = Math.PI * (metrics.pointSize / 2) ** 2
@@ -400,6 +442,8 @@ export interface RadarPipelineInput {
   readonly area: boolean | undefined
   readonly scale: RadarScale | undefined
   readonly curve: RadarCurve | undefined
+  readonly rings: number | undefined
+  readonly ringLabels: boolean | undefined
   readonly format: NumberFormatSpec | ((value: number) => string) | undefined
   readonly hiddenSeries: readonly string[]
   readonly size: ChartSize | null
@@ -429,7 +473,7 @@ export function createRadarPipeline(): RadarPipeline {
   const normalize = memoizeLast(normalizeRadarSpec)
   const derive = memoizeLast(deriveRadar)
   const formatsOf = memoizeLast(radarFormats)
-  const optionsOf = memoizeLast((shape: RadarShape, area: boolean, curve: RadarCurve): RadarLayoutOptions => ({ shape, area, curve }))
+  const optionsOf = memoizeLast((shape: RadarShape, area: boolean, curve: RadarCurve, rings: number, ringLabels: boolean): RadarLayoutOptions => ({ shape, area, curve, rings, ringLabels }))
   const layoutOf = memoizeLast(layoutRadar)
   let version = 0
   const sceneOf = memoizeLast((layout: RadarLayout) => radarScene(layout, ++version))
@@ -438,13 +482,14 @@ export function createRadarPipeline(): RadarPipeline {
   const hiddenOf = memoizeLast((key: string): readonly string[] => JSON.parse(key) as string[])
   return (input) => {
     const spec = normalize(input.data, input.nameField, input.indicators)
-    const derived = derive(spec, hiddenOf(JSON.stringify([...input.hiddenSeries].sort())), input.scale ?? 'independent')
+    const rings = radarRingCount(input.rings)
+    const derived = derive(spec, hiddenOf(JSON.stringify([...input.hiddenSeries].sort())), input.scale ?? 'independent', rings)
     const formats = formatsOf(input.locale, input.format)
     const a11y = a11yOf(derived, formats, input.translations)
-    const options = optionsOf(input.shape ?? 'polygon', input.area ?? true, input.curve ?? 'linear')
+    const options = optionsOf(input.shape ?? 'polygon', input.area ?? true, input.curve ?? 'linear', rings, input.ringLabels ?? false)
     const scene = input.size == null || spec.issues.length > 0
       ? null
-      : sceneOf(layoutOf(derived, options, input.size, input.metrics, input.measurer, input.measurerVersion))
+      : sceneOf(layoutOf(derived, options, input.size, input.metrics, input.measurer, input.measurerVersion, formats))
     return { spec, derived, formats, issues: spec.issues, warnings: spec.warnings, scene, summary: a11y.summary, table: a11y.table }
   }
 }

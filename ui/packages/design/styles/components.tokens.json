@@ -55843,6 +55843,42 @@
       "description": "radar-chart 的 legend-swatch、root、tooltip-swatch 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-radar-chart-ring-label-fg",
+      "component": "radar-chart",
+      "part": [
+        "ring-label"
+      ],
+      "property": [
+        "fill"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chart-label"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 ring-label 部件 fill 覆盖槽。"
+    },
+    {
+      "name": "--xh-radar-chart-ring-label-opacity",
+      "component": "radar-chart",
+      "part": [
+        "ring-label"
+      ],
+      "property": [
+        "opacity"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "0.8"
+      ],
+      "visibility": "public",
+      "description": "radar-chart 的 ring-label 部件 opacity 覆盖槽。"
+    },
+    {
       "name": "--xh-radar-chart-series-color",
       "component": "radar-chart",
       "part": [

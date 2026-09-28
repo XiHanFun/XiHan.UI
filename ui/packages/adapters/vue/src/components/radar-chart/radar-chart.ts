@@ -173,6 +173,10 @@ export const XhRadarChartRoot = defineComponent({
     area: { type: Boolean, default: undefined },
     scale: { type: String as PropType<RadarScale> },
     curve: { type: String as PropType<RadarCurve> },
+    /** 网格分几圈，2–10，缺省 4。 */
+    rings: { type: Number },
+    /** 在 12 点方向那根轴上写出每一圈的数值；只在各指标量程相同时写。 */
+    ringLabels: { type: Boolean, default: undefined },
     format: { type: [Object, Function] as PropType<NumberFormatSpec | ((value: number) => string)> },
     hiddenSeries: { type: Array as PropType<string[]> },
     defaultHiddenSeries: { type: Array as PropType<string[]> },

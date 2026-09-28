@@ -218,6 +218,10 @@ export interface XhRadarChartRootProps extends Omit<ComponentPropsWithRef<'figur
   scale?: RadarScale
   /** 轮廓的画法，缺省 linear。 */
   curve?: RadarCurve
+  /** 网格分几圈，2–10，缺省 4。 */
+  rings?: number
+  /** 在 12 点方向那根轴上写出每一圈的数值；只在各指标量程相同时写。 */
+  ringLabels?: boolean
   /** 数值格式。 */
   format?: NumberFormatSpec | ((value: number) => string)
   /** 隐藏的实体（受控）。 */
@@ -254,6 +258,8 @@ export function XhRadarChartRoot({
   area,
   scale,
   curve,
+  rings,
+  ringLabels,
   format,
   hiddenSeries,
   defaultHiddenSeries,
@@ -280,6 +286,8 @@ export function XhRadarChartRoot({
     area,
     scale,
     curve,
+    rings,
+    ringLabels,
     format,
     hiddenSeries,
     defaultHiddenSeries,
