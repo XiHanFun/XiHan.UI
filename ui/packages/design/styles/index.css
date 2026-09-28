@@ -18431,6 +18431,13 @@
   /* 形态按根面三选一：outline 即基础规则（描边 + surface 底 + raised），subtle 淡底 + 透明占位边 + 无影
      （淡底与阴影互斥），ghost 三件都不画（占位边保住 1px 边位，三档几何一致）；不承诺悬停或尺寸等额外行为。 */
   [data-scope='card'][data-part='root'][data-variant='subtle'] {
+    /* 淡底容器：坐在它上面的控件按淡底阶梯换面（200 → 300），可交互卡片自己的悬停与按下读同一支私有槽。
+       host 槽只写不读，值由私有槽供给，两边同源 */
+    --xh-_card-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-_card-host-bg-pressed: var(--xh-bg-subtle-active);
+    --xh-action-host-bg-hover: var(--xh-_card-host-bg-hover);
+    --xh-action-host-bg-pressed: var(--xh-_card-host-bg-pressed);
+
     border-color: transparent;
     background: var(--xh-card-bg, var(--xh-bg-subtle));
     box-shadow: var(--xh-card-shadow, none);
@@ -18440,6 +18447,109 @@
     border-color: transparent;
     background: transparent;
     box-shadow: var(--xh-card-shadow, none);
+  }
+
+  /* —— 整卡可交互 ——
+     点击区由 trigger 的 ::after 铺满整张卡片，可及名与 Tab 位只归 trigger 这个原生链接或按钮。
+     反馈按根面分：outline 是 raised 面，悬停抬高一档海拔（raised → lifted），按下换到白底阶梯的 200；
+     subtle / ghost 没有影，按承载面阶梯换面（淡底 200 → 300，无壳 100 → 200）。
+     抬起只走影、不走位移，减弱动效下仍是淡变。按下 press 时长切面，松开按 micro 回落。
+     按下认根的 :active：点击区是 trigger 的伪元素，按在卡片任一处都会让根进入 :active；
+     脚部叠在点击区之上，按脚部里的按钮时根也是 :active，这一档排除掉 */
+  [data-scope='card'][data-part='root'][data-interactive] {
+    transition-property: background-color, box-shadow;
+    transition-duration: var(--xh-motion-duration-micro);
+    transition-timing-function: var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='card'][data-part='root'][data-interactive][data-variant='outline']:hover {
+    box-shadow: var(--xh-card-shadow-hover, var(--xh-elevation-lifted));
+  }
+
+  [data-scope='card'][data-part='root'][data-interactive][data-variant='subtle']:hover {
+    background: var(--xh-card-bg-hover, var(--xh-_card-host-bg-hover));
+  }
+
+  [data-scope='card'][data-part='root'][data-interactive][data-variant='ghost']:hover {
+    background: var(--xh-card-bg-hover, var(--xh-bg-subtle));
+  }
+
+  [data-scope='card'][data-part='root'][data-interactive]:active:not(:has([data-scope='card'][data-part='footer']:active)) {
+    transition-duration: var(--xh-motion-duration-press);
+  }
+
+  [data-scope='card'][data-part='root'][data-interactive][data-variant='outline']:active:not(:has([data-scope='card'][data-part='footer']:active)) {
+    background: var(--xh-card-bg-pressed, var(--xh-bg-subtle-hover-opaque));
+  }
+
+  [data-scope='card'][data-part='root'][data-interactive][data-variant='subtle']:active:not(:has([data-scope='card'][data-part='footer']:active)) {
+    background: var(--xh-card-bg-pressed, var(--xh-_card-host-bg-pressed));
+  }
+
+  [data-scope='card'][data-part='root'][data-interactive][data-variant='ghost']:active:not(:has([data-scope='card'][data-part='footer']:active)) {
+    background: var(--xh-card-bg-pressed, var(--xh-bg-subtle-hover));
+  }
+
+  /* trigger 读作标题本身：链接不带 UA 的蓝字下划线，按钮不带 UA 的框与底 */
+  [data-scope='card'][data-part='trigger'] {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* 点击区铺满整张卡片：相对根定位（根是 position: relative），外扩一条描边宽盖住边框。
+     trigger 与根之间的祖先不能再建定位上下文，否则点击区只铺到那一层 */
+  [data-scope='card'][data-part='root'][data-interactive] [data-scope='card'][data-part='trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-stroke-thin));
+    border-radius: var(--xh-card-radius, var(--xh-shape-surface));
+  }
+
+  /* 焦点环画在整张卡片外沿：环是点击区的轮廓，读者看到的可交互范围与点得到的范围一致 */
+  [data-scope='card'][data-part='root'][data-interactive] [data-scope='card'][data-part='trigger']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='card'][data-part='root'][data-interactive] [data-scope='card'][data-part='trigger']:focus-visible::after {
+    outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* footer 叠在点击区之上：里面另放的按钮照常可点，footer 的空白处不触发整卡 */
+  [data-scope='card'][data-part='root'][data-interactive] [data-scope='card'][data-part='footer'] {
+    position: relative;
+  }
+
+  /* liquid 档的交互光：可交互卡片进入悬停时，一道光沿 1px 描边扫过一次，与 Button 实心钮同一配方。
+     光只走描边、不进面，取卡片前景色；只在细指针可悬停的设备上播，强制色下不画装饰光。
+     减弱动效下时长归 1ms，一闪即过 */
+  @media (hover: hover) and (pointer: fine) and (forced-colors: none) {
+    :where([data-material='liquid']) [data-scope='card'][data-part='root'][data-interactive]:hover::after {
+      content: '';
+      position: absolute;
+      inset: calc(-1 * var(--xh-stroke-thin));
+      border: var(--xh-stroke-thin) solid transparent;
+      border-radius: inherit;
+      background: linear-gradient(100deg, transparent 42%, currentColor 50%, transparent 58%) border-box no-repeat;
+      background-size: 300% 100%;
+      background-position: 0% 0;
+      pointer-events: none;
+      mask:
+        linear-gradient(currentColor 0 0) padding-box exclude,
+        linear-gradient(currentColor 0 0);
+      animation: xh-glint var(--xh-card-glint-duration, var(--xh-motion-duration-glint)) var(--xh-motion-ease-enter) both;
+    }
+
+    /* 从右往左书写时光从行首（右缘）扫起 */
+    :where([data-material='liquid']) [data-scope='card'][data-part='root'][data-interactive]:dir(rtl):hover::after {
+      animation-direction: reverse;
+    }
   }
 
   [data-scope='card'][data-part='header'] {
@@ -18491,6 +18601,11 @@
     [data-scope='card'][data-part='root']:not([data-variant='ghost']) {
       border-color: CanvasText;
       box-shadow: none;
+    }
+
+    /* 高对比档里换底与抬起都被系统抹平：可交互卡片的悬停与按下改由描边表出，三档形态同一条 */
+    [data-scope='card'][data-part='root'][data-interactive]:is(:hover, :active) {
+      border-color: Highlight;
     }
   }
 

@@ -115,6 +115,7 @@ export {
   XhCardHeader,
   XhCardRoot,
   XhCardTitle,
+  XhCardTrigger,
 } from './components/card/card'
 export type { CardContext } from './components/card/context'
 export {

@@ -5405,7 +5405,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-card>`：Light-DOM 行为宿主，无状态机，把 connectCard 产出接到各角色节点。\n除 root 外的部件全部可省略：头部、内容、脚部按需放置，一个都不写也是合法的卡片。\n\n根上不写 role：卡片是否为地标、是否需要可及名，由其中放置的内容决定，作者自行声明。",
+          "description": "`<xh-card>`：Light-DOM 行为宿主，无状态机，把 connectCard 产出接到各角色节点。\n除 root 外的部件全部可省略：头部、内容、脚部按需放置，一个都不写也是合法的卡片。\n\n根上不写 role：卡片是否为地标、是否需要可及名，由其中放置的内容决定，作者自行声明。\n整卡可交互时在 title 里放一个原生链接或按钮作 trigger（`<a data-xh-part=\"trigger\" href>`），\n再给元素写 interactive：trigger 的点击区铺满整张卡片，Tab 位与可及名都只归它。",
           "name": "XhCardElement",
           "cssParts": [
             {
@@ -5419,6 +5419,10 @@
             {
               "description": "标题",
               "name": "title"
+            },
+            {
+              "description": "整卡的触发器：title 里的原生链接或按钮",
+              "name": "trigger"
             },
             {
               "description": "标题下的说明",
@@ -5453,6 +5457,15 @@
               "attribute": "variant"
             },
             {
+              "kind": "field",
+              "name": "interactive",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "interactive"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -5471,6 +5484,14 @@
               "description": "形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影；默认 outline",
               "name": "variant",
               "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整卡可交互：title 里的 trigger 把点击区铺满整张卡片",
+              "name": "interactive",
+              "fieldName": "interactive"
             }
           ],
           "superclass": {
@@ -5482,6 +5503,12 @@
           "cssProperties": [
             {
               "name": "--xh-card-bg"
+            },
+            {
+              "name": "--xh-card-bg-hover"
+            },
+            {
+              "name": "--xh-card-bg-pressed"
             },
             {
               "name": "--xh-card-border"
@@ -5511,6 +5538,9 @@
               "name": "--xh-card-gap"
             },
             {
+              "name": "--xh-card-glint-duration"
+            },
+            {
               "name": "--xh-card-leading"
             },
             {
@@ -5521,6 +5551,9 @@
             },
             {
               "name": "--xh-card-shadow"
+            },
+            {
+              "name": "--xh-card-shadow-hover"
             },
             {
               "name": "--xh-card-title-fg"
