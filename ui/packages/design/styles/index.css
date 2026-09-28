@@ -11040,9 +11040,10 @@
   }
 
   /* 强度条：一条底槽，填充按档位加长。档位由调用方打分后经 strength 传进来，
-     0 与 1 判弱、2 判中、3 与 4 判强，三段各取一族语义色 */
+     0 与 1 判弱、2 判中、3 与 4 判强，三段各取一族语义色。
+     私有槽记的是填到轨道的比例（0–1）：填充铺满轨道、按比例往行首平移藏起未完成的那一截，由轨道裁掉 */
   [data-scope='password-input'][data-part='strength-meter'] {
-    --xh-_password-input-strength-fill: 0%;
+    --xh-_password-input-strength-fill: 0;
     --xh-_password-input-strength-fg: var(--xh-fg-muted);
 
     display: block;
@@ -11058,33 +11059,39 @@
     display: none;
   }
 
-  /* 没写内容就由皮肤画填充；作者往部件里塞了自己的分段，这几条即不命中 */
+  /* 没写内容就由皮肤画填充；作者往部件里塞了自己的分段，这几条即不命中。
+     填充不动 inline-size：铺满轨道、按比例平移，只走合成（数值角色 move / continuous）；前端圆角保留，
+     行首由轨道圆角裁出。平移乘书写方向的符号，rtl 下从行首（右侧）长出。换档时底色走 micro 淡变 */
   [data-scope='password-input'][data-part='strength-meter']:empty::before {
     content: '';
     display: block;
-    inline-size: var(--xh-_password-input-strength-fill);
+    inline-size: 100%;
     block-size: 100%;
     border-radius: inherit;
     background: var(--xh-password-input-strength-fg, var(--xh-_password-input-strength-fg));
+    translate: calc((var(--xh-_password-input-strength-fill) - 1) * 100% * var(--xh-direction-sign)) 0;
+    transition:
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='password-input'][data-part='strength-meter'][data-level='1'] {
-    --xh-_password-input-strength-fill: 25%;
+    --xh-_password-input-strength-fill: 0.25;
     --xh-_password-input-strength-fg: var(--xh-fg-danger);
   }
 
   [data-scope='password-input'][data-part='strength-meter'][data-level='2'] {
-    --xh-_password-input-strength-fill: 50%;
+    --xh-_password-input-strength-fill: 0.5;
     --xh-_password-input-strength-fg: var(--xh-fg-warning);
   }
 
   [data-scope='password-input'][data-part='strength-meter'][data-level='3'] {
-    --xh-_password-input-strength-fill: 75%;
+    --xh-_password-input-strength-fill: 0.75;
     --xh-_password-input-strength-fg: var(--xh-fg-success);
   }
 
   [data-scope='password-input'][data-part='strength-meter'][data-level='4'] {
-    --xh-_password-input-strength-fill: 100%;
+    --xh-_password-input-strength-fill: 1;
     --xh-_password-input-strength-fg: var(--xh-fg-success);
   }
 
