@@ -31517,6 +31517,8 @@
         "border-color"
       ],
       "state": [
+        "has(> [data-part='item-progress'][data-state='error'])",
+        "state=closed",
         "state=error"
       ],
       "defaultToken": [
@@ -31553,6 +31555,8 @@
         "background-color"
       ],
       "state": [
+        "has(> [data-part='item-progress'][data-state='done'])",
+        "state=closed",
         "state=done"
       ],
       "defaultToken": [
@@ -31571,6 +31575,8 @@
         "color"
       ],
       "state": [
+        "has(> [data-part='item-progress'][data-state='error'])",
+        "state=closed",
         "state=error"
       ],
       "defaultToken": [
@@ -31644,6 +31650,9 @@
         "inline-size"
       ],
       "state": [
+        "has(> [data-part='item-progress'][data-state='done'])",
+        "has(> [data-part='item-progress'][data-state='error'])",
+        "state=closed",
         "state=done",
         "state=error"
       ],
@@ -31681,7 +31690,7 @@
         "background"
       ],
       "state": [
-        "state=uploading"
+        "default"
       ],
       "defaultToken": [
         "--xh-bg-brand"

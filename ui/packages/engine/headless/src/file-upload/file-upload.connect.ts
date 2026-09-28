@@ -9,7 +9,7 @@ import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-u
 import type { FileUploadApi, FileUploadFile, FileUploadPressedKey, FileUploadSchema, FileUploadSnapshot } from './file-upload.types'
 import { contains, createPressTracker, dataAttr, isHTMLElement } from '@xihan-ui/core'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
-import { fileUploadAnatomy, fileUploadHiddenInputId } from './file-upload.anatomy'
+import { fileUploadAnatomy, fileUploadHiddenInputId, fileUploadListId, fileUploadProgressId } from './file-upload.anatomy'
 import { acceptAttr, fileUploadPressKey, formatFileSize, normalizeMaxFiles } from './file-upload.machine'
 
 const parts = fileUploadAnatomy.build()
@@ -244,10 +244,14 @@ export function connectFileUpload<T extends PropTypes>(
 
     getListProps: () => normalize.element({
       ...parts.list.attrs,
+      // 机器接列表动效时按它找回列表
+      'id': fileUploadListId(scope),
       // 报列表语义，读屏据此播报项数
       'role': 'list',
       'data-empty': dataAttr(empty),
       'data-disabled': dataAttr(disabled),
+      // 列表动效接上之前的这一帧（含服务端渲染）里的条目都属于首帧，不播进场
+      'data-instant': dataAttr(!context.get('listTracked')),
     }),
 
     // 文件名与字节数照原样挂成属性：一致性套件只比得了属性，
@@ -287,16 +291,27 @@ export function connectFileUpload<T extends PropTypes>(
     }),
 
     // 传输进度：比例走私有槽给皮肤算宽度，相位与条目同源
-    getItemProgressProps: ({ file }) => normalize.element({
-      ...parts['item-progress'].attrs,
-      // 进度已经由条目的 data-state 与文件名一起念出来，条子本身不必再念一遍
-      'aria-hidden': true,
-      'data-state': uploadOf(file)?.status,
-      'data-disabled': dataAttr(disabled),
-      'style': {
-        '--xh-_file-upload-progress': String(Math.min(1, Math.max(0, (uploadOf(file)?.progress ?? 0) / 100))),
-      },
-    }),
+    getItemProgressProps: ({ file }) => {
+      const upload = uploadOf(file)
+      // 本地文件的内部 id；远程附件恒为传完，不画进度
+      const key = isRemote(file) ? undefined : service.refs.get('fileIds').get(file)
+      // 传输中露面；传完先走满再淡出，淡出播完（机器报落定）才藏起
+      const shown = upload?.status === 'uploading'
+        || (upload?.status === 'done' && key != null && !context.get('settledProgress')[key])
+      return normalize.element({
+        ...parts['item-progress'].attrs,
+        // 机器等传完后的淡出播完时按它找回这条进度条
+        'id': key == null ? undefined : fileUploadProgressId(scope, key),
+        // 进度已经由条目的 data-state 与文件名一起念出来，条子本身不必再念一遍
+        'aria-hidden': true,
+        'data-state': upload?.status,
+        'data-disabled': dataAttr(disabled),
+        'hidden': !shown || undefined,
+        'style': {
+          '--xh-_file-upload-progress': String(Math.min(1, Math.max(0, (upload?.progress ?? 0) / 100))),
+        },
+      })
+    },
 
     getItemDeleteTriggerProps: ({ file }) => normalize.button({
       ...parts['item-delete-trigger'].attrs,

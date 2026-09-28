@@ -143,6 +143,7 @@
         "dialog",
         "download-trigger",
         "drawer",
+        "file-upload",
         "funnel-chart",
         "graph-chart",
         "heatmap",
@@ -172,6 +173,7 @@
         "dialog",
         "drawer",
         "field-array",
+        "file-upload",
         "form",
         "image",
         "image-viewer",
@@ -210,6 +212,7 @@
       "consumers": [
         "approval",
         "field-array",
+        "file-upload",
         "message-feed",
         "question-flow",
         "tool-call"

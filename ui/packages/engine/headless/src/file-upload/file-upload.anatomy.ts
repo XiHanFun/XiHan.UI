@@ -33,3 +33,13 @@ export const fileUploadAnatomy = createAnatomy('file-upload', [
 export function fileUploadHiddenInputId(scope: Scope): string {
   return scope.partId(fileUploadAnatomy.name, 'hidden-input')
 }
+
+/** 文件列表的 id：连接层写入，机器接列表动效时按它找回节点。 */
+export function fileUploadListId(scope: Scope): string {
+  return scope.partId(fileUploadAnatomy.name, 'list')
+}
+
+/** 某个本地文件那条进度条的 id（key 是文件的内部 id）：连接层写入，机器等传完后的淡出播完时按它找回节点。 */
+export function fileUploadProgressId(scope: Scope, key: string): string {
+  return `${scope.partId(fileUploadAnatomy.name, 'item-progress')}-${key}`
+}
