@@ -58950,10 +58950,16 @@
               "name": "--xh-table-footer-bg"
             },
             {
+              "name": "--xh-table-footer-border"
+            },
+            {
               "name": "--xh-table-footer-font-weight"
             },
             {
               "name": "--xh-table-header-bg"
+            },
+            {
+              "name": "--xh-table-header-border"
             },
             {
               "name": "--xh-table-icon-size"

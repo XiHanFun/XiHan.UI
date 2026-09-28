@@ -65163,24 +65163,19 @@
       "name": "--xh-table-border",
       "component": "table",
       "part": [
-        "footer",
-        "header",
         "root"
       ],
       "property": [
-        "border",
-        "border-block-end",
-        "border-block-start"
+        "border"
       ],
       "state": [
-        "default",
         "variant=outline"
       ],
       "defaultToken": [
         "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "table 的 footer、header、root 部件 border、border-block-end、border-block-start 覆盖槽。"
+      "description": "table 的 root 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-table-caption-fg",
@@ -65786,6 +65781,24 @@
       "description": "table 的 footer 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-table-footer-border",
+      "component": "table",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "border-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "table 的 footer 部件 border-block-start 覆盖槽。"
+    },
+    {
       "name": "--xh-table-footer-font-weight",
       "component": "table",
       "part": [
@@ -65822,6 +65835,24 @@
       ],
       "visibility": "public",
       "description": "table 的 column-header、header 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-header-border",
+      "component": "table",
+      "part": [
+        "header"
+      ],
+      "property": [
+        "border-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "table 的 header 部件 border-block-end 覆盖槽。"
     },
     {
       "name": "--xh-table-icon-size",
