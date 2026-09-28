@@ -82123,7 +82123,7 @@
         "not([data-disabled])"
       ],
       "defaultToken": [
-        "--xh-border-control-focus"
+        "--xh-bg-brand"
       ],
       "visibility": "public",
       "description": "tree 的 branch-control、item 部件 background、box-shadow 覆盖槽。"

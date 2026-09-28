@@ -244,12 +244,14 @@
     white-space: nowrap;
     user-select: none;
     /* 换面走家族的时间线（按下 press，其余一律 micro，描边色同样不进过渡）；box-shadow 一并接过渡：
-       换父落点那圈内描边挂在行自己身上，跟着 data-drop 在行间移动 */
+       换父落点那圈内描边挂在行自己身上，跟着 data-drop 在行间移动。
+       translate 是落下后的换位：宿主写回 collection 之后，连接层把行按旧位置反向补偿，这条过渡带它滑到新位置 */
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 已有节点时重新取数：不换成占位，行保留上一帧、按 micro 淡到禁用透明度，数据到了再淡回；
@@ -281,7 +283,8 @@
     --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
     --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
 
-    transition: none;
+    /* 换面即时，只留换位：Alt + 方向键搬的正是这一行，它照样从旧位置滑到新位置 */
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled：叶子的禁用面由家族按 aria-disabled 给；
@@ -574,7 +577,7 @@
     position: absolute;
     inset-inline: 0;
     block-size: var(--xh-tree-drop-line, var(--xh-stroke-thick));
-    background: var(--xh-tree-drop-fg, var(--xh-border-control-focus));
+    background: var(--xh-tree-drop-fg, var(--xh-bg-brand));
   }
 
   /* 落在上沿还是下沿走逻辑属性，块向跟着书写模式走。
@@ -599,7 +602,7 @@
     /* 落点不是选中：品牌淡底专属选中 / 当前，落点面取悬停之上一档的中性面 */
     background: var(--xh-tree-drop-inside-bg, var(--xh-bg-subtle-hover));
     box-shadow: inset 0 0 0 var(--xh-tree-drop-line, var(--xh-stroke-thick))
-      var(--xh-tree-drop-fg, var(--xh-border-control-focus));
+      var(--xh-tree-drop-fg, var(--xh-bg-brand));
   }
 
   /* 活动区域只说给读屏听，不占版面。声明与 shared/visually-hidden.ts 逐条同值。 */

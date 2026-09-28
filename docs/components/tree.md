@@ -134,7 +134,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 - `size` 取 `sm` / `md` / `lg`，默认 `md`，走集合家族的尺寸档：行高、行内内衬、字号、展开箭头与对号盒、拖拽把手与层级缩进一起随档。
 - 选中与[树形选择器](./tree-select)同一种读法：行不换面，单选、多选与级联都只在行尾画对号；分支行也摆 `item-indicator`，级联下的半选画横杠。
 - `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
-- 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
+- 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。拖放与 Alt + 方向键落下之后，宿主写回 `collection` 的那一次重排里，行从旧位置滑到新位置（换了父被重建的节点按节点值认回）；落点线取品牌实心色，与表格、排序同一种。
 - 展开与选中分开：点行只选中，展开归箭头与左右方向键；`expandOnClick` 打开后点整行才顺带展开。
 - 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
 - 节点可写副文本，第 2 行放一句解释，不进连打检索串。
@@ -496,7 +496,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `--xh-tree-drag-radius` | `node-drag-trigger` | `border-radius` | `default` | `--xh-shape-control` | tree 的 node-drag-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-tree-drag-size` | `node-drag-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_tree-indicator` | tree 的 node-drag-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-tree-dragging-opacity` | `branch-control`<br>`item` | `opacity` | `dragging` | `--xh-state-dragging-opacity` | tree 的 branch-control、item 部件 opacity 覆盖槽。 |
-| `--xh-tree-drop-fg` | `branch-control`<br>`item` | `background`<br>`box-shadow` | `disabled`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-disabled])` | `--xh-border-control-focus` | tree 的 branch-control、item 部件 background、box-shadow 覆盖槽。 |
+| `--xh-tree-drop-fg` | `branch-control`<br>`item` | `background`<br>`box-shadow` | `disabled`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-disabled])` | `--xh-bg-brand` | tree 的 branch-control、item 部件 background、box-shadow 覆盖槽。 |
 | `--xh-tree-drop-inside-bg` | `branch-control`<br>`item` | `background` | `disabled`<br>`drop=inside`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | tree 的 branch-control、item 部件 background 覆盖槽。 |
 | `--xh-tree-drop-line` | `branch-control`<br>`item` | `block-size`<br>`box-shadow` | `disabled`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-disabled])` | `--xh-stroke-thick` | tree 的 branch-control、item 部件 block-size、box-shadow 覆盖槽。 |
 | `--xh-tree-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | tree 的 empty 部件 color 覆盖槽。 |
@@ -541,9 +541,9 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `box-shadow` · `color` · `mask-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `box-shadow` · `color` · `mask-size` · `opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

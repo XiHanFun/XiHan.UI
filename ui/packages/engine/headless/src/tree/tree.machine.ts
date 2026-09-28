@@ -5,13 +5,15 @@
 
 // 提供 tree 相关实现。
 
+import type { Scope } from '@xihan-ui/core'
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
 import type { TreeMove, TreeNode, TreeNodeMeta, TreePressedPart, TreeSchema, TreeVisibleNode } from './tree.types'
-import { applySelection, cascadeToggle, collapseChecked, createTypeahead, setup } from '@xihan-ui/core'
+import { applySelection, cascadeToggle, collapseChecked, createTypeahead, ITEM_VALUE_ATTR, setup, trackReorder } from '@xihan-ui/core'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { dragAnnouncement, hitAlongNested } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
+import { TREE_ROW_SELECTOR } from './tree.anatomy'
 import { isTreeDropAllowed, treeMoveOf } from './tree.drag'
 
 const { createMachine } = setup<TreeSchema>()
@@ -134,6 +136,7 @@ export const treeMachine = createMachine({
     typeahead: createTypeahead(),
     gesture: null,
     nodeDrag: null,
+    reorder: null,
   }),
   initialState: () => 'idle',
   states: {
@@ -190,6 +193,8 @@ export const treeMachine = createMachine({
         return () => {
           session.dispose()
           refs.set('gesture', null)
+          refs.get('reorder')?.()
+          refs.set('reorder', null)
         }
       },
     },
@@ -250,7 +255,7 @@ export const treeMachine = createMachine({
         context.set('dropTarget', ok ? hit : null)
       },
 
-      endNodeDrag: ({ context, prop, refs }) => {
+      endNodeDrag: ({ context, prop, refs, scope }) => {
         const session = refs.get('nodeDrag')
         const target = context.get('dropTarget')
         clearNodeDrag(context, refs)
@@ -261,7 +266,7 @@ export const treeMachine = createMachine({
           announceNodeMove(context, prop, 'rejected', session.value)
           return
         }
-        commitNodeMove(context, prop, session.value, target, 'dropped')
+        commitNodeMove(context, prop, session.value, target, 'dropped', () => armReorder(scope, refs))
       },
 
       cancelNodeDrag: ({ context, prop, refs }) => {
@@ -271,7 +276,7 @@ export const treeMachine = createMachine({
           announceNodeMove(context, prop, 'canceled', session.value)
       },
 
-      moveNodeBy: ({ context, prop, event }) => {
+      moveNodeBy: ({ context, prop, event, refs, scope }) => {
         const e = event.current()
         if (e.type !== 'NODE.MOVE_BY')
           return
@@ -280,7 +285,7 @@ export const treeMachine = createMachine({
           announceNodeMove(context, prop, 'rejected', e.value)
           return
         }
-        commitNodeMove(context, prop, e.value, e.target, 'moved')
+        commitNodeMove(context, prop, e.value, e.target, 'moved', () => armReorder(scope, refs))
       },
 
       setExpanded: ({ context, event }) => {
@@ -438,6 +443,7 @@ function commitNodeMove(
   value: string,
   target: DropTarget,
   kind: DragAnnounceKind,
+  beforeCommit: () => void,
 ): void {
   const meta = indexTree(prop('collection') ?? [])
   const move = treeMoveOf(meta, value, target)
@@ -445,8 +451,25 @@ function commitNodeMove(
     announceNodeMove(context, prop, 'rejected', value)
     return
   }
+  beforeCommit()
   prop('onNodeMove')?.(move)
   announceNodeMove(context, prop, kind, value, move)
+}
+
+/**
+ * 报出搬家之前记下每一行此刻的排布位，宿主写回 collection、行换到新位置的那一批变更里，
+ * 行从旧位置滑到新位置（皮肤给行的 translate 过渡）。宿主可能重建换了父的节点，行按节点值认身份：
+ * 叶子行自己带值，分支行的值在外面那层 branch 上。上一次没等到写回的先停掉。
+ */
+function armReorder(
+  scope: Scope,
+  refs: { get: (k: 'reorder') => (() => void) | null, set: (k: 'reorder', v: (() => void) | null) => void },
+): void {
+  refs.get('reorder')?.()
+  const tree = scope.getById(scope.partId('tree', 'tree'))
+  refs.set('reorder', tree
+    ? trackReorder(tree, { item: TREE_ROW_SELECTOR, key: row => row.closest(`[${ITEM_VALUE_ATTR}]`)?.getAttribute(ITEM_VALUE_ATTR) ?? null })
+    : null)
 }
 
 /** 收尾：拖动态的三样一起清干净，别留半截。 */

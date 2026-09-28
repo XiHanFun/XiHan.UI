@@ -128,6 +128,11 @@ export interface TreeRefs {
     source: HTMLElement | null
   } | null
   /**
+   * 落下之后盯住宿主那一次重排的句柄：宿主写回 collection、行换到新位置时，从旧位置滑过去。
+   * 宿主没写回时留到下一次提交前或卸载时停掉。
+   */
+  reorder: (() => void) | null
+  /**
    * 连打检索缓冲，随服务存活，停顿足够久后自行重新开始。
    * 放在模块变量中会使同页两棵树共用一个缓冲。
    */
