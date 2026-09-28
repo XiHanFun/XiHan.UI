@@ -1,5 +1,4 @@
-// 选择型条目 | CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
-import { useState } from "react";
+import type { ReactNode } from "react";
 import {
   XhMenuCheckboxItem,
   XhMenuContent,
@@ -11,8 +10,10 @@ import {
   XhMenuRoot,
   XhMenuTrigger,
 } from "@xihan-ui/react";
+// 选择型条目 | CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
+import { useState } from "react";
 
-export function Demo() {
+export default function Demo(): ReactNode {
   const [checkboxValue, setCheckboxValue] = useState(["wrap"]);
   const [radioValue, setRadioValue] = useState<Record<string, string>>({ density: "comfortable" });
   return (
@@ -30,8 +31,14 @@ export function Demo() {
             <XhMenuItemText>自动换行</XhMenuItemText>
           </XhMenuCheckboxItem>
           <XhMenuRadioGroup value="density">
-            <XhMenuRadioItem value="comfortable"><XhMenuItemIndicator /><XhMenuItemText>宽松</XhMenuItemText></XhMenuRadioItem>
-            <XhMenuRadioItem value="compact"><XhMenuItemIndicator /><XhMenuItemText>紧凑</XhMenuItemText></XhMenuRadioItem>
+            <XhMenuRadioItem value="comfortable">
+              <XhMenuItemIndicator />
+              <XhMenuItemText>宽松</XhMenuItemText>
+            </XhMenuRadioItem>
+            <XhMenuRadioItem value="compact">
+              <XhMenuItemIndicator />
+              <XhMenuItemText>紧凑</XhMenuItemText>
+            </XhMenuRadioItem>
           </XhMenuRadioGroup>
         </XhMenuContent>
       </XhMenuPositioner>
