@@ -344,7 +344,7 @@
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
-    border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-material-frosted-separator));
+    border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-material-solid-separator));
   }
 
   [data-scope='time-picker'][data-part='preset-group'][hidden] {
@@ -358,7 +358,7 @@
     --xh-collection-block-padding: var(--xh-time-picker-preset-py, var(--xh-space-1));
     --xh-collection-inline-padding: var(--xh-time-picker-preset-px, var(--xh-space-3));
     --xh-collection-font-size: var(--xh-text-secondary-size);
-    --xh-collection-radius: var(--xh-time-picker-preset-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-time-picker-preset-radius, var(--xh-shape-inset));
     /* 面板是实体面（floating），正文取页面前景 */
     --xh-collection-fg-rest: var(--xh-time-picker-preset-fg, var(--xh-fg-default));
     --xh-collection-fg-hover: var(--xh-time-picker-preset-fg, var(--xh-fg-default));
@@ -453,7 +453,7 @@
 
   /* 每列后面紧跟着它自己的贴层条子节点，相邻选择器接不到下一列，按「前面有过列」取第二列起 */
   [data-scope='time-picker'][data-part='column'] ~ [data-scope='time-picker'][data-part='column'] {
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-material-frosted-separator));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-material-solid-separator));
   }
 
   /* 焦点落在列上有两种情形：指针打开、这一段还空着、还没有任何格当锚点，或整列被界裁空。
@@ -481,7 +481,7 @@
     /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
     --xh-collection-inline-padding: var(--xh-_time-picker-item-rail);
     --xh-collection-font-size: var(--xh-time-picker-item-font-size, var(--xh-_time-picker-font-size));
-    --xh-collection-radius: var(--xh-time-picker-item-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-time-picker-item-radius, var(--xh-shape-inset));
     --xh-collection-fg-rest: var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-keyboard-highlight: var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg));

@@ -271,7 +271,7 @@
     --xh-collection-inline-padding: var(--xh-listbox-item-px, var(--xh-_listbox-item-px));
     --xh-collection-gap: var(--xh-listbox-item-gap, var(--xh-_listbox-gap));
     --xh-collection-font-size: var(--xh-listbox-item-font-size, var(--xh-_listbox-font-size));
-    --xh-collection-radius: var(--xh-listbox-item-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-listbox-item-radius, var(--xh-shape-inset));
     /* 作者的图标尺槽经桥接槽下发到条目，家族缺省按 data-xh-collection-size 取档 */
     --xh-collection-glyph-size: var(--xh-listbox-icon-size, var(--xh-_collection-glyph-size));
     --xh-collection-fg-rest: var(--xh-listbox-item-fg, var(--xh-fg-default));

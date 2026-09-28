@@ -462,7 +462,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-inset` | date-range-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-date-range-picker-action-size` | `clear-trigger`<br>`trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | date-range-picker 的 clear-trigger、trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-date-range-picker-calendar-gap` | `calendar`<br>`column-group` | `gap`<br>`padding-block-start` | `default` | `--xh-space-2` | date-range-picker 的 calendar、column-group 部件 gap、padding-block-start 覆盖槽。 |
-| `--xh-date-range-picker-column-divider` | `preset-group`<br>`time-column` | `border-block-end`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-frosted-separator` | date-range-picker 的 preset-group、time-column 部件 border-block-end、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-date-range-picker-column-divider` | `preset-group`<br>`time-column` | `border-block-end`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-solid-separator` | date-range-picker 的 preset-group、time-column 部件 border-block-end、border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-date-range-picker-column-group-gap` | `column-group` | `margin-inline-start` | `default` | `--xh-space-2` | date-range-picker 的 column-group 部件 margin-inline-start 覆盖槽。 |
 | `--xh-date-range-picker-column-group-label-fg` | `column-group-label` | `color` | `default` | `--xh-fg-subtle` | date-range-picker 的 column-group-label 部件 color 覆盖槽。 |
 | `--xh-date-range-picker-column-group-label-fg-active` | `column-group-label` | `color` | `editing` | `--xh-fg-default` | date-range-picker 的 column-group-label 部件 color 覆盖槽。 |
@@ -510,7 +510,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | date-range-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-date-range-picker-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | date-range-picker 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-date-range-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | date-range-picker 的 content 部件 max-block-size 覆盖槽。 |
-| `--xh-date-range-picker-panel-divider` | `calendar` | `border-block-start`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-frosted-separator` | date-range-picker 的 calendar 部件 border-block-start、border-inline-start 覆盖槽。 |
+| `--xh-date-range-picker-panel-divider` | `calendar` | `border-block-start`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-solid-separator` | date-range-picker 的 calendar 部件 border-block-start、border-inline-start 覆盖槽。 |
 | `--xh-date-range-picker-panel-gap` | `calendar`<br>`preset-group` | `padding-block-start`<br>`padding-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-space-3` | date-range-picker 的 calendar、preset-group 部件 padding-block-start、padding-inline-start 覆盖槽。 |
 | `--xh-date-range-picker-preset-bg-hover` | `preset` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | date-range-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-date-range-picker-preset-bg-pressed` | `preset` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | date-range-picker 的 preset 部件 background-color 覆盖槽。 |
@@ -523,7 +523,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-preset-group-padding` | `preset-group` | `padding` | `default` | `--xh-space-1` | date-range-picker 的 preset-group 部件 padding 覆盖槽。 |
 | `--xh-date-range-picker-preset-px` | `preset` | `inset-inline-end`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-space-3` | date-range-picker 的 preset 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。 |
 | `--xh-date-range-picker-preset-py` | `preset` | `padding-block` | `default` | `--xh-space-1` | date-range-picker 的 preset 部件 padding-block 覆盖槽。 |
-| `--xh-date-range-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-control` | date-range-picker 的 preset 部件 border-radius 覆盖槽。 |
+| `--xh-date-range-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-inset` | date-range-picker 的 preset 部件 border-radius 覆盖槽。 |
 | `--xh-date-range-picker-range-separator-fg` | `range-separator` | `color` | `default` | `--xh-fg-subtle` | date-range-picker 的 range-separator 部件 color 覆盖槽。 |
 | `--xh-date-range-picker-range-separator-mx` | `range-separator` | `margin-inline` | `default` | `--xh-_date-range-picker-range-separator-mx` | date-range-picker 的 range-separator 部件 margin-inline 覆盖槽。 |
 | `--xh-date-range-picker-range-separator-px` | `range-separator` | `margin-inline`<br>`padding-inline` | `default` | `--xh-space-1` | date-range-picker 的 range-separator 部件 margin-inline、padding-inline 覆盖槽。 |
@@ -544,7 +544,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-time-item-h` | `time-item` | `block-size` | `default` | `auto` | date-range-picker 的 time-item 部件 block-size 覆盖槽。 |
 | `--xh-date-range-picker-time-item-px` | `time-item` | `inset-inline-end`<br>`padding-inline` | `default` | `--xh-space-0_5` | date-range-picker 的 time-item 部件 inset-inline-end、padding-inline 覆盖槽。 |
 | `--xh-date-range-picker-time-item-py` | `time-item` | `padding-block` | `default` | `--xh-_date-range-picker-item-py` | date-range-picker 的 time-item 部件 padding-block 覆盖槽。 |
-| `--xh-date-range-picker-time-item-radius` | `time-item` | `border-radius` | `default` | `--xh-shape-control` | date-range-picker 的 time-item 部件 border-radius 覆盖槽。 |
+| `--xh-date-range-picker-time-item-radius` | `time-item` | `border-radius` | `default` | `--xh-shape-inset` | date-range-picker 的 time-item 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

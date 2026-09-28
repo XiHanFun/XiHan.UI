@@ -200,7 +200,7 @@
     --xh-collection-inline-padding: var(--xh-tree-row-px, var(--xh-_tree-row-px));
     --xh-collection-gap: 0;
     --xh-collection-font-size: var(--xh-tree-row-font-size, var(--xh-_tree-font-size));
-    --xh-collection-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-tree-row-radius, var(--xh-shape-inset));
     /* 作者的图标尺槽经桥接槽下发到行，家族缺省按 md 档 */
     --xh-collection-glyph-size: var(--xh-tree-icon-size, var(--xh-_collection-glyph-size));
     /* 箭头 / 对号盒与叶子的占位同一把尺：指示符档（md comfortable 16 / compact 14），与同一行里的
