@@ -88,7 +88,7 @@ export type ControlVariant = 'outline' | 'subtle' | 'ghost'
 
 /**
  * 可按下的表面的形态四档：在输入类三档之上多一个 `solid`。
- * button / button-group / toggle / icon-wrapper 共用。
+ * button / button-group / toggle 共用，icon 的底框也取这一组值。
  */
 export type ActionVariant = ControlVariant | 'solid'
 

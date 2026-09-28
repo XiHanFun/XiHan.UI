@@ -66,7 +66,6 @@ import type { HeatmapTranslations } from '../heatmap/heatmap.types'
 import type { HierarchyChartTranslations } from '../hierarchy-chart/hierarchy-chart.types'
 import type { HighlightTranslations } from '../highlight/highlight.types'
 import type { HoverCardTranslations } from '../hover-card/hover-card.types'
-import type { IconWrapperTranslations } from '../icon-wrapper/icon-wrapper.types'
 import type { IconTranslations } from '../icon/icon.types'
 import type { ImageCropperTranslations } from '../image-cropper/image-cropper.types'
 import type { ImageViewerTranslations } from '../image-viewer/image-viewer.types'
@@ -213,7 +212,6 @@ export interface XhTranslationOverrides {
   'highlight'?: Partial<HighlightTranslations>
   'hover-card'?: Partial<HoverCardTranslations>
   'icon'?: Partial<IconTranslations>
-  'icon-wrapper'?: Partial<IconWrapperTranslations>
   'kbd'?: Partial<KbdTranslations>
   'image'?: Partial<ImageTranslations>
   'image-cropper'?: Partial<ImageCropperTranslations>

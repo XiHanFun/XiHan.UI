@@ -168,6 +168,33 @@ describe('connectIcon 档位', () => {
   })
 })
 
+describe('connectIcon 底框', () => {
+  it('不写 frame 即无框：不落 data-frame', () => {
+    expect(root({ icon: check })['data-frame']).toBeUndefined()
+  })
+
+  it('四种底框原样落成 data-frame，与语气、档位各落各的', () => {
+    for (const frame of ['solid', 'subtle', 'outline', 'ghost'] as const)
+      expect(root({ icon: check, frame })['data-frame']).toBe(frame)
+    expect(root({ icon: check, frame: 'subtle', tone: 'success', size: 'lg' })).toMatchObject({
+      'data-frame': 'subtle',
+      'data-tone': 'success',
+      'data-size': 'lg',
+    })
+  })
+
+  it('框只是外观：装饰态与命名态都与不加框时逐项相同', () => {
+    for (const label of [undefined, '已通过']) {
+      const plain = root({ icon: check, label })
+      const framed = root({ icon: check, label, frame: 'solid' })
+      expect(framed.role).toBe(plain.role)
+      expect(framed['aria-label']).toBe(plain['aria-label'])
+      expect(framed['aria-hidden']).toBe(plain['aria-hidden'])
+      expect(api({ icon: check, label, frame: 'solid' }).decorative).toBe(api({ icon: check, label }).decorative)
+    }
+  })
+})
+
 describe('connectIcon 图元树', () => {
   it('没传图标：nodes 是空数组、content 是 undefined', () => {
     expect(api().nodes).toEqual([])

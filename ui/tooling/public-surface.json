@@ -94,7 +94,6 @@
       "./hierarchy-chart.css",
       "./highlight.css",
       "./hover-card.css",
-      "./icon-wrapper.css",
       "./icon.css",
       "./image-cropper.css",
       "./image-viewer.css",
@@ -1485,8 +1484,6 @@
       "XhHoverCardTriggerProps",
       "XhIcon",
       "XhIconProps",
-      "XhIconWrapper",
-      "XhIconWrapperProps",
       "XhImageCropperCropArea",
       "XhImageCropperCropAreaProps",
       "XhImageCropperCropHandle",
@@ -3827,7 +3824,6 @@
       "XhHoverCardTitle",
       "XhHoverCardTrigger",
       "XhIcon",
-      "XhIconWrapper",
       "XhImageCropperCropArea",
       "XhImageCropperCropHandle",
       "XhImageCropperGrid",
@@ -6427,9 +6423,6 @@
       "IconSize",
       "IconTranslations",
       "IconWeight",
-      "IconWrapperApi",
-      "IconWrapperProps",
-      "IconWrapperTranslations",
       "ImageApi",
       "ImageCropperApi",
       "ImageCropperDragOrigin",
@@ -7687,7 +7680,6 @@
       "connectHighlight",
       "connectHoverCard",
       "connectIcon",
-      "connectIconWrapper",
       "connectImage",
       "connectImageCropper",
       "connectImageViewer",
@@ -8036,9 +8028,6 @@
       "iconAnatomy",
       "iconKeyboard",
       "iconMeta",
-      "iconWrapperAnatomy",
-      "iconWrapperKeyboard",
-      "iconWrapperMeta",
       "imageAnatomy",
       "imageCropperAnatomy",
       "imageCropperKeyboard",
@@ -10146,9 +10135,6 @@
       "glyph",
       "root"
     ],
-    "icon-wrapper": [
-      "root"
-    ],
     "image": [
       "fallback",
       "image",
@@ -11991,17 +11977,13 @@
     ],
     "icon": [
       "flip",
+      "frame",
       "icon",
       "label",
       "rotate",
       "size",
       "tone",
       "weight"
-    ],
-    "icon-wrapper": [
-      "size",
-      "tone",
-      "variant"
     ],
     "image": [
       "alt",
@@ -13379,6 +13361,7 @@
     "data-foldable",
     "data-form-path",
     "data-format",
+    "data-frame",
     "data-frozen",
     "data-full-width",
     "data-fullscreen",
@@ -16163,15 +16146,15 @@
     "--xh-hover-card-title-font-weight",
     "--xh-hover-card-trigger-gap",
     "--xh-icon-fg",
+    "--xh-icon-frame-bg",
+    "--xh-icon-frame-border",
+    "--xh-icon-frame-glyph-size",
+    "--xh-icon-frame-radius",
+    "--xh-icon-frame-shadow",
+    "--xh-icon-frame-size",
     "--xh-icon-shift",
     "--xh-icon-size",
     "--xh-icon-stroke",
-    "--xh-icon-wrapper-bg",
-    "--xh-icon-wrapper-fg",
-    "--xh-icon-wrapper-glyph-size",
-    "--xh-icon-wrapper-radius",
-    "--xh-icon-wrapper-shadow",
-    "--xh-icon-wrapper-size",
     "--xh-image-bg",
     "--xh-image-cropper-bg",
     "--xh-image-cropper-crop-area-radius",
@@ -19732,17 +19715,10 @@
         "open-change"
       ]
     },
-    "xh-icon-wrapper": {
-      "attributes": [
-        "size",
-        "tone",
-        "variant"
-      ],
-      "events": []
-    },
     "xh-icon": {
       "attributes": [
         "flip",
+        "frame",
         "label",
         "rotate",
         "size",

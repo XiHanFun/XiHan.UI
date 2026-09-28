@@ -5,7 +5,7 @@
 
 // 定义 icon 类型契约。
 
-import type { IconNode, IconRecord, PropTypes, Tone } from '@xihan-ui/core'
+import type { ActionVariant, IconNode, IconRecord, PropTypes, Tone } from '@xihan-ui/core'
 
 /**
  * 直径档位，默认 md，逐档对应 --xh-glyph-size-*。
@@ -38,8 +38,14 @@ export interface IconProps {
   size?: IconSize
   /** 描边粗细档位，默认 regular；默认档不输出 data-weight。 */
   weight?: IconWeight
-  /** 颜色：brand / neutral / success / warning / danger / info。 */
+  /** 颜色：brand / neutral / success / warning / danger / info；加了底框时同时决定框的配色。 */
   tone?: Tone
+  /**
+   * 底框：solid / subtle / outline / ghost，不写即无框。
+   * 加框后图标是一个定直径的圆底座，sm / md / lg 三档与头像同档，图元仍按 size 取字形直径；
+   * 框只是外观，可及名与装饰态不因它改变。
+   */
+  frame?: ActionVariant
   /**
    * 旋转档位：90 / 180 / 270，不旋转时不写。
    * 接受字符串是因为 WC 侧的档位来自 DOM 属性；不是这三档的值一律不写出。

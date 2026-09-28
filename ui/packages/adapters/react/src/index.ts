@@ -1302,8 +1302,6 @@ export type {
 } from './components/hover-card/hover-card'
 export { useHoverCard } from './components/hover-card/use-hover-card'
 export type { HoverCardContext } from './components/hover-card/use-hover-card'
-export { XhIconWrapper } from './components/icon-wrapper/icon-wrapper'
-export type { XhIconWrapperProps } from './components/icon-wrapper/icon-wrapper'
 export { XhIcon } from './components/icon/icon'
 export type { XhIconProps } from './components/icon/icon'
 export { useImageCropperContext } from './components/image-cropper/context'

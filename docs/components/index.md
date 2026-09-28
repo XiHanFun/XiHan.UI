@@ -14,7 +14,6 @@
 <XhComponentCard src="float-button" name="FloatButton" label="浮动按钮" href="/components/float-button" />
 <XhComponentCard src="kbd" name="Kbd" label="键盘按键" href="/components/kbd" />
 <XhComponentCard src="icon" name="Icon" label="图标" href="/components/icon" />
-<XhComponentCard src="icon-wrapper" name="IconWrapper" label="图标块" href="/components/icon-wrapper" />
 <XhComponentCard src="scrollbar" name="Scrollbar" label="滚动条" href="/components/scrollbar" />
 <XhComponentCard src="toggle" name="Toggle" label="切换按钮" href="/components/toggle" />
 <XhComponentCard src="toggle-group" name="ToggleGroup" label="切换按钮组" href="/components/toggle-group" />

@@ -7659,84 +7659,6 @@
   }
 }
 
-/* styles/icon-wrapper.css */
-/* 定义 icon wrapper 样式。 */
-
-@layer xihan.components {
-  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-  [data-scope='icon-wrapper'] {
-    --xh-icon-wrapper-skin: 1;
-  }
-
-  /* 定直径的图标底座：图元在正中，底色、描边与形状由三轴决定。
-     直径与图元直径分两个槽位，底座换档时里面的图元跟着一起换 */
-  [data-scope='icon-wrapper'][data-part='root'] {
-    /* 私有槽位：底座直径与图元直径，换档只改这两个 */
-    --xh-_icon-wrapper-size: var(--xh-icon-wrapper-size, var(--xh-control-h-md));
-
-    /* 流给里面的图元——包括自己写了档位的那一枚，它的档位取值也读这个槽，
-       图元直径因此始终跟着底座换档 */
-    --xh-icon-size: var(--xh-icon-wrapper-glyph-size, var(--xh-glyph-size-md));
-
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--xh-_icon-wrapper-size);
-    block-size: var(--xh-_icon-wrapper-size);
-    border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-icon-wrapper-radius, var(--xh-shape-circle));
-    background: var(--xh-icon-wrapper-bg, var(--xh-bg-subtle));
-    color: var(--xh-icon-wrapper-fg, var(--xh-fg-default));
-    line-height: var(--xh-leading-none);
-  }
-
-  /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
-     不补的话作者给节点加 hidden 后它照样显示 */
-  [data-scope='icon-wrapper'][data-part='root'][hidden] {
-    display: none;
-  }
-
-  /* —— 形态 —— */
-  /* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的品牌/中性配色。
-     实心档还在顶边画一条极浅的内高光，把这块底座衬出厚度；另外三档面上没有实心底，不画 */
-  [data-scope='icon-wrapper'][data-part='root'][data-variant='solid'] {
-    --xh-_icon-wrapper-highlight: var(--xh-_highlight-tone);
-
-    background: var(--xh-_tone, var(--xh-bg-brand));
-    color: var(--xh-_tone-on, var(--xh-fg-on-brand));
-    box-shadow: var(--xh-icon-wrapper-shadow, var(--xh-_icon-wrapper-highlight));
-  }
-
-  [data-scope='icon-wrapper'][data-part='root'][data-variant='subtle'] {
-    background: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    color: var(--xh-_tone-fg, var(--xh-fg-default));
-  }
-
-  [data-scope='icon-wrapper'][data-part='root'][data-variant='outline'] {
-    border-color: var(--xh-_tone-border, var(--xh-border-default));
-    background: transparent;
-    color: var(--xh-_tone-fg, var(--xh-fg-default));
-  }
-
-  [data-scope='icon-wrapper'][data-part='root'][data-variant='ghost'] {
-    background: transparent;
-    color: var(--xh-_tone-fg, var(--xh-fg-default));
-  }
-
-  /* —— 尺寸 —— */
-  /* 缺省档写在上面的基础规则里 */
-  [data-scope='icon-wrapper'][data-part='root'][data-size='sm'] {
-    --xh-_icon-wrapper-size: var(--xh-icon-wrapper-size, var(--xh-control-h-sm));
-    --xh-icon-size: var(--xh-icon-wrapper-glyph-size, var(--xh-glyph-size-sm));
-  }
-
-  [data-scope='icon-wrapper'][data-part='root'][data-size='lg'] {
-    --xh-_icon-wrapper-size: var(--xh-icon-wrapper-size, var(--xh-control-h-lg));
-    --xh-icon-size: var(--xh-icon-wrapper-glyph-size, var(--xh-glyph-size-lg));
-  }
-}
-
 /* styles/kbd.css */
 /* 定义 kbd 样式。 */
 
@@ -29700,6 +29622,106 @@
 
   [data-scope='icon'][data-part='root'][data-flip='both'] {
     scale: -1 -1;
+  }
+
+  /* —— 底框 —— */
+  /*
+   * 加了框的图标是一个定直径的圆底座：框画在 <svg> 自己的盒上，图元落在内容盒里居中。
+   * sm / md / lg 三档框与头像同档（取同一支控件高度令牌），图元按自己的档位取字形直径，
+   * 内衬由两者之差算出，框换档时图元跟着一起换。
+   * 框里的图元不读外层统一图元直径的通道 --xh-icon-size：框自己就是一个定尺对象，
+   * 落在按钮、提示条这类下发图元直径的容器里也不被改小。
+   * 排在档位与语气之后：框接管了盒的尺寸与配色。
+   */
+  [data-scope='icon'][data-part='root'][data-frame] {
+    /* 三档之外的档位经两支 step 槽给出字形直径与框直径，三档本身在下面的档位块里换 */
+    --xh-_icon-glyph: var(--xh-icon-frame-glyph-size, var(--xh-_icon-glyph-step, var(--xh-glyph-size-md)));
+    --xh-_icon-frame-size: var(--xh-icon-frame-size, var(--xh-_icon-frame-step, var(--xh-control-h-md)));
+
+    inline-size: var(--xh-_icon-frame-size);
+    block-size: var(--xh-_icon-frame-size);
+    padding: calc((var(--xh-_icon-frame-size) - var(--xh-_icon-glyph)) / 2 - var(--xh-stroke-thin));
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-icon-frame-radius, var(--xh-shape-circle));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame][data-size='sm'] {
+    --xh-_icon-glyph: var(--xh-icon-frame-glyph-size, var(--xh-glyph-size-sm));
+    --xh-_icon-frame-size: var(--xh-icon-frame-size, var(--xh-control-h-sm));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame][data-size='lg'] {
+    --xh-_icon-glyph: var(--xh-icon-frame-glyph-size, var(--xh-glyph-size-lg));
+    --xh-_icon-frame-size: var(--xh-icon-frame-size, var(--xh-control-h-lg));
+  }
+
+  /* 头像只有三档；其余档的框沿用 md 档的内衬厚度：框直径 = 本档字形 + md 档框与字形之差 */
+  [data-scope='icon'][data-part='root'][data-frame][data-size='text'] {
+    --xh-_icon-glyph-step: var(--xh-glyph-size-text);
+    --xh-_icon-frame-step: calc(var(--xh-glyph-size-text) + var(--xh-control-h-md) - var(--xh-glyph-size-md));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame][data-size='xl'] {
+    --xh-_icon-glyph-step: var(--xh-glyph-size-xl);
+    --xh-_icon-frame-step: calc(var(--xh-glyph-size-xl) + var(--xh-control-h-md) - var(--xh-glyph-size-md));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame][data-size='2xl'] {
+    --xh-_icon-glyph-step: var(--xh-glyph-size-2xl);
+    --xh-_icon-frame-step: calc(var(--xh-glyph-size-2xl) + var(--xh-control-h-md) - var(--xh-glyph-size-md));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame][data-size='3xl'] {
+    --xh-_icon-glyph-step: var(--xh-glyph-size-3xl);
+    --xh-_icon-frame-step: calc(var(--xh-glyph-size-3xl) + var(--xh-control-h-md) - var(--xh-glyph-size-md));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame][data-size='4xl'] {
+    --xh-_icon-glyph-step: var(--xh-glyph-size-4xl);
+    --xh-_icon-frame-step: calc(var(--xh-glyph-size-4xl) + var(--xh-control-h-md) - var(--xh-glyph-size-md));
+  }
+
+  /* 框的四种形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写语气取品牌实心 / 中性。
+     语气只认自己身上的 data-tone：语气槽会沿继承流下来，放在语气容器里的框不跟着改色。
+     实心档在顶边画一条极浅的内高光，把这块底座衬出厚度；另外三档面上没有实心底，不画 */
+  [data-scope='icon'][data-part='root'][data-frame='solid'] {
+    background: var(--xh-icon-frame-bg, var(--xh-bg-brand));
+    box-shadow: var(--xh-icon-frame-shadow, var(--xh-_highlight-brand));
+    color: var(--xh-icon-fg, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame='solid'][data-tone] {
+    background: var(--xh-icon-frame-bg, var(--xh-_tone));
+    box-shadow: var(--xh-icon-frame-shadow, var(--xh-_highlight-tone));
+    color: var(--xh-icon-fg, var(--xh-_tone-on));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame='subtle'] {
+    background: var(--xh-icon-frame-bg, var(--xh-bg-subtle));
+    color: var(--xh-icon-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame='subtle'][data-tone] {
+    background: var(--xh-icon-frame-bg, var(--xh-_tone-subtle));
+    color: var(--xh-icon-fg, var(--xh-_tone-fg));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame='outline'] {
+    border-color: var(--xh-icon-frame-border, var(--xh-border-default));
+    color: var(--xh-icon-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame='outline'][data-tone] {
+    border-color: var(--xh-icon-frame-border, var(--xh-_tone-border));
+    color: var(--xh-icon-fg, var(--xh-_tone-fg));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame='ghost'] {
+    color: var(--xh-icon-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='icon'][data-part='root'][data-frame='ghost'][data-tone] {
+    color: var(--xh-icon-fg, var(--xh-_tone-fg));
   }
 }
 

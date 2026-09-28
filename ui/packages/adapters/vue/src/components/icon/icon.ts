@@ -5,7 +5,7 @@
 
 // 提供 icon 相关实现。
 
-import type { IconNode, IconRecord, Tone } from '@xihan-ui/core'
+import type { ActionVariant, IconNode, IconRecord, Tone } from '@xihan-ui/core'
 import type { IconFlip, IconProps, IconRotate, IconSize, IconWeight } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
@@ -36,6 +36,7 @@ export const XhIcon = defineComponent({
     size: { type: String as PropType<IconSize> },
     weight: { type: String as PropType<IconWeight> },
     tone: { type: String as PropType<Tone> },
+    frame: { type: String as PropType<ActionVariant> },
     rotate: { type: [Number, String] as PropType<IconRotate | string> },
     flip: { type: String as PropType<IconFlip> },
   },

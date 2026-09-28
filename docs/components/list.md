@@ -67,7 +67,7 @@ size 改变条目的内边距、图文间距与两行文字的字号，不传 si
 
 ### 组合
 
-- 媒体位放[头像](./avatar)或[图标块](./icon-wrapper)；操作位放[按钮](./button)或[菜单](./menu)；末尾接[分页](./pagination)或[无限滚动](./infinite-scroll)。
+- 媒体位放[头像](./avatar)或带底框的[图标](./icon)；操作位放[按钮](./button)或[菜单](./menu)；末尾接[分页](./pagination)或[无限滚动](./infinite-scroll)。
 
 ### 最佳实践
 

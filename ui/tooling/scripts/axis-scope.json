@@ -157,10 +157,6 @@
     "tone",
     "size"
   ],
-  "icon-wrapper": [
-    "variant",
-    "size"
-  ],
   "image": [],
   "image-cropper": [],
   "image-viewer": [

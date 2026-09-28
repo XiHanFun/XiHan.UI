@@ -38,10 +38,6 @@
           "name": "图标"
         },
         {
-          "id": "icon-wrapper",
-          "name": "图标块"
-        },
-        {
           "id": "scrollbar",
           "name": "滚动条"
         },

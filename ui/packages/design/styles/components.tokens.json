@@ -37213,14 +37213,148 @@
       ],
       "state": [
         "default",
+        "frame=ghost",
+        "frame=outline",
+        "frame=solid",
+        "frame=subtle",
         "tone"
       ],
       "defaultToken": [
         "--xh-_tone-fg",
+        "--xh-_tone-on",
+        "--xh-fg-default",
+        "--xh-fg-on-brand",
         "currentColor"
       ],
       "visibility": "public",
       "description": "icon 的 root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-icon-frame-bg",
+      "component": "icon",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "frame=solid",
+        "frame=subtle",
+        "tone"
+      ],
+      "defaultToken": [
+        "--xh-_tone",
+        "--xh-_tone-subtle",
+        "--xh-bg-brand",
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "icon 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-icon-frame-border",
+      "component": "icon",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "frame=outline",
+        "tone"
+      ],
+      "defaultToken": [
+        "--xh-_tone-border",
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "icon 的 root 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-icon-frame-glyph-size",
+      "component": "icon",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "padding"
+      ],
+      "state": [
+        "frame",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-_icon-glyph-step",
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "icon 的 root 部件 padding 覆盖槽。"
+    },
+    {
+      "name": "--xh-icon-frame-radius",
+      "component": "icon",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "frame"
+      ],
+      "defaultToken": [
+        "--xh-shape-circle"
+      ],
+      "visibility": "public",
+      "description": "icon 的 root 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-icon-frame-shadow",
+      "component": "icon",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "frame=solid",
+        "tone"
+      ],
+      "defaultToken": [
+        "--xh-_highlight-brand",
+        "--xh-_highlight-tone"
+      ],
+      "visibility": "public",
+      "description": "icon 的 root 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-icon-frame-size",
+      "component": "icon",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "padding"
+      ],
+      "state": [
+        "frame",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-_icon-frame-step",
+        "--xh-control-h-lg",
+        "--xh-control-h-sm"
+      ],
+      "visibility": "public",
+      "description": "icon 的 root 部件 block-size、inline-size、padding 覆盖槽。"
     },
     {
       "name": "--xh-icon-shift",
@@ -37358,123 +37492,6 @@
       ],
       "visibility": "public",
       "description": "icon 的 root 部件 stroke-width 覆盖槽。"
-    },
-    {
-      "name": "--xh-icon-wrapper-bg",
-      "component": "icon-wrapper",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "icon-wrapper 的 root 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-icon-wrapper-fg",
-      "component": "icon-wrapper",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-fg-default"
-      ],
-      "visibility": "public",
-      "description": "icon-wrapper 的 root 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-icon-wrapper-glyph-size",
-      "component": "icon-wrapper",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "--xh-icon-size"
-      ],
-      "state": [
-        "default",
-        "size=lg",
-        "size=sm"
-      ],
-      "defaultToken": [
-        "--xh-glyph-size-lg",
-        "--xh-glyph-size-md",
-        "--xh-glyph-size-sm"
-      ],
-      "visibility": "public",
-      "description": "icon-wrapper 的 root 部件 --xh-icon-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-icon-wrapper-radius",
-      "component": "icon-wrapper",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-circle"
-      ],
-      "visibility": "public",
-      "description": "icon-wrapper 的 root 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-icon-wrapper-shadow",
-      "component": "icon-wrapper",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "variant=solid"
-      ],
-      "defaultToken": [
-        "--xh-_icon-wrapper-highlight"
-      ],
-      "visibility": "public",
-      "description": "icon-wrapper 的 root 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-icon-wrapper-size",
-      "component": "icon-wrapper",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "block-size",
-        "inline-size"
-      ],
-      "state": [
-        "default",
-        "size=lg",
-        "size=sm"
-      ],
-      "defaultToken": [
-        "--xh-control-h-lg",
-        "--xh-control-h-md",
-        "--xh-control-h-sm"
-      ],
-      "visibility": "public",
-      "description": "icon-wrapper 的 root 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-image-bg",

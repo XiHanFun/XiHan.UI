@@ -225,6 +225,47 @@ export const iconSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '底框：frame 与语气、档位各落一个属性，装饰态照旧退出无障碍树',
+      spec: { apg: APG },
+      props: { icon: CHECK, frame: 'subtle', tone: 'success', size: 'lg' },
+      initial: {
+        parts: {
+          root: {
+            'data-frame': 'subtle',
+            'data-tone': 'success',
+            'data-size': 'lg',
+            'aria-hidden': 'true',
+            'role': null,
+            'aria-label': null,
+          },
+        },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { frame: 'solid' },
+          expect: {
+            parts: { root: { 'data-frame': 'solid' } },
+          },
+        },
+      ],
+    },
+    {
+      name: '底框不改命名：有名字的图标加了框仍是 role="img" + aria-label',
+      spec: { apg: APG },
+      props: { icon: CHECK, label: '已通过', frame: 'solid' },
+      initial: {
+        parts: {
+          root: {
+            'data-frame': 'solid',
+            'role': 'img',
+            'aria-label': '已通过',
+            'aria-hidden': null,
+          },
+        },
+      },
+    },
+    {
       name: '旋转与翻转：只收三个旋转档，其余值不写出；两者可以同写',
       spec: { apg: APG },
       props: { icon: CHECK, rotate: 90, flip: 'horizontal' },

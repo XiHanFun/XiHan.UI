@@ -104,7 +104,6 @@
     "./hierarchy-chart.css": "./css/hierarchy-chart.css",
     "./highlight.css": "./css/highlight.css",
     "./hover-card.css": "./css/hover-card.css",
-    "./icon-wrapper.css": "./css/icon-wrapper.css",
     "./icon.css": "./css/icon.css",
     "./kbd.css": "./css/kbd.css",
     "./image-cropper.css": "./css/image-cropper.css",

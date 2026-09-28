@@ -291,7 +291,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | control | 4px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger |
 | surface | 8px | Card、Alert、Panel、列表容器、Segmented 与 Tabs segment 的轨道 |
 | overlay | 12px | Popover、Menu、Dialog、Drawer、Toast |
-| circle | 50% | 宽高相等的圆形对象：avatar、icon-wrapper、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点 |
+| circle | 50% | 宽高相等的圆形对象：avatar、加了底框的 icon、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点 |
 | pill | 9999px | 仅两类身份：(a) 状态 chip：Badge、Tag、ToolCall status、Approval result、QuestionFlow result；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、skeleton text、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄、不贴边的 liquid 一维栏（§8.5）、随文的引用编号（Citation trigger） |
 
 强制规则：

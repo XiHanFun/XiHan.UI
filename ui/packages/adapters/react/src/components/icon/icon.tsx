@@ -5,7 +5,7 @@
 
 // 提供 icon 相关实现。
 
-import type { IconNode, IconRecord, Tone } from '@xihan-ui/core'
+import type { ActionVariant, IconNode, IconRecord, Tone } from '@xihan-ui/core'
 import type { IconFlip, IconProps, IconRotate, IconSize, IconWeight } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactElement, ReactNode } from 'react'
 import { connectIcon } from '@xihan-ui/headless'
@@ -35,6 +35,8 @@ export interface XhIconProps extends Omit<ComponentPropsWithRef<'svg'>, 'rotate'
   size?: IconSize
   weight?: IconWeight
   tone?: Tone
+  /** 底框：solid / subtle / outline / ghost，不写即无框；框只是外观，不改可及名。 */
+  frame?: ActionVariant
   /** 旋转档位：90 / 180 / 270，不属于这三档的一律不写出。 */
   rotate?: IconRotate | string
   flip?: IconFlip
@@ -53,12 +55,13 @@ export function XhIcon({
   size,
   weight,
   tone,
+  frame,
   rotate,
   flip,
   children,
   ...rest
 }: XhIconProps): ReactNode {
-  const configured = withXhConfig('icon', { icon, label, size, weight, tone, rotate, flip } as IconProps)
+  const configured = withXhConfig('icon', { icon, label, size, weight, tone, frame, rotate, flip } as IconProps)
   const api = connectIcon(configured, reactNormalize)
   return (
     <svg {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
