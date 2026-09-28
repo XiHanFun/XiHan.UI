@@ -5,7 +5,7 @@
 
 // 提供 signature pad 相关实现。
 
-import type { SignaturePadApi, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations } from '@xihan-ui/headless'
+import type { SignaturePadApi, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations, SignaturePadValue } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
@@ -19,23 +19,40 @@ type SignaturePadProps = SignaturePadSchema['props']
 
 function noop(): void {}
 
-/** 函数式 children 的载荷：笔迹路径与空态、落笔中标记，以及导出与清空的动作。 */
+/** 函数式 children 的载荷：签名数据、笔迹路径与空态、落笔中标记，以及导出、清空、撤销与重做的动作。 */
 export type SignaturePadRootSlotProps = Pick<
   SignaturePadApi,
-  'paths' | 'empty' | 'drawing' | 'disabled' | 'readOnly' | 'statusText' | 'toSvg' | 'clear'
+  | 'value'
+  | 'paths'
+  | 'empty'
+  | 'drawing'
+  | 'disabled'
+  | 'readOnly'
+  | 'canUndo'
+  | 'canRedo'
+  | 'statusText'
+  | 'toSvg'
+  | 'clear'
+  | 'undo'
+  | 'redo'
 >
 
-export interface XhSignaturePadRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+export interface XhSignaturePadRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
   invalid?: boolean
   /** 表单字段名；提供后才参与提交。 */
   name?: string
+  /** 签名数据；提供即受控。 */
+  value?: SignaturePadValue
+  /** 非受控初值，也是表单重置回到的那一份。 */
+  defaultValue?: SignaturePadValue
   drawing?: SignaturePadDrawingOptions
   translations?: Partial<SignaturePadTranslations>
   onDraw?: SignaturePadProps['onDraw']
   onDrawEnd?: SignaturePadProps['onDrawEnd']
+  onValueChange?: SignaturePadProps['onValueChange']
   children?: SlotChildren<SignaturePadRootSlotProps>
 }
 
@@ -45,10 +62,13 @@ export function XhSignaturePadRoot({
   required,
   invalid,
   name,
+  value,
+  defaultValue,
   drawing,
   translations,
   onDraw,
   onDrawEnd,
+  onValueChange,
   children,
   ...rest
 }: XhSignaturePadRootProps): ReactNode {
@@ -58,10 +78,13 @@ export function XhSignaturePadRoot({
     required,
     invalid,
     name,
+    value,
+    defaultValue,
     drawing,
     translations,
     onDraw,
     onDrawEnd,
+    onValueChange,
   })) as SignaturePadProps)
   const api = ctx.api
   return (
@@ -74,21 +97,26 @@ export function XhSignaturePadRoot({
         )}
       >
         {renderSlot(children, {
+          value: api.value,
           paths: api.paths,
           empty: api.empty,
           drawing: api.drawing,
           disabled: api.disabled,
           readOnly: api.readOnly,
+          canUndo: api.canUndo,
+          canRedo: api.canRedo,
           statusText: api.statusText,
           toSvg: api.toSvg,
           clear: api.clear,
+          undo: api.undo,
+          redo: api.redo,
         })}
       </div>
     </SignaturePadProvider>
   )
 }
 
-XhSignaturePadRoot.xhEvents = ['draw', 'draw-end'] as const
+XhSignaturePadRoot.xhEvents = ['draw', 'draw-end', 'value-change'] as const
 
 export interface XhSignaturePadLabelProps extends ComponentPropsWithRef<'span'> {}
 /** 不使用原生 label：画布是 svg、不是可被 label 关联的表单控件，名字经 aria-labelledby 关联。 */
@@ -139,6 +167,26 @@ export function XhSignaturePadClearTrigger({ children, ...rest }: XhSignaturePad
   const ctx = useSignaturePadContext()
   return (
     <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </button>
+  )
+}
+
+export interface XhSignaturePadUndoTriggerProps extends ComponentPropsWithRef<'button'> {}
+export function XhSignaturePadUndoTrigger({ children, ...rest }: XhSignaturePadUndoTriggerProps): ReactNode {
+  const ctx = useSignaturePadContext()
+  return (
+    <button {...mergeReactProps(ctx.api.getUndoTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </button>
+  )
+}
+
+export interface XhSignaturePadRedoTriggerProps extends ComponentPropsWithRef<'button'> {}
+export function XhSignaturePadRedoTrigger({ children, ...rest }: XhSignaturePadRedoTriggerProps): ReactNode {
+  const ctx = useSignaturePadContext()
+  return (
+    <button {...mergeReactProps(ctx.api.getRedoTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}
     </button>
   )

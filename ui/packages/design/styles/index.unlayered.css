@@ -12718,6 +12718,19 @@
   --xh-action-fg-rest: var(--xh-signature-pad-clear-fg-empty, var(--xh-fg-muted));
 }
 
+/*
+ * 撤销与重做按钮与清空按钮同一身份：盒型、sm 档几何、outline 四态面、0.97 按压与粗指针命中区全由家族配方给出。
+ * 没有可撤销或可重做的一步时连接层投影 data-disabled + aria-disabled，家族给置灰面，焦点仍留在钮上。
+ */
+[data-scope='signature-pad'][data-part='undo-trigger'],
+[data-scope='signature-pad'][data-part='redo-trigger'] {
+  /* 作者塞进来的图标随档取字形尺（sm = 16px） */
+  --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
+  /* 竖排容器里不铺满一行：按钮只占自己的宽 */
+  align-self: flex-start;
+}
+
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色 */
 [data-scope='signature-pad'][data-part='clear-trigger'][data-xh-action-variant='solid']:focus-visible {
   --xh-action-ring-color-focus-visible: currentColor;
@@ -12739,6 +12752,8 @@
 /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */
 [data-scope='signature-pad'][data-part='root'][hidden],
 [data-scope='signature-pad'][data-part='control'][hidden],
+[data-scope='signature-pad'][data-part='undo-trigger'][hidden],
+[data-scope='signature-pad'][data-part='redo-trigger'][hidden],
 [data-scope='signature-pad'][data-part='clear-trigger'][hidden] {
   display: none;
 }

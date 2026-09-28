@@ -5,10 +5,9 @@
 
 // 提供 signature pad 相关实现。
 
-import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { SignaturePadApi, SignaturePadSchema } from './signature-pad.types'
-import { dataAttr } from '@xihan-ui/core'
-import { pressHandlers } from '../shared/press'
+import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { SignaturePadApi, SignaturePadSchema, SignaturePadTrigger } from './signature-pad.types'
+import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { signaturePadAnatomy } from './signature-pad.anatomy'
 import { signaturePadSvg, strokesToPaths } from './signature-pad.geometry'
@@ -32,17 +31,22 @@ export function connectSignaturePad<T extends PropTypes>(
   const readOnly = !!prop('readOnly')
   const required = !!prop('required')
   const invalid = !!prop('invalid')
-  // 能否落笔；清空按钮用的是同一道判据
+  // 能否落笔；三颗按钮用的是同一道判据
   const editable = !disabled && !readOnly
   const drawing = state.matches('drawing')
   const translations = prop('translations')
   const ids = scope.ids('signature-pad', 'label')
-  // 清空按钮的按压通道：Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档
-  const press = pressHandlers(service)
 
-  const surface = context.get('surface')
-  const paths = strokesToPaths(context.get('strokes'), prop('drawing') ?? {})
+  const value = context.get('value')
+  const draft = context.get('draft')
+  // 正在写的那一笔还没并进 value，画面与导出都要带上它
+  const strokes = draft ? [...value.strokes, draft.stroke] : value.strokes
+  const surface = draft ? draft.surface : value.surface
+  const paths = strokesToPaths(strokes, prop('drawing') ?? {})
   const empty = paths.length === 0
+  // 撤销与重做只在两笔之间：落笔途中那一笔还没定稿，历史里没有它
+  const canUndo = !drawing && context.get('past').length > 0
+  const canRedo = !drawing && context.get('future').length > 0
   const statusText = empty
     ? translations?.statusEmpty ?? 'No signature yet'
     : translations?.statusSigned ?? 'Signed'
@@ -50,15 +54,42 @@ export function connectSignaturePad<T extends PropTypes>(
   const d = paths.join(' ')
   const toSvg = (): string => signaturePadSvg(paths, surface)
 
+  // 三颗按钮的按压通道：真源是机器 context 里「正被按住的那一颗」，各按钮按自己的键合成一份跟踪器；
+  // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档
+  const pressed = context.get('pressed')
+  const press = (trigger: SignaturePadTrigger): PressHandlers => createPressTracker({
+    isPressed: () => context.get('pressed') === trigger,
+    onChange: down => send(down ? { type: 'PRESS.START', trigger } : { type: 'PRESS.END', trigger }),
+  })
+
+  /** 某颗按钮的按压处理器，连同它此刻是否被按住。 */
+  const pressProps = (trigger: SignaturePadTrigger): Record<string, unknown> => {
+    const handlers = press(trigger)
+    return {
+      'data-pressed': dataAttr(pressed === trigger),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
+
   return {
+    value,
     paths,
     empty,
     drawing,
     disabled,
     readOnly,
+    canUndo,
+    canRedo,
     statusText,
     toSvg,
     clear: () => send({ type: 'STROKES.CLEAR' }),
+    undo: () => send({ type: 'HISTORY.UNDO' }),
+    redo: () => send({ type: 'HISTORY.REDO' }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -152,17 +183,54 @@ export function connectSignaturePad<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'sm',
       'data-xh-action-variant': 'outline',
-      'data-pressed': dataAttr(context.get('pressed')),
+      ...pressProps('clear'),
       'onClick': () => {
         if (editable)
           send({ type: 'STROKES.CLEAR' })
       },
-      'onKeyDown': press.onKeyDown,
-      'onKeyUp': press.onKeyUp,
-      'onBlur': press.onBlur,
-      'onPointerDown': press.onPointerDown,
-      'onPointerUp': press.onPointerUp,
-      'onPointerCancel': press.onPointerCancel,
+    }),
+
+    getUndoTriggerProps: () => normalize.button({
+      ...parts['undo-trigger'].attrs,
+      'type': 'button',
+      // 按钮里通常只有一个回转箭头，读屏念不出它撤销的是什么
+      'aria-label': translations?.undoTrigger ?? 'Undo last stroke',
+      // 整块禁用或只读时走原生 disabled；撤销栈空时走 aria-disabled，焦点留在原处——
+      // 原生 disabled 会让刚把最后一笔撤掉的这颗钮把焦点丢回 body
+      'disabled': !editable || undefined,
+      'aria-disabled': editable && !canUndo ? 'true' : undefined,
+      'data-disabled': dataAttr(!editable || !canUndo),
+      // 与清空按钮同一身份：Action Control text 档 sm、缺省 outline
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'outline',
+      ...pressProps('undo'),
+      'onClick': () => {
+        if (editable && canUndo)
+          send({ type: 'HISTORY.UNDO' })
+      },
+    }),
+
+    getRedoTriggerProps: () => normalize.button({
+      ...parts['redo-trigger'].attrs,
+      'type': 'button',
+      'aria-label': translations?.redoTrigger ?? 'Redo stroke',
+      // 重做栈空时走 aria-disabled，理由同撤销按钮
+      'disabled': !editable || undefined,
+      'aria-disabled': editable && !canRedo ? 'true' : undefined,
+      'data-disabled': dataAttr(!editable || !canRedo),
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'outline',
+      ...pressProps('redo'),
+      'onClick': () => {
+        if (editable && canRedo)
+          send({ type: 'HISTORY.REDO' })
+      },
     }),
 
     getStatusProps: () => normalize.element({

@@ -24,7 +24,7 @@ export interface SignaturePadContext {
 
 export function useSignaturePad(
   props: SignaturePadSchema['props'],
-  callbacks: Pick<SignaturePadSchema['props'], 'onDraw' | 'onDrawEnd'> = {},
+  callbacks: Pick<SignaturePadSchema['props'], 'onDraw' | 'onDrawEnd' | 'onValueChange'> = {},
 ): SignaturePadContext {
   const controlRef = ref<Element | null>(null)
 

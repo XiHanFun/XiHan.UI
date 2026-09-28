@@ -6,12 +6,20 @@
  */
 
 import type { Service } from '@xihan-ui/core'
-import type { SignaturePadDrawDetails, SignaturePadDrawEndDetails, SignaturePadSchema } from '../src/signature-pad/index'
+import type {
+  SignaturePadDrawDetails,
+  SignaturePadDrawEndDetails,
+  SignaturePadSchema,
+  SignaturePadStroke,
+  SignaturePadValue,
+  SignaturePadValueChangeDetails,
+} from '../src/signature-pad/index'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   connectSignaturePad,
+  EMPTY_SIGNATURE,
   pathFromPoints,
   signaturePadMachine,
   signaturePadSvg,
@@ -69,13 +77,20 @@ function makeService(initial: Props = {}): Harness {
     setProps: (next) => {
       props = { ...props, ...next }
       // props 是从外面换进来的，不经 set；推一下让订阅者按新 props 重算
-      service.context.set('strokes', service.context.get('strokes'))
+      service.context.set('pressed', service.context.get('pressed'))
     },
   }
 }
 
 function api(service: Service<SignaturePadSchema>) {
   return connectSignaturePad(service, normalizeProps)
+}
+
+/** 画面上的全部笔：定稿的加上正在写的那一笔。 */
+function strokesOf(h: Harness): SignaturePadStroke[] {
+  const draft = h.service.context.get('draft')
+  const strokes = h.service.context.get('value').strokes
+  return draft ? [...strokes, draft.stroke] : strokes
 }
 
 /** 落一笔：按下、依次移动、抬手。坐标是画布内坐标，这里加回矩形原点。 */
@@ -161,7 +176,7 @@ describe('signaturePadMachine 落笔与收笔', () => {
     document.dispatchEvent(new PointerEvent('pointermove', { clientX: 60, clientY: 40, bubbles: true }))
     document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
     expect(h.service.state.get()).toBe('idle')
-    const strokes = h.service.context.get('strokes')
+    const strokes = strokesOf(h)
     expect(strokes).toHaveLength(1)
     // 坐标以画布左上角为原点：客户端坐标减去矩形原点
     expect(strokes[0]!.points).toEqual([
@@ -174,32 +189,32 @@ describe('signaturePadMachine 落笔与收笔', () => {
     const h = makeService()
     drawStroke(h, [[0, 0], [40, 30]])
     document.dispatchEvent(new PointerEvent('pointermove', { clientX: 200, clientY: 100, bubbles: true }))
-    expect(h.service.context.get('strokes')[0]!.points).toHaveLength(2)
+    expect(strokesOf(h)[0]!.points).toHaveLength(2)
   })
 
   it('低于最小间距的移动被丢掉：手抖与重采样噪声会让轮廓自交', () => {
     const h = makeService()
     h.service.send({ type: 'DRAW.START', point: { clientX: 20, clientY: 10 } })
     document.dispatchEvent(new PointerEvent('pointermove', { clientX: 20.4, clientY: 10, bubbles: true }))
-    expect(h.service.context.get('strokes')[0]!.points).toHaveLength(1)
+    expect(strokesOf(h)[0]!.points).toHaveLength(1)
     document.dispatchEvent(new PointerEvent('pointermove', { clientX: 25, clientY: 10, bubbles: true }))
-    expect(h.service.context.get('strokes')[0]!.points).toHaveLength(2)
+    expect(strokesOf(h)[0]!.points).toHaveLength(2)
   })
 
   it('两笔各成一条子路径，落笔尺寸写进导出视窗', () => {
     const h = makeService()
     drawStroke(h, [[0, 0], [40, 30]])
     drawStroke(h, [[60, 0], [90, 30]])
-    expect(h.service.context.get('strokes')).toHaveLength(2)
+    expect(strokesOf(h)).toHaveLength(2)
     expect(api(h.service).paths).toHaveLength(2)
-    expect(h.service.context.get('surface')).toEqual({ width: 300, height: 120 })
+    expect(h.service.context.get('value').surface).toEqual({ width: 300, height: 120 })
   })
 
   it('画布没就位时一笔都落不下：没有坐标系就没有坐标', () => {
     const h = makeService()
     h.service.refs.set('getControlEl', () => null)
     h.service.send({ type: 'DRAW.START', point: { clientX: 20, clientY: 10 } })
-    expect(h.service.context.get('strokes')).toHaveLength(0)
+    expect(strokesOf(h)).toHaveLength(0)
   })
 
   it('onDraw 每收进一个点通知一次，onDrawEnd 抬笔才发一次并带上可提交的 SVG', () => {
@@ -244,44 +259,44 @@ describe('signaturePadMachine 落笔与收笔', () => {
     document.dispatchEvent(new PointerEvent('pointermove', { pointerId: 2, clientX: 300, clientY: 120, bubbles: true }))
     document.dispatchEvent(new PointerEvent('pointerup', { pointerId: 2, bubbles: true }))
     expect(h.service.state.get()).toBe('drawing')
-    expect(h.service.context.get('strokes')[0]!.points).toHaveLength(1)
+    expect(strokesOf(h)[0]!.points).toHaveLength(1)
 
     document.dispatchEvent(new PointerEvent('pointermove', { pointerId: 1, clientX: 60, clientY: 40, bubbles: true }))
     document.dispatchEvent(new PointerEvent('pointerup', { pointerId: 1, bubbles: true }))
     expect(h.service.state.get()).toBe('idle')
-    expect(h.service.context.get('strokes')[0]!.points).toHaveLength(2)
+    expect(strokesOf(h)[0]!.points).toHaveLength(2)
   })
 
   it('画布尺寸第一笔就钉住：容器变窄后落的新笔与旧笔在同一套坐标里', () => {
     const h = makeService()
     drawStroke(h, [[0, 0], [40, 30]])
-    expect(h.service.context.get('surface')).toEqual({ width: 300, height: 120 })
+    expect(h.service.context.get('value').surface).toEqual({ width: 300, height: 120 })
 
     // 容器缩到一半，笔迹坐标系不变，新落的点按比例放大回原坐标
     stubRect(h.control, 20, 10, 150, 60)
     drawStroke(h, [[20, 15], [40, 30]])
-    expect(h.service.context.get('surface')).toEqual({ width: 300, height: 120 })
-    expect(h.service.context.get('strokes')[1]!.points[0]).toMatchObject({ x: 40, y: 30 })
+    expect(h.service.context.get('value').surface).toEqual({ width: 300, height: 120 })
+    expect(strokesOf(h)[1]!.points[0]).toMatchObject({ x: 40, y: 30 })
 
     // 清空后重新量：下一笔按当时的画布定坐标系
     h.service.send({ type: 'STROKES.CLEAR' })
     drawStroke(h, [[10, 10], [40, 30]])
-    expect(h.service.context.get('surface')).toEqual({ width: 150, height: 60 })
+    expect(h.service.context.get('value').surface).toEqual({ width: 150, height: 60 })
   })
 
   it('禁用与只读都落不下笔；解除后照常能画', () => {
     const h = makeService({ disabled: true })
     h.service.send({ type: 'DRAW.START', point: { clientX: 20, clientY: 10 } })
     expect(h.service.state.get()).toBe('idle')
-    expect(h.service.context.get('strokes')).toHaveLength(0)
+    expect(strokesOf(h)).toHaveLength(0)
 
     h.setProps({ disabled: false, readOnly: true })
     h.service.send({ type: 'DRAW.START', point: { clientX: 20, clientY: 10 } })
-    expect(h.service.context.get('strokes')).toHaveLength(0)
+    expect(strokesOf(h)).toHaveLength(0)
 
     h.setProps({ readOnly: false })
     drawStroke(h, [[0, 0], [40, 30]])
-    expect(h.service.context.get('strokes')).toHaveLength(1)
+    expect(strokesOf(h)).toHaveLength(1)
   })
 
   it('落笔途中被禁用就不再收点，但抬笔照常收尾，状态不会卡在 drawing', () => {
@@ -289,7 +304,7 @@ describe('signaturePadMachine 落笔与收笔', () => {
     h.service.send({ type: 'DRAW.START', point: { clientX: 20, clientY: 10 } })
     h.setProps({ disabled: true })
     document.dispatchEvent(new PointerEvent('pointermove', { clientX: 60, clientY: 40, bubbles: true }))
-    expect(h.service.context.get('strokes')[0]!.points).toHaveLength(1)
+    expect(strokesOf(h)[0]!.points).toHaveLength(1)
     document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
     expect(h.service.state.get()).toBe('idle')
   })
@@ -305,11 +320,215 @@ describe('signaturePadMachine 落笔与收笔', () => {
 
     drawStroke(h, [[0, 0], [40, 30]])
     h.service.send({ type: 'FORM.RESET' })
-    expect(h.service.context.get('strokes')).toHaveLength(0)
+    expect(strokesOf(h)).toHaveLength(0)
+  })
+})
+
+/** 一份存下来的签名：坐标系比测试画布（300×120）大一倍。 */
+const SAVED: SignaturePadValue = {
+  strokes: [{ points: [{ x: 10, y: 10, pressure: 0.5 }, { x: 60, y: 40, pressure: 0.5 }] }],
+  surface: { width: 600, height: 240 },
+}
+
+describe('signaturePadMachine 值、回显与撤销重做', () => {
+  it('defaultValue 回显已存的签名：笔迹、视窗与表单影子都按存下的那份坐标系', () => {
+    const h = makeService({ defaultValue: SAVED, name: 'sign' })
+    const a = api(h.service)
+    expect(a.empty).toBe(false)
+    expect(a.paths).toHaveLength(1)
+    expect(a.value).toBe(SAVED)
+    expect(a.getControlProps()).toMatchObject({ viewBox: '0 0 600 240' })
+    expect(String((a.getHiddenInputProps() as Record<string, unknown>).value)).toContain('viewBox="0 0 600 240"')
+  })
+
+  it('回显之后接着写：新笔落在存下的坐标系里，画布缩了一半，点按比例放大回去', () => {
+    const h = makeService({ defaultValue: SAVED })
+    drawStroke(h, [[20, 15], [40, 30]])
+    expect(h.service.context.get('value').surface).toEqual({ width: 600, height: 240 })
+    expect(strokesOf(h)).toHaveLength(2)
+    expect(strokesOf(h)[1]!.points[0]).toMatchObject({ x: 40, y: 30 })
+  })
+
+  it('onValueChange 只在定稿时发：落笔途中逐点不发，抬笔、清空、撤销、重做各发一次', () => {
+    const changes: SignaturePadValueChangeDetails[] = []
+    const h = makeService({ onValueChange: details => changes.push(details) })
+    h.service.send({ type: 'DRAW.START', point: { clientX: 20, clientY: 10 } })
+    document.dispatchEvent(new PointerEvent('pointermove', { clientX: 60, clientY: 40, bubbles: true }))
+    expect(changes).toHaveLength(0)
+    document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+    expect(changes).toHaveLength(1)
+    expect(changes[0]!.value.strokes).toHaveLength(1)
+    expect(changes[0]!.value.surface).toEqual({ width: 300, height: 120 })
+
+    h.service.send({ type: 'STROKES.CLEAR' })
+    h.service.send({ type: 'HISTORY.UNDO' })
+    h.service.send({ type: 'HISTORY.REDO' })
+    expect(changes.map(c => c.value.strokes.length)).toEqual([1, 0, 1, 0])
+  })
+
+  it('撤销一笔一步，重做按原样放回；撤到空时坐标系也退回未量，下一笔重新量画布', () => {
+    const h = makeService()
+    drawStroke(h, [[0, 0], [40, 30]])
+    drawStroke(h, [[60, 0], [90, 30]])
+    expect(api(h.service)).toMatchObject({ canUndo: true, canRedo: false })
+
+    h.service.send({ type: 'HISTORY.UNDO' })
+    expect(strokesOf(h)).toHaveLength(1)
+    expect(api(h.service)).toMatchObject({ canUndo: true, canRedo: true })
+    h.service.send({ type: 'HISTORY.REDO' })
+    expect(strokesOf(h)).toHaveLength(2)
+    expect(api(h.service).canRedo).toBe(false)
+
+    h.service.send({ type: 'HISTORY.UNDO' })
+    h.service.send({ type: 'HISTORY.UNDO' })
+    expect(api(h.service)).toMatchObject({ empty: true, canUndo: false, canRedo: true })
+    expect(h.service.context.get('value').surface).toEqual({ width: 0, height: 0 })
+    stubRect(h.control, 20, 10, 150, 60)
+    drawStroke(h, [[10, 10], [40, 30]])
+    expect(h.service.context.get('value').surface).toEqual({ width: 150, height: 60 })
+  })
+
+  it('再落一笔后重做栈作废：分叉之后的历史不能再接回来', () => {
+    const h = makeService()
+    drawStroke(h, [[0, 0], [40, 30]])
+    drawStroke(h, [[60, 0], [90, 30]])
+    h.service.send({ type: 'HISTORY.UNDO' })
+    expect(api(h.service).canRedo).toBe(true)
+    drawStroke(h, [[10, 50], [80, 60]])
+    expect(api(h.service).canRedo).toBe(false)
+    h.service.send({ type: 'HISTORY.REDO' })
+    expect(strokesOf(h)).toHaveLength(2)
+  })
+
+  it('清空也是一步：误清之后撤销能把整份签名找回来，定稿通知跟着发', () => {
+    const h = makeService()
+    drawStroke(h, [[0, 0], [40, 30]])
+    drawStroke(h, [[60, 0], [90, 30]])
+    h.service.send({ type: 'STROKES.CLEAR' })
+    expect(api(h.service).empty).toBe(true)
+    h.ends.length = 0
+    h.service.send({ type: 'HISTORY.UNDO' })
+    expect(strokesOf(h)).toHaveLength(2)
+    expect(h.ends).toHaveLength(1)
+    expect(h.ends[0]!.svg).toContain('viewBox="0 0 300 120"')
+  })
+
+  it('落笔途中不认撤销与重做：那一笔还没定稿，历史里没有它', () => {
+    const h = makeService()
+    drawStroke(h, [[0, 0], [40, 30]])
+    h.service.send({ type: 'DRAW.START', point: { clientX: 80, clientY: 40 } })
+    expect(api(h.service).canUndo).toBe(false)
+    h.service.send({ type: 'HISTORY.UNDO' })
+    expect(strokesOf(h)).toHaveLength(2)
+    document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+    expect(api(h.service).canUndo).toBe(true)
+  })
+
+  it('受控：机器不改自己的值，只把定稿的新值发给宿主；落笔途中那一笔照常画出来', () => {
+    const changes: SignaturePadValueChangeDetails[] = []
+    const h = makeService({ value: SAVED, onValueChange: details => changes.push(details) })
+    h.service.send({ type: 'DRAW.START', point: { clientX: 20, clientY: 10 } })
+    expect(api(h.service).paths).toHaveLength(2)
+    document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+    expect(changes).toHaveLength(1)
+    expect(changes[0]!.value.strokes).toHaveLength(2)
+    // 宿主没写回，画面仍是宿主那一份
+    expect(h.service.context.get('value')).toBe(SAVED)
+    expect(api(h.service).paths).toHaveLength(1)
+  })
+
+  it('宿主从外面换了一份签名：撤销与重做栈作废；写回的是刚发出去的那份拷贝则照常保留', () => {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({ value: EMPTY_SIGNATURE })
+    const control = document.createElement('div')
+    document.body.appendChild(control)
+    stubRect(control, 20, 10, 300, 120)
+    const service = createService(signaturePadMachine, {
+      runtime,
+      props: () => ({
+        ...props.get(),
+        // 宿主按 JSON 往返存一份拷贝再写回：对象身份变了，内容没变
+        onValueChange: ({ value }) => props.set({ value: JSON.parse(JSON.stringify(value)) as SignaturePadValue }),
+      }),
+    })
+    service.refs.set('getControlEl', () => control)
+    runtime.start()
+    const draw = (x: number): void => {
+      service.send({ type: 'DRAW.START', point: { clientX: 20 + x, clientY: 10 } })
+      document.dispatchEvent(new PointerEvent('pointermove', { clientX: 60 + x, clientY: 40, bubbles: true }))
+      document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+    }
+    draw(0)
+    draw(100)
+    expect(connectSignaturePad(service, normalizeProps)).toMatchObject({ canUndo: true })
+    service.send({ type: 'HISTORY.UNDO' })
+    expect(service.context.get('value').strokes).toHaveLength(1)
+    expect(connectSignaturePad(service, normalizeProps)).toMatchObject({ canUndo: true, canRedo: true })
+
+    props.set({ value: SAVED })
+    expect(connectSignaturePad(service, normalizeProps)).toMatchObject({ canUndo: false, canRedo: false })
+    runtime.stop()
+  })
+
+  it('表单重置回到 defaultValue 并清掉历史；宿主攥着值又没声明默认值时一动不动', () => {
+    const h = makeService({ defaultValue: SAVED })
+    drawStroke(h, [[0, 0], [40, 30]])
+    h.service.send({ type: 'FORM.RESET' })
+    expect(h.service.context.get('value')).toBe(SAVED)
+    expect(api(h.service)).toMatchObject({ canUndo: false, canRedo: false })
+
+    const changes: SignaturePadValueChangeDetails[] = []
+    const controlled = makeService({ value: SAVED, onValueChange: details => changes.push(details) })
+    controlled.service.send({ type: 'FORM.RESET' })
+    expect(changes).toHaveLength(0)
   })
 })
 
 describe('connectSignaturePad 属性表', () => {
+  it('撤销与重做按钮：没东西可做时 aria-disabled 并按不进按压面，焦点留在原处；整块禁用走原生 disabled', () => {
+    type Dict = Record<string, unknown>
+    const key = (name: string): KeyboardEvent => ({ key: name, repeat: false, isComposing: false, keyCode: 0 } as KeyboardEvent)
+    const fire = (props: Dict, name: string, event: unknown): void => (props[name] as (e: unknown) => void)(event)
+    const h = makeService()
+    const undo = (): Dict => api(h.service).getUndoTriggerProps() as Dict
+    const redo = (): Dict => api(h.service).getRedoTriggerProps() as Dict
+    expect(undo()).toMatchObject({
+      'type': 'button',
+      'aria-label': 'Undo last stroke',
+      'aria-disabled': 'true',
+      'data-disabled': '',
+      'disabled': undefined,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'outline',
+    })
+    expect(redo()).toMatchObject({ 'aria-label': 'Redo stroke', 'aria-disabled': 'true' })
+    fire(undo(), 'onKeyDown', key(' '))
+    expect(undo()['data-pressed']).toBeUndefined()
+    fire(undo(), 'onClick', {})
+    expect(api(h.service).empty).toBe(true)
+
+    drawStroke(h, [[0, 0], [40, 30]])
+    expect(undo()).toMatchObject({ 'aria-disabled': undefined, 'data-disabled': undefined })
+    fire(undo(), 'onKeyDown', key('Enter'))
+    expect(undo()['data-pressed']).toBe('')
+    // 另一颗钮的 keyup 不该把正按着的这颗松开
+    fire(redo(), 'onKeyUp', key('Enter'))
+    expect(undo()['data-pressed']).toBe('')
+    fire(undo(), 'onKeyUp', key('Enter'))
+    fire(undo(), 'onClick', {})
+    expect(api(h.service).empty).toBe(true)
+    expect(redo()).toMatchObject({ 'aria-disabled': undefined })
+    fire(redo(), 'onClick', {})
+    expect(api(h.service).empty).toBe(false)
+
+    h.setProps({ disabled: true })
+    expect(undo()).toMatchObject({ 'disabled': true, 'aria-disabled': undefined, 'data-disabled': '' })
+    fire(undo(), 'onClick', {})
+    expect(api(h.service).empty).toBe(false)
+  })
+
   it('空画布：root 与画布都带 data-empty，path 的 d 是空串', () => {
     const h = makeService()
     const a = api(h.service)

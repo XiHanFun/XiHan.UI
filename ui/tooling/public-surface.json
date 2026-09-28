@@ -2138,10 +2138,14 @@
       "XhSignaturePadLabelProps",
       "XhSignaturePadPath",
       "XhSignaturePadPathProps",
+      "XhSignaturePadRedoTrigger",
+      "XhSignaturePadRedoTriggerProps",
       "XhSignaturePadRoot",
       "XhSignaturePadRootProps",
       "XhSignaturePadStatus",
       "XhSignaturePadStatusProps",
+      "XhSignaturePadUndoTrigger",
+      "XhSignaturePadUndoTriggerProps",
       "XhSkeletonItem",
       "XhSkeletonItemProps",
       "XhSkeletonRoot",
@@ -4163,8 +4167,10 @@
       "XhSignaturePadHiddenInput",
       "XhSignaturePadLabel",
       "XhSignaturePadPath",
+      "XhSignaturePadRedoTrigger",
       "XhSignaturePadRoot",
       "XhSignaturePadStatus",
+      "XhSignaturePadUndoTrigger",
       "XhSkeletonItem",
       "XhSkeletonRoot",
       "XhSliderControl",
@@ -6098,6 +6104,7 @@
       "EDITABLE_DEFAULT_ACTIVATION_MODE",
       "EDITABLE_DEFAULT_SUBMIT_MODE",
       "EMPTY_CROP_RECT",
+      "EMPTY_SIGNATURE",
       "EasingName",
       "EditableActivationMode",
       "EditableApi",
@@ -6938,6 +6945,7 @@
       "SideNavTranslations",
       "SideNavValueChangeDetails",
       "SignaturePadApi",
+      "SignaturePadDraft",
       "SignaturePadDrawDetails",
       "SignaturePadDrawEndDetails",
       "SignaturePadDrawingOptions",
@@ -6947,6 +6955,9 @@
       "SignaturePadStroke",
       "SignaturePadSurface",
       "SignaturePadTranslations",
+      "SignaturePadTrigger",
+      "SignaturePadValue",
+      "SignaturePadValueChangeDetails",
       "SkeletonAnimation",
       "SkeletonApi",
       "SkeletonItemProps",
@@ -10655,8 +10666,10 @@
       "hidden-input",
       "label",
       "path",
+      "redo-trigger",
       "root",
-      "status"
+      "status",
+      "undo-trigger"
     ],
     "skeleton": [
       "item",
@@ -12716,15 +12729,18 @@
       "value"
     ],
     "signature-pad": [
+      "defaultValue",
       "disabled",
       "drawing",
       "invalid",
       "name",
       "onDraw",
       "onDrawEnd",
+      "onValueChange",
       "readOnly",
       "required",
-      "translations"
+      "translations",
+      "value"
     ],
     "skeleton": [
       "animation",
@@ -20600,7 +20616,8 @@
       ],
       "events": [
         "draw",
-        "draw-end"
+        "draw-end",
+        "value-change"
       ]
     },
     "xh-skeleton": {

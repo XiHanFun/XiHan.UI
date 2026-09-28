@@ -2280,8 +2280,10 @@ export {
   XhSignaturePadHiddenInput,
   XhSignaturePadLabel,
   XhSignaturePadPath,
+  XhSignaturePadRedoTrigger,
   XhSignaturePadRoot,
   XhSignaturePadStatus,
+  XhSignaturePadUndoTrigger,
 } from './components/signature-pad/signature-pad'
 export type {
   SignaturePadRootSlotProps,
@@ -2291,8 +2293,10 @@ export type {
   XhSignaturePadHiddenInputProps,
   XhSignaturePadLabelProps,
   XhSignaturePadPathProps,
+  XhSignaturePadRedoTriggerProps,
   XhSignaturePadRootProps,
   XhSignaturePadStatusProps,
+  XhSignaturePadUndoTriggerProps,
 } from './components/signature-pad/signature-pad'
 export { useSignaturePad } from './components/signature-pad/use-signature-pad'
 export type { SignaturePadContext } from './components/signature-pad/use-signature-pad'

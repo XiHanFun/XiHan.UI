@@ -55202,7 +55202,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-signature-pad>`：Light-DOM 行为宿主：作者写 root / control / path 三个必需角色节点\n（可再写 label、guide、clear-trigger 与 hidden-input），元素运行 signature-pad 状态机并把 connect 产出接上。\n\ncontrol 必须是 `<svg>`，guide 是其中的 `<line>`、path 是其中的 `<path>`：\n笔迹是一条填充轮廓，粗细随压感变化，描边无法实现该效果。viewBox 由元素按第一笔落下时\n测得的画布尺寸写入，作者不应自行编写。\n\n画布本身不接受键盘。签名天然依赖指针，要求签名的流程必须另提供一条不依赖指针的替代路径。\n\n笔迹外形（drawing）与读屏文案（translations）是对象，只能通过 property 设置。\n清空与获取 SVG 另有 `clear()` / `toSvg()` 两个方法。",
+          "description": "`<xh-signature-pad>`：Light-DOM 行为宿主：作者写 root / control / path 三个必需角色节点\n（可再写 label、guide、undo-trigger、redo-trigger、clear-trigger、status 与 hidden-input），\n元素运行 signature-pad 状态机并把 connect 产出接上。\n\ncontrol 必须是 `<svg>`，guide 是其中的 `<line>`、path 是其中的 `<path>`：\n笔迹是一条填充轮廓，粗细随压感变化，描边无法实现该效果。viewBox 由元素按第一笔落下时\n测得的画布尺寸写入，作者不应自行编写。\n\n画布本身不接受键盘。签名天然依赖指针，要求签名的流程必须另提供一条不依赖指针的替代路径。\n\n签名数据（value / defaultValue）、笔迹外形（drawing）与读屏文案（translations）是对象，只能通过 property 设置。\n回显已存的签名把存下的数据赋给 `defaultValue`；清空、撤销、重做与获取 SVG 另有\n`clear()` / `undo()` / `redo()` / `toSvg()` 四个方法，此刻的签名数据读 `currentValue`。",
           "name": "XhSignaturePadElement",
           "cssParts": [
             {
@@ -55224,6 +55224,14 @@
             {
               "description": "全部笔迹，必须是 control 中的 `<path>`；每一笔是它的一条子路径",
               "name": "path"
+            },
+            {
+              "description": "撤销按钮，必须是原生 `<button>`；没有可撤销的一步时 aria-disabled",
+              "name": "undo-trigger"
+            },
+            {
+              "description": "重做按钮，必须是原生 `<button>`；没有可重做的一步时 aria-disabled",
+              "name": "redo-trigger"
             },
             {
               "description": "清空按钮，必须是原生 `<button>`",
@@ -55295,6 +55303,22 @@
             },
             {
               "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "SignaturePadValue | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "SignaturePadValue | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "drawing",
               "privacy": "public",
               "type": {
@@ -55318,6 +55342,12 @@
             {
               "kind": "field",
               "name": "notifyDrawEnd",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
               "privacy": "private",
               "readonly": true
             },
@@ -55405,6 +55435,53 @@
             },
             {
               "kind": "method",
+              "name": "undo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "撤销最近一步（一笔或一次清空），与点击撤销按钮同一路径；没有可撤销的一步时什么都不做。"
+            },
+            {
+              "kind": "method",
+              "name": "redo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "重做最近撤销的一步；没有可重做的一步时什么都不做。"
+            },
+            {
+              "kind": "field",
+              "name": "canUndo",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "是否有可撤销的一步；还没进文档时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "canRedo",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "是否有被撤销、还能重做的一步；还没进文档时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentValue",
+              "type": {
+                "text": "SignaturePadValue"
+              },
+              "description": "此刻已定稿的签名数据，可原样存下、再赋回 defaultValue 回显。\nvalue 是作者递进来的受控值，非受控时读这里；还没进文档时为空签名。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
               "name": "toSvg",
               "return": {
                 "type": {
@@ -55467,17 +55544,24 @@
           ],
           "events": [
             {
-              "description": "笔迹变化时通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }`",
+              "description": "笔迹变化时通知一次（含清空、撤销、重做与表单重置）；detail 为 `{ paths: string[], path: string }`",
               "name": "draw",
               "type": {
                 "text": "SignaturePadDrawDetails"
               }
             },
             {
-              "description": "签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接存储",
+              "description": "签名定稿时通知一次（抬笔、清空、撤销、重做、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接存储",
               "name": "draw-end",
               "type": {
                 "text": "SignaturePadDrawEndDetails"
+              }
+            },
+            {
+              "description": "签名数据定稿，时机同 draw-end；detail 为 `{ value: { strokes, surface } }`，可原样存下再赋回 defaultValue 回显",
+              "name": "value-change",
+              "type": {
+                "text": "SignaturePadValueChangeDetails"
               }
             }
           ],
