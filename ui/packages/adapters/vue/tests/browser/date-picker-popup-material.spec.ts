@@ -135,8 +135,9 @@ describe('日期选择浮层', () => {
   it.each(['presets', 'show-time'] as const)('%s：内部结构使用统一分隔线', async (shape) => {
     await mount('dark', shape)
     const target = part(shape === 'presets' ? 'preset-group' : 'time-column')
+    // 面板是 floating 材质（实体面），面内分隔取实体面的分隔令牌
     const expected = document.createElement('span')
-    expected.style.color = 'var(--xh-material-frosted-separator)'
+    expected.style.color = 'var(--xh-material-solid-separator)'
     part('content').append(expected)
     const color = getComputedStyle(expected).color
     const style = getComputedStyle(target)
