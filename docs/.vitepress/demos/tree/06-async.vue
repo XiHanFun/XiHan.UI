@@ -1,4 +1,4 @@
-<!-- 异步加载子节点 | 展开时才请求数据：先放置一行禁用的占位，取回后就地替换，收起再展开不重复请求 -->
+<!-- 异步加载子节点 | 展开时才请求数据：请求在途的分支写进 loadingValue，展开箭头换成转圈并报告 aria-busy；取回后写回 collection 并移出，收起再展开不重复请求 -->
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -18,19 +18,14 @@ import { ref } from "vue";
 interface Node {
   value: string;
   label: string;
-  disabled?: boolean;
   children?: Node[];
 }
 
-// 占位行也是一个真节点：它得在 collection 里，方向键才走得到它
-function pending(owner: string): Node[] {
-  return [{ value: `${owner}-pending`, label: "加载中…", disabled: true }];
-}
-
+// 空数组也是分支：还没取回子项的部门照样报告 aria-expanded
 const collection = ref<Node[]>([
-  { value: "rd", label: "研发中心", children: pending("rd") },
-  { value: "ops", label: "运维中心", children: pending("ops") },
-  { value: "biz", label: "业务中心", children: pending("biz") },
+  { value: "rd", label: "研发中心", children: [] },
+  { value: "ops", label: "运维中心", children: [] },
+  { value: "biz", label: "业务中心", children: [] },
 ]);
 
 const staff: Record<string, string[]> = {
@@ -40,20 +35,20 @@ const staff: Record<string, string[]> = {
 };
 
 const expanded = ref<string[]>([]);
+const loading = ref<string[]>([]);
 const loaded = new Set<string>();
 
+// 这里用定时器代替一次请求
 function fetchChildren(value: string): void {
   if (loaded.has(value))
     return;
   loaded.add(value);
+  loading.value = [...loading.value, value];
   window.setTimeout(() => {
     const branch = collection.value.find(node => node.value === value);
-    if (!branch)
-      return;
-    branch.children = staff[value].map((name, index) => ({
-      value: `${value}-${index}`,
-      label: name,
-    }));
+    if (branch)
+      branch.children = staff[value].map((name, index) => ({ value: `${value}-${index}`, label: name }));
+    loading.value = loading.value.filter(item => item !== value);
   }, 800);
 }
 
@@ -67,6 +62,7 @@ function onExpandedValueChange(details: { value: string[] }): void {
   <XhTreeRoot
     :collection="collection"
     :expanded-value="expanded"
+    :loading-value="loading"
     style="inline-size: 100%; max-inline-size: 320px"
     @expanded-value-change="onExpandedValueChange"
   >

@@ -74,6 +74,10 @@ export const XhTreeRoot = defineComponent({
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<TreeProps['checkedStrategy']> },
     expandOnClick: { type: Boolean, default: undefined },
+    /** 正在取子节点的分支：在其中的分支报告 aria-busy，展开箭头换成转圈。 */
+    loadingValue: { type: Array as PropType<string[]> },
+    /** 缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头。 */
+    lines: { type: Boolean, default: undefined },
     disabled: Boolean,
     loading: Boolean,
     loop: { type: Boolean, default: undefined },

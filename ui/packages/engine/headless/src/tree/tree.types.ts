@@ -180,6 +180,13 @@ export interface TreeSchema extends MachineSchema {
     disabled?: boolean
     /** 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位。 */
     loading?: boolean
+    /**
+     * 正在取子节点的分支（节点 value）。在其中的分支报告 aria-busy，展开箭头换成转圈；
+     * 取数本身归作者：常见写法是在 onExpandedValueChange 里发起请求、回来后写回 collection 并移出这里。
+     */
+    loadingValue?: string[]
+    /** 缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头，默认 false。只是外观，不改结构与键盘。 */
+    lines?: boolean
     /** 上下键到达首尾是否回绕，默认 false。 */
     loop?: boolean
     /** 连打检索，默认开启。关闭后可打印字符一律放行给页面。 */

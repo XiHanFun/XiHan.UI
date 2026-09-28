@@ -86,6 +86,10 @@ export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   expandOnClick?: boolean
   disabled?: boolean
   loading?: boolean
+  /** 正在取子节点的分支：在其中的分支报告 aria-busy，展开箭头换成转圈。 */
+  loadingValue?: string[]
+  /** 缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头。 */
+  lines?: boolean
   loop?: boolean
   typeahead?: boolean
   dir?: Direction
@@ -116,6 +120,8 @@ export function XhTreeRoot({
   expandOnClick,
   disabled,
   loading,
+  loadingValue,
+  lines,
   loop,
   typeahead,
   dir,
@@ -143,6 +149,8 @@ export function XhTreeRoot({
     expandOnClick,
     disabled,
     loading,
+    loadingValue,
+    lines,
     loop,
     typeahead,
     dir,

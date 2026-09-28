@@ -496,6 +496,25 @@ const MARKED: TreeNode[] = [
   },
 ]
 
+describe('节点级加载态与缩进参考线', () => {
+  it('loadingValue 里的分支报告 aria-busy 并投影 data-loading，其余分支不写', () => {
+    const h = mount({ loadingValue: ['src'] })
+    const src = h.branch('src').branch
+    expect(src.getAttribute('aria-busy')).toBe('true')
+    expect(src.hasAttribute('data-loading')).toBe(true)
+    const other = h.branch('docs').branch
+    expect(other.hasAttribute('aria-busy')).toBe(false)
+    expect(other.hasAttribute('data-loading')).toBe(false)
+    h.setProps({ loadingValue: [] })
+    expect(h.branch('src').branch.hasAttribute('aria-busy')).toBe(false)
+  })
+
+  it('lines 只落在 tree 上：写了投影 data-lines，不写不落', () => {
+    expect(mount().treeEl.hasAttribute('data-lines')).toBe(false)
+    expect(mount({ lines: true }).treeEl.hasAttribute('data-lines')).toBe(true)
+  })
+})
+
 describe('子层排布方向', () => {
   const orientationOf = (h: Harness, value: string): string | null =>
     h.branch(value).content.getAttribute('data-orientation')

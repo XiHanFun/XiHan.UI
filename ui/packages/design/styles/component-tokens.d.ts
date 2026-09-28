@@ -4173,6 +4173,7 @@ export type ComponentTokenName
     | '--xh-tree-label-font-size'
     | '--xh-tree-label-font-weight'
     | '--xh-tree-leaf-row-gap'
+    | '--xh-tree-line-color'
     | '--xh-tree-loading-fg'
     | '--xh-tree-loading-font-size'
     | '--xh-tree-loading-px'

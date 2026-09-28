@@ -583,6 +583,20 @@ export const treeSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'loadingValue：在途的分支报告 aria-busy 并投影 data-loading；lines 只落在 tree 上',
+      spec: { adr: 'tree-branch-loading' },
+      props: props({ loadingValue: ['src'], lines: true }),
+      initial: {
+        parts: {
+          'tree': { 'data-lines': '' },
+          'branch[0]': { 'data-value': 'src', 'aria-busy': 'true', 'data-loading': '' },
+        },
+      },
+      steps: [
+        { kind: 'setProps', props: { loadingValue: [], lines: false }, expect: { parts: { 'tree': { 'data-lines': null }, 'branch[0]': { 'aria-busy': null, 'data-loading': null } } } },
+      ],
+    },
+    {
       name: '禁用节点点不动',
       spec: { apg: APG },
       props: props({ defaultExpandedValue: ['src'], defaultSelection: ['index'] }),

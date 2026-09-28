@@ -1,4 +1,4 @@
-// 异步加载子节点 | 展开时才请求数据：先放置一行禁用的占位，取回后就地替换，收起再展开不重复请求
+// 异步加载子节点 | 展开时才请求数据：请求在途的分支写进 loadingValue，展开箭头换成转圈并报告 aria-busy；取回后写回 collection 并移出，收起再展开不重复请求
 import type { ReactNode } from "react";
 import {
   XhTreeBranch,
@@ -18,19 +18,14 @@ import { useRef, useState } from "react";
 interface Node {
   value: string;
   label: string;
-  disabled?: boolean;
   children?: Node[];
 }
 
-// 占位行也是一个真节点：它得在 collection 里，方向键才走得到它
-function pending(owner: string): Node[] {
-  return [{ value: `${owner}-pending`, label: "加载中…", disabled: true }];
-}
-
+// 空数组也是分支：还没取回子项的部门照样报告 aria-expanded
 const initial: Node[] = [
-  { value: "rd", label: "研发中心", children: pending("rd") },
-  { value: "ops", label: "运维中心", children: pending("ops") },
-  { value: "biz", label: "业务中心", children: pending("biz") },
+  { value: "rd", label: "研发中心", children: [] },
+  { value: "ops", label: "运维中心", children: [] },
+  { value: "biz", label: "业务中心", children: [] },
 ];
 
 const staff: Record<string, string[]> = {
@@ -42,22 +37,21 @@ const staff: Record<string, string[]> = {
 export default function Demo(): ReactNode {
   const [collection, setCollection] = useState<Node[]>(initial);
   const [expanded, setExpanded] = useState<string[]>([]);
+  const [loading, setLoading] = useState<string[]>([]);
   const loaded = useRef(new Set<string>());
 
+  // 这里用定时器代替一次请求
   function fetchChildren(value: string): void {
     if (loaded.current.has(value))
       return;
     loaded.current.add(value);
+    setLoading(current => [...current, value]);
     window.setTimeout(() => {
-      const names = staff[value];
-      if (!names)
-        return;
+      const names = staff[value] ?? [];
       setCollection(current => current.map(node => (node.value === value
-        ? {
-            ...node,
-            children: names.map((name, index) => ({ value: `${value}-${index}`, label: name })),
-          }
+        ? { ...node, children: names.map((name, index) => ({ value: `${value}-${index}`, label: name })) }
         : node)));
+      setLoading(current => current.filter(item => item !== value));
     }, 800);
   }
 
@@ -70,6 +64,7 @@ export default function Demo(): ReactNode {
     <XhTreeRoot
       collection={collection}
       expandedValue={expanded}
+      loadingValue={loading}
       style={{ inlineSize: "100%", maxInlineSize: "320px" }}
       onExpandedValueChange={onExpandedValueChange}
     >

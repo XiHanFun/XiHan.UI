@@ -168,6 +168,9 @@ export function connectTree<T extends PropTypes>(
     'data-highlighted': dataAttr(focusedValue === value),
   })
 
+  /** 正在取子节点的分支：作者写在 loadingValue 里的那几枝。 */
+  const branchLoading = new Set(prop('loadingValue') ?? [])
+
   /** 分支一系再多一个展开态，箭头旋转与子树收起都看它。 */
   const branchState = (value: string): Record<string, string | undefined> => ({
     ...itemState(value),
@@ -463,6 +466,8 @@ export function connectTree<T extends PropTypes>(
       // 取数在途的播报归树本体：两个相位占位自己不带这一位
       'aria-busy': loading ? 'true' : undefined,
       'data-orientation': 'vertical',
+      // 缩进参考线只是外观：皮肤在每一层子节点的行首画竖线
+      'data-lines': dataAttr(!!prop('lines')),
       // 焦点在树外时容器兜底进 Tab 序列，由 onFocus 转投给节点。
       // 判据用 focusedValue 而非 anchor：anchor 可能指向已删掉、已隐藏或不在树里的值，那时无人认领 tabindex=0
       'tabindex': focusedValue == null ? 0 : -1,
@@ -696,6 +701,9 @@ export function connectTree<T extends PropTypes>(
         ...nodeAttrs(node.value),
         ...branchState(node.value),
         'aria-expanded': isExpanded(node.value) ? 'true' : 'false',
+        // 这一枝在取子节点：读屏据此知道子层还没到齐，皮肤据此把展开箭头换成转圈
+        'aria-busy': branchLoading.has(node.value) ? 'true' : undefined,
+        'data-loading': dataAttr(branchLoading.has(node.value)),
         // 分支的可及名字必须显式给：它裹着整棵子树，从内容算名字会把子孙的文字一并念出来。
         // 名字取 collection 里的 label（缺省退回 value）
         'aria-label': metaOf(node.value)?.label,
