@@ -2374,34 +2374,17 @@
     font-size: var(--xh-text-secondary-size);
   }
 
-  /* 取数中、还没有可画的数据：文字前转一个圈，与 Spinner 同一副画法——整圈是轨道色，起始边是前景色 */
+  /* 取数中、还没有可画的数据：文字前一枚加载环。环由加载环配方画（连接层在空态部件上投影 data-xh-loading-ring 与
+     data-loading），与 Spinner 同一副画法，减弱动效与打印停成点线环；这里只给它占的那一格 */
   [data-xh-chart-part='empty'][data-state='loading'] {
     gap: var(--xh-_chart-empty-gap);
   }
 
   [data-xh-chart-part='empty'][data-state='loading']::before {
     content: '';
-    box-sizing: border-box;
     flex: none;
     inline-size: var(--xh-glyph-size-md);
     block-size: var(--xh-glyph-size-md);
-    border: var(--xh-stroke-thick) solid var(--xh-border-default);
-    border-block-start-color: currentColor;
-    border-radius: var(--xh-shape-circle);
-    animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite;
-  }
-
-  /* 减弱动效：圈停下、换成点线，文字照写。两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
-  @media (prefers-reduced-motion: reduce) {
-    [data-xh-chart-part='empty'][data-state='loading']::before {
-      border-style: dotted;
-      animation: none;
-    }
-  }
-
-  :where([data-motion='reduce']) [data-xh-chart-part='empty'][data-state='loading']::before {
-    border-style: dotted;
-    animation: none;
   }
 
   /* 声明了 display 的部件：作者写 hidden 时照样收起 */

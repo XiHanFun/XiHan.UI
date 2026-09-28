@@ -34,9 +34,7 @@
     "lineThickness": "var(--xh-stroke-thick)"
   },
   "loading": {
-    "ringSize": "var(--xh-glyph-size-md)",
-    "ringWidth": "var(--xh-stroke-thick)",
-    "track": "var(--xh-border-default)"
+    "ringSize": "var(--xh-glyph-size-md)"
   },
   "patterns": [
     { "angle": 45, "spacing": 1, "cross": false, "dash": [] },

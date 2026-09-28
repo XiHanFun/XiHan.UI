@@ -1118,6 +1118,9 @@ export function connectCartesianChart<T extends PropTypes>(
       // 空态随数据显隐；全部系列被隐藏时坐标轴保留，空态叠在视口上
       'hidden': !empty || undefined,
       'data-state': loading ? 'loading' : undefined,
+      // 取数中那枚环由加载环配方画，随 data-loading 淡入淡出
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
     }),
 
     getSummaryProps: () => normalize.element({

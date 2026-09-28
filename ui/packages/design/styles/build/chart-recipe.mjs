@@ -50,7 +50,7 @@ export const CHART_LINE_CONTRACT_FIELDS = ['legendSwatchLineRadius', 'tooltipSwa
 const LAYOUT_FIELDS = ['fontSize']
 const LEGEND_FIELDS = ['swatchSize', 'swatchBorder', 'lineThickness', 'hiddenFg']
 const TOOLTIP_FIELDS = ['minInlineSize', 'offsetInline', 'offsetBlock', 'swatchSize', 'lineThickness']
-const LOADING_FIELDS = ['ringSize', 'ringWidth', 'track']
+const LOADING_FIELDS = ['ringSize']
 const FORCED_FIELDS = ['mark', 'focusRing', 'hidden']
 const SEQUENTIAL_FIELDS = ['start', 'mid', 'end', 'paletteStart', 'paletteEnd']
 
@@ -371,29 +371,13 @@ export function compileChartRecipe(source) {
     'color: var(--xh-fg-muted);',
     'font-size: var(--xh-text-secondary-size);',
   ])
-  comment('取数中、还没有可画的数据：文字前转一个圈，与 Spinner 同一副画法——整圈是轨道色，起始边是前景色')
+  comment('取数中、还没有可画的数据：文字前一枚加载环。环由加载环配方画（连接层在空态部件上投影 data-xh-loading-ring 与\n     data-loading），与 Spinner 同一副画法，减弱动效与打印停成点线环；这里只给它占的那一格')
   rule(`${part('empty')}[data-state='loading']`, `gap: ${slot('emptyGap')};`)
   rule(`${part('empty')}[data-state='loading']::before`, [
     'content: \'\';',
-    'box-sizing: border-box;',
     'flex: none;',
     `inline-size: ${loading.ringSize};`,
     `block-size: ${loading.ringSize};`,
-    `border: ${loading.ringWidth} solid ${loading.track};`,
-    'border-block-start-color: currentColor;',
-    'border-radius: var(--xh-shape-circle);',
-    'animation: xh-spin var(--xh-motion-loop-spin) var(--xh-motion-ease-loop) infinite;',
-  ])
-  comment('减弱动效：圈停下、换成点线，文字照写。两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion')
-  const reduced = []
-  rule(`${part('empty')}[data-state='loading']::before`, [
-    'border-style: dotted;',
-    'animation: none;',
-  ], 'reduced-motion', reduced, '    ')
-  chunks.push(`${lead('  ')}  @media (prefers-reduced-motion: reduce) {\n${reduced.join('\n\n')}\n  }`)
-  rule(`:where([data-motion='reduce']) ${part('empty')}[data-state='loading']::before`, [
-    'border-style: dotted;',
-    'animation: none;',
   ])
 
   comment('声明了 display 的部件：作者写 hidden 时照样收起')

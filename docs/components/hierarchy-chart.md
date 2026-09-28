@@ -320,8 +320,10 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 | `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
 | `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |
+| `empty` | `data-loading` | ''（条件成立时才出现） |
 | `empty` | `data-state` | 'loading' \| undefined |
 | `empty` | `data-xh-chart-part` | 'empty' |
+| `empty` | `data-xh-loading-ring` | '' |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
 | `mark` | `data-level` | String(Math.min(geometry.level, 4)) \| undefined |
 | `mark` | `data-xh-chart-part` | mark.part \| undefined |
@@ -367,11 +369,11 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

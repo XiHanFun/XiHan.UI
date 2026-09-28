@@ -6,7 +6,9 @@
 /* 定义 radar chart 样式。 */
 
 /* 标题、视口、图例、提示框、空态与焦点环走 Chart 家族配方。本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 @import '../family/chart.css';
+@import '../family/loading-ring.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
