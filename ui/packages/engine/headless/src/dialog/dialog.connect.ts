@@ -48,6 +48,8 @@ export function connectDialog<T extends PropTypes>(
     event.preventDefault()
     send({ type: 'DRAG.START', point: { clientX: event.clientX, clientY: event.clientY }, pointerId: event.pointerId })
   }
+  // 首帧标记：挂载时就开着、还没收起过
+  const instant = dataAttr(context.get('openedAtMount'))
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
@@ -100,6 +102,8 @@ export function connectDialog<T extends PropTypes>(
     getBackdropProps: () => normalize.element({
       ...parts.backdrop.attrs,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': instant,
       // 形态轴落在 backdrop 上：三档换的都是这一层自己的底色与模糊
       'data-variant': prop('variant'),
       // 非模态不激活遮罩；Vue/React 据此不创建节点，WC 隐藏作者节点。
@@ -123,6 +127,7 @@ export function connectDialog<T extends PropTypes>(
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': stateAttr,
+      'data-instant': instant,
       // 尺寸轴落在 content 上：解剖里没有 root，positioner 非必需，且 content 会被 portal 走
       'data-size': prop('size'),
       // 拖动：位移写成两个私有槽，皮肤按它平移面板；跟手期间另打 data-dragging

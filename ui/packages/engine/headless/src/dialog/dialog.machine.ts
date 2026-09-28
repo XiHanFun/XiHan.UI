@@ -8,6 +8,7 @@
 import type { DialogGesture, DialogOffset, DialogPressedPart, DialogSchema } from './dialog.types'
 import { createDismissLayer, createFocusScope, getTabbables, removeLinks, setup, warn } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
 import { clampDialogOffset, dialogDragBounds, startGesturePointer } from './dialog.gesture'
 
@@ -31,11 +32,12 @@ function queryInContent(content: HTMLElement | null, selector: string): HTMLElem
 
 export const dialogMachine = createMachine({
   name: 'dialog',
-  context: ({ cell }) => ({
+  context: ({ cell, prop }) => ({
     // 按压通道：正被按住的那颗按钮，与开合无关
     pressed: cell<DialogPressedPart | null>(() => ({ defaultValue: null })),
     offset: cell<DialogOffset>(() => ({ defaultValue: HOME })),
     gesture: cell<DialogGesture | null>(() => ({ defaultValue: null })),
+    openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
   }),
   refs: () => ({
     config: null,
@@ -49,7 +51,7 @@ export const dialogMachine = createMachine({
     gesture: null,
     pointer: null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 资源由机器生命周期持有；逻辑关闭之后继续保留，等 Presence 真正退出再释放。
   // 指针手势（拖动、抽屉改尺）的会话跟着 context 里的手势种类挂与拆，同样归机器生命周期
   effects: ['trackOverlay', 'trackGesture'],
@@ -65,6 +67,8 @@ export const dialogMachine = createMachine({
   },
   states: {
     closed: {
+      // 第一次收起即撤首帧标记：之后的每一次打开都是用户操作带来的
+      entry: ['clearOpenedAtMount'],
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
@@ -185,6 +189,7 @@ export const dialogMachine = createMachine({
         if (context.get('gesture') != null)
           context.set('gesture', null)
       },
+      clearOpenedAtMount,
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭

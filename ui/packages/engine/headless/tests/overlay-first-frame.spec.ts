@@ -4,6 +4,7 @@ import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/core'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
+import { connectDialog, dialogMachine } from '../src/dialog'
 import { connectPopconfirm } from '../src/popconfirm'
 import { connectPopover, popoverMachine } from '../src/popover'
 
@@ -31,6 +32,13 @@ const CASES: Record<string, Case> = {
   popconfirm: {
     machine: popoverMachine,
     parts: service => [connectPopconfirm(service, {}, normalizeProps).getContentProps() as Attrs],
+  },
+  dialog: {
+    machine: dialogMachine,
+    parts: (service) => {
+      const api = connectDialog(service, normalizeProps)
+      return [api.getContentProps() as Attrs, api.getBackdropProps() as Attrs]
+    },
   },
 }
 
