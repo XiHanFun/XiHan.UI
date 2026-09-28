@@ -8450,10 +8450,10 @@
               "name": "--xh-cascader-input-font-size"
             },
             {
-              "name": "--xh-cascader-input-px"
+              "name": "--xh-cascader-input-h"
             },
             {
-              "name": "--xh-cascader-input-py"
+              "name": "--xh-cascader-input-px"
             },
             {
               "name": "--xh-cascader-item-active-font-weight"
@@ -71600,6 +71600,9 @@
             },
             {
               "name": "--xh-transfer-panel-title-font-weight"
+            },
+            {
+              "name": "--xh-transfer-placeholder-fg"
             },
             {
               "name": "--xh-transfer-search-bg"

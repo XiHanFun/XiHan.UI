@@ -669,6 +669,8 @@ export function connectCascader<T extends PropTypes>(
       'autocapitalize': 'none',
       // 字段标签名的是整个控件（trigger 指着它），浮层里这个框只能自带一句
       'aria-label': translations.searchInput,
+      // 面板内嵌的搜索框：重置与占位前景走字段家族，下划线与高度由皮肤给
+      'data-xh-field-input': '',
       'aria-autocomplete': 'list',
       'aria-controls': ids['search-list'],
       // 没有高亮可指时属性整个缺席

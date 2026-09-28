@@ -8,6 +8,7 @@
 @import '../family/action-control.css';
 @import '../family/check-mark.css';
 @import '../family/collection-item.css';
+@import '../family/field-chrome.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -28,9 +29,10 @@
     /* 两侧定高小列表的自绘条挂在根上：根是条子的定位盒（面板不定位），轨道底色关掉才不会在列表边缘糊出一条灰带 */
     --xh-scrollbar-track-bg: transparent;
 
-    /* 尺寸档只换这五个私有槽，面板头、搜索框、条目与勾选格都从 root 继承它们，
+    /* 尺寸档只换这六个私有槽，面板头、搜索框、条目与勾选格都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */
     --xh-_transfer-item-py: var(--xh-list-option-py-md);
+    --xh-_transfer-h: var(--xh-control-h-md);
     --xh-_transfer-px: var(--xh-control-px-md);
     --xh-_transfer-gap: var(--xh-control-gap-md);
     --xh-_transfer-font-size: var(--xh-control-font-md);
@@ -54,6 +56,7 @@
   [data-scope='transfer'][data-part='root'][data-size='sm'] {
     --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-sm));
     --xh-_transfer-item-py: var(--xh-list-option-py-sm);
+    --xh-_transfer-h: var(--xh-control-h-sm);
     --xh-_transfer-px: var(--xh-control-px-sm);
     --xh-_transfer-gap: var(--xh-control-gap-sm);
     --xh-_transfer-font-size: var(--xh-control-font-sm);
@@ -63,6 +66,7 @@
   [data-scope='transfer'][data-part='root'][data-size='lg'] {
     --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-lg));
     --xh-_transfer-item-py: var(--xh-list-option-py-lg);
+    --xh-_transfer-h: var(--xh-control-h-lg);
     --xh-_transfer-px: var(--xh-control-px-lg);
     --xh-_transfer-gap: var(--xh-control-gap-lg);
     --xh-_transfer-font-size: var(--xh-control-font-lg);
@@ -164,13 +168,21 @@
     content: attr(data-checked-count) ' / ' attr(data-count);
   }
 
+  /* 面板内嵌的搜索框：通栏一行，控件高与字号随尺寸档，只画一道面内分隔的下划线（取面材质的分隔令牌）；
+     重置与占位前景由字段家族按 data-xh-field-input 给 */
   [data-scope='transfer'][data-part='search'] {
+    --xh-field-placeholder-fg: var(--xh-transfer-placeholder-fg, var(--xh-fg-subtle));
+    /* 自动填充铺的底取所在面板的面，不取画布：否则框内比周围亮出（或暗出）一块 */
+    --xh-field-autofill-bg: var(--xh-bg-surface);
+
     display: block;
+    flex: none;
     inline-size: 100%;
-    block-size: var(--xh-transfer-search-h, var(--xh-control-h-sm));
+    block-size: var(--xh-transfer-search-h, var(--xh-_transfer-h));
+    padding-block: 0;
     padding-inline: var(--xh-transfer-search-px, var(--xh-_transfer-px));
     border: 0;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-search-border, var(--xh-border-control));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-search-border, var(--xh-material-solid-separator));
     background: var(--xh-transfer-search-bg, transparent);
     color: var(--xh-transfer-search-fg, var(--xh-fg-default));
     font: inherit;

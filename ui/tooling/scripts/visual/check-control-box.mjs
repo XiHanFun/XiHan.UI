@@ -125,6 +125,8 @@ const SHARED_FAMILY = {
     boxSelector: '[data-xh-field-chrome]',
     contentSelector: `[data-scope='cascader'][data-part='trigger']`,
     actionParts: new Set(['clear-trigger']),
+    // data-xh-field-input 投影在浮层面板内嵌的搜索框上（只为家族的重置与占位前景），不在盒里
+    panelSearchInput: true,
   },
   // 分段日期框 + 日历钮：内容区是 segment-group，尾钮是日历钮与清空钮
   'date-picker': {
@@ -304,7 +306,7 @@ for (const comp of COMPONENTS) {
     const projectsInput = connectSource.includes(`'data-xh-field-input': ''`)
     if (family.contentSelector === FIELD_INPUT_SELECTOR && !projectsInput)
       report(comp, 'box-part', '连接层没有把 Field Chrome 的 input 稳定角色投影到解剖部件')
-    if (family.contentSelector !== FIELD_INPUT_SELECTOR && projectsInput)
+    if (family.contentSelector !== FIELD_INPUT_SELECTOR && projectsInput && !family.panelSearchInput)
       report(comp, 'box-part', `内容区登记为 ${family.contentSelector ?? '无（单元素）'}，连接层却投影了 data-xh-field-input——登记过期了`)
   }
 

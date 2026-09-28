@@ -211,6 +211,8 @@ export function connectCommand<T extends PropTypes>(
       'placeholder': prop('placeholder'),
       'value': inputValue,
       'aria-label': translations?.input ?? 'Search commands',
+      // 面板内嵌的检索框：重置与占位前景走字段家族，下划线与高度由皮肤给
+      'data-xh-field-input': '',
       'aria-haspopup': 'listbox',
       // 列表恒在面板里，不另开合
       'aria-expanded': 'true',

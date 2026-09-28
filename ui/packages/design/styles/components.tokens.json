@@ -9694,6 +9694,24 @@
       "description": "cascader 的 input 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-cascader-input-h",
+      "component": "cascader",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_cascader-h"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 input 部件 block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-cascader-input-px",
       "component": "cascader",
       "part": [
@@ -9706,28 +9724,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_cascader-px"
       ],
       "visibility": "public",
       "description": "cascader 的 input 部件 padding-inline 覆盖槽。"
-    },
-    {
-      "name": "--xh-cascader-input-py",
-      "component": "cascader",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "padding-block"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-2"
-      ],
-      "visibility": "public",
-      "description": "cascader 的 input 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-cascader-item-active-font-weight",
@@ -10302,19 +10302,21 @@
       "name": "--xh-cascader-placeholder-fg",
       "component": "cascader",
       "part": [
+        "input",
         "value-text"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "placeholder"
+        "placeholder",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
       ],
       "visibility": "public",
-      "description": "cascader 的 value-text 部件 color 覆盖槽。"
+      "description": "cascader 的 input、value-text 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-cascader-search-divider",
@@ -10329,7 +10331,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-separator"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "cascader 的 input 部件 border-block-end 覆盖槽。"
@@ -19313,7 +19315,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-material-elevated-separator"
       ],
       "visibility": "public",
       "description": "command 的 footer 部件 border-block-start 覆盖槽。"
@@ -19608,7 +19610,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-material-elevated-separator"
       ],
       "visibility": "public",
       "description": "command 的 input 部件 border-block-end 覆盖槽。"
@@ -19644,7 +19646,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-_command-font-size"
       ],
       "visibility": "public",
       "description": "command 的 input 部件 font-size 覆盖槽。"
@@ -20099,7 +20101,8 @@
         "color"
       ],
       "state": [
-        "placeholder"
+        "placeholder",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
@@ -81716,6 +81719,25 @@
       "description": "transfer 的 panel-title 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-transfer-placeholder-fg",
+      "component": "transfer",
+      "part": [
+        "search"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "placeholder",
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 search 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-transfer-search-bg",
       "component": "transfer",
       "part": [
@@ -81746,7 +81768,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-material-solid-separator"
       ],
       "visibility": "public",
       "description": "transfer 的 search 部件 border-block-end 覆盖槽。"
@@ -81800,7 +81822,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_transfer-h"
       ],
       "visibility": "public",
       "description": "transfer 的 search 部件 block-size 覆盖槽。"

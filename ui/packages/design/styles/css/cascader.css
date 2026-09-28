@@ -618,13 +618,18 @@
     flex-wrap: wrap;
   }
 
+  /* 面板内嵌的搜索框：通栏一行，控件高与字号随尺寸档，只画一道面内分隔的下划线（取面材质的分隔令牌）；
+     重置与占位前景由字段家族按 data-xh-field-input 给，占位与值文本的占位同一支组件槽 */
   [data-scope='cascader'][data-part='input'] {
+    --xh-field-placeholder-fg: var(--xh-cascader-placeholder-fg, var(--xh-fg-subtle));
+
     flex-basis: 100%;
     min-inline-size: 0;
-    padding-block: var(--xh-cascader-input-py, var(--xh-space-2));
-    padding-inline: var(--xh-cascader-input-px, var(--xh-control-px-md));
+    block-size: var(--xh-cascader-input-h, var(--xh-_cascader-h));
+    padding-block: 0;
+    padding-inline: var(--xh-cascader-input-px, var(--xh-_cascader-px));
     border: none;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-material-frosted-separator));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-material-solid-separator));
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
     background: none;

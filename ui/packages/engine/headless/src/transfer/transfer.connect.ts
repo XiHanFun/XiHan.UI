@@ -322,6 +322,8 @@ export function connectTransfer<T extends PropTypes>(
       'aria-controls': listId[panel.side],
       // 搜索框无可见标签，借本侧标题当可及名字
       'aria-labelledby': titleId[panel.side],
+      // 面板内嵌的搜索框：重置与占位前景走字段家族，下划线与高度由皮肤给
+      'data-xh-field-input': '',
       'data-side': panel.side,
       // 关掉搜索时只隐去，不卸载作者节点
       'hidden': !searchable || undefined,
