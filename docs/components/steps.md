@@ -54,6 +54,12 @@
 
 <XhDemo src="steps/06-dot" />
 
+### 当前步进度
+
+用 percent 在当前步的圆点外画一圈进度环，报出这一步自己完成了多少
+
+<XhDemo src="steps/07-progress" />
+
 ## 设计指引
 
 ### 何时使用
@@ -72,6 +78,7 @@
 - 已完成、当前、未完成三种状态清晰区分；被退回或需要留意的步骤用 `tones`（或 collection 的 `tone`）标记语气，与状态互不相关。
 - 当前步骤使用实心强调标记，已完成步骤使用中性面加品牌对号。
 - `variant="dot"` 把序号圆点收成不盛内容的小圆点，只标位置，适合步数多或横向空间紧的流程：没走到的空心圈、走过的实心点、当前步实心点外加一圈环，三态靠形状区分。圆点直径走空间尺（sm / md / lg = 8 / 10 / 12px），不随密度换档；点状的 `indicator` 留空，不放序号与图标。
+- `percent`（0–100）报出当前这一步自己的完成比例：当前步的序号圆点外离一道缝画一圈进度环，从 12 点顺时针走（不随书写方向镜像），已完成那段取强调色、其余取连接线的底色；环落在触发器的内衬里，不挤版面；比例变化时弧平滑走到新值，首帧直接落位。读屏：可操作时比例作为当前步触发器的描述读出（tab 的子节点对读屏是纯展示的，圆点里放不了进度条）；只读展示下当前步的圆点是一个 `progressbar`。文案由 `translations.progressLabel` / `progressValueText` 改。进度环只画在序号圆点上，点状形态与非有限数会报 `steps.option-ignored` 并按没给处理。
 - `linear` 限制用户跳到尚未完成的步骤。
 - 方向键移动焦点，Enter 或空格切换步骤。
 - `readOnly` 是纯展示形态：只呈现进度，步骤不可点、不可聚焦、不发事件，标题与说明不置灰；语义换成有序列表（`list` / `listitem`，当前步 `aria-current="step"`），`trigger` 只负责排版。与 `disabled` 不同，`disabled` 是「本可操作、此刻不行」，会置灰。Vue / React 的 `trigger` 在只读下渲染为 `<div>`；Web Components 由作者把 `trigger` 写成 `<div>`。
@@ -90,7 +97,7 @@
 ### 反模式
 
 - 不要在流程进行中改变步骤总数。
-- 不要用步骤条表示连续百分比进度。
+- 不要用步骤条表示连续百分比进度；`percent` 只说当前这一步走了多少，整段流程的连续进度用[进度条](./progress)。
 - 不要用 `disabled` 表达「只展示进度」：它会把每一步置灰，读屏也会念成一排不可用的按钮，改用 `readOnly`。
 
 ## API 参考
@@ -125,6 +132,7 @@
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `variant` | `StepsVariant` |  | 标记形态，默认 number。dot 把序号圆点收成不盛内容的小圆点：走过的实心、当前步实心外加一圈环、 没走到的空心；indicator 留空，不放序号与图标。 |
+| `percent` | `number` |  | 当前这一步自己的完成比例（0–100），越界夹回。当前步的序号圆点外画一圈进度环； 可操作时比例作为触发器的描述读出，只读展示下圆点是一个 progressbar。 只画在序号圆点上：点状形态画不下进度环，给了会报 steps.option-ignored 并按没给处理；非有限数同样报错并按没给处理。 |
 | `onValueChange` | `(details: StepsValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### StepNode
@@ -174,7 +182,7 @@
 | --- | --- |
 | `item` | s.status |
 | `trigger` | s.status |
-| `indicator` | getItemState(item).status |
+| `indicator` | s.status |
 | `title` | getItemState(item).status |
 | `description` | getItemState(item).status |
 | `separator` | getItemState(item).status |
@@ -237,19 +245,26 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `list` | `aria-disabled` | 'true' \| 'false' |
-| `list` | `aria-label` | props.translations.list |
+| `list` | `aria-label` | translations?.list |
 | `list` | `aria-orientation` | props.orientation |
 | `list` | `role` | 'list' |
 | `item` | `aria-current` | 'step' \| undefined |
 | `item` | `role` | 'listitem' \| undefined |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-current` | 'step' \| undefined |
+| `trigger` | `aria-describedby` | `indicator` 部件的 id \| undefined |
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
 | `trigger` | `aria-posinset` | item.index + 1 \| undefined |
 | `trigger` | `aria-selected` | 'true' \| 'false' |
 | `trigger` | `aria-setsize` | normalizeStepCount(prop('count') ?? (collection.lengt… \| undefined |
 | `trigger` | `role` | 'tab' |
 | `indicator` | `aria-hidden` | 'true' |
+| `indicator` | `aria-label` | translations?.progressLabel |
+| `indicator` | `aria-valuemax` | '100' |
+| `indicator` | `aria-valuemin` | '0' |
+| `indicator` | `aria-valuenow` | String(percent) |
+| `indicator` | `aria-valuetext` | progressValueText(Math.round(percent)) |
+| `indicator` | `role` | 'progressbar' |
 | `separator` | `aria-hidden` | 'true' |
 | `content` | `aria-labelledby` | undefined \| `trigger` 部件的 id |
 | `content` | `role` | undefined \| 'tabpanel' |
@@ -290,7 +305,8 @@
 | `trigger` | `data-xh-action-size` | props.size |
 | `trigger` | `data-xh-action-variant` | 'ghost' |
 | `indicator` | `data-instant` | ''（条件成立时才出现） |
-| `indicator` | `data-state` | getItemState(item).status |
+| `indicator` | `data-progress` | ''（条件成立时才出现） |
+| `indicator` | `data-state` | s.status |
 | `indicator` | `data-variant` | props.variant |
 | `title` | `data-state` | getItemState(item).status |
 | `description` | `data-state` | getItemState(item).status |
@@ -337,6 +353,7 @@
 | `--xh-steps-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-circle` | steps 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-steps-indicator-ring-bg` | `indicator` | `background` | `default` | `--xh-_steps-accent` | steps 的 indicator 部件 background 覆盖槽。 |
 | `--xh-steps-indicator-ring-bg-disabled` | `indicator`<br>`item` | `background` | `disabled` | `--xh-fg-disabled` | steps 的 indicator、item 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-ring-track` | `indicator` | `background` | `progress` | `--xh-border-default` | steps 的 indicator 部件 background 覆盖槽。 |
 | `--xh-steps-indicator-shadow` | `indicator` | `box-shadow` | `state=current` | `--xh-_steps-highlight` | steps 的 indicator 部件 box-shadow 覆盖槽。 |
 | `--xh-steps-indicator-size` | `indicator`<br>`separator` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`orientation=vertical` | `--xh-_steps-indicator-size` | steps 的 indicator、separator 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-steps-item-gap` | `item` | `gap` | `default` | `--xh-space-2` | steps 的 item 部件 gap 覆盖槽。 |

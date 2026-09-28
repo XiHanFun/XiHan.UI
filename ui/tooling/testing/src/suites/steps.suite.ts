@@ -76,6 +76,22 @@ function tabStops(inside: boolean): StepWithExpect {
   }
 }
 
+/** 只读展示的夹具：trigger 是只排版的 div（Vue / React 按 readOnly 渲成 div，Web Components 由作者写成 div）。 */
+function readOnlyTree(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children!.map(child => child.part !== 'list'
+      ? child
+      : {
+          ...child,
+          children: child.children!.map(item => ({
+            ...item,
+            children: item.children!.map(node => node.part === 'trigger' ? { ...node, tag: 'div' } : node),
+          })),
+        }),
+  }
+}
+
 export const stepsSuite: ConformanceSuite = {
   component: 'steps',
   anatomy: stepsAnatomy,
@@ -222,6 +238,40 @@ export const stepsSuite: ConformanceSuite = {
           kind: 'settle',
           until: { attr: { part: 'root', name: 'data-variant', value: 'number' } },
           expect: { parts: { 'indicator[1]': { 'data-variant': 'number', 'data-state': 'current' } } },
+        },
+      ],
+    },
+    {
+      // tab 的子节点对读屏是纯展示的：比例改作触发器的描述，由对读屏隐藏的圆点供给名字
+      name: 'percent：当前步的圆点带进度环标记，触发器以它为描述；换步后比例跟着当前步走',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { count: COUNT, defaultValue: 1, percent: 40 },
+      initial: {
+        parts: {
+          'indicator[1]': { 'id': '@self', 'role': 'img', 'aria-label': '40% complete', 'aria-hidden': 'true', 'data-progress': '' },
+          'trigger[1]': { 'aria-describedby': '@part(indicator[1])' },
+          'indicator[0]': { 'id': null, 'role': null, 'aria-label': null, 'data-progress': null },
+          'trigger[0]': { 'aria-describedby': null },
+          'indicator[2]': { 'data-progress': null },
+        },
+      },
+      steps: [
+        { kind: 'setProps', props: { percent: 75 } },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'indicator[1]', name: 'aria-label', value: '75% complete' } },
+        },
+        {
+          kind: 'click',
+          part: 'trigger[2]',
+          expect: {
+            parts: {
+              'indicator[1]': { 'id': null, 'role': null, 'data-progress': null },
+              'trigger[1]': { 'aria-describedby': null },
+              'indicator[2]': { 'id': '@self', 'role': 'img', 'aria-label': '75% complete', 'data-progress': '' },
+              'trigger[2]': { 'aria-describedby': '@part(indicator[2])' },
+            },
+          },
         },
       ],
     },
@@ -582,18 +632,7 @@ export const stepsSuite: ConformanceSuite = {
       name: '只读展示：换成有序列表，trigger 只排版——不进 Tab 序列、没有按钮语义，点了不切步、不发事件',
       spec: { adr: 'steps-read-only' },
       // 只读下 trigger 是只排版的 div：Vue / React 按 readOnly 渲成 div，Web Components 由作者写成 div
-      fixture: base => ({
-        ...base,
-        children: base.children!.map(child => child.part !== 'list'
-          ? child
-          : {
-              ...child,
-              children: child.children!.map(item => ({
-                ...item,
-                children: item.children!.map(node => node.part === 'trigger' ? { ...node, tag: 'div' } : node),
-              })),
-            }),
-      }),
+      fixture: readOnlyTree,
       props: { count: COUNT, defaultValue: 1, readOnly: true },
       initial: {
         parts: {
@@ -624,6 +663,29 @@ export const stepsSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      // 只读展示是有序列表，列表项的子节点照常可达：当前步的圆点本身就是一个进度条
+      name: '只读展示 + percent：当前步的圆点是 progressbar，名字、区间、当前值与读法齐全，不对读屏隐藏',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/meter/' },
+      fixture: readOnlyTree,
+      props: { count: COUNT, defaultValue: 1, readOnly: true, percent: 40 },
+      initial: {
+        parts: {
+          'indicator[1]': {
+            'role': 'progressbar',
+            'aria-label': 'Step progress',
+            'aria-valuemin': '0',
+            'aria-valuemax': '100',
+            'aria-valuenow': '40',
+            'aria-valuetext': '40% complete',
+            'aria-hidden': null,
+            'data-progress': '',
+          },
+          'indicator[0]': { 'role': null, 'aria-hidden': 'true', 'data-progress': null },
+          'trigger[1]': { 'aria-describedby': null },
+        },
+      },
     },
   ],
 }

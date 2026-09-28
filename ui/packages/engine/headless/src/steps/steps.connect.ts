@@ -6,8 +6,8 @@
 // 提供 steps 相关实现。
 
 import type { ItemQuery, NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { StepNodeMeta, StepsApi, StepsItemProps, StepsItemState, StepsSchema } from './steps.types'
-import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import type { StepNodeMeta, StepsApi, StepsItemProps, StepsItemState, StepsSchema, StepsVariant } from './steps.types'
+import { contains, createPressTracker, dataAttr, DIAGNOSTIC_CODES, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, reportDiagnostic } from '@xihan-ui/core'
 import { stepsAnatomy } from './steps.anatomy'
 import { clampStep, normalizeStepCount } from './steps.machine'
 
@@ -15,6 +15,25 @@ const parts = stepsAnatomy.build()
 
 // 集合容器是 list 不是 root，按归属过滤嵌套 Steps 才互不吞并；content 在 list 之外，不入导航。
 const ITEM_QUERY: ItemQuery = { scope: stepsAnatomy.name, part: 'trigger' }
+
+/**
+ * 当前步的完成比例：夹进 [0, 100]。进度环只画在序号圆点上，点状形态的圆点不盛内容、画不下它；
+ * 这两种写错与非有限数都报 steps.option-ignored，并按没给处理。
+ */
+function resolvePercent(percent: number | undefined, variant: StepsVariant): number | null {
+  if (percent == null)
+    return null
+  const issue = !Number.isFinite(percent)
+    ? `percent 取 0–100 的有限数，收到 ${String(percent)}，这次按没给处理`
+    : variant === 'dot'
+      ? 'percent 只画在序号圆点上：点状形态的圆点不盛内容、画不下进度环，这次按没给处理'
+      : null
+  if (issue) {
+    reportDiagnostic({ code: DIAGNOSTIC_CODES.stepsOptionIgnored, level: 'error', scope: stepsAnatomy.name, message: issue, detail: { percent, variant } })
+    return null
+  }
+  return Math.min(100, Math.max(0, percent))
+}
 
 export function connectSteps<T extends PropTypes>(
   service: Service<StepsSchema>,
@@ -51,11 +70,16 @@ export function connectSteps<T extends PropTypes>(
   const loop = !!prop('loop')
   // 标记形态不写时显式落 number：root 与圆点上始终带 data-variant，嵌套的步骤条各认各的形态
   const variant = prop('variant') ?? 'number'
-  const listLabel = prop('translations')?.list
+  const translations = prop('translations')
+  const listLabel = translations?.list
+  const percent = resolvePercent(prop('percent'), variant)
+  const progressLabel = translations?.progressLabel ?? 'Step progress'
+  const progressValueText = translations?.progressValueText ?? ((value: number) => `${value}% complete`)
   const complete = count > 0 && value >= count
 
   const triggerId = (index: number): string => scope.partId(stepsAnatomy.name, `trigger:${index}`)
   const contentId = (index: number): string => scope.partId(stepsAnatomy.name, `content:${index}`)
+  const indicatorId = (index: number): string => scope.partId(stepsAnatomy.name, `indicator:${index}`)
 
   const getItemState = (item: StepsItemProps): StepsItemState => {
     const completed = item.index < value
@@ -75,6 +99,12 @@ export function connectSteps<T extends PropTypes>(
       disabled: disabled || !!item.disabled || !!meta?.disabled || (linear && item.index > value),
     }
   }
+
+  /**
+   * 完成比例只属于正停着的那一步，且那一步显示的仍是 current（statuses 把它改成别的状态时不画）；
+   * 走到完成位时没有这一步。
+   */
+  const carriesProgress = (s: StepsItemState): boolean => percent != null && s.current && s.status === 'current'
 
   /**
    * 方向键落点：条目集合只在事件那一刻读活 DOM，顺序即文档序；起点用锚点，不回绕。
@@ -240,6 +270,9 @@ export function connectSteps<T extends PropTypes>(
         // aria-current 取值是词不是布尔，省略即不是当前项；与 aria-selected 并存，读屏两句都念
         'aria-current': s.current ? 'step' : undefined,
         'aria-controls': contentId(item.index),
+        // tab 的子节点对读屏是纯展示的，圆点里放不了一个 progressbar：当前步的完成比例改作触发器的描述，
+        // 由圆点的名字供给（圆点本身仍对读屏隐藏，直接引用的隐藏节点照样参与描述计算）
+        'aria-describedby': carriesProgress(s) ? indicatorId(item.index) : undefined,
         // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
         'aria-disabled': s.disabled ? 'true' : 'false',
         // 第 k 步共 n 步；count 为 0 时两个都不写，aria-setsize="0" 等于声明集合是空的
@@ -269,14 +302,37 @@ export function connectSteps<T extends PropTypes>(
 
     // 序号圆点是纯视觉的，第 k 步共 n 步已由 posinset/setsize 说明，不参与名字计算。
     // 形态写在圆点自己身上：点状的规则落在它身上，嵌在面板里的另一台步骤条不被外层的形态波及
-    getIndicatorProps: item => normalize.element({
-      ...parts.indicator.attrs,
-      'aria-hidden': true,
-      'data-variant': variant,
-      'data-state': getItemState(item).status,
-      // 首帧就走过、此后没被回退到的步：对号直接呈现；此后才走过的步对号淡入
-      'data-instant': dataAttr(item.index < context.get('untouchedBelow')),
-    }),
+    getIndicatorProps: (item) => {
+      const s = getItemState(item)
+      const base = {
+        ...parts.indicator.attrs,
+        'data-variant': variant,
+        'data-state': s.status,
+        // 首帧就走过、此后没被回退到的步：对号直接呈现；此后才走过的步对号淡入
+        'data-instant': dataAttr(item.index < context.get('untouchedBelow')),
+        // 不带进度的圆点显式撤掉比例：Web Components 按键写内联样式，换步后上一步的比例不能留在节点上
+        'style': { '--xh-_steps-progress': undefined },
+      }
+      if (percent == null || !carriesProgress(s))
+        return normalize.element({ ...base, 'aria-hidden': true })
+      const valueText = progressValueText(Math.round(percent))
+      // 当前步外画一圈进度环：比例（0–1）写进内联样式，皮肤按它画弧
+      const progress = { ...base, 'id': indicatorId(item.index), 'data-progress': dataAttr(true), 'style': { '--xh-_steps-progress': String(percent / 100) } }
+      // 只读展示是有序列表，列表项的子节点照常可达：圆点本身就是一个进度条（APG progressbar）
+      if (readOnly) {
+        return normalize.element({
+          ...progress,
+          'role': 'progressbar',
+          'aria-label': progressLabel,
+          'aria-valuemin': '0',
+          'aria-valuemax': '100',
+          'aria-valuenow': String(percent),
+          'aria-valuetext': valueText,
+        })
+      }
+      // 可操作时圆点在 tab 里，只作触发器描述的来源：对读屏隐藏，名字就是那句比例
+      return normalize.element({ ...progress, 'role': 'img', 'aria-label': valueText, 'aria-hidden': true })
+    },
 
     // title / description 不产出 id、不做 trigger 的 aria-labelledby：作者未必都渲染，
     // 指向不存在的 id 会让 trigger 没有名字；它们是 trigger 的后代文本，已计入名字。

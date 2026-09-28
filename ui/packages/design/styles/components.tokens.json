@@ -67161,6 +67161,24 @@
       "description": "steps 的 indicator、item 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-steps-indicator-ring-track",
+      "component": "steps",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "progress"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-steps-indicator-shadow",
       "component": "steps",
       "part": [
