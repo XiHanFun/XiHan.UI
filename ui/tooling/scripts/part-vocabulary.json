@@ -833,6 +833,7 @@
       "menu",
       "menubar",
       "notification",
+      "question-flow",
       "radio-group",
       "select",
       "transfer",
@@ -1961,6 +1962,9 @@
     ],
     "undo-trigger": [
       "signature-pad"
+    ],
+    "unread-count": [
+      "message-feed"
     ],
     "value": [
       "descriptions",
