@@ -462,6 +462,23 @@ describe('connectTree 属性输出', () => {
     expect(mount({ variant: 'ghost' }).root.getAttribute('data-variant')).toBe('ghost')
   })
 
+  it('在途分两相：还没有节点时在途占位露面并带加载环；已有节点时占位让位、树本体标 data-loading 让行淡下', () => {
+    const empty = mount({ collection: [], loading: true })
+    const emptyLoading = empty.api().getLoadingProps() as Record<string, unknown>
+    expect(emptyLoading.hidden).toBeUndefined()
+    expect(emptyLoading['data-loading']).toBe('')
+    expect(emptyLoading['data-xh-loading-ring']).toBe('')
+    expect((empty.api().getTreeProps() as Record<string, unknown>)['data-loading']).toBeUndefined()
+
+    const filled = mount({ loading: true })
+    const filledLoading = filled.api().getLoadingProps() as Record<string, unknown>
+    expect(filledLoading.hidden).toBe(true)
+    expect(filledLoading['data-loading']).toBeUndefined()
+    expect(filled.treeEl.getAttribute('data-loading')).toBe('')
+    expect(filled.treeEl.getAttribute('aria-busy')).toBe('true')
+    expect(mount().treeEl.hasAttribute('data-loading')).toBe(false)
+  })
+
   it('尺寸恒有值：不写 size 时根落 md，行按同一档投影家族尺寸；sm / lg 如实落到根与每一行', () => {
     const plain = mount({ defaultExpandedValue: ['src'] })
     expect(plain.root.getAttribute('data-size')).toBe('md')

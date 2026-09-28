@@ -69,6 +69,9 @@ export function connectTree<T extends PropTypes>(
   const loading = !!prop('loading')
   // 集合交给库时相位由库判；节点手写时库数不出有几条
   const counted = prop('collection') != null
+  // 在途分两种：还没有节点时由在途占位承载，已有节点时不换成占位、行保留上一帧淡下
+  const placeholderLoading = loading && (!counted || collection.length === 0)
+  const refreshing = loading && !placeholderLoading
   // 形态恒有值：缺省 outline，读一眼 DOM 就知道这棵树有没有外框
   const variant = prop('variant') ?? 'outline'
   // 尺寸恒有值：行、指示符盒与缩进都按这一档取尺，缺省 md
@@ -442,11 +445,14 @@ export function connectTree<T extends PropTypes>(
       'hidden': counted ? (loading || collection.length > 0) || undefined : loading || undefined,
     }),
 
-    // 在途占位：与空态占位同一个位置、同一套收放判据，只是条件相反
+    // 在途占位：与空态占位同一个位置、同一套收放判据，只是条件相反。
+    // 环走加载环配方，随 data-loading 淡入并转
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(placeholderLoading),
       'data-disabled': dataAttr(treeDisabled),
-      'hidden': counted ? (!loading || collection.length > 0) || undefined : !loading || undefined,
+      'hidden': !placeholderLoading || undefined,
     }),
 
     getLiveRegionProps: () => normalize.element({
@@ -468,6 +474,8 @@ export function connectTree<T extends PropTypes>(
       'aria-disabled': treeDisabled ? 'true' : 'false',
       // 取数在途的播报归树本体：两个相位占位自己不带这一位
       'aria-busy': loading ? 'true' : undefined,
+      // 已有节点时重新取数：皮肤让行保留上一帧淡下，树框不动
+      'data-loading': dataAttr(refreshing),
       'data-orientation': 'vertical',
       // 缩进参考线只是外观：皮肤在每一层子节点的行首画竖线
       'data-lines': dataAttr(!!prop('lines')),
