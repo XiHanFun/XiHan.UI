@@ -679,6 +679,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 释放 | `--xh-motion-duration-release`（200ms） | scale 0.97 → 1；背景、描边、字色按 `--xh-motion-duration-micro` 回到 hover/rest | `--xh-motion-ease-release`（换面 `--xh-motion-ease-enter`） |
 
 - transform origin 固定为 center。
+- 共边相接的分段（ButtonGroup 段、ToggleGroup item、Toolbar group 里的 item）按下只换面不缩放：分段零间距相接，缩放任一段都会撕开两侧接缝；皮肤在该部件上写 `--xh-action-scale-pressed: none`，换底照常。散落的独立条目仍缩放。
 - 指针 `:active`、键盘 Press 和 Headless `data-pressed` 必须一致。
 - 不采用点击波纹。
 - 不允许组件自行设置 0.94、0.96、0.98 等缩放。

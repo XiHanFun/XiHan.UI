@@ -157,4 +157,17 @@ describe('toolbar 默认视觉', () => {
     expect(Number.parseFloat(style.opacity)).toBeLessThan(0.5)
     expect(Number.parseFloat(style.marginInlineStart)).toBe(-1)
   })
+
+  it('组内相接的分段按下只换面不缩放，散落的条目照常缩放', async () => {
+    const toolbar = mount({ loose: true })
+    const [loose, joined] = toolbar.items
+    for (const item of [loose!, joined!])
+      item.setAttribute('data-pressed', '')
+    const settle = (el: HTMLElement): Promise<unknown> => Promise.all(el.getAnimations().map(a => a.finished.catch(() => undefined)))
+    await Promise.all([settle(loose!), settle(joined!)])
+    // 分段零间距直角相接：缩放会撕开两侧接缝
+    expect(['none', '1'].includes(getComputedStyle(joined!).scale)).toBe(true)
+    expect(getComputedStyle(joined!).backgroundColor).not.toBe(getComputedStyle(toolbar.items[2]!).backgroundColor)
+    expect(Number.parseFloat(getComputedStyle(loose!).scale)).toBeLessThan(1)
+  })
 })
