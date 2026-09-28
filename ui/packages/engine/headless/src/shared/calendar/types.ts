@@ -110,6 +110,12 @@ export interface CalendarBaseProps {
   invalid?: boolean
   /** 决定周首日与月份/星期几的文案，不给按宿主语言，宿主也没有时按 en-US。 */
   locale?: string
+  /**
+   * 周首日，0 = 星期日 … 6 = 星期六（与热力图同一套写法），非整数向下取整后按 7 取模。
+   * 不给按 locale：en-US 从星期日排起，zh-CN 从星期一排起。表头、每行的行首与 Home / End 都跟着它走；
+   * 周粒度挑的仍是 ISO 周（星期一到星期日），要让一行正好是一周，写 1。
+   */
+  firstDayOfWeek?: number
   /** 判定「今天」与格式化文案用的时区，默认取宿主本地时区。 */
   timeZone?: string
   /** 整张日历禁用：翻月按钮转原生 disabled，格子全转 aria-disabled，键盘与点击都不改值。 */

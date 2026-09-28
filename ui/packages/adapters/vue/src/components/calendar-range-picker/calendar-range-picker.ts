@@ -56,6 +56,8 @@ export const XhCalendarRangePickerRoot = defineComponent({
     /** 校验失败：根带 data-invalid，区间内的格子报告 aria-invalid。 */
     invalid: Boolean,
     locale: { type: String },
+    /** 周首日，0 = 星期日 … 6 = 星期六；不给按 locale。 */
+    firstDayOfWeek: { type: Number },
     timeZone: { type: String },
     disabled: Boolean,
     readOnly: Boolean,

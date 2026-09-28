@@ -8,6 +8,7 @@
 // 门禁按「哪份 connect 发了哪些属性」逐组件对账，属性得写在组件自己那份文件里。
 
 import type { Service } from '@xihan-ui/core'
+import type { WeekStart } from '@xihan-ui/core/date'
 import type { CalendarPeriod, CalendarView, CalendarWeekDay } from './grid'
 import type { CalendarBaseSchema } from './machine-base'
 import type { CalendarCellProps, CalendarPanel } from './types'
@@ -25,6 +26,7 @@ import {
   calendarPeriodOf,
   calendarPeriodStart,
   calendarWeekListedIn,
+  calendarWeekStart,
   calendarZoomIn,
   parseCalendarDate,
   visibleCountOf,
@@ -81,6 +83,8 @@ export interface CalendarCellClickOptions {
 /** 骨架对外露出的那一面：算好的值与导航动作，两个组件的 connect 据此写属性。 */
 export interface CalendarFrame {
   locale: string
+  /** 网格实际的周首日：firstDayOfWeek 给了按它，否则按 locale。Home / End 与表头都按它走。 */
+  weekStart: WeekStart
   disabled: boolean
   readOnly: boolean
   min: PlainDate | null
@@ -141,6 +145,8 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
   const { context, prop, send, scope } = service
 
   const locale = resolveLocale(prop('locale'), scope)
+  const firstDayOfWeek = prop('firstDayOfWeek')
+  const weekStart = calendarWeekStart(firstDayOfWeek, locale)
   const timeZone = prop('timeZone') ?? getLocalTimeZone()
   const calendarDisabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
@@ -213,14 +219,14 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
     const start = visibleStart.add({ months: index * pageMonths })
     const pieces = calendarHeadingPieces(start, locale)
     if (view === 'day') {
-      const g = buildMonthGrid(start.toString(), { locale, fixedWeeks: !!prop('fixedWeeks') })
+      const g = buildMonthGrid(start.toString(), { locale, firstDayOfWeek, fixedWeeks: !!prop('fixedWeeks') })
       return {
         index,
         year: g.year,
         month: g.month,
         startValue: g.monthStart,
         weeks: g.weeks,
-        // 每行取行中那天算周序号：行首日随 locale 变（周日或周一），行中那天恒落在这一行覆盖的那个 ISO 周里
+        // 每行取第四格（行中那天）算周序号：不论周首日是哪天，它所在的 ISO 周都占了这一行七天里的至少四天
         weekNumbers: g.weeks.map(row => PlainDate.from(row[3]!.start).weekOfYear),
         periods: g.weeks.flat(),
         cells: [],
@@ -251,6 +257,7 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
   const weekDays = buildWeekDays({
     reference: grid.startValue,
     locale,
+    firstDayOfWeek,
     weekdayFormat: prop('weekdayFormat') ?? 'short',
   })
   const cellLabelFormatter = createDateFormatter(locale, {
@@ -412,6 +419,7 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
 
   return {
     locale,
+    weekStart,
     disabled: calendarDisabled,
     readOnly,
     min,
@@ -459,7 +467,7 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
       if (intent) {
         event.preventDefault()
         // 粗粒度视图走的是格子：一格一格、一行一行，不是一天一天
-        focusInGrid(calendarNavTarget(focusedValue, intent, locale, view))
+        focusInGrid(calendarNavTarget(focusedValue, intent, weekStart, view))
         return
       }
       if (event.key === 'Enter' || event.key === ' ') {

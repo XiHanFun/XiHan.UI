@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { PlainDate } from '@xihan-ui/core/date'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { calendarPickerMachine, connectCalendarPicker } from '../src/calendar-picker'
 import {
@@ -17,7 +18,7 @@ import {
   calendarZoomIn,
   parseCalendarDate,
 } from '../src/shared/calendar'
-import { calendarHeadingPieces, calendarPeriodStart } from '../src/shared/calendar/grid'
+import { calendarHeadingPieces, calendarPeriodStart, calendarWeekStart } from '../src/shared/calendar/grid'
 import { click, createCalendarHarness, focused, pointerDown, pointerUp, press, settle, tabStops } from './calendar-harness'
 
 const { mount, mountDrill } = createCalendarHarness(calendarPickerMachine, connectCalendarPicker)
@@ -79,6 +80,54 @@ describe('buildMonthGrid 月份矩阵', () => {
       const prev = parseCalendarDate(flat[i - 1]!.start)!
       expect(prev.add({ days: 1 }).toString()).toBe(flat[i]!.start)
     }
+  })
+})
+
+describe('firstDayOfWeek 周首日', () => {
+  it('给了就压过 locale：en-US 下写 1 从星期一排起，zh-CN 下写 0 从星期日排起', () => {
+    const enMonday = buildMonthGrid('2024-02-15', { locale: 'en-US', firstDayOfWeek: 1 })
+    expect(enMonday.weeks[0]![0]!.start).toBe('2024-01-29')
+    expect(enMonday.weeks.every(row => PlainDate.from(row[0]!.start).dayOfWeek === 1)).toBe(true)
+    const zhSunday = buildMonthGrid('2024-02-15', { locale: 'zh-CN', firstDayOfWeek: 0 })
+    expect(zhSunday.weeks[0]![0]!.start).toBe('2024-01-28')
+    expect(buildWeekDays({ reference: '2024-02-01', locale: 'en-US', firstDayOfWeek: 1 })[0]!.long).toBe('Monday')
+    expect(buildWeekDays({ reference: '2024-02-01', locale: 'zh-CN', firstDayOfWeek: 0 })[0]!.long).toBe('星期日')
+  })
+
+  it('周首日改变当月占几行：2026 年 3 月从星期日排是五行，从星期一排是六行', () => {
+    expect(buildMonthGrid('2026-03-10', { locale: 'en-US', firstDayOfWeek: 0 }).weeks).toHaveLength(5)
+    expect(buildMonthGrid('2026-03-10', { locale: 'en-US', firstDayOfWeek: 1 }).weeks).toHaveLength(6)
+  })
+
+  it('非整数向下取整、再按 7 取模；不给或不是有限数时按 locale', () => {
+    expect(calendarWeekStart(1, 'en-US')).toBe(1)
+    expect(calendarWeekStart(0, 'zh-CN')).toBe(7)
+    expect(calendarWeekStart(8, 'en-US')).toBe(1)
+    expect(calendarWeekStart(-1, 'en-US')).toBe(6)
+    expect(calendarWeekStart(2.7, 'en-US')).toBe(2)
+    expect(calendarWeekStart(undefined, 'zh-CN')).toBe('zh-CN')
+    expect(calendarWeekStart(Number.NaN, 'en-US')).toBe('en-US')
+  })
+
+  it('home / End 的周界按给定的周首日算', () => {
+    // 2024-02-01 是周四：从星期六排起，本周是 1 月 27 日到 2 月 2 日
+    expect(calendarNavTarget('2024-02-01', 'week.start', calendarWeekStart(6, 'en-US'))).toBe('2024-01-27')
+    expect(calendarNavTarget('2024-02-01', 'week.end', calendarWeekStart(6, 'en-US'))).toBe('2024-02-02')
+  })
+
+  it('接到日历上：格子、表头与 Home 都从星期一起，周序号仍按 ISO 周', async () => {
+    const h = mount({ defaultFocusedValue: '2024-02-01', locale: 'en-US', firstDayOfWeek: 1 })
+    expect(h.rendered()[0]).toBe('2024-01-29')
+    expect(h.api().weekDays.map(d => d.long)).toEqual(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
+    expect(h.api().panels[0]!.weekNumbers[0]).toBe(5)
+    h.cell('2024-02-01').focus()
+    press(h.cell('2024-02-01'), 'Home')
+    await settle()
+    expect(focused()).toBe('2024-01-29')
+    // Home 落到 1 月 29 日，展示月跟着回到 1 月；改成从星期三排起，首行从 2023-12-27 开始
+    h.setProps({ firstDayOfWeek: 3 })
+    expect(h.rendered()[0]).toBe('2023-12-27')
+    expect(h.api().weekDays[0]!.long).toBe('Wednesday')
   })
 })
 

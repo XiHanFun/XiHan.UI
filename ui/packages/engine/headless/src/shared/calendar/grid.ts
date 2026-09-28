@@ -5,6 +5,7 @@
 
 // 日历网格的纯数学：日期矩阵、周期格、表头与方向键落点，日历选择器与日历范围选择器共用。
 
+import type { DayOfWeek, WeekStart } from '@xihan-ui/core/date'
 import { createDateFormatter, endOfWeek, PlainDate, startOfMonth, startOfWeek, weeksInMonth } from '@xihan-ui/core/date'
 
 // 月视图的纯数学与纯格式化：不碰 DOM、不认识状态机，把「哪一天 + locale」翻成
@@ -23,6 +24,18 @@ export const CALENDAR_LOCALE = 'en-US'
 export const CALENDAR_WEEK_LENGTH = 7
 /** fixedWeeks 打开后固定渲染的周行数；六行能装下任何公历月份。 */
 export const CALENDAR_FIXED_WEEKS = 6
+
+/**
+ * 网格的周首日：给了 firstDayOfWeek（0 = 星期日 … 6 = 星期六，与热力图同一套写法）就按它，
+ * 非整数先向下取整、再按 7 取模；没给（或不是有限数）按 locale 的周首日。
+ * 返回值直接喂给 @xihan-ui/core/date 的周运算：数字是 ISO 星期序（1 = 星期一 … 7 = 星期日），字符串是 locale。
+ */
+export function calendarWeekStart(firstDayOfWeek: number | undefined, locale: string = CALENDAR_LOCALE): WeekStart {
+  if (firstDayOfWeek == null || !Number.isFinite(firstDayOfWeek))
+    return locale
+  const day = ((Math.floor(firstDayOfWeek) % CALENDAR_WEEK_LENGTH) + CALENDAR_WEEK_LENGTH) % CALENDAR_WEEK_LENGTH
+  return (day === 0 ? CALENDAR_WEEK_LENGTH : day) as DayOfWeek
+}
 
 /** 可选择的周期粒度。选择模式由 selectionMode 单独决定。 */
 export type CalendarGranularity = 'day' | 'week' | 'month' | 'quarter' | 'year'
@@ -75,6 +88,8 @@ export interface CalendarMonthGrid {
 export interface CalendarMonthGridOptions {
   /** 决定周首日，不给按 CALENDAR_LOCALE（en-US，周日起）。 */
   locale?: string
+  /** 周首日，0 = 星期日 … 6 = 星期六；给了就压过 locale 的周首日。 */
+  firstDayOfWeek?: number
   /** 恒补满六行，默认按当月实际占用的周数（4-6 行）。 */
   fixedWeeks?: boolean
 }
@@ -93,6 +108,8 @@ export interface CalendarWeekDaysOptions {
   /** 参照日：取它所在那一周产出七列，周首日与网格首列对齐。 */
   reference: string
   locale?: string
+  /** 周首日，0 = 星期日 … 6 = 星期六；给了就压过 locale 的周首日，与 buildMonthGrid 同一个口径。 */
+  firstDayOfWeek?: number
   weekdayFormat?: 'narrow' | 'short'
 }
 
@@ -139,12 +156,13 @@ export function parseCalendarDate(value: string | null | undefined): PlainDate |
  * anchor 必须是合法 ISO 日期串，否则原样抛出解析错误。
  */
 export function buildMonthGrid(anchor: string, options: CalendarMonthGridOptions = {}): CalendarMonthGrid {
-  const { locale = CALENDAR_LOCALE, fixedWeeks = false } = options
+  const { locale = CALENDAR_LOCALE, firstDayOfWeek, fixedWeeks = false } = options
+  const weekStart = calendarWeekStart(firstDayOfWeek, locale)
   const first = startOfMonth(PlainDate.from(anchor))
-  const weekCount = fixedWeeks ? CALENDAR_FIXED_WEEKS : weeksInMonth(first, locale)
+  const weekCount = fixedWeeks ? CALENDAR_FIXED_WEEKS : weeksInMonth(first, weekStart)
 
   const weeks: CalendarDay[][] = []
-  let cursor = startOfWeek(first, locale)
+  let cursor = startOfWeek(first, weekStart)
   for (let w = 0; w < weekCount; w++) {
     const row: CalendarDay[] = []
     for (let d = 0; d < CALENDAR_WEEK_LENGTH; d++) {
@@ -170,8 +188,8 @@ export function buildMonthGrid(anchor: string, options: CalendarMonthGridOptions
 
 /** 生成七列表头。取参照日所在那一周逐日格式化，列序与 buildMonthGrid 一致。 */
 export function buildWeekDays(options: CalendarWeekDaysOptions): CalendarWeekDay[] {
-  const { reference, locale = CALENDAR_LOCALE, weekdayFormat = 'short' } = options
-  const start = startOfWeek(PlainDate.from(reference), locale)
+  const { reference, locale = CALENDAR_LOCALE, firstDayOfWeek, weekdayFormat = 'short' } = options
+  const start = startOfWeek(PlainDate.from(reference), calendarWeekStart(firstDayOfWeek, locale))
   const shortFormatter = createDateFormatter(locale, { weekday: weekdayFormat })
   const longFormatter = createDateFormatter(locale, { weekday: 'long' })
 
@@ -223,7 +241,7 @@ export function calendarNavFromKey(event: CalendarNavKeyEventLike): CalendarNavI
 export function calendarNavTarget(
   anchor: string,
   intent: CalendarNavIntent,
-  locale = CALENDAR_LOCALE,
+  weekStart: WeekStart = CALENDAR_LOCALE,
   view: CalendarView = 'day',
 ): string {
   if (view !== 'day')
@@ -239,9 +257,9 @@ export function calendarNavTarget(
     case 'week.next':
       return date.add({ days: CALENDAR_WEEK_LENGTH }).toString()
     case 'week.start':
-      return startOfWeek(date, locale).toString()
+      return startOfWeek(date, weekStart).toString()
     case 'week.end':
-      return endOfWeek(date, locale).toString()
+      return endOfWeek(date, weekStart).toString()
     case 'month.prev':
       return date.subtract({ months: 1 }).toString()
     case 'month.next':

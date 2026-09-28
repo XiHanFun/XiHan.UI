@@ -3941,6 +3941,15 @@
             },
             {
               "kind": "field",
+              "name": "firstDayOfWeek",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "first-day-of-week"
+            },
+            {
+              "kind": "field",
               "name": "timeZone",
               "privacy": "public",
               "type": {
@@ -4249,6 +4258,14 @@
               "description": "决定周首日与文案；未提供时按宿主语言，宿主也没有时按 en-US",
               "name": "locale",
               "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "周首日，0 = 星期日 … 6 = 星期六；未提供时按 locale",
+              "name": "first-day-of-week",
+              "fieldName": "firstDayOfWeek"
             },
             {
               "type": {
@@ -4650,6 +4667,15 @@
             },
             {
               "kind": "field",
+              "name": "firstDayOfWeek",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "first-day-of-week"
+            },
+            {
+              "kind": "field",
               "name": "timeZone",
               "privacy": "public",
               "type": {
@@ -4969,6 +4995,14 @@
               "description": "决定周首日与文案；未提供时按宿主语言，宿主也没有时按 en-US",
               "name": "locale",
               "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "周首日，0 = 星期日 … 6 = 星期六；未提供时按 locale",
+              "name": "first-day-of-week",
+              "fieldName": "firstDayOfWeek"
             },
             {
               "type": {

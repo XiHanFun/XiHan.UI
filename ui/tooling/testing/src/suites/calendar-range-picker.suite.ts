@@ -34,8 +34,10 @@ function at(value: string): number {
  * 网格由作者渲染（连接层只给数据、不生成节点），fixture 因此就是"作者照 weeks 写出来的那棵树"。
  * 日期身份只写在 cell 上，cell-trigger 跟着它所在的 cell 走。
  */
-function buildFixture(fixedWeeks = false): FixtureNode {
-  const grid = fixedWeeks ? buildMonthGrid(ANCHOR, { locale: LOCALE, fixedWeeks: true }) : GRID
+function buildFixture(options: { fixedWeeks?: boolean, firstDayOfWeek?: number } = {}): FixtureNode {
+  const { fixedWeeks = false, firstDayOfWeek } = options
+  const grid = fixedWeeks || firstDayOfWeek != null ? buildMonthGrid(ANCHOR, { locale: LOCALE, fixedWeeks, firstDayOfWeek }) : GRID
+  const weekDays = firstDayOfWeek != null ? buildWeekDays({ reference: grid.monthStart, locale: LOCALE, firstDayOfWeek }) : WEEK_DAYS
   return {
     part: 'root',
     children: [
@@ -55,7 +57,7 @@ function buildFixture(fixedWeeks = false): FixtureNode {
             children: [{
               // 列头得待在一行里：columnheader 直接挂在 rowgroup 下，grid 的行列语义从表头就断了
               part: 'week-row',
-              children: WEEK_DAYS.map(d => ({
+              children: weekDays.map(d => ({
                 part: 'week-day',
                 tag: 'span',
                 attrs: { value: String(d.value) },
@@ -479,6 +481,21 @@ export const calendarRangePickerSuite: ConformanceSuite = {
         heldPressIgnored('calendar-range-picker', 'cell-trigger', '整张禁用时格子不接受按压', { value: ANCHOR }),
         heldPressIgnored('calendar-range-picker', 'next-trigger', '整张禁用时翻月钮不接受按压'),
       ],
+    },
+    {
+      name: 'firstDayOfWeek：写 0 时压过 zh-CN 的星期一，首格是 1 月 28 日，表头第一列读作星期日',
+      spec: { apg: APG },
+      props: { ...BASE_PROPS, firstDayOfWeek: 0 },
+      fixture: () => buildFixture({ firstDayOfWeek: 0 }),
+      initial: {
+        counts: { 'cell': 35, 'cell-trigger': 35, 'week-day': 7 },
+        parts: {
+          'cell[0]': { 'data-value': '2024-01-28', 'data-outside-month': '' },
+          'cell[34]': { 'data-value': '2024-03-02', 'data-outside-month': '' },
+          'week-day[0]': { 'aria-label': '星期日' },
+          'week-day[6]': { 'aria-label': '星期六' },
+        },
+      },
     },
   ],
 }
