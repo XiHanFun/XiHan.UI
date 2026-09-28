@@ -553,5 +553,52 @@ export const stepsSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '只读展示：换成有序列表，trigger 只排版——不进 Tab 序列、没有按钮语义，点了不切步、不发事件',
+      spec: { adr: 'steps-read-only' },
+      // 只读下 trigger 是只排版的 div：Vue / React 按 readOnly 渲成 div，Web Components 由作者写成 div
+      fixture: base => ({
+        ...base,
+        children: base.children!.map(child => child.part !== 'list'
+          ? child
+          : {
+              ...child,
+              children: child.children!.map(item => ({
+                ...item,
+                children: item.children!.map(node => node.part === 'trigger' ? { ...node, tag: 'div' } : node),
+              })),
+            }),
+      }),
+      props: { count: COUNT, defaultValue: 1, readOnly: true },
+      initial: {
+        parts: {
+          'list': { 'role': 'list', 'tabindex': null, 'aria-orientation': null, 'aria-disabled': null },
+          'item[0]': { 'role': 'listitem', 'aria-current': null, 'data-disabled': null },
+          'item[1]': { 'role': 'listitem', 'aria-current': 'step' },
+          'trigger[0]': {
+            'role': null,
+            'type': null,
+            'tabindex': null,
+            'aria-selected': null,
+            'aria-disabled': null,
+            'data-xh-action-control': null,
+            'data-readonly': '',
+            'data-state': 'completed',
+          },
+          'content[1]': { role: null, tabindex: null, hidden: null },
+          'content[0]': { hidden: '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'trigger[2]',
+          expect: {
+            parts: { 'item[1]': { 'aria-current': 'step' }, 'content[2]': { hidden: '' } },
+            events: [],
+          },
+        },
+      ],
+    },
   ],
 }

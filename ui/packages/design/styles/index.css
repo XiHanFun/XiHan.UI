@@ -36963,6 +36963,13 @@
     text-align: start;
   }
 
+  /* 只读展示：trigger 不投影 Action Control，只是「序号 + 标题 + 说明」的排版容器——内距与可操作时同一把尺，
+     在两种形态间切换版面不跳；没有悬停、按压与焦点环，标题与说明不置灰 */
+  [data-scope='steps'][data-part='trigger'][data-readonly] {
+    padding-block: var(--xh-steps-trigger-p, var(--xh-space-1));
+    padding-inline: var(--xh-steps-trigger-p, var(--xh-control-px-sm));
+  }
+
   [data-scope='steps'][data-part='trigger'][hidden] {
     display: none;
   }
@@ -37010,25 +37017,25 @@
      :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面，同一时间线，不缩放——
      圆点自己是 100 的淡底，坐在触发器的 hover 面（100）上，再上一档到 200 才与承载面分得开，按下到 300；
      当前步的实心面按下换语气 active 档 */
-  [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
+  [data-scope='steps'][data-part='trigger']:hover:not([data-disabled], [data-readonly])
     [data-scope='steps'][data-part='indicator'][data-state='incomplete'] {
     background: var(--xh-steps-indicator-bg-hover, var(--xh-_steps-host-bg-hover));
     color: var(--xh-steps-indicator-fg-hover, var(--xh-fg-default));
   }
 
-  [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
+  [data-scope='steps'][data-part='trigger']:hover:not([data-disabled], [data-readonly])
     [data-scope='steps'][data-part='indicator'][data-state='completed'] {
     background: var(--xh-steps-indicator-bg-completed-hover, var(--xh-_steps-host-bg-hover));
   }
 
-  [data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed])
+  [data-scope='steps'][data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
     [data-scope='steps'][data-part='indicator']:is([data-state='incomplete'], [data-state='completed']) {
     background: var(--xh-steps-indicator-bg-pressed, var(--xh-_steps-host-bg-pressed));
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
-  [data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed])
+  [data-scope='steps'][data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
     [data-scope='steps'][data-part='indicator'][data-state='current'] {
     background: var(--xh-steps-indicator-bg-current-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
     transition-duration: var(--xh-motion-duration-press);
@@ -37167,7 +37174,7 @@
       color: HighlightText;
     }
 
-    [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
+    [data-scope='steps'][data-part='trigger']:hover:not([data-disabled], [data-readonly])
       [data-scope='steps'][data-part='indicator'][data-state='incomplete'] {
       border-color: Highlight;
     }

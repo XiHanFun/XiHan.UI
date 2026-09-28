@@ -35,6 +35,8 @@ export const XhStepsRoot = defineComponent({
     orientation: { type: String as PropType<Orientation> },
     linear: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
+    /** 只读展示：不可点、不可聚焦、不置灰，语义换成有序列表，trigger 渲染为 div。 */
+    readOnly: { type: Boolean, default: undefined },
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction> },
     translations: { type: Object as PropType<Partial<StepsTranslations>> },
@@ -117,8 +119,9 @@ export const XhStepsTrigger = defineComponent({
       if (itemEl.value && ctx.service.scope.getActiveElement() === itemEl.value)
         ctx.service.send({ type: 'LIST.BLUR' })
     })
+    // 只读展示的 trigger 只排版，不是按钮
     return () => h(
-      'button',
+      ctx.api.value.readOnly ? 'div' : 'button',
       { ...ctx.api.value.getTriggerProps(item()) as Record<string, unknown>, ref: itemEl },
       slots.default?.(),
     )
