@@ -957,6 +957,17 @@ export const cascaderSuite: ConformanceSuite = {
             const first = ctx.doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="item"]`)[0]
             if (ctx.doc.activeElement !== first)
               throw new Error('悬停把键盘焦点抢走了')
+            // 子列头一次铺开：条目照常播进场，不标 data-instant
+            if (nanjing?.hasAttribute('data-instant'))
+              throw new Error('子列头一次出现却被标成 data-instant，列的进场播不出来')
+            // 扫到同列另一个父项：子列此前就在，换上来的条目标 data-instant，不重播列的进场
+            first?.dispatchEvent(new MouseEvent('pointerenter', { bubbles: true, cancelable: true }))
+            await ctx.flush()
+            const hangzhou = ctx.doc.querySelector<HTMLElement>(`${SCOPE}[data-part="item"][data-value="hangzhou"]`)
+            if (!hangzhou || hangzhou.hasAttribute('hidden'))
+              throw new Error('悬停没有把子列换成 zhejiang 的子节点')
+            if (!hangzhou.hasAttribute('data-instant'))
+              throw new Error('子列换内容时条目没标 data-instant，列的进场会重播')
           },
         },
       ],

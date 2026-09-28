@@ -20146,9 +20146,10 @@
   display: none;
 }
 
-/* 一列开幕：条目自上而下逐条淡入。列从 hidden 转回来、或换了展开路径把另一批条目放出来时，
-   这段动画重新起跑。backwards 让每条在自己那份延迟里保持起始帧 */
-[data-scope='cascader'][data-part='column'] [data-part='item'] {
+/* 一列开幕：条目自上而下逐条淡入。只在列头一次出现时播（浮层展开、此前收着的子列铺出来）；
+   列此前就在、展开路径换到同列另一个父项时（悬停扫过），连接层给露面的条目标 data-instant，
+   换内容不重播。backwards 让每条在自己那份延迟里保持起始帧 */
+[data-scope='cascader'][data-part='column'] [data-part='item']:not([data-instant]) {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) backwards;
 }
 

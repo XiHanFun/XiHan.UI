@@ -5,8 +5,8 @@
 
 // 提供 cascader 相关实现。
 
-import type { PositionResult } from '@xihan-ui/core'
-import type { CascaderFocusIntent, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderValue } from './cascader.types'
+import type { ContextFacade, PositionResult } from '@xihan-ui/core'
+import type { CascaderFocusIntent, CascaderNode, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderValue } from './cascader.types'
 import { cascadeToggle, collapseChecked, itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
@@ -79,6 +79,17 @@ function samePathCell(a: string[], b: string[] | undefined): boolean {
   return !!b && cascaderSamePath(a, b)
 }
 
+/**
+ * 换展开路径，先记下换之前铺开了几列。连接层据此把这几列里露面的条目标成 data-instant：
+ * 列此前就在、只是换了一批内容（悬停扫过同列的父项），不重播列的进场；此前收着的列头一次出现才播。
+ */
+function moveActivePath(context: ContextFacade<CascaderSchema>, collection: readonly CascaderNode[], next: string[]): void {
+  if (cascaderSamePath(context.get('activePath'), next))
+    return
+  context.set('settledColumns', cascaderBuildColumns(collection, context.get('activePath')).length)
+  context.set('activePath', next)
+}
+
 /** 按值取条目元素，不问它此刻可不可见；只在事件那一刻读活 DOM。 */
 export function findCascaderItemEl(container: HTMLElement | null, value: string | null): HTMLElement | null {
   if (!container || value == null)
@@ -101,6 +112,8 @@ export const cascaderMachine = createMachine({
       onChange: value => prop('onValueChange')?.({ value }),
     })),
     activePath: cell<string[]>(() => ({ defaultValue: [], isEqual: samePathCell })),
+    // 展开路径上一次改动之前铺开了几列：这几列此前就在，换成另一批条目时不重播列的进场
+    settledColumns: cell<number>(() => ({ defaultValue: 0 })),
     focusedPath: cell<string[] | null>(() => ({
       defaultValue: null,
       // 同一次交互里锚点会被写两遍（条目 onFocus 与连接层各一遍），按内容比避免多排一轮重渲
@@ -350,7 +363,7 @@ export const cascaderMachine = createMachine({
        * 焦点回落到既有锚点（打开落焦、focusMeta 的补写）不动展开路径，
        * 打开落点才能停在「锚点在、列不展开」上；点选与右方向键的展开各自显式发 ITEM.EXPAND。
        */
-      setFocusedPath: ({ context, event }) => {
+      setFocusedPath: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'ITEM.FOCUS')
           return
@@ -359,25 +372,29 @@ export const cascaderMachine = createMachine({
         // 锚点间的真实移动才拖动展开路径；落地（此前无锚点）与回落到既有锚点都只记锚点，
         // 打开后的首次落焦不带出子列——展开由导航移动、点选与右方向键各自声明
         if (anchored && !cascaderSamePath(path, anchored))
-          context.set('activePath', path)
+          moveActivePath(context, prop('collection') ?? [], path)
         context.set('focusedPath', path)
       },
 
       // 只展开不移焦点
-      expandPath: ({ context, event }) => {
+      expandPath: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type === 'ITEM.EXPAND')
-          context.set('activePath', cascaderTruncatePath(context.get('activePath'), e.level, e.value))
+          moveActivePath(context, prop('collection') ?? [], cascaderTruncatePath(context.get('activePath'), e.level, e.value))
       },
 
-      setActivePath: ({ context, event }) => {
+      setActivePath: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type === 'PATH.SET')
-          context.set('activePath', [...e.path])
+          moveActivePath(context, prop('collection') ?? [], [...e.path])
       },
 
-      // 收起只清焦点锚点，展开路径留着：它是本次浏览的痕迹，下次展开由 entry 按选中值重算
-      clearFocusedPath: ({ context }) => context.set('focusedPath', null),
+      // 收起只清焦点锚点，展开路径留着：它是本次浏览的痕迹，下次展开由 entry 按选中值重算；
+      // 下次展开时每一列都是头一次出现，照常播进场
+      clearFocusedPath: ({ context }) => {
+        context.set('focusedPath', null)
+        context.set('settledColumns', 0)
+      },
 
       selectPath: ({ context, prop, event }) => {
         const e = event.current()

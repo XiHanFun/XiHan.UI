@@ -427,6 +427,7 @@
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-in-path` | ''（条件成立时才出现） |
+| `item` | `data-instant` | ''（条件成立时才出现） |
 | `item` | `data-level` | String(meta.level) \| undefined |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |

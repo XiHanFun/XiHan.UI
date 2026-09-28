@@ -1740,3 +1740,30 @@ describe('副文本', () => {
     expect(props['data-part']).toBe('item-description')
   })
 })
+
+describe('列的进场只在头一次出现时播', () => {
+  const instant = (h: Harness, value: string): unknown =>
+    (h.api().getItemProps({ value }) as Record<string, unknown>)['data-instant']
+
+  it('子列头一次铺开不标 data-instant；换到同列另一个父项时露面的条目标上；收起后重开归零', () => {
+    const h = mount({ defaultOpen: true })
+    expect(instant(h, 'zhejiang')).toBeUndefined()
+
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    // 第 1 列此前收着：头一次出现
+    expect(instant(h, 'hangzhou')).toBeUndefined()
+
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'jiangsu' })
+    // 第 1 列此前就在，只是换了一批条目；根列一直在
+    expect(instant(h, 'nanjing')).toBe('')
+    expect(instant(h, 'zhejiang')).toBe('')
+
+    h.send({ type: 'ITEM.EXPAND', level: 1, value: 'nanjing' })
+    // 第 2 列此前收着：头一次出现
+    expect(instant(h, 'xuanwu')).toBeUndefined()
+
+    h.send({ type: 'CLOSE' })
+    h.send({ type: 'OPEN' })
+    expect(instant(h, 'zhejiang')).toBeUndefined()
+  })
+})
