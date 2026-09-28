@@ -1,8 +1,7 @@
 // 步骤条自绘的状态字形——走过的步里皮肤画的兜底对号——是指示符，不是控件内图标：它与序号圆点同属
-// --xh-control-indicator-* 一族，root 上的 --xh-icon-size（桥自 --xh-steps-icon-size，sm 16px）只管
-// 作者放进标题 / 说明里的图标。此前对号读 root 的 --xh-icon-size：comfortable 下恰好也是 16，compact 下
-// 指示符收到 14 时它仍是 16。两档密度一起量：对号与作者塞进圆点里的 XhIcon 走指示符档 16 / 14，
-// 作者放进标题里的图标两档都恒 16；圆点自己走 space / control-h 尺（md 32px），不随密度。
+// --xh-control-indicator-* 一族，root 上的 --xh-icon-size（桥自 --xh-steps-icon-size，按尺寸档取字形尺，
+// md 20px）只管作者放进标题 / 说明里的图标。两档密度一起量：对号与作者塞进圆点里的 XhIcon 走指示符档
+// 16 / 14，作者放进标题里的图标两档都是 md 档的字形尺；圆点自己走 control-h 尺，随密度换档。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -50,7 +49,7 @@ async function mount(density: 'comfortable' | 'compact'): Promise<void> {
   document.body.append(host)
   app = createApp({
     // 第 0、1 步走过（value = 2）：第 0 步的圆点留空由皮肤画兜底对号，第 1 步的圆点里塞作者的 XhIcon；
-    // 第 2 步是当前步，标题里再放一枚作者图标（仍按 root 的 sm 档）
+    // 第 2 步是当前步，标题里再放一枚作者图标（按 root 的 md 档）
     render: () => h(XhStepsRoot, { defaultValue: 2, count: 3 }, () => [
       h(XhStepsList, null, () => [0, 1, 2].map(index => h(XhStepsItem, { key: index, value: index }, () => [
         h(XhStepsTrigger, null, () => [
@@ -64,6 +63,15 @@ async function mount(density: 'comfortable' | 'compact'): Promise<void> {
   })
   app.mount(host)
   await nextTick()
+}
+
+function tokenPx(name: string): number {
+  const probe = document.createElement('span')
+  probe.style.cssText = `display: block; inline-size: var(${name})`
+  host!.append(probe)
+  const value = probe.getBoundingClientRect().width
+  probe.remove()
+  return value
 }
 
 function indicatorSize(): number {
@@ -98,10 +106,11 @@ describe.each(['comfortable', 'compact'] as const)('步骤条自绘状态字形�
     const observed = describeGlyph(dot, '::before')
     expect(check.width, observed).toBe(indicator)
     expect(check.height, observed).toBe(indicator)
-    // 圆点走 space-8（32px）的自家尺度，不随密度换档；对号落得进去
+    // 圆点走 control-h-md，随密度换档；对号落得进去
     const rect = dot.getBoundingClientRect()
-    expect(rect.width, `圆点 ${rect.width}×${rect.height}`).toBe(32)
-    expect(rect.height, `圆点 ${rect.width}×${rect.height}`).toBe(32)
+    const diameter = tokenPx('--xh-control-h-md')
+    expect(rect.width, `圆点 ${rect.width}×${rect.height}`).toBe(diameter)
+    expect(rect.height, `圆点 ${rect.width}×${rect.height}`).toBe(diameter)
     expect(check.width, observed).toBeLessThan(rect.width)
     expectCenteredBox(dot)
   })
@@ -118,13 +127,13 @@ describe.each(['comfortable', 'compact'] as const)('步骤条自绘状态字形�
     expect(rect.height, `圆点图标 ${rect.width}×${rect.height}`).toBe(indicator)
   })
 
-  it('作者放进标题里的图标仍按 root 的 --xh-icon-size（sm 16px）取尺，不随指示符档变', async () => {
+  it('作者放进标题里的图标按 root 的 --xh-icon-size（md 档 20px）取尺，不随指示符档变', async () => {
     await mount(density)
-    expect(Number.parseFloat(getComputedStyle(part('root')).getPropertyValue('--xh-icon-size'))).toBe(16)
+    expect(Number.parseFloat(getComputedStyle(part('root')).getPropertyValue('--xh-icon-size'))).toBe(20)
     const title = part('title', 2)
     const svg = title.querySelector<HTMLElement>('[data-scope=\'icon\'][data-part=\'root\']')!
     const rect = svg.getBoundingClientRect()
-    expect(rect.width, `标题图标 ${rect.width}×${rect.height}`).toBe(16)
-    expect(rect.height, `标题图标 ${rect.width}×${rect.height}`).toBe(16)
+    expect(rect.width, `标题图标 ${rect.width}×${rect.height}`).toBe(20)
+    expect(rect.height, `标题图标 ${rect.width}×${rect.height}`).toBe(20)
   })
 })
