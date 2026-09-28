@@ -34509,7 +34509,8 @@
   /* 多选的记号是勾选格：没写内容时勾由勾选标记配方画在 ::before 上，常驻、按状态淡变并轻缩放；
      作者往部件里塞了自己的图形，配方与下面的圆点都不画。
      单选那一档画实心点，由伪元素自己的底色画；直径按记号盒的一半量，与其余单选控件的圆点同源——
-     盒换档时点跟着换 */
+     盒换档时点跟着换。圆点与 RadioGroup 同一套动效：没选中时缩放为 0（盒留在原位，翻面时整行不跳），
+     选中时落位略涨过 1 再收回、收起走强减速不过冲，换色走 micro */
   [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before {
     content: '';
     display: inline-block;
@@ -34517,16 +34518,22 @@
     block-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
     border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-circle));
     background-color: currentColor;
+    scale: 0;
+    transition:
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single'][data-state='checked']:empty::before {
+    scale: 1;
+    transition:
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-settle),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='question-flow'][data-part='item-indicator'][data-state='checked'] {
     border-color: var(--xh-question-flow-indicator-border-checked, var(--xh-_tone, var(--xh-bg-brand)));
     background: var(--xh-question-flow-indicator-bg-checked, var(--xh-_tone, var(--xh-bg-brand)));
-  }
-
-  /* 单选没选中时把圆点隐去而不是撤掉：盒留在原位，翻面时整行不跳 */
-  [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single'][data-state='unchecked'] {
-    color: transparent;
   }
 
   [data-scope='question-flow'][data-part='item-text'] {
@@ -35107,7 +35114,7 @@
 
   /* 圆点用 scale 收放，选中态切换不引起布局抖动。
      直径取指示器的一半：换尺寸档时圈与点一起走，比例不散。
-     出现时略微涨过 1 再收回，过冲量落在圈内不碰描边 */
+     收起走强减速、不过冲：过冲曲线收到 0 会冲成负缩放，闪出一个极小的镜像点；换色走 micro */
   [data-scope='radio-group'][data-part='indicator']::before {
     content: '';
     inline-size: calc(var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator)) / 2);
@@ -35115,18 +35122,27 @@
     border-radius: var(--xh-shape-circle);
     background: var(--xh-radio-group-indicator-dot, var(--xh-_radio-group-accent));
     scale: 0;
-    transition: scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-settle);
+    transition:
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 出现时略微涨过 1 再收回，过冲量落在圈内不碰描边 */
   [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
     scale: 1;
+    transition:
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-settle),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 选中的圆点是这颗圈的「填色」：按下随行换到语气的 active 档（与 checkbox-group 勾中方框按下同档），
-     选中圈的描边保住不换 */
+     换色走按压时间线（按下 press、释放回到 micro）；选中圈的描边保住不换 */
   [data-scope='radio-group'][data-part='item']:not([data-disabled]):not([data-readonly]):is(:active, [data-pressed])
     > [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
     background: var(--xh-radio-group-indicator-dot-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+    transition:
+      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-settle),
+      background-color var(--xh-motion-duration-press) var(--xh-motion-ease-press);
   }
 
   /* 禁用：--xh-border-default 描边 + --xh-bg-subtle 底 + --xh-fg-disabled 圆点，不靠 opacity；
