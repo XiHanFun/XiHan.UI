@@ -236,7 +236,9 @@
       background: Highlight;
     }
 
+    /* 勾是 mask 挖出来的一块底色：退出强制换色、直接写系统色，否则底色被换成 Canvas、勾跟着消失 */
     [data-scope='color-swatch-picker'][data-part='indicator']:empty::after {
+      forced-color-adjust: none;
       background-color: HighlightText;
     }
   }

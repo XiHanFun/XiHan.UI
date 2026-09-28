@@ -61,6 +61,18 @@
     z-index: var(--xh-watermark-layer, var(--xh-layer-tooltip));
   }
 
+  /*
+   * 高对比档：印子的颜色是遮罩底下那块底色，这一档里被系统换成 Canvas，与页面同色，整层印子消失。
+   * 印子是防泄露的标记，不能因为读者开了高对比就不印：退出强制换色、取 GrayText——系统给「弱化内容」
+   * 留的那个角色，深浅仍由图样自带的透明度压着，不与正文抢对比
+   */
+  @media (forced-colors: active) {
+    [data-scope='watermark'][data-part='root'][data-state='ready']::after {
+      forced-color-adjust: none;
+      background-color: GrayText;
+    }
+  }
+
   /* 遮罩不支持时整层不画：只剩底色的话，盖上去的会是一整块实心色 */
   @supports not ((mask-image: none) or (-webkit-mask-image: none)) {
     [data-scope='watermark'][data-part='root'][data-state='ready']::after {

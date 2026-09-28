@@ -1817,10 +1817,17 @@
   background-color: currentColor;
 }
 
+/* 强制色：勾与圆点都是伪元素上的一块底色，这一档里会被换成 Canvas 而消失；退出强制换色、直接写系统前景。
+   标记坐在菜单条目里，按下与没被高亮时的悬停，家族把条目涂成 Highlight，标记跟着换 HighlightText；禁用取 GrayText */
 @media (forced-colors: active) {
   [data-scope][data-xh-menu-choice-indicator]:empty::before {
     forced-color-adjust: none;
     background-color: CanvasText;
+  }
+
+  [data-scope][data-xh-collection-item]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))
+    [data-scope][data-xh-menu-choice-indicator]:empty::before {
+    background-color: HighlightText;
   }
 
   [data-scope][data-xh-menu-choice-indicator][data-disabled]:empty::before {
@@ -1897,11 +1904,19 @@
   mask-size: 0 0, 100% 100%;
 }
 
-/* 强制色：遮罩保留字形轮廓，系统前景接管颜色；禁用取置灰前景 */
+/* 强制色：遮罩保留字形轮廓，标记退出强制换色、直接写系统前景（不能取 currentColor：退出强制换色的伪元素
+   读到的是被系统换掉之前的作者色）；禁用取置灰前景。
+   节点自己就是一颗动作控件的方框（Table 的勾选把手）：悬停与按下时家族把方框涂成 Highlight，标记跟着换 HighlightText。
+   方框另有实心面的（CheckboxGroup、Transfer 的勾选盒，行档的方框）在这一档里是 Canvas，整行悬停不换面，不在此列 */
 @media (forced-colors: active) {
   [data-scope][data-xh-check-mark]:where([data-xh-check-mark-profile='box']):empty::before,
   [data-scope][data-xh-check-mark]:where([data-xh-check-mark-profile='row'])::after {
+    forced-color-adjust: none;
     background-color: CanvasText;
+  }
+
+  [data-scope][data-xh-check-mark][data-scope][data-xh-action-control]:where([data-xh-check-mark-profile='box']):where(:not([data-disabled]):not([data-loading])):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
   }
 
   [data-scope][data-xh-check-mark]:where([data-disabled]):where([data-xh-check-mark-profile='box']):empty::before,
@@ -3378,6 +3393,25 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='back-top'][data-part='trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='back-top'][data-part='trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='back-top'][data-part='trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/button-group.css */
 /* 定义 button group 样式。 */
 
@@ -4411,6 +4445,31 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     落在 Canvas 面上的取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='diff-view'][data-part='truncation']::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='diff-view'][data-part='comment-trigger']::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='diff-view'][data-part='comment-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed])::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='diff-view'][data-part='comment-trigger'][data-disabled]::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/download-trigger.css */
 /* 定义 download trigger 样式。 */
 
@@ -4532,6 +4591,25 @@
   /* 与家族同一笔：起点是逻辑属性、平移是物理通道，rtl 下行内分量掉头，热区才落回按钮中心 */
   [data-scope='download-trigger'][data-part='root']:empty:not([data-loading]):dir(rtl)::before {
     translate: 50% -50%;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='download-trigger'][data-part='root']:empty::after {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='download-trigger'][data-part='root']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::after {
+    background-color: HighlightText;
+  }
+
+  [data-scope='download-trigger'][data-part='root'][data-disabled]:empty::after {
+    background-color: GrayText;
   }
 }
 
@@ -4733,6 +4811,25 @@
 [data-scope='field-array'][data-part='item-content'][hidden],
 [data-scope='field-array'][data-part='item-action'][hidden] {
   display: none;
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='field-array']:is([data-part='move-up-trigger'], [data-part='move-down-trigger'], [data-part='item-delete-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='field-array']:is([data-part='move-up-trigger'], [data-part='move-down-trigger'], [data-part='item-delete-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='field-array']:is([data-part='move-up-trigger'], [data-part='move-down-trigger'], [data-part='item-delete-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
+  }
 }
 
 /* styles/fieldset.css */
@@ -5696,6 +5793,25 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='float-button'][data-part='trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='float-button'][data-part='trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='float-button'][data-part='trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/floating-panel.css */
 /* 定义 floating panel 样式。 */
 
@@ -6095,6 +6211,25 @@
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
   [data-scope='floating-panel'][data-part='positioner'] {
     display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='floating-panel']:is([data-part='close-trigger'], [data-part='window-state-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='floating-panel']:is([data-part='close-trigger'], [data-part='window-state-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='floating-panel']:is([data-part='close-trigger'], [data-part='window-state-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -9003,6 +9138,25 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     分支行上取 CanvasText，按下时整行涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='json-viewer'][data-part='branch-indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='json-viewer'][data-part='branch-control']:not([data-disabled]):is(:active, [data-pressed]) [data-scope='json-viewer'][data-part='branch-indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='json-viewer'][data-part='branch-control'][data-disabled] [data-scope='json-viewer'][data-part='branch-indicator']:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/layout.css */
 /* 定义 layout 样式。 */
 
@@ -9795,6 +9949,25 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='log'][data-part='scroll-to-end-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='log'][data-part='scroll-to-end-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='log'][data-part='scroll-to-end-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/markdown-stream.css */
 /* 定义 markdown stream 样式。 */
 
@@ -10285,6 +10458,25 @@
 
   [data-scope='marquee'][data-part='autoplay-trigger'] {
     display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='marquee'][data-part='autoplay-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='marquee'][data-part='autoplay-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='marquee'][data-part='autoplay-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -11373,6 +11565,31 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     落在 Canvas 面上的取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='password-input'][data-part='visibility-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='password-input'][data-part='caps-lock-indicator'][data-state='visible']::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='password-input'][data-part='visibility-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='password-input'][data-part='visibility-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/popconfirm.css */
 /* 定义 popconfirm 样式。 */
 
@@ -11914,6 +12131,28 @@
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='send']:empty::before,
+  [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='stop']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='send']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before,
+  [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='stop']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='send'][data-disabled]:empty::before,
+  [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='stop'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/reset.css */
 /*
  * 库自己的基线，只作用于带 data-scope 的库节点，不碰宿主页面的任何元素。
@@ -12312,6 +12551,25 @@
   box-shadow:
     inset var(--xh-reasoning-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-reasoning-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand))),
     var(--xh-_reasoning-shadow);
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='reasoning'][data-part='indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='reasoning'][data-part='trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]) [data-scope='reasoning'][data-part='indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='reasoning'][data-part='trigger'][data-disabled] [data-scope='reasoning'][data-part='indicator']:empty::before {
+    background-color: GrayText;
+  }
 }
 
 @media print {
@@ -12873,6 +13131,16 @@
   display: none;
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     落在 Canvas 面上的取 CanvasText */
+  [data-scope='statistic'][data-part='trend'][data-direction]::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+}
+
 /* styles/tag.css */
 /* 定义 tag 样式。 */
 
@@ -13137,17 +13405,6 @@
   }
 }
 
-/*
- * 高对比档：关闭钮的按压面常态靠从 currentColor 兑出来的底色表出，这一档里底色被统一换成 Canvas，
- * 按住那一下与静息塌成同一个样子；用系统高亮反色画回来，兜底字形读 currentColor、自己跟着换
- */
-@media (forced-colors: active) {
-  [data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
-    background: Highlight;
-    color: HighlightText;
-  }
-}
-
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
 [data-scope='tag'][data-part='close-trigger']:empty::before {
   content: '';
@@ -13158,6 +13415,34 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+/*
+ * 高对比档：关闭钮的按压面常态靠从 currentColor 兑出来的底色表出，这一档里底色被统一换成 Canvas，
+ * 按住那一下与静息塌成同一个样子；用系统高亮反色画回来。
+ * 兜底字形是 mask 挖出来的一块底色，同样会被换成 Canvas 而消失：退出强制换色、直接写系统色
+ * （不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）——
+ * 标签面上取 CanvasText，按住时跟着按压面换 HighlightText，禁用取 GrayText
+ */
+@media (forced-colors: active) {
+  [data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  [data-scope='tag'][data-part='close-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='tag'][data-part='root'][data-disabled] [data-scope='tag'][data-part='close-trigger']:empty::before,
+  [data-scope='tag'][data-part='close-trigger']:disabled:empty::before {
+    background-color: GrayText;
+  }
 }
 
 /* styles/timeline.css */
@@ -14869,6 +15154,25 @@
   display: none;
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='alert'][data-part='close-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='alert'][data-part='close-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='alert'][data-part='close-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/empty-state.css */
 /* 定义 empty state 样式。 */
 
@@ -15639,6 +15943,25 @@
   animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='accordion'][data-part='indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='accordion'][data-part='trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]) [data-scope='accordion'][data-part='indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='accordion'][data-part='trigger'][data-disabled] [data-scope='accordion'][data-part='indicator']:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='accordion'][data-part='root'][hidden],
@@ -16371,6 +16694,21 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     落在勾选盒自己的实心面上（这一档里是 Canvas），整行悬停不换面，取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='approval'][data-part='item-indicator']:not([data-state='unchecked']):empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='approval'][data-part='item'][data-disabled] [data-scope='approval'][data-part='item-indicator']:not([data-state='unchecked']):empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/avatar.css */
 /* 定义 avatar 样式。 */
 
@@ -16920,6 +17258,27 @@
 /* 从右往左排版时「向前」在左边 */
 [dir='rtl'] [data-scope='breadcrumb'][data-part='separator']:empty::before {
   rotate: 180deg;
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
+     落在 Canvas 面上的取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='breadcrumb'][data-part='ellipsis-trigger']:empty::before,
+  [data-scope='breadcrumb'][data-part='separator']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='breadcrumb'][data-part='ellipsis-trigger']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='breadcrumb'][data-part='ellipsis-trigger']:is([aria-disabled='true'], [data-disabled]):empty::before {
+    background-color: GrayText;
+  }
 }
 
 /* styles/button.css */
@@ -17767,6 +18126,25 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='calendar-picker']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='prev-year-trigger'], [data-part='next-year-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='calendar-picker']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='prev-year-trigger'], [data-part='next-year-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='calendar-picker']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='prev-year-trigger'], [data-part='next-year-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/calendar-range-picker.css */
 /* 定义 calendar range picker 样式。 */
 
@@ -18290,6 +18668,25 @@
   [data-scope='calendar-range-picker'][data-part='cell'][data-in-range]::before {
     inset-block-start: auto;
     border-block-end: var(--xh-stroke-thick) solid currentColor;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='calendar-range-picker']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='prev-year-trigger'], [data-part='next-year-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='calendar-range-picker']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='prev-year-trigger'], [data-part='next-year-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='calendar-range-picker']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='prev-year-trigger'], [data-part='next-year-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -19137,6 +19534,31 @@
     > [data-scope='carousel'][data-part='indicator'][data-current]::before {
     inline-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
     block-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='carousel']:is([data-part='prev-trigger'], [data-part='next-trigger']):empty::before,
+  [data-scope='carousel'][data-part='autoplay-trigger'][data-state='running']:empty::before,
+  [data-scope='carousel'][data-part='autoplay-trigger'][data-state='paused']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='carousel']:is([data-part='prev-trigger'], [data-part='next-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before,
+  [data-scope='carousel'][data-part='autoplay-trigger'][data-state='running']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before,
+  [data-scope='carousel'][data-part='autoplay-trigger'][data-state='paused']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='carousel']:is([data-part='prev-trigger'], [data-part='next-trigger'])[data-disabled]:empty::before,
+  [data-scope='carousel'][data-part='autoplay-trigger'][data-state='running'][data-disabled]:empty::before,
+  [data-scope='carousel'][data-part='autoplay-trigger'][data-state='paused'][data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -20846,17 +21268,35 @@
 }
 
 @media (forced-colors: active) {
-  /* 蒙版底色会被系统改成 Canvas 而消失；明确用系统前景保住箭头、对号与半选横线。 */
+  /* 蒙版底色会被系统改成 Canvas 而消失；明确用系统前景保住箭头、对号与半选横线。
+     按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形跟着换 HighlightText。
+     触发器里的下拉箭头落在字段面上取 CanvasText，字段禁用时取 GrayText；
+     清除钮是按钮面，取 ButtonText，悬停与按下换 HighlightText，禁用取 GrayText */
   [data-scope='cascader'][data-part='item'][data-branch]::after,
   [data-scope='cascader'][data-part='item-indicator']:empty::before,
-  [data-scope='cascader'][data-part='search-item']::after {
+  [data-scope='cascader'][data-part='search-item']::after,
+  [data-scope='cascader'][data-part='indicator']:empty::before {
     forced-color-adjust: none;
     background-color: CanvasText;
   }
 
+  [data-scope='cascader'][data-part='clear-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='cascader'][data-part='item'][data-branch]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
+  [data-scope='cascader'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='cascader'][data-part='item-indicator']:empty::before,
+  [data-scope='cascader'][data-part='search-item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
+  [data-scope='cascader'][data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
   [data-scope='cascader'][data-part='item'][data-branch][data-disabled]::after,
   [data-scope='cascader'][data-part='item-indicator'][data-disabled]:empty::before,
-  [data-scope='cascader'][data-part='search-item'][data-disabled]::after {
+  [data-scope='cascader'][data-part='search-item'][data-disabled]::after,
+  [data-scope='cascader'][data-part='control'][data-disabled] [data-scope='cascader'][data-part='indicator']:empty::before,
+  [data-scope='cascader'][data-part='clear-trigger'][data-disabled]:empty::before {
     background-color: GrayText;
   }
 }
@@ -21090,10 +21530,16 @@
 }
 
 @media (forced-colors: active) {
-  /* 真实 border 保住盒，勾与半选横杠的系统前景由配方给；禁用写在 root 上，指示器自己不带，这里补置灰 */
+  /* 真实 border 保住盒，勾与半选横杠的系统前景由配方给；禁用写在 root 上，指示器自己不带，这里补置灰。
+     盒就是 root 本身：悬停与按下时家族把它涂成 Highlight，勾跟着换 HighlightText */
   [data-scope='checkbox'][data-part='root'][data-disabled]
     [data-scope='checkbox'][data-part='indicator']:empty::before {
     background-color: GrayText;
+  }
+
+  [data-scope='checkbox'][data-part='root']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed])
+    [data-scope='checkbox'][data-part='indicator']:empty::before {
+    background-color: HighlightText;
   }
 }
 
@@ -21902,6 +22348,25 @@
   display: none;
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='citation']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='dismiss-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='citation']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='dismiss-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='citation']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='dismiss-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/clipboard.css */
 /* 定义 clipboard 样式。 */
 
@@ -22552,6 +23017,31 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     落在 Canvas 面上的取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='code-view'][data-part='line-fold-trigger']::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='code-view'][data-part='line-content'][data-folded]::after {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='code-view'][data-part='line-fold-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed])::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='code-view'][data-part='line-fold-trigger'][data-disabled]::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/collapsible.css */
 /* 定义 collapsible 样式。 */
 
@@ -22700,6 +23190,25 @@
 
 [data-scope='collapsible'][data-part='content'][data-state='closed']:not([data-instant]) {
   animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='collapsible'][data-part='indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='collapsible'][data-part='trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]) [data-scope='collapsible'][data-part='indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='collapsible'][data-part='trigger'][data-disabled] [data-scope='collapsible'][data-part='indicator']:empty::before {
+    background-color: GrayText;
+  }
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -22856,6 +23365,25 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='color-field'][data-part='clear-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='color-field'][data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='color-field'][data-part='clear-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
 }
 
 /* styles/color-picker.css */
@@ -23898,7 +24426,9 @@
     background: Highlight;
   }
 
+  /* 勾是 mask 挖出来的一块底色：退出强制换色、直接写系统色，否则底色被换成 Canvas、勾跟着消失 */
   [data-scope='color-swatch-picker'][data-part='indicator']:empty::after {
+    forced-color-adjust: none;
     background-color: HighlightText;
   }
 }
@@ -24427,6 +24957,33 @@
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
   [data-scope='combobox'][data-part='positioner'] {
     display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='combobox']:is([data-part='trigger'], [data-part='clear-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='combobox'][data-part='item-indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='combobox']:is([data-part='trigger'], [data-part='clear-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before,
+  [data-scope='combobox'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='combobox'][data-part='item-indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='combobox']:is([data-part='trigger'], [data-part='clear-trigger'])[data-disabled]:empty::before,
+  [data-scope='combobox'][data-part='item']:is([aria-disabled='true'], [data-disabled]) [data-scope='combobox'][data-part='item-indicator']:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -25186,6 +25743,28 @@
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='context-menu'][data-part='item'][aria-haspopup='menu']::after,
+  [data-scope='context-menu'][data-part='item-indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='context-menu'][data-part='item'][aria-haspopup='menu']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
+  [data-scope='context-menu'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='context-menu'][data-part='item-indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='context-menu'][data-part='item'][aria-haspopup='menu']:is([aria-disabled='true'], [data-disabled])::after,
+  [data-scope='context-menu'][data-part='item']:is([aria-disabled='true'], [data-disabled]) [data-scope='context-menu'][data-part='item-indicator']:empty::before {
+    background-color: GrayText;
+  }
+}
+
 @media print {
   /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
@@ -25452,6 +26031,25 @@
   clip-path: inset(50%);
   white-space: nowrap;
   pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='date-field'][data-part='clear-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='date-field'][data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='date-field'][data-part='clear-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
 }
 
 /* styles/date-picker.css */
@@ -26186,6 +26784,12 @@
     background-color: CanvasText;
   }
 
+  /* 按下与没被高亮时的悬停，家族把条目涂成 Highlight，对号跟着换 HighlightText */
+  [data-scope='date-picker'][data-part='preset']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
+  [data-scope='date-picker'][data-part='time-item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after {
+    background-color: HighlightText;
+  }
+
   [data-scope='date-picker'][data-part='preset'][data-disabled]::after,
   [data-scope='date-picker'][data-part='time-item'][data-disabled]::after,
   [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
@@ -26196,6 +26800,25 @@
   [data-scope='date-picker'][data-part='time-item'][data-disabled],
   [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
     color: GrayText;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='date-picker']:is([data-part='clear-trigger'], [data-part='trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='date-picker']:is([data-part='clear-trigger'], [data-part='trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='date-picker']:is([data-part='clear-trigger'], [data-part='trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -26989,6 +27612,12 @@
     background-color: CanvasText;
   }
 
+  /* 按下与没被高亮时的悬停，家族把条目涂成 Highlight，对号跟着换 HighlightText */
+  [data-scope='date-range-picker'][data-part='preset']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
+  [data-scope='date-range-picker'][data-part='time-item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after {
+    background-color: HighlightText;
+  }
+
   [data-scope='date-range-picker'][data-part='preset'][data-disabled]::after,
   [data-scope='date-range-picker'][data-part='time-item'][data-disabled]::after,
   [data-scope='date-range-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
@@ -27004,6 +27633,25 @@
   /* 正在编辑的那一端靠字重与系统前景区分，不靠颜色 */
   [data-scope='date-range-picker'][data-part='column-group-label'][data-editing] {
     color: CanvasText;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='date-range-picker']:is([data-part='clear-trigger'], [data-part='trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='date-range-picker']:is([data-part='clear-trigger'], [data-part='trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='date-range-picker']:is([data-part='clear-trigger'], [data-part='trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -27435,6 +28083,31 @@
   [data-scope='dialog'][data-part='backdrop'],
   [data-scope='dialog'][data-part='positioner'] {
     display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     落在 Canvas 面上的取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='dialog'][data-part='indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='dialog'][data-part='close-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='dialog'][data-part='close-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='dialog'][data-part='close-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -27964,6 +28637,25 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='drawer'][data-part='close-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='drawer'][data-part='close-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='drawer'][data-part='close-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/editable.css */
 /* Editable 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 
@@ -28230,6 +28922,25 @@
   [data-scope='editable'][data-part='submit-trigger'] {
     background-image: linear-gradient(ButtonText, ButtonText);
     forced-color-adjust: none;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='editable']:is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='editable']:is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='editable']:is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -28781,6 +29492,34 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     落在 Canvas 面上的取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='file-upload'][data-part='item'][data-state='error']::before,
+  [data-scope='file-upload'][data-part='item'][data-state='closed']:has(> [data-part='item-progress'][data-state='error'])::before,
+  [data-scope='file-upload'][data-part='item'][data-state='done']::before,
+  [data-scope='file-upload'][data-part='item'][data-state='closed']:has(> [data-part='item-progress'][data-state='done'])::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='file-upload']:is([data-part='item-delete-trigger'], [data-part='clear-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='file-upload']:is([data-part='item-delete-trigger'], [data-part='clear-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='file-upload']:is([data-part='item-delete-trigger'], [data-part='clear-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
+  }
 }
 
 /* styles/form.css */
@@ -31004,6 +31743,31 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     落在 Canvas 面上的取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='image-viewer'][data-part='viewport'][data-error]::after {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='image-viewer']:is([data-part='zoom-in-trigger'], [data-part='zoom-out-trigger'], [data-part='rotate-left-trigger'], [data-part='rotate-right-trigger'], [data-part='flip-horizontal-trigger'], [data-part='flip-vertical-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='image-viewer']:is([data-part='zoom-in-trigger'], [data-part='zoom-out-trigger'], [data-part='rotate-left-trigger'], [data-part='rotate-right-trigger'], [data-part='flip-horizontal-trigger'], [data-part='flip-vertical-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='image-viewer']:is([data-part='zoom-in-trigger'], [data-part='zoom-out-trigger'], [data-part='rotate-left-trigger'], [data-part='rotate-right-trigger'], [data-part='flip-horizontal-trigger'], [data-part='flip-vertical-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/listbox.css */
 /* 定义 listbox 样式。 */
 
@@ -31362,6 +32126,25 @@
   /* 打印默认丢底色，而对号是遮罩出来的一块底色：行本就不换面，丢了它选中在纸上就没了踪影 */
   [data-scope='listbox'][data-part='item-indicator'] {
     print-color-adjust: exact;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='listbox'][data-part='item-indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='listbox'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='listbox'][data-part='item-indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='listbox'][data-part='item']:is([aria-disabled='true'], [data-disabled]) [data-scope='listbox'][data-part='item-indicator']:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -31837,6 +32620,25 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='menu'][data-part='item'][aria-haspopup='menu']::after {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='menu'][data-part='item'][aria-haspopup='menu']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after {
+    background-color: HighlightText;
+  }
+
+  [data-scope='menu'][data-part='item'][aria-haspopup='menu']:is([aria-disabled='true'], [data-disabled])::after {
+    background-color: GrayText;
+  }
+}
+
 /* styles/menubar.css */
 /* 定义 menubar 样式。 */
 
@@ -32260,6 +33062,28 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='menubar'][data-part='item'][aria-haspopup='menu']::after,
+  [data-scope='menubar'][data-part='item-indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='menubar'][data-part='item'][aria-haspopup='menu']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
+  [data-scope='menubar'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='menubar'][data-part='item-indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='menubar'][data-part='item'][aria-haspopup='menu']:is([aria-disabled='true'], [data-disabled])::after,
+  [data-scope='menubar'][data-part='item']:is([aria-disabled='true'], [data-disabled]) [data-scope='menubar'][data-part='item-indicator']:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/message-feed.css */
 /* 定义 message feed 样式。 */
 
@@ -32545,6 +33369,28 @@
   [data-scope='message-feed'][data-part='unread-count'] {
     background: Highlight;
     color: HighlightText;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='message-feed'][data-part='scroll-to-end-trigger']:empty::before,
+  [data-scope='message-feed'][data-part='scroll-to-end-trigger']:has(> [data-part='unread-count']:only-child)::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='message-feed'][data-part='scroll-to-end-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before,
+  [data-scope='message-feed'][data-part='scroll-to-end-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):has(> [data-part='unread-count']:only-child)::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='message-feed'][data-part='scroll-to-end-trigger'][data-disabled]:empty::before,
+  [data-scope='message-feed'][data-part='scroll-to-end-trigger'][data-disabled]:has(> [data-part='unread-count']:only-child)::before {
+    background-color: GrayText;
   }
 }
 
@@ -33028,15 +33874,28 @@
     background: Highlight;
   }
 
-  /* 子级开关的箭头是 mask 挖出来的一块底色，这一档里底色换成 Canvas、箭头跟着消失，开合只剩读屏听得到。
-     直接写开关按钮的系统前景（不能取 currentColor：退出强制色的伪元素读到的是被系统换掉之前的作者色），
-     禁用的开关取 GrayText，与公共补救层给禁用行的字色一致 */
+  /* 顶层入口与子级开关的箭头都是 mask 挖出来的一块底色，这一档里底色换成 Canvas、箭头跟着消失，
+     开合只剩读屏听得到。直接写系统前景（不能取 currentColor：退出强制色的伪元素读到的是被系统换掉之前的作者色）：
+     子级开关取按钮前景 ButtonText，顶层入口落在条目面上取 CanvasText；
+     两者都是集合条目，按下与没被高亮时的悬停，家族把条目涂成 Highlight，箭头跟着换 HighlightText；
+     禁用的取 GrayText，与公共补救层给禁用行的字色一致 */
   [data-scope='navigation-menu'][data-part='branch-indicator']:empty::before {
     background-color: ButtonText;
     forced-color-adjust: none;
   }
 
-  [data-scope='navigation-menu'][data-part='branch-trigger'][data-disabled] [data-scope='navigation-menu'][data-part='branch-indicator']:empty::before {
+  [data-scope='navigation-menu'][data-part='trigger-indicator']:empty::before {
+    background-color: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  [data-scope='navigation-menu'][data-part='branch-trigger']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='navigation-menu'][data-part='branch-indicator']:empty::before,
+  [data-scope='navigation-menu'][data-part='trigger']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='navigation-menu'][data-part='trigger-indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='navigation-menu'][data-part='branch-trigger'][data-disabled] [data-scope='navigation-menu'][data-part='branch-indicator']:empty::before,
+  [data-scope='navigation-menu'][data-part='trigger']:is([aria-disabled='true'], [data-disabled]) [data-scope='navigation-menu'][data-part='trigger-indicator']:empty::before {
     background-color: GrayText;
   }
 }
@@ -33781,6 +34640,32 @@
   /* 作者把卡片摆在摞外的用法：加载环的静止替代由加载环配方在打印档给出 */
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     落在 Canvas 面上的取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='notification'][data-part='item'][data-preset='toast']::after,
+  [data-scope='notification'][data-part='item-indicator']:empty::after {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='notification'][data-part='item-close-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='notification'][data-part='item-close-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='notification'][data-part='item-close-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/number-field.css */
 /* NumberField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 
@@ -34002,6 +34887,28 @@
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='number-field'][data-part='control'][hidden] {
   display: none;
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:empty::before,
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before,
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'][data-disabled]:empty::before,
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
 }
 
 /* styles/pagination.css */
@@ -34424,6 +35331,25 @@
      改用字重表达同一件事——常态之所以不加粗是怕格子变宽、行宽跟着抖，纸上没有这回事 */
   [data-scope='pagination'][data-part='item'][data-current] {
     font-weight: var(--xh-font-weight-semibold);
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='pagination']:is([data-part='first-trigger'], [data-part='last-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='ellipsis-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='pagination']:is([data-part='first-trigger'], [data-part='last-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='ellipsis-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='pagination']:is([data-part='first-trigger'], [data-part='last-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='ellipsis-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -35108,6 +36034,25 @@
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
   [data-scope='popover'][data-part='positioner'] {
     display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='popover'][data-part='close-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='popover'][data-part='close-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='popover'][data-part='close-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -36121,6 +37066,32 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     落在勾选盒自己的实心面上（这一档里是 Canvas），整行悬停不换面，取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='question-flow']:is([data-part='prev-trigger'], [data-part='next-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='question-flow']:is([data-part='prev-trigger'], [data-part='next-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='question-flow'][data-part='item'][data-disabled] [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before,
+  [data-scope='question-flow']:is([data-part='prev-trigger'], [data-part='next-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
+  }
 }
 
 /* styles/radar-chart.css */
@@ -37173,11 +38144,14 @@
     color: GrayText;
   }
 
+  /* 两层星形都是 mask 挖出来的底色：退出强制换色、直接写系统色，空星 GrayText、点亮的那层 Highlight */
   [data-scope='rating'][data-part='item']:empty::before {
+    forced-color-adjust: none;
     background-color: GrayText;
   }
 
   [data-scope='rating'][data-part='item']:empty::after {
+    forced-color-adjust: none;
     background-color: Highlight;
   }
 
@@ -38195,6 +39169,36 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
+     字段面上取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='select'][data-part='indicator']:empty::before,
+  [data-scope='select'][data-part='item-indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='select'][data-part='clear-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='select'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='select'][data-part='item-indicator']:empty::before,
+  [data-scope='select'][data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='select'][data-part='control'][data-disabled] [data-scope='select'][data-part='indicator']:empty::before,
+  [data-scope='select'][data-part='item']:is([aria-disabled='true'], [data-disabled]) [data-scope='select'][data-part='item-indicator']:empty::before,
+  [data-scope='select'][data-part='clear-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/separator.css */
 /* 定义 separator 样式。 */
 
@@ -38960,6 +39964,25 @@
   [data-scope='side-nav'][data-part='positioner'],
   [data-scope='side-nav'][data-part='input'] {
     display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='side-nav'][data-part='branch-indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='side-nav'][data-part='branch-trigger']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='side-nav'][data-part='branch-indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='side-nav'][data-part='branch-trigger']:is([aria-disabled='true'], [data-disabled]) [data-scope='side-nav'][data-part='branch-indicator']:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -40471,6 +41494,21 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     落在勾选盒自己的实心面上（这一档里是 Canvas），整行悬停不换面，取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='steps'][data-part='indicator'][data-state='completed']:not([data-variant='dot']):empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'][data-state='completed']:not([data-variant='dot']):empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/switch.css */
 /* 定义 switch 样式。 */
 
@@ -41910,6 +42948,25 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='table']:is([data-part='sort-trigger'], [data-part='expand-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='table']:is([data-part='sort-trigger'], [data-part='expand-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='table']:is([data-part='sort-trigger'], [data-part='expand-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/tabs.css */
 /* 定义 tabs 样式。 */
 
@@ -42829,6 +43886,25 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='tabs']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='tabs']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='tabs']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/tag-group.css */
 /* 定义 tag group 样式。 */
 
@@ -43036,9 +44112,17 @@
 }
 
 @media (forced-colors: active) {
-  /* 选中只由对号表达：遮罩出来的那块底色用系统高亮色画，按下时标签整枚反成 Highlight，对号换成反白 */
+  /* 选中只由对号表达：遮罩出来的那块底色退出强制换色、用系统高亮色画，按下时标签整枚反成 Highlight，对号换成反白；
+     禁用的标签取 GrayText */
   [data-scope='tag-group'][data-part='item-indicator']:empty::before {
+    forced-color-adjust: none;
     background-color: Highlight;
+  }
+
+  [data-scope='tag-group'][data-part='list']
+    > [data-scope='tag'][data-part='root'][data-disabled]
+    [data-scope='tag-group'][data-part='item-indicator']:empty::before {
+    background-color: GrayText;
   }
 
   [data-scope='tag-group'][data-part='list']
@@ -43357,6 +44441,25 @@
   color: var(--xh-tags-input-count-fg-disabled, var(--xh-fg-disabled));
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='tags-input'][data-part='clear-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='tags-input'][data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='tags-input'][data-part='clear-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/text-field.css */
 /* TextField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 
@@ -43526,6 +44629,25 @@
 
 [data-scope='text-field'][data-part='count'][data-disabled] {
   color: var(--xh-text-field-count-fg-disabled, var(--xh-fg-disabled));
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='text-field'][data-part='clear-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='text-field'][data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='text-field'][data-part='clear-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
 }
 
 /* styles/time-field.css */
@@ -43777,6 +44899,25 @@
   clip-path: inset(50%);
   white-space: nowrap;
   pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='time-field'][data-part='clear-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='time-field'][data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='time-field'][data-part='clear-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
 }
 
 /* styles/time-picker.css */
@@ -44338,6 +45479,12 @@
     forced-color-adjust: none;
   }
 
+  /* 按下与没被高亮时的悬停，家族把条目涂成 Highlight，对号跟着换 HighlightText */
+  [data-scope='time-picker'][data-part='preset']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
+  [data-scope='time-picker'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after {
+    background-color: HighlightText;
+  }
+
   [data-scope='time-picker'][data-part='preset'][data-disabled]::after,
   [data-scope='time-picker'][data-part='item'][data-disabled]::after {
     background-color: GrayText;
@@ -44381,6 +45528,25 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-clock) center / contain no-repeat;
   mask: var(--xh-glyph-mark-clock) center / contain no-repeat;
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='time-picker']:is([data-part='clear-trigger'], [data-part='trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='time-picker']:is([data-part='clear-trigger'], [data-part='trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='time-picker']:is([data-part='clear-trigger'], [data-part='trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
+  }
 }
 
 @media print {
@@ -45046,6 +46212,12 @@
     forced-color-adjust: none;
   }
 
+  /* 按下与没被高亮时的悬停，家族把条目涂成 Highlight，对号跟着换 HighlightText */
+  [data-scope='time-range-picker'][data-part='preset']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
+  [data-scope='time-range-picker'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after {
+    background-color: HighlightText;
+  }
+
   [data-scope='time-range-picker'][data-part='preset'][data-disabled]::after,
   [data-scope='time-range-picker'][data-part='item'][data-disabled]::after {
     background-color: GrayText;
@@ -45089,6 +46261,25 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-clock) center / contain no-repeat;
   mask: var(--xh-glyph-mark-clock) center / contain no-repeat;
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='time-range-picker']:is([data-part='clear-trigger'], [data-part='trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='time-range-picker']:is([data-part='clear-trigger'], [data-part='trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='time-range-picker']:is([data-part='clear-trigger'], [data-part='trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
+  }
 }
 
 @media print {
@@ -46028,6 +47219,25 @@
     var(--xh-_tool-call-shadow);
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='tool-call'][data-part='indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='tool-call'][data-part='trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]) [data-scope='tool-call'][data-part='indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='tool-call'][data-part='trigger'][data-disabled] [data-scope='tool-call'][data-part='indicator']:empty::before {
+    background-color: GrayText;
+  }
+}
+
 @media print {
   /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
      取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
@@ -46393,6 +47603,25 @@
      几段控件就连成了一长串。换成前景色画回来 */
   [data-scope='toolbar'][data-part='separator'] {
     background: CanvasText;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='toolbar'][data-part='overflow-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='toolbar'][data-part='overflow-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='toolbar'][data-part='overflow-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -46804,6 +48033,25 @@
   [data-scope='tour'][data-part='positioner'],
   [data-scope='tour'][data-part='positioner'][data-position='center'] {
     display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='tour'][data-part='close-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='tour'][data-part='close-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='tour'][data-part='close-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 /* 排在六份浮层皮肤之后：箭头几何里摘边框那几条要压过它们的 border 简写 */
@@ -47462,6 +48710,25 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='transfer']:is([data-part='to-source-trigger'], [data-part='to-target-trigger']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='transfer']:is([data-part='to-source-trigger'], [data-part='to-target-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='transfer']:is([data-part='to-source-trigger'], [data-part='to-target-trigger'])[data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/tree.css */
 /* 定义 tree 样式。 */
 
@@ -48092,6 +49359,28 @@
   [data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content']::before {
     background: GrayText;
     forced-color-adjust: none;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
+     禁用取 GrayText */
+  [data-scope='tree']:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before,
+  [data-scope='tree'][data-part='item-indicator']:empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='tree'][data-part='branch-control']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='tree']:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before,
+  [data-scope='tree'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='tree'][data-part='item-indicator']:empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='tree'][data-part='branch-control']:is([aria-disabled='true'], [data-disabled]) [data-scope='tree']:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before,
+  [data-scope='tree'][data-part='item']:is([aria-disabled='true'], [data-disabled]) [data-scope='tree'][data-part='item-indicator']:empty::before {
+    background-color: GrayText;
   }
 }
 
@@ -48921,6 +50210,41 @@
   }
 }
 
+@media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
+     字段面上取 CanvasText；
+     落在 Canvas 面上的取 CanvasText；
+     禁用取 GrayText */
+  [data-scope='tree-select'][data-part='branch-error']::before,
+  [data-scope='tree-select'][data-part='indicator']:empty::before,
+  [data-scope='tree-select'][data-part='item-indicator']:empty::before,
+  [data-scope='tree-select']:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+
+  [data-scope='tree-select'][data-part='clear-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  [data-scope='tree-select'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='tree-select'][data-part='item-indicator']:empty::before,
+  [data-scope='tree-select'][data-part='branch-control']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='tree-select']:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before,
+  [data-scope='tree-select'][data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  [data-scope='tree-select'][data-part='control'][data-disabled] [data-scope='tree-select'][data-part='indicator']:empty::before,
+  [data-scope='tree-select'][data-part='item']:is([aria-disabled='true'], [data-disabled]) [data-scope='tree-select'][data-part='item-indicator']:empty::before,
+  [data-scope='tree-select'][data-part='branch-control']:is([aria-disabled='true'], [data-disabled]) [data-scope='tree-select']:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before,
+  [data-scope='tree-select'][data-part='clear-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
+  }
+}
+
 /* styles/virtualizer.css */
 /* 定义 virtualizer 样式。 */
 
@@ -49138,6 +50462,18 @@
 [data-scope='watermark'][data-part='root'][data-state='ready'][data-fullscreen]::after {
   position: fixed;
   z-index: var(--xh-watermark-layer, var(--xh-layer-tooltip));
+}
+
+/*
+ * 高对比档：印子的颜色是遮罩底下那块底色，这一档里被系统换成 Canvas，与页面同色，整层印子消失。
+ * 印子是防泄露的标记，不能因为读者开了高对比就不印：退出强制换色、取 GrayText——系统给「弱化内容」
+ * 留的那个角色，深浅仍由图样自带的透明度压着，不与正文抢对比
+ */
+@media (forced-colors: active) {
+  [data-scope='watermark'][data-part='root'][data-state='ready']::after {
+    forced-color-adjust: none;
+    background-color: GrayText;
+  }
 }
 
 /* 遮罩不支持时整层不画：只剩底色的话，盖上去的会是一整块实心色 */

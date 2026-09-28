@@ -268,17 +268,6 @@
     }
   }
 
-  /*
-   * 高对比档：关闭钮的按压面常态靠从 currentColor 兑出来的底色表出，这一档里底色被统一换成 Canvas，
-   * 按住那一下与静息塌成同一个样子；用系统高亮反色画回来，兜底字形读 currentColor、自己跟着换
-   */
-  @media (forced-colors: active) {
-    [data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
-      background: Highlight;
-      color: HighlightText;
-    }
-  }
-
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
   [data-scope='tag'][data-part='close-trigger']:empty::before {
     content: '';
@@ -289,5 +278,33 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  }
+
+  /*
+   * 高对比档：关闭钮的按压面常态靠从 currentColor 兑出来的底色表出，这一档里底色被统一换成 Canvas，
+   * 按住那一下与静息塌成同一个样子；用系统高亮反色画回来。
+   * 兜底字形是 mask 挖出来的一块底色，同样会被换成 Canvas 而消失：退出强制换色、直接写系统色
+   * （不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）——
+   * 标签面上取 CanvasText，按住时跟着按压面换 HighlightText，禁用取 GrayText
+   */
+  @media (forced-colors: active) {
+    [data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
+      background: Highlight;
+      color: HighlightText;
+    }
+
+    [data-scope='tag'][data-part='close-trigger']:empty::before {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+
+    [data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]):empty::before {
+      background-color: HighlightText;
+    }
+
+    [data-scope='tag'][data-part='root'][data-disabled] [data-scope='tag'][data-part='close-trigger']:empty::before,
+    [data-scope='tag'][data-part='close-trigger']:disabled:empty::before {
+      background-color: GrayText;
+    }
   }
 }

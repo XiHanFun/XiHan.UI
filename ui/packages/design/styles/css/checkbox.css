@@ -227,10 +227,16 @@
   }
 
   @media (forced-colors: active) {
-    /* 真实 border 保住盒，勾与半选横杠的系统前景由配方给；禁用写在 root 上，指示器自己不带，这里补置灰 */
+    /* 真实 border 保住盒，勾与半选横杠的系统前景由配方给；禁用写在 root 上，指示器自己不带，这里补置灰。
+       盒就是 root 本身：悬停与按下时家族把它涂成 Highlight，勾跟着换 HighlightText */
     [data-scope='checkbox'][data-part='root'][data-disabled]
       [data-scope='checkbox'][data-part='indicator']:empty::before {
       background-color: GrayText;
+    }
+
+    [data-scope='checkbox'][data-part='root']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed])
+      [data-scope='checkbox'][data-part='indicator']:empty::before {
+      background-color: HighlightText;
     }
   }
 

@@ -273,4 +273,23 @@
       forced-color-adjust: none;
     }
   }
+
+  @media (forced-colors: active) {
+    /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+       字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+       按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+       禁用取 GrayText */
+    [data-scope='editable']:is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger']):empty::before {
+      forced-color-adjust: none;
+      background-color: ButtonText;
+    }
+
+    [data-scope='editable']:is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+      background-color: HighlightText;
+    }
+
+    [data-scope='editable']:is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])[data-disabled]:empty::before {
+      background-color: GrayText;
+    }
+  }
 }

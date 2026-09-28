@@ -485,15 +485,28 @@
       background: Highlight;
     }
 
-    /* 子级开关的箭头是 mask 挖出来的一块底色，这一档里底色换成 Canvas、箭头跟着消失，开合只剩读屏听得到。
-       直接写开关按钮的系统前景（不能取 currentColor：退出强制色的伪元素读到的是被系统换掉之前的作者色），
-       禁用的开关取 GrayText，与公共补救层给禁用行的字色一致 */
+    /* 顶层入口与子级开关的箭头都是 mask 挖出来的一块底色，这一档里底色换成 Canvas、箭头跟着消失，
+       开合只剩读屏听得到。直接写系统前景（不能取 currentColor：退出强制色的伪元素读到的是被系统换掉之前的作者色）：
+       子级开关取按钮前景 ButtonText，顶层入口落在条目面上取 CanvasText；
+       两者都是集合条目，按下与没被高亮时的悬停，家族把条目涂成 Highlight，箭头跟着换 HighlightText；
+       禁用的取 GrayText，与公共补救层给禁用行的字色一致 */
     [data-scope='navigation-menu'][data-part='branch-indicator']:empty::before {
       background-color: ButtonText;
       forced-color-adjust: none;
     }
 
-    [data-scope='navigation-menu'][data-part='branch-trigger'][data-disabled] [data-scope='navigation-menu'][data-part='branch-indicator']:empty::before {
+    [data-scope='navigation-menu'][data-part='trigger-indicator']:empty::before {
+      background-color: CanvasText;
+      forced-color-adjust: none;
+    }
+
+    [data-scope='navigation-menu'][data-part='branch-trigger']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='navigation-menu'][data-part='branch-indicator']:empty::before,
+    [data-scope='navigation-menu'][data-part='trigger']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='navigation-menu'][data-part='trigger-indicator']:empty::before {
+      background-color: HighlightText;
+    }
+
+    [data-scope='navigation-menu'][data-part='branch-trigger'][data-disabled] [data-scope='navigation-menu'][data-part='branch-indicator']:empty::before,
+    [data-scope='navigation-menu'][data-part='trigger']:is([aria-disabled='true'], [data-disabled]) [data-scope='navigation-menu'][data-part='trigger-indicator']:empty::before {
       background-color: GrayText;
     }
   }

@@ -524,4 +524,30 @@
     clip-path: inset(50%);
     white-space: nowrap;
   }
+
+  @media (forced-colors: active) {
+    /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+       字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+       按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+       落在勾选盒自己的实心面上（这一档里是 Canvas），整行悬停不换面，取 CanvasText；
+       禁用取 GrayText */
+    [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+
+    [data-scope='question-flow']:is([data-part='prev-trigger'], [data-part='next-trigger']):empty::before {
+      forced-color-adjust: none;
+      background-color: ButtonText;
+    }
+
+    [data-scope='question-flow']:is([data-part='prev-trigger'], [data-part='next-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+      background-color: HighlightText;
+    }
+
+    [data-scope='question-flow'][data-part='item'][data-disabled] [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before,
+    [data-scope='question-flow']:is([data-part='prev-trigger'], [data-part='next-trigger'])[data-disabled]:empty::before {
+      background-color: GrayText;
+    }
+  }
 }
