@@ -26,6 +26,8 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_alert-exit-block-size', 'packages/engine/headless/src/alert/alert.connect.ts'],
   // 引用预览披露的内容区高度：机器在露面与收起前量下，连接层写进预览的内联样式，展开与收起的关键帧只读
   ['--xh-_citation-preview-block-size', 'packages/engine/headless/src/citation/citation.connect.ts'],
+  // 跑马灯一份内容在滚动轴上的实测长度：机器挂载后量、随尺寸变化重量，连接层写进根的内联样式，一圈的时长按它换算
+  ['--xh-_marquee-measured-span', 'packages/engine/headless/src/marquee/marquee.connect.ts'],
   // 同一批新到条目的错开序号：条目到达的追踪写进条目的内联样式，皮肤只读
   ['--xh-_stagger-index', 'packages/engine/core/src/behavior/arrival/track-arrivals.ts'],
   // 退场中途重开时进场的起点透明度：退场探测按退场播到的位置写进节点的内联样式，进场关键帧只读

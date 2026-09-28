@@ -49,13 +49,13 @@
    * 后代式会一路匹配到别人家的节点上去。
    *
    * 一圈的时长 = 一份内容的长度 ÷ 每秒像素数。--xh-_marquee-span 是一份内容在滚动轴上的长度，
-   * 单位像素、写成纯数字。CSS 读不到布局尺寸，这里给的是缺省值；内容明显长于或短于它时，
-   * 由使用者改写 --xh-marquee-span 对齐真实长度，速度才逐字等于每秒那么多像素。
+   * 单位像素、写成纯数字：连接层挂载后实测、写成内联的 --xh-_marquee-measured-span，量到之前
+   * （无布局宿主、首帧）退回缺省值。使用者写了 --xh-marquee-span 以它为准。
    */
   [data-scope='marquee'][data-part='root'] {
     /* 暂停开关的边长：开关用它定尺，两端渐隐按它给开关留出位置，两处同源 */
     --xh-_marquee-trigger-size: var(--xh-control-h-md);
-    --xh-_marquee-span: var(--xh-marquee-span, 600);
+    --xh-_marquee-span: var(--xh-marquee-span, var(--xh-_marquee-measured-span, 600));
     --xh-_marquee-speed: var(--xh-marquee-speed, 60);
 
     /* 铺一份时一圈走两倍自身长度：从窗口一侧整段进来，再整段出到另一侧 */
