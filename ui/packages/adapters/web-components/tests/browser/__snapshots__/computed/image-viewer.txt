@@ -268,7 +268,7 @@ min-height: 0px
 font-size: 16px
 line-height: 16px
 font-weight: 400
-color: oklch(1 0 0)
+color: oklab(1 0 0 / 0.294)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -278,7 +278,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: oklab(1 0 0 / 0.294)
 
 [positioner]
 padding-top: 0px
@@ -338,7 +338,7 @@ min-height: 0px
 font-size: 16px
 line-height: 16px
 font-weight: 400
-color: oklch(1 0 0)
+color: oklab(1 0 0 / 0.294)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -348,7 +348,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: oklab(1 0 0 / 0.294)
 
 [reset-trigger]
 padding-top: 1px

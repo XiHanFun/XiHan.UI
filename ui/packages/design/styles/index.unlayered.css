@@ -30343,15 +30343,30 @@
   cursor: progress;
 }
 
-/* 取图期间在画面正中垫一块占位面：不垫的话打开一张几 MB 的原图，
-   台前是一整块什么都没有的暗底，用户分不清是在加载还是这张图坏了 */
-[data-scope='image-viewer'][data-part='viewport'][data-loading]::after {
+/* 取图期间画面正中一枚加载环：不给的话打开一张几 MB 的原图，台前是一整块什么都没有的暗底，
+   用户分不清是在加载还是这张图坏了。环由加载环配方画（连接层投影 data-xh-loading-ring），
+   随 data-loading 淡入淡出；前景随看片层的白墨域 */
+[data-scope='image-viewer'][data-part='viewport'] {
+  /* 画面正中那两枚状态图形（加载环与警示字形）的尺：看片台是整幅画面，取控件图标档的最大一档 */
+  --xh-icon-size: var(--xh-image-viewer-status-size, var(--xh-glyph-size-lg));
+}
+
+[data-scope='image-viewer'][data-part='viewport']::before {
   content: '';
   position: absolute;
-  inline-size: var(--xh-image-viewer-loading-size, calc(var(--xh-control-h-lg) * 3));
-  block-size: var(--xh-image-viewer-loading-size, calc(var(--xh-control-h-lg) * 3));
-  border-radius: var(--xh-image-viewer-loading-radius, var(--xh-shape-surface));
-  background: var(--xh-image-viewer-loading-bg, var(--xh-bg-surface-raised));
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+}
+
+/* 取图失败：画面正中一枚警示字形（取危险色，非颜色通道），替掉浏览器画的破图与替代文字 */
+[data-scope='image-viewer'][data-part='viewport'][data-error]::after {
+  content: '';
+  position: absolute;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  background-color: var(--xh-image-viewer-error-fg, var(--xh-fg-danger));
+  -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
 }
 
 [data-scope='image-viewer'][data-part='image'] {
@@ -30372,6 +30387,11 @@
 [data-scope='image-viewer'][data-part='image'][data-loading] {
   opacity: 0;
   transition: none;
+}
+
+/* 载不出来的图不露浏览器的破图：整张让位给视口正中的警示字形，替代文字仍在可及树里 */
+[data-scope='image-viewer'][data-part='image'][data-error] {
+  visibility: hidden;
 }
 
 /* 拖拽期间平移每帧都在改：只在这一档备好合成层，松手后随 data-dragging 一起撤掉 */
@@ -30431,7 +30451,7 @@
   --xh-action-fg-hover: currentColor;
   --xh-action-fg-pressed: currentColor;
   --xh-action-fg-focus-visible: currentColor;
-  --xh-action-fg-disabled: currentColor;
+  --xh-action-fg-disabled: var(--xh-fg-disabled);
   --xh-action-border-rest: transparent;
   --xh-action-border-hover: transparent;
   --xh-action-border-pressed: transparent;
@@ -30468,7 +30488,7 @@
   --xh-action-fg-hover: currentColor;
   --xh-action-fg-pressed: currentColor;
   --xh-action-fg-focus-visible: currentColor;
-  --xh-action-fg-disabled: currentColor;
+  --xh-action-fg-disabled: var(--xh-fg-disabled);
   --xh-action-border-rest: transparent;
   --xh-action-border-hover: transparent;
   --xh-action-border-pressed: transparent;
@@ -30506,7 +30526,7 @@
   --xh-action-fg-hover: var(--xh-image-viewer-close-fg, currentColor);
   --xh-action-fg-pressed: var(--xh-image-viewer-close-fg, currentColor);
   --xh-action-fg-focus-visible: var(--xh-image-viewer-close-fg, currentColor);
-  --xh-action-fg-disabled: var(--xh-image-viewer-close-fg, currentColor);
+  --xh-action-fg-disabled: var(--xh-fg-disabled);
   --xh-action-border-rest: transparent;
   --xh-action-border-hover: transparent;
   --xh-action-border-pressed: transparent;
@@ -30572,6 +30592,7 @@
   --xh-action-border-pressed: var(--xh-material-liquid-border);
   --xh-action-border-focus-visible: var(--xh-material-liquid-border);
   --xh-action-border-disabled: var(--xh-material-liquid-border);
+  --xh-action-fg-disabled: var(--xh-fg-disabled);
   --xh-action-shadow-rest: var(--xh-_liquid-shadow);
   --xh-action-shadow-hover: var(--xh-_liquid-shadow);
   --xh-action-shadow-pressed: var(--xh-_liquid-shadow);
@@ -30606,10 +30627,6 @@
 
 [data-scope='image-viewer'][data-part='close-trigger'][hidden] {
   display: none;
-}
-
-[data-scope='image-viewer'] button[data-part]:disabled {
-  opacity: var(--xh-state-disabled-opacity);
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

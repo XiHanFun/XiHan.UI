@@ -499,6 +499,7 @@
         "grid-list",
         "heatmap",
         "hierarchy-chart",
+        "image-viewer",
         "listbox",
         "mention",
         "notification",
