@@ -10,7 +10,7 @@ import type { FileUploadApi, FileUploadFile, FileUploadPressedKey, FileUploadSch
 import { contains, createPressTracker, dataAttr, isHTMLElement } from '@xihan-ui/core'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { fileUploadAnatomy, fileUploadHiddenInputId, fileUploadListId, fileUploadProgressId } from './file-upload.anatomy'
-import { acceptAttr, fileUploadPressKey, formatFileSize, normalizeMaxFiles } from './file-upload.machine'
+import { acceptAttr, fileUploadFileKey, fileUploadPressKey, formatFileSize, normalizeMaxFiles } from './file-upload.machine'
 
 const parts = fileUploadAnatomy.build()
 
@@ -294,7 +294,7 @@ export function connectFileUpload<T extends PropTypes>(
     getItemProgressProps: ({ file }) => {
       const upload = uploadOf(file)
       // 本地文件的内部 id；远程附件恒为传完，不画进度
-      const key = isRemote(file) ? undefined : service.refs.get('fileIds').get(file)
+      const key = isRemote(file) ? undefined : fileUploadFileKey(service.refs, file)
       // 传输中露面；传完先走满再淡出，淡出播完（机器报落定）才藏起
       const shown = upload?.status === 'uploading'
         || (upload?.status === 'done' && key != null && !context.get('settledProgress')[key])
