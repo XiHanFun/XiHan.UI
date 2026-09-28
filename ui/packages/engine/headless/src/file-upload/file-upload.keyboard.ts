@@ -46,6 +46,12 @@ export const fileUploadKeyboard: KeyboardTable = {
       does: '清空整份列表（原生 button 的默认激活）；列表为空时按钮照常在位、可聚焦，激活是空操作',
     },
     {
+      id: 'file-upload.kbd.paste',
+      keys: ['Ctrl+V', 'Meta+V'],
+      when: 'focus inside the component, not disabled, allowPaste',
+      does: '收下剪贴板里的文件，与选择、投放走同一道校验；剪贴板里没有文件时不拦截，文字照常粘贴到别处',
+    },
+    {
       id: 'file-upload.kbd.press',
       keys: ['Enter', 'Space'],
       when: 'held on trigger / item-delete-trigger / clear-trigger, not disabled',

@@ -11,6 +11,7 @@ interface UploadScope {
   allFiles: FileUploadFile[]
   uploadOf: (file: FileUploadFile) => FileUploadSnapshot | null
   startUpload: (file: File) => void
+  cancelUpload: (file: File) => void
   addFiles: (files: File[]) => void
   deleteFile: (file: FileUploadFile) => void
   clear: () => void
@@ -39,6 +40,7 @@ interface MountOptions {
   onRemoteFilesChange?: (details: { files: FileUploadRemoteFile[] }) => void
   onUploadComplete?: (details: { file: File, url?: string }) => void
   onUploadError?: (details: { file: File, error: unknown }) => void
+  onUploadCancel?: (details: { file: File }) => void
   onFileReject?: (details: { files: { file: File, reasons: string[] }[] }) => void
 }
 
@@ -56,6 +58,7 @@ function mountUpload(opts: MountOptions = {}): { scope: () => UploadScope } {
         'onRemote-files-change': opts.onRemoteFilesChange,
         'onUpload-complete': opts.onUploadComplete,
         'onUpload-error': opts.onUploadError,
+        'onUpload-cancel': opts.onUploadCancel,
         'onFile-reject': opts.onFileReject,
       }, {
         default: (scope: UploadScope) => {
@@ -186,6 +189,32 @@ describe('file-upload 上传生命周期', () => {
     engine.reject(new Error('aborted'))
     await tick()
     expect(failed).not.toHaveBeenCalled()
+  })
+
+  it('插槽里的 cancelUpload 中止传输、文件留下，发 upload-cancel 而不发 upload-error；startUpload 重开', async () => {
+    const engine = deferredUpload()
+    const failed = vi.fn()
+    const canceled = vi.fn()
+    const t = mountUpload({ upload: engine.upload, onUploadError: failed, onUploadCancel: canceled })
+    const file = makeFile()
+    t.scope().addFiles([file])
+    await tick()
+    const first = engine.lastSignal()
+    t.scope().cancelUpload(file)
+    await tick()
+    expect(first.aborted).toBe(true)
+    expect(t.scope().acceptedFiles).toEqual([file])
+    expect(t.scope().uploadOf(file)?.status).toBe('canceled')
+    expect(document.querySelector('[data-part="item"]')?.getAttribute('data-state')).toBe('canceled')
+    expect(canceled).toHaveBeenCalledWith({ file })
+    engine.reject(new Error('aborted'))
+    await tick()
+    expect(failed).not.toHaveBeenCalled()
+
+    t.scope().startUpload(file)
+    await tick()
+    expect(engine.lastSignal()).not.toBe(first)
+    expect(t.scope().uploadOf(file)?.status).toBe('uploading')
   })
 
   it('没配 upload 就是纯选择器：uploadOf 为 null、条目不带 data-state', async () => {

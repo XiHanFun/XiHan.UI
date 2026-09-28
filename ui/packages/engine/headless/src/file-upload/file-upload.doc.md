@@ -16,7 +16,10 @@
 - 超出 `maxFiles` / `maxFileSize` / `minFileSize` 的文件立即被拒绝，`onFileReject` 逐个报告原因。
 - `autoUpload` 决定选择后立即上传还是等待提交。
 - `remoteFiles` 回显服务器上已有的附件，与本次新选的文件并列在同一个列表中。
-- 上传生命周期（完成、失败）各有回调；宿主还可以插入自定义的准入判断。
+- `validate` 在类型与大小校验之后逐个判定，返回拒绝码即拒收，与内建原因一起进 `onFileReject`。
+- 焦点在组件里时可以直接粘贴文件（`allowPaste`，默认开启），与选择、投放走同一道校验。
+- 上传生命周期（完成、失败、取消）各有回调；`maxConcurrentUploads` 限定同时在传的份数，其余排队。
+- `cancelUpload` 中止传输但保留文件，`startUpload` 让取消或失败的文件重新开传；删除文件同样中止它的传输。
 
 ## 组合
 

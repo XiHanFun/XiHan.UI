@@ -15,6 +15,7 @@ export {
   fileUploadMachine,
   formatFileSize,
   normalizeAccept,
+  normalizeMaxConcurrentUploads,
   normalizeMaxFiles,
   sameFiles,
   sameRemoteFiles,
@@ -25,6 +26,7 @@ export { fileUploadMeta } from './file-upload.meta'
 export type {
   FileRejectReason,
   FileUploadApi,
+  FileUploadCancelDetails,
   FileUploadCompleteDetails,
   FileUploadErrorDetails,
   FileUploadFile,
@@ -33,6 +35,7 @@ export type {
   FileUploadFilesChangeDetails,
   FileUploadItemProps,
   FileUploadPressedKey,
+  FileUploadRejectCode,
   FileUploadRejection,
   FileUploadRemoteFile,
   FileUploadRemoteFilesChangeDetails,
@@ -42,5 +45,6 @@ export type {
   FileUploadSnapshot,
   FileUploadStatus,
   FileUploadTranslations,
+  FileUploadValidateContext,
   FileUploadValidationResult,
 } from './file-upload.types'

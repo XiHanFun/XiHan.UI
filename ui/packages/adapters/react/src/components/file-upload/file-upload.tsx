@@ -28,6 +28,7 @@ export type FileUploadRootSlotProps = Pick<
   | 'allFiles'
   | 'uploadOf'
   | 'startUpload'
+  | 'cancelUpload'
   | 'dragging'
   | 'empty'
   | 'disabled'
@@ -62,6 +63,12 @@ export interface XhFileUploadRootProps extends Omit<ComponentPropsWithRef<'div'>
   name?: string
   /** 是否接受拖放，默认接受。 */
   allowDrop?: boolean
+  /** 是否接受粘贴，默认接受：焦点在组件里时 Ctrl / Cmd+V 收下剪贴板里的文件。 */
+  allowPaste?: boolean
+  /** 作者的准入判定：类型与大小通过后逐个调用，返回拒绝码即拒收并进 onFileReject。 */
+  validate?: FileUploadProps['validate']
+  /** 同时在传的文件数上限，默认不限；到了上限的排队。 */
+  maxConcurrentUploads?: number
   /** 选择整个目录。 */
   directory?: boolean
   capture?: 'user' | 'environment'
@@ -72,6 +79,7 @@ export interface XhFileUploadRootProps extends Omit<ComponentPropsWithRef<'div'>
   onRemoteFilesChange?: FileUploadProps['onRemoteFilesChange']
   onUploadComplete?: FileUploadProps['onUploadComplete']
   onUploadError?: FileUploadProps['onUploadError']
+  onUploadCancel?: FileUploadProps['onUploadCancel']
   children?: SlotChildren<FileUploadRootSlotProps>
 }
 
@@ -90,6 +98,9 @@ export function XhFileUploadRoot({
   invalid,
   name,
   allowDrop,
+  allowPaste,
+  validate,
+  maxConcurrentUploads,
   directory,
   capture,
   translations,
@@ -99,6 +110,7 @@ export function XhFileUploadRoot({
   onRemoteFilesChange,
   onUploadComplete,
   onUploadError,
+  onUploadCancel,
   children,
   ...rest
 }: XhFileUploadRootProps): ReactNode {
@@ -117,6 +129,9 @@ export function XhFileUploadRoot({
     invalid,
     name,
     allowDrop,
+    allowPaste,
+    validate,
+    maxConcurrentUploads,
     directory,
     capture,
     translations,
@@ -126,6 +141,7 @@ export function XhFileUploadRoot({
     onRemoteFilesChange,
     onUploadComplete,
     onUploadError,
+    onUploadCancel,
   })) as FileUploadProps)
   const api = ctx.api
 
@@ -144,6 +160,7 @@ export function XhFileUploadRoot({
           allFiles: api.allFiles,
           uploadOf: api.uploadOf,
           startUpload: api.startUpload,
+          cancelUpload: api.cancelUpload,
           dragging: api.dragging,
           empty: api.empty,
           disabled: api.disabled,
@@ -167,6 +184,7 @@ XhFileUploadRoot.xhEvents = [
   'remote-files-change',
   'upload-complete',
   'upload-error',
+  'upload-cancel',
 ] as const
 
 export interface XhFileUploadLabelProps extends ComponentPropsWithRef<'label'> {}

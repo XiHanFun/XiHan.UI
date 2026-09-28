@@ -24429,6 +24429,32 @@
             },
             {
               "kind": "field",
+              "name": "allowPaste",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "allow-paste"
+            },
+            {
+              "kind": "field",
+              "name": "validate",
+              "privacy": "public",
+              "type": {
+                "text": "FileUploadSchema['props']['validate'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "maxConcurrentUploads",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-concurrent-uploads"
+            },
+            {
+              "kind": "field",
               "name": "directory",
               "privacy": "public",
               "type": {
@@ -24495,6 +24521,12 @@
             {
               "kind": "field",
               "name": "notifyUploadError",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyUploadCancel",
               "privacy": "private",
               "readonly": true
             },
@@ -24624,6 +24656,60 @@
                 }
               ],
               "description": "按引用移除某一个文件。"
+            },
+            {
+              "kind": "method",
+              "name": "uploadOf",
+              "return": {
+                "type": {
+                  "text": "FileUploadSnapshot | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "file",
+                  "type": {
+                    "text": "FileUploadFile"
+                  }
+                }
+              ],
+              "description": "这个文件此刻的传输快照（状态、进度、地址、错误）：远程附件恒为 done，没配 upload 时本地文件为 null。"
+            },
+            {
+              "kind": "method",
+              "name": "startUpload",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "file",
+                  "type": {
+                    "text": "File"
+                  }
+                }
+              ],
+              "description": "手动开传（auto-upload 关闭时），或让失败、取消的文件重新开传。"
+            },
+            {
+              "kind": "method",
+              "name": "cancelUpload",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "file",
+                  "type": {
+                    "text": "File"
+                  }
+                }
+              ],
+              "description": "取消这个文件的传输（在传或排队中），文件留在列表里、状态落 canceled；删除用 deleteFile。"
             },
             {
               "kind": "method",
@@ -24764,6 +24850,13 @@
               }
             },
             {
+              "description": "单个文件的传输被 cancelUpload 取消（文件留在列表里）；detail 为 `{ file }`",
+              "name": "upload-cancel",
+              "type": {
+                "text": "FileUploadCancelDetails"
+              }
+            },
+            {
               "description": "本次接受了哪些文件；detail 为 `{ files: File[] }`",
               "name": "file-accept",
               "type": {
@@ -24842,6 +24935,22 @@
               "description": "是否接受拖拽投放，默认 true；写 allow-drop=\"false\" 关闭",
               "name": "allow-drop",
               "fieldName": "allowDrop"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否接受粘贴，默认 true：焦点在组件里时 Ctrl / Cmd+V 收下剪贴板里的文件；写 allow-paste=\"false\" 关闭",
+              "name": "allow-paste",
+              "fieldName": "allowPaste"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "同时在传的文件数上限，默认不限；到了上限的报 queued 排队",
+              "name": "max-concurrent-uploads",
+              "fieldName": "maxConcurrentUploads"
             },
             {
               "type": {

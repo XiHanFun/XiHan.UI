@@ -1,5 +1,6 @@
-<!-- 宿主自定义的准入 | 组件只管理 accept 与大小数量这几条通用规则，其他规则由宿主在受控列表中再筛一遍：这里同名文件只保留最先到达的一份 -->
+<!-- 作者的准入判定 | accept 与大小数量之外的规矩交给 validate：类型与大小通过之后逐个问它，返回拒绝码即拒收，拒收的文件带着这个码进 file-reject；这里同名文件只收最先到的一份 -->
 <script setup lang="ts">
+import type { FileUploadValidateContext } from "@xihan-ui/vue";
 import {
   XhFileUploadDropzone,
   XhFileUploadHiddenInput,
@@ -14,30 +15,21 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const files = ref<File[]>([]);
 const dropped = ref("");
-const lastAccepted = ref("");
 
-// 组件报来的是变化之后的完整列表，宿主按自己的规矩决定最终留下哪些
-function onFilesChange(details: { files: File[] }) {
-  const seen = new Set<string>();
-  const kept: File[] = [];
-  const names: string[] = [];
-  for (const file of details.files) {
-    if (seen.has(file.name)) {
-      names.push(file.name);
-      continue;
-    }
-    seen.add(file.name);
-    kept.push(file);
-  }
-  files.value = kept;
-  dropped.value = names.join("、");
+// 列表里已有同名的，或同一批里排在它前面的有同名的，就报 duplicate
+function validate(file: File, context: FileUploadValidateContext): string | null {
+  const earlier = context.files.slice(0, context.files.indexOf(file));
+  const taken = [...context.acceptedFiles, ...earlier].some(other => other.name === file.name);
+  return taken ? "duplicate" : null;
 }
 
-// 这一批组件收下了谁
-function onFileAccept(details: { files: File[] }) {
-  lastAccepted.value = details.files.map(file => file.name).join("、");
+// 拒收的文件与内建原因（类型、大小、数量）走同一条通道，按码挑出自己关心的那一类
+function onFileReject(details: { files: { file: File; reasons: string[] }[] }) {
+  dropped.value = details.files
+    .filter(rejection => rejection.reasons.includes("duplicate"))
+    .map(rejection => rejection.file.name)
+    .join("、");
 }
 </script>
 
@@ -45,14 +37,13 @@ function onFileAccept(details: { files: File[] }) {
   <div style="width: 100%; max-width: 480px; display: grid; gap: 12px">
     <XhFileUploadRoot
       v-slot="{ acceptedFiles }"
-      :files="files"
       :max-files="6"
-      @files-change="onFilesChange"
-      @file-accept="onFileAccept"
+      :validate="validate"
+      @file-reject="onFileReject"
     >
       <XhFileUploadLabel>去重后的附件</XhFileUploadLabel>
       <XhFileUploadDropzone>
-        <span>同名文件只留最先来的那份</span>
+        <span>同名文件只收最先来的那份</span>
       </XhFileUploadDropzone>
       <div>
         <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
@@ -67,7 +58,6 @@ function onFileAccept(details: { files: File[] }) {
       </XhFileUploadList>
     </XhFileUploadRoot>
 
-    <span v-if="lastAccepted">这一批收下：{{ lastAccepted }}</span>
     <span v-if="dropped">同名挡下：{{ dropped }}</span>
   </div>
 </template>

@@ -65,6 +65,33 @@ function drag(type: 'dragover' | 'dragleave' | 'drop', files: readonly File[] = 
   }
 }
 
+/**
+ * 在某个部件上派一次粘贴。无头 DOM 没有 ClipboardEvent 构造器，自己补一份 clipboardData。
+ * 带文件的粘贴必须拦下默认行为（否则浏览器会把文件名当文字插进焦点所在的输入框），
+ * 不带文件的必须放行（文字粘贴属于别处）；两半都只有直接看 defaultPrevented 才验得到。
+ */
+function paste(part: string, files: readonly File[], taken: boolean): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: '无头 DOM 没有 ClipboardEvent 构造器，且拦不拦默认行为是粘贴契约的一半，声明式步骤表达不了',
+    run: async ({ doc, flush }) => {
+      const event = new Event('paste', { bubbles: true, cancelable: true })
+      Object.defineProperty(event, 'clipboardData', { value: { files: [...files] } })
+      partEl(doc, part).dispatchEvent(event)
+      if (event.defaultPrevented !== taken)
+        throw new Error(taken ? '收下文件的粘贴没拦默认行为' : '没收文件的粘贴不该拦默认行为：文字粘贴属于别处')
+      await flush()
+    },
+  }
+}
+
+/** 永不自己结束的传输：只在被中止时收尾，好让「在传」与「排队」停在原地供断言。 */
+function pendingUpload({ signal }: { signal: AbortSignal }): Promise<void> {
+  return new Promise((_resolve, reject) => {
+    signal.addEventListener('abort', () => reject(signal.reason))
+  })
+}
+
 const BASE: FixtureNode = {
   part: 'root',
   children: [
@@ -405,6 +432,69 @@ export const fileUploadSuite: ConformanceSuite = {
           expect: {
             counts: { item: 0 },
             parts: { dropzone: { 'data-dragging': null }, root: { 'data-empty': '' } },
+          },
+        },
+      ],
+    },
+    {
+      name: '粘贴：焦点在组件里时收下剪贴板里的文件，过同一道校验；剪贴板里没有文件时不拦截',
+      spec: { apg: APG },
+      covers: ['file-upload.kbd.paste'],
+      fixture: withItems(2),
+      props: { maxFiles: 3, accept: 'image/*' },
+      steps: [
+        { ...paste('trigger', [], false), expect: { counts: { item: 0 } } },
+        {
+          ...paste('dropzone', [PHOTO, REPORT], true),
+          expect: {
+            counts: { item: 1 },
+            parts: { 'item[0]': { 'data-file-name': 'photo.png' } },
+          },
+        },
+      ],
+    },
+    {
+      name: 'allowPaste=false：粘贴不收也不拦',
+      spec: { apg: APG },
+      fixture: withItems(1),
+      props: { maxFiles: 3, allowPaste: false },
+      steps: [
+        { ...paste('dropzone', [PHOTO], false), expect: { counts: { item: 0 }, parts: { root: { 'data-empty': '' } } } },
+      ],
+    },
+    {
+      name: '作者的 validate 在内建校验之后判定，返回拒绝码的文件不进列表',
+      spec: { apg: APG },
+      fixture: withItems(2),
+      props: { maxFiles: 3, validate: (file: File) => (file.name === 'photo.png' ? 'duplicate' : null) },
+      steps: [
+        stubPicker([PHOTO, NOTES]),
+        {
+          kind: 'click',
+          part: 'trigger',
+          expect: {
+            counts: { item: 1 },
+            parts: { 'item[0]': { 'data-file-name': 'notes.txt' } },
+          },
+        },
+      ],
+    },
+    {
+      name: '并发上限：到了 maxConcurrentUploads 的文件排队，条目与进度条投影 queued',
+      spec: { apg: APG },
+      fixture: withItems(2),
+      props: { maxFiles: 3, maxConcurrentUploads: 1, upload: pendingUpload },
+      steps: [
+        stubPicker([PHOTO, NOTES]),
+        {
+          kind: 'click',
+          part: 'trigger',
+          expect: {
+            parts: {
+              'item[0]': { 'data-state': 'uploading' },
+              'item[1]': { 'data-state': 'queued' },
+              'item-progress[1]': { 'data-state': 'queued', 'hidden': '' },
+            },
           },
         },
       ],
