@@ -23,6 +23,7 @@ export function connectPopover<T extends PropTypes>(
   const modal = prop('modal') ?? false
   const ids = scope.ids('popover', 'trigger', 'content', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'
+  const disabled = !!prop('disabled')
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
   // 箭头落点：引擎没算（没要箭头 / 尚未落位）时缺席，皮肤退回居中
@@ -72,8 +73,15 @@ export function connectPopover<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
       'data-xh-action-variant': 'outline',
+      // 浮层禁用时触发器没有别的用处：原生 disabled 退出 Tab 序列，家族按 data-disabled 画禁用面
+      'disabled': disabled || undefined,
+      'data-disabled': dataAttr(disabled),
       ...press('trigger'),
-      'onClick': () => send({ type: 'TOGGLE' }),
+      'onClick': () => {
+        // 作者把这份 props 摊到非按钮节点上时原生 disabled 不生效，守卫得自己带
+        if (!disabled)
+          send({ type: 'TOGGLE' })
+      },
     }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,

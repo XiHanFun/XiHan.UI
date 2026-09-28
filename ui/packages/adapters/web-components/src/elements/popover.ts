@@ -38,6 +38,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} modal - 模态浮层陷入焦点并回绕 Tab，默认 false
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true；写 close-on-escape="false" 关闭
  * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关闭
+ * @attr {boolean} disabled - 浮层不可打开：触发器转原生 disabled，展开途中转为禁用即收起
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点
@@ -66,6 +67,7 @@ export class XhPopoverElement extends XhPortalHostElement {
     modal: { converter: BOOLEAN_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
+    disabled: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
     // 对象值进不了属性，只作为 property 暴露
     translations: { attribute: false },
@@ -79,6 +81,7 @@ export class XhPopoverElement extends XhPortalHostElement {
   declare modal?: boolean
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
+  declare disabled?: boolean
   declare size?: Size
   /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上的值会被覆盖，只能从此处提供。 */
   declare translations?: Partial<PopoverTranslations>
@@ -125,6 +128,7 @@ export class XhPopoverElement extends XhPortalHostElement {
       modal: this.modal,
       closeOnEscape: this.closeOnEscape,
       closeOnInteractOutside: this.closeOnInteractOutside,
+      disabled: this.disabled,
       translations: this.translations,
       size: this.size,
       onOpenChange: this.notify,

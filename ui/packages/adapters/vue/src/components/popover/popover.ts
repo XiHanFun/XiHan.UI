@@ -35,6 +35,8 @@ export const XhPopoverRoot = defineComponent({
     modal: { type: Boolean, default: false },
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: true },
+    /** 浮层不可打开：触发器转原生 disabled。 */
+    disabled: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<PopoverProps['translations']> },
     size: { type: String as PropType<Size> },
   },

@@ -34,6 +34,8 @@ export interface XhPopoverRootProps {
   modal?: boolean
   closeOnEscape?: boolean
   closeOnInteractOutside?: boolean
+  /** 浮层不可打开：触发器转原生 disabled。 */
+  disabled?: boolean
   translations?: PopoverProps['translations']
   size?: Size
   onOpenChange?: PopoverProps['onOpenChange']
