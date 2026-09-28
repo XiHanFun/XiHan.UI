@@ -132,6 +132,8 @@ interface Case {
   mount: () => Promise<void>
   /** 浮层族：按住条子那一下不该把浮层消解掉。 */
   overlay: boolean
+  /** 浮层面板（带 data-state 的那层）；缺省就是滚动层，滚动层住在面板里时另指面板。 */
+  panel?: string
 }
 
 const CASES: Case[] = [
@@ -139,7 +141,9 @@ const CASES: Case[] = [
     scope: 'tree-select',
     axes: ['vertical', 'horizontal'],
     shell: 'positioner',
-    layer: 'content',
+    // 滚动归树，面板只是外壳：搜索框与底部操作区钉在树的上下沿
+    layer: 'tree',
+    panel: 'content',
     overlay: true,
     mount: async () => {
       render(() => h(XhTreeSelectRoot, {
@@ -252,7 +256,9 @@ describe.each(CASES)('$scope 的自绘条', (item) => {
       expect(root.querySelector('[data-scope="scrollbar"][data-part="thumb"]')).not.toBeNull()
       expect(root.contains(layer)).toBe(false)
     }
-    expect(layer.parentElement).toBe(shell)
+    // 滚动层直接挂在壳上；住在面板里时，面板挂在壳上
+    const panel = item.panel ? part(item.scope, item.panel) : null
+    expect([layer.parentElement, panel?.parentElement]).toContain(shell)
   })
 
   it('摆出来的轴与宿主报的一致', async () => {
@@ -302,7 +308,7 @@ describe.each(CASES)('$scope 的自绘条', (item) => {
   it.runIf(item.overlay)('按在条子上不会把浮层消解掉', async () => {
     await item.mount()
 
-    const panel = part(item.scope, item.layer)
+    const panel = part(item.scope, item.panel ?? item.layer)
     expect(panel.getAttribute('data-state')).toBe('open')
 
     part(item.scope, item.shell)
@@ -315,7 +321,7 @@ describe.each(CASES)('$scope 的自绘条', (item) => {
 })
 
 describe('双轴的让位跟着另一条轴走', () => {
-  /** 树浮层挂起来，把 content 的两条轴按给定尺寸钉死。 */
+  /** 树浮层挂起来，把滚动层（树）的两条轴按给定尺寸钉死。 */
   async function mountTreeSelect(
     vertical: [number, number],
     horizontal: [number, number],
@@ -325,7 +331,7 @@ describe('双轴的让位跟着另一条轴走', () => {
       defaultExpandedValue: ['docs'],
       defaultOpen: true,
     }))
-    stubBox(part('tree-select', 'content'), vertical, horizontal)
+    stubBox(part('tree-select', 'tree'), vertical, horizontal)
     await settle()
     return part('tree-select', 'positioner')
   }

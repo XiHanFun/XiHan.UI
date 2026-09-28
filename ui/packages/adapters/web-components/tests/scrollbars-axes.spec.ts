@@ -81,7 +81,9 @@ const CASES: Case[] = [
     tag: 'xh-tree-select',
     axes: ['vertical', 'horizontal'],
     shell: 'positioner',
-    layer: 'content',
+    // 滚动归树，面板只是外壳：搜索框与底部操作区钉在树的上下沿
+    layer: 'tree',
+    panel: 'content',
     overlay: true,
     attrs: { 'default-open': '' },
     props: { collection: TREE, expandedValue: ['docs'] },
@@ -395,7 +397,9 @@ describe.each(CASES)('$scope 的自绘条', (item) => {
       expect(root.querySelector('[data-scope="scrollbar"][data-part="thumb"]')).not.toBeNull()
       expect(root.contains(layer)).toBe(false)
     }
-    expect(layer.parentElement).toBe(shell)
+    // 滚动层直接挂在壳上；住在面板里时，面板挂在壳上
+    const panel = item.panel ? part(el, item.panel) : null
+    expect([layer.parentElement, panel?.parentElement]).toContain(shell)
   })
 
   it('摆出来的轴与宿主报的一致', async () => {
