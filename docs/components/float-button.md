@@ -220,6 +220,7 @@
 | `trigger` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `trigger` | `data-xh-liquid` | '' |
 | `trigger` | `data-xh-material` | 'frosted' \| undefined |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `list` | `data-placement` | props.placement |
 | `list` | `data-state` | 'open' \| 'closed' |
 | `list` | `data-xh-liquid` | '' |

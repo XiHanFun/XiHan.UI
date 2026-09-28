@@ -14,6 +14,7 @@ import { datePickerMachine } from '../src/date-picker'
 import { dateRangePickerMachine } from '../src/date-range-picker'
 import { connectDialog, dialogMachine } from '../src/dialog'
 import { connectDrawer, drawerMachine } from '../src/drawer'
+import { connectFloatButton, floatButtonMachine } from '../src/float-button'
 import { connectFloatingPanel, floatingPanelMachine } from '../src/floating-panel'
 import { connectHoverCard, hoverCardMachine } from '../src/hover-card'
 import { connectImageViewer, imageViewerMachine } from '../src/image-viewer'
@@ -160,6 +161,10 @@ const CASES: Record<string, Case> = {
   'tooltip': {
     machine: tooltipMachine,
     parts: service => [connectTooltip(service, normalizeProps).getContentProps() as Attrs],
+  },
+  'float-button': {
+    machine: floatButtonMachine,
+    parts: service => [connectFloatButton(service, {}, normalizeProps).getListProps() as Attrs],
   },
 }
 

@@ -130,6 +130,8 @@ export function connectFloatButton<T extends PropTypes>(
       'role': 'group',
       'aria-labelledby': ids.trigger,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现：里面的动作不逐条冒出
+      'data-instant': dataAttr(context.get('openedAtMount')),
       'data-placement': placement,
       // 收起时留着节点只隐藏：靠不透明度藏起来的按钮仍然可聚焦、仍然被读屏念到
       'hidden': (!open && !merging) || undefined,
