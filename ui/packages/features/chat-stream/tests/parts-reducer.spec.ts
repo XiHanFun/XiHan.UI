@@ -383,3 +383,67 @@ describe('纯函数', () => {
     expect(next.message.parts).not.toBe(seed.message.parts)
   })
 })
+
+describe('结束方式', () => {
+  it('助手消息从 streaming 起步，finish 记为 complete', () => {
+    const start = createReduceState('m1')
+    expect(start.message.status).toBe('streaming')
+    const done = apply(start, textStart('a'), textDelta('a', 'A'), { kind: 'finish', receivedTime: T })
+    expect(done.message.status).toBe('complete')
+  })
+
+  it('没等到 finish 的 abort 记为 aborted；finish 之后的 abort 不改', () => {
+    const cut = apply(createReduceState('m1'), textStart('a'), { kind: 'abort', receivedTime: T })
+    expect(cut.message.status).toBe('aborted')
+    const done = apply(createReduceState('m1'), { kind: 'finish', receivedTime: T }, { kind: 'abort', receivedTime: T })
+    expect(done.message.status).toBe('complete')
+  })
+
+  it('error 记为 error，之后的收尾不再改写', () => {
+    const failed = apply(
+      createReduceState('m1'),
+      { kind: 'error', errorText: '炸了', receivedTime: T },
+      { kind: 'abort', receivedTime: T },
+    )
+    expect(failed.message.status).toBe('error')
+  })
+
+  it('用户消息不写结束方式', () => {
+    const state = apply(createReduceState('u1', 'user'), { kind: 'finish', receivedTime: T })
+    expect(state.message.status).toBeUndefined()
+  })
+})
+
+describe('续写', () => {
+  const cut = apply(createReduceState('m1'), textStart('a'), textDelta('a', '截断在半'), { kind: 'abort', receivedTime: T }).message
+
+  it('第一段正文接回截断前的那一块，续上的字连成一段', () => {
+    const resumed = apply(createReduceState('m1', 'assistant', cut), textStart('b'), textDelta('b', '句上'), textEnd('b'))
+    expect(resumed.message.parts).toHaveLength(1)
+    expect(resumed.message.parts[0]).toMatchObject({ type: 'text', text: '截断在半句上', streaming: false })
+  })
+
+  it('续写期间重新记为 streaming，收尾后为 complete', () => {
+    const resumed = createReduceState('m1', 'assistant', cut)
+    expect(resumed.message.status).toBe('streaming')
+    expect(apply(resumed, { kind: 'finish', receivedTime: T }).message.status).toBe('complete')
+  })
+
+  it('先到了别的块时不再往截断的正文上接', () => {
+    const resumed = apply(
+      createReduceState('m1', 'assistant', cut),
+      { kind: 'step-start', receivedTime: T },
+      textStart('b'),
+      textDelta('b', '新段'),
+    )
+    expect(resumed.message.parts.map(p => p.type)).toEqual(['text', 'step-start', 'text'])
+    expect((resumed.message.parts[0] as TextPart).text).toBe('截断在半')
+    expect((resumed.message.parts[2] as TextPart).text).toBe('新段')
+  })
+
+  it('最后一块不是正文时照常追加', () => {
+    const tail = apply(createReduceState('m1'), { kind: 'step-start', receivedTime: T }, { kind: 'abort', receivedTime: T }).message
+    const resumed = apply(createReduceState('m1', 'assistant', tail), textStart('b'), textDelta('b', '正文'))
+    expect(resumed.message.parts.map(p => p.type)).toEqual(['step-start', 'text'])
+  })
+})

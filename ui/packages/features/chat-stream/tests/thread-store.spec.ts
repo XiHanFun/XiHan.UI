@@ -1,3 +1,4 @@
+import type { ChatRequest } from '../src/model/message'
 import type { TextPart } from '../src/model/part-kinds'
 import type { NormalizedEvent } from '../src/reduce/events'
 import type { ThreadSnapshot } from '../src/store/thread-store'
@@ -42,6 +43,7 @@ function manualFrames(): {
 }
 
 interface Run {
+  readonly req: ChatRequest
   push: (ev: NormalizedEvent) => void
   close: () => void
   readonly signal: AbortSignal
@@ -52,7 +54,7 @@ function channelTransport(): { transport: Transport, runs: Run[], latest: () => 
   const runs: Run[] = []
 
   const transport: Transport = {
-    stream: (_req, signal) => {
+    stream: (req, signal) => {
       const buffer: NormalizedEvent[] = []
       let wake: (() => void) | null = null
       let closed = false
@@ -61,6 +63,7 @@ function channelTransport(): { transport: Transport, runs: Run[], latest: () => 
         wake = null
       }
       runs.push({
+        req,
         signal,
         push: (ev) => {
           buffer.push(ev)
@@ -108,7 +111,7 @@ describe('createThreadStore 提交与状态流转', () => {
     store.submit('你好')
     expect(seen).toEqual(['submitted'])
     expect(store.getSnapshot().messages).toEqual([
-      { id: 'xh-msg-1', role: 'user', parts: [{ type: 'text', text: '你好' }] },
+      { id: 'xh-msg-1', role: 'user', parts: [{ type: 'text', text: '你好' }], parentId: null },
     ])
 
     chan.latest().push(textStart('b1'))
@@ -270,8 +273,9 @@ describe('createThreadStore 错误与取消', () => {
     const afterStop = listener.mock.calls.length
     expect(afterStop).toBe(before + 1)
 
-    // 停止时 b1 仍开着，此后传输吐出的事件不再写入
-    expect((store.getSnapshot().messages[1]!.parts[0] as TextPart).streaming).toBe(true)
+    // 停止当场收尾：b1 不再生长，消息记为 aborted；此后传输吐出的事件不再写入
+    expect((store.getSnapshot().messages[1]!.parts[0] as TextPart).streaming).toBe(false)
+    expect(store.getSnapshot().messages[1]!.status).toBe('aborted')
     chan.latest().push(textDelta('b1', '不该出现'))
     chan.latest().push({ kind: 'finish', receivedTime: T })
     chan.latest().close()
@@ -279,7 +283,7 @@ describe('createThreadStore 错误与取消', () => {
     frames.run()
 
     expect((store.getSnapshot().messages[1]!.parts[0] as TextPart).text).toBe('')
-    // 开着的块仍被收尾并发布
+    // 旧轮次结束时再发布一次，内容不变
     expect((store.getSnapshot().messages[1]!.parts[0] as TextPart).streaming).toBe(false)
     expect(listener.mock.calls.length).toBe(afterStop + 1)
   })
@@ -370,7 +374,7 @@ describe('createThreadStore 错误与取消', () => {
     frames.run()
 
     store.clear()
-    expect(store.getSnapshot()).toEqual({ messages: [], status: 'idle', error: undefined })
+    expect(store.getSnapshot()).toEqual({ messages: [], status: 'idle', error: undefined, branches: {} })
   })
 })
 
@@ -487,5 +491,257 @@ describe('createThreadStore 帧批处理', () => {
     const settled = listener.mock.calls.length
     frames.run()
     expect(listener.mock.calls.length).toBe(settled)
+  })
+})
+
+/** 跑完一轮：开一块正文、写入 text、收尾并关流。 */
+async function answer(chan: ReturnType<typeof channelTransport>, text: string, finish = true): Promise<void> {
+  const run = chan.latest()
+  run.push(textStart(`b-${chan.runs.length}`))
+  run.push(textDelta(`b-${chan.runs.length}`, text))
+  if (finish)
+    run.push({ kind: 'finish', receivedTime: T })
+  run.close()
+  await tick()
+}
+
+function textOf(message: { parts: readonly { type: string }[] }): string {
+  return message.parts.filter((part): part is TextPart => part.type === 'text').map(part => part.text).join('')
+}
+
+describe('createThreadStore 附件', () => {
+  it('submit 接受 parts：正文与附件原样进 user 消息', () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit([
+      { type: 'text', text: '看看这张图' },
+      { type: 'file', url: 'blob:a', mediaType: 'image/png', filename: 'a.png' },
+    ])
+    const [user] = store.getSnapshot().messages
+    expect(user!.parts.map(part => part.type)).toEqual(['text', 'file'])
+    expect(chan.latest().req.messages[0]!.parts[1]).toMatchObject({ type: 'file', filename: 'a.png' })
+  })
+
+  it('用户消息里出现 text / file / data 以外的块立即报错', () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    expect(() => store.submit([{ type: 'step-start' }])).toThrow(/text \/ file \/ data/)
+    expect(chan.runs).toHaveLength(0)
+  })
+})
+
+describe('createThreadStore 重新生成与分支', () => {
+  it('regenerate 在同一提问下新建一条候选并选中，原回复留作分支', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit('写首诗')
+    await answer(chan, '第一版')
+    const first = store.getSnapshot().messages[1]!
+
+    store.regenerate()
+    expect(chan.latest().req).toMatchObject({ trigger: 'regenerate', messageId: first.id })
+    expect(chan.latest().req.messages.map(m => m.role)).toEqual(['user'])
+    await answer(chan, '第二版')
+
+    const snapshot = store.getSnapshot()
+    expect(snapshot.messages).toHaveLength(2)
+    expect(textOf(snapshot.messages[1]!)).toBe('第二版')
+    expect(snapshot.messages[1]!.parentId).toBe(snapshot.messages[0]!.id)
+    expect(snapshot.branches[snapshot.messages[1]!.id]).toEqual({ index: 1, count: 2 })
+    expect(snapshot.branches[snapshot.messages[0]!.id]).toEqual({ index: 0, count: 1 })
+  })
+
+  it('selectBranch 切回旧回复，其下沿用那一支的路径', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit('问')
+    await answer(chan, '甲')
+    store.submit('追问')
+    await answer(chan, '甲的追答')
+    const firstReply = store.getSnapshot().messages[1]!
+
+    store.regenerate(firstReply.id)
+    await answer(chan, '乙')
+    expect(store.getSnapshot().messages.map(textOf)).toEqual(['问', '乙'])
+
+    store.selectBranch(firstReply.id, 0)
+    expect(store.getSnapshot().messages.map(textOf)).toEqual(['问', '甲', '追问', '甲的追答'])
+    store.selectBranch(firstReply.id, 1)
+    expect(store.getSnapshot().messages.map(textOf)).toEqual(['问', '乙'])
+  })
+
+  it('selectBranch 下标越界、regenerate 指向用户消息都立即报错', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit('问')
+    await answer(chan, '答')
+    const [user, reply] = store.getSnapshot().messages
+    expect(() => store.selectBranch(reply!.id, 3)).toThrow(/越界/)
+    expect(() => store.regenerate(user!.id)).toThrow(/只针对助手消息/)
+  })
+
+  it('服务端改了回复的 id，分支关系跟着改名', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit('问')
+    chan.latest().push({ kind: 'message-start', messageId: 'srv-1', role: 'assistant', receivedTime: T })
+    await answer(chan, '答')
+    store.submit('追问')
+    const snapshot = store.getSnapshot()
+    expect(snapshot.messages.map(m => m.id)).toContain('srv-1')
+    expect(snapshot.messages[2]!.parentId).toBe('srv-1')
+  })
+})
+
+describe('createThreadStore 编辑重发', () => {
+  it('edit 在原提问的位置插入新提问并重发，原提问连同回复留作分支', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit('原问题')
+    await answer(chan, '原回答')
+    const original = store.getSnapshot().messages[0]!
+
+    store.edit(original.id, '改过的问题')
+    expect(chan.latest().req).toMatchObject({ trigger: 'edit', messageId: original.id })
+    expect(chan.latest().req.messages.map(textOf)).toEqual(['改过的问题'])
+    await answer(chan, '新回答')
+
+    const snapshot = store.getSnapshot()
+    expect(snapshot.messages.map(textOf)).toEqual(['改过的问题', '新回答'])
+    expect(snapshot.branches[snapshot.messages[0]!.id]).toEqual({ index: 1, count: 2 })
+
+    store.selectBranch(snapshot.messages[0]!.id, 0)
+    expect(store.getSnapshot().messages.map(textOf)).toEqual(['原问题', '原回答'])
+  })
+
+  it('edit 只接受用户消息', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit('问')
+    await answer(chan, '答')
+    expect(() => store.edit(store.getSnapshot().messages[1]!.id, 'x')).toThrow(/只针对用户消息/)
+  })
+})
+
+describe('createThreadStore 重试', () => {
+  it('失败的回复被撤掉，从同一提问重新发起，不留分支', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit('问')
+    chan.latest().push({ kind: 'error', errorText: '过载', retryable: true, receivedTime: T })
+    chan.latest().close()
+    await tick()
+    const failed = store.getSnapshot().messages[1]!
+    expect(failed.status).toBe('error')
+
+    store.retry()
+    expect(chan.latest().req).toMatchObject({ trigger: 'retry', messageId: failed.id })
+    expect(store.getSnapshot().messages).toHaveLength(1)
+    await answer(chan, '好了')
+    const snapshot = store.getSnapshot()
+    expect(snapshot.messages.map(textOf)).toEqual(['问', '好了'])
+    expect(snapshot.branches[snapshot.messages[1]!.id]).toEqual({ index: 0, count: 1 })
+  })
+
+  it('第一帧之前就失败时从最后一条提问重新发起', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({
+      transport: chan.transport,
+      frame: manualFrames().options,
+      onData: () => {
+        throw new Error('宿主炸了')
+      },
+    })
+    store.submit('问')
+    chan.latest().push({ kind: 'data', name: 'x', data: 1, transient: true, receivedTime: T })
+    await tick()
+    expect(store.getSnapshot().status).toBe('error')
+
+    store.retry()
+    expect(chan.runs).toHaveLength(2)
+    expect(chan.latest().req.messages.map(textOf)).toEqual(['问'])
+  })
+
+  it('没有失败的运行时 retry 报错', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit('问')
+    await answer(chan, '答')
+    expect(() => store.retry()).toThrow(/没有可以重试/)
+  })
+})
+
+describe('createThreadStore 续写', () => {
+  it('stop 截断的回复记为 aborted，continue 在同一条上接着写', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit('写长文')
+    chan.latest().push(textStart('a'))
+    chan.latest().push(textDelta('a', '写到一半'))
+    await tick()
+    store.stop()
+    await tick()
+    const cut = store.getSnapshot().messages[1]!
+    expect(cut.status).toBe('aborted')
+
+    store.continue()
+    expect(chan.latest().req).toMatchObject({ trigger: 'continue', messageId: cut.id })
+    expect(chan.latest().req.messages.at(-1)!.id).toBe(cut.id)
+    // 续写这一轮的起始帧不改 id
+    chan.latest().push({ kind: 'message-start', messageId: 'srv-9', role: 'assistant', receivedTime: T })
+    await answer(chan, '，接着写完')
+
+    const snapshot = store.getSnapshot()
+    expect(snapshot.messages).toHaveLength(2)
+    expect(snapshot.messages[1]!.id).toBe(cut.id)
+    expect(textOf(snapshot.messages[1]!)).toBe('写到一半，接着写完')
+    expect(snapshot.messages[1]!.status).toBe('complete')
+  })
+
+  it('没被截断的回复不能续写', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit('问')
+    await answer(chan, '答')
+    expect(() => store.continue()).toThrow(/没有被截断/)
+  })
+
+  it('因长度上限收尾的回复可以续写', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({ transport: chan.transport, frame: manualFrames().options })
+    store.submit('问')
+    chan.latest().push({ kind: 'message-metadata', metadata: { finishReason: 'length' }, receivedTime: T })
+    await answer(chan, '答到上限')
+    expect(() => store.continue()).not.toThrow()
+    expect(chan.latest().req.trigger).toBe('continue')
+  })
+})
+
+describe('createThreadStore 恢复会话', () => {
+  it('线性历史按数组顺序相连；getTree 导出的整棵树可以原样恢复', async () => {
+    const chan = channelTransport()
+    const store = createThreadStore({
+      transport: chan.transport,
+      frame: manualFrames().options,
+      messages: [
+        { id: 'u1', role: 'user', parts: [{ type: 'text', text: '问' }] },
+        { id: 'a1', role: 'assistant', parts: [{ type: 'text', text: '答' }] },
+      ],
+    })
+    expect(store.getSnapshot().messages.map(m => m.parentId)).toEqual([null, 'u1'])
+    store.regenerate('a1')
+    await answer(chan, '另一个答')
+
+    const restored = createThreadStore({ transport: chan.transport, frame: manualFrames().options, messages: store.getTree() })
+    expect(restored.getSnapshot().messages.map(textOf)).toEqual(['问', '另一个答'])
+    expect(restored.getSnapshot().branches[restored.getSnapshot().messages[1]!.id]).toEqual({ index: 1, count: 2 })
+  })
+
+  it('parentId 指向不存在的消息时立即报错', () => {
+    const chan = channelTransport()
+    expect(() => createThreadStore({
+      transport: chan.transport,
+      messages: [{ id: 'a1', role: 'assistant', parts: [], parentId: 'missing' }],
+    })).toThrow(/parentId/)
   })
 })

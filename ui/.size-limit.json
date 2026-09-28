@@ -82,7 +82,7 @@
     "name": "chat-stream",
     "path": "packages/features/chat-stream/dist/index.js",
     "gzip": true,
-    "limit": "5.6 kB"
+    "limit": "7.1 kB"
   },
   {
     "name": "markdown",

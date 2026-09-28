@@ -113,6 +113,16 @@ describe('createHttpSseTransport 正常流', () => {
     expect(JSON.parse(init.body as string)).toMatchObject({ model: 'x-1', temperature: 0.2 })
   })
 
+  it('运行起因与目标消息随请求体交给服务端', async () => {
+    const fetchMock = vi.fn(async () => okResponse('data: [DONE]\n\n'))
+    const transport = createHttpSseTransport({ url: '/x', fetch: fetchMock as unknown as typeof fetch })
+
+    await drain({ stream: (_r, s) => transport.stream({ ...REQ, trigger: 'regenerate', messageId: 'a1' }, s) })
+
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+    expect(JSON.parse(init.body as string)).toMatchObject({ trigger: 'regenerate', messageId: 'a1' })
+  })
+
   it('receivedTime 取自注入时钟', async () => {
     let tick = 0
     const fetchMock = vi.fn(async () => okResponse('data: {"type":"finish"}\n\n'))
