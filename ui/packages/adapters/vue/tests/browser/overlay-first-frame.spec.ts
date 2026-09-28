@@ -8,6 +8,9 @@ import {
   XhDialogContent,
   XhDialogRoot,
   XhDialogTitle,
+  XhDrawerContent,
+  XhDrawerRoot,
+  XhDrawerTitle,
   XhPopconfirmContent,
   XhPopconfirmPositioner,
   XhPopconfirmRoot,
@@ -57,6 +60,11 @@ const CASES: Record<string, Case> = {
     parts: ['content', 'backdrop'],
     enter: 'xh-sheet-in',
     render: props => h(XhDialogRoot, props, () => h(XhDialogContent, null, () => h(XhDialogTitle, null, () => '标题'))),
+  },
+  drawer: {
+    parts: ['content', 'backdrop'],
+    enter: 'xh-slide-in',
+    render: props => h(XhDrawerRoot, props, () => h(XhDrawerContent, null, () => h(XhDrawerTitle, null, () => '设置'))),
   },
 }
 

@@ -41,6 +41,8 @@ export function connectDrawer<T extends PropTypes>(
   const resizing = context.get('gesture') === 'resize'
   const ids = scope.ids('drawer', 'trigger', 'content', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'
+  // 首帧标记：挂载时就开着、还没收起过（与对话框共用的机器记下）
+  const instant = dataAttr(context.get('openedAtMount'))
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
@@ -102,6 +104,8 @@ export function connectDrawer<T extends PropTypes>(
     getBackdropProps: () => normalize.element({
       ...parts.backdrop.attrs,
       'data-state': stateAttr,
+      // 挂载时就开着的这一段直接呈现，不播进场
+      'data-instant': instant,
       // 局部容器里遮罩改画在容器上，铺满视口的那份 fixed 由皮肤据此让位
       'data-contained': dataAttr(contained),
       // 形态轴落在 backdrop 上：三档换的都是这一层自己的底色与模糊
@@ -128,6 +132,7 @@ export function connectDrawer<T extends PropTypes>(
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': stateAttr,
+      'data-instant': instant,
       // content 被 portal 到 body 后 root 上的选择器够不着它，故自身也带 data-side / data-size
       'data-side': side,
       'data-size': prop('size'),

@@ -2,7 +2,7 @@
 // 这两件只有真实浏览器量得出来：jsdom 不算样式，animation-duration 与描边色都要皮肤真的加载进来才有计算值。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { createApp, h, nextTick } from 'vue'
+import { createApp, h, nextTick, ref } from 'vue'
 import { XhDrawerContent, XhDrawerRoot, XhDrawerTitle, XhDrawerTrigger } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -19,16 +19,25 @@ function part(name: string): HTMLElement {
   return document.querySelector<HTMLElement>(`[data-scope='drawer'][data-part='${name}']`)!
 }
 
-function mount(side: 'left' | 'right' | 'top' | 'bottom' = 'right'): void {
+function mount(side: 'left' | 'right' | 'top' | 'bottom' = 'right', open = ref(true)): void {
   const host = document.createElement('div')
   document.body.append(host)
   app = createApp({
-    render: () => h(XhDrawerRoot, { open: true, side, variant: 'blur' }, () => [
+    render: () => h(XhDrawerRoot, { open: open.value, side, variant: 'blur' }, () => [
       h(XhDrawerTrigger, null, () => '打开'),
       h(XhDrawerContent, null, () => [h(XhDrawerTitle, null, () => '设置'), h('button', '保存')]),
     ]),
   })
   app.mount(host)
+}
+
+/** 挂载时收着、挂载之后再打开：挂载即开的那一次属于首帧，不播入场。 */
+async function mountThenOpen(side: 'left' | 'right' | 'top' | 'bottom'): Promise<void> {
+  const open = ref(false)
+  mount(side, open)
+  await settle()
+  open.value = true
+  await settle()
 }
 
 afterEach(() => {
@@ -58,8 +67,7 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
   })
 
   it.each(['right', 'left', 'top', 'bottom'] as const)('%s：开着时入场动画走 --xh-motion-duration-slide（320ms），不是 enter 档', async (side) => {
-    mount(side)
-    await settle()
+    await mountThenOpen(side)
 
     // 第一段是整幅位移，第二段是并列的淡变（缺省档两端都是不透明）
     const content = getComputedStyle(part('content'))
@@ -73,8 +81,7 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     ['top', '0px -100%'],
     ['bottom', '0px 100%'],
   ] as const)('%s：入场首帧从所贴的那条边外整幅推入', async (side, from) => {
-    mount(side)
-    await settle()
+    await mountThenOpen(side)
 
     const [slide] = part('content').getAnimations().filter(a => (a as CSSAnimation).animationName === 'xh-slide-in')
     slide!.pause()
@@ -88,8 +95,7 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
   ] as const)('从右到左（RTL）下 %s：行内方向的推入随书写方向翻转，与逻辑贴边同侧', async (side, from) => {
     document.documentElement.dir = 'rtl'
     try {
-      mount(side)
-      await settle()
+      await mountThenOpen(side)
 
       const [slide] = part('content').getAnimations().filter(a => (a as CSSAnimation).animationName === 'xh-slide-in')
       slide!.pause()

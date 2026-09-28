@@ -5,6 +5,7 @@ import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectDialog, dialogMachine } from '../src/dialog'
+import { connectDrawer, drawerMachine } from '../src/drawer'
 import { connectPopconfirm } from '../src/popconfirm'
 import { connectPopover, popoverMachine } from '../src/popover'
 
@@ -37,6 +38,13 @@ const CASES: Record<string, Case> = {
     machine: dialogMachine,
     parts: (service) => {
       const api = connectDialog(service, normalizeProps)
+      return [api.getContentProps() as Attrs, api.getBackdropProps() as Attrs]
+    },
+  },
+  drawer: {
+    machine: drawerMachine,
+    parts: (service) => {
+      const api = connectDrawer(service, normalizeProps)
       return [api.getContentProps() as Attrs, api.getBackdropProps() as Attrs]
     },
   },
