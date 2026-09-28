@@ -35,13 +35,29 @@
     color: var(--xh-fg-muted);
   }
 
-  /* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
+  /* 错误文案出现时淡入。不 invalid 时节点带 hidden，但不交给浏览器的 [hidden] 规则收成 display: none：
+     从不生成盒到生成盒没有过渡的起点，淡入播不出来。收起态改成不占位（绝对定位、零高、裁切）、
+     不可见也不进可及树（visibility: hidden）的盒，露面时回到流里淡入；首帧就在的错误文案没有过渡起点，
+     直接呈现。收起那一下不占位的盒当场让位，不留淡出——同一行随即交还说明或整行收起，淡出只会叠在
+     别的内容上；Field 下方为错误文案预留了一行时，退场在那一行里淡出（见 field.css） */
   [data-scope='field'][data-part='error-text'],
   [data-scope='fieldset'][data-part='error-text'] {
     margin: 0;
     font-size: var(--xh-text-secondary-size);
     line-height: var(--xh-leading-normal);
     color: var(--xh-fg-danger);
+    transition: opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='field'][data-part='error-text'][hidden],
+  [data-scope='fieldset'][data-part='error-text'][hidden] {
+    display: block;
+    position: absolute;
+    block-size: 0;
+    overflow: clip;
+    visibility: hidden;
+    opacity: 0;
+    transition: none;
   }
 
   [data-scope='field'][data-part='root'][data-invalid] > [data-scope='field'][data-part='description'],
