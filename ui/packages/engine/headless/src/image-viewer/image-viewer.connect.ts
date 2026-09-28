@@ -368,11 +368,12 @@ export function connectImageViewer<T extends PropTypes>(
     }),
 
     getCloseTriggerProps: () => toolButton('close-trigger', label.close, () => send({ type: 'CLOSE', src: 'close-trigger' }), false, {
-      // 右上角的叉：接 Action Control icon 档 lg（40px，触控靶走 lg），面由皮肤桥接到自家深色 chrome
+      // 右上角的叉：悬浮在媒体上的单图标动作，与翻页钮同走 Action Control floating 档 sm（40px、圆形），
+      // 面由皮肤桥接到自家深色 chrome
       'data-xh-action-control': '',
-      'data-xh-action-profile': 'icon',
+      'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'lg',
+      'data-xh-action-size': 'sm',
       'data-xh-liquid': '',
       ...press('close-trigger'),
     }),

@@ -262,7 +262,7 @@ source-open 把文档 SourcePart 与锚点交给宿主打开
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-citation-dismiss-trigger-radius` | `dismiss-trigger` | `border-radius` | `default` | `--xh-shape-circle` | citation 的 dismiss-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-citation-dismiss-trigger-radius` | `dismiss-trigger` | `border-radius` | `default` | `--xh-shape-control` | citation 的 dismiss-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-citation-fg` | `root` | `color` | `default` | `--xh-fg-default` | citation 的 root 部件 color 覆盖槽。 |
 | `--xh-citation-font-size` | `root` | `font-size` | `default` | `--xh-_citation-font-size` | citation 的 root 部件 font-size 覆盖槽。 |
 | `--xh-citation-gap` | `root` | `gap` | `default` | `--xh-_citation-gap` | citation 的 root 部件 gap 覆盖槽。 |

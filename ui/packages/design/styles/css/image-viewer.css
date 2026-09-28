@@ -245,7 +245,8 @@
     translate: 0 -50%;
   }
 
-  /* 右上角的关闭钮：接 Action Control icon 档 lg（40px，触控靶走 lg），圆角走控件档；面与翻页钮同一层深色 chrome */
+  /* 右上角的关闭钮：悬浮在媒体上的单图标动作，与翻页钮同走 Action Control floating 档（sm = 40px、圆形）；
+     面与翻页钮同一层深色 chrome */
   [data-scope='image-viewer'][data-part='close-trigger'] {
     --xh-action-bg-rest: var(--xh-_image-viewer-chrome-bg);
     --xh-action-bg-hover: var(--xh-image-viewer-close-bg-hover, var(--xh-_image-viewer-chrome-bg-hover));
@@ -263,7 +264,7 @@
     --xh-action-border-pressed: transparent;
     --xh-action-border-focus-visible: transparent;
     --xh-action-border-disabled: transparent;
-    --xh-action-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-control));
+    --xh-action-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-circle));
     --xh-action-visual-size: var(--xh-image-viewer-close-size, var(--xh-_action-profile-visual-size));
     --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-_action-profile-glyph-size));
 
