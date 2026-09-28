@@ -33,7 +33,7 @@ type ColorPickerProps = ColorPickerSchema['props']
 /** 默认插槽的载荷：展开态、当前颜色的各种表示、预设色板、屏幕取色状态，以及修改展开与修改值两个动作。 */
 export type ColorPickerRootSlotProps = Pick<
   ColorPickerApi,
-  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'clearError'
+  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'recentColors' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'clearError' | 'clearRecentColors'
 >
 
 export const XhColorPickerRoot = defineComponent({
@@ -49,6 +49,11 @@ export const XhColorPickerRoot = defineComponent({
     readOnly: { type: Boolean, default: undefined },
     alpha: Boolean,
     swatches: { type: Array as PropType<string[]> },
+    inline: Boolean,
+    // 缺席值 undefined 表示非受控
+    recentColors: { type: Array as PropType<string[]> },
+    defaultRecentColors: { type: Array as PropType<string[]> },
+    maxRecentColors: { type: Number },
     name: { type: String },
     size: { type: String as PropType<Size> },
     variant: { type: String as PropType<ControlVariant> },
@@ -64,6 +69,8 @@ export const XhColorPickerRoot = defineComponent({
     'color-error': (_details: PayloadOf<ColorPickerProps, 'onColorError'>) => true,
     'update:value': (_value: PayloadOf<ColorPickerProps, 'onValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<ColorPickerProps, 'onOpenChange'>['open']) => true,
+    'recent-colors-change': (_details: PayloadOf<ColorPickerProps, 'onRecentColorsChange'>) => true,
+    'update:recentColors': (_recentColors: PayloadOf<ColorPickerProps, 'onRecentColorsChange'>['recentColors']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: ColorPickerRootSlotProps) => VNode[]
@@ -78,10 +85,15 @@ export const XhColorPickerRoot = defineComponent({
       emit('update:open', details.open)
     }
     const notifyColorError: ColorPickerProps['onColorError'] = details => emit('color-error', details)
+    const notifyRecent: ColorPickerProps['onRecentColorsChange'] = (details) => {
+      emit('recent-colors-change', details)
+      emit('update:recentColors', details.recentColors)
+    }
     const ctx = useColorPicker(withXhConfig('color-picker', useFormControlProps(props)) as ColorPickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
       onColorError: notifyColorError,
+      onRecentColorsChange: notifyRecent,
     })
     provideColorPicker(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
@@ -90,12 +102,14 @@ export const XhColorPickerRoot = defineComponent({
       rgba: ctx.api.value.rgba,
       hsva: ctx.api.value.hsva,
       swatches: ctx.api.value.swatches,
+      recentColors: ctx.api.value.recentColors,
       picking: ctx.api.value.picking,
       eyeDropperSupported: ctx.api.value.eyeDropperSupported,
       errors: ctx.api.value.errors,
       setOpen: ctx.api.value.setOpen,
       setValue: ctx.api.value.setValue,
       clearError: ctx.api.value.clearError,
+      clearRecentColors: ctx.api.value.clearRecentColors,
     }))
   },
 })
@@ -271,6 +285,23 @@ export const XhColorPickerSwatchPicker = defineComponent({
       'div',
       ctx.api.value.getSwatchPickerProps() as Record<string, unknown>,
       slots.default?.() ?? ctx.api.value.swatchPicker.swatches.map(node => h(XhColorSwatchPickerItem, { key: node.value, value: node.value })),
+    )
+  },
+})
+
+/**
+ * 最近使用色的挂载点，与预设色板同一套：其中放置的是 XhColorSwatchPickerItem。
+ * 未写默认插槽时按 recentColors 自动铺开格子；还没有最近使用色时挂载点收起。
+ */
+export const XhColorPickerRecentSwatchPicker = defineComponent({
+  name: 'XhColorPickerRecentSwatchPicker',
+  setup(_, { slots }) {
+    const ctx = useColorPickerContext()
+    provideColorSwatchPicker(ctx.recentSwatchPicker)
+    return () => h(
+      'div',
+      ctx.api.value.getRecentSwatchPickerProps() as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.recentSwatchPicker.swatches.map(node => h(XhColorSwatchPickerItem, { key: node.value, value: node.value })),
     )
   },
 })

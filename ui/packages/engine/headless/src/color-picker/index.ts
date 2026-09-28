@@ -23,11 +23,15 @@ export type { ColorPickerPoint, ColorPickerRatio, ColorPickerRect } from './colo
 export { colorPickerKeyboard } from './color-picker.keyboard'
 export {
   COLOR_PICKER_DEFAULT_PLACEMENT,
+  COLOR_PICKER_MAX_RECENT_COLORS,
   colorPickerAlphaSliderProps,
   colorPickerHasEyeDropper,
   colorPickerHueSliderProps,
   colorPickerMachine,
+  colorPickerMaxRecent,
   colorPickerOpenEyeDropper,
+  colorPickerPushRecent,
+  colorPickerRecentSwatchPickerProps,
   colorPickerSwatchPickerProps,
 } from './color-picker.machine'
 export { colorPickerMeta } from './color-picker.meta'
@@ -43,6 +47,7 @@ export type {
   ColorPickerInputProps,
   ColorPickerOpenChangeDetails,
   ColorPickerParseErrorDetails,
+  ColorPickerRecentColorsChangeDetails,
   ColorPickerRefs,
   ColorPickerSchema,
   ColorPickerServices,

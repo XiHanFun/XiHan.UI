@@ -32,6 +32,7 @@ const PUBLIC_EVENTS = {
   'open-change': 'onOpenChange',
   'pressed-change': 'onPressedChange',
   'radio-value-change': 'onRadioValueChange',
+  'recent-colors-change': 'onRecentColorsChange',
   'row-move': 'onRowMove',
   'select': 'onSelect',
   'sort': 'onSort',

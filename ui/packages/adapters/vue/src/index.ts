@@ -238,6 +238,7 @@ export {
   XhColorPickerHueSlider,
   XhColorPickerLabel,
   XhColorPickerPositioner,
+  XhColorPickerRecentSwatchPicker,
   XhColorPickerRoot,
   XhColorPickerSaturationArea,
   XhColorPickerSwatch,

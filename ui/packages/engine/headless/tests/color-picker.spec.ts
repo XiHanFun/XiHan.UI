@@ -9,7 +9,7 @@ import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/co
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { colorPickerAlphaSliderProps, colorPickerHueSliderProps, colorPickerMachine, colorPickerSwatchPickerProps, connectColorPicker } from '../src/color-picker'
+import { colorPickerAlphaSliderProps, colorPickerHueSliderProps, colorPickerMachine, colorPickerMaxRecent, colorPickerPushRecent, colorPickerRecentSwatchPickerProps, colorPickerSwatchPickerProps, connectColorPicker } from '../src/color-picker'
 import { colorSliderMachine, colorSliderSliderProps } from '../src/color-slider'
 import { colorSwatchPickerMachine } from '../src/color-swatch-picker'
 import { colorParse } from '../src/shared/color'
@@ -33,7 +33,8 @@ function attachSliders(service: Service<ColorPickerSchema>, runtime: ReactiveRun
     return { root, slider }
   }
   const swatchPicker = createService(colorSwatchPickerMachine, { props: () => colorPickerSwatchPickerProps(service), runtime })
-  sliderBundles.set(service, { root: service, hueSlider: make('hue'), alphaSlider: make('alpha'), swatchPicker })
+  const recentSwatchPicker = createService(colorSwatchPickerMachine, { props: () => colorPickerRecentSwatchPickerProps(service), runtime })
+  sliderBundles.set(service, { root: service, hueSlider: make('hue'), alphaSlider: make('alpha'), swatchPicker, recentSwatchPicker })
   return service
 }
 
@@ -1023,5 +1024,143 @@ describe('按压通道：取色按钮 Space / Enter 与触屏按住投影 data-p
       expect(pressed(s)).toBe(false)
       runtime.stop()
     }
+  })
+})
+
+describe('最近使用色', () => {
+  it('colorPickerPushRecent 推到最前、同色（写法不同也算）只留一份、按上限截尾，解析不出的不记', () => {
+    expect(colorPickerPushRecent(['#00ff00', '#0000ff'], '#ff0000', 8)).toEqual(['#ff0000', '#00ff00', '#0000ff'])
+    expect(colorPickerPushRecent(['#00ff00', 'rgb(255, 0, 0)'], '#ff0000', 8)).toEqual(['#ff0000', '#00ff00'])
+    expect(colorPickerPushRecent(['#00ff00', '#0000ff'], '#ff0000', 2)).toEqual(['#ff0000', '#00ff00'])
+    expect(colorPickerPushRecent(['#00ff00'], 'nope', 8)).toEqual(['#00ff00'])
+    expect(colorPickerPushRecent(['#00ff00'], '#ff0000', 0)).toEqual([])
+  })
+
+  it('colorPickerMaxRecent：缺省 8，负数与非有限数按缺省，0 即不记', () => {
+    expect(colorPickerMaxRecent(undefined)).toBe(8)
+    expect(colorPickerMaxRecent(-1)).toBe(8)
+    expect(colorPickerMaxRecent(Number.NaN)).toBe(8)
+    expect(colorPickerMaxRecent(0)).toBe(0)
+    expect(colorPickerMaxRecent(3.7)).toBe(3)
+  })
+
+  it('浮层形态：一轮取色里改了颜色，收起那一刻记进最近使用色并通知', () => {
+    const onRecentColorsChange = vi.fn()
+    const s = makeService({ defaultValue: '#3b82f6', onRecentColorsChange })
+    s.send({ type: 'OPEN' })
+    s.send({ type: 'AREA.STEP', axis: 'x', direction: 1 })
+    s.send({ type: 'AREA.STEP', axis: 'x', direction: 1 })
+    expect(api(s).recentColors).toEqual([])
+    s.send({ type: 'CLOSE' })
+    const value = api(s).value
+    expect(api(s).recentColors).toEqual([value])
+    expect(onRecentColorsChange).toHaveBeenCalledWith({ recentColors: [value] })
+  })
+
+  it('开了又关、颜色没变，或只经 api.setValue 改过，都不记', () => {
+    const s = makeService({ defaultValue: '#3b82f6' })
+    s.send({ type: 'OPEN' })
+    s.send({ type: 'CLOSE' })
+    s.send({ type: 'OPEN' })
+    api(s).setValue('#ff0000')
+    s.send({ type: 'CLOSE' })
+    expect(api(s).recentColors).toEqual([])
+  })
+
+  it('改了又改回原色也不记：比较的是一轮前后的颜色', () => {
+    const s = makeService({ defaultValue: '#ff0000' })
+    s.send({ type: 'OPEN' })
+    s.send({ type: 'VALUE.SET', value: '#00ff00', source: 'swatch' })
+    s.send({ type: 'VALUE.SET', value: '#ff0000', source: 'swatch' })
+    s.send({ type: 'CLOSE' })
+    expect(api(s).recentColors).toEqual([])
+  })
+
+  it('受控 recentColors：只发意图，宿主不写回则列表不动；clearRecentColors 清空', () => {
+    const onRecentColorsChange = vi.fn()
+    const s = makeService({ defaultValue: '#000000', recentColors: ['#00ff00'], onRecentColorsChange })
+    s.send({ type: 'OPEN' })
+    s.send({ type: 'VALUE.SET', value: '#ff0000', source: 'swatch' })
+    s.send({ type: 'CLOSE' })
+    expect(onRecentColorsChange).toHaveBeenCalledWith({ recentColors: ['#ff0000', '#00ff00'] })
+    expect(api(s).recentColors).toEqual(['#00ff00'])
+
+    const free = makeService({ defaultRecentColors: ['#00ff00'] })
+    api(free).clearRecentColors()
+    expect(api(free).recentColors).toEqual([])
+  })
+
+  it('最近使用色那台色板：格子取 recentColors，挑一格即改值，名字走 recentSwatchGroup；空列表时挂载点收起', () => {
+    const s = makeService({ defaultValue: '#000000', defaultRecentColors: ['#ff0000', '#00ff00'], translations: { recentSwatchGroup: '最近使用' } })
+    expect(api(s).recentSwatchPicker.swatches.map(m => m.value)).toEqual(['#ff0000', '#00ff00'])
+    expect((api(s).getRecentSwatchPickerProps() as Dict)['aria-label']).toBe('最近使用')
+    expect((api(s).getRecentSwatchPickerProps() as Dict).hidden).toBeUndefined()
+    servicesOf(s).recentSwatchPicker.send({ type: 'ITEM.SELECT', value: '#00ff00' })
+    expect(api(s).value).toBe('#00ff00')
+
+    const empty = makeService()
+    expect((api(empty).getRecentSwatchPickerProps() as Dict).hidden).toBe(true)
+  })
+})
+
+describe('常驻形态 inline', () => {
+  it('恒为展开态：content 是页面里的一组控件（role=group），不带 aria-modal 与 tabindex，root 与 content 投影 data-inline', () => {
+    const s = makeService({ inline: true })
+    expect(api(s).open).toBe(true)
+    expect(api(s).inline).toBe(true)
+    const content = api(s).getContentProps() as Dict
+    expect(content.role).toBe('group')
+    expect(content['aria-modal']).toBeUndefined()
+    expect(content.tabindex).toBeUndefined()
+    expect(content.hidden).toBeUndefined()
+    expect(content['data-inline']).toBe('')
+    expect((api(s).getRootProps() as Dict)['data-inline']).toBe('')
+  })
+
+  it('收不起来：CLOSE、TOGGLE 与 setOpen(false) 都不起作用，也不发 onOpenChange', () => {
+    const onOpenChange = vi.fn()
+    const s = makeService({ inline: true, onOpenChange })
+    s.send({ type: 'CLOSE' })
+    s.send({ type: 'TOGGLE' })
+    api(s).setOpen(false)
+    expect(api(s).open).toBe(true)
+    expect(onOpenChange).not.toHaveBeenCalled()
+  })
+
+  it('拖动与键盘照常改色；焦点离开取色面时一轮结束，颜色变了就记进最近使用色', () => {
+    const s = makeService({ inline: true, defaultValue: '#3b82f6' })
+    s.send({ type: 'AREA.STEP', axis: 'y', direction: -1, large: true })
+    const value = api(s).value
+    expect(value).not.toBe('#3b82f6')
+    const content = document.createElement('div')
+    const inside = document.createElement('button')
+    content.append(inside)
+    document.body.append(content)
+    const props = api(s).getContentProps() as Dict
+    // 焦点在取色面里走动不算结束
+    ;(props.onFocusOut as (e: unknown) => void)({ currentTarget: content, relatedTarget: inside })
+    expect(api(s).recentColors).toEqual([])
+    ;(props.onFocusOut as (e: unknown) => void)({ currentTarget: content, relatedTarget: null })
+    expect(api(s).recentColors).toEqual([value])
+    content.remove()
+  })
+
+  it('浮层形态下 content 的失焦不记：一轮取色以收起为准', () => {
+    const s = makeService({ defaultOpen: true, defaultValue: '#3b82f6' })
+    s.send({ type: 'AREA.STEP', axis: 'x', direction: 1 })
+    const props = api(s).getContentProps() as Dict
+    ;(props.onFocusOut as (e: unknown) => void)({ currentTarget: document.createElement('div'), relatedTarget: null })
+    expect(api(s).recentColors).toEqual([])
+  })
+
+  it('运行期关掉 inline 即收起回到浮层形态；再打开又落展开态', () => {
+    const props: Props = { inline: true }
+    const s = makeService(props)
+    props.inline = false
+    s.send({ type: 'INLINE.CLOSE' })
+    expect(api(s).open).toBe(false)
+    props.inline = true
+    s.send({ type: 'INLINE.SYNC' })
+    expect(api(s).open).toBe(true)
   })
 })

@@ -37,7 +37,7 @@ function noop(): void {}
 /** 函数式 children 的载荷：展开态、当前颜色的各种表示、预设色板、屏幕取色状态，以及修改展开与修改值两个动作。 */
 export type ColorPickerRootSlotProps = Pick<
   ColorPickerApi,
-  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'clearError'
+  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'recentColors' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'clearError' | 'clearRecentColors'
 >
 
 /** 根上自有的取值；dir 与原生的同名属性含义不同，由这里接管。 */
@@ -59,6 +59,13 @@ export interface XhColorPickerRootProps extends RootElementProps {
   alpha?: boolean
   /** 预设色板：交给内嵌的色块选择器铺设格子，选中的格子按颜色比较。 */
   swatches?: string[]
+  /** 常驻形态：取色面直接铺在页面里，不经触发钮与浮层。 */
+  inline?: boolean
+  /** 受控的最近使用色，最新的在最前；给定即受控。 */
+  recentColors?: string[]
+  defaultRecentColors?: string[]
+  /** 最近使用色最多留几个，默认 8；写 0 即不记。 */
+  maxRecentColors?: number
   /** 表单字段名；提供后表单影子才带 name 并参与提交。 */
   name?: string
   size?: Size
@@ -72,6 +79,7 @@ export interface XhColorPickerRootProps extends RootElementProps {
   onValueChange?: ColorPickerProps['onValueChange']
   onOpenChange?: ColorPickerProps['onOpenChange']
   onColorError?: ColorPickerProps['onColorError']
+  onRecentColorsChange?: ColorPickerProps['onRecentColorsChange']
   children?: SlotChildren<ColorPickerRootSlotProps>
 }
 
@@ -85,6 +93,10 @@ export function XhColorPickerRoot({
   readOnly,
   alpha,
   swatches,
+  inline,
+  recentColors,
+  defaultRecentColors,
+  maxRecentColors,
   name,
   size,
   variant,
@@ -95,6 +107,7 @@ export function XhColorPickerRoot({
   onValueChange,
   onOpenChange,
   onColorError,
+  onRecentColorsChange,
   children,
   ...rest
 }: XhColorPickerRootProps): ReactNode {
@@ -108,6 +121,10 @@ export function XhColorPickerRoot({
     readOnly,
     alpha,
     swatches,
+    inline,
+    recentColors,
+    defaultRecentColors,
+    maxRecentColors,
     name,
     size,
     variant,
@@ -118,6 +135,7 @@ export function XhColorPickerRoot({
     onValueChange,
     onOpenChange,
     onColorError,
+    onRecentColorsChange,
   })) as ColorPickerProps)
   const api = ctx.api
 
@@ -136,19 +154,21 @@ export function XhColorPickerRoot({
           rgba: api.rgba,
           hsva: api.hsva,
           swatches: api.swatches,
+          recentColors: api.recentColors,
           picking: api.picking,
           eyeDropperSupported: api.eyeDropperSupported,
           errors: api.errors,
           setOpen: api.setOpen,
           setValue: api.setValue,
           clearError: api.clearError,
+          clearRecentColors: api.clearRecentColors,
         })}
       </div>
     </ColorPickerProvider>
   )
 }
 
-XhColorPickerRoot.xhEvents = ['value-change', 'open-change', 'color-error'] as const
+XhColorPickerRoot.xhEvents = ['value-change', 'open-change', 'color-error', 'recent-colors-change'] as const
 
 export interface XhColorPickerLabelProps extends ComponentPropsWithRef<'label'> {}
 
@@ -383,6 +403,25 @@ export function XhColorPickerSwatchPicker({ children, ...rest }: XhColorPickerSw
     <ColorSwatchPickerProvider value={ctx.swatchPicker}>
       <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
         {children ?? ctx.api.swatchPicker.swatches.map(node => <XhColorSwatchPickerItem key={node.value} value={node.value} />)}
+      </div>
+    </ColorSwatchPickerProvider>
+  )
+}
+
+export interface XhColorPickerRecentSwatchPickerProps extends ComponentPropsWithRef<'div'> {}
+
+/**
+ * 最近使用色的挂载点，与预设色板同一套：其中放置的是 XhColorSwatchPickerItem。
+ * 未写 children 时按 recentColors 自动铺开格子；还没有最近使用色时挂载点收起。
+ */
+export function XhColorPickerRecentSwatchPicker({ children, ...rest }: XhColorPickerRecentSwatchPickerProps): ReactNode {
+  const ctx = useColorPickerContext()
+  // 与预设色板同理：挂载点的 onFocus 装成原生监听器，格子得焦不把焦点抢回锚点
+  const bind = useNativeEvents(ctx.api.getRecentSwatchPickerProps() as Record<string, unknown>, ['onFocus'])
+  return (
+    <ColorSwatchPickerProvider value={ctx.recentSwatchPicker}>
+      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+        {children ?? ctx.api.recentSwatchPicker.swatches.map(node => <XhColorSwatchPickerItem key={node.value} value={node.value} />)}
       </div>
     </ColorSwatchPickerProvider>
   )

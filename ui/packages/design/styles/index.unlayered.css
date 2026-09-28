@@ -22834,6 +22834,23 @@
   outline: none;
 }
 
+/* 常驻形态：根不再取字段缺省宽，跟着取色面走 */
+[data-scope='color-picker'][data-part='root'][data-inline] {
+  inline-size: auto;
+  min-inline-size: 0;
+}
+
+/* 常驻形态的取色面是页面里的静态内容面（solid）：surface 圆角、border-default 描边、实体底、不落影。
+   没有定位层给出可用宽高，不限高也不自己滚；它一直在，没有进退场 */
+[data-scope='color-picker'][data-part='content'][data-inline] {
+  max-inline-size: 100%;
+  max-block-size: none;
+  overflow-y: visible;
+  border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-surface));
+  box-shadow: var(--xh-color-picker-content-shadow, none);
+  animation: none;
+}
+
 /* 二维取色区。底色是当前色相（连接层内联给），两层渐变盖在上面：
    横轴由白到透明 = 饱和度，纵轴由透明到黑 = 明度。
    两层都收在一个 ::before 里：它是盒树里的第一个子节点，作者写的拇指排在它后面，
@@ -23027,8 +23044,9 @@
 /* 预设色板的挂载点，同时充当色板的根节点：color-swatch-picker 那份皮的 root 规则落在
    [data-scope='color-swatch-picker'][data-part='root'] 上，而这里没有那个节点，所以根上挂的那几个私有槽
    （格子边长、间距、徽标尺寸、语气色、图标尺）与排布得在这儿照抄一遍；格子的皮仍归色板那一份。
-   浮层里的色板走小号格子：与滑块的拇指、数值框一个量级，整块面板才不会被色板撑开 */
-[data-scope='color-picker'][data-part='swatch-picker'] {
+   浮层里的色板走小号格子：与滑块的拇指、数值框一个量级，整块面板才不会被色板撑开。
+   最近使用色是同一台色块选择器，挂载点同一套 */
+[data-scope='color-picker']:is([data-part='swatch-picker'], [data-part='recent-swatch-picker']) {
   --xh-_color-swatch-picker-cell: var(--xh-color-picker-swatch-cell, var(--xh-control-h-sm));
   --xh-_color-swatch-picker-gap: var(--xh-color-picker-swatch-gap, var(--xh-control-gap-sm));
   --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-sm);
@@ -23042,7 +23060,7 @@
   gap: var(--xh-color-picker-swatch-picker-gap, var(--xh-_color-swatch-picker-gap));
 }
 
-[data-scope='color-picker'][data-part='swatch-picker'][data-disabled] {
+[data-scope='color-picker']:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])[data-disabled] {
   cursor: not-allowed;
 }
 
@@ -23056,7 +23074,8 @@
 [data-scope='color-picker'][data-part='hue-slider'][hidden],
 [data-scope='color-picker'][data-part='alpha-slider'][hidden],
 [data-scope='color-picker'][data-part='eye-dropper-trigger'][hidden],
-[data-scope='color-picker'][data-part='swatch-picker'][hidden] {
+[data-scope='color-picker'][data-part='swatch-picker'][hidden],
+[data-scope='color-picker'][data-part='recent-swatch-picker'][hidden] {
   display: none;
 }
 

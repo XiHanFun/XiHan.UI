@@ -25,13 +25,16 @@
 - 屏幕取色通过浮层内的按钮触发，环境不提供 EyeDropper 时始终禁用；取到的颜色与色板、外部 setValue 走同一条取值路径。
 - 格式、输入、颜色解析与屏幕取色四路错误相互独立，修正一路不影响其他路。
 - 受控 `value` 与 `open`：宿主不写回时界面不变化，回调照常发出；表单出口经 `hidden-input` 提交当前值串。
+- `inline` 是常驻形态：取色面直接铺在页面里，与浮层形态同一台机器、同一组部件，只是不写 `control` / `trigger` / `positioner`。取色面是静态内容面（surface 圆角、描边、不落影），不抢焦点、不入层栈，点外与 Escape 都不收起。
+- 最近使用色：一轮取色结束且颜色变了就记一笔，最新的在最前、同色只留一份、最多留 `maxRecentColors` 个（缺省 8）。浮层形态以收起为一轮，常驻形态以焦点离开取色面为一轮；只经 `setValue` 改的不记。`recentColors` 可受控，由宿主持久化；`recent-swatch-picker` 挂载点渲染它们，还没有时收起。
 
 ## 无障碍
 
 - 触发按钮是原生按钮，`aria-haspopup="dialog"`，名称由标题与当前值串合成；浮层是非模态 `role="dialog"`。
 - 取色面的拇指是 `role="slider"`：`aria-valuenow` 报告饱和度，明度写入 `aria-valuetext`。
 - 两条滑块的名称与带单位的播报文本取自 `translations.channel` / `channelValueText`，由内嵌滑块读出。
-- 色板是 `role="radiogroup"`，每格 `role="radio"`；整组名称取 `translations.swatchGroup`，每格读 `translations.swatch(value)`。
+- 色板是 `role="radiogroup"`，每格 `role="radio"`；整组名称取 `translations.swatchGroup`，每格读 `translations.swatch(value)`；最近使用色同一套，整组名称取 `translations.recentSwatchGroup`。
+- 常驻形态的取色面是 `role="group"`，由标题命名，不是对话框。
 - Escape 收起浮层并把焦点归还触发按钮。
 
 ## RTL
@@ -45,7 +48,7 @@
 
 ## 组合
 
-- 三个挂载点 `hue-slider` / `alpha-slider` / `swatch-picker` 同时充当内嵌组件的根节点，内部放置的是[颜色滑块](./color-slider)与[颜色色块选择器](./color-swatch-picker)自己的部件；不写子节点时自动铺开最简结构。
+- 四个挂载点 `hue-slider` / `alpha-slider` / `swatch-picker` / `recent-swatch-picker` 同时充当内嵌组件的根节点，内部放置的是[颜色滑块](./color-slider)与[颜色色块选择器](./color-swatch-picker)自己的部件；不写子节点时自动铺开最简结构。
 - 放入[表单字段](./field)承接标题、说明与错误信息，`disabled` / `readOnly` 随字段下发。
 - 与[颜色字段](./color-field)并排：选择器挑颜色，字段显示并微调该值。
 
