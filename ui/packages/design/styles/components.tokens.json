@@ -66862,7 +66862,7 @@
         "background"
       ],
       "state": [
-        "state=completed"
+        "default"
       ],
       "defaultToken": [
         "--xh-_steps-accent"

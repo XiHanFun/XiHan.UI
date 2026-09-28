@@ -6,6 +6,8 @@
 /* 定义 steps 样式。 */
 
 @import '../family/action-control.css';
+/* 走过那一步时对号的淡入取共享关键帧。 */
+@import '../family/motion.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -307,6 +309,8 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    /* 走到这一步、走过这一步时标题换色，与圆点的换面同一段淡变 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='steps'][data-part='title']:is([data-state='current'], [data-state='completed']) {
@@ -329,22 +333,34 @@
     text-overflow: ellipsis;
   }
 
-  /* 连接线属于它前面那一步：那一步走过了就整条点亮，进度因此是连续的一条线 */
+  /* 连接线属于它前面那一步：那一步走过了就点亮，进度因此是连续的一条线。点亮的那一层叠在底线上，
+     沿行向从这一步填到下一步（数值角色：move / continuous，只动 clip-path），回退时反向收回 */
   [data-scope='steps'][data-part='separator'] {
+    position: relative;
     flex: 1;
     min-inline-size: var(--xh-steps-separator-min-length, var(--xh-space-4));
     block-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-steps-separator-radius, var(--xh-shape-pill));
     background: var(--xh-steps-separator-bg, var(--xh-border-default));
-    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 没走过时把行尾那一侧整段裁掉：inset 的左右两侧乘书写方向符号，ltr 裁右侧、rtl 裁左侧 */
+  [data-scope='steps'][data-part='separator']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--xh-steps-separator-bg-completed, var(--xh-_steps-accent));
+    clip-path: inset(0 calc(50% + 50% * var(--xh-direction-sign)) 0 calc(50% - 50% * var(--xh-direction-sign)));
+    transition: clip-path var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='steps'][data-part='separator'][hidden] {
     display: none;
   }
 
-  [data-scope='steps'][data-part='separator'][data-state='completed'] {
-    background: var(--xh-steps-separator-bg-completed, var(--xh-_steps-accent));
+  [data-scope='steps'][data-part='separator'][data-state='completed']::after {
+    clip-path: inset(0);
   }
 
   /* 纵向时连接线转成竖的一条，缩进到与序号圆点同一条竖线上 */
@@ -359,6 +375,15 @@
       + var(--xh-steps-trigger-p, var(--xh-control-px-sm))
       - var(--xh-steps-separator-thickness, var(--xh-stroke-thick)) * 0.5
     );
+  }
+
+  /* 纵向时从上往下填：没走过时裁掉下端 */
+  [data-scope='steps'][data-part='separator'][data-orientation='vertical']::after {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  [data-scope='steps'][data-part='separator'][data-orientation='vertical'][data-state='completed']::after {
+    clip-path: inset(0);
   }
 
   /* 面板刻意不给 display：连接层用 hidden 收起，UA 的 [hidden]{display:none} 压得住，
@@ -381,6 +406,11 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
+  /* 走过这一步那一刻：序号撤下、对号淡入，与圆点的换面同一段淡变；首帧就走过的（data-instant）直接呈现 */
+  [data-scope='steps'][data-part='indicator'][data-state='completed']:not([data-instant]):empty::before {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
   @media (forced-colors: active) {
     /* 触发器的悬停 / 按下由家族 forced-colors 块涂成 Highlight / HighlightText；标题与说明各自写了颜色，
        这一档里会被换成 CanvasText 压在高亮底上，悬停与按住时一起跟到反色 */
@@ -400,7 +430,7 @@
       background: CanvasText;
     }
 
-    [data-scope='steps'][data-part='separator'][data-state='completed'] {
+    [data-scope='steps'][data-part='separator']::after {
       background: Highlight;
     }
   }

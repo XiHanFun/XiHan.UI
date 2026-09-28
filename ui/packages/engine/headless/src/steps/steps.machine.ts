@@ -55,11 +55,15 @@ export const stepsMachine = createMachine({
     focusedStep: cell<number | null>(() => ({ defaultValue: null })),
     // 按压通道：正被按住的那一步（按下标记），与步序、焦点锚点无关
     pressedStep: cell<number | null>(() => ({ defaultValue: null })),
+    // 首帧就走过的那几步的上界：挂载时的步序，此后只降不升
+    untouchedBelow: cell<number>(() => ({ defaultValue: prop('value') ?? prop('defaultValue') ?? 0 })),
   }),
   initialState: () => 'idle',
   // 按住途中整组转入禁用：不会再来 keyup，按压面由机器自己收
-  watch: ({ track, prop, action }) => {
+  watch: ({ track, prop, context, action }) => {
     track([() => prop('disabled')], () => action(['releaseWhenInert']))
+    // 步序往回退时，退到的那一步之后的对号就不再是首帧那一份了
+    track([context.dep('value')], () => action(['lowerUntouched']))
   },
   states: {
     idle: {
@@ -84,6 +88,11 @@ export const stepsMachine = createMachine({
       },
     },
     actions: {
+      lowerUntouched: ({ context }) => {
+        const value = context.get('value')
+        if (value < context.get('untouchedBelow'))
+          context.set('untouchedBelow', value)
+      },
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')

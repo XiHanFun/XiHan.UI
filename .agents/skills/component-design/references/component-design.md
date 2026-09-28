@@ -800,6 +800,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 - 进度类填充（Progress、LoadingBar、FileUpload 进度）不动 `inline-size`：填充铺满轨道、按比例 `translate`，由轨道裁掉，只走合成；前端圆角保留，行首由轨道圆角裁出。倒计时条自己就是填充、父级不裁，以 `clip-path: inset(…)` 裁切收起。
 - 不定进度以固定宽度的段做 `translate` 往复。
+- Steps 推进时连接线的点亮层沿行向以 `clip-path: inset(…)` 从这一步填到下一步（左右两侧乘 `--xh-direction-sign`，rtl 翻转；回退时反向收回），`move` / `continuous`；标题换色与圆点换面同一段 `micro`，走过那一步的对号淡入，首帧就走过的直接呈现。
 - 倒计时共用一份关键帧；减弱动效下按秒分段显示剩余时间。
 - 数值补间（NumberAnimation）的时长由属性给出，减弱动效下直接落到终值。
 

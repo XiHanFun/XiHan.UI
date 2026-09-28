@@ -269,6 +269,8 @@ export function connectSteps<T extends PropTypes>(
       ...parts.indicator.attrs,
       'aria-hidden': true,
       'data-state': getItemState(item).status,
+      // 首帧就走过、此后没被回退到的步：对号直接呈现；此后才走过的步对号淡入
+      'data-instant': dataAttr(item.index < context.get('untouchedBelow')),
     }),
 
     // title / description 不产出 id、不做 trigger 的 aria-labelledby：作者未必都渲染，
