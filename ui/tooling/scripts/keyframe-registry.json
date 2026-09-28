@@ -157,7 +157,6 @@
         "alert",
         "avatar",
         "cascader",
-        "clipboard",
         "combobox",
         "command",
         "dialog",
@@ -497,7 +496,6 @@
         "funnel-chart",
         "graph-chart",
         "grid-list",
-        "heatmap",
         "hierarchy-chart",
         "image-viewer",
         "listbox",
@@ -511,7 +509,9 @@
         "spinner",
         "switch",
         "table",
-        "tree"
+        "transfer",
+        "tree",
+        "tree-select"
       ],
       "relation": "loop"
     },

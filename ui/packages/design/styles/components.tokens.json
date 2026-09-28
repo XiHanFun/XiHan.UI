@@ -34048,7 +34048,7 @@
         "animation"
       ],
       "state": [
-        "loading"
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-motion-loop-spin"
@@ -34191,25 +34191,33 @@
         "submit-trigger"
       ],
       "property": [
+        "border-block-start-color",
+        "border-color",
         "color"
       ],
       "state": [
+        "@media (prefers-reduced-motion: reduce)",
+        "@media print",
         "default",
         "disabled",
         "hover",
         "is(:active, [data-pressed])",
         "loading",
+        "motion=reduce",
         "not([data-disabled])",
         "not([data-loading])",
-        "pressed"
+        "pressed",
+        "where([data-motion='reduce'])",
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-loading",
         "--xh-_action-variant-fg-pressed",
         "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "form 的 submit-trigger 部件 color 覆盖槽。"
+      "description": "form 的 submit-trigger 部件 border-block-start-color、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-form-submit-shadow",
@@ -38174,7 +38182,6 @@
         "is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])",
         "mode=send",
         "mode=stop",
-        "not([aria-busy='true'])",
         "preset=toast",
         "size=2xl",
         "size=3xl",
@@ -38203,7 +38210,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、last-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、last-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
@@ -84788,6 +84795,24 @@
       "description": "tree-select 的 input 部件 margin-block-end 覆盖槽。"
     },
     {
+      "name": "--xh-tree-select-input-h",
+      "component": "tree-select",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_tree-select-h"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 input 部件 block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-tree-select-input-px",
       "component": "tree-select",
       "part": [
@@ -84800,28 +84825,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_tree-select-row-px"
+        "--xh-_tree-select-px"
       ],
       "visibility": "public",
       "description": "tree-select 的 input 部件 padding-inline 覆盖槽。"
-    },
-    {
-      "name": "--xh-tree-select-input-py",
-      "component": "tree-select",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "padding-block"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-2"
-      ],
-      "visibility": "public",
-      "description": "tree-select 的 input 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-item-bg-hover",
@@ -85318,19 +85325,21 @@
       "name": "--xh-tree-select-placeholder-fg",
       "component": "tree-select",
       "part": [
+        "input",
         "value-text"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "placeholder"
+        "placeholder",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
       ],
       "visibility": "public",
-      "description": "tree-select 的 value-text 部件 color 覆盖槽。"
+      "description": "tree-select 的 input、value-text 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-search-divider",

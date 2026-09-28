@@ -313,6 +313,7 @@
 | `submit-trigger` | `data-xh-action-size` | 'md' |
 | `submit-trigger` | `data-xh-action-variant` | 'solid' |
 | `submit-trigger` | `data-xh-ink-surface` | '' |
+| `submit-trigger` | `data-xh-loading-ring` | 'overlay' |
 | `reset-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `reset-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `reset-trigger` | `data-xh-action-control` | '' |
@@ -334,14 +335,14 @@
 | `--xh-form-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | form 的 root 部件 gap 覆盖槽。 |
 | `--xh-form-inline-gap` | `root` | `column-gap` | `layout=inline` | `--xh-space-4` | form 的 root 部件 column-gap 覆盖槽。 |
 | `--xh-form-label-w` | `root` | `grid-template-columns` | `layout=horizontal` | `30%` | form 的 root 部件 grid-template-columns 覆盖槽。 |
-| `--xh-form-loading-duration` | `submit-trigger` | `animation` | `loading` | `--xh-motion-loop-spin` | form 的 submit-trigger 部件 animation 覆盖槽。 |
+| `--xh-form-loading-duration` | `submit-trigger` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | form 的 submit-trigger 部件 animation 覆盖槽。 |
 | `--xh-form-submit-bg` | `submit-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | form 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-form-submit-bg-active` | `submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | form 的 submit-trigger 部件 background-color 覆盖槽。 |
 | `--xh-form-submit-bg-hover` | `submit-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | form 的 submit-trigger 部件 background-color 覆盖槽。 |
 | `--xh-form-submit-border` | `submit-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | form 的 submit-trigger 部件 border 覆盖槽。 |
 | `--xh-form-submit-border-active` | `submit-trigger` | `border-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-pressed` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
 | `--xh-form-submit-border-hover` | `submit-trigger` | `border-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-border-hover` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
-| `--xh-form-submit-fg` | `submit-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | form 的 submit-trigger 部件 color 覆盖槽。 |
+| `--xh-form-submit-fg` | `submit-trigger` | `border-block-start-color`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`motion=reduce`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | form 的 submit-trigger 部件 border-block-start-color、border-color、color 覆盖槽。 |
 | `--xh-form-submit-shadow` | `submit-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_highlight-brand` | form 的 submit-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-form-summary-bg` | `error-summary` | `background` | `default` | `--xh-bg-surface` | form 的 error-summary 部件 background 覆盖槽。 |
 | `--xh-form-summary-border` | `error-summary` | `border` | `default` | `--xh-border-invalid` | form 的 error-summary 部件 border 覆盖槽。 |
@@ -380,9 +381,9 @@
 
 可覆盖的动效槽：`--xh-form-loading-duration`。
 
-共享关键帧 `xh-drop-in` · `xh-fade-out` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-drop-in` · `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
 

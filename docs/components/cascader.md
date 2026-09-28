@@ -73,7 +73,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 - `expandTrigger` 支持点击或悬停展开。
 - `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。
 - 多选的已选路径在触发器里排成标签，与[选择器](./select)同一套呈现：文字是整条路径（按 `separator` 连缀），超出 `maxTagCount`（默认 3）合并为 `+N`；标签身份写路径的比较键（`api.tags` 里的 `key`），触发器外可放带删除钮的标签，value-text 仍留在 DOM 里给触发器的可及名。
-- `searchable` 按完整路径筛选选项；`filter` 接管匹配规则，拿到的候选是一条可落值的完整路径（`path` 与逐段的 `labels`），检索词已 trim，空串不调用。
+- `searchable` 按完整路径筛选选项；`filter` 接管匹配规则，拿到的候选是一条可落值的完整路径（`path` 与逐段的 `labels`），检索词已 trim，空串不调用。搜索框与命令面板、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，占位文字与其它字段同一支前景。
 - 选项可逐条声明语气，不向下传导；搜索结果取整条路径末段的语气。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 选项行尾留一格给作者（计数、徽标）。
@@ -503,6 +503,8 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `item-indicator` | `data-in-path` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
+| `loading` | `data-xh-loading-ring` | '' |
 | `branch-loading` | `data-level` | String(column.level) |
 | `branch-error` | `data-level` | String(column.level) |
 | `branch-retry-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -537,7 +539,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-branch-status-font-size` | `branch-error`<br>`branch-loading` | `font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 branch-error、branch-loading 部件 font-size 覆盖槽。 |
 | `--xh-cascader-branch-status-px` | `branch-error`<br>`branch-loading` | `padding-inline` | `default` | `--xh-_cascader-row-px` | cascader 的 branch-error、branch-loading 部件 padding-inline 覆盖槽。 |
 | `--xh-cascader-branch-status-py` | `branch-error`<br>`branch-loading` | `padding-block` | `default` | `--xh-space-3` | cascader 的 branch-error、branch-loading 部件 padding-block 覆盖槽。 |
-| `--xh-cascader-column-divider` | `column` | `border-inline-start` | `default` | `--xh-material-frosted-separator` | cascader 的 column 部件 border-inline-start 覆盖槽。 |
+| `--xh-cascader-column-divider` | `column` | `border-inline-start` | `default` | `--xh-material-solid-separator` | cascader 的 column 部件 border-inline-start 覆盖槽。 |
 | `--xh-cascader-column-gap` | `column` | `gap` | `default` | `--xh-list-option-gap` | cascader 的 column 部件 gap 覆盖槽。 |
 | `--xh-cascader-column-h` | `column`<br>`search-list` | `block-size` | `default` | `--xh-viewport-h-sm` | cascader 的 column、search-list 部件 block-size 覆盖槽。 |
 | `--xh-cascader-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | cascader 的 column 部件 min-inline-size 覆盖槽。 |
