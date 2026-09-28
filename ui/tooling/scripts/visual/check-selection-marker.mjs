@@ -4,7 +4,7 @@
 // 设计真源的选中与当前态分类：
 // 对号集合（Select / Combobox / TreeSelect / Cascader / 时间列 / Mention / Tree / Listbox / TagGroup）= 透明底 + 行尾对号，
 //   正文颜色与字重保持 rest（TagGroup 保持标签自身的面）；
-// 页内持久集合（Table row / Transfer / SideNav 当前项）
+// 页内持久集合（Table row / Transfer / GridList / SideNav 当前项）
 //   = --xh-bg-brand-subtle 行面 + --xh-fg-on-brand-subtle；
 // 导航当前页（Tabs line / Anchor / NavigationMenu）= 指示条 + --xh-fg-brand-strong + medium，
 //   Breadcrumb 当前页是不可点位置，保留 --xh-fg-default + medium；两者都是 Collection Item 的 nav 语境；
@@ -62,6 +62,7 @@ const SEMANTIC = {
   // 页内持久集合：品牌淡底行面，行首勾选框
   'table:row': [{ kind: 'page', state: '[data-selected]' }],
   'transfer:item': [{ kind: 'page', state: '[data-state=\'checked\']' }],
+  'grid-list:row': [{ kind: 'page', state: '[data-state=\'checked\']' }],
   'side-nav:link': [{ kind: 'page', state: '[data-current]' }],
   // 导航当前页：指示条 + 品牌深字 + medium；Breadcrumb 当前页不可点，保留默认字色。
   // tabs 的 segment 档是有滑块开关：没放 indicator 部件时白色抬起面长在选中标签自己身上，放了则搬到部件上滑动；

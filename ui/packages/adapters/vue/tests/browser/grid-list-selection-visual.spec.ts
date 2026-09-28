@@ -69,7 +69,7 @@ afterEach(() => {
 })
 
 describe('grid-list 多选视觉', () => {
-  it('选中只由与 Checkbox 同尺度的方框表达，静息行不换面也不画焦点环', async () => {
+  it('选中与 Table、Transfer 同一种标记：品牌淡底行面 + 淡底前景，外加与 Checkbox 同尺度的方框；不画焦点环', async () => {
     await mount()
     const selected = row('docs')
     const idle = row('console')
@@ -78,8 +78,9 @@ describe('grid-list 多选视觉', () => {
 
     expect(selected.getAttribute('aria-selected')).toBe('true')
     expect(selected.matches(':focus-visible')).toBe(false)
-    expect(selectedStyle.backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(selectedStyle.color).toBe(idleStyle.color)
+    expect(selectedStyle.backgroundColor).toBe(resolveColor(selected, 'var(--xh-bg-brand-subtle)'))
+    expect(selectedStyle.color).toBe(resolveColor(selected, 'var(--xh-fg-on-brand-subtle)'))
+    expect(idleStyle.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(selectedStyle.outlineColor).toBe('rgba(0, 0, 0, 0)')
 
     const selectedIndicator = indicator('docs')
@@ -97,6 +98,30 @@ describe('grid-list 多选视觉', () => {
     expect(uncheckedStyle.borderColor).toBe(resolveColor(uncheckedIndicator, 'var(--xh-border-control)'))
     expect(checkedStyle.backgroundColor).toBe(resolveColor(selectedIndicator, 'var(--xh-bg-brand)'))
     expect(checkedStyle.borderColor).toBe(checkedStyle.backgroundColor)
+  })
+
+  it('选中行悬停升到 20% 淡底；指针点过之后留下的高亮行不画键盘高亮面，移开即回选中静息面', async () => {
+    await mount()
+    const selected = row('docs')
+    await userEvent.hover(selected)
+    await expect.poll(() => getComputedStyle(selected).backgroundColor).toBe(resolveColor(selected, 'var(--xh-bg-brand-subtle-hover)'))
+
+    await userEvent.click(row('console'))
+    const clicked = row('console')
+    expect(clicked.hasAttribute('data-highlighted')).toBe(true)
+    expect(clicked.getAttribute('aria-selected')).toBe('true')
+    await userEvent.hover(document.body, { position: { x: 0, y: 0 } })
+    await expect.poll(() => getComputedStyle(clicked).backgroundColor).toBe(resolveColor(clicked, 'var(--xh-bg-brand-subtle)'))
+    expect(getComputedStyle(clicked).outlineColor).toBe('rgba(0, 0, 0, 0)')
+  })
+
+  it('方框接勾选标记配方：连接层投影 data-xh-check-mark，勾由配方画', async () => {
+    await mount()
+    expect(indicator('docs').getAttribute('data-xh-check-mark')).toBe('checked')
+    expect(indicator('docs').getAttribute('data-xh-check-mark-profile')).toBe('box')
+    expect(indicator('console').getAttribute('data-xh-check-mark')).toBe('unchecked')
+    await expect.poll(() => getComputedStyle(indicator('docs'), '::before').opacity).toBe('1')
+    expect(getComputedStyle(indicator('console'), '::before').opacity).toBe('0')
   })
 
   it('键盘真正移入选中行时仍保留 focus-visible 回执', async () => {

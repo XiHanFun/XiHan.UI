@@ -28862,6 +28862,9 @@
               "name": "--xh-grid-list-row-actions-ms"
             },
             {
+              "name": "--xh-grid-list-row-bg-selected"
+            },
+            {
               "name": "--xh-grid-list-row-content-gap"
             },
             {
@@ -28869,6 +28872,9 @@
             },
             {
               "name": "--xh-grid-list-row-description-font-size"
+            },
+            {
+              "name": "--xh-grid-list-row-fg-selected"
             },
             {
               "name": "--xh-grid-list-row-indicator-bg"
