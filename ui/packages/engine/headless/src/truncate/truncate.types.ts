@@ -12,6 +12,9 @@ export interface TruncateOpenChangeDetails {
   open: boolean
 }
 
+/** 省略号落在哪：end 收在末尾，middle 收在中间、首尾两段都留着。 */
+export type TruncatePosition = 'end' | 'middle'
+
 export interface TruncateOverflowChangeDetails {
   /** 截断版本是否裁掉了内容。 */
   overflowing: boolean
@@ -39,7 +42,13 @@ export interface TruncateSchema extends MachineSchema {
   props: {
     /** 截断行数，1 为单行，默认 1。 */
     lines?: number
-    /** 点击展开全文。 */
+    /**
+     * 省略号落在哪，默认 end。middle 只对单行生效：首尾两段各占一半宽度，中间收一个省略号，
+     * 适合文件名、路径这类两头都要看得见的文字；多行时按 end 处理。
+     * 中间省略按整段纯文字排，盒内带标记的内容会被当成它的文字。
+     */
+    position?: TruncatePosition
+    /** 旁边放一颗展开 / 收起全文的按钮（trigger 部件），真被裁了才出现。 */
     expandable?: boolean
     /** 受控展开；未提供时非受控。 */
     open?: boolean
@@ -51,6 +60,7 @@ export interface TruncateSchema extends MachineSchema {
     onOpenChange?: (details: TruncateOpenChangeDetails) => void
     /** 测得的溢出结论翻转时回调。 */
     onOverflowChange?: (details: TruncateOverflowChangeDetails) => void
+    translations?: Partial<TruncateTranslations>
   }
   context: {
     /** 截断版本是否裁掉了内容；尚未测量时为 false。 */
@@ -85,8 +95,17 @@ export interface TruncateApi<T extends PropTypes = PropTypes> {
   setOpen: (next: boolean) => void
   /** 手动测量一次，用于观察器无法感知的布局变化。 */
   measure: () => void
+  /** 展开按钮此刻该显示的文字：收着时是展开那一句，铺开时是收起那一句。 */
+  triggerLabel: string
   getRootProps: () => T['element']
+  /** 展开 / 收起全文的按钮：没开 expandable 或没东西可展开时收起不占位。 */
+  getTriggerProps: () => T['button']
 }
 
-/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
-export interface TruncateTranslations {}
+/** 展开按钮的文案，默认英文。 */
+export interface TruncateTranslations {
+  /** 收着时按钮上的字。 */
+  expand: string
+  /** 铺开时按钮上的字。 */
+  collapse: string
+}

@@ -69,6 +69,7 @@ interface Rig {
   root: HTMLElement
   api: () => TruncateApi
   rootProps: () => Dict
+  triggerProps: () => Dict
   setProps: (next: Props) => void
   stop: () => void
   /** 改尺寸并逼观察器重量一次。 */
@@ -112,6 +113,7 @@ function makeRig(initial: Props = {}, box: Box = { sw: 400, cw: 100, sh: 100, ch
     root,
     api,
     rootProps: () => api().getRootProps() as Dict,
+    triggerProps: () => api().getTriggerProps() as Dict,
     setProps: next => props.set({ ...props.get(), ...next }),
     stop: () => runtime.stop(),
     // 无布局环境没有 ResizeObserver，改完尺寸只能靠内容变动把量测拉起来
@@ -211,67 +213,77 @@ describe('truncate 量测', () => {
 })
 
 describe('truncate 展开', () => {
-  it('不可展开时根上没有按钮语义', async () => {
-    const rig = makeRig()
-    await settle()
-    const props = rig.rootProps()
-    expect(props.role).toBeUndefined()
-    expect(props.tabindex).toBeUndefined()
-    expect(props['aria-expanded']).toBeUndefined()
-    expect(props.onClick).toBeUndefined()
+  it('文字盒子恒没有按钮语义：展开交互全在旁边那颗按钮上', async () => {
+    for (const initial of [{}, { expandable: true }]) {
+      const rig = makeRig(initial)
+      await settle()
+      const props = rig.rootProps()
+      expect(props.role).toBeUndefined()
+      expect(props.tabindex).toBeUndefined()
+      expect(props['aria-expanded']).toBeUndefined()
+      expect(props.onClick).toBeUndefined()
+      expect(props.onKeydown).toBeUndefined()
+    }
   })
 
-  it('expandable：点一下铺开；铺开着不再量，收回去才重量', async () => {
+  it('按钮是原生 button，aria-controls 指回文字盒子，用 Action Control 的文字档', async () => {
     const rig = makeRig({ expandable: true })
     await settle()
-    expect(rig.rootProps().role).toBe('button')
-    expect(rig.rootProps().tabindex).toBe(0)
-    expect(rig.rootProps()['aria-expanded']).toBe('false')
+    const trigger = rig.triggerProps()
+    expect(trigger.type).toBe('button')
+    expect(trigger['aria-controls']).toBe(rig.rootProps().id)
+    expect(trigger['data-xh-action-control']).toBe('')
+    expect(trigger['data-xh-action-profile']).toBe('text')
+    expect(trigger['data-xh-action-variant']).toBe('ghost')
+  })
+
+  it('expandable：点按钮铺开；铺开着不再量，收回去才重量', async () => {
+    const rig = makeRig({ expandable: true })
+    await settle()
+    expect(rig.triggerProps().hidden).toBeUndefined()
+    expect(rig.triggerProps()['aria-expanded']).toBe('false')
+    expect(rig.api().triggerLabel).toBe('Show more')
     expect(rig.api().overflowing).toBe(true)
 
-    ;(rig.rootProps().onClick as () => void)()
+    ;(rig.triggerProps().onClick as () => void)()
     await settle()
     expect(rig.api().open).toBe(true)
     expect(rig.rootProps()['data-state']).toBe('open')
-    expect(rig.rootProps()['aria-expanded']).toBe('true')
+    expect(rig.triggerProps()['aria-expanded']).toBe('true')
+    expect(rig.api().triggerLabel).toBe('Show less')
 
     // 裁剪已经撤掉，这时量出来的恒是"装得下"，所以铺开态原地留住上一次的结论
     rig.resize({ sw: 100, cw: 100, sh: 100, ch: 100 })
     await settle()
     expect(rig.api().overflowing).toBe(true)
 
-    ;(rig.rootProps().onClick as () => void)()
+    ;(rig.triggerProps().onClick as () => void)()
     await settle()
     expect(rig.api().open).toBe(false)
     expect(rig.api().overflowing).toBe(false)
   })
 
-  it('装得下的短文本不算按钮：开了 expandable 也不给角色与手型', async () => {
-    // 按下去什么都不变的东西不该报成按钮：读屏会念出一颗按不动的按钮，Tab 也会白停一站
+  it('装得下的短文本：按钮收起不占位，点了也不动', async () => {
+    // 按下去什么都不变的按钮不该露出来：读屏会念出一颗按不动的按钮，Tab 也会白停一站
     const rig = makeRig({ expandable: true }, { sw: 100, cw: 100, sh: 100, ch: 100 })
     await settle()
-    const props = rig.rootProps()
     expect(rig.api().overflowing).toBe(false)
-    // 皮肤按这两条决定给不给手型
-    expect(props['data-expandable']).toBe('')
-    expect(props['data-overflowing']).toBeUndefined()
-    expect(props.role).toBeUndefined()
-    expect(props.tabindex).toBeUndefined()
-    expect(props['aria-expanded']).toBeUndefined()
-    expect(props['data-state']).toBeUndefined()
-    expect(props.onClick).toBeUndefined()
-    expect(props.onKeydown).toBeUndefined()
+    expect(rig.rootProps()['data-expandable']).toBe('')
+    expect(rig.rootProps()['data-state']).toBeUndefined()
+    expect(rig.triggerProps().hidden).toBe(true)
+    ;(rig.triggerProps().onClick as () => void)()
+    await settle()
+    expect(rig.api().open).toBe(false)
   })
 
-  it('装不下了当场长出按钮语义', async () => {
+  it('装不下了按钮当场露出来', async () => {
     const rig = makeRig({ expandable: true }, { sw: 100, cw: 100, sh: 100, ch: 100 })
     await settle()
-    expect(rig.rootProps().role).toBeUndefined()
+    expect(rig.triggerProps().hidden).toBe(true)
 
     rig.resize({ sw: 400, cw: 100, sh: 100, ch: 100 })
     await settle()
-    expect(rig.rootProps().role).toBe('button')
-    expect(rig.rootProps().tabindex).toBe(0)
+    expect(rig.triggerProps().hidden).toBeUndefined()
   })
 
   it('铺开态恒留着收回去的入口：那一档量不出"被裁"', async () => {
@@ -280,34 +292,21 @@ describe('truncate 展开', () => {
     const rig = makeRig({ expandable: true, defaultOpen: true }, { sw: 400, cw: 100, sh: 100, ch: 100 })
     await settle()
     expect(rig.api().overflowing).toBe(false)
-    expect(rig.rootProps().role).toBe('button')
-    expect(rig.rootProps()['aria-expanded']).toBe('true')
+    expect(rig.triggerProps().hidden).toBeUndefined()
+    expect(rig.triggerProps()['aria-expanded']).toBe('true')
 
-    ;(rig.rootProps().onClick as () => void)()
+    ;(rig.triggerProps().onClick as () => void)()
     await settle()
     expect(rig.api().open).toBe(false)
   })
 
-  it('enter / Space 切换并拦掉 Space 的翻页，其它键不管', async () => {
-    const rig = makeRig({ expandable: true })
+  it('translations 换掉按钮上的两句文案', async () => {
+    const rig = makeRig({ expandable: true, translations: { expand: '展开', collapse: '收起' } })
     await settle()
-    const press = (key: string): boolean => {
-      const event = new KeyboardEvent('keydown', { key, cancelable: true })
-      ;(rig.rootProps().onKeydown as (e: KeyboardEvent) => void)(event)
-      return event.defaultPrevented
-    }
-
-    expect(press('Enter')).toBe(true)
+    expect(rig.api().triggerLabel).toBe('展开')
+    ;(rig.triggerProps().onClick as () => void)()
     await settle()
-    expect(rig.api().open).toBe(true)
-
-    expect(press(' ')).toBe(true)
-    await settle()
-    expect(rig.api().open).toBe(false)
-
-    expect(press('a')).toBe(false)
-    await settle()
-    expect(rig.api().open).toBe(false)
+    expect(rig.api().triggerLabel).toBe('收起')
   })
 
   it('受控 open：只发意图不自改，父写回才铺开', async () => {
@@ -315,7 +314,7 @@ describe('truncate 展开', () => {
     const rig = makeRig({ expandable: true, open: false, onOpenChange: d => seen.push(d.open) })
     await settle()
 
-    ;(rig.rootProps().onClick as () => void)()
+    ;(rig.triggerProps().onClick as () => void)()
     await settle()
     expect(seen).toEqual([true])
     expect(rig.api().open).toBe(false)
@@ -326,6 +325,38 @@ describe('truncate 展开', () => {
   })
 })
 
+describe('truncate 中间省略', () => {
+  it('单行真被裁且收着时，把压好空白的整段文字交给皮肤', async () => {
+    const rig = makeRig({ position: 'middle' })
+    await settle()
+    expect(rig.rootProps()['data-position']).toBe('middle')
+    expect(rig.rootProps()['data-middle-text']).toBe(TEXT)
+  })
+
+  it('装得下、铺开着或多行时不交：中间省略只在单行被裁时成立', async () => {
+    const fits = makeRig({ position: 'middle' }, { sw: 100, cw: 100, sh: 100, ch: 100 })
+    await settle()
+    expect(fits.rootProps()['data-middle-text']).toBeUndefined()
+
+    const opened = makeRig({ position: 'middle', expandable: true })
+    await settle()
+    ;(opened.triggerProps().onClick as () => void)()
+    await settle()
+    expect(opened.rootProps()['data-middle-text']).toBeUndefined()
+
+    const multi = makeRig({ position: 'middle', lines: 2 }, { sw: 100, cw: 100, sh: 400, ch: 100 })
+    await settle()
+    expect(multi.rootProps()['data-position']).toBeUndefined()
+    expect(multi.rootProps()['data-middle-text']).toBeUndefined()
+  })
+
+  it('缺省末尾省略不写 data-position', async () => {
+    const rig = makeRig()
+    await settle()
+    expect(rig.rootProps()['data-position']).toBeUndefined()
+  })
+})
+
 describe('truncate 提示', () => {
   it('tooltip：被裁时把整段文字交给 title，模板里的缩进不带进去', async () => {
     const rig = makeRig({ tooltip: true, expandable: true })
@@ -333,7 +364,7 @@ describe('truncate 提示', () => {
     expect(rig.rootProps().title).toBe(TEXT)
 
     // 铺开着什么都没被裁掉，提示一并撤走
-    ;(rig.rootProps().onClick as () => void)()
+    ;(rig.triggerProps().onClick as () => void)()
     await settle()
     expect(rig.rootProps().title).toBeUndefined()
   })

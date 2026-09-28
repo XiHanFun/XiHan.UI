@@ -557,6 +557,7 @@
       "TreeSelectRootSlotProps",
       "TruncateContext",
       "TruncateSlotProps",
+      "TruncateTriggerSlotProps",
       "TypographyContext",
       "UseBackgroundOptions",
       "UseBackgroundReturn",
@@ -3329,6 +3330,7 @@
       "TreeSelectRootSlotProps",
       "TruncateContext",
       "TruncateSlotProps",
+      "TruncateTriggerSlotProps",
       "TypographyContext",
       "UseBackgroundOptions",
       "UseBackgroundReturn",
@@ -7323,6 +7325,7 @@
       "TruncateMetrics",
       "TruncateOpenChangeDetails",
       "TruncateOverflowChangeDetails",
+      "TruncatePosition",
       "TruncateRefs",
       "TruncateSchema",
       "TruncateTranslations",
@@ -11011,7 +11014,8 @@
       "value-text"
     ],
     "truncate": [
-      "root"
+      "root",
+      "trigger"
     ],
     "typography": [
       "heading",
@@ -13271,7 +13275,9 @@
       "onOpenChange",
       "onOverflowChange",
       "open",
-      "tooltip"
+      "position",
+      "tooltip",
+      "translations"
     ],
     "typography": [
       "align",
@@ -13439,6 +13445,7 @@
     "data-mark",
     "data-marked",
     "data-max",
+    "data-middle-text",
     "data-min-col",
     "data-mode",
     "data-modules",
@@ -21172,6 +21179,7 @@
         "expandable",
         "lines",
         "open",
+        "position",
         "tooltip"
       ],
       "events": [

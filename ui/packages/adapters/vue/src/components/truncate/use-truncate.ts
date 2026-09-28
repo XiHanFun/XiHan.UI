@@ -8,10 +8,12 @@
 import type { Service } from '@xihan-ui/core'
 import type { TruncateApi, TruncateSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
+import { createScope } from '@xihan-ui/core'
 import { connectTruncate, truncateMachine } from '@xihan-ui/headless'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { createVueIdGenerator } from '../../runtime/vue-id'
 
 /** 对外的两个回调。 */
 export type TruncateNotifiers = Pick<TruncateSchema['props'], 'onOpenChange' | 'onOverflowChange'>
@@ -29,8 +31,9 @@ export function useTruncate(
   notify?: TruncateNotifiers,
 ): TruncateContext {
   const rootRef = ref<HTMLElement | null>(null)
-  // 传响应式 props 对象本身而非快照，供机器每次读时重新展开
-  const service = useMachine(truncateMachine, () => ({ ...props, ...notify }))
+  // 传响应式 props 对象本身而非快照，供机器每次读时重新展开；
+  // 展开按钮以 aria-controls 指回文字盒子，id 要按实例派生
+  const service = useMachine(truncateMachine, () => ({ ...props, ...notify }), createScope(null, createVueIdGenerator()))
 
   service.refs.set('getRootEl', () => rootRef.value)
 

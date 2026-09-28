@@ -42,35 +42,72 @@
     white-space: normal;
   }
 
-  /* 可展开的那一档常备一条透明的下划线，悬停时淡进来。挂在 expandable 上而不是被裁那一档：
-     被裁与否挂载后才量得出，挂在那一档上的话，量出来那一下下划线会从文字色淡到透明，首帧闪一条线 */
-  [data-scope='truncate'][data-part='root'][data-expandable] {
-    text-decoration-line: underline;
-    text-decoration-color: transparent;
-    text-underline-offset: var(--xh-space-0_5);
-    transition:
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      text-decoration-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  /* —— 中间省略 —— */
+  /* 盒子里的原文照旧排着、只是不上色：溢出照它量，读屏照它念，选中与复制拿到的也是整段。
+     看得见的两段由两个伪元素画：前一半从头排、末尾收省略号，后一半从尾排、开头直接截断，
+     两段各占一半宽度，拼起来就是省略号落在中间的那一版 */
+  [data-scope='truncate'][data-part='root'][data-middle-text] {
+    position: relative;
+    text-overflow: clip;
+    -webkit-text-fill-color: transparent;
   }
 
-  /* 真被裁了才是那颗按钮：装得下的短文本按下去什么都不变，摆出手型等于许一个按不动的按钮。
-     铺开态另收一条——那一档量不出"被裁"，但收回去的入口必须留着 */
-  [data-scope='truncate'][data-part='root'][data-expandable][data-overflowing],
-  [data-scope='truncate'][data-part='root'][data-expandable][data-state='open'] {
-    cursor: pointer;
+  [data-scope='truncate'][data-part='root'][data-middle-text]::before,
+  [data-scope='truncate'][data-part='root'][data-middle-text]::after {
+    position: absolute;
+    inset-block: 0;
+    inline-size: 50%;
+    overflow: hidden;
+    white-space: nowrap;
+    -webkit-text-fill-color: currentColor;
+    pointer-events: none;
   }
 
-  /* 是按钮的那一档才给悬停反馈：提亮到正文色之外再淡进一条下划线——
-     正文本来就是这个色时单靠提亮等于零反馈。按不动的短文本不给这个反馈 */
-  [data-scope='truncate'][data-part='root'][data-expandable][data-overflowing]:hover,
-  [data-scope='truncate'][data-part='root'][data-expandable][data-state='open']:hover {
-    color: var(--xh-fg-default);
-    text-decoration-color: currentColor;
+  /* 替代文字给空串：这两段只是画出来的样子，读屏念的是盒子里的原文 */
+  [data-scope='truncate'][data-part='root'][data-middle-text]::before {
+    content: attr(data-middle-text) / '';
+    inset-inline-start: 0;
+    text-overflow: ellipsis;
+  }
+
+  /* 后一半的盒子按相反方向排，溢出就落在它的开头那侧，露出来的是原文的结尾。
+     文字本身用方向隔离符包成与正文同向的一整段：盒子反了向，字序与标点仍照正文的方向排。
+     逻辑偏移按它自己的方向换算：方向翻过来了，它的起始侧正是盒子的末尾侧 */
+  [data-scope='truncate'][data-part='root'][data-middle-text]::after {
+    content: '\2066' attr(data-middle-text) '\2069' / '';
+    inset-inline-start: 0;
+    direction: rtl;
+  }
+
+  [data-scope='truncate'][data-part='root'][data-middle-text]:dir(rtl)::after {
+    content: '\2067' attr(data-middle-text) '\2069' / '';
+    direction: ltr;
+  }
+
+  /* —— 展开按钮 —— */
+  /* 盒型、悬停与按下面由 Action Control 的文字档给（ghost、sm）；排在文字盒子之后另起一行，
+     起始端对齐正文，不被外层的弹性布局拉宽 */
+  [data-scope='truncate'][data-part='trigger'] {
+    flex: none;
+  }
+
+  @media (forced-colors: active) {
+    /* 这一档不保证文字填色照写的走：退回末尾省略，原文按系统色直接显示 */
+    [data-scope='truncate'][data-part='root'][data-middle-text] {
+      text-overflow: ellipsis;
+      -webkit-text-fill-color: currentColor;
+    }
+
+    [data-scope='truncate'][data-part='root'][data-middle-text]::before,
+    [data-scope='truncate'][data-part='root'][data-middle-text]::after {
+      content: none;
+    }
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-  [data-scope='truncate'][data-part='root'][hidden] {
+  [data-scope='truncate'][data-part='root'][hidden],
+  [data-scope='truncate'][data-part='trigger'][hidden] {
     display: none;
   }
 }

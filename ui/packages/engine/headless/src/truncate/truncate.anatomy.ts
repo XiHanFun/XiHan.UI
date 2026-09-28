@@ -7,5 +7,6 @@
 
 import { createAnatomy } from '@xihan-ui/core'
 
-// 只有一个部件：夹字、量溢出、承载展开交互，全落在同一个盒子上。
-export const truncateAnatomy = createAnatomy('truncate', ['root'])
+// root 夹字、量溢出；trigger 是它旁边那颗展开 / 收起的按钮，排在 root 之外——
+// 放进被夹住的盒子里会跟着文字一起被裁掉。
+export const truncateAnatomy = createAnatomy('truncate', ['root', 'trigger'])

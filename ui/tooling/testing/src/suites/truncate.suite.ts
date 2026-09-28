@@ -1,7 +1,8 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext, StepWithExpect } from '../conformance/types'
 import { truncateAnatomy, truncateKeyboard } from '@xihan-ui/headless'
+import { nativeActivation } from './shared/native-activation'
 
-// 不可展开时这块文字只是一段字；开了 expandable 才按按钮那套走。
+// 文字盒子恒是一段字；开了 expandable 才在旁边多一颗展开按钮，按钮那套走。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 
 const TEXT = '这一段话长得一行放不下，夹住之后尾巴上会收一个省略号'
@@ -9,6 +10,17 @@ const TEXT = '这一段话长得一行放不下，夹住之后尾巴上会收一
 const FIXTURE: FixtureNode = {
   part: 'root',
   children: [{ text: TEXT }],
+}
+
+/**
+ * 带展开按钮的那一版：Web Components 由作者把按钮写成 root 的兄弟节点，
+ * Vue 与 React 开了 expandable 由组件自己铺，夹具里不写。
+ */
+function withTrigger(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: [...(base.children ?? []), { part: 'trigger', tag: 'button', slot: 'trigger', only: ['wc'] }],
+  }
 }
 
 function partEl(doc: Document, part: string): HTMLElement {
@@ -68,6 +80,20 @@ function assertTitle(expected: string | null): StepWithExpect {
   }
 }
 
+/** 按钮上的字是缺省文案还是作者写的，都是文本节点，只能直接读。 */
+function assertTriggerText(expected: string): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: '按钮上的字是文本节点，不在快照采集的属性集里',
+    run: async ({ doc, flush }) => {
+      await flush()
+      const actual = partEl(doc, 'trigger').textContent?.trim()
+      if (actual !== expected)
+        throw new Error(`展开按钮上的字期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+    },
+  }
+}
+
 export const truncateSuite: ConformanceSuite = {
   component: 'truncate',
   anatomy: truncateAnatomy,
@@ -75,7 +101,7 @@ export const truncateSuite: ConformanceSuite = {
   fixture: FIXTURE,
   cases: [
     {
-      name: '缺省：夹一行，没有按钮语义，也还没报溢出',
+      name: '缺省：夹一行，文字盒子没有按钮语义，也还没报溢出',
       spec: { apg: APG },
       initial: {
         order: ['root'],
@@ -87,7 +113,9 @@ export const truncateSuite: ConformanceSuite = {
             'data-expandable': null,
             'data-state': null,
             'data-overflowing': null,
-            // 不可展开时这几件一个都不写，它就还是一段普通的文字
+            'data-position': null,
+            'data-middle-text': null,
+            // 文字盒子恒是一段普通的文字
             'role': null,
             'tabindex': null,
             'aria-expanded': null,
@@ -126,21 +154,29 @@ export const truncateSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'expandable 且真被裁：整块文字变成一颗按钮，Tab 停得住',
+      name: 'expandable 且真被裁：展开按钮露出来、Tab 停在它上面，文字盒子仍是一段字',
       spec: { apg: APG },
       covers: ['truncate.kbd.tab'],
       props: { expandable: true },
-      // 还没量出被裁的这一帧：按下去什么都不变，按钮那几件一个都不写，
+      fixture: withTrigger,
+      // 还没量出被裁的这一帧：按下去什么都不变，按钮收起不占位，
       // 否则读屏念出的是一颗按不动的按钮、Tab 也白停一站
       initial: {
         parts: {
           root: {
             'data-expandable': '',
             'data-overflowing': null,
+            'data-state': null,
             'role': null,
             'tabindex': null,
-            'aria-expanded': null,
-            'data-state': null,
+          },
+          trigger: {
+            'type': 'button',
+            'hidden': '',
+            'aria-expanded': 'false',
+            'aria-controls': '@part(root)',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
           },
         },
       },
@@ -150,55 +186,100 @@ export const truncateSuite: ConformanceSuite = {
           expect: {
             parts: {
               root: {
-                'role': 'button',
-                'tabindex': '0',
-                'aria-expanded': 'false',
-                'data-expandable': '',
+                'role': null,
+                'tabindex': null,
+                'aria-expanded': null,
                 'data-overflowing': '',
                 'data-state': 'closed',
               },
+              trigger: { 'hidden': null, 'aria-expanded': 'false', 'data-state': 'closed' },
             },
           },
         },
+        nativeActivation('truncate', 'trigger'),
+        assertTriggerText('Show more'),
       ],
     },
     {
-      name: 'expandable：Enter 铺开、Space 收回',
+      name: 'expandable：点按钮铺开、再点收回，按钮上的字跟着换；铺开着不再报被裁的那一版',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['truncate.kbd.toggle'],
       props: { expandable: true },
+      fixture: withTrigger,
       steps: [
         measureStep(400, 100, true),
-        { kind: 'focus', part: 'root' },
         {
-          kind: 'key',
-          key: 'Enter',
+          kind: 'click',
+          part: 'trigger',
           expect: {
-            parts: { root: { 'aria-expanded': 'true', 'data-state': 'open' } },
+            // 铺开后不再重量：结论留着上一次的，供作者判断收回去会不会又被裁
+            parts: {
+              root: { 'data-state': 'open', 'data-overflowing': '' },
+              trigger: { 'aria-expanded': 'true', 'data-state': 'open', 'hidden': null },
+            },
+            events: [{ type: 'open-change', detail: { open: true } }],
           },
         },
+        assertTriggerText('Show less'),
         {
-          kind: 'key',
-          key: 'Space',
+          kind: 'click',
+          part: 'trigger',
           expect: {
-            parts: { root: { 'aria-expanded': 'false', 'data-state': 'closed' } },
+            parts: {
+              root: { 'data-state': 'closed' },
+              trigger: { 'aria-expanded': 'false', 'data-state': 'closed' },
+            },
+            events: [{ type: 'open-change', detail: { open: false } }],
           },
         },
       ],
     },
     {
-      name: '点一下也能铺开；铺开着不再报被裁的那一版',
+      name: '点文字盒子本身什么都不发生：展开只归按钮管',
       spec: { apg: APG },
       props: { expandable: true },
+      fixture: withTrigger,
       steps: [
         measureStep(400, 100, true),
         {
           kind: 'click',
           part: 'root',
           expect: {
-            // 铺开后不再重量：结论留着上一次的，供作者判断收回去会不会又被裁
-            parts: { root: { 'data-state': 'open', 'data-overflowing': '' } },
+            parts: { root: { 'data-state': 'closed' }, trigger: { 'aria-expanded': 'false' } },
+            events: [],
           },
+        },
+      ],
+    },
+    {
+      name: 'translations：按钮上的两句文案换成语言包里的',
+      spec: { apg: APG },
+      props: { expandable: true, translations: { expand: '展开', collapse: '收起' } },
+      fixture: withTrigger,
+      steps: [
+        measureStep(400, 100, true),
+        assertTriggerText('展开'),
+        { kind: 'click', part: 'trigger' },
+        assertTriggerText('收起'),
+      ],
+    },
+    {
+      name: 'position=middle：单行真被裁时把整段文字交给皮肤拼首尾两段，装得下或多行时不交',
+      spec: { apg: APG },
+      props: { position: 'middle' },
+      initial: {
+        parts: { root: { 'data-position': 'middle', 'data-middle-text': null } },
+      },
+      steps: [
+        {
+          ...measureStep(400, 100, true),
+          expect: { parts: { root: { 'data-position': 'middle', 'data-middle-text': TEXT } } },
+        },
+        { kind: 'setProps', props: { position: 'middle', lines: 2 } },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'root', name: 'data-multiline', value: '' } },
+          expect: { parts: { root: { 'data-position': null, 'data-middle-text': null } } },
         },
       ],
     },
@@ -206,6 +287,7 @@ export const truncateSuite: ConformanceSuite = {
       name: 'tooltip：真被裁了才把整段文字交给平台的原生提示，铺开后撤走',
       spec: { apg: APG },
       props: { tooltip: true, expandable: true },
+      fixture: withTrigger,
       steps: [
         // 先量成放得下：「还没被裁」必须是量出来的，不能指望挂载那一刻恰好不溢出——
         // 真实浏览器里这段字在默认视口下本来就放不下
@@ -213,21 +295,23 @@ export const truncateSuite: ConformanceSuite = {
         assertTitle(null),
         measureStep(400, 100, true),
         assertTitle(TEXT),
-        { kind: 'click', part: 'root' },
+        { kind: 'click', part: 'trigger' },
         assertTitle(null),
       ],
     },
     {
-      name: '受控 open：点一下不自改 DOM，父写回 open 后才铺开',
+      name: '受控 open：点按钮不自改 DOM，父写回 open 后才铺开',
       spec: { adr: 'controlled-uncontrolled' },
       props: { expandable: true, open: false },
+      fixture: withTrigger,
       steps: [
         measureStep(400, 100, true),
         {
           kind: 'click',
-          part: 'root',
+          part: 'trigger',
           expect: {
-            parts: { root: { 'data-state': 'closed', 'aria-expanded': 'false' } },
+            parts: { root: { 'data-state': 'closed' }, trigger: { 'aria-expanded': 'false' } },
+            events: [{ type: 'open-change', detail: { open: true } }],
           },
         },
         { kind: 'setProps', props: { open: true } },
@@ -235,7 +319,7 @@ export const truncateSuite: ConformanceSuite = {
           kind: 'settle',
           until: { attr: { part: 'root', name: 'data-state', value: 'open' } },
           expect: {
-            parts: { root: { 'data-state': 'open', 'aria-expanded': 'true' } },
+            parts: { root: { 'data-state': 'open' }, trigger: { 'aria-expanded': 'true' } },
           },
         },
       ],
