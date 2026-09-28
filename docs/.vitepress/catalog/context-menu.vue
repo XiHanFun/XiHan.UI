@@ -1,20 +1,18 @@
-<script setup lang="ts">
-import { XhContextMenuRoot } from "@xihan-ui/vue";
-
-const commands = [
-  { value: "open", label: "打开" },
-  { value: "rename", label: "重命名" },
-  { value: "delete", label: "移到回收站", separatorBefore: true },
-];
-</script>
-
 <template>
-  <XhContextMenuRoot :collection="commands">
-    <template #trigger>
-      <span style="display: grid; place-items: center; gap: var(--xh-space-1); inline-size: var(--xh-doc-catalog-w); block-size: var(--xh-doc-catalog-h); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
-        <strong>设计规范.pdf</strong>
-        <span style="color: var(--xh-fg-muted)">右键打开菜单</span>
-      </span>
-    </template>
-  </XhContextMenuRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="20" y="20" width="136" height="92" rx="8" fill="var(--xh-bg-subtle)" />
+    <path d="M38 40h60M38 52h44" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <rect x="92.5" y="56.5" width="123" height="87" rx="12" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M108 70h8v8h-8zm-4 4v-8h8" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M127 72h34" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M190 72h12" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <rect x="96" y="84" width="116" height="24" rx="4" fill="var(--xh-bg-subtle)" />
+    <path d="M104 102l1-4 8-8 3 3-8 8z" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M127 96h42" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M190 96h12" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M92 112.5h124" stroke="var(--xh-border-subtle)" />
+    <path d="M106 124l8 8m0-8l-8 8" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M127 128h30" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M84 44v15l4-3.5 3 6.5 3-1.5-3-6h5.5z" fill="var(--xh-fg-default)" stroke="var(--xh-bg-surface)" />
+  </svg>
 </template>

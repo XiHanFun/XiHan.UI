@@ -1,26 +1,10 @@
-<script setup lang="ts">
-import { BoldIcon, ItalicIcon, UnderlineIcon } from "@xihan-ui/icons";
-import { XhIcon, XhToolbarGroup, XhToolbarItem, XhToolbarRoot } from "@xihan-ui/vue";
-
-const actions = [
-  { value: "bold", label: "加粗", icon: BoldIcon },
-  { value: "italic", label: "斜体", icon: ItalicIcon },
-  { value: "underline", label: "下划线", icon: UnderlineIcon },
-];
-</script>
-
 <template>
-  <XhToolbarRoot aria-label="文本格式">
-    <XhToolbarGroup>
-      <XhToolbarItem
-        v-for="action in actions"
-        :key="action.value"
-        :value="action.value"
-        type="button"
-        :aria-label="action.label"
-      >
-        <XhIcon :icon="action.icon" />
-      </XhToolbarItem>
-    </XhToolbarGroup>
-  </XhToolbarRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="40.5" y="64.5" width="159" height="31" rx="8" stroke="var(--xh-border-default)" />
+    <rect x="44" y="68" width="24" height="24" rx="4" fill="var(--xh-bg-brand-subtle)" />
+    <path d="M50 76h12m-12 4h8m-8 4h10" stroke="var(--xh-fg-on-brand-subtle)" stroke-width="2" />
+    <path d="M78 76h12m-10 4h8m-9 4h10M106 76h12m-8 4h8m-10 4h10" stroke="var(--xh-fg-default)" stroke-width="2" />
+    <path d="M128.5 72v16" stroke="var(--xh-border-subtle)" />
+    <path d="M142.5 81.5l3-3m-4.5.5l-1.5 1.5a2.8 2.8 0 0 0 4 4l1.5-1.5m2-2l1.5-1.5a2.8 2.8 0 0 0-4-4l-1.5 1.5M166 75h12v10h-12zm0 8l4-4 3 3 2-2 3 3" stroke="var(--xh-fg-default)" stroke-width="2" />
+  </svg>
 </template>

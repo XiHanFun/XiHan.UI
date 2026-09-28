@@ -1,13 +1,11 @@
-<script setup lang="ts">
-import { XhBreadcrumbRoot } from "@xihan-ui/vue";
-
-const items = [
-  { value: "home", label: "首页", href: "#/" },
-  { value: "components", label: "组件", href: "#/components" },
-  { value: "breadcrumb", label: "面包屑", current: true },
-];
-</script>
-
 <template>
-  <XhBreadcrumbRoot :collection="items" />
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M30 80l6-5 6 5m-10-1v7h8v-7" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M54 76l4 4-4 4" stroke="var(--xh-fg-subtle)" stroke-width="2" />
+    <path d="M71 80h26" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M110 76l4 4-4 4" stroke="var(--xh-fg-subtle)" stroke-width="2" />
+    <path d="M127 80h22" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M162 76l4 4-4 4" stroke="var(--xh-fg-subtle)" stroke-width="2" />
+    <path d="M179 80h30" stroke="var(--xh-fg-default)" stroke-width="6" />
+  </svg>
 </template>

@@ -1,22 +1,10 @@
-<script setup lang="ts">
-import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const scrollEl = ref<HTMLElement | null>(null);
-</script>
-
 <template>
-  <div
-    ref="scrollEl"
-    data-xh-scroll
-    style="block-size: var(--xh-doc-catalog-h); inline-size: var(--xh-doc-catalog-w); overflow: auto; padding: var(--xh-space-2); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
-  >
-    <div style="padding: var(--xh-space-1_5) var(--xh-space-2); color: var(--xh-fg-muted)">项目概览</div>
-    <XhAffixRoot :target="scrollEl">
-      <XhAffixContent style="padding: var(--xh-space-1_5) var(--xh-space-2_5); border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)">
-        筛选与操作
-      </XhAffixContent>
-    </XhAffixRoot>
-    <div style="block-size: 400px; padding: var(--xh-space-2); color: var(--xh-fg-muted)">项目动态<br><br>最近访问<br><br>团队成员</div>
-  </div>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="40.5" y="16.5" width="159" height="127" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M58 76h108M58 88h92M58 100h116M58 112h84M58 124h100" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <rect x="52.5" y="28.5" width="135" height="31" rx="4" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M67 44h50" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M154 44h20" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M190 72v32" stroke="var(--xh-fg-scrollbar-thumb-hover)" stroke-width="4" />
+  </svg>
 </template>

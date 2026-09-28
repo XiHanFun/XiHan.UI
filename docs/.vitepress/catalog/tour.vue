@@ -1,23 +1,16 @@
-<script setup lang="ts">
-import {
-  XhTourContent,
-  XhTourDescription,
-  XhTourNextTrigger,
-  XhTourProgressText,
-  XhTourRoot,
-  XhTourTitle,
-} from "@xihan-ui/vue";
-
-const steps = [{ id: "welcome", title: "快速上手", description: "从这里开始了解主要功能。" }];
-</script>
-
 <template>
-  <XhTourRoot :steps="steps" default-open>
-    <XhTourContent style="position: static; inline-size: var(--xh-doc-catalog-w)">
-      <XhTourTitle />
-      <XhTourDescription />
-      <XhTourProgressText />
-      <XhTourNextTrigger>完成</XhTourNextTrigger>
-    </XhTourContent>
-  </XhTourRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M30 84h132M30 96h108M30 108h124" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <rect x="28.5" y="24.5" width="71" height="31" rx="4" stroke="var(--xh-border-default)" />
+    <path d="M47 40h34" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M8 0h224a8 8 0 0 1 8 8v144a8 8 0 0 1-8 8h-224a8 8 0 0 1-8-8v-144a8 8 0 0 1 8-8zM28 16h72a8 8 0 0 1 8 8v32a8 8 0 0 1-8 8h-72a8 8 0 0 1-8-8v-32a8 8 0 0 1 8-8z" fill="var(--xh-bg-overlay)" fill-rule="evenodd" />
+    <rect x="56.5" y="76.5" width="163" height="71" rx="12" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M57 77l7-7 7 7" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M75 94h58" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M74 110h124" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M75 132h6" stroke="var(--xh-fg-brand)" stroke-width="6" />
+    <path d="M95 132h0M105 132h0" stroke="var(--xh-bg-subtle-active)" stroke-width="6" />
+    <rect x="164" y="120" width="44" height="24" rx="4" fill="var(--xh-bg-brand)" />
+    <path d="M176 132h20" stroke="var(--xh-fg-on-brand)" stroke-width="4" />
+  </svg>
 </template>

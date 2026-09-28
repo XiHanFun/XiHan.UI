@@ -1,25 +1,10 @@
-<script setup lang="ts">
-import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
-import { onMounted, ref } from "vue";
-
-const scrollEl = ref<HTMLElement | null>(null);
-// 预览里没人滚动：先滚过阈值，按钮才有得看
-onMounted(() => {
-  if (scrollEl.value)
-    scrollEl.value.scrollTop = 200;
-});
-</script>
-
 <template>
-  <div style="position: relative; inline-size: var(--xh-doc-catalog-w)">
-    <div ref="scrollEl" data-xh-scroll style="block-size: var(--xh-doc-catalog-h); overflow: auto; padding-inline: var(--xh-space-3); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
-      <section v-for="section in ['概览', '安装', '主题', '发布']" :key="section" style="min-block-size: 90px; padding-block: var(--xh-space-2_5)">
-        <strong>{{ section }}</strong>
-        <div style="margin-block-start: var(--xh-space-1); color: var(--xh-fg-muted)">{{ section }}相关内容</div>
-      </section>
-    </div>
-    <XhBackTopRoot :target="scrollEl" :visibility-height="100" style="position: absolute; --xh-back-top-inset-block: var(--xh-space-2_5); --xh-back-top-inset-inline: var(--xh-space-2_5)">
-      <XhBackTopTrigger />
-    </XhBackTopRoot>
-  </div>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="28.5" y="20.5" width="183" height="119" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M46 40h132M46 52h116M46 64h124" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M47 84h66" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M46 104h132M46 116h92" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <circle cx="184" cy="112" r="15.5" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M184 118v-12m-5 5l5-5 5 5" stroke="var(--xh-fg-default)" stroke-width="2" />
+  </svg>
 </template>

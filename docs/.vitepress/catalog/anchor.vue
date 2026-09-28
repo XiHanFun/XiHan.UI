@@ -1,30 +1,12 @@
-<script setup lang="ts">
-import { XhAnchorIndicator, XhAnchorItem, XhAnchorLink, XhAnchorList, XhAnchorRoot } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const sections = [
-  { value: "catalog-anchor-overview", label: "概览" },
-  { value: "catalog-anchor-install", label: "安装" },
-  { value: "catalog-anchor-theme", label: "主题" },
-];
-const scrollEl = ref<HTMLElement | null>(null);
-</script>
-
 <template>
-  <div style="display: grid; grid-template-columns: 80px 1fr; gap: var(--xh-space-3); inline-size: var(--xh-doc-catalog-w); align-items: start">
-    <XhAnchorRoot :scroll-element="scrollEl">
-      <XhAnchorList>
-        <XhAnchorItem v-for="s in sections" :key="s.value">
-          <XhAnchorLink :value="s.value">{{ s.label }}</XhAnchorLink>
-        </XhAnchorItem>
-        <XhAnchorIndicator />
-      </XhAnchorList>
-    </XhAnchorRoot>
-    <div ref="scrollEl" data-xh-scroll style="block-size: var(--xh-doc-catalog-h); overflow: auto; padding-inline: var(--xh-space-2_5); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
-      <div v-for="s in sections" :id="s.value" :key="s.value" style="block-size: 90px; padding-block: var(--xh-space-2)">
-        <strong>{{ s.label }}</strong>
-        <div style="margin-block-start: var(--xh-space-1); color: var(--xh-fg-muted)">{{ s.label }}相关内容</div>
-      </div>
-    </div>
-  </div>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M44.5 36v92" stroke="var(--xh-border-default)" />
+    <path d="M45 37v22" stroke="var(--xh-fg-brand)" stroke-width="2" />
+    <path d="M59 48h30" stroke="var(--xh-fg-brand)" stroke-width="6" />
+    <path d="M59 72h22M59 96h26M59 120h18" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M115 44h42" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M114 60h92M114 72h76" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <path d="M115 100h34" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M114 116h84M114 128h68" stroke="var(--xh-fg-muted)" stroke-width="4" />
+  </svg>
 </template>
