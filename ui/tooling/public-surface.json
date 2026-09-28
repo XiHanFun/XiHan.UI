@@ -7198,6 +7198,7 @@
       "StepsSchema",
       "StepsTranslations",
       "StepsValueChangeDetails",
+      "StepsVariant",
       "SwitchApi",
       "SwitchCheckedChangeDetails",
       "SwitchSchema",
@@ -13172,7 +13173,8 @@
       "tone",
       "tones",
       "translations",
-      "value"
+      "value",
+      "variant"
     ],
     "switch": [
       "checked",
@@ -18058,6 +18060,8 @@
     "--xh-steps-indicator-font-size",
     "--xh-steps-indicator-mark-size",
     "--xh-steps-indicator-radius",
+    "--xh-steps-indicator-ring-bg",
+    "--xh-steps-indicator-ring-bg-disabled",
     "--xh-steps-indicator-shadow",
     "--xh-steps-indicator-size",
     "--xh-steps-item-gap",
@@ -21270,7 +21274,8 @@
         "read-only",
         "size",
         "tone",
-        "value"
+        "value",
+        "variant"
       ],
       "events": [
         "value-change"

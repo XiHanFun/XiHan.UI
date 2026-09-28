@@ -302,6 +302,7 @@
     "size"
   ],
   "steps": [
+    "variant",
     "tone",
     "size"
   ],

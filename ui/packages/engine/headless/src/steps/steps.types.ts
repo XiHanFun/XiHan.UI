@@ -15,6 +15,13 @@ export interface StepsValueChangeDetails {
 /** 单步的状态，由步序计算；statuses 或 collection 可以逐步改写。出错 / 警示不是状态，是语气，使用 tones。 */
 export type StepStatus = 'completed' | 'current' | 'incomplete'
 
+/**
+ * 标记形态：number 是盛内容的序号圆点（缺省），圆里放序号、对号或作者的图标，直径与同档控件等高；
+ * dot 是不盛内容的小圆点，只标位置，适合步数多或横向空间紧的流程。与 Tabs 的 line / card / segment 同类，
+ * 换的是标记的结构，不是有框 / 无框的 ControlVariant。
+ */
+export type StepsVariant = 'number' | 'dot'
+
 /** 单步的数据。提供 collection 时，标题、说明、状态与禁用以它为准。 */
 export interface StepNode {
   /** 标题文本。 */
@@ -117,6 +124,11 @@ export interface StepsSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    /**
+     * 标记形态，默认 number。dot 把序号圆点收成不盛内容的小圆点：走过的实心、当前步实心外加一圈环、
+     * 没走到的空心；indicator 留空，不放序号与图标。
+     */
+    variant?: StepsVariant
     /** 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: StepsValueChangeDetails) => void
   }

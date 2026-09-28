@@ -114,7 +114,7 @@ export const stepsSuite: ConformanceSuite = {
         ],
         counts: { root: 1, list: 1, item: 3, trigger: 3, indicator: 3, title: 3, description: 3, separator: 3, content: 3 },
         parts: {
-          'root': { 'data-orientation': 'horizontal', 'data-complete': null, 'data-empty': null, 'data-disabled': null },
+          'root': { 'data-orientation': 'horizontal', 'data-variant': 'number', 'data-complete': null, 'data-empty': null, 'data-disabled': null },
           'list': { 'role': 'tablist', 'aria-orientation': 'horizontal', 'aria-disabled': 'false', 'tabindex': '0' },
           'item[0]': { 'data-state': 'current', 'data-orientation': 'horizontal', 'data-disabled': null },
           'trigger[0]': {
@@ -145,7 +145,7 @@ export const stepsSuite: ConformanceSuite = {
             'data-state': 'incomplete',
             'data-value': '1',
           },
-          'indicator[0]': { 'aria-hidden': 'true', 'data-state': 'current' },
+          'indicator[0]': { 'aria-hidden': 'true', 'data-variant': 'number', 'data-state': 'current' },
           'title[1]': { 'data-state': 'incomplete' },
           'description[1]': { 'data-state': 'incomplete' },
           'separator[0]': { 'aria-hidden': 'true', 'data-state': 'current', 'data-orientation': 'horizontal' },
@@ -199,6 +199,31 @@ export const stepsSuite: ConformanceSuite = {
           'trigger[1]': { 'data-state': 'current', 'data-tone': null },
         },
       },
+    },
+    {
+      // 形态是样式轴：只落在 root 与圆点上，状态、语义与连接线照旧
+      name: 'variant=dot：root 与每个圆点带 data-variant=dot，圆点照旧对读屏隐藏、照报三态',
+      spec: { apg: APG },
+      props: { count: COUNT, defaultValue: 1, variant: 'dot' },
+      initial: {
+        parts: {
+          'root': { 'data-variant': 'dot' },
+          'indicator[0]': { 'aria-hidden': 'true', 'data-variant': 'dot', 'data-state': 'completed' },
+          'indicator[1]': { 'aria-hidden': 'true', 'data-variant': 'dot', 'data-state': 'current' },
+          'indicator[2]': { 'aria-hidden': 'true', 'data-variant': 'dot', 'data-state': 'incomplete' },
+          'trigger[1]': { 'role': 'tab', 'data-xh-action-profile': 'row', 'aria-current': 'step' },
+          'separator[0]': { 'data-state': 'completed', 'data-variant': null },
+          'item[1]': { 'data-state': 'current', 'data-variant': null },
+        },
+      },
+      steps: [
+        { kind: 'setProps', props: { variant: 'number' } },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'root', name: 'data-variant', value: 'number' } },
+          expect: { parts: { 'indicator[1]': { 'data-variant': 'number', 'data-state': 'current' } } },
+        },
+      ],
     },
     {
       // 走完最后一步后没有任何一步是 current，也没有条目认领 tabindex=0，容器须兜底

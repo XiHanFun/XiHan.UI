@@ -3383,6 +3383,8 @@ export type ComponentTokenName
     | '--xh-steps-indicator-font-size'
     | '--xh-steps-indicator-mark-size'
     | '--xh-steps-indicator-radius'
+    | '--xh-steps-indicator-ring-bg'
+    | '--xh-steps-indicator-ring-bg-disabled'
     | '--xh-steps-indicator-shadow'
     | '--xh-steps-indicator-size'
     | '--xh-steps-item-gap'
