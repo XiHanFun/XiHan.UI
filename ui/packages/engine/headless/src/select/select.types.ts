@@ -196,6 +196,8 @@ export interface SelectSchema extends MachineSchema {
     pressedPart: 'item' | 'clear-trigger' | null
     /** 按压通道：按住的条目 value；clear-trigger 没有 value，记 null。抬起、失焦或浮层收起即清空。 */
     pressedValue: string | null
+    /** 标签行的列表动效已经接上；接上之前 tag-list 带 data-instant，首帧的标签一律不播进场。 */
+    tagListTracked: boolean
   }
   computed: Record<string, never>
   refs: SelectRefs
@@ -222,6 +224,8 @@ export interface SelectSchema extends MachineSchema {
     | { type: 'PRESS.START', part: 'item' | 'clear-trigger', value?: string, disabled?: boolean }
     /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */
     | { type: 'PRESS.END', part: 'item' | 'clear-trigger', value?: string }
+    /** 标签行的列表动效已接上：之后到达的标签才播进场。 */
+    | { type: 'TAG_LIST.TRACKED' }
   tag: never
   guard: 'isOpenControlled' | 'isMultiple' | 'isReadOnly' | 'canPress'
   action:
@@ -243,6 +247,7 @@ export interface SelectSchema extends MachineSchema {
     | 'endPress'
     | 'releasePress'
     | 'releaseWhenInert'
+    | 'markTagListTracked'
   effect: 'trackPosition' | 'trackLayer' | 'trackTagListMotion'
 }
 

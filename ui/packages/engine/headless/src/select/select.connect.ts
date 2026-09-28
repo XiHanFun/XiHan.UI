@@ -344,6 +344,8 @@ export function connectSelect<T extends PropTypes>(
       ...parts['tag-list'].attrs,
       'hidden': value.length === 0 || undefined,
       'data-disabled': dataAttr(disabled),
+      // 列表动效接上之前，首帧的标签直接呈现
+      'data-instant': dataAttr(!context.get('tagListTracked')),
     }),
     // 标签本体就是 tag 的 root（data-scope="tag"），只多一个 data-value 记它代表哪个选中值
     getTagProps: ({ value: v }) => ({

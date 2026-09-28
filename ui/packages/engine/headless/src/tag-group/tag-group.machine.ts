@@ -35,6 +35,7 @@ export const tagGroupMachine = createMachine({
     // 按压通道：正被按住的那一枚的哪个部件；与选中、锚点都无关
     pressedPart: cell<TagPressedPart | null>(() => ({ defaultValue: null })),
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
+    listTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     typeahead: createTypeahead(),
@@ -58,6 +59,7 @@ export const tagGroupMachine = createMachine({
         // 按压通道：按 part + value 记按住的那一枚；整组禁用 / 只读不进，条目自身按不动的事实随事件带入
         'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
         'PRESS.END': { actions: ['endPress'] },
+        'LIST.TRACKED': { actions: ['markListTracked'] },
       },
     },
   },
@@ -75,7 +77,7 @@ export const tagGroupMachine = createMachine({
        * 删掉的在原处播完退场，其余标签滑到新位置。条目的去留归宿主，这里只看 DOM 的增删。
        * React 的祖先 ref 在子组件 layout effect 之后才附着，延到提交后的微任务再取，仍在首帧绘制之前。
        */
-      trackListMotion: ({ scope, flush }) => {
+      trackListMotion: ({ scope, send, flush }) => {
         let disposed = false
         let stop: (() => void) | undefined
         flush(() => {
@@ -84,6 +86,7 @@ export const tagGroupMachine = createMachine({
             if (disposed || !list)
               return
             stop = trackListMotion(list, { item: TAG_GROUP_ITEM_SELECTOR })
+            send({ type: 'LIST.TRACKED' })
           })
         })
         return () => {
@@ -93,6 +96,7 @@ export const tagGroupMachine = createMachine({
       },
     },
     actions: {
+      markListTracked: ({ context }) => context.set('listTracked', true),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')

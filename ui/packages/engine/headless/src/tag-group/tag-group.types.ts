@@ -143,6 +143,8 @@ export interface TagGroupSchema extends MachineSchema {
     pressedPart: TagPressedPart | null
     /** 正被按住的那一枚标签的 value；没有按住时为 null。 */
     pressedValue: string | null
+    /** 列表动效已经接到 list 上；接上之前 list 带 data-instant，首帧的标签一律不播进场。 */
+    listTracked: boolean
   }
   computed: Record<string, never>
   refs: TagGroupRefs
@@ -164,6 +166,8 @@ export interface TagGroupSchema extends MachineSchema {
     // disabled 是该部件自身按不动的事实（条目禁用、不可选、不可移除），由 connect 判定后随事件带入
     | { type: 'PRESS.START', part: TagPressedPart, value: string, disabled?: boolean }
     | { type: 'PRESS.END', part: TagPressedPart, value: string }
+    /** 列表动效已接上：之后到达的标签才播进场。 */
+    | { type: 'LIST.TRACKED' }
   tag: never
   guard: 'canPress'
   action:
@@ -176,6 +180,7 @@ export interface TagGroupSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
+    | 'markListTracked'
   effect: 'trackListMotion'
 }
 
