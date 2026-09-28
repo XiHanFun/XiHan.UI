@@ -33512,10 +33512,9 @@
   /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-popover-icon-size, var(--xh-_action-profile-glyph-size));
 
-  /* 与 Dialog、Drawer、Tour、Notification 的叉同一个内缩：面板右上角的关闭钮落点一致 */
   position: absolute;
-  inset-block-start: var(--xh-surface-action-inset);
-  inset-inline-end: var(--xh-surface-action-inset);
+  inset-block-start: var(--xh-space-2);
+  inset-inline-end: var(--xh-space-2);
 }
 
 [data-scope='popover'][data-part='close-trigger'][hidden] {
