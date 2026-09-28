@@ -507,6 +507,7 @@
         "sankey-chart",
         "spinner",
         "switch",
+        "table",
         "tree"
       ],
       "relation": "loop"
@@ -518,15 +519,6 @@
       ],
       "consumers": [
         "spinner"
-      ]
-    },
-    "xh-table-loading-pulse": {
-      "content": "0%,100%{opacity:var(--xh-state-disabled-opacity)}50%{opacity:1}",
-      "definedIn": [
-        "table.css"
-      ],
-      "consumers": [
-        "table"
       ]
     },
     "xh-tour-spotlight-in": {
