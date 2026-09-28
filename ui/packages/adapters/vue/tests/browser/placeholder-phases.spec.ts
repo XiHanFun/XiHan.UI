@@ -60,6 +60,14 @@ import {
   XhSelectRoot,
   XhSelectTrigger,
   XhSelectValueText,
+  XhTransferEmpty,
+  XhTransferItem,
+  XhTransferItemText,
+  XhTransferList,
+  XhTransferLoading,
+  XhTransferRoot,
+  XhTransferSourcePanel,
+  XhTransferTargetPanel,
   XhTreeSelectRoot,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
@@ -183,6 +191,22 @@ const CASES: Case[] = [
         h(XhCommandLoading, null, () => '正在检索'),
       ]),
     ]),
+    muted: '--xh-fg-muted',
+    dim: 'list',
+  },
+  {
+    scope: 'transfer',
+    render: ({ loading, items }) => {
+      const panel = (Panel: typeof XhTransferSourcePanel): VNode => h(Panel, null, {
+        default: ({ items: visible }: { items: { value: string, label?: string }[] }) => [
+          h(XhTransferList, null, () => visible.map(node =>
+            h(XhTransferItem, { key: node.value, value: node.value }, () => h(XhTransferItemText, null, () => node.label)))),
+          h(XhTransferEmpty, null, () => '没有条目'),
+          h(XhTransferLoading, null, () => '正在读取'),
+        ],
+      })
+      return h(XhTransferRoot, { collection: items ? ITEMS : [], loading }, () => [panel(XhTransferSourcePanel), panel(XhTransferTargetPanel)])
+    },
     muted: '--xh-fg-muted',
     dim: 'list',
   },

@@ -9,6 +9,8 @@
 @import '../family/check-mark.css';
 @import '../family/collection-item.css';
 @import '../family/field-chrome.css';
+@import '../family/loading-ring.css';
+@import '../family/motion.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -206,6 +208,12 @@
     padding-block: var(--xh-transfer-list-py, var(--xh-space-1));
     padding-inline: var(--xh-transfer-list-px, var(--xh-space-1));
     overflow: auto;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 刷新：这一侧已有条目时后台在取，保留上一帧，列表按 micro 淡下，数据到了再淡回；在途占位此时让位 */
+  [data-scope='transfer'][data-part='list'][aria-busy='true'] {
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* Virtualizer viewport 才是真正的滚动层。此时 list 只负责 Transfer 的定高，
@@ -246,7 +254,7 @@
     flex: none;
     padding-block: var(--xh-transfer-empty-py, var(--xh-space-3));
     padding-inline: var(--xh-transfer-empty-px, var(--xh-_transfer-px));
-    color: var(--xh-transfer-empty-fg, var(--xh-fg-subtle));
+    color: var(--xh-transfer-empty-fg, var(--xh-fg-muted));
     font-size: var(--xh-transfer-empty-font-size, var(--xh-_transfer-font-size));
     line-height: var(--xh-leading-none);
     text-align: center;
@@ -263,11 +271,14 @@
 
   /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   [data-scope='transfer'][data-part='loading'] {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-_transfer-gap);
     flex: none;
     padding-block: var(--xh-transfer-loading-py, var(--xh-space-3));
     padding-inline: var(--xh-transfer-loading-px, var(--xh-_transfer-px));
-    color: var(--xh-transfer-loading-fg, var(--xh-fg-subtle));
+    color: var(--xh-transfer-loading-fg, var(--xh-fg-muted));
     font-size: var(--xh-transfer-loading-font-size, var(--xh-_transfer-font-size));
     line-height: var(--xh-leading-none);
     text-align: center;
@@ -275,6 +286,15 @@
 
   [data-scope='transfer'][data-part='loading'][hidden] {
     display: none;
+  }
+
+  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
+     直径取所在尺寸档的图标档 */
+  [data-scope='transfer'][data-part='loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   }
 
   [data-scope='transfer'][data-part='loading'][data-disabled] {
@@ -309,7 +329,7 @@
     display: block;
     padding-block: var(--xh-transfer-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-transfer-group-label-px, var(--xh-_transfer-px));
-    color: var(--xh-transfer-group-label-fg, var(--xh-fg-subtle));
+    color: var(--xh-transfer-group-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-transfer-group-label-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-transfer-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
