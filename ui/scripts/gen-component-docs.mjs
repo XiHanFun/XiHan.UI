@@ -546,6 +546,7 @@ function skinTraits(id) {
     pressFamily,
     logical: /(?:margin|padding|inset|border)-inline|inline-(?:start|end)/.test(css),
     dirRules: /\[dir=|:dir\(/.test(css),
+    dirSign: css.includes('--xh-direction-sign'),
   }
 }
 
@@ -1451,11 +1452,13 @@ function renderComponent(entry, category) {
 
   // RTL
   const rtl = authored('RTL')
-  if ((sk && (sk.logical || sk.dirRules)) || rtl) {
+  if ((sk && (sk.logical || sk.dirRules || sk.dirSign)) || rtl) {
     push('### RTL', '')
     const bits = []
     if (sk?.logical)
       bits.push(`皮肤用逻辑属性排布（${code('inline-start')} 一族），${code('dir="rtl"')} 下自动镜像`)
+    if (sk?.dirSign)
+      bits.push(`只认物理方向的量乘 ${code('--xh-direction-sign')} 换向，按就近的 ${code('dir')} 走`)
     if (sk?.dirRules)
       bits.push(`另有按 ${code('dir')} 分支的规则`)
     if (bits.length)

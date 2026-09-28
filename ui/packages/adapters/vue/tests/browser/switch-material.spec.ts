@@ -377,4 +377,33 @@ describe('switch 实体轨道与 raised 滑块', () => {
     expect(thumb('ltr-on').getBoundingClientRect().left).toBeGreaterThan(thumb('ltr-off').getBoundingClientRect().left)
     expect(thumb('rtl-on').getBoundingClientRect().left).toBeLessThan(thumb('rtl-off').getBoundingClientRect().left)
   })
+
+  it('rtl 页面里局部写回 ltr 的开关，滑块照 ltr 走到行尾、不被推出轨道', async () => {
+    await mount([
+      h('div', { dir: 'rtl' }, [
+        h('div', { dir: 'ltr' }, [
+          h(XhSwitch, { 'data-testid': 'nested-off' }),
+          h(XhSwitch, { 'data-testid': 'nested-on', 'defaultChecked': true }),
+        ]),
+        h(XhSwitch, { 'data-testid': 'outer-on', 'defaultChecked': true }),
+      ]),
+    ])
+    for (const id of ['nested-on', 'outer-on']) {
+      const box = track(id).getBoundingClientRect()
+      const knob = thumb(id).getBoundingClientRect()
+      expect(knob.left, `${id} 滑块左缘在轨道内`).toBeGreaterThanOrEqual(box.left)
+      expect(knob.right, `${id} 滑块右缘在轨道内`).toBeLessThanOrEqual(box.right)
+    }
+    expect(thumb('nested-on').getBoundingClientRect().left).toBeGreaterThan(thumb('nested-off').getBoundingClientRect().left)
+
+    // 按住拉长时已选中端回退同一段：外缘仍贴着轨道
+    track('nested-on').focus()
+    await userEvent.keyboard('{Space>}')
+    await finishMotion()
+    const box = track('nested-on').getBoundingClientRect()
+    const knob = thumb('nested-on').getBoundingClientRect()
+    expect(knob.left).toBeGreaterThanOrEqual(box.left)
+    expect(knob.right).toBeLessThanOrEqual(box.right)
+    await userEvent.keyboard('{/Space}')
+  })
 })
