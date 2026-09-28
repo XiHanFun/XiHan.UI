@@ -42124,6 +42124,13 @@
   flex: 0 0 auto;
 }
 
+/* 竖排标签的高就是控件高，不随标签带压缩：使用者限了高、标签带放不下时，靠位移露出被裁掉的那截（与横排同一套），
+   而不是把每一枚压扁到只剩一行字高 */
+[data-scope='tabs'][data-part='root'][data-orientation='vertical']
+  [data-scope='tabs'][data-part='trigger'] {
+  flex-shrink: 0;
+}
+
 /* segment 档是一条轨道里的格子（与 RadioGroup 的 segmented 形态同构）：格子按可用宽度等分 */
 [data-scope='tabs'][data-part='root'][data-orientation='horizontal'][data-variant='segment']
   [data-scope='tabs'][data-part='trigger'] {
