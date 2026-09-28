@@ -215,11 +215,17 @@ export function connectFileUpload<T extends PropTypes>(
     }),
 
     // 单体控件用原生 disabled；编程调用由机器上的 canChange 守卫兜底
+    // 定尺的独立动作按钮：盒型、四态面与 0.97 按压由 Action Control 家族按 text 档 outline 给出
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'type': 'button',
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+      'data-xh-action-variant': 'outline',
       // 打开系统文件框后窗口失焦，跟踪器的 onBlur 随即撤下按压面
       ...press('trigger'),
       'onClick': () => send({ type: 'PICKER.OPEN' }),
@@ -333,6 +339,12 @@ export function connectFileUpload<T extends PropTypes>(
       'aria-label': label.deleteItem(file),
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
+      // 一行里的小图标钮：Action Control icon 档 ghost，xs 视觉盒
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+      'data-xh-action-variant': 'ghost',
       // Enter 在 keydown 即删掉这一条，按钮随文件离开列表后由机器松开
       ...press(fileUploadPressKey(service.refs, file)),
       'onClick': (event: MouseEvent) => {
@@ -355,6 +367,12 @@ export function connectFileUpload<T extends PropTypes>(
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
       'data-empty': dataAttr(empty),
+      // 收尾动作画成不带底的文字钮：Action Control text 档 ghost，比「选择文件」小一档
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'data-xh-action-variant': 'ghost',
       // 空列表时按钮照常在位、可按（激活是空操作），按压面也照常
       ...press('clear'),
       'onClick': () => send({ type: 'FILES.CLEAR' }),

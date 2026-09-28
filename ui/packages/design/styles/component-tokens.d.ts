@@ -1652,6 +1652,7 @@ export type ComponentTokenName
     | '--xh-file-upload-trigger-border'
     | '--xh-file-upload-trigger-fg'
     | '--xh-file-upload-trigger-font-size'
+    | '--xh-file-upload-trigger-font-weight'
     | '--xh-file-upload-trigger-gap'
     | '--xh-file-upload-trigger-h'
     | '--xh-file-upload-trigger-px'

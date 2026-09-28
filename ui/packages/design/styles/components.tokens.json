@@ -31262,18 +31262,21 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "is(:active, [data-pressed])",
-        "not(:disabled)",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "file-upload 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "file-upload 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-clear-bg-hover",
@@ -31282,17 +31285,20 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "file-upload 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "file-upload 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-clear-fg",
@@ -31322,8 +31328,13 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -31344,7 +31355,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-caption-size"
+        "--xh-_action-profile-font-size"
       ],
       "visibility": "public",
       "description": "file-upload 的 clear-trigger 部件 font-size 覆盖槽。"
@@ -31362,7 +31373,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-sm"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "file-upload 的 clear-trigger 部件 gap 覆盖槽。"
@@ -31374,16 +31385,18 @@
         "clear-trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "file-upload 的 clear-trigger 部件 block-size 覆盖槽。"
+      "description": "file-upload 的 clear-trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-clear-px",
@@ -31398,7 +31411,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-sm"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "file-upload 的 clear-trigger 部件 padding-inline 覆盖槽。"
@@ -31428,18 +31441,21 @@
         "item-delete-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "is(:active, [data-pressed])",
-        "not(:disabled)",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "file-upload 的 item-delete-trigger 部件 background 覆盖槽。"
+      "description": "file-upload 的 item-delete-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-delete-bg-hover",
@@ -31448,17 +31464,20 @@
         "item-delete-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "file-upload 的 item-delete-trigger 部件 background 覆盖槽。"
+      "description": "file-upload 的 item-delete-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-delete-fg",
@@ -31488,8 +31507,13 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-danger-hover"
@@ -31526,10 +31550,11 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "file-upload 的 item-delete-trigger 部件 block-size、inline-size 覆盖槽。"
@@ -32447,16 +32472,18 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "--xh-ink-surface",
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "file-upload 的 trigger 部件 background 覆盖槽。"
+      "description": "file-upload 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-trigger-bg-active",
@@ -32465,18 +32492,21 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "is(:active, [data-pressed])",
-        "not(:disabled)",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "file-upload 的 trigger 部件 background 覆盖槽。"
+      "description": "file-upload 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-trigger-bg-hover",
@@ -32485,17 +32515,20 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "file-upload 的 trigger 部件 background 覆盖槽。"
+      "description": "file-upload 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-trigger-border",
@@ -32510,7 +32543,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
       "description": "file-upload 的 trigger 部件 border 覆盖槽。"
@@ -32525,10 +32558,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "file-upload 的 trigger 部件 color 覆盖槽。"
@@ -32546,10 +32588,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-_action-profile-font-size"
       ],
       "visibility": "public",
       "description": "file-upload 的 trigger 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-file-upload-trigger-font-weight",
+      "component": "file-upload",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 trigger 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-trigger-gap",
@@ -32564,7 +32624,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-md"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "file-upload 的 trigger 部件 gap 覆盖槽。"
@@ -32576,16 +32636,18 @@
         "trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-md"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "file-upload 的 trigger 部件 block-size 覆盖槽。"
+      "description": "file-upload 的 trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-trigger-px",
@@ -32600,7 +32662,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "file-upload 的 trigger 部件 padding-inline 覆盖槽。"
@@ -32633,11 +32695,14 @@
         "box-shadow"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "file-upload 的 trigger 部件 box-shadow 覆盖槽。"
