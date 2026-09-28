@@ -362,6 +362,22 @@ describe('摘除钮是 tag 的 close-trigger', () => {
   })
 })
 
+describe('确认键与输入法', () => {
+  it('按住 Enter / Space 的连发只切换一次；输入法组合中的按键不归标签组', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    const vue = h.nodes('vue').item
+    vue.focus()
+    keydown(vue, 'Enter')
+    expect(h.api().value).toEqual(['vue'])
+    vue.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', repeat: true, bubbles: true, cancelable: true }))
+    expect(h.api().value).toEqual(['vue'])
+    const composing = new KeyboardEvent('keydown', { key: ' ', isComposing: true, bubbles: true, cancelable: true })
+    vue.dispatchEvent(composing)
+    expect(composing.defaultPrevented).toBe(false)
+    expect(h.api().value).toEqual(['vue'])
+  })
+})
+
 describe('按压通道', () => {
   const keyup = (el: HTMLElement, key: string): void => {
     el.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }))

@@ -5,24 +5,19 @@
 
 // 提供 grid list 相关实现。
 
-import type { GridListSchema, GridListSelectionMode } from './grid-list.types'
+import type { GridListSchema } from './grid-list.types'
 import { applySelection, createTypeahead, setup } from '@xihan-ui/core'
 import { sameArray, toArray } from '../shared/array'
+import { normalizeGridSelection, toggleGridSelection } from '../shared/grid-collection'
 
 const { createMachine } = setup<GridListSchema>()
-
-function normalizeValue(value: readonly string[], mode: GridListSelectionMode): string[] {
-  if (mode === 'none')
-    return []
-  return mode === 'single' ? value.slice(0, 1) : [...new Set(value)]
-}
 
 export const gridListMachine = createMachine({
   name: 'grid-list',
   context: ({ prop, cell }) => ({
     value: cell<string[]>(() => ({
       value: toArray(prop('value')),
-      defaultValue: normalizeValue(toArray(prop('defaultValue')) ?? [], prop('selectionMode') ?? 'single'),
+      defaultValue: normalizeGridSelection(toArray(prop('defaultValue')) ?? [], prop('selectionMode') ?? 'single'),
       isEqual: sameArray,
       onChange: value => prop('onValueChange')?.({ value }),
     })),
@@ -63,14 +58,14 @@ export const gridListMachine = createMachine({
         const current = event.current()
         if (current.type !== 'VALUE.SET')
           return
-        context.set('value', normalizeValue(current.value, prop('selectionMode') ?? 'single'))
+        context.set('value', normalizeGridSelection(current.value, prop('selectionMode') ?? 'single'))
         context.set('selectionBaseline', null)
       },
       selectRow: ({ context, prop, event }) => {
         const current = event.current()
         if (current.type !== 'ROW.SELECT')
           return
-        context.set('value', normalizeValue([current.value], prop('selectionMode') ?? 'single'))
+        context.set('value', normalizeGridSelection([current.value], prop('selectionMode') ?? 'single'))
         context.set('anchorValue', current.value)
         context.set('selectionBaseline', null)
       },
@@ -81,10 +76,7 @@ export const gridListMachine = createMachine({
         const mode = prop('selectionMode') ?? 'single'
         if (mode === 'none')
           return
-        const value = context.get('value')
-        context.set('value', normalizeValue(value.includes(current.value)
-          ? value.filter(item => item !== current.value)
-          : [...value, current.value], mode))
+        context.set('value', toggleGridSelection(context.get('value'), current.value, mode))
         context.set('anchorValue', current.value)
         context.set('selectionBaseline', null)
       },

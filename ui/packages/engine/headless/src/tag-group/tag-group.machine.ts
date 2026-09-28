@@ -9,15 +9,14 @@ import type { TagPressedPart } from '../tag/tag.types'
 import type { TagGroupSchema, TagGroupSelectionMode } from './tag-group.types'
 import { createTypeahead, setup, trackListMotion } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
+import { normalizeGridSelection, toggleGridSelection } from '../shared/grid-collection'
 import { TAG_GROUP_ITEM_SELECTOR } from './tag-group.anatomy'
 
 const { createMachine } = setup<TagGroupSchema>()
 
-/** 选中集合归一：不选中模式清空，单选截到长度 ≤ 1，复选去重。 */
+/** 选中集合归一：不选中模式清空，单选截到长度 ≤ 1，复选去重。与 GridList 同一套规则。 */
 export function normalizeTagSelection(next: readonly string[], mode: TagGroupSelectionMode): string[] {
-  if (mode === 'none')
-    return []
-  return mode === 'single' ? next.slice(0, 1) : [...new Set(next)]
+  return normalizeGridSelection(next, mode)
 }
 
 // 选中集合存放在 context cell，受控/非受控由 cell 收口；机器只有 idle 一个状态。
@@ -26,7 +25,7 @@ export const tagGroupMachine = createMachine({
   context: ({ prop, cell }) => ({
     value: cell<string[]>(() => ({
       value: toValues(prop('value')),
-      defaultValue: toValues(prop('defaultValue')) ?? [],
+      defaultValue: normalizeGridSelection(toValues(prop('defaultValue')) ?? [], prop('selectionMode') ?? 'none'),
       isEqual: sameValues,
       onChange: value => prop('onValueChange')?.({ value }),
     })),
@@ -140,12 +139,8 @@ export const tagGroupMachine = createMachine({
         const mode = prop('selectionMode') ?? 'none'
         if (mode === 'none')
           return
-        const current = context.get('value')
         // 单选下切换退化成选中，不做取消
-        if (mode === 'single')
-          context.set('value', [e.value])
-        else
-          context.set('value', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
+        context.set('value', toggleGridSelection(context.get('value'), e.value, mode))
         context.set('focusedValue', e.value)
       },
       /**

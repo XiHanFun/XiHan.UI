@@ -35,7 +35,10 @@ function connectFiles(): { name: string, source: string }[] {
 
 const TEXT_INPUT = /HTMLInputElement|HTMLTextAreaElement|contentEditable|contenteditable/
 
-const needsGuard = connectFiles().filter(f => f.source.includes('onKeyDown') && TEXT_INPUT.test(f.source))
+/** 可操作网格集合的行里放得下作者的输入框（行内控件的放行规则在共享模块里），键盘入口同样要挡。 */
+const GRID_COLLECTION = /from '\.\.\/shared\/grid-collection'/
+
+const needsGuard = connectFiles().filter(f => f.source.includes('onKeyDown') && (TEXT_INPUT.test(f.source) || GRID_COLLECTION.test(f.source)))
 
 describe('输入法组合态守卫', () => {
   it('识别出了需要守卫的组件', () => {
