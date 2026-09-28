@@ -1,21 +1,17 @@
-<script setup lang="ts">
-import { ChevronDownIcon } from "@xihan-ui/icons";
-import { XhButton, XhIcon, XhMenuRoot } from "@xihan-ui/vue";
-
-const actions = [
-  { value: "new", label: "新建文件" },
-  { value: "open", label: "打开文件" },
-  { value: "delete", label: "移到回收站", separatorBefore: true },
-];
-</script>
-
 <template>
-  <XhMenuRoot :collection="actions" trigger-as-child>
-    <template #trigger>
-      <XhButton>
-        操作
-        <XhIcon :icon="ChevronDownIcon" />
-      </XhButton>
-    </template>
-  </XhMenuRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="24.5" y="20.5" width="95" height="31" rx="4" stroke="var(--xh-border-default)" />
+    <path d="M39 36h38" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M96 34l4 4 4-4" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <rect x="24.5" y="56.5" width="143" height="79" rx="12" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M36 78l1-4 8-8 3 3-8 8z" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M59 72h42" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M138 72h16" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <rect x="28" y="84" width="136" height="24" rx="4" fill="var(--xh-bg-subtle)" />
+    <path d="M40 94h8v8h-8zm-4 4v-8h8" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M59 96h34" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M138 96h16" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M42 114v8m-4-4l4 4 4-4m-10 8h12" stroke="var(--xh-fg-muted)" stroke-width="2" />
+    <path d="M59 120h46" stroke="var(--xh-fg-muted)" stroke-width="6" />
+  </svg>
 </template>

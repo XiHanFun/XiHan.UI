@@ -1,15 +1,10 @@
-<script setup lang="ts">
-import { XhTabsContent, XhTabsIndicator, XhTabsList, XhTabsRoot, XhTabsTrigger } from "@xihan-ui/vue";
-</script>
-
 <template>
-  <XhTabsRoot default-value="overview" style="inline-size: var(--xh-doc-catalog-w)">
-    <XhTabsList aria-label="内容视图">
-      <XhTabsTrigger value="overview">概览</XhTabsTrigger>
-      <XhTabsTrigger value="activity">动态</XhTabsTrigger>
-      <XhTabsIndicator />
-    </XhTabsList>
-    <XhTabsContent value="overview">项目概览</XhTabsContent>
-    <XhTabsContent value="activity">近期动态</XhTabsContent>
-  </XhTabsRoot>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M24 52.5h192" stroke="var(--xh-border-default)" />
+    <path d="M35 36h30" stroke="var(--xh-fg-brand-strong)" stroke-width="6" />
+    <path d="M28 52h44" stroke="var(--xh-fg-brand)" stroke-width="2" />
+    <path d="M91 36h26M143 36h30" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M31 76h58" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M30 96h172M30 108h148M30 120h160" stroke="var(--xh-fg-muted)" stroke-width="4" />
+  </svg>
 </template>
