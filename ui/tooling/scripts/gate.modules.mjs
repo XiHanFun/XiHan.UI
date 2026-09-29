@@ -174,6 +174,7 @@ export const MODULES = [
       'node tooling/scripts/docs/check-doc-design-language.mjs',
       'node tooling/scripts/docs/check-doc-media-placeholders.mjs',
       'node tooling/scripts/docs/check-demo-imports.mjs',
+      'node tooling/scripts/docs/check-demo-ids.mjs',
       'node tooling/scripts/docs/check-demo-count.mjs',
       'node tooling/scripts/docs/check-catalog-preview.mjs',
       'node tooling/scripts/docs/check-demo-scroll.mjs',
