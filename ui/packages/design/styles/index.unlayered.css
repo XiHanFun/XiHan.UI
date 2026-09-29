@@ -21039,6 +21039,11 @@
   line-height: var(--xh-leading-normal);
 }
 
+/* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
+[data-scope='cascader'][data-part='input']:focus-visible {
+  outline: none;
+}
+
 [data-scope='cascader'][data-part='input'][hidden] {
   display: none;
 }
@@ -25179,6 +25184,11 @@
   color: var(--xh-command-input-fg, var(--xh-fg-default));
   font-family: inherit;
   font-size: var(--xh-command-input-font-size, var(--xh-_command-font-size));
+}
+
+/* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
+[data-scope='command'][data-part='input']:focus-visible {
+  outline: none;
 }
 
 /* 自动填充态：浏览器给填过的框强加一套系统色（多数引擎是黄底黑字），
@@ -39634,6 +39644,11 @@
   transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
+[data-scope='side-nav'][data-part='input']:focus-visible {
+  outline: none;
+}
+
 /* 自动填充：引擎给填过的框强加一套系统色，盖得过 background 与 color。
    底改用 inset 阴影铺回来，字改用 -webkit-text-fill-color 接回来；
    两个选择器名分写两条，一条列表里只要有一个名字不被认识整条就被丢弃 */
@@ -48314,6 +48329,11 @@
   font-size: var(--xh-transfer-search-font-size, var(--xh-_transfer-font-size));
 }
 
+/* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
+[data-scope='transfer'][data-part='search']:focus-visible {
+  outline: none;
+}
+
 /* 单体控件的禁用是原生 disabled，样式只能写 :disabled；集合条目才读 data-disabled */
 [data-scope='transfer'][data-part='search']:disabled {
   color: var(--xh-fg-disabled);
@@ -49784,6 +49804,11 @@
   font-family: inherit;
   font-size: var(--xh-tree-select-input-font-size, var(--xh-_tree-select-font-size));
   line-height: var(--xh-leading-normal);
+}
+
+/* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
+[data-scope='tree-select'][data-part='input']:focus-visible {
+  outline: none;
 }
 
 [data-scope='tree-select'][data-part='input'][hidden] {

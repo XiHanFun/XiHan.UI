@@ -387,6 +387,11 @@
     line-height: var(--xh-leading-normal);
   }
 
+  /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
+  [data-scope='tree-select'][data-part='input']:focus-visible {
+    outline: none;
+  }
+
   [data-scope='tree-select'][data-part='input'][hidden] {
     display: none;
   }

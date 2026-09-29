@@ -180,6 +180,11 @@
     font-size: var(--xh-command-input-font-size, var(--xh-_command-font-size));
   }
 
+  /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
+  [data-scope='command'][data-part='input']:focus-visible {
+    outline: none;
+  }
+
   /* 自动填充态：浏览器给填过的框强加一套系统色（多数引擎是黄底黑字），
      优先级高到 background / color 改不动，也不跟主题走。
      底用 box-shadow 的 inset 扩散铺满内容盒，字用 -webkit-text-fill-color 接回令牌。

@@ -191,6 +191,11 @@
     font-size: var(--xh-transfer-search-font-size, var(--xh-_transfer-font-size));
   }
 
+  /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
+  [data-scope='transfer'][data-part='search']:focus-visible {
+    outline: none;
+  }
+
   /* 单体控件的禁用是原生 disabled，样式只能写 :disabled；集合条目才读 data-disabled */
   [data-scope='transfer'][data-part='search']:disabled {
     color: var(--xh-fg-disabled);
