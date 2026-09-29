@@ -74,20 +74,30 @@ async function mouseScale(): Promise<number> {
   return seen
 }
 
-/** 从图中心按下、分几步拖过 dx、松手；每步隔一帧，最后几步决定松手速度。 */
+/**
+ * 拖动每步之间的事件时间差（毫秒）。松手速度按事件自带的时间戳、取抬起前 80ms 内的首尾采样算；
+ * 时间戳若沿用派发时刻，一帧卡顿就把倒数第二次移动挤出窗口，只剩最后一次移动与同位的抬起，速度算成零、不起滑。
+ * 钉成 50ms：窗口里的采样离抬起 0 / 50ms，100ms 那个落在窗口外，都不压在窗口边上。
+ */
+const STEP_MS = 50
+
+/** 从图中心按下、分几步拖过 dx、松手；每步隔一帧派发，事件时间戳按 STEP_MS 递增，松手速度与机器快慢无关。 */
 async function drag(image: HTMLImageElement, dx: number, steps = 6): Promise<void> {
   const scale = await mouseScale()
   const rect = image.getBoundingClientRect()
   const x = rect.left + rect.width / 2
   const y = rect.top + rect.height / 2
   const at = (px: number) => ({ x: px / scale, y: y / scale })
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...at(x) })
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...at(x) })
+  // CDP 的 timestamp 是 Unix 纪元秒，事件的 timeStamp 照它换算
+  const start = Date.now() / 1000
+  const time = (step: number) => ({ timestamp: start + (step * STEP_MS) / 1000 })
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...at(x), ...time(0) })
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...at(x), ...time(0) })
   for (let i = 1; i <= steps; i++) {
     await frames(1)
-    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', button: 'left', ...at(x + (dx * i) / steps) })
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', button: 'left', ...at(x + (dx * i) / steps), ...time(i) })
   }
-  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...at(x + dx) })
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...at(x + dx), ...time(steps) })
 }
 
 async function zoomTo3(): Promise<void> {
@@ -117,6 +127,7 @@ describe('看片手势松手', () => {
   it('放大后快甩：松手顺着速度继续滑、一路减速，停在范围内', async () => {
     const image = await mount()
     await zoomTo3()
+    // 最后一步 20px / 50ms：松手速度 400px/s，投影落点 -60 - 120 = -180 越过左边界
     await drag(image, -60, 3)
     await frames(1)
     const released = offset(image).x
