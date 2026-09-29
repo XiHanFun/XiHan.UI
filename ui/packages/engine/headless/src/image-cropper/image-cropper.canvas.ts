@@ -5,30 +5,7 @@
 
 // 出图的那一步。连接层不碰它：什么时候出图、出成什么、拿去做什么，全归使用者。
 
-import type { ImageCropperFlip, ImageCropperRect, ImageCropperShape } from './image-cropper.types'
-
-export interface CropToCanvasOptions {
-  /**
-   * 裁切内容画出来的宽度，缺省等于裁切矩形的宽（即按 1:1 出图）。
-   * 量的是旋转之前的那块内容：旋转 90° 的倍数时画布宽高互换，其余角度画布是旋转后的外接矩形。
-   */
-  width?: number
-  /** 裁切内容画出来的高度，缺省按宽度与裁切矩形的比例算。 */
-  height?: number
-  /**
-   * 先铺一层底色再画图，铺满整张画布。
-   * 源图带透明像素而输出格式是 JPEG 时，不铺底色的透明区会被编码成黑块；圆形与斜角旋转留下的四角同理。
-   */
-  background?: string
-  /** 缩放时的插值质量，缺省 'high'。 */
-  quality?: ImageSmoothingQuality
-  /** 旋转角度，单位度，顺时针为正；缺省 0。与裁切器的呈现同一口径。 */
-  rotation?: number
-  /** 翻转，先于旋转作用在裁切内容上；缺省不翻。 */
-  flip?: ImageCropperFlip
-  /** 外形；round 时把内容裁成内切于裁切矩形的椭圆（1:1 即正圆），椭圆外透明或铺底色。缺省 rect。 */
-  shape?: ImageCropperShape
-}
+import type { CropToCanvasOptions, ImageCropperRect } from './image-cropper.types'
 
 /** 三角函数算出来的 1e-16 级尾巴：90° 的倍数要得到整整齐齐的宽高互换。 */
 function snap(value: number): number {

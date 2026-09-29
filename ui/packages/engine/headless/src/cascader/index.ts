@@ -32,7 +32,6 @@ export {
 } from './cascader.machine'
 export { cascaderMeta } from './cascader.meta'
 export { cascaderFilterCandidates, cascaderSearchCandidates } from './cascader.search'
-export type { CascaderFilter, CascaderSearchCandidate } from './cascader.search'
 export type {
   CascaderApi,
   CascaderBranchLoadDetails,
@@ -42,6 +41,7 @@ export type {
   CascaderColumn,
   CascaderColumnProps,
   CascaderExpandTrigger,
+  CascaderFilter,
   CascaderFocusIntent,
   CascaderGroupProps,
   CascaderItemProps,
@@ -53,6 +53,7 @@ export type {
   CascaderPressedPart,
   CascaderRefs,
   CascaderSchema,
+  CascaderSearchCandidate,
   CascaderSearchItemProps,
   CascaderSearchResult,
   CascaderTagMeta,

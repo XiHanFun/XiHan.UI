@@ -1254,6 +1254,7 @@ export {
 export type { ToolbarRootSlotProps } from './components/toolbar/toolbar'
 export { useToolbar } from './components/toolbar/use-toolbar'
 export type { ToolbarContext } from './components/toolbar/use-toolbar'
+export type { TooltipContext } from './components/tooltip/context'
 export {
   XhTooltipArrow,
   XhTooltipContent,
@@ -1264,7 +1265,6 @@ export {
 } from './components/tooltip/tooltip'
 export type { TooltipRootSlotProps } from './components/tooltip/tooltip'
 export { useTooltip } from './components/tooltip/use-tooltip'
-export type { TooltipContext } from './components/tooltip/use-tooltip'
 export {
   XhTourArrow,
   XhTourBackdrop,

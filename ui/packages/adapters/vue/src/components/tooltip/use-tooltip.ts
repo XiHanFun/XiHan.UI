@@ -5,9 +5,9 @@
 
 // 提供 use tooltip 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { TooltipApi, TooltipSchema } from '@xihan-ui/headless'
-import type { ComputedRef, Ref } from 'vue'
+import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/core'
+import type { TooltipSchema } from '@xihan-ui/headless'
+import type { TooltipContext } from './context'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTooltip, tooltipMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
@@ -18,21 +18,6 @@ import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 import { useTooltipGroup } from './context'
-
-export interface TooltipContext {
-  service: Service<TooltipSchema>
-  api: ComputedRef<TooltipApi>
-  /** 定位锚点。 */
-  triggerRef: Ref<HTMLElement | null>
-  /** 被定位的浮层。 */
-  positionerRef: Ref<HTMLElement | null>
-  /** 浮层本体，退场动画从它上面探测。 */
-  contentRef: Ref<HTMLElement | null>
-  /** 当前是否应当可见：退场动画播完之前仍为真。 */
-  visible: Ref<boolean>
-  /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
-  portalTarget: ComputedRef<string | Element>
-}
 
 export function useTooltip(
   props: TooltipSchema['props'],
