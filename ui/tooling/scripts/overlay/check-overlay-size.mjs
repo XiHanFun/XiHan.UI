@@ -180,21 +180,7 @@ for (const name of Object.keys(WIDTH_EXEMPT)) {
 
 // 锚宽那条通道：列表型浮层的候选面板与字段盒等宽，下界与限高取列表档。
 // 反过来，菜单与面板型浮层按自然宽度，跟着触发器拉伸就是走样，不许消费锚宽。
-const LIST_OVERLAYS = ['select', 'combobox', 'tree-select', 'cascader']
-/**
- * 形态不是「整块面板等宽」的列表型浮层：列表宽先算进一支私有槽，再由面板与一级列消费。
- * Cascader 的面板随列数伸展，与字段盒等宽的只有一级列；列高定死（见 SIZE_EXEMPT），不走列表档限高。
- */
-const LIST_FIRST_COLUMN = {
-  cascader: {
-    slot: '--xh-_cascader-list-w',
-    // 面板不窄于字段盒（只有一级列、搜索视图与占位都铺满它），一级列扣掉面板两侧描边与盒齐宽
-    consumers: [
-      /\[data-scope='cascader'\]\[data-part='content'\]\s*\{[^}]*min-inline-size:\s*var\(--xh-_cascader-list-w\)/,
-      /\[data-scope='cascader'\]\[data-part='column'\]\[data-level='0'\]\s*\{[^}]*inline-size:\s*calc\(var\(--xh-_cascader-list-w\) - 2 \* var\(--xh-stroke-thin\)\)/,
-    ],
-  },
-}
+const LIST_OVERLAYS = ['select', 'combobox', 'tree-select']
 const listWired = []
 
 for (const family of families) {
@@ -210,21 +196,11 @@ for (const family of families) {
   const missing = []
   if (!connect?.includes(`overlayAnchorWidthVar('${name}'`) && !connect?.includes(`'${anchorSlot}'`))
     missing.push(`${name}.connect.ts 没发 ${anchorSlot}（面板量不到字段盒多宽）`)
-  const shape = LIST_FIRST_COLUMN[name]
-  const lead = shape ? `${shape.slot}:` : 'inline-size:'
-  const width = new RegExp(`(?<![\\w-])${lead.replace(/-/g, '\\-')}\\s*min\\(\\s*max\\(var\\(--xh-${name}-content-min-w, var\\(--xh-overlay-menu-min-w\\)\\), var\\(${anchorSlot}\\)\\),\\s*var\\(--xh-_${name}-available-w\\)\\s*\\)`)
+  const width = new RegExp(`(?<![\\w-])inline-size:\\s*min\\(\\s*max\\(var\\(--xh-${name}-content-min-w, var\\(--xh-overlay-menu-min-w\\)\\), var\\(${anchorSlot}\\)\\),\\s*var\\(--xh-_${name}-available-w\\)\\s*\\)`)
   if (!width.test(css ?? ''))
-    missing.push(`${name}.css 没写 ${lead} min(max(下界, ${anchorSlot}), 可用宽)——面板会随最长的选项变宽，不与字段盒等宽`)
-  if (shape) {
-    const bare = (css ?? '').replace(/\/\*[\s\S]*?\*\//g, '')
-    for (const consumer of shape.consumers) {
-      if (!consumer.test(bare))
-        missing.push(`${name}.css 没按 ${consumer.source.slice(0, 80)}… 消费 ${shape.slot}（一级列与字段盒等宽）`)
-    }
-  }
-  else if (!css?.includes(`max-block-size: min(var(--xh-${name}-content-max-h, var(--xh-overlay-menu-max-h))`)) {
+    missing.push(`${name}.css 的 content 没写 inline-size: min(max(下界, ${anchorSlot}), 可用宽)——面板会随最长的选项变宽，不与字段盒等宽`)
+  if (!css?.includes(`max-block-size: min(var(--xh-${name}-content-max-h, var(--xh-overlay-menu-max-h))`))
     missing.push(`${name}.css 的 content 限高没取 --xh-overlay-menu-max-h（列表型浮层同一个限高）`)
-  }
   if (missing.length)
     problems.push(`${name} 是列表型浮层，锚宽通道没接齐：\n      ${missing.join('\n      ')}`)
   else

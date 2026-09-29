@@ -8,7 +8,7 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CascaderApi, CascaderBranchLoadSnapshot, CascaderColumnProps, CascaderLevel, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
 import { cascadeState, createPressTracker, dataAttr, focusItem, isComposingEvent, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/core'
-import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
@@ -558,8 +558,6 @@ export function connectCascader<T extends PropTypes>(
       'style': {
         ...overlayFixedStyle(position),
         ...overlayAvailableSpaceVars('cascader', position, null),
-        // 字段盒实测宽度：一级列与它等宽
-        ...overlayAnchorWidthVar('cascader', position?.anchorWidth),
       },
     }),
 

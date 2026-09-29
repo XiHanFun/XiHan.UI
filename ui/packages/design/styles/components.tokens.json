@@ -9023,22 +9023,19 @@
       "name": "--xh-cascader-content-min-w",
       "component": "cascader",
       "part": [
-        "column",
         "content"
       ],
       "property": [
-        "inline-size",
         "min-inline-size"
       ],
       "state": [
-        "default",
-        "level=0"
+        "default"
       ],
       "defaultToken": [
         "--xh-overlay-menu-min-w"
       ],
       "visibility": "public",
-      "description": "cascader 的 column、content 部件 inline-size、min-inline-size 覆盖槽。"
+      "description": "cascader 的 content 部件 min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-cascader-content-radius",

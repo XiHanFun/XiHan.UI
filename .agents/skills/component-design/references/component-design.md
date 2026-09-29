@@ -288,13 +288,13 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 类型 | 组件 | 宽度 |
 | --- | --- | --- |
-| 列表型 | Select、Combobox、TreeSelect 的候选面板；Cascader 的一级列 | 锚在字段盒上、与它等宽；长选项在条目里截断，面板不随最长的一条变宽。字段盒比 `--xh-overlay-menu-min-w` 还窄时取这个下界，比可用区还宽时收成可用宽度；限高统一 `--xh-overlay-menu-max-h` |
-| 面板型 | DatePicker、TimePicker、ColorPicker 等带网格或多列的面板 | 按内容的自然宽度，与字段盒起始对齐，不随字段盒拉伸 |
+| 列表型 | Select、Combobox、TreeSelect 的候选面板 | 锚在字段盒上、与它等宽；长选项在条目里截断，面板不随最长的一条变宽。字段盒比 `--xh-overlay-menu-min-w` 还窄时取这个下界，比可用区还宽时收成可用宽度；限高统一 `--xh-overlay-menu-max-h` |
+| 面板型 | DatePicker、TimePicker、ColorPicker、Cascader 等带网格或多列的面板 | 按内容的自然宽度，与字段盒起始对齐，不随字段盒拉伸 |
 | 菜单 | Menu、ContextMenu、Menubar | 不跟随触发器（触发器多是一颗按钮），按条目自然宽度，受 `--xh-overlay-menu-min-w` 与 `--xh-overlay-max-w` 夹取 |
 
 - 列表型浮层的锚点是字段盒（control），不是盒里的触发按钮：锚在触发按钮上时面板左缘会缩进一截内距。
 - 作者要给列表封顶写 `--xh-<c>-content-max-w`，要抬下界写 `--xh-<c>-content-min-w`；缺省没有上界。
-- Cascader 是多列的列表：与字段盒等宽的是一级列（只有一级列时整块面板恰好与盒齐宽），后续列按条目的自然宽度、受 `--xh-overlay-menu-min-w` 托底，面板随列数伸展、宽过可用区时收成可用宽度并在面内横滚；每列定高、列内自滚，不走列表档限高。
+- Cascader 是多列的面板：锚在字段盒上、与盒起始缘对齐；每一列（含一级列）按条目的自然宽度、受 `--xh-overlay-menu-min-w` 托底，长选项撑到条目上限 `--xh-overlay-max-w` 为止、余下的在条目里截断；面板随列数伸展、宽过可用区时收成可用宽度并在面内横滚；每列定高、列内自滚，不走列表档限高。
 
 ### 6.3 形状身份
 

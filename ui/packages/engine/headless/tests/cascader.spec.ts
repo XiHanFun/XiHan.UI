@@ -1589,17 +1589,6 @@ describe('cascader 浮层定位', () => {
     expect(options.dir).toBe('rtl')
   })
 
-  it('锚点实测宽度投影成私有槽，一级列据此与字段盒等宽；没量到时撤掉声明', async () => {
-    const engine = fakeEngine()
-    const h = mount({}, { position: engine.port })
-    h.send({ type: 'OPEN' })
-    await tick()
-    const style = (): Record<string, string> => (h.api().getPositionerProps() as { style: Record<string, string> }).style
-    expect(style()['--xh-_cascader-anchor-w']).toBe('')
-    engine.calls[0]!.emit({ ...RESULT, anchorWidth: 256 })
-    expect(style()['--xh-_cascader-anchor-w']).toBe('256px')
-  })
-
   it('定位锚在字段盒上，清空后焦点仍回触发按钮', async () => {
     const engine = fakeEngine()
     const h = mount({ defaultValue: ['zhejiang', 'hangzhou'] }, { position: engine.port })

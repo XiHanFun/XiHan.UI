@@ -25,9 +25,6 @@
     /* 落定那一侧的可用宽度，由定位引擎经内联自定义属性写进来，列区据此夹住行内轴；
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
     --xh-_cascader-available-w: 100vw;
-    /* 字段盒实测宽度，由定位引擎经内联自定义属性写进来，一级列与它等宽；
-       引擎没算（尚未落位 / 无引擎）时为 0，一级列取下界 */
-    --xh-_cascader-anchor-w: 0px;
     /* 当前浮层只接受自己的落位方向，不叠加祖先的位移。 */
     --xh-_overlay-enter-up: 0;
     --xh-_overlay-enter-down: 0;
@@ -297,22 +294,16 @@
   }
 
   /* 级联的骨架就在这一条上：列沿书写方向并排，一层一列。
-     一级列是列表型浮层，与字段盒等宽；后续列按条目的自然宽度，面板随列数伸展。
+     面板型浮层：每一列按条目的自然宽度，不随字段盒拉伸，面板随列数伸展。
      面板含多列，材质取 floating：实体底 + border-default 描边 + 浮起投影，不透景 */
   [data-scope='cascader'][data-part='content'] {
-    /* 列表宽：字段盒比下界还窄时取下界，比可用区还宽时收成可用宽度。
-       锚宽与可用宽都写在定位层上、沿继承流下来 */
-    --xh-_cascader-list-w: min(
-      max(var(--xh-cascader-content-min-w, var(--xh-overlay-menu-min-w)), var(--xh-_cascader-anchor-w)),
-      var(--xh-_cascader-available-w)
-    );
-
     position: relative;
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    /* 面板不窄于字段盒：只有一级列、搜索视图与两个占位都铺满这一宽度 */
-    min-inline-size: var(--xh-_cascader-list-w);
+    /* 面板的下界：搜索视图与两个占位没有列托底，靠这一条不缩成一小块；可用区比它还窄时让位。
+       可用宽写在定位层上、沿继承流下来 */
+    min-inline-size: min(var(--xh-cascader-content-min-w, var(--xh-overlay-menu-min-w)), var(--xh-_cascader-available-w));
     /* 列多起来时外框宽过可用区就收成可用宽度，溢出的列交给下面那条 overflow-x；
        缺省不封顶，作者要封顶写 --xh-cascader-content-max-w */
     max-inline-size: min(var(--xh-cascader-content-max-w, var(--xh-_cascader-available-w)), var(--xh-_cascader-available-w));
@@ -360,7 +351,7 @@
     flex: none;
     flex-direction: column;
     gap: var(--xh-cascader-column-gap, var(--xh-list-option-gap));
-    /* 后续列按条目的自然宽度，受菜单的下界托底 */
+    /* 每一列按条目的自然宽度，受菜单的下界托底；长选项撑到条目的上限为止，余下的在条目里截断 */
     min-inline-size: var(--xh-cascader-column-min-w, var(--xh-overlay-menu-min-w));
     block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
     padding-block: var(--xh-cascader-column-py, var(--xh-space-1));
@@ -375,13 +366,6 @@
      淡的是列不是面：content 是整块浮起面，整块淡下去面就透了 */
   [data-scope='cascader'][data-part='content'][aria-busy='true'] > [data-scope='cascader']:is([data-part='column'], [data-part='search-list']) {
     opacity: var(--xh-state-disabled-opacity);
-  }
-
-  /* 一级列与字段盒等宽：扣掉面板两侧的描边，只有这一列时整块面板恰好与盒齐宽。
-     长选项在条目里截断，不撑宽这一列 */
-  [data-scope='cascader'][data-part='column'][data-level='0'] {
-    inline-size: calc(var(--xh-_cascader-list-w) - 2 * var(--xh-stroke-thin));
-    min-inline-size: 0;
   }
 
   /* 展开路径砍短了这一列就收起来。display 盖掉了 UA 的 [hidden]{display:none}，
