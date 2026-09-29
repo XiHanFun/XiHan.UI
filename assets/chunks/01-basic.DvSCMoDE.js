@@ -1,1 +1,0 @@
-import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{X as o}from"./matrix-code.DJbKFA1S.js";import"./jsx-runtime.Twf82CZ0.js";import"./theme.BkMxTDZM.js";import"./framework.D1FqHTxE.js";import"./slot-content.DPoKlr88.js";import"./index.CVfUds7h.js";function u(){return t.jsx(o,{value:"https://ui.xihanfun.com"})}export{u as default};

@@ -1,0 +1,1 @@
+import{iZ as e}from"./theme.CAi6RKG1.js";import{d as a,o,b as t,k as r}from"./framework.D1FqHTxE.js";const m=a({__name:"01-basic",setup(n){return(s,c)=>(o(),t(r(e),{value:"https://ui.xihanfun.com"}))}});export{m as default};
