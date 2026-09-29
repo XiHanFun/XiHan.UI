@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite'
+import type { Plugin } from 'vitest/config'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -38,7 +38,9 @@ function demoWorkspacePackages(): Plugin {
       const matched = /^(@xihan-ui\/[^/]+)(?:\/(.+))?$/.exec(source)
       if (!matched)
         return null
-      const [, name, subpath] = matched
+      // 包名一组不带量词，匹配上就一定有值；子路径一组可缺
+      const name = matched[1]!
+      const subpath = matched[2]
       if (name === '@xihan-ui/web-components') {
         const file = join(packageRoot, 'src', `${subpath ?? 'index'}.ts`)
         if (!existsSync(file))
