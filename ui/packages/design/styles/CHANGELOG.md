@@ -1,5 +1,1232 @@
 # @xihan-ui/styles
 
+## 3.0.0
+
+### Major Changes
+
+- 508a0b5: Cascader 的浮层按面板型浮层定宽：每一列（含一级列）按条目的自然宽度、以 `--xh-overlay-menu-min-w` 托底（不再是字面量 7rem），不随字段盒拉伸，长选项撑到条目上限为止、余下的在条目里截断；搜索框不参与定宽，铺满列撑出的宽度；面板随列数伸展，宽过可用区时收成可用宽度。浮层改锚在字段盒（control）上，面板起始缘与盒对齐；焦点归还仍回触发按钮，`CascaderRefs` 新增 `getTriggerEl`。`--xh-cascader-content-max-w` 缺省改为不封顶，新增 `--xh-cascader-content-min-w` 定面板的下界（缺省 `--xh-overlay-menu-min-w`）。
+
+  面板含多列，材质由 frosted 改为 floating（实体底 + `--xh-border-default` 描边 + `--xh-elevation-floating` 投影，不透景），与时间选择同档：content 不再投影 `data-xh-material`，列间分隔改取 `--xh-material-solid-separator`，条目、分组标题与占位文字改取 `--xh-fg-default` / `--xh-fg-muted`。破坏性：移除 `--xh-cascader-content-backdrop`、`--xh-cascader-content-highlight` 与 `--xh-cascader-loading-min-w`（占位铺满面板宽度，下界改由 `--xh-cascader-content-min-w` 统一给）。
+
+- 31ce42a: Cascader 的占位态按设计真源的占位态一节补齐：首次加载时 `loading` 部件在文案前转一枚加载环（连接层投影 `data-xh-loading-ring` 与 `data-loading`，环走加载环家族配方），此前只是一行静态文字；已有候选时后台刷新保留上一帧，列与搜索候选列表按 `micro` 淡到 `--xh-state-disabled-opacity`，淡的是列不是浮起面。占位不再设最小高，内容多高就多高。破坏性：移除 `--xh-cascader-empty-min-h` 与 `--xh-cascader-loading-min-h`（缺省是字面量 5rem）。
+- e927168: DownloadTrigger 的取数在途改接加载环家族配方：连接层投影 `data-xh-loading-ring="overlay"`，环压在钮正中、直径取钮的图标档，画法与 Spinner 环档一致（此前是 1em、1px、无轨道的小环）。进入在途等一个 `micro` 才起淡，钮里的文字与兜底下载字形随前景同刻淡出留位；退出在途不再硬切，按 `micro` 交叉淡回。`--xh-download-trigger-loading-duration` 照旧控制转速。破坏性：移除关键帧 `xh-download-trigger-content-hide`（文字的隐去改由过渡承担）。
+- 1672c7e: IconWrapper 并入 Icon：图标新增 `frame` 底框，删除 IconWrapper 组件。
+
+  - `IconProps` 新增 `frame?: ActionVariant`（`solid` / `subtle` / `outline` / `ghost`），不写即无框；root 上落 `data-frame`。框画在 `<svg>` 自己的盒上，圆形；sm / md / lg 三档直径取 `--xh-control-h-sm/md/lg`，与同档 Avatar 一样大，图元按 `size` 取字形直径居中。其余五档（text、xl、2xl、3xl、4xl）的框沿用 md 档的内衬厚度。
+  - `tone` 同时决定框的配色：实心取语气主色与反白前景，淡底取语气淡底与语气文字色，描边取语气描边；不写 `tone` 时实心为品牌色、其余为中性。框只认图标自己身上的 `data-tone`，放在语气容器里的无语气框保持中性。
+  - 框里的图元不读外层下发的 `--xh-icon-size`，落在按钮、提示条这类统一图元直径的容器里也按自己的档位。
+  - 新增覆盖槽：`--xh-icon-frame-size`、`--xh-icon-frame-glyph-size`、`--xh-icon-frame-radius`、`--xh-icon-frame-bg`、`--xh-icon-frame-border`、`--xh-icon-frame-shadow`；框的前景沿用 `--xh-icon-fg`。
+  - 可及名与装饰态不因加框改变。
+  - 删除：Vue / React 的 `XhIconWrapper`、`XhIconWrapperProps`，Web Components 的 `<xh-icon-wrapper>` 与 `XhIconWrapperElement`，Headless 的 `connectIconWrapper`、`iconWrapperAnatomy`、`iconWrapperKeyboard`、`iconWrapperMeta` 与 `IconWrapperApi`、`IconWrapperProps`、`IconWrapperTranslations`，皮肤子路径 `@xihan-ui/styles/icon-wrapper.css`，覆盖槽 `--xh-icon-wrapper-*`，以及 `data-scope="icon-wrapper"`。
+
+  迁移：把底座的三个轴搬到图标自己身上，`variant` 改名 `frame`。
+
+  ```vue
+  <!-- 之前 -->
+  <XhIconWrapper variant="subtle" tone="brand" size="lg">
+    <XhIcon :icon="FolderIcon" />
+  </XhIconWrapper>
+
+  <!-- 之后 -->
+  <XhIcon :icon="FolderIcon" frame="subtle" tone="brand" size="lg" />
+  ```
+
+  Web Components 把 `<xh-icon-wrapper variant="subtle"><span data-xh-part="root"><xh-icon>…</xh-icon></span></xh-icon-wrapper>` 换成 `<xh-icon frame="subtle">…</xh-icon>`。原先不写 `variant` 的 IconWrapper 是中性淡底，对应 `frame="subtle"`。覆盖槽对应：`--xh-icon-wrapper-size` → `--xh-icon-frame-size`、`--xh-icon-wrapper-glyph-size` → `--xh-icon-frame-glyph-size`、`--xh-icon-wrapper-radius` → `--xh-icon-frame-radius`、`--xh-icon-wrapper-bg` → `--xh-icon-frame-bg`、`--xh-icon-wrapper-shadow` → `--xh-icon-frame-shadow`、`--xh-icon-wrapper-fg` → `--xh-icon-fg`。
+
+- ccb58dd: ImageViewer 的占位态与禁用按设计真源补齐：
+  - 取图时画面正中改转一枚加载环（`viewport` 投影 `data-xh-loading-ring`，环走加载环家族配方，随 `data-loading` 淡入淡出），不再垫一块抬起占位面；环与警示字形的尺由新增的 `--xh-image-viewer-status-size` 给，缺省 `--xh-glyph-size-lg`。
+  - 取图失败此前没有画面：机器已置 `imageStatus: 'error'`，连接层却只投影 `data-loading`。`viewport` 与 `image` 新增 `data-error`，皮肤在画面正中画一枚取 `--xh-fg-danger` 的警示字形，破图整张让位（替代文字仍在可及树里）；新增 `--xh-image-viewer-error-fg`。
+  - 禁用的翻页、缩放钮此前只压低不透明度：改为前景换 `--xh-fg-disabled`（看片层的白墨域里取深色档的禁用色），不再改不透明度。
+    破坏性：移除 `--xh-image-viewer-loading-size`、`--xh-image-viewer-loading-radius` 与 `--xh-image-viewer-loading-bg`（占位面已撤，环径改由 `--xh-image-viewer-status-size` 给）。
+- cd23ebb: Command、Cascader、Transfer 面板里内嵌的搜索框统一成一种写法：通栏一行，块尺寸取所在尺寸档的 `--xh-control-h-*`、字号取 `--xh-control-font-*`（Command 此前固定正文字号、Transfer 固定 sm 高度、Cascader 由内衬撑高）；只画一道面内分隔的下划线，取所在面材质的分隔令牌（Cascader、Transfer 取 `--xh-material-solid-separator`，Command 与它的底栏上沿取 sheet 面的 `--xh-material-elevated-separator`），Transfer 不再用字段边 `--xh-border-control`。三处搜索框的连接层投影 `data-xh-field-input`，重置与占位前景走字段家族：Cascader、Transfer 的占位文字此前是浏览器默认色，现在与其它字段同取 `--xh-fg-subtle`，新增 `--xh-transfer-placeholder-fg`，Cascader 与值文本的占位共用 `--xh-cascader-placeholder-fg`。破坏性：移除 `--xh-cascader-input-py`，改由新增的 `--xh-cascader-input-h` 定高。
+- 89b3c2a: 组件私有的关键帧并入 `family/motion.css` 的共享关键帧，旧名退役。在 `xihan.overrides` 层重定义过下列旧名的，改为重定义新名。新名跨组件共享，重定义会同时作用于所有引用它的组件；只想换一个组件的动画，改写该组件部件上的 `animation-name`。
+
+  | 旧名                                 | 新名           |
+  | ------------------------------------ | -------------- |
+  | `xh-spinner-rotate`                  | `xh-spin`      |
+  | `xh-popconfirm-rotate`               | `xh-spin`      |
+  | `xh-switch-rotate`                   | `xh-spin`      |
+  | `xh-toast-spin`                      | `xh-spin`      |
+  | `xh-approval-rotate`                 | `xh-spin`      |
+  | `xh-clipboard-rotate`                | `xh-spin`      |
+  | `xh-download-trigger-rotate`         | `xh-spin`      |
+  | `xh-notification-spin`               | `xh-spin`      |
+  | `xh-reasoning-shimmer`               | `xh-shimmer`   |
+  | `xh-tool-call-shimmer`               | `xh-shimmer`   |
+  | `xh-skeleton-shimmer`                | `xh-shimmer`   |
+  | `xh-approval-in`                     | `xh-item-in`   |
+  | `xh-message-feed-item-in`            | `xh-item-in`   |
+  | `xh-question-flow-in`                | `xh-item-in`   |
+  | `xh-tool-call-enter`                 | `xh-item-in`   |
+  | `xh-approval-result-in`              | `xh-pop-in`    |
+  | `xh-message-feed-button-in`          | `xh-pop-in`    |
+  | `xh-question-flow-result-in`         | `xh-pop-in`    |
+  | `xh-log-button-in`                   | `xh-pop-in`    |
+  | `xh-reasoning-fade-in`               | `xh-fade-in`   |
+  | `xh-clipboard-loading-reveal`        | `xh-fade-in`   |
+  | `xh-download-trigger-loading-reveal` | `xh-fade-in`   |
+  | `xh-clipboard-loading-hide`          | `xh-fade-out`  |
+  | `xh-diff-view-reveal`                | `xh-drop-in`   |
+  | `xh-form-summary-enter`              | `xh-drop-in`   |
+  | `xh-dialog-in`                       | `xh-sheet-in`  |
+  | `xh-dialog-out`                      | `xh-sheet-out` |
+  | `xh-notification-in`                 | `xh-sheet-in`  |
+  | `xh-notification-out`                | `xh-sheet-out` |
+  | `xh-drawer-in-right`                 | `xh-slide-in`  |
+  | `xh-drawer-in-left`                  | `xh-slide-in`  |
+  | `xh-drawer-in-top`                   | `xh-slide-in`  |
+  | `xh-drawer-in-bottom`                | `xh-slide-in`  |
+  | `xh-drawer-out-right`                | `xh-slide-out` |
+  | `xh-drawer-out-left`                 | `xh-slide-out` |
+  | `xh-drawer-out-top`                  | `xh-slide-out` |
+  | `xh-drawer-out-bottom`               | `xh-slide-out` |
+
+- bf1fb1f: 循环动画的周期令牌并入 `--xh-motion-loop-*` 一族，与 `--xh-motion-loop-breathe` 并列；旧名不再输出，也不留别名。改写过或在自己样式里引用过下列旧名的，改为新名。`tokens.json`、`tokens` 对象与 `TokenName` 类型同样只有新名。
+
+  | 旧名                    | 新名                       | 取值   |
+  | ----------------------- | -------------------------- | ------ |
+  | `--xh-spin-duration`    | `--xh-motion-loop-spin`    | 640ms  |
+  | `--xh-caret-duration`   | `--xh-motion-loop-caret`   | 1000ms |
+  | `--xh-shimmer-duration` | `--xh-motion-loop-shimmer` | 1600ms |
+
+- dc4e305: 轻提示并入通知：Toast 整个组件删除，同一种「到期自行消失的消息」只剩一个 Notification，用 `preset` 区分两种形态。`card`（缺省）是主动推送的两层卡片，`toast` 是刚才那个操作的一句结果。两种预设的缺省值由 Headless 的 `NOTIFICATION_PRESETS` 统一给出，三端读同一份：
+
+  | 缺省值            | `card`                       | `toast`                                              |
+  | ----------------- | ---------------------------- | ---------------------------------------------------- |
+  | `placement`       | `bottom-end`                 | `bottom`                                             |
+  | `max`（每个落位） | 5                            | 3                                                    |
+  | `gap`             | 16                           | 12                                                   |
+  | `duration`        | 5000                         | 4000                                                 |
+  | `stacked`         | 不叠                         | 叠成一摞，指针或焦点进入即展开，整摞计时一并按住     |
+  | `pauseOnPageIdle` | 关闭                         | 开启                                                 |
+  | 卡片排版          | 两列网格，叉钉在右上角（sm） | 一行，叉排在行尾（xs），有悬停能力时悬停或聚焦才显现 |
+
+  原 Toast 的能力都在轻提示预设里：加载环与语气字形交叉淡变、`loading` / `promise`、行内动作、倒计时条、叠放与展开、页面闲置暂停、`max` 与 `dedupe`。叠放从轻提示专有变成通知的开关，卡片也可以 `stacked`。旧名一律不保留，没有转发别名。
+
+  ## 服务
+
+  ```ts
+  // 之前
+  import { createToastService } from "@xihan-ui/vue";
+  const toast = createToastService({ placement: "top" });
+
+  // 之后
+  import { createNotificationService } from "@xihan-ui/vue";
+  const toast = createNotificationService({
+    preset: "toast",
+    placement: "top",
+  });
+  ```
+
+  React 与 Web Components（`@xihan-ui/web-components/services`）同样改法。句柄的方法（`create` / `update` / `dismiss` / `info` / `success` / `warning` / `danger` / `loading` / `promise` / `pauseAll` / `resumeAll` / `setConfig` / `dispose`）不变；语气快捷方法的第一个参数仍是标题。
+
+  | 旧                                                                   | 新                                                                                        |
+  | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+  | `createToastService(options)`                                        | `createNotificationService({ preset: 'toast', ...options })`                              |
+  | `ToastService` / `ToastServiceOptions`                               | `NotificationService` / `NotificationServiceOptions`                                      |
+  | `ToastCreateOptions` / `ToastMessageOptions` / `ToastPromiseOptions` | `NotificationCreateOptions` / `NotificationMessageOptions` / `NotificationPromiseOptions` |
+  | `ToastTranslationsSource`（React）                                   | `NotificationTranslationsSource`                                                          |
+  | 服务选项 `toastTranslations`                                         | `translations`                                                                            |
+  | 服务选项里没有的 `stacked` / `duration` / `pauseOnPageIdle` 缺省     | 现在都可以在创建时改写，缺省随预设                                                        |
+
+  ## 组件
+
+  | 旧                                                                                                                                    | 新                                                                                                                                     |
+  | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+  | `XhToastRoot`                                                                                                                         | `XhNotificationItem`，写 `preset="toast"`                                                                                              |
+  | `XhToastIndicator` / `XhToastContent` / `XhToastTitle` / `XhToastDescription`                                                         | `XhNotificationItemIndicator` / `XhNotificationItemContent` / `XhNotificationItemTitle` / `XhNotificationItemDescription`              |
+  | `XhToastActionTrigger` / `XhToastProgress` / `XhToastCloseTrigger`                                                                    | `XhNotificationItemActionTrigger` / `XhNotificationItemProgress` / `XhNotificationItemCloseTrigger`                                    |
+  | `XhToast*Props`（React）                                                                                                              | `XhNotificationItem*Props`                                                                                                             |
+  | `ToastRootSlotProps`                                                                                                                  | `NotificationItemSlotProps`                                                                                                            |
+  | `useToast` / `ToastContext`                                                                                                           | `useNotificationItem` / `NotificationItemContext`                                                                                      |
+  | `useToastContext`（React）                                                                                                            | `useNotificationItemContext`                                                                                                           |
+  | `<xh-toast>`                                                                                                                          | `<xh-notification-item preset="toast">`                                                                                                |
+  | Light DOM 作者节点 `data-xh-part="indicator"` / `content` / `title` / `description` / `action-trigger` / `progress` / `close-trigger` | `item-indicator` / `item-content` / `item-title` / `item-description` / `item-action-trigger` / `item-progress` / `item-close-trigger` |
+  | 事件 `status-change` / `action`                                                                                                       | 同名；Vue 的 `action` 现在与 React / Web Components 一样带 `{ id }`                                                                    |
+
+  `XhNotificationRoot` / `<xh-notification>` 新增 `preset` 与 `stacked`；`XhNotificationItem` / `<xh-notification-item>` 新增 `preset`，队列交下来的条目自带 `preset`，自己铺卡片时要带上。单独使用的轻提示条目现在缺省在页面转入后台时暂停计时（原 `<xh-toast>` 单用时缺省关闭），写 `pauseOnPageIdle={false}` / `pause-on-page-idle="false"` 回到旧行为。单独摆放、不在叠放的一摞里的轻提示改走面板的进出场（淡入并轻微缩放），叠放档仍从视口边缘推入。
+
+  新增 `XhNotificationItemContent`：标题与说明的文本列，两种预设都用它包住 `item-title` 与 `item-description`。
+
+  ## Headless
+
+  | 旧                                                                                                 | 新                                                                                                                                              |
+  | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+  | `toastMachine` / `ToastSchema` / `ToastApi`                                                        | `notificationItemMachine` / `NotificationItemSchema` / `NotificationItemApi`                                                                    |
+  | `connectToast`                                                                                     | `connectNotificationItem`                                                                                                                       |
+  | `toastAnatomy` / `toastKeyboard` / `toastMeta`                                                     | `notificationAnatomy` / `notificationKeyboard` / `notificationMeta`                                                                             |
+  | `resolveToastDuration(loading, duration)`                                                          | `resolveNotificationDuration(loading, duration, preset)`                                                                                        |
+  | `resolveToastId`                                                                                   | `resolveNotificationItemId`                                                                                                                     |
+  | `TOAST_DURATION` / `TOAST_GAP` / `TOAST_MAX` / `TOAST_PLACEMENT`                                   | `NOTIFICATION_PRESETS.toast.duration` / `.gap` / `.max` / `.placement`                                                                          |
+  | `NOTIFICATION_GAP` / `NOTIFICATION_MAX` / `NOTIFICATION_PLACEMENT`                                 | `NOTIFICATION_PRESETS.card.gap` / `.max` / `.placement`，或 `notificationPresetOf(preset)`                                                      |
+  | `createToastStackController` / `ToastStackController` / `ToastStackControllerOptions`              | 删除：叠放由 `notificationMachine` 的 `stacked` 接管，展开状态进了机器（`STACK.EXPAND` / `STACK.COLLAPSE`，Esc 收起）                           |
+  | `resolveToastServiceItem` / `ResolvedToastServiceItem` / `ToastServiceDefaults`                    | 删除：服务条目按 `ResolvedNotification` 解析，缺省值取 `notificationPresetOf`                                                                   |
+  | `ToastTone` / `ToastStatus` / `ToastPlacement` / `ToastPauseSource` / `ToastPressedPart`           | `NotificationTone` / `NotificationStatus` / `NotificationPlacement` / `NotificationPauseSource`（多一个 `'stack'`） / `NotificationPressedPart` |
+  | `ToastRecord` / `ToastOptions` / `ToastTranslations`                                               | `NotificationRecord` / `NotificationOptions` / `NotificationTranslations`                                                                       |
+  | `ToastStatusChangeDetails` / `ToastActionDetails`                                                  | `NotificationStatusChangeDetails` / `NotificationActionDetails`                                                                                 |
+  | 事件 `TOAST.DISMISS` / `TOAST.ACTION` / `TOAST.PAUSE` / `TOAST.RESUME` / `TOAST.RESET`             | `ITEM.DISMISS` / `ITEM.ACTION` / `ITEM.PAUSE` / `ITEM.RESUME` / `ITEM.RESET`                                                                    |
+  | `getRootProps` / `getIndicatorProps` / `getContentProps` / `getTitleProps` / `getDescriptionProps` | `getItemProps` / `getItemIndicatorProps` / `getItemContentProps` / `getItemTitleProps` / `getItemDescriptionProps`                              |
+  | `getActionTriggerProps` / `getProgressProps` / `getCloseTriggerProps`                              | `getItemActionTriggerProps` / `getItemProgressProps` / `getItemCloseTriggerProps`                                                               |
+  | `createFeedbackServiceController` 的 `idPrefix` 选项                                               | 删除：条目 id 统一由队列生成                                                                                                                    |
+  | 全局配置文案桶 `translations.toast`                                                                | `translations.notification`（`region` 与 `close`）                                                                                              |
+
+  ## 样式
+
+  `@xihan-ui/styles/css/toast.css` 子路径删除，轻提示的皮肤在 `css/notification.css` 里按 `[data-preset='toast']` 分支。
+
+  | 旧                                                                                                          | 新                                                                                                                           |
+  | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+  | `[data-scope='toast'][data-part='root']`                                                                    | `[data-scope='notification'][data-part='item'][data-preset='toast']`                                                         |
+  | `[data-scope='toast'][data-part='group']`                                                                   | `[data-scope='notification'][data-part='group'][data-preset='toast']`（叠放时另带 `data-stacked`，展开时带 `data-expanded`） |
+  | `[data-scope='toast'][data-part='<部件>']`                                                                  | `[data-scope='notification'][data-part='item-<部件>']`                                                                       |
+  | `--xh-toast-bg` / `-border` / `-shadow` / `-radius` / `-fg`                                                 | `--xh-notification-item-bg` / `-border` / `-shadow` / `-radius` / `-fg`                                                      |
+  | `--xh-toast-px` / `-py` / `-gap` / `-font-size` / `-leading`                                                | `--xh-notification-item-px` / `-py` / `-gap` / `-font-size` / `-leading`                                                     |
+  | `--xh-toast-inline-size`                                                                                    | `--xh-notification-item-w`                                                                                                   |
+  | `--xh-toast-inset` / `--xh-toast-layer`                                                                     | `--xh-notification-inset` / `--xh-notification-layer`                                                                        |
+  | `--xh-toast-title-*` / `--xh-toast-description-*`                                                           | `--xh-notification-title-*` / `--xh-notification-description-*`（后缀不变）                                                  |
+  | `--xh-toast-icon-fg` / `--xh-toast-icon-size` / `--xh-toast-indicator-p`                                    | `--xh-notification-indicator-fg` / `--xh-notification-icon-size` / `--xh-notification-indicator-p`                           |
+  | `--xh-toast-action-*` / `--xh-toast-close-*` / `--xh-toast-progress-*`                                      | `--xh-notification-action-*` / `--xh-notification-close-*` / `--xh-notification-progress-*`（后缀不变）                      |
+  | `--xh-toast-scale-collapsed`                                                                                | `--xh-notification-stack-scale`                                                                                              |
+  | `--xh-toast-offset-collapsed` / `-offset-expanded` / `-front-height` / `-height` / `-y` / `-scale` / `-dir` | 删除：叠放测量改写私有槽，不再是可覆盖的公开面                                                                               |
+  | 关键帧 `xh-toast-in` / `xh-toast-out`                                                                       | `xh-notification-stack-in` / `xh-notification-stack-out`                                                                     |
+
+  通知新增 `--xh-notification-close-border`，两种预设的叉都认它（原来只有 Toast 有）。z 层级令牌 `--xh-layer-toast` / `--xh-z-toast` 保留原名，它说的是这一层，不是组件。
+
+- d74d171: Segmented 并入 RadioGroup：删除 Segmented 组件，改用 `RadioGroup` 的 `variant="segmented"`。两者都是 `radiogroup` / `radio` + `aria-checked`、都随表单提交，Segmented 的 props 只比 RadioGroup 多 `loop` 与 `block`，这两个随之并入 RadioGroup。不留兼容别名。
+
+  **删除（破坏性）**
+
+  - Headless：`connectSegmented`、`segmentedMachine`、`segmentedAnatomy`、`segmentedItemQuery`、`segmentedKeyboard`、`segmentedMeta` 与 `Segmented*` 全部类型；`translations` 里的 `segmented` 键。
+  - Vue / React：`XhSegmentedRoot`、`XhSegmentedItem`、`XhSegmentedItemIcon`、`XhSegmentedItemText`、`XhSegmentedIndicator`、`XhSegmentedHiddenInput`、`useSegmented`、`useSegmentedContext`、`useSegmentedItemContext` 及对应 props / 上下文类型。
+  - Web Components：`<xh-segmented>` 与 `XhSegmentedElement`。
+  - 样式：`@xihan-ui/styles/segmented.css` 与全部 `--xh-segmented-*` 组件槽。
+
+  **迁移**
+
+  - `<XhSegmentedRoot …>` → `<XhRadioGroupRoot variant="segmented" …>`，`collection`、`value` / `defaultValue`、`disabled`、`readOnly`、`invalid`、`required`、`name`、`orientation`、`dir`、`loop`、`block`、`tone`、`size` 原样沿用；`XhSegmentedIndicator` → `XhRadioGroupThumb`（部件名 `thumb`，避开行首单选圆圈 `indicator`），`XhSegmentedItemIcon` / `XhSegmentedItemText` → `XhRadioGroupItemIcon` / `XhRadioGroupItemText`。
+  - 隐藏输入改为每个条目一份原生 radio（与 RadioGroup 其余形态相同），不再写整组那一份 `hidden-input`；只传 `collection` 时由组件铺出。
+  - Web Components：`<xh-segmented>` → `<xh-radio-group variant="segmented">`，滑块写 `data-xh-part="thumb"`，条目用 `<div data-xh-part="item">` 而不是原生 `<button>`（按钮会把 Enter 翻成点击）。
+  - 组件槽：轨道 `--xh-segmented-bg / -border / -radius / -track-padding` → `--xh-radio-group-track-*`，段 `--xh-segmented-item-*` → `--xh-radio-group-segment-*`，滑块 `--xh-segmented-indicator-*` → `--xh-radio-group-thumb-*`，段内图标 `--xh-segmented-icon-size` → `--xh-radio-group-icon-size`。
+
+  **键盘统一到 APG 的单选组（破坏性）**
+
+  - segmented 形态按 Enter 不再选中、不再进按压面，Home / End 不再跳到首末段：单选组只有方向键在组内移动、Space 选中当前项。RadioGroup 原有形态的键盘不变。
+  - 未传 `dir` 时左右方向键按祖先链上的书写方向翻转（原 RadioGroup 缺省按 ltr），整页 rtl 而组件没传 `dir` 时方向键跟着视觉顺序走。
+
+  **RadioGroup 新增**
+
+  - `variant="segmented"`：一条淡底轨道（surface 圆角）里首尾相接的段，选中段由新部件 `thumb`（`XhRadioGroupThumb`）标出——白色抬起面，写了 `tone` 时换实心语气面；只有换段时才滑，首次落位、窗口缩放、换上正式字体的重量直接到位（`data-instant`），liquid 档由前后沿两支弹簧推着走。段坐在淡底承载面上悬停 200 → 按下 300、只换面不缩放，不投影 Action Control 配方；这一形态不画行首圆圈、缺省横排，`label` 部件视觉隐藏只作可及名，一行排不下时折行。RTL 下滑块位移乘 `--xh-direction-sign`。
+  - 新 props：`loop`（方向键尽头是否回绕，缺省 true）、`block`（segmented 形态撑满行宽、各段等分）。`orientation` 没传时随形态取缺省：list / card 竖排，segmented 横排。
+  - 新部件 `item-icon`（`XhRadioGroupItemIcon`）：条目文字前的图标位，对读屏隐藏，直径随尺寸档、颜色随条目；节点新增 `icon` 字段，只传 `collection` 时自动铺出。三种形态都可用，卡片与带说明的列表行里图标自成一列。
+  - connect API 新增 `variant`、`measure()`、`getThumbProps()`、`getItemIconProps()`；Headless 导出 `radioGroupItemQuery` 与类型 `RadioGroupRefs`、`RadioGroupThumbRect`。
+  - 新增组件槽 `--xh-radio-group-icon-size`、`--xh-radio-group-track-*`、`--xh-radio-group-segment-*`、`--xh-radio-group-thumb-*`。
+
+- acd1065: Table 的加载态改按占位态的两种相位画：
+
+  - 表体为空、正在取数：`loading` 占位投影 `data-xh-loading-ring` 与 `data-loading`，一枚加载环（加载环家族配方，与 Spinner 环档同一副画法）排在文案之前，直径取表格尺寸档的图标档；不再让整块占位呼吸。**删除关键帧 `xh-table-loading-pulse`**（关键帧名是公开面）；`--xh-table-loading-duration` 保留，改为环转一圈的时长，缺省 `--xh-motion-loop-spin`。
+  - 已有行时重新取数（排序、翻页、筛选）：此前只写 `aria-busy` / `data-loading`，皮肤没有任何可见反馈；现在表体与表尾保留上一帧、按 `micro` 淡到 `--xh-state-disabled-opacity`，取完再淡回，表头不动。
+  - 空态与加载态占位的排版按占位态统一：块向内距 `--xh-space-3`、行内与单元格文字对齐（`--xh-control-px-sm`）、环与文案之间取控件间距、不设最小高（`--xh-table-state-min-h` 缺省由 `8rem` 改为 `0`），字号随表格的尺寸档。
+
+- 1c6f692: GradientText 并入 Typography：渐变字是行内文字的一档形态 `variant="gradient"`，删除 GradientText 组件。
+
+  - `TypographyVariant` 新增 `gradient`。文字前景透明、品牌渐变裁进字形；写了 `tone` 时两端取该语气的主色与压深一档；`data-contrast="more"` 作用域、系统高对比、强制色与打印下退回实色文字。
+  - 两端颜色与走向改由 text 部件上的覆盖槽表达：`--xh-typography-gradient-from`、`--xh-typography-gradient-to`、`--xh-typography-gradient-direction`（任意 `<angle>` 或 `to <边或角>`，缺省 `to right`）。
+  - 删除：Vue / React 的 `XhGradientText`、`XhGradientTextProps`，Web Components 的 `<xh-gradient-text>` 与 `XhGradientTextElement`，Headless 的 `connectGradientText`、`gradientTextAnatomy`、`gradientTextKeyboard`、`gradientTextMeta` 与 `GradientTextApi`、`GradientTextDirection`、`GradientTextProps`、`GradientTextTranslations`，皮肤子路径 `@xihan-ui/styles/gradient-text.css`，覆盖槽 `--xh-gradient-text-from` / `--xh-gradient-text-to`，以及 `data-scope="gradient-text"`。
+
+  迁移：渐变字写成 Typography 的行内文字，放在 `XhTypographyRoot`（`<xh-typography>`）里。
+
+  ```vue
+  <!-- 之前 -->
+  <XhGradientText
+    from="#f97316"
+    to="#ec4899"
+    direction="to-bottom-right"
+    tone="brand"
+  >组件库</XhGradientText>
+
+  <!-- 之后 -->
+  <XhTypographyRoot>
+    <XhTypographyText
+      variant="gradient"
+      tone="brand"
+      style="--xh-typography-gradient-from: #f97316; --xh-typography-gradient-to: #ec4899; --xh-typography-gradient-direction: to bottom right"
+    >
+      组件库
+    </XhTypographyText>
+  </XhTypographyRoot>
+  ```
+
+  React 写法相同，`style` 传 `{ '--xh-typography-gradient-from': '#f97316', … } as CSSProperties`。Web Components 把 `<xh-gradient-text><span data-xh-part="root">…</span></xh-gradient-text>` 换成 `<xh-typography><div data-xh-part="root"><span data-xh-part="text" variant="gradient">…</span></div></xh-typography>`，两端颜色与走向同样写在 text 节点的 `style` 上。`direction` 的八个档位对应 `to right`、`to left`、`to bottom`、`to top`、`to bottom right`、`to bottom left`、`to top right`、`to top left`。
+
+### Minor Changes
+
+- 513fb62: Accordion 首帧不播开合：挂载时已经展开或收起的条目，内容与箭头投影 `data-instant`，直接呈现，不再在页面载入时播一遍展开 / 收起动画（收起项此前会闪过一段内容收起）；某一项第一次开合（用户操作或受控值改写）起撤掉标记，按动效走。
+- b1f83d9: ToolCall、Approval、QuestionFlow 落在首帧就在的列表条目里（例如 MessageFeed 的历史消息）时，卡片滑入、结果弹出与选项错开开幕直接呈现，不再在打开一段会话时整屏一起入场；新到的消息里的卡片照常进场。
+- 292ce8c: AI 披露面与同族对齐：
+
+  - Reasoning 缺省形态由 `subtle` 改为 `outline`（描边 + surface 底，与 ToolCall、Approval、QuestionFlow 一致），缺省尺寸由 `sm` 改为 `md`；要回到淡底卡片写 `variant="subtle"`，要紧凑写 `size="sm"`。
+  - Reasoning 与 ToolCall 的内距改用与 Accordion / Collapsible 同一把尺：sm 12 / 12、md 16 / 16、lg 20 / 20（此前 8 / 4、12 / 8、16 / 12），四个披露面的触发条在同一档位下等高。
+
+- 0ca6153: Alert 新增 `banner`：把提示改成页面顶部的横幅，贴着页面或容器的边铺满整行，不取圆角，只在朝向页面内容的块尾画一道 `--xh-border-default` 描边；面、语气、实时区语义与关闭都与页内提示相同。根投影 `data-banner`。它是放置而不是面的形态，所以不走 `variant`，也不是打包缺省值的 `preset`。
+- 61fb20f: Alert 关闭补上退场：先淡出，再把占位从整块高度收到 0（内缩与描边一起收掉），下方内容随之平移上来，播完连接层才给根写 `hidden`（此前关闭即 `hidden`，下面的内容整块跳上来）。退场途中根带 `inert`，关闭钮与作者操作不再响应；减弱动效下收占位瞬时完成，淡出照常。
+
+  - 根部件新增 `id`：机器在收起前按它量下整块高度，写进内联私有槽，并等根上的退场动画播完再藏起。
+  - 机器新增 context `rendered` / `exitBlockSize` 与事件 `ROOT.RENDERED`。
+  - 新增皮肤关键帧 `xh-alert-collapse`（收占位，登记为布局动画例外）；皮肤体积基线随之上调。
+  - Web Components 的根显隐改照连接层给的 `hidden`。
+
+- ba1275b: Approval 判定在途的环改接加载环家族配方：`footer` 投影 `data-xh-loading-ring` 与 `data-loading`，环画法与 Spinner 环档一致（此前是 1em、1px、无轨道的小环），直径取所在尺寸档的图标档；在途开始与落定时环按 `micro` 淡入淡出，不再一出现就转、一落定就消失。`--xh-approval-loading-duration` 照旧控制转速。
+- 354bc2f: Approval 新增 `requireReason`（Web Components 属性 `require-reason`）：用户拒绝时必须写明理由。备注空着（或只有空白）就按拒绝钮或 Escape，不发判定，焦点移到备注框，备注框带 `aria-invalid` 与 `data-invalid`、描边换成无效色；写上理由再按即拒绝，理由随载荷的 `note` 发出。只拦人手按的这两条路：超时、卸载兜底与宿主的 `deny()` 照常落地，没渲染备注框时也照常拒绝。开启后备注框的名字取 `translations.reason`（新增，默认 `Reason for denial`）并带 `aria-required`。API 新增 `reasonMissing`；外观槽新增 `--xh-approval-note-border-invalid` 与 `--xh-approval-note-ring-invalid`（聚焦时焦点环也换成无效色）。
+- cca626f: Approval 新增部件 `pending-indicator`（Vue / React `XhApprovalPendingIndicator`，Web Components `data-xh-part="pending-indicator"`）：待决时在右上角显示一颗呼吸的圆点，颜色随语气、缺省取警示色，判定落定即收起；不占作者排的版面，对读屏隐藏，减弱动效下静止，打印时隐藏。根节点随之成为定位基准（`position: relative`）。
+- a7e9fbe: Avatar 载入改为交叉淡变：图片载好时回退内容浮在图片之上原地淡出、与图片的淡入同时进行，播完才藏起，中间不再露一拍底色。新增 `fallbackDelay`（毫秒，默认 `AVATAR_FALLBACK_DELAY` = 300）：载入中回退内容等过这段才露面，图片在这段里载好就直接出图，缓存命中与虚拟列表回收行时不再闪首字母；没有 src 或载入失败时回退内容立即露面。回退节点带上 scope 派生的 id；Web Components 的显隐改照连接层的 `hidden`。
+- 17b8e12: BackTop 补上进出场：滚过线时按钮弹出（`xh-pop-in`），退回线内时先播完 `xh-pop-out`、根上才写 `hidden` 收起（此前出现与消失都是硬切），退场途中不接指针。按钮新增 `id`，机器按它等退场动画、接液态面；Vue / React 两端改用由 useId 派生的 scope，服务端与水合两侧同号。
+- 5183110: Badge 的 md、lg 两档收小：计数盒最小尺寸由 28 / 32px 改为 20 / 24px，字号与圆点直径不变；三档现为 14 / 20 / 24px，字号 12 / 13 / 14px。
+- 3e2b06b: Badge 新增两个组件槽 `--xh-badge-offset-inline` 与 `--xh-badge-offset-block`，微调角标离角多远（不设 prop）：正值朝行内末端、块末端挪，RTL 下行内末端在左；四个角各按贴哪条边换正负号，同一个值在哪个角都朝同一个方向挪。不写时落点不变。badge.css 的体积基线随四个落点的偏移写法上调。
+- 86c520d: Badge 出现与消失补上进退场：计数从无到有时原地弹出（`xh-pop-in`），清零时缩小淡出（`xh-pop-out`），播完才给 indicator 写 `hidden`，退场途中仍显示清零前的数字（此前出现与消失都是硬切）。首帧就在的角标投影 `data-instant` 直接呈现；呼吸的圆点不叠进场；减弱动效下只剩淡变。
+
+  - 破坏性：`connectBadge(props, normalize)` 改为 `connectBadge(service, normalize)`，显隐与计数仍由 props 算出，新增的 `badgeMachine` 只管进退场。新增导出 `badgeMachine`、`badgeVisible`、`badgeText`、`BADGE_DEFAULT_MAX` 与类型 `BadgeSchema`。直接调用 `connectBadge` 的作者改为先用 `badgeMachine` 建服务。
+  - indicator 新增 `id`、`data-state`（`visible` / `hidden`）与 `data-instant`。
+  - 三端改为经状态机渲染，公开 props、部件与默认值不变。
+
+- d7e3c59: Breadcrumb 的折叠位改为可操作：新增 `ellipsis-trigger` 部件（Vue / React `XhBreadcrumbEllipsisTrigger`），是一枚键盘可达、读屏可读的按钮（可及名 `translations.ellipsis`，缺省 Show full path），按下即就地展开完整路径，省略位收起，焦点落到第一条展开出来的链接上。`ellipsis` 不再 `aria-hidden`，展开后带 `hidden`；触发器不写内容时皮肤画一枚省略号字形。connect 新增 `expanded`、`expand()` 与 `collapsedRange(count)`，headless 新增纯函数 `breadcrumbCollapsedRange`。
+
+  Web Components 的 `max-items` 开始生效：作者把完整路径逐层写成部件、在首层之后放一个装着触发器的省略位，元素收起中间层并在展开后放出来；紧跟在被收起层或已展开省略位后面的分隔符由皮肤一并收起。
+
+  皮肤 breadcrumb.css 涨在折叠位触发器的家族映射、兜底字形与分隔符的收起规则上，体积基线随之重落。
+
+- c48171d: 新增呼吸动效：共享关键帧 `xh-breathe`（明暗与缩放起伏，峰值在 42%）与 `xh-breathe-halo`（外扩光环），令牌 `--xh-motion-loop-breathe`（3600ms）、`--xh-motion-ease-breathe`（正弦式缓入缓出，原语 `--xh-ease-sine-in-out`）、`--xh-motion-scale-breathe` 与 `--xh-motion-scale-halo`（减弱档归 1）；`@xihan-ui/motion` 的 `easing.sineInOut` 与 `motionEasings.breathe` 同源。
+
+  Badge 新增 `pulse`（Web Components 为 `pulse` attribute）：圆点档呼吸，表达正在进行、给不出进度的状态（直播、录制、通话中）；光环播 3 轮后停，圆点持续到状态结束；数字角标不呼吸；减弱动效下两者都停，圆点停在满不透明度。badge.css 因此引入共享关键帧，体积基线随之上调。
+
+- df3d2ac: liquid 档的交互光：`data-material="liquid"` 下实心按钮在细指针悬停的一刻，一道光沿 1px 描边环扫过一次，光取面上前景色、不进面，文字对比不受影响；粗指针、强制色下不播，减弱动效下时长归 1ms。新增令牌 `--xh-motion-duration-glint`（640ms）与 motion 的 `motionDurations.glint`，共享关键帧 `xh-glint`，按钮新增覆盖槽 `--xh-button-glint-duration`。
+- d56688e: Button 在途改为与 Clipboard、DownloadTrigger 同一种做法：`indicator` 不再常驻占位（静止时标签左侧不再空一格），而是居中压在钮上、钮宽不变；部件空着时由加载环家族配方画一枚环（连接层投影 `data-xh-loading-ring="overlay"` 与 `data-loading`）。进入在途要等一个 `micro` 才起淡，标签、前后缀同刻淡出留位，不到一个 `micro` 就结束的短请求什么都不闪；退出在途不等，环与内容按 `micro` 交叉淡回。作者往 `indicator` 里放了自己的图形时环让位，作者图形按同一节拍淡入淡出并转。示例改用空的 `indicator`。
+- 3af3de7: Card 新增整卡可交互形态：
+
+  - `interactive` 加新部件 `trigger`（放在 title 里的原生链接或按钮；Vue / React 的 `XhCardTrigger` 给了 `href` 渲染 `<a>`、不给渲染 `<button type="button">`，路由链接用 `asChild`；WC 作者直接写 `<a data-xh-part="trigger">`）。trigger 的点击区由伪元素铺满整张卡片，可及名与 Tab 位只归它，根上投影 `data-interactive`、不拿焦点也不写 role。
+  - 反馈：outline 悬停抬高一档海拔（raised → lifted），按下换到白底阶梯 200；subtle 悬停 200、按下 300；ghost 悬停 100、按下 200。键盘聚焦时焦点环画在整张卡片外沿。脚部叠在点击区之上，里面的按钮照常可点、按下时整卡不换面。新增槽 `--xh-card-shadow-hover`、`--xh-card-bg-hover`、`--xh-card-bg-pressed`、`--xh-card-glint-duration`。
+  - `data-material="liquid"` 下，可交互卡片在细指针悬停时描边扫过一道交互光，与 Button 实心钮同一配方。
+  - subtle 卡片作为淡底容器向内下发承载面阶梯：放在里面的 ghost / outline 控件悬停与按下改按 200 → 300 换面。
+
+  皮肤涨在可交互形态的三档反馈、点击区与焦点环、交互光与淡底容器的承载面槽上。
+
+- 5dea71a: Carousel 新增 `effect` 换页方式：缺省 `slide` 轨道平移；`fade` 时各张叠放在同一格，新一张淡入、旧一张同时淡出，时长与平移同一档，减弱动效下直接换。`loop` 回绕在 fade 下只是一次淡变；拖拽仍按方向与速度翻页、画面不跟手。fade 一页只放一张，`slidesPerPage` 大于 1 时报错。Web Components 用 `effect` 属性。
+- 56ce57b: `carousel` 在 `data-material="liquid"` 下：翻页与播放钮换成液态面（纵向轮播的钮整颗旋转，不挂按住形变），分页点托在一条液态胶囊上，压在任何媒体上都看得清；新增覆盖槽 `--xh-carousel-indicator-group-p`、`--xh-carousel-indicator-group-radius`。三颗控制钮与分页条带上部件 id。standard 档不变。
+- fc40cbe: Carousel 拖拽松手改由弹簧接住松手速度：落点按速度投影 0.2s，轻甩也能翻页，往回甩到起点另一侧则收回原页；翻页后轨道从松手位置带着速度落到目标页，期间投影 `data-animating`、样式层让开过渡。不循环时首末页往外拖越拉越沉（60px 橡皮筋），松手硬弹簧弹回；落定途中再按下从此刻的位置接着拖。
+
+  修正纵向轮播拖拽按 clientX 取坐标；指针被系统收走时不再翻页，弹回原页。状态机新增上下文 `dragBase`、`settleOffset`、`settling` 与 refs `settle`，`DRAG.END` 带 `velocity` 与 `canceled`。
+
+- f660e16: `cartesian-chart` 新增注释 `annotations`：画在数据之外、帮读者读数的参照。
+
+  - `line` 参考线、`band` 参考带：`axis` 取 `x`（自变量轴）或 `y`（数值轴），与屏幕方向无关；值计入所在轴的定义域，数据之外的目标值也看得到。参考带垫在数据之下，参考线是结构色的虚线。
+  - `point` 标出某个系列的最大、最小、最后一个或指定 x 上的数据（一圈环加值）；`average` 是系列均值处的平均线；`trend` 是最小二乘直线（虚线）或尾随窗口的移动平均（点线，`window` 缺省 3）。它们取所属系列的颜色，随系列淡出与隐藏。
+  - 标签缺省写值，与数据标签一起按重要性落位且注释优先；贴着绘图区边缘时翻到线或点的另一侧。
+  - 新部件 `annotation`、`annotation-label`，带 `data-kind`（趋势线另带 `data-method`），都 `aria-hidden`；摘要末尾写出参考线、参考带与平均线，新增文案 `referenceLabel`、`averageLabel` 与模板 `annotationSummary`（缺省导出 `defaultCartesianAnnotationSummary`）。
+  - 诊断码新增 `chart.annotation-target`：注释指向不存在的系列、不在轴上的类目时按提醒报出，只少画这一条。
+
+- 25ccc68: `cartesian-chart` 新增箱线系列 `mark: 'boxplot'`，另有小提琴画法。
+
+  - `y` 写字段名时同一个 x 上的全部行是一组原始值，按 R-7 求四分位，须线到 1.5 倍四分距以内最远的点，其外为离群点（`outliers: false` 时须线直达两端）；`y` 写成 `{ min, q1, median, q3, max }` 时直接用算好的五数，五个数须依次不减，否则报 `chart.invalid-range`。
+  - 新部件 `box`（箱，可聚焦）、`whisker`、`median`、`outlier`：箱铺系列色的淡洗并描出轮廓，中位线加粗，离群点是空心小圆；`box` 上写 `data-style="box|violin"`。
+  - `style: 'violin'` 用核密度画出每组分布的对称轮廓，宽度按整个系列里最大的密度归一；要原始值，否则报新诊断码 `chart.violin-raw`。
+  - 可及名与提示框按新文案 `boxLabel` 写出五数，数据表五数与离群点各一列（列名 `boxColumns`），锚点落在中位数。
+
+- 52f16f1: `cartesian-chart` 新增刷选。
+
+  - `brush` 取 `x` / `y` / `xy`，缺省 `none`。开启后在绘图区里拖动即刷选（指针是十字，放大后的平移改用缩放条或键盘），拖着时画出框、类目轴取整到首尾类目的整条带，松手派发一次 `onBrushSelectionChange`（Vue `brush-selection-change` 与 `update:brushSelection`，Web Components `brush-selection-change`），载荷是范围 `selection` 与框里的数据 `data`。
+  - 范围 `brushSelection` / `defaultBrushSelection` 写法同缩放窗口（定义域里的值，没刷的方向为 `null`），受控时由作者写回。`api.brush` 给出方向、范围与框在绘图区里的矩形，`api.setBrushSelection` 从外部设置。
+  - 新部件 `brush`：选中语义的淡底加一圈聚焦色的细边，垫在数据之下；框外的柱、点、K 线与箱线淡出。组件槽 `--xh-cartesian-chart-brush-bg`、`--xh-cartesian-chart-brush-border`。
+  - 键盘：Shift + 方向键从锚点起沿自变量刷，每按一次派发一次；Escape 与点一下清掉。
+  - 开了刷选时绘图区写 `data-selectable`；绘图区的 `data-touch-axis` 写出缩放与刷选合起来拦下的触屏方向。
+
+- 6dec15e: `cartesian-chart` 新增 K 线系列 `mark: 'candlestick'`。
+
+  - `open` / `high` / `low` / `close` 四个字段，系列 `id` 缺省取收盘字段；自变量轴缺省是类目轴，数值轴盖住最低与最高价、不强制含 0。
+  - `style` 缺省 `candle`：新部件 `wick`（影线，最低到最高）与 `candle`（实体，开盘到收盘，十字星至少一像素高）；`ohlc` 是美国线，整根线就是 `candle`。标记上写 `data-trend="rise|fall"` 与 `data-style="candle|ohlc"`，取涨跌色；强制色下涨空心、跌实心。
+  - 实体是可聚焦的数据标记：可及名与提示框按新文案 `ohlcLabel` 写出四个价，数据表开高低收各一列（列名 `ohlcColumns`），锚点落在收盘价。
+  - 诊断码新增 `chart.ohlc-range`：最低价高于开盘或收盘、最高价低于开盘或收盘。
+
+- 1a821e9: 直角坐标图的数据层可选画在画布上：`renderer: 'svg' | 'canvas' | 'auto'`，缺省 `auto`。
+
+  - `auto`：数据层逐个成节点的标记（柱、点、K 线、箱线……，折线与面积各算一条路径）超过 3000 个时改用画布，以内与 `svg` 完全一样。
+  - 画布只画数据层：坐标轴、网格、参考带与十字准线移到画布下面的垫层（新部件 `underlay`），画布是新部件 `canvas`；系列分组、注释、数据标签、激活的点、焦点代理与焦点环、摘要与数据表仍是 SVG / DOM。
+  - 颜色从 CSS 来：系列分组里放同部件、同状态、空几何的样式探针，画布逐帧读它们的计算样式——主题与暗色、强制色（画布上画系统色）、打印、纹理、作者对 `--xh-cartesian-chart-series-color` 的覆盖都照样生效；悬停图例时其余系列随分组的 CSS 过渡淡出，画布逐帧跟读。
+  - 后备尺寸按设备像素比，浏览器缩放与换屏后重画，打印时按至少 2 倍重画；重绘在宿主提交之后按微任务合并，与 SVG 层同帧。
+  - 键盘与读屏不变：绘图区占一个 Tab 位，进来后焦点落在锚点数据的焦点代理上（那根柱、那个点或那根 K 线的 SVG 版本，放回所属系列的分组、叠在画布上）。
+  - 画布上不播几何过渡：数据更新、图例切换与缩放直接画终态，画布整体随有无数据淡入淡出。
+  - Web Components 侧新增 `renderer` 属性与 `currentRenderer` 只读属性；垫层与画布由元素生成，作者照旧只写空的 `<svg>` plot。
+
+- cecd047: **新增** `cartesian-chart` 组件（直角坐标图），Vue、React 与 Web Components 三端可用：柱与折线共用一根自变量轴与一根数值轴，柱状图、条形图、分组与堆叠柱、折线、面积与百分比堆叠面积都是它的配置。
+
+  - 系列用 `mark` 区分画法，字段名把数据列映射到 `x` / `y`；比例尺按数据推断（类目、时间、数值、对数），有柱时数值轴强制包含 0。
+  - 颜色按系列次序取分类色 1–8，`slot` 固定色槽，`tone` 改用语气色；图例切换显隐后幸存系列颜色不变。
+  - 提示框缺省按键汇报同一个键上的全部系列（`trigger="axis"`），frosted 材质，画在根内；`activeKey` 受控即可让多张图在同一个键上联动。
+  - 绘图区是 `graphics-document`，只占一个 Tab 位，方向键在数据之间移动，折线由焦点代理点承接真实焦点；图例是工具条，按钮 `aria-pressed` 表示显隐。
+  - 组件在根内生成视觉隐藏的摘要与数据表；几何量（柱厚上限、线宽、点径、轴标签字体）以 CSS 组件槽为真源，挂载后读取。
+  - React 适配器的 SVG 文本属性 `text-anchor` 与 `dominant-baseline` 按 React 写法转换。
+
+- 73703b7: `cartesian-chart` 新增区间、棒棒糖与流图。
+
+  - 柱与折线的 `y` 可写成二元组 `[下, 上]`：柱从下端画到上端浮着（数值轴不再强制含 0），折线只铺一条区间带、不画线，锚点落在带的正中。提示框、可及名与数据表写成「下 – 上」，系列 `id` 缺省取上端字段；区间不参与堆叠，下端高于上端时报 `chart.invalid-range`。
+  - 柱的 `shape: 'lollipop'`：新部件 `stem`（细杆）顶一个可聚焦的 `point`；区间时两头各一个点（哑铃），只有上端的点可聚焦。图例与提示框的色标画成圆。
+  - 折线堆叠的 `stackOffset` 新增 `silhouette`（以 0 为中线上下对称）与 `wiggle`（流图，层按峰值出现的先后由内向外排）。
+
+- dcde778: 直角坐标图加入数据标签、堆叠合计与线尾标签。
+
+  - 柱系列 `labels: 'inside' | 'end'`：inside 写在柱内居中、字取与色槽配对的前景色；end 写在柱的远端外侧，负值翻到另一侧，堆叠中的段写在段内的远端。放不下、与更要紧的标签重叠时不写。
+  - 折线系列 `labels: 'end'` 把数值写在每个点的上方；`endLabel` 在线尾写系列名与末值，末端挤在一起时上下推开，推开的标签用引导线连回线尾。
+  - 图级 `totals`：每个堆叠组在整叠外侧写合计，含负值时正负两端各写一个；百分比堆叠不写。
+  - 柱端外侧的标签写在绘图区里，数值轴两端各收进一截；线尾标签在右边留出位置。标签只给眼睛看，首次出现等柱长完、笔尖扫到再淡入，所属系列被淡出时一起淡出。
+  - 新增部件 `data-label`、`total-label`、`end-label`、`leader-line`；三端都画出场景的前景层。直角坐标图皮肤因标签规则涨约 20%。
+
+- 21e5e7e: `cartesian-chart` 新增散点与气泡系列 `mark: 'scatter'`：看两个量之间的关系与分布。
+
+  - 每行一个点，同一个 `x` 上可以有任意多个点。只有散点时自变量按数据推断为连续轴，两端缺省取整到刻度上，两个方向都画网格；提示框缺省按 `item` 汇报，命中取离指针最近的点。
+  - 点的形状缺省随色槽依次取圆、方、菱形、三角……，`symbol` 可指定；图例与提示框的色标画成同一个形状（带 `data-mark="point"` 与 `data-symbol`）。
+  - `size` 把一个字段映射到点的面积（半径取平方根），全部散点系列共用一把尺，最大半径等于柱厚上限；大的先画、小的压在上面。连续轴两端收进一截，贴着定义域端点的点也整个落在绘图区里。
+  - `jitter` 在类目轴上把点左右散开，偏移以点的身份为种子，重渲染不跳；`datumId` 指定身份字段，数据换序时同一个点落在同一处，过渡里也按它配对。
+  - 点本身可聚焦、roving 取 Tab 位，左右键按 x 的次序走，上下键换到另一个系列里 x 最近的点；焦点环按点的大小外扩。
+  - 含散点时数据表改为每个数据一行（系列、x、y，有气泡时再加大小），新增文案 `seriesLabel`、`valueLabel`、`sizeLabel`；气泡的缺省可及名与提示框在数值后面补上大小。
+  - 修正 `trigger="item"` 时折线命中不到数据点的问题。
+
+- 0b1816a: `cartesian-chart` 的散点新增按值着色 `color` 与根上的色板 `palette`。
+
+  - `color` 把一个字段映射到顺序色阶，全部按值着色的系列共用一把尺；这样的系列不再取分类色（形状照旧随色槽），字段缺失的点取色阶中点。点只用色阶上从 30% 起的一段，最浅的一段压在承载面上看不清。
+  - 图例末尾生成色阶：新部件 `legend-scale`、`legend-scale-name`、`legend-scale-bar`、`legend-scale-value`（`data-edge="min|max"`），渐变按点用的同一段画；没有按值着色时整块收起。只有一个系列而有色阶时图例不再收起。
+  - `palette`（与热力图同名的十三个色板）把顺序色阶换到基础色板里同名的色相上，起点贴近承载面、终点贴近正文色，亮暗主题下都是值越大越显眼。Web Components 写 `palette` 属性。
+  - 连接层在点与提示框的色标上写 `data-seg="low|high"` 与内联 `--xh-_chart-p`，皮肤用一层 `color-mix` 插值；系列分组、图例项与提示框的行带 `data-xh-chart-scale="sequential"`。
+  - 新增文案 `colorLabel`；数据表多一列，缺省可及名与提示框在数值后补上颜色对应的值。
+  - Chart 家族配方新增顺序色阶的三个锚点私有槽与十三个色板规则，提示框的色标按段插值。
+
+- c86cc04: `cartesian-chart` 的柱系列新增瀑布 `waterfall`。
+
+  - 每一步接在上一步的累计值上浮着，柱上写 `data-trend="rise|fall"`，涨取 `--xh-chart-rise`、跌取 `--xh-chart-fall`；`waterfall.total` 指定小计字段，为真的行从 0 画到当前累计值、保持系列色，它的 `y` 被忽略。
+  - 新部件 `connector`：相邻两步之间的细线，与上一步的终点同高，只给眼睛看；缺失的一步不画、不改累计，连接线跨过它。
+  - 数据标签与可及名写这一步的增减，小计写累计值；瀑布不参与堆叠。纹理模式、强制色下由纹理与柱的走向区分涨跌。
+
+- 9efa072: `cartesian-chart` 新增缩放与降采样。
+
+  - `zoom` 打开缩放：`x` / `y` / `xy`，缺省 `none`。窗口 `window` / `defaultWindow` 用定义域里的值写两根轴各露出的一段（类目轴写首尾两个类目，连续轴写两端的值，数值轴写 `[下, 上]`，`null` 是整条轴），多张图接到同一份窗口上即联动；变化时派发 `onWindowChange`（Vue `window-change` 与 `update:window`，Web Components `window-change`）。类目轴按窗口露出连续的一段类目；连续轴与数值轴换成窗口对着的定义域，系列与注释按绘图区裁剪（新部件 `clip-path` / `clip-rect`）。
+  - 手势：Ctrl（⌘）滚轮以指针为中心缩放，放大后拖动平移，触屏双指捏合、单指平移，只拦能缩放的方向；键盘在绘图区按 + / − 以焦点为中心缩放，焦点走出窗口时窗口跟过去。
+  - 竖向图缩放自变量轴时，绘图区下方出一条缩放条：新部件 `zoom-slider`（`role="group"`）、`zoom-track`、`zoom-window`、两个 `zoom-handle`（`role="slider"`，读出窗口那一端对着的类目或值）与轨道里整条轴的缩略线 `zoom-preview` / `zoom-preview-line`。Web Components 侧作者在外壳里放一个空的 `zoom-slider`。新增文案 `zoomLabel`、`zoomStartLabel`、`zoomEndLabel`，组件槽 `--xh-cartesian-chart-zoom-*`。
+  - 折线的点比绘图区的像素多一倍以上时按 Largest-Triangle-Three-Buckets 降采样，缩放后只采窗口里的一段；焦点、提示框、摘要与数据表仍是全部数据。
+
+- ea8043f: Cascader 新增懒加载，与 TreeSelect 同一套契约：节点写 `hasChildren: true` 不给 `children` 即是懒分支，照样算分支、右边开一列；展开路径走到它时由 `loadChildren({ node, path, signal })` 取回直接子项，结果留在组件里并进 `api.collection` 与 `levels`（还没取回时补一个空层）。那一列在途时报 `aria-busy` 并露出新部件 `branch-loading`，失败露出 `branch-error` 与 `branch-retry-trigger`（Action Control text ghost 档，不占 Tab 位；父条目上按 Enter / Space 同样重试），取回空数组即成了叶子。三块由三端在列末自动铺出，文案走新文案 `translations.branchError` / `retry` 与原有的 `loading`。展开路径离开、浮层收起、重试、节点换代与卸载都会中止在途请求，迟到的结果不写回也不发事件。新增 `onBranchLoadStart` / `onBranchLoad` / `onBranchLoadError`（三端事件 `branch-load-start` / `branch-load` / `branch-load-error`）、`api.branchLoadState` / `columnLoadState` / `retryBranch`、`getBranchLoadingProps` / `getBranchErrorProps` / `getBranchRetryTriggerProps`，导出 `isCascaderLazyBranch` / `resolveCascaderCollection` / `findCascaderNode` 与相关类型；`cascaderSearchCandidates` 不再把没取回的懒分支当叶子候选。`api.collection` 改为有效树（作者的 collection 并上已取回的子项）。样式槽 `--xh-cascader-branch-status-*`。
+- ab84e80: Cascader 多选的已选路径在触发器里排成标签，与 Select、TreeSelect 同一套呈现：新增 `tag-list` 部件与 `maxTagCount`（默认 3，其余合成 `+N`），标签与 +N 套库里的 tag、走标签行家族配方与列表动效，文字是整条路径按 `separator` 连缀；触发器外可放带删除钮的标签。标签身份写路径的比较键（`api.tags` 里的 `key`）。新增 `api.tags` / `overflowCount` / `overflowText` / `deselect(path)`、`getTagListProps` / `getTagProps({ value })` / `getTagLabelProps` / `getOverflowTagProps` / `getItemDeleteTriggerProps({ value })`、类型 `CascaderTagMeta` / `CascaderTagProps` 与文案 `translations.deleteItem` / `overflowTag`。Vue / React 新增 `XhCascaderTagList`、`XhCascaderTag`、`XhCascaderTagLabel`、`XhCascaderOverflowTag`、`XhCascaderItemDeleteTrigger`；Web Components 用 `tag-list` / `tag` / `overflow-tag` / `item-delete-trigger` 角色并按元素的 `tags` 渲染，另补 `tags` / `overflowCount` / `overflowText` 读口与 `deselect` 方法。行距槽 `--xh-cascader-tag-list-gap`。
+- b07b3f0: 新增 Chart 图表家族配方 `@xihan-ui/styles/chart.css`：标题、视口与绘图区、在途、图例、提示框、色标、焦点环、引导线、空态与加载态，以及它们的强制色与打印分支，由 `recipes/chart.recipe.json` 生成这一份真源，直角坐标图与饼图共用。
+
+  - 两个图表在这些部件上投影 `data-xh-chart-part`（取值与部件名相同），皮肤只留各自的色槽、数据标记与标注。
+  - 组件覆盖槽不变：`--xh-cartesian-chart-*` 与 `--xh-pie-chart-*` 写在对应部件上接进配方的私有槽，作者在部件或它的祖先上覆盖都照常生效；三端的计算样式与改动前逐项一致。
+  - 两份图表皮肤各自 `@import '../family/chart.css'`，单独引入仍成立；全量入口把配方与其它家族一起在组件皮肤之前内联一次。
+
+- 1581fda: 图表首次取数的空态：`pending` 而手里还没有可画的数据时，空态写 `translations.loadingText`（缺省 Loading…）并在文字前转一个圈，空态部件带 `data-state="loading"`；取完仍没有数据才写 `emptyText`。减弱动效与打印下圈停下换成点线。新增组件槽 `--xh-cartesian-chart-empty-gap`、`--xh-pie-chart-empty-gap`。饼图皮肤因此涨约 13%。
+- 62a45d3: 图表取数中、还没有可画数据时空态部件里那枚环改接加载环家族配方，不再由 Chart 家族配方另画一份：CartesianChart、PieChart、FunnelChart、RadarChart、GraphChart、HierarchyChart、SankeyChart 的 `empty` 部件在取数时投影 `data-xh-loading-ring` 与 `data-loading`，环的画法、减弱动效与打印下的静止点线环、强制色都由配方给；Chart 家族配方只留环占的那一格（配方源 `loading` 段只剩 `ringSize`）。FunnelChart、RadarChart、GraphChart、HierarchyChart、SankeyChart 的皮肤补上 `family/motion.css` 的引入：此前单独引入这几份皮肤时，空态的转圈与入场淡入没有关键帧可用。
+- ddb0797: 图表在颜色不可用或不可靠时改用纹理区分系列：强制色与打印下总是开启，作者在任意祖先上写 `data-xh-chart-patterns` 也会开启。
+
+  - 直角坐标图的柱与面积改用本系列的斜线纹理填充并描出轮廓，折线换成各自的线型（实线、长虚线、点线、点划线……）；饼图的扇区改用本色槽的纹理，「其他」不带纹理。图例与提示框的色标画成同一副纹理与线型，压在色块上的标签改用标签色并描一圈承载面色。
+  - 8 种纹理（45° 与 135° 各三档疏密，外加斜向与正向两种交叉）与色槽一一对应，语义系列按声明次序取。纹理定义在绘图区开头的 `<defs>` 里，id 由绘图区的 id 派生，服务端渲染与客户端一致；三端都画出它。
+  - 新增 API `patterns`、`getDefsProps`、`getPatternProps`、`getPatternLineProps`，新增部件 `defs`、`pattern`、`pattern-line`；系列分组、扇区、图例项与提示框的行带 `data-xh-chart-pattern`。纹理的方向、线距与线型由 Chart 家族配方给出，门禁核对配方与 headless 的纹理形状逐项相同。
+
+- 659c0e0: 图表入场的细节：折线上的数据点等描线的笔尖扫到才出现；饼图的标签与引导线等扫开的边缘到了才出现，环形中心等整圈扫完再淡入；环形中心的合计首次出现从 0 数上去，数据变化或图例切换时从旧值滚到新值。延迟以入场时长的比例写在私有槽 `--xh-_chart-reveal-at` 上，由样式乘上 `--xh-motion-duration-reveal`，作者改时长、系统开减弱动效时一起缩放；减弱动效下数值直接到终值。数据层的标记多于 1000 个时不做几何插值，只淡入淡出。
+- b308aed: 图表播放过渡动画：直角坐标图首次出现时柱沿数值轴从基线长出、折线从头描到尾、面积与点淡入，多个系列按图例次序错开；饼图整圈从起始角顺着扫开，标签与引导线随之淡入。之后的数据变化与图例切换从当前位置插值到新位置：留下的柱原地伸缩、扇区角度随之变化，新增的从基线长出，隐藏的收回基线并淡出后才移除；坐标轴刻度按值对齐，两边都有的刻度滑到新位置，其余淡入淡出。
+
+  新增 `animated` 属性（缺省 true），false 时直接画终态，Web Components 写 `animated="false"`。入场取 `--xh-motion-duration-reveal`（640ms），更新取 `--xh-motion-duration-morph`（400ms），在图或它的容器上改写即可调快慢；系统减弱动效或容器写 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。视口尺寸变化与字体加载后的重排不播过渡。收场中的标记不进可访问树、不可聚焦。
+
+  共享关键帧新增 `xh-draw`（数据关系组），描线期间折线带 `data-drawing` 与 `pathLength="1"`。
+
+- f06dcb3: 新增勾选标记家族配方 `family/check-mark.css`：勾选格里的勾与半选杠常驻，不再按勾选态生成或撤掉内容；按状态以 opacity 淡变（`--xh-motion-duration-micro`）并从 `--xh-motion-scale-enter` 回到原尺寸（`--xh-motion-duration-nudge`），减弱动效下只剩淡变；勾与半选杠叠成两层遮罩，半选淡出途中保持横杠。
+
+  连接层在画标记的节点上投影 `data-xh-check-mark`（`checked` / `indeterminate` / `unchecked`）与 `data-xh-check-mark-profile`（`box`：节点就是方框；`row`：方框画在整行的 `::before`，标记叠在方框正中）：
+
+  - Checkbox `indicator`、CheckboxGroup `indicator`、Transfer `item-checkbox`、Table `select-all-trigger` / `row-select-trigger` / `column-visibility-trigger`、QuestionFlow 多选题的 `item-indicator` 投影 `box`；
+  - CheckboxGroup 与 Transfer 的 `select-all-trigger` 投影 `row`。
+
+  随之对齐的取值：CheckboxGroup 勾中方框的填色与独立 Checkbox 同取保证 3:1 的语气 control 色；CheckboxGroup 全选格禁用时标记取 `--xh-fg-disabled`；Table 三颗勾选框不再把前景换成透明来藏勾，禁用且勾中时显示置灰的勾，与 Checkbox 同一档。GridList 行勾选框的描边、底色补上过渡，勾常驻并按同一副取值淡变。
+
+- 0ac39c5: CheckboxGroup 新增结构形态 `variant`（`list` 缺省 | `card`）与说明行部件 `item-description`。
+
+  - `variant="card"` 把每个条目画成一张可点的描边卡，与 RadioGroup 的 card 形态共用选择卡片家族配方：条目换成 Action Control row 档的 `outline` 形态并投影 `data-xh-choice-card`，根投影 `data-variant`；勾中的卡换品牌淡底（有 `tone` 换语气淡底），描边不换，行首方框照常。全选触发器在两种形态里都是一行。
+  - 条目新增投影 `data-readonly`，卡面据此在只读时收回悬停与按下面。
+  - 新增部件 `item-description`（`XhCheckboxGroupItemDescription`）：文案下方的说明行，13 / `--xh-fg-muted`；`collection` 的节点新增 `description`，数据驱动时自动铺出这一行。
+  - 新增组件槽 `--xh-checkbox-group-card-title-font-weight`、`--xh-checkbox-group-item-description-fg`、`--xh-checkbox-group-item-description-font-size`、`--xh-checkbox-group-item-description-fg-disabled`、`--xh-checkbox-group-item-row-gap`。
+
+- 4f4b97b: Citation 新增悬停预览与一处多源轮换：
+
+  - 新增 `previewMode`（`inline` 缺省 / `hover`）。hover 档把预览放进新部件 `positioner`（Vue / React `XhCitationPositioner`，Web Components `data-xh-part="positioner"`），锚定在引用编号旁的悬停卡片接定位引擎、搬到 portal 落点、不推动正文；指针停留 `openDelay`（缺省 700ms）出现，离开编号与卡片 `closeDelay`（缺省 300ms）后收起，卡片开着或刚收起不到 `skipDelayDuration`（缺省 300ms）时指向另一处引用直接接替；焦点落到引用上当场打开，Escape 与卡片外按下收起；触屏交给点按。卡片是 frosted 锚定面板，出现与退场走 `xh-overlay-pop-in` / `xh-pop-out`。另新增 `placement`、`offset`。
+  - 行内引用新增 `sourceIds`（Web Components 在 `value` 里写空白分隔的几个 id），与 `sourceId` 只写一个；预览新增部件 `prev-trigger`、`next-trigger`、`preview-index`，在一处多源的几个来源之间轮换，只有一个来源时收起。新增文案 `citations`、`previousSource`、`nextSource`。
+  - 新增导出 `CITATION_DEFAULT_PLACEMENT` 与类型 `CitationPreviewMode`、`CitationRefs`、`CitationTriggerTarget`；API 新增 `activeGroup`、`previewMode`、`getPositionerProps`、`getPrevTriggerProps`、`getNextTriggerProps`、`getPreviewIndexProps`、`getPreviewPosition`。
+  - 行内引用的 `aria-expanded` 只落在打开预览的那一处（从来源列表打开时同来源的引用都算）。
+  - 修正 Vue `XhCitationRoot` 只在首帧读取 props：受控写回与改档此前传不进机器。
+
+- dce47c5: Citation 预览按 surface 级披露展开收起：内容区高度从 0 长到整块（`--xh-motion-duration-expand` + `enter-strong`）、收起时收回 0（`collapse` + `exit`），内缩、描边与它前面那道间距一起动，后面的段落随之平移（此前瞬开瞬关、直接推开后面的段落）。首帧就开着的预览投影 `data-instant` 直接呈现；减弱动效下瞬时完成。
+
+  - 收起的那一份先播完收回才写 `hidden`，途中带 `inert`；换来源时旧的收起、新的展开同时进行。
+  - 机器新增 context `shownSourceId` / `leavingSourceId` / `moved` / `previewBlockSizes` 与事件 `PREVIEW.MEASURED` / `PREVIEW.LEFT`；预览露面与收起前量下内容区高度，连接层写进内联私有槽。
+  - 皮肤新增关键帧 `xh-citation-preview-expand` / `xh-citation-preview-collapse`（登记为布局动画例外）；根改为纵向 flex 排列，预览的盒模型改为 content-box 并裁掉溢出。皮肤体积基线随之上调。
+
+- 0ed99b4: **新增** `Citation` 组件（引用来源）：Vue、React 与 Web Components 同时支持行内引用、来源预览、来源列表、方向键导航及完整可访问关系。
+
+  `sources` 与 `@xihan-ui/chat-stream` 的 `SourcePart[]` 结构兼容；URL 来源也可携带 `anchors`。新增皮肤约 8 KB，包含预览 surface、引用编号和来源列表样式。
+
+- a594e30: Clipboard 复制钮的写入在途改接加载环家族配方：连接层投影 `data-xh-loading-ring="overlay"`，环压在钮正中、直径取钮的图标档，画法与 Spinner 环档一致（一整圈轨道 + 粗环，此前是 1em、1px、无轨道的小环）。进入在途等一个 `micro` 才起淡，钮里的文字与字形随前景同刻淡出留位；退出在途不再硬切，按 `micro` 交叉淡回。`--xh-clipboard-loading-duration` 照旧控制转速。加载环配方新增私有槽 `--xh-_loading-ring-duration`，供承载者把自己的时长槽接进来。
+- ac0d04e: CodeView 新增按语法块折叠：
+
+  - 新增 `blockFolding`：按缩进找出语法块（一行之下缩进更深的连续行，夹在中间的空行算在内），块头那一行的行首出现折叠钮，新部件 `line-fold-trigger` 由组件铺在正文最前面；收起的行带 `hidden`、不占高度，块头的行与正文带 `data-folded`，皮肤在正文后面画一枚省略号；root 带 `data-block-folding`。
+  - 折叠集合写块头的行号（随 `startLine`）：`folded` 受控（Vue `v-model:folded`）、`defaultFolded` 非受控（Web Components 属性 `folded` / `default-folded`，逗号分隔），变化经 `folded-change` 报出 `{ folded }`。
+  - 行首折叠钮合起来只占一个 Tab 位，上下方向键在看得见的钮之间走，Home / End 到首末；可访问名取 `translations.foldBlock(first, last)`，开合由 `aria-expanded` 表达。
+  - 新增导出 `findCodeViewFoldRegions` 与类型 `CodeViewFoldRegion`、`CodeViewFoldedChangeDetails`；API 新增 `foldRegions`、`folded`、`isFoldStart`、`toggleFold`、`getLineFoldTriggerProps`。
+  - 外观槽：`--xh-code-view-fold-col`、`--xh-code-view-line-fold-trigger-{radius,fg}`、`--xh-code-view-icon-size`、`--xh-code-view-folded-{gap,fg}`。
+
+- 7e5a87a: Collapsible 首帧不播开合：挂载时已经展开或收起的内容与箭头投影 `data-instant`，直接呈现；第一次开合（用户操作或受控值改写）起撤掉，按动效走。
+- fac80f7: 为 Tree、Listbox、Select、Combobox 与 Transfer 增加 CollectionVirtualizer 正式接线协议；完整集合继续负责键盘、检索、选择与 ARIA 位置，Virtualizer 只裁剪窗口 DOM，并在目标条目挂载后完成焦点交接。
+- b85e63d: ColorPicker 的盒接入字段外壳家族：静息无影、悬停取家族的淡底、聚焦边一律 `--xh-border-control-focus`（不随语气），与同族的下拉选择同一套面；新增 `variant`（outline / subtle / ghost，默认 outline）。字段标签字号不再随档；通道输入框的聚焦边不随语气；吸管钮按浮层白底承载阶梯换面（hover 100 → pressed 200）。
+- d990cfd: ColorPicker 新增常驻形态 `inline` 与最近使用色。
+
+  - `inline`（Web Components 属性 `inline`）：取色面直接铺在页面里，与浮层形态同一台机器、同一组部件，只是不写 `control` / `trigger` / `positioner`。恒为展开态，`open` / `defaultOpen` / `onOpenChange` 不起作用；不入层栈、不抢焦点，点外与 Escape 都不收起。content 换成由标题命名的 `role="group"`（不带 `aria-modal` 与 `tabindex`），root 与 content 投影 `data-inline`；皮肤把取色面画成静态内容面：surface 圆角、`--xh-border-default` 描边、实体底、不落影、不播进退场，根不再取字段缺省宽。运行期关掉 `inline` 时收起回到浮层形态（`open` 受控为真则留着）。
+  - 最近使用色：一轮取色结束且颜色变了就记一笔，最新的在最前、同色（写法不同也算）只留一份。浮层形态以收起为一轮，常驻形态以焦点离开取色面为一轮；只经 `setValue` 改的不记。`recentColors`（属性 `recent-colors`，逗号分隔）可受控，`defaultRecentColors`（`default-recent-colors`）为非受控初值，`maxRecentColors`（`max-recent-colors`，缺省 8，写 0 即不记）限定个数；变化经 `onRecentColorsChange` / `recent-colors-change` 发出 `{ recentColors }`。
+  - 新部件 `recent-swatch-picker`：最近使用色的挂载点，与 `swatch-picker` 同一台色块选择器（`role="radiogroup"`，名字取新文案 `translations.recentSwatchGroup`，缺省 `Recent colors`），挑一格即改值；还没有最近使用色时收起。Vue / React 新增 `XhColorPickerRecentSwatchPicker`，不写子节点时按列表自动铺格；Web Components 由作者按 `recent-colors-change` 铺格。
+  - `colorPickerMeta.requiredParts` 去掉 `trigger`：它只在浮层形态才写，常驻形态不写。
+  - 插槽作用域 / 函数式 children 新增 `recentColors` 与 `clearRecentColors`；元素新增只读属性 `currentRecentColors` 与方法 `clearRecentColors()`。
+  - headless（破坏性）：`ColorPickerServices` 新增必填的 `recentSwatchPicker`，自行组装服务表接 `connectColorPicker` 的调用方要用 `colorPickerRecentSwatchPickerProps` 再建一台色块选择器补上；导出 `colorPickerRecentSwatchPickerProps`、`colorPickerPushRecent`、`colorPickerMaxRecent`、`COLOR_PICKER_MAX_RECENT_COLORS` 与类型 `ColorPickerRecentColorsChangeDetails`；机器 context 新增 `recentColors` / `sessionValue`，事件新增 `SESSION.END` / `RECENT.CLEAR` / `INLINE.SYNC` / `INLINE.CLOSE`。
+
+- fcfe307: Combobox 多选时已选项在输入框前排成标签，与 Select 同一套呈现：新增 `tag-list` 部件与 `maxTagCount`（默认 3，其余合成 `+N`），标签与 +N 套库里的 tag，标签里的删除钮不占 Tab 位、按下不夺焦，删完焦点仍在输入框；新增 `api.tags` / `overflowCount` / `overflowText` / `deselect`，文案 `translations.deleteItem` / `overflowTag`。已选项被宿主筛出候选后，标签仍显示选中那一刻的文字。Vue / React 的自动结构在 `multiple` 时直接铺出标签行；手写时用 `XhComboboxTagList`、`XhComboboxTag`、`XhComboboxTagLabel`、`XhComboboxOverflowTag`、`XhComboboxItemDeleteTrigger`，Web Components 用 `tag-list` / `tag` / `tag-label` / `overflow-tag` / `item-delete-trigger` 角色并按元素的 `tags` 渲染。输入框缺省最小宽取 `--xh-control-input-min-w`（`--xh-combobox-input-min-w` 可覆盖），行距槽 `--xh-combobox-tag-list-gap`。
+- cba8ed7: Combobox 的占位态按设计真源的占位态一节补齐：首次加载时 `loading` 部件在文案前转一枚加载环（连接层投影 `data-xh-loading-ring` 与 `data-loading`，环走加载环家族配方），此前只是一行静态文字；已有候选时后台刷新保留上一帧，条目与分组标题按 `micro` 淡到 `--xh-state-disabled-opacity`，淡的是内容不是磨砂面。分组标题、空态与加载占位的行内内衬改随尺寸档（此前固定 md），与条目文字对齐。
+- d8d731a: Command 打开时已有的结果不再逐条冒出来：每次打开，列表接上条目到达的追踪之前投影 `data-instant`，接上时已在的结果直接呈现；之后因检索串换掉而新露面的一批结果按到达顺序错开进场（`--xh-_stagger-index`，封顶 4 个步长），不再按它在可见结果里排第几。
+- b8e4f3b: Command 的占位态按设计真源的占位态一节补齐：
+  - 首次加载时 `loading` 部件在文案前转一枚加载环（连接层投影 `data-xh-loading-ring` 与 `data-loading`，环走加载环家族配方）。
+  - 在途占位只接管首次加载：清单里已有看得见的命令时列表原样留着、按 `micro` 淡到 `--xh-state-disabled-opacity`（此前是硬切），在途占位让位（此前与列表同屏）；没给清单时库判不出有没有候选，在途即露面，与此前一致。
+  - 空态与在途占位的上下内距由 `--xh-space-6` 收到与其它集合同档的 `--xh-space-3`，文字与分组标题由 `--xh-fg-subtle` 改为次要文字 `--xh-fg-muted`。
+- 46c59c5: DatePicker 的 showTime 接上与时间选择器同一份时间约束。
+
+  - 新增 `hourCycle`（`12 | 24`，缺省 24，不随 locale 推断）：12 时时间列末位多出上下午列、输入行的时刻段后面多出上下午段，值仍是 24 小时制的 ISO 串；上下午列的名字走新文案键 `translations.dayPeriod`（缺省 `AM/PM`），格上的字按 locale 现译。Web Components 的 attribute 是 `hour-cycle`。
+  - 新增 `timeStep: { hour?, minute?, second? }`：时间列按单位取样。Web Components 的 attribute 是 `time-step`（JSON 对象）。
+  - 新增 `isTimeUnavailable(value, unit, context)`：时列按 24 小时制给值，`context` 带已选的时、分与这份时间所属的日期（还没有值时是聚焦日）。
+  - `min` / `max` 可以带时间段（`'2026-09-28T09:30'`）：日历按日期段收，与它同一天时界外的时刻留在列里、标为不可选（`aria-disabled` + `data-disabled`，家族禁用面），按下不写值、方向键跳过；列长不随所选的日子变。
+  - api 新增 `hourCycle`、`timeStep`、`getTimeItemText`、`isTimeItemDisabled`；`DatePickerTimeUnit` 放宽到含 `dayPeriod`；新增 `datePickerTimeModel`、`datePickerNormalizeTime`、`datePickerCalendarBound`。Vue / React 的 `TimePanel` 按 `getTimeItemText` 填字，Web Components 新增只读属性 `timeColumns`，时间格内容为空时由元素填字。
+  - 皮肤：不可选的时间格选中标记跟着降级，强制色下换 GrayText。
+
+- 4cb8645: DateRangePicker 新增一体化时间 `showTime`（只在 `granularity=day` 下生效）。
+
+  - 两端都升格为不带时区的 `YYYY-MM-DDTHH:mm[:ss]`：两组段位带上时刻段，浮层里起止各多出一组时间列，选完日期不收起，由新部件 `confirm-trigger` 收口。`timeZone` 仍只决定「今天」。
+  - 新增部件 `column-group`、`column-group-label`、`time-column`、`time-item`、`confirm-trigger`，列与格与 DatePicker 的时间部件同名，一端的外壳与小标题与 TimeRangePicker 同名，按 `index`（0 起点、1 终点）归属。Vue / React 新增 `XhDateRangePickerTimePanel`（起止两组整组自动铺）与 `XhDateRangePickerConfirmTrigger`；Web Components 由作者写两组 `data-xh-part="column-group"`（`index` 属性区分），新增只读属性 `timeColumnGroups`，时间格内容为空时由元素填字。
+  - 新增 `timeGranularity`（`'minute' | 'second'`，缺省 minute；不扩展 `CalendarGranularity`）、`hourCycle`（`12 | 24`，缺省 24）、`timeStep`、`isTimeUnavailable`（`context.index` 是哪一端、`context.date` 是这一端的日期），与时间选择器共用一份约束；`min` / `max` 可以带时间段，同一天界外的时刻标为不可选。起止落在同一天时终点列早于起点时刻的格自动不可选；两端按日期时间比先后，终点早于起点即整份标为不合法。
+  - 新增 `defaultTime: [string, string]`：只点日期时给还没有时刻的那一端补上对应时刻；快捷选项同样是「日期拼上这一端此刻的时刻」。
+  - 新增 `activeIndex`（`0 | 1`，可受控，配 `onActiveIndexChange` / Vue `update:activeIndex` / Web Components `active-index-change`）：从终点那组段位展开（点它或在它上面按 Alt+ArrowDown）为 1，其余为 0；为 1 且已有起点时日历只改终点。Web Components 的 attribute 是 `show-time`、`time-granularity`、`hour-cycle`、`time-step`、`active-index`，`defaultTime` 与 `isTimeUnavailable` 只能走 property。
+  - 文案新增 `startTime`、`endTime`、`hour`、`minute`、`second`、`dayPeriod`；`DateRangePickerValueSource` 放宽到含 `'time'`。
+  - 导出 `compareDateRangeEnds`、`dateRangePickerShowTime`、`dateRangePickerTimeGranularity`、`dateRangePickerDefaultTime`、`dateRangePickerJoinTimes` 与相应类型。
+  - 皮肤：`date-range-picker.css` 新增两组时间列（外壳、小标题、列、格与选中对号、禁用面）与确认钮的样式，连同强制色与手机档的补丁，去注释压空白后由 18033 字节涨到 29203 字节。
+
+- 84d0111: Descriptions 新增列表之前的头部：`header`（一行）、`title`（左侧标题）、`extra`（右侧操作或状态）三个部件。头部排在根之外——根常写成 `dl`，里面只能放成对的 `dt` / `dd`：Vue 写进 `XhDescriptionsRoot` 的 `header` 插槽，React 经 `header` 传入，Web Components 写成 `root` 的前一个兄弟。标题缺省渲染为 `div`，按页面层级用 `as` 换成 `h2` / `h3`；样式为 Surface 内标题（正文字号、半粗），头部与列表的间距随尺寸档。新增公开槽 `--xh-descriptions-header-gap`、`--xh-descriptions-header-mb`、`--xh-descriptions-extra-gap`、`--xh-descriptions-title-fg`、`--xh-descriptions-title-font-size`、`--xh-descriptions-title-font-weight`。皮肤涨在头部三条规则上。Vue 的 `XhDescriptionsRoot` 写了头部时渲染为片段，作者写在根上的 class 与属性仍落在 `dl` 上。
+- 88e41b9: Dialog 新增 `draggable`（Web Components 为 `panel-draggable`，避开 HTML 全局的 `draggable`）：指针按住标题栏（header，没写 header 时是 title）即跟手挪走面板，标题栏里的按钮与表单控件照常点，面板四边始终夹在视口内，每次打开从居中落点起。新增 `drag-trigger` 部件（`XhDialogDragTrigger`）：放在 header 里铺满标题栏的透明把手，方向键挪一步、Shift 大步、Enter / Space 回到居中，初始焦点越过它。拖动走 `@xihan-ui/pointer` 的指针会话，位移写成 content 上的私有槽、按 transform 平移，与进出场关键帧叠加，拖过的面板从拖到的位置退场。`DialogTranslations` 新增 `dragTrigger`，`DialogApi` 新增 `offset` 与 `dragging`。
+- 41e5a5a: DiffView 新增行评论钩子：
+
+  - 新增 `commentable`：每行正文前出现一颗评论钮（新部件 `comment-trigger`，由组件铺），点它报出 `comment-request`，detail 为 `{ side, line, change, text }`；一组钮只占一个 Tab 位，上下方向键在组内走，Home / End 到首末。指针设备上钮平时透明，悬停到这一行或焦点进了视口时显出来。root 带 `data-commentable`。
+  - 新增 `commentLines`（写 `{ side, line }`）：这些行在代码下方、同一个格里铺出评论容器（新部件 `comment-thread`），内容由作者写——Vue 用 `XhDiffViewBody` 的 `comment` 插槽，React 用 `XhDiffViewBody` 的 `renderComment`，Web Components 监听 `comment-mount`（detail 带 `element`）。单栏里删除行落旧侧、其余落新侧，并排按所在的那一侧。
+  - 新增类型 `DiffViewLineRef`、`DiffViewCommentRequestDetails`；API 新增 `commentable`、`commentRefAt`、`hasComment`、`getCommentTriggerProps`、`getCommentThreadProps`；文案新增 `commentOn(line, side)`。
+  - 外观槽：`--xh-diff-view-comment-col`、`--xh-diff-view-comment-trigger-{radius,fg}`、`--xh-diff-view-comment-trigger-icon-size`、`--xh-diff-view-comment-thread-{max-w,my,p,border,radius,bg,fg}`。
+
+- 6ec16fd: Drawer 新增 `resizable`：新增 `resize-trigger` 部件（`XhDrawerResizeTrigger`，role=separator），落在朝向页面的那条边上，拖动它或聚焦后用方向键推面板厚度（Shift 大步、Home / End 推到上下限），推向页面那一侧变厚，从右往左排版时把手与方向一起翻。厚度夹在 `minPanelSize`（缺省 160）与 `maxPanelSize` 之间且不超出视口或所在容器；`panelSize` / `defaultPanelSize` / `onPanelSizeChange`（Vue 另有 `v-model:panel-size`，Web Components 派发 `panel-size-change`）走受控与非受控，没调过时按 `size` 档绘制。拖动复用对话框机器里的指针会话，步长与 Resizable 同一档；调过的厚度写进 content 的私有槽，压过 size 档。`DrawerTranslations` 新增 `resizeTrigger`，`DrawerApi` 新增 `panelSize` 与 `resizing`。
+- 2315792: EmptyState 的开幕只在出现时播放。
+
+  - 随页面首屏就在的空状态直接呈现：页面加载完成之前挂上的、服务端渲染后水合的，图标、标题、说明、操作五个部件投影 `data-instant`，不播开幕。筛选、删除或新数据带来的出现（页面加载完成之后挂上），以及 root 从 `hidden` 恢复显示，照常依次开幕；首屏那一份第一次收起之后，此后每次显出都开幕。
+  - 新增 `emptyStateMachine`、`EmptyStateSchema`、`EmptyStateRefs`；`connectEmptyState(props, normalize)` 改为 `connectEmptyState(service, normalize)`，与其余带状态机的组件一致。
+  - React 的 `EmptyStateContext` 新增 `rootRef`，自行渲染根节点时要把它接到根元素上。
+  - 皮肤的开幕关键帧改写在 `:not([data-instant])` 下。
+
+- 3b806b0: FieldArray 的行增删与移动有进退场：首次渲染时已有的行直接呈现，新增的行以 `xh-item-in` 进场，删掉的行由替身在原处以 `xh-fade-out` 淡出（替身里的控件摘掉 id 与表单名，不进表单提交），上移、下移与增删带来的换位沿 `translate` 过渡滑到新位置。行照常按 `items` 渲染、删掉即卸载，写法不变。root 部件在列表动效接上之前投影 `data-instant`，并改为定位元素。
+- 6c896a5: FileUpload 的三颗钮改接 Action Control 家族，不再各自手绘：
+  - 「选择文件」`trigger` 投影 text 档 `outline`、md：静息描边、悬停白底承载 100、按下 200 与 0.97 按压、焦点环与禁用面由家族给，不再悬停抬 raised 影（`--xh-file-upload-trigger-shadow-hover` 仍可自行加影）；字号改随家族 md 档，新增 `--xh-file-upload-trigger-font-weight`。
+  - 逐条删除 `item-delete-trigger` 投影 icon 档 `ghost`、xs：悬停 100 / 按下 200，悬停与按下时字换危险色；钮里的兜底叉按 xs 钮的字形尺画（`--xh-glyph-size-sm`），此前随文字号。
+  - 清空 `clear-trigger` 投影 text 档 `ghost`、sm：字号改随家族 sm 档（此前是说明字号），空列表时三态前景一起压淡。
+    此前三颗钮悬停落 200、按下落 300，白底承载面上高了一档。
+- d611556: Flex 的 `orientation`、`align`、`justify`、`gap` 接受断点对象 `{ base, sm, md, lg, xl }`，与 Grid 同一套档位按视口逐档接管，逐档落 `data-orientation-<档>` / `data-align-<档>` / `data-justify-<档>` / `data-gap-<档>`；Web Components 在特性上写 JSON 对象，写坏了当没写。换档时交叉轴的缺省对齐跟着当档的方向走（竖排拉伸、横排居中），作者显式写的对齐不被换掉：皮肤改由两个私有槽承载对齐，计算结果与此前一致。Headless 新增 `FlexBreakpoint`、`FlexByBreakpoint`、`FlexResponsive`、`FlexTierName`、`FLEX_TIER_NAMES` 与 `normalizeFlexTier`。flex.css 的体积基线随逐档规则上调。
+- 4915299: FloatButton 在 liquid 档下把触发器与展开组里的动作结成液态组：展开时动作从触发器里分离，收起时融回，融回落定后展开组才带 `hidden`，其间 `inert`；状态机新增上下文 `merging` 与 refs `liquidGroup`。展开组投影 `data-xh-liquid`，缺省 outline 的触发器与原生动作项在组里只留前景与磨砂，底色、细线、亮边与投影由色块层沿整组外形画；`--xh-float-button-shadow` 接到整组的投影上。
+- 162dbd7: FloatButton 展开列表补上收起退场：标准档下条目逆着冒出的次序逐条缩回（`xh-pop-out`，离触发器最远的先走，错开封顶 4 步），列表等它们播完才藏起（此前一收起就硬消失）；退场途中不接指针。液态档照旧由液态组融回；减弱动效下两档都只剩一段淡出，播完藏起。
+- 5b2d09a: Form 错误摘要补上退场：改完最后一处错误或重置时，摘要先淡出（途中仍占位、不可交互，条目与条数停在撤下之前那一版），播完才藏起，下方字段不再在打字时瞬间上跳。摘要的 `data-state` 改为跟摘要自身的显隐走（露面 `invalid`，撤下与退场途中 `idle`）。
+
+  `FormApi` 新增 `summaryErrors` / `summaryErrorNames` / `summaryErrorCount` / `getSummaryError`：摘要此刻画的那版错误表；Vue / React 的摘要与摘要条目插槽参数改读它。Web Components 的摘要与条目显隐改照连接层给的 `hidden`。
+
+- 1d51e7f: 新增 `funnel-chart` 漏斗图：看一个流程里各阶段的保留量与逐级转化率。
+
+  - 每行数据一个阶段（`nameField` / `valueField`），按先后排好；宽度与数值成正比。`shape` 取 `trapezoid`（上下两边接着相邻阶段）或 `bar`，`align` 取 `center` / `start`，`direction="up"` 画成金字塔。
+  - 颜色取有序色阶，第一阶段最深、逐级变浅，没有图例，阶段名直接标在阶段上；`palette` 换色相。标签缺省 `outside` 跟在各阶段右边，`inside` 写在阶段里（描一圈承载面色，放不下时写到外侧）。
+  - `conversion` 取 `previous` / `first` / `none`：转化率写在左侧、落在相邻阶段的交界处；递增的阶段写成大于 100%。隐藏的阶段不画，转化率跳过它重算。
+  - 每个阶段是带可及名的 `graphics-symbol`；摘要写首尾、总转化率与流失最多的一步，数据表四列。上下键跟着画面走，金字塔里对调。负值报 `chart.negative-share`。
+
+- c221a15: GraphChart 新增三项：
+
+  - `layout="preset"` 按节点上写的 `x` / `y` 摆放，整体等比缩放进绘图区；有节点缺有限数的坐标时报 `chart.graph-shape`。
+  - 连线可写 `label`：画在两端圆心连线的中点（新部件 `link-label`，描一圈承载面色），和节点或名字压住、越出绘图区时不写；数据表多一列关系（新文案 `translations.linkLabel`）。
+  - 画布视图可受控：`view` / `defaultView` / `onViewChange`（Vue `v-model:view`，事件 `view-change`），几张图接同一份视图即同步平移缩放；`zoom` 关着时视图不生效。新增类型 `GraphViewChangeDetails`。
+
+  Web Components 侧原先读此刻视图的 `view` getter 改名为 `currentView`，`view` 成为受控的 JS property。
+
+- c292b0f: 新增 `graph-chart` 关系图：看实体之间的连接关系、聚类与层级结构。
+
+  - 数据是节点（`id` / `name` / `group` / `value`）与连线（`source` / `target` / `value`）。节点重复、端点不存在、自环，或树布局下数据不是一棵树，报新的诊断码 `chart.graph-shape`；多于 500 个节点按提醒报新的 `chart.graph-size`，多于 2000 个报错不画。
+  - `layout` 取 `force`（缺省，同步跑到收敛，同样的数据得到同样的布局）、`circular`（按分组等角排在圆上）、`tree`（根在最左）、`radial-tree`（根在圆心）；`root` 指定树的根。
+  - 节点按分组分配分类色，`value` 经平方根比例尺定面积，连线的 `value` 定粗细，`directed` 画箭头。名字先量再放，互相压住时连线多的节点先放。
+  - 悬停节点时它、邻居与连着它的线留着、线换成它的颜色；方向键朝那个方向 45° 锥形里找最近的节点，Home / End 到阅读序的头尾。
+  - 力导布局下可以拖动节点（`draggableNodes`，缺省开；不叫 `draggable`，那是 HTML 的原生属性），松手后模拟冷却到收敛；`zoom` 打开平移缩放（Ctrl / ⌘ 加滚轮、拖动空白处、+ / − / 0 键），`api.zoomBy` / `api.resetView` 供外部调用。
+
+- 953239b: GridList 的加载态按占位态的两种相位画：
+
+  - 还没有行、正在取：`loading` 占位投影 `data-xh-loading-ring` 与 `data-loading`，一枚加载环（加载环家族配方）排在文案之前，直径取尺寸档的图标档。
+  - 已有行时重新取数：行保留上一帧、按 `micro` 淡到 `--xh-grid-list-row-loading-opacity`（缺省 `--xh-state-disabled-opacity`），取完淡回；此前是一刀切到禁用透明度。
+  - 空态与加载态占位排版统一：字号与行内内衬随尺寸档与条目同档、文字取 `--xh-fg-muted`（此前 `--xh-fg-subtle`，那一档留给占位字与禁用标签）、块向内距 `--xh-space-3`；新增 `--xh-grid-list-state-gap` 管环与文案的间距。
+
+- 4f83a46: GridList 的选中标记与 Table、Transfer 统一：同为「页内持久集合 + 行首勾选框」，选中行铺品牌淡底行面（`--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle`，悬停 20%、按下 28%），方框留作非颜色通道。此前选中行保持透明面、只靠方框表达，与另外两者是两套标记。
+
+  - 新增组件槽 `--xh-grid-list-row-bg-selected`、`--xh-grid-list-row-fg-selected`，与 `--xh-table-row-bg-selected` / `--xh-transfer-item-bg-selected` 同位。
+  - `row-selection-indicator` 投影 `data-xh-check-mark` 与 `data-xh-check-mark-profile="box"`，方框里的勾改由勾选标记配方画（与 Checkbox、Transfer、Table 同一副淡变与缩放），皮肤里复刻的那一份删掉。
+  - 指针点过之后留下的高亮行（`data-highlighted` 而非 `:focus-visible`）面退回静息：未选中行透明、选中行回到选中面，指针移入仍按悬停那一档。
+
+- 288b106: **新增** GridList 网格列表组件：提供可选择行、行主操作和独立行内按钮的 grid/row/gridcell 语义，支持单选、多选、方向键与连打检索；与 Sortable 组合后支持指针和键盘拖动。Vue、React 与 Web Components 三端同时可用。新增皮肤约 6 kB，包含容器、选择标记、行内动作与状态样式。
+- 78fa54b: Grid 的每一格新增 `rowSpan`（Web Components 写在 item 节点的 `row-span` 属性上）：1 至 12 的整数，越界与非整数按没写算；与跨列一样接受断点对象 `{ base, sm, md, lg, xl }` 逐档书写，落 `data-row-span` 及逐档的 `data-row-span-<档>`。皮肤经私有槽 `--xh-_grid-row-span` 写 `grid-row-end: span N`，跨几行就占几条行轨道（连同中间的行间距）。Headless 新增 `GridRowSpan`、`GridRowSpanByBreakpoint`。grid.css 的体积基线随逐档规则上调。
+- 65e4e09: **变更** Heatmap 并入图表家族，公开部件与键盘表不变：
+
+  - 分档交给图表引擎的分档比例尺：档数给定时有数据的几档等宽分开（结果与原先相同），给了 `thresholds` 时按分界落档；`thresholds` 里有重复或不是有限数的值时剔除并报 `chart.invalid-range`（原先重复的分界会多出一档永远用不上的空档）。新导出 `normalizeHeatmapThresholds`。
+  - `palette` 扩到基础色板的十二个色相加 `gray`：red / orange / amber / yellow / lime / green / teal / cyan / blue / indigo / purple / pink。满档取同名色相的 600 档，不再借用语气色——**视觉变化**：`green` / `blue` / `orange` / `red` 原先取 success / info / warning / danger 的 600 档，现在取 green / blue / orange / red 的 600 档；要回到语气色写 `tone`。
+  - 详情条与对照条走 Chart 家族配方：详情条由反白改为与其余图表提示框同一副 frosted 材质、overlay 圆角与正文字号（**视觉变化**）；`--xh-heatmap-tooltip-bg` / `-fg` / `-border` 仍可覆盖颜色，`-py` / `-px` / `-radius` / `-shadow` 的缺省值随配方换成 frosted 那一套。
+  - 文档分类从「数据展示」迁到「图表」，页面地址不变。
+
+- cd094b8: Heatmap 新增发散色阶、连续色阶与按下事件：
+
+  - 负数不再落进第 0 档：不写 `scale` 时数据里出现负数即按发散色阶，以 `midpoint`（缺省 0）为界，低于中点兑向负向色、高于中点兑向正向色，中点那一格取中性中点色。显式写 `scale="sequential"` 保留原来的口径。发散色阶取数据色的发散三色，组件槽 `--xh-heatmap-diverging-negative` / `-center` / `-positive` 可单独改写，`tone` 与 `palette` 在这一档不生效；打印时负向一侧的环改用点线。
+  - 格子、详情与统计新增 `polarity`（`negative` / `positive` / null）与 `percent`，三张网格新增 `scale`；root 投影 `data-scale="diverging"`，格子与对照条投影 `data-polarity`。对照条从负向满档经中点排到正向满档：api 与插槽作用域新增 `legendItems`、`scaleMode`，WC 元素新增同名只读属性，legend-item 部件读取作者写的 `polarity` 属性；两端文字缺省改为两侧最远的数。新增导出 `heatmapLegendEntries`、`heatmapPlaceOf`。
+  - `continuous`：着色按数值的确切比例，不按档位取整；档位、打印纹理与可访问名称照旧按档。
+  - `onCellPress`（事件名 `cell-press`）：点击一格或焦点在格上按 Enter 时报告那一格，载荷与详情同源，与图表家族的 `onDatumPress` 同一口径；Space 不接，照常滚动页面。Vue 的 `useHeatmap` 追加第三个回调参数。
+
+- ebccae5: Heatmap 悬停补上两处回执：详情条收起不再 `display: none`，与其余图表的提示框一样按家族配方淡入；详情条正在说的那一格投影 `data-highlighted`，描一圈正文色的粗线（新增覆盖槽 `--xh-heatmap-cell-border-highlighted`），扫过一片格子时看得出条说的是哪一格。
+- 6ec7ac2: 热力图加上与其余图表同一套数据动效，新增 `animated` 属性（缺省开，Web Components 写 `animated="false"` 关闭）。
+
+  - 首次出现：网格、星期名、月份名与对照条原样在场，有颜色的格子从空格底色填到自己的档位色，按日期先后（矩阵按列先后）一路扫过去。扫描取 `--xh-motion-duration-reveal`，每格的填色取 `--xh-motion-duration-enter`。数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `value`）同样播这段填色，三个适配器一致。
+  - 数据变化：各格从旧档的颜色过渡到新档，取 `--xh-motion-duration-morph` 与 `continuous` 曲线；只在这一段过渡，根上写 `data-animating`。格子原先常驻的 `background-color` 状态过渡随之撤掉，主题、语气与色板的换色改为一步到位，与其余图表一致。
+  - 减弱动效或容器写了 `data-motion="reduce"`：不再逐格扫过去，各格一起淡变填色；数据变化直接换色。
+  - 新关键帧 `xh-heatmap-fill` 随热力图皮肤自带；格子在填色途中带 `data-drawing` 与私有槽 `--xh-_chart-reveal-at`。
+
+- 736adcf: 新增 `hierarchy-chart` 层级图：看层级数据中各部分的占比，并逐层下钻。
+
+  - 数据是嵌套的树（`childrenField`），或扁平的行（`idField` / `parentField`）；只取叶子的值，上层是子孙之和，兄弟按值从大到小排。多根、父节点缺失、成环报 `chart.hierarchy-shape`，负值报 `chart.negative-share`。
+  - `layout` 取 `treemap`（缺省，`tile` 取 `squarify` / `binary` / `slice-dice`）、`sunburst`、`icicle`（`orientation` 换方向）、`pack`；`depth`（缺省 2）是同时看得见的层数。
+  - `colorBy` 取 `branch`（缺省：第一层分支按数据次序取分类色，后代向承载面混色变浅；多于 8 个分支报 `chart.too-many-series`）、`value`（顺序色阶，`palette` 换色相）或 `uniform`。标签先量再放，放不下的交给提示框与数据表。
+  - 点有子节点的节点或按 Enter 下钻，Backspace 与旭日图中间的空洞上钻；下钻路径是一组 nav 语境的按钮。`rootKey` / `defaultRootKey` / `onRootKeyChange` 受控或记住下钻的位置，`api.drillTo` / `api.drillUp` 供外部调用。
+  - 绘图区是 `role="tree"`，节点是带 `aria-level` / `aria-setsize` / `aria-posinset` / `aria-expanded` 的 treeitem；左右键在兄弟之间、上下键在父子之间走。数据表列出整棵树的路径、数值与占上一层的比例。
+
+- fd0e9da: HierarchyChart 新增色阶图例：`colorBy="value"` 时每个看得见的层一条色阶（名字、低端的值、渐变条、高端的值），颜色在同一层里各自归一所以一层一条；下钻后跟着换，其余着色方式收起。新部件 `legend`、`legend-scale`、`legend-scale-name`、`legend-scale-bar`、`legend-scale-value`，`api.legendScales` 与类型 `HierarchyLegendScale`，新文案 `translations.levelLabel`；Vue / React 新增 `XhHierarchyChartLegend` 并铺进缺省结构，Web Components 作者可写 `<div data-xh-part="legend">`。新增槽 `--xh-hierarchy-chart-legend-gap`、`--xh-hierarchy-chart-legend-scale-gap`、`--xh-hierarchy-chart-legend-scale-width`、`--xh-hierarchy-chart-legend-scale-bar-radius`。
+
+  新增语义令牌 `--xh-chart-legend-scale-width`（色阶渐变条的长度），CartesianChart 与 HierarchyChart 的同名组件槽都缺省指向它，数值不变。
+
+- c699e05: ImageCropper 出图按所见生效，新增水平 / 垂直翻转。
+
+  - 修复：出图原先直接 `drawImage` 裁切矩形，旋转不进导出图、`shape="round"` 也不裁成圆形。新增 `toCanvas(options?)`（Vue / React 插槽载荷、Web Components 元素方法）：裁切矩形、旋转、翻转与圆形外形一并生效，像素取自 image 部件；圆形裁成内切于裁切矩形的椭圆，椭圆外透明；旋转 90° 的倍数时画布宽高互换，其余角度为旋转后的外接矩形。纯函数 `cropToCanvas` 新增 `rotation` / `flip` / `shape` 三个选项，`width` / `height` 量的是旋转之前的那块内容。
+  - 新增翻转：`flip` / `defaultFlip` / `onFlipChange`（`{ horizontal, vertical }`，Vue 走 `v-model:flip`，Web Components 属性写空格分隔的轴名 `flip="horizontal vertical"`，事件 `flip-change`），API `flip` / `setFlip()` / `toggleFlip(axis)`。翻转与缩放、旋转一样同时作用在图片与裁切框上，只改呈现，裁切矩形不变；拖动的位移换算同样拆掉翻转。
+  - 新增部件 `flip-trigger`（`XhImageCropperFlipTrigger`，Web Components 作者节点写 `axis="horizontal|vertical"`）：原生按钮报 `aria-pressed`，接 Action Control text 档 sm、缺省 outline，翻着时为品牌淡底选中面，带按压通道。文案新增 `translations.flipHorizontal` / `translations.flipVertical`。
+  - 方向键改为跟随屏幕方向：图片转了、翻了，框在屏幕上往哪边挪就按哪个键，旋转取最近的直角（此前按图片像素方向走，旋转 90° 后按右键框会往下走）。headless 新增 `screenStepToImage`、`sameCropFlip`、`IMAGE_CROPPER_NO_FLIP`，`CropProjection` 新增可选 `flip`。
+  - Web Components 元素新增只读的 `currentFlip` 与 `setFlip()` / `toggleFlip()` / `toCanvas()` 方法。
+
+- 23d878c: Image 载入改为交叉淡变：占位层（模糊小图、骨架）在图片载好或失败时原地淡出，图片在它底下直接落位，模糊小图的揭开不再被打断、中间不露一拍底色；没有占位层时图片照旧自己淡入。回退内容在图片载好时浮到图片之上淡出，播完才藏起。占位层与回退节点带上 scope 派生的 id；Web Components 的显隐改照连接层的 `hidden`。
+- 5cc7978: `image-viewer` 在 `data-material="liquid"` 下：工具条、计数、翻页与关闭钮换成液态面，工具条与计数取胶囊形、叉取圆形；前景随墨色域在黑白之间切换，工具条里的钮悬停 / 按下取墨色淡底阶梯。定位层在非透明遮罩下声明 `data-xh-backdrop="dark"`，替被模态设成 inert 的遮罩告诉液态面身后是什么。工具条、计数与各钮带上部件 id。standard 档仍是那层深色纱。
+- a99fab9: ImageViewer 的平移限定在范围内：按放大、旋转后的外接框超出视口的部分算，图比视口小时只能居中；拖出范围越拉越沉（80px 橡皮筋），松手硬弹簧回弹。单指快甩松手后图片顺着速度惯性滑行、逐渐停下，期间投影 `data-animating`；缩放钮、滚轮与旋转后平移收进新范围。状态机新增上下文 `settling` 与 refs `inertia`，`POINTERS.END` 带 `velocity` 与 `canceled`。
+- 93beb41: 滑动指示器改量排布位、位置交给 transform。Segmented 的滑块沿 offsetParent 链量选中段相对根的位置，祖先带缩放（对话框进场）时不再跟着缩小偏位；段或根变尺寸、段增减、字体加载完成都会重量。皮肤以 `transform: translate()` 摆放滑块、只走合成，RTL 下由 `:dir(rtl)` 翻转位移。随之删除导出 `resolveSegmentedIndicator` 与类型 `SegmentedBox`，量测改用内部的共用几何。
+
+  Tabs 的指示条同样改量排布位、位置交给 transform，与标签带平移的 translate 叠加而不互相覆盖；方向缺省从标签带现读，整页 RTL 而没传 `dir` 时不再落错。
+
+  Anchor 的指示条同样改量排布位、位置交给 transform；连接层不再写内联的 `inset-*` 与尺寸，改写私有槽 `--xh-_anchor-indicator-x / -y / -w / -h`，皮肤按排布取主轴那两支；目录或链接变尺寸、链接增减、字体加载完成都会重量。
+
+  NavigationMenu 的指示条同样改量排布位、位置交给 transform；连接层改写私有槽 `--xh-_navigation-menu-indicator-x / -y / -w / -h`，列表或入口变尺寸、入口增减、字体加载完成都会重量。
+
+- 17f3523: InputGroup 不传尺寸时整组与单个字段同宽（新增覆盖槽 `--xh-input-group-w`，回退 `--xh-control-w`），组里带字段外壳的控件占满前后缀与动作之外的剩余宽度；此前整组宽 = 字段缺省宽再加前后缀，比同一列的字段宽一截。
+- 0adceaa: JsonViewer 新增搜索：`search` 标出键名与值里含有搜索词的行（不区分大小写，收起的分支里也找得到），命中行投影 `data-match`，它们的祖先分支自动展开（写进展开集合，之后照常能收起），键名与值里命中的那一段铺成新部件 `mark`（品牌淡底 + 品牌深字，与 Highlight 的命中片段同一身份）。在命中之间逐个走：headless API `searchMatches` / `activeMatch` / `nextMatch()` / `prevMatch()` / `setActiveMatch()`，停住的那一行投影 `data-current`、命中片段换成品牌实心，并被滚进视野；强制色下命中片段画一圈正文色的框，停住的取系统高亮。Vue 新增 `toolbar` 插槽、React 新增 `toolbar`，渲染在根之前、载荷是这四样；Web Components 元素新增 `searchMatches` / `activeMatch` 只读属性与 `nextMatch()` / `prevMatch()` 方法。树容器新增 `id`（机器据此把停住的那一条滚进视野）。headless 另导出 `jsonSearch` / `jsonSearchQuery`。新增公开槽 `--xh-json-viewer-mark-bg` / `-fg` / `-radius` 与停住时的 `--xh-json-viewer-mark-bg-current` / `-fg-current`。Vue 的 `XhJsonViewerRoot` 写了工具条时渲染为片段，作者写在根上的 class 与属性仍落在根上。 皮肤涨在命中片段、停住的那一条与强制色下的三组规则上。
+- d74d3d4: `layout` 的顶栏在 `headerFixed` 且 `data-material="liquid"` 时换成液态面：内容从它下面滚过时按下层换色调；贴边铺满、不取圆角，边界由下沿墨色细线承担。不吸顶的顶栏保持原样。顶栏带上部件 id。
+- dcc6364: Layout 覆盖档侧栏收起改走退场档：位移、淡出与藏起同取 `--xh-motion-duration-exit` + `--xh-motion-ease-exit`，与 Drawer 的整幅滑出一致；推出仍走 `slide` 档。减弱动效下位移归零，只剩淡出。
+- 1b0701c: `@xihan-ui/core/visual-environment` 新增液态组 `trackLiquidGoo(host, { source, members, domains })`：宿主的材质轴为 `liquid` 时，在宿主最前面插入装粘连滤镜的 `<svg>` 与一层装饰色块层（`aria-hidden`、不接指针），同组的块边缘相距约 15px 以内就连成一片；投影、底色、墨色细线与 1px 亮边都沿整组外形画，色调、通透档与光源方向跟源块走。`split(items, open)` 让块从源块中分离或融回，离源块近的先走、相邻两块错开交错步长，减弱动效下不播放。
+
+  弹簧新增预设 `merge` 与令牌 `--xh-motion-spring-merge-stiffness / -damping`（320 / 24，超调 5.8%），供融合分离使用。液态层皮肤新增色块层与滤镜各段的填色规则，投影经私有槽 `--xh-_liquid-goo-shadow`，组件可在自己的宿主上接入使用者的投影槽。
+
+- 7878927: liquid 档的双沿指示器：`data-material="liquid"` 下，Segmented、Tabs、Anchor、NavigationMenu 的指示器起始沿与结束沿各由一支弹簧驱动，去向那一侧用 `spring-lead`、另一侧用 `spring-trail`，移动中被拉长、停下时收回；拉伸比例写成私有槽 `--xh-_<组件>-indicator-stretch`，皮肤据此把块向压到不低于新令牌 `--xh-motion-scale-squash`（0.86，减弱档为 1）。新的点击从当前位置与速度改向；standard 档与减弱动效下直接落位。
+
+  `@xihan-ui/core/visual-environment` 导出 `isLiquidMaterial(el)`：最近一层 `data-material` 声明为 `liquid` 时为真。
+
+- ad0b9da: 液态面的按下形变：按住液态面时面朝手指鼓出、沿指向拉长、另一个方向压扁（不低于 `--xh-motion-scale-squash`），拖离时越拉越长、按越界衰减趋近上限；松手由 `spring-toggle` 带回原形。形变由 core 写成私有槽 `--xh-_liquid-deform`，FloatButton 触发器与 BackTop 的液态面拿它当 transform；减弱动效下不形变。
+- f75c139: Listbox 的占位态按设计真源的占位态一节补齐：首次加载时 `loading` 部件在文案前转一枚加载环（连接层投影 `data-xh-loading-ring` 与 `data-loading`，环走加载环家族配方），此前只是一行静态文字；已有选项时后台刷新保留上一帧，条目与分组标题按 `micro` 淡到 `--xh-state-disabled-opacity`。空态、加载与分组标题的文字由 `--xh-fg-subtle` 改为次要文字 `--xh-fg-muted`，与浮层里的同类占位同档。皮肤补上 `family/motion.css` 的引入，单独引入时加载环照样转。
+- 1ba659c: 加载环家族配方新增「压在动作钮上」一档：承载者投影 `data-xh-loading-ring="overlay"` 时，环居中压在钮上、不进排布，直径取钮的图标档；进入在途要等一个 `micro` 才起淡，不到一个 `micro` 就结束的短请求什么都不闪，退出在途不等、按 `micro` 淡出。
+- efd6410: Log 新增 ANSI 着色、级别过滤与虚拟滚动接线：
+
+  - ANSI 着色：行新增 `ansi`（Vue / React 传原文；Web Components 在行上写 `ansi` 属性、文字就是原文），按 SGR 拆成新部件 `segment`（Vue / React `XhLogSegment`）。八种前景色映射到语义色、可经 `--xh-log-ansi-<颜色>` 覆盖，粗体、暗淡、斜体、下划线各自生效；背景色、256 色的高位与真彩色不着色，其余转义去掉。新增导出 `parseAnsi`、`stripAnsi` 与类型 `LogAnsiColor`、`LogAnsiSegment`；API 新增 `getSegmentProps`。
+  - 级别过滤：新增 `levels`，只显示所选级别的行，没写级别的行不受影响；API 新增 `isLevelVisible`。
+  - 虚拟滚动：新增 `virtualizer`，接 Virtualizer 的 `collectionVirtualizer`；粘底改跟 Virtualizer 的视口与内容层，日志视口只定高、带 `data-virtualized`、不占 Tab 位。`content` 不再是必需部件（接虚拟滚动时行在 Virtualizer 的条目里）。
+  - Virtualizer 的 `CollectionVirtualizer` 新增可选的 `getContentElement`，Virtualizer 交出的桥总带着它。
+
+- 2f98025: `log` 的回到底部在 `data-material="liquid"` 下换成液态面：按下层换色调，按住时液面随手指形变；使用者的底、描边、前景与投影槽照常优先。standard 档不变。
+- e842984: Marquee 新增暂停开关与暂停状态，悬停与聚焦暂停缺省开启。
+
+  - 新增部件 `autoplay-trigger`（Vue / React `XhMarqueeAutoplayTrigger`，Web Components `data-xh-part="autoplay-trigger"`，须写为 `<button>`）：窗口行尾的单图标按钮，指针、键盘与触屏都能停住滚动（WCAG 2.2.2）。可及名随状态切换为下一步的动作（`Pause scrolling` / `Resume scrolling`），`data-state` 投影 `running` / `paused`；不给内容时皮肤画暂停 / 播放图标。减弱动效与打印下随轨道一起收起。
+  - 暂停状态改由状态机持有：新增 `defaultPaused`、`translations`、`onPausedChange`（Vue `paused-change` 与 `update:paused`，Web Components `paused-change` 事件与 `setPaused()` 方法）；`paused` 变为受控属性，给了它，暂停开关只通知、由作者写回。新增导出 `marqueeMachine`、`MarqueeSchema`、`MarqueePausedChangeDetails`。
+  - `connectMarquee(props, normalize)` 改为 `connectMarquee(service, normalize)`，与其余带状态机的组件一致；`MarqueeApi` 新增 `paused`、`setPaused` 与 `getAutoplayTriggerProps`。
+  - `pauseOnHover` 缺省由关改为开，要关掉须显式写 `false`（Web Components 写 `pause-on-hover="false"`）。指针或焦点停在暂停开关上不计入悬停 / 聚焦暂停，按下「继续」即刻恢复滚动。
+  - 皮肤新增覆盖槽 `--xh-marquee-trigger-inset`、`--xh-marquee-trigger-bg`、`--xh-marquee-trigger-bg-hover`、`--xh-marquee-trigger-bg-active`、`--xh-marquee-icon-size`；开关压在走动的内容上，底取不透明的面，悬停 / 按下走同一承载面的不透明阶梯。`marquee.css` 因开关的定位、面、图标与减弱动效 / 打印规则增至 6362 字节，并引入动作控件配方。
+
+- 2ed6e2d: Marquee 新增 `fade`：窗口两端沿滚动方向渐隐，内容从一端淡入、从另一端淡出，根上投影 `data-fade`，渐隐段长由新公开槽 `--xh-marquee-fade-size`（缺省 `--xh-space-6`）调整。有暂停开关时行尾那一端淡到开关之前，开关所在那一块整块露出、不被淡掉；rtl 与竖排随方向翻转。减弱动效与打印时轨道停住、窗口改成可滚，两端不再淡。 皮肤涨在渐隐的遮罩层、开关留位与减弱动效 / 打印的撤销三组规则上；暂停开关的边长改由根上的同一支私有槽给出，与遮罩留出的位置同源，外观不变。
+- dbec25e: BackTop、FloatButton（缺省 outline 档）、Carousel 控制钮、Log 与 MessageFeed 的回到底部改走材质家族配方：交互阶梯统一为悬停 / 按下换不透明淡底一档、二档、键盘聚焦铺 focus surface、带 1px 顶光——Log 与 MessageFeed 的回到底部此前悬停取半透明淡底、键盘聚焦时面变透明、没有顶光，现与其余浮动钮一致。`data-material="liquid"` 下的液态面由配方在同一组私有槽上换值，外观不变。
+- 3869da2: 新增材质家族配方 `@xihan-ui/styles/material.css`：投影了 `data-xh-material="frosted"` 的部件从同一份配方取 frosted 面——描边、底、1px 顶光、前景、投影与背景滤镜，覆盖槽 `--xh-frosted-bg/-border/-fg/-shadow/-backdrop/-highlight`。Cascader、Combobox、ContextMenu、FloatingPanel、HoverCard、Mention、Menu、Menubar、Popconfirm、Popover、Select、TreeSelect 的内容面改由它画，组件原有的覆盖槽照常生效。Menu、Select 等 8 个列表浮层的 1px 顶光由伪元素改画在背景最上一层：列表滚动时不再跟着内容滚走。
+- 146b646: Mention 支持多行正文：`input` 部件写 `as="textarea"`（Web Components 直接摆 `<textarea data-xh-part="input">`）即多行形态，撤掉单行才有的 `type`、`combobox` 角色与 `aria-expanded`，换 Field Chrome 的多行布局，上下内衬取 `--xh-mention-textarea-py`，只许纵向拉伸；候选收起时 Enter 照常换行。插入后的引用是一个整体：光标紧贴它时 Backspace（在其后）或 Delete（在其前）整条删掉、光标落回它的起点，在它内部改字即退回普通文字，光标停在插完的引用里不再弹候选。新增 `api.mentions`（三端插槽 / children 载荷同名，Web Components 为元素的 `mentions` 只读属性），列出正文里仍然完整的引用：值、文本、前缀与起止下标。
+- 69e77be: Mention 的占位态按设计真源的占位态一节补齐：首次加载时 `loading` 部件在文案前转一枚加载环（连接层投影 `data-xh-loading-ring` 与 `data-loading`，环走加载环家族配方），此前只是一行静态文字；已有候选时后台刷新保留上一帧，候选按 `micro` 淡到 `--xh-state-disabled-opacity`，淡的是候选不是磨砂面。
+- 3cc9c66: Menu、ContextMenu 与 Menubar 新增 CheckboxItem、RadioGroup、RadioItem 选择型条目，支持受控值、`aria-checked` 与逐条关闭策略。
+- 8bf43a2: MessageFeed 首屏的历史消息不再逐条入场：条目到达的追踪接上之前 list 投影 `data-instant`（服务端渲染的首屏同样生效），接上时已在的消息各自带上 `data-instant` 直接呈现；之后新到的一批消息播进场，同一批按到达顺序错开（`--xh-_stagger-index`），不按它排在第几条。
+- c9abec4: `message-feed` 的回到底部在 `data-material="liquid"` 下换成液态面：按下层换色调，按住时液面随手指形变；使用者的底、描边、前景与投影槽照常优先。standard 档不变。
+- ab3c842: MessageFeed 新增部件 `pending-indicator`（Vue / React `XhMessageFeedPendingIndicator`，Web Components `data-xh-part="pending-indicator"`）：放在列表之后，已发送、等首个片段（`status` 为 `submitted`）时显示为一颗呼吸的圆点，首个片段到来即收起；对读屏隐藏，减弱动效下静止，打印时隐藏。
+- b480c22: MessageFeed 新增按日期分隔与回到底部的未读数：
+
+  - 新部件 `separator`（Vue / React `XhMessageFeedSeparator`）：与条目平级写在内容层里，显示「今天」「9 月 27 日」这类标注，两侧各一道内部分隔线，对读屏隐藏。API 新增 `getSeparatorProps`。
+  - 新部件 `unread-count`（Vue / React `XhMessageFeedUnreadCount`）：放进回到底部按钮里；离开底部期间 `count` 的增量累加成未读条数，回到底部清零。插槽留空时显示条数（Web Components 由元素写入），没有未读时收起；只放入它时按钮上的向下字形照旧。条数写进按钮的可访问名，文案 `scrollToBottomUnread(count)` 可覆盖。API 新增 `unreadCount` 与 `getUnreadCountProps`。
+  - 角标与分隔的外观槽：`--xh-message-feed-unread-count-{size,px,radius,bg,fg,font-size}`、`--xh-message-feed-separator-{gap,fg,font-size,line}`。
+
+- d0b6dea: `family/motion.css` 新增七个共享关键帧，覆盖跨组件重复出现的动作：列表条目进场 `xh-item-in`、自上而下的显现 `xh-drop-in`、面板进退场 `xh-sheet-in` / `xh-sheet-out`、整幅滑入滑出 `xh-slide-in` / `xh-slide-out`（方向经 `--xh-_slide-from-x` / `--xh-_slide-from-y` 传入）、流光 `xh-shimmer`。`xh-spin` 与 `xh-countdown` 也收进同一文件，名字不变；`xh-spin` 改写独立的 `rotate` 属性，与元素自身的 `transform` 叠加。
+- caa257c: 新增动效令牌 `--xh-motion-travel-opacity`：整幅位移起止两端的不透明度，缺省 1，减弱动效下 0。配套共享关键帧 `xh-slide-fade-in` / `xh-slide-fade-out` 与整幅滑入并列播放、时长取淡变档：缺省档两端都是不透明、看不出来，减弱动效下整幅位移归零，进出场改由这段淡变表达。
+
+  Drawer 的进出场在整幅滑入旁并列 `xh-slide-fade-in` / `xh-slide-fade-out`：减弱动效下不再位移，改为 120ms 淡入淡出。
+
+  Layout 覆盖档侧栏的整幅位移改取 `--xh-motion-travel`，减弱动效下不再位移：展开淡入、收起淡出，淡完才藏起；遮罩收起时的淡出改走退场档。
+
+- f800e3f: NavigationMenu 面板里的条目可以再带一层子级。新增三个部件：`branch-trigger`（子级开关，原生按钮，`aria-expanded` / `aria-controls` 指向子级）、`branch-indicator`（开关行尾的展开箭头，展开时转向下方）与 `branch-content`（紧跟开关之后的子级容器，`role="group"`，收着时带 `hidden`、被 Tab 整段跳过）；Vue / React 对应导出 `XhNavigationMenuBranchTrigger`、`XhNavigationMenuBranchIndicator`、`XhNavigationMenuBranchContent`，Web Components 由作者用 `data-xh-part` 声明同名节点。
+
+  - 同一张面板只展开一枝，点击或 Enter / Space 开合，焦点留在开关上；焦点在子级里按 Escape 只收起这一枝、焦点回到它的开关，再按一次才收起面板。
+  - 每次展开面板都按当前页重新落定子级：`aria-current="page"` 的链接所在的那一枝展开，其余收起。
+  - `NavigationMenuNode` 新增 `children`：只给 `collection` 不写结构时，入口的 `children` 铺成面板（`panel` 插槽 / `renderPanel` 仍优先），面板条目的 `children` 铺成一枝子级；子级里只放带 `href` 的链接。`value` 重复、`href` 与 `children` 并存、面板条目两者都没有、子级再往下嵌套都当场报错。`NavigationMenuNodeMeta` 相应多出 `children`。
+  - 连接层新增 `getBranchTriggerProps` / `getBranchIndicatorProps` / `getBranchContentProps`、`branchValue` 与 `isBranchOpen`；按压通道的部件多了 `branch-trigger`。
+  - 皮肤：开关与面板里的链接同一种行、读链接那一组槽（等高、行首对齐），展开不换面；子级缩进新增槽 `--xh-navigation-menu-branch-content-indent`（缺省 `--xh-space-4`），箭头盒 `--xh-navigation-menu-branch-indicator-size`（缺省指示符档），开关内间距 `--xh-navigation-menu-branch-trigger-gap`。子级不动高度、不播展开动画，只有箭头按 `nudge` 转向；rtl 下收着的箭头随书写方向指向行尾；强制色下箭头取开关按钮的系统前景（禁用取 GrayText），不随底色被换成 Canvas 而消失。`navigation-menu.css` 因此从 13.4 kB 涨到 16.6 kB（去注释压空白后）。
+
+- 62caae4: Notification 的错开开幕改按到达顺序：同一批新到的卡片（同一轮同步调用里连发的几条）按到达先后写 `--xh-_stagger-index` 错开，不再按它在那一摞里排第几——一摞里已有 6 条时，新来的那条不必先等 5 个错开步长。页面载入时就在的卡片同样算第一批，照常进场。三端把作用域包装节点交给队列机器，条目到达的追踪挂在它上面。
+- 5cd5206: Pagination 新增整组 `disabled`：翻页钮、页码与省略位都是原生 disabled（不可聚焦、不接指针与键盘、不进按压面），跳页输入框与每页条数下拉一并禁用，已摊开的省略位收起；当前页照常带 `aria-current`，皮肤把它退成淡底加禁用色，位置仍标得出。命令式 `setPage` 不受约束，`previousPage` / `nextPage` 照常报出。根上投影 `data-disabled`，connect 新增 `disabled`。
+
+  新增 `first-trigger` / `last-trigger` 部件（Vue / React `XhPaginationFirstTrigger` / `XhPaginationLastTrigger`），按需放在上一页之前、下一页之后，一步跳到首页 / 末页，到头那一侧原生 disabled；可及名取 `translations.firstTrigger` / `translations.lastTrigger`（缺省 First page / Last page），不写内容时皮肤画双箭头，rtl 下对调。
+
+  皮肤 pagination.css 涨在首页 / 末页钮并入格子骨架、双箭头兜底字形与禁用当前页的淡底上，体积基线随之重落。
+
+- 549b39b: Pagination 行里的两个字段对齐字段规则：
+  - 每页条数控制器（库内 Select）此前取字段缺省宽 16rem，在分页行里过宽；改为按内容定宽，新增 `--xh-pagination-page-size-select-w`（缺省 `max-content`），地板一并放开。
+  - 跳页框此前是手绘字段：静息 surface 底 + `--xh-border-default`，悬停 `--xh-border-strong`，没有聚焦换边与校验失败态。改接字段家族：连接层投影 `data-xh-field-chrome`、`data-xh-field-size`、`data-variant="outline"` 与 `data-disabled`，静息透明底 + `--xh-border-control`、悬停升控件悬停边、聚焦换聚焦边加环、禁用面都由家族给；越界的页码按原生约束判校验失败，换失败边与失败环。新增 `--xh-pagination-jumper-bg-disabled`、`-jumper-border-focus`、`-jumper-border-invalid` 覆盖槽。
+- 7e920ec: **新增** `pie-chart` 组件（饼图），Vue、React 与 Web Components 三端可用：一行数据一个扇区，缺省画成环形、中心显示合计。
+
+  - 形态 `variant`（donut / pie）、半环 `sweep="half"`、玫瑰图 `rose`；扇区缺省按数值从大到小、自 12 点顺时针。
+  - 超过 `maxSlices`（缺省 6）时最小的几块并成「其他」，取中性色，提示框列出被合并的各项。
+  - 外侧标签带两段式引导线，两侧各排一列、推开避免重叠，放不下时去掉最小扇区的标签；也可以写在扇区里或不画。
+  - 图例切换显隐后合计与占比重算，颜色不变；受控 `activeKey` 按扇区名与其他图联动。
+  - 扇区是 `graphics-symbol`，绘图区只占一个 Tab 位，方向键顺时针走；根内生成视觉隐藏的摘要与数据表。
+  - 扇区四角（实心饼含圆心一端）与柱的远端取同一档圆角：图表内核新增圆角度量，缺省 `--xh-shape-inset`，直角坐标图随之新增 `--xh-cartesian-chart-bar-radius` 覆盖槽。
+
+- 65f29c4: Popconfirm 确认钮的异步挂起改接加载环家族配方：连接层投影 `data-xh-loading-ring="overlay"`，环压在确认钮正中、直径取钮的图标档，画法与 Spinner 环档一致（此前是排在文案之前的 1em、1px、无轨道小环，一挂起就占位转圈）。进入挂起等一个 `micro` 才起淡，确认文案随前景同刻淡出留位、钮宽不变；落定时不等，按 `micro` 交叉淡回。`--xh-popconfirm-loading-duration` 照旧控制转速。
+- 4edea3b: **新增** Progress 在量（`semantics="meter"`）下的四样刻画，承担仪表盘与子弹图，三端可用：
+
+  - `thresholds` 分段：升序上界 + 语气 + 名字，画成同族淡色的色带；当前值所在的分段决定填充色，`aria-valuetext` 补上分段名（模板 `translations.segmentValueText`）。
+  - `target` 目标刻度、`scale` 量程刻度与刻度值（`{ ticks, format }`，按 `locale` 写）、`indicator="needle"` 仪表盘指针。
+  - 线形加分段时画成子弹图：轨道加厚一档，填充收窄压在色带正中。
+  - 新部件 threshold / target / scale / scale-tick / scale-label / needle；Web Components 侧由元素生成进作者写的外壳。
+  - 在进度语义下写这些属性报新诊断码 `chart.meter-only`；分段或目标越界报 `chart.invalid-range`。
+  - 新增组件槽 `--xh-progress-threshold-color`、`--xh-progress-target-color`、`--xh-progress-needle-color`。
+  - 文档总览的「图表」分类加一张引用卡，指向进度条的仪表盘示例。
+
+  **修复** 环形与仪表盘的填充被线形那套按比例的平移挪出画面、只剩轨道的问题。
+
+  皮肤体积：`progress.css` 从约 4.6 KB 涨到约 10.6 KB（去注释压空白后），涨在色带、目标刻度、量程刻度、指针三套形态的规则与它们的强制色分支。
+
+- 7bf67f9: Progress 线形新增三样外观：`steps` 把轨道切成等宽的格、填充按整格亮起（读屏仍报实际值）；`striped` 在填充上铺斜纹，进行中沿行向流动、完成与减弱动效下静止；`buffer` 在填充之后画第二段浅色填充，新增 `buffer` 部件（Web Components 由元素生成进 track）。三者只对线形生效，`buffer` 只属于进度语义；写错地方或 `steps` 取值不合法时报新诊断码 `progress.option-ignored` 并按没给处理。填充与缓冲都铺满轨道按比例平移，不动宽度。progress.css 随之增大约 2.3 kB（分段遮罩、条纹与缓冲段的规则，以及它们的减弱动效、强制色与打印分支）。
+- 1c2108d: QuestionFlow 新增选项说明、题目说明与多选的数量要求：
+
+  - 选项新增 `description`，写进新部件 `item-description`（Vue / React `XhQuestionFlowItemDescription`），排在选项之内另起一行、与文字左缘对齐，跟着选项名一起念。
+  - 题目新增 `description`，写进新部件 `description`（Vue / React `XhQuestionFlowDescription`，留空时显示数据里的说明；Web Components 由元素写入），成为选项组的 `aria-describedby`；没有说明时该部件收起。
+  - 多选题新增 `minSelections`（默认 1，选够之前继续键不可用，写了自由文本同样算作答）与 `maxSelections`（选满之后其余未选项转为 `aria-disabled`，程序化 `toggleOption` 守同一条上限）；选项组带 `data-at-max`。没写题目说明时，数量要求代填进去，文案取新增的 `translations.selectionRange(min, max)`。
+  - 新增导出 `questionSelectionLimits` 与类型 `QuestionFlowSelectionLimits`；API 新增 `selectionLimitsOf`、`descriptionOf`、`getDescriptionProps`、`getItemDescriptionProps`。
+  - 外观槽：`--xh-question-flow-description-{fg,font-size}`、`--xh-question-flow-item-description-{fg,font-size}`。
+
+- 606ef8d: 新增 `radar-chart` 雷达图：比较少数几个实体在多个指标上的画像。
+
+  - 每行数据一个实体（`nameField` 取实体名），`indicators` 列出 3–10 个指标，自 12 点方向顺时针排开；量程缺省每个指标自己的（`scale: 'independent'`，下限 0、上限取整），`shared` 全部指标共用，指标上可写 `min` / `max` 固定量程。量程按全部实体算，图例隐藏一个实体时其余形状不变。
+  - 网格 `shape` 取 `polygon` / `circle`；轮廓 `curve` 取 `linear` / `catmull-rom`；`area` 控制系列色淡洗。缺失的值落在圆心、不画顶点。
+  - 悬停按角度落到最近的指标轴并加粗成准线，提示框列出全部实体在这个指标上的值；键盘左右键沿顺时针走指标、上下键换实体。每个实体是 `graphics-object` 分组，每个顶点是带可及名的 `graphics-symbol`；摘要写每个实体最高与最低的指标，数据表每个实体一行、每个指标一列。
+  - 入场从圆心张开，数据变化与图例切换在形状之间插值；强制色、打印与纹理模式下淡洗换纹理、轮廓换线型。
+  - 新诊断码 `chart.indicator-count`（给了指标但个数不在 3–10 之间；还没给指标时按空态处理，自定义元素在脚本赋值之前连上也不误报）与 `chart.radar-overlap`（多于 3 个实体时按提醒报）。
+
+- 893d36d: RadarChart 新增 `rings`（网格圈数 2–10，缺省 4，上限按圈数取整）与 `ringLabels`：在 12 点方向那根轴的右侧写出每一圈的数值，新部件 `ring-label`，只在各指标量程相同时写。新增槽 `--xh-radar-chart-ring-label-fg`、`--xh-radar-chart-ring-label-opacity`。
+- c6c0717: RadioGroup 新增结构形态 `variant`（`list` 缺省 | `card`）与说明行部件 `item-description`；新增选择卡片家族配方。
+
+  - `variant="card"` 把每个条目画成一张可点的描边卡（对应 Mantine Radio.Card、Carbon selectable tile），不新建组件：条目换成 Action Control row 档的 `outline` 形态并投影 `data-xh-choice-card`，根投影 `data-variant`。卡面由新配方 `family/choice-card.css`（子路径 `@xihan-ui/styles/choice-card.css`）给出：surface 圆角、内衬 space-3 / space-4、透明底 + `--xh-border-control`，白底承载阶梯悬停 100 → 按下 200 且不随语气染色；选中卡换「页内持久集合的选中」面（品牌淡底 12 → 20 → 28、前景 `--xh-fg-on-brand-subtle`，写了 `tone` 换语气淡底），描边不换，行首圆圈照常；只读不给悬停与按下面，强制色下选中卡描边换 Highlight，打印时选中卡描边加粗。竖排时卡片撑满一列，横排时各卡等分一行、放不下折行。
+  - 新增部件 `item-description`（`XhRadioGroupItemDescription`）：文案下方的说明行，13 / `--xh-fg-muted`，与文案一起构成条目的可及名；`collection` 的节点新增 `description`，数据驱动时自动铺出这一行。列表形态的条目带了说明同样排成两行。
+  - 新增组件槽 `--xh-radio-group-card-title-font-weight`、`--xh-radio-group-item-description-fg`、`--xh-radio-group-item-description-font-size`、`--xh-radio-group-item-description-fg-disabled`。
+  - 设计真源登记 RadioGroup / CheckboxGroup 的 `list | card` 结构形态、选择卡片的部件归族、surface 形状与选中标记。
+
+- 2f6e6b3: 新增 `sankey-chart` 桑基图：看流量从哪里来、到哪里去、在哪里流失。
+
+  - 数据是流带（`links`：`source` / `target` / `value`），节点（`nodes`：`id` / `name` / `group`）缺省从流带推断。成环、自环、端点不存在或节点重复报新的诊断码 `chart.sankey-shape`，负值报 `chart.negative-share`。
+  - `orientation` 取 `horizontal` / `vertical`；`nodeAlign` 取 `justify` / `start` / `end` / `center`；`nodeSort` 取 `auto` / `input`。节点厚度取 `--xh-sankey-chart-node-width`，同一列相邻节点至少隔一行字。
+  - 节点按分组分配分类色（多于 8 组报 `chart.too-many-series`），有两组及以上时显示图例、按组显隐；流带缺省是半透明的中性色，`linkColor` 取 `source` / `target` / `gradient`。
+  - 悬停节点时相连的流带换成它的颜色、其余淡出，提示框列出流入与流出的明细；悬停流带时写流量与它占两端的比例。名字写在列间的空当里，挤的时候只留放得下的。
+  - 节点是带可及名的 `graphics-symbol`，流带不占焦点；上下键在同一列里走，左右键沿流向跨到相邻的列、取流量最大的相连节点（竖排时对调），Home / End 到头尾两列。数据表每条流带一行。
+
+- f4f9912: MessageFeed 与 Log 的回到底部按钮补上退场：回到底部时 `data-state` 立即转 `hidden`、播完 `xh-pop-out` 才写 `hidden` 属性藏起（此前一回底就硬消失），退场途中不接指针。按钮新增 `id`，机器按它找节点、等浏览器实际起播的退场动画播完；没有可等的动画（例如没装皮肤）时即刻藏起。
+- 8d29891: Select 的占位态按设计真源的占位态一节补齐：首次加载时 `loading` 部件在文案前转一枚加载环（连接层投影 `data-xh-loading-ring` 与 `data-loading`，环走加载环家族配方，直径取所在尺寸档的图标档），此前只是一行静态文字；已有选项时后台刷新保留上一帧，`list` 按 `micro` 淡到 `--xh-state-disabled-opacity`，数据到了再淡回。
+- bf2d7f5: Select 多选标签行接上列表动效：取消选中的标签替身在行里淡出（标签行成为定位容器，替身裁在行内），其余标签从旧位置滑到新位置，新选中的标签播进场，首帧就在的直接呈现；此前增删都是瞬切、旁边的标签硬跳。
+- 6ebc099: SideNav 折叠成图标栏后，只剩图标的入口（顶层叶子；`collapsedPopout` 关掉时也含顶层分支）悬停或聚焦时在行尾一侧显示名称提示。提示就是库内的 Tooltip：一台内嵌的 Tooltip 状态机按受控跑，悬停开延时、收起延时、接替窗口、提示组（含 `XhTooltipProvider` / `xh-tooltip-provider`）、定位、Escape 收起与反白外观都随 Tooltip，指针在两片叶子间挪动或焦点逐行移动时原地换锚、不重播进场；弹出分支不叠提示，平铺与折叠进行中不显示，折叠开关一翻即收。提示对读屏隐藏、行上不挂 `aria-describedby`，可及名仍由行文字承担。Headless 新增 `sideNavTooltipProps(service)`（喂给内嵌提示机的 props）、`findSideNavRowEl(service, value)`（提示锚点），`connectSideNav` 新增可选的第三个参数接内嵌提示机，api 新增 `tooltipText`、`getTooltipPositionerProps()` 与 `getTooltipContentProps()`（投影 tooltip 的 positioner 与 content）。Vue / React 新增 `XhSideNavTooltip`（放一个即可，自带定位层与 Portal）；Web Components 新增 `tooltip-positioner` 与 `tooltip` 两个角色（委派给 tooltip 的 scope）。side-nav.css 引入 tooltip.css，单独引入仍成立。
+- dcade8f: SideNav 的分组改成合法的列表结构。原先 `group` 渲染成 `<li role="group" aria-labelledby>`，组内的 `item` / `branch` 直接挂在这个 li 里：外层 `<ul>` 的直接子节点多了一个 role=group（axe `list`），组内的 `<li>` 父节点又不是列表（axe `listitem`），读屏既念不出列表项数，也念不对分组。现在 `group` 仍是上一层列表里的一条 `<li>`，不再带 `role` 与 `aria-labelledby`；新增部件 `group-list`（`<ul>`），放在 `group-label` 之后，组内的行挂在它里面，由它以 `aria-labelledby` 指向组标题，读屏念作「标题 + 列表」。不写 `role="group"`：列表项的父节点只能是列表，把 role=group 挪到 ul 上同样会拆散组内的行。搜索时整组收起、折叠态的标题淡出与细分隔、方向键走位与成员收集都不变；新结构下标题与行的落位、宽度、间距与计算样式都与原来一致。
+
+  - Headless：anatomy 新增 `group-list`；新增 `api.getGroupListProps({ value })`；`getGroupProps` 不再输出 `role` / `aria-labelledby`。
+  - Vue / React：新增 `XhSideNavGroupList`（React 另有 `XhSideNavGroupListProps`），分组身份取自所在的 `XhSideNavGroup`，不用写 `value`；放在分组外直接报错。
+  - Web Components：新增作者角色 `data-xh-part="group-list"`，分组身份认所在的 `group`。
+  - 样式：`group-list` 与 `list`、`branch-content` 同一副列表排法（flex 纵排、`--xh-side-nav-gap`、无 UA 缩进与外边距），`--xh-side-nav-gap` 多了一个消费部件。
+
+  迁移：在每个分组里，把 `group-label` 之后的条目包进一层 `group-list`。
+
+  ```vue
+  <XhSideNavGroup value="main">
+    <XhSideNavGroupLabel value="main">常用</XhSideNavGroupLabel>
+    <XhSideNavGroupList>
+      <XhSideNavItem>…</XhSideNavItem>
+      <XhSideNavBranch value="users">…</XhSideNavBranch>
+    </XhSideNavGroupList>
+  </XhSideNavGroup>
+  ```
+
+  React 写法同上（`<XhSideNavGroupList>` 包住组内的 `XhSideNavItem` / `XhSideNavBranch`）。Web Components：
+
+  ```html
+  <li data-xh-part="group" value="main">
+    <div data-xh-part="group-label">常用</div>
+    <ul data-xh-part="group-list">
+      <li data-xh-part="item">…</li>
+    </ul>
+  </li>
+  ```
+
+  直接调 headless 的作者：分组 li 照旧取 `getGroupProps({ value, members })`，新加的 ul 取 `getGroupListProps({ value })`；依赖 `[data-part='group'][role='group']` 的自定义样式或测试改认 `[data-part='group-list']`。
+
+- 04e2efc: SideNav 新增搜索过滤：放一个 `input` 部件（root 里、list 之前）即可输入即按 `filter`（缺省为标签大小写不敏感包含）过滤导航树，命中入口整枝留下、祖先保留并展开，没命中的列表项、分支整行整枝带 `hidden` 收起，分组的成员一个都没命中就整组收起；方向键只走剩下的行。搜索中的展开单独记，不改写 `expandedValue`、不发 `expanded-value-change`，清空检索词即回到原样。搜索框里下方向键或 Enter 进到剩下的第一行，Escape 先清空检索词；一条都没命中时新部件 `empty` 以 `role="status"` 露面，文案取新增的 `translations.noMatch`，搜索框可及名取 `translations.input`。折叠成图标栏时过滤暂停，搜索框留着高度、不可见也不可聚焦。搜索框走面板内嵌搜索的写法（投影 `data-xh-field-input`，只画一道取实体面分隔令牌的下划线），样式槽 `--xh-side-nav-input-*`、`--xh-side-nav-search-divider`、`--xh-side-nav-placeholder-fg` 与 `--xh-side-nav-empty-*`。新增 `api.inputValue` / `setInputValue` / `searching` / `empty` / `translations` 与 `getInputProps()` / `getEmptyProps()`；`getItemProps` 可带所包链接的 `value`、`getGroupProps` 可带成员 `members`，三端适配器自动收集。Vue / React 新增 `XhSideNavInput`、`XhSideNavEmpty` 与根上的 `filter`，插槽载荷多了 `inputValue` / `setInputValue` / `searching`；Web Components 新增 `input`、`empty` 角色、`filter` property、`inputValue` / `searching` 读口与 `setInputValue` 方法。TreeSelect 的树形检索裁剪改由与 SideNav 共用的一份实现承担，行为不变。side-nav.css 因搜索框、自动填充与空态的规则涨约 15%。
+- 4c03c34: Sortable 放下后被拖项从松手处带着松手速度落进新位置，不再瞬间跳过去：放下时记下它的屏幕位置，宿主按新顺序重排提交之后量出差值，由弹簧收到零，期间投影 `data-animating`；宿主不接这次排序时照样收回原位。状态机新增上下文 `settle` 与 refs `drop`、`settle`，`POINTER.END` 带 `velocity`。
+- 3469140: Sortable 支持跨列表拖放：写了同一个 `group` 的几个列表组成一组（每个列表另写组内不重复的 `listId`），条目能从一个列表拖进另一个列表并落在指定位置。
+
+  - 指针：被拖项的中心进了组里别的列表，那个列表的根投影 `data-drop="inside"`，插入点及其后的项让出一格，末尾垫出同样大的一段让容器长高，落点线画在让出那一格的起始缘上；源列表里被拖项之后的各项合拢。中心落在列表之间的空白里时落点留在上一个列表。
+  - 键盘：拿起后本轴方向键在列表内移动，另一条轴上的方向键在相邻列表间移动（竖排列表左右键、横排列表上下键，rtl 下竖排的左右键对调），Escape 取消。键盘表新增 `sortable.kbd.next-list` / `sortable.kbd.prev-list`。
+  - 事件：落进别的列表时由源列表发一次 `transfer`（`onTransfer`），载荷 `{ id, fromList, toList, from, to, fromIds, toIds }` 给出两个列表各自的新顺序，写不写回归宿主；不写回时条目收回原位。入组时 `drag-end` 另带 `fromList` / `toList`。宿主接下转移后，落进来的那一项由目标列表从松手处以弹簧收进新位置。
+  - 读屏：挪进别的列表时播报列表名、它在组里排第几与新位次，落下时播报落进了哪个列表；`translations` 新增 `movedToList` / `droppedInList`。列表名取列表容器的可及名（`aria-labelledby` 优先）。
+  - 非法组合立即报错：写了 `group` 不写 `listId`、换行网格（`orientation="both"`）入组、组内 `listId` 重复。
+  - `@xihan-ui/pointer` 新增跨列表插入的几何原语 `projectInsertion`、`insertionOffsets`、`insertionSlot`。
+  - 高对比档里落点线改画系统高亮色，不再随底色一起消失。
+  - Web Components：连接层写在角色节点上的内联样式改为「写过才撤」对账，下一帧不再给的一条会被撤掉，节点被作者挪进另一台同类宿主时由接管方撤掉前一台留下的位移；此前给 `undefined` 的内联样式会一直钉在节点上。
+
+- 384f1f9: Sparkline 新增 `reference`：一条横贯的细虚线（新部件 `reference-line`），写一个数是目标或阈值，写 `mean` / `median` 按有值的点算出。纵向范围扩到把它包进来，摘要模型新增 `reference` 并在缺省摘要里读出；盈亏形态不画。新增槽 `--xh-sparkline-reference-color`，新增类型 `SparklineReference`。
+- 648c368: **新增** `sparkline` 组件（迷你图），Vue、React 与 Web Components 三端可用：在文字、表格单元格或指标卡里一眼看到一组数的趋势形状。
+
+  - 根是 `<svg role="img">`，可及名写在根上的 `aria-label`，`aria-describedby` 指向自动生成的摘要（点数、范围、末值、首末变化率）；不可聚焦，没有坐标轴、图例与提示框。
+  - 形态 `variant`：line（缺省）/ area / bar / win-loss；win-loss 只看正负、柱等高，取涨跌色。
+  - 标记点 `markers`：last（缺省）/ extremes / none；参考带 `band` 画出正常区间；`curve="monotone"` 平滑。
+  - 缺省中性：线取弱化色、末点取品牌色相的分类色 1；写了 `tone` 整条取语气色。
+  - 尺寸走组件槽 `--xh-sparkline-width`（缺省 6rem）与 `--xh-sparkline-height`（缺省一行字高）。
+  - 首次出现描线、柱从基线长出，数据变化时插值；`animated` 可关，减弱动效下只淡入。
+  - 诊断码新增 `chart.invalid-range`：区间两端不是有限数，或下界大于上界。
+
+- deb0560: Spinner 新增 `delay`（毫秒，默认 0）：挂载后等够时长才露面，请求在这之前回来、转圈被卸掉时它从头到尾不出现。等待期间 root 投影 `data-state="hidden"`，皮肤以 `visibility: hidden` 藏起整块并保留位置、读屏读不到；露面后为 `data-state="visible"`，不再回到等待，等待途中把 `delay` 改成 0 即刻露面。
+
+  破坏性（Headless）：Spinner 改由状态机驱动，新增 `spinnerMachine`、`SpinnerSchema`、`SpinnerState`，`connectSpinner(props, normalize)` 改为 `connectSpinner(service, normalize)`；`SpinnerApi` 新增 `visible`。直接调用 `connectSpinner` 的使用者先用 `spinnerMachine` 建 service 再接线。三个适配器的公开 props 只多了 `delay`。
+
+- 8b5cb84: Splitter 面板折叠 / 展开（Enter、命令式）改为沿过渡让出空间，与 Layout 侧栏折叠同一种节奏：折叠途中根投影 `data-animating`，面板上浏览器实际起播的 `flex-basis` 过渡播完即撤下。拖拽、方向键步进与整份赋值跟手、不带过渡，并当场打断正在播的折叠。
+- 1b7ad21: Steps 新增 `percent`（0–100，越界夹回）：当前这一步报出自己的完成比例，当前步的序号圆点外离一道缝画一圈进度环，从 12 点顺时针走（不随书写方向镜像），已完成那段取强调色、轨道取连接线的底色；环落在触发器的内衬里，不挤版面。比例变化时弧沿数值角色的时长走到新值，首帧直接落位；强制色下弧与轨道改取系统色，打印照原色印出。读屏：可操作时比例作为当前步触发器的描述读出（圆点对读屏隐藏，经 `aria-describedby` 供给「60% complete」），只读展示下当前步的圆点是一个 `progressbar`（`aria-valuenow` / `aria-valuetext`）。新增 `translations.progressLabel` 与 `progressValueText`、圆点的 `data-progress` 状态与覆盖槽 `--xh-steps-indicator-ring-track`。进度环只画在序号圆点上：点状形态给了 `percent`、或取值不是有限数时报新诊断码 `steps.option-ignored` 并按没给处理。
+- 2cc5a3b: Steps 新增标记形态轴 `variant`：`number`（缺省，盛内容的序号圆点）与 `dot`（不盛内容的小圆点，只标位置，适合步数多或横向空间紧的流程）。点状形态的圆点是纯位置标记，直径走空间尺 sm / md / lg = 8 / 10 / 12px，不随密度换档；三态由形状区分：没走到的空心粗圈、走过的实心标记色、当前步实心品牌外加一圈同色环，四周留出环的位置、换步不挪版面，竖排连接线仍落在圆点中轴上。root 与 indicator 投影 `data-variant`，新增类型 `StepsVariant` 与覆盖槽 `--xh-steps-indicator-ring-bg` / `-ring-bg-disabled`；强制色下实心点与环改取系统色，打印时照原色印出。点状形态的 indicator 留空，走过的步不再画兜底对号。
+- 3c6df6f: Steps 新增只读展示形态 `readOnly`（Web Components `read-only`）：只呈现进度，步骤不可点、不可聚焦、不发事件，也不置灰；语义从 tablist 换成有序列表（`list` / `listitem`，当前步 `aria-current="step"`），面板去掉 tabpanel 语义。`trigger` 不再投影 Action Control，只负责「序号 + 标题 + 说明」的排版：Vue / React 渲染为 `<div>`，Web Components 由作者写成 `<div>`；内距与可操作形态同一把尺，版面不跳。connect 新增 `readOnly`。
+- 7ed31aa: 适配全局墨色（描边与淡底改为半透明墨色）：
+
+  - 要盖住下层内容的面改取不透明档：Table 吸顶表头、冻结列头与各态行底（冻结单元格靠继承取行底）、Tabs 翻页钮的悬停与按下、FloatButton subtle / outline 的面、Carousel 翻页钮悬停与指示点、Avatar 与头像组溢出计数、Image 占位层、ImageCropper 把手与网格线、Heatmap 空格底（色阶两端之一，半透明会让整条色阶偏色）、Clipboard 自动填充遮罩。
+  - 共边只画一次：Clipboard 复制钮、ButtonGroup 与 ToggleGroup 关掉分隔线时，后一段不再往回挪 1px 压住前一段的边，改为不画起始边，总尺寸不变。
+  - Slider 与 ColorSlider 拇指的描边取 `--xh-border-default-opaque`，仍是一道把拇指与已选区间分开的浅框。
+  - Toggle / ToggleGroup 选中且禁用时掺的中性面取不透明档；禁用的实心 Action Control 与 Tag 给面内墨色域的底色取不透明档（相对颜色语法选墨只看分量、不看透明度，半透明的禁用面会选反墨色）。
+
+- 855064a: 实心 Action Control、实心 Tag 与 Tooltip 反白面把当前底色写进 `--xh-ink-surface`（禁用时换成禁用面），面内的快捷键、分隔、小徽标等作者内容取这块面的墨色，不再是一块不透明的灰；面自身外观不变。组件覆盖槽的清单随之记下背景槽同时喂给 `--xh-ink-surface`。
+- 81c6f9a: 新增共享液态层 `@xihan-ui/styles/liquid.css`（已含在主入口）：`data-material="liquid"` 下为投影了 `data-xh-liquid` 的部件提供液态面的底、交互阶梯、1px 亮边与投影，亮边按光源方向落在朝光一侧，RTL 下缺省光源在右上。FloatButton 与 BackTop 的缺省 outline 触发器在该轴下换成液态面，覆盖槽照常生效；standard 档下外观不变。
+
+  float-button.css 与 back-top.css 各加一块液态档规则（把 Action Control 的底、字、边、影与高光槽指向液态层，并声明背景滤镜），体积基线随之上调。
+
+- c2ab8e6: Switch 提交中滑块里的环改接加载环家族配方：`thumb` 投影 `data-xh-loading-ring`，环画在滑块的 `::before` 上（此前在 `::after`，是 1px、无轨道的细环），画法与 Spinner 环档一致，起始边取强调色；提交开始与落定时按 `micro` 淡入淡出。`--xh-switch-loading-fg` 与 `--xh-switch-loading-duration` 照旧可用。
+- 02f7394: Switch 的滑块可以拖：按住横向移动过 3px 即接管，滑块跟手，拖出两端越拉越沉（24px 橡皮筋）；松手按落点投影 0.06s，过中点即切换，滑块由弹簧带着松手速度落到那一端，期间投影 `data-dragging` / `data-animating`。纵向为主的划动留给页面滚动（轨道 `touch-action: pan-y`），不拖的点按照常切换，拖完浏览器补派的那次点击不会再切一次；RTL 下往左拖是打开。
+- e4f4f97: Table 行换位落位与冻结列边界提示：
+
+  - 行换位（拖放与 Alt + 方向键）提交之后，宿主按 `ids` 重排的那一次里，行按旧位置反向补偿、经 `translate` 过渡（`--xh-motion-duration-move` / `--xh-motion-ease-continuous`）滑到新位置，详情行随数据行一起走；此前在宿主重渲那一刻瞬移。减弱动效下即时落位。
+  - 冻结列的边界提示：横向滚过之后，紧挨滚动区的冻结列（投影 `data-frozen-edge`）朝向滚动区的一侧出现一道 `--xh-border-default` 描边（新增组件槽 `--xh-table-frozen-edge`），只在确有内容被压住时出现——行首冻结列滚离起始端后、行尾冻结列没滚到末端时，按 `micro` 淡入淡出。`root` 以 `data-at-min-horizontal` / `data-at-max-horizontal` 报横向滚动贴着哪一端（没有冻结列或没量过时两端都算贴着）。新增类型 `TableScrollEdges`。
+
+- 19aa36d: Table 表头下沿与表尾上沿是内部分隔，改取 `--xh-border-subtle`（新增覆盖槽 `--xh-table-header-border` / `--xh-table-footer-border`），与行间横线同档，外边才取 default；subtle 档补上透明占位边，与 outline 档同盒尺寸，换档不跳 1px。
+- 93154c8: Table 新增单元格合并、表头分组，冻结列不再要求数字宽度：
+
+  - `cellSpan`（与 antd 的 `spanMethod` 同一种写法）：逐格询问合并区的大小。起点格报 `aria-rowspan` / `aria-colspan`，横向合并的宽度按跨过的列相加；同一行被跨过的格子写 `hidden` 不渲染，下面行里被纵向跨过的在合并区最左那一列留占位（`data-covered`，对读屏隐藏、保住列宽）。纵向合并的起点格投影 `data-row-span`，挂载后按实测行位铺满合并的几行（高度写进私有槽，负外边距让回自己那一行）。合并遇到展开的详情行截断。新增 `cellSpanOf`。
+  - 列定义新增 `children`：分组列只在表头占格、横跨它的叶子列（`data-group`），不进列号空间。新增 `headerRows` / `headerRowCount`，表头行按 `level` 逐层渲染（`getHeaderRowProps({ level })`、`getColumnHeaderProps({ value, level })`，Vue / React 的 `XhTableRow` 与 `XhTableColumnHeader` 新增 `level`，WC 在表头行上写 `level` 属性）；较浅的叶子列纵向跨到最后一行，数据行的行号与 `aria-rowcount` 把各层表头都算进去。示例「多级表头与表头分组」改为这种写法，不再手写行号与跨列数。
+  - 冻结列的吸附偏移：数字宽度直接累加，其余取挂载后实测的列头宽度，不再从第一列没写数字宽度的列起一律贴边。
+  - 机器新增挂载后的版面实测（只在有非数字宽度的冻结列、合并或分组时观察），适配器把 root 节点交给它；新增导出 `tableLeafColumns`、`tableColumnAncestors`、`buildTableHeaderRows`、`tableLayoutNeeds`、`measureTableLayout`、`sameTableLayout`、`TABLE_EMPTY_LAYOUT` 与相应类型。
+
+  皮肤涨在纵向合并格、占位格与分组表头三组规则上。
+
+- 5ce48f4: Table 树形表新增级联勾选，与 Tree 的 `cascade` 同一套算法：
+
+  - `cascade`：行声明了 `parentId` 且 `selectionMode` 为 multiple 时生效。勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手投影 `data-indeterminate` 画半选，禁用行的子树整棵冻结；级联下不接 Shift 范围选。
+  - `checkedStrategy`：对外选中值的收敛策略，缺省 `child` 只收叶行，`parent` 收到最高整枝，`all` 收全部勾中的行。
+  - 全选在级联下逐棵根整枝传导，基数是够得着的叶行，禁用子树不会被连带勾上。
+  - 新增导出 `tableCascadeRoots`、`tableCascadeSelectableLeaves`、`tableCascades`。
+
+- a49618c: Tabs 新增 `close-trigger` 部件（Vue / React `XhTabsCloseTrigger`）：紧跟在所属标签之后、与它平级，皮肤把它收进标签面的行尾，点按发出与 Delete / Backspace 相同的 `tab-close`，鼠标与触屏也能关标签；它接 Action Control icon 档 ghost 面、xs 档，对读屏隐藏、不占 Tab 位，`closable` 关闭时收起，标签禁用时留在原地但按不动。按 `collection` 铺开的缺省结构在 `closable` 下自动带上关闭钮。
+
+  新增 `lazyMount` / `unmountOnExit`（语义对齐 Ark UI）：前者把面板内容推迟到对应标签第一次被选中才渲染，后者在标签被选走时卸掉面板内容；面板节点本身常在，`aria-controls` 始终指得到它。connect 新增 `isContentMounted(value)`。Web Components 的面板内容写在面板里的 `<template>` 中时，元素按挂载时机把模板克隆进面板或撤走克隆出的节点。
+
+- d48dbf7: Tabs 放不下时可以在标签带行尾放一颗「更多」下拉：新增 `overflow-trigger` 部件（Vue / React `XhTabsOverflowTrigger`，Web Components 在 root 里、紧跟 list 之后写一颗空的 `<button data-xh-part="overflow-trigger">`）。标签带放不下时钮露面，点开是一张 Menu，列出此刻没有整个露在可见区里的标签（可见区扣掉两端显示着的翻页钮，半露的也列），选中一项即选中那个标签并把它挪进可见区；宽度够时钮收起。标签不会被收起，始终留在标签带与 tablist 里，下拉只是可见区外标签的索引，随标签带位移换项；钮的有无只取决于全部标签放不放得下，与翻页钮同进同退，不会因为钮自己挤窄了标签带而一直留着。
+
+  - 键盘：钮在 tablist 之外、紧跟标签带自占一个 Tab 位，不是方向键走位的一站（方向键只在标签之间走、尽头回绕）；Enter / Space / ArrowDown 展开并落到首项，ArrowUp 落到末项，Escape 收起、焦点回到钮上，选中一项后菜单收起、焦点同样回到钮上。
+  - 钮接 Action Control 的 icon 档、ghost 形态，与两端翻页钮同档、与标签同高；不写内容时皮肤画一枚横排三点，菜单开着时与悬停同档的中性面；竖排时排在标签带那一列的列尾、横贯列宽。可及名缺省 `More tabs`，由新增的 `translations.overflowTrigger` 换成本地文案。
+  - headless：`TabsApi` 新增 `overflowItems` 与 `getOverflowTriggerProps()`，新增 `tabsOverflowMenuProps(service)`（喂给菜单的机器 props）与类型 `TabsOverflowItem`；`TabsTranslations` 新增 `overflowTrigger`。
+  - core：新增 `overflowOutsideWindow` 与类型 `OverflowSpan`：滚动带里落在可见窗口之外的条目，与 `fitOverflowCount` 同一把舍入余量。
+  - Web Components：`<xh-tabs>` 新增 `portalContainer` property；下拉的定位层、列表与条目由元素自己建，与工具条的「更多」菜单共用一套。
+
+  皮肤 tabs.css 涨在「更多」钮一节：放了钮的 root 换成两轨网格（钮排在标签带之后、面板横跨两轨），钮的尺寸、兜底字形、打开态、竖排落位与打印时隐藏；另修竖排限了高时标签被压扁到一行字高的问题——标签保持控件高，放不下的那截靠位移露出。
+
+- 21d79f9: Tag 关闭补上退场：点关闭钮后标签原地淡出（途中仍占位、不可交互），播完才写 `hidden`，不再瞬间消失。可关闭的标签根节点带上 scope 派生的稳定 `id`；Web Components 的显隐改照连接层给的 `hidden`。
+- 9d0391e: TagGroup 接上列表动效：删掉一枚标签时替身在原处淡出、其余标签从旧位置滑到新位置，新加的标签播进场（同一批按到达顺序错开），首帧就在的标签直接呈现；此前增删都是瞬切、旁边的标签硬跳。退场替身不参与方向键、检索与摘除。tag-group.css 因进场、退场与换位三条规则涨约 0.6 kB。
+- b74381e: 新增标签行家族配方 `@xihan-ui/styles/tag-list.css`：多选控件把已选值摆成一行标签时共用同一份排法——行只缩不涨、装不下的标签各自截断、+N 那一枚始终完整，新选中的原地弹出、取消选中的在原处淡出、其余滑到新位置。连接层在标签行上投影 `data-xh-tag-list`，行距经桥接槽 `--xh-tag-list-gap` 交给皮肤。Select 的标签行改接这份配方（`--xh-select-tag-list-gap` 照旧生效），外观与动效不变；Headless 里标签的取数与套 tag 的做法抽成共享模块，供 Combobox、TreeSelect、Cascader 复用。
+- e09654b: TagsInput 的标签增删有进退场：首次渲染时已有的标签直接呈现，新落下的标签以 `xh-item-in` 进场、同一批按到达顺序错开，删掉的标签由替身在原处以 `xh-fade-out` 淡出，其余标签沿 `translate` 过渡滑到新位置。标签照常按值渲染、删掉即卸载，写法不变。control 部件在列表动效接上之前投影 `data-instant`，并改为定位元素（退场替身的定位基准）。
+- f8fd317: 时间列里的格子按「候选与菜单」语境的集合行定高：TimePicker、TimeRangePicker 与 DatePicker、DateRangePicker 的时间格此前一律 28px（`--xh-overlay-column-item-h`）、不随尺寸档，DatePicker / DateRangePicker 的时间格字号固定说明档 13px；改为块向内距取所在尺寸档的 `--xh-list-option-py-*`、加一行正文行高撑开，字号随档，与 Select 等候选行同高同字号。`--xh-<c>-item-h` / `--xh-<c>-time-item-h` 仍可钉死高度（缺省不再钉），DatePicker 与 DateRangePicker 新增 `--xh-<c>-time-item-font-size`。TimeRangePicker 列的行内内衬保持不变。
+- da90903: 新增加载环家族配方 `@xihan-ui/styles/loading-ring.css`：连接层在承载者上投影 `data-xh-loading-ring`，配方把它的 `::before` 画成与 Spinner 环档同一副加载环（一整圈 `--xh-border-default` 轨道、起始边取私有槽 `--xh-_loading-ring-fg`，缺省 `currentColor`），随同一部件上的 `data-loading` 淡入淡出、转与停；减弱动效与打印下停成点线环，强制色下轨道 `CanvasText`、起始边 `Highlight`。伪元素的有无与尺寸仍由皮肤给。
+
+  Toast 接上这份配方：
+
+  - 加载中不再转箭头字形，改画加载环，起始边取语气色（`--xh-toast-icon-fg`）。root 与 indicator 新增 `data-xh-loading-ring`。
+  - 行首那一格叠两层：`::before` 是环，`::after` 是语气字形。加载落定时环停在当前角度淡出、语气字形淡入，同一格里交叉淡变（此前瞬换）；减弱动效下淡变照常。
+  - indicator 的兜底字形按根上的 `data-tone` 换（此前按 indicator 自身的 `data-tone` 换，连接层不在 indicator 上发语气，四档都画成信息字形）。
+
+- 984d31e: Toast 叠放的收拢比例令牌化：新增 `--xh-motion-scale-stack`（每往后一层保留的比例，缺省 0.95，减弱动效下为 1），后层按层深逐层收拢改由皮肤计算；减弱动效下层与层只靠位移分开，不再缩放。堆叠控制器只把层深写进私有槽，`--xh-toast-scale-collapsed` 回到作者覆盖槽的本分（此前由脚本写成内联样式，作者改不动）。`createToastStackController` 删去 `scaleFactor` 选项，要改收拢比例覆盖 `--xh-motion-scale-stack`。
+- acbb2a3: ToolCall 与 Reasoning 首帧不播开合：挂载时已经展开或收起（含在跑时自动展开）的内容与箭头投影 `data-instant`，直接呈现；挂载后第一次开合（用户操作、自动开合、程序化或受控改写）起才按动效走。Reasoning 的标签与时长在「想完」那一下的整句替换淡入，也只在挂载后真的想完时播，首帧就已想完的直接呈现。
+- 4920b59: Toolbar 放不下时可以把条目收进行尾的「更多」菜单：新增 `overflow-trigger` 部件（Vue / React `XhToolbarOverflowTrigger`，Web Components 在 root 末尾写一颗空的 `<button data-xh-part="overflow-trigger">`）。放了它的工具条不再折行，宽度不够时放不下的条目按文档序从尾部起收起，钮露面，点开是一张 Menu：菜单里的文字取条目的可及名，写了 `aria-pressed` 的开关条目是勾选项，工具条上的分组与分隔线在菜单里画成分隔线，选中一项即替收起的条目触发它自己的点击；全部放得下时钮收起。容器变宽变窄、条目增减或改写、字体加载后自动重算，焦点所在的条目被收起时焦点交给「更多」钮。没放钮的工具条照旧折行。
+
+  - 键盘：「更多」钮是方向键走位的最后一站（End 落到它上面，收起的条目跳过）；横排时 ArrowDown / ArrowUp / Enter / Space 展开菜单，竖排时上下键仍归工具条走位；Escape 收起菜单、焦点回到钮上。工具条只接没被条目处理过的方向键：菜单触发器用上下键展开菜单时不再同时走位。
+  - 钮接 Action Control 的 icon 档、ghost 形态，与条目同档；不写内容时皮肤画一枚横排三点，菜单开着时与悬停同档的中性面。可及名缺省 `More`，由新增的 `translations.overflowTrigger` 换成本地文案（Toolbar 新增 `translations` prop）。
+  - headless：`ToolbarApi` 新增 `overflowItems` 与 `getOverflowTriggerProps()`，新增 `toolbarOverflowMenuProps(service)`（喂给菜单的机器 props）、`toolbarOverflowTriggerQuery` 与类型 `ToolbarOverflowItem`、`ToolbarRefs`；机器新增 `getRootEl` ref，适配器在挂载前交出 root 节点。
+  - core：新增溢出收纳原语 `fitOverflowCount`、`measureOverflowLayout`、`trackOverflowLayout` 与类型 `OverflowAxis`、`OverflowLayout`、`MeasureOverflowOptions`、`TrackOverflowOptions`。
+  - Web Components：`<xh-toolbar>` 新增 `translations` 与 `portalContainer` 两个 property；「更多」菜单的定位层、列表与条目由元素自己建。
+
+  皮肤 toolbar.css 涨在收纳一节：放了钮的根不折行、条目不压缩，收起后多出的分隔线与收空的分组让开，组里留下的最后一段补回末端圆角，以及钮的兜底字形、打开态与收起规则，体积基线随之重落。
+
+- 6accada: Tooltip 新增提示组与跟随鼠标。`XhTooltipProvider`（Vue / React）与 `<xh-tooltip-provider>` 容器元素（Web Components，`display: contents`）把子树里的提示放进同一组：组内共用接替窗口、同一时刻只开一个，不同组互不接替；组上的 `openDelay` / `closeDelay` / `skipDelayDuration` 作为组内提示的缺省，提示自己写的优先。Headless 导出 `createTooltipGroup` 与 `TooltipGroup` / `TooltipGroupOptions`，没放进 Provider 的提示归页面级的那一组。`followCursor` 让由指针打开的提示锚在指针落点上并随移动重新落位，触屏与键盘聚焦时锚回触发器；跟随中的定位层投影 `data-follow-cursor`，浮层本体不接指针。
+- cf4e2ea: Tour 的说明文字字号新增使用者槽 `--xh-tour-description-font-size`（缺省仍取说明档 `--xh-text-secondary-size`），与标题、进度文字同一待遇；此前字号写死，作者改不动。
+- feed42d: Transfer 的占位态按设计真源的占位态一节补齐：
+  - 首次加载时 `loading` 部件在文案前转一枚加载环（连接层投影 `data-xh-loading-ring` 与 `data-loading`，环走加载环家族配方）。
+  - 在途占位只接管这一侧的首次加载：这一侧已有看得见的条目时列表原样留着、按 `micro` 淡到 `--xh-state-disabled-opacity`，在途占位让位（此前不看有没有条目，一律与列表同屏）。
+  - 空态、加载与分组标题的文字由 `--xh-fg-subtle` 改为次要文字 `--xh-fg-muted`。皮肤补上 `family/motion.css` 的引入，单独引入时加载环照样转。
+- 3b3c8a8: Tree 新增节点级加载态与缩进参考线：
+
+  - `loadingValue`：正在取子节点的分支，报告 `aria-busy` 并投影 `data-loading`，展开箭头换成转圈、不再按开合转向；减弱动效与打印下转圈停住，静止字形仍在。取数归作者，文档示例「异步加载子节点」改为这种写法，不再放占位行。
+  - `lines`：缩进参考线，`tree` 部件投影 `data-lines`，皮肤在每一层子层的行首画一道竖线，落在父节点展开箭头的中线上、贯穿这一层的全部子孙；颜色取内部分隔线，公开槽 `--xh-tree-line-color`，强制色下取 `GrayText`。只是外观，不改结构与键盘。
+
+  皮肤涨在参考线（含强制色）与转圈（含减弱动效与打印的停转）两组规则上。
+
+- 89df97c: Tree 的整树加载态按占位态的两种相位画（节点级的 `loadingValue` 不变）：
+
+  - 还没有节点、正在取：`loading` 占位投影 `data-xh-loading-ring` 与 `data-loading`，一枚加载环（加载环家族配方）排在文案之前，直径取尺寸档的图标档；此前只有一行静态文字。
+  - 已有节点时重新取数：`tree` 部件投影 `data-loading`，行保留上一帧、按 `micro` 淡到 `--xh-tree-row-loading-opacity`（缺省 `--xh-state-disabled-opacity`）并不接指针，取完淡回，树框不淡；此前除 `aria-busy` 外没有任何可见反馈。
+  - 空态与在途占位排版统一：字号与行内内衬随尺寸档与条目同档、文字取 `--xh-fg-muted`（此前 `--xh-fg-subtle`）、正文行高；新增 `--xh-tree-loading-gap` 管环与文案的间距。
+
+- f389fbd: TreeSelect 多选的已选项在触发器里排成标签，与 Select 同一套呈现：新增 `tag-list` 部件与 `maxTagCount`（默认 3，其余合成 `+N`），标签与 +N 套库里的 tag、走标签行家族配方与列表动效；触发器外可放带删除钮的标签。新增 `api.tags` / `overflowCount` / `overflowText` / `deselect` 与文案 `translations.deleteItem` / `overflowTag`。Vue / React 的自动结构在 `multiple` 时直接铺出标签行，手写时用 `XhTreeSelectTagList`、`XhTreeSelectTag`、`XhTreeSelectTagLabel`、`XhTreeSelectOverflowTag`、`XhTreeSelectItemDeleteTrigger`；Web Components 用 `tag-list` / `tag` / `overflow-tag` / `item-delete-trigger` 角色并按元素的 `tags` 渲染，另补 `deselect` 方法。行距槽 `--xh-tree-select-tag-list-gap`。
+- 252e7b4: TreeSelect 的占位态按设计真源的占位态一节补齐：
+  - 整树首次加载时 `loading` 部件在文案前转一枚加载环（连接层投影 `data-xh-loading-ring` 与 `data-loading`，环走加载环家族配方），此前只是一行静态文字；已有节点时后台刷新保留上一帧，`tree` 按 `micro` 淡到 `--xh-state-disabled-opacity`。
+  - 分支首次展开取子项的 `branch-loading`、`branch-empty`、`branch-error`、`branch-retry-trigger` 此前没有皮肤，补齐：三种占位落在子层的位置、与子层同一缩进，文字取材质的次要文字、字号随档；在途一枚加载环（`branch-loading` 同样投影 `data-xh-loading-ring` 与 `data-loading`），失败一枚取 `--xh-fg-danger` 的警示字形，重试钮排在说明之下、取品牌色，悬停出下划线。新增 `--xh-tree-select-branch-status-py`、`-branch-status-fg`、`-branch-status-font-size`、`-branch-error-fg`、`-branch-retry-fg` 覆盖槽。
+- 3148b54: TreeSelect 新增浮层内搜索：`searchable` 打开 `input` 部件（放在 content 中、tree 之前），展开时焦点先落在搜索框上；输入即按 `filter`（缺省为标签大小写不敏感包含）把树裁到只剩命中节点，命中节点保留整棵子树、祖先自动展开，搜索中的展开单独记、不改写 `expandedValue`。手写的整棵树里没命中的节点由连接层带 `hidden` 收起，键盘导航只走命中的那几枝；无命中时空态改说新文案 `translations.noMatch`，搜索框可及名取 `translations.searchInput`。树里打可打印字符接到检索词末尾并把焦点交回搜索框，下方向键从框进树，Escape 先清空检索词，收起浮层即清空。新增 `api.searching` / `inputValue` / `setInputValue` 与 `getInputProps()`；Vue / React 新增 `XhTreeSelectInput`，自动结构在 `searchable` 时铺出搜索框；Web Components 新增 `searchable` 属性、`filter` property、`input` 角色、`searching` / `inputValue` 读口与 `setInputValue` 方法。样式槽 `--xh-tree-select-input-*` 与 `--xh-tree-select-search-divider`。浮层的滚动面从整块 content 改为 tree（与 Select 的 list 同一做法）：content 只作外壳，搜索框与底部操作区钉在树的上下沿不随行滚走，三端的自绘滚动条改接在树上。
+- f4e3150: Tree 新增 `size` 轴（`sm` / `md` / `lg`，缺省 `md`），三端同名：root 投影 `data-size`，叶子行与分支行按同一档投影 `data-xh-collection-size`（此前固定 `md`）。走集合家族的尺寸档：行的块向内衬取 `--xh-list-option-py-*`、行内内衬 / 间距 / 字号取 `--xh-control-px-*` / `-gap-*` / `-font-*`、展开箭头与对号盒及拖拽把手取 `--xh-control-indicator-*`、层级缩进 sm / md / lg 为 `--xh-space-3` / `-4` / `-5`，行外字形随图标档。md 与此前逐项一致；行字号的缺省由 `--xh-text-body-size` 改为同值的 `--xh-control-font-md`。
+- 0d07820: Truncate 的展开改由独立的 `trigger` 部件承担，并新增中间省略。
+
+  破坏性：开了 `expandable` 后文字盒子（root）不再是按钮——不再带 `role="button"`、`tabindex`、`aria-expanded`，点文字与在文字上按 Enter / Space 都不再展开。展开交互移到文字盒子之后的一颗原生按钮上（Action Control 文字档，ghost、sm），`aria-controls` 指回文字盒子，真被裁了（或已铺开）才出现，否则 `hidden` 不占位；root 的 `data-state` 仍只在能展开时写。Vue / React 开了 `expandable` 时自动铺出这颗按钮，与文字盒子并排交给外层排版，透传属性落在文字盒子上（Vue 设 `inheritAttrs: false`）；按钮内容可由 Vue 的 `trigger` 插槽、React 的 `trigger` prop 换掉，载荷为 `{ open, triggerLabel }`。Web Components 需要作者写一个 `<button data-xh-part="trigger">` 与 root 并排：留空时元素按展开态写入缺省文案，写了内容原样保留。按钮文案走新增的 `translations`（`expand` / `collapse`，缺省 `Show more` / `Show less`），也接全局配置的 `truncate` 分桶。Headless 新增 `getTriggerProps`、`triggerLabel`，`TruncateTranslations` 新增两键，root 新增 `id`。
+
+  新增：`position`（`end` | `middle`，默认 `end`）。`middle` 只对单行生效：真被裁且收着时 root 投影 `data-position="middle"` 与 `data-middle-text`（压好空白的整段文字），皮肤用两个伪元素各画一半——前一半末尾收省略号、后一半反向排露出结尾，原文照旧排着但不上色，溢出照它量、读屏照它念；强制色下退回末尾省略。新增导出类型 `TruncatePosition`（Vue / React 另导出 `TruncateTriggerSlotProps`）。truncate.css 的体积基线随中间省略与按钮规则上调。
+
+- feb8c8b: Typography 行内文字新增 `strikethrough`、`underline`、`mark` 三个开关（Web Components 写在 `text` 节点上的同名布尔属性），投影 `data-strikethrough` / `data-underline` / `data-marked`，与 `variant`、`tone`、`weight` 叠加；删除线与下划线可并存。标记与文本高亮的命中片段同一副淡底、字色与跨行收边，写了 `tone` 时换成该族；强制色下改用系统高亮反色，打印时保留底色。新增组件槽 `--xh-typography-text-underline-offset`、`--xh-typography-mark-px`、`--xh-typography-mark-radius`、`--xh-typography-mark-bg`、`--xh-typography-mark-fg`。需要删除或标出的原生语义时把标签写成 `del` / `s` / `mark`。typography.css 的体积基线随这几条规则与强制色、打印两块上调。
+- 4730ff9: 值类填充不再改变尺寸。Progress 线形的填充铺满轨道，按比例往行首平移、由轨道裁掉，进度变化只走合成，不重排也不重绘；不定进度改为固定宽度的一段平移往复。range 不再由连接层写内联 `inline-size`，改写私有槽 `--xh-_progress-value`（0–1 的比例），自带整套皮肤的使用方改为读这个槽。
+
+  LoadingBar 的进度段同样铺满轨道、按比例平移，末端亮边随之落在露出的前端；range 改写私有槽 `--xh-_loading-bar-value`。减弱动效下作者写进 `--xh-loading-bar-speed` / `--xh-loading-bar-fade` 的时长不作数、退回令牌：平移立刻到位，收尾的淡出保留减弱档的 120ms。
+
+  FileUpload 的传输进度条按同一方式推进，填充不再改宽度。
+
+  Toast 与 Notification 的倒计时条不再缩宽度，改为裁切从行尾往行首收起（共享关键帧 `xh-countdown` 随之改写），RTL 下从左往右收；减弱动效下按秒分段走，段数由连接层写进私有槽 `--xh-_toast-progress-steps` / `--xh-_notification-progress-steps`。
+
+  `loading-bar` 皮肤因补上 RTL 下的反向平移与减弱动效两段时长规则，体积由 1989 涨到 2377 字节（去注释压空白后），单份体积基线随之重落。
+
+- a11a7ed: Virtualizer 新增三种滚动形态：
+
+  - `scrollContainer: 'window'`：列表铺在页面里、随整页滚动。视口不再是滚动框（皮肤撤掉 overflow 与定高）、不占 Tab 位，投影 `data-scroll-container="window"`；列表在页面里的起点由内核现量，不必再算 `scrollMargin`。
+  - 条目增删时钉住视口：视口里第一条按 `getItemKey` 给出的身份放回原处，往前插入条目时视口不跳。`anchor: 'end'` 另外从最新一条看起、贴底时内容再长也继续贴底，用户翻离底部就不再拽回；视口投影 `data-anchor="end"`，不足一屏时条目贴着底部排。写回滚动量时若内容层还没长高、被浏览器夹住，等内容层长高再补上。
+  - `stickyIndices`：登记要钉在视口起点的条目（分组标题），滚过之后一直钉着、由下一个接替；条目外壳投影 `data-fixed`，按 `position: sticky` 留在文档流里，新增槽 `--xh-virtualizer-sticky-bg`。快照条目新增 `sticky` 字段。
+  - 新增导出类型 `VirtualizerScrollContainer`、`VirtualizerAnchor`。
+
+  皮肤涨在随整页滚动的视口、贴底排布、钉住标题的定位与实底，以及它在高对比档里补的系统描边上。
+
+- 0edc0ba: Watermark 新增状态机 `watermarkMachine`，承载两件副作用；`connectWatermark` 随之改为 `connectWatermark(service, normalize)`，与其余组件同一种接法（原先的 `connectWatermark(props, normalize)` 不再保留）。
+
+  - 防篡改：删掉水印的根节点会被原位放回，改写它的 `data-scope` / `data-part` / `data-state` / `data-fullscreen` 或内联的图样变量会被改回当下 props 算出的值；观察器由机器效应挂在根节点与它的父节点上，组件卸载时先撤，正常卸载不受影响。防的是直接动 DOM 的抹除，不是访问控制。
+  - `image` 除 `data:image/` 内联图片外，也接受 http(s)、`blob:` 与相对路径的地址：按匿名跨域取回、画进 canvas 转成内联 PNG 再进图样，取回之前只印文字；跨域地址须带 `Access-Control-Allow-Origin`，否则拒载或 canvas 被污染，这张图不印并报一条诊断。`javascript:` 等其余协议一律不收。
+  - 新增 `fullscreen`（三端同名）：印子固定铺满整个视口、压在模态与轻提示之上，根节点投影 `data-fullscreen` 且不再建层叠上下文；层号经 `--xh-watermark-layer` 覆盖，缺省取 `--xh-layer-tooltip`。
+
+  皮肤 watermark.css 涨在全屏档的固定铺满与层号规则上，体积基线随之重落。
+
+### Patch Changes
+
+- e98cdd8: Action Control 家族配方三处修正，影响全部按钮形触发器：
+
+  - 换面过渡补上字色：底色、描边与字色同一节奏淡变（micro），缩放单走释放时长。此前字色硬切、底色淡变，Pagination 换页、Toggle 实心切换、Clipboard 成功态等会先闪一拍字色。
+  - outline 形态的禁用外边改取 `--xh-border-default`，与 Checkbox、Switch、字段的禁用边一致；此前取只作内部分隔的 `--xh-border-subtle`。
+  - xs 视觉盒（含 field-inset sm）改走 `--xh-control-action-size`，field-inset 字形 xs / sm 改走 `--xh-control-indicator-sm` / `--xh-control-indicator-md`，随密度换档：compact 下 xs 视觉盒为 20px、field-inset 字形为 10 / 14px；comfortable 下 field-inset sm 字形由 14px 变为 16px。
+
+- c915266: Anchor 指示条只在换节时滑：首次落位、同一节的重量（窗口缩放、换上正式字体、链接变高）直接到位，指示条投影 `data-instant`，不再拖尾或伸缩一下。
+- b896ec3: Approval 判定落定时根的描边换色改走状态档 `--xh-motion-duration-micro` + `--xh-motion-ease-enter`，与别处悬停、选中、校验的换色同一拍（此前取进场档 `enter` + `enter-strong`，比同屏其他状态换色慢一截）。
+- 55ab5ca: CalendarRangePicker（以及 DateRangePicker 内嵌的日历）挑到一半的区间预览改铺中性淡底，落定时淡变成品牌淡底；新增覆盖槽 `--xh-calendar-range-picker-range-preview-bg` 与预览中段格的悬停 / 按下槽，强制色下预览在轨道上下沿画虚线。
+- e99ecb6: Carousel 粗指针下当前分页点的伸长改走 `move` 时长，与细指针同一档。
+- 157af5d: Carousel：
+
+  - `loop` 下从末页往后翻（或首页往前翻）不再把轨道倒着刷过全部页：轨道继续朝同一方向走一张，首屏（或末屏）的条目临时平移过去接住画面，过渡播完再无动画地归位到真实页（列表投影 `data-snapped`，直到下一次翻页）。按钮、键盘、自动播放与手势松手都走这条路径。
+  - 自动播放按住（悬停、聚焦）时进度条回到起点，恢复后与计时器一起从头走满一整个间隔；此前进度条从暂停处续走、计时器却重计，两者对不上。
+  - 当前分页点的伸长是尺寸变化，改走 `move` 时长。
+
+- 3e8da55: Carousel 轨道的位移由内联 `transform: translateX(…)` 改为独立的 `translate` 属性（横排只写横向一支，竖排写 `0px <位移>`），过渡与拖拽、落定期间的 `will-change` 随之改到 `translate`。画面不变；在样式里给轨道写 `transform` 的作者，现在它会与位移叠加而不是被内联值盖掉。
+- 6f483bc: Cascader 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- a97c866: Cascader 悬停展开不再闪：`expandTrigger: 'hover'` 下指针每扫过一个父项，子列换一批条目时都重播一遍淡入加 5 级错开。列的进场改为只在列头一次出现时播（浮层展开、此前收着的子列铺出来）；展开路径换到同列另一个父项时，连接层给露面的条目投影 `data-instant`，皮肤的进场写在 `:not([data-instant])` 下，换内容不重播。收起即归零，下次展开照常播。
+- d56327b: Citation 引用编号展开预览时改用与悬停同档的中性面，不再铺品牌淡底（品牌淡底只表达选中 / 当前）；禁用时正文前景降到禁用色，不再整体降透明度。
+- 1cb1f88: 关闭钮按身份统一：
+
+  - ImageViewer 的叉是悬浮在媒体上的单图标动作，改走 Action Control floating 档 sm（40px、圆形），与翻页钮同一身份；此前 standard 档是 4px 方角、liquid 档才是圆形。
+  - Citation 预览面里的收起钮改用控件圆角，与其它面板内的关闭钮一致。
+
+- 2002322: 代码类面的缺省档与强调色对齐：
+
+  - CodeView、DiffView 不写 `size` 时字号改为 md 档，与面内按钮同档（此前正文 sm、按钮 md）。
+  - CodeView 行号槽的分隔线改用 `--xh-border-subtle`（内部分隔），与 DiffView 一致。
+  - CodeView 高亮行改为中性淡底 + 行首强调条（`--xh-bg-subtle` + `--xh-border-strong`），不再用只表达选中的品牌淡底。
+  - Log 行高缺省改走 `--xh-text-code-leading`（1.5rem），与 CodeView 同一把尺；按 `rows` 定高的视口随之变高，要维持原密度可写 `--xh-log-line-height: 1.25rem`。
+
+- 0f3df11: 集合行尾的已选对号（Select、Listbox、Combobox、Cascader、TreeSelect、Tree）改为常驻在 indicator 列、按选中态以 opacity 淡变（`--xh-motion-duration-micro`），不再用 `visibility` 瞬切，与时间 / 日期面板里预设与时间格的对号同一种做法。Cascader、TreeSelect、Tree 的勾与半选杠叠成两层遮罩按状态换尺寸：离开半选淡出的那一段里横杠留着，淡出播完才换回勾。Cascader 搜索候选行尾的对号同样淡变。
+- 4426f6e: 集合行家族配方的过渡补上不透明度，与换面同一节拍（`micro`）：集合在后台刷新时保留上一帧、条目淡下再淡回，不再硬切。
+- f882b05: ColorPicker 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- 4333415: ColorSlider 的值气泡与 Slider 同一套：拖动时不再跟着拇指放大（按同一比例反向缩回、与拇指同一段过渡）；横排气泡改为起点 50% 加乘 `--xh-direction-sign` 的平移回中——此前两侧 inset 都钉在 50% 再靠自动外边距回中，可用宽度是 0，气泡从拇指中线起排、偏出半个自身宽。
+- 52f89e3: Combobox 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- 452672e: Command 面板进场改为从上方落下：起点在终点之上一小段，与锚在面板顶缘的缩放同向（此前方向槽写反，面板从下方往上浮，位移与缩放方向相反）。
+- 31a95f4: Command 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- cb2bddc: ContextMenu 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- 52b697a: 新增语义令牌 `--xh-control-input-min-w`（4rem）：字段盒里与已选标签并排的输入框的最小宽度，标签再多也给打字留出这一截。TagsInput 的输入框缺省最小宽改接它（`--xh-tags-input-input-min-w` 照旧可覆盖），取值不变。
+- fa52b14: DateField（以及 DatePicker 的输入段）当前段的反白改为 `micro` 淡变换色，与 TimeField 一致。
+- 67dbe4e: DatePicker 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- e7f4e2f: `date-picker` 手机档规则在 Safari 16.2 / 16.3 上恢复生效。
+
+  皮肤里的手机档规则（浮层内衬收窄、时 / 分列的最小宽与内衬、时间项改用小号勾选指示符并贴边）此前写成媒体查询区间写法 `@media (width < 768px)`。区间写法要求 Safari 16.4，而浏览器硬底线是 Safari 16.2：16.2 与 16.3 把整条查询判作不成立，这些规则被静默丢弃，手机视口下面板仍取平板档的取值。
+
+  现在改写成等价的 `@media not all and (min-width: 768px)`，断点仍是 `--xh-breakpoint-md`（768px），各档取值不变。覆盖槽的条件列随之显示为新写法。
+
+- e6cf5a1: DateRangePicker 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- 97bd596: Dialog 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，content 与遮罩投影 `data-instant`、不再在页面载入时播一遍面板升起与遮罩淡入；第一次收起照常播退场，之后每一次打开照常进场。
+- 7f0c61b: 新增 `--xh-direction-start` / `--xh-direction-end`：行内起始缘与末尾缘在水平方向上的位置（ltr 为 0% / 100%，rtl 反过来），与 `--xh-direction-sign` 同一个就近的 `dir`。Popover、HoverCard、Popconfirm 的缩放原点按它换算起止两端，不再用 `:dir()`（Chrome 120 / Safari 16.4 起才认，高于浏览器底线）；Spinner 三点档的 RTL 扫向改为按书写方向符号水平翻转；Truncate 的中间省略后一半改用末端对齐露出结尾，不再分书写方向各写一版。
+- bd6a1da: Accordion、Collapsible、Reasoning、ToolCall 的展开内容不再挂 `will-change: grid-template-rows`：行高不可合成，提前声明换不来任何收益。
+- 87af61e: Drawer 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，面板与遮罩投影 `data-instant`、不再在页面载入时整幅推入；第一次收起照常播退场，之后每一次打开照常推入。
+- 093d9bf: 反馈三件套与卡片的排版对齐：Alert、Toast、Notification 的指示符字形到正文一律 12px（此前 20 / 10 / 12px）；Toast 标题行高改为 tight，与 Alert、Notification 一致；Card 标题行高由 relaxed 改为 tight，与其它面内标题同档。
+- 76effa4: Field / Fieldset 的校验换色与错误文案补上动效：Field 标签与说明换色走 `--xh-motion-duration-micro`，与 Fieldset 组标题同一档；错误文案出现时淡入（`--xh-motion-duration-enter`），首帧就报错的直接呈现。收起的错误文案不再交给浏览器的 `display: none`，改成不可见、不进可及树、不占位的盒；Field 没有说明占着那一行时，收起的错误文案自己留在流里占住预留的一行（取代根上的 `::after` 占位），退场在这一行里淡出（`--xh-motion-duration-exit`），播完才藏起，外框高度前后不变。带说明的 Field 与 Fieldset 收起时那一行当场交还说明或收起，错误文案随即让位。
+- e9cab76: FileUpload 的传输收尾与文件列表补上动效。传完那一刻进度条不再当场收起：填充先走满（move），随后整条淡出（exit，延后一个 move），淡出播完机器才让连接层给进度条写 `hidden`；行首对号在同一时刻淡入，与淡出的条子交叉。进度条的显隐改由连接层的 `hidden` 表达（没在传也没刚传完的一律 `hidden`），皮肤只按 `data-state='uploading'` 给不透明。填充的平移乘 `--xh-direction-sign`，撤掉 `:dir(rtl)` 分支。
+
+  文件列表接上 core 的 `trackListMotion`：首帧就在的文件直接呈现（列表在动效接上之前带 `data-instant`），之后收下的一批按到达顺序错开进场，删掉的那一行由替身在原处淡出，其余行滑到新位置；列表晚于根挂上时，后来出现的条目照常进场。替身的 `data-state` 换成 `closed` 后，传完 / 失败的行首标记与失败配色从进度条的 `data-state` 读回，退场途中文件名不再往行首跳。
+
+- 947d249: FloatButton 挂载时已展开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，展开组投影 `data-instant`、里面的动作不再在页面载入时逐条冒出；第一次收起照常逐条缩回，之后每一次展开照常冒出。
+- 84d8e04: FloatButton 展开后触发器兜底的「+」转 45° 成「×」，收起转回（`--xh-motion-duration-nudge` + `enter-strong`，减弱动效下即刻到位），读得出再按一下就收起；此前展开后触发器仍是「+」。作者往触发器里塞了自己的图形时不转。展开列表的错开改为第五条起钉在第四级，与收起、与列表动效（`trackArrivals`）同一个封顶（此前展开最多错开 5 步、收起 4 步）。
+- 32c2ee9: FloatingPanel 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- 9382c8f: FloatingPanel 进出最大化补上几何过渡：位置与尺寸按指示档（`--xh-motion-duration-move` + `continuous`）补过去，圆角同步收放，描边与投影淡去（此前位置尺寸瞬切，只有投影淡变，圆角与描边硬切）。只在这一段挂过渡：定位层投影 `data-animating`，过渡播完即撤，拖动与改尺寸照旧跟手；减弱动效下即刻到位；最小化与常规之间不补间。
+
+  - 机器新增 context `windowAnimating` / `settledWindowState` 与事件 `WINDOW_STATE.SETTLED`。
+  - 最大化时描边改为只撤颜色（`border-color: transparent`）、不撤宽度，进出时盒子不跳一像素。
+  - 定位层的 `left` / `top` / `width` / `height` 过渡登记为布局动画例外。
+
+- 2476e3a: 高对比档（`forced-colors: active`）里皮肤画的兜底字形不再消失。关闭钮的叉、翻页与展开箭头、选中对号、单选圆点、下载与播放暂停等字形都是伪元素上的一块底色（用 mask 挖出形状，或者就是一块 `currentColor` 实心点），这一档里底色被系统换成 Canvas，与所在的面同色，只剩空按钮。现在这些伪元素退出强制换色、直接写系统色，按身下那块面在这一档里的实际底色取值：
+
+  - 按钮面上取 `ButtonText`，悬停与按下时按钮被涂成 `Highlight`，字形跟着换 `HighlightText`；禁用取 `GrayText`。
+  - 集合条目上取 `CanvasText`，按下与没被键盘或指针高亮时的悬停条目被涂成 `Highlight`，字形换 `HighlightText`；禁用取 `GrayText`。
+  - 字段里的下拉箭头、页面上的趋势与提示字形取 `CanvasText`；落在勾选盒实心面上的对号与圆点取 `CanvasText`。
+  - Watermark 的印子改取 `GrayText`：印子是防泄露的标记，开了高对比也照印，深浅仍由图样自带的透明度压着。
+
+  涉及 Accordion、Alert、Approval、BackTop、Breadcrumb、CalendarPicker、CalendarRangePicker、Carousel、Cascader、Checkbox、Citation、CodeView、Collapsible、ColorField、ColorSwatchPicker、Combobox、ContextMenu、DateField、DatePicker、DateRangePicker、Dialog、DiffView、DownloadTrigger、Drawer、Editable、FieldArray、FileUpload、FloatButton、FloatingPanel、ImageViewer、JsonViewer、Listbox、Log、Marquee、Menu、Menubar、MessageFeed、NavigationMenu、Notification、NumberField、Pagination、PasswordInput、Popover、PromptInput、QuestionFlow、Rating、Reasoning、Select、SideNav、Statistic、Steps、Table、Tabs、Tag、TagGroup、TagsInput、TextField、TimeField、TimePicker、TimeRangePicker、ToolCall、Toolbar、Tour、Transfer、Tree、TreeSelect、Watermark，以及勾选标记与菜单选择标记两份家族配方。只改高对比档，常态渲染不变；这几份皮肤的体积基线随补救块上调。
+
+- 1d905ac: GridList 的多选标记与 Checkbox 对齐：未选中方框改为透明静息面，选中描边与填色使用同一语气色，勾形固定为方框边长的 75%。选中行不再额外铺品牌淡底或提前显示预置高亮；只有真实悬停、按下或键盘 `focus-visible` 才显示行级反馈。皮肤增加约 1.4 KB，来自 GridList 对选中、悬停、按下与真实键盘高亮的独立状态映射。
+- 49fa706: HoverCard 卡片的缩放原点在交叉轴上按 placement 的对齐取：`*-start` / `*-end` 从与锚点齐平的那一端涨开（上下两侧 RTL 下起始缘在右），居中对齐仍从中线（此前交叉轴恒为 50%）。皮肤体积基线随之上调。
+- e316d5f: HoverCard 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- cfca3d1: ImageViewer 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- c05abe3: ImageViewer 换图不再当着用户把旧图转回、缩回：取图期间（打开与换下标）图不挂变换过渡、不透明度为 0，换下标那一刻变换直接归位，旧图随即让位给视口里的占位面；新图取到之后按进场档（`--xh-motion-duration-enter` + `--xh-motion-ease-enter`）淡入（此前换图时平移、旋转、缩放补间回初值，然后新图直接露面）。
+- 6ecdd56: ImageViewer 图片的平移、旋转与翻转缩放由一条内联 `transform` 拆成独立的 `translate`、`rotate`、`scale` 属性（作用顺序与原来一致，画面不变）；过渡与拖拽、惯性期间的 `will-change` 随之改写。
+- 73a5d2f: 面板内嵌的搜索框（Command、Cascader、TreeSelect、Transfer、SideNav）聚焦不再画焦点环：插入符就是焦点指示，下划线也不换色。此前 `focus.css` 的键盘焦点环落在没有外壳的通栏一行上，框出一圈品牌色描边。
+- e0e52a7: Layout 侧栏的首帧与跨过断点的开合直接落位：侧栏与遮罩投影 `data-instant`，挂载时就窄于断点的覆盖档侧栏不再先闪出展开面板、再播一段收起退场；视口跨过断点这类环境引起的宽度档与开合变化同样不走过渡。落位之后标记撤下，用户按把手、点遮罩、Escape 与 API 的开合照常过渡。
+- fac9264: `layout` 的侧栏里放了 `side-nav` 时，侧栏内衬缺省为 0。
+
+  `side-nav` 自带一圈内衬，展开与折叠宽度又与 `layout` 的侧栏同取侧栏令牌；此前侧栏再叠一圈 `space-3` 内衬，导航就比侧栏的内容盒宽出 24px，右缘被裁掉。现在侧栏检测到其中有 `side-nav` 根（三端都认，包括 Web Components 隔着 `<xh-side-nav>` 宿主的写法）时把内衬缺省归零，展开与折叠两档导航都正好铺满侧栏；覆盖档（`siderPresentation: 'sheet'`）同样归零，刘海与底部横条的安全区照旧保留。
+
+  侧栏里 `side-nav` 以外的内容（如折叠把手）也随之贴边；需要留白时写 `--xh-layout-sider-padding`，槽优先于这条缺省。不认 `:has()` 的引擎（Firefox 121 以前）保持原来的内衬。
+
+- 9dbe4fd: 液态档的色调翻转改为淡变：Layout 吸顶顶栏、Carousel 分页胶囊、ImageViewer 工具条与计数在下层深浅变化时，底色、字色、细线与投影一起走 micro 淡变，不再在同一帧翻转。
+- b1e367a: Select、Combobox、TreeSelect 的候选面板与字段盒等宽：长选项在条目里截断，面板不再随最长的一条变宽到 `--xh-overlay-max-w`；字段盒比 `--xh-overlay-menu-min-w` 还窄时取这个下界，比可用区还宽时收成可用宽度。三者的下界与限高统一取列表档（`--xh-overlay-menu-min-w` / `--xh-overlay-menu-max-h`）。Select 与 TreeSelect 的浮层改锚在字段盒（control）上，面板左缘与盒子对齐，不再缩进一截内距；作者没写 control 时退回触发器。`--xh-<c>-content-max-w` 缺省改为不封顶，要封顶时显式写。
+- 3fb3649: 按身份取令牌的两处订正（缺省主题下取值不变）：
+  - 候选与菜单的集合行（Menu、ContextMenu、Menubar 的条目，Select、Combobox、Cascader、TreeSelect、Tree、Listbox、Command、Transfer、Mention 的行，日期与时间面板的预设项与时间格）圆角缺省由 `--xh-shape-control` 改为 `--xh-shape-inset`：二者同为 4px，但行是嵌在面里的小块，主题单改 inset 时行跟着变、按钮与字段不动。
+  - TimePicker、TimeRangePicker、DatePicker、DateRangePicker 是 floating 面板，面内的列间与分区分隔缺省由 `--xh-material-frosted-separator` 改为实体面的 `--xh-material-solid-separator`。
+- 1204d90: LoadingBar 收尾先走满再淡出：`loading` 翻假后进入新相位 `complete`，进度段冲向 100 的平移真正播完才进 `finishing`；`finishing` 里满格先停一个 `--xh-motion-duration-micro` 再按淡出时长淡出，淡出播完才归零收起（此前冲满与淡出同一拍开始，填充 200ms、淡出 120ms，条子大约在八成处就看不见了）。
+
+  - `LoadingBarPhase` 新增 `complete`，`data-state` 相应多出这一值；`finishing` 仍是淡出那一段。
+  - 机器新增事件 `FILL.DONE`；进度段部件新增 `id`，机器按它等平移播完。已在满格、没渲染进度段或没装皮肤时直接进淡出。
+
+- 17cd500: Clipboard 在减弱动效下复制在途时没有任何表达（圆环一直停在透明）：改为圆环不转、整圈换成虚线，延迟之后照常淡入，图标照常淡出。DownloadTrigger 同一处保留文字隐去与圆环淡入，只停转圈。
+- e8319e8: Marquee 的速度按每秒像素数逐字成立：挂载后实测一份内容在滚动轴上的长度（随尺寸变化重量），连接层写成根上的内联私有槽 `--xh-_marquee-measured-span`，皮肤按它换算一圈的时长。此前长度取槽里的缺省值 600，位移却按轨道自身宽度算，同一个 `speed` 在 375px 窄窗约 38px/s、1200px 宽窗约 120px/s。使用者写了 `--xh-marquee-span` 仍以它为准。
+- 74e5874: Menu、ContextMenu、Menubar 条目说明的缺省字号改为控件次级字号 `--xh-control-caption-md`，与同一行的快捷键、Select 等列表的说明同档；此前取 caption 令牌，同一行里出现两种次级字号。
+- dc69845: Menu 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- db92826: Menubar 挂载时已展开某一张（`defaultValue`，或受控 `value` 初值不为空）时直接呈现，那一张 content 投影 `data-instant`、不再在页面载入时播一遍滑入；整条收起照常播退场，之后每一次展开照常进场，换张仍然瞬时。
+- c60cbf8: 几何过渡改用专属的时长令牌：换位与尺寸变化取 `--xh-motion-duration-move`，紧跟操作的小幅几何变化取 `--xh-motion-duration-nudge`，内容展开收起取 `--xh-motion-duration-expand` / `--xh-motion-duration-collapse`，抽屉与轻提示的整幅位移取 `--xh-motion-travel`。基础时长与此前相同，以下几处有可见差异：
+
+  - Accordion、Collapsible、Reasoning、ToolCall 的展开箭头随正文开合同档：收起 120ms、展开 200ms。
+  - FileUpload 的上传进度条增长 200ms。
+  - Progress 环形进度与 Rating 星级填充改走 `--xh-motion-ease-continuous` 曲线。
+  - 减弱动效下，抽屉与轻提示的进退场不再整幅位移。
+
+- 79bd762: 字段外壳、集合条目、InputGroup 与 ColorSlider 在减弱动效下不再关掉全部过渡：换色保留 120ms 的淡变，几何变化由令牌降到 1ms，与其余组件一致。
+- 122077e: 动效口径复议落地：字段外壳的焦点环即时出现、即时撤下（描边与底色照常淡变），与其余焦点环同一节奏；行内横排的胶囊集合（TagsInput、TagGroup、Select 标签行）加入一枚改为原地弹出 `xh-pop-in`，不再竖向上浮、探出字段外壳底边。
+- d60176f: NavigationMenu 挂载时已展开某一项（`defaultValue`，或受控 `value` 初值不为空）时直接呈现，那一项 content 投影 `data-instant`、不再在页面载入时播一遍弹出；展开项第一次变化起照常进退场。
+- 0654f52: NavigationMenu 指示条只在换项时滑：首次落位、同一项的重量（窗口缩放、换上正式字体、入口变宽）直接到位，指示条投影 `data-instant`，不再拖尾或伸缩一下。
+- e30a3ec: NavigationMenu 的面板与共享面板外壳按内容的自然宽度排开，不再被入口那一项压到最小宽、让一行放得下的链接文字折行；超过浮层最大宽（新增使用者槽 `--xh-navigation-menu-content-max-w`，缺省 `--xh-overlay-max-w-xl`）才折行。
+- e950665: NavigationMenu 换张瞬时：在两张之间换时两侧 content 都投影 `data-instant`、不播进退场，与 Menubar 一致；用共享外壳（viewport）时不再新旧两张上下叠放、外壳先变高再塌回。外壳自己承担首开弹出与末收收回（投影 `data-state` / `data-instant`），外壳里的面板只随之淡入淡出。
+- de98c70: Notification 的加载指示接上加载环家族配方：加载中不再转箭头字形，改画与 Spinner 环档同一副加载环（起始边取指示符的语气色）。item-indicator 新增 `data-xh-loading-ring` 与 `data-loading`；兜底的环与语气字形叠在同一格（`::before` 环、`::after` 字形），加载落定时环停在当前角度淡出、字形淡入。
+- 25db668: Notification 增删卡片时其余卡片从旧位置过渡到新位置，不再整张跳位：
+
+  - `trackListMotion` 新增 `depart` 选项（缺省 true）：传 false 时不放离场替身，只做到达与换位，给条目自己带退场、播完才收起的集合用；选项类型以 `TrackListMotionOptions` 导出。
+  - Notification 的卡片改由它追踪（`depart: false`），皮肤给卡片补上 translate 的 move 过渡。
+
+- 531fa5c: 新增语义令牌 `--xh-overlay-calendar-column-h`：与日历并排的时间列高度，与日历网格（周名一行加六周）同高、视口矮时退到中档滚动面高。DatePicker 的 `--xh-date-picker-time-column-h` 缺省改指向它，`--xh-date-picker-time-item-h` 缺省改指向既有的 `--xh-overlay-column-item-h`；两处取值不变。
+- 665f0ab: `page-header` 在视口恰好 640px 时改按宽档排布。
+
+  窄屏规则（标题区占满第二列、操作区换到下一行）此前写在 `@media (max-width: 640px)` 下：640px 本身也算窄档，而其余皮肤在 `min-width: 640px`（`--xh-breakpoint-sm`）就已换到宽档，同一宽度下页头与页面其余部分差一档。现在改写成 `@media not all and (min-width: 640px)`，639px 及以下仍是窄档，640px 起与其余组件同时换成宽档。
+
+- 8618391: Pagination 摊开的页码面板归锚定列表：进退场改为 `xh-overlay-slide-in / out`，从省略位一侧短移淡入、不再缩放弹出。
+- 23a1355: PasswordInput 强度条改为数值角色的动效：填充不再按 25 / 50 / 75 / 100% 改 `inline-size`、换档硬切，而是铺满轨道、按档位比例平移，由轨道圆角裁掉未完成的那一截（`--xh-motion-duration-move` / `--xh-motion-ease-continuous`，只走合成）；危险 → 警示 → 成功三段底色换档走 `--xh-motion-duration-micro` 淡变；平移乘 `--xh-direction-sign`，RTL 下从行首（右侧）长出。
+- c49f9a9: Popconfirm 面板的缩放原点在交叉轴上按 placement 的对齐取：`*-start` / `*-end` 从与锚点齐平的那一端涨开（上下两侧 RTL 下起始缘在右），居中对齐仍从中线（此前交叉轴恒为 50%）。
+- 16d130f: Popconfirm 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，content 投影 `data-instant`、不再在页面载入时播一遍弹出；第一次收起照常播退场，之后每一次打开照常进场。
+- 4862ae6: Popover 面板的缩放原点在交叉轴上按 placement 的对齐取：`*-start` / `*-end` 从与锚点齐平的那一端涨开（上下两侧 RTL 下起始缘在右），居中对齐仍从中线（此前交叉轴恒为 50%，`bottom-start` 贴着小触发器时面板从自己的中线缩放，而不是从触发器）。皮肤体积基线随之上调。
+- d61751b: Popover 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，content 投影 `data-instant`、不再在页面载入时播一遍弹出；第一次收起照常播退场，之后每一次打开照常进场。
+- f2e9fb0: 浮层退场中途重新打开时，从当前透明度接着淡入，不再先跳回全透明再进场（快速连点触发器时的一次闪断）。
+
+  - `PresenceHandle` 新增 `onReenter(fn)`：退场中途被重新打开时同步回调，先于租约结清。
+  - `attachCssExit` 在退场开始时记下起始透明度、时长与缓动，重开时按已播时间算出此刻的透明度，写进节点的私有槽 `--xh-_enter-from-opacity`；共享进场关键帧（`xh-overlay-slide-in`、`xh-overlay-pop-in`、`xh-pop-in`、`xh-fade-in`、`xh-rise-in`、`xh-item-in`、`xh-drop-in`、`xh-sheet-in`、`xh-slide-fade-in`）与 Toast、Tour 聚光框的进场以它为起点，未写时仍从 0 起。完整关闭后的下一次打开照常从全透明淡入。
+
+- b0acd86: Progress 仪表盘指针的转动改走数值档 `--xh-motion-duration-move` + `--xh-motion-ease-continuous`，与圆弧填充同一档时长与曲线（此前指针取 `enter-strong`，同一次值变化指针领先于弧先到位）。
+- ec655d8: PromptInput 发送钮在发送与停止两种身份间切换时，兜底字形不再瞬换：换上来的那一枚淡入（停止的方块从略小处浮出 `xh-pop-in`，发送的箭头 `xh-fade-in`），与按钮换面同一拍；首帧就在的字形直接呈现，减弱动效下只剩淡入。按钮新增 `data-instant`（身份换过之前投影），机器新增 context `modeChanged`。粗指针下按钮的 `::after` 是家族命中区，字形只有 `::before` 一层，旧字形随身份切换当即换下。
+- 5d30b5f: RadioGroup 与 QuestionFlow 单选的圆点对齐为同一套动效：选中时从 0 缩放到 1、落位走 `--xh-motion-ease-settle` 略涨过 1 再收回；收起改走 `--xh-motion-ease-enter-strong`，不再冲成负缩放、闪出一个极小的镜像点；圆点换色走 `--xh-motion-duration-micro`，RadioGroup 按住条目时选中圆点换到语气 active 档走按压时间线。QuestionFlow 单选的圆点此前只做颜色淡入，现在同样按缩放收放。
+- ece88cd: Rating 在 RTL 下的星形修正：未点亮那层原先只写了从右侧裁（`inset(0 100% 0 0)`），RTL 下整颗星从行尾往行首擦出；整幅与半档的裁切改为乘 `--xh-direction-sign` 换边，RTL 从行首（右侧）点亮，rtl 里局部写回 `ltr` 的星带按 ltr 裁。两层星形改为铺满格子、四边外边距 auto 回中，不再用物理平移回拉——此前 RTL 下底层那颗中性星偏出一个星宽。作者自带图标的半颗渐变改为角度乘方向符号换向，不再用 `:dir()`（Chrome 120 起，高于浏览器硬底线）。
+- e2f1b67: rtl 下行内轴居中的盒不再偏出一个自身宽度。起点 `inset-inline-start` 是逻辑属性、`translate` 是物理通道，rtl 下起点落在右半边、再往左挪半个盒；现在 `:dir(rtl)` 下平移的行内分量掉头。涉及：Toast 在 top / bottom 居中的那一摞（rtl 下曾整摞偏出视口）、走马灯横轨分页条与纵轨翻页钮、粗指针下的分页点与自动播放进度条、图片预览的工具条与计数、评分空项的星形、可调尺寸上下把手的指示条、滑块刻度点与刻度文案（横排与竖排）。
+
+  滑块值气泡改用平移回中：原先两侧 inset 钉在 50% 靠自动外边距回中，可用宽度为 0、气泡比它宽时自动外边距按规范取 0，气泡在 ltr 与 rtl 下都从拇指中线起排、偏出半个自身宽。
+
+  六份皮肤（carousel / image-viewer / rating / resizable / slider / toast）的体积基线随之上调。
+
+- 9692178: ScrollArea `fade` 变体滚到头时，那一侧的遮罩带沿 micro 过渡收起、离开端点时淡回，不再在到端那一帧瞬间消失。四条带宽经 `@property` 登记成长度才能过渡；不认 `@property` 的引擎照旧按端点收放、没有过渡。
+- e7f1f93: Select 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- faf5e64: SideNav 折叠 / 展开：整栏宽度按 move 过渡，放在 Layout 侧栏里时与侧栏同步；折叠进行中根投影 `data-animating`，行文字、展开箭头与分组标题先淡出、宽度落定才裁成图标栏（展开时落定之后才淡入），分组标题在图标栏里留着高度并画一道细分隔，行不再上下跳。分支箭头按书写方向转向（rtl 下收起指向左侧）。折叠态弹出分支改按锚定列表的 `xh-overlay-slide-in / out` 进退场。皮肤体积随之增长（side-nav.css 约 2 KB）。
+- e337148: SideNav 当前项不再加粗：页内持久集合的当前标记只有品牌淡底行面与淡底前景（与 Table、Transfer 选中行一致），字重与静息同为 regular；要加粗可写 `--xh-side-nav-row-font-weight-active`。
+- ba6e8b6: `side-nav` 的两档宽度改为缺省读侧栏令牌，与 `layout` 的侧栏同源。
+
+  展开宽 `--xh-side-nav-w` 缺省改取 `--xh-sider-w`（`15rem`，根字号 16px 时仍是 240px），折叠宽 `--xh-side-nav-collapsed-w` 缺省改取 `--xh-sider-collapsed-w`（`4rem`）。**折叠成图标栏时由 56px 变为 64px**，与 `layout` 折叠后的侧栏同宽；行内容居中，图标位置不变、两侧留白各多 4px。
+
+  需要保留 56px 的，在侧栏上写 `--xh-side-nav-collapsed-w: 56px`。改 `--xh-sider-w` / `--xh-sider-collapsed-w` 两支令牌会让 `layout` 的侧栏与 `side-nav` 一起换宽。
+
+- 316d8c2: 新增侧栏宽度语义令牌 `--xh-sider-w`（展开，`15rem`）与 `--xh-sider-collapsed-w`（折叠成图标栏，`4rem`），`layout` 的侧栏改为缺省读这两支令牌。
+
+  此前侧栏宽度只以字面量写在 `layout` 皮肤的兜底里，页面要统一换侧栏宽只能逐个组件改覆盖槽。现在改这两支令牌即可；只想改一处时照旧写 `--xh-layout-sider-w` / `--xh-layout-sider-collapsed-w`，组件槽优先于令牌。`layout` 的默认宽度不变。
+
+- 7687746: SignaturePad 新增签名数据 `value` / `defaultValue` / `onValueChange` 与撤销、重做。
+
+  - 签名数据是逐笔的点加上笔迹坐标系（`SignaturePadValue = { strokes, surface }`），无损：存下 `value-change` 给出的数据，编辑页交回 `defaultValue` 即原样回显，之后照常续写。提供 `value` 即受控，抬笔、清空、撤销、重做只经 `onValueChange` 送出，落笔途中不发。导出的 SVG 读不回逐笔的点，回显要存数据。Vue 走 `v-model:value`；Web Components 的 `value` / `defaultValue` 只走 property，事件名 `value-change`。
+  - 新增部件 `undo-trigger` / `redo-trigger`（`XhSignaturePadUndoTrigger` / `XhSignaturePadRedoTrigger`），与清空按钮同为 Action Control text 档 sm、缺省 outline。一笔、一次清空各是一步，误清之后撤销能找回整份签名；再落一笔或清空后重做栈作废，宿主从外面换了一份签名时撤销与重做栈一并作废。没有可做的一步时按钮投影 `aria-disabled` 与置灰面，焦点仍留在钮上。
+  - API 新增 `value`、`canUndo`、`canRedo`、`undo()`、`redo()`；Web Components 元素新增 `undo()` / `redo()` 方法与只读的 `canUndo` / `canRedo`；文案新增 `translations.undoTrigger` / `translations.redoTrigger`；headless 导出 `EMPTY_SIGNATURE`。
+  - 表单重置回到 `defaultValue`（未提供时清空）并清掉撤销历史；`draw-end` 在撤销与重做时同样发出。
+  - 机器 context 由 `strokes` / `surface` 改为 `value` / `draft` / `past` / `future`，按压通道的 `pressed` 改为记录正被按住的是哪一颗按钮。
+
+- e89fbe5: Skeleton 刚加载完时不再当场收起：骨架让出版面、原地盖在真实内容之上淡出，播完才收起；挂载时就已加载完的直接收起。
+
+  **破坏性**：`connectSkeleton` 的签名由 `(props, normalize)` 改为 `(service, normalize)`，新增 `skeletonMachine` 与 `SkeletonSchema`。直接使用 `@xihan-ui/headless` 的调用方需先用 `skeletonMachine` 创建服务再连接：
+
+  ```ts
+  const service = createService(skeletonMachine, {
+    props: () => props,
+    runtime,
+  });
+  const api = connectSkeleton(service, normalize);
+  ```
+
+  Vue、React 与 Web Components 组件的用法不变。
+
+- ce03512: Slider 的值气泡拖动时不再跟着拇指放大：气泡挂在拇指里，拇指按 `--xh-motion-scale-drag` 放大到 1.12 时连文字一起被放大；现在气泡按同一比例反向缩回、与拇指同一段过渡，缩放原点在贴着拇指那一边。刻度点、刻度文案与值气泡的回中平移改为乘 `--xh-direction-sign` 换向，撤掉四处 `:dir(rtl)`（Chrome 120 起，高于浏览器硬底线）。
+- 6f1afc3: Slider 新增反向 `inverted`、整段拖动 `draggableRange` 与不填充轨道 `trackFill`。
+
+  - `inverted`（Web Components 属性 `inverted`）：min 落在轨道末端（横排在行尾、竖排在顶端），拇指、已选区间与刻度都从末端量起，指针换算与方向键跟着对调，方向键跟随屏幕方向。插槽里的 `thumbs[i].percent` 与 `range` 仍按值的位置报。
+  - `draggableRange`（属性 `draggable-range`）：多拇指时按住两端拇指之间的轨道拖动，整段一起平移、宽度不变，挪到头就停；按在拇指上仍只推那一个，按在区间外照旧抓最近的拇指；只认刻度落点时不生效。range 部件投影 `data-draggable`，皮肤给出抓取光标；整段拖动时两端拇指都投影 `data-dragging`。
+  - `trackFill`（默认 `true`，属性 `track-fill`，写 `"false"` 关掉）：关掉后 range 部件收起（`hidden`），刻度不再按区间上色。
+  - headless 导出 `displayPercent`、`shiftThumbValues` 与类型 `SliderDragMode`、`SliderRangeDragOrigin`；`AxisOptions` 新增可选 `inverted`；机器 context 新增 `dragMode` / `rangeOrigin`，`DRAG.START` 事件新增可选 `onThumb`。
+
+- c4e95ea: Sortable 键盘重排时被拖那一项与让位的邻项同一段一起逐格滑（根投影 `data-drag-mode`）；放下或取消之后各项从原处滑回自己的排布位，取消时不再瞬间回位；指针放下的那一项仍由弹簧收进。
+- a714f3f: Sortable 条目的让位、跟手与归位位移，以及落点线的位置，由内联 `transform: translate3d(…)` 改为独立的 `translate` 属性；皮肤的让位过渡与归位期间的 `will-change` 随之改到 `translate`。画面不变。
+- b2b4be3: Spinner 三点档改为错相的波：明暗不再靠整组不透明度同步起落（读起来像整体在闪），改由一层三倍宽的遮罩沿行扫过，三枚点依次亮起再暗回禁用档；RTL 下扫向掉头。减弱动效与打印下撤掉遮罩、三点满不透明度静止；强制色下退回描边圆环并转圈。关键帧 `xh-spinner-dots` 的帧体随之改为动 `mask-position`，皮肤体积基线随之上调。
+- 3cab30e: Spinner 三档直径改为与控件内图标同档：sm `--xh-glyph-size-sm`（16px）、md `--xh-glyph-size-md`（20px）、lg `--xh-glyph-size-lg`（24px）。此前 md 取 `--xh-glyph-size-lg`、lg 取 `--xh-glyph-size-xl`，缺省档比同一行文字里的图标大一圈。环档的画法（环粗、轨道、起始边、圆角与转圈节拍）与加载环家族配方逐项同值，由浏览器用例钉住。
+- a7d62ed: ToolCall 状态、Approval 结果、QuestionFlow 结果三种状态 chip 统一：
+
+  - 连接层在这三个部件上投影 `data-tone`（ToolCall：等审批 warning、有结果 success、出错 danger；Approval：批准 success，拒绝与超时 danger；QuestionFlow：交卷 success），皮肤改读共享语气槽 `--xh-_tone-subtle` / `--xh-_tone-fg`，不再各自拼一份颜色公式；各阶段的覆盖槽保留。
+  - 几何与 Tag 的 sm 档同一把尺：内衬 2 / 6px、1px 透明边、字号 12、字重 medium、行框 16px，三者等高。
+
+- f9a8307: Steps 推进时三个通道一起走：连接线沿行向从这一步填到下一步（rtl 翻转、回退时反向收回），标题换色淡变，走过那一步的对号淡入；首帧就走过的步（序号圆点投影 `data-instant`）直接呈现。
+- 93790bd: Steps 的尺寸档与同类对象同一把尺：
+  - 序号圆点直径改取 `--xh-control-h-sm/md/lg`，与 Avatar、带框 Icon 相同并随密度换档。comfortable 下 sm 由 28px 变为 32px、md 由 32px 变为 36px，lg 仍是 40px；compact 下三档依旧是 28 / 32 / 36px。此前 sm / md 走 space 档不随密度，lg 却走 control-h 随密度，三档不在同一把尺上。
+  - 作者放进标题 / 说明里的图标是控件内图标，改为随尺寸档取 `--xh-glyph-size-sm/md/lg`（16 / 20 / 24px），此前三档都固定 16px。`--xh-steps-icon-size` 照旧可覆盖；圆点里的兜底对号与作者图标仍走指示符档，不受影响。
+- f477d75: transition 列表统一写长名：28 份皮肤里的 `background` 简写换成 `background-color`；Anchor、NavigationMenu、Segmented 的滑动指示器位置由 `transform: translate()` 改为独立的 `translate` 属性（RTL 翻转同改），液态档的挤压 `scale` 不再与位置写在同一个变换里。画面不变，计算样式里的 `transition-property` 随之改名；在 `xihan.overrides` 层覆盖这三个指示器 `transform` 的作者，改写 `translate`。
+- 489a347: 换面节奏统一：集合行（菜单项、列表项、树节点、表格行、侧栏链接等）、树行与表单错误汇总条目的底色过渡由 200ms 改为 micro（120ms），与字色、离散按钮的换面同一时长。悬停进入与按压释放共用同一条过渡，换面只取一个时长；200ms 的释放只作用于按钮缩放。
+- 3940609: Switch 的滑块换向改为乘 `--xh-direction-sign`：此前按祖先 `[dir='rtl']` 换向，rtl 页面里局部写回 `ltr` 的开关照样命中，打开态与按住拉长时滑块被推出轨道；现在按就近的 `dir` 走，嵌套方向下滑块始终停在轨道的行尾。
+- 4763e90: Tabs 指示条只在换项时滑：首次落位、同一项的重量（窗口缩放、换上正式字体、标签变宽）直接到位，指示条投影 `data-instant`，不再拖尾或伸缩一下。
+- ad9d7c3: TagsInput 的计数是次级标注，字号缺省改取 12px 说明档 `--xh-text-caption-size`，不再随控件尺寸档（此前 md 14px、sm 13px、lg 更大）。`--xh-tags-input-count-font-size` 照旧可覆盖。
+- 8815c58: TimePicker、TimeRangePicker、DatePicker、DateRangePicker 的时间列与预设项对号改取指示符档 `--xh-control-indicator-size`，与 Select、Combobox、Listbox、Cascader、TreeSelect、Menu 的对号同一把尺，紧凑密度下随之收到 14px（此前固定 16px，同屏对不齐）。
+- eae4884: TimePicker 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- 9921870: TimeRangePicker 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- 84d8bb9: Toast 叠放的位移与收拢比例由 `transform: translateY() scale()` 拆成独立的 `translate` 与 `scale` 属性，进出场关键帧 `xh-toast-in / xh-toast-out` 同改。两者的作用顺序与原来一致，画面不变；计算样式里的 `transition-property` 由 `transform` 变为 `translate, scale`。
+- 9f215ab: ToolCall 触发条文字取标签字重：与 Accordion、Collapsible、Reasoning 的面级披露触发条同一档（`--xh-text-label-weight`），此前落在正文字重，在一串披露面里显得比别家轻一档。新增覆盖槽 `--xh-tool-call-label-font-weight`。
+- 320cc89: Toolbar 分组里相接的分段按下只换面、不再缩放：分段零间距直角相接，0.97 缩放会撕开两侧接缝（与 ButtonGroup、ToggleGroup 一致）；散落的独立条目照常缩放。
+- ef7e2c1: Tooltip 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，content 投影 `data-instant`、不再在页面载入时播一遍滑入；第一次收起照常播退场，之后每一次打开照常进场。接替窗口内打开直接呈现的行为不变。
+- 3e6adbb: Tooltip 新增跳过等待的接替窗口 `skipDelayDuration`（默认 300ms，Web Components 属性 `skip-delay-duration`）：同页的提示共用这个窗口，另一个提示还开着、或刚收起一个不到这么久时，指向下一个不再等 `openDelay`、也不播进场，直接接替，上一个随之收起（此前每一个都要等 700ms、都要滑入，横扫工具栏时提示一个个等、一个个滑入）。0、负数或非有限数表示不参与接替。
+
+  - 接替打开的提示在 content 上投影 `data-instant`，皮肤的进场写在 `:not([data-instant])` 下；退场照常。
+  - 机器新增 context `instant`，窗口时长的缺省值 300ms 登记为停留时长。
+
+- 3033774: Tour 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- 4cb4c5d: Tour 换步时气泡与聚光框同一段时长、同一条曲线一起滑到下一个目标（定位层与聚光框在这一段投影 `data-animating`），不再卡片先瞬移、光圈后到；减弱动效下同时到位。页面滚动与视口缩放时两者跟手，聚光框不再拖尾。
+- fd991c6: 修正 Transfer 与 Virtualizer 组合时的列表布局：虚拟化 viewport 与自绘竖向滚动条现在铺满面板的列表内容区，不再在底部留下空白。
+- 5a9e98a: Tree 分支箭头的朝向改为乘 `--xh-direction-sign`，与 TreeSelect 同一写法：rtl 页面里局部写回 `ltr` 的树按 ltr 朝向，收起时指向行尾、展开时朝下。
+- c8582ae: Tree 拖放落下不再瞬移：拖放与 Alt + 方向键提交搬家时，连接层先记下每一行的排布位，宿主写回 `collection` 的那一次重排里，行按旧位置反向补偿、经皮肤的 `translate` 过渡（`--xh-motion-duration-move` / `--xh-motion-ease-continuous`）滑到新位置；换了父、被宿主重建的节点按节点值认回。减弱动效下 move 为 1ms，即时落位。落点线与换父描边的缺省色由 `--xh-border-control-focus` 改为 `--xh-bg-brand`，与 Table、Sortable 同一种（暗色下二者此前不同色）。
+- 727768b: TreeSelect 分支箭头的朝向改为乘 `--xh-direction-sign`：此前按祖先 `[dir='rtl']` 翻转，rtl 页面里局部写回 `ltr` 的树选择器收起的箭头照样朝左；现在按就近的 `dir` 走，收起时指向行尾、展开时朝下。
+- 975db1c: TreeSelect 挂载时已打开（`defaultOpen`，或受控 `open` 初值为 `true`）时直接呈现，带进场的部件投影 `data-instant`、不再在页面载入时播一遍进场；第一次收起照常播退场，之后每一次打开照常进场。
+- Updated dependencies [c48171d]
+- Updated dependencies [df3d2ac]
+- Updated dependencies [52b697a]
+- Updated dependencies [7f0c61b]
+- Updated dependencies [f283144]
+- Updated dependencies [fd0e9da]
+- Updated dependencies [1b0701c]
+- Updated dependencies [7878927]
+- Updated dependencies [9c6d582]
+- Updated dependencies [4ddf556]
+- Updated dependencies [245995e]
+- Updated dependencies [1b537d9]
+- Updated dependencies [bf1fb1f]
+- Updated dependencies [5c79ac0]
+- Updated dependencies [560242d]
+- Updated dependencies [caa257c]
+- Updated dependencies [531fa5c]
+- Updated dependencies [316d8c2]
+- Updated dependencies [984d31e]
+- Updated dependencies [cd01d4b]
+- Updated dependencies [7ed31aa]
+- Updated dependencies [43b344e]
+- Updated dependencies [47549df]
+- Updated dependencies [c5e6c16]
+- Updated dependencies [6d95e8c]
+  - @xihan-ui/tokens@3.0.0
+
 ## 2.1.0
 
 ### Minor Changes

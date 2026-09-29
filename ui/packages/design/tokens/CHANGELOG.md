@@ -1,5 +1,137 @@
 # @xihan-ui/tokens
 
+## 3.0.0
+
+### Major Changes
+
+- bf1fb1f: 循环动画的周期令牌并入 `--xh-motion-loop-*` 一族，与 `--xh-motion-loop-breathe` 并列；旧名不再输出，也不留别名。改写过或在自己样式里引用过下列旧名的，改为新名。`tokens.json`、`tokens` 对象与 `TokenName` 类型同样只有新名。
+
+  | 旧名                    | 新名                       | 取值   |
+  | ----------------------- | -------------------------- | ------ |
+  | `--xh-spin-duration`    | `--xh-motion-loop-spin`    | 640ms  |
+  | `--xh-caret-duration`   | `--xh-motion-loop-caret`   | 1000ms |
+  | `--xh-shimmer-duration` | `--xh-motion-loop-shimmer` | 1600ms |
+
+### Minor Changes
+
+- c48171d: 新增呼吸动效：共享关键帧 `xh-breathe`（明暗与缩放起伏，峰值在 42%）与 `xh-breathe-halo`（外扩光环），令牌 `--xh-motion-loop-breathe`（3600ms）、`--xh-motion-ease-breathe`（正弦式缓入缓出，原语 `--xh-ease-sine-in-out`）、`--xh-motion-scale-breathe` 与 `--xh-motion-scale-halo`（减弱档归 1）；`@xihan-ui/motion` 的 `easing.sineInOut` 与 `motionEasings.breathe` 同源。
+
+  Badge 新增 `pulse`（Web Components 为 `pulse` attribute）：圆点档呼吸，表达正在进行、给不出进度的状态（直播、录制、通话中）；光环播 3 轮后停，圆点持续到状态结束；数字角标不呼吸；减弱动效下两者都停，圆点停在满不透明度。badge.css 因此引入共享关键帧，体积基线随之上调。
+
+- df3d2ac: liquid 档的交互光：`data-material="liquid"` 下实心按钮在细指针悬停的一刻，一道光沿 1px 描边环扫过一次，光取面上前景色、不进面，文字对比不受影响；粗指针、强制色下不播，减弱动效下时长归 1ms。新增令牌 `--xh-motion-duration-glint`（640ms）与 motion 的 `motionDurations.glint`，共享关键帧 `xh-glint`，按钮新增覆盖槽 `--xh-button-glint-duration`。
+- 52b697a: 新增语义令牌 `--xh-control-input-min-w`（4rem）：字段盒里与已选标签并排的输入框的最小宽度，标签再多也给打字留出这一截。TagsInput 的输入框缺省最小宽改接它（`--xh-tags-input-input-min-w` 照旧可覆盖），取值不变。
+- 7f0c61b: 新增 `--xh-direction-start` / `--xh-direction-end`：行内起始缘与末尾缘在水平方向上的位置（ltr 为 0% / 100%，rtl 反过来），与 `--xh-direction-sign` 同一个就近的 `dir`。Popover、HoverCard、Popconfirm 的缩放原点按它换算起止两端，不再用 `:dir()`（Chrome 120 / Safari 16.4 起才认，高于浏览器底线）；Spinner 三点档的 RTL 扫向改为按书写方向符号水平翻转；Truncate 的中间省略后一半改用末端对齐露出结尾，不再分书写方向各写一版。
+- f283144: 新增书写方向符号令牌 `--xh-direction-sign`：从左往右为 `1`、从右往左为 `-1`，按就近的 `dir` 属性决定、靠继承传到子树——`dir` 写在哪一层就在哪一层翻转，rtl 里局部写回 `ltr` 的子树跟着翻回，`dir="auto"` 沿用外层；不随 `data-density` 等轴的边界重置。逻辑属性自己会随方向换边，只认物理方向的量（`translate`、渐变角度、`clip-path` 的左右两侧）乘上它换向，取代祖先 `[dir='rtl']`（局部写回 ltr 时判错）与 `:dir()`（Chrome 120 起，高于浏览器硬底线）两种写法。
+- fd0e9da: HierarchyChart 新增色阶图例：`colorBy="value"` 时每个看得见的层一条色阶（名字、低端的值、渐变条、高端的值），颜色在同一层里各自归一所以一层一条；下钻后跟着换，其余着色方式收起。新部件 `legend`、`legend-scale`、`legend-scale-name`、`legend-scale-bar`、`legend-scale-value`，`api.legendScales` 与类型 `HierarchyLegendScale`，新文案 `translations.levelLabel`；Vue / React 新增 `XhHierarchyChartLegend` 并铺进缺省结构，Web Components 作者可写 `<div data-xh-part="legend">`。新增槽 `--xh-hierarchy-chart-legend-gap`、`--xh-hierarchy-chart-legend-scale-gap`、`--xh-hierarchy-chart-legend-scale-width`、`--xh-hierarchy-chart-legend-scale-bar-radius`。
+
+  新增语义令牌 `--xh-chart-legend-scale-width`（色阶渐变条的长度），CartesianChart 与 HierarchyChart 的同名组件槽都缺省指向它，数值不变。
+
+- 1b0701c: `@xihan-ui/core/visual-environment` 新增液态组 `trackLiquidGoo(host, { source, members, domains })`：宿主的材质轴为 `liquid` 时，在宿主最前面插入装粘连滤镜的 `<svg>` 与一层装饰色块层（`aria-hidden`、不接指针），同组的块边缘相距约 15px 以内就连成一片；投影、底色、墨色细线与 1px 亮边都沿整组外形画，色调、通透档与光源方向跟源块走。`split(items, open)` 让块从源块中分离或融回，离源块近的先走、相邻两块错开交错步长，减弱动效下不播放。
+
+  弹簧新增预设 `merge` 与令牌 `--xh-motion-spring-merge-stiffness / -damping`（320 / 24，超调 5.8%），供融合分离使用。液态层皮肤新增色块层与滤镜各段的填色规则，投影经私有槽 `--xh-_liquid-goo-shadow`，组件可在自己的宿主上接入使用者的投影槽。
+
+- 7878927: liquid 档的双沿指示器：`data-material="liquid"` 下，Segmented、Tabs、Anchor、NavigationMenu 的指示器起始沿与结束沿各由一支弹簧驱动，去向那一侧用 `spring-lead`、另一侧用 `spring-trail`，移动中被拉长、停下时收回；拉伸比例写成私有槽 `--xh-_<组件>-indicator-stretch`，皮肤据此把块向压到不低于新令牌 `--xh-motion-scale-squash`（0.86，减弱档为 1）。新的点击从当前位置与速度改向；standard 档与减弱动效下直接落位。
+
+  `@xihan-ui/core/visual-environment` 导出 `isLiquidMaterial(el)`：最近一层 `data-material` 声明为 `liquid` 时为真。
+
+- 9c6d582: 新增两枚数据动效的语义时长：`--xh-motion-duration-reveal`（640ms）给数据标记首次出现——柱从基线长出、折线描出、扇区扫开；`--xh-motion-duration-morph`（400ms）给数据更新——标记从旧位置走到新位置、坐标轴刻度滑动。减弱动效下两者都归 1ms。`motionDurations` 与 `reducedMotionDurations` 同步加入 `reveal`、`morph`，`readMotion(el).duration('reveal' | 'morph')` 可直接读取。
+- 245995e: 新增表现性动效令牌：`--xh-motion-duration-attention`（注意动效播一遍，640ms，减弱档 1ms）、`--xh-motion-distance-lg`（16px，减弱档归零）、`--xh-motion-ease-emphasis`（取新原语 `--xh-ease-emphasized`）。它们供 `@xihan-ui/animations` 的预设使用，组件皮肤不用。`@xihan-ui/motion` 同步导出语义位移 `motionDistances`（sm / md / lg）与错开步长 `motionStaggerStep`，`motionDurations` 增加 `attention`、`motionEasings` 增加 `emphasis`，与令牌逐条对账。
+- 1b537d9: 新增几何动效的时长与幅度令牌，出现、换色与几何变化各有专属时长。
+
+  - `--xh-motion-duration-move`（200ms）：元素换位与尺寸变化，如选中指示器滑移、进度增长、堆叠重排。
+  - `--xh-motion-duration-expand` / `--xh-motion-duration-collapse`（200 / 120ms）：内容展开与收起。
+  - `--xh-motion-travel`（100%）：面板从所在边整条推入推出的位移幅度。
+  - 以上令牌在减弱动效下归零（时长 1ms、位移 0px）。
+
+  `--xh-motion-duration-nudge` 由 200ms 改为 120ms，承担紧跟操作的小幅几何变化：开关滑块、勾选标记、展开箭头、拖拽让位、查看器缩放平移。组件库此前没有消费这支令牌；自行引用它的样式会快一档。
+
+- 5c79ac0: 减弱动效改为去掉位移、保留淡变。
+
+  减弱动效下（系统 `prefers-reduced-motion: reduce` 或 `data-motion="reduce"`），`--xh-motion-duration-micro`、`--xh-motion-duration-enter`、`--xh-motion-duration-exit` 保留为 120ms：换色、浮层与提示的淡入不再瞬间跳变。位移、缩放、旋转与尺寸变化仍然瞬时完成——组件的几何过渡取 `move` / `nudge` / `expand` / `collapse` / `slide` / `press` / `release`，这些时长在减弱档下为 1ms，位移与缩放幅度归零。
+
+  自定义样式如果把几何变化挂在 `micro` / `enter` / `exit` 上，减弱动效下会以 120ms 动起来，请改用上面的几何时长。`@xihan-ui/motion` 的 `readMotion` 在读不到样式时取同样的减弱档取值。
+
+- 560242d: 新增有状态弹簧 `createSpringValue`：持有当前值、速度与目标，`to(target, { velocity })` 中途改目标时以当前位移与速度为初始条件重新求解，位置与速度都不跳变，手势松手的速度可以原样交给动画；在目标处带着速度松手也会运动。每一段运动是时间的闭式解，与帧率无关；减弱动效下直接落到终态；非法参数立即抛 `TypeError`。
+
+  弹簧预设进入令牌：`--xh-motion-spring-<名>-stiffness / -damping`（snappy、smooth、gentle、bouncy、stiff，以及 liquid 档用的 toggle、lead、trail），`springPresets` 与令牌同源并由门禁双向对账。
+
+- caa257c: 新增动效令牌 `--xh-motion-travel-opacity`：整幅位移起止两端的不透明度，缺省 1，减弱动效下 0。配套共享关键帧 `xh-slide-fade-in` / `xh-slide-fade-out` 与整幅滑入并列播放、时长取淡变档：缺省档两端都是不透明、看不出来，减弱动效下整幅位移归零，进出场改由这段淡变表达。
+
+  Drawer 的进出场在整幅滑入旁并列 `xh-slide-fade-in` / `xh-slide-fade-out`：减弱动效下不再位移，改为 120ms 淡入淡出。
+
+  Layout 覆盖档侧栏的整幅位移改取 `--xh-motion-travel`，减弱动效下不再位移：展开淡入、收起淡出，淡完才藏起；遮罩收起时的淡出改走退场档。
+
+- 531fa5c: 新增语义令牌 `--xh-overlay-calendar-column-h`：与日历并排的时间列高度，与日历网格（周名一行加六周）同高、视口矮时退到中档滚动面高。DatePicker 的 `--xh-date-picker-time-column-h` 缺省改指向它，`--xh-date-picker-time-item-h` 缺省改指向既有的 `--xh-overlay-column-item-h`；两处取值不变。
+- 316d8c2: 新增侧栏宽度语义令牌 `--xh-sider-w`（展开，`15rem`）与 `--xh-sider-collapsed-w`（折叠成图标栏，`4rem`），`layout` 的侧栏改为缺省读这两支令牌。
+
+  此前侧栏宽度只以字面量写在 `layout` 皮肤的兜底里，页面要统一换侧栏宽只能逐个组件改覆盖槽。现在改这两支令牌即可；只想改一处时照旧写 `--xh-layout-sider-w` / `--xh-layout-sider-collapsed-w`，组件槽优先于令牌。`layout` 的默认宽度不变。
+
+- 984d31e: Toast 叠放的收拢比例令牌化：新增 `--xh-motion-scale-stack`（每往后一层保留的比例，缺省 0.95，减弱动效下为 1），后层按层深逐层收拢改由皮肤计算；减弱动效下层与层只靠位移分开，不再缩放。堆叠控制器只把层深写进私有槽，`--xh-toast-scale-collapsed` 回到作者覆盖槽的本分（此前由脚本写成内联样式，作者改不动）。`createToastStackController` 删去 `scaleFactor` 选项，要改收拢比例覆盖 `--xh-motion-scale-stack`。
+- cd01d4b: 新增图表数据色与度量令牌（`--xh-chart-*`，51 支）。分类色板 `--xh-chart-categorical-1…8` 由 `build/emit-chart-palette.mjs` 在基础色板上确定性搜索得出，亮暗两套各自满足：明度带、彩度下限、对承载面 ≥ 3:1，相邻与前 3 色两两正常视觉 ΔE ≥ 15、红色弱 / 绿色弱模拟下 ΔE ≥ 8，任意两色 ΔE ≥ 10，任意 45° 扇区至多 2 个色槽，与 danger 语气每一档 ΔE ≥ 10（red 与发红的 orange 因此不进色板），色槽 1 为品牌色相；yellow 整族不取。颜色按浏览器在 sRGB 显示器上的画法换算（出界通道逐个截断）。色块内文字 `--xh-chart-on-categorical-N` 对色块 ≥ 4.5:1。另有「其他」与淡出两支中性色、有序色阶 `ordinal-1…6`、顺序色阶 `sequential-start / -mid / -end`（暗色下锚点翻转）、发散色阶 `diverging-negative / -center / -positive`（amber ↔ blue 同档两臂，暖臂同样离开告警色）、涨跌 `rise / fall`（缺省绿涨红跌），图表家具 `surface / grid / axis / label / crosshair / band-highlight`（网格与轴线在高对比档随边界加重），以及视口高度、柱厚上限、间隙、线宽、点径、命中尺寸、刻度与淡洗、淡出、重取中不透明度等度量（compact 档收紧刻度标签间距）。
+- 7ed31aa: 缺省面同样用墨色表达描边与淡底：浅色 / 深色主题块里新增 `--xh-ink`（主题极性的纯黑 / 纯白），`--xh-border-default`、`-subtle`、`-strong`、`-control-hover` 与 `--xh-bg-subtle`、`-subtle-hover`、`-subtle-active`、`--xh-bg-muted` 写成墨色按比例透明。作者自己的彩色区块即使不声明域，描边与淡底也是底色自身的深浅变体。
+
+  比例按「与原中性色对比度相等」求：描边在页面底、画布、缺省面与 elevated 面上各求一个取最大值，哪种面上都不比原来淡（浅色档与原值一致，深色档 22%，卡片面上略重）；淡底只按缺省面求（浅色 4.3%、深色 6.2%），压在上面的字、对号与焦点环对比度不降。置灰字属于文字，缺省面上保持实色，只在墨色域里取墨色。高对比档的描边仍取实色。
+
+  新增不透明档 `--xh-bg-subtle-opaque`、`--xh-bg-subtle-hover-opaque`、`--xh-bg-subtle-active-opaque`、`--xh-bg-muted-opaque` 与 `--xh-border-default-opaque`：同一比例的墨色叠在缺省面上的实色，给要盖住下层内容的面与压在任意内容上的框用；它们在缺省面上与原来的中性色逐值一致。
+
+- 43b344e: 新增墨色域：彩色区块写 `data-xh-ink="dark"`（浅色底）或 `data-xh-ink="light"`（深色底），域内的中性描边、分隔、淡底、交互阶梯改取墨色（纯黑 / 纯白）按比例透明，正文、焦点环与主要动作取墨色本身，品牌实心换成墨色实心、文字取 `--xh-ink-surface`。比例由构建按「与缺省面上的原中性色对比度相等」求出，所以在白底或暗面上声明域外观不变，落在黄、绿、橙等彩色底上时描边显著度保持一致，而不再像不透明灰那样时隐时现。两种域同时是浅色 / 深色主题边界，语气色、表面与原生控件随极性切换。
+
+  `data-xh-ink="auto"` 配合 `--xh-ink-surface` 由底色的相对亮度按 0.179 选墨（需要相对颜色语法，更早的引擎里等于未声明）；`data-xh-ink-margin="ample"` 让次要文字与占位取墨色 72%，缺省时二者等于墨色。高对比档下域内描边回到实色，强制色下取系统色。
+
+- 47549df: 墨色域的 auto 规则同时作用于 `[data-xh-ink-surface]` 的直接子元素：库自己渲染的彩色面打上这一标记、在 `--xh-ink-surface` 里给出自己的底色，面内的内容就按这块底选墨，面自身的底色与字色仍按外层取值（域落在面上会让底色随域翻转）。材质通道、减少透明（媒体查询与 `data-transparency="reduce"`）与强制色同样命中这些子元素；强制色块另外补上了此前漏掉的 `[data-xh-ink]` 域。
+- c5e6c16: 新增 M5 液态材质配方 `--xh-material-liquid-*`：在材质四档共有的九项之外另有 `tint`、`alpha-clear`、`alpha-floor`、`rim-far`、`bezel` 五项。静态形态按主题极性、取可读下限（浅 0.48 / 深 0.61 不透明度，8px 模糊 + 140% 饱和度），标签在任何下层上至少 4.5:1；下层均匀且色调已知时可换通透档（浅 0.24 / 深 0.34）。边界由墨色细线承担，另有朝光源一侧的 1px 亮边与背光一侧的弱亮边，折射带宽 18px。高对比、减少透明、强制色与打印各有原位替代。
+
+  修复减少透明在墨色域里失效：墨色域与局部主题边界会在自身重新声明主题取值，`prefers-reduced-transparency` 与 `data-transparency="reduce"` 现在同时命中子树里的 `[data-theme]` 与 `[data-xh-ink]`，实体替代不再在那一层被盖回透明。
+
+- 6d95e8c: 视觉环境控制器新增第八轴 `material`（`standard` / `liquid`，缺省 `standard`，没有系统档）：`setPreference({ material: 'liquid' })` 在作用域根写 `data-material`，子作用域继承，Portal 视觉桥照常带到实例壳；新增类型 `Material`。`<xh-config>` 新增 `material` 属性，Vue 的 `provideXhConfig` 在 `initial.material` 变化时重建控制器。用了控制器的应用，材质轴改经它设置——控制器始终维护根上的 `data-material`。
+
+### Patch Changes
+
+- 4ddf556: `data-motion="default"` 恢复完整动效。
+
+  系统开启减弱动效、而产品设置（视觉环境的 `motion: 'default'`）或某个局部容器选择完整动效时，CSS 此前仍停在减弱档，只有 JS 动画恢复。现在 `tokens.css` 为 `data-motion="default"` 输出一块基线取值，排在减弱块之后，该子树的 CSS 与 JS 动效一致；与 `data-motion="reduce"` 嵌套时最近的一层生效。
+
+- Updated dependencies [f660e16]
+- Updated dependencies [25ccc68]
+- Updated dependencies [6dec15e]
+- Updated dependencies [a85b582]
+- Updated dependencies [a72c5bb]
+- Updated dependencies [41a393e]
+- Updated dependencies [fac80f7]
+- Updated dependencies [4e619a5]
+- Updated dependencies [e19c0b4]
+- Updated dependencies [3092b47]
+- Updated dependencies [d210959]
+- Updated dependencies [d1cca09]
+- Updated dependencies [65d6fc3]
+- Updated dependencies [467c967]
+- Updated dependencies [bc8120d]
+- Updated dependencies [f7cec9b]
+- Updated dependencies [768b06f]
+- Updated dependencies [6356589]
+- Updated dependencies [94aee78]
+- Updated dependencies [8a2b0fa]
+- Updated dependencies [c292b0f]
+- Updated dependencies [1b0701c]
+- Updated dependencies [7878927]
+- Updated dependencies [ad0b9da]
+- Updated dependencies [25db668]
+- Updated dependencies [8ca7eaa]
+- Updated dependencies [0c8d389]
+- Updated dependencies [e90cad8]
+- Updated dependencies [f2e9fb0]
+- Updated dependencies [4edea3b]
+- Updated dependencies [7bf67f9]
+- Updated dependencies [606ef8d]
+- Updated dependencies [2f6e6b3]
+- Updated dependencies [648c368]
+- Updated dependencies [1b7ad21]
+- Updated dependencies [d48dbf7]
+- Updated dependencies [4920b59]
+- Updated dependencies [6d95e8c]
+- Updated dependencies [bfbf28b]
+  - @xihan-ui/core@3.0.0
+
 ## 2.1.0
 
 ### Patch Changes

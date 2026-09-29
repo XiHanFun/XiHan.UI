@@ -1,5 +1,50 @@
 # @xihan-ui/position
 
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies [f660e16]
+- Updated dependencies [25ccc68]
+- Updated dependencies [6dec15e]
+- Updated dependencies [a85b582]
+- Updated dependencies [a72c5bb]
+- Updated dependencies [41a393e]
+- Updated dependencies [fac80f7]
+- Updated dependencies [4e619a5]
+- Updated dependencies [e19c0b4]
+- Updated dependencies [3092b47]
+- Updated dependencies [d210959]
+- Updated dependencies [d1cca09]
+- Updated dependencies [65d6fc3]
+- Updated dependencies [467c967]
+- Updated dependencies [bc8120d]
+- Updated dependencies [f7cec9b]
+- Updated dependencies [768b06f]
+- Updated dependencies [6356589]
+- Updated dependencies [94aee78]
+- Updated dependencies [8a2b0fa]
+- Updated dependencies [c292b0f]
+- Updated dependencies [1b0701c]
+- Updated dependencies [7878927]
+- Updated dependencies [ad0b9da]
+- Updated dependencies [25db668]
+- Updated dependencies [8ca7eaa]
+- Updated dependencies [0c8d389]
+- Updated dependencies [e90cad8]
+- Updated dependencies [f2e9fb0]
+- Updated dependencies [4edea3b]
+- Updated dependencies [7bf67f9]
+- Updated dependencies [606ef8d]
+- Updated dependencies [2f6e6b3]
+- Updated dependencies [648c368]
+- Updated dependencies [1b7ad21]
+- Updated dependencies [d48dbf7]
+- Updated dependencies [4920b59]
+- Updated dependencies [6d95e8c]
+- Updated dependencies [bfbf28b]
+  - @xihan-ui/core@3.0.0
+
 ## 2.1.0
 
 ### Patch Changes
