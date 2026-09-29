@@ -15,20 +15,20 @@ import {
 } from "@xihan-ui/vue";
 
 const collection: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
   {
     value: "user",
     label: "用户管理",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
   {
     value: "order",
     label: "订单管理",
     children: [
-      { value: "order-list", label: "订单列表", href: "#order-list" },
+      { value: "order-list", label: "订单列表", href: "#/order/list" },
       // 没开这项权限：方向键跳过它，点也不落值
       { value: "order-refund", label: "退款处理", disabled: true },
     ],
@@ -36,7 +36,7 @@ const collection: SideNavNode[] = [
   {
     value: "system",
     label: "系统设置",
-    children: [{ value: "system-log", label: "操作日志", href: "#system-log" }],
+    children: [{ value: "system-log", label: "操作日志", href: "#/system/log" }],
   },
 ];
 
