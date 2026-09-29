@@ -15,15 +15,20 @@ export const demoFrameworks: DemoFramework[] = table.frameworks;
 /** 全站共用一份选择，所有示例跟着同一个值走。 */
 export const demoFramework = ref(demoFrameworks[0].id);
 
-// 主语不是元素而是一个框架无关的 JS 包的目录，不出那个框架的版本，登记在同一份表里
-const notApplicable: Record<string, Record<string, string>> = table.notApplicable;
+// 不出某个框架版本的示例登记在同一份表里，两种粒度：
+// 键是目录名、值是结论——整个目录的主语不是元素；
+// 键是「目录/基名」、值是 { symbol, reason }——这一份的主语是个在那个框架里没有对应物的名字
+type NotApplicable = string | { symbol: string; reason: string };
+const notApplicable: Record<string, Record<string, NotApplicable>> = table.notApplicable;
 
-/** 这个目录不出该框架的版本时给出结论；出的话返回 undefined。 */
+/** 这份示例不出该框架的版本时给出结论；出的话返回 undefined。 */
 export function demoNotApplicable(
   frameworkId: string,
   src: string,
 ): string | undefined {
-  return notApplicable[frameworkId]?.[src.split("/")[0]];
+  const entries = notApplicable[frameworkId];
+  const entry = entries?.[src] ?? entries?.[src.split("/")[0]];
+  return typeof entry === "string" ? entry : entry?.reason;
 }
 
 const STORAGE_KEY = "xh-demo-framework";
