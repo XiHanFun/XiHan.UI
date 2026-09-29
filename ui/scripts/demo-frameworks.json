@@ -30,10 +30,6 @@
         "symbol": "vSound",
         "reason": "这份示例的主语是 v-sound 指令：挂到元素上即配声，click 与 Enter 发声、禁用态不发声。它是 Vue 的指令，React 那份对应的是 useSoundOnPress，都出自各自适配器的 sound 子入口；@xihan-ui/web-components 没有 sound 子入口，自定义元素这一侧没有对应的绑定。用 @xihan-ui/sound 的 resolveSoundPressOptions 与 isSoundTargetDisabled 手接一遍按压监听，答的是「这条指令怎么实现」，不是这一份示例。"
       },
-      "message-feed/10-actions": {
-        "symbol": "createThreadStore",
-        "reason": "这份示例的主语是 @xihan-ui/chat-stream 的会话容器 createThreadStore：动作条上的重新生成、编辑重发、分支切换、重试与续写各是它的一个方法，界面只照它的快照渲染。不用它就得在示例里手抄一棵消息树（兄弟分支、选中路径、截断续写），那答的是「怎么不用它」。函数取不到的原因同 dialog/09-service。消息流的元素写法本身在同目录其余示例里都有自定义元素版。"
-      },
       "notification/08-service": {
         "symbol": "createNotificationService",
         "reason": "这份示例的主语是 createNotificationService 这个工厂函数：它自己建 <xh-notification> 与卡片节点、挂到浮层落点、按预设排版，句柄在模块作用域随处可调。函数只能 import，而示例源码经 innerHTML 注入、<script> 逐个重建执行，页面里没有 import map，裸说明符当场抛错。同目录的 07-toast 演的是用 <xh-notification preset=\"toast\"> 自己铺一摞，那是「不用这个服务怎么写」。要答「不用 Vue 怎么调这个服务」，得先给文档站一条让示例取到包的路，那是文档站的能力，不是这一份示例补得上的。"
