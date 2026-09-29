@@ -1,0 +1,1 @@
+async function e(){for(const t of document.querySelectorAll("[data-format]"))t.addEventListener("click",()=>{t.setAttribute("aria-pressed",String(t.getAttribute("aria-pressed")!=="true"))})}export{e as default};

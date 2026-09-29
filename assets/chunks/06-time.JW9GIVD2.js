@@ -1,0 +1,1 @@
+async function n(){const e=document.getElementById("cartesian-chart-time");e.data=Array.from({length:61},(a,t)=>({date:new Date(2026,6,1+t),count:Math.round(420+t*3+Math.sin(t/5)*40+Math.cos(t/11)*25)})),e.series=[{mark:"line",x:"date",y:"count",name:"订单量",curve:"monotone",area:!0}],e.xAxis={format:{month:"numeric",day:"numeric"}}}export{n as default};

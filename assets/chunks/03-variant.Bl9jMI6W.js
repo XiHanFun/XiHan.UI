@@ -1,0 +1,1 @@
+async function a(){const e=[{value:"users",label:"用户管理"},{value:"roles",label:"角色管理"},{value:"export",label:"导出报表"}];for(const l of document.querySelectorAll(".command-variant"))l.collection=e}export{a as default};

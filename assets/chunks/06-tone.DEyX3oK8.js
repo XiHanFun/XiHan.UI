@@ -1,1 +1,0 @@
-import{lR as a}from"./theme.UYVbUEgX.js";import{d as r,o,b as n,k as t}from"./framework.D1FqHTxE.js";const m=r({__name:"06-tone",setup(s){const e=[.4,.5,.3,.6,.9,1.4,1.2,1.8,2.3,2.1];return(c,p)=>(o(),n(t(a),{data:e,tone:"danger","aria-label":"近 10 分钟错误率"}))}});export{m as default};

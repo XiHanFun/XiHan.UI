@@ -1,0 +1,1 @@
+async function a(){const e=[{value:"read",label:"查看"},{value:"create",label:"新建"},{value:"update",label:"编辑"}];for(const l of document.querySelectorAll(".transfer-axes"))l.collection=e}export{a as default};

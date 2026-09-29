@@ -1,0 +1,1 @@
+async function a(){const e=document.getElementById("grid-list-multiple"),l=document.getElementById("grid-list-multiple-readout");e.value=["read"],e.addEventListener("value-change",t=>{e.value=t.detail.value,l.textContent="权限："+(t.detail.value.join("、")||"无")})}export{a as default};

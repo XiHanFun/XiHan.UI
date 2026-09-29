@@ -1,0 +1,1 @@
+async function d(){const e=document.getElementById("slider-thumb-content"),t=document.getElementById("slider-thumb-content-badge");e.addEventListener("value-change",n=>{t.textContent=`${n.detail.value[0]}%`})}export{d as default};

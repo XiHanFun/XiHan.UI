@@ -1,0 +1,1 @@
+async function e(){document.getElementById("sparkline-tone").data=[.4,.5,.3,.6,.9,1.4,1.2,1.8,2.3,2.1]}export{e as default};

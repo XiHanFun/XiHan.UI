@@ -1,0 +1,1 @@
+async function n(){const t=document.getElementById("watermark-fullscreen-toggle"),e=document.getElementById("watermark-fullscreen");t.addEventListener("click",()=>{e.hidden=!e.hidden,t.querySelector("button").textContent=e.hidden?"铺上全屏水印":"撤下全屏水印"})}export{n as default};

@@ -1,0 +1,1 @@
+async function t(){document.getElementById("prompt-input-autosize-one").translations={input:"给助手写点什么"},document.getElementById("prompt-input-autosize-draft").translations={input:"已经有草稿的输入框"}}export{t as default};

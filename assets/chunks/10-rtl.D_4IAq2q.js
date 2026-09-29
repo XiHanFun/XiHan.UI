@@ -1,0 +1,1 @@
+async function n(){const e=document.getElementById("popover-rtl-stage"),o=document.getElementById("popover-rtl-toggle");let t="rtl";function r(){e.setAttribute("dir",t);for(const l of e.querySelectorAll("xh-popover"))l.setAttribute("dir",t);o.textContent="当前方向："+t+"（点一下切换）"}o.addEventListener("click",()=>{t=t==="ltr"?"rtl":"ltr",r()})}export{n as default};

@@ -1,0 +1,1 @@
+async function a(){const e=document.getElementById("accordion-outer"),t=document.getElementById("accordion-inner");e.value=["shipping"],t.value=["express"],e.addEventListener("value-change",n=>{n.target===e&&(e.value=n.detail.value)}),t.addEventListener("value-change",n=>{t.value=n.detail.value})}export{a as default};

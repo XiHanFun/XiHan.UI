@@ -1,0 +1,1 @@
+async function o(){const t=document.getElementById("pin-input-otp"),e=document.getElementById("pin-input-otp-value");t.addEventListener("value-complete",n=>{e.textContent=n.detail.valueAsString})}export{o as default};

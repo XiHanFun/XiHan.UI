@@ -220,7 +220,7 @@ import {
   <XhCardRoot interactive style="inline-size: 360px; max-inline-size: 100%">
     <XhCardHeader>
       <XhCardTitle>
-        <XhCardTrigger href="#card-interactive">季度报告</XhCardTrigger>
+        <XhCardTrigger href="#/reports/2026-q3">季度报告</XhCardTrigger>
       </XhCardTitle>
       <XhCardDescription>2026 年第三季度 · 财务部</XhCardDescription>
     </XhCardHeader>
@@ -239,7 +239,7 @@ import {
   <div data-xh-part="root" style="inline-size: 360px; max-inline-size: 100%">
     <div data-xh-part="header">
       <div data-xh-part="title">
-        <a data-xh-part="trigger" href="#card-interactive">季度报告</a>
+        <a data-xh-part="trigger" href="#/reports/2026-q3">季度报告</a>
       </div>
       <div data-xh-part="description">2026 年第三季度 · 财务部</div>
     </div>

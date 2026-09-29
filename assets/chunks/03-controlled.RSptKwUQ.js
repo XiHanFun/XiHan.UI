@@ -1,0 +1,1 @@
+async function d(){const t=document.getElementById("number-field-controlled"),l=document.getElementById("number-field-controlled-text"),n=document.getElementById("number-field-controlled-number");t.addEventListener("value-change",e=>{t.value=e.detail.value,l.textContent=e.detail.value===""?"（空）":e.detail.value,n.textContent=String(e.detail.valueAsNumber)})}export{d as default};

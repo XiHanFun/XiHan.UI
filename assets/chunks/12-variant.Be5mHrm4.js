@@ -1,0 +1,1 @@
+async function o(){const a=document.getElementById("accordion-variants");for(const e of a.querySelectorAll("xh-accordion"))e.value=["shipping"],e.addEventListener("value-change",n=>{e.value=n.detail.value})}export{o as default};

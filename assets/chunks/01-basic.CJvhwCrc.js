@@ -1,0 +1,1 @@
+async function r(){const e=document.getElementById("combobox-basic"),n=e.querySelector('[data-xh-part="content"]'),o=[...n.children],a=t=>t.querySelector('[data-xh-part="item-text"]').textContent.toLowerCase();e.addEventListener("input-value-change",t=>{const c=t.detail.inputValue.trim().toLowerCase();n.replaceChildren(...o.filter(l=>a(l).includes(c)))})}export{r as default};

@@ -1,0 +1,1 @@
+async function s(){const e=document.getElementById("approval-reason"),n=document.getElementById("approval-reason-decision");e.translations={reason:"拒绝理由（必填）",notePlaceholder:"说明为什么不让它做"},e.addEventListener("decision",t=>{const{decision:o,note:a}=t.detail;n.textContent=`判定：${o}（理由 ${a??"无"}）`})}export{s as default};

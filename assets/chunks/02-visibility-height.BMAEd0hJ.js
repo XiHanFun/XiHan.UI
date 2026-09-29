@@ -1,0 +1,1 @@
+async function l(){const t=document.getElementById("back-top-threshold-template"),e=t.content.firstElementChild;e.target=document.getElementById("back-top-threshold-scroll"),t.replaceWith(e)}export{l as default};

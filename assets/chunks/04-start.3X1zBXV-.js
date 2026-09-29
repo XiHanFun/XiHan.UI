@@ -1,0 +1,1 @@
+async function e(){const s=document.getElementById("funnel-chart-start"),t=[{stage:"收到简历",users:860},{stage:"简历通过",users:310},{stage:"一面",users:150},{stage:"二面",users:64},{stage:"发放录用",users:18}];s.data=t}export{e as default};

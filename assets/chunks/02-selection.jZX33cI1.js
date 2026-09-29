@@ -1,0 +1,1 @@
+async function a(){const e=document.getElementById("tag-group-selection"),n=document.getElementById("tag-group-selection-value");e.addEventListener("value-change",t=>{e.value=t.detail.value,n.textContent=t.detail.value.join("、")||"（无）"})}export{a as default};

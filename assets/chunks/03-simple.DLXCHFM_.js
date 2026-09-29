@@ -1,0 +1,1 @@
+async function o(){const t=document.getElementById("pagination-simple"),e=document.getElementById("pagination-simple-current"),n=document.getElementById("pagination-simple-total");t.addEventListener("page-change",a=>{t.page=a.detail.page,e.setAttribute("value",String(t.currentPage)),e.textContent=String(t.currentPage),n.textContent=`/ ${t.totalPages}`})}export{o as default};

@@ -1,0 +1,1 @@
+async function n(){const e=document.getElementById("date-field-hour-cycle"),t=document.getElementById("date-field-hour-cycle-value");e.addEventListener("value-change",d=>{t.textContent=d.detail.value??"（空）"})}export{n as default};

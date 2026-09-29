@@ -1190,6 +1190,70 @@ onBeforeUnmount(() => motion.cancel());
 </template>
 ```
 
+```html
+<div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+  <div
+    style="
+      display: grid;
+      place-items: center;
+      min-height: 140px;
+      border: 1px dashed var(--vp-c-divider);
+      border-radius: 12px;
+    "
+  >
+    <div
+      id="animations-presets-card"
+      style="
+        padding: 16px 24px;
+        border-radius: 10px;
+        background: var(--vp-c-brand-1);
+        color: #fff;
+        font-weight: 600;
+      "
+    >
+      点下面的名字
+    </div>
+  </div>
+
+  <div>
+    <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">进场</p>
+    <div id="animations-presets-enter" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+  </div>
+
+  <div>
+    <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">注意</p>
+    <div id="animations-presets-attention" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+  </div>
+</div>
+
+<script type="module">
+  import { BUILTIN_MOTION_NAMES, createMotionPlayer } from "@xihan-ui/animations";
+
+  const motion = createMotionPlayer();
+  const card = document.getElementById("animations-presets-card");
+
+  // 预设名单在包里，按钮照它铺，不另抄一份
+  function presetButton(name) {
+    const button = document.createElement("xh-button");
+    button.setAttribute("variant", "outline");
+    button.setAttribute("size", "sm");
+    button.innerHTML = `<button data-xh-part="root">${name}</button>`;
+    button.addEventListener("click", () => {
+      card.textContent = name;
+      void motion.play(card, name);
+    });
+    return button;
+  }
+
+  document
+    .getElementById("animations-presets-enter")
+    .append(...BUILTIN_MOTION_NAMES.slice(0, 11).map(presetButton));
+  document
+    .getElementById("animations-presets-attention")
+    .append(...BUILTIN_MOTION_NAMES.slice(11).map(presetButton));
+</script>
+```
+
 ## 动画是配方，不是类名
 
 一段动画是一份可 JSON 序列化的配方（`MotionSpec`）：若干视觉帧加一组时序参数。
@@ -1357,6 +1421,90 @@ onBeforeUnmount(() => motion.cancel());
     </div>
   </div>
 </template>
+```
+
+```html
+<div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+    <xh-radio-group id="animations-stagger-from" default-value="first" name="stagger-from">
+      <div data-xh-part="root">
+        <span data-xh-part="label">起点</span>
+        <div data-xh-part="item" value="first">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">从头</span>
+        </div>
+        <div data-xh-part="item" value="last">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">从尾</span>
+        </div>
+        <div data-xh-part="item" value="center">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">从中间</span>
+        </div>
+      </div>
+    </xh-radio-group>
+    <label style="display: flex; align-items: center; gap: 8px">
+      <span id="animations-stagger-gap-text">间隔 60ms</span>
+      <input id="animations-stagger-gap" type="range" min="0" max="200" step="10" value="60" />
+    </label>
+  </div>
+
+  <div style="display: flex; gap: 8px">
+    <xh-button id="animations-stagger-play-list" size="sm">
+      <button data-xh-part="root">播列表</button>
+    </xh-button>
+    <xh-button id="animations-stagger-play-title" size="sm" variant="outline">
+      <button data-xh-part="root">播标题</button>
+    </xh-button>
+  </div>
+
+  <h3 id="animations-stagger-title" style="margin: 0; font-size: 24px">曦寒 UI 动画层</h3>
+
+  <div id="animations-stagger-list" style="display: flex; flex-wrap: wrap; gap: 8px">
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">1</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">2</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">3</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">4</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">5</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">6</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">7</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">8</div>
+  </div>
+</div>
+
+<script type="module">
+  import { createMotionPlayer, splitText } from "@xihan-ui/animations";
+
+  const motion = createMotionPlayer();
+  const gap = document.getElementById("animations-stagger-gap");
+  const list = document.getElementById("animations-stagger-list");
+  const title = document.getElementById("animations-stagger-title");
+
+  // 起点跟着单选组走：非受控，记下最近一次选中的值
+  let from = "first";
+  document.getElementById("animations-stagger-from").addEventListener("value-change", (event) => {
+    from = event.detail.value;
+  });
+  gap.addEventListener("input", () => {
+    document.getElementById("animations-stagger-gap-text").textContent = `间隔 ${gap.value}ms`;
+  });
+
+  document.getElementById("animations-stagger-play-list").addEventListener("click", () => {
+    void motion.playAll([...list.children], "rise", {
+      stagger: Number(gap.value),
+      from,
+    });
+  });
+
+  document.getElementById("animations-stagger-play-title").addEventListener("click", async () => {
+    const { parts, restore } = splitText(title);
+    await motion.playAll(parts, "fade-up", { stagger: 30 });
+    restore();
+  });
+</script>
 ```
 
 ```ts
@@ -3340,6 +3488,111 @@ onBeforeUnmount(() => handle?.cancel());
 </template>
 ```
 
+```html
+<div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+    <label style="display: flex; align-items: center; gap: 8px">
+      <span id="motion-spring-duration-text">时长 0.50s</span>
+      <input id="motion-spring-duration" type="range" min="0.15" max="1.2" step="0.05" value="0.5" />
+    </label>
+    <label style="display: flex; align-items: center; gap: 8px">
+      <span id="motion-spring-bounce-text">弹性 0.30</span>
+      <input id="motion-spring-bounce" type="range" min="-0.8" max="0.8" step="0.05" value="0.3" />
+    </label>
+  </div>
+
+  <p id="motion-spring-stats" style="margin: 0; font-size: 13px; opacity: 0.7"></p>
+
+  <svg viewBox="0 0 280 120" style="width: 100%; height: 120px">
+    <line x1="0" y1="30" x2="280" y2="30" stroke="var(--vp-c-divider)" stroke-dasharray="4 4" />
+    <line x1="0" y1="110" x2="280" y2="110" stroke="var(--vp-c-divider)" />
+    <path id="motion-spring-curve" fill="none" stroke="var(--vp-c-brand-1)" stroke-width="2" />
+  </svg>
+
+  <div style="display: flex; align-items: center; gap: 12px">
+    <button
+      id="motion-spring-play"
+      type="button"
+      style="
+        padding: 6px 14px;
+        border: 1px solid var(--vp-c-divider);
+        border-radius: 8px;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+      "
+    >
+      播一次
+    </button>
+    <div
+      style="
+        position: relative;
+        flex: 1;
+        height: 40px;
+        border: 1px dashed var(--vp-c-divider);
+        border-radius: 8px;
+      "
+    >
+      <div
+        id="motion-spring-box"
+        style="
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: var(--vp-c-brand-1);
+        "
+      ></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { animate, createSpring, springToLinearEasing } from "@xihan-ui/motion";
+
+  const duration = document.getElementById("motion-spring-duration");
+  const bounce = document.getElementById("motion-spring-bounce");
+  const box = document.getElementById("motion-spring-box");
+
+  let solver;
+  let handle = null;
+
+  // 滑块一动就按新参数重解：读数、曲线与下一次播放用的是同一个解
+  function solve() {
+    solver = createSpring({ duration: Number(duration.value), bounce: Number(bounce.value) });
+    document.getElementById("motion-spring-duration-text").textContent = `时长 ${Number(duration.value).toFixed(2)}s`;
+    document.getElementById("motion-spring-bounce-text").textContent = `弹性 ${Number(bounce.value).toFixed(2)}`;
+    document.getElementById("motion-spring-stats").textContent
+      = `阻尼比 ${solver.dampingRatio.toFixed(3)} · 沉降 ${Math.round(solver.durationMs)}ms · 过冲 ${(solver.overshoot * 100).toFixed(1)}%`;
+
+    // 曲线画在 0..1 的归一化坐标里，y 轴翻过来让 1 在上方
+    const seconds = solver.durationMs / 1000;
+    const points = [];
+    for (let i = 0; i <= 80; i++) {
+      const t = i / 80;
+      const value = solver(t * seconds);
+      points.push(`${(t * 280).toFixed(1)},${(110 - value * 80).toFixed(1)}`);
+    }
+    document.getElementById("motion-spring-curve").setAttribute("d", `M ${points.join(" L ")}`);
+  }
+
+  duration.addEventListener("input", solve);
+  bounce.addEventListener("input", solve);
+  solve();
+
+  document.getElementById("motion-spring-play").addEventListener("click", () => {
+    handle?.cancel();
+    handle = animate(
+      box,
+      [{ translate: "0 0" }, { translate: "180px 0" }],
+      { duration: solver.durationMs, easing: springToLinearEasing(solver, 48), fill: "forwards" },
+    );
+  });
+</script>
+```
+
 两种参数写法。直接给物理参数：
 
 ```ts
@@ -3875,6 +4128,87 @@ onBeforeUnmount(() => player.dispose());
 </template>
 ```
 
+```html
+<div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+    <xh-radio-group id="sound-play-theme" default-value="default" name="sound-theme">
+      <div data-xh-part="root">
+        <span data-xh-part="label">主题</span>
+        <div data-xh-part="item" value="default">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">default 清亮</span>
+        </div>
+        <div data-xh-part="item" value="minimal">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">minimal 极简</span>
+        </div>
+        <div data-xh-part="item" value="soft">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">soft 柔和</span>
+        </div>
+      </div>
+    </xh-radio-group>
+    <label style="display: flex; align-items: center; gap: 8px">
+      音量
+      <input id="sound-play-volume" type="range" min="0" max="1" step="0.05" value="0.5" />
+    </label>
+    <label style="display: flex; align-items: center; gap: 8px">
+      出声
+      <xh-switch id="sound-play-enabled" default-checked>
+        <button data-xh-part="root">
+          <span data-xh-part="thumb"></span>
+        </button>
+      </xh-switch>
+    </label>
+  </div>
+
+  <div id="sound-play-names" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+</div>
+
+<script type="module">
+  import {
+    BUILTIN_SOUND_NAMES,
+    createSoundPlayer,
+    defaultSoundTheme,
+    minimalSoundTheme,
+    softSoundTheme,
+  } from "@xihan-ui/sound";
+
+  const themes = {
+    default: defaultSoundTheme,
+    minimal: minimalSoundTheme,
+    soft: softSoundTheme,
+  };
+
+  // 建播放器不碰音频上下文，等第一次真的发声才建；缺省音量就是 0.5，与滑块起点一致
+  const player = createSoundPlayer();
+  const volume = document.getElementById("sound-play-volume");
+
+  document.getElementById("sound-play-theme").addEventListener("value-change", (event) => {
+    player.setTheme(themes[event.detail.value] ?? defaultSoundTheme);
+  });
+  volume.addEventListener("input", () => player.setVolume(Number(volume.value)));
+  document.getElementById("sound-play-enabled").addEventListener("checked-change", (event) => {
+    player.setEnabled(event.detail.checked);
+  });
+
+  // 语义名单在包里，按钮照它铺，不另抄一份
+  document.getElementById("sound-play-names").append(
+    ...BUILTIN_SOUND_NAMES.map((name) => {
+      const button = document.createElement("xh-button");
+      button.setAttribute("variant", "outline");
+      button.setAttribute("size", "sm");
+      button.innerHTML = `<button data-xh-part="root">${name}</button>`;
+      button.addEventListener("click", () => player.play(name));
+      return button;
+    }),
+  );
+</script>
+```
+
 ## 声音是配方，不是文件
 
 一段声音是一份可 JSON 序列化的声明式配方（`SoundSpec`）：若干并行发声层，每层一条增益包络，可带音高包络、滤波与混响送出。
@@ -4010,6 +4344,145 @@ onBeforeUnmount(() => player.dispose());
     >{{ code }}</pre>
   </div>
 </template>
+```
+
+```html
+<div id="sound-designer" style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+  <xh-radio-group id="sound-designer-wave" default-value="triangle" name="sound-wave">
+    <div data-xh-part="root">
+      <span data-xh-part="label">波形</span>
+      <div data-xh-part="item" value="sine">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="indicator"></span>
+        <span data-xh-part="item-text">sine</span>
+      </div>
+      <div data-xh-part="item" value="triangle">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="indicator"></span>
+        <span data-xh-part="item-text">triangle</span>
+      </div>
+      <div data-xh-part="item" value="square">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="indicator"></span>
+        <span data-xh-part="item-text">square</span>
+      </div>
+      <div data-xh-part="item" value="sawtooth">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="indicator"></span>
+        <span data-xh-part="item-text">sawtooth</span>
+      </div>
+    </div>
+  </xh-radio-group>
+
+  <div
+    style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px 20px;
+    "
+  >
+    <label style="display: flex; align-items: center; gap: 8px">
+      <span style="width: 76px">起始 <output for="sound-designer-from">880</output>Hz</span>
+      <input id="sound-designer-from" name="from" type="range" min="80" max="2400" step="10" value="880" />
+    </label>
+    <label style="display: flex; align-items: center; gap: 8px">
+      <span style="width: 76px">终止 <output for="sound-designer-to">1320</output>Hz</span>
+      <input id="sound-designer-to" name="to" type="range" min="80" max="2400" step="10" value="1320" />
+    </label>
+    <label style="display: flex; align-items: center; gap: 8px">
+      <span style="width: 76px">起音 <output for="sound-designer-attack">5</output>ms</span>
+      <input id="sound-designer-attack" name="attack" type="range" min="1" max="80" step="1" value="5" />
+    </label>
+    <label style="display: flex; align-items: center; gap: 8px">
+      <span style="width: 76px">衰减 <output for="sound-designer-decay">180</output>ms</span>
+      <input id="sound-designer-decay" name="decay" type="range" min="20" max="900" step="10" value="180" />
+    </label>
+    <label style="display: flex; align-items: center; gap: 8px">
+      <span style="width: 76px">峰值 <output for="sound-designer-peak">0.3</output></span>
+      <input id="sound-designer-peak" name="peak" type="range" min="0.05" max="0.6" step="0.05" value="0.3" />
+    </label>
+    <label style="display: flex; align-items: center; gap: 8px">
+      <span style="width: 76px">空间 <output for="sound-designer-space">0.15</output></span>
+      <input id="sound-designer-space" name="space" type="range" min="0" max="0.6" step="0.05" value="0.15" />
+    </label>
+  </div>
+
+  <div>
+    <xh-button id="sound-designer-play" variant="solid">
+      <button data-xh-part="root">试听</button>
+    </xh-button>
+  </div>
+
+  <pre
+    id="sound-designer-code"
+    data-xh-scroll
+    style="
+      margin: 0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--vp-c-bg-soft);
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-x: auto;
+    "
+  ></pre>
+</div>
+
+<script type="module">
+  import { createSoundPlayer, glide, strike } from "@xihan-ui/sound";
+
+  const root = document.getElementById("sound-designer");
+  const player = createSoundPlayer();
+
+  // 每个滑块按自己的 name 写回同名参数，读数跟着滑块走
+  const params = { wave: "triangle" };
+  for (const slider of root.querySelectorAll("input[type=range]")) {
+    params[slider.name] = Number(slider.value);
+    slider.addEventListener("input", () => {
+      params[slider.name] = Number(slider.value);
+      root.querySelector(`output[for="${slider.id}"]`).textContent = slider.value;
+      render();
+    });
+  }
+  document.getElementById("sound-designer-wave").addEventListener("value-change", (event) => {
+    params.wave = event.detail.value;
+    render();
+  });
+
+  const seconds = () => Math.max(0.01, params.decay / 1000);
+
+  // 配方是纯数据：试听播的与下面那段代码是同一组数
+  function spec() {
+    return {
+      layers: [
+        {
+          kind: "oscillator",
+          wave: params.wave,
+          frequency: glide(params.from, params.to, seconds()),
+          gain: strike(params.peak, params.attack / 1000, seconds()),
+        },
+      ],
+      space: params.space,
+    };
+  }
+
+  function render() {
+    document.getElementById("sound-designer-code").textContent = `sound.play({
+  layers: [
+    {
+      kind: 'oscillator',
+      wave: '${params.wave}',
+      frequency: glide(${params.from}, ${params.to}, ${seconds().toFixed(3)}),
+      gain: strike(${params.peak}, ${(params.attack / 1000).toFixed(3)}, ${seconds().toFixed(3)}),
+    },
+  ],
+  space: ${params.space},
+})`;
+  }
+  render();
+
+  document.getElementById("sound-designer-play").addEventListener("click", () => player.play(spec()));
+</script>
 ```
 
 播放前配方一律经过一道钳制（`clampSpec`）：越界钳住、类型不符回落、未知形态丢弃，异常数据不会导致播放失败，也不会产出刺耳或超长的声音。
@@ -4682,15 +5155,18 @@ pnpm test:browser overlay -- -t Esc  # -- 之后的参数原样交给 vitest
 
 分类与组件总览一致（`ui/scripts/component-docs.manifest.json`）：`general`、`layout`、`navigation`、`form`、`data-display`、`feedback`、`overlay`、`ai`。用例文件名以某个组件名开头（取最长匹配）即归入该组件的分类；浮层主题的跨组件用例（`overlay-*`、各类 Portal、position 引擎）归 `overlay`；其余跨组件用例（全量无障碍、计算样式快照、像素基线、焦点环对账等）归 `shared`。某个包失败不中断其余包，全部跑完后汇总。
 
-### Vue 浏览器态的三个项目
+### 浏览器态的项目划分
 
-同一个 worker 里的用例文件共用一张页面，仿真状态会从上一个文件带到下一个文件。`vitest.browser.config.ts` 因此把 Vue 浏览器态分成三个项目，按 `sequence.groupOrder` 先后运行：
+同一个 worker 里的用例文件共用一张页面，仿真状态会从上一个文件带到下一个文件。Vue 的 `vitest.browser.config.ts` 因此把浏览器态分成四个项目，按 `sequence.groupOrder` 先后运行：
 
 | 项目 | 收哪些文件 | 为什么单独放 |
 | --- | --- | --- |
 | `vue-browser` | 其余全部 | 并行主池 |
+| `vue-browser-a11y` | `a11y-light.spec.ts`、`a11y-dark.spec.ts` | 全量无障碍扫描是整包最重的一块，按主题拆成两份、单份约三分钟。单成项目后 CI 可以用 `--project` 把它挑出来独占一片，其余分片排除它；本地整包跑时与主池同组并行 |
 | `vue-browser-touch` | 调用过 `Emulation.setTouchEmulationEnabled` 或 `coarsePointer()` 的文件，配置加载时自动扫出 | Linux 无头 Chromium 上，一张页面只要关过一次触屏仿真，`(pointer)` 与 `(hover)` 就永久变为 `none`，没有 CDP 入口改回来。挂在 `@media (hover: hover)` 下的悬停规则随之失效，同一 worker 里后续文件的悬停断言与像素基线会随机判红。Windows 上不走这条恢复路径，本机复现不出来 |
-| `vue-browser-serial` | `overlay-open-budget.spec.ts` | 量主线程耗时，与整套并行时量到的是别的用例抢走的 CPU，放到最后单独串行 |
+| `vue-browser-serial` | `overlay-open-budget.spec.ts`、`cartesian-budget.spec.ts` | 量主线程耗时，与整套并行时量到的是别的用例抢走的 CPU，放到最后单独串行 |
+
+React 与 Web Components 同样把无障碍扫描单成 `react-browser-a11y`、`wc-browser-a11y`，其余用例在 `react-browser`、`wc-browser`。CI 的 `browser` job 用 `--project=*-a11y*` 与 `--project=!*-a11y*` 两种写法挑选，新增的项目名不带 `-a11y` 就自动落进常规分片。
 
 媒介仿真（print、forced-colors 等）由 `tests/browser/setup.ts` 在每个文件开跑前复位；触屏仿真不能这样复位，复位本身就会让页面失去悬停能力。
 
@@ -4779,7 +5255,7 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 
 校验模式下基线目录不挂载进容器，容器无法写入。修改基线只能显式使用 `--update`。
 
-比对失败时，实际截图与差异图输出到 `packages/adapters/vue/.vitest-attachments/`（不入库）。CI 上同一批文件作为 `visual-diffs` artifact 输出，可下载逐张查看。
+比对失败时，实际截图与差异图输出到 `packages/adapters/vue/.vitest-attachments/`（不入库）。CI 上同一批文件由失败的那一片作为 `visual-diffs-<分片>` artifact 输出（如 `visual-diffs-vue-2`），可下载逐张查看。
 
 ### 本地运行方式与固定失败项
 
@@ -4790,8 +5266,8 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 修改皮肤的工作方式：
 
 - 本地 `pnpm visual:baseline` 查看本次改动影响的截图，差异图在 `.vitest-attachments/` 下逐张打开；
-- PR 的判据是 CI 的 `browser` job，本地 `pnpm test:browser` 的固定失败项可以忽略；
-- CI 失败时先下载 `visual-diffs` artifact 查看，确认是有意的视觉改动，再 `pnpm visual:baseline --update` 重新生成基线并提交。
+- PR 的判据是 CI 的 `browser` job（按包与分片铺成矩阵），本地 `pnpm test:browser` 的固定失败项可以忽略；
+- CI 失败时先下载对应分片的 `visual-diffs-<分片>` artifact 查看，确认是有意的视觉改动，再 `pnpm visual:baseline --update` 重新生成基线并提交。
 
 字体族名、安装它的 apt 包、容器镜像与运行命令分散在用例、容器脚本、CI 与本页中，任何一处不一致都只表现为四十张整体判红。`check-visual-baseline-env` 把四处对齐，并核对镜像版本与 `pnpm-workspace.yaml` 中 `playwright` 的版本一致、CI 的 `browser` job 中安装字体的步骤排在运行用例之前。
 
@@ -4865,7 +5341,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 129 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 130 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |
@@ -5364,7 +5840,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 255 个属性名 / 1123 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
+样式钩子。自带皮肤消费了 255 个属性名 / 1122 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |

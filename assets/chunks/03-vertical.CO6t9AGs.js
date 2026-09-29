@@ -1,0 +1,1 @@
+async function o(){const t=document.getElementById("steps-vertical"),a=[...t.querySelectorAll('[data-xh-part="indicator"]')];t.addEventListener("value-change",n=>{a.forEach((c,e)=>{c.textContent=n.detail.value>e?"":String(e+1)})})}export{o as default};

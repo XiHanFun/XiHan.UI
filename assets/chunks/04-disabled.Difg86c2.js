@@ -1,0 +1,1 @@
+async function l(){const e=document.getElementById("tooltip-disabled").querySelector('[data-xh-part="trigger"]'),o=document.getElementById("tooltip-disabled-clicks");let t=0;e.addEventListener("click",()=>{t+=1,o.textContent=String(t)})}export{l as default};

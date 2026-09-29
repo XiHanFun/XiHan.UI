@@ -1,0 +1,1 @@
+async function o(){const n=document.getElementById("fieldset-contact"),e=[...n.querySelectorAll("input")],c=()=>{n.invalid=e.every(t=>t.value==="")};for(const t of e)t.addEventListener("input",c);c()}export{o as default};

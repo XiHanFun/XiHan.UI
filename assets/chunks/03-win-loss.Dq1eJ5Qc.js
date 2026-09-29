@@ -1,0 +1,1 @@
+async function n(){document.getElementById("sparkline-win-loss").data=[120,-40,85,60,-15,-80,0,45,30,90,-25,70,55,-60,20,110]}export{n as default};

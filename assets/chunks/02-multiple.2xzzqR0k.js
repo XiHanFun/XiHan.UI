@@ -1,0 +1,1 @@
+async function l(){const e=document.getElementById("accordion-multiple"),a=document.getElementById("accordion-multiple-value");e.value=["basic","size"],e.addEventListener("value-change",t=>{e.value=t.detail.value,a.textContent=t.detail.value.join("、")||"（无）"})}export{l as default};

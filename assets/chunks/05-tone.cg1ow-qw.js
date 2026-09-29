@@ -1,0 +1,1 @@
+async function a(){const o=document.getElementById("accordion-tones");for(const e of o.querySelectorAll("xh-accordion"))e.value=["open"],e.addEventListener("value-change",n=>{e.value=n.detail.value})}export{a as default};

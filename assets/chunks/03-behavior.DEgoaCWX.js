@@ -1,0 +1,1 @@
+async function c(){for(const t of["smooth","auto"]){const e=document.getElementById(`back-top-${t}-template`),o=e.content.firstElementChild;o.target=document.getElementById(`back-top-${t}-scroll`),e.replaceWith(o)}}export{c as default};

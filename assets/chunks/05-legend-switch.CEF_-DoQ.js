@@ -1,0 +1,1 @@
+async function c(){const t=document.getElementById("fieldset-backup"),e=document.getElementById("fieldset-backup-toggle");e.addEventListener("change",()=>{t.disabled=!e.checked})}export{c as default};

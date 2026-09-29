@@ -527,7 +527,7 @@ const rules: FormRules = {
       </xh-field>
     </div>
 
-    <button data-xh-part="submit-trigger" id="form-async-submit">提交</button>
+    <button data-xh-part="submit-trigger">提交</button>
   </form>
 </xh-form>
 
@@ -537,7 +537,7 @@ const rules: FormRules = {
   // 部件节点上的 id 由组件自己派生，别写自己的：查它们一律按角色名
   const hint = host.querySelector('[data-xh-part="description"]');
   const error = host.querySelector('[data-xh-part="error-text"]');
-  const submit = document.getElementById("form-async-submit");
+  const submit = host.querySelector('[data-xh-part="submit-trigger"]');
 
   const TAKEN = ["admin", "root", "xihan"];
   const HINT = "提交时先问一次服务端，占用的名字会被挡下";

@@ -1,0 +1,1 @@
+async function o(){for(const e of["reasoning-inline-a","reasoning-inline-b"]){const n=document.getElementById(e),t=(n.durationMs??0)/1e3;n.querySelector('[data-xh-part="duration"]').textContent=`${t.toFixed(1)} 秒`}}export{o as default};

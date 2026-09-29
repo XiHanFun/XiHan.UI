@@ -1,1 +1,0 @@
-import{fU as n}from"./theme.UYVbUEgX.js";import{d as a,o as l,b as c,k as e}from"./framework.D1FqHTxE.js";const r="ABCDEFGHIJKLMNOPQRSTUVWXYZ",i=a({__name:"12-many-options",setup(s){const t=Array.from(r,o=>({value:o,label:`${o} 区`}));return(o,p)=>(l(),c(e(n),{collection:e(t),label:"仓位",placeholder:"敲 M 试试"},null,8,["collection"]))}});export{i as default};

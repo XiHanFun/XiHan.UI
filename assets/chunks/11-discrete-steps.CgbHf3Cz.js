@@ -1,0 +1,1 @@
+async function s(){const t=[1,5,10,50,100,500],n=document.getElementById("slider-levels"),l=document.getElementById("slider-levels-current");n.getValueText=({value:e})=>`每页 ${t[e]} 条`,n.addEventListener("value-change",e=>{l.textContent=t[e.detail.value[0]]})}export{s as default};

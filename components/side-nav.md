@@ -35,21 +35,21 @@ import {
 } from "@xihan-ui/vue";
 
 const collection: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
   {
     value: "user",
     label: "用户管理",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
   {
     value: "order",
     label: "订单管理",
     children: [
-      { value: "order-list", label: "订单列表", href: "#order-list" },
-      { value: "order-refund", label: "退款处理", href: "#order-refund" },
+      { value: "order-list", label: "订单列表", href: "#/order/list" },
+      { value: "order-refund", label: "退款处理", href: "#/order/refund" },
     ],
   },
 ];
@@ -143,21 +143,21 @@ const collection: SideNavNode[] = [
   const nav = document.getElementById("side-nav-basic");
 
   nav.collection = [
-    { value: "dashboard", label: "工作台", href: "#dashboard" },
+    { value: "dashboard", label: "工作台", href: "#/dashboard" },
     {
       value: "user",
       label: "用户管理",
       children: [
-        { value: "user-list", label: "用户列表", href: "#user-list" },
-        { value: "user-role", label: "角色权限", href: "#user-role" },
+        { value: "user-list", label: "用户列表", href: "#/user/list" },
+        { value: "user-role", label: "角色权限", href: "#/user/role" },
       ],
     },
     {
       value: "order",
       label: "订单管理",
       children: [
-        { value: "order-list", label: "订单列表", href: "#order-list" },
-        { value: "order-refund", label: "退款处理", href: "#order-refund" },
+        { value: "order-list", label: "订单列表", href: "#/order/list" },
+        { value: "order-refund", label: "退款处理", href: "#/order/refund" },
       ],
     },
   ];
@@ -205,19 +205,19 @@ const collection: SideNavNode[] = [
     value: "user",
     label: "用户管理",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
   {
     value: "order",
     label: "订单管理",
-    children: [{ value: "order-list", label: "订单列表", href: "#order-list" }],
+    children: [{ value: "order-list", label: "订单列表", href: "#/order/list" }],
   },
   {
     value: "system",
     label: "系统设置",
-    children: [{ value: "system-log", label: "操作日志", href: "#system-log" }],
+    children: [{ value: "system-log", label: "操作日志", href: "#/system/log" }],
   },
 ];
 
@@ -319,19 +319,19 @@ const icons = {
       value: "user",
       label: "用户管理",
       children: [
-        { value: "user-list", label: "用户列表", href: "#user-list" },
-        { value: "user-role", label: "角色权限", href: "#user-role" },
+        { value: "user-list", label: "用户列表", href: "#/user/list" },
+        { value: "user-role", label: "角色权限", href: "#/user/role" },
       ],
     },
     {
       value: "order",
       label: "订单管理",
-      children: [{ value: "order-list", label: "订单列表", href: "#order-list" }],
+      children: [{ value: "order-list", label: "订单列表", href: "#/order/list" }],
     },
     {
       value: "system",
       label: "系统设置",
-      children: [{ value: "system-log", label: "操作日志", href: "#system-log" }],
+      children: [{ value: "system-log", label: "操作日志", href: "#/system/log" }],
     },
   ];
 
@@ -359,13 +359,13 @@ import {
 } from "@xihan-ui/vue";
 
 const collection: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
   {
     value: "user",
     label: "用户管理",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
 ];
@@ -477,13 +477,13 @@ const rows = [
 
 <script type="module">
   const collection = [
-    { value: "dashboard", label: "工作台", href: "#dashboard" },
+    { value: "dashboard", label: "工作台", href: "#/dashboard" },
     {
       value: "user",
       label: "用户管理",
       children: [
-        { value: "user-list", label: "用户列表", href: "#user-list" },
-        { value: "user-role", label: "角色权限", href: "#user-role" },
+        { value: "user-list", label: "用户列表", href: "#/user/list" },
+        { value: "user-role", label: "角色权限", href: "#/user/role" },
       ],
     },
   ];
@@ -519,20 +519,20 @@ import {
 } from "@xihan-ui/vue";
 
 const collection: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
   {
     value: "user",
     label: "用户管理",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
   {
     value: "order",
     label: "订单管理",
     children: [
-      { value: "order-list", label: "订单列表", href: "#order-list" },
+      { value: "order-list", label: "订单列表", href: "#/order/list" },
       // 没开这项权限：方向键跳过它，点也不落值
       { value: "order-refund", label: "退款处理", disabled: true },
     ],
@@ -540,7 +540,7 @@ const collection: SideNavNode[] = [
   {
     value: "system",
     label: "系统设置",
-    children: [{ value: "system-log", label: "操作日志", href: "#system-log" }],
+    children: [{ value: "system-log", label: "操作日志", href: "#/system/log" }],
   },
 ];
 
@@ -644,27 +644,27 @@ const branches = collection.filter(node => node.children);
   const nav = document.getElementById("side-nav-controlled");
 
   nav.collection = [
-    { value: "dashboard", label: "工作台", href: "#dashboard" },
+    { value: "dashboard", label: "工作台", href: "#/dashboard" },
     {
       value: "user",
       label: "用户管理",
       children: [
-        { value: "user-list", label: "用户列表", href: "#user-list" },
-        { value: "user-role", label: "角色权限", href: "#user-role" },
+        { value: "user-list", label: "用户列表", href: "#/user/list" },
+        { value: "user-role", label: "角色权限", href: "#/user/role" },
       ],
     },
     {
       value: "order",
       label: "订单管理",
       children: [
-        { value: "order-list", label: "订单列表", href: "#order-list" },
+        { value: "order-list", label: "订单列表", href: "#/order/list" },
         { value: "order-refund", label: "退款处理", disabled: true },
       ],
     },
     {
       value: "system",
       label: "系统设置",
-      children: [{ value: "system-log", label: "操作日志", href: "#system-log" }],
+      children: [{ value: "system-log", label: "操作日志", href: "#/system/log" }],
     },
   ];
 
@@ -698,21 +698,21 @@ import {
 } from "@xihan-ui/vue";
 
 const collection: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
   {
     value: "user",
     label: "用户管理",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
   {
     value: "order",
     label: "订单管理",
     children: [
-      { value: "order-list", label: "订单列表", href: "#order-list" },
-      { value: "order-refund", label: "退款处理", href: "#order-refund" },
+      { value: "order-list", label: "订单列表", href: "#/order/list" },
+      { value: "order-refund", label: "退款处理", href: "#/order/refund" },
     ],
   },
 ];
@@ -805,21 +805,21 @@ const collection: SideNavNode[] = [
 
   nav.translations = { input: "搜索导航", noMatch: "没有匹配的入口" };
   nav.collection = [
-    { value: "dashboard", label: "工作台", href: "#dashboard" },
+    { value: "dashboard", label: "工作台", href: "#/dashboard" },
     {
       value: "user",
       label: "用户管理",
       children: [
-        { value: "user-list", label: "用户列表", href: "#user-list" },
-        { value: "user-role", label: "角色权限", href: "#user-role" },
+        { value: "user-list", label: "用户列表", href: "#/user/list" },
+        { value: "user-role", label: "角色权限", href: "#/user/role" },
       ],
     },
     {
       value: "order",
       label: "订单管理",
       children: [
-        { value: "order-list", label: "订单列表", href: "#order-list" },
-        { value: "order-refund", label: "退款处理", href: "#order-refund" },
+        { value: "order-list", label: "订单列表", href: "#/order/list" },
+        { value: "order-refund", label: "退款处理", href: "#/order/refund" },
       ],
     },
   ];
@@ -845,10 +845,10 @@ import {
 } from "@xihan-ui/vue";
 
 const collection: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
-  { value: "user", label: "用户管理", href: "#user" },
-  { value: "order", label: "订单管理", href: "#order" },
-  { value: "system", label: "系统设置", href: "#system" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
+  { value: "user", label: "用户管理", href: "#/user" },
+  { value: "order", label: "订单管理", href: "#/order" },
+  { value: "system", label: "系统设置", href: "#/system" },
 ];
 
 const icons = {
@@ -913,10 +913,10 @@ const icons = {
   const nav = document.getElementById("side-nav-collapsed-tooltip");
 
   nav.collection = [
-    { value: "dashboard", label: "工作台", href: "#dashboard" },
-    { value: "user", label: "用户管理", href: "#user" },
-    { value: "order", label: "订单管理", href: "#order" },
-    { value: "system", label: "系统设置", href: "#system" },
+    { value: "dashboard", label: "工作台", href: "#/dashboard" },
+    { value: "user", label: "用户管理", href: "#/user" },
+    { value: "order", label: "订单管理", href: "#/order" },
+    { value: "system", label: "系统设置", href: "#/system" },
   ];
 </script>
 ```
@@ -1225,7 +1225,7 @@ const icons = {
 - 分组 `group` 是上一层列表里的一条，本身不带角色；组内的行挂在 `group-list` 里，`group-list` 以 `aria-labelledby` 指向 `group-label`，读屏念作「标题 + 列表」。不写 `role="group"`：列表项的父节点必须是列表。
 - 将文字放入 `branch-text` 或 `link-text`，确保折叠后仍有可访问名称。
 - 装饰图标使用 `aria-hidden="true"`。
-- 搜索框没有可见标签，可及名取 `translations.input`；空态以 `role="status"` 露面即播报。
+- 搜索框没有可见标签，可及名取 `translations.input`；聚焦不画环，插入符就是焦点指示，与级联选择、命令面板的搜索框同一种写法；空态以 `role="status"` 露面即播报。
 - 图标栏的名称提示对读屏隐藏，行上也不挂 `aria-describedby`：行文字已是可及名，提示只给看得见的人补上被裁掉的那段字。Escape 收起提示，焦点留在行上。
 
 ## 样式参考

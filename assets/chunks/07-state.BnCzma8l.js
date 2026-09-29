@@ -1,0 +1,1 @@
+async function d(){const a=[{value:"docs",label:"docs",children:[{value:"guide",label:"guide.md"},{value:"api",label:"api.md"}]},{value:"readme",label:"README.md"}];for(const e of document.getElementById("tree-select-state").children)e.collection=a,e.expandedValue=["docs"],e.addEventListener("expanded-value-change",l=>e.expandedValue=l.detail.value)}export{d as default};

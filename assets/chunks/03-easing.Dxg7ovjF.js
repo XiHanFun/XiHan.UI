@@ -1,0 +1,1 @@
+async function a(){const e=document.getElementById("number-animation-easing"),t=e.querySelectorAll("xh-number-animation");e.querySelector("#number-animation-easing-toggle").addEventListener("click",()=>{for(const n of t)n.to=n.to===1e4?0:1e4})}export{a as default};

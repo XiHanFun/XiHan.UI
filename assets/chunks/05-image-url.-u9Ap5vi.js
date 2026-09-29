@@ -1,0 +1,1 @@
+async function e(){document.getElementById("watermark-image-url").imageSize={width:40,height:40}}export{e as default};

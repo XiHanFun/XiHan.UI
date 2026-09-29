@@ -41,15 +41,18 @@ pnpm test:browser overlay -- -t Esc  # -- 之后的参数原样交给 vitest
 
 分类与组件总览一致（`ui/scripts/component-docs.manifest.json`）：`general`、`layout`、`navigation`、`form`、`data-display`、`feedback`、`overlay`、`ai`。用例文件名以某个组件名开头（取最长匹配）即归入该组件的分类；浮层主题的跨组件用例（`overlay-*`、各类 Portal、position 引擎）归 `overlay`；其余跨组件用例（全量无障碍、计算样式快照、像素基线、焦点环对账等）归 `shared`。某个包失败不中断其余包，全部跑完后汇总。
 
-### Vue 浏览器态的三个项目
+### 浏览器态的项目划分
 
-同一个 worker 里的用例文件共用一张页面，仿真状态会从上一个文件带到下一个文件。`vitest.browser.config.ts` 因此把 Vue 浏览器态分成三个项目，按 `sequence.groupOrder` 先后运行：
+同一个 worker 里的用例文件共用一张页面，仿真状态会从上一个文件带到下一个文件。Vue 的 `vitest.browser.config.ts` 因此把浏览器态分成四个项目，按 `sequence.groupOrder` 先后运行：
 
 | 项目 | 收哪些文件 | 为什么单独放 |
 | --- | --- | --- |
 | `vue-browser` | 其余全部 | 并行主池 |
+| `vue-browser-a11y` | `a11y-light.spec.ts`、`a11y-dark.spec.ts` | 全量无障碍扫描是整包最重的一块，按主题拆成两份、单份约三分钟。单成项目后 CI 可以用 `--project` 把它挑出来独占一片，其余分片排除它；本地整包跑时与主池同组并行 |
 | `vue-browser-touch` | 调用过 `Emulation.setTouchEmulationEnabled` 或 `coarsePointer()` 的文件，配置加载时自动扫出 | Linux 无头 Chromium 上，一张页面只要关过一次触屏仿真，`(pointer)` 与 `(hover)` 就永久变为 `none`，没有 CDP 入口改回来。挂在 `@media (hover: hover)` 下的悬停规则随之失效，同一 worker 里后续文件的悬停断言与像素基线会随机判红。Windows 上不走这条恢复路径，本机复现不出来 |
-| `vue-browser-serial` | `overlay-open-budget.spec.ts` | 量主线程耗时，与整套并行时量到的是别的用例抢走的 CPU，放到最后单独串行 |
+| `vue-browser-serial` | `overlay-open-budget.spec.ts`、`cartesian-budget.spec.ts` | 量主线程耗时，与整套并行时量到的是别的用例抢走的 CPU，放到最后单独串行 |
+
+React 与 Web Components 同样把无障碍扫描单成 `react-browser-a11y`、`wc-browser-a11y`，其余用例在 `react-browser`、`wc-browser`。CI 的 `browser` job 用 `--project=*-a11y*` 与 `--project=!*-a11y*` 两种写法挑选，新增的项目名不带 `-a11y` 就自动落进常规分片。
 
 媒介仿真（print、forced-colors 等）由 `tests/browser/setup.ts` 在每个文件开跑前复位；触屏仿真不能这样复位，复位本身就会让页面失去悬停能力。
 
@@ -138,7 +141,7 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 
 校验模式下基线目录不挂载进容器，容器无法写入。修改基线只能显式使用 `--update`。
 
-比对失败时，实际截图与差异图输出到 `packages/adapters/vue/.vitest-attachments/`（不入库）。CI 上同一批文件作为 `visual-diffs` artifact 输出，可下载逐张查看。
+比对失败时，实际截图与差异图输出到 `packages/adapters/vue/.vitest-attachments/`（不入库）。CI 上同一批文件由失败的那一片作为 `visual-diffs-<分片>` artifact 输出（如 `visual-diffs-vue-2`），可下载逐张查看。
 
 ### 本地运行方式与固定失败项
 
@@ -149,8 +152,8 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 修改皮肤的工作方式：
 
 - 本地 `pnpm visual:baseline` 查看本次改动影响的截图，差异图在 `.vitest-attachments/` 下逐张打开；
-- PR 的判据是 CI 的 `browser` job，本地 `pnpm test:browser` 的固定失败项可以忽略；
-- CI 失败时先下载 `visual-diffs` artifact 查看，确认是有意的视觉改动，再 `pnpm visual:baseline --update` 重新生成基线并提交。
+- PR 的判据是 CI 的 `browser` job（按包与分片铺成矩阵），本地 `pnpm test:browser` 的固定失败项可以忽略；
+- CI 失败时先下载对应分片的 `visual-diffs-<分片>` artifact 查看，确认是有意的视觉改动，再 `pnpm visual:baseline --update` 重新生成基线并提交。
 
 字体族名、安装它的 apt 包、容器镜像与运行命令分散在用例、容器脚本、CI 与本页中，任何一处不一致都只表现为四十张整体判红。`check-visual-baseline-env` 把四处对齐，并核对镜像版本与 `pnpm-workspace.yaml` 中 `playwright` 的版本一致、CI 的 `browser` job 中安装字体的步骤排在运行用例之前。
 
@@ -224,7 +227,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 129 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 130 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |

@@ -1,0 +1,1 @@
+async function d(){const t=document.getElementById("skeleton-loading"),n=document.getElementById("skeleton-loading-toggle"),o=document.getElementById("skeleton-loading-text");n.addEventListener("click",()=>{const e=t.loading===!1;t.loading=e,n.textContent=e?"数据回来了":"重新加载",o.hidden=e})}export{d as default};

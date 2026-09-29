@@ -1,1 +1,0 @@
-import{r as s}from"./index.CVfUds7h.js";import{pf as a,pg as p,ph as m}from"./theme.UYVbUEgX.js";function f(t,r){const o=a(t.machine);s.useEffect(()=>{if(!o)return;let e=p({getNode:()=>r.current,getFormId:()=>t.prop("form"),onReset:()=>{t.getStatus()==="Started"&&t.send({type:m})}});return()=>{e==null||e.dispose(),e=null}},[o,t,r])}export{f as u};

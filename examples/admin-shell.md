@@ -60,21 +60,21 @@ import {
 import { ref } from "vue";
 
 const nav: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
   {
     value: "order",
     label: "订单",
     children: [
-      { value: "order-list", label: "订单列表", href: "#order-list" },
-      { value: "order-refund", label: "退款处理", href: "#order-refund" },
+      { value: "order-list", label: "订单列表", href: "#/order/list" },
+      { value: "order-refund", label: "退款处理", href: "#/order/refund" },
     ],
   },
   {
     value: "user",
     label: "用户",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
 ];
@@ -159,15 +159,15 @@ const lastCommand = ref("（无）");
       <XhBreadcrumbRoot>
         <XhBreadcrumbList>
           <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#dashboard">工作台</XhBreadcrumbLink>
+            <XhBreadcrumbLink href="#/dashboard">工作台</XhBreadcrumbLink>
           </XhBreadcrumbItem>
           <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
           <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#order">订单</XhBreadcrumbLink>
+            <XhBreadcrumbLink href="#/order">订单</XhBreadcrumbLink>
           </XhBreadcrumbItem>
           <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
           <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#order-list" current>订单列表</XhBreadcrumbLink>
+            <XhBreadcrumbLink href="#/order/list" current>订单列表</XhBreadcrumbLink>
           </XhBreadcrumbItem>
         </XhBreadcrumbList>
       </XhBreadcrumbRoot>
@@ -472,15 +472,15 @@ const lastCommand = ref("（无）");
         <nav data-xh-part="root">
           <ol data-xh-part="list">
             <li data-xh-part="item">
-              <a data-xh-part="link" href="#dashboard">工作台</a>
+              <a data-xh-part="link" href="#/dashboard">工作台</a>
             </li>
             <li data-xh-part="separator">/</li>
             <li data-xh-part="item">
-              <a data-xh-part="link" href="#order">订单</a>
+              <a data-xh-part="link" href="#/order">订单</a>
             </li>
             <li data-xh-part="separator">/</li>
             <li data-xh-part="item">
-              <a data-xh-part="link" href="#order-list" current>订单列表</a>
+              <a data-xh-part="link" href="#/order/list" current>订单列表</a>
             </li>
           </ol>
         </nav>
@@ -568,21 +568,21 @@ const lastCommand = ref("（无）");
 
   // 入口树是 href 与层级的事实源，数组只能走 property
   nav.collection = [
-    { value: "dashboard", label: "工作台", href: "#dashboard" },
+    { value: "dashboard", label: "工作台", href: "#/dashboard" },
     {
       value: "order",
       label: "订单",
       children: [
-        { value: "order-list", label: "订单列表", href: "#order-list" },
-        { value: "order-refund", label: "退款处理", href: "#order-refund" },
+        { value: "order-list", label: "订单列表", href: "#/order/list" },
+        { value: "order-refund", label: "退款处理", href: "#/order/refund" },
       ],
     },
     {
       value: "user",
       label: "用户",
       children: [
-        { value: "user-list", label: "用户列表", href: "#user-list" },
-        { value: "user-role", label: "角色权限", href: "#user-role" },
+        { value: "user-list", label: "用户列表", href: "#/user/list" },
+        { value: "user-role", label: "角色权限", href: "#/user/role" },
       ],
     },
   ];

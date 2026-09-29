@@ -1,0 +1,6 @@
+import{c as d}from"./index.HwSYhWVk.js";import{gQ as u,iU as f,gP as k}from"./theme.BUzG0yHg.js";import{d as p,v as w,$ as g,o as h,b as _,w as v,E as l,k as n,G as m}from"./framework.D1FqHTxE.js";const o=`## 增量渲染
+
+每来一批字符只重渲**最后一块**。
+
+前面的块已经冻结，key 不再变化。
+`,B=p({__name:"02-streaming",setup(M){const a=d(),r=m([]),s=m(!0);let e=0,i=0;function c(){e=Math.min(e+3,o.length);const t=e>=o.length;r.value=a.render(o.slice(0,e),{ended:t}),s.value=!t,t||(i=window.setTimeout(c,70))}return w(c),g(()=>{window.clearTimeout(i),a.dispose()}),(t,b)=>(h(),_(n(k),{blocks:r.value,streaming:s.value,announce:"polite",style:{"inline-size":"100%"}},{default:v(()=>[l(n(u)),l(n(f))]),_:1},8,["blocks","streaming"]))}});export{B as default};

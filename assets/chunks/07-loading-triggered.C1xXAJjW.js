@@ -1,0 +1,1 @@
+async function n(){const e=document.getElementById("button-loading-trigger");e.addEventListener("click",async()=>{e.loading=!0,await new Promise(t=>setTimeout(t,1200)),e.loading=!1})}export{n as default};

@@ -88,6 +88,70 @@ onBeforeUnmount(() => motion.cancel());
 </template>
 ```
 
+```html
+<div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+  <div
+    style="
+      display: grid;
+      place-items: center;
+      min-height: 140px;
+      border: 1px dashed var(--vp-c-divider);
+      border-radius: 12px;
+    "
+  >
+    <div
+      id="animations-presets-card"
+      style="
+        padding: 16px 24px;
+        border-radius: 10px;
+        background: var(--vp-c-brand-1);
+        color: #fff;
+        font-weight: 600;
+      "
+    >
+      点下面的名字
+    </div>
+  </div>
+
+  <div>
+    <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">进场</p>
+    <div id="animations-presets-enter" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+  </div>
+
+  <div>
+    <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">注意</p>
+    <div id="animations-presets-attention" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+  </div>
+</div>
+
+<script type="module">
+  import { BUILTIN_MOTION_NAMES, createMotionPlayer } from "@xihan-ui/animations";
+
+  const motion = createMotionPlayer();
+  const card = document.getElementById("animations-presets-card");
+
+  // 预设名单在包里，按钮照它铺，不另抄一份
+  function presetButton(name) {
+    const button = document.createElement("xh-button");
+    button.setAttribute("variant", "outline");
+    button.setAttribute("size", "sm");
+    button.innerHTML = `<button data-xh-part="root">${name}</button>`;
+    button.addEventListener("click", () => {
+      card.textContent = name;
+      void motion.play(card, name);
+    });
+    return button;
+  }
+
+  document
+    .getElementById("animations-presets-enter")
+    .append(...BUILTIN_MOTION_NAMES.slice(0, 11).map(presetButton));
+  document
+    .getElementById("animations-presets-attention")
+    .append(...BUILTIN_MOTION_NAMES.slice(11).map(presetButton));
+</script>
+```
+
 ## 动画是配方，不是类名
 
 一段动画是一份可 JSON 序列化的配方（`MotionSpec`）：若干视觉帧加一组时序参数。
@@ -255,6 +319,90 @@ onBeforeUnmount(() => motion.cancel());
     </div>
   </div>
 </template>
+```
+
+```html
+<div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+    <xh-radio-group id="animations-stagger-from" default-value="first" name="stagger-from">
+      <div data-xh-part="root">
+        <span data-xh-part="label">起点</span>
+        <div data-xh-part="item" value="first">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">从头</span>
+        </div>
+        <div data-xh-part="item" value="last">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">从尾</span>
+        </div>
+        <div data-xh-part="item" value="center">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">从中间</span>
+        </div>
+      </div>
+    </xh-radio-group>
+    <label style="display: flex; align-items: center; gap: 8px">
+      <span id="animations-stagger-gap-text">间隔 60ms</span>
+      <input id="animations-stagger-gap" type="range" min="0" max="200" step="10" value="60" />
+    </label>
+  </div>
+
+  <div style="display: flex; gap: 8px">
+    <xh-button id="animations-stagger-play-list" size="sm">
+      <button data-xh-part="root">播列表</button>
+    </xh-button>
+    <xh-button id="animations-stagger-play-title" size="sm" variant="outline">
+      <button data-xh-part="root">播标题</button>
+    </xh-button>
+  </div>
+
+  <h3 id="animations-stagger-title" style="margin: 0; font-size: 24px">曦寒 UI 动画层</h3>
+
+  <div id="animations-stagger-list" style="display: flex; flex-wrap: wrap; gap: 8px">
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">1</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">2</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">3</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">4</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">5</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">6</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">7</div>
+    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">8</div>
+  </div>
+</div>
+
+<script type="module">
+  import { createMotionPlayer, splitText } from "@xihan-ui/animations";
+
+  const motion = createMotionPlayer();
+  const gap = document.getElementById("animations-stagger-gap");
+  const list = document.getElementById("animations-stagger-list");
+  const title = document.getElementById("animations-stagger-title");
+
+  // 起点跟着单选组走：非受控，记下最近一次选中的值
+  let from = "first";
+  document.getElementById("animations-stagger-from").addEventListener("value-change", (event) => {
+    from = event.detail.value;
+  });
+  gap.addEventListener("input", () => {
+    document.getElementById("animations-stagger-gap-text").textContent = `间隔 ${gap.value}ms`;
+  });
+
+  document.getElementById("animations-stagger-play-list").addEventListener("click", () => {
+    void motion.playAll([...list.children], "rise", {
+      stagger: Number(gap.value),
+      from,
+    });
+  });
+
+  document.getElementById("animations-stagger-play-title").addEventListener("click", async () => {
+    const { parts, restore } = splitText(title);
+    await motion.playAll(parts, "fade-up", { stagger: 30 });
+    restore();
+  });
+</script>
 ```
 
 ```ts

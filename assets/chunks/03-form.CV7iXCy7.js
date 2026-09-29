@@ -1,0 +1,1 @@
+async function e(){document.getElementById("xh-signature-form").addEventListener("submit",t=>t.preventDefault()),document.getElementById("xh-signature-form-pad").translations={statusEmpty:"尚未签名",statusSigned:"已签名"}}export{e as default};

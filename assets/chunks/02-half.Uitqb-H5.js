@@ -1,0 +1,1 @@
+async function l(){const t=document.getElementById("rating-half"),n=document.getElementById("rating-half-score"),a=document.getElementById("rating-half-preview");t.addEventListener("value-change",e=>{t.value=e.detail.value,n.textContent=e.detail.value}),t.addEventListener("hover-change",e=>{a.textContent=e.detail.value??"（无）"})}export{l as default};

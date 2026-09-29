@@ -1,0 +1,1 @@
+async function r(){const t=document.getElementById("switch-form"),n=document.getElementById("switch-form-result");t.addEventListener("submit",o=>{o.preventDefault();const e=[...new FormData(t).entries()].map(([s,m])=>`${s}=${m}`);n.textContent=`表单收到：${e.length?e.join("  "):"（一个字段都没提交）"}`})}export{r as default};

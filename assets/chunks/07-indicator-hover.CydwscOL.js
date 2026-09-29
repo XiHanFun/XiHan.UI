@@ -1,0 +1,1 @@
+async function n(){const t=document.getElementById("carousel-hover"),o=document.getElementById("carousel-hover-readout");for(const e of t.querySelectorAll('[data-xh-part="indicator"]'))e.addEventListener("mouseenter",()=>e.click());t.addEventListener("page-change",e=>{o.textContent=`鼠标扫过下面的圆点即可换页，当前第 ${e.detail.page+1} / 4 页`})}export{n as default};

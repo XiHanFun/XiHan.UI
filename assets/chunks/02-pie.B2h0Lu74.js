@@ -1,0 +1,1 @@
+async function n(){document.getElementById("pie-chart-pie").data=[{channel:"搜索",visits:4200},{channel:"直接访问",visits:2600},{channel:"社交",visits:1800},{channel:"邮件",visits:900},{channel:"广告",visits:500}]}export{n as default};

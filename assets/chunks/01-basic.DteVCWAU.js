@@ -1,0 +1,1 @@
+async function t(){const s=document.getElementById("funnel-chart-basic"),e=[{stage:"浏览商品",users:12800},{stage:"加入购物车",users:5200},{stage:"提交订单",users:2300},{stage:"完成支付",users:1850},{stage:"再次购买",users:620}];s.data=e}export{t as default};

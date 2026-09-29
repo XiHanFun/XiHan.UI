@@ -1,0 +1,1 @@
+async function r(){const t=document.getElementById("steps-progress"),a=[...t.querySelectorAll('[data-xh-part="indicator"]')];t.addEventListener("value-change",n=>{a.forEach((o,e)=>{o.textContent=n.detail.value>e?"":String(e+1)})})}export{r as default};

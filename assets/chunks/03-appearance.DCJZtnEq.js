@@ -1,0 +1,1 @@
+async function t(){const n=document.getElementById("loading-bar-appearance"),e=document.getElementById("loading-bar-appearance-actions");for(const a of e.querySelectorAll("[data-loading]"))a.addEventListener("click",()=>{n.loading=a.dataset.loading==="on"})}export{t as default};

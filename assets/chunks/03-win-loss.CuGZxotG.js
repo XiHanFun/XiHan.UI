@@ -1,1 +1,0 @@
-import{lR as e}from"./theme.UYVbUEgX.js";import{d as n,o,b as r,k as s}from"./framework.D1FqHTxE.js";const _=n({__name:"03-win-loss",setup(t){const a=[120,-40,85,60,-15,-80,0,45,30,90,-25,70,55,-60,20,110];return(l,p)=>(o(),r(s(e),{data:a,variant:"win-loss","aria-label":"近 16 个交易日盈亏"}))}});export{_ as default};

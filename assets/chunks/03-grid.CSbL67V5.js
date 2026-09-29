@@ -1,0 +1,1 @@
+async function d(){const t=document.getElementById("sortable-grid"),e=t.querySelector('[data-xh-part="root"]');t.addEventListener("sort",r=>{t.ids=r.detail.ids;for(const o of r.detail.ids)e.insertBefore(e.querySelector(`[data-xh-part="item"][item-id="${o}"]`),e.querySelector('[data-xh-part="drop-indicator"]'))})}export{d as default};

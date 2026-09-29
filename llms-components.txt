@@ -12178,7 +12178,7 @@ import {
   <XhCardRoot interactive style="inline-size: 360px; max-inline-size: 100%">
     <XhCardHeader>
       <XhCardTitle>
-        <XhCardTrigger href="#card-interactive">季度报告</XhCardTrigger>
+        <XhCardTrigger href="#/reports/2026-q3">季度报告</XhCardTrigger>
       </XhCardTitle>
       <XhCardDescription>2026 年第三季度 · 财务部</XhCardDescription>
     </XhCardHeader>
@@ -12197,7 +12197,7 @@ import {
   <div data-xh-part="root" style="inline-size: 360px; max-inline-size: 100%">
     <div data-xh-part="header">
       <div data-xh-part="title">
-        <a data-xh-part="trigger" href="#card-interactive">季度报告</a>
+        <a data-xh-part="trigger" href="#/reports/2026-q3">季度报告</a>
       </div>
       <div data-xh-part="description">2026 年第三季度 · 财务部</div>
     </div>
@@ -16135,6 +16135,45 @@ const annotations = [{ kind: "point", series: "v", at: "max" }] as const;
 </template>
 ```
 
+```html
+<div style="width: 100%">
+  <xh-cartesian-chart id="cartesian-chart-columns" zoom="x">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">振动采集</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="zoom-slider"></div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-cartesian-chart>
+</div>
+
+<script type="module">
+  import { createColumnStore } from "@xihan-ui/web-components";
+
+  // 振动传感器 1 kHz 采样一千秒：一百万个点，由序号算出，每次打开都长一样；每隔十万个点左右有一次冲击
+  const count = 1_000_000;
+  const t = new Float64Array(count);
+  const v = new Float64Array(count);
+  const start = Date.UTC(2026, 8, 1, 8);
+  for (let i = 0; i < count; i++) {
+    t[i] = start + i;
+    v[i] = Math.sin(i / 20000) * 2 + Math.sin(i / 7) * 0.4 + (i % 99991 === 50000 ? 6 : 0);
+  }
+
+  const chart = document.getElementById("cartesian-chart-columns");
+  chart.data = createColumnStore({ fields: ["t", "v"], columns: { t, v } });
+  // 列式数据总是画在画布上；放大后数值轴只按窗口里露出的点取
+  chart.series = [{ mark: "line", x: "t", y: "v", name: "振幅" }];
+  chart.xAxis = { scale: "utc" };
+  chart.yAxis = { title: "振幅（mm/s）", fit: "window" };
+  chart.annotations = [{ kind: "point", series: "v", at: "max" }];
+</script>
+```
+
 ### 实时行情流
 
 列式数据仓 append 新成交，同一帧里的多次推送合成一次重画；窗口跟着最新价走，拖离末端即暂停，受控的 follow 一键回到最新
@@ -16193,6 +16232,74 @@ const annotations = [{ kind: "point", series: "price", at: "last" }] as const;
     </XhCartesianChartRoot>
   </div>
 </template>
+```
+
+```html
+<div style="display: grid; gap: var(--xh-space-3); justify-items: start; width: 100%">
+  <xh-button id="cartesian-chart-trades-latest" variant="subtle" disabled>
+    <button data-xh-part="root">回到最新</button>
+  </xh-button>
+  <xh-cartesian-chart id="cartesian-chart-trades" zoom="x" follow style="width: 100%">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">BTC/USDT 逐笔成交</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="zoom-slider"></div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-cartesian-chart>
+</div>
+
+<script type="module">
+  import { createColumnStore } from "@xihan-ui/web-components";
+
+  // 最多留两万笔成交，更早的从头部挤掉；价格是确定的随机游走，每次打开都长一样
+  const trades = createColumnStore({ fields: ["t", "price"], capacity: 20000 });
+  let seed = 7;
+  let price = 62000;
+  let time = Date.UTC(2026, 8, 1);
+  function trade() {
+    seed = (seed * 16807) % 2147483647;
+    price += (seed / 2147483647 - 0.5) * 40;
+    time += 500;
+    trades.append({ t: time, price });
+  }
+  for (let i = 0; i < 5000; i++)
+    trade();
+
+  const chart = document.getElementById("cartesian-chart-trades");
+  const latest = document.getElementById("cartesian-chart-trades-latest");
+  // 初始窗口是最近十分钟
+  chart.defaultWindow = { x: [new Date(time - 10 * 60_000), new Date(time)], y: null };
+  chart.data = trades;
+  chart.series = [{ mark: "line", x: "t", y: "price", name: "BTC/USDT" }];
+  chart.xAxis = { scale: "time" };
+  chart.yAxis = { fit: "window" };
+  chart.annotations = [{ kind: "point", series: "price", at: "last" }];
+
+  // 拖动、滚轮或键盘让窗口离开末端时 follow 变 false；写回元素才生效，按钮再把它写回 true
+  chart.addEventListener("follow-change", (event) => {
+    chart.follow = event.detail.follow;
+    latest.disabled = event.detail.follow;
+  });
+  latest.addEventListener("click", () => {
+    chart.follow = true;
+    latest.disabled = true;
+  });
+
+  // 每 100 ms 到五笔：图表按帧合并，不是每笔重画一次；图表被移出文档就收手
+  const timer = window.setInterval(() => {
+    if (!chart.isConnected) {
+      window.clearInterval(timer);
+      return;
+    }
+    for (let i = 0; i < 5; i++)
+      trade();
+  }, 100);
+</script>
 ```
 
 ### 股票 K 线 + 成交量
@@ -18033,14 +18140,14 @@ const filter: CascaderFilter = (candidate, query) =>
 - `expandTrigger` 支持点击或悬停展开。
 - `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。
 - 多选的已选路径在触发器里排成标签，与[选择器](./select)同一套呈现：文字是整条路径（按 `separator` 连缀），超出 `maxTagCount`（默认 3）合并为 `+N`；标签身份写路径的比较键（`api.tags` 里的 `key`），触发器外可放带删除钮的标签，value-text 仍留在 DOM 里给触发器的可及名。
-- `searchable` 按完整路径筛选选项；`filter` 接管匹配规则，拿到的候选是一条可落值的完整路径（`path` 与逐段的 `labels`），检索词已 trim，空串不调用。搜索框与命令面板、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，占位文字与其它字段同一支前景。
+- `searchable` 按完整路径筛选选项；`filter` 接管匹配规则，拿到的候选是一条可落值的完整路径（`path` 与逐段的 `labels`），检索词已 trim，空串不调用。搜索框与命令面板、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，聚焦不画环（插入符就是焦点指示），占位文字与其它字段同一支前景。
 - 选项可逐条声明语气，不向下传导；搜索结果取整条路径末段的语气。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 选项行尾留一格给作者（计数、徽标）。
 - 懒加载：节点写 `hasChildren: true` 不给 `children` 即是懒分支，照样算分支、右边开一列；展开路径走到它时由 `loadChildren({ node, path, signal })` 取回直接子项，结果留在组件里并进 `api.collection` 与 `levels`，宿主不必重建 collection。那一列在途时报 `aria-busy` 并露出 `branch-loading`，失败时露出 `branch-error` 与 `branch-retry-trigger`（不占 Tab 位，父条目上按 Enter / Space 同样重试）；取回空数组即成了叶子，可以落值。三块由适配器在列末自动铺出，文案走 `translations.loading` / `branchError` / `retry`。展开路径离开、浮层收起、重试、节点换代与卸载都会中止在途请求，迟到的结果不写回。`onBranchLoadStart` / `onBranchLoad` / `onBranchLoadError`（三端事件 `branch-load-start` / `branch-load` / `branch-load-error`）公开有效请求的生命周期，`api.branchLoadState(value)` 读取状态。
 - 支持空状态、整浮层加载状态与原生表单提交。
 - 选中项使用末端标记，半选项使用横线。
-- 浮层锚在字段盒上：一级列与字段盒等宽，长选项在条目里截断；后续列按条目的自然宽度，面板随列数伸展，宽过可用区时收成可用宽度并在面内横滚。
+- 浮层锚在字段盒上、与盒起始缘对齐，宽度按内容定：每一列按条目的自然宽度，不随字段盒拉伸，长选项撑到条目上限为止、余下的在条目里截断；搜索框不参与定宽，铺满列撑出的宽度；面板随列数伸展，宽过可用区时收成可用宽度并在面内横滚。
 - 面板含多列，取不透景的实体浮起面，与时间选择同一档。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
@@ -18510,7 +18617,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | `--xh-cascader-content-border` | `content` | `border` | `default` | `--xh-border-default` | cascader 的 content 部件 border 覆盖槽。 |
 | `--xh-cascader-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | cascader 的 content 部件 color 覆盖槽。 |
 | `--xh-cascader-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-_cascader-available-w` | cascader 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-cascader-content-min-w` | `column`<br>`content` | `inline-size`<br>`min-inline-size` | `default`<br>`level=0` | `--xh-overlay-menu-min-w` | cascader 的 column、content 部件 inline-size、min-inline-size 覆盖槽。 |
+| `--xh-cascader-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | cascader 的 content 部件 min-inline-size 覆盖槽。 |
 | `--xh-cascader-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | cascader 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-content-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-floating` | cascader 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-cascader-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | cascader 的 control 部件 background-color 覆盖槽。 |
@@ -18551,7 +18658,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | `--xh-cascader-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | cascader 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-cascader-input-font-size` | `input` | `font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 input 部件 font-size 覆盖槽。 |
 | `--xh-cascader-input-h` | `input` | `block-size` | `default` | `--xh-_cascader-h` | cascader 的 input 部件 block-size 覆盖槽。 |
-| `--xh-cascader-input-px` | `input` | `padding-inline` | `default` | `--xh-_cascader-px` | cascader 的 input 部件 padding-inline 覆盖槽。 |
+| `--xh-cascader-input-px` | `input` | `margin-inline-end`<br>`padding-inline` | `default` | `--xh-_cascader-px` | cascader 的 input 部件 margin-inline-end、padding-inline 覆盖槽。 |
 | `--xh-cascader-item-active-font-weight` | `item` | `font-weight` | `in-path` | `--xh-font-weight-regular` | cascader 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-cascader-item-bg-active` | `item` | `background-color` | `in-path` | `--xh-bg-subtle` | cascader 的 item 部件 background-color 覆盖槽。 |
 | `--xh-cascader-item-bg-hover` | `item`<br>`search-item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:focus-visible, [data-highlighted])`<br>`is(:hover, [data-highlighted], [data-in-path])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`not([data-disabled])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | cascader 的 item、search-item 部件 background-color 覆盖槽。 |
@@ -28715,7 +28822,7 @@ function onSelect(details: { label: string }) {
 - 命令可写快捷键提示，贴行尾、与说明同档同色；纯装饰，不进检索串。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 面板默认是模态浮层：捕获焦点、锁定滚动、背景失活，Escape 与点击遮罩收起，收起后焦点归还触发按钮。`modal=false` 时不渲染遮罩、不拦截页面指针，也不启用这些模态约束；展开期间切换会立即同步。
-- 检索框是面板内嵌的搜索框，与级联选择、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，占位文字与其它字段同一支前景。
+- 检索框是面板内嵌的搜索框，与级联选择、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，聚焦不画环（插入符就是焦点指示），占位文字与其它字段同一支前景。
 - 焦点全程在检索框，活动候选经 `aria-activedescendant` 报告给读屏；活动候选同步 `aria-selected=true`，其余候选显式为 `false`，输入后活动候选自动回到首条。
 - 这里的 `aria-selected` 遵循 [WAI-ARIA 组合框规范](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)中“选中随焦点移动”的模式，只描述当前活动建议；命令执行后不保留持久选中状态，视觉上也不绘制对号或选中底。
 - 两种非条目相位各有部件：空（`empty`）与在途（`loading`）。取数期间显示在途占位，空态让位，两者不同时出现。
@@ -37093,6 +37200,40 @@ async function remove(): Promise<void> {
     <span>上次答复：{{ lastAnswer }}</span>
   </div>
 </template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+  <xh-button id="dialog-service-remove" variant="solid" tone="danger">
+    <button data-xh-part="root">删除工作区</button>
+  </xh-button>
+  <xh-button id="dialog-service-error" variant="outline">
+    <button data-xh-part="root">error 告知框</button>
+  </xh-button>
+  <span id="dialog-service-answer">上次答复：（还没问过）</span>
+</div>
+
+<script type="module">
+  import { createDialogService } from "@xihan-ui/web-components/services";
+
+  // 服务自带宿主，建一次，句柄在模块作用域随处可调
+  const modal = createDialogService();
+  const answer = document.getElementById("dialog-service-answer");
+
+  document.getElementById("dialog-service-remove").addEventListener("click", async () => {
+    const ok = await modal.confirm({
+      title: "删除工作区",
+      content: "删除后 30 天内还能恢复。",
+      tone: "danger",
+      okText: "删除",
+      onOk: () => new Promise(resolve => setTimeout(resolve, 900)),
+    });
+    answer.textContent = `上次答复：${ok ? "已删除" : "取消了"}`;
+  });
+  document.getElementById("dialog-service-error").addEventListener("click", () => {
+    void modal.error({ title: "同步失败", content: "稍后重试。" });
+  });
+</script>
 ```
 
 ## 设计指引
@@ -47638,7 +47779,7 @@ const rules: FormRules = {
       </xh-field>
     </div>
 
-    <button data-xh-part="submit-trigger" id="form-async-submit">提交</button>
+    <button data-xh-part="submit-trigger">提交</button>
   </form>
 </xh-form>
 
@@ -47648,7 +47789,7 @@ const rules: FormRules = {
   // 部件节点上的 id 由组件自己派生，别写自己的：查它们一律按角色名
   const hint = host.querySelector('[data-xh-part="description"]');
   const error = host.querySelector('[data-xh-part="error-text"]');
-  const submit = document.getElementById("form-async-submit");
+  const submit = host.querySelector('[data-xh-part="submit-trigger"]');
 
   const TAKEN = ["admin", "root", "xihan"];
   const HINT = "提交时先问一次服务端，占用的名字会被挡下";
@@ -72910,6 +73051,340 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 </template>
 ```
 
+```html
+<div style="display: grid; gap: 12px; inline-size: 100%">
+  <xh-message-feed id="message-feed-actions">
+    <div data-xh-part="root" style="block-size: 360px">
+      <div data-xh-part="viewport">
+        <div data-xh-part="list" id="message-feed-actions-list"></div>
+        <span data-xh-part="pending-indicator"></span>
+      </div>
+    </div>
+  </xh-message-feed>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 8px">
+    <xh-button id="message-feed-actions-ask">
+      <button data-xh-part="root">追问一句</button>
+    </xh-button>
+    <xh-button id="message-feed-actions-stop" variant="outline">
+      <button data-xh-part="root">停止</button>
+    </xh-button>
+    <xh-button id="message-feed-actions-fail" variant="ghost">
+      <button data-xh-part="root">让下一轮失败</button>
+    </xh-button>
+  </div>
+</div>
+
+<script type="module">
+  import { asBlockKey, createThreadStore } from "@xihan-ui/chat-stream";
+  import {
+    CheckIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    CopyIcon,
+    PencilIcon,
+    PlayIcon,
+    RefreshIcon,
+    RotateRightIcon,
+  } from "@xihan-ui/icons";
+
+  function textOf(message) {
+    return message.parts.map(part => (part.type === "text" ? part.text : "")).join("");
+  }
+  function errorOf(message) {
+    return message.parts.map(part => (part.type === "error" ? part.errorText : "")).join("");
+  }
+
+  // 演示用的传输：按提问拼一段回复逐字吐出。接真实后端时换成 createHttpSseTransport，
+  // 请求里的 trigger 与 messageId 告诉服务端这一轮是新提问、重新生成、重试、编辑还是续写
+  const drafts = [
+    q => `关于「${q}」：先确认范围，再列出依赖，最后逐项核对，每一步做完都留一条记录。`,
+    q => `换个角度看「${q}」：把不确定的部分先问清楚，其余照清单推进，卡住就回到第一步。`,
+    q => `简短版：围绕「${q}」，先做最小可行的那一步，再按反馈补齐。`,
+  ];
+  // 每条回复本该写完的全文：续写从截断处接着吐
+  const fullText = new Map([["a1", "发布前冻结改动、跑完回归，发布后盯住告警。"]]);
+  let replies = 0;
+  let failNext = false;
+
+  function wait(ms, signal) {
+    return new Promise((resolve) => {
+      const timer = window.setTimeout(resolve, ms);
+      // 取消时不抛：传输按约定自己收手，结束方式由会话容器记为 aborted
+      signal.addEventListener("abort", () => {
+        window.clearTimeout(timer);
+        resolve();
+      }, { once: true });
+    });
+  }
+
+  const transport = {
+    async* stream(request, signal) {
+      await wait(400, signal);
+      if (signal.aborted)
+        return;
+      if (failNext) {
+        failNext = false;
+        yield { kind: "error", errorText: "网络中断，这一轮没有完成。", receivedTime: Date.now() };
+        return;
+      }
+      const last = request.messages[request.messages.length - 1];
+      let text;
+      if (request.trigger === "continue") {
+        text = (fullText.get(last.id) ?? "").slice(textOf(last).length);
+      }
+      else {
+        replies += 1;
+        const id = `reply-${replies}`;
+        text = drafts[(replies - 1) % drafts.length](textOf(last));
+        fullText.set(id, text);
+        yield { kind: "message-start", messageId: id, role: "assistant", receivedTime: Date.now() };
+      }
+      const block = asBlockKey("text");
+      yield { kind: "text-start", block, receivedTime: Date.now() };
+      for (let i = 0; i < text.length; i += 2) {
+        await wait(80, signal);
+        if (signal.aborted)
+          return;
+        yield { kind: "text-delta", block, delta: text.slice(i, i + 2), receivedTime: Date.now() };
+      }
+      yield { kind: "text-end", block, receivedTime: Date.now() };
+      yield { kind: "finish", receivedTime: Date.now() };
+    },
+  };
+
+  const store = createThreadStore({
+    transport,
+    messages: [
+      { id: "q1", role: "user", parts: [{ type: "text", text: "怎么准备一次发布？" }] },
+      { id: "a1", role: "assistant", status: "complete", parts: [{ type: "text", text: "发布前冻结改动、跑完回归，发布后盯住告警。" }] },
+    ],
+  });
+
+  const feed = document.getElementById("message-feed-actions");
+  const list = document.getElementById("message-feed-actions-list");
+  const ask = document.getElementById("message-feed-actions-ask");
+  const stop = document.getElementById("message-feed-actions-stop");
+  const fail = document.getElementById("message-feed-actions-fail");
+
+  // 正在改写的那条提问：改写的那条留在原位，新写法成为同一位置上的另一个分支
+  let editing = null;
+
+  // 图标记录是对象，只能经 icon 属性交给元素，图元铺进 glyph 空壳
+  function icon(record) {
+    const el = document.createElement("xh-icon");
+    el.innerHTML = '<svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>';
+    el.icon = record;
+    return el;
+  }
+
+  // 工具条条目：禁用写 aria-disabled，仍可聚焦、方向键照常走到，点击由这里拦下
+  function item(value, content, onClick, disabled = false) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.setAttribute("data-xh-part", "item");
+    button.setAttribute("value", value);
+    if (disabled)
+      button.setAttribute("aria-disabled", "true");
+    button.append(...content);
+    button.addEventListener("click", () => {
+      if (button.getAttribute("aria-disabled") !== "true")
+        onClick();
+    });
+    return button;
+  }
+
+  // 分支切换钮只有图标，名字写在 aria-label 上；左右箭头随书写方向翻转
+  function branchItem(value, record, name, onClick, disabled) {
+    const glyph = icon(record);
+    glyph.firstElementChild.style.scale = "var(--xh-direction-sign) 1";
+    const button = item(value, [glyph], onClick, disabled);
+    button.setAttribute("aria-label", name);
+    return button;
+  }
+
+  // 复制交给剪贴板元素，它自带复制钮与「已复制」回落。
+  // 两个宿主各接各的角色节点：复制钮归剪贴板管，排在工具条前面，不进工具条的方向键序列
+  function clipboard(text) {
+    const el = document.createElement("xh-clipboard");
+    el.setAttribute("value", text);
+    el.setAttribute("size", "sm");
+    el.setAttribute("variant", "ghost");
+    el.innerHTML = '<div data-xh-part="root"><button data-xh-part="copy-trigger">'
+      + '<span data-xh-part="indicator"></span><span data-xh-part="indicator" copied></span>'
+      + "</button></div>";
+    const [idle, copied] = el.querySelectorAll('[data-xh-part="indicator"]');
+    idle.append(icon(CopyIcon), " 复制");
+    copied.append(icon(CheckIcon), " 已复制");
+    return el;
+  }
+
+  function editor(message) {
+    const form = document.createElement("div");
+    form.style.cssText = "display: grid; gap: 8px";
+    form.innerHTML = `<xh-text-field>
+      <div data-xh-part="root">
+        <label data-xh-part="label">改写这条提问</label>
+        <div data-xh-part="control"><input data-xh-part="input" /></div>
+      </div>
+    </xh-text-field>
+    <div style="display: flex; gap: 8px">
+      <xh-button size="sm"><button data-xh-part="root">发送</button></xh-button>
+      <xh-button size="sm" variant="ghost"><button data-xh-part="root">取消</button></xh-button>
+    </div>`;
+    let draft = textOf(message);
+    const field = form.querySelector("xh-text-field");
+    field.setAttribute("default-value", draft);
+    field.addEventListener("value-change", (event) => {
+      draft = event.detail.value;
+    });
+    const [send, cancel] = form.querySelectorAll("xh-button");
+    send.addEventListener("click", () => {
+      editing = null;
+      if (draft.trim() !== "")
+        store.edit(message.id, draft.trim());
+      render();
+    });
+    cancel.addEventListener("click", () => {
+      editing = null;
+      render();
+    });
+    return form;
+  }
+
+  function actions(message, { running, last, branch }) {
+    const items = [];
+    if (message.role === "assistant" && message.status !== "error")
+      items.push(item("regenerate", [icon(RefreshIcon), " 重新生成"], () => store.regenerate(message.id), running));
+    if (message.role === "user") {
+      items.push(item("edit", [icon(PencilIcon), " 编辑"], () => {
+        editing = message.id;
+        render();
+      }, running));
+    }
+    if (message.status === "error" && last)
+      items.push(item("retry", [icon(RotateRightIcon), " 重试"], () => store.retry()));
+    if (message.status === "aborted" && last)
+      items.push(item("continue", [icon(PlayIcon), " 续写"], () => store.continue(message.id)));
+    // 分支切换：同一位置上有几条候选，就能在它们之间来回换
+    if ((branch?.count ?? 1) > 1) {
+      const position = document.createElement("span");
+      position.textContent = `${branch.index + 1} / ${branch.count}`;
+      items.push(
+        branchItem("previous", ChevronLeftIcon, "上一个版本", () => store.selectBranch(message.id, branch.index - 1), running || branch.index === 0),
+        position,
+        branchItem("next", ChevronRightIcon, "下一个版本", () => store.selectBranch(message.id, branch.index + 1), running || branch.index === branch.count - 1),
+      );
+    }
+
+    const row = document.createElement("div");
+    row.style.cssText = "display: flex; flex-wrap: wrap; align-items: center; gap: 4px";
+    if (message.role === "assistant" && textOf(message) !== "")
+      row.append(clipboard(textOf(message)));
+    if (items.length > 0) {
+      const toolbar = document.createElement("xh-toolbar");
+      toolbar.setAttribute("size", "sm");
+      const root = document.createElement("div");
+      root.setAttribute("data-xh-part", "root");
+      root.setAttribute("aria-label", message.role === "user" ? "提问操作" : "回复操作");
+      root.append(...items);
+      toolbar.append(root);
+      row.append(toolbar);
+    }
+    return row;
+  }
+
+  function paint(node, message, state) {
+    node.setAttribute("item-role", message.role === "user" ? "user" : "assistant");
+    node.toggleAttribute("item-streaming", message.status === "streaming");
+    const label = document.createElement("span");
+    label.setAttribute("data-xh-part", "item-label");
+    label.textContent = message.role === "user" ? "我" : "助手";
+    if (editing === message.id) {
+      node.replaceChildren(label, editor(message));
+      return;
+    }
+    const content = document.createElement("div");
+    content.textContent = textOf(message);
+    const parts = [label, content];
+    if (message.status === "error" || message.status === "aborted") {
+      const note = document.createElement("div");
+      note.textContent = message.status === "error" ? errorOf(message) : "（已停止）";
+      parts.push(note);
+    }
+    // 动作条只在这条写完之后出现：生成中的那条没有可操作的内容
+    if (message.status !== "streaming")
+      parts.push(actions(message, state));
+    node.replaceChildren(...parts);
+  }
+
+  // 条目按消息 id 留着，只重画快照里变了的那几条：流式输出时别的条目连同焦点原地不动
+  const views = new Map();
+
+  function render() {
+    // 示例被移出文档就收手：退订并释放会话容器
+    if (!feed.isConnected) {
+      unsubscribe();
+      store.dispose();
+      return;
+    }
+    const snapshot = store.getSnapshot();
+    const running = snapshot.status === "submitted" || snapshot.status === "streaming";
+    feed.setAttribute("count", String(snapshot.messages.length));
+    feed.setAttribute("status", snapshot.status);
+
+    const nodes = snapshot.messages.map((message, index) => {
+      const state = { running, last: index === snapshot.messages.length - 1, branch: snapshot.branches[message.id] };
+      const key = JSON.stringify([message.status, textOf(message), errorOf(message), state, editing === message.id]);
+      let view = views.get(message.id);
+      if (!view) {
+        view = { node: document.createElement("article"), key: "" };
+        view.node.setAttribute("data-xh-part", "item");
+        view.node.setAttribute("item-id", message.id);
+        views.set(message.id, view);
+      }
+      view.node.setAttribute("item-index", String(index));
+      if (view.key !== key) {
+        view.key = key;
+        paint(view.node, message, state);
+      }
+      return view.node;
+    });
+    // 按快照的顺序落位：已在位的节点不挪，新条目插进去，离开当前路径的摘掉
+    nodes.forEach((node, index) => {
+      if (list.children[index] !== node)
+        list.insertBefore(node, list.children[index] ?? null);
+    });
+    while (list.children.length > nodes.length)
+      list.lastElementChild.remove();
+    for (const [id, view] of views) {
+      if (!nodes.includes(view.node))
+        views.delete(id);
+    }
+
+    ask.disabled = running;
+    stop.disabled = !running;
+    fail.disabled = failNext;
+    fail.querySelector("button").textContent = failNext ? "下一轮会失败" : "让下一轮失败";
+  }
+
+  const unsubscribe = store.subscribe(render);
+  render();
+
+  const followUps = ["发布前要冻结哪些改动？", "回滚预案怎么写？"];
+  let asked = 0;
+  ask.addEventListener("click", () => {
+    store.submit(followUps[asked % followUps.length]);
+    asked += 1;
+  });
+  stop.addEventListener("click", () => store.stop());
+  fail.addEventListener("click", () => {
+    failNext = true;
+    render();
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -75154,6 +75629,38 @@ function save(): void {
     <XhButton variant="outline" @click="use().danger('同步失败')">danger</XhButton>
   </div>
 </template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+  <xh-button id="notification-service-save" variant="solid">
+    <button data-xh-part="root">保存（loading 收尾成 success）</button>
+  </xh-button>
+  <xh-button id="notification-service-success" variant="outline">
+    <button data-xh-part="root">success</button>
+  </xh-button>
+  <xh-button id="notification-service-warning" variant="outline">
+    <button data-xh-part="root">warning</button>
+  </xh-button>
+  <xh-button id="notification-service-danger" variant="outline">
+    <button data-xh-part="root">danger</button>
+  </xh-button>
+</div>
+
+<script type="module">
+  import { createNotificationService } from "@xihan-ui/web-components/services";
+
+  // 服务自带宿主，建一次，句柄在模块作用域随处可调
+  const toast = createNotificationService({ preset: "toast" });
+
+  document.getElementById("notification-service-save").addEventListener("click", () => {
+    const id = toast.loading("保存中");
+    setTimeout(() => toast.update(id, { loading: false, tone: "success", title: "已保存" }), 900);
+  });
+  document.getElementById("notification-service-success").addEventListener("click", () => toast.success("已发布"));
+  document.getElementById("notification-service-warning").addEventListener("click", () => toast.warning("配额即将用尽"));
+  document.getElementById("notification-service-danger").addEventListener("click", () => toast.danger("同步失败"));
+</script>
 ```
 
 ### 计时与暂停
@@ -97214,21 +97721,21 @@ import {
 } from "@xihan-ui/vue";
 
 const collection: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
   {
     value: "user",
     label: "用户管理",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
   {
     value: "order",
     label: "订单管理",
     children: [
-      { value: "order-list", label: "订单列表", href: "#order-list" },
-      { value: "order-refund", label: "退款处理", href: "#order-refund" },
+      { value: "order-list", label: "订单列表", href: "#/order/list" },
+      { value: "order-refund", label: "退款处理", href: "#/order/refund" },
     ],
   },
 ];
@@ -97322,21 +97829,21 @@ const collection: SideNavNode[] = [
   const nav = document.getElementById("side-nav-basic");
 
   nav.collection = [
-    { value: "dashboard", label: "工作台", href: "#dashboard" },
+    { value: "dashboard", label: "工作台", href: "#/dashboard" },
     {
       value: "user",
       label: "用户管理",
       children: [
-        { value: "user-list", label: "用户列表", href: "#user-list" },
-        { value: "user-role", label: "角色权限", href: "#user-role" },
+        { value: "user-list", label: "用户列表", href: "#/user/list" },
+        { value: "user-role", label: "角色权限", href: "#/user/role" },
       ],
     },
     {
       value: "order",
       label: "订单管理",
       children: [
-        { value: "order-list", label: "订单列表", href: "#order-list" },
-        { value: "order-refund", label: "退款处理", href: "#order-refund" },
+        { value: "order-list", label: "订单列表", href: "#/order/list" },
+        { value: "order-refund", label: "退款处理", href: "#/order/refund" },
       ],
     },
   ];
@@ -97384,19 +97891,19 @@ const collection: SideNavNode[] = [
     value: "user",
     label: "用户管理",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
   {
     value: "order",
     label: "订单管理",
-    children: [{ value: "order-list", label: "订单列表", href: "#order-list" }],
+    children: [{ value: "order-list", label: "订单列表", href: "#/order/list" }],
   },
   {
     value: "system",
     label: "系统设置",
-    children: [{ value: "system-log", label: "操作日志", href: "#system-log" }],
+    children: [{ value: "system-log", label: "操作日志", href: "#/system/log" }],
   },
 ];
 
@@ -97498,19 +98005,19 @@ const icons = {
       value: "user",
       label: "用户管理",
       children: [
-        { value: "user-list", label: "用户列表", href: "#user-list" },
-        { value: "user-role", label: "角色权限", href: "#user-role" },
+        { value: "user-list", label: "用户列表", href: "#/user/list" },
+        { value: "user-role", label: "角色权限", href: "#/user/role" },
       ],
     },
     {
       value: "order",
       label: "订单管理",
-      children: [{ value: "order-list", label: "订单列表", href: "#order-list" }],
+      children: [{ value: "order-list", label: "订单列表", href: "#/order/list" }],
     },
     {
       value: "system",
       label: "系统设置",
-      children: [{ value: "system-log", label: "操作日志", href: "#system-log" }],
+      children: [{ value: "system-log", label: "操作日志", href: "#/system/log" }],
     },
   ];
 
@@ -97538,13 +98045,13 @@ import {
 } from "@xihan-ui/vue";
 
 const collection: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
   {
     value: "user",
     label: "用户管理",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
 ];
@@ -97656,13 +98163,13 @@ const rows = [
 
 <script type="module">
   const collection = [
-    { value: "dashboard", label: "工作台", href: "#dashboard" },
+    { value: "dashboard", label: "工作台", href: "#/dashboard" },
     {
       value: "user",
       label: "用户管理",
       children: [
-        { value: "user-list", label: "用户列表", href: "#user-list" },
-        { value: "user-role", label: "角色权限", href: "#user-role" },
+        { value: "user-list", label: "用户列表", href: "#/user/list" },
+        { value: "user-role", label: "角色权限", href: "#/user/role" },
       ],
     },
   ];
@@ -97698,20 +98205,20 @@ import {
 } from "@xihan-ui/vue";
 
 const collection: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
   {
     value: "user",
     label: "用户管理",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
   {
     value: "order",
     label: "订单管理",
     children: [
-      { value: "order-list", label: "订单列表", href: "#order-list" },
+      { value: "order-list", label: "订单列表", href: "#/order/list" },
       // 没开这项权限：方向键跳过它，点也不落值
       { value: "order-refund", label: "退款处理", disabled: true },
     ],
@@ -97719,7 +98226,7 @@ const collection: SideNavNode[] = [
   {
     value: "system",
     label: "系统设置",
-    children: [{ value: "system-log", label: "操作日志", href: "#system-log" }],
+    children: [{ value: "system-log", label: "操作日志", href: "#/system/log" }],
   },
 ];
 
@@ -97823,27 +98330,27 @@ const branches = collection.filter(node => node.children);
   const nav = document.getElementById("side-nav-controlled");
 
   nav.collection = [
-    { value: "dashboard", label: "工作台", href: "#dashboard" },
+    { value: "dashboard", label: "工作台", href: "#/dashboard" },
     {
       value: "user",
       label: "用户管理",
       children: [
-        { value: "user-list", label: "用户列表", href: "#user-list" },
-        { value: "user-role", label: "角色权限", href: "#user-role" },
+        { value: "user-list", label: "用户列表", href: "#/user/list" },
+        { value: "user-role", label: "角色权限", href: "#/user/role" },
       ],
     },
     {
       value: "order",
       label: "订单管理",
       children: [
-        { value: "order-list", label: "订单列表", href: "#order-list" },
+        { value: "order-list", label: "订单列表", href: "#/order/list" },
         { value: "order-refund", label: "退款处理", disabled: true },
       ],
     },
     {
       value: "system",
       label: "系统设置",
-      children: [{ value: "system-log", label: "操作日志", href: "#system-log" }],
+      children: [{ value: "system-log", label: "操作日志", href: "#/system/log" }],
     },
   ];
 
@@ -97877,21 +98384,21 @@ import {
 } from "@xihan-ui/vue";
 
 const collection: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
   {
     value: "user",
     label: "用户管理",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
   {
     value: "order",
     label: "订单管理",
     children: [
-      { value: "order-list", label: "订单列表", href: "#order-list" },
-      { value: "order-refund", label: "退款处理", href: "#order-refund" },
+      { value: "order-list", label: "订单列表", href: "#/order/list" },
+      { value: "order-refund", label: "退款处理", href: "#/order/refund" },
     ],
   },
 ];
@@ -97984,21 +98491,21 @@ const collection: SideNavNode[] = [
 
   nav.translations = { input: "搜索导航", noMatch: "没有匹配的入口" };
   nav.collection = [
-    { value: "dashboard", label: "工作台", href: "#dashboard" },
+    { value: "dashboard", label: "工作台", href: "#/dashboard" },
     {
       value: "user",
       label: "用户管理",
       children: [
-        { value: "user-list", label: "用户列表", href: "#user-list" },
-        { value: "user-role", label: "角色权限", href: "#user-role" },
+        { value: "user-list", label: "用户列表", href: "#/user/list" },
+        { value: "user-role", label: "角色权限", href: "#/user/role" },
       ],
     },
     {
       value: "order",
       label: "订单管理",
       children: [
-        { value: "order-list", label: "订单列表", href: "#order-list" },
-        { value: "order-refund", label: "退款处理", href: "#order-refund" },
+        { value: "order-list", label: "订单列表", href: "#/order/list" },
+        { value: "order-refund", label: "退款处理", href: "#/order/refund" },
       ],
     },
   ];
@@ -98024,10 +98531,10 @@ import {
 } from "@xihan-ui/vue";
 
 const collection: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
-  { value: "user", label: "用户管理", href: "#user" },
-  { value: "order", label: "订单管理", href: "#order" },
-  { value: "system", label: "系统设置", href: "#system" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
+  { value: "user", label: "用户管理", href: "#/user" },
+  { value: "order", label: "订单管理", href: "#/order" },
+  { value: "system", label: "系统设置", href: "#/system" },
 ];
 
 const icons = {
@@ -98092,10 +98599,10 @@ const icons = {
   const nav = document.getElementById("side-nav-collapsed-tooltip");
 
   nav.collection = [
-    { value: "dashboard", label: "工作台", href: "#dashboard" },
-    { value: "user", label: "用户管理", href: "#user" },
-    { value: "order", label: "订单管理", href: "#order" },
-    { value: "system", label: "系统设置", href: "#system" },
+    { value: "dashboard", label: "工作台", href: "#/dashboard" },
+    { value: "user", label: "用户管理", href: "#/user" },
+    { value: "order", label: "订单管理", href: "#/order" },
+    { value: "system", label: "系统设置", href: "#/system" },
   ];
 </script>
 ```
@@ -98404,7 +98911,7 @@ const icons = {
 - 分组 `group` 是上一层列表里的一条，本身不带角色；组内的行挂在 `group-list` 里，`group-list` 以 `aria-labelledby` 指向 `group-label`，读屏念作「标题 + 列表」。不写 `role="group"`：列表项的父节点必须是列表。
 - 将文字放入 `branch-text` 或 `link-text`，确保折叠后仍有可访问名称。
 - 装饰图标使用 `aria-hidden="true"`。
-- 搜索框没有可见标签，可及名取 `translations.input`；空态以 `role="status"` 露面即播报。
+- 搜索框没有可见标签，可及名取 `translations.input`；聚焦不画环，插入符就是焦点指示，与级联选择、命令面板的搜索框同一种写法；空态以 `role="status"` 露面即播报。
 - 图标栏的名称提示对读屏隐藏，行上也不挂 `aria-describedby`：行文字已是可及名，提示只给看得见的人补上被裁掉的那段字。Escape 收起提示，焦点留在行上。
 
 ## 样式参考
@@ -131892,7 +132399,7 @@ const value = ref<string[]>([]);
 
 ### 特性
 
-- 两栏都可搜索，`filter` 可自定义匹配规则。搜索框与命令面板、级联选择的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，占位文字与其它字段同一支前景。
+- 两栏都可搜索，`filter` 可自定义匹配规则。搜索框与命令面板、级联选择的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，聚焦不画环（插入符就是焦点指示），占位文字与其它字段同一支前景。
 - 勾中的条目铺品牌淡底行面并由行首的方框标记，与表格选中行同一副外观；两侧定高列表挂自绘滚动条。
 - `oneWay` 单向移动：只能移向目标，不可退回。
 - 条目可逐条声明语气，搬到另一侧仍带着自己的那一份。
@@ -135585,7 +136092,7 @@ function indent(level: number): Record<string, string> {
 - 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
 - 节点可写副文本，第 2 行放一句解释，不进连打检索串。
 - 节点行尾留一格给作者（计数、徽标）；行首那一格归勾选框与展开箭头。
-- `searchable` 在浮层顶部放一个搜索框（`input` 部件，排在 `tree` 之前），展开时焦点先落在框上。输入即按 `filter`（缺省为标签大小写不敏感包含）裁树：命中节点连同整棵子树留下，祖先保留并自动展开；搜索里的展开单独记，不改写 `expandedValue`。手写的整棵树里没命中的节点由连接层带 `hidden` 收起，没有命中时空态改说 `translations.noMatch`。搜索框与命令面板、级联选择、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，占位文字与其它字段同一支前景。树里打可打印字符会接到检索词末尾并把焦点交回搜索框，下方向键从框进树，Escape 先清空检索词；收起浮层即清空。
+- `searchable` 在浮层顶部放一个搜索框（`input` 部件，排在 `tree` 之前），展开时焦点先落在框上。输入即按 `filter`（缺省为标签大小写不敏感包含）裁树：命中节点连同整棵子树留下，祖先保留并自动展开；搜索里的展开单独记，不改写 `expandedValue`。手写的整棵树里没命中的节点由连接层带 `hidden` 收起，没有命中时空态改说 `translations.noMatch`。搜索框与命令面板、级联选择、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，聚焦不画环（插入符就是焦点指示），占位文字与其它字段同一支前景。树里打可打印字符会接到检索词末尾并把焦点交回搜索框，下方向键从框进树，Escape 先清空检索词；收起浮层即清空。
 - 大树接 [虚拟列表](./virtualizer)：把展开后的可见行数（`flattenTree(collection, expandedValue)` 的长度）交给它的 `count`，再把它的 `collectionVirtualizer` 回传给 `virtualizer`，展开收起后同步更新 `count`。键盘、连打检索与展开时的锚点都按完整可见行的数据算，焦点由桥把目标行滚进窗口再交接。窗口里的行平铺渲染，层级缩进按行的 `level` 由作者补上；`virtualizer` 与 `searchable` 不能同开。
 - 支持只选叶子不选分支、子节点异步加载：节点用 `hasChildren: true` 声明懒分支，首次展开由 `loadChildren({ node, signal })` 获取直接子项；失败保留 cause，默认 `branch-error` 与 `branch-retry-trigger` 直接可用。
 - 整树空（`empty`）与在途（`loading`）默认自动渲染；collection 看有效树长度，手写节点由适配器只上报挂载事实、Headless 统一判空。`loading` 为真时树报 `aria-busy`，空态让位；作者写同名部件时保留作者结构与文案。

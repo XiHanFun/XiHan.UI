@@ -1,0 +1,1 @@
+async function t(){document.getElementById("heatmap-month").value=[{date:"2024-01-16",count:1},{date:"2024-01-18",count:3},{date:"2024-01-22",count:6},{date:"2024-01-25",count:2},{date:"2024-01-29",count:9},{date:"2024-01-31",count:4},{date:"2024-02-05",count:12},{date:"2024-02-08",count:7},{date:"2024-02-10",count:2}]}export{t as default};

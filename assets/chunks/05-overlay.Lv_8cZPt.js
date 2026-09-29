@@ -1,0 +1,1 @@
+async function s(){const t=document.getElementById("spinner-overlay-toggle"),n=document.getElementById("spinner-overlay-panel"),l=document.getElementById("spinner-overlay-mask");let e=!0;t.addEventListener("click",()=>{e=!e,n.setAttribute("aria-busy",String(e)),l.style.display=e?"grid":"none",t.textContent=e?"数据回来了":"重新加载"})}export{s as default};

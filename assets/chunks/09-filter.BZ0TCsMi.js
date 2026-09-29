@@ -1,0 +1,1 @@
+async function n(){const t=document.getElementById("log-filter"),e=document.getElementById("log-filter-levels");e.defaultValue=["info","warn","error"],e.addEventListener("value-change",l=>{t.setAttribute("levels",l.detail.value.join(" "))})}export{n as default};

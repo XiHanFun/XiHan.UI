@@ -1,0 +1,1 @@
+async function l(){const t=document.getElementById("dialog-size");for(const e of t.querySelectorAll("xh-dialog")){const o=e.querySelector('[data-xh-part="close-trigger"]');for(const c of e.querySelectorAll("[data-dismiss]"))c.addEventListener("click",()=>o.click())}}export{l as default};

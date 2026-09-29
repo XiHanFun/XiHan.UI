@@ -1,0 +1,1 @@
+async function o(){const e=document.getElementById("cartesian-chart-symlog"),t=[{store:"华北",delta:-1800},{store:"华东",delta:-40},{store:"华中",delta:0},{store:"华南",delta:12},{store:"西南",delta:260},{store:"西北",delta:9600}],s=[{mark:"bar",x:"store",y:"delta",name:"库存变化"}],a={scale:"symlog"};e.data=t,e.series=s,e.yAxis=a}export{o as default};

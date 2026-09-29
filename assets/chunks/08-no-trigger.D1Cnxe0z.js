@@ -1,0 +1,1 @@
+async function d(){const t=document.getElementById("number-field-no-trigger"),n=document.getElementById("number-field-no-trigger-value");t.addEventListener("value-change",e=>{n.textContent=e.detail.value===""?"（空）":e.detail.value})}export{d as default};
