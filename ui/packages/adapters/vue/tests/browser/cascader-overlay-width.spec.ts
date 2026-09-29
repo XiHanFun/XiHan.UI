@@ -11,6 +11,7 @@ import {
   XhCascaderColumn,
   XhCascaderContent,
   XhCascaderControl,
+  XhCascaderInput,
   XhCascaderItem,
   XhCascaderItemText,
   XhCascaderPositioner,
@@ -87,7 +88,7 @@ async function settled(): Promise<HTMLElement> {
   throw new Error('cascader 的几何一直没落定')
 }
 
-async function mount(options: { collection?: CascaderNode[], value?: string[][] } = {}): Promise<HTMLElement> {
+async function mount(options: { collection?: CascaderNode[], value?: string[][], searchable?: boolean } = {}): Promise<HTMLElement> {
   host = document.createElement('div')
   host.style.cssText = 'padding: 24px'
   document.body.append(host)
@@ -95,6 +96,7 @@ async function mount(options: { collection?: CascaderNode[], value?: string[][] 
     render: () => h(XhCascaderRoot, {
       collection: options.collection ?? COLLECTION,
       open: true,
+      searchable: options.searchable ?? false,
       ...(options.value ? { value: options.value } : {}),
     } as never, {
       default: ({ levels }: { levels: CascaderLevel[] }) => [
@@ -102,9 +104,12 @@ async function mount(options: { collection?: CascaderNode[], value?: string[][] 
           h(XhCascaderTrigger, null, () => h(XhCascaderValueText)),
         ]),
         h(XhCascaderPositioner, null, () => [
-          h(XhCascaderContent, null, () => levels.map(level => h(XhCascaderColumn, { key: level.level, level: level.level }, () =>
-            level.items.map(node => h(XhCascaderItem, { key: node.value, value: node.value }, () =>
-              h(XhCascaderItemText, null, () => node.label)))))),
+          h(XhCascaderContent, null, () => [
+            ...(options.searchable ? [h(XhCascaderInput, { placeholder: '搜索地区' })] : []),
+            ...levels.map(level => h(XhCascaderColumn, { key: level.level, level: level.level }, () =>
+              level.items.map(node => h(XhCascaderItem, { key: node.value, value: node.value }, () =>
+                h(XhCascaderItemText, null, () => node.label))))),
+          ]),
         ]),
       ],
     }),
@@ -154,6 +159,14 @@ describe('级联选择的浮层宽度', () => {
     const item = text.closest<HTMLElement>(`[data-part='item']`)!
     expect(item.getBoundingClientRect().width).toBeCloseTo(px(content, '--xh-overlay-max-w'), 0)
     expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
+  })
+
+  it('搜索框不参与定宽：面板仍由列撑出，搜索框铺满这一宽度', async () => {
+    const content = await mount({ collection: SHORT, searchable: true })
+    const input = part('input')
+    // 原生输入框自带约 20 个字符的固有宽度，还有自己的内衬；两样都不许把面板撑得比列宽
+    expect(content.clientWidth).toBeCloseTo(column(0).getBoundingClientRect().width, 0)
+    expect(input.getBoundingClientRect().width).toBeCloseTo(content.clientWidth, 0)
   })
 
   it('浮层锚在字段盒上：面板起始缘与盒的起始缘对齐', async () => {

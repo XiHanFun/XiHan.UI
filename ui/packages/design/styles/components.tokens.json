@@ -9812,6 +9812,7 @@
         "input"
       ],
       "property": [
+        "margin-inline-end",
         "padding-inline"
       ],
       "state": [
@@ -9821,7 +9822,7 @@
         "--xh-_cascader-px"
       ],
       "visibility": "public",
-      "description": "cascader 的 input 部件 padding-inline 覆盖槽。"
+      "description": "cascader 的 input 部件 margin-inline-end、padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-cascader-item-active-font-weight",

@@ -21189,8 +21189,14 @@
   [data-scope='cascader'][data-part='input'] {
     --xh-field-placeholder-fg: var(--xh-cascader-placeholder-fg, var(--xh-fg-subtle));
 
-    flex-basis: 100%;
-    min-inline-size: 0;
+    /* 搜索框不参与定宽，面板宽度只由列（搜索视图里是候选列表）撑出：换行的 flex 容器按内容定宽时
+       把各项的固有宽度相加，原生输入框自带约 20 个字符的固有宽，内衬也算在里面。
+       内容宽取 0，落位后由 min-inline-size 铺满整行；内衬由等量的负外边距在宽度贡献里抵掉，
+       盒子本身仍铺满整行，下一项照样折到下一行 */
+    flex: none;
+    inline-size: 0;
+    min-inline-size: 100%;
+    margin-inline-end: calc(-2 * var(--xh-cascader-input-px, var(--xh-_cascader-px)));
     block-size: var(--xh-cascader-input-h, var(--xh-_cascader-h));
     padding-block: 0;
     padding-inline: var(--xh-cascader-input-px, var(--xh-_cascader-px));
