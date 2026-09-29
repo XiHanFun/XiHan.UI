@@ -22,7 +22,14 @@
   ],
   "notApplicable": {
     "web-components": {
-      "sound": "@xihan-ui/sound 是框架无关的 JS 包，没有 <xh-sound> 元素。01-play 与 04-designer 的主语是 createSoundPlayer 与 play：示例源码经 innerHTML 注入、再把 <script> 逐个重建执行，页面里没有 import map，裸说明符当场抛错，自定义元素版取不到这两个函数；要答「不用 Vue 怎么写」，得先给文档站一条让示例取到包的路。02-toast 与 03-directive 的主语是 withNotificationSound 与 v-sound，只存在于 @xihan-ui/vue/sound，换个框架就没有对应的东西。",
+      "sound/02-toast": {
+        "symbol": "withNotificationSound",
+        "reason": "这份示例的主语是 withNotificationSound：给现成的通知服务包一层声音，调用点不改。它是适配器侧的胶水，接上适配器共享的播放器与首次交互解锁，只在 @xihan-ui/vue/sound 与 @xihan-ui/react/sound 两处导出；@xihan-ui/web-components 没有 sound 子入口，自定义元素这一侧没有这个名字可调。拿 @xihan-ui/sound 的底层 withNotificationSoundService 自己把播放器与解锁接一遍，答的是「这层包装怎么实现」，不是这一份示例。"
+      },
+      "sound/03-directive": {
+        "symbol": "vSound",
+        "reason": "这份示例的主语是 v-sound 指令：挂到元素上即配声，click 与 Enter 发声、禁用态不发声。它是 Vue 的指令，React 那份对应的是 useSoundOnPress，都出自各自适配器的 sound 子入口；@xihan-ui/web-components 没有 sound 子入口，自定义元素这一侧没有对应的绑定。用 @xihan-ui/sound 的 resolveSoundPressOptions 与 isSoundTargetDisabled 手接一遍按压监听，答的是「这条指令怎么实现」，不是这一份示例。"
+      },
       "cartesian-chart/34-columns": {
         "symbol": "createColumnStore",
         "reason": "这份示例的主语是列式数据仓 createColumnStore：一百万个采样点装进 Float64Array 列，图表走大数据的那一条管线。不用它就只能写对象数组，而一百万个对象正是这份示例要说明不该走的路。函数只能 import，取不到的原因同 dialog/09-service。列式数据的元素写法（给元素的 data 属性赋一个数据仓）与三端一致性在浏览器用例里验过；要让自定义元素版示例取到这个函数，得先给文档站一条让示例取到包的路。"
