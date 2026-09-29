@@ -94,12 +94,14 @@ const STABLE_TIMEOUT = 15_000
 /** 等动画跑完的上限。进场动画是几百毫秒量级，留出一个数量级的余量。 */
 const ANIMATION_BUDGET = 5000
 
-/** 与整套并行跑时圆弧上抖 1 个抗锯齿像素的四格，比对退到 pixelmatch 缺省档；理由见比对处。 */
-const DIALOG_AA_JITTER: ReadonlySet<string> = new Set([
+/** 并行跑时圆弧上抖 1 个抗锯齿像素的六格，比对退到 pixelmatch 缺省档；理由见比对处。 */
+const AA_JITTER: ReadonlySet<string> = new Set([
   'dialog-light-comfortable',
   'dialog-dark-comfortable',
   'dialog-light-compact',
   'dialog-dark-compact',
+  'dialog-dark-more',
+  'popover-dark-more',
 ])
 
 /**
@@ -513,10 +515,16 @@ describe('像素基线', () => {
             // dialog 四格已经走到了那一步：预热之后单跑这一份 spec 在容器里三轮 40/40 逐字节一致，
             // 但与整套 vue 浏览器态并行跑时面板圆弧上仍会抖出 1 个抗锯齿像素——CI（run 35541790512）
             // 四格各 1 px，同镜像容器整套并行一轮 dark-comfortable 1 px，画面、位置与尺寸逐项一致。
-            // 并行时栅格化被别的页面抢占，这一个像素落在哪一态不由这份 spec 决定。四格退到缺省档，
-            // 其余 36 格仍零容差。
-            threshold: DIALOG_AA_JITTER.has(name) ? 0.1 : 0,
-            includeAA: !DIALOG_AA_JITTER.has(name),
+            // 并行时栅格化被别的页面抢占，这一个像素落在哪一态不由这份 spec 决定。四格退到缺省档。
+            //
+            // 高对比深色档的 dialog 与 popover 随后也走到了这一步：聚焦环左上圆角的一个抗锯齿点在
+            // (86,152,244) 与 (84,148,238) 两个值之间跳，随同机并行的用例组合变。dialog 在旧的串行
+            // browser job 上从 run 36420428100 起九轮都落在后者（含重录基线后的 run 36538469500）；
+            // 源码相同、只把 CI 改成 --shard 分片的下一轮（run 36541474109，vue 2/4）落回前者。
+            // popover 在串行 job 的 run 36433888126 也拍到过前者，其余各轮是后者。
+            // 两格退到缺省档，其余 34 格仍零容差。
+            threshold: AA_JITTER.has(name) ? 0.1 : 0,
+            includeAA: !AA_JITTER.has(name),
           },
           timeout: STABLE_TIMEOUT,
         })

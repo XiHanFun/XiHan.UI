@@ -97,12 +97,15 @@ describe('桑基图', () => {
 
   it('真指针悬停节点：相连的流带换成它的颜色，其余流带淡出', async () => {
     mount({ nodes: NODES, links: LINKS })
+    // 淡出的过渡即时完成：断言的是悬停的稳定态，不是过渡中间帧。真实指针是整个浏览器共用的一颗，
+    // 并行跑的别份用例随时会把它停回角落；悬停一落下、等 Vue 刷新一拍就读，不给挪走留窗口
+    host!.style.setProperty('--xh-motion-duration-micro', '0ms')
     await settle()
     const scale = await mouseScale()
     const home = nodeNamed('首页')
     const box = home.getBoundingClientRect()
     await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: (box.left + box.width / 2) / scale, y: (box.top + box.height / 2) / scale })
-    await settle()
+    await nextTick()
     const links = all('link')
     const homeFill = getComputedStyle(home).fill
     // 0 搜索→首页 连着首页；2 广告→详情 不连
