@@ -80,7 +80,7 @@ export interface ImageViewerRefs {
    * 每一帧都相对它计算，不相对上一帧：相对上一帧会累积浮点误差。
    */
   pinchSession: { start: PinchSnapshot, scale: number, x: number, y: number } | null
-  /** 松手后的平移弹簧（两轴各一支）：惯性滑行，或越出范围时硬弹簧回弹；落定、再按下或改变换时撤下。 */
+  /** 松手后的平移弹簧（两轴各一支）：惯性滑行（滑到边界时换成回弹那支），或越出范围时硬弹簧回弹；落定、再按下或改变换时撤下。 */
   inertia: { x: SpringValue | null, y: SpringValue | null } | null
 }
 

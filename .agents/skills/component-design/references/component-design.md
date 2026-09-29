@@ -854,7 +854,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | --- | --- | --- |
 | 手势松手：Carousel 翻页 / 归位、Sortable 放下归位、ImageViewer 平移惯性、Switch 拖动拇指 | 缺省 | `smooth`（刚度 300 / 阻尼 30，超调 0.4%，落定约 283ms） |
 | 越界回弹 | 缺省 | `stiff`（600 / 42，超调 0.5%，约 195ms） |
-| 惯性滑行：ImageViewer 平移快甩 | 缺省 | 临界阻尼、固有频率 1 / τ（motion 的 `glideSpring`，τ 为投影时间）：以投影落点为目标时恰是指数减速，停在落点 |
+| 惯性滑行：ImageViewer 平移快甩 | 缺省 | 临界阻尼、固有频率 1 / τ（motion 的 `glideSpring`，τ 为投影时间）：以投影落点为目标时恰是指数减速，停在落点；落点越过边界时滑到边界交给越界回弹 |
 | 切换滑块 | liquid | `spring-toggle`（420 / 26，超调 7.5%） |
 | 指示器前沿 / 后沿 | liquid | `spring-lead`（520 / 34）/ `spring-trail`（210 / 24） |
 | 融合分离 | liquid | `spring-merge`（320 / 24，超调 5.8%） |
@@ -863,6 +863,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - standard 档超调不超过 3%，liquid 档不超过 8%；`bouncy` 不进入核心组件。
 - 速度交接：指针会话（单指与多指）保留最近 80ms 的采样，松手时的速度（px/s）作为弹簧初速度；落点取「当前位置 + 速度 × 投影时间」最近的吸附点。投影时间：Switch 拇指 0.06s、Carousel 翻页 0.2s、ImageViewer 惯性 0.3s。Carousel 往回甩到起点另一侧算收回，不翻到反方向；落定途中再按下时从弹簧此刻的位置接着拖。被系统收走（pointercancel）时不按速度投影，回到原位。
 - 越界跟手按 `(1 − 1 / (x × 0.55 / d + 1)) × d` 衰减（motion 的 `rubberBand`）：拇指 24px、卡片（Carousel 首末页）60px、面板（ImageViewer 平移范围）80px。
+- 惯性滑行撞边：投影落点越过边界时照原速滑到边界，碰到的那一刻以那一刻的速度（越过边界那段投影 ÷ τ）交给越界回弹 `stiff`；越出的那段与越界跟手同一条橡皮筋，越界量到不了橡皮筋尺寸，轻碰一下再停。不把落点截到边界再交给同一支滑行弹簧：临界阻尼弹簧带着松手速度奔向截短的目标会冲过头，越界量约为截掉那段的 1 / e，快甩时露出视口底色。
 - 中途改向：以当前值与当前速度为初始条件重新求解，位置与速度都不跳变。
 - 实现：`@xihan-ui/motion` 的有状态弹簧经 `frameLoop` 驱动；减弱动效下直接落到终态。CSS 侧的弹簧曲线只有令牌 `--xh-motion-ease-spring`（`linear()`，`@supports` 守卫，兜底 `cubic-bezier`），只用于 liquid 档的点击切换；手势一律走 JS。
 - Slider 拇指、FloatingPanel、Splitter、Resizable 不用弹簧：值必须精确跟手，或松手即停在原位。

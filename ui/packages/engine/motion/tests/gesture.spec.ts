@@ -1,5 +1,6 @@
 // 手势松手的物理：橡皮筋越拉越沉、趋近尺寸上限且方向随越界；夹取只衰减越出的那段；
-// 落点投影顺着速度走；最近吸附点等距取前一个；惯性滑行弹簧是指数衰减、停在投影落点。
+// 落点投影顺着速度走；最近吸附点等距取前一个；惯性滑行弹簧是指数衰减、停在投影落点，
+// 速度与剩余位移成正比，目标截短到边界时会冲过头。
 import { describe, expect, it } from 'vitest'
 import { glideSpring, nearestSnap, projectRelease, rubberBand, rubberClamp } from '../src/gesture'
 import { solveSpring } from '../src/spring-value'
@@ -66,6 +67,25 @@ describe('glideSpring', () => {
       expect(motion.velocity(t)).toBeLessThan(motion.velocity(t / 2))
       expect(motion.displacement(t)).toBeLessThanOrEqual(0)
     }
+  })
+
+  it('途中每一刻的速度等于剩余位移 ÷ τ：滑到边界时的速度就是越过边界那段投影 ÷ τ', () => {
+    const tau = 0.3
+    const v = 1200
+    const motion = solveSpring(glideSpring(tau), -v * tau, v)
+    for (const t of [0, 0.026, 0.1, 0.5, 1])
+      expect(motion.velocity(t)).toBeCloseTo(-motion.displacement(t) / tau, 6)
+  })
+
+  it('目标截短到边界时会冲过头：越界量 = 截掉那段 × e^(−1 − 离边界 / 截掉那段)，远超边界时趋近截掉那段的 1 / e', () => {
+    const tau = 0.3
+    const v = 1200
+    // 离边界 30，投影落点越过边界 330：以边界为目标起滑
+    const motion = solveSpring(glideSpring(tau), -30, v)
+    let peak = 0
+    for (let t = 0; t < 3; t += 0.001)
+      peak = Math.max(peak, motion.displacement(t))
+    expect(peak).toBeCloseTo(330 * Math.exp(-1 - 30 / 330), 2)
   })
 
   it('临界阻尼：阻尼比恰为 1', () => {
