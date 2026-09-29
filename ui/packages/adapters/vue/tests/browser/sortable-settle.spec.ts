@@ -74,6 +74,20 @@ async function drag(el: HTMLElement, dy: number, steps = 6): Promise<void> {
   await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...at(y + dy) })
 }
 
+/**
+ * 那一项的位移或动画态每写一次，就在那一刻量下它在屏幕上的位置。弹簧接手那一刻的位置由此量得，
+ * 与帧间隔无关；等一帧再量的话，慢帧里弹簧已经走出一大截。
+ */
+function trackItem(item: () => HTMLElement): { trail: Array<{ top: number, animating: boolean }>, stop: () => void } {
+  const trail: Array<{ top: number, animating: boolean }> = []
+  const observer = new MutationObserver(() => {
+    const el = item()
+    trail.push({ top: el.getBoundingClientRect().top, animating: el.hasAttribute('data-animating') })
+  })
+  observer.observe(host!, { attributes: true, subtree: true, attributeFilter: ['style', 'data-animating'] })
+  return { trail, stop: () => observer.disconnect() }
+}
+
 describe('排序放下归位', () => {
   it('宿主接了这次排序：那一项先停在松手处，再由弹簧收进新位置', async () => {
     const itemA = await mount()
@@ -81,14 +95,16 @@ describe('排序放下归位', () => {
     const start = rects[0]!.top
     // 拖过 c 的中心一点：落到第三位
     const dy = rects[2]!.top + rects[2]!.height / 2 - (rects[0]!.top + rects[0]!.height / 2) + 6
+    const track = trackItem(itemA)
     await drag(itemA(), dy)
     await nextTick()
     await frames(1)
+    track.stop()
     const moved = itemA()
-    // 已经重排到第三位，但画面上还停在松手处附近
+    // 已经重排到第三位，但弹簧接手那一刻画面上还停在松手处
     expect([...moved.parentElement!.children].map(el => el.textContent).join('')).toBe('bcad')
     expect(moved.hasAttribute('data-animating')).toBe(true)
-    expect(Math.abs(moved.getBoundingClientRect().top - (start + dy))).toBeLessThan(20)
+    expect(track.trail.find(entry => entry.animating)?.top).toBeCloseTo(start + dy, 0)
     await expect.poll(() => moved.hasAttribute('data-animating'), { timeout: 2000 }).toBe(false)
     expect(moved.style.translate).toBe('')
     // 新位置：b、c 两项让出来的地方
@@ -98,13 +114,16 @@ describe('排序放下归位', () => {
   it('宿主不接这次排序：从松手处收回原位', async () => {
     const itemA = await mount(false)
     const start = itemA().getBoundingClientRect().top
+    const track = trackItem(itemA)
     await drag(itemA(), 95)
     await nextTick()
     await frames(1)
+    track.stop()
     const back = itemA()
     expect(back.parentElement!.children[0]).toBe(back)
     expect(back.hasAttribute('data-animating')).toBe(true)
-    expect(back.getBoundingClientRect().top).toBeGreaterThan(start + 50)
+    // 弹簧从松手处起收
+    expect(track.trail.find(entry => entry.animating)?.top).toBeCloseTo(start + 95, 0)
     await expect.poll(() => back.hasAttribute('data-animating'), { timeout: 2000 }).toBe(false)
     expect(back.getBoundingClientRect().top).toBeCloseTo(start, 0)
   })
