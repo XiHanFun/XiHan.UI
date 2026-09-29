@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 门禁：挂在同一页上的示例不许声明同一个 id。
+// 门禁：挂在同一页上的示例不许声明同一个 id，按 id 取节点、指向节点的引用只能落在本示例自己的 id 上。
 //
 // 文档站把一页的全部示例挂进同一个 document：自定义元素版经 innerHTML 注入、脚本逐个重建执行，
 // Vue / React 版是同一棵应用树里的子树。示例脚本按 document.getElementById 取节点，两份示例写了
@@ -18,13 +18,21 @@
 //   纯表达式（s.value、item.id）：读不出值。绑到本文件 useId() 的放行（框架保证全页唯一），
 //   其余必须登记在 RUNTIME_IDS 并写明为什么不会撞，登了却没用上的条目判过期。
 //
-// 引用一侧逐文件核：脚本按 id 取节点的地方——getElementById(…) 的实参、querySelector(All)(…)
-// 选择器里的 #id——必须落在这份示例自己声明的 id 上。取不到自己的节点，单独挂时是 null，
-// 同页挂时就是别人的（复制一份示例、改了 id 属性却漏改脚本，就是这样）。实参是变量时顺着同文件的
-// 写法追到字面量：for…of 的数组字面量（[id, …] 解构取每项首位）、Object.entries / Object.keys 的
-// 对象字面量键、数组字面量 .map / .forEach 回调的参数、具名函数的参数（取各调用处的首个实参）；
-// 模板串里的 ${变量} 能追到的逐个代入，追不到的段按通配。getElementById 的实参追不到一律判红；
-// 选择器不是字面量时，看得见 # 的同样判红（改成模板串才追得到），看不见的未必和 id 有关，只报数。
+// 引用一侧逐文件核：按 id 取节点、指向节点的地方必须落在这份示例自己声明的 id 上。取不到自己的节点，
+// 单独挂时是 null，同页挂时就是别人的（复制一份示例、改了 id 属性却漏改引用，就是这样）。引用有四处来源：
+// - 脚本：getElementById(…) 的实参、querySelector(All)(…) 选择器里的 #id；
+// - 属性：for / htmlFor、aria-labelledby 一族、list / form / headers 等（登记在 REFERENCE_ATTRIBUTES，
+//   组件自己的 id 属性——Scrollbar 的 controls、Anchor 的 value——只在对应元素上算），href="#id"
+//   （#/ 开头的是哈希路由，示例里的占位链接照 breadcrumb 的写法用它），脚本里 setAttribute 设的同名属性；
+// - 组件配置：漫游式引导步骤的 target: "#id"；
+// - SVG / CSS 的 url(#id)。
+// 绑定的属性值（:attr="…"、attr={…}）是条件式时两支分别算；与本文件某处 id 绑同一个表达式
+// （:id="s.value" 配 :value="s.value"）的算作同一个节点；x.id 顺着 x 的初值追到取它时用的 id。
+// 值是变量时顺着同文件的写法追到字面量：for…of 的数组字面量（[id, …] 解构取每项首位）、
+// Object.entries / Object.keys 的对象字面量键、数组字面量 .map / .forEach 回调的参数、具名函数的参数
+// （取各调用处的首个实参）；模板串里的 ${变量} 能追到的逐个代入，追不到的段按通配。追不到的一律判红，
+// 真是运行时才定的值登进 RUNTIME_IDS。选择器不是字面量时，看得见 # 的同样判红（改成模板串才追得到），
+// 看不见的未必和 id 有关；href 是表达式时多半是外链——这两种只报数。
 //
 // 用法：node tooling/scripts/docs/check-demo-ids.mjs
 import { readdir, readFile } from 'node:fs/promises'
@@ -38,17 +46,40 @@ const TABLE = 'scripts/demo-frameworks.json'
 const NOT_PAGES = new Set(['.vitepress', 'node_modules', 'public'])
 
 /**
- * 纯表达式 id 的登记：示例目录 → 绑定表达式 → 为什么不会撞。
+ * 读不出值的纯表达式：示例目录 → 表达式 → 为什么不会出错。声明一侧（id 绑它）要说明不会与同页示例相撞，
+ * 引用一侧（指向节点的属性绑它）要说明指向的是本示例自己的节点。
  * 本检查读不出这些值，理由就是唯一的依据，所以登了没用上的一并判红。
  */
 const RUNTIME_IDS = {
   anchor: {
     's.value': '分节 id 取自同文件 sections 表的 value 字面量，都带 anchor-<示例>- 前缀；自定义元素版把同一批 id 写成字面量，由本检查按字面量核对',
+    'g.value': '嵌套目录的分组链接：value 取自同文件 groups 表，sections 由它摊平而来，指向的就是本示例 :id="s.value" 的分节',
+    'c.value': '嵌套目录的子项链接：value 取自 groups 表各组的 children，同样摊平进 sections，指向本示例自己的分节',
   },
   notification: {
     'item.id': 'XhNotificationItem 的 id 是队列身份，适配器把它声明成组件属性、不写进 DOM；节点 id 由组件按实例 scope 生成',
   },
 }
+
+/**
+ * 值是 id 引用的属性。form：id（整值一个 id）、list（空白分隔的 id 列表）、fragment（#id）。
+ * 同名属性在别处另有所指的要收窄：native 只在原生元素上算（组件的同名属性不一定落到 DOM）；
+ * tag 只在这些元素 / 组件上算（controls 在 <video> 上是布尔属性，value 在表单控件上是值）；
+ * part + within 认自定义元素版的作者节点：落在 <within> 里、带 data-xh-part="<part>" 的元素。
+ */
+const REFERENCE_ATTRIBUTES = [
+  { name: /^(?:for|htmlFor)$/, form: 'id' },
+  { name: /^aria-activedescendant$/, form: 'id' },
+  { name: /^aria-(?:labelledby|describedby|controls|owns|flowto|details|errormessage)$/, form: 'list' },
+  { name: /^(?:list|form|popovertarget|commandfor)$/, form: 'id', native: true },
+  { name: /^headers$/, form: 'list', native: true },
+  { name: /^(?:href|xlink:href)$/, form: 'fragment' },
+  // Scrollbar 的被控滚动容器：按 id 取，并写到滑块的 aria-controls 上
+  { name: /^controls$/, form: 'id', tag: /^(?:xh-scrollbar|XhScrollbarRoot)$/ },
+  // Anchor 的当前区块与链接的目标区块：机器按 getElementById 取
+  { name: /^value$/, form: 'id', tag: /^(?:xh-anchor|XhAnchor|XhAnchorLink)$/ },
+  { name: /^value$/, form: 'id', tag: /^a$/, part: 'link', within: 'xh-anchor' },
+]
 
 const { frameworks } = JSON.parse(await readFile(TABLE, 'utf8'))
 const extToFramework = new Map(frameworks.map(framework => [framework.ext, framework]))
@@ -364,18 +395,189 @@ function selectorRefs(text, selector, index) {
   return refs
 }
 
+/** 顶层条件式 a ? b : c 拆成两支；不是条件式返回 null。?. 与 ?? 不算问号。 */
+function branchesOf(expr) {
+  let depth = 0
+  let quote = null
+  let question = -1
+  let nested = 0
+  for (let i = 0; i < expr.length; i++) {
+    const ch = expr[i]
+    if (quote) {
+      if (ch === '\\')
+        i++
+      else if (ch === quote)
+        quote = null
+      continue
+    }
+    if (ch === '"' || ch === '\'' || ch === '`') {
+      quote = ch
+    }
+    else if ('([{'.includes(ch)) {
+      depth++
+    }
+    else if (')]}'.includes(ch)) {
+      depth--
+    }
+    else if (depth === 0 && ch === '?') {
+      if (expr[i + 1] === '.' || expr[i + 1] === '?')
+        i++
+      else if (question < 0)
+        question = i
+      else
+        nested++
+    }
+    else if (depth === 0 && ch === ':' && question >= 0) {
+      if (nested)
+        nested--
+      else
+        return [expr.slice(question + 1, i), expr.slice(i + 1)]
+    }
+  }
+  return null
+}
+
 /**
- * 一个示例文件里按 id 取节点的地方。选择器不是字面量（拼接、调用、追不到字面量初值的变量）时
- * 它未必和 id 有关：看得见 # 的按读不出的引用判红，看不见的记成 kind: 'opaque-selector' 只报数。
+ * 引用处的表达式：条件式两支分别算，undefined / null 那支不指向任何节点；与本文件某处 id 绑的是
+ * 同一个表达式（:id="s.value" 配 :value="s.value"、:id="reasonId" 配 aria-describedby），
+ * 两边随同一个值走，记成 bound；其余按字面量、模板串或顺着变量追。
  */
-function references(source) {
+function expressionRefs(text, expr, index, bindings) {
+  const source = expr.trim()
+  if (/^(?:undefined|null)$/.test(source))
+    return []
+  const branches = branchesOf(source)
+  if (branches)
+    return branches.flatMap(branch => expressionRefs(text, branch, index, bindings))
+  if (bindings.has(source))
+    return [{ kind: 'bound', expr: source }]
+  // reason.id：reason 是同文件按 id 取来的节点，指向的就是取它时的那个 id
+  const own = source.match(/^([A-Z_$][\w$]*)\.id$/i)
+  const lookup = own && initializerOf(text, own[1])?.match(/\.(getElementById|querySelector)\(([\s\S]*)\)$/)
+  if (lookup) {
+    if (lookup[1] === 'getElementById')
+      return expressionRefs(text, lookup[2], index, bindings)
+    const selector = literalOf(lookup[2].trim())
+    if (selector !== null && /^#[\w-]+$/.test(selector))
+      return [{ kind: 'literal', value: selector.slice(1) }]
+  }
+  return argumentRefs(text, source, index)
+}
+
+/** 属性值按形态拆成 id：list 是空白分隔的 id 列表，fragment 取 #id（#/ 开头的是哈希路由，不算）。 */
+function attributeIds(value, form) {
+  if (form === 'list')
+    return value.split(/\s+/).filter(Boolean)
+  if (form === 'fragment')
+    return /^#[^/]/.test(value) ? [value.slice(1)] : []
+  return value.trim() ? [value.trim()] : []
+}
+
+/** 值里带 ${…} 的属性写在脚本的模板串里（'<a href="#${id}">'），按模板串算。 */
+function attributeRefs(text, value, form, index) {
+  return attributeIds(value, form).flatMap(id => (id.includes('${') ? templateRefs(text, id, index) : [{ kind: 'literal', value: id }]))
+}
+
+/** 属性所在的起始标签：属性之前最近的一个 <名字。 */
+function tagAt(tags, index) {
+  let found = null
+  for (const tag of tags) {
+    if (tag.index >= index)
+      break
+    found = tag
+  }
+  return found
+}
+
+function referenceRule(name, tag, text, index) {
+  return REFERENCE_ATTRIBUTES.find((rule) => {
+    if (!rule.name.test(name))
+      return false
+    if (rule.native && !/^[a-z][a-z0-9]*$/.test(tag?.name ?? ''))
+      return false
+    if (rule.tag && !rule.tag.test(tag?.name ?? ''))
+      return false
+    if (rule.part && !new RegExp(`\\sdata-xh-part="${rule.part}"`).test(text.slice(tag.index, text.indexOf('>', index))))
+      return false
+    if (rule.within) {
+      const open = text.lastIndexOf(`<${rule.within}`, index)
+      if (open < 0 || text.lastIndexOf(`</${rule.within}>`, index) > open)
+        return false
+    }
+    return true
+  })
+}
+
+/**
+ * 一个示例文件里按 id 取节点、指向节点的地方。选择器不是字面量（拼接、调用、追不到字面量初值的变量）时
+ * 它未必和 id 有关：看得见 # 的按读不出的引用判红，看不见的记成 opaque 只报数；href 是表达式时同理，
+ * 它多半是外链。bindings 是本文件里 id 绑的表达式。
+ */
+function references(source, bindings) {
   const text = stripHtmlComments(source)
   const out = []
   for (const m of text.matchAll(/\.getElementById\(/g)) {
     const arg = readExpression(text, m.index + m[0].length, ',')
-    for (const ref of argumentRefs(text, arg, m.index))
+    for (const ref of expressionRefs(text, arg, m.index, bindings))
       out.push({ ...ref, call: `getElementById(${arg})`, line: lineOf(text, m.index) })
   }
+
+  // 属性：name="…"（三种文件）、:name="表达式"（Vue）、name={表达式}（JSX）
+  const tags = [...text.matchAll(/<([A-Z][\w.-]*)/gi)].map(m => ({ index: m.index, name: m[1] }))
+  for (const m of text.matchAll(/(?<=\s)(:|v-bind:)?([A-Z][\w:.-]*)=(["'{])/gi)) {
+    const [, bound, name, open] = m
+    const rule = referenceRule(name, tagAt(tags, m.index), text, m.index)
+    if (!rule)
+      continue
+    const start = m.index + m[0].length
+    const raw = open === '{' ? readExpression(text, start, '') : text.slice(start, text.indexOf(open, start))
+    const call = `${bound ?? ''}${name}=${open === '{' ? `{${raw}}` : `"${raw}"`}`
+    const line = lineOf(text, m.index)
+    if (!bound && open !== '{') {
+      for (const ref of attributeRefs(text, raw, rule.form, m.index))
+        out.push({ ...ref, call, line })
+      continue
+    }
+    // 绑定的值是表达式：href 先看它是不是 #id，看不出就是外链，只报数
+    if (rule.form === 'fragment') {
+      const literal = literalOf(raw.trim())
+      const template = raw.trim().match(/^`#([^/`\\][^`\\]*)`$/)?.[1]
+      if (literal !== null)
+        attributeRefs(text, literal, rule.form, m.index).forEach(ref => out.push({ ...ref, call, line }))
+      else if (template !== undefined)
+        templateRefs(text, template, m.index).forEach(ref => out.push({ ...ref, call, line }))
+      else
+        out.push({ kind: 'opaque-href', call, line })
+      continue
+    }
+    for (const ref of expressionRefs(text, raw, m.index, bindings))
+      out.push({ ...ref, call, line })
+  }
+  // 脚本里设的引用属性：只认不挑元素的那几条（设在哪个元素上，这里看不出）
+  for (const m of text.matchAll(/\.setAttribute\(\s*(["'])([\w:-]+)\1\s*,/g)) {
+    const rule = REFERENCE_ATTRIBUTES.find(r => r.name.test(m[2]) && !r.tag && !r.native && !r.part)
+    if (!rule)
+      continue
+    const arg = readExpression(text, m.index + m[0].length, ',')
+    const call = `setAttribute("${m[2]}", ${arg})`
+    const line = lineOf(text, m.index)
+    const literal = literalOf(arg)
+    const refs = literal !== null ? attributeRefs(text, literal, rule.form, m.index) : expressionRefs(text, arg, m.index, bindings)
+    refs.forEach(ref => out.push({ ...ref, call, line }))
+  }
+  // 漫游式引导的步骤：target: "#…" 是交给组件去查的选择器
+  for (const m of text.matchAll(/(?<![\w$.])target\s*:\s*(?=["'`])/g)) {
+    const value = readExpression(text, m.index + m[0].length, ',;\n')
+    const selector = literalOf(value) ?? value.match(/^`([^`\\]*)`$/)?.[1]
+    if (selector?.includes('#')) {
+      for (const ref of selectorRefs(text, selector, m.index))
+        out.push({ ...ref, call: `target: ${value}`, line: lineOf(text, m.index) })
+    }
+  }
+  // SVG 与 CSS 里的 url(#id)：渐变、裁剪、遮罩、滤镜、标记
+  for (const m of text.matchAll(/url\(\s*["']?#([\w-]+)/g))
+    out.push({ kind: 'literal', value: m[1], call: `url(#${m[1]})`, line: lineOf(text, m.index) })
+
   for (const m of text.matchAll(/\.(querySelector(?:All)?)\(/g)) {
     const arg = readExpression(text, m.index + m[0].length, ',')
     const init = IDENTIFIER.test(arg) ? initializerOf(text, arg) : null
@@ -424,7 +626,9 @@ let useIdCount = 0
 let runtimeCount = 0
 let refCount = 0
 let tracedCount = 0
+let boundCount = 0
 let opaqueSelectorCount = 0
+let opaqueHrefCount = 0
 
 for (const path of await walk(DEMOS, name => extToFramework.has(extname(name)))) {
   const file = relative(DEMOS, path).replaceAll('\\', '/')
@@ -435,6 +639,8 @@ for (const path of await walk(DEMOS, name => extToFramework.has(extname(name))))
   fileCount++
 
   const ids = []
+  /** 本文件里 id 绑的表达式：引用处写同一个表达式，两边随同一个值走。 */
+  const bindings = new Set()
   for (const decl of declarations(source)) {
     if (decl.kind === 'unreadable') {
       problems.push(`${file}:${decl.line} 的 id="${decl.value}" 读不出一个确定的值：id 写成不带空白与引号的字面量，拼接改用模板串`)
@@ -444,6 +650,7 @@ for (const path of await walk(DEMOS, name => extToFramework.has(extname(name))))
       ids.push({ ...decl, file })
       continue
     }
+    bindings.add(decl.expr)
     if (/^[A-Z_$][\w$]*$/i.test(decl.expr) && new RegExp(`\\b${escapeRegExp(decl.expr)}\\s*=\\s*useId\\(\\)`).test(source)) {
       useIdCount++
       continue
@@ -460,16 +667,30 @@ for (const path of await walk(DEMOS, name => extToFramework.has(extname(name))))
   }
 
   const framework = extToFramework.get(ext).id
-  for (const ref of references(source)) {
+  for (const ref of references(source, bindings)) {
     if (ref.kind === 'opaque-selector') {
       opaqueSelectorCount++
       continue
     }
+    if (ref.kind === 'opaque-href') {
+      opaqueHrefCount++
+      continue
+    }
     refCount++
+    if (ref.kind === 'bound') {
+      boundCount++
+      continue
+    }
+    if (ref.kind === 'expr' && RUNTIME_IDS[dir]?.[ref.expr]) {
+      usedRuntime.add(`${dir}\0${ref.expr}`)
+      runtimeCount++
+      continue
+    }
     if (ref.kind === 'expr') {
       problems.push(
-        `${file}:${ref.line} 的 ${ref.call} 追不到取的是哪个 id：写成字面量或模板串（拼接读不出），变量要来自同文件的数组字面量 / `
-        + `Object.entries(对象字面量) 的 for…of、数组字面量的 .map / .forEach 回调、以字面量调用的具名函数参数`,
+        `${file}:${ref.line} 的 ${ref.call} 追不到指向哪个 id：写成字面量或模板串（拼接读不出），变量要来自同文件的数组字面量 / `
+        + `Object.entries(对象字面量) 的 for…of、数组字面量的 .map / .forEach 回调、以字面量调用的具名函数参数；`
+        + `实在是运行时才定的值，登进 RUNTIME_IDS['${dir}'] 写明它指向本示例的哪个节点`,
       )
       continue
     }
@@ -487,7 +708,7 @@ for (const path of await walk(DEMOS, name => extToFramework.has(extname(name))))
 for (const [dir, entries] of Object.entries(RUNTIME_IDS)) {
   for (const expr of Object.keys(entries)) {
     if (!usedRuntime.has(`${dir}\0${expr}`))
-      problems.push(`RUNTIME_IDS['${dir}']['${expr}'] 已过期：${dir}/ 下的示例不再以 ${expr} 绑 id，删掉这条登记`)
+      problems.push(`RUNTIME_IDS['${dir}']['${expr}'] 已过期：${dir}/ 下的示例不再用 ${expr} 绑 id 或指向节点，删掉这条登记`)
   }
 }
 
@@ -557,7 +778,7 @@ for (const ref of dangling) {
     }
   }
   const owner = owners.size ? `；同页的 ${[...owners].join('、')} 声明了它，挂在一起时取到的是那份示例的节点` : ''
-  problems.push(`${ref.file}:${ref.line} 的 ${ref.call} 取 ${label(ref)}，这份示例自己没有声明它${owner}`)
+  problems.push(`${ref.file}:${ref.line} 的 ${ref.call} 指向 ${label(ref)}，这份示例自己没有声明它${owner}`)
 }
 
 if (problems.length) {
@@ -570,7 +791,8 @@ if (problems.length) {
 
 console.log(
   `[check-demo-ids] 通过：${pages.size} 页挂 ${demos.size} 份示例（${fileCount} 个文件），按页 × 框架核对 ${compared} 处 id 声明没有相撞；`
-  + `另有 ${useIdCount} 处绑 useId()、${runtimeCount} 处登记在 RUNTIME_IDS 的运行时 id。`
-  + `脚本里 ${refCount} 处按 id 取节点都落在本示例自己的声明上（${tracedCount} 处顺着变量追到字面量），`
-  + `另有 ${opaqueSelectorCount} 处选择器不是字面量、也看不见 #，不算按 id 取`,
+  + `另有 ${useIdCount} 处绑 useId()、${runtimeCount} 处登记在 RUNTIME_IDS 的运行时表达式。`
+  + `${refCount} 处按 id 取节点、指向节点的引用都落在本示例自己的声明上`
+  + `（${tracedCount} 处顺着变量追到字面量、${boundCount} 处与本文件的 id 绑同一个表达式）；`
+  + `另有 ${opaqueSelectorCount} 处选择器、${opaqueHrefCount} 处 href 是表达式且看不出 #id，不算引用`,
 )
