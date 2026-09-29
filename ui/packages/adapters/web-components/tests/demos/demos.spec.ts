@@ -34,6 +34,14 @@ const RAW = import.meta.glob<string>('../../../../../../docs/.vitepress/demos/**
   eager: true,
 })
 
+// 示例的模块脚本与文档站同一条路：由 docs/.vitepress/demo-script.ts 编成模块，裸说明符照应用里的解析走。
+// 按需加载，一份示例的脚本编不过只红它自己
+type DemoScript = () => Promise<void>
+const SCRIPTS = import.meta.glob<() => Promise<DemoScript>>('../../../../../../docs/.vitepress/demos/**/*.html', {
+  query: '?xh-demo-script',
+  import: 'default',
+})
+
 /** kebab → camelCase */
 function camel(id: string): string {
   return id.replace(/-([a-z0-9])/g, (_, c: string) => c.toUpperCase())
@@ -65,40 +73,12 @@ const demos: Demo[] = Object.entries(RAW)
   .filter(demo => filter.size === 0 || filter.has(demo.component))
   .sort((a, b) => a.id.localeCompare(b.id))
 
-// innerHTML 收下的 <script> 不会执行，逐个重建成新节点才跑得起来（与文档站同一做法）
-async function reviveScripts(host: HTMLElement): Promise<void> {
-  for (const stale of Array.from(host.querySelectorAll('script'))) {
-    const script = document.createElement('script')
-    for (const attr of Array.from(stale.attributes)) script.setAttribute(attr.name, attr.value)
-    script.textContent = stale.textContent
-    if (script.type !== 'module')
-      throw new Error('示例脚本必须使用 type="module"')
-    // 此验证环境的内联模块没有可靠 load 通知；显式完成事件保证求值结束后才允许清场。
-    const completed = `xh-demo-module-${crypto.randomUUID()}`
-    if (!script.src)
-      script.textContent += `\n;document.dispatchEvent(new Event(${JSON.stringify(completed)}));`
-    await new Promise<void>((resolve, reject) => {
-      const listeners = new AbortController()
-      const ready = (): void => {
-        listeners.abort()
-        resolve()
-      }
-      const failed = (event: ErrorEvent): void => {
-        listeners.abort()
-        reject(event.error ?? new Error(event.message))
-      }
-      const options = { once: true, signal: listeners.signal }
-      document.addEventListener(completed, ready, options)
-      window.addEventListener('error', failed, options)
-      if (script.src)
-        script.addEventListener('load', ready, options)
-      script.addEventListener('error', () => {
-        listeners.abort()
-        reject(new Error(`示例模块加载失败：${script.src || '内联模块'}`))
-      }, options)
-      stale.replaceWith(script)
-    })
-  }
+// innerHTML 收下的 <script> 不会执行，改跑编好的模块（与文档站同一做法）；
+// 等它的顶层语句连同顶层 await 全部跑完才返回，之后才允许清场
+async function runScript(host: HTMLElement, id: string): Promise<void> {
+  for (const script of Array.from(host.querySelectorAll('script'))) script.remove()
+  const run = await SCRIPTS[`${DEMOS_PREFIX}${id}`]!()
+  await run()
 }
 
 /** 刷到 DOM 不再动为止：宿主接线会排新一轮，示例脚本也可能再改 DOM。 */
@@ -204,7 +184,7 @@ describe('自定义元素版示例', () => {
     it(demo.id, async () => {
       const problems: string[] = []
 
-      // 判据五：脚本必须 type="module"。示例会被反复挂载，顶层常量在经典脚本里第二次就撞名
+      // 判据五：脚本必须 type="module"。示例的 import 只写得进模块脚本，文档站也只编模块脚本
       for (const [index, matched] of [...demo.html.matchAll(/<script\b([^>]*)>/gi)].entries()) {
         if (!/\btype\s*=\s*["']module["']/i.test(matched[1] ?? ''))
           problems.push(`第 ${index + 1} 个 <script> 没写 type="module"`)
@@ -213,14 +193,16 @@ describe('自定义元素版示例', () => {
       stage = document.createElement('div')
       document.body.append(stage)
       stage.innerHTML = demo.html
-      await reviveScripts(stage)
+      await runScript(stage, demo.id)
       await settle(stage)
 
       const hosts = Array.from(stage.querySelectorAll('*')).filter(el =>
         el.tagName.toLowerCase().startsWith('xh-'),
       ) as HTMLElement[]
 
-      if (hosts.length === 0)
+      // 目录的主语是一个元素时，示例里至少要有一个 xh-* 标签；
+      // 主语是框架无关的 JS 包的目录（motion 等）照原样用原生标签，不要求
+      if (hosts.length === 0 && customElements.get(`xh-${demo.component}`))
         problems.push('整份示例里没有一个 xh-* 标签')
 
       for (const host of hosts) {

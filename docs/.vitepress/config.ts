@@ -3,6 +3,7 @@ import type { DefaultTheme, HeadConfig } from "vitepress";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitepress";
+import { demoScriptPlugin } from "./demo-script";
 // @ts-expect-error 纯 JS 生成器，没有类型声明
 import { renderPageMarkdown, writeLlmsAssets } from "./gen-llms.mjs";
 
@@ -399,7 +400,7 @@ export default defineConfig({
     await writeLlmsAssets(siteConfig.outDir);
   },
   vite: {
-    plugins: [devMarkdownPlugin()],
+    plugins: [devMarkdownPlugin(), demoScriptPlugin()],
     esbuild: {
       jsx: "automatic",
       jsxImportSource: "react",

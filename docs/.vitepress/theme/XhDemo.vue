@@ -42,6 +42,12 @@ const reactSources = import.meta.glob<string>("../demos/**/*.tsx", {
   query: "?raw",
   import: "default",
 });
+// 自定义元素版示例的模块脚本由 Vite 编成模块（见 ../demo-script.ts），裸说明符照应用里的解析走；
+// 默认导出是包着脚本顶层语句的函数，挂一次调一次
+const wcScripts = import.meta.glob<() => Promise<void>>("../demos/**/*.html", {
+  query: "?xh-demo-script",
+  import: "default",
+});
 
 // 一个框架一份源码表，键是 glob 给出的文件路径。加框架时这里多一条
 const sourcesByFramework: Record<string, Record<string, () => Promise<string>>> = {
@@ -171,26 +177,23 @@ function defineElements(): Promise<void> {
   return defined;
 }
 
-// innerHTML 收下的 <script> 不会执行，逐个重建成新节点才跑得起来
-function reviveScripts(host: HTMLElement): void {
-  for (const stale of Array.from(host.querySelectorAll("script"))) {
-    const script = document.createElement("script");
-    for (const attr of Array.from(stale.attributes)) {
-      script.setAttribute(attr.name, attr.value);
-    }
-    script.textContent = stale.textContent;
-    stale.replaceWith(script);
-  }
-}
+let wcRequest = 0;
 
 async function mountWebComponents(host: HTMLElement, html: string): Promise<void> {
-  await defineElements();
-  // 等注册期间可能已经切走，容器换了就不再往旧的写
-  if (wcHost.value !== host)
+  const load = wcScripts[`../demos/${props.src}.html`];
+  if (!load)
+    return;
+  const request = ++wcRequest;
+  const [run] = await Promise.all([load(), defineElements()]);
+  // 等注册与加载期间可能已经切走，容器换了就不再往旧的写
+  if (request !== wcRequest || wcHost.value !== host)
     return;
   // 重写 innerHTML 会摘掉上一份的全部节点，元素随之断开、挂在它们身上的监听一并撤走
   host.innerHTML = html;
-  reviveScripts(host);
+  // innerHTML 收下的 <script> 不会执行，脚本改由上面编好的模块来跑；留着的只是一段死代码
+  for (const script of Array.from(host.querySelectorAll("script")))
+    script.remove();
+  await run();
 }
 
 // 切到别的框架时 Vue 直接摘掉整个容器，这条不再触发
