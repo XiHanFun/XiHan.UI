@@ -358,7 +358,7 @@
 - 分组 `group` 是上一层列表里的一条，本身不带角色；组内的行挂在 `group-list` 里，`group-list` 以 `aria-labelledby` 指向 `group-label`，读屏念作「标题 + 列表」。不写 `role="group"`：列表项的父节点必须是列表。
 - 将文字放入 `branch-text` 或 `link-text`，确保折叠后仍有可访问名称。
 - 装饰图标使用 `aria-hidden="true"`。
-- 搜索框没有可见标签，可及名取 `translations.input`；空态以 `role="status"` 露面即播报。
+- 搜索框没有可见标签，可及名取 `translations.input`；聚焦不画环，插入符就是焦点指示，与级联选择、命令面板的搜索框同一种写法；空态以 `role="status"` 露面即播报。
 - 图标栏的名称提示对读屏隐藏，行上也不挂 `aria-describedby`：行文字已是可及名，提示只给看得见的人补上被裁掉的那段字。Escape 收起提示，焦点留在行上。
 
 ## 样式参考

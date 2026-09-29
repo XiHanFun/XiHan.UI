@@ -1,7 +1,7 @@
 // 面板里内嵌的搜索框（Command、Cascader、TreeSelect、Transfer、SideNav）是同一种写法：通栏一行、控件高与字号随尺寸档、
-// 只画一道面内分隔的下划线，占位文字走字段家族（投影 data-xh-field-input）。
+// 只画一道面内分隔的下划线，聚焦不画环（插入符就是焦点指示），占位文字走字段家族（投影 data-xh-field-input）。
 //
-// 判据是计算样式：块尺寸、字号、::placeholder 前景与下划线颜色，jsdom 不算这些。
+// 判据是计算样式：块尺寸、字号、::placeholder 前景、下划线颜色与聚焦时的 outline，jsdom 不算这些。
 import type { CascaderLevel } from '@xihan-ui/headless'
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -165,5 +165,17 @@ describe.each(['cascader', 'command', 'side-nav', 'transfer', 'tree-select'] as 
     expect(style.borderTopWidth).toBe('0px')
     expect(style.borderBottomWidth).toBe('1px')
     expect(style.borderBottomColor).toBe(resolved(input, 'border-bottom-color', DIVIDER[scope]))
+  })
+
+  it('聚焦不画环：插入符就是焦点指示，下划线也不换色', async () => {
+    const input = await mount(scope, 'md')
+    const divider = getComputedStyle(input).borderBottomColor
+    input.focus()
+    // 文本框落焦总是命中 :focus-visible，全局那条键盘焦点环正是按它画的
+    expect(input.matches(':focus-visible')).toBe(true)
+    const style = getComputedStyle(input)
+    expect(style.outlineStyle).toBe('none')
+    expect(style.boxShadow).toBe('none')
+    expect(style.borderBottomColor).toBe(divider)
   })
 })
