@@ -56,7 +56,11 @@ export function nearestSnap(points: readonly number[], position: number): number
 /**
  * 惯性滑行：临界阻尼、固有频率 1 / seconds 的弹簧。从松手速度 v 出发、目标取投影落点（位置 + v × seconds）时，
  * 位移恰好按 e^(−t / seconds) 衰减——起步速度等于松手速度，一路减速停在投影落点，不会被弹簧往前甩。
- * 目标被边界截短时，同一支弹簧会在边界上轻碰一下再落定。
+ * 途中每一刻的速度都等于剩余位移 ÷ seconds，所以滑到某条边界时的速度就是越过它的那段投影 ÷ seconds。
+ *
+ * 目标只取投影落点。把目标截短到边界时，这支弹簧带着松手速度奔向更近的目标会冲过头，
+ * 越界量随截掉的那段增长，远超边界时约为截掉那段的 1 / e；有边界时照原速滑到边界，
+ * 在那一刻以上面的速度交给回弹弹簧。
  */
 export function glideSpring(seconds: number): SpringPhysical {
   const omega = 1 / seconds

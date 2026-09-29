@@ -1,6 +1,6 @@
 // 看片的手势松手：真指针拖动，平移限定在范围内，松手后由弹簧惯性滑行或回弹。
 // 钉住：图比视口小时只能拖出一小截、松手硬弹簧弹回居中；放大后快甩松手顺着速度继续滑、一路减速、停在范围内；
-// 拖出范围越拉越沉、松手收回边界；减弱动效下松手直接收回，不经弹簧。
+// 快甩越过边界时滑到边界轻碰一下就停，越界量有上限；拖出范围越拉越沉、松手收回边界；减弱动效下松手直接收回，不经弹簧。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, page } from 'vitest/browser'
@@ -66,6 +66,20 @@ async function mount(): Promise<HTMLImageElement> {
 function offset(image: HTMLImageElement): { x: number, y: number } {
   const match = /^(-?[\d.]+)px(?: (-?[\d.]+)px)?$/.exec(image.style.translate)
   return match ? { x: Number(match[1]), y: Number(match[2] ?? 0) } : { x: Number.NaN, y: Number.NaN }
+}
+
+/**
+ * 记下图的每一次平移写入，返回值停止记录并交出记下的横向平移。
+ * MutationObserver 在写入之后、下一帧之前回调，量到的就是那一拍画上的值，不随帧间隔漏掉峰值。
+ */
+function recordOffsets(image: HTMLImageElement): () => number[] {
+  const seen: number[] = []
+  const observer = new MutationObserver(() => seen.push(offset(image).x))
+  observer.observe(image, { attributes: true, attributeFilter: ['style'] })
+  return () => {
+    observer.disconnect()
+    return seen
+  }
 }
 
 async function mouseScale(): Promise<number> {
@@ -142,6 +156,36 @@ describe('看片手势松手', () => {
     // 放大 3 倍的图是 1200 × 900，视口宽 900：左右各能平移 150px
     const limit = (image.offsetWidth * 3 - image.parentElement!.clientWidth) / 2
     expect(rest).toBeGreaterThanOrEqual(-limit - 0.5)
+  })
+
+  it('快甩越过边界：照原速滑到边界，轻碰一下就停，越界量有上限', async () => {
+    const image = await mount()
+    await zoomTo3()
+    const limit = (image.offsetWidth * 3 - image.parentElement!.clientWidth) / 2
+    const stop = recordOffsets(image)
+    // 两步各 60px / 50ms：松手速度 1200px/s，从 -120 松手，投影落点 -480 越过左边界 330px
+    await drag(image, -120, 2)
+    await expect.poll(() => image.hasAttribute('data-animating'), { timeout: 4000 }).toBe(false)
+    const furthest = Math.min(...stop())
+    // 碰到边界时还剩 1100px/s，越过去一点再收回
+    expect(furthest).toBeLessThan(-limit)
+    // 越出的那段按平移的橡皮筋衰减，约 9px；把落点夹到边界、交给同一支滑行弹簧的话会冲出约 110px，露出视口底色
+    expect(furthest).toBeGreaterThan(-limit - 16)
+    expect(Math.abs(offset(image).x + limit)).toBeLessThan(0.01)
+  })
+
+  it('减弱动效下快甩越过边界：直接停在边界，不越出', async () => {
+    const image = await mount()
+    await zoomTo3()
+    const limit = (image.offsetWidth * 3 - image.parentElement!.clientWidth) / 2
+    host!.dataset.motion = 'reduce'
+    document.querySelector<HTMLElement>('[data-scope="image-viewer"][data-part="content"]')!.dataset.motion = 'reduce'
+    const stop = recordOffsets(image)
+    await drag(image, -120, 2)
+    await frames(1)
+    expect(image.hasAttribute('data-animating')).toBe(false)
+    expect(Math.min(...stop())).toBeGreaterThanOrEqual(-limit)
+    expect(offset(image).x).toBe(-limit)
   })
 
   it('拖出范围越拉越沉，松手收回边界', async () => {

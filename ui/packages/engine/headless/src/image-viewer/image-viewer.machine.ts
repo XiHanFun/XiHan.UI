@@ -6,7 +6,7 @@
 // 提供 image viewer 相关实现。
 
 import type { ContextFacade, PropFn, RefsFacade } from '@xihan-ui/core'
-import type { SpringValue } from '@xihan-ui/motion'
+import type { SpringPhysical, SpringPresetName, SpringValue } from '@xihan-ui/motion'
 import type { PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
 import type { ImageViewerImageStatus, ImageViewerItem, ImageViewerPressedPart, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
 import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
@@ -118,8 +118,14 @@ function stopInertia(refs: RefsFacade<ImageViewerSchema>, context: ContextFacade
 }
 
 /**
- * 松手落定：两轴各自判断。已越出范围的一轴用硬弹簧收回边界；在范围内的一轴顺着松手速度惯性滑行，
- * 落点夹在范围内（滑到边界会轻碰一下再停）。量不到范围时不动。
+ * 松手落定：两轴各自判断，量不到范围时不动。
+ *
+ * - 已越出范围的一轴：硬弹簧从此刻的位置收回边界。
+ * - 在范围内、投影落点也在范围内：顺着松手速度惯性滑行，停在落点。
+ * - 在范围内、投影落点越过边界：照原速滑到边界，碰到的那一刻以那一刻的速度交给硬弹簧收回边界；
+ *   越出的那段与跟手同一条橡皮筋，越界量再快也到不了 PAN_STRETCH——轻碰一下再停。
+ *   不把落点夹到边界再交给同一支滑行弹簧：临界阻尼弹簧带着松手速度奔向截短的目标会冲过头，
+ *   越界量约为被截掉那段投影的 0.37 倍，快甩时露出视口底色，还要拖三四秒才落定。
  */
 function settlePan(refs: RefsFacade<ImageViewerSchema>, context: ContextFacade<ImageViewerSchema>, velocity: { x: number, y: number }): void {
   stopInertia(refs, context)
@@ -128,33 +134,59 @@ function settlePan(refs: RefsFacade<ImageViewerSchema>, context: ContextFacade<I
   const limits = panLimits(refs, t)
   if (!image || !limits)
     return
-  const axis = (key: 'x' | 'y'): { spring: SpringValue, done: Promise<unknown> } | null => {
+  // 两轴当前各自的那支弹簧：滑到边界交给回弹时换成回弹那支，stopInertia 停的是换过之后的
+  const inertia: { x: SpringValue | null, y: SpringValue | null } = { x: null, y: null }
+  const axis = (key: 'x' | 'y'): Promise<unknown> | null => {
     const at = t[key]
     const limit = limits[key]
-    const outside = Math.abs(at) > limit + 0.5
-    const target = Math.min(Math.max(outside ? at : projectRelease(at, velocity[key], INERTIA_SECONDS), -limit), limit)
-    if (Math.abs(target - at) < 0.5 && Math.abs(velocity[key]) < 5) {
-      if (target !== at)
-        context.set('transform', { ...context.get('transform'), [key]: target })
+    const speed = velocity[key]
+    const write = (value: number): void => context.set('transform', { ...context.get('transform'), [key]: value })
+    const spring = (physics: SpringPresetName | SpringPhysical, from: number, onUpdate: (value: number) => void): SpringValue => {
+      const value = createSpringValue({ spring: physics, value: from, target: image, onUpdate })
+      inertia[key] = value
+      return value
+    }
+    if (Math.abs(at) > limit + 0.5)
+      return spring('stiff', at, write).to(Math.sign(at) * limit, { velocity: 0 })
+    const landing = projectRelease(at, speed, INERTIA_SECONDS)
+    const bound = Math.min(Math.max(landing, -limit), limit)
+    if (Math.abs(bound - at) < 0.5 && Math.abs(speed) < 5) {
+      if (bound !== at)
+        write(bound)
       return null
     }
-    const spring = createSpringValue({
-      spring: outside ? 'stiff' : glideSpring(INERTIA_SECONDS),
-      value: at,
-      target: image,
-      onUpdate: value => context.set('transform', { ...context.get('transform'), [key]: value }),
+    if (bound === landing)
+      return spring(glideSpring(INERTIA_SECONDS), at, write).to(landing, { velocity: speed })
+    // 越出的那段按橡皮筋衰减：弹簧在未衰减的坐标里走，写出前再衰减
+    const bounce = (contact: number): Promise<unknown> =>
+      spring('stiff', bound, value => write(rubberClamp(value, -limit, limit, PAN_STRETCH))).to(bound, { velocity: contact })
+    const direction = Math.sign(speed)
+    if ((at - bound) * direction >= 0)
+      return bounce(speed)
+    // 滑到边界时的速度恰是被截掉那段投影 ÷ 投影时间（滑行位移按 e^(−t / τ) 衰减，速度与剩余位移成正比）。
+    // 越过边界的那一帧不写滑行的值，写边界、从边界以这个速度起回弹：回弹只比理想时刻晚不到一帧，越界量与帧间隔无关
+    let bounced: Promise<unknown> | null = null
+    const glide = spring(glideSpring(INERTIA_SECONDS), at, (value) => {
+      if (bounced)
+        return
+      if ((value - bound) * direction < 0) {
+        write(value)
+        return
+      }
+      bounced = bounce((landing - bound) / INERTIA_SECONDS)
+      write(bound)
+      glide.stop()
     })
-    return { spring, done: spring.to(target, { velocity: outside ? 0 : velocity[key] }) }
+    return glide.to(landing, { velocity: speed }).then(() => bounced)
   }
   const x = axis('x')
   const y = axis('y')
   if (!x && !y)
     return
-  const inertia = { x: x?.spring ?? null, y: y?.spring ?? null }
   refs.set('inertia', inertia)
   context.set('settling', true)
   // 两轴都落定（或被新的按下、缩放打断）才撤下；打断时 stopInertia 已经收过尾
-  void Promise.all([x?.done, y?.done]).then(() => {
+  void Promise.all([x, y]).then(() => {
     if (refs.get('inertia') === inertia) {
       refs.set('inertia', null)
       context.set('settling', false)
