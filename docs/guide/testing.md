@@ -136,7 +136,7 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 
 校验模式下基线目录不挂载进容器，容器无法写入。修改基线只能显式使用 `--update`。
 
-比对失败时，实际截图与差异图输出到 `packages/adapters/vue/.vitest-attachments/`（不入库）。CI 上同一批文件作为 `visual-diffs` artifact 输出，可下载逐张查看。
+比对失败时，实际截图与差异图输出到 `packages/adapters/vue/.vitest-attachments/`（不入库）。CI 上同一批文件由失败的那一片作为 `visual-diffs-<分片>` artifact 输出（如 `visual-diffs-vue-2`），可下载逐张查看。
 
 ### 本地运行方式与固定失败项
 
@@ -147,8 +147,8 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 修改皮肤的工作方式：
 
 - 本地 `pnpm visual:baseline` 查看本次改动影响的截图，差异图在 `.vitest-attachments/` 下逐张打开；
-- PR 的判据是 CI 的 `browser` job，本地 `pnpm test:browser` 的固定失败项可以忽略；
-- CI 失败时先下载 `visual-diffs` artifact 查看，确认是有意的视觉改动，再 `pnpm visual:baseline --update` 重新生成基线并提交。
+- PR 的判据是 CI 的 `browser` job（按包与分片铺成矩阵），本地 `pnpm test:browser` 的固定失败项可以忽略；
+- CI 失败时先下载对应分片的 `visual-diffs-<分片>` artifact 查看，确认是有意的视觉改动，再 `pnpm visual:baseline --update` 重新生成基线并提交。
 
 字体族名、安装它的 apt 包、容器镜像与运行命令分散在用例、容器脚本、CI 与本页中，任何一处不一致都只表现为四十张整体判红。`check-visual-baseline-env` 把四处对齐，并核对镜像版本与 `pnpm-workspace.yaml` 中 `playwright` 的版本一致、CI 的 `browser` job 中安装字体的步骤排在运行用例之前。
 

@@ -1,0 +1,19 @@
+name: 准备 ui 工作区
+description: 装 pnpm 与 Node，按锁文件装 ui/ 的依赖。调用前先 actions/checkout。
+
+runs:
+  using: composite
+  steps:
+    # 仓库根没有 package.json，action 默认在根找 packageManager 会失败；
+    # 指向工作区的清单，pnpm 版本仍以 ui/package.json 为唯一事实源
+    - uses: pnpm/action-setup@v6
+      with:
+        package_json_file: ui/package.json
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 24
+        cache: pnpm
+        cache-dependency-path: ui/pnpm-lock.yaml
+    - run: pnpm install --frozen-lockfile
+      shell: bash
+      working-directory: ui
