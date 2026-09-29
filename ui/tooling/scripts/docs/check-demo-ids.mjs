@@ -24,7 +24,8 @@
 // - 属性：for / htmlFor、aria-labelledby 一族、list / form / headers 等（登记在 REFERENCE_ATTRIBUTES，
 //   组件自己的 id 属性——Scrollbar 的 controls、Anchor 的 value——只在对应元素上算），href="#id"
 //   （#/ 开头的是哈希路由，示例里的占位链接照 breadcrumb 的写法用它），脚本里 setAttribute 设的同名属性；
-// - 组件配置：漫游式引导步骤的 target: "#id"；
+// - 组件配置与数据：漫游式引导步骤的 target: "#id"；数据表里的 href: "#id"（side-nav 的 collection 等，
+//   渲染出来就是链接），与属性上的 href 同一条规则，占位链接同样写 #/…；
 // - SVG / CSS 的 url(#id)。
 // 绑定的属性值（:attr="…"、attr={…}）是条件式时两支分别算；与本文件某处 id 绑同一个表达式
 // （:id="s.value" 配 :value="s.value"）的算作同一个节点；x.id 顺着 x 的初值追到取它时用的 id。
@@ -478,6 +479,25 @@ function attributeRefs(text, value, form, index) {
   return attributeIds(value, form).flatMap(id => (id.includes('${') ? templateRefs(text, id, index) : [{ kind: 'literal', value: id }]))
 }
 
+/** 数据里 href 的类型标注（{ href: string }）不是值。 */
+const HREF_TYPE = /^(?:string|undefined|null)(?:\s*\|\s*(?:string|undefined|null))*$/
+
+/**
+ * 以表达式写的 href（:href="…"、href={…}、组件数据里的 href: …）：字面量按 #id 规则取；
+ * 模板串以 #（不是 #/）开头的顺着模板串追，以 ${…} 开头的看不出；其余看不出是不是 #id，
+ * 多半是外链，记成 opaque 只报数。
+ */
+function hrefRefs(text, expr, index) {
+  const source = expr.trim()
+  const literal = literalOf(source)
+  if (literal !== null)
+    return attributeRefs(text, literal, 'fragment', index)
+  const template = source.match(/^`([^`\\]*)`$/)?.[1]
+  if (template !== undefined && !template.startsWith('${'))
+    return /^#[^/]/.test(template) ? templateRefs(text, template.slice(1), index) : []
+  return [{ kind: 'opaque-href' }]
+}
+
 /** 属性所在的起始标签：属性之前最近的一个 <名字。 */
 function tagAt(tags, index) {
   let found = null
@@ -533,25 +553,28 @@ function references(source, bindings) {
     const raw = open === '{' ? readExpression(text, start, '') : text.slice(start, text.indexOf(open, start))
     const call = `${bound ?? ''}${name}=${open === '{' ? `{${raw}}` : `"${raw}"`}`
     const line = lineOf(text, m.index)
-    if (!bound && open !== '{') {
-      for (const ref of attributeRefs(text, raw, rule.form, m.index))
-        out.push({ ...ref, call, line })
+    const fragment = rule.form === 'fragment'
+    const refs = !bound && open !== '{'
+      ? attributeRefs(text, raw, rule.form, m.index)
+      : fragment ? hrefRefs(text, raw, m.index) : expressionRefs(text, raw, m.index, bindings)
+    // href 读出来是哈希路由或外链：看过了、不指向页内节点，记一笔好报数
+    if (fragment && !refs.length)
+      out.push({ kind: 'route-href', call, line })
+    for (const ref of refs)
+      out.push({ ...ref, call, line, fragment })
+  }
+  // 组件数据里的链接（side-nav 的 collection、navigation-menu 的面板表）：渲染出来就是 <a href>，同一条规则
+  for (const m of text.matchAll(/(?<![\w$.])href\s*:\s*/g)) {
+    const value = readExpression(text, m.index + m[0].length, ',;\n')
+    if (HREF_TYPE.test(value))
       continue
-    }
-    // 绑定的值是表达式：href 先看它是不是 #id，看不出就是外链，只报数
-    if (rule.form === 'fragment') {
-      const literal = literalOf(raw.trim())
-      const template = raw.trim().match(/^`#([^/`\\][^`\\]*)`$/)?.[1]
-      if (literal !== null)
-        attributeRefs(text, literal, rule.form, m.index).forEach(ref => out.push({ ...ref, call, line }))
-      else if (template !== undefined)
-        templateRefs(text, template, m.index).forEach(ref => out.push({ ...ref, call, line }))
-      else
-        out.push({ kind: 'opaque-href', call, line })
-      continue
-    }
-    for (const ref of expressionRefs(text, raw, m.index, bindings))
-      out.push({ ...ref, call, line })
+    const refs = hrefRefs(text, value, m.index)
+    const call = `href: ${value}`
+    const line = lineOf(text, m.index)
+    if (!refs.length)
+      out.push({ kind: 'route-href', call, line })
+    for (const ref of refs)
+      out.push({ ...ref, call, line, fragment: true })
   }
   // 脚本里设的引用属性：只认不挑元素的那几条（设在哪个元素上，这里看不出）
   for (const m of text.matchAll(/\.setAttribute\(\s*(["'])([\w:-]+)\1\s*,/g)) {
@@ -629,6 +652,7 @@ let tracedCount = 0
 let boundCount = 0
 let opaqueSelectorCount = 0
 let opaqueHrefCount = 0
+let routeHrefCount = 0
 
 for (const path of await walk(DEMOS, name => extToFramework.has(extname(name)))) {
   const file = relative(DEMOS, path).replaceAll('\\', '/')
@@ -670,6 +694,10 @@ for (const path of await walk(DEMOS, name => extToFramework.has(extname(name))))
   for (const ref of references(source, bindings)) {
     if (ref.kind === 'opaque-selector') {
       opaqueSelectorCount++
+      continue
+    }
+    if (ref.kind === 'route-href') {
+      routeHrefCount++
       continue
     }
     if (ref.kind === 'opaque-href') {
@@ -778,7 +806,8 @@ for (const ref of dangling) {
     }
   }
   const owner = owners.size ? `；同页的 ${[...owners].join('、')} 声明了它，挂在一起时取到的是那份示例的节点` : ''
-  problems.push(`${ref.file}:${ref.line} 的 ${ref.call} 指向 ${label(ref)}，这份示例自己没有声明它${owner}`)
+  const placeholder = ref.fragment && !owners.size ? '；只是占位链接的话写成哈希路由 #/…（breadcrumb、side-nav 示例的写法）' : ''
+  problems.push(`${ref.file}:${ref.line} 的 ${ref.call} 指向 ${label(ref)}，这份示例自己没有声明它${owner}${placeholder}`)
 }
 
 if (problems.length) {
@@ -794,5 +823,6 @@ console.log(
   + `另有 ${useIdCount} 处绑 useId()、${runtimeCount} 处登记在 RUNTIME_IDS 的运行时表达式。`
   + `${refCount} 处按 id 取节点、指向节点的引用都落在本示例自己的声明上`
   + `（${tracedCount} 处顺着变量追到字面量、${boundCount} 处与本文件的 id 绑同一个表达式）；`
+  + `${routeHrefCount} 处 href（属性与组件数据）是哈希路由或外链，不指向页内节点；`
   + `另有 ${opaqueSelectorCount} 处选择器、${opaqueHrefCount} 处 href 是表达式且看不出 #id，不算引用`,
 )
