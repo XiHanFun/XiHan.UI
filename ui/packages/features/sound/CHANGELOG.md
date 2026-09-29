@@ -1,5 +1,77 @@
 # @xihan-ui/sound
 
+## 3.0.0
+
+### Major Changes
+
+- e4d038a: 反馈服务的声音包装改名，不再绑定轻提示：`@xihan-ui/sound` 的装饰器与类型、Vue / React `sound` 子入口的包装函数一律改用 Notification 的名字，旧名不保留。适配器侧的包装改为按结构化端口泛型，传入哪个服务就原样交回哪个服务的类型。
+
+  | 旧                                                                 | 新                                                              |
+  | ------------------------------------------------------------------ | --------------------------------------------------------------- |
+  | `withToastSoundService`（`@xihan-ui/sound`）                       | `withNotificationSoundService`                                  |
+  | `ToastSoundServicePort`                                            | `NotificationSoundServicePort`                                  |
+  | `ToastSoundServiceOptions`                                         | `NotificationSoundServiceOptions`                               |
+  | `ToastSoundKey`                                                    | `NotificationSoundKey`（Vue / React 的 `sound` 子入口同时导出） |
+  | `withToastSound`（`@xihan-ui/vue/sound`、`@xihan-ui/react/sound`） | `withNotificationSound`                                         |
+  | `ToastSoundOptions`                                                | `NotificationSoundOptions`                                      |
+
+  迁移只改名字，选项、声音映射（四档语气各一把、`loading` 静音、`update` 只在改语气或打开 `loading` 时发声）与返回值不变：
+
+  ```ts
+  // 之前
+  import { withToastSound } from "@xihan-ui/vue/sound";
+  export const toast = withToastSound(createToastService());
+
+  // 之后（轻提示服务同批并入通知，见通知的 changeset）
+  import { withNotificationSound } from "@xihan-ui/vue/sound";
+  export const toast = withNotificationSound(
+    createNotificationService({ preset: "toast" })
+  );
+  ```
+
+### Patch Changes
+
+- Updated dependencies [f660e16]
+- Updated dependencies [25ccc68]
+- Updated dependencies [6dec15e]
+- Updated dependencies [a85b582]
+- Updated dependencies [a72c5bb]
+- Updated dependencies [41a393e]
+- Updated dependencies [fac80f7]
+- Updated dependencies [4e619a5]
+- Updated dependencies [e19c0b4]
+- Updated dependencies [3092b47]
+- Updated dependencies [d210959]
+- Updated dependencies [d1cca09]
+- Updated dependencies [65d6fc3]
+- Updated dependencies [467c967]
+- Updated dependencies [bc8120d]
+- Updated dependencies [f7cec9b]
+- Updated dependencies [768b06f]
+- Updated dependencies [6356589]
+- Updated dependencies [94aee78]
+- Updated dependencies [8a2b0fa]
+- Updated dependencies [c292b0f]
+- Updated dependencies [1b0701c]
+- Updated dependencies [7878927]
+- Updated dependencies [ad0b9da]
+- Updated dependencies [25db668]
+- Updated dependencies [8ca7eaa]
+- Updated dependencies [0c8d389]
+- Updated dependencies [e90cad8]
+- Updated dependencies [f2e9fb0]
+- Updated dependencies [4edea3b]
+- Updated dependencies [7bf67f9]
+- Updated dependencies [606ef8d]
+- Updated dependencies [2f6e6b3]
+- Updated dependencies [648c368]
+- Updated dependencies [1b7ad21]
+- Updated dependencies [d48dbf7]
+- Updated dependencies [4920b59]
+- Updated dependencies [6d95e8c]
+- Updated dependencies [bfbf28b]
+  - @xihan-ui/core@3.0.0
+
 ## 2.1.0
 
 ### Patch Changes

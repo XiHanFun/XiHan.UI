@@ -1,5 +1,188 @@
 # @xihan-ui/core
 
+## 3.0.0
+
+### Major Changes
+
+- f7cec9b: 减弱动效改按元素判断，容器上的 `data-motion` 对 JS 驱动的滚动同样生效：
+
+  - 贴底（`createStickToBottom`）的回到底部按滚动元素所在的作用域决定平滑还是瞬移。
+  - `resolveScrollBehavior(behavior, scope, target?)` 新增可选的滚动目标，给了就按它判断；`scrollBlockTo` 把容器（整页时是 `scrollingElement`）传进去。
+  - 删去 `RuntimeConfig.reducedMotion` 与 `createRuntimeConfig` 的同名选项：它只按窗口判断、看不到容器上的作用域，唯一的消费者（贴底）已改为按元素读 `resolveMotionPreference`。要强制减弱动效，在容器上写 `data-motion="reduce"` 或调用 `setMotionOverride('reduce')`。
+
+- e90cad8: 减弱动效下退场不再瞬时：Presence 照样等退场动画播完，减弱档的退场关键帧去掉位移、只剩 120ms 淡出，浮层、对话框、抽屉等在减弱动效下先淡出再卸载。Presence 不再读减弱动效偏好，`createPresence` 的 `config` 选项随之删除，调用处去掉这一项即可。
+
+### Minor Changes
+
+- f660e16: `cartesian-chart` 新增注释 `annotations`：画在数据之外、帮读者读数的参照。
+
+  - `line` 参考线、`band` 参考带：`axis` 取 `x`（自变量轴）或 `y`（数值轴），与屏幕方向无关；值计入所在轴的定义域，数据之外的目标值也看得到。参考带垫在数据之下，参考线是结构色的虚线。
+  - `point` 标出某个系列的最大、最小、最后一个或指定 x 上的数据（一圈环加值）；`average` 是系列均值处的平均线；`trend` 是最小二乘直线（虚线）或尾随窗口的移动平均（点线，`window` 缺省 3）。它们取所属系列的颜色，随系列淡出与隐藏。
+  - 标签缺省写值，与数据标签一起按重要性落位且注释优先；贴着绘图区边缘时翻到线或点的另一侧。
+  - 新部件 `annotation`、`annotation-label`，带 `data-kind`（趋势线另带 `data-method`），都 `aria-hidden`；摘要末尾写出参考线、参考带与平均线，新增文案 `referenceLabel`、`averageLabel` 与模板 `annotationSummary`（缺省导出 `defaultCartesianAnnotationSummary`）。
+  - 诊断码新增 `chart.annotation-target`：注释指向不存在的系列、不在轴上的类目时按提醒报出，只少画这一条。
+
+- 25ccc68: `cartesian-chart` 新增箱线系列 `mark: 'boxplot'`，另有小提琴画法。
+
+  - `y` 写字段名时同一个 x 上的全部行是一组原始值，按 R-7 求四分位，须线到 1.5 倍四分距以内最远的点，其外为离群点（`outliers: false` 时须线直达两端）；`y` 写成 `{ min, q1, median, q3, max }` 时直接用算好的五数，五个数须依次不减，否则报 `chart.invalid-range`。
+  - 新部件 `box`（箱，可聚焦）、`whisker`、`median`、`outlier`：箱铺系列色的淡洗并描出轮廓，中位线加粗，离群点是空心小圆；`box` 上写 `data-style="box|violin"`。
+  - `style: 'violin'` 用核密度画出每组分布的对称轮廓，宽度按整个系列里最大的密度归一；要原始值，否则报新诊断码 `chart.violin-raw`。
+  - 可及名与提示框按新文案 `boxLabel` 写出五数，数据表五数与离群点各一列（列名 `boxColumns`），锚点落在中位数。
+
+- 6dec15e: `cartesian-chart` 新增 K 线系列 `mark: 'candlestick'`。
+
+  - `open` / `high` / `low` / `close` 四个字段，系列 `id` 缺省取收盘字段；自变量轴缺省是类目轴，数值轴盖住最低与最高价、不强制含 0。
+  - `style` 缺省 `candle`：新部件 `wick`（影线，最低到最高）与 `candle`（实体，开盘到收盘，十字星至少一像素高）；`ohlc` 是美国线，整根线就是 `candle`。标记上写 `data-trend="rise|fall"` 与 `data-style="candle|ohlc"`，取涨跌色；强制色下涨空心、跌实心。
+  - 实体是可聚焦的数据标记：可及名与提示框按新文案 `ohlcLabel` 写出四个价，数据表开高低收各一列（列名 `ohlcColumns`），锚点落在收盘价。
+  - 诊断码新增 `chart.ohlc-range`：最低价高于开盘或收盘、最高价低于开盘或收盘。
+
+- a85b582: 直角坐标图接受列式数据，百万点的折线、K 线、柱与散点照样跟手。
+
+  - `data` 可以是 `createColumnStore({ fields, columns })` 建的列式数据仓（headless 与三个适配器都转发这个函数及其类型），每个字段一列 `Float64Array`，缺失写 `NaN`，日期写时间戳；系列照常用字段名取列。
+  - 列式数据走独立的大数据管线、总是画在画布上：折线与面积按像素列 M4 降采样（尖峰不丢），K 线与柱窄于 3px 时按 2 的幂根一组合并（组按序号对齐），散点按 2px 格稀疏；拾取在有序的自变量列上二分、散点走像素网格；提示框、可及名、键盘与数据表用原始数据。
+  - 数据表超过 500 行时按自变量区间聚合成不超过 100 行，表题按新文案 `translations.aggregatedCaption` 注明聚合了多少行；摘要由分块极值直接算。
+  - 不支持的写法报 `chart.columns-option`，共用的自变量列乱序报 `chart.columns-unsorted`，整张图不画。
+  - 新写法：`xAxis.ordinal`（列式数据按数据点等距排列、跳过休市）、`yAxis.fit: 'window'`（数值轴只按缩放窗口里露出的数据取，两种数据都支持）、柱的 `trend: [from, to]`（按两个字段的涨跌取色，两种数据都支持）。等距排列写在对象数组上、`trend` 与瀑布同写报 `chart.option-conflict`。
+  - core 新增诊断码 `chart.columns-option`、`chart.columns-unsorted`、`chart.option-conflict`。
+
+- a72c5bb: CartesianChart 的坐标轴新增比例尺与时区：
+
+  - `scale` 新增 `sqrt`、`pow`（指数写 `exponent`，缺省 1）与 `symlog`（对称对数，常数写 `constant`，缺省 1）：数值轴与连续的自变量轴都可以用，跨越正负、含 0 的长尾数据交给 `symlog`。新增类型 `CartesianContinuousScaleKind`。
+  - 时间轴的 `timeZone`（IANA 名）：刻度按那个时区的墙上时间排，刻度标签、提示框、可及名与数据表里的日期都按它写。
+  - 参数无效（幂指数不是正的有限数、对称对数常数不是正数、时区名无效）时报新增的诊断码 `chart.scale-param`，与其余规格问题一样整张图不画。
+
+- 41a393e: **新增** 图表内核：各图表组件共用的数据身份、详情载荷（`ChartDatumDetails`）、文案（`CHART_TRANSLATIONS`、`defaultChartDatumLabel`、`defaultChartSummary`）、度量读取、键盘意图、提示框落点与共享状态片段。诊断码新增 `chart.*` 一组：缺少可及名、字段不存在、系列 id 重复、系列超过 8 个、分类色与语气色混用、色槽越界、堆叠方式冲突、对数轴定义域非正、柱的基线不在 0、占比含负值。
+- fac80f7: 为 Tree、Listbox、Select、Combobox 与 Transfer 增加 CollectionVirtualizer 正式接线协议；完整集合继续负责键盘、检索、选择与 ARIA 位置，Virtualizer 只裁剪窗口 DOM，并在目标条目挂载后完成焦点交接。
+- 4e619a5: `trackArrivals` 新增 `reveal` 选项：取 `'instant'` 时撤掉 `hidden` 重新露出来的条目打上 `data-instant` 直接呈现，不算新到；缺省 `'arrive'` 行为不变。
+- e19c0b4: 新增子入口 `@xihan-ui/core/date`：不带时区的日期值 `PlainDate` / `PlainTime` / `PlainDateTime`，公历加减、差值与取整；时区换算（`today` / `now` / `toDate` / `fromDate`，夏令时跳过与重复的时间按 `disambiguation` 取舍）；按地区划分的周（周首日与周末取自 Unicode CLDR 48，各浏览器一致）；月、季度、年的边界与 ISO 周反查；以及结果与时区无关的格式化器 `createDateFormatter`。命名、取值范围与越界规则沿用 Temporal，用法见文档「日期与时间」。
+- 3092b47: 新增 `glideBy` / `glideFrom`：条目沿 transform 播一段换位（时长与曲线读元素上的 move / continuous 令牌，减弱动效下直接到位，上一段没走完时接着走）。`trackListMotion` 新增 `channel: 'transform'`，给 translate 另有用途、过渡清单又归别处的条目换位用。
+- d210959: 新增导出 `HOVER_INTENT_OPEN_DELAY`（100）与 `HOVER_INTENT_CLOSE_DELAY`（300）：`trackHoverIntent` 的 `openDelay` / `closeDelay` 缺省值改由这两个具名常量给出，取值不变。依赖悬停意图时长的组件（Menu 子菜单缺省、SideNav 折叠态悬停弹出）与它同源。
+- 65d6fc3: `@xihan-ui/core/visual-environment` 新增液态面 `trackLiquidSurface(el)`：同一文档的液态部件共用一个协调器，只在最近祖先的 `data-material` 为 `liquid` 时生效。它按部件下层的计算底色与作者声明（`data-xh-backdrop="light | dark"`，杂乱时加 `data-xh-backdrop-busy`）在部件上写 `data-xh-ink` 选色调（相对亮度 0.179 ± 0.04 滞回），下层均匀时写 `data-xh-liquid-clarity="clear"`；细指针下把光源方向写进 `--xh-_liquid-light-x/-y`，减弱动效时不跟随；Chromium 内核下以 SVG 位移滤镜折射边缘，其余引擎、超过 640 × 120 或同一视口超过 3 个时只模糊。返回的清理函数撤回写过的全部属性、行内样式与滤镜库。
+
+  Portal 视觉桥把材质轴 `data-material` 一并投影到实例壳。
+
+- 467c967: `trackListMotion` 新增 `onReflow`：一批变更里有条目换了位时回调，跟着条目走的东西（如 Tabs 的指示条）据此一起滑过去。
+- bc8120d: 新增列表动效原语 `trackListMotion(container, { item, initial })`：在 `trackArrivals` 的到达规则之上，接住条目的离场与换位。条目被宿主移出文档时，在原位置放一个退场态的替身（摘掉 id、表单名与 `data-xh-part`，`inert`、`aria-hidden`、`data-state="closed"`，绝对定位在原排布位），等它身上实际起播的退场动画播完再移除；留下来、排布位变了的条目先写反向的 `translate`，再交给皮肤的 `translate` 过渡回到新位置。同一批变更里被挪了位置的已知条目算换位，不算到达。时长与曲线全部由皮肤的令牌给出。
+- 768b06f: 新增行为原语 `trackAppearance(el, release, { adopted })`：单个节点的出现随页面首屏就在时保持 `data-instant` 直接呈现，页面加载完成之后挂上、挂上时本就不可见、或首屏那一份第一次收起之后调用 `release`，此后每次显出都播进场。页面加载完成取文档的 `readyState`，服务端渲染后水合的节点由 `adopted` 标明。
+- 6356589: 新增条目到达原语 `trackArrivals(container, { item })`：开始时已在的条目打上 `data-instant`（首帧不播进场），之后同一批新到的条目（插入，或撤掉 `hidden` 重新露出）按到达顺序写私有槽 `--xh-_stagger-index`（0 起，封顶 `STAGGER_CAP` = 4）；`initial: 'arrive'` 让开始时已在的条目也算第一批到达，照常进场。
+- 94aee78: 新增 `trackReorder(container, { item, key })`：记下条目此刻的排布位，等宿主下一批增删了条目的 DOM 变更，把排布位变了的条目反向补偿、交给皮肤的 `translate` 过渡带回新位置，随即停止。给「一次提交之后由宿主重排」的集合用（树与表格的拖放落下）：`key` 按身份认回被宿主重建的节点，排布位沿 `offsetParent` 链累加到容器，嵌套层级之间的换位也量得出位移。`trackListMotion` 的换位补偿与它共用同一段实现，行为不变。
+- c292b0f: 新增 `graph-chart` 关系图：看实体之间的连接关系、聚类与层级结构。
+
+  - 数据是节点（`id` / `name` / `group` / `value`）与连线（`source` / `target` / `value`）。节点重复、端点不存在、自环，或树布局下数据不是一棵树，报新的诊断码 `chart.graph-shape`；多于 500 个节点按提醒报新的 `chart.graph-size`，多于 2000 个报错不画。
+  - `layout` 取 `force`（缺省，同步跑到收敛，同样的数据得到同样的布局）、`circular`（按分组等角排在圆上）、`tree`（根在最左）、`radial-tree`（根在圆心）；`root` 指定树的根。
+  - 节点按分组分配分类色，`value` 经平方根比例尺定面积，连线的 `value` 定粗细，`directed` 画箭头。名字先量再放，互相压住时连线多的节点先放。
+  - 悬停节点时它、邻居与连着它的线留着、线换成它的颜色；方向键朝那个方向 45° 锥形里找最近的节点，Home / End 到阅读序的头尾。
+  - 力导布局下可以拖动节点（`draggableNodes`，缺省开；不叫 `draggable`，那是 HTML 的原生属性），松手后模拟冷却到收敛；`zoom` 打开平移缩放（Ctrl / ⌘ 加滚轮、拖动空白处、+ / − / 0 键），`api.zoomBy` / `api.resetView` 供外部调用。
+
+- 1b0701c: `@xihan-ui/core/visual-environment` 新增液态组 `trackLiquidGoo(host, { source, members, domains })`：宿主的材质轴为 `liquid` 时，在宿主最前面插入装粘连滤镜的 `<svg>` 与一层装饰色块层（`aria-hidden`、不接指针），同组的块边缘相距约 15px 以内就连成一片；投影、底色、墨色细线与 1px 亮边都沿整组外形画，色调、通透档与光源方向跟源块走。`split(items, open)` 让块从源块中分离或融回，离源块近的先走、相邻两块错开交错步长，减弱动效下不播放。
+
+  弹簧新增预设 `merge` 与令牌 `--xh-motion-spring-merge-stiffness / -damping`（320 / 24，超调 5.8%），供融合分离使用。液态层皮肤新增色块层与滤镜各段的填色规则，投影经私有槽 `--xh-_liquid-goo-shadow`，组件可在自己的宿主上接入使用者的投影槽。
+
+- 7878927: liquid 档的双沿指示器：`data-material="liquid"` 下，Segmented、Tabs、Anchor、NavigationMenu 的指示器起始沿与结束沿各由一支弹簧驱动，去向那一侧用 `spring-lead`、另一侧用 `spring-trail`，移动中被拉长、停下时收回；拉伸比例写成私有槽 `--xh-_<组件>-indicator-stretch`，皮肤据此把块向压到不低于新令牌 `--xh-motion-scale-squash`（0.86，减弱档为 1）。新的点击从当前位置与速度改向；standard 档与减弱动效下直接落位。
+
+  `@xihan-ui/core/visual-environment` 导出 `isLiquidMaterial(el)`：最近一层 `data-material` 声明为 `liquid` 时为真。
+
+- ad0b9da: 液态面的按下形变：按住液态面时面朝手指鼓出、沿指向拉长、另一个方向压扁（不低于 `--xh-motion-scale-squash`），拖离时越拉越长、按越界衰减趋近上限；松手由 `spring-toggle` 带回原形。形变由 core 写成私有槽 `--xh-_liquid-deform`，FloatButton 触发器与 BackTop 的液态面拿它当 transform；减弱动效下不形变。
+- 25db668: Notification 增删卡片时其余卡片从旧位置过渡到新位置，不再整张跳位：
+
+  - `trackListMotion` 新增 `depart` 选项（缺省 true）：传 false 时不放离场替身，只做到达与换位，给条目自己带退场、播完才收起的集合用；选项类型以 `TrackListMotionOptions` 导出。
+  - Notification 的卡片改由它追踪（`depart: false`），皮肤给卡片补上 translate 的 move 过渡。
+
+- 0c8d389: 浮层关闭那一刻就把焦点交回触发器，不再等退场动画播完。此前 Dialog、Drawer、Popover、Popconfirm、Command、Tour、ImageViewer 与 Select 等锚定列表在关闭同一拍把内容设为 inert，焦点被浏览器收到 body 上，要等退场结束再过一帧才归还，这段时间里键盘与读屏用户「不在任何地方」。
+
+  - `createFocusScope` 的返回值新增 `returnFocus()`：立即按原有规则归还焦点，归还过的域卸载时不再重复归还；`reactivate()` 恢复归还资格。返回值类型以 `FocusScopeHandle` 导出。
+  - 模态浮层关闭那一刻先撤下背景失活（滚动锁仍保留到退场结束），背景里的触发器才能接住焦点；退场中途重开时补回。
+
+- f2e9fb0: 浮层退场中途重新打开时，从当前透明度接着淡入，不再先跳回全透明再进场（快速连点触发器时的一次闪断）。
+
+  - `PresenceHandle` 新增 `onReenter(fn)`：退场中途被重新打开时同步回调，先于租约结清。
+  - `attachCssExit` 在退场开始时记下起始透明度、时长与缓动，重开时按已播时间算出此刻的透明度，写进节点的私有槽 `--xh-_enter-from-opacity`；共享进场关键帧（`xh-overlay-slide-in`、`xh-overlay-pop-in`、`xh-pop-in`、`xh-fade-in`、`xh-rise-in`、`xh-item-in`、`xh-drop-in`、`xh-sheet-in`、`xh-slide-fade-in`）与 Toast、Tour 聚光框的进场以它为起点，未写时仍从 0 起。完整关闭后的下一次打开照常从全透明淡入。
+
+- 4edea3b: **新增** Progress 在量（`semantics="meter"`）下的四样刻画，承担仪表盘与子弹图，三端可用：
+
+  - `thresholds` 分段：升序上界 + 语气 + 名字，画成同族淡色的色带；当前值所在的分段决定填充色，`aria-valuetext` 补上分段名（模板 `translations.segmentValueText`）。
+  - `target` 目标刻度、`scale` 量程刻度与刻度值（`{ ticks, format }`，按 `locale` 写）、`indicator="needle"` 仪表盘指针。
+  - 线形加分段时画成子弹图：轨道加厚一档，填充收窄压在色带正中。
+  - 新部件 threshold / target / scale / scale-tick / scale-label / needle；Web Components 侧由元素生成进作者写的外壳。
+  - 在进度语义下写这些属性报新诊断码 `chart.meter-only`；分段或目标越界报 `chart.invalid-range`。
+  - 新增组件槽 `--xh-progress-threshold-color`、`--xh-progress-target-color`、`--xh-progress-needle-color`。
+  - 文档总览的「图表」分类加一张引用卡，指向进度条的仪表盘示例。
+
+  **修复** 环形与仪表盘的填充被线形那套按比例的平移挪出画面、只剩轨道的问题。
+
+  皮肤体积：`progress.css` 从约 4.6 KB 涨到约 10.6 KB（去注释压空白后），涨在色带、目标刻度、量程刻度、指针三套形态的规则与它们的强制色分支。
+
+- 7bf67f9: Progress 线形新增三样外观：`steps` 把轨道切成等宽的格、填充按整格亮起（读屏仍报实际值）；`striped` 在填充上铺斜纹，进行中沿行向流动、完成与减弱动效下静止；`buffer` 在填充之后画第二段浅色填充，新增 `buffer` 部件（Web Components 由元素生成进 track）。三者只对线形生效，`buffer` 只属于进度语义；写错地方或 `steps` 取值不合法时报新诊断码 `progress.option-ignored` 并按没给处理。填充与缓冲都铺满轨道按比例平移，不动宽度。progress.css 随之增大约 2.3 kB（分段遮罩、条纹与缓冲段的规则，以及它们的减弱动效、强制色与打印分支）。
+- 606ef8d: 新增 `radar-chart` 雷达图：比较少数几个实体在多个指标上的画像。
+
+  - 每行数据一个实体（`nameField` 取实体名），`indicators` 列出 3–10 个指标，自 12 点方向顺时针排开；量程缺省每个指标自己的（`scale: 'independent'`，下限 0、上限取整），`shared` 全部指标共用，指标上可写 `min` / `max` 固定量程。量程按全部实体算，图例隐藏一个实体时其余形状不变。
+  - 网格 `shape` 取 `polygon` / `circle`；轮廓 `curve` 取 `linear` / `catmull-rom`；`area` 控制系列色淡洗。缺失的值落在圆心、不画顶点。
+  - 悬停按角度落到最近的指标轴并加粗成准线，提示框列出全部实体在这个指标上的值；键盘左右键沿顺时针走指标、上下键换实体。每个实体是 `graphics-object` 分组，每个顶点是带可及名的 `graphics-symbol`；摘要写每个实体最高与最低的指标，数据表每个实体一行、每个指标一列。
+  - 入场从圆心张开，数据变化与图例切换在形状之间插值；强制色、打印与纹理模式下淡洗换纹理、轮廓换线型。
+  - 新诊断码 `chart.indicator-count`（给了指标但个数不在 3–10 之间；还没给指标时按空态处理，自定义元素在脚本赋值之前连上也不误报）与 `chart.radar-overlap`（多于 3 个实体时按提醒报）。
+
+- 2f6e6b3: 新增 `sankey-chart` 桑基图：看流量从哪里来、到哪里去、在哪里流失。
+
+  - 数据是流带（`links`：`source` / `target` / `value`），节点（`nodes`：`id` / `name` / `group`）缺省从流带推断。成环、自环、端点不存在或节点重复报新的诊断码 `chart.sankey-shape`，负值报 `chart.negative-share`。
+  - `orientation` 取 `horizontal` / `vertical`；`nodeAlign` 取 `justify` / `start` / `end` / `center`；`nodeSort` 取 `auto` / `input`。节点厚度取 `--xh-sankey-chart-node-width`，同一列相邻节点至少隔一行字。
+  - 节点按分组分配分类色（多于 8 组报 `chart.too-many-series`），有两组及以上时显示图例、按组显隐；流带缺省是半透明的中性色，`linkColor` 取 `source` / `target` / `gradient`。
+  - 悬停节点时相连的流带换成它的颜色、其余淡出，提示框列出流入与流出的明细；悬停流带时写流量与它占两端的比例。名字写在列间的空当里，挤的时候只留放得下的。
+  - 节点是带可及名的 `graphics-symbol`，流带不占焦点；上下键在同一列里走，左右键沿流向跨到相邻的列、取流量最大的相连节点（竖排时对调），Home / End 到头尾两列。数据表每条流带一行。
+
+- 648c368: **新增** `sparkline` 组件（迷你图），Vue、React 与 Web Components 三端可用：在文字、表格单元格或指标卡里一眼看到一组数的趋势形状。
+
+  - 根是 `<svg role="img">`，可及名写在根上的 `aria-label`，`aria-describedby` 指向自动生成的摘要（点数、范围、末值、首末变化率）；不可聚焦，没有坐标轴、图例与提示框。
+  - 形态 `variant`：line（缺省）/ area / bar / win-loss；win-loss 只看正负、柱等高，取涨跌色。
+  - 标记点 `markers`：last（缺省）/ extremes / none；参考带 `band` 画出正常区间；`curve="monotone"` 平滑。
+  - 缺省中性：线取弱化色、末点取品牌色相的分类色 1；写了 `tone` 整条取语气色。
+  - 尺寸走组件槽 `--xh-sparkline-width`（缺省 6rem）与 `--xh-sparkline-height`（缺省一行字高）。
+  - 首次出现描线、柱从基线长出，数据变化时插值；`animated` 可关，减弱动效下只淡入。
+  - 诊断码新增 `chart.invalid-range`：区间两端不是有限数，或下界大于上界。
+
+- 1b7ad21: Steps 新增 `percent`（0–100，越界夹回）：当前这一步报出自己的完成比例，当前步的序号圆点外离一道缝画一圈进度环，从 12 点顺时针走（不随书写方向镜像），已完成那段取强调色、轨道取连接线的底色；环落在触发器的内衬里，不挤版面。比例变化时弧沿数值角色的时长走到新值，首帧直接落位；强制色下弧与轨道改取系统色，打印照原色印出。读屏：可操作时比例作为当前步触发器的描述读出（圆点对读屏隐藏，经 `aria-describedby` 供给「60% complete」），只读展示下当前步的圆点是一个 `progressbar`（`aria-valuenow` / `aria-valuetext`）。新增 `translations.progressLabel` 与 `progressValueText`、圆点的 `data-progress` 状态与覆盖槽 `--xh-steps-indicator-ring-track`。进度环只画在序号圆点上：点状形态给了 `percent`、或取值不是有限数时报新诊断码 `steps.option-ignored` 并按没给处理。
+- d48dbf7: Tabs 放不下时可以在标签带行尾放一颗「更多」下拉：新增 `overflow-trigger` 部件（Vue / React `XhTabsOverflowTrigger`，Web Components 在 root 里、紧跟 list 之后写一颗空的 `<button data-xh-part="overflow-trigger">`）。标签带放不下时钮露面，点开是一张 Menu，列出此刻没有整个露在可见区里的标签（可见区扣掉两端显示着的翻页钮，半露的也列），选中一项即选中那个标签并把它挪进可见区；宽度够时钮收起。标签不会被收起，始终留在标签带与 tablist 里，下拉只是可见区外标签的索引，随标签带位移换项；钮的有无只取决于全部标签放不放得下，与翻页钮同进同退，不会因为钮自己挤窄了标签带而一直留着。
+
+  - 键盘：钮在 tablist 之外、紧跟标签带自占一个 Tab 位，不是方向键走位的一站（方向键只在标签之间走、尽头回绕）；Enter / Space / ArrowDown 展开并落到首项，ArrowUp 落到末项，Escape 收起、焦点回到钮上，选中一项后菜单收起、焦点同样回到钮上。
+  - 钮接 Action Control 的 icon 档、ghost 形态，与两端翻页钮同档、与标签同高；不写内容时皮肤画一枚横排三点，菜单开着时与悬停同档的中性面；竖排时排在标签带那一列的列尾、横贯列宽。可及名缺省 `More tabs`，由新增的 `translations.overflowTrigger` 换成本地文案。
+  - headless：`TabsApi` 新增 `overflowItems` 与 `getOverflowTriggerProps()`，新增 `tabsOverflowMenuProps(service)`（喂给菜单的机器 props）与类型 `TabsOverflowItem`；`TabsTranslations` 新增 `overflowTrigger`。
+  - core：新增 `overflowOutsideWindow` 与类型 `OverflowSpan`：滚动带里落在可见窗口之外的条目，与 `fitOverflowCount` 同一把舍入余量。
+  - Web Components：`<xh-tabs>` 新增 `portalContainer` property；下拉的定位层、列表与条目由元素自己建，与工具条的「更多」菜单共用一套。
+
+  皮肤 tabs.css 涨在「更多」钮一节：放了钮的 root 换成两轨网格（钮排在标签带之后、面板横跨两轨），钮的尺寸、兜底字形、打开态、竖排落位与打印时隐藏；另修竖排限了高时标签被压扁到一行字高的问题——标签保持控件高，放不下的那截靠位移露出。
+
+- 4920b59: Toolbar 放不下时可以把条目收进行尾的「更多」菜单：新增 `overflow-trigger` 部件（Vue / React `XhToolbarOverflowTrigger`，Web Components 在 root 末尾写一颗空的 `<button data-xh-part="overflow-trigger">`）。放了它的工具条不再折行，宽度不够时放不下的条目按文档序从尾部起收起，钮露面，点开是一张 Menu：菜单里的文字取条目的可及名，写了 `aria-pressed` 的开关条目是勾选项，工具条上的分组与分隔线在菜单里画成分隔线，选中一项即替收起的条目触发它自己的点击；全部放得下时钮收起。容器变宽变窄、条目增减或改写、字体加载后自动重算，焦点所在的条目被收起时焦点交给「更多」钮。没放钮的工具条照旧折行。
+
+  - 键盘：「更多」钮是方向键走位的最后一站（End 落到它上面，收起的条目跳过）；横排时 ArrowDown / ArrowUp / Enter / Space 展开菜单，竖排时上下键仍归工具条走位；Escape 收起菜单、焦点回到钮上。工具条只接没被条目处理过的方向键：菜单触发器用上下键展开菜单时不再同时走位。
+  - 钮接 Action Control 的 icon 档、ghost 形态，与条目同档；不写内容时皮肤画一枚横排三点，菜单开着时与悬停同档的中性面。可及名缺省 `More`，由新增的 `translations.overflowTrigger` 换成本地文案（Toolbar 新增 `translations` prop）。
+  - headless：`ToolbarApi` 新增 `overflowItems` 与 `getOverflowTriggerProps()`，新增 `toolbarOverflowMenuProps(service)`（喂给菜单的机器 props）、`toolbarOverflowTriggerQuery` 与类型 `ToolbarOverflowItem`、`ToolbarRefs`；机器新增 `getRootEl` ref，适配器在挂载前交出 root 节点。
+  - core：新增溢出收纳原语 `fitOverflowCount`、`measureOverflowLayout`、`trackOverflowLayout` 与类型 `OverflowAxis`、`OverflowLayout`、`MeasureOverflowOptions`、`TrackOverflowOptions`。
+  - Web Components：`<xh-toolbar>` 新增 `translations` 与 `portalContainer` 两个 property；「更多」菜单的定位层、列表与条目由元素自己建。
+
+  皮肤 toolbar.css 涨在收纳一节：放了钮的根不折行、条目不压缩，收起后多出的分隔线与收空的分组让开，组里留下的最后一段补回末端圆角，以及钮的兜底字形、打开态与收起规则，体积基线随之重落。
+
+- 6d95e8c: 视觉环境控制器新增第八轴 `material`（`standard` / `liquid`，缺省 `standard`，没有系统档）：`setPreference({ material: 'liquid' })` 在作用域根写 `data-material`，子作用域继承，Portal 视觉桥照常带到实例壳；新增类型 `Material`。`<xh-config>` 新增 `material` 属性，Vue 的 `provideXhConfig` 在 `initial.material` 变化时重建控制器。用了控制器的应用，材质轴改经它设置——控制器始终维护根上的 `data-material`。
+- bfbf28b: **新增** `ZonedDateTime` 毫秒精度值模型，以及 IANA 时区规范化、可用时区枚举和 UTC 偏移格式化工具。模型支持严格字符串回读、DST 重复/跳过时间消歧、保留时间点换时区，以及保留时区替换墙上日期时间。
+
+### Patch Changes
+
+- d1cca09: 液态面的下层判定修正三处：图片、视频、画布与内嵌 SVG 没有声明 `data-xh-backdrop` 时按未知处理（此前它们底色透明，会被跳过、读到它们下面的颜色）；模态把背景设为 inert、命中栈里读不到时只按主题猜色调、不换通透档；下层原地变样（媒体加载完、过渡与动画播完、状态机驱动的平移落定）时重读，不必等滚动。
+- 8a2b0fa: 浮层退场还没播完就被重新打开时，焦点按这一次打开的初始焦点落位（例如菜单按 ArrowUp 打开落末项），不再回到上一次打开时停过的那一项；这一次没给初始焦点时仍回到上次聚焦的控件。
+- 8ca7eaa: 订阅通知改为直接遍历订阅表，不再先拷一份快照：`setMotionOverride`、视觉环境控制器、`onXhConfigChange`、对话线程仓库的订阅者，在通知途中退订、还没轮到的不再收到这一轮；通知途中新订阅的在同一轮里也会收到。回调里退订自己照旧安全。
+- Updated dependencies [c48171d]
+- Updated dependencies [df3d2ac]
+- Updated dependencies [1b0701c]
+- Updated dependencies [9c6d582]
+- Updated dependencies [c17f6e3]
+- Updated dependencies [245995e]
+- Updated dependencies [684cf13]
+- Updated dependencies [7192b57]
+- Updated dependencies [5c79ac0]
+- Updated dependencies [608cc0a]
+- Updated dependencies [cac2eaf]
+- Updated dependencies [560242d]
+- Updated dependencies [8ca7eaa]
+  - @xihan-ui/motion@3.0.0
+
 ## 2.1.0
 
 ### Minor Changes

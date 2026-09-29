@@ -1,5 +1,68 @@
 # @xihan-ui/motion
 
+## 3.0.0
+
+### Major Changes
+
+- c17f6e3: 缓动表删去 `decelerate` 与 `accelerate`：组件库与令牌都不使用它们，也没有对应的令牌。引用过的改写成 `cubic-bezier()` 串：
+
+  | 旧名                                 | 替代写法                       |
+  | ------------------------------------ | ------------------------------ |
+  | `easing.decelerate` / `'decelerate'` | `'cubic-bezier(0, 0, 0, 1)'`   |
+  | `easing.accelerate` / `'accelerate'` | `'cubic-bezier(0.3, 0, 1, 1)'` |
+
+  `EasingName` 类型随之少了这两个名字。
+
+- 608cc0a: `resolveEasing` 认不出写法时抛 `TypeError`，不再退回线性（此前只在开发构建下警告）。消息里带原文与全部可用写法。
+
+  字符串先查命名缓动，查不到再按 CSS 缓动函数的语法与取值解释，新认下 `ease` / `ease-in` / `ease-out` / `ease-in-out`、`step-start` / `step-end`、`steps()` 与 `linear()`；`readMotion(el).easing()` 读到样式里改写成的任何合法 CSS 缓动都能换成函数。
+
+  迁移：
+
+  - 此前写成 `'ease-out'` 一类 CSS 关键字、实际按匀速播放的，现在按 CSS 的曲线播放；要保持匀速写 `'linear'`，要库里的曲线写命名缓动 `'easeOut'`。
+  - 写法不合 CSS 的一律报错，包括 x 分量越出 [0,1] 的 `cubic-bezier()`、带单位的分量、原型上的属性名（如 `'toString'`）与非字符串值。来自配置或后端的缓动串，请在入口处调用 `resolveEasing` 校验。
+  - `tweenValueAt` 经 `resolveEasing` 取曲线，规则相同。
+
+### Minor Changes
+
+- c48171d: 新增呼吸动效：共享关键帧 `xh-breathe`（明暗与缩放起伏，峰值在 42%）与 `xh-breathe-halo`（外扩光环），令牌 `--xh-motion-loop-breathe`（3600ms）、`--xh-motion-ease-breathe`（正弦式缓入缓出，原语 `--xh-ease-sine-in-out`）、`--xh-motion-scale-breathe` 与 `--xh-motion-scale-halo`（减弱档归 1）；`@xihan-ui/motion` 的 `easing.sineInOut` 与 `motionEasings.breathe` 同源。
+
+  Badge 新增 `pulse`（Web Components 为 `pulse` attribute）：圆点档呼吸，表达正在进行、给不出进度的状态（直播、录制、通话中）；光环播 3 轮后停，圆点持续到状态结束；数字角标不呼吸；减弱动效下两者都停，圆点停在满不透明度。badge.css 因此引入共享关键帧，体积基线随之上调。
+
+- df3d2ac: liquid 档的交互光：`data-material="liquid"` 下实心按钮在细指针悬停的一刻，一道光沿 1px 描边环扫过一次，光取面上前景色、不进面，文字对比不受影响；粗指针、强制色下不播，减弱动效下时长归 1ms。新增令牌 `--xh-motion-duration-glint`（640ms）与 motion 的 `motionDurations.glint`，共享关键帧 `xh-glint`，按钮新增覆盖槽 `--xh-button-glint-duration`。
+- 1b0701c: `@xihan-ui/core/visual-environment` 新增液态组 `trackLiquidGoo(host, { source, members, domains })`：宿主的材质轴为 `liquid` 时，在宿主最前面插入装粘连滤镜的 `<svg>` 与一层装饰色块层（`aria-hidden`、不接指针），同组的块边缘相距约 15px 以内就连成一片；投影、底色、墨色细线与 1px 亮边都沿整组外形画，色调、通透档与光源方向跟源块走。`split(items, open)` 让块从源块中分离或融回，离源块近的先走、相邻两块错开交错步长，减弱动效下不播放。
+
+  弹簧新增预设 `merge` 与令牌 `--xh-motion-spring-merge-stiffness / -damping`（320 / 24，超调 5.8%），供融合分离使用。液态层皮肤新增色块层与滤镜各段的填色规则，投影经私有槽 `--xh-_liquid-goo-shadow`，组件可在自己的宿主上接入使用者的投影槽。
+
+- 9c6d582: 新增两枚数据动效的语义时长：`--xh-motion-duration-reveal`（640ms）给数据标记首次出现——柱从基线长出、折线描出、扇区扫开；`--xh-motion-duration-morph`（400ms）给数据更新——标记从旧位置走到新位置、坐标轴刻度滑动。减弱动效下两者都归 1ms。`motionDurations` 与 `reducedMotionDurations` 同步加入 `reveal`、`morph`，`readMotion(el).duration('reveal' | 'morph')` 可直接读取。
+- 245995e: 新增表现性动效令牌：`--xh-motion-duration-attention`（注意动效播一遍，640ms，减弱档 1ms）、`--xh-motion-distance-lg`（16px，减弱档归零）、`--xh-motion-ease-emphasis`（取新原语 `--xh-ease-emphasized`）。它们供 `@xihan-ui/animations` 的预设使用，组件皮肤不用。`@xihan-ui/motion` 同步导出语义位移 `motionDistances`（sm / md / lg）与错开步长 `motionStaggerStep`，`motionDurations` 增加 `attention`、`motionEasings` 增加 `emphasis`，与令牌逐条对账。
+- 684cf13: 新增手势松手的物理：`rubberBand(overshoot, dimension)` 越界跟手的橡皮筋衰减、`rubberClamp(value, min, max, dimension)` 只衰减越出区间的那段、`projectRelease(position, velocity, seconds)` 松手落点投影、`nearestSnap(points, position)` 最近吸附点，以及 `glideSpring(seconds)`——临界阻尼、固有频率 1 / seconds 的弹簧，以投影落点为目标时恰是指数减速的惯性滑行。
+- 7192b57: JS 动画可以从元素读取语义动效令牌，减弱动效按元素的作用域判断。
+
+  - 新增 `readMotion(el)`：按语义名读取 `--xh-motion-duration-*`（毫秒）与 `--xh-motion-ease-*`（采样函数）的实际取值，作者对组件槽的覆盖、容器上的 `data-motion` 与系统偏好都已算进计算样式；读不到时取与令牌同值的常量。
+  - 新增与令牌同值的常量 `motionDurations`、`motionEasings` 及类型 `MotionDurationName`、`MotionEaseName`、`MotionReading`。
+  - `resolveMotionPreference` 接受元素：最近祖先上的 `data-motion`（`reduce` / `default`）优先，其次是应用级 override 与系统设置。传入窗口或不传时行为不变。
+  - 缓动表新增与令牌原语同值的 `outFluid`、`outBack`。
+  - `resolveEasing` 遇到认不出的写法仍按匀速播放，开发构建下同一写法在控制台警告一次。
+
+- 560242d: 新增有状态弹簧 `createSpringValue`：持有当前值、速度与目标，`to(target, { velocity })` 中途改目标时以当前位移与速度为初始条件重新求解，位置与速度都不跳变，手势松手的速度可以原样交给动画；在目标处带着速度松手也会运动。每一段运动是时间的闭式解，与帧率无关；减弱动效下直接落到终态；非法参数立即抛 `TypeError`。
+
+  弹簧预设进入令牌：`--xh-motion-spring-<名>-stiffness / -damping`（snappy、smooth、gentle、bouncy、stiff，以及 liquid 档用的 toggle、lead、trail），`springPresets` 与令牌同源并由门禁双向对账。
+
+### Patch Changes
+
+- 5c79ac0: 减弱动效改为去掉位移、保留淡变。
+
+  减弱动效下（系统 `prefers-reduced-motion: reduce` 或 `data-motion="reduce"`），`--xh-motion-duration-micro`、`--xh-motion-duration-enter`、`--xh-motion-duration-exit` 保留为 120ms：换色、浮层与提示的淡入不再瞬间跳变。位移、缩放、旋转与尺寸变化仍然瞬时完成——组件的几何过渡取 `move` / `nudge` / `expand` / `collapse` / `slide` / `press` / `release`，这些时长在减弱档下为 1ms，位移与缩放幅度归零。
+
+  自定义样式如果把几何变化挂在 `micro` / `enter` / `exit` 上，减弱动效下会以 120ms 动起来，请改用上面的几何时长。`@xihan-ui/motion` 的 `readMotion` 在读不到样式时取同样的减弱档取值。
+
+- cac2eaf: `animate()` 与背景层按宿主元素所在的 `data-motion` 作用域判断减弱动效。
+
+  局部容器写了 `data-motion="reduce"` 时，其中的 `animate()` 调用（包括 `@xihan-ui/animations` 的预设播放）不再播放中间帧，背景画面冻结；写了 `data-motion="default"` 时，即使应用级偏好要求减弱也照常播放。没有 `data-motion` 的页面行为不变。
+
+- 8ca7eaa: 订阅通知改为直接遍历订阅表，不再先拷一份快照：`setMotionOverride`、视觉环境控制器、`onXhConfigChange`、对话线程仓库的订阅者，在通知途中退订、还没轮到的不再收到这一轮；通知途中新订阅的在同一轮里也会收到。回调里退订自己照旧安全。
+
 ## 2.1.0
 
 ## 2.0.0

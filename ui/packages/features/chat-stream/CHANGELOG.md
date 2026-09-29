@@ -1,5 +1,68 @@
 # @xihan-ui/chat-stream
 
+## 3.0.0
+
+### Minor Changes
+
+- 6309422: 会话容器改为一棵消息树，补齐重新生成、失败重试、编辑重发、分支切换、附件提交与续写：
+
+  - `UIMessage` 新增 `parentId`（会话第一条为 `null`，同一 `parentId` 下互为分支；缺席时按数组顺序相连）与 `status`（助手消息的结束方式：`streaming` / `complete` / `aborted` / `error`）。
+  - `ThreadStore` 新增 `regenerate(messageId?)`、`retry()`、`edit(messageId, content)`、`continue(messageId?)`、`selectBranch(messageId, index)` 与 `getTree()`；`submit` 除纯文本外接受 parts（`text` / `file` / `data`），附件与 UIMessage 的 parts 同形。
+  - 快照新增 `branches`：当前路径上每条消息在兄弟中的 `{ index, count }`；`messages` 是从根往下每个分叉取选中那一支的路径。
+  - `createThreadStore` 新增 `messages` 选项，用线性历史或 `getTree()` 导出的整棵树恢复会话。
+  - `ChatRequest` 新增 `trigger` 与 `messageId`，HTTP 传输把两者并进请求体；续写时 `messages` 的最后一条就是要接着写的那条助手消息，截断在半句上的正文接着长。
+  - `stop()` 当场把在途的回复收尾并记为 `aborted`，不再等传输那头关流。
+  - `createReduceState` 新增第三个参数 `from`：在已有消息上接着归约。
+
+- 0ed99b4: **新增** `Citation` 组件（引用来源）：Vue、React 与 Web Components 同时支持行内引用、来源预览、来源列表、方向键导航及完整可访问关系。
+
+  `sources` 与 `@xihan-ui/chat-stream` 的 `SourcePart[]` 结构兼容；URL 来源也可携带 `anchors`。新增皮肤约 8 KB，包含预览 surface、引用编号和来源列表样式。
+
+### Patch Changes
+
+- 1ee904b: 传输在取消时直接抛错（而不是正常收尾）时，已被 `stop()` 或被新一轮顶掉的那一轮不再把会话记成 `error`，也不改写新一轮的状态；内置的 HTTP 传输不受影响。
+- 8ca7eaa: 订阅通知改为直接遍历订阅表，不再先拷一份快照：`setMotionOverride`、视觉环境控制器、`onXhConfigChange`、对话线程仓库的订阅者，在通知途中退订、还没轮到的不再收到这一轮；通知途中新订阅的在同一轮里也会收到。回调里退订自己照旧安全。
+- Updated dependencies [f660e16]
+- Updated dependencies [25ccc68]
+- Updated dependencies [6dec15e]
+- Updated dependencies [a85b582]
+- Updated dependencies [a72c5bb]
+- Updated dependencies [41a393e]
+- Updated dependencies [fac80f7]
+- Updated dependencies [4e619a5]
+- Updated dependencies [e19c0b4]
+- Updated dependencies [3092b47]
+- Updated dependencies [d210959]
+- Updated dependencies [d1cca09]
+- Updated dependencies [65d6fc3]
+- Updated dependencies [467c967]
+- Updated dependencies [bc8120d]
+- Updated dependencies [f7cec9b]
+- Updated dependencies [768b06f]
+- Updated dependencies [6356589]
+- Updated dependencies [94aee78]
+- Updated dependencies [8a2b0fa]
+- Updated dependencies [c292b0f]
+- Updated dependencies [1b0701c]
+- Updated dependencies [7878927]
+- Updated dependencies [ad0b9da]
+- Updated dependencies [25db668]
+- Updated dependencies [8ca7eaa]
+- Updated dependencies [0c8d389]
+- Updated dependencies [e90cad8]
+- Updated dependencies [f2e9fb0]
+- Updated dependencies [4edea3b]
+- Updated dependencies [7bf67f9]
+- Updated dependencies [606ef8d]
+- Updated dependencies [2f6e6b3]
+- Updated dependencies [648c368]
+- Updated dependencies [1b7ad21]
+- Updated dependencies [d48dbf7]
+- Updated dependencies [4920b59]
+- Updated dependencies [6d95e8c]
+- Updated dependencies [bfbf28b]
+  - @xihan-ui/core@3.0.0
+
 ## 2.1.0
 
 ### Patch Changes

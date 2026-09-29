@@ -1,5 +1,72 @@
 # @xihan-ui/backgrounds
 
+## 3.0.0
+
+### Patch Changes
+
+- 896a7c1: 减弱动效下换点云直接落到新形状，粒子不再卡在旧形状上。
+
+  此前开启减弱动效（系统 `prefers-reduced-motion: reduce` 或 `setMotionOverride('reduce')`，且 `respectReducedMotion` 未关）时，画面的时间步恒为 0，`setCloud()` 之后的形变进度永远停在起点：粒子一直停在上一份点云的形状上，而且因为形变没走完，调度循环每帧都在空画。
+
+  现在减弱动效下换点云与 `duration: 0` 同样处理，一步落到新形状，画完一帧即停；形变进行到一半时才切到减弱动效，也会立即收尾。未开启减弱动效时的过渡时长与节奏不变。
+
+- cac2eaf: `animate()` 与背景层按宿主元素所在的 `data-motion` 作用域判断减弱动效。
+
+  局部容器写了 `data-motion="reduce"` 时，其中的 `animate()` 调用（包括 `@xihan-ui/animations` 的预设播放）不再播放中间帧，背景画面冻结；写了 `data-motion="default"` 时，即使应用级偏好要求减弱也照常播放。没有 `data-motion` 的页面行为不变。
+
+- Updated dependencies [c48171d]
+- Updated dependencies [df3d2ac]
+- Updated dependencies [f660e16]
+- Updated dependencies [25ccc68]
+- Updated dependencies [6dec15e]
+- Updated dependencies [a85b582]
+- Updated dependencies [a72c5bb]
+- Updated dependencies [41a393e]
+- Updated dependencies [fac80f7]
+- Updated dependencies [4e619a5]
+- Updated dependencies [e19c0b4]
+- Updated dependencies [3092b47]
+- Updated dependencies [d210959]
+- Updated dependencies [d1cca09]
+- Updated dependencies [65d6fc3]
+- Updated dependencies [467c967]
+- Updated dependencies [bc8120d]
+- Updated dependencies [f7cec9b]
+- Updated dependencies [768b06f]
+- Updated dependencies [6356589]
+- Updated dependencies [94aee78]
+- Updated dependencies [8a2b0fa]
+- Updated dependencies [c292b0f]
+- Updated dependencies [1b0701c]
+- Updated dependencies [7878927]
+- Updated dependencies [ad0b9da]
+- Updated dependencies [9c6d582]
+- Updated dependencies [c17f6e3]
+- Updated dependencies [245995e]
+- Updated dependencies [684cf13]
+- Updated dependencies [7192b57]
+- Updated dependencies [5c79ac0]
+- Updated dependencies [608cc0a]
+- Updated dependencies [cac2eaf]
+- Updated dependencies [560242d]
+- Updated dependencies [25db668]
+- Updated dependencies [8ca7eaa]
+- Updated dependencies [0c8d389]
+- Updated dependencies [e90cad8]
+- Updated dependencies [f2e9fb0]
+- Updated dependencies [4edea3b]
+- Updated dependencies [7bf67f9]
+- Updated dependencies [606ef8d]
+- Updated dependencies [2f6e6b3]
+- Updated dependencies [648c368]
+- Updated dependencies [1b7ad21]
+- Updated dependencies [d48dbf7]
+- Updated dependencies [4920b59]
+- Updated dependencies [6d95e8c]
+- Updated dependencies [bfbf28b]
+  - @xihan-ui/motion@3.0.0
+  - @xihan-ui/core@3.0.0
+
 ## 2.1.0
 
 ### Patch Changes
