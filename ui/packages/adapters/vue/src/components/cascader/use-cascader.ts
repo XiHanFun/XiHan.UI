@@ -67,7 +67,7 @@ export function useCascader(
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
-    // 锚点是字段盒：一级列与盒子同宽、面板左缘对齐；作者没写 control 时退回触发器
+    // 锚点是字段盒：面板起始缘与盒对齐；作者没写 control 时退回触发器
     service.refs.set('getAnchorEl', () => controlRef.value ?? triggerRef.value)
     service.refs.set('getTriggerEl', () => triggerRef.value)
     service.refs.set('getFloatingEl', () => positionerRef.value)

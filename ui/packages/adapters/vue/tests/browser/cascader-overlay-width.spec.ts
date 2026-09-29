@@ -1,7 +1,8 @@
-// Cascader 的一级列是列表型浮层：与字段盒等宽、长选项在条目里截断；后续列按自然宽度，面板随列数伸展。
-// 浮层锚在字段盒上，面板起始缘与盒对齐。面板含多列，材质取 floating：不透景的实体面 + 描边 + 浮起投影。
+// Cascader 的浮层按内容定宽：每一列取条目的自然宽度、以 --xh-overlay-menu-min-w 托底，不随字段盒拉伸；
+// 长选项把列撑到条目的上限为止，余下的在条目里截断；面板随列数伸展。浮层锚在字段盒上，面板起始缘与盒对齐。
+// 面板含多列，材质取 floating：不透景的实体面 + 描边 + 浮起投影。
 //
-// 判据全在布局与计算样式上：一级列宽度要等引擎量到锚点、写进槽、皮肤消费之后才落定，jsdom 不排版。
+// 判据全在布局与计算样式上：列宽要等皮肤排版、浮层落位之后才落定，jsdom 不排版。
 import type { CascaderLevel, CascaderNode } from '@xihan-ui/headless'
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -33,6 +34,12 @@ const COLLECTION: CascaderNode[] = [
   },
   { value: 'long', label: LONG },
   ...Array.from({ length: 12 }, (_, i) => ({ value: `p${i}`, label: `省份 ${i}` })),
+]
+
+/** 只有短选项：列宽全由下界决定。 */
+const SHORT: CascaderNode[] = [
+  { value: 'zj', label: '浙江', children: [{ value: 'hz', label: '杭州' }] },
+  { value: 'js', label: '江苏', children: [{ value: 'nj', label: '南京' }] },
 ]
 
 let app: App | null = null
@@ -80,16 +87,15 @@ async function settled(): Promise<HTMLElement> {
   throw new Error('cascader 的几何一直没落定')
 }
 
-async function mount(options: { value?: string[][], style?: string } = {}): Promise<HTMLElement> {
+async function mount(options: { collection?: CascaderNode[], value?: string[][] } = {}): Promise<HTMLElement> {
   host = document.createElement('div')
   host.style.cssText = 'padding: 24px'
   document.body.append(host)
   app = createApp({
     render: () => h(XhCascaderRoot, {
-      collection: COLLECTION,
+      collection: options.collection ?? COLLECTION,
       open: true,
       ...(options.value ? { value: options.value } : {}),
-      style: options.style,
     } as never, {
       default: ({ levels }: { levels: CascaderLevel[] }) => [
         h(XhCascaderControl, null, () => [
@@ -106,10 +112,6 @@ async function mount(options: { value?: string[][], style?: string } = {}): Prom
   app.mount(host)
   await nextTick()
   return settled()
-}
-
-function remPx(rem: number): number {
-  return rem * Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
 }
 
 function alphaOf(color: string): number {
@@ -132,41 +134,43 @@ function resolved(on: HTMLElement, property: string, value: string): string {
   return out
 }
 
+/** 一支长度令牌在某个节点上解析出来的像素数。读 min-inline-size：它回的是计算值，不受探针自己排版的影响。 */
+function px(on: HTMLElement, token: string): number {
+  return Number.parseFloat(resolved(on, 'min-inline-size', `var(${token})`))
+}
+
 describe('级联选择的浮层宽度', () => {
-  it('一级列与字段盒等宽，长选项在条目里截断', async () => {
+  it('短选项的一级列取下界，不随字段盒拉伸', async () => {
+    const content = await mount({ collection: SHORT })
+    expect(column(0).getBoundingClientRect().width).toBeCloseTo(px(content, '--xh-overlay-menu-min-w'), 0)
+    // 缺省宽的字段盒比下界宽，面板不跟着它拉宽
+    expect(content.getBoundingClientRect().width).toBeLessThan(part('control').getBoundingClientRect().width)
+  })
+
+  it('长选项把一级列撑到条目上限为止，余下的在条目里截断', async () => {
     const content = await mount()
-    const control = part('control').getBoundingClientRect()
-    // 只有一级列时整块面板恰好与字段盒齐宽，一级列铺满面板的描边之内
-    expect(content.getBoundingClientRect().width).toBeCloseTo(control.width, 0)
-    expect(column(0).getBoundingClientRect().width).toBeCloseTo(content.clientWidth, 0)
     const text = [...document.querySelectorAll<HTMLElement>(`[data-scope='cascader'][data-part='item-text']`)]
       .find(el => el.textContent === LONG)!
+    const item = text.closest<HTMLElement>(`[data-part='item']`)!
+    expect(item.getBoundingClientRect().width).toBeCloseTo(px(content, '--xh-overlay-max-w'), 0)
     expect(text.scrollWidth).toBeGreaterThan(text.clientWidth)
   })
 
   it('浮层锚在字段盒上：面板起始缘与盒的起始缘对齐', async () => {
-    const content = await mount()
+    const content = await mount({ collection: SHORT })
     expect(content.getBoundingClientRect().left).toBeCloseTo(part('control').getBoundingClientRect().left, 0)
   })
 
-  it('后续列按自然宽度，面板随列数伸展', async () => {
+  it('后续列同样按自然宽度，面板随列数伸展', async () => {
     const content = await mount({ value: [['zj', 'hz', 'xh']] })
     const first = column(0).getBoundingClientRect().width
     const second = column(1).getBoundingClientRect().width
-    const border = Number.parseFloat(getComputedStyle(content).borderLeftWidth) * 2
-    // 列多了一级列也不变宽：仍是字段盒扣掉面板两侧描边
-    expect(first).toBeCloseTo(part('control').getBoundingClientRect().width - border, 0)
-    // 「杭州 / 宁波」这一列用不着字段盒那么宽
+    // 「杭州 / 宁波」这一列只取下界，比装着长选项的一级列窄
+    expect(second).toBeCloseTo(px(content, '--xh-overlay-menu-min-w'), 0)
     expect(second).toBeLessThan(first)
     // 面板随列数伸展；宽过可用区时收成可用宽度，溢出的列在面内横滚够得到
     expect(content.scrollWidth).toBeGreaterThan(first + second)
     expect(content.getBoundingClientRect().right).toBeLessThanOrEqual(document.documentElement.clientWidth)
-  })
-
-  it('字段盒比下界还窄时面板取下界', async () => {
-    const content = await mount({ style: 'inline-size: 6rem; min-inline-size: 0' })
-    expect(part('control').getBoundingClientRect().width).toBeLessThan(remPx(10))
-    expect(content.getBoundingClientRect().width).toBeCloseTo(remPx(10), 0)
   })
 })
 
