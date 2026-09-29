@@ -60,6 +60,9 @@ function demoWorkspacePackages(): Plugin {
   }
 }
 
+// 浏览器态按项目分了主池与无障碍扫描；验证台自成一个项目，只取公共的浏览器设置，不带那两个项目
+const { projects, ...browserTest } = browser.test ?? {}
+
 // 文档站示例的验证台，浏览器设置照搬 vitest.browser.config，只换 include 与几处示例专用配置。
 //
 // 单开一份而不是并进 tests/browser：示例文件在 docs/ 下，不在 turbo 对 test:browser
@@ -78,7 +81,7 @@ export default defineConfig({
     __XH_WC_DEMOS__: JSON.stringify(process.env.XH_WC_DEMOS ?? ''),
   },
   test: {
-    ...browser.test,
+    ...browserTest,
     name: 'wc-demos',
     include: ['tests/demos/**/*.spec.ts'],
   },

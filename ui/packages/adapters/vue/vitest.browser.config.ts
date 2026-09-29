@@ -23,9 +23,15 @@ const TOUCH_SPECS = readdirSync(BROWSER_DIR)
 /** 量主线程耗时的预算用例：与整套并行跑时量到的是别份用例抢走的 CPU，放到最后单独串行跑。 */
 const SERIAL_SPECS = ['tests/browser/overlay-open-budget.spec.ts', 'tests/browser/cartesian-budget.spec.ts']
 
+/**
+ * 全量无障碍扫描：整包最重的一块（按主题拆成两份文件，单份约三分钟）。单开一个项目，
+ * CI 上用 --project=*-a11y* 挑出来独占一片、其余分片用 --project=!*-a11y* 排除；本地整包跑时与主池同组并行。
+ */
+const A11Y_SPECS = ['tests/browser/a11y-*.spec.ts']
+
 // 浏览器态：真实 Chromium，跑 jsdom 里演不出来的那部分（无障碍、布局、可见性、真实焦点）。
 // 与 vitest.config 缺省的 jsdom 单测互不覆盖，各跑各的目录。
-// 三个项目按 sequence.groupOrder 先后跑：主池 → 触屏组 → 串行预算。
+// 四个项目按 sequence.groupOrder 先后跑：主池与无障碍扫描 → 触屏组 → 串行预算。
 export default defineConfig({
   test: {
     // 硬件相关的性能预算只在固定配额的容器里跑（vitest.performance.config.ts），三个项目都不收
@@ -47,7 +53,14 @@ export default defineConfig({
         test: {
           name: 'vue-browser',
           include: ['tests/browser/**/*.spec.ts'],
-          exclude: [...TOUCH_SPECS, ...SERIAL_SPECS],
+          exclude: [...TOUCH_SPECS, ...SERIAL_SPECS, ...A11Y_SPECS],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'vue-browser-a11y',
+          include: A11Y_SPECS,
         },
       },
       {

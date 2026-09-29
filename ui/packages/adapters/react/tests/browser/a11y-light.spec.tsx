@@ -7,4 +7,6 @@ import { createReactHarness } from '../harness'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-runA11y(createReactHarness(), allSuites, { describe, it }, reactA11yBaseline)
+// 整套按主题拆成 a11y-light / a11y-dark 两份：扫一遍要五六分钟，一份文件只能占一个 worker，
+// 拆开才能分到不同的 worker 与 CI 分片上并行。登记表的核对只在 light 那份里跑
+runA11y(createReactHarness(), allSuites, { describe, it }, { ...reactA11yBaseline, onlyTheme: 'light' })
