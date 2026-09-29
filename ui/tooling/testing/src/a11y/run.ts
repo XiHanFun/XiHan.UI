@@ -25,6 +25,13 @@ export interface A11yRunOptions extends AxeCheckOptions {
   readonly replayExempt?: Readonly<Record<string, string>>
   /** 要扫的主题，默认 {@link DEFAULT_A11Y_THEMES}。 */
   readonly themes?: readonly A11yTheme[]
+  /**
+   * 这一份文件只扫 themes 里的这一个主题。整套扫一遍要五六分钟，全在一份文件里就只能占一个 worker；
+   * 按主题拆成几份文件，才能分到不同的 worker 与 CI 分片上并行。
+   * 每个主题的登记与命中本来就各记一本，拆开不丢账；登记表的两条核对只在 themes 第一个主题那份里跑，
+   * 且仍按完整的 themes 核对。各份文件合起来要覆盖全部 themes。
+   */
+  readonly onlyTheme?: A11yTheme
 }
 
 async function mount(harness: AdapterHarness, suite: ConformanceSuite, props: Readonly<Record<string, unknown>>, tree: ConformanceSuite['fixture']): Promise<ApplyContext> {
@@ -100,7 +107,8 @@ function signature(ctx: ApplyContext, harness: AdapterHarness): string {
 /**
  * 把一致性套件的 fixture 挂进浏览器，对初始态与各用例终态跑 axe。
  * 扫描目标是 `document.body`，以覆盖 portal 里的浮层内容；终态按形态签名去重。
- * 整套按 {@link A11yRunOptions.themes} 逐个主题各跑一遍，登记与命中记账也各主题一本。
+ * 整套按 {@link A11yRunOptions.themes} 逐个主题各跑一遍，登记与命中记账也各主题一本；
+ * 给了 {@link A11yRunOptions.onlyTheme} 时只跑那一个主题。
  */
 export function runA11y(
   harness: AdapterHarness,
@@ -108,29 +116,34 @@ export function runA11y(
   hooks: TestHooks,
   options: A11yRunOptions = {},
 ): void {
-  const { known = {}, knownByTheme = {}, knownEverywhere = {}, replayExempt = {}, themes = DEFAULT_A11Y_THEMES, ...axeOptions } = options
+  const { known = {}, knownByTheme = {}, knownEverywhere = {}, replayExempt = {}, themes = DEFAULT_A11Y_THEMES, onlyTheme, ...axeOptions } = options
+  if (onlyTheme != null && !themes.includes(onlyTheme))
+    throw new Error(`onlyTheme「${onlyTheme}」不在要扫的主题 ${themes.join(' / ')} 里`)
   blockNavigation(document)
 
   const componentNames = new Set(suites.map(s => s.component))
-  hooks.describe(`a11y 登记表 (${harness.adapterName})`, () => {
-    hooks.it('登记的组件都还在', () => {
-      const registered = new Set([
-        ...Object.keys(known),
-        ...Object.values(knownByTheme).flatMap(t => Object.keys(t ?? {})),
-      ])
-      const gone = [...registered].filter(c => !componentNames.has(c))
-      if (gone.length)
-        throw new Error(`登记表里的组件已不存在，请删掉：${gone.join(', ')}`)
-    })
+  // 拆成几份文件时只在第一个主题那份里核对登记表，免得同一处过期报好几遍
+  if (onlyTheme == null || onlyTheme === themes[0]) {
+    hooks.describe(`a11y 登记表 (${harness.adapterName})`, () => {
+      hooks.it('登记的组件都还在', () => {
+        const registered = new Set([
+          ...Object.keys(known),
+          ...Object.values(knownByTheme).flatMap(t => Object.keys(t ?? {})),
+        ])
+        const gone = [...registered].filter(c => !componentNames.has(c))
+        if (gone.length)
+          throw new Error(`登记表里的组件已不存在，请删掉：${gone.join(', ')}`)
+      })
 
-    hooks.it('按主题登记的那些主题都真的在扫', () => {
-      const gone = Object.keys(knownByTheme).filter(t => !themes.includes(t as A11yTheme))
-      if (gone.length)
-        throw new Error(`knownByTheme 里的主题没在扫描名单里，登记永远命不中：${gone.join(', ')}`)
+      hooks.it('按主题登记的那些主题都真的在扫', () => {
+        const gone = Object.keys(knownByTheme).filter(t => !themes.includes(t as A11yTheme))
+        if (gone.length)
+          throw new Error(`knownByTheme 里的主题没在扫描名单里，登记永远命不中：${gone.join(', ')}`)
+      })
     })
-  })
+  }
 
-  for (const theme of themes) {
+  for (const theme of onlyTheme == null ? themes : [onlyTheme]) {
     const hitEverywhere = new Set<string>()
 
     for (const suite of suites) {

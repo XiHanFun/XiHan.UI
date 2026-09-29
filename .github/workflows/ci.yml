@@ -135,7 +135,10 @@ jobs:
         run: node tooling/scripts/test-unit.mjs ${{ matrix.filter }} -- --testTimeout=60000
 
   # 单开一组：真实浏览器要下 ~300MB 的 Chromium，不该把上面那几条快链路堵住。
-  # 用例按 vitest --shard 切片：分片按文件路径哈希切连续区间，同一个包的各片合起来不重不漏。
+  # 三端的全量无障碍扫描是各包最重的一块（每端两份文件、单份约三分钟），在浏览器配置里单成 *-a11y 项目，
+  # 这里每端独占一片（--project=*-a11y*）；其余用例用 --project=!*-a11y* 排除它们，vue 再按 vitest --shard 切四片
+  # （按文件路径哈希切连续区间，各片合起来不重不漏），react、web-components 与 position 合一片。
+  # 以后新增的项目名不带 -a11y 就自动落进常规分片，不会漏跑。
   browser:
     name: 浏览器态（${{ matrix.name }}）
     runs-on: ubuntu-latest
@@ -144,14 +147,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { name: vue 1/4, id: vue-1, args: '--pkg=vue -- --shard=1/4' }
-          - { name: vue 2/4, id: vue-2, args: '--pkg=vue -- --shard=2/4' }
-          - { name: vue 3/4, id: vue-3, args: '--pkg=vue -- --shard=3/4' }
-          - { name: vue 4/4, id: vue-4, args: '--pkg=vue -- --shard=4/4' }
-          - { name: react 1/2, id: react-1, args: '--pkg=react -- --shard=1/2' }
-          - { name: react 2/2, id: react-2, args: '--pkg=react -- --shard=2/2' }
-          - { name: web-components + position 1/2, id: wc-1, args: '--pkg=web-components,position -- --shard=1/2' }
-          - { name: web-components + position 2/2, id: wc-2, args: '--pkg=web-components,position -- --shard=2/2' }
+          - { name: vue 1/4, id: vue-1, args: '--pkg=vue -- "--project=!*-a11y*" --shard=1/4' }
+          - { name: vue 2/4, id: vue-2, args: '--pkg=vue -- "--project=!*-a11y*" --shard=2/4' }
+          - { name: vue 3/4, id: vue-3, args: '--pkg=vue -- "--project=!*-a11y*" --shard=3/4' }
+          - { name: vue 4/4, id: vue-4, args: '--pkg=vue -- "--project=!*-a11y*" --shard=4/4' }
+          - { name: react + web-components + position, id: rest, args: '--pkg=react,web-components,position -- "--project=!*-a11y*"' }
+          - { name: vue 无障碍, id: vue-a11y, args: '--pkg=vue -- "--project=*-a11y*"' }
+          - { name: react 无障碍, id: react-a11y, args: '--pkg=react -- "--project=*-a11y*"' }
+          - { name: web-components 无障碍, id: wc-a11y, args: '--pkg=web-components -- "--project=*-a11y*"' }
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-ui
