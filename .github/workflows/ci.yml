@@ -6,26 +6,28 @@ on:
   pull_request:
     branches: [dev, main]
 
+# 同一分支连着推时只留最新的一次：dev 几分钟一推，旧提交那一轮跑完也不再有人看。
+# main 不取消——进 main 的每个提交都要跑出完整结论，发版时以它为据。
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 defaults:
   run:
     working-directory: ui
 
+# 原先是两条长链：quality 约 21 分钟、browser 约 34 分钟，各在一台 4 核 runner 上串行跑完。
+# 现在按「吃不吃构建产物、要不要浏览器」拆成互不等待的 job，最慢的单测与浏览器用例再按包、按分片铺开，
+# 整轮的墙钟时间由最长的那一个 job 决定。每个 job 自己装依赖、自己构建，互相不传产物。
 jobs:
-  quality:
+  # 不吃构建产物的静态门禁
+  lint:
+    name: 静态门禁与 Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
-      # 仓库根没有 package.json，action 默认在根找 packageManager 会失败；
-      # 指向工作区的清单，pnpm 版本仍以 ui/package.json 为唯一事实源
-      - uses: pnpm/action-setup@v6
-        with:
-          package_json_file: ui/package.json
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: pnpm
-          cache-dependency-path: ui/pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-ui
       - name: Gate (依赖 / 令牌 / 浮层 / 皮肤 / 部件接线 / 导出 / 角色组)
         run: pnpm gate
       - name: Token artifacts in sync
@@ -36,11 +38,22 @@ jobs:
         run: pnpm gate:styled
       - name: Lint
         run: pnpm lint
+      - name: Commit message
+        if: github.event_name == 'pull_request'
+        run: pnpm exec commitlint --from origin/${{ github.base_ref }} --to HEAD
+
+  quality:
+    name: 类型、构建与产物
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-ui
       - name: Typecheck
         run: pnpm typecheck
       - name: Build
         run: pnpm build
-      # 下面四步都吃构建产物，必须排在 Build 之后：
+      # 下面几步都吃构建产物，必须排在 Build 之后：
       # 组件文档由 headless 产物与类型生成；React 示例的类型判据要读 icons 的 dist（它没有
       # TS 源码）；公开面从各包已构建的 .d.ts 采集（产物才是使用者拿到的那一份）；
       # dependency-cruiser 按 exports 条件解析兄弟包，同样指向 dist。
@@ -52,10 +65,6 @@ jobs:
         run: pnpm gate:surface
       - name: Boundaries (dependency-cruiser)
         run: pnpm boundaries
-      # 用例默认 5s 超时是按开发机定的。这一步并发跑二十多个包，CPU 争抢下纯计算的用例
-      # 慢十几倍，本机一秒多的会假超时。超时是护栏不是断言，放到 60s。
-      - name: Test
-        run: pnpm test -- -- --testTimeout=60000
       - name: Size limit
         run: pnpm size
       # cjs-resolves-to-esm 是 ESM-only 的刻意选择，node10 / node16-from-ESM / bundler 三列均绿
@@ -63,10 +72,19 @@ jobs:
         run: pnpm gate:exports
       - name: Publish artifacts (publint + attw)
         run: pnpm gate:publish
-      # 文档站是全仓唯一会编译 .vue 示例的地方，也是站内死链唯一的判据（没配 ignoreDeadLinks，
-      # 断一条就构建失败）；渲染期抛的异常由 .vitepress/config.ts 的 buildEnd 收口成非零退出。
-      # 它以 link: 吃 ui 的 dist，必须排在 Build 之后。
-      # 文档站独立锁文件随仓库提交，本地与 CI 均按锁文件安装。
+
+  # 文档站是全仓唯一会编译 .vue 示例的地方，也是站内死链唯一的判据（没配 ignoreDeadLinks，
+  # 断一条就构建失败）；渲染期抛的异常由 .vitepress/config.ts 的 buildEnd 收口成非零退出。
+  # 它以 link: 吃 ui 的 dist，所以先构建 ui。文档站独立锁文件随仓库提交，本地与 CI 均按锁文件安装。
+  docs:
+    name: 文档站
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-ui
+      - name: Build
+        run: pnpm build
       - name: 装文档站依赖
         working-directory: ./docs
         run: pnpm install --frozen-lockfile
@@ -79,26 +97,64 @@ jobs:
       # 机读资产由文档站构建期落盘，必须排在上一步之后
       - name: 机读资产与库对账
         run: pnpm gate:llms
-      - name: Commit message
-        if: github.event_name == 'pull_request'
-        run: pnpm exec commitlint --from origin/${{ github.base_ref }} --to HEAD
 
-  # 单开一份：真实浏览器要下 ~300MB 的 Chromium，不该把上面那条快链路堵住
-  browser:
+  # 单测按包分组，各占一台 runner。四个大包单跑一个要六到八分钟（一个 worker 时），
+  # 挤在一台 4 核机器上时 test-unit.mjs 只能给每包一个 worker；拆开后一组只有一两个包，
+  # worker 数按组里的包数放宽到占满四核。
+  unit:
+    name: 单测（${{ matrix.name }}）
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: vue
+            filter: '--filter=@xihan-ui/vue'
+            workers: 4
+          - name: headless
+            filter: '--filter=@xihan-ui/headless'
+            workers: 4
+          - name: react + web-components
+            filter: '--filter=@xihan-ui/react --filter=@xihan-ui/web-components'
+            workers: 2
+          # 其余全部包用排除写法：以后新增的包自动落进这一组，不会漏测。
+          # 上面加一组时，这里要同步排除它，否则那几个包会跑两遍（多跑，不会漏）。
+          - name: 其余包
+            filter: '--filter=!@xihan-ui/vue --filter=!@xihan-ui/headless --filter=!@xihan-ui/react --filter=!@xihan-ui/web-components'
+            workers: 2
+    env:
+      VITEST_MAX_WORKERS: ${{ matrix.workers }}
     steps:
       - uses: actions/checkout@v7
-      # 仓库根没有 package.json，action 默认在根找 packageManager 会失败；
-      # 指向工作区的清单，pnpm 版本仍以 ui/package.json 为唯一事实源
-      - uses: pnpm/action-setup@v6
-        with:
-          package_json_file: ui/package.json
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: pnpm
-          cache-dependency-path: ui/pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-ui
+      # 用例默认 5s 超时是按开发机定的。CI 上几个包并发跑时，CPU 争抢下纯计算的用例
+      # 慢十几倍，本机一秒多的会假超时。超时是护栏不是断言，放到 60s。
+      # 直接调运行器而不走 pnpm test：--filter 写在 pnpm 后面会被 pnpm 当成自己的选项。
+      - name: Test
+        run: node tooling/scripts/test-unit.mjs ${{ matrix.filter }} -- --testTimeout=60000
+
+  # 单开一组：真实浏览器要下 ~300MB 的 Chromium，不该把上面那几条快链路堵住。
+  # 用例按 vitest --shard 切片：分片按文件路径哈希切连续区间，同一个包的各片合起来不重不漏。
+  browser:
+    name: 浏览器态（${{ matrix.name }}）
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: vue 1/4, id: vue-1, args: '--pkg=vue -- --shard=1/4' }
+          - { name: vue 2/4, id: vue-2, args: '--pkg=vue -- --shard=2/4' }
+          - { name: vue 3/4, id: vue-3, args: '--pkg=vue -- --shard=3/4' }
+          - { name: vue 4/4, id: vue-4, args: '--pkg=vue -- --shard=4/4' }
+          - { name: react 1/2, id: react-1, args: '--pkg=react -- --shard=1/2' }
+          - { name: react 2/2, id: react-2, args: '--pkg=react -- --shard=2/2' }
+          - { name: web-components + position 1/2, id: wc-1, args: '--pkg=web-components,position -- --shard=1/2' }
+          - { name: web-components + position 2/2, id: wc-2, args: '--pkg=web-components,position -- --shard=2/2' }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-ui
       - name: Cache Playwright browsers
         uses: actions/cache@v6
         with:
@@ -116,26 +172,44 @@ jobs:
       - name: Build
         run: pnpm build
       - name: Accessibility + visual baselines (real Chromium)
-        run: pnpm test:browser
-      # 性能预算与像素基线共用 Playwright Linux 镜像，但额外固定 2 CPU / 2 GiB、
-      # 800×520@1x 与 4× CPU throttle；宿主 runner 的瞬时规格不直接成为判据。
-      - name: Pull visual performance image
-        run: docker pull mcr.microsoft.com/playwright:v1.62.0-noble
-      - name: Visual performance budget (default vs reduced transparency)
-        run: pnpm visual:performance
+        run: pnpm test:browser ${{ matrix.args }}
       # 基线对不上时把实际截图与差异图带出来：像素差异在日志里看不出来，
       # 必须下载下来逐张比对，确认是有意的视觉改动才重出基线。
+      # artifact 名按分片区分：同一轮里重名的 artifact 会让后传的那片上传失败。
       - name: Upload visual diffs
         if: failure()
         uses: actions/upload-artifact@v5
         with:
-          name: visual-diffs
+          name: visual-diffs-${{ matrix.id }}
           path: ui/packages/adapters/*/.vitest-attachments/**
           # 落点是点开头的目录，upload-artifact 默认跳过隐藏文件，不开这个开关会报
           # 「No files were found」而一张图都不带出来
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7
+
+  browser-extras:
+    name: 性能预算与自定义元素示例
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-ui
+      - name: Cache Playwright browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
+      - name: Install Chromium
+        run: pnpm --fail-if-no-match --filter @xihan-ui/vue exec playwright install --with-deps chromium
+      - name: Build
+        run: pnpm build
       # 示例文件在 docs/ 下，不在 turbo 对 test:browser 声明的输入集里，单开一步直接起 vitest
       - name: Web Components demos (real Chromium)
         run: pnpm gate:demos
+      # 性能预算与像素基线共用 Playwright Linux 镜像，但额外固定 2 CPU / 2 GiB、
+      # 800×520@1x 与 4× CPU throttle；宿主 runner 的瞬时规格不直接成为判据。
+      - name: Pull visual performance image
+        run: docker pull mcr.microsoft.com/playwright:v1.62.0-noble
+      - name: Visual performance budget (default vs reduced transparency)
+        run: pnpm visual:performance
