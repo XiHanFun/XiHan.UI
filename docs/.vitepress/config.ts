@@ -405,6 +405,12 @@ export default defineConfig({
       jsx: "automatic",
       jsxImportSource: "react",
     },
+    // 适配器是 link: 进来的，dist 里的 import "react" 会按真实路径解析到 ui/ 工作区自己装的那一份，
+    // 与文档站挂示例用的 react-dom 不是同一份：hooks 调度器只挂在渲染器那一份上，React 示例全部读 null 崩掉。
+    // vue 由 VitePress 自己去重，不用列
+    resolve: {
+      dedupe: ["react", "react-dom"],
+    },
     // 组件库是 link: 进来的，Vite 的依赖预打包缓存只认 package.json 与锁文件，
     // 改了库的源码它不会失效——本地构建会拿着旧产物继续渲染而且什么都不说。
     // 排除掉，示例渲染的永远是当前代码；传递依赖也要列全，漏一个它就带着旧代码进缓存
