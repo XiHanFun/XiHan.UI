@@ -12,10 +12,10 @@
 //   一律判红——不知道挂在哪页，就无从判断和谁同页。
 // - 框架切换是全站一个值，同一时刻一页只挂一种框架的示例，所以只在同一框架的文件之间比对；
 //   同一份示例自己的各框架版本写同一个 id 是常态，不算撞。
-// - 读出的 id 分三种：
-//   字面量：id="x"、id={"x"}、:id="'x'"、el.id = "x"、setAttribute("id", "x")；
-//   模板串：`prefix-${k}` 按通配模式比对，与另一份示例的字面量或模式可能相等即判撞；
-//   纯表达式（s.value、item.id）：读不出值。绑到本文件 useId() 的放行（框架保证全页唯一），
+// - 读出的 id 分三种（表达式先按下文「变量追溯」追到字面量）：
+//   字面量：id="x"、id={"x"}、:id="'x'"、el.id = "x"、setAttribute("id", "x")，以及追到字面量的表达式；
+//   模板串：`prefix-${k}` 里追不到的段按通配，与另一份示例的字面量或模式可能相等即判撞；
+//   纯表达式（item.id 这类作用域插槽的参数）：读不出值。绑到本文件 useId() 的放行（框架保证全页唯一），
 //   其余必须登记在 RUNTIME_IDS 并写明为什么不会撞，登了却没用上的条目判过期。
 //
 // 引用一侧逐文件核：按 id 取节点、指向节点的地方必须落在这份示例自己声明的 id 上。取不到自己的节点，
@@ -27,13 +27,18 @@
 // - 组件配置与数据：漫游式引导步骤的 target: "#id"；数据表里的 href: "#id"（side-nav 的 collection 等，
 //   渲染出来就是链接），与属性上的 href 同一条规则，占位链接同样写 #/…；
 // - SVG / CSS 的 url(#id)。
-// 绑定的属性值（:attr="…"、attr={…}）是条件式时两支分别算；与本文件某处 id 绑同一个表达式
-// （:id="s.value" 配 :value="s.value"）的算作同一个节点；x.id 顺着 x 的初值追到取它时用的 id。
-// 值是变量时顺着同文件的写法追到字面量：for…of 的数组字面量（[id, …] 解构取每项首位）、
-// Object.entries / Object.keys 的对象字面量键、数组字面量 .map / .forEach 回调的参数、具名函数的参数
-// （取各调用处的首个实参）；模板串里的 ${变量} 能追到的逐个代入，追不到的段按通配。追不到的一律判红，
-// 真是运行时才定的值登进 RUNTIME_IDS。选择器不是字面量时，看得见 # 的同样判红（改成模板串才追得到），
-// 看不见的未必和 id 有关；href 是表达式时多半是外链——这两种只报数。
+// 绑定的属性值（:attr="…"、attr={…}）是条件式时两支分别算；与本文件某处追不到的 id 绑同一个表达式
+// （:id="reasonId" 配 aria-describedby）的算作同一个节点；x.id 顺着 x 的初值追到取它时用的 id。
+//
+// 变量追溯（声明与引用共用）：标识符取它之前最近的一处绑定——for…of 的循环变量、数组方法回调的参数、
+// Vue 模板 v-for 的循环变量（遍历对象时取各项的值）、具名函数的参数（取各调用处的首个实参）——
+// 一处都没有时取同文件唯一的 const / let 初值。迭代源可以是数组字面量（...展开接着追）、
+// Object.entries / Object.keys 的对象字面量、R.map / R.flatMap(p => …)（对 R 的每一项代入 p 算函数体），
+// 外面包着的 ref / reactive / computed(() => …) 与 as const 先剥掉；[x, …] 解构取每项首位。
+// X.a.b 在 X 的每个取值里逐级取对象字面量的键，外层循环变量此刻的取值随项带着走
+// （v-for="c in g.children" 里的 c 取遍每个 g 的 children）。模板串里的 ${…} 能追到的逐个代入。
+// 追不到的一律判红，真是运行时才定的值登进 RUNTIME_IDS。选择器不是字面量时，看得见 # 的同样判红
+// （改成模板串才追得到），看不见的未必和 id 有关；href 是表达式时多半是外链——这两种只报数。
 //
 // 用法：node tooling/scripts/docs/check-demo-ids.mjs
 import { readdir, readFile } from 'node:fs/promises'
@@ -52,11 +57,6 @@ const NOT_PAGES = new Set(['.vitepress', 'node_modules', 'public'])
  * 本检查读不出这些值，理由就是唯一的依据，所以登了没用上的一并判红。
  */
 const RUNTIME_IDS = {
-  anchor: {
-    's.value': '分节 id 取自同文件 sections 表的 value 字面量，都带 anchor-<示例>- 前缀；自定义元素版把同一批 id 写成字面量，由本检查按字面量核对',
-    'g.value': '嵌套目录的分组链接：value 取自同文件 groups 表，sections 由它摊平而来，指向的就是本示例 :id="s.value" 的分节',
-    'c.value': '嵌套目录的子项链接：value 取自 groups 表各组的 children，同样摊平进 sections，指向本示例自己的分节',
-  },
   notification: {
     'item.id': 'XhNotificationItem 的 id 是队列身份，适配器把它声明成组件属性、不写进 DOM；节点 id 由组件按实例 scope 生成',
   },
@@ -158,36 +158,40 @@ function fromExpression(text) {
   return { kind: 'expr', expr }
 }
 
-/** 属性值里的 id：示例的 HTML 片段也会写在脚本的模板串里，所以带 ${…} 的按模板串算。 */
-function fromAttribute(value) {
+/**
+ * 属性值里的 id：示例的 HTML 片段也会写在脚本的模板串里（'<p id="row-${k}">'），带 ${…} 的按模板串追；
+ * 其余必须是不带空白与引号的字面量。
+ */
+function attributeDeclarations(text, value, index) {
   if (value.includes('${'))
-    return fromTemplate(value, value)
+    return templateRefs(text, value, index)
   if (/[\s'"`+]/.test(value) || value === '')
-    return { kind: 'unreadable', value }
-  return { kind: 'literal', value }
+    return [{ kind: 'unreadable', value }]
+  return [{ kind: 'literal', value }]
 }
 
 /**
  * 一个示例文件声明的全部 id。三种框架的写法都扫一遍：
  * id="x" 在三种文件里都是静态声明（Vue 模板、JSX、HTML，以及脚本里的 HTML 片段）；
  * :id / v-bind:id 只会出现在 Vue 模板，id={…} 只会出现在 JSX；
- * el.id = … 与 setAttribute('id', …) 是脚本里的写法。
+ * el.id = … 与 setAttribute('id', …) 是脚本里的写法。表达式与引用一侧同样顺着变量追到字面量。
  */
 function declarations(source) {
   const out = []
   const text = stripHtmlComments(source)
+  const add = (index, decls) => decls.forEach(decl => out.push({ ...decl, line: lineOf(text, index) }))
   for (const m of text.matchAll(/\sid="([^"]*)"/g))
-    out.push({ index: m.index + 1, ...fromAttribute(m[1]) })
+    add(m.index + 1, attributeDeclarations(text, m[1], m.index))
   for (const m of text.matchAll(/(?::|v-bind:)id="([^"]*)"/g))
-    out.push({ index: m.index, ...fromExpression(m[1]) })
+    add(m.index, argumentRefs(text, m[1], m.index))
   for (const m of text.matchAll(/\sid=\{/g))
-    out.push({ index: m.index + 1, ...fromExpression(readExpression(text, m.index + m[0].length, '')) })
+    add(m.index + 1, argumentRefs(text, readExpression(text, m.index + m[0].length, ''), m.index))
   // dataset.id 写的是 data-id，不是 id
   for (const m of text.matchAll(/(?<!dataset)\.id\s*=(?!=)/g))
-    out.push({ index: m.index, ...fromExpression(readExpression(text, m.index + m[0].length, ';,\n')) })
+    add(m.index, argumentRefs(text, readExpression(text, m.index + m[0].length, ';,\n'), m.index))
   for (const m of text.matchAll(/\.setAttribute\(\s*(["'])id\1\s*,/g))
-    out.push({ index: m.index, ...fromExpression(readExpression(text, m.index + m[0].length, ',;\n')) })
-  return out.map(({ index, ...decl }) => ({ ...decl, line: lineOf(text, index) }))
+    add(m.index, argumentRefs(text, readExpression(text, m.index + m[0].length, ',;\n'), m.index))
+  return out
 }
 
 function patternRegExp(parts) {
@@ -257,12 +261,16 @@ function splitTopLevel(body) {
   return items.filter(Boolean)
 }
 
-/** 同文件里 const / let 定义的初值原文；没有或不止一处定义时返回 null。 */
-function initializerOf(text, name) {
+/** 同文件里 const / let 定义的初值原文与位置；没有或不止一处定义时返回 null。 */
+function definitionOf(text, name) {
   const found = [...text.matchAll(new RegExp(`(?<![\\w$])(?:const|let)\\s+${escapeRegExp(name)}\\s*=(?!=)\\s*`, 'g'))]
   if (found.length !== 1)
     return null
-  return readExpression(text, found[0].index + found[0][0].length, ';\n')
+  return { expr: readExpression(text, found[0].index + found[0][0].length, ';\n'), index: found[0].index }
+}
+
+function initializerOf(text, name) {
+  return definitionOf(text, name)?.expr ?? null
 }
 
 /** 对象字面量的键；有一项不是「键: 值」就返回 null。 */
@@ -278,93 +286,290 @@ function keysOf(body) {
 }
 
 /**
- * 迭代源每一项给循环变量的值：数组字面量逐项取字符串（destructured 时变量是 [id, …] 的首位，
- * 取每项数组的首项）；Object.entries 配解构、Object.keys 不配解构，取对象字面量的键；
- * 标识符追到同文件唯一的 const / let 定义。读不出返回 null。
+ * 追溯的一项：一段表达式原文，连同它里面循环变量此刻的取值（env：变量名 → 项）。
+ * map / flatMap 算出来的数组没有原文，直接记成 items。
+ * @typedef {{ expr: string, env: Map<string, Term> } | { items: Term[] }} Term
  */
-function valuesOf(text, expr, destructured) {
-  const source = expr.trim()
-  const object = source.match(/^Object\.(entries|keys)\(\s*([A-Z_$][\w$]*)\s*\)$/i)
-  if (object) {
-    if ((object[1] === 'entries') !== destructured)
-      return null
-    const init = initializerOf(text, object[2])
-    return init?.startsWith('{') ? keysOf(init) : null
+
+/** 追溯最多走这么多步：变量互相引用或写成递归时就此停下，按追不到算。 */
+const MAX_TRACE = 24
+
+/** source[open] 是左括号时，与它配对的右括号位置；配不上返回 -1。 */
+function matchingClose(source, open) {
+  let depth = 0
+  let quote = null
+  for (let i = open; i < source.length; i++) {
+    const ch = source[i]
+    if (quote) {
+      if (ch === '\\')
+        i++
+      else if (ch === quote)
+        quote = null
+      continue
+    }
+    if (ch === '"' || ch === '\'' || ch === '`')
+      quote = ch
+    else if ('([{'.includes(ch))
+      depth++
+    else if (')]}'.includes(ch) && --depth === 0)
+      return i
   }
-  if (IDENTIFIER.test(source)) {
-    const init = initializerOf(text, source)
-    return init === null ? null : valuesOf(text, init, destructured)
-  }
-  if (!source.startsWith('[') || !source.endsWith(']'))
+  return -1
+}
+
+/** source 整个是 head(…) 一次调用（head 连同左括号由 pattern 匹配）时，返回括号里的原文。 */
+function soleCall(source, pattern) {
+  const m = source.match(pattern)
+  if (!m)
     return null
+  const open = m[0].length - 1
+  // 格式化器会给折行的唯一实参补一个尾逗号：computed(() =>\n  …,\n)
+  return matchingClose(source, open) === source.length - 1 ? source.slice(open + 1, -1).trim().replace(/,$/, '').trim() : null
+}
+
+/** 去掉不改变取值的包装：括号、as const、Vue 的 ref / reactive / readonly、computed(() => …)。 */
+function unwrap(expr) {
+  let source = expr.trim().replace(/\s+as\s+const$/, '')
+  for (;;) {
+    const inner = soleCall(source, /^\(/)
+      ?? soleCall(source, /^(?:ref|shallowRef|reactive|shallowReactive|readonly)\(/)
+      ?? soleCall(source, /^computed\(/)?.match(/^\(\)\s*=>([\s\S]*)$/)?.[1]
+    if (inner == null)
+      return source
+    source = inner.trim().replace(/\s+as\s+const$/, '')
+  }
+}
+
+/** R.map(p => 体) / R.flatMap(p => 体)：接收者、方法、参数与函数体；不是这种写法返回 null。 */
+function arrayCall(source) {
+  const m = source.match(/^([A-Z_$][\w$]*(?:\??\.[A-Z_$][\w$]*)*)\??\.(map|flatMap)\(/i)
+  const fn = m && soleCall(source, new RegExp(`^${escapeRegExp(m[0])}`))
+  const arrow = fn?.match(/^(?:\(\s*([A-Z_$][\w$]*)\s*(?:,[^)]*)?\)|([A-Z_$][\w$]*))\s*=>([\s\S]*)$/i)
+  return arrow ? { receiver: m[1], method: m[2], param: arrow[1] ?? arrow[2], body: arrow[3].trim() } : null
+}
+
+/**
+ * 对象字面量里某个键的值原文；没有这个键，或它后面还有 ...展开可能盖掉它，返回 null。
+ * 简写 { value } 返回键名本身，留给调用方按变量追。
+ */
+function propertyOf(expr, key) {
+  if (!expr.startsWith('{') || !expr.endsWith('}'))
+    return null
+  let found = null
+  for (const entry of splitTopLevel(expr.slice(1, -1))) {
+    if (entry.startsWith('...')) {
+      found = null
+      continue
+    }
+    const m = entry.match(/^(?:"([^"]*)"|'([^']*)'|([A-Z_$][\w$]*))\s*(:)?/i)
+    if (!m || (m[1] ?? m[2] ?? m[3]) !== key)
+      continue
+    if (m[4])
+      found = entry.slice(m[0].length).trim()
+    else if (entry === key)
+      found = key
+  }
+  return found
+}
+
+/** 对象字面量各项的值原文（v-for 遍历对象时循环变量取值）；有一项读不出返回 null。 */
+function objectValuesOf(expr) {
   const out = []
-  for (const item of splitTopLevel(source.slice(1, -1))) {
-    const head = destructured ? (item.startsWith('[') ? splitTopLevel(item.slice(1, -1))[0] : undefined) : item
-    const value = head === undefined ? null : literalOf(head)
-    if (value === null)
+  for (const entry of splitTopLevel(expr.slice(1, -1))) {
+    const m = entry.match(/^(?:"[^"]*"|'[^']*'|[A-Z_$][\w$]*)\s*:/i)
+    if (!m)
       return null
-    out.push(value)
+    out.push(entry.slice(m[0].length).trim())
   }
   return out
 }
 
-/** `.map(` 之前的接收者：紧挨着的数组字面量或标识符。 */
+/**
+ * 表达式在 index 处可能的取值（一组 Term）；读不出返回 null。字面量、数组与对象字面量就是它自己；
+ * X.a.b 在 X 的每个取值里逐级取对象字面量的键；R.map / R.flatMap 对 R 的每一项代入参数算函数体；
+ * 标识符先看 env（外层循环此刻的取值），再看它的绑定。
+ */
+function termsOf(text, expr, index, env, depth = 0) {
+  if (depth > MAX_TRACE)
+    return null
+  const source = unwrap(expr)
+  if (/^(?:["'`[{]|-?\d)/.test(source))
+    return [{ expr: source, env }]
+  const call = arrayCall(source)
+  if (call) {
+    const receiver = itemsOf(text, call.receiver, index, env, depth + 1)
+    if (!receiver)
+      return null
+    const items = []
+    for (const item of receiver) {
+      const inner = new Map(env).set(call.param, item)
+      const produced = call.method === 'map'
+        ? termsOf(text, call.body, index, inner, depth + 1)
+        : itemsOf(text, call.body, index, inner, depth + 1)
+      if (!produced)
+        return null
+      items.push(...produced)
+    }
+    return [{ items }]
+  }
+  const member = source.match(/^([A-Z_$][\w$]*)((?:\??\.[A-Z_$][\w$]*)+)$/i)
+  if (member) {
+    let terms = termsOf(text, member[1], index, env, depth + 1)
+    for (const key of member[2].split(/\??\./).slice(1)) {
+      if (!terms)
+        return null
+      const next = []
+      for (const term of terms) {
+        const value = term.expr === undefined ? null : propertyOf(term.expr, key)
+        const resolved = value === null ? null : termsOf(text, value, index, term.env, depth + 1)
+        if (!resolved)
+          return null
+        next.push(...resolved)
+      }
+      terms = next
+    }
+    return terms
+  }
+  if (IDENTIFIER.test(source))
+    return env.has(source) ? [env.get(source)] : bindingTerms(text, source, index, depth + 1)
+  return null
+}
+
+/**
+ * 迭代源的每一项：数组字面量逐项（...展开的接着追）、map / flatMap 的结果、
+ * Object.entries（配 [key, …] 解构）/ Object.keys 的键；objectValues 时（v-for 遍历对象）取对象各项的值。
+ * destructured 时循环变量是 [x, …] 的首位，取每项数组的首项。读不出返回 null。
+ */
+function itemsOf(text, expr, index, env, depth, destructured = false, objectValues = false) {
+  const source = unwrap(expr)
+  const object = source.match(/^Object\.(entries|keys)\(([\s\S]*)\)$/)
+  if (object) {
+    if ((object[1] === 'entries') !== destructured)
+      return null
+    const targets = termsOf(text, object[2], index, env, depth + 1)
+    const out = []
+    for (const target of targets ?? [null]) {
+      const keys = target?.expr?.startsWith('{') ? keysOf(target.expr) : null
+      if (!keys)
+        return null
+      out.push(...keys.map(key => ({ expr: JSON.stringify(key), env: target.env })))
+    }
+    return out
+  }
+  const terms = termsOf(text, source, index, env, depth + 1)
+  if (!terms)
+    return null
+  const out = []
+  for (const term of terms) {
+    let elements
+    if (term.items) {
+      elements = term.items
+    }
+    else if (term.expr.startsWith('[')) {
+      elements = []
+      for (const item of splitTopLevel(term.expr.slice(1, -1))) {
+        const spread = item.startsWith('...') ? itemsOf(text, item.slice(3), index, term.env, depth + 1) : [{ expr: item, env: term.env }]
+        if (!spread)
+          return null
+        elements.push(...spread)
+      }
+    }
+    else if (objectValues && term.expr.startsWith('{')) {
+      elements = objectValuesOf(term.expr)?.map(value => ({ expr: value, env: term.env }))
+    }
+    if (!elements)
+      return null
+    for (const element of elements) {
+      if (!destructured) {
+        out.push(element)
+        continue
+      }
+      const head = element.expr?.startsWith('[') ? splitTopLevel(element.expr.slice(1, -1))[0] : undefined
+      if (head === undefined)
+        return null
+      out.push({ expr: head, env: element.env })
+    }
+  }
+  return out
+}
+
+/** `.map(` 之前的接收者：紧挨着的数组字面量或标识符（可带 .成员）；是下标取值或调用结果时返回 null。 */
 function receiverBefore(text, end) {
-  if (text[end - 1] === ']') {
+  const stop = text[end - 1] === '?' ? end - 1 : end
+  if (text[stop - 1] === ']') {
     let depth = 0
-    for (let i = end - 1; i >= 0; i--) {
+    for (let i = stop - 1; i >= 0; i--) {
       if (text[i] === ']')
         depth++
       else if (text[i] === '[' && --depth === 0)
-        return text.slice(i, end)
+        return /[\w$)\]]/.test(text[i - 1] ?? '') ? null : text.slice(i, stop)
     }
     return null
   }
-  return text.slice(0, end).match(/[A-Z_$][\w$]*$/i)?.[0] ?? null
+  const m = text.slice(0, stop).match(/[A-Z_$][\w$]*(?:\??\.[A-Z_$][\w$]*)*$/i)
+  return m && !/[.)\]]/.test(text[stop - m[0].length - 1] ?? '') ? m[0] : null
 }
 
-/** 具名函数各调用处的首个实参；一处调用都没有，或有一处不是字面量，返回 null。 */
-function callArguments(text, fn) {
+/** 具名函数各调用处的首个实参能取到的项；一处调用都没有，或有一处追不到，返回 null。 */
+function callArgumentTerms(text, fn, depth) {
   const out = []
   for (const m of text.matchAll(new RegExp(`(?<![\\w$.]|function\\s+)${escapeRegExp(fn)}\\(`, 'g'))) {
-    const value = literalOf(readExpression(text, m.index + m[0].length, ','))
-    if (value === null)
+    const terms = termsOf(text, readExpression(text, m.index + m[0].length, ','), m.index, new Map(), depth + 1)
+    if (!terms)
       return null
-    out.push(value)
+    out.push(...terms)
   }
   return out.length ? out : null
 }
 
 /**
- * 标识符在 index 处能取到的全部字面值：取它在 index 之前最近的一处绑定——for…of 的循环变量、
- * 数组方法回调的参数、具名函数（function f(id) / const f = (id) =>）的首个参数。追不到返回 null。
+ * 标识符在 index 处能取到的项：取它在 index 之前最近的一处绑定——for…of 的循环变量、
+ * 数组方法回调的参数、Vue 模板 v-for 的循环变量、具名函数（function f(id) / const f = (id) =>）的首个参数；
+ * 一处绑定都没有时取同文件唯一的 const / let 初值。追不到返回 null。
  */
-function resolveIdentifier(text, name, index) {
+function bindingTerms(text, name, index, depth) {
   const n = escapeRegExp(name)
   const sites = []
   for (const m of text.matchAll(new RegExp(`for\\s*\\(\\s*(?:const|let|var)\\s+(\\[\\s*)?${n}(?![\\w$])[^;)]*?\\sof\\s`, 'g'))) {
     const source = readExpression(text, m.index + m[0].length, '')
-    sites.push({ index: m.index, values: () => valuesOf(text, source, Boolean(m[1])) })
+    sites.push({ index: m.index, terms: () => itemsOf(text, source, m.index, new Map(), depth, Boolean(m[1])) })
   }
   for (const m of text.matchAll(new RegExp(`\\.(?:map|flatMap|forEach|filter|find|some|every)\\(\\s*(?:\\(\\s*(\\[\\s*)?${n}(?![\\w$])[^)]*\\)|${n})\\s*=>`, 'g'))) {
     const receiver = receiverBefore(text, m.index)
-    sites.push({ index: m.index, values: () => (receiver === null ? null : valuesOf(text, receiver, Boolean(m[1]))) })
+    sites.push({ index: m.index, terms: () => (receiver === null ? null : itemsOf(text, receiver, m.index, new Map(), depth, Boolean(m[1]))) })
   }
+  // v-for="s in 源" / v-for="(s, i) of 源" / v-for="[s, …] in 源"
+  for (const m of text.matchAll(new RegExp(`v-for="\\s*\\(?\\s*(\\[\\s*)?${n}(?![\\w$])[^"]*?\\s(?:in|of)\\s+([^"]*)"`, 'g')))
+    sites.push({ index: m.index, terms: () => itemsOf(text, m[2], m.index, new Map(), depth, Boolean(m[1]), true) })
   const named = `function\\s+([A-Za-z_$][\\w$]*)\\s*\\(\\s*${n}(?![\\w$])|(?:const|let)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*(?:async\\s*)?(?:\\(\\s*${n}(?![\\w$])[^)]*\\)|${n})\\s*=>`
   for (const m of text.matchAll(new RegExp(named, 'g')))
-    sites.push({ index: m.index, values: () => callArguments(text, m[1] ?? m[2]) })
+    sites.push({ index: m.index, terms: () => callArgumentTerms(text, m[1] ?? m[2], depth) })
   const nearest = sites.filter(site => site.index < index).sort((a, b) => b.index - a.index)[0]
-  return nearest ? nearest.values() : null
+  if (nearest)
+    return nearest.terms()
+  const definition = definitionOf(text, name)
+  return definition ? termsOf(text, definition.expr, definition.index, new Map(), depth + 1) : null
 }
 
-/** 模板串：${标识符} 能追到字面量的逐个代入，追不到的段按通配；一个字面字符都没剩就是纯表达式。 */
+/** 表达式在 index 处能取到的全部字符串；有一项不是字符串字面量就返回 null。 */
+function valuesAt(text, expr, index) {
+  const values = []
+  for (const term of termsOf(text, expr, index, new Map()) ?? [null]) {
+    const value = term?.expr === undefined ? null : literalOf(term.expr)
+    if (value === null)
+      return null
+    values.push(value)
+  }
+  return values
+}
+
+/** 模板串：${表达式} 能追到字符串的逐个代入，追不到的段按通配；一个字面字符都没剩就是纯表达式。 */
 function templateRefs(text, body, index) {
   const pieces = body.split(/\$\{([^}]*)\}/)
   let variants = [{ parts: [pieces[0]], traced: false }]
   for (let i = 1; i < pieces.length; i += 2) {
-    const expr = pieces[i].trim()
     const tail = pieces[i + 1]
-    const values = IDENTIFIER.test(expr) ? resolveIdentifier(text, expr, index) : null
+    const values = valuesAt(text, pieces[i], index)
     variants = values
       ? variants.flatMap(v => values.map(value => ({ parts: [...v.parts.slice(0, -1), v.parts.at(-1) + value + tail], traced: true })))
       : variants.map(v => ({ ...v, parts: [...v.parts, tail] }))
@@ -376,15 +581,16 @@ function templateRefs(text, body, index) {
   })
 }
 
-/** getElementById 的实参：字面量、模板串，或能追到字面量的变量。 */
+/** 一处 id 的写法（声明或引用）：字面量、模板串，或能追到字符串的表达式；追不到的原样记成 expr。 */
 function argumentRefs(text, arg, index) {
-  const template = arg.match(/^`([^`\\]*)`$/)
+  const source = arg.trim()
+  const template = source.match(/^`([^`\\]*)`$/)
   if (template)
     return templateRefs(text, template[1], index)
-  const decl = fromExpression(arg)
+  const decl = fromExpression(source)
   if (decl.kind !== 'expr')
     return [decl]
-  const values = IDENTIFIER.test(arg) ? resolveIdentifier(text, arg, index) : null
+  const values = valuesAt(text, source, index)
   return values ? values.map(value => ({ kind: 'literal', value, traced: true })) : [decl]
 }
 
@@ -649,6 +855,7 @@ let useIdCount = 0
 let runtimeCount = 0
 let refCount = 0
 let tracedCount = 0
+let tracedDeclCount = 0
 let boundCount = 0
 let opaqueSelectorCount = 0
 let opaqueHrefCount = 0
@@ -671,6 +878,8 @@ for (const path of await walk(DEMOS, name => extToFramework.has(extname(name))))
       continue
     }
     if (decl.kind !== 'expr') {
+      if (decl.traced)
+        tracedDeclCount++
       ids.push({ ...decl, file })
       continue
     }
@@ -819,7 +1028,8 @@ if (problems.length) {
 }
 
 console.log(
-  `[check-demo-ids] 通过：${pages.size} 页挂 ${demos.size} 份示例（${fileCount} 个文件），按页 × 框架核对 ${compared} 处 id 声明没有相撞；`
+  `[check-demo-ids] 通过：${pages.size} 页挂 ${demos.size} 份示例（${fileCount} 个文件），按页 × 框架核对 ${compared} 处 id 声明没有相撞`
+  + `（${tracedDeclCount} 处顺着变量追到字面量）；`
   + `另有 ${useIdCount} 处绑 useId()、${runtimeCount} 处登记在 RUNTIME_IDS 的运行时表达式。`
   + `${refCount} 处按 id 取节点、指向节点的引用都落在本示例自己的声明上`
   + `（${tracedCount} 处顺着变量追到字面量、${boundCount} 处与本文件的 id 绑同一个表达式）；`
