@@ -54,21 +54,21 @@ import {
 import { ref } from "vue";
 
 const nav: SideNavNode[] = [
-  { value: "dashboard", label: "工作台", href: "#dashboard" },
+  { value: "dashboard", label: "工作台", href: "#/dashboard" },
   {
     value: "order",
     label: "订单",
     children: [
-      { value: "order-list", label: "订单列表", href: "#order-list" },
-      { value: "order-refund", label: "退款处理", href: "#order-refund" },
+      { value: "order-list", label: "订单列表", href: "#/order/list" },
+      { value: "order-refund", label: "退款处理", href: "#/order/refund" },
     ],
   },
   {
     value: "user",
     label: "用户",
     children: [
-      { value: "user-list", label: "用户列表", href: "#user-list" },
-      { value: "user-role", label: "角色权限", href: "#user-role" },
+      { value: "user-list", label: "用户列表", href: "#/user/list" },
+      { value: "user-role", label: "角色权限", href: "#/user/role" },
     ],
   },
 ];
@@ -153,15 +153,15 @@ const lastCommand = ref("（无）");
       <XhBreadcrumbRoot>
         <XhBreadcrumbList>
           <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#dashboard">工作台</XhBreadcrumbLink>
+            <XhBreadcrumbLink href="#/dashboard">工作台</XhBreadcrumbLink>
           </XhBreadcrumbItem>
           <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
           <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#order">订单</XhBreadcrumbLink>
+            <XhBreadcrumbLink href="#/order">订单</XhBreadcrumbLink>
           </XhBreadcrumbItem>
           <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
           <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#order-list" current>订单列表</XhBreadcrumbLink>
+            <XhBreadcrumbLink href="#/order/list" current>订单列表</XhBreadcrumbLink>
           </XhBreadcrumbItem>
         </XhBreadcrumbList>
       </XhBreadcrumbRoot>
