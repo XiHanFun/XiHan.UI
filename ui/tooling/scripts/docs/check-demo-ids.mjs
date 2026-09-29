@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 门禁：挂在同一页上的示例不许声明同一个 id，按 id 取节点、指向节点的引用只能落在本示例自己的 id 上。
+// 门禁：挂在同一页上的示例与总览示意图不许声明同一个 id，按 id 取节点、指向节点的引用只能落在自己的 id 上。
 //
 // 文档站把一页的全部示例挂进同一个 document：自定义元素版经 innerHTML 注入、脚本逐个重建执行，
 // Vue / React 版是同一棵应用树里的子树。示例脚本按 document.getElementById 取节点，两份示例写了
@@ -12,6 +12,9 @@
 //   一律判红——不知道挂在哪页，就无从判断和谁同页。
 // - 框架切换是全站一个值，同一时刻一页只挂一种框架的示例，所以只在同一框架的文件之间比对；
 //   同一份示例自己的各框架版本写同一个 id 是常态，不算撞。
+// - 组件总览的示意图（docs/.vitepress/catalog/*.vue）由 <XhComponentCard src="名字" /> 挂到页上
+//   （renderless 的卡片不挂），同样按页归组；它不随框架切换，哪一档都挂着：与同页每一档的示例比，
+//   示意图之间只比一遍。示意图里的渐变 id 与 url(#…) 引用走同一套声明与引用判据。
 // - 读出的 id 分三种（表达式先按下文「变量追溯」追到字面量）：
 //   字面量：id="x"、id={"x"}、:id="'x'"、el.id = "x"、setAttribute("id", "x")，以及追到字面量的表达式；
 //   模板串：`prefix-${k}` 里追不到的段按通配，与另一份示例的字面量或模式可能相等即判撞；
@@ -47,6 +50,10 @@ import process from 'node:process'
 
 const DOCS = '../docs'
 const DEMOS = '../docs/.vitepress/demos'
+/** 组件总览的示意图：总览页以 <XhComponentCard src="名字" /> 一张张挂出，同样共享一个 document。 */
+const PREVIEWS = '../docs/.vitepress/catalog'
+/** 示意图在页上的身份前缀，与示例的「目录/基名」分开。 */
+const PREVIEW_UNIT = 'catalog:'
 const TABLE = 'scripts/demo-frameworks.json'
 /** docs 下不放页面的目录：主题、示例与构建缓存都在 .vitepress 里。 */
 const NOT_PAGES = new Set(['.vitepress', 'node_modules', 'public'])
@@ -847,6 +854,8 @@ async function walk(dir, keep, skip = new Set()) {
 
 /** @type {Map<string, Map<string, { file: string, ids: object[] }>>} 示例 → 框架 id → 文件与声明 */
 const demos = new Map()
+/** @type {Map<string, { file: string, ids: object[] }>} 总览示意图 → 文件与声明；不随框架切换，哪一档都挂着 */
+const previews = new Map()
 const usedRuntime = new Set()
 /** 没落在本示例声明上的引用：等页面读完再看同页谁声明了它。 */
 const dangling = []
@@ -861,11 +870,11 @@ let opaqueSelectorCount = 0
 let opaqueHrefCount = 0
 let routeHrefCount = 0
 
-for (const path of await walk(DEMOS, name => extToFramework.has(extname(name)))) {
-  const file = relative(DEMOS, path).replaceAll('\\', '/')
-  const ext = extname(file)
-  const src = file.slice(0, -ext.length)
-  const dir = src.split('/')[0]
+/**
+ * 读一个挂载单元（一份示例的一个框架版本，或一张总览示意图）：声明逐条归类计数，引用逐条核，
+ * 没落在本单元声明上的引用进 dangling。unit 是它在页上的身份；framework 为 null 表示不随框架切换、哪一档都挂着。
+ */
+async function scanFile(path, file, dir, unit, framework) {
   const source = await readFile(path, 'utf8')
   fileCount++
 
@@ -899,7 +908,6 @@ for (const path of await walk(DEMOS, name => extToFramework.has(extname(name))))
     )
   }
 
-  const framework = extToFramework.get(ext).id
   for (const ref of references(source, bindings)) {
     if (ref.kind === 'opaque-selector') {
       opaqueSelectorCount++
@@ -934,12 +942,24 @@ for (const path of await walk(DEMOS, name => extToFramework.has(extname(name))))
     if (ref.traced)
       tracedCount++
     if (!ids.some(decl => collide(ref, decl)))
-      dangling.push({ ...ref, file, src, framework })
+      dangling.push({ ...ref, file, src: unit, framework })
   }
+  return { file, ids }
+}
 
+for (const path of await walk(DEMOS, name => extToFramework.has(extname(name)))) {
+  const file = relative(DEMOS, path).replaceAll('\\', '/')
+  const ext = extname(file)
+  const src = file.slice(0, -ext.length)
+  const framework = extToFramework.get(ext).id
   if (!demos.has(src))
     demos.set(src, new Map())
-  demos.get(src).set(framework, { file, ids })
+  demos.get(src).set(framework, await scanFile(path, file, src.split('/')[0], src, framework))
+}
+
+for (const path of await walk(PREVIEWS, name => name.endsWith('.vue'))) {
+  const name = relative(PREVIEWS, path).replaceAll('\\', '/').slice(0, -'.vue'.length)
+  previews.set(name, await scanFile(path, `catalog/${name}.vue`, 'catalog', `${PREVIEW_UNIT}${name}`, null))
 }
 
 for (const [dir, entries] of Object.entries(RUNTIME_IDS)) {
@@ -952,15 +972,17 @@ for (const [dir, entries] of Object.entries(RUNTIME_IDS)) {
 // ── 页面：每页挂了哪些示例 ──────────────────────────────────────────────────
 
 const DEMO_TAG = /<XhDemo\s+src="([^"]+)"\s*\/>/g
-/** @type {Map<string, string[]>} 页面 → 示例 */
+/** @type {Map<string, { demos: string[], previews: string[] }>} 页面 → 挂着的示例与总览示意图 */
 const pages = new Map()
 const referenced = new Set()
+const referencedPreviews = new Set()
 
 for (const path of await walk(DOCS, name => name.endsWith('.md'), NOT_PAGES)) {
   const page = relative(DOCS, path).replaceAll('\\', '/')
   const source = await readFile(path, 'utf8')
   const tags = [...source.matchAll(/<XhDemo\b/g)]
-  if (!tags.length)
+  const cards = [...source.matchAll(/<XhComponentCard\b([^>]*)>/g)]
+  if (!tags.length && !cards.length)
     continue
   const srcs = [...source.matchAll(DEMO_TAG)].map(m => m[1])
   if (srcs.length !== tags.length)
@@ -970,12 +992,45 @@ for (const path of await walk(DOCS, name => name.endsWith('.md'), NOT_PAGES)) {
     if (!demos.has(src))
       problems.push(`${page} 引用的示例 ${src} 不存在：${DEMOS} 下没有 ${src}.{${frameworks.map(f => f.ext.slice(1)).join(',')}}`)
   }
-  pages.set(page, [...new Set(srcs)])
+  // renderless 的卡片不挂示意图
+  const names = []
+  for (const card of cards) {
+    const name = card[1].match(/\ssrc="([^"]+)"/)?.[1]
+    if (!name) {
+      problems.push(`${page}:${lineOf(source, card.index)} 的 <XhComponentCard 读不出 src="…"，不知道挂的是哪张示意图`)
+      continue
+    }
+    if (/\srenderless(?=[\s/=]|$)/.test(card[1]))
+      continue
+    referencedPreviews.add(name)
+    if (previews.has(name))
+      names.push(name)
+    else
+      problems.push(`${page} 挂的示意图 ${name} 不存在：${PREVIEWS} 下没有 ${name}.vue`)
+  }
+  pages.set(page, { demos: [...new Set(srcs)], previews: [...new Set(names)] })
 }
 
 for (const src of demos.keys()) {
   if (!referenced.has(src))
     problems.push(`示例 ${src} 没有任何一页用 <XhDemo src="${src}" /> 引用：不知道它挂在哪页，就判断不了它和谁同页`)
+}
+for (const name of previews.keys()) {
+  if (!referencedPreviews.has(name))
+    problems.push(`示意图 catalog/${name}.vue 没有任何一页用 <XhComponentCard src="${name}" /> 挂出：不知道它挂在哪页，就判断不了它和谁同页`)
+}
+
+/** 页上某一档框架下同时挂着的单元：该框架的示例版本，加上不随框架切换的总览示意图（always）。 */
+function mountedUnits(entry, framework) {
+  const units = []
+  for (const src of entry.demos) {
+    const version = demos.get(src)?.get(framework.id)
+    if (version)
+      units.push({ src, ...version })
+  }
+  for (const name of entry.previews)
+    units.push({ src: `${PREVIEW_UNIT}${name}`, always: true, ...previews.get(name) })
+  return units
 }
 
 // ── 按页 × 框架比对 ─────────────────────────────────────────────────────────
@@ -983,18 +1038,21 @@ for (const src of demos.keys()) {
 let compared = 0
 const collisions = new Set()
 
-for (const [page, srcs] of pages) {
-  for (const framework of frameworks) {
-    const decls = srcs.flatMap(src => (demos.get(src)?.get(framework.id)?.ids ?? []).map(decl => ({ ...decl, src })))
-    compared += decls.length
+for (const [page, entry] of pages) {
+  for (const [index, framework] of frameworks.entries()) {
+    const units = mountedUnits(entry, framework)
+    // 示意图不随框架切换：它的声明只数一遍，示意图之间也只比一遍
+    compared += units.filter(unit => !unit.always || index === 0).reduce((sum, unit) => sum + unit.ids.length, 0)
+    const decls = units.flatMap(unit => unit.ids.map(decl => ({ ...decl, src: unit.src, always: unit.always })))
     for (let i = 0; i < decls.length; i++) {
       for (let j = i + 1; j < decls.length; j++) {
         const [a, b] = [decls[i], decls[j]]
-        if (a.src === b.src || !collide(a, b))
+        const previewsOnly = a.always && b.always
+        if (a.src === b.src || (previewsOnly && index > 0) || !collide(a, b))
           continue
         const [first, second] = [a, b].sort((x, y) => x.file.localeCompare(y.file))
         collisions.add(
-          `${page}（${framework.name}）：${first.file}:${first.line} 的 ${label(first)} 与 `
+          `${page}（${previewsOnly ? '总览示意图' : framework.name}）：${first.file}:${first.line} 的 ${label(first)} 与 `
           + `${second.file}:${second.line} 的 ${label(second)} 会在同一个 document 里相撞`,
         )
       }
@@ -1005,33 +1063,37 @@ problems.push(...collisions)
 
 for (const ref of dangling) {
   const owners = new Set()
-  for (const srcs of pages.values()) {
-    if (!srcs.includes(ref.src))
+  const preview = ref.framework === null
+  for (const entry of pages.values()) {
+    if (!(preview ? entry.previews.includes(ref.src.slice(PREVIEW_UNIT.length)) : entry.demos.includes(ref.src)))
       continue
-    for (const other of srcs) {
-      const entry = other === ref.src ? undefined : demos.get(other)?.get(ref.framework)
-      if (entry?.ids.some(decl => collide(ref, decl)))
-        owners.add(entry.file)
+    // 示意图哪一档框架都挂着，同页哪一档的示例都可能与它同处一个 document
+    for (const framework of frameworks.filter(f => preview || f.id === ref.framework)) {
+      for (const unit of mountedUnits(entry, framework)) {
+        if (unit.src !== ref.src && unit.ids.some(decl => collide(ref, decl)))
+          owners.add(unit.file)
+      }
     }
   }
-  const owner = owners.size ? `；同页的 ${[...owners].join('、')} 声明了它，挂在一起时取到的是那份示例的节点` : ''
+  const self = preview ? '这张示意图' : '这份示例'
+  const owner = owners.size ? `；同页的 ${[...owners].join('、')} 声明了它，挂在一起时取到的是别人的节点` : ''
   const placeholder = ref.fragment && !owners.size ? '；只是占位链接的话写成哈希路由 #/…（breadcrumb、side-nav 示例的写法）' : ''
-  problems.push(`${ref.file}:${ref.line} 的 ${ref.call} 指向 ${label(ref)}，这份示例自己没有声明它${owner}${placeholder}`)
+  problems.push(`${ref.file}:${ref.line} 的 ${ref.call} 指向 ${label(ref)}，${self}自己没有声明它${owner}${placeholder}`)
 }
 
 if (problems.length) {
   console.error(`[check-demo-ids] ✗ ${problems.length} 处示例 id 问题：`)
   for (const problem of problems)
     console.error(`  ${problem}`)
-  console.error('同一页的示例共享一个 document：id 要全页唯一（给后来的那份换一个带示例名的 id，如 <组件>-<示例>-<用途>），脚本只取本示例自己声明的 id。')
+  console.error('同一页的示例与总览示意图共享一个 document：id 要全页唯一（给后来的那份换一个带示例名的 id，如 <组件>-<示例>-<用途>；示意图的以文件名开头），引用只指向自己声明的 id。')
   process.exit(1)
 }
 
 console.log(
-  `[check-demo-ids] 通过：${pages.size} 页挂 ${demos.size} 份示例（${fileCount} 个文件），按页 × 框架核对 ${compared} 处 id 声明没有相撞`
+  `[check-demo-ids] 通过：${pages.size} 页挂 ${demos.size} 份示例、${previews.size} 张总览示意图（${fileCount} 个文件），按页 × 框架核对 ${compared} 处 id 声明没有相撞`
   + `（${tracedDeclCount} 处顺着变量追到字面量）；`
   + `另有 ${useIdCount} 处绑 useId()、${runtimeCount} 处登记在 RUNTIME_IDS 的运行时表达式。`
-  + `${refCount} 处按 id 取节点、指向节点的引用都落在本示例自己的声明上`
+  + `${refCount} 处按 id 取节点、指向节点的引用都落在所在示例或示意图自己的声明上`
   + `（${tracedCount} 处顺着变量追到字面量、${boundCount} 处与本文件的 id 绑同一个表达式）；`
   + `${routeHrefCount} 处 href（属性与组件数据）是哈希路由或外链，不指向页内节点；`
   + `另有 ${opaqueSelectorCount} 处选择器、${opaqueHrefCount} 处 href 是表达式且看不出 #id，不算引用`,
