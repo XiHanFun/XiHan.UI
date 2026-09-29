@@ -1,4 +1,3 @@
-import type { Plugin } from "vite";
 import { readFile } from "node:fs/promises";
 
 // 自定义元素版示例（demos/**/*.html）的 <script type="module"> 交给 Vite 编译。
@@ -25,6 +24,17 @@ interface ParsedNode {
 
 type Parse = (code: string) => { body: ParsedNode[] };
 
+/**
+ * 插件只用到 Vite 插件接口里的这几项。文档站（VitePress 带的 Vite）与 ui/ 的验证台（vitest 带的 Vite）
+ * 大版本不同，两边的 Plugin 类型各是各的；这里不从任一方取类型，两边按结构各自接收。
+ * 放在 docs/ 下，ui/ 的类型检查从这里也解析不到 docs 的依赖。
+ */
+interface DemoScriptPlugin {
+  name: string;
+  enforce: "pre";
+  load: (this: { parse: (code: string) => unknown }, id: string) => Promise<string | null>;
+}
+
 const SCRIPT = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
 
 /**
@@ -33,17 +43,20 @@ const SCRIPT = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
  */
 export function compileDemoScript(html: string, file: string, parse: Parse): string {
   const scripts = [...html.matchAll(SCRIPT)];
-  if (scripts.length === 0)
+  const script = scripts[0];
+  if (!script)
     return "export default async function () {}\n";
   // 两段模块脚本各有各的作用域，提上来的 import 会在同一个模块里撞名
   if (scripts.length > 1)
     throw new Error(`${file}：一份示例只写一段 <script type="module">，这里有 ${scripts.length} 段`);
 
-  const [, attrs, body] = scripts[0];
+  // 两个捕获组都不带量词，匹配上就一定有值
+  const attrs = script[1]!;
+  const body = script[2]!;
   if (!/^\s*type\s*=\s*["']module["']\s*$/i.test(attrs))
     throw new Error(`${file}：示例脚本的开标签只写 type="module"，这里是 <script${attrs}>`);
 
-  const bodyStart = scripts[0].index + "<script".length + attrs.length + ">".length;
+  const bodyStart = script.index + "<script".length + attrs.length + ">".length;
   const bodyLine = html.slice(0, bodyStart).split("\n").length - 1;
 
   const imports: string[] = [];
@@ -69,16 +82,19 @@ export function compileDemoScript(html: string, file: string, parse: Parse): str
 }
 
 /** 响应 `<示例>.html?xh-demo-script`，其余请求一概不管。 */
-export function demoScriptPlugin(): Plugin {
+export function demoScriptPlugin(): DemoScriptPlugin {
   return {
     name: "xihan-demo-script",
     enforce: "pre",
     async load(id) {
-      const [file, query = ""] = id.split("?", 2);
-      if (!file.endsWith(".html") || !new URLSearchParams(query).has(DEMO_SCRIPT_QUERY))
+      const queryStart = id.indexOf("?");
+      if (queryStart < 0)
+        return null;
+      const file = id.slice(0, queryStart);
+      if (!file.endsWith(".html") || !new URLSearchParams(id.slice(queryStart + 1)).has(DEMO_SCRIPT_QUERY))
         return null;
       const html = await readFile(file, "utf8");
-      return compileDemoScript(html, file, code => this.parse(code) as unknown as { body: ParsedNode[] });
+      return compileDemoScript(html, file, code => this.parse(code) as { body: ParsedNode[] });
     },
   };
 }
