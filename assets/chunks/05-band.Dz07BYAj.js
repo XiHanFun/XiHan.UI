@@ -1,0 +1,1 @@
+import{lR as e}from"./theme.BkMxTDZM.js";import{d as n,o,b as r,k as t}from"./framework.D1FqHTxE.js";const m=n({__name:"05-band",setup(s){const a=[150,162,148,171,188,214,196,172,165,158,231,204,179,168];return(c,p)=>(o(),r(t(e),{data:a,band:[120,200],"aria-label":"近 14 天 P95 延迟，正常区间 120 到 200 毫秒"}))}});export{m as default};
