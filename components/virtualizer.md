@@ -744,6 +744,328 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 </script>
 ```
 
+### 随整页滚动
+
+scrollContainer 设为 window：列表铺在页面里，不另开滚动框，列表上方的内容不必再算 scrollMargin
+
+```vue
+<script setup lang="ts">
+import {
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <!-- root 不定高：视口随内容撑开，滚的是整页 -->
+  <XhVirtualizerRoot
+    v-slot="{ virtualItems }"
+    :count="200"
+    :estimate-size="36"
+    scroll-container="window"
+    style="inline-size: 100%; max-inline-size: 420px"
+  >
+    <XhVirtualizerViewport>
+      <XhVirtualizerContent>
+        <XhVirtualizerItem
+          v-for="item in virtualItems"
+          :key="item.key"
+          :value="item.index"
+          style="display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)"
+        >
+          第 {{ item.index + 1 }} 条
+        </XhVirtualizerItem>
+      </XhVirtualizerContent>
+    </XhVirtualizerViewport>
+  </XhVirtualizerRoot>
+</template>
+```
+
+```html
+<!-- root 不定高：视口随内容撑开，滚的是整页 -->
+<xh-virtualizer id="virtualizer-window" count="200" estimate-size="36" scroll-container="window">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px">
+    <div data-xh-part="viewport">
+      <div data-xh-part="content"></div>
+    </div>
+  </div>
+</xh-virtualizer>
+
+<script type="module">
+  const host = document.getElementById("virtualizer-window");
+  const content = host.querySelector('[data-xh-part="content"]');
+  const nodes = new Map();
+
+  function render(items) {
+    const live = new Set();
+    for (const item of items) {
+      live.add(item.index);
+      if (nodes.has(item.index)) continue;
+      const el = document.createElement("div");
+      el.dataset.xhPart = "item";
+      el.setAttribute("value", String(item.index));
+      el.style.cssText = "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+      el.textContent = `第 ${item.index + 1} 条`;
+      nodes.set(item.index, el);
+      content.append(el);
+    }
+    for (const [index, el] of nodes) {
+      if (live.has(index)) continue;
+      el.remove();
+      nodes.delete(index);
+    }
+  }
+
+  render(host.virtualItems);
+  host.addEventListener("range-change", event => render(event.detail.virtualItems));
+</script>
+```
+
+### 聊天流
+
+anchor 设为 end：从最新一条看起，贴底时新消息继续贴底；往前翻出历史时，给了 getItemKey 视口不跳
+
+```vue
+<script setup lang="ts">
+import {
+  XhButton,
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+interface Message {
+  id: number;
+  text: string;
+}
+
+let oldest = 0;
+let newest = 0;
+const messages = ref<Message[]>(Array.from({ length: 30 }, () => ({ id: newest, text: `消息 ${newest++}` })));
+
+// 历史往前插：身份是消息 id，原来视口里第一条留在原处
+function loadOlder(): void {
+  const older = Array.from({ length: 20 }, () => {
+    oldest -= 1;
+    return { id: oldest, text: `历史 ${-oldest}` };
+  }).reverse();
+  messages.value = [...older, ...messages.value];
+}
+
+function send(): void {
+  messages.value = [...messages.value, { id: newest, text: `消息 ${newest++}` }];
+}
+</script>
+
+<template>
+  <div style="display: grid; gap: 8px; inline-size: 100%; max-inline-size: 420px">
+    <div style="display: flex; gap: 8px">
+      <XhButton size="sm" variant="outline" @click="loadOlder">加载更早</XhButton>
+      <XhButton size="sm" @click="send">发送一条</XhButton>
+    </div>
+    <XhVirtualizerRoot
+      v-slot="{ virtualItems }"
+      :count="messages.length"
+      :estimate-size="36"
+      :get-item-key="(index: number) => messages[index]!.id"
+      anchor="end"
+      style="block-size: 240px"
+    >
+      <XhVirtualizerViewport>
+        <XhVirtualizerContent>
+          <XhVirtualizerItem
+            v-for="item in virtualItems"
+            :key="item.key"
+            :value="item.index"
+            style="display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)"
+          >
+            {{ messages[item.index]!.text }}
+          </XhVirtualizerItem>
+        </XhVirtualizerContent>
+      </XhVirtualizerViewport>
+    </XhVirtualizerRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: 8px; inline-size: 100%; max-inline-size: 420px">
+  <div style="display: flex; gap: 8px">
+    <xh-button id="virtualizer-chat-older" size="sm" variant="outline">
+      <button data-xh-part="root" type="button">加载更早</button>
+    </xh-button>
+    <xh-button id="virtualizer-chat-send" size="sm">
+      <button data-xh-part="root" type="button">发送一条</button>
+    </xh-button>
+  </div>
+  <xh-virtualizer id="virtualizer-chat" estimate-size="36" anchor="end">
+    <div data-xh-part="root" style="block-size: 240px">
+      <div data-xh-part="viewport">
+        <div data-xh-part="content"></div>
+      </div>
+    </div>
+  </xh-virtualizer>
+</div>
+
+<script type="module">
+  const host = document.getElementById("virtualizer-chat");
+  const content = host.querySelector('[data-xh-part="content"]');
+  let oldest = 0;
+  let newest = 30;
+  let messages = Array.from({ length: 30 }, (_, id) => ({ id, text: `消息 ${id}` }));
+  // 节点按消息 id 复用：下标会随往前插入整体后移，身份不会
+  const nodes = new Map();
+
+  function render(items) {
+    const live = new Set();
+    for (const item of items) {
+      const message = messages[item.index];
+      live.add(message.id);
+      let el = nodes.get(message.id);
+      if (!el) {
+        el = document.createElement("div");
+        el.dataset.xhPart = "item";
+        el.style.cssText = "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+        el.textContent = message.text;
+        nodes.set(message.id, el);
+        content.append(el);
+      }
+      el.setAttribute("value", String(item.index));
+    }
+    for (const [id, el] of nodes) {
+      if (live.has(id)) continue;
+      el.remove();
+      nodes.delete(id);
+    }
+  }
+
+  function sync() {
+    host.getItemKey = index => messages[index].id;
+    host.count = messages.length;
+  }
+
+  sync();
+  host.addEventListener("range-change", event => render(event.detail.virtualItems));
+  document.getElementById("virtualizer-chat-older").addEventListener("click", () => {
+    const older = Array.from({ length: 20 }, () => {
+      oldest -= 1;
+      return { id: oldest, text: `历史 ${-oldest}` };
+    }).reverse();
+    messages = [...older, ...messages];
+    sync();
+  });
+  document.getElementById("virtualizer-chat-send").addEventListener("click", () => {
+    messages = [...messages, { id: newest, text: `消息 ${newest++}` }];
+    sync();
+  });
+</script>
+```
+
+### 分组标题
+
+stickyIndices 登记标题的下标：滚过它之后它钉在起点，下一组的标题滚上来时接替
+
+```vue
+<script setup lang="ts">
+import {
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
+} from "@xihan-ui/vue";
+
+const groups = ["A", "B", "C", "D", "E", "F"];
+const rows = groups.flatMap(letter => [
+  { header: true, text: letter },
+  ...Array.from({ length: 12 }, (_, i) => ({ header: false, text: `${letter}${i + 1} 联系人` })),
+]);
+const stickyIndices = rows.flatMap((row, index) => (row.header ? [index] : []));
+</script>
+
+<template>
+  <XhVirtualizerRoot
+    v-slot="{ virtualItems }"
+    :count="rows.length"
+    :estimate-size="36"
+    :sticky-indices="stickyIndices"
+    style="block-size: 260px; inline-size: 100%; max-inline-size: 420px"
+  >
+    <XhVirtualizerViewport>
+      <XhVirtualizerContent>
+        <!-- 钉住的条目自带实底（--xh-virtualizer-sticky-bg），滚过去的条目从它下面穿过 -->
+        <XhVirtualizerItem
+          v-for="item in virtualItems"
+          :key="item.key"
+          :value="item.index"
+          :style="
+            rows[item.index]!.header
+              ? 'display: flex; align-items: center; height: 36px; padding-inline: 12px; font-weight: 600; color: var(--xh-fg-muted)'
+              : 'display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)'
+          "
+        >
+          {{ rows[item.index]!.text }}
+        </XhVirtualizerItem>
+      </XhVirtualizerContent>
+    </XhVirtualizerViewport>
+  </XhVirtualizerRoot>
+</template>
+```
+
+```html
+<!-- 钉住的条目自带实底（--xh-virtualizer-sticky-bg），滚过去的条目从它下面穿过 -->
+<xh-virtualizer id="virtualizer-sticky" estimate-size="36">
+  <div data-xh-part="root" style="block-size: 260px; inline-size: 100%; max-inline-size: 420px">
+    <div data-xh-part="viewport">
+      <div data-xh-part="content"></div>
+    </div>
+  </div>
+</xh-virtualizer>
+
+<script type="module">
+  const groups = ["A", "B", "C", "D", "E", "F"];
+  const rows = groups.flatMap(letter => [
+    { header: true, text: letter },
+    ...Array.from({ length: 12 }, (_, i) => ({ header: false, text: `${letter}${i + 1} 联系人` })),
+  ]);
+  const stickyIndices = rows.flatMap((row, index) => (row.header ? [index] : []));
+
+  const host = document.getElementById("virtualizer-sticky");
+  const content = host.querySelector('[data-xh-part="content"]');
+  const nodes = new Map();
+
+  function render(items) {
+    const live = new Set();
+    for (const item of items) {
+      live.add(item.index);
+      if (nodes.has(item.index)) continue;
+      const row = rows[item.index];
+      const el = document.createElement("div");
+      el.dataset.xhPart = "item";
+      el.setAttribute("value", String(item.index));
+      el.style.cssText = row.header
+        ? "display: flex; align-items: center; height: 36px; padding-inline: 12px; font-weight: 600; color: var(--xh-fg-muted)"
+        : "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+      el.textContent = row.text;
+      nodes.set(item.index, el);
+      content.append(el);
+    }
+    for (const [index, el] of nodes) {
+      if (live.has(index)) continue;
+      el.remove();
+      nodes.delete(index);
+    }
+  }
+
+  host.stickyIndices = stickyIndices;
+  host.count = rows.length;
+  host.addEventListener("range-change", event => render(event.detail.virtualItems));
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -761,16 +1083,24 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 - 支持动态高度（测量而非估算）、横向列表与多列。
 - `overscan` 决定窗口外多渲染的条数，滚动时不露白。
 - 可以滚到指定条目。
+- 滚动容器由 `scrollContainer` 决定：缺省 `viewport` 是视口自己滚；`window` 是列表铺在页面里、随整页滚动，视口不再是滚动框也不占 Tab 位，列表在页面里的起点由内核现量（每次滚动都重量，页头折叠、上方内容加载完都跟得上），不必再算 `scrollMargin`。
+- 条目增删时视口不跳：缺省（`anchor` 为 `start`）把视口里第一条按身份放回原处，往前插入条目（向上翻出历史）时它仍停在原来的位置。身份来自 `getItemKey`，没给时身份就是下标，往前插入只保住下标、内容会整体后移。
+- `anchor` 为 `end` 时从最新一条看起：滚到底后内容再长（追加条目、条目长高）也继续贴底；用户往上翻离开底部就不再拽回，翻回底部重新贴底。列表不足一屏时条目贴着底部排。适合聊天与日志。
+- `stickyIndices` 登记要钉在视口起点的条目（分组标题）：滚过它之后它一直钉着，直到下一个登记过的条目接替；它的条目外壳带 `data-fixed`，按 `position: sticky` 留在文档流里，自带实底 `--xh-virtualizer-sticky-bg`。钉住的标题读屏照常读到，不另建一份。
 
 ### 组合
 
-- 与[列表](./list)、[表格](./table)、[选择器](./select)的长选项列表、[穿梭框](./transfer)配合。
+- `collectionVirtualizer` 是正式集合接线口：[树](./tree)、[列表框](./listbox)、[选择器](./select)、[组合框](./combobox)、[穿梭框](./transfer)与[表格](./table)把完整 collection 交给各自状态机，只用 `virtualItems` 裁剪 DOM。表格按可见数据行计数，每个虚拟条目装一行数据行。[日志](./log)接上它之后，粘底改跟 Virtualizer 的视口与内容层（`getViewportElement` / `getContentElement`）走。
+- 集合接线时 `count` 必须等于当前语义序列长度；不一致会明确抛错，避免方向键与可见窗口指向两份数据。
+- 集合自身已有焦点模型，把 `viewportTabIndex` 设为 `-1`，不要让虚拟视口额外占一个 Tab 位。
 - 与[无限滚动](./infinite-scroll)组合为边滚边取的长列表：哨兵放在内容层之后，取数目标指向视口层。
 
 ### 最佳实践
 
 - 条目高度差异大时使用动态高度模式，不依赖估值。
+- 条目会增删的列表（消息、动态流）一律给 `getItemKey`：实测尺寸、视口钉住与节点复用都按它认条目。
 - 提供滚动到指定条目的入口，否则用户无法找回之前的位置。
+- Web Components 跨嵌套宿主组合时，语义条目根用 `data-xh-part-owner` 声明归属；Virtualizer 外壳仍归 `virtualizer`，两台宿主不会争写同一节点。
 
 ### 反模式
 
@@ -805,6 +1135,10 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 | `paddingStart` | `number` |  | 列表前后的内边距（px），默认 0。计入总长，第一条从 paddingStart 处起算。 |
 | `paddingEnd` | `number` |  |  |
 | `lanes` | `number` |  | 多列网格的列数，默认 1（单列）。条目按下标轮流落到各列上。 |
+| `viewportTabIndex` | `number` |  | viewport 的 Tab 位；独立列表默认 0，组合进有自身焦点模型的集合时设为 -1。window 形态下视口不滚动，不占 Tab 位。 |
+| `scrollContainer` | `VirtualizerScrollContainer` |  | 滚动容器：viewport（缺省）是视口节点自己滚；window 是列表铺在页面里、随整页滚动， 列表在页面里的起点由内核现量，不必再给 scrollMargin。 |
+| `anchor` | `VirtualizerAnchor` |  | 条目增删时钉住哪一头。start（缺省）把视口里第一条按身份放回原处：往前插入条目（向上翻出历史）视口不跳， 需要 getItemKey 给出稳定身份。end 另外从底部看起、已经滚到底时内容再长也继续贴底（聊天流）， 列表不足一屏时条目贴着底部排。 |
+| `stickyIndices` | `number[]` |  | 钉在视口起点的条目下标（分组标题）：滚过它之后它一直钉着，直到下一个钉住的条目接替。 |
 
 ### 事件
 
@@ -853,9 +1187,11 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 | `horizontal` | `boolean` |  |
 | `lanes` | `number` |  |
 | `scrolling` | `boolean` | 正在滚动。 |
+| `collectionVirtualizer` | `CollectionVirtualizer` | 交给集合组件的正式虚拟化桥。 |
 | `scrollToIndex` | `(index: number, options?: VirtualizerScrollToOptions) => void` | 滚动到某一条。越界下标由内核夹取。 |
 | `measureElement` | `(element: HTMLElement \| null) => void` | 把条目节点的真实尺寸回填给内核（动态高度使用）。传 null 无副作用。 |
 | `measure` | `() => void` | 丢弃全部实测尺寸重新按估算值排列。视口更换排版时使用。 |
+| `registerItemElement` | `(index: number, element: HTMLElement \| null) => void` | 适配器在条目 ref 挂载 / 卸载时登记；业务作者通常不直接调用。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
@@ -875,6 +1211,8 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
 `@xihan-ui/styles/virtualizer.css` 使用 `[data-scope="virtualizer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -883,11 +1221,25 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 | --- | --- | --- |
 | `root` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `data-scrolling` | ''（条件成立时才出现） |
+| `viewport` | `data-anchor` | 'end' \| undefined |
 | `viewport` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `viewport` | `data-scroll-container` | 'window' \| undefined |
 | `content` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `item` | `data-fixed` | ''（条件成立时才出现） |
 | `item` | `data-index` | props.index |
 | `item` | `data-lane` | item.lane \| undefined |
 | `item` | `data-orientation` | 'horizontal' \| 'vertical' |
+
+<!-- xh-component-tokens:start -->
+### CSS 变量
+
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
+
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-virtualizer-sticky-bg` | `item` | `background` | `fixed` | `--xh-bg-surface` | virtualizer 的 item 部件 background 覆盖槽。 |
+| `--xh-virtualizer-sticky-layer` | `item` | `z-index` | `fixed` | `--xh-layer-sticky` | virtualizer 的 item 部件 z-index 覆盖槽。 |
+<!-- xh-component-tokens:end -->
 
 ### 动效
 

@@ -308,8 +308,10 @@ const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: to
 | `header` | `data-fixed` | ''（条件成立时才出现） |
 | `header` | `data-xh-liquid` | ''（条件成立时才出现） |
 | `sider-backdrop` | `data-collapsed` | ''（条件成立时才出现） |
+| `sider-backdrop` | `data-instant` | ''（条件成立时才出现） |
 | `sider` | `data-collapsed` | ''（条件成立时才出现） |
 | `sider` | `data-fixed` | ''（条件成立时才出现） |
+| `sider` | `data-instant` | ''（条件成立时才出现） |
 | `sider` | `data-placement` | props.siderPlacement |
 | `sider` | `data-presentation` | resolveSiderPresentation( prop('siderPresentation'), … |
 | `sider-trigger` | `data-collapsed` | ''（条件成立时才出现） |
@@ -360,7 +362,7 @@ const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: to
 
 动效角色：按压 · 状态 · 指示与换位 · 出现 · 导航（见[动效规范](../design/motion#角色)）。
 
-`inline-size` · `opacity` · `translate` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `border-color` · `box-shadow` · `color` · `inline-size` · `opacity` · `translate` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

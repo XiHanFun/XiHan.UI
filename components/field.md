@@ -348,6 +348,7 @@ import {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-field-border-invalid` | `jumper` | `border-color` | `user-invalid` | `--xh-_field-variant-border-invalid` | field 的 jumper 部件 border-color 覆盖槽。 |
 | `--xh-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | field 的 control 部件 background-color 覆盖槽。 |
@@ -366,7 +367,7 @@ import {
 | `--xh-field-description-fg-disabled` | `description` | `color` | `disabled` | `--xh-fg-subtle` | field 的 description 部件 color 覆盖槽。 |
 | `--xh-field-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | field 的 description 部件 font-size 覆盖槽。 |
 | `--xh-field-error-fg` | `error-text` | `color` | `default` | `--xh-fg-danger` | field 的 error-text 部件 color 覆盖槽。 |
-| `--xh-field-error-font-size` | `error-text`<br>`root` | `block-size`<br>`font-size` | `default`<br>`has(> [data-scope='field'][data-part='error-text'][hidden])`<br>`not(:has(> [data-scope='field'][data-part='description']:not([hidden])` | `--xh-text-secondary-size` | field 的 error-text、root 部件 block-size、font-size 覆盖槽。 |
+| `--xh-field-error-font-size` | `error-text`<br>`root` | `block-size`<br>`font-size` | `default`<br>`not(:has(> [data-scope='field'][data-part='description']:not([hidden])` | `--xh-text-secondary-size` | field 的 error-text、root 部件 block-size、font-size 覆盖槽。 |
 | `--xh-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | field 的 label 部件 color 覆盖槽。 |
 | `--xh-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | field 的 label 部件 color 覆盖槽。 |
@@ -377,11 +378,16 @@ import {
 | `--xh-field-label-gap-block` | `label` | `margin-block-end` | `default` | `--xh-field-gap` | field 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-field-label-leading` | `label`<br>`root` | `line-height`<br>`padding-block` | `layout=horizontal` | `--xh-leading-normal` | field 的 label、root 部件 line-height、padding-block 覆盖槽。 |
 | `--xh-field-label-star` | `label` | `color` | `required` | `--xh-fg-danger` | field 的 label 部件 color 覆盖槽。 |
+| `--xh-field-ring-invalid` | `jumper` | `outline-color` | `focus-within`<br>`user-invalid` | `--xh-ring-invalid` | field 的 jumper 部件 outline-color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
+
+`color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

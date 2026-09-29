@@ -1071,6 +1071,7 @@ function pin(event: MouseEvent): void {
 - `modal` 可选：需要锁定下层时开启；展开期间可动态切换，模态档会锁定页面滚动并让背景失活。
 - 可以与触发器同宽，也可以落在指针位置。
 - `end` 等对齐是逻辑方向，跟随书写方向，不是物理左右。
+- `disabled` 让浮层不可打开：触发器转原生 disabled（退出 Tab 序列、画禁用面），点按与 `setOpen(true)` 都不展开，展开途中转为禁用即收起；与文字提示、悬浮卡片的 `disabled` 同名同义。
 
 默认内容面使用 M2 磨砂配方，背景模糊只发生在浮层本体，箭头复用底色和边界，不重复模糊。正文保持不透明。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`，与指针按下同一副按压面。说明文字为 13px 说明档。系统减少透明度、高对比与强制色时，原位切换为实体表面；打印时收起交互浮层。
 
@@ -1113,6 +1114,7 @@ function pin(event: MouseEvent): void {
 | `modal` | `boolean` |  | 模态浮层陷入焦点；默认 false（非模态，Tab 可离开）。 |
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
+| `disabled` | `boolean` |  | 浮层不可打开：触发器转原生 disabled，点按与命令式 setOpen(true) 都不展开；展开途中转为禁用即收起。 与 Tooltip、HoverCard 的 disabled 同名同义：关掉的是浮层这件事。受控写回 open 仍按宿主的意思来。 |
 | `translations` | `Partial<PopoverTranslations>` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定面板的内边距档位。 |
 | `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -1158,7 +1160,7 @@ function pin(event: MouseEvent): void {
 
 **事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled`
+**判据**：`isOpenControlled` · `isDisabled`
 
 ### connect API
 
@@ -1221,6 +1223,7 @@ function pin(event: MouseEvent): void {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
@@ -1232,6 +1235,7 @@ function pin(event: MouseEvent): void {
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |

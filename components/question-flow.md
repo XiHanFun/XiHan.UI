@@ -248,7 +248,7 @@ const sent = ref("");
 
 加粗的是必需部件。
 
-`data-scope="question-flow"`：**`root`** · `viewport` · **`track`** · **`question`** · `prompt` · `group` · `item` · `item-indicator` · `item-text` · `note` · `footer` · `prev-trigger` · `counter` · `next-trigger` · `skip-trigger` · **`submit-trigger`** · `result` · `live-region`
+`data-scope="question-flow"`：**`root`** · `viewport` · **`track`** · **`question`** · `prompt` · `description` · `group` · `item` · `item-indicator` · `item-text` · `item-description` · `note` · `footer` · `prev-trigger` · `counter` · `next-trigger` · `skip-trigger` · **`submit-trigger`** · `result` · `live-region`
 
 ## 示例
 
@@ -815,6 +815,211 @@ const questions: QuestionFlowQuestion[] = [
 </script>
 ```
 
+### 说明与多选上下限
+
+选项的 description 写进 item-description，跟着选项名一起念；多选的 minSelections / maxSelections 管选够与选满，数量要求写进题目说明 description 并描述选项组
+
+```vue
+<script setup lang="ts">
+import type { QuestionFlowQuestion } from "@xihan-ui/headless";
+import {
+  XhQuestionFlowDescription,
+  XhQuestionFlowFooter,
+  XhQuestionFlowGroup,
+  XhQuestionFlowItem,
+  XhQuestionFlowItemDescription,
+  XhQuestionFlowItemIndicator,
+  XhQuestionFlowItemText,
+  XhQuestionFlowLiveRegion,
+  XhQuestionFlowPrompt,
+  XhQuestionFlowQuestion,
+  XhQuestionFlowRoot,
+  XhQuestionFlowSubmitTrigger,
+  XhQuestionFlowTrack,
+  XhQuestionFlowViewport,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const questions: QuestionFlowQuestion[] = [
+  {
+    id: "cadence",
+    prompt: "按什么节奏发布？",
+    description: "会影响发布说明的写法。",
+    type: "single",
+    options: [
+      { value: "weekly", label: "每周", description: "小步快跑，回滚成本低" },
+      { value: "monthly", label: "每月", description: "攒一批再发，说明写得更完整" },
+    ],
+  },
+  {
+    id: "checks",
+    prompt: "上线前跑哪些检查？",
+    type: "multiple",
+    // 没写 description 时，数量要求代填成题目说明
+    minSelections: 2,
+    maxSelections: 3,
+    options: [
+      { value: "unit", label: "单元测试" },
+      { value: "e2e", label: "端到端", description: "约 20 分钟" },
+      { value: "bench", label: "性能基准", description: "只在夜里跑" },
+      { value: "audit", label: "依赖安全扫描" },
+    ],
+  },
+];
+
+const translations = {
+  selectionRange: (min: number, max: number | undefined) => (max === undefined ? `至少选 ${min} 项` : `选 ${min} 到 ${max} 项`),
+};
+
+const sent = ref("");
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 12px; max-width: 360px;">
+    <XhQuestionFlowRoot
+      v-slot="{ isLast }"
+      :questions="questions"
+      :translations="translations"
+      :auto-advance="false"
+      @submit="sent = Object.entries($event.answers).map(([id, values]) => `${id}=${values.join('、')}`).join('；')"
+    >
+      <XhQuestionFlowViewport>
+        <XhQuestionFlowTrack>
+          <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
+            <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
+            <!-- 留空：写上题目自带的说明，或多选的数量要求 -->
+            <XhQuestionFlowDescription :question-id="question.id" />
+            <XhQuestionFlowGroup :question-id="question.id">
+              <XhQuestionFlowItem
+                v-for="option in question.options"
+                :key="option.value"
+                :question-id="question.id"
+                :option-value="option.value"
+              >
+                <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
+                <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
+                  {{ option.label }}
+                </XhQuestionFlowItemText>
+                <XhQuestionFlowItemDescription v-if="option.description" :question-id="question.id" :option-value="option.value">
+                  {{ option.description }}
+                </XhQuestionFlowItemDescription>
+              </XhQuestionFlowItem>
+            </XhQuestionFlowGroup>
+          </XhQuestionFlowQuestion>
+        </XhQuestionFlowTrack>
+      </XhQuestionFlowViewport>
+      <XhQuestionFlowFooter>
+        <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
+      </XhQuestionFlowFooter>
+      <XhQuestionFlowLiveRegion />
+    </XhQuestionFlowRoot>
+    <p v-if="sent" style="margin: 0;">收到：{{ sent }}</p>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-direction: column; gap: 12px; max-width: 360px">
+  <xh-question-flow id="question-flow-descriptions" auto-advance="false">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="track">
+          <div data-xh-part="question" question-id="cadence">
+            <p data-xh-part="prompt" question-id="cadence">按什么节奏发布？</p>
+            <!-- 留空：元素写上题目自带的说明，或多选的数量要求 -->
+            <p data-xh-part="description" question-id="cadence"></p>
+            <div data-xh-part="group" question-id="cadence">
+              <button data-xh-part="item" question-id="cadence" option-value="weekly">
+                <span data-xh-part="item-indicator" question-id="cadence" option-value="weekly"></span>
+                <span data-xh-part="item-text" question-id="cadence" option-value="weekly">每周</span>
+                <span data-xh-part="item-description" question-id="cadence" option-value="weekly">小步快跑，回滚成本低</span>
+              </button>
+              <button data-xh-part="item" question-id="cadence" option-value="monthly">
+                <span data-xh-part="item-indicator" question-id="cadence" option-value="monthly"></span>
+                <span data-xh-part="item-text" question-id="cadence" option-value="monthly">每月</span>
+                <span data-xh-part="item-description" question-id="cadence" option-value="monthly">攒一批再发，说明写得更完整</span>
+              </button>
+            </div>
+          </div>
+          <div data-xh-part="question" question-id="checks">
+            <p data-xh-part="prompt" question-id="checks">上线前跑哪些检查？</p>
+            <p data-xh-part="description" question-id="checks"></p>
+            <div data-xh-part="group" question-id="checks">
+              <button data-xh-part="item" question-id="checks" option-value="unit">
+                <span data-xh-part="item-indicator" question-id="checks" option-value="unit"></span>
+                <span data-xh-part="item-text" question-id="checks" option-value="unit">单元测试</span>
+              </button>
+              <button data-xh-part="item" question-id="checks" option-value="e2e">
+                <span data-xh-part="item-indicator" question-id="checks" option-value="e2e"></span>
+                <span data-xh-part="item-text" question-id="checks" option-value="e2e">端到端</span>
+                <span data-xh-part="item-description" question-id="checks" option-value="e2e">约 20 分钟</span>
+              </button>
+              <button data-xh-part="item" question-id="checks" option-value="bench">
+                <span data-xh-part="item-indicator" question-id="checks" option-value="bench"></span>
+                <span data-xh-part="item-text" question-id="checks" option-value="bench">性能基准</span>
+                <span data-xh-part="item-description" question-id="checks" option-value="bench">只在夜里跑</span>
+              </button>
+              <button data-xh-part="item" question-id="checks" option-value="audit">
+                <span data-xh-part="item-indicator" question-id="checks" option-value="audit"></span>
+                <span data-xh-part="item-text" question-id="checks" option-value="audit">依赖安全扫描</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-xh-part="footer">
+        <button data-xh-part="submit-trigger">继续</button>
+      </div>
+      <div data-xh-part="live-region"></div>
+    </div>
+  </xh-question-flow>
+  <p id="question-flow-descriptions-sent" style="margin: 0"></p>
+</div>
+
+<script type="module">
+  // 题目与文案是对象，只走 property
+  const flow = document.getElementById("question-flow-descriptions");
+  const sent = document.getElementById("question-flow-descriptions-sent");
+  const submit = flow.querySelector('[data-xh-part="submit-trigger"]');
+  flow.questions = [
+    {
+      id: "cadence",
+      prompt: "按什么节奏发布？",
+      description: "会影响发布说明的写法。",
+      type: "single",
+      options: [
+        { value: "weekly", label: "每周", description: "小步快跑，回滚成本低" },
+        { value: "monthly", label: "每月", description: "攒一批再发，说明写得更完整" },
+      ],
+    },
+    {
+      id: "checks",
+      prompt: "上线前跑哪些检查？",
+      type: "multiple",
+      // 没写 description 时，数量要求代填成题目说明
+      minSelections: 2,
+      maxSelections: 3,
+      options: [
+        { value: "unit", label: "单元测试" },
+        { value: "e2e", label: "端到端", description: "约 20 分钟" },
+        { value: "bench", label: "性能基准", description: "只在夜里跑" },
+        { value: "audit", label: "依赖安全扫描" },
+      ],
+    },
+  ];
+  flow.translations = {
+    selectionRange: (min, max) => (max === undefined ? `至少选 ${min} 项` : `选 ${min} 到 ${max} 项`),
+  };
+  // 末题上同一颗键的文字换成发送
+  flow.addEventListener("index-change", (event) => {
+    submit.textContent = event.detail.index === 1 ? "发送" : "继续";
+  });
+  flow.addEventListener("submit", (event) => {
+    sent.textContent = `收到：${Object.entries(event.detail.answers).map(([id, values]) => `${id}=${values.join("、")}`).join("；")}`;
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -835,6 +1040,8 @@ const questions: QuestionFlowQuestion[] = [
 - 单选自动前进，多选等待用户点击继续：选中一项后隔一小段自动翻到下一题；连续更改时，每次更改都从整段延时重新计时。自动前进只走到下一题，末题上停止，不替用户提交。
 - 一个按钮两个身份：不是末题时为“继续”，末题时为“发送”。它原位切换 `data-mode` 与可访问名称，正在按它的用户不会按空。
 - 自由文本与选项同等有效：填写了“都不是，我想要……”即视为已作答，继续键随之可用。
+- 多选的数量要求：`minSelections` 管选够——选够之前继续键不可用（写了自由文本同样算作答）；`maxSelections` 管选满——选满之后其余未选项转为不可选（`aria-disabled`），取消一项又能再选，程序化的 `toggleOption` 守同一条上限。选项组带 `data-at-max` 供皮肤取用。
+- 两种说明：题目的 `description` 写进 `description` 部件并成为选项组的描述，缺席时由多选的数量要求代填（文案取 `translations.selectionRange`）；选项的 `description` 写进 `item-description` 部件，排在选项之内另起一行。有没有题目说明看数据，没有时该部件收起。
 - 进度只播报一次：`counter` 部件 `aria-hidden`，逐题跳动的数字不进入活动区域；换题与提交由 `announcement` 读出一句。
 - 跳过是明确路径：`allowSkip` 关闭时整个跳过键收起，而不是保留一个不可用的按钮。末题上跳过即提交，否则最后一题没有出口。
 
@@ -863,7 +1070,7 @@ const questions: QuestionFlowQuestion[] = [
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-question-flow>` |
-| Vue 组件 | `XhQuestionFlowCounter` `XhQuestionFlowFooter` `XhQuestionFlowGroup` `XhQuestionFlowItem` `XhQuestionFlowItemIndicator` `XhQuestionFlowItemText` `XhQuestionFlowLiveRegion` `XhQuestionFlowNextTrigger` `XhQuestionFlowNote` `XhQuestionFlowPrevTrigger` `XhQuestionFlowPrompt` `XhQuestionFlowQuestion` `XhQuestionFlowResult` `XhQuestionFlowRoot` `XhQuestionFlowSkipTrigger` `XhQuestionFlowSubmitTrigger` `XhQuestionFlowTrack` `XhQuestionFlowViewport` |
+| Vue 组件 | `XhQuestionFlowCounter` `XhQuestionFlowDescription` `XhQuestionFlowFooter` `XhQuestionFlowGroup` `XhQuestionFlowItem` `XhQuestionFlowItemDescription` `XhQuestionFlowItemIndicator` `XhQuestionFlowItemText` `XhQuestionFlowLiveRegion` `XhQuestionFlowNextTrigger` `XhQuestionFlowNote` `XhQuestionFlowPrevTrigger` `XhQuestionFlowPrompt` `XhQuestionFlowQuestion` `XhQuestionFlowResult` `XhQuestionFlowRoot` `XhQuestionFlowSkipTrigger` `XhQuestionFlowSubmitTrigger` `XhQuestionFlowTrack` `XhQuestionFlowViewport` |
 | 组合式函数 | `useQuestionFlow` |
 | 状态机 | `questionFlowMachine` |
 | 皮肤 | `@xihan-ui/styles/question-flow.css` |
@@ -906,6 +1113,9 @@ const questions: QuestionFlowQuestion[] = [
 | `type` | `QuestionFlowType` |  | single = 互斥单选（radiogroup），multiple = 多选（group + checkbox）。默认 single。 |
 | `options` | `readonly QuestionFlowOption[]` | 是 |  |
 | `optional` | `boolean` |  | 允许不作答直接进入下一题。 |
+| `description` | `string` |  | 题目的补充说明，写进 description 部件并成为选项组的描述；缺席时由多选的数量要求代填。 |
+| `minSelections` | `number` |  | 多选至少选几项，默认 1。选够之前继续键不可用（写了自由文本同样算作答）。 只对 multiple 生效；非有限值或小于 1 按 1 算。 |
+| `maxSelections` | `number` |  | 多选最多选几项。选满之后其余未选项转为不可选（aria-disabled），取消一项又能再选。 只对 multiple 生效；非有限值或小于 1 当没给，小于 minSelections 时按 minSelections 算。 |
 
 ### 事件
 
@@ -934,11 +1144,14 @@ const questions: QuestionFlowQuestion[] = [
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhQuestionFlowDescription` | `questionId` | `string` | 是 |  |
 | `XhQuestionFlowGroup` | `questionId` | `string` | 是 |  |
 | `XhQuestionFlowItem` | `questionId` | `string` | 是 |  |
 | `XhQuestionFlowItem` | `optionValue` | `string` | 是 |  |
 | `XhQuestionFlowItem` | `optionDisabled` | `boolean` |  | 默认交给 connect 查询 questions，写死 false 会覆盖数据中的禁用。 |
 | `XhQuestionFlowItem` | `children` | `SlotChildren<QuestionFlowOptionSlotProps>` |  |  |
+| `XhQuestionFlowItemDescription` | `questionId` | `string` | 是 |  |
+| `XhQuestionFlowItemDescription` | `optionValue` | `string` | 是 |  |
 | `XhQuestionFlowItemIndicator` | `questionId` | `string` | 是 |  |
 | `XhQuestionFlowItemIndicator` | `optionValue` | `string` | 是 |  |
 | `XhQuestionFlowItemText` | `questionId` | `string` | 是 |  |
@@ -958,6 +1171,7 @@ const questions: QuestionFlowQuestion[] = [
 | `item` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
 | `item-text` | 'checked' \| 'unchecked' |
+| `item-description` | 'checked' \| 'unchecked' |
 | `result` | 'answering' \| 'submitted' |
 
 以下名称仅用于内部状态机。
@@ -981,7 +1195,7 @@ const questions: QuestionFlowQuestion[] = [
 | `current` | `QuestionFlowQuestion \| undefined` | 当前题；没有题目时为 undefined。 |
 | `isFirst` | `boolean` |  |
 | `isLast` | `boolean` |  |
-| `canAdvance` | `boolean` | 当前题是否可以进入下一题：已选选项、已填自由文本，或该题本身可跳过。 |
+| `canAdvance` | `boolean` | 当前题是否可以进入下一题：选够了选项、已填自由文本，或该题本身可跳过。 |
 | `allowSkip` | `boolean` |  |
 | `counter` | `string` | 视觉上的 N / M。它对读屏隐藏，进度由播报区朗读。 |
 | `announcement` | `string` | 读屏朗读的语句：答题中朗读进度，提交后朗读结果。 |
@@ -991,6 +1205,8 @@ const questions: QuestionFlowQuestion[] = [
 | `noteOf` | `(questionId: string) => string` |  |
 | `isOptionSelected` | `(questionId: string, value: string) => boolean` |  |
 | `isCurrent` | `(questionId: string) => boolean` |  |
+| `selectionLimitsOf` | `(questionId: string) => QuestionFlowSelectionLimits` | 这一题的数量要求；单选恒为 { min: 1, max: 1 }。 |
+| `descriptionOf` | `(questionId: string) => string` | 这一题的说明文字：题目自带的 description，缺席时由多选的数量要求代填；都没有时为空串。 |
 | `goTo` | `(index: number) => void` |  |
 | `next` | `() => void` |  |
 | `prev` | `() => void` |  |
@@ -1004,10 +1220,12 @@ const questions: QuestionFlowQuestion[] = [
 | `getTrackProps` | `() => T['element']` |  |
 | `getQuestionProps` | `(props: QuestionFlowQuestionProps) => T['element']` |  |
 | `getPromptProps` | `(props: QuestionFlowQuestionProps) => T['element']` |  |
+| `getDescriptionProps` | `(props: QuestionFlowQuestionProps) => T['element']` | 题目说明：有说明文字时成为选项组的 aria-describedby。 |
 | `getGroupProps` | `(props: QuestionFlowQuestionProps) => T['element']` |  |
 | `getItemProps` | `(props: QuestionFlowItemProps) => T['button']` |  |
 | `getItemIndicatorProps` | `(props: QuestionFlowItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: QuestionFlowItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: QuestionFlowItemProps) => T['element']` |  |
 | `getNoteProps` | `(props: QuestionFlowQuestionProps) => T['input']` |  |
 | `getFooterProps` | `() => T['element']` |  |
 | `getPrevTriggerProps` | `() => T['button']` |  |
@@ -1030,7 +1248,7 @@ const questions: QuestionFlowQuestion[] = [
 | `ArrowUp` / `ArrowLeft` | 焦点在当前题的选项上 | 焦点移到上一个可停留选项；单选时同时选中它 |
 | `Home` | 焦点在当前题的选项上 | 焦点移到首个可停留选项；单选时同时选中它 |
 | `End` | 焦点在当前题的选项上 | 焦点移到末个可停留选项；单选时同时选中它 |
-| `Space` | 焦点在当前题的选项上 | 切换该项。单选点已选中的那一项不取消 |
+| `Space` | 焦点在当前题的选项上 | 切换该项。单选点已选中的那一项不取消；多选已选满 maxSelections 时，未选项转为不可选，按了不加，取消已选项照常 |
 | `Enter` | 焦点在当前题的选项或自由文本上，且这一题答得能往下走 | 前进一题；已经在末题就交卷 |
 | `Space` | 按住当前题的未禁用选项 | 按住期间该选项投影 data-pressed，与指针 :active 同一副按压面（row 档只换面不缩放）；抬起、失焦、换题或交卷撤下。Enter 不是选项的激活键，不进按压面 |
 | `Enter` / `Space` | 按住未禁用的上一题 / 下一题 / 跳过 / 继续（发送）按钮 | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦、换题或交卷撤下 |
@@ -1045,6 +1263,7 @@ const questions: QuestionFlowQuestion[] = [
 | `question` | `aria-label` | undefined \| translations?.prompt |
 | `question` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
 | `question` | `role` | 'group' |
+| `group` | `aria-describedby` | undefined \| `description` 部件的 id |
 | `group` | `aria-label` | undefined \| translations?.options |
 | `group` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
 | `group` | `role` | 'radiogroup' \| 'group' |
@@ -1063,7 +1282,7 @@ const questions: QuestionFlowQuestion[] = [
 | `live-region` | `aria-live` | 'polite' |
 
 - 每题是 `role=group`，题干是它的可访问名称；题干缺席时退到 `translations.prompt`。
-- 选项组按题型取 `role=radiogroup`（单选）或 `role=group`（多选），同样由题干命名；选项各自是 `role=radio` 或 `role=checkbox` 并显式报告 `aria-checked`。
+- 选项组按题型取 `role=radiogroup`（单选）或 `role=group`（多选），同样由题干命名、由题目说明描述（`aria-describedby`，多选的数量要求就在其中）；选项各自是 `role=radio` 或 `role=checkbox` 并显式报告 `aria-checked`。选项说明排在选项之内，跟着选项名一起念。
 - 选项组内是漫游焦点：整组只占一个 Tab 位，落在选中项上，没有选中时落在首个可停留项。
 - 上一题 / 下一题只提供按钮入口，不接管全局按键，避免与选项漫游争抢方向键。这两个按钮通常只绘制箭头，因此它们的可访问名称始终发出（`translations.prev` / `translations.next`，默认 `Previous question` / `Next question`）；跳过键一般带可见文字，未提供 `translations.skip` 时不产出 `aria-label`。
 - 自由文本取 `translations.note` 作为可访问名称（默认 `Other answer`），占位文字取 `translations.notePlaceholder`。
@@ -1074,6 +1293,8 @@ const questions: QuestionFlowQuestion[] = [
 ### 皮肤
 
 `@xihan-ui/styles/question-flow.css` 使用 `[data-scope="question-flow"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 
@@ -1086,6 +1307,7 @@ const questions: QuestionFlowQuestion[] = [
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `question` | `data-current` | ''（条件成立时才出现） |
+| `group` | `data-at-max` | ''（条件成立时才出现） |
 | `group` | `data-select-mode` | 'single' \| 'multiple' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
@@ -1098,8 +1320,12 @@ const questions: QuestionFlowQuestion[] = [
 | `item` | `data-xh-action-variant` | 'ghost' |
 | `item-indicator` | `data-select-mode` | 'single' \| 'multiple' |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
+| `item-indicator` | `data-xh-check-mark` | undefined \| 'checked' \| 'unchecked' |
+| `item-indicator` | `data-xh-check-mark-profile` | undefined \| 'box' |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-value` | item.value |
+| `item-description` | `data-state` | 'checked' \| 'unchecked' |
+| `item-description` | `data-value` | item.value |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-xh-action-control` | '' |
@@ -1132,6 +1358,7 @@ const questions: QuestionFlowQuestion[] = [
 | `submit-trigger` | `data-xh-action-variant` | 'solid' |
 | `submit-trigger` | `data-xh-ink-surface` | '' |
 | `result` | `data-state` | 'answering' \| 'submitted' |
+| `result` | `data-tone` | 'success' \| undefined |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -1150,6 +1377,8 @@ const questions: QuestionFlowQuestion[] = [
 | `--xh-question-flow-border` | `root` | `border` | `default` | `--xh-border-default` | question-flow 的 root 部件 border 覆盖槽。 |
 | `--xh-question-flow-counter-fg` | `counter` | `color` | `default` | `--xh-fg-subtle` | question-flow 的 counter 部件 color 覆盖槽。 |
 | `--xh-question-flow-counter-font-size` | `counter` | `font-size` | `default` | `--xh-text-caption-size` | question-flow 的 counter 部件 font-size 覆盖槽。 |
+| `--xh-question-flow-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | question-flow 的 description 部件 color 覆盖槽。 |
+| `--xh-question-flow-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | question-flow 的 description 部件 font-size 覆盖槽。 |
 | `--xh-question-flow-dot-radius` | `item-indicator` | `border-radius` | `empty`<br>`select-mode=single` | `--xh-shape-circle` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-dot-size` | `item-indicator` | `block-size`<br>`inline-size` | `empty`<br>`select-mode=single` | `--xh-question-flow-indicator-size` | question-flow 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-question-flow-footer-gap` | `footer` | `gap` | `default` | `--xh-space-3` | question-flow 的 footer 部件 gap 覆盖槽。 |
@@ -1164,13 +1393,15 @@ const questions: QuestionFlowQuestion[] = [
 | `--xh-question-flow-indicator-icon-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-_question-flow-indicator-glyph` | question-flow 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-question-flow-indicator-radius` | `item-indicator` | `border-radius` | `default` | `--xh-shape-inset` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-indicator-radius-single` | `item-indicator` | `border-radius` | `select-mode=single` | `--xh-shape-circle` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
-| `--xh-question-flow-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default`<br>`empty`<br>`select-mode=single` | `--xh-_question-flow-indicator` | question-flow 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-question-flow-indicator-size` | `item-description`<br>`item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`padding-inline-start` | `default`<br>`empty`<br>`select-mode=single` | `--xh-_question-flow-indicator` | question-flow 的 item-description、item-indicator 部件 --xh-icon-size、block-size、inline-size、padding-inline-start 覆盖槽。 |
 | `--xh-question-flow-item-bg` | `item` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | question-flow 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-question-flow-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 item 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-item-description-fg` | `item-description` | `color` | `default` | `--xh-fg-subtle` | question-flow 的 item-description 部件 color 覆盖槽。 |
+| `--xh-question-flow-item-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-caption-size` | question-flow 的 item-description 部件 font-size 覆盖槽。 |
 | `--xh-question-flow-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-muted` | question-flow 的 item 部件 color 覆盖槽。 |
 | `--xh-question-flow-item-fg-checked` | `item` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked` | `--xh-fg-default` | question-flow 的 item 部件 color 覆盖槽。 |
 | `--xh-question-flow-item-font-size` | `item` | `font-size` | `default` | `--xh-_question-flow-font-size` | question-flow 的 item 部件 font-size 覆盖槽。 |
-| `--xh-question-flow-item-gap` | `item` | `gap` | `default` | `--xh-space-1_5` | question-flow 的 item 部件 gap 覆盖槽。 |
+| `--xh-question-flow-item-gap` | `item`<br>`item-description` | `gap`<br>`padding-inline-start` | `default` | `--xh-space-1_5` | question-flow 的 item、item-description 部件 gap、padding-inline-start 覆盖槽。 |
 | `--xh-question-flow-item-px` | `item` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-question-flow-item-py` | `item` | `padding-block` | `xh-action-profile=row` | `--xh-space-1` | question-flow 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-question-flow-item-radius` | `item` | `border-radius` | `default` | `--xh-_action-profile-radius` | question-flow 的 item 部件 border-radius 覆盖槽。 |
@@ -1188,13 +1419,13 @@ const questions: QuestionFlowQuestion[] = [
 | `--xh-question-flow-prompt-font-weight` | `prompt` | `font-weight` | `default` | `--xh-font-weight-semibold` | question-flow 的 prompt 部件 font-weight 覆盖槽。 |
 | `--xh-question-flow-question-gap` | `question` | `gap` | `default` | `--xh-space-2` | question-flow 的 question 部件 gap 覆盖槽。 |
 | `--xh-question-flow-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | question-flow 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-question-flow-result-bg` | `result` | `background` | `default` | `--xh-bg-subtle` | question-flow 的 result 部件 background 覆盖槽。 |
-| `--xh-question-flow-result-fg` | `result` | `color` | `default` | `--xh-fg-success` | question-flow 的 result 部件 color 覆盖槽。 |
+| `--xh-question-flow-result-bg` | `result` | `background` | `default` | `--xh-_tone-subtle` | question-flow 的 result 部件 background 覆盖槽。 |
+| `--xh-question-flow-result-fg` | `result` | `color` | `default` | `--xh-_tone-fg` | question-flow 的 result 部件 color 覆盖槽。 |
 | `--xh-question-flow-result-font-size` | `result` | `font-size` | `default` | `--xh-text-caption-size` | question-flow 的 result 部件 font-size 覆盖槽。 |
-| `--xh-question-flow-result-font-weight` | `result` | `font-weight` | `default` | `--xh-text-label-weight` | question-flow 的 result 部件 font-weight 覆盖槽。 |
-| `--xh-question-flow-result-gap` | `result` | `gap` | `default` | `--xh-space-1_5` | question-flow 的 result 部件 gap 覆盖槽。 |
-| `--xh-question-flow-result-px` | `result` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 result 部件 padding-inline 覆盖槽。 |
-| `--xh-question-flow-result-py` | `result` | `padding-block` | `default` | `--xh-space-1` | question-flow 的 result 部件 padding-block 覆盖槽。 |
+| `--xh-question-flow-result-font-weight` | `result` | `font-weight` | `default` | `--xh-font-weight-medium` | question-flow 的 result 部件 font-weight 覆盖槽。 |
+| `--xh-question-flow-result-gap` | `result` | `gap` | `default` | `--xh-space-1` | question-flow 的 result 部件 gap 覆盖槽。 |
+| `--xh-question-flow-result-px` | `result` | `padding-inline` | `default` | `--xh-space-1_5` | question-flow 的 result 部件 padding-inline 覆盖槽。 |
+| `--xh-question-flow-result-py` | `result` | `padding-block` | `default` | `--xh-space-0_5` | question-flow 的 result 部件 padding-block 覆盖槽。 |
 | `--xh-question-flow-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | question-flow 的 result 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-shadow` | `root` | `box-shadow` | `default` | `none` | question-flow 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-question-flow-skip-bg` | `skip-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | question-flow 的 skip-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
@@ -1221,9 +1452,9 @@ const questions: QuestionFlowQuestion[] = [
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位 · 出现（无锚定弹出） · 列表（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（无锚定弹出） · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-item-in` · `xh-pop-in` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-item-in` · `xh-pop-in` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `block-size` · `border-color` · `color` · `mask-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

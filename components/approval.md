@@ -29,9 +29,9 @@ import {
   XhApprovalItemIndicator,
   XhApprovalItemText,
   XhApprovalLiveRegion,
+  XhApprovalPendingIndicator,
   XhApprovalResult,
   XhApprovalRoot,
-  XhApprovalPendingIndicator,
   XhApprovalTitle,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -461,6 +461,284 @@ const rows = [
 </script>
 ```
 
+### 拒绝要写理由
+
+requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或 Escape，焦点落到备注框并标为无效，写上理由再按才拒绝；超时照常按拒绝收口
+
+```vue
+<script setup lang="ts">
+import {
+  XhApprovalApproveTrigger,
+  XhApprovalDenyTrigger,
+  XhApprovalDescription,
+  XhApprovalFooter,
+  XhApprovalNote,
+  XhApprovalRoot,
+  XhApprovalTitle,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const decided = ref("");
+
+const translations = { reason: "拒绝理由（必填）", notePlaceholder: "说明为什么不让它做" };
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <XhApprovalRoot
+      require-reason
+      :translations="translations"
+      @decision="decided = `${$event.decision}（理由 ${$event.note ?? '无'}）`"
+    >
+      <XhApprovalTitle>要删除远端分支 release/2.1</XhApprovalTitle>
+      <XhApprovalDescription>拒绝时写一句理由，Agent 会据此换个做法。</XhApprovalDescription>
+      <XhApprovalNote />
+      <XhApprovalFooter>
+        <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
+        <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
+      </XhApprovalFooter>
+    </XhApprovalRoot>
+    <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <xh-approval id="approval-reason" require-reason>
+    <div data-xh-part="root">
+      <h3 data-xh-part="title">要删除远端分支 release/2.1</h3>
+      <p data-xh-part="description">拒绝时写一句理由，Agent 会据此换个做法。</p>
+      <input data-xh-part="note" />
+      <div data-xh-part="footer">
+        <button data-xh-part="approve-trigger">批准</button>
+        <button data-xh-part="deny-trigger">拒绝</button>
+      </div>
+    </div>
+  </xh-approval>
+  <p id="approval-reason-decision" style="margin: 0"></p>
+</div>
+
+<script type="module">
+  // 文案是对象，只走 property
+  const gate = document.getElementById("approval-reason");
+  const line = document.getElementById("approval-reason-decision");
+  gate.translations = { reason: "拒绝理由（必填）", notePlaceholder: "说明为什么不让它做" };
+  gate.addEventListener("decision", (event) => {
+    const { decision, note } = event.detail;
+    line.textContent = `判定：${decision}（理由 ${note ?? "无"}）`;
+  });
+</script>
+```
+
+### 批量处理
+
+闸门是单发的，批量是宿主的编排：每条请求一个闸门、判定受控，上面一行放全部批准与全部拒绝；全部批准只收必选项已勾满的那几条（canApproveScopes），没勾满的留着逐条处理
+
+```vue
+<script setup lang="ts">
+import type { ApprovalDecisionDetails, ApprovalScope, ApprovalStatus } from "@xihan-ui/headless";
+import { canApproveScopes } from "@xihan-ui/headless";
+import {
+  XhApprovalApproveTrigger,
+  XhApprovalDenyTrigger,
+  XhApprovalDescription,
+  XhApprovalFooter,
+  XhApprovalGroup,
+  XhApprovalItem,
+  XhApprovalItemIndicator,
+  XhApprovalItemText,
+  XhApprovalResult,
+  XhApprovalRoot,
+  XhApprovalTitle,
+  XhButton,
+} from "@xihan-ui/vue";
+import { computed, ref } from "vue";
+
+interface Request {
+  id: string;
+  title: string;
+  detail: string;
+  scopes: ApprovalScope[];
+  granted: string[];
+  status: ApprovalStatus;
+}
+
+const requests = ref<Request[]>([
+  { id: "r1", title: "读取 package.json", detail: "只读，不改任何文件。", scopes: [], granted: [], status: "pending" },
+  {
+    id: "r2",
+    title: "运行 pnpm install",
+    detail: "会改写 node_modules 与锁文件。",
+    scopes: [{ value: "network", label: "访问网络下载依赖", required: true }],
+    granted: [],
+    status: "pending",
+  },
+  { id: "r3", title: "写入 src/config.ts", detail: "把超时从 5 秒改成 30 秒。", scopes: [], granted: [], status: "pending" },
+]);
+
+const pending = computed(() => requests.value.filter(request => request.status === "pending"));
+// 必选项没勾满的批不了：批量批准跳过它们，留给用户逐条处理
+const approvable = computed(() => pending.value.filter(request => canApproveScopes(request.scopes, request.granted)));
+
+// 判定受控：闸门报出意图，宿主写回才落定
+function decide(request: Request, details: ApprovalDecisionDetails): void {
+  request.status = details.decision;
+}
+
+function approveAll(): void {
+  for (const request of approvable.value)
+    request.status = "approved";
+}
+
+function denyAll(): void {
+  for (const request of pending.value)
+    request.status = "denied";
+}
+</script>
+
+<template>
+  <div style="display: grid; gap: 12px; inline-size: 100%">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+      <span>{{ pending.length }} 项待决</span>
+      <XhButton size="sm" :disabled="approvable.length === 0" @click="approveAll">全部批准（{{ approvable.length }}）</XhButton>
+      <XhButton size="sm" variant="outline" :disabled="pending.length === 0" @click="denyAll">全部拒绝</XhButton>
+    </div>
+    <XhApprovalRoot
+      v-for="request in requests"
+      :key="request.id"
+      v-model:granted-scopes="request.granted"
+      :request-id="request.id"
+      :status="request.status"
+      :scopes="request.scopes"
+      @decision="decide(request, $event)"
+    >
+      <XhApprovalTitle>{{ request.title }}</XhApprovalTitle>
+      <XhApprovalDescription>{{ request.detail }}</XhApprovalDescription>
+      <XhApprovalGroup v-if="request.scopes.length > 0">
+        <XhApprovalItem
+          v-for="scope in request.scopes"
+          :key="scope.value"
+          :scope-value="scope.value"
+          :scope-label="scope.label"
+          :scope-required="scope.required"
+        >
+          <XhApprovalItemIndicator :scope-value="scope.value" />
+          <XhApprovalItemText :scope-value="scope.value">{{ scope.label }}</XhApprovalItemText>
+        </XhApprovalItem>
+      </XhApprovalGroup>
+      <XhApprovalResult>{{ request.status === "approved" ? "已批准" : "已拒绝" }}</XhApprovalResult>
+      <XhApprovalFooter>
+        <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
+        <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
+      </XhApprovalFooter>
+    </XhApprovalRoot>
+  </div>
+</template>
+```
+
+```html
+<div id="approval-batch" style="display: grid; gap: 12px; inline-size: 100%">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+    <span id="approval-batch-count">3 项待决</span>
+    <xh-button size="sm"><button data-xh-part="root" id="approval-batch-approve">全部批准（2）</button></xh-button>
+    <xh-button size="sm" variant="outline"><button data-xh-part="root" id="approval-batch-deny">全部拒绝</button></xh-button>
+  </div>
+  <xh-approval request-id="r1" status="pending">
+    <div data-xh-part="root">
+      <h3 data-xh-part="title">读取 package.json</h3>
+      <p data-xh-part="description">只读，不改任何文件。</p>
+      <div data-xh-part="result" hidden></div>
+      <div data-xh-part="footer">
+        <button data-xh-part="approve-trigger">批准</button>
+        <button data-xh-part="deny-trigger">拒绝</button>
+      </div>
+    </div>
+  </xh-approval>
+  <xh-approval request-id="r2" status="pending">
+    <div data-xh-part="root">
+      <h3 data-xh-part="title">运行 pnpm install</h3>
+      <p data-xh-part="description">会改写 node_modules 与锁文件。</p>
+      <div data-xh-part="group">
+        <div data-xh-part="item" scope-value="network" scope-label="访问网络下载依赖" scope-required>
+          <span data-xh-part="item-indicator" scope-value="network"></span>
+          <span data-xh-part="item-text" scope-value="network">访问网络下载依赖</span>
+        </div>
+      </div>
+      <div data-xh-part="result" hidden></div>
+      <div data-xh-part="footer">
+        <button data-xh-part="approve-trigger">批准</button>
+        <button data-xh-part="deny-trigger">拒绝</button>
+      </div>
+    </div>
+  </xh-approval>
+  <xh-approval request-id="r3" status="pending">
+    <div data-xh-part="root">
+      <h3 data-xh-part="title">写入 src/config.ts</h3>
+      <p data-xh-part="description">把超时从 5 秒改成 30 秒。</p>
+      <div data-xh-part="result" hidden></div>
+      <div data-xh-part="footer">
+        <button data-xh-part="approve-trigger">批准</button>
+        <button data-xh-part="deny-trigger">拒绝</button>
+      </div>
+    </div>
+  </xh-approval>
+</div>
+
+<script type="module">
+  const board = document.getElementById("approval-batch");
+  const gates = [...board.querySelectorAll("xh-approval")];
+  const count = document.getElementById("approval-batch-count");
+  const approveAll = document.getElementById("approval-batch-approve");
+  const denyAll = document.getElementById("approval-batch-deny");
+
+  // 每条请求的必选项与已勾选的授权项，由宿主记着
+  const required = { r2: ["network"] };
+  const granted = new Map(gates.map(gate => [gate.getAttribute("request-id"), []]));
+  const canApprove = id => (required[id] ?? []).every(value => granted.get(id).includes(value));
+
+  function settle(gate, status) {
+    gate.setAttribute("status", status);
+    gate.querySelector('[data-xh-part="result"]').textContent = status === "approved" ? "已批准" : "已拒绝";
+  }
+
+  function refresh() {
+    const pending = gates.filter(gate => gate.getAttribute("status") === "pending");
+    // 必选项没勾满的批不了：批量批准跳过它们，留给用户逐条处理
+    const approvable = pending.filter(gate => canApprove(gate.getAttribute("request-id")));
+    count.textContent = `${pending.length} 项待决`;
+    approveAll.textContent = `全部批准（${approvable.length}）`;
+    approveAll.disabled = approvable.length === 0;
+    denyAll.disabled = pending.length === 0;
+    return { pending, approvable };
+  }
+
+  for (const gate of gates) {
+    const id = gate.getAttribute("request-id");
+    // 判定受控：闸门报出意图，宿主写回才落定
+    gate.addEventListener("decision", (event) => {
+      settle(gate, event.detail.decision);
+      refresh();
+    });
+    gate.addEventListener("granted-scopes-change", (event) => {
+      granted.set(id, event.detail.value);
+      refresh();
+    });
+  }
+  approveAll.addEventListener("click", () => {
+    for (const gate of refresh().approvable)
+      settle(gate, "approved");
+    refresh();
+  });
+  denyAll.addEventListener("click", () => {
+    for (const gate of refresh().pending)
+      settle(gate, "denied");
+    refresh();
+  });
+  refresh();
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -480,6 +758,7 @@ const rows = [
 - 拒绝路径始终可达：状态机层的拒绝不受必选项和任何闸门限制，超时、卸载兜底与宿主的 `deny()` 入口都能落地。拒绝按钮与 Escape 另有一道挂起闸门：判定在途时与批准按钮一起锁定，避免等待宿主响应期间产生第二条判定。
 - 勾选与判定是原子的：批准的载荷携带已勾选的授权项，不存在已批准但范围未同步的窗口。
 - 备注（`note`）与勾选同批快照，随判定载荷一起发出；为空时不携带该字段。备注不参与必选项是否勾满的判断。
+- `requireReason` 让用户拒绝时必须写明理由：备注空着（或只有空白）就按拒绝钮或 Escape，不发判定，焦点移到备注框并标为无效；写上理由再按即拒绝，理由随载荷的 `note` 发出。它只拦人手按的这两条路：超时、卸载兜底与宿主的 `deny()` 不是用户的判定，照常落地；没渲染备注框时也照常拒绝——写不了理由的地方不能拦住拒绝。
 - `requestId` 变化即重新进入待决并按新时长重启计时；不为上一轮补发拒绝，旧结果由宿主自行作废。重入时勾选与备注回到各自默认值。
 - 判定落定后 `result` 部件才显示，语气随判定变化：批准取成功档，拒绝与超时取危险档。它对读屏隐藏，同一句话由播报区读出一次。
 - 两个按钮位于 `actions` 行内，间距与对齐由库统一处理，使用者不需要另写容器。
@@ -491,6 +770,7 @@ const rows = [
 - 需要弹窗时每个闸门一个[对话框](./dialog)：`role="alertdialog"`、关闭 `closeOnEscape`，并把 `initialFocus` 设为本组件导出的 `APPROVAL_DENY_SELECTOR`。浮层只保留批准与拒绝两个出口，Escape 仍冒泡到闸门并判为拒绝。
 - 剩余时间的显示交给[计时器](./timer)，判定权仍由本组件持有。不要把倒计时直接渲染为 `timer` 节点：两套解剖打在同一节点上会互相覆盖，应让 `timer` 作为外层容器。
 - 需要连续询问多件事时，使用[步骤条](./steps)或[走马灯](./carousel)串联多个闸门。本组件是单发闸门，`data-state` 的四个值互斥，不表达序号。
+- 批量处理（一轮里 Agent 提了好几条请求）：每条请求一个闸门，`status` 受控，上面一行放“全部批准 / 全部拒绝”，由宿主直接写各闸门的 `status`。全部批准只收必选项已勾满的那几条，用 `canApproveScopes(scopes, grantedScopes)` 判，没勾满的留给用户逐条处理；受控写回不再派发 `decision`，批量的判定记录由宿主自己写。批量不做成组件内建：哪几条能一起批、批量是否也要理由，都是宿主的安全策略。
 - 需要提供“稍后再说”入口时，该入口由宿主实现，不属于闸门。常见做法是在 `onDecision` 之外另留延后路径，或按上一条把闸门放进对话框；浮层内仍只有批准与拒绝两个出口。
 
 ### 最佳实践
@@ -528,6 +808,7 @@ const rows = [
 | `defaultGrantedScopes` | `readonly string[]` |  |  |
 | `note` | `string` |  | 附在判定上的一段自由文本。提供即受控。 它只随判定载荷发出，不参与必选项是否全部勾选的判断。 |
 | `defaultNote` | `string` |  |  |
+| `requireReason` | `boolean` |  | 用户拒绝时必须写明理由（备注非空）。备注空着时按拒绝钮或 Escape 不发判定， 而是把焦点移到备注框并标为无效。只管人手按的这两条路：超时、卸载兜底与宿主的 deny() 不是用户的判定，照常落地；没渲染备注框时也照常拒绝——写不了理由就不能拦住拒绝。 |
 | `loading` | `boolean` |  | 判定在途：只阻止重复批准，不阻止拒绝。 |
 | `denyOnEscape` | `boolean` |  | Escape 判为拒绝，默认开启。 |
 | `denyOnUnmount` | `boolean` |  | 卸载时若仍待决则按拒绝派发一次，默认关闭。 机制成立不等于默认值成立：列表更换 key、路由切换、热更新的任何一次重挂， 都会替用户发出未做过的判定。 |
@@ -605,7 +886,7 @@ const rows = [
 
 **状态**：`pending` · `approved` · `denied` · `expired`
 
-**事件**：`APPROVE` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `NOTE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`APPROVE` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `NOTE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET` · `PRESS.START` · `PRESS.END` · `REASON.PROMPT`
 
 **判据**：`isStatusControlled` · `canApprove` · `isEditable` · `canApproveControlled` · `canPress`
 
@@ -621,6 +902,7 @@ const rows = [
 | `grantedScopes` | `string[]` |  |
 | `note` | `string` | 备注中的文字；未填写时为空串。 |
 | `canApprove` | `boolean` | 必选项是否全部勾选。 |
+| `reasonMissing` | `boolean` | 要求写理由而备注还空着：此时用户按拒绝只会把焦点带到备注框。 |
 | `announcement` | `string` | 按 status 选出的播报文本；关闭 announce 时作者不渲染该部件即可。 |
 | `approve` | `() => void` |  |
 | `deny` | `() => void` |  |
@@ -657,6 +939,7 @@ const rows = [
 | `Enter` / `Space` | 按住批准或拒绝按钮，待决且不在挂起中；批准还要必选项已勾满 | 按住期间该钮投影 data-pressed，与指针 :active 同一副按压面（text 档定尺按钮，按下缩放并换底）；抬起、失焦、判定落定或转入挂起撤下 |
 | `Space` | 按住授权项，待决、不在挂起中且该项未禁用 | 按住期间该行投影 data-pressed，与指针 :active 同一副按压面（row 档只换面不缩放）；抬起或失焦撤下。Enter 不是复选框的激活键，不进按压面 |
 | `Escape` | 焦点在闸门内，待决、未挂起、且开启 denyOnEscape | 判为拒绝。它不是关闭：本组件不提供不作答的出口 |
+| `Enter` / `Space` / `Escape` | 开了 requireReason、备注框在场且还空着，焦点在拒绝按钮上（Escape 则焦点在闸门内） | 不判定，焦点移到备注框并标为无效（aria-invalid）；写上理由后再按即判为拒绝，理由随载荷的 note 发出 |
 
 ### ARIA
 
@@ -677,7 +960,9 @@ const rows = [
 | `item` | `aria-required` | 'true' \| 'false' |
 | `item` | `role` | 'checkbox' |
 | `item-indicator` | `aria-hidden` | 'true' |
-| `note` | `aria-label` | translations?.note |
+| `note` | `aria-invalid` | 'true' \| undefined |
+| `note` | `aria-label` | translations?.reason \| translations?.note |
+| `note` | `aria-required` | 'true' \| undefined |
 | `timer` | `aria-hidden` | 'true' |
 | `result` | `aria-hidden` | 'true' |
 | `approve-trigger` | `aria-busy` | 'true' \| undefined |
@@ -691,7 +976,7 @@ const rows = [
 - 待决时批准键使用 `aria-disabled` 而不是原生 `disabled`：保持可聚焦，读屏可以读出不可用的原因。
 - 授权项是 `role=checkbox`，各占一个 Tab 停靠点，只响应 `Space`，与原生复选框一致。
 - 剩余时间、结果条与待决的呼吸点都对读屏隐藏：逐秒变化的数字进入活动区域会持续打断，判定结果与截止事件由播报区各读出一次。
-- 备注取 `translations.note` 作为可访问名称（默认 `Note`），占位文字取 `translations.notePlaceholder`。
+- 备注取 `translations.note` 作为可访问名称（默认 `Note`），占位文字取 `translations.notePlaceholder`。开了 `requireReason` 时名字换成 `translations.reason`（默认 `Reason for denial`）并带 `aria-required`，缺理由按过拒绝后带 `aria-invalid`。
 
 ## 样式参考
 
@@ -724,9 +1009,13 @@ const rows = [
 | `item` | `data-xh-action-variant` | 'ghost' |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-value` | item.value |
+| `note` | `data-invalid` | ''（条件成立时才出现） |
 | `note` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `timer` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `result` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `result` | `data-tone` | 'success' \| 'danger' \| undefined |
+| `footer` | `data-loading` | ''（条件成立时才出现） |
+| `footer` | `data-xh-loading-ring` | '' |
 | `approve-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `approve-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `approve-trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -755,7 +1044,7 @@ const rows = [
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-approval-action-font-size` | `approve-trigger`<br>`deny-trigger`<br>`footer`<br>`root` | `font-size` | `default`<br>`loading` | `--xh-text-label-size` | approval 的 approve-trigger、deny-trigger、footer、root 部件 font-size 覆盖槽。 |
+| `--xh-approval-action-font-size` | `approve-trigger`<br>`deny-trigger` | `font-size` | `default` | `--xh-text-label-size` | approval 的 approve-trigger、deny-trigger 部件 font-size 覆盖槽。 |
 | `--xh-approval-action-font-weight` | `approve-trigger`<br>`deny-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | approval 的 approve-trigger、deny-trigger 部件 font-weight 覆盖槽。 |
 | `--xh-approval-action-h` | `approve-trigger`<br>`deny-trigger` | `block-size`<br>`min-block-size` | `default`<br>`xh-action-profile=row` | `--xh-_approval-action-h` | approval 的 approve-trigger、deny-trigger 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-approval-action-px` | `approve-trigger`<br>`deny-trigger` | `padding-inline` | `default` | `--xh-_approval-action-px` | approval 的 approve-trigger、deny-trigger 部件 padding-inline 覆盖槽。 |
@@ -795,28 +1084,30 @@ const rows = [
 | `--xh-approval-item-radius` | `item` | `border-radius` | `default` | `--xh-_action-profile-radius` | approval 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-approval-item-text-fg` | `item-text` | `color` | `default` | `--xh-fg-muted` | approval 的 item-text 部件 color 覆盖槽。 |
 | `--xh-approval-item-text-fg-checked` | `item`<br>`item-text` | `color` | `state=checked` | `--xh-fg-default` | approval 的 item、item-text 部件 color 覆盖槽。 |
-| `--xh-approval-loading-duration` | `footer`<br>`root` | `animation` | `loading` | `--xh-motion-loop-spin` | approval 的 footer、root 部件 animation 覆盖槽。 |
+| `--xh-approval-loading-duration` | `footer` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | approval 的 footer 部件 animation 覆盖槽。 |
 | `--xh-approval-note-bg` | `note` | `background` | `default` | `--xh-bg-surface` | approval 的 note 部件 background 覆盖槽。 |
 | `--xh-approval-note-border` | `note` | `border` | `default` | `--xh-border-control` | approval 的 note 部件 border 覆盖槽。 |
+| `--xh-approval-note-border-invalid` | `note` | `border-color` | `invalid` | `--xh-border-invalid` | approval 的 note 部件 border-color 覆盖槽。 |
 | `--xh-approval-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | approval 的 note 部件 color 覆盖槽。 |
 | `--xh-approval-note-font-size` | `note` | `font-size` | `default` | `--xh-_approval-note-font-size` | approval 的 note 部件 font-size 覆盖槽。 |
 | `--xh-approval-note-px` | `note` | `padding-inline` | `default` | `--xh-space-2` | approval 的 note 部件 padding-inline 覆盖槽。 |
 | `--xh-approval-note-py` | `note` | `padding-block` | `default` | `--xh-space-1_5` | approval 的 note 部件 padding-block 覆盖槽。 |
 | `--xh-approval-note-radius` | `note` | `border-radius` | `default` | `--xh-shape-control` | approval 的 note 部件 border-radius 覆盖槽。 |
+| `--xh-approval-note-ring-invalid` | `note` | `--xh-_ring-color` | `invalid` | `--xh-ring-invalid` | approval 的 note 部件 --xh-_ring-color 覆盖槽。 |
 | `--xh-approval-p` | `pending-indicator`<br>`root` | `inset-block-start`<br>`inset-inline-end`<br>`padding` | `default` | `--xh-_approval-p` | approval 的 pending-indicator、root 部件 inset-block-start、inset-inline-end、padding 覆盖槽。 |
 | `--xh-approval-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-_tone` | approval 的 pending-indicator 部件 background 覆盖槽。 |
 | `--xh-approval-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | approval 的 pending-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-approval-pending-indicator-size` | `pending-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | approval 的 pending-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-approval-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | approval 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-approval-result-bg` | `result` | `background` | `default` | `--xh-fg-success` | approval 的 result 部件 background 覆盖槽。 |
-| `--xh-approval-result-bg-denied` | `result` | `background` | `is([data-state='denied'], [data-state='expired'])`<br>`state=denied`<br>`state=expired` | `--xh-fg-danger` | approval 的 result 部件 background 覆盖槽。 |
-| `--xh-approval-result-fg` | `result` | `color` | `default` | `--xh-fg-success` | approval 的 result 部件 color 覆盖槽。 |
-| `--xh-approval-result-fg-denied` | `result` | `color` | `is([data-state='denied'], [data-state='expired'])`<br>`state=denied`<br>`state=expired` | `--xh-fg-danger` | approval 的 result 部件 color 覆盖槽。 |
+| `--xh-approval-result-bg` | `result` | `background` | `default` | `--xh-_tone-subtle` | approval 的 result 部件 background 覆盖槽。 |
+| `--xh-approval-result-bg-denied` | `result` | `background` | `is([data-state='denied'], [data-state='expired'])`<br>`state=denied`<br>`state=expired` | `--xh-_tone-subtle` | approval 的 result 部件 background 覆盖槽。 |
+| `--xh-approval-result-fg` | `result` | `color` | `default` | `--xh-_tone-fg` | approval 的 result 部件 color 覆盖槽。 |
+| `--xh-approval-result-fg-denied` | `result` | `color` | `is([data-state='denied'], [data-state='expired'])`<br>`state=denied`<br>`state=expired` | `--xh-_tone-fg` | approval 的 result 部件 color 覆盖槽。 |
 | `--xh-approval-result-font-size` | `result` | `font-size` | `default` | `--xh-text-caption-size` | approval 的 result 部件 font-size 覆盖槽。 |
-| `--xh-approval-result-font-weight` | `result` | `font-weight` | `default` | `--xh-text-label-weight` | approval 的 result 部件 font-weight 覆盖槽。 |
-| `--xh-approval-result-gap` | `result` | `gap` | `default` | `--xh-space-1_5` | approval 的 result 部件 gap 覆盖槽。 |
-| `--xh-approval-result-px` | `result` | `padding-inline` | `default` | `--xh-space-2` | approval 的 result 部件 padding-inline 覆盖槽。 |
-| `--xh-approval-result-py` | `result` | `padding-block` | `default` | `--xh-space-1` | approval 的 result 部件 padding-block 覆盖槽。 |
+| `--xh-approval-result-font-weight` | `result` | `font-weight` | `default` | `--xh-font-weight-medium` | approval 的 result 部件 font-weight 覆盖槽。 |
+| `--xh-approval-result-gap` | `result` | `gap` | `default` | `--xh-space-1` | approval 的 result 部件 gap 覆盖槽。 |
+| `--xh-approval-result-px` | `result` | `padding-inline` | `default` | `--xh-space-1_5` | approval 的 result 部件 padding-inline 覆盖槽。 |
+| `--xh-approval-result-py` | `result` | `padding-block` | `default` | `--xh-space-0_5` | approval 的 result 部件 padding-block 覆盖槽。 |
 | `--xh-approval-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | approval 的 result 部件 border-radius 覆盖槽。 |
 | `--xh-approval-shadow` | `root` | `box-shadow` | `default` | `none` | approval 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-approval-timer-fg` | `timer` | `color` | `default` | `--xh-fg-muted` | approval 的 timer 部件 color 覆盖槽。 |
@@ -832,7 +1123,7 @@ const rows = [
 
 可覆盖的动效槽：`--xh-approval-loading-duration`。
 
-共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-pop-in` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

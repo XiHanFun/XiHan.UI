@@ -11,7 +11,7 @@
 ```ts
 import { defineXhElements } from "@xihan-ui/web-components/define";
 
-defineXhElements(); // 注册全部 138 个 xh-* 元素
+defineXhElements(); // 注册全部 143 个 xh-* 元素
 ```
 
 主入口的 `import` 本身不注册，必须显式调用这一行。注册是幂等的：同版本重复调用直接返回；同标签不同版本，或标签已被非 XiHan.UI 代码占用，都会抛错而不是静默覆盖。无 `customElements` 的环境（SSR）静默跳过。
@@ -98,6 +98,15 @@ dialog.closeOnEscape = false;
 
 布尔属性使用三态转换器：属性缺席 = `undefined`（使用组件默认值），`="false"` = `false`，其余 = `true`。这个区分是必要的：`modal` 的默认值是 `true`，缺席与 `="false"` 不能区分时就无法关闭它。
 
+数组与对象形态的初值只能走 property，而脚本常常排在元素连接之后才执行。状态第一次被写入之前，给 `default*` 赋值都算数：
+
+```ts
+const calendar = document.querySelector("xh-calendar-picker");
+calendar.defaultValue = ["2026-09-18"]; // 元素早已连接，照样按这一天选中
+```
+
+写入（用户交互、方法调用、表单重置）之后再改 `default*` 不影响当前值，只改变表单重置的落点，与 Vue / React 一致，见[初值的读取时机](../guide/machine#初值的读取时机)。
+
 ## 事件
 
 组件的变更以 `CustomEvent` 派发，`bubbles: true, composed: true`，事件名是 kebab-case：
@@ -115,8 +124,8 @@ document.querySelector("xh-dialog")
 
 一台状态机对应一个控制器：
 
-- `connectedCallback` → 创建状态机并 mount（旧状态机已停止时从 `initialState` 重建）；
-- 每次更新 → 运行依赖追踪；
+- `connectedCallback` → 写回升级前赋在实例上的属性，再创建状态机并 mount（旧状态机已停止时从 `initialState` 重建）；
+- 每次更新 → 状态尚未被写入而 `default*` 变了时，按新的初值重建状态机；再运行依赖追踪；
 - `disconnectedCallback` → unmount。
 
 角色节点的进出由 `MutationObserver` 监视，但只在确实有角色节点进出时才重新接线：业务内容（图表、虚拟列表、面板内的业务 DOM）的增删与部件集合无关。这条判断同时避免了一条死循环：角色节点若本身是会在属性变化时改写自身子节点的自定义元素，“宿主重新接线 → 写属性 → 该节点改子节点 → 再次命中观察器”会形成环。
@@ -141,7 +150,7 @@ document.querySelector("xh-dialog")
 
 ## 自定义元素清单
 
-包内附带 `custom-elements.json`（CEM 格式），包含 138 个元素的标签名、属性、事件、CSS part。编辑器与框架的自定义元素支持可以直接读取它获得补全与类型提示。
+包内附带 `custom-elements.json`（CEM 格式），包含 143 个元素的标签名、属性、事件、CSS part。编辑器与框架的自定义元素支持可以直接读取它获得补全与类型提示。
 
 清单由构建生成，`pnpm gate:cem` 会重新生成后比对，修改元素后未重新生成会被拦截。
 

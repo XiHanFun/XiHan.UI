@@ -457,6 +457,8 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | `onScrollEnd` | `(details: ScrollbarScrollDetails) => void` |  | 一段滚动结束。 |
 | `onDragStart` | `(details: ScrollbarScrollDetails) => void` |  | 按住滑块。 |
 | `onDragEnd` | `(details: ScrollbarScrollDetails) => void` |  | 松开滑块。 |
+| `onScrollChange` | `(details: ScrollbarScrollDetails) => void` |  | 本轴的滚动量变了（滚轮、键盘、拖动与命令式滚动都算），每次滚动事件至多一次。 |
+| `onReachEnd` | `(details: ScrollbarScrollDetails) => void` |  | 本轴滚到了末端：只在从"没到头"变成"到头"那一下通知，停在末端不重复；内容不溢出时不通知。 |
 
 ### 事件
 

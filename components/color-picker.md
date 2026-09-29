@@ -86,7 +86,7 @@ import {
 
 加粗的是必需部件。
 
-`data-scope="color-picker"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `hue-slider` · `alpha-slider` · `channel-input` · `eye-dropper-trigger` · `swatch-picker` · `hidden-input`
+`data-scope="color-picker"`：`root` · `label` · `control` · `trigger` · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `hue-slider` · `alpha-slider` · `channel-input` · `eye-dropper-trigger` · `swatch-picker` · `recent-swatch-picker` · `hidden-input`
 
 ## 示例
 
@@ -433,6 +433,257 @@ const translations = {
 </script>
 ```
 
+### oklch 写法
+
+format="oklch" 让值串与主题令牌同一色空间，取到的颜色可以直接写回令牌；工作色在 sRGB 内，超出 sRGB 的 oklch 值按通道夹回
+
+```vue
+<script setup lang="ts">
+import {
+  XhColorPickerAreaThumb,
+  XhColorPickerContent,
+  XhColorPickerControl,
+  XhColorPickerHueSlider,
+  XhColorPickerLabel,
+  XhColorPickerPositioner,
+  XhColorPickerRoot,
+  XhColorPickerSaturationArea,
+  XhColorPickerSwatch,
+  XhColorPickerTrigger,
+  XhColorPickerValueText,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhColorPickerRoot default-value="oklch(62.31% 0.188 259.81)" format="oklch">
+    <XhColorPickerLabel>主题主色</XhColorPickerLabel>
+    <XhColorPickerControl>
+      <XhColorPickerTrigger>
+        <XhColorPickerSwatch />
+        <XhColorPickerValueText />
+      </XhColorPickerTrigger>
+    </XhColorPickerControl>
+    <XhColorPickerPositioner>
+      <XhColorPickerContent>
+        <XhColorPickerSaturationArea>
+          <XhColorPickerAreaThumb />
+        </XhColorPickerSaturationArea>
+        <XhColorPickerHueSlider />
+      </XhColorPickerContent>
+    </XhColorPickerPositioner>
+  </XhColorPickerRoot>
+</template>
+```
+
+```html
+<xh-color-picker default-value="oklch(62.31% 0.188 259.81)" format="oklch">
+  <div data-xh-part="root">
+    <label data-xh-part="label">主题主色</label>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="saturation-area">
+          <div data-xh-part="area-thumb"></div>
+        </div>
+        <div data-xh-part="hue-slider">
+          <div data-xh-part="control">
+            <div data-xh-part="track"></div>
+            <div data-xh-part="thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-color-picker>
+```
+
+### 常驻形态
+
+inline 让取色面直接铺在页面里，与浮层形态同一台机器、同一组部件，只是不写 control、trigger 与 positioner；取色面不抢焦点，也不因点外或 Esc 收起
+
+```vue
+<script setup lang="ts">
+import {
+  XhColorPickerAreaThumb,
+  XhColorPickerChannelInput,
+  XhColorPickerContent,
+  XhColorPickerHueSlider,
+  XhColorPickerLabel,
+  XhColorPickerRoot,
+  XhColorPickerSaturationArea,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const color = ref("#3b82f6");
+</script>
+
+<template>
+  <XhColorPickerRoot v-model:value="color" inline>
+    <XhColorPickerLabel>画笔颜色</XhColorPickerLabel>
+    <XhColorPickerContent>
+      <XhColorPickerSaturationArea>
+        <XhColorPickerAreaThumb />
+      </XhColorPickerSaturationArea>
+      <XhColorPickerHueSlider />
+      <XhColorPickerChannelInput channel="hex" />
+    </XhColorPickerContent>
+  </XhColorPickerRoot>
+  <p>当前：<code>{{ color }}</code></p>
+</template>
+```
+
+```html
+<xh-color-picker id="color-picker-inline" default-value="#3b82f6" inline>
+  <div data-xh-part="root">
+    <label data-xh-part="label">画笔颜色</label>
+    <div data-xh-part="content">
+      <div data-xh-part="saturation-area">
+        <div data-xh-part="area-thumb"></div>
+      </div>
+      <div data-xh-part="hue-slider">
+        <div data-xh-part="control">
+          <div data-xh-part="track"></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+      <input data-xh-part="channel-input" channel="hex" />
+    </div>
+  </div>
+</xh-color-picker>
+<p>当前：<code id="color-picker-inline-value">#3b82f6</code></p>
+
+<script type="module">
+  const picker = document.getElementById("color-picker-inline");
+  const readout = document.getElementById("color-picker-inline-value");
+  picker.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value;
+  });
+</script>
+```
+
+### 最近使用色
+
+一轮取色结束（浮层收起，或常驻形态下焦点离开取色面）且颜色变了，就记进最近使用色，最新的在最前、同色只留一份；受控写回由宿主保存，刷新后还在
+
+```vue
+<script setup lang="ts">
+import {
+  XhButton,
+  XhColorPickerAreaThumb,
+  XhColorPickerContent,
+  XhColorPickerControl,
+  XhColorPickerHueSlider,
+  XhColorPickerLabel,
+  XhColorPickerPositioner,
+  XhColorPickerRecentSwatchPicker,
+  XhColorPickerRoot,
+  XhColorPickerSaturationArea,
+  XhColorPickerSwatch,
+  XhColorPickerTrigger,
+  XhColorPickerValueText,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+// 宿主自己决定存在哪：这里演示放进一个 ref，真实场景可以存进本地存储或用户偏好
+const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
+</script>
+
+<template>
+  <XhColorPickerRoot
+    v-slot="{ clearRecentColors }"
+    v-model:recent-colors="recent"
+    default-value="#3b82f6"
+    :max-recent-colors="6"
+  >
+    <XhColorPickerLabel>标记颜色</XhColorPickerLabel>
+    <XhColorPickerControl>
+      <XhColorPickerTrigger>
+        <XhColorPickerSwatch />
+        <XhColorPickerValueText />
+      </XhColorPickerTrigger>
+    </XhColorPickerControl>
+    <XhColorPickerPositioner>
+      <XhColorPickerContent>
+        <XhColorPickerSaturationArea>
+          <XhColorPickerAreaThumb />
+        </XhColorPickerSaturationArea>
+        <XhColorPickerHueSlider />
+        <XhColorPickerRecentSwatchPicker />
+        <XhButton v-if="recent.length" size="sm" variant="ghost" @click="clearRecentColors()">清空最近使用</XhButton>
+      </XhColorPickerContent>
+    </XhColorPickerPositioner>
+  </XhColorPickerRoot>
+</template>
+```
+
+```html
+<xh-color-picker id="color-picker-recent" default-value="#3b82f6" recent-colors="#ef4444,#f59e0b" max-recent-colors="6">
+  <div data-xh-part="root">
+    <label data-xh-part="label">标记颜色</label>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="saturation-area">
+          <div data-xh-part="area-thumb"></div>
+        </div>
+        <div data-xh-part="hue-slider">
+          <div data-xh-part="control">
+            <div data-xh-part="track"></div>
+            <div data-xh-part="thumb"></div>
+          </div>
+        </div>
+        <div data-xh-part="recent-swatch-picker"></div>
+        <xh-button id="color-picker-recent-clear" size="sm" variant="ghost">
+          <button data-xh-part="root">清空最近使用</button>
+        </xh-button>
+      </div>
+    </div>
+  </div>
+</xh-color-picker>
+
+<script type="module">
+  const picker = document.getElementById("color-picker-recent");
+  const mount = picker.querySelector('[data-xh-part="recent-swatch-picker"]');
+  const clear = document.getElementById("color-picker-recent-clear");
+
+  // 格子由作者按当前列表铺：每格是 color-swatch-picker 的 item，色块面、选中标记与表单影子手写
+  function render(colors) {
+    mount.replaceChildren(
+      ...colors.map((value) => {
+        const item = document.createElement("div");
+        item.dataset.xhPart = "item";
+        item.setAttribute("value", value);
+        item.innerHTML =
+          '<input data-xh-part="hidden-input" />' +
+          '<span data-xh-part="swatch"></span>' +
+          '<span data-xh-part="indicator"></span>';
+        return item;
+      })
+    );
+    clear.hidden = colors.length === 0;
+  }
+
+  // 受控：宿主收下新列表再写回（真实场景顺手存进本地存储）
+  picker.addEventListener("recent-colors-change", (event) => {
+    picker.recentColors = event.detail.recentColors;
+    render(event.detail.recentColors);
+  });
+  clear.addEventListener("click", () => picker.clearRecentColors());
+
+  render(["#ef4444", "#f59e0b"]);
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -451,17 +702,19 @@ const translations = {
 ### 特性
 
 - 工作色始终是 HSVA：取色面两轴是饱和度与明度，纯黑与灰度处的色相由锚点保持，拖到黑色再拉回时色相不丢失。
-- `format` 决定值串写法（hex / rgba / hsla），`alpha` 决定是否带透明度；关闭时透明度滑块与输入框整体禁用。
+- `format` 决定值串写法（hex / rgba / hsla / oklch），`alpha` 决定是否带透明度；关闭时透明度滑块与输入框整体禁用。oklch 与令牌同一色空间，便于把取到的颜色写回主题；工作色在 sRGB 内，超出 sRGB 的 oklch 值按通道夹回。HSB 不是 CSS 颜色写法，不作值串格式，需要 HSB 数值时读 `hsva`。
 - 色相与透明度两条滑块是内嵌的颜色滑块：整份工作色交给它们，调整色相不会把透明度归 1；键盘（方向键、PageUp / PageDown、Home / End、Shift 大步）与拖动都由滑块自身处理。
 - 预设色板是内嵌的色块选择器：方向键在格子间移动并选中，当前颜色所在格按颜色比较（写法不同也能匹配）。
 - 数值框输入只保留草稿，可解析时立即取值；不可解析时保留原文并报输入错误，回车同时拦截表单提交。
 - 屏幕取色通过浮层内的按钮触发，环境不提供 EyeDropper 时始终禁用；取到的颜色与色板、外部 setValue 走同一条取值路径。
 - 格式、输入、颜色解析与屏幕取色四路错误相互独立，修正一路不影响其他路。
 - 受控 `value` 与 `open`：宿主不写回时界面不变化，回调照常发出；表单出口经 `hidden-input` 提交当前值串。
+- `inline` 是常驻形态：取色面直接铺在页面里，与浮层形态同一台机器、同一组部件，只是不写 `control` / `trigger` / `positioner`。取色面是静态内容面（surface 圆角、描边、不落影），不抢焦点、不入层栈，点外与 Escape 都不收起。
+- 最近使用色：一轮取色结束且颜色变了就记一笔，最新的在最前、同色只留一份、最多留 `maxRecentColors` 个（缺省 8）。浮层形态以收起为一轮，常驻形态以焦点离开取色面为一轮；只经 `setValue` 改的不记。`recentColors` 可受控，由宿主持久化；`recent-swatch-picker` 挂载点渲染它们，还没有时收起。
 
 ### 组合
 
-- 三个挂载点 `hue-slider` / `alpha-slider` / `swatch-picker` 同时充当内嵌组件的根节点，内部放置的是[颜色滑块](./color-slider)与[颜色色块选择器](./color-swatch-picker)自己的部件；不写子节点时自动铺开最简结构。
+- 四个挂载点 `hue-slider` / `alpha-slider` / `swatch-picker` / `recent-swatch-picker` 同时充当内嵌组件的根节点，内部放置的是[颜色滑块](./color-slider)与[颜色色块选择器](./color-swatch-picker)自己的部件；不写子节点时自动铺开最简结构。
 - 放入[表单字段](./field)承接标题、说明与错误信息，`disabled` / `readOnly` 随字段下发。
 - 与[颜色字段](./color-field)并排：选择器挑颜色，字段显示并微调该值。
 
@@ -484,7 +737,7 @@ const translations = {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-color-picker>` |
-| Vue 组件 | `XhColorPickerAlphaSlider` `XhColorPickerAreaThumb` `XhColorPickerChannelInput` `XhColorPickerContent` `XhColorPickerControl` `XhColorPickerEyeDropperTrigger` `XhColorPickerHiddenInput` `XhColorPickerHueSlider` `XhColorPickerLabel` `XhColorPickerPositioner` `XhColorPickerRoot` `XhColorPickerSaturationArea` `XhColorPickerSwatch` `XhColorPickerSwatchPicker` `XhColorPickerTrigger` `XhColorPickerValueText` |
+| Vue 组件 | `XhColorPickerAlphaSlider` `XhColorPickerAreaThumb` `XhColorPickerChannelInput` `XhColorPickerContent` `XhColorPickerControl` `XhColorPickerEyeDropperTrigger` `XhColorPickerHiddenInput` `XhColorPickerHueSlider` `XhColorPickerLabel` `XhColorPickerPositioner` `XhColorPickerRecentSwatchPicker` `XhColorPickerRoot` `XhColorPickerSaturationArea` `XhColorPickerSwatch` `XhColorPickerSwatchPicker` `XhColorPickerTrigger` `XhColorPickerValueText` |
 | 组合式函数 | `useColorPicker` |
 | 状态机 | `colorPickerMachine` |
 | 皮肤 | `@xihan-ui/styles/color-picker.css` |
@@ -501,15 +754,21 @@ const translations = {
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 与两个按钮使用原生 disabled，取色区与滑杆退出 Tab 序列。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开（可查看当前颜色），但任何改值的动作都不发生。 |
 | `swatches` | `string[]` |  | 预设色板：交给内嵌的色块选择器铺格，选中的格按颜色比较。 |
+| `inline` | `boolean` |  | 常驻形态：取色面直接铺在页面里，不经触发钮与浮层，与浮层形态共用同一台机器与同一组部件。 开着时恒为展开态，open / defaultOpen / onOpenChange 不起作用，也不接管焦点与点外关闭。 |
+| `recentColors` | `string[]` |  | 最近使用色（最新的在最前）。提供即受控：内部只发 onRecentColorsChange，由宿主写回（也由宿主持久化）。 一次取色结束时记一笔：浮层形态在收起那一刻，常驻形态在焦点离开取色面那一刻； 这一轮里颜色没变、或只经 api.setValue 改过就不记。 |
+| `defaultRecentColors` | `string[]` |  |  |
+| `maxRecentColors` | `number` |  | 最近使用色最多留几个，默认 8；写 0 即不记。 |
 | `name` | `string` |  | 表单字段名；提供后表单影子才带 name 并参与提交。 |
 | `alpha` | `boolean` |  | 带透明度，默认关闭。关闭时值串恒为不透明，透明度滑杆与输入框整条禁用。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `variant` | `ControlVariant` |  | 盒的形态：outline / subtle / ghost，默认 outline，与同族字段同一套字段外壳。 |
 | `dir` | `Direction` |  | 文字方向。只改写横轴（取色区的饱和度、通道滑杆）上左右两键与指针的语义。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
 | `translations` | `Partial<ColorPickerTranslations>` |  |  |
 | `onValueChange` | `(details: ColorPickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: ColorPickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onRecentColorsChange` | `(details: ColorPickerRecentColorsChangeDetails) => void` |  | 最近使用色变化意图回调；受控时是唯一出口。 |
 | `onColorError` | `(details: ColorPickerErrorDetails) => void` |  | 格式、文本、颜色解析或屏幕取色失败；与 value / open 事件独立。 |
 
 ### 事件
@@ -521,6 +780,7 @@ const translations = {
 | `value-change` | `ColorPickerValueChangeDetails` | 颜色变化；detail 为 `{ value: string }` |
 | `open-change` | `ColorPickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `color-error` | `ColorPickerErrorDetails` | 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象 |
+| `recent-colors-change` | `ColorPickerRecentColorsChangeDetails` | 一轮取色结束、颜色变了，最近使用色随之变化；detail 为 `{ recentColors: string[] }` |
 
 ### 插槽
 
@@ -563,9 +823,9 @@ const translations = {
 
 **状态**：`closed` · `open` · `open.idle` · `open.dragging` · `open.picking`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `HSVA.SET` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `EYE_DROPPER.ERROR` · `ERROR.CLEAR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `HSVA.SET` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `EYE_DROPPER.ERROR` · `ERROR.CLEAR` · `SESSION.END` · `RECENT.CLEAR` · `INLINE.SYNC` · `INLINE.CLOSE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`isOpenControlled` · `canInteract` · `canPick`
+**判据**：`isOpenControlled` · `canInteract` · `canPick` · `isInline`
 
 ### connect API
 
@@ -586,13 +846,17 @@ const translations = {
 | `eyeDropperSupported` | `boolean` |  |
 | `errors` | `ColorPickerErrors` | 格式、文本、颜色解析与屏幕取色四路互不覆盖的错误。 |
 | `swatches` | `string[]` | 预设色板（原样透传 swatches prop，默认为空数组）。 |
+| `inline` | `boolean` | 常驻形态。 |
+| `recentColors` | `string[]` | 最近使用色，最新的在最前。 |
 | `hueSlider` | `ColorSliderApi<T>` | 色相颜色滑块的 api：部件属性与取值都从这里获取，DOM 带 data-scope="color-slider"。 |
 | `alphaSlider` | `ColorSliderApi<T>` | 透明度颜色滑块的 api。 |
 | `swatchPicker` | `ColorSwatchPickerApi<T>` | 预设色板的 api，DOM 带 data-scope="color-swatch-picker"。 |
+| `recentSwatchPicker` | `ColorSwatchPickerApi<T>` | 最近使用色那台色块选择器的 api。 |
 | `inputText` | `(channel: ColorPickerInputChannel) => string` | 某个数值框当前应显示的文字（有草稿显示草稿，否则显示规范文本）。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string) => void` |  |
 | `clearError` | `() => void` | 清除四路显式错误；屏幕取色重试也会先清除自己那一路。 |
+| `clearRecentColors` | `() => void` | 清空最近使用色。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
@@ -608,6 +872,7 @@ const translations = {
 | `getChannelInputProps` | `(props: ColorPickerInputProps) => T['input']` |  |
 | `getEyeDropperTriggerProps` | `() => T['button']` |  |
 | `getSwatchPickerProps` | `() => T['element']` | 预设色板的挂载点，同时充当色板的根节点（role=radiogroup 与键盘处理都在它身上）。 |
+| `getRecentSwatchPickerProps` | `() => T['element']` | 最近使用色的挂载点，同上；还没有最近使用色时收起。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单影子：值随表单提交。提供 name 后才带 name，未提供时不参与提交。 |
 
 ## 无障碍
@@ -623,7 +888,7 @@ const translations = {
 | `Shift+ArrowRight` / `Shift+ArrowLeft` / `Shift+ArrowUp` / `Shift+ArrowDown` | focus in area-thumb, not disabled/readOnly | 同上，但一步走 10 |
 | `Home` / `End` | focus in area-thumb, not disabled/readOnly | 饱和度取 0 / 100（与 aria-valuenow 报的是同一条轴） |
 | `Enter` | focus in channel-input | 收下框里的字；收不了就保留草稿并报告输入错误。一并拦住表单提交 |
-| `Escape` | open（本层在层栈顶） | 收起浮层，焦点归还触发器 |
+| `Escape` | open（本层在层栈顶） | 收起浮层，焦点归还触发器；常驻形态不入层栈，不接管这个键 |
 | `Enter` / `Space` | held on eye-dropper-trigger, not disabled | 按住期间取色按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，屏幕取色一开（窗口随即失焦）或浮层收起时一并撤下 |
 
 ### ARIA
@@ -639,8 +904,8 @@ const translations = {
 | `swatch` | `aria-hidden` | 'true' |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `label` 部件的 id |
-| `content` | `aria-modal` | 'false' |
-| `content` | `role` | 'dialog' |
+| `content` | `aria-modal` | undefined \| 'false' |
+| `content` | `role` | 'group' \| 'dialog' |
 | `area-thumb` | `aria-disabled` | 'true' \| 'false' |
 | `area-thumb` | `aria-label` | label.area |
 | `area-thumb` | `aria-valuemax` | '100' |
@@ -655,7 +920,8 @@ const translations = {
 - 触发按钮是原生按钮，`aria-haspopup="dialog"`，名称由标题与当前值串合成；浮层是非模态 `role="dialog"`。
 - 取色面的拇指是 `role="slider"`：`aria-valuenow` 报告饱和度，明度写入 `aria-valuetext`。
 - 两条滑块的名称与带单位的播报文本取自 `translations.channel` / `channelValueText`，由内嵌滑块读出。
-- 色板是 `role="radiogroup"`，每格 `role="radio"`；整组名称取 `translations.swatchGroup`，每格读 `translations.swatch(value)`。
+- 色板是 `role="radiogroup"`，每格 `role="radio"`；整组名称取 `translations.swatchGroup`，每格读 `translations.swatch(value)`；最近使用色同一套，整组名称取 `translations.recentSwatchGroup`。
+- 常驻形态的取色面是 `role="group"`，由标题命名，不是对话框。
 - Escape 收起浮层并把焦点归还触发按钮。
 
 ## 样式参考
@@ -673,6 +939,7 @@ const translations = {
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-inline` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
@@ -682,6 +949,9 @@ const translations = {
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
+| `control` | `data-variant` | props.variant |
+| `control` | `data-xh-field-chrome` | '' |
+| `control` | `data-xh-field-size` | props.size |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
@@ -700,7 +970,9 @@ const translations = {
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-disabled` | ''（条件成立时才出现） |
-| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-inline` | ''（条件成立时才出现） |
+| `content` | `data-instant` | ''（条件成立时才出现） |
+| `content` | `data-placement` | undefined \| 定位引擎算出的实际落位 |
 | `content` | `data-readonly` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `saturation-area` | `data-disabled` | ''（条件成立时才出现） |
@@ -732,8 +1004,8 @@ const translations = {
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-color-picker-action-bg` | `eye-dropper-trigger` | `background` | `default` | `transparent` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
-| `--xh-color-picker-action-bg-active` | `eye-dropper-trigger` | `background` | `is(:active, [data-pressed])`<br>`not(:disabled)`<br>`pressed`<br>`state=picking` | `--xh-bg-subtle-active` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
-| `--xh-color-picker-action-bg-hover` | `eye-dropper-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
+| `--xh-color-picker-action-bg-active` | `eye-dropper-trigger` | `background` | `is(:active, [data-pressed])`<br>`not(:disabled)`<br>`pressed`<br>`state=picking` | `--xh-bg-subtle-active`<br>`--xh-bg-subtle-hover` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
+| `--xh-color-picker-action-bg-hover` | `eye-dropper-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
 | `--xh-color-picker-action-border` | `eye-dropper-trigger` | `border` | `default` | `--xh-border-control` | color-picker 的 eye-dropper-trigger 部件 border 覆盖槽。 |
 | `--xh-color-picker-action-border-active` | `eye-dropper-trigger` | `border-color` | `state=picking` | `--xh-bg-brand` | color-picker 的 eye-dropper-trigger 部件 border-color 覆盖槽。 |
 | `--xh-color-picker-action-fg` | `eye-dropper-trigger` | `color` | `default` | `--xh-fg-muted` | color-picker 的 eye-dropper-trigger 部件 color 覆盖槽。 |
@@ -748,23 +1020,23 @@ const translations = {
 | `--xh-color-picker-content-gap` | `content` | `gap` | `default` | `--xh-space-3` | color-picker 的 content 部件 gap 覆盖槽。 |
 | `--xh-color-picker-content-px` | `content` | `padding-inline` | `default` | `--xh-space-3` | color-picker 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-color-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-3` | color-picker 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-color-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | color-picker 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-color-picker-content-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-floating` | color-picker 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-color-picker-content-radius` | `content` | `border-radius` | `default`<br>`inline` | `--xh-shape-overlay`<br>`--xh-shape-surface` | color-picker 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-color-picker-content-shadow` | `content` | `box-shadow` | `default`<br>`inline` | `--xh-elevation-floating`<br>`none` | color-picker 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-color-picker-content-w` | `content` | `inline-size` | `default` | `--xh-overlay-min-w` | color-picker 的 content 部件 inline-size 覆盖槽。 |
-| `--xh-color-picker-control-bg` | `control` | `background` | `default` | `transparent` | color-picker 的 control 部件 background 覆盖槽。 |
-| `--xh-color-picker-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | color-picker 的 control 部件 background 覆盖槽。 |
-| `--xh-color-picker-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-bg-subtle` | color-picker 的 control 部件 background 覆盖槽。 |
-| `--xh-color-picker-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | color-picker 的 control 部件 background 覆盖槽。 |
-| `--xh-color-picker-control-border` | `control` | `border` | `default` | `--xh-border-control` | color-picker 的 control 部件 border 覆盖槽。 |
-| `--xh-color-picker-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_tone` | color-picker 的 control 部件 border-color 覆盖槽。 |
-| `--xh-color-picker-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-border-control-hover` | color-picker 的 control 部件 border-color 覆盖槽。 |
-| `--xh-color-picker-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | color-picker 的 control 部件 color 覆盖槽。 |
-| `--xh-color-picker-control-gap` | `control` | `gap` | `default` | `--xh-_color-picker-gap` | color-picker 的 control 部件 gap 覆盖槽。 |
-| `--xh-color-picker-control-h` | `control` | `block-size` | `default` | `--xh-_color-picker-h` | color-picker 的 control 部件 block-size 覆盖槽。 |
-| `--xh-color-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | color-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
-| `--xh-color-picker-control-px` | `control` | `padding-inline` | `default` | `--xh-_color-picker-px` | color-picker 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-color-picker-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 control 部件 border-radius 覆盖槽。 |
-| `--xh-color-picker-control-shadow` | `control` | `box-shadow` | `default` | `--xh-elevation-raised` | color-picker 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-color-picker-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | color-picker 的 control 部件 background-color 覆盖槽。 |
+| `--xh-color-picker-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | color-picker 的 control 部件 background-color 覆盖槽。 |
+| `--xh-color-picker-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | color-picker 的 control 部件 background-color 覆盖槽。 |
+| `--xh-color-picker-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | color-picker 的 control 部件 background-color 覆盖槽。 |
+| `--xh-color-picker-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | color-picker 的 control 部件 border 覆盖槽。 |
+| `--xh-color-picker-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | color-picker 的 control 部件 border-color 覆盖槽。 |
+| `--xh-color-picker-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | color-picker 的 control 部件 border-color 覆盖槽。 |
+| `--xh-color-picker-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | color-picker 的 control 部件 color 覆盖槽。 |
+| `--xh-color-picker-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_color-picker-gap` | color-picker 的 control 部件 gap 覆盖槽。 |
+| `--xh-color-picker-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_color-picker-h` | color-picker 的 control 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-color-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | color-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-color-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_color-picker-px` | color-picker 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-color-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | color-picker 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-color-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | color-picker 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-color-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | color-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-color-picker-hue-slider-gap` | `hue-slider` | `gap` | `default` | `--xh-stack-gap-md` | color-picker 的 hue-slider 部件 gap 覆盖槽。 |
@@ -772,14 +1044,14 @@ const translations = {
 | `--xh-color-picker-input-bg-disabled` | `channel-input` | `background` | `disabled` | `--xh-bg-subtle` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-bg-readonly` | `channel-input` | `background` | `readonly` | `--xh-bg-subtle` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-border` | `channel-input` | `border` | `default` | `--xh-border-control` | color-picker 的 channel-input 部件 border 覆盖槽。 |
-| `--xh-color-picker-input-border-focus` | `channel-input` | `border-color` | `focus-visible` | `--xh-_tone` | color-picker 的 channel-input 部件 border-color 覆盖槽。 |
+| `--xh-color-picker-input-border-focus` | `channel-input` | `border-color` | `focus-visible` | `--xh-border-control-focus` | color-picker 的 channel-input 部件 border-color 覆盖槽。 |
 | `--xh-color-picker-input-border-invalid` | `channel-input` | `border-color` | `invalid` | `--xh-border-invalid` | color-picker 的 channel-input 部件 border-color 覆盖槽。 |
 | `--xh-color-picker-input-font-size` | `channel-input` | `font-size` | `default` | `--xh-text-secondary-size` | color-picker 的 channel-input 部件 font-size 覆盖槽。 |
 | `--xh-color-picker-input-h` | `channel-input` | `block-size` | `default` | `--xh-control-h-sm` | color-picker 的 channel-input 部件 block-size 覆盖槽。 |
 | `--xh-color-picker-input-px` | `channel-input` | `padding-inline` | `default` | `--xh-control-px-sm` | color-picker 的 channel-input 部件 padding-inline 覆盖槽。 |
 | `--xh-color-picker-input-radius` | `channel-input` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 channel-input 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | color-picker 的 label 部件 color 覆盖槽。 |
-| `--xh-color-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-_color-picker-label-font-size` | color-picker 的 label 部件 font-size 覆盖槽。 |
+| `--xh-color-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-picker 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-picker 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-color-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | color-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-color-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-md` | color-picker 的 content 部件 max-block-size 覆盖槽。 |
@@ -788,10 +1060,10 @@ const translations = {
 | `--xh-color-picker-slider-thumb-size` | `alpha-slider`<br>`hue-slider` | `--xh-_thumb-size` | `default` | `--xh-track-thumb-size` | color-picker 的 alpha-slider、hue-slider 部件 --xh-_thumb-size 覆盖槽。 |
 | `--xh-color-picker-slider-track-thickness` | `alpha-slider`<br>`hue-slider` | `--xh-_track-thickness` | `default` | `--xh-space-3` | color-picker 的 alpha-slider、hue-slider 部件 --xh-_track-thickness 覆盖槽。 |
 | `--xh-color-picker-swatch-border` | `swatch` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。 |
-| `--xh-color-picker-swatch-cell` | `swatch-picker` | `--xh-_color-swatch-picker-cell` | `default` | `--xh-control-h-sm` | color-picker 的 swatch-picker 部件 --xh-_color-swatch-picker-cell 覆盖槽。 |
-| `--xh-color-picker-swatch-gap` | `swatch-picker` | `gap` | `default` | `--xh-control-gap-sm` | color-picker 的 swatch-picker 部件 gap 覆盖槽。 |
-| `--xh-color-picker-swatch-icon-size` | `swatch-picker` | `--xh-icon-size` | `default` | `--xh-_color-swatch-picker-mark` | color-picker 的 swatch-picker 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-color-picker-swatch-picker-gap` | `swatch-picker` | `gap` | `default` | `--xh-_color-swatch-picker-gap` | color-picker 的 swatch-picker 部件 gap 覆盖槽。 |
+| `--xh-color-picker-swatch-cell` | `recent-swatch-picker`<br>`swatch-picker` | `--xh-_color-swatch-picker-cell` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-control-h-sm` | color-picker 的 recent-swatch-picker、swatch-picker 部件 --xh-_color-swatch-picker-cell 覆盖槽。 |
+| `--xh-color-picker-swatch-gap` | `recent-swatch-picker`<br>`swatch-picker` | `gap` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-control-gap-sm` | color-picker 的 recent-swatch-picker、swatch-picker 部件 gap 覆盖槽。 |
+| `--xh-color-picker-swatch-icon-size` | `recent-swatch-picker`<br>`swatch-picker` | `--xh-icon-size` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-_color-swatch-picker-mark` | color-picker 的 recent-swatch-picker、swatch-picker 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-color-picker-swatch-picker-gap` | `recent-swatch-picker`<br>`swatch-picker` | `gap` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-_color-swatch-picker-gap` | color-picker 的 recent-swatch-picker、swatch-picker 部件 gap 覆盖槽。 |
 | `--xh-color-picker-swatch-radius` | `swatch` | `--xh-swatch-radius` | `default` | `--xh-shape-inset` | color-picker 的 swatch 部件 --xh-swatch-radius 覆盖槽。 |
 | `--xh-color-picker-swatch-size` | `swatch` | `--xh-swatch-size` | `default` | `--xh-_swatch-size` | color-picker 的 swatch 部件 --xh-swatch-size 覆盖槽。 |
 | `--xh-color-picker-thumb-border` | `area-thumb` | `border` | `default` | `--xh-color-neutral-0` | color-picker 的 area-thumb 部件 border 覆盖槽。 |

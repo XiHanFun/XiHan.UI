@@ -721,6 +721,135 @@ function onLoad(): void {
 </script>
 ```
 
+### 往前翻历史
+
+edge 设为 start：哨兵摆在列表开头，更早的消息插在前面，取数期间视口不跳
+
+```vue
+<script setup lang="ts">
+import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
+import { onMounted, ref } from "vue";
+
+const scrollEl = ref<HTMLElement | null>(null);
+let oldest = 100;
+const messages = ref(Array.from({ length: 12 }, (_, i) => `消息 ${oldest + i}`));
+const loading = ref(false);
+const done = ref(false);
+
+// 从最新一条看起
+onMounted(() => {
+  if (scrollEl.value)
+    scrollEl.value.scrollTop = scrollEl.value.scrollHeight;
+});
+
+// 取更早的一页；这里用定时器代替真实请求。loading 要如实写：组件靠它知道什么时候守住视口
+function onLoad(): void {
+  loading.value = true;
+  window.setTimeout(() => {
+    const older = Array.from({ length: 8 }, (_, i) => `消息 ${oldest - 8 + i}`);
+    oldest -= 8;
+    messages.value = [...older, ...messages.value];
+    loading.value = false;
+    done.value = oldest <= 60;
+  }, 500);
+}
+</script>
+
+<template>
+  <div
+    ref="scrollEl"
+    data-xh-scroll
+    style="
+      block-size: 240px;
+      overflow: auto;
+      border: 1px solid var(--xh-border-default);
+      border-radius: 8px;
+    "
+  >
+    <XhInfiniteScrollRoot
+      edge="start"
+      :target="scrollEl"
+      :loading="loading"
+      :disabled="done"
+      @load="onLoad"
+    >
+      <!-- 哨兵摆在第一条之前 -->
+      <XhInfiniteScrollSentinel />
+      <p style="margin: 0; padding: 8px 12px; color: var(--xh-fg-muted)">
+        {{ done ? "没有更早的消息了" : loading ? "正在取更早的消息…" : "往上翻取更早的消息" }}
+      </p>
+      <div v-for="message in messages" :key="message" style="padding: 8px 12px">{{ message }}</div>
+    </XhInfiniteScrollRoot>
+  </div>
+</template>
+```
+
+```html
+<style>
+  #infinite-scroll-edge-shell [data-row] {
+    padding: 8px 12px;
+  }
+  #infinite-scroll-edge-shell [data-hint] {
+    margin: 0;
+    padding: 8px 12px;
+    color: var(--xh-fg-muted);
+  }
+</style>
+
+<div
+  id="infinite-scroll-edge-shell"
+  data-xh-scroll
+  style="
+    block-size: 240px;
+    overflow: auto;
+    border: 1px solid var(--xh-border-default);
+    border-radius: 8px;
+  "
+>
+  <xh-infinite-scroll id="infinite-scroll-edge" edge="start" style="display: contents">
+    <div data-xh-part="root">
+      <!-- 哨兵摆在第一条之前 -->
+      <div data-xh-part="sentinel"></div>
+      <p data-hint>往上翻取更早的消息</p>
+      <div data-list></div>
+    </div>
+  </xh-infinite-scroll>
+</div>
+
+<script type="module">
+  const host = document.getElementById("infinite-scroll-edge");
+  const shell = document.getElementById("infinite-scroll-edge-shell");
+  const list = host.querySelector("[data-list]");
+  const hint = host.querySelector("[data-hint]");
+  let oldest = 100;
+
+  function row(text) {
+    const el = document.createElement("div");
+    el.setAttribute("data-row", "");
+    el.textContent = text;
+    return el;
+  }
+
+  for (let i = 0; i < 12; i += 1) list.append(row(`消息 ${oldest + i}`));
+  host.target = shell;
+  // 从最新一条看起
+  shell.scrollTop = shell.scrollHeight;
+
+  // 取更早的一页；这里用定时器代替真实请求。loading 要如实写：组件靠它知道什么时候守住视口
+  host.addEventListener("load", () => {
+    host.loading = true;
+    hint.textContent = "正在取更早的消息…";
+    window.setTimeout(() => {
+      oldest -= 8;
+      list.prepend(...Array.from({ length: 8 }, (_, i) => row(`消息 ${oldest + i}`)));
+      host.loading = false;
+      host.disabled = oldest <= 60;
+      hint.textContent = host.disabled ? "没有更早的消息了" : "往上翻取更早的消息";
+    }, 500);
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -737,6 +866,7 @@ function onLoad(): void {
 - `distance` 是提前量：距底部该距离时触发，用户感觉不到等待。
 - `loading` 与 `disabled` 由组件交给宿主，加载提示与结束语由宿主放置。
 - 加载完成后关闭即可，不会再触发。
+- `edge` 决定取数的那一头：缺省 `end` 在列表末尾往后取；`start` 在列表开头往前取（聊天历史、时间线往回翻），哨兵与按钮摆在列表开头。往前取数时新内容插在已有内容前面，组件在取数期间保持可视区离内容底部的距离不变，视口不跳；这要求宿主如实写 `loading`：写回 `true` 起开始守，写回 `false` 之后再守两帧，框架晚一拍提交的 DOM 也接得住。
 - `load-more-trigger` 是同一通路的另一个入口：一个真实按钮，取数中与关闭时自动停用。它是铺满一行的独立动作条目：宽度由容器给、高度随内容，中性描边与透明底，按下只换面不缩放。
 
 ### 组合
@@ -778,6 +908,7 @@ function onLoad(): void {
 | `disabled` | `boolean` |  | 关闭：不再观察，也不再触发。列表已没有下一页时使用。 |
 | `loading` | `boolean` |  | 正在取数：期间不观察、不重复触发。取完由宿主写回 false。 |
 | `onLoad` | `() => void` |  | 应取下一页。 |
+| `edge` | `InfiniteScrollEdge` |  | 取数的那一头，缺省 end。start 时哨兵摆在列表开头，新的一页插在已有内容前面： 取数期间（loading 为 true 起、写回 false 之后再守两帧）组件保持可视区离内容底部的距离不变， 新内容插进来视口不跳。需要宿主如实写 loading。 |
 
 ### 事件
 

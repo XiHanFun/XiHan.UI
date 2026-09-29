@@ -8,12 +8,12 @@
 
 | 家族 | 典型组件 | 配方给什么 |
 | --- | --- | --- |
-| Action Control | Button、Toggle、ToggleGroup item、分页按钮、图标按钮、Toolbar item、Segmented item、各类 trigger | 高度、内边距、图标随档、缺省语气（只有 Button 品牌实心）、按承载面的交互阶梯、120 / 200ms 按压、焦点、禁用、加载。六个 profile：`text`、`icon`、`field-inset`（字段内的清空 / 展开小钮）、`floating`（悬浮单图标动作，圆形）、`row` 与 `disclosure-trigger`（铺满一行、只换面） |
+| Action Control | Button、Toggle、ToggleGroup item、分页按钮、图标按钮、Toolbar item、单选组 segmented 形态的段、各类 trigger | 高度、内边距、图标随档、缺省语气（只有 Button 品牌实心）、按承载面的交互阶梯、120 / 200ms 按压、焦点、禁用、加载。六个 profile：`text`、`icon`、`field-inset`（字段内的清空 / 展开小钮）、`floating`（悬浮单图标动作，圆形）、`row` 与 `disclosure-trigger`（铺满一行、只换面） |
 | Field Chrome | Input、Textarea、Select trigger、Date / Time field、Combobox、Cascader、TagsInput、PinInput、PromptInput | 静息描边式外壳（不填底）、`outline / subtle / ghost` 三档 × rest / hover / focus / invalid / disabled / readOnly / loading 七态、占位、前后缀、清空、标签与说明排版、缺省宽 |
 | Collection Item | Menu item、Listbox item、Tree node、Table row、Transfer item、SideNav link、Tabs line trigger、Anchor / Breadcrumb link、NavigationMenu / Menubar trigger | highlighted、按集合语境（`overlay / page / nav`）的 selected / current 标记、pressed 只换面、disabled、缩进、指示器 |
 | Surface | Card、Alert、Panel、CodeView、DiffView、Log、JsonViewer、ToolCall、Reasoning、Approval、QuestionFlow、Accordion / Toolbar / PageHeader 的 outline 档、各类容器面 | 边界三选一、raised 逐部件登记、标题与说明排版、内衬只走 `--xh-surface-*`、层级 |
 | Overlay | Popover、Menu、Select content、Dialog、Drawer、Tooltip、NavigationMenu content、日期 / 时间面板 | Portal、定位、遮罩、材质按内容判定、进退场按锚定关系、浮层滚动面、焦点归还 |
-| Feedback | Toast、Notification、Progress、Skeleton | 状态语气、sheet 面描边、计时、暂停、消除、加载与即时反馈 |
+| Feedback | Notification（卡片与轻提示两种预设）、Progress、Skeleton | 状态语气、sheet 面描边、计时、暂停、消除、加载与即时反馈 |
 
 一个组件可以组合多个家族，但每个部件只有一个主要身份。归族的判据是功能：用户直接触发动作 → Action Control；输入或选择值 → Field Chrome；在集合中导航、选择或操作条目 → Collection Item；长期承载一组内容 → Surface；脱离文档流临时覆盖页面 → Overlay；表达任务过程或结果 → Feedback。
 
@@ -50,14 +50,14 @@
 | [导航](/components/#导航) | 页级切换用 Tabs，站内层级用 SideNav / NavigationMenu / Menubar，位置用 Breadcrumb / Anchor / Steps，右键与更多用 ContextMenu / Menu |
 | [数据录入](/components/#数据录入) | 少于七个互斥项用 RadioGroup，更多用 Select；可输入的候选用 Combobox；多选用 CheckboxGroup 或 TagsInput；日期优先分段输入（DateField）再加日历（DatePicker）；整表用 Form + Field 承担校验与重置 |
 | [数据展示](/components/#数据展示) | 记录用 Table，层级用 Tree，键值对用 Descriptions，长列表用 Virtualizer / InfiniteScroll，状态用 Tag / Badge |
-| [反馈](/components/#反馈) | 页内静态提示用 Alert，操作结果用 Toast（短、自动消失）或 Notification（可停留、可动作），进行中用 Progress / Spinner / Skeleton / LoadingBar |
+| [反馈](/components/#反馈) | 页内静态提示用 Alert，操作结果用 Notification 的轻提示预设（短、自动消失），主动推送的消息用它的卡片预设（可停留、可动作），进行中用 Progress / Spinner / Skeleton / LoadingBar |
 | [浮层](/components/#浮层) | 轻量补充用 Tooltip / HoverCard / Popover，需要确认用 Popconfirm，需要打断用 Dialog，侧边任务流用 Drawer，命令入口用 Command |
 | [AI 对话](/components/#ai-对话) | 输入用 PromptInput，流式正文用 MarkdownStream / MessageFeed，工具与推理用 ToolCall / Reasoning，审批与提问用 Approval / QuestionFlow |
 
 ## 示例与总览
 
 - 第一个示例用最少结构展示核心用途；一个示例只证明一个意图；不为覆盖 API 保留重复示例；示例不写内联宽度。
-- 组件总览用独立极简预览：一律 md 缺省档、缺省 variant，tone 只在语气即核心用途时允许一个非 neutral 值；浮层类展示已打开的静态面板。
+- 组件总览的每张卡片是一张内联 SVG 示意图，不挂真实组件：240 × 160 画布，文字画成圆头条，颜色只取语义令牌，随亮暗主题、高对比与强制色走；画缺省形态，浮层类画已打开的面板，图表画示意图形而不是真实数据。
 - 复杂业务组合放到 [示例](/examples/) 一册，不塞进基础组件专页。
 
 ## 相关

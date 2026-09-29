@@ -10,8 +10,8 @@
 | --- | ---: | --- |
 | inset | 4px | 内嵌项、菜单项、标签内部、微型状态块 |
 | control | 4px | Button、Input、Select Trigger、Toggle、分页按钮 |
-| surface | 8px | Card、Alert、Panel、列表容器、Segmented 与 Tabs segment 轨道 |
-| overlay | 12px | Popover、Menu、Dialog、Drawer、Toast |
+| surface | 8px | Card、Alert、Panel、列表容器、RadioGroup segmented 形态与 Tabs segment 轨道 |
+| overlay | 12px | Popover、Menu、Dialog、Drawer、Notification |
 | circle | 50% | 宽高相等的圆形对象（头像、单选指示器、thumb、steps / timeline indicator、加载环）与悬浮于内容之上的单图标动作（FloatButton、BackTop、翻页、回底） |
 | pill | 9999px | 状态 chip（Badge、Tag、ToolCall status、Approval / QuestionFlow result）与一维对象（轨道、track / range、tick、hairline 分隔线、滑动指示条、手柄、scrollbar thumb、skeleton text、位置指示点当前拉长态） |
 
@@ -30,10 +30,10 @@
 
 - 默认 Button 的四角为 4px，不呈胶囊形。
 - Card 和静态容器为 8px。
-- Popover、Dialog、Toast 等浮层不超过 12px。
+- Popover、Dialog、Notification 等浮层不超过 12px。
 - 亮色、暗色和 compact 不改变圆角身份。
 - Tag 为胶囊，与 Button 4px 形成可点 / 不可点识别差。
-- Segmented / Tabs segment 轨道为 8px，滑块 ≥ 4px。
+- RadioGroup segmented 形态 / Tabs segment 轨道为 8px，滑块 ≥ 4px。
 
 ## 2. 统一点击触感
 
@@ -44,7 +44,7 @@ rest
   └─ pointerdown / Space / Enter
        └─ 0–120ms：scale 1 → 0.97，背景进入 active
             └─ release / keyup
-                 └─ 0–200ms：scale 0.97 → 1，背景回到 hover/rest
+                 └─ 0–200ms：scale 0.97 → 1；背景、描边、字色 0–120ms 回到 hover/rest
 ```
 
 固定参数：
@@ -52,7 +52,8 @@ rest
 | 参数 | 值 | 说明 |
 | --- | ---: | --- |
 | press duration | `--xh-motion-duration-press`（120ms） | 必须先于业务请求反馈 |
-| release duration | `--xh-motion-duration-release`（200ms） | 允许轻微回弹但不得过冲明显 |
+| release duration | `--xh-motion-duration-release`（200ms） | 只作用于缩放；允许轻微回弹但不得过冲明显 |
+| surface duration | `--xh-motion-duration-micro`（120ms） | 底色、描边、字色的换面，悬停进入与按压释放同一时长 |
 | press scale | `--xh-motion-scale-press`（0.97） | 所有离散 Action Control 一致 |
 | press easing | `--xh-motion-ease-press` | 按下稳定，不使用弹簧 |
 | release easing | `--xh-motion-ease-release` | 快速恢复，末端柔和 |
@@ -65,18 +66,19 @@ rest
 必须使用 0.97 缩放并同时换底（inline-size 由 Action Control profile 决定的定尺部件）：
 
 - Button、Icon Button、Close / Clear Button。
-- Toggle、ToggleGroup item、分页按钮、步骤操作按钮。
-- 工具栏按钮、轮播控制、日期翻页按钮、日历格、星、色块、把手。
+- Toggle、分页按钮、步骤操作按钮。
+- 散落的工具栏按钮、轮播控制、日期翻页按钮、日历格、星、色块、把手。
 - 视觉上是一枚独立按钮的 trigger（投影 `data-xh-action-control`）。
 
 使用同节奏但只换面（主体规则含 `inline-size: 100%`、`flex: 1`、含文本的 grid / flex，或高度随内容多行）：
 
 - Menu Item、Listbox Item、Tree Node、Table Row、Transfer Item、SideNav link、Tabs line trigger、Anchor link、Breadcrumb link、NavigationMenu / Menubar trigger（投影 `data-xh-collection-item`；横向导航这五件投影 `nav` 语境）。
 - Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger（`disclosure-trigger` profile）。
-- Tabs card / segment trigger、Segmented item、load-more trigger。
+- Tabs card / segment trigger、RadioGroup segmented 形态的段、load-more trigger。
+- 共边相接的分段：ButtonGroup 段、ToggleGroup item、Toolbar group 里的 item（定尺但零间距相接，缩放会撕开接缝，皮肤写 `--xh-action-scale-pressed: none`）。
 - 大面积 Card Action、导航项、可选择列表行。
 
-这些部件在 120ms 内切到 active 面，200ms 回到 hover / rest；不允许零反馈。原因是缩放整行会让文字发虚、边界漂移并影响相邻内容感知。
+这些部件在 120ms 内切到 active 面，松开后按 micro（120ms）回到 hover / rest；不允许零反馈。原因是缩放整行会让文字发虚、边界漂移并影响相邻内容感知。
 
 不播放点击反馈（须在门禁登记理由）：
 
@@ -178,7 +180,7 @@ Frosted 是可读性优先的半透明柔和模糊面。它允许隐约感知背
 - Button、Input、Card、Table、Alert 等常驻内容。
 - 大段正文、表单主体和数据密集列表。
 - Dialog/Drawer 的主要阅读面；它们默认使用稳定的 sheet/elevated 实体面。
-- Toast/Notification；它们默认使用 sheet，避免运动背景影响短时阅读。
+- Notification（卡片与轻提示两种预设）；它默认使用 sheet，避免运动背景影响短时阅读。
 - 嵌套在另一 frosted 面里的子浮层，除非能证明层级仍清楚。
 - 含网格或多列的锚定面板（NavigationMenu content、Date / Time / DateRange / TimeRange picker content）；它们使用 floating：solid 底 + `--xh-border-default` + `--xh-elevation-floating`。
 

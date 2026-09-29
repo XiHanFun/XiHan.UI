@@ -516,6 +516,81 @@ import {
 </xh-date-field>
 ```
 
+### 12 小时制
+
+hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / p 切换），值仍是 24 小时制的 ISO 串
+
+```vue
+<script setup lang="ts">
+import {
+  XhDateFieldControl,
+  XhDateFieldLabel,
+  XhDateFieldRoot,
+  XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const value = ref<string | null>("2026-07-28T21:05");
+</script>
+
+<template>
+  <XhDateFieldRoot v-model:value="value" locale="en-US" granularity="minute" :hour-cycle="12">
+    <XhDateFieldLabel>Departure</XhDateFieldLabel>
+    <XhDateFieldControl>
+      <XhDateFieldSegmentGroup>
+        <XhDateFieldSegment :index="0" />
+        <span>/</span>
+        <XhDateFieldSegment :index="1" />
+        <span>/</span>
+        <XhDateFieldSegment :index="2" />
+        <span>&nbsp;</span>
+        <XhDateFieldSegment :index="3" />
+        <span>:</span>
+        <XhDateFieldSegment :index="4" />
+        <span>&nbsp;</span>
+        <XhDateFieldSegment segment="dayPeriod" />
+      </XhDateFieldSegmentGroup>
+    </XhDateFieldControl>
+  </XhDateFieldRoot>
+
+  <span style="font-size: 13px">当前值：{{ value ?? "（空）" }}</span>
+</template>
+```
+
+```html
+<xh-date-field id="date-field-hour-cycle" locale="en-US" granularity="minute" hour-cycle="12" default-value="2026-07-28T21:05">
+  <div data-xh-part="root">
+    <label data-xh-part="label">Departure</label>
+    <div data-xh-part="control">
+      <div data-xh-part="segment-group">
+        <span data-xh-part="segment" index="0"></span>
+        <span>/</span>
+        <span data-xh-part="segment" index="1"></span>
+        <span>/</span>
+        <span data-xh-part="segment" index="2"></span>
+        <span>&nbsp;</span>
+        <span data-xh-part="segment" index="3"></span>
+        <span>:</span>
+        <span data-xh-part="segment" index="4"></span>
+        <span>&nbsp;</span>
+        <span data-xh-part="segment" segment="dayPeriod"></span>
+      </div>
+    </div>
+  </div>
+</xh-date-field>
+
+<span style="font-size: 13px">当前值：<span id="date-field-hour-cycle-value">2026-07-28T21:05</span></span>
+
+<script type="module">
+  const field = document.getElementById("date-field-hour-cycle");
+  const readout = document.getElementById("date-field-hour-cycle-value");
+  field.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value ?? "（空）";
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -532,8 +607,9 @@ import {
 
 - `locale` 决定日期段的顺序和分隔方式。
 - `min` 与 `max` 限制可输入范围。
-- `granularity` 支持日期或精确到分钟的日期时间。
+- `granularity` 支持日期或精确到分钟的日期时间；`hourCycle={12}` 时小时段收 1-12，时刻段后面多出上下午段，值仍是 24 小时制的 ISO 串。
 - `year + week` 段集使用 ISO 周历，固定周一到周日，不随显示语言改变。
+- 不提供 `formatOptions`，也不解析 `YYYY/MM/DD` 这类格式串。能用 `Intl.DateTimeFormat` 选项表达的显示差异已经各有归口：段序与分隔符随 `locale`，由哪几段组成随 `granularity` / `segments`，小时制随 `hourCycle`。其余选项要么改变值的含义（两位年份还原不出唯一的世纪，`era` 需要另一套纪年），要么改变编辑方式（`month: 'long'` 的文字月份要按字母跳选，逐段键入与上下键加减都对不上）。格式串绕开 locale 的段序，还得自带一套解析器，同一个值在别的语言下会被写成对方读不懂的顺序。只是要换一种写法展示选中值时，用[时间戳](./timestamp)或 `Intl.DateTimeFormat` 另外格式化。
 - 标准组合包含标签、输入框、日期段和隐藏表单输入；支持受控值与原生表单提交。
 - 聚焦只强调正在编辑的日期段，错误段使用独立的危险色反馈。
 - 清空按钮默认收起，输入任一段后出现；点按后回到第一段，聚焦边界平滑过渡。
@@ -578,6 +654,7 @@ import {
 | `locale` | `string` |  | BCP 47 语言标记，决定年月日三段的先后。未提供时按宿主语言，宿主也没有时按 en-US（月日年）排列。 |
 | `timeZone` | `string` |  | IANA 时区名，只用于取今天：空段上按上下键时从今天的对应位起步。 |
 | `granularity` | `DateGranularity` |  | 精度，默认 day（只有年月日三段）。提供 segments 时它不再生效。 |
+| `hourCycle` | `DateHourCycle` |  | 时刻段的小时制，默认 24，不随 locale 推断。12 时小时段收 1-12，时刻段后面多出上下午段（按 a / p 或上下键切换）； 只在按 granularity 铺段且精度到时以下时生效，提供 segments 时由段集里有没有 dayPeriod 决定。值仍是 24 小时制的 ISO 串。 |
 | `segments` | `DateSegmentSet` |  | 段集：该控件由哪几段组成，提供后以它为准，granularity 让位。写 `['year', 'quarter']` 得到「2026 Q2」、`['year', 'week']` 得到「2026 33」。归一后为空（如 `[]`）视同未提供。 值仍是 ISO 日期（时间）串，因此段集中必须有 year，否则段位可编辑但无法拼出值。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
@@ -801,7 +878,9 @@ import {
 
 动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

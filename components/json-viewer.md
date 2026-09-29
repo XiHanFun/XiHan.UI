@@ -52,7 +52,7 @@ const payload = {
 
 加粗的是必需部件。
 
-`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `empty`
+`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `empty` · `mark`
 
 ## 示例
 
@@ -491,6 +491,120 @@ function toggle(): void {
 </script>
 ```
 
+### 搜索
+
+search 标出键名与值里含有搜索词的行并展开它们的祖先，命中的那一段铺成 mark；工具条里的上一条 / 下一条在命中之间逐个走，停住的那一条换成实心并滚进视野
+
+```vue
+<script setup lang="ts">
+import {
+  XhButton,
+  XhJsonViewerRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const payload = {
+  name: "曦寒视图",
+  version: "1.0.0-alpha.2",
+  author: { name: "曦寒", site: "xihanfun.com" },
+  packages: [
+    { name: "@xihan-ui/vue", size: 128 },
+    { name: "@xihan-ui/react", size: 131 },
+    { name: "@xihan-ui/web-components", size: 142 },
+  ],
+};
+
+const query = ref("xihan");
+</script>
+
+<template>
+  <XhJsonViewerRoot :value="payload" :search="query" style="inline-size: 100%; max-inline-size: 460px">
+    <template #toolbar="{ searchMatches, activeMatch, nextMatch, prevMatch }">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block-end: 8px">
+        <XhTextFieldRoot v-model:value="query" placeholder="搜索键名或值" size="sm">
+          <XhTextFieldControl>
+            <XhTextFieldInput aria-label="搜索 JSON" />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
+        <XhButton variant="outline" size="sm" :disabled="!searchMatches.length" @click="prevMatch">上一条</XhButton>
+        <XhButton variant="outline" size="sm" :disabled="!searchMatches.length" @click="nextMatch">下一条</XhButton>
+        <span aria-live="polite">
+          {{ searchMatches.length ? `${activeMatch ? searchMatches.indexOf(activeMatch) + 1 : 0} / ${searchMatches.length}` : "无命中" }}
+        </span>
+      </div>
+    </template>
+  </XhJsonViewerRoot>
+</template>
+```
+
+```html
+<!-- 工具条写在根之前；搜索词经 search 属性交给元素，上一条 / 下一条调用元素的 prevMatch / nextMatch -->
+<div style="inline-size: 100%; max-inline-size: 460px">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block-end: 8px">
+    <xh-text-field id="json-search-field" placeholder="搜索键名或值" size="sm" value="xihan">
+      <div data-xh-part="root">
+        <div data-xh-part="control">
+          <input data-xh-part="input" aria-label="搜索 JSON" />
+        </div>
+      </div>
+    </xh-text-field>
+    <xh-button id="json-search-prev" variant="outline" size="sm">
+      <button data-xh-part="root">上一条</button>
+    </xh-button>
+    <xh-button id="json-search-next" variant="outline" size="sm">
+      <button data-xh-part="root">下一条</button>
+    </xh-button>
+    <span id="json-search-count" aria-live="polite"></span>
+  </div>
+  <xh-json-viewer id="json-search-viewer" search="xihan">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+</div>
+
+<script type="module">
+  const viewer = document.getElementById("json-search-viewer");
+  const field = document.getElementById("json-search-field");
+  const count = document.getElementById("json-search-count");
+  viewer.value = {
+  name: "曦寒视图",
+  version: "1.0.0-alpha.2",
+  author: { name: "曦寒", site: "xihanfun.com" },
+  packages: [
+    { name: "@xihan-ui/vue", size: 128 },
+    { name: "@xihan-ui/react", size: 131 },
+    { name: "@xihan-ui/web-components", size: 142 },
+  ],
+};
+
+  // 计数与两颗按钮跟着命中走：命中与停在哪一条都是即时算出的，改完搜索词就能读
+  function refresh() {
+    const matches = viewer.searchMatches;
+    const at = viewer.activeMatch ? matches.indexOf(viewer.activeMatch) + 1 : 0;
+    count.textContent = matches.length ? `${at} / ${matches.length}` : "无命中";
+    for (const id of ["json-search-prev", "json-search-next"])
+      document.getElementById(id).disabled = matches.length === 0;
+  }
+
+  field.addEventListener("value-change", (event) => {
+    field.value = event.detail.value;
+    viewer.search = event.detail.value;
+    refresh();
+  });
+  document.getElementById("json-search-prev").addEventListener("click", () => {
+    viewer.prevMatch();
+    refresh();
+  });
+  document.getElementById("json-search-next").addEventListener("click", () => {
+    viewer.nextMatch();
+    refresh();
+  });
+  refresh();
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -520,6 +634,8 @@ function toggle(): void {
 - 自定义元素侧：`value` 属性接受一段 JSON 文本（无法解析时按字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` 没有对应属性，只能通过 property 设置，写成 `expanded-value='["$"]'` 不会生效。
 
 ### 组合
+
+- 搜索：`search` 标出键名与值里含有搜索词的行（不区分大小写），命中行的祖先分支自动展开（写进展开集合，之后照常能收起），命中的那一段铺成 `mark` 部件。搜索框与上一条 / 下一条由作者摆在树之前：Vue 写进 `toolbar` 插槽，React 经 `toolbar` 传入，载荷是 `searchMatches`、`activeMatch`、`nextMatch`、`prevMatch`；Web Components 在元素上取 `searchMatches` / `activeMatch` 并调用 `nextMatch()` / `prevMatch()`。停住的那一条投影 `data-current`、命中片段换成实心，并被滚进视野。
 
 - 放入[标签页](./tabs)或[抽屉](./drawer)作为调试面板；行数多时套一层[滚动区域](./scroll-area)。
 - 配合[剪贴板](./clipboard)提供原始 JSON 的复制。
@@ -564,6 +680,7 @@ function toggle(): void {
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，只对调左右方向键的展开 / 收起语义；未提供时从 DOM 读取。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `search` | `string` |  | 搜索词：键名与值文本里含有它（不区分大小写）的行即为命中。 命中行的祖先分支自动展开（写进展开集合），命中片段由作者按 `api.segments` 铺成 mark 部件。 空串与只含空白视为没有搜索。 |
 | `translations` | `Partial<JsonViewerTranslations>` |  |  |
 | `onExpandedValueChange` | `(details: JsonViewerExpandedValueChangeDetails) => void` |  |  |
 
@@ -582,6 +699,7 @@ function toggle(): void {
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhJsonViewerRoot` | `empty` | — |  |
+| `XhJsonViewerRoot` | `toolbar` | `JsonViewerToolbarSlotProps` | 树之前的一条：放搜索框与上一条 / 下一条，渲染为根的前一个兄弟。 |
 
 ### React 适配器 props
 
@@ -590,6 +708,7 @@ function toggle(): void {
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhJsonViewerRoot` | `empty` | `ReactNode` |  | 空态格子的内容；未写时铺设 translations 中的兜底文案。 |
+| `XhJsonViewerRoot` | `toolbar` | `SlotChildren<JsonViewerToolbarSlotProps>` |  | 树之前的一条：放搜索框与上一条 / 下一条，渲染为根的前一个兄弟。 |
 
 ### 状态
 
@@ -609,7 +728,7 @@ function toggle(): void {
 
 **状态**：`idle`
 
-**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `VIEWER.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `VIEWER.BLUR` · `PRESS.START` · `PRESS.END` · `MATCH.SET` · `SEARCH.SYNC`
 
 ### connect API
 
@@ -632,6 +751,13 @@ function toggle(): void {
 | `isEmpty` | `boolean` | 无法展开任何一行：value 未提供或为 undefined。空态部件随它显隐。 |
 | `emptyText` | `string` | 空态的兜底文案，作者未向空态部件写入内容时铺设它。 |
 | `text` | `string` | 缩进后的 JSON 原文；键序与环路记号与树档一致。text 档之外也可获取，便于作者实现复制原文。 |
+| `searchMatches` | `readonly string[]` | 命中搜索词的行路径，按树序排列；没有搜索时为空。 |
+| `activeMatch` | `string \| null` | 在命中之间逐个走时停在哪一行；没有时为 null。 |
+| `nextMatch` | `() => void` | 停到下一条命中（走到末尾回到第一条），并把它滚进视野。 |
+| `prevMatch` | `() => void` | 停到上一条命中（走到开头回到最后一条），并把它滚进视野。 |
+| `setActiveMatch` | `(value: string \| null) => void` |  |
+| `keySegments` | `(node: JsonViewerNode) => readonly HighlightSegment[]` | 键名按搜索词切成的片段，依次拼接恒等于键名；命中的片段铺成 mark 部件。 没有搜索或没有键名时整段是一个不命中的片段。 |
+| `valueSegments` | `(node: JsonViewerNode) => readonly HighlightSegment[]` | 值文本（即 valueText）按搜索词切成的片段；截断占位行的文案不参与命中。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
 | `getTextProps` | `() => T['element']` |  |
@@ -646,6 +772,7 @@ function toggle(): void {
 | `getBranchContentProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getPreviewProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
+| `getMarkProps` | `() => T['element']` | 键名与值文本里命中搜索词的那一段。 |
 
 ## 无障碍
 
@@ -715,50 +842,70 @@ function toggle(): void {
 | `root` | `data-variant` | props.variant |
 | `root` | `data-view` | props.view |
 | `item` | `data-circular` | ''（条件成立时才出现） |
+| `item` | `data-current` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-match` | ''（条件成立时才出现） |
 | `item` | `data-truncated` | ''（条件成立时才出现） |
 | `item` | `data-value-type` | node?.type |
 | `item-key` | `data-circular` | ''（条件成立时才出现） |
+| `item-key` | `data-current` | ''（条件成立时才出现） |
 | `item-key` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-key` | `data-match` | ''（条件成立时才出现） |
 | `item-key` | `data-truncated` | ''（条件成立时才出现） |
 | `item-key` | `data-value-type` | node?.type |
 | `item-value` | `data-circular` | ''（条件成立时才出现） |
+| `item-value` | `data-current` | ''（条件成立时才出现） |
 | `item-value` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-value` | `data-match` | ''（条件成立时才出现） |
 | `item-value` | `data-truncated` | ''（条件成立时才出现） |
 | `item-value` | `data-value-type` | node?.type |
 | `branch` | `data-circular` | ''（条件成立时才出现） |
+| `branch` | `data-current` | ''（条件成立时才出现） |
 | `branch` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch` | `data-match` | ''（条件成立时才出现） |
 | `branch` | `data-state` | 'open' \| 'closed' |
 | `branch` | `data-truncated` | ''（条件成立时才出现） |
 | `branch` | `data-value-type` | node?.type |
 | `branch-control` | `data-circular` | ''（条件成立时才出现） |
+| `branch-control` | `data-current` | ''（条件成立时才出现） |
 | `branch-control` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-control` | `data-match` | ''（条件成立时才出现） |
 | `branch-control` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-control` | `data-state` | 'open' \| 'closed' |
 | `branch-control` | `data-truncated` | ''（条件成立时才出现） |
 | `branch-control` | `data-value-type` | node?.type |
 | `branch-trigger` | `data-circular` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-current` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-match` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
 | `branch-trigger` | `data-truncated` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-value-type` | node?.type |
 | `branch-indicator` | `data-circular` | ''（条件成立时才出现） |
+| `branch-indicator` | `data-current` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-indicator` | `data-match` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-state` | 'open' \| 'closed' |
 | `branch-indicator` | `data-truncated` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-value-type` | node?.type |
 | `branch-text` | `data-circular` | ''（条件成立时才出现） |
+| `branch-text` | `data-current` | ''（条件成立时才出现） |
 | `branch-text` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-text` | `data-match` | ''（条件成立时才出现） |
 | `branch-text` | `data-state` | 'open' \| 'closed' |
 | `branch-text` | `data-truncated` | ''（条件成立时才出现） |
 | `branch-text` | `data-value-type` | node?.type |
 | `branch-content` | `data-circular` | ''（条件成立时才出现） |
+| `branch-content` | `data-current` | ''（条件成立时才出现） |
 | `branch-content` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-content` | `data-match` | ''（条件成立时才出现） |
 | `branch-content` | `data-state` | 'open' \| 'closed' |
 | `branch-content` | `data-truncated` | ''（条件成立时才出现） |
 | `branch-content` | `data-value-type` | node?.type |
 | `preview` | `data-circular` | ''（条件成立时才出现） |
+| `preview` | `data-current` | ''（条件成立时才出现） |
 | `preview` | `data-highlighted` | ''（条件成立时才出现） |
+| `preview` | `data-match` | ''（条件成立时才出现） |
 | `preview` | `data-state` | 'open' \| 'closed' |
 | `preview` | `data-truncated` | ''（条件成立时才出现） |
 | `preview` | `data-value-type` | node?.type |
@@ -786,6 +933,11 @@ function toggle(): void {
 | `--xh-json-viewer-indicator-size` | `branch-trigger` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | json-viewer 的 branch-trigger 部件 --xh-icon-size、inline-size 覆盖槽。 |
 | `--xh-json-viewer-key-fg` | `branch-text`<br>`item-key` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 branch-text、item-key 部件 color 覆盖槽。 |
 | `--xh-json-viewer-key-font-weight` | `branch-text`<br>`item-key` | `font-weight` | `default` | `--xh-font-weight-medium` | json-viewer 的 branch-text、item-key 部件 font-weight 覆盖槽。 |
+| `--xh-json-viewer-mark-bg` | `mark` | `background` | `default` | `--xh-bg-brand-subtle` | json-viewer 的 mark 部件 background 覆盖槽。 |
+| `--xh-json-viewer-mark-bg-current` | `branch`<br>`branch-control`<br>`branch-text`<br>`item`<br>`item-key`<br>`item-value`<br>`mark` | `background` | `current` | `--xh-bg-brand` | json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 background 覆盖槽。 |
+| `--xh-json-viewer-mark-fg` | `mark` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 mark 部件 color 覆盖槽。 |
+| `--xh-json-viewer-mark-fg-current` | `branch`<br>`branch-control`<br>`branch-text`<br>`item`<br>`item-key`<br>`item-value`<br>`mark` | `color` | `current` | `--xh-fg-on-brand` | json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 color 覆盖槽。 |
+| `--xh-json-viewer-mark-radius` | `mark` | `border-radius` | `default` | `--xh-shape-inset` | json-viewer 的 mark 部件 border-radius 覆盖槽。 |
 | `--xh-json-viewer-max-h` | `text`<br>`tree` | `max-block-size` | `default` | `--xh-viewport-max-h` | json-viewer 的 text、tree 部件 max-block-size 覆盖槽。 |
 | `--xh-json-viewer-null-fg` | `item-value` | `color` | `value-type=null` | `--xh-fg-subtle` | json-viewer 的 item-value 部件 color 覆盖槽。 |
 | `--xh-json-viewer-number-fg` | `item-value` | `color` | `value-type=number` | `--xh-syntax-number` | json-viewer 的 item-value 部件 color 覆盖槽。 |

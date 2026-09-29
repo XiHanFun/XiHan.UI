@@ -104,13 +104,13 @@ const filtered = computed(() => {
 
 加粗的是必需部件。
 
-`data-scope="combobox"`：`root` · `label` · **`control`** · **`input`** · `trigger` · `clear-trigger` · `positioner` · **`content`** · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `hidden-input`
+`data-scope="combobox"`：`root` · `label` · **`control`** · `tag-list` · **`input`** · `trigger` · `clear-trigger` · `positioner` · **`content`** · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `hidden-input`
 
 ## 示例
 
 ### 多选
 
-选择多个城市
+已选城市在输入框前排成标签
 
 ```vue
 <script setup lang="ts">
@@ -124,6 +124,7 @@ const cities = [
   { value: "london", label: "London 伦敦" },
 ];
 
+const picked = ref<string[]>(["beijing", "chengdu"]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
@@ -133,6 +134,7 @@ const filtered = computed(() => {
 
 <template>
   <XhComboboxRoot
+    v-model:value="picked"
     v-model:input-value="query"
     :collection="filtered"
     clearable
@@ -149,6 +151,10 @@ const filtered = computed(() => {
   <div data-xh-part="root">
     <label data-xh-part="label">常去城市</label>
     <div data-xh-part="control">
+      <!-- 标签行排在输入框之前：可见的几枚由脚本按 tags 渲染，+N 那一枚常挂、由元素填字 -->
+      <span data-xh-part="tag-list">
+        <span data-xh-part="overflow-tag"></span>
+      </span>
       <input data-xh-part="input" />
       <button data-xh-part="trigger"></button>
       <button data-xh-part="clear-trigger"></button>
@@ -180,14 +186,52 @@ const filtered = computed(() => {
 <script type="module">
   const combobox = document.getElementById("combobox-multiple");
   const content = combobox.querySelector('[data-xh-part="content"]');
+  const overflow = combobox.querySelector('[data-xh-part="overflow-tag"]');
   const all = [...content.children];
   const labelOf = (item) => item.querySelector('[data-xh-part="item-text"]').textContent.toLowerCase();
 
+  // 一枚带删除钮的标签：文字包在 tag-label 里，长名字在这一层截断
+  function tagOf(tag) {
+    const el = document.createElement("span");
+    el.setAttribute("data-xh-part", "tag");
+    el.setAttribute("value", tag.value);
+    const label = document.createElement("span");
+    label.setAttribute("data-xh-part", "tag-label");
+    label.textContent = tag.label;
+    const remove = document.createElement("button");
+    remove.setAttribute("data-xh-part", "item-delete-trigger");
+    el.append(label, remove);
+    return el;
+  }
+
+  // 摆得下几枚由组件按 max-tag-count 算好；+N 那一枚常挂，标签插在它前面。
+  // 按值复用已有的节点，只增删变了的那几枚，标签行的进场与退场才落在真正变了的标签上
+  function renderTags() {
+    const current = new Map(
+      [...combobox.querySelectorAll('[data-xh-part="tag-list"] > [data-xh-part="tag"]')].map((el) => [el.getAttribute("value"), el]),
+    );
+    const next = combobox.tags.map((tag) => current.get(tag.value) ?? tagOf(tag));
+    for (const el of current.values()) {
+      if (!next.includes(el))
+        el.remove();
+    }
+    overflow.before(...next);
+  }
+
+  // 受控：写回选中值，等元素把这一轮更新落定再按 tags 重排标签
+  async function select(value) {
+    combobox.value = value;
+    await combobox.updateComplete;
+    renderTags();
+  }
+
+  combobox.addEventListener("value-change", (event) => select(event.detail.value));
   combobox.addEventListener("input-value-change", (event) => {
     const q = event.detail.inputValue.trim().toLowerCase();
     content.replaceChildren(...all.filter((item) => labelOf(item).includes(q)));
   });
 
+  select(["beijing", "chengdu"]);
 </script>
 ```
 
@@ -848,6 +892,95 @@ const filtered = computed(() => {
 </script>
 ```
 
+### 候选虚拟化
+
+过滤后的完整 collection 与 count 同步，高亮仍可跨窗口移动
+
+```vue
+<script setup lang="ts">
+import {
+  XhComboboxContent,
+  XhComboboxControl,
+  XhComboboxEmpty,
+  XhComboboxInput,
+  XhComboboxItem,
+  XhComboboxItemIndicator,
+  XhComboboxItemText,
+  XhComboboxLabel,
+  XhComboboxPositioner,
+  XhComboboxRoot,
+  XhComboboxTrigger,
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
+} from "@xihan-ui/vue";
+import { computed, ref } from "vue";
+
+const cities = Array.from({ length: 1000 }, (_, index) => ({ value: `city-${index + 1}`, label: `城市 ${index + 1}` }));
+const query = ref("");
+const filtered = computed(() => cities.filter(city => city.label.includes(query.value.trim())));
+</script>
+
+<template>
+  <XhVirtualizerRoot v-slot="{ virtualItems, collectionVirtualizer }" :count="filtered.length" :estimate-size="36" :viewport-tab-index="-1">
+    <XhComboboxRoot v-model:input-value="query" :collection="filtered" :virtualizer="collectionVirtualizer" open-on-click placeholder="搜索城市">
+      <XhComboboxLabel>城市</XhComboboxLabel>
+      <XhComboboxControl><XhComboboxInput /><XhComboboxTrigger /></XhComboboxControl>
+      <XhComboboxPositioner>
+        <XhComboboxContent style="overflow: visible; max-block-size: none">
+          <XhVirtualizerViewport style="block-size: 240px">
+            <XhVirtualizerContent>
+              <XhVirtualizerItem v-for="virtualItem in virtualItems" :key="virtualItem.key" :value="virtualItem.index" style="block-size: 36px">
+                <XhComboboxItem :value="filtered[virtualItem.index].value">
+                  <XhComboboxItemText>{{ filtered[virtualItem.index].label }}</XhComboboxItemText>
+                  <XhComboboxItemIndicator />
+                </XhComboboxItem>
+              </XhVirtualizerItem>
+            </XhVirtualizerContent>
+          </XhVirtualizerViewport>
+        </XhComboboxContent>
+        <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
+      </XhComboboxPositioner>
+    </XhComboboxRoot>
+  </XhVirtualizerRoot>
+</template>
+```
+
+```html
+<xh-combobox id="combobox-virtualized" open-on-click placeholder="搜索城市">
+  <div data-xh-part="root">
+    <label data-xh-part="label">城市</label>
+    <div data-xh-part="control"><input data-xh-part="input"><button data-xh-part="trigger"></button></div>
+    <div data-xh-part="positioner"><div data-xh-part="content" style="overflow: visible; max-block-size: none">
+      <xh-virtualizer id="combobox-virtualizer" count="1000" estimate-size="36" viewport-tab-index="-1">
+        <div data-xh-part="root"><div data-xh-part="viewport" style="block-size: 240px"><div data-xh-part="content"></div></div></div>
+      </xh-virtualizer>
+    </div><div data-xh-part="empty">无匹配城市</div></div>
+  </div>
+</xh-combobox>
+
+<script type="module">
+  const combobox = document.getElementById("combobox-virtualized");
+  const virtualizer = document.getElementById("combobox-virtualizer");
+  const content = virtualizer.querySelector('[data-xh-part="content"]');
+  const cities = Array.from({ length: 1000 }, (_, index) => ({ value: `city-${index + 1}`, label: `城市 ${index + 1}` }));
+  combobox.collection = cities;
+  function render(virtualItems) {
+    content.replaceChildren(...virtualItems.map((virtualItem) => {
+      const shell = document.createElement("div"); shell.dataset.xhPart = "item"; shell.setAttribute("value", virtualItem.index); shell.style.blockSize = "36px";
+      const option = document.createElement("div"); option.dataset.xhPart = "item"; option.dataset.xhPartOwner = "combobox"; option.setAttribute("value", cities[virtualItem.index].value);
+      const text = document.createElement("span"); text.dataset.xhPart = "item-text"; text.textContent = cities[virtualItem.index].label;
+      const indicator = document.createElement("span"); indicator.dataset.xhPart = "item-indicator";
+      option.append(text, indicator); shell.append(option); return shell;
+    }));
+    virtualizer.requestUpdate(); combobox.virtualizer = virtualizer.collectionVirtualizer; combobox.requestUpdate();
+  }
+  render(virtualizer.virtualItems);
+  virtualizer.addEventListener("range-change", event => render(event.detail.virtualItems));
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -864,19 +997,22 @@ const filtered = computed(() => {
 ### 特性
 
 - 支持单选、多选、分组和自定义值。
+- 多选的已选项在输入框前排成标签，与[选择器](./select)同一套呈现：超出 `maxTagCount`（默认 3）合并为 `+N`，标签带删除钮，输入串为空时退格删掉最后一个；已选项被筛出候选后标签仍显示选中那一刻的文字。
 - 候选可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 候选可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 输入值、选中值与展开状态均可独立受控。
 - `loading` 与 `empty` 分别表示加载和空结果。
 - 支持自定义过滤、异步候选和自定义条目内容。
+- 候选面板与输入框所在的字段盒等宽，长候选在条目里截断。
 - 通过隐藏输入参与原生表单提交。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
 ### 组合
 
 - 放进[表单字段](./field)获得标签、说明与错误信息，字段状态会接到输入框上。
 - 候选列表是常驻的[列表框](./listbox)收进浮层的形态；选项固定且不需要输入时换成[选择器](./select)。
-- 多选时的已选项可用[标签组](./tag-group)排在输入框前。
+- 长候选列表接入 [Virtualizer](./virtualizer) 时，过滤后的 collection 与 `count` 必须同批更新；高亮、`aria-activedescendant` 与确认仍按完整候选序列计算。
 
 ### 最佳实践
 
@@ -897,7 +1033,7 @@ const filtered = computed(() => {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-combobox>` |
-| Vue 组件 | `XhComboboxClearTrigger` `XhComboboxContent` `XhComboboxControl` `XhComboboxEmpty` `XhComboboxGroup` `XhComboboxGroupLabel` `XhComboboxHiddenInput` `XhComboboxInput` `XhComboboxItem` `XhComboboxItemDescription` `XhComboboxItemIndicator` `XhComboboxItemPrefix` `XhComboboxItemSuffix` `XhComboboxItemText` `XhComboboxLabel` `XhComboboxLoading` `XhComboboxPositioner` `XhComboboxRoot` `XhComboboxTrigger` |
+| Vue 组件 | `XhComboboxClearTrigger` `XhComboboxContent` `XhComboboxControl` `XhComboboxEmpty` `XhComboboxGroup` `XhComboboxGroupLabel` `XhComboboxHiddenInput` `XhComboboxInput` `XhComboboxItem` `XhComboboxItemDeleteTrigger` `XhComboboxItemDescription` `XhComboboxItemIndicator` `XhComboboxItemPrefix` `XhComboboxItemSuffix` `XhComboboxItemText` `XhComboboxLabel` `XhComboboxLoading` `XhComboboxOverflowTag` `XhComboboxPositioner` `XhComboboxRoot` `XhComboboxTag` `XhComboboxTagLabel` `XhComboboxTagList` `XhComboboxTrigger` |
 | 组合式函数 | `useCombobox` |
 | 状态机 | `comboboxMachine` |
 | 皮肤 | `@xihan-ui/styles/combobox.css` |
@@ -907,6 +1043,7 @@ const filtered = computed(() => {
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `ComboboxNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍由调用方完成：传入的即当前应显示的候选。 提供后条目部件只需声明 value，显示文本也不再从 DOM 查询。 未提供时回到文本写在条目中、从 DOM 查询的方式。 |
+| `virtualizer` | `CollectionVirtualizer` |  | 当前已过滤 collection 与 Virtualizer 的滚动桥；count 必须与 collection.length 一致。 |
 | `value` | `string \| string[]` |  | 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选写为裸串是简写，内部一律归一为数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `inputValue` | `string` |  | 输入框中的字符串。提供即受控，与选中值各自独立。 过滤不由组件完成：调用方用该串筛选条目，把筛选结果重新渲染进来。 |
@@ -915,7 +1052,8 @@ const filtered = computed(() => {
 | `defaultOpen` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；hidden-input 按选中值逐个生成同名字段，不使用分隔符编码。 |
 | `form` | `string` |  | 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 |
-| `multiple` | `boolean` |  |  |
+| `multiple` | `boolean` |  | 多选：选中为集合，选中后列表不收起、输入串清空以便继续筛选；已选项在输入框前排成标签。 |
+| `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 |
 | `disabled` | `boolean` |  | 整个控件禁用：输入框与两个按钮都使用原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：文字可选可复制，但展开、选中、清空一概不发生。 |
 | `invalid` | `boolean` |  | 校验失败：输入框报告 aria-invalid，各角色节点带 data-invalid。 |
@@ -989,6 +1127,7 @@ const filtered = computed(() => {
 | `XhComboboxRoot` | `renderItemPrefix` | `(node: ComboboxNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
 | `XhComboboxRoot` | `renderItemSuffix` | `(node: ComboboxNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
 | `XhComboboxRoot` | `children` | `SlotChildren<ComboboxRootSlotProps>` |  |  |
+| `XhComboboxTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
 
 ### 状态
 
@@ -1015,7 +1154,7 @@ const filtered = computed(() => {
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ESCAPE` · `INPUT.CHANGE` · `INPUT.SET` · `INPUT.BLUR` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.SELECT` · `VALUE.COMMIT` · `VALUE.SET` · `VALUE.CLEAR` · `ITEMS.SYNC` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ESCAPE` · `INPUT.CHANGE` · `INPUT.SET` · `INPUT.BLUR` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.SELECT` · `VALUE.COMMIT` · `VALUE.SET` · `VALUE.CLEAR` · `ITEMS.SYNC` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `TAG_LIST.TRACKED`
 
 **判据**：`isOpenControlled` · `isMultiple` · `hasHighlight` · `canPress`
 
@@ -1037,14 +1176,23 @@ const filtered = computed(() => {
 | `invalid` | `boolean` |  |
 | `empty` | `boolean` | 候选为空（已结算且条数为 0）且当前展开：empty 角色节点据此显示。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `tags` | `ComboboxTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组，选中项的文字在输入框里。 |
+| `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `setInputValue` | `(next: string) => void` |  |
 | `clear` | `() => void` |  |
+| `deselect` | `(value: string) => void` | 移除一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
+| `getTagListProps` | `() => T['element']` | 标签行：放在盒里、输入框之前，收纳可见标签与 +N 标签；单选或无选中时整体 hidden。 |
+| `getTagProps` | `(props: ComboboxTagProps) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生，另带 data-value 记录代表的值。 |
+| `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 |
+| `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
+| `getItemDeleteTriggerProps` | `(props: ComboboxTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem， 禁用与只读时保留位置、原生 disabled。不占 Tab 位，按下不夺焦：焦点留在输入框，键盘用退格删掉最后一个。 |
 | `getInputProps` | `(props?: ComboboxInputProps) => T['input']` | 不传参即单行 input，产出与增加此参数前逐字相同。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
@@ -1083,7 +1231,7 @@ const filtered = computed(() => {
 | `Escape` | open | 先清除高亮；高亮已空时才收起列表，选中值不变 |
 | `Alt+ArrowUp` | open | 收起列表，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 收起列表且不拦按键，焦点按 Tab 序列自然离开 |
-| `Backspace` | multiple, 输入串为空且已有选中 | 删掉最后一个已选项 |
+| `Backspace` | multiple, 输入串为空且已有选中 | 删掉最后一个已选项，它的标签在原处淡出；标签里的删除钮不占 Tab 位，键盘走这一条 |
 | `可打印字符` | focus in input | 改写输入串并展开列表；过滤由调用方按 onInputValueChange 自己做 |
 
 ### ARIA
@@ -1124,6 +1272,8 @@ const filtered = computed(() => {
 
 `@xihan-ui/styles/combobox.css` 使用 `[data-scope="combobox"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -1146,6 +1296,9 @@ const filtered = computed(() => {
 | `control` | `data-variant` | props.variant |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
+| `tag-list` | `data-disabled` | ''（条件成立时才出现） |
+| `tag-list` | `data-instant` | ''（条件成立时才出现） |
+| `tag-list` | `data-xh-tag-list` | '' |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |
@@ -1174,6 +1327,7 @@ const filtered = computed(() => {
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
 | `positioner` | `data-variant` | props.variant |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-xh-material` | 'frosted' |
@@ -1206,7 +1360,11 @@ const filtered = computed(() => {
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `empty` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-xh-loading-ring` | '' |
+| `overflow-tag` | `data-count` | String(overflowCount) |
+| `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -1229,10 +1387,10 @@ const filtered = computed(() => {
 | `--xh-combobox-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | combobox 的 content 部件 color 覆盖槽。 |
 | `--xh-combobox-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | combobox 的 content 部件 gap 覆盖槽。 |
 | `--xh-combobox-content-highlight` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-highlight` | combobox 的 content 部件 background 覆盖槽。 |
-| `--xh-combobox-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | combobox 的 content 部件 max-block-size 覆盖槽。 |
-| `--xh-combobox-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | combobox 的 content 部件 max-inline-size 覆盖槽。 |
+| `--xh-combobox-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | combobox 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-combobox-content-max-w` | `content` | `max-inline-size` | `default` | `none` | combobox 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-combobox-content-min-h` | `content` | `min-block-size` | `default` | `--xh-_combobox-h` | combobox 的 content 部件 min-block-size 覆盖槽。 |
-| `--xh-combobox-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` | combobox 的 content 部件 min-inline-size 覆盖槽。 |
+| `--xh-combobox-content-min-w` | `content` | `inline-size` | `default` | `--xh-overlay-menu-min-w` | combobox 的 content 部件 inline-size 覆盖槽。 |
 | `--xh-combobox-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | combobox 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | combobox 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | combobox 的 content 部件 border-radius 覆盖槽。 |
@@ -1255,14 +1413,14 @@ const filtered = computed(() => {
 | `--xh-combobox-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | combobox 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-combobox-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 empty 部件 color 覆盖槽。 |
 | `--xh-combobox-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 empty 部件 font-size 覆盖槽。 |
-| `--xh-combobox-empty-px` | `empty` | `padding-inline` | `default` | `--xh-control-px-md` | combobox 的 empty 部件 padding-inline 覆盖槽。 |
+| `--xh-combobox-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | combobox 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-gap` | `root` | `gap` | `default` | `--xh-space-1` | combobox 的 root 部件 gap 覆盖槽。 |
 | `--xh-combobox-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | combobox 的 group 部件 gap 覆盖槽。 |
 | `--xh-combobox-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 group-label 部件 color 覆盖槽。 |
 | `--xh-combobox-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | combobox 的 group-label 部件 font-size 覆盖槽。 |
 | `--xh-combobox-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | combobox 的 group-label 部件 font-weight 覆盖槽。 |
-| `--xh-combobox-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-control-px-md` | combobox 的 group-label 部件 padding-inline 覆盖槽。 |
+| `--xh-combobox-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | combobox 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-group-spacing` | `group` | `margin-block-start` | `default` | `--xh-space-1_5` | combobox 的 group 部件 margin-block-start 覆盖槽。 |
 | `--xh-combobox-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | combobox 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
@@ -1270,6 +1428,7 @@ const filtered = computed(() => {
 | `--xh-combobox-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | combobox 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-combobox-input-fg` | `input` | `color` | `xh-field-input` | `--xh-combobox-control-fg` | combobox 的 input 部件 color 覆盖槽。 |
 | `--xh-combobox-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_combobox-font-size` | combobox 的 input 部件 font-size 覆盖槽。 |
+| `--xh-combobox-input-min-w` | `input` | `min-inline-size` | `default` | `--xh-control-input-min-w` | combobox 的 input 部件 min-inline-size 覆盖槽。 |
 | `--xh-combobox-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | combobox 的 item 部件 background-color 覆盖槽。 |
 | `--xh-combobox-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | combobox 的 item 部件 background-color 覆盖槽。 |
 | `--xh-combobox-item-check-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-combobox-item-indicator-fg` | combobox 的 item 部件 color 覆盖槽。 |
@@ -1283,7 +1442,7 @@ const filtered = computed(() => {
 | `--xh-combobox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | combobox 的 item 部件 line-height 覆盖槽。 |
 | `--xh-combobox-item-px` | `item` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-item-py` | `item` | `padding-block` | `default` | `--xh-_combobox-item-py` | combobox 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-combobox-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | combobox 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-combobox-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | combobox 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-combobox-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | combobox 的 label 部件 color 覆盖槽。 |
 | `--xh-combobox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | combobox 的 label 部件 color 覆盖槽。 |
 | `--xh-combobox-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | combobox 的 label 部件 font-size 覆盖槽。 |
@@ -1291,16 +1450,17 @@ const filtered = computed(() => {
 | `--xh-combobox-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | combobox 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-combobox-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 loading 部件 color 覆盖槽。 |
 | `--xh-combobox-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 loading 部件 font-size 覆盖槽。 |
-| `--xh-combobox-loading-px` | `loading` | `padding-inline` | `default` | `--xh-control-px-md` | combobox 的 loading 部件 padding-inline 覆盖槽。 |
+| `--xh-combobox-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | combobox 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | combobox 的 input 部件 color 覆盖槽。 |
+| `--xh-combobox-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | combobox 的 tag-list 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

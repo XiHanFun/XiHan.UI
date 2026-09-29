@@ -422,6 +422,62 @@ import { XhAvatarFallback, XhAvatarRoot, XhBadge, XhButton } from "@xihan-ui/vue
 </div>
 ```
 
+### 偏移
+
+离角多远用两个组件槽微调，不设 prop：圆形头像角上留白多，把状态点往里收一点才贴得住轮廓
+
+```vue
+<script setup lang="ts">
+import { XhAvatarFallback, XhAvatarRoot, XhBadge } from "@xihan-ui/vue";
+
+// 正值朝行内末端、块末端挪；贴在右下角的点往里收就是两个负值
+const inward = { "--xh-badge-offset-inline": "-4px", "--xh-badge-offset-block": "-4px" };
+</script>
+
+<template>
+  <div style="display: flex; align-items: center; gap: 24px">
+    <XhBadge dot tone="success" placement="bottom-end" label="在线">
+      <XhAvatarRoot>
+        <XhAvatarFallback>默</XhAvatarFallback>
+      </XhAvatarRoot>
+    </XhBadge>
+
+    <XhBadge dot tone="success" placement="bottom-end" label="在线" :style="inward">
+      <XhAvatarRoot>
+        <XhAvatarFallback>收</XhAvatarFallback>
+      </XhAvatarRoot>
+    </XhBadge>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; align-items: center; gap: 24px">
+  <xh-badge dot tone="success" placement="bottom-end" label="在线">
+    <span data-xh-part="root">
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">默</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="indicator"></span>
+    </span>
+  </xh-badge>
+
+  <!-- 正值朝行内末端、块末端挪；贴在右下角的点往里收就是两个负值 -->
+  <xh-badge dot tone="success" placement="bottom-end" label="在线" style="--xh-badge-offset-inline: -4px; --xh-badge-offset-block: -4px">
+    <span data-xh-part="root">
+      <xh-avatar>
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">收</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="indicator"></span>
+    </span>
+  </xh-badge>
+</div>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -443,8 +499,10 @@ import { XhAvatarFallback, XhAvatarRoot, XhBadge, XhButton } from "@xihan-ui/vue
 - 语气与尺寸两轴与其他组件同源；角标只有一种形态，没有形态轴。
 - 默认使用 neutral；未读、错误等强提醒显式使用 danger。
 - `placement` 决定挂在哪个角，四角可选，跟随文字方向。
+- 离角多远由两个组件槽微调，不设 prop：`--xh-badge-offset-inline` 与 `--xh-badge-offset-block`，正值朝行内末端、块末端挪（RTL 下行内末端在左），四个角同一个值朝同一个方向；圆形头像这类角上留白多的宿主往里收一点即可。
 - `count` 输出数字，超过 `max`（默认 99）时显示为“99+”。
 - 计数为 0 时整个收起，需要显示 0 时开启 `showZero`。
+- 计数从无到有时原地弹出，清零时缩小淡出、播完才收起，退场途中仍显示清零前的数字；首帧就在的角标直接呈现。
 - `dot` 收成一个圆点，只表示存在，不表示数量。
 - 计数盒三档最小尺寸为 14 / 20 / 24px，字号为 12 / 13 / 14px，角标只探出宿主四分之一，保持与宿主的视觉连接；sm 是贴在图标按钮角上的小号。
 - `label` 为读屏提供完整语句，避免只读出一个数字。
@@ -473,7 +531,7 @@ import { XhAvatarFallback, XhAvatarRoot, XhBadge, XhButton } from "@xihan-ui/vue
 | --- | --- |
 | 自定义元素 | `<xh-badge>` |
 | Vue 组件 | `XhBadge` `XhBadgeIndicator` `XhBadgeRoot` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `badgeMachine` |
 | 皮肤 | `@xihan-ui/styles/badge.css` |
 
 ### Props
@@ -506,6 +564,20 @@ import { XhAvatarFallback, XhAvatarRoot, XhBadge, XhButton } from "@xihan-ui/vue
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhBadgeIndicator` | `children` | `SlotChildren<BadgeIndicatorSlotProps>` |  |  |
+
+### 状态
+
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `indicator` | 'visible' \| 'hidden' |
+
+以下名称仅用于内部状态机。
+
+**状态**：`idle`
+
+**事件**：`INDICATOR.RENDERED`
 
 ### connect API
 
@@ -549,9 +621,11 @@ import { XhAvatarFallback, XhAvatarRoot, XhBadge, XhButton } from "@xihan-ui/vue
 | --- | --- | --- |
 | `root` | `data-placement` | props.placement |
 | `indicator` | `data-dot` | ''（条件成立时才出现） |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-placement` | props.placement |
 | `indicator` | `data-pulse` | ''（条件成立时才出现） |
 | `indicator` | `data-size` | props.size |
+| `indicator` | `data-state` | 'visible' \| 'hidden' |
 | `indicator` | `data-tone` | props.tone |
 
 <!-- xh-component-tokens:start -->
@@ -568,6 +642,8 @@ import { XhAvatarFallback, XhAvatarRoot, XhBadge, XhButton } from "@xihan-ui/vue
 | `--xh-badge-font-size` | `indicator` | `font-size` | `default` | `--xh-_badge-font` | badge 的 indicator 部件 font-size 覆盖槽。 |
 | `--xh-badge-font-weight` | `indicator` | `font-weight` | `default` | `--xh-font-weight-medium` | badge 的 indicator 部件 font-weight 覆盖槽。 |
 | `--xh-badge-min-size` | `indicator` | `block-size`<br>`min-inline-size` | `default` | `--xh-_badge-min` | badge 的 indicator 部件 block-size、min-inline-size 覆盖槽。 |
+| `--xh-badge-offset-block` | `indicator` | `inset-block-end`<br>`inset-block-start` | `placement=bottom-end`<br>`placement=bottom-start`<br>`placement=top-end`<br>`placement=top-start` | `--xh-space-0` | badge 的 indicator 部件 inset-block-end、inset-block-start 覆盖槽。 |
+| `--xh-badge-offset-inline` | `indicator` | `inset-inline-end`<br>`inset-inline-start` | `placement=bottom-end`<br>`placement=bottom-start`<br>`placement=top-end`<br>`placement=top-start` | `--xh-space-0` | badge 的 indicator 部件 inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-badge-px` | `indicator` | `padding-inline` | `default` | `--xh-_badge-px` | badge 的 indicator 部件 padding-inline 覆盖槽。 |
 | `--xh-badge-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | badge 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-badge-ring` | `indicator` | `border` | `default` | `--xh-bg-surface` | badge 的 indicator 部件 border 覆盖槽。 |
@@ -575,9 +651,9 @@ import { XhAvatarFallback, XhAvatarRoot, XhBadge, XhButton } from "@xihan-ui/vue
 
 ### 动效
 
-动效角色：循环（见[动效规范](../design/motion#角色)）。
+动效角色：出现（锚定面板） · 出现（无锚定弹出） · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-breathe` · `xh-breathe-halo` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

@@ -1792,6 +1792,236 @@ function onValueChange(details: { value: string[] }) {
 </script>
 ```
 
+### 准入判定
+
+validate 逐个判定新标签，返回拒绝码即拒收：这一次提交整体不生效、文本留在框里改；tag-reject 报告拒收的标签与原因，重复的照常消费但也会报
+
+```vue
+<script setup lang="ts">
+import {
+  XhTagsInputControl,
+  XhTagsInputInput,
+  XhTagsInputItem,
+  XhTagsInputItemDeleteTrigger,
+  XhTagsInputItemPreview,
+  XhTagsInputItemText,
+  XhTagsInputLabel,
+  XhTagsInputRoot,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const reasonText: Record<string, string> = {
+  "duplicate": "已经在列表里",
+  "invalid-email": "不是邮箱地址",
+};
+
+const hint = ref("");
+
+function validate(tag: string): string | null {
+  return /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(tag) ? null : "invalid-email";
+}
+
+function onTagReject(details: { tags: { tag: string; reasons: string[] }[] }) {
+  hint.value = details.tags
+    .map(({ tag, reasons }) => `${tag}：${reasons.map(r => reasonText[r] ?? r).join("、")}`)
+    .join("；");
+}
+</script>
+
+<template>
+  <XhTagsInputRoot
+    v-slot="{ value }"
+    :default-value="['ada@example.com']"
+    :validate="validate"
+    placeholder="输入邮箱后回车"
+    style="max-inline-size: 420px"
+    @tag-reject="onTagReject"
+    @value-change="hint = ''"
+  >
+    <XhTagsInputLabel>收件人</XhTagsInputLabel>
+    <XhTagsInputControl>
+      <XhTagsInputItem v-for="t in value" :key="t" :value="t">
+        <XhTagsInputItemPreview>
+          <XhTagsInputItemText>{{ t }}</XhTagsInputItemText>
+          <XhTagsInputItemDeleteTrigger />
+        </XhTagsInputItemPreview>
+      </XhTagsInputItem>
+      <XhTagsInputInput />
+    </XhTagsInputControl>
+  </XhTagsInputRoot>
+  <p v-if="hint" style="color: var(--xh-fg-danger)">{{ hint }}</p>
+</template>
+```
+
+```html
+<xh-tags-input id="tags-input-validate" default-value="ada@example.com" placeholder="输入邮箱后回车">
+  <div data-xh-part="root" style="max-inline-size: 420px">
+    <label data-xh-part="label">收件人</label>
+    <div data-xh-part="control">
+      <div data-xh-part="item" value="ada@example.com">
+        <div data-xh-part="item-preview">
+          <span data-xh-part="item-text">ada@example.com</span>
+          <button data-xh-part="item-delete-trigger"></button>
+        </div>
+      </div>
+      <input data-xh-part="input" />
+    </div>
+  </div>
+</xh-tags-input>
+<p id="tags-input-validate-hint" style="color: var(--xh-fg-danger)"></p>
+
+<script type="module">
+  const root = document.getElementById("tags-input-validate");
+  const control = root.querySelector('[data-xh-part="control"]');
+  const input = control.querySelector('[data-xh-part="input"]');
+  const hint = document.getElementById("tags-input-validate-hint");
+
+  const reasonText = {
+    "duplicate": "已经在列表里",
+    "invalid-email": "不是邮箱地址",
+  };
+
+  root.validate = (tag) =>
+    /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(tag) ? null : "invalid-email";
+
+  root.addEventListener("tag-reject", (event) => {
+    hint.textContent = event.detail.tags
+      .map(
+        ({ tag, reasons }) =>
+          `${tag}：${reasons.map((r) => reasonText[r] ?? r).join("、")}`
+      )
+      .join("；");
+  });
+
+  // 一个标签一个节点：外壳带 value 标识身份，里面是文本与删除按钮
+  function createTag(value) {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.setAttribute("value", value);
+    const preview = document.createElement("div");
+    preview.dataset.xhPart = "item-preview";
+    const text = document.createElement("span");
+    text.dataset.xhPart = "item-text";
+    text.textContent = value;
+    const remove = document.createElement("button");
+    remove.dataset.xhPart = "item-delete-trigger";
+    preview.append(text, remove);
+    item.append(preview);
+    return item;
+  }
+
+  // 按当前值增删标签节点，已经在的那份原地留着
+  root.addEventListener("value-change", (event) => {
+    const values = event.detail.value;
+    hint.textContent = "";
+    const alive = new Map();
+    for (const el of control.querySelectorAll('[data-xh-part="item"]')) {
+      alive.set(el.getAttribute("value"), el);
+    }
+    for (const [value, el] of alive) {
+      if (!values.includes(value)) el.remove();
+    }
+    for (const value of values) {
+      if (!alive.has(value)) control.insertBefore(createTag(value), input);
+    }
+  });
+</script>
+```
+
+### 一组断词符
+
+delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号、分号都行，粘贴多行清单时换行也算；随表单提交的整串用第一个拼接
+
+```vue
+<script setup lang="ts">
+import {
+  XhTagsInputControl,
+  XhTagsInputInput,
+  XhTagsInputItem,
+  XhTagsInputItemDeleteTrigger,
+  XhTagsInputItemPreview,
+  XhTagsInputItemText,
+  XhTagsInputLabel,
+  XhTagsInputRoot,
+} from "@xihan-ui/vue";
+
+const delimiters = [",", "，", ";", "\n"];
+</script>
+
+<template>
+  <XhTagsInputRoot
+    v-slot="{ value }"
+    :delimiter="delimiters"
+    add-on-paste
+    placeholder="试试输入 北京，上海;广州"
+    style="max-inline-size: 420px"
+  >
+    <XhTagsInputLabel>城市</XhTagsInputLabel>
+    <XhTagsInputControl>
+      <XhTagsInputItem v-for="t in value" :key="t" :value="t">
+        <XhTagsInputItemPreview>
+          <XhTagsInputItemText>{{ t }}</XhTagsInputItemText>
+          <XhTagsInputItemDeleteTrigger />
+        </XhTagsInputItemPreview>
+      </XhTagsInputItem>
+      <XhTagsInputInput />
+    </XhTagsInputControl>
+  </XhTagsInputRoot>
+</template>
+```
+
+```html
+<xh-tags-input id="tags-input-delimiters" add-on-paste placeholder="试试输入 北京，上海;广州">
+  <div data-xh-part="root" style="max-inline-size: 420px">
+    <label data-xh-part="label">城市</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" />
+    </div>
+  </div>
+</xh-tags-input>
+
+<script type="module">
+  const root = document.getElementById("tags-input-delimiters");
+  const control = root.querySelector('[data-xh-part="control"]');
+  const input = control.querySelector('[data-xh-part="input"]');
+
+  // 一组断词符只能走 property：属性里写不下数组
+  root.delimiter = [",", "，", ";", "\n"];
+
+  // 一个标签一个节点：外壳带 value 标识身份，里面是文本与删除按钮
+  function createTag(value) {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.setAttribute("value", value);
+    const preview = document.createElement("div");
+    preview.dataset.xhPart = "item-preview";
+    const text = document.createElement("span");
+    text.dataset.xhPart = "item-text";
+    text.textContent = value;
+    const remove = document.createElement("button");
+    remove.dataset.xhPart = "item-delete-trigger";
+    preview.append(text, remove);
+    item.append(preview);
+    return item;
+  }
+
+  // 按当前值增删标签节点，已经在的那份原地留着
+  root.addEventListener("value-change", (event) => {
+    const values = event.detail.value;
+    const alive = new Map();
+    for (const el of control.querySelectorAll('[data-xh-part="item"]')) {
+      alive.set(el.getAttribute("value"), el);
+    }
+    for (const [value, el] of alive) {
+      if (!values.includes(value)) el.remove();
+    }
+    for (const value of values) {
+      if (!alive.has(value)) control.insertBefore(createTag(value), input);
+    }
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -1806,7 +2036,9 @@ function onValueChange(details: { value: string[] }) {
 
 ### 特性
 
-- `delimiter` 与 `addOnPaste` 一起处理粘贴拆分。
+- `delimiter` 与 `addOnPaste` 一起处理粘贴拆分；`delimiter` 给一组时其中任何一个都断词（如半角与全角逗号），提交串用第一个。
+- `validate` 逐个判定新标签，返回拒绝码即拒收：这一次提交整体不生效、文本留在框里；拒收的标签连同原因（重复、放不下或自定义码）经 `onTagReject` 报告。
+- 标签是一个集合：已有的标签再输入一次照常被消费、值不变，只报一笔 `duplicate`。
 - 每个标签都是库内的 tag：预览、文字与删除按钮就是它的 root、label 与 close-trigger，语气与尺寸随控件，形态按控件的面派生。
 - `editable` 让已有标签双击就地修改。
 - `max` 与 `allowOverflow` 成对：超出上限时拒绝还是标记。
@@ -1858,7 +2090,8 @@ function onValueChange(details: { value: string[] }) {
 | `showCount` | `boolean` |  | 显示计数部件：关闭时 count 部件带 hidden 收起。 |
 | `name` | `string` |  | 表单字段名；提供后 hidden-input 才带 name，此时整份标签按 delimiter 拼接为一串提交。 |
 | `placeholder` | `string` |  |  |
-| `delimiter` | `string` |  | 断词符，默认逗号。输入它即断词为标签，粘贴时也按它拆分。 显式提供空串即关闭断词：此时只有 Enter 能把文本变为标签。 |
+| `delimiter` | `string \| string[]` |  | 断词符，默认逗号。输入它即断词为标签，粘贴时也按它拆分。 给一组即任何一个都断词（如 [',', '，', ';']），hidden-input 拼串用第一个。 显式提供空串或空数组即关闭断词：此时只有 Enter 能把文本变为标签。 |
+| `validate` | `(tag: string, context: TagsInputValidateContext) => string \| string[] \| null \| undefined` |  | 作者的准入判定：用户提交的每个新标签（Enter、断词、粘贴、失焦加入、addValue 与就地编辑）逐个调用， 返回拒绝码（一个或一组）即拒收；返回 null / undefined / 空数组即放行。 有一个被拒这一次提交就整体不生效，文本原样留在框里（就地编辑则留在编辑框里），拒收的连同码一起进 onTagReject。 setValue 的整份替换不经过它。应为纯函数：粘贴时会先判一次决定接不接管。 |
 | `addOnPaste` | `boolean` |  | 粘贴时接管：按 delimiter 拆分为多个标签。默认关闭（交给浏览器照常粘贴进框中）。 |
 | `editable` | `boolean` |  | 允许双击标签就地修改。默认关闭。 |
 | `blurBehavior` | `TagsInputBlurBehavior \| null` |  | 焦点离开整个组件时输入框中残留文本的处置方式。 |
@@ -1868,6 +2101,7 @@ function onValueChange(details: { value: string[] }) {
 | `translations` | `Partial<TagsInputTranslations>` |  |  |
 | `onValueChange` | `(details: TagsInputValueChangeDetails) => void` |  |  |
 | `onInputValueChange` | `(details: TagsInputInputValueChangeDetails) => void` |  |  |
+| `onTagReject` | `(details: TagsInputTagRejectDetails) => void` |  | 提交里有标签没进集合：重复（照常消费）、到了上限或被 validate 拒收，逐个报告原因。 |
 
 ### 事件
 
@@ -1877,6 +2111,7 @@ function onValueChange(details: { value: string[] }) {
 | --- | --- | --- |
 | `value-change` | `TagsInputValueChangeDetails` | 标签集合变化；detail 为 `{ value: string[] }` |
 | `input-value-change` | `TagsInputInputValueChangeDetails` | 输入文本变化；detail 为 `{ inputValue: string }` |
+| `tag-reject` | `TagsInputTagRejectDetails` | 提交里有标签没进集合（重复、到了上限或被 validate 拒收）；detail 为 `{ tags: { tag, reasons }[] }` |
 
 ### 插槽
 
@@ -1905,7 +2140,7 @@ function onValueChange(details: { value: string[] }) {
 
 **事件**：`VALUE.SET` · `TAG.ADD` · `VALUE.CLEAR` · `INPUT.CHANGE` · `INPUT.COMMIT` · `INPUT.BLUR` · `TAG.HIGHLIGHT` · `TAG.DELETE` · `TAG.EDIT` · `EDIT.CHANGE` · `EDIT.SUBMIT` · `EDIT.CANCEL` · `ITEM.FOCUS_LOST` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED`
 
-**判据**：`canEdit` · `canEditTag` · `canDeleteWithPrev` · `hasHighlightTarget` · `canPress`
+**判据**：`canEdit` · `canEditTag` · `canDeleteWithPrev` · `hasHighlightTarget` · `canPress` · `isEditRejected` · `isBlurEditRejected`
 
 ### connect API
 
@@ -1929,7 +2164,7 @@ function onValueChange(details: { value: string[] }) {
 | `editedValue` | `string \| null` | 正被就地改写的标签；不在编辑态时为 null。 |
 | `canClear` | `boolean` | 清空按钮当前是否可用（可编辑，且标签或输入文本至少有一项）。 |
 | `setValue` | `(next: string[]) => void` | 整份替换，去重去空白，不受 max 约束。 |
-| `addValue` | `(next: string) => void` | 追加一个标签，受 max 与 allowOverflow 约束。 |
+| `addValue` | `(next: string) => void` | 追加一个标签，受 max、allowOverflow 与 validate 约束。 |
 | `deleteValue` | `(value: string) => void` |  |
 | `clear` | `() => void` |  |
 | `setInputValue` | `(next: string) => void` |  |
@@ -1956,8 +2191,8 @@ function onValueChange(details: { value: string[] }) {
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `Enter` | focus in input, 框里有能成标签的内容, not disabled/readOnly | 把输入框里的文本变成标签（含 delimiter 时一次进多个）；框里只有空白时不接管，Enter 留给表单提交 |
-| `delimiter（默认 ,）` | focus in input, not disabled/readOnly | 断词：分隔符之前的每一段各成一个标签，最后一段留在框里接着打 |
+| `Enter` | focus in input, 框里有能成标签的内容, not disabled/readOnly | 把输入框里的文本变成标签（含 delimiter 时一次进多个）；有一个被 validate 拒收或放不下就整体不生效、文本留在框里。框里只有空白时不接管，Enter 留给表单提交 |
+| `delimiter（默认 ,，可给一组）` | focus in input, not disabled/readOnly | 断词：分隔符之前的每一段各成一个标签，最后一段留在框里接着打；被拒时整段原样留在框里 |
 | `Backspace` | 输入框为空且没有标签被高亮, 至少有一个标签 | 高亮最后一个标签（这一下不删任何东西） |
 | `Backspace` | 输入框为空且已有标签被高亮 | 删掉高亮的标签，光标落到前一个上；删的是第一个就交回输入框 |
 | `Delete` | 已有标签被高亮 | 同上，删掉高亮的标签 |
@@ -1967,7 +2202,7 @@ function onValueChange(details: { value: string[] }) {
 | `End` | 已有标签被高亮 | 交回输入框 |
 | `Escape` | 已有标签被高亮 | 取消高亮，光标交回输入框；没在标签间走时不接管该键 |
 | `Enter` | 已有标签被高亮, editable 开启 | 就地编辑这个标签，焦点进编辑框并整段选中 |
-| `Enter` | focus in item-input（就地编辑中） | 提交改写；改成空白等于删掉这个标签，改成另一个已有标签则并成一个。焦点交回输入框 |
+| `Enter` | focus in item-input（就地编辑中） | 提交改写；改成空白等于删掉这个标签，改成另一个已有标签则并成一个。焦点交回输入框；被 validate 拒收时留在编辑框里 |
 | `Escape` | focus in item-input（就地编辑中） | 撤销这次改写，标签保持原样，焦点交回输入框 |
 | `Enter` / `Space` | held in clear-trigger, 有标签或框里有文本, not disabled/readOnly | 按住期间清空按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，清空后按钮藏起一并撤下。清空按钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面 |
 
@@ -1992,6 +2227,8 @@ function onValueChange(details: { value: string[] }) {
 ### 皮肤
 
 `@xihan-ui/styles/tags-input.css` 使用 `[data-scope="tags-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 
@@ -2079,7 +2316,7 @@ function onValueChange(details: { value: string[] }) {
 | `--xh-tags-input-count-fg` | `count` | `color` | `default` | `--xh-fg-muted` | tags-input 的 count 部件 color 覆盖槽。 |
 | `--xh-tags-input-count-fg-at-max` | `count` | `color` | `at-max` | `--xh-fg-warning` | tags-input 的 count 部件 color 覆盖槽。 |
 | `--xh-tags-input-count-fg-disabled` | `count` | `color` | `disabled` | `--xh-fg-disabled` | tags-input 的 count 部件 color 覆盖槽。 |
-| `--xh-tags-input-count-font-size` | `count` | `font-size` | `default` | `--xh-_tags-input-item-font-size` | tags-input 的 count 部件 font-size 覆盖槽。 |
+| `--xh-tags-input-count-font-size` | `count` | `font-size` | `default` | `--xh-text-caption-size` | tags-input 的 count 部件 font-size 覆盖槽。 |
 | `--xh-tags-input-gap` | `root` | `gap` | `default` | `--xh-space-1` | tags-input 的 root 部件 gap 覆盖槽。 |
 | `--xh-tags-input-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tags-input 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tags-input-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | tags-input 的 input 部件 box-shadow 覆盖槽。 |
@@ -2087,7 +2324,7 @@ function onValueChange(details: { value: string[] }) {
 | `--xh-tags-input-input-basis` | `input` | `flex-basis` | `default` | `6rem` | tags-input 的 input 部件 flex-basis 覆盖槽。 |
 | `--xh-tags-input-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | tags-input 的 input 部件 color 覆盖槽。 |
 | `--xh-tags-input-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_tags-input-input-font-size` | tags-input 的 input 部件 font-size 覆盖槽。 |
-| `--xh-tags-input-input-min-w` | `input` | `min-inline-size` | `default` | `4rem` | tags-input 的 input 部件 min-inline-size 覆盖槽。 |
+| `--xh-tags-input-input-min-w` | `input` | `min-inline-size` | `default` | `--xh-control-input-min-w` | tags-input 的 input 部件 min-inline-size 覆盖槽。 |
 | `--xh-tags-input-item-bg-highlight` | `item`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-_tags-input-accent` | tags-input 的 item、root 部件 background 覆盖槽。 |
 | `--xh-tags-input-item-fg-highlight` | `item`<br>`root` | `color` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-_tags-input-accent-fg` | tags-input 的 item、root 部件 color 覆盖槽。 |
 | `--xh-tags-input-item-font-size` | `item-input` | `font-size` | `default` | `--xh-_tags-input-item-font-size` | tags-input 的 item-input 部件 font-size 覆盖槽。 |
@@ -2106,9 +2343,9 @@ function onValueChange(details: { value: string[] }) {
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -59,8 +59,8 @@ const messages = [
 
 ```html
 <!-- 键盘：Tab 进来落在第一条，PageDown / PageUp 在消息之间走，Ctrl+End 一步走到流外 -->
-<xh-message-feed count="4" style="block-size: 260px">
-  <div data-xh-part="root">
+<xh-message-feed count="4">
+  <div data-xh-part="root" style="block-size: 260px">
     <div data-xh-part="viewport">
       <div data-xh-part="list">
         <article data-xh-part="item" item-id="m1" item-index="0" item-role="user">
@@ -90,7 +90,7 @@ const messages = [
 
 加粗的是必需部件。
 
-`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `pending-indicator` · `scroll-to-end-trigger` · `live-region`
+`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `separator` · `pending-indicator` · `scroll-to-end-trigger` · `unread-count` · `live-region`
 
 ## 示例
 
@@ -158,8 +158,8 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 ```
 
 ```html
-<xh-message-feed id="message-feed-sticky" count="1" status="streaming" style="block-size: 220px">
-  <div data-xh-part="root">
+<xh-message-feed id="message-feed-sticky" count="1" status="streaming">
+  <div data-xh-part="root" style="block-size: 220px">
     <div data-xh-part="viewport">
       <div data-xh-part="list">
         <article data-xh-part="item" item-id="m1" item-index="0" item-role="assistant">
@@ -265,8 +265,8 @@ const bubble = {
   }
 </style>
 
-<xh-message-feed id="message-feed-roles" count="4" style="block-size: 260px">
-  <div data-xh-part="root">
+<xh-message-feed id="message-feed-roles" count="4">
+  <div data-xh-part="root" style="block-size: 260px">
     <div data-xh-part="viewport">
       <div data-xh-part="list">
         <article data-xh-part="item" item-id="m1" item-index="0" item-role="user">
@@ -379,8 +379,8 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
 ```html
 <div style="display: grid; gap: 12px">
-  <xh-message-feed id="message-feed-status" count="1" status="idle" style="block-size: 200px">
-    <div data-xh-part="root">
+  <xh-message-feed id="message-feed-status" count="1" status="idle">
+    <div data-xh-part="root" style="block-size: 200px">
       <div data-xh-part="viewport">
         <div data-xh-part="list" id="message-feed-status-list">
           <article data-xh-part="item" item-id="m1" item-index="0" item-role="user">
@@ -543,8 +543,8 @@ function onStickChange(details: { atBottom: boolean; sticking: boolean }): void 
 ```html
 <div style="display: grid; gap: 12px">
   <!-- 提示行不是消息，摆在列表外面：条目必须是 list 的直接子节点 -->
-  <xh-message-feed id="message-feed-load-more" count="8" style="block-size: 220px">
-    <div data-xh-part="root">
+  <xh-message-feed id="message-feed-load-more" count="8">
+    <div data-xh-part="root" style="block-size: 220px">
       <div data-xh-part="viewport">
         <div data-xh-part="list" id="message-feed-load-more-list">
           <article data-xh-part="item" item-id="m1" item-index="0" item-role="assistant">第 1 条 · 先往上翻一段，再滚回底部</article>
@@ -677,8 +677,8 @@ function onScroll(event: Event): void {
 
 ```html
 <div style="display: grid; gap: 12px">
-  <xh-message-feed id="message-feed-earlier" count="8" style="block-size: 220px">
-    <div data-xh-part="root">
+  <xh-message-feed id="message-feed-earlier" count="8">
+    <div data-xh-part="root" style="block-size: 220px">
       <div data-xh-part="viewport" id="message-feed-earlier-viewport">
         <div data-xh-part="list" id="message-feed-earlier-list">
           <article data-xh-part="item" item-id="m33" item-index="0" item-role="assistant">第 33 条 · 会话记录</article>
@@ -831,8 +831,8 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 
 ```html
 <div style="display: grid; gap: 12px">
-  <xh-message-feed id="message-feed-scroll-to" count="16" style="block-size: 220px">
-    <div data-xh-part="root">
+  <xh-message-feed id="message-feed-scroll-to" count="16">
+    <div data-xh-part="root" style="block-size: 220px">
       <div data-xh-part="viewport" id="message-feed-scroll-to-viewport">
         <div data-xh-part="list">
           <article data-xh-part="item" item-id="m1" item-index="0" item-role="assistant">第 1 条 · 会话记录</article>
@@ -900,6 +900,448 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 </script>
 ```
 
+### 按日期分隔
+
+跨天的消息之间放一条 separator，与条目平级写在列表里；它对读屏隐藏，时间由消息自己的时间戳表达
+
+```vue
+<script setup lang="ts">
+import {
+  XhMessageFeedItem,
+  XhMessageFeedItemLabel,
+  XhMessageFeedList,
+  XhMessageFeedRoot,
+  XhMessageFeedSeparator,
+  XhMessageFeedViewport,
+} from "@xihan-ui/vue";
+import { computed } from "vue";
+
+const messages = [
+  { id: "m1", day: "9 月 27 日", time: "21:40", role: "user" as const, who: "我", text: "明天的发布清单整理好了吗？" },
+  { id: "m2", day: "9 月 27 日", time: "21:41", role: "assistant" as const, who: "助手", text: "整理好了，一共 12 项，明早再核一遍。" },
+  { id: "m3", day: "今天", time: "09:02", role: "user" as const, who: "我", text: "开始核对吧。" },
+  { id: "m4", day: "今天", time: "09:02", role: "assistant" as const, who: "助手", text: "第 1 项：构建产物已上传。" },
+];
+
+// 一天的第一条消息前面放一条分隔
+const rows = computed(() => messages.map((message, index) => ({
+  ...message,
+  index,
+  separator: index === 0 || messages[index - 1]!.day !== message.day ? message.day : null,
+})));
+</script>
+
+<template>
+  <XhMessageFeedRoot :count="messages.length" style="block-size: 280px">
+    <XhMessageFeedViewport>
+      <XhMessageFeedList>
+        <template v-for="row in rows" :key="row.id">
+          <XhMessageFeedSeparator v-if="row.separator">{{ row.separator }}</XhMessageFeedSeparator>
+          <XhMessageFeedItem :item-id="row.id" :item-index="row.index" :item-role="row.role">
+            <XhMessageFeedItemLabel>{{ row.who }} · {{ row.time }}</XhMessageFeedItemLabel>
+            <div>{{ row.text }}</div>
+          </XhMessageFeedItem>
+        </template>
+      </XhMessageFeedList>
+    </XhMessageFeedViewport>
+  </XhMessageFeedRoot>
+</template>
+```
+
+```html
+<xh-message-feed count="4">
+  <div data-xh-part="root" style="block-size: 280px">
+    <div data-xh-part="viewport">
+      <div data-xh-part="list">
+        <div data-xh-part="separator">9 月 27 日</div>
+        <article data-xh-part="item" item-id="m1" item-index="0" item-role="user">
+          <span data-xh-part="item-label">我 · 21:40</span>
+          <div>明天的发布清单整理好了吗？</div>
+        </article>
+        <article data-xh-part="item" item-id="m2" item-index="1" item-role="assistant">
+          <span data-xh-part="item-label">助手 · 21:41</span>
+          <div>整理好了，一共 12 项，明早再核一遍。</div>
+        </article>
+        <div data-xh-part="separator">今天</div>
+        <article data-xh-part="item" item-id="m3" item-index="2" item-role="user">
+          <span data-xh-part="item-label">我 · 09:02</span>
+          <div>开始核对吧。</div>
+        </article>
+        <article data-xh-part="item" item-id="m4" item-index="3" item-role="assistant">
+          <span data-xh-part="item-label">助手 · 09:02</span>
+          <div>第 1 项：构建产物已上传。</div>
+        </article>
+      </div>
+    </div>
+  </div>
+</xh-message-feed>
+```
+
+### 回到底部带未读数
+
+离开底部期间新到的消息记成未读，数字挂在回到底部按钮上并进入它的可访问名；回到底部即清零
+
+```vue
+<script setup lang="ts">
+import {
+  XhMessageFeedItem,
+  XhMessageFeedList,
+  XhMessageFeedRoot,
+  XhMessageFeedScrollToEndTrigger,
+  XhMessageFeedUnreadCount,
+  XhMessageFeedViewport,
+} from "@xihan-ui/vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+
+const messages = ref(Array.from({ length: 8 }, (_, index) => ({
+  id: `m${index + 1}`,
+  text: index === 0 ? "第 1 条：往上翻，之后到的消息会记成未读。" : `第 ${index + 1} 条消息。`,
+})));
+
+let timer = 0;
+function tick() {
+  const n = messages.value.length + 1;
+  messages.value = [...messages.value, { id: `m${n}`, text: `第 ${n} 条消息。` }];
+  if (n < 30)
+    timer = window.setTimeout(tick, 2000);
+}
+// 挂载后才起：<script setup> 顶层在服务端渲染时也执行，那里没有 window
+onMounted(() => {
+  timer = window.setTimeout(tick, 2000);
+});
+
+onBeforeUnmount(() => window.clearTimeout(timer));
+</script>
+
+<template>
+  <XhMessageFeedRoot :count="messages.length" style="block-size: 240px">
+    <XhMessageFeedViewport>
+      <XhMessageFeedList>
+        <XhMessageFeedItem
+          v-for="(message, index) in messages"
+          :key="message.id"
+          :item-id="message.id"
+          :item-index="index"
+          item-role="assistant"
+        >
+          {{ message.text }}
+        </XhMessageFeedItem>
+      </XhMessageFeedList>
+    </XhMessageFeedViewport>
+    <XhMessageFeedScrollToEndTrigger>
+      <XhMessageFeedUnreadCount />
+    </XhMessageFeedScrollToEndTrigger>
+  </XhMessageFeedRoot>
+</template>
+```
+
+```html
+<xh-message-feed id="message-feed-unread" count="8">
+  <div data-xh-part="root" style="block-size: 240px">
+    <div data-xh-part="viewport">
+      <div data-xh-part="list">
+        <article data-xh-part="item" item-id="m1" item-index="0" item-role="assistant">第 1 条：往上翻，之后到的消息会记成未读。</article>
+        <article data-xh-part="item" item-id="m2" item-index="1" item-role="assistant">第 2 条消息。</article>
+        <article data-xh-part="item" item-id="m3" item-index="2" item-role="assistant">第 3 条消息。</article>
+        <article data-xh-part="item" item-id="m4" item-index="3" item-role="assistant">第 4 条消息。</article>
+        <article data-xh-part="item" item-id="m5" item-index="4" item-role="assistant">第 5 条消息。</article>
+        <article data-xh-part="item" item-id="m6" item-index="5" item-role="assistant">第 6 条消息。</article>
+        <article data-xh-part="item" item-id="m7" item-index="6" item-role="assistant">第 7 条消息。</article>
+        <article data-xh-part="item" item-id="m8" item-index="7" item-role="assistant">第 8 条消息。</article>
+      </div>
+    </div>
+    <button data-xh-part="scroll-to-end-trigger">
+      <!-- 条数由元素写入 -->
+      <span data-xh-part="unread-count"></span>
+    </button>
+  </div>
+</xh-message-feed>
+
+<script type="module">
+  // 消息由宿主追加，元素不替作者生成节点
+  const feed = document.getElementById("message-feed-unread");
+  const list = feed.querySelector('[data-xh-part="list"]');
+
+  let n = 8;
+  const tick = () => {
+    // 元素被移出文档就收手，别让定时器在卸载后继续跑
+    if (!feed.isConnected) return;
+    n += 1;
+    const item = document.createElement("article");
+    item.setAttribute("data-xh-part", "item");
+    item.setAttribute("item-id", `m${n}`);
+    item.setAttribute("item-index", String(n - 1));
+    item.setAttribute("item-role", "assistant");
+    item.textContent = `第 ${n} 条消息。`;
+    list.appendChild(item);
+    feed.setAttribute("count", String(n));
+    if (n < 30) setTimeout(tick, 2000);
+  };
+  setTimeout(tick, 2000);
+</script>
+```
+
+### 消息动作条
+
+每条消息下挂一条工具条：复制交给剪贴板；重新生成、编辑重发、切换分支、失败重试与截断续写各是会话容器 createThreadStore 上的一个方法，界面只照快照渲染
+
+```vue
+<script setup lang="ts">
+import type { Transport, UIMessage } from "@xihan-ui/chat-stream";
+import { asBlockKey, createThreadStore } from "@xihan-ui/chat-stream";
+import {
+  CheckIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CopyIcon,
+  PencilIcon,
+  PlayIcon,
+  RefreshIcon,
+  RotateRightIcon,
+} from "@xihan-ui/icons";
+import {
+  XhButton,
+  XhClipboardRoot,
+  XhIcon,
+  XhMessageFeedItem,
+  XhMessageFeedItemLabel,
+  XhMessageFeedList,
+  XhMessageFeedPendingIndicator,
+  XhMessageFeedRoot,
+  XhMessageFeedViewport,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldLabel,
+  XhTextFieldRoot,
+  XhToolbarItem,
+  XhToolbarRoot,
+} from "@xihan-ui/vue";
+import { onBeforeUnmount, ref, shallowRef } from "vue";
+
+function textOf(message: UIMessage): string {
+  return message.parts.map(part => (part.type === "text" ? part.text : "")).join("");
+}
+function errorOf(message: UIMessage): string {
+  return message.parts.map(part => (part.type === "error" ? part.errorText : "")).join("");
+}
+
+// 演示用的传输：按提问拼一段回复逐字吐出。接真实后端时换成 createHttpSseTransport，
+// 请求里的 trigger 与 messageId 告诉服务端这一轮是新提问、重新生成、重试、编辑还是续写
+const drafts = [
+  (q: string) => `关于「${q}」：先确认范围，再列出依赖，最后逐项核对，每一步做完都留一条记录。`,
+  (q: string) => `换个角度看「${q}」：把不确定的部分先问清楚，其余照清单推进，卡住就回到第一步。`,
+  (q: string) => `简短版：围绕「${q}」，先做最小可行的那一步，再按反馈补齐。`,
+];
+// 每条回复本该写完的全文：续写从截断处接着吐
+const fullText = new Map<string, string>([["a1", "发布前冻结改动、跑完回归，发布后盯住告警。"]]);
+let replies = 0;
+const failNext = ref(false);
+
+function wait(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve) => {
+    const timer = window.setTimeout(resolve, ms);
+    // 取消时不抛：传输按约定自己收手，结束方式由会话容器记为 aborted
+    signal.addEventListener("abort", () => {
+      window.clearTimeout(timer);
+      resolve();
+    }, { once: true });
+  });
+}
+
+const transport: Transport = {
+  async* stream(request, signal) {
+    await wait(400, signal);
+    if (signal.aborted)
+      return;
+    if (failNext.value) {
+      failNext.value = false;
+      yield { kind: "error", errorText: "网络中断，这一轮没有完成。", receivedTime: Date.now() };
+      return;
+    }
+    const last = request.messages[request.messages.length - 1]!;
+    let text: string;
+    if (request.trigger === "continue") {
+      text = (fullText.get(last.id) ?? "").slice(textOf(last).length);
+    }
+    else {
+      replies += 1;
+      const id = `reply-${replies}`;
+      text = drafts[(replies - 1) % drafts.length]!(textOf(last));
+      fullText.set(id, text);
+      yield { kind: "message-start", messageId: id, role: "assistant", receivedTime: Date.now() };
+    }
+    const block = asBlockKey("text");
+    yield { kind: "text-start", block, receivedTime: Date.now() };
+    for (let i = 0; i < text.length; i += 2) {
+      await wait(80, signal);
+      if (signal.aborted)
+        return;
+      yield { kind: "text-delta", block, delta: text.slice(i, i + 2), receivedTime: Date.now() };
+    }
+    yield { kind: "text-end", block, receivedTime: Date.now() };
+    yield { kind: "finish", receivedTime: Date.now() };
+  },
+};
+
+const store = createThreadStore({
+  transport,
+  messages: [
+    { id: "q1", role: "user", parts: [{ type: "text", text: "怎么准备一次发布？" }] },
+    { id: "a1", role: "assistant", status: "complete", parts: [{ type: "text", text: "发布前冻结改动、跑完回归，发布后盯住告警。" }] },
+  ],
+});
+const snapshot = shallowRef(store.getSnapshot());
+const unsubscribe = store.subscribe((next) => {
+  snapshot.value = next;
+});
+onBeforeUnmount(() => {
+  unsubscribe();
+  store.dispose();
+});
+
+const followUps = ["发布前要冻结哪些改动？", "回滚预案怎么写？"];
+let asked = 0;
+function ask(): void {
+  store.submit(followUps[asked % followUps.length]!);
+  asked += 1;
+}
+
+// 编辑：改写的那条留在原位，新写法成为同一位置上的另一个分支
+const editing = ref<string | null>(null);
+const draft = ref("");
+function startEdit(message: UIMessage): void {
+  editing.value = message.id;
+  draft.value = textOf(message);
+}
+function send(id: string): void {
+  if (draft.value.trim() !== "")
+    store.edit(id, draft.value.trim());
+  editing.value = null;
+}
+
+const running = (): boolean => snapshot.value.status === "submitted" || snapshot.value.status === "streaming";
+const isLast = (index: number): boolean => index === snapshot.value.messages.length - 1;
+</script>
+
+<template>
+  <div style="display: grid; gap: 12px; inline-size: 100%">
+    <XhMessageFeedRoot :count="snapshot.messages.length" :status="snapshot.status" style="block-size: 360px">
+      <XhMessageFeedViewport>
+        <XhMessageFeedList>
+          <XhMessageFeedItem
+            v-for="(message, index) in snapshot.messages"
+            :key="message.id"
+            :item-id="message.id"
+            :item-index="index"
+            :item-role="message.role === 'user' ? 'user' : 'assistant'"
+            :item-streaming="message.status === 'streaming'"
+          >
+            <XhMessageFeedItemLabel>{{ message.role === "user" ? "我" : "助手" }}</XhMessageFeedItemLabel>
+
+            <div v-if="editing === message.id" style="display: grid; gap: 8px">
+              <XhTextFieldRoot v-model:value="draft">
+                <XhTextFieldLabel>改写这条提问</XhTextFieldLabel>
+                <XhTextFieldControl>
+                  <XhTextFieldInput />
+                </XhTextFieldControl>
+              </XhTextFieldRoot>
+              <div style="display: flex; gap: 8px">
+                <XhButton size="sm" @click="send(message.id)">发送</XhButton>
+                <XhButton size="sm" variant="ghost" @click="editing = null">取消</XhButton>
+              </div>
+            </div>
+            <template v-else>
+              <div>{{ textOf(message) }}</div>
+              <div v-if="message.status === 'error'">{{ errorOf(message) }}</div>
+              <div v-else-if="message.status === 'aborted'">（已停止）</div>
+
+              <!-- 动作条只在这条写完之后出现：生成中的那条没有可操作的内容 -->
+              <XhToolbarRoot
+                v-if="message.status !== 'streaming'"
+                size="sm"
+                :aria-label="message.role === 'user' ? '提问操作' : '回复操作'"
+              >
+                <!-- 复制交给剪贴板：根的插槽给出 copy 与 copied，按钮仍是工具条的一项，方向键照常走到它 -->
+                <XhClipboardRoot v-if="message.role === 'assistant' && textOf(message) !== ''" v-slot="{ copy, copied }" :value="textOf(message)">
+                  <XhToolbarItem value="copy" type="button" @click="copy">
+                    <XhIcon :icon="copied ? CheckIcon : CopyIcon" /> {{ copied ? "已复制" : "复制" }}
+                  </XhToolbarItem>
+                </XhClipboardRoot>
+                <XhToolbarItem
+                  v-if="message.role === 'assistant' && message.status !== 'error'"
+                  value="regenerate"
+                  type="button"
+                  :disabled="running()"
+                  @click="store.regenerate(message.id)"
+                >
+                  <XhIcon :icon="RefreshIcon" /> 重新生成
+                </XhToolbarItem>
+                <XhToolbarItem
+                  v-if="message.role === 'user'"
+                  value="edit"
+                  type="button"
+                  :disabled="running()"
+                  @click="startEdit(message)"
+                >
+                  <XhIcon :icon="PencilIcon" /> 编辑
+                </XhToolbarItem>
+                <XhToolbarItem
+                  v-if="message.status === 'error' && isLast(index)"
+                  value="retry"
+                  type="button"
+                  @click="store.retry()"
+                >
+                  <XhIcon :icon="RotateRightIcon" /> 重试
+                </XhToolbarItem>
+                <XhToolbarItem
+                  v-if="message.status === 'aborted' && isLast(index)"
+                  value="continue"
+                  type="button"
+                  @click="store.continue(message.id)"
+                >
+                  <XhIcon :icon="PlayIcon" /> 续写
+                </XhToolbarItem>
+                <!-- 分支切换：同一位置上有几条候选，就能在它们之间来回换 -->
+                <template v-if="(snapshot.branches[message.id]?.count ?? 1) > 1">
+                  <XhToolbarItem
+                    value="previous"
+                    type="button"
+                    aria-label="上一个版本"
+                    :disabled="running() || snapshot.branches[message.id]!.index === 0"
+                    @click="store.selectBranch(message.id, snapshot.branches[message.id]!.index - 1)"
+                  >
+                    <XhIcon :icon="ChevronLeftIcon" style="scale: var(--xh-direction-sign) 1" />
+                  </XhToolbarItem>
+                  <span>{{ snapshot.branches[message.id]!.index + 1 }} / {{ snapshot.branches[message.id]!.count }}</span>
+                  <XhToolbarItem
+                    value="next"
+                    type="button"
+                    aria-label="下一个版本"
+                    :disabled="running() || snapshot.branches[message.id]!.index === snapshot.branches[message.id]!.count - 1"
+                    @click="store.selectBranch(message.id, snapshot.branches[message.id]!.index + 1)"
+                  >
+                    <XhIcon :icon="ChevronRightIcon" style="scale: var(--xh-direction-sign) 1" />
+                  </XhToolbarItem>
+                </template>
+              </XhToolbarRoot>
+            </template>
+          </XhMessageFeedItem>
+        </XhMessageFeedList>
+        <XhMessageFeedPendingIndicator />
+      </XhMessageFeedViewport>
+    </XhMessageFeedRoot>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <XhButton :disabled="running()" @click="ask">追问一句</XhButton>
+      <XhButton variant="outline" :disabled="!running()" @click="store.stop()">停止</XhButton>
+      <XhButton variant="ghost" :disabled="failNext" @click="failNext = true">
+        {{ failNext ? "下一轮会失败" : "让下一轮失败" }}
+      </XhButton>
+    </div>
+  </div>
+</template>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -921,13 +1363,16 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 - 消息内容全部由作者编写：气泡、头像、时间、动作条都不是本组件的部件。
 - 新生成的消息与出现的“回到底部”各带一段淡入位移；减弱动效由令牌层收敛，不需要另行关闭。
 - 已发送、等首个片段（`status` 为 `submitted`）时，放在列表之后的 `pending-indicator` 显示为一颗呼吸的圆点，首个片段到来即收起；它只给视觉看，进度由宿主写进播报区。减弱动效下圆点静止。
-- “回到底部”留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
+- “回到底部”留空时皮肤绘制向下的字形，放入节点即替换为自定义图形；只放入 `unread-count` 时字形照旧。
+- 未读数：离开底部期间 `count` 的增量累加成未读条数，回到底部即清零。把 `unread-count` 放进“回到底部”按钮里，它显示条数、没有未读时收起；条数同时写进按钮的可访问名，角标本身对读屏隐藏。
+- 按日期分隔：`separator` 与条目平级写在内容层里，显示“今天”“9 月 27 日”这类标注，对读屏隐藏；怎么分组由作者按消息时间决定，组件不解析日期。
 - 应用设为 `data-material="liquid"` 时，“回到底部”换成液态面：按下层换色调，按住时液面随手指形变。
 
 ### 组合
 
 - 正文使用[流式正文](./markdown-stream)，代码使用[代码视图](./code-view)。
-- 每条消息的动作条使用[工具栏](./toolbar)，复制使用[剪贴板](./clipboard)。
+- 每条消息的动作条使用[工具栏](./toolbar)，复制使用[剪贴板](./clipboard)：剪贴板根的插槽给出 `copy` 与 `copied`，复制按钮仍写成工具栏的一项，方向键照常走到它。
+- 动作条上的重新生成、编辑重发、分支切换、失败重试与截断续写，对应 `@xihan-ui/chat-stream` 会话容器的 `regenerate`、`edit`、`selectBranch`、`retry` 与 `continue`；分支位置取快照的 `branches`，见 [AI 对话](../guide/ai)。
 - 加载更早的消息使用[无限滚动](./infinite-scroll)，必须把消息流的滚动容器交给它，否则它的提前量只对窗口视口生效。
 - 空会话使用[空状态](./empty-state)，并显式把它的 `live` 设为 `off`：它默认会成为活动区域，放在消息流中会与播报区冲突。
 - 需要左右分侧或气泡时，条目上带 `data-role`（`user` / `assistant` / `system`），在自己的样式表中按它编写 `align-self`、底色、内衬与最大行宽，组件不预设这层外观。
@@ -935,7 +1380,7 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 
 ### 最佳实践
 
-- 条目必须是内容层的直接子节点：向上插入历史消息时的滚动补偿只在直接子节点中选锚点，套一层壳或使用 `display: contents` 都会让补偿静默失效。
+- 条目与分隔都必须是内容层的直接子节点：向上插入历史消息时的滚动补偿只在直接子节点中选锚点，套一层壳或使用 `display: contents` 都会让补偿静默失效。
 - 一轮流式结束时把整段最终文本写入播报区，不每个 token 写一次。
 
 ### 反模式
@@ -951,7 +1396,7 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-message-feed>` |
-| Vue 组件 | `XhMessageFeedItem` `XhMessageFeedItemLabel` `XhMessageFeedList` `XhMessageFeedLiveRegion` `XhMessageFeedPendingIndicator` `XhMessageFeedRoot` `XhMessageFeedScrollToEndTrigger` `XhMessageFeedViewport` |
+| Vue 组件 | `XhMessageFeedItem` `XhMessageFeedItemLabel` `XhMessageFeedList` `XhMessageFeedLiveRegion` `XhMessageFeedPendingIndicator` `XhMessageFeedRoot` `XhMessageFeedScrollToEndTrigger` `XhMessageFeedSeparator` `XhMessageFeedUnreadCount` `XhMessageFeedViewport` |
 | 组合式函数 | `useMessageFeed` |
 | 状态机 | `messageFeedMachine` |
 | 皮肤 | `@xihan-ui/styles/message-feed.css` |
@@ -1027,6 +1472,7 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | `sticking` | `boolean` |  |
 | `focusedId` | `string \| null` | roving tabindex 的锚点。 |
 | `showScrollToEndTrigger` | `boolean` | 是否显示回到底部按钮：只判断是否在底部，不判断贴附意图。 |
+| `unreadCount` | `number` | 离底期间新到的消息条数，回到底部即清零。按 count 的增长算，count 缺席时恒为 0。 |
 | `scrollToBottom` | `() => void` |  |
 | `scrollToItem` | `(id: string) => void` | 把某条消息滚进可视区；该条不在 DOM 中时不做任何事。 |
 | `focusItem` | `(id: string) => void` | 把焦点落到某条消息上；该条不在 DOM 中时不做任何事。 |
@@ -1036,6 +1482,8 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | `getItemProps` | `(props: MessageFeedItemProps) => T['element']` |  |
 | `getItemLabelProps` | `(props: Pick<MessageFeedItemProps, 'id'>) => T['element']` |  |
 | `getScrollToEndTriggerProps` | `() => T['button']` |  |
+| `getUnreadCountProps` | `() => T['element']` | 回到底部按钮上的未读数：没有未读时带 hidden，对读屏隐藏（条数已在按钮的可访问名里）。 |
+| `getSeparatorProps` | `() => T['element']` | 消息之间的分隔（按日期分组的「今天」「9 月 27 日」这类）：是内容层的直接子节点、与条目平级， 对读屏隐藏——role=feed 只认 article 子节点，时间由消息自己的时间戳表达。 |
 | `getPendingIndicatorProps` | `() => T['element']` | 已发送、等首个片段时的呼吸点：status 为 submitted 时出现，对读屏隐藏。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
@@ -1069,8 +1517,10 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | `item` | `aria-posinset` | item.index + 1 |
 | `item` | `aria-setsize` | props.count |
 | `item` | `role` | 'article' |
+| `separator` | `aria-hidden` | 'true' |
 | `pending-indicator` | `aria-hidden` | 'true' |
-| `scroll-to-end-trigger` | `aria-label` | translations?.scrollToBottom |
+| `scroll-to-end-trigger` | `aria-label` | (translations?.scrollToBottomUnread ?? ((n: number) =… \| translations?.scrollToBottom |
+| `unread-count` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
 
@@ -1135,6 +1585,16 @@ function go(jump: (id: string) => void, id: string, label: string): void {
 | `--xh-message-feed-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-circle` | message-feed 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_material-shadow` | message-feed 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size` | message-feed 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-message-feed-separator-fg` | `separator` | `color` | `default` | `--xh-fg-subtle` | message-feed 的 separator 部件 color 覆盖槽。 |
+| `--xh-message-feed-separator-font-size` | `separator` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 separator 部件 font-size 覆盖槽。 |
+| `--xh-message-feed-separator-gap` | `separator` | `gap` | `default` | `--xh-space-3` | message-feed 的 separator 部件 gap 覆盖槽。 |
+| `--xh-message-feed-separator-line` | `separator` | `border-block-start` | `default` | `--xh-border-subtle` | message-feed 的 separator 部件 border-block-start 覆盖槽。 |
+| `--xh-message-feed-unread-count-bg` | `unread-count` | `background` | `default` | `--xh-bg-brand` | message-feed 的 unread-count 部件 background 覆盖槽。 |
+| `--xh-message-feed-unread-count-fg` | `unread-count` | `color` | `default` | `--xh-fg-on-brand` | message-feed 的 unread-count 部件 color 覆盖槽。 |
+| `--xh-message-feed-unread-count-font-size` | `unread-count` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 unread-count 部件 font-size 覆盖槽。 |
+| `--xh-message-feed-unread-count-px` | `unread-count` | `padding-inline` | `default` | `--xh-space-1` | message-feed 的 unread-count 部件 padding-inline 覆盖槽。 |
+| `--xh-message-feed-unread-count-radius` | `unread-count` | `border-radius` | `default` | `--xh-shape-pill` | message-feed 的 unread-count 部件 border-radius 覆盖槽。 |
+| `--xh-message-feed-unread-count-size` | `unread-count` | `block-size`<br>`line-height`<br>`min-inline-size` | `default` | `--xh-space-4` | message-feed 的 unread-count 部件 block-size、line-height、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

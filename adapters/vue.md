@@ -21,7 +21,7 @@ import {
 } from "@xihan-ui/vue";
 ```
 
-只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1052 个导出组件按组件分组列在[组件参考](../components/)。
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1157 个导出组件按组件分组列在[组件参考](../components/)。
 
 没有插件，不需要 `app.use()`。按名称 import 即可，`sideEffects: false` 让打包器移除未使用的部分。
 
@@ -89,6 +89,8 @@ emits: {
 ```
 
 受控时组件不会自行改变：它只发出变更意图，由使用者写回新值后才真正改变。这条语义收在状态机的 `cell` 与 `watch` 中，不由各组件自行判断。详见[状态机运行时](../guide/machine#受控与非受控-cell)。
+
+`default*` 只在 setup 时读取一次，之后修改不影响当前值，只改变表单重置的落点；要换初值就换 `key`。三端的取法见[初值的读取时机](../guide/machine#初值的读取时机)。
 
 ## 作用域插槽
 
@@ -199,10 +201,10 @@ import { useBackground, vBackground, XhBackground } from "@xihan-ui/vue/backgrou
 
 ## 声音层
 
-同样是单独的子入口。`withToastSound` / `withDialogSound` 为命令式反馈服务配置声音，调用点不需要修改；`v-sound` 为单个元素配置声音：
+同样是单独的子入口。`withNotificationSound` / `withDialogSound` 为命令式反馈服务配置声音，调用点不需要修改；`v-sound` 为单个元素配置声音：
 
 ```ts
-import { setSoundPlayer, vSound, withToastSound } from "@xihan-ui/vue/sound";
+import { setSoundPlayer, vSound, withNotificationSound } from "@xihan-ui/vue/sound";
 ```
 
 默认映射与开关见[声音层](../guide/sound#在-vue-里用)。

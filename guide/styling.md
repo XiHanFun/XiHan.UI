@@ -155,11 +155,11 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 }
 ```
 
-19 份皮肤消费缺省宽令牌。日期范围选择器是登记过的例外：起止两组按日的段位、分隔符与日历钮排在一行，内容本身就比 16rem 宽，钉成缺省宽会裁掉终点的段位，所以它缺省按内容撑开、只拿缺省宽作地板（按年、按月时不比别的字段窄），`--xh-date-range-picker-control-w` 仍可钉宽。分格输入的宽由格数与格宽决定，对话输入条铺满宿主，表单字段（Field）的控件铺满表单列：这三类不吃缺省宽。
+20 份皮肤消费缺省宽令牌。日期范围选择器是登记过的例外：起止两组按日的段位、分隔符与日历钮排在一行，内容本身就比 16rem 宽，钉成缺省宽会裁掉终点的段位，所以它缺省按内容撑开、只拿缺省宽作地板（按年、按月时不比别的字段窄），`--xh-date-range-picker-control-w` 仍可钉宽。分格输入的宽由格数与格宽决定，对话输入条铺满宿主，表单字段（Field）的控件铺满表单列：这三类不吃缺省宽。
 
 缺省宽之外还有一条底线 `min-inline-size: var(--xh-control-min-w)`，默认值 `12rem`（约 192px）。字段放进 flex 或 grid 中会被压缩，压缩到只剩箭头时无法使用，底线挡住这一步；容器比底线还窄时整件收成容器那么宽，不越出去。
 
-20 份皮肤消费这条令牌（其中 file-upload 用它作为条目内文件名的下限，不是控件宽度）。窄栏场景（两列表单、抽屉内的设置项、表格上方的筛选行）要让字段收得更小时放开它：
+22 份皮肤消费这条令牌（其中 file-upload 用它作为条目内文件名的下限，不是控件宽度）。窄栏场景（两列表单、抽屉内的设置项、表格上方的筛选行）要让字段收得更小时放开它：
 
 ```css
 /* 全局：所有消费这条令牌的控件一起改 */
@@ -337,7 +337,7 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 
 关闭时 DOM 不会立即消失：[进出场原语](./behavior#进出场)会等待动画结束（或超时）后才允许卸载，因此 `[data-state='closed']` 的动画可以完整播放。
 
-跨皮肤共用的关键帧只定义一次，住在 `family/motion.css`，子入口是 `@xihan-ui/styles/motion.css`：浮层进出场 `xh-overlay-slide-in / out`、`xh-overlay-pop-in`、`xh-pop-in / out`，面板 `xh-sheet-in / out`，整幅滑入 `xh-slide-in / out`，淡变与页内显现 `xh-fade-in / out`、`xh-rise-in`、`xh-drop-in`，列表条目 `xh-item-in`，披露 `xh-disclosure-expand / collapse`，循环 `xh-spin`、`xh-shimmer`，倒计时 `xh-countdown`。引用它们的皮肤各自 `@import` 这份文件，所以单独引入某一份皮肤时关键帧仍会到场，全量入口按物理文件去重。同一段动画全库只有一个名字；只属于一个组件的关键帧（`xh-toast-in`、`xh-skeleton-shimmer` 一类）仍写在各自皮肤里。
+跨皮肤共用的关键帧只定义一次，住在 `family/motion.css`，子入口是 `@xihan-ui/styles/motion.css`：浮层进出场 `xh-overlay-slide-in / out`、`xh-overlay-pop-in`、`xh-pop-in / out`，面板 `xh-sheet-in / out`，整幅滑入 `xh-slide-in / out`，淡变与页内显现 `xh-fade-in / out`、`xh-rise-in`、`xh-drop-in`，列表条目 `xh-item-in`，披露 `xh-disclosure-expand / collapse`，循环 `xh-spin`、`xh-shimmer`，倒计时 `xh-countdown`。引用它们的皮肤各自 `@import` 这份文件，所以单独引入某一份皮肤时关键帧仍会到场，全量入口按物理文件去重。同一段动画全库只有一个名字；只属于一个组件的关键帧（`xh-notification-stack-in`、`xh-skeleton-pulse` 一类）仍写在各自皮肤里。
 
 要替换某段动画，在 `xihan.overrides` 层重定义同名关键帧即可，不必逐皮肤覆盖。共享关键帧的重定义会作用到所有引用它的组件；只想换一个组件时，改写该组件部件上的 `animation-name`，指向自己定义的关键帧。
 

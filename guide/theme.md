@@ -51,8 +51,8 @@ primitive  ──►  semantic  ──►  组件私有槽
 | --- | ---: | --- |
 | `--xh-shape-inset` | 4px | 嵌在控件里的内层：菜单项、标签内部、微型状态块 |
 | `--xh-shape-control` | 4px | 控件本体：Button、Input、Select Trigger、Toggle、分页按钮 |
-| `--xh-shape-surface` | 8px | 成面的静态容器：Card、Alert、Panel、列表容器、Segmented 与 Tabs 轨道 |
-| `--xh-shape-overlay` | 12px | 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Toast |
+| `--xh-shape-surface` | 8px | 成面的静态容器：Card、Alert、Panel、列表容器、单选组 segmented 形态与 Tabs segment 的轨道 |
+| `--xh-shape-overlay` | 12px | 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification |
 | `--xh-shape-circle` | 50% | 正圆：头像、圆形图标按钮、单选指示器 |
 | `--xh-shape-pill` | 9999px | 胶囊：Badge、Tag 等状态 chip，以及轨道、指示条、手柄、滚动条滑块等一维对象 |
 
@@ -65,9 +65,9 @@ primitive  ──►  semantic  ──►  组件私有槽
 | 阶段 | 时长 | 缓动 | 结果 |
 | --- | ---: | --- | --- |
 | 按下 | `--xh-motion-duration-press`（120ms） | `--xh-motion-ease-press` | scale 1 → `--xh-motion-scale-press`（0.97），背景进入 active |
-| 释放 | `--xh-motion-duration-release`（200ms） | `--xh-motion-ease-release` | scale 回到 1，背景回到 hover / rest |
+| 释放 | `--xh-motion-duration-release`（200ms） | `--xh-motion-ease-release` | scale 回到 1；背景、描边、字色按 `--xh-motion-duration-micro` 回到 hover / rest |
 
-Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏，但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
+Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏（按下 120ms 换到 active 面，松开按 micro 回到 hover / rest），但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
 
 ## 组件内滚动
 
@@ -160,7 +160,7 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 | `data-theme` | 明暗两值各有整套语义取值 |
 | `data-brand` | 注册品牌梯度后切换品牌色 |
 | `data-density='compact'` | 收紧控件高度、内距与间隙，不缩字号和字形 |
-| `dir` | 由逻辑属性驱动 LTR / RTL 布局 |
+| `dir` | 由逻辑属性驱动 LTR / RTL 布局；只认物理方向的量（translate、渐变角度、clip-path 左右两侧）乘 `--xh-direction-sign` 换向——它按就近的 `dir` 继承（ltr 为 1、rtl 为 -1），局部写回 `ltr` 的子树跟着翻回；`transform-origin` 这类物理坐标取 `--xh-direction-start` / `--xh-direction-end`（行内起始缘 / 末尾缘的水平位置，ltr 为 0% / 100%，rtl 反过来） |
 | `data-contrast` | `more` 加强边界；`default` 显式回到常规档 |
 | `data-motion` | `reduce` 触发局部 CSS 动效降级 |
 | `data-transparency` | `reduce` 把磨砂材质切成实体配方 |
@@ -199,9 +199,9 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式 | 实体底色，无高光、无投影 |
 | M1 soft | `--xh-material-soft-*` | Button soft、Tag、Popconfirm 动作等次级操作；不用于 Card 与字段 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
 | M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等需要透景的锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 0.88 不透明度，16px 模糊，108% 饱和度，1px 可见边界 |
-| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Toast、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
+| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
 | M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层——浮动钮（FloatButton、BackTop、MessageFeed / Log 的回到底部）、媒体控制（Carousel 控制钮与分页条、ImageViewer 控制层）、吸顶的 Layout 顶栏 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
-| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Segmented、Tabs segment 的滑块，静止的滑杆拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色，一层低海拔投影 |
+| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（单选组 segmented 形态与 Tabs segment 的滑块，静止的滑杆拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色，一层低海拔投影 |
 | floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，中海拔投影 |
 
 | 后缀 | 用途 |
@@ -222,7 +222,7 @@ Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--x
 
 ### 磨砂面的使用范围
 
-- 只用于需要保留背景空间感的瞬态浮层，正文、表单主体、Card、Table、Toast 与 Dialog 主阅读面不使用。
+- 只用于需要保留背景空间感的瞬态浮层，正文、表单主体、Card、Table、Notification 与 Dialog 主阅读面不使用。
 - 不把 `backdrop-filter` 放在页面根、大滚动区或重叠的多层表面，不对模糊半径做动画。
 - 焦点环必须搭配 `focus-surface` 对应的实体隔离面。
 
@@ -242,7 +242,7 @@ Tooltip 等小型反白表面使用三支 compact 配方组合 M2 的边界、�
 
 `data-material` 是应用级材质轴，缺省 `standard`，取 `liquid` 时浮在内容之上的导航层部件换成液态面。它写在任意祖先上，最近的一层生效，Portal 视觉桥会把它带到实例壳；standard 档下同一部件保持原材质。用了视觉环境控制器时，经它的 `material` 偏好设置（控制器始终维护根上的这个属性）。
 
-现有的液态部件：FloatButton 触发器与展开的动作、BackTop、MessageFeed / Log 的回到底部、Carousel 的翻页与播放钮和分页条（托在一条液态胶囊上）、ImageViewer 的工具条、计数、翻页与关闭钮，以及 Layout 固定时的顶栏。瞬态浮层、模态、Toast / Notification、Card、Table、表单与正文容器不用液态，由门禁 `check-material-scope` 守住。
+现有的液态部件：FloatButton 触发器与展开的动作、BackTop、MessageFeed / Log 的回到底部、Carousel 的翻页与播放钮和分页条（托在一条液态胶囊上）、ImageViewer 的工具条、计数、翻页与关闭钮，以及 Layout 固定时的顶栏。瞬态浮层、模态、Notification、Card、Table、表单与正文容器不用液态，由门禁 `check-material-scope` 守住。
 
 ```html
 <html data-material="liquid">

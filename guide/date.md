@@ -2,9 +2,9 @@
 
 # 日期与时间
 
-`@xihan-ui/core/date` 提供不带时区的日期值、公历运算、时区换算、按地区划分的周与格式化。日期族的 8 个组件（日期字段、时间字段、日期选择器、日期范围选择器、日历选择器、日历范围选择器、时间选择器、时间范围选择器）都建立在它之上。自研实现，零运行时依赖，整个子入口压缩后 6.52 kB。
+`@xihan-ui/core/date` 提供不带时区与带 IANA 时区的日期时间值、公历运算、时区换算、按地区划分的周与格式化。日期族组件都建立在它之上。自研实现，零运行时依赖。
 
-命名、取值范围与越界规则沿用 Temporal：`PlainDate` / `PlainTime` / `PlainDateTime` 与 `Temporal.PlainDate` 等同名同义，运行环境普遍提供 Temporal 之后，调用点可以逐个换成原生对象。
+命名、取值范围与越界规则沿用 Temporal：`PlainDate` / `PlainTime` / `PlainDateTime` / `ZonedDateTime` 与 Temporal 同名类型保持核心语义一致，运行环境普遍提供 Temporal 之后，调用点可以逐个换成原生对象。
 
 ## 存在的原因
 
@@ -34,10 +34,11 @@ today("Asia/Shanghai").toString(); // 上海此刻的日期
 | `PlainDate` | `year` `month` `day` | `YYYY-MM-DD`；0–9999 以外的年份写成 `±YYYYYY-MM-DD` |
 | `PlainTime` | `hour` `minute` `second` `millisecond` | `HH`、`HH:mm`、`HH:mm:ss`、`HH:mm:ss.SSS`，可带前缀 `T` |
 | `PlainDateTime` | 以上全部 | `YYYY-MM-DD`（时间取 00:00）或 `YYYY-MM-DDTHH[:mm[:ss[.SSS]]]`，分隔符可以是 `T` 或空格 |
+| `ZonedDateTime` | 日期时间字段、`epochMilliseconds`、`timeZoneId`、`offset` | `YYYY-MM-DDTHH:mm:ss.SSS+08:00[Asia/Shanghai]`；偏移与 IANA 时区必须在该时刻一致 |
 
-三种值都不可变，实例冻结，所有运算返回新值。月份从 1 起算，星期几按 ISO 8601 编号：1 = 星期一 … 7 = 星期日。日期范围与 Temporal 相同：-271821-04-19 至 +275760-09-13。
+四种值都不可变，实例冻结，所有变换返回新值。月份从 1 起算，星期几按 ISO 8601 编号：1 = 星期一 … 7 = 星期日。日期范围与 Temporal 相同：-271821-04-19 至 +275760-09-13。
 
-字符串解析是严格的：`2026-02-29`、`2026-1-1`、带时区偏移的串（`...Z`、`...+08:00`）都抛 `RangeError`。组件内部把解析失败当作「没有值」处理，不会抛给使用者。
+Plain 值的字符串解析是严格的：`2026-02-29`、`2026-1-1`、带时区偏移的串（`...Z`、`...+08:00`）都抛 `RangeError`。`ZonedDateTime` 则要求字符串同时带偏移与 `[IANA/TimeZone]`，并拒绝两者不一致的值。组件内部把解析失败当作「没有值」处理，不会抛给使用者。
 
 ### 构造与越界
 
@@ -78,6 +79,9 @@ PlainDate.from({ year: 2026, month: 2, day: 31 }, { overflow: "reject" }); // Ra
 | `getLocalTimeZone()` | 运行环境所在时区的 IANA 名 |
 | `getTimeZoneOffset(instant, timeZone?)` | 该时刻的偏移量，毫秒，东正西负 |
 | `isValidTimeZone(timeZone)` | 运行环境是否认得这个时区名 |
+| `canonicalizeTimeZone(timeZone)` | 校验并返回 Intl 规范化后的 IANA 标识 |
+| `getAvailableTimeZones()` | 当前运行环境支持的 IANA 时区，冻结列表并显式包含 UTC |
+| `formatTimeZoneOffset(offsetMilliseconds)` | 毫秒偏移量格式化为 `+08:00`、`-03:30` 等 ISO 形式 |
 
 偏移量向 `Intl` 询问，库里不带时区数据库。墙上时间不唯一时按 `disambiguation` 取舍：
 
@@ -89,6 +93,25 @@ PlainDate.from({ year: 2026, month: 2, day: 31 }, { overflow: "reject" }); // Ra
 | `reject` | 抛 `RangeError` | 抛 `RangeError` |
 
 零点被夏令时跳过的日子（例如智利），`plainDate.toDate()` 取当天第一个存在的时刻。
+
+### 带时区值
+
+`ZonedDateTime` 同时保存时间点和 IANA 时区。`withTimeZone()` 保持时间点、只改变当地字段；`withPlainDateTime()` 保持时区、按 DST 消歧重新计算时间点：
+
+```ts
+import { ZonedDateTime } from "@xihan-ui/core/date";
+
+const shanghai = ZonedDateTime.from("2026-01-01T08:00:00+08:00[Asia/Shanghai]");
+shanghai.withTimeZone("America/Los_Angeles").toPlainDateTime().toString();
+// '2025-12-31T16:00:00'
+
+ZonedDateTime.from(
+  { year: 2026, month: 11, day: 1, hour: 1, minute: 30, timeZone: "America/Los_Angeles" },
+  { disambiguation: "later" },
+);
+```
+
+`compare(a, b)` 只比较时间点；`equals(other)` 同时比较时间点与时区。模型精度为毫秒，不提供多历法；多历法需要单独定义值语义、字段顺序和组件交互，不作为时区能力的隐式扩展。
 
 日期类组件的 `timeZone` prop 只决定「今天」是哪一天（聚焦日的兜底、今天的标记、快捷预设）与日期字段的 `valueAsDate`。格式化只由日期字段决定，与时区无关。
 
@@ -146,7 +169,7 @@ heading.format(PlainDate.from("2026-02-01")); // '2026年2月'
 | --- | --- | --- |
 | 精度 | 毫秒 | 纳秒 |
 | 历法 | 只有 ISO 8601 推及历 | 支持多种历法 |
-| 字符串解析 | 只认上文列出的扩展格式，不收时区偏移与时区注记 | 另收基本格式、偏移与注记 |
-| 带时区的值 | 与 `Date` 互换（`toDate` / `fromDate`） | `ZonedDateTime` |
+| 字符串解析 | Plain 值只认上文列出的扩展格式；Zoned 值严格校验偏移与时区 | 另收更多基本格式与注记组合 |
+| 带时区的值 | 毫秒精度 `ZonedDateTime` | 纳秒精度 `Temporal.ZonedDateTime` |
 | 时长 | 冻结的普通对象 | `Temporal.Duration` |
 | 周与季度 | 另有按地区的周规则、季度与边界函数 | 无 |

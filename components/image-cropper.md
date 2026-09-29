@@ -85,7 +85,7 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"] as const;
 
 加粗的是必需部件。
 
-`data-scope="image-cropper"`：**`root`** · **`viewport`** · **`image`** · **`crop-area`** · `crop-handle` · `grid` · `zoom-slider` · `rotate-slider` · `hidden-input`
+`data-scope="image-cropper"`：**`root`** · **`viewport`** · **`image`** · **`crop-area`** · `crop-handle` · `grid` · `zoom-slider` · `rotate-slider` · `flip-trigger` · `hidden-input`
 
 ## 示例
 
@@ -358,6 +358,176 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 </xh-image-cropper>
 ```
 
+### 翻转
+
+两颗开关钮各管一条轴，图片与裁切框一起镜像；aria-pressed 报这条轴翻没翻
+
+```vue
+<script setup lang="ts">
+import {
+  XhImageCropperCropArea,
+  XhImageCropperCropHandle,
+  XhImageCropperFlipTrigger,
+  XhImageCropperImage,
+  XhImageCropperRoot,
+  XhImageCropperViewport,
+} from "@xihan-ui/vue";
+
+const handles = ["nw", "ne", "se", "sw"] as const;
+</script>
+
+<template>
+  <XhImageCropperRoot
+    src="/images/image-cropper-landscape.svg"
+    alt="山谷与湖泊风景图"
+    :default-value="{ x: 96, y: 64, width: 448, height: 280 }"
+    :min-width="40"
+    style="inline-size: min(100%, 420px)"
+  >
+    <XhImageCropperViewport>
+      <XhImageCropperImage />
+      <XhImageCropperCropArea>
+        <XhImageCropperCropHandle
+          v-for="position in handles"
+          :key="position"
+          :position="position"
+        />
+      </XhImageCropperCropArea>
+    </XhImageCropperViewport>
+    <div style="display: flex; gap: var(--xh-space-2); padding-block-start: var(--xh-space-3)">
+      <XhImageCropperFlipTrigger axis="horizontal">左右翻转</XhImageCropperFlipTrigger>
+      <XhImageCropperFlipTrigger axis="vertical">上下翻转</XhImageCropperFlipTrigger>
+    </div>
+  </XhImageCropperRoot>
+</template>
+```
+
+```html
+<xh-image-cropper
+  src="/images/image-cropper-landscape.svg"
+  alt="山谷与湖泊风景图"
+  default-value="96,64,448,280"
+  min-width="40"
+>
+  <div data-xh-part="root" style="inline-size: min(100%, 420px)">
+    <div data-xh-part="viewport">
+      <img data-xh-part="image" />
+      <div data-xh-part="crop-area">
+        <button data-xh-part="crop-handle" position="nw"></button>
+        <button data-xh-part="crop-handle" position="ne"></button>
+        <button data-xh-part="crop-handle" position="se"></button>
+        <button data-xh-part="crop-handle" position="sw"></button>
+      </div>
+    </div>
+    <div style="display: flex; gap: var(--xh-space-2); padding-block-start: var(--xh-space-3)">
+      <button data-xh-part="flip-trigger" axis="horizontal">左右翻转</button>
+      <button data-xh-part="flip-trigger" axis="vertical">上下翻转</button>
+    </div>
+  </div>
+</xh-image-cropper>
+```
+
+### 导出裁切结果
+
+toCanvas 按所见出图：裁切矩形、旋转、翻转与圆形外形一并生效
+
+```vue
+<script setup lang="ts">
+import {
+  XhButton,
+  XhImageCropperCropArea,
+  XhImageCropperCropHandle,
+  XhImageCropperImage,
+  XhImageCropperRoot,
+  XhImageCropperRotateSlider,
+  XhImageCropperViewport,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const handles = ["nw", "ne", "se", "sw"] as const;
+const avatar = ref("");
+
+// 在确认时出图一次，不要在每次拖动时出图
+function exportAvatar(toCanvas: (options?: { width?: number }) => HTMLCanvasElement | null) {
+  avatar.value = toCanvas({ width: 96 })?.toDataURL("image/png") ?? "";
+}
+</script>
+
+<template>
+  <XhImageCropperRoot
+    v-slot="{ toCanvas }"
+    src="/images/image-cropper-landscape.svg"
+    alt="山谷与湖泊风景图"
+    shape="round"
+    :aspect-ratio="1"
+    :default-value="{ x: 160, y: 50, width: 320, height: 320 }"
+    :default-rotation="90"
+    :min-width="48"
+    style="inline-size: min(100%, 420px)"
+  >
+    <XhImageCropperViewport>
+      <XhImageCropperImage />
+      <XhImageCropperCropArea>
+        <XhImageCropperCropHandle
+          v-for="position in handles"
+          :key="position"
+          :position="position"
+        />
+      </XhImageCropperCropArea>
+    </XhImageCropperViewport>
+    <XhImageCropperRotateSlider aria-label="旋转" />
+    <div style="display: flex; gap: var(--xh-space-3); align-items: center; padding-block-start: var(--xh-space-3)">
+      <XhButton @click="exportAvatar(toCanvas)">导出头像</XhButton>
+      <img v-if="avatar" :src="avatar" alt="导出的头像" width="48" height="48">
+    </div>
+  </XhImageCropperRoot>
+</template>
+```
+
+```html
+<xh-image-cropper
+  id="image-cropper-export"
+  src="/images/image-cropper-landscape.svg"
+  alt="山谷与湖泊风景图"
+  shape="round"
+  aspect-ratio="1"
+  default-value="160,50,320,320"
+  default-rotation="90"
+  min-width="48"
+>
+  <div data-xh-part="root" style="inline-size: min(100%, 420px)">
+    <div data-xh-part="viewport">
+      <img data-xh-part="image" />
+      <div data-xh-part="crop-area">
+        <button data-xh-part="crop-handle" position="nw"></button>
+        <button data-xh-part="crop-handle" position="ne"></button>
+        <button data-xh-part="crop-handle" position="se"></button>
+        <button data-xh-part="crop-handle" position="sw"></button>
+      </div>
+    </div>
+    <input data-xh-part="rotate-slider" aria-label="旋转" />
+    <div style="display: flex; gap: var(--xh-space-3); align-items: center; padding-block-start: var(--xh-space-3)">
+      <xh-button><button data-xh-part="root" id="image-cropper-export-trigger">导出头像</button></xh-button>
+      <img id="image-cropper-export-result" alt="导出的头像" width="48" height="48" hidden />
+    </div>
+  </div>
+</xh-image-cropper>
+
+<script type="module">
+  const cropper = document.getElementById("image-cropper-export");
+  const result = document.getElementById("image-cropper-export-result");
+
+  // 在确认时出图一次，不要在每次拖动时出图
+  document.getElementById("image-cropper-export-trigger").addEventListener("click", () => {
+    const canvas = cropper.toCanvas({ width: 96 });
+    if (!canvas)
+      return;
+    result.src = canvas.toDataURL("image/png");
+    result.hidden = false;
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -376,8 +546,11 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 - 使用源图自然像素记录裁切矩形。
 - 支持拖动、八方向调整和键盘微调。
 - 边缘把手显示为贴住裁切框边框的圆端短条；角部使用与可调容器相同的单拐角圆弧。
-- 支持固定宽高比、圆形遮罩、缩放和旋转。
-- 支持受控裁切区域和原生表单提交。
+- 支持固定宽高比、圆形遮罩、缩放、旋转与水平 / 垂直翻转。缩放、旋转与翻转同时作用在图片与裁切框上，只改呈现，裁切矩形与源图像素的对应关系不变。
+- 翻转由两颗 `flip-trigger` 开关钮承担，各管一条轴（`axis`），`aria-pressed` 报这条轴翻没翻；翻着时是无滑块开关的选中面（品牌淡底）。
+- 方向键按屏幕方向移动：图片转了、翻了，框在屏幕上往哪边挪，按的就是哪个键；斜着的角度取最近的直角。
+- `toCanvas()` 按所见出图：裁切矩形、旋转、翻转与圆形外形一并生效，像素取自 image 部件。圆形裁成内切于裁切矩形的椭圆（1:1 即正圆），椭圆外透明；旋转 90° 的倍数时画布宽高互换，其余角度画布是旋转后的外接矩形。纯函数 `cropToCanvas` 接受同一组 `rotation` / `flip` / `shape` 选项。
+- 支持受控裁切区域、受控翻转和原生表单提交。
 - `onValueChangeEnd` 在一次调整结束时触发。
 
 ### 组合
@@ -389,7 +562,8 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 - 为裁切区域设置合理的最小尺寸。
 - 头像使用 1:1 比例和圆形遮罩。
-- 在调整结束或确认时生成裁切结果。
+- 在调整结束或确认时用 `toCanvas()` 生成裁切结果，不要自己拿 `getCropRect()` 去 `drawImage`：那样会丢掉旋转、翻转与圆形。
+- 输出 JPEG 时给 `background`：圆形与斜角旋转留下的四角是透明的，JPEG 会把它们编码成黑块。
 - 跨域图片应在加载前配置 `crossorigin`。
 
 ### 反模式
@@ -404,7 +578,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-image-cropper>` |
-| Vue 组件 | `XhImageCropperCropArea` `XhImageCropperCropHandle` `XhImageCropperGrid` `XhImageCropperHiddenInput` `XhImageCropperImage` `XhImageCropperRoot` `XhImageCropperRotateSlider` `XhImageCropperViewport` `XhImageCropperZoomSlider` |
+| Vue 组件 | `XhImageCropperCropArea` `XhImageCropperCropHandle` `XhImageCropperFlipTrigger` `XhImageCropperGrid` `XhImageCropperHiddenInput` `XhImageCropperImage` `XhImageCropperRoot` `XhImageCropperRotateSlider` `XhImageCropperViewport` `XhImageCropperZoomSlider` |
 | 组合式函数 | `useImageCropper` |
 | 状态机 | `imageCropperMachine` |
 | 皮肤 | `@xihan-ui/styles/image-cropper.css` |
@@ -430,6 +604,8 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `minRotation` | `number` |  | 旋转滑杆的下限，默认 -180。 |
 | `maxRotation` | `number` |  | 旋转滑杆的上限，默认 180。 |
 | `rotationStep` | `number` |  | 旋转滑杆的步长，默认 1。 |
+| `flip` | `ImageCropperFlip` |  | 翻转，默认两条轴都不翻。提供即受控：setFlip / toggleFlip 只发 onFlipChange。 |
+| `defaultFlip` | `ImageCropperFlip` |  |  |
 | `shape` | `ImageCropperShape` |  | 裁切框外形，默认 rect。 |
 | `disabled` | `boolean` |  | 禁用：裁切框与把手退出 Tab 序列，指针与键盘都不可修改，也不参与表单提交。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦与被读屏朗读，不可修改。 |
@@ -439,6 +615,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `onValueChangeEnd` | `(details: ImageCropperValueChangeEndDetails) => void` |  | 只在一次拖动结束时发出一次，适合用于裁切导出。 |
 | `onZoomChange` | `(details: ImageCropperZoomChangeDetails) => void` |  | 缩放变化意图；受控时是唯一出口。 |
 | `onRotationChange` | `(details: ImageCropperRotationChangeDetails) => void` |  | 旋转变化意图；受控时是唯一出口。 |
+| `onFlipChange` | `(details: ImageCropperFlipChangeDetails) => void` |  | 翻转变化意图；受控时是唯一出口。 |
 
 ### 事件
 
@@ -450,6 +627,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `value-change-end` | `ImageCropperValueChangeEndDetails` | 一次指针拖动松开时发出一次，一次方向键微调也发出一次；detail 为 `{ value: { x, y, width, height } }` |
 | `zoom-change` | `ImageCropperZoomChangeDetails` | 缩放倍率变化；detail 为 `{ zoom: number }` |
 | `rotation-change` | `ImageCropperRotationChangeDetails` | 旋转角度变化；detail 为 `{ rotation: number }` |
+| `flip-change` | `ImageCropperFlipChangeDetails` | 翻转变化；detail 为 `{ flip: { horizontal: boolean, vertical: boolean } }` |
 
 ### 插槽
 
@@ -466,17 +644,24 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhImageCropperCropHandle` | `position` | `ImageCropperHandlePosition` | 是 | 该把手拖动的方位。 |
+| `XhImageCropperFlipTrigger` | `axis` | `ImageCropperFlipAxis` | 是 | 这颗按钮翻哪条轴。 |
 | `XhImageCropperRoot` | `children` | `SlotChildren<ImageCropperRootSlotProps>` |  |  |
 
 ### 状态
+
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `flip-trigger` | 'on' \| 'off' |
 
 以下名称仅用于内部状态机。
 
 **状态**：`dragging` · `idle` · `resizing`
 
-**事件**：`VALUE.SET` · `ZOOM.SET` · `ROTATE.SET` · `IMAGE.LOAD` · `CROP.NUDGE` · `HANDLE.NUDGE` · `DRAG.START` · `RESIZE.START` · `DRAG.MOVE` · `DRAG.END` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ZOOM.SET` · `ROTATE.SET` · `FLIP.SET` · `FLIP.TOGGLE` · `IMAGE.LOAD` · `CROP.NUDGE` · `HANDLE.NUDGE` · `DRAG.START` · `RESIZE.START` · `DRAG.MOVE` · `DRAG.END` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`canEdit`
+**判据**：`canEdit` · `canPress`
 
 ### connect API
 
@@ -487,15 +672,19 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `value` | `ImageCropperRect` | 当前裁切矩形，自然像素。 |
 | `zoom` | `number` |  |
 | `rotation` | `number` |  |
+| `flip` | `ImageCropperFlip` |  |
 | `natural` | `ImageCropperSize` | 图片自然尺寸；未加载完成时为 0×0，此时裁切框无法测量位置。 |
 | `dragging` | `boolean` | 正在整体拖动裁切框。 |
 | `resizing` | `boolean` | 正在拉动某个把手。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
-| `getCropRect` | `() => ImageCropperRect` | 获取一份当前裁切矩形的副本，交给 cropToCanvas 出图。 |
+| `getCropRect` | `() => ImageCropperRect` | 获取一份当前裁切矩形的副本。出图用 toCanvas，它连同旋转、翻转与圆形一起带上。 |
+| `toCanvas` | `(options?: CropToCanvasOptions) => HTMLCanvasElement \| null` | 把当前裁切结果画到一张新画布上：裁切矩形、旋转、翻转与圆形外形一并生效，所见即所得。 像素取自 image 部件；图片未加载、没有裁切框或在服务端时返回 null。 |
 | `setValue` | `(next: ImageCropperRect) => void` |  |
 | `setZoom` | `(next: number) => void` |  |
 | `setRotation` | `(next: number) => void` |  |
+| `setFlip` | `(next: ImageCropperFlip) => void` |  |
+| `toggleFlip` | `(axis: ImageCropperFlipAxis) => void` | 翻转一条轴，另一条轴不动。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getImageProps` | `() => T['img']` |  |
@@ -504,6 +693,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `getGridProps` | `() => T['element']` | 裁切框中的构图参考线，纯装饰。 |
 | `getZoomSliderProps` | `() => T['input']` | 缩放滑杆，原生 range 输入。 |
 | `getRotateSliderProps` | `() => T['input']` | 旋转滑杆，原生 range 输入。 |
+| `getFlipTriggerProps` | `(props: ImageCropperFlipTriggerProps) => T['button']` | 翻转按钮，原生 button；aria-pressed 报这条轴此刻是否翻着。 |
 | `getHiddenInputProps` | `() => T['input']` |  |
 
 ## 无障碍
@@ -514,11 +704,13 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `ArrowLeft` / `ArrowRight` / `ArrowUp` / `ArrowDown` | focus on crop-area, 未禁用且非只读 | 裁切框整体平移一个自然像素，尺寸不变；走到图片边界就停住 |
+| `ArrowLeft` / `ArrowRight` / `ArrowUp` / `ArrowDown` | focus on crop-area, 未禁用且非只读 | 裁切框沿屏幕方向整体平移一个自然像素，尺寸不变；旋转取最近的直角、翻着的轴反向换算到图片上；走到图片边界就停住 |
 | `Shift+ArrowLeft` / `Shift+ArrowRight` / `Shift+ArrowUp` / `Shift+ArrowDown` | focus on crop-area, 未禁用且非只读 | 同上，一次走十个自然像素 |
-| `ArrowLeft` / `ArrowRight` / `ArrowUp` / `ArrowDown` | focus on crop-handle, 未禁用且非只读 | 这个把手负责的那条边或那个角挪一个自然像素，对面那条边钉住不动；锁了比例时另一条边跟着算 |
+| `ArrowLeft` / `ArrowRight` / `ArrowUp` / `ArrowDown` | focus on crop-handle, 未禁用且非只读 | 这个把手负责的那条边或那个角沿屏幕方向挪一个自然像素，对面那条边钉住不动；锁了比例时另一条边跟着算 |
 | `Shift+ArrowLeft` / `Shift+ArrowRight` / `Shift+ArrowUp` / `Shift+ArrowDown` | focus on crop-handle, 未禁用且非只读 | 同上，一次走十个自然像素 |
-| `Tab` / `Shift+Tab` | 未禁用 | 裁切框与八个把手各占一个 Tab 停靠点，按文档序依次走过 |
+| `Enter` / `Space` | focus on flip-trigger, 未禁用 | 翻转这颗按钮管的那条轴，aria-pressed 随之翻转；按钮是原生 button，这两个键由平台翻成 click |
+| `Enter` / `Space` | held in flip-trigger, 未禁用 | 按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下 |
+| `Tab` / `Shift+Tab` | 未禁用 | 裁切框、八个把手、两条滑杆与翻转按钮各占一个 Tab 停靠点，按文档序依次走过 |
 
 ### ARIA
 
@@ -539,6 +731,8 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `grid` | `aria-hidden` | 'true' |
 | `zoom-slider` | `aria-label` | label.zoomSlider |
 | `rotate-slider` | `aria-label` | label.rotateSlider |
+| `flip-trigger` | `aria-label` | label.flip(axis) |
+| `flip-trigger` | `aria-pressed` | 'true' \| 'false' |
 
 ## 样式参考
 
@@ -573,6 +767,15 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `grid` | `data-shape` | props.shape |
 | `zoom-slider` | `data-disabled` | ''（条件成立时才出现） |
 | `rotate-slider` | `data-disabled` | ''（条件成立时才出现） |
+| `flip-trigger` | `data-axis` | axis |
+| `flip-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `flip-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `flip-trigger` | `data-state` | 'on' \| 'off' |
+| `flip-trigger` | `data-xh-action-control` | '' |
+| `flip-trigger` | `data-xh-action-display` | 'always' |
+| `flip-trigger` | `data-xh-action-profile` | 'text' |
+| `flip-trigger` | `data-xh-action-size` | 'sm' |
+| `flip-trigger` | `data-xh-action-variant` | 'outline' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -602,7 +805,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 ### 动效
 
-动效角色：状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
 
 `background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

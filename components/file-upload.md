@@ -500,8 +500,8 @@ const initialFiles = [
     }),
   ];
 
-  // defaultFiles 是挂载那一刻的初值：元素一进文档就把机器建起来，
-  // 所以先把元素造好、设完这份初值，再挂到页面上
+  // defaultFiles 是初值：列表被改动之前什么时候赋都算数。
+  // 这里先把元素造好、设完这份初值再挂到页面上，一挂上就是带着两份文件的列表
   const upload = document.createElement("xh-file-upload");
   upload.setAttribute("max-files", "4");
   upload.innerHTML = `
@@ -757,12 +757,13 @@ onBeforeUnmount(() => {
 </script>
 ```
 
-### 宿主自定义的准入
+### 作者的准入判定
 
-组件只管理 accept 与大小数量这几条通用规则，其他规则由宿主在受控列表中再筛一遍：这里同名文件只保留最先到达的一份
+accept 与大小数量之外的规矩交给 validate：类型与大小通过之后逐个问它，返回拒绝码即拒收，拒收的文件带着这个码进 file-reject；这里同名文件只收最先到的一份
 
 ```vue
 <script setup lang="ts">
+import type { FileUploadValidateContext } from "@xihan-ui/vue";
 import {
   XhFileUploadDropzone,
   XhFileUploadHiddenInput,
@@ -777,30 +778,21 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const files = ref<File[]>([]);
 const dropped = ref("");
-const lastAccepted = ref("");
 
-// 组件报来的是变化之后的完整列表，宿主按自己的规矩决定最终留下哪些
-function onFilesChange(details: { files: File[] }) {
-  const seen = new Set<string>();
-  const kept: File[] = [];
-  const names: string[] = [];
-  for (const file of details.files) {
-    if (seen.has(file.name)) {
-      names.push(file.name);
-      continue;
-    }
-    seen.add(file.name);
-    kept.push(file);
-  }
-  files.value = kept;
-  dropped.value = names.join("、");
+// 列表里已有同名的，或同一批里排在它前面的有同名的，就报 duplicate
+function validate(file: File, context: FileUploadValidateContext): string | null {
+  const earlier = context.files.slice(0, context.files.indexOf(file));
+  const taken = [...context.acceptedFiles, ...earlier].some(other => other.name === file.name);
+  return taken ? "duplicate" : null;
 }
 
-// 这一批组件收下了谁
-function onFileAccept(details: { files: File[] }) {
-  lastAccepted.value = details.files.map(file => file.name).join("、");
+// 拒收的文件与内建原因（类型、大小、数量）走同一条通道，按码挑出自己关心的那一类
+function onFileReject(details: { files: { file: File; reasons: string[] }[] }) {
+  dropped.value = details.files
+    .filter(rejection => rejection.reasons.includes("duplicate"))
+    .map(rejection => rejection.file.name)
+    .join("、");
 }
 </script>
 
@@ -808,14 +800,13 @@ function onFileAccept(details: { files: File[] }) {
   <div style="width: 100%; max-width: 480px; display: grid; gap: 12px">
     <XhFileUploadRoot
       v-slot="{ acceptedFiles }"
-      :files="files"
       :max-files="6"
-      @files-change="onFilesChange"
-      @file-accept="onFileAccept"
+      :validate="validate"
+      @file-reject="onFileReject"
     >
       <XhFileUploadLabel>去重后的附件</XhFileUploadLabel>
       <XhFileUploadDropzone>
-        <span>同名文件只留最先来的那份</span>
+        <span>同名文件只收最先来的那份</span>
       </XhFileUploadDropzone>
       <div>
         <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
@@ -830,7 +821,6 @@ function onFileAccept(details: { files: File[] }) {
       </XhFileUploadList>
     </XhFileUploadRoot>
 
-    <span v-if="lastAccepted">这一批收下：{{ lastAccepted }}</span>
     <span v-if="dropped">同名挡下：{{ dropped }}</span>
   </div>
 </template>
@@ -841,7 +831,7 @@ function onFileAccept(details: { files: File[] }) {
   <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 480px">
     <label data-xh-part="label">去重后的附件</label>
     <div data-xh-part="dropzone">
-      <span>同名文件只留最先来的那份</span>
+      <span>同名文件只收最先来的那份</span>
     </div>
     <div>
       <button data-xh-part="trigger">选择文件</button>
@@ -851,20 +841,34 @@ function onFileAccept(details: { files: File[] }) {
   </div>
 </xh-file-upload>
 
-<span id="file-upload-rule-accepted"></span>
 <span id="file-upload-rule-dropped"></span>
 
 <script type="module">
   const upload = document.getElementById("file-upload-rule");
   const group = upload.querySelector('[data-xh-part="list"]');
-  const accepted = document.getElementById("file-upload-rule-accepted");
   const dropped = document.getElementById("file-upload-rule-dropped");
 
-  upload.files = [];
+  // 列表里已有同名的，或同一批里排在它前面的有同名的，就报 duplicate
+  upload.validate = (file, context) => {
+    const earlier = context.files.slice(0, context.files.indexOf(file));
+    const taken = [...context.acceptedFiles, ...earlier].some(
+      (other) => other.name === file.name
+    );
+    return taken ? "duplicate" : null;
+  };
 
-  function render(files) {
+  // 拒收的文件与内建原因（类型、大小、数量）走同一条通道，按码挑出自己关心的那一类
+  upload.addEventListener("file-reject", (event) => {
+    const names = event.detail.files
+      .filter((rejection) => rejection.reasons.includes("duplicate"))
+      .map((rejection) => rejection.file.name);
+    dropped.textContent = names.length ? `同名挡下：${names.join("、")}` : "";
+  });
+
+  // 条目节点由作者按当前列表铺，文件名与大小由元素代填
+  upload.addEventListener("files-change", (event) => {
     group.replaceChildren(
-      ...files.map(() => {
+      ...event.detail.files.map(() => {
         const item = document.createElement("div");
         item.dataset.xhPart = "item";
         item.innerHTML =
@@ -874,31 +878,6 @@ function onFileAccept(details: { files: File[] }) {
         return item;
       })
     );
-  }
-
-  // 组件报来的是变化之后的完整列表，宿主按自己的规矩决定最终留下哪些
-  upload.addEventListener("files-change", (event) => {
-    const seen = new Set();
-    const kept = [];
-    const names = [];
-    for (const file of event.detail.files) {
-      if (seen.has(file.name)) {
-        names.push(file.name);
-        continue;
-      }
-      seen.add(file.name);
-      kept.push(file);
-    }
-    upload.files = kept;
-    dropped.textContent = names.length ? `同名挡下：${names.join("、")}` : "";
-    render(kept);
-  });
-
-  // 这一批组件收下了谁
-  upload.addEventListener("file-accept", (event) => {
-    accepted.textContent = `这一批收下：${event.detail.files
-      .map((file) => file.name)
-      .join("、")}`;
   });
 </script>
 ```
@@ -1425,6 +1404,224 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 </script>
 ```
 
+### 并发上限与取消
+
+max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补上；cancelUpload 只中止传输、文件留在列表里，startUpload 让它重新开传
+
+```vue
+<script setup lang="ts">
+import type { FileUploadRequest, FileUploadResult, FileUploadStatus } from "@xihan-ui/vue";
+import {
+  XhButton,
+  XhFileUploadDropzone,
+  XhFileUploadHiddenInput,
+  XhFileUploadItem,
+  XhFileUploadItemDeleteTrigger,
+  XhFileUploadItemName,
+  XhFileUploadLabel,
+  XhFileUploadList,
+  XhFileUploadRoot,
+  XhFileUploadTrigger,
+  XhProgress,
+} from "@xihan-ui/vue";
+
+const statusText: Record<FileUploadStatus, string> = {
+  idle: "未开始",
+  queued: "排队中",
+  uploading: "上传中",
+  done: "已传完",
+  error: "失败",
+  canceled: "已取消",
+};
+
+// 演示用的假传输：两秒走完；真实实现把 signal 接给请求库，取消与删除都经它中止
+function upload(request: FileUploadRequest): Promise<FileUploadResult> {
+  return new Promise((resolve, reject) => {
+    let progress = 0;
+    const timer = setInterval(() => {
+      progress += 10;
+      request.onProgress(progress);
+      if (progress >= 100) {
+        clearInterval(timer);
+        resolve({});
+      }
+    }, 200);
+    request.signal.addEventListener("abort", () => {
+      clearInterval(timer);
+      reject(request.signal.reason);
+    });
+  });
+}
+</script>
+
+<template>
+  <XhFileUploadRoot
+    v-slot="{ acceptedFiles, uploadOf, startUpload, cancelUpload }"
+    :max-files="Infinity"
+    :max-concurrent-uploads="2"
+    :upload="upload"
+    style="max-inline-size: 420px"
+  >
+    <XhFileUploadLabel>附件</XhFileUploadLabel>
+    <XhFileUploadDropzone>一次多选几份，同时只传两份</XhFileUploadDropzone>
+    <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
+    <XhFileUploadHiddenInput />
+    <XhFileUploadList>
+      <XhFileUploadItem v-for="file in acceptedFiles" :key="file.name" :file="file">
+        <XhFileUploadItemName />
+        <XhProgress
+          v-if="uploadOf(file)?.status === 'uploading'"
+          :value="uploadOf(file)!.progress"
+          style="flex: 1"
+        />
+        <span v-else style="flex: 1">{{ statusText[uploadOf(file)?.status ?? "idle"] }}</span>
+        <XhButton
+          v-if="uploadOf(file)?.status === 'uploading' || uploadOf(file)?.status === 'queued'"
+          size="sm"
+          variant="outline"
+          @click="cancelUpload(file)"
+        >
+          取消
+        </XhButton>
+        <XhButton
+          v-else-if="uploadOf(file)?.status === 'canceled'"
+          size="sm"
+          variant="outline"
+          @click="startUpload(file)"
+        >
+          重新上传
+        </XhButton>
+        <XhFileUploadItemDeleteTrigger />
+      </XhFileUploadItem>
+    </XhFileUploadList>
+  </XhFileUploadRoot>
+</template>
+```
+
+```html
+<xh-file-upload id="file-upload-queue" max-files="99" max-concurrent-uploads="2">
+  <div data-xh-part="root" style="max-inline-size: 420px">
+    <label data-xh-part="label">附件</label>
+    <div data-xh-part="dropzone">一次多选几份，同时只传两份</div>
+    <button data-xh-part="trigger">选择文件</button>
+    <input data-xh-part="hidden-input" />
+    <div data-xh-part="list"></div>
+  </div>
+</xh-file-upload>
+
+<script type="module">
+  const upload = document.getElementById("file-upload-queue");
+  const group = upload.querySelector('[data-xh-part="list"]');
+
+  const statusText = {
+    idle: "未开始",
+    queued: "排队中",
+    uploading: "上传中",
+    done: "已传完",
+    error: "失败",
+    canceled: "已取消",
+  };
+
+  // 每份文件那一行的状态位，按文件取，状态变化时只改这一块
+  const slots = new Map();
+
+  // 演示用的假传输：两秒走完；真实实现把 signal 接给请求库，取消与删除都经它中止
+  upload.upload = (request) =>
+    new Promise((resolve, reject) => {
+      let progress = 0;
+      paint(request.file);
+      const timer = setInterval(() => {
+        progress += 10;
+        request.onProgress(progress);
+        paint(request.file);
+        if (progress >= 100) {
+          clearInterval(timer);
+          resolve({});
+        }
+      }, 200);
+      request.signal.addEventListener("abort", () => {
+        clearInterval(timer);
+        reject(request.signal.reason);
+      });
+    });
+
+  function button(text, onClick) {
+    const el = document.createElement("xh-button");
+    el.setAttribute("size", "sm");
+    el.setAttribute("variant", "outline");
+    el.innerHTML = `<button data-xh-part="root">${text}</button>`;
+    el.addEventListener("click", onClick);
+    return el;
+  }
+
+  // 状态从元素上读：uploadOf 给的是这一刻的传输快照
+  function paint(file) {
+    const slot = slots.get(file);
+    if (!slot) return;
+    const snapshot = upload.uploadOf(file);
+    const status = snapshot?.status ?? "idle";
+
+    let state;
+    if (status === "uploading") {
+      state = slot.querySelector("xh-progress");
+      if (!state) {
+        state = document.createElement("xh-progress");
+        state.style.cssText = "display: block; flex: 1";
+        state.innerHTML =
+          '<div data-xh-part="root"><div data-xh-part="track"><div data-xh-part="range"></div></div></div>';
+      }
+      state.setAttribute("value", String(snapshot.progress));
+    } else {
+      state = document.createElement("span");
+      state.style.flex = "1";
+      state.textContent = statusText[status];
+    }
+
+    const action =
+      status === "uploading" || status === "queued"
+        ? button("取消", () => upload.cancelUpload(file))
+        : status === "canceled"
+          ? button("重新上传", () => upload.startUpload(file))
+          : null;
+    slot.replaceChildren(...(action ? [state, action] : [state]));
+  }
+
+  // 条目节点由作者按当前列表铺，文件名由元素代填；状态位留成空壳，由 paint 填
+  function render(files) {
+    slots.clear();
+    group.replaceChildren(
+      ...files.map((file) => {
+        const item = document.createElement("div");
+        item.dataset.xhPart = "item";
+
+        const name = document.createElement("span");
+        name.dataset.xhPart = "item-name";
+
+        const slot = document.createElement("span");
+        slot.style.cssText =
+          "display: flex; flex: 1; min-inline-size: 0; align-items: center; gap: 8px";
+
+        const remove = document.createElement("button");
+        remove.dataset.xhPart = "item-delete-trigger";
+
+        item.append(name, slot, remove);
+        slots.set(file, slot);
+        return item;
+      })
+    );
+    for (const file of files) paint(file);
+  }
+
+  // 列表变化的回调先于排队与开传：等这一轮落定再按新状态铺
+  upload.addEventListener("files-change", (event) => {
+    queueMicrotask(() => render(event.detail.files));
+  });
+
+  upload.addEventListener("upload-complete", (event) => paint(event.detail.file));
+  upload.addEventListener("upload-cancel", (event) => paint(event.detail.file));
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -1441,7 +1638,10 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 - 超出 `maxFiles` / `maxFileSize` / `minFileSize` 的文件立即被拒绝，`onFileReject` 逐个报告原因。
 - `autoUpload` 决定选择后立即上传还是等待提交。
 - `remoteFiles` 回显服务器上已有的附件，与本次新选的文件并列在同一个列表中。
-- 上传生命周期（完成、失败）各有回调；宿主还可以插入自定义的准入判断。
+- `validate` 在类型与大小校验之后逐个判定，返回拒绝码即拒收，与内建原因一起进 `onFileReject`。
+- 焦点在组件里时可以直接粘贴文件（`allowPaste`，默认开启），与选择、投放走同一道校验。
+- 上传生命周期（完成、失败、取消）各有回调；`maxConcurrentUploads` 限定同时在传的份数，其余排队。
+- `cancelUpload` 中止传输但保留文件，`startUpload` 让取消或失败的文件重新开传；删除文件同样中止它的传输。
 
 ### 组合
 
@@ -1483,6 +1683,9 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `files` | `File[]` |  | 已选文件。提供即受控：cell 直读 prop，写入只发 onFilesChange 不落内部值。 |
 | `defaultFiles` | `File[]` |  |  |
 | `allowDrop` | `boolean` |  | 是否接受拖拽投放，默认 true。关闭后投放区不再拦截默认行为，也不再输出 data-dragging。 |
+| `allowPaste` | `boolean` |  | 是否接受粘贴，默认 true：焦点在组件里（投放区、选择钮、删除钮）时 Ctrl / Cmd+V 收下剪贴板里的文件， 与选择、投放走同一道校验。剪贴板里没有文件时不拦截，文字照常粘贴到别处。 |
+| `validate` | `(file: File, context: FileUploadValidateContext) => string \| string[] \| null \| undefined` |  | 作者自己的准入判定，在类型与大小校验通过之后、数量上限之前逐个调用：返回拒绝码（一个或一组）即拒收， 拒收的文件连同返回的码一起进 onFileReject，不占数量名额；返回 null / undefined / 空数组即放行。 只接受同步判定；要读图片尺寸之类的异步检查放进 upload，失败时抛错走 onUploadError。 |
+| `maxConcurrentUploads` | `number` |  | 同时在传的文件数上限，默认不限。到了上限的文件报 queued 排队，前面的传完、失败或被取消后按列表顺序补上。 |
 | `directory` | `boolean` |  | 选择目录而不是文件（隐藏输入带 webkitdirectory）。 |
 | `capture` | `'user' \| 'environment'` |  | 移动端直接调用摄像头 / 麦克风采集。 |
 | `remoteFiles` | `FileUploadRemoteFile[]` |  | 服务器已有附件（编辑表单回显）。提供即受控：cell 直读 prop，删改只发 onRemoteFilesChange 不落内部值。条目计入 maxFiles 总量，与本地文件一起渲染。 |
@@ -1496,6 +1699,7 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `onRemoteFilesChange` | `(details: FileUploadRemoteFilesChangeDetails) => void` |  | 远程附件列表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onUploadComplete` | `(details: FileUploadCompleteDetails) => void` |  | 单个文件传输完成（upload 的 Promise 兑现）。 |
 | `onUploadError` | `(details: FileUploadErrorDetails) => void` |  | 单个文件传输失败（upload 的 Promise 拒绝）；中止不视为失败，不发出。 |
+| `onUploadCancel` | `(details: FileUploadCancelDetails) => void` |  | 单个文件的传输被 cancelUpload 取消（文件留在列表里）；删除文件时的中止不发出。 |
 
 ### FileUploadRemoteFile
 
@@ -1519,6 +1723,7 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `remote-files-change` | `FileUploadRemoteFilesChangeDetails` | 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }` |
 | `upload-complete` | `FileUploadCompleteDetails` | 单个文件传输完成；detail 为 `{ file, url? }` |
 | `upload-error` | `FileUploadErrorDetails` | 单个文件传输失败；detail 为 `{ file, error }` |
+| `upload-cancel` | `FileUploadCancelDetails` | 单个文件的传输被 cancelUpload 取消（文件留在列表里）；detail 为 `{ file }` |
 | `file-accept` | `FileUploadFileAcceptDetails` | 本次接受了哪些文件；detail 为 `{ files: File[] }` |
 | `file-reject` | `FileUploadFileRejectDetails` | 本次拒绝了哪些文件及各自的原因；detail 为 `{ files: { file, reasons }[] }` |
 
@@ -1547,15 +1752,15 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | 部件 | 取值 |
 | --- | --- |
 | `item` | uploadOf(file)?.status |
-| `item-progress` | uploadOf(file)?.status |
+| `item-progress` | upload?.status |
 
 以下名称仅用于内部状态机。
 
 **状态**：`idle` · `dragging`
 
-**事件**：`FILES.SET` · `FILES.ADD` · `FILE.DELETE` · `FILES.CLEAR` · `PICKER.OPEN` · `DRAG.OVER` · `DRAG.LEAVE` · `DROP` · `UPLOAD.START` · `REMOTE.DELETE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`FILES.SET` · `FILES.ADD` · `FILE.DELETE` · `FILES.CLEAR` · `PICKER.OPEN` · `DRAG.OVER` · `DRAG.LEAVE` · `DROP` · `PASTE` · `UPLOAD.CANCEL` · `UPLOAD.START` · `REMOTE.DELETE` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED` · `PROGRESS.SETTLED`
 
-**判据**：`canChange` · `canDrop`
+**判据**：`canChange` · `canDrop` · `canPaste`
 
 ### connect API
 
@@ -1573,7 +1778,8 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `maxFiles` | `number` | 生效的数量上限（已按默认值与非法值归一）。 |
 | `getFileSizeText` | `(file: FileUploadFile) => string` | 字节数格式化为可读形式，供作者渲染 item-size-text；远程附件未报大小时为空串。 |
 | `uploadOf` | `(file: FileUploadFile) => FileUploadSnapshot \| null` | 该条目的传输快照：远程附件恒为 done；本地文件未配置 upload 时为 null， 已配置而尚未开始传输时为 idle。 |
-| `startUpload` | `(file: File) => void` | 手动开始传输（autoUpload 关闭时）或失败后重试；不在列表中或传输中的文件调用无效。 |
+| `startUpload` | `(file: File) => void` | 手动开始传输（autoUpload 关闭时）、失败或取消后重试；不在列表中或传输中的文件调用无效。 |
+| `cancelUpload` | `(file: File) => void` | 取消这个文件的传输（在传或排队中），文件留在列表里、状态落 canceled；删除用 deleteFile。 |
 | `setFiles` | `(files: File[]) => void` |  |
 | `addFiles` | `(files: File[]) => void` |  |
 | `deleteFile` | `(file: FileUploadFile) => void` | 本地文件按引用移除（传输中会中止），远程附件按 id 移除。 |
@@ -1606,6 +1812,7 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `Enter` / `Space` | focus on trigger | 打开系统文件选择框（原生 button 的默认激活） |
 | `Enter` / `Space` | focus on item-delete-trigger | 把这一条从列表里删掉（原生 button 的默认激活） |
 | `Enter` / `Space` | focus on clear-trigger | 清空整份列表（原生 button 的默认激活）；列表为空时按钮照常在位、可聚焦，激活是空操作 |
+| `Ctrl+V` / `Meta+V` | focus inside the component, not disabled, allowPaste | 收下剪贴板里的文件，与选择、投放走同一道校验；剪贴板里没有文件时不拦截，文字照常粘贴到别处 |
 | `Enter` / `Space` | held on trigger / item-delete-trigger / clear-trigger, not disabled | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下（选择钮打开系统文件框即失焦），删除钮随文件离开列表时一并撤下 |
 
 ### ARIA
@@ -1649,8 +1856,14 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `dropzone` | `data-invalid` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `trigger` | `data-xh-action-control` | '' |
+| `trigger` | `data-xh-action-display` | 'always' |
+| `trigger` | `data-xh-action-profile` | 'text' |
+| `trigger` | `data-xh-action-size` | 'md' |
+| `trigger` | `data-xh-action-variant` | 'outline' |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-empty` | ''（条件成立时才出现） |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-file-name` | file.name |
 | `item` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |
@@ -1662,12 +1875,22 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `item-preview` | `data-disabled` | ''（条件成立时才出现） |
 | `item-preview` | `data-file-type` | (isRemote(file) ? file.type ?? '' : file.type) \|\| 'un… |
 | `item-progress` | `data-disabled` | ''（条件成立时才出现） |
-| `item-progress` | `data-state` | uploadOf(file)?.status |
+| `item-progress` | `data-state` | upload?.status |
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-xh-action-control` | '' |
+| `item-delete-trigger` | `data-xh-action-display` | 'always' |
+| `item-delete-trigger` | `data-xh-action-profile` | 'icon' |
+| `item-delete-trigger` | `data-xh-action-size` | 'xs' |
+| `item-delete-trigger` | `data-xh-action-variant` | 'ghost' |
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-empty` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-xh-action-control` | '' |
+| `clear-trigger` | `data-xh-action-display` | 'always' |
+| `clear-trigger` | `data-xh-action-profile` | 'text' |
+| `clear-trigger` | `data-xh-action-size` | 'sm' |
+| `clear-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -1676,21 +1899,21 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-file-upload-clear-bg-active` | `clear-trigger` | `background` | `is(:active, [data-pressed])`<br>`not(:disabled)`<br>`pressed` | `--xh-bg-subtle-active` | file-upload 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-file-upload-clear-bg-hover` | `clear-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | file-upload 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-file-upload-clear-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | file-upload 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-file-upload-clear-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | file-upload 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-file-upload-clear-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | file-upload 的 clear-trigger 部件 color 覆盖槽。 |
-| `--xh-file-upload-clear-fg-hover` | `clear-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | file-upload 的 clear-trigger 部件 color 覆盖槽。 |
-| `--xh-file-upload-clear-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-caption-size` | file-upload 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-file-upload-clear-gap` | `clear-trigger` | `gap` | `default` | `--xh-control-gap-sm` | file-upload 的 clear-trigger 部件 gap 覆盖槽。 |
-| `--xh-file-upload-clear-h` | `clear-trigger` | `block-size` | `default` | `--xh-control-h-sm` | file-upload 的 clear-trigger 部件 block-size 覆盖槽。 |
-| `--xh-file-upload-clear-px` | `clear-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | file-upload 的 clear-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-file-upload-clear-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | file-upload 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-file-upload-clear-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` | file-upload 的 clear-trigger 部件 font-size 覆盖槽。 |
+| `--xh-file-upload-clear-gap` | `clear-trigger` | `gap` | `default` | `--xh-_action-profile-gap` | file-upload 的 clear-trigger 部件 gap 覆盖槽。 |
+| `--xh-file-upload-clear-h` | `clear-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | file-upload 的 clear-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-file-upload-clear-px` | `clear-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | file-upload 的 clear-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-file-upload-clear-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 clear-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-file-upload-delete-bg-active` | `item-delete-trigger` | `background` | `is(:active, [data-pressed])`<br>`not(:disabled)`<br>`pressed` | `--xh-bg-subtle-active` | file-upload 的 item-delete-trigger 部件 background 覆盖槽。 |
-| `--xh-file-upload-delete-bg-hover` | `item-delete-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | file-upload 的 item-delete-trigger 部件 background 覆盖槽。 |
+| `--xh-file-upload-delete-bg-active` | `item-delete-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | file-upload 的 item-delete-trigger 部件 background-color 覆盖槽。 |
+| `--xh-file-upload-delete-bg-hover` | `item-delete-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | file-upload 的 item-delete-trigger 部件 background-color 覆盖槽。 |
 | `--xh-file-upload-delete-fg` | `item-delete-trigger` | `color` | `default` | `--xh-fg-muted` | file-upload 的 item-delete-trigger 部件 color 覆盖槽。 |
-| `--xh-file-upload-delete-fg-hover` | `item-delete-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-danger-hover` | file-upload 的 item-delete-trigger 部件 color 覆盖槽。 |
+| `--xh-file-upload-delete-fg-hover` | `item-delete-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-danger-hover` | file-upload 的 item-delete-trigger 部件 color 覆盖槽。 |
 | `--xh-file-upload-delete-radius` | `item-delete-trigger` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item-delete-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-file-upload-delete-size` | `item-delete-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | file-upload 的 item-delete-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-file-upload-delete-size` | `item-delete-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | file-upload 的 item-delete-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg` | `dropzone` | `background` | `default` | `transparent` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg-disabled` | `dropzone` | `background` | `disabled` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg-dragging` | `dropzone` | `background` | `dragging` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
@@ -1711,16 +1934,16 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `--xh-file-upload-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | file-upload 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-file-upload-item-bg` | `item` | `background` | `default` | `--xh-bg-surface` | file-upload 的 item 部件 background 覆盖槽。 |
 | `--xh-file-upload-item-border` | `item` | `border` | `default` | `--xh-border-default` | file-upload 的 item 部件 border 覆盖槽。 |
-| `--xh-file-upload-item-border-error` | `item` | `border-color` | `state=error` | `--xh-border-invalid` | file-upload 的 item 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-item-border-error` | `item` | `border-color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-border-invalid` | file-upload 的 item 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | file-upload 的 item 部件 color 覆盖槽。 |
-| `--xh-file-upload-item-fg-done` | `item` | `background-color` | `state=done` | `--xh-fg-success` | file-upload 的 item 部件 background-color 覆盖槽。 |
-| `--xh-file-upload-item-fg-error` | `item` | `color` | `state=error` | `--xh-fg-danger` | file-upload 的 item 部件 color 覆盖槽。 |
+| `--xh-file-upload-item-fg-done` | `item` | `background-color` | `has(> [data-part='item-progress'][data-state='done'])`<br>`state=closed`<br>`state=done` | `--xh-fg-success` | file-upload 的 item 部件 background-color 覆盖槽。 |
+| `--xh-file-upload-item-fg-error` | `item` | `color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-fg-danger` | file-upload 的 item 部件 color 覆盖槽。 |
 | `--xh-file-upload-item-font-size` | `item` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 item 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-item-gap` | `list` | `gap` | `default` | `--xh-space-2` | file-upload 的 list 部件 gap 覆盖槽。 |
 | `--xh-file-upload-item-inner-gap` | `item` | `gap` | `default` | `--xh-control-gap-md` | file-upload 的 item 部件 gap 覆盖槽。 |
-| `--xh-file-upload-item-mark-size` | `item` | `block-size`<br>`inline-size` | `state=done`<br>`state=error` | `--xh-control-indicator-size` | file-upload 的 item 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-file-upload-item-mark-size` | `item` | `block-size`<br>`inline-size` | `has(> [data-part='item-progress'][data-state='done'])`<br>`has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=done`<br>`state=error` | `--xh-control-indicator-size` | file-upload 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-item-name-min-w` | `item-name` | `min-inline-size` | `default` | `--xh-control-min-w` | file-upload 的 item-name 部件 min-inline-size 覆盖槽。 |
-| `--xh-file-upload-item-progress-fill` | `item-progress` | `background` | `state=uploading` | `--xh-bg-brand` | file-upload 的 item-progress 部件 background 覆盖槽。 |
+| `--xh-file-upload-item-progress-fill` | `item-progress` | `background` | `default` | `--xh-bg-brand` | file-upload 的 item-progress 部件 background 覆盖槽。 |
 | `--xh-file-upload-item-progress-h` | `item-progress` | `block-size` | `default` | `--xh-stroke-thick` | file-upload 的 item-progress 部件 block-size 覆盖槽。 |
 | `--xh-file-upload-item-progress-radius` | `item-progress` | `border-radius` | `default` | `--xh-shape-pill` | file-upload 的 item-progress 部件 border-radius 覆盖槽。 |
 | `--xh-file-upload-item-progress-track` | `item-progress` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 item-progress 部件 background 覆盖槽。 |
@@ -1740,27 +1963,28 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
 | `--xh-file-upload-preview-size` | `item-preview` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-md` | file-upload 的 item-preview 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-size-fg` | `item-size-text` | `color` | `default` | `--xh-fg-subtle` | file-upload 的 item-size-text 部件 color 覆盖槽。 |
 | `--xh-file-upload-size-font-size` | `item-size-text` | `font-size` | `default` | `--xh-text-caption-size` | file-upload 的 item-size-text 部件 font-size 覆盖槽。 |
-| `--xh-file-upload-trigger-bg` | `trigger` | `background` | `default` | `--xh-bg-surface` | file-upload 的 trigger 部件 background 覆盖槽。 |
-| `--xh-file-upload-trigger-bg-active` | `trigger` | `background` | `is(:active, [data-pressed])`<br>`not(:disabled)`<br>`pressed` | `--xh-bg-subtle-active` | file-upload 的 trigger 部件 background 覆盖槽。 |
-| `--xh-file-upload-trigger-bg-hover` | `trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | file-upload 的 trigger 部件 background 覆盖槽。 |
-| `--xh-file-upload-trigger-border` | `trigger` | `border` | `default` | `--xh-border-control` | file-upload 的 trigger 部件 border 覆盖槽。 |
-| `--xh-file-upload-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | file-upload 的 trigger 部件 color 覆盖槽。 |
-| `--xh-file-upload-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 trigger 部件 font-size 覆盖槽。 |
-| `--xh-file-upload-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-md` | file-upload 的 trigger 部件 gap 覆盖槽。 |
-| `--xh-file-upload-trigger-h` | `trigger` | `block-size` | `default` | `--xh-control-h-md` | file-upload 的 trigger 部件 block-size 覆盖槽。 |
-| `--xh-file-upload-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-control-px-md` | file-upload 的 trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-file-upload-trigger-bg` | `trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | file-upload 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-file-upload-trigger-bg-active` | `trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | file-upload 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-file-upload-trigger-bg-hover` | `trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | file-upload 的 trigger 部件 background-color 覆盖槽。 |
+| `--xh-file-upload-trigger-border` | `trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | file-upload 的 trigger 部件 border 覆盖槽。 |
+| `--xh-file-upload-trigger-fg` | `trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | file-upload 的 trigger 部件 color 覆盖槽。 |
+| `--xh-file-upload-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` | file-upload 的 trigger 部件 font-size 覆盖槽。 |
+| `--xh-file-upload-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | file-upload 的 trigger 部件 font-weight 覆盖槽。 |
+| `--xh-file-upload-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_action-profile-gap` | file-upload 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-file-upload-trigger-h` | `trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | file-upload 的 trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-file-upload-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | file-upload 的 trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-file-upload-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 trigger 部件 border-radius 覆盖槽。 |
-| `--xh-file-upload-trigger-shadow-hover` | `trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | file-upload 的 trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-file-upload-trigger-shadow-hover` | `trigger` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | file-upload 的 trigger 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `border-color` · `box-shadow` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。

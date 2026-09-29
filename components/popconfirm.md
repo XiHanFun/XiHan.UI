@@ -462,7 +462,7 @@ function onConfirm() {
 ### 何时不用
 
 - 后果严重且不可逆时，使用[对话框](./dialog)，让用户读到完整说明。
-- 操作可以撤销时，直接执行并配一条带“撤销”的[轻提示](./toast)，体验优于事前确认。
+- 操作可以撤销时，直接执行并配一条带“撤销”的轻提示（[通知](./notification)的轻提示预设），体验优于事前确认。
 
 ### 特性
 
@@ -473,7 +473,7 @@ function onConfirm() {
 - 位置、尺寸、语气三轴。
 - 内容与箭头使用与 Popover 同源的 M2 磨砂表面：边界、顶光、背景模糊与投影保持连续；强制色模式撤掉装饰顶光，由系统色接管边界。
 - 标题、说明与末行操作按固定节奏排布，长文案可在可用宽度内断行；说明文字为 13px 说明档。触发器与两个按钮走 Action Control 家族配方：确认是本浮层的主要动作，显式 solid 实心（语气随 content 的 `data-tone`）；取消是中性次要出口，outline 描边；触发器为 text 档中性描边。三者的按压反馈、粗指针命中区与焦点环由配方给出，Space / Enter 与触屏按住期间投影 `data-pressed`。
-- pending 时在确认文案之前显示 spinner，并以 `aria-busy` / `aria-disabled` 报告状态；挂起时按钮不再响应 hover / active 换面，减弱动效下以静止点线圆环表达在途。
+- pending 时确认钮宽不变：一个 micro 之后加载环在钮正中淡入、确认文案同刻淡出留位，快速落定什么都不闪；以 `aria-busy` / `aria-disabled` 报告状态，挂起时按钮不再响应 hover / active 换面，减弱动效下以静止点线圆环表达在途。
 
 ### 组合
 
@@ -509,6 +509,7 @@ function onConfirm() {
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
+| `disabled` | `boolean` |  | 浮层不可打开：触发器转原生 disabled，点按与命令式 setOpen(true) 都不展开；展开途中转为禁用即收起。 与 Tooltip、HoverCard 的 disabled 同名同义：关掉的是浮层这件事。受控写回 open 仍按宿主的意思来。 |
 | `offset` | `number` |  |  |
 | `onCancel` | `() => void` |  | 点击了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发该回调。 |
 | `onConfirm` | `() => void \| PromiseLike<unknown>` |  | 点击了确认按钮。返回 thenable 即挂起确认门：浮层等待它兑现才收起、 确认按钮转圈且再次点击无效，拒绝则留在原地并报告确认错误。同步返回照常立即收起。 |
@@ -636,6 +637,7 @@ function onConfirm() {
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -648,6 +650,7 @@ function onConfirm() {
 | `confirm-trigger` | `data-xh-action-size` | 'sm' |
 | `confirm-trigger` | `data-xh-action-variant` | 'solid' |
 | `confirm-trigger` | `data-xh-ink-surface` | '' |
+| `confirm-trigger` | `data-xh-loading-ring` | 'overlay' |
 | `cancel-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `cancel-trigger` | `data-xh-action-control` | '' |
 | `cancel-trigger` | `data-xh-action-display` | 'always' |
@@ -680,7 +683,7 @@ function onConfirm() {
 | `--xh-popconfirm-cancel-fg` | `cancel-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | popconfirm 的 cancel-trigger 部件 color 覆盖槽。 |
 | `--xh-popconfirm-cancel-fg-focus` | `cancel-trigger` | `color` | `focus-visible` | `--xh-popconfirm-cancel-fg` | popconfirm 的 cancel-trigger 部件 color 覆盖槽。 |
 | `--xh-popconfirm-confirm-bg` | `confirm-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`loading`<br>`xh-ink-surface` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-loading`<br>`--xh-_action-variant-bg-rest` | popconfirm 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-popconfirm-confirm-fg` | `confirm-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | popconfirm 的 confirm-trigger 部件 color 覆盖槽。 |
+| `--xh-popconfirm-confirm-fg` | `confirm-trigger` | `border-block-start-color`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`motion=reduce`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | popconfirm 的 confirm-trigger 部件 border-block-start-color、border-color、color 覆盖槽。 |
 | `--xh-popconfirm-confirm-shadow` | `confirm-trigger` | `box-shadow` | `default` | `--xh-popconfirm-action-shadow` | popconfirm 的 confirm-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-popconfirm-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | popconfirm 的 description 部件 color 覆盖槽。 |
 | `--xh-popconfirm-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | popconfirm 的 description 部件 font-size 覆盖槽。 |
@@ -688,7 +691,7 @@ function onConfirm() {
 | `--xh-popconfirm-gap` | `content` | `gap` | `default` | `--xh-space-2` | popconfirm 的 content 部件 gap 覆盖槽。 |
 | `--xh-popconfirm-icon-size` | `cancel-trigger`<br>`confirm-trigger`<br>`content`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | popconfirm 的 cancel-trigger、confirm-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-popconfirm-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | popconfirm 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-popconfirm-loading-duration` | `confirm-trigger` | `animation` | `loading` | `--xh-motion-loop-spin` | popconfirm 的 confirm-trigger 部件 animation 覆盖槽。 |
+| `--xh-popconfirm-loading-duration` | `confirm-trigger` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | popconfirm 的 confirm-trigger 部件 animation 覆盖槽。 |
 | `--xh-popconfirm-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | popconfirm 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-popconfirm-max-w` | `content` | `max-inline-size` | `default` | `--xh-_popconfirm-max-w` | popconfirm 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-popconfirm-px` | `content` | `padding-inline` | `default` | `--xh-_popconfirm-pad` | popconfirm 的 content 部件 padding-inline 覆盖槽。 |
@@ -706,11 +709,11 @@ function onConfirm() {
 
 可覆盖的动效槽：`--xh-popconfirm-loading-duration`。
 
-共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；状态切换走 `transition`，属性由 `transition-*` 分项给定。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
-`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

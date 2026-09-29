@@ -14,7 +14,7 @@
 
 ## 用法
 
-思考时自动展开、思考完成后自动收起；状态文案由组件按是否在思考与时长给出
+思考时自动展开、每秒更新已经想了多久，思考完成后自动收起；状态文案由组件按是否在思考、已用时与时长给出
 
 ```vue
 <script setup lang="ts">
@@ -39,7 +39,7 @@ function tick() {
   at = Math.min(at + 2, full.length);
   text.value = full.slice(0, at);
   if (at < full.length) {
-    timer = window.setTimeout(tick, 60);
+    timer = window.setTimeout(tick, 240);
     return;
   }
   endTime.value = Date.now();
@@ -57,6 +57,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 const translations = {
   label: "思考过程",
   thinking: "正在思考…",
+  thinkingFor: "已想了 {seconds} 秒…",
   thoughtFor: "想了 {seconds} 秒",
 };
 </script>
@@ -98,6 +99,7 @@ const translations = {
   panel.translations = {
     label: "思考过程",
     thinking: "正在思考…",
+    thinkingFor: "已想了 {seconds} 秒…",
     thoughtFor: "想了 {seconds} 秒",
   };
 
@@ -110,7 +112,7 @@ const translations = {
     at = Math.min(at + 2, full.length);
     body.textContent = full.slice(0, at);
     if (at < full.length) {
-      setTimeout(tick, 60);
+      setTimeout(tick, 240);
       return;
     }
     const endTime = performance.timeOrigin + performance.now();
@@ -540,8 +542,9 @@ const translations = {
 - 自动开合与[工具调用](./tool-call)是同一台状态机：锁存依靠转移的放置位置，不依靠布尔位，用户点击过一次之后阶段变化就不再触发自动开合。
 - 思考时长由两个时刻计算，任一缺席即无法计算：流被中止时兜底收尾不写结束时刻，推理块只有起点没有终点，这一情况必须被处理。
 - 名称与时长都排在开关内，“思考过程，用时 12 秒”整句构成开关的可访问名称。
-- 状态文案由组件提供：进行中显示“在想”的文案，完成后把秒数代入 `thoughtFor` 的 `{seconds}`，无法计算时长时回落到折叠区的名称。名称位不写内容时显示的就是它。
-- 形态三档：`outline` 描边、`subtle` 底色分区（默认档）、`ghost` 无壳内联。一段回答中穿插多处思考时使用 `ghost`，它不占一块面，开关收为只占文字宽度的小圆角块。
+- 状态文案由组件提供：进行中知道开始时刻（`startTime`）就把已经想了的整秒数代入 `thinkingFor` 的 `{seconds}`，每秒跟着走，不知道时显示 `thinking`；完成后把秒数代入 `thoughtFor` 的 `{seconds}`，无法计算时长时回落到折叠区的名称。名称位不写内容时显示的就是它。只换了 `thinking` 没给 `thinkingFor` 时照旧显示 `thinking`，不把英文缺省串混进本地化过的文案。
+- 已用时的表只在思考中走：机器每秒记一次当前时刻，想完即拆掉计时器，一段会话里的几十个推理块不会各挂一个空转的计时器。`api.elapsedMs` 在思考中是已用时、想完即时长。
+- 形态三档：`outline` 描边（默认档）、`subtle` 底色分区、`ghost` 无壳内联。一段回答中穿插多处思考时使用 `ghost`，它不占一块面，开关收为只占文字宽度的小圆角块。
 - 开合有动画：展开与收起是行高与内缩同帧动画，收起在动画完成后才真正隐藏。
 
 ### 组合
@@ -582,7 +585,7 @@ const translations = {
 | `streaming` | `boolean` |  | 仍在思考。适配器把它折叠为状态机的 running。 |
 | `tone` | `Tone` |  |  |
 | `translations` | `Partial<ReasoningTranslations>` |  |  |
-| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 subtle。 |
+| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 |
 
 ### 事件
 
@@ -634,6 +637,7 @@ const translations = {
 | `streaming` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `durationMs` | `number \| undefined` | 思考时长，毫秒；两个时刻任一缺席即 undefined。 |
+| `elapsedMs` | `number \| undefined` | 已经想了多久，毫秒：思考中按开始时刻与每秒走一次的表算，想完即 durationMs。 缺开始时刻时为 undefined。 |
 | `statusText` | `string` | 当前应显示的状态文案，已按 streaming 与时长选定。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
@@ -718,8 +722,8 @@ const translations = {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-reasoning-bg` | `root` | `background` | `default`<br>`variant=outline` | `--xh-bg-subtle`<br>`--xh-bg-surface` | reasoning 的 root 部件 background 覆盖槽。 |
-| `--xh-reasoning-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | reasoning 的 root 部件 border 覆盖槽。 |
+| `--xh-reasoning-bg` | `root` | `background` | `default`<br>`variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | reasoning 的 root 部件 background 覆盖槽。 |
+| `--xh-reasoning-border` | `root` | `border` | `default`<br>`variant=outline` | `--xh-border-default` | reasoning 的 root 部件 border 覆盖槽。 |
 | `--xh-reasoning-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | reasoning 的 content 部件 color 覆盖槽。 |
 | `--xh-reasoning-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | reasoning 的 content 部件 font-size 覆盖槽。 |
 | `--xh-reasoning-content-leading` | `content` | `line-height` | `default` | `--xh-text-prose-leading` | reasoning 的 content 部件 line-height 覆盖槽。 |

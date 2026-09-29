@@ -290,6 +290,64 @@ import {
 </div>
 ```
 
+### 横幅
+
+banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页面内容的块尾画一道描边；关闭后下方内容平移上来
+
+```vue
+<script setup lang="ts">
+import {
+  XhAlertCloseTrigger,
+  XhAlertContent,
+  XhAlertDescription,
+  XhAlertRoot,
+  XhAlertTitle,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <div
+    style="
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
+    "
+  >
+    <XhAlertRoot banner tone="warning">
+      <XhAlertContent>
+        <XhAlertTitle>系统将于今晚 23:00 维护</XhAlertTitle>
+        <XhAlertDescription>维护约 30 分钟，期间无法提交表单</XhAlertDescription>
+      </XhAlertContent>
+      <XhAlertCloseTrigger />
+    </XhAlertRoot>
+    <p style="margin: 0; padding: var(--xh-space-4); color: var(--xh-fg-muted)">页面内容</p>
+  </div>
+</template>
+```
+
+```html
+<div
+  style="
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--xh-border-default);
+    border-radius: var(--xh-shape-surface);
+  "
+>
+  <xh-alert banner tone="warning">
+    <div data-xh-part="root">
+      <div data-xh-part="content">
+        <div data-xh-part="title">系统将于今晚 23:00 维护</div>
+        <div data-xh-part="description">维护约 30 分钟，期间无法提交表单</div>
+      </div>
+      <button data-xh-part="close-trigger"></button>
+    </div>
+  </xh-alert>
+  <p style="margin: 0; padding: var(--xh-space-4); color: var(--xh-fg-muted)">页面内容</p>
+</div>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -299,7 +357,7 @@ import {
 
 ### 何时不用
 
-- 一次操作的结果反馈使用[轻提示](./toast)，它会自动消失。
+- 一次操作的结果反馈使用[通知](./notification)的轻提示预设，它会自动消失。
 - 需要用户当场决定并阻断流程时使用[对话框](./dialog)。
 - 单个字段的错误使用[表单字段](./field)的错误文本。
 
@@ -308,6 +366,8 @@ import {
 - 默认使用中性描边表面，语气只强调标题与图标，说明保持次级前景。
 - `content` 是标题与说明共用的必需文本列，操作和关闭入口排在尾端。
 - `closable` 显示关闭按钮，关闭状态可受控。
+- 关闭时先淡出、再收起占位，下方内容随之平移上来；退场播完才藏起，途中不再响应交互。
+- `banner` 把提示改成页面顶部的横幅：贴着页面或容器的边铺满整行，不取圆角，只在朝向页面内容的块尾画一道描边。它说的是提示贴在哪儿，不是面的形态：面、语气、实时区语义与关闭都与页内提示相同。
 
 ### 组合
 
@@ -316,6 +376,7 @@ import {
 ### 最佳实践
 
 - 说明发生了什么、影响是什么、用户可以做什么，三项缺一不可。
+- 横幅只放影响整个页面或整个应用的事（停机维护、账号欠费、离线），一页至多一条，放在页面最顶上、其余内容之前；区块内的事用页内提示。
 - 严重程度不能只靠颜色表达，标题文字本身应说明。
 
 ### 反模式
@@ -340,6 +401,7 @@ import {
 | --- | --- | --- | --- |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色，默认 info。 danger / warning 使用 role="alert"，其余使用 role="status"。 |
 | `closable` | `boolean` |  | 关闭按钮是否可用，默认 true。false 时该按钮同时被禁用与收起。 |
+| `banner` | `boolean` |  | 横幅：页面顶部的通栏，贴着页面或容器的边铺满整行，不取圆角，只在朝向页面内容的块尾画一道描边。 说的是提示贴在哪儿，不是面的形态：面与语气规则与页内提示相同。默认 false。 |
 | `open` | `boolean` |  | 受控显隐；未提供该 prop 即非受控。 |
 | `defaultOpen` | `boolean` |  | 非受控初始显隐，默认显示。 |
 | `onOpenChange` | `(details: AlertOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -373,7 +435,7 @@ import {
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END` · `ROOT.RENDERED`
 
 **判据**：`isOpenControlled` · `canPress`
 
@@ -386,6 +448,7 @@ import {
 | `open` | `boolean` |  |
 | `tone` | `string` |  |
 | `closable` | `boolean` |  |
+| `banner` | `boolean` | 是否横幅：贴边铺满的页面通栏。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
@@ -424,7 +487,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/alert.css` 使用 `[data-scope="alert"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/alert.css` 使用 `[data-scope="alert"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -434,6 +497,7 @@ import {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-banner` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -465,7 +529,7 @@ import {
 | `--xh-alert-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | alert 的 description 部件 font-size 覆盖槽。 |
 | `--xh-alert-fg` | `root` | `color` | `default` | `--xh-fg-default` | alert 的 root 部件 color 覆盖槽。 |
 | `--xh-alert-font-size` | `root` | `font-size` | `default` | `--xh-text-body-size` | alert 的 root 部件 font-size 覆盖槽。 |
-| `--xh-alert-gap` | `root` | `gap` | `default` | `--xh-space-4` | alert 的 root 部件 gap 覆盖槽。 |
+| `--xh-alert-gap` | `root` | `gap` | `default` | `--xh-space-2` | alert 的 root 部件 gap 覆盖槽。 |
 | `--xh-alert-icon-size` | `close-trigger`<br>`root` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | alert 的 close-trigger、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-alert-indicator-fg` | `indicator` | `color` | `default` | `--xh-_tone-fg` | alert 的 indicator 部件 color 覆盖槽。 |
 | `--xh-alert-indicator-p` | `indicator` | `padding` | `default` | `--xh-space-1` | alert 的 indicator 部件 padding 覆盖槽。 |
@@ -482,9 +546,11 @@ import {
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 披露 · 出现（见[动效规范](../design/motion#角色)）。
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+关键帧 `xh-alert-collapse` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

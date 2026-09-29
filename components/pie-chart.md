@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/pie-chart
 
-# PieChart 饼图
+# PieChart 饼图 `new`
 
 一眼看出少量类目在整体中的占比。缺省画成环形，中心显示合计；也可以画成实心饼、上半环或按数值画半径的玫瑰图。
 
@@ -76,7 +76,7 @@ const rows = [
 
 加粗的是必需部件。
 
-`data-scope="pie-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `slice` · `leader-line` · `slice-label` · `focus-ring` · `center` · `center-value` · `center-label` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="pie-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `slice` · `leader-line` · `slice-label` · `focus-ring` · `center` · `center-value` · `center-label` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
 
 ## 示例
 
@@ -448,7 +448,7 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
   <!-- 按数据次序排列：扇区不随数值换位，只在原处伸缩 -->
   <xh-pie-chart id="pie-chart-transition" name-field="channel" value-field="visits" sort="none">
     <figure data-xh-part="root">
-      <figcaption data-xh-part="caption" id="pie-chart-transition-caption"></figcaption>
+      <figcaption data-xh-part="caption"></figcaption>
       <div data-xh-part="legend"></div>
       <div data-xh-part="viewport">
         <svg data-xh-part="plot"></svg>
@@ -462,7 +462,8 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 
 <script type="module">
   const chart = document.getElementById("pie-chart-transition");
-  const caption = document.getElementById("pie-chart-transition-caption");
+  // 部件的 id 归元素管（接线时换成它生成的那个），标题按部件取
+  const caption = chart.querySelector('[data-xh-part="caption"]');
   const channels = ["搜索", "直接访问", "社交", "邮件"];
   const weeks = [
     { week: 1, visits: [4200, 2800, 1800, 1200] },
@@ -484,6 +485,306 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
   });
   document.getElementById("pie-chart-transition-animated").addEventListener("checked-change", (event) => {
     chart.animated = event.detail.checked;
+  });
+</script>
+```
+
+### 标签内容
+
+labelContent 决定标签写什么：取 name-value 等内建写法，或给函数自己拼；返回空串的扇区不写标签
+
+```vue
+<script setup lang="ts">
+import type { PieLabelDetails } from "@xihan-ui/headless";
+import { XhPieChartRoot } from "@xihan-ui/vue";
+
+const rows = [
+  { category: "服饰", revenue: 386 },
+  { category: "数码", revenue: 274 },
+  { category: "家居", revenue: 158 },
+  { category: "美妆", revenue: 96 },
+  { category: "图书", revenue: 42 },
+];
+
+// 写金额与占比两样；不到 5% 的扇区交给图例与提示框
+function labelOf(slice: PieLabelDetails): string {
+  return slice.share < 0.05 ? "" : `${slice.name} ${slice.formatted.value} 万（${slice.formatted.share}）`;
+}
+</script>
+
+<template>
+  <XhPieChartRoot
+    :data="rows"
+    name-field="category"
+    value-field="revenue"
+    :label-content="labelOf"
+  >
+    <template #caption>各品类营收</template>
+  </XhPieChartRoot>
+</template>
+```
+
+```html
+<div style="width: 100%">
+  <xh-pie-chart id="pie-chart-label-content" name-field="category" value-field="revenue">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">各品类营收</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="center"></div>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-pie-chart>
+</div>
+
+<script type="module">
+  const chart = document.getElementById("pie-chart-label-content");
+  chart.data = [
+    { category: "服饰", revenue: 386 },
+    { category: "数码", revenue: 274 },
+    { category: "家居", revenue: 158 },
+    { category: "美妆", revenue: 96 },
+    { category: "图书", revenue: 42 },
+  ];
+  // 写金额与占比两样；不到 5% 的扇区交给图例与提示框。函数只走 property，内建写法另有 label-content 属性
+  chart.labelContent = slice => (slice.share < 0.05 ? "" : `${slice.name} ${slice.formatted.value} 万（${slice.formatted.share}）`);
+</script>
+```
+
+### 可见的数据表
+
+根的作用域交出 table：交给表格组件就是一张看得见的数据表，列名、数值格式与占比口径都与图同一份，不必在图下另写一遍数据
+
+```vue
+<script setup lang="ts">
+import {
+  XhPieChartCaption,
+  XhPieChartCenter,
+  XhPieChartEmpty,
+  XhPieChartLegend,
+  XhPieChartPlot,
+  XhPieChartRoot,
+  XhPieChartTooltip,
+  XhPieChartViewport,
+  XhTableBody,
+  XhTableCaption,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableColumnLabel,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from "@xihan-ui/vue";
+
+const rows = [
+  { channel: "搜索", visits: 4200 },
+  { channel: "直接访问", visits: 2600 },
+  { channel: "社交", visits: 1800 },
+  { channel: "邮件", visits: 900 },
+  { channel: "广告", visits: 500 },
+];
+</script>
+
+<template>
+  <!-- 写了默认插槽就不再铺缺省结构：图的各部件照常摆出来，表格接在后面 -->
+  <XhPieChartRoot v-slot="{ table }" :data="rows" name-field="channel" value-field="visits">
+    <XhPieChartCaption>访问来源</XhPieChartCaption>
+    <XhPieChartLegend />
+    <XhPieChartViewport>
+      <XhPieChartPlot />
+      <XhPieChartCenter />
+      <XhPieChartEmpty />
+    </XhPieChartViewport>
+    <XhPieChartTooltip />
+    <XhTableRoot :columns="[...table.columns]" :rows="table.rows.map(row => ({ id: String(row.key) }))">
+      <XhTableCaption>各来源的访问量</XhTableCaption>
+      <XhTableHeader>
+        <XhTableRow>
+          <XhTableColumnHeader v-for="column in table.columns" :key="column.id" :value="column.id">
+            <XhTableColumnLabel>{{ column.label }}</XhTableColumnLabel>
+          </XhTableColumnHeader>
+        </XhTableRow>
+      </XhTableHeader>
+      <XhTableBody>
+        <XhTableRow v-for="row in table.rows" :key="String(row.key)" :value="String(row.key)">
+          <XhTableCell v-for="(cell, i) in row.cells" :key="table.columns[i]!.id" :value="table.columns[i]!.id">
+            {{ cell.text }}
+          </XhTableCell>
+        </XhTableRow>
+      </XhTableBody>
+    </XhTableRoot>
+  </XhPieChartRoot>
+</template>
+```
+
+```html
+<div style="display: grid; gap: var(--xh-space-4); width: 100%">
+  <xh-pie-chart id="pie-chart-table" name-field="channel" value-field="visits">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">访问来源</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="center"></div>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-pie-chart>
+  <xh-table id="pie-chart-table-view">
+    <div data-xh-part="root">
+      <div data-xh-part="caption">各来源的访问量</div>
+      <div data-xh-part="header">
+        <div id="pie-chart-table-head" data-xh-part="row"></div>
+      </div>
+      <div id="pie-chart-table-body" data-xh-part="body"></div>
+    </div>
+  </xh-table>
+</div>
+
+<script type="module">
+  const chart = document.getElementById("pie-chart-table");
+  const view = document.getElementById("pie-chart-table-view");
+  const rows = [
+    { channel: "搜索", visits: 4200 },
+    { channel: "直接访问", visits: 2600 },
+    { channel: "社交", visits: 1800 },
+    { channel: "邮件", visits: 900 },
+    { channel: "广告", visits: 500 },
+  ];
+  chart.data = rows;
+
+  // 元素上的 table 与根里视觉隐藏的那张表同一份：等它按数据算好，再照着铺表格的节点
+  await chart.updateComplete;
+  const { columns, rows: tableRows } = chart.table;
+  view.columns = columns;
+  view.rows = tableRows.map(row => ({ id: String(row.key) }));
+
+  function part(name, value, text) {
+    const el = document.createElement("div");
+    el.dataset.xhPart = name;
+    if (value)
+      el.setAttribute("value", value);
+    if (text !== undefined)
+      el.textContent = text;
+    return el;
+  }
+  document.getElementById("pie-chart-table-head").append(...columns.map((column) => {
+    const header = part("column-header", column.id);
+    const label = document.createElement("span");
+    label.dataset.xhPart = "column-label";
+    label.textContent = column.label;
+    header.append(label);
+    return header;
+  }));
+  document.getElementById("pie-chart-table-body").append(...tableRows.map((row) => {
+    const tr = part("row", String(row.key));
+    tr.append(...row.cells.map((cell, i) => part("cell", columns[i].id, cell.text)));
+    return tr;
+  }));
+</script>
+```
+
+### 从外面强调一块
+
+受控的 activeKey 写扇区名，图就强调那一块、中心与提示框跟着显示它：图外的筛选、列表或别的图都能这样指给读者看
+
+```vue
+<script setup lang="ts">
+import type { ChartKey } from "@xihan-ui/headless";
+import { XhPieChartRoot, XhRadioGroupRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
+
+const rows = [
+  { channel: "搜索", visits: 4200 },
+  { channel: "直接访问", visits: 2600 },
+  { channel: "社交", visits: 1800 },
+  { channel: "邮件", visits: 900 },
+  { channel: "广告", visits: 500 },
+];
+
+const choices = [
+  { value: "none", label: "不突出" },
+  ...rows.map(row => ({ value: row.channel, label: row.channel })),
+];
+
+// 图外选中的那一项；「不突出」对应 null
+const choice = ref<string | null>("none");
+const activeKey = computed<ChartKey | null>(() => (choice.value === "none" ? null : choice.value));
+</script>
+
+<template>
+  <div style="display: grid; gap: var(--xh-space-3); justify-items: start; width: 100%">
+    <XhRadioGroupRoot v-model:value="choice" variant="segmented" :collection="choices" aria-label="突出显示的渠道" />
+    <XhPieChartRoot
+      :data="rows"
+      name-field="channel"
+      value-field="visits"
+      :active-key="activeKey"
+      style="width: 100%"
+    >
+      <template #caption>访问来源</template>
+    </XhPieChartRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: var(--xh-space-3); justify-items: start; width: 100%">
+  <xh-radio-group id="pie-chart-emphasis-choice" variant="segmented" default-value="none">
+    <div data-xh-part="root" aria-label="突出显示的渠道">
+      <span data-xh-part="thumb"></span>
+      <div data-xh-part="item" value="none">
+        <span data-xh-part="item-text">不突出</span>
+      </div>
+      <div data-xh-part="item" value="搜索">
+        <span data-xh-part="item-text">搜索</span>
+      </div>
+      <div data-xh-part="item" value="直接访问">
+        <span data-xh-part="item-text">直接访问</span>
+      </div>
+      <div data-xh-part="item" value="社交">
+        <span data-xh-part="item-text">社交</span>
+      </div>
+      <div data-xh-part="item" value="邮件">
+        <span data-xh-part="item-text">邮件</span>
+      </div>
+      <div data-xh-part="item" value="广告">
+        <span data-xh-part="item-text">广告</span>
+      </div>
+    </div>
+  </xh-radio-group>
+  <xh-pie-chart id="pie-chart-emphasis" name-field="channel" value-field="visits" style="width: 100%">
+    <figure data-xh-part="root">
+      <figcaption data-xh-part="caption">访问来源</figcaption>
+      <div data-xh-part="legend"></div>
+      <div data-xh-part="viewport">
+        <svg data-xh-part="plot"></svg>
+        <div data-xh-part="center"></div>
+        <div data-xh-part="empty"></div>
+      </div>
+      <div data-xh-part="tooltip"></div>
+    </figure>
+  </xh-pie-chart>
+</div>
+
+<script type="module">
+  const chart = document.getElementById("pie-chart-emphasis");
+  const rows = [
+    { channel: "搜索", visits: 4200 },
+    { channel: "直接访问", visits: 2600 },
+    { channel: "社交", visits: 1800 },
+    { channel: "邮件", visits: 900 },
+    { channel: "广告", visits: 500 },
+  ];
+  chart.data = rows;
+
+  // 图外选中的那一项写进 activeKey；「不突出」对应 null
+  document.getElementById("pie-chart-emphasis-choice").addEventListener("value-change", (event) => {
+    chart.activeKey = event.detail.value === "none" ? null : event.detail.value;
   });
 </script>
 ```
@@ -511,8 +812,10 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 - 扇区缺省按数值从大到小排列，自 12 点方向顺时针；`sort="none"` 按数据次序。读者从 12 点开始顺时针读，最大的一块在最前面最容易比较。
 - 超过 `maxSlices`（缺省 6，含「其他」）时，最小的几块并成「其他」，排在最后、取中性色；提示框里列出被合并的各项。只并入一项时不合并，保留它本身。
 - 颜色按数据次序依次取分类色 1–8；次序变化（改 `sort`、隐藏扇区）不改变颜色，同一个类目在不同图里保持同色。
+- 颜色不可用或不可靠时改用纹理区分扇区：强制色与打印下总是开启，作者在任意祖先上写 `data-xh-chart-patterns` 也会开启。扇区改用本色槽的斜线纹理填充并描出轮廓，图例与提示框的色标画成同一副纹理；「其他」不带纹理，仍是它自己的中性色。
 - `sweep="half"` 画成上半环（自 9 点扫到 3 点），适合放在指标卡上方；`rose` 画成南丁格尔玫瑰图：角度均分，半径按数值的平方根，面积与数值成正比。两者可以同时使用。
 - 扇区标签由 `labels` 控制：`outside`（缺省）画在外侧、带两段式引导线，两侧各排一列，自上而下推开避免重叠，放不下时去掉最小扇区的标签；`inside` 把占比写在扇区里，扇区装不下时不写；`none` 不画。视口太窄、外侧标签会把饼挤得太小时，外侧标签整体不画，只靠图例与提示框。
+- 标签写什么由 `labelContent` 决定：`name-share` 名字加占比（外侧缺省）、`share` 只写占比（内侧缺省）、`name-value` 名字加数值、`name` 只写名字、`value` 只写数值。也可以给一个函数自己拼：它拿到扇区的 `id`、`name`（「其他」已换成文案）、原始的 `value` 与 `share`、按 `locale` 与 `format` 写好的 `formatted.value` / `formatted.share`，以及是不是「其他」；返回空串的扇区不写标签，外侧也不画它的引导线。内侧标签照样先量再放，写得越长越容易装不下。
 - 相邻扇区之间留 `--xh-chart-gap`（2px）的表面缝，靠缝区分扇区而不是靠描边；缝宽沿半径保持不变。
 - 悬停或键盘聚焦一个扇区时，其余扇区淡出到 `--xh-chart-dim-alpha`；被指着的扇区不位移、不放大，位移会改变读者对面积的判断。
 - 图例一个扇区一项，点击切换显隐；隐藏的扇区从合计中移除，其余扇区的占比随之重新计算。
@@ -520,17 +823,17 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 - `format` 指定数值格式（数字格式或函数），提示框、标签、中心合计与数据表共用；占比固定写成一位小数的百分数。
 - 多张图接到同一个受控的 `activeKey` 上时，饼图按扇区名与其他图的类目对齐：在柱状图上悬停「华东」，饼图的「华东」扇区一起指示。
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有扇区时，空态写 `translations.loadingText`（缺省 Loading…）并转一个圈，取完仍没有数据才写 `emptyText`。
-- 首次出现时整圈从起始角顺着扫开，标签与引导线等扫开的边缘到了才出现，环形中心等整圈扫完再淡入，合计从 0 数上去；之后的数据变化与图例切换从当前角度插值到新角度，合计从旧值滚到新值，隐藏的扇区收拢并淡出后才移除。按数据次序排列（`sort="none"`）时扇区不换位，只在原处伸缩。
+- 首次出现时整圈从起始角顺着扫开，标签与引导线等扫开的边缘到了才出现，环形中心等整圈扫完再淡入，合计从 0 数上去，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场；之后的数据变化与图例切换从当前角度插值到新角度，合计从旧值滚到新值，隐藏的扇区收拢并淡出后才移除。按数据次序排列（`sort="none"`）时扇区不换位，只在原处伸缩。
 - `animated={false}`（Web Components 写 `animated="false"`）关闭过渡，数据一变直接画终态。系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。视口尺寸变化后的重排不播过渡。
 - 过渡的快慢由动效令牌决定，组件从绘图区的计算样式读取：入场取 `--xh-motion-duration-reveal`（缺省 640ms），数据更新与图例切换取 `--xh-motion-duration-morph`（缺省 400ms）。在图或它的容器上改写它们，例如 `style="--xh-motion-duration-reveal: 1s"`，只影响这张图；入场的曲线取 `--xh-motion-ease-enter-strong`，更新取 `--xh-motion-ease-continuous`。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、图例、视口与绘图区、环形中心、空态、提示框）；Web Components 侧作者写外壳（root、caption、legend、viewport 与其中空的 `<svg>` plot，可选 center、empty 与 tooltip），扇区、标签与图例项由元素生成进去。
-- Web Components 侧的数据与数值格式只走 JS property；字段名、形态、次序、`max-slices`、标签与 `active-key` 另有同名属性。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
+- Web Components 侧的数据与数值格式只走 JS property；字段名、形态、次序、`max-slices`、标签、标签内容（`label-content`，内建写法）与 `active-key` 另有同名属性；自己拼标签的函数给 `labelContent` property 赋值。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
 
 ### 最佳实践
 
 - 为图写标题：`caption` 是图的可访问名称，饼图尤其需要说明「整体」是什么。
 - 扇区保持在 5 个以内；更多的类目交给「其他」，或者换成条形图。
-- 需要读出准确数字时，把 `labels` 留在 `outside`，或者在旁边放一张[表格](./table)。
+- 需要读出准确数字时，把 `labels` 留在 `outside`，或者把 `api.table` 交给[表格](./table)组件（Vue 与 React 从根的作用域插槽 / 函数式 children 取 `table`，Web Components 读元素的 `table`），列名、数值格式与占比口径都与图同一份。
 - 环形中心写整体的合计或一个结论（如「完成 72%」），不要再放一张小图。
 - 同一页的几张饼图要比较时，保持相同的 `sort` 与颜色次序，读者才能按位置对照。
 
@@ -559,7 +862,7 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `hidden-series-change` | `ChartHiddenSeriesChangeDetails` | 图例切换显隐；detail 为 `{ hiddenSeries: string[] }` |
+| `hidden-series-change` | `PieLabelDetails` | 图例切换显隐；detail 为 `{ hiddenSeries: string[] }` |
 | `active-key-change` | `ChartActiveKeyChangeDetails` | 指针或键盘换了激活的扇区；detail 为 `{ activeKey }`，收起时为 null |
 | `datum-active` | `ChartDatumDetails` | 悬停或聚焦到某个扇区；detail 为扇区详情，收起时为 null |
 | `datum-press` | `ChartDatumDetails` | 指针点击、Enter 或 Space 按在某个扇区上；detail 为扇区详情 |
@@ -594,6 +897,7 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 | `XhPieChartRoot` | `sort` | `PieSort` |  | 扇区次序，缺省 descending。 |
 | `XhPieChartRoot` | `maxSlices` | `number` |  | 最多保留几个扇区（含「其他」），缺省 6。 |
 | `XhPieChartRoot` | `labels` | `PieLabels` |  | 扇区标签，缺省 outside。 |
+| `XhPieChartRoot` | `labelContent` | `PieLabelContent \| ((details: PieLabelDetails) => string)` |  | 扇区标签写什么：内建写法之一，或自己拼的函数；缺省外侧名字加占比、内侧只写占比。 |
 | `XhPieChartRoot` | `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式。 |
 | `XhPieChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的扇区（受控）。 |
 | `XhPieChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的扇区（非受控）。 |
@@ -639,6 +943,7 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 | `measured` | `boolean` | 视口尚未测量（服务端与首帧）。 |
 | `empty` | `boolean` | 没有可画的数据（全部为 0、没有数据或全部隐藏）。 |
 | `legendItems` | `readonly PieLegendItem[]` |  |
+| `patterns` | `readonly ChartPattern[]` | 各扇区的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时扇区用它填充；「其他」没有纹理。 |
 | `active` | `ChartDatumDetails \| null` | 激活的扇区；没有时为 null。 |
 | `tooltip` | `PieTooltipModel \| null` | 提示框内容；收起时为 null。 |
 | `center` | `{ readonly value: string, readonly label: string }` | 环形中心的缺省内容：可见扇区的合计与说明文字。 |
@@ -659,6 +964,9 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 | `getLegendLabelProps` | `(item: PieLegendItem) => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getPlotProps` | `() => T['element']` |  |
+| `getDefsProps` | `() => T['element']` | 绘图区的第一个子节点：各扇区的纹理定义在这里。 |
+| `getPatternProps` | `(pattern: ChartPattern) => T['element']` |  |
+| `getPatternLineProps` | `(pattern: ChartPattern) => T['element']` |  |
 | `getMarkProps` | `(mark: Mark) => T['element']` |  |
 | `getCenterProps` | `() => T['element']` |  |
 | `getCenterValueProps` | `() => T['element']` |  |
@@ -715,7 +1023,7 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 - 引导线、扇区标签与环形中心都 `aria-hidden` 或不在可访问树中：它们的内容已在扇区的名称里；提示框同样 `aria-hidden`。
 - 组件在根内生成一段摘要与一张数据表，视觉隐藏、对读屏可见：摘要写扇区数、合计以及最大与最小的扇区（模板是 `translations.summary`），数据表三列是扇区名、数值与占比。
 - 图例是 `role="toolbar"`，每一项是 `<button aria-pressed>`，按下表示扇区可见；图例整体只占一个 Tab 位。
-- 颜色不是区分扇区的唯一线索：外侧标签写出扇区名，图例与提示框也写出名字。
+- 颜色不是区分扇区的唯一线索：外侧标签写出扇区名，图例与提示框也写出名字；强制色与打印下扇区还有各自的纹理。
 - 过渡只改画面：扇区的名称、合计、摘要与数据表在数据变化的那一刻就按新数据更新；收场中的扇区 `aria-hidden`、不可聚焦。
 
 ## 样式参考
@@ -744,10 +1052,15 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 | `legend-item` | `data-xh-action-size` | 'xs' |
 | `legend-item` | `data-xh-action-variant` | 'ghost' |
 | `legend-item` | `data-xh-chart-part` | 'legend-item' |
+| `legend-item` | `data-xh-chart-pattern` | patternAttr(item.slot, item.other) |
 | `legend-item` | `data-xh-chart-slot` | slotAttr(item.slot, item.other) |
 | `legend-swatch` | `data-xh-chart-part` | 'legend-swatch' |
 | `viewport` | `data-xh-chart-part` | 'viewport' |
 | `plot` | `data-xh-chart-part` | 'plot' |
+| `defs` | `data-xh-chart-part` | 'defs' |
+| `pattern` | `data-xh-chart-part` | 'pattern' |
+| `pattern` | `data-xh-chart-slot` | undefined \| String(pattern.slot) |
+| `pattern-line` | `data-xh-chart-part` | 'pattern-line' |
 | `center` | `data-drawing` | ''（条件成立时才出现） |
 | `center` | `data-placement` | 'top' \| undefined |
 | `tooltip` | `data-placement` | 'top' \| 'bottom'-'right' \| 'left' \| undefined |
@@ -756,12 +1069,15 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 | `tooltip-header` | `data-xh-chart-part` | 'tooltip-header' |
 | `tooltip-row` | `data-series-id` | row.key |
 | `tooltip-row` | `data-xh-chart-part` | 'tooltip-row' |
+| `tooltip-row` | `data-xh-chart-pattern` | patternAttr(row.slot, row.other) |
 | `tooltip-row` | `data-xh-chart-slot` | slotAttr(row.slot, row.other) |
 | `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
 | `tooltip-name` | `data-xh-chart-part` | 'tooltip-name' |
+| `empty` | `data-loading` | ''（条件成立时才出现） |
 | `empty` | `data-state` | 'loading' \| undefined |
 | `empty` | `data-xh-chart-part` | 'empty' |
+| `empty` | `data-xh-loading-ring` | '' |
 | `mark` | `data-dimmed` | ''（条件成立时才出现） |
 | `mark` | `data-drawing` | '' |
 | `mark` | `data-xh-chart-part` | mark.part \| undefined |
@@ -781,7 +1097,7 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 | `--xh-pie-chart-height` | `viewport` | `block-size` | `default` | `--xh-chart-height` | pie-chart 的 viewport 部件 block-size 覆盖槽。 |
 | `--xh-pie-chart-legend-gap` | `legend` | `gap` | `default` | `--xh-space-1` | pie-chart 的 legend 部件 gap 覆盖槽。 |
 | `--xh-pie-chart-legend-swatch-radius` | `legend-swatch` | `border-radius` | `default` | `--xh-shape-inset` | pie-chart 的 legend-swatch 部件 border-radius 覆盖槽。 |
-| `--xh-pie-chart-series-color` | `legend-swatch`<br>`slice`<br>`tooltip-swatch` | `background`<br>`border`<br>`fill` | `xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | pie-chart 的 legend-swatch、slice、tooltip-swatch 部件 background、border、fill 覆盖槽。 |
+| `--xh-pie-chart-series-color` | `legend-swatch`<br>`pattern-line`<br>`slice`<br>`tooltip-swatch` | `background`<br>`border`<br>`fill`<br>`stroke` | `@media (forced-colors: active)`<br>`@media print`<br>`mark=line`<br>`where([data-xh-chart-patterns])`<br>`xh-chart-pattern`<br>`xh-chart-pattern=1`<br>`xh-chart-pattern=2`<br>`xh-chart-pattern=3`<br>`xh-chart-pattern=4`<br>`xh-chart-pattern=5`<br>`xh-chart-pattern=6`<br>`xh-chart-pattern=7`<br>`xh-chart-pattern=8`<br>`xh-chart-patterns`<br>`xh-chart-slot=1`<br>`xh-chart-slot=2`<br>`xh-chart-slot=3`<br>`xh-chart-slot=4`<br>`xh-chart-slot=5`<br>`xh-chart-slot=6`<br>`xh-chart-slot=7`<br>`xh-chart-slot=8` | `--xh-chart-categorical-1`<br>`--xh-chart-categorical-2`<br>`--xh-chart-categorical-3`<br>`--xh-chart-categorical-4`<br>`--xh-chart-categorical-5`<br>`--xh-chart-categorical-6`<br>`--xh-chart-categorical-7`<br>`--xh-chart-categorical-8` | pie-chart 的 legend-swatch、pattern-line、slice、tooltip-swatch 部件 background、border、fill、stroke 覆盖槽。 |
 | `--xh-pie-chart-slice-gap` | `root` | `--xh-_chart-metric-gap` | `default` | `--xh-chart-gap` | pie-chart 的 root 部件 --xh-_chart-metric-gap 覆盖槽。 |
 | `--xh-pie-chart-slice-radius` | `root` | `--xh-_chart-metric-radius` | `default` | `--xh-shape-inset` | pie-chart 的 root 部件 --xh-_chart-metric-radius 覆盖槽。 |
 | `--xh-pie-chart-tooltip-gap` | `tooltip` | `gap` | `default` | `--xh-space-1` | pie-chart 的 tooltip 部件 gap 覆盖槽。 |
@@ -795,11 +1111,11 @@ const rows = computed(() => channels.map((channel, i) => ({ channel, visits: cur
 
 ### 动效
 
-动效角色：状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

@@ -1345,6 +1345,104 @@ const panels = [
 </script>
 ```
 
+### 内容懒挂载
+
+条目多、内容重时 lazyMount 让每个条目第一次展开才挂载内容；再加 unmountOnExit 即只有展开着的条目挂着内容
+
+```vue
+<script setup lang="ts">
+import { XhAccordionRoot } from "@xihan-ui/vue";
+
+const items = Array.from({ length: 6 }, (_, i) => ({
+  value: `q${i + 1}`,
+  label: `第 ${i + 1} 季度报告`,
+  content: `第 ${i + 1} 季度的明细在第一次展开时才渲染，收起动画播完即卸载。`,
+}));
+</script>
+
+<template>
+  <div style="width: 100%; max-width: 420px">
+    <XhAccordionRoot :collection="items" collapsible lazy-mount unmount-on-exit />
+  </div>
+</template>
+```
+
+```html
+<!-- 自定义元素的面板内容写在 <template> 中：解析时不实例化，第一次展开才克隆出来 -->
+<div style="width: 100%; max-width: 420px">
+  <xh-accordion collapsible lazy-mount unmount-on-exit>
+    <div data-xh-part="root">
+      <div data-xh-part="item" value="q1">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>第 1 季度报告</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          <template>第 1 季度的明细在第一次展开时才渲染，收起动画播完即卸载。</template>
+        </div>
+      </div>
+      <div data-xh-part="item" value="q2">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>第 2 季度报告</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          <template>第 2 季度的明细在第一次展开时才渲染，收起动画播完即卸载。</template>
+        </div>
+      </div>
+      <div data-xh-part="item" value="q3">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>第 3 季度报告</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          <template>第 3 季度的明细在第一次展开时才渲染，收起动画播完即卸载。</template>
+        </div>
+      </div>
+      <div data-xh-part="item" value="q4">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>第 4 季度报告</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          <template>第 4 季度的明细在第一次展开时才渲染，收起动画播完即卸载。</template>
+        </div>
+      </div>
+      <div data-xh-part="item" value="q5">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>第 5 季度报告</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          <template>第 5 季度的明细在第一次展开时才渲染，收起动画播完即卸载。</template>
+        </div>
+      </div>
+      <div data-xh-part="item" value="q6">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>第 6 季度报告</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          <template>第 6 季度的明细在第一次展开时才渲染，收起动画播完即卸载。</template>
+        </div>
+      </div>
+    </div>
+  </xh-accordion>
+</div>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -1363,6 +1461,7 @@ const panels = [
 - `multiple` 决定能否同时展开多项，`collapsible` 决定能否全部收起。
 - 指示器可置于标题前或标题后，图形可自定义。
 - 支持嵌套；触发区大小由作者决定。
+- 条目内容缺省随组件一起挂载、收起只隐藏；`lazyMount` 让每个条目第一次展开才挂载内容，`unmountOnExit` 让条目在收起动画播完后卸载内容。content 节点本身始终在场。Web Components 里把面板内容写进一个 `<template>`，挂载时克隆、卸载时丢弃。
 
 ### 组合
 
@@ -1406,6 +1505,8 @@ const panels = [
 | `dir` | `Direction` |  | 文字方向，默认 ltr；影响水平轴上 ArrowLeft / ArrowRight 的语义。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `lazyMount` | `boolean` |  | 条目内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。 条目多、内容重且多数不会被展开时打开它。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载条目内容，再展开时重新挂载，默认 false。 内容里的输入与滚动位置随之丢失；与 lazyMount 一起用即「只在展开期间存在」。 |
 | `onValueChange` | `(details: AccordionValueChangeDetails) => void` |  | 展开集合变化回调。 |
 
 ### AccordionNode
@@ -1475,6 +1576,7 @@ const panels = [
 | `getTriggerProps` | `(props: AccordionItemProps) => T['button']` |  |
 | `getContentProps` | `(props: AccordionItemProps) => T['element']` |  |
 | `getIndicatorProps` | `(props: AccordionItemProps) => T['element']` |  |
+| `isContentMounted` | `(props: AccordionItemProps, present: boolean) => boolean` | 该条目 content 里的内容此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。 未打开 lazyMount / unmountOnExit 时恒为真；content 节点本身始终在场，只有它的内容按此挂卸。 |
 
 ## 无障碍
 
@@ -1513,6 +1615,8 @@ const panels = [
 ### 皮肤
 
 `@xihan-ui/styles/accordion.css` 使用 `[data-scope="accordion"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 

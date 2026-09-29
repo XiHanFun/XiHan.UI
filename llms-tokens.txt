@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 设计令牌
 
-共 660 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
+共 666 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
 「改写档」列出还有哪几份令牌源重新给过它——深色、紧凑、更高对比度、减弱动效、打印各是一档。
 
 覆盖时在 `:root` 上直接设同名令牌即可，这一层是公开面。带下划线前缀的 `--xh-_*` 是私有槽，不要在外面设。
@@ -331,6 +331,7 @@
 | `--xh-control-box-lg` | dimension | `48px` | compact |
 | `--xh-control-w` | dimension | `16rem` | — |
 | `--xh-control-min-w` | dimension | `12rem` | — |
+| `--xh-control-input-min-w` | dimension | `4rem` | — |
 | `--xh-control-px-sm` | dimension | `var(--xh-space-2)` | compact |
 | `--xh-control-px-md` | dimension | `var(--xh-space-3)` | compact |
 | `--xh-control-px-lg` | dimension | `var(--xh-space-4)` | compact |
@@ -634,6 +635,7 @@
 | `--xh-overlay-menu-min-w` | dimension | `10rem` | — |
 | `--xh-overlay-column-min-w` | dimension | `3.5rem` | — |
 | `--xh-overlay-column-item-h` | dimension | `calc(var(--xh-control-h-sm) - var(--xh-space-1))` | — |
+| `--xh-overlay-calendar-column-h` | dimension | `min(var(--xh-viewport-h-md), calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7)))` | — |
 | `--xh-overlay-menu-max-h` | dimension | `20rem` | compact |
 | `--xh-overlay-max-w-sm` | dimension | `16rem` | — |
 | `--xh-overlay-max-w` | dimension | `20rem` | — |
@@ -709,6 +711,7 @@
 | `--xh-chart-hit-min` | dimension | `var(--xh-space-6)` | — |
 | `--xh-chart-tick-length` | dimension | `var(--xh-space-1)` | — |
 | `--xh-chart-label-gap` | dimension | `var(--xh-space-1)` | compact |
+| `--xh-chart-legend-scale-width` | dimension | `calc(var(--xh-space-8) * 3)` | — |
 | `--xh-chart-area-alpha` | number | `0.1` | — |
 | `--xh-chart-link-alpha` | number | `0.35` | — |
 | `--xh-chart-dim-alpha` | number | `0.3` | — |
@@ -751,6 +754,14 @@
 | `--xh-chart-on-categorical-6` |  | `var(--xh-color-neutral-0)` | — |
 | `--xh-chart-on-categorical-7` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-on-categorical-8` |  | `var(--xh-color-neutral-950)` | — |
+
+## direction
+
+| 令牌 | 类型 | 缺省值 | 改写档 |
+| --- | --- | --- | --- |
+| `--xh-direction-sign` | number | `1` | rtl |
+| `--xh-direction-start` | dimension | `0%` | rtl |
+| `--xh-direction-end` | dimension | `100%` | rtl |
 
 ## material
 

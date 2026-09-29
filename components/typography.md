@@ -261,12 +261,161 @@ const html = `
 </xh-typography>
 ```
 
+### 删除线、下划线与标记
+
+三个开关与形态、语气叠加；需要删除或标出的原生语义时把标签写成 del、mark
+
+```vue
+<script setup lang="ts">
+import { XhTypographyParagraph, XhTypographyRoot, XhTypographyText } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhTypographyRoot>
+    <XhTypographyParagraph>
+      现价 ¥129
+      <XhTypographyText as="del" variant="muted" strikethrough>原价 ¥199</XhTypographyText>
+    </XhTypographyParagraph>
+    <XhTypographyParagraph>
+      提交前请<XhTypographyText underline>逐项核对</XhTypographyText>收货地址。
+    </XhTypographyParagraph>
+    <XhTypographyParagraph>
+      搜索结果中的<XhTypographyText as="mark" mark>关键词</XhTypographyText>会被标出，
+      待确认的条目用<XhTypographyText as="mark" mark tone="warning">警告色标记</XhTypographyText>。
+    </XhTypographyParagraph>
+  </XhTypographyRoot>
+</template>
+```
+
+```html
+<xh-typography>
+  <div data-xh-part="root">
+    <p data-xh-part="paragraph">
+      现价 ¥129
+      <del data-xh-part="text" variant="muted" strikethrough>原价 ¥199</del>
+    </p>
+    <p data-xh-part="paragraph">
+      提交前请<span data-xh-part="text" underline>逐项核对</span>收货地址。
+    </p>
+    <p data-xh-part="paragraph">
+      搜索结果中的<mark data-xh-part="text" mark>关键词</mark>会被标出，
+      待确认的条目用<mark data-xh-part="text" mark tone="warning">警告色标记</mark>。
+    </p>
+  </div>
+</xh-typography>
+```
+
+### 渐变字
+
+为标题里的关键词铺品牌渐变
+
+```vue
+<script setup lang="ts">
+import { XhTypographyHeading, XhTypographyRoot, XhTypographyText } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhTypographyRoot>
+    <XhTypographyHeading as="h2" :level="1">
+      快速、轻量的<XhTypographyText variant="gradient">Headless 组件库</XhTypographyText>
+    </XhTypographyHeading>
+  </XhTypographyRoot>
+</template>
+```
+
+```html
+<xh-typography>
+  <div data-xh-part="root">
+    <h2 data-xh-part="heading" level="1">
+      快速、轻量的<span data-xh-part="text" variant="gradient">Headless 组件库</span>
+    </h2>
+  </div>
+</xh-typography>
+```
+
+### 渐变字配色
+
+tone 换成语气色板，覆盖槽改写两端颜色与走向
+
+```vue
+<script setup lang="ts">
+import { XhTypographyHeading, XhTypographyRoot, XhTypographyText } from "@xihan-ui/vue";
+
+const tones = [
+  { tone: "success", label: "成功" },
+  { tone: "warning", label: "警告" },
+  { tone: "danger", label: "危险" },
+  { tone: "info", label: "信息" },
+] as const;
+</script>
+
+<template>
+  <XhTypographyRoot>
+    <XhTypographyHeading :level="3">
+      <template v-for="(item, index) in tones" :key="item.tone">
+        <template v-if="index > 0">
+          ·
+        </template>
+        <XhTypographyText variant="gradient" :tone="item.tone">
+          {{ item.label }}
+        </XhTypographyText>
+      </template>
+    </XhTypographyHeading>
+    <XhTypographyHeading :level="3">
+      <XhTypographyText
+        variant="gradient"
+        style="--xh-typography-gradient-from: var(--xh-color-orange-500); --xh-typography-gradient-to: var(--xh-color-pink-500)"
+      >
+        日落橙
+      </XhTypographyText>
+      ·
+      <XhTypographyText
+        variant="gradient"
+        style="--xh-typography-gradient-from: var(--xh-color-purple-500); --xh-typography-gradient-to: var(--xh-color-cyan-500); --xh-typography-gradient-direction: to bottom right"
+      >
+        极光紫
+      </XhTypographyText>
+    </XhTypographyHeading>
+  </XhTypographyRoot>
+</template>
+```
+
+```html
+<xh-typography>
+  <div data-xh-part="root">
+    <p data-xh-part="heading" level="3">
+      <span data-xh-part="text" variant="gradient" tone="success">成功</span>
+      ·
+      <span data-xh-part="text" variant="gradient" tone="warning">警告</span>
+      ·
+      <span data-xh-part="text" variant="gradient" tone="danger">危险</span>
+      ·
+      <span data-xh-part="text" variant="gradient" tone="info">信息</span>
+    </p>
+    <p data-xh-part="heading" level="3">
+      <span
+        data-xh-part="text"
+        variant="gradient"
+        style="--xh-typography-gradient-from: var(--xh-color-orange-500); --xh-typography-gradient-to: var(--xh-color-pink-500)"
+      >日落橙</span>
+      ·
+      <span
+        data-xh-part="text"
+        variant="gradient"
+        style="--xh-typography-gradient-from: var(--xh-color-purple-500); --xh-typography-gradient-to: var(--xh-color-cyan-500); --xh-typography-gradient-direction: to bottom right"
+      >极光紫</span>
+    </p>
+  </div>
+</xh-typography>
+```
+
 ## 设计指引
 
 ### 何时使用
 
 - 展示文章、说明、条款或消息正文。
 - 统一标题层级、段落间距和行宽。
+- 为标题、品牌名称或关键词铺渐变强调。
 
 ### 何时不用
 
@@ -277,8 +426,11 @@ const html = `
 ### 特性
 
 - 支持六档标题层级和三档正文尺寸。
-- 支持弱化、强调、代码等文本变体。
+- 支持弱化、强调、代码和渐变等文本变体。
+- 行内文字另有删除线、下划线与标记三个开关，可与变体、语气叠加；需要删除或标出的原生语义时把标签写成 `del` / `s` / `mark`。
 - 支持链接、语义颜色、对齐和字重。
+- 渐变字缺省取品牌渐变，`tone` 换成语气色板；两端颜色与走向由 `--xh-typography-gradient-from`、`--xh-typography-gradient-to` 与 `--xh-typography-gradient-direction` 改写。
+- 高对比、强制色和打印环境下渐变字退回实色文字。
 - `prose` 可直接排版外部 HTML 内容。
 
 ### 组合
@@ -289,11 +441,13 @@ const html = `
 
 - 使用 `root` 控制正文最大行宽。
 - 根据文档结构选择标题标签，使用 `level` 调整视觉大小。
+- 渐变字的两端颜色取明度接近的一对，每个视图只留少量渐变强调。
 
 ### 反模式
 
 - 不要仅为了放大文字而改变标题语义。
 - 不要在正文中密集放置交互控件。
+- 不要给正文、表单标签或长段落铺渐变。
 
 ## API 参考
 
@@ -324,9 +478,12 @@ const html = `
 | `XhTypographyHeading` | `as` | `ElementType` |  | 渲染为哪个标签，默认 p；需要进入文档大纲时写 h2（或 hN）。 |
 | `XhTypographyProse` | `as` | `ElementType` |  | 渲染为哪个标签，默认 div。 |
 | `XhTypographyText` | `tone` | `Tone` |  | 语气：决定使用哪族颜色。 |
-| `XhTypographyText` | `variant` | `TypographyVariant` |  | 形态：muted 弱化 / strong 加重 / code 等宽。 |
+| `XhTypographyText` | `variant` | `TypographyVariant` |  | 形态：muted 弱化 / strong 加重 / code 等宽 / gradient 渐变。 |
 | `XhTypographyText` | `weight` | `TypographyWeight` |  | 字重：regular / medium / semibold / bold，只作用于该段行内文字。 |
-| `XhTypographyText` | `as` | `ElementType` |  | 渲染为哪个标签，默认 span；需要 code / strong 的原生语义时自行写明。 |
+| `XhTypographyText` | `strikethrough` | `boolean` |  | 删除线：只画线，表达"已删除"时 as 写 del 或 s。 |
+| `XhTypographyText` | `underline` | `boolean` |  | 下划线：只画线，与链接同形。 |
+| `XhTypographyText` | `mark` | `boolean` |  | 标记：淡底加同族字色，有 tone 时换成该族；表达"被标出"时 as 写 mark。 |
+| `XhTypographyText` | `as` | `ElementType` |  | 渲染为哪个标签，默认 span；需要 code / strong / del / mark 的原生语义时自行写明。 |
 
 ### connect API
 
@@ -355,6 +512,8 @@ const html = `
 
 `@xihan-ui/styles/typography.css` 使用 `[data-scope="typography"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -365,7 +524,10 @@ const html = `
 | `root` | `data-size` | props.size |
 | `root` | `data-weight` | props.weight |
 | `heading` | `data-level` | levelAttr(heading.level) |
+| `text` | `data-marked` | ''（条件成立时才出现） |
+| `text` | `data-strikethrough` | ''（条件成立时才出现） |
 | `text` | `data-tone` | text.tone |
+| `text` | `data-underline` | ''（条件成立时才出现） |
 | `text` | `data-variant` | text.variant |
 | `text` | `data-weight` | text.weight |
 
@@ -386,6 +548,9 @@ const html = `
 | `--xh-typography-fg` | `root` | `color` | `default` | `--xh-fg-default` | typography 的 root 部件 color 覆盖槽。 |
 | `--xh-typography-font-size` | `root` | `font-size` | `default` | `--xh-_typography-body-size` | typography 的 root 部件 font-size 覆盖槽。 |
 | `--xh-typography-font-weight` | `root` | `font-weight` | `default`<br>`weight=bold`<br>`weight=medium`<br>`weight=regular`<br>`weight=semibold` | `--xh-font-weight-bold`<br>`--xh-font-weight-medium`<br>`--xh-font-weight-regular`<br>`--xh-font-weight-semibold`<br>`--xh-text-body-weight` | typography 的 root 部件 font-weight 覆盖槽。 |
+| `--xh-typography-gradient-direction` | `text` | `background-image` | `variant=gradient` | `to right` | typography 的 text 部件 background-image 覆盖槽。 |
+| `--xh-typography-gradient-from` | `text` | `background-image` | `variant=gradient` | `--xh-_typography-gradient-from` | typography 的 text 部件 background-image 覆盖槽。 |
+| `--xh-typography-gradient-to` | `text` | `background-image` | `variant=gradient` | `--xh-_typography-gradient-to` | typography 的 text 部件 background-image 覆盖槽。 |
 | `--xh-typography-heading-fg` | `heading` | `color` | `default` | `--xh-fg-default` | typography 的 heading 部件 color 覆盖槽。 |
 | `--xh-typography-heading-font-size` | `heading` | `font-size` | `default`<br>`level=1`<br>`level=2`<br>`level=3`<br>`level=4`<br>`level=5`<br>`level=6` | `--xh-_typography-h1`<br>`--xh-_typography-h2`<br>`--xh-_typography-h3`<br>`--xh-_typography-h4`<br>`--xh-_typography-h5`<br>`--xh-_typography-h6` | typography 的 heading 部件 font-size 覆盖槽。 |
 | `--xh-typography-heading-font-weight` | `heading` | `font-weight` | `default` | `--xh-font-weight-semibold` | typography 的 heading 部件 font-weight 覆盖槽。 |
@@ -396,6 +561,10 @@ const html = `
 | `--xh-typography-link-fg-hover` | `link` | `color` | `@media (hover: hover)`<br>`hover` | `--xh-fg-brand-strong` | typography 的 link 部件 color 覆盖槽。 |
 | `--xh-typography-link-radius` | `link`<br>`prose` | `border-radius` | `default`<br>`where(a)` | `--xh-shape-inset` | typography 的 link、prose 部件 border-radius 覆盖槽。 |
 | `--xh-typography-link-underline-offset` | `link`<br>`prose` | `text-underline-offset` | `default`<br>`where(a)` | `--xh-space-0_5` | typography 的 link、prose 部件 text-underline-offset 覆盖槽。 |
+| `--xh-typography-mark-bg` | `text` | `background` | `marked`<br>`tone` | `--xh-_tone-subtle`<br>`--xh-bg-brand-subtle` | typography 的 text 部件 background 覆盖槽。 |
+| `--xh-typography-mark-fg` | `text` | `color` | `marked`<br>`tone` | `--xh-_tone-fg`<br>`--xh-fg-brand-strong` | typography 的 text 部件 color 覆盖槽。 |
+| `--xh-typography-mark-px` | `text` | `padding-inline` | `marked` | `--xh-space-0_5` | typography 的 text 部件 padding-inline 覆盖槽。 |
+| `--xh-typography-mark-radius` | `text` | `border-radius` | `marked` | `--xh-shape-inset` | typography 的 text 部件 border-radius 覆盖槽。 |
 | `--xh-typography-measure` | `root` | `max-inline-size` | `default` | `--xh-_typography-measure` | typography 的 root 部件 max-inline-size 覆盖槽。 |
 | `--xh-typography-prose-block-gap` | `prose` | `margin-block-start` | `where(h1, h2, h3, h4, h5, h6, p, ul, ol, pre, blockquote, table, hr)` | `--xh-_typography-block-gap` | typography 的 prose 部件 margin-block-start 覆盖槽。 |
 | `--xh-typography-prose-cell-border` | `prose` | `border-block-end` | `where(th, td)` | `--xh-border-subtle` | typography 的 prose 部件 border-block-end 覆盖槽。 |
@@ -430,6 +599,7 @@ const html = `
 | `--xh-typography-text-fg-muted` | `text` | `color` | `variant=muted` | `--xh-fg-muted` | typography 的 text 部件 color 覆盖槽。 |
 | `--xh-typography-text-fg-tone` | `text` | `color` | `tone` | `--xh-_tone-fg` | typography 的 text 部件 color 覆盖槽。 |
 | `--xh-typography-text-font-weight` | `text` | `font-weight` | `variant=strong` | `--xh-font-weight-semibold` | typography 的 text 部件 font-weight 覆盖槽。 |
+| `--xh-typography-text-underline-offset` | `text` | `text-underline-offset` | `underline` | `--xh-space-0_5` | typography 的 text 部件 text-underline-offset 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

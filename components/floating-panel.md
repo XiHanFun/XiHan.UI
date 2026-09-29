@@ -574,6 +574,7 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 ### 特性
 
 - 三种形态：常规、收拢（只留标题栏）、铺满（占满视口），由 `windowState` 一个值表达，可受控。
+- 进出铺满时位置与尺寸补过去、圆角同步收放；拖动与改尺寸照旧跟手。
 - 位置与尺寸各自成对（`position` / `defaultPosition`、`dimensions` / `defaultDimensions`），受控与非受控齐全。
 - 八个调整尺寸的把手在节点上声明各自守护的边，西边与北边的把手会同时改变位置。
 - 默认皮肤使用 M2 磨砂面：描边、顶边高光、投影与光学采样同出一份配方；高对比、减少透明、强制色与打印时原位收敛为实体面；浮层内标题 14 / 600。
@@ -685,7 +686,7 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 
 **状态**：`closed` · `open` · `open.dragging` · `open.idle` · `open.resizing`
 
-**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `POSITION.SET` · `POSITION.NUDGE` · `DIMENSIONS.SET` · `DIMENSIONS.NUDGE` · `WINDOW_STATE.SET` · `DRAG.START` · `RESIZE.START` · `DRAG.MOVE` · `DRAG.END` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `POSITION.SET` · `POSITION.NUDGE` · `DIMENSIONS.SET` · `DIMENSIONS.NUDGE` · `WINDOW_STATE.SET` · `DRAG.START` · `RESIZE.START` · `DRAG.MOVE` · `DRAG.END` · `PRESS.START` · `PRESS.END` · `WINDOW_STATE.SETTLED`
 
 **判据**：`canDrag` · `canInteract` · `canResize` · `isOpenControlled` · `canPress`
 
@@ -798,6 +799,8 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 | `trigger` | `data-xh-action-profile` | 'text' |
 | `trigger` | `data-xh-action-size` | 'md' |
 | `trigger` | `data-xh-action-variant` | 'outline' |
+| `positioner` | `data-animating` | ''（条件成立时才出现） |
+| `positioner` | `data-instant` | ''（条件成立时才出现） |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-window-state` | context.get('windowState') |
@@ -880,9 +883,9 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定面板） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（锚定面板） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`border-color` · `border-radius` · `box-shadow` · `height` · `left` · `top` · `width` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

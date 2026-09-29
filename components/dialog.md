@@ -84,7 +84,7 @@ import {
 
 加粗的是必需部件。
 
-`data-scope="dialog"`：`trigger` · `backdrop` · `positioner` · **`content`** · `header` · `indicator` · `title` · `description` · `body` · `footer` · `close-trigger`
+`data-scope="dialog"`：`trigger` · `backdrop` · `positioner` · **`content`** · `header` · `drag-trigger` · `indicator` · `title` · `description` · `body` · `footer` · `close-trigger`
 
 ## 示例
 
@@ -499,7 +499,7 @@ function submit() {
             取消
           </XhButton>
           <XhButton variant="solid" :loading="submitting" @click="submit">
-            <XhButtonIndicator v-if="submitting" />
+            <XhButtonIndicator />
             <XhButtonLabel>{{ submitting ? "归档中" : "确认归档" }}</XhButtonLabel>
           </XhButton>
         </div>
@@ -525,7 +525,7 @@ function submit() {
           </xh-button>
           <xh-button variant="solid" id="dialog-async-submit">
             <button data-xh-part="root">
-              <span data-xh-part="indicator" style="display: none"></span>
+              <span data-xh-part="indicator"></span>
               <span data-xh-part="label">确认归档</span>
             </button>
           </xh-button>
@@ -542,20 +542,18 @@ function submit() {
   const text = dialog.querySelector('[data-xh-part="description"]');
   const cancel = document.getElementById("dialog-async-cancel");
   const submit = document.getElementById("dialog-async-submit");
-  const spinner = submit.querySelector('[data-xh-part="indicator"]');
   const label = submit.querySelector('[data-xh-part="label"]');
   const state = document.getElementById("dialog-async-state");
 
   let submitting = false;
 
-  // 提交态一并写进正文、两颗按钮与转圈指示器
+  // 提交态一并写进正文与两颗按钮
   function render() {
     text.textContent = submitting
       ? "正在归档，先别走开。"
       : "归档后项目转为只读，随时可以恢复。";
     cancel.disabled = submitting;
     submit.loading = submitting;
-    spinner.style.display = submitting ? "" : "none";
     label.textContent = submitting ? "归档中" : "确认归档";
   }
 
@@ -675,7 +673,7 @@ function submit(): void {
             取消
           </XhButton>
           <XhButton variant="solid" :loading="current.loading" @click="submit">
-            <XhButtonIndicator v-if="current.loading" />
+            <XhButtonIndicator />
             <XhButtonLabel>{{ current.confirmLabel }}</XhButtonLabel>
           </XhButton>
         </div>
@@ -715,7 +713,7 @@ function submit(): void {
           </xh-button>
           <xh-button variant="solid" id="dialog-imperative-ok">
             <button data-xh-part="root">
-              <span data-xh-part="indicator" style="display: none"></span>
+              <span data-xh-part="indicator"></span>
               <span data-xh-part="label">确认</span>
             </button>
           </xh-button>
@@ -731,7 +729,6 @@ function submit(): void {
   const description = dialog.querySelector('[data-xh-part="description"]');
   const cancel = document.getElementById("dialog-imperative-cancel");
   const ok = document.getElementById("dialog-imperative-ok");
-  const spinner = ok.querySelector('[data-xh-part="indicator"]');
   const label = ok.querySelector('[data-xh-part="label"]');
   const list = document.getElementById("dialog-imperative-specs");
 
@@ -763,7 +760,6 @@ function submit(): void {
       description.textContent = current.text;
       label.textContent = current.confirmLabel;
       ok.loading = current.loading;
-      spinner.style.display = current.loading ? "" : "none";
       cancel.disabled = current.loading;
     }
     const rows = specs.map(
@@ -819,9 +815,9 @@ function submit(): void {
 </script>
 ```
 
-### 拖动标题栏移动窗口
+### 可拖动
 
-指针按在标题上，沿 DOM 找到 content 部件，把累计位移写进它的 translate；入场动画使用 transform，两者互不覆盖
+draggable 让标题栏成为拖动区，面板始终夹在视口内；标题栏里的拖动把手让键盘也能挪：方向键挪一步，Enter 回到居中
 
 ```vue
 <script setup lang="ts">
@@ -830,70 +826,23 @@ import {
   XhDialogCloseTrigger,
   XhDialogContent,
   XhDialogDescription,
+  XhDialogDragTrigger,
+  XhDialogHeader,
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const offset = ref({ x: 0, y: 0 });
-const dragging = ref(false);
-let panel: HTMLElement | null = null;
-let startX = 0;
-let startY = 0;
-
-function begin(event: PointerEvent): void {
-  const handle = event.currentTarget as HTMLElement;
-  panel = handle.closest<HTMLElement>("[data-scope=\"dialog\"][data-part=\"content\"]");
-  if (!panel)
-    return;
-  dragging.value = true;
-  startX = event.clientX - offset.value.x;
-  startY = event.clientY - offset.value.y;
-  handle.setPointerCapture(event.pointerId);
-}
-
-function move(event: PointerEvent): void {
-  if (!dragging.value || !panel)
-    return;
-  offset.value = { x: event.clientX - startX, y: event.clientY - startY };
-  panel.style.translate = `${offset.value.x}px ${offset.value.y}px`;
-}
-
-function end(event: PointerEvent): void {
-  if (!dragging.value)
-    return;
-  dragging.value = false;
-  panel = null;
-  (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
-}
-
-// 每次重新展开都是一块新面板，位移从零算起
-function reset(details: { open: boolean }): void {
-  if (details.open)
-    offset.value = { x: 0, y: 0 };
-}
 </script>
 
 <template>
-  <XhDialogRoot v-slot="{ setOpen }" :translations="{ close: '关闭' }" @open-change="reset">
+  <XhDialogRoot v-slot="{ setOpen }" draggable :translations="{ close: '关闭', dragTrigger: '移动对话框' }">
     <XhDialogTrigger>打开可拖动的对话框</XhDialogTrigger>
     <XhDialogContent>
-      <XhDialogTitle
-        style="cursor: move; touch-action: none"
-        @pointerdown="begin"
-        @pointermove="move"
-        @pointerup="end"
-        @pointercancel="end"
-      >
-        拖住这一行挪窗口
-      </XhDialogTitle>
-      <XhDialogDescription>
-        位移是相对居中位置累计的，收起再打开会回到正中。
-      </XhDialogDescription>
-      <p style="margin: 0; color: var(--xh-fg-muted)">
-        当前位移：{{ Math.round(offset.x) }} / {{ Math.round(offset.y) }}
-      </p>
+      <XhDialogHeader>
+        <XhDialogDragTrigger />
+        <XhDialogTitle>拖住标题栏挪窗口</XhDialogTitle>
+        <XhDialogDescription>每次打开都从正中开始；拖出视口的那一截会被夹回来。</XhDialogDescription>
+      </XhDialogHeader>
       <div style="display: flex; justify-content: flex-end">
         <XhButton variant="solid" @click="setOpen(false)">关闭</XhButton>
       </div>
@@ -904,78 +853,31 @@ function reset(details: { open: boolean }): void {
 ```
 
 ```html
-<xh-dialog id="dialog-draggable">
+<xh-dialog id="dialog-draggable" panel-draggable>
   <button data-xh-part="trigger">打开可拖动的对话框</button>
   <div data-xh-part="backdrop"></div>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
-      <h2 data-xh-part="title" style="cursor: move; touch-action: none">
-        拖住这一行挪窗口
-      </h2>
-      <p data-xh-part="description">
-        位移是相对居中位置累计的，收起再打开会回到正中。
-      </p>
-      <p style="margin: 0; color: var(--xh-fg-muted)">
-        当前位移：<span id="dialog-draggable-offset">0 / 0</span>
-      </p>
+      <header data-xh-part="header">
+        <button data-xh-part="drag-trigger"></button>
+        <h2 data-xh-part="title">拖住标题栏挪窗口</h2>
+        <p data-xh-part="description">每次打开都从正中开始；拖出视口的那一截会被夹回来。</p>
+      </header>
       <div style="display: flex; justify-content: flex-end">
         <xh-button variant="solid">
           <button data-xh-part="root" data-dismiss>关闭</button>
         </xh-button>
       </div>
-      <button data-xh-part="close-trigger" aria-label="关闭"></button>
+      <button data-xh-part="close-trigger"></button>
     </div>
   </div>
 </xh-dialog>
 
 <script type="module">
+  // 文案是对象，只能走 property；页脚按钮借关闭钮收起
   const dialog = document.getElementById("dialog-draggable");
-  const handle = dialog.querySelector('[data-xh-part="title"]');
+  dialog.translations = { close: "关闭", dragTrigger: "移动对话框" };
   const close = dialog.querySelector('[data-xh-part="close-trigger"]');
-  const readout = document.getElementById("dialog-draggable-offset");
-
-  let panel = null;
-  let dragging = false;
-  let offset = { x: 0, y: 0 };
-  let startX = 0;
-  let startY = 0;
-
-  // 位移写进 content 的 translate，回显同步刷新
-  function apply() {
-    readout.textContent = `${Math.round(offset.x)} / ${Math.round(offset.y)}`;
-    if (panel) panel.style.translate = `${offset.x}px ${offset.y}px`;
-  }
-
-  handle.addEventListener("pointerdown", (event) => {
-    panel = handle.closest('[data-scope="dialog"][data-part="content"]');
-    if (!panel) return;
-    dragging = true;
-    startX = event.clientX - offset.x;
-    startY = event.clientY - offset.y;
-    handle.setPointerCapture(event.pointerId);
-  });
-
-  handle.addEventListener("pointermove", (event) => {
-    if (!dragging) return;
-    offset = { x: event.clientX - startX, y: event.clientY - startY };
-    apply();
-  });
-
-  const end = (event) => {
-    if (!dragging) return;
-    dragging = false;
-    handle.releasePointerCapture(event.pointerId);
-  };
-  handle.addEventListener("pointerup", end);
-  handle.addEventListener("pointercancel", end);
-
-  // 面板节点常挂不卸载，重新展开时把上一轮的位移抹掉
-  dialog.addEventListener("open-change", (event) => {
-    if (!event.detail.open) return;
-    offset = { x: 0, y: 0 };
-    apply();
-  });
-
   for (const button of dialog.querySelectorAll("[data-dismiss]")) {
     button.addEventListener("click", () => close.click());
   }
@@ -1036,7 +938,7 @@ async function remove(): Promise<void> {
 
 ### 何时不用
 
-- 只提示一条结果时，使用[轻提示](./toast)。
+- 只提示一条结果时，使用[通知](./notification)的轻提示预设。
 - 内容是页面主流程的一部分时，直接展开在页面内。
 - 内容很长或是完整表单时，使用[抽屉](./drawer)或单独页面。
 
@@ -1045,7 +947,8 @@ async function remove(): Promise<void> {
 - `modal` 决定是否锁住下层：非模态不创建遮罩，页面仍可点击、聚焦和滚动；展开期间切换会同步更新这些约束。
 - 焦点进入时落在 `initialFocus`，关闭后归还触发器。
 - `closeOnEscape` 与 `closeOnInteractOutside` 可分别关闭，避免填写中的表单因误点外部而丢失。
-- 内容区可以内部滚动，标题栏可以拖动移动窗口。Body 是模态滚动面：滚到头不带动页面，内容高度变化时保留稳定的滚动条空道。
+- 内容区可以内部滚动。Body 是模态滚动面：滚到头不带动页面，内容高度变化时保留稳定的滚动条空道。
+- `draggable` 让面板可以挪走：指针按住标题栏（header，没写 header 时是 title）即跟手，落在标题栏里的按钮、链接与表单控件照常点；面板四边始终夹在视口内，每次打开都从居中落点起。键盘经 `drag-trigger` 挪：它是一块透明的把手，放在 header 里时铺满标题栏，焦点落在它上面时方向键挪一步（10px）、Shift 挪一大步（50px）、Enter / Space 回到居中；初始焦点越过它，落到第一个真正的控件上。位移写成 content 上的两个私有槽、按 transform 平移，与进出场的 translate / scale 叠加，拖过的面板从拖到的位置退场。Web Components 侧的属性是 `panel-draggable`：`draggable` 是 HTML 全局属性，写在宿主上会把它变成原生拖放源。
 - 面板走 M4 sheet 三件套（描边、不透明底、投影）。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`。标题为 heading-3，说明文字为 13px 说明档。
 - 关闭时内容立即失活并退出可访问树，内容与遮罩的有限退场动画全部完成后再释放模态资源，并发出 `onExitComplete` / `exit-complete`。重开撤销旧退出，卸载立即清理。
 - 另有命令式服务，业务代码一次调用即可弹出。
@@ -1076,7 +979,7 @@ async function remove(): Promise<void> {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-dialog>` |
-| Vue 组件 | `XhDialogBody` `XhDialogCloseTrigger` `XhDialogContent` `XhDialogDescription` `XhDialogFooter` `XhDialogHeader` `XhDialogIndicator` `XhDialogRoot` `XhDialogTitle` `XhDialogTrigger` |
+| Vue 组件 | `XhDialogBody` `XhDialogCloseTrigger` `XhDialogContent` `XhDialogDescription` `XhDialogDragTrigger` `XhDialogFooter` `XhDialogHeader` `XhDialogIndicator` `XhDialogRoot` `XhDialogTitle` `XhDialogTrigger` |
 | 组合式函数 | `useDialog` |
 | 状态机 | `dialogMachine` |
 | 皮肤 | `@xihan-ui/styles/dialog.css` |
@@ -1095,6 +998,7 @@ async function remove(): Promise<void> {
 | `initialFocus` | `string` |  | 展开后先聚焦到 content 内匹配该选择器的元素；选择器不匹配时回退为默认聚焦顺序。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。只影响 content 的最大宽度，写在 content 上（本组件没有 root 部件）。 |
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
+| `draggable` | `boolean` |  | 可拖动：指针按住标题栏（header，没有 header 时是 title）或 drag-trigger 把面板挪走， 键盘在 drag-trigger 上用方向键挪；面板始终夹在视口内。默认 false。每次打开都从居中落点起。 |
 | `translations` | `Partial<DialogTranslations>` |  |  |
 | `onOpenChange` | `(details: DialogOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onExitComplete` | `() => void` |  | 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 |
@@ -1140,9 +1044,9 @@ async function remove(): Promise<void> {
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END` · `DRAG.START` · `DRAG.NUDGE` · `DRAG.RESET` · `GESTURE.MOVE` · `GESTURE.END`
 
-**判据**：`isOpenControlled`
+**判据**：`isOpenControlled` · `canDrag`
 
 ### connect API
 
@@ -1151,12 +1055,15 @@ async function remove(): Promise<void> {
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
+| `offset` | `DialogOffset` | 当前的拖动位移。 |
+| `dragging` | `boolean` | 正在被指针拖动。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getBackdropProps` | `() => T['element']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
+| `getDragTriggerProps` | `() => T['button']` | 拖动把手：键盘挪动面板的入口；放在 header 里时铺满标题栏。 |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
@@ -1177,6 +1084,9 @@ async function remove(): Promise<void> {
 | `Tab` | open | 在 content 内向后循环焦点 |
 | `Shift+Tab` | open | 在 content 内向前循环焦点 |
 | `Enter` / `Space` | held in trigger / close-trigger | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或面板收起撤下 |
+| `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | focus in drag-trigger, draggable | 按屏幕方向把面板挪一步（10px），夹在视口内；方向是物理键位，RTL 下不对调 |
+| `Shift+ArrowUp` / `Shift+ArrowDown` / `Shift+ArrowLeft` / `Shift+ArrowRight` | focus in drag-trigger, draggable | 按大步长挪（50px） |
+| `Enter` / `Space` | focus in drag-trigger, draggable | 把面板送回居中落点 |
 
 ### ARIA
 
@@ -1192,6 +1102,8 @@ async function remove(): Promise<void> {
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
+| `drag-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `drag-trigger` | `aria-label` | props.translations.dragTrigger |
 | `indicator` | `aria-hidden` | 'true' |
 | `close-trigger` | `aria-label` | props.translations.close |
 
@@ -1216,12 +1128,20 @@ async function remove(): Promise<void> {
 | `trigger` | `data-xh-action-profile` | 'text' |
 | `trigger` | `data-xh-action-size` | 'md' |
 | `trigger` | `data-xh-action-variant` | 'outline' |
+| `backdrop` | `data-instant` | ''（条件成立时才出现） |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
 | `backdrop` | `data-variant` | props.variant |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-draggable` | ''（条件成立时才出现） |
+| `content` | `data-dragging` | ''（条件成立时才出现） |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `header` | `data-draggable` | ''（条件成立时才出现） |
+| `drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
+| `title` | `data-draggable` | ''（条件成立时才出现） |
 | `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
@@ -1255,6 +1175,8 @@ async function remove(): Promise<void> {
 | `--xh-dialog-content-lens-depth` | `content` | `background` | `default` | `--xh-dialog-header-lens-depth` | dialog 的 content 部件 background 覆盖槽。 |
 | `--xh-dialog-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | dialog 的 description 部件 color 覆盖槽。 |
 | `--xh-dialog-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | dialog 的 description 部件 font-size 覆盖槽。 |
+| `--xh-dialog-drag-trigger-min-h` | `drag-trigger` | `min-block-size` | `default` | `--xh-space-6` | dialog 的 drag-trigger 部件 min-block-size 覆盖槽。 |
+| `--xh-dialog-drag-trigger-radius` | `drag-trigger` | `border-radius` | `default` | `--xh-shape-control` | dialog 的 drag-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-dialog-fg` | `content` | `color` | `default` | `--xh-material-elevated-fg` | dialog 的 content 部件 color 覆盖槽。 |
 | `--xh-dialog-footer-gap` | `footer` | `gap` | `default` | `--xh-control-gap-md` | dialog 的 footer 部件 gap 覆盖槽。 |
 | `--xh-dialog-footer-pt` | `footer` | `padding-block-start` | `default` | `--xh-space-2` | dialog 的 footer 部件 padding-block-start 覆盖槽。 |

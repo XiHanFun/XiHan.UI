@@ -70,7 +70,7 @@ const lines = [
 
 加粗的是必需部件。
 
-`data-scope="log"`：**`root`** · **`viewport`** · **`content`** · `line` · `scroll-to-end-trigger` · `live-region`
+`data-scope="log"`：**`root`** · **`viewport`** · `content` · `line` · `segment` · `scroll-to-end-trigger` · `live-region`
 
 ## 示例
 
@@ -688,6 +688,318 @@ onUnmounted(() => window.clearTimeout(timer));
 </script>
 ```
 
+### ANSI 着色
+
+行上写 ansi 交出带转义的原文，按 SGR 拆成着色的段：颜色映射到语义色，粗体、暗淡、下划线各自生效，其余转义不显示
+
+```vue
+<script setup lang="ts">
+import { XhLogContent, XhLogLine, XhLogRoot, XhLogViewport } from "@xihan-ui/vue";
+
+const ESC = "\u001B";
+const lines = [
+  `${ESC}[2m$ pnpm build${ESC}[0m`,
+  `${ESC}[36mvite${ESC}[0m v7.1.2 ${ESC}[32mbuilding for production...${ESC}[0m`,
+  `${ESC}[32m✓${ESC}[0m 1,204 modules transformed.`,
+  `${ESC}[33m(!) Some chunks are larger than 500 kB after minification.${ESC}[0m`,
+  `${ESC}[1;31merror${ESC}[0m src/app.ts(12,3): ${ESC}[4mType 'string' is not assignable to type 'number'.${ESC}[0m`,
+  `${ESC}[1;32m✓ built in 4.21s${ESC}[0m`,
+];
+</script>
+
+<template>
+  <XhLogRoot :rows="6" style="inline-size: 100%">
+    <XhLogViewport>
+      <XhLogContent>
+        <XhLogLine v-for="(line, i) in lines" :key="i" :ansi="line" />
+      </XhLogContent>
+    </XhLogViewport>
+  </XhLogRoot>
+</template>
+```
+
+```html
+<xh-log rows="6" style="inline-size: 100%">
+  <div data-xh-part="root">
+    <div data-xh-part="viewport">
+      <div data-xh-part="content" id="log-ansi-content"></div>
+    </div>
+  </div>
+</xh-log>
+
+<script type="module">
+  // 带 ansi 属性的行，文字就是带转义的原文，元素按 SGR 拆成着色的 segment
+  const ESC = "\u001B";
+  const lines = [
+    `${ESC}[2m$ pnpm build${ESC}[0m`,
+    `${ESC}[36mvite${ESC}[0m v7.1.2 ${ESC}[32mbuilding for production...${ESC}[0m`,
+    `${ESC}[32m✓${ESC}[0m 1,204 modules transformed.`,
+    `${ESC}[33m(!) Some chunks are larger than 500 kB after minification.${ESC}[0m`,
+    `${ESC}[1;31merror${ESC}[0m src/app.ts(12,3): ${ESC}[4mType 'string' is not assignable to type 'number'.${ESC}[0m`,
+    `${ESC}[1;32m✓ built in 4.21s${ESC}[0m`,
+  ];
+  const content = document.getElementById("log-ansi-content");
+  for (const text of lines) {
+    const line = document.createElement("div");
+    line.setAttribute("data-xh-part", "line");
+    line.setAttribute("ansi", "");
+    line.textContent = text;
+    content.append(line);
+  }
+</script>
+```
+
+### 级别过滤
+
+levels 只显示所选级别的行，用切换按钮组选；没写级别的行不受影响
+
+```vue
+<script setup lang="ts">
+import type { LogLevel } from "@xihan-ui/headless";
+import { XhLogContent, XhLogLine, XhLogRoot, XhLogViewport, XhToggleGroupRoot } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
+
+const entries: { level: LogLevel; text: string }[] = [
+  { level: "debug", text: "12:00:01  读取配置 config/app.yaml" },
+  { level: "info", text: "12:00:02  数据库连接池就绪" },
+  { level: "info", text: "12:00:04  POST /api/orders  201  118ms" },
+  { level: "warn", text: "12:00:05  慢查询 1,240ms  select * from orders" },
+  { level: "error", text: "12:00:06  支付网关超时，第 1 次重试" },
+  { level: "info", text: "12:00:08  支付网关恢复，订单 8812 已确认" },
+];
+
+const options = [
+  { value: "debug", label: "Debug" },
+  { value: "info", label: "Info" },
+  { value: "warn", label: "Warn" },
+  { value: "error", label: "Error" },
+];
+
+const selected = ref<string[]>(["info", "warn", "error"]);
+const levels = computed(() => selected.value as LogLevel[]);
+</script>
+
+<template>
+  <div style="display: grid; gap: 12px; inline-size: 100%">
+    <XhToggleGroupRoot v-model:value="selected" :collection="options" multiple aria-label="显示的级别" />
+    <XhLogRoot :rows="6" :levels="levels">
+      <XhLogViewport>
+        <XhLogContent>
+          <XhLogLine v-for="(entry, i) in entries" :key="i" :level="entry.level">{{ entry.text }}</XhLogLine>
+        </XhLogContent>
+      </XhLogViewport>
+    </XhLogRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: 12px; inline-size: 100%">
+  <xh-toggle-group id="log-filter-levels" multiple>
+    <div data-xh-part="root" aria-label="显示的级别">
+      <button data-xh-part="item" value="debug">Debug</button>
+      <button data-xh-part="item" value="info">Info</button>
+      <button data-xh-part="item" value="warn">Warn</button>
+      <button data-xh-part="item" value="error">Error</button>
+    </div>
+  </xh-toggle-group>
+  <xh-log id="log-filter" rows="6" levels="info warn error">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="content">
+          <div data-xh-part="line" level="debug">12:00:01  读取配置 config/app.yaml</div>
+          <div data-xh-part="line" level="info">12:00:02  数据库连接池就绪</div>
+          <div data-xh-part="line" level="info">12:00:04  POST /api/orders  201  118ms</div>
+          <div data-xh-part="line" level="warn">12:00:05  慢查询 1,240ms  select * from orders</div>
+          <div data-xh-part="line" level="error">12:00:06  支付网关超时，第 1 次重试</div>
+          <div data-xh-part="line" level="info">12:00:08  支付网关恢复，订单 8812 已确认</div>
+        </div>
+      </div>
+    </div>
+  </xh-log>
+</div>
+
+<script type="module">
+  // 多选的初值是数组，走 property；选中的级别写回日志的 levels 属性，空白分隔
+  const log = document.getElementById("log-filter");
+  const group = document.getElementById("log-filter-levels");
+  group.defaultValue = ["info", "warn", "error"];
+  group.addEventListener("value-change", (event) => {
+    log.setAttribute("levels", event.detail.value.join(" "));
+  });
+</script>
+```
+
+### 复制全部
+
+日志旁放一颗剪贴板按钮复制整段输出；带 ANSI 转义的原文先用 stripAnsi 去掉转义，复制出去的是纯文字
+
+```vue
+<script setup lang="ts">
+import { stripAnsi } from "@xihan-ui/headless";
+import { CheckIcon, ClipboardIcon } from "@xihan-ui/icons";
+import {
+  XhClipboardCopyTrigger,
+  XhClipboardIndicator,
+  XhClipboardRoot,
+  XhIcon,
+  XhLogContent,
+  XhLogLine,
+  XhLogRoot,
+  XhLogViewport,
+} from "@xihan-ui/vue";
+
+const ESC = "\u001B";
+const lines = [
+  `${ESC}[2m$ pnpm test${ESC}[0m`,
+  `${ESC}[32m✓${ESC}[0m tests/order.spec.ts (12 tests)`,
+  `${ESC}[31m✗${ESC}[0m tests/payment.spec.ts > 超时重试 ${ESC}[1;31mFAILED${ESC}[0m`,
+  `Tests  ${ESC}[1;31m1 failed${ESC}[0m | ${ESC}[32m12 passed${ESC}[0m (13)`,
+];
+const text = lines.map(stripAnsi).join("\n");
+</script>
+
+<template>
+  <div style="display: grid; gap: 8px; inline-size: 100%">
+    <XhClipboardRoot :value="text">
+      <XhClipboardCopyTrigger>
+        <XhClipboardIndicator><XhIcon :icon="ClipboardIcon" /> 复制全部</XhClipboardIndicator>
+        <XhClipboardIndicator copied><XhIcon :icon="CheckIcon" /> 已复制</XhClipboardIndicator>
+      </XhClipboardCopyTrigger>
+    </XhClipboardRoot>
+    <XhLogRoot :rows="4">
+      <XhLogViewport>
+        <XhLogContent>
+          <XhLogLine v-for="(line, i) in lines" :key="i" :ansi="line" />
+        </XhLogContent>
+      </XhLogViewport>
+    </XhLogRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: 8px; inline-size: 100%">
+  <xh-clipboard id="log-copy-clipboard">
+    <div data-xh-part="root">
+      <button data-xh-part="copy-trigger">
+        <span data-xh-part="indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2.5" width="8" height="4" rx="1"/><path d="M16 4.5h1.5a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2H8"/></svg> 复制全部</span>
+        <span data-xh-part="indicator" copied><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg> 已复制</span>
+      </button>
+    </div>
+  </xh-clipboard>
+  <xh-log rows="4">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="content" id="log-copy-content"></div>
+      </div>
+    </div>
+  </xh-log>
+</div>
+
+<script type="module">
+  const ESC = "\u001B";
+  const lines = [
+    `${ESC}[2m$ pnpm test${ESC}[0m`,
+    `${ESC}[32m✓${ESC}[0m tests/order.spec.ts (12 tests)`,
+    `${ESC}[31m✗${ESC}[0m tests/payment.spec.ts > 超时重试 ${ESC}[1;31mFAILED${ESC}[0m`,
+    `Tests  ${ESC}[1;31m1 failed${ESC}[0m | ${ESC}[32m12 passed${ESC}[0m (13)`,
+  ];
+  const content = document.getElementById("log-copy-content");
+  for (const text of lines) {
+    const line = document.createElement("div");
+    line.setAttribute("data-xh-part", "line");
+    line.setAttribute("ansi", "");
+    line.textContent = text;
+    content.append(line);
+  }
+  // 复制出去的是去掉转义之后的纯文字；这里只有颜色转义，按 SGR 的写法去掉即可
+  const sgr = new RegExp(`${ESC}\\[[0-9;]*m`, "g");
+  document.getElementById("log-copy-clipboard").setAttribute("value", lines.map(text => text.replace(sgr, "")).join("\n"));
+</script>
+```
+
+### 虚拟滚动
+
+行数很大时把日志与 Virtualizer 接线：virtualizer 交出 collectionVirtualizer，行放进 Virtualizer 的条目里，只挂窗口里的那些；粘底跟着 Virtualizer 的视口走
+
+```vue
+<script setup lang="ts">
+import {
+  XhLogLine,
+  XhLogRoot,
+  XhLogViewport,
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
+} from "@xihan-ui/vue";
+
+const lines = Array.from({ length: 10000 }, (_, index) =>
+  `${String(index + 1).padStart(5, "0")}  GET /api/orders/${8000 + index}  200  ${(index % 90) + 10}ms`);
+</script>
+
+<template>
+  <XhVirtualizerRoot v-slot="{ virtualItems, collectionVirtualizer }" :count="lines.length" :estimate-size="20" style="inline-size: 100%">
+    <XhLogRoot :rows="10" :virtualizer="collectionVirtualizer">
+      <XhLogViewport>
+        <XhVirtualizerViewport>
+          <XhVirtualizerContent>
+            <XhVirtualizerItem v-for="item in virtualItems" :key="item.key" :value="item.index">
+              <XhLogLine>{{ lines[item.index] }}</XhLogLine>
+            </XhVirtualizerItem>
+          </XhVirtualizerContent>
+        </XhVirtualizerViewport>
+      </XhLogViewport>
+    </XhLogRoot>
+  </XhVirtualizerRoot>
+</template>
+```
+
+```html
+<xh-log id="log-virtualized" rows="10" style="inline-size: 100%">
+  <div data-xh-part="root">
+    <div data-xh-part="viewport">
+      <xh-virtualizer id="log-virtualizer" count="10000" estimate-size="20">
+        <div data-xh-part="root">
+          <div data-xh-part="viewport">
+            <div data-xh-part="content"></div>
+          </div>
+        </div>
+      </xh-virtualizer>
+    </div>
+  </div>
+</xh-log>
+
+<script type="module">
+  const log = document.getElementById("log-virtualized");
+  const virtualizer = document.getElementById("log-virtualizer");
+  const content = virtualizer.querySelector('[data-xh-part="content"]');
+  const lines = Array.from({ length: 10000 }, (_, index) =>
+    `${String(index + 1).padStart(5, "0")}  GET /api/orders/${8000 + index}  200  ${(index % 90) + 10}ms`);
+
+  // 条目外壳归 Virtualizer，里面的行声明归日志管（data-xh-part-owner="log"），由外层 xh-log 认领
+  function render(virtualItems) {
+    content.replaceChildren(...virtualItems.map((item) => {
+      const shell = document.createElement("div");
+      shell.dataset.xhPart = "item";
+      shell.setAttribute("value", item.index);
+      const line = document.createElement("div");
+      line.dataset.xhPart = "line";
+      line.dataset.xhPartOwner = "log";
+      line.textContent = lines[item.index];
+      shell.append(line);
+      return shell;
+    }));
+    virtualizer.requestUpdate();
+    log.virtualizer = virtualizer.collectionVirtualizer;
+  }
+
+  render(virtualizer.virtualItems);
+  virtualizer.addEventListener("range-change", event => render(event.detail.virtualItems));
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -709,16 +1021,20 @@ onUnmounted(() => window.clearTimeout(timer));
 - 内置“回到底部”：离开底部时出现，按下后归位并重新粘附。留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
 - 应用设为 `data-material="liquid"` 时，“回到底部”换成液态面：按下层换色调，按住时液面随手指形变。
 - 视口自身可聚焦，整块日志占一个 Tab 停靠位，方向键与翻页键交给浏览器滚动。
+- ANSI 着色：行上写 `ansi` 交出带转义的原文（Web Components 在行上写 `ansi` 属性、文字就是原文），按 SGR 拆成 `segment`。八种前景色映射到语义色：红、绿、黄、蓝取语气前景，品红、青借代码着色的关键字与字符串色，黑与白取正文与次要前景，每一种都可经 `--xh-log-ansi-<颜色>` 覆盖；高亮色（90–97）与基础色同一档。粗体、暗淡、斜体、下划线各自生效；背景色、256 色的高位与真彩色不着色，清行、挪光标之类的转义直接去掉。`parseAnsi` 与 `stripAnsi` 同时导出，复制与播报用去掉转义的纯文字。
+- 级别过滤：`levels` 只显示所选级别的行，没写级别的行不受影响；接了虚拟滚动时 DOM 里只有窗口里的行，过滤在交给 Virtualizer 之前按 `isLevelVisible` 做。
 
 ### 组合
 
 - 行内可以用[文本高亮](./highlight)标出关键词。
+- 行数很大时与[虚拟滚动](./virtualizer)接线：`XhVirtualizerRoot` 包在外面，把它交出的 `collectionVirtualizer` 传给 `virtualizer`，日志视口里放 Virtualizer 的视口，行放进 Virtualizer 的条目。日志视口只定高、不滚动，Tab 位与滚动都归里面那层 Virtualizer 视口，粘底跟着它走；这时不用 `content` 部件。Web Components 的行写在 Virtualizer 条目里，声明 `data-xh-part-owner="log"` 由外层日志认领。
+- 复制全部用[剪贴板](./clipboard)，下载用[下载触发器](./download-trigger)，都放在日志旁边；带转义的原文先经 `stripAnsi`。
 - 给视口一个 id，把[滚动条](./scrollbar)的 `controls` 指向它，滚动条与视口平级放在 `root` 内：它浮在内容之上，不占宽度。未挂自绘滚动条时视口自行预留一条通道，原生滚动条出现与消失不会推动文字。
 
 ### 最佳实践
 
 - 用户向上翻时不强行拉回底部。
-- 行数很大时截断或虚拟化，不把十万行全部挂载。
+- 行数很大时接虚拟滚动或截断，不把十万行全部挂载。
 
 ### 反模式
 
@@ -733,7 +1049,7 @@ onUnmounted(() => window.clearTimeout(timer));
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-log>` |
-| Vue 组件 | `XhLogContent` `XhLogLine` `XhLogLiveRegion` `XhLogRoot` `XhLogScrollToEndTrigger` `XhLogViewport` |
+| Vue 组件 | `XhLogContent` `XhLogLine` `XhLogLiveRegion` `XhLogRoot` `XhLogScrollToEndTrigger` `XhLogSegment` `XhLogViewport` |
 | 组合式函数 | `useLog` |
 | 状态机 | `logMachine` |
 | 皮肤 | `@xihan-ui/styles/log.css` |
@@ -743,7 +1059,9 @@ onUnmounted(() => window.clearTimeout(timer));
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `threshold` | `number` |  | 距底部多少 px 视为在底部，默认使用贴底原语的默认值。 |
+| `virtualizer` | `CollectionVirtualizer` |  | 与虚拟滚动接线：传入 Virtualizer 的 collectionVirtualizer，行只挂载当前窗口里的那些。 粘底改跟 Virtualizer 的滚动层与内容层，日志视口只保留 role=log 与定高，由它里面的 Virtualizer 视口滚动。 |
 | `onStickChange` | `(details: LogStickChangeDetails) => void` |  | 贴底状态变化时通知宿主。 |
+| `levels` | `readonly LogLevel[]` |  | 只显示这几个级别的行，缺省全部显示。没写 level 的行不受过滤影响。 接了虚拟滚动时 DOM 里只有窗口里的行，过滤要在交给 Virtualizer 之前按 isLevelVisible 做。 |
 | `loading` | `boolean` |  | 行仍在传输中：日志区报告 aria-busy，根写 data-loading。 |
 | `rows` | `number` |  | 视口按多少行定高；未提供时高度由皮肤决定。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。影响行文字号与内衬，行高不随档位变化。 |
@@ -772,7 +1090,9 @@ onUnmounted(() => window.clearTimeout(timer));
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhLogLine` | `level` | `LogLevel` |  | 该行的级别，写为行上的 data-level。 |
+| `XhLogLine` | `ansi` | `string` |  | 带 ANSI 转义的一行原文：按 SGR 拆成着色的段；写了 children 时以 children 为准。 |
 | `XhLogRoot` | `children` | `SlotChildren<LogRootSlotProps>` |  |  |
+| `XhLogSegment` | `segment` | `LogAnsiSegment` | 是 | parseAnsi 拆出的一段。 |
 
 ### 状态
 
@@ -801,11 +1121,14 @@ onUnmounted(() => window.clearTimeout(timer));
 | `atBottom` | `boolean` | 当前滚动位置是否落在底部阈值内。 |
 | `sticking` | `boolean` | 新行到达时是否自动跟随到底部。 |
 | `showScrollToEndTrigger` | `boolean` | 是否显示回到底部按钮，不在底部时为 true。 |
+| `virtualized` | `boolean` | 是否接了虚拟滚动。 |
+| `isLevelVisible` | `(level?: LogLevel) => boolean` | 某级别的行此刻是否显示；没写级别的行始终显示。 |
 | `scrollToBottom` | `() => void` | 滚动到底部并恢复贴附。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getLineProps` | `(props?: LogLineProps) => T['element']` |  |
+| `getSegmentProps` | `(segment: LogAnsiSegment) => T['element']` | 一段 ANSI 文字：颜色与字形写成 data 属性，皮肤映射到语义令牌。 |
 | `getScrollToEndTriggerProps` | `() => T['button']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
@@ -846,6 +1169,8 @@ onUnmounted(() => window.clearTimeout(timer));
 
 `@xihan-ui/styles/log.css` 使用 `[data-scope="log"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -856,7 +1181,14 @@ onUnmounted(() => window.clearTimeout(timer));
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-sticking` | ''（条件成立时才出现） |
+| `viewport` | `data-virtualized` | ''（条件成立时才出现） |
 | `line` | `data-level` | line?.level |
+| `segment` | `data-bold` | ''（条件成立时才出现） |
+| `segment` | `data-bright` | ''（条件成立时才出现） |
+| `segment` | `data-dim` | ''（条件成立时才出现） |
+| `segment` | `data-fg` | segment.fg |
+| `segment` | `data-italic` | ''（条件成立时才出现） |
+| `segment` | `data-underline` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-state` | 'visible' \| 'hidden' |
 | `scroll-to-end-trigger` | `data-xh-action-control` | '' |
@@ -874,18 +1206,29 @@ onUnmounted(() => window.clearTimeout(timer));
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-log-ansi-black` | `segment` | `color` | `fg=black` | `--xh-fg-default` | log 的 segment 部件 color 覆盖槽。 |
+| `--xh-log-ansi-blue` | `segment` | `color` | `fg=blue` | `--xh-fg-info` | log 的 segment 部件 color 覆盖槽。 |
+| `--xh-log-ansi-bold-weight` | `segment` | `font-weight` | `bold` | `--xh-font-weight-semibold` | log 的 segment 部件 font-weight 覆盖槽。 |
+| `--xh-log-ansi-cyan` | `segment` | `color` | `fg=cyan` | `--xh-syntax-string` | log 的 segment 部件 color 覆盖槽。 |
+| `--xh-log-ansi-dim-fg` | `segment` | `color` | `dim`<br>`fg`<br>`not([data-fg])` | `--xh-fg-subtle` | log 的 segment 部件 color 覆盖槽。 |
+| `--xh-log-ansi-green` | `segment` | `color` | `fg=green` | `--xh-fg-success` | log 的 segment 部件 color 覆盖槽。 |
+| `--xh-log-ansi-magenta` | `segment` | `color` | `fg=magenta` | `--xh-syntax-keyword` | log 的 segment 部件 color 覆盖槽。 |
+| `--xh-log-ansi-red` | `segment` | `color` | `fg=red` | `--xh-fg-danger` | log 的 segment 部件 color 覆盖槽。 |
+| `--xh-log-ansi-white` | `segment` | `color` | `fg=white` | `--xh-fg-muted` | log 的 segment 部件 color 覆盖槽。 |
+| `--xh-log-ansi-yellow` | `segment` | `color` | `fg=yellow` | `--xh-fg-warning` | log 的 segment 部件 color 覆盖槽。 |
 | `--xh-log-bg` | `root` | `background` | `default` | `--xh-bg-surface` | log 的 root 部件 background 覆盖槽。 |
 | `--xh-log-border` | `root` | `border` | `default` | `--xh-border-default` | log 的 root 部件 border 覆盖槽。 |
-| `--xh-log-content-px` | `content` | `padding-inline` | `default` | `--xh-_log-content-px` | log 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-log-content-px` | `content`<br>`line`<br>`viewport` | `padding-inline` | `default`<br>`virtualized` | `--xh-_log-content-px` | log 的 content、line、viewport 部件 padding-inline 覆盖槽。 |
 | `--xh-log-fg` | `root` | `color` | `default` | `--xh-fg-default` | log 的 root 部件 color 覆盖槽。 |
-| `--xh-log-font` | `content` | `font-family` | `default` | `--xh-font-family-mono` | log 的 content 部件 font-family 覆盖槽。 |
-| `--xh-log-font-size` | `content` | `font-size` | `default` | `--xh-_log-font-size` | log 的 content 部件 font-size 覆盖槽。 |
+| `--xh-log-font` | `content`<br>`viewport` | `font-family` | `default`<br>`virtualized` | `--xh-font-family-mono` | log 的 content、viewport 部件 font-family 覆盖槽。 |
+| `--xh-log-font-size` | `content`<br>`viewport` | `font-size` | `default`<br>`virtualized` | `--xh-_log-font-size` | log 的 content、viewport 部件 font-size 覆盖槽。 |
 | `--xh-log-icon-size` | `scroll-to-end-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | log 的 scroll-to-end-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-log-level-debug-fg` | `line` | `color` | `level=debug` | `--xh-fg-subtle` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-level-error-fg` | `line` | `color` | `level=error` | `--xh-fg-danger` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-level-info-fg` | `line` | `color` | `level=info` | `--xh-fg-default` | log 的 line 部件 color 覆盖槽。 |
 | `--xh-log-level-warn-fg` | `line` | `color` | `level=warn` | `--xh-fg-warning` | log 的 line 部件 color 覆盖槽。 |
-| `--xh-log-line-height` | `line`<br>`root`<br>`viewport` | `block-size`<br>`line-height` | `default` | `1.25rem` | log 的 line、root、viewport 部件 block-size、line-height 覆盖槽。 |
+| `--xh-log-line-height` | `line`<br>`root`<br>`viewport` | `block-size`<br>`line-height` | `default` | `--xh-text-code-leading` | log 的 line、root、viewport 部件 block-size、line-height 覆盖槽。 |
+| `--xh-log-line-px` | `line`<br>`viewport` | `padding-inline` | `virtualized` | `--xh-log-content-px` | log 的 line、viewport 部件 padding-inline 覆盖槽。 |
 | `--xh-log-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | log 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-log-rows` | `viewport` | `block-size` | `default` | `16` | log 的 viewport 部件 block-size 覆盖槽。 |
 | `--xh-log-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_material-bg`<br>`--xh-_material-bg-focus` | log 的 scroll-to-end-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |

@@ -691,6 +691,7 @@ import {
 | `defaultOpen` | `boolean` |  |  |
 | `autoDisclosure` | `boolean` |  | 运行时自动展开、结束时自动收起，默认开启；用户手动开合过一次即永久停用。 |
 | `disabled` | `boolean` |  |  |
+| `clock` | `boolean` |  | running 期间每秒记一次当前时刻（context.now），给思考过程算已经想了多久；默认关闭。 只在运行时走表，停下即拆掉计时器——一段会话里的几十个块不会各挂一个空转的计时器。 |
 | `onOpenChange` | `(details: ToolCallOpenChangeDetails) => void` |  |  |
 | `endTime` | `number` |  | 本次调用结束的时刻。可能缺席：仍在运行，或流被中止时兜底收尾不写该字段。 |
 | `phase` | `ToolCallPhase` |  | 本次调用所处的阶段，默认 input-available。 |
@@ -842,6 +843,7 @@ import {
 | `label` | `data-state` | props.phase |
 | `summary` | `data-state` | props.phase |
 | `status` | `data-state` | props.phase |
+| `status` | `data-tone` | statusTone(phase) |
 | `duration` | `data-loading` | ''（条件成立时才出现） |
 | `duration` | `data-state` | props.phase |
 | `approval` | `data-state` | props.phase |
@@ -869,22 +871,23 @@ import {
 | `--xh-tool-call-icon-size` | `root`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | tool-call 的 root、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tool-call-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-subtle` | tool-call 的 indicator 部件 color 覆盖槽。 |
 | `--xh-tool-call-label-font` | `label`<br>`summary` | `font-family` | `default` | `--xh-font-family-mono` | tool-call 的 label、summary 部件 font-family 覆盖槽。 |
+| `--xh-tool-call-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tool-call 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-tool-call-px` | `approval`<br>`content`<br>`trigger` | `padding-inline` | `default` | `--xh-_tool-call-px` | tool-call 的 approval、content、trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-tool-call-py` | `approval`<br>`content`<br>`trigger` | `padding-block`<br>`padding-block-end`<br>`padding-block-start` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default`<br>`xh-action-profile=disclosure-trigger` | `--xh-_tool-call-py` | tool-call 的 approval、content、trigger 部件 padding-block、padding-block-end、padding-block-start 覆盖槽。 |
 | `--xh-tool-call-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | tool-call 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-tool-call-shadow` | `root` | `box-shadow` | `default`<br>`tone` | `0 0 0 transparent`<br>`none` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-tool-call-shimmer-duration` | `root`<br>`status` | `animation` | `loading` | `--xh-motion-loop-shimmer` | tool-call 的 root、status 部件 animation 覆盖槽。 |
-| `--xh-tool-call-status-bg-approval` | `status` | `background` | `state=awaiting-approval` | `--xh-fg-warning` | tool-call 的 status 部件 background 覆盖槽。 |
-| `--xh-tool-call-status-bg-done` | `status` | `background` | `state=output-available` | `--xh-fg-success` | tool-call 的 status 部件 background 覆盖槽。 |
-| `--xh-tool-call-status-bg-error` | `status` | `background` | `state=output-error` | `--xh-fg-danger` | tool-call 的 status 部件 background 覆盖槽。 |
+| `--xh-tool-call-status-bg-approval` | `status` | `background` | `state=awaiting-approval` | `--xh-_tone-subtle` | tool-call 的 status 部件 background 覆盖槽。 |
+| `--xh-tool-call-status-bg-done` | `status` | `background` | `state=output-available` | `--xh-_tone-subtle` | tool-call 的 status 部件 background 覆盖槽。 |
+| `--xh-tool-call-status-bg-error` | `status` | `background` | `state=output-error` | `--xh-_tone-subtle` | tool-call 的 status 部件 background 覆盖槽。 |
 | `--xh-tool-call-status-fg` | `root`<br>`status` | `color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`loading`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-fg-muted` | tool-call 的 root、status 部件 color 覆盖槽。 |
-| `--xh-tool-call-status-fg-approval` | `status` | `color` | `state=awaiting-approval` | `--xh-fg-warning` | tool-call 的 status 部件 color 覆盖槽。 |
-| `--xh-tool-call-status-fg-done` | `status` | `color` | `state=output-available` | `--xh-fg-success` | tool-call 的 status 部件 color 覆盖槽。 |
-| `--xh-tool-call-status-fg-error` | `status` | `color` | `state=output-error` | `--xh-fg-danger` | tool-call 的 status 部件 color 覆盖槽。 |
+| `--xh-tool-call-status-fg-approval` | `status` | `color` | `state=awaiting-approval` | `--xh-_tone-fg` | tool-call 的 status 部件 color 覆盖槽。 |
+| `--xh-tool-call-status-fg-done` | `status` | `color` | `state=output-available` | `--xh-_tone-fg` | tool-call 的 status 部件 color 覆盖槽。 |
+| `--xh-tool-call-status-fg-error` | `status` | `color` | `state=output-error` | `--xh-_tone-fg` | tool-call 的 status 部件 color 覆盖槽。 |
 | `--xh-tool-call-status-font-size` | `duration`<br>`error`<br>`status` | `font-size` | `default` | `--xh-text-caption-size` | tool-call 的 duration、error、status 部件 font-size 覆盖槽。 |
-| `--xh-tool-call-status-px` | `status` | `padding-inline` | `state=awaiting-approval`<br>`state=output-available`<br>`state=output-error` | `--xh-space-2` | tool-call 的 status 部件 padding-inline 覆盖槽。 |
-| `--xh-tool-call-status-py` | `status` | `padding-block` | `state=awaiting-approval`<br>`state=output-available`<br>`state=output-error` | `--xh-space-0_5` | tool-call 的 status 部件 padding-block 覆盖槽。 |
-| `--xh-tool-call-status-radius` | `status` | `border-radius` | `state=awaiting-approval`<br>`state=output-available`<br>`state=output-error` | `--xh-shape-pill` | tool-call 的 status 部件 border-radius 覆盖槽。 |
+| `--xh-tool-call-status-px` | `status` | `padding-inline` | `tone` | `--xh-space-1_5` | tool-call 的 status 部件 padding-inline 覆盖槽。 |
+| `--xh-tool-call-status-py` | `status` | `padding-block` | `tone` | `--xh-space-0_5` | tool-call 的 status 部件 padding-block 覆盖槽。 |
+| `--xh-tool-call-status-radius` | `status` | `border-radius` | `tone` | `--xh-shape-pill` | tool-call 的 status 部件 border-radius 覆盖槽。 |
 | `--xh-tool-call-status-shimmer-base` | `root`<br>`status` | `background-image` | `loading` | `--xh-fg-subtle` | tool-call 的 root、status 部件 background-image 覆盖槽。 |
 | `--xh-tool-call-status-shimmer-sheen` | `root`<br>`status` | `background-image` | `loading` | `--xh-fg-default` | tool-call 的 root、status 部件 background-image 覆盖槽。 |
 | `--xh-tool-call-summary-bg` | `summary` | `background` | `default` | `--xh-bg-subtle` | tool-call 的 summary 部件 background 覆盖槽。 |

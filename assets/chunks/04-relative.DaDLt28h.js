@@ -1,0 +1,28 @@
+const n=`<!-- 相对时间 | 一分钟以内是「现在」，其余按分、时、天取整，过去说「几分钟前」、将来说「几分钟后」，离现在三十天及以上退回绝对日期；用词由 Intl 按 locale 给出，未提供时跟随浏览器语言 -->
+<script setup lang="ts">
+import { XhTimestamp } from "@xihan-ui/vue";
+
+// 参照时刻给定后产出完全确定，不给则取当前时刻
+const now = "2026-08-11T12:00:00";
+
+const moments = [
+  "2026-08-11T11:59:40",
+  "2026-08-11T11:30:00",
+  "2026-08-11T09:00:00",
+  "2026-08-09T12:00:00",
+  // 将来的时刻
+  "2026-08-11T12:30:00",
+  // 超过三十天，没有档位可用，改报绝对日期
+  "2026-01-01T00:00:00",
+];
+<\/script>
+
+<template>
+  <div style="display: grid; grid-template-columns: auto auto; gap: 8px 24px; justify-content: start">
+    <template v-for="moment in moments" :key="moment">
+      <XhTimestamp :value="moment" type="relative" :now="now" locale="en-US" />
+      <XhTimestamp :value="moment" type="relative" :now="now" locale="zh-CN" />
+    </template>
+  </div>
+</template>
+`;export{n as default};

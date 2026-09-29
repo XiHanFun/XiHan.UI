@@ -866,9 +866,9 @@ const slides = ["A", "B", "C", "D", "E", "F"];
 </script>
 ```
 
-### 更换过渡效果
+### 淡入淡出换页
 
-条目的内联样式只有尺寸与间距，位移之外的表现全部归作者：把条目叠放后按当前页调整透明度与缩放，翻页、键盘与指示点一概照常
+effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张同时淡出，轨道不位移；按钮、键盘、指示点与循环照常，减弱动效下直接换
 
 ```vue
 <script setup lang="ts">
@@ -882,57 +882,36 @@ import {
   XhCarouselRoot,
   XhCarouselViewport,
 } from "@xihan-ui/vue";
-import { computed, ref } from "vue";
 
-type Effect = "slide" | "fade" | "zoom";
-
-const slides = ["城市夜景", "海岸线", "雪山", "沙漠"];
-
-const options: { key: Effect; label: string }[] = [
-  { key: "slide", label: "平移" },
-  { key: "fade", label: "淡入" },
-  { key: "zoom", label: "缩放淡入" },
+const slides = [
+  { title: "城市夜景", background: "var(--xh-bg-brand-subtle)" },
+  { title: "海岸线", background: "color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface))" },
+  { title: "雪山", background: "color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface))" },
 ];
-
-const effect = ref<Effect>("fade");
-
-// 后两档把条目摞在一起，轨道那条整页位移随之作废
-const groupStyle = computed(() =>
-  effect.value === "slide" ? undefined : { position: "relative", transform: "none" },
-);
-
-function itemStyle(index: number, page: number): Record<string, string> | undefined {
-  if (effect.value === "slide")
-    return undefined;
-  const current = index === page;
-  return {
-    position: "absolute",
-    inset: "0",
-    opacity: current ? "1" : "0",
-    scale: effect.value === "zoom" && !current ? "0.9" : "1",
-    transition:
-      "opacity var(--xh-motion-duration-slide) var(--xh-motion-ease-slide), scale var(--xh-motion-duration-slide) var(--xh-motion-ease-slide)",
-  };
-}
 </script>
 
 <template>
   <XhCarouselRoot
-    v-slot="{ page, totalPages }"
+    v-slot="{ totalPages }"
     :slide-count="slides.length"
+    effect="fade"
+    loop
     style="inline-size: 100%"
   >
     <XhCarouselPrevTrigger />
-    <XhCarouselViewport style="block-size: 140px">
-      <XhCarouselList :style="groupStyle">
-        <XhCarouselItem
-          v-for="(text, i) in slides"
-          :key="text"
-          :index="i"
-          :style="itemStyle(i, page)"
-        >
-          <div style="display: grid; place-items: center; block-size: 100%">
-            {{ text }}
+    <XhCarouselViewport style="block-size: 176px">
+      <XhCarouselList>
+        <XhCarouselItem v-for="(slide, i) in slides" :key="slide.title" :index="i">
+          <div
+            :style="{
+              display: 'grid',
+              placeItems: 'center',
+              blockSize: '100%',
+              background: slide.background,
+              color: 'var(--xh-fg-default)',
+            }"
+          >
+            {{ slide.title }}
           </div>
         </XhCarouselItem>
       </XhCarouselList>
@@ -941,71 +920,29 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
     <XhCarouselIndicatorGroup>
       <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
     </XhCarouselIndicatorGroup>
-    <div style="flex-basis: 100%; display: flex; justify-content: center; gap: 8px">
-      <button
-        v-for="opt in options"
-        :key="opt.key"
-        type="button"
-        :aria-pressed="effect === opt.key"
-        @click="effect = opt.key"
-      >
-        {{ opt.label }}
-      </button>
-    </div>
   </XhCarouselRoot>
 </template>
 ```
 
 ```html
-<style>
-  /* 后两档把条目摞在一起，轨道那条整页位移随之作废 */
-  #carousel-effect:not([data-effect="slide"]) [data-xh-part="list"] {
-    position: relative;
-    transform: none !important;
-  }
-  #carousel-effect:not([data-effect="slide"]) [data-xh-part="item"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition:
-      opacity var(--xh-motion-duration-slide) var(--xh-motion-ease-slide),
-      scale var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
-  }
-  /* 露在外面的那一张由组件标出来，样式跟着它走 */
-  #carousel-effect:not([data-effect="slide"]) [data-xh-part="item"][data-inview] {
-    opacity: 1;
-  }
-  #carousel-effect[data-effect="zoom"] [data-xh-part="item"] {
-    scale: 0.9;
-  }
-  #carousel-effect[data-effect="zoom"] [data-xh-part="item"][data-inview] {
-    scale: 1;
-  }
-</style>
-
-<xh-carousel id="carousel-effect" data-effect="fade" slide-count="4">
+<xh-carousel slide-count="3" effect="fade" loop>
   <div data-xh-part="root" style="inline-size: 100%">
     <button data-xh-part="prev-trigger"></button>
-    <div data-xh-part="viewport" style="block-size: 140px">
+    <div data-xh-part="viewport" style="block-size: 176px">
       <div data-xh-part="list">
         <div data-xh-part="item" index="0">
-          <div style="display: grid; place-items: center; block-size: 100%">
+          <div style="display: grid; place-items: center; block-size: 100%; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-default)">
             城市夜景
           </div>
         </div>
         <div data-xh-part="item" index="1">
-          <div style="display: grid; place-items: center; block-size: 100%">
+          <div style="display: grid; place-items: center; block-size: 100%; background: color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)); color: var(--xh-fg-default)">
             海岸线
           </div>
         </div>
         <div data-xh-part="item" index="2">
-          <div style="display: grid; place-items: center; block-size: 100%">
+          <div style="display: grid; place-items: center; block-size: 100%; background: color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)); color: var(--xh-fg-default)">
             雪山
-          </div>
-        </div>
-        <div data-xh-part="item" index="3">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            沙漠
           </div>
         </div>
       </div>
@@ -1015,34 +952,9 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
       <button data-xh-part="indicator" index="0"></button>
       <button data-xh-part="indicator" index="1"></button>
       <button data-xh-part="indicator" index="2"></button>
-      <button data-xh-part="indicator" index="3"></button>
-    </div>
-    <div
-      id="carousel-effect-picker"
-      style="flex-basis: 100%; display: flex; justify-content: center; gap: 8px"
-    >
-      <button type="button" data-effect="slide" aria-pressed="false">平移</button>
-      <button type="button" data-effect="fade" aria-pressed="true">淡入</button>
-      <button type="button" data-effect="zoom" aria-pressed="false">缩放淡入</button>
     </div>
   </div>
 </xh-carousel>
-
-<script type="module">
-  // 挡位落在宿主的 data-effect 上，上面那段样式照它选形态
-  const carousel = document.getElementById("carousel-effect");
-  const picker = document.getElementById("carousel-effect-picker");
-  const buttons = [...picker.querySelectorAll("[data-effect]")];
-
-  for (const button of buttons) {
-    button.addEventListener("click", () => {
-      carousel.dataset.effect = button.dataset.effect;
-      for (const other of buttons) {
-        other.setAttribute("aria-pressed", String(other === button));
-      }
-    });
-  }
-</script>
 ```
 
 ## 设计指引
@@ -1061,7 +973,9 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 - `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次移动一张。
 - 支持纵向轨道、指针拖拽、循环与自动播放。
 - 拖拽松手后轨道带着松手速度落到目标页：轻甩一下也能翻页，往回甩则收回；不循环时首末页往外拖越拉越沉，松手弹回。
-- 分页点为 8px 圆点，当前页拉长为 20px 品牌胶囊；自动播放时胶囊按停留间隔显示进度，临时暂停时同步冻结。
+- 分页点为 8px 圆点，当前页拉长为 20px 品牌胶囊；自动播放时胶囊按停留间隔显示进度。悬停、聚焦等临时暂停时进度回到起点，恢复后与计时器一起从头计满一整个间隔。
+- `loop` 下从末页往后翻（或首页往前翻）轨道继续朝同一方向走一张，接到首页（或末页），不倒着刷过全部页。
+- `effect="fade"` 换成淡入淡出：各张叠放在同一格，新一张淡入、旧一张同时淡出，时长与平移同一档，减弱动效下直接换；一页只放一张。
 - 指示点可以配置为悬停即切页。
 - 应用设为 `data-material="liquid"` 时，翻页与播放钮换成液态面，分页点托在一条液态胶囊上：按下层换色调，压在任何媒体上都看得清；按住控制钮时液面随手指形变。
 
@@ -1108,6 +1022,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 | `autoplay` | `boolean \| number` |  | 自动播放。true 使用默认间隔，数值即毫秒间隔；未提供 / false / 非正数一律不自动播放。 指针悬停或轮播内任一节点获得焦点时暂停计时，离开后重新计满一个完整间隔再翻页。 减弱动效档下不自动起播：提供间隔也停在 idle，需要由用户按下播放开关。 |
 | `allowPointerDrag` | `boolean` |  | 允许指针拖拽切页，默认 false。鼠标、触摸、触控笔一并门控。 开启后沿轨道轴的原生滚动让位给拖拽，关闭则完全没有拖拽、触摸使用原生滚动。 |
 | `spacing` | `string` |  | 张与张之间的间距，任意 CSS 长度（如 '12px'）。落为条目自身的内边距，不影响位移计算。 |
+| `effect` | `CarouselEffect` |  | 换页方式，默认 slide（轨道平移）。fade 时条目叠放、新一页淡入旧一页淡出，与平移同一段时长与曲线， 减弱动效下直接换；loop 回绕也只是一次淡变。拖拽仍按方向与速度决定翻不翻页，画面不跟手位移。 fade 一页只放一张：slidesPerPage 大于 1 时报错。 |
 | `translations` | `Partial<CarouselTranslations>` |  |  |
 | `onPageChange` | `(details: CarouselPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
@@ -1151,7 +1066,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 
 **状态**：`idle` · `playing` · `playing.running` · `playing.paused`
 
-**事件**：`PAGE.SET` · `PAGE.PREV` · `PAGE.NEXT` · `AUTOPLAY.START` · `AUTOPLAY.STOP` · `AUTOPLAY.PAUSE` · `AUTOPLAY.RESUME` · `after.autoplay` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `PRESS.START` · `PRESS.END`
+**事件**：`PAGE.SET` · `PAGE.PREV` · `PAGE.NEXT` · `AUTOPLAY.START` · `AUTOPLAY.STOP` · `AUTOPLAY.PAUSE` · `AUTOPLAY.RESUME` · `after.autoplay` · `WRAP.SETTLE` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isLastPauseSource` · `canAdvance` · `hasAutoplay` · `canPress`
 
@@ -1172,7 +1087,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 | `canScrollPrev` | `boolean` |  |
 | `canScrollNext` | `boolean` |  |
 | `autoplaying` | `boolean` | 自动播放的计时进行中。 |
-| `paused` | `boolean` | 自动播放已开启但被暂停（悬停 / 焦点 / 调用方）。 |
+| `paused` | `boolean` | 自动播放已开启但被暂停（悬停 / 焦点 / 调用方 / 看不见）。 |
 | `autoplayStopped` | `boolean` | 自动播放当前是否由用户停止：计时未进行（idle），或由调用方暂停。 与 `paused` 的差别在于它不计入悬停与焦点两路：这两路一离开即自动恢复， 若用它驱动播放 / 暂停开关的名字与图形，鼠标一碰按钮就会在两态之间跳动。 |
 | `dragging` | `boolean` |  |
 | `isInView` | `(index: number) => boolean` |  |
@@ -1259,7 +1174,9 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 | `viewport` | `data-orientation` | props.orientation |
 | `list` | `data-animating` | ''（条件成立时才出现） |
 | `list` | `data-dragging` | ''（条件成立时才出现） |
+| `list` | `data-effect` | props.effect |
 | `list` | `data-orientation` | props.orientation |
+| `list` | `data-snapped` | ''（条件成立时才出现） |
 | `item` | `data-index` | String(index) |
 | `item` | `data-inview` | ''（条件成立时才出现） |
 | `item` | `data-orientation` | props.orientation |
@@ -1304,8 +1221,8 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-carousel-control-inset` | `autoplay-trigger`<br>`indicator-group`<br>`next-trigger`<br>`prev-trigger`<br>`root` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `default`<br>`orientation=vertical` | `--xh-space-3` | carousel 的 autoplay-trigger、indicator-group、next-trigger、prev-trigger、root 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
-| `--xh-carousel-duration` | `list` | `transition` | `default` | `--xh-motion-duration-slide` | carousel 的 list 部件 transition 覆盖槽。 |
-| `--xh-carousel-ease` | `list` | `transition` | `default` | `--xh-motion-ease-slide` | carousel 的 list 部件 transition 覆盖槽。 |
+| `--xh-carousel-duration` | `item`<br>`list` | `transition`<br>`transition-duration` | `default`<br>`effect=fade` | `--xh-motion-duration-slide` | carousel 的 item、list 部件 transition、transition-duration 覆盖槽。 |
+| `--xh-carousel-ease` | `item`<br>`list` | `transition`<br>`transition-timing-function` | `default`<br>`effect=fade` | `--xh-motion-ease-slide` | carousel 的 item、list 部件 transition、transition-timing-function 覆盖槽。 |
 | `--xh-carousel-icon-size` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-carousel-indicator-bg` | `indicator` | `background` | `@media (pointer: coarse)`<br>`default` | `--xh-bg-subtle-hover-opaque` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-bg-active` | `indicator` | `background` | `@media (pointer: coarse)`<br>`current`<br>`is(:active, [data-pressed])`<br>`not([data-current])`<br>`pressed` | `--xh-fg-default` | carousel 的 indicator 部件 background 覆盖槽。 |
@@ -1337,11 +1254,11 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 导航（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 导航（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-carousel-duration` · `--xh-carousel-ease`。
 
-关键帧 `xh-carousel-indicator-progress` 随皮肤自带，不引用别处文件里的名字；`background-color` · `block-size` · `inline-size` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-carousel-indicator-progress` 随皮肤自带，不引用别处文件里的名字；`background-color` · `block-size` · `border-color` · `box-shadow` · `inline-size` · `opacity` · `scale` · `translate` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。
 

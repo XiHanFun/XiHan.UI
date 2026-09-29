@@ -12,10 +12,8 @@
 - [DownloadTrigger 下载触发器](/components/download-trigger)
 - [Truncate 文本截断](/components/truncate)
 - [FloatButton 浮动按钮](/components/float-button)
-- [GradientText 渐变文字](/components/gradient-text)
 - [Kbd 键盘按键](/components/kbd)
 - [Icon 图标](/components/icon)
-- [IconWrapper 图标块](/components/icon-wrapper)
 - [Scrollbar 滚动条](/components/scrollbar)
 - [Toggle 切换按钮](/components/toggle)
 - [ToggleGroup 切换按钮组](/components/toggle-group)
@@ -46,7 +44,6 @@
 - [NavigationMenu 导航菜单](/components/navigation-menu)
 - [PageHeader 页头](/components/page-header)
 - [Pagination 分页](/components/pagination)
-- [Segmented 分段控制器](/components/segmented)
 - [SideNav 侧栏导航](/components/side-nav)
 - [Steps 步骤条](/components/steps)
 - [Tabs 标签页](/components/tabs)
@@ -101,14 +98,14 @@
 - [Accordion 手风琴](/components/accordion)
 - [Avatar 头像](/components/avatar)
 - [AvatarGroup 头像组](/components/avatar-group)
-<XhComponentCard src="bar-code" name="BarCode" label="条形码" href="/components/bar-code" status="alpha" />
+- [BarCode 条形码](/components/bar-code)
 - [Card 卡片](/components/card)
 - [Carousel 走马灯](/components/carousel)
 - [Collapsible 折叠区域](/components/collapsible)
 - [ColorSwatch 颜色色块](/components/color-swatch)
 - [Descriptions 描述列表](/components/descriptions)
 - [EmptyState 空状态](/components/empty-state)
-- [Heatmap 热力图](/components/heatmap)
+<XhComponentCard src="grid-list" name="GridList" label="网格列表" href="/components/grid-list" status="new" />
 - [Highlight 文本高亮](/components/highlight)
 - [Image 图片](/components/image)
 - [ImageViewer 图片预览](/components/image-viewer)
@@ -129,8 +126,16 @@
 
 ## 图表
 
-- [CartesianChart 直角坐标图](/components/cartesian-chart)
-- [PieChart 饼图](/components/pie-chart)
+<XhComponentCard src="cartesian-chart" name="CartesianChart" label="直角坐标图" href="/components/cartesian-chart" status="new" />
+<XhComponentCard src="funnel-chart" name="FunnelChart" label="漏斗图" href="/components/funnel-chart" status="new" />
+<XhComponentCard src="graph-chart" name="GraphChart" label="关系图" href="/components/graph-chart" status="new" />
+- [Heatmap 热力图](/components/heatmap)
+<XhComponentCard src="hierarchy-chart" name="HierarchyChart" label="层级图" href="/components/hierarchy-chart" status="new" />
+<XhComponentCard src="pie-chart" name="PieChart" label="饼图" href="/components/pie-chart" status="new" />
+<XhComponentCard src="radar-chart" name="RadarChart" label="雷达图" href="/components/radar-chart" status="new" />
+<XhComponentCard src="sankey-chart" name="SankeyChart" label="桑基图" href="/components/sankey-chart" status="new" />
+<XhComponentCard src="sparkline" name="Sparkline" label="迷你图" href="/components/sparkline" status="new" />
+- [Progress 仪表盘与子弹图](/components/progress#仪表盘)
 
 ## 反馈
 
@@ -141,7 +146,6 @@
 - [Skeleton 骨架屏](/components/skeleton)
 - [Spinner 加载指示器](/components/spinner)
 - [Notification 通知](/components/notification)
-- [Toast 轻提示](/components/toast)
 
 ## 浮层
 
@@ -157,6 +161,7 @@
 ## AI 对话
 
 <XhComponentCard src="approval" name="Approval" label="审批" href="/components/approval" status="alpha" />
+<XhComponentCard src="citation" name="Citation" label="引用来源" href="/components/citation" status="alpha" />
 - [CodeView 代码视图](/components/code-view)
 - [DiffView 差异视图](/components/diff-view)
 - [Log 日志](/components/log)

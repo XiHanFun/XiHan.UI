@@ -499,6 +499,93 @@ import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 </div>
 ```
 
+### 自定义色相
+
+语气之外的分类色：在标签上写 --xh-tag-bg / --xh-tag-fg / --xh-tag-border，从基础色板取同一色相的浅底深字；light-dark() 让暗色下换成深底浅字
+
+```vue
+<script setup lang="ts">
+import { XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
+
+// 同一色相取三档：浅底、深字、比底深一档的描边；暗色下对调
+const tags = [
+  { label: "前端", style: {
+    "--xh-tag-bg": "light-dark(var(--xh-color-teal-100), var(--xh-color-teal-900))",
+    "--xh-tag-fg": "light-dark(var(--xh-color-teal-800), var(--xh-color-teal-100))",
+    "--xh-tag-border": "light-dark(var(--xh-color-teal-200), var(--xh-color-teal-800))",
+  } },
+  { label: "设计", style: {
+    "--xh-tag-bg": "light-dark(var(--xh-color-purple-100), var(--xh-color-purple-900))",
+    "--xh-tag-fg": "light-dark(var(--xh-color-purple-800), var(--xh-color-purple-100))",
+    "--xh-tag-border": "light-dark(var(--xh-color-purple-200), var(--xh-color-purple-800))",
+  } },
+  { label: "运营", style: {
+    "--xh-tag-bg": "light-dark(var(--xh-color-orange-100), var(--xh-color-orange-900))",
+    "--xh-tag-fg": "light-dark(var(--xh-color-orange-800), var(--xh-color-orange-100))",
+    "--xh-tag-border": "light-dark(var(--xh-color-orange-200), var(--xh-color-orange-800))",
+  } },
+  { label: "数据", style: {
+    "--xh-tag-bg": "light-dark(var(--xh-color-blue-100), var(--xh-color-blue-900))",
+    "--xh-tag-fg": "light-dark(var(--xh-color-blue-800), var(--xh-color-blue-100))",
+    "--xh-tag-border": "light-dark(var(--xh-color-blue-200), var(--xh-color-blue-800))",
+  } },
+  { label: "内测", style: {
+    "--xh-tag-bg": "light-dark(var(--xh-color-pink-100), var(--xh-color-pink-900))",
+    "--xh-tag-fg": "light-dark(var(--xh-color-pink-800), var(--xh-color-pink-100))",
+    "--xh-tag-border": "light-dark(var(--xh-color-pink-200), var(--xh-color-pink-800))",
+  } },
+];
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-2)">
+    <XhTagRoot
+      v-for="tag in tags"
+      :key="tag.label"
+      variant="subtle"
+      :style="tag.style"
+    >
+      <XhTagLabel>{{ tag.label }}</XhTagLabel>
+    </XhTagRoot>
+  </div>
+</template>
+```
+
+```html
+<!-- 同一色相取三档：浅底、深字、比底深一档的描边；暗色下对调 -->
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-2)">
+  <xh-tag variant="subtle" style="--xh-tag-bg: light-dark(var(--xh-color-teal-100), var(--xh-color-teal-900)); --xh-tag-fg: light-dark(var(--xh-color-teal-800), var(--xh-color-teal-100)); --xh-tag-border: light-dark(var(--xh-color-teal-200), var(--xh-color-teal-800))">
+    <span data-xh-part="root">
+      <span data-xh-part="label">前端</span>
+    </span>
+  </xh-tag>
+
+  <xh-tag variant="subtle" style="--xh-tag-bg: light-dark(var(--xh-color-purple-100), var(--xh-color-purple-900)); --xh-tag-fg: light-dark(var(--xh-color-purple-800), var(--xh-color-purple-100)); --xh-tag-border: light-dark(var(--xh-color-purple-200), var(--xh-color-purple-800))">
+    <span data-xh-part="root">
+      <span data-xh-part="label">设计</span>
+    </span>
+  </xh-tag>
+
+  <xh-tag variant="subtle" style="--xh-tag-bg: light-dark(var(--xh-color-orange-100), var(--xh-color-orange-900)); --xh-tag-fg: light-dark(var(--xh-color-orange-800), var(--xh-color-orange-100)); --xh-tag-border: light-dark(var(--xh-color-orange-200), var(--xh-color-orange-800))">
+    <span data-xh-part="root">
+      <span data-xh-part="label">运营</span>
+    </span>
+  </xh-tag>
+
+  <xh-tag variant="subtle" style="--xh-tag-bg: light-dark(var(--xh-color-blue-100), var(--xh-color-blue-900)); --xh-tag-fg: light-dark(var(--xh-color-blue-800), var(--xh-color-blue-100)); --xh-tag-border: light-dark(var(--xh-color-blue-200), var(--xh-color-blue-800))">
+    <span data-xh-part="root">
+      <span data-xh-part="label">数据</span>
+    </span>
+  </xh-tag>
+
+  <xh-tag variant="subtle" style="--xh-tag-bg: light-dark(var(--xh-color-pink-100), var(--xh-color-pink-900)); --xh-tag-fg: light-dark(var(--xh-color-pink-800), var(--xh-color-pink-100)); --xh-tag-border: light-dark(var(--xh-color-pink-200), var(--xh-color-pink-800))">
+    <span data-xh-part="root">
+      <span data-xh-part="label">内测</span>
+    </span>
+  </xh-tag>
+</div>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -589,7 +676,7 @@ import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSED` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSED` · `PRESS.START` · `PRESS.END` · `ROOT.RENDERED`
 
 **判据**：`isOpenControlled` · `canPress`
 
@@ -679,9 +766,9 @@ import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

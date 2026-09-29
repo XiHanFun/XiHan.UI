@@ -209,6 +209,38 @@ const sections = [
 </xh-grid>
 ```
 
+### 跨行
+
+row-span 让一格占几条行轨道，常用来放一块比同行其余格子更高的主内容
+
+```vue
+<script setup lang="ts">
+import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhGridRoot :cols="3" gap="sm" style="inline-size: min(640px, 100%)">
+    <XhGridItem :row-span="2" data-demo-block data-tone="brand" style="--xh-demo-block-block-size: auto" />
+    <XhGridItem data-demo-block data-tone="info" />
+    <XhGridItem data-demo-block data-tone="success" />
+    <XhGridItem data-demo-block data-tone="warning" />
+    <XhGridItem data-demo-block data-tone="danger" />
+  </XhGridRoot>
+</template>
+```
+
+```html
+<xh-grid id="grid-row-span" cols="3" gap="sm" style="display: contents">
+  <div data-xh-part="root" style="inline-size: min(640px, 100%)">
+    <div data-xh-part="item" row-span="2" data-demo-block data-tone="brand" style="--xh-demo-block-block-size: auto"></div>
+    <div data-xh-part="item" data-demo-block data-tone="info"></div>
+    <div data-xh-part="item" data-demo-block data-tone="success"></div>
+    <div data-xh-part="item" data-demo-block data-tone="warning"></div>
+    <div data-xh-part="item" data-demo-block data-tone="danger"></div>
+  </div>
+</xh-grid>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -227,6 +259,7 @@ const sections = [
 - 支持自适应最小列宽。
 - 支持统一或独立的行列间距。
 - 支持跨列、错列和格内对齐。
+- 每一格可用 `rowSpan` 跨 1 至 12 行，与跨列一样接受断点对象逐档书写；Web Components 写在 item 节点的 `row-span` 属性上。
 
 ### 组合
 
@@ -274,6 +307,7 @@ const sections = [
 | --- | --- | --- | --- | --- |
 | `XhGridItem` | `span` | `GridColumnCount \| string \| GridSpanByBreakpoint` |  | 跨几列：1 至 12 的整数，或逐档写的断点对象；也接受字符串与 JSON 串。 |
 | `XhGridItem` | `offset` | `GridColumnOffset \| string \| GridOffsetByBreakpoint` |  | 向后偏移几列：1 至 11 的整数，或逐档写的断点对象；也接受字符串与 JSON 串。 |
+| `XhGridItem` | `rowSpan` | `GridRowCount \| string \| GridRowSpanByBreakpoint` |  | 跨几行：1 至 12 的整数，或逐档写的断点对象；也接受字符串与 JSON 串。 |
 
 ### connect API
 
@@ -321,6 +355,11 @@ const sections = [
 | `item` | `data-offset-md` | offset.md |
 | `item` | `data-offset-sm` | offset.sm |
 | `item` | `data-offset-xl` | offset.xl |
+| `item` | `data-row-span` | rowSpan.base |
+| `item` | `data-row-span-lg` | rowSpan.lg |
+| `item` | `data-row-span-md` | rowSpan.md |
+| `item` | `data-row-span-sm` | rowSpan.sm |
+| `item` | `data-row-span-xl` | rowSpan.xl |
 | `item` | `data-span` | span.base |
 | `item` | `data-span-lg` | span.lg |
 | `item` | `data-span-md` | span.md |

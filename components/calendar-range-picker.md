@@ -623,6 +623,159 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 </script>
 ```
 
+### 只改终点
+
+activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之前从那一天重新开始挑
+
+```vue
+<script setup lang="ts">
+import {
+  XhCalendarRangePickerCell,
+  XhCalendarRangePickerCellTrigger,
+  XhCalendarRangePickerGrid,
+  XhCalendarRangePickerGridBody,
+  XhCalendarRangePickerGridHead,
+  XhCalendarRangePickerHeader,
+  XhCalendarRangePickerHeading,
+  XhCalendarRangePickerNextTrigger,
+  XhCalendarRangePickerPrevTrigger,
+  XhCalendarRangePickerRoot,
+  XhCalendarRangePickerWeekDay,
+  XhCalendarRangePickerWeekRow,
+} from "@xihan-ui/vue";
+import { computed, ref } from "vue";
+
+const value = ref<string[]>(["2026-10-05", "2026-10-09"]);
+
+// 起点留着，每点一下只改终点
+const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → ${value.value[1]}` : "（未选）"));
+</script>
+
+<template>
+  <XhCalendarRangePickerRoot
+    v-slot="{ weeks, weekDays }"
+    v-model:value="value"
+    :active-index="1"
+    locale="zh-CN"
+    fixed-weeks
+    style="max-inline-size: 280px"
+  >
+    <XhCalendarRangePickerHeader>
+      <XhCalendarRangePickerPrevTrigger aria-label="上个月" />
+      <XhCalendarRangePickerHeading />
+      <XhCalendarRangePickerNextTrigger aria-label="下个月" />
+    </XhCalendarRangePickerHeader>
+    <XhCalendarRangePickerGrid>
+      <XhCalendarRangePickerGridHead>
+        <XhCalendarRangePickerWeekRow>
+          <XhCalendarRangePickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
+        </XhCalendarRangePickerWeekRow>
+      </XhCalendarRangePickerGridHead>
+      <XhCalendarRangePickerGridBody>
+        <XhCalendarRangePickerWeekRow v-for="week in weeks" :key="week[0].start">
+          <XhCalendarRangePickerCell v-for="day in week" :key="day.start" :value="day.start">
+            <XhCalendarRangePickerCellTrigger>{{ day.day }}</XhCalendarRangePickerCellTrigger>
+          </XhCalendarRangePickerCell>
+        </XhCalendarRangePickerWeekRow>
+      </XhCalendarRangePickerGridBody>
+    </XhCalendarRangePickerGrid>
+  </XhCalendarRangePickerRoot>
+
+  <span style="font-size: 13px">区间：{{ text }}</span>
+</template>
+```
+
+```html
+<div id="calendar-range-picker-edit-end-mount"></div>
+<span style="font-size: 13px">区间：<span id="calendar-range-picker-edit-end-value">2026-10-05 → 2026-10-09</span></span>
+
+<!-- 结构先收在模板里：必需的格子要在元素接线前就位，所以网格填好了才入页 -->
+<template id="calendar-range-picker-edit-end-template">
+  <xh-calendar-range-picker locale="zh-CN" fixed-weeks active-index="1">
+    <div data-xh-part="root" style="max-inline-size: 280px">
+      <div data-xh-part="header">
+        <button data-xh-part="prev-trigger" aria-label="上个月"></button>
+        <div data-xh-part="heading"></div>
+        <button data-xh-part="next-trigger" aria-label="下个月"></button>
+      </div>
+      <div data-xh-part="grid">
+        <div data-xh-part="grid-head">
+          <div data-xh-part="week-row"></div>
+        </div>
+        <div data-xh-part="grid-body"></div>
+      </div>
+    </div>
+  </xh-calendar-range-picker>
+</template>
+
+<script type="module">
+  const fragment = document
+    .getElementById("calendar-range-picker-edit-end-template")
+    .content.cloneNode(true);
+  const calendar = fragment.querySelector("xh-calendar-range-picker");
+  const heading = fragment.querySelector('[data-xh-part="heading"]');
+  const head = fragment.querySelector('[data-xh-part="grid-head"] [data-xh-part="week-row"]');
+  const body = fragment.querySelector('[data-xh-part="grid-body"]');
+  const readout = document.getElementById("calendar-range-picker-edit-end-value");
+
+  // 已经画出来的是哪个月
+  let month = "";
+
+  // 表头七列只跟 locale 走，画一次就够
+  function paintHead() {
+    head.replaceChildren(
+      ...calendar.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+  }
+
+  // 换了月才重画格子：同月内移动焦点时格子原样留着，区间底色由元素自己写
+  function paintBody() {
+    const first = calendar.weeks[0][0].start;
+    if (first === month) {
+      return;
+    }
+    month = first;
+    heading.textContent = calendar.headingLabel;
+    body.replaceChildren(
+      ...calendar.weeks.map((week) => {
+        const row = document.createElement("div");
+        row.dataset.xhPart = "week-row";
+        for (const day of week) {
+          const cell = document.createElement("div");
+          cell.dataset.xhPart = "cell";
+          cell.setAttribute("value", day.start);
+          const trigger = document.createElement("div");
+          trigger.dataset.xhPart = "cell-trigger";
+          trigger.textContent = day.day;
+          cell.append(trigger);
+          row.append(cell);
+        }
+        return row;
+      }),
+    );
+  }
+
+  // 已有的区间：起点留着，每点一下只改终点
+  calendar.defaultValue = ["2026-10-05", "2026-10-09"];
+  document.getElementById("calendar-range-picker-edit-end-mount").append(fragment);
+  paintHead();
+  paintBody();
+
+  calendar.addEventListener("focused-value-change", paintBody);
+  calendar.addEventListener("value-change", (event) => {
+    // 值只在两端都落定时更新；挑到一半的起点记在元素里
+    const [start, end] = event.detail.value;
+    readout.textContent = start && end ? `${start} → ${end}` : "（未选）";
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -640,12 +793,14 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 - 先选起点再选终点：起点只记录在组件内，两端都落定后才写值；Escape 撤销起点后原区间保持不变。
 - 支持按住拖选：按下即落起点，拖到另一格松开即完成；按住已选区间的一端拖动可以直接改写该端；触屏按住片刻才开始拖动，轻点仍是普通点选。
 - 焦点离开网格时，未完成的区间在起点到聚焦日之间就地收口，不留悬空的起点。
+- `activeIndex={1}` 时只改终点：已有起点当锚，点在起点当天或之后即落终点、起点不动；点在起点之前的日子从那一天重新开始挑。与 antd 的「从终点输入框继续改」一致；React Aria 的区间日历每次点选都重新开始，没有这一档。
 - 落起点后可选范围默认被夹在两侧最近的不可用日之间，`allowsNonContiguousRanges` 允许跨过它们；`isDateUnavailable` 的第二个参数是当前起点，可据此限制区间长度。
 - 已选区间的任一端越界或不可用即标记为不合法，也可以用 `invalid` 显式声明。
 - `granularity` 决定周期格的生成方式；周、月、季度和年区间共用同一套 Period 边界判断。
-- `visibleCount` 并排展示连续的月份，翻页时整个视窗一起移动；起止常跨月时建议为 2。
+- `visibleCount` 并排展示连续的月份，翻页时整个视窗一起移动；起止常跨月时建议为 2。多个面板始终联动、一起翻页，不提供解绑（Element Plus 的 `unlink-panels` 那一档）：两张月历各翻各的之后，方向键跨出一张月历时焦点该落到哪一张、另一张跟不跟着走都没有一致的答案，读屏用户也失去「这几张是连续的月」这条线索。起止相隔很远时点标题里的年 / 月直接跳，或在输入行键入；React Aria 的 `visibleDuration` 同样只有联动一种。
 - `calendarPeriodValue` 将两端转换为 `{ granularity, start, end, keys }`，可直接用于查询参数。
-- 周首日、月份名与星期名跟随 `locale`，与日历选择器使用同一套解析链。
+- 周首日、月份名与星期名跟随 `locale`，与日历选择器使用同一套解析链；`firstDayOfWeek`（0 = 星期日 … 6 = 星期六）单独改周首日，月份名与星期名仍按 `locale`。
+- `week` 粒度按 ISO 周（星期一到星期日）成段，周序号也按 ISO 周计，与 `locale` 和 `firstDayOfWeek` 都无关。以星期日开头的 locale（如 `en-US`）下，日视图的一行比 ISO 周早一天开始，行首的周序号取这一行中间那天所在的 ISO 周；要让日视图的每一行正好是一个 ISO 周，把 `firstDayOfWeek` 设为 1。
 
 ### 组合
 
@@ -654,7 +809,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
 ### 最佳实践
 
-- 区间中段保持连续淡色带，起止使用实心端点；未完成的预览与已落定的区间外观一致，悬停预览不显示独立的普通悬停样式。
+- 区间中段保持连续淡色带，起止使用实心端点；挑到一半的预览铺中性淡底，落定时淡变成品牌淡底——品牌淡底专属选中，还没确认的一段不借用它。悬停预览不显示独立的普通悬停样式。
 - 今天使用 1px 品牌环 + 品牌字，落在区间里时环压在淡色带上，仍与起止端点的实心面分得开。
 - 周区间按整周格连续预览，月份、季度和年份区间共用同一套 Period 边界判断。
 - 落起点后把焦点移动一格，让键盘用户看出正在选择一段而不是一天。
@@ -715,8 +870,10 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 | `XhCalendarRangePickerRoot` | `max` | `string` |  |  |
 | `XhCalendarRangePickerRoot` | `isDateUnavailable` | `(value: string, anchor: string \| null) => boolean` |  |  |
 | `XhCalendarRangePickerRoot` | `allowsNonContiguousRanges` | `boolean` |  | 区间允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止。 |
+| `XhCalendarRangePickerRoot` | `activeIndex` | `0 \| 1` |  | 下一次点选落在哪一端；为 1 且已有起点时只改终点。 |
 | `XhCalendarRangePickerRoot` | `invalid` | `boolean` |  | 校验失败：根带 data-invalid，区间内的格子报告 aria-invalid。 |
 | `XhCalendarRangePickerRoot` | `locale` | `string` |  |  |
+| `XhCalendarRangePickerRoot` | `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日 … 6 = 星期六；不给按 locale。 |
 | `XhCalendarRangePickerRoot` | `timeZone` | `string` |  |  |
 | `XhCalendarRangePickerRoot` | `disabled` | `boolean` |  |  |
 | `XhCalendarRangePickerRoot` | `readOnly` | `boolean` |  |  |
@@ -742,7 +899,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
 **事件**：`RANGE.ANCHOR` · `RANGE.COMMIT` · `DRAG.SET` · `HOVER.SET` · `HOVER.CLEAR` · `PRESS.START` · `PRESS.END`
 
-**判据**：`startsRange` · `anchorsRange` · `canPress`
+**判据**：`startsRange` · `endsFromStart` · `anchorsRange` · `canPress`
 
 ### connect API
 
@@ -946,6 +1103,9 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 | `--xh-calendar-range-picker-range-cap-radius` | `cell` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `in-range`<br>`range-end`<br>`range-start` | `--xh-shape-inset` | calendar-range-picker 的 cell 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-calendar-range-picker-range-cell-bg-hover` | `cell-trigger` | `background-color` | `disabled`<br>`hover`<br>`in-range`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])`<br>`outside-month`<br>`range-end`<br>`range-start` | `--xh-bg-brand-subtle-hover` | calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。 |
 | `--xh-calendar-range-picker-range-cell-bg-pressed` | `cell-trigger` | `background-color` | `disabled`<br>`in-range`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])`<br>`outside-month`<br>`pressed`<br>`range-end`<br>`range-start` | `--xh-bg-brand-subtle-active` | calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。 |
+| `--xh-calendar-range-picker-range-preview-bg` | `cell` | `background` | `in-range`<br>`not([data-outside-month])`<br>`outside-month`<br>`range-preview` | `--xh-bg-subtle` | calendar-range-picker 的 cell 部件 background 覆盖槽。 |
+| `--xh-calendar-range-picker-range-preview-cell-bg-hover` | `cell-trigger` | `background-color` | `disabled`<br>`hover`<br>`in-range`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])`<br>`outside-month`<br>`range-end`<br>`range-preview`<br>`range-start` | `--xh-bg-subtle-hover` | calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。 |
+| `--xh-calendar-range-picker-range-preview-cell-bg-pressed` | `cell-trigger` | `background-color` | `disabled`<br>`in-range`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-outside-month], [data-disabled], [data-range-start], [data-range-end])`<br>`outside-month`<br>`pressed`<br>`range-end`<br>`range-preview`<br>`range-start` | `--xh-bg-subtle-active` | calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。 |
 | `--xh-calendar-range-picker-range-row-radius` | `cell`<br>`week-number`<br>`week-row` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`in-range`<br>`last-child` | `--xh-shape-inset` | calendar-range-picker 的 cell、week-number、week-row 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-calendar-range-picker-row-gap` | `grid-body`<br>`grid-head` | `gap` | `default` | `--xh-space-0` | calendar-range-picker 的 grid-body、grid-head 部件 gap 覆盖槽。 |
 | `--xh-calendar-range-picker-today-bg` | `cell-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`today`<br>`xh-ink-surface` | `transparent` | calendar-range-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |

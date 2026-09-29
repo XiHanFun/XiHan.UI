@@ -838,7 +838,7 @@ const densities = [
 
 ### 空态与加载态
 
-两个状态节点常驻只依靠 hidden 显隐：表体为空且在取数时显示加载态，取数完成后没有行才显示空态
+两个占位节点常驻只依靠 hidden 显隐：表体为空且在取数时显示加载环，取完没有行才显示空态；已有行时重新取数不换占位，表体保留上一帧淡下
 
 ```vue
 <script setup lang="ts">
@@ -886,6 +886,19 @@ function load(): void {
   }, 1200);
 }
 
+function refresh(): void {
+  if (tasks.value.length === 0) {
+    load();
+    return;
+  }
+  window.clearTimeout(timer);
+  loading.value = true;
+  timer = window.setTimeout(() => {
+    tasks.value = [...tasks.value].reverse();
+    loading.value = false;
+  }, 1200);
+}
+
 function reset(): void {
   window.clearTimeout(timer);
   tasks.value = [];
@@ -900,6 +913,7 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
   <div style="width: 100%; max-width: 480px; display: grid; gap: 12px">
     <div style="display: flex; gap: 8px">
       <button type="button" @click="load">取数</button>
+      <button type="button" @click="refresh">刷新</button>
       <button type="button" @click="reset">清空</button>
     </div>
 
@@ -928,6 +942,7 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
 <div id="table-states" style="width: 100%; max-width: 480px; display: grid; gap: 12px">
   <div style="display: flex; gap: 8px">
     <button type="button" id="table-states-load">取数</button>
+    <button type="button" id="table-states-refresh">刷新</button>
     <button type="button" id="table-states-reset">清空</button>
   </div>
 
@@ -964,6 +979,7 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
 
   // 表体为空与否按 rows 推导，不必另写 empty
   function setTasks(tasks) {
+    current = tasks;
     body.replaceChildren(
       ...tasks.map((task) => {
         const row = document.createElement("div");
@@ -986,6 +1002,7 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
   }
 
   let timer = 0;
+  let current = [];
 
   stage.querySelector("#table-states-load").addEventListener("click", () => {
     window.clearTimeout(timer);
@@ -993,6 +1010,19 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
     table.loading = true;
     timer = window.setTimeout(() => {
       setTasks(source);
+      table.loading = false;
+    }, 1200);
+  });
+
+  stage.querySelector("#table-states-refresh").addEventListener("click", () => {
+    if (current.length === 0) {
+      stage.querySelector("#table-states-load").click();
+      return;
+    }
+    window.clearTimeout(timer);
+    table.loading = true;
+    timer = window.setTimeout(() => {
+      setTasks([...current].reverse());
       table.loading = false;
     }, 1200);
   });
@@ -1693,9 +1723,9 @@ function onEditKeydown(event: KeyboardEvent): void {
 </script>
 ```
 
-### 多行表头与表头分组
+### 多级表头与表头分组
 
-表头写几行就是几行；分组格的跨列数与两行表头的行号由标记声明，columns 仍只登记叶子列
+列给出 children 即为分组：表头按 headerRows 逐层渲染，分组格的跨列数、行号与较浅列头的纵向跨行都由表格算出
 
 ```vue
 <script setup lang="ts">
@@ -1710,13 +1740,25 @@ import {
   XhTableRow,
 } from "@xihan-ui/vue";
 
-// 只有叶子列进 columns：列号与列总数按它算
+// 分组只在表头占格：列号、列宽与数据都按叶子列算，分组内的叶子列要给出宽度
 const columns = [
   { id: "team", label: "小组", width: "8rem" },
-  { id: "q1", label: "Q1", width: "5rem" },
-  { id: "q2", label: "Q2", width: "5rem" },
-  { id: "q3", label: "Q3", width: "5rem" },
-  { id: "q4", label: "Q4", width: "5rem" },
+  {
+    id: "h1",
+    label: "上半年",
+    children: [
+      { id: "q1", label: "Q1", width: "5rem" },
+      { id: "q2", label: "Q2", width: "5rem" },
+    ],
+  },
+  {
+    id: "h2",
+    label: "下半年",
+    children: [
+      { id: "q3", label: "Q3", width: "5rem" },
+      { id: "q4", label: "Q4", width: "5rem" },
+    ],
+  },
 ];
 
 const teams = [
@@ -1726,46 +1768,24 @@ const teams = [
 ];
 
 const rows = teams.map(t => ({ id: t.id }));
-
-// 分组格宽度取两列之和，伸缩系数也翻倍，两行表头才对得齐
-const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
+const leaves = ["team", "q1", "q2", "q3", "q4"] as const;
 </script>
 
 <template>
   <div style="width: 100%; max-width: 620px">
-    <!-- 表头占两行，行号空间比缺省的多一行，总行数在这里自报 -->
-    <XhTableRoot :columns="columns" :rows="rows" :aria-rowcount="teams.length + 2">
+    <XhTableRoot v-slot="{ headerRows }" :columns="columns" :rows="rows">
       <XhTableCaption>季度交付单量</XhTableCaption>
       <XhTableHeader>
-        <XhTableRow>
-          <XhTableColumnHeader value="team" />
-          <XhTableColumnHeader value="q1" :style="groupStyle" :aria-colspan="2">
-            <XhTableColumnLabel>上半年</XhTableColumnLabel>
-          </XhTableColumnHeader>
-          <XhTableColumnHeader value="q3" :style="groupStyle" :aria-colspan="2">
-            <XhTableColumnLabel>下半年</XhTableColumnLabel>
-          </XhTableColumnHeader>
-        </XhTableRow>
-        <!-- 第二行表头自报行号：缺省那条恒为 1 -->
-        <XhTableRow :aria-rowindex="2">
-          <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
-            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
+        <!-- 每层一行，写明第几行；「小组」在第一行纵向跨满两行，第二行那一格是占位，照样渲 -->
+        <XhTableRow v-for="(cells, i) in headerRows" :key="i" :level="i + 1">
+          <XhTableColumnHeader v-for="cell in cells" :key="cell.id" :value="cell.id">
+            <XhTableColumnLabel>{{ cell.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
-        <!-- 数据行也往后挪一行 -->
-        <XhTableRow
-          v-for="(t, i) in teams"
-          :key="t.id"
-          :value="t.id"
-          :aria-rowindex="i + 3"
-        >
-          <XhTableCell value="team">{{ t.team }}</XhTableCell>
-          <XhTableCell value="q1">{{ t.q1 }}</XhTableCell>
-          <XhTableCell value="q2">{{ t.q2 }}</XhTableCell>
-          <XhTableCell value="q3">{{ t.q3 }}</XhTableCell>
-          <XhTableCell value="q4">{{ t.q4 }}</XhTableCell>
+        <XhTableRow v-for="t in teams" :key="t.id" :value="t.id">
+          <XhTableCell v-for="id in leaves" :key="id" :value="id">{{ t[id] }}</XhTableCell>
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
@@ -1778,77 +1798,71 @@ const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
   <xh-table id="table-group-header">
     <div data-xh-part="root">
       <div data-xh-part="caption">季度交付单量</div>
-      <div data-xh-part="header">
-        <div data-xh-part="row">
-          <div data-xh-part="column-header" value="team"></div>
-          <!-- 分组格不是数据列，不进 columns：跨列数、列号与宽度都写在标记上，
-               宽度取两列之和、伸缩系数也翻倍，两行表头才对得齐 -->
-          <div
-            data-xh-part="column-header"
-            value="h1"
-            aria-colindex="2"
-            aria-colspan="2"
-            style="inline-size: 10rem; flex-grow: 2"
-          >
-            <span data-xh-part="column-label">上半年</span>
-          </div>
-          <div
-            data-xh-part="column-header"
-            value="h2"
-            aria-colindex="4"
-            aria-colspan="2"
-            style="inline-size: 10rem; flex-grow: 2"
-          >
-            <span data-xh-part="column-label">下半年</span>
-          </div>
-        </div>
-        <div data-xh-part="row">
-          <div data-xh-part="column-header" value="team"><span data-xh-part="column-label">小组</span></div>
-          <div data-xh-part="column-header" value="q1"><span data-xh-part="column-label">Q1</span></div>
-          <div data-xh-part="column-header" value="q2"><span data-xh-part="column-label">Q2</span></div>
-          <div data-xh-part="column-header" value="q3"><span data-xh-part="column-label">Q3</span></div>
-          <div data-xh-part="column-header" value="q4"><span data-xh-part="column-label">Q4</span></div>
-        </div>
-      </div>
-      <div data-xh-part="body">
-        <div data-xh-part="row" value="t1">
-          <div data-xh-part="cell" value="team">平台研发</div>
-          <div data-xh-part="cell" value="q1">12</div>
-          <div data-xh-part="cell" value="q2">15</div>
-          <div data-xh-part="cell" value="q3">18</div>
-          <div data-xh-part="cell" value="q4">21</div>
-        </div>
-        <div data-xh-part="row" value="t2">
-          <div data-xh-part="cell" value="team">前端体验</div>
-          <div data-xh-part="cell" value="q1">9</div>
-          <div data-xh-part="cell" value="q2">11</div>
-          <div data-xh-part="cell" value="q3">14</div>
-          <div data-xh-part="cell" value="q4">16</div>
-        </div>
-        <div data-xh-part="row" value="t3">
-          <div data-xh-part="cell" value="team">基础架构</div>
-          <div data-xh-part="cell" value="q1">7</div>
-          <div data-xh-part="cell" value="q2">8</div>
-          <div data-xh-part="cell" value="q3">10</div>
-          <div data-xh-part="cell" value="q4">12</div>
-        </div>
-      </div>
+      <!-- 表头按 headerRows 逐层铺：每层一行，row 上写 level -->
+      <div data-xh-part="header" data-header></div>
+      <div data-xh-part="body" data-body></div>
     </div>
   </xh-table>
 </div>
 
 <script type="module">
-  // 只有叶子列进 columns：列号与列总数按它算
   const table = document.getElementById("table-group-header");
+  const header = table.querySelector("[data-header]");
+  const body = table.querySelector("[data-body]");
 
-  table.columns = [
+  // 分组只在表头占格：列号、列宽与数据都按叶子列算，分组内的叶子列要给出宽度
+  const columns = [
     { id: "team", label: "小组", width: "8rem" },
-    { id: "q1", label: "Q1", width: "5rem" },
-    { id: "q2", label: "Q2", width: "5rem" },
-    { id: "q3", label: "Q3", width: "5rem" },
-    { id: "q4", label: "Q4", width: "5rem" },
+    {
+      id: "h1",
+      label: "上半年",
+      children: [
+        { id: "q1", label: "Q1", width: "5rem" },
+        { id: "q2", label: "Q2", width: "5rem" },
+      ],
+    },
+    {
+      id: "h2",
+      label: "下半年",
+      children: [
+        { id: "q3", label: "Q3", width: "5rem" },
+        { id: "q4", label: "Q4", width: "5rem" },
+      ],
+    },
   ];
-  table.rows = [{ id: "t1" }, { id: "t2" }, { id: "t3" }];
+  const teams = [
+    { id: "t1", team: "平台研发", q1: 12, q2: 15, q3: 18, q4: 21 },
+    { id: "t2", team: "前端体验", q1: 9, q2: 11, q3: 14, q4: 16 },
+    { id: "t3", team: "基础架构", q1: 7, q2: 8, q3: 10, q4: 12 },
+  ];
+  const leaves = ["team", "q1", "q2", "q3", "q4"];
+
+  table.columns = columns;
+  table.rows = teams.map(t => ({ id: t.id }));
+
+  function part(tag, name, attrs = {}, text) {
+    const el = document.createElement(tag);
+    el.dataset.xhPart = name;
+    for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, String(value));
+    if (text != null) el.textContent = text;
+    return el;
+  }
+
+  // 「小组」在第一行纵向跨满两行，第二行那一格是占位，照样铺
+  header.replaceChildren(...table.headerRows.map((cells, i) => {
+    const row = part("div", "row", { level: i + 1 });
+    row.append(...cells.map((cell) => {
+      const th = part("div", "column-header", { value: cell.id });
+      th.append(part("span", "column-label", {}, cell.label ?? ""));
+      return th;
+    }));
+    return row;
+  }));
+  body.replaceChildren(...teams.map((t) => {
+    const row = part("div", "row", { value: t.id });
+    row.append(...leaves.map(id => part("div", "cell", { value: id }, t[id])));
+    return row;
+  }));
 </script>
 ```
 
@@ -2617,7 +2631,7 @@ const preference = ref<Record<string, unknown>>({});
 
 ### 只渲染窗口内的行
 
-全量 rows 照常交给 root（那只是行序与行号的元信息，不产生 DOM），标记中只渲染可见的一段，首尾用两块空白撑出真实滚动高度
+一万行交给 Virtualizer：表格经 virtualizer 接上它的 collectionVirtualizer，行号与方向键仍按完整行序走，DOM 里只有窗口那十几行
 
 ```vue
 <script setup lang="ts">
@@ -2629,8 +2643,11 @@ import {
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
 } from "@xihan-ui/vue";
-import { computed, ref } from "vue";
 
 const columns = [
   { id: "no", label: "编号", width: "6rem" },
@@ -2640,154 +2657,142 @@ const columns = [
 
 const depts = ["平台研发", "前端体验", "基础架构", "质量保障"];
 
-const people = Array.from({ length: 2000 }, (_, i) => ({
+const people = Array.from({ length: 10000 }, (_, i) => ({
   id: `u${i + 1}`,
   no: `#${i + 1}`,
   name: `员工 ${i + 1}`,
   dept: depts[i % depts.length],
 }));
 
-// 行号与总数按全量算，与渲染了哪几行无关
+// 行号与总数按全量算，与挂了哪几行无关
 const rows = people.map(p => ({ id: p.id }));
 
-// 行高写死才算得出窗口；上下各多渲几行做缓冲
-const ROW_H = 36;
-const WINDOW = 18;
-const OVERSCAN = 4;
-
-const start = ref(0);
-const end = computed(() => Math.min(people.length, start.value + WINDOW));
-const visible = computed(() => people.slice(start.value, end.value));
-
-const bodyStyle = computed(() => ({
-  paddingBlockStart: `${start.value * ROW_H}px`,
-  paddingBlockEnd: `${(people.length - end.value) * ROW_H}px`,
-}));
-
-const rowStyle = { blockSize: `${ROW_H}px` };
-
-function onScroll(event: Event): void {
-  const top = (event.target as HTMLElement).scrollTop;
-  const first = Math.floor(top / ROW_H) - OVERSCAN;
-  start.value = Math.min(Math.max(0, first), Math.max(0, people.length - WINDOW));
-}
+// 行之间的分隔线：每行装在各自的虚拟条目里，彼此不是兄弟节点，分隔线写在行上
+const rowStyle = "block-size: 36px; border-block-end: 1px solid var(--xh-border-subtle)";
 </script>
 
 <template>
-  <div style="width: 100%; max-width: 520px; display: grid; gap: 12px">
-    <!-- root 自己就是那个滚动容器，滚动量直接从它身上读 -->
-    <XhTableRoot :columns="columns" :rows="rows" sticky-header @scroll="onScroll">
+  <!-- 表体里的视口负责滚动：表格自己不再定高、不再滚；视口不占 Tab 位，键盘归表体 -->
+  <XhVirtualizerRoot
+    v-slot="{ virtualItems, collectionVirtualizer }"
+    :count="people.length"
+    :estimate-size="36"
+    :viewport-tab-index="-1"
+    style="inline-size: 100%; max-inline-size: 520px"
+  >
+    <XhTableRoot
+      :columns="columns"
+      :rows="rows"
+      :virtualizer="collectionVirtualizer"
+      style="max-block-size: none; overflow: visible"
+    >
       <XhTableHeader>
-        <XhTableRow :style="rowStyle">
+        <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
             <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
           </XhTableColumnHeader>
         </XhTableRow>
       </XhTableHeader>
-      <XhTableBody :style="bodyStyle">
-        <XhTableRow v-for="p in visible" :key="p.id" :value="p.id" :style="rowStyle">
-          <XhTableCell value="no">{{ p.no }}</XhTableCell>
-          <XhTableCell value="name">{{ p.name }}</XhTableCell>
-          <XhTableCell value="dept">{{ p.dept }}</XhTableCell>
-        </XhTableRow>
+      <XhTableBody>
+        <XhVirtualizerViewport style="block-size: 320px">
+          <XhVirtualizerContent>
+            <XhVirtualizerItem v-for="item in virtualItems" :key="item.key" :value="item.index">
+              <XhTableRow :value="people[item.index]!.id" :style="rowStyle">
+                <XhTableCell value="no">{{ people[item.index]!.no }}</XhTableCell>
+                <XhTableCell value="name">{{ people[item.index]!.name }}</XhTableCell>
+                <XhTableCell value="dept">{{ people[item.index]!.dept }}</XhTableCell>
+              </XhTableRow>
+            </XhVirtualizerItem>
+          </XhVirtualizerContent>
+        </XhVirtualizerViewport>
       </XhTableBody>
     </XhTableRoot>
-    <span>
-      共 {{ people.length }} 行，此刻在 DOM 里的是第 {{ start + 1 }} –
-      {{ end }} 行
-    </span>
-  </div>
+  </XhVirtualizerRoot>
 </template>
 ```
 
 ```html
-<div id="table-virtual" style="width: 100%; max-width: 520px; display: grid; gap: 12px">
-  <xh-table id="table-virtual-table" sticky-header>
-    <div data-xh-part="root">
-      <div data-xh-part="header">
-        <div data-xh-part="row" style="block-size: 36px">
-          <div data-xh-part="column-header" value="no"><span data-xh-part="column-label">编号</span></div>
-          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
-          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
-        </div>
+<!-- 表体里的视口负责滚动：表格自己不再定高、不再滚；视口不占 Tab 位，键盘归表体 -->
+<xh-table id="table-virtual-rows" style="display: block; inline-size: 100%; max-inline-size: 520px">
+  <div data-xh-part="root" style="max-block-size: none; overflow: visible">
+    <div data-xh-part="header">
+      <div data-xh-part="row">
+        <div data-xh-part="column-header" value="no"><span data-xh-part="column-label">编号</span></div>
+        <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+        <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
       </div>
-      <div data-xh-part="body"></div>
     </div>
-  </xh-table>
-  <span id="table-virtual-value"></span>
-</div>
+    <div data-xh-part="body">
+      <xh-virtualizer id="table-virtual-rows-virtualizer" count="10000" estimate-size="36" viewport-tab-index="-1">
+        <div data-xh-part="root">
+          <div data-xh-part="viewport" style="block-size: 320px">
+            <div data-xh-part="content"></div>
+          </div>
+        </div>
+      </xh-virtualizer>
+    </div>
+  </div>
+</xh-table>
 
 <script type="module">
-  const stage = document.getElementById("table-virtual");
-  const table = stage.querySelector("#table-virtual-table");
-  // root 自己就是那个滚动容器，滚动量直接从它身上读
-  const root = table.querySelector('[data-xh-part="root"]');
-  const body = table.querySelector('[data-xh-part="body"]');
-  const readout = stage.querySelector("#table-virtual-value");
+  const table = document.getElementById("table-virtual-rows");
+  const virtualizer = document.getElementById("table-virtual-rows-virtualizer");
+  const content = virtualizer.querySelector('[data-xh-part="content"]');
+
+  const columns = [
+    { id: "no", label: "编号", width: "6rem" },
+    { id: "name", label: "姓名", width: "8rem" },
+    { id: "dept", label: "部门" },
+  ];
 
   const depts = ["平台研发", "前端体验", "基础架构", "质量保障"];
-  const people = Array.from({ length: 2000 }, (_, i) => ({
+
+  const people = Array.from({ length: 10000 }, (_, i) => ({
     id: `u${i + 1}`,
     no: `#${i + 1}`,
     name: `员工 ${i + 1}`,
     dept: depts[i % depts.length],
   }));
 
-  table.columns = [
-    { id: "no", label: "编号", width: "6rem" },
-    { id: "name", label: "姓名", width: "8rem" },
-    { id: "dept", label: "部门" },
-  ];
-  // 行号与总数按全量算，与渲染了哪几行无关
-  table.rows = people.map((p) => ({ id: p.id }));
+  // 行号与总数按全量算，与挂了哪几行无关
+  const rows = people.map(p => ({ id: p.id }));
 
-  // 行高写死才算得出窗口；上下各多渲几行做缓冲
-  const ROW_H = 36;
-  const WINDOW = 18;
-  const OVERSCAN = 4;
+  table.columns = columns;
+  table.rows = rows;
 
-  // 窗口里的行节点只建一次，滚动时改的是身份与文字
-  const pool = Array.from({ length: WINDOW }, () => {
-    const row = document.createElement("div");
-    row.dataset.xhPart = "row";
-    row.style.blockSize = `${ROW_H}px`;
-    for (const id of ["no", "name", "dept"]) {
+  // 行装在虚拟条目里、隔着一层 xh-virtualizer：data-xh-part-owner 声明它们归表格，两台宿主不争同一个节点
+  function row(p) {
+    const el = document.createElement("div");
+    el.dataset.xhPart = "row";
+    el.dataset.xhPartOwner = "table";
+    el.setAttribute("value", p.id);
+    // 行之间的分隔线：每行装在各自的虚拟条目里，彼此不是兄弟节点，分隔线写在行上
+    el.style.cssText = "block-size: 36px; border-block-end: 1px solid var(--xh-border-subtle)";
+    el.append(...columns.map((col) => {
       const cell = document.createElement("div");
       cell.dataset.xhPart = "cell";
-      cell.setAttribute("value", id);
-      row.append(cell);
-    }
-    return row;
-  });
-  body.append(...pool);
-
-  let start = 0;
-
-  function render() {
-    const end = Math.min(people.length, start + WINDOW);
-    // 首尾两块空白撑出真实滚动高度
-    body.style.paddingBlockStart = `${start * ROW_H}px`;
-    body.style.paddingBlockEnd = `${(people.length - end) * ROW_H}px`;
-    pool.forEach((row, i) => {
-      const person = people[start + i];
-      row.setAttribute("value", person.id);
-      const [no, name, dept] = row.children;
-      no.textContent = person.no;
-      name.textContent = person.name;
-      dept.textContent = person.dept;
-    });
-    readout.textContent = `共 ${people.length} 行，此刻在 DOM 里的是第 ${start + 1} – ${end} 行`;
+      cell.setAttribute("value", col.id);
+      cell.textContent = p[col.id];
+      return cell;
+    }));
+    return el;
   }
 
-  root.addEventListener("scroll", () => {
-    const first = Math.floor(root.scrollTop / ROW_H) - OVERSCAN;
-    const next = Math.min(Math.max(0, first), people.length - WINDOW);
-    if (next === start) return;
-    start = next;
-    render();
-  });
+  function render(virtualItems) {
+    content.replaceChildren(...virtualItems.map((item) => {
+      const shell = document.createElement("div");
+      shell.dataset.xhPart = "item";
+      shell.setAttribute("value", item.index);
+      shell.append(row(people[item.index]));
+      return shell;
+    }));
+    virtualizer.requestUpdate();
+    table.virtualizer = virtualizer.collectionVirtualizer;
+    table.requestUpdate();
+  }
 
-  render();
+  render(virtualizer.virtualItems);
+  virtualizer.addEventListener("range-change", event => render(event.detail.virtualItems));
 </script>
 ```
 
@@ -4383,6 +4388,544 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 </script>
 ```
 
+### 树形表级联勾选
+
+cascade 与树的级联同一套算法：勾父行整枝带上，子行勾满父行跟着勾中、勾了一部分显示半选，禁用行的子树不动；对外值缺省只收叶行
+
+```vue
+<script setup lang="ts">
+import type { TableSelection } from "@xihan-ui/headless";
+import {
+  XhTableBody,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableColumnLabel,
+  XhTableExpandTrigger,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+  XhTableRowSelectTrigger,
+  XhTableSelectAllTrigger,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const columns = [
+  { id: "select", width: "3rem" },
+  { id: "name", label: "组织", width: "13rem" },
+  { id: "owner", label: "负责人" },
+];
+
+const units = [
+  { id: "rd", label: "研发中心", owner: "赵一", parentId: undefined },
+  { id: "rd-web", label: "前端组", owner: "钱二", parentId: "rd" },
+  { id: "rd-api", label: "服务端组", owner: "孙三", parentId: "rd" },
+  { id: "rd-lab", label: "实验室（冻结）", owner: "李四", parentId: "rd", disabled: true },
+  { id: "ops", label: "运维中心", owner: "周五", parentId: undefined },
+  { id: "ops-sre", label: "稳定性组", owner: "吴六", parentId: "ops" },
+];
+
+const byId = new Map(units.map(unit => [unit.id, unit]));
+const rows = units.map(unit => ({ id: unit.id, parentId: unit.parentId, disabled: unit.disabled }));
+const selection = ref<TableSelection>([]);
+</script>
+
+<template>
+  <div style="width: 100%; max-width: 560px; display: grid; gap: 12px">
+    <XhTableRoot
+      v-slot="{ visibleRows }"
+      v-model:selection="selection"
+      :columns="columns"
+      :rows="rows"
+      :default-expanded-value="['rd', 'ops']"
+      selection-mode="multiple"
+      cascade
+    >
+      <XhTableHeader>
+        <XhTableRow>
+          <XhTableColumnHeader value="select"><XhTableSelectAllTrigger /></XhTableColumnHeader>
+          <XhTableColumnHeader value="name"><XhTableColumnLabel>组织</XhTableColumnLabel></XhTableColumnHeader>
+          <XhTableColumnHeader value="owner"><XhTableColumnLabel>负责人</XhTableColumnLabel></XhTableColumnHeader>
+        </XhTableRow>
+      </XhTableHeader>
+      <XhTableBody>
+        <XhTableRow
+          v-for="row in visibleRows.filter((item) => item.kind === 'data')"
+          :key="row.id"
+          :value="row.id"
+        >
+          <XhTableCell value="select"><XhTableRowSelectTrigger /></XhTableCell>
+          <XhTableCell value="name" :style="{ paddingInlineStart: `${row.level * 16}px` }">
+            <XhTableExpandTrigger v-if="row.level === 1" />
+            {{ byId.get(row.id)?.label }}
+          </XhTableCell>
+          <XhTableCell value="owner">{{ byId.get(row.id)?.owner }}</XhTableCell>
+        </XhTableRow>
+      </XhTableBody>
+    </XhTableRoot>
+    <span>选中：{{ selection === "all" ? "全部" : selection.length ? selection.join("、") : "（无）" }}</span>
+  </div>
+</template>
+```
+
+```html
+<div id="table-tree-cascade" style="width: 100%; max-width: 560px; display: grid; gap: 12px">
+  <xh-table data-host selection-mode="multiple" cascade>
+    <div data-xh-part="root">
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="select"><span data-xh-part="select-all-trigger"></span></div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">组织</span></div>
+          <div data-xh-part="column-header" value="owner"><span data-xh-part="column-label">负责人</span></div>
+        </div>
+      </div>
+      <div data-xh-part="body" data-body></div>
+    </div>
+  </xh-table>
+  <span data-log>选中：（无）</span>
+</div>
+
+<script type="module">
+  const scope = document.getElementById("table-tree-cascade");
+  const table = scope.querySelector("[data-host]");
+  const body = scope.querySelector("[data-body]");
+  const log = scope.querySelector("[data-log]");
+
+  const units = [
+    { id: "rd", label: "研发中心", owner: "赵一", parentId: undefined },
+    { id: "rd-web", label: "前端组", owner: "钱二", parentId: "rd" },
+    { id: "rd-api", label: "服务端组", owner: "孙三", parentId: "rd" },
+    { id: "rd-lab", label: "实验室（冻结）", owner: "李四", parentId: "rd", disabled: true },
+    { id: "ops", label: "运维中心", owner: "周五", parentId: undefined },
+    { id: "ops-sre", label: "稳定性组", owner: "吴六", parentId: "ops" },
+  ];
+
+  let expanded = ["rd", "ops"];
+  table.columns = [
+    { id: "select", width: "3rem" },
+    { id: "name", label: "组织", width: "13rem" },
+    { id: "owner", label: "负责人" },
+  ];
+  table.rows = units.map(unit => ({ id: unit.id, parentId: unit.parentId, disabled: unit.disabled }));
+
+  // 收起的那一枝整段不渲：可见序与层级都照 parentId 与展开集合算
+  function render() {
+    table.expandedValue = expanded;
+    const visible = units.filter(unit => unit.parentId == null || expanded.includes(unit.parentId));
+    body.replaceChildren(...visible.map((unit) => {
+      const row = document.createElement("div");
+      row.dataset.xhPart = "row";
+      row.setAttribute("value", unit.id);
+      const select = document.createElement("div");
+      select.dataset.xhPart = "cell";
+      select.setAttribute("value", "select");
+      const trigger = document.createElement("span");
+      trigger.dataset.xhPart = "row-select-trigger";
+      select.append(trigger);
+      const name = document.createElement("div");
+      name.dataset.xhPart = "cell";
+      name.setAttribute("value", "name");
+      name.style.paddingInlineStart = `${unit.parentId == null ? 16 : 32}px`;
+      if (unit.parentId == null) {
+        const expand = document.createElement("span");
+        expand.dataset.xhPart = "expand-trigger";
+        name.append(expand);
+      }
+      name.append(unit.label);
+      const owner = document.createElement("div");
+      owner.dataset.xhPart = "cell";
+      owner.setAttribute("value", "owner");
+      owner.textContent = unit.owner;
+      row.append(select, name, owner);
+      return row;
+    }));
+  }
+
+  table.addEventListener("expanded-value-change", (event) => {
+    expanded = event.detail.value;
+    render();
+  });
+  table.addEventListener("selection-change", (event) => {
+    const value = event.detail.value;
+    log.textContent = `选中：${value === "all" ? "全部" : value.length ? value.join("、") : "（无）"}`;
+  });
+
+  render();
+</script>
+```
+
+### 单元格合并
+
+cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向合并，汇总行的两个季度横向合并；作者照常逐格渲染，被合并掉的格子由表格收起或留成占位
+
+```vue
+<script setup lang="ts">
+import type { TableCellSpan, TableCellSpanDetails } from "@xihan-ui/headless";
+import {
+  XhTableBody,
+  XhTableCaption,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableColumnLabel,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from "@xihan-ui/vue";
+
+const columns = [
+  { id: "dept", label: "部门", width: "7rem" },
+  { id: "name", label: "姓名", width: "7rem" },
+  { id: "q1", label: "Q1", width: "5rem" },
+  { id: "q2", label: "Q2", width: "5rem" },
+];
+
+const people = [
+  { id: "p1", dept: "研发", name: "赵一", q1: "12", q2: "15" },
+  { id: "p2", dept: "研发", name: "钱二", q1: "9", q2: "11" },
+  { id: "p3", dept: "研发", name: "孙三", q1: "7", q2: "10" },
+  { id: "p4", dept: "运维", name: "李四", q1: "5", q2: "6" },
+  { id: "p5", dept: "运维", name: "周五", q1: "4", q2: "8" },
+  { id: "sum", dept: "合计", name: "—", q1: "上半年 104", q2: "" },
+];
+
+const rows = people.map(p => ({ id: p.id }));
+
+// 部门列：同一部门的第一行往下合并到这个部门的最后一行；汇总行的 Q1 横跨两列
+function cellSpan({ row, rowIndex, column }: TableCellSpanDetails): TableCellSpan | null {
+  const person = people[rowIndex]!;
+  if (column.id === "dept" && row.id !== "sum") {
+    if (rowIndex > 0 && people[rowIndex - 1]!.dept === person.dept)
+      return null;
+    let span = 1;
+    while (people[rowIndex + span]?.dept === person.dept)
+      span += 1;
+    return { rowSpan: span };
+  }
+  if (row.id === "sum" && column.id === "q1")
+    return { colSpan: 2 };
+  return null;
+}
+</script>
+
+<template>
+  <div style="width: 100%; max-width: 560px">
+    <XhTableRoot :columns="columns" :rows="rows" :cell-span="cellSpan" ruled>
+      <XhTableCaption>季度交付单量</XhTableCaption>
+      <XhTableHeader>
+        <XhTableRow>
+          <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
+          </XhTableColumnHeader>
+        </XhTableRow>
+      </XhTableHeader>
+      <XhTableBody>
+        <XhTableRow v-for="p in people" :key="p.id" :value="p.id">
+          <XhTableCell v-for="col in columns" :key="col.id" :value="col.id">
+            {{ p[col.id as keyof typeof p] }}
+          </XhTableCell>
+        </XhTableRow>
+      </XhTableBody>
+    </XhTableRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="width: 100%; max-width: 560px">
+  <xh-table id="table-cell-span" ruled>
+    <div data-xh-part="root">
+      <div data-xh-part="caption">季度交付单量</div>
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="dept"><span data-xh-part="column-label">部门</span></div>
+          <div data-xh-part="column-header" value="name"><span data-xh-part="column-label">姓名</span></div>
+          <div data-xh-part="column-header" value="q1"><span data-xh-part="column-label">Q1</span></div>
+          <div data-xh-part="column-header" value="q2"><span data-xh-part="column-label">Q2</span></div>
+        </div>
+      </div>
+      <div data-xh-part="body" data-body></div>
+    </div>
+  </xh-table>
+</div>
+
+<script type="module">
+  const table = document.getElementById("table-cell-span");
+  const body = table.querySelector("[data-body]");
+
+  const columns = [
+    { id: "dept", label: "部门", width: "7rem" },
+    { id: "name", label: "姓名", width: "7rem" },
+    { id: "q1", label: "Q1", width: "5rem" },
+    { id: "q2", label: "Q2", width: "5rem" },
+  ];
+
+  const people = [
+    { id: "p1", dept: "研发", name: "赵一", q1: "12", q2: "15" },
+    { id: "p2", dept: "研发", name: "钱二", q1: "9", q2: "11" },
+    { id: "p3", dept: "研发", name: "孙三", q1: "7", q2: "10" },
+    { id: "p4", dept: "运维", name: "李四", q1: "5", q2: "6" },
+    { id: "p5", dept: "运维", name: "周五", q1: "4", q2: "8" },
+    { id: "sum", dept: "合计", name: "—", q1: "上半年 104", q2: "" },
+  ];
+
+  const rows = people.map(p => ({ id: p.id }));
+
+  // 部门列：同一部门的第一行往下合并到这个部门的最后一行；汇总行的 Q1 横跨两列
+  function cellSpan({ row, rowIndex, column }) {
+    const person = people[rowIndex];
+    if (column.id === "dept" && row.id !== "sum") {
+      if (rowIndex > 0 && people[rowIndex - 1].dept === person.dept)
+        return null;
+      let span = 1;
+      while (people[rowIndex + span]?.dept === person.dept)
+        span += 1;
+      return { rowSpan: span };
+    }
+    if (row.id === "sum" && column.id === "q1")
+      return { colSpan: 2 };
+    return null;
+  }
+
+  table.columns = columns;
+  table.rows = rows;
+  // 合并询问是函数，只走属性
+  table.cellSpan = cellSpan;
+  // 作者照常逐格写：被合并掉的格子由元素写上 hidden 或留成占位
+  body.replaceChildren(...people.map((p) => {
+    const row = document.createElement("div");
+    row.dataset.xhPart = "row";
+    row.setAttribute("value", p.id);
+    row.append(...columns.map((col) => {
+      const cell = document.createElement("div");
+      cell.dataset.xhPart = "cell";
+      cell.setAttribute("value", col.id);
+      cell.textContent = p[col.id];
+      return cell;
+    }));
+    return row;
+  }));
+</script>
+```
+
+### 导出 CSV
+
+工具条里放一个下载按钮：点击时按当前的排序与列头现拼 CSV，Excel 打开不乱码要带 BOM，字段里的逗号、引号与换行按规则转义
+
+```vue
+<script setup lang="ts">
+import { DownloadIcon } from "@xihan-ui/icons";
+import {
+  XhDownloadTrigger,
+  XhIcon,
+  XhTableBody,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableColumnLabel,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+  XhTableSortTrigger,
+  XhTableToolbar,
+} from "@xihan-ui/vue";
+import { computed, ref } from "vue";
+
+interface Member {
+  id: string;
+  name: string;
+  dept: string;
+  note: string;
+}
+
+const columns = [
+  { id: "name", label: "姓名", width: "7rem", sortable: true },
+  { id: "dept", label: "部门", width: "8rem", sortable: true },
+  { id: "note", label: "备注" },
+];
+
+const members: Member[] = [
+  { id: "u1", name: "赵一", dept: "平台研发", note: "负责网关，兼管发布" },
+  { id: "u2", name: "钱二", dept: "前端体验", note: "组件库, 设计系统" },
+  { id: "u3", name: "孙三", dept: "基础架构", note: "口头禅是\"先压测\"" },
+  { id: "u4", name: "李四", dept: "前端体验", note: "控制台" },
+];
+
+type Sort = { id: string; direction: "asc" | "desc" }[];
+
+function sortMembers(sort: Sort): Member[] {
+  if (!sort.length)
+    return members;
+  return [...members].sort((a, b) => {
+    for (const s of sort) {
+      const diff = a[s.id as keyof Member].localeCompare(b[s.id as keyof Member], "zh");
+      if (diff !== 0)
+        return s.direction === "asc" ? diff : -diff;
+    }
+    return 0;
+  });
+}
+
+// 含逗号、引号或换行的字段整段加引号，里面的引号写两遍
+function field(value: string): string {
+  return /[",\n]/.test(value) ? `"${value.replaceAll("\"", "\"\"")}"` : value;
+}
+
+// 列头取 columns 的 label，行序取当前排序；开头的 BOM 让 Excel 按 UTF-8 读
+function toCsv(list: Member[]): string {
+  const lines = [
+    columns.map(col => field(col.label)).join(","),
+    ...list.map(m => columns.map(col => field(m[col.id as keyof Member])).join(",")),
+  ];
+  return `\uFEFF${lines.join("\r\n")}`;
+}
+
+const sort = ref<Sort>([]);
+const sorted = computed(() => sortMembers(sort.value));
+const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
+</script>
+
+<template>
+  <div style="width: 100%; max-width: 560px">
+    <XhTableRoot v-model:sort="sort" :columns="columns" :rows="rows">
+      <template #toolbar>
+        <XhTableToolbar>
+          <span>成员 {{ members.length }} 人</span>
+          <!-- 点击时才拼：导出的是那一刻的排序结果 -->
+          <XhDownloadTrigger
+            :data="() => toCsv(sorted)"
+            file-name="members.csv"
+            mime-type="text/csv"
+            size="sm"
+          >
+            <XhIcon :icon="DownloadIcon" /> 导出 CSV
+          </XhDownloadTrigger>
+        </XhTableToolbar>
+      </template>
+      <XhTableHeader>
+        <XhTableRow>
+          <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
+            <XhTableSortTrigger v-if="col.sortable" />
+          </XhTableColumnHeader>
+        </XhTableRow>
+      </XhTableHeader>
+      <XhTableBody>
+        <XhTableRow v-for="m in sorted" :key="m.id" :value="m.id">
+          <XhTableCell value="name">{{ m.name }}</XhTableCell>
+          <XhTableCell value="dept">{{ m.dept }}</XhTableCell>
+          <XhTableCell value="note">{{ m.note }}</XhTableCell>
+        </XhTableRow>
+      </XhTableBody>
+    </XhTableRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="width: 100%; max-width: 560px">
+  <xh-table id="table-export-csv">
+    <div data-xh-part="toolbar">
+      <span>成员 4 人</span>
+      <!-- 点击时才拼：导出的是那一刻的排序结果 -->
+      <xh-download-trigger id="table-export-csv-download" file-name="members.csv" mime-type="text/csv" size="sm">
+        <button data-xh-part="root">
+          <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10L12 15L17 10"/><path d="M12 3V15"/></svg>
+          导出 CSV
+        </button>
+      </xh-download-trigger>
+    </div>
+    <div data-xh-part="root">
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="name">
+            <span data-xh-part="column-label">姓名</span>
+            <span data-xh-part="sort-trigger"></span>
+          </div>
+          <div data-xh-part="column-header" value="dept">
+            <span data-xh-part="column-label">部门</span>
+            <span data-xh-part="sort-trigger"></span>
+          </div>
+          <div data-xh-part="column-header" value="note"><span data-xh-part="column-label">备注</span></div>
+        </div>
+      </div>
+      <div data-xh-part="body" data-body></div>
+    </div>
+  </xh-table>
+</div>
+
+<script type="module">
+  const table = document.getElementById("table-export-csv");
+  const download = document.getElementById("table-export-csv-download");
+  const body = table.querySelector("[data-body]");
+
+  const columns = [
+    { id: "name", label: "姓名", width: "7rem", sortable: true },
+    { id: "dept", label: "部门", width: "8rem", sortable: true },
+    { id: "note", label: "备注" },
+  ];
+
+  const members = [
+    { id: "u1", name: "赵一", dept: "平台研发", note: "负责网关，兼管发布" },
+    { id: "u2", name: "钱二", dept: "前端体验", note: "组件库, 设计系统" },
+    { id: "u3", name: "孙三", dept: "基础架构", note: "口头禅是\"先压测\"" },
+    { id: "u4", name: "李四", dept: "前端体验", note: "控制台" },
+  ];
+
+  function sortMembers(sort) {
+    if (!sort.length)
+      return members;
+    return [...members].sort((a, b) => {
+      for (const s of sort) {
+        const diff = a[s.id].localeCompare(b[s.id], "zh");
+        if (diff !== 0)
+          return s.direction === "asc" ? diff : -diff;
+      }
+      return 0;
+    });
+  }
+
+  // 含逗号、引号或换行的字段整段加引号，里面的引号写两遍
+  function field(value) {
+    return /[",\n]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value;
+  }
+
+  // 列头取 columns 的 label，行序取当前排序；开头的 BOM 让 Excel 按 UTF-8 读
+  function toCsv(list) {
+    const lines = [
+      columns.map(col => field(col.label)).join(","),
+      ...list.map(m => columns.map(col => field(m[col.id])).join(",")),
+    ];
+    return `\uFEFF${lines.join("\r\n")}`;
+  }
+
+  let sorted = members;
+
+  function render() {
+    table.rows = sorted.map(m => ({ id: m.id }));
+    body.replaceChildren(...sorted.map((m) => {
+      const row = document.createElement("div");
+      row.dataset.xhPart = "row";
+      row.setAttribute("value", m.id);
+      row.append(...columns.map((col) => {
+        const cell = document.createElement("div");
+        cell.dataset.xhPart = "cell";
+        cell.setAttribute("value", col.id);
+        cell.textContent = m[col.id];
+        return cell;
+      }));
+      return row;
+    }));
+  }
+
+  table.columns = columns;
+  table.addEventListener("sort-change", (event) => {
+    sorted = sortMembers(event.detail.value);
+    render();
+  });
+  // 取数函数只走属性；点击时才拼
+  download.data = () => toCsv(sorted);
+  render();
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -4403,13 +4946,22 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 - 选中行铺品牌淡底行面并由行首的勾选方框标记；悬停与按下只换面，行的几何与吸附列不动。
 - 表头吸顶与列吸附、条纹、密度、边框都是开关。
 - 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
-- 行数很大时只渲染窗口内的行。
+- 表头分组：列给出 `children` 即为分组，只在表头占一格、横跨它的全部叶子列，不进列号空间，也不承载数据、排序、改宽与冻结。嵌套几层就有几行表头，按 `headerRows` 逐层渲染：表头行写明 `level`，列头按所在的行定位自己是哪一格；较浅的叶子列（含前缀列）在它起始的那一行出列头、纵向跨到最后一行（`aria-rowspan`），下面各行那一格是对读屏隐藏的占位，照样渲染以保住列宽。行号空间把各层表头都算进去，数据行从表头之后起算。分组内的叶子列要给出宽度，分组格的宽度按它们相加；列偏好把一个分组的叶子列拆开时，分组格按连续的段各出一格。
+- 单元格合并用 `cellSpan`，与 antd 的 `spanMethod` 同一种写法：逐格询问合并区的大小（`rowSpan` / `colSpan`）。表格按它算出起点格的 `aria-rowspan` / `aria-colspan`：与起点同一行、被横向跨过的格子不渲染（`hidden`）；下面行里被纵向跨过的，在合并区最左那一列留一格占位（`data-covered`，对读屏隐藏、只保住宽度），其余不渲染。作者照常逐格渲染，谁显谁藏由表格决定；`cellSpanOf(行, 列)` 可查某一格的合并情形。合并只在可见数据行之间，遇到展开的详情行截断。
+- 纵向合并的起点格（`data-row-span`）挂载后按实测行位铺满合并的几行，压在下面几行之上、底色随起点行；量到之前按普通格子排。
+- 横向滚过之后，冻结列与滚动区之间只在确有内容被压住时出现一道描边：行首冻结列滚离起始端后画在紧挨滚动区那一列的行尾侧，行尾冻结列没滚到末端时画在它的行首侧（`data-frozen-edge` 标出那一列，`root` 以 `data-at-min-horizontal` / `data-at-max-horizontal` 报两端）。滚动容器是 `root` 自己；放进滚动区的表格不画这道边界。
+- 行换位（拖放与 Alt + 方向键）提交之后，宿主按 `ids` 重排的那一次里行从旧位置滑到新位置，详情行随它的数据行一起走；落点线取品牌实心色，与树、排序同一种。
+- 冻结列不必都写数字宽度：同侧多列冻结时，数字宽度直接累加，其余（没写、百分比、`fr`）取挂载后实测的列头宽度；量到之前那一侧从该列起暂时贴边。
+- 行数很大时只渲染窗口内的行：把[虚拟滚动](./virtualizer)的 `collectionVirtualizer` 交给 `virtualizer`，表体里放它的视口，每个虚拟条目装一行数据行（`count` 等于可见数据行的条数，展开的详情行跟在同一个条目里）。行号与 `aria-rowcount` 照旧按完整行序报；上下键与 Home / End 按完整行序求落点，落点不在窗口里时先把它滚进来再交焦点。窗口外的行没有落点，接上后行拖动换位不可用（`rowReorderDisabledReason` 为 `virtualized`）。Web Components 下行隔着一层 `xh-virtualizer`，行节点写 `data-xh-part-owner="table"` 归表格。
+- 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
 - 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页按钮的行为由作者决定，取数在途时自动停用。
+- 在途分两种：表体为空时 `loading` 占位露面，一枚加载环排在文案之前；已有行时重新取数（排序、翻页、筛选）不换成占位，表体与表尾保留上一帧淡下，取完再淡回。两种都由 `root` 报告 `aria-busy`。
 
 ### 组合
 
 - 单元格内放[就地编辑](./editable)、[徽标](./badge)、[头像](./avatar)；末尾接[分页](./pagination)；空态使用[空状态](./empty-state)。
+- 导出放进工具条：[下载按钮](./download-trigger)的 `data` 给一个取数函数，点击时按当前排序与列头现拼 CSV，导出的就是那一刻看到的顺序。
 
 ### 最佳实践
 
@@ -4446,12 +4998,16 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `expandedValue` | `string[]` |  | 展开集合。提供即受控，语义同上。 |
 | `defaultExpandedValue` | `string[]` |  |  |
 | `selectionMode` | `TableSelectionMode` |  | 默认 none：未声明则没有选择机制，行也不报告 aria-selected。 |
+| `virtualizer` | `CollectionVirtualizer` |  | 与 Virtualizer 的正式接线口（Virtualizer 的 `collectionVirtualizer`）：count 必须等于可见数据行的条数， 每个虚拟条目装一行数据行（展开的详情行跟在同一个条目里）。接上后上下键与 Home / End 按完整行序计算， 落点不在窗口里时先把它滚进来再交焦点；行号照旧按完整行序报；行拖动换位不可用（窗口外的行没有落点）。 |
+| `cellSpan` | `(details: TableCellSpanDetails) => TableCellSpan \| null \| undefined` |  | 单元格合并（与 antd 的 spanMethod 同一种写法）：逐格询问，返回合并区的大小。 表格按它算出起点格的 aria-rowspan / aria-colspan：同一行里被横向合并的格子不渲染（hidden）， 下面被纵向跨过的行在那一列留一格占位保住列宽、对读屏隐藏。作者照常逐格渲染，由连接层决定谁显谁藏。 合并只在可见数据行之间，遇到展开的详情行截断。焦点仍是行级：上下键逐行走，合并格随它的起点行读出。 |
+| `cascade` | `boolean` |  | 树形表（行声明了 parentId）在 multiple 下父子级联勾选，与 Tree 的 cascade 同一套算法： 勾父整枝传导、子全勾父勾、部分勾选的父行把手显示半选，禁用行的子树整棵冻结。 级联下不接 Shift 范围选。默认 false；平表与 single 下无效。 |
+| `checkedStrategy` | `CascadeStrategy` |  | 级联下对外选中值的收敛策略，默认 child（只收叶行）；parent = 最高整枝，all = 全部勾中的行。与 Tree 同义。 |
 | `prefixColumns` | `TableColumnKind[]` |  | 需要的前缀列，按给定顺序插在最前面，默认不插入任何列。 它们由库插入并占用列号：不占用时右侧所有列的 aria-colindex 会整体错位， 这正是使用者手工向 columns 中添加假列的原因。作者按 `api.columns` 渲染即可， 每一项都声明 `kind`。 |
 | `columnPreference` | `TableColumnPreference` |  | 列偏好。提供即受控：内部不自行修改，写入只发 onColumnPreferenceChange。 持久化归使用者：库只负责把它计算进生效列。 |
 | `defaultColumnPreference` | `TableColumnPreference` |  |  |
 | `page` | `number` |  | 当前页码与每页条数，只用于计算序号，不参与切片：切片归调用方 （或分页组件的 `api.slice`）。都未提供时序号回退为可见序。 |
 | `pageSize` | `number` |  |  |
-| `loading` | `boolean` |  | 数据加载中：root 报告 aria-busy，表体为空时加载态节点显示。 |
+| `loading` | `boolean` |  | 数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体保留上一帧淡下。 |
 | `empty` | `boolean` |  | 显式声明表体为空；未提供时按 rows 是否为空推导。 |
 | `stickyHeader` | `boolean` |  | 表头吸顶：只写 data-fixed（布尔），固定的实现归皮肤。列冻结使用 data-frozen，两者不同名。 |
 | `striped` | `boolean` |  | 斑马纹：表体偶数行换一层浅底。 |
@@ -4479,11 +5035,12 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `id` | `string` | 是 | 全表唯一：既是 DOM 身份（data-value），也是排序链与列号索引的键。 |
 | `label` | `string` |  | 展示名。只供调用方渲染，不作为可及名。 |
 | `sortable` | `boolean` |  | 可排序：提供后才产出 aria-sort，排序把手也才响应按键与点击。 |
-| `sticky` | `boolean \| 'start' \| 'end'` |  | 横向冻结（左右滚动时该列固定），写为条目上的 data-frozen。true 等于 'start'（固定在行首侧），'end' 固定在行尾侧。 与表头吸顶的 data-fixed 是两件事：那是布尔，这个带方向，同名会使 [data-fixed] 一条选择器命中两种语义。 同侧有多列吸附时，连接层按前面各列的数字列宽累加出偏移，写入 --xh-table-sticky-inset； 有一列宽度不是数字时无法计算，该侧从该列起都回退为贴边。 |
+| `sticky` | `boolean \| 'start' \| 'end'` |  | 横向冻结（左右滚动时该列固定），写为条目上的 data-frozen。true 等于 'start'（固定在行首侧），'end' 固定在行尾侧。 与表头吸顶的 data-fixed 是两件事：那是布尔，这个带方向，同名会使 [data-fixed] 一条选择器命中两种语义。 同侧有多列吸附时，连接层按前面各列的宽度累加出偏移，写入 --xh-table-sticky-inset： 数字列宽直接累加，不是数字（没写、百分比、fr 这类）的列取挂载后实测的列头宽度，量到之前该侧从该列起暂时贴边。 |
 | `width` | `string \| number` |  | 列宽。数字按 px 处理，字符串原样写入内联 inline-size。 |
 | `minWidth` | `number` |  | 拖动改列宽时的下限（px）。未提供时使用 TABLE_COLUMN_MIN_WIDTH。 |
 | `maxWidth` | `number` |  | 拖动改列宽时的上限（px）。未提供时不封顶。 |
 | `resizable` | `boolean` |  | 该列的宽度可以拖动修改。提供后才产出改宽把手。 |
+| `children` | `TableColumnDef[]` |  | 表头分组：给了 children 即为分组列，只在表头占一格、横跨它全部叶子列，不进列号空间， 也不承载数据、排序、改宽与冻结。叶子列才是生效列；嵌套几层表头就有几行， 较浅的叶子列（含前缀列）的列头纵向跨到最后一行。分组内的叶子列都要给出宽度， 分组那一格的宽度才能按叶子列之和算准。 |
 | `reorderable` | `boolean` |  | 该列可以拖动换位。提供后才产出拖拽把手：每个把手都是一个 Tab 位， 未声明的表格不承担该代价。 不可拖动的列与冻结列一样是屏障：跨过它落下会把它挤走，而作者已声明该列不动。 |
 
 ### TableRowDef
@@ -4536,11 +5093,13 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `XhTableCell` | `value` | `string` | 是 | 列 id。 |
 | `XhTableCell` | `colspan` | `number \| string` |  | 跨列数，从 value 所在列向后计算。 |
 | `XhTableColumnHeader` | `value` | `string` | 是 |  |
+| `XhTableColumnHeader` | `level` | `number` |  | 多级表头里这一格所在的表头行；省略时取所在表头行写明的层号。 |
 | `XhTableColumnVisibilityTrigger` | `value` | `string` |  | 列 id。写在列设置区中时必须提供；写在列标题中时可省略，跟随该列。 |
 | `XhTableExpandedRow` | `value` | `string` | 是 | 所属数据行的 id。 |
 | `XhTableRoot` | `toolbar` | `SlotChildren<TableToolbarSlotProps>` |  | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
 | `XhTableRoot` | `children` | `SlotChildren<TableRootSlotProps>` |  |  |
 | `XhTableRow` | `value` | `string` |  | 行 id：数据行必须提供，表头行与脚注行省略。 |
+| `XhTableRow` | `level` | `number` |  | 多级表头下写明这是第几行表头（1 起算），行里的列头据此定位；单行表头省略。 |
 
 ### 状态
 
@@ -4550,7 +5109,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | --- | --- |
 | `row` | 'open' \| 'closed' \| undefined |
 | `column-visibility-trigger` | 'unchecked' \| 'checked' |
-| `select-all-trigger` | tableSelectionState(selection, selectableIds) |
+| `select-all-trigger` | tableSelectionState([...cascaded.checked], tableCasca… \| tableSelectionState(selection, selectableIds) |
 | `row-select-trigger` | 'open' \| 'closed' \| undefined |
 | `expand-trigger` | 'open' \| 'closed' \| undefined |
 | `expanded-row` | 'open' \| 'closed' |
@@ -4586,6 +5145,9 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `empty` | `boolean` | 表体为空（显式声明或 rows 为空）。 |
 | `rowCount` | `number` | aria-rowcount：表头行 + 可见行 + 脚注行。 |
 | `columnCount` | `number` | aria-colcount：列定义的条数。 |
+| `headerRows` | `readonly (readonly TableHeaderCell[])[]` | 表头按层排好的格子，每层一行；没有分组时只有一行、每格是一列。 多级表头按它逐层渲染表头行与列头（带上 level），占位格也要渲。 |
+| `headerRowCount` | `number` | 表头占几行，数据行的行号从它之后起算。 |
+| `cellSpanOf` | `(rowId: string, columnId: string) => { rowSpan: number, colSpan: number, covered: boolean }` | 某一格此刻的合并情形：起点给出跨度，被合并掉的给 covered。没有 cellSpan 时恒是 1×1、不被合并。 作者据此省掉被合并格的内容，或在自绘时跳过它。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `sortDirection` | `(value: string) => TableSortDirection \| null` | 该列当前的排序方向；不参与排序时为 null。 |
@@ -4607,7 +5169,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `getHeaderProps` | `() => T['element']` |  |
 | `getBodyProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
-| `getHeaderRowProps` | `() => T['element']` | 表头行：恒占行号空间的第 1 行。 |
+| `getHeaderRowProps` | `(props?: TableHeaderRowProps) => T['element']` | 表头行：占行号空间最前面的几行；多级表头下写明第几行。 |
 | `getFooterRowProps` | `() => T['element']` | 脚注行：占行号空间的最后一行。 |
 | `rowNumber` | `(rowId: string) => string` | 该行显示的序号。平表是分页全局序号，树形是大纲编号。 不显示序号列时仍可调用：它是纯计算，不依赖是否有该列。 |
 | `columnPreference` | `TableColumnPreference` | 当前的列偏好。原样交出即可存储。 |
@@ -4672,7 +5234,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `root` | `aria-colcount` | columns.length \|\| undefined |
 | `root` | `aria-labelledby` | `caption` 部件的 id |
 | `root` | `aria-multiselectable` | 'true' \| 'false' |
-| `root` | `aria-rowcount` | HEADER_ROW_COUNT + visibleRows.length + (hasFooter ? … |
+| `root` | `aria-rowcount` | headerRowCount + visibleRows.length + (hasFooter ? 1 … |
 | `root` | `role` | 'treegrid' \| 'grid' |
 | `header` | `role` | 'rowgroup' |
 | `body` | `role` | 'rowgroup' |
@@ -4686,11 +5248,16 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `row` | `aria-selected` | 'true' \| 'false' \| undefined |
 | `row` | `aria-setsize` | metaIndex.get(row.value)?.setSize \| undefined |
 | `row` | `role` | 'row' |
-| `column-header` | `aria-colindex` | columnIndex.get(column.value) |
+| `column-header` | `aria-colindex` | cell.colIndex |
+| `column-header` | `aria-colspan` | cell.colSpan \| undefined |
+| `column-header` | `aria-hidden` | 'true' |
+| `column-header` | `aria-rowspan` | cell.rowSpan \| undefined |
 | `column-header` | `aria-sort` | 'ascending' \| 'descending' \| 'none' \| undefined |
 | `column-header` | `role` | 'columnheader' |
 | `cell` | `aria-colindex` | columnIndex.get(cell.value) |
-| `cell` | `aria-colspan` | cell.colSpan \| undefined |
+| `cell` | `aria-colspan` | Math.max(cell.colSpan ?? 1, origin?.colSpan ?? 1) \| undefined |
+| `cell` | `aria-hidden` | 'true' |
+| `cell` | `aria-rowspan` | origin.rowSpan \| undefined |
 | `cell` | `role` | 'gridcell' |
 | `toolbar` | `aria-label` | label.toolbar |
 | `column-list` | `aria-label` | label.columnList |
@@ -4728,8 +5295,8 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
-| `header-row` | `aria-rowindex` | 1 |
-| `footer-row` | `aria-rowindex` | HEADER_ROW_COUNT + visibleRows.length + (hasFooter ? … \| undefined |
+| `header-row` | `aria-rowindex` | Math.max(1, Math.min(Math.trunc(header?.level ?? 1) \|… |
+| `footer-row` | `aria-rowindex` | headerRowCount + visibleRows.length + (hasFooter ? 1 … \| undefined |
 | `header-row` | `role` | 'row' |
 | `footer-row` | `role` | 'row' |
 
@@ -4737,12 +5304,16 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 - `column-label` 不带角色与状态：列头 `role=columnheader` 的可及名由它里面的文字算出，视觉上被省略号截断的列名读屏仍读全文。
 - 列宽把手与列拖拽把手同样各占一个 Tab 位，名字分别取 `translations.columnResize` 与 `translations.columnDrag`。
 - 行内的勾选框与展开箭头对读屏隐藏：选中与展开都由行自身的属性与方向键 / 空格承担。
+- 焦点是行级的，合并格不改变键盘：上下键逐行走，每一行都是一个停靠点；纵向合并格只在起点行里报出（带 `aria-rowspan`），下面几行那一格是占位、读屏跳过。表格刻意不做单元格级导航（左右键是展开 / 收起），合并格因此没有「焦点落进合并格、再移出」的问题。
+- 级联的半选只画在行选把手上：`row` 角色没有 mixed 这一档，半选的父行对读屏报 `aria-selected=false`，勾了哪些子行由子行各自报出。
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/table.css` 使用 `[data-scope="table"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/table.css` 使用 `[data-scope="table"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 
@@ -4750,6 +5321,8 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-at-max-horizontal` | ''（条件成立时才出现） |
+| `root` | `data-at-min-horizontal` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-fixed` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
@@ -4771,16 +5344,23 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `row` | `data-xh-collection-context` | 'page' |
 | `row` | `data-xh-collection-item` | '' |
 | `row` | `data-xh-collection-size` | props.size |
+| `column-header` | `data-covered` | ''（条件成立时才出现） |
 | `column-header` | `data-dragging` | ''（条件成立时才出现） |
 | `column-header` | `data-drop` | 'before' \| 'after' |
 | `column-header` | `data-frozen` | undefined |
+| `column-header` | `data-frozen-edge` | ''（条件成立时才出现） |
+| `column-header` | `data-group` | ''（条件成立时才出现） |
+| `column-header` | `data-row-span` | ''（条件成立时才出现） |
 | `column-header` | `data-sort` | 'asc' \| 'desc' |
 | `column-header` | `data-sort-index` | tableSortIndexOf(sort, value) \| undefined |
 | `column-header` | `data-sortable` | ''（条件成立时才出现） |
+| `cell` | `data-covered` | ''（条件成立时才出现） |
 | `cell` | `data-disabled` | ''（条件成立时才出现） \| undefined |
 | `cell` | `data-dragging` | ''（条件成立时才出现） |
 | `cell` | `data-drop` | 'before' \| 'after' |
 | `cell` | `data-frozen` | undefined |
+| `cell` | `data-frozen-edge` | ''（条件成立时才出现） |
+| `cell` | `data-row-span` | ''（条件成立时才出现） |
 | `cell` | `data-selected` | ''（条件成立时才出现） \| undefined |
 | `toolbar` | `data-size` | props.size |
 | `column-list` | `data-size` | props.size |
@@ -4792,16 +5372,21 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `column-visibility-trigger` | `data-xh-action-profile` | 'icon' |
 | `column-visibility-trigger` | `data-xh-action-size` | props.size |
 | `column-visibility-trigger` | `data-xh-action-variant` | 'outline' |
+| `column-visibility-trigger` | `data-xh-check-mark` | 'unchecked' \| 'checked' |
+| `column-visibility-trigger` | `data-xh-check-mark-profile` | 'box' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
-| `select-all-trigger` | `data-state` | tableSelectionState(selection, selectableIds) |
+| `select-all-trigger` | `data-state` | tableSelectionState([...cascaded.checked], tableCasca… \| tableSelectionState(selection, selectableIds) |
 | `select-all-trigger` | `data-xh-action-control` | '' |
 | `select-all-trigger` | `data-xh-action-display` | 'always' |
 | `select-all-trigger` | `data-xh-action-profile` | 'icon' |
 | `select-all-trigger` | `data-xh-action-size` | props.size |
 | `select-all-trigger` | `data-xh-action-variant` | 'outline' |
+| `select-all-trigger` | `data-xh-check-mark` | tableSelectionState([...cascaded.checked], tableCasca… \| tableSelectionState(selection, selectableIds) |
+| `select-all-trigger` | `data-xh-check-mark-profile` | 'box' |
 | `row-select-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-highlighted` | ''（条件成立时才出现） |
+| `row-select-trigger` | `data-indeterminate` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-selected` | ''（条件成立时才出现） |
 | `row-select-trigger` | `data-state` | 'open' \| 'closed' \| undefined |
@@ -4810,6 +5395,8 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `row-select-trigger` | `data-xh-action-profile` | 'icon' |
 | `row-select-trigger` | `data-xh-action-size` | props.size |
 | `row-select-trigger` | `data-xh-action-variant` | 'outline' |
+| `row-select-trigger` | `data-xh-check-mark` | 'checked' \| 'indeterminate' \| 'unchecked' |
+| `row-select-trigger` | `data-xh-check-mark-profile` | 'box' |
 | `sort-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `sort-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `sort-trigger` | `data-sort` | 'asc' \| 'desc' |
@@ -4837,6 +5424,8 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `expand-trigger` | `data-xh-action-variant` | 'ghost' |
 | `expanded-row` | `data-dragging` | ''（条件成立时才出现） |
 | `expanded-row` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
+| `loading` | `data-xh-loading-ring` | '' |
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-xh-action-control` | '' |
@@ -4855,7 +5444,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-table-bg` | `root` | `background` | `default`<br>`variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | table 的 root 部件 background 覆盖槽。 |
-| `--xh-table-border` | `footer`<br>`header`<br>`root` | `border`<br>`border-block-end`<br>`border-block-start` | `default`<br>`variant=outline` | `--xh-border-default` | table 的 footer、header、root 部件 border、border-block-end、border-block-start 覆盖槽。 |
+| `--xh-table-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | table 的 root 部件 border 覆盖槽。 |
 | `--xh-table-caption-fg` | `caption` | `color` | `default` | `--xh-fg-muted` | table 的 caption 部件 color 覆盖槽。 |
 | `--xh-table-caption-font-size` | `caption` | `font-size` | `default` | `--xh-text-label-size` | table 的 caption 部件 font-size 覆盖槽。 |
 | `--xh-table-caption-font-weight` | `caption` | `font-weight` | `default` | `--xh-text-label-weight` | table 的 caption 部件 font-weight 覆盖槽。 |
@@ -4887,8 +5476,11 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `--xh-table-fg` | `root` | `color` | `default` | `--xh-fg-default` | table 的 root 部件 color 覆盖槽。 |
 | `--xh-table-font-size` | `root`<br>`row` | `font-size` | `default` | `--xh-_table-font-size` | table 的 root、row 部件 font-size 覆盖槽。 |
 | `--xh-table-footer-bg` | `footer` | `background` | `default` | `--xh-bg-subtle` | table 的 footer 部件 background 覆盖槽。 |
+| `--xh-table-footer-border` | `footer` | `border-block-start` | `default` | `--xh-border-subtle` | table 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-table-footer-font-weight` | `footer` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 footer 部件 font-weight 覆盖槽。 |
+| `--xh-table-frozen-edge` | `cell`<br>`column-header` | `background` | `frozen-edge`<br>`is([data-part='column-header'], [data-part='cell'])` | `--xh-border-default` | table 的 cell、column-header 部件 background 覆盖槽。 |
 | `--xh-table-header-bg` | `column-header`<br>`header` | `background` | `default`<br>`frozen` | `--xh-bg-subtle-opaque` | table 的 column-header、header 部件 background 覆盖槽。 |
+| `--xh-table-header-border` | `header` | `border-block-end` | `default` | `--xh-border-subtle` | table 的 header 部件 border-block-end 覆盖槽。 |
 | `--xh-table-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | table 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-table-load-more-trigger-bg-hover` | `load-more-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | table 的 load-more-trigger 部件 background-color 覆盖槽。 |
 | `--xh-table-load-more-trigger-fg` | `load-more-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-brand-strong` | table 的 load-more-trigger 部件 color 覆盖槽。 |
@@ -4897,7 +5489,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `--xh-table-load-more-trigger-px` | `load-more-trigger` | `padding-inline` | `default` | `--xh-space-4` | table 的 load-more-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-table-load-more-trigger-py` | `load-more-trigger` | `padding-block` | `xh-action-profile=row` | `--xh-space-3` | table 的 load-more-trigger 部件 padding-block 覆盖槽。 |
 | `--xh-table-load-more-trigger-radius` | `load-more-trigger` | `border-radius` | `default` | `--xh-shape-control` | table 的 load-more-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-table-loading-duration` | `loading` | `animation` | `default` | `--xh-motion-loop-shimmer` | table 的 loading 部件 animation 覆盖槽。 |
+| `--xh-table-loading-duration` | `loading` | `animation-duration` | `default` | `--xh-motion-loop-spin` | table 的 loading 部件 animation-duration 覆盖槽。 |
 | `--xh-table-max-h` | `root` | `max-block-size` | `default` | `--xh-viewport-h-lg` | table 的 root 部件 max-block-size 覆盖槽。 |
 | `--xh-table-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | table 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-table-resize-fg` | `column-resize-trigger` | `background` | `default` | `--xh-border-default` | table 的 column-resize-trigger 部件 background 覆盖槽。 |
@@ -4925,36 +5517,37 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
 | `--xh-table-sort-fg` | `sort-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | table 的 sort-trigger 部件 color 覆盖槽。 |
 | `--xh-table-sort-fg-active` | `sort-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`sort`<br>`sort-index` | `--xh-fg-default` | table 的 sort-trigger 部件 color 覆盖槽。 |
 | `--xh-table-sort-size` | `sort-trigger` | `--xh-icon-size` | `default` | `--xh-_table-trigger-size` | table 的 sort-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-table-span-layer` | `cell`<br>`column-header` | `z-index` | `is([data-part='cell'], [data-part='column-header'])`<br>`row-span` | `1` | table 的 cell、column-header 部件 z-index 覆盖槽。 |
 | `--xh-table-state-fg` | `empty`<br>`loading` | `color` | `default` | `--xh-fg-muted` | table 的 empty、loading 部件 color 覆盖槽。 |
-| `--xh-table-state-gap` | `empty`<br>`loading` | `gap` | `default` | `--xh-space-2` | table 的 empty、loading 部件 gap 覆盖槽。 |
-| `--xh-table-state-min-h` | `empty`<br>`loading` | `min-block-size` | `default` | `8rem` | table 的 empty、loading 部件 min-block-size 覆盖槽。 |
-| `--xh-table-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-space-4` | table 的 empty、loading 部件 padding-inline 覆盖槽。 |
-| `--xh-table-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-6` | table 的 empty、loading 部件 padding-block 覆盖槽。 |
+| `--xh-table-state-gap` | `empty`<br>`loading` | `gap` | `default` | `--xh-control-gap-md` | table 的 empty、loading 部件 gap 覆盖槽。 |
+| `--xh-table-state-min-h` | `empty`<br>`loading` | `min-block-size` | `default` | `0` | table 的 empty、loading 部件 min-block-size 覆盖槽。 |
+| `--xh-table-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-control-px-sm` | table 的 empty、loading 部件 padding-inline 覆盖槽。 |
+| `--xh-table-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-3` | table 的 empty、loading 部件 padding-block 覆盖槽。 |
 | `--xh-table-sticky-column-layer` | `cell`<br>`column-header`<br>`row` | `z-index` | `drop=after`<br>`drop=before`<br>`drop=inside`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])` | `1` | table 的 cell、column-header、row 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-header-layer` | `header` | `z-index` | `fixed` | `--xh-layer-sticky` | table 的 header 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-inset` | `cell`<br>`column-header` | `inset-inline-end`<br>`inset-inline-start` | `frozen=end`<br>`frozen=start` | `0` | table 的 cell、column-header 部件 inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-table-toolbar-fg` | `toolbar` | `color` | `default` | `--xh-fg-default` | table 的 toolbar 部件 color 覆盖槽。 |
 | `--xh-table-toolbar-gap` | `toolbar` | `gap` | `default` | `--xh-_table-toolbar-gap` | table 的 toolbar 部件 gap 覆盖槽。 |
 | `--xh-table-toolbar-py` | `toolbar` | `padding-block` | `default` | `--xh-space-2` | table 的 toolbar 部件 padding-block 覆盖槽。 |
-| `--xh-table-trigger-bg-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `--xh-ink-surface`<br>`background-color`<br>`border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate`<br>`xh-ink-surface` | `--xh-bg-brand` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 --xh-ink-surface、background-color、border、border-color 覆盖槽。 |
-| `--xh-table-trigger-bg-checked-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand-active` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
+| `--xh-table-trigger-bg-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `--xh-ink-surface`<br>`background-color`<br>`border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`indeterminate`<br>`is(:active, [data-pressed])`<br>`is([data-selected], [data-indeterminate])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate`<br>`xh-ink-surface` | `--xh-bg-brand` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 --xh-ink-surface、background-color、border、border-color 覆盖槽。 |
+| `--xh-table-trigger-bg-checked-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`indeterminate`<br>`is(:active, [data-pressed])`<br>`is([data-selected], [data-indeterminate])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand-active` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
 | `--xh-table-trigger-bg-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
 | `--xh-table-trigger-border` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
-| `--xh-table-trigger-border-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-table-trigger-bg-checked` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
-| `--xh-table-trigger-fg` | `column-visibility-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `--xh-_ring-color`<br>`background-color`<br>`color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=indeterminate` | `--xh-fg-on-brand` | table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 --xh-_ring-color、background-color、color 覆盖槽。 |
+| `--xh-table-trigger-border-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`indeterminate`<br>`is(:active, [data-pressed])`<br>`is([data-selected], [data-indeterminate])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-table-trigger-bg-checked` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-table-trigger-fg` | `column-visibility-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-on-brand` | table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 color 覆盖槽。 |
 | `--xh-table-trigger-radius` | `column-drag-trigger`<br>`column-visibility-trigger`<br>`expand-trigger`<br>`row-drag-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border-radius` | `default` | `--xh-shape-control`<br>`--xh-shape-inset` | table 的 column-drag-trigger、column-visibility-trigger、expand-trigger、row-drag-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-table-trigger-size` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`min-block-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon`<br>`xh-action-profile=row` | `--xh-control-indicator-size` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 --xh-icon-size、block-size、inline-size、min-block-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 循环（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-table-loading-duration`。
 
-关键帧 `xh-table-loading-pulse` 随皮肤自带，不引用别处文件里的名字；`background-color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`-webkit-mask-size` · `background-color` · `color` · `mask-size` · `opacity` · `rotate` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
 

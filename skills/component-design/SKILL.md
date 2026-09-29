@@ -13,7 +13,7 @@ description: 设计、重构或审查 XiHan.UI 组件的视觉、交互、状态
 2. 定义 anatomy、状态、事件、键盘和生命周期，再确定表现。
 3. 归入 Action Control、Field Chrome、Collection Item、Surface、Overlay 或 Feedback 家族；图表部件归图表家具或数据标记。
 4. 使用现有语义令牌、Family Recipe 和组件槽确定尺寸、层级与状态。
-5. 同步检查组件文档、首个示例和组件总览预览，删除重复示例。
+5. 同步检查组件文档、首个示例和组件总览示意图（设计真源 §15.2），删除重复示例。
 
 ## 强制设计规则
 

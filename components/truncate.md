@@ -40,7 +40,7 @@ import { XhTruncate } from "@xihan-ui/vue";
 
 加粗的是必需部件。
 
-`data-scope="truncate"`：**`root`**
+`data-scope="truncate"`：**`root`** · `trigger`
 
 ## 示例
 
@@ -74,17 +74,19 @@ import { XhTruncate } from "@xihan-ui/vue";
 
 ### 展开全文
 
-点击文本展开或收起
+真被裁了才在文字之后露出一颗展开按钮；文字本身照常可选中，展开与收起只归按钮管
 
 ```vue
 <script setup lang="ts">
 import { XhTruncate } from "@xihan-ui/vue";
+
+const translations = { expand: "展开", collapse: "收起" };
 </script>
 
 <template>
   <div style="inline-size: 360px; max-inline-size: 100%">
-    <XhTruncate :lines="2" expandable>
-      本次更新改进了组件主题、键盘交互与响应式布局。点击这段文字可查看完整内容，再次点击即可收起。
+    <XhTruncate :lines="2" expandable :translations="translations">
+      本次更新改进了组件主题、键盘交互与响应式布局。按下文字下方的按钮可查看完整内容，再按一次即可收起。
     </XhTruncate>
   </div>
 </template>
@@ -92,12 +94,19 @@ import { XhTruncate } from "@xihan-ui/vue";
 
 ```html
 <div style="inline-size: 360px; max-inline-size: 100%">
-  <xh-truncate lines="2" expandable>
+  <xh-truncate id="truncate-expandable" lines="2" expandable>
     <div data-xh-part="root">
-      本次更新改进了组件主题、键盘交互与响应式布局。点击这段文字可查看完整内容，再次点击即可收起。
+      本次更新改进了组件主题、键盘交互与响应式布局。按下文字下方的按钮可查看完整内容，再按一次即可收起。
     </div>
+    <!-- 按钮留空时元素按展开态写入文案 -->
+    <button data-xh-part="trigger"></button>
   </xh-truncate>
 </div>
+
+<script type="module">
+  // 文案是对象，只走 property
+  document.getElementById("truncate-expandable").translations = { expand: "展开", collapse: "收起" };
+</script>
 ```
 
 ### 原生提示
@@ -124,6 +133,42 @@ import { XhTruncate } from "@xihan-ui/vue";
 </div>
 ```
 
+### 中间省略
+
+position="middle" 把单行文字的省略号收在中间，文件名的开头与扩展名都看得见
+
+```vue
+<script setup lang="ts">
+import { XhTruncate } from "@xihan-ui/vue";
+
+const files = [
+  "2026-第三季度-经营分析报告-终稿-已审阅.pdf",
+  "design-system-tokens-export-dark-theme-v2.json",
+  "IMG_20260928_081530_HDR_panorama_edited.jpg",
+];
+</script>
+
+<template>
+  <div style="display: grid; gap: 8px; inline-size: 240px; max-inline-size: 100%">
+    <XhTruncate v-for="file in files" :key="file" position="middle" tooltip>{{ file }}</XhTruncate>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: 8px; inline-size: 240px; max-inline-size: 100%">
+  <xh-truncate position="middle" tooltip>
+    <div data-xh-part="root">2026-第三季度-经营分析报告-终稿-已审阅.pdf</div>
+  </xh-truncate>
+  <xh-truncate position="middle" tooltip>
+    <div data-xh-part="root">design-system-tokens-export-dark-theme-v2.json</div>
+  </xh-truncate>
+  <xh-truncate position="middle" tooltip>
+    <div data-xh-part="root">IMG_20260928_081530_HDR_panorama_edited.jpg</div>
+  </xh-truncate>
+</div>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -140,7 +185,8 @@ import { XhTruncate } from "@xihan-ui/vue";
 
 - `lines` 控制单行或多行截断。
 - 容器、内容与字体变化后自动重新测量。
-- `expandable` 支持点击或键盘展开全文。
+- `expandable` 在文字旁放一颗展开 / 收起按钮（`trigger` 部件），真被裁了才出现；文字本身不变成按钮，照常可选中、可复制。
+- `position="middle"` 把单行文字的省略号收在中间，首尾两段都留着，适合文件名与路径；读屏与原生提示读到的仍是整段文字。
 - `tooltip` 仅在内容溢出时提供原生提示。
 
 ### 组合
@@ -174,12 +220,14 @@ import { XhTruncate } from "@xihan-ui/vue";
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `lines` | `number` |  | 截断行数，1 为单行，默认 1。 |
-| `expandable` | `boolean` |  | 点击展开全文。 |
+| `position` | `TruncatePosition` |  | 省略号落在哪，默认 end。middle 只对单行生效：首尾两段各占一半宽度，中间收一个省略号， 适合文件名、路径这类两头都要看得见的文字；多行时按 end 处理。 中间省略按整段纯文字排，盒内带标记的内容会被当成它的文字。 |
+| `expandable` | `boolean` |  | 旁边放一颗展开 / 收起全文的按钮（trigger 部件），真被裁了才出现。 |
 | `open` | `boolean` |  | 受控展开；未提供时非受控。 |
 | `defaultOpen` | `boolean` |  | 非受控时的初始展开态。 |
 | `tooltip` | `boolean` |  | 实际裁掉内容时才把整段文字交给平台的原生提示。 |
 | `onOpenChange` | `(details: TruncateOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onOverflowChange` | `(details: TruncateOverflowChangeDetails) => void` |  | 测得的溢出结论翻转时回调。 |
+| `translations` | `Partial<TruncateTranslations>` |  |  |
 
 ### 事件
 
@@ -197,6 +245,7 @@ import { XhTruncate } from "@xihan-ui/vue";
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTruncate` | `default` | `TruncateSlotProps` |  |
+| `XhTruncate` | `trigger` | `TruncateTriggerSlotProps` | 展开按钮里的内容，缺省是随展开态切换的那一句文案。 |
 
 ### React 适配器 props
 
@@ -204,6 +253,7 @@ import { XhTruncate } from "@xihan-ui/vue";
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhTruncate` | `trigger` | `SlotChildren<TruncateTriggerSlotProps>` |  | 展开按钮里的内容，缺省是随展开态切换的那一句文案。 |
 | `XhTruncate` | `children` | `SlotChildren<TruncateSlotProps>` |  |  |
 
 ### 状态
@@ -212,7 +262,8 @@ import { XhTruncate } from "@xihan-ui/vue";
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'open' \| 'closed' |
+| `root` | 'open' \| 'closed' \| undefined |
+| `trigger` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
 
@@ -232,7 +283,9 @@ import { XhTruncate } from "@xihan-ui/vue";
 | `overflowing` | `boolean` | 截断版本是否裁掉了内容。作者据此决定是否附加提示。 |
 | `setOpen` | `(next: boolean) => void` | 程序化展开 / 收起，与点击走同一路径。 |
 | `measure` | `() => void` | 手动测量一次，用于观察器无法感知的布局变化。 |
+| `triggerLabel` | `string` | 展开按钮此刻该显示的文字：收着时是展开那一句，铺开时是收起那一句。 |
 | `getRootProps` | `() => T['element']` |  |
+| `getTriggerProps` | `() => T['button']` | 展开 / 收起全文的按钮：没开 expandable 或没东西可展开时收起不占位。 |
 
 ## 无障碍
 
@@ -242,8 +295,8 @@ import { XhTruncate } from "@xihan-ui/vue";
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `Enter` / `Space` | expandable，焦点在 root 上 | 铺开全文 / 收回夹住的那一版；Space 拦掉翻页的默认动作 |
-| `Tab` / `Shift+Tab` | expandable | 停到这块文字上；不可展开时它不带 tabindex，不在 Tab 序列里 |
+| `Enter` / `Space` | expandable，焦点在 trigger 上 | 铺开全文 / 收回夹住的那一版；原生按钮自带的激活行为 |
+| `Tab` / `Shift+Tab` | expandable 且真被裁或已铺开 | 停到展开按钮上；没东西可展开时按钮收起，不在 Tab 序列里；文字盒子恒不停 |
 
 ### ARIA
 
@@ -251,14 +304,16 @@ import { XhTruncate } from "@xihan-ui/vue";
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-expanded` | 'true' \| 'false' |
-| `root` | `role` | 'button' |
+| `trigger` | `aria-controls` | `root` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
 
 ## 样式参考
 
 ### 皮肤
 
 `@xihan-ui/styles/truncate.css` 使用 `[data-scope="truncate"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 
@@ -268,9 +323,17 @@ import { XhTruncate } from "@xihan-ui/vue";
 | --- | --- | --- |
 | `root` | `data-expandable` | ''（条件成立时才出现） |
 | `root` | `data-lines` | String(lines) |
+| `root` | `data-middle-text` | context.get('text') \| undefined |
 | `root` | `data-multiline` | ''（条件成立时才出现） |
 | `root` | `data-overflowing` | ''（条件成立时才出现） |
-| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-position` | 'middle' \| undefined |
+| `root` | `data-state` | 'open' \| 'closed' \| undefined |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-xh-action-control` | '' |
+| `trigger` | `data-xh-action-display` | 'always' |
+| `trigger` | `data-xh-action-profile` | 'text' |
+| `trigger` | `data-xh-action-size` | 'sm' |
+| `trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -284,8 +347,8 @@ import { XhTruncate } from "@xihan-ui/vue";
 
 ### 动效
 
-动效角色：状态（见[动效规范](../design/motion#角色)）。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-`color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+### RTL
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

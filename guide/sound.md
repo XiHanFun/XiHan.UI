@@ -273,17 +273,17 @@ Vue 侧的适配放在单独的子入口 `@xihan-ui/vue/sound`，两种用法：
 
 ### 给通知与确认框配声
 
-`withToastSound` / `withDialogSound` 包装现有的服务，调用点不需修改：
+`withNotificationSound` / `withDialogSound` 包装现有的服务，调用点不需修改：
 
 ```ts
 import { createSoundPlayer, softSoundTheme } from "@xihan-ui/sound";
-import { createDialogService, createToastService } from "@xihan-ui/vue";
-import { setSoundPlayer, withDialogSound, withToastSound } from "@xihan-ui/vue/sound";
+import { createDialogService, createNotificationService } from "@xihan-ui/vue";
+import { setSoundPlayer, withDialogSound, withNotificationSound } from "@xihan-ui/vue/sound";
 
 // 更换主题、接入用户偏好；不设置时使用默认播放器
 setSoundPlayer(createSoundPlayer({ theme: softSoundTheme, enabled: userPrefs.sound }));
 
-export const toast = withToastSound(createToastService());
+export const toast = withNotificationSound(createNotificationService({ preset: "toast" }));
 export const dialog = withDialogSound(createDialogService());
 
 toast.success("已保存"); // 视觉 + 听觉，返回值与原服务完全一致
@@ -292,15 +292,15 @@ await dialog.confirm({ title: "删除这条记录？" });
 
 ```vue
 <script setup lang="ts">
-import type { ToastService } from "@xihan-ui/vue";
-import { createToastService, XhButton } from "@xihan-ui/vue";
-import { withToastSound } from "@xihan-ui/vue/sound";
+import type { NotificationService } from "@xihan-ui/vue";
+import { createNotificationService, XhButton } from "@xihan-ui/vue";
+import { withNotificationSound } from "@xihan-ui/vue/sound";
 import { onBeforeUnmount } from "vue";
 
 // 惰性建单例：服务要 document，等到第一次调用（必然在客户端）再建
-let toast: ToastService | undefined;
-function use(): ToastService {
-  toast ??= withToastSound(createToastService({ placement: "top" }));
+let toast: NotificationService | undefined;
+function use(): NotificationService {
+  toast ??= withNotificationSound(createNotificationService({ preset: "toast", placement: "top" }));
   return toast;
 }
 onBeforeUnmount(() => toast?.dispose());
@@ -337,7 +337,7 @@ function upload(): void {
 逐项改写，传 `null` 即该类静音：
 
 ```ts
-withToastSound(createToastService(), {
+withNotificationSound(createNotificationService({ preset: "toast" }), {
   sounds: { success: "complete", danger: null },
 });
 ```
@@ -375,14 +375,14 @@ import { vSound } from "@xihan-ui/vue/sound";
 React 侧的适配同样放在单独的子入口 `@xihan-ui/react/sound`。服务层与 Vue 完全同名同形：
 
 ```ts
-import { createDialogService, createToastService } from "@xihan-ui/react";
-import { setSoundPlayer, withDialogSound, withToastSound } from "@xihan-ui/react/sound";
+import { createDialogService, createNotificationService } from "@xihan-ui/react";
+import { setSoundPlayer, withDialogSound, withNotificationSound } from "@xihan-ui/react/sound";
 import { createSoundPlayer, softSoundTheme } from "@xihan-ui/sound";
 
 // 更换主题、接入用户偏好；不设置时使用默认播放器
 setSoundPlayer(createSoundPlayer({ theme: softSoundTheme, enabled: userPrefs.sound }));
 
-export const toast = withToastSound(createToastService());
+export const toast = withNotificationSound(createNotificationService({ preset: "toast" }));
 export const dialog = withDialogSound(createDialogService());
 
 toast.success("已保存"); // 视觉 + 听觉，返回值与原服务完全一致

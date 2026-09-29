@@ -47,7 +47,7 @@ const scrollEl = ref<HTMLElement | null>(null);
       align-items: start;
     "
   >
-    <XhAnchorRoot :scroll-element="scrollEl" smooth>
+    <XhAnchorRoot :target="scrollEl" smooth>
       <XhAnchorList>
         <XhAnchorItem v-for="s in sections" :key="s.value">
           <XhAnchorLink :value="s.value">{{ s.label }}</XhAnchorLink>
@@ -146,7 +146,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 <script type="module">
   const template = document.getElementById("anchor-basic-nav");
   const anchor = template.content.firstElementChild;
-  anchor.scrollElement = document.getElementById("anchor-basic-scroll");
+  anchor.target = document.getElementById("anchor-basic-scroll");
   template.replaceWith(anchor);
 </script>
 ```
@@ -193,7 +193,7 @@ const scrollEl = ref<HTMLElement | null>(null);
       align-items: start;
     "
   >
-    <XhAnchorRoot :scroll-element="scrollEl" :offset="44" smooth>
+    <XhAnchorRoot :target="scrollEl" :offset="44" smooth>
       <XhAnchorList>
         <XhAnchorItem v-for="s in sections" :key="s.value">
           <XhAnchorLink :value="s.value">{{ s.label }}</XhAnchorLink>
@@ -317,7 +317,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 <script type="module">
   const template = document.getElementById("anchor-offset-nav");
   const anchor = template.content.firstElementChild;
-  anchor.scrollElement = document.getElementById("anchor-offset-scroll");
+  anchor.target = document.getElementById("anchor-offset-scroll");
   template.replaceWith(anchor);
 </script>
 ```
@@ -350,7 +350,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px; inline-size: min(640px, 100%)">
     <XhAnchorRoot
-      :scroll-element="scrollEl"
+      :target="scrollEl"
       orientation="horizontal"
       smooth
     >
@@ -444,7 +444,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 <script type="module">
   const template = document.getElementById("anchor-h-nav");
   const anchor = template.content.firstElementChild;
-  anchor.scrollElement = document.getElementById("anchor-h-scroll");
+  anchor.target = document.getElementById("anchor-h-scroll");
   template.replaceWith(anchor);
 </script>
 ```
@@ -511,7 +511,7 @@ function isGroupActive(group: {
       align-items: start;
     "
   >
-    <XhAnchorRoot v-model:value="active" :scroll-element="scrollEl" smooth>
+    <XhAnchorRoot v-model:value="active" :target="scrollEl" smooth>
       <XhAnchorList>
         <XhAnchorItem
           v-for="g in groups"
@@ -659,7 +659,7 @@ function isGroupActive(group: {
     }
   }
 
-  anchor.scrollElement = document.getElementById("anchor-nested-scroll");
+  anchor.target = document.getElementById("anchor-nested-scroll");
   apply(null);
   template.replaceWith(anchor);
 
@@ -680,7 +680,7 @@ function isGroupActive(group: {
 
 ### 特性
 
-- 支持页面或指定容器滚动。
+- 支持页面或指定容器滚动：指定 `target` 后监听并滚动该容器，未指定时作用于页面；与[固钉](./affix)、[回到顶部](./back-top)同一个名字、同一种取值。
 - 支持滚动偏移、平滑滚动和当前项指示线：不放 `indicator` 部件时当前链接自带一条静态线（竖排贴起始缘、横排贴底边），放了部件则由部件滑动。
 - 支持水平、垂直和嵌套目录。
 
@@ -742,7 +742,7 @@ function isGroupActive(group: {
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhAnchorLink` | `value` | `string` | 是 |  |
-| `XhAnchorRoot` | `scrollElement` | `() => HTMLElement \| null` |  | 判定线所依附的滚动容器取值器，默认挂在窗口上；挂载效应执行时求值。 |
+| `XhAnchorRoot` | `target` | `() => HTMLElement \| null` |  | 判定线所依附的滚动容器取值器，默认挂在窗口上；挂载效应执行时求值。 |
 | `XhAnchorRoot` | `children` | `ReactNode` |  |  |
 
 ### 状态
@@ -817,6 +817,7 @@ function isGroupActive(group: {
 | `link` | `data-xh-collection-item` | '' |
 | `link` | `data-xh-collection-size` | props.size |
 | `link-text` | `data-xh-collection-slot` | 'text' |
+| `indicator` | `data-instant` | ''（条件成立时才出现） |
 | `indicator` | `data-orientation` | props.orientation |
 | `indicator` | `data-value` | context.get('value') |
 

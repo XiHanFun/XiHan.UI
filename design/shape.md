@@ -12,8 +12,8 @@
   :notes="{
     '--xh-shape-inset': '4px · 嵌在控件里的内层：菜单项、勾选方框、字段内的清空钮、表格行选择框、色块',
     '--xh-shape-control': '4px · 控件本体：Button、Input、Select trigger、Toggle、分页按钮、kbd、tooltip、Tabs / Steps trigger',
-    '--xh-shape-surface': '8px · 成面的静态容器：Card、Alert、Panel、列表容器、Segmented 与 Tabs 的轨道',
-    '--xh-shape-overlay': '12px · 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Toast',
+    '--xh-shape-surface': '8px · 成面的静态容器：Card、Alert、Panel、列表容器、单选组 segmented 形态与 Tabs segment 的轨道',
+    '--xh-shape-overlay': '12px · 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification',
     '--xh-shape-circle': '50% · 宽高相等的圆：头像、单选圈、开关与滑杆的拇指、步骤圆点、加载环、悬浮单图标动作',
     '--xh-shape-pill': '9999px · 只两类身份：状态 chip（Badge、Tag、结果标记）与一维对象（轨道、进度条、指示条、手柄、滚动条滑块）',
   }"
@@ -53,7 +53,7 @@
 
 - 有框 / 无框只走 `variant` 这一条轴：`outline | subtle | ghost`，可按下的表面多一档 `solid`。不存在 `bordered`、`borderless`、`plain | surface` 这类私有轴。
 - `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能作 `border-block-start` 类分隔线与 `::after` 分隔伪元素。
-- raised 面（Card、Segmented 滑块、静止的滑杆拇指）必带 `--xh-border-default` 描边，影只是加成；只有可交互时允许 hover 抬升。
+- raised 面（Card、单选组 segmented 形态的滑块、静止的滑杆拇指）必带 `--xh-border-default` 描边，影只是加成；只有可交互时允许 hover 抬升。
 
 ## 控件盒：浅边、不填底
 
@@ -78,13 +78,13 @@
 | 页内持久集合的选中 | Table row、Transfer、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；Table row / Transfer 另有行首勾选框。SideNav 当前项只有行面与字色，不画指示条 |
 | 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | 透明面 + 2px 指示条 + `--xh-fg-brand-strong` + medium；Breadcrumb 当前页不可点、无指示条 |
 | 格状当前 | Pagination item、Steps indicator、Calendar 选中格 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`，不加粗 |
-| 开关型（有滑块） | Segmented、Tabs segment | 轨道 `--xh-bg-subtle` 内的白色抬起 indicator |
+| 开关型（有滑块） | 单选组 segmented 形态、Tabs segment | 轨道 `--xh-bg-subtle` 内的白色抬起 indicator |
 | 开关型（无滑块） | Toggle、ToggleGroup item、Toolbar `aria-pressed` | `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle` |
 | 展开路径 / 打开中（不是选中） | Menu / Menubar / NavigationMenu trigger、Cascader in-path、Date / Time trigger | 与所在家族 hover 同档的中性面，不用品牌色 |
 
 选中对号一律落在行尾，不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框。
 
-`--xh-bg-brand-subtle` 专属"选中 / 当前"：Calendar 的今天改成 inset 1px `--xh-fg-brand` 环 + 品牌字，Steps 已完成改成中性面 + 品牌对号。
+`--xh-bg-brand-subtle` 专属"选中 / 当前"：Calendar 的今天改成 inset 1px `--xh-fg-brand` 环 + 品牌字，Steps 已完成改成中性面 + 品牌对号；点状形态的圆点不盛内容，三态由形状区分：没走到的空心圈、走过的实心标记色、当前步实心品牌外加一圈同色环。
 
 ## 相关
 

@@ -200,17 +200,16 @@ import { XhButton, XhIcon } from "@xihan-ui/vue";
 
 ```vue
 <script setup lang="ts">
-import { LoaderIcon } from "@xihan-ui/icons";
-import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vue";
+import { XhButton, XhButtonIndicator, XhButtonLabel } from "@xihan-ui/vue";
 </script>
 
 <template>
   <XhButton loading>
-    <XhButtonIndicator><XhIcon :icon="LoaderIcon" /></XhButtonIndicator>
+    <XhButtonIndicator />
     <XhButtonLabel>提交</XhButtonLabel>
   </XhButton>
   <XhButton loading variant="subtle">
-    <XhButtonIndicator><XhIcon :icon="LoaderIcon" /></XhButtonIndicator>
+    <XhButtonIndicator />
     <XhButtonLabel>处理中</XhButtonLabel>
   </XhButton>
 </template>
@@ -219,17 +218,13 @@ import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vu
 ```html
 <xh-button loading>
   <button data-xh-part="root">
-    <span data-xh-part="indicator">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
-    </span>
+    <span data-xh-part="indicator"></span>
     <span data-xh-part="label">提交</span>
   </button>
 </xh-button>
 <xh-button loading variant="subtle">
   <button data-xh-part="root">
-    <span data-xh-part="indicator">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
-    </span>
+    <span data-xh-part="indicator"></span>
     <span data-xh-part="label">处理中</span>
   </button>
 </xh-button>
@@ -241,8 +236,7 @@ import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vu
 
 ```vue
 <script setup lang="ts">
-import { LoaderIcon } from "@xihan-ui/icons";
-import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vue";
+import { XhButton, XhButtonIndicator, XhButtonLabel } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const loading = ref(false);
@@ -256,7 +250,7 @@ async function save() {
 
 <template>
   <XhButton :loading="loading" @click="save">
-    <XhButtonIndicator><XhIcon :icon="LoaderIcon" /></XhButtonIndicator>
+    <XhButtonIndicator />
     <XhButtonLabel>保存</XhButtonLabel>
   </XhButton>
 </template>
@@ -265,9 +259,7 @@ async function save() {
 ```html
 <xh-button id="button-loading-trigger">
   <button data-xh-part="root">
-    <span data-xh-part="indicator">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
-    </span>
+    <span data-xh-part="indicator"></span>
     <span data-xh-part="label">保存</span>
   </button>
 </xh-button>
@@ -365,14 +357,14 @@ import { XhButton } from "@xihan-ui/vue";
 - 支持四种变体、六种颜色和三种尺寸。
 - 缺省变体是品牌实心 `solid`，这是按钮独有的缺省；其余触发器缺省中性。
 - 支持文字、图标、图标加文字与全宽按钮。
-- `loading` 保留焦点并阻止重复操作。
+- `loading` 保留焦点并阻止重复操作。在途时钮宽不变：进入在途一个 micro 之后，加载环在钮正中淡入、原有内容同刻淡出留位；不到一个 micro 就结束的请求什么都不闪，退出在途时两者交叉淡回。
 - `as="a"` 保留原生链接能力。
 - 应用设为 `data-material="liquid"` 时，实心按钮在细指针悬停的一刻有一道光沿描边扫过一次；光只走描边、不进面，文字对比不受影响。粗指针、减弱动效与强制色下不播。
 
 ### 组合
 
 - 使用 `prefix` 与 `suffix` 放置图标。
-- 使用 `indicator` 提供加载图形。
+- 放一个空的 `indicator`，在途时由库在钮正中画加载环；也可以往里放自己的图形，按同一节拍淡入淡出并转。
 - 使用[按钮组](./button-group)组合相关操作。
 
 ### 最佳实践
@@ -498,6 +490,8 @@ import { XhButton } from "@xihan-ui/vue";
 | `root` | `data-xh-action-size` | props.size |
 | `root` | `data-xh-action-variant` | props.variant |
 | `root` | `data-xh-ink-surface` | ''（条件成立时才出现） |
+| `indicator` | `data-loading` | ''（条件成立时才出现） |
+| `indicator` | `data-xh-loading-ring` | 'overlay' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -520,7 +514,7 @@ import { XhButton } from "@xihan-ui/vue";
 | `--xh-button-radius` | `root` | `border-radius` | `default` | `--xh-_button-radius` | button 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-button-shadow` | `root` | `box-shadow` | `default` | `none` | button 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-button-shadow-hover` | `root` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | button 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-button-spin-duration` | `indicator`<br>`root` | `animation` | `loading` | `--xh-motion-loop-spin` | button 的 indicator、root 部件 animation 覆盖槽。 |
+| `--xh-button-spin-duration` | `indicator` | `animation` | `default` | `--xh-motion-loop-spin` | button 的 indicator 部件 animation 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -529,7 +523,7 @@ import { XhButton } from "@xihan-ui/vue";
 
 可覆盖的动效槽：`--xh-button-glint-duration` · `--xh-button-spin-duration`。
 
-共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

@@ -86,7 +86,7 @@ const model = computed(() =>
 
 加粗的是必需部件。
 
-`data-scope="diff-view"`：**`root`** · `header` · `summary` · **`viewport`** · **`body`** · `row` · `line-number` · `line-content` · `change-label` · `inline-change` · `token` · `gap` · `gap-cell` · `gap-trigger` · `empty` · `truncation`
+`data-scope="diff-view"`：**`root`** · `header` · `summary` · **`viewport`** · **`body`** · `row` · `line-number` · `line-content` · `change-label` · `inline-change` · `token` · `gap` · `gap-cell` · `gap-trigger` · `empty` · `truncation` · `comment-trigger` · `comment-thread`
 
 ## 示例
 
@@ -595,6 +595,391 @@ const model = computed(() => computeTextDiff(before, after));
 </script>
 ```
 
+### 行评论
+
+commentable 在每行正文前给一颗评论钮，点它报出 comment-request；挂在 commentLines 里的行在代码下方铺出评论容器，内容由 comment 插槽写
+
+```vue
+<script setup lang="ts">
+import type { DiffViewCommentRequestDetails, DiffViewLineRef } from "@xihan-ui/headless";
+import { computeTextDiff } from "@xihan-ui/headless";
+import {
+  XhButton,
+  XhDiffViewBody,
+  XhDiffViewHeader,
+  XhDiffViewRoot,
+  XhDiffViewSummary,
+  XhDiffViewViewport,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldLabel,
+  XhTextFieldRoot,
+} from "@xihan-ui/vue";
+import { computed, ref } from "vue";
+
+const before = `export function createClient(base: string) {
+  return fetchJson(base, { timeout: 5000 })
+}`;
+const after = `export function createClient(base: string, token?: string) {
+  const headers = token ? { authorization: token } : {}
+  return fetchJson(base, { timeout: 30000, headers })
+}`;
+const model = computeTextDiff(before, after);
+
+const keyOf = (ref: DiffViewLineRef): string => `${ref.side}:${ref.line}`;
+
+// 已有的评论，一行一条
+const comments = ref(new Map([["new:3", "超时从 5 秒放到 30 秒，网关那边的超时也要一起改。"]]));
+// 正在写的那一条
+const draft = ref<DiffViewLineRef | null>(null);
+const draftText = ref("");
+
+const commentLines = computed<DiffViewLineRef[]>(() => {
+  const lines = [...comments.value.keys()].map((key) => {
+    const [side, line] = key.split(":");
+    return { side: side as DiffViewLineRef["side"], line: Number(line) };
+  });
+  if (draft.value && !comments.value.has(keyOf(draft.value)))
+    lines.push(draft.value);
+  return lines;
+});
+
+function request(details: DiffViewCommentRequestDetails): void {
+  draft.value = { side: details.side, line: details.line };
+  draftText.value = comments.value.get(keyOf(details)) ?? "";
+}
+
+function save(): void {
+  if (draft.value && draftText.value.trim() !== "")
+    comments.value = new Map(comments.value).set(keyOf(draft.value), draftText.value.trim());
+  draft.value = null;
+}
+</script>
+
+<template>
+  <XhDiffViewRoot :model="model" commentable :comment-lines="commentLines" @comment-request="request">
+    <XhDiffViewHeader>
+      <span>src/client.ts</span>
+      <XhDiffViewSummary change="added" />
+      <XhDiffViewSummary change="removed" />
+    </XhDiffViewHeader>
+    <XhDiffViewViewport>
+      <XhDiffViewBody>
+        <template #comment="{ side, line }">
+          <div v-if="draft && keyOf(draft) === keyOf({ side, line })" style="display: grid; gap: 8px">
+            <XhTextFieldRoot v-model:value="draftText">
+              <XhTextFieldLabel>{{ side === "old" ? "旧" : "新" }}第 {{ line }} 行的评论</XhTextFieldLabel>
+              <XhTextFieldControl>
+                <XhTextFieldInput />
+              </XhTextFieldControl>
+            </XhTextFieldRoot>
+            <div style="display: flex; gap: 8px">
+              <XhButton size="sm" @click="save">保存</XhButton>
+              <XhButton size="sm" variant="ghost" @click="draft = null">取消</XhButton>
+            </div>
+          </div>
+          <template v-else>
+            {{ comments.get(keyOf({ side, line })) }}
+          </template>
+        </template>
+      </XhDiffViewBody>
+    </XhDiffViewViewport>
+  </XhDiffViewRoot>
+</template>
+```
+
+```html
+<xh-diff-view id="diff-view-comments" commentable>
+  <div data-xh-part="root">
+    <div data-xh-part="header">
+      <span>src/client.ts</span>
+      <span data-xh-part="summary" data-change="added"></span>
+      <span data-xh-part="summary" data-change="removed"></span>
+    </div>
+    <div data-xh-part="viewport">
+      <div data-xh-part="body"></div>
+    </div>
+  </div>
+</xh-diff-view>
+
+<script type="module">
+  // 真实应用里这份模型来自 computeTextDiff
+  const view = document.getElementById("diff-view-comments");
+  view.model = {
+    hunks: [{
+      header: "@@ -1,3 +1,4 @@",
+      oldStart: 1,
+      oldLines: 3,
+      newStart: 1,
+      newLines: 4,
+      lines: [
+        { change: "removed", oldNumber: 1, text: "export function createClient(base: string) {" },
+        { change: "removed", oldNumber: 2, text: "  return fetchJson(base, { timeout: 5000 })" },
+        {
+          change: "added",
+          newNumber: 1,
+          text: "export function createClient(base: string, token?: string) {",
+          segments: [
+            { text: "export function createClient(base: string", changed: false },
+            { text: ", token?: string", changed: true },
+            { text: ") {", changed: false },
+          ],
+        },
+        { change: "added", newNumber: 2, text: "  const headers = token ? { authorization: token } : {}" },
+        { change: "added", newNumber: 3, text: "  return fetchJson(base, { timeout: 30000, headers })" },
+        { change: "context", oldNumber: 3, newNumber: 4, text: "}" },
+      ],
+    }],
+  };
+
+  const keyOf = ref => `${ref.side}:${ref.line}`;
+  // 已有的评论，一行一条；draft 是正在写的那一条
+  const comments = new Map([["new:3", "超时从 5 秒放到 30 秒，网关那边的超时也要一起改。"]]);
+  let draft = null;
+
+  function sync() {
+    const lines = [...comments.keys()].map((key) => {
+      const [side, line] = key.split(":");
+      return { side, line: Number(line) };
+    });
+    if (draft && !comments.has(keyOf(draft)))
+      lines.push(draft);
+    view.commentLines = lines;
+  }
+
+  // 评论容器由元素铺，内容由这里放：写着的那一行放输入框，其余放评论正文
+  function fill(element, ref) {
+    if (!draft || keyOf(draft) !== keyOf(ref)) {
+      element.textContent = comments.get(keyOf(ref)) ?? "";
+      return;
+    }
+    element.innerHTML = `
+      <div style="display: grid; gap: 8px">
+        <xh-text-field>
+          <div data-xh-part="root">
+            <label data-xh-part="label">${ref.side === "old" ? "旧" : "新"}第 ${ref.line} 行的评论</label>
+            <div data-xh-part="control"><input data-xh-part="input" /></div>
+          </div>
+        </xh-text-field>
+        <div style="display: flex; gap: 8px">
+          <xh-button size="sm"><button data-xh-part="root" data-action="save">保存</button></xh-button>
+          <xh-button size="sm" variant="ghost"><button data-xh-part="root" data-action="cancel">取消</button></xh-button>
+        </div>
+      </div>`;
+    const input = element.querySelector("input");
+    input.value = comments.get(keyOf(ref)) ?? "";
+    element.querySelector('[data-action="save"]').addEventListener("click", () => {
+      if (input.value.trim() !== "")
+        comments.set(keyOf(ref), input.value.trim());
+      draft = null;
+      refill();
+    });
+    element.querySelector('[data-action="cancel"]').addEventListener("click", () => {
+      draft = null;
+      refill();
+    });
+  }
+
+  // 已经铺着的容器不会再派发 comment-mount：开合编辑时把它们的内容重填一遍
+  function refill() {
+    sync();
+    for (const element of view.querySelectorAll('[data-part="comment-thread"]')) {
+      const [side, line] = element.dataset.value.split(":");
+      fill(element, { side, line: Number(line) });
+    }
+  }
+
+  view.addEventListener("comment-mount", event => fill(event.detail.element, event.detail));
+  view.addEventListener("comment-request", (event) => {
+    draft = { side: event.detail.side, line: event.detail.line };
+    refill();
+  });
+  sync();
+</script>
+```
+
+### 多文件
+
+parseUnifiedPatch 把一份多文件补丁拆成每个文件一份模型；逐份放进折叠面板，标题栏写路径与增删数，差异视图不再写头部，表格直接以路径为名
+
+```vue
+<script setup lang="ts">
+import { diffStats, parseUnifiedPatch } from "@xihan-ui/headless";
+import {
+  XhAccordionContent,
+  XhAccordionHeader,
+  XhAccordionIndicator,
+  XhAccordionItem,
+  XhAccordionRoot,
+  XhAccordionTrigger,
+  XhDiffViewBody,
+  XhDiffViewRoot,
+  XhDiffViewViewport,
+} from "@xihan-ui/vue";
+
+const patch = `diff --git a/src/client.ts b/src/client.ts
+--- a/src/client.ts
++++ b/src/client.ts
+@@ -1,3 +1,4 @@
+ export function createClient(base: string) {
+-  return fetchJson(base, { timeout: 5000 })
++  const headers = { accept: "application/json" }
++  return fetchJson(base, { timeout: 30000, headers })
+ }
+diff --git a/src/retry.ts b/src/retry.ts
+--- a/src/retry.ts
++++ b/src/retry.ts
+@@ -1,4 +1,4 @@
+-export const MAX_RETRIES = 3
++export const MAX_RETRIES = 5
+ export function shouldRetry(status: number) {
+   return status >= 500
+ }
+`;
+
+// git 的补丁路径带 a/ b/ 前缀，展示与作表格名字时去掉
+const files = parseUnifiedPatch(patch).map((model) => {
+  const path = (model.newPath ?? model.oldPath ?? "").replace(/^[ab]\//, "");
+  return { path, model: { ...model, oldPath: path, newPath: path }, stats: diffStats(model) };
+});
+const added = files.reduce((sum, file) => sum + file.stats.added, 0);
+const removed = files.reduce((sum, file) => sum + file.stats.removed, 0);
+</script>
+
+<template>
+  <div style="display: grid; gap: 8px; inline-size: 100%">
+    <span>{{ files.length }} 个文件，+{{ added }} −{{ removed }}</span>
+    <XhAccordionRoot multiple :default-value="files.map(file => file.path)">
+      <XhAccordionItem v-for="file in files" :key="file.path" :value="file.path">
+        <XhAccordionHeader>
+          <XhAccordionTrigger>
+            <span>{{ file.path }}</span>
+            <span style="display: flex; align-items: center; gap: 8px">
+              <span>+{{ file.stats.added }} −{{ file.stats.removed }}</span>
+              <XhAccordionIndicator />
+            </span>
+          </XhAccordionTrigger>
+        </XhAccordionHeader>
+        <XhAccordionContent>
+          <XhDiffViewRoot :model="file.model">
+            <XhDiffViewViewport>
+              <XhDiffViewBody />
+            </XhDiffViewViewport>
+          </XhDiffViewRoot>
+        </XhAccordionContent>
+      </XhAccordionItem>
+    </XhAccordionRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: 8px; inline-size: 100%">
+  <span>2 个文件，+3 −2</span>
+  <xh-accordion id="diff-view-multi-file" multiple>
+    <div data-xh-part="root">
+      <div data-xh-part="item" value="src/client.ts">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>src/client.ts</span>
+            <span style="display: flex; align-items: center; gap: 8px">
+              <span>+2 −1</span>
+              <span data-xh-part="indicator"></span>
+            </span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          <xh-diff-view data-file="src/client.ts">
+            <div data-xh-part="root">
+              <div data-xh-part="viewport"><div data-xh-part="body"></div></div>
+            </div>
+          </xh-diff-view>
+        </div>
+      </div>
+      <div data-xh-part="item" value="src/retry.ts">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>src/retry.ts</span>
+            <span style="display: flex; align-items: center; gap: 8px">
+              <span>+1 −1</span>
+              <span data-xh-part="indicator"></span>
+            </span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          <xh-diff-view data-file="src/retry.ts">
+            <div data-xh-part="root">
+              <div data-xh-part="viewport"><div data-xh-part="body"></div></div>
+            </div>
+          </xh-diff-view>
+        </div>
+      </div>
+    </div>
+  </xh-accordion>
+</div>
+
+<script type="module">
+  // 真实应用里这两份模型来自 parseUnifiedPatch(补丁)，路径已去掉 a/ b/ 前缀
+  const models = {
+    "src/client.ts": {
+      oldPath: "src/client.ts",
+      newPath: "src/client.ts",
+      hunks: [{
+        header: "@@ -1,3 +1,4 @@",
+        oldStart: 1,
+        oldLines: 3,
+        newStart: 1,
+        newLines: 4,
+        lines: [
+          { change: "context", oldNumber: 1, newNumber: 1, text: "export function createClient(base: string) {" },
+          { change: "removed", oldNumber: 2, text: "  return fetchJson(base, { timeout: 5000 })" },
+          { change: "added", newNumber: 2, text: "  const headers = { accept: \"application/json\" }" },
+          { change: "added", newNumber: 3, text: "  return fetchJson(base, { timeout: 30000, headers })" },
+          { change: "context", oldNumber: 3, newNumber: 4, text: "}" },
+        ],
+      }],
+    },
+    "src/retry.ts": {
+      oldPath: "src/retry.ts",
+      newPath: "src/retry.ts",
+      hunks: [{
+        header: "@@ -1,4 +1,4 @@",
+        oldStart: 1,
+        oldLines: 4,
+        newStart: 1,
+        newLines: 4,
+        lines: [
+          {
+            change: "removed",
+            oldNumber: 1,
+            text: "export const MAX_RETRIES = 3",
+            segments: [{ text: "export const MAX_RETRIES = ", changed: false }, { text: "3", changed: true }],
+          },
+          {
+            change: "added",
+            newNumber: 1,
+            text: "export const MAX_RETRIES = 5",
+            segments: [{ text: "export const MAX_RETRIES = ", changed: false }, { text: "5", changed: true }],
+          },
+          { change: "context", oldNumber: 2, newNumber: 2, text: "export function shouldRetry(status: number) {" },
+          { change: "context", oldNumber: 3, newNumber: 3, text: "  return status >= 500" },
+          { change: "context", oldNumber: 4, newNumber: 4, text: "}" },
+        ],
+      }],
+    },
+  };
+  for (const view of document.querySelectorAll("#diff-view-multi-file xh-diff-view"))
+    view.model = models[view.dataset.file];
+
+  // 展开集合是数组，只走 property：一开始全部展开，每次变更写回
+  const accordion = document.getElementById("diff-view-multi-file");
+  accordion.value = Object.keys(models);
+  accordion.addEventListener("value-change", (event) => {
+    accordion.value = event.detail.value;
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -618,10 +1003,12 @@ const model = computed(() => computeTextDiff(before, after));
 - 头部自带增删统计位 `summary`，增删各一个，数字取自模型，着色跟随变更类型。
 - `maxLines` 是必需的上限：AI 可能输出超大文件，新旧两侧各自超出时从尾部截断。截断行数由模型带出，`truncation` 提示条向读者说明。
 - 行号与列号一律从模型计算，不从 DOM 反推。
+- 行评论：`commentable` 在每行正文前给一颗评论钮，点它报出 `comment-request`（这一行的侧、行号、变更类型与文本）；挂在 `commentLines` 里的行在代码下方铺出 `comment-thread` 容器，内容由作者写（Vue 用 `comment` 插槽，React 用 `XhDiffViewBody` 的 `renderComment`，Web Components 监听 `comment-mount` 往容器里放）。评论落在哪一行按侧与行号记：单栏里删除行落旧侧、其余落新侧，并排按所在的那一侧。评论与代码同住一个格，表格的行序与列号不受影响。组件只管位置与入口，评论的存储、输入与多条回复都归宿主。
 
 ### 组合
 
 - 单栏与并排的切换使用[切换按钮组](./toggle-group)；增删统计已有成品位（只需要数字时可用 `diffStats(model)`）。
+- 多文件：`parseUnifiedPatch` 把一份多文件补丁拆成每个文件一份模型，逐份渲染一个差异视图。文件多时外面套[折叠面板](./accordion)（`multiple`），标题栏写路径与 `diffStats` 算出的增删数；这时差异视图不必再写头部，表格直接以路径为名。git 补丁的路径带 `a/`、`b/` 前缀，展示前自行去掉。组件不内建文件列表：列表的排序、筛选、已读标记与跳转都随产品而变。
 - 放入[工具调用](./tool-call)的详情区，展示本次调用的改动。
 - 需要对 AI 提议的编辑逐条取舍并应用时，使用[表格](./table)的选择机制承载行级取舍，单元格内放[复选框](./checkbox)，页脚的计数与“应用”使用[按钮](./button)。差异视图本身只读，不接这套交互。
 
@@ -658,9 +1045,22 @@ const model = computed(() => computeTextDiff(before, after));
 | `expandedValue` | `readonly string[]` |  | 展开的折叠格 id 集合，提供即受控。 |
 | `defaultExpandedValue` | `readonly string[]` |  |  |
 | `wrap` | `boolean` |  | 长行原地折行，不再横向滚动；默认关闭。 |
+| `labelled` | `boolean` |  | 作者渲染了 header 部件时置真，由适配器统计。为真且模型带路径时表格的可访问名指向头部； 否则直接用路径（没有路径时用 translations.diff）作名字——指向未渲染的 id 会让读屏读空。 |
+| `commentable` | `boolean` |  | 每行正文前给一颗评论钮，点它报出 comment-request，默认关闭。 一组钮只占一个 Tab 位，上下方向键在组内走；指针设备上悬停到这一行或键盘聚焦时才露出来。 |
+| `commentLines` | `readonly DiffViewLineRef[]` |  | 挂着评论的行：这些行的正文格里、代码下方铺出 comment-thread 部件，内容由作者写。 |
 | `size` | `Size` |  |  |
 | `translations` | `Partial<DiffViewTranslations>` |  |  |
 | `onExpandedValueChange` | `(details: DiffViewExpandedValueChangeDetails) => void` |  |  |
+| `onCommentRequest` | `(details: DiffViewCommentRequestDetails) => void` |  | 在某一行上点了评论钮：宿主据此打开输入框，把这一行加进 commentLines。 |
+
+### DiffViewLineRef
+
+`commentLines` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `side` | `DiffSide` | 是 |  |
+| `line` | `number` | 是 |  |
 
 ### 事件
 
@@ -668,7 +1068,9 @@ const model = computed(() => computeTextDiff(before, after));
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
+| `comment-mount` | `CustomEvent` | 新铺出一个评论容器；detail 为 `{ side, line, change, text, element }` |
 | `expanded-value-change` | `DiffViewExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `comment-request` | `DiffViewCommentRequestDetails` | 在某一行上点了评论钮；detail 为 `{ side, line, change, text }` |
 
 ### 插槽
 
@@ -676,6 +1078,8 @@ const model = computed(() => computeTextDiff(before, after));
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
+| `XhDiffViewBody` | `default` | — |  |
+| `XhDiffViewBody` | `comment` | `DiffViewCommentRequestDetails` |  |
 | `XhDiffViewRoot` | `default` | `DiffViewRootSlotProps` |  |
 | `XhDiffViewSummary` | `default` | `{ count: number }` |  |
 | `XhDiffViewTruncation` | `default` | `{ count: number }` |  |
@@ -686,6 +1090,7 @@ const model = computed(() => computeTextDiff(before, after));
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhDiffViewBody` | `renderComment` | `(details: DiffViewCommentRequestDetails) => ReactNode` |  | 挂着评论的那一行在代码下方铺出评论容器，内容由它给；入参是这一行的侧、行号、变更类型与文本。 |
 | `XhDiffViewRoot` | `children` | `SlotChildren<DiffViewRootSlotProps>` |  |  |
 | `XhDiffViewSummary` | `change` | `Extract<DiffChange, 'added' \| 'removed'>` | 是 |  |
 | `XhDiffViewSummary` | `children` | `SlotChildren<{ count: number }>` |  |  |
@@ -697,7 +1102,7 @@ const model = computed(() => computeTextDiff(before, after));
 
 **状态**：`idle`
 
-**事件**：`GAP.EXPAND` · `GAP.COLLAPSE` · `CONTROLLED.EXPANDED.SET` · `PRESS.START` · `PRESS.END`
+**事件**：`GAP.EXPAND` · `GAP.COLLAPSE` · `CONTROLLED.EXPANDED.SET` · `PRESS.START` · `PRESS.END` · `COMMENT.FOCUS`
 
 **判据**：`isExpandedControlled`
 
@@ -717,6 +1122,11 @@ const model = computed(() => computeTextDiff(before, after));
 | `isEmpty` | `boolean` | 没有任何变更。 |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `toggleGap` | `(id: string) => void` |  |
+| `commentable` | `boolean` | 开了行评论；适配器据此决定要不要在正文格里建评论钮。 |
+| `commentRefAt` | `(props: DiffViewCellProps) => DiffViewLineRef \| undefined` | 这一格的评论落在哪一行；空侧与折叠格为 undefined。 |
+| `hasComment` | `(props: DiffViewCellProps) => boolean` | 这一格挂着评论（在 commentLines 里）；适配器据此在代码下方铺出 comment-thread 部件。 |
+| `getCommentTriggerProps` | `(props: DiffViewCellProps) => T['button']` |  |
+| `getCommentThreadProps` | `(props: DiffViewCellProps) => T['element']` | 挂在这一格里的评论容器，内容由作者写。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
 | `getSummaryProps` | `(props: { change: DiffChange }) => T['element']` | 头部右侧的增删统计位，增删各一个。 |
@@ -750,6 +1160,10 @@ const model = computed(() => computeTextDiff(before, after));
 | `Tab` | 差异视图在 Tab 序列中 | 滚动容器自身可聚焦，随后方向键的横纵滚动交给浏览器，组件不接管 |
 | `Enter` / `Space` | 焦点在展开按钮上 | 展开该处折起来的上下文行；组件只接 click，按键走原生 button 的默认行为 |
 | `Enter` / `Space` | 按住展开按钮 | 按住期间该格的 gap-trigger 投影 data-pressed，与指针 :active 同一副按压面（disclosure trigger 只换面不缩放）；抬起、失焦或该格展开撤下 |
+| `Tab` | 开了行评论 | 一组评论钮只占一个 Tab 位：落在上次聚焦的那颗，它不在可见行里时落在第一颗 |
+| `Enter` / `Space` | 焦点在评论钮上 | 报出 comment-request（这一行的侧、行号、变更类型与文本），走原生 button 的激活 |
+| `ArrowDown` / `ArrowUp` | 焦点在评论钮上 | 移到下一颗 / 上一颗评论钮，到头不回绕；并排视图按先旧侧后新侧、逐行往下 |
+| `Home` / `End` | 焦点在评论钮上 | 移到第一颗 / 最后一颗评论钮 |
 
 ### ARIA
 
@@ -758,7 +1172,7 @@ const model = computed(() => computeTextDiff(before, after));
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `body` | `aria-colcount` | 2 \| 1 |
-| `body` | `aria-label` | undefined \| translations?.diff |
+| `body` | `aria-label` | undefined \| model.newPath |
 | `body` | `aria-labelledby` | `header` 部件的 id \| undefined |
 | `body` | `aria-rowcount` | rows.length |
 | `body` | `role` | 'table' |
@@ -772,12 +1186,15 @@ const model = computed(() => computeTextDiff(before, after));
 | `gap-cell` | `role` | 'cell' |
 | `gap-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `gap-trigger` | `aria-label` | expandGapLabel(hiddenCountOf(gapId)) |
+| `comment-trigger` | `aria-label` | undefined \| commentLabel(ref.line, ref.side) |
 
 - 表格语义：`role=table` 配 `role=row` 与 `role=cell`，带 `aria-rowcount` / `aria-rowindex` / `aria-colcount` / `aria-colindex`。列数只计算实际暴露的内容列，行号不算列。
+- 表格的名字：渲染了头部且模型带路径时指向头部；没渲染头部时直接用路径，没有路径时用 `translations.diff`。
 - 每一行都带一段视觉隐藏的变更类型文字，变更不只靠颜色传达。
 - 变更行还有一条非颜色线索：新增绘制实心色条，删除绘制同宽的斜纹条，灰度与高对比度下也可区分。
 - 行号对读屏隐藏，由皮肤用 `attr()` 绘制，复制差异不会带上行号。
 - 不采用表格的行级 roving：只读差异不是网格，吞掉方向键的焦点组会抢走页面滚动，读屏本身也有表格浏览模式。这是显式决定。
+- 评论钮合起来只占一个 Tab 位，上下方向键在钮之间走、Home / End 到首末；方向键只在焦点落在钮上时才被接管，视口本身的滚动不受影响。可访问名写侧与行号（`translations.commentOn`）。指针设备上钮平时透明但仍可聚焦，悬停到这一行或焦点进了视口就显出来。
 
 ## 样式参考
 
@@ -793,6 +1210,7 @@ const model = computed(() => computeTextDiff(before, after));
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-commentable` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-truncated` | ''（条件成立时才出现） |
 | `root` | `data-view` | props.view |
@@ -818,6 +1236,13 @@ const model = computed(() => computeTextDiff(before, after));
 | `gap-trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
 | `gap-trigger` | `data-xh-action-size` | props.size |
 | `gap-trigger` | `data-xh-action-variant` | 'ghost' |
+| `comment-trigger` | `data-side` | ref?.side |
+| `comment-trigger` | `data-xh-action-control` | '' |
+| `comment-trigger` | `data-xh-action-display` | 'always' |
+| `comment-trigger` | `data-xh-action-profile` | 'icon' |
+| `comment-trigger` | `data-xh-action-size` | props.size |
+| `comment-trigger` | `data-xh-action-variant` | 'ghost' |
+| `comment-thread` | `data-side` | ref?.side |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -831,7 +1256,18 @@ const model = computed(() => computeTextDiff(before, after));
 | `--xh-diff-view-bg` | `root` | `background` | `default` | `--xh-bg-surface` | diff-view 的 root 部件 background 覆盖槽。 |
 | `--xh-diff-view-border` | `root` | `border` | `default` | `--xh-border-default` | diff-view 的 root 部件 border 覆盖槽。 |
 | `--xh-diff-view-change-bar` | `row` | `background`<br>`box-shadow` | `change=added`<br>`change=removed` | `--xh-stroke-thick` | diff-view 的 row 部件 background、box-shadow 覆盖槽。 |
+| `--xh-diff-view-comment-col` | `comment-trigger`<br>`line-content`<br>`root` | `block-size`<br>`inline-size`<br>`min-block-size`<br>`min-inline-size`<br>`padding-inline-start` | `commentable`<br>`xh-action-profile=disclosure-trigger`<br>`xh-action-profile=icon` | `--xh-diff-view-line-height` | diff-view 的 comment-trigger、line-content、root 部件 block-size、inline-size、min-block-size、min-inline-size、padding-inline-start 覆盖槽。 |
 | `--xh-diff-view-comment-fg` | `token` | `color` | `kind=comment` | `--xh-fg-muted` | diff-view 的 token 部件 color 覆盖槽。 |
+| `--xh-diff-view-comment-thread-bg` | `comment-thread` | `background` | `default` | `--xh-bg-surface` | diff-view 的 comment-thread 部件 background 覆盖槽。 |
+| `--xh-diff-view-comment-thread-border` | `comment-thread` | `border` | `default` | `--xh-border-default` | diff-view 的 comment-thread 部件 border 覆盖槽。 |
+| `--xh-diff-view-comment-thread-fg` | `comment-thread` | `color` | `default` | `--xh-fg-default` | diff-view 的 comment-thread 部件 color 覆盖槽。 |
+| `--xh-diff-view-comment-thread-max-w` | `comment-thread` | `max-inline-size` | `default` | `--xh-measure-prose` | diff-view 的 comment-thread 部件 max-inline-size 覆盖槽。 |
+| `--xh-diff-view-comment-thread-my` | `comment-thread` | `margin-block` | `default` | `--xh-space-2` | diff-view 的 comment-thread 部件 margin-block 覆盖槽。 |
+| `--xh-diff-view-comment-thread-p` | `comment-thread` | `padding` | `default` | `--xh-space-3` | diff-view 的 comment-thread 部件 padding 覆盖槽。 |
+| `--xh-diff-view-comment-thread-radius` | `comment-thread` | `border-radius` | `default` | `--xh-shape-surface` | diff-view 的 comment-thread 部件 border-radius 覆盖槽。 |
+| `--xh-diff-view-comment-trigger-fg` | `comment-trigger` | `color` | `default` | `--xh-fg-muted` | diff-view 的 comment-trigger 部件 color 覆盖槽。 |
+| `--xh-diff-view-comment-trigger-icon-size` | `comment-trigger` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | diff-view 的 comment-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-diff-view-comment-trigger-radius` | `comment-trigger` | `border-radius` | `default` | `--xh-shape-control` | diff-view 的 comment-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-diff-view-divider` | `header`<br>`line-number`<br>`root` | `border-block-end`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 1024px)`<br>`default`<br>`side=new`<br>`view=split` | `--xh-border-subtle` | diff-view 的 header、line-number、root 部件 border-block-end、border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-diff-view-empty-bg` | `line-content` | `background` | `empty` | `--xh-bg-subtle` | diff-view 的 line-content 部件 background 覆盖槽。 |
 | `--xh-diff-view-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | diff-view 的 empty 部件 color 覆盖槽。 |
@@ -848,7 +1284,7 @@ const model = computed(() => computeTextDiff(before, after));
 | `--xh-diff-view-inline-change-radius` | `inline-change` | `border-radius` | `change` | `--xh-shape-inset` | diff-view 的 inline-change 部件 border-radius 覆盖槽。 |
 | `--xh-diff-view-keyword-fg` | `token` | `color` | `kind=keyword` | `--xh-syntax-keyword` | diff-view 的 token 部件 color 覆盖槽。 |
 | `--xh-diff-view-keyword-weight` | `token` | `font-weight` | `kind=keyword` | `--xh-font-weight-semibold` | diff-view 的 token 部件 font-weight 覆盖槽。 |
-| `--xh-diff-view-line-height` | `body`<br>`gap`<br>`gap-trigger`<br>`row` | `block-size`<br>`line-height`<br>`min-block-size` | `default`<br>`xh-action-profile=disclosure-trigger` | `--xh-text-code-leading` | diff-view 的 body、gap、gap-trigger、row 部件 block-size、line-height、min-block-size 覆盖槽。 |
+| `--xh-diff-view-line-height` | `body`<br>`comment-trigger`<br>`gap`<br>`gap-trigger`<br>`line-content`<br>`root`<br>`row` | `block-size`<br>`inline-size`<br>`line-height`<br>`min-block-size`<br>`min-inline-size`<br>`padding-inline-start` | `commentable`<br>`default`<br>`xh-action-profile=disclosure-trigger`<br>`xh-action-profile=icon` | `--xh-text-code-leading` | diff-view 的 body、comment-trigger、gap、gap-trigger、line-content、root、row 部件 block-size、inline-size、line-height、min-block-size、min-inline-size、padding-inline-start 覆盖槽。 |
 | `--xh-diff-view-max-h` | `viewport` | `max-block-size` | `default` | `--xh-viewport-max-h` | diff-view 的 viewport 部件 max-block-size 覆盖槽。 |
 | `--xh-diff-view-number-fg` | `line-number` | `color` | `default` | `--xh-fg-subtle` | diff-view 的 line-number 部件 color 覆盖槽。 |
 | `--xh-diff-view-number-token-fg` | `token` | `color` | `kind=number` | `--xh-syntax-number` | diff-view 的 token 部件 color 覆盖槽。 |
@@ -877,6 +1313,8 @@ const model = computed(() => computeTextDiff(before, after));
 ### 响应式
 
 皮肤按视口分档：`min-width: 1024px`。
+
+皮肤另按输入能力分档：`hover: hover`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

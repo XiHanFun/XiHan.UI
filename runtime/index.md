@@ -7,7 +7,7 @@
 | 本册 | 内容 | 对应的包 |
 | --- | --- | --- |
 | [全局配置](./config) | 应用级注入一次，语言与内建文案的默认值 | `@xihan-ui/vue` |
-| [命令式服务](./services) | `confirm()` / `toast.success()` 这类一次调用即出结果的入口 | `@xihan-ui/vue` |
+| [命令式服务](./services) | `confirm()` / `notify.success()` 这类一次调用即出结果的入口 | `@xihan-ui/vue` |
 | [流式 Markdown](./markdown) | 传入截至当前的全文，返回一组带稳定 key 的已渲染块 | `@xihan-ui/markdown` |
 | [代码着色](./code-highlight) | 零依赖的粗粒度词法着色，也是一个可替换的端口 | `@xihan-ui/code-highlight` |
 

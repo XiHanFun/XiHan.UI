@@ -6,7 +6,7 @@
 
 依赖：`react` 与 `react-dom` 是 peer 依赖，下限 19。当前版本只支持 React 19：状态机要求宿主提交完当前帧、DOM 落定之后再运行回调，`flushSync` 与 `useSyncExternalStore` 的行为是这条契约的基础。
 
-覆盖进度：136 个组件中已覆盖 136 个，与 Vue 侧一致。
+覆盖进度：140 个组件中已覆盖 141 个，与 Vue 侧一致。
 登记在 `ui/tooling/scripts/react-coverage.json`，多项门禁按它决定核对哪些组件：登记多余会核对不存在的组件，登记缺失会静默漏检，两种情况都判失败。
 
 ## 组件命名
@@ -34,6 +34,8 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 ```tsx
 <XhDialogRoot defaultOpen />;
 ```
+
+`default*` 只在首次渲染时读取，之后修改不影响当前值，只改变表单重置的落点；要换初值就换 `key`。三端的取法见[初值的读取时机](../guide/machine#初值的读取时机)。
 
 载荷与 Vue 侧的明细对象相同：`{ open }`、`{ value }`、`{ checked }`。Vue 侧额外发出裸值事件是为了 `v-model`，React 没有这层语法，只保留明细一种。
 
@@ -112,7 +114,7 @@ const { api, service } = useDialog({ open, onOpenChange });
 | `flush` | `flushSync` 强制一次提交，回调在 DOM 落定之后运行 |
 | `onMount` / `onCleanup` | `useLayoutEffect` 的挂载与清理 |
 
-`track` 是拉式的，与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源变化即通知；React 中 props 的变化不经过任何可订阅的源，它是下一次渲染函数的入参。推式实现在这里永远收不到 props 变化：85 个状态机中的 `track` 与 84 个 `watch` 块会全部静默失效且不报错。
+`track` 是拉式的，与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源变化即通知；React 中 props 的变化不经过任何可订阅的源，它是下一次渲染函数的入参。推式实现在这里永远收不到 props 变化：102 个状态机中的 `track` 与 97 个 `watch` 块会全部静默失效且不报错。
 
 `useMachine(machine, getProps, options)` 封装了它。props 传的是 getter：每次渲染读取，状态机读到的始终是当前帧的值。
 
@@ -159,12 +161,12 @@ import { useBackground, XhBackground } from "@xihan-ui/react/backgrounds";
 
 ## 命令式服务
 
-对话框、轻提示、通知、顶部进度条四个服务从组件树之外调用，自带宿主树：
+对话框、通知、顶部进度条三个服务从组件树之外调用，自带宿主树；轻提示是通知服务的 `preset: "toast"`：
 
 ```ts
-import { createToastService } from "@xihan-ui/react";
+import { createNotificationService } from "@xihan-ui/react";
 
-const toast = createToastService();
+const toast = createNotificationService({ preset: "toast" });
 toast.success("已保存");
 ```
 
@@ -174,10 +176,10 @@ toast.success("已保存");
 
 ## 声音层
 
-`@xihan-ui/react/sound` 是单独的子入口。`withToastSound` / `withDialogSound` 为上述两个命令式服务配置声音，调用点不需要修改；`useSoundOnPress` 为单个元素配置声音，返回值挂到该元素的 `ref` 上：
+`@xihan-ui/react/sound` 是单独的子入口。`withNotificationSound` / `withDialogSound` 为上述两个命令式服务配置声音，调用点不需要修改；`useSoundOnPress` 为单个元素配置声音，返回值挂到该元素的 `ref` 上：
 
 ```tsx
-import { setSoundPlayer, useSoundOnPress, withToastSound } from "@xihan-ui/react/sound";
+import { setSoundPlayer, useSoundOnPress, withNotificationSound } from "@xihan-ui/react/sound";
 ```
 
 Vue 侧由 `v-sound` 指令完成同一件事。React 没有指令介质，改为返回 ref 回调的 hook；两侧的服务包装名与选项完全同名同形。默认映射与开关见[声音层](../guide/sound#在-react-里用)。

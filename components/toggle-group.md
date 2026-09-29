@@ -385,7 +385,7 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 ### 组合
 
 - 每一项就是一个[切换按钮](./toggle)；放入[工具栏](./toolbar)与其他按钮组成一排。
-- 需要面板关联时使用[标签页](./tabs)；需要分段控件形态时使用[分段控制器](./segmented)。
+- 需要面板关联时使用[标签页](./tabs)；选的是一个随表单提交的值、要画成分段轨道时，使用[单选组](./radio-group)的 `variant="segmented"`。
 
 ### 最佳实践
 

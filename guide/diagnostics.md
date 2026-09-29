@@ -39,6 +39,8 @@ export const DIAGNOSTIC_CODES = {
   matrixCodeLogoDamage: "matrix-code.logo-damage", // 中心 logo 挖掉的码字超出纠错级别能恢复的量
   matrixCodeOptionIgnored: "matrix-code.option-ignored", // 二维码收到一个对当前码制没有意义的选项，按没给处理
   barCodeOptionIgnored: "bar-code.option-ignored", // 条形码收到一个对当前码制没有意义的选项，按没给处理
+  progressOptionIgnored: "progress.option-ignored", // 进度条收到一个对当前形态或语义没有意义、或取值不合法的选项，按没给处理
+  stepsOptionIgnored: "steps.option-ignored", // 步骤条收到一个对当前形态没有意义、或取值不合法的选项，按没给处理
   stylesMissingSkin: "styles.missing-skin", // 页面上出现了组件，但它那份皮肤没被引入
   versionMismatch: "core.version-mismatch", // 适配器与 core 的版本不一致，锁步发版被打破
   ignoredSlot: "core.ignored-slot", // 作者给了默认插槽，但该组件不渲染插槽内容
@@ -53,8 +55,23 @@ export const DIAGNOSTIC_CODES = {
   chartInvalidSlot: "chart.invalid-slot", // 固定色槽越界，或两个系列固定到同一槽
   chartStackOffsetConflict: "chart.stack-offset-conflict", // 同一堆叠组的 stackOffset 不一致
   chartLogDomain: "chart.log-domain", // 对数轴的定义域含 0 或跨越正负
+  chartScaleParam: "chart.scale-param", // 坐标轴的参数无效：幂指数、对称对数常数、时区或最小厚度
   chartBarBaseline: "chart.bar-baseline", // 柱系列所在的值轴不含 0
   chartNegativeShare: "chart.negative-share", // 占比类图表出现负值
+  chartInvalidRange: "chart.invalid-range", // 区间不合法：两端不是有限数，或下界大于上界
+  chartMeterOnly: "chart.meter-only", // Progress 在非 meter 语义下用了分段、目标、量程刻度或指示方式
+  chartAnnotationTarget: "chart.annotation-target", // 图表注释指向的系列不存在，或指向的类目不在轴上：这条注释不画
+  chartOhlcRange: "chart.ohlc-range", // K 线的开高低收对不上：最低价高于开盘或收盘，或最高价低于开盘或收盘
+  chartViolinRaw: "chart.violin-raw", // 小提琴图要原始值才画得出密度：箱线系列写了 style: 'violin'，y 却是算好的五数字段
+  chartIndicatorCount: "chart.indicator-count", // 雷达图的指标少于 3 个或多于 10 个：围不成面，或轴挤在一起读不出来
+  chartRadarOverlap: "chart.radar-overlap", // 雷达图的实体多于 3 个：多边形互相遮挡，按两两配对检查只有前 3 个色槽都合格；图照常画，按提醒报
+  chartHierarchyShape: "chart.hierarchy-shape", // 层级图的数据组不成一棵树：扁平的行缺 idField / parentField，或 id 重复、父节点不存在、多个根、成环
+  chartSankeyShape: "chart.sankey-shape", // 桑基图的流带不合法：成环、自环、端点不存在或节点重复；负值另报 chart.negative-share
+  chartGraphShape: "chart.graph-shape", // 关系图的数据不合法：节点重复、连线的端点不存在、自环，或树布局下数据不是一棵树
+  chartGraphSize: "chart.graph-size", // 关系图的节点太多：多于 500 个时交互变慢，按提醒报；多于 2000 个时不画，先聚合
+  chartColumnsOption: "chart.columns-option", // 列式数据用了它不支持的写法（堆叠、瀑布、箱线、类目轴、横向、逐点标签、刷选……），或与 svg 渲染器同写
+  chartColumnsUnsorted: "chart.columns-unsorted", // 列式数据里折线、K 线与柱共用的自变量列不是升序（追加了乱序的时间戳）
+  chartOptionConflict: "chart.option-conflict", // 两种写法不能同时用：柱的涨跌取色（trend）与瀑布；等距排列（xAxis.ordinal）与对象数组
 };
 ```
 

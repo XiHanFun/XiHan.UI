@@ -471,6 +471,121 @@ function patch(index: number, key: keyof Header, next: string) {
 </script>
 ```
 
+### 插入与任意换位
+
+insert(index) 在指定位置插入一行，后面的行往后挪；move(from, to) 一步挪到任意位置，不必逐格上移
+
+```vue
+<script setup lang="ts">
+import {
+  XhButton,
+  XhFieldArrayAddTrigger,
+  XhFieldArrayItem,
+  XhFieldArrayItemAction,
+  XhFieldArrayItemContent,
+  XhFieldArrayItemDeleteTrigger,
+  XhFieldArrayRoot,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const steps = ref<string[]>(["拉取代码", "跑构建", "发布"]);
+
+function setAt(index: number, next: string) {
+  steps.value = steps.value.map((item, i) => (i === index ? next : item));
+}
+</script>
+
+<template>
+  <XhFieldArrayRoot
+    v-slot="{ items, insert, move }"
+    v-model:value="steps"
+    movable
+    :create-item="() => ''"
+    style="max-inline-size: 480px"
+  >
+    <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
+      <XhFieldArrayItemContent>
+        <span style="inline-size: 1.5rem">{{ row.index + 1 }}.</span>
+        <input
+          class="xh-demo-control"
+          style="inline-size: 100%"
+          placeholder="这一步做什么"
+          :value="row.value"
+          @input="setAt(row.index, ($event.target as HTMLInputElement).value)"
+        >
+      </XhFieldArrayItemContent>
+      <XhFieldArrayItemAction>
+        <XhButton size="sm" variant="ghost" @click="insert(row.index + 1)">下方插入</XhButton>
+        <XhButton size="sm" variant="ghost" :disabled="row.index === 0" @click="move(row.index, 0)">置顶</XhButton>
+        <XhFieldArrayItemDeleteTrigger />
+      </XhFieldArrayItemAction>
+    </XhFieldArrayItem>
+    <XhFieldArrayAddTrigger>+ 添加一步</XhFieldArrayAddTrigger>
+  </XhFieldArrayRoot>
+</template>
+```
+
+```html
+<xh-field-array id="field-array-insert" movable>
+  <div data-xh-part="root" style="max-inline-size: 480px">
+    <button data-xh-part="add-trigger">+ 添加一步</button>
+  </div>
+</xh-field-array>
+
+<template id="field-array-insert-row">
+  <div data-xh-part="item">
+    <div data-xh-part="item-content">
+      <span style="inline-size: 1.5rem"></span>
+      <input class="xh-demo-control" style="inline-size: 100%" placeholder="这一步做什么" />
+    </div>
+    <div data-xh-part="item-action">
+      <xh-button size="sm" variant="ghost" data-action="insert"><button data-xh-part="root">下方插入</button></xh-button>
+      <xh-button size="sm" variant="ghost" data-action="top"><button data-xh-part="root">置顶</button></xh-button>
+      <button data-xh-part="item-delete-trigger"></button>
+    </div>
+  </div>
+</template>
+
+<script type="module">
+  const host = document.getElementById("field-array-insert");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
+  const template = document.getElementById("field-array-insert-row");
+
+  let steps = ["拉取代码", "跑构建", "发布"];
+
+  function render() {
+    for (const row of root.querySelectorAll('[data-xh-part="item"]')) row.remove();
+    steps.forEach((value, index) => {
+      const row = template.content.firstElementChild.cloneNode(true);
+      row.querySelector("span").textContent = `${index + 1}.`;
+      const input = row.querySelector("input");
+      input.value = value;
+      input.addEventListener("input", () => {
+        steps = steps.map((item, i) => (i === index ? input.value : item));
+        host.value = steps;
+      });
+      // 插入与换位走元素的命令式方法，结果经 value-change 回来
+      row.querySelector('[data-action="insert"]').addEventListener("click", () => host.insert(index + 1));
+      const top = row.querySelector('[data-action="top"]');
+      if (index === 0) top.setAttribute("disabled", "");
+      top.addEventListener("click", () => host.move(index, 0));
+      root.insertBefore(row, addTrigger);
+    });
+  }
+
+  host.createItem = () => "";
+  host.value = steps;
+  host.addEventListener("value-change", (event) => {
+    steps = event.detail.value;
+    host.value = steps;
+    render();
+  });
+
+  render();
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -487,6 +602,7 @@ function patch(index: number, key: keyof Header, next: string) {
 - `min` 与 `max` 限制行数。
 - `movable` 启用上移和下移操作。
 - `createItem` 设置新增行的初始值。
+- `insert(index, item?)` 在指定位置插入一行，后面的行往后挪；`move(from, to)` 一步挪到任意位置。两者与 `add` 同受 `max`、`movable` 与禁用约束。
 - 每行可以包含一个或多个字段。
 - 在 Form 中会同步迁移数组子字段的值、规则和错误。
 - 行的增删与移动有进退场：首次渲染时已有的行直接呈现，新增的行淡入，删掉的行在原处淡出，上移、下移与增删带来的换位滑到新位置。行照常按 `items` 渲染，删掉即卸载。
@@ -494,7 +610,7 @@ function patch(index: number, key: keyof Header, next: string) {
 ### 组合
 
 - 每一行放[表单字段](./field)，行内多个字段用行布局排列；整组挂在[表单](./form)下由它迁移值、规则与错误。
-- 行序也可以交给[排序](./sortable)拖拽调整；`movable` 只提供上移、下移两个按钮。
+- 行序也可以交给[排序](./sortable)拖拽调整；`movable` 自带上移、下移两个把手，跳到任意位置用 `move(from, to)` 接作者自己的按钮或拖放。
 
 ### 最佳实践
 
@@ -589,7 +705,8 @@ function patch(index: number, key: keyof Header, next: string) {
 | `atMax` | `boolean` | 已到上限：再新增会多于 max。 |
 | `canAdd` | `boolean` |  |
 | `setValue` | `(next: unknown[]) => void` | 整份替换，不受 min / max 约束。 |
-| `add` | `() => void` |  |
+| `add` | `() => void` | 在末尾追加一行，数据由 createItem 造；受 max 约束。 |
+| `insert` | `(index: number, item?: unknown) => void` | 在 index 处插入一行（夹到 0 到行数之间，等于行数即追加），原来在这个位置及之后的行往后挪；受 max 约束。 给了 item 就用它作这一行的数据，缺省（undefined）由 createItem 造。嵌在 Form 里时，后面各行的值、规则与错误随之后移。 |
 | `remove` | `(index: number) => void` |  |
 | `move` | `(from: number, to: number) => void` |  |
 | `moveUp` | `(index: number) => void` |  |
@@ -629,6 +746,8 @@ function patch(index: number, key: keyof Header, next: string) {
 ### 皮肤
 
 `@xihan-ui/styles/field-array.css` 使用 `[data-scope="field-array"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 

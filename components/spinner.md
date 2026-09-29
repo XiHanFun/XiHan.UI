@@ -316,6 +316,88 @@ import { XhSpinner } from "@xihan-ui/vue";
 </xh-spinner>
 ```
 
+### 延迟露面
+
+delay 让转圈挂载后等一段时间才出现：快请求在这之前就回来，转圈从头到尾不露面，不会闪一下
+
+```vue
+<script setup lang="ts">
+import { XhButton, XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const loading = ref(false);
+const result = ref("");
+
+// 模拟一次耗时不同的请求：转圈只在请求在途时挂着
+function query(ms: number): void {
+  loading.value = true;
+  result.value = "";
+  window.setTimeout(() => {
+    loading.value = false;
+    result.value = `用时 ${ms} ms，查询完成`;
+  }, ms);
+}
+</script>
+
+<template>
+  <div style="display: grid; gap: 12px; justify-items: start">
+    <div style="display: flex; gap: 8px">
+      <XhButton variant="outline" :disabled="loading" @click="query(200)">快请求（200 ms）</XhButton>
+      <XhButton variant="outline" :disabled="loading" @click="query(1500)">慢请求（1.5 s）</XhButton>
+    </div>
+    <XhSpinner v-if="loading" :delay="400" label="正在查询">
+      <XhSpinnerLabel />
+    </XhSpinner>
+    <span v-else>{{ result }}</span>
+  </div>
+</template>
+```
+
+```html
+<div id="spinner-delay" style="display: grid; gap: 12px; justify-items: start">
+  <div style="display: flex; gap: 8px">
+    <xh-button variant="outline" data-ms="200">
+      <button data-xh-part="root">快请求（200 ms）</button>
+    </xh-button>
+    <xh-button variant="outline" data-ms="1500">
+      <button data-xh-part="root">慢请求（1.5 s）</button>
+    </xh-button>
+  </div>
+  <span data-slot="result"></span>
+</div>
+
+<!-- delay 从元素连上文档那一刻算起：每次请求现挂一个，回来就撤掉 -->
+<template id="spinner-delay-template">
+  <xh-spinner delay="400" label="正在查询">
+    <span data-xh-part="root">
+      <span data-xh-part="label"></span>
+    </span>
+  </xh-spinner>
+</template>
+
+<script type="module">
+  const demo = document.getElementById("spinner-delay");
+  const template = document.getElementById("spinner-delay-template");
+  const result = demo.querySelector('[data-slot="result"]');
+  const buttons = [...demo.querySelectorAll("xh-button")];
+
+  for (const button of buttons) {
+    button.addEventListener("click", () => {
+      const ms = Number(button.dataset.ms);
+      const spinner = document.importNode(template.content.firstElementChild, true);
+      for (const each of buttons) each.disabled = true;
+      result.textContent = "";
+      result.before(spinner);
+      window.setTimeout(() => {
+        spinner.remove();
+        for (const each of buttons) each.disabled = false;
+        result.textContent = `用时 ${ms} ms，查询完成`;
+      }, ms);
+    });
+  }
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -334,6 +416,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 - 可以配可见文案，也可以只通过 `translations` 提供给读屏。
 - 可以与宿主遮罩组合，盖住等待中的内容。
 - 默认使用渐隐弧；也可显式选择整圈轨道或三点。
+- `delay` 让转圈挂载后等一段时间才露面：请求在这之前回来、转圈被卸掉时它从头到尾不出现，快请求不再闪一下。等待期间整块藏起但保留位置，读屏也读不到。
 
 ### 组合
 
@@ -357,18 +440,31 @@ import { XhSpinner } from "@xihan-ui/vue";
 | --- | --- |
 | 自定义元素 | `<xh-spinner>` |
 | Vue 组件 | `XhSpinner` `XhSpinnerLabel` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `spinnerMachine` |
 | 皮肤 | `@xihan-ui/styles/spinner.css` |
 
 ### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `delay` | `number` |  | 挂载后等多少毫秒才露面，默认 0 即刻露面。等待期间 root 投影 data-state="hidden"， 皮肤按它把整块藏起、仍占着位置，读屏也读不到；加载在这之前结束、转圈被卸掉时它从头到尾不出现。 露面之后不再回到等待。 |
 | `label` | `string` |  | 该处的可及名，写在 root 上。 label 部件显示的应当是同一段文案：aria-label 会覆盖节点中的文字，两者不一致时 读屏朗读的与屏幕上看到的不匹配。 |
 | `size` | `Size` |  | 直径档位，默认 md；默认档不输出 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 |
 | `translations` | `Partial<SpinnerTranslations>` |  |  |
 | `variant` | `SpinnerVariant` |  | 形态，默认 arc。 |
+
+### 状态
+
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'visible' \| 'hidden' |
+
+以下名称仅用于内部状态机。
+
+**状态**：`waiting` · `visible`
 
 ### connect API
 
@@ -377,6 +473,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `label` | `string` | 解析后的文案：label → translations.label → 内置默认值。 |
+| `visible` | `boolean` | 已经露面；等待 delay 期间为 false。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 
@@ -413,6 +510,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
+| `root` | `data-state` | 'visible' \| 'hidden' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 
@@ -429,7 +527,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 | `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | spinner 的 label 部件 color 覆盖槽。 |
 | `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-secondary-size` | spinner 的 label 部件 font-size 覆盖槽。 |
 | `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-circle` | spinner 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-lg` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
 | `--xh-spinner-track` | `root` | `border` | `default` | `--xh-border-default` | spinner 的 root 部件 border 覆盖槽。 |
 <!-- xh-component-tokens:end -->
@@ -443,3 +541,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 关键帧 `xh-spinner-dots` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+### RTL
+
+只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。

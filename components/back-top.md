@@ -324,6 +324,52 @@ const variants = [
 </div>
 ```
 
+### 放进浮动按钮
+
+作为浮动按钮展开列表里的一项，根按列表排布
+
+```vue
+<script setup lang="ts">
+import { MessageCircleIcon } from "@xihan-ui/icons";
+import {
+  XhBackTopRoot,
+  XhBackTopTrigger,
+  XhFloatButtonList,
+  XhFloatButtonRoot,
+  XhFloatButtonTrigger,
+  XhIcon,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhFloatButtonRoot style="position: static" default-open>
+    <XhFloatButtonTrigger />
+    <XhFloatButtonList>
+      <XhBackTopRoot style="position: static">
+        <XhBackTopTrigger />
+      </XhBackTopRoot>
+      <button type="button" aria-label="消息"><XhIcon :icon="MessageCircleIcon" /></button>
+    </XhFloatButtonList>
+  </XhFloatButtonRoot>
+</template>
+```
+
+```html
+<xh-float-button default-open>
+  <div data-xh-part="root" style="position: static">
+    <button data-xh-part="trigger"></button>
+    <div data-xh-part="list">
+      <xh-back-top style="display: contents">
+        <div data-xh-part="root" style="position: static">
+          <button data-xh-part="trigger"></button>
+        </div>
+      </xh-back-top>
+      <button type="button" aria-label="消息"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.91 19.2A8.5 8.5 0 1 0 4.51 14.41L3 20.5Z"/></svg></button>
+    </div>
+  </div>
+</xh-float-button>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -345,6 +391,7 @@ const variants = [
 ### 组合
 
 - 指定 `target` 后监听并滚动该容器；未指定时作用于页面。
+- 可以作为[浮动按钮](./float-button)展开列表里的一项：根写 `position: static`，由列表排布，钮与列表里的其他动作同一身量；滚过阈值才出现在列表里。Web Components 的宿主元素写 `display: contents`，让根直接成为列表的一项。
 
 ### 最佳实践
 
@@ -457,6 +504,8 @@ const variants = [
 ### 皮肤
 
 `@xihan-ui/styles/back-top.css` 使用 `[data-scope="back-top"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 

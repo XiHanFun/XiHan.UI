@@ -551,11 +551,10 @@ const log = ref("（还没发过）");
   <div style="display: grid; gap: 12px">
     <XhPromptInputRoot
       v-slot="{ value, setValue }"
-      default-value="输入框两侧各放了一颗自己的按钮"
+      default-value="框里放了自己的计数与清空钮"
       :translations="{ input: '给助手写点什么' }"
       @submit="log = `提交：${$event.value}`"
     >
-      <XhButton variant="ghost" size="sm">附件</XhButton>
       <!-- maxlength 是原生属性，直接落到 textarea 上 -->
       <XhPromptInputInput :maxlength="max" rows="1" placeholder="最多 40 个字" />
       <span style="font-size: 13px; white-space: nowrap">{{ value.length }} / {{ max }}</span>
@@ -574,9 +573,6 @@ const log = ref("（还没发过）");
 <div style="display: grid; gap: 12px">
   <xh-prompt-input id="prompt-input-extras">
     <div data-xh-part="root">
-      <xh-button variant="ghost" size="sm">
-        <button data-xh-part="root">附件</button>
-      </xh-button>
       <!-- maxlength 是原生属性，直接写在 textarea 上 -->
       <textarea
         data-xh-part="input"
@@ -618,7 +614,7 @@ const log = ref("（还没发过）");
     log.textContent = `提交：${event.detail.value}`;
   });
 
-  setValue("输入框两侧各放了一颗自己的按钮");
+  setValue("框里放了自己的计数与清空钮");
 </script>
 ```
 
@@ -951,6 +947,150 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 </script>
 ```
 
+### 附件
+
+选中的文件以可关闭的标签排在输入行下方，发送时与正文一起交给宿主；文件选择器是宿主自己的原生 input，框里只放触发它的按钮
+
+```vue
+<script setup lang="ts">
+import {
+  XhButton,
+  XhPromptInputControl,
+  XhPromptInputInput,
+  XhPromptInputRoot,
+  XhPromptInputSubmitTrigger,
+  XhTagCloseTrigger,
+  XhTagLabel,
+  XhTagRoot,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+interface Attachment {
+  id: number;
+  name: string;
+}
+
+const attachments = ref<Attachment[]>([]);
+const picker = ref<HTMLInputElement | null>(null);
+const log = ref("（还没发过）");
+let seq = 0;
+
+function pick(event: Event) {
+  const input = event.target as HTMLInputElement;
+  for (const file of input.files ?? [])
+    attachments.value.push({ id: ++seq, name: file.name });
+  // 清掉选择器的值：删掉的文件还能再选一次
+  input.value = "";
+}
+
+function send(value: string) {
+  const names = attachments.value.map(item => item.name);
+  log.value = names.length ? `提交：${value}（附件：${names.join("、")}）` : `提交：${value}`;
+  attachments.value = [];
+}
+</script>
+
+<template>
+  <div style="display: grid; gap: 12px">
+    <XhPromptInputRoot :translations="{ input: '给助手写点什么' }" @submit="send($event.value)">
+      <XhPromptInputControl>
+        <XhPromptInputInput rows="1" placeholder="写点什么，可以附上文件…" />
+        <XhPromptInputSubmitTrigger />
+      </XhPromptInputControl>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+        <input ref="picker" type="file" multiple hidden @change="pick">
+        <XhButton variant="ghost" size="sm" @click="picker?.click()">
+          添加附件
+        </XhButton>
+        <XhTagRoot
+          v-for="item in attachments"
+          :key="item.id"
+          variant="subtle"
+          closable
+          :open="true"
+          :translations="{ close: `移除 ${item.name}` }"
+          @open-change="attachments = attachments.filter(other => other.id !== item.id)"
+        >
+          <XhTagLabel>{{ item.name }}</XhTagLabel>
+          <XhTagCloseTrigger />
+        </XhTagRoot>
+      </div>
+    </XhPromptInputRoot>
+    <span>{{ log }}</span>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: 12px">
+  <xh-prompt-input id="prompt-input-attachments">
+    <div data-xh-part="root">
+      <div data-xh-part="control">
+        <textarea data-xh-part="input" rows="1" placeholder="写点什么，可以附上文件…"></textarea>
+        <button data-xh-part="submit-trigger"></button>
+      </div>
+      <div
+        id="prompt-input-attachments-list"
+        style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px"
+      >
+        <input id="prompt-input-attachments-picker" type="file" multiple hidden />
+        <xh-button id="prompt-input-attachments-add" variant="ghost" size="sm">
+          <button data-xh-part="root">添加附件</button>
+        </xh-button>
+      </div>
+    </div>
+  </xh-prompt-input>
+  <span id="prompt-input-attachments-log">（还没发过）</span>
+</div>
+
+<script type="module">
+  const input = document.getElementById("prompt-input-attachments");
+  const list = document.getElementById("prompt-input-attachments-list");
+  const picker = document.getElementById("prompt-input-attachments-picker");
+  const add = document.getElementById("prompt-input-attachments-add");
+  const log = document.getElementById("prompt-input-attachments-log");
+  input.translations = { input: "给助手写点什么" };
+
+  // 每个选中的文件铺一枚可关闭的标签；open 受控，收起意图回来时由宿主把它摘掉
+  function attach(name) {
+    const tag = document.createElement("xh-tag");
+    tag.setAttribute("variant", "subtle");
+    tag.setAttribute("closable", "");
+    tag.setAttribute("open", "");
+    tag.dataset.name = name;
+    const root = document.createElement("span");
+    root.dataset.xhPart = "root";
+    const label = document.createElement("span");
+    label.dataset.xhPart = "label";
+    label.textContent = name;
+    const close = document.createElement("button");
+    close.dataset.xhPart = "close-trigger";
+    root.append(label, close);
+    tag.append(root);
+    list.append(tag);
+    tag.translations = { close: `移除 ${name}` };
+    tag.addEventListener("open-change", () => tag.remove());
+  }
+
+  add.addEventListener("click", () => picker.click());
+  picker.addEventListener("change", () => {
+    for (const file of picker.files) attach(file.name);
+    // 清掉选择器的值：删掉的文件还能再选一次
+    picker.value = "";
+  });
+
+  // submit 与原生表单提交同名，故不冒泡，直接在元素上监听
+  input.addEventListener("submit", (event) => {
+    const tags = [...list.querySelectorAll("xh-tag")];
+    const names = tags.map((tag) => tag.dataset.name);
+    log.textContent = names.length
+      ? `提交：${event.detail.value}（附件：${names.join("、")}）`
+      : `提交：${event.detail.value}`;
+    for (const tag of tags) tag.remove();
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -961,7 +1101,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 ### 何时不用
 
 - 只是表单中的多行文本域时，使用[文本字段](./text-field)配[表单字段](./field)。
-- 需要 @提及或斜杠命令时，整体使用[提及](./mention)作为输入器，见下方的组合。
+- 需要 @ 提及或斜杠命令时，用[提及](./mention)的多行形态作输入框：本组件不内置触发符候选，见下方的组合。
 
 ### 特性
 
@@ -979,6 +1119,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 - 附件使用[文件上传](./file-upload)：它已覆盖 accept、大小校验、拖拽投放与逐条删除；有附件而正文为空时把 `allowEmptySubmit` 置真。附件条放在输入行上方，动作行放在下方，两者都是 root 的直接子节点，与输入行并列。
 - 粘贴上传由作者在输入框上自行挂 `onPaste`，处理器会与组件的处理器链式组合。
 - 模型选择器使用[选择器](./select)或[组合框](./combobox)，工具开关使用[切换按钮组](./toggle-group)，它们连同自己的容器一起放进输入行下方。
+- @ 提及与斜杠命令用[提及](./mention)的多行形态（`input` 部件写 `as="textarea"`，前缀写 `['@', '/']`）：触发符、候选浮层与插入由它负责，插入的引用整条删除。这种写法里输入框归提及，发送钮用[按钮](./button)；Enter 提交挂在提及输入框的 `keydown` 上，先看 `defaultPrevented`——候选打开时提交候选的那次 Enter 已被提及吞掉。
 - 与[消息流](./message-feed)组合即是最小对话界面。
 
 ### 最佳实践
@@ -1121,6 +1262,8 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 
 `@xihan-ui/styles/prompt-input.css` 使用 `[data-scope="prompt-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -1137,6 +1280,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `input` | `data-state` | 'empty' \| 'editing' \| 'disabled' |
 | `input` | `data-xh-field-input` | '' |
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `submit-trigger` | `data-instant` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-mode` | 'stop' \| 'send' |
 | `submit-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-xh-action-control` | '' |
@@ -1191,9 +1335,9 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-`border-radius` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`border-radius` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

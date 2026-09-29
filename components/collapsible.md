@@ -508,6 +508,106 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 </div>
 ```
 
+### 内容懒挂载
+
+lazyMount 让内容第一次展开时才挂载，之后收起只隐藏；再加 unmountOnExit 即只在展开期间存在，收起动画播完就卸载，里面输入的内容再展开时已清空
+
+```vue
+<script setup lang="ts">
+import {
+  XhCollapsibleContent,
+  XhCollapsibleIndicator,
+  XhCollapsibleRoot,
+  XhCollapsibleTrigger,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldLabel,
+  XhTextFieldRoot,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <div style="width: 100%; max-width: 420px; display: grid; gap: 12px">
+    <XhCollapsibleRoot lazy-mount>
+      <XhCollapsibleTrigger>
+        第一次展开才挂载
+        <XhCollapsibleIndicator />
+      </XhCollapsibleTrigger>
+      <XhCollapsibleContent>
+        <XhTextFieldRoot placeholder="输入后收起再展开，内容还在">
+          <XhTextFieldLabel>备注</XhTextFieldLabel>
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
+      </XhCollapsibleContent>
+    </XhCollapsibleRoot>
+
+    <XhCollapsibleRoot lazy-mount unmount-on-exit>
+      <XhCollapsibleTrigger>
+        只在展开期间存在
+        <XhCollapsibleIndicator />
+      </XhCollapsibleTrigger>
+      <XhCollapsibleContent>
+        <XhTextFieldRoot placeholder="输入后收起再展开，内容已清空">
+          <XhTextFieldLabel>草稿</XhTextFieldLabel>
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
+      </XhCollapsibleContent>
+    </XhCollapsibleRoot>
+  </div>
+</template>
+```
+
+```html
+<!-- 自定义元素的内容写在 content 里的 <template> 中：解析时不实例化，第一次展开才克隆出来，卸载后再展开重新克隆 -->
+<div style="width: 100%; max-width: 420px; display: grid; gap: 12px">
+  <xh-collapsible lazy-mount>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">
+        第一次展开才挂载
+        <span data-xh-part="indicator"></span>
+      </button>
+      <div data-xh-part="content">
+        <template>
+          <xh-text-field placeholder="输入后收起再展开，内容还在">
+            <div data-xh-part="root">
+              <label data-xh-part="label">备注</label>
+              <div data-xh-part="control">
+                <input data-xh-part="input" />
+              </div>
+            </div>
+          </xh-text-field>
+        </template>
+      </div>
+    </div>
+  </xh-collapsible>
+
+  <xh-collapsible lazy-mount unmount-on-exit>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">
+        只在展开期间存在
+        <span data-xh-part="indicator"></span>
+      </button>
+      <div data-xh-part="content">
+        <template>
+          <xh-text-field placeholder="输入后收起再展开，内容已清空">
+            <div data-xh-part="root">
+              <label data-xh-part="label">草稿</label>
+              <div data-xh-part="control">
+                <input data-xh-part="input" />
+              </div>
+            </div>
+          </xh-text-field>
+        </template>
+      </div>
+    </div>
+  </xh-collapsible>
+</div>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -524,6 +624,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 - 触发器与内容通过 `aria-controls` 与 `aria-expanded` 关联。
 - 展开动画由皮肤提供，内容高度由组件测量。
 - 指示符部件留空时由皮肤绘制箭头，放入图形时以作者提供的为准，两种情形的转向都由皮肤处理。
+- 内容缺省随组件一起挂载、收起只隐藏；`lazyMount` 让它第一次展开才挂载，`unmountOnExit` 让它在收起动画播完后卸载、再展开时重新挂载。content 节点本身始终在场，`aria-controls` 不会指空。Web Components 里把内容写进 content 里的一个 `<template>`，解析时不实例化，挂载时克隆、卸载时丢弃；没写模板时卸载只是把节点暂时摘下、挂载时原样放回。
 
 ### 组合
 
@@ -560,6 +661,8 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
+| `lazyMount` | `boolean` |  | 内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。 收起的内容很重（图表、长列表、iframe）且多数用户不会展开时打开它。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载内容，再展开时重新挂载，默认 false。 内容里的输入与滚动位置随之丢失；与 lazyMount 一起用即「只在展开期间存在」。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### 事件
@@ -611,6 +714,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `getTriggerProps` | `() => T['button']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
+| `isContentMounted` | `(present: boolean) => boolean` | content 里的内容此刻该不该挂载。`present` 是适配器的退场闸门：展开中或收起动画还没播完为真。 未打开 lazyMount / unmountOnExit 时恒为真；content 节点本身始终在场，只有它的内容按此挂卸。 |
 
 ## 无障碍
 
@@ -638,6 +742,8 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 ### 皮肤
 
 `@xihan-ui/styles/collapsible.css` 使用 `[data-scope="collapsible"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 

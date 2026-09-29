@@ -331,6 +331,118 @@ import {
 </xh-listbox>
 ```
 
+### 集合虚拟化
+
+collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
+
+```vue
+<script setup lang="ts">
+import {
+  XhListboxContent,
+  XhListboxItem,
+  XhListboxItemIndicator,
+  XhListboxItemText,
+  XhListboxLabel,
+  XhListboxRoot,
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
+} from "@xihan-ui/vue";
+
+const items = Array.from({ length: 1000 }, (_, index) => ({
+  value: `member-${index + 1}`,
+  label: `成员 ${index + 1}`,
+}));
+</script>
+
+<template>
+  <XhVirtualizerRoot
+    v-slot="{ virtualItems, collectionVirtualizer }"
+    :count="items.length"
+    :estimate-size="36"
+    :viewport-tab-index="-1"
+    style="inline-size: min(100%, 320px)"
+  >
+    <XhListboxRoot :collection="items" :virtualizer="collectionVirtualizer">
+      <XhListboxLabel>团队成员</XhListboxLabel>
+      <XhListboxContent style="overflow: visible; max-block-size: none">
+        <XhVirtualizerViewport style="block-size: 240px">
+          <XhVirtualizerContent>
+            <XhVirtualizerItem
+              v-for="virtualItem in virtualItems"
+              :key="virtualItem.key"
+              :value="virtualItem.index"
+              style="block-size: 36px"
+            >
+              <XhListboxItem :value="items[virtualItem.index].value">
+                <XhListboxItemText>{{ items[virtualItem.index].label }}</XhListboxItemText>
+                <XhListboxItemIndicator />
+              </XhListboxItem>
+            </XhVirtualizerItem>
+          </XhVirtualizerContent>
+        </XhVirtualizerViewport>
+      </XhListboxContent>
+    </XhListboxRoot>
+  </XhVirtualizerRoot>
+</template>
+```
+
+```html
+<xh-listbox id="listbox-virtualized">
+  <div data-xh-part="root">
+    <span data-xh-part="label">团队成员</span>
+    <div data-xh-part="content" style="overflow: visible; max-block-size: none">
+      <xh-virtualizer id="listbox-virtualizer" count="1000" estimate-size="36" viewport-tab-index="-1">
+        <div data-xh-part="root">
+          <div data-xh-part="viewport" style="block-size: 240px">
+            <div data-xh-part="content"></div>
+          </div>
+        </div>
+      </xh-virtualizer>
+    </div>
+  </div>
+</xh-listbox>
+
+<script type="module">
+  const listbox = document.getElementById("listbox-virtualized");
+  const virtualizer = document.getElementById("listbox-virtualizer");
+  const content = virtualizer.querySelector('[data-xh-part="content"]');
+  const items = Array.from({ length: 1000 }, (_, index) => ({
+    value: `member-${index + 1}`,
+    label: `成员 ${index + 1}`,
+  }));
+  listbox.collection = items;
+
+  function render(virtualItems) {
+    content.replaceChildren(...virtualItems.map((virtualItem) => {
+      const shell = document.createElement("div");
+      shell.dataset.xhPart = "item";
+      shell.setAttribute("value", virtualItem.index);
+      shell.style.blockSize = "36px";
+      const option = document.createElement("div");
+      option.dataset.xhPart = "item";
+      option.dataset.xhPartOwner = "listbox";
+      option.setAttribute("value", items[virtualItem.index].value);
+      const text = document.createElement("span");
+      text.dataset.xhPart = "item-text";
+      text.textContent = items[virtualItem.index].label;
+      const indicator = document.createElement("span");
+      indicator.dataset.xhPart = "item-indicator";
+      option.append(text, indicator);
+      shell.append(option);
+      return shell;
+    }));
+    virtualizer.requestUpdate();
+    listbox.virtualizer = virtualizer.collectionVirtualizer;
+    listbox.requestUpdate();
+  }
+
+  render(virtualizer.virtualItems);
+  virtualizer.addEventListener("range-change", event => render(event.detail.virtualItems));
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -352,11 +464,13 @@ import {
 - 条目可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 提供空态、加载态与加载更多部件。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
 ### 组合
 
 - 收进浮层即是[选择器](./select)与[组合框](./combobox)的候选列表；常驻时直接铺在面板内。
 - 长列表接入[虚拟滚动](./virtualizer)只渲染可视区；两侧搬运的场景使用[穿梭框](./transfer)。
+- 接入 Virtualizer 时 collection 仍须是完整集合；方向键、连打检索、全选与区间选择不会退化成只处理当前 DOM 窗口。
 
 ### 最佳实践
 
@@ -387,6 +501,7 @@ import {
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `ListboxNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 |
 | `value` | `string \| string[]` |  | 选中值，提供即受控；单选可写为裸串，内部归一为数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `selectionMode` | `ListboxSelectionMode` |  | 选择模式，默认 single。 |
@@ -551,6 +666,8 @@ import {
 
 `@xihan-ui/styles/listbox.css` 使用 `[data-scope="listbox"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -569,6 +686,7 @@ import {
 | `content` | `data-invalid` | ''（条件成立时才出现） |
 | `content` | `data-orientation` | props.orientation |
 | `content` | `data-readonly` | ''（条件成立时才出现） |
+| `content` | `data-xh-virtualized` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
@@ -601,6 +719,8 @@ import {
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
 | `empty` | `data-disabled` | ''（条件成立时才出现） |
 | `loading` | `data-disabled` | ''（条件成立时才出现） |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
+| `loading` | `data-xh-loading-ring` | '' |
 | `load-more-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -626,13 +746,13 @@ import {
 | `--xh-listbox-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | listbox 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-listbox-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | listbox 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-listbox-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | listbox 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-listbox-empty-fg` | `empty` | `color` | `default` | `--xh-fg-subtle` | listbox 的 empty 部件 color 覆盖槽。 |
+| `--xh-listbox-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | listbox 的 empty 部件 color 覆盖槽。 |
 | `--xh-listbox-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_listbox-font-size` | listbox 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-listbox-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-listbox-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | listbox 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-listbox-gap` | `root` | `gap` | `default` | `--xh-space-2` | listbox 的 root 部件 gap 覆盖槽。 |
 | `--xh-listbox-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | listbox 的 group 部件 gap 覆盖槽。 |
-| `--xh-listbox-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-subtle` | listbox 的 group-label 部件 color 覆盖槽。 |
+| `--xh-listbox-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-muted` | listbox 的 group-label 部件 color 覆盖槽。 |
 | `--xh-listbox-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | listbox 的 group-label 部件 font-size 覆盖槽。 |
 | `--xh-listbox-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | listbox 的 group-label 部件 font-weight 覆盖槽。 |
 | `--xh-listbox-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 group-label 部件 padding-inline 覆盖槽。 |
@@ -652,7 +772,7 @@ import {
 | `--xh-listbox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | listbox 的 item 部件 line-height 覆盖槽。 |
 | `--xh-listbox-item-px` | `item` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-listbox-item-py` | `item` | `padding-block` | `default` | `--xh-_listbox-item-py` | listbox 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-listbox-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | listbox 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-listbox-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | listbox 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-listbox-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | listbox 的 label 部件 color 覆盖槽。 |
 | `--xh-listbox-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | listbox 的 label 部件 font-size 覆盖槽。 |
 | `--xh-listbox-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | listbox 的 label 部件 font-weight 覆盖槽。 |
@@ -663,7 +783,7 @@ import {
 | `--xh-listbox-load-more-trigger-px` | `load-more-trigger` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 load-more-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-listbox-load-more-trigger-py` | `load-more-trigger` | `padding-block` | `xh-action-profile=row` | `--xh-_listbox-item-py` | listbox 的 load-more-trigger 部件 padding-block 覆盖槽。 |
 | `--xh-listbox-load-more-trigger-radius` | `load-more-trigger` | `border-radius` | `default` | `--xh-shape-control` | listbox 的 load-more-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-listbox-loading-fg` | `loading` | `color` | `default` | `--xh-fg-subtle` | listbox 的 loading 部件 color 覆盖槽。 |
+| `--xh-listbox-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | listbox 的 loading 部件 color 覆盖槽。 |
 | `--xh-listbox-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_listbox-font-size` | listbox 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-listbox-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-listbox-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | listbox 的 loading 部件 padding-block 覆盖槽。 |
@@ -673,7 +793,9 @@ import {
 
 动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 

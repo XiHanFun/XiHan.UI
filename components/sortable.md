@@ -2,7 +2,7 @@
 
 # Sortable 排序
 
-通过拖拽或键盘重新排列内容。
+通过拖拽或键盘重新排列内容，或在一组列表之间移动条目。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/sortable" target="_blank" rel="noreferrer">Headless</a>
@@ -239,17 +239,139 @@ const tones = ["neutral", "info", "success", "warning"] as const;
 </script>
 ```
 
+### 看板
+
+在几列之间移动任务
+
+```vue
+<script setup lang="ts">
+import type { SortableTransferDetails } from "@xihan-ui/headless";
+import { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from "@xihan-ui/vue";
+import { reactive } from "vue";
+
+const columns = [
+  { id: "todo", title: "待办" },
+  { id: "doing", title: "进行中" },
+  { id: "done", title: "已完成" },
+];
+const lists = reactive<Record<string, string[]>>({ todo: ["调研", "原型", "评审"], doing: ["接口", "联调"], done: ["立项"] });
+const tones: Record<string, string> = { 调研: "brand", 原型: "info", 评审: "warning", 接口: "success", 联调: "danger", 立项: "neutral" };
+
+// 落进别的列时源列表发一次 transfer：两列的新顺序都算好了，照着写回即可
+function onTransfer(detail: SortableTransferDetails): void {
+  lists[detail.fromList] = detail.fromIds;
+  lists[detail.toList] = detail.toIds;
+}
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--xh-space-4)">
+    <section
+      v-for="column in columns"
+      :key="column.id"
+      style="flex: 1 1 160px; display: grid; gap: var(--xh-space-2); padding: var(--xh-space-3); border: var(--xh-stroke-thin) solid var(--xh-border-default); border-radius: var(--xh-shape-surface)"
+    >
+      <h4 :id="`sortable-board-${column.id}`" style="margin: 0; font-size: var(--xh-text-label-size)">{{ column.title }}</h4>
+      <XhSortableRoot
+        v-model:ids="lists[column.id]"
+        group="board"
+        :list-id="column.id"
+        :aria-labelledby="`sortable-board-${column.id}`"
+        style="min-block-size: var(--xh-control-h-lg)"
+        @transfer="onTransfer"
+      >
+        <XhSortableItem
+          v-for="id in lists[column.id]"
+          :key="id"
+          :item-id="id"
+          :aria-label="id"
+          style="display: flex; align-items: center; gap: var(--xh-space-2); padding: var(--xh-space-2) var(--xh-space-3); border-radius: var(--xh-shape-control); background: var(--xh-bg-subtle)"
+        >
+          <XhSortableItemDragTrigger :item-id="id" />
+          <span data-demo-block="line" :data-tone="tones[id]" />
+        </XhSortableItem>
+        <XhSortableDropIndicator />
+        <XhSortableLiveRegion />
+      </XhSortableRoot>
+    </section>
+  </div>
+</template>
+```
+
+```html
+<style>
+  #sortable-board { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--xh-space-4); }
+  #sortable-board section { flex: 1 1 160px; display: grid; gap: var(--xh-space-2); padding: var(--xh-space-3); border: var(--xh-stroke-thin) solid var(--xh-border-default); border-radius: var(--xh-shape-surface); }
+  #sortable-board h4 { margin: 0; font-size: var(--xh-text-label-size); }
+  #sortable-board [data-xh-part="root"] { min-block-size: var(--xh-control-h-lg); }
+  #sortable-board [data-xh-part="item"] { display: flex; align-items: center; gap: var(--xh-space-2); padding: var(--xh-space-2) var(--xh-space-3); border-radius: var(--xh-shape-control); background: var(--xh-bg-subtle); }
+</style>
+<div id="sortable-board">
+  <section>
+    <h4 id="sortable-board-todo">待办</h4>
+    <xh-sortable ids="调研,原型,评审" group="board" list-id="todo" style="display: contents">
+      <div data-xh-part="root" aria-labelledby="sortable-board-todo">
+        <div data-xh-part="item" item-id="调研" aria-label="调研"><button data-xh-part="item-drag-trigger" item-id="调研"></button><span data-demo-block="line" data-tone="brand"></span></div>
+        <div data-xh-part="item" item-id="原型" aria-label="原型"><button data-xh-part="item-drag-trigger" item-id="原型"></button><span data-demo-block="line" data-tone="info"></span></div>
+        <div data-xh-part="item" item-id="评审" aria-label="评审"><button data-xh-part="item-drag-trigger" item-id="评审"></button><span data-demo-block="line" data-tone="warning"></span></div>
+        <div data-xh-part="drop-indicator"></div>
+        <div data-xh-part="live-region"></div>
+      </div>
+    </xh-sortable>
+  </section>
+  <section>
+    <h4 id="sortable-board-doing">进行中</h4>
+    <xh-sortable ids="接口,联调" group="board" list-id="doing" style="display: contents">
+      <div data-xh-part="root" aria-labelledby="sortable-board-doing">
+        <div data-xh-part="item" item-id="接口" aria-label="接口"><button data-xh-part="item-drag-trigger" item-id="接口"></button><span data-demo-block="line" data-tone="success"></span></div>
+        <div data-xh-part="item" item-id="联调" aria-label="联调"><button data-xh-part="item-drag-trigger" item-id="联调"></button><span data-demo-block="line" data-tone="danger"></span></div>
+        <div data-xh-part="drop-indicator"></div>
+        <div data-xh-part="live-region"></div>
+      </div>
+    </xh-sortable>
+  </section>
+  <section>
+    <h4 id="sortable-board-done">已完成</h4>
+    <xh-sortable ids="立项" group="board" list-id="done" style="display: contents">
+      <div data-xh-part="root" aria-labelledby="sortable-board-done">
+        <div data-xh-part="item" item-id="立项" aria-label="立项"><button data-xh-part="item-drag-trigger" item-id="立项"></button><span data-demo-block="line" data-tone="neutral"></span></div>
+        <div data-xh-part="drop-indicator"></div>
+        <div data-xh-part="live-region"></div>
+      </div>
+    </xh-sortable>
+  </section>
+</div>
+<script type="module">
+  const board = document.getElementById("sortable-board");
+  const hostOf = listId => board.querySelector(`xh-sortable[list-id="${listId}"]`);
+  // 按新顺序把项节点排进这一列的 root：落点线与播报区留在末尾
+  function place(host, ids) {
+    const root = host.querySelector('[data-xh-part="root"]');
+    for (const id of ids) root.insertBefore(board.querySelector(`[data-xh-part="item"][item-id="${id}"]`), root.querySelector('[data-xh-part="drop-indicator"]'));
+    host.ids = ids;
+  }
+  board.addEventListener("sort", event => place(event.target, event.detail.ids));
+  // 落进别的列时源列表发一次 transfer：两列的新顺序都算好了，照着把节点挪过去、写回 ids
+  board.addEventListener("transfer", (event) => {
+    const { fromList, toList, fromIds, toIds } = event.detail;
+    place(hostOf(toList), toIds);
+    place(hostOf(fromList), fromIds);
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
 
 - 调整任务、标签页、收藏项或表格列的顺序。
 - 需要保存用户定义的排列顺序。
+- 看板一类的几个列表之间移动条目，并落在指定位置。
 
 ### 何时不用
 
 - 数据规则决定顺序时使用普通排序。
-- 跨容器拖拽需要使用更完整的拖放方案。
+- 条目要落进树的某个节点里、改变层级时使用[树](./tree)的拖放。
 
 ### 特性
 
@@ -257,6 +379,8 @@ const tones = ["neutral", "info", "success", "warning"] as const;
 - 拖动时实时显示让位和落点；放下后项目从松手处带着松手速度落进新位置。
 - 支持边缘自动滚动。
 - `sort` 事件返回重排后的 `ids`。
+- 写了同一个 `group` 的几个列表组成一组：条目拖进组里别的列表时，那个列表让出落点并画出落点线，容器随之长出一格。
+- 落进别的列表时由源列表发一次 `transfer`，载荷给出源列表、目标列表、新旧位次与两个列表各自的新顺序；写不写回归宿主，不写回时条目收回原位。
 
 ### 组合
 
@@ -268,11 +392,14 @@ const tones = ["neutral", "info", "success", "warning"] as const;
 - 拖拽手柄放在项目的固定位置，与项目内的其他控件分开。
 - 拖放结束后立刻持久化 `ids`，失败时回滚并提示。
 - 项目高度保持一致，让位动画才能表达落点。
+- 一组里的每个列表写不重复的 `listId`，`transfer` 靠它说明从哪来、到哪去。
+- 被拖的条目仍在源列表里跟手，拖出列表的那一段不能被裁掉：入组的列表与它们的外层不设 `overflow` 裁剪，滚动放在更外层。
 
 ### 反模式
 
 - 用整个项目作为手柄，项目内的按钮与链接将无法点击。
 - 拖动中改变列表长度或过滤条件。
+- 换行网格（`orientation="both"`）入组：四个方向键都用在列表内，没有键留给列表间移动，会直接报错。
 
 ## API 参考
 
@@ -297,7 +424,10 @@ const tones = ["neutral", "info", "success", "warning"] as const;
 | `autoScroll` | `boolean` |  | 拖到容器边缘时自动滚动，默认开启。 |
 | `dir` | `Direction` |  |  |
 | `translations` | `Partial<SortableTranslations>` |  |  |
+| `group` | `string` |  | 所在的组。同一文档里 group 相同的几个列表组成一组，条目能从一个列表拖进另一个列表并落在指定位置； 键盘拖动中另一条轴上的方向键在相邻列表间移动。不写时列表只在自身内排序。 入组的列表只能是单轴排布（vertical / horizontal）。 |
+| `listId` | `string` |  | 这个列表在组里的标识，写了 group 就必须写，且组内不重复：transfer 事件用它说明从哪来、到哪去。 |
 | `onSort` | `(details: SortableSortDetails) => void` |  | 顺序变化意图。取消的一次不发出。 |
+| `onTransfer` | `(details: SortableTransferDetails) => void` |  | 一项落进了同组另一个列表的意图，由源列表发出一次；取消、落回源列表时不发。 两个列表的新顺序都在载荷里，写不写回归宿主：不写回时那一项收回原位。 |
 | `onDragStart` | `(details: SortableDragStartDetails) => void` |  |  |
 | `onDragEnd` | `(details: SortableDragEndDetails) => void` |  |  |
 
@@ -308,8 +438,9 @@ const tones = ["neutral", "info", "success", "warning"] as const;
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `sort` | `SortableSortDetails` | 顺序变化；detail 为 `{ from, to, id, ids }`，其中 ids 已重排 |
+| `transfer` | `SortableTransferDetails` | 一项落进了同组另一个列表，由源列表发一次；detail 为 `{ id, fromList, toList, from, to, fromIds, toIds }`，节点挪不挪、ids 写不写回归作者 |
 | `drag-start` | `SortableDragStartDetails` | 拾起；detail 为 `{ id, from, mode }` |
-| `drag-end` | `SortableDragEndDetails` | 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }` |
+| `drag-end` | `SortableDragEndDetails` | 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }`，入了组时另带 fromList / toList |
 
 ### 插槽
 
@@ -340,7 +471,7 @@ const tones = ["neutral", "info", "success", "warning"] as const;
 
 **状态**：`idle` · `pending` · `dragging`
 
-**事件**：`ITEM.POINTER_DOWN` · `POINTER.MOVE` · `POINTER.END` · `POINTER.CANCEL` · `ITEM.PICKUP` · `KEY.MOVE` · `KEY.DROP` · `KEY.CANCEL` · `PRESS.START` · `PRESS.END`
+**事件**：`ITEM.POINTER_DOWN` · `POINTER.MOVE` · `POINTER.END` · `POINTER.CANCEL` · `ITEM.PICKUP` · `KEY.MOVE` · `KEY.MOVE_LIST` · `KEY.DROP` · `KEY.CANCEL` · `GROUP.OVER` · `GROUP.LEAVE` · `GROUP.DROP` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canSort` · `passedActivation` · `canPress`
 
@@ -371,10 +502,12 @@ const tones = ["neutral", "info", "success", "warning"] as const;
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Space` / `Enter` | focus in item-drag-trigger，未在拖动，not disabled | 拾起这一项，进入键盘拖动；播报它现在第几位、共几项、以及接下来能按什么 |
-| `ArrowDown` / `ArrowRight` | 键盘拖动中 | 往后挪一位并播报新位置；已在末位时不动，也不回绕。竖直排布认上下键、水平排布认左右键，另一条轴上的方向键原样放行 |
+| `ArrowDown` / `ArrowRight` | 键盘拖动中 | 往后挪一位并播报新位置；已在末位时不动，也不回绕（挪进了同组别的列表时可以排到它的末项之后）。竖直排布认上下键、水平排布认左右键；另一条轴上的方向键未入组时原样放行，入组时归列表间移动 |
 | `ArrowUp` / `ArrowLeft` | 键盘拖动中 | 往前挪一位，规则同上；rtl 下左右两键对调，语义恒是「往前 / 往后」 |
-| `Space` / `Enter` | 键盘拖动中 | 放下，按当前位置提交顺序并播报落点 |
-| `Escape` | 键盘拖动中 | 取消，顺序回到拾起前，播报已取消与原位置 |
+| `ArrowRight` / `ArrowDown` | 键盘拖动中，列表入了组（group），按的是另一条轴上的键：竖直排布认 ArrowRight、水平排布认 ArrowDown | 挪进组里文档序的下一个列表，位次尽量沿用、超出那个列表的长度就排到末尾；播报列表名、它在组里排第几与新位次。已是最后一个列表时不动，也不回绕；rtl 下竖直排布的左右两键对调 |
+| `ArrowLeft` / `ArrowUp` | 键盘拖动中，列表入了组（group），按的是另一条轴上的键：竖直排布认 ArrowLeft、水平排布认 ArrowUp | 挪进组里文档序的上一个列表，规则同上 |
+| `Space` / `Enter` | 键盘拖动中 | 放下，按当前位置提交顺序并播报落点；落在同组别的列表里时发 transfer，播报落进了哪个列表的第几位 |
+| `Escape` | 键盘拖动中 | 取消，顺序回到拾起前，悬着的别的列表撤掉让位；播报已取消与原位置 |
 | `Enter` / `Space` | held on item-drag-trigger, not disabled | 按住期间把手投影 data-pressed，与指针 :active 同一副按压面；拾起转拖动那一下即撤下（拖动中的回执是 data-dragging），抬起或失焦撤下 |
 
 ### ARIA
@@ -396,7 +529,8 @@ const tones = ["neutral", "info", "success", "warning"] as const;
 | `live-region` | `role` | 'status' |
 
 - 空格拾取或放下，方向键移动，Escape 取消。
-- `live-region` 会播报当前拖动位置。
+- 入组的列表拿起后，本轴方向键在列表内移动，另一条轴上的方向键在相邻列表间移动：竖排列表用左右键，横排列表用上下键。
+- `live-region` 会播报当前拖动位置；挪进别的列表时先播报列表名与它在组里排第几，再播报位次。列表名取列表容器的可及名，看板里用 `aria-labelledby` 指向列标题即可。
 - 拖动期间焦点保留在当前手柄。
 
 ## 样式参考
@@ -405,6 +539,8 @@ const tones = ["neutral", "info", "success", "warning"] as const;
 
 `@xihan-ui/styles/sortable.css` 使用 `[data-scope="sortable"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -412,7 +548,9 @@ const tones = ["neutral", "info", "success", "warning"] as const;
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-drag-mode` | context.get('mode') \| undefined |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-drop` | 'inside' \| undefined |
 | `root` | `data-orientation` | props.orientation |
 | `item` | `data-animating` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |

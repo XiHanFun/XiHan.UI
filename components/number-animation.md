@@ -269,6 +269,63 @@ function next(): void {
 </script>
 ```
 
+### 语言与数字格式
+
+locale 决定小数点与分组习惯，formatOptions 交给 Intl.NumberFormat 铺货币、百分比与紧凑记数；小数位仍归 precision
+
+```vue
+<script setup lang="ts">
+import { XhNumberAnimation } from "@xihan-ui/vue";
+
+const euro = { style: "currency", currency: "EUR", useGrouping: true } as const;
+const percent = { style: "percent" } as const;
+const compact = { notation: "compact" } as const;
+</script>
+
+<template>
+  <p>
+    德语欧元：
+    <XhNumberAnimation :from="0" :to="1234567.89" :precision="2" locale="de-DE" :format-options="euro" />
+  </p>
+  <p>
+    百分比：
+    <XhNumberAnimation :from="0" :to="0.873" :precision="1" locale="zh-CN" :format-options="percent" />
+  </p>
+  <p>
+    紧凑记数：
+    <XhNumberAnimation :from="0" :to="12840000" :precision="1" locale="en-US" :format-options="compact" />
+  </p>
+</template>
+```
+
+```html
+<p>
+  德语欧元：
+  <xh-number-animation id="number-animation-intl-euro" from="0" to="1234567.89" precision="2" locale="de-DE">
+    <span data-xh-part="root"></span>
+  </xh-number-animation>
+</p>
+<p>
+  百分比：
+  <xh-number-animation id="number-animation-intl-percent" from="0" to="0.873" precision="1" locale="zh-CN">
+    <span data-xh-part="root"></span>
+  </xh-number-animation>
+</p>
+<p>
+  紧凑记数：
+  <xh-number-animation id="number-animation-intl-compact" from="0" to="12840000" precision="1" locale="en-US">
+    <span data-xh-part="root"></span>
+  </xh-number-animation>
+</p>
+
+<script type="module">
+  // formatOptions 是对象，只能经 property 赋值
+  document.getElementById("number-animation-intl-euro").formatOptions = { style: "currency", currency: "EUR", useGrouping: true };
+  document.getElementById("number-animation-intl-percent").formatOptions = { style: "percent" };
+  document.getElementById("number-animation-intl-compact").formatOptions = { notation: "compact" };
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -282,8 +339,10 @@ function next(): void {
 
 ### 特性
 
-- `precision` 小数位、`separator` 千位分隔。
-- `easing` 与 `duration` 决定滚动的节奏。
+- `precision` 小数位、`separator` 分组符，每一帧都按同一个位数铺字，数字不会在滚动中忽长忽短。
+- 文字由 `Intl.NumberFormat` 铺出：`locale` 决定小数点、分组习惯与数字系统（未提供时跟随宿主语言），`formatOptions` 给出货币、百分比、单位与紧凑记数；`formatOptions.useGrouping` 打开即按该语言的习惯分组。
+- `easing` 与 `duration` 决定滚动的节奏；不写时与图表里的数字同一口径：首次滚动按入场档（reveal、enter-strong），换目标按更新档（morph、continuous）。
+- 屏幕外不空转：首次滚动时不在视口里就停在起点，进了视口再从头滚；换目标时不在视口里直接落到终值。
 - `live` 决定读屏播报方式，通常只播报终值。
 
 ### 组合
@@ -317,10 +376,12 @@ function next(): void {
 | --- | --- | --- | --- |
 | `from` | `number` |  | 起点，默认 0。改写它会把显示值立即落到新起点，并从那里重新运行本轮。 |
 | `to` | `number` |  | 终点，默认 0。改写它从当前显示值继续走向新终点，不跳回起点。 |
-| `duration` | `number` |  | 时长毫秒，默认 1000；&lt;=0 即一步到位。 |
-| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串，默认线性；认不出的写法在起跑时报错。 |
-| `precision` | `number` |  | 小数位，默认 0。夹进 [0, 20]。 |
-| `separator` | `string` |  | 千位分隔符，默认不分隔。 |
+| `duration` | `number` |  | 时长毫秒；&lt;=0 即一步到位。不写按数值角色取令牌：首次滚动与图表数字入场同档（reveal）， 换目标与图表数字更新同档（morph）。 |
+| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串；认不出的写法在起跑时报错。 不写按数值角色取令牌：首次滚动取 enter-strong，换目标取 continuous。 |
+| `precision` | `number` |  | 小数位，默认 0。夹进 [0, 20]；每一帧都按这个位数铺字。 |
+| `separator` | `string` |  | 分组符。给了就分组并把该语言的分组符换成它；默认不分组。 |
+| `locale` | `string` |  | BCP 47 语言标记，决定小数点、分组习惯、数字系统与货币写法。 未提供时按宿主语言，宿主也没有时按 en-US。 |
+| `formatOptions` | `NumberAnimationFormatOptions` |  | 交给 Intl.NumberFormat 的选项：货币、百分比、单位、紧凑记数、符号与数字系统， `useGrouping` 打开即按该语言的习惯分组。小数位不在其中，归 `precision`。 |
 | `active` | `boolean` |  | 是否运行，默认 true。变为假即停在当前值，变为真从当前值继续走向终点。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，只写为 root 的 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只写为 root 的 data-tone。 |
@@ -363,7 +424,7 @@ function next(): void {
 
 **状态**：`idle` · `running`
 
-**事件**：`RUN.START` · `RUN.STOP` · `RUN.SYNC` · `FRAME`
+**事件**：`RUN.START` · `RUN.STOP` · `RUN.SYNC` · `FRAME` · `RUN.SKIP`
 
 **判据**：`isSettled` · `isActive`
 
@@ -375,7 +436,7 @@ function next(): void {
 | --- | --- | --- |
 | `phase` | `NumberAnimationPhase` |  |
 | `value` | `number` | 当前数值（未格式化）。 |
-| `text` | `string` | 当前数值按 precision 与 separator 格式化的文本，即根中应显示的文字。 |
+| `text` | `string` | 当前数值按 locale、precision、separator 与 formatOptions 格式化的文本，即根中应显示的文字。 |
 | `running` | `boolean` | 是否仍在运行。 |
 | `getRootProps` | `() => T['element']` |  |
 
@@ -425,6 +486,6 @@ function next(): void {
 
 ### 动效
 
-皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。时长与缓动由组件属性给出。
+皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。时长与缓动从元素读[动效令牌](../guide/motion)。
 
 系统开启减弱动效时由内核按元素判断后自行降级，不经令牌层。

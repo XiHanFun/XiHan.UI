@@ -361,6 +361,259 @@ const sizes = [
 </div>
 ```
 
+### 分页
+
+列表只画当前页的条目，末尾接分页：换页时换一段数据，条目与页码各管各的
+
+```vue
+<script setup lang="ts">
+import {
+  XhListItem,
+  XhListItemContent,
+  XhListItemDescription,
+  XhListItemTitle,
+  XhListRoot,
+  XhPaginationEllipsisTrigger,
+  XhPaginationItem,
+  XhPaginationNextTrigger,
+  XhPaginationPrevTrigger,
+  XhPaginationRoot,
+} from "@xihan-ui/vue";
+import { computed, ref } from "vue";
+
+// 23 张工单，每页 5 张
+const STATUS = ["待处理", "处理中", "已解决"];
+const tickets = Array.from({ length: 23 }, (_, i) => ({
+  id: 1001 + i,
+  title: `工单 #${1001 + i}`,
+  desc: `${STATUS[i % 3]} · 华东区`,
+}));
+const PAGE_SIZE = 5;
+
+const page = ref(1);
+const visible = computed(() => tickets.slice((page.value - 1) * PAGE_SIZE, page.value * PAGE_SIZE));
+</script>
+
+<template>
+  <div style="display: grid; gap: var(--xh-space-3); max-inline-size: 360px">
+    <XhListRoot split>
+      <XhListItem v-for="t in visible" :key="t.id">
+        <XhListItemContent>
+          <XhListItemTitle>{{ t.title }}</XhListItemTitle>
+          <XhListItemDescription>{{ t.desc }}</XhListItemDescription>
+        </XhListItemContent>
+      </XhListItem>
+    </XhListRoot>
+    <XhPaginationRoot
+      v-slot="{ pages }"
+      v-model:page="page"
+      :count="tickets.length"
+      :page-size="PAGE_SIZE"
+    >
+      <XhPaginationPrevTrigger />
+      <template v-for="(p, i) in pages" :key="`${p}-${i}`">
+        <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
+        <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
+      </template>
+      <XhPaginationNextTrigger />
+    </XhPaginationRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: var(--xh-space-3); max-inline-size: 360px">
+  <!-- 宿主设 display: contents，列表落在 root 上 -->
+  <xh-list split style="display: contents">
+    <ul id="list-pagination-root" data-xh-part="root"></ul>
+  </xh-list>
+  <!-- 23 条每页 5 条：5 页全部写出，不出省略号 -->
+  <xh-pagination id="list-pagination-pages" count="23" page-size="5">
+    <nav data-xh-part="root">
+      <button data-xh-part="prev-trigger"></button>
+      <button data-xh-part="item" value="1">1</button>
+      <button data-xh-part="item" value="2">2</button>
+      <button data-xh-part="item" value="3">3</button>
+      <button data-xh-part="item" value="4">4</button>
+      <button data-xh-part="item" value="5">5</button>
+      <button data-xh-part="next-trigger"></button>
+    </nav>
+  </xh-pagination>
+</div>
+
+<script type="module">
+  const list = document.getElementById("list-pagination-root");
+  const pages = document.getElementById("list-pagination-pages");
+  // 23 张工单，每页 5 张
+  const STATUS = ["待处理", "处理中", "已解决"];
+  const tickets = Array.from({ length: 23 }, (_, i) => ({
+    id: 1001 + i,
+    title: `工单 #${1001 + i}`,
+    desc: `${STATUS[i % 3]} · 华东区`,
+  }));
+  const PAGE_SIZE = 5;
+
+  // 条目的节点由作者建：写上 data-xh-part，元素看到新节点自动接上
+  function render(page) {
+    list.replaceChildren(...tickets.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((t) => {
+      const item = document.createElement("li");
+      item.dataset.xhPart = "item";
+      const content = document.createElement("div");
+      content.dataset.xhPart = "item-content";
+      const title = document.createElement("div");
+      title.dataset.xhPart = "item-title";
+      title.textContent = t.title;
+      const desc = document.createElement("div");
+      desc.dataset.xhPart = "item-description";
+      desc.textContent = t.desc;
+      content.append(title, desc);
+      item.append(content);
+      return item;
+    }));
+  }
+
+  render(1);
+  pages.addEventListener("page-change", event => render(event.detail.page));
+</script>
+```
+
+### 加载更多
+
+列表末尾放一个按钮追加下一批：取数时按钮转圈、不能重复点，取完了换成提示
+
+```vue
+<script setup lang="ts">
+import { LoaderIcon } from "@xihan-ui/icons";
+import {
+  XhButton,
+  XhButtonIndicator,
+  XhButtonLabel,
+  XhIcon,
+  XhListItem,
+  XhListItemContent,
+  XhListItemDescription,
+  XhListItemTitle,
+  XhListRoot,
+} from "@xihan-ui/vue";
+import { computed, ref } from "vue";
+
+// 模拟分批取数：每次 4 条，共 11 条
+const TOTAL = 11;
+const BATCH = 4;
+interface Row {
+  id: number;
+  name: string;
+  desc: string;
+}
+function rowsFrom(from: number): Row[] {
+  return Array.from({ length: Math.min(BATCH, TOTAL - from) }, (_, i) => ({
+    id: from + i,
+    name: `通知 ${from + i + 1}`,
+    desc: `系统消息 · ${from + i + 1} 小时前`,
+  }));
+}
+function fetchBatch(from: number): Promise<Row[]> {
+  return new Promise(resolve => setTimeout(resolve, 800, rowsFrom(from)));
+}
+
+// 第一批随页面一起到
+const rows = ref<Row[]>(rowsFrom(0));
+const loading = ref(false);
+const done = computed(() => rows.value.length >= TOTAL);
+
+async function loadMore() {
+  loading.value = true;
+  rows.value = [...rows.value, ...await fetchBatch(rows.value.length)];
+  loading.value = false;
+}
+</script>
+
+<template>
+  <div style="display: grid; gap: var(--xh-space-3); justify-items: center; max-inline-size: 360px">
+    <XhListRoot split style="inline-size: 100%">
+      <XhListItem v-for="row in rows" :key="row.id">
+        <XhListItemContent>
+          <XhListItemTitle>{{ row.name }}</XhListItemTitle>
+          <XhListItemDescription>{{ row.desc }}</XhListItemDescription>
+        </XhListItemContent>
+      </XhListItem>
+    </XhListRoot>
+    <XhButton variant="subtle" :loading="loading" :disabled="done" @click="loadMore">
+      <XhButtonIndicator><XhIcon :icon="LoaderIcon" /></XhButtonIndicator>
+      <XhButtonLabel>{{ done ? "没有更多了" : "加载更多" }}</XhButtonLabel>
+    </XhButton>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: var(--xh-space-3); justify-items: center; max-inline-size: 360px">
+  <!-- 宿主设 display: contents，列表落在 root 上 -->
+  <xh-list split style="display: contents">
+    <ul id="list-load-more-root" data-xh-part="root" style="inline-size: 100%"></ul>
+  </xh-list>
+  <xh-button id="list-load-more-button" variant="subtle">
+    <button data-xh-part="root">
+      <span data-xh-part="indicator">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+      </span>
+      <span data-xh-part="label">加载更多</span>
+    </button>
+  </xh-button>
+</div>
+
+<script type="module">
+  const list = document.getElementById("list-load-more-root");
+  const button = document.getElementById("list-load-more-button");
+  const label = button.querySelector('[data-xh-part="label"]');
+  // 模拟分批取数：每次 4 条，共 11 条
+  const TOTAL = 11;
+  const BATCH = 4;
+  function rowsFrom(from) {
+    return Array.from({ length: Math.min(BATCH, TOTAL - from) }, (_, i) => ({
+      id: from + i,
+      name: `通知 ${from + i + 1}`,
+      desc: `系统消息 · ${from + i + 1} 小时前`,
+    }));
+  }
+  function fetchBatch(from) {
+    return new Promise(resolve => setTimeout(resolve, 800, rowsFrom(from)));
+  }
+
+  // 条目的节点由作者建：写上 data-xh-part，元素看到新节点自动接上
+  function itemOf(row) {
+    const item = document.createElement("li");
+    item.dataset.xhPart = "item";
+    const content = document.createElement("div");
+    content.dataset.xhPart = "item-content";
+    const title = document.createElement("div");
+    title.dataset.xhPart = "item-title";
+    title.textContent = row.name;
+    const desc = document.createElement("div");
+    desc.dataset.xhPart = "item-description";
+    desc.textContent = row.desc;
+    content.append(title, desc);
+    item.append(content);
+    return item;
+  }
+
+  async function loadMore() {
+    button.loading = true;
+    const rows = await fetchBatch(list.children.length);
+    list.append(...rows.map(itemOf));
+    button.loading = false;
+    if (list.children.length >= TOTAL) {
+      button.disabled = true;
+      label.textContent = "没有更多了";
+    }
+  }
+
+  // 第一批随页面一起到
+  list.append(...rowsFrom(0).map(itemOf));
+  button.addEventListener("click", loadMore);
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -380,7 +633,7 @@ const sizes = [
 
 ### 组合
 
-- 媒体位放[头像](./avatar)或[图标块](./icon-wrapper)；操作位放[按钮](./button)或[菜单](./menu)；末尾接[分页](./pagination)或[无限滚动](./infinite-scroll)。
+- 媒体位放[头像](./avatar)或带底框的[图标](./icon)；操作位放[按钮](./button)或[菜单](./menu)；末尾接[分页](./pagination)或[无限滚动](./infinite-scroll)。
 
 ### 最佳实践
 

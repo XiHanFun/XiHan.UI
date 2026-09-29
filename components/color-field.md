@@ -329,7 +329,7 @@ import {
 
 ### 特性
 
-- 支持 `#rgb` / `#rrggbb(aa)`、`rgb()` / `rgba()`、`hsl()` / `hsla()`，不支持颜色关键字；提交后按 `format`（hex / rgba / hsla）重写，`alpha` 决定是否带透明度。
+- 支持 `#rgb` / `#rrggbb(aa)`、`rgb()` / `rgba()`、`hsl()` / `hsla()` 与 `oklch()`，不支持颜色关键字；提交后按 `format`（hex / rgba / hsla / oklch）重写，`alpha` 决定是否带透明度。
 - 输入过程只保留草稿：值、色块与 `onValueChange` 都不变化，`data-editing` 标记正在编辑；回车或失焦提交，Escape 放弃草稿并回到规范文本。
 - 无法提交的草稿留在框内并标记为无效（`aria-invalid`、`data-invalid`），用户可以看到自己的输入；再次修改时移除标记。
 - 空串是合法的“无颜色”：`clearable` 开启清空按钮与 Escape 清空，空值时色块只绘制棋盘格。
@@ -479,6 +479,8 @@ import {
 ### 皮肤
 
 `@xihan-ui/styles/color-field.css` 使用 `[data-scope="color-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 

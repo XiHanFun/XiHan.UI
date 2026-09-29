@@ -21,6 +21,8 @@ pnpm test         # 第一套
 pnpm test:browser # 后两套（先 pnpm exec playwright install chromium）
 ```
 
+`pnpm test` 由 `ui/tooling/scripts/test-unit.mjs` 执行：turbo 并发取 `min(10, 核数)`，每个包的 vitest worker 数上限取 `max(1, ⌊核数 / 并发⌋)`，经 `VITEST_MAX_WORKERS` 传给各包。vitest 缺省按核数开 worker，turbo 同时跑十个包就是十倍超卖，冷启动重的用例会被拖过超时。显式设置 `VITEST_MAX_WORKERS` 时按设置的值运行。
+
 在 Windows / macOS 宿主上，`pnpm test:browser` 固定有一条失败：像素基线文件受字体守卫拦截，整文件判失败、40 条用例全部 skipped。这是预期结果，不是环境故障；本地验证像素改动的方式见下文「像素基线」。
 
 ### 按分类运行浏览器态
@@ -113,7 +115,7 @@ interface DomSnapshot {
 
 计算样式不一致会被令牌快照拦截，结构错位会被一致性套件拦截，但值全部正确、外观仍然不同这一档没有其他判据覆盖：层叠顺序、私有槽的覆盖时机、两条规则的先后，只在最终位图上显现。像素基线负责这一档。
 
-受管范围是母组件 `button` / `text-field` / `select` / `menu` / `popover` / `dialog` / `drawer` / `toast`，每件在五组轴上各出一张：`light×comfortable`、`dark×comfortable`、`light×compact`、`dark×compact`、`dark×more`。前四格是主题与密度的笛卡尔积；第五格是层叠最脆弱的一格：两块 `contrast` 取值块必须排在两个 `mode` 块之后，顺序错误即静默回归。`motion=reduce` 不在其中：静止帧与默认档没有差别，该轴由令牌快照与 `check-infinite-motion` 承担。
+受管范围是母组件 `button` / `text-field` / `select` / `menu` / `popover` / `dialog` / `drawer` / `notification`（轻提示预设的一条），每件在五组轴上各出一张：`light×comfortable`、`dark×comfortable`、`light×compact`、`dark×compact`、`dark×more`。前四格是主题与密度的笛卡尔积；第五格是层叠最脆弱的一格：两块 `contrast` 取值块必须排在两个 `mode` 块之后，顺序错误即静默回归。`motion=reduce` 不在其中：静止帧与默认档没有差别，该轴由令牌快照与 `check-infinite-motion` 承担。
 
 基线文件在 `packages/adapters/vue/tests/browser/__screenshots__/` 下，具体数量以该目录为准。
 
@@ -222,7 +224,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 128 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 129 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |
@@ -285,7 +287,7 @@ pnpm gate:family  # 逐家族豁免表只减不增（条目数快照 + 键集合
 pnpm size
 ```
 
-40 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
+46 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
 
 
 ## 相关

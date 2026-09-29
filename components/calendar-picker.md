@@ -687,6 +687,293 @@ function hasPlan(iso: string) {
 </script>
 ```
 
+### 周首日
+
+firstDayOfWeek 单独改周首日：locale 仍是 en-US，月份与星期名照旧是英文，表头与每一行改从星期一排起
+
+```vue
+<script setup lang="ts">
+import {
+  XhCalendarPickerCell,
+  XhCalendarPickerCellTrigger,
+  XhCalendarPickerGrid,
+  XhCalendarPickerGridBody,
+  XhCalendarPickerGridHead,
+  XhCalendarPickerHeader,
+  XhCalendarPickerHeading,
+  XhCalendarPickerNextTrigger,
+  XhCalendarPickerPrevTrigger,
+  XhCalendarPickerRoot,
+  XhCalendarPickerWeekDay,
+  XhCalendarPickerWeekRow,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhCalendarPickerRoot
+    v-slot="{ weeks, weekDays }"
+    :default-value="['2026-09-18']"
+    default-focused-value="2026-09-13"
+    locale="en-US"
+    :first-day-of-week="1"
+    fixed-weeks
+  >
+    <XhCalendarPickerHeader>
+      <XhCalendarPickerPrevTrigger aria-label="上个月" />
+      <XhCalendarPickerHeading />
+      <XhCalendarPickerNextTrigger aria-label="下个月" />
+    </XhCalendarPickerHeader>
+    <XhCalendarPickerGrid>
+      <XhCalendarPickerGridHead>
+        <XhCalendarPickerWeekRow>
+          <XhCalendarPickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
+        </XhCalendarPickerWeekRow>
+      </XhCalendarPickerGridHead>
+      <XhCalendarPickerGridBody>
+        <XhCalendarPickerWeekRow v-for="week in weeks" :key="week[0].start">
+          <XhCalendarPickerCell v-for="day in week" :key="day.start" :value="day.start">
+            <XhCalendarPickerCellTrigger>{{ day.day }}</XhCalendarPickerCellTrigger>
+          </XhCalendarPickerCell>
+        </XhCalendarPickerWeekRow>
+      </XhCalendarPickerGridBody>
+    </XhCalendarPickerGrid>
+  </XhCalendarPickerRoot>
+</template>
+```
+
+```html
+<div id="calendar-picker-first-day-of-week-mount"></div>
+
+<!-- 结构先收在模板里：必需的格子要在元素接线前就位，所以网格填好了才入页 -->
+<template id="calendar-picker-first-day-of-week-template">
+  <xh-calendar-picker locale="en-US" first-day-of-week="1" fixed-weeks>
+    <div data-xh-part="root">
+      <div data-xh-part="header">
+        <button data-xh-part="prev-trigger" aria-label="上个月"></button>
+        <div data-xh-part="heading"></div>
+        <button data-xh-part="next-trigger" aria-label="下个月"></button>
+      </div>
+      <div data-xh-part="grid">
+        <div data-xh-part="grid-head">
+          <div data-xh-part="week-row"></div>
+        </div>
+        <div data-xh-part="grid-body"></div>
+      </div>
+    </div>
+  </xh-calendar-picker>
+</template>
+
+<script type="module">
+  const fragment = document
+    .getElementById("calendar-picker-first-day-of-week-template")
+    .content.cloneNode(true);
+  const calendar = fragment.querySelector("xh-calendar-picker");
+  const heading = fragment.querySelector('[data-xh-part="heading"]');
+  const head = fragment.querySelector('[data-xh-part="grid-head"] [data-xh-part="week-row"]');
+  const body = fragment.querySelector('[data-xh-part="grid-body"]');
+  calendar.defaultValue = ["2026-09-18"];
+  calendar.defaultFocusedValue = "2026-09-13";
+
+  // 已经画出来的是哪个月
+  let month = "";
+
+  // 表头七列只跟 locale 与周首日走，画一次就够
+  function paintHead() {
+    head.replaceChildren(
+      ...calendar.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+  }
+
+  // 换了月才重画格子：同月内移动焦点时格子原样留着，选中态与焦点态由元素自己写
+  function paintBody() {
+    const first = calendar.weeks[0][0].start;
+    if (first === month) {
+      return;
+    }
+    month = first;
+    heading.textContent = calendar.headingLabel;
+    body.replaceChildren(
+      ...calendar.weeks.map((week) => {
+        const row = document.createElement("div");
+        row.dataset.xhPart = "week-row";
+        for (const day of week) {
+          const cell = document.createElement("div");
+          cell.dataset.xhPart = "cell";
+          cell.setAttribute("value", day.start);
+          const trigger = document.createElement("div");
+          trigger.dataset.xhPart = "cell-trigger";
+          trigger.textContent = day.day;
+          cell.append(trigger);
+          row.append(cell);
+        }
+        return row;
+      }),
+    );
+  }
+
+  // 元素一连上就能读 weeks / weekDays，接线排在这之后，格子赶得上
+  document.getElementById("calendar-picker-first-day-of-week-mount").append(fragment);
+  paintHead();
+  paintBody();
+
+  calendar.addEventListener("focused-value-change", paintBody);
+</script>
+```
+
+### 限定多选数量
+
+max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名额
+
+```vue
+<script setup lang="ts">
+import {
+  XhCalendarPickerCell,
+  XhCalendarPickerCellTrigger,
+  XhCalendarPickerGrid,
+  XhCalendarPickerGridBody,
+  XhCalendarPickerGridHead,
+  XhCalendarPickerHeader,
+  XhCalendarPickerHeading,
+  XhCalendarPickerNextTrigger,
+  XhCalendarPickerPrevTrigger,
+  XhCalendarPickerRoot,
+  XhCalendarPickerWeekDay,
+  XhCalendarPickerWeekRow,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const value = ref<string[]>(["2026-09-08", "2026-09-15"]);
+</script>
+
+<template>
+  <XhCalendarPickerRoot
+    v-slot="{ weeks, weekDays }"
+    v-model:value="value"
+    default-focused-value="2026-09-13"
+    locale="zh-CN"
+    selection-mode="multiple"
+    :max-selected="3"
+    fixed-weeks
+    style="max-inline-size: 280px"
+  >
+    <XhCalendarPickerHeader>
+      <XhCalendarPickerPrevTrigger aria-label="上个月" />
+      <XhCalendarPickerHeading />
+      <XhCalendarPickerNextTrigger aria-label="下个月" />
+    </XhCalendarPickerHeader>
+    <XhCalendarPickerGrid>
+      <XhCalendarPickerGridHead>
+        <XhCalendarPickerWeekRow>
+          <XhCalendarPickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
+        </XhCalendarPickerWeekRow>
+      </XhCalendarPickerGridHead>
+      <XhCalendarPickerGridBody>
+        <XhCalendarPickerWeekRow v-for="week in weeks" :key="week[0].start">
+          <XhCalendarPickerCell v-for="day in week" :key="day.start" :value="day.start">
+            <XhCalendarPickerCellTrigger>{{ day.day }}</XhCalendarPickerCellTrigger>
+          </XhCalendarPickerCell>
+        </XhCalendarPickerWeekRow>
+      </XhCalendarPickerGridBody>
+    </XhCalendarPickerGrid>
+  </XhCalendarPickerRoot>
+
+  <span aria-live="polite" style="font-size: 13px">已选 {{ value.length }} / 3 天：{{ value.join("、") || "（无）" }}</span>
+</template>
+```
+
+```html
+<div id="calendar-picker-max-selected-mount"></div>
+<span aria-live="polite" style="font-size: 13px">已选（最多 3 天）：<span id="calendar-picker-max-selected-value">2026-09-08、2026-09-15</span></span>
+
+<!-- 结构先收在模板里：必需的格子要在元素接线前就位，所以网格填好了才入页 -->
+<template id="calendar-picker-max-selected-template">
+  <xh-calendar-picker locale="zh-CN" selection-mode="multiple" max-selected="3" default-focused-value="2026-09-13" fixed-weeks>
+    <div data-xh-part="root" style="max-inline-size: 280px">
+      <div data-xh-part="header">
+        <button data-xh-part="prev-trigger" aria-label="上个月"></button>
+        <div data-xh-part="heading"></div>
+        <button data-xh-part="next-trigger" aria-label="下个月"></button>
+      </div>
+      <div data-xh-part="grid">
+        <div data-xh-part="grid-head">
+          <div data-xh-part="week-row"></div>
+        </div>
+        <div data-xh-part="grid-body"></div>
+      </div>
+    </div>
+  </xh-calendar-picker>
+</template>
+
+<script type="module">
+  const fragment = document
+    .getElementById("calendar-picker-max-selected-template")
+    .content.cloneNode(true);
+  const calendar = fragment.querySelector("xh-calendar-picker");
+  const heading = fragment.querySelector('[data-xh-part="heading"]');
+  const head = fragment.querySelector('[data-xh-part="grid-head"] [data-xh-part="week-row"]');
+  const body = fragment.querySelector('[data-xh-part="grid-body"]');
+  const readout = document.getElementById("calendar-picker-max-selected-value");
+  // 多选的值是数组，只能走 property
+  calendar.defaultValue = ["2026-09-08", "2026-09-15"];
+
+  let month = "";
+
+  function paintHead() {
+    head.replaceChildren(
+      ...calendar.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+  }
+
+  // 换了月才重画格子：同月内点选时格子原样留着，选中态由元素自己写
+  function paintBody() {
+    const first = calendar.weeks[0][0].start;
+    if (first === month) {
+      return;
+    }
+    month = first;
+    heading.textContent = calendar.headingLabel;
+    body.replaceChildren(
+      ...calendar.weeks.map((week) => {
+        const row = document.createElement("div");
+        row.dataset.xhPart = "week-row";
+        for (const day of week) {
+          const cell = document.createElement("div");
+          cell.dataset.xhPart = "cell";
+          cell.setAttribute("value", day.start);
+          const trigger = document.createElement("div");
+          trigger.dataset.xhPart = "cell-trigger";
+          trigger.textContent = day.day;
+          cell.append(trigger);
+          row.append(cell);
+        }
+        return row;
+      }),
+    );
+  }
+
+  document.getElementById("calendar-picker-max-selected-mount").append(fragment);
+  paintHead();
+  paintBody();
+
+  calendar.addEventListener("focused-value-change", paintBody);
+  calendar.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value.join("、") || "（无）";
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -707,12 +994,15 @@ function hasPlan(iso: string) {
 - 五种粒度统一产出 `CalendarPeriod`：稳定键、周期首尾、标签与相邻容器标记都来自同一份数据。
 - `week` 是一级粒度，使用一行一个整周的网格；不通过日格高亮模拟整周选择。
 - `isDateUnavailable` 与 `min` / `max` 只阻止取值，不阻止聚焦；粗粒度周期越过任一边界时整格不可选。
+- 多选时 `maxSelected` 限定最多选几个周期：选满后没选中的格子转为不可用（仍可聚焦），已选的点掉一个即腾出名额。它只拦用户的加选，`setValue` 与受控值原样收下。
 - 支持固定六行与显式多面板；翻页时整个视窗一起移动。
 - 日期、月份与年份格按下时轻微缩放，松开后复原；减弱动效下自动收敛。
 - 年份网格采用三列紧凑滚动面，可由作者按业务上下界铺入连续年份，复用日历格的选中与键盘语义。
 - `calendarPeriodValue` 将选中的周期转换为 `{ granularity, start, end, keys }`，可直接用于查询参数。
 - 切换粒度会清空旧选择并保留浏览锚点，避免不同周期键之间发生隐式转换。
 - 周首日、月份名与星期名跟随 `locale`：`en-US` 周日起、`zh-CN` 周一起。未提供 `locale` 时跟随宿主浏览器语言，读取失败时使用 `en-US`；需要固定排法时显式传入 `locale`。
+- `firstDayOfWeek`（0 = 星期日 … 6 = 星期六，与热力图同一套写法）单独改周首日：表头、每一行的行首与 Home / End 跟着它走，月份名与星期名仍按 `locale`。
+- `week` 粒度按 ISO 周（星期一到星期日）成段，周序号也按 ISO 周计，与 `locale` 和 `firstDayOfWeek` 都无关。以星期日开头的 locale（如 `en-US`）下，日视图的一行比 ISO 周早一天开始，行首的周序号取这一行中间那天所在的 ISO 周；要让日视图的每一行正好是一个 ISO 周，把 `firstDayOfWeek` 设为 1。
 
 ### 组合
 
@@ -723,6 +1013,7 @@ function hasPlan(iso: string) {
 
 - 今天使用 1px 品牌环 + 品牌字，选中使用实心强调面，两种状态必须能同时辨认。
 - 多选时使用 `aria-multiselectable` 告知读屏用户可以多选，不依赖视觉提示。
+- 设了 `maxSelected` 时在日历旁写明「已选几个 / 上限」：选满后格子只是转为不可用，本身不说明原因。
 - 格子中的内容超出时收起，避免某一行明显高于其他行。
 
 ### 反模式
@@ -776,6 +1067,7 @@ function hasPlan(iso: string) {
 | `XhCalendarPickerRoot` | `value` | `string \| string[]` |  |  |
 | `XhCalendarPickerRoot` | `defaultValue` | `string \| string[]` |  |  |
 | `XhCalendarPickerRoot` | `selectionMode` | `CalendarPickerSelectionMode` |  |  |
+| `XhCalendarPickerRoot` | `maxSelected` | `number` |  | multiple 下最多选几个周期；选满后没选中的格子不可再加选。 |
 | `XhCalendarPickerRoot` | `focusedValue` | `string` |  |  |
 | `XhCalendarPickerRoot` | `defaultFocusedValue` | `string` |  |  |
 | `XhCalendarPickerRoot` | `min` | `string` |  |  |
@@ -783,6 +1075,7 @@ function hasPlan(iso: string) {
 | `XhCalendarPickerRoot` | `isDateUnavailable` | `(value: string) => boolean` |  |  |
 | `XhCalendarPickerRoot` | `invalid` | `boolean` |  | 校验失败：根带 data-invalid。 |
 | `XhCalendarPickerRoot` | `locale` | `string` |  |  |
+| `XhCalendarPickerRoot` | `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日 … 6 = 星期六；不给按 locale。 |
 | `XhCalendarPickerRoot` | `timeZone` | `string` |  |  |
 | `XhCalendarPickerRoot` | `disabled` | `boolean` |  |  |
 | `XhCalendarPickerRoot` | `readOnly` | `boolean` |  |  |
@@ -817,6 +1110,7 @@ function hasPlan(iso: string) {
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `selectionMode` | `CalendarPickerSelectionMode` |  |
+| `maxSelected` | `number \| null` | 实际生效的多选上限；single 或没设上限时为 null。 |
 
 ## 无障碍
 

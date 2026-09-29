@@ -2280,6 +2280,362 @@ const rows = [
 </script>
 ```
 
+### 双侧虚拟化
+
+每个面板拥有独立窗口，搬运与搜索仍按该侧完整可见集合计算
+
+```vue
+<script setup lang="ts">
+import type { CollectionVirtualizer, TransferItem, TransferSide } from "@xihan-ui/headless";
+import {
+  XhTransferEmpty,
+  XhTransferItem,
+  XhTransferItemCheckbox,
+  XhTransferItemText,
+  XhTransferList,
+  XhTransferPanelCount,
+  XhTransferPanelHeader,
+  XhTransferPanelTitle,
+  XhTransferRoot,
+  XhTransferSearch,
+  XhTransferSelectAllTrigger,
+  XhTransferSourcePanel,
+  XhTransferTargetPanel,
+  XhTransferToSourceTrigger,
+  XhTransferToTargetTrigger,
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
+} from "@xihan-ui/vue";
+import { computed, defineComponent, onMounted, onUpdated, reactive, ref } from "vue";
+
+const items: TransferItem[] = Array.from({ length: 500 }, (_, index) => ({ value: `permission-${index + 1}`, label: `权限 ${index + 1}` }));
+const value = ref(items.slice(0, 20).map(item => item.value));
+const bridges = reactive<Partial<Record<TransferSide, CollectionVirtualizer>>>({});
+const virtualizers = computed(() => ({ ...bridges }));
+
+const BridgeCapture = defineComponent({
+  props: { side: { type: String, required: true }, bridge: { type: Object, required: true } },
+  setup(props, { slots }) {
+    const publish = (): void => {
+      bridges[props.side as TransferSide] = props.bridge as CollectionVirtualizer;
+    };
+    onMounted(publish);
+    onUpdated(publish);
+    return () => slots.default?.();
+  },
+});
+</script>
+
+<template>
+  <div style="inline-size: 100%; max-inline-size: 640px">
+    <XhTransferRoot v-model:value="value" :collection="items" :virtualizers="virtualizers" searchable>
+      <XhTransferSourcePanel v-slot="{ items: panelItems }">
+        <XhTransferPanelHeader>
+          <XhTransferPanelTitle>待选权限</XhTransferPanelTitle>
+          <XhTransferPanelCount />
+          <XhTransferSelectAllTrigger>全选</XhTransferSelectAllTrigger>
+        </XhTransferPanelHeader>
+        <XhTransferSearch placeholder="搜索待选权限" />
+        <XhVirtualizerRoot v-slot="slot" :count="panelItems.length" :estimate-size="36" :viewport-tab-index="-1">
+          <BridgeCapture side="source" :bridge="slot.collectionVirtualizer">
+            <XhTransferList>
+              <XhVirtualizerViewport>
+                <XhVirtualizerContent>
+                  <XhVirtualizerItem v-for="virtualItem in slot.virtualItems" :key="virtualItem.key" :value="virtualItem.index" style="block-size: 36px">
+                    <XhTransferItem :value="panelItems[virtualItem.index].value">
+                      <XhTransferItemCheckbox />
+                      <XhTransferItemText>{{ panelItems[virtualItem.index].label }}</XhTransferItemText>
+                    </XhTransferItem>
+                  </XhVirtualizerItem>
+                </XhVirtualizerContent>
+              </XhVirtualizerViewport>
+            </XhTransferList>
+          </BridgeCapture>
+        </XhVirtualizerRoot>
+        <XhTransferEmpty>暂无待选权限</XhTransferEmpty>
+      </XhTransferSourcePanel>
+      <XhTransferToTargetTrigger />
+      <XhTransferToSourceTrigger />
+      <XhTransferTargetPanel v-slot="{ items: panelItems }">
+        <XhTransferPanelHeader>
+          <XhTransferPanelTitle>已选权限</XhTransferPanelTitle>
+          <XhTransferPanelCount />
+          <XhTransferSelectAllTrigger>全选</XhTransferSelectAllTrigger>
+        </XhTransferPanelHeader>
+        <XhTransferSearch placeholder="搜索已选权限" />
+        <XhVirtualizerRoot v-slot="slot" :count="panelItems.length" :estimate-size="36" :viewport-tab-index="-1">
+          <BridgeCapture side="target" :bridge="slot.collectionVirtualizer">
+            <XhTransferList>
+              <XhVirtualizerViewport>
+                <XhVirtualizerContent>
+                  <XhVirtualizerItem v-for="virtualItem in slot.virtualItems" :key="virtualItem.key" :value="virtualItem.index" style="block-size: 36px">
+                    <XhTransferItem :value="panelItems[virtualItem.index].value">
+                      <XhTransferItemCheckbox />
+                      <XhTransferItemText>{{ panelItems[virtualItem.index].label }}</XhTransferItemText>
+                    </XhTransferItem>
+                  </XhVirtualizerItem>
+                </XhVirtualizerContent>
+              </XhVirtualizerViewport>
+            </XhTransferList>
+          </BridgeCapture>
+        </XhVirtualizerRoot>
+        <XhTransferEmpty>暂无已选权限</XhTransferEmpty>
+      </XhTransferTargetPanel>
+    </XhTransferRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="inline-size: 100%; max-inline-size: 640px">
+  <xh-transfer id="transfer-virtualized" searchable>
+    <div data-xh-part="root">
+      <div data-xh-part="source-panel">
+        <div data-xh-part="panel-header"><span data-xh-part="panel-title">待选权限</span><span data-xh-part="panel-count"></span><button data-xh-part="select-all-trigger">全选</button></div>
+        <input data-xh-part="search" placeholder="搜索待选权限" />
+        <div data-xh-part="list"><xh-virtualizer id="transfer-source-virtualizer" estimate-size="36" viewport-tab-index="-1" style="display: contents"><div data-xh-part="root"><div data-xh-part="viewport"><div data-xh-part="content"></div></div></div></xh-virtualizer></div>
+        <div data-xh-part="empty">暂无待选权限</div>
+      </div>
+      <button data-xh-part="to-target-trigger"></button><button data-xh-part="to-source-trigger"></button>
+      <div data-xh-part="target-panel">
+        <div data-xh-part="panel-header"><span data-xh-part="panel-title">已选权限</span><span data-xh-part="panel-count"></span><button data-xh-part="select-all-trigger">全选</button></div>
+        <input data-xh-part="search" placeholder="搜索已选权限" />
+        <div data-xh-part="list"><xh-virtualizer id="transfer-target-virtualizer" estimate-size="36" viewport-tab-index="-1" style="display: contents"><div data-xh-part="root"><div data-xh-part="viewport"><div data-xh-part="content"></div></div></div></xh-virtualizer></div>
+        <div data-xh-part="empty">暂无已选权限</div>
+      </div>
+    </div>
+  </xh-transfer>
+</div>
+
+<script type="module">
+  const transfer = document.getElementById("transfer-virtualized");
+  const items = Array.from({ length: 500 }, (_, index) => ({ value: `permission-${index + 1}`, label: `权限 ${index + 1}` }));
+  transfer.collection = items; transfer.value = items.slice(0, 20).map(item => item.value);
+  const hosts = { source: document.getElementById("transfer-source-virtualizer"), target: document.getElementById("transfer-target-virtualizer") };
+  function sideItems(side) { const targets = new Set(transfer.value ?? []); return items.filter(item => side === "target" ? targets.has(item.value) : !targets.has(item.value)); }
+  function render(side, virtualItems) {
+    const host = hosts[side]; const visible = sideItems(side); const content = host.querySelector('[data-xh-part="content"]');
+    content.replaceChildren(...virtualItems.map((virtualItem) => {
+      const shell = document.createElement("div"); shell.dataset.xhPart = "item"; shell.setAttribute("value", virtualItem.index); shell.style.blockSize = "36px";
+      const item = document.createElement("div"); item.dataset.xhPart = "item"; item.dataset.xhPartOwner = "transfer"; item.setAttribute("value", visible[virtualItem.index].value);
+      const checkbox = document.createElement("span"); checkbox.dataset.xhPart = "item-checkbox";
+      const text = document.createElement("span"); text.dataset.xhPart = "item-text"; text.textContent = visible[virtualItem.index].label;
+      item.append(checkbox, text); shell.append(item); return shell;
+    }));
+    host.requestUpdate();
+    transfer.virtualizers = { source: hosts.source.collectionVirtualizer, target: hosts.target.collectionVirtualizer };
+    transfer.requestUpdate();
+  }
+  for (const side of ["source", "target"]) {
+    const host = hosts[side]; host.count = sideItems(side).length;
+    render(side, host.virtualItems); host.addEventListener("range-change", event => render(side, event.detail.virtualItems));
+  }
+  transfer.addEventListener("value-change", event => { transfer.value = event.detail.value; for (const side of ["source", "target"]) { hosts[side].count = sideItems(side).length; hosts[side].requestUpdate(); } });
+</script>
+```
+
+### 分页
+
+page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用分页组件拼进面板，页码、页数与条数取自面板插槽。全选、计数与搬运仍按整侧算，搜索串一变回到第 1 页
+
+```vue
+<script setup lang="ts">
+import {
+  XhPaginationNextTrigger,
+  XhPaginationPrevTrigger,
+  XhPaginationRoot,
+  XhTransferItem,
+  XhTransferItemCheckbox,
+  XhTransferItemText,
+  XhTransferList,
+  XhTransferPanelCount,
+  XhTransferPanelHeader,
+  XhTransferPanelTitle,
+  XhTransferRoot,
+  XhTransferSearch,
+  XhTransferSelectAllTrigger,
+  XhTransferSourcePanel,
+  XhTransferTargetPanel,
+  XhTransferToSourceTrigger,
+  XhTransferToTargetTrigger,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const PAGE_SIZE = 6;
+
+const items = Array.from({ length: 40 }, (_, i) => ({
+  value: `member-${i + 1}`,
+  label: `成员 ${String(i + 1).padStart(2, "0")}`,
+}));
+
+const value = ref<string[]>([]);
+</script>
+
+<template>
+  <div style="inline-size: 100%; max-inline-size: 560px">
+    <XhTransferRoot v-model:value="value" :collection="items" :page-size="PAGE_SIZE" searchable>
+      <XhTransferSourcePanel v-slot="{ items: shown, page, pageCount, total, setPage }">
+        <XhTransferPanelHeader>
+          <XhTransferPanelTitle>全部成员</XhTransferPanelTitle>
+          <XhTransferSelectAllTrigger>全选</XhTransferSelectAllTrigger>
+          <XhTransferPanelCount />
+        </XhTransferPanelHeader>
+        <XhTransferSearch placeholder="搜索成员" />
+        <XhTransferList>
+          <XhTransferItem v-for="item in shown" :key="item.value" :value="item.value">
+            <XhTransferItemCheckbox />
+            <XhTransferItemText>{{ item.label }}</XhTransferItemText>
+          </XhTransferItem>
+        </XhTransferList>
+        <XhPaginationRoot :page="page" :count="total" :page-size="PAGE_SIZE" size="sm" @page-change="setPage($event.page)">
+          <XhPaginationPrevTrigger />
+          <span>{{ page }} / {{ pageCount }}</span>
+          <XhPaginationNextTrigger />
+        </XhPaginationRoot>
+      </XhTransferSourcePanel>
+
+      <XhTransferToTargetTrigger />
+      <XhTransferToSourceTrigger />
+
+      <XhTransferTargetPanel v-slot="{ items: shown, page, pageCount, total, setPage }">
+        <XhTransferPanelHeader>
+          <XhTransferPanelTitle>项目成员</XhTransferPanelTitle>
+          <XhTransferSelectAllTrigger>全选</XhTransferSelectAllTrigger>
+          <XhTransferPanelCount />
+        </XhTransferPanelHeader>
+        <XhTransferSearch placeholder="搜索成员" />
+        <XhTransferList>
+          <XhTransferItem v-for="item in shown" :key="item.value" :value="item.value">
+            <XhTransferItemCheckbox />
+            <XhTransferItemText>{{ item.label }}</XhTransferItemText>
+          </XhTransferItem>
+        </XhTransferList>
+        <XhPaginationRoot :page="page" :count="total" :page-size="PAGE_SIZE" size="sm" @page-change="setPage($event.page)">
+          <XhPaginationPrevTrigger />
+          <span>{{ page }} / {{ pageCount }}</span>
+          <XhPaginationNextTrigger />
+        </XhPaginationRoot>
+      </XhTransferTargetPanel>
+    </XhTransferRoot>
+  </div>
+</template>
+```
+
+```html
+<div id="transfer-paged" style="inline-size: 100%; max-inline-size: 560px">
+  <xh-transfer searchable page-size="6">
+    <div data-xh-part="root">
+      <div data-xh-part="source-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">全部成员</span>
+          <button data-xh-part="select-all-trigger">全选</button>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <input data-xh-part="search" placeholder="搜索成员" />
+        <div data-xh-part="list"></div>
+        <xh-pagination page-size="6" size="sm" page="1">
+          <nav data-xh-part="root">
+            <button data-xh-part="prev-trigger"></button>
+            <button data-xh-part="item" value="1">1</button>
+            <span data-page-total>/ 1</span>
+            <button data-xh-part="next-trigger"></button>
+          </nav>
+        </xh-pagination>
+      </div>
+
+      <button data-xh-part="to-target-trigger"></button>
+      <button data-xh-part="to-source-trigger"></button>
+
+      <div data-xh-part="target-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">项目成员</span>
+          <button data-xh-part="select-all-trigger">全选</button>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <input data-xh-part="search" placeholder="搜索成员" />
+        <div data-xh-part="list"></div>
+        <xh-pagination page-size="6" size="sm" page="1">
+          <nav data-xh-part="root">
+            <button data-xh-part="prev-trigger"></button>
+            <button data-xh-part="item" value="1">1</button>
+            <span data-page-total>/ 1</span>
+            <button data-xh-part="next-trigger"></button>
+          </nav>
+        </xh-pagination>
+      </div>
+    </div>
+  </xh-transfer>
+</div>
+
+<script type="module">
+  const stage = document.getElementById("transfer-paged");
+  const transfer = stage.querySelector("xh-transfer");
+
+  transfer.collection = Array.from({ length: 40 }, (_, i) => ({
+    value: `member-${i + 1}`,
+    label: `成员 ${String(i + 1).padStart(2, "0")}`,
+  }));
+
+  let value = [];
+  transfer.value = value;
+
+  const sides = ["source", "target"].map((side) => {
+    const panel = stage.querySelector(`[data-xh-part="${side}-panel"]`);
+    const state = {
+      side,
+      list: panel.querySelector('[data-xh-part="list"]'),
+      pager: panel.querySelector("xh-pagination"),
+      current: panel.querySelector('xh-pagination [data-xh-part="item"]'),
+      total: panel.querySelector("[data-page-total]"),
+    };
+    // 翻页器只报意图，页码由穿梭框收下再回填，两边才对得上
+    state.pager.addEventListener("page-change", (event) => {
+      transfer.setPage(side, event.detail.page);
+      render(state);
+    });
+    return state;
+  });
+
+  function itemNode(item) {
+    const el = document.createElement("div");
+    el.dataset.xhPart = "item";
+    el.setAttribute("value", item.value);
+    el.innerHTML =
+      '<span data-xh-part="item-checkbox"></span><span data-xh-part="item-text"></span>';
+    el.querySelector('[data-xh-part="item-text"]').textContent = item.label;
+    return el;
+  }
+
+  // 这一页铺哪些条目、共几页、第几页都问组件要：分侧、搜索与分页都在它里面算完了
+  function render(state) {
+    state.list.replaceChildren(...transfer.visibleItems(state.side).map(itemNode));
+    const page = transfer.currentPage(state.side);
+    state.pager.count = transfer.filteredItems(state.side).length;
+    state.pager.page = page;
+    // 简洁翻页器只摆当前这一页：页码按钮跟着换值
+    state.current.setAttribute("value", String(page));
+    state.current.textContent = String(page);
+    state.total.textContent = `/ ${transfer.pageCount(state.side)}`;
+  }
+
+  function renderAll() {
+    for (const state of sides) render(state);
+  }
+
+  transfer.addEventListener("value-change", (event) => {
+    value = event.detail.value;
+    transfer.value = value;
+    renderAll();
+  });
+  // 搜索串住在组件里、不对外派事件；这一条挂在宿主上，跑在组件写给搜索框的处理器之后
+  transfer.addEventListener("input", renderAll);
+
+  renderAll();
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -2294,22 +2650,26 @@ const rows = [
 
 ### 特性
 
-- 两栏都可搜索，`filter` 可自定义匹配规则。
+- 两栏都可搜索，`filter` 可自定义匹配规则。搜索框与命令面板、级联选择的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，占位文字与其它字段同一支前景。
 - 勾中的条目铺品牌淡底行面并由行首的方框标记，与表格选中行同一副外观；两侧定高列表挂自绘滚动条。
 - `oneWay` 单向移动：只能移向目标，不可退回。
 - 条目可逐条声明语气，搬到另一侧仍带着自己的那一份。
 - 条目可写副文本，第 2 行放一句解释，搬到另一侧一并带着。
 - 条目行尾留一格给作者（计数、徽标）；行首那一格归勾选框。
 - 万级条目时只渲染可视区。
+- `pageSize` 给了即分页：两侧各翻各的，只渲染当前这一页，方向键只在这一页里走；全选、三态、计数与搬运仍按整侧（分侧 + 搜索之后）算。搜索串一变该侧回到第 1 页，条目搬走后页数变少时页码夹回最后一页。翻页器用[分页](./pagination)拼进面板，页码、页数与条数取自面板插槽（`page` / `pageCount` / `total` / `setPage`）。
 - 每一侧的空（`empty`）与在途（`loading`）各有部件；`loading` 为真时两侧列表报 `aria-busy`，空态让位。
 - 设置 `name` 后，目标侧每个值以一个同名原生字段提交；源侧勾选 `selection` 不参与提交。三端自动装配隐藏出口，无需手写节点。
 - 值内逗号保留原样，使用 `new FormData(form).getAll(name)` 读取数组；目标为空时没有该字段，显式选中的空字符串则是一个有效字段值。
 - `form` 可指定同一文档或影子树内的原生表单 ID；指定无效 ID 时不关联其他表单。整体 `disabled` 不提交，只读和禁用条目已经存在的目标值仍提交。
 - 原生 `form.reset()` 恢复 `defaultValue` 与 `defaultSelection`，清理搜索与导航状态。受控值没有声明默认值时保持业务数据；声明默认值时只通知重置意图，由业务回写受控值。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
 ### 组合
 
-- 内层是[列表框](./listbox)；长列表配[虚拟滚动](./virtualizer)。
+- 内层是[列表框](./listbox)；长列表为 source / target 各接一台[虚拟滚动](./virtualizer)，两侧桥分别写入 `virtualizers`，不能共用滚动窗口。
+- 分页时每侧面板里放一台[分页](./pagination)，与虚拟滚动二选一。
+- 树形候选不内置：条目是一维集合（`value` 是扁平的已选集合），父子勾选联动与展开状态属于[树](./tree)。需要按层级选择时用树选择或树 + 列表组合，而不是把树塞进穿梭框的一侧。
 
 ### 最佳实践
 
@@ -2338,6 +2698,7 @@ const rows = [
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `TransferItem[]` |  | 条目全集，元信息的唯一事实源。默认为空。 |
+| `virtualizers` | `Partial<Record<TransferSide, CollectionVirtualizer>>` |  | 两侧各自的虚拟化桥；count 必须等于该侧搜索过滤后的 visibleItems.length。 |
 | `value` | `string[]` |  | 落在 target 侧的值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
 | `name` | `string` |  | 原生表单字段名；目标侧每个值提交一个同名字段。 |
@@ -2346,6 +2707,7 @@ const rows = [
 | `defaultSelection` | `string[]` |  |  |
 | `searchable` | `boolean` |  | 每侧带一个搜索框；关闭时搜索框仍在 DOM 中但带 hidden，且搜索串一律按空处理。 |
 | `filter` | `TransferFilter` |  | 自定义匹配规则；默认为标签大小写不敏感包含。 |
+| `pageSize` | `number` |  | 每侧每页几条；给了即分页，两侧各翻各的，缺省不分页。 分页只决定这一页渲染哪些条目、方向键在哪些条目间走；全选、三态、计数与搬运仍按整侧（分侧 + 搜索之后）算。 搜索串一变该侧回到第 1 页；条目搬走后页数变少时页码夹回最后一页。 |
 | `disabled` | `boolean` |  | 整个控件禁用：条目为 aria-disabled，三个按钮与搜索框使用原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动。禁用还额外移除键盘入口。 |
 | `invalid` | `boolean` |  | 校验失败：两侧列表报告 aria-invalid，各角色节点带 data-invalid。 |
@@ -2409,13 +2771,13 @@ const rows = [
 | `item-description` | 'checked' \| 'unchecked' |
 | `item-suffix` | 'checked' \| 'unchecked' |
 | `item-checkbox` | 'checked' \| 'unchecked' |
-| `select-all-trigger` | checkStates[panel.side] |
+| `select-all-trigger` | itemState(item) |
 
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
-**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `ITEM.FOCUS` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `PAGE.SET` · `ITEM.FOCUS` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -2433,8 +2795,13 @@ const rows = [
 | `invalid` | `boolean` |  |
 | `oneWay` | `boolean` |  |
 | `searchable` | `boolean` |  |
-| `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当前可见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 |
-| `checkedValues` | `(side: TransferSide) => string[]` | 某一侧当前实际勾选的值（只计可见且未禁用的条目，与三态、移动同一口径）。 |
+| `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当前可见的条目（分侧 + 搜索 + 分页之后），顺序恒为 collection 原序。 |
+| `filteredItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧分侧 + 搜索之后的全部条目（不分页）；全选、三态、计数与搬运都按它算。 |
+| `pageSize` | `number \| undefined` | 每页几条；不分页时为 undefined。 |
+| `page` | `(side: TransferSide) => number` | 某一侧当前页码（从 1 起）。 |
+| `pageCount` | `(side: TransferSide) => number` | 某一侧共有几页（至少 1 页）。 |
+| `setPage` | `(side: TransferSide, page: number) => void` | 翻到某一侧的第 page 页（从 1 起，夹回页数之内）。 |
+| `checkedValues` | `(side: TransferSide) => string[]` | 某一侧当前实际勾选的值（只计分侧 + 搜索之后未禁用的条目，与三态、移动同一口径；分页不影响）。 |
 | `checkState` | `(side: TransferSide) => TransferCheckState` |  |
 | `query` | `(side: TransferSide) => string` |  |
 | `canMove` | `(to: TransferSide) => boolean` | 向 to 侧移动当前是否可行：对面有勾选的可操作条目，且该路径未被 oneWay 关闭。 |
@@ -2523,6 +2890,8 @@ const rows = [
 
 `@xihan-ui/styles/transfer.css` 使用 `[data-scope="transfer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -2540,13 +2909,15 @@ const rows = [
 | `panel-header` | `data-side` | panel.side |
 | `panel-title` | `data-side` | panel.side |
 | `panel-count` | `data-checked-count` | String(checked[panel.side].length) |
-| `panel-count` | `data-count` | String(visible[panel.side].length) |
+| `panel-count` | `data-count` | String(filtered[panel.side].length) |
 | `panel-count` | `data-side` | panel.side |
 | `search` | `data-side` | panel.side |
+| `search` | `data-xh-field-input` | '' |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-invalid` | ''（条件成立时才出现） |
 | `list` | `data-readonly` | ''（条件成立时才出现） |
 | `list` | `data-side` | panel.side |
+| `list` | `data-xh-virtualized` | ''（条件成立时才出现） |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group` | `data-side` | group.side |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
@@ -2579,11 +2950,15 @@ const rows = [
 | `item-checkbox` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-checkbox` | `data-side` | item.side |
 | `item-checkbox` | `data-state` | 'checked' \| 'unchecked' |
+| `item-checkbox` | `data-xh-check-mark` | state['data-state'] |
+| `item-checkbox` | `data-xh-check-mark-profile` | 'box' |
 | `item-checkbox` | `data-xh-collection-slot` | 'prefix' |
 | `empty` | `data-disabled` | ''（条件成立时才出现） |
 | `empty` | `data-side` | panel.side |
 | `loading` | `data-disabled` | ''（条件成立时才出现） |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-side` | panel.side |
+| `loading` | `data-xh-loading-ring` | '' |
 | `to-target-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `to-target-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `to-target-trigger` | `data-xh-action-control` | '' |
@@ -2601,12 +2976,14 @@ const rows = [
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-side` | panel.side |
-| `select-all-trigger` | `data-state` | checkStates[panel.side] |
+| `select-all-trigger` | `data-state` | itemState(item) |
 | `select-all-trigger` | `data-xh-action-control` | '' |
 | `select-all-trigger` | `data-xh-action-display` | 'always' |
 | `select-all-trigger` | `data-xh-action-profile` | 'text' |
 | `select-all-trigger` | `data-xh-action-size` | 'xs' |
 | `select-all-trigger` | `data-xh-action-variant` | 'ghost' |
+| `select-all-trigger` | `data-xh-check-mark` | itemState(item) |
+| `select-all-trigger` | `data-xh-check-mark-profile` | 'row' |
 | `panel` | `data-disabled` | ''（条件成立时才出现） |
 | `panel` | `data-side` | panel.side |
 
@@ -2623,18 +3000,18 @@ const rows = [
 | `--xh-transfer-checkbox-border` | `item-checkbox`<br>`select-all-trigger` | `border` | `default` | `--xh-border-control` | transfer 的 item-checkbox、select-all-trigger 部件 border 覆盖槽。 |
 | `--xh-transfer-checkbox-border-checked` | `item-checkbox`<br>`select-all-trigger` | `border-color` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-accent` | transfer 的 item-checkbox、select-all-trigger 部件 border-color 覆盖槽。 |
 | `--xh-transfer-checkbox-border-disabled` | `item-checkbox` | `border-color` | `disabled` | `--xh-border-default` | transfer 的 item-checkbox 部件 border-color 覆盖槽。 |
-| `--xh-transfer-checkbox-fg` | `item-checkbox`<br>`select-all-trigger` | `background-color`<br>`color` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-on-accent` | transfer 的 item-checkbox、select-all-trigger 部件 background-color、color 覆盖槽。 |
-| `--xh-transfer-checkbox-font-size` | `item-checkbox`<br>`select-all-trigger` | `font-size` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 font-size 覆盖槽。 |
+| `--xh-transfer-checkbox-fg` | `item-checkbox`<br>`select-all-trigger` | `--xh-check-mark-fg`<br>`color` | `default` | `--xh-_transfer-on-accent` | transfer 的 item-checkbox、select-all-trigger 部件 --xh-check-mark-fg、color 覆盖槽。 |
+| `--xh-transfer-checkbox-font-size` | `item-checkbox`<br>`select-all-trigger` | `font-size` | `default` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 font-size 覆盖槽。 |
 | `--xh-transfer-checkbox-radius` | `item-checkbox`<br>`select-all-trigger` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 item-checkbox、select-all-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-transfer-checkbox-size` | `item-checkbox`<br>`select-all-trigger` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 --xh-icon-size、block-size、inline-size、margin-inline-start 覆盖槽。 |
-| `--xh-transfer-empty-fg` | `empty` | `color` | `default` | `--xh-fg-subtle` | transfer 的 empty 部件 color 覆盖槽。 |
+| `--xh-transfer-checkbox-size` | `item-checkbox`<br>`select-all-trigger` | `--xh-check-mark-box-size`<br>`--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 --xh-check-mark-box-size、--xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-transfer-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | transfer 的 empty 部件 color 覆盖槽。 |
 | `--xh-transfer-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-transfer-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | transfer 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-transfer-fg` | `root` | `color` | `default` | `--xh-fg-default` | transfer 的 root 部件 color 覆盖槽。 |
 | `--xh-transfer-gap` | `root` | `gap` | `default` | `--xh-space-3` | transfer 的 root 部件 gap 覆盖槽。 |
 | `--xh-transfer-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | transfer 的 group 部件 gap 覆盖槽。 |
-| `--xh-transfer-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-subtle` | transfer 的 group-label 部件 color 覆盖槽。 |
+| `--xh-transfer-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-muted` | transfer 的 group-label 部件 color 覆盖槽。 |
 | `--xh-transfer-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | transfer 的 group-label 部件 font-size 覆盖槽。 |
 | `--xh-transfer-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | transfer 的 group-label 部件 font-weight 覆盖槽。 |
 | `--xh-transfer-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 group-label 部件 padding-inline 覆盖槽。 |
@@ -2651,12 +3028,12 @@ const rows = [
 | `--xh-transfer-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | transfer 的 item 部件 line-height 覆盖槽。 |
 | `--xh-transfer-item-px` | `item` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-item-py` | `item` | `padding-block` | `default` | `--xh-_transfer-item-py` | transfer 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-transfer-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | transfer 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-transfer-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-transfer-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | transfer 的 list 部件 gap 覆盖槽。 |
 | `--xh-transfer-list-h` | `list` | `block-size` | `default` | `--xh-viewport-h-md` | transfer 的 list 部件 block-size 覆盖槽。 |
 | `--xh-transfer-list-px` | `list` | `padding-inline` | `default` | `--xh-space-1` | transfer 的 list 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-list-py` | `list` | `padding-block` | `default` | `--xh-space-1` | transfer 的 list 部件 padding-block 覆盖槽。 |
-| `--xh-transfer-loading-fg` | `loading` | `color` | `default` | `--xh-fg-subtle` | transfer 的 loading 部件 color 覆盖槽。 |
+| `--xh-transfer-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | transfer 的 loading 部件 color 覆盖槽。 |
 | `--xh-transfer-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-transfer-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | transfer 的 loading 部件 padding-block 覆盖槽。 |
@@ -2673,11 +3050,12 @@ const rows = [
 | `--xh-transfer-panel-title-fg` | `panel-title` | `color` | `default` | `--xh-fg-default` | transfer 的 panel-title 部件 color 覆盖槽。 |
 | `--xh-transfer-panel-title-font-size` | `panel-title` | `font-size` | `default` | `--xh-text-label-size` | transfer 的 panel-title 部件 font-size 覆盖槽。 |
 | `--xh-transfer-panel-title-font-weight` | `panel-title` | `font-weight` | `default` | `--xh-font-weight-semibold` | transfer 的 panel-title 部件 font-weight 覆盖槽。 |
+| `--xh-transfer-placeholder-fg` | `search` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | transfer 的 search 部件 color 覆盖槽。 |
 | `--xh-transfer-search-bg` | `search` | `background` | `default` | `transparent` | transfer 的 search 部件 background 覆盖槽。 |
-| `--xh-transfer-search-border` | `search` | `border-block-end` | `default` | `--xh-border-control` | transfer 的 search 部件 border-block-end 覆盖槽。 |
+| `--xh-transfer-search-border` | `search` | `border-block-end` | `default` | `--xh-material-solid-separator` | transfer 的 search 部件 border-block-end 覆盖槽。 |
 | `--xh-transfer-search-fg` | `search` | `color` | `default` | `--xh-fg-default` | transfer 的 search 部件 color 覆盖槽。 |
 | `--xh-transfer-search-font-size` | `search` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 search 部件 font-size 覆盖槽。 |
-| `--xh-transfer-search-h` | `search` | `block-size` | `default` | `--xh-control-h-sm` | transfer 的 search 部件 block-size 覆盖槽。 |
+| `--xh-transfer-search-h` | `search` | `block-size` | `default` | `--xh-_transfer-h` | transfer 的 search 部件 block-size 覆盖槽。 |
 | `--xh-transfer-search-px` | `search` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 search 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-select-all-bg-hover` | `select-all-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | transfer 的 select-all-trigger 部件 background-color 覆盖槽。 |
 | `--xh-transfer-select-all-bg-pressed` | `select-all-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | transfer 的 select-all-trigger 部件 background-color 覆盖槽。 |
@@ -2700,17 +3078,15 @@ const rows = [
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`-webkit-mask-size` · `background-color` · `border-color` · `mask-size` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
 
 皮肤按视口分档：`min-width: 640px`。
-
-皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

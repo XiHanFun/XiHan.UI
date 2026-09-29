@@ -277,6 +277,106 @@ const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: to
 </xh-scroll-area>
 ```
 
+### 命令式滚动与到底通知
+
+scrollTo 滚动视口，reach-end 在滚到底那一下通知一次，常用来提示或续载
+
+```vue
+<script setup lang="ts">
+import type { ScrollAreaScrollDetails } from "@xihan-ui/headless";
+import {
+  XhButton,
+  XhScrollAreaContent,
+  XhScrollAreaRoot,
+  XhScrollAreaScrollbar,
+  XhScrollAreaThumb,
+  XhScrollAreaTrack,
+  XhScrollAreaViewport,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const rows = Array.from({ length: 20 }, (_, i) => `第 ${i + 1} 条记录`);
+const status = ref("往下滚到底看看");
+
+function onReachEnd(details: ScrollAreaScrollDetails): void {
+  if (details.orientation === "vertical")
+    status.value = "已经到底了";
+}
+</script>
+
+<template>
+  <div style="display: grid; gap: 12px; justify-items: start; inline-size: min(360px, 100%)">
+    <XhScrollAreaRoot
+      v-slot="{ scrollTo }"
+      type="always"
+      aria-label="记录列表"
+      style="block-size: 180px; inline-size: 100%; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
+      @reach-end="onReachEnd"
+    >
+      <XhScrollAreaViewport>
+        <XhScrollAreaContent style="padding: 8px 16px">
+          <p v-for="row in rows" :key="row" style="margin: 8px 0">{{ row }}</p>
+        </XhScrollAreaContent>
+      </XhScrollAreaViewport>
+      <XhScrollAreaScrollbar orientation="vertical">
+        <XhScrollAreaTrack>
+          <XhScrollAreaThumb />
+        </XhScrollAreaTrack>
+      </XhScrollAreaScrollbar>
+      <div style="position: absolute; inset-block-end: 8px; inset-inline-end: 20px">
+        <XhButton size="sm" variant="outline" @click="scrollTo({ top: 0, behavior: 'smooth' }); status = '往下滚到底看看'">
+          回到顶部
+        </XhButton>
+      </div>
+    </XhScrollAreaRoot>
+    <span aria-live="polite">{{ status }}</span>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: 12px; justify-items: start; inline-size: min(360px, 100%)">
+  <xh-scroll-area id="scroll-area-scroll-to" type="always" aria-label="记录列表" style="display: contents">
+    <div data-xh-part="root" style="block-size: 180px; inline-size: 100%; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
+      <div data-xh-part="viewport">
+        <div data-xh-part="content" style="padding: 8px 16px"></div>
+      </div>
+      <div data-xh-part="scrollbar" orientation="vertical"><div data-xh-part="track"><div data-xh-part="thumb"></div></div></div>
+      <div style="position: absolute; inset-block-end: 8px; inset-inline-end: 20px">
+        <xh-button id="scroll-area-scroll-to-top" size="sm" variant="outline">
+          <button data-xh-part="root">回到顶部</button>
+        </xh-button>
+      </div>
+    </div>
+  </xh-scroll-area>
+  <span id="scroll-area-scroll-to-status" aria-live="polite">往下滚到底看看</span>
+</div>
+
+<script type="module">
+  const area = document.getElementById("scroll-area-scroll-to");
+  const status = document.getElementById("scroll-area-scroll-to-status");
+  const content = area.querySelector('[data-xh-part="content"]');
+
+  for (let i = 1; i <= 20; i++) {
+    const row = document.createElement("p");
+    row.style.margin = "8px 0";
+    row.textContent = `第 ${i} 条记录`;
+    content.append(row);
+  }
+
+  // 元素的 scrollTo 滚的是 viewport，参数与原生同形
+  document.getElementById("scroll-area-scroll-to-top").addEventListener("click", () => {
+    area.scrollTo({ top: 0, behavior: "smooth" });
+    status.textContent = "往下滚到底看看";
+  });
+
+  area.addEventListener("reach-end", (event) => {
+    if (event.detail.orientation === "vertical")
+      status.textContent = "已经到底了";
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -296,6 +396,8 @@ const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: to
 - 支持五种滚动条显示时机。
 - `fade` 变体在可滚动边缘显示渐隐提示。
 - 触屏设备默认保留原生滚动体验。
+- `scrollTo` 滚动视口，参数与原生 `Element.scrollTo` 的对象形式同形；`smooth` 在减弱动效下即刻到位。Vue 从组件实例与默认插槽取，React 从函数式 children 取，Web Components 直接调元素的 `scrollTo`。
+- `scroll-change` 按轴报滚动量，`reach-end` 在某条轴跨过末端那一下报一次；两者都不与原生 `scroll` 同名，不会冒泡进祖先的滚动监听。
 
 ### 组合
 
@@ -330,10 +432,21 @@ const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: to
 | `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻转。 必须显式提供：组件不读取计算样式，无法感知从 RTL 祖先继承的方向。 |
 | `forceVisible` | `boolean` |  | 触屏（粗指针）上也绘制自绘滚动条，默认 false：默认交给原生滚动。 |
 | `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 |
+| `onReachEnd` | `(details: ScrollAreaScrollDetails) => void` |  | 某条轴滚到了末端：只在跨过末端那一下通知，停在末端不重复；内容不溢出时不通知。 |
+| `onScrollChange` | `(details: ScrollAreaScrollDetails) => void` |  | 某条轴的滚动量变了（滚轮、键盘、拖动与命令式滚动都算），按轴分别通知。 |
 | `orientation` | `ScrollAreaOrientation` |  | 归本组件管理的轴，默认 both。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，影响滚动条厚度，也是边缘渐隐的带宽。 |
 | `type` | `ScrollbarType` |  | 滚动条显示的时机，默认 scroll-hover。 |
 | `variant` | `ScrollAreaVariant` |  | 形态：plain / fade，默认 plain。 |
+
+### 事件
+
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `scroll-change` | `ScrollAreaScrollDetails` | 某条轴的滚动量变了，按轴分别派发；detail 为 `{ orientation, offset, max }` |
+| `reach-end` | `ScrollAreaScrollDetails` | 某条轴滚到了末端，只在跨过末端那一下派发；detail 为 `{ orientation, offset, max }` |
 
 ### 插槽
 
@@ -373,6 +486,7 @@ const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: to
 | `horizontal` | `ScrollAreaAxisState` |  |
 | `draggingAxis` | `Orientation \| null` | 正被拖动的轴；未拖动时为 null。 |
 | `cornerVisible` | `boolean` | 右下角补丁是否应显示：两条滚动条同时在场才有它的位置。 |
+| `scrollTo` | `(options: ScrollAreaScrollToOptions) => void` | 滚动视口，与原生 Element.scrollTo 的对象形式同形；视口还没挂上时什么也不做。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
@@ -453,7 +567,7 @@ const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: to
 
 ### 动效
 
-动效角色：出现（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
 `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

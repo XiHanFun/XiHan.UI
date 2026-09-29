@@ -22,7 +22,7 @@ import {
   XhPaginationPrevTrigger,
   XhPaginationRoot,
   XhPaginationSummary,
-  XhSegmentedRoot,
+  XhRadioGroupRoot,
   XhSelectRoot,
   XhSeparator,
   XhSpinner,
@@ -187,7 +187,7 @@ function refresh(): void {
         placeholder="全部状态"
       />
 
-      <XhSegmentedRoot v-model:value="range" :collection="ranges" aria-label="时间粒度" />
+      <XhRadioGroupRoot v-model:value="range" variant="segmented" :collection="ranges" aria-label="时间粒度" />
 
       <XhSeparator orientation="vertical" class="data-page__divider" />
 
@@ -385,21 +385,20 @@ function refresh(): void {
       </div>
     </xh-select>
 
-    <xh-segmented id="data-page-range" value="30">
+    <xh-radio-group id="data-page-range" variant="segmented" value="30">
       <div data-xh-part="root" aria-label="时间粒度">
-        <span data-xh-part="indicator"></span>
-        <button data-xh-part="item" value="7">
+        <span data-xh-part="thumb"></span>
+        <div data-xh-part="item" value="7">
           <span data-xh-part="item-text">近 7 天</span>
-        </button>
-        <button data-xh-part="item" value="14">
+        </div>
+        <div data-xh-part="item" value="14">
           <span data-xh-part="item-text">近 14 天</span>
-        </button>
-        <button data-xh-part="item" value="30">
+        </div>
+        <div data-xh-part="item" value="30">
           <span data-xh-part="item-text">近 30 天</span>
-        </button>
-        <input data-xh-part="hidden-input" />
+        </div>
       </div>
-    </xh-segmented>
+    </xh-radio-group>
 
     <xh-separator orientation="vertical" style="display: contents">
       <!-- 竖线要有确定高度才画得出来，取控件行高那一档 -->
@@ -689,7 +688,7 @@ function refresh(): void {
 
 ## 这一屏定了什么
 
-- **筛选条是一行，不是一堆。** 文本框、下拉、[分段控件](../components/segmented)与按钮同高对齐，靠的是同一组控件高度令牌；它们之间那道竖线是[分隔线](../components/separator)组件。
+- **筛选条是一行，不是一堆。** 文本框、下拉、[分段形态的单选组](../components/radio-group)与按钮同高对齐，靠的是同一组控件高度令牌；它们之间那道竖线是[分隔线](../components/separator)组件。
 - **三种状态各有其位。** 表体有行时渲行，取数中露加载槽，筛完没有行露空态槽——空态槽里放的就是[空态](../components/empty-state)组件，表格不必自己再造一套。
 - **状态列是标签不是色块。** 每种状态对应一档[语气](../guide/theme)，颜色由语气派生，页面里一个色值都没写。
 - **筛选一动就退回第一页。** 页码是一份独立状态，条件变了不复位就会停在一页不存在的页码上；这条在示例里是三行 `watch`，在你的项目里同样要有。

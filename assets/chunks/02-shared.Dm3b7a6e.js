@@ -1,0 +1,31 @@
+const n=`<!-- 共用量程 | scale="shared" 让全部指标共用一个量程：单位相同的指标，形状的大小才能跨指标比较 -->
+<script setup lang="ts">
+import { XhRadarChartRoot } from "@xihan-ui/vue";
+
+// 六项能力都是 0–100 分：同一种单位，适合共用量程
+const people = [
+  { name: "张三", design: 85, frontend: 92, backend: 60, testing: 70, communication: 78, planning: 66 },
+  { name: "李四", design: 58, frontend: 70, backend: 90, testing: 82, communication: 64, planning: 80 },
+];
+
+const indicators = [
+  { key: "design", label: "设计" },
+  { key: "frontend", label: "前端" },
+  { key: "backend", label: "后端" },
+  { key: "testing", label: "测试" },
+  { key: "communication", label: "沟通" },
+  { key: "planning", label: "规划" },
+] as const;
+<\/script>
+
+<template>
+  <XhRadarChartRoot
+    :data="people"
+    name-field="name"
+    :indicators="indicators"
+    scale="shared"
+  >
+    <template #caption>两名工程师的能力评估</template>
+  </XhRadarChartRoot>
+</template>
+`;export{n as default};

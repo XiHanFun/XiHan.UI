@@ -15,18 +15,21 @@
 | 披露 | 内容展开收起 | `grid-template-rows` | `expand` / `enter-strong`；`collapse` / `exit` | 瞬时 |
 | 出现 | 挂载与卸载 | `opacity`、小幅 `translate` / `scale` | `enter` / `enter` 或 `enter-strong`；`exit` / `exit` | 淡变 |
 | 列表 | 加入、移除、重排、错开 | 同出现；重排用 `translate` | 同出现；重排 `move` / `continuous` | 淡变，无错开 |
-| 导航 | 抽屉、侧栏、走马灯、标签带滚动、平滑滚动 | `translate`、滚动位置 | 进 `slide` / `slide`；出 `exit` / `exit` | 抽屉类淡变，其余瞬时 |
+| 导航 | 整幅位移：抽屉、覆盖式侧栏、走马灯翻页、平滑滚动 | `translate`、滚动位置 | 进 `slide` / `slide`；出 `exit` / `exit` | 抽屉类淡变，其余瞬时 |
 | 数值 | 进度、计数、倒计时 | `translate`、`clip-path`、文本 | `move` / `continuous` | 瞬时；倒计时按秒分段 |
 | 手势 | 拖拽跟手、松手归位、快甩、越界回弹 | `translate`、`scale` | 跟手无过渡；松手用弹簧并交接松手速度 | 瞬时归位 |
 | 循环 | 转圈、微光、光标、不定进度、呼吸 | `rotate`、`background-position`、`opacity`、`translate` | 循环周期 / `loop` | 停止并显示静态替代 |
 | 注意 | 抖动、脉冲强调 | — | 只在 [`@xihan-ui/animations`](/guide/animations) 中使用：`attention` | 不播放 |
-| 数据 | 图表入场、更新、退出 | 几何参数、`stroke-dashoffset`、`opacity` | 入场 `reveal` / `enter-strong`，描线 `reveal` / `continuous`；更新 `morph` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
+| 数据 | 图表入场、更新、退出 | 几何参数、`stroke-dashoffset`、`opacity` | 入场 `reveal` / `enter-strong`，描线 `reveal` / `continuous`；更新与删除 `morph` / `continuous`；缩放换窗 `move` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
 | 氛围 | 动态背景、跑马灯 | 着色器时间轴、`translate` | 由速度决定 | 冻结或停止 |
 
 表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`。
 
 - 带位移、缩放、旋转或尺寸变化的动画不用 `micro`、`enter`、`exit` 三支时长：这三支在减弱动效下保留为淡变。例外是进出场（出现、列表加入与移除、整幅滑出）：其中的位移与缩放只取幅度令牌，减弱动效下归零，剩下的只有淡变，所以照常取 `enter` / `exit`。
 - `move` 与 `nudge` 的分界：跨位置的换位与尺寸变化（指示器滑移、进度增长、堆叠重排、视口长高）取 `move`；原地的小幅几何变化（滑块、勾选标记、展开箭头、拇指缩放）与跟手的让位、查看器缩放平移取 `nudge`。
+- 屏内换位与尺寸变化（占位式侧栏折叠、分栏折叠、标签带滚动）归 `move`，不归导航：导航只管以视口尺度移动的整幅位移。通知从边缘推入是出现，取 `enter` / `exit`。
+- 焦点环即时出现、即时撤下，不淡入：键盘用户要焦点当场落位；字段的描边与底色换色照常淡变。
+- 日历翻月与视图切换瞬时，不做方向动画：横移途中读格会读错，方向由标题的年月交代。
 
 ## 令牌
 
@@ -90,12 +93,12 @@
 | --- | ---: | ---: | --- |
 | `--xh-motion-distance-sm` / `-md` | 4 / 8px | 0 | 浮层滑入、面板与列表条目入场 |
 | `--xh-motion-distance-lg` | 16px | 0 | `@xihan-ui/animations` 的表现性进场 |
-| `--xh-motion-travel` | 100% | 0 | 整幅位移：抽屉、轻提示 |
+| `--xh-motion-travel` | 100% | 0 | 整幅位移：抽屉、叠放的通知 |
 | `--xh-motion-travel-opacity` | 1 | 0 | 整幅位移两端的不透明度：减弱动效下位移归零，改由淡变表达 |
 | `--xh-motion-scale-enter` / `-exit` | 0.96 / 0.98 | 1 | 出现 |
 | `--xh-motion-scale-press` | 0.97 | 1 | 按压 |
 | `--xh-motion-scale-drag` | 1.12 | 1 | 拖起 |
-| `--xh-motion-scale-stack` | 0.95 | 1 | 轻提示叠放每往后一层的收拢比例 |
+| `--xh-motion-scale-stack` | 0.95 | 1 | 通知叠放（轻提示预设的缺省）每往后一层的收拢比例 |
 | `--xh-motion-scale-squash` | 0.86 | 1 | liquid 档指示器拉长时另一向的压扁下限 |
 | `--xh-motion-scale-breathe` / `-halo` | 0.82 / 2.6 | 1 | 呼吸的吸气最小值与光环外扩 |
 
@@ -104,7 +107,7 @@
 ## 编排
 
 - **进出不对称**：进场比退场长一档（`enter` 200ms、`exit` 120ms），进场减速、退场加速；退场是让路。
-- **方向**：从哪来回哪去——锚定浮层从锚点一侧滑出，抽屉从所在边推入，轻提示从视口边缘进出；RTL 下横向位移随书写方向翻转。
+- **方向**：从哪来回哪去——锚定浮层从锚点一侧滑出，抽屉从所在边推入，通知从视口边缘进出；RTL 下横向位移随书写方向翻转。
 - **错开**：只对同一批到达的条目按到达顺序计数，步长 `--xh-motion-stagger-step`，最多 5 步，后面的与第 5 步同时出现；不按 DOM 位置（`nth-child`）计数。每次都是同一批一起露面的（浮动按钮列表、级联列、问答选项）位次就是到达顺序。
 - **分层**：遮罩与面板同时开始、同时退场，在最长的那个结束后卸载；面板内列表的错开从面板进场开始计时。
 - **首帧不播进场**：初始渲染时已存在的内容（默认展开的披露、默认打开的浮层、历史消息、初始列表）直接呈现，只有用户操作或新数据带来的出现才播进场。Headless 以 `data-instant` 标记这类内容，皮肤把进场写在 `:not([data-instant])` 下；标记挂在条目上，只有它自己变了才撤，撤掉祖先上的标记会让下面所有静止的元素同时重播进场。
@@ -119,10 +122,12 @@
 | 阶段 | 时长 | 结果 | 缓动 |
 | --- | ---: | --- | --- |
 | 按下 | 120ms（`--xh-motion-duration-press`） | scale 1 → 0.97，底进入 active | `--xh-motion-ease-press` |
-| 释放 | 200ms（`--xh-motion-duration-release`） | scale 0.97 → 1，底回到 hover / rest | `--xh-motion-ease-release` |
+| 释放 | 200ms（`--xh-motion-duration-release`） | scale 0.97 → 1；底、描边、字色按 120ms（`--xh-motion-duration-micro`）回到 hover / rest | `--xh-motion-ease-release` |
 
 - transform origin 固定居中；指针 `:active`、键盘 Space / Enter 与 Headless 投影的 `data-pressed` 三者一致。
 - 行级条目与 disclosure trigger（菜单项、树节点、表格行、手风琴标题）只换面，不缩放整个条目；不允许零反馈。
+- 共边相接的分段（按钮组、切换组、工具条分组里的按钮）按下只换面：缩放任一段都会撕开两侧接缝。
+- 换面（底、描边、字色）悬停进入与按压释放同一时长 micro：CSS 分不出这两种来路，200ms 的释放只给缩放。
 - 不用点击波纹；不允许组件自设 0.94 / 0.96 / 0.98 等缩放。
 - 业务事件不等动画结束：按下首帧先于异步 loading 可见；pending 后锁定重复操作，不持续缩放。
 - hover + pressed 时 pressed 优先；focus-visible + pressed 保留焦点环、按压只改内部表面；selected / danger + pressed 保留各自身份，在其上派生 active 面。
@@ -151,14 +156,14 @@
 
 - 加入用 `xh-item-in`（淡入 + `distance-md` 上移），移除用 `xh-fade-out`；重排用 FLIP：读取旧位置、写入新布局、以 `translate` 反向补偿后过渡到 0，`move` + `continuous`。
 - 条目由作者渲染、删掉即卸载的集合（TagsInput、FieldArray）由列表动效原语 `trackListMotion` 接住离场：在原位置放一个退场态的替身，绝对定位在原排布位、不可交互，播完即移除；留下来的条目从旧位置滑到新位置。作者的列表写法不变。
-- 启用列表增删动效的集合：TagsInput、FieldArray，以及 Toast、Notification、MessageFeed、Command、Cascader；Transfer（两侧同时变化）与 InfiniteScroll（批量追加）不启用。
+- 启用列表增删动效的集合：TagsInput、FieldArray，以及 Notification、MessageFeed、Command、Cascader；Transfer（两侧同时变化）与 InfiniteScroll（批量追加）不启用。
 
 ## 数值与指示
 
 - 进度类填充（Progress、LoadingBar、FileUpload 进度）不动 `inline-size`：填充铺满轨道、按比例 `translate`，由轨道裁掉，只走合成。倒计时条自己就是填充，用 `clip-path` 裁切收起；减弱动效下按秒分段。
 - 不定进度以固定宽度的一段做 `translate` 往复。
 - 数值补间（NumberAnimation）的时长由属性给出，减弱动效下直接落到终值。
-- 滑动指示器（Tabs、Segmented、Anchor、NavigationMenu）取当前项相对列表容器的 `offset*` 排布位：不用 `getBoundingClientRect`，祖先的进场缩放会让测量值失真。位置用 `translate`，尺寸用 `inline-size` / `block-size`。Tabs 的标签带滚动已经占了 `translate`，指示条的位置叠在 `transform` 上，两者互不覆盖。
+- 滑动指示器（Tabs、单选组 segmented 形态的滑块、Anchor、NavigationMenu）取当前项相对列表容器的 `offset*` 排布位：不用 `getBoundingClientRect`，祖先的进场缩放会让测量值失真。位置用 `translate`，尺寸用 `inline-size` / `block-size`。Tabs 的标签带滚动已经占了 `translate`，指示条的位置叠在 `transform` 上，两者互不覆盖。
 
 ## 布局动画例外与 will-change
 
@@ -170,7 +175,8 @@
 | 指示器的 `inline-size` / `block-size` | 绝对定位的独立小元素，不影响其他元素 |
 | Switch 滑块按下伸长、Carousel 当前指示点伸长 | 部件很小，影响范围只有自己 |
 | Layout 侧栏折叠 | 必须让出内容区宽度 |
-| QuestionFlow 视口高度、Toast 堆叠高度 | 容器必须随内容增减高度 |
+| Splitter 面板折叠与展开 | 必须让出相邻面板的空间；拖拽与步进跟手，不带过渡 |
+| QuestionFlow 视口高度、Notification 叠摞高度 | 容器必须随内容增减高度 |
 | Tour 聚光框的位置与尺寸、进度点伸长 | 聚光框是 `position: fixed` 的独立框，不在文档流里；进度点只有几像素 |
 
 新增一处布局动画，要么改成可合成的写法，要么把理由登记进门禁 `check-motion-layout` 的例外表。

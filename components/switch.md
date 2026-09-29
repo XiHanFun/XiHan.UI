@@ -821,6 +821,7 @@ function onSubmit(event: Event) {
 | `thumb` | `data-dragging` | ''（条件成立时才出现） |
 | `thumb` | `data-loading` | ''（条件成立时才出现） |
 | `thumb` | `data-state` | 'checked' \| 'unchecked' |
+| `thumb` | `data-xh-loading-ring` | '' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-size` | props.size |
 | `label` | `data-state` | 'checked' \| 'unchecked' |
@@ -854,8 +855,8 @@ function onSubmit(event: Event) {
 | `--xh-switch-label-font-size` | `label` | `font-size` | `default` | `--xh-_switch-label-font-size` | switch 的 label 部件 font-size 覆盖槽。 |
 | `--xh-switch-label-gap` | `label` | `gap` | `default` | `--xh-control-gap-md` | switch 的 label 部件 gap 覆盖槽。 |
 | `--xh-switch-label-leading` | `label` | `line-height` | `default` | `--xh-leading-normal` | switch 的 label 部件 line-height 覆盖槽。 |
-| `--xh-switch-loading-duration` | `thumb` | `animation` | `loading` | `--xh-motion-loop-spin` | switch 的 thumb 部件 animation 覆盖槽。 |
-| `--xh-switch-loading-fg` | `thumb` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`loading`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-_switch-accent` | switch 的 thumb 部件 border-block-start-color、border-color 覆盖槽。 |
+| `--xh-switch-loading-duration` | `thumb` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | switch 的 thumb 部件 animation 覆盖槽。 |
+| `--xh-switch-loading-fg` | `thumb` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring` | `--xh-_switch-accent` | switch 的 thumb 部件 border-block-start-color、border-color 覆盖槽。 |
 | `--xh-switch-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | switch 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-switch-thumb` | `thumb` | `background` | `default` | `--xh-bg-surface-raised` | switch 的 thumb 部件 background 覆盖槽。 |
 | `--xh-switch-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default` | switch 的 thumb 部件 border 覆盖槽。 |
@@ -875,7 +876,7 @@ function onSubmit(event: Event) {
 
 可覆盖的动效槽：`--xh-switch-loading-duration` · `--xh-switch-thumb-press-stretch`。
 
-共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`box-shadow` · `inline-size` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`box-shadow` · `inline-size` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
@@ -885,4 +886,4 @@ function onSubmit(event: Event) {
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。

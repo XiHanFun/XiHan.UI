@@ -47,7 +47,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
     v-model:value="value"
     name="open-at"
     end-name="close-at"
-    :step="15"
+    :time-step="{ minute: 15 }"
   >
     <XhTimeRangePickerLabel>营业时段</XhTimeRangePickerLabel>
     <XhTimeRangePickerControl>
@@ -99,7 +99,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 
 <!-- 结构先收在模板里：两组列里的格子要在元素接线前就位，所以铺满了才入页 -->
 <template id="time-range-picker-basic-shell">
-  <xh-time-range-picker name="open-at" end-name="close-at" step="15">
+  <xh-time-range-picker name="open-at" end-name="close-at" time-step='{"minute":15}'>
     <div data-xh-part="root">
       <label data-xh-part="label">营业时段</label>
       <div data-xh-part="control">
@@ -241,7 +241,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
     v-model:value="value"
     min="08:00"
     max="20:00"
-    :step="30"
+    :time-step="{ minute: 30 }"
   >
     <XhTimeRangePickerLabel>预约时段</XhTimeRangePickerLabel>
     <XhTimeRangePickerControl>
@@ -290,7 +290,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 
 <!-- 结构先收在模板里：两组列里的格子要在元素接线前就位，所以铺满了才入页 -->
 <template id="time-range-picker-bounds-shell">
-  <xh-time-range-picker min="08:00" max="20:00" step="30">
+  <xh-time-range-picker min="08:00" max="20:00" time-step='{"minute":30}'>
     <div data-xh-part="root">
       <label data-xh-part="label">预约时段</label>
       <div data-xh-part="control">
@@ -427,7 +427,7 @@ const presets = computed(() => [
 </script>
 
 <template>
-  <XhTimeRangePickerRoot v-model:value="value" :presets="presets" :step="15">
+  <XhTimeRangePickerRoot v-model:value="value" :presets="presets" :time-step="{ minute: 15 }">
     <XhTimeRangePickerLabel>会议时段</XhTimeRangePickerLabel>
     <XhTimeRangePickerControl>
       <!-- 端号定这组段位认领哪一端：0 起点、1 终点 -->
@@ -477,7 +477,7 @@ const presets = computed(() => [
 
 <!-- 结构先收在模板里：两组列里的格子要在元素接线前就位，所以铺满了才入页 -->
 <template id="time-range-picker-presets-shell">
-  <xh-time-range-picker step="15">
+  <xh-time-range-picker time-step='{"minute":15}'>
     <div data-xh-part="root">
       <label data-xh-part="label">会议时段</label>
       <div data-xh-part="control">
@@ -604,11 +604,11 @@ const presets = computed(() => [
 
 ### 逐格判定
 
-isTimeUnavailable 收到值、列与端，起点只能整点开始、终点只能半点结束
+isTimeUnavailable 收到值、列与上下文（context.index 是哪一端），起点只能整点开始、终点只能半点结束
 
 ```vue
 <script setup lang="ts">
-import type { TimePickerColumnUnit, TimeRangePickerEndIndex } from "@xihan-ui/headless";
+import type { TimeColumnUnit, TimeUnavailableContext } from "@xihan-ui/headless";
 import {
   XhTimeRangePickerClearTrigger,
   XhTimeRangePickerColumn,
@@ -631,15 +631,15 @@ const value = ref<string[]>([]);
 const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0]} → ${value.value[1]}` : "（未填齐）"));
 
 // 判定与 min/max 的界外值同等对待：判真的格子仍可聚焦，只是选不中
-function isTimeUnavailable(option: string, unit: TimePickerColumnUnit, index: TimeRangePickerEndIndex): boolean {
+function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUnavailableContext): boolean {
   if (unit !== "minute")
     return false;
-  return index === 0 ? option !== "00" : option !== "30";
+  return context.index === 0 ? option !== "00" : option !== "30";
 }
 </script>
 
 <template>
-  <XhTimeRangePickerRoot v-model:value="value" :is-time-unavailable="isTimeUnavailable" :step="15">
+  <XhTimeRangePickerRoot v-model:value="value" :is-time-unavailable="isTimeUnavailable" :time-step="{ minute: 15 }">
     <XhTimeRangePickerLabel>课时</XhTimeRangePickerLabel>
     <XhTimeRangePickerControl>
       <!-- 端号定这组段位认领哪一端：0 起点、1 终点 -->
@@ -687,7 +687,7 @@ function isTimeUnavailable(option: string, unit: TimePickerColumnUnit, index: Ti
 
 <!-- 结构先收在模板里：两组列里的格子要在元素接线前就位，所以铺满了才入页 -->
 <template id="time-range-picker-predicate-shell">
-  <xh-time-range-picker step="15">
+  <xh-time-range-picker time-step='{"minute":15}'>
     <div data-xh-part="root">
       <label data-xh-part="label">课时</label>
       <div data-xh-part="control">
@@ -764,10 +764,10 @@ function isTimeUnavailable(option: string, unit: TimePickerColumnUnit, index: Ti
   }
 
   // 判定函数只走 property；判真的格子仍可聚焦，只是选不中
-  picker.isTimeUnavailable = (option, unit, index) => {
+  picker.isTimeUnavailable = (option, unit, context) => {
     if (unit !== "minute")
       return false;
-    return index === 0 ? option !== "00" : option !== "30";
+    return context.index === 0 ? option !== "00" : option !== "30";
   };
 
   picker.addEventListener("value-change", async (event) => {
@@ -821,7 +821,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 </script>
 
 <template>
-  <XhTimeRangePickerRoot v-model:value="value" :hour-cycle="12" locale="zh-CN" :step="30">
+  <XhTimeRangePickerRoot v-model:value="value" :hour-cycle="12" locale="zh-CN" :time-step="{ minute: 30 }">
     <XhTimeRangePickerLabel>值班时段</XhTimeRangePickerLabel>
     <XhTimeRangePickerControl>
       <XhTimeRangePickerSegmentGroup v-for="end in [0, 1]" :key="end" :index="end">
@@ -867,7 +867,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 
 <!-- 结构先收在模板里：两组列里的格子要在元素接线前就位，所以铺满了才入页 -->
 <template id="time-range-picker-hour-cycle-shell">
-  <xh-time-range-picker hour-cycle="12" locale="zh-CN" step="30">
+  <xh-time-range-picker hour-cycle="12" locale="zh-CN" time-step='{"minute":30}'>
     <div data-xh-part="root">
       <label data-xh-part="label">值班时段</label>
       <div data-xh-part="control">
@@ -980,7 +980,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 
 - 只选一个时刻时，使用[时间选择器](./time-picker)。
 - 任意时间都可以、用户直接键入时，使用两个[时间字段](./time-field)。
-- 起止跨天、需要连同日期一起选择时，使用[日期范围选择器](./date-range-picker)。
+- 起止跨天、需要连同日期一起选择时，使用开启 `showTime` 的日期范围选择器，见[日期加时间](./date-range-picker#日期加时间)示例。
 
 ### 特性
 
@@ -988,7 +988,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入是否参与提交。
 - 浮层内起止两组时间列并排，左右键跨组换列；选中一格只改对应端的段，浮层不收起。
 - 终点组以起点为下界、起点组以终点为上界：另一端填满后，界外的格留在原位并标为禁用，列高、滚动位置与焦点节点不跳。
-- `step` 分列设定各列的步长；`min` / `max` 与 `isTimeUnavailable` 只改变格子的可选性，第三个参数是哪一端。
+- `timeStep` 按单位设定时、分、秒各列的步长；`min` / `max` 与 `isTimeUnavailable` 只改变格子的可选性，判定的第三个参数带这一端已选的时分与端号。
 - `presets` 提供“上午”“全天”等整段快捷项，值使用 ISO 8601 的区间写法拼接两端，点击后两端整份写入值并收起。
 - 终点早于起点、任一端越界时整个字段标为不合法，也可以用 `invalid` 显式声明。
 - 触发器打开空值时焦点直接落到起点组的第一项；从输入段打开时继续保留键入焦点，展开后落到正在编辑一端的时间列。
@@ -996,7 +996,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 ### 组合
 
 - 输入行内嵌两组与[时间字段](./time-field)同构的段位，逐段键入与加减由它负责。
-- 与[日期范围选择器](./date-range-picker)配合组成日期时间区间。
+- 要连同日期一起选一段时刻，不必把两个组件拼在一起：[日期范围选择器](./date-range-picker#日期加时间)开启 `showTime` 后起止各带一组时间列，约束与本组件同一份。
 
 ### 最佳实践
 
@@ -1035,7 +1035,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `locale` | `string` |  | BCP 47 语言标记。决定上午 / 下午的文字，以及未显式提供 hourCycle 时的小时制。 |
 | `hourCycle` | `TimeHourCycle` |  | 小时制。未提供时按 locale 推断，locale 也没有时使用 24。 |
 | `granularity` | `TimeGranularity` |  | 值精确到哪一段，默认 minute。它同时决定两组分段输入各显示几段、浮层中各排几列。 |
-| `step` | `number` |  | 分列的步进（分钟），默认 1。只影响浮层中的可选值，不限制手动输入的分钟数。 |
+| `timeStep` | `TimeStep` |  | 按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。时的步进按 24 小时制的真实小时取。 只影响浮层中的可选值，不限制段位上手动输入的数。 |
 | `presets` | `TimeRangePickerPreset[]` |  | 快捷选项（「上午」「全天」等）。提供后浮层中多出一列，点击即两端整份写入值并收起。 时刻需计算后传入：连接层每帧求值，把当前时刻放进渲染期会每帧得出一个新结果。 无法解析、不是恰好两端、任一端落在 min / max 之外或终点早于起点的选项自动不可按下。 |
 | `disabled` | `boolean` |  | 禁用：两组分段输入整组退出 Tab 序列、触发器使用原生 disabled，隐藏输入不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、列表照常浏览，但值不可修改也不可清空。 |
@@ -1049,7 +1049,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `placement` | `Placement` |  |  |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
-| `isTimeUnavailable` | `(value: string, unit: TimePickerColumnUnit, index: TimeRangePickerEndIndex) => boolean` |  | 逐值可选性。接收两位补零的值、所属的列与端：同一个 '30' 在分钟列与秒列含义不同， 起点与终点也可以各有规则。与 min / max 的界外值同等处理：判定为真的格子仍可聚焦，只是不可选中。 |
+| `isTimeUnavailable` | `TimeUnavailablePredicate` |  | 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）； unit 区分同一个 '30' 属于哪一列；context 带这一端已选的时（24 小时制）与分，以及是哪一端（index）， 起点与终点可以各有规则；date 在本组件恒为 null。 与 min / max 的界外值同等处理：判定为真的格子仍可聚焦，只是不可选中。 |
 | `translations` | `Partial<TimeRangePickerTranslations>` |  | 段位与两端读屏名的覆盖；未提供时使用内置英文语义名。 |
 | `onValueChange` | `(details: TimeRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: TimeRangePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -1146,10 +1146,10 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `invalid` | `boolean` | 与根节点的 data-invalid 同一口径：作者标记的、越界的、终点早于起点的都计入。 |
 | `hourCycle` | `TimeHourCycle` | 实际生效的小时制（prop 未提供时由 locale 推断的值）。 |
 | `granularity` | `TimeGranularity` |  |
-| `step` | `number` | 实际生效的分列步进。 |
+| `timeStep` | `ResolvedTimeStep` | 实际生效的按单位步进。 |
 | `segments` | `TimeSegmentType[]` | 两组段位各自当前参与显示的段，文档序；两组相同。未列入的段由 connect 写上 hidden 收起。 |
 | `focusedSegment` | `TimeRangePickerSegmentRef \| null` | 焦点所在的段；焦点在分段输入外时为 null。 |
-| `columnGroups` | `readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup]` | 起止两组时列：每组应排列的稳定列及完整选项（已按 step 取样）。界外项由 isItemDisabled 标记，作者据此渲染浮层。 |
+| `columnGroups` | `readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup]` | 起止两组时列：每组应排列的稳定列及完整选项（已按 timeStep 取样）。界外项由 isItemDisabled 标记，作者据此渲染浮层。 |
 | `focusedColumn` | `TimeRangePickerColumnRef \| null` |  |
 | `focusedItem` | `string \| null` |  |
 | `presets` | `readonly TimeRangePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
@@ -1333,6 +1333,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
 | `positioner` | `data-variant` | props.variant |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `preset` | `data-disabled` | ''（条件成立时才出现） |
@@ -1373,9 +1374,9 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `--xh-time-range-picker-action-font-size` | `clear-trigger`<br>`trigger` | `font-size` | `default` | `--xh-text-secondary-size` | time-range-picker 的 clear-trigger、trigger 部件 font-size 覆盖槽。 |
 | `--xh-time-range-picker-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-inset` | time-range-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-time-range-picker-action-size` | `clear-trigger`<br>`trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | time-range-picker 的 clear-trigger、trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
-| `--xh-time-range-picker-column-divider` | `column`<br>`preset-group` | `border-inline-end`<br>`border-inline-start` | `default` | `--xh-material-frosted-separator` | time-range-picker 的 column、preset-group 部件 border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-time-range-picker-column-divider` | `column`<br>`preset-group` | `border-inline-end`<br>`border-inline-start` | `default` | `--xh-material-solid-separator` | time-range-picker 的 column、preset-group 部件 border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-time-range-picker-column-gap` | `column` | `gap` | `default` | `0` | time-range-picker 的 column 部件 gap 覆盖槽。 |
-| `--xh-time-range-picker-column-group-divider` | `column-group` | `border-inline-start` | `default` | `--xh-material-frosted-separator` | time-range-picker 的 column-group 部件 border-inline-start 覆盖槽。 |
+| `--xh-time-range-picker-column-group-divider` | `column-group` | `border-inline-start` | `default` | `--xh-material-solid-separator` | time-range-picker 的 column-group 部件 border-inline-start 覆盖槽。 |
 | `--xh-time-range-picker-column-group-gap` | `column-group` | `margin-inline-start`<br>`padding-inline-start` | `default` | `--xh-space-2` | time-range-picker 的 column-group 部件 margin-inline-start、padding-inline-start 覆盖槽。 |
 | `--xh-time-range-picker-column-group-label-fg` | `column-group-label` | `color` | `default` | `--xh-fg-subtle` | time-range-picker 的 column-group-label 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-column-group-label-px` | `column-group-label` | `padding-inline` | `default` | `--xh-space-1` | time-range-picker 的 column-group-label 部件 padding-inline 覆盖槽。 |
@@ -1414,15 +1415,15 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `--xh-time-range-picker-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | time-range-picker 的 item 部件 background-color 覆盖槽。 |
 | `--xh-time-range-picker-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | time-range-picker 的 item 部件 background-color 覆盖槽。 |
 | `--xh-time-range-picker-item-check-fg` | `item` | `background-color` | `default` | `--xh-_time-range-picker-check-fg` | time-range-picker 的 item 部件 background-color 覆盖槽。 |
-| `--xh-time-range-picker-item-check-size` | `item` | `block-size`<br>`inline-size`<br>`padding-inline` | `default` | `--xh-glyph-size-sm` | time-range-picker 的 item 部件 block-size、inline-size、padding-inline 覆盖槽。 |
+| `--xh-time-range-picker-item-check-size` | `item` | `block-size`<br>`inline-size`<br>`padding-inline` | `default` | `--xh-control-indicator-size` | time-range-picker 的 item 部件 block-size、inline-size、padding-inline 覆盖槽。 |
 | `--xh-time-range-picker-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | time-range-picker 的 item 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-time-range-picker-item-fg` | time-range-picker 的 item 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-item-font-size` | `item` | `font-size` | `default` | `--xh-_time-range-picker-font-size` | time-range-picker 的 item 部件 font-size 覆盖槽。 |
 | `--xh-time-range-picker-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | time-range-picker 的 item 部件 font-weight 覆盖槽。 |
-| `--xh-time-range-picker-item-h` | `item` | `block-size` | `default` | `--xh-overlay-column-item-h` | time-range-picker 的 item 部件 block-size 覆盖槽。 |
+| `--xh-time-range-picker-item-h` | `item` | `block-size` | `default` | `auto` | time-range-picker 的 item 部件 block-size 覆盖槽。 |
 | `--xh-time-range-picker-item-px` | `item` | `padding-inline` | `default` | `--xh-space-0_5` | time-range-picker 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-time-range-picker-item-py` | `item` | `padding-block` | `default` | `0` | time-range-picker 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-time-range-picker-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | time-range-picker 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-time-range-picker-item-py` | `item` | `padding-block` | `default` | `--xh-_time-range-picker-item-py` | time-range-picker 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-time-range-picker-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | time-range-picker 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-time-range-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | time-range-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | time-range-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | time-range-picker 的 label 部件 font-size 覆盖槽。 |
@@ -1433,7 +1434,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `--xh-time-range-picker-preset-bg-hover` | `preset` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | time-range-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-time-range-picker-preset-bg-pressed` | `preset` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | time-range-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-time-range-picker-preset-check-fg` | `preset` | `background-color` | `default` | `--xh-_time-range-picker-check-fg` | time-range-picker 的 preset 部件 background-color 覆盖槽。 |
-| `--xh-time-range-picker-preset-check-size` | `preset` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default` | `--xh-glyph-size-sm` | time-range-picker 的 preset 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-time-range-picker-preset-check-size` | `preset` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default` | `--xh-control-indicator-size` | time-range-picker 的 preset 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
 | `--xh-time-range-picker-preset-fg` | `preset` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-fg-default` | time-range-picker 的 preset 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-preset-fg-checked` | `preset` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-time-range-picker-preset-fg` | time-range-picker 的 preset 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-preset-fg-disabled` | `preset` | `background-color`<br>`color` | `default`<br>`disabled` | `--xh-fg-disabled` | time-range-picker 的 preset 部件 background-color、color 覆盖槽。 |
@@ -1442,7 +1443,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `--xh-time-range-picker-preset-group-px` | `preset-group` | `padding-inline` | `default` | `--xh-space-1` | time-range-picker 的 preset-group 部件 padding-inline 覆盖槽。 |
 | `--xh-time-range-picker-preset-px` | `preset` | `inset-inline-end`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-space-3` | time-range-picker 的 preset 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。 |
 | `--xh-time-range-picker-preset-py` | `preset` | `padding-block` | `default` | `--xh-space-1` | time-range-picker 的 preset 部件 padding-block 覆盖槽。 |
-| `--xh-time-range-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-control` | time-range-picker 的 preset 部件 border-radius 覆盖槽。 |
+| `--xh-time-range-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-inset` | time-range-picker 的 preset 部件 border-radius 覆盖槽。 |
 | `--xh-time-range-picker-range-separator-fg` | `range-separator` | `color` | `default` | `--xh-fg-subtle` | time-range-picker 的 range-separator 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-range-separator-mx` | `range-separator` | `margin-inline` | `default` | `--xh-_time-range-picker-range-separator-mx` | time-range-picker 的 range-separator 部件 margin-inline 覆盖槽。 |
 | `--xh-time-range-picker-range-separator-px` | `range-separator` | `margin-inline`<br>`padding-inline` | `default` | `--xh-space-1` | time-range-picker 的 range-separator 部件 margin-inline、padding-inline 覆盖槽。 |

@@ -599,17 +599,20 @@ function onSelect(details: { label: string }) {
 
 - 内置过滤：传入清单后按检索串逐词筛选、按 `group` 归组，空组自动移除。`keywords` 让一条命令同时匹配英文名、拼音与旧称。
 - 过滤可以关闭（`filter` 置否），改由调用方筛选；远端检索使用这一档。
+- 结果随输入即时换：检索过滤筛掉又露出来的命令直接呈现，不逐键重播入场；只有新插进列表的命令（宿主追加、远端取回的一批）才逐条上浮、按到达顺序错开。打开时已有的结果同样直接呈现。
 - 命令可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 命令可写副文本，第 2 行放一句解释，不进检索串。
 - 命令可写快捷键提示，贴行尾、与说明同档同色；纯装饰，不进检索串。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 面板默认是模态浮层：捕获焦点、锁定滚动、背景失活，Escape 与点击遮罩收起，收起后焦点归还触发按钮。`modal=false` 时不渲染遮罩、不拦截页面指针，也不启用这些模态约束；展开期间切换会立即同步。
+- 检索框是面板内嵌的搜索框，与级联选择、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，占位文字与其它字段同一支前景。
 - 焦点全程在检索框，活动候选经 `aria-activedescendant` 报告给读屏；活动候选同步 `aria-selected=true`，其余候选显式为 `false`，输入后活动候选自动回到首条。
 - 这里的 `aria-selected` 遵循 [WAI-ARIA 组合框规范](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)中“选中随焦点移动”的模式，只描述当前活动建议；命令执行后不保留持久选中状态，视觉上也不绘制对号或选中底。
 - 两种非条目相位各有部件：空（`empty`）与在途（`loading`）。取数期间显示在途占位，空态让位，两者不同时出现。
 - 零可见命令时列表不保留额外空白行；搜索输入和作者提供的状态、底栏仍然在场。未提供 Empty / Loading 文案时不显示空白占位，也不自动生成提示文字。
 - `collection` 与过滤结果保持数据语义；已挂载节点上的 `hidden` 会排除对应条目或分组的交互与 ARIA 高亮。未挂载或虚拟候选不按隐藏推断；展开期间替换列表节点后，可见性观察会切换到新节点。
 - `closeOnSelect` 决定选中后是否收起；连续执行多条命令时关闭它。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
 ### 组合
 
@@ -858,14 +861,17 @@ function onSelect(details: { label: string }) {
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `backdrop` | `data-instant` | ''（条件成立时才出现） |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
 | `backdrop` | `data-variant` | props.variant |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `input` | `data-state` | 'open' \| 'closed' |
+| `input` | `data-xh-field-input` | '' |
 | `list` | `data-instant` | ''（条件成立时才出现） |
 | `list` | `data-state` | 'open' \| 'closed' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
@@ -891,7 +897,9 @@ function onSelect(details: { label: string }) {
 | `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `empty` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-xh-loading-ring` | '' |
 | `footer` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
@@ -906,19 +914,19 @@ function onSelect(details: { label: string }) {
 | `--xh-command-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | command 的 backdrop 部件 z-index 覆盖槽。 |
 | `--xh-command-bg` | `content` | `background` | `default` | `--xh-material-elevated-bg` | command 的 content 部件 background 覆盖槽。 |
 | `--xh-command-border` | `content` | `border` | `default` | `--xh-material-elevated-border` | command 的 content 部件 border 覆盖槽。 |
-| `--xh-command-empty-fg` | `empty` | `color` | `default` | `--xh-fg-subtle` | command 的 empty 部件 color 覆盖槽。 |
+| `--xh-command-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | command 的 empty 部件 color 覆盖槽。 |
 | `--xh-command-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_command-font-size` | command 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-command-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_command-px` | command 的 empty 部件 padding-inline 覆盖槽。 |
-| `--xh-command-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-6` | command 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-command-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | command 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-command-fg` | `content` | `color` | `default` | `--xh-material-elevated-fg` | command 的 content 部件 color 覆盖槽。 |
-| `--xh-command-footer-border` | `footer` | `border-block-start` | `default` | `--xh-border-subtle` | command 的 footer 部件 border-block-start 覆盖槽。 |
+| `--xh-command-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-elevated-separator` | command 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-command-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | command 的 footer 部件 color 覆盖槽。 |
 | `--xh-command-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-caption-size` | command 的 footer 部件 font-size 覆盖槽。 |
 | `--xh-command-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | command 的 footer 部件 gap 覆盖槽。 |
 | `--xh-command-footer-px` | `footer` | `padding-inline` | `default` | `--xh-_command-px` | command 的 footer 部件 padding-inline 覆盖槽。 |
 | `--xh-command-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | command 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-command-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | command 的 group 部件 gap 覆盖槽。 |
-| `--xh-command-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-subtle` | command 的 group-label 部件 color 覆盖槽。 |
+| `--xh-command-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-muted` | command 的 group-label 部件 color 覆盖槽。 |
 | `--xh-command-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | command 的 group-label 部件 font-size 覆盖槽。 |
 | `--xh-command-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | command 的 group-label 部件 font-weight 覆盖槽。 |
 | `--xh-command-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_command-px` | command 的 group-label 部件 padding-inline 覆盖槽。 |
@@ -927,9 +935,9 @@ function onSelect(details: { label: string }) {
 | `--xh-command-icon-size` | `content`<br>`positioner` | `--xh-icon-size` | `is([data-part='positioner'], [data-part='content'])`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | command 的 content、positioner 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-command-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-surface` | command 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-command-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | command 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
-| `--xh-command-input-border` | `input` | `border-block-end` | `default` | `--xh-border-subtle` | command 的 input 部件 border-block-end 覆盖槽。 |
+| `--xh-command-input-border` | `input` | `border-block-end` | `default` | `--xh-material-elevated-separator` | command 的 input 部件 border-block-end 覆盖槽。 |
 | `--xh-command-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | command 的 input 部件 color 覆盖槽。 |
-| `--xh-command-input-font-size` | `input` | `font-size` | `default` | `--xh-text-body-size` | command 的 input 部件 font-size 覆盖槽。 |
+| `--xh-command-input-font-size` | `input` | `font-size` | `default` | `--xh-_command-font-size` | command 的 input 部件 font-size 覆盖槽。 |
 | `--xh-command-input-h` | `input` | `block-size` | `default` | `--xh-_command-input-h` | command 的 input 部件 block-size 覆盖槽。 |
 | `--xh-command-input-px` | `input` | `padding-inline` | `default` | `--xh-_command-px` | command 的 input 部件 padding-inline 覆盖槽。 |
 | `--xh-command-inset-block-start` | `positioner` | `padding-block-start` | `default` | `--xh-space-8` | command 的 positioner 部件 padding-block-start 覆盖槽。 |
@@ -941,19 +949,19 @@ function onSelect(details: { label: string }) {
 | `--xh-command-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | command 的 item 部件 line-height 覆盖槽。 |
 | `--xh-command-item-px` | `item` | `padding-inline` | `default` | `--xh-_command-px` | command 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-command-item-py` | `item` | `padding-block` | `default` | `--xh-_command-item-py` | command 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-command-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | command 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-command-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | command 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-command-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | command 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-command-list-busy-opacity` | `list` | `opacity` | `default` | `--xh-state-disabled-opacity` | command 的 list 部件 opacity 覆盖槽。 |
 | `--xh-command-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | command 的 list 部件 gap 覆盖槽。 |
 | `--xh-command-list-px` | `list` | `padding-inline` | `default` | `--xh-space-2` | command 的 list 部件 padding-inline 覆盖槽。 |
 | `--xh-command-list-py` | `list` | `padding-block` | `default` | `--xh-space-2` | command 的 list 部件 padding-block 覆盖槽。 |
-| `--xh-command-loading-fg` | `loading` | `color` | `default` | `--xh-fg-subtle` | command 的 loading 部件 color 覆盖槽。 |
+| `--xh-command-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | command 的 loading 部件 color 覆盖槽。 |
 | `--xh-command-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_command-font-size` | command 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-command-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_command-px` | command 的 loading 部件 padding-inline 覆盖槽。 |
-| `--xh-command-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-6` | command 的 loading 部件 padding-block 覆盖槽。 |
+| `--xh-command-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | command 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-command-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | command 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-command-max-w` | `content` | `max-inline-size` | `default` | `--xh-_command-max-w` | command 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-command-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | command 的 input 部件 color 覆盖槽。 |
+| `--xh-command-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | command 的 input 部件 color 覆盖槽。 |
 | `--xh-command-positioner-pb` | `positioner` | `padding-block-end` | `default` | `--xh-space-4` | command 的 positioner 部件 padding-block-end 覆盖槽。 |
 | `--xh-command-positioner-px` | `positioner` | `padding-inline` | `default` | `--xh-space-4` | command 的 positioner 部件 padding-inline 覆盖槽。 |
 | `--xh-command-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | command 的 content 部件 border-radius 覆盖槽。 |
@@ -964,7 +972,7 @@ function onSelect(details: { label: string }) {
 
 动效角色：按压 · 状态 · 出现（锚定面板）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

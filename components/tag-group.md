@@ -441,7 +441,7 @@ const avatar
 - 只有一个标签且不接受交互时，直接使用[标签](./tag)。
 - 用户需要自行输入并累积多个值时，使用[标签输入](./tags-input)，它自带输入框与增删逻辑。
 - 选项很多、需要搜索时，使用[选择器](./select)的多选或[穿梭框](./transfer)。
-- 一组互斥选项需要用户选一个时，使用[单选组](./radio-group)或[分段控制器](./segmented)。
+- 一组互斥选项需要用户选一个时，使用[单选组](./radio-group)，一行短选项可用它的 `variant="segmented"`。
 - 只是把一排标签排开、不接键盘时，用[弹性布局](./flex)包一层即可。
 
 ### 特性
@@ -558,7 +558,7 @@ const avatar
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `ITEM.DELETE` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `ITEM.DELETE` · `LIST.BLUR` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED`
 
 **判据**：`canPress`
 
@@ -647,6 +647,7 @@ const avatar
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `list` | `data-orientation` | props.orientation |
 | `cell` | `data-disabled` | ''（条件成立时才出现） |
 | `cell` | `data-highlighted` | ''（条件成立时才出现） |
@@ -681,8 +682,8 @@ const avatar
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

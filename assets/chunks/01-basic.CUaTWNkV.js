@@ -1,0 +1,1 @@
+import{lR as e}from"./theme.UYVbUEgX.js";import{d as o,o as r,b as s,k as t}from"./framework.D1FqHTxE.js";const l=o({__name:"01-basic",setup(n){const a=[320,356,341,398,420,388,452,470,431,498,520,548];return(c,i)=>(r(),s(t(e),{data:a,"aria-label":"近 12 周访问量"}))}});export{l as default};

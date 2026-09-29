@@ -418,7 +418,7 @@ import {
 ### 特性
 
 - `channel` 七选一：`hue`（0-360）、`saturation` / `brightness` / `alpha`（0-100）、`red` / `green` / `blue`（0-255）；步长 1，PageUp / PageDown 走 10。
-- 值始终是完整颜色串，`format` 决定写法（hex / rgba / hsla）；`alpha` 决定串中是否带透明度，默认调整透明度通道时带、其余不带。与透明度滑块并排时显式开启它，否则调整色相会把透明度归 1。
+- 值始终是完整颜色串，`format` 决定写法（hex / rgba / hsla / oklch）；`alpha` 决定串中是否带透明度，默认调整透明度通道时带、其余不带。与透明度滑块并排时显式开启它，否则调整色相会把透明度归 1。
 - 轨道渐变由连接层按当前颜色实时计算：其余分量不变，只让本通道从 min 走到 max；透明度通道从全透明走到实色，底部垫棋盘格。
 - 灰度与纯黑处色相无定义，把明度调到 0 再拉回时色相由锚点保持，不塌为 0。
 - 拖动、键盘、RTL 方向与竖直排布全部取自内嵌的[滑块](./slider)；`onValueChange` 在拖动中连续发出，`onValueChangeEnd` 在松手时只发一次。
@@ -639,7 +639,7 @@ import {
 | `--xh-color-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default-opaque` | color-slider 的 thumb 部件 border 覆盖槽。 |
 | `--xh-color-slider-thumb-border-invalid` | `thumb` | `border-color` | `invalid` | `--xh-border-invalid` | color-slider 的 thumb 部件 border-color 覆盖槽。 |
 | `--xh-color-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | color-slider 的 thumb 部件 border-radius 覆盖槽。 |
-| `--xh-color-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-slider 的 thumb 部件 scale 覆盖槽。 |
+| `--xh-color-slider-thumb-scale-dragging` | `thumb`<br>`value-text` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-slider 的 thumb、value-text 部件 scale 覆盖槽。 |
 | `--xh-color-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-color-slider-thumb-shadow-disabled` | `thumb` | `box-shadow` | `disabled` | `none` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-color-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
@@ -669,4 +669,4 @@ import {
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。

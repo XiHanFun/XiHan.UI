@@ -832,6 +832,58 @@ const formatWeight = (value: number) => `${value} kg`;
 </script>
 ```
 
+### 保留越界值
+
+关掉 clampValueOnBlur 后越界输入不再在失焦时被悄悄改掉，outOfRange 报出来交给宿主提示
+
+```vue
+<script setup lang="ts">
+import {
+  XhNumberFieldControl,
+  XhNumberFieldDecrementTrigger,
+  XhNumberFieldIncrementTrigger,
+  XhNumberFieldInput,
+  XhNumberFieldLabel,
+  XhNumberFieldRoot,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhNumberFieldRoot v-slot="{ outOfRange }" default-value="12" :min="1" :max="10" :clamp-value-on-blur="false">
+    <XhNumberFieldLabel>每周训练天数</XhNumberFieldLabel>
+    <XhNumberFieldControl>
+      <XhNumberFieldInput />
+      <XhNumberFieldDecrementTrigger />
+      <XhNumberFieldIncrementTrigger />
+    </XhNumberFieldControl>
+    <span>{{ outOfRange ? "请填 1 到 10 之间的天数" : "范围 1 到 10" }}</span>
+  </XhNumberFieldRoot>
+</template>
+```
+
+```html
+<xh-number-field id="number-field-out-of-range" default-value="12" min="1" max="10" clamp-value-on-blur="false">
+  <div data-xh-part="root">
+    <label data-xh-part="label">每周训练天数</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" />
+      <button data-xh-part="decrement-trigger"></button>
+      <button data-xh-part="increment-trigger"></button>
+    </div>
+    <span id="number-field-out-of-range-hint">请填 1 到 10 之间的天数</span>
+  </div>
+</xh-number-field>
+
+<script type="module">
+  const field = document.getElementById("number-field-out-of-range");
+  const hint = document.getElementById("number-field-out-of-range-hint");
+
+  field.addEventListener("value-change", () => {
+    hint.textContent = field.outOfRange ? "请填 1 到 10 之间的天数" : "范围 1 到 10";
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -847,9 +899,9 @@ const formatWeight = (value: number) => `${value} kg`;
 ### 特性
 
 - `step` 与 `largeStep` 分别对应方向键和 PageUp / PageDown。
-- 长按加减按钮连续步进，首次延时与间隔都可调。
+- 长按加减按钮连续步进，按住越久越快：先等 `changeDelay`（300ms），随后从 `changeInterval`（50ms）一拍起，每连发一次间隔缩到上一拍的 0.85，约半秒后收到 `minChangeInterval`（10ms）。把 `minChangeInterval` 写成与 `changeInterval` 相同即按固定节奏连发。
 - `parse` / `format` 成对，用于接入固定小数位、千分位、货币符号或自定义换算。
-- 越界的值在失焦规范化时被夹回区间。
+- 越界的值在失焦规范化时被夹回区间；`clampValueOnBlur` 关掉后越界值原样留在框里（仍按 `format` 补格式），由 `outOfRange` 与根上的 `data-out-of-range` 报出来，交给表单层提示。步进在两种情形下都不会越界。
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
 - `control` 是必需部件，也是输入、前后缀与两个动作共用的唯一视觉盒，投影 Field Chrome 家族（`data-xh-field-chrome`、`data-xh-field-size`、`data-variant`），输入与前后缀分别投影 `data-xh-field-input` 与 `data-xh-field-affix`；默认即 `outline`：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`，悬停与聚焦由整体盒统一反馈，聚焦描边一律 `--xh-border-control-focus`。减、加两颗动作依次收在右侧，走 Action Control 的 `field-inset` ghost 档：正方视觉盒、inset 圆角、在控件里垂直居中，悬停 `--xh-bg-subtle`（100）、按下 `--xh-bg-subtle-hover`（200）中性底并带 0.97 按压缩放，粗指针命中区由家族伪元素外扩到 44px。
 - `subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边；三档都由统一输入壳承担交互反馈。
@@ -873,7 +925,7 @@ const formatWeight = (value: number) => `${value} kg`;
 
 - 默认解析使用严格的 `Number()` 语义，不识别本地化小数分隔符；需要千分位、逗号小数或单位时，显式提供互逆的 `parse` / `format`。组件不推测 locale。
 - 空串与非法文本以原串保留，失焦不会改写为另一个数；此时调用步进会从 `min`（有值时）或 `0` 开始。业务校验和错误文案由表单层提供。
-- 长按按固定节奏重复：默认先等待 300ms，再每 50ms 步进一次；尚未提供加速曲线。
+- 长按加速只缩短间隔、不放大步长：每一拍仍按 `step` 走，数值不会跳过对齐的格点。
 - 输入使用 `type="text"` 与 `inputmode="decimal"`，组件不接管滚轮，避免页面滚动时意外改值。
 - 当前结构是 `control` 内水平排列的可选减号、必需输入与可选加号；不支持脱离 `control` 的三件并排，也不提供上下堆叠动作。
 
@@ -910,7 +962,9 @@ const formatWeight = (value: number) => `${value} kg`;
 | `invalid` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；提供后才参与提交。 |
 | `changeDelay` | `number` |  | 按住加减按钮多久开始连发，默认 300ms。 |
-| `changeInterval` | `number` |  | 连发间隔，默认 50ms。 |
+| `changeInterval` | `number` |  | 连发开始时的间隔，默认 50ms；按住越久间隔越短，逐次收到 minChangeInterval。 |
+| `minChangeInterval` | `number` |  | 连发加速后的最短间隔，默认 10ms：按住越久步进越快，每连发一次间隔缩到上一次的 0.85，缩到这里为止。 写成与 changeInterval 相同的数即关掉加速，按固定节奏连发。 |
+| `clampValueOnBlur` | `boolean` |  | 失焦时把越界的值夹回 [min, max]，默认开启。关掉后越界值原样留在框里（仍按 format 规范显示）， 由 outOfRange 与 data-out-of-range 报出来，交给表单层提示；步进照旧不会越界。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与加减按钮的几何档位。 |
@@ -966,6 +1020,7 @@ const formatWeight = (value: number) => `${value} kg`;
 | `invalid` | `boolean` |  |
 | `canIncrement` | `boolean` |  |
 | `canDecrement` | `boolean` |  |
+| `outOfRange` | `boolean` | 值是合法数字但落在 [min, max] 之外。只有关掉 clampValueOnBlur 或受控写入时才会在失焦后仍为真。 |
 | `setValue` | `(next: string) => void` |  |
 | `increment` | `() => void` |  |
 | `decrement` | `() => void` |  |
@@ -1028,6 +1083,7 @@ const formatWeight = (value: number) => `${value} kg`;
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-out-of-range` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |

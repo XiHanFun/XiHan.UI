@@ -1067,6 +1067,137 @@ function valueText({ value }: { value: number }) {
 </script>
 ```
 
+### 反向
+
+inverted 把 min 放到轨道末端，已选区间从末端画起；竖排时 0 米在上、越往下越深，方向键跟随屏幕方向
+
+```vue
+<script setup lang="ts">
+import {
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhSliderRoot :default-value="[18]" :min="0" :max="40" orientation="vertical" inverted>
+    <XhSliderLabel>潜水深度（米）</XhSliderLabel>
+    <XhSliderControl>
+      <XhSliderTrack>
+        <XhSliderRange />
+      </XhSliderTrack>
+      <XhSliderThumb />
+    </XhSliderControl>
+  </XhSliderRoot>
+</template>
+```
+
+```html
+<xh-slider default-value="18" min="0" max="40" orientation="vertical" inverted>
+  <div data-xh-part="root">
+    <label data-xh-part="label">潜水深度（米）</label>
+    <div data-xh-part="control">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+      <div data-xh-part="thumb"></div>
+    </div>
+  </div>
+</xh-slider>
+```
+
+### 整段拖动
+
+draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽度不变地平移；按在拇指上仍只推那一个
+
+```vue
+<script setup lang="ts">
+import {
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhSliderRoot :default-value="[9, 12]" :min="0" :max="24" draggable-range style="inline-size: 320px">
+    <XhSliderLabel>会议时段（时）</XhSliderLabel>
+    <XhSliderControl>
+      <XhSliderTrack>
+        <XhSliderRange />
+      </XhSliderTrack>
+      <XhSliderThumb :index="0" />
+      <XhSliderThumb :index="1" />
+    </XhSliderControl>
+  </XhSliderRoot>
+</template>
+```
+
+```html
+<xh-slider default-value="9,12" min="0" max="24" draggable-range>
+  <div data-xh-part="root" style="inline-size: 320px">
+    <label data-xh-part="label">会议时段（时）</label>
+    <div data-xh-part="control">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+      <div data-xh-part="thumb" index="0"></div>
+      <div data-xh-part="thumb" index="1"></div>
+    </div>
+  </div>
+</xh-slider>
+```
+
+### 不填充轨道
+
+取值没有「多少」之分时关掉 trackFill，只留底槽与拇指，免得从一端画起的区间暗示大小
+
+```vue
+<script setup lang="ts">
+import {
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhSliderRoot :default-value="[0]" :min="-50" :max="50" :track-fill="false" style="inline-size: 320px">
+    <XhSliderLabel>声道平衡</XhSliderLabel>
+    <XhSliderControl>
+      <XhSliderTrack>
+        <XhSliderRange />
+      </XhSliderTrack>
+      <XhSliderThumb />
+    </XhSliderControl>
+  </XhSliderRoot>
+</template>
+```
+
+```html
+<xh-slider default-value="0" min="-50" max="50" track-fill="false">
+  <div data-xh-part="root" style="inline-size: 320px">
+    <label data-xh-part="label">声道平衡</label>
+    <div data-xh-part="control">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+      <div data-xh-part="thumb"></div>
+    </div>
+  </div>
+</xh-slider>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -1085,6 +1216,9 @@ function valueText({ value }: { value: number }) {
 - `marks` 绘制刻度，`snapToMarks` 让值吸附到刻度。
 - 两个回调：拖动途中连续发出，松手时发出一次；持久化使用后者。
 - `getValueText` 决定读屏读出的内容，不只读数字。
+- `inverted` 把 min 放到轨道末端（横排在行尾、竖排在顶端），已选区间从末端画起；方向键跟随屏幕方向，拇指在屏幕上往哪边挪就按哪个键。插槽里的 `thumbs[i].percent` 与 `range` 仍按值的位置报，自绘内容反向时自己取 `1 - percent`。
+- `draggableRange`：多拇指时按住两端拇指之间的轨道拖动，整段区间一起平移、宽度不变，挪到头就停；按在拇指上仍只推那一个，按在区间外照旧抓最近的拇指。只认刻度落点（`snapToMarks`）时不生效。键盘仍按拇指逐个调整。
+- `trackFill` 关掉后不画已选区间、刻度也不按区间上色，只留底槽与拇指：取值没有「多少」之分（声道平衡、色温中点）时用它，免得从一端画起的区间暗示大小。
 
 ### 组合
 
@@ -1133,6 +1267,9 @@ function valueText({ value }: { value: number }) {
 | `minStepsBetweenThumbs` | `number` |  | 相邻滑块至少相隔的格数，默认 0（可以贴在一起但不能交换顺序）。 |
 | `marks` | `SliderMark[]` |  | 刻度表：轨道上的圆点与文案，点击文案即跳到该值。 |
 | `snapToMarks` | `boolean` |  | 只接受刻度落点：拖动、点击与键盘都吸附到最近 / 下一档刻度。 |
+| `inverted` | `boolean` |  | 反向：min 落在轨道的末端（横排在行尾、竖排在顶端），已选区间从末端画起。 方向键跟随屏幕方向：拇指在屏幕上往哪边挪，按的就是哪个键。默认 false。 |
+| `draggableRange` | `boolean` |  | 多拇指时按住两端拇指之间的轨道拖动，整段区间一起平移、宽度不变；按在拇指上仍只推那一个。 只认刻度落点（snapToMarks）时不生效：整段平移会把拇指推离刻度。默认 false。 |
+| `trackFill` | `boolean` |  | 画出已选区间（range 部件）并给落进区间的刻度上色，默认 true；关掉后轨道只剩底槽与拇指。 |
 | `getValueText` | `(details: SliderValueTextDetails) => string` |  | 把值转换为可读文字，产出写入拇指的 aria-valuetext。 未提供时不写该属性，读屏回退为朗读 aria-valuenow。 |
 | `onValueChange` | `(details: SliderValueChangeDetails) => void` |  | 每次推动都发出；拖动过程中连续发出。 |
 | `onValueChangeEnd` | `(details: SliderValueChangeEndDetails) => void` |  | 只在一次操作结束时发出一次，适合用于发起请求。 |
@@ -1220,7 +1357,7 @@ function valueText({ value }: { value: number }) {
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `ArrowRight` / `ArrowUp` | focus in thumb, not disabled/readOnly | 按 step 增大；RTL 与竖直排布下按屏幕方向对调，语义恒是"朝 max 走一格" |
+| `ArrowRight` / `ArrowUp` | focus in thumb, not disabled/readOnly | 按 step 增大；方向跟随屏幕：RTL 对调左右两键，inverted 再对调一次（竖直轨道 inverted 时 ArrowUp 朝 min） |
 | `ArrowLeft` / `ArrowDown` | focus in thumb, not disabled/readOnly | 按 step 减小，同上对调规则 |
 | `PageUp` | focus in thumb, not disabled/readOnly | 按 largeStep 增大（默认 10 倍 step） |
 | `PageDown` | focus in thumb, not disabled/readOnly | 按 largeStep 减小 |
@@ -1279,6 +1416,7 @@ function valueText({ value }: { value: number }) {
 | `track` | `data-orientation` | props.orientation |
 | `track` | `data-readonly` | ''（条件成立时才出现） |
 | `range` | `data-disabled` | ''（条件成立时才出现） |
+| `range` | `data-draggable` | ''（条件成立时才出现） |
 | `range` | `data-dragging` | ''（条件成立时才出现） |
 | `range` | `data-invalid` | ''（条件成立时才出现） |
 | `range` | `data-orientation` | props.orientation |
@@ -1326,7 +1464,7 @@ function valueText({ value }: { value: number }) {
 | `--xh-slider-thumb-bg-invalid` | `thumb` | `background` | `invalid` | `--xh-border-invalid` | slider 的 thumb 部件 background 覆盖槽。 |
 | `--xh-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default-opaque` | slider 的 thumb 部件 border 覆盖槽。 |
 | `--xh-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | slider 的 thumb 部件 border-radius 覆盖槽。 |
-| `--xh-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | slider 的 thumb 部件 scale 覆盖槽。 |
+| `--xh-slider-thumb-scale-dragging` | `thumb`<br>`value-text` | `scale` | `dragging` | `--xh-motion-scale-drag` | slider 的 thumb、value-text 部件 scale 覆盖槽。 |
 | `--xh-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-slider-thumb-shadow-disabled` | `thumb` | `box-shadow` | `disabled` | `none` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
@@ -1368,4 +1506,4 @@ function valueText({ value }: { value: number }) {
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。
