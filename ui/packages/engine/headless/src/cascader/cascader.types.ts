@@ -7,7 +7,6 @@
 
 import type { CascadeStrategy, Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { CascaderFilter } from './cascader.search'
 
 /**
  * 树数据，层级、显示文本与条目禁用的唯一事实源。
@@ -84,6 +83,21 @@ export interface CascaderBranchLoadErrorDetails {
 export interface CascaderSearchItemProps {
   path: string[]
 }
+
+/** 搜索时摊平出的一条候选路径。 */
+export interface CascaderSearchCandidate {
+  path: string[]
+  /** 整条路径逐段的显示名。 */
+  labels: string[]
+  /** 路径上任何一段禁用即整条禁用。 */
+  disabled: boolean
+}
+
+/**
+ * 自定义搜索匹配：candidate 是一条可落值的完整路径，query 已 trim 且非空（空搜索不调用谓词）。
+ * 缺省按整条路径的显示名以「/」连缀后大小写不敏感包含。
+ */
+export type CascaderFilter = (candidate: CascaderSearchCandidate, query: string) => boolean
 
 /** 一条过滤后的候选。 */
 export interface CascaderSearchResult {

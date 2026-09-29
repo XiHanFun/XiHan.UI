@@ -2850,6 +2850,7 @@ export type {
 export { useToolbar } from './components/toolbar/use-toolbar'
 export type { ToolbarContext } from './components/toolbar/use-toolbar'
 export { useTooltipContext } from './components/tooltip/context'
+export type { TooltipContext } from './components/tooltip/context'
 export {
   XhTooltipArrow,
   XhTooltipContent,
@@ -2868,7 +2869,6 @@ export type {
   XhTooltipTriggerProps,
 } from './components/tooltip/tooltip'
 export { useTooltip } from './components/tooltip/use-tooltip'
-export type { TooltipContext } from './components/tooltip/use-tooltip'
 export { useTourContext } from './components/tour/context'
 export {
   XhTourArrow,

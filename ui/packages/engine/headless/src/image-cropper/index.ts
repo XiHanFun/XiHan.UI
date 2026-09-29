@@ -7,7 +7,6 @@
 
 export { imageCropperAnatomy } from './image-cropper.anatomy'
 export { cropToCanvas } from './image-cropper.canvas'
-export type { CropToCanvasOptions } from './image-cropper.canvas'
 export { connectImageCropper } from './image-cropper.connect'
 export {
   CROP_HANDLES,
@@ -42,6 +41,7 @@ export {
 } from './image-cropper.machine'
 export { imageCropperMeta } from './image-cropper.meta'
 export type {
+  CropToCanvasOptions,
   ImageCropperApi,
   ImageCropperDragOrigin,
   ImageCropperFlip,

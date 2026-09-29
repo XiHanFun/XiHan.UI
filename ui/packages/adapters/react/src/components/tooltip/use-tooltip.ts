@@ -6,9 +6,8 @@
 // 提供 use tooltip 相关实现。
 
 import type { Layer, Service } from '@xihan-ui/core'
-import type { TooltipApi, TooltipSchema } from '@xihan-ui/headless'
-import type { RefObject } from 'react'
-import type { OverlayWiring } from '../../runtime/use-overlay'
+import type { TooltipSchema } from '@xihan-ui/headless'
+import type { TooltipContext } from './context'
 import { connectTooltip, tooltipMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useCallback, useContext, useRef } from 'react'
@@ -17,17 +16,6 @@ import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 import { TooltipGroupContext } from './context'
-
-export interface TooltipContext extends OverlayWiring {
-  service: Service<TooltipSchema>
-  api: TooltipApi
-  /** 定位锚点。 */
-  triggerRef: RefObject<HTMLElement | null>
-  /** 被定位的浮层。 */
-  positionerRef: RefObject<HTMLElement | null>
-  /** 浮层本体，退场动画从它上面探测。 */
-  contentRef: RefObject<HTMLElement | null>
-}
 
 export function useTooltip(props: TooltipSchema['props']): TooltipContext {
   const idGenerator = useReactIdGenerator()

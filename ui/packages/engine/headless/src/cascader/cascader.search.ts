@@ -4,22 +4,8 @@
  */
 
 // 搜索候选的纯运算：把树摊平成整条路径，按连缀文本过滤。不碰 DOM、不看状态机。
-import type { CascaderNode } from './cascader.types'
+import type { CascaderFilter, CascaderNode, CascaderSearchCandidate } from './cascader.types'
 import { isCascaderLazyBranch } from './cascader.columns'
-
-export interface CascaderSearchCandidate {
-  path: string[]
-  /** 整条路径逐段的显示名。 */
-  labels: string[]
-  /** 路径上任何一段禁用即整条禁用。 */
-  disabled: boolean
-}
-
-/**
- * 自定义搜索匹配：candidate 是一条可落值的完整路径，query 已 trim 且非空（空搜索不调用谓词）。
- * 缺省按整条路径的显示名以「/」连缀后大小写不敏感包含。
- */
-export type CascaderFilter = (candidate: CascaderSearchCandidate, query: string) => boolean
 
 /** 摊平成候选：叶子恒在；changeOnSelect 打开时分支路径也算一条（它本身就能落值）。 */
 export function cascaderSearchCandidates(
