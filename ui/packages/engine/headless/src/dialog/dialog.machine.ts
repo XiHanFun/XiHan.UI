@@ -265,12 +265,13 @@ export const dialogMachine = createMachine({
               // 普通 dialog 交给 tabbable 探测选首个可聚焦元素
               if (role === 'alertdialog')
                 return getContentEl()
-              // 拖动把手只是挪面板的落脚点：初始焦点越过它，落到第一个真正的控件上；除它之外没有可聚焦的，再交回探测
+              // 初始焦点落到第一个真正的控件上：拖动与改尺把手只是挪面板、拉边的落脚点，关闭钮是退路而不是要做的事，
+              // 写在标题旁时它排在文档序最前，这几样都越过；除它们之外没有可聚焦的，再交回探测（落在关闭钮上）
               const content = getContentEl()
-              if (!prop('draggable') || !content)
+              if (!content)
                 return null
-              const handle = `[data-scope="${refs.get('partScope')}"][data-part="drag-trigger"]`
-              return removeLinks(getTabbables(content)).find(el => !el.matches(handle)) ?? null
+              const skipped = `[data-scope="${refs.get('partScope')}"]:is([data-part="drag-trigger"], [data-part="resize-trigger"], [data-part="close-trigger"])`
+              return removeLinks(getTabbables(content)).find(el => !el.matches(skipped)) ?? null
             },
             restoreFocus: () => prop('restoreFocus') ?? true,
             // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），

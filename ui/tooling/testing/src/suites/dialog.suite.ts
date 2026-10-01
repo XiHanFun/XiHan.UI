@@ -28,6 +28,33 @@ function withDragTrigger(base: FixtureNode): FixtureNode {
   }
 }
 
+/** 关闭钮写在标题旁：文档序上它排在第一个真正的控件之前。 */
+function withLeadingClose(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children?.map(child => child.part !== 'content'
+      ? child
+      : {
+          ...child,
+          children: [
+            ...(child.children ?? []).filter(node => node.part === 'title'),
+            ...(child.children ?? []).filter(node => node.part === 'close-trigger'),
+            ...(child.children ?? []).filter(node => node.part !== 'title' && node.part !== 'close-trigger'),
+          ],
+        }),
+  }
+}
+
+/** 面板里除了关闭钮没有别的可聚焦节点。 */
+function withOnlyClose(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children?.map(child => child.part !== 'content'
+      ? child
+      : { ...child, children: (child.children ?? []).filter(node => node.part !== undefined) }),
+  }
+}
+
 // backdrop / positioner 由 content 组件内部装配，不作为独立 fixture 节点；
 // 采集器仍会从 document 抓到它们。
 export const dialogSuite: ConformanceSuite = {
@@ -230,6 +257,29 @@ export const dialogSuite: ConformanceSuite = {
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { present: 'content' } },
         heldPress('dialog', 'close-trigger'),
+      ],
+    },
+    {
+      name: '关闭钮写在标题旁：初始焦点越过它，落到第一个真正的控件上',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { defaultOpen: true },
+      fixture: withLeadingClose,
+      steps: [
+        { kind: 'settle', until: { activeElement: 'content' } },
+        expectFocusSkips('dialog', 'close-trigger', 'confirm'),
+      ],
+    },
+    {
+      name: '除了关闭钮没有别的控件：初始焦点仍落在关闭钮上',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { defaultOpen: true },
+      fixture: withOnlyClose,
+      steps: [
+        {
+          kind: 'settle',
+          until: { activeElement: 'close-trigger' },
+          expect: { activeElement: 'close-trigger' },
+        },
       ],
     },
     {
