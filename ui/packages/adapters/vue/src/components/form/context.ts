@@ -33,10 +33,15 @@ export interface FormFieldHandle {
   name: () => FormPath
 }
 
-const FIELD_KEY: InjectionKey<FormFieldHandle> = Symbol.for('xh-form-field')
+const FIELD_KEY: InjectionKey<FormFieldHandle | null> = Symbol.for('xh-form-field')
 
 export function provideFormField(handle: FormFieldHandle): void {
   provide(FIELD_KEY, handle)
+}
+
+/** 在这棵子树里断开表单字段组：后代控件不再按外层字段名取校验态与必填。 */
+export function clearFormField(): void {
+  provide(FIELD_KEY, null)
 }
 
 export function useOptionalFormField(): FormFieldHandle | null {

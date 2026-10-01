@@ -1033,6 +1033,8 @@ export type {
 } from './components/field-array/field-array'
 export { useFieldArray } from './components/field-array/use-field-array'
 export type { FieldArrayContext } from './components/field-array/use-field-array'
+export { XhFieldBoundary } from './components/field/boundary'
+export type { XhFieldBoundaryProps } from './components/field/boundary'
 export { FieldProvider, useFieldContext, useOptionalFieldContext } from './components/field/context'
 export {
   XhFieldControl,
@@ -1051,7 +1053,7 @@ export type {
 } from './components/field/field'
 export { useField } from './components/field/use-field'
 export type { FieldContext } from './components/field/use-field'
-export { useFieldControl, useFieldLabelWiring, useFieldStateWiring } from './components/field/use-field-control'
+export { useFieldControl, useFieldGroupWiring, useFieldLabelWiring, useFieldStateWiring } from './components/field/use-field-control'
 export { useFieldsetContext } from './components/fieldset/context'
 export {
   XhFieldsetActions,

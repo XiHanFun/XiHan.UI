@@ -12,7 +12,11 @@ import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectField, fieldAnatomy, fieldMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { XhReactiveElement } from '../reactive'
 import { FORM_CONTROL_HOST_SELECTOR } from '../runtime/form-control-host'
+
+/** 字段沿 DOM 祖先链认领控件时停在这两种节点上：更近的字段，或作者放的字段边界。 */
+export const FIELD_SCOPE_SELECTOR = 'xh-field, xh-field-boundary'
 
 // 属性缺席翻成 undefined，控件 id 的缺省由 connect 派生。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -102,8 +106,8 @@ export class XhFieldElement extends XhElement {
 
     // Field 套库内控件时，状态必须进那台控件机器；只把 ARIA 铺在包装根上不足以挡住输入。
     for (const control of this.querySelectorAll<FormControlHost>(FORM_CONTROL_HOST_SELECTOR)) {
-      // 嵌套 Field 的控件归更近的那一层，当前 Field 不跨过去覆盖。
-      if (control.closest('xh-field') !== this)
+      // 嵌套 Field 的控件归更近的那一层，字段边界后面的控件不归任何外层字段，当前 Field 都不跨过去覆盖。
+      if (control.closest(FIELD_SCOPE_SELECTOR) !== this)
         continue
       control.setFormControlState({
         disabled: api.disabled,
@@ -115,5 +119,28 @@ export class XhFieldElement extends XhElement {
 
     // 错误文案常挂，非 invalid 时用内联 display 收起
     this.setPartHidden(this.getPart('error-text'), !api.invalid)
+  }
+}
+
+/**
+ * `<xh-field-boundary>`：字段边界。包裹一棵子树，其中的库内控件不再继承外层 `<xh-field>` 与表单字段组的
+ * 禁用、只读、必填与无效：组合控件把自己的内部输入（搜索框、筛选框）包进来，它们就不归外层字段管。
+ *
+ * 它不渲染任何内容、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，布局上它是 display: contents。
+ * 与 Vue / React 的 XhFieldBoundary 是同一件事：那两家断开的是组件树上的字段上下文，这里是字段沿 DOM 祖先链
+ * 认领控件时停在它身上。浮层内容经 Portal 搬到落点后本来就不在字段的子树里。
+ *
+ * @customElement xh-field-boundary
+ */
+export class XhFieldBoundaryElement extends XhReactiveElement {
+  protected override createRenderRoot(): HTMLElement | DocumentFragment {
+    return this // Light DOM，不建 shadowRoot
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback()
+    // 布局上让开：作者的子节点该由外层容器直接排布，不该被这一层挡出一个块
+    if (!this.style.display)
+      this.style.display = 'contents'
   }
 }

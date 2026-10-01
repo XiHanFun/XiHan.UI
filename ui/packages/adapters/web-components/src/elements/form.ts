@@ -389,6 +389,10 @@ export class XhFormElement extends XhElement {
         // Field 自己会再把已合并状态交给其内的控件，避免 Form 越过 Field 覆盖最近继承源。
         if (control.tagName !== 'XH-FIELD' && control.closest('xh-field'))
           continue
+        // 字段边界后面的控件与 Field 不归这个字段组：边界落在字段组里面时跳过
+        const boundary = control.parentElement?.closest('xh-field-boundary')
+        if (boundary && el.contains(boundary))
+          continue
         control.setFormControlState(state)
       }
     }
