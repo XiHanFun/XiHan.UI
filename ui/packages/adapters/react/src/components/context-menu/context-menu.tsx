@@ -33,6 +33,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { MenuProvider, useMenuContext } from '../menu/context'
+import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
 import { useMenuWithParent } from '../menu/use-menu'
 import {
   ContextMenuGroupProvider,
@@ -493,6 +494,19 @@ function renderItemNode(
   meta: ContextMenuNodeMeta,
   renderers: ContextMenuItemRenderers,
 ): ReactNode {
+  // 带 children 的条目铺成子菜单：子层跑的是 menu 机器，条目按数据铺、不经本层的渲染函数
+  if (meta.children) {
+    return (
+      <XhContextMenuSub key={meta.value} value={meta.value} disabled={meta.disabled || undefined} collection={meta.children as MenuNode[]}>
+        <XhContextMenuSubTrigger>{meta.label}</XhContextMenuSubTrigger>
+        <XhMenuPositioner>
+          <XhMenuContent>
+            <MenuDefaultNodes />
+          </XhMenuContent>
+        </XhMenuPositioner>
+      </XhContextMenuSub>
+    )
+  }
   const content = (
     <>
       {renderers.prefix

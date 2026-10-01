@@ -63,6 +63,8 @@ export function connectMenubar<T extends PropTypes>(
     const kind = item ? (node.kind ?? 'item') : 'item'
     if (kind === 'radio' && !node.group)
       throw new RangeError(`[xh] menubar radio item ${JSON.stringify(node.value)} 必须声明非空 group`)
+    if (item && node.children?.length && kind !== 'item')
+      throw new RangeError(`[xh] menubar ${kind} item ${JSON.stringify(node.value)} 不能带 children：子菜单的入口只能是普通条目`)
     return {
       value: node.value,
       kind,
@@ -76,6 +78,7 @@ export function connectMenubar<T extends PropTypes>(
       separatorBefore: !!node.separatorBefore,
       closeOnSelect: menuChoiceCloses(kind, node.closeOnSelect),
       items: (node.items ?? []).map(child => toMeta(child, true)),
+      children: item && node.children?.length ? node.children : null,
     }
   }
   const collection: MenubarNodeMeta[] = (prop('collection') ?? []).map(node => toMeta(node, false))

@@ -80,6 +80,12 @@ export interface MenuNode {
   separatorBefore?: boolean
   /** 激活后是否关闭菜单；普通命令默认 true，checkbox / radio 默认 false。 */
   closeOnSelect?: boolean
+  /**
+   * 子菜单的条目：给了 children 这一条就是子菜单的入口，Vue / React 的默认树按 children 递归铺出下一层，
+   * 深度不限；本条只能是普通条目（kind 为 item）。子层的选中经菜单树汇到根上，勾选与单选由各层自持。
+   * 手写部件时改用 Sub 部件；Web Components 由作者写 Light DOM，不读这一项。
+   */
+  children?: MenuNode[]
 }
 
 /** 单个条目的元信息，由 collection 推导，不含焦点态。 */
@@ -103,6 +109,8 @@ export interface MenuNodeMeta {
   groupLabel: string | null
   separatorBefore: boolean
   closeOnSelect: boolean
+  /** 子菜单的条目；没有下一层时为 null。 */
+  children: readonly MenuNode[] | null
 }
 
 /**

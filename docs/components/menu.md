@@ -77,7 +77,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 - `collection` 可直接生成条目、分组、标记位、说明、快捷键提示和分隔线。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 快捷键提示贴行尾，与说明同档同色；它是纯装饰，读屏从命令文字取意。
-- 支持方向键、首字符检索、禁用条目和多级子菜单。
+- 支持方向键、首字符检索、禁用条目和多级子菜单。数据驱动时节点写 `children` 即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出下一层，深度不限，路由菜单这类按数据生成的多级菜单不必手写 `Sub` 部件；子层与本层同用 `item` / `item-prefix` / `item-suffix` 插槽，叶子的选中汇到根级 `select`。入口只能是普通条目，勾选与单选条目带 `children` 直接报错。
 - 子菜单使用安全三角避免指针斜向移动时误关闭。
 - 条目可组合图标、文字、说明和快捷键提示。
 - `CheckboxItem` 与 `RadioGroup / RadioItem` 表达菜单内的持久选项，值分别由 `checkboxValue` 与 `radioValue` 控制；默认切换后保持展开，逐条可用 `closeOnSelect` 改为收起。
@@ -159,6 +159,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `groupLabel` | `string` |  | 分组标题文字，取本组首个提供它的条目；本组无人提供时不铺 group-label。 |
 | `separatorBefore` | `boolean` |  | 本条之前绘制一条分隔线；写在首条上不产出分隔线。本条领头一个分组时，分隔线绘制在分组外。 |
 | `closeOnSelect` | `boolean` |  | 激活后是否关闭菜单；普通命令默认 true，checkbox / radio 默认 false。 |
+| `children` | `MenuNode[]` |  | 子菜单的条目：给了 children 这一条就是子菜单的入口，Vue / React 的默认树按 children 递归铺出下一层， 深度不限；本条只能是普通条目（kind 为 item）。子层的选中经菜单树汇到根上，勾选与单选由各层自持。 手写部件时改用 Sub 部件；Web Components 由作者写 Light DOM，不读这一项。 |
 
 ### 事件
 

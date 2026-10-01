@@ -7,7 +7,7 @@
 
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { MenuApi, MenubarAnyItemProps, MenubarApi, MenubarCheckboxItemProps, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioItemProps, MenubarRadioValue, MenubarSchema, MenubarTranslations, MenuSchema } from '@xihan-ui/headless'
+import type { MenuApi, MenubarAnyItemProps, MenubarApi, MenubarCheckboxItemProps, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioItemProps, MenubarRadioValue, MenubarSchema, MenubarTranslations, MenuNode, MenuSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -24,6 +24,7 @@ import { renderSlot } from '../../runtime/slot-content'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { MenuProvider, useMenuContext } from '../menu/context'
+import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
 import { useMenuWithParent } from '../menu/use-menu'
 import {
   MenubarGroupProvider,
@@ -498,6 +499,8 @@ export interface XhMenubarSubProps {
   /** 它在所属菜单中的条目身份。 */
   value: string
   disabled?: boolean
+  /** 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 */
+  collection?: MenuNode[]
   placement?: Placement
   offset?: number
   loop?: boolean
@@ -584,6 +587,19 @@ export function XhMenubarSubTrigger({ children, ...rest }: XhMenubarSubTriggerPr
 
 /** 单个条目：文字在上，副文本在下，未提供副文本时不铺设该部件。 */
 function renderNode(meta: MenubarNodeMeta, renderers: MenubarItemRenderers): ReactNode {
+  // 带 children 的条目铺成子菜单：子层跑的是 menu 机器，条目按数据铺、不经本层的渲染函数
+  if (meta.children) {
+    return (
+      <XhMenubarSub key={meta.value} value={meta.value} disabled={meta.disabled || undefined} collection={meta.children as MenuNode[]}>
+        <XhMenubarSubTrigger>{meta.label}</XhMenubarSubTrigger>
+        <XhMenuPositioner>
+          <XhMenuContent>
+            <MenuDefaultNodes />
+          </XhMenuContent>
+        </XhMenuPositioner>
+      </XhMenubarSub>
+    )
+  }
   const content = (
     <>
       {renderers.prefix

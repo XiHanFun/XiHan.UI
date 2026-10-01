@@ -7,6 +7,7 @@
 
 import type { Cleanup, Direction, Layer, MachineSchema, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { MenuNode } from '../menu/menu.types'
 import type { MenuCheckboxValueChangeDetails, MenuChoiceGroupProps, MenuChoiceKind, MenuRadioValue, MenuRadioValueChangeDetails, MenuCheckboxItemProps as SharedMenuCheckboxItemProps, MenuRadioItemProps as SharedMenuRadioItemProps } from '../shared/menu-choice'
 
 export type { MenuCheckboxValueChangeDetails as MenubarCheckboxValueChangeDetails, MenuRadioValue as MenubarRadioValue, MenuRadioValueChangeDetails as MenubarRadioValueChangeDetails } from '../shared/menu-choice'
@@ -91,6 +92,12 @@ export interface MenubarNode {
   closeOnSelect?: boolean
   /** 该菜单中的条目；只在顶层节点上读取。 */
   items?: MenubarNode[]
+  /**
+   * 子菜单的条目：只在条目上读取。给了 children 这一条就是子菜单的入口，Vue / React 的默认树按 children
+   * 递归铺出下一层，深度不限；本条只能是普通条目（kind 为 item）。子层的选中经菜单树汇到菜单栏上。
+   * 手写部件时改用 XhMenubarSub；Web Components 由作者写 Light DOM，不读这一项。
+   */
+  children?: MenuNode[]
 }
 
 /** 单个节点的元信息，由 collection 推导，不含展开态与焦点态。 */
@@ -115,6 +122,8 @@ export interface MenubarNodeMeta {
   closeOnSelect: boolean
   /** 该菜单中的条目元信息；条目自身恒为空数组。 */
   items: readonly MenubarNodeMeta[]
+  /** 子菜单的条目；只在条目上有值，没有下一层时为 null。 */
+  children: readonly MenuNode[] | null
 }
 
 /**

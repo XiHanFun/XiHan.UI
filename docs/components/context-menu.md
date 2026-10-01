@@ -63,7 +63,7 @@
 ### 特性
 
 - 菜单默认贴近指针位置。
-- 支持分组、分隔线、标记位和子菜单。
+- 支持分组、分隔线、标记位和子菜单。数据驱动时节点写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。
 - `typeahead` 控制首字符检索，`longPressDelay` 设置长按时间。
@@ -144,6 +144,7 @@
 | `groupLabel` | `string` |  | 分组标题文字，取本组首个提供它的条目；本组无人提供时不铺 group-label。 |
 | `separatorBefore` | `boolean` |  | 本条之前绘制一条分隔线；写在首条上不产出分隔线。本条领头一个分组时，分隔线绘制在分组外。 |
 | `closeOnSelect` | `boolean` |  | 选择型条目激活后是否关闭菜单；checkbox / radio 默认 false。 |
+| `children` | `MenuNode[]` |  | 子菜单的条目：给了 children 这一条就是子菜单的入口，Vue / React 的默认树按 children 递归铺出下一层， 深度不限；本条只能是普通条目（kind 为 item）。子层的选中经菜单树汇到根上，勾选与单选由各层自持。 手写部件时改用 Sub 部件；Web Components 由作者写 Light DOM，不读这一项。 |
 
 ### 事件
 
