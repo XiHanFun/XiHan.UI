@@ -71,9 +71,10 @@ export function connectTruncate<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'id': ids.root,
-      // 行数两处都写：data-lines 是读得懂的那一份，内联自定义属性是皮肤拿去裁行的那一份
+      // 行数两处都写：data-lines 是读得懂的那一份，内联自定义属性是皮肤拿去裁行的那一份。
+      // 逐条给出而不是一整串：Web Components 照条写、照条撤，作者写在 root 上的内联样式不被整串盖掉
       'data-lines': String(lines),
-      'style': `--xh-_truncate-lines: ${lines}`,
+      'style': { '--xh-_truncate-lines': String(lines) },
       'data-multiline': dataAttr(multiline),
       'data-expandable': dataAttr(expandable),
       'data-overflowing': dataAttr(overflowing),
