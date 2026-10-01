@@ -192,7 +192,7 @@ export interface TreeSchema extends MachineSchema {
      * 取数本身归作者：常见写法是在 onExpandedValueChange 里发起请求、回来后写回 collection 并移出这里。
      */
     loadingValue?: string[]
-    /** 缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头，默认 false。只是外观，不改结构与键盘。 */
+    /** 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点横出一段接到行首，最后一个子节点止于行中线，默认 false。只是外观，不改结构与键盘。 */
     lines?: boolean
     /** 上下键到达首尾是否回绕，默认 false。 */
     loop?: boolean

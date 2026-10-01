@@ -54,7 +54,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} expand-on-click - 点击分支行同时展开 / 收起，默认关闭（展开与选中分开，展开归箭头与左右方向键）；写 expand-on-click 打开
- * @attr {boolean} lines - 缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头
+ * @attr {boolean} lines - 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点横出一段接到行首，最后一个子节点止于行中线
  * @prop {string[]} loadingValue - 正在取子节点的分支；在其中的分支报告 aria-busy，展开箭头换成转圈。只能通过 property 设置
  * @attr {boolean} disabled - 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不能改变展开与选中
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
