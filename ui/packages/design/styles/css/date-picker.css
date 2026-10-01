@@ -269,9 +269,10 @@
     border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-overlay));
     background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
     color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
-    /* 日历是定高结构：六行日期加表头本来就有固定高度，上限走页内滚动面那一档；
+    /* 日历是定高结构：网格、时间列与确认行都按 px 排，天然高度就是它们的和，缺省不另设上限
+       （按 rem 的滚动面档会随根字号缩小，根字号低于 16px 时确认行就被挤到滚动里）；
        可用高度是定位引擎算出的视口余量，视口真放不下时再收一截 */
-    max-block-size: min(var(--xh-date-picker-max-h, var(--xh-viewport-h-lg)), var(--xh-_date-picker-available-h));
+    max-block-size: min(var(--xh-date-picker-max-h, var(--xh-_date-picker-available-h)), var(--xh-_date-picker-available-h));
     /* 两轴都滚：块轴放不下时面板内自己竖滚，行内轴放不下时面板内自己横滚，
        日历那几块保持各自的天然宽度，不被压 */
     overflow: auto;

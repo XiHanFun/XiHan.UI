@@ -23268,7 +23268,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-lg"
+        "--xh-_date-picker-available-h"
       ],
       "visibility": "public",
       "description": "date-picker 的 content 部件 max-block-size 覆盖槽。"
@@ -25104,7 +25104,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-lg"
+        "--xh-_date-range-picker-available-h"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 content 部件 max-block-size 覆盖槽。"
