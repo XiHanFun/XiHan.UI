@@ -98,4 +98,28 @@ describe('tokens.css 产物', () => {
     for (const t of compact)
       expect(css).toContain(`--xh-${t.name}:`)
   })
+
+  // 自定义属性在声明处求值：只写在 :root 上的派生令牌，局部 compact 子树继承到的是宽松档的冻结值
+  it('引用链落到 compact 覆盖项的基线令牌在 compact 边界上重新声明，其余基线令牌不在那里声明', () => {
+    const css = readFileSync(join(TOKENS_DIR, '..', 'tokens.css'), 'utf8')
+    const tightened = new Set(compact.map(t => t.name))
+    for (let grown = true; grown;) {
+      grown = false
+      for (const t of base) {
+        const refs = [...t.value.matchAll(/\{([^}]+)\}/g)].map(m => m[1]!.trim().replace(/\./g, '-'))
+        if (!tightened.has(t.name) && refs.some(ref => tightened.has(ref))) {
+          tightened.add(t.name)
+          grown = true
+        }
+      }
+    }
+    const atCompact = new Set<string>()
+    for (const block of css.matchAll(/^ {2}:where\(\[data-density='compact'\]\) \{\n([\s\S]*?)\n {2}\}/gm)) {
+      for (const decl of block[1]!.matchAll(/^ {4}--xh-([\w-]+):/gm))
+        atCompact.add(decl[1]!)
+    }
+    expect(tightened).toContain('overlay-calendar-column-h')
+    expect(tightened).toContain('control-indicator-size')
+    expect([...atCompact].sort()).toEqual([...tightened].sort())
+  })
 })

@@ -578,7 +578,6 @@
     --xh-control-gap-md: var(--xh-space-1_5);
     --xh-control-gap-lg: var(--xh-space-2);
     --xh-control-action-size: 20px;
-    --xh-control-indicator-size: var(--xh-control-indicator-md);
     --xh-control-indicator-sm: 10px;
     --xh-control-indicator-md: 14px;
     --xh-control-indicator-lg: 18px;
@@ -622,6 +621,17 @@
     --xh-layout-gap-lg: var(--xh-space-3);
     --xh-layout-gap-xl: var(--xh-space-5);
     --xh-chart-label-gap: var(--xh-space-0_5);
+  }
+
+  /* density 轴 · compact 档的派生令牌：基线里引用链落到上面收紧项的 calc 与别名。自定义属性在声明处求值，
+     只写在 :root 与 comfortable 边界上会冻结成宽松档的取值，局部 compact 子树继承到的是这份冻结值；
+     在 compact 边界上再声明一次，引用才在边界自己的取值里解析。只挑这几支，不整组重声明基线，
+     祖先上作者写的其余覆盖照常继承下来 */
+  :where([data-density='compact']) {
+    --xh-control-indicator-size: var(--xh-control-indicator-md);
+    --xh-section-py: var(--xh-section-py-md);
+    --xh-overlay-column-item-h: calc(var(--xh-control-h-sm) - var(--xh-space-1));
+    --xh-overlay-calendar-column-h: calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7));
   }
 
   /* direction 轴：书写方向的符号，给只认物理方向的量换向。就近的 dir 属性决定——dir 写在哪一层就在

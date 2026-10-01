@@ -197,6 +197,29 @@ async function main() {
     if (!direction.some(ltr => ltr.name === entry.name))
       throw new Error(`[emit-tokens] semantic.rtl.json 的 ${entry.name} 在 semantic.base.json 的 direction 组里没有 ltr 基线`)
   }
+  // compact 档只重声明收紧的原值。基线里引用这些原值的派生令牌（calc、别名）在 :root 与 comfortable 边界上
+  // 求值后按计算值继承，挂在子树上的 compact 收不动它们（<html> 同时命中两块才碰巧对）。引用链（可传递）
+  // 落到 compact 覆盖项上的基线令牌要在 compact 边界上再声明一次，在边界自己的取值里解析。
+  // 只挑这几支：整组基线挂到 compact 边界会盖掉祖先上作者写的覆盖（如容器上的 --xh-control-w: 100%）
+  const refsOf = entry => [...String(entry.value).matchAll(/\{([^}]+)\}/g)].map(m => `--xh-${m[1].trim().replace(/\./g, '-')}`)
+  const compactNames = new Set(compact.map(entry => entry.name))
+  const tightened = new Set(compactNames)
+  for (let grown = true; grown;) {
+    grown = false
+    for (const entry of basePlain) {
+      if (!tightened.has(entry.name) && refsOf(entry).some(name => tightened.has(name))) {
+        tightened.add(entry.name)
+        grown = true
+      }
+    }
+  }
+  const compactDerived = basePlain.filter(entry => tightened.has(entry.name) && !compactNames.has(entry.name))
+  // 其余各块挂在主题、方向、墨色域等边界上，不在 density 边界上重声明：引到收紧项的话局部 compact 子树里同样收不动
+  for (const entry of [...base.filter(entry => isMaterial(entry) || isDirection(entry)), ...rtl, ...lightAll, ...darkAll, ...lightMore, ...darkMore, ...transparencyReduce, ...forcedColors, ...reduce, ...print]) {
+    const hit = refsOf(entry).find(name => tightened.has(name))
+    if (hit)
+      throw new Error(`[emit-tokens] ${entry.name} 引用了随密度收紧的 ${hit}，它所在的块不挂在 density 边界上，局部 compact 子树里收不动`)
+  }
   const light = lightAll.filter(entry => !sharedMaterialNames.has(entry.name))
   const dark = darkAll.filter(entry => !sharedMaterialNames.has(entry.name))
   const selection = [...routes].map(([name, value]) => `    ${name}: ${value};`).join('\n')
@@ -271,6 +294,14 @@ ${await declarations(boundaryMaterial)}
      同为零特指度时靠书写顺序压过基线；嵌套换档靠元素自身声明压过继承 */
   :where([data-density='compact']) {
 ${await declarations(compact)}
+  }
+
+  /* density 轴 · compact 档的派生令牌：基线里引用链落到上面收紧项的 calc 与别名。自定义属性在声明处求值，
+     只写在 :root 与 comfortable 边界上会冻结成宽松档的取值，局部 compact 子树继承到的是这份冻结值；
+     在 compact 边界上再声明一次，引用才在边界自己的取值里解析。只挑这几支，不整组重声明基线，
+     祖先上作者写的其余覆盖照常继承下来 */
+  :where([data-density='compact']) {
+${await declarations(compactDerived)}
   }
 
   /* direction 轴：书写方向的符号，给只认物理方向的量换向。就近的 dir 属性决定——dir 写在哪一层就在
@@ -390,7 +421,7 @@ export type TokenName = keyof typeof tokens
     applyFileHeader(join(ROOT, 'src', 'generated', 'tokens.ts'), generatedTs),
   )
 
-  console.log(`[emit-tokens] material recipes ${materials.recipes} × ${materials.targets} modes · shared ${sharedMaterial.length} · primitive ${primitive.length} · base ${base.length} · compact ${compact.length} · rtl ${rtl.length} · light ${light.length} · dark ${dark.length} · transparency ${transparencyReduce.length} · forced-colors ${forcedColors.length} · reduce ${reduce.length} · print ${print.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
+  console.log(`[emit-tokens] material recipes ${materials.recipes} × ${materials.targets} modes · shared ${sharedMaterial.length} · primitive ${primitive.length} · base ${base.length} · compact ${compact.length} + derived ${compactDerived.length} · rtl ${rtl.length} · light ${light.length} · dark ${dark.length} · transparency ${transparencyReduce.length} · forced-colors ${forcedColors.length} · reduce ${reduce.length} · print ${print.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
 }
 
 main()
