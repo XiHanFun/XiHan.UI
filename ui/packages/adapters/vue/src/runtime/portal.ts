@@ -9,6 +9,7 @@ import type { PortalVisualBridge } from '@xihan-ui/core'
 import type { PropType, Ref, VNode } from 'vue'
 import { createPortalVisualBridge } from '@xihan-ui/core'
 import { defineComponent, h, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { clearFieldContext } from '../components/field/context'
 
 /**
  * Vue 内部 Portal：Teleport 只负责物理搬运，本层为每个实例增加无盒壳并桥接逻辑来源的视觉轴。
@@ -24,6 +25,9 @@ export const XhPortal = defineComponent({
     source: { type: Object as PropType<Readonly<Ref<HTMLElement | null>>>, default: undefined },
   },
   setup(props, { slots }) {
+    // 浮层内容搬到落点后不再是外层字段的控件：放在里面的输入框不被外层字段命名、描述，也不拿同一个 id。
+    // 与 Web Components 一致：那边的 Portal 把节点物理搬走，字段按 DOM 祖先链找控件，本来就够不着
+    clearFieldContext()
     const sourceRef = ref<HTMLTemplateElement | null>(null)
     const shellRef = ref<HTMLElement | null>(null)
     let bridge: PortalVisualBridge | null = null

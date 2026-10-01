@@ -25303,6 +25303,15 @@
       "path": "src/elements/field.ts",
       "declarations": [
         {
+          "kind": "variable",
+          "name": "FIELD_SCOPE_SELECTOR",
+          "type": {
+            "text": "string"
+          },
+          "default": "'xh-field, xh-field-boundary'",
+          "description": "字段沿 DOM 祖先链认领控件时停在这两种节点上：更近的字段，或作者放的字段边界。"
+        },
+        {
           "kind": "class",
           "description": "`<xh-field>`：Light-DOM 行为宿主，无状态机，把 connectField 产出的 id 与 aria-* 接到\nlabel / control / description / error-text 角色节点上，自动对齐 `for` 与描述链。控件本身由作者渲染。\n\n每个实例自带一份 scope 派生 part id，同页多个 field 各自分配 id。",
           "name": "XhFieldElement",
@@ -25572,14 +25581,42 @@
               "name": "--xh-field-ring-invalid"
             }
           ]
+        },
+        {
+          "kind": "class",
+          "description": "`<xh-field-boundary>`：字段边界。包裹一棵子树，其中的库内控件不再继承外层 `<xh-field>` 与表单字段组的\n禁用、只读、必填与无效：组合控件把自己的内部输入（搜索框、筛选框）包进来，它们就不归外层字段管。\n\n它不渲染任何内容、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，布局上它是 display: contents。\n与 Vue / React 的 XhFieldBoundary 是同一件事：那两家断开的是组件树上的字段上下文，这里是字段沿 DOM 祖先链\n认领控件时停在它身上。浮层内容经 Portal 搬到落点后本来就不在字段的子树里。",
+          "name": "XhFieldBoundaryElement",
+          "members": [],
+          "superclass": {
+            "name": "XhReactiveElement",
+            "module": "/src/reactive"
+          },
+          "tagName": "xh-field-boundary",
+          "customElement": true
         }
       ],
       "exports": [
         {
           "kind": "js",
+          "name": "FIELD_SCOPE_SELECTOR",
+          "declaration": {
+            "name": "FIELD_SCOPE_SELECTOR",
+            "module": "src/elements/field.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "XhFieldElement",
           "declaration": {
             "name": "XhFieldElement",
+            "module": "src/elements/field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "XhFieldBoundaryElement",
+          "declaration": {
+            "name": "XhFieldBoundaryElement",
             "module": "src/elements/field.ts"
           }
         }

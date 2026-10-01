@@ -9,6 +9,7 @@ import type { ReactNode } from 'react'
 import { createPortalVisualBridge } from '@xihan-ui/core'
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { XhFieldBoundary } from '../components/field/boundary'
 import { useXhConfig } from '../config/config'
 
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
@@ -112,7 +113,9 @@ function PortalWithVisualBridge({ target, source, children }: {
 
   const shell = (
     <div ref={shellRef} data-xh-portal-shell="" style={{ display: 'contents' }}>
-      {children}
+      {/* 浮层内容搬到落点后不再是外层字段的控件：放在里面的输入框不被外层字段命名、描述，也不拿同一个 id。
+          与 Web Components 一致：那边的 Portal 把节点物理搬走，字段按 DOM 祖先链找控件，本来就够不着 */}
+      <XhFieldBoundary>{children}</XhFieldBoundary>
     </div>
   )
 

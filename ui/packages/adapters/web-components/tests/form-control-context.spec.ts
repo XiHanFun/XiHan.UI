@@ -348,6 +348,27 @@ describe('form control context 接线', () => {
     expect(input.getAttribute('aria-required')).toBe('false')
   })
 
+  it('xh-field-boundary 后面的控件不继承外层 Field 与表单字段组的状态', async () => {
+    const field = `
+      <xh-field disabled read-only required invalid>
+        <div data-xh-part="root">
+          <label data-xh-part="label">图标</label>
+          ${textField('data-xh-part="control" id="outer"')}
+          <xh-field-boundary>${textField('id="inner"')}</xh-field-boundary>
+        </div>
+      </xh-field>`
+    const form = makeForm(field)
+    const outer = form.querySelector('#outer input') as HTMLInputElement
+    const inner = form.querySelector('#inner input') as HTMLInputElement
+    // 边界外的那个先接上状态，说明这一轮接线已经跑完
+    await vi.waitFor(() => expect(outer.disabled).toBe(true))
+    expect(inner.disabled).toBe(false)
+    expect(inner.readOnly).toBe(false)
+    expect(inner.required).toBe(false)
+    expect(inner.getAttribute('aria-invalid')).toBe('false')
+    expect(getComputedStyle(form.querySelector('xh-field-boundary')!).display).toBe('contents')
+  })
+
   it.each(ATOMIC_CONTROLS)('%s 直接继承 Form 的四条状态轴', async (kind) => {
     await expectAtomicState(makeForm(atomicControl(kind)), kind, true)
   })

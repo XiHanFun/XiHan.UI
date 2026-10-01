@@ -60,6 +60,7 @@
 - `disabled`、`readOnly`、`invalid` 和 `required` 可传递给内部控件。
 - 说明和错误信息可以同时显示。
 - `FieldControl` 默认将属性合并到唯一子节点。
+- 字段的标签、说明、状态与控件 id 沿组件树（Web Components 沿 DOM 祖先链）交给子树里的库内控件。组合控件内嵌的输入（图标选择器里的搜索框、筛选框）不该被读成外层字段的名字时，包进 `XhFieldBoundary`（Web Components 为 `display: contents` 的 `<xh-field-boundary>`）：边界后面的控件不再继承外层字段与表单字段组。浮层内容经 Portal 搬到落点后已自动断开，放在弹出层、对话框里的输入框不归外层字段管。
 - 字段族控件（文本框、下拉、日期、数字等）放进字段即铺满字段宽，跟着表单的列走，不必再在根上写 `inline-size: 100%`；单独摆放时仍是 16rem 缺省宽。横排一行流（`layout="inline"`）的表单里字段按内容收，那一档仍取缺省宽。
 
 ### 组合

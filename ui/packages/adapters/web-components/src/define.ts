@@ -52,7 +52,7 @@ import { XhDownloadTriggerElement } from './elements/download-trigger'
 import { XhDrawerElement } from './elements/drawer'
 import { XhEditableElement } from './elements/editable'
 import { XhEmptyStateElement } from './elements/empty-state'
-import { XhFieldElement } from './elements/field'
+import { XhFieldBoundaryElement, XhFieldElement } from './elements/field'
 import { XhFieldArrayElement } from './elements/field-array'
 import { XhFieldsetElement } from './elements/fieldset'
 import { XhFileUploadElement } from './elements/file-upload'
@@ -237,6 +237,7 @@ export function defineXhElements(): void {
   defineElement('xh-drawer', XhDrawerElement, VERSION)
   defineElement('xh-editable', XhEditableElement, VERSION)
   defineElement('xh-field', XhFieldElement, VERSION)
+  defineElement('xh-field-boundary', XhFieldBoundaryElement, VERSION)
   defineElement('xh-file-upload', XhFileUploadElement, VERSION)
   defineElement('xh-form', XhFormElement, VERSION)
   defineElement('xh-hover-card', XhHoverCardElement, VERSION)
@@ -345,6 +346,7 @@ export {
   XhDrawerElement,
   XhEditableElement,
   XhEmptyStateElement,
+  XhFieldBoundaryElement,
   XhFieldElement,
   XhFieldsetElement,
   XhFileUploadElement,
