@@ -39,3 +39,21 @@ export function useTimePickerColumnContext(): TimePickerColumnContext {
     throw new Error('[xh] TimePicker 选项必须用在 XhTimePickerColumn 内')
   return ctx
 }
+
+/** 标签声明的值，供标签中的删除按钮复用同一份声明。 */
+export interface TimePickerTagContext {
+  value: () => string
+}
+
+const TAG_KEY: InjectionKey<TimePickerTagContext> = Symbol.for('xh-time-picker-tag')
+
+export function provideTimePickerTag(ctx: TimePickerTagContext): void {
+  provide(TAG_KEY, ctx)
+}
+
+export function useTimePickerTagContext(): TimePickerTagContext {
+  const ctx = inject(TAG_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] TimePicker 标签子部件必须用在 XhTimePickerTag 内')
+  return ctx
+}

@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `segment-group` · **`segment`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `hidden-input`
+`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `tag-list` · `segment-group` · **`segment`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `confirm-trigger` · `hidden-input`
 
 ## 示例
 
@@ -90,6 +90,12 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 
 <XhDemo src="time-picker/12-unavailable" />
 
+### 多选成标签
+
+selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值、浮层不收，可以接着添；选中的时刻在输入行里排成标签，点叉或在展开钮上按退格摘掉
+
+<XhDemo src="time-picker/13-multiple" />
+
 ## 设计指引
 
 ### 何时使用
@@ -107,6 +113,9 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 - `max` 直接把界外的格从列中裁掉；分钟列还会随已选的小时再裁一次。
 - `isTimeUnavailable` 逐格判断可选性：时列按 24 小时制给值，第三个参数带已选的时与分，写得出「9 点只能选 30 分以后」。
 - 浮层内可以放置“当前时刻”与确认按钮。
+- 值恒为 ISO 时间串数组：单选至多一项（还没填全时为空数组），宿主可以写裸串；`onValueChange` 的 `value` 恒为数组。
+- 多选（`selectionMode="multiple"`）时各列拼出的是草稿，按「添加」（`confirm-trigger`）收进值，浮层不收、草稿留着，改一列就能接着添；快捷选项点一下切换选中。草稿没填全、越界、已经选过或到了 `maxSelected` 时「添加」不可按。
+- 多选的选中值在输入行里排成标签（与[选择器](./select)多选同一套库内[标签](./tag)），按时刻升序：段位收起，展开钮常驻并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签按 `locale` 与小时制排出（13:45、下午1:45），不截短、一行放不下就折行，超过 `maxTagCount`（默认 3）的折进 +N；表单一个选中值一份同名隐藏输入。
 - 触发器打开空值时焦点直接落到第一项；从输入段打开时继续保留键入焦点。
 - 快捷选项与时/分/秒列都从当前值恢复持久选中，并在逻辑末端显示对号。
 - 悬停、键盘高亮与可见焦点使用中性实体底，与选中对号可以同时存在。数字格在左右保留等宽标记轨，选中和 RTL 都不会把数字推离中心。
@@ -123,7 +132,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 
 - 把不可选的时段裁掉而不是置灰，列更短、查找更快。
 - 打开时把浮层滚动到当前值。
-- 标准输入行应同时包含清空按钮与时钟图标触发器；二者按值互斥显示。参与表单时同时渲染隐藏输入。
+- 标准输入行应同时包含清空按钮与时钟图标触发器；单选时二者按值互斥显示，多选时都留着。参与表单时同时渲染隐藏输入。
 - 自定义格内文案保持简短；选中对号由皮肤统一绘制，不在插槽内重复添加。
 
 ### 反模式
@@ -137,7 +146,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-time-picker>` |
-| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerHiddenInput` `XhTimePickerItem` `XhTimePickerLabel` `XhTimePickerPositioner` `XhTimePickerPreset` `XhTimePickerPresetGroup` `XhTimePickerRoot` `XhTimePickerSegment` `XhTimePickerSegmentGroup` `XhTimePickerTrigger` |
+| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerConfirmTrigger` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerHiddenInput` `XhTimePickerItem` `XhTimePickerItemDeleteTrigger` `XhTimePickerLabel` `XhTimePickerOverflowTag` `XhTimePickerPositioner` `XhTimePickerPreset` `XhTimePickerPresetGroup` `XhTimePickerRoot` `XhTimePickerSegment` `XhTimePickerSegmentGroup` `XhTimePickerTag` `XhTimePickerTagLabel` `XhTimePickerTagList` `XhTimePickerTrigger` |
 | 组合式函数 | `useTimePicker` |
 | 状态机 | `timePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/time-picker.css` |
@@ -146,8 +155,11 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 受控值，ISO 时间串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
-| `defaultValue` | `string` |  |  |
+| `value` | `string \| string[]` |  | 受控值，ISO 时间串数组。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组（空串即空数组）。 |
+| `defaultValue` | `string \| string[]` |  |  |
+| `selectionMode` | `TimePickerSelectionMode` |  | 选择模式，默认 single。 |
+| `maxSelected` | `number` |  | multiple 下最多选几个时刻：选满后「添加」不可按、快捷选项只能点掉已选的。非整数向下取整，小于 1 或不是有限数时不设上限。 |
+| `maxTagCount` | `number` |  | 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `min` | `string` |  | 下界（含）。裁掉浮层中落在界外的可选值，并把已填的越界值标注出来（不改写它）。 |
@@ -219,6 +231,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `XhTimePickerPresetGroup` | `children` | `SlotChildren<TimePickerPresetsSlotProps>` |  | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhTimePickerRoot` | `children` | `SlotChildren<TimePickerRootSlotProps>` |  |  |
 | `XhTimePickerSegment` | `segment` | `TimeSegmentType` | 是 | 段的身份由作者声明。 |
+| `XhTimePickerTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
 
 ### 状态
 
@@ -239,7 +252,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.DIGIT` · `SEGMENT.CLEAR` · `SEGMENT.PERIOD` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `OPTION.FOCUS` · `ITEM.SELECT` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `VALUE.ADD` · `VALUE.REMOVE` · `VALUE.TOGGLE` · `TAG_LIST.TRACKED` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.DIGIT` · `SEGMENT.CLEAR` · `SEGMENT.PERIOD` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `OPTION.FOCUS` · `ITEM.SELECT` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isOpenControlled` · `canEdit` · `closesOnPreset` · `canPress`
 
@@ -250,8 +263,10 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `value` | `string` | ISO 时间串；任一必填段为空时为空串。 |
-| `empty` | `boolean` | 值为空串（尚未填全）。 |
+| `value` | `string[]` | 选中的时刻，ISO 时间串数组；单选至多一项，任一必填段为空时为空数组。 |
+| `selectionMode` | `TimePickerSelectionMode` |  |
+| `draftValue` | `string` | 多选时浮层里拼着的草稿（填全了才有，否则空串）；单选时就是当前值。 |
+| `empty` | `boolean` | 没有选中值（单选时还没填全也算）。 |
 | `outOfRange` | `boolean` | 已填全但落在 min / max 之外。只是标注，不改写值。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
@@ -266,17 +281,28 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `focusedItem` | `string \| null` |  |
 | `presets` | `readonly TimePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `canAdd` | `boolean` | 多选时「添加」此刻可按：草稿填全、在 min / max 之内、还没选过、也没到 maxSelected。 |
+| `tags` | `TimePickerTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 |
+| `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `getSegmentText` | `(props: TimePickerSegmentProps) => string` | 某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 |
 | `getItemText` | `(props: TimePickerItemProps) => string` | 某一格应显示的文字。数字列即格子自身的值，上下午列按 locale 给出「上午 / 下午」。 各适配器都用它填充文本，保证同构。 |
 | `isItemSelected` | `(props: TimePickerItemProps) => boolean` |  |
 | `isItemDisabled` | `(props: TimePickerItemProps) => boolean` | 落在 min / max 之外（或整个控件禁用）：仍在列表中，但不可选、方向键跳过。 |
 | `setOpen` | `(next: boolean) => void` |  |
-| `setValue` | `(next: string) => void` |  |
+| `setValue` | `(next: string[]) => void` |  |
 | `clear` | `() => void` |  |
+| `add` | `() => void` | 多选：把草稿收进值（与按「添加」同一条路）。 |
+| `deselect` | `(value: string) => void` | 多选：摘掉一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
-| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒内剩余宽度，把尾部按钮推到框内末端。 |
+| `getTagListProps` | `() => T['element']` | 标签行：多选时放在盒里，收纳可见标签与 +N 标签；没有选中时整体留空。单选时整体 hidden。 |
+| `getTagProps` | `(props: TimePickerTagProps) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"），另带 data-value。 |
+| `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）；标签与 +N 共用。 |
+| `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
+| `getItemDeleteTriggerProps` | `(props: TimePickerTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；不占 Tab 位、按下不夺焦。 |
+| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒内剩余宽度，把尾部按钮推到框内末端；多选时整体 hidden。 |
 | `getSegmentProps` | `(props: TimePickerSegmentProps) => T['element']` | 分段输入：一段一个节点，与 TimeField 的段同构（role=spinbutton + roving tabindex）。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
@@ -286,7 +312,8 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `getPresetProps` | `(props: TimePickerPresetProps) => T['element']` | 一条快捷选项（role=option）：点击把整份时间写入值并收起浮层。 |
 | `getColumnProps` | `(props: TimePickerColumnProps) => T['element']` |  |
 | `getItemProps` | `(props: TimePickerItemProps) => T['element']` |  |
-| `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 |
+| `getConfirmTriggerProps` | `() => T['button']` | 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收起；单选时 hidden。文字由作者写。 |
+| `getHiddenInputProps` | `(props?: TimePickerHiddenInputProps) => T['input']` | 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 多选时一个选中值一份同名输入：传 `{ value }` 产出那一份，不传是首个选中值那一份。 |
 
 ## 无障碍
 
@@ -296,6 +323,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
+| `Backspace` | focus in trigger, multiple, 有选中值, not disabled/readOnly | 摘掉最后一个选中值（标签行末尾那一枚）；多选时段位不出现，触发钮就是键盘入口 |
 | `ArrowDown` / `ArrowUp` | focus in trigger, closed, not disabled | 展开浮层，焦点落到时列（已选的时仍可选就停在它上面，否则停在首格） |
 | `Enter` / `Space` | focus in trigger, not disabled | 按钮的默认激活即展开/收起（不额外拦键，否则会一开一关） |
 | `ArrowDown` | open, focus in 某一列 | 列内下移一格，到尾回绕；被 min/max 裁掉的格自动跳过 |
@@ -399,7 +427,11 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
 | `control` | `data-xh-field-chrome` | '' |
+| `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
 | `control` | `data-xh-field-size` | props.size |
+| `tag-list` | `data-disabled` | ''（条件成立时才出现） |
+| `tag-list` | `data-instant` | ''（条件成立时才出现） |
+| `tag-list` | `data-xh-tag-list` | '' |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
@@ -448,6 +480,16 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `confirm-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-xh-action-control` | '' |
+| `confirm-trigger` | `data-xh-action-display` | 'always' |
+| `confirm-trigger` | `data-xh-action-profile` | 'text' |
+| `confirm-trigger` | `data-xh-action-size` | 'sm' |
+| `confirm-trigger` | `data-xh-action-variant` | 'solid' |
+| `confirm-trigger` | `data-xh-ink-surface` | '' |
+| `overflow-tag` | `data-count` | String(overflowCount) |
+| `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -469,6 +511,15 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `--xh-time-picker-column-h` | `column` | `block-size` | `default` | `--xh-viewport-h-sm` | time-picker 的 column 部件 block-size 覆盖槽。 |
 | `--xh-time-picker-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | time-picker 的 column 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-picker-column-px` | `column` | `padding-inline` | `default` | `0` | time-picker 的 column 部件 padding-inline 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-bg` | `confirm-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | time-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-bg-active` | `confirm-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | time-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-bg-hover` | `confirm-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | time-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-fg` | `confirm-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | time-picker 的 confirm-trigger 部件 color 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-gap` | `confirm-trigger`<br>`content` | `margin-inline-start` | `default` | `--xh-space-1` | time-picker 的 confirm-trigger、content 部件 margin-inline-start 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-h` | `confirm-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | time-picker 的 confirm-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-px` | `confirm-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | time-picker 的 confirm-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-radius` | `confirm-trigger` | `border-radius` | `default` | `--xh-shape-control` | time-picker 的 confirm-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-shadow` | `confirm-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | time-picker 的 confirm-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-time-picker-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | time-picker 的 content 部件 background 覆盖槽。 |
 | `--xh-time-picker-content-border` | `content` | `border` | `default` | `--xh-border-default` | time-picker 的 content 部件 border 覆盖槽。 |
 | `--xh-time-picker-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | time-picker 的 content 部件 color 覆盖槽。 |
@@ -488,6 +539,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `--xh-time-picker-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | time-picker 的 control 部件 color 覆盖槽。 |
 | `--xh-time-picker-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_time-picker-gap` | time-picker 的 control 部件 gap 覆盖槽。 |
 | `--xh-time-picker-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_time-picker-control-h` | time-picker 的 control 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-time-picker-control-max-h` | `control` | `max-block-size` | `xh-field-layout=multi-tag` | `--xh-viewport-h-sm` | time-picker 的 control 部件 max-block-size 覆盖槽。 |
 | `--xh-time-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | time-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_time-picker-control-px` | time-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | time-picker 的 control 部件 border-radius 覆盖槽。 |
@@ -536,13 +588,14 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `--xh-time-picker-segment-fg-invalid-focus` | `segment` | `color` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-fg-danger` | time-picker 的 segment 部件 color 覆盖槽。 |
 | `--xh-time-picker-segment-px` | `segment` | `padding-inline` | `default` | `--xh-space-0_5` | time-picker 的 segment 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-segment-radius` | `segment` | `border-radius` | `default` | `--xh-shape-inset` | time-picker 的 segment 部件 border-radius 覆盖槽。 |
+| `--xh-time-picker-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | time-picker 的 tag-list 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

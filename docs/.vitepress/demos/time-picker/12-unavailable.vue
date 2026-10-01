@@ -14,7 +14,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("09:30");
+const value = ref<string[]>(["09:30"]);
 
 // 判真的格子仍在列里、仍可聚焦，只是选不中；时列的值恒按 24 小时制给
 function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUnavailableContext): boolean {
@@ -50,5 +50,5 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
 </template>

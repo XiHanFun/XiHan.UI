@@ -14,7 +14,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("");
+const value = ref<string[]>([]);
 
 // 此刻的时分，两位补零
 function now() {
@@ -52,7 +52,7 @@ function now() {
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 8px" @keydown.stop>
-          <XhButton size="sm" variant="ghost" @click="setValue(now())">此刻</XhButton>
+          <XhButton size="sm" variant="ghost" @click="setValue([now()])">此刻</XhButton>
           <XhButton size="sm" variant="ghost" :disabled="!canClear" @click="clear()">
             清空
           </XhButton>
@@ -62,5 +62,5 @@ function now() {
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
 </template>

@@ -12,9 +12,11 @@ import { createContext, useContext } from 'react'
 const Ctx = createContext<TimePickerContext | undefined>(undefined)
 /** 列声明的单位，供列内选项取到自己所属的列。 */
 const ColumnCtx = createContext<TimePickerColumnUnit | undefined>(undefined)
+const TagCtx = createContext<string | undefined>(undefined)
 
 export const TimePickerProvider = Ctx
 export const TimePickerColumnProvider = ColumnCtx
+export const TimePickerTagProvider = TagCtx
 
 export function useTimePickerContext(): TimePickerContext {
   const ctx = useContext(Ctx)
@@ -28,4 +30,11 @@ export function useTimePickerColumnContext(): TimePickerColumnUnit {
   if (!unit)
     throw new Error('XhTimePickerItem 要放在 XhTimePickerColumn 里')
   return unit
+}
+
+export function useTimePickerTagContext(): string {
+  const value = useContext(TagCtx)
+  if (value === undefined)
+    throw new Error('XhTimePickerItemDeleteTrigger 要放在 XhTimePickerTag 里')
+  return value
 }

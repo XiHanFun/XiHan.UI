@@ -47,6 +47,6 @@
     unit === "minute" && context.hour === 9 && Number(option) < 30;
 
   picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value || "（空）";
+    readout.textContent = event.detail.value[0] ?? "（空）";
   });
 </script>

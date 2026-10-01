@@ -76,7 +76,7 @@
   const picker = node.querySelector("xh-time-picker");
   picker.presets = presets;
   picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value || "（空）";
+    readout.textContent = event.detail.value[0] ?? "（空）";
   });
 
   stage.append(node);

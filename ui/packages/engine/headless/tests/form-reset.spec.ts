@@ -54,7 +54,7 @@ const 值回落 = [
   { 名: 'date-picker', machine: datePickerMachine, props: { defaultValue: '2026-01-02' }, 改: { type: 'VALUE.SET', value: ['2026-03-04'] }, 键: 'value', 期望: ['2026-01-02'] },
   { 名: 'date-field', machine: dateFieldMachine, props: { defaultValue: '2026-01-02' }, 改: { type: 'VALUE.SET', value: '2026-03-04' }, 键: 'value', 期望: '2026-01-02' },
   { 名: 'time-field', machine: timeFieldMachine, props: { defaultValue: '08:30' }, 改: { type: 'VALUE.SET', value: '19:45' }, 键: 'value', 期望: '08:30' },
-  { 名: 'time-picker', machine: timePickerMachine, props: { defaultValue: '08:30' }, 改: { type: 'VALUE.SET', value: '19:45' }, 键: 'value', 期望: '08:30' },
+  { 名: 'time-picker', machine: timePickerMachine, props: { defaultValue: '08:30' }, 改: { type: 'VALUE.SET', value: ['19:45'] }, 键: 'value', 期望: ['08:30'] },
   { 名: 'editable', machine: editableMachine, props: { defaultValue: '甲' }, 改: { type: 'VALUE.SET', value: '乙' }, 键: 'value', 期望: '甲' },
   { 名: 'tags-input', machine: tagsInputMachine, props: { defaultValue: ['x'] }, 改: { type: 'VALUE.SET', value: ['x', 'y'] }, 键: 'value', 期望: ['x'] },
 ] as const

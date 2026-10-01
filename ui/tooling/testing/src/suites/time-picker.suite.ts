@@ -158,6 +158,8 @@ export const timePickerSuite: ConformanceSuite = {
               column('minute', ['00', '30']),
               column('second', ['00', '30']),
               column('dayPeriod', ['00', '01']),
+              // 多选的「添加」；单选时连接层给 hidden
+              { part: 'confirm-trigger', tag: 'button', text: '添加' },
             ],
           },
         ],
@@ -313,11 +315,14 @@ export const timePickerSuite: ConformanceSuite = {
           DAY_PERIOD_COL,
           PERIOD_AM,
           PERIOD_PM,
+          'confirm-trigger',
         ],
         counts: { segment: 4, column: 4, item: 10 },
         activeElement: null,
         parts: {
           'root': { 'data-state': 'closed', 'data-empty': '', 'data-disabled': null, 'data-invalid': null },
+          // 单选不用「添加」：整个收起
+          'confirm-trigger': { hidden: '' },
           'control': {
             'role': 'group',
             'aria-labelledby': '@part(label)',
@@ -650,7 +655,7 @@ export const timePickerSuite: ConformanceSuite = {
           kind: 'key',
           key: 'Enter',
           expect: {
-            events: [{ type: 'value-change', detail: { value: '08:00' } }],
+            events: [{ type: 'value-change', detail: { value: ['08:00'] } }],
             parts: { root: { 'data-empty': null } },
           },
         },
@@ -770,7 +775,7 @@ export const timePickerSuite: ConformanceSuite = {
           key: 'ArrowUp',
           expect: {
             parts: { [HOUR_SEG]: { 'aria-valuenow': '10' }, [HOUR_10]: { 'aria-selected': 'true' } },
-            events: [{ type: 'value-change', detail: { value: '10:30' } }],
+            events: [{ type: 'value-change', detail: { value: ['10:30'] } }],
           },
         },
         {
@@ -839,7 +844,7 @@ export const timePickerSuite: ConformanceSuite = {
               // 时还留着，清空按钮仍该能按
               'clear-trigger': { disabled: null },
             },
-            events: [{ type: 'value-change', detail: { value: '' } }],
+            events: [{ type: 'value-change', detail: { value: [] } }],
           },
         },
       ],
@@ -870,7 +875,7 @@ export const timePickerSuite: ConformanceSuite = {
             },
             // 这个按钮不占 Tab 位，清完必须把焦点送回首段
             activeElement: { part: HOUR_SEG, exact: true },
-            events: [{ type: 'value-change', detail: { value: '' } }, { type: 'clear', detail: null }],
+            events: [{ type: 'value-change', detail: { value: [] } }, { type: 'clear', detail: null }],
           },
         },
         {
@@ -925,7 +930,7 @@ export const timePickerSuite: ConformanceSuite = {
             parts: {
               [MINUTE_00]: { 'aria-disabled': 'false', 'data-disabled': null },
             },
-            events: [{ type: 'value-change', detail: { value: '10:30' } }],
+            events: [{ type: 'value-change', detail: { value: ['10:30'] } }],
           },
         },
       ],
@@ -1015,7 +1020,7 @@ export const timePickerSuite: ConformanceSuite = {
               // 21:30 仍在 08:00-23:00 之内
               root: { 'data-out-of-range': null },
             },
-            events: [{ type: 'value-change', detail: { value: '21:30' } }],
+            events: [{ type: 'value-change', detail: { value: ['21:30'] } }],
           },
         },
         {
@@ -1026,7 +1031,7 @@ export const timePickerSuite: ConformanceSuite = {
               [PERIOD_AM]: { 'aria-selected': 'true' },
               [DAY_PERIOD_SEG]: { 'aria-valuenow': '0', 'aria-valuetext': 'AM' },
             },
-            events: [{ type: 'value-change', detail: { value: '09:30' } }],
+            events: [{ type: 'value-change', detail: { value: ['09:30'] } }],
           },
         },
       ],
@@ -1069,7 +1074,7 @@ export const timePickerSuite: ConformanceSuite = {
               // 上界是 11:00，翻到下午即出界
               root: { 'data-out-of-range': '' },
             },
-            events: [{ type: 'value-change', detail: { value: '21:30' } }],
+            events: [{ type: 'value-change', detail: { value: ['21:30'] } }],
           },
         },
         {
@@ -1081,7 +1086,7 @@ export const timePickerSuite: ConformanceSuite = {
               [DAY_PERIOD_SEG]: { 'aria-valuenow': '0', 'aria-valuetext': 'AM' },
               root: { 'data-out-of-range': null },
             },
-            events: [{ type: 'value-change', detail: { value: '09:30' } }],
+            events: [{ type: 'value-change', detail: { value: ['09:30'] } }],
           },
         },
       ],
@@ -1210,7 +1215,7 @@ export const timePickerSuite: ConformanceSuite = {
           key: 'ArrowUp',
           expect: {
             parts: { [HOUR_SEG]: { 'aria-valuenow': '9' }, [HOUR_09]: { 'aria-selected': 'true' } },
-            events: [{ type: 'value-change', detail: { value: '10:30' } }],
+            events: [{ type: 'value-change', detail: { value: ['10:30'] } }],
           },
         },
         {
@@ -1294,6 +1299,23 @@ export const timePickerSuite: ConformanceSuite = {
         heldPressIgnored('time-picker', 'item', '被 min 裁掉的格 aria-disabled，不接受按压', { value: '08' }),
         heldPressIgnored('time-picker', 'preset', '作者禁用的快捷选项不接受按压', { value: '08:30', keyboardHost: null }),
         heldPressIgnored('time-picker', 'preset', '越界的快捷选项不接受按压', { value: '23:00', keyboardHost: null }),
+      ],
+    },
+    {
+      name: '多选时段位收起，触发钮是键盘入口：退格摘掉最后一个选中值',
+      spec: { apg: APG },
+      covers: ['time-picker.kbd.remove-last'],
+      props: { ...BASE, selectionMode: 'multiple', defaultValue: ['08:30', '09:00'] },
+      initial: {
+        parts: { 'segment-group': { hidden: '' }, 'confirm-trigger': { hidden: null, disabled: '' } },
+      },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: { events: [{ type: 'value-change', detail: { value: ['08:30'] } }] },
+        },
       ],
     },
   ],

@@ -16,7 +16,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("09:30");
+const value = ref<string[]>(["09:30"]);
 </script>
 
 <template>
@@ -49,6 +49,6 @@ const value = ref("09:30");
   </XhTimePickerRoot>
 
   <span aria-live="polite" style="font-size: 13px">
-    当前值：{{ value || "（未填齐）" }}
+    当前值：{{ value[0] ?? "（未填齐）" }}
   </span>
 </template>

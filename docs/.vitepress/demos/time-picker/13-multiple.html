@@ -1,13 +1,9 @@
-<!-- 基础用法 | 输入框与选择面板共享同一份值；按 15 分钟列出选项并实时显示结果 -->
-<xh-time-picker id="time-picker-basic" name="meeting-time" value="09:30" time-step='{"minute":15}'>
+<!-- 多选成标签 | selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值、浮层不收，可以接着添；选中的时刻在输入行里排成标签，点叉或在展开钮上按退格摘掉 -->
+<xh-time-picker id="time-picker-multiple" name="reminders" selection-mode="multiple" time-step='{"minute":15}'>
   <div data-xh-part="root">
-    <label data-xh-part="label">会议开始</label>
+    <label data-xh-part="label">提醒时刻</label>
     <div data-xh-part="control">
-      <div data-xh-part="segment-group">
-        <span data-xh-part="segment" segment="hour"></span>
-        <span>:</span>
-        <span data-xh-part="segment" segment="minute"></span>
-      </div>
+      <span data-xh-part="tag-list"></span>
       <button data-xh-part="clear-trigger"></button>
       <button data-xh-part="trigger"></button>
     </div>
@@ -46,22 +42,50 @@
           <div data-xh-part="item" value="30"></div>
           <div data-xh-part="item" value="45"></div>
         </div>
+        <button data-xh-part="confirm-trigger">添加</button>
       </div>
     </div>
   </div>
 </xh-time-picker>
 
 <span aria-live="polite" style="font-size: 13px">
-  当前值：<span id="time-picker-basic-value">09:30</span>
+  当前值：<span id="time-picker-multiple-value">09:00、14:30</span>
 </span>
 
 <script type="module">
-  const picker = document.getElementById("time-picker-basic");
-  const readout = document.getElementById("time-picker-basic-value");
+  const picker = document.getElementById("time-picker-multiple");
+  const readout = document.getElementById("time-picker-multiple-value");
 
-  picker.addEventListener("value-change", (event) => {
-    const next = event.detail.value;
+  const tagList = picker.querySelector('[data-xh-part="tag-list"]');
+
+  // 标签按 tags 铺：一个选中值一枚，带删除钮；放不下的那些合成一枚 +N，文字由元素填
+  function paintTags() {
+    const overflow = document.createElement("span");
+    overflow.dataset.xhPart = "overflow-tag";
+    tagList.replaceChildren(
+      ...picker.tags.map((tag) => {
+        const node = document.createElement("span");
+        node.dataset.xhPart = "tag";
+        node.setAttribute("value", tag.value);
+        const label = document.createElement("span");
+        label.dataset.xhPart = "tag-label";
+        label.textContent = tag.label;
+        const remove = document.createElement("button");
+        remove.dataset.xhPart = "item-delete-trigger";
+        node.append(label, remove);
+        return node;
+      }),
+      overflow,
+    );
+  }
+
+  // 多选的值是数组，只走 property：设初值、每次变更写回
+  function apply(next) {
     picker.value = next;
-    readout.textContent = next[0] ?? "（未填齐）";
-  });
+    readout.textContent = next.join("、") || "（空）";
+    paintTags();
+  }
+
+  apply(["09:00", "14:30"]);
+  picker.addEventListener("value-change", (event) => apply(event.detail.value));
 </script>

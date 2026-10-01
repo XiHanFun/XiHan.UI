@@ -1,37 +1,38 @@
-<!-- 可选的触发按钮 | 点击输入行本来就会展开，该按钮不是必需的；需要它是因为它才带 aria-haspopup / aria-expanded -->
+<!-- 多选成标签 | selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值、浮层不收，可以接着添；选中的时刻在输入行里排成标签，点叉或在展开钮上按退格摘掉 -->
 <script setup lang="ts">
 import {
   XhTimePickerClearTrigger,
   XhTimePickerColumn,
+  XhTimePickerConfirmTrigger,
   XhTimePickerContent,
   XhTimePickerControl,
+  XhTimePickerHiddenInput,
   XhTimePickerItem,
   XhTimePickerLabel,
   XhTimePickerPositioner,
   XhTimePickerRoot,
-  XhTimePickerSegment,
-  XhTimePickerSegmentGroup,
+  XhTimePickerTagList,
   XhTimePickerTrigger,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref<string[]>(["09:30"]);
+const value = ref<string[]>(["09:00", "14:30"]);
 </script>
 
 <template>
-  <XhTimePickerRoot v-model:value="value">
-    <XhTimePickerLabel>会议开始</XhTimePickerLabel>
+  <XhTimePickerRoot
+    v-model:value="value"
+    name="reminders"
+    selection-mode="multiple"
+    :time-step="{ minute: 15 }"
+  >
+    <XhTimePickerLabel>提醒时刻</XhTimePickerLabel>
     <XhTimePickerControl>
-      <XhTimePickerSegmentGroup>
-        <XhTimePickerSegment segment="hour" />
-        <span>:</span>
-        <XhTimePickerSegment segment="minute" />
-      </XhTimePickerSegmentGroup>
+      <XhTimePickerTagList />
       <XhTimePickerClearTrigger />
-      <!-- 写上它多一个明写的入口；不写也照样能展开——点输入行即可，
-           键盘则在段上按 Alt+ArrowDown -->
-      <XhTimePickerTrigger aria-label="展开时间列" />
+      <XhTimePickerTrigger />
     </XhTimePickerControl>
+    <XhTimePickerHiddenInput />
     <XhTimePickerPositioner>
       <XhTimePickerContent>
         <XhTimePickerColumn v-slot="{ options }" unit="hour">
@@ -40,9 +41,12 @@ const value = ref<string[]>(["09:30"]);
         <XhTimePickerColumn v-slot="{ options }" unit="minute">
           <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
+        <XhTimePickerConfirmTrigger>添加</XhTimePickerConfirmTrigger>
       </XhTimePickerContent>
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
+  <span aria-live="polite" style="font-size: 13px">
+    当前值：{{ value.join("、") || "（空）" }}
+  </span>
 </template>

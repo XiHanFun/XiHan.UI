@@ -17,6 +17,12 @@ import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegm
 export type TimePickerColumnUnit = TimeColumnUnit
 
 /**
+ * 选择模式：single 选一个时刻；multiple 选一组时刻——浮层里各列拼出的是草稿，按「添加」才收进值，
+ * 输入行里的段位让位给一排标签。
+ */
+export type TimePickerSelectionMode = 'single' | 'multiple'
+
+/**
  * 展开时焦点落在时列的哪一格：
  * - selected 停在该段已填的值（被 min / max 裁掉时回退为首格；该段仍为空则不落锚点，
  *   焦点停在列容器上：指针打开走这条，不能有格子看似被选中）
@@ -55,7 +61,26 @@ export interface TimePickerOpenChangeDetails {
 }
 
 export interface TimePickerValueChangeDetails {
-  /** ISO 时间串：'13:45' 或 '13:45:30'（形状随 granularity）。任一必填段为空时为空串。 */
+  /**
+   * 选中的时刻，ISO 时间串（'13:45' 或 '13:45:30'，形状随 granularity），恒为数组。
+   * 单选时至多一项，任一必填段为空时为空数组；多选时去重并按时刻升序。
+   */
+  value: string[]
+}
+
+/** 多选时一枚标签：value 是它代表的选中值（ISO 时间串），label 是按 locale 与小时制排出来的显示文本。 */
+export interface TimePickerTagMeta {
+  value: string
+  label: string
+}
+
+export interface TimePickerTagProps {
+  /** 它代表哪个选中值。 */
+  value: string
+}
+
+export interface TimePickerHiddenInputProps {
+  /** 多选时一个选中值一份原生输入：传这个值，产出的就是它那一份。 */
   value: string
 }
 
@@ -109,13 +134,22 @@ export interface TimePickerPresetProps {
  * 接了按压通道的部件，按 key 记住正被按住的那一个：
  * 清空钮、触发钮各一，快捷选项按其值、时间格按「列:值」。
  */
-export type TimePickerPressedKey = 'clear' | 'trigger' | `preset:${string}` | `item:${TimePickerColumnUnit}:${string}`
+export type TimePickerPressedKey = 'clear' | 'trigger' | 'confirm' | `preset:${string}` | `item:${TimePickerColumnUnit}:${string}`
 
 export interface TimePickerSchema extends MachineSchema {
   props: {
-    /** 受控值，ISO 时间串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 */
-    value?: string
-    defaultValue?: string
+    /**
+     * 受控值，ISO 时间串数组。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。
+     * 单选可写裸串，内部一律归一为数组（空串即空数组）。
+     */
+    value?: string | string[]
+    defaultValue?: string | string[]
+    /** 选择模式，默认 single。 */
+    selectionMode?: TimePickerSelectionMode
+    /** multiple 下最多选几个时刻：选满后「添加」不可按、快捷选项只能点掉已选的。非整数向下取整，小于 1 或不是有限数时不设上限。 */
+    maxSelected?: number
+    /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
+    maxTagCount?: number
     /** 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
@@ -185,13 +219,15 @@ export interface TimePickerSchema extends MachineSchema {
     openedAtMount: boolean
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
-    /** ISO 时间串；任一必填段为空时为空串。受控（value 提供）时 cell 直读 prop。 */
-    value: string
+    /** 选中的时刻，ISO 时间串数组；单选至多一项。受控（value 提供）时 cell 直读 prop。 */
+    value: string[]
     /**
      * 逐段编辑缓冲，分段输入与浮层选中写入的是同一份。
-     * 只在 value 不是可解析的时间时才用它显示。
+     * 单选时它跟着值走，只在值不是可解析的时间时才用它显示；多选时它就是浮层里拼着的那个草稿，按「添加」才收进值。
      */
     draft: TimeDraft
+    /** 标签行的列表动效接上了：此前首帧就在的标签直接呈现，之后到达的才播进场。 */
+    tagListTracked: boolean
     /** 焦点所在段；焦点在分段输入之外时为 null。同时是段间 roving tabindex 的锚点。 */
     focusedSegment: TimeSegmentType | null
     /** 当前段已输入的数字串。换段、加减、清段、在浮层中选中都会清除它。 */
@@ -227,8 +263,15 @@ export interface TimePickerSchema extends MachineSchema {
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
-    /** 整份替换（外部 setValue 与快捷选项）；无法解析的串等同于清空。src 为 preset 时一并收起浮层。 */
-    | { type: 'VALUE.SET', value: string, src?: 'preset' }
+    /** 整份替换（外部 setValue 与快捷选项）；无法解析的串丢掉。src 为 preset 时一并收起浮层。 */
+    | { type: 'VALUE.SET', value: string[], src?: 'preset' }
+    /** 多选：把浮层里拼好的草稿收进值。 */
+    | { type: 'VALUE.ADD' }
+    /** 多选：摘掉一个选中值（标签的删除钮、触发钮上的退格）。 */
+    | { type: 'VALUE.REMOVE', value: string }
+    /** 多选：快捷选项点一下切换选中。 */
+    | { type: 'VALUE.TOGGLE', value: string }
+    | { type: 'TAG_LIST.TRACKED' }
     /** 清空所有段。 */
     | { type: 'VALUE.CLEAR' }
     /** 上下键：把某一段加减一格，越界回绕。 */
@@ -282,14 +325,21 @@ export interface TimePickerSchema extends MachineSchema {
     | 'syncDraft'
     | 'resetToDefault'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer' | 'trackColumnScroll'
+    | 'addValue'
+    | 'removeValue'
+    | 'toggleValue'
+    | 'markTagListTracked'
+  effect: 'trackPosition' | 'trackLayer' | 'trackColumnScroll' | 'trackTagListMotion'
 }
 
 export interface TimePickerApi<T extends PropTypes = PropTypes> {
   open: boolean
-  /** ISO 时间串；任一必填段为空时为空串。 */
-  value: string
-  /** 值为空串（尚未填全）。 */
+  /** 选中的时刻，ISO 时间串数组；单选至多一项，任一必填段为空时为空数组。 */
+  value: string[]
+  selectionMode: TimePickerSelectionMode
+  /** 多选时浮层里拼着的草稿（填全了才有，否则空串）；单选时就是当前值。 */
+  draftValue: string
+  /** 没有选中值（单选时还没填全也算）。 */
   empty: boolean
   /** 已填全但落在 min / max 之外。只是标注，不改写值。 */
   outOfRange: boolean
@@ -313,6 +363,14 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   presets: readonly TimePickerPresetState[]
   /** 清空按钮当前是否可按。 */
   canClear: boolean
+  /** 多选时「添加」此刻可按：草稿填全、在 min / max 之内、还没选过、也没到 maxSelected。 */
+  canAdd: boolean
+  /** 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 */
+  tags: TimePickerTagMeta[]
+  /** 被 maxTagCount 折叠的标签数。 */
+  overflowCount: number
+  /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
+  overflowText: string
   /** 某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 */
   getSegmentText: (props: TimePickerSegmentProps) => string
   /**
@@ -324,12 +382,26 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   /** 落在 min / max 之外（或整个控件禁用）：仍在列表中，但不可选、方向键跳过。 */
   isItemDisabled: (props: TimePickerItemProps) => boolean
   setOpen: (next: boolean) => void
-  setValue: (next: string) => void
+  setValue: (next: string[]) => void
   clear: () => void
+  /** 多选：把草稿收进值（与按「添加」同一条路）。 */
+  add: () => void
+  /** 多选：摘掉一个选中值。 */
+  deselect: (value: string) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
   getControlProps: () => T['element']
-  /** 段位与分隔符的外壳：占满盒内剩余宽度，把尾部按钮推到框内末端。 */
+  /** 标签行：多选时放在盒里，收纳可见标签与 +N 标签；没有选中时整体留空。单选时整体 hidden。 */
+  getTagListProps: () => T['element']
+  /** 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"），另带 data-value。 */
+  getTagProps: (props: TimePickerTagProps) => T['element']
+  /** 标签文字所在的块（tag 的 label）；标签与 +N 共用。 */
+  getTagLabelProps: () => T['element']
+  /** 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 */
+  getOverflowTagProps: () => T['element']
+  /** 标签删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；不占 Tab 位、按下不夺焦。 */
+  getItemDeleteTriggerProps: (props: TimePickerTagProps) => T['button']
+  /** 段位与分隔符的外壳：占满盒内剩余宽度，把尾部按钮推到框内末端；多选时整体 hidden。 */
   getSegmentGroupProps: () => T['element']
   /** 分段输入：一段一个节点，与 TimeField 的段同构（role=spinbutton + roving tabindex）。 */
   getSegmentProps: (props: TimePickerSegmentProps) => T['element']
@@ -343,8 +415,13 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   getPresetProps: (props: TimePickerPresetProps) => T['element']
   getColumnProps: (props: TimePickerColumnProps) => T['element']
   getItemProps: (props: TimePickerItemProps) => T['element']
-  /** 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 */
-  getHiddenInputProps: () => T['input']
+  /** 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收起；单选时 hidden。文字由作者写。 */
+  getConfirmTriggerProps: () => T['button']
+  /**
+   * 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。
+   * 多选时一个选中值一份同名输入：传 `{ value }` 产出那一份，不传是首个选中值那一份。
+   */
+  getHiddenInputProps: (props?: TimePickerHiddenInputProps) => T['input']
 }
 
 /** 读屏文案。 */
@@ -361,4 +438,8 @@ export interface TimePickerTranslations {
   presets: string
   /** 清空按钮的可及名。 */
   clearTrigger: string
+  /** 多选标签删除按钮的可及名，接收标签文本；默认 `Delete <label>`。 */
+  deleteItem: (label: string) => string
+  /** 被折叠的标签（+N）显示的文字，接收折叠的个数；默认 +N。 */
+  overflowTag: (count: number) => string
 }

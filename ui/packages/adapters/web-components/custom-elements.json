@@ -66581,7 +66581,27 @@
               "name": "control"
             },
             {
-              "description": "段位与分隔符的外壳，占满盒内剩余宽度",
+              "description": "多选时盒里、trigger 之前的标签行：可见标签与 overflow-tag 放在其中；单选时带 hidden",
+              "name": "tag-list"
+            },
+            {
+              "description": "多选标签，须自带 value 属性标识选中值；作者按 tags 渲染，接线为 tag 的 root（data-scope=\"tag\"）",
+              "name": "tag"
+            },
+            {
+              "description": "标签文字，须放在 tag 中；接线为 tag 的 label。标签里只有文字时元素自动包一层，带删除钮时由作者写它包住文字",
+              "name": "tag-label"
+            },
+            {
+              "description": "标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦；可及名使用 translations.deleteItem",
+              "name": "item-delete-trigger"
+            },
+            {
+              "description": "折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N；没有折叠的标签时带 hidden",
+              "name": "overflow-tag"
+            },
+            {
+              "description": "段位与分隔符的外壳，占满盒内剩余宽度；多选时带 hidden",
               "name": "segment-group"
             },
             {
@@ -66621,7 +66641,11 @@
               "name": "item"
             },
             {
-              "description": "type=hidden 的表单出口，值是完整 ISO 串",
+              "description": "「添加」：多选时把浮层里拼好的草稿收进值，浮层不收；单选时带 hidden。文字由作者写",
+              "name": "confirm-trigger"
+            },
+            {
+              "description": "type=hidden 的表单出口，值是完整 ISO 串；多选时一个选中值一份，首值用这个节点，其余由元素在它后面补同名输入",
               "name": "hidden-input"
             }
           ],
@@ -66641,14 +66665,14 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: timePickerAnatomy, meta: timePickerMeta }"
+              "default": "{ anatomy: timePickerAnatomy, meta: timePickerMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
               "attribute": "value"
             },
@@ -66657,9 +66681,36 @@
               "name": "defaultValue",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
               "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "selectionMode",
+              "privacy": "public",
+              "type": {
+                "text": "TimePickerSelectionMode | undefined"
+              },
+              "attribute": "selection-mode"
+            },
+            {
+              "kind": "field",
+              "name": "maxSelected",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-selected"
+            },
+            {
+              "kind": "field",
+              "name": "maxTagCount",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-tag-count"
             },
             {
               "kind": "field",
@@ -67035,6 +67086,122 @@
               "description": "段与格子上的文字是否归元素填，首次见到该节点时定。"
             },
             {
+              "kind": "field",
+              "name": "tagLabels",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, HTMLElement>()",
+              "description": "每枚标签里由元素补出来的那层 label。"
+            },
+            {
+              "kind": "field",
+              "name": "hiddenInputs",
+              "privacy": "private",
+              "readonly": true,
+              "description": "多选时一个选中值一份同名隐藏输入：首值用作者的节点，其余由元素补在它后面。"
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "ensureTagLabel",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tag",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，\n返回 null——带删除钮的标签由作者用 tag-label 包住文字。补出来的那层不打 data-xh-part，不进角色节点表。"
+            },
+            {
+              "kind": "field",
+              "name": "tags",
+              "type": {
+                "text": "TimePickerTagMeta[]"
+              },
+              "description": "多选时应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中值同序；单选恒为空数组。状态机尚未建立时为空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowCount",
+              "type": {
+                "text": "number"
+              },
+              "description": "被 max-tag-count 折叠的标签数。状态机尚未建立时为 0。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowText",
+              "type": {
+                "text": "string"
+              },
+              "description": "overflow-tag 显示的文字；没有折叠的标签或状态机尚未建立时为空串。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "canAdd",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "多选时「添加」此刻可按（草稿填全、在界内、没选过、没到上限）；状态机尚未建立时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "add",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "多选：把浮层里拼好的草稿收进值；状态机尚未建立时不做任何事。"
+            },
+            {
+              "kind": "method",
+              "name": "deselect",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "多选：摘掉一个选中值；状态机尚未建立时不做任何事。"
+            },
+            {
               "kind": "method",
               "name": "fillText",
               "privacy": "private",
@@ -67102,19 +67269,43 @@
           "attributes": [
             {
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
-              "description": "受控值，ISO 时间串（'13:45' / '13:45:30'）；未提供该属性即非受控",
+              "description": "受控值，ISO 时间串（'13:45' / '13:45:30'）；未提供该属性即非受控。多选的一组时刻是数组，只走 property",
               "name": "value",
               "fieldName": "value"
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
-              "description": "非受控初值",
+              "description": "非受控初值；多选的数组只走 property",
               "name": "default-value",
               "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "TimePickerSelectionMode | undefined"
+              },
+              "description": "选择模式，默认 single；multiple 时列上拼草稿、按 confirm-trigger 收进值，输入行里排成标签",
+              "name": "selection-mode",
+              "fieldName": "selectionMode"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "multiple 下最多选几个时刻",
+              "name": "max-selected",
+              "fieldName": "maxSelected"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "multiple 下输入行最多摆几枚标签，其余折进 overflow-tag；默认 3",
+              "name": "max-tag-count",
+              "fieldName": "maxTagCount"
             },
             {
               "type": {
@@ -67316,6 +67507,33 @@
               "name": "--xh-time-picker-column-px"
             },
             {
+              "name": "--xh-time-picker-confirm-trigger-bg"
+            },
+            {
+              "name": "--xh-time-picker-confirm-trigger-bg-active"
+            },
+            {
+              "name": "--xh-time-picker-confirm-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-time-picker-confirm-trigger-fg"
+            },
+            {
+              "name": "--xh-time-picker-confirm-trigger-gap"
+            },
+            {
+              "name": "--xh-time-picker-confirm-trigger-h"
+            },
+            {
+              "name": "--xh-time-picker-confirm-trigger-px"
+            },
+            {
+              "name": "--xh-time-picker-confirm-trigger-radius"
+            },
+            {
+              "name": "--xh-time-picker-confirm-trigger-shadow"
+            },
+            {
               "name": "--xh-time-picker-content-bg"
             },
             {
@@ -67371,6 +67589,9 @@
             },
             {
               "name": "--xh-time-picker-control-h"
+            },
+            {
+              "name": "--xh-time-picker-control-max-h"
             },
             {
               "name": "--xh-time-picker-control-min-w"
@@ -67515,6 +67736,9 @@
             },
             {
               "name": "--xh-time-picker-segment-radius"
+            },
+            {
+              "name": "--xh-time-picker-tag-list-gap"
             }
           ]
         }

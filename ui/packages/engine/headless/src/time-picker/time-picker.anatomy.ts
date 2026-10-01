@@ -18,6 +18,7 @@ export const timePickerAnatomy = createAnatomy('time-picker', [
   'root',
   'label',
   'control',
+  'tag-list',
   'segment-group',
   'segment',
   'trigger',
@@ -28,8 +29,12 @@ export const timePickerAnatomy = createAnatomy('time-picker', [
   'preset',
   'column',
   'item',
+  'confirm-trigger',
   'hidden-input',
 ])
+
+/** 标签行：多选时盒里收着已选时刻标签的那一行。 */
+export const TIME_PICKER_TAG_LIST_SELECTOR = timePickerAnatomy.build()['tag-list'].selector
 
 /** 分段输入的集合：容器取 control（trigger 与清空按钮同在 control 里，但不是 input，查不到它们）。 */
 export const timePickerSegmentQuery: ItemQuery = { scope: timePickerAnatomy.name, part: 'segment' }

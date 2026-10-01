@@ -15,6 +15,7 @@ import type {
   TimePickerPreset,
   TimePickerPresetState,
   TimePickerSchema,
+  TimePickerSelectionMode,
   TimeSegmentType,
   TimeStep,
   TimeUnavailablePredicate,
@@ -24,7 +25,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
-import { slotPaints } from '../../runtime/slot-content'
+import { slotIsPlainText, slotPaints } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -32,8 +33,10 @@ import { useFormControlProps } from '../form/use-form-control'
 import {
   provideTimePicker,
   provideTimePickerColumn,
+  provideTimePickerTag,
   useTimePickerColumnContext,
   useTimePickerContext,
+  useTimePickerTagContext,
 } from './context'
 import { useTimePicker } from './use-time-picker'
 
@@ -49,9 +52,11 @@ export type TimePickerRootSlotProps = Pick<
   | 'segments'
   | 'columns'
   | 'canClear'
+  | 'canAdd'
   | 'setOpen'
   | 'setValue'
   | 'clear'
+  | 'add'
 >
 
 /** 默认插槽的载荷：该列当前的可选值。 */
@@ -68,8 +73,15 @@ export const XhTimePickerRoot = defineComponent({
   name: 'XhTimePickerRoot',
   // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: String },
-    defaultValue: { type: String },
+    /** 选中的时刻，ISO 时间串数组；单选可写裸串。 */
+    value: { type: [String, Array] as PropType<string | string[]> },
+    defaultValue: { type: [String, Array] as PropType<string | string[]> },
+    /** 选择模式，默认 single；multiple 时列上拼草稿、按「添加」收进值，输入行里排成标签。 */
+    selectionMode: { type: String as PropType<TimePickerSelectionMode> },
+    /** multiple 下最多选几个时刻。 */
+    maxSelected: { type: Number },
+    /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
+    maxTagCount: { type: Number },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     min: { type: String },
@@ -131,9 +143,11 @@ export const XhTimePickerRoot = defineComponent({
       segments: ctx.api.value.segments,
       columns: ctx.api.value.columns,
       canClear: ctx.api.value.canClear,
+      canAdd: ctx.api.value.canAdd,
       setOpen: ctx.api.value.setOpen,
       setValue: ctx.api.value.setValue,
       clear: ctx.api.value.clear,
+      add: ctx.api.value.add,
     }))
   },
 })
@@ -155,6 +169,79 @@ export const XhTimePickerControl = defineComponent({
       ...ctx.api.value.getControlProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.controlRef.value = el as HTMLElement },
     }, slots.default?.())
+  },
+})
+
+/** 标签文字所在的块（tag 的 label）。 */
+export const XhTimePickerTagLabel = defineComponent({
+  name: 'XhTimePickerTagLabel',
+  setup(_, { slots }) {
+    const ctx = useTimePickerContext()
+    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 标签内容：只有文字时替它包一层 label；作者自己写了节点则原样放行。库自身填入的文字（+N）恒包 label。 */
+function tagChildren(content: VNode[] | string | undefined): VNode[] | string | undefined {
+  if (typeof content === 'string')
+    return [h(XhTimePickerTagLabel, null, () => content)]
+  return slotIsPlainText(content) ? [h(XhTimePickerTagLabel, null, () => content)] : content
+}
+
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；点按摘掉所在标签的选中值，焦点不动。 */
+export const XhTimePickerItemDeleteTrigger = defineComponent({
+  name: 'XhTimePickerItemDeleteTrigger',
+  setup(_, { slots }) {
+    const ctx = useTimePickerContext()
+    const tag = useTimePickerTagContext()
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 多选时一个选中值一个标签，即库内 tag 的 root（data-scope="tag"）。 */
+export const XhTimePickerTag = defineComponent({
+  name: 'XhTimePickerTag',
+  props: {
+    /** 它代表哪个选中值。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useTimePickerContext()
+    provideTimePickerTag({ value: () => props.value })
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+  },
+})
+
+/** 折叠的标签合成的一个标签：有插槽时使用插槽，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
+export const XhTimePickerOverflowTag = defineComponent({
+  name: 'XhTimePickerOverflowTag',
+  setup(_, { slots }) {
+    const ctx = useTimePickerContext()
+    return () => h(
+      'span',
+      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
+    )
+  },
+})
+
+/**
+ * 标签行：多选时放在盒里、触发钮之前；单选时连接层给 hidden。
+ * 不写插槽即按 tags 铺出带删除钮的标签与 +N 那一枚，写了插槽由作者自己铺。
+ */
+export const XhTimePickerTagList = defineComponent({
+  name: 'XhTimePickerTagList',
+  setup(_, { slots }) {
+    const ctx = useTimePickerContext()
+    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default
+      ? slots.default()
+      : [
+          ...ctx.api.value.tags.map(tag => h(XhTimePickerTag, { key: tag.value, value: tag.value }, () => [
+            h(XhTimePickerTagLabel, null, () => tag.label),
+            h(XhTimePickerItemDeleteTrigger),
+          ])),
+          h(XhTimePickerOverflowTag),
+        ])
   },
 })
 
@@ -363,10 +450,22 @@ export const XhTimePickerItem = defineComponent({
   },
 })
 
+/** 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收；单选时连接层给 hidden。文字由作者写。 */
+export const XhTimePickerConfirmTrigger = defineComponent({
+  name: 'XhTimePickerConfirmTrigger',
+  setup(_, { slots }) {
+    const ctx = useTimePickerContext()
+    return () => h('button', ctx.api.value.getConfirmTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTimePickerHiddenInput = defineComponent({
   name: 'XhTimePickerHiddenInput',
   setup() {
     const ctx = useTimePickerContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    // 多选时一个选中值一份同名输入，表单按原生多值收；单选仍是一份
+    return () => ctx.api.value.selectionMode === 'multiple'
+      ? ctx.api.value.value.map(value => h('input', { key: value, ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown> }))
+      : h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
   },
 })

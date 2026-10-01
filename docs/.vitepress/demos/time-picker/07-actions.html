@@ -78,14 +78,14 @@
   // 值与开合都由宿主持有，写回元素才生效
   function setValue(next) {
     picker.value = next;
-    readout.textContent = next || "（空）";
+    readout.textContent = next[0] ?? "（空）";
   }
 
   function setOpen(next) {
     picker.open = next;
   }
 
-  setValue("");
+  setValue([]);
   setOpen(false);
   picker.addEventListener("value-change", (event) => setValue(event.detail.value));
   picker.addEventListener("open-change", (event) => setOpen(event.detail.open));
@@ -95,12 +95,12 @@
     const now = new Date();
     const hour = String(now.getHours()).padStart(2, "0");
     const minute = String(now.getMinutes()).padStart(2, "0");
-    setValue(`${hour}:${minute}`);
+    setValue([`${hour}:${minute}`]);
   });
 
   document
     .getElementById("time-picker-actions-clear")
-    .addEventListener("click", () => setValue(""));
+    .addEventListener("click", () => setValue([]));
 
   document
     .getElementById("time-picker-actions-ok")

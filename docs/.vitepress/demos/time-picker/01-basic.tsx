@@ -17,7 +17,7 @@ import {
 import { useState } from "react";
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState("09:30");
+  const [value, setValue] = useState<string[]>(["09:30"]);
 
   return (
     <>
@@ -51,7 +51,7 @@ export default function Demo(): ReactNode {
       </XhTimePickerRoot>
 
       <span aria-live="polite" style={{ fontSize: "13px" }}>
-        {`当前值：${value || "（未填齐）"}`}
+        {`当前值：${value[0] ?? "（未填齐）"}`}
       </span>
     </>
   );

@@ -283,7 +283,8 @@
     "confirm-trigger": [
       "date-picker",
       "date-range-picker",
-      "popconfirm"
+      "popconfirm",
+      "time-picker"
     ],
     "connector": [
       "cartesian-chart",
@@ -1779,6 +1780,7 @@
       "combobox",
       "date-picker",
       "select",
+      "time-picker",
       "tree-select"
     ],
     "target": [

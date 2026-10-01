@@ -1187,17 +1187,23 @@ export type { TimeFieldContext } from './components/time-field/use-time-field'
 export {
   XhTimePickerClearTrigger,
   XhTimePickerColumn,
+  XhTimePickerConfirmTrigger,
   XhTimePickerContent,
   XhTimePickerControl,
   XhTimePickerHiddenInput,
   XhTimePickerItem,
+  XhTimePickerItemDeleteTrigger,
   XhTimePickerLabel,
+  XhTimePickerOverflowTag,
   XhTimePickerPositioner,
   XhTimePickerPreset,
   XhTimePickerPresetGroup,
   XhTimePickerRoot,
   XhTimePickerSegment,
   XhTimePickerSegmentGroup,
+  XhTimePickerTag,
+  XhTimePickerTagLabel,
+  XhTimePickerTagList,
   XhTimePickerTrigger,
 } from './components/time-picker/time-picker'
 export type { TimePickerColumnSlotProps, TimePickerPresetsSlotProps, TimePickerRootSlotProps } from './components/time-picker/time-picker'
