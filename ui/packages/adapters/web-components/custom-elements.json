@@ -43576,6 +43576,9 @@
               "name": "--xh-notification-description-leading"
             },
             {
+              "name": "--xh-notification-description-max-h"
+            },
+            {
               "name": "--xh-notification-icon-size"
             },
             {

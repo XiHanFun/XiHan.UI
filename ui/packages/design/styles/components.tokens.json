@@ -49694,6 +49694,24 @@
       "description": "notification 的 item、item-description 部件 line-height 覆盖槽。"
     },
     {
+      "name": "--xh-notification-description-max-h",
+      "component": "notification",
+      "part": [
+        "item-description"
+      ],
+      "property": [
+        "max-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-viewport-h-md"
+      ],
+      "visibility": "public",
+      "description": "notification 的 item-description 部件 max-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-notification-icon-size",
       "component": "notification",
       "part": [

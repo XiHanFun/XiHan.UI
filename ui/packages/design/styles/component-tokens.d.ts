@@ -2505,6 +2505,7 @@ export type ComponentTokenName
     | '--xh-notification-description-fg'
     | '--xh-notification-description-font-size'
     | '--xh-notification-description-leading'
+    | '--xh-notification-description-max-h'
     | '--xh-notification-icon-size'
     | '--xh-notification-indicator-fg'
     | '--xh-notification-indicator-p'

@@ -156,3 +156,22 @@ describe('通知卡片的加载指示', () => {
     expect(getComputedStyle(indicator, '::after').maskImage).not.toBe('none')
   })
 })
+
+describe('通知卡片的长正文', () => {
+  it('正文有上限：长文在正文里竖滚，卡片不被撑到整屏高，标题与操作钮留在卡片上', async () => {
+    notify = createNotificationService()
+    const body = Array.from({ length: 80 }, (_, i) => `第 ${i + 1} 条公告正文，内容较长，用来把通知卡片撑高。`).join('')
+    notify.info('系统公告', { description: body, duration: 0, actionLabel: '查看全文' })
+    await tick()
+    const description = part('item-description')
+    const cap = resolvedLength(description, 'var(--xh-viewport-h-md)')
+    expect(description.getBoundingClientRect().height).toBeLessThanOrEqual(cap + 0.5)
+    expect(description.scrollHeight).toBeGreaterThan(description.clientHeight)
+    expect(getComputedStyle(description).overflowY).toBe('auto')
+    expect(getComputedStyle(description).overscrollBehaviorY).toBe('contain')
+    // 整张卡片落在视口里：标题在顶、操作钮在底，都看得到
+    const item = part('item').getBoundingClientRect()
+    expect(item.top).toBeGreaterThanOrEqual(0)
+    expect(item.bottom).toBeLessThanOrEqual(window.innerHeight)
+  })
+})
