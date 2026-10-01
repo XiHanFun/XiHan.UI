@@ -8,7 +8,7 @@
 import type { TruncateApi, TruncatePosition, TruncateSchema, TruncateTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useTruncate } from './use-truncate'
 
@@ -61,11 +61,10 @@ export const XhTruncate = defineComponent({
     })
     return () => {
       const api = ctx.api.value
-      const text = h('div', {
-        ...attrs,
-        ...api.getRootProps() as Record<string, unknown>,
+      // 作者的 style / class / 监听器与连接层的逐条合并：平铺展开时同名 style 整个盖掉作者那份
+      const text = h('div', mergeProps(api.getRootProps() as Record<string, unknown>, attrs, {
         ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
-      }, slots.default?.({
+      }), slots.default?.({
         open: api.open,
         overflowing: api.overflowing,
         setOpen: api.setOpen,
