@@ -1,5 +1,6 @@
 import type { ConformanceSuite, StepWithExpect } from '../conformance/types'
 import { popconfirmAnatomy, popconfirmKeyboard } from '@xihan-ui/headless'
+import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
 import { heldPress } from './shared/press-channel'
 
@@ -252,6 +253,24 @@ export const popconfirmSuite: ConformanceSuite = {
           expect: { activeElement: 'trigger' },
         },
       ],
+    },
+    {
+      name: 'disabled：触发器转原生 disabled，点了不展开也不派 open-change',
+      spec: { adr: 'popover-disabled' },
+      props: { disabled: true },
+      initial: { parts: { trigger: { 'disabled': '', 'data-disabled': '', 'aria-expanded': 'false' } } },
+      steps: [
+        dispatchClickOnDisabled('popconfirm', 'trigger', {
+          parts: { trigger: { 'aria-expanded': 'false' }, content: { hidden: '' } },
+          events: [],
+        }),
+      ],
+    },
+    {
+      name: 'dir 写在定位层上：浮层搬到落点后继承不到作者子树的方向',
+      spec: { apg: DIALOG_SPEC },
+      props: { dir: 'rtl' },
+      initial: { parts: { positioner: { dir: 'rtl' }, root: { dir: null } } },
     },
     {
       name: '尺寸只落在 content 上：root 与 positioner 都不带这一轴',

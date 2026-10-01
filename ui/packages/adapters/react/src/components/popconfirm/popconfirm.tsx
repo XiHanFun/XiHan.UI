@@ -5,7 +5,7 @@
 
 // 提供 popconfirm 相关实现。
 
-import type { Placement, Size } from '@xihan-ui/core'
+import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type { PopconfirmApi, PopconfirmNotifiers, PopconfirmOverlayProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
@@ -24,16 +24,20 @@ export type PopconfirmRootSlotProps = Pick<
   'open' | 'pending' | 'actionError' | 'setOpen' | 'confirm' | 'cancel'
 >
 
-/** 根上自有的取值；onCancel 与原生的同名事件含义不同，由这里接管。 */
-type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'onCancel'>
+/** 根上自有的取值；onCancel 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'onCancel' | 'dir'>
 
 export interface XhPopconfirmRootProps extends RootElementProps {
   open?: boolean
   defaultOpen?: boolean
   placement?: Placement
   offset?: number
+  /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
+  dir?: Direction
   closeOnEscape?: boolean
   closeOnInteractOutside?: boolean
+  /** 不可打开：触发器转原生 disabled，展开途中转为禁用即收起。 */
+  disabled?: boolean
   size?: Size
   onOpenChange?: PopconfirmNotifiers['onOpenChange']
   /**
@@ -53,8 +57,10 @@ export function XhPopconfirmRoot({
   defaultOpen,
   placement,
   offset,
+  dir,
   closeOnEscape,
   closeOnInteractOutside,
+  disabled,
   size,
   onOpenChange,
   onConfirm,
@@ -69,8 +75,10 @@ export function XhPopconfirmRoot({
     defaultOpen,
     placement,
     offset,
+    dir,
     closeOnEscape,
     closeOnInteractOutside,
+    disabled,
     size,
   } as PopconfirmOverlayProps, notify)
   return (

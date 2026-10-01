@@ -163,6 +163,7 @@ export function connectPopconfirm<T extends PropTypes>(
   const open = state.get() === 'open'
   const ids = scope.ids('popconfirm', 'trigger', 'content', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'
+  const disabled = !!prop('disabled')
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
   // 箭头落点：引擎没算（没要箭头 / 尚未落位）时缺席，皮肤退回居中
@@ -331,11 +332,20 @@ export function connectPopconfirm<T extends PropTypes>(
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'md',
       'data-xh-action-variant': 'outline',
+      // 确认禁用时触发器没有别的用处：原生 disabled 退出 Tab 序列，家族按 data-disabled 画禁用面
+      'disabled': disabled || undefined,
+      'data-disabled': dataAttr(disabled),
       ...press('trigger'),
-      'onClick': () => setOpen(!open),
+      'onClick': () => {
+        // 作者把这份 props 摊到非按钮节点上时原生 disabled 不生效，守卫得自己带
+        if (!disabled)
+          setOpen(!open)
+      },
     }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
+      // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
+      'dir': prop('dir'),
       'data-state': stateAttr,
       'data-placement': placement,
       // 锚点被滚出可视区时引擎置 hidden，样式据此收起浮层

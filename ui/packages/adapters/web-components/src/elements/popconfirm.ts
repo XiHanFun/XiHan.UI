@@ -5,7 +5,7 @@
 
 // 提供 popconfirm 相关实现。
 
-import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { PopconfirmConfirmErrorDetails, PopconfirmIntents, PopoverOpenChangeDetails, PopoverSchema } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -37,6 +37,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {string} placement - 首选放置位，默认 bottom；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px），默认 8
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
+ * @attr {boolean} disabled - 不可打开：触发器转原生 disabled，展开途中转为禁用即收起
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true；写 close-on-escape="false" 关闭
  * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关闭
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -68,8 +70,12 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
+    // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
+    direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
+    disabled: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
   }
 
@@ -77,8 +83,10 @@ export class XhPopconfirmElement extends XhPortalHostElement {
   declare defaultOpen?: boolean
   declare placement?: Placement
   declare offset?: number
+  declare direction?: Direction
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
+  declare disabled?: boolean
   declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -162,8 +170,10 @@ export class XhPopconfirmElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
       offset: this.offset,
+      dir: this.direction,
       closeOnEscape: this.pendingState ? false : this.closeOnEscape,
       closeOnInteractOutside: this.pendingState ? false : this.closeOnInteractOutside,
+      disabled: this.disabled,
       size: this.size,
       onOpenChange: this.notify,
     }
