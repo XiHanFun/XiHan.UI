@@ -277,9 +277,10 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-<c>-control-w` | `--xh-control-w` | 16rem | 不传尺寸时单行字段根的 `inline-size`；选中一条很长的选项触发器也不变宽，文字在盒内截断 |
 | `--xh-<c>-control-min-w` | `--xh-control-min-w` | 12rem | 被 flex / grid 容器压缩时的底线；根上写成 `min(缺省宽, 底线, 100%)`，底线不高过缺省宽，容器比底线还窄时收成容器宽 |
 
-- 根另带 `max-inline-size: 100%`；盒（control）只写家族的 `min(…, 100%)` 地板，由根撑开。要撑满表单列由使用者在根上写 `inline-size: 100%`。
+- 根另带 `max-inline-size: 100%`；盒（control）只写家族的 `min(…, 100%)` 地板，由根撑开。
+- 放进 Field 即铺满表单列：Field 根把 `--xh-control-w` 改成 `100%`，单个组件的 `--xh-<c>-control-w` 仍压过它；Form `layout="inline"` 一行流里字段宽由控件撑出，Form 把字段还原成缺省宽，避免两者互相依赖塌成内容宽。Field 之外要铺满由使用者改 `--xh-control-w` 或在根上写 `inline-size: 100%`。
 - 盒里与已选标签并排的输入框（TagsInput、多选 Combobox）最小宽取 `--xh-control-input-min-w`（4rem）：标签再多也给打字留出这一截——TagsInput 的输入框换到下一行，多选 Combobox 的标签先截断、再折进 +N。
-- 刻意例外（须登记进 check-control-box 的 EXEMPT）：DateRangePicker 起止两组按日的段位、分隔符与日历钮排在一行，内容比缺省宽宽，缺省 `inline-size: max-content`、地板取 `--xh-control-w`（按年、按月时不比别的字段窄）；PinInput 由格数与格宽定宽；PromptInput 铺满宿主；Field 的控件铺满表单列；Clipboard 只放复制钮的用法是独立按钮，缺省宽只给带输入框的用法（`:has(control)`）。
+- 刻意例外（须登记进 check-control-box 的 EXEMPT）：DateRangePicker 起止两组按日的段位、分隔符与日历钮排在一行，内容比缺省宽宽，缺省 `inline-size: max-content`、地板取 `--xh-control-w`（按年、按月时不比别的字段窄）；PinInput 由格数与格宽定宽；PromptInput 铺满宿主；Clipboard 只放复制钮的用法是独立按钮，缺省宽只给带输入框的用法（`:has(control)`）。
 - 嵌入位改写字段缺省宽同样是例外（须登记进 check-control-box 的 EMBEDDED_WIDTH，并经嵌入方自己的使用者槽）：Pagination 的每页条数控制器是一个库内 Select，选项是「10 条 / 页」一类短串，在分页行里按内容定宽（`--xh-pagination-page-size-select-w`，缺省 `max-content`，地板一并放开）。
 - InputGroup 整组是一个字段：缺省宽走 `--xh-input-group-w` → `--xh-control-w`，组里带字段外壳的控件占满前后缀与动作之外的剩余宽度，前后缀与按钮按内容宽。
 - 示例不写内联宽度，让文档展示缺省宽；只有演示宽度本身的示例才改槽。
@@ -389,6 +390,155 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 标签放不下时不裁切：柱的标签移到柱外，仍放不下交给提示框；堆叠中段放不下就不标，由图例、提示框与数据表承担。
 - 单系列不显示图例，标题已说明；2 个及以上系列始终显示图例，≤ 4 条折线时建议再加线端直接标签。
 - 视口块尺寸包含坐标轴带，卡片里不出现嵌套的纵向滚动。
+
+### 6.8 组件尺寸：缺省、下限与上限
+
+组件尺寸只取语义尺寸令牌。组件槽（`--xh-<c>-…-w`、`-h`、`-size`、`-min-*`、`-max-*`）的缺省值引用令牌，作者改槽，不改私有槽。三种量：
+
+- 缺省：不传 `size`、不改槽时的尺寸。`size` 只有 sm / md / lg（Action Control 另有 xs），md 缺省。
+- 下限：被 flex / grid 压缩或内容很少时的底线。
+- 上限：内容再多也不越过；越出的部分在面内滚动或在条目里截断，不撑大外框。浮层的上限一律再与可用区取 `min()`（`--xh-_<c>-available-w` / `-h`），窗口小时以可用区为准。
+
+强制规则：
+
+- 新组件先在下表找同类，按同类取档；没有对应档时先加语义令牌，再在皮肤里引用，不在皮肤写字面尺寸。
+- 有上限就必须有去处：面内滚动（按 §6.6 的两档滚动条）或条目截断。
+- 限高只取 `--xh-viewport-h-sm` / `md` / `lg`、`--xh-viewport-max-h`，浮层另取 `--xh-overlay-max-h` / `--xh-overlay-menu-max-h`。按 px 定高的面板（日期面板）不再叠 rem 上限。
+- 尺寸不随断点换档；粗指针命中区至少 44×44px，经伪元素外扩，不改表里的视觉尺寸。
+- 表中 sm / md / lg 并列时以「/」分隔；compact 列为空表示不随密度换档。
+
+#### 尺寸令牌
+
+| 令牌 | comfortable | compact | 用途 |
+| --- | --- | --- | --- |
+| `--xh-control-h-sm` / `md` / `lg` | 32 / 36 / 40px | 28 / 32 / 36px | 单行控件、按钮、集合行、标签页与导航 trigger 的高；盛内容的圆的直径 |
+| `--xh-control-box-sm` / `md` / `lg` | 32 / 40 / 48px | 28 / 36 / 44px | 方格：PinInput 格、floating 动作钮 |
+| `--xh-control-action-size` | 24px | 20px | xs 动作钮、sm 字段里的 field-inset 钮 |
+| `--xh-control-indicator-sm` / `md` / `lg` | 12 / 16 / 20px | 10 / 14 / 18px | 勾选方框、单选圆、状态字形、行内拖拽把手 |
+| `--xh-glyph-size-sm` … `4xl` | 16 / 20 / 24 / 32 / 40 / 56 / 72px | | 图标与插图，见 §6.5 |
+| `--xh-switch-track-h-sm` / `md` / `lg` | 18 / 22 / 28px | 16 / 20 / 24px | Switch 轨道高 |
+| `--xh-track-thickness`、`--xh-track-thumb-size` | 6px、18px | | 轨道与滑块 |
+| `--xh-control-w`、`--xh-control-min-w`、`--xh-control-input-min-w` | 16rem、12rem、4rem | | 字段缺省宽、压缩底线、标签旁输入框的最小宽 |
+| `--xh-viewport-h-sm` / `md` / `lg` | 12 / 16 / 24rem | 10 / 14 / 20rem | 页内与面板内滚动面的定高与限高 |
+| `--xh-viewport-max-h` | 24rem | 20rem | 长文本视口限高 |
+| `--xh-overlay-menu-min-w`、`--xh-overlay-min-w` | 10rem、12rem | | 菜单与候选面板的下限；带输入的面板宽 |
+| `--xh-overlay-column-min-w` | 3.5rem | | 时间列下限 |
+| `--xh-overlay-max-w-sm`、`--xh-overlay-max-w`、`-lg`、`-xl` | 16、20、24、48rem | | 浮层宽的上限 |
+| `--xh-overlay-max-h` | 16rem | 14rem | 卡片类浮层限高 |
+| `--xh-overlay-menu-max-h` | 20rem | 17rem | 菜单与候选列表限高 |
+| `--xh-overlay-sheet-w-sm` / `md` / `lg` | 24 / 32 / 48rem | | Dialog、Command 宽的上限 |
+| `--xh-overlay-drawer-w-sm` / `md` / `lg` | 16 / 20 / 28rem | | Drawer 厚度 |
+| `--xh-sider-w`、`--xh-sider-collapsed-w` | 15rem、4rem | | 侧栏展开与收起宽 |
+| `--xh-nav-link-max-w` | 12rem | | 导航链接上限 |
+| `--xh-measure-prose` | 32rem | | 说明文字行宽上限 |
+| `--xh-chart-height`、`--xh-chart-bar-max` | 20rem、24px | | 图表视口高、柱厚上限 |
+| `--xh-stroke-thin` / `thick` / `strong` | 1 / 2 / 3px | | 分隔线、指示条与细进度、把手 |
+
+#### 动作控件
+
+| profile | 用于 | xs | sm | md | lg |
+| --- | --- | --- | --- | --- | --- |
+| text / icon | Button、Toggle、ToggleGroup 与 Toolbar 条目、各组件的触发与提交钮 | `control-action-size` | `control-h-sm` | `control-h-md` | `control-h-lg` |
+| field-inset | 字段里的清空、展开、步进、可见性钮，档位随所在字段 | `control-action-size` | `control-action-size` | `control-h-sm` | `control-h-md` |
+| floating | FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer | `control-box-sm` | `control-box-md` | `control-box-lg` | `control-box-lg` + 8px |
+
+- text 档宽按内容，下限等于高；icon、field-inset、floating 是正方盒。
+- 字形：text / icon 为 16 / 16 / 20 / 24px；field-inset 为 `control-indicator-sm`、`control-indicator-md`、16px、20px；floating 为 16 / 20 / 24 / 32px。
+- Dialog、Drawer、Popover、Tour、Notification 的关闭钮取 `control-h-sm`。
+
+#### 字段
+
+| 组件 | 缺省 | 下限 | 上限 |
+| --- | --- | --- | --- |
+| 单行字段（TextField、Select、Combobox、TreeSelect、Cascader、NumberField、PasswordInput、DateField、TimeField、DatePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、Mention、TagsInput、Editable、Clipboard、InputGroup） | 宽 16rem；高 `control-h` 随 size | 宽 `min(16rem, 12rem, 100%)` | 宽 100%；长值在盒内截断 |
+| 放进 Field 的字段 | 铺满 Field；Form `layout="inline"` 还原 16rem | 同上 | 100% |
+| TextField 多行 | 随内容长高 | 一行 `control-h` | `viewport-h-sm`，超出内滚 |
+| TagsInput | 标签折行长高 | 输入框 4rem | `viewport-h-sm`，超出内滚 |
+| 多选 Combobox | 标签与输入框同行 | 输入框 4rem | 标签先截断、再折进 +N |
+| PromptInput | 铺满宿主 | 一行 | 8 行，超出内滚 |
+| NumberField 输入框 | 5em | | |
+| PinInput | 格 `control-box` 随 size；根宽 = 格数 × 格宽 + 间距 | | |
+| DateRangePicker | `max-content` | 16rem | 100% |
+| Pagination 每页条数、跳页框 | `max-content`、64px | 放开 | |
+
+| 组类控件 | 尺寸 |
+| --- | --- |
+| Checkbox、Radio、CheckboxGroup、RadioGroup、Transfer、GridList、Tree 的方框与圆 | `control-indicator` 随 size |
+| RadioGroup segmented | 条目高 `control-h`，轨道内距 2px |
+| ColorSwatchPicker 色块 | `control-h` 随 size |
+| Switch | 轨道高 `switch-track-h` 随 size；宽 = 2 × 高 − 2 × 内距；滑块 = 高 − 2 × 内距 |
+| Slider | 轨道 6px、滑块 18px、刻度 4px；竖向长度 10rem |
+| ColorSlider | 轨道 12px、滑块 18px；竖向长度 10rem |
+
+#### 浮层
+
+| 组件 | 宽 | 高 |
+| --- | --- | --- |
+| Tooltip | 内容宽，上限 20rem | 内容高 |
+| Popover、Popconfirm、HoverCard | 内容宽，上限随 size 16 / 20 / 24rem | 上限 `overlay-max-h` |
+| Tour | 内容宽，上限 24rem | 上限 `overlay-max-h` |
+| Citation 预览 | 上限 20rem | 上限 `overlay-max-h` |
+| Menu、ContextMenu、Menubar、SideNav 弹出层 | 条目自然宽，下限 10rem，上限 20rem | 上限 `overlay-menu-max-h` |
+| NavigationMenu | 下限 10rem，上限 48rem | 内容高 |
+| Select、Combobox、TreeSelect | 与字段盒等宽，下限 10rem，缺省无上限 | 下限一行 `control-h`，上限 `overlay-menu-max-h` |
+| Mention | 下限 12rem，上限 20rem | 下限一行 `control-h`，上限 `overlay-max-h` |
+| Cascader | 每列自然宽、下限 10rem，条目上限 20rem；整面上限为可用宽，超出横滚 | 列定高 `viewport-h-sm`，列内滚 |
+| DatePicker、DateRangePicker | 内容宽；时间列下限 3.5rem | 上限为可用高；时间列高 `control-h-sm` × 7 + 28px；预设组上限 `viewport-h-lg` |
+| TimePicker、TimeRangePicker | 内容宽；列下限 3.5rem | 列定高 `viewport-h-sm`；面板上限 `viewport-h-lg`；预设组上限 `viewport-h-sm` |
+| ColorPicker | 定宽 12rem；饱和区高 9rem | 上限 `viewport-h-md` |
+| Pagination 下拉 | 上限 20rem | 上限 `overlay-max-h` |
+| Dialog | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限为视口可用高，正文内滚 |
+| Command | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限 `overlay-max-h` |
+| Drawer | 厚度随 size 16 / 20 / 28rem，不超过视口；可拖拽时夹在 `minPanelSize`（缺省 160px）与 `maxPanelSize` 之间 | 贴边铺满 |
+| FloatingPanel | 缺省 360 × 240px，下限 `minSize` 缺省 160 × 120px，上限 `maxSize` 缺省不封顶 | 同左 |
+| Notification | 卡宽 24rem（toast 档 28.75rem），不超过视口宽 − 32px | 描述上限 `viewport-h-md`，超出内滚 |
+| ImageViewer | 图片上限 90% 视口宽 | 图片上限 85% 视口高 |
+
+#### 页内滚动面与数据展示
+
+| 组件 | 尺寸 |
+| --- | --- |
+| Table | 限高 `viewport-h-lg`；单元格最小宽 3rem；列 `width` 是伸缩基准，`minWidth` / `maxWidth` 落成内联上下限，三者同值即定宽；空态与加载态最小高 0 |
+| Tree | 限高 `viewport-h-lg` |
+| Listbox | 限高 `viewport-h-md` |
+| Transfer | 列表定高 `viewport-h-md` |
+| FileUpload | 列表限高 `viewport-h-md`；拖放区最小高 8rem；预览 `control-h-md`；文件名最小宽 12rem；进度条宽 2 × `control-h-md` |
+| JsonViewer、DiffView | 限高 `viewport-max-h` |
+| Log | 视口 16 行 |
+| CalendarPicker、CalendarRangePicker | 日期格最小宽与星期行高 `control-h-sm`；年网格限高 `viewport-h-sm` |
+| Image | 宽 100%，高随比例；兜底最小高 `control-h-lg` |
+| Typography | 行宽上限 68ch |
+| EmptyState | 说明行宽上限 32rem |
+| CodeView | 页头最小高 `control-h-lg` |
+| Marquee | 块高 10rem |
+
+#### 标记与小件
+
+| 组件 | 缺省 | sm / lg |
+| --- | --- | --- |
+| Avatar、AvatarGroup、Icon 底框 | `control-h-md` | `control-h-sm` / `control-h-lg` |
+| Steps 序号圆 | `control-h-md` | `control-h-sm` / `control-h-lg` |
+| Steps 点状、Timeline 圆点 | 10px | 8 / 12px |
+| Badge 计数 | 最小 20px | 14 / 24px |
+| Badge 圆点 | 8px | 6 / 10px |
+| Spinner | 20px | 16 / 24px |
+| EmptyState 图标 | 40px；媒体区高为图标 2 倍 | 32 / 56px |
+| Kbd | 高 24px，最小宽 24px | |
+| Skeleton | 圆与矩形 `control-h-lg`；文本行高等于说明字号 | |
+| Progress | 线形厚 6px；环形直径 7.5rem | |
+| Carousel、Tour 位置点 | 8px，当前项 20px；Carousel 点命中区 44px | |
+| Sparkline | 6rem × 一行正文高 | |
+| 图表视口 | 高 20rem，含坐标轴带；缩放条高 24px | |
+
+#### 布局与导航
+
+| 组件 | 尺寸 |
+| --- | --- |
+| Layout | 页头高 3.5rem；侧栏 15rem，收起 4rem；侧栏限高 100vh |
+| SideNav | 宽 15rem，收起 4rem；行高 `control-h` 随 size |
+| Tabs、NavigationMenu | trigger 高 `control-h` 随 size |
+| Breadcrumb、Anchor | 链接上限 12rem，超出截断 |
+| Splitter、Resizable | Splitter 拖拽条 4px；Resizable 边柄 8px、角柄 16px |
 
 ## 7. 颜色
 
