@@ -82,7 +82,7 @@ describe('轻提示预设的中性浮层', () => {
 
     expect(style.display).toBe('flex')
     expect(item.getBoundingClientRect().width).toBe(Math.min(
-      resolvedWidth(item, '28.75rem'),
+      resolvedWidth(item, 'var(--xh-overlay-toast-w)'),
       item.parentElement!.getBoundingClientRect().width,
     ))
     expect(style.paddingBlock).toBe('12px')

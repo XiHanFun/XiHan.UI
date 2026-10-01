@@ -14648,6 +14648,7 @@
     "--xh-overlay-sheet-w-lg",
     "--xh-overlay-sheet-w-md",
     "--xh-overlay-sheet-w-sm",
+    "--xh-overlay-toast-w",
     "--xh-radius-full",
     "--xh-radius-lg",
     "--xh-radius-md",

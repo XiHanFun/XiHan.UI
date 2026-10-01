@@ -365,7 +365,7 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 | `--xh-notification-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-overlay` | notification 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-notification-item-row-gap` | `item`<br>`item-content` | `row-gap` | `default` | `--xh-space-2` | notification 的 item、item-content 部件 row-gap 覆盖槽。 |
 | `--xh-notification-item-shadow` | `item` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | notification 的 item 部件 box-shadow 覆盖槽。 |
-| `--xh-notification-item-w` | `group`<br>`item` | `inline-size` | `default`<br>`preset=toast`<br>`stacked` | `--xh-overlay-max-w-lg`<br>`28.75rem` | notification 的 group、item 部件 inline-size 覆盖槽。 |
+| `--xh-notification-item-w` | `group`<br>`item` | `inline-size` | `default`<br>`preset=toast`<br>`stacked` | `--xh-overlay-max-w-lg`<br>`--xh-overlay-toast-w` | notification 的 group、item 部件 inline-size 覆盖槽。 |
 | `--xh-notification-layer` | `group` | `z-index` | `default` | `--xh-layer-toast` | notification 的 group 部件 z-index 覆盖槽。 |
 | `--xh-notification-progress-bg` | `item-progress` | `background` | `default` | `--xh-_tone-soft` | notification 的 item-progress 部件 background 覆盖槽。 |
 | `--xh-notification-progress-duration` | `item-progress` | `animation` | `default` | `--xh-motion-duration-slide` | notification 的 item-progress 部件 animation 覆盖槽。 |
