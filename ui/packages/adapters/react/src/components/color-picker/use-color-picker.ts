@@ -24,7 +24,7 @@ import {
   sliderMachine,
 } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
@@ -117,8 +117,20 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
   const hueSliderMachine = useMachine(sliderMachine, () => colorSliderSliderProps(hueRoot), { scope, onCreate: onHueCreate })
   const alphaRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => colorPickerAlphaSliderProps(service), { scope })
   const alphaSliderMachine = useMachine(sliderMachine, () => colorSliderSliderProps(alphaRoot), { scope, onCreate: onAlphaCreate })
-  const swatchPickerService = useMachine(colorSwatchPickerMachine, () => colorPickerSwatchPickerProps(service), { scope })
-  const recentSwatchPickerService = useMachine(colorSwatchPickerMachine, () => colorPickerRecentSwatchPickerProps(service), { scope })
+  // 内嵌的两组色板同样可以放 label 部件：各自的登记数喂给各自的机器，根的 aria-labelledby 才只指向真渲染了的标题。
+  // 用状态而不是 ref：登记数要能把根重渲一次，connect 在渲染期求值
+  const [swatchLabels, setSwatchLabels] = useState(0)
+  const [recentSwatchLabels, setRecentSwatchLabels] = useState(0)
+  const registerSwatchLabel = useCallback(() => {
+    setSwatchLabels(n => n + 1)
+    return () => setSwatchLabels(n => n - 1)
+  }, [])
+  const registerRecentSwatchLabel = useCallback(() => {
+    setRecentSwatchLabels(n => n + 1)
+    return () => setRecentSwatchLabels(n => n - 1)
+  }, [])
+  const swatchPickerService = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerSwatchPickerProps(service), labelled: swatchLabels > 0 }), { scope })
+  const recentSwatchPickerService = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerRecentSwatchPickerProps(service), labelled: recentSwatchLabels > 0 }), { scope })
   const services: ColorPickerServices = {
     root: service,
     hueSlider: { root: hueRoot, slider: hueSliderMachine },
@@ -134,8 +146,8 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
   // 内嵌组件的 api 从取色器那份 api 上取：同一帧算好的同一份，不另连一次
   const hueSlider: ColorSliderContext = { api: api.hueSlider, service: hueRoot, trackRef: hueTrackRef, rootRef }
   const alphaSlider: ColorSliderContext = { api: api.alphaSlider, service: alphaRoot, trackRef: alphaTrackRef, rootRef }
-  const swatchPicker: ColorSwatchPickerContext = { api: api.swatchPicker, service: swatchPickerService, rootRef }
-  const recentSwatchPicker: ColorSwatchPickerContext = { api: api.recentSwatchPicker, service: recentSwatchPickerService, rootRef }
+  const swatchPicker: ColorSwatchPickerContext = { api: api.swatchPicker, service: swatchPickerService, rootRef, registerLabel: registerSwatchLabel }
+  const recentSwatchPicker: ColorSwatchPickerContext = { api: api.recentSwatchPicker, service: recentSwatchPickerService, rootRef, registerLabel: registerRecentSwatchLabel }
 
   return {
     ...overlay,

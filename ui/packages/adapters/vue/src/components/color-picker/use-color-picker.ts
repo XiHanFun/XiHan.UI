@@ -81,8 +81,11 @@ export function useColorPicker(
   }
   const hue = colorSlider(colorPickerHueSliderProps)
   const alpha = colorSlider(colorPickerAlphaSliderProps)
-  const swatchPicker = useMachine(colorSwatchPickerMachine, () => colorPickerSwatchPickerProps(service), scope)
-  const recentSwatchPicker = useMachine(colorSwatchPickerMachine, () => colorPickerRecentSwatchPickerProps(service), scope)
+  // 内嵌的两组色板同样可以放 label 部件：各自的登记数喂给各自的机器，根的 aria-labelledby 才只指向真渲染了的标题
+  const swatchLabels = ref(0)
+  const recentSwatchLabels = ref(0)
+  const swatchPicker = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerSwatchPickerProps(service), labelled: swatchLabels.value > 0 }), scope)
+  const recentSwatchPicker = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerRecentSwatchPickerProps(service), labelled: recentSwatchLabels.value > 0 }), scope)
   const services: ColorPickerServices = {
     root: service,
     hueSlider: { root: hue.root, slider: hue.slider },
@@ -134,8 +137,8 @@ export function useColorPicker(
   // 内嵌组件的 api 从取色器那份 api 上取：同一帧算好的同一份，不另连一次
   const hueSlider: ColorSliderContext = { api: computed(() => api.value.hueSlider), service: hue.root, trackRef: hue.trackRef }
   const alphaSlider: ColorSliderContext = { api: computed(() => api.value.alphaSlider), service: alpha.root, trackRef: alpha.trackRef }
-  const swatchPickerCtx: ColorSwatchPickerContext = { api: computed(() => api.value.swatchPicker), service: swatchPicker }
-  const recentSwatchPickerCtx: ColorSwatchPickerContext = { api: computed(() => api.value.recentSwatchPicker), service: recentSwatchPicker }
+  const swatchPickerCtx: ColorSwatchPickerContext = { api: computed(() => api.value.swatchPicker), service: swatchPicker, labelCount: swatchLabels }
+  const recentSwatchPickerCtx: ColorSwatchPickerContext = { api: computed(() => api.value.recentSwatchPicker), service: recentSwatchPicker, labelCount: recentSwatchLabels }
 
   return {
     visible,
