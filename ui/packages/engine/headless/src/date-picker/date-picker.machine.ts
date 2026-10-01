@@ -20,8 +20,9 @@ import { alignColumnsOnOpen, followColumnSelection } from '../shared/column-scro
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { trackSelectionTagMotion } from '../shared/selection-tags'
 import { resolveHourCycle } from '../time-field'
-import { datePickerAnatomy } from './date-picker.anatomy'
+import { DATE_PICKER_TAG_LIST_SELECTOR, datePickerAnatomy } from './date-picker.anatomy'
 import { datePickerDatePart, datePickerJoinDateTime, datePickerTimePart } from './date-picker.time'
 
 const { createMachine, guards } = setup<DatePickerSchema>()
@@ -242,6 +243,7 @@ export const datePickerMachine = createMachine({
     moveFocusIn: cell<boolean>(() => ({ defaultValue: true })),
     // 按压通道：被 Space / Enter 或触屏按住的那一个部件（清空 / 触发 / 确认钮、快捷选项、时间格），按 key 记
     pressed: cell<DatePickerPressedKey | null>(() => ({ defaultValue: null })),
+    tagListTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -254,7 +256,7 @@ export const datePickerMachine = createMachine({
   }),
   initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
-  effects: ['trackLayer'],
+  effects: ['trackLayer', 'trackTagListMotion'],
   // 开合受控（给定 open prop）时用户事件只发意图、不自改状态；宿主写回 open 后由 watch
   // 派发 CONTROLLED.* 回写状态
   watch: ({ track, prop, context, action }) => {
@@ -269,6 +271,8 @@ export const datePickerMachine = createMachine({
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue', 'syncFocusedValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
+    'VALUE.REMOVE': { actions: ['removeValue'] },
+    'TAG_LIST.TRACKED': { actions: ['markTagListTracked'] },
     'FOCUSED.SET': { actions: ['setFocusedValue'] },
     'VIEW.SET': { actions: ['setActiveView'] },
     // 按压通道：触发钮与清空钮在收起态按、快捷选项 / 时间格 / 确认钮在展开态按，两个状态都认
@@ -423,6 +427,12 @@ export const datePickerMachine = createMachine({
       },
 
       clearValue: ({ context }) => context.set('value', []),
+      removeValue: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'VALUE.REMOVE')
+          context.set('value', context.get('value').filter(value => value !== e.value))
+      },
+      markTagListTracked: ({ context }) => context.set('tagListTracked', true),
 
       setFocusedValue: ({ context, event }) => {
         const e = event.current()
@@ -462,6 +472,12 @@ export const datePickerMachine = createMachine({
       },
     },
     effects: {
+      // 多选的标签行：首帧就在的标签直接呈现，之后新选的播进场、摘掉的在原处播完退场
+      trackTagListMotion: ({ refs, send, flush }) => trackSelectionTagMotion({
+        flush,
+        list: () => refs.get('getAnchorEl')()?.querySelector<HTMLElement>(DATE_PICKER_TAG_LIST_SELECTOR),
+        onTracked: () => send({ type: 'TAG_LIST.TRACKED' }),
+      }),
       trackColumnScroll: params => alignColumnsOnOpen(columnScrollTarget(params)),
       // 引擎订阅的返回值即 cleanup；位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({

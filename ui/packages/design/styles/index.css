@@ -26647,6 +26647,40 @@
     outline: none;
   }
 
+  /* 多选的标签行：段位让位，选中的日期在盒里排成标签，超过 maxTagCount 的折进 +N。
+     行里每一枚都是 tag（data-scope="tag"），样子归 tag.css；行怎么排、标签怎么进出归标签行家族配方，
+     这里只接使用者的间距槽，并让它像段位那样占满输入行剩下的宽度 */
+  [data-scope='date-picker'][data-part='tag-list'] {
+    --xh-tag-list-gap: var(--xh-date-picker-tag-list-gap, var(--xh-space-1));
+
+    /* 基准取 0：只吃两颗钮剩下的宽度、在自己里面折行；按内容宽算基准的话，盒子会先在钮前面折行，把钮挤到最后一行 */
+    flex: 1 1 0;
+    flex-wrap: wrap;
+    font-size: var(--xh-date-picker-font-size, var(--xh-_date-picker-font-size));
+  }
+
+  /* 日期标签是定长文字，截短了就读不出是哪天：不收缩，排不下就折到下一行（与标签输入同一种排法），
+     盒随行数长高（字段家族的 multi-tag 布局给），到上限后在盒内滚动 */
+  [data-scope='date-picker'][data-part='tag-list'] > [data-scope='tag'][data-part='root'] {
+    flex: none;
+  }
+
+  [data-scope='date-picker'][data-part='control'][data-xh-field-layout='multi-tag'] {
+    max-block-size: var(--xh-date-picker-control-max-h, var(--xh-viewport-h-sm));
+    overflow-y: auto;
+  }
+
+  /* 没有选中时这一行承载整条占位：与单选那条占位同一句文字、同一个颜色槽 */
+  [data-scope='date-picker'][data-part='tag-list'][data-placeholder-shown]::before {
+    content: attr(data-placeholder-text);
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--xh-date-picker-placeholder-fg, var(--xh-fg-subtle));
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    pointer-events: none;
+  }
+
   /* 两个按钮同一副长相：贴在框内末端的小方钮，不占宽度也不撑高 control。正方视觉盒、inset 圆角、
      悬停 100 / 按下 200 与 0.97 按压、粗指针热区、禁用面与 :focus-visible 关环（盒的 :focus-within
      已画了一圈）全由 Action Control 的 field-inset ghost 档给，组件只映射既有覆盖槽。
@@ -26686,10 +26720,11 @@
     --xh-action-fg-rest: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
   }
 
-  /* 有值时清空钮顶上来，日历钮让位：两颗并排堆着用户分不清点哪个 */
+  /* 有值时清空钮顶上来，日历钮让位：两颗并排堆着用户分不清点哪个。
+     多选不让位：段位收起后日历钮是唯一的键盘入口（退格摘标签也在它身上），藏了键盘就进不来 */
   [data-scope='date-picker'][data-part='control']:has(
       > [data-scope='date-picker'][data-part='clear-trigger']:not([hidden])
-    )
+    ):not(:has(> [data-scope='date-picker'][data-part='tag-list']:not([hidden])))
     > [data-scope='date-picker'][data-part='trigger'] {
     display: none;
   }
@@ -27179,7 +27214,8 @@
       forced-color-adjust: none;
     }
 
-    [data-scope='date-picker'][data-part='segment-group'][data-placeholder-shown]::before {
+    [data-scope='date-picker'][data-part='segment-group'][data-placeholder-shown]::before,
+    [data-scope='date-picker'][data-part='tag-list'][data-placeholder-shown]::before {
       color: GrayText;
     }
 

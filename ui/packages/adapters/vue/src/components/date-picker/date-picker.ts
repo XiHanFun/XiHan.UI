@@ -31,7 +31,7 @@ import { resolveDatePickerPanelIndex } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
-import { slotPaints } from '../../runtime/slot-content'
+import { slotIsPlainText, slotPaints } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -40,9 +40,11 @@ import {
   provideDatePicker,
   provideDatePickerCell,
   provideDatePickerPanel,
+  provideDatePickerTag,
   useDatePickerCellContext,
   useDatePickerContext,
   useDatePickerPanelContext,
+  useDatePickerTagContext,
 } from './context'
 import { useDatePickerWithRoot } from './use-date-picker'
 
@@ -113,6 +115,8 @@ export const XhDatePickerRoot = defineComponent({
     selectionMode: { type: String as PropType<CalendarPickerSelectionMode> },
     /** multiple 下最多选几个周期；选满后日历里没选中的格子不可再加选，已选的仍可点掉。 */
     maxSelected: { type: Number },
+    /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
+    maxTagCount: { type: Number },
     /** 选择粒度；与 selectionMode 正交，输入行铺设哪几段也跟随它。 */
     granularity: { type: String as PropType<CalendarGranularity> },
     /** 面板当前所处的层级；给定即受控，默认跟随 granularity。 */
@@ -231,6 +235,82 @@ export const XhDatePickerControl = defineComponent({
       ...ctx.api.value.getControlProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.controlRef.value = el as HTMLElement },
     }, slots.default?.())
+  },
+})
+
+/** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
+export const XhDatePickerTagLabel = defineComponent({
+  name: 'XhDatePickerTagLabel',
+  setup(_, { slots }) {
+    const ctx = useDatePickerContext()
+    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 标签内容：只有文字时替它包一层 label：截断规则挂在 label 上，直接展开在 root 上的文字过长会把
+ * 删除按钮挤出；作者自己写了节点则原样放行。库自身填入的文字（+N）恒包 label，三个适配器渲染出同一棵树。
+ */
+function tagChildren(content: VNode[] | string | undefined): VNode[] | string | undefined {
+  if (typeof content === 'string')
+    return [h(XhDatePickerTagLabel, null, () => content)]
+  return slotIsPlainText(content) ? [h(XhDatePickerTagLabel, null, () => content)] : content
+}
+
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；点按摘掉所在标签的选中值，焦点不动。 */
+export const XhDatePickerItemDeleteTrigger = defineComponent({
+  name: 'XhDatePickerItemDeleteTrigger',
+  setup(_, { slots }) {
+    const ctx = useDatePickerContext()
+    const tag = useDatePickerTagContext()
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 多选时一个选中值一个标签，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从日期选择器传下，形态按盒的面派生。 */
+export const XhDatePickerTag = defineComponent({
+  name: 'XhDatePickerTag',
+  props: {
+    /** 它代表哪个选中值。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useDatePickerContext()
+    provideDatePickerTag({ value: () => props.value })
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+  },
+})
+
+/** 折叠的标签合成的一个标签：同样是 tag 的 root；有插槽时使用插槽，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
+export const XhDatePickerOverflowTag = defineComponent({
+  name: 'XhDatePickerOverflowTag',
+  setup(_, { slots }) {
+    const ctx = useDatePickerContext()
+    return () => h(
+      'span',
+      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
+    )
+  },
+})
+
+/**
+ * 标签行：多选时放在盒里、触发钮之前；没有选中时承载整条占位，单选时连接层给 hidden。
+ * 不写插槽即按 tags 铺出带删除钮的标签与 +N 那一枚，写了插槽由作者自己铺。
+ */
+export const XhDatePickerTagList = defineComponent({
+  name: 'XhDatePickerTagList',
+  setup(_, { slots }) {
+    const ctx = useDatePickerContext()
+    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default
+      ? slots.default()
+      : [
+          ...ctx.api.value.tags.map(tag => h(XhDatePickerTag, { key: tag.value, value: tag.value }, () => [
+            h(XhDatePickerTagLabel, null, () => tag.label),
+            h(XhDatePickerItemDeleteTrigger),
+          ])),
+          h(XhDatePickerOverflowTag),
+        ])
   },
 })
 
@@ -698,6 +778,9 @@ export const XhDatePickerHiddenInput = defineComponent({
   name: 'XhDatePickerHiddenInput',
   setup() {
     const ctx = useDatePickerContext()
-    return () => h('input', ctx.api.value.field.getHiddenInputProps() as Record<string, unknown>)
+    // 多选时一个选中值一份同名输入，表单按原生多值收；单选仍是一份
+    return () => ctx.api.value.selectionMode === 'multiple'
+      ? ctx.api.value.value.map(value => h('input', { key: value, ...ctx.api.value.field.getHiddenInputProps({ value }) as Record<string, unknown> }))
+      : h('input', ctx.api.value.field.getHiddenInputProps() as Record<string, unknown>)
   },
 })

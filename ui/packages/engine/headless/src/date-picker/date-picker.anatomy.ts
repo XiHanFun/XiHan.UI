@@ -21,6 +21,7 @@ export const datePickerAnatomy = createAnatomy('date-picker', [
   'root',
   'label',
   'control',
+  'tag-list',
   'segment-group',
   'trigger',
   'clear-trigger',
@@ -33,3 +34,6 @@ export const datePickerAnatomy = createAnatomy('date-picker', [
   'time-item',
   'confirm-trigger',
 ])
+
+/** 标签行：多选时盒里收着已选日期标签的那一行。 */
+export const DATE_PICKER_TAG_LIST_SELECTOR = datePickerAnatomy.build()['tag-list'].selector

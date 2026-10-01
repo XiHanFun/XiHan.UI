@@ -22994,6 +22994,24 @@
       "description": "date-picker 的 control 部件 block-size、min-block-size 覆盖槽。"
     },
     {
+      "name": "--xh-date-picker-control-max-h",
+      "component": "date-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "max-block-size"
+      ],
+      "state": [
+        "xh-field-layout=multi-tag"
+      ],
+      "defaultToken": [
+        "--xh-viewport-h-sm"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 control 部件 max-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-date-picker-control-min-w",
       "component": "date-picker",
       "part": [
@@ -23090,7 +23108,8 @@
       "name": "--xh-date-picker-font-size",
       "component": "date-picker",
       "part": [
-        "segment-group"
+        "segment-group",
+        "tag-list"
       ],
       "property": [
         "font-size"
@@ -23102,7 +23121,7 @@
         "--xh-_date-picker-font-size"
       ],
       "visibility": "public",
-      "description": "date-picker 的 segment-group 部件 font-size 覆盖槽。"
+      "description": "date-picker 的 segment-group、tag-list 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-gap",
@@ -23320,7 +23339,8 @@
       "name": "--xh-date-picker-placeholder-fg",
       "component": "date-picker",
       "part": [
-        "segment-group"
+        "segment-group",
+        "tag-list"
       ],
       "property": [
         "color"
@@ -23332,7 +23352,7 @@
         "--xh-fg-subtle"
       ],
       "visibility": "public",
-      "description": "date-picker 的 segment-group 部件 color 覆盖槽。"
+      "description": "date-picker 的 segment-group、tag-list 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-preset-bg-hover",
@@ -23580,6 +23600,24 @@
       ],
       "visibility": "public",
       "description": "date-picker 的 preset 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-tag-list-gap",
+      "component": "date-picker",
+      "part": [
+        "tag-list"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "xh-tag-list"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 tag-list 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-time-column-gap",

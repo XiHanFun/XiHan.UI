@@ -49,6 +49,24 @@ export function useDatePickerCellContext(): DatePickerCellContext {
   return ctx
 }
 
+/** 标签声明的值，供标签中的删除按钮复用同一份声明。 */
+export interface DatePickerTagContext {
+  value: () => string
+}
+
+const TAG_KEY: InjectionKey<DatePickerTagContext> = Symbol.for('xh-date-picker-tag')
+
+export function provideDatePickerTag(ctx: DatePickerTagContext): void {
+  provide(TAG_KEY, ctx)
+}
+
+export function useDatePickerTagContext(): DatePickerTagContext {
+  const ctx = inject(TAG_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] DatePicker 标签子部件必须用在 XhDatePickerTag 内')
+  return ctx
+}
+
 export function provideDatePickerPanel(ctx: DatePickerPanelContext): void {
   provide(PANEL_KEY, ctx)
 }

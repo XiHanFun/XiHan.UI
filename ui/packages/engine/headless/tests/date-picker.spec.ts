@@ -1872,3 +1872,69 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     expect(pressed(cleared.clear)).toBe(false)
   })
 })
+
+describe('多选：选中值在盒里排成标签', () => {
+  type Handler = (event: unknown) => void
+
+  it('与选中值同序排成标签，日按 locale 排成紧凑的数字写法；单选没有标签、标签行收起', () => {
+    const multiple = mount({ selectionMode: 'multiple', defaultValue: ['2026-07-01', '2026-07-09'] }).api()
+    expect(multiple.tags).toEqual([{ value: '2026-07-01', label: '2026/07/01' }, { value: '2026-07-09', label: '2026/07/09' }])
+    expect((multiple.getTagListProps() as Record<string, unknown>).hidden).toBeUndefined()
+    const single = mount({ defaultValue: '2026-07-01' }).api()
+    expect(single.tags).toEqual([])
+    expect((single.getTagListProps() as Record<string, unknown>).hidden).toBe(true)
+  })
+
+  it('月、周粒度的标签取周期的名字', () => {
+    expect(mount({ selectionMode: 'multiple', granularity: 'month', defaultValue: ['2026-07-01'] }).api().tags[0]!.label).toBe('2026年7月')
+    expect(mount({ selectionMode: 'multiple', granularity: 'week', defaultValue: ['2026-07-01'] }).api().tags[0]!.label).toBe('2026-W27')
+  })
+
+  it('多选时段位整体收起，选中值改由标签行呈现', () => {
+    expect((mount({ selectionMode: 'multiple' }).api().getSegmentGroupProps() as Record<string, unknown>).hidden).toBe(true)
+    expect((mount({}).api().getSegmentGroupProps() as Record<string, unknown>).hidden).toBeUndefined()
+  })
+
+  it('超过 maxTagCount 的折进 +N：只摆前几枚，+N 那一枚带 data-count 并显形', () => {
+    const api = mount({ selectionMode: 'multiple', maxTagCount: 2, defaultValue: ['2026-07-01', '2026-07-02', '2026-07-03', '2026-07-04'] }).api()
+    expect(api.tags.map(tag => tag.value)).toEqual(['2026-07-01', '2026-07-02'])
+    expect(api.overflowCount).toBe(2)
+    expect(api.overflowText).toBe('+2')
+    const overflow = api.getOverflowTagProps() as Record<string, unknown>
+    expect(overflow['data-count']).toBe('2')
+    expect(overflow.hidden).toBeUndefined()
+  })
+
+  it('没有选中时标签行承载整条占位，有了选中就撤下', () => {
+    const h = mount({ selectionMode: 'multiple', placeholder: '请选择日期' })
+    const list = h.api().getTagListProps() as Record<string, unknown>
+    expect(list['data-placeholder-text']).toBe('请选择日期')
+    expect(list['data-placeholder-shown']).toBe('')
+    h.api().setValue(['2026-07-01'])
+    expect((h.api().getTagListProps() as Record<string, unknown>)['data-placeholder-shown']).toBeUndefined()
+  })
+
+  it('删除钮摘掉它那一个；触发钮上按退格摘掉最后一个；只读时都不动', () => {
+    const changes: string[][] = []
+    const h = mount({ selectionMode: 'multiple', defaultValue: ['2026-07-01', '2026-07-02', '2026-07-03'], onValueChange: d => changes.push(d.value) })
+    const remove = h.api().getItemDeleteTriggerProps({ value: '2026-07-02' }) as Record<string, unknown>
+    expect(remove.tabindex).toBe(-1)
+    ;(remove.onClick as Handler)(new MouseEvent('click'))
+    expect(h.value()).toEqual(['2026-07-01', '2026-07-03'])
+    const event = new KeyboardEvent('keydown', { key: 'Backspace', cancelable: true })
+    ;((h.api().getTriggerProps() as Record<string, unknown>).onKeyDown as Handler)(event)
+    expect(event.defaultPrevented).toBe(true)
+    expect(h.value()).toEqual(['2026-07-01'])
+    expect(changes).toEqual([['2026-07-01', '2026-07-03'], ['2026-07-01']])
+
+    const readOnly = mount({ selectionMode: 'multiple', readOnly: true, defaultValue: ['2026-07-01'] })
+    ;((readOnly.api().getTriggerProps() as Record<string, unknown>).onKeyDown as Handler)(new KeyboardEvent('keydown', { key: 'Backspace', cancelable: true }))
+    expect(readOnly.value()).toEqual(['2026-07-01'])
+  })
+
+  it('表单出口：多选时一个选中值一份同名输入', () => {
+    const api = mount({ selectionMode: 'multiple', name: 'days', defaultValue: ['2026-07-01', '2026-07-09'] }).api()
+    expect((api.field.getHiddenInputProps({ value: '2026-07-09' }) as Record<string, unknown>).value).toBe('2026-07-09')
+    expect((api.field.getHiddenInputProps({ value: '2026-07-09' }) as Record<string, unknown>).name).toBe('days')
+  })
+})
