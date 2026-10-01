@@ -14,7 +14,7 @@ import {
 import { useState } from "react";
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState<string[]>([]);
 
   return (
     <>
@@ -47,7 +47,7 @@ export default function Demo(): ReactNode {
       </XhTimePickerRoot>
 
       <span style={{ fontSize: "13px" }}>
-        {`手打进段位的时间不受裁剪限制，越界只被标注：${value || "（空）"}`}
+        {`手打进段位的时间不受裁剪限制，越界只被标注：${value[0] ?? "（空）"}`}
       </span>
     </>
   );

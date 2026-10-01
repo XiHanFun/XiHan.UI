@@ -16,7 +16,7 @@ import {
 import { useMemo, useState } from "react";
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState<string[]>([]);
 
   // 时刻算一次就固定下来：connect 每帧都会跑一遍，把「此刻」放进渲染期会每帧算出新值
   const presets = useMemo(() => [
@@ -56,7 +56,7 @@ export default function Demo(): ReactNode {
         </XhTimePickerPositioner>
       </XhTimePickerRoot>
 
-      <span style={{ fontSize: "13px" }}>{`当前值：${value || "（空）"}`}</span>
+      <span style={{ fontSize: "13px" }}>{`当前值：${value[0] ?? "（空）"}`}</span>
     </>
   );
 }

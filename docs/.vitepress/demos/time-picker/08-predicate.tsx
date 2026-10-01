@@ -31,7 +31,7 @@ function snap(next: string): string {
 }
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState("09:00");
+  const [value, setValue] = useState<string[]>(["09:00"]);
 
   return (
     <>
@@ -40,7 +40,7 @@ export default function Demo(): ReactNode {
         timeStep={{ minute: 30 }}
         min="09:00"
         max="18:00"
-        onValueChange={details => setValue(snap(details.value))}
+        onValueChange={details => setValue(details.value.map(snap))}
       >
         <XhTimePickerLabel>面谈时刻</XhTimePickerLabel>
         <XhTimePickerControl>
@@ -67,7 +67,7 @@ export default function Demo(): ReactNode {
         </XhTimePickerPositioner>
       </XhTimePickerRoot>
 
-      <span style={{ fontSize: "13px" }}>{`当前值：${value || "（空）"}`}</span>
+      <span style={{ fontSize: "13px" }}>{`当前值：${value[0] ?? "（空）"}`}</span>
     </>
   );
 }

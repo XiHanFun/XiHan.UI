@@ -52,9 +52,9 @@
   // 值由宿主持有：吸附之后写回元素才生效
   function apply(next) {
     picker.value = next;
-    readout.textContent = next || "（空）";
+    readout.textContent = next[0] ?? "（空）";
   }
 
-  apply("09:00");
-  picker.addEventListener("value-change", (event) => apply(snap(event.detail.value)));
+  apply(["09:00"]);
+  picker.addEventListener("value-change", (event) => apply(event.detail.value.map(snap)));
 </script>

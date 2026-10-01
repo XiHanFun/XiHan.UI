@@ -14,7 +14,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("");
+const value = ref<string[]>([]);
 </script>
 
 <template>
@@ -45,5 +45,5 @@ const value = ref("");
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
 </template>

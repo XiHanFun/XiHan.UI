@@ -16,7 +16,7 @@ import { ref } from "vue";
 // 午休不接待
 const closed = [12, 13];
 
-const value = ref("09:00");
+const value = ref<string[]>(["09:00"]);
 
 // 列里只留通过谓词的那几格
 function bookable(options: readonly string[]) {
@@ -39,7 +39,7 @@ function snap(next: string) {
     :time-step="{ minute: 30 }"
     min="09:00"
     max="18:00"
-    @update:value="value = snap($event)"
+    @update:value="value = $event.map(snap)"
   >
     <XhTimePickerLabel>面谈时刻</XhTimePickerLabel>
     <XhTimePickerControl>
@@ -64,5 +64,5 @@ function snap(next: string) {
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
 </template>

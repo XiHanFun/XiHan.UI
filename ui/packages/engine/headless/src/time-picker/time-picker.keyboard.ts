@@ -15,6 +15,7 @@ export const timePickerKeyboard: KeyboardTable = {
   component: 'time-picker',
   source: APG,
   rows: [
+    { id: 'time-picker.kbd.remove-last', keys: ['Backspace'], when: 'focus in trigger, multiple, 有选中值, not disabled/readOnly', does: '摘掉最后一个选中值（标签行末尾那一枚）；多选时段位不出现，触发钮就是键盘入口' },
     { id: 'time-picker.kbd.open', keys: ['ArrowDown', 'ArrowUp'], when: 'focus in trigger, closed, not disabled', does: '展开浮层，焦点落到时列（已选的时仍可选就停在它上面，否则停在首格）' },
     { id: 'time-picker.kbd.toggle', keys: ['Enter', 'Space'], when: 'focus in trigger, not disabled', does: '按钮的默认激活即展开/收起（不额外拦键，否则会一开一关）' },
     { id: 'time-picker.kbd.item-next', keys: ['ArrowDown'], when: 'open, focus in 某一列', does: '列内下移一格，到尾回绕；被 min/max 裁掉的格自动跳过' },

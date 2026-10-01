@@ -6,10 +6,11 @@
 // 提供 time picker 相关实现。
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { TimeSegmentType } from '../time-field'
-import type { TimePickerApi, TimePickerColumnUnit, TimePickerPresetState, TimePickerPressedKey, TimePickerSchema } from './time-picker.types'
-import { createPressTracker, dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
+import type { TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
+import type { TimePickerApi, TimePickerColumnUnit, TimePickerPresetState, TimePickerPressedKey, TimePickerSchema, TimePickerTagMeta } from './time-picker.types'
+import { createPressTracker, dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, mergeProps, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { connectSelectionTags } from '../shared/selection-tags'
 import { isTimeItemUnavailable, resolveTimeStep, timeColumnsFor, timeItemValue } from '../shared/time-constraint'
 import {
   appendSegmentDigit,
@@ -34,7 +35,7 @@ import {
   timePickerPresetQuery,
   timePickerSegmentQuery,
 } from './time-picker.anatomy'
-import { TIME_PICKER_DEFAULT_PLACEMENT } from './time-picker.machine'
+import { resolveTimePickerMaxSelected, TIME_PICKER_DEFAULT_PLACEMENT } from './time-picker.machine'
 
 const parts = timePickerAnatomy.build()
 
@@ -52,6 +53,32 @@ const SEGMENT_LABELS: Record<TimeSegmentType, string> = {
   minute: 'minute',
   second: 'second',
   dayPeriod: 'AM/PM',
+}
+
+/**
+ * 多选标签的显示文本：按 locale 与小时制排出时刻（zh-CN 24 时 13:45、12 时 下午1:45），精度随 granularity。
+ * 只用 Intl 排时刻，日期固定在 UTC 的同一天，不随运行环境的时区漂移。
+ */
+function createTimeLabeler(locale: string | undefined, hourCycle: TimeHourCycle, granularity: TimeGranularity): (value: string) => string {
+  const format = new Intl.DateTimeFormat(locale, {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: granularity === 'second' ? '2-digit' : undefined,
+    hourCycle: hourCycle === 12 ? 'h12' : 'h23',
+    timeZone: 'UTC',
+  })
+  return (value) => {
+    const time = parseTimeValue(value)
+    if (!time)
+      return value
+    return format.format(Date.UTC(1970, 0, 1, time.hour, time.minute, time.second ?? 0))
+  }
+}
+
+/** 标签的删除钮按下不夺焦：焦点留在原处（多选时是触发钮），删完不跳走。 */
+function keepFocus(event: PointerEvent): void {
+  if (event.button === 0)
+    event.preventDefault()
 }
 
 export function connectTimePicker<T extends PropTypes>(
@@ -74,17 +101,28 @@ export function connectTimePicker<T extends PropTypes>(
   // 只读与禁用在"能不能改"上是一回事，在"能不能聚焦"上不是；后者见 tabindex
   const editable = !disabled && !readOnly
 
-  const value = context.get('value')
-  const draft = resolveTimeDraft(value, context.get('draft'))
+  // 单选时值至多一项，段位与列编辑的就是它；多选时列上拼的是草稿，按「添加」才收进值
+  const multiple = prop('selectionMode') === 'multiple'
+  const values = context.get('value')
+  const draft = multiple ? context.get('draft') : resolveTimeDraft(values[0] ?? '', context.get('draft'))
+  /** 单选的当前值；多选时是草稿拼出来的那一个（没填全为空串）。 */
+  const value = multiple ? formatTimeValue(draft, granularity) : (values[0] ?? '')
   const segments = timeSegments(granularity, hourCycle)
-  const empty = value === ''
-  const outOfRange = isTimeOutOfRange(value, prop('min'), prop('max'))
+  const empty = multiple ? values.length === 0 : value === ''
+  // 多选的值都是收进来时就过了界的，越界只在单选的那一份上标
+  const outOfRange = !multiple && isTimeOutOfRange(value, prop('min'), prop('max'))
   // 越界与显式 invalid 在读屏那里是同一件事：这份输入现在不合法
   const flagged = invalid || outOfRange
-  // 值还凑不成一个时间时也可能已经填了几段，清空按钮此时就能按
-  const dirty = value !== '' || draft.hour != null || draft.minute != null
-    || draft.second != null || draft.dayPeriod != null
+  // 值还凑不成一个时间时也可能已经填了几段，清空按钮此时就能按；多选清的是选中的那一组
+  const dirty = multiple
+    ? values.length > 0
+    : value !== '' || draft.hour != null || draft.minute != null || draft.second != null || draft.dayPeriod != null
   const canClear = editable && dirty
+  const maxSelected = resolveTimePickerMaxSelected(prop('maxSelected'))
+  const full = maxSelected != null && values.length >= maxSelected
+  // 「添加」：草稿填全、在界内、还没选过、没到上限
+  const canAdd = multiple && editable && value !== '' && !values.includes(value) && !full
+    && !isTimeOutOfRange(value, prop('min'), prop('max'))
 
   // 按压通道：四类可按部件各自合成一份跟踪器，真源是机器 context 里「正被按住的那一个」；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档。
@@ -173,7 +211,9 @@ export function connectTimePicker<T extends PropTypes>(
     const time = normalizeTime(preset.value)
     // 解析不了、落在 min/max 之外的，按下不写值
     const presetDisabled = !!preset.disabled || time == null || isTimeOutOfRange(time, prop('min'), prop('max'))
-    return { ...preset, time, disabled: presetDisabled, selected: time != null && time === value }
+    const selected = time != null && (multiple ? values.includes(time) : time === value)
+    // 多选选满后，没选过的快捷选项加不进来；已选的仍可点掉
+    return { ...preset, time, disabled: presetDisabled || (full && !selected), selected }
   })
 
   /**
@@ -193,7 +233,8 @@ export function connectTimePicker<T extends PropTypes>(
     const preset = presets.find(p => p.value === next)
     if (!editable || !preset || preset.disabled || preset.time == null)
       return
-    send({ type: 'VALUE.SET', value: preset.time, src: 'preset' })
+    // 多选点一下切换选中，浮层不收；单选整份写入并收起
+    send(multiple ? { type: 'VALUE.TOGGLE', value: preset.time } : { type: 'VALUE.SET', value: [preset.time], src: 'preset' })
   }
 
   const itemSelected = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): boolean =>
@@ -230,9 +271,16 @@ export function connectTimePicker<T extends PropTypes>(
     focusSafely(navigateItems(liveSegments(from), current, intent, { loop: false, focusDisabled: true }))
   }
 
-  /** 把焦点送到首段：从组件内任一节点往上找到 root，再往下取第一段。 */
+  /**
+   * 把焦点送到键盘入口：单选是首段（从组件内任一节点往上找到 root，再往下取第一段）；
+   * 多选时段位不出现，入口是触发钮。
+   */
   const focusFirstSegment = (from: HTMLElement): void => {
     const root = from.closest<HTMLElement>(parts.root.selector)
+    if (multiple) {
+      focusSafely(root?.querySelector<HTMLElement>(parts.trigger.selector))
+      return
+    }
     focusSafely(queryItems(root, timePickerSegmentQuery).find(el => !el.hasAttribute('hidden')))
   }
 
@@ -276,9 +324,28 @@ export function connectTimePicker<T extends PropTypes>(
   // 形态默认落 outline：不写时 root 与 positioner 如实投影同一常量，皮肤不再依赖缺省档
   const variant = prop('variant') ?? 'outline'
 
+  // —— 多选：选中的时刻在盒里排成标签，段位让位；套的是库里的 tag，与 Select 多选同一套 ——
+  const tagLabel = createTimeLabeler(locale, hourCycle, granularity)
+  const selectionTags = connectSelectionTags({
+    entries: multiple ? values.map(v => ({ key: v, label: tagLabel(v) })) : [],
+    maxTagCount: prop('maxTagCount'),
+    overflowTag: prop('translations')?.overflowTag,
+    deleteItem: prop('translations')?.deleteItem,
+    variant,
+    tone: prop('tone'),
+    size: prop('size'),
+    disabled,
+    readOnly,
+    onDelete: key => send({ type: 'VALUE.REMOVE', value: key }),
+  }, normalize)
+  const tags: TimePickerTagMeta[] = selectionTags.visible.map(tag => ({ value: tag.key, label: tag.label }))
+  const { overflowCount, overflowText } = selectionTags
+
   return {
     open,
-    value,
+    value: values,
+    selectionMode: multiple ? 'multiple' : 'single',
+    draftValue: value,
     empty,
     outOfRange,
     disabled,
@@ -294,6 +361,10 @@ export function connectTimePicker<T extends PropTypes>(
     focusedItem,
     presets,
     canClear,
+    canAdd,
+    tags,
+    overflowCount,
+    overflowText,
     getSegmentText: ({ segment }) => segmentTextOf(segment),
     getItemText: itemTextOf,
     isItemSelected: itemSelected,
@@ -304,6 +375,8 @@ export function connectTimePicker<T extends PropTypes>(
     },
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     clear: () => send({ type: 'VALUE.CLEAR' }),
+    add: () => send({ type: 'VALUE.ADD' }),
+    deselect: v => send({ type: 'VALUE.REMOVE', value: v }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -338,6 +411,8 @@ export function connectTimePicker<T extends PropTypes>(
       ...parts.control.attrs,
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',
+      // 多选的标签换行排开：时刻标签是定长文字，截短了就读不出是几点；盒随行数长高，到上限后在盒内滚动
+      'data-xh-field-layout': multiple ? 'multi-tag' : undefined,
       'data-variant': variant,
       'id': ids.control,
       // 几段合起来才是一个控件，靠 group 兜住，名字由 label 提供
@@ -356,9 +431,9 @@ export function connectTimePicker<T extends PropTypes>(
       'onClick': (event: MouseEvent) => {
         if (disabled)
           return
-        // 触发钮与清空钮各有自己的处理器，落在它们身上的这一下不归这里
+        // 触发钮、清空钮与标签的删除钮各有自己的处理器，落在它们身上的这一下不归这里
         const el = event.target as Element | null
-        if (el?.closest(parts.trigger.selector) || el?.closest(parts['clear-trigger'].selector))
+        if (el?.closest(parts.trigger.selector) || el?.closest(parts['clear-trigger'].selector) || el?.closest('[data-scope="tag"][data-part="close-trigger"]'))
           return
         // 再点一下收起：点开与收起对称，不然浮层展开后指针那条路就没有出口了
         // （段位敲出来的值不触发"选完即收"，触发钮又是可选部件）
@@ -366,14 +441,52 @@ export function connectTimePicker<T extends PropTypes>(
           send({ type: 'CLOSE' })
           return
         }
-        // src=control：这一下的用意是编辑段位，焦点得留在段上，不搬进浮层
-        send({ type: 'OPEN', src: 'control' })
+        // src=control：这一下的用意是编辑段位，焦点得留在段上，不搬进浮层。
+        // 多选没有段位可编辑，这一下就是来挑时刻的，焦点照触发钮那一路搬进浮层
+        send({ type: 'OPEN', src: multiple ? 'trigger' : 'control' })
       },
     }),
 
-    // 段位与作者写在段间的分隔符都挂在这一层，它占满盒里剩下的宽度，尾部按钮因此靠在框内末端
+    // 标签行：盒里、触发钮之前，可见标签与 +N 那一枚在里面并排；单选时整体收起
+    getTagListProps: () => normalize.element({
+      ...parts['tag-list'].attrs,
+      'data-xh-tag-list': '',
+      // 列表动效接上之前，首帧的标签直接呈现
+      'data-instant': dataAttr(!context.get('tagListTracked')),
+      'hidden': !multiple || undefined,
+      'data-disabled': dataAttr(disabled),
+    }),
+
+    // 标签本体就是 tag 的 root（data-scope="tag"），只多一个 data-value 记它代表哪个选中值
+    getTagProps: ({ value: v }) => ({
+      ...selectionTags.tag(v).getRootProps() as Record<string, unknown>,
+      'data-value': v,
+    }) as T['element'],
+
+    // 折起来的那些合成一枚：也是 tag 的 root，data-count 记折了几枚；没有折起的就整个收起，不留空位
+    getOverflowTagProps: () => ({
+      ...selectionTags.overflow.getRootProps() as Record<string, unknown>,
+      'data-count': String(overflowCount),
+    }) as T['element'],
+
+    // 两种标签的文字都落在 tag 的 label 上
+    getTagLabelProps: () => selectionTags.overflow.getLabelProps(),
+
+    // 删除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用与点按都由 tag 给。
+    // 不占 Tab 位：多选时键盘入口只有触发钮一个停靠点，用退格删掉最后一个；按下不夺焦
+    getItemDeleteTriggerProps: ({ value: v }) => mergeProps<T['button']>(
+      selectionTags.tag(v).getCloseTriggerProps(),
+      normalize.button({
+        tabindex: -1,
+        onPointerDown: keepFocus,
+      }),
+    ),
+
+    // 段位与作者写在段间的分隔符都挂在这一层，它占满盒里剩下的宽度，尾部按钮因此靠在框内末端。
+    // 多选时整体收起：选中值改由标签行呈现，段位只管一个值，摆着反而像能在这里敲出第二个
     getSegmentGroupProps: () => normalize.element({
       ...parts['segment-group'].attrs,
+      'hidden': multiple || undefined,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(flagged),
@@ -538,6 +651,12 @@ export function connectTimePicker<T extends PropTypes>(
         'onKeyDown': (event: KeyboardEvent) => {
           // 按压通道先过：展开中按住触发钮收起浮层也该有回执
           triggerPress.onKeyDown(event)
+          // 多选时段位不出现，触发钮就是键盘入口：退格摘掉最后一个选中值，与 Select 多选同一手势
+          if (multiple && editable && event.key === 'Backspace' && !event.altKey && !event.ctrlKey && !event.metaKey && values.length > 0) {
+            event.preventDefault()
+            send({ type: 'VALUE.REMOVE', value: values[values.length - 1]! })
+            return
+          }
           if (open || disabled)
             return
           // 上下键直接展开，落点跟着方向走：下键落首格、上键落末格
@@ -786,13 +905,34 @@ export function connectTimePicker<T extends PropTypes>(
       })
     },
 
-    getHiddenInputProps: () => normalize.input({
+    // 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收；单选时整个收起。文字由作者写
+    getConfirmTriggerProps: () => normalize.button({
+      ...parts['confirm-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'solid',
+      'data-xh-ink-surface': '',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'type': 'button',
+      'hidden': !multiple || undefined,
+      // 草稿没填全、越界、已选过或选满了都按不下去，原生 disabled 一并退出 Tab 序列
+      'disabled': !canAdd || undefined,
+      'data-disabled': dataAttr(!canAdd),
+      ...press('confirm', !canAdd),
+      'onClick': () => {
+        if (canAdd)
+          send({ type: 'VALUE.ADD' })
+      },
+    }),
+
+    getHiddenInputProps: input => normalize.input({
       ...parts['hidden-input'].attrs,
-      // type 先于 value 写入：改 type 会重置输入的值
+      // type 先于 value 写入：改 type 会重置输入的值；多选时一个选中值一份同名输入
       type: 'hidden',
       // name 缺省即不产出该属性，此时这份输入不参与提交
       name: prop('name'),
-      value,
+      value: input ? input.value : (values[0] ?? ''),
       // 禁用的控件不该提交出值
       disabled: disabled || undefined,
     }),

@@ -12,6 +12,7 @@
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
+@import '../family/tag-list.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -176,6 +177,27 @@
     display: none;
   }
 
+  /* 多选的标签行：段位让位，选中的时刻在盒里排成标签，超过 maxTagCount 的折进 +N。
+     行里每一枚都是 tag（data-scope="tag"），样子归 tag.css；行怎么排、标签怎么进出归标签行家族配方。
+     基准取 0：只吃两颗钮剩下的宽度、在自己里面折行；按内容宽算基准的话，盒子会先在钮前面折行，把钮挤到最后一行 */
+  [data-scope='time-picker'][data-part='tag-list'] {
+    --xh-tag-list-gap: var(--xh-time-picker-tag-list-gap, var(--xh-space-1));
+
+    flex: 1 1 0;
+    flex-wrap: wrap;
+  }
+
+  /* 时刻标签是定长文字，截短了就读不出是几点：不收缩，排不下就折到下一行（与标签输入同一种排法），
+     盒随行数长高（字段家族的 multi-tag 布局给），到上限后在盒内滚动 */
+  [data-scope='time-picker'][data-part='tag-list'] > [data-scope='tag'][data-part='root'] {
+    flex: none;
+  }
+
+  [data-scope='time-picker'][data-part='control'][data-xh-field-layout='multi-tag'] {
+    max-block-size: var(--xh-time-picker-control-max-h, var(--xh-viewport-h-sm));
+    overflow-y: auto;
+  }
+
   [data-scope='time-picker'][data-part='segment-group'] > :not([data-scope]) {
     color: var(--xh-time-picker-literal-fg, var(--xh-fg-subtle));
   }
@@ -281,10 +303,11 @@
     --xh-action-fg-rest: var(--xh-time-picker-action-fg-hover, var(--xh-fg-default));
   }
 
-  /* 有值时清空钮顶上来，展开钮让位：两颗并排堆着用户分不清点哪个 */
+  /* 有值时清空钮顶上来，展开钮让位：两颗并排堆着用户分不清点哪个。
+     多选不让位：段位收起后展开钮是唯一的键盘入口（退格摘标签也在它身上），藏了键盘就进不来 */
   [data-scope='time-picker'][data-part='control']:has(
       > [data-scope='time-picker'][data-part='clear-trigger']:not([hidden])
-    )
+    ):not(:has(> [data-scope='time-picker'][data-part='tag-list']:not([hidden])))
     > [data-scope='time-picker'][data-part='trigger'] {
     display: none;
   }
@@ -332,6 +355,40 @@
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='time-picker'][data-part='content'][data-state='closed'] {
     animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  /* 「添加」沉到各列的右下角：它是多选时整块面板的出口，不跟列顶对齐 */
+  [data-scope='time-picker'][data-part='content'] > [data-scope='time-picker'][data-part='confirm-trigger'] {
+    flex: none;
+    align-self: flex-end;
+    margin-inline-start: var(--xh-time-picker-confirm-trigger-gap, var(--xh-space-1));
+  }
+
+  /* 「添加」是面板里唯一的主要动作：品牌实心、悬停 / 按下与 0.97 按压、焦点环全由 Action Control 的
+     text solid 档给；槽名统一按部件取 --xh-time-picker-confirm-trigger-*，只映射到家族桥接槽 */
+  [data-scope='time-picker'][data-part='confirm-trigger'] {
+    --xh-action-visual-size: var(--xh-time-picker-confirm-trigger-h, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-inline: var(--xh-time-picker-confirm-trigger-px, var(--xh-_action-profile-padding-inline));
+    --xh-action-radius: var(--xh-time-picker-confirm-trigger-radius, var(--xh-shape-control));
+    --xh-action-bg-rest: var(--xh-time-picker-confirm-trigger-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-time-picker-confirm-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-time-picker-confirm-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-time-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-time-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-time-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-border-rest: transparent;
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: var(--xh-time-picker-confirm-trigger-shadow, none);
+    --xh-action-shadow-hover: var(--xh-time-picker-confirm-trigger-shadow, none);
+    --xh-action-shadow-pressed: var(--xh-time-picker-confirm-trigger-shadow, none);
+    --xh-action-font-size: var(--xh-text-secondary-size);
+
+    border-width: 0;
+  }
+
+  /* 单选时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
+  [data-scope='time-picker'][data-part='confirm-trigger'][hidden] {
+    display: none;
   }
 
   /* 快捷选项也是一列，与时分秒那几列并排，排在行内起始一侧 */

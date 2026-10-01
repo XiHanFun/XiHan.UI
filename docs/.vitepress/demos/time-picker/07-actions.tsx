@@ -23,7 +23,7 @@ function now(): string {
 }
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState<string[]>([]);
 
   return (
     <>
@@ -58,7 +58,7 @@ export default function Demo(): ReactNode {
                   style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}
                   onKeyDown={event => event.stopPropagation()}
                 >
-                  <XhButton size="sm" variant="ghost" onClick={() => write(now())}>此刻</XhButton>
+                  <XhButton size="sm" variant="ghost" onClick={() => write([now()])}>此刻</XhButton>
                   <XhButton size="sm" variant="ghost" disabled={!canClear} onClick={() => clear()}>
                     清空
                   </XhButton>
@@ -70,7 +70,7 @@ export default function Demo(): ReactNode {
         )}
       </XhTimePickerRoot>
 
-      <span style={{ fontSize: "13px" }}>{`当前值：${value || "（空）"}`}</span>
+      <span style={{ fontSize: "13px" }}>{`当前值：${value[0] ?? "（空）"}`}</span>
     </>
   );
 }

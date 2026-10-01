@@ -15,7 +15,7 @@ import {
 import { useState } from "react";
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState("09:30");
+  const [value, setValue] = useState<string[]>(["09:30"]);
 
   return (
     <>
@@ -51,7 +51,7 @@ export default function Demo(): ReactNode {
         </XhTimePickerPositioner>
       </XhTimePickerRoot>
 
-      <span style={{ fontSize: "13px" }}>{`值仍是 24 小时的串：${value || "（空）"}`}</span>
+      <span style={{ fontSize: "13px" }}>{`值仍是 24 小时的串：${value[0] ?? "（空）"}`}</span>
     </>
   );
 }

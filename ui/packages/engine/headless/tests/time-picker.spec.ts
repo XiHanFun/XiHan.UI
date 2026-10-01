@@ -81,7 +81,7 @@ interface Harness {
   setProps: (next: Partial<Props>) => void
   render: () => void
   state: () => string
-  value: () => string
+  value: () => string[]
   destroy: () => void
 }
 
@@ -514,7 +514,7 @@ describe('开合', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
     expect(h.state()).toBe('closed')
-    expect(h.value()).toBe('09:30')
+    expect(h.value()).toEqual(['09:30'])
   })
 
   it('tab 收起且不拦按键，焦点不抢回触发器', () => {
@@ -561,7 +561,7 @@ describe('浮层里的列与选项', () => {
     h.trigger.click()
     expect(enabledValues(h.column('minute'))).toHaveLength(60)
     h.option('hour', '09').click()
-    expect(h.value()).toBe('')
+    expect(h.value()).toEqual([])
     expect(enabledValues(h.column('minute'))[0]).toBe('30')
     expect(enabledValues(h.column('minute'))).toHaveLength(30)
   })
@@ -701,13 +701,13 @@ describe('两条路写的是同一个值', () => {
     h.trigger.click()
     h.option('hour', '13').click()
     // 分还没选，凑不成一个时间
-    expect(h.value()).toBe('')
+    expect(h.value()).toEqual([])
     expect(h.segment('hour').textContent).toBe('13')
     h.option('minute', '45').click()
-    expect(h.value()).toBe('13:45')
+    expect(h.value()).toEqual(['13:45'])
     expect(h.segment('minute').textContent).toBe('45')
     expect(h.hiddenInput.value).toBe('13:45')
-    expect(onValueChange).toHaveBeenLastCalledWith({ value: '13:45' })
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['13:45'] })
   })
 
   it('段上敲进去的值，浮层里立刻显示成选中', () => {
@@ -725,7 +725,7 @@ describe('两条路写的是同一个值', () => {
     const hour = h.segment('hour')
     hour.focus()
     pressKey(hour, 'ArrowUp')
-    expect(h.value()).toBe('10:30')
+    expect(h.value()).toEqual(['10:30'])
     expect(h.option('hour', '10').getAttribute('aria-selected')).toBe('true')
     expect(h.option('hour', '09').getAttribute('aria-selected')).toBe('false')
   })
@@ -735,16 +735,16 @@ describe('两条路写的是同一个值', () => {
     h.trigger.click()
     // 上午 9 点 → 选 1 点得到上午 1 点
     h.option('hour', '01').click()
-    expect(h.value()).toBe('01:30')
+    expect(h.value()).toEqual(['01:30'])
     // 把上下午段翻到下午，再选 1 点就是 13 点
     const period = h.segment('dayPeriod')
     period.focus()
     pressKey(period, 'p')
-    expect(h.value()).toBe('13:30')
+    expect(h.value()).toEqual(['13:30'])
     h.option('hour', '01').click()
-    expect(h.value()).toBe('13:30')
+    expect(h.value()).toEqual(['13:30'])
     h.option('hour', '02').click()
-    expect(h.value()).toBe('14:30')
+    expect(h.value()).toEqual(['14:30'])
   })
 
   it('12 小时制下时列跟着上下午重新裁剪', () => {
@@ -753,7 +753,7 @@ describe('两条路写的是同一个值', () => {
     const period = h.segment('dayPeriod')
     period.focus()
     pressKey(period, 'p')
-    expect(h.value()).toBe('21:30')
+    expect(h.value()).toEqual(['21:30'])
     expect(enabledValues(h.column('hour'))).toEqual(['01', '02', '03', '04', '05', '06', '12'])
   })
 
@@ -763,12 +763,12 @@ describe('两条路写的是同一个值', () => {
     expect(h.api().isItemSelected({ unit: 'dayPeriod', value: '00' })).toBe(true)
     // 挑「下午」：9 点 → 21 点，段上的文字与选中态一并跟上
     h.option('dayPeriod', '01').click()
-    expect(h.value()).toBe('21:30')
+    expect(h.value()).toEqual(['21:30'])
     expect(h.api().isItemSelected({ unit: 'dayPeriod', value: '01' })).toBe(true)
     expect(h.segment('dayPeriod').getAttribute('aria-valuenow')).toBe('1')
     // 挑回「上午」
     h.option('dayPeriod', '00').click()
-    expect(h.value()).toBe('09:30')
+    expect(h.value()).toEqual(['09:30'])
   })
 
   it('时还空着时挑上下午先记着，等填了时再落到真实小时上', () => {
@@ -776,10 +776,10 @@ describe('两条路写的是同一个值', () => {
     h.trigger.click()
     h.option('dayPeriod', '01').click()
     // 只挑了上下午还凑不成一个时间
-    expect(h.value()).toBe('')
+    expect(h.value()).toEqual([])
     h.option('hour', '03').click()
     h.option('minute', '15').click()
-    expect(h.value()).toBe('15:15')
+    expect(h.value()).toEqual(['15:15'])
   })
 
   it('上下午列在 24 小时制下收起，作者写了也不显出', () => {
@@ -844,7 +844,7 @@ describe('分段输入（委派给 TimeField 的那套语义）', () => {
     const minute = h.segment('minute')
     minute.focus()
     pressKey(minute, 'Backspace')
-    expect(h.value()).toBe('')
+    expect(h.value()).toEqual([])
     expect(h.segment('hour').textContent).toBe('13')
     expect(h.segment('minute').textContent).toBe('--')
     expect(h.root.hasAttribute('data-empty')).toBe(true)
@@ -865,9 +865,9 @@ describe('禁用 / 只读 / 越界 / 清空', () => {
     pressKey(h.content, 'ArrowDown')
     expect(document.activeElement).toBe(h.option('hour', '10'))
     pressKey(h.content, 'Enter')
-    expect(h.value()).toBe('09:30')
+    expect(h.value()).toEqual(['09:30'])
     h.option('hour', '11').click()
-    expect(h.value()).toBe('09:30')
+    expect(h.value()).toEqual(['09:30'])
     expect(h.clear.hidden).toBe(true)
     expect(h.segment('hour').getAttribute('aria-readonly')).toBe('true')
   })
@@ -885,7 +885,7 @@ describe('禁用 / 只读 / 越界 / 清空', () => {
     expect(h.root.hasAttribute('data-out-of-range')).toBe(true)
     expect(h.root.hasAttribute('data-invalid')).toBe(true)
     expect(h.control.getAttribute('aria-invalid')).toBe('true')
-    expect(h.value()).toBe('08:00')
+    expect(h.value()).toEqual(['08:00'])
     expect(h.hiddenInput.value).toBe('08:00')
   })
 
@@ -898,7 +898,7 @@ describe('禁用 / 只读 / 越界 / 清空', () => {
     const hour = h.segment('hour')
     hour.focus()
     pressKey(hour, '9')
-    expect(h.value()).toBe('')
+    expect(h.value()).toEqual([])
     expect(h.clear.hidden).toBe(false)
     h.clear.click()
     expect(h.segment('hour').textContent).toBe('--')
@@ -966,9 +966,9 @@ describe('受控值', () => {
     const h = open({ value: '13:45', onValueChange })
     h.trigger.click()
     h.option('hour', '09').click()
-    expect(h.value()).toBe('13:45')
+    expect(h.value()).toEqual(['13:45'])
     expect(h.segment('hour').textContent).toBe('13')
-    expect(onValueChange).toHaveBeenCalledWith({ value: '09:45' })
+    expect(onValueChange).toHaveBeenCalledWith({ value: ['09:45'] })
     h.setProps({ value: '09:45' })
     expect(h.segment('hour').textContent).toBe('09')
     expect(h.option('hour', '09').getAttribute('aria-selected')).toBe('true')
@@ -976,10 +976,10 @@ describe('受控值', () => {
 
   it('setValue 走一遍解析：写坏的串等同于清空', () => {
     const h = open({ defaultValue: '13:45' })
-    h.api().setValue('25:00')
-    expect(h.value()).toBe('')
-    h.api().setValue('09:05')
-    expect(h.value()).toBe('09:05')
+    h.api().setValue(['25:00'])
+    expect(h.value()).toEqual([])
+    h.api().setValue(['09:05'])
+    expect(h.value()).toEqual(['09:05'])
   })
 })
 
@@ -992,7 +992,7 @@ describe('快捷选项', () => {
     const h = mount({ defaultValue: '09:00', presets: [{ value: '09:00:30', label: '上班' }, { value: '13:45:30', label: '午后' }] })
     expect(h.api().presets.map(p => [p.time, p.selected])).toEqual([['09:00', true], ['13:45', false]])
     pick(h, '13:45:30')
-    expect(h.value()).toBe('13:45')
+    expect(h.value()).toEqual(['13:45'])
   })
 
   it('越界、解析不了的按不下去；步进只裁列表，不拦快捷选项', () => {
@@ -1003,9 +1003,9 @@ describe('快捷选项', () => {
     ] })
     expect(h.api().presets.map(p => p.disabled)).toEqual([true, true, false])
     pick(h, '07:00')
-    expect(h.value()).toBe('')
+    expect(h.value()).toEqual([])
     pick(h, '09:07')
-    expect(h.value()).toBe('09:07')
+    expect(h.value()).toEqual(['09:07'])
   })
 
   it('tab 落点落在命中且按得下的那条上', () => {
@@ -1068,7 +1068,7 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     expect(pressed(h.clear)).toBe(true)
     pointer(h.clear, 'pointerup', 'touch')
     expect(pressed(h.clear)).toBe(false)
-    expect(h.value()).toBe('09:30')
+    expect(h.value()).toEqual(['09:30'])
   })
 
   it('时间格：按住投影，按 key 只亮那一格；Escape 收起浮层时一并撤下', async () => {
@@ -1088,7 +1088,7 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     ten.focus()
     key(ten, 'keydown', ' ')
     expect(pressed(ten)).toBe(true)
-    expect(h.value()).toBe('10:30')
+    expect(h.value()).toEqual(['10:30'])
     expect(h.state()).toBe('open')
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
     expect(h.state()).toBe('closed')
@@ -1104,7 +1104,7 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     expect(presetProps(h, '09:00')['data-pressed']).toBeUndefined()
     presetProps(h, '09:00').onKeyDown!(fakeKey('Enter'))
     presetProps(h, '09:00').onClick!()
-    expect(h.value()).toBe('09:00')
+    expect(h.value()).toEqual(['09:00'])
     expect(h.state()).toBe('closed')
     expect(presetProps(h, '09:00')['data-pressed']).toBeUndefined()
   })
@@ -1165,8 +1165,82 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     key(cleared.clear, 'keydown', 'Enter')
     expect(pressed(cleared.clear)).toBe(true)
     cleared.api().clear()
-    expect(cleared.value()).toBe('')
+    expect(cleared.value()).toEqual([])
     expect(cleared.clear.hidden).toBe(true)
     expect(pressed(cleared.clear)).toBe(false)
+  })
+})
+
+describe('多选：列上拼草稿，按「添加」收进值，选中的时刻排成标签', () => {
+  type Handler = (event: unknown) => void
+  const props = (h: Harness, getter: (api: TimePickerApi) => unknown): Record<string, unknown> => getter(h.api()) as Record<string, unknown>
+
+  it('列上点选只改草稿不写值；「添加」把草稿收进值，浮层不收、草稿留着，改一列就能接着添', () => {
+    const changes: string[][] = []
+    const h = open({ selectionMode: 'multiple', onValueChange: d => changes.push(d.value) })
+    h.trigger.click()
+    h.option('hour', '09').click()
+    h.option('minute', '30').click()
+    expect(h.value()).toEqual([])
+    expect(h.api().draftValue).toBe('09:30')
+    ;(props(h, api => api.getConfirmTriggerProps()).onClick as Handler)(new MouseEvent('click'))
+    expect(h.value()).toEqual(['09:30'])
+    expect(h.api().open).toBe(true)
+    h.option('minute', '00').click()
+    h.api().add()
+    expect(h.value()).toEqual(['09:00', '09:30'])
+    expect(changes).toEqual([['09:30'], ['09:00', '09:30']])
+  })
+
+  it('「添加」只在草稿填全、没选过、没满时可按；单选时整个收起', () => {
+    const h = open({ selectionMode: 'multiple', maxSelected: 1 })
+    h.trigger.click()
+    expect(props(h, api => api.getConfirmTriggerProps()).disabled).toBe(true)
+    h.option('hour', '09').click()
+    h.option('minute', '30').click()
+    expect(h.api().canAdd).toBe(true)
+    h.api().add()
+    expect(h.api().canAdd).toBe(false)
+    expect(props(h, api => api.getConfirmTriggerProps()).disabled).toBe(true)
+    expect((open({}).api().getConfirmTriggerProps() as Record<string, unknown>).hidden).toBe(true)
+  })
+
+  it('快捷选项点一下切换选中，浮层不收', () => {
+    const h = open({ selectionMode: 'multiple', presets: [{ value: '09:00', label: '上班' }, { value: '18:00', label: '下班' }] })
+    h.trigger.click()
+    ;(props(h, api => api.getPresetProps({ value: '18:00' })).onClick as Handler)(new MouseEvent('click'))
+    ;(props(h, api => api.getPresetProps({ value: '09:00' })).onClick as Handler)(new MouseEvent('click'))
+    expect(h.value()).toEqual(['09:00', '18:00'])
+    expect(h.api().presets.every(preset => preset.selected)).toBe(true)
+    ;(props(h, api => api.getPresetProps({ value: '09:00' })).onClick as Handler)(new MouseEvent('click'))
+    expect(h.value()).toEqual(['18:00'])
+    expect(h.api().open).toBe(true)
+  })
+
+  it('选中的时刻排成标签，段位收起；删除钮摘掉那一个，触发钮上退格摘掉最后一个', () => {
+    const h = mount({ selectionMode: 'multiple', defaultValue: ['08:00', '12:30', '18:00'], locale: 'zh-CN', hourCycle: 24 })
+    expect(h.api().tags.map(tag => tag.label)).toEqual(['08:00', '12:30', '18:00'])
+    expect(props(h, api => api.getSegmentGroupProps()).hidden).toBe(true)
+    expect(props(h, api => api.getTagListProps()).hidden).toBeUndefined()
+    ;(props(h, api => api.getItemDeleteTriggerProps({ value: '12:30' })).onClick as Handler)(new MouseEvent('click'))
+    expect(h.value()).toEqual(['08:00', '18:00'])
+    const event = new KeyboardEvent('keydown', { key: 'Backspace', cancelable: true })
+    ;(props(h, api => api.getTriggerProps()).onKeyDown as Handler)(event)
+    expect(event.defaultPrevented).toBe(true)
+    expect(h.value()).toEqual(['08:00'])
+  })
+
+  it('12 小时制的标签按 locale 带上下午；超过 maxTagCount 的折进 +N', () => {
+    const api = mount({ selectionMode: 'multiple', maxTagCount: 1, defaultValue: ['13:45', '09:00'], locale: 'en-US', hourCycle: 12 }).api()
+    expect(api.tags).toHaveLength(1)
+    expect(api.tags[0]!.label).toMatch(/01:45\sPM/)
+    expect(api.overflowText).toBe('+1')
+  })
+
+  it('表单出口：一个选中值一份同名输入；宿主写进来的值归一、去重并按时刻升序', () => {
+    const h = mount({ selectionMode: 'multiple', name: 'slots' })
+    h.api().setValue(['18:00', '09:00:30', '18:00', 'bad'])
+    expect(h.value()).toEqual(['09:00', '18:00'])
+    expect((h.api().getHiddenInputProps({ value: '18:00' }) as Record<string, unknown>).value).toBe('18:00')
   })
 })

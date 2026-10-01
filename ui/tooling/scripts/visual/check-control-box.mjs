@@ -60,6 +60,7 @@ const TRIGGER_IS_CONTENT = new Set(['select', 'cascader', 'tree-select', 'color-
  */
 const ALTERNATE_CONTENT = {
   'date-picker': { parts: ['segment-group', 'tag-list'], why: '单选是一组段位、多选是一行标签，按 selectionMode 二选一' },
+  'time-picker': { parts: ['segment-group', 'tag-list'], why: '同 date-picker' },
 }
 
 /** 内容区里还能再套一层撑开的文字区：下拉族的 value-text 长在 trigger 里面。 */

@@ -13,7 +13,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("");
+const value = ref<string[]>([]);
 </script>
 
 <template>
@@ -40,6 +40,6 @@ const value = ref("");
   </XhTimePickerRoot>
 
   <span style="font-size: 13px">
-    手打进段位的时间不受裁剪限制，越界只被标注：{{ value || "（空）" }}
+    手打进段位的时间不受裁剪限制，越界只被标注：{{ value[0] ?? "（空）" }}
   </span>
 </template>

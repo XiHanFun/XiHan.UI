@@ -20,7 +20,7 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 }
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState("09:30");
+  const [value, setValue] = useState<string[]>(["09:30"]);
 
   return (
     <>
@@ -52,7 +52,7 @@ export default function Demo(): ReactNode {
         </XhTimePickerPositioner>
       </XhTimePickerRoot>
 
-      <span style={{ fontSize: "13px" }}>{`当前值：${value || "（空）"}`}</span>
+      <span style={{ fontSize: "13px" }}>{`当前值：${value[0] ?? "（空）"}`}</span>
     </>
   );
 }

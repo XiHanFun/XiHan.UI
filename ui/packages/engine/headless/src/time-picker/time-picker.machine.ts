@@ -16,10 +16,12 @@ import type {
   TimePickerSchema,
 } from './time-picker.types'
 import { canTakeFocus, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { sameArray } from '../shared/array'
 import { alignColumnsOnOpen, followColumnSelection } from '../shared/column-scroll'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { trackSelectionTagMotion } from '../shared/selection-tags'
 import { timeColumnsFor, timeItemValue } from '../shared/time-constraint'
 import {
   appendSegmentDigit,
@@ -28,6 +30,7 @@ import {
   draftFromTime,
   emptyTimeDraft,
   formatTimeValue,
+  isTimeOutOfRange,
   parseTimeValue,
   resolveHourCycle,
   resolveTimeDraft,
@@ -38,7 +41,7 @@ import {
   setTimeSegment,
   TIME_FIELD_GRANULARITY,
 } from '../time-field'
-import { findTimePickerColumn, findTimePickerItem, timePickerColumnQuery } from './time-picker.anatomy'
+import { findTimePickerColumn, findTimePickerItem, TIME_PICKER_TAG_LIST_SELECTOR, timePickerColumnQuery } from './time-picker.anatomy'
 
 const { createMachine, guards } = setup<TimePickerSchema>()
 const { and } = guards
@@ -46,9 +49,51 @@ const { and } = guards
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const TIME_PICKER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
-/** 此刻该编辑哪一份逐段值；与 connect 显示用的是同一条规则。 */
+function isMultiple(params: Pick<Params<TimePickerSchema>, 'prop'>): boolean {
+  return params.prop('selectionMode') === 'multiple'
+}
+
+/** 单选时的当前值：值至多一项，还没填全时为空串。 */
+function singleValue(params: Params<TimePickerSchema>): string {
+  return params.context.get('value')[0] ?? ''
+}
+
+/**
+ * 宿主给的值归一成数组：裸串是单选的写法，空串即没有值；数组里的空串丢掉。
+ * 不归一的 undefined 原样留着，那是「非受控」的唯一表达。
+ */
+export function toTimePickerValues(input: string | readonly string[] | undefined): string[] | undefined {
+  if (input === undefined)
+    return undefined
+  if (typeof input === 'string')
+    return input === '' ? [] : [input]
+  return input.filter(value => value !== '')
+}
+
+/** 多选的值：每一项按精度归一（'9:00' → '09:00'、多出的秒截掉），解析不了的丢掉，去重并按时刻升序。 */
+function normalizeTimes(values: readonly string[], granularity: TimeGranularity): string[] {
+  const out = new Set<string>()
+  for (const value of values) {
+    const text = formatTimeValue(draftFromTime(parseTimeValue(value)), granularity)
+    if (text !== '')
+      out.add(text)
+  }
+  return [...out].sort()
+}
+
+/** maxSelected 的生效值：非整数向下取整，小于 1 或不是有限数时不设上限。 */
+export function resolveTimePickerMaxSelected(max: number | undefined): number | null {
+  if (max == null || !Number.isFinite(max))
+    return null
+  const floor = Math.floor(max)
+  return floor >= 1 ? floor : null
+}
+
+/** 此刻该编辑哪一份逐段值；与 connect 显示用的是同一条规则。多选时就是浮层里拼着的草稿。 */
 function currentDraft(params: Params<TimePickerSchema>): TimeDraft {
-  return resolveTimeDraft(params.context.get('value'), params.context.get('draft'))
+  return isMultiple(params)
+    ? params.context.get('draft')
+    : resolveTimeDraft(singleValue(params), params.context.get('draft'))
 }
 
 function currentHourCycle(params: Params<TimePickerSchema>): TimeHourCycle {
@@ -75,7 +120,11 @@ function currentColumns(params: Params<TimePickerSchema>): TimeColumn[] {
  */
 function commitDraft(params: Params<TimePickerSchema>, next: TimeDraft): void {
   params.context.set('draft', next)
-  params.context.set('value', formatTimeValue(next, currentGranularity(params)))
+  // 多选时草稿只是浮层里拼着的那一个，按「添加」才收进值
+  if (isMultiple(params))
+    return
+  const text = formatTimeValue(next, currentGranularity(params))
+  params.context.set('value', text === '' ? [] : [text])
 }
 
 /**
@@ -99,13 +148,18 @@ export const timePickerMachine = createMachine({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
-    value: cell<string>(() => ({
-      value: prop('value'),
-      defaultValue: prop('defaultValue') ?? '',
+    value: cell<string[]>(() => ({
+      value: toTimePickerValues(prop('value')),
+      defaultValue: toTimePickerValues(prop('defaultValue')) ?? [],
+      // 数组每次都是新对象，比内容才不会把没变当成变了
+      isEqual: sameArray,
       onChange: value => prop('onValueChange')?.({ value }),
     })),
     draft: cell<TimeDraft>(() => ({
-      defaultValue: draftFromTime(parseTimeValue(prop('value') ?? prop('defaultValue'))),
+      // 单选时缓冲从值起步；多选的草稿与值无关，从空起步
+      defaultValue: prop('selectionMode') === 'multiple'
+        ? emptyTimeDraft()
+        : draftFromTime(parseTimeValue((toTimePickerValues(prop('value')) ?? toTimePickerValues(prop('defaultValue')) ?? [])[0])),
       // 逐段比内容而不是比引用：每次写入都产出新对象，不比内容会重复通知宿主
       isEqual: sameTimeDraft,
     })),
@@ -118,8 +172,9 @@ export const timePickerMachine = createMachine({
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
     // 缺省搬：触发钮、键盘与命令式入口都要把焦点送进浮层
     moveFocusIn: cell<boolean>(() => ({ defaultValue: true })),
-    // 按压通道：被 Space / Enter 或触屏按住的那一个部件（清空钮 / 触发钮 / 快捷选项 / 时间格），按 key 记
+    // 按压通道：被 Space / Enter 或触屏按住的那一个部件（清空钮 / 触发钮 / 添加钮 / 快捷选项 / 时间格），按 key 记
     pressed: cell<TimePickerPressedKey | null>(() => ({ defaultValue: null })),
+    tagListTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     config: null,
@@ -133,7 +188,7 @@ export const timePickerMachine = createMachine({
   }),
   initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
-  effects: ['trackLayer'],
+  effects: ['trackLayer', 'trackTagListMotion'],
   watch: ({ track, prop, context, action }) => {
     // 开合受控时用户事件只发意图、不自改状态；宿主写回 open 后由这里派发影子事件无条件回写
     track([() => prop('open')], () => action(['syncOpen']))
@@ -149,6 +204,10 @@ export const timePickerMachine = createMachine({
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { guard: 'canEdit', actions: ['clearValue'] },
+    'VALUE.ADD': { guard: 'canEdit', actions: ['addValue'] },
+    'VALUE.REMOVE': { guard: 'canEdit', actions: ['removeValue'] },
+    'VALUE.TOGGLE': { guard: 'canEdit', actions: ['toggleValue'] },
+    'TAG_LIST.TRACKED': { actions: ['markTagListTracked'] },
     'SEGMENT.STEP': { guard: 'canEdit', actions: ['stepSegment'] },
     'SEGMENT.DIGIT': { guard: 'canEdit', actions: ['typeDigit'] },
     'SEGMENT.CLEAR': { guard: 'canEdit', actions: ['clearSegment'] },
@@ -272,7 +331,7 @@ export const timePickerMachine = createMachine({
           return
         }
         const draft = context.get('draft')
-        const dirty = context.get('value') !== '' || draft.hour != null || draft.minute != null
+        const dirty = context.get('value').length > 0 || draft.hour != null || draft.minute != null
           || draft.second != null || draft.dayPeriod != null
         if (pressed === 'clear' && !dirty)
           context.set('pressed', null)
@@ -366,14 +425,62 @@ export const timePickerMachine = createMachine({
         const e = params.event.current()
         if (e.type !== 'VALUE.SET')
           return
+        if (isMultiple(params)) {
+          params.context.set('value', normalizeTimes(e.value, currentGranularity(params)))
+          return
+        }
         // 走一遍解析再回填：写坏的串等同于清空
-        commitDraft(params, draftFromTime(parseTimeValue(e.value)))
+        commitDraft(params, draftFromTime(parseTimeValue(e.value[0])))
       },
 
       clearValue: (params) => {
+        // 多选清的是选中的那一组，浮层里拼着的草稿留着
+        if (isMultiple(params)) {
+          params.context.set('value', [])
+          return
+        }
         commitDraft(params, emptyTimeDraft())
         params.context.set('typeBuffer', '')
       },
+
+      /** 把草稿收进值：填全、在界内、还没选过、没到上限才收；收完草稿留着，改一列就能接着添下一个。 */
+      addValue: (params) => {
+        if (!isMultiple(params))
+          return
+        const text = formatTimeValue(params.context.get('draft'), currentGranularity(params))
+        const current = params.context.get('value')
+        const max = resolveTimePickerMaxSelected(params.prop('maxSelected'))
+        if (text === '' || current.includes(text) || isTimeOutOfRange(text, params.prop('min'), params.prop('max')))
+          return
+        if (max != null && current.length >= max)
+          return
+        params.context.set('value', normalizeTimes([...current, text], currentGranularity(params)))
+      },
+
+      removeValue: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'VALUE.REMOVE')
+          return
+        params.context.set('value', params.context.get('value').filter(value => value !== e.value))
+      },
+
+      /** 快捷选项点一下切换：选过的点掉，没选过的加进来（满了就加不进）。 */
+      toggleValue: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'VALUE.TOGGLE' || !isMultiple(params))
+          return
+        const current = params.context.get('value')
+        if (current.includes(e.value)) {
+          params.context.set('value', current.filter(value => value !== e.value))
+          return
+        }
+        const max = resolveTimePickerMaxSelected(params.prop('maxSelected'))
+        if (max != null && current.length >= max)
+          return
+        params.context.set('value', normalizeTimes([...current, e.value], currentGranularity(params)))
+      },
+
+      markTagListTracked: ({ context }) => context.set('tagListTracked', true),
 
       stepSegment: (params) => {
         const e = params.event.current()
@@ -437,13 +544,22 @@ export const timePickerMachine = createMachine({
        * 缓冲算出来的串与当前值一致时直接返回，否则会把填了一半的段当成外部清空抹掉。
        */
       syncDraft: (params) => {
-        const value = params.context.get('value')
+        // 多选的草稿与值无关：值变了（添加、摘掉、宿主写回）草稿照旧
+        if (isMultiple(params))
+          return
+        const value = singleValue(params)
         if (formatTimeValue(params.context.get('draft'), currentGranularity(params)) === value)
           return
         params.context.set('draft', draftFromTime(parseTimeValue(value)))
       },
     },
     effects: {
+      // 多选的标签行：首帧就在的标签直接呈现，之后新选的播进场、摘掉的在原处播完退场
+      trackTagListMotion: ({ refs, send, flush }) => trackSelectionTagMotion({
+        flush,
+        list: () => refs.get('getAnchorEl')()?.querySelector<HTMLElement>(TIME_PICKER_TAG_LIST_SELECTOR),
+        onTracked: () => send({ type: 'TAG_LIST.TRACKED' }),
+      }),
       trackColumnScroll: params => alignColumnsOnOpen(columnScrollTarget(params)),
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => {

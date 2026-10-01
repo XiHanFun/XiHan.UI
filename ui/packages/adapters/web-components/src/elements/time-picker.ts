@@ -15,15 +15,18 @@ import type {
   TimePickerOpenChangeDetails,
   TimePickerPreset,
   TimePickerSchema,
+  TimePickerSelectionMode,
+  TimePickerTagMeta,
   TimePickerValueChangeDetails,
   TimeSegmentType,
   TimeStep,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTimePicker, resolveFormControlState, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
+import { connectTimePicker, resolveFormControlState, tagAnatomy, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
+import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { TIME_STEP_CONVERTER } from '../dom/time-step'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -71,8 +74,11 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * 段与格子上的文字由元素填入；作者自行写了内容的不修改。
  *
  * @customElement xh-time-picker
- * @attr {string} value - 受控值，ISO 时间串（'13:45' / '13:45:30'）；未提供该属性即非受控
- * @attr {string} default-value - 非受控初值
+ * @attr {string} value - 受控值，ISO 时间串（'13:45' / '13:45:30'）；未提供该属性即非受控。多选的一组时刻是数组，只走 property
+ * @attr {string} default-value - 非受控初值；多选的数组只走 property
+ * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single；multiple 时列上拼草稿、按 confirm-trigger 收进值，输入行里排成标签
+ * @attr {number} max-selected - multiple 下最多选几个时刻
+ * @attr {number} max-tag-count - multiple 下输入行最多摆几枚标签，其余折进 overflow-tag；默认 3
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {string} min - 下界（含）：裁掉浮层中落在界外的可选值，并把已填的越界值标注出来
@@ -99,7 +105,12 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid / data-empty）
  * @csspart label - 标题；点击它把焦点送到第一段
  * @csspart control - role=group 的输入行，同时是浮层的定位锚点
- * @csspart segment-group - 段位与分隔符的外壳，占满盒内剩余宽度
+ * @csspart tag-list - 多选时盒里、trigger 之前的标签行：可见标签与 overflow-tag 放在其中；单选时带 hidden
+ * @csspart tag - 多选标签，须自带 value 属性标识选中值；作者按 tags 渲染，接线为 tag 的 root（data-scope="tag"）
+ * @csspart tag-label - 标签文字，须放在 tag 中；接线为 tag 的 label。标签里只有文字时元素自动包一层，带删除钮时由作者写它包住文字
+ * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦；可及名使用 translations.deleteItem
+ * @csspart overflow-tag - 折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N；没有折叠的标签时带 hidden
+ * @csspart segment-group - 段位与分隔符的外壳，占满盒内剩余宽度；多选时带 hidden
  * @csspart segment - 一段一个的 spinbutton，可自带 segment 属性声明身份，默认按文档序
  * @csspart trigger - 展开 / 收起按钮，须是原生 button
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，可及名使用 translations.clearTrigger；无值时收起
@@ -109,18 +120,27 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据中的 value 逐字一致）
  * @csspart column - role=listbox 的一列，可自带 unit 属性声明单位，默认按文档序
  * @csspart item - role=option 的一格，须自带 value 属性（两位补零的显示串；上下午列写 '00' / '01'）
- * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
+ * @csspart confirm-trigger - 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收；单选时带 hidden。文字由作者写
+ * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串；多选时一个选中值一份，首值用这个节点，其余由元素在它后面补同名输入
  */
 export class XhTimePickerElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
-  static override partContract = { anatomy: timePickerAnatomy, meta: timePickerMeta }
+  // tag / overflow-tag 接的是 tag 的 root，tag-label 接的是 tag 的 label，item-delete-trigger 接的是 tag 的 close-trigger
+  static override partContract = {
+    anatomy: timePickerAnatomy,
+    meta: timePickerMeta,
+    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
+  }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
+    selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
+    maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     min: { converter: STRING_CONVERTER },
@@ -148,8 +168,11 @@ export class XhTimePickerElement extends XhPortalHostElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
   }
 
-  declare value?: string
-  declare defaultValue?: string
+  declare value?: string | string[]
+  declare defaultValue?: string | string[]
+  declare selectionMode?: TimePickerSelectionMode
+  declare maxSelected?: number
+  declare maxTagCount?: number
   declare open?: boolean
   declare defaultOpen?: boolean
   declare min?: string
@@ -224,6 +247,9 @@ export class XhTimePickerElement extends XhPortalHostElement {
     return {
       value: this.value,
       defaultValue: this.defaultValue,
+      selectionMode: this.selectionMode,
+      maxSelected: this.maxSelected,
+      maxTagCount: this.maxTagCount,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       min: this.min,
@@ -319,6 +345,63 @@ export class XhTimePickerElement extends XhPortalHostElement {
 
   /** 段与格子上的文字是否归元素填，首次见到该节点时定。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
+  /** 每枚标签里由元素补出来的那层 label。 */
+  private readonly tagLabels = new WeakMap<HTMLElement, HTMLElement>()
+  /** 多选时一个选中值一份同名隐藏输入：首值用作者的节点，其余由元素补在它后面。 */
+  private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
+
+  protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    this.hiddenInputs.release(nodes)
+  }
+
+  /**
+   * 标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，
+   * 返回 null——带删除钮的标签由作者用 tag-label 包住文字。补出来的那层不打 data-xh-part，不进角色节点表。
+   */
+  private ensureTagLabel(tag: HTMLElement): HTMLElement | null {
+    const existing = this.tagLabels.get(tag)
+    if (existing && existing.parentNode === tag)
+      return existing
+    if (tag.children.length > 0)
+      return null
+    const label = this.ownerDocument.createElement('span')
+    label.append(...Array.from(tag.childNodes))
+    tag.append(label)
+    this.tagLabels.set(tag, label)
+    return label
+  }
+
+  /** 多选时应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中值同序；单选恒为空数组。状态机尚未建立时为空数组。 */
+  get tags(): TimePickerTagMeta[] {
+    return this.ctrl.service ? connectTimePicker(this.ctrl.service, wcNormalize).tags : []
+  }
+
+  /** 被 max-tag-count 折叠的标签数。状态机尚未建立时为 0。 */
+  get overflowCount(): number {
+    return this.ctrl.service ? connectTimePicker(this.ctrl.service, wcNormalize).overflowCount : 0
+  }
+
+  /** overflow-tag 显示的文字；没有折叠的标签或状态机尚未建立时为空串。 */
+  get overflowText(): string {
+    return this.ctrl.service ? connectTimePicker(this.ctrl.service, wcNormalize).overflowText : ''
+  }
+
+  /** 多选时「添加」此刻可按（草稿填全、在界内、没选过、没到上限）；状态机尚未建立时为 false。 */
+  get canAdd(): boolean {
+    return this.ctrl.service ? connectTimePicker(this.ctrl.service, wcNormalize).canAdd : false
+  }
+
+  /** 多选：把浮层里拼好的草稿收进值；状态机尚未建立时不做任何事。 */
+  add(): void {
+    if (this.ctrl.service)
+      connectTimePicker(this.ctrl.service, wcNormalize).add()
+  }
+
+  /** 多选：摘掉一个选中值；状态机尚未建立时不做任何事。 */
+  deselect(value: string): void {
+    if (this.ctrl.service)
+      connectTimePicker(this.ctrl.service, wcNormalize).deselect(value)
+  }
 
   /** 填节点上的文字，归属只在第一次见到这个节点时定一次。 */
   private fillText(el: HTMLElement, text: string): void {
@@ -352,13 +435,43 @@ export class XhTimePickerElement extends XhPortalHostElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
+    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    // 标签是多实例 part，接的是 tag 的 root：身份取自己的 value 属性；只有文字的补一层 label
+    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    for (const el of this.getParts('tag')) {
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      const label = this.ensureTagLabel(el)
+      if (label)
+        this.spreader.spread(label, tagLabelProps)
+    }
+    for (const el of this.getParts('tag-label'))
+      this.spreader.spread(el, tagLabelProps)
+    // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
+    for (const el of this.getParts('item-delete-trigger')) {
+      const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    }
+    // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
+    const overflowTag = this.getPart('overflow-tag')
+    if (overflowTag) {
+      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      const label = this.ensureTagLabel(overflowTag)
+      if (label) {
+        this.spreader.spread(label, tagLabelProps)
+        this.fillText(label, api.overflowText)
+      }
+    }
     put('segment-group', api.getSegmentGroupProps() as Record<string, unknown>)
+    put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    // 多选时一个选中值一份同名输入，单选仍是一份
+    this.hiddenInputs.sync(this.getPart('hidden-input'), api.selectionMode === 'multiple'
+      ? api.value.map(value => api.getHiddenInputProps({ value }) as Record<string, unknown>)
+      : [api.getHiddenInputProps() as Record<string, unknown>])
     put('preset-group', api.getPresetGroupProps() as Record<string, unknown>)
 
     // 快捷选项是多实例 part：条目自报 value

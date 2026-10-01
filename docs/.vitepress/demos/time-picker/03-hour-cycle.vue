@@ -14,7 +14,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("09:30");
+const value = ref<string[]>(["09:30"]);
 </script>
 
 <template>
@@ -45,5 +45,5 @@ const value = ref("09:30");
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">值仍是 24 小时的串：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">值仍是 24 小时的串：{{ value[0] ?? "（空）" }}</span>
 </template>

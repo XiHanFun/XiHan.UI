@@ -62,6 +62,6 @@
   picker.addEventListener("value-change", (event) => {
     const next = event.detail.value;
     picker.value = next;
-    readout.textContent = next || "（未填齐）";
+    readout.textContent = next[0] ?? "（未填齐）";
   });
 </script>

@@ -45,6 +45,12 @@
       "gutter": false,
       "why": "级联搜索态的扁平候选列表，与列区互斥"
     },
+    "time-picker:control": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "同 date-picker:control"
+    },
     "tree-select:tree": {
       "mode": "drawn",
       "overscroll": true,

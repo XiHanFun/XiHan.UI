@@ -15,6 +15,7 @@ import type {
   TimePickerPreset,
   TimePickerPresetState,
   TimePickerSchema,
+  TimePickerSelectionMode,
   TimeSegmentType,
   TimeStep,
   TimeUnavailablePredicate,
@@ -26,11 +27,11 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
-import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { renderSlot, slotIsPlainText, slotPaints } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
-import { TimePickerColumnProvider, TimePickerProvider, useTimePickerColumnContext, useTimePickerContext } from './context'
+import { TimePickerColumnProvider, TimePickerProvider, TimePickerTagProvider, useTimePickerColumnContext, useTimePickerContext, useTimePickerTagContext } from './context'
 import { useTimePicker } from './use-time-picker'
 
 type TimePickerProps = TimePickerSchema['props']
@@ -47,9 +48,11 @@ export type TimePickerRootSlotProps = Pick<
   | 'segments'
   | 'columns'
   | 'canClear'
+  | 'canAdd'
   | 'setOpen'
   | 'setValue'
   | 'clear'
+  | 'add'
 >
 
 /** 列函数式 children 的载荷：该列当前的可选值。 */
@@ -63,8 +66,15 @@ export interface TimePickerPresetsSlotProps {
 }
 
 export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  value?: string
-  defaultValue?: string
+  /** 选中的时刻，ISO 时间串数组；单选可写裸串。 */
+  value?: string | string[]
+  defaultValue?: string | string[]
+  /** 选择模式，默认 single；multiple 时列上拼草稿、按「添加」收进值，输入行里排成标签。 */
+  selectionMode?: TimePickerSelectionMode
+  /** multiple 下最多选几个时刻。 */
+  maxSelected?: number
+  /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
+  maxTagCount?: number
   open?: boolean
   defaultOpen?: boolean
   min?: string
@@ -101,6 +111,9 @@ export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
 export function XhTimePickerRoot({
   value,
   defaultValue,
+  selectionMode,
+  maxSelected,
+  maxTagCount,
   open,
   defaultOpen,
   min,
@@ -132,6 +145,9 @@ export function XhTimePickerRoot({
   const ctx = useTimePicker(withXhConfig('time-picker', useFormControlProps({
     value,
     defaultValue,
+    selectionMode,
+    maxSelected,
+    maxTagCount,
     open,
     defaultOpen,
     min,
@@ -178,9 +194,11 @@ export function XhTimePickerRoot({
               segments: api.segments,
               columns: api.columns,
               canClear: api.canClear,
+              canAdd: api.canAdd,
               setOpen: api.setOpen,
               setValue: api.setValue,
               clear: api.clear,
+              add: api.add,
             })}
       </div>
     </TimePickerProvider>
@@ -209,6 +227,75 @@ export function XhTimePickerControl({ children, ...rest }: XhTimePickerControlPr
     >
       {children}
     </div>
+  )
+}
+
+export interface XhTimePickerTagLabelProps extends ComponentPropsWithRef<'span'> {}
+/** 标签文字所在的块（tag 的 label）。 */
+export function XhTimePickerTagLabel({ children, ...rest }: XhTimePickerTagLabelProps): ReactNode {
+  const ctx = useTimePickerContext()
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/** 标签内容：只有文字时替它包一层 label；作者自己写了节点则原样放行。库自身填入的文字（+N）恒包 label。 */
+function tagChildren(children: ReactNode): ReactNode {
+  return typeof children === 'string' || slotIsPlainText(children) ? <XhTimePickerTagLabel>{children}</XhTimePickerTagLabel> : children
+}
+
+export interface XhTimePickerItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；点按摘掉所在标签的选中值，焦点不动。 */
+export function XhTimePickerItemDeleteTrigger({ children, ...rest }: XhTimePickerItemDeleteTriggerProps): ReactNode {
+  const ctx = useTimePickerContext()
+  const value = useTimePickerTagContext()
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
+export interface XhTimePickerTagProps extends ComponentPropsWithRef<'span'> {
+  /** 它代表哪个选中值。 */
+  value: string
+}
+/** 多选时一个选中值一个标签，即库内 tag 的 root（data-scope="tag"）。 */
+export function XhTimePickerTag({ value, children, ...rest }: XhTimePickerTagProps): ReactNode {
+  const ctx = useTimePickerContext()
+  return (
+    <TimePickerTagProvider value={value}>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
+    </TimePickerTagProvider>
+  )
+}
+
+export interface XhTimePickerOverflowTagProps extends ComponentPropsWithRef<'span'> {}
+/** 折叠的标签合成的一个标签：有内容时使用内容，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
+export function XhTimePickerOverflowTag({ children, ...rest }: XhTimePickerOverflowTagProps): ReactNode {
+  const ctx = useTimePickerContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {tagChildren(children ?? ctx.api.overflowText)}
+    </span>
+  )
+}
+
+export interface XhTimePickerTagListProps extends ComponentPropsWithRef<'span'> {}
+/**
+ * 标签行：多选时放在盒里、触发钮之前；单选时连接层写 hidden。
+ * 不写 children 即按 tags 铺出带删除钮的标签与 +N 那一枚，写了由作者自己铺。
+ */
+export function XhTimePickerTagList({ children, ...rest }: XhTimePickerTagListProps): ReactNode {
+  const ctx = useTimePickerContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children ?? (
+        <>
+          {ctx.api.tags.map(tag => (
+            <XhTimePickerTag key={tag.value} value={tag.value}>
+              <XhTimePickerTagLabel>{tag.label}</XhTimePickerTagLabel>
+              <XhTimePickerItemDeleteTrigger />
+            </XhTimePickerTag>
+          ))}
+          <XhTimePickerOverflowTag />
+        </>
+      )}
+    </span>
   )
 }
 
@@ -398,9 +485,29 @@ export function XhTimePickerItem({ value, children, ...rest }: XhTimePickerItemP
   )
 }
 
+export interface XhTimePickerConfirmTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收；单选时连接层写 hidden。文字由作者写。 */
+export function XhTimePickerConfirmTrigger({ children, ...rest }: XhTimePickerConfirmTriggerProps): ReactNode {
+  const ctx = useTimePickerContext()
+  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
 export interface XhTimePickerHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
 export function XhTimePickerHiddenInput({ ...rest }: XhTimePickerHiddenInputProps): ReactNode {
   const ctx = useTimePickerContext()
+  // 多选时一个选中值一份同名输入，表单按原生多值收；单选仍是一份
+  if (ctx.api.selectionMode === 'multiple') {
+    return ctx.api.value.map(value => (
+      <input
+        key={value}
+        {...mergeReactProps(
+          ctx.api.getHiddenInputProps({ value }) as Record<string, unknown>,
+          { onChange: noop },
+          rest as Record<string, unknown>,
+        )}
+      />
+    ))
+  }
   return (
     <input
       {...mergeReactProps(
