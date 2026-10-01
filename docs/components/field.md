@@ -89,7 +89,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-field>` |
-| Vue 组件 | `XhFieldControl` `XhFieldDescription` `XhFieldErrorText` `XhFieldLabel` `XhFieldRoot` |
+| Vue 组件 | `XhFieldBoundary` `XhFieldControl` `XhFieldDescription` `XhFieldErrorText` `XhFieldLabel` `XhFieldRoot` |
 | 组合式函数 | `useField` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/field.css` |
@@ -118,6 +118,7 @@
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhFieldBoundary` | `children` | `ReactNode` |  |  |
 | `XhFieldControl` | `asChild` | `boolean` |  | 把接线属性合并到唯一的子节点上，默认开启。 子节点是薄封装（根不是可聚焦元素）时关闭它：属性只经函数式 children 交出， 由封装内部调用 useFieldControl 绑定到真实控件上。 |
 | `XhFieldControl` | `children` | `SlotChildren<FieldControlSlotProps>` |  |  |
 
