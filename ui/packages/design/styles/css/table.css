@@ -307,6 +307,23 @@
     user-select: none;
   }
 
+  /* 列对齐：data-align 控制列头与数据格的文本对齐方向；数据格同时调整 justify-content 以对齐块级内容 */
+  [data-scope='table']:is([data-part='column-header'], [data-part='cell'])[data-align='center'] {
+    text-align: center;
+  }
+
+  [data-scope='table']:is([data-part='column-header'], [data-part='cell'])[data-align='end'] {
+    text-align: end;
+  }
+
+  [data-scope='table'][data-part='cell'][data-align='center'] {
+    justify-content: center;
+  }
+
+  [data-scope='table'][data-part='cell'][data-align='end'] {
+    justify-content: flex-end;
+  }
+
   /* 列名是列头里唯一可收窄的一格：flex: 1 吃掉余量、把排序钮 / 列宽把手推到行尾，min-inline-size: 0 让它在
      窄列上收得下去并出省略号。列名不能裸写成文本节点：flex 行里的裸文本是匿名 flex item，min-inline-size 取 auto
      （nowrap 文本的 min-content）缩不下去，96px 的列配一串长列名时定尺的把手连同 auto 外边距一起被挤出列头盒、
