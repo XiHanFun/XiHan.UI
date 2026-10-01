@@ -10,6 +10,7 @@ import type { RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGrou
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideRadioGroup, provideRadioGroupItem, useRadioGroupContext, useRadioGroupItemContext } from './context'
 import { useRadioGroup } from './use-radio-group'
@@ -49,12 +50,15 @@ export const XhRadioGroupRoot = defineComponent({
     }
     const ctx = useRadioGroup(useFormControlProps(props) as RadioGroupProps, notify)
     provideRadioGroup(ctx)
+    // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
     return () => {
       // 标题文字不论手写选项还是数据驱动都由根铺出：手写选项时不必再写 label 部件
       const title = slots.label?.() ?? (props.label != null ? [props.label] : null)
       return h(
         'div',
-        { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef },
+        { ...fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }), ref: ctx.rootRef },
         slots.default
           ? [...renderLabel(title), ...slots.default()]
           : props.collection
