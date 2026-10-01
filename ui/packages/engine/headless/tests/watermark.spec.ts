@@ -19,9 +19,9 @@ function svg(props: WatermarkProps): string {
   return decodeURIComponent(image.slice(IMAGE_PREFIX.length))
 }
 
-/** 根上那条内联 style。 */
-function style(props: WatermarkProps): string {
-  return String((api(props).getRootProps() as Record<string, unknown>).style ?? '')
+/** 根上逐条给出的内联样式。 */
+function style(props: WatermarkProps): Record<string, string | undefined> {
+  return (api(props).getRootProps() as Record<string, unknown>).style as Record<string, string | undefined>
 }
 
 /** 图样里铺了几行字。 */
@@ -57,7 +57,8 @@ describe('watermark 的图样', () => {
       expect(current.state).toBe('empty')
       expect(current.image).toBe('')
       expect(current.tile).toEqual({ width: 0, height: 0 })
-      expect((current.getRootProps() as Record<string, unknown>).style).toBeUndefined()
+      // 一条都不给：上一帧写过的图样与步距由适配器撤掉
+      expect((current.getRootProps() as Record<string, unknown>).style).toEqual({})
     }
   })
 
@@ -97,14 +98,11 @@ describe('watermark 文字的收口', () => {
     expect(uri.replace(/%[0-9a-f]{2}/gi, '')).not.toMatch(/[;"#%<>]/)
   })
 
-  it.each(ATTACKS)('%s：整条内联 style 仍然只有图样与步距两条声明', (text) => {
-    const declarations = style({ text })
-      .split(';')
-      .map(d => d.trim())
-      .filter(Boolean)
-    expect(declarations).toHaveLength(2)
-    expect(declarations[0]!.startsWith('--xh-watermark-image: url("')).toBe(true)
-    expect(declarations[1]).toMatch(/^--xh-watermark-tile: \d+px \d+px$/)
+  it.each(ATTACKS)('%s：内联样式仍然只有图样与步距两条，图样收在自己那对 url("…") 里', (text) => {
+    const vars = style({ text })
+    expect(Object.keys(vars)).toEqual(['--xh-watermark-image', '--xh-watermark-tile'])
+    expect(vars['--xh-watermark-image']).toMatch(/^url\("[^"]*"\)$/)
+    expect(vars['--xh-watermark-tile']).toMatch(/^\d+px \d+px$/)
   })
 
   it('原文能从图样里原样取回来，转义没有吞字也没有多字', () => {

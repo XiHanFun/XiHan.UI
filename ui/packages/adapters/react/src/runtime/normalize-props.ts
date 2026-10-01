@@ -121,7 +121,8 @@ export const reactNormalize = createNormalizer((props) => {
   for (const key of Object.keys(props)) {
     const value = props[key]
     const name = toReactKey(key)
-    // style 绝大多数已经是对象，原样透传；marquee 与 watermark 的根节点各有一处写成串，解析成对象
+    // style 是对象时原样透传。库内各 connect 都已逐条给出对象；reactNormalize 是公开导出，
+    // 外部自写的 connect 给出的串仍解析成对象再交给 React（React 的 style 只收对象）
     if (name === 'style' && typeof value === 'string') {
       out.style = parseStyleString(value)
       continue
