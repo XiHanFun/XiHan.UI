@@ -8,9 +8,10 @@
 // 而这种失效不报任何错，text-field 的文档里推荐的正是「外面套表单字段拿标签与错误文本」。
 //
 // 判据：带 invalid 轴、且解剖里有单一可聚焦控件的组件，它的封装必须调 useFieldStateWiring()
-// 与 useFieldLabelWiring()。分组型（radio-group / checkbox-group）与分段型
-// （date-field / pin-input 之类）不在此列——它们的根本身有分组角色或多个焦点目标，
-// 属性落在根上读屏进组时就会念出来。
+// 与 useFieldLabelWiring()。组类控件（单选组、复选框组、滑块、分格输入……）登记在 GROUP_CONTROLS：
+// 焦点宿主是组根、拇指或格子，作者不经 XhFieldControl 直接放进字段时，字段的标题与说明要落在那里，
+// 封装必须调 useFieldGroupWiring() 与 useFieldLabelWiring()（只取描述链：role=group 不接受
+// aria-invalid / aria-required，校验与必填由组件按字段状态自己投影）。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -36,20 +37,29 @@ const WRAPPERS = [
  */
 const WC_NOT_APPLICABLE = `${ADAPTERS.wc.label} 不在其列：<xh-field> 把 id 与 aria-* 直接打在作者标出的 control 节点上，没有薄封装这一层`
 
+/**
+ * 组类控件：字段的标题并进焦点宿主的名字链、说明进描述链，宿主各带说明。
+ * 不论有没有 invalid 轴都核：评分、切换按钮组没有校验态，放进字段时照样要念得出字段的标题。
+ */
+const GROUP_CONTROLS = {
+  'radio-group': '组根 role=radiogroup',
+  'checkbox-group': '组根 role=group',
+  'color-swatch-picker': '组根 role=radiogroup',
+  'toggle-group': '组根 role=group（多选）/ radiogroup（单选）',
+  'rating': '星组 control 部件 role=radiogroup',
+  'slider': '每个拇指 role=slider，焦点落在拇指上',
+  'pin-input': '整组 role=group，每格的名字是「第几格」',
+}
+
 /** 不必接线的，各带理由。 */
 const NOT_SINGLE_CONTROL = {
   'field': '它自己就是字段',
   'fieldset': '同上，分组容器',
-  'checkbox-group': '分组：根是 role=group，读屏进组即念说明',
   'listbox': '分组：content 是 role=listbox，焦点在各条目上',
   'grid-list': '分组：root 是 role=grid，焦点在各行与行内按钮上',
   'transfer': '分组：两侧各一个 role=listbox，没有单一可聚焦控件',
-  'radio-group': '分组：根是 role=radiogroup',
-  'color-swatch-picker': '分组：根是 role=radiogroup',
   'date-field': '分段输入：焦点在各段上，没有单一可聚焦控件',
   'time-field': '同 date-field',
-  'pin-input': '分段输入：每格一个 input',
-  'slider': '图形控件：焦点在各个拇指上',
   'color-slider': '图形控件：焦点在拇指上',
   'signature-pad': '图形控件：画布自己承担名字与描述',
   'file-upload': '根是投放区，触发钮只是其中一个入口',
@@ -59,9 +69,10 @@ const NOT_SINGLE_CONTROL = {
 
 const covered = await reactCovered()
 const problems = []
-/** 逐适配器计数：接上字段状态的、接上字段标签的。 */
+/** 逐适配器计数：接上字段状态的、接上字段标签的、组类控件接上的。 */
 const wired = { vue: 0, react: 0 }
 const named = { vue: 0, react: 0 }
+const grouped = { vue: 0, react: 0 }
 const exemptSeen = new Set()
 /** 有 types 文件的目录才算一个组件，config / shared / spec 这类不算。 */
 let components = 0
@@ -78,6 +89,30 @@ for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
     continue
   }
   components += 1
+
+  if (name in GROUP_CONTROLS) {
+    for (const { key, file, coveredOnly } of WRAPPERS) {
+      const label = ADAPTERS[key].label
+      if (coveredOnly && !covered.has(name))
+        continue
+      const path = file(name)
+      let src
+      try {
+        src = await readFile(path, 'utf8')
+      }
+      catch {
+        problems.push(`${name}：登记为组类控件却找不到 ${label} 封装 ${path}`)
+        continue
+      }
+      const missing = ['useFieldGroupWiring(', 'useFieldLabelWiring('].filter(call => !src.includes(call))
+      if (missing.length)
+        problems.push(`${name}：${label} 的组类控件（${GROUP_CONTROLS[name]}）没有调 ${missing.map(call => `${call})`).join(' 与 ')}——直接放进表单字段时念不到字段的标题与说明`)
+      else
+        grouped[key] += 1
+    }
+    continue
+  }
+
   if (!/invalid\?:\s*boolean/.test(types))
     continue
 
@@ -131,5 +166,6 @@ if (problems.length) {
 console.log(
   `[check-field-wiring] 通过：${ADAPTERS.vue.label} ${wired.vue} 个、${ADAPTERS.react.label} ${wired.react} 个单一控件封装把字段状态接到了真控件上，`
   + `字段标签同样 ${ADAPTERS.vue.label} ${named.vue} 个 / ${ADAPTERS.react.label} ${named.react} 个`
+  + `；组类控件 ${ADAPTERS.vue.label} ${grouped.vue} 个 / ${ADAPTERS.react.label} ${grouped.react} 个把字段标题与说明接到焦点宿主上`
   + `（分组 / 分段 / 图形控件 ${exemptSeen.size} 个不在此列；${reactProgress(covered, components)}，未铺到的跳过；${WC_NOT_APPLICABLE}）`,
 )
