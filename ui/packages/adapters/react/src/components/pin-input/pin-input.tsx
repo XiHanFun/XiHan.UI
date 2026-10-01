@@ -13,6 +13,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { PinInputProvider, usePinInputContext } from './context'
 import { usePinInput } from './use-pin-input'
@@ -106,11 +107,14 @@ export function XhPinInputRoot({
   }
   const ctx = usePinInput(withXhConfig('pin-input', useFormControlProps(machineProps)) as PinInputProps)
   const api = ctx.api
+  // 放进表单字段时，字段的标题与说明接到整组上：读屏进组时念组名与说明，每格的名字仍是「第几格」
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
   return (
     <PinInputProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
+          fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }),
           rest as Record<string, unknown>,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
