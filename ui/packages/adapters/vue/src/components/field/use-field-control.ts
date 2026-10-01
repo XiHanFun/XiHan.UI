@@ -57,6 +57,20 @@ export function useFieldStateWiring(): ComputedRef<Record<string, unknown>> {
 }
 
 /**
+ * 组类控件（单选组、复选框组、滑块、评分、分格输入……）只取字段的描述链。
+ *
+ * 焦点宿主是组根、拇指或格子，名字由 useFieldLabelWiring 并入；校验、必填与只读由组件按字段状态
+ * 自己投影（role=group 不接受 aria-invalid / aria-required，组件的 connect 也只在支持它们的角色上发）。
+ */
+export function useFieldGroupWiring(): ComputedRef<Record<string, unknown>> {
+  const ctx = useOptionalFieldContext()
+  return computed(() => {
+    const describedBy = ctx ? (ctx.api.value.getControlProps() as Record<string, unknown>)['aria-describedby'] : undefined
+    return describedBy === undefined ? {} : { 'aria-describedby': describedBy }
+  })
+}
+
+/**
  * 把字段标签的 id 并入该份属性中的名字链，供库自身的薄封装包在渲染属性外面。
  *
  * 复合控件的可聚焦部件自带 aria-labelledby，指向它自己的 label 部件。放入字段时
