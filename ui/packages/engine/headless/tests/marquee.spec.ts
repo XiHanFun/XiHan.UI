@@ -71,15 +71,15 @@ describe('marquee 的档位', () => {
 
 describe('marquee 的速度', () => {
   it('有限正数写成根上的内联变量', () => {
-    expect(root({ speed: 90 }).style).toBe('--xh-marquee-speed: 90')
-    expect(root({ speed: 12.5 }).style).toBe('--xh-marquee-speed: 12.5')
+    expect(root({ speed: 90 }).style).toMatchObject({ '--xh-marquee-speed': '90' })
+    expect(root({ speed: 12.5 }).style).toMatchObject({ '--xh-marquee-speed': '12.5' })
   })
 
   // 皮肤拿一份内容的长度除以速度算一圈的时长：写出 0 会让时长变成无穷，
   // 整段动画一格都不动；负数与非有限值同理，一律不写出、退回皮肤缺省。
   it('零、负数与非有限值一概不写出', () => {
     for (const speed of [0, -1, -0.5, Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, undefined])
-      expect(root({ speed }).style).toBeUndefined()
+      expect((root({ speed }).style as Dict)['--xh-marquee-speed']).toBeUndefined()
   })
 
   it('速度不占语义属性', () => {
