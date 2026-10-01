@@ -8,7 +8,7 @@
 import type { ContextFacade, PropFn, RefsFacade, Scope } from '@xihan-ui/core'
 import type { CarouselWrap } from './carousel.pages'
 import type { CarouselPauseSource, CarouselPressedKey, CarouselSchema } from './carousel.types'
-import { setTimeoutEffect, setup } from '@xihan-ui/core'
+import { DIAGNOSTIC_CODES, isDev, queryItems, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { createSpringValue, projectRelease, resolveMotionPreference, rubberBand } from '@xihan-ui/motion'
 import { createMultiPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { trackLiquidPart } from '../shared/liquid'
@@ -253,7 +253,7 @@ export const carouselMachine = createMachine({
   initialState: ({ prop }) => (resolveAutoplayInterval(prop('autoplay')) > 0 ? 'playing' : 'idle'),
   // 跟手的会话整个生命周期都在。它不按拖动状态挂卸——常驻的代价只是几个早退的
   // pointermove，换来的是不必为了「有拆卸时机」去改状态树
-  effects: ['trackPointer', 'respectScopedMotion', 'trackLiquid', 'trackWrapSettle', 'trackVisibility'],
+  effects: ['trackPointer', 'respectScopedMotion', 'trackLiquid', 'trackWrapSettle', 'trackVisibility', 'checkSlideCount'],
   refs: () => ({
     gesture: null,
     settle: null,
@@ -489,6 +489,38 @@ export const carouselMachine = createMachine({
        * 看不见就不翻页：视口滚出可视区、或页面切到后台时按住自动播放，看得见了再从头计一整个间隔。
        * 页面上没人看的时候照样翻页，回来看到的是翻到半路的页与对不上的进度条。
        */
+      /**
+       * 开发期核对张数：张数只看 slideCount、不从 DOM 计数（服务端渲染与按需渲染都靠它），漏传时按 0 张处理——
+       * 没有指示点、翻页禁用、自动播放不动、读屏报总数为 0，却不报任何错。挂载后与 slideCount 改写时各量一次，
+       * 只报「渲染出来的比声明的多」：按需渲染时 DOM 里的条目本来就可以比张数少。
+       */
+      checkSlideCount: ({ scope, prop, flush, track }) => {
+        if (!isDev())
+          return undefined
+        let disposed = false
+        const check = (): void => flush(() => {
+          if (disposed)
+            return
+          const viewport = scope.getById(scope.partId('carousel', 'viewport'))
+          const rendered = queryItems(viewport, { scope: 'carousel', part: 'item' }).length
+          const declared = normalizeSlideCount(prop('slideCount'))
+          if (rendered <= declared)
+            return
+          reportDiagnostic({
+            code: DIAGNOSTIC_CODES.carouselSlideCountMismatch,
+            level: 'warn',
+            scope: 'carousel',
+            message: `渲染了 ${rendered} 张条目，slideCount 却是 ${declared}：张数只看 slideCount、不从 DOM 计数，`
+              + '多出来的那几张翻不到、指示点与读屏播报的总数也对不上。把 slideCount 写成条目数',
+          })
+        })
+        check()
+        track([() => prop('slideCount')], check)
+        return () => {
+          disposed = true
+        }
+      },
+
       trackVisibility: ({ scope, state, send, flush, track }) => {
         const doc = scope.getDoc()
         let intersecting = true

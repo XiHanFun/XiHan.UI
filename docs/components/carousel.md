@@ -85,6 +85,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 
 ### 特性
 
+- 张数由 `slideCount` 声明，不从 DOM 计数；开发期挂载后若渲染出来的条目比它多（常见是漏传），诊断通道报 `carousel.slide-count-mismatch` 并在控制台告警。按需渲染时 DOM 里的条目少于张数是正常的，不报。
 - `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次移动一张。
 - 支持纵向轨道、指针拖拽、循环与自动播放。
 - 拖拽松手后轨道带着松手速度落到目标页：轻甩一下也能翻页，往回甩则收回；不循环时首末页往外拖越拉越沉，松手弹回。
@@ -128,7 +129,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | --- | --- | --- | --- |
 | `page` | `number` |  | 当前页，0 基。提供即受控：内部不再自行修改，只发 onPageChange。 页不等于张：一页可能同时显示多张（见 slidesPerPage）。 |
 | `defaultPage` | `number` |  | 非受控初始页，默认 0。 |
-| `slideCount` | `number` |  | 条目总数，由作者声明，不从 DOM 统计。 |
+| `slideCount` | `number` |  | 条目总数，由作者声明，不从 DOM 统计（服务端渲染与按需渲染都靠它）。 开发期挂载后若渲染出来的条目比它多，经诊断通道报 carousel.slide-count-mismatch。 |
 | `slidesPerPage` | `number` |  | 一屏显示的张数，默认 1。 |
 | `slidesPerMove` | `number` |  | 一次翻动的张数，默认跟随 slidesPerPage（整屏翻页）。 |
 | `orientation` | `Orientation` |  | 轨道方向，默认 horizontal；方向键的轴随之变化。 |

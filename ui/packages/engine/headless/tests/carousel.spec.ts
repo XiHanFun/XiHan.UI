@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { CarouselSchema } from '../src/carousel'
-import { createService, normalizeProps } from '@xihan-ui/core'
+import { createService, DIAGNOSTIC_CODES, normalizeProps, onDiagnostic, setDiagnosticsDedupe } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -244,6 +244,56 @@ function autoplayTrigger(c: ReturnType<typeof makeCarousel>): Dict {
 function clickAutoplayTrigger(c: ReturnType<typeof makeCarousel>): void {
   ;(autoplayTrigger(c).onClick as () => void)()
 }
+
+describe('carouselMachine 张数核对', () => {
+  /** 按 connect 的产出铺出视口与若干条目，量的是机器挂载后看到的真实 DOM。 */
+  function renderSlides(c: ReturnType<typeof makeCarousel>, count: number): HTMLElement {
+    const viewport = document.createElement('div')
+    for (const [key, value] of Object.entries(c.api().getViewportProps() as Dict)) {
+      if (typeof value === 'string')
+        viewport.setAttribute(key, value)
+    }
+    for (let index = 0; index < count; index++) {
+      const item = document.createElement('div')
+      item.setAttribute('data-scope', 'carousel')
+      item.setAttribute('data-part', 'item')
+      viewport.append(item)
+    }
+    document.body.append(viewport)
+    return viewport
+  }
+
+  it('渲染出来的条目比 slideCount 多时在开发期告警；写对 slideCount 不报，按需渲染时条目少于张数也不报', async () => {
+    setDiagnosticsDedupe(false)
+    const codes: string[] = []
+    const off = onDiagnostic(record => void codes.push(record.code))
+    try {
+      const missing = makeCarousel({})
+      const viewport = renderSlides(missing, 3)
+      await Promise.resolve()
+      expect(codes).toEqual([DIAGNOSTIC_CODES.carouselSlideCountMismatch])
+      missing.stop()
+      viewport.remove()
+
+      codes.length = 0
+      const declared = makeCarousel({ slideCount: 3 })
+      const ok = renderSlides(declared, 3)
+      await Promise.resolve()
+      const lazy = makeCarousel({ slideCount: 10 })
+      const partial = renderSlides(lazy, 3)
+      await Promise.resolve()
+      expect(codes).toEqual([])
+      declared.stop()
+      lazy.stop()
+      ok.remove()
+      partial.remove()
+    }
+    finally {
+      off()
+      setDiagnosticsDedupe(true)
+    }
+  })
+})
 
 describe('carouselMachine 翻页', () => {
   it('默认停在第 0 页，defaultPage 决定初值', () => {
