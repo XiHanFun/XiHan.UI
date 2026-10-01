@@ -10,7 +10,9 @@ import type {
   FloatButtonApi,
   FloatButtonExpandTrigger,
   FloatButtonPlacement,
+  FloatButtonPosition,
   FloatButtonProps,
+  FloatButtonSnap,
   FloatButtonTranslations,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
@@ -32,12 +34,17 @@ export interface XhFloatButtonRootProps extends Omit<ComponentPropsWithRef<'div'
   dir?: Direction
   placement?: FloatButtonPlacement
   offset?: number
+  draggable?: boolean
+  snap?: FloatButtonSnap
+  position?: FloatButtonPosition
+  defaultPosition?: FloatButtonPosition
   expandTrigger?: FloatButtonExpandTrigger
   variant?: ActionVariant
   tone?: Tone
   size?: Size
   translations?: Partial<FloatButtonTranslations>
   onOpenChange?: FloatButtonProps['onOpenChange']
+  onPositionChange?: FloatButtonProps['onPositionChange']
   children?: SlotChildren<FloatButtonRootSlotProps>
 }
 
@@ -49,12 +56,17 @@ export function XhFloatButtonRoot({
   dir,
   placement,
   offset,
+  draggable,
+  snap,
+  position,
+  defaultPosition,
   expandTrigger,
   variant,
   tone,
   size,
   translations,
   onOpenChange,
+  onPositionChange,
   children,
   ...rest
 }: XhFloatButtonRootProps): ReactNode {
@@ -65,12 +77,16 @@ export function XhFloatButtonRoot({
     dir,
     placement,
     offset,
+    draggable,
+    snap,
+    position,
+    defaultPosition,
     expandTrigger,
     variant,
     tone,
     size,
     translations,
-  }) as FloatButtonProps, { onOpenChange })
+  }) as FloatButtonProps, { onOpenChange, onPositionChange })
   // 悬停展开挂的是 pointerenter / pointerleave，两者都不冒泡：留在 React 的合成事件上
   // 收到的是从 pointerover / pointerout 合出来的那一档，直接派到壳上的事件到不了
   const bind = useNativeEvents(
@@ -86,7 +102,7 @@ export function XhFloatButtonRoot({
   )
 }
 
-XhFloatButtonRoot.xhEvents = ['open-change'] as const
+XhFloatButtonRoot.xhEvents = ['open-change', 'position-change'] as const
 
 export interface XhFloatButtonTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 原生 button：Enter / Space 的激活与 Tab 停靠都由平台提供。 */

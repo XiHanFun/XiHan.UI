@@ -42,6 +42,12 @@
 
 <XhDemo src="float-button/04-size" />
 
+### 拖动与贴边
+
+按住页面右侧的触发器拖到别处，松手贴到近的那条边；位置按比例记，宿主存下来下次照样落在原处
+
+<XhDemo src="float-button/05-draggable" />
+
 ## 设计指引
 
 ### 何时使用
@@ -58,6 +64,10 @@
 ### 特性
 
 - 支持四个视口角与安全区偏移。
+- `draggable` 打开后可按住触发器拖到别处：移动过激活距离才跟手，不到这个距离仍是一次点按；起拖时展开的动作组先收起，拖完补派的点击不开合。
+- 松手按 `snap` 贴边：`inline`（缺省）贴左右两边里近的那条，`block` 贴上下两边，`nearest` 贴四条边里最近的，`none` 停在放手处；甩一下就贴到甩去的那一边。贴过去由弹簧带着松手速度落定，减弱动效下直接到位。
+- 位置由 `position` / `defaultPosition` 给出：贴边写 `{ edge, ratio }`（如 `{ edge: 'inline-end', ratio: 0.75 }` 贴行尾一侧、中心在视口 75% 高处），停在一点写像素坐标 `{ x, y }`；不给时停在 `placement` 那一角。贴边位置按比例记，视口尺寸变了仍贴在同一侧、同一比例上；离两端不足 `offset` 时收回，并与安全区取大的一头。展开组恒朝页面中间长。
+- 拖动落定后才发一次 `onPositionChange`（Vue 为 `position-change` / `v-model:position`）；要记住位置，就在这里存，下次作为 `defaultPosition` 传回。Web Components 的开关是 `button-draggable`：`draggable` 是 HTML 全局属性，写上会让宿主变成原生拖放源。
 - 支持点击或悬停展开；键盘与触控始终使用点击。
 - Escape、层外点击和再次触发均可收起。
 - 收起后动作项退出 Tab 序列。
@@ -74,7 +84,8 @@
 
 - 为每个图标按钮提供可访问名称。
 - 将操作数量控制在 2 至 5 个。
-- 使用 `offset` 避开系统手势区。
+- 使用 `offset` 避开系统手势区；拖动与贴边同样离视口四边留出这段距离。
+- 位置只是外观上的偏好，拖动不承载功能：键盘与读屏用户不需要移动它也能用全部动作。
 
 ### 反模式
 
@@ -98,14 +109,19 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `defaultOpen` | `boolean` |  |  |
+| `defaultPosition` | `FloatButtonPosition` |  | 初始位置，例如 `{ edge: 'inline-end', ratio: 0.75 }`：贴右边（LTR）、中心在视口 75% 高处。 |
 | `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
 | `disabled` | `boolean` |  |  |
+| `draggable` | `boolean` |  | 能否用指针拖着触发器移动，默认 false。按下后移动过激活距离才算拖动，不到这个距离仍是一次点按。 |
 | `expandTrigger` | `FloatButtonExpandTrigger` |  | 展开方式，默认 click。 |
 | `offset` | `number` |  | 距两条边的距离（px），默认 24。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onPositionChange` | `(details: FloatButtonPositionChangeDetails) => void` |  | 拖动落定后的新位置：贴边时给贴边位置（按比例，换个视口尺寸照样成立），snap 为 none 时给像素坐标。 落定才通知一次，拖动途中不发；要记住位置就在这里存。 |
 | `open` | `boolean` |  |  |
 | `placement` | `FloatButtonPlacement` |  | 固定在哪一角，默认 bottom-end。 |
+| `position` | `FloatButtonPosition` |  | 位置。提供即受控：拖动只发 onPositionChange，宿主写回才落到新位置。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，默认与 lg 同档：悬浮按钮需要易于触达，起始即比行内按钮大一档。 |
+| `snap` | `FloatButtonSnap` |  | 松手后贴向哪里，默认 inline（贴左右两边里近的那条）。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `translations` | `Partial<FloatButtonTranslations>` |  |  |
 | `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 |
@@ -117,6 +133,7 @@
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `CollapsibleOpenChangeDetails` | 展开状态变化；detail 为 `{ open: boolean }` |
+| `position-change` | `FloatButtonPositionChangeDetails` | 拖动落定后的新位置；detail 为 `{ position: FloatButtonPosition }` |
 
 ### 插槽
 
@@ -148,9 +165,9 @@
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `DISABLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `DISABLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `CLICK.SWALLOW` · `VIEWPORT.RESIZE`
 
-**判据**：`isDisabled` · `isOpenControlled` · `canPress`
+**判据**：`isDisabled` · `isOpenControlled` · `canPress` · `canDrag`
 
 ### connect API
 
@@ -160,6 +177,9 @@
 | --- | --- | --- |
 | `open` | `boolean` | 展开的动作组当前是否显示。 |
 | `setOpen` | `(next: boolean) => void` |  |
+| `position` | `FloatButtonPosition \| null` | 提交了的位置；null 表示停在 placement 那一角。 |
+| `setPosition` | `(next: FloatButtonPosition) => void` | 改位置：受控时只发 onPositionChange。 |
+| `dragging` | `boolean` | 正被拖着。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getListProps` | `() => T['element']` |  |
@@ -204,7 +224,12 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-placement` | props.placement |
+| `root` | `data-draggable` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-edge` | edge?.edge |
+| `root` | `data-moving` | ''（条件成立时才出现） |
+| `root` | `data-placement` | floatButtonPlacementOf(position, context.get('viewpor… \| props.placement |
+| `root` | `data-point` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
@@ -221,7 +246,7 @@
 | `trigger` | `data-xh-liquid` | '' |
 | `trigger` | `data-xh-material` | 'frosted' \| undefined |
 | `list` | `data-instant` | ''（条件成立时才出现） |
-| `list` | `data-placement` | props.placement |
+| `list` | `data-placement` | floatButtonPlacementOf(position, context.get('viewpor… \| props.placement |
 | `list` | `data-state` | 'open' \| 'closed' |
 | `list` | `data-xh-liquid` | '' |
 
@@ -243,7 +268,7 @@
 | `--xh-float-button-layer` | `root` | `z-index` | `default` | `--xh-_layer` | float-button 的 root 部件 z-index 覆盖槽。 |
 | `--xh-float-button-radius` | `list`<br>`trigger` | `border-radius` | `default` | `--xh-_action-profile-radius`<br>`--xh-shape-circle` | float-button 的 list、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-float-button-shadow` | `*`<br>`list`<br>`root`<br>`trigger` | `--xh-_liquid-goo-shadow`<br>`box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope])`<br>`pressed`<br>`variant=outline`<br>`xh-liquid-goo-layer` | `--xh-_float-button-shadow`<br>`--xh-_material-shadow`<br>`--xh-material-liquid-shadow`<br>`none` | float-button 的 *、list、root、trigger 部件 --xh-_liquid-goo-shadow、box-shadow 覆盖槽。 |
-| `--xh-float-button-size` | `list`<br>`trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size`<br>`--xh-_float-button-size` | float-button 的 list、trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-float-button-size` | `list`<br>`root`<br>`trigger` | `block-size`<br>`bottom`<br>`inline-size`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start`<br>`left`<br>`top` | `default`<br>`edge=block`<br>`edge=inline`<br>`moving`<br>`placement`<br>`placement=-end`<br>`placement=-start`<br>`placement=bottom`<br>`placement=top`<br>`point`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size`<br>`--xh-_float-button-size` | float-button 的 list、root、trigger 部件 block-size、bottom、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start、left、top 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

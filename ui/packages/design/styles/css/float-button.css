@@ -66,6 +66,102 @@
     inset-inline-end: max(var(--xh-_float-button-offset), env(safe-area-inset-left), env(safe-area-inset-right));
   }
 
+  /* —— 位置 ——
+     拖到别处、或作者给了位置时，角落那两条贴边里有一条换掉：data-placement 由连接层按位置推出
+     （离触发器最近的恒是视口的那条边、展开组朝页面中间长），这里只换沿边的那一条。
+     百分比按固定定位的包含块（视口去掉滚动条）量，与连接层量的视口同一块；
+     夹取的上下界与四角同样和安全区取大的一头，比例再怎么写，钮也不会压进刘海与横条。
+     触发器边长取它自己那一档（使用者槽在前）：沿边的比例量的是触发器中心 */
+  [data-scope='float-button'][data-part='root'] {
+    --xh-_float-button-span: var(--xh-float-button-size, var(--xh-_float-button-size));
+  }
+
+  /* 贴左右边：上下按比例，锚在离触发器近的那一头 */
+  [data-scope='float-button'][data-part='root'][data-edge^='inline'][data-placement^='top'] {
+    inset-block-start: clamp(
+      max(var(--xh-_float-button-offset), env(safe-area-inset-top)),
+      calc(var(--xh-_float-button-ratio) * 100% - var(--xh-_float-button-span) / 2),
+      calc(100% - var(--xh-_float-button-span) - max(var(--xh-_float-button-offset), env(safe-area-inset-bottom)))
+    );
+  }
+
+  [data-scope='float-button'][data-part='root'][data-edge^='inline'][data-placement^='bottom'] {
+    inset-block-end: clamp(
+      max(var(--xh-_float-button-offset), env(safe-area-inset-bottom)),
+      calc((1 - var(--xh-_float-button-ratio)) * 100% - var(--xh-_float-button-span) / 2),
+      calc(100% - var(--xh-_float-button-span) - max(var(--xh-_float-button-offset), env(safe-area-inset-top)))
+    );
+  }
+
+  /* 贴上下边：行内方向按比例，从行首量起 */
+  [data-scope='float-button'][data-part='root'][data-edge^='block'][data-placement$='-start'] {
+    inset-inline-start: clamp(
+      max(var(--xh-_float-button-offset), env(safe-area-inset-left), env(safe-area-inset-right)),
+      calc(var(--xh-_float-button-ratio) * 100% - var(--xh-_float-button-span) / 2),
+      calc(100% - var(--xh-_float-button-span) - max(var(--xh-_float-button-offset), env(safe-area-inset-left), env(safe-area-inset-right)))
+    );
+  }
+
+  [data-scope='float-button'][data-part='root'][data-edge^='block'][data-placement$='-end'] {
+    inset-inline-end: clamp(
+      max(var(--xh-_float-button-offset), env(safe-area-inset-left), env(safe-area-inset-right)),
+      calc((1 - var(--xh-_float-button-ratio)) * 100% - var(--xh-_float-button-span) / 2),
+      calc(100% - var(--xh-_float-button-span) - max(var(--xh-_float-button-offset), env(safe-area-inset-left), env(safe-area-inset-right)))
+    );
+  }
+
+  /* 停在一点、或正跟着指针走：坐标是触发器左上角的物理像素，横向一律从左边量，不随书写方向翻。
+     竖向锚在离触发器近的那一头：朝下长的锚上沿，朝上长的锚下沿，展开组冒出来时触发器不挪窝。
+     停着的点仍夹在视口里（视口变小时不跑出去）；跟手的坐标由连接层夹好，这里原样用 */
+  [data-scope='float-button'][data-part='root'][data-point][data-placement] {
+    inset-inline: auto;
+    left: clamp(
+      max(var(--xh-_float-button-offset), env(safe-area-inset-left)),
+      var(--xh-_float-button-x),
+      calc(100% - var(--xh-_float-button-span) - max(var(--xh-_float-button-offset), env(safe-area-inset-right)))
+    );
+  }
+
+  [data-scope='float-button'][data-part='root'][data-point][data-placement^='top'] {
+    top: clamp(
+      max(var(--xh-_float-button-offset), env(safe-area-inset-top)),
+      var(--xh-_float-button-y),
+      calc(100% - var(--xh-_float-button-span) - max(var(--xh-_float-button-offset), env(safe-area-inset-bottom)))
+    );
+  }
+
+  [data-scope='float-button'][data-part='root'][data-point][data-placement^='bottom'] {
+    bottom: clamp(
+      max(var(--xh-_float-button-offset), env(safe-area-inset-bottom)),
+      calc(100% - var(--xh-_float-button-y) - var(--xh-_float-button-span)),
+      calc(100% - var(--xh-_float-button-span) - max(var(--xh-_float-button-offset), env(safe-area-inset-top)))
+    );
+  }
+
+  /* 跟手排在贴边与停点之后：拖动与落定途中压过提交了的位置 */
+  [data-scope='float-button'][data-part='root'][data-moving][data-placement] {
+    inset-inline: auto;
+    left: var(--xh-_float-button-x);
+  }
+
+  [data-scope='float-button'][data-part='root'][data-moving][data-placement^='top'] {
+    top: var(--xh-_float-button-y);
+  }
+
+  [data-scope='float-button'][data-part='root'][data-moving][data-placement^='bottom'] {
+    bottom: calc(100% - var(--xh-_float-button-y) - var(--xh-_float-button-span));
+  }
+
+  /* 能拖时触屏手指在触发器上的移动归拖动，不让浏览器拿去滚页面；光标提示能抓、正抓着 */
+  [data-scope='float-button'][data-part='root'][data-draggable] [data-scope='float-button'][data-part='trigger'] {
+    touch-action: none;
+    cursor: grab;
+  }
+
+  [data-scope='float-button'][data-part='root'][data-dragging] [data-scope='float-button'][data-part='trigger'] {
+    cursor: grabbing;
+  }
+
   /* —— 尺寸：原生动作项与触发器的 floating 档逐档同表 —— */
   [data-scope='float-button'][data-part='root'][data-size='sm'] {
     --xh-_float-button-size: var(--xh-control-box-md);

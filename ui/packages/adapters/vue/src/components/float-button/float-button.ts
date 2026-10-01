@@ -11,7 +11,9 @@ import type {
   FloatButtonExpandTrigger,
   FloatButtonNotifiers,
   FloatButtonPlacement,
+  FloatButtonPosition,
   FloatButtonProps,
+  FloatButtonSnap,
   FloatButtonTranslations,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
@@ -35,16 +37,22 @@ export const XhFloatButtonRoot = defineComponent({
     dir: { type: String as PropType<Direction> },
     placement: { type: String as PropType<FloatButtonPlacement> },
     offset: { type: Number },
+    draggable: Boolean,
+    snap: { type: String as PropType<FloatButtonSnap> },
+    position: { type: Object as PropType<FloatButtonPosition> },
+    defaultPosition: { type: Object as PropType<FloatButtonPosition> },
     expandTrigger: { type: String as PropType<FloatButtonExpandTrigger> },
     variant: { type: String as PropType<ActionVariant> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
     translations: { type: Object as PropType<Partial<FloatButtonTranslations>> },
   },
-  // open-change 携带 { open }，update:open 携带裸布尔
+  // open-change 携带 { open }，update:open 携带裸布尔；position-change 携带 { position }，update:position 携带裸位置
   emits: {
     'open-change': (_details: PayloadOf<FloatButtonProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<FloatButtonProps, 'onOpenChange'>['open']) => true,
+    'position-change': (_details: PayloadOf<FloatButtonProps, 'onPositionChange'>) => true,
+    'update:position': (_position: PayloadOf<FloatButtonProps, 'onPositionChange'>['position']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: FloatButtonRootSlotProps) => VNode[]
@@ -54,6 +62,10 @@ export const XhFloatButtonRoot = defineComponent({
       onOpenChange: (details) => {
         emit('open-change', details)
         emit('update:open', details.open)
+      },
+      onPositionChange: (details) => {
+        emit('position-change', details)
+        emit('update:position', details.position)
       },
     }
     const ctx = useFloatButton(withXhConfig('float-button', props) as FloatButtonProps, notify)

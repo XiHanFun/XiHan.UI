@@ -12,6 +12,7 @@ export {
   FLOAT_BUTTON_DEFAULT_PLACEMENT,
   resolveFloatButtonOffset,
 } from './float-button.connect'
+export { FLOAT_BUTTON_DEFAULT_SNAP } from './float-button.geometry'
 export { floatButtonKeyboard } from './float-button.keyboard'
 export { floatButtonMachine } from './float-button.machine'
 export { floatButtonMeta } from './float-button.meta'
@@ -19,11 +20,21 @@ export type {
   FloatButtonApi,
   FloatButtonAppearance,
   FloatButtonDisclosureProps,
+  FloatButtonDrag,
+  FloatButtonEdge,
+  FloatButtonEdgePosition,
   FloatButtonExpandTrigger,
   FloatButtonNotifiers,
   FloatButtonPlacement,
+  FloatButtonPoint,
+  FloatButtonPointPosition,
+  FloatButtonPosition,
+  FloatButtonPositionChangeDetails,
+  FloatButtonPositionProps,
   FloatButtonProps,
   FloatButtonRefs,
   FloatButtonSchema,
+  FloatButtonSettle,
+  FloatButtonSnap,
   FloatButtonTranslations,
 } from './float-button.types'

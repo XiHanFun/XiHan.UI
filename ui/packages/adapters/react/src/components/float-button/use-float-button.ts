@@ -46,7 +46,13 @@ export function useFloatButton(
     defaultOpen: props.defaultOpen,
     disabled: props.disabled,
     expandTrigger: props.expandTrigger,
+    offset: props.offset,
+    draggable: props.draggable,
+    snap: props.snap,
+    position: props.position,
+    defaultPosition: props.defaultPosition,
     onOpenChange: notify?.onOpenChange,
+    onPositionChange: notify?.onPositionChange,
   }), {
     scope,
     onCreate: (svc) => {
