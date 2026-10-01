@@ -25,6 +25,7 @@ const HEADLESS = 'packages/engine/headless/src'
  * 但适配器上确实露着、也确实通到机器。登记了就要还露着：名单过期即判失败。
  */
 const COMPOSED = {
+  popconfirm: '运行的是 popover 状态机：作者面由 PopoverSchema 的 props 派生（PopconfirmOverlayProps），dir 交给定位引擎并写到定位层',
 }
 
 /** 取 `.types.ts` 里作者面的 props 块：machine schema 的 props，或无机器组件的 <Name>Props 接口。 */
