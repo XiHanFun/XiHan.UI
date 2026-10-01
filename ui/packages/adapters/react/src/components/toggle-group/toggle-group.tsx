@@ -12,6 +12,7 @@ import { Children, Fragment, isValidElement, useEffect, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { ToggleGroupProvider, useToggleGroupContext } from './context'
 import { useToggleGroup } from './use-toggle-group'
@@ -89,7 +90,10 @@ export function XhToggleGroupRoot({
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，条目得焦也会把它叫起来，那一下会把焦点从条目抢回锚点上——
   // 装成原生监听器，到达路径才与另外两家一致。onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
-  const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>, ['onFocus'])
+  // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }), ['onFocus'])
 
   const body = children ?? (collection ? renderDefaultTree(api.collection, renderItem) : null)
 
