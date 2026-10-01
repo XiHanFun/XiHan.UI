@@ -166,6 +166,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `variant` | `RadioGroupVariant` |  | 结构形态，默认 list；card 把每个条目画成一张可点的卡，segmented 画成轨道里的一排段。 |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 会让组没有名字，作者写在根上的 aria-label 也会被它压住。 |
 | `onValueChange` | `(details: RadioGroupValueChangeDetails) => void` |  | value 变化回调。 |
 
 ### RadioGroupNode
@@ -264,7 +265,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-invalid` | 'true' \| 'false' |
-| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `aria-readonly` | 'true' \| 'false' |
 | `root` | `aria-required` | 'true' \| 'false' |
@@ -281,6 +282,8 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 - 焦点进组时落在已选中的条目上，没有选中项才落第一个；方向键移动焦点的同时选中。键盘按 APG 的单选组：Space 选中当前条目，Enter 与 Home / End 不归单选组管。
 - 禁用的条目使用 `aria-disabled` 而不是原生 `disabled`：它仍可聚焦，仍是方向键的起点。
 - `label` 部件是组的可及名。segmented 形态的轨道里不排标题，`label` 部件在这一形态下视觉隐藏、只作可及名；需要可见标题时放进[表单字段](./field)，或给根节点写 `aria-label`。
+- 根节点只在 `label` 部件真渲染了时才输出 `aria-labelledby`；不写标题时给根节点写 `aria-label`。Vue / React 的 `label` 属性不论手写选项还是数据驱动都会铺出标题。
+- 方向键只认落在条目或根节点自身上的按键：组里放着的数字框、下拉等行内编辑控件，它们的方向键照常移光标、换值，不会切换选项。
 - 圆圈与滑块都是纯装饰，对读屏隐藏；当前项由条目自身的选中态表达。
 
 ## 样式参考

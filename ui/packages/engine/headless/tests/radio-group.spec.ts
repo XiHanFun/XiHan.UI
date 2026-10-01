@@ -85,7 +85,7 @@ afterEach(() => {
 
 describe('connectRadioGroup 投影', () => {
   it('根是 radiogroup，指着 label；条目是 radio，未选中也显式 aria-checked=false；隐藏输入 inert 且只在选中时 checked', () => {
-    const g = makeGroup({ defaultValue: 'standard', name: 'plan', orientation: 'horizontal' })
+    const g = makeGroup({ defaultValue: 'standard', name: 'plan', orientation: 'horizontal', labelled: true })
     const root = g.api().getRootProps() as Record<string, unknown>
     expect(root).toMatchObject({ 'role': 'radiogroup', 'aria-orientation': 'horizontal', 'data-orientation': 'horizontal', 'aria-readonly': 'false', 'aria-invalid': 'false', 'aria-required': 'false' })
     expect(root['aria-labelledby']).toBe((g.api().getLabelProps() as Record<string, unknown>).id)
@@ -99,6 +99,15 @@ describe('connectRadioGroup 投影', () => {
     expect(input).toMatchObject({ type: 'radio', name: 'plan', value: 'standard', checked: true, inert: true, tabindex: -1 })
     expect((g.api().getHiddenInputProps({ value: 'pro' }) as Record<string, unknown>).checked).toBe(false)
     expect(g.api().getIndicatorProps({ value: 'pro' })).toMatchObject({ 'aria-hidden': true, 'data-state': 'unchecked' })
+    g.stop()
+  })
+
+  it('没渲染 label 部件时根不输出 aria-labelledby，组名留给作者写的 aria-label', () => {
+    const g = makeGroup({ defaultValue: 'standard' })
+    expect((g.api().getRootProps() as Record<string, unknown>)['aria-labelledby']).toBeUndefined()
+    expect(g.root.hasAttribute('aria-labelledby')).toBe(false)
+    g.setProps({ labelled: true })
+    expect(g.root.getAttribute('aria-labelledby')).toBe((g.api().getLabelProps() as Record<string, unknown>).id)
     g.stop()
   })
 
@@ -204,6 +213,46 @@ describe('connectRadioGroup 键盘与焦点', () => {
     expect(ro.api().value).toBe('free')
     expect(ro.api().focusedValue).toBe('standard')
     ro.stop()
+  })
+
+  it('组里行内编辑控件上的方向键归控件自己：不换值、不搬焦点、不 preventDefault', () => {
+    const g = makeGroup({ defaultValue: 'free' })
+    // 「每 N 分钟」这类写法：数字框摆在条目旁边，仍在根的子树里
+    const input = document.createElement('input')
+    input.type = 'number'
+    g.root.append(input)
+    input.focus()
+    const arrow = new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true })
+    input.dispatchEvent(arrow)
+    expect(arrow.defaultPrevented).toBe(false)
+    expect(g.api().value).toBe('free')
+    expect(document.activeElement).toBe(input)
+
+    // 下拉触发器这类按钮同样不归单选组管
+    const trigger = document.createElement('button')
+    g.root.append(trigger)
+    const side = new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true })
+    trigger.dispatchEvent(side)
+    expect(side.defaultPrevented).toBe(false)
+    expect(g.api().value).toBe('free')
+    expect(g.changes).toEqual([])
+    g.stop()
+  })
+
+  it('内层已经 preventDefault 的方向键不再接手；条目自己的方向键照常换选项', () => {
+    const g = makeGroup({ defaultValue: 'free' })
+    const claim = (event: Event): void => event.preventDefault()
+    g.items[0]!.addEventListener('keydown', claim)
+    g.items[0]!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
+    expect(g.api().value).toBe('free')
+    g.items[0]!.removeEventListener('keydown', claim)
+
+    const own = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true })
+    g.items[0]!.dispatchEvent(own)
+    expect(own.defaultPrevented).toBe(true)
+    expect(g.api().value).toBe('standard')
+    expect(document.activeElement).toBe(g.items[1])
+    g.stop()
   })
 
   it('焦点从组外进来落在选中项；没选中就落第一个；焦点离组后容器重新占 Tab 位', () => {

@@ -136,6 +136,30 @@ describe('radio-group 的 collection', () => {
     w.unmount()
   })
 
+  it('手写选项时 label 属性照样铺出标题，根的 aria-labelledby 指向它', async () => {
+    const w = mount(defineComponent({
+      setup: () => () => h(XhRadioGroupRoot, { label: '提醒频率' }, () => [
+        h(XhRadioGroupItem, { value: 'daily' }, () => [h(XhRadioGroupItemText, () => '每天')]),
+      ]),
+    }), { attachTo: document.body })
+    await w.vm.$nextTick()
+    const label = w.element.querySelector('[data-part="label"]')
+    expect(label?.textContent).toBe('提醒频率')
+    expect(w.element.getAttribute('aria-labelledby')).toBe(label?.id)
+    w.unmount()
+  })
+
+  it('没有标题时根不输出 aria-labelledby，作者写的 aria-label 就是组名', async () => {
+    const w = mount(defineComponent({
+      setup: () => () => h(XhRadioGroupRoot, { 'collection': COLLECTION, 'aria-label': '套餐' }),
+    }), { attachTo: document.body })
+    await w.vm.$nextTick()
+    expect(w.element.querySelector('[data-part="label"]')).toBeNull()
+    expect(w.element.hasAttribute('aria-labelledby')).toBe(false)
+    expect(w.element.getAttribute('aria-label')).toBe('套餐')
+    w.unmount()
+  })
+
   it('不给 collection 时仍按手写部件渲染，文本与禁用都写在部件上', () => {
     const w = mount(defineComponent({
       setup: () => () => h(XhRadioGroupRoot, { defaultValue: 'free' }, () => [

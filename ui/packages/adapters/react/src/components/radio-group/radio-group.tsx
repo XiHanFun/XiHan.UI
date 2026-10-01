@@ -95,9 +95,17 @@ export function XhRadioGroupRoot({
   // 装成原生监听器，到达路径才与另外两家一致。onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
   const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>, ['onFocus'])
 
-  const body = children ?? (collection
-    ? <DefaultTree collection={api.collection} segmented={api.variant === 'segmented'} label={label} renderItem={renderItem} />
-    : null)
+  // 标题文字不论手写选项还是数据驱动都由根铺出：手写选项时不必再写 label 部件
+  const body = children != null
+    ? (
+        <>
+          {label != null ? <XhRadioGroupLabel>{label}</XhRadioGroupLabel> : null}
+          {children}
+        </>
+      )
+    : collection
+      ? <DefaultTree collection={api.collection} segmented={api.variant === 'segmented'} label={label} renderItem={renderItem} />
+      : label != null ? <XhRadioGroupLabel>{label}</XhRadioGroupLabel> : null
 
   return (
     <RadioGroupProvider value={ctx}>
@@ -120,6 +128,9 @@ XhRadioGroupRoot.xhEvents = ['value-change'] as const
 export interface XhRadioGroupLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhRadioGroupLabel({ children, ...rest }: XhRadioGroupLabelProps): ReactNode {
   const ctx = useRadioGroupContext()
+  // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 

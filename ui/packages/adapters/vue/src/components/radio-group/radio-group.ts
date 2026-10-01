@@ -9,7 +9,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupVariant } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideRadioGroup, provideRadioGroupItem, useRadioGroupContext, useRadioGroupItemContext } from './context'
 import { useRadioGroup } from './use-radio-group'
@@ -49,20 +49,24 @@ export const XhRadioGroupRoot = defineComponent({
     }
     const ctx = useRadioGroup(useFormControlProps(props) as RadioGroupProps, notify)
     provideRadioGroup(ctx)
-    return () => h(
-      'div',
-      { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef },
-      slots.default
-        ? slots.default()
-        : props.collection
-          ? renderDefaultTree(
-              ctx.api.value.collection,
-              ctx.api.value.variant === 'segmented',
-              slots.label?.() ?? (props.label != null ? [props.label] : null),
-              slots.item,
-            )
-          : [],
-    )
+    return () => {
+      // 标题文字不论手写选项还是数据驱动都由根铺出：手写选项时不必再写 label 部件
+      const title = slots.label?.() ?? (props.label != null ? [props.label] : null)
+      return h(
+        'div',
+        { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef },
+        slots.default
+          ? [...renderLabel(title), ...slots.default()]
+          : props.collection
+            ? renderDefaultTree(
+                ctx.api.value.collection,
+                ctx.api.value.variant === 'segmented',
+                title,
+                slots.item,
+              )
+            : renderLabel(title),
+      )
+    }
   },
 })
 
@@ -70,6 +74,13 @@ export const XhRadioGroupLabel = defineComponent({
   name: 'XhRadioGroupLabel',
   setup(_, { slots }) {
     const ctx = useRadioGroupContext()
+    // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
+    onMounted(() => {
+      ctx.labelCount.value++
+    })
+    onBeforeUnmount(() => {
+      ctx.labelCount.value--
+    })
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -162,7 +173,7 @@ function renderDefaultTree(
   itemSlot?: (node: RadioGroupNodeMeta) => VNode[],
 ): VNode[] {
   return [
-    ...(label ? [h(XhRadioGroupLabel, null, () => label)] : []),
+    ...renderLabel(label),
     ...(segmented ? [h(XhRadioGroupThumb)] : []),
     // 条目内的 hidden-input 与 indicator 由 XhRadioGroupItem 自行装配
     ...collection.map(node => h(XhRadioGroupItem, { key: node.value, value: node.value }, () => [
@@ -171,4 +182,9 @@ function renderDefaultTree(
       ...(node.description != null ? [h(XhRadioGroupItemDescription, null, () => node.description)] : []),
     ])),
   ]
+}
+
+/** 组标题：给了文字或 label 插槽才铺 label 部件。 */
+function renderLabel(title: (VNode | string)[] | null): VNode[] {
+  return title ? [h(XhRadioGroupLabel, null, () => title)] : []
 }
