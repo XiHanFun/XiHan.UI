@@ -76,7 +76,10 @@ export interface CarouselSchema extends MachineSchema {
     page?: number
     /** 非受控初始页，默认 0。 */
     defaultPage?: number
-    /** 条目总数，由作者声明，不从 DOM 统计。 */
+    /**
+     * 条目总数，由作者声明，不从 DOM 统计（服务端渲染与按需渲染都靠它）。
+     * 开发期挂载后若渲染出来的条目比它多，经诊断通道报 carousel.slide-count-mismatch。
+     */
     slideCount?: number
     /** 一屏显示的张数，默认 1。 */
     slidesPerPage?: number
