@@ -107,8 +107,14 @@ describe('connectColorSwatchPicker 投影', () => {
     ])
   })
 
+  it('没渲染 label 部件时根不输出 aria-labelledby，名字交给 aria-label 的文案', () => {
+    const root = api(makeService()).getRootProps() as Dict
+    expect(root['aria-labelledby']).toBeUndefined()
+    expect(typeof root['aria-label']).toBe('string')
+  })
+
   it('标题只随整组置灰：单格禁用不投影到 label', () => {
-    const partial = makeService({ swatches: [{ value: '#e11d48' }, { value: '#f59e0b', disabled: true }] })
+    const partial = makeService({ swatches: [{ value: '#e11d48' }, { value: '#f59e0b', disabled: true }], labelled: true })
     const label = api(partial).getLabelProps() as Dict
     expect(label.id).toBe((api(partial).getRootProps() as Dict)['aria-labelledby'])
     expect(label['data-disabled']).toBeUndefined()

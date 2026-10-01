@@ -68,6 +68,11 @@ export interface ColorSwatchPickerSchema extends MachineSchema {
     /** 语气：决定选中环与选中标记使用哪族颜色。 */
     tone?: Tone
     translations?: Partial<ColorSwatchPickerTranslations>
+    /**
+     * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
+     * 为假时根不输出 aria-labelledby，名字交给 aria-label 的文案：指向未渲染的 id 是悬空引用。
+     */
+    labelled?: boolean
     /** value 变化回调。 */
     onValueChange?: (details: ColorSwatchPickerValueChangeDetails) => void
   }

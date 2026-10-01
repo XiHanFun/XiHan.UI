@@ -115,6 +115,7 @@
 | `size` | `Size` |  | 尺寸：sm / md / lg，影响格子的边长与间距。 |
 | `tone` | `Tone` |  | 语气：决定选中环与选中标记使用哪族颜色。 |
 | `translations` | `Partial<ColorSwatchPickerTranslations>` |  |  |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby，名字交给 aria-label 的文案：指向未渲染的 id 是悬空引用。 |
 | `onValueChange` | `(details: ColorSwatchPickerValueChangeDetails) => void` |  | value 变化回调。 |
 
 ### ColorSwatchPickerNode
@@ -215,7 +216,7 @@
 | --- | --- | --- |
 | `root` | `aria-invalid` | 'true' \| 'false' |
 | `root` | `aria-label` | label.group |
-| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `aria-readonly` | 'true' \| 'false' |
 | `root` | `aria-required` | 'true' \| 'false' |
 | `root` | `role` | 'radiogroup' |
@@ -227,7 +228,8 @@
 | `indicator` | `aria-hidden` | 'true' |
 | `hidden-input` | `aria-hidden` | 'true' |
 
-- 根是 `role=radiogroup`，名称取 label 部件，未提供时读 `translations.group`。
+- 根是 `role=radiogroup`，名称取 label 部件，未提供时读 `translations.group`；`label` 部件真渲染了时才输出 `aria-labelledby`。Vue / React 的 `label` 属性不论手写格子还是数据驱动都会铺出标题。
+- 直接放进[表单字段](./field)时，字段的标题并进组名、说明进描述链。
 - 每格是 `role=radio` 并显式输出 `aria-checked`；名称依次取 `label`、`swatches` 中的 `label`、`translations.swatch(value)`，颜色串无法表达含义时务必提供名称。
 - 禁用格用 `aria-disabled` 表达，仍可聚焦，仍是方向键的起点。
 - 每格内有一个 `inert` 的隐藏原生 radio 承接表单提交，不进入焦点序列与可访问树。
