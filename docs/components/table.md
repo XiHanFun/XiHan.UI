@@ -196,6 +196,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 
 - 排序、选择、展开三套状态各自可受控。
 - 列名放在 `column-label` 里，它是列头里唯一可收窄的一格：列名太长时由它出省略号。排序钮、列宽把手与列拖拽把手都是它的兄弟，不装进它里面。列头是 flex 行，裸写的文本是匿名 flex item、缩不下去，窄列上会把定尺的把手连同外边距一起挤出列头盒，所以不可排序、不可改宽的列也要用它。
+- 列定义中的 `align` 控制该列所有格子（列头与数据格）的内容对齐方向：`start`（默认）、`center`、`end`，对应列头与单元格上的 `data-align` 属性。
 - 排序钮（`sort-trigger`）是列头里独立的定尺图标钮，不包列名：列名留在 `column-label` 上，钮写在列名之后、被推到行尾侧与列宽把手并排；点列头文字不排序，点钮才排序。
 - 选中行铺品牌淡底行面并由行首的勾选方框标记；悬停与按下只换面，行的几何与吸附列不动。
 - 表头吸顶与列吸附、条纹、密度、边框都是开关。
@@ -296,6 +297,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `resizable` | `boolean` |  | 该列的宽度可以拖动修改。提供后才产出改宽把手。 |
 | `children` | `TableColumnDef[]` |  | 表头分组：给了 children 即为分组列，只在表头占一格、横跨它全部叶子列，不进列号空间， 也不承载数据、排序、改宽与冻结。叶子列才是生效列；嵌套几层表头就有几行， 较浅的叶子列（含前缀列）的列头纵向跨到最后一行。分组内的叶子列都要给出宽度， 分组那一格的宽度才能按叶子列之和算准。 |
 | `reorderable` | `boolean` |  | 该列可以拖动换位。提供后才产出拖拽把手：每个把手都是一个 Tab 位， 未声明的表格不承担该代价。 不可拖动的列与冻结列一样是屏障：跨过它落下会把它挤走，而作者已声明该列不动。 |
+| `align` | `'start' \| 'center' \| 'end'` |  | 列内容的对齐方向，写为列头与数据格上的 data-align。 不提供时由皮肤决定（默认 start）。 |
 
 ### TableRowDef
 
@@ -598,6 +600,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `row` | `data-xh-collection-context` | 'page' |
 | `row` | `data-xh-collection-item` | '' |
 | `row` | `data-xh-collection-size` | props.size |
+| `column-header` | `data-align` | def?.align |
 | `column-header` | `data-covered` | ''（条件成立时才出现） |
 | `column-header` | `data-dragging` | ''（条件成立时才出现） |
 | `column-header` | `data-drop` | 'before' \| 'after' |
@@ -608,6 +611,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `column-header` | `data-sort` | 'asc' \| 'desc' |
 | `column-header` | `data-sort-index` | tableSortIndexOf(sort, value) \| undefined |
 | `column-header` | `data-sortable` | ''（条件成立时才出现） |
+| `cell` | `data-align` | def?.align |
 | `cell` | `data-covered` | ''（条件成立时才出现） |
 | `cell` | `data-disabled` | ''（条件成立时才出现） \| undefined |
 | `cell` | `data-dragging` | ''（条件成立时才出现） |
