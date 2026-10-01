@@ -17,8 +17,9 @@
 // 命中 THEMES 的按主题归类，其余归 shared（跨组件：全量无障碍、计算样式快照、像素基线、焦点环对账等）。
 import { spawnSync } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { availableParallelism } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 
 const PACKAGE_GLOBS = ['packages', 'tooling']
@@ -64,6 +65,34 @@ function spawn(command, args, options) {
   return spawnSync([command, ...args].map(quote).join(' '), { ...options, stdio: 'inherit', shell: true })
 }
 
+/**
+ * Windows 上的用例直接用 node 起 vitest 入口，不经 pnpm.cmd：cmd.exe 的命令行上限只有 8191 字符，
+ * 多分类时几百个用例路径一拼就超，cmd 只回一句 GBK 的「命令行太长。」，vitest 根本没起来。
+ * pnpm run 起包脚本、node_modules/.bin/vitest.cmd 又各过一次 cmd.exe，所以连 pnpm 一起绕开；
+ * CreateProcess 的上限是 32767 字符，参数也不再经 cmd 转义。整包仍是一次 vitest，分组与汇总不变。
+ * 包脚本因此要是一条不带 shell 语法的 vitest 命令，按空白拆成参数原样传。
+ */
+function vitestCommand(pkg) {
+  const [bin, ...args] = pkg.script.trim().split(/\s+/)
+  if (bin !== 'vitest' || /[^\w\s./:=,@+-]/.test(pkg.script)) {
+    console.error(`[test:browser] ✗ ${pkg.name} 的 test:browser 不是单条 vitest 命令（${pkg.script}），Windows 上没法绕过 cmd.exe 起 vitest`)
+    process.exit(2)
+  }
+  const vitestManifest = createRequire(resolve(pkg.dir, 'package.json')).resolve('vitest/package.json')
+  return [join(dirname(vitestManifest), JSON.parse(readFileSync(vitestManifest, 'utf8')).bin.vitest), ...args]
+}
+
+/** 子进程没起来、被信号终止或非零退出时说清是哪一种；vitest 自己的失败汇总照常打在前面。 */
+function failureOf(result) {
+  if (result.error) {
+    const hint = result.error.code === 'ENAMETOOLONG' ? '（命令行超过 Windows 的 32767 字符上限，把分类拆成几次跑）' : ''
+    return `子进程没起来：${result.error.message}${hint}`
+  }
+  if (result.signal)
+    return `子进程被 ${result.signal} 终止`
+  return result.status === 0 ? null : `退出码 ${result.status}`
+}
+
 // —— 分类 ——
 const manifest = JSON.parse(readFileSync('scripts/component-docs.manifest.json', 'utf8'))
 const CATEGORIES = [...manifest.categories.map(category => ({ id: category.id, label: category.label })), SHARED]
@@ -94,7 +123,7 @@ function listPackages() {
         if (!pkg.scripts?.['test:browser'])
           continue
         const specs = readdirSync(join(dir, TESTS_DIR)).filter(file => SPEC.test(file)).sort()
-        found.push({ dir, id: entry.name, name: pkg.name, specs })
+        found.push({ dir, id: entry.name, name: pkg.name, script: pkg.scripts['test:browser'], specs })
       }
     }
   }
@@ -152,13 +181,20 @@ if (plan.length === 0) {
   process.exit(0)
 }
 
+// Windows 上构建之前先解析好每个包的 vitest 入口，包脚本不合要求时一个用例都不跑
+if (process.platform === 'win32') {
+  for (const pkg of plan)
+    pkg.vitest = vitestCommand(pkg)
+}
+
 // 依赖构建：原先的 turbo run test:browser 声明了 dependsOn ^build，这里照样先把依赖构建好（有缓存时很快）
 if (option('no-build') == null) {
   const filters = plan.map(pkg => `--filter=${pkg.name}^...`)
   console.log(`[test:browser] 构建依赖：${plan.map(pkg => pkg.name).join(' ')}`)
   const build = spawn('pnpm', ['turbo', 'run', 'build', ...filters, '--output-logs=errors-only'])
-  if (build.status !== 0) {
-    console.error('[test:browser] ✗ 依赖构建失败，用例没跑')
+  const failure = failureOf(build)
+  if (failure) {
+    console.error(`[test:browser] ✗ 依赖构建失败，用例没跑：${failure}`)
     process.exit(build.status ?? 1)
   }
 }
@@ -169,10 +205,15 @@ const started = performance.now()
 for (const pkg of plan) {
   const what = pkg.files == null ? `${pkg.specs.length} 个用例文件（整包）` : `${pkg.files.length} 个用例文件`
   console.log(`\n[test:browser] ── ${pkg.name} · ${scope} · ${what} · ${workers} 个 worker`)
-  const args = ['run', 'test:browser', `--maxWorkers=${workers}`, ...(pkg.files ?? []).map(file => `${TESTS_DIR}/${file}`), ...passthrough]
-  const run = spawn('pnpm', args, { cwd: pkg.dir })
-  if (run.status !== 0)
+  const args = [`--maxWorkers=${workers}`, ...(pkg.files ?? []).map(file => `${TESTS_DIR}/${file}`), ...passthrough]
+  const run = pkg.vitest
+    ? spawnSync(process.execPath, [...pkg.vitest, ...args], { cwd: pkg.dir, stdio: 'inherit' })
+    : spawn('pnpm', ['run', 'test:browser', ...args], { cwd: pkg.dir })
+  const failure = failureOf(run)
+  if (failure) {
+    console.error(`[test:browser] ✗ ${pkg.name}：${failure}`)
     failures.push(pkg.name)
+  }
 }
 
 const seconds = ((performance.now() - started) / 1000).toFixed(0)
