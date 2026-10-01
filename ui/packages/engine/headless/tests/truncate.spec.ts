@@ -132,7 +132,7 @@ describe('truncate 量测', () => {
     expect(rig.rootProps()['data-overflowing']).toBe('')
     expect(rig.rootProps()['data-lines']).toBe('1')
     // 行数落进内联自定义属性，皮肤拿它裁行
-    expect(rig.rootProps().style).toBe('--xh-_truncate-lines: 1')
+    expect(rig.rootProps().style).toEqual({ '--xh-_truncate-lines': '1' })
   })
 
   it('装得下就不报；尺寸变了跟着翻面并通知一次', async () => {

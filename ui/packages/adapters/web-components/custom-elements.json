@@ -75655,7 +75655,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-truncate>`：省略行为宿主：把一段文字限制在给定行数内，并如实报告是否被裁剪。\n\n测量在状态机的效应中运行：挂载后推迟一拍测量一次，此后随盒子尺寸与盒内文字的变化重新测量。\n结论写为 root 上的 data-overflowing，浮层不在这里处理：是否附加提示由作者按该属性决定。\n开启 tooltip 则另提供一条不使用浮层的路径：实际裁剪时才把整段文字写进 root 的 title，交给平台的原生提示。\n\n行数写在 root 的内联 style 中（自定义属性只有这一条路径能同时落到各适配器上），\n因此 root 的内联 style 归本元素管理，作者自己的内联样式写在外层元素上。\n\n展开按钮是 root 之外的另一个角色节点（放进 root 会跟着文字一起被裁掉）：作者写一个\n`<button data-xh-part=\"trigger\">` 与 root 并排；它留空时元素按展开态写入缺省文案，写了内容则原样保留。",
+          "description": "`<xh-truncate>`：省略行为宿主：把一段文字限制在给定行数内，并如实报告是否被裁剪。\n\n测量在状态机的效应中运行：挂载后推迟一拍测量一次，此后随盒子尺寸与盒内文字的变化重新测量。\n结论写为 root 上的 data-overflowing，浮层不在这里处理：是否附加提示由作者按该属性决定。\n开启 tooltip 则另提供一条不使用浮层的路径：实际裁剪时才把整段文字写进 root 的 title，交给平台的原生提示。\n\n行数写在 root 的内联 style 中（自定义属性只有这一条路径能同时落到各适配器上）：\n元素只写、只撤自己的那一条 --xh-_truncate-lines，作者写在 root 上的其余内联样式原样保留。\n\n展开按钮是 root 之外的另一个角色节点（放进 root 会跟着文字一起被裁掉）：作者写一个\n`<button data-xh-part=\"trigger\">` 与 root 并排；它留空时元素按展开态写入缺省文案，写了内容则原样保留。",
           "name": "XhTruncateElement",
           "cssParts": [
             {
