@@ -18,6 +18,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-field-gap, var(--xh-space-1));
+    /* 字段族控件放进字段即铺满字段宽：字段的宽由表单的列给，控件跟着列走，
+       不必逐个组件在根上写 inline-size: 100%。单独摆放的控件仍是 16rem 缺省宽；
+       单类钉宽（--xh-<组件>-control-w）照旧压过这一条 */
+    --xh-control-w: 100%;
   }
 
   /* 表单横排（标签左置）：字段转两列网格，标签列宽由表单的 --xh-form-label-w 统一给，

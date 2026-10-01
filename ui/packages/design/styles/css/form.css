@@ -44,6 +44,14 @@
     flex-flow: row wrap;
     align-items: start;
     column-gap: var(--xh-form-inline-gap, var(--xh-space-4));
+    /* 一行流里字段按内容收，没有列宽可铺：在表单根上取下此处的字段缺省宽，交给下面的字段还原 */
+    --xh-_form-inline-control-w: var(--xh-control-w);
+  }
+
+  /* 字段会把里面的控件铺满字段宽，而一行流的字段宽正是由控件撑出来的，两者互相指望就塌成内容宽；
+     这一档的字段还原成表单根上的缺省宽 */
+  [data-scope='form'][data-part='root'][data-layout='inline'] [data-scope='field'][data-part='root'] {
+    --xh-control-w: var(--xh-_form-inline-control-w);
   }
 
   /* 一列是网格档的缺省，这里从两列起逐档写 */

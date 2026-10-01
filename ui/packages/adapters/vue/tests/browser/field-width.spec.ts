@@ -1,5 +1,6 @@
 // 字段的缺省宽（--xh-control-w）与地板（--xh-control-min-w）：
 // 不传尺寸时一族同宽、宽度不随内容走；窄处跟着容器收，地板不高过缺省宽。
+// 放进表单字段（Field）时一族铺满字段宽；横排一行流的表单里字段按内容收，仍取缺省宽。
 //
 // 宿主视口固定在一个宽度上且改不动，这里改用内嵌 iframe 自带视口，宽度由这边说了算。
 // 皮肤与令牌以 <style> 注入主文档，克隆一份进 iframe 的 head 才生效。
@@ -15,8 +16,8 @@ const DEFAULT = 256
 /** 12rem 的地板，与 --xh-control-min-w 同值。 */
 const FLOOR = 192
 
-/** 在一个定宽容器里挂一件控件，量根的宽与它在容器里的越界量。 */
-function measure(container: number, markup: string, hostStyle = '') {
+/** 在一个定宽容器里挂一件控件，量根的宽与它在容器里的越界量；给了 scope 就量那个组件的根。 */
+function measure(container: number, markup: string, hostStyle = '', scope?: string) {
   frame?.remove()
   frame = document.createElement('iframe')
   frame.style.cssText = 'width: 1280px; height: 400px; border: 0'
@@ -30,7 +31,7 @@ function measure(container: number, markup: string, hostStyle = '') {
   doc.body.style.margin = '0'
   doc.body.innerHTML = `<div id="host" style="inline-size:${container}px;${hostStyle}">${markup}</div>`
 
-  const root = doc.querySelector('[data-part="root"]')
+  const root = doc.querySelector(scope ? `[data-scope="${scope}"][data-part="root"]` : '[data-part="root"]')
   if (!(root instanceof doc.defaultView!.HTMLElement))
     throw new Error('没有挂上控件根')
   const width = root.getBoundingClientRect().width
@@ -210,6 +211,36 @@ describe('缺省宽由槽给', () => {
 
   it('date-range-picker 钉宽仍走 --xh-date-range-picker-control-w', () => {
     expect(measure(600, rangeSegments('date-range-picker', 'yyyy'), '--xh-date-range-picker-control-w: 24rem').width).toBe(384)
+  })
+})
+
+/** 套一层表单字段：标签在上、控件在下。 */
+function inField(markup: string): string {
+  return `<div data-scope="field" data-part="root"><label data-scope="field" data-part="label">套餐</label>${markup}</div>`
+}
+
+describe('放进表单字段时铺满字段宽', () => {
+  it.each(ALL)('%s 在字段里与字段同宽，不再停在 16rem', (name, markup) => {
+    expect(measure(480, inField(markup), '', name).width).toBe(480)
+    expect(measure(300, inField(markup), '', name).width).toBe(300)
+  })
+
+  it('网格表单里铺满所在那一列', () => {
+    const markup = `<form data-scope="form" data-part="root" data-layout="grid" data-columns="2" style="column-gap:0">${inField(trigger('select'))}${inField(TEXT_FIELD)}</form>`
+    expect(measure(600, markup, '', 'select').width).toBe(300)
+    expect(measure(600, markup, '', 'text-field').width).toBe(300)
+  })
+
+  it('横排一行流的表单里字段按内容收，控件仍取缺省宽', () => {
+    const markup = `<form data-scope="form" data-part="root" data-layout="inline">${inField(trigger('select'))}${inField(TEXT_FIELD)}</form>`
+    expect(measure(1200, markup, '', 'select').width).toBe(DEFAULT)
+    expect(measure(1200, markup, '', 'text-field').width).toBe(DEFAULT)
+    // 表单上改了缺省宽，一行流里的字段跟着走
+    expect(measure(1200, markup, '--xh-control-w: 20rem', 'select').width).toBe(320)
+  })
+
+  it('单类 --xh-<c>-control-w 在字段里仍然钉得住', () => {
+    expect(measure(480, inField(trigger('select')), '--xh-select-control-w: 20rem', 'select').width).toBe(320)
   })
 })
 
