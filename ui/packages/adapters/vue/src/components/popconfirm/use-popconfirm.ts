@@ -53,6 +53,8 @@ export function usePopconfirm(
     defaultOpen: props.defaultOpen,
     placement: props.placement,
     offset: props.offset,
+    dir: props.dir,
+    disabled: props.disabled,
     closeOnEscape: pending.value ? false : props.closeOnEscape,
     closeOnInteractOutside: pending.value ? false : props.closeOnInteractOutside,
     size: props.size,

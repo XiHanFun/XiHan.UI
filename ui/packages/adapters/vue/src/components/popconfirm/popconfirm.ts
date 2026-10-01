@@ -5,7 +5,7 @@
 
 // 提供 popconfirm 相关实现。
 
-import type { Placement, Size } from '@xihan-ui/core'
+import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmProps } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -30,8 +30,12 @@ export const XhPopconfirmRoot = defineComponent({
     defaultOpen: Boolean,
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
+    /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
+    dir: { type: String as PropType<Direction> },
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: true },
+    /** 不可打开：触发器转原生 disabled，展开途中转为禁用即收起。 */
+    disabled: { type: Boolean, default: undefined },
     size: { type: String as PropType<Size> },
     /**
      * 确认回调使用函数 prop 而非 emit：emit 无法获取监听函数的返回值，而异步门正需要它：

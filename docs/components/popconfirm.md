@@ -221,6 +221,7 @@ size 改变面板的内边距与最大宽度，三个档位落在 content 上
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |

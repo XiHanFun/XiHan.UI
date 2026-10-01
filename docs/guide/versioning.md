@@ -121,7 +121,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 308 个不同的 `data-*` 属性名、1978 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 308 个不同的 `data-*` 属性名、1979 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -213,7 +213,7 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 144（`defineXhElements()` 注册 143 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1535 条声明 / 475 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| observed attribute | 1537 条声明 / 475 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 475 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 120 个名字 / 261 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（246 处中 244 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |

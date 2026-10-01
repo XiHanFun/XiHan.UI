@@ -60,6 +60,36 @@ describe('connectPopconfirm：三颗按钮接 Action Control', () => {
   })
 })
 
+describe('connectPopconfirm：disabled 与 dir', () => {
+  it('disabled：触发器转原生 disabled 并带 data-disabled，点按不展开；没给就都不写', () => {
+    const service = makeService({ disabled: true })
+    const trigger = api(service).getTriggerProps() as Dict
+    expect(trigger.disabled).toBe(true)
+    expect(trigger['data-disabled']).toBe('')
+    fire(trigger, 'onClick', {})
+    expect(api(service).open).toBe(false)
+
+    const plain = api(makeService({})).getTriggerProps() as Dict
+    expect(plain.disabled).toBeUndefined()
+    expect(plain['data-disabled']).toBeUndefined()
+  })
+
+  it('展开途中转为禁用即收起', () => {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<PopoverSchema['props']>({ defaultOpen: true })
+    const service = createService(popoverMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    expect(api(service).open).toBe(true)
+    props.set({ ...props.get(), disabled: true })
+    expect(api(service).open).toBe(false)
+  })
+
+  it('dir 写在定位层上：浮层搬到落点后继承不到作者子树的方向；没给就不写', () => {
+    expect((api(makeService({ dir: 'rtl' })).getPositionerProps() as Dict).dir).toBe('rtl')
+    expect((api(makeService({})).getPositionerProps() as Dict).dir).toBeUndefined()
+  })
+})
+
 describe('popconfirm 按压通道：跑的是 popover 机器，按住的是哪颗就只落在哪颗上', () => {
   it('两颗动作钮：只有按住的那颗带 data-pressed，另一颗的 keyup 不把它松开', () => {
     const service = makeService()

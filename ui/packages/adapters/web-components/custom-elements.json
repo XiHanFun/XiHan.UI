@@ -48024,6 +48024,15 @@
             },
             {
               "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
               "name": "closeOnEscape",
               "privacy": "public",
               "type": {
@@ -48039,6 +48048,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "close-on-interact-outside"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
             },
             {
               "kind": "field",
@@ -48315,6 +48333,22 @@
               "description": "浮层与锚点的间距（px），默认 8",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "不可打开：触发器转原生 disabled，展开途中转为禁用即收起",
+              "name": "disabled",
+              "fieldName": "disabled"
             },
             {
               "type": {
