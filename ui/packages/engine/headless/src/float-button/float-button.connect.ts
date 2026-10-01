@@ -6,17 +6,16 @@
 // 提供 float button 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { FloatButtonApi, FloatButtonAppearance, FloatButtonPlacement, FloatButtonSchema } from './float-button.types'
+import type { FloatButtonApi, FloatButtonAppearance, FloatButtonPlacement, FloatButtonPosition, FloatButtonSchema } from './float-button.types'
 import { dataAttr } from '@xihan-ui/core'
 import { pressHandlers } from '../shared/press'
 import { floatButtonAnatomy } from './float-button.anatomy'
+import { floatButtonPlacementOf, isFloatButtonEdgePosition, normalizeFloatButtonRatio } from './float-button.geometry'
 
 const parts = floatButtonAnatomy.build()
 
 /** 不给落位时钉在尾下角。 */
 export const FLOAT_BUTTON_DEFAULT_PLACEMENT: FloatButtonPlacement = 'bottom-end'
-
-/** 不给外形时是圆的。 */
 
 /** 不给距离时距那两条边 24px。 */
 export const FLOAT_BUTTON_DEFAULT_OFFSET = 24
@@ -44,8 +43,24 @@ export function connectFloatButton<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const ids = scope.ids('float-button', 'trigger', 'list')
   const stateAttr = open ? 'open' : 'closed'
-  const placement = props.placement ?? FLOAT_BUTTON_DEFAULT_PLACEMENT
   const offset = resolveFloatButtonOffset(props.offset)
+  // 位置：提交过的位置压过 placement 那一角；拖动与落定途中的跟手坐标再压过提交了的位置
+  const position = context.get('position')
+  const moving = context.get('movingPoint')
+  const edge = position && isFloatButtonEdgePosition(position) ? position : null
+  const point = position && !isFloatButtonEdgePosition(position) ? position : null
+  // 展开组的朝向与锚定的那两条边都由落位定：贴边与停在一点时按位置推出来，展开组朝页面中间长
+  const placement = position
+    ? floatButtonPlacementOf(position, context.get('viewportHeight'))
+    : (props.placement ?? FLOAT_BUTTON_DEFAULT_PLACEMENT)
+  const draggable = !!prop('draggable') && !disabled
+  // 几何写成内联自定义属性，贴哪条边、按哪个比例排由皮肤按 data-edge / data-point / data-moving 决定
+  const geometry = [`--xh-_float-button-offset: ${offset}px`]
+  if (edge)
+    geometry.push(`--xh-_float-button-ratio: ${normalizeFloatButtonRatio(edge.ratio)}`)
+  const at = moving ?? point
+  if (at)
+    geometry.push(`--xh-_float-button-x: ${at.x}px`, `--xh-_float-button-y: ${at.y}px`)
   const hover = prop('expandTrigger') === 'hover'
   // 缺省 outline：描边 + 磨砂面的中性圆钮（只有 Button 缺省品牌实心）
   const variant = props.variant ?? 'outline'
@@ -57,9 +72,14 @@ export function connectFloatButton<T extends PropTypes>(
       send(next ? { type: 'OPEN' } : { type: 'CLOSE', src: 'programmatic' })
   }
 
+  const setPosition = (next: FloatButtonPosition): void => context.set('position', next)
+
   return {
     open,
     setOpen,
+    position,
+    setPosition,
+    dragging: context.get('dragging'),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -70,9 +90,14 @@ export function connectFloatButton<T extends PropTypes>(
       'data-tone': props.tone,
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),
+      // 贴在哪条边、停在哪一点、正跟着指针走：皮肤据此换掉角落那两条贴边
+      'data-edge': edge?.edge,
+      'data-point': dataAttr(point != null),
+      'data-moving': dataAttr(moving != null),
+      'data-draggable': dataAttr(draggable),
+      'data-dragging': dataAttr(context.get('dragging')),
       'dir': prop('dir'),
-      // 贴边距离写成内联自定义属性：贴的是哪两条边由皮肤按 data-placement 决定，这里只给数
-      'style': `--xh-_float-button-offset: ${offset}px`,
+      'style': geometry.join('; '),
       // 悬停展开：进出整个壳才算数，不是只进出触发器——指针得能走到展开的那一组上去
       ...(hover
         ? {
@@ -112,13 +137,23 @@ export function connectFloatButton<T extends PropTypes>(
       'data-pressed': dataAttr(context.get('pressed')),
       // 点一下恒能开合：悬停只是多给一条路，触摸与键盘还得靠它
       'onClick': () => {
+        // 刚拖完：位置已由松手决定，浏览器补派的这一下不再开合
+        if (context.get('swallowClick')) {
+          send({ type: 'CLICK.SWALLOW' })
+          return
+        }
         if (!disabled)
           send({ type: 'TOGGLE' })
       },
       'onKeyDown': press.onKeyDown,
       'onKeyUp': press.onKeyUp,
       'onBlur': press.onBlur,
-      'onPointerDown': press.onPointerDown,
+      'onPointerDown': (event: PointerEvent) => {
+        press.onPointerDown(event)
+        // 只认主键；按下先不算拖动，移动过激活距离才接管，点按照常经 click 开合
+        if (draggable && event.button === 0)
+          send({ type: 'DRAG.START', pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY })
+      },
       'onPointerUp': press.onPointerUp,
       'onPointerCancel': press.onPointerCancel,
     }),

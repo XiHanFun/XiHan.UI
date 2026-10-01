@@ -228,6 +228,32 @@ export const floatButtonSuite: ConformanceSuite = {
       },
     },
     {
+      name: '贴边位置压过角落：投影贴哪条边，展开组朝页面中间长；没给位置时不带 data-edge',
+      spec: { apg: APG },
+      props: { placement: 'top-start', defaultPosition: { edge: 'inline-end', ratio: 0.75 } },
+      initial: {
+        parts: {
+          root: { 'data-edge': 'inline-end', 'data-placement': 'bottom-end', 'data-point': null, 'data-moving': null },
+          list: { 'data-placement': 'bottom-end' },
+        },
+      },
+    },
+    {
+      name: '受控 position：宿主换了位置，壳上的贴边跟着换',
+      spec: { adr: 'controlled-uncontrolled' },
+      props: { position: { edge: 'inline-start', ratio: 0.25 } },
+      initial: {
+        parts: { root: { 'data-edge': 'inline-start', 'data-placement': 'top-start' } },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { position: { edge: 'block-end', ratio: 0.5 } },
+          expect: { parts: { root: { 'data-edge': 'block-end', 'data-placement': 'bottom-end' } } },
+        },
+      ],
+    },
+    {
       name: '受控 open：点一下只发 open-change 不自改 DOM，父写回 open 后才展开',
       spec: { adr: 'controlled-uncontrolled' },
       props: { open: false },

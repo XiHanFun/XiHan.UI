@@ -34046,14 +34046,31 @@
       "component": "float-button",
       "part": [
         "list",
+        "root",
         "trigger"
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "bottom",
+        "inline-size",
+        "inset-block-end",
+        "inset-block-start",
+        "inset-inline-end",
+        "inset-inline-start",
+        "left",
+        "top"
       ],
       "state": [
         "default",
+        "edge=block",
+        "edge=inline",
+        "moving",
+        "placement",
+        "placement=-end",
+        "placement=-start",
+        "placement=bottom",
+        "placement=top",
+        "point",
         "xh-action-profile=floating"
       ],
       "defaultToken": [
@@ -34061,7 +34078,7 @@
         "--xh-_float-button-size"
       ],
       "visibility": "public",
-      "description": "float-button 的 list、trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "float-button 的 list、root、trigger 部件 block-size、bottom、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start、left、top 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-action-bg-active",

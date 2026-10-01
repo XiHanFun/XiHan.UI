@@ -11,7 +11,10 @@ import type {
   FloatButtonAppearance,
   FloatButtonExpandTrigger,
   FloatButtonPlacement,
+  FloatButtonPosition,
+  FloatButtonPositionChangeDetails,
   FloatButtonSchema,
+  FloatButtonSnap,
   FloatButtonTranslations,
 } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -45,12 +48,17 @@ const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? 
  * @attr {boolean} disabled - 禁用触发器
  * @attr {'ltr'|'rtl'} dir - 文字方向
  * @attr {'top-start'|'top-end'|'bottom-start'|'bottom-end'} placement - 固定在哪一角，默认 bottom-end
- * @attr {number} offset - 距两条边的距离（px），默认 24
+ * @attr {number} offset - 距两条边的距离（px），默认 24；拖动与贴边时也是离视口四边至少留出的距离
+ * @attr {boolean} button-draggable - 能否用指针拖着触发器移动，默认 false；按下移动过激活距离才算拖动。不命名为 draggable：那是 HTML 全局属性，写上后宿主会变成原生拖放源
+ * @attr {'inline'|'block'|'nearest'|'none'} snap - 松手后贴向哪里，默认 inline（贴左右两边里近的那条）
+ * @prop {FloatButtonPosition} position - 受控位置：贴边位置 `{ edge, ratio }` 或像素坐标 `{ x, y }`，只走 property
+ * @prop {FloatButtonPosition} defaultPosition - 初始位置，例如 `{ edge: 'inline-end', ratio: 0.75 }`，只走 property
  * @attr {'hover'|'click'} expand-trigger - 展开方式，默认 click
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，默认 outline（磨砂面；solid 才品牌实心）
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸，默认与 lg 同档
  * @fires open-change - 展开状态变化；detail 为 `{ open: boolean }`
+ * @fires position-change - 拖动落定后的新位置；detail 为 `{ position: FloatButtonPosition }`
  * @csspart root - 定位壳，承载 data-state / data-placement / data-disabled
  * @csspart trigger - 触发按钮，须写为 `<button>`；可及名由 translations.trigger 提供
  * @csspart list - 展开的动作组；收起时带 hidden
@@ -66,6 +74,12 @@ export class XhFloatButtonElement extends XhElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    // 避开原生的 draggable：那是 HTML 全局枚举属性，同名的响应式字段还会与 HTMLElement.draggable 访问器打架
+    buttonDraggable: { type: Boolean, attribute: 'button-draggable' },
+    snap: { converter: STRING_CONVERTER },
+    // 位置是对象，只走 property
+    position: { attribute: false },
+    defaultPosition: { attribute: false },
     expandTrigger: { converter: STRING_CONVERTER, attribute: 'expand-trigger' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
@@ -80,6 +94,10 @@ export class XhFloatButtonElement extends XhElement {
   declare direction?: Direction
   declare placement?: FloatButtonPlacement
   declare offset?: number
+  declare buttonDraggable?: boolean
+  declare snap?: FloatButtonSnap
+  declare position?: FloatButtonPosition
+  declare defaultPosition?: FloatButtonPosition
   declare expandTrigger?: FloatButtonExpandTrigger
   declare variant?: ActionVariant
   declare tone?: Tone
@@ -92,6 +110,10 @@ export class XhFloatButtonElement extends XhElement {
 
   private readonly notify = (details: CollapsibleOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyPosition = (details: FloatButtonPositionChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('position-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<FloatButtonSchema>(
@@ -108,7 +130,13 @@ export class XhFloatButtonElement extends XhElement {
       disabled: this.disabled ?? false,
       dir: this.direction,
       expandTrigger: this.expandTrigger,
+      offset: this.offset,
+      draggable: this.buttonDraggable ?? false,
+      snap: this.snap,
+      position: this.position,
+      defaultPosition: this.defaultPosition,
       onOpenChange: this.notify,
+      onPositionChange: this.notifyPosition,
     }
   }
 

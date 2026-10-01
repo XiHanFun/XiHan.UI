@@ -27229,6 +27229,42 @@
             },
             {
               "kind": "field",
+              "name": "buttonDraggable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "button-draggable"
+            },
+            {
+              "kind": "field",
+              "name": "snap",
+              "privacy": "public",
+              "type": {
+                "text": "FloatButtonSnap | undefined"
+              },
+              "attribute": "snap"
+            },
+            {
+              "kind": "field",
+              "name": "position",
+              "privacy": "public",
+              "type": {
+                "text": "FloatButtonPosition"
+              },
+              "description": "受控位置：贴边位置 `{ edge, ratio }` 或像素坐标 `{ x, y }`，只走 property"
+            },
+            {
+              "kind": "field",
+              "name": "defaultPosition",
+              "privacy": "public",
+              "type": {
+                "text": "FloatButtonPosition"
+              },
+              "description": "初始位置，例如 `{ edge: 'inline-end', ratio: 0.75 }`，只走 property"
+            },
+            {
+              "kind": "field",
               "name": "expandTrigger",
               "privacy": "public",
               "type": {
@@ -27298,6 +27334,12 @@
             {
               "kind": "field",
               "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyPosition",
               "privacy": "private",
               "readonly": true
             },
@@ -27380,6 +27422,13 @@
               "type": {
                 "text": "CollapsibleOpenChangeDetails"
               }
+            },
+            {
+              "description": "拖动落定后的新位置；detail 为 `{ position: FloatButtonPosition }`",
+              "name": "position-change",
+              "type": {
+                "text": "FloatButtonPositionChangeDetails"
+              }
             }
           ],
           "attributes": [
@@ -27427,9 +27476,25 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "距两条边的距离（px），默认 24",
+              "description": "距两条边的距离（px），默认 24；拖动与贴边时也是离视口四边至少留出的距离",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "能否用指针拖着触发器移动，默认 false；按下移动过激活距离才算拖动。不命名为 draggable：那是 HTML 全局属性，写上后宿主会变成原生拖放源",
+              "name": "button-draggable",
+              "fieldName": "buttonDraggable"
+            },
+            {
+              "type": {
+                "text": "FloatButtonSnap | undefined"
+              },
+              "description": "松手后贴向哪里，默认 inline（贴左右两边里近的那条）",
+              "name": "snap",
+              "fieldName": "snap"
             },
             {
               "type": {

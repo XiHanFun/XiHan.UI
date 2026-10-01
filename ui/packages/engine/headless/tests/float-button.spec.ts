@@ -5,6 +5,7 @@ import { createDismissLayer, createRuntimeConfig, createService, normalizeProps 
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
 import { connectFloatButton, floatButtonMachine, resolveFloatButtonOffset } from '../src/float-button'
+import { floatButtonPlacementOf, resolveFloatButtonSnap } from '../src/float-button/float-button.geometry'
 
 type Dict = Record<string, unknown>
 type Props = Partial<FloatButtonSchema['props']>
@@ -422,5 +423,193 @@ describe('float-button 开合', () => {
     rig.api().setOpen(true)
     expect(rig.api().open).toBe(true)
     expect(seen).toEqual([true])
+  })
+})
+
+describe('resolveFloatButtonSnap：松手后贴向哪里', () => {
+  // 1000 × 800 的视口，48px 的触发器，四边各留 24
+  const base = { size: 48, width: 1000, height: 800, gap: 24, rtl: false, velocity: { x: 0, y: 0 } }
+
+  it('inline 按中心在左半还是右半贴左右边，沿边那条轴停在放手处；比例按触发器中心量', () => {
+    const left = resolveFloatButtonSnap({ ...base, snap: 'inline', at: { x: 300, y: 376 } })
+    expect(left.target).toEqual({ x: 24, y: 376 })
+    expect(left.position).toEqual({ edge: 'inline-start', ratio: 0.5 })
+    const right = resolveFloatButtonSnap({ ...base, snap: 'inline', at: { x: 600, y: 576 } })
+    expect(right.target).toEqual({ x: 928, y: 576 })
+    expect(right.position).toEqual({ edge: 'inline-end', ratio: 0.75 })
+  })
+
+  it('RTL 下左边是行尾：贴边位置按书写方向命名，比例沿边仍从上往下', () => {
+    const left = resolveFloatButtonSnap({ ...base, rtl: true, snap: 'inline', at: { x: 300, y: 376 } })
+    expect(left.position).toEqual({ edge: 'inline-end', ratio: 0.5 })
+  })
+
+  it('甩一下贴到甩去的那一边：松手处在左半，向右的速度足够大就贴右边', () => {
+    const flick = resolveFloatButtonSnap({ ...base, snap: 'inline', at: { x: 400, y: 376 }, velocity: { x: 2000, y: 0 } })
+    expect(flick.position).toMatchObject({ edge: 'inline-end' })
+  })
+
+  it('block 贴上下边，比例沿行内轴量；RTL 下从行首（右边）量起', () => {
+    const top = resolveFloatButtonSnap({ ...base, snap: 'block', at: { x: 226, y: 300 } })
+    expect(top.target).toEqual({ x: 226, y: 24 })
+    expect(top.position).toEqual({ edge: 'block-start', ratio: 0.25 })
+    const bottom = resolveFloatButtonSnap({ ...base, rtl: true, snap: 'block', at: { x: 226, y: 500 } })
+    expect(bottom.target).toEqual({ x: 226, y: 728 })
+    expect(bottom.position).toEqual({ edge: 'block-end', ratio: 0.75 })
+  })
+
+  it('nearest 贴四条边里最近的那条', () => {
+    expect(resolveFloatButtonSnap({ ...base, snap: 'nearest', at: { x: 476, y: 40 } }).position).toMatchObject({ edge: 'block-start' })
+    expect(resolveFloatButtonSnap({ ...base, snap: 'nearest', at: { x: 940, y: 376 } }).position).toMatchObject({ edge: 'inline-end' })
+  })
+
+  it('none 停在放手处并提交像素坐标；越出视口的先收进四边各留 gap 的范围', () => {
+    expect(resolveFloatButtonSnap({ ...base, snap: 'none', at: { x: 300, y: 200 } })).toEqual({ target: { x: 300, y: 200 }, position: { x: 300, y: 200 } })
+    expect(resolveFloatButtonSnap({ ...base, snap: 'none', at: { x: -50, y: 900 } }).target).toEqual({ x: 24, y: 728 })
+  })
+})
+
+describe('floatButtonPlacementOf：位置推出展开组朝哪长', () => {
+  it('左右边按比例上下半分；上下边按比例行首行尾分；停在一点按视口上下半分，视口未知时朝下长', () => {
+    expect(floatButtonPlacementOf({ edge: 'inline-end', ratio: 0.75 }, null)).toBe('bottom-end')
+    expect(floatButtonPlacementOf({ edge: 'inline-start', ratio: 0.2 }, null)).toBe('top-start')
+    expect(floatButtonPlacementOf({ edge: 'block-start', ratio: 0.8 }, null)).toBe('top-end')
+    expect(floatButtonPlacementOf({ edge: 'block-end', ratio: 0.1 }, null)).toBe('bottom-start')
+    expect(floatButtonPlacementOf({ x: 10, y: 500 }, 800)).toBe('bottom-start')
+    expect(floatButtonPlacementOf({ x: 10, y: 500 }, null)).toBe('top-start')
+  })
+})
+
+describe('float-button 位置投影', () => {
+  it('不给位置停在 placement 那一角；defaultPosition 贴边时投影贴哪条边与比例，展开组朝页面中间长', () => {
+    expect(makeRig().root()['data-edge']).toBeUndefined()
+    const rig = makeRig({ defaultPosition: { edge: 'inline-end', ratio: 0.75 } }, { placement: 'top-start' })
+    expect(rig.root()['data-edge']).toBe('inline-end')
+    expect(rig.root()['data-placement']).toBe('bottom-end')
+    expect(rig.list()['data-placement']).toBe('bottom-end')
+    expect(String(rig.root().style)).toContain('--xh-_float-button-ratio: 0.75')
+    expect(rig.api().position).toEqual({ edge: 'inline-end', ratio: 0.75 })
+  })
+
+  it('比例夹到 0 到 1', () => {
+    const rig = makeRig({ defaultPosition: { edge: 'inline-start', ratio: 3 } })
+    expect(String(rig.root().style)).toContain('--xh-_float-button-ratio: 1')
+  })
+
+  it('停在一点：投影 data-point 与坐标；量到视口高度后按上下半定朝向', () => {
+    const rig = makeRig({ defaultPosition: { x: 40, y: 500 } })
+    expect(rig.root()['data-point']).toBe('')
+    expect(String(rig.root().style)).toContain('--xh-_float-button-x: 40px')
+    expect(String(rig.root().style)).toContain('--xh-_float-button-y: 500px')
+    rig.service.send({ type: 'VIEWPORT.RESIZE', height: 800 })
+    expect(rig.root()['data-placement']).toBe('bottom-start')
+  })
+
+  it('受控 position：setPosition 只发意图，宿主写回才换位置', () => {
+    const seen: unknown[] = []
+    const rig = makeRig({ position: { edge: 'inline-end', ratio: 0.5 }, onPositionChange: d => seen.push(d.position) })
+    rig.api().setPosition({ edge: 'inline-start', ratio: 0.5 })
+    expect(seen).toEqual([{ edge: 'inline-start', ratio: 0.5 }])
+    expect(rig.root()['data-edge']).toBe('inline-end')
+    rig.setProps({ position: { edge: 'inline-start', ratio: 0.5 } })
+    expect(rig.root()['data-edge']).toBe('inline-start')
+  })
+})
+
+describe('float-button 拖动', () => {
+  /** 视口 1000 × 800；触发器 48px 停在右下角（928, 728）。减弱动效下弹簧直接落到终点。 */
+  function dragRig(initial: Props = {}): Rig {
+    const rig = makeRig({ draggable: true, ...initial })
+    rig.rootEl.dataset.motion = 'reduce'
+    const trigger = document.createElement('button')
+    trigger.id = String(rig.trigger().id)
+    trigger.getBoundingClientRect = () => ({ left: 928, top: 728, width: 48, height: 48, right: 976, bottom: 776, x: 928, y: 728, toJSON: () => ({}) })
+    rig.rootEl.append(trigger)
+    Object.defineProperty(document.documentElement, 'clientWidth', { configurable: true, value: 1000 })
+    Object.defineProperty(document.documentElement, 'clientHeight', { configurable: true, value: 800 })
+    stops.push(() => {
+      delete (document.documentElement as unknown as Record<string, unknown>).clientWidth
+      delete (document.documentElement as unknown as Record<string, unknown>).clientHeight
+    })
+    return rig
+  }
+
+  function down(rig: Rig): void {
+    ;(rig.trigger().onPointerDown as (e: PointerEvent) => void)({ button: 0, pointerId: 1, clientX: 950, clientY: 750, pointerType: 'mouse' } as PointerEvent)
+  }
+
+  it('按下移动过激活距离才跟手：投影 data-moving / data-dragging 与跟手坐标，起拖时展开着就收起', () => {
+    const rig = dragRig({ defaultOpen: true })
+    down(rig)
+    rig.service.send({ type: 'DRAG.MOVE', clientX: 952, clientY: 751 })
+    expect(rig.root()['data-moving']).toBeUndefined()
+    expect(rig.api().open).toBe(true)
+    rig.service.send({ type: 'DRAG.MOVE', clientX: 600, clientY: 300 })
+    expect(rig.root()['data-moving']).toBe('')
+    expect(rig.root()['data-dragging']).toBe('')
+    expect(String(rig.root().style)).toContain('--xh-_float-button-x: 578px')
+    expect(String(rig.root().style)).toContain('--xh-_float-button-y: 278px')
+    expect(rig.api().open).toBe(false)
+  })
+
+  it('跟手的坐标夹在视口里，四边各留 offset', () => {
+    const rig = dragRig()
+    down(rig)
+    rig.service.send({ type: 'DRAG.MOVE', clientX: -500, clientY: 2000 })
+    expect(String(rig.root().style)).toContain('--xh-_float-button-x: 24px')
+    expect(String(rig.root().style)).toContain('--xh-_float-button-y: 728px')
+  })
+
+  it('松手按 snap 贴边、落定才提交并通知一次；随后浏览器补派的 click 不开合，再点一下照常开合', async () => {
+    const seen: unknown[] = []
+    const rig = dragRig({ onPositionChange: d => seen.push(d.position) })
+    down(rig)
+    rig.service.send({ type: 'DRAG.MOVE', clientX: 300, clientY: 398 })
+    rig.service.send({ type: 'DRAG.END', velocityX: 0, velocityY: 0, canceled: false })
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(seen).toEqual([{ edge: 'inline-start', ratio: 0.5 }])
+    expect(rig.root()['data-edge']).toBe('inline-start')
+    expect(rig.root()['data-moving']).toBeUndefined()
+    expect(rig.root()['data-dragging']).toBeUndefined()
+    ;(rig.trigger().onClick as () => void)()
+    expect(rig.api().open).toBe(false)
+    ;(rig.trigger().onClick as () => void)()
+    expect(rig.api().open).toBe(true)
+  })
+
+  it('没移动过激活距离就松手是一次点按：不提交位置，click 照常开合', async () => {
+    const seen: unknown[] = []
+    const rig = dragRig({ onPositionChange: d => seen.push(d.position) })
+    down(rig)
+    rig.service.send({ type: 'DRAG.MOVE', clientX: 951, clientY: 751 })
+    rig.service.send({ type: 'DRAG.END', velocityX: 0, velocityY: 0, canceled: false })
+    await Promise.resolve()
+    expect(seen).toEqual([])
+    ;(rig.trigger().onClick as () => void)()
+    expect(rig.api().open).toBe(true)
+  })
+
+  it('snap 为 none 时停在放手处，提交像素坐标', async () => {
+    const seen: unknown[] = []
+    const rig = dragRig({ snap: 'none', onPositionChange: d => seen.push(d.position) })
+    down(rig)
+    rig.service.send({ type: 'DRAG.MOVE', clientX: 500, clientY: 300 })
+    rig.service.send({ type: 'DRAG.END', velocityX: 0, velocityY: 0, canceled: false })
+    await Promise.resolve()
+    expect(seen).toEqual([{ x: 478, y: 278 }])
+    expect(rig.root()['data-point']).toBe('')
+  })
+
+  it('不写 draggable 或禁用时按下不起拖', () => {
+    const rig = dragRig({ draggable: false })
+    down(rig)
+    rig.service.send({ type: 'DRAG.MOVE', clientX: 300, clientY: 300 })
+    expect(rig.root()['data-moving']).toBeUndefined()
+    const disabled = dragRig({ disabled: true })
+    down(disabled)
+    disabled.service.send({ type: 'DRAG.MOVE', clientX: 300, clientY: 300 })
+    expect(disabled.root()['data-moving']).toBeUndefined()
+    expect(disabled.root()['data-draggable']).toBeUndefined()
   })
 })
