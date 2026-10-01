@@ -307,21 +307,21 @@
     user-select: none;
   }
 
-  /* 列对齐：data-align 控制列头与数据格的文本对齐方向；数据格同时调整 justify-content 以对齐块级内容 */
+  /* 列对齐：data-align 控制列头与数据格的文本与内容对齐方向；
+     显式写出三档以便 start 能重置自定义皮肤里可能存在的非默认对齐 */
+  [data-scope='table']:is([data-part='column-header'], [data-part='cell'])[data-align='start'] {
+    text-align: start;
+    justify-content: start;
+  }
+
   [data-scope='table']:is([data-part='column-header'], [data-part='cell'])[data-align='center'] {
     text-align: center;
+    justify-content: center;
   }
 
   [data-scope='table']:is([data-part='column-header'], [data-part='cell'])[data-align='end'] {
     text-align: end;
-  }
-
-  [data-scope='table'][data-part='cell'][data-align='center'] {
-    justify-content: center;
-  }
-
-  [data-scope='table'][data-part='cell'][data-align='end'] {
-    justify-content: flex-end;
+    justify-content: end;
   }
 
   /* 列名是列头里唯一可收窄的一格：flex: 1 吃掉余量、把排序钮 / 列宽把手推到行尾，min-inline-size: 0 让它在
