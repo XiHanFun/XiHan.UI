@@ -1064,6 +1064,7 @@ export function connectTable<T extends PropTypes>(
         // 两个属性都不带位移——被拖的列原地不动，冻结列的吸附才不会被祖先 transform 打死
         'data-dragging': dataAttr(draggingColumn === column.value),
         'data-drop': dropSide(column.value),
+        'data-align': def?.align,
         ...sticky,
         // 列宽由连接层写进内联 inline-size：那条轴归它，皮肤不再声明；吸附偏移与纵向合并的高度与它同住一个 style
         ...(() => {
@@ -1125,6 +1126,7 @@ export function connectTable<T extends PropTypes>(
         // 与表头格同发：指示线要贯穿整张表，只画在列头上会看不出落到哪儿
         'data-dragging': dataAttr(draggingColumn === cell.value),
         'data-drop': dropSide(cell.value),
+        'data-align': def?.align,
         ...sticky,
         ...(Object.keys(sizeStyle).length || Object.keys(spanStyle).length
           ? { style: { ...sticky.style as Record<string, unknown>, ...sizeStyle, ...spanStyle } }

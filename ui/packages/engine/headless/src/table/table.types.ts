@@ -156,6 +156,11 @@ export interface TableColumnDef {
    * 不可拖动的列与冻结列一样是屏障：跨过它落下会把它挤走，而作者已声明该列不动。
    */
   reorderable?: boolean
+  /**
+   * 列内容的对齐方向，写为列头与数据格上的 data-align。
+   * 不提供时由皮肤决定（默认 start）。
+   */
+  align?: 'start' | 'center' | 'end'
 }
 
 /**
