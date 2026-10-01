@@ -15861,6 +15861,177 @@
       "description": "color-picker 的 alpha-slider 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-color-picker-confirm-trigger-bg",
+      "component": "color-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background-color"
+      ],
+      "state": [
+        "default",
+        "xh-ink-surface"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-rest"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-confirm-trigger-bg-active",
+      "component": "color-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-confirm-trigger-bg-hover",
+      "component": "color-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 confirm-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-confirm-trigger-fg",
+      "component": "color-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 confirm-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-confirm-trigger-h",
+      "component": "color-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-visual-size"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 confirm-trigger 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-confirm-trigger-px",
+      "component": "color-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-padding-inline"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 confirm-trigger 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-confirm-trigger-radius",
+      "component": "color-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 confirm-trigger 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-confirm-trigger-shadow",
+      "component": "color-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "none"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 confirm-trigger 部件 box-shadow 覆盖槽。"
+    },
+    {
       "name": "--xh-color-picker-content-bg",
       "component": "color-picker",
       "part": [
@@ -16236,6 +16407,24 @@
       ],
       "visibility": "public",
       "description": "color-picker 的 control 部件 block-size、min-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-control-max-h",
+      "component": "color-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "max-block-size"
+      ],
+      "state": [
+        "xh-field-layout=multi-tag"
+      ],
+      "defaultToken": [
+        "--xh-viewport-h-sm"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 control 部件 max-block-size 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-control-min-w",
@@ -16839,6 +17028,63 @@
       ],
       "visibility": "public",
       "description": "color-picker 的 swatch 部件 --xh-swatch-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-tag-dot-border",
+      "component": "color-picker",
+      "part": [
+        "root",
+        "tag-list"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "value"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 root、tag-list 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-tag-dot-size",
+      "component": "color-picker",
+      "part": [
+        "root",
+        "tag-list"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "value"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-sm"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 root、tag-list 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-tag-list-gap",
+      "component": "color-picker",
+      "part": [
+        "tag-list"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "xh-tag-list"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 tag-list 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-thumb-border",

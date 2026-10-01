@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="color-picker"`：`root` · `label` · `control` · `trigger` · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `hue-slider` · `alpha-slider` · `channel-input` · `eye-dropper-trigger` · `swatch-picker` · `recent-swatch-picker` · `hidden-input`
+`data-scope="color-picker"`：`root` · `label` · `control` · `tag-list` · `trigger` · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `hue-slider` · `alpha-slider` · `channel-input` · `eye-dropper-trigger` · `swatch-picker` · `recent-swatch-picker` · `confirm-trigger` · `hidden-input`
 
 ## 示例
 
@@ -66,11 +66,18 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 
 <XhDemo src="color-picker/08-recent" />
 
+### 多选成标签
+
+selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」收进值、浮层不收，可以接着添；预设色板点一下切换选中。选中的颜色在输入行里排成带色点的标签，点叉或在展开钮上按退格摘掉
+
+<XhDemo src="color-picker/09-multiple" />
+
 ## 设计指引
 
 ### 何时使用
 
 - 用户需要自定义主题色、标注色或画布颜色，且不限于固定选项。
+- 需要挑出一组颜色（配色方案、图表系列色）时，用多选把它们收成一排标签。
 - 既需要可视化挑选（取色面、滑块）也需要精确输入（十六进制、分量框）。
 - 需要从屏幕取色。
 
@@ -90,7 +97,10 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 - 数值框输入只保留草稿，可解析时立即取值；不可解析时保留原文并报输入错误，回车同时拦截表单提交。
 - 屏幕取色通过浮层内的按钮触发，环境不提供 EyeDropper 时始终禁用；取到的颜色与色板、外部 setValue 走同一条取值路径。
 - 格式、输入、颜色解析与屏幕取色四路错误相互独立，修正一路不影响其他路。
-- 受控 `value` 与 `open`：宿主不写回时界面不变化，回调照常发出；表单出口经 `hidden-input` 提交当前值串。
+- 值恒为颜色串数组：单选恒为一项（取色器总有一个颜色），宿主可以写裸串；`onValueChange` 的 `value` 恒为数组。
+- 受控 `value` 与 `open`：宿主不写回时界面不变化，回调照常发出；表单出口经 `hidden-input` 提交选中的值串。
+- 多选（`selectionMode="multiple"`）时浮层里调出的工作色是草稿，按「添加」（`confirm-trigger`）收进值，浮层不收、工作色留着，接着调就能添下一个；预设色板点一下切换选中，格子本身不再标选中。工作色解析不出、已经选过（按颜色比较，写法不同也算同一个）或到了 `maxSelected` 时「添加」不可按。
+- 多选的选中值在输入行里排成标签（与[选择器](./select)多选同一套库内[标签](./tag)），按加入先后：每枚标签前一个该颜色的色点，值文字收起，触发钮只剩一颗显示工作色的色块并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签不截短、一行放不下就折行，超过 `maxTagCount`（默认 3）的折进 +N；表单一个选中值一份同名隐藏输入。
 - `inline` 是常驻形态：取色面直接铺在页面里，与浮层形态同一台机器、同一组部件，只是不写 `control` / `trigger` / `positioner`。取色面是静态内容面（surface 圆角、描边、不落影），不抢焦点、不入层栈，点外与 Escape 都不收起。
 - 最近使用色：一轮取色结束且颜色变了就记一笔，最新的在最前、同色只留一份、最多留 `maxRecentColors` 个（缺省 8）。浮层形态以收起为一轮，常驻形态以焦点离开取色面为一轮；只经 `setValue` 改的不记。`recentColors` 可受控，由宿主持久化；`recent-swatch-picker` 挂载点渲染它们，还没有时收起。
 
@@ -104,6 +114,7 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 
 - 通过 `swatches` 提供常用色，多数用户从这里即可完成选择。
 - 触发按钮内同时放色块与值串，读屏与视觉各有一路。
+- 多选时在浮层末尾放「添加」，并配上预设色板：常用色点一下就进出，自定义色调好再添。
 - 需要精确输入时放数值框；一个十六进制框比四个分量框更节省空间。
 
 ### 反模式
@@ -119,7 +130,7 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-color-picker>` |
-| Vue 组件 | `XhColorPickerAlphaSlider` `XhColorPickerAreaThumb` `XhColorPickerChannelInput` `XhColorPickerContent` `XhColorPickerControl` `XhColorPickerEyeDropperTrigger` `XhColorPickerHiddenInput` `XhColorPickerHueSlider` `XhColorPickerLabel` `XhColorPickerPositioner` `XhColorPickerRecentSwatchPicker` `XhColorPickerRoot` `XhColorPickerSaturationArea` `XhColorPickerSwatch` `XhColorPickerSwatchPicker` `XhColorPickerTrigger` `XhColorPickerValueText` |
+| Vue 组件 | `XhColorPickerAlphaSlider` `XhColorPickerAreaThumb` `XhColorPickerChannelInput` `XhColorPickerConfirmTrigger` `XhColorPickerContent` `XhColorPickerControl` `XhColorPickerEyeDropperTrigger` `XhColorPickerHiddenInput` `XhColorPickerHueSlider` `XhColorPickerItemDeleteTrigger` `XhColorPickerLabel` `XhColorPickerOverflowTag` `XhColorPickerPositioner` `XhColorPickerRecentSwatchPicker` `XhColorPickerRoot` `XhColorPickerSaturationArea` `XhColorPickerSwatch` `XhColorPickerSwatchPicker` `XhColorPickerTag` `XhColorPickerTagLabel` `XhColorPickerTagList` `XhColorPickerTrigger` `XhColorPickerValueText` |
 | 组合式函数 | `useColorPicker` |
 | 状态机 | `colorPickerMachine` |
 | 皮肤 | `@xihan-ui/styles/color-picker.css` |
@@ -128,8 +139,11 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 颜色值串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
-| `defaultValue` | `string` |  |  |
+| `value` | `string \| string[]` |  | 选中的颜色，值串数组。提供即受控：写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组；单选给空数组时按缺省色 #000000。 |
+| `defaultValue` | `string \| string[]` |  |  |
+| `selectionMode` | `ColorPickerSelectionMode` |  | 选择模式，默认 single。 |
+| `maxSelected` | `number` |  | multiple 下最多选几个颜色：选满后「添加」不可按、色块只能点掉已选的。非整数向下取整，小于 1 或不是有限数时不设上限。 |
+| `maxTagCount` | `number` |  | 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 |
 | `format` | `ColorFormat` |  | 值串的写法，默认 hex。修改它只改变对外的序列化，工作色恒为 HSVA。 |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
@@ -159,7 +173,7 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ColorPickerValueChangeDetails` | 颜色变化；detail 为 `{ value: string }` |
+| `value-change` | `ColorPickerValueChangeDetails` | 选中的颜色变化；detail 为 `{ value: string[] }`，单选恒为一项 |
 | `open-change` | `ColorPickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `color-error` | `ColorPickerErrorDetails` | 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象 |
 | `recent-colors-change` | `ColorPickerRecentColorsChangeDetails` | 一轮取色结束、颜色变了，最近使用色随之变化；detail 为 `{ recentColors: string[] }` |
@@ -181,6 +195,7 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | `XhColorPickerChannelInput` | `channel` | `ColorPickerInputChannel` |  | 该输入框编辑的通道：hex 是整串，r/g/b 是分量，a 是透明度百分数；默认或无法识别时按 hex 处理。 |
 | `XhColorPickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhColorPickerRoot` | `children` | `SlotChildren<ColorPickerRootSlotProps>` |  |  |
+| `XhColorPickerTag` | `value` | `string` | 是 | 它代表哪个选中颜色。 |
 
 ### 状态
 
@@ -205,7 +220,7 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 
 **状态**：`closed` · `open` · `open.idle` · `open.dragging` · `open.picking`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `HSVA.SET` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `EYE_DROPPER.ERROR` · `ERROR.CLEAR` · `SESSION.END` · `RECENT.CLEAR` · `INLINE.SYNC` · `INLINE.CLOSE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `SELECTED.SET` · `VALUE.ADD` · `VALUE.REMOVE` · `VALUE.TOGGLE` · `TAG_LIST.TRACKED` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `HSVA.SET` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `EYE_DROPPER.ERROR` · `ERROR.CLEAR` · `SESSION.END` · `RECENT.CLEAR` · `INLINE.SYNC` · `INLINE.CLOSE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isOpenControlled` · `canInteract` · `canPick` · `isInline`
 
@@ -216,7 +231,9 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `value` | `string` | 当前值串（与 onValueChange 发出的是同一个）。 |
+| `value` | `string[]` | 选中的颜色，值串数组（与 onValueChange 发出的是同一个）：单选恒为一项，多选按加入先后。 |
+| `selectionMode` | `ColorPickerSelectionMode` |  |
+| `color` | `string` | 工作色的值串：触发钮里的色块与值文字显示它；单选时就是选中值，多选时是浮层里调着的草稿。 |
 | `rgba` | `ColorRgba` |  |
 | `hsva` | `ColorHsva` | 工作色。取色区与色相滑杆读取的都是它。 |
 | `format` | `ColorFormat` |  |
@@ -230,18 +247,29 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | `swatches` | `string[]` | 预设色板（原样透传 swatches prop，默认为空数组）。 |
 | `inline` | `boolean` | 常驻形态。 |
 | `recentColors` | `string[]` | 最近使用色，最新的在最前。 |
+| `canAdd` | `boolean` | 多选时「添加」此刻可按：工作色还没选过、也没到 maxSelected。 |
+| `tags` | `ColorPickerTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 |
+| `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `hueSlider` | `ColorSliderApi<T>` | 色相颜色滑块的 api：部件属性与取值都从这里获取，DOM 带 data-scope="color-slider"。 |
 | `alphaSlider` | `ColorSliderApi<T>` | 透明度颜色滑块的 api。 |
 | `swatchPicker` | `ColorSwatchPickerApi<T>` | 预设色板的 api，DOM 带 data-scope="color-swatch-picker"。 |
 | `recentSwatchPicker` | `ColorSwatchPickerApi<T>` | 最近使用色那台色块选择器的 api。 |
 | `inputText` | `(channel: ColorPickerInputChannel) => string` | 某个数值框当前应显示的文字（有草稿显示草稿，否则显示规范文本）。 |
 | `setOpen` | `(next: boolean) => void` |  |
-| `setValue` | `(next: string) => void` |  |
+| `setValue` | `(next: string[]) => void` | 改选中值：单选取首项改工作色，多选整份替换。 |
+| `add` | `() => void` | 多选：把工作色收进值（与按「添加」同一条路）。 |
+| `deselect` | `(value: string) => void` | 多选：摘掉一个选中值。 |
 | `clearError` | `() => void` | 清除四路显式错误；屏幕取色重试也会先清除自己那一路。 |
 | `clearRecentColors` | `() => void` | 清空最近使用色。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
+| `getTagListProps` | `() => T['element']` | 标签行：多选时放在盒里、触发钮之前，收纳可见标签与 +N 标签；单选时整体 hidden。 |
+| `getTagProps` | `(props: ColorPickerTagProps) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"），另带 data-value 与画色点用的颜色。 |
+| `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）；标签与 +N 共用。 |
+| `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
+| `getItemDeleteTriggerProps` | `(props: ColorPickerTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；不占 Tab 位、按下不夺焦。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
 | `getSwatchProps` | `() => T['element']` |  |
@@ -255,7 +283,8 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | `getEyeDropperTriggerProps` | `() => T['button']` |  |
 | `getSwatchPickerProps` | `() => T['element']` | 预设色板的挂载点，同时充当色板的根节点（role=radiogroup 与键盘处理都在它身上）。 |
 | `getRecentSwatchPickerProps` | `() => T['element']` | 最近使用色的挂载点，同上；还没有最近使用色时收起。 |
-| `getHiddenInputProps` | `() => T['input']` | 表单影子：值随表单提交。提供 name 后才带 name，未提供时不参与提交。 |
+| `getConfirmTriggerProps` | `() => T['button']` | 「添加」：多选时把工作色收进值，浮层不收；单选时 hidden。文字由作者写。 |
+| `getHiddenInputProps` | `(props?: ColorPickerHiddenInputProps) => T['input']` | 表单影子：值随表单提交。提供 name 后才带 name，未提供时不参与提交。 多选时一个选中值一份同名输入：传 `{ value }` 产出那一份，不传是首个选中值那一份。 |
 
 ## 无障碍
 
@@ -265,6 +294,7 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
+| `Backspace` | focus in trigger, multiple, 有选中值, not disabled/readOnly | 摘掉最后一个选中值（标签行末尾那一枚） |
 | `ArrowRight` / `ArrowLeft` | focus in area-thumb, not disabled/readOnly | 按 1 调饱和度；RTL 下左右对调，语义恒是"朝饱和走一格" |
 | `ArrowUp` / `ArrowDown` | focus in area-thumb, not disabled/readOnly | 按 1 调明度，屏幕向上恒是变亮，与 dir 无关 |
 | `Shift+ArrowRight` / `Shift+ArrowLeft` / `Shift+ArrowUp` / `Shift+ArrowDown` | focus in area-thumb, not disabled/readOnly | 同上，但一步走 10 |
@@ -300,6 +330,7 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | `eye-dropper-trigger` | `aria-label` | label.eyeDropperTrigger |
 
 - 触发按钮是原生按钮，`aria-haspopup="dialog"`，名称由标题与当前值串合成；浮层是非模态 `role="dialog"`。
+- 多选标签上的删除钮不占 Tab 位，可及名取 `translations.deleteItem`；键盘从触发钮上按退格摘掉最后一个。色点只是辅助，标签文字就是值串，颜色不是唯一的信息通道。
 - 取色面的拇指是 `role="slider"`：`aria-valuenow` 报告饱和度，明度写入 `aria-valuetext`。
 - 两条滑块的名称与带单位的播报文本取自 `translations.channel` / `channelValueText`，由内嵌滑块读出。
 - 色板是 `role="radiogroup"`，每格 `role="radio"`；整组名称取 `translations.swatchGroup`，每格读 `translations.swatch(value)`；最近使用色同一套，整组名称取 `translations.recentSwatchGroup`。
@@ -333,7 +364,11 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
 | `control` | `data-xh-field-chrome` | '' |
+| `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
 | `control` | `data-xh-field-size` | props.size |
+| `tag-list` | `data-disabled` | ''（条件成立时才出现） |
+| `tag-list` | `data-instant` | ''（条件成立时才出现） |
+| `tag-list` | `data-xh-tag-list` | '' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
@@ -377,6 +412,15 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | `eye-dropper-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `eye-dropper-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `eye-dropper-trigger` | `data-state` | 'picking' \| 'open' \| 'closed' |
+| `confirm-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-xh-action-control` | '' |
+| `confirm-trigger` | `data-xh-action-display` | 'always' |
+| `confirm-trigger` | `data-xh-action-profile` | 'text' |
+| `confirm-trigger` | `data-xh-action-size` | 'sm' |
+| `confirm-trigger` | `data-xh-action-variant` | 'solid' |
+| `confirm-trigger` | `data-xh-ink-surface` | '' |
+| `overflow-tag` | `data-count` | String(overflowCount) |
+| `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -396,6 +440,14 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | `--xh-color-picker-action-radius` | `eye-dropper-trigger` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 eye-dropper-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-action-size` | `eye-dropper-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | color-picker 的 eye-dropper-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-color-picker-alpha-slider-gap` | `alpha-slider` | `gap` | `default` | `--xh-stack-gap-md` | color-picker 的 alpha-slider 部件 gap 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-bg` | `confirm-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | color-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-bg-active` | `confirm-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | color-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-bg-hover` | `confirm-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | color-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-fg` | `confirm-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | color-picker 的 confirm-trigger 部件 color 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-h` | `confirm-trigger` | `block-size` | `default` | `--xh-_action-profile-visual-size` | color-picker 的 confirm-trigger 部件 block-size 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-px` | `confirm-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | color-picker 的 confirm-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-radius` | `confirm-trigger` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 confirm-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-shadow` | `confirm-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | color-picker 的 confirm-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-color-picker-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | color-picker 的 content 部件 background 覆盖槽。 |
 | `--xh-color-picker-content-border` | `content` | `border` | `default` | `--xh-border-default` | color-picker 的 content 部件 border 覆盖槽。 |
 | `--xh-color-picker-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | color-picker 的 content 部件 color 覆盖槽。 |
@@ -415,6 +467,7 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | `--xh-color-picker-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | color-picker 的 control 部件 color 覆盖槽。 |
 | `--xh-color-picker-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_color-picker-gap` | color-picker 的 control 部件 gap 覆盖槽。 |
 | `--xh-color-picker-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_color-picker-h` | color-picker 的 control 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-color-picker-control-max-h` | `control` | `max-block-size` | `xh-field-layout=multi-tag` | `--xh-viewport-h-sm` | color-picker 的 control 部件 max-block-size 覆盖槽。 |
 | `--xh-color-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | color-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-color-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_color-picker-px` | color-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-color-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | color-picker 的 control 部件 border-radius 覆盖槽。 |
@@ -448,6 +501,9 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 | `--xh-color-picker-swatch-picker-gap` | `recent-swatch-picker`<br>`swatch-picker` | `gap` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-_color-swatch-picker-gap` | color-picker 的 recent-swatch-picker、swatch-picker 部件 gap 覆盖槽。 |
 | `--xh-color-picker-swatch-radius` | `swatch` | `--xh-swatch-radius` | `default` | `--xh-shape-inset` | color-picker 的 swatch 部件 --xh-swatch-radius 覆盖槽。 |
 | `--xh-color-picker-swatch-size` | `swatch` | `--xh-swatch-size` | `default` | `--xh-_swatch-size` | color-picker 的 swatch 部件 --xh-swatch-size 覆盖槽。 |
+| `--xh-color-picker-tag-dot-border` | `root`<br>`tag-list` | `border` | `value` | `--xh-border-default` | color-picker 的 root、tag-list 部件 border 覆盖槽。 |
+| `--xh-color-picker-tag-dot-size` | `root`<br>`tag-list` | `block-size`<br>`inline-size` | `value` | `--xh-control-indicator-sm` | color-picker 的 root、tag-list 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-color-picker-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | color-picker 的 tag-list 部件 gap 覆盖槽。 |
 | `--xh-color-picker-thumb-border` | `area-thumb` | `border` | `default` | `--xh-color-neutral-0` | color-picker 的 area-thumb 部件 border 覆盖槽。 |
 | `--xh-color-picker-thumb-radius` | `area-thumb` | `border-radius` | `default` | `--xh-shape-circle` | color-picker 的 area-thumb 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-thumb-scale-dragging` | `area-thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-picker 的 area-thumb 部件 scale 覆盖槽。 |
@@ -462,11 +518,11 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-color-picker-thumb-scale-dragging`。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

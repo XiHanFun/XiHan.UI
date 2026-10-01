@@ -43,6 +43,7 @@ export type {
   ColorPickerErrors,
   ColorPickerEyeDropperErrorDetails,
   ColorPickerFormatErrorDetails,
+  ColorPickerHiddenInputProps,
   ColorPickerInputErrorDetails,
   ColorPickerInputProps,
   ColorPickerOpenChangeDetails,
@@ -50,7 +51,10 @@ export type {
   ColorPickerRecentColorsChangeDetails,
   ColorPickerRefs,
   ColorPickerSchema,
+  ColorPickerSelectionMode,
   ColorPickerServices,
+  ColorPickerTagMeta,
+  ColorPickerTagProps,
   ColorPickerTranslations,
   ColorPickerValueChangeDetails,
 } from './color-picker.types'

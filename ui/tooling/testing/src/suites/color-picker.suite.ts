@@ -93,6 +93,26 @@ function withHiddenInput(base: FixtureNode): FixtureNode {
   return { ...base, children: [...(base.children ?? []), { part: 'hidden-input', tag: 'input' }] }
 }
 
+/** 多选的「添加」由作者写在浮层末尾，只有多选用例才声明它。 */
+function withConfirmTrigger(base: FixtureNode): FixtureNode {
+  const [positioner] = (base.children ?? []).filter(node => node.part === 'positioner')
+  const content = positioner?.children?.[0]
+  if (!positioner || !content)
+    throw new Error('fixture 里找不到 positioner / content')
+  const nextContent: FixtureNode = { ...content, children: [...(content.children ?? []), { part: 'confirm-trigger', tag: 'button', text: '添加' }] }
+  return {
+    ...base,
+    children: (base.children ?? []).map(node => node === positioner ? { ...positioner, children: [nextContent] } : node),
+  }
+}
+
+/** 多选时一个选中值一份同名隐藏输入：Vue / React 各渲染一份部件，WC 首份用作者的节点、其余由元素补在后面，按 name 收齐才三端一致。 */
+function assertSubmittedValues(doc: Document, name: string, expected: readonly string[]): void {
+  const actual = Array.from(doc.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`), input => input.value)
+  if (JSON.stringify(actual) !== JSON.stringify(expected))
+    throw new Error(`表单提交的值不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+}
+
 /** name/value/disabled 里只有 name 进得了归一化快照（value 只落 DOM property），表单出口只能直接读 DOM。 */
 function assertHiddenInput(doc: Document, expected: readonly [string, string, boolean]): void {
   const el = doc.querySelector<HTMLInputElement>(`${SCOPE}[data-part="hidden-input"]`)
@@ -396,7 +416,7 @@ export const colorPickerSuite: ConformanceSuite = {
             swatchItem(ctx.doc, 0).dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
             await ctx.flush()
           },
-          expect: { events: [{ type: 'value-change', detail: { value: '#ff0000' } }] },
+          expect: { events: [{ type: 'value-change', detail: { value: ['#ff0000'] } }] },
         },
         { kind: 'focus', part: 'area-thumb' },
         {
@@ -434,7 +454,7 @@ export const colorPickerSuite: ConformanceSuite = {
             swatchItem(ctx.doc, 0).dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
             await ctx.flush()
           },
-          expect: { events: [{ type: 'value-change', detail: { value: '#ff0000' } }] },
+          expect: { events: [{ type: 'value-change', detail: { value: ['#ff0000'] } }] },
         },
       ],
     },
@@ -596,7 +616,7 @@ export const colorPickerSuite: ConformanceSuite = {
             // 色相跟着跳到绿
             expectAttr(sliderPart(ctx.doc, 'thumb', 0), 'aria-valuenow', '120')
           },
-          expect: { events: [{ type: 'value-change', detail: { value: '#00ff00' } }] },
+          expect: { events: [{ type: 'value-change', detail: { value: ['#00ff00'] } }] },
         },
       ],
     },
@@ -628,7 +648,7 @@ export const colorPickerSuite: ConformanceSuite = {
               'channel-input[0]': { 'aria-invalid': 'false' },
               'area-thumb': { 'aria-valuenow': '100' },
             },
-            events: [{ type: 'value-change', detail: { value: '#ff0000' } }],
+            events: [{ type: 'value-change', detail: { value: ['#ff0000'] } }],
           },
         },
       ],
@@ -676,7 +696,7 @@ export const colorPickerSuite: ConformanceSuite = {
             if (input.value !== '#00ff00')
               throw new Error(`收得下的输入应留在框里，实际 ${input.value}`)
           },
-          expect: { events: [{ type: 'value-change', detail: { value: '#00ff00' } }] },
+          expect: { events: [{ type: 'value-change', detail: { value: ['#00ff00'] } }] },
         },
       ],
     },
@@ -769,7 +789,7 @@ export const colorPickerSuite: ConformanceSuite = {
             // 受控下界面不许自作主张：拇指仍停在宿主给的那个值上
             expectAttr(hue, 'aria-valuenow', '0')
           },
-          expect: { events: [{ type: 'value-change', detail: { value: '#ff0400' } }] },
+          expect: { events: [{ type: 'value-change', detail: { value: ['#ff0400'] } }] },
         },
         { kind: 'setProps', props: { value: '#00ff00' } },
         {
@@ -859,6 +879,91 @@ export const colorPickerSuite: ConformanceSuite = {
           'hidden-input': { type: 'hidden', name: null },
         },
       },
+    },
+    {
+      name: '多选时值文字收起，触发钮是键盘入口：退格摘掉最后一个选中值',
+      spec: { apg: APG_DIALOG },
+      covers: ['color-picker.kbd.remove-last'],
+      fixture: withConfirmTrigger,
+      props: { selectionMode: 'multiple', defaultValue: ['#ff0000', '#00ff00'] },
+      initial: {
+        parts: { 'value-text': { hidden: '' } },
+      },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: { events: [{ type: 'value-change', detail: { value: ['#ff0000'] } }] },
+        },
+      ],
+    },
+    {
+      name: '多选的「添加」：把工作色收进值，浮层不收；选过的颜色再按不下去',
+      spec: { apg: APG_DIALOG },
+      fixture: withConfirmTrigger,
+      props: { selectionMode: 'multiple', defaultValue: ['#ff0000'], defaultOpen: true },
+      initial: {
+        parts: { 'confirm-trigger': { hidden: null, disabled: null } },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'confirm-trigger',
+          expect: {
+            events: [{ type: 'value-change', detail: { value: ['#ff0000', '#000000'] } }],
+            parts: { 'content': { hidden: null }, 'confirm-trigger': { disabled: '' } },
+          },
+        },
+      ],
+    },
+    {
+      name: '多选的预设色板只是切换入口：格子不标选中，点一下选过的点掉、没选过的加进来',
+      spec: { apg: APG_DIALOG },
+      fixture: withConfirmTrigger,
+      props: { selectionMode: 'multiple', defaultValue: ['#ff0000'], defaultOpen: true },
+      steps: [
+        {
+          kind: 'raw',
+          why: '色板的格子戴 color-swatch-picker 的 scope，不进取色器的快照，只能直接读 DOM 与点击',
+          run: async (ctx) => {
+            expectAttr(swatchItem(ctx.doc, 0), 'aria-checked', 'false')
+            swatchItem(ctx.doc, 1).dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+            await ctx.flush()
+          },
+          expect: { events: [{ type: 'value-change', detail: { value: ['#ff0000', '#00ff00'] } }] },
+        },
+        {
+          kind: 'raw',
+          why: '同上',
+          run: async (ctx) => {
+            swatchItem(ctx.doc, 0).dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+            await ctx.flush()
+            expectAttr(swatchItem(ctx.doc, 0), 'aria-checked', 'false')
+          },
+          expect: { events: [{ type: 'value-change', detail: { value: ['#00ff00'] } }] },
+        },
+      ],
+    },
+    {
+      name: '多选的表单影子：一个选中值一份同名输入，摘掉一个就少一份',
+      spec: { apg: APG_DIALOG },
+      fixture: base => withHiddenInput(withConfirmTrigger(base)),
+      props: { selectionMode: 'multiple', defaultValue: ['#ff0000', '#00ff00'], name: 'theme' },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'value 只落 DOM property，WC 补出的那几份也不带部件标记，按 name 收齐',
+          run: ({ doc }) => assertSubmittedValues(doc, 'theme', ['#ff0000', '#00ff00']),
+        },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Backspace' },
+        {
+          kind: 'raw',
+          why: '同上',
+          run: ({ doc }) => assertSubmittedValues(doc, 'theme', ['#ff0000']),
+        },
+      ],
     },
   ],
 }

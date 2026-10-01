@@ -55,12 +55,13 @@ const CONTENT_PARTS = new Set(['input', 'value-text', 'segment-group'])
 const TRIGGER_IS_CONTENT = new Set(['select', 'cascader', 'tree-select', 'color-picker'])
 
 /**
- * 按模式二选一的内容区：同一时刻只有一个在场，另一个由连接层带 hidden。登记的是这一对部件与理由，
- * 两者各自仍须是盒里唯一撑开的那一个（不在场的那个收起不占位）。
+ * 按模式二选一的内容区：同一时刻只有一个撑开，另一个由连接层带 hidden，或收成定宽（flex: none）让位。
+ * 登记的是这一对部件与理由，两者各自仍须是盒里唯一撑开的那一个。
  */
 const ALTERNATE_CONTENT = {
   'date-picker': { parts: ['segment-group', 'tag-list'], why: '单选是一组段位、多选是一行标签，按 selectionMode 二选一' },
   'time-picker': { parts: ['segment-group', 'tag-list'], why: '同 date-picker' },
+  'color-picker': { parts: ['trigger', 'tag-list'], why: '单选是装着色块与值串的触发钮撑满盒；多选是一行标签，触发钮只剩色块、收成定宽让位' },
 }
 
 /** 内容区里还能再套一层撑开的文字区：下拉族的 value-text 长在 trigger 里面。 */

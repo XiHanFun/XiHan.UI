@@ -22,6 +22,6 @@
   const picker = document.getElementById("color-picker-inline");
   const readout = document.getElementById("color-picker-inline-value");
   picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value;
+    readout.textContent = event.detail.value[0];
   });
 </script>

@@ -13,16 +13,17 @@ import type {
   ColorPickerServices,
   ColorPickerTranslations,
 } from './color-picker.types'
-import { contains, dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { contains, dataAttr, isComposingEvent, mergeProps } from '@xihan-ui/core'
 import { connectColorSlider } from '../color-slider'
 import { connectColorSwatchPicker } from '../color-swatch-picker'
-import { colorCss, colorHsvaToRgba, colorHueCss, colorParse, colorResolveFormat, colorResolveHsva } from '../shared/color'
+import { COLOR_FALLBACK, colorCss, colorHsvaToRgba, colorHueCss, colorParse, colorResolveFormat, colorResolveHsva } from '../shared/color'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { pressHandlers } from '../shared/press'
+import { connectSelectionTags } from '../shared/selection-tags'
 import { colorPickerAnatomy } from './color-picker.anatomy'
 import { colorPickerInputText } from './color-picker.color'
 import { colorPickerPercent } from './color-picker.geometry'
-import { COLOR_PICKER_DEFAULT_PLACEMENT } from './color-picker.machine'
+import { COLOR_PICKER_DEFAULT_PLACEMENT, colorPickerIncludes, resolveColorPickerMaxSelected } from './color-picker.machine'
 
 const parts = colorPickerAnatomy.build()
 
@@ -37,7 +38,10 @@ const INPUT_NAME: Record<ColorPickerInputChannel, string> = {
   a: 'Alpha',
 }
 
-function resolveTranslations(input: Partial<ColorPickerTranslations> | undefined): ColorPickerTranslations {
+/** 标签的两句交给共享的标签连接层兜底，这里只收本组件自己的。 */
+type OwnTranslations = Omit<ColorPickerTranslations, 'deleteItem' | 'overflowTag'>
+
+function resolveTranslations(input: Partial<ColorPickerTranslations> | undefined): OwnTranslations {
   return {
     area: input?.area ?? 'Saturation and brightness',
     areaValueText: input?.areaValueText
@@ -83,7 +87,12 @@ export function connectColorPicker<T extends PropTypes>(
 
   const ids = scope.ids('color-picker', 'label', 'trigger', 'content', 'value-text')
 
+  // 工作色：取色区、滑块、数值框与触发钮里的色块读的都是它；单选时它就是选中值
   const value = context.get('value')
+  const multiple = prop('selectionMode') === 'multiple'
+  const selected = context.get('selected')
+  /** 对外的选中值：单选恒为一项，多选按加入先后。 */
+  const values = multiple ? selected : [value]
   const draft = context.get('draft')
   const dragTarget = context.get('dragTarget')
   const eyeDropperSupported = context.get('eyeDropperSupported')
@@ -104,6 +113,10 @@ export function connectColorPicker<T extends PropTypes>(
   const label = resolveTranslations(prop('translations'))
   // 只读与禁用都不改值；区别在于浮层还开不开得了、控件还聚不聚得上焦
   const interactive = !disabled && !readOnly
+  const maxSelected = resolveColorPickerMaxSelected(prop('maxSelected'))
+  // 「添加」：工作色解析得出、还没选过、没到上限
+  const canAdd = multiple && interactive && colorParse(value) != null && !colorPickerIncludes(selected, value)
+    && (maxSelected == null || selected.length < maxSelected)
   // 横轴（取色区的饱和度）跟着 dir 掉头；上下两键恒是屏幕向上变大，与 dir 无关
   const flipHorizontal = dir === 'rtl'
 
@@ -157,9 +170,30 @@ export function connectColorPicker<T extends PropTypes>(
     handler()
   }
 
+  // —— 多选：选中的颜色在盒里排成标签，每枚前面一个色点；套的是库里的 tag，与 Select 多选同一套 ——
+  const selectionTags = connectSelectionTags({
+    entries: multiple ? selected.map(v => ({ key: v, label: v })) : [],
+    maxTagCount: prop('maxTagCount'),
+    overflowTag: prop('translations')?.overflowTag,
+    deleteItem: prop('translations')?.deleteItem,
+    variant: prop('variant') ?? 'outline',
+    tone: undefined,
+    size: prop('size'),
+    disabled,
+    readOnly,
+    onDelete: key => send({ type: 'VALUE.REMOVE', value: key }),
+  }, normalize)
+  const { overflowCount, overflowText } = selectionTags
+
   return {
     open,
-    value,
+    value: values,
+    selectionMode: multiple ? 'multiple' : 'single',
+    color: value,
+    canAdd,
+    tags: selectionTags.visible.map(tag => ({ value: tag.key, label: tag.label })),
+    overflowCount,
+    overflowText,
     rgba,
     hsva,
     format,
@@ -182,7 +216,11 @@ export function connectColorPicker<T extends PropTypes>(
       if (next !== open)
         send({ type: next ? 'OPEN' : 'CLOSE' })
     },
-    setValue: next => send({ type: 'VALUE.SET', value: next, source: 'api' }),
+    setValue: next => send(multiple
+      ? { type: 'SELECTED.SET', value: next }
+      : { type: 'VALUE.SET', value: next[0] ?? COLOR_FALLBACK, source: 'api' }),
+    add: () => send({ type: 'VALUE.ADD' }),
+    deselect: v => send({ type: 'VALUE.REMOVE', value: v }),
     clearError: () => send({ type: 'ERROR.CLEAR' }),
     clearRecentColors: () => send({ type: 'RECENT.CLEAR' }),
 
@@ -206,8 +244,52 @@ export function connectColorPicker<T extends PropTypes>(
       ...stateAttrs(),
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',
+      // 多选的标签换行排开：盒随行数长高，到上限后在盒内滚动；触发钮收成一颗只显示工作色的小色块
+      'data-xh-field-layout': multiple ? 'multi-tag' : undefined,
       'data-variant': prop('variant') ?? 'outline',
     }),
+
+    // 标签行：盒里、触发钮之前，可见标签与 +N 那一枚在里面并排；单选时整体收起
+    getTagListProps: () => normalize.element({
+      ...parts['tag-list'].attrs,
+      'data-xh-tag-list': '',
+      // 列表动效接上之前，首帧的标签直接呈现
+      'data-instant': dataAttr(!context.get('tagListTracked')),
+      'hidden': !multiple || undefined,
+      'data-disabled': dataAttr(disabled),
+    }),
+
+    // 标签本体就是 tag 的 root（data-scope="tag"），多一个 data-value 记它代表哪个颜色，
+    // 颜色本身写进内联私有槽，皮肤在标签前画一个色点
+    getTagProps: ({ value: v }) => mergeProps<T['element']>(
+      selectionTags.tag(v).getRootProps(),
+      normalize.element({
+        'data-value': v,
+        'style': { '--xh-_color-picker-tag-color': colorParse(v) ? colorCss(colorParse(v)!) : '' },
+      }),
+    ),
+
+    // 折起来的那些合成一枚：也是 tag 的 root，data-count 记折了几枚；没有折起的就整个收起，不留空位
+    getOverflowTagProps: () => ({
+      ...selectionTags.overflow.getRootProps() as Record<string, unknown>,
+      'data-count': String(overflowCount),
+    }) as T['element'],
+
+    // 两种标签的文字都落在 tag 的 label 上
+    getTagLabelProps: () => selectionTags.overflow.getLabelProps(),
+
+    // 删除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用与点按都由 tag 给。
+    // 不占 Tab 位：键盘入口是触发钮，用退格删掉最后一个；按下不夺焦
+    getItemDeleteTriggerProps: ({ value: v }) => mergeProps<T['button']>(
+      selectionTags.tag(v).getCloseTriggerProps(),
+      normalize.button({
+        tabindex: -1,
+        onPointerDown: (event: PointerEvent) => {
+          if (event.button === 0)
+            event.preventDefault()
+        },
+      }),
+    ),
 
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
@@ -226,12 +308,21 @@ export function connectColorPicker<T extends PropTypes>(
         if (!disabled)
           send({ type: 'TOGGLE' })
       },
+      // 多选时触发钮是键盘入口：退格摘掉最后一个选中值，与 Select 多选同一手势
+      'onKeyDown': (event: KeyboardEvent) => {
+        if (!multiple || !interactive || event.key !== 'Backspace' || event.altKey || event.ctrlKey || event.metaKey || selected.length === 0)
+          return
+        event.preventDefault()
+        send({ type: 'VALUE.REMOVE', value: selected[selected.length - 1]! })
+      },
     }),
 
+    // 多选时收起：选中值在标签里念，触发钮只剩一颗显示工作色的色块
     getValueTextProps: () => normalize.element({
       ...parts['value-text'].attrs,
       ...stateAttrs(),
       id: ids['value-text'],
+      hidden: multiple || undefined,
     }),
 
     // 触发钮里的当前色块：面、棋盘格与描边由 Swatch 家族画，这里只投影颜色；解析不出的串不画颜色层
@@ -444,13 +535,34 @@ export function connectColorPicker<T extends PropTypes>(
       hidden: recentColors.length === 0 || undefined,
     })),
 
-    getHiddenInputProps: () => normalize.input({
+    // 「添加」：多选时把工作色收进值，浮层不收；单选时整个收起。文字由作者写
+    getConfirmTriggerProps: () => normalize.button({
+      ...parts['confirm-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'solid',
+      'data-xh-ink-surface': '',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'type': 'button',
+      'hidden': !multiple || undefined,
+      // 已经选过、选满了或改不动时按不下去，原生 disabled 一并退出 Tab 序列
+      'disabled': !canAdd || undefined,
+      'data-disabled': dataAttr(!canAdd),
+      'onClick': () => {
+        if (canAdd)
+          send({ type: 'VALUE.ADD' })
+      },
+    }),
+
+    getHiddenInputProps: input => normalize.input({
       ...parts['hidden-input'].attrs,
       // type 先于 value 写入：改 type 会重置输入的值
       type: 'hidden',
       // name 缺省即不产出该属性，此时这份输入不参与提交
       name: prop('name'),
-      value,
+      // 多选时一个选中值一份同名输入
+      value: input ? input.value : (values[0] ?? ''),
       // 禁用的控件不该提交出值。只读照常提交
       disabled: disabled || undefined,
     }),

@@ -49,6 +49,8 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ...['depth', 'offset', 'offset-expanded', 'front-height', 'height'].map(name => [`--xh-_notification-${name}`, 'packages/engine/headless/src/notification/notification.stack.ts']),
   // 浮动按钮的贴边比例与停点 / 跟手坐标：机器按位置与拖动算好，连接层写进根的内联样式，皮肤按它们排落位
   ...['ratio', 'x', 'y'].map(name => [`--xh-_float-button-${name}`, 'packages/engine/headless/src/float-button/float-button.connect.ts']),
+  // 颜色多选标签的色点颜色：连接层按标签代表的颜色写进标签的内联样式，皮肤只读
+  ['--xh-_color-picker-tag-color', 'packages/engine/headless/src/color-picker/color-picker.connect.ts'],
   // 图表提示框的锚点坐标：连接层按数据或指针的位置写进提示框的内联样式，皮肤只读
   ['--xh-_chart-tip-x', 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts'],
   ['--xh-_chart-tip-y', 'packages/engine/headless/src/cartesian-chart/cartesian-chart.connect.ts'],
