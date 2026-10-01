@@ -52,6 +52,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires draw - 笔迹变化时通知一次（含清空、撤销、重做与表单重置）；detail 为 `{ paths: string[], path: string }`
  * @fires draw-end - 签名定稿时通知一次（抬笔、清空、撤销、重做、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接存储
  * @fires value-change - 签名数据定稿，时机同 draw-end；detail 为 `{ value: { strokes, surface } }`，可原样存下再赋回 defaultValue 回显
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-drawing 的外壳
  * @csspart label - 画布标题（aria-labelledby 目标）
  * @csspart control - role=img 的画布，必须是 `<svg>`，指针落笔全部在它身上
@@ -89,6 +90,11 @@ export class XhSignaturePadElement extends XhElement {
   declare defaultValue?: SignaturePadValue
   declare drawing?: SignaturePadDrawingOptions
   declare translations?: Partial<SignaturePadTranslations>
+
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
 
   private readonly notifyDraw = (details: SignaturePadDrawDetails): void => {
     this.dispatchEvent(new CustomEvent('draw', { detail: details, bubbles: true, composed: true }))
@@ -137,6 +143,7 @@ export class XhSignaturePadElement extends XhElement {
       onDraw: this.notifyDraw,
       onDrawEnd: this.notifyDrawEnd,
       onValueChange: this.notifyValue,
+      onClear: this.notifyClear,
     }
   }
 

@@ -689,7 +689,7 @@ export const datePickerSuite: ConformanceSuite = {
               'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
               'segment-group': { 'data-empty': '', 'data-complete': null },
             },
-            events: [{ type: 'value-change', detail: { value: [] } }],
+            events: [{ type: 'value-change', detail: { value: [] } }, { type: 'clear', detail: null }],
           },
         },
         {

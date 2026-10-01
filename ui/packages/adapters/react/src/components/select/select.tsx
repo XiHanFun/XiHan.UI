@@ -72,6 +72,8 @@ export interface XhSelectRootProps extends RootElementProps {
   tone?: Tone
   size?: Size
   onValueChange?: SelectProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   onOpenChange?: SelectProps['onOpenChange']
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: SelectNodeMeta) => ReactNode
@@ -109,6 +111,7 @@ export function XhSelectRoot({
   tone,
   size,
   onValueChange,
+  onClear,
   onOpenChange,
   renderItem,
   renderItemPrefix,
@@ -142,6 +145,7 @@ export function XhSelectRoot({
     tone,
     size,
     onValueChange,
+    onClear,
     onOpenChange,
   })) as SelectProps)
   const api = ctx.api
@@ -190,7 +194,7 @@ export function XhSelectRoot({
   )
 }
 
-XhSelectRoot.xhEvents = ['value-change', 'open-change'] as const
+XhSelectRoot.xhEvents = ['clear', 'value-change', 'open-change'] as const
 
 export interface XhSelectLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhSelectLabel({ children, ...rest }: XhSelectLabelProps): ReactNode {

@@ -11626,6 +11626,7 @@
       "onBranchLoad",
       "onBranchLoadError",
       "onBranchLoadStart",
+      "onClear",
       "onOpenChange",
       "onValueChange",
       "open",
@@ -11744,6 +11745,7 @@
       "format",
       "invalid",
       "name",
+      "onClear",
       "onValueChange",
       "placeholder",
       "readOnly",
@@ -11837,6 +11839,7 @@
       "multiple",
       "name",
       "offset",
+      "onClear",
       "onInputValueChange",
       "onOpenChange",
       "onValueChange",
@@ -11910,6 +11913,7 @@
       "max",
       "min",
       "name",
+      "onClear",
       "onValueChange",
       "placeholder",
       "readOnly",
@@ -11944,6 +11948,7 @@
       "name",
       "offset",
       "onActiveViewChange",
+      "onClear",
       "onFocusedValueChange",
       "onOpenChange",
       "onValueChange",
@@ -11993,6 +11998,7 @@
       "offset",
       "onActiveIndexChange",
       "onActiveViewChange",
+      "onClear",
       "onFocusedValueChange",
       "onOpenChange",
       "onValueChange",
@@ -12159,6 +12165,7 @@
       "maxFiles",
       "minFileSize",
       "name",
+      "onClear",
       "onFileAccept",
       "onFileReject",
       "onFilesChange",
@@ -13066,6 +13073,7 @@
       "multiple",
       "name",
       "offset",
+      "onClear",
       "onOpenChange",
       "onValueChange",
       "open",
@@ -13112,6 +13120,7 @@
       "drawing",
       "invalid",
       "name",
+      "onClear",
       "onDraw",
       "onDrawEnd",
       "onValueChange",
@@ -13342,6 +13351,7 @@
       "invalid",
       "max",
       "name",
+      "onClear",
       "onInputValueChange",
       "onTagReject",
       "onValueChange",
@@ -13364,6 +13374,7 @@
       "invalid",
       "maxLength",
       "name",
+      "onClear",
       "onValueChange",
       "placeholder",
       "readOnly",
@@ -13386,6 +13397,7 @@
       "max",
       "min",
       "name",
+      "onClear",
       "onValueChange",
       "placeholder",
       "readOnly",
@@ -13410,6 +13422,7 @@
       "min",
       "name",
       "offset",
+      "onClear",
       "onOpenChange",
       "onValueChange",
       "open",
@@ -13439,6 +13452,7 @@
       "min",
       "name",
       "offset",
+      "onClear",
       "onOpenChange",
       "onValueChange",
       "open",
@@ -13651,6 +13665,7 @@
       "onBranchLoad",
       "onBranchLoadError",
       "onBranchLoadStart",
+      "onClear",
       "onExpandedValueChange",
       "onOpenChange",
       "onValueChange",
@@ -19540,6 +19555,7 @@
         "branch-load",
         "branch-load-error",
         "branch-load-start",
+        "clear",
         "open-change",
         "value-change"
       ]
@@ -19674,6 +19690,7 @@
         "variant"
       ],
       "events": [
+        "clear",
         "value-change"
       ]
     },
@@ -19780,6 +19797,7 @@
         "variant"
       ],
       "events": [
+        "clear",
         "input-value-change",
         "open-change",
         "value-change"
@@ -19869,6 +19887,7 @@
         "variant"
       ],
       "events": [
+        "clear",
         "value-change"
       ]
     },
@@ -19910,6 +19929,7 @@
       ],
       "events": [
         "active-view-change",
+        "clear",
         "focused-value-change",
         "open-change",
         "value-change"
@@ -19954,6 +19974,7 @@
       "events": [
         "active-index-change",
         "active-view-change",
+        "clear",
         "focused-value-change",
         "open-change",
         "value-change"
@@ -20129,6 +20150,7 @@
         "name"
       ],
       "events": [
+        "clear",
         "file-accept",
         "file-reject",
         "files-change",
@@ -21166,6 +21188,7 @@
         "variant"
       ],
       "events": [
+        "clear",
         "open-change",
         "value-change"
       ]
@@ -21207,6 +21230,7 @@
         "required"
       ],
       "events": [
+        "clear",
         "draw",
         "draw-end",
         "value-change"
@@ -21460,6 +21484,7 @@
         "variant"
       ],
       "events": [
+        "clear",
         "input-value-change",
         "tag-reject",
         "value-change"
@@ -21485,6 +21510,7 @@
         "variant"
       ],
       "events": [
+        "clear",
         "value-change"
       ]
     },
@@ -21508,6 +21534,7 @@
         "variant"
       ],
       "events": [
+        "clear",
         "value-change"
       ]
     },
@@ -21536,6 +21563,7 @@
         "variant"
       ],
       "events": [
+        "clear",
         "open-change",
         "value-change"
       ]
@@ -21564,6 +21592,7 @@
         "variant"
       ],
       "events": [
+        "clear",
         "open-change",
         "value-change"
       ]
@@ -21773,6 +21802,7 @@
         "branch-load",
         "branch-load-error",
         "branch-load-start",
+        "clear",
         "expanded-value-change",
         "open-change",
         "value-change"

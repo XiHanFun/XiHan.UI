@@ -162,6 +162,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @prop {[string, string]} defaultTime - 只点日期时起止各补的时刻（数组只能通过 property 设置），例如 ['00:00:00', '23:59:59']
  * @attr {'0'|'1'} active-index - 受控：当前编辑哪一端；未提供时每次展开按入口重定（从终点那组段位展开为 1）
  * @fires value-change - 区间两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires focused-value-change - 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格
  * @fires active-view-change - 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`，作者据此重绘网格
@@ -326,6 +327,11 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     onChange: () => this.requestUpdate(),
   })
 
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
+
   private readonly notifyValue = (details: DateRangePickerValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -473,6 +479,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
       dir: this.direction,
       closeOnSelect: this.closeOnSelect,
       onValueChange: this.notifyValue,
+      onClear: this.notifyClear,
       onOpenChange: this.notifyOpen,
       onFocusedValueChange: this.notifyFocus,
       onActiveViewChange: this.notifyActiveView,

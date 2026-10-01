@@ -145,6 +145,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} time-step - showTime 时间列按单位的步进，JSON 对象（`{"minute":15}`）；也可通过 property 传入对象
  * @prop {TimeUnavailablePredicate} isTimeUnavailable - showTime 时间列的逐格可选性（函数只能通过 property 设置）
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires focused-value-change - 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格
  * @fires active-view-change - 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`，作者据此重绘网格
@@ -295,6 +296,11 @@ export class XhDatePickerElement extends XhPortalHostElement {
     onChange: () => this.requestUpdate(),
   })
 
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
+
   private readonly notifyValue = (details: DatePickerValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -429,6 +435,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
       timeStep: this.timeStep,
       isTimeUnavailable: this.isTimeUnavailable,
       onValueChange: this.notifyValue,
+      onClear: this.notifyClear,
       onOpenChange: this.notifyOpen,
       onFocusedValueChange: this.notifyFocus,
       onActiveViewChange: this.notifyActiveView,

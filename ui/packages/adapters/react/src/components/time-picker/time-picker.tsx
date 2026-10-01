@@ -92,6 +92,8 @@ export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   onValueChange?: TimePickerProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   onOpenChange?: TimePickerProps['onOpenChange']
   children?: SlotChildren<TimePickerRootSlotProps>
 }
@@ -122,6 +124,7 @@ export function XhTimePickerRoot({
   offset,
   dir,
   onValueChange,
+  onClear,
   onOpenChange,
   children,
   ...rest
@@ -152,6 +155,7 @@ export function XhTimePickerRoot({
     offset,
     dir,
     onValueChange,
+    onClear,
     onOpenChange,
   })) as TimePickerProps)
   const api = ctx.api
@@ -183,7 +187,7 @@ export function XhTimePickerRoot({
   )
 }
 
-XhTimePickerRoot.xhEvents = ['value-change', 'open-change'] as const
+XhTimePickerRoot.xhEvents = ['clear', 'value-change', 'open-change'] as const
 
 export interface XhTimePickerLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 仍使用原生 label 保持表单语义，点击标题聚焦第一段由连接层的 click 接管。 */

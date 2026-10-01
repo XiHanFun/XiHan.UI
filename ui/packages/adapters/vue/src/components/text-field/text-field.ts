@@ -12,6 +12,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { autoSizeTextarea } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideTextField, useTextFieldContext } from './context'
@@ -53,6 +54,7 @@ export const XhTextFieldRoot = defineComponent({
   },
   // value-change 携带 { value }，update:value 携带裸串
   emits: {
+    'clear': () => true,
     'value-change': (_details: PayloadOf<TextFieldProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<TextFieldProps, 'onValueChange'>['value']) => true,
   },
@@ -64,7 +66,7 @@ export const XhTextFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useTextField(withXhConfig('text-field', useFormControlProps(props)) as TextFieldProps, notify)
+    const ctx = useTextField(withHandlers(withXhConfig('text-field', useFormControlProps(props)), { onClear: () => emit('clear') }) as TextFieldProps, notify)
     provideTextField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

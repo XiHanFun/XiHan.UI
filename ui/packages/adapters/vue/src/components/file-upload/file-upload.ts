@@ -12,6 +12,7 @@ import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
+import { withHandlers } from '../../runtime/with-handlers'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideFileUpload, provideFileUploadItem, useFileUploadContext, useFileUploadItemContext } from './context'
 import { useFileUpload } from './use-file-upload'
@@ -67,6 +68,7 @@ export const XhFileUploadRoot = defineComponent({
   },
   // files-change 携带 { files }，update:files 携带裸数组；file-accept / file-reject 逐个文件报告
   emits: {
+    'clear': () => true,
     'files-change': (_details: PayloadOf<FileUploadProps, 'onFilesChange'>) => true,
     'update:files': (_files: PayloadOf<FileUploadProps, 'onFilesChange'>['files']) => true,
     'file-accept': (_details: PayloadOf<FileUploadProps, 'onFileAccept'>) => true,
@@ -94,7 +96,7 @@ export const XhFileUploadRoot = defineComponent({
     const onUploadComplete: FileUploadProps['onUploadComplete'] = details => emit('upload-complete', details)
     const onUploadError: FileUploadProps['onUploadError'] = details => emit('upload-error', details)
     const onUploadCancel: FileUploadProps['onUploadCancel'] = details => emit('upload-cancel', details)
-    const ctx = useFileUpload(withXhConfig('file-upload', useFormControlProps(props)) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject, onRemoteFilesChange, onUploadComplete, onUploadError, onUploadCancel })
+    const ctx = useFileUpload(withHandlers(withXhConfig('file-upload', useFormControlProps(props)), { onClear: () => emit('clear') }) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject, onRemoteFilesChange, onUploadComplete, onUploadError, onUploadCancel })
     provideFileUpload(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       acceptedFiles: ctx.api.value.acceptedFiles,

@@ -205,6 +205,8 @@ export interface FileUploadSchema extends MachineSchema {
     translations?: Partial<FileUploadTranslations>
     /** 列表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onFilesChange?: (details: FileUploadFilesChangeDetails) => void
+    /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+    onClear?: () => void
     /** 本次接受了哪些文件。受控与否都发出：宿主据此发起上传。 */
     onFileAccept?: (details: FileUploadFileAcceptDetails) => void
     /** 本次拒绝了哪些文件及各自的原因。 */

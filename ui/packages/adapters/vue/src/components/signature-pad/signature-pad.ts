@@ -10,6 +10,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { withHandlers } from '../../runtime/with-handlers'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideSignaturePad, useSignaturePadContext } from './context'
 import { useSignaturePad } from './use-signature-pad'
@@ -51,6 +52,7 @@ export const XhSignaturePadRoot = defineComponent({
   },
   // draw / draw-end 是笔迹通知；value-change 携带 { value }，update:value 携带裸值
   emits: {
+    'clear': () => true,
     'draw': (_details: PayloadOf<SignaturePadProps, 'onDraw'>) => true,
     'draw-end': (_details: PayloadOf<SignaturePadProps, 'onDrawEnd'>) => true,
     'value-change': (_details: PayloadOf<SignaturePadProps, 'onValueChange'>) => true,
@@ -66,7 +68,7 @@ export const XhSignaturePadRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useSignaturePad(withXhConfig('signature-pad', useFormControlProps(props)) as SignaturePadProps, { onDraw, onDrawEnd, onValueChange })
+    const ctx = useSignaturePad(withHandlers(withXhConfig('signature-pad', useFormControlProps(props)), { onClear: () => emit('clear') }) as SignaturePadProps, { onDraw, onDrawEnd, onValueChange })
     provideSignaturePad(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

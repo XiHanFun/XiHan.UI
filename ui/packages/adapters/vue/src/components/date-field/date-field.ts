@@ -11,6 +11,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { withHandlers } from '../../runtime/with-handlers'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideDateField, useDateFieldContext } from './context'
 import { useDateField } from './use-date-field'
@@ -67,6 +68,7 @@ export const XhDateFieldRoot = defineComponent({
   },
   // value-change 携带 { value }，update:value 携带裸串
   emits: {
+    'clear': () => true,
     'value-change': (_details: PayloadOf<DateFieldProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<DateFieldProps, 'onValueChange'>['value']) => true,
   },
@@ -78,7 +80,7 @@ export const XhDateFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useDateField(withXhConfig('date-field', useFormControlProps(props)) as DateFieldProps, { onValueChange })
+    const ctx = useDateField(withHandlers(withXhConfig('date-field', useFormControlProps(props)), { onClear: () => emit('clear') }) as DateFieldProps, { onValueChange })
     provideDateField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

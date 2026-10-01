@@ -153,6 +153,8 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   /** showTime 时间列的逐格可选性：时列按 24 小时制给值，第三个参数带已选的时分与所属日期。 */
   isTimeUnavailable?: TimeUnavailablePredicate
   onValueChange?: DatePickerProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   onOpenChange?: DatePickerProps['onOpenChange']
   onFocusedValueChange?: DatePickerProps['onFocusedValueChange']
   onActiveViewChange?: DatePickerProps['onActiveViewChange']
@@ -200,6 +202,7 @@ export function XhDatePickerRoot({
   timeStep,
   isTimeUnavailable,
   onValueChange,
+  onClear,
   onOpenChange,
   onFocusedValueChange,
   onActiveViewChange,
@@ -246,6 +249,7 @@ export function XhDatePickerRoot({
     timeStep,
     isTimeUnavailable,
     onValueChange,
+    onClear,
     onOpenChange,
     onFocusedValueChange,
     onActiveViewChange,
@@ -288,7 +292,7 @@ export function XhDatePickerRoot({
   )
 }
 
-XhDatePickerRoot.xhEvents = ['value-change', 'open-change'] as const
+XhDatePickerRoot.xhEvents = ['clear', 'value-change', 'open-change'] as const
 
 export interface XhDatePickerLabelProps extends ComponentPropsWithRef<'span'> {}
 /** 渲染为 span 而非 label，点击聚焦由连接层接管。 */

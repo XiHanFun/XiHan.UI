@@ -171,6 +171,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `activeIndex` | `DateRangePickerEndIndex` |  | 当前编辑区间的哪一端。提供即受控；未提供时每次展开都重新定：从终点那组段位展开为 1，其余为 0。 聚焦某一组段位、点某一端的时间格时随之改写。为 1 且已有起点时日历只改终点： 点在起点那一天或之后即落终点、起点不动，点在起点之前从那一天重新开始挑。 没有配套的 defaultActiveIndex：它每次展开都会重定，非受控初值没有生效时刻。 |
 | `onActiveIndexChange` | `(details: DateRangePickerActiveIndexChangeDetails) => void` |  | 当前编辑的一端变化；受控时是唯一出口。 |
 | `onValueChange` | `(details: DateRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: DateRangePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onFocusedValueChange` | `(details: DateRangePickerFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻月、展开、段位输入都会发出）。 网格由外部渲染，不监听该事件时日历不会换月。 |
 | `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板所在层级变化（点击标题向上、点击格子向下都会发出）；受控时是唯一出口。 |
@@ -182,6 +183,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `DateRangePickerValueChangeDetails` | 区间两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `DateRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `focused-value-change` | `DateRangePickerFocusChangeDetails` | 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格 |
 | `active-view-change` | `CalendarViewChangeDetails` | 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重绘网格 |

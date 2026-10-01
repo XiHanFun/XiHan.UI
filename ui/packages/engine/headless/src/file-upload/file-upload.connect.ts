@@ -375,7 +375,12 @@ export function connectFileUpload<T extends PropTypes>(
       'data-xh-action-variant': 'ghost',
       // 空列表时按钮照常在位、可按（激活是空操作），按压面也照常
       ...press('clear'),
-      'onClick': () => send({ type: 'FILES.CLEAR' }),
+      'onClick': () => {
+        send({ type: 'FILES.CLEAR' })
+        // 列表本来就空时激活是空操作，不报清空
+        if (!empty)
+          prop('onClear')?.()
+      },
     }),
   }
 }

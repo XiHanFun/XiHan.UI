@@ -48,6 +48,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @prop {object} translations - 读屏文案（只能通过 property 设置）：clearTrigger 是清空按钮的名字
  * @fires value-change - 值变化；detail 为 `{ value: string }`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max 的容器
  * @csspart control - 视觉盒；提供后由它绘制描边、底色与聚焦环，输入框与清空按钮排列在其中
  * @csspart label - 标题；`for` 恒指向 input，因此须是原生 `<label>` 才可点击
@@ -100,6 +101,11 @@ export class XhTextFieldElement extends XhElement {
   declare size?: Size
   declare translations?: TextFieldSchema['props']['translations']
 
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
+
   private readonly notify = (details: TextFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -139,6 +145,7 @@ export class XhTextFieldElement extends XhElement {
       size: this.size,
       translations: this.translations,
       onValueChange: this.notify,
+      onClear: this.notifyClear,
     }
   }
 

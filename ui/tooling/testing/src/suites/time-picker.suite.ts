@@ -870,7 +870,7 @@ export const timePickerSuite: ConformanceSuite = {
             },
             // 这个按钮不占 Tab 位，清完必须把焦点送回首段
             activeElement: { part: HOUR_SEG, exact: true },
-            events: [{ type: 'value-change', detail: { value: '' } }],
+            events: [{ type: 'value-change', detail: { value: '' } }, { type: 'clear', detail: null }],
           },
         },
         {

@@ -378,6 +378,8 @@ export function connectSelect<T extends PropTypes>(
           if (!canClear)
             return
           send({ type: 'VALUE.CLEAR' })
+          // 按清空钮这一下单独通知：调用方常要在清空后重新查询，只看值变化分不出是清空还是删光了字
+          prop('onClear')?.()
           // 键盘/程序化激活这一路没走 pointerdown，主动把焦点送回 trigger；
           // 适配器没挂触发按钮 ref 时按 id 在同一文档里找
           const doc = (event.currentTarget as HTMLElement | null)?.ownerDocument

@@ -11,6 +11,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { withHandlers } from '../../runtime/with-handlers'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideTimeField, useTimeFieldContext } from './context'
 import { useTimeField } from './use-time-field'
@@ -48,6 +49,7 @@ export const XhTimeFieldRoot = defineComponent({
   },
   // value-change 携带 { value }，update:value 携带裸串
   emits: {
+    'clear': () => true,
     'value-change': (_details: PayloadOf<TimeFieldProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<TimeFieldProps, 'onValueChange'>['value']) => true,
   },
@@ -59,7 +61,7 @@ export const XhTimeFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useTimeField(withXhConfig('time-field', useFormControlProps(props)) as TimeFieldProps, { onValueChange })
+    const ctx = useTimeField(withHandlers(withXhConfig('time-field', useFormControlProps(props)), { onClear: () => emit('clear') }) as TimeFieldProps, { onValueChange })
     provideTimeField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

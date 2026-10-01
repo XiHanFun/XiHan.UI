@@ -180,6 +180,7 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<TagsInputTranslations>` |  |  |
 | `onValueChange` | `(details: TagsInputValueChangeDetails) => void` |  |  |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onInputValueChange` | `(details: TagsInputInputValueChangeDetails) => void` |  |  |
 | `onTagReject` | `(details: TagsInputTagRejectDetails) => void` |  | 提交里有标签没进集合：重复（照常消费）、到了上限或被 validate 拒收，逐个报告原因。 |
 
@@ -190,6 +191,7 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TagsInputValueChangeDetails` | 标签集合变化；detail 为 `{ value: string[] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `input-value-change` | `TagsInputInputValueChangeDetails` | 输入文本变化；detail 为 `{ inputValue: string }` |
 | `tag-reject` | `TagsInputTagRejectDetails` | 提交里有标签没进集合（重复、到了上限或被 validate 拒收）；detail 为 `{ tags: { tag, reasons }[] }` |
 

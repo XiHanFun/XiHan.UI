@@ -53,6 +53,8 @@ export interface XhSignaturePadRootProps extends Omit<ComponentPropsWithRef<'div
   onDraw?: SignaturePadProps['onDraw']
   onDrawEnd?: SignaturePadProps['onDrawEnd']
   onValueChange?: SignaturePadProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   children?: SlotChildren<SignaturePadRootSlotProps>
 }
 
@@ -69,6 +71,7 @@ export function XhSignaturePadRoot({
   onDraw,
   onDrawEnd,
   onValueChange,
+  onClear,
   children,
   ...rest
 }: XhSignaturePadRootProps): ReactNode {
@@ -85,6 +88,7 @@ export function XhSignaturePadRoot({
     onDraw,
     onDrawEnd,
     onValueChange,
+    onClear,
   })) as SignaturePadProps)
   const api = ctx.api
   return (
@@ -116,7 +120,7 @@ export function XhSignaturePadRoot({
   )
 }
 
-XhSignaturePadRoot.xhEvents = ['draw', 'draw-end', 'value-change'] as const
+XhSignaturePadRoot.xhEvents = ['clear', 'draw', 'draw-end', 'value-change'] as const
 
 export interface XhSignaturePadLabelProps extends ComponentPropsWithRef<'span'> {}
 /** 不使用原生 label：画布是 svg、不是可被 label 关联的表单控件，名字经 aria-labelledby 关联。 */

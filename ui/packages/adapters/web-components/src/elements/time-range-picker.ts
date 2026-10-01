@@ -106,6 +106,7 @@ function declaredEnd(el: HTMLElement, position: number): TimeRangePickerEndIndex
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @fires value-change - 两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid / data-empty）
  * @csspart label - 标题；点击它把焦点送到第一段
@@ -204,6 +205,11 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
     onChange: () => this.requestUpdate(),
   })
 
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
+
   private readonly notifyValue = (details: TimeRangePickerValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -260,6 +266,7 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
       offset: this.offset,
       dir: this.direction,
       onValueChange: this.notifyValue,
+      onClear: this.notifyClear,
       onOpenChange: this.notifyOpen,
     }
   }

@@ -254,6 +254,21 @@ export const colorFieldSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'clearable：点清空钮清掉值，先派 value-change 再派 clear；Escape 清空不派 clear',
+      spec: { apg: HTML_SPEC },
+      props: { defaultValue: '#3b82f6', clearable: true },
+      steps: [
+        {
+          kind: 'click',
+          part: 'clear-trigger',
+          expect: {
+            parts: { 'root': { 'data-empty': '' }, 'clear-trigger': { hidden: '' } },
+            events: [{ type: 'value-change', detail: { value: '' } }, { type: 'clear', detail: null }],
+          },
+        },
+      ],
+    },
+    {
       name: 'clearable：有值时清空按钮露面，Escape 在没有草稿时清空；空值 root 带 data-empty、色块不画颜色',
       spec: { apg: HTML_SPEC },
       covers: ['color-field.kbd.clear'],

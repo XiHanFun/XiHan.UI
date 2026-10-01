@@ -16,7 +16,7 @@ import type {
 } from '../src/signature-pad/index'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   connectSignaturePad,
   EMPTY_SIGNATURE,
@@ -481,6 +481,20 @@ describe('signaturePadMachine 值、回显与撤销重做', () => {
     const controlled = makeService({ value: SAVED, onValueChange: details => changes.push(details) })
     controlled.service.send({ type: 'FORM.RESET' })
     expect(changes).toHaveLength(0)
+  })
+})
+
+describe('connectSignaturePad 清空钮', () => {
+  it('清空钮清掉笔迹后通知 onClear；画板本来就空时激活是空操作，不报', () => {
+    const onClear = vi.fn()
+    const h = makeService({ onClear })
+    const click = (): void => (api(h.service).getClearTriggerProps() as { onClick: () => void }).onClick()
+    click()
+    expect(onClear).not.toHaveBeenCalled()
+    drawStroke(h, [[0, 0], [40, 30]])
+    click()
+    expect(api(h.service).paths).toEqual([])
+    expect(onClear).toHaveBeenCalledTimes(1)
   })
 })
 

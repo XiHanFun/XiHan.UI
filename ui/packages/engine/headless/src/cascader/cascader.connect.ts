@@ -534,6 +534,8 @@ export function connectCascader<T extends PropTypes>(
           if (!canClear)
             return
           send({ type: 'VALUE.CLEAR' })
+          // 按清空钮这一下单独通知：调用方常要在清空后重新查询，只看值变化分不出是清空还是删光了字
+          prop('onClear')?.()
           // 键盘/程序化激活这一路没走 pointerdown，主动把焦点送回 trigger
           refs.get('getTriggerEl')()?.focus()
         },

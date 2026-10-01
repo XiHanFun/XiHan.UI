@@ -162,6 +162,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `autoUpload` | `boolean` |  | 接受后即自动开始传输，默认 true；关闭后由 api.startUpload 逐个开始。 |
 | `translations` | `Partial<FileUploadTranslations>` |  |  |
 | `onFilesChange` | `(details: FileUploadFilesChangeDetails) => void` |  | 列表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onFileAccept` | `(details: FileUploadFileAcceptDetails) => void` |  | 本次接受了哪些文件。受控与否都发出：宿主据此发起上传。 |
 | `onFileReject` | `(details: FileUploadFileRejectDetails) => void` |  | 本次拒绝了哪些文件及各自的原因。 |
 | `onRemoteFilesChange` | `(details: FileUploadRemoteFilesChangeDetails) => void` |  | 远程附件列表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
@@ -188,6 +189,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `files-change` | `FileUploadFilesChangeDetails` | 列表变化；detail 为 `{ files: File[] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `remote-files-change` | `FileUploadRemoteFilesChangeDetails` | 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }` |
 | `upload-complete` | `FileUploadCompleteDetails` | 单个文件传输完成；detail 为 `{ file, url? }` |
 | `upload-error` | `FileUploadErrorDetails` | 单个文件传输失败；detail 为 `{ file, error }` |

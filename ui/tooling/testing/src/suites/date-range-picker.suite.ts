@@ -875,7 +875,7 @@ export const dateRangePickerSuite: ConformanceSuite = {
               'segment-group[0]': { 'data-empty': '', 'data-complete': null },
               'segment-group[1]': { 'data-empty': '', 'data-complete': null },
             },
-            events: [{ type: 'value-change', detail: { value: [] } }],
+            events: [{ type: 'value-change', detail: { value: [] } }, { type: 'clear', detail: null }],
           },
         },
         {

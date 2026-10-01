@@ -74,6 +74,8 @@ export interface XhFileUploadRootProps extends Omit<ComponentPropsWithRef<'div'>
   capture?: 'user' | 'environment'
   translations?: Partial<FileUploadTranslations>
   onFilesChange?: FileUploadProps['onFilesChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   onFileAccept?: FileUploadProps['onFileAccept']
   onFileReject?: FileUploadProps['onFileReject']
   onRemoteFilesChange?: FileUploadProps['onRemoteFilesChange']
@@ -105,6 +107,7 @@ export function XhFileUploadRoot({
   capture,
   translations,
   onFilesChange,
+  onClear,
   onFileAccept,
   onFileReject,
   onRemoteFilesChange,
@@ -136,6 +139,7 @@ export function XhFileUploadRoot({
     capture,
     translations,
     onFilesChange,
+    onClear,
     onFileAccept,
     onFileReject,
     onRemoteFilesChange,
@@ -177,15 +181,7 @@ export function XhFileUploadRoot({
   )
 }
 
-XhFileUploadRoot.xhEvents = [
-  'files-change',
-  'file-accept',
-  'file-reject',
-  'remote-files-change',
-  'upload-complete',
-  'upload-error',
-  'upload-cancel',
-] as const
+XhFileUploadRoot.xhEvents = ['clear', 'files-change', 'file-accept', 'file-reject', 'remote-files-change', 'upload-complete', 'upload-error', 'upload-cancel'] as const
 
 export interface XhFileUploadLabelProps extends ComponentPropsWithRef<'label'> {}
 

@@ -1050,7 +1050,7 @@ export const selectSuite: ConformanceSuite = {
               'indicator': { 'data-clearable': null },
               'item[1]': { 'aria-selected': 'false' },
             },
-            events: [{ type: 'value-change', detail: { value: [] } }],
+            events: [{ type: 'value-change', detail: { value: [] } }, { type: 'clear', detail: null }],
           },
         },
         {

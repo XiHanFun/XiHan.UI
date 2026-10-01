@@ -110,6 +110,8 @@ export interface SignaturePadSchema extends MachineSchema {
     onDrawEnd?: (details: SignaturePadDrawEndDetails) => void
     /** 签名数据变了：与 onDrawEnd 同一批时机，落笔途中不发。受控时是唯一出口。 */
     onValueChange?: (details: SignaturePadValueChangeDetails) => void
+    /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+    onClear?: () => void
   }
   context: {
     /** 已定稿的签名：每一笔与笔迹坐标系。受控时读宿主给的那一份。 */

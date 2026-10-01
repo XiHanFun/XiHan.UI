@@ -171,6 +171,8 @@ export interface XhDateRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   /** 当前编辑哪一端；给定即受控，未给时每次展开按入口重定。 */
   activeIndex?: DateRangePickerEndIndex
   onValueChange?: DateRangePickerProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   onOpenChange?: DateRangePickerProps['onOpenChange']
   onFocusedValueChange?: DateRangePickerProps['onFocusedValueChange']
   onActiveViewChange?: DateRangePickerProps['onActiveViewChange']
@@ -223,6 +225,7 @@ export function XhDateRangePickerRoot({
   defaultTime,
   activeIndex,
   onValueChange,
+  onClear,
   onOpenChange,
   onFocusedValueChange,
   onActiveViewChange,
@@ -274,6 +277,7 @@ export function XhDateRangePickerRoot({
     defaultTime,
     activeIndex,
     onValueChange,
+    onClear,
     onOpenChange,
     onFocusedValueChange,
     onActiveViewChange,
@@ -318,7 +322,7 @@ export function XhDateRangePickerRoot({
   )
 }
 
-XhDateRangePickerRoot.xhEvents = ['value-change', 'open-change'] as const
+XhDateRangePickerRoot.xhEvents = ['clear', 'value-change', 'open-change'] as const
 
 export interface XhDateRangePickerLabelProps extends ComponentPropsWithRef<'span'> {}
 /** 渲染为 span 而非 label，点击聚焦由连接层接管。 */

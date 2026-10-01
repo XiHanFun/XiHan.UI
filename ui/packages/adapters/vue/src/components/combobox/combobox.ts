@@ -14,6 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -80,6 +81,7 @@ export const XhComboboxRoot = defineComponent({
   },
   // *-change 携带 details 对象，update:* 携带裸值
   emits: {
+    'clear': () => true,
     'value-change': (_details: PayloadOf<ComboboxProps, 'onValueChange'>) => true,
     'input-value-change': (_details: PayloadOf<ComboboxProps, 'onInputValueChange'>) => true,
     'open-change': (_details: PayloadOf<ComboboxProps, 'onOpenChange'>) => true,
@@ -111,7 +113,7 @@ export const XhComboboxRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useCombobox(withXhConfig('combobox', useFormControlProps(props)) as ComboboxProps, {
+    const ctx = useCombobox(withHandlers(withXhConfig('combobox', useFormControlProps(props)), { onClear: () => emit('clear') }) as ComboboxProps, {
       onValueChange: notifyValue,
       onInputValueChange: notifyInputValue,
       onOpenChange: notifyOpen,

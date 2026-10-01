@@ -86,6 +86,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {string} name - 表单字段名；每个选中值提交为一个同名字段
  * @attr {string} form - 显式关联的原生表单 ID，提交与 reset 使用同一所有者
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires branch-load-start - 分支请求开始；detail 为 `{ value, node, reason }`
@@ -231,6 +232,11 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   private renderedNodeCount = -1
 
   private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
+
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
 
   private readonly notifyValue = (details: TreeSelectValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -403,6 +409,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
       name: this.name,
       form: this.form,
       onValueChange: this.notifyValue,
+      onClear: this.notifyClear,
       onExpandedValueChange: this.notifyExpanded,
       onOpenChange: this.notifyOpen,
       onBranchLoadStart: this.notifyBranchLoadStart,

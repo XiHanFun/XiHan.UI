@@ -101,6 +101,7 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string | null }`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @csspart root - 最外层，承载 data-disabled / data-invalid / data-complete / data-out-of-range
  * @csspart label - 标题；点击它把焦点送进首段
  * @csspart control - role=group 的分段容器
@@ -157,6 +158,11 @@ export class XhDateFieldElement extends XhElement {
   declare tone?: Tone
   declare size?: Size
 
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
+
   private readonly notifyChange = (details: DateFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -199,6 +205,7 @@ export class XhDateFieldElement extends XhElement {
       tone: this.tone,
       size: this.size,
       onValueChange: this.notifyChange,
+      onClear: this.notifyClear,
     }
   }
 

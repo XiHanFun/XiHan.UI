@@ -185,8 +185,12 @@ export function connectSignaturePad<T extends PropTypes>(
       'data-xh-action-variant': 'outline',
       ...pressProps('clear'),
       'onClick': () => {
-        if (editable)
-          send({ type: 'STROKES.CLEAR' })
+        if (!editable)
+          return
+        send({ type: 'STROKES.CLEAR' })
+        // 画板本来就空时激活是空操作，不报清空
+        if (!empty)
+          prop('onClear')?.()
       },
     }),
 

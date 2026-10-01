@@ -8,6 +8,7 @@ const PUBLIC_EVENTS = {
   'action': 'onAction',
   'active-source-change': 'onActiveSourceChange',
   'checked-change': 'onCheckedChange',
+  'clear': 'onClear',
   'decision': 'onDecision',
   'granted-scopes-change': 'onGrantedScopesChange',
   'clamp-toggle': 'onClampToggle',

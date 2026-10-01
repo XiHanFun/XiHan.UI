@@ -80,6 +80,8 @@ export interface TimeFieldSchema extends MachineSchema {
     /** 段位读屏名的覆盖；未提供时使用内置英文语义名。 */
     translations?: Partial<TimeFieldTranslations>
     onValueChange?: (details: TimeFieldValueChangeDetails) => void
+    /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+    onClear?: () => void
   }
   context: {
     /** ISO 时间串；任一必填段为空时为空串。受控（value 提供）时 cell 直读 prop。 */

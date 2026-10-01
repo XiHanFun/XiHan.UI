@@ -13,6 +13,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideSelect, provideSelectGroup, provideSelectItem, provideSelectTag, useSelectContext, useSelectGroupContext, useSelectItemContext, useSelectTagContext } from './context'
@@ -62,6 +63,7 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   // *-change 携带 details 对象，update:* 携带裸值。
   // 校验函数恒真，只声明载荷类型：'update:value' 是 string[]，单选也是长度 1 的数组而非裸串。
   emits: {
+    'clear': () => true,
     'value-change': (_details: SelectValueChangeDetails) => true,
     'open-change': (_details: SelectOpenChangeDetails) => true,
     'update:value': (_value: string[]) => true,
@@ -86,7 +88,7 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useSelect(withXhConfig('select', useFormControlProps(props)) as SelectProps, notifyValue, notifyOpen)
+    const ctx = useSelect(withHandlers(withXhConfig('select', useFormControlProps(props)), { onClear: () => emit('clear') }) as SelectProps, notifyValue, notifyOpen)
     provideSelect(ctx)
 
     // 表单影子由根部件装配：空串选项打底，每个选中值一个 selected 选项，供 required 判定。
