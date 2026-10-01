@@ -14,7 +14,7 @@ const HEIGHT_PROPS = new Set(['block-size', 'min-block-size', 'max-block-size'])
 
 /**
  * 滚动面高度令牌：三档定高、页内滚动面上限、菜单族上限、列表族上限，
- * 以及与日历并排的时间列定高（与日历网格同高，令牌本身以中档定高封顶）。
+ * 以及与日历并排的时间列定高（与日历网格同高，按 px 结算）。
  */
 const HEIGHT_TOKENS = /--xh-(?:viewport-h-(?:sm|md|lg)|viewport-max-h|overlay-menu-max-h|overlay-max-h|overlay-calendar-column-h)\b/
 
@@ -46,6 +46,8 @@ const PAIRED = {
 const EXEMPT = {
   'cascader content': '横排面板：滚的是列的方向（overflow-x），纵向高度由最高的那一列给',
   'code-view pre': '纵向高度由行数算出来写进内联样式，折叠时夹到 clamp 行，不是预设的档',
+  'date-picker content': '日历面板是定高结构：天然高度是按 px 排的网格、时间列与确认行之和，只受定位引擎给出的可用高度限制；按 rem 的滚动面档随根字号缩小，会把确认行挤进滚动里',
+  'date-range-picker content': '同 date-picker content：两块日历与两组时间列都按 px 排，只受可用高度限制',
   'floating-panel body': '面板高度由用户拖出来、存在机器里，不是预设的档',
   'heatmap root': '热力图滚的是横向的周列，纵向就是七行格子的高度',
   'drawer content': '贴边抽屉的厚度走 --xh-overlay-drawer-w-* 档，不是滚动面高度',
