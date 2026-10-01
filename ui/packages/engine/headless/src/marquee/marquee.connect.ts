@@ -18,10 +18,10 @@ const DEFAULT_DIRECTION: MarqueeDirection = 'left'
 /** 走横轴的两档，其余两档走纵轴。 */
 const HORIZONTAL: readonly MarqueeDirection[] = ['left', 'right']
 
-/** 每秒像素只收有限正数：0 与负数不是速度，往回走由 direction 表达。 */
 /** 一份内容在滚动轴上的实测长度：写进根的内联样式，皮肤按它换算一圈的时长。 */
 const MEASURED_SPAN = '--xh-_marquee-measured-span'
 
+/** 每秒像素只收有限正数：0 与负数不是速度，往回走由 direction 表达。 */
 function speedValue(speed: number | undefined): number | undefined {
   return typeof speed === 'number' && Number.isFinite(speed) && speed > 0 ? speed : undefined
 }
@@ -39,11 +39,12 @@ export function connectMarquee<T extends PropTypes>(
   const speed = speedValue(prop('speed'))
   const paused = context.get('paused')
   const span = context.get('span')
-  // 根节点的内联 style 归本组件管：速度与实测长度两个变量，作者自己的内联样式写在外层元素上
-  const style = [
-    speed === undefined ? null : `--xh-marquee-speed: ${speed}`,
-    span == null ? null : `${MEASURED_SPAN}: ${span}`,
-  ].filter(Boolean).join('; ')
+  // 速度与实测长度两个变量逐条给出而不是一整串：Web Components 照条写、照条撤，
+  // 作者写在 root 上的内联样式不被整串盖掉；undefined 是「这一条不给」
+  const style: Record<string, string | undefined> = {
+    '--xh-marquee-speed': speed === undefined ? undefined : String(speed),
+    [MEASURED_SPAN]: span == null ? undefined : String(span),
+  }
   const translations = prop('translations')
   const label = {
     autoplayTriggerPause: translations?.autoplayTriggerPause ?? 'Pause scrolling',
@@ -62,7 +63,7 @@ export function connectMarquee<T extends PropTypes>(
     'data-paused': dataAttr(paused),
     'data-auto-fill': dataAttr(autoFill),
     'data-fade': dataAttr(prop('fade') === true),
-    ...(style ? { style } : {}),
+    'style': style,
   }
 
   return {

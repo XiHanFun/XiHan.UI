@@ -21,14 +21,15 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * `<xh-marquee>`：Light-DOM 行为宿主，把 connectMarquee 产出接到 root、content 与 autoplay-trigger 上。
  *
  * 作者写一个 root 窗口，其中写一条 content 轨道，内容放进轨道；暂停开关写成 root 里的一颗 `<button>`。
- * 滚动整段在皮肤中：横竖各一条 @keyframes，四个方向与两种铺法只切换起止点，元素侧不运行任何动画；
+ * 滚动整段在皮肤中：横竖各一条关键帧，四个方向与两种铺法只切换起止点，元素侧不运行任何动画；
  * 机器只管暂停状态。
  *
  * 开启 auto-fill 时要在轨道中写两份内容，每份包一层 `data-xh-copy` 的壳，第二份同时标注 aria-hidden 与 inert：
  * 皮肤此时按走完一份的长度排动画，只写一份会在走到一半时露出空白；
  * 副本若只标注 aria-hidden 而仍可聚焦，焦点会落进读屏不可见的位置。
  *
- * 提供 speed 时 root 的内联 style 归本元素管理，作者自己的内联样式写在宿主元素上。
+ * 速度与实测的一份长度写在 root 的内联 style 中（皮肤要拿它们换算一圈的时长）：
+ * 元素只写、只撤自己的 --xh-marquee-speed 与 --xh-_marquee-measured-span 两条，作者写在 root 上的其余内联样式原样保留。
  *
  * @customElement xh-marquee
  * @attr {'left'|'right'|'up'|'down'} direction - 滚动方向，默认 left
