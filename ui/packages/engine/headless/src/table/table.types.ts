@@ -134,11 +134,17 @@ export interface TableColumnDef {
    * 数字列宽直接累加，不是数字（没写、百分比、fr 这类）的列取挂载后实测的列头宽度，量到之前该侧从该列起暂时贴边。
    */
   sticky?: boolean | 'start' | 'end'
-  /** 列宽。数字按 px 处理，字符串原样写入内联 inline-size。 */
+  /**
+   * 列宽。数字按 px 处理，字符串原样写入内联 inline-size。它是伸缩的基准：表格比各列之和宽时
+   * 与其余列一起分剩余空间，窄时一起收；要定宽就把 minWidth / maxWidth 写成与它同一个数。
+   */
   width?: string | number
-  /** 拖动改列宽时的下限（px）。未提供时使用 TABLE_COLUMN_MIN_WIDTH。 */
+  /**
+   * 列宽下限（px）：布局里伸缩时不窄过它，拖动改宽也不窄过它。
+   * 未提供时布局下限是皮肤的 --xh-table-cell-min-w，拖动下限是 TABLE_COLUMN_MIN_WIDTH。
+   */
   minWidth?: number
-  /** 拖动改列宽时的上限（px）。未提供时不封顶。 */
+  /** 列宽上限（px）：布局里伸缩时不宽过它，拖动改宽也不宽过它。未提供时不封顶。 */
   maxWidth?: number
   /** 该列的宽度可以拖动修改。提供后才产出改宽把手。 */
   resizable?: boolean

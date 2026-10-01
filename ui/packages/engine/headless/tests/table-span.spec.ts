@@ -57,6 +57,39 @@ describe('多级表头', () => {
     expect((api.getRowProps({ value: 'a' }) as Dict)['aria-rowindex']).toBe(3)
   })
 
+  it('minWidth / maxWidth 同时管布局：列头与数据格都带上下限，写成同一个数就是定宽', () => {
+    const t = mount({
+      columns: [
+        { id: 'name', label: '名称', width: 120, minWidth: 200 },
+        { id: 'size', label: '大小', maxWidth: 96 },
+        { id: 'fixed', label: '状态', width: 80, minWidth: 80, maxWidth: 80 },
+        { id: 'free', label: '备注' },
+      ],
+      rows: [{ id: 'a' }],
+    })
+    const api = t.api()
+    const style = (props: unknown): Dict => ((props as Dict).style ?? {}) as Dict
+    expect(style(api.getColumnHeaderProps({ value: 'name' }))).toMatchObject({ inlineSize: '120px', minInlineSize: '200px' })
+    expect(style(api.getCellProps({ row: 'a', value: 'name' }))).toMatchObject({ inlineSize: '120px', minInlineSize: '200px' })
+    expect(style(api.getColumnHeaderProps({ value: 'size' }))).toMatchObject({ maxInlineSize: '96px' })
+    expect(style(api.getColumnHeaderProps({ value: 'fixed' }))).toMatchObject({ inlineSize: '80px', minInlineSize: '80px', maxInlineSize: '80px' })
+    // 没写上下限的列不带这两条，下限交给皮肤
+    expect(style(api.getColumnHeaderProps({ value: 'free' })).minInlineSize).toBeUndefined()
+    expect(style(api.getColumnHeaderProps({ value: 'free' })).maxInlineSize).toBeUndefined()
+  })
+
+  it('分组格的上下限按叶子列相加，有一列没写就不设', () => {
+    const api = mount({
+      columns: [
+        { id: 'h1', label: '上半年', children: [{ id: 'q1', label: 'Q1', width: 80, minWidth: 64 }, { id: 'q2', label: 'Q2', width: 80, minWidth: 72, maxWidth: 120 }] },
+      ],
+      rows: [{ id: 'a' }],
+    }).api()
+    const group = (api.getColumnHeaderProps({ value: 'h1' }) as Dict).style as Dict
+    expect(group.minInlineSize).toBe('136px')
+    expect(group.maxInlineSize).toBeUndefined()
+  })
+
   it('分组格报横跨的列数与起始列号，宽度按叶子列相加；较浅的叶子列报 aria-rowspan，下层给占位', () => {
     const api = mount({ columns: GROUPED, rows: [{ id: 'a' }] }).api()
     const group = api.getColumnHeaderProps({ value: 'h1' }) as Dict

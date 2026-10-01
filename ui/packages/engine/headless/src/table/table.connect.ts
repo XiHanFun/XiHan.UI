@@ -60,17 +60,25 @@ function columnSize(width: string | number | undefined): string | undefined {
  * 那一列就只听内联宽度的。
  *
  * 只钉偏好里的列。作者在 `columns` 里写的 `width` 保持原样可伸缩，既有表格不受影响。
+ * 作者写的 `minWidth` / `maxWidth` 同时管布局：伸缩分剩余空间时不越过这两条，
+ * 三者写成同一个数就是一列定宽。
  */
-function columnSizeStyle(width: string | number | undefined, pinned: boolean): Record<string, unknown> {
-  const size = columnSize(width)
-  if (!size)
-    return {}
-  return pinned ? { inlineSize: size, flexGrow: 0, flexShrink: 0 } : { inlineSize: size }
+function columnSizeStyle(def: TableColumnDef | undefined, pinned: boolean): Record<string, unknown> {
+  const style: Record<string, unknown> = {}
+  const size = columnSize(def?.width)
+  if (size)
+    Object.assign(style, pinned ? { inlineSize: size, flexGrow: 0, flexShrink: 0 } : { inlineSize: size })
+  if (def?.minWidth != null)
+    style.minInlineSize = `${def.minWidth}px`
+  if (def?.maxWidth != null)
+    style.maxInlineSize = `${def.maxWidth}px`
+  return style
 }
 
 /**
  * 合并格（横跨几列的分组表头、横向合并的单元格）的宽度：跨过的各列宽度相加，伸缩系数也相加，
  * 与它下面那几列各自伸缩之后的总宽对得上。有一列没写宽度就只按伸缩系数分，宽度交给内容。
+ * 上下限同理：跨过的每一列都写了才相加，有一列没写就不给合并格设这一条。
  */
 function spanSizeStyle(
   defs: readonly (TableColumnDef | undefined)[],
@@ -82,6 +90,16 @@ function spanSizeStyle(
   const style: Record<string, unknown> = { flexGrow: grow, flexShrink: grow }
   if (sizes.every(size => size != null))
     style.inlineSize = sizes.length === 1 ? sizes[0] : `calc(${sizes.join(' + ')})`
+  const sum = (pick: (def: TableColumnDef | undefined) => number | undefined): number | undefined => {
+    const values = defs.map(pick)
+    return values.every(value => value != null) ? values.reduce<number>((total, value) => total + (value ?? 0), 0) : undefined
+  }
+  const min = sum(def => def?.minWidth)
+  const max = sum(def => def?.maxWidth)
+  if (min != null)
+    style.minInlineSize = `${min}px`
+  if (max != null)
+    style.maxInlineSize = `${max}px`
   return style
 }
 
@@ -1018,7 +1036,7 @@ export function connectTable<T extends PropTypes>(
       if (cell?.covered) {
         const def = columnOf(column.value)
         const sticky = stickyAttrs(def)
-        const sizeStyle = columnSizeStyle(def?.width, hasWidthOverride(column.value))
+        const sizeStyle = columnSizeStyle(def, hasWidthOverride(column.value))
         return normalize.element({
           ...parts['column-header'].attrs,
           [ITEM_VALUE_ATTR]: column.value,
@@ -1045,7 +1063,7 @@ export function connectTable<T extends PropTypes>(
       const headerSpan = cell && cell.rowSpan > 1 ? cell.rowSpan : undefined
       const sortable = !!def?.sortable
       const direction = sortDirection(column.value)
-      const sizeStyle = columnSizeStyle(def?.width, hasWidthOverride(column.value))
+      const sizeStyle = columnSizeStyle(def, hasWidthOverride(column.value))
       const sticky = stickyAttrs(def)
       return normalize.element({
         ...parts['column-header'].attrs,
@@ -1108,7 +1126,7 @@ export function connectTable<T extends PropTypes>(
       const rowSpan = origin && origin.rowSpan > 1 ? origin.rowSpan : undefined
       const sizeStyle = origin && origin.colSpan > 1
         ? spanColumnsStyle(columnIndex.get(cell.value)! - 1, origin.colSpan)
-        : columnSizeStyle(def?.width, hasWidthOverride(cell.value))
+        : columnSizeStyle(def, hasWidthOverride(cell.value))
       const spanStyle = rowSpan && origin ? rowSpanStyle(origin.rowIndex, rowSpan) : {}
       return normalize.element({
         ...parts.cell.attrs,
