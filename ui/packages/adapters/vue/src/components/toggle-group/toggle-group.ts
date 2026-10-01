@@ -10,6 +10,7 @@ import type { ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGro
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { Comment, defineComponent, Fragment, h, onBeforeUnmount, ref, Text, watch } from 'vue'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideToggleGroup, useToggleGroupContext } from './context'
 import { useToggleGroup } from './use-toggle-group'
@@ -63,6 +64,9 @@ export const XhToggleGroupRoot = defineComponent({
     }
     const ctx = useToggleGroup(useFormControlProps(props) as ToggleGroupProps, notify)
     provideToggleGroup(ctx)
+    // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
     return () => {
       const children = slots.default
         ? slots.default()
@@ -71,7 +75,7 @@ export const XhToggleGroupRoot = defineComponent({
           : []
       return h(
         'div',
-        ctx.api.value.getRootProps() as Record<string, unknown>,
+        fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }),
         renderChildren(children, ctx.api.value),
       )
     }
