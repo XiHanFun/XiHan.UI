@@ -97,7 +97,8 @@ export function connectRadioGroup<T extends PropTypes>(
       // 只在作者显式给了时才写：写死 ltr 会切断从 RTL 祖先继承来的方向
       'dir': prop('dir'),
       'role': 'radiogroup',
-      'aria-labelledby': ids.label,
+      // 只指向真渲染了的标题：悬空的 IDREF 让组没有名字
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       // 只描述视觉排布，与方向键接受的轴无关（见 onKeyDown 的 axis: 'both'）
       'aria-orientation': orientation,
       'data-orientation': orientation,
@@ -132,7 +133,8 @@ export function connectRadioGroup<T extends PropTypes>(
         send({ type: 'GROUP.BLUR' })
       },
       'onKeyDown': (e: KeyboardEvent) => {
-        if (groupDisabled)
+        // 内层控件已经处理过的按键不再接手
+        if (groupDisabled || e.defaultPrevented)
           return
         // 四个方向键都响应，不接 Home/End：APG 的单选组只有方向键在组内移动。
         // 方向只对调左右键，上下键在 rtl 下语义不变。方向从容器现读：整页 rtl 而作者没传 dir 时，
@@ -142,8 +144,13 @@ export function connectRadioGroup<T extends PropTypes>(
         // 返回 null 表示该键不归导航管，此时绝不 preventDefault
         if (!intent)
           return
+        const container = e.currentTarget as HTMLElement
+        const items = queryItems(container, ITEM_QUERY)
+        // 只接落在条目或根自身上的按键：组里还可能摆着数字框、下拉这类行内编辑控件，
+        // 它们冒上来的方向键归它们自己（移光标、换值、开浮层），不能被当成换选项
+        if (e.target !== container && !items.includes(e.target as HTMLElement))
+          return
         e.preventDefault()
-        const items = queryItems(e.currentTarget as HTMLElement, ITEM_QUERY)
         const target = navigateItems(items, anchor, intent, { loop })
         const next = itemValue(target)
         if (next == null)
