@@ -39,8 +39,8 @@ const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? 
  * 收起时 list 带 hidden，其中的按钮一并退出 Tab 序列与无障碍树。
  * `data-material="liquid"` 下 root 里会多出 core 生成的装饰节点（液态组的色块层与装滤镜的 `<svg>`），
  * 不是部件，也不需要作者提供；收起时 list 先 inert、等动作融回触发器再带 hidden。
- * 贴边距离写在 root 的内联 style 中（自定义属性只有这一条路径能同时落到各适配器上），
- * 因此 root 的内联 style 归本元素管理，作者自己的内联样式写在外层元素上。
+ * 贴边距离、贴边比例与坐标写在 root 的内联 style 中（自定义属性只有这一条路径能同时落到各适配器上）：
+ * 元素逐条写、逐条撤自己的那几条 --xh-_float-button-*，作者写在 root 上的其余内联样式原样保留。
  *
  * @customElement xh-float-button
  * @attr {boolean} open - 受控展开；未提供该属性即非受控

@@ -54,13 +54,15 @@ export function connectFloatButton<T extends PropTypes>(
     ? floatButtonPlacementOf(position, context.get('viewportHeight'))
     : (props.placement ?? FLOAT_BUTTON_DEFAULT_PLACEMENT)
   const draggable = !!prop('draggable') && !disabled
-  // 几何写成内联自定义属性，贴哪条边、按哪个比例排由皮肤按 data-edge / data-point / data-moving 决定
-  const geometry = [`--xh-_float-button-offset: ${offset}px`]
-  if (edge)
-    geometry.push(`--xh-_float-button-ratio: ${normalizeFloatButtonRatio(edge.ratio)}`)
+  // 几何写成内联自定义属性，贴哪条边、按哪个比例排由皮肤按 data-edge / data-point / data-moving 决定。
+  // 逐条给出而不是一整串：Web Components 照条写、照条撤，作者写在 root 上的内联样式不被整串盖掉
   const at = moving ?? point
-  if (at)
-    geometry.push(`--xh-_float-button-x: ${at.x}px`, `--xh-_float-button-y: ${at.y}px`)
+  const geometry: Record<string, string | undefined> = {
+    '--xh-_float-button-offset': `${offset}px`,
+    '--xh-_float-button-ratio': edge ? String(normalizeFloatButtonRatio(edge.ratio)) : undefined,
+    '--xh-_float-button-x': at ? `${at.x}px` : undefined,
+    '--xh-_float-button-y': at ? `${at.y}px` : undefined,
+  }
   const hover = prop('expandTrigger') === 'hover'
   // 缺省 outline：描边 + 磨砂面的中性圆钮（只有 Button 缺省品牌实心）
   const variant = props.variant ?? 'outline'
@@ -97,7 +99,7 @@ export function connectFloatButton<T extends PropTypes>(
       'data-draggable': dataAttr(draggable),
       'data-dragging': dataAttr(context.get('dragging')),
       'dir': prop('dir'),
-      'style': geometry.join('; '),
+      'style': geometry,
       // 悬停展开：进出整个壳才算数，不是只进出触发器——指针得能走到展开的那一组上去
       ...(hover
         ? {
