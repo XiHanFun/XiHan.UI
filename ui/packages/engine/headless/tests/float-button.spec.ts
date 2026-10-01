@@ -85,7 +85,7 @@ describe('float-button 结构与缺省', () => {
     expect(rig.root()['data-state']).toBe('closed')
     expect(rig.root()['data-placement']).toBe('bottom-end')
     // 贴边距离落进内联自定义属性，贴哪两条边由皮肤按 data-placement 决定
-    expect(rig.root().style).toBe('--xh-_float-button-offset: 24px')
+    expect(rig.root().style).toMatchObject({ '--xh-_float-button-offset': '24px' })
 
     expect(rig.trigger().type).toBe('button')
     expect(rig.trigger()['aria-expanded']).toBe('false')
@@ -101,7 +101,7 @@ describe('float-button 结构与缺省', () => {
   it('落位与贴边如实落到壳上，list 也拿得到落位；没有 shape 位', () => {
     const rig = makeRig({}, { placement: 'top-start', offset: 8 })
     expect(rig.root()['data-placement']).toBe('top-start')
-    expect(rig.root().style).toBe('--xh-_float-button-offset: 8px')
+    expect(rig.root().style).toMatchObject({ '--xh-_float-button-offset': '8px' })
     expect(rig.root()['data-shape']).toBeUndefined()
     expect(rig.trigger()['data-shape']).toBeUndefined()
     expect(rig.list()['data-placement']).toBe('top-start')
@@ -487,20 +487,20 @@ describe('float-button 位置投影', () => {
     expect(rig.root()['data-edge']).toBe('inline-end')
     expect(rig.root()['data-placement']).toBe('bottom-end')
     expect(rig.list()['data-placement']).toBe('bottom-end')
-    expect(String(rig.root().style)).toContain('--xh-_float-button-ratio: 0.75')
+    expect(rig.root().style).toMatchObject({ '--xh-_float-button-ratio': '0.75' })
     expect(rig.api().position).toEqual({ edge: 'inline-end', ratio: 0.75 })
   })
 
   it('比例夹到 0 到 1', () => {
     const rig = makeRig({ defaultPosition: { edge: 'inline-start', ratio: 3 } })
-    expect(String(rig.root().style)).toContain('--xh-_float-button-ratio: 1')
+    expect(rig.root().style).toMatchObject({ '--xh-_float-button-ratio': '1' })
   })
 
   it('停在一点：投影 data-point 与坐标；量到视口高度后按上下半定朝向', () => {
     const rig = makeRig({ defaultPosition: { x: 40, y: 500 } })
     expect(rig.root()['data-point']).toBe('')
-    expect(String(rig.root().style)).toContain('--xh-_float-button-x: 40px')
-    expect(String(rig.root().style)).toContain('--xh-_float-button-y: 500px')
+    expect(rig.root().style).toMatchObject({ '--xh-_float-button-x': '40px' })
+    expect(rig.root().style).toMatchObject({ '--xh-_float-button-y': '500px' })
     rig.service.send({ type: 'VIEWPORT.RESIZE', height: 800 })
     expect(rig.root()['data-placement']).toBe('bottom-start')
   })
@@ -547,8 +547,8 @@ describe('float-button 拖动', () => {
     rig.service.send({ type: 'DRAG.MOVE', clientX: 600, clientY: 300 })
     expect(rig.root()['data-moving']).toBe('')
     expect(rig.root()['data-dragging']).toBe('')
-    expect(String(rig.root().style)).toContain('--xh-_float-button-x: 578px')
-    expect(String(rig.root().style)).toContain('--xh-_float-button-y: 278px')
+    expect(rig.root().style).toMatchObject({ '--xh-_float-button-x': '578px' })
+    expect(rig.root().style).toMatchObject({ '--xh-_float-button-y': '278px' })
     expect(rig.api().open).toBe(false)
   })
 
@@ -556,8 +556,8 @@ describe('float-button 拖动', () => {
     const rig = dragRig()
     down(rig)
     rig.service.send({ type: 'DRAG.MOVE', clientX: -500, clientY: 2000 })
-    expect(String(rig.root().style)).toContain('--xh-_float-button-x: 24px')
-    expect(String(rig.root().style)).toContain('--xh-_float-button-y: 728px')
+    expect(rig.root().style).toMatchObject({ '--xh-_float-button-x': '24px' })
+    expect(rig.root().style).toMatchObject({ '--xh-_float-button-y': '728px' })
   })
 
   it('松手按 snap 贴边、落定才提交并通知一次；随后浏览器补派的 click 不开合，再点一下照常开合', async () => {
