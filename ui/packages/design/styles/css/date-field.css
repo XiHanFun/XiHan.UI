@@ -123,6 +123,30 @@
     display: none;
   }
 
+  /* 整条占位：一段都没填、焦点也不在段上时，段位与分隔符让位给一句占位文字，焦点一进到段上就换回段位。
+     段位只是淡出（仍可聚焦、仍在读屏树里），文字以生成内容压在同一行上、不吃指针，点下去落到底下的段位 */
+  [data-scope='date-field'][data-part='segment-group'][data-placeholder-shown] {
+    position: relative;
+    color: transparent;
+  }
+
+  [data-scope='date-field'][data-part='segment-group'][data-placeholder-shown] > * {
+    opacity: 0;
+  }
+
+  [data-scope='date-field'][data-part='segment-group'][data-placeholder-shown]::before {
+    content: attr(data-placeholder-text);
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 50%;
+    overflow: hidden;
+    color: var(--xh-date-field-placeholder-fg, var(--xh-fg-subtle));
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    pointer-events: none;
+    translate: 0 -50%;
+  }
+
   [data-scope='date-field'][data-part='segment-group'] > :not([data-scope]) {
     color: var(--xh-date-field-literal-fg, var(--xh-fg-subtle));
   }
@@ -235,6 +259,15 @@
   }
 
   @media (forced-colors: active) {
+    /* 整条占位的文字照系统的弱色画；段位让位时的透明字不被强制换色顶回来 */
+    [data-scope='date-field'][data-part='segment-group'][data-placeholder-shown] {
+      forced-color-adjust: none;
+    }
+
+    [data-scope='date-field'][data-part='segment-group'][data-placeholder-shown]::before {
+      color: GrayText;
+    }
+
     [data-scope='date-field'][data-part='segment'][data-invalid]:is([data-focus], :focus-visible) {
       outline: var(--xh-ring-width) solid Highlight;
       outline-offset: var(--xh-ring-offset);

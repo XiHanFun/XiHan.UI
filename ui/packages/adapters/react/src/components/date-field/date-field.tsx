@@ -59,7 +59,8 @@ export interface XhDateFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
   invalid?: boolean
   required?: boolean
   name?: string
-  placeholder?: SegmentTexts
+  /** 占位。字符串是整条占位：一段都没填、焦点也不在段上时输入行显示这句文字，焦点进到段上即换回段位；对象是逐段的占位串，覆盖内置的 yyyy / mm / dd。 */
+  placeholder?: string | SegmentTexts
   translations?: DateFieldTranslations
   variant?: ControlVariant
   tone?: Tone

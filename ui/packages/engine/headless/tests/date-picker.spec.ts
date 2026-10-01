@@ -667,6 +667,26 @@ describe('段位之间的移动（编排机自己接管的那一段）', () => {
   })
 })
 
+describe('整条占位', () => {
+  it('字符串 placeholder：全空且焦点不在段上时输入行出整条占位，焦点落到段上就让回段位', () => {
+    const h = mount({ placeholder: '请选择生效时间' })
+    const group = (): Record<string, unknown> => h.api().getSegmentGroupProps() as Record<string, unknown>
+    expect(group()).toMatchObject({ 'data-placeholder-text': '请选择生效时间', 'data-placeholder-shown': '' })
+    h.segments()[0]!.focus()
+    expect(group()['data-placeholder-shown']).toBeUndefined()
+    h.segments()[0]!.blur()
+    expect(group()['data-placeholder-shown']).toBe('')
+    h.setProps({ value: ['2026-07-01'] })
+    expect(group()['data-placeholder-shown']).toBeUndefined()
+  })
+
+  it('对象 placeholder 转给段位做逐段占位，不出整条占位', () => {
+    const h = mount({ placeholder: { year: '年', month: '月', day: '日' } })
+    expect(h.segmentTexts().filter(Boolean).sort()).toEqual(['年', '日', '月'])
+    expect((h.api().getSegmentGroupProps() as Record<string, unknown>)['data-placeholder-shown']).toBeUndefined()
+  })
+})
+
 describe('点输入行即展开', () => {
   it('点段位就展开，且焦点留在段上——那一下的用意是打字，不是挑日子', async () => {
     const h = mount({ defaultValue: '2026-07-28' })

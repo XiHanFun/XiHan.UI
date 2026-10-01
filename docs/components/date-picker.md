@@ -82,6 +82,7 @@ timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界
 ### 特性
 
 - `granularity` 支持 day / week / month / quarter / year，`selectionMode` 独立控制单选或多选。
+- `placeholder` 给字符串是整条占位：一段都没填、焦点也不在段上时输入行显示这句文字（「请选择生效时间」），段位与分隔符淡出让位，焦点一进到段上就换回 yyyy / mm / dd 段位；给对象是逐段的占位串。整条占位由皮肤以生成内容画出，段位仍可聚焦、仍在读屏树里。
 - 周选择直接渲染整周周期格；不再需要 `weekSelection` 特殊开关。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
 - `min`、`max` 与 `isDateUnavailable` 限制可选日期。
 - `presets` 提供常用日期快捷项。
@@ -155,6 +156,7 @@ timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界
 | `granularity` | `CalendarGranularity` |  | 选择粒度；与 selectionMode 正交。输入行与周期网格都由它决定。 |
 | `activeView` | `CalendarView` |  | 面板当前所在的层级。提供即受控；未提供时跟随 granularity，每次展开都回到目标粒度。 点击标题中的年 / 月会修改它。 没有配套的 defaultActiveView：面板每次展开都会重置该档，非受控初值没有生效时刻， 提供后也观察不到任何效果。修改初始层级使用 granularity。 |
 | `segments` | `DateSegmentSet` |  | 输入行铺设的段。未提供时按 granularity 推导：按周为「2026-33」、按月为「2026-05」、 按季度为「2026-Q2」、按年为「2026」，按天则按 locale 排列年月日。 |
+| `placeholder` | `string \| DateSegmentPlaceholders` |  | 占位。给字符串是整条占位：一段都没填、焦点也不在段上时，输入行显示这句文字（「请选择生效时间」）， 焦点进到段上即换回段位。给对象是逐段的占位串，覆盖内置的 yyyy / mm / dd。 |
 | `presets` | `DatePickerPreset[]` |  | 快捷选项（「今天」「明天」等）。提供后浮层中多出一列，点击即整份写入选中值。 日期需计算后传入：连接层每帧求值，把 `today()` 放进渲染期会跨零点得出两个结果。 与 selectionMode 不匹配（单选提供了多条）、落在 min / max 之外或被 isDateUnavailable 判定不可用的选项 自动不可按下；showTime 下写入的日期附带当前已选的时间。 |
 | `visibleCount` | `number` |  | 展示的连续日历面板数；默认 1。 |
 | `fixedWeeks` | `boolean` |  | 日历恒渲染六行，默认开启。关闭后网格按当月实际周数收缩，翻页时浮层高度随之变化。 |
@@ -390,6 +392,8 @@ timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界
 | `segment-group` | `data-empty` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-out-of-range` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-text` | props.placeholder \| undefined |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -503,6 +507,7 @@ timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界
 | `--xh-date-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-_date-picker-available-h` | date-picker 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-date-picker-panel-divider` | `calendar` | `border-block-start`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-solid-separator` | date-picker 的 calendar 部件 border-block-start、border-inline-start 覆盖槽。 |
 | `--xh-date-picker-panel-gap` | `calendar`<br>`preset-group` | `padding-block-start`<br>`padding-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-space-3` | date-picker 的 calendar、preset-group 部件 padding-block-start、padding-inline-start 覆盖槽。 |
+| `--xh-date-picker-placeholder-fg` | `segment-group` | `color` | `placeholder-shown` | `--xh-fg-subtle` | date-picker 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-date-picker-preset-bg-hover` | `preset` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | date-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-date-picker-preset-bg-pressed` | `preset` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | date-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-date-picker-preset-check-fg` | `preset` | `background-color` | `default` | `--xh-_date-picker-check-fg` | date-picker 的 preset 部件 background-color 覆盖槽。 |

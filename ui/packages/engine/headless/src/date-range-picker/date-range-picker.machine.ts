@@ -261,6 +261,8 @@ function dateRangePickerFieldPropsAt(
     invalid: prop('invalid'),
     required: prop('required'),
     name: index === 0 ? prop('name') : prop('endName'),
+    // 这一端给了整条占位就用它，没给就用两端共用的逐段占位
+    placeholder: (index === 0 ? prop('startPlaceholder') : prop('endPlaceholder')) ?? prop('placeholder'),
     onValueChange: ({ value }) => {
       send({ type: 'VALUE.SET', value: writeRangeAt(context.get('value'), index, value), src })
     },

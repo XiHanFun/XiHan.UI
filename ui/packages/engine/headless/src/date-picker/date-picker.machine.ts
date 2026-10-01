@@ -176,6 +176,7 @@ export function datePickerFieldProps(service: Service<DatePickerSchema>): DateFi
     invalid: prop('invalid'),
     required: prop('required'),
     name: prop('name'),
+    placeholder: prop('placeholder'),
     onValueChange: ({ value }) => {
       // 段位只改首个选中值：多选下其余的原样留着
       const current = context.get('value')

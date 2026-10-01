@@ -18,6 +18,7 @@ import type {
   DateRangePickerPreset,
   DateRangePickerPresetState,
   DateRangePickerSchema,
+  DateSegmentPlaceholders,
   DateSegmentSet,
   DateSegmentType,
   TimeHourCycle,
@@ -121,6 +122,12 @@ export const XhDateRangePickerRoot = defineComponent({
     activeView: { type: String as PropType<CalendarView> },
     /** 输入行铺设哪几段；未提供时按 granularity 推导。 */
     segments: { type: Array as PropType<DateSegmentSet> },
+    /** 逐段的占位串，两组段位共用，覆盖内置的 yyyy / mm / dd。 */
+    placeholder: { type: Object as PropType<DateSegmentPlaceholders> },
+    /** 起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字，焦点进到段上即换回段位。 */
+    startPlaceholder: { type: String },
+    /** 终点那组段位的整条占位，规则同 startPlaceholder。 */
+    endPlaceholder: { type: String },
     /** 并排展示几页；默认 1，起止常跨月时可设为 2。 */
     visibleCount: { type: Number },
     /** 日历恒渲染六行，默认开启。关闭后翻页时浮层高度会随月份变化。 */

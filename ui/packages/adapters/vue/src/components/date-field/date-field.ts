@@ -58,7 +58,8 @@ export const XhDateFieldRoot = defineComponent({
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     name: { type: String },
-    placeholder: { type: Object as PropType<SegmentTexts> },
+    /** 占位。字符串是整条占位：一段都没填、焦点也不在段上时输入行显示这句文字，焦点进到段上即换回段位；对象是逐段的占位串，覆盖内置的 yyyy / mm / dd。 */
+    placeholder: { type: [String, Object] as PropType<string | SegmentTexts> },
     translations: { type: Object as PropType<DateFieldTranslations> },
     variant: { type: String as PropType<ControlVariant> },
     tone: { type: String as PropType<Tone> },

@@ -22077,19 +22077,21 @@
       "name": "--xh-date-field-placeholder-fg",
       "component": "date-field",
       "part": [
-        "segment"
+        "segment",
+        "segment-group"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "placeholder"
+        "placeholder",
+        "placeholder-shown"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
       ],
       "visibility": "public",
-      "description": "date-field 的 segment 部件 color 覆盖槽。"
+      "description": "date-field 的 segment、segment-group 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-date-field-segment-bg-focus",
@@ -23313,6 +23315,24 @@
       ],
       "visibility": "public",
       "description": "date-picker 的 calendar、preset-group 部件 padding-block-start、padding-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-placeholder-fg",
+      "component": "date-picker",
+      "part": [
+        "segment-group"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "placeholder-shown"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 segment-group 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-preset-bg-hover",
@@ -25149,6 +25169,24 @@
       ],
       "visibility": "public",
       "description": "date-range-picker 的 calendar、preset-group 部件 padding-block-start、padding-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-placeholder-fg",
+      "component": "date-range-picker",
+      "part": [
+        "segment-group"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "placeholder-shown"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 segment-group 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-preset-bg-hover",

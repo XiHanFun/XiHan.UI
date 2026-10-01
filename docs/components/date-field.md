@@ -76,6 +76,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 
 - `locale` 决定日期段的顺序和分隔方式。
 - `min` 与 `max` 限制可输入范围。
+- `placeholder` 给对象是逐段的占位串；给字符串是整条占位，一段都没填、焦点也不在段上时段位与分隔符让位给这句文字，焦点一进来就换回段位。
 - `granularity` 支持日期或精确到分钟的日期时间；`hourCycle={12}` 时小时段收 1-12，时刻段后面多出上下午段，值仍是 24 小时制的 ISO 串。
 - `year + week` 段集使用 ISO 周历，固定周一到周日，不随显示语言改变。
 - 不提供 `formatOptions`，也不解析 `YYYY/MM/DD` 这类格式串。能用 `Intl.DateTimeFormat` 选项表达的显示差异已经各有归口：段序与分隔符随 `locale`，由哪几段组成随 `granularity` / `segments`，小时制随 `hourCycle`。其余选项要么改变值的含义（两位年份还原不出唯一的世纪，`era` 需要另一套纪年），要么改变编辑方式（`month: 'long'` 的文字月份要按字母跳选，逐段键入与上下键加减都对不上）。格式串绕开 locale 的段序，还得自带一套解析器，同一个值在别的语言下会被写成对方读不懂的顺序。只是要换一种写法展示选中值时，用[时间戳](./timestamp)或 `Intl.DateTimeFormat` 另外格式化。
@@ -130,7 +131,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | `invalid` | `boolean` |  |  |
 | `required` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，ISO 串随表单一并提交。 |
-| `placeholder` | `{ readonly [K in DateSegmentType]?: string }` |  | 各段未填时显示的占位串，逐段覆盖内置默认（yyyy / mm / dd / hh / mm / ss）。 |
+| `placeholder` | `string \| DateSegmentPlaceholders` |  | 占位。给对象是逐段的占位串，覆盖内置默认（yyyy / mm / dd / hh / mm / ss）。 给字符串是整条占位：一段都没填、焦点也不在段上时，段位与分隔符让位给这句文字（「请选择生效时间」）， 焦点一进来就换回段位，段位仍显示内置的逐段占位。 |
 | `translations` | `DateFieldTranslations` |  | 各段的读屏名字，逐段覆盖内置默认。段是 spinbutton，没有名字时读屏只能朗读一串数字。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 |
@@ -277,6 +278,8 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | `control` | `data-xh-field-size` | props.size |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-text` | props.placeholder \| undefined |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-disabled` | ''（条件成立时才出现） |
 | `segment` | `data-focus` | ''（条件成立时才出现） |
@@ -332,7 +335,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | `--xh-date-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | date-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-date-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | date-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-date-field-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | date-field 的 segment-group 部件 color 覆盖槽。 |
-| `--xh-date-field-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | date-field 的 segment 部件 color 覆盖槽。 |
+| `--xh-date-field-placeholder-fg` | `segment`<br>`segment-group` | `color` | `placeholder`<br>`placeholder-shown` | `--xh-fg-subtle` | date-field 的 segment、segment-group 部件 color 覆盖槽。 |
 | `--xh-date-field-segment-bg-focus` | `segment` | `background` | `focus`<br>`focus-visible` | `--xh-_date-field-segment-bg` | date-field 的 segment 部件 background 覆盖槽。 |
 | `--xh-date-field-segment-bg-invalid-focus` | `segment` | `background` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-bg-subtle` | date-field 的 segment 部件 background 覆盖槽。 |
 | `--xh-date-field-segment-fg-focus` | `segment` | `color` | `focus`<br>`focus-visible`<br>`placeholder` | `--xh-_date-field-segment-fg` | date-field 的 segment 部件 color 覆盖槽。 |

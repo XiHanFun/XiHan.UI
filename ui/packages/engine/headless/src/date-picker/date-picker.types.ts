@@ -8,7 +8,7 @@
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { CalendarPickerApi, CalendarPickerSchema, CalendarPickerSelectionMode, CalendarPickerTranslations } from '../calendar-picker'
-import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentSet } from '../date-field'
+import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentPlaceholders, DateSegmentSet } from '../date-field'
 import type { CalendarGranularity, CalendarPeriodValue, CalendarView, CalendarViewChangeDetails } from '../shared/calendar'
 import type { ResolvedTimeStep, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
 import type { TimeHourCycle } from '../time-field'
@@ -184,6 +184,11 @@ export interface DatePickerSchema extends MachineSchema {
      * 按季度为「2026-Q2」、按年为「2026」，按天则按 locale 排列年月日。
      */
     segments?: DateSegmentSet
+    /**
+     * 占位。给字符串是整条占位：一段都没填、焦点也不在段上时，输入行显示这句文字（「请选择生效时间」），
+     * 焦点进到段上即换回段位。给对象是逐段的占位串，覆盖内置的 yyyy / mm / dd。
+     */
+    placeholder?: string | DateSegmentPlaceholders
     /**
      * 快捷选项（「今天」「明天」等）。提供后浮层中多出一列，点击即整份写入选中值。
      * 日期需计算后传入：连接层每帧求值，把 `today()` 放进渲染期会跨零点得出两个结果。

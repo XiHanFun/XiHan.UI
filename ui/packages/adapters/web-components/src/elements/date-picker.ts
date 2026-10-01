@@ -28,6 +28,7 @@ import type {
   DatePickerServices,
   DatePickerTimeUnit,
   DatePickerValueChangeDetails,
+  DateSegmentPlaceholders,
   DateSegmentSet,
   DateSegmentType,
   FormControlState,
@@ -130,6 +131,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} invalid - 校验失败标注；未提供时也会自行判定：已填齐但越界
  * @attr {boolean} required - 必填标注，写入每段的 aria-required
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
+ * @attr {string} placeholder - 整条占位：一段都没填、焦点也不在段上时输入行显示这句文字；逐段的占位对象走 property
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -207,6 +209,8 @@ export class XhDatePickerElement extends XhPortalHostElement {
     granularity: { converter: STRING_CONVERTER },
     activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },
     segments: { attribute: false },
+    // 属性只承载整条占位的文字；逐段的对象走 property
+    placeholder: { converter: STRING_CONVERTER },
     // 快捷选项是数组，只能走 property
     presets: { attribute: false },
     visibleCount: { converter: NUMBER_CONVERTER, attribute: 'visible-count' },
@@ -251,6 +255,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare granularity?: CalendarGranularity
   declare activeView?: CalendarView
   declare segments?: DateSegmentSet
+  declare placeholder?: string | DateSegmentPlaceholders
   declare presets?: DatePickerPreset[]
   declare visibleCount?: number
   declare fixedWeeks?: boolean
@@ -399,6 +404,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
       granularity: this.granularity,
       activeView: this.activeView,
       segments: this.segments,
+      placeholder: this.placeholder,
       presets: this.presets,
       visibleCount: this.visibleCount,
       fixedWeeks: this.fixedWeeks,
