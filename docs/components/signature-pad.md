@@ -160,6 +160,7 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | `onDraw` | `(details: SignaturePadDrawDetails) => void` |  | 每收进一个点通知一次，清空、撤销、重做与表单重置时也通知一次。 |
 | `onDrawEnd` | `(details: SignaturePadDrawEndDetails) => void` |  | 签名定稿时通知一次并附带可直接提交的 SVG：抬笔、清空、撤销、重做与表单重置都发出。 |
 | `onValueChange` | `(details: SignaturePadValueChangeDetails) => void` |  | 签名数据变了：与 onDrawEnd 同一批时机，落笔途中不发。受控时是唯一出口。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 事件
 
@@ -170,6 +171,7 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | `draw` | `SignaturePadDrawDetails` | 笔迹变化时通知一次（含清空、撤销、重做与表单重置）；detail 为 `{ paths: string[], path: string }` |
 | `draw-end` | `SignaturePadDrawEndDetails` | 签名定稿时通知一次（抬笔、清空、撤销、重做、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接存储 |
 | `value-change` | `SignaturePadValueChangeDetails` | 签名数据定稿，时机同 draw-end；detail 为 `{ value: { strokes, surface } }`，可原样存下再赋回 defaultValue 回显 |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 

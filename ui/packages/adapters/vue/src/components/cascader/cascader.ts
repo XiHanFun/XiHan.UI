@@ -25,6 +25,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideCascader, provideCascaderContent, provideCascaderGroup, provideCascaderItem, provideCascaderTag, useCascaderContentContext, useCascaderContext, useCascaderGroupContext, useCascaderItemContext, useCascaderTagContext } from './context'
@@ -129,6 +130,7 @@ export const XhCascaderRoot = defineComponent({
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为路径数组，单选时长度 ≤ 1
   emits: {
+    'clear': () => true,
     'value-change': (_details: PayloadOf<CascaderProps, 'onValueChange'>) => true,
     'open-change': (_details: PayloadOf<CascaderProps, 'onOpenChange'>) => true,
     'update:value': (_value: PayloadOf<CascaderProps, 'onValueChange'>['value']) => true,
@@ -149,7 +151,7 @@ export const XhCascaderRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useCascader(withXhConfig('cascader', useFormControlProps(props)) as CascaderProps, {
+    const ctx = useCascader(withHandlers(withXhConfig('cascader', useFormControlProps(props)), { onClear: () => emit('clear') }) as CascaderProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
       onBranchLoadStart: details => emit('branch-load-start', details),

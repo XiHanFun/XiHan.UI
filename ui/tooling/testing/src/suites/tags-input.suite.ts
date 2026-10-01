@@ -498,7 +498,7 @@ export const tagsInputSuite: ConformanceSuite = {
               'root': { 'data-empty': '' },
               'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
             },
-            events: [{ type: 'value-change', detail: { value: [] } }],
+            events: [{ type: 'value-change', detail: { value: [] } }, { type: 'clear', detail: null }],
           },
         },
         {

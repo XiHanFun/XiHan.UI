@@ -78,6 +78,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires input-value-change - 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid）
@@ -198,6 +199,11 @@ export class XhComboboxElement extends XhPortalHostElement {
     onChange: () => this.requestUpdate(),
   })
 
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
+
   private readonly notifyValue = (details: ComboboxValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -274,6 +280,7 @@ export class XhComboboxElement extends XhPortalHostElement {
       tone: this.tone,
       size: this.size,
       onValueChange: this.notifyValue,
+      onClear: this.notifyClear,
       onInputValueChange: this.notifyInputValue,
       onOpenChange: this.notifyOpen,
     }

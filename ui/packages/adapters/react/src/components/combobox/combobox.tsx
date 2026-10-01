@@ -80,6 +80,8 @@ export interface XhComboboxRootProps extends RootElementProps {
   tone?: Tone
   size?: Size
   onValueChange?: ComboboxProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   onInputValueChange?: ComboboxProps['onInputValueChange']
   onOpenChange?: ComboboxProps['onOpenChange']
   /** 每个候选的自定义内容；未提供时使用 collection 中的 label。 */
@@ -124,6 +126,7 @@ export function XhComboboxRoot({
   tone,
   size,
   onValueChange,
+  onClear,
   onInputValueChange,
   onOpenChange,
   renderItem,
@@ -163,6 +166,7 @@ export function XhComboboxRoot({
     tone,
     size,
     onValueChange,
+    onClear,
     onInputValueChange,
     onOpenChange,
   })) as ComboboxProps)
@@ -219,7 +223,7 @@ export function XhComboboxRoot({
   )
 }
 
-XhComboboxRoot.xhEvents = ['value-change', 'input-value-change', 'open-change'] as const
+XhComboboxRoot.xhEvents = ['clear', 'value-change', 'input-value-change', 'open-change'] as const
 
 export interface XhComboboxLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 使用原生 label，connect 给出的 for 指向输入框。 */

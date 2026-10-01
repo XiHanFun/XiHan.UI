@@ -171,6 +171,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | `isTimeUnavailable` | `TimeUnavailablePredicate` |  | 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）； unit 区分同一个 '30' 属于哪一列；context 带这份值里已选的时（24 小时制）与分， 写得出「9 点只能选 30 分以后」。date 与 index 在本组件恒为 null。 与 min / max 裁掉的值同等处理：判定为真的格子仍可聚焦，只是不可选中。 连续区间用 min / max 表达即可，该项留给每隔 15 分钟才可预约这类离散规则。 |
 | `translations` | `Partial<TimePickerTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |
 | `onValueChange` | `(details: TimePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: TimePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### TimePickerPreset
@@ -190,6 +191,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TimePickerValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `TimePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽

@@ -485,6 +485,8 @@ export function connectTagsInput<T extends PropTypes>(
         // 清完这个按钮会收起，收起的元素持不住焦点，须先把焦点交回输入框
         const restore = holdsFocus(el) ? inputOf(el) : null
         send({ type: 'VALUE.CLEAR' })
+        // 按清空钮这一下单独通知：调用方常要在清空后重新查询，只看值变化分不出是清空还是删光了字
+        prop('onClear')?.()
         restore?.focus()
       },
     }),

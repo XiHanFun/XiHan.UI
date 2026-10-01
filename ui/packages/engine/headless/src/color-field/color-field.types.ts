@@ -41,6 +41,8 @@ export interface ColorFieldSchema extends MachineSchema {
     /** 读屏文案；默认英文。 */
     translations?: Partial<ColorFieldTranslations>
     onValueChange?: (details: ColorFieldValueChangeDetails) => void
+    /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+    onClear?: () => void
   }
   context: {
     /** 颜色串。受控（value 提供）时 cell 直读 prop。 */

@@ -72,6 +72,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {'user'|'environment'} capture - 移动端直接调用摄像头 / 麦克风采集
  * @attr {boolean} auto-upload - 接受后即自动开始传输（须配置 upload 实现），默认 true；写 auto-upload="false" 关闭
  * @fires files-change - 列表变化；detail 为 `{ files: File[] }`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires remote-files-change - 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }`
  * @fires upload-complete - 单个文件传输完成；detail 为 `{ file, url? }`
  * @fires upload-error - 单个文件传输失败；detail 为 `{ file, error }`
@@ -145,6 +146,11 @@ export class XhFileUploadElement extends XhElement {
   // scope 绑在本元素上：打开选择框要在 scope 的 root 里按 id 找回隐藏输入
   private readonly uploadScope: Scope = createScope(this, createCounterIdGenerator())
 
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
+
   private readonly notifyChange = (details: FileUploadFilesChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('files-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -216,6 +222,7 @@ export class XhFileUploadElement extends XhElement {
       capture: this.capture,
       translations: this.translations,
       onFilesChange: this.notifyChange,
+      onClear: this.notifyClear,
       onRemoteFilesChange: this.notifyRemoteChange,
       onUploadComplete: this.notifyUploadComplete,
       onUploadError: this.notifyUploadError,

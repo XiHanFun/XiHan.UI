@@ -69,6 +69,7 @@ const ARRAY_CONVERTER = {
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 标签集合变化；detail 为 `{ value: string[] }`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires input-value-change - 输入文本变化；detail 为 `{ inputValue: string }`
  * @fires tag-reject - 提交里有标签没进集合（重复、到了上限或被 validate 拒收）；detail 为 `{ tags: { tag, reasons }[] }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max / data-overflowing
@@ -144,6 +145,11 @@ export class XhTagsInputElement extends XhElement {
   /** 删除按钮、就地编辑框与清空按钮的无障碍名。 */
   declare translations?: TagsInputSchema['props']['translations']
 
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
+
   private readonly notifyValue = (details: TagsInputValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -201,6 +207,7 @@ export class XhTagsInputElement extends XhElement {
       size: this.size,
       translations: this.translations,
       onValueChange: this.notifyValue,
+      onClear: this.notifyClear,
       onInputValueChange: this.notifyInputValue,
       onTagReject: this.notifyTagReject,
     }

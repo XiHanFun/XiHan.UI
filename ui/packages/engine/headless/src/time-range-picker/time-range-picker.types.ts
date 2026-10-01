@@ -188,6 +188,8 @@ export interface TimeRangePickerSchema extends MachineSchema {
     translations?: Partial<TimeRangePickerTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: TimeRangePickerValueChangeDetails) => void
+    /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+    onClear?: () => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: TimeRangePickerOpenChangeDetails) => void
   }

@@ -60,6 +60,7 @@ function declaredSegment(el: HTMLElement, position: number): TimeSegmentType {
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string }`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-out-of-range 的容器
  * @csspart label - 标题；点击它把焦点送到第一段
  * @csspart control - role=group 的段容器，由 label 命名
@@ -110,6 +111,11 @@ export class XhTimeFieldElement extends XhElement {
   declare tone?: Tone
   declare size?: Size
 
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
+
   private readonly notifyChange = (details: TimeFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -150,6 +156,7 @@ export class XhTimeFieldElement extends XhElement {
       tone: this.tone,
       size: this.size,
       onValueChange: this.notifyChange,
+      onClear: this.notifyClear,
     }
   }
 

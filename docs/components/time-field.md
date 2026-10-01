@@ -141,6 +141,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |
 | `onValueChange` | `(details: TimeFieldValueChangeDetails) => void` |  |  |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 事件
 
@@ -149,6 +150,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TimeFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 

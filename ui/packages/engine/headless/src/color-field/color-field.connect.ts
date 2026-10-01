@@ -214,6 +214,8 @@ export function connectColorField<T extends PropTypes>(
         if (!canClear)
           return
         send({ type: 'VALUE.CLEAR' })
+        // 按清空钮这一下单独通知：调用方常要在清空后重新查询，只看值变化分不出是清空还是删光了字
+        prop('onClear')?.()
         // 清完把焦点送回输入框，接着打字不用再点一次
         scope.getById(ids.input)?.focus()
       },

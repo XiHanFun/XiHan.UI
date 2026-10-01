@@ -46,6 +46,8 @@ export interface XhTimeFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
   tone?: Tone
   size?: Size
   onValueChange?: TimeFieldProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   children?: SlotChildren<TimeFieldRootSlotProps>
 }
 
@@ -68,6 +70,7 @@ export function XhTimeFieldRoot({
   tone,
   size,
   onValueChange,
+  onClear,
   children,
   ...rest
 }: XhTimeFieldRootProps): ReactNode {
@@ -90,6 +93,7 @@ export function XhTimeFieldRoot({
     tone,
     size,
     onValueChange,
+    onClear,
   })) as TimeFieldProps)
   const api = ctx.api
   return (
@@ -120,7 +124,7 @@ export function XhTimeFieldRoot({
   )
 }
 
-XhTimeFieldRoot.xhEvents = ['value-change'] as const
+XhTimeFieldRoot.xhEvents = ['clear', 'value-change'] as const
 
 export interface XhTimeFieldLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 仍使用原生 label 保持表单语义，点击标题聚焦第一段由连接层的 click 接管。 */

@@ -7832,6 +7832,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -8205,6 +8212,10 @@
               "type": {
                 "text": "CascaderValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             },
             {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
@@ -11965,6 +11976,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -12086,6 +12104,10 @@
               "type": {
                 "text": "ColorFieldValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             }
           ],
           "attributes": [
@@ -15165,6 +15187,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -15453,6 +15482,10 @@
               "type": {
                 "text": "ComboboxValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             },
             {
               "description": "输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选",
@@ -18226,6 +18259,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyChange",
               "privacy": "private",
               "readonly": true
@@ -18291,6 +18331,10 @@
               "type": {
                 "text": "DateFieldValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             }
           ],
           "attributes": [
@@ -19128,6 +19172,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -19467,6 +19518,10 @@
               "type": {
                 "text": "DatePickerValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             },
             {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
@@ -20627,6 +20682,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -21016,6 +21078,10 @@
               "type": {
                 "text": "DateRangePickerValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             },
             {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
@@ -26156,6 +26222,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyChange",
               "privacy": "private",
               "readonly": true
@@ -26493,6 +26566,10 @@
               "type": {
                 "text": "FileUploadFilesChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             },
             {
               "description": "远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }`",
@@ -55767,6 +55844,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -56066,6 +56150,10 @@
               "type": {
                 "text": "SelectValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             },
             {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
@@ -57705,6 +57793,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyDraw",
               "privacy": "private",
               "readonly": true
@@ -57933,6 +58028,10 @@
               "type": {
                 "text": "SignaturePadValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             }
           ],
           "attributes": [
@@ -64488,6 +64587,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -64640,6 +64746,10 @@
               "type": {
                 "text": "TagsInputValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             },
             {
               "description": "输入文本变化；detail 为 `{ inputValue: string }`",
@@ -65203,6 +65313,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -65355,6 +65472,10 @@
               "type": {
                 "text": "TextFieldValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             }
           ],
           "attributes": [
@@ -65845,6 +65966,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyChange",
               "privacy": "private",
               "readonly": true
@@ -65943,6 +66071,10 @@
               "type": {
                 "text": "TimeFieldValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             }
           ],
           "attributes": [
@@ -66571,6 +66703,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -66742,6 +66881,10 @@
               "type": {
                 "text": "TimePickerValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             },
             {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
@@ -67551,6 +67694,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -67763,6 +67913,10 @@
               "type": {
                 "text": "TimeRangePickerValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             },
             {
               "description": "open 状态变化；detail 为 `{ open: boolean }`",
@@ -73600,6 +73754,13 @@
             },
             {
               "kind": "field",
+              "name": "notifyClear",
+              "privacy": "private",
+              "readonly": true,
+              "description": "按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -74032,6 +74193,10 @@
               "type": {
                 "text": "TreeSelectValueChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。",
+              "name": "clear"
             },
             {
               "description": "展开集合变化；detail 为 `{ value: string[] }`",

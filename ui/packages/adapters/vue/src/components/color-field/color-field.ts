@@ -11,6 +11,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideColorField, useColorFieldContext } from './context'
@@ -47,6 +48,7 @@ export const XhColorFieldRoot = defineComponent({
   },
   // value-change 携带 { value }，update:value 携带裸串
   emits: {
+    'clear': () => true,
     'value-change': (_details: PayloadOf<ColorFieldProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<ColorFieldProps, 'onValueChange'>['value']) => true,
   },
@@ -58,7 +60,7 @@ export const XhColorFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useColorField(withXhConfig('color-field', useFormControlProps(props)) as ColorFieldProps, notify)
+    const ctx = useColorField(withHandlers(withXhConfig('color-field', useFormControlProps(props)), { onClear: () => emit('clear') }) as ColorFieldProps, notify)
     provideColorField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

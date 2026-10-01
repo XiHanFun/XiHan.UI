@@ -762,7 +762,7 @@ export const dateFieldSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '有值时清空钮显出：点它清空全部段、派 value-change、焦点回到首段，随后收起',
+      name: '有值时清空钮显出：点它清空全部段、先派 value-change 再派 clear、焦点回到首段，随后收起',
       spec: { apg: APG },
       props: { locale: 'zh-CN', defaultValue: '2026-07-28', name: 'due' },
       initial: {
@@ -783,7 +783,7 @@ export const dateFieldSuite: ConformanceSuite = {
               'segment[1]': { 'aria-valuenow': null, 'data-placeholder': '' },
               'segment[2]': { 'aria-valuenow': null, 'data-placeholder': '' },
             },
-            events: [{ type: 'value-change', detail: { value: null } }],
+            events: [{ type: 'value-change', detail: { value: null } }, { type: 'clear', detail: null }],
             activeElement: { part: 'segment[0]', exact: true },
           },
         },
@@ -834,7 +834,7 @@ export const dateFieldSuite: ConformanceSuite = {
               'segment[1]': { 'aria-valuenow': null, 'data-placeholder': '' },
             },
             // 值原本就是 null，清空不会再派一次
-            events: [],
+            events: [{ type: 'clear', detail: null }],
             activeElement: { part: 'segment[0]', exact: true },
           },
         },

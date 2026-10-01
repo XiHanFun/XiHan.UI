@@ -734,7 +734,7 @@ export const timeRangePickerSuite: ConformanceSuite = {
               [E_HOUR]: { 'aria-valuenow': null, 'data-placeholder': '' },
               [E_MINUTE]: { 'aria-valuenow': null },
             },
-            events: [{ type: 'value-change', detail: { value: [] } }],
+            events: [{ type: 'value-change', detail: { value: [] } }, { type: 'clear', detail: null }],
             activeElement: { part: S_HOUR, exact: true },
           },
         },

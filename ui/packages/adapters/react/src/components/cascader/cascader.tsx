@@ -107,6 +107,8 @@ export interface XhCascaderRootProps extends RootElementProps {
   loop?: boolean
   dir?: Direction
   onValueChange?: CascaderProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   onOpenChange?: CascaderProps['onOpenChange']
   onBranchLoadStart?: CascaderProps['onBranchLoadStart']
   onBranchLoad?: CascaderProps['onBranchLoad']
@@ -146,6 +148,7 @@ export function XhCascaderRoot({
   loop,
   dir,
   onValueChange,
+  onClear,
   onOpenChange,
   onBranchLoadStart,
   onBranchLoad,
@@ -185,6 +188,7 @@ export function XhCascaderRoot({
     loop,
     dir,
     onValueChange,
+    onClear,
     onOpenChange,
     onBranchLoadStart,
     onBranchLoad,
@@ -225,7 +229,7 @@ export function XhCascaderRoot({
   )
 }
 
-XhCascaderRoot.xhEvents = ['value-change', 'open-change', 'branch-load-start', 'branch-load', 'branch-load-error'] as const
+XhCascaderRoot.xhEvents = ['clear', 'value-change', 'open-change', 'branch-load-start', 'branch-load', 'branch-load-error'] as const
 
 export interface XhCascaderLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhCascaderLabel({ children, ...rest }: XhCascaderLabelProps): ReactNode {

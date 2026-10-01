@@ -1308,7 +1308,7 @@ export const treeSelectSuite: ConformanceSuite = {
               // 清完就收起，不灰留位
               'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
             },
-            events: [{ type: 'value-change', detail: { value: [] } }],
+            events: [{ type: 'value-change', detail: { value: [] } }, { type: 'clear', detail: null }],
           },
         },
         {

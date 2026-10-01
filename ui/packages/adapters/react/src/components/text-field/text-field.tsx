@@ -51,6 +51,8 @@ export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
   size?: Size
   translations?: TextFieldProps['translations']
   onValueChange?: TextFieldProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   children?: SlotChildren<TextFieldRootSlotProps>
 }
 
@@ -73,6 +75,7 @@ export function XhTextFieldRoot({
   size,
   translations,
   onValueChange,
+  onClear,
   children,
   ...rest
 }: XhTextFieldRootProps): ReactNode {
@@ -95,6 +98,7 @@ export function XhTextFieldRoot({
     size,
     translations,
     onValueChange,
+    onClear,
   })) as TextFieldProps)
   const api = ctx.api
   return (
@@ -120,7 +124,7 @@ export function XhTextFieldRoot({
   )
 }
 
-XhTextFieldRoot.xhEvents = ['value-change'] as const
+XhTextFieldRoot.xhEvents = ['clear', 'value-change'] as const
 
 export interface XhTextFieldLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 必须是原生 label，connect 把 for 指向 input。 */

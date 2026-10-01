@@ -887,6 +887,20 @@ describe('传输收尾与列表动效的投影', () => {
   })
 })
 
+describe('file-upload 清空钮', () => {
+  it('清空钮清掉列表后通知 onClear；列表本来就空时激活是空操作，不报', () => {
+    const onClear = vi.fn()
+    const m = open({ maxFiles: 3, onClear })
+    m.clear.click()
+    expect(onClear).not.toHaveBeenCalled()
+    m.dropzone.dispatchEvent(dragEvent('drop', { files: [makeFile('a.txt')] }))
+    expect(names(m)).toEqual(['a.txt'])
+    m.clear.click()
+    expect(names(m)).toEqual([])
+    expect(onClear).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('file-upload 作者准入判定 validate', () => {
   it('类型与大小通过之后才问 validate，返回的码并进原因、拒收的不占名额', () => {
     const calls: string[] = []

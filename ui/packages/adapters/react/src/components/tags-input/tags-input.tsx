@@ -78,6 +78,8 @@ export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>,
   size?: Size
   translations?: Partial<TagsInputTranslations>
   onValueChange?: TagsInputProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   onInputValueChange?: TagsInputProps['onInputValueChange']
   onTagReject?: TagsInputProps['onTagReject']
   children?: SlotChildren<TagsInputRootSlotProps>
@@ -107,6 +109,7 @@ export function XhTagsInputRoot({
   size,
   translations,
   onValueChange,
+  onClear,
   onInputValueChange,
   onTagReject,
   children,
@@ -136,6 +139,7 @@ export function XhTagsInputRoot({
     size,
     translations,
     onValueChange,
+    onClear,
     onInputValueChange,
     onTagReject,
   })) as TagsInputProps)
@@ -172,7 +176,7 @@ export function XhTagsInputRoot({
   )
 }
 
-XhTagsInputRoot.xhEvents = ['value-change', 'input-value-change', 'tag-reject'] as const
+XhTagsInputRoot.xhEvents = ['clear', 'value-change', 'input-value-change', 'tag-reject'] as const
 
 export interface XhTagsInputLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 使用原生 label，getLabelProps 的 for 指向输入框。 */

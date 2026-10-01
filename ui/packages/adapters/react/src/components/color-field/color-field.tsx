@@ -45,6 +45,8 @@ export interface XhColorFieldRootProps extends Omit<ComponentPropsWithRef<'div'>
   size?: Size
   translations?: ColorFieldProps['translations']
   onValueChange?: ColorFieldProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   children?: SlotChildren<ColorFieldRootSlotProps>
 }
 
@@ -65,6 +67,7 @@ export function XhColorFieldRoot({
   size,
   translations,
   onValueChange,
+  onClear,
   children,
   ...rest
 }: XhColorFieldRootProps): ReactNode {
@@ -85,6 +88,7 @@ export function XhColorFieldRoot({
     size,
     translations,
     onValueChange,
+    onClear,
   })))
   const api = ctx.api
 
@@ -114,7 +118,7 @@ export function XhColorFieldRoot({
   )
 }
 
-XhColorFieldRoot.xhEvents = ['value-change'] as const
+XhColorFieldRoot.xhEvents = ['clear', 'value-change'] as const
 
 export interface XhColorFieldLabelProps extends ComponentPropsWithRef<'label'> {}
 

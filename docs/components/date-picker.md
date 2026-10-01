@@ -175,6 +175,7 @@ timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界
 | `timeStep` | `TimeStep` |  | showTime 时间列按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。只影响列里的格，不限制段位上手动输入的数。 |
 | `isTimeUnavailable` | `TimeUnavailablePredicate` |  | showTime 时间列的逐格可选性。value 是两位补零的格值，时列恒按 24 小时制给出； context 带已选的时（24 小时制）与分、这份时间所属的日期（date，还没有值时是聚焦日），index 恒为 null。 判定为真的格子仍可聚焦，只是按不下去，与 min / max 之外的时刻同等对待。 |
 | `onValueChange` | `(details: DatePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: DatePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onFocusedValueChange` | `(details: DatePickerFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻月、展开、段位输入都会发出）。 网格由外部渲染，不监听该事件时日历不会换月。 |
 | `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板所在层级变化（点击标题向上、点击格子向下都会发出）；受控时是唯一出口。 |
@@ -196,6 +197,7 @@ timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `DatePickerValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `DatePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `focused-value-change` | `DatePickerFocusChangeDetails` | 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格 |
 | `active-view-change` | `CalendarViewChangeDetails` | 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重绘网格 |

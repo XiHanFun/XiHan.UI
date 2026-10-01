@@ -450,7 +450,7 @@ export const timeFieldSuite: ConformanceSuite = {
             },
             // 这个按钮不占 Tab 位，清完必须把焦点送回第一段
             activeElement: { part: HOUR, exact: true },
-            events: [{ type: 'value-change', detail: { value: '' } }],
+            events: [{ type: 'value-change', detail: { value: '' } }, { type: 'clear', detail: null }],
           },
         },
         {

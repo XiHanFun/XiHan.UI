@@ -147,6 +147,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `loop` | `boolean` |  | 列内上下键到达首尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的进入子列 / 返回上一列语义。 |
 | `onValueChange` | `(details: CascaderValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: CascaderOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onBranchLoadStart` | `(details: CascaderBranchLoadStartDetails) => void` |  | 一轮有效分支请求开始；reason 区分展开路径走到它与显式重试。 |
 | `onBranchLoad` | `(details: CascaderBranchLoadDetails) => void` |  | 一轮有效分支请求成功；children 为空仍是成功，这个分支随之成了叶子。 |
@@ -173,6 +174,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `CascaderValueChangeDetails` | 选中路径集合变化；detail 为 `{ value: string[][] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `CascaderOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `branch-load-start` | `CascaderBranchLoadStartDetails` | 懒分支请求开始；detail 为 `{ value, path, node, reason }` |
 | `branch-load` | `CascaderBranchLoadDetails` | 懒分支请求成功；detail 为 `{ value, path, node, children }` |

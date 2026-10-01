@@ -127,6 +127,8 @@ export interface TagsInputSchema extends MachineSchema {
     size?: Size
     translations?: Partial<TagsInputTranslations>
     onValueChange?: (details: TagsInputValueChangeDetails) => void
+    /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+    onClear?: () => void
     onInputValueChange?: (details: TagsInputInputValueChangeDetails) => void
     /** 提交里有标签没进集合：重复（照常消费）、到了上限或被 validate 拒收，逐个报告原因。 */
     onTagReject?: (details: TagsInputTagRejectDetails) => void

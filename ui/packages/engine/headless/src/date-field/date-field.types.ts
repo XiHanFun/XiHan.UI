@@ -156,6 +156,8 @@ export interface DateFieldSchema extends MachineSchema {
     /** 尺寸：sm / md / lg。 */
     size?: Size
     onValueChange?: (details: DateFieldValueChangeDetails) => void
+    /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+    onClear?: () => void
   }
   context: {
     /**

@@ -187,6 +187,8 @@ export interface ComboboxSchema extends MachineSchema {
     size?: Size
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: ComboboxValueChangeDetails) => void
+    /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+    onClear?: () => void
     /** 输入串变化回调：调用方据此重新过滤候选。 */
     onInputValueChange?: (details: ComboboxInputValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */

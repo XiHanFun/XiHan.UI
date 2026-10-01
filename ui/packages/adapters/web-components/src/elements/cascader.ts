@@ -85,6 +85,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {boolean} loop - 列内上下键到达首尾回绕，默认开启；写 loop="false" 关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的进入子列 / 返回上一列语义，默认 ltr
  * @fires value-change - 选中路径集合变化；detail 为 `{ value: string[][] }`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires branch-load-start - 懒分支请求开始；detail 为 `{ value, path, node, reason }`
  * @fires branch-load - 懒分支请求成功；detail 为 `{ value, path, node, children }`
@@ -293,6 +294,11 @@ export class XhCascaderElement extends XhPortalHostElement {
     return label
   }
 
+  /** 按清空钮清掉了值：先派发值变化，再派发它；程序化的 clear() 不派发。 */
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
+  }
+
   private readonly notifyValue = (details: CascaderValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -411,6 +417,7 @@ export class XhCascaderElement extends XhPortalHostElement {
       dir: this.direction,
       translations: this.translations,
       onValueChange: this.notifyValue,
+      onClear: this.notifyClear,
       onOpenChange: this.notifyOpen,
       onBranchLoadStart: this.notifyBranchLoadStart,
       onBranchLoad: this.notifyBranchLoad,

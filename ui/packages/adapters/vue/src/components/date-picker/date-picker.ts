@@ -33,6 +33,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -154,6 +155,7 @@ export const XhDatePickerRoot = defineComponent({
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: {
+    'clear': () => true,
     'value-change': (_details: PayloadOf<DatePickerProps, 'onValueChange'>) => true,
     'open-change': (_details: PayloadOf<DatePickerProps, 'onOpenChange'>) => true,
     'focused-value-change': (_details: PayloadOf<DatePickerProps, 'onFocusedValueChange'>) => true,
@@ -181,7 +183,7 @@ export const XhDatePickerRoot = defineComponent({
       emit('active-view-change', details)
       emit('update:activeView', details.activeView)
     }
-    const ctx = useDatePickerWithRoot(withXhConfig('date-picker', useFormControlProps(props)) as DatePickerProps, {
+    const ctx = useDatePickerWithRoot(withHandlers(withXhConfig('date-picker', useFormControlProps(props)), { onClear: () => emit('clear') }) as DatePickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
       onFocusedValueChange: notifyFocus,

@@ -15,6 +15,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideTreeSelect, provideTreeSelectContent, provideTreeSelectNode, provideTreeSelectTag, useTreeSelectContentContext, useTreeSelectContext, useTreeSelectNodeContext, useTreeSelectTagContext } from './context'
@@ -136,6 +137,7 @@ export const XhTreeSelectRoot = defineComponent({
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: {
+    'clear': () => true,
     'value-change': (_details: PayloadOf<TreeSelectProps, 'onValueChange'>) => true,
     'expanded-value-change': (_details: PayloadOf<TreeSelectProps, 'onExpandedValueChange'>) => true,
     'open-change': (_details: PayloadOf<TreeSelectProps, 'onOpenChange'>) => true,
@@ -166,7 +168,7 @@ export const XhTreeSelectRoot = defineComponent({
     const notifyBranchLoadStart: TreeSelectProps['onBranchLoadStart'] = details => emit('branch-load-start', details)
     const notifyBranchLoad: TreeSelectProps['onBranchLoad'] = details => emit('branch-load', details)
     const notifyBranchLoadError: TreeSelectProps['onBranchLoadError'] = details => emit('branch-load-error', details)
-    const ctx = useTreeSelect(withXhConfig('tree-select', useFormControlProps(props)) as TreeSelectProps, {
+    const ctx = useTreeSelect(withHandlers(withXhConfig('tree-select', useFormControlProps(props)), { onClear: () => emit('clear') }) as TreeSelectProps, {
       onValueChange: notifyValue,
       onExpandedValueChange: notifyExpanded,
       onOpenChange: notifyOpen,

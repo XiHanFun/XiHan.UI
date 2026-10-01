@@ -134,6 +134,8 @@ export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>
   /** 显式关联的原生表单 ID。 */
   form?: string
   onValueChange?: TreeSelectProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   onExpandedValueChange?: TreeSelectProps['onExpandedValueChange']
   onOpenChange?: TreeSelectProps['onOpenChange']
   onBranchLoadStart?: TreeSelectProps['onBranchLoadStart']
@@ -176,6 +178,7 @@ export function XhTreeSelectRoot({
   name,
   form,
   onValueChange,
+  onClear,
   onExpandedValueChange,
   onOpenChange,
   onBranchLoadStart,
@@ -217,6 +220,7 @@ export function XhTreeSelectRoot({
     name,
     form,
     onValueChange,
+    onClear,
     onExpandedValueChange,
     onOpenChange,
     onBranchLoadStart,
@@ -275,7 +279,7 @@ export function XhTreeSelectRoot({
   )
 }
 
-XhTreeSelectRoot.xhEvents = ['value-change', 'expanded-value-change', 'open-change', 'branch-load-start', 'branch-load', 'branch-load-error'] as const
+XhTreeSelectRoot.xhEvents = ['clear', 'value-change', 'expanded-value-change', 'open-change', 'branch-load-start', 'branch-load', 'branch-load-error'] as const
 
 export interface XhTreeSelectLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeSelectLabel({ children, ...rest }: XhTreeSelectLabelProps): ReactNode {

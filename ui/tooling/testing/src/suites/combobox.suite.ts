@@ -734,7 +734,7 @@ export const comboboxSuite: ConformanceSuite = {
               'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
             },
             activeElement: { part: 'input', exact: true },
-            events: [{ type: 'value-change', detail: { value: [] } }],
+            events: [{ type: 'value-change', detail: { value: [] } }, { type: 'clear', detail: null }],
           },
         },
         {

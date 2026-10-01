@@ -66,6 +66,8 @@ export interface XhDateFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
   tone?: Tone
   size?: Size
   onValueChange?: DateFieldProps['onValueChange']
+  /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
+  onClear?: () => void
   children?: SlotChildren<DateFieldRootSlotProps>
 }
 
@@ -90,6 +92,7 @@ export function XhDateFieldRoot({
   tone,
   size,
   onValueChange,
+  onClear,
   children,
   ...rest
 }: XhDateFieldRootProps): ReactNode {
@@ -114,6 +117,7 @@ export function XhDateFieldRoot({
     tone,
     size,
     onValueChange,
+    onClear,
   })) as DateFieldProps)
   const api = ctx.api
   return (
@@ -144,7 +148,7 @@ export function XhDateFieldRoot({
   )
 }
 
-XhDateFieldRoot.xhEvents = ['value-change'] as const
+XhDateFieldRoot.xhEvents = ['clear', 'value-change'] as const
 
 export interface XhDateFieldLabelProps extends ComponentPropsWithRef<'span'> {}
 /** 渲染为 span 而非 label，段位不是可被 for 标注的控件；点击标题聚焦由连接层接管。 */

@@ -191,6 +191,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
 | `translations` | `Partial<TextFieldTranslations>` |  | 读屏文案；默认英文。 |
 | `onValueChange` | `(details: TextFieldValueChangeDetails) => void` |  |  |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 事件
 
@@ -199,6 +200,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TextFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 

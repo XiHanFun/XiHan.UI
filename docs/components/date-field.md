@@ -137,6 +137,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: DateFieldValueChangeDetails) => void` |  |  |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 事件
 
@@ -145,6 +146,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `DateFieldValueChangeDetails` | 值变化；detail 为 `{ value: string \| null }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 

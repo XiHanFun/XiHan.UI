@@ -131,7 +131,7 @@ export const textFieldSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'clearable + 有值：清空按钮显出，点它清空、派 value-change、焦点回到 input',
+      name: 'clearable + 有值：清空按钮显出，点它清空、先派 value-change 再派 clear、焦点回到 input',
       spec: { apg: HTML_SPEC },
       props: { defaultValue: '阿旺', clearable: true },
       initial: {
@@ -150,7 +150,7 @@ export const textFieldSuite: ConformanceSuite = {
               'root': { 'data-empty': '' },
               'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
             },
-            events: [{ type: 'value-change', detail: { value: '' } }],
+            events: [{ type: 'value-change', detail: { value: '' } }, { type: 'clear', detail: null }],
             activeElement: { part: 'input', exact: true },
           },
         },
