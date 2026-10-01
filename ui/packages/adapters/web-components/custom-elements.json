@@ -67484,7 +67484,7 @@
           ],
           "events": [
             {
-              "description": "值变化；detail 为 `{ value: string }`",
+              "description": "选中的时刻变化；detail 为 `{ value: string[] }`，单选至多一项",
               "name": "value-change",
               "type": {
                 "text": "TimePickerValueChangeDetails"
