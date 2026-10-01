@@ -1777,6 +1777,7 @@
     "tag-list": [
       "cascader",
       "combobox",
+      "date-picker",
       "select",
       "tree-select"
     ],

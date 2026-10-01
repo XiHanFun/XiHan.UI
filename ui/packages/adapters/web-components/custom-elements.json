@@ -18648,7 +18648,27 @@
               "name": "control"
             },
             {
-              "description": "role=group 的分段容器，段位挂在其中",
+              "description": "多选时盒里、trigger 之前的标签行：可见标签与 overflow-tag 放在其中；没有选中时承载整条占位，单选时带 hidden",
+              "name": "tag-list"
+            },
+            {
+              "description": "多选标签，须自带 value 属性标识选中值；作者按 tags 渲染，接线为 tag 的 root（data-scope=\"tag\"），语气、尺寸与禁用随本元素、形态按盒的面派生",
+              "name": "tag"
+            },
+            {
+              "description": "标签文字，须放在 tag 中；接线为 tag 的 label（截断落在这一层）。标签里只有文字时元素自动包一层，带删除钮时由作者写它包住文字",
+              "name": "tag-label"
+            },
+            {
+              "description": "标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦；点击摘掉所在标签的选中值，可及名使用 translations.deleteItem",
+              "name": "item-delete-trigger"
+            },
+            {
+              "description": "折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N（文字使用 translations.overflowTag）；没有折叠的标签时带 hidden",
+              "name": "overflow-tag"
+            },
+            {
+              "description": "role=group 的分段容器，段位挂在其中；多选时带 hidden，选中值改由 tag-list 呈现",
               "name": "segment-group"
             },
             {
@@ -18760,7 +18780,7 @@
               "name": "cell-trigger"
             },
             {
-              "description": "type=hidden 的表单出口，值是 ISO 串",
+              "description": "type=hidden 的表单出口，值是 ISO 串；多选时一个选中值一份，首值用这个节点，其余由元素在它后面补同名输入",
               "name": "hidden-input"
             }
           ],
@@ -18780,7 +18800,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: datePickerAnatomy, meta: datePickerMeta, delegates: [dateFieldAnatomy, calendarPickerAnatomy], }"
+              "default": "{ anatomy: datePickerAnatomy, meta: datePickerMeta, delegates: [dateFieldAnatomy, calendarPickerAnatomy, { name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -18880,6 +18900,15 @@
                 "text": "number | undefined"
               },
               "attribute": "max-selected"
+            },
+            {
+              "kind": "field",
+              "name": "maxTagCount",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-tag-count"
             },
             {
               "kind": "field",
@@ -19417,6 +19446,103 @@
               "description": "格子上的文字是否归元素填，首次见到该节点时定。"
             },
             {
+              "kind": "field",
+              "name": "tagLabels",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, HTMLElement>()",
+              "description": "每枚标签里由元素补出来的那层 label。"
+            },
+            {
+              "kind": "field",
+              "name": "hiddenInputs",
+              "privacy": "private",
+              "readonly": true,
+              "description": "多选时一个选中值一份同名隐藏输入：首值用作者的节点，其余由元素补在它后面。"
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "ensureTagLabel",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tag",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，\n返回 null——带删除钮的标签由作者用 tag-label 包住文字。补出来的那层不打 data-xh-part，不进角色节点表。"
+            },
+            {
+              "kind": "field",
+              "name": "tags",
+              "type": {
+                "text": "DatePickerTagMeta[]"
+              },
+              "description": "多选时应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中值同序；单选恒为空数组。\n作者据此渲染 tag 部件。状态机尚未建立时返回空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowCount",
+              "type": {
+                "text": "number"
+              },
+              "description": "被 max-tag-count 折叠的标签数；+N 标签由元素填入 overflow-tag，此处仅供作者读取。状态机尚未建立时为 0。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowText",
+              "type": {
+                "text": "string"
+              },
+              "description": "overflow-tag 显示的文字（由 translations.overflowTag 计算）；没有折叠的标签或状态机尚未建立时为空串。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "deselect",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "多选时摘掉一个选中值；状态机尚未建立时不做任何事。"
+            },
+            {
               "kind": "method",
               "name": "fillText",
               "privacy": "private",
@@ -19633,6 +19759,14 @@
               "description": "multiple 下最多选几个周期；选满后日历里没选中的格子不可再加选",
               "name": "max-selected",
               "fieldName": "maxSelected"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "multiple 下输入行最多摆几枚标签，其余折进 overflow-tag；默认 3",
+              "name": "max-tag-count",
+              "fieldName": "maxTagCount"
             },
             {
               "type": {
@@ -19927,6 +20061,9 @@
               "name": "--xh-date-picker-control-h"
             },
             {
+              "name": "--xh-date-picker-control-max-h"
+            },
+            {
               "name": "--xh-date-picker-control-min-w"
             },
             {
@@ -20015,6 +20152,9 @@
             },
             {
               "name": "--xh-date-picker-preset-radius"
+            },
+            {
+              "name": "--xh-date-picker-tag-list-gap"
             },
             {
               "name": "--xh-date-picker-time-column-gap"

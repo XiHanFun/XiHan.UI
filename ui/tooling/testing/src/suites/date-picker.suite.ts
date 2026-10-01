@@ -1137,5 +1137,22 @@ export const datePickerSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '多选时段位收起，触发钮是键盘入口：退格摘掉最后一个选中值',
+      spec: { apg: APG },
+      covers: ['date-picker.kbd.remove-last'],
+      props: { ...BASE_PROPS, defaultValue: ['2024-02-01', ANCHOR], selectionMode: 'multiple' },
+      initial: {
+        parts: { 'segment-group': { hidden: '' } },
+      },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: { events: [{ type: 'value-change', detail: { value: ['2024-02-01'] } }] },
+        },
+      ],
+    },
   ],
 }

@@ -8,6 +8,7 @@
 import type { Dict, NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CalendarPickerTranslations } from '../calendar-picker'
 import type { DateFieldApi, DateFieldSchema, DateSegmentType } from '../date-field'
+import type { CalendarGranularity } from '../shared/calendar'
 import type { TimePickerColumn } from '../time-picker'
 import type {
   DatePickerApi,
@@ -15,10 +16,12 @@ import type {
   DatePickerPresetState,
   DatePickerPressedKey,
   DatePickerServices,
+  DatePickerTagMeta,
   DatePickerTimeUnit,
   DatePickerTranslations,
 } from './date-picker.types'
-import { createPressTracker, dataAttr, focusSafely, navIntentFromKey, normalizeProps, readDirection, stepIndex } from '@xihan-ui/core'
+import { createPressTracker, dataAttr, focusSafely, mergeProps, navIntentFromKey, normalizeProps, readDirection, stepIndex } from '@xihan-ui/core'
+import { createDateFormatter } from '@xihan-ui/core/date'
 import { connectCalendarPicker } from '../calendar-picker'
 import {
   applySegmentDigit,
@@ -29,8 +32,9 @@ import {
   segmentMaxDigits,
 } from '../date-field'
 import { sameArray as sameDates } from '../shared/array'
-import { calendarPeriodValue } from '../shared/calendar'
+import { CALENDAR_LOCALE, calendarPeriodOf, calendarPeriodValue, parseCalendarDate } from '../shared/calendar'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTimeStep } from '../shared/time-constraint'
 import { resolveHourCycle } from '../time-field'
 import { datePickerAnatomy } from './date-picker.anatomy'
@@ -48,8 +52,35 @@ function hasModifier(event: KeyboardEvent): boolean {
   return event.ctrlKey || event.metaKey || event.altKey
 }
 
-/** 只收本组件自己那几句；内嵌日历的文案由日历自己兜底。 */
-type OwnTranslations = Omit<DatePickerTranslations, keyof CalendarPickerTranslations>
+/** 只收本组件自己那几句；内嵌日历的文案由日历自己兜底，标签的两句交给共享的标签连接层兜底。 */
+type OwnTranslations = Omit<DatePickerTranslations, keyof CalendarPickerTranslations | 'deleteItem' | 'overflowTag'>
+
+/**
+ * 多选标签的显示文本：按粒度取一个周期的名字。日与月按 locale 排成紧凑的写法（zh-CN 2026/10/02、2026年10月），
+ * 周、季、年用不随语言变的周期键（2026-W40、2026-Q4、2026），标签窄，长串在这里放不下。
+ */
+function createTagLabeler(granularity: CalendarGranularity, locale: string | undefined): (value: string) => string {
+  const lang = locale ?? CALENDAR_LOCALE
+  const day = createDateFormatter(lang, { year: 'numeric', month: '2-digit', day: '2-digit' })
+  const month = createDateFormatter(lang, { year: 'numeric', month: '2-digit' })
+  return (value) => {
+    const period = calendarPeriodOf(value, granularity, { locale: lang })
+    const start = period && parseCalendarDate(period.start)
+    if (!period || !start)
+      return value
+    if (granularity === 'day')
+      return day.format(start)
+    if (granularity === 'month')
+      return month.format(start)
+    return period.key
+  }
+}
+
+/** 标签的删除钮按下不夺焦：焦点留在原处（多选时是触发钮），删完不跳走。 */
+function keepFocus(event: PointerEvent): void {
+  if (event.button === 0)
+    event.preventDefault()
+}
 
 function resolveTranslations(input: Partial<DatePickerTranslations> | undefined): OwnTranslations {
   return {
@@ -246,6 +277,26 @@ export function connectDatePicker<T extends PropTypes>(
   // 形态默认落 outline：不写时 root 与 positioner 如实投影同一常量，皮肤不再依赖缺省档
   const variant = prop('variant') ?? 'outline'
 
+  // —— 多选：选中值在盒里排成标签，段位让位；套的是库里的 tag，截断与 +N 的做法与 Select 同一套 ——
+  const multiple = selectionMode === 'multiple'
+  const placeholder = prop('placeholder')
+  const placeholderText = typeof placeholder === 'string' && placeholder !== '' ? placeholder : undefined
+  const tagLabel = createTagLabeler(calendar.granularity, prop('locale'))
+  const selectionTags = connectSelectionTags({
+    entries: multiple ? value.map(v => ({ key: v, label: tagLabel(v) })) : [],
+    maxTagCount: prop('maxTagCount'),
+    overflowTag: prop('translations')?.overflowTag,
+    deleteItem: prop('translations')?.deleteItem,
+    variant,
+    tone: prop('tone'),
+    size: prop('size'),
+    disabled,
+    readOnly,
+    onDelete: key => send({ type: 'VALUE.REMOVE', value: key }),
+  }, normalize)
+  const tags: DatePickerTagMeta[] = selectionTags.visible.map(tag => ({ value: tag.key, label: tag.label }))
+  const { overflowCount, overflowText } = selectionTags
+
   /**
    * 同一份分段输入里的全部段位，文档序。事件那一刻现查，不缓存节点数组。
    *
@@ -281,6 +332,15 @@ export function connectDatePicker<T extends PropTypes>(
 
   const focusFirstSegment = (from: HTMLElement): void => {
     focusSafely(firstSegmentIn(from))
+  }
+
+  /** 键盘入口：单选是首段；多选时段位不出现，入口是触发钮。 */
+  const focusEntry = (from: HTMLElement): void => {
+    if (!multiple) {
+      focusFirstSegment(from)
+      return
+    }
+    focusSafely(from.closest<HTMLElement>(parts.root.selector)?.querySelector<HTMLElement>(parts.trigger.selector))
   }
 
   /**
@@ -346,9 +406,11 @@ export function connectDatePicker<T extends PropTypes>(
       })
     },
 
-    getHiddenInputProps: () => normalize.input({
+    getHiddenInputProps: input => normalize.input({
       ...raw.getHiddenInputProps() as Dict,
       ...(hiddenValue !== undefined ? { value: hiddenValue } : {}),
+      // 多选时一个选中值一份同名输入，值里的逗号保持原样
+      ...(input ? { value: input.value } : {}),
     }),
   })
 
@@ -370,6 +432,9 @@ export function connectDatePicker<T extends PropTypes>(
     // 与根节点的 data-invalid 同一口径：作者标的、越界的都算
     invalid: flagged,
     canClear,
+    tags,
+    overflowCount,
+    overflowText,
     presets,
     showTime,
     timeColumns,
@@ -386,6 +451,7 @@ export function connectDatePicker<T extends PropTypes>(
     },
     setValue: next => send({ type: 'VALUE.SET', value: next, src: 'api' }),
     clear: () => send({ type: 'VALUE.CLEAR' }),
+    deselect: v => send({ type: 'VALUE.REMOVE', value: v }),
     setActiveView: next => send({ type: 'VIEW.SET', activeView: next }),
 
     getRootProps: () => normalize.element({
@@ -407,7 +473,7 @@ export function connectDatePicker<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'onClick': (event: MouseEvent) => {
         if (!disabled)
-          focusFirstSegment(event.currentTarget as HTMLElement)
+          focusEntry(event.currentTarget as HTMLElement)
       },
     }),
 
@@ -420,6 +486,8 @@ export function connectDatePicker<T extends PropTypes>(
       ...parts.control.attrs,
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',
+      // 多选的标签换行排开：日期标签是定长文字，截短了就读不出是哪天；盒随行数长高，到上限后在盒内滚动
+      'data-xh-field-layout': multiple ? 'multi-tag' : undefined,
       'data-variant': variant,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
@@ -428,9 +496,9 @@ export function connectDatePicker<T extends PropTypes>(
       'onClick': (event: MouseEvent) => {
         if (disabled)
           return
-        // 触发钮与清空钮各有自己的处理器，落在它们身上的这一下不归这里
+        // 触发钮、清空钮与标签的删除钮各有自己的处理器，落在它们身上的这一下不归这里
         const el = event.target as Element | null
-        if (el?.closest(parts.trigger.selector) || el?.closest(parts['clear-trigger'].selector))
+        if (el?.closest(parts.trigger.selector) || el?.closest(parts['clear-trigger'].selector) || el?.closest('[data-scope="tag"][data-part="close-trigger"]'))
           return
         // 再点一下收起：点开与收起对称，不然浮层展开后指针那条路就没有出口了
         // （段位敲出来的值不触发"选完即收"，触发钮又是可选部件）
@@ -438,23 +506,62 @@ export function connectDatePicker<T extends PropTypes>(
           send({ type: 'CLOSE' })
           return
         }
-        // src=control：这一下的用意是编辑段位，焦点得留在段上，不搬进浮层
-        send({ type: 'OPEN', src: 'control' })
+        // src=control：这一下的用意是编辑段位，焦点得留在段上，不搬进浮层。
+        // 多选没有段位可编辑，这一下就是来挑日期的，焦点照触发钮那一路搬进浮层
+        send({ type: 'OPEN', src: multiple ? 'trigger' : 'control' })
       },
     }),
 
+    // 标签行：盒里、触发钮之前，可见标签与 +N 那一枚在里面并排；单选时整体收起。
+    // 多选没有选中时留着它承载整条占位，与单选那条占位同一个通道
+    getTagListProps: () => normalize.element({
+      ...parts['tag-list'].attrs,
+      'data-xh-tag-list': '',
+      // 列表动效接上之前，首帧的标签直接呈现
+      'data-instant': dataAttr(!context.get('tagListTracked')),
+      'hidden': !multiple || undefined,
+      'data-placeholder-text': multiple ? placeholderText : undefined,
+      'data-placeholder-shown': dataAttr(multiple && placeholderText != null && value.length === 0),
+      'data-disabled': dataAttr(disabled),
+    }),
+
+    // 标签本体就是 tag 的 root（data-scope="tag"），只多一个 data-value 记它代表哪个选中值
+    getTagProps: ({ value: v }) => ({
+      ...selectionTags.tag(v).getRootProps() as Record<string, unknown>,
+      'data-value': v,
+    }) as T['element'],
+
+    // 折起来的那些合成一枚：也是 tag 的 root，data-count 记折了几枚；没有折起的就整个收起，不留空位
+    getOverflowTagProps: () => ({
+      ...selectionTags.overflow.getRootProps() as Record<string, unknown>,
+      'data-count': String(overflowCount),
+    }) as T['element'],
+
+    // 两种标签的文字都落在 tag 的 label 上，截断规则挂在那一层
+    getTagLabelProps: () => selectionTags.overflow.getLabelProps(),
+
+    // 删除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用与点按都由 tag 给。
+    // 不占 Tab 位：多选时键盘入口只有触发钮一个停靠点，用退格删掉最后一个；按下不夺焦
+    getItemDeleteTriggerProps: ({ value: v }) => mergeProps<T['button']>(
+      selectionTags.tag(v).getCloseTriggerProps(),
+      normalize.button({
+        tabindex: -1,
+        onPointerDown: keepFocus,
+      }),
+    ),
+
     // 分段容器：role=group 把一排段位兜成整体，名字由 label 提供。
-    // 它同时承担内嵌分段输入的 root/control 两个部件，不另挂分段输入的根节点
+    // 它同时承担内嵌分段输入的 root/control 两个部件，不另挂分段输入的根节点。
+    // 多选时整体收起：选中值改由标签行呈现，段位只管一个值，摆着反而像能在这里敲出第二个
     getSegmentGroupProps: () => {
       const outOfRange = !!fieldRaw.outOfRange
-      const placeholder = prop('placeholder')
-      const placeholderText = typeof placeholder === 'string' && placeholder !== '' ? placeholder : undefined
       return normalize.element({
         ...parts['segment-group'].attrs,
         'id': ids['segment-group'],
         'role': 'group',
         'aria-labelledby': ids.label,
         // 整条占位：一段都没填、焦点也不在段上时才露出，文字由皮肤以生成内容画出，段位与分隔符让位
+        'hidden': multiple || undefined,
         'data-placeholder-text': placeholderText,
         'data-placeholder-shown': dataAttr(placeholderText != null && fieldRaw.empty && fieldRaw.focusedSegment == null),
         'aria-disabled': disabled ? 'true' : 'false',
@@ -487,32 +594,43 @@ export function connectDatePicker<T extends PropTypes>(
 
     // 日历钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200；
     // 常驻在场，有值时由皮肤按「清空钮在场」收起；打开中与悬停同档、不另上底，方向由浮层承担
-    getTriggerProps: () => normalize.button({
-      ...parts.trigger.attrs,
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'field-inset',
-      'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'always',
-      'data-xh-action-size': prop('size') ?? 'md',
-      'id': ids.trigger,
-      'type': 'button',
-      // 用原生 disabled，不可聚焦也不派 click；只读不禁用，日历仍能展开
-      'disabled': disabled || undefined,
-      'aria-haspopup': 'dialog',
-      'aria-expanded': open ? 'true' : 'false',
-      'aria-controls': ids.content,
-      // 图标按钮无文字，名字借标题；作者写的 aria-label 会盖过这条
-      'aria-labelledby': ids.label,
-      'data-state': stateAttr,
-      'data-disabled': dataAttr(disabled),
-      // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
-      ...press('trigger', disabled),
-      'onClick': () => {
+    getTriggerProps: () => {
+      const triggerPress = press('trigger', disabled)
+      return normalize.button({
+        ...parts.trigger.attrs,
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'field-inset',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': prop('size') ?? 'md',
+        'id': ids.trigger,
+        'type': 'button',
+        // 用原生 disabled，不可聚焦也不派 click；只读不禁用，日历仍能展开
+        'disabled': disabled || undefined,
+        'aria-haspopup': 'dialog',
+        'aria-expanded': open ? 'true' : 'false',
+        'aria-controls': ids.content,
+        // 图标按钮无文字，名字借标题；作者写的 aria-label 会盖过这条
+        'aria-labelledby': ids.label,
+        'data-state': stateAttr,
+        'data-disabled': dataAttr(disabled),
+        // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
+        ...triggerPress,
+        // 多选时段位不出现，触发钮就是键盘入口：退格摘掉最后一个选中值，与 Select 多选同一手势
+        'onKeyDown': (event: KeyboardEvent) => {
+          triggerPress.onKeyDown(event)
+          if (!multiple || !interactive || hasModifier(event) || event.key !== 'Backspace' || value.length === 0)
+            return
+          event.preventDefault()
+          send({ type: 'VALUE.REMOVE', value: value[value.length - 1]! })
+        },
+        'onClick': () => {
         // 守卫防程序化派发（原生 disabled 不派 click）
-        if (!disabled)
-          send({ type: 'TOGGLE', src: 'trigger' })
-      },
-    }),
+          if (!disabled)
+            send({ type: 'TOGGLE', src: 'trigger' })
+        },
+      })
+    },
 
     // 清空钮同走 field-inset ghost 档，按 has-value 显隐
     getClearTriggerProps: () => {
@@ -550,8 +668,8 @@ export function connectDatePicker<T extends PropTypes>(
           send({ type: 'VALUE.CLEAR' })
           // 按清空钮这一下单独通知：调用方常要在清空后重新查询，只看值变化分不出是清空还是删光了字
           prop('onClear')?.()
-          // pointerdown 已拦掉默认聚焦，键盘/程序化激活这一路则要主动把焦点送回首段
-          focusFirstSegment(event.currentTarget as HTMLElement)
+          // pointerdown 已拦掉默认聚焦，键盘/程序化激活这一路则要主动把焦点送回键盘入口
+          focusEntry(event.currentTarget as HTMLElement)
         },
       })
     },

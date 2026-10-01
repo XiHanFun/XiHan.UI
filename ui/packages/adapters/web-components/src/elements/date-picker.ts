@@ -26,6 +26,7 @@ import type {
   DatePickerPreset,
   DatePickerSchema,
   DatePickerServices,
+  DatePickerTagMeta,
   DatePickerTimeUnit,
   DatePickerValueChangeDetails,
   DateSegmentPlaceholders,
@@ -38,10 +39,11 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { calendarPickerAnatomy, calendarPickerMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveDatePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
+import { calendarPickerAnatomy, calendarPickerMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveDatePickerPanelIndex, resolveFormControlState, tagAnatomy } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
+import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { TIME_STEP_CONVERTER } from '../dom/time-step'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -120,6 +122,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} time-zone - 判定今天与格式化使用的时区，默认宿主本地时区
  * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single
  * @attr {number} max-selected - multiple 下最多选几个周期；选满后日历里没选中的格子不可再加选
+ * @attr {number} max-tag-count - multiple 下输入行最多摆几枚标签，其余折进 overflow-tag；默认 3
  * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；与 selection-mode 正交
  * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板当前所在的层级；未提供时跟随 granularity
  * @prop {DatePickerPreset[]} presets - 快捷选项（数组只能通过 property 设置）：提供后浮层中多出一列
@@ -152,7 +155,12 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid）
  * @csspart label - 标题；点击它把焦点送进首段。刻意不是原生 label（段位是 div，无法标注）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
- * @csspart segment-group - role=group 的分段容器，段位挂在其中
+ * @csspart tag-list - 多选时盒里、trigger 之前的标签行：可见标签与 overflow-tag 放在其中；没有选中时承载整条占位，单选时带 hidden
+ * @csspart tag - 多选标签，须自带 value 属性标识选中值；作者按 tags 渲染，接线为 tag 的 root（data-scope="tag"），语气、尺寸与禁用随本元素、形态按盒的面派生
+ * @csspart tag-label - 标签文字，须放在 tag 中；接线为 tag 的 label（截断落在这一层）。标签里只有文字时元素自动包一层，带删除钮时由作者写它包住文字
+ * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦；点击摘掉所在标签的选中值，可及名使用 translations.deleteItem
+ * @csspart overflow-tag - 折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N（文字使用 translations.overflowTag）；没有折叠的标签时带 hidden
+ * @csspart segment-group - role=group 的分段容器，段位挂在其中；多选时带 hidden，选中值改由 tag-list 呈现
  * @csspart segment - 一段一个的 spinbutton 节点（data-scope="date-field"）。可自带 segment 属性按段名归属
  *   （segment="quarter"），或自带 index 属性声明下标（在所属 segment-group 组内数），两者都没写按文档序
  * @csspart trigger - 展开日历的按钮，须是原生 button
@@ -181,17 +189,18 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart week-number - 行首的周序号格（role=rowheader），须自带 value 属性（行首日期）；可选
  * @csspart cell - role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）
  * @csspart cell-trigger - 实际可点击可聚焦的层，承载 aria-disabled 与 roving tabindex
- * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串
+ * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串；多选时一个选中值一份，首值用这个节点，其余由元素在它后面补同名输入
  */
 export class XhDatePickerElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
-  // 分段输入与日历的 DOM 摊在本元素的 Light DOM 里由本元素接线，它们的角色节点归各自 scope 管
+  // 分段输入与日历的 DOM 摊在本元素的 Light DOM 里由本元素接线，它们的角色节点归各自 scope 管；
+  // tag / overflow-tag 接的是 tag 的 root，tag-label 接的是 tag 的 label，item-delete-trigger 接的是 tag 的 close-trigger
   static override partContract = {
     anatomy: datePickerAnatomy,
     meta: datePickerMeta,
-    delegates: [dateFieldAnatomy, calendarPickerAnatomy],
+    delegates: [dateFieldAnatomy, calendarPickerAnatomy, { name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -207,6 +216,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
     timeZone: { converter: STRING_CONVERTER, attribute: 'time-zone' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
+    maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     granularity: { converter: STRING_CONVERTER },
     activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },
     segments: { attribute: false },
@@ -253,6 +263,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare timeZone?: string
   declare selectionMode?: CalendarPickerSelectionMode
   declare maxSelected?: number
+  declare maxTagCount?: number
   declare granularity?: CalendarGranularity
   declare activeView?: CalendarView
   declare segments?: DateSegmentSet
@@ -407,6 +418,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
       timeZone: this.timeZone,
       selectionMode: this.selectionMode,
       maxSelected: this.maxSelected,
+      maxTagCount: this.maxTagCount,
       granularity: this.granularity,
       activeView: this.activeView,
       segments: this.segments,
@@ -540,6 +552,54 @@ export class XhDatePickerElement extends XhPortalHostElement {
 
   /** 格子上的文字是否归元素填，首次见到该节点时定。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
+  /** 每枚标签里由元素补出来的那层 label。 */
+  private readonly tagLabels = new WeakMap<HTMLElement, HTMLElement>()
+  /** 多选时一个选中值一份同名隐藏输入：首值用作者的节点，其余由元素补在它后面。 */
+  private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
+
+  protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    this.hiddenInputs.release(nodes)
+  }
+
+  /**
+   * 标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，
+   * 返回 null——带删除钮的标签由作者用 tag-label 包住文字。补出来的那层不打 data-xh-part，不进角色节点表。
+   */
+  private ensureTagLabel(tag: HTMLElement): HTMLElement | null {
+    const existing = this.tagLabels.get(tag)
+    if (existing && existing.parentNode === tag)
+      return existing
+    if (tag.children.length > 0)
+      return null
+    const label = this.ownerDocument.createElement('span')
+    label.append(...Array.from(tag.childNodes))
+    tag.append(label)
+    this.tagLabels.set(tag, label)
+    return label
+  }
+
+  /**
+   * 多选时应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中值同序；单选恒为空数组。
+   * 作者据此渲染 tag 部件。状态机尚未建立时返回空数组。
+   */
+  get tags(): DatePickerTagMeta[] {
+    return this.api()?.tags ?? []
+  }
+
+  /** 被 max-tag-count 折叠的标签数；+N 标签由元素填入 overflow-tag，此处仅供作者读取。状态机尚未建立时为 0。 */
+  get overflowCount(): number {
+    return this.api()?.overflowCount ?? 0
+  }
+
+  /** overflow-tag 显示的文字（由 translations.overflowTag 计算）；没有折叠的标签或状态机尚未建立时为空串。 */
+  get overflowText(): string {
+    return this.api()?.overflowText ?? ''
+  }
+
+  /** 多选时摘掉一个选中值；状态机尚未建立时不做任何事。 */
+  deselect(value: string): void {
+    this.api()?.deselect(value)
+  }
 
   /** 填节点上的文字，归属只在第一次见到这个节点时定一次。 */
   private fillText(el: HTMLElement, text: string): void {
@@ -598,6 +658,33 @@ export class XhDatePickerElement extends XhPortalHostElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
+    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    // 标签是多实例 part，接的是 tag 的 root：身份取自己的 value 属性；只有文字的补一层 label
+    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    for (const el of this.getParts('tag')) {
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      const label = this.ensureTagLabel(el)
+      if (label)
+        this.spreader.spread(label, tagLabelProps)
+    }
+    // 作者自己包住的标签文字：带删除钮的标签用它，截断落在这一层
+    for (const el of this.getParts('tag-label'))
+      this.spreader.spread(el, tagLabelProps)
+    // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
+    for (const el of this.getParts('item-delete-trigger')) {
+      const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    }
+    // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
+    const overflowTag = this.getPart('overflow-tag')
+    if (overflowTag) {
+      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      const label = this.ensureTagLabel(overflowTag)
+      if (label) {
+        this.spreader.spread(label, tagLabelProps)
+        this.fillText(label, api.overflowText)
+      }
+    }
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
@@ -627,7 +714,10 @@ export class XhDatePickerElement extends XhPortalHostElement {
     if (segmentGroup)
       this.spreader.spread(segmentGroup, api.getSegmentGroupProps() as Record<string, unknown>)
     this.wireSegments(segmentGroup ?? (this as unknown as HTMLElement), api.field)
-    put('hidden-input', api.field.getHiddenInputProps() as Record<string, unknown>)
+    // 多选时一个选中值一份同名输入，单选仍是一份
+    this.hiddenInputs.sync(this.getPart('hidden-input'), api.selectionMode === 'multiple'
+      ? api.value.map(value => api.field.getHiddenInputProps({ value }) as Record<string, unknown>)
+      : [api.field.getHiddenInputProps() as Record<string, unknown>])
 
     // 内嵌日历的角色节点：行为取自本元素持有的那台日历机器
     putAll('header', api.calendar.getHeaderProps() as Record<string, unknown>)

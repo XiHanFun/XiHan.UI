@@ -34,6 +34,26 @@ export interface DatePickerTranslations extends CalendarPickerTranslations {
   second: string
   /** 上下午列的名字（12 小时制下才有这一列）。 */
   dayPeriod: string
+  /** 多选标签删除按钮的可及名，接收标签文本；默认 `Delete <label>`。 */
+  deleteItem: (label: string) => string
+  /** 被折叠的标签（+N）显示的文字，接收折叠的个数；默认 +N。 */
+  overflowTag: (count: number) => string
+}
+
+/** 多选时一枚标签：value 是它代表的选中值（ISO 串），label 是按粒度与 locale 排出来的显示文本。 */
+export interface DatePickerTagMeta {
+  value: string
+  label: string
+}
+
+export interface DatePickerTagProps {
+  /** 它代表哪个选中值。 */
+  value: string
+}
+
+export interface DatePickerHiddenInputProps {
+  /** 多选时一个选中值一份原生输入：传这个值，产出的就是它那一份。 */
+  value: string
 }
 
 /**
@@ -154,6 +174,8 @@ export interface DatePickerSchema extends MachineSchema {
      * 带的日期比它多的快捷选项不可按下。非整数向下取整，小于 1 或不是有限数时不设上限。
      */
     maxSelected?: number
+    /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
+    maxTagCount?: number
     /** 不可用判定，接收 ISO 串。界外与判定为真的日期同等处理。 */
     isDateUnavailable?: (value: string) => boolean
     /** 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列，日历格子全部为 aria-disabled。 */
@@ -282,6 +304,8 @@ export interface DatePickerSchema extends MachineSchema {
      * 没有按住时为 null。抬起、失焦、指针取消或浮层收起时即撤下。
      */
     pressed: DatePickerPressedKey | null
+    /** 标签行的列表动效接上了：此前首帧就在的标签直接呈现，之后到达的才播进场。 */
+    tagListTracked: boolean
   }
   computed: Record<string, never>
   refs: DatePickerRefs
@@ -297,6 +321,9 @@ export interface DatePickerSchema extends MachineSchema {
     /** 整体改写选中集合。src 决定是否一并收起浮层。 */
     | { type: 'VALUE.SET', value: string[], src?: DatePickerValueSource }
     | { type: 'VALUE.CLEAR' }
+    /** 多选时摘掉一个选中值：标签的删除钮与触发钮上的退格都经它。 */
+    | { type: 'VALUE.REMOVE', value: string }
+    | { type: 'TAG_LIST.TRACKED' }
     /** 聚焦日改写：日历中移动焦点、翻月都经它回到编排状态机。 */
     | { type: 'FOCUSED.SET', value: string }
     /** 切换到另一层级：点击标题向上、点击格子向下，都由日历经它回到编排状态机。 */
@@ -331,7 +358,9 @@ export interface DatePickerSchema extends MachineSchema {
     | 'focusSelectedDay'
     | 'resetToDefault'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer' | 'trackColumnScroll'
+    | 'removeValue'
+    | 'markTagListTracked'
+  effect: 'trackPosition' | 'trackLayer' | 'trackColumnScroll' | 'trackTagListMotion'
 }
 
 /**
@@ -365,8 +394,11 @@ export interface DatePickerFieldApi<T extends PropTypes = PropTypes> {
   /** 作者的声明（按下标或按段名）落在哪一段上；没有落点时缺席。 */
   segmentOf: (props: DateFieldSegmentProps) => DateFieldSegmentState | undefined
   getSegmentProps: (props: DateFieldSegmentProps) => T['element']
-  /** 表单出口：一份 type=hidden 的原生输入，值是 ISO 串。 */
-  getHiddenInputProps: () => T['input']
+  /**
+   * 表单出口：一份 type=hidden 的原生输入，值是 ISO 串。
+   * 多选时一个选中值一份同名输入：传 `{ value }` 产出那一份，不传仍是首个选中值那一份。
+   */
+  getHiddenInputProps: (props?: DatePickerHiddenInputProps) => T['input']
 }
 
 export interface DatePickerApi<T extends PropTypes = PropTypes> {
@@ -390,6 +422,14 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   invalid: boolean
   /** 清空按钮当前是否可按。 */
   canClear: boolean
+  /** 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 */
+  tags: DatePickerTagMeta[]
+  /** 被 maxTagCount 折叠的标签数。 */
+  overflowCount: number
+  /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
+  overflowText: string
+  /** 多选时摘掉一个选中值。 */
+  deselect: (value: string) => void
   setOpen: (next: boolean) => void
   setValue: (next: string[]) => void
   clear: () => void
@@ -418,7 +458,22 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getControlProps: () => T['element']
-  /** role=group 的分段容器，段位挂在其中。 */
+  /**
+   * 标签行：多选时放在盒里，收纳可见标签与 +N 标签；没有选中时承载整条占位。单选时整体 hidden。
+   */
+  getTagListProps: () => T['element']
+  /** 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按盒的面派生，另带 data-value。 */
+  getTagProps: (props: DatePickerTagProps) => T['element']
+  /** 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 */
+  getTagLabelProps: () => T['element']
+  /** 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 */
+  getOverflowTagProps: () => T['element']
+  /**
+   * 标签删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem。
+   * 不占 Tab 位、按下不夺焦；键盘在触发钮上按退格删掉最后一个。
+   */
+  getItemDeleteTriggerProps: (props: DatePickerTagProps) => T['button']
+  /** role=group 的分段容器，段位挂在其中；多选时整体 hidden，选中值改由标签行呈现。 */
   getSegmentGroupProps: () => T['element']
   getTriggerProps: () => T['button']
   getClearTriggerProps: () => T['button']

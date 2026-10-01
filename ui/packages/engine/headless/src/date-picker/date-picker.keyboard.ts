@@ -23,6 +23,7 @@ export const datePickerKeyboard: KeyboardTable = {
     { id: 'date-picker.kbd.preset-move', keys: ['ArrowUp', 'ArrowDown', 'Home', 'End'], when: 'open, focus in 快捷选项列', does: '在快捷选项之间移动焦点，到头回绕；不写值' },
     { id: 'date-picker.kbd.preset-pick', keys: ['Enter', 'Space'], when: 'open, focus in 某条快捷选项', does: '把这条快捷选项整份写进选中值；closeOnSelect 时收起浮层' },
     { id: 'date-picker.kbd.segment-open', keys: ['Alt+ArrowDown'], when: 'focus in 某一段, closed, not disabled', does: '展开浮层并把焦点移入；触发按钮是可选部件，键盘入口不能只挂在它上面' },
+    { id: 'date-picker.kbd.remove-last', keys: ['Backspace'], when: 'focus in trigger, multiple, 有选中值, not disabled/readOnly', does: '摘掉最后一个选中值（标签行末尾那一枚）；多选时段位不出现，触发钮就是键盘入口' },
     { id: 'date-picker.kbd.segment-close', keys: ['Enter'], when: 'focus in 某一段, open', does: '收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势' },
     { id: 'date-picker.kbd.press', keys: ['Enter', 'Space'], when: 'held on trigger / confirm-trigger（not disabled）、clear-trigger（可清）、preset 或 time-item（open, not disabled/readOnly, 该条可按）', does: '按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，浮层收起时一并撤下。日历里的部件由 calendar-picker 自己投影' },
   ],

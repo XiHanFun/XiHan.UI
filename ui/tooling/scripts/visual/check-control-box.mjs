@@ -54,6 +54,14 @@ const CONTENT_PARTS = new Set(['input', 'value-text', 'segment-group'])
  */
 const TRIGGER_IS_CONTENT = new Set(['select', 'cascader', 'tree-select', 'color-picker'])
 
+/**
+ * 按模式二选一的内容区：同一时刻只有一个在场，另一个由连接层带 hidden。登记的是这一对部件与理由，
+ * 两者各自仍须是盒里唯一撑开的那一个（不在场的那个收起不占位）。
+ */
+const ALTERNATE_CONTENT = {
+  'date-picker': { parts: ['segment-group', 'tag-list'], why: '单选是一组段位、多选是一行标签，按 selectionMode 二选一' },
+}
+
 /** 内容区里还能再套一层撑开的文字区：下拉族的 value-text 长在 trigger 里面。 */
 const NESTED_CONTENT = new Set(['value-text'])
 
@@ -428,9 +436,13 @@ for (const comp of COMPONENTS) {
         growers.push({ part, selector })
       }
     }
-    const contentOk = part => CONTENT_PARTS.has(part) || (part === 'trigger' && TRIGGER_IS_CONTENT.has(comp))
-    // 嵌在内容区里再撑一层的（下拉族 trigger 内的 value-text）不算盒的直接内容区
-    const direct = growers.filter(g => !(NESTED_CONTENT.has(g.part) && TRIGGER_IS_CONTENT.has(comp)))
+    const alternate = ALTERNATE_CONTENT[comp]?.parts ?? []
+    const contentOk = part => CONTENT_PARTS.has(part) || (part === 'trigger' && TRIGGER_IS_CONTENT.has(comp)) || alternate.includes(part)
+    // 嵌在内容区里再撑一层的（下拉族 trigger 内的 value-text）不算盒的直接内容区；
+    // 按模式二选一的那一对只算一个内容区（同一时刻只有一个在场）
+    const direct = growers
+      .filter(g => !(NESTED_CONTENT.has(g.part) && TRIGGER_IS_CONTENT.has(comp)))
+      .filter(g => !(alternate.includes(g.part) && g.part !== alternate[0]))
     if (direct.length === 0)
       report(comp, 'content-flex', `盒内没有 flex:1 的内容区（尾钮靠 margin 顶或干脆不靠右）`)
     else if (direct.length > 1)

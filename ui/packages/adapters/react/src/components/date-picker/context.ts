@@ -14,10 +14,12 @@ const Ctx = createContext<DatePickerContext | undefined>(undefined)
 const CellCtx = createContext<CalendarCellProps | undefined>(undefined)
 /** 日历未声明面板号时的落点，与单面板时一致。 */
 const PanelCtx = createContext<number>(0)
+const TagCtx = createContext<string | undefined>(undefined)
 
 export const DatePickerProvider = Ctx
 export const DatePickerCellProvider = CellCtx
 export const DatePickerPanelProvider = PanelCtx
+export const DatePickerTagProvider = TagCtx
 
 export function useDatePickerContext(): DatePickerContext {
   const ctx = useContext(Ctx)
@@ -35,4 +37,11 @@ export function useDatePickerCellContext(): CalendarCellProps {
 
 export function useDatePickerPanelContext(): number {
   return useContext(PanelCtx)
+}
+
+export function useDatePickerTagContext(): string {
+  const value = useContext(TagCtx)
+  if (value === undefined)
+    throw new Error('XhDatePickerItemDeleteTrigger 要放在 XhDatePickerTag 里')
+  return value
 }

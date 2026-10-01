@@ -32,7 +32,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
-import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { renderSlot, slotIsPlainText, slotPaints } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -40,9 +40,11 @@ import {
   DatePickerCellProvider,
   DatePickerPanelProvider,
   DatePickerProvider,
+  DatePickerTagProvider,
   useDatePickerCellContext,
   useDatePickerContext,
   useDatePickerPanelContext,
+  useDatePickerTagContext,
 } from './context'
 import { useDatePicker } from './use-date-picker'
 
@@ -113,6 +115,8 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   selectionMode?: CalendarPickerSelectionMode
   /** multiple 下最多选几个周期；选满后日历里没选中的格子不可再加选，已选的仍可点掉。 */
   maxSelected?: number
+  /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
+  maxTagCount?: number
   /** 选择粒度；与 selectionMode 正交，输入行铺设哪几段也跟随它。 */
   granularity?: CalendarGranularity
   /** 面板当前所处的层级；给定即受控，默认跟随 granularity。 */
@@ -174,6 +178,7 @@ export function XhDatePickerRoot({
   timeZone,
   selectionMode,
   maxSelected,
+  maxTagCount,
   granularity,
   activeView,
   segments,
@@ -221,6 +226,7 @@ export function XhDatePickerRoot({
     timeZone,
     selectionMode,
     maxSelected,
+    maxTagCount,
     granularity,
     activeView,
     segments,
@@ -314,6 +320,78 @@ export function XhDatePickerControl({ children, ...rest }: XhDatePickerControlPr
     >
       {children}
     </div>
+  )
+}
+
+export interface XhDatePickerTagLabelProps extends ComponentPropsWithRef<'span'> {}
+/** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
+export function XhDatePickerTagLabel({ children, ...rest }: XhDatePickerTagLabelProps): ReactNode {
+  const ctx = useDatePickerContext()
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/**
+ * 标签内容：只有文字时替它包一层 label：截断规则挂在 label 上，直接展开在 root 上的文字过长会把
+ * 删除按钮挤出；作者自己写了节点则原样放行。库自身填入的文字（+N）恒包 label，三个适配器渲染出同一棵树。
+ */
+function tagChildren(children: ReactNode): ReactNode {
+  return typeof children === 'string' || slotIsPlainText(children) ? <XhDatePickerTagLabel>{children}</XhDatePickerTagLabel> : children
+}
+
+export interface XhDatePickerItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；点按摘掉所在标签的选中值，焦点不动。 */
+export function XhDatePickerItemDeleteTrigger({ children, ...rest }: XhDatePickerItemDeleteTriggerProps): ReactNode {
+  const ctx = useDatePickerContext()
+  const value = useDatePickerTagContext()
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
+export interface XhDatePickerTagProps extends ComponentPropsWithRef<'span'> {
+  /** 它代表哪个选中值。 */
+  value: string
+}
+/** 多选时一个选中值一个标签，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从日期选择器传下，形态按盒的面派生。 */
+export function XhDatePickerTag({ value, children, ...rest }: XhDatePickerTagProps): ReactNode {
+  const ctx = useDatePickerContext()
+  return (
+    <DatePickerTagProvider value={value}>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
+    </DatePickerTagProvider>
+  )
+}
+
+export interface XhDatePickerOverflowTagProps extends ComponentPropsWithRef<'span'> {}
+/** 折叠的标签合成的一个标签：同样是 tag 的 root；有内容时使用内容，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
+export function XhDatePickerOverflowTag({ children, ...rest }: XhDatePickerOverflowTagProps): ReactNode {
+  const ctx = useDatePickerContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {tagChildren(children ?? ctx.api.overflowText)}
+    </span>
+  )
+}
+
+export interface XhDatePickerTagListProps extends ComponentPropsWithRef<'span'> {}
+/**
+ * 标签行：多选时放在盒里、触发钮之前；没有选中时承载整条占位，单选时连接层写 hidden。
+ * 不写 children 即按 tags 铺出带删除钮的标签与 +N 那一枚，写了由作者自己铺。
+ */
+export function XhDatePickerTagList({ children, ...rest }: XhDatePickerTagListProps): ReactNode {
+  const ctx = useDatePickerContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children ?? (
+        <>
+          {ctx.api.tags.map(tag => (
+            <XhDatePickerTag key={tag.value} value={tag.value}>
+              <XhDatePickerTagLabel>{tag.label}</XhDatePickerTagLabel>
+              <XhDatePickerItemDeleteTrigger />
+            </XhDatePickerTag>
+          ))}
+          <XhDatePickerOverflowTag />
+        </>
+      )}
+    </span>
   )
 }
 
@@ -727,6 +805,19 @@ export function XhDatePickerCellTrigger({ children, ...rest }: XhDatePickerCellT
 export interface XhDatePickerHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
 export function XhDatePickerHiddenInput(rest: XhDatePickerHiddenInputProps): ReactNode {
   const ctx = useDatePickerContext()
+  // 多选时一个选中值一份同名输入，表单按原生多值收；单选仍是一份
+  if (ctx.api.selectionMode === 'multiple') {
+    return ctx.api.value.map(value => (
+      <input
+        key={value}
+        {...mergeReactProps(
+          ctx.api.field.getHiddenInputProps({ value }) as Record<string, unknown>,
+          { onChange: noop },
+          rest as Record<string, unknown>,
+        )}
+      />
+    ))
+  }
   return (
     <input
       {...mergeReactProps(

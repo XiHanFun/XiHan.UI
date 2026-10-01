@@ -63,11 +63,14 @@ const ATTR = {
   'tree-select': 'value-text',
 }
 
-/** 通道 ③：`[data-placeholder-shown]::before` 生成内容，组件 → 承载整条占位的部件。 */
+/**
+ * 通道 ③：`[data-placeholder-shown]::before` 生成内容，组件 → 承载整条占位的部件。
+ * 日期选择器两处：单选落在段位组上，多选段位收起、落在标签行上，同一句文字、同一个颜色槽。
+ */
 const GENERATED = {
-  'date-field': 'segment-group',
-  'date-picker': 'segment-group',
-  'date-range-picker': 'segment-group',
+  'date-field': ['segment-group'],
+  'date-picker': ['segment-group', 'tag-list'],
+  'date-range-picker': ['segment-group'],
 }
 
 /** 三条通道共用的默认前景。改这一支等于同时改全部占位前景，正是它存在的意义。 */
@@ -87,16 +90,16 @@ function checkGenerated(file, sel, body) {
     problems.push(`${file} 整条占位规则没写全 data-scope / data-part：${sel}`)
     return
   }
-  if (GENERATED[scope] !== part) {
+  if (!GENERATED[scope]?.includes(part)) {
     problems.push(`${file} ${scope} 的整条占位落在 [${part}] 上，名单里没有这一条——新组件要登记进 GENERATED`)
     return
   }
   // 高对比档里换成系统色的那一条是强制色补救，不是第二条基础规则
   if (/^(?:GrayText|CanvasText|Canvas|Highlight|HighlightText|LinkText|ButtonText)$/.test(decl(body, 'color') ?? ''))
     return
-  const key = `generated:${scope}`
+  const key = `generated:${scope}:${part}`
   if (base.has(key)) {
-    problems.push(`${file} ${scope} 的整条占位有不止一条 ::before 规则`)
+    problems.push(`${file} ${scope} 的 [${part}] 整条占位有不止一条 ::before 规则`)
     return
   }
   base.set(key, { file, part })
@@ -220,9 +223,13 @@ for (const [scope, part] of Object.entries(PSEUDO)) {
 }
 
 for (const [registry, channel, chLabel] of [[PSEUDO, 'pseudo', '::placeholder'], [ATTR, 'attr', '[data-placeholder]'], [GENERATED, 'generated', '[data-placeholder-shown]::before']]) {
-  for (const [scope, part] of Object.entries(registry)) {
-    if (!base.has(`${channel}:${scope}`))
-      problems.push(`${scope}.css 缺 [${part}] 的 ${chLabel} 占位前景——名单里登记了却没扫到，要么规则被删了，要么部件改名了`)
+  for (const [scope, registered] of Object.entries(registry)) {
+    // 整条占位一个组件可以落在几个部件上，逐个核；另两条通道一个组件一处
+    for (const part of [registered].flat()) {
+      const key = channel === 'generated' ? `${channel}:${scope}:${part}` : `${channel}:${scope}`
+      if (!base.has(key))
+        problems.push(`${scope}.css 缺 [${part}] 的 ${chLabel} 占位前景——名单里登记了却没扫到，要么规则被删了，要么部件改名了`)
+    }
   }
 }
 
@@ -234,4 +241,4 @@ if (problems.length) {
 }
 
 const files = new Set([...base.values()].map(v => v.file))
-console.log(`[check-placeholder-fg] 通过：${base.size} 处占位前景同取 var(${DEFAULT_FG}) 并各留组件槽（${Object.keys(PSEUDO).length} 处 ::placeholder + ${Object.keys(ATTR).length} 处 [data-placeholder] + ${Object.keys(GENERATED).length} 处整条占位，落在 ${files.size} 份皮肤里），另 ${overrides.length} 处状态覆写一并查过 opacity`)
+console.log(`[check-placeholder-fg] 通过：${base.size} 处占位前景同取 var(${DEFAULT_FG}) 并各留组件槽（${Object.keys(PSEUDO).length} 处 ::placeholder + ${Object.keys(ATTR).length} 处 [data-placeholder] + ${Object.values(GENERATED).flat().length} 处整条占位，落在 ${files.size} 份皮肤里），另 ${overrides.length} 处状态覆写一并查过 opacity`)
