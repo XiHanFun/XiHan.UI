@@ -25,9 +25,16 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-/** 与适配器同一种写法：属性逐条落，style 串整段写。 */
+/** 与适配器同一种写法：属性逐条落，style 里的变量也逐条落。 */
 function paint(el: HTMLElement, props: Dict): void {
   for (const [key, value] of Object.entries(props)) {
+    if (key === 'style') {
+      for (const [name, entry] of Object.entries(value as Record<string, string | undefined>)) {
+        if (entry !== undefined)
+          el.style.setProperty(name, entry)
+      }
+      continue
+    }
     if (value === undefined)
       el.removeAttribute(key)
     else

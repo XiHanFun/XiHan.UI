@@ -257,12 +257,12 @@ export function connectWatermark<T extends PropTypes>(
   const plan = planWatermark(props, context.get('imageData') ?? null)
 
   // 图样与步距走根上的内联 CSS 变量：自定义属性是唯一能同时落到三个适配器上的通道。
-  // 给了文字时根节点的内联 style 归本组件管，作者自己的内联样式写在外层元素上
-  const style = Object.entries(plan.vars).map(([name, value]) => `${name}: ${value}`).join('; ')
+  // 逐条给出而不是一整串：Web Components 照条写、照条撤，作者写在 root 上的内联样式不被整串盖掉；
+  // 没有图样时一条都不给，上一帧写过的由适配器撤掉
   const rootAttrs = {
     ...parts.root.attrs,
     ...plan.attrs,
-    ...(style ? { style } : {}),
+    style: { ...plan.vars },
   }
 
   return {

@@ -25,7 +25,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * 多行水印用 text 属性中的换行，或把 text 作为 property 传入一个字符串数组。
  * 没有可印的文字时 root 写 data-state="empty"，皮肤整层不绘制。
  *
- * 提供文字时 root 的内联 style 归本元素管理，作者自己的内联样式写在宿主元素上。
+ * 元素只写、只撤自己的 --xh-watermark-image 与 --xh-watermark-tile 两条，作者写在 root 上的其余内联样式原样保留；
+ * 没有可印的文字时这两条一并撤掉。
  *
  * @customElement xh-watermark
  * @attr {string} text - 水印文字，换行即多行
