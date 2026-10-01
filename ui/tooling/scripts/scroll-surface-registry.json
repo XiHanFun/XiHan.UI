@@ -350,6 +350,12 @@
       "overscroll": false,
       "gutter": false,
       "why": "字段配方里 textarea 布局的输入框自己滚"
+    },
+    "notification:item-description": {
+      "mode": "native",
+      "overscroll": true,
+      "gutter": false,
+      "why": "通知正文的上限：长文在正文里竖滚，标题与操作钮留在卡片上；摞不吃指针也不裁切，滚到头不带动页面"
     }
   }
 }

@@ -547,8 +547,14 @@
     );
   }
 
+  /* 正文有上限：推一段长文（公告全文）进来时卡片不被撑到整屏高——摞是整面视口的定位面、不吃指针也不裁切，
+     撑出视口的那截既看不到也滚不到。超出的部分在正文自己里面滚，标题与操作钮留在卡片上；
+     滚到头不把滚动量传给页面 */
   [data-scope='notification'][data-part='item-description'] {
     margin: 0;
+    max-block-size: var(--xh-notification-description-max-h, var(--xh-viewport-h-md));
+    overflow-y: auto;
+    overscroll-behavior: contain;
     color: var(--xh-notification-description-fg, var(--xh-fg-muted));
     font-size: var(--xh-notification-description-font-size, var(--xh-text-secondary-size));
   }
