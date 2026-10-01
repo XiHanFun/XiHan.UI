@@ -62,6 +62,8 @@ export function connectContextMenu<T extends PropTypes>(
     const kind = node.kind ?? 'item'
     if (kind === 'radio' && !node.group)
       throw new RangeError(`[xh] context-menu radio item ${JSON.stringify(node.value)} 必须声明非空 group`)
+    if (node.children?.length && kind !== 'item')
+      throw new RangeError(`[xh] context-menu ${kind} item ${JSON.stringify(node.value)} 不能带 children：子菜单的入口只能是普通条目`)
     return {
       value: node.value,
       kind,
@@ -75,6 +77,7 @@ export function connectContextMenu<T extends PropTypes>(
       groupLabel: node.groupLabel ?? null,
       separatorBefore: !!node.separatorBefore,
       closeOnSelect: menuChoiceCloses(kind, node.closeOnSelect),
+      children: node.children?.length ? node.children : null,
     }
   })
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))

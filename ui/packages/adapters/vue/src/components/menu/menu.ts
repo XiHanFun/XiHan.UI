@@ -464,6 +464,8 @@ function renderItem(
   meta: MenuNodeMeta,
   itemSlots: MenuItemSlots,
 ): VNode {
+  if (meta.children)
+    return renderSubmenu(meta, itemSlots)
   const prefix = itemSlots['item-prefix']
   const suffix = itemSlots['item-suffix']
   const Item = meta.kind === 'checkbox' ? XhMenuCheckboxItem : meta.kind === 'radio' ? XhMenuRadioItem : XhMenuItem
@@ -477,5 +479,31 @@ function renderItem(
     ...(meta.description != null ? [h(XhMenuItemDescription, null, () => meta.description)] : []),
     ...(meta.shortcut != null ? [h(XhMenuItemShortcut, null, () => meta.shortcut)] : []),
     ...(suffix ? [h(XhMenuItemSuffix, null, () => suffix(meta))] : []),
+  ])
+}
+
+/**
+ * 子菜单那一层的条目：从本层机器的 collection 现铺，条目带 children 的再往下一层。
+ * 默认树内部用；Menubar 与 ContextMenu 按数据铺子层时也用它。不作为公开组件导出。
+ */
+export const MenuDefaultNodes = /* @__PURE__ */ defineComponent({
+  name: 'MenuDefaultNodes',
+  props: {
+    itemSlots: { type: Object as PropType<MenuItemSlots>, default: () => ({}) },
+  },
+  setup(props) {
+    const ctx = useMenuContext()
+    return () => renderNodes(ctx.api.value.collection, props.itemSlots)
+  },
+})
+
+/**
+ * 带 children 的条目铺成子菜单：本条是入口，下一层交给子菜单机器的 collection 现铺，深度不限。
+ * 子层与本层同用这几个插槽，载荷是子层自己的条目元信息。
+ */
+function renderSubmenu(meta: MenuNodeMeta, itemSlots: MenuItemSlots): VNode {
+  return h(XhMenuSub, { key: meta.value, value: meta.value, disabled: meta.disabled || undefined, collection: meta.children as MenuNode[] }, () => [
+    h(XhMenuSubTrigger, null, () => itemSlots.item?.(meta) ?? [meta.label]),
+    h(XhMenuPositioner, null, () => [h(XhMenuContent, null, () => [h(MenuDefaultNodes, { itemSlots })])]),
   ])
 }

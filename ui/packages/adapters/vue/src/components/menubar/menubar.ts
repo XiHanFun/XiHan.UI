@@ -7,7 +7,7 @@
 
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { MenubarAnyItemProps, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioValue, MenubarSchema } from '@xihan-ui/headless'
+import type { MenubarAnyItemProps, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioValue, MenubarSchema, MenuNode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
@@ -20,6 +20,7 @@ import { XhPortal } from '../../runtime/portal'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { provideMenu, useMenuContext } from '../menu/context'
+import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
 import { useMenuWithParent } from '../menu/use-menu'
 import {
   provideMenubar,
@@ -468,6 +469,8 @@ function renderNode(
   meta: MenubarNodeMeta,
   itemSlots: MenubarItemSlots,
 ): VNode {
+  if (meta.children)
+    return renderSubmenu(meta)
   const prefix = itemSlots['item-prefix']
   const suffix = itemSlots['item-suffix']
   const Item = meta.kind === 'checkbox' ? XhMenubarCheckboxItem : meta.kind === 'radio' ? XhMenubarRadioItem : XhMenubarItem
@@ -521,6 +524,8 @@ export const XhMenubarSub = defineComponent({
     /** 它在所属菜单中的条目身份。 */
     value: { type: String, required: true },
     disabled: { type: Boolean, default: undefined },
+    /** 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 */
+    collection: { type: Array as PropType<MenuNode[]> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
@@ -585,3 +590,11 @@ export const XhMenubarSubTrigger = defineComponent({
     }, slots.default?.())
   },
 })
+
+/** 带 children 的条目铺成子菜单：子层跑的是 menu 机器，条目按数据铺、不经本层的插槽。 */
+function renderSubmenu(meta: MenubarNodeMeta): VNode {
+  return h(XhMenubarSub, { key: meta.value, value: meta.value, disabled: meta.disabled || undefined, collection: meta.children as MenuNode[] }, () => [
+    h(XhMenubarSubTrigger, null, () => [meta.label]),
+    h(XhMenuPositioner, null, () => [h(XhMenuContent, null, () => [h(MenuDefaultNodes)])]),
+  ])
+}

@@ -497,6 +497,8 @@ function renderItemNode(
   meta: MenuNodeMeta,
   renderers: MenuItemRenderers,
 ): ReactNode {
+  if (meta.children)
+    return renderSubmenu(meta, renderers)
   const content = renderers.item?.(meta) ?? (
     <>
       {renderers.prefix
@@ -515,4 +517,30 @@ function renderItemNode(
   if (meta.kind === 'radio')
     return <XhMenuRadioItem key={meta.value} value={meta.value} closeOnSelect={meta.closeOnSelect}>{content}</XhMenuRadioItem>
   return <XhMenuItem key={meta.value} value={meta.value}>{content}</XhMenuItem>
+}
+
+/**
+ * 带 children 的条目铺成子菜单：本条是入口，下一层交给子菜单机器的 collection 现铺，深度不限。
+ * 子层与本层同用这几个渲染函数，入参是子层自己的条目元信息。
+ */
+function renderSubmenu(meta: MenuNodeMeta, renderers: MenuItemRenderers): ReactNode {
+  return (
+    <XhMenuSub key={meta.value} value={meta.value} disabled={meta.disabled || undefined} collection={meta.children as MenuNode[]}>
+      <XhMenuSubTrigger>{renderers.item?.(meta) ?? meta.label}</XhMenuSubTrigger>
+      <XhMenuPositioner>
+        <XhMenuContent>
+          <MenuDefaultNodes renderers={renderers} />
+        </XhMenuContent>
+      </XhMenuPositioner>
+    </XhMenuSub>
+  )
+}
+
+/**
+ * 子菜单那一层的条目：从本层机器的 collection 现铺，条目带 children 的再往下一层。
+ * 默认树内部用；Menubar 与 ContextMenu 按数据铺子层时也用它。不作为公开组件导出。
+ */
+export function MenuDefaultNodes({ renderers = {} }: { renderers?: MenuItemRenderers }): ReactNode {
+  const ctx = useMenuContext()
+  return <>{renderNodes(ctx.api.collection, renderers)}</>
 }

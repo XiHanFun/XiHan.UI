@@ -6,7 +6,7 @@
 // 提供 context menu 相关实现。
 
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { ContextMenuAnyItemProps, ContextMenuApi, ContextMenuGroupProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuRadioValue, ContextMenuSchema, MenuApi } from '@xihan-ui/headless'
+import type { ContextMenuAnyItemProps, ContextMenuApi, ContextMenuGroupProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuRadioValue, ContextMenuSchema, MenuApi, MenuNode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
@@ -17,6 +17,7 @@ import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { provideMenu, useMenuContext } from '../menu/context'
+import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
 import { useMenuWithParent } from '../menu/use-menu'
 import {
   provideContextMenu,
@@ -301,6 +302,8 @@ export const XhContextMenuSub = defineComponent({
     /** 它在父右键菜单中的条目身份。 */
     value: { type: String, required: true },
     disabled: { type: Boolean, default: undefined },
+    /** 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 */
+    collection: { type: Array as PropType<MenuNode[]> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
@@ -480,6 +483,13 @@ function renderItem(
   meta: ContextMenuNodeMeta,
   itemSlots: ContextMenuItemSlots,
 ): VNode {
+  // 带 children 的条目铺成子菜单：子层跑的是 menu 机器，条目按数据铺、不经本层的插槽
+  if (meta.children) {
+    return h(XhContextMenuSub, { key: meta.value, value: meta.value, disabled: meta.disabled || undefined, collection: meta.children as MenuNode[] }, () => [
+      h(XhContextMenuSubTrigger, null, () => [meta.label]),
+      h(XhMenuPositioner, null, () => [h(XhMenuContent, null, () => [h(MenuDefaultNodes)])]),
+    ])
+  }
   const prefix = itemSlots['item-prefix']
   const suffix = itemSlots['item-suffix']
   const Item = meta.kind === 'checkbox' ? XhContextMenuCheckboxItem : meta.kind === 'radio' ? XhContextMenuRadioItem : XhContextMenuItem
