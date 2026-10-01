@@ -145,7 +145,8 @@ export function connectCheckboxGroup<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'role': 'group',
-      'aria-labelledby': ids.label,
+      // 只指向真渲染了的标题：悬空的 IDREF 让组没有名字
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       // role=group 不接受 aria-orientation，只出 data-orientation
       'data-orientation': orientation,
       // 视觉轴打在根上，条目与方框从这里继承私有槽，子部件不重复标注
@@ -267,9 +268,8 @@ export function connectCheckboxGroup<T extends PropTypes>(
         // 自指的那一段要有落点
         'id': ids['select-all-trigger'],
         // 名字 = 组标题 + 全选格自己的文本：作者没写文本时由组标题兜住，
-        // 写了文本也不会被顶掉（自指那段按 accname 规则取本节点的内容）；
-        // 两段各自缺席时都是悬空 IDREF，按规则跳过
-        'aria-labelledby': `${ids.label} ${ids['select-all-trigger']}`,
+        // 写了文本也不会被顶掉（自指那段按 accname 规则取本节点的内容）；没渲染标题时只剩自指那段
+        'aria-labelledby': prop('labelled') ? `${ids.label} ${ids['select-all-trigger']}` : ids['select-all-trigger'],
         // 勾了一部分时输出 mixed
         'aria-checked': checkedState === 'checked' ? 'true' : checkedState === 'indeterminate' ? 'mixed' : 'false',
         // 与条目同形：用 aria-disabled，禁用后仍可聚焦

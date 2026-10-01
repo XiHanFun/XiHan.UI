@@ -9,9 +9,10 @@ import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { CheckboxGroupApi, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema, CheckboxGroupVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
   CheckboxGroupItemProvider,
@@ -96,6 +97,11 @@ export function XhCheckboxGroupRoot({
   } as CheckboxGroupProps))
   const api = ctx.api
 
+  // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
+  // 标题文字不论手写选项还是数据驱动都由根铺出：手写选项时不必再写 label 部件
+  const title = label != null ? <XhCheckboxGroupLabel>{label}</XhCheckboxGroupLabel> : null
   const body = children != null
     ? renderSlot(children, {
         value: api.value,
@@ -108,17 +114,18 @@ export function XhCheckboxGroupRoot({
       })
     : collection
       ? <DefaultTree collection={api.collection} label={label} renderItem={renderItem} />
-      : null
+      : title
 
   return (
     <CheckboxGroupProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
+          fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }),
           rest as Record<string, unknown>,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
+        {children != null ? title : null}
         {body}
       </div>
     </CheckboxGroupProvider>
@@ -130,6 +137,9 @@ XhCheckboxGroupRoot.xhEvents = ['value-change'] as const
 export interface XhCheckboxGroupLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhCheckboxGroupLabel({ children, ...rest }: XhCheckboxGroupLabelProps): ReactNode {
   const ctx = useCheckboxGroupContext()
+  // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 

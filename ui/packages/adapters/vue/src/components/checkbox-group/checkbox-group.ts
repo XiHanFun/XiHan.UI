@@ -16,7 +16,8 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h } from 'vue'
+import { computed, defineComponent, h, onBeforeUnmount, onMounted } from 'vue'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
   provideCheckboxGroup,
@@ -72,23 +73,26 @@ export const XhCheckboxGroupRoot = defineComponent({
     }
     const ctx = useCheckboxGroup(useFormControlProps(props) as CheckboxGroupProps, notify)
     provideCheckboxGroup(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
-      ? slots.default({
-          value: ctx.api.value.value,
-          checkedState: ctx.api.value.checkedState,
-          atMax: ctx.api.value.atMax,
-          atMin: ctx.api.value.atMin,
-          isChecked: ctx.api.value.isChecked,
-          setValue: ctx.api.value.setValue,
-          toggleValue: ctx.api.value.toggleValue,
-        })
-      : props.collection
-        ? renderDefaultTree(
-            ctx.api.value.collection,
-            slots.label?.() ?? (props.label != null ? [props.label] : null),
-            slots.item,
-          )
-        : [])
+    // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
+    return () => {
+      // 标题文字不论手写选项还是数据驱动都由根铺出：手写选项时不必再写 label 部件
+      const title = slots.label?.() ?? (props.label != null ? [props.label] : null)
+      return h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }), slots.default
+        ? [...renderLabel(title), ...slots.default({
+            value: ctx.api.value.value,
+            checkedState: ctx.api.value.checkedState,
+            atMax: ctx.api.value.atMax,
+            atMin: ctx.api.value.atMin,
+            isChecked: ctx.api.value.isChecked,
+            setValue: ctx.api.value.setValue,
+            toggleValue: ctx.api.value.toggleValue,
+          })]
+        : props.collection
+          ? renderDefaultTree(ctx.api.value.collection, title, slots.item)
+          : renderLabel(title))
+    }
   },
 })
 
@@ -96,6 +100,13 @@ export const XhCheckboxGroupLabel = defineComponent({
   name: 'XhCheckboxGroupLabel',
   setup(_, { slots }) {
     const ctx = useCheckboxGroupContext()
+    // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
+    onMounted(() => {
+      ctx.labelCount.value++
+    })
+    onBeforeUnmount(() => {
+      ctx.labelCount.value--
+    })
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -167,7 +178,7 @@ function renderDefaultTree(
   itemSlot?: (node: CheckboxGroupNodeMeta) => VNode[],
 ): VNode[] {
   return [
-    ...(label ? [h(XhCheckboxGroupLabel, null, () => label)] : []),
+    ...renderLabel(label),
     ...collection.map(node =>
       h(XhCheckboxGroupItem, { key: node.value, value: node.value }, () => [
         h(XhCheckboxGroupIndicator),
@@ -176,4 +187,9 @@ function renderDefaultTree(
       ]),
     ),
   ]
+}
+
+/** 组标题：给了文字或 label 插槽才铺 label 部件。 */
+function renderLabel(title: (VNode | string)[] | null): VNode[] {
+  return title ? [h(XhCheckboxGroupLabel, null, () => title)] : []
 }
