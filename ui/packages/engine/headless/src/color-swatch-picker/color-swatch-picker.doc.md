@@ -29,7 +29,8 @@
 
 ## 无障碍
 
-- 根是 `role=radiogroup`，名称取 label 部件，未提供时读 `translations.group`。
+- 根是 `role=radiogroup`，名称取 label 部件，未提供时读 `translations.group`；`label` 部件真渲染了时才输出 `aria-labelledby`。Vue / React 的 `label` 属性不论手写格子还是数据驱动都会铺出标题。
+- 直接放进[表单字段](./field)时，字段的标题并进组名、说明进描述链。
 - 每格是 `role=radio` 并显式输出 `aria-checked`；名称依次取 `label`、`swatches` 中的 `label`、`translations.swatch(value)`，颜色串无法表达含义时务必提供名称。
 - 禁用格用 `aria-disabled` 表达，仍可聚焦，仍是方向键的起点。
 - 每格内有一个 `inert` 的隐藏原生 radio 承接表单提交，不进入焦点序列与可访问树。

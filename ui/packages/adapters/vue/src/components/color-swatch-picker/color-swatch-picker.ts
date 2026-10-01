@@ -9,8 +9,9 @@ import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { ColorSwatchPickerApi, ColorSwatchPickerItemProps, ColorSwatchPickerNode, ColorSwatchPickerNodeMeta, ColorSwatchPickerSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideColorSwatchPicker, useColorSwatchPickerContext } from './context'
 import { useColorSwatchPicker } from './use-color-swatch-picker'
@@ -58,22 +59,27 @@ export const XhColorSwatchPickerRoot = defineComponent({
     // withXhConfig 只能在 setup 期调，机器在运行期读这份代理
     const ctx = useColorSwatchPicker(withXhConfig('color-swatch-picker', useFormControlProps(props)) as ColorSwatchPickerProps, notify)
     provideColorSwatchPicker(ctx)
+    // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
     return () => {
       const api = ctx.api.value
+      // 标题文字不论手写格子还是数据驱动都由根铺出：手写格子时不必再写 label 部件
+      const title = slots.label?.() ?? (props.label != null ? [props.label] : null)
       return h(
         'div',
-        api.getRootProps() as Record<string, unknown>,
+        fieldLabel.value({ ...fieldWiring.value, ...api.getRootProps() as Record<string, unknown> }),
         slots.default
-          ? slots.default({
+          ? [...renderLabel(title), ...slots.default({
               value: api.value,
               swatches: api.swatches,
               focusedValue: api.focusedValue,
               isSelected: api.isSelected,
               setValue: api.setValue,
-            })
+            })]
           : props.swatches
-            ? renderDefaultTree(api.swatches, slots.label?.() ?? (props.label != null ? [props.label] : null))
-            : [],
+            ? renderDefaultTree(api.swatches, title)
+            : renderLabel(title),
       )
     }
   },
@@ -83,6 +89,13 @@ export const XhColorSwatchPickerLabel = defineComponent({
   name: 'XhColorSwatchPickerLabel',
   setup(_, { slots }) {
     const ctx = useColorSwatchPickerContext()
+    // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
+    onMounted(() => {
+      ctx.labelCount.value++
+    })
+    onBeforeUnmount(() => {
+      ctx.labelCount.value--
+    })
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -137,7 +150,12 @@ function renderDefaultTree(
   label: (VNode | string)[] | null,
 ): VNode[] {
   return [
-    ...(label ? [h(XhColorSwatchPickerLabel, null, () => label)] : []),
+    ...renderLabel(label),
     ...swatches.map(node => h(XhColorSwatchPickerItem, { key: node.value, value: node.value })),
   ]
+}
+
+/** 组标题：给了文字或 label 插槽才铺 label 部件。 */
+function renderLabel(title: (VNode | string)[] | null): VNode[] {
+  return title ? [h(XhColorSwatchPickerLabel, null, () => title)] : []
 }

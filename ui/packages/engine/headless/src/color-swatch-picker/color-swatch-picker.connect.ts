@@ -121,8 +121,8 @@ export function connectColorSwatchPicker<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'role': 'radiogroup',
-      'aria-labelledby': ids.label,
-      // 作者没放 label 部件时名字从文案取，两者同时在时以 label 部件为准
+      // 只指向真渲染了的标题：作者没放 label 部件时名字从文案取，两者同时在时以 label 部件为准
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       'aria-label': label.group,
       'data-size': prop('size'),
       'data-tone': prop('tone'),

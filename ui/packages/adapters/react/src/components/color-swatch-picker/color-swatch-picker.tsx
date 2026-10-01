@@ -15,6 +15,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { ColorSwatchPickerProvider, useColorSwatchPickerContext } from './context'
 import { useColorSwatchPicker } from './use-color-swatch-picker'
@@ -86,7 +87,12 @@ export function XhColorSwatchPickerRoot({
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，格子得焦也会把它叫起来，那一下会把焦点从格子抢回锚点上——
   // 装成原生监听器，到达路径才与另外两家一致。onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
-  const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>, ['onFocus'])
+  // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }), ['onFocus'])
+  // 标题文字不论手写格子还是数据驱动都由根铺出：手写格子时不必再写 label 部件
+  const title = label != null ? <XhColorSwatchPickerLabel>{label}</XhColorSwatchPickerLabel> : null
   const body = children
     ? renderSlot(children, {
         value: api.value,
@@ -97,7 +103,7 @@ export function XhColorSwatchPickerRoot({
       })
     : swatches
       ? <DefaultTree swatches={api.swatches} label={label} />
-      : null
+      : title
   return (
     <ColorSwatchPickerProvider value={ctx}>
       <div
@@ -108,6 +114,7 @@ export function XhColorSwatchPickerRoot({
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
+        {children ? title : null}
         {body}
       </div>
     </ColorSwatchPickerProvider>
@@ -120,6 +127,9 @@ export interface XhColorSwatchPickerLabelProps extends ComponentPropsWithRef<'sp
 
 export function XhColorSwatchPickerLabel({ children, ...rest }: XhColorSwatchPickerLabelProps): ReactNode {
   const ctx = useColorSwatchPickerContext()
+  // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
