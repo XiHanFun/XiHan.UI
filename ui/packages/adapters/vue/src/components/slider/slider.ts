@@ -11,6 +11,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { normalizeItemIndex } from '@xihan-ui/core'
 import { computed, defineComponent, h } from 'vue'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideSlider, provideSliderThumb, useSliderContext, useSliderThumbContext } from './context'
 import { useSlider } from './use-slider'
@@ -151,7 +152,10 @@ export const XhSliderThumb = defineComponent({
     const ctx = useSliderContext()
     const index = computed(() => normalizeItemIndex(props.index))
     provideSliderThumb({ index })
-    return () => h('div', ctx.api.value.getThumbProps(index.value) as Record<string, unknown>, slots.default?.())
+    // 放进表单字段时，字段的标题与说明接到拇指上：焦点落在拇指，读屏在这里念名字与说明
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
+    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getThumbProps(index.value) as Record<string, unknown> }), slots.default?.())
   },
 })
 

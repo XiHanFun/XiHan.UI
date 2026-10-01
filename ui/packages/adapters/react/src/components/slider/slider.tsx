@@ -14,6 +14,7 @@ import { Fragment } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { SliderProvider, SliderThumbProvider, useSliderContext, useSliderThumbContext } from './context'
 import { useSlider } from './use-slider'
@@ -240,7 +241,10 @@ export function XhSliderThumb({ index = 0, children, ...rest }: XhSliderThumbPro
   const at = normalizeItemIndex(index)
   // 拇指上的 onFocus 是不冒泡的 DOM focus，React 的同名合成事件挂的是冒泡的 focusin：
   // 后代得焦会被算成拇指自己得焦，活动下标于是指错人。装成原生监听器，到达路径才与另外两家一致
-  const bind = useNativeEvents(ctx.api.getThumbProps(at) as Record<string, unknown>, ['onFocus'])
+  // 放进表单字段时，字段的标题与说明接到拇指上：焦点落在拇指，读屏在这里念名字与说明
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getThumbProps(at) as Record<string, unknown> }), ['onFocus'])
   return (
     <SliderThumbProvider value={at}>
       <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
