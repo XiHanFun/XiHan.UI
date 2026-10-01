@@ -81,11 +81,13 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 - 方框是字段家族的控制盒：不填底、描边与无影，勾中后以语气色填充；整行接 Action Control row 档，悬停 / 按下换面不缩放，方框随行换到承载面阶梯的下一档。
 - `variant` 是结构形态：缺省 `list` 是一列「方框 + 文案」的行；`card` 把每个条目画成一张可点的描边卡（surface 圆角，白底承载阶梯悬停 100 → 按下 200），方框在卡的行首，整张卡是命中区。勾中的卡换品牌淡底（写了 `tone` 换语气淡底），与表格选中行、穿梭框选中项同一种标记，描边不换；只读时卡片不给悬停与按下面。竖排时卡片撑满一列，横排时各卡等分一行、放不下就折行。全选触发器在两种形态里都是一行。
 - `item-description` 是文案下方的说明行（13 / `--xh-fg-muted`），与文案一起构成条目的可及名；`collection` 里的 `description` 会自动铺出这一行。
+- 根是 `role=group`，`label` 部件真渲染了时才经 `aria-labelledby` 给组命名；不写标题时给根节点写 `aria-label`。Vue / React 的 `label` 属性不论手写选项还是数据驱动都会铺出标题。
 
 ### 组合
 
 - 每一项都是一个[复选框](./checkbox)，全选触发器是组内额外的一项，半选状态由组计算。
 - 在[表单](./form)中以整组的值数组作为一个字段参与校验与提交。
+- 直接放进[表单字段](./field)即可：字段的标题并进组名、说明进描述链，读屏进组时一起念出。
 
 ### 最佳实践
 
@@ -129,6 +131,7 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选方框使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框与文字的几何档位。 |
 | `variant` | `CheckboxGroupVariant` |  | 结构形态，默认 list；card 把每个条目画成一张可点的卡。 |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 会让组没有名字，作者写在根上的 aria-label 也会被它压住。 |
 | `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### CheckboxGroupNode
@@ -238,7 +241,7 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `role` | 'group' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
@@ -249,7 +252,7 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 | `hidden-input` | `aria-hidden` | 'true' |
 | `select-all-trigger` | `aria-checked` | 'true' \| 'mixed' \| 'false' |
 | `select-all-trigger` | `aria-disabled` | 'false' \| 'true' |
-| `select-all-trigger` | `aria-labelledby` | `label` 部件的 id `select-all-trigger` 部件的 id |
+| `select-all-trigger` | `aria-labelledby` | `label` 部件的 id `select-all-trigger` 部件的 id \| `select-all-trigger` 部件的 id |
 | `select-all-trigger` | `aria-readonly` | 'true' \| 'false' |
 | `select-all-trigger` | `role` | 'checkbox' |
 

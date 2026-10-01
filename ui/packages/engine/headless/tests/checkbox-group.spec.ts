@@ -143,7 +143,7 @@ describe('checkboxGroupMachine', () => {
 
 describe('connectCheckboxGroup：容器与标题', () => {
   it('root 是 role=group，指向 label，且不占 Tab 位', () => {
-    const s = makeService()
+    const s = makeService({ labelled: true })
     const root = api(s).getRootProps() as Record<string, unknown>
     expect(root.role).toBe('group')
     expect(root['data-scope']).toBe('checkbox-group')
@@ -154,6 +154,13 @@ describe('connectCheckboxGroup：容器与标题', () => {
     // role=group 不接受 aria-orientation，只能出 data-orientation
     expect(root['data-orientation']).toBe('vertical')
     expect('aria-orientation' in root).toBe(false)
+  })
+
+  it('没渲染 label 部件时根不输出 aria-labelledby，全选格只念自己的文本', () => {
+    const a = api(makeService())
+    expect((a.getRootProps() as Record<string, unknown>)['aria-labelledby']).toBeUndefined()
+    const trigger = a.getSelectAllTriggerProps() as Record<string, unknown>
+    expect(trigger['aria-labelledby']).toBe(trigger.id)
   })
 
   it('orientation / tone / size 与状态落成 data 标记', () => {
@@ -337,7 +344,7 @@ describe('connectCheckboxGroup：全选/半选的 trigger', () => {
   })
 
   it('可及名两段：组标题在前，全选格自己的文本在后（自指那段落在它自己的 id 上）', () => {
-    const a = api(makeService({}))
+    const a = api(makeService({ labelled: true }))
     const trigger = a.getSelectAllTriggerProps() as Record<string, unknown>
     const labelId = (a.getLabelProps() as Record<string, unknown>).id
     expect(trigger['aria-labelledby']).toBe(`${labelId} ${trigger.id}`)
