@@ -11,6 +11,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { providePinInput, usePinInputContext } from './context'
 import { usePinInput } from './use-pin-input'
@@ -64,7 +65,10 @@ export const XhPinInputRoot = defineComponent({
     const onValueComplete: PinInputProps['onValueComplete'] = details => emit('value-complete', details)
     const ctx = usePinInput(withXhConfig('pin-input', useFormControlProps(props)) as PinInputProps, { onValueChange, onValueComplete })
     providePinInput(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    // 放进表单字段时，字段的标题与说明接到整组上：读屏进组时念组名与说明，每格的名字仍是「第几格」
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
+    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }), slots.default?.({
       value: ctx.api.value.value,
       valueAsString: ctx.api.value.valueAsString,
       complete: ctx.api.value.complete,
