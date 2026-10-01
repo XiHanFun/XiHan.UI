@@ -78,7 +78,7 @@ export const XhTreeRoot = defineComponent({
     expandOnClick: { type: Boolean, default: undefined },
     /** 正在取子节点的分支：在其中的分支报告 aria-busy，展开箭头换成转圈。 */
     loadingValue: { type: Array as PropType<string[]> },
-    /** 缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头。 */
+    /** 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点横出一段接到行首，最后一个子节点止于行中线。 */
     lines: { type: Boolean, default: undefined },
     disabled: Boolean,
     loading: Boolean,

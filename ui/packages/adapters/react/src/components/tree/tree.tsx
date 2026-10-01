@@ -90,7 +90,7 @@ export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   loading?: boolean
   /** 正在取子节点的分支：在其中的分支报告 aria-busy，展开箭头换成转圈。 */
   loadingValue?: string[]
-  /** 缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头。 */
+  /** 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点横出一段接到行首，最后一个子节点止于行中线。 */
   lines?: boolean
   loop?: boolean
   typeahead?: boolean

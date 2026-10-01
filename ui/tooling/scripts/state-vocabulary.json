@@ -127,7 +127,7 @@
     "data-at-min-horizontal": "横向已经贴着起始端：scroll-area 的视口；table 的行首冻结列下面没有被压住的内容，不画边界。",
     "data-at-min-vertical": "scroll-area 的视口纵向已经贴着顶端。",
     "data-auto-fill": "marquee 开了自动补足副本：内容不足一屏时复制到铺满。",
-    "data-lines": "tree 打开了缩进参考线：每一层子节点的行首画一道竖线。",
+    "data-lines": "tree 打开了连接线：父节点展开箭头的中线引出竖线，子节点横出一段接到行首，末位子节点止于行中线。",
     "data-match": "json-viewer 这一行的键名或值命中了搜索词。",
     "data-fade": "marquee 开了两端渐隐：窗口沿滚动方向两端画遮罩，内容从一端淡入、从另一端淡出。",
     "data-auto-resize": "editable 的输入框随内容自动长高。",

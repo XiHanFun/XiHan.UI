@@ -477,7 +477,7 @@ export function connectTree<T extends PropTypes>(
       // 已有节点时重新取数：皮肤让行保留上一帧淡下，树框不动
       'data-loading': dataAttr(refreshing),
       'data-orientation': 'vertical',
-      // 缩进参考线只是外观：皮肤在每一层子节点的行首画竖线
+      // 连接线只是外观：皮肤按子层里节点的先后画出竖线与横出的那一段
       'data-lines': dataAttr(!!prop('lines')),
       // 焦点在树外时容器兜底进 Tab 序列，由 onFocus 转投给节点。
       // 判据用 focusedValue 而非 anchor：anchor 可能指向已删掉、已隐藏或不在树里的值，那时无人认领 tabindex=0

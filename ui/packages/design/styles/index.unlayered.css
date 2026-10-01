@@ -49293,26 +49293,88 @@
 }
 
 /*
- * 缩进参考线：每一层子节点的行首画一道竖线，对齐父节点展开箭头的中线，层级深时一眼看得出谁跟谁同层。
- * 线画在子层容器自己的伪元素上：定位在子层里，只贯穿这一层的全部子孙，不越出父节点的范围。
+ * 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点从竖线横出一段接到自己行首（├），
+ * 最后一个子节点的竖线止于它那一行的中线（└），层级深时一眼看得出谁挂在谁下面。
+ * 线由每个子节点自己画：子节点的行画「这一段竖线 + 横出的那一段」，展开着的非末位分支再由它的子层
+ * 把竖线接过它整棵子树，交给下一个兄弟。子节点之间、分支行与子层之间的间距由线向上下伸出补齐，竖线不断开。
+ * 只画在竖排的子层里：顶层节点没有父节点可连，横排的末端层没有行首可接。
+ * 首个与末位子节点按子层里的结构次序认：子层里只放节点，收起的子树整块不显示、不影响次序。
  * 它是内部分隔的一种，颜色取 border-subtle；行悬停与选中换面时线压在面上照样看得见
  */
 [data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'] {
   position: relative;
 }
 
-[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content']::before {
+/* 竖线落在父节点展开箭头的中线上：父行的行首内边距加半个箭头盒，换算到缩进了一格的子节点坐标里。
+   向上伸出的量补的是上方那段间距（首个子节点补分支行与子层之间的那段），向下补到下一个兄弟 */
+[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='item'],
+[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='branch'] > [data-scope='tree'][data-part='branch-control'] {
+  --xh-_tree-line-x: calc(
+    var(--xh-tree-row-px, var(--xh-_tree-row-px)) +
+      var(--xh-_tree-indicator-size) / 2 -
+      var(--xh-stroke-thin) / 2 -
+      var(--xh-tree-indent, var(--xh-_tree-indent))
+  );
+  --xh-_tree-line-top: 0px;
+  --xh-_tree-line-bottom: var(--xh-tree-branch-content-gap, var(--xh-list-option-gap));
+
+  position: relative;
+}
+
+[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='item']:first-child,
+[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='branch']:first-child > [data-scope='tree'][data-part='branch-control'] {
+  --xh-_tree-line-top: var(--xh-tree-branch-gap, var(--xh-list-option-gap));
+}
+
+/* 展开着的非末位分支：行下面先是它自己的子层，竖线只伸到子层顶上，余下那段由子层接着画 */
+[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='branch'] > [data-scope='tree'][data-part='branch-control'][data-state='open'] {
+  --xh-_tree-line-bottom: var(--xh-tree-branch-gap, var(--xh-list-option-gap));
+}
+
+[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='item']::before,
+[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='branch'] > [data-scope='tree'][data-part='branch-control']::before {
   content: '';
   position: absolute;
-  inset-block: 0;
-  /* 父行的行首内边距加半个箭头盒：竖线正好落在父节点展开箭头的中线上 */
+  inset-block: calc(var(--xh-_tree-line-top) * -1) calc(var(--xh-_tree-line-bottom) * -1);
+  inset-inline-start: var(--xh-_tree-line-x);
+  /* 分支横出到展开箭头盒的起点；叶子没有箭头，横线穿过占位那一格接到正文前 */
+  inline-size: calc(var(--xh-tree-row-px, var(--xh-_tree-row-px)) - var(--xh-_tree-line-x));
+  border-inline-start: var(--xh-stroke-thin) solid var(--xh-tree-line-color, var(--xh-border-subtle));
+  /* 横出的那段落在行的中线：线盒上下伸出的量不对称时按差值的一半补回 */
+  background: linear-gradient(var(--xh-tree-line-color, var(--xh-border-subtle)), var(--xh-tree-line-color, var(--xh-border-subtle)))
+    0 calc(50% + (var(--xh-_tree-line-top) - var(--xh-_tree-line-bottom)) / 2) / 100% var(--xh-stroke-thin) no-repeat;
+  pointer-events: none;
+}
+
+[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='item']::before {
+  inline-size: calc(
+    var(--xh-tree-row-px, var(--xh-_tree-row-px)) +
+      var(--xh-_tree-indicator-size) -
+      var(--xh-_tree-line-x)
+  );
+}
+
+/* 最后一个子节点：竖线止于行的中线并在那里拐向行首（└），下面不再有兄弟要接 */
+[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='item']:last-child::before,
+[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='branch']:last-child > [data-scope='tree'][data-part='branch-control']::before {
+  inset-block-end: calc(50% - var(--xh-stroke-thin) / 2);
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-tree-line-color, var(--xh-border-subtle));
+  background: none;
+}
+
+/* 展开着的非末位分支：它的子层把父节点那道竖线接过整棵子树，一直伸到下一个兄弟。
+   子层的盒与分支同起点（缩进是子层自己的内边距），竖线位置与分支行里那一段相同 */
+[data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='branch']:not(:last-child) > [data-scope='tree'][data-part='branch-content']::after {
+  content: '';
+  position: absolute;
+  inset-block: 0 calc(var(--xh-tree-branch-content-gap, var(--xh-list-option-gap)) * -1);
   inset-inline-start: calc(
     var(--xh-tree-row-px, var(--xh-_tree-row-px)) +
       var(--xh-tree-indicator-size, var(--xh-_tree-indicator)) / 2 -
-      var(--xh-stroke-thin) / 2
+      var(--xh-stroke-thin) / 2 -
+      var(--xh-tree-indent, var(--xh-_tree-indent))
   );
-  inline-size: var(--xh-stroke-thin);
-  background: var(--xh-tree-line-color, var(--xh-border-subtle));
+  border-inline-start: var(--xh-stroke-thin) solid var(--xh-tree-line-color, var(--xh-border-subtle));
   pointer-events: none;
 }
 
@@ -49541,10 +49603,18 @@
   }
 }
 
-/* 强制色：参考线是一块底色，系统色下会被抹成 Canvas；换成 GrayText 并只让这条线不参与强制换色 */
+/* 强制色：连接线的横段是一块渐变底色、竖段是描边，系统色下一个被抹掉、一个被换成文字色；
+   两段都写 GrayText，并只让连接线不参与强制换色 */
 @media (forced-colors: active) {
-  [data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content']::before {
-    background: GrayText;
+  [data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='item']::before,
+  [data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='branch'] > [data-scope='tree'][data-part='branch-control']::before {
+    border-color: GrayText;
+    background-image: linear-gradient(GrayText, GrayText);
+    forced-color-adjust: none;
+  }
+
+  [data-scope='tree'][data-part='tree'][data-lines] [data-scope='tree'][data-part='branch-content'][data-orientation='vertical'] > [data-scope='tree'][data-part='branch'] > [data-scope='tree'][data-part='branch-content']::after {
+    border-color: GrayText;
     forced-color-adjust: none;
   }
 }
