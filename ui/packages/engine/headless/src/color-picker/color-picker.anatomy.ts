@@ -17,6 +17,7 @@ export const colorPickerAnatomy = createAnatomy('color-picker', [
   'root',
   'label',
   'control',
+  'tag-list',
   'trigger',
   'value-text',
   'swatch',
@@ -30,5 +31,9 @@ export const colorPickerAnatomy = createAnatomy('color-picker', [
   'eye-dropper-trigger',
   'swatch-picker',
   'recent-swatch-picker',
+  'confirm-trigger',
   'hidden-input',
 ])
+
+/** 标签行：多选时盒里收着已选颜色标签的那一行。 */
+export const COLOR_PICKER_TAG_LIST_SELECTOR = colorPickerAnatomy.build()['tag-list'].selector

@@ -23785,6 +23785,46 @@
     display: none;
   }
 
+  /* 多选的标签行：选中的颜色在盒里排成标签，超过 maxTagCount 的折进 +N。
+     行里每一枚都是 tag（data-scope="tag"），样子归 tag.css；行怎么排、标签怎么进出归标签行家族配方。
+     基准取 0：只吃触发钮剩下的宽度、在自己里面折行；按内容宽算基准的话，盒子会先在钮前面折行，把钮挤到最后一行 */
+  [data-scope='color-picker'][data-part='tag-list'] {
+    --xh-tag-list-gap: var(--xh-color-picker-tag-list-gap, var(--xh-space-1));
+
+    flex: 1 1 0;
+    flex-wrap: wrap;
+  }
+
+  /* 颜色标签是定长的值串，截短了就读不出是哪个颜色：不收缩，排不下就折到下一行，
+     盒随行数长高（字段家族的 multi-tag 布局给），到上限后在盒内滚动 */
+  [data-scope='color-picker'][data-part='tag-list'] > [data-scope='tag'][data-part='root'] {
+    flex: none;
+  }
+
+  /* 每枚标签前一个色点，颜色由连接层写进内联私有槽；+N 那一枚没有 data-value，不画。
+     白色与近底色的颜色靠一圈默认描边从标签底上分出来 */
+  [data-scope='color-picker'][data-part='tag-list'] > [data-scope='tag'][data-part='root'][data-value]::before {
+    flex: none;
+    box-sizing: border-box;
+    inline-size: var(--xh-color-picker-tag-dot-size, var(--xh-control-indicator-sm));
+    block-size: var(--xh-color-picker-tag-dot-size, var(--xh-control-indicator-sm));
+    border: var(--xh-stroke-thin) solid var(--xh-color-picker-tag-dot-border, var(--xh-border-default));
+    border-radius: var(--xh-shape-circle);
+    background-color: var(--xh-_color-picker-tag-color, transparent);
+    content: '';
+    print-color-adjust: exact;
+  }
+
+  [data-scope='color-picker'][data-part='control'][data-xh-field-layout='multi-tag'] {
+    max-block-size: var(--xh-color-picker-control-max-h, var(--xh-viewport-h-sm));
+    overflow-y: auto;
+  }
+
+  /* 多选时值文字让位，触发钮只剩一颗显示工作色的色块：不再占满剩余宽度，标签行吃掉余下的位置 */
+  [data-scope='color-picker'][data-part='control'][data-xh-field-layout='multi-tag'] > [data-scope='color-picker'][data-part='trigger'] {
+    flex: none;
+  }
+
   /* 盒内那颗可聚焦的按钮：不画描边不铺底也不自带高度，只占满剩余宽度、排布色块与值文本 */
   [data-scope='color-picker'][data-part='trigger'] {
     display: inline-flex;
@@ -24122,6 +24162,39 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 「添加」沉到面板的行尾：它是多选时整块面板的出口，不跟取色面左对齐 */
+  [data-scope='color-picker'][data-part='content'] > [data-scope='color-picker'][data-part='confirm-trigger'] {
+    flex: none;
+    align-self: flex-end;
+  }
+
+  /* 「添加」是面板里唯一的主要动作：品牌实心、悬停 / 按下与 0.97 按压、焦点环全由 Action Control 的
+     text solid 档给；槽名统一按部件取 --xh-color-picker-confirm-trigger-*，只映射到家族桥接槽 */
+  [data-scope='color-picker'][data-part='confirm-trigger'] {
+    --xh-action-visual-size: var(--xh-color-picker-confirm-trigger-h, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-inline: var(--xh-color-picker-confirm-trigger-px, var(--xh-_action-profile-padding-inline));
+    --xh-action-radius: var(--xh-color-picker-confirm-trigger-radius, var(--xh-shape-control));
+    --xh-action-bg-rest: var(--xh-color-picker-confirm-trigger-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-color-picker-confirm-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-color-picker-confirm-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-color-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-color-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-color-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-border-rest: transparent;
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: var(--xh-color-picker-confirm-trigger-shadow, none);
+    --xh-action-shadow-hover: var(--xh-color-picker-confirm-trigger-shadow, none);
+    --xh-action-shadow-pressed: var(--xh-color-picker-confirm-trigger-shadow, none);
+    --xh-action-font-size: var(--xh-text-secondary-size);
+
+    border-width: 0;
+  }
+
+  /* 单选时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
+  [data-scope='color-picker'][data-part='confirm-trigger'][hidden] {
+    display: none;
+  }
+
   /* 预设色板的挂载点，同时充当色板的根节点：color-swatch-picker 那份皮的 root 规则落在
      [data-scope='color-swatch-picker'][data-part='root'] 上，而这里没有那个节点，所以根上挂的那几个私有槽
      （格子边长、间距、徽标尺寸、语气色、图标尺）与排布得在这儿照抄一遍；格子的皮仍归色板那一份。
@@ -24204,6 +24277,12 @@
     [data-scope='color-picker'][data-part='saturation-area'] {
       outline: var(--xh-stroke-thin) solid ButtonBorder;
       outline-offset: calc(-1 * var(--xh-stroke-thin));
+    }
+
+    /* 标签前的色点画的也是颜色本身：同样退出强制着色，用系统文字色描一圈 */
+    [data-scope='color-picker'][data-part='tag-list'] > [data-scope='tag'][data-part='root'][data-value]::before {
+      forced-color-adjust: none;
+      border-color: CanvasText;
     }
   }
 }

@@ -19,8 +19,13 @@ import { COLOR_FALLBACK, colorHsvaToRgba, colorParse, colorResolveFormat, colorR
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { trackSelectionTagMotion } from '../shared/selection-tags'
+import { COLOR_PICKER_TAG_LIST_SELECTOR, colorPickerAnatomy } from './color-picker.anatomy'
 import { colorPickerApplyInput, colorPickerWithArea } from './color-picker.color'
 import { colorPickerPointRatio } from './color-picker.geometry'
+
+/** 盒（control）的选择器：标签行与触发钮同在盒里。 */
+const COLOR_PICKER_CONTROL_SELECTOR = colorPickerAnatomy.build().control.selector
 
 const { createMachine } = setup<ColorPickerSchema>()
 
@@ -279,9 +284,11 @@ export function colorPickerRecentSwatchPickerProps(service: Service<ColorPickerS
 function swatchPickerProps(service: Service<ColorPickerSchema>, swatches: readonly string[], group: string): ColorSwatchPickerSchema['props'] {
   const { prop, context, send } = service
   const translations = prop('translations')
+  const multiple = prop('selectionMode') === 'multiple'
   return {
     swatches: swatches.map(value => ({ value })),
-    value: context.get('value'),
+    // 多选时色板只是切换的入口：选中的那一组在输入行的标签里，色板本身不再标一格
+    value: multiple ? null : context.get('value'),
     disabled: !!prop('disabled'),
     readOnly: !!prop('readOnly'),
     dir: prop('dir'),
@@ -291,10 +298,43 @@ function swatchPickerProps(service: Service<ColorPickerSchema>, swatches: readon
       swatch: translations?.swatch ?? (value => `Color ${value}`),
     },
     onValueChange: ({ value }) => {
-      if (value != null)
-        send({ type: 'VALUE.SET', value, source: 'swatch' })
+      if (value == null)
+        return
+      // 工作色先跟过去（取色面显示这一格），多选再切换它在选中值里的去留
+      send({ type: 'VALUE.SET', value, source: 'swatch' })
+      if (multiple)
+        send({ type: 'VALUE.TOGGLE', value })
     },
   }
+}
+
+/**
+ * 宿主给的值归一成数组：裸串是单选的写法；数组里的空串丢掉。
+ * 不归一的 undefined 原样留着，那是「非受控」的唯一表达。
+ */
+export function toColorPickerValues(input: string | readonly string[] | undefined): string[] | undefined {
+  if (input === undefined)
+    return undefined
+  if (typeof input === 'string')
+    return input === '' ? [] : [input]
+  return input.filter(value => value !== '')
+}
+
+/** maxSelected 的生效值：非整数向下取整，小于 1 或不是有限数时不设上限。 */
+export function resolveColorPickerMaxSelected(max: number | undefined): number | null {
+  if (max == null || !Number.isFinite(max))
+    return null
+  const floor = Math.floor(max)
+  return floor >= 1 ? floor : null
+}
+
+/** 选中值里有没有这个颜色：按颜色比，写法不同（#fff 与 #ffffff）也算同一个。 */
+export function colorPickerIncludes(values: readonly string[], color: string): boolean {
+  return values.some(value => colorSameColor(value, color))
+}
+
+function isMultiple(params: Pick<MachineParams, 'prop'>): boolean {
+  return params.prop('selectionMode') === 'multiple'
 }
 
 function stepSize(large: boolean): number {
@@ -309,11 +349,31 @@ export const colorPickerMachine = createMachine({
   context: ({ prop, cell }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
-    value: cell<string>(() => ({
-      value: prop('value'),
-      defaultValue: prop('defaultValue') ?? COLOR_FALLBACK,
-      onChange: value => prop('onValueChange')?.({ value }),
-    })),
+    // 工作色：单选时它就是选中值（受控时直读 prop 的首项），多选时是浮层里调着的草稿、不对外通知
+    value: cell<string>(() => {
+      if (prop('selectionMode') === 'multiple')
+        return { defaultValue: COLOR_FALLBACK }
+      const controlled = toColorPickerValues(prop('value'))
+      return {
+        value: controlled === undefined ? undefined : (controlled[0] ?? COLOR_FALLBACK),
+        defaultValue: toColorPickerValues(prop('defaultValue'))?.[0] ?? COLOR_FALLBACK,
+        onChange: value => prop('onValueChange')?.({ value: [value] }),
+      }
+    }),
+    // 多选的选中值；单选不用它
+    selected: cell<string[]>(() => {
+      const multiple = prop('selectionMode') === 'multiple'
+      return {
+        value: multiple ? toColorPickerValues(prop('value')) : undefined,
+        defaultValue: toColorPickerValues(prop('defaultValue')) ?? [],
+        isEqual: sameArray,
+        onChange: (value) => {
+          if (multiple)
+            prop('onValueChange')?.({ value })
+        },
+      }
+    }),
+    tagListTracked: cell<boolean>(() => ({ defaultValue: false })),
     anchor: cell<ColorPickerSchema['context']['anchor']>(() => ({ defaultValue: null })),
     position: cell<ColorPickerSchema['context']['position']>(() => ({ defaultValue: null })),
     draft: cell<ColorPickerSchema['context']['draft']>(() => ({ defaultValue: null })),
@@ -343,7 +403,7 @@ export const colorPickerMachine = createMachine({
   // 常驻形态恒为展开态：取色面一直在，拖动与屏幕取色这两段照样挂在展开态下
   initialState: ({ prop }) => ((prop('inline') || openAtMount(prop)) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
-  effects: ['trackLayer'],
+  effects: ['trackLayer', 'trackTagListMotion'],
   // 挂载即问一次环境有没有屏幕取色，按钮从首帧起就要正确禁用
   entry: ['syncValueError', 'syncFormatError', 'syncEyeDropperSupport'],
   // 开合受控时用户事件只发意图、不自改状态；宿主写回 open 后由这里派发影子事件无条件回写
@@ -359,6 +419,11 @@ export const colorPickerMachine = createMachine({
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { guard: 'canInteract', actions: ['setValue'] },
+    'SELECTED.SET': { guard: 'canInteract', actions: ['setSelected'] },
+    'VALUE.ADD': { guard: 'canInteract', actions: ['addValue'] },
+    'VALUE.REMOVE': { guard: 'canInteract', actions: ['removeValue'] },
+    'VALUE.TOGGLE': { guard: 'canInteract', actions: ['toggleValue'] },
+    'TAG_LIST.TRACKED': { actions: ['markTagListTracked'] },
     'AREA.SET': { guard: 'canInteract', actions: ['setArea'] },
     'AREA.STEP': { guard: 'canInteract', actions: ['stepArea'] },
     'AREA.TO_EDGE': { guard: 'canInteract', actions: ['areaToEdge'] },
@@ -452,10 +517,61 @@ export const colorPickerMachine = createMachine({
     },
     actions: {
       clearOpenedAtMount,
+      markTagListTracked: ({ context }) => context.set('tagListTracked', true),
+
+      /** 多选的整份替换：解析不出的颜色丢掉，同一个颜色只留第一次出现的那一份。 */
+      setSelected: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'SELECTED.SET' || !isMultiple(params))
+          return
+        const next: string[] = []
+        for (const value of e.value) {
+          if (colorParse(value) && !colorPickerIncludes(next, value))
+            next.push(value)
+        }
+        params.context.set('selected', next)
+      },
+
+      /** 把工作色收进选中值：还没选过、没到上限才收；收完工作色留着，接着调就能添下一个。 */
+      addValue: (params) => {
+        if (!isMultiple(params))
+          return
+        const color = params.context.get('value')
+        const current = params.context.get('selected')
+        const max = resolveColorPickerMaxSelected(params.prop('maxSelected'))
+        if (!colorParse(color) || colorPickerIncludes(current, color) || (max != null && current.length >= max))
+          return
+        params.context.set('selected', [...current, color])
+      },
+
+      removeValue: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'VALUE.REMOVE')
+          return
+        params.context.set('selected', params.context.get('selected').filter(value => !colorSameColor(value, e.value)))
+      },
+
+      /** 色块点一下切换：选过的点掉，没选过的加进来（满了就加不进）。 */
+      toggleValue: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'VALUE.TOGGLE' || !isMultiple(params))
+          return
+        const current = params.context.get('selected')
+        if (colorPickerIncludes(current, e.value)) {
+          params.context.set('selected', current.filter(value => !colorSameColor(value, e.value)))
+          return
+        }
+        const max = resolveColorPickerMaxSelected(params.prop('maxSelected'))
+        if (max != null && current.length >= max)
+          return
+        params.context.set('selected', [...current, e.value])
+      },
       resetToDefault: (params) => {
         if (params.prop('value') === undefined)
           params.context.reset('anchor')
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
+        if (isMultiple(params))
+          resetDeclaredValue(params, 'selected', 'value', 'defaultValue')
         params.context.reset('draft')
         params.context.reset('sessionValue')
         clearAllErrors(params)
@@ -623,6 +739,13 @@ export const colorPickerMachine = createMachine({
       },
     },
     effects: {
+      // 多选的标签行：首帧就在的标签直接呈现，之后新选的播进场、摘掉的在原处播完退场。
+      // 锚点是盒里的触发钮，标签行与它同在盒里，从它往上找到盒再往下取
+      trackTagListMotion: ({ refs, send, flush }) => trackSelectionTagMotion({
+        flush,
+        list: () => refs.get('getAnchorEl')()?.closest<HTMLElement>(COLOR_PICKER_CONTROL_SELECTOR)?.querySelector<HTMLElement>(COLOR_PICKER_TAG_LIST_SELECTOR),
+        onTracked: () => send({ type: 'TAG_LIST.TRACKED' }),
+      }),
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => {
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。

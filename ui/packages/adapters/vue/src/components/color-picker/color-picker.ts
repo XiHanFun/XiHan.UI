@@ -11,6 +11,7 @@ import type {
   ColorPickerApi,
   ColorPickerInputChannel,
   ColorPickerSchema,
+  ColorPickerSelectionMode,
   ColorPickerTranslations,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
@@ -19,13 +20,14 @@ import { colorPickerToInputChannel } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
+import { slotIsPlainText } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { XhColorSliderControl, XhColorSliderThumb, XhColorSliderTrack } from '../color-slider/color-slider'
 import { provideColorSlider } from '../color-slider/context'
 import { XhColorSwatchPickerItem } from '../color-swatch-picker/color-swatch-picker'
 import { provideColorSwatchPicker } from '../color-swatch-picker/context'
 import { useFormControlProps } from '../form/use-form-control'
-import { provideColorPicker, useColorPickerContext } from './context'
+import { provideColorPicker, provideColorPickerTag, useColorPickerContext, useColorPickerTagContext } from './context'
 import { useColorPicker } from './use-color-picker'
 
 type ColorPickerProps = ColorPickerSchema['props']
@@ -33,15 +35,22 @@ type ColorPickerProps = ColorPickerSchema['props']
 /** 默认插槽的载荷：展开态、当前颜色的各种表示、预设色板、屏幕取色状态，以及修改展开与修改值两个动作。 */
 export type ColorPickerRootSlotProps = Pick<
   ColorPickerApi,
-  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'recentColors' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'clearError' | 'clearRecentColors'
+  'open' | 'value' | 'color' | 'canAdd' | 'rgba' | 'hsva' | 'swatches' | 'recentColors' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'add' | 'clearError' | 'clearRecentColors'
 >
 
 export const XhColorPickerRoot = defineComponent({
   name: 'XhColorPickerRoot',
   // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    value: { type: String },
-    defaultValue: { type: String },
+    /** 选中的颜色，值串数组；单选可写裸串。 */
+    value: { type: [String, Array] as PropType<string | string[]> },
+    defaultValue: { type: [String, Array] as PropType<string | string[]> },
+    /** 选择模式，默认 single；multiple 时工作色是草稿、按「添加」收进值，色块点一下切换，输入行里排成标签。 */
+    selectionMode: { type: String as PropType<ColorPickerSelectionMode> },
+    /** multiple 下最多选几个颜色。 */
+    maxSelected: { type: Number },
+    /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
+    maxTagCount: { type: Number },
     format: { type: String as PropType<ColorFormat> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
@@ -99,6 +108,8 @@ export const XhColorPickerRoot = defineComponent({
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       open: ctx.api.value.open,
       value: ctx.api.value.value,
+      color: ctx.api.value.color,
+      canAdd: ctx.api.value.canAdd,
       rgba: ctx.api.value.rgba,
       hsva: ctx.api.value.hsva,
       swatches: ctx.api.value.swatches,
@@ -108,6 +119,7 @@ export const XhColorPickerRoot = defineComponent({
       errors: ctx.api.value.errors,
       setOpen: ctx.api.value.setOpen,
       setValue: ctx.api.value.setValue,
+      add: ctx.api.value.add,
       clearError: ctx.api.value.clearError,
       clearRecentColors: ctx.api.value.clearRecentColors,
     }))
@@ -147,11 +159,11 @@ export const XhColorPickerValueText = defineComponent({
   name: 'XhColorPickerValueText',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    // 有插槽用插槽，否则显示当前值串
+    // 有插槽用插槽，否则显示工作色的值串
     return () => h(
       'span',
       ctx.api.value.getValueTextProps() as Record<string, unknown>,
-      slots.default?.() ?? ctx.api.value.value,
+      slots.default?.() ?? ctx.api.value.color,
     )
   },
 })
@@ -306,10 +318,95 @@ export const XhColorPickerRecentSwatchPicker = defineComponent({
   },
 })
 
+/** 标签文字所在的块（tag 的 label）。 */
+export const XhColorPickerTagLabel = defineComponent({
+  name: 'XhColorPickerTagLabel',
+  setup(_, { slots }) {
+    const ctx = useColorPickerContext()
+    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 标签内容：只有文字时替它包一层 label；作者自己写了节点则原样放行。库自身填入的文字（+N）恒包 label。 */
+function tagChildren(content: VNode[] | string | undefined): VNode[] | string | undefined {
+  if (typeof content === 'string')
+    return [h(XhColorPickerTagLabel, null, () => content)]
+  return slotIsPlainText(content) ? [h(XhColorPickerTagLabel, null, () => content)] : content
+}
+
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；点按摘掉所在标签的颜色，焦点不动。 */
+export const XhColorPickerItemDeleteTrigger = defineComponent({
+  name: 'XhColorPickerItemDeleteTrigger',
+  setup(_, { slots }) {
+    const ctx = useColorPickerContext()
+    const tag = useColorPickerTagContext()
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 多选时一个选中颜色一个标签，即库内 tag 的 root（data-scope="tag"），标签前由皮肤画一个色点。 */
+export const XhColorPickerTag = defineComponent({
+  name: 'XhColorPickerTag',
+  props: {
+    /** 它代表哪个选中颜色。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useColorPickerContext()
+    provideColorPickerTag({ value: () => props.value })
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+  },
+})
+
+/** 折叠的标签合成的一个标签：有插槽时使用插槽，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
+export const XhColorPickerOverflowTag = defineComponent({
+  name: 'XhColorPickerOverflowTag',
+  setup(_, { slots }) {
+    const ctx = useColorPickerContext()
+    return () => h(
+      'span',
+      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
+    )
+  },
+})
+
+/**
+ * 标签行：多选时放在盒里、触发钮之前；单选时连接层给 hidden。
+ * 不写插槽即按 tags 铺出带删除钮的标签与 +N 那一枚，写了插槽由作者自己铺。
+ */
+export const XhColorPickerTagList = defineComponent({
+  name: 'XhColorPickerTagList',
+  setup(_, { slots }) {
+    const ctx = useColorPickerContext()
+    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default
+      ? slots.default()
+      : [
+          ...ctx.api.value.tags.map(tag => h(XhColorPickerTag, { key: tag.value, value: tag.value }, () => [
+            h(XhColorPickerTagLabel, null, () => tag.label),
+            h(XhColorPickerItemDeleteTrigger),
+          ])),
+          h(XhColorPickerOverflowTag),
+        ])
+  },
+})
+
+/** 「添加」：多选时把工作色收进值，浮层不收；单选时连接层给 hidden。文字由作者写。 */
+export const XhColorPickerConfirmTrigger = defineComponent({
+  name: 'XhColorPickerConfirmTrigger',
+  setup(_, { slots }) {
+    const ctx = useColorPickerContext()
+    return () => h('button', ctx.api.value.getConfirmTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhColorPickerHiddenInput = defineComponent({
   name: 'XhColorPickerHiddenInput',
   setup() {
     const ctx = useColorPickerContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    // 多选时一个选中值一份同名输入，表单按原生多值收；单选仍是一份
+    return () => ctx.api.value.selectionMode === 'multiple'
+      ? ctx.api.value.value.map(value => h('input', { key: value, ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown> }))
+      : h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
   },
 })

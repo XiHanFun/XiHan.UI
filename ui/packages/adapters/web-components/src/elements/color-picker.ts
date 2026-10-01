@@ -13,7 +13,9 @@ import type {
   ColorPickerOpenChangeDetails,
   ColorPickerRecentColorsChangeDetails,
   ColorPickerSchema,
+  ColorPickerSelectionMode,
   ColorPickerServices,
+  ColorPickerTagMeta,
   ColorPickerTranslations,
   ColorPickerValueChangeDetails,
   ColorSliderApi,
@@ -42,9 +44,11 @@ import {
   connectColorPicker,
   resolveFormControlState,
   sliderMachine,
+  tagAnatomy,
 } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
+import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -81,8 +85,11 @@ const STRING_LIST_CONVERTER = {
  * data-scope；色板的格子用 value 属性写明颜色。数值框用 channel 属性写明所调的通道（`channel="r"`）。
  *
  * @customElement xh-color-picker
- * @attr {string} value - 受控颜色值串；未提供该属性即非受控
- * @attr {string} default-value - 非受控初值，默认 #000000
+ * @attr {string} value - 受控颜色值串；未提供该属性即非受控。多选的一组颜色是数组，只走 property
+ * @attr {string} default-value - 非受控初值，默认 #000000；多选的数组只走 property
+ * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single；multiple 时浮层里调出的工作色是草稿、按 confirm-trigger 收进值，色板的格子点一下切换，输入行里排成标签
+ * @attr {number} max-selected - multiple 下最多选几个颜色
+ * @attr {number} max-tag-count - multiple 下输入行最多摆几枚标签，其余折进 overflow-tag；默认 3
  * @attr {'hex'|'rgba'|'hsla'|'oklch'} format - 值串写法，默认 hex
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
@@ -100,16 +107,21 @@ const STRING_LIST_CONVERTER = {
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {string} name - 表单字段名；提供后 hidden-input 才带 name 并参与提交
- * @fires value-change - 颜色变化；detail 为 `{ value: string }`
+ * @fires value-change - 选中的颜色变化；detail 为 `{ value: string[] }`，单选恒为一项
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires color-error - 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象
  * @fires recent-colors-change - 一轮取色结束、颜色变了，最近使用色随之变化；detail 为 `{ recentColors: string[] }`
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly）
  * @csspart label - 组标题（触发器 aria-labelledby 的目标之一）
  * @csspart control - 触发按钮的收纳容器：描边、底色与聚焦环都落在这一层
- * @csspart trigger - 触发按钮，须是原生 button；同时是浮层的定位锚点
- * @csspart value-text - 当前值串的显示位；留空即由元素填入，作者写了内容则由作者负责
- * @csspart swatch - 当前颜色的色块（aria-hidden，背景由连接层写为内联样式）
+ * @csspart tag-list - 多选时盒里、trigger 之前的标签行：可见标签与 overflow-tag 放在其中；单选时带 hidden
+ * @csspart tag - 多选标签，须自带 value 属性标识选中颜色；作者按 tags 渲染，接线为 tag 的 root（data-scope="tag"），皮肤在文字前画一个该颜色的色点
+ * @csspart tag-label - 标签文字，须放在 tag 中；接线为 tag 的 label。标签里只有文字时元素自动包一层，带删除钮时由作者写它包住文字
+ * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦；可及名使用 translations.deleteItem
+ * @csspart overflow-tag - 折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N；没有折叠的标签时带 hidden
+ * @csspart trigger - 触发按钮，须是原生 button；同时是浮层的定位锚点。多选时按退格摘掉最后一个选中颜色
+ * @csspart value-text - 工作色值串的显示位；留空即由元素填入，作者写了内容则由作者负责。多选时带 hidden
+ * @csspart swatch - 工作色的色块（aria-hidden，背景由连接层写为内联样式）
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=dialog 容器（焦点域与消解层的根节点），收起时带 hidden；常驻形态下是 role=group 的取色面
  * @csspart saturation-area - 二维取色区，横轴饱和度、纵轴明度；底色是当前色相
@@ -124,7 +136,8 @@ const STRING_LIST_CONVERTER = {
  * @csspart recent-swatch-picker - 最近使用色的挂载点，与 swatch-picker 同一套；格子由作者按 recent-colors-change 铺，还没有最近使用色时收起
  * @csspart item - 色板中 role=radio 的一格（data-scope="color-swatch-picker"），须自带 value 属性声明颜色串
  * @csspart indicator - 色板格子的选中标记（data-scope="color-swatch-picker"）
- * @csspart hidden-input - type=hidden 的表单出口，值是当前颜色串；作者未编写该部件时不参与提交
+ * @csspart confirm-trigger - 「添加」：多选时把工作色收进值，浮层不收；单选时带 hidden。文字由作者写
+ * @csspart hidden-input - type=hidden 的表单出口，值是选中的颜色串；多选时一个选中值一份同名输入，首份用作者的节点、其余由元素补在后面。作者未编写该部件时不参与提交
  */
 export class XhColorPickerElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -134,7 +147,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
   static override partContract = {
     anatomy: colorPickerAnatomy,
     meta: colorPickerMeta,
-    delegates: [colorSliderAnatomy, colorSwatchPickerAnatomy],
+    // tag / overflow-tag 接的是 tag 的 root，tag-label 接的是 tag 的 label，item-delete-trigger 接的是 tag 的 close-trigger
+    delegates: [colorSliderAnatomy, colorSwatchPickerAnatomy, { name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
@@ -142,6 +156,9 @@ export class XhColorPickerElement extends XhPortalHostElement {
   static override properties = {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
+    selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
+    maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     format: { converter: STRING_CONVERTER },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
@@ -163,8 +180,11 @@ export class XhColorPickerElement extends XhPortalHostElement {
     translations: { attribute: false },
   }
 
-  declare value?: string
-  declare defaultValue?: string
+  declare value?: string | string[]
+  declare defaultValue?: string | string[]
+  declare selectionMode?: ColorPickerSelectionMode
+  declare maxSelected?: number
+  declare maxTagCount?: number
   declare format?: ColorFormat
   declare open?: boolean
   declare defaultOpen?: boolean
@@ -298,6 +318,9 @@ export class XhColorPickerElement extends XhPortalHostElement {
     return {
       value: this.value,
       defaultValue: this.defaultValue,
+      selectionMode: this.selectionMode,
+      maxSelected: this.maxSelected,
+      maxTagCount: this.maxTagCount,
       format: this.format,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
@@ -397,11 +420,46 @@ export class XhColorPickerElement extends XhPortalHostElement {
   }
 
   /**
-   * 写入一个新颜色，与点击预设色板同一路径（照常触发 value-change）。
-   * 入参按当前 format 重新序列化后落值，因此更换 format 后再写回原值，值串会按新格式产出。
+   * 改选中的颜色（照常触发 value-change）：单选取首项改工作色，与点击预设色板同一路径；多选整份替换。
+   * 单选时入参按当前 format 重新序列化后落值，因此更换 format 后再写回原值，值串会按新格式产出。
    */
-  setValue(next: string): void {
+  setValue(next: string[]): void {
     this.api()?.setValue(next)
+  }
+
+  /** 工作色的值串：触发钮里的色块与 value-text 显示它；单选时就是选中值，多选时是浮层里调着的草稿。状态机尚未建立时为空串。 */
+  get color(): string {
+    return this.api()?.color ?? ''
+  }
+
+  /** 多选时应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中值同序；单选恒为空数组。状态机尚未建立时为空数组。 */
+  get tags(): ColorPickerTagMeta[] {
+    return this.api()?.tags ?? []
+  }
+
+  /** 被 max-tag-count 折叠的标签数。状态机尚未建立时为 0。 */
+  get overflowCount(): number {
+    return this.api()?.overflowCount ?? 0
+  }
+
+  /** overflow-tag 显示的文字；没有折叠的标签或状态机尚未建立时为空串。 */
+  get overflowText(): string {
+    return this.api()?.overflowText ?? ''
+  }
+
+  /** 多选时「添加」此刻可按（工作色还没选过、没到上限）；状态机尚未建立时为 false。 */
+  get canAdd(): boolean {
+    return this.api()?.canAdd ?? false
+  }
+
+  /** 多选：把工作色收进值；状态机尚未建立时不做任何事。 */
+  add(): void {
+    this.api()?.add()
+  }
+
+  /** 多选：摘掉一个选中颜色；状态机尚未建立时不做任何事。 */
+  deselect(value: string): void {
+    this.api()?.deselect(value)
   }
 
   /** 格式、输入、颜色解析与屏幕取色四路错误；状态机尚未建立时均为空。 */
@@ -426,6 +484,31 @@ export class XhColorPickerElement extends XhPortalHostElement {
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（读到的会是自己写的字）。 */
   private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
+  /** 每枚标签里由元素补出来的那层 label。 */
+  private readonly tagLabels = new WeakMap<HTMLElement, HTMLElement>()
+  /** 多选时一个选中值一份同名隐藏输入：首值用作者的节点，其余由元素补在它后面。 */
+  private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
+
+  protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    this.hiddenInputs.release(nodes)
+  }
+
+  /**
+   * 标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，
+   * 返回 null——带删除钮的标签由作者用 tag-label 包住文字。补出来的那层不打 data-xh-part，不进角色节点表。
+   */
+  private ensureTagLabel(tag: HTMLElement): HTMLElement | null {
+    const existing = this.tagLabels.get(tag)
+    if (existing && existing.parentNode === tag)
+      return existing
+    if (tag.children.length > 0)
+      return null
+    const label = this.ownerDocument.createElement('span')
+    label.append(...Array.from(tag.childNodes))
+    tag.append(label)
+    this.tagLabels.set(tag, label)
+    return label
+  }
 
   private fillValueText(el: HTMLElement, text: string): void {
     let owned = this.ownsValueText.get(el)
@@ -506,6 +589,32 @@ export class XhColorPickerElement extends XhPortalHostElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
+    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    // 标签是多实例 part，接的是 tag 的 root：身份取自己的 value 属性；只有文字的补一层 label
+    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    for (const el of this.getParts('tag')) {
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      const label = this.ensureTagLabel(el)
+      if (label)
+        this.spreader.spread(label, tagLabelProps)
+    }
+    for (const el of this.getParts('tag-label'))
+      this.spreader.spread(el, tagLabelProps)
+    // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
+    for (const el of this.getParts('item-delete-trigger')) {
+      const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    }
+    // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
+    const overflowTag = this.getPart('overflow-tag')
+    if (overflowTag) {
+      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      const label = this.ensureTagLabel(overflowTag)
+      if (label) {
+        this.spreader.spread(label, tagLabelProps)
+        this.fillValueText(label, api.overflowText)
+      }
+    }
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('swatch', api.getSwatchProps() as Record<string, unknown>)
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
@@ -515,13 +624,17 @@ export class XhColorPickerElement extends XhPortalHostElement {
     put('saturation-area', api.getSaturationAreaProps() as Record<string, unknown>)
     put('area-thumb', api.getAreaThumbProps() as Record<string, unknown>)
     put('eye-dropper-trigger', api.getEyeDropperTriggerProps() as Record<string, unknown>)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
+    // 多选时一个选中值一份同名输入，单选仍是一份
+    this.hiddenInputs.sync(this.ownPart('hidden-input'), api.selectionMode === 'multiple'
+      ? api.value.map(value => api.getHiddenInputProps({ value }) as Record<string, unknown>)
+      : [api.getHiddenInputProps() as Record<string, unknown>])
 
-    // 值串的显示由元素代填（作者只需给出空节点）；作者写了内容就归作者，元素不再改写
+    // 工作色值串的显示由元素代填（作者只需给出空节点）；作者写了内容就归作者，元素不再改写
     const valueText = this.ownPart('value-text')
     if (valueText) {
       this.spreader.spread(valueText, api.getValueTextProps() as Record<string, unknown>)
-      this.fillValueText(valueText, api.value)
+      this.fillValueText(valueText, api.color)
     }
 
     // 两条内嵌颜色滑块

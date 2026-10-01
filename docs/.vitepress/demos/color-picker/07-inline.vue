@@ -11,7 +11,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const color = ref("#3b82f6");
+const color = ref<string[]>(["#3b82f6"]);
 </script>
 
 <template>
@@ -25,5 +25,5 @@ const color = ref("#3b82f6");
       <XhColorPickerChannelInput channel="hex" />
     </XhColorPickerContent>
   </XhColorPickerRoot>
-  <p>当前：<code>{{ color }}</code></p>
+  <p>当前：<code>{{ color[0] }}</code></p>
 </template>

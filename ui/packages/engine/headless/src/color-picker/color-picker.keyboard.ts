@@ -15,6 +15,7 @@ export const colorPickerKeyboard: KeyboardTable = {
   component: 'color-picker',
   source: APG,
   rows: [
+    { id: 'color-picker.kbd.remove-last', keys: ['Backspace'], when: 'focus in trigger, multiple, 有选中值, not disabled/readOnly', does: '摘掉最后一个选中值（标签行末尾那一枚）' },
     {
       id: 'color-picker.kbd.area-saturation',
       keys: ['ArrowRight', 'ArrowLeft'],

@@ -50,6 +50,8 @@ const NO_SLOT = {
   'radio-group:indicator::before': '单选圆点，圆是它的身份',
   'color-swatch-picker:indicator::before': '压在色块正中的选中徽标，圆是它的身份',
   'tour:progress-dot': '进度圆点，8px 正方盒取 circle；当前那颗拉成 20px 胶囊取 pill，两档都是身份',
+  // 主体是标签行里 tag 的 root，部件位按选择器里最后一个部件记作 root
+  'color-picker:root::before': '多选标签前的色点，圆是它的身份',
   // reset 层的原生细条：主体是 :where([data-scope][data-part], [data-xh-scroll], …) 一组宿主，
   // 部件位记作 *；原生滑块与自绘 scrollbar:thumb 同为一维对象，pill 是它的身份
   'reset:*::-webkit-scrollbar-thumb': '原生细条的滑块，与自绘 scrollbar:thumb 同身份',
@@ -70,6 +72,8 @@ const IDENTITY = {
   'dialog:indicator': 'circle',
   'radio-group:indicator': 'circle',
   'radio-group:indicator::before': 'circle',
+  // 颜色多选标签前的色点：等宽高的颜色记号
+  'color-picker:tag/root::before': 'circle',
   // 记号盒：单选是圆，多选是嵌在行里的圆角方格（与 Checkbox 同 inset），单选的实心点是圆
   'question-flow:item-indicator[data-select-mode=\'single\']': 'circle',
   'question-flow:item-indicator::before': 'circle',

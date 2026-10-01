@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 
 export default function Demo(): ReactNode {
-  const [color, setColor] = useState("#3b82f6");
+  const [color, setColor] = useState<string[]>(["#3b82f6"]);
 
   return (
     <>
@@ -28,7 +28,7 @@ export default function Demo(): ReactNode {
       </XhColorPickerRoot>
       <p>
         当前：
-        <code>{color}</code>
+        <code>{color[0]}</code>
       </p>
     </>
   );

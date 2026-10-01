@@ -19,6 +19,28 @@ import type { ColorPickerPoint } from './color-picker.geometry'
  */
 export type ColorPickerDragTarget = 'area'
 
+/**
+ * 选择模式：single 取一个颜色；multiple 选一组颜色——浮层里调出来的工作色是草稿，按「添加」才收进值，
+ * 预设色块点一下切换选中，输入行里排成一排带色点的标签。
+ */
+export type ColorPickerSelectionMode = 'single' | 'multiple'
+
+/** 多选时一枚标签：value 是它代表的选中颜色（按 format 序列化的串），label 是显示文本。 */
+export interface ColorPickerTagMeta {
+  value: string
+  label: string
+}
+
+export interface ColorPickerTagProps {
+  /** 它代表哪个选中值。 */
+  value: string
+}
+
+export interface ColorPickerHiddenInputProps {
+  /** 多选时一个选中值一份原生输入：传这个值，产出的就是它那一份。 */
+  value: string
+}
+
 /** 某个输入框中尚未接受的草稿。同一时刻只有一个框在编辑（即聚焦的框）。 */
 export interface ColorPickerDraft {
   channel: ColorPickerInputChannel
@@ -45,6 +67,10 @@ export interface ColorPickerTranslations {
   recentSwatchGroup: string
   /** 屏幕取色按钮的名字。 */
   eyeDropperTrigger: string
+  /** 多选标签删除按钮的可及名，接收标签文本；默认 `Delete <label>`。 */
+  deleteItem: (label: string) => string
+  /** 被折叠的标签（+N）显示的文字，接收折叠的个数；默认 +N。 */
+  overflowTag: (count: number) => string
 }
 
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；缺省时副作用一律短路。
@@ -87,8 +113,8 @@ export interface ColorPickerServices {
 }
 
 export interface ColorPickerValueChangeDetails {
-  /** 按 format 序列化的值串。 */
-  value: string
+  /** 选中的颜色，按 format 序列化的值串，恒为数组：单选恒为一项（取色器总有一个颜色），多选按加入先后。 */
+  value: string[]
 }
 
 export interface ColorPickerOpenChangeDetails {
@@ -143,9 +169,18 @@ export interface ColorPickerInputProps {
 
 export interface ColorPickerSchema extends MachineSchema {
   props: {
-    /** 颜色值串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 */
-    value?: string
-    defaultValue?: string
+    /**
+     * 选中的颜色，值串数组。提供即受控：写入只发 onValueChange 不落内部值。
+     * 单选可写裸串，内部一律归一为数组；单选给空数组时按缺省色 #000000。
+     */
+    value?: string | string[]
+    defaultValue?: string | string[]
+    /** 选择模式，默认 single。 */
+    selectionMode?: ColorPickerSelectionMode
+    /** multiple 下最多选几个颜色：选满后「添加」不可按、色块只能点掉已选的。非整数向下取整，小于 1 或不是有限数时不设上限。 */
+    maxSelected?: number
+    /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
+    maxTagCount?: number
     /** 值串的写法，默认 hex。修改它只改变对外的序列化，工作色恒为 HSVA。 */
     format?: ColorFormat
     /** 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 */
@@ -199,8 +234,15 @@ export interface ColorPickerSchema extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
-    /** 值串。受控（value 提供）时 cell 直读 prop。 */
+    /**
+     * 工作色的值串：取色区、滑块、数值框与触发钮里的色块读的都是它。
+     * 单选时它就是选中值（受控时直读 prop 的首项）；多选时它是浮层里调着的草稿，按「添加」才收进 selected。
+     */
     value: string
+    /** 多选的选中颜色，按加入先后。受控（value 提供）时直读 prop；单选不用它。 */
+    selected: string[]
+    /** 标签行的列表动效接上了：此前首帧就在的标签直接呈现，之后到达的才播进场。 */
+    tagListTracked: boolean
     /** 工作色的锚：上一次由内部操作产出的 HSVA 与对应的串，灰度处的色相依靠它保留。 */
     anchor: ColorAnchor | null
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
@@ -233,8 +275,17 @@ export interface ColorPickerSchema extends MachineSchema {
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
-    /** 整体改写颜色（预设色板、屏幕取色、外部 setValue 都经过它）；解析失败时原值不变并报告来源。 */
+    /** 整体改写工作色（预设色板、屏幕取色、单选的外部 setValue 都经过它）；解析失败时原值不变并报告来源。 */
     | { type: 'VALUE.SET', value: string, source?: 'api' | 'swatch' }
+    /** 多选：整份替换选中的那一组（外部 setValue）。 */
+    | { type: 'SELECTED.SET', value: string[] }
+    /** 多选：把工作色收进选中值。 */
+    | { type: 'VALUE.ADD' }
+    /** 多选：摘掉一个选中值（标签的删除钮、触发钮上的退格）。 */
+    | { type: 'VALUE.REMOVE', value: string }
+    /** 多选：色块点一下切换选中。 */
+    | { type: 'VALUE.TOGGLE', value: string }
+    | { type: 'TAG_LIST.TRACKED' }
     /** 取色区按比例落点（0-1），由拖动路径发出。 */
     | { type: 'AREA.SET', x: number, y: number }
     /** 取色区上按方向键移动一格。 */
@@ -302,13 +353,21 @@ export interface ColorPickerSchema extends MachineSchema {
     | 'clearRecent'
     | 'syncInline'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer' | 'trackPointer' | 'runEyeDropper'
+    | 'setSelected'
+    | 'addValue'
+    | 'removeValue'
+    | 'toggleValue'
+    | 'markTagListTracked'
+  effect: 'trackPosition' | 'trackLayer' | 'trackPointer' | 'runEyeDropper' | 'trackTagListMotion'
 }
 
 export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   open: boolean
-  /** 当前值串（与 onValueChange 发出的是同一个）。 */
-  value: string
+  /** 选中的颜色，值串数组（与 onValueChange 发出的是同一个）：单选恒为一项，多选按加入先后。 */
+  value: string[]
+  selectionMode: ColorPickerSelectionMode
+  /** 工作色的值串：触发钮里的色块与值文字显示它；单选时就是选中值，多选时是浮层里调着的草稿。 */
+  color: string
   rgba: ColorRgba
   /** 工作色。取色区与色相滑杆读取的都是它。 */
   hsva: ColorHsva
@@ -329,6 +388,14 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   inline: boolean
   /** 最近使用色，最新的在最前。 */
   recentColors: string[]
+  /** 多选时「添加」此刻可按：工作色还没选过、也没到 maxSelected。 */
+  canAdd: boolean
+  /** 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 */
+  tags: ColorPickerTagMeta[]
+  /** 被 maxTagCount 折叠的标签数。 */
+  overflowCount: number
+  /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
+  overflowText: string
   /** 色相颜色滑块的 api：部件属性与取值都从这里获取，DOM 带 data-scope="color-slider"。 */
   hueSlider: ColorSliderApi<T>
   /** 透明度颜色滑块的 api。 */
@@ -340,7 +407,12 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   /** 某个数值框当前应显示的文字（有草稿显示草稿，否则显示规范文本）。 */
   inputText: (channel: ColorPickerInputChannel) => string
   setOpen: (next: boolean) => void
-  setValue: (next: string) => void
+  /** 改选中值：单选取首项改工作色，多选整份替换。 */
+  setValue: (next: string[]) => void
+  /** 多选：把工作色收进值（与按「添加」同一条路）。 */
+  add: () => void
+  /** 多选：摘掉一个选中值。 */
+  deselect: (value: string) => void
   /** 清除四路显式错误；屏幕取色重试也会先清除自己那一路。 */
   clearError: () => void
   /** 清空最近使用色。 */
@@ -348,6 +420,16 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
   getControlProps: () => T['element']
+  /** 标签行：多选时放在盒里、触发钮之前，收纳可见标签与 +N 标签；单选时整体 hidden。 */
+  getTagListProps: () => T['element']
+  /** 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"），另带 data-value 与画色点用的颜色。 */
+  getTagProps: (props: ColorPickerTagProps) => T['element']
+  /** 标签文字所在的块（tag 的 label）；标签与 +N 共用。 */
+  getTagLabelProps: () => T['element']
+  /** 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 */
+  getOverflowTagProps: () => T['element']
+  /** 标签删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；不占 Tab 位、按下不夺焦。 */
+  getItemDeleteTriggerProps: (props: ColorPickerTagProps) => T['button']
   getTriggerProps: () => T['button']
   getValueTextProps: () => T['element']
   getSwatchProps: () => T['element']
@@ -365,6 +447,11 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   getSwatchPickerProps: () => T['element']
   /** 最近使用色的挂载点，同上；还没有最近使用色时收起。 */
   getRecentSwatchPickerProps: () => T['element']
-  /** 表单影子：值随表单提交。提供 name 后才带 name，未提供时不参与提交。 */
-  getHiddenInputProps: () => T['input']
+  /** 「添加」：多选时把工作色收进值，浮层不收；单选时 hidden。文字由作者写。 */
+  getConfirmTriggerProps: () => T['button']
+  /**
+   * 表单影子：值随表单提交。提供 name 后才带 name，未提供时不参与提交。
+   * 多选时一个选中值一份同名输入：传 `{ value }` 产出那一份，不传是首个选中值那一份。
+   */
+  getHiddenInputProps: (props?: ColorPickerHiddenInputProps) => T['input']
 }

@@ -11,6 +11,7 @@ import type {
   ColorPickerApi,
   ColorPickerInputChannel,
   ColorPickerSchema,
+  ColorPickerSelectionMode,
   ColorPickerTranslations,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
@@ -20,14 +21,14 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
-import { renderSlot } from '../../runtime/slot-content'
+import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { XhColorSliderControl, XhColorSliderThumb, XhColorSliderTrack } from '../color-slider/color-slider'
 import { ColorSliderProvider } from '../color-slider/context'
 import { XhColorSwatchPickerItem } from '../color-swatch-picker/color-swatch-picker'
 import { ColorSwatchPickerProvider } from '../color-swatch-picker/context'
 import { useFormControlProps } from '../form/use-form-control'
-import { ColorPickerProvider, useColorPickerContext } from './context'
+import { ColorPickerProvider, ColorPickerTagProvider, useColorPickerContext, useColorPickerTagContext } from './context'
 import { useColorPicker } from './use-color-picker'
 
 type ColorPickerProps = ColorPickerSchema['props']
@@ -37,17 +38,23 @@ function noop(): void {}
 /** 函数式 children 的载荷：展开态、当前颜色的各种表示、预设色板、屏幕取色状态，以及修改展开与修改值两个动作。 */
 export type ColorPickerRootSlotProps = Pick<
   ColorPickerApi,
-  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'recentColors' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'clearError' | 'clearRecentColors'
+  'open' | 'value' | 'color' | 'canAdd' | 'rgba' | 'hsva' | 'swatches' | 'recentColors' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'add' | 'clearError' | 'clearRecentColors'
 >
 
 /** 根上自有的取值；dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'dir' | 'children' | 'color'>
 
 export interface XhColorPickerRootProps extends RootElementProps {
-  /** 受控颜色值串；给定即受控。 */
-  value?: string
+  /** 受控的选中颜色，值串数组；给定即受控。单选可写裸串。 */
+  value?: string | string[]
   /** 非受控初值。 */
-  defaultValue?: string
+  defaultValue?: string | string[]
+  /** 选择模式，默认 single；multiple 时工作色是草稿、按「添加」收进值，色块点一下切换，输入行里排成标签。 */
+  selectionMode?: ColorPickerSelectionMode
+  /** multiple 下最多选几个颜色。 */
+  maxSelected?: number
+  /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
+  maxTagCount?: number
   /** 值串的写法，默认 hex。修改它只改变对外的序列化，工作色恒为 HSVA。 */
   format?: ColorFormat
   open?: boolean
@@ -86,6 +93,9 @@ export interface XhColorPickerRootProps extends RootElementProps {
 export function XhColorPickerRoot({
   value,
   defaultValue,
+  selectionMode,
+  maxSelected,
+  maxTagCount,
   format,
   open,
   defaultOpen,
@@ -114,6 +124,9 @@ export function XhColorPickerRoot({
   const ctx = useColorPicker(withXhConfig('color-picker', useFormControlProps({
     value,
     defaultValue,
+    selectionMode,
+    maxSelected,
+    maxTagCount,
     format,
     open,
     defaultOpen,
@@ -151,6 +164,8 @@ export function XhColorPickerRoot({
         {renderSlot(children, {
           open: api.open,
           value: api.value,
+          color: api.color,
+          canAdd: api.canAdd,
           rgba: api.rgba,
           hsva: api.hsva,
           swatches: api.swatches,
@@ -160,6 +175,7 @@ export function XhColorPickerRoot({
           errors: api.errors,
           setOpen: api.setOpen,
           setValue: api.setValue,
+          add: api.add,
           clearError: api.clearError,
           clearRecentColors: api.clearRecentColors,
         })}
@@ -218,7 +234,7 @@ export function XhColorPickerValueText({ children, ...rest }: XhColorPickerValue
   const ctx = useColorPickerContext()
   return (
     <span {...mergeReactProps(ctx.api.getValueTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children ?? ctx.api.value}
+      {children ?? ctx.api.color}
     </span>
   )
 }
@@ -427,11 +443,99 @@ export function XhColorPickerRecentSwatchPicker({ children, ...rest }: XhColorPi
   )
 }
 
+export interface XhColorPickerTagLabelProps extends ComponentPropsWithRef<'span'> {}
+/** 标签文字所在的块（tag 的 label）。 */
+export function XhColorPickerTagLabel({ children, ...rest }: XhColorPickerTagLabelProps): ReactNode {
+  const ctx = useColorPickerContext()
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
+/** 标签内容：只有文字时替它包一层 label；作者自己写了节点则原样放行。库自身填入的文字（+N）恒包 label。 */
+function tagChildren(children: ReactNode): ReactNode {
+  return typeof children === 'string' || slotIsPlainText(children) ? <XhColorPickerTagLabel>{children}</XhColorPickerTagLabel> : children
+}
+
+export interface XhColorPickerItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；点按摘掉所在标签的颜色，焦点不动。 */
+export function XhColorPickerItemDeleteTrigger({ children, ...rest }: XhColorPickerItemDeleteTriggerProps): ReactNode {
+  const ctx = useColorPickerContext()
+  const value = useColorPickerTagContext()
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
+export interface XhColorPickerTagProps extends ComponentPropsWithRef<'span'> {
+  /** 它代表哪个选中颜色。 */
+  value: string
+}
+/** 多选时一个选中颜色一个标签，即库内 tag 的 root（data-scope="tag"），标签前由皮肤画一个色点。 */
+export function XhColorPickerTag({ value, children, ...rest }: XhColorPickerTagProps): ReactNode {
+  const ctx = useColorPickerContext()
+  return (
+    <ColorPickerTagProvider value={value}>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
+    </ColorPickerTagProvider>
+  )
+}
+
+export interface XhColorPickerOverflowTagProps extends ComponentPropsWithRef<'span'> {}
+/** 折叠的标签合成的一个标签：有内容时使用内容，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
+export function XhColorPickerOverflowTag({ children, ...rest }: XhColorPickerOverflowTagProps): ReactNode {
+  const ctx = useColorPickerContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {tagChildren(children ?? ctx.api.overflowText)}
+    </span>
+  )
+}
+
+export interface XhColorPickerTagListProps extends ComponentPropsWithRef<'span'> {}
+/**
+ * 标签行：多选时放在盒里、触发钮之前；单选时连接层写 hidden。
+ * 不写 children 即按 tags 铺出带删除钮的标签与 +N 那一枚，写了由作者自己铺。
+ */
+export function XhColorPickerTagList({ children, ...rest }: XhColorPickerTagListProps): ReactNode {
+  const ctx = useColorPickerContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children ?? (
+        <>
+          {ctx.api.tags.map(tag => (
+            <XhColorPickerTag key={tag.value} value={tag.value}>
+              <XhColorPickerTagLabel>{tag.label}</XhColorPickerTagLabel>
+              <XhColorPickerItemDeleteTrigger />
+            </XhColorPickerTag>
+          ))}
+          <XhColorPickerOverflowTag />
+        </>
+      )}
+    </span>
+  )
+}
+
+export interface XhColorPickerConfirmTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 「添加」：多选时把工作色收进值，浮层不收；单选时连接层写 hidden。文字由作者写。 */
+export function XhColorPickerConfirmTrigger({ children, ...rest }: XhColorPickerConfirmTriggerProps): ReactNode {
+  const ctx = useColorPickerContext()
+  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
 export interface XhColorPickerHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
 
-/** 表单出口：颜色随该原生输入提交，对键盘与读屏不可见。 */
+/** 表单出口：颜色随该原生输入提交，对键盘与读屏不可见；多选时一个选中值一份同名输入。 */
 export function XhColorPickerHiddenInput({ ...rest }: XhColorPickerHiddenInputProps): ReactNode {
   const ctx = useColorPickerContext()
+  if (ctx.api.selectionMode === 'multiple') {
+    return ctx.api.value.map(value => (
+      <input
+        key={value}
+        {...mergeReactProps(
+          ctx.api.getHiddenInputProps({ value }) as Record<string, unknown>,
+          { onChange: noop },
+          rest as Record<string, unknown>,
+        )}
+      />
+    ))
+  }
   return (
     <input
       {...mergeReactProps(

@@ -499,7 +499,7 @@ describe('colorPickerMachine 受控', () => {
 
     setChannel(s, 'hue', 120)
     expect(s.context.get('value')).toBe('#ff0000')
-    expect(onValueChange).toHaveBeenCalledWith({ value: '#00ff00' })
+    expect(onValueChange).toHaveBeenCalledWith({ value: ['#00ff00'] })
     // 受控下界面不许自作主张：工作色仍是宿主给的那个
     expect(Math.round(api(s).hsva.h)).toBe(0)
 
@@ -1052,7 +1052,7 @@ describe('最近使用色', () => {
     s.send({ type: 'AREA.STEP', axis: 'x', direction: 1 })
     expect(api(s).recentColors).toEqual([])
     s.send({ type: 'CLOSE' })
-    const value = api(s).value
+    const value = api(s).color
     expect(api(s).recentColors).toEqual([value])
     expect(onRecentColorsChange).toHaveBeenCalledWith({ recentColors: [value] })
   })
@@ -1062,7 +1062,7 @@ describe('最近使用色', () => {
     s.send({ type: 'OPEN' })
     s.send({ type: 'CLOSE' })
     s.send({ type: 'OPEN' })
-    api(s).setValue('#ff0000')
+    api(s).setValue(['#ff0000'])
     s.send({ type: 'CLOSE' })
     expect(api(s).recentColors).toEqual([])
   })
@@ -1096,7 +1096,7 @@ describe('最近使用色', () => {
     expect((api(s).getRecentSwatchPickerProps() as Dict)['aria-label']).toBe('最近使用')
     expect((api(s).getRecentSwatchPickerProps() as Dict).hidden).toBeUndefined()
     servicesOf(s).recentSwatchPicker.send({ type: 'ITEM.SELECT', value: '#00ff00' })
-    expect(api(s).value).toBe('#00ff00')
+    expect(api(s).value).toEqual(['#00ff00'])
 
     const empty = makeService()
     expect((api(empty).getRecentSwatchPickerProps() as Dict).hidden).toBe(true)
@@ -1130,7 +1130,7 @@ describe('常驻形态 inline', () => {
   it('拖动与键盘照常改色；焦点离开取色面时一轮结束，颜色变了就记进最近使用色', () => {
     const s = makeService({ inline: true, defaultValue: '#3b82f6' })
     s.send({ type: 'AREA.STEP', axis: 'y', direction: -1, large: true })
-    const value = api(s).value
+    const value = api(s).color
     expect(value).not.toBe('#3b82f6')
     const content = document.createElement('div')
     const inside = document.createElement('button')
@@ -1162,5 +1162,74 @@ describe('常驻形态 inline', () => {
     props.inline = true
     s.send({ type: 'INLINE.SYNC' })
     expect(api(s).open).toBe(true)
+  })
+})
+
+describe('多选：工作色是草稿，按「添加」收进值，色块切换，选中成标签', () => {
+  type Handler = (event: unknown) => void
+
+  it('调色只改工作色不写值；「添加」把工作色收进值，同一个颜色加不进第二次', () => {
+    const onValueChange = vi.fn()
+    const s = makeService({ selectionMode: 'multiple', onValueChange })
+    s.send({ type: 'VALUE.SET', value: '#ff0000' })
+    expect(api(s).value).toEqual([])
+    expect(api(s).color).toBe('#ff0000')
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect(api(s).canAdd).toBe(true)
+    ;((api(s).getConfirmTriggerProps() as Dict).onClick as Handler)(new MouseEvent('click'))
+    expect(api(s).value).toEqual(['#ff0000'])
+    expect(api(s).canAdd).toBe(false)
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['#ff0000'] })
+    s.send({ type: 'VALUE.SET', value: '#00ff00' })
+    api(s).add()
+    expect(api(s).value).toEqual(['#ff0000', '#00ff00'])
+  })
+
+  it('色块点一下切换选中：没选过的加进来，选过的点掉；工作色跟到那一格', () => {
+    const s = makeService({ selectionMode: 'multiple', swatches: ['#112233', '#445566'] })
+    const swatch = servicesOf(s).swatchPicker
+    swatch.prop('onValueChange')?.({ value: '#445566' })
+    expect(api(s).value).toEqual(['#445566'])
+    expect(api(s).color).toBe('#445566')
+    swatch.prop('onValueChange')?.({ value: '#445566' })
+    expect(api(s).value).toEqual([])
+  })
+
+  it('maxSelected 选满后「添加」与没选过的色块都加不进', () => {
+    const s = makeService({ selectionMode: 'multiple', maxSelected: 1, defaultValue: ['#112233'] })
+    s.send({ type: 'VALUE.SET', value: '#ff0000' })
+    expect(api(s).canAdd).toBe(false)
+    s.send({ type: 'VALUE.TOGGLE', value: '#ff0000' })
+    expect(api(s).value).toEqual(['#112233'])
+  })
+
+  it('选中的颜色排成标签，标签上写着画色点用的颜色；删除钮摘掉那一个，触发钮上退格摘掉最后一个', () => {
+    const s = makeService({ selectionMode: 'multiple', defaultValue: ['#112233', '#445566', '#778899'] })
+    expect(api(s).tags.map(tag => tag.label)).toEqual(['#112233', '#445566', '#778899'])
+    expect(((api(s).getTagProps({ value: '#112233' }) as Dict).style as Record<string, string>)['--xh-_color-picker-tag-color']).toBeTruthy()
+    expect((api(s).getTagListProps() as Dict).hidden).toBeUndefined()
+    expect((api(s).getValueTextProps() as Dict).hidden).toBe(true)
+    ;((api(s).getItemDeleteTriggerProps({ value: '#445566' }) as Dict).onClick as Handler)(new MouseEvent('click'))
+    expect(api(s).value).toEqual(['#112233', '#778899'])
+    const event = new KeyboardEvent('keydown', { key: 'Backspace', cancelable: true })
+    ;((api(s).getTriggerProps() as Dict).onKeyDown as Handler)(event)
+    expect(event.defaultPrevented).toBe(true)
+    expect(api(s).value).toEqual(['#112233'])
+  })
+
+  it('单选：值恒为一项、标签行与「添加」都收起；setValue 取首项', () => {
+    const s = makeService({ defaultValue: '#112233' })
+    expect(api(s).value).toEqual(['#112233'])
+    expect((api(s).getTagListProps() as Dict).hidden).toBe(true)
+    expect((api(s).getConfirmTriggerProps() as Dict).hidden).toBe(true)
+    api(s).setValue(['#445566'])
+    expect(api(s).value).toEqual(['#445566'])
+  })
+
+  it('多选的 setValue 整份替换：解析不出的丢掉，同一个颜色只留一份；表单一值一份同名输入', () => {
+    const s = makeService({ selectionMode: 'multiple', name: 'palette' })
+    api(s).setValue(['#ffffff', 'nope', '#FFF', '#000000'])
+    expect(api(s).value).toEqual(['#ffffff', '#000000'])
+    expect((api(s).getHiddenInputProps({ value: '#000000' }) as Dict).value).toBe('#000000')
   })
 })

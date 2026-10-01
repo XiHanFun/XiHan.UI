@@ -12381,15 +12381,35 @@
               "name": "control"
             },
             {
-              "description": "触发按钮，须是原生 button；同时是浮层的定位锚点",
+              "description": "多选时盒里、trigger 之前的标签行：可见标签与 overflow-tag 放在其中；单选时带 hidden",
+              "name": "tag-list"
+            },
+            {
+              "description": "多选标签，须自带 value 属性标识选中颜色；作者按 tags 渲染，接线为 tag 的 root（data-scope=\"tag\"），皮肤在文字前画一个该颜色的色点",
+              "name": "tag"
+            },
+            {
+              "description": "标签文字，须放在 tag 中；接线为 tag 的 label。标签里只有文字时元素自动包一层，带删除钮时由作者写它包住文字",
+              "name": "tag-label"
+            },
+            {
+              "description": "标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦；可及名使用 translations.deleteItem",
+              "name": "item-delete-trigger"
+            },
+            {
+              "description": "折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N；没有折叠的标签时带 hidden",
+              "name": "overflow-tag"
+            },
+            {
+              "description": "触发按钮，须是原生 button；同时是浮层的定位锚点。多选时按退格摘掉最后一个选中颜色",
               "name": "trigger"
             },
             {
-              "description": "当前值串的显示位；留空即由元素填入，作者写了内容则由作者负责",
+              "description": "工作色值串的显示位；留空即由元素填入，作者写了内容则由作者负责。多选时带 hidden",
               "name": "value-text"
             },
             {
-              "description": "当前颜色的色块（aria-hidden，背景由连接层写为内联样式）",
+              "description": "工作色的色块（aria-hidden，背景由连接层写为内联样式）",
               "name": "swatch"
             },
             {
@@ -12449,7 +12469,11 @@
               "name": "indicator"
             },
             {
-              "description": "type=hidden 的表单出口，值是当前颜色串；作者未编写该部件时不参与提交",
+              "description": "「添加」：多选时把工作色收进值，浮层不收；单选时带 hidden。文字由作者写",
+              "name": "confirm-trigger"
+            },
+            {
+              "description": "type=hidden 的表单出口，值是选中的颜色串；多选时一个选中值一份同名输入，首份用作者的节点、其余由元素补在后面。作者未编写该部件时不参与提交",
               "name": "hidden-input"
             }
           ],
@@ -12469,14 +12493,14 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: colorPickerAnatomy, meta: colorPickerMeta, delegates: [colorSliderAnatomy, colorSwatchPickerAnatomy], }"
+              "default": "{ anatomy: colorPickerAnatomy, meta: colorPickerMeta, // tag / overflow-tag 接的是 tag 的 root，tag-label 接的是 tag 的 label，item-delete-trigger 接的是 tag 的 close-trigger delegates: [colorSliderAnatomy, colorSwatchPickerAnatomy, { name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
               "attribute": "value"
             },
@@ -12485,9 +12509,36 @@
               "name": "defaultValue",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
               "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "selectionMode",
+              "privacy": "public",
+              "type": {
+                "text": "ColorPickerSelectionMode | undefined"
+              },
+              "attribute": "selection-mode"
+            },
+            {
+              "kind": "field",
+              "name": "maxSelected",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-selected"
+            },
+            {
+              "kind": "field",
+              "name": "maxTagCount",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-tag-count"
             },
             {
               "kind": "field",
@@ -12948,11 +12999,84 @@
                 {
                   "name": "next",
                   "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "description": "改选中的颜色（照常触发 value-change）：单选取首项改工作色，与点击预设色板同一路径；多选整份替换。\n单选时入参按当前 format 重新序列化后落值，因此更换 format 后再写回原值，值串会按新格式产出。"
+            },
+            {
+              "kind": "field",
+              "name": "color",
+              "type": {
+                "text": "string"
+              },
+              "description": "工作色的值串：触发钮里的色块与 value-text 显示它；单选时就是选中值，多选时是浮层里调着的草稿。状态机尚未建立时为空串。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "tags",
+              "type": {
+                "text": "ColorPickerTagMeta[]"
+              },
+              "description": "多选时应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中值同序；单选恒为空数组。状态机尚未建立时为空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowCount",
+              "type": {
+                "text": "number"
+              },
+              "description": "被 max-tag-count 折叠的标签数。状态机尚未建立时为 0。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowText",
+              "type": {
+                "text": "string"
+              },
+              "description": "overflow-tag 显示的文字；没有折叠的标签或状态机尚未建立时为空串。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "canAdd",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "多选时「添加」此刻可按（工作色还没选过、没到上限）；状态机尚未建立时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "add",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "多选：把工作色收进值；状态机尚未建立时不做任何事。"
+            },
+            {
+              "kind": "method",
+              "name": "deselect",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
                     "text": "string"
                   }
                 }
               ],
-              "description": "写入一个新颜色，与点击预设色板同一路径（照常触发 value-change）。\n入参按当前 format 重新序列化后落值，因此更换 format 后再写回原值，值串会按新格式产出。"
+              "description": "多选：摘掉一个选中颜色；状态机尚未建立时不做任何事。"
             },
             {
               "kind": "field",
@@ -12999,6 +13123,58 @@
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
               "description": "value-text 是否归元素填：首次见到该节点时定，之后不再回读（读到的会是自己写的字）。"
+            },
+            {
+              "kind": "field",
+              "name": "tagLabels",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, HTMLElement>()",
+              "description": "每枚标签里由元素补出来的那层 label。"
+            },
+            {
+              "kind": "field",
+              "name": "hiddenInputs",
+              "privacy": "private",
+              "readonly": true,
+              "description": "多选时一个选中值一份同名隐藏输入：首值用作者的节点，其余由元素补在它后面。"
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "ensureTagLabel",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tag",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，\n返回 null——带删除钮的标签由作者用 tag-label 包住文字。补出来的那层不打 data-xh-part，不进角色节点表。"
             },
             {
               "kind": "method",
@@ -13147,7 +13323,7 @@
           ],
           "events": [
             {
-              "description": "颜色变化；detail 为 `{ value: string }`",
+              "description": "选中的颜色变化；detail 为 `{ value: string[] }`，单选恒为一项",
               "name": "value-change",
               "type": {
                 "text": "ColorPickerValueChangeDetails"
@@ -13178,19 +13354,43 @@
           "attributes": [
             {
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
-              "description": "受控颜色值串；未提供该属性即非受控",
+              "description": "受控颜色值串；未提供该属性即非受控。多选的一组颜色是数组，只走 property",
               "name": "value",
               "fieldName": "value"
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
-              "description": "非受控初值，默认 #000000",
+              "description": "非受控初值，默认 #000000；多选的数组只走 property",
               "name": "default-value",
               "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "ColorPickerSelectionMode | undefined"
+              },
+              "description": "选择模式，默认 single；multiple 时浮层里调出的工作色是草稿、按 confirm-trigger 收进值，色板的格子点一下切换，输入行里排成标签",
+              "name": "selection-mode",
+              "fieldName": "selectionMode"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "multiple 下最多选几个颜色",
+              "name": "max-selected",
+              "fieldName": "maxSelected"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "multiple 下输入行最多摆几枚标签，其余折进 overflow-tag；默认 3",
+              "name": "max-tag-count",
+              "fieldName": "maxTagCount"
             },
             {
               "type": {
@@ -13370,6 +13570,30 @@
               "name": "--xh-color-picker-alpha-slider-gap"
             },
             {
+              "name": "--xh-color-picker-confirm-trigger-bg"
+            },
+            {
+              "name": "--xh-color-picker-confirm-trigger-bg-active"
+            },
+            {
+              "name": "--xh-color-picker-confirm-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-color-picker-confirm-trigger-fg"
+            },
+            {
+              "name": "--xh-color-picker-confirm-trigger-h"
+            },
+            {
+              "name": "--xh-color-picker-confirm-trigger-px"
+            },
+            {
+              "name": "--xh-color-picker-confirm-trigger-radius"
+            },
+            {
+              "name": "--xh-color-picker-confirm-trigger-shadow"
+            },
+            {
               "name": "--xh-color-picker-content-bg"
             },
             {
@@ -13425,6 +13649,9 @@
             },
             {
               "name": "--xh-color-picker-control-h"
+            },
+            {
+              "name": "--xh-color-picker-control-max-h"
             },
             {
               "name": "--xh-color-picker-control-min-w"
@@ -13524,6 +13751,15 @@
             },
             {
               "name": "--xh-color-picker-swatch-size"
+            },
+            {
+              "name": "--xh-color-picker-tag-dot-border"
+            },
+            {
+              "name": "--xh-color-picker-tag-dot-size"
+            },
+            {
+              "name": "--xh-color-picker-tag-list-gap"
             },
             {
               "name": "--xh-color-picker-thumb-border"
