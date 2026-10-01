@@ -1,7 +1,7 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { drawerAnatomy, drawerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
-import { expectInlineSlot } from './shared/panel-gesture'
+import { expectFocusSkips, expectInlineSlot } from './shared/panel-gesture'
 import { heldPress } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
@@ -13,6 +13,33 @@ function withResizeTrigger(base: FixtureNode): FixtureNode {
     children: base.children?.map(child => child.part === 'content'
       ? { ...child, children: [...(child.children ?? []), { part: 'resize-trigger' }] }
       : child),
+  }
+}
+
+/** 关闭钮写在标题旁：文档序上它排在第一个真正的控件之前。 */
+function withLeadingClose(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children?.map(child => child.part !== 'content'
+      ? child
+      : {
+          ...child,
+          children: [
+            ...(child.children ?? []).filter(node => node.part === 'title'),
+            ...(child.children ?? []).filter(node => node.part === 'close-trigger'),
+            ...(child.children ?? []).filter(node => node.part !== 'title' && node.part !== 'close-trigger'),
+          ],
+        }),
+  }
+}
+
+/** 面板里除了关闭钮没有别的可聚焦节点。 */
+function withOnlyClose(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children?.map(child => child.part !== 'content'
+      ? child
+      : { ...child, children: (child.children ?? []).filter(node => node.part !== undefined) }),
   }
 }
 
@@ -39,6 +66,29 @@ export const drawerSuite: ConformanceSuite = {
     ],
   },
   cases: [
+    {
+      name: '关闭钮写在标题旁：初始焦点越过它，落到第一个真正的控件上',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { defaultOpen: true },
+      fixture: withLeadingClose,
+      steps: [
+        { kind: 'settle', until: { activeElement: 'content' } },
+        expectFocusSkips('drawer', 'close-trigger', 'confirm'),
+      ],
+    },
+    {
+      name: '除了关闭钮没有别的控件：初始焦点仍落在关闭钮上',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { defaultOpen: true },
+      fixture: withOnlyClose,
+      steps: [
+        {
+          kind: 'settle',
+          until: { activeElement: 'close-trigger' },
+          expect: { activeElement: 'close-trigger' },
+        },
+      ],
+    },
     {
       name: 'contained：遮罩与定位层改按容器画，三处角色节点一起报 data-contained',
       spec: { apg: APG },
