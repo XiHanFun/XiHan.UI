@@ -306,6 +306,7 @@
 --xh-overlay-sheet-w-lg: 48rem
 --xh-overlay-sheet-w-md: 32rem
 --xh-overlay-sheet-w-sm: 24rem
+--xh-overlay-toast-w: 28.75rem
 --xh-ring-focus: oklch(0.546 0.216 258)  ← var(--xh-color-brand-600)
 --xh-ring-invalid: oklch(0.637 0.208 25)  ← var(--xh-color-danger-500)
 --xh-ring-offset: calc(-1 * 2px)  ← calc(-1 * var(--xh-ring-width))

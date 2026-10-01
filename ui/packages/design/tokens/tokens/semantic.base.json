@@ -990,6 +990,11 @@
       "$type": "dimension",
       "$value": "28rem"
     },
+    "toast-w": {
+      "$description": "轻提示的卡宽：指示符、正文、行内动作与关闭钮排成一行，比通知卡片（max-w-lg）宽一截。",
+      "$type": "dimension",
+      "$value": "28.75rem"
+    },
     "backdrop-blur": {
       "$description": "遮罩模糊档的模糊半径。",
       "$type": "dimension",

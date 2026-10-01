@@ -50094,7 +50094,7 @@
       ],
       "defaultToken": [
         "--xh-overlay-max-w-lg",
-        "28.75rem"
+        "--xh-overlay-toast-w"
       ],
       "visibility": "public",
       "description": "notification 的 group、item 部件 inline-size 覆盖槽。"

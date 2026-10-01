@@ -428,6 +428,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-overlay-menu-max-h` | 20rem | 17rem | 菜单与候选列表限高 |
 | `--xh-overlay-sheet-w-sm` / `md` / `lg` | 24 / 32 / 48rem | | Dialog、Command 宽的上限 |
 | `--xh-overlay-drawer-w-sm` / `md` / `lg` | 16 / 20 / 28rem | | Drawer 厚度 |
+| `--xh-overlay-toast-w` | 28.75rem | | 轻提示卡宽：一行排开指示符、正文、行内动作与关闭钮 |
 | `--xh-sider-w`、`--xh-sider-collapsed-w` | 15rem、4rem | | 侧栏展开与收起宽 |
 | `--xh-nav-link-max-w` | 12rem | | 导航链接上限 |
 | `--xh-measure-prose` | 32rem | | 说明文字行宽上限 |
@@ -491,7 +492,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Command | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限 `overlay-max-h` |
 | Drawer | 厚度随 size 16 / 20 / 28rem，不超过视口；可拖拽时夹在 `minPanelSize`（缺省 160px）与 `maxPanelSize` 之间 | 贴边铺满 |
 | FloatingPanel | 缺省 360 × 240px，下限 `minSize` 缺省 160 × 120px，上限 `maxSize` 缺省不封顶 | 同左 |
-| Notification | 卡宽 24rem（toast 档 28.75rem），不超过视口宽 − 32px | 描述上限 `viewport-h-md`，超出内滚 |
+| Notification | 卡宽 `overlay-max-w-lg`，toast 档 `overlay-toast-w`；不超过视口宽 − 32px | 描述上限 `viewport-h-md`，超出内滚 |
 | ImageViewer | 图片上限 90% 视口宽 | 图片上限 85% 视口高 |
 
 #### 页内滚动面与数据展示

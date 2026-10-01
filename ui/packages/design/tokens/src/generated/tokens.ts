@@ -480,6 +480,7 @@ export const tokens = {
   "--xh-overlay-drawer-w-sm": "16rem",
   "--xh-overlay-drawer-w-md": "20rem",
   "--xh-overlay-drawer-w-lg": "28rem",
+  "--xh-overlay-toast-w": "28.75rem",
   "--xh-overlay-backdrop-blur": "12px",
   "--xh-text-label-size": "var(--xh-font-size-md)",
   "--xh-text-label-weight": "var(--xh-font-weight-medium)",
