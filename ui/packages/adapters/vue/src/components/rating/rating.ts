@@ -11,6 +11,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideRating, useRatingContext } from './context'
 import { useRating } from './use-rating'
@@ -96,7 +97,10 @@ export const XhRatingControl = defineComponent({
   name: 'XhRatingControl',
   setup(_, { slots }) {
     const ctx = useRatingContext()
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    // 放进表单字段时，字段的标题与说明接到星组上：读屏进组时念组名与说明
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
+    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getControlProps() as Record<string, unknown> }), slots.default?.())
   },
 })
 

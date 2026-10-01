@@ -16,6 +16,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { RatingProvider, useRatingContext } from './context'
 import { useRating } from './use-rating'
@@ -158,8 +159,11 @@ export function XhRatingControl({ children, ...rest }: XhRatingControlProps): Re
   // 容器的 onFocus 是不冒泡的 DOM focus（只在容器自己得焦时接管），pointerleave 也不冒泡，
   // React 的同名合成事件一个挂的是 focusin、一个由 pointerout 推导，两下都对不上——
   // 装成原生监听器，到达路径才与另外两家一致。onFocusout 归到的 onBlur 本就是冒泡的 focusout，不动它
+  // 放进表单字段时，字段的标题与说明接到星组上：读屏进组时念组名与说明
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
   const bind = useNativeEvents(
-    ctx.api.getControlProps() as Record<string, unknown>,
+    fieldLabel({ ...fieldWiring, ...ctx.api.getControlProps() as Record<string, unknown> }),
     ['onFocus', 'onPointerLeave'],
   )
   return (
