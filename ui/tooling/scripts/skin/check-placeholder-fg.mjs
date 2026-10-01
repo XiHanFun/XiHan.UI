@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 // 门禁：占位文字的前景色，两条通道同一支默认令牌、各自留组件槽、一律不许用 opacity 表达。
 //
-// 占位文字有两条通道，长得完全不一样但说的是同一件事：
+// 占位文字有三条通道，长得完全不一样但说的是同一件事：
 // ① 原生表单控件（input / textarea）的占位串只能用 `::placeholder` 伪元素画；
 // ② 不是原生控件的触发器、段位、预览文本（value-text / segment / trigger / preview）
-//    由机器打 `[data-placeholder]`，占位态是一个属性钩子。
+//    由机器打 `[data-placeholder]`，占位态是一个属性钩子；
+// ③ 分段输入的整条占位：整组段位让位给一句文字，机器打 `[data-placeholder-shown]`，
+//    文字由 `::before` 以生成内容画出。组自身的字色是透明（盖住作者写的分隔符），
+//    占位前景只看那条 `::before` 规则。
 // 同一个库里两套写法各自演化，最容易长成两种深浅——一个下拉框没选值时的灰，
 // 和它旁边输入框没填值时的灰对不上，用户看到的是同一句「请选择」深浅不一。
 // 所以两条通道钉死同一支默认前景 --xh-fg-subtle，各自留 --xh-<组件>-placeholder-fg 供覆盖。
@@ -60,7 +63,14 @@ const ATTR = {
   'tree-select': 'value-text',
 }
 
-/** 两条通道共用的默认前景。改这一支等于同时改 19 处，正是它存在的意义。 */
+/** 通道 ③：`[data-placeholder-shown]::before` 生成内容，组件 → 承载整条占位的部件。 */
+const GENERATED = {
+  'date-field': 'segment-group',
+  'date-picker': 'segment-group',
+  'date-range-picker': 'segment-group',
+}
+
+/** 三条通道共用的默认前景。改这一支等于同时改全部占位前景，正是它存在的意义。 */
 const DEFAULT_FG = '--xh-fg-subtle'
 
 const problems = []
@@ -68,6 +78,35 @@ const problems = []
 const base = new Map()
 /** 占位通道上带状态限定的覆写规则（如焦点反白后重新指定前景），只查 opacity。 */
 const overrides = []
+
+/** 通道 ③：整条占位的文字前景，同一套「组件槽 + 默认前景」的写法，同样不许用 opacity。 */
+function checkGenerated(file, sel, body) {
+  const scope = /\[data-scope='([a-z-]+)'\]/.exec(sel)?.[1]
+  const part = [...sel.matchAll(/\[data-part='([a-z-]+)'\]/g)].at(-1)?.[1]
+  if (!scope || !part) {
+    problems.push(`${file} 整条占位规则没写全 data-scope / data-part：${sel}`)
+    return
+  }
+  if (GENERATED[scope] !== part) {
+    problems.push(`${file} ${scope} 的整条占位落在 [${part}] 上，名单里没有这一条——新组件要登记进 GENERATED`)
+    return
+  }
+  // 高对比档里换成系统色的那一条是强制色补救，不是第二条基础规则
+  if (/^(?:GrayText|CanvasText|Canvas|Highlight|HighlightText|LinkText|ButtonText)$/.test(decl(body, 'color') ?? ''))
+    return
+  const key = `generated:${scope}`
+  if (base.has(key)) {
+    problems.push(`${file} ${scope} 的整条占位有不止一条 ::before 规则`)
+    return
+  }
+  base.set(key, { file, part })
+  if (decl(body, 'opacity') !== null)
+    problems.push(`${file} [${part}] 整条占位不许用 opacity 表达——对比度要由令牌单独决定`)
+  const value = decl(body, 'color')
+  const expected = `var(--xh-${scope}-placeholder-fg, var(${DEFAULT_FG}))`
+  if (value === null || value.replace(/\s+/g, ' ') !== expected)
+    problems.push(`${file} ${scope} 的整条占位前景写成 ${value ?? '（没写）'}——该写 ${expected}`)
+}
 
 /** 取声明块里某个属性的值；属性名必须整段匹配，免得 -webkit-text-fill-color 被当成 color。 */
 function decl(body, prop) {
@@ -81,6 +120,12 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
   for (const [, rawSelector, body] of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     for (const one of rawSelector.split(',')) {
       const sel = one.trim().replace(/\s+/g, ' ')
+      // 通道 ③ 只认画文字的那条 ::before；组自身的透明字色与让位的子节点不是占位前景
+      if (sel.includes('[data-placeholder-shown]')) {
+        if (sel.endsWith('[data-placeholder-shown]::before'))
+          checkGenerated(file, sel, body)
+        continue
+      }
       const channel = sel.includes('::placeholder') ? 'pseudo' : sel.includes('[data-placeholder]') ? 'attr' : null
       if (!channel)
         continue
@@ -174,7 +219,7 @@ for (const [scope, part] of Object.entries(PSEUDO)) {
   base.set(key, { file: `${scope}.css → family/field-chrome.css`, part })
 }
 
-for (const [registry, channel, chLabel] of [[PSEUDO, 'pseudo', '::placeholder'], [ATTR, 'attr', '[data-placeholder]']]) {
+for (const [registry, channel, chLabel] of [[PSEUDO, 'pseudo', '::placeholder'], [ATTR, 'attr', '[data-placeholder]'], [GENERATED, 'generated', '[data-placeholder-shown]::before']]) {
   for (const [scope, part] of Object.entries(registry)) {
     if (!base.has(`${channel}:${scope}`))
       problems.push(`${scope}.css 缺 [${part}] 的 ${chLabel} 占位前景——名单里登记了却没扫到，要么规则被删了，要么部件改名了`)
@@ -182,11 +227,11 @@ for (const [registry, channel, chLabel] of [[PSEUDO, 'pseudo', '::placeholder'],
 }
 
 if (problems.length) {
-  console.error('[check-placeholder-fg] ✗ 占位前景没按两通道同源的写法走：')
+  console.error('[check-placeholder-fg] ✗ 占位前景没按三通道同源的写法走：')
   for (const p of problems)
     console.error(`  ${p}`)
   process.exit(1)
 }
 
 const files = new Set([...base.values()].map(v => v.file))
-console.log(`[check-placeholder-fg] 通过：${base.size} 处占位前景同取 var(${DEFAULT_FG}) 并各留组件槽（${Object.keys(PSEUDO).length} 处 ::placeholder + ${Object.keys(ATTR).length} 处 [data-placeholder]，落在 ${files.size} 份皮肤里），另 ${overrides.length} 处状态覆写一并查过 opacity`)
+console.log(`[check-placeholder-fg] 通过：${base.size} 处占位前景同取 var(${DEFAULT_FG}) 并各留组件槽（${Object.keys(PSEUDO).length} 处 ::placeholder + ${Object.keys(ATTR).length} 处 [data-placeholder] + ${Object.keys(GENERATED).length} 处整条占位，落在 ${files.size} 份皮肤里），另 ${overrides.length} 处状态覆写一并查过 opacity`)

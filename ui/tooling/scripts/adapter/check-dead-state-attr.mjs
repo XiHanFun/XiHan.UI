@@ -55,6 +55,7 @@ const HOOK_ATTRS = {
   'data-side': '哪一侧。两侧的版面是对称的，不按侧别分档',
   'data-unit': '哪个时间单位',
   'data-segment': '哪个日期段',
+  'data-placeholder-text': '整条占位的文字。皮肤以 content: attr() 画出，露不露由同一节点上的 data-placeholder 决定',
   'data-lines': '截到几行。真正裁切的是行数槽，这一位只是把入参照抄出来',
   'data-icon': '图标叫什么名字',
   'data-step': '第几步',

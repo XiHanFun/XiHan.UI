@@ -8,7 +8,7 @@
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { CalendarRangePickerApi, CalendarRangePickerSchema, CalendarRangePickerTranslations } from '../calendar-range-picker'
-import type { DateFieldSchema, DateSegmentSet } from '../date-field'
+import type { DateFieldSchema, DateSegmentPlaceholders, DateSegmentSet } from '../date-field'
 import type { DatePickerFieldApi, DatePickerPreset, DatePickerPresetProps, DatePickerPresetState, DatePickerTimeGranularity, DatePickerTimeUnit } from '../date-picker'
 import type { CalendarGranularity, CalendarPeriodValue, CalendarView, CalendarViewChangeDetails } from '../shared/calendar'
 import type { ResolvedTimeStep, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
@@ -196,6 +196,12 @@ export interface DateRangePickerSchema extends MachineSchema {
     name?: string
     /** 终点隐藏输入的表单字段名；未提供时终点不参与提交。 */
     endName?: string
+    /** 逐段的占位串，两组段位共用，覆盖内置的 yyyy / mm / dd。 */
+    placeholder?: DateSegmentPlaceholders
+    /** 起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字（「开始日期」），焦点进到段上即换回段位。 */
+    startPlaceholder?: string
+    /** 终点那组段位的整条占位，规则同 startPlaceholder。 */
+    endPlaceholder?: string
     /** 选择粒度。输入行与周期网格都由它决定。 */
     granularity?: CalendarGranularity
     /**

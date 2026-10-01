@@ -16,6 +16,7 @@
 ## 特性
 
 - `granularity` 支持 day / week / month / quarter / year，`selectionMode` 独立控制单选或多选。
+- `placeholder` 给字符串是整条占位：一段都没填、焦点也不在段上时输入行显示这句文字（「请选择生效时间」），段位与分隔符淡出让位，焦点一进到段上就换回 yyyy / mm / dd 段位；给对象是逐段的占位串。整条占位由皮肤以生成内容画出，段位仍可聚焦、仍在读屏树里。
 - 周选择直接渲染整周周期格；不再需要 `weekSelection` 特殊开关。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
 - `min`、`max` 与 `isDateUnavailable` 限制可选日期。
 - `presets` 提供常用日期快捷项。

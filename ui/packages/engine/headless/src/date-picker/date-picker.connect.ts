@@ -447,11 +447,16 @@ export function connectDatePicker<T extends PropTypes>(
     // 它同时承担内嵌分段输入的 root/control 两个部件，不另挂分段输入的根节点
     getSegmentGroupProps: () => {
       const outOfRange = !!fieldRaw.outOfRange
+      const placeholder = prop('placeholder')
+      const placeholderText = typeof placeholder === 'string' && placeholder !== '' ? placeholder : undefined
       return normalize.element({
         ...parts['segment-group'].attrs,
         'id': ids['segment-group'],
         'role': 'group',
         'aria-labelledby': ids.label,
+        // 整条占位：一段都没填、焦点也不在段上时才露出，文字由皮肤以生成内容画出，段位与分隔符让位
+        'data-placeholder-text': placeholderText,
+        'data-placeholder-shown': dataAttr(placeholderText != null && fieldRaw.empty && fieldRaw.focusedSegment == null),
         'aria-disabled': disabled ? 'true' : 'false',
         'data-disabled': dataAttr(disabled),
         'data-readonly': dataAttr(readOnly),

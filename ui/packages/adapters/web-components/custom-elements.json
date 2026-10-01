@@ -18012,7 +18012,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-field>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group / segment（多个）/ hidden-input\n角色节点，元素运行 date-field 状态机并把 connect 产出接上。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间内回绕、左右键与 Home/End 换段、\n数字键直接填入且输满自动跳到下一段、Backspace 清除本段；可选的 clear-trigger 一键清空全部段。\n\n段的身份有两种写法：只声明下标（`index`，或按文档序），具体是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与段集计算：同一份标记更换 locale 即更换形态；或按段名固定\n（`segment=\"quarter\"`），段集中没有该段时该格收起。不使用的段带 hidden 保留在文档中，\n不卸载作者节点。\n\n段位未填齐时整份值为 null；填齐后才拼出 ISO 串，由 hidden-input 随表单提交。\n\n占位串与读屏名字是逐段的对象，属性无法表达，只能通过 property 设置\n（`el.placeholder = { year: '年' }`）。",
+          "description": "`<xh-date-field>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group / segment（多个）/ hidden-input\n角色节点，元素运行 date-field 状态机并把 connect 产出接上。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间内回绕、左右键与 Home/End 换段、\n数字键直接填入且输满自动跳到下一段、Backspace 清除本段；可选的 clear-trigger 一键清空全部段。\n\n段的身份有两种写法：只声明下标（`index`，或按文档序），具体是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与段集计算：同一份标记更换 locale 即更换形态；或按段名固定\n（`segment=\"quarter\"`），段集中没有该段时该格收起。不使用的段带 hidden 保留在文档中，\n不卸载作者节点。\n\n段位未填齐时整份值为 null；填齐后才拼出 ISO 串，由 hidden-input 随表单提交。\n\n整条占位可写成 placeholder 属性（一段都没填、焦点也不在段上时显示）；逐段的占位串与读屏名字是对象，\n属性无法表达，只能通过 property 设置（`el.placeholder = { year: '年' }`）。",
           "name": "XhDateFieldElement",
           "cssParts": [
             {
@@ -18185,8 +18185,9 @@
               "name": "placeholder",
               "privacy": "public",
               "type": {
-                "text": "SegmentTexts | undefined"
-              }
+                "text": "string | SegmentTexts | undefined"
+              },
+              "attribute": "placeholder"
             },
             {
               "kind": "field",
@@ -18428,6 +18429,13 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "name": "placeholder",
+              "type": {
+                "text": "string | SegmentTexts | undefined"
+              },
+              "fieldName": "placeholder"
             }
           ],
           "superclass": {
@@ -18854,6 +18862,15 @@
               "type": {
                 "text": "DateSegmentSet | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | DateSegmentPlaceholders | undefined"
+              },
+              "attribute": "placeholder"
             },
             {
               "kind": "field",
@@ -19644,6 +19661,14 @@
             },
             {
               "type": {
+                "text": "string | DateSegmentPlaceholders | undefined"
+              },
+              "description": "整条占位：一段都没填、焦点也不在段上时输入行显示这句文字；逐段的占位对象走 property",
+              "name": "placeholder",
+              "fieldName": "placeholder"
+            },
+            {
+              "type": {
                 "text": "ControlVariant | undefined"
               },
               "description": "形态：outline / subtle / ghost，默认 outline",
@@ -19896,6 +19921,9 @@
             },
             {
               "name": "--xh-date-picker-panel-gap"
+            },
+            {
+              "name": "--xh-date-picker-placeholder-fg"
             },
             {
               "name": "--xh-date-picker-preset-bg-hover"
@@ -20280,6 +20308,32 @@
               "type": {
                 "text": "DateSegmentSet | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "privacy": "public",
+              "type": {
+                "text": "DateSegmentPlaceholders | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "startPlaceholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "start-placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "endPlaceholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "end-placeholder"
             },
             {
               "kind": "field",
@@ -21141,6 +21195,22 @@
               "type": {
                 "text": "string | undefined"
               },
+              "description": "起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字",
+              "name": "start-placeholder",
+              "fieldName": "startPlaceholder"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "终点那组段位的整条占位，规则同 start-placeholder",
+              "name": "end-placeholder",
+              "fieldName": "endPlaceholder"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
               "description": "终点隐藏输入的表单字段名；未提供时终点不参与提交",
               "name": "end-name",
               "fieldName": "endName"
@@ -21425,6 +21495,9 @@
             },
             {
               "name": "--xh-date-range-picker-panel-gap"
+            },
+            {
+              "name": "--xh-date-range-picker-placeholder-fg"
             },
             {
               "name": "--xh-date-range-picker-preset-bg-hover"

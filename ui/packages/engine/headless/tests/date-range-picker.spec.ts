@@ -653,6 +653,28 @@ describe('选中值的三个入口', () => {
   })
 })
 
+describe('起止两组的整条占位', () => {
+  it('startPlaceholder / endPlaceholder 各管一组：哪一端全空且焦点不在它的段上就出哪一端的占位', () => {
+    const h = mount({ startPlaceholder: '开始日期', endPlaceholder: '结束日期' })
+    const group = (index: 0 | 1): Record<string, unknown> => h.api().getSegmentGroupProps({ index }) as Record<string, unknown>
+    expect(group(0)).toMatchObject({ 'data-placeholder-text': '开始日期', 'data-placeholder-shown': '' })
+    expect(group(1)).toMatchObject({ 'data-placeholder-text': '结束日期', 'data-placeholder-shown': '' })
+    h.segments()[0]!.focus()
+    expect(group(0)['data-placeholder-shown']).toBeUndefined()
+    expect(group(1)['data-placeholder-shown']).toBe('')
+    h.segments()[0]!.blur()
+    h.setProps({ value: ['2026-07-01'] })
+    expect(group(0)['data-placeholder-shown']).toBeUndefined()
+    expect(group(1)['data-placeholder-shown']).toBe('')
+  })
+
+  it('逐段的 placeholder 两端共用', () => {
+    const h = mount({ placeholder: { year: '年' } })
+    expect(h.segmentTexts()).toContain('年')
+    expect(h.segmentEndTexts()).toContain('年')
+  })
+})
+
 describe('起止两组段位', () => {
   it('两组各管一端：敲终点只改 value[1]，起点原封不动', () => {
     const h = mount({ defaultValue: ['2026-07-01', '2026-07-09'] })

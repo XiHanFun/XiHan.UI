@@ -74,8 +74,12 @@ export function connectDateField<T extends PropTypes>(
   const flagged = invalid || outOfRange
   const ids = scope.ids('date-field', 'label', 'control')
 
+  const placeholder = prop('placeholder')
   const placeholderOf = (type: DateSegmentType): string =>
-    prop('placeholder')?.[type] ?? DATE_SEGMENT_PLACEHOLDER[type]
+    (typeof placeholder === 'object' ? placeholder[type] : undefined) ?? DATE_SEGMENT_PLACEHOLDER[type]
+  // 整条占位：一段都没填、焦点也不在段上时才露出；焦点一进来就换回段位
+  const placeholderText = typeof placeholder === 'string' && placeholder !== '' ? placeholder : undefined
+  const placeholderShown = placeholderText != null && empty && focusedSegment == null
 
   const labelOf = (type: DateSegmentType): string =>
     prop('translations')?.[type] ?? DATE_SEGMENT_LABEL[type]
@@ -207,6 +211,9 @@ export function connectDateField<T extends PropTypes>(
     // 段位与作者写在段间的分隔符都挂在这一层，它占满盒里剩下的宽度，清空钮因此靠在框内末端
     getSegmentGroupProps: () => normalize.element({
       ...parts['segment-group'].attrs,
+      // 整条占位的文字由皮肤以生成内容画出，段位与分隔符在它露出时让位
+      'data-placeholder-text': placeholderText,
+      'data-placeholder-shown': dataAttr(placeholderShown),
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(flagged),

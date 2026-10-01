@@ -491,10 +491,15 @@ export function connectDateRangePicker<T extends PropTypes>(
       const end = index === 1
       const raw = end ? fieldEndRaw : fieldRaw
       const outOfRange = raw.outOfRange
+      const placeholder = end ? prop('endPlaceholder') : prop('startPlaceholder')
+      const placeholderText = placeholder != null && placeholder !== '' ? placeholder : undefined
       return normalize.element({
         ...parts['segment-group'].attrs,
         'id': end ? ids['segment-group-end'] : ids['segment-group'],
         'data-index': String(index),
+        // 整条占位：这一端一段都没填、焦点也不在段上时才露出，文字由皮肤以生成内容画出，段位与分隔符让位
+        'data-placeholder-text': placeholderText,
+        'data-placeholder-shown': dataAttr(placeholderText != null && raw.empty && raw.focusedSegment == null),
         'role': 'group',
         // 两组各自报「开始日期」「结束日期」；字段标题挂在 trigger 与浮层上，两组段位不再各重复一遍
         'aria-label': end ? label.endDate : label.startDate,

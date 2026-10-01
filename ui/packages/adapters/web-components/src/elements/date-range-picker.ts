@@ -30,6 +30,7 @@ import type {
   DateRangePickerServices,
   DateRangePickerTimeColumnGroup,
   DateRangePickerValueChangeDetails,
+  DateSegmentPlaceholders,
   DateSegmentSet,
   DateSegmentType,
   FormControlState,
@@ -143,6 +144,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} allows-non-contiguous-ranges - 允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止
  * @attr {boolean} required - 必填标注，写入每段的 aria-required
  * @attr {string} name - 起点隐藏输入的表单字段名；提供后才带 name
+ * @attr {string} start-placeholder - 起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字
+ * @attr {string} end-placeholder - 终点那组段位的整条占位，规则同 start-placeholder
  * @attr {string} end-name - 终点隐藏输入的表单字段名；未提供时终点不参与提交
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
@@ -226,6 +229,10 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     granularity: { converter: STRING_CONVERTER },
     activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },
     segments: { attribute: false },
+    // 逐段的占位串是对象，只能走 property
+    placeholder: { attribute: false },
+    startPlaceholder: { converter: STRING_CONVERTER, attribute: 'start-placeholder' },
+    endPlaceholder: { converter: STRING_CONVERTER, attribute: 'end-placeholder' },
     // 快捷选项是数组，只能走 property
     presets: { attribute: false },
     visibleCount: { converter: NUMBER_CONVERTER, attribute: 'visible-count' },
@@ -273,6 +280,9 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
   declare granularity?: CalendarGranularity
   declare activeView?: CalendarView
   declare segments?: DateSegmentSet
+  declare placeholder?: DateSegmentPlaceholders
+  declare startPlaceholder?: string
+  declare endPlaceholder?: string
   declare presets?: DateRangePickerPreset[]
   declare visibleCount?: number
   declare fixedWeeks?: boolean
@@ -439,6 +449,9 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
       granularity: this.granularity,
       activeView: this.activeView,
       segments: this.segments,
+      placeholder: this.placeholder,
+      startPlaceholder: this.startPlaceholder,
+      endPlaceholder: this.endPlaceholder,
       presets: this.presets,
       visibleCount: this.visibleCount,
       fixedWeeks: this.fixedWeeks,

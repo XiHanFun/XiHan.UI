@@ -18,6 +18,7 @@
 
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入参不参与提交。
+- `startPlaceholder` / `endPlaceholder` 是两组段位各自的整条占位：哪一端一段都没填、焦点也不在它的段上，就在那一组显示这句文字（「开始日期」「结束日期」）；`placeholder` 是两端共用的逐段占位串。
 - 浮层内是[日历范围选择器](./calendar-range-picker)：先选起点再选终点，两端都落定后才写值并收起浮层；支持按住拖选与拖动已选区间的一端。
 - `granularity` 支持 day / week / month / quarter / year，输入段、网格和周期边界一起切换。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
 - `min`、`max`、`isDateUnavailable`（第二个参数是当前起点）与 `allowsNonContiguousRanges` 一并转给日历。

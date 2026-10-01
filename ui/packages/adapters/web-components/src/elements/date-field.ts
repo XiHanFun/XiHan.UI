@@ -77,8 +77,8 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
  *
  * 段位未填齐时整份值为 null；填齐后才拼出 ISO 串，由 hidden-input 随表单提交。
  *
- * 占位串与读屏名字是逐段的对象，属性无法表达，只能通过 property 设置
- * （`el.placeholder = { year: '年' }`）。
+ * 整条占位可写成 placeholder 属性（一段都没填、焦点也不在段上时显示）；逐段的占位串与读屏名字是对象，
+ * 属性无法表达，只能通过 property 设置（`el.placeholder = { year: '年' }`）。
  *
  * @customElement xh-date-field
  * @attr {string} value - 受控值，ISO 串；写为空串即受控且当前为空；未提供该属性即非受控
@@ -129,7 +129,8 @@ export class XhDateFieldElement extends XhElement {
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
-    placeholder: { attribute: false },
+    // 属性只承载整条占位的文字；逐段的对象走 property
+    placeholder: { converter: STRING_CONVERTER },
     translations: { attribute: false },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
@@ -150,7 +151,7 @@ export class XhDateFieldElement extends XhElement {
   declare invalid?: boolean
   declare required?: boolean
   declare name?: string
-  declare placeholder?: SegmentTexts
+  declare placeholder?: string | SegmentTexts
   declare translations?: DateFieldTranslations
   declare variant?: ControlVariant
   declare tone?: Tone

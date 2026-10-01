@@ -697,6 +697,28 @@ describe('connectDateField 结构与 ARIA', () => {
     expect(m.seg[2]!.getAttribute('aria-valuemax')).toBe('31')
   })
 
+  it('placeholder 给字符串是整条占位：全空且焦点不在段上才露出，焦点进来或填了一段就让回段位', () => {
+    const m = open({ locale: 'zh-CN', placeholder: '请选择生效日期' })
+    const group = (): Record<string, unknown> => m.api().getSegmentGroupProps() as Record<string, unknown>
+    expect(group()['data-placeholder-text']).toBe('请选择生效日期')
+    expect(group()['data-placeholder-shown']).toBe('')
+    // 段位仍显示内置的逐段占位：焦点进来后看到的是 yyyy / mm / dd
+    expect(texts(m).slice(0, 3)).toEqual(['yyyy', 'mm', 'dd'])
+    m.seg[0]!.dispatchEvent(new FocusEvent('focus'))
+    expect(group()['data-placeholder-shown']).toBeUndefined()
+    m.seg[0]!.dispatchEvent(new FocusEvent('blur'))
+    expect(group()['data-placeholder-shown']).toBe('')
+    m.setProps({ value: '2026-07-01' })
+    expect(group()['data-placeholder-shown']).toBeUndefined()
+  })
+
+  it('placeholder 给对象只换逐段占位，不出整条占位', () => {
+    const m = open({ locale: 'zh-CN', placeholder: { year: '年' } })
+    const group = m.api().getSegmentGroupProps() as Record<string, unknown>
+    expect(group['data-placeholder-text']).toBeUndefined()
+    expect(group['data-placeholder-shown']).toBeUndefined()
+  })
+
   it('placeholder 与 translations 逐段覆盖内置默认', () => {
     const m = open({
       locale: 'zh-CN',

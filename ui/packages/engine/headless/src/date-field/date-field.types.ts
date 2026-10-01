@@ -33,6 +33,9 @@ export type DateSegmentType
  */
 export type DateSegmentSet = readonly DateSegmentType[]
 
+/** 各段未填时显示的占位串，逐段覆盖内置默认（yyyy / mm / dd / hh / mm / ss）。 */
+export type DateSegmentPlaceholders = { readonly [K in DateSegmentType]?: string }
+
 /** 精度：决定共有几段，也决定产出的 ISO 串截止到哪一位。 */
 export type DateGranularity = 'day' | 'hour' | 'minute' | 'second'
 
@@ -138,8 +141,12 @@ export interface DateFieldSchema extends MachineSchema {
     required?: boolean
     /** 表单字段名；提供后隐藏输入才带 name，ISO 串随表单一并提交。 */
     name?: string
-    /** 各段未填时显示的占位串，逐段覆盖内置默认（yyyy / mm / dd / hh / mm / ss）。 */
-    placeholder?: { readonly [K in DateSegmentType]?: string }
+    /**
+     * 占位。给对象是逐段的占位串，覆盖内置默认（yyyy / mm / dd / hh / mm / ss）。
+     * 给字符串是整条占位：一段都没填、焦点也不在段上时，段位与分隔符让位给这句文字（「请选择生效时间」），
+     * 焦点一进来就换回段位，段位仍显示内置的逐段占位。
+     */
+    placeholder?: string | DateSegmentPlaceholders
     /** 各段的读屏名字，逐段覆盖内置默认。段是 spinbutton，没有名字时读屏只能朗读一串数字。 */
     translations?: DateFieldTranslations
     /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
