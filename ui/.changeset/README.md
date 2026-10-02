@@ -1,6 +1,6 @@
 # Changesets · 发布流程
 
-版本与发布由 [changesets](https://github.com/changesets/changesets) 驱动。**18 个公开包**
+版本与发布由 [changesets](https://github.com/changesets/changesets) 驱动。**全部公开包**
 （core / motion / pointer / viz / tokens / headless / styles / vue / react / web-components /
 chat-stream / markdown / position / code-highlight / backgrounds / sound / icons / animations）
 经 `fixed` 组**锁步同版**；私有包（testing / build / scripts / tsconfig / eslint-config /

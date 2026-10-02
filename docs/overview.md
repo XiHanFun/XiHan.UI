@@ -93,9 +93,9 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/headless` | 140 个组件的解剖 + 状态机 + `connect`，无样式、无框架 |
-| `@xihan-ui/vue` | Vue 3 适配器 |
-| `@xihan-ui/react` | React 19 适配器 |
+| `@xihan-ui/headless` | 全部组件的解剖 + 状态机 + `connect`，无样式、无框架 |
+| `@xihan-ui/vue` | Vue 适配器 |
+| `@xihan-ui/react` | React 适配器 |
 | `@xihan-ui/web-components` | Web Components 适配器，自研响应式基类 |
 
 **表现**

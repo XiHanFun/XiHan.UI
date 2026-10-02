@@ -2,9 +2,9 @@
 <img src="./assets/banner.png" alt="XiHan.UI" />
 <h1>XiHan.UI</h1>
 
-<p><b>A fast, lightweight, efficient and thoughtfully built framework-agnostic component library</b></p>
+<p><b>A fast, lightweight, efficient and thoughtfully built framework-agnostic headless UI component library</b></p>
 
-<p>A headless core with Vue 3, React 19 and Web Components adapters — composable, accessible and themeable UI infrastructure</p>
+<p>A headless core with Vue, React and Web Components adapters — composable, accessible and themeable UI infrastructure</p>
 
 <p><b>English</b> | <a href="./README_cn.md">简体中文</a></p>
 
@@ -15,9 +15,8 @@
 </p>
 
 <p>
-  <img alt="Vue" src="https://img.shields.io/badge/Vue-3.5-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript&logoColor=white" />
-  <img alt="Components" src="https://img.shields.io/badge/Components-140-1f6feb?style=flat-square" />
+  <img alt="Vue" src="https://img.shields.io/badge/Vue-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
   <a href="https://www.npmjs.com/package/@xihan-ui/vue"><img alt="npm" src="https://img.shields.io/npm/v/@xihan-ui/vue?style=flat-square&logo=npm&logoColor=white" /></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/XiHanFun/XiHan.UI?style=flat-square&color=green" /></a>
 </p>
@@ -32,12 +31,12 @@
 
 ## Introduction
 
-XiHan.UI is built around a framework-agnostic headless core: a component's state, interaction and accessibility logic live in that core, and every framework only gets a thin adapter. Vue, React and Web Components run the shared conformance suite against the same `connect()` output, advancing the case step by step and comparing normalized DOM. XiHan.UI is the component layer of the XiHanFun open-source ecosystem, which spans foundation, components and applications.
+XiHan.UI is built around a framework-agnostic headless core: a component's state, interaction and accessibility logic live in that core, and every framework only gets a thin adapter. Vue, React and Web Components run the shared conformance suite against the same `connect()` output, advancing the case step by step and comparing normalized DOM. XiHan.UI is the frontend foundation of the XiHanFun open-source ecosystem.
 
 ## Features
 
 - **Framework-agnostic** - state and accessibility live in the headless core; Vue, React and Web Components share the same component contracts
-- **140 components** - covering general, layout, navigation, data entry, data display, feedback, overlay and AI chat — eight groups
+- **Broad coverage** - general, layout, navigation, data entry, data display, charts, feedback, overlay and AI chat components
 - **No third-party runtime dependencies** - apart from the host framework, nothing third-party ships at runtime; date arithmetic, floating positioning, pointer sessions, code highlighting and streaming markdown are all first-party
 - **Build-time styling** - tokens are generated from DTCG sources into CSS variables and skins are layered with `@layer`; no CSS-in-JS at runtime
 - **Themeable** - color mode, brand, density, contrast and writing direction switch independently
@@ -46,7 +45,7 @@ XiHan.UI is built around a framework-agnostic headless core: a component's state
 
 ## Install
 
-18 public packages, all published to npm; the current version is on the npm badge above.
+All public packages are published to npm; the current version is on the npm badge above.
 
 ```bash
 pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
@@ -148,18 +147,18 @@ pnpm install
 pnpm dev
 ```
 
-Changes must pass the full CI gate, and CI runs the same commands you do locally: `pnpm lint`, `pnpm typecheck`, `pnpm boundaries`, `pnpm gate` (one command runs 130 structural checks), `pnpm test`, `pnpm build`, `pnpm size` and more.
+Changes must pass the full CI gate, and CI runs the same commands you do locally: `pnpm lint`, `pnpm typecheck`, `pnpm boundaries`, `pnpm gate` (the structural checks), `pnpm test`, `pnpm build`, `pnpm size` and more.
 
 ## Scope
 
-In the box: 140 components with their cores and three adapters, 127 visual-component skins, design tokens and the theme runtime, the cross-adapter conformance suite, the accessibility sweep and floating-position contract in real Chromium, and the documentation site.
+In the box: every component with its core and adapters, default skins for the visual components, design tokens and the theme runtime, the cross-adapter conformance suite, the accessibility sweep and floating-position contract in real Chromium, and the documentation site.
 
-Not in the box: bundled language packs (component copy ships English only; other languages need your own `translations`, though the global injection point is in place), the token browser, the AI family's MarkdownStream / Reasoning and ToolCall collapsing / tool approval, and enterprise business components.
+Not in the box: bundled language packs (component copy ships English only; other languages need your own `translations`, though the global injection point is in place), the token browser, and enterprise business components.
 
 ## Related Projects
 
 - [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) - modular development framework for .NET
-- [XiHan.BasicApp](https://github.com/XiHanFun/XiHan.BasicApp) - enterprise admin kernel built on XiHan.Framework and Vue 3
+- [XiHan.BasicApp](https://github.com/XiHanFun/XiHan.BasicApp) - general-purpose admin kernel built on XiHan.Framework and XiHan.UI
 
 ## Contributing
 

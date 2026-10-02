@@ -6,9 +6,9 @@
 
 Framework-agnostic component library. State machines and accessibility live in a headless core; each framework only gets a thin adapter.
 
-140 components, each shipping a headless core, Vue and React components, a custom element, and a default skin.
+Every component ships a headless core, Vue and React components, a custom element, and a default skin.
 
-> The 18 public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to six recorded entries (the shared table’s `tag`, `select` and `combobox` disabled-tag contrast, `file-upload`’s disabled item text contrast and `prompt-input`’s author-owned accessible name, plus the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
+> The public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to six recorded entries (the shared table’s `tag`, `select` and `combobox` disabled-tag contrast, `file-upload`’s disabled item text contrast and `prompt-input`’s author-owned accessible name, plus the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
 
 ## Packages
 
@@ -16,9 +16,9 @@ Framework-agnostic component library. State machines and accessibility live in a
 | --- | --- |
 | `@xihan-ui/core` | Runtime base: anatomy, `mergeProps`, `normalizeProps`, scope, ids; the `createMachine` state machine runtime; dismissable layer, focus scope, scroll lock, presence, collection, typeahead |
 | `@xihan-ui/motion` | Motion primitives: easing single source, tweening, frame loop, reduced-motion preference, closed-form springs, Web Animations wrapper |
-| `@xihan-ui/headless` | 140 components as anatomy + machine + `connect` — no styles, no framework |
-| `@xihan-ui/vue` | Vue 3 adapter |
-| `@xihan-ui/react` | React 19 adapter |
+| `@xihan-ui/headless` | Every component as anatomy + machine + `connect` — no styles, no framework |
+| `@xihan-ui/vue` | Vue adapter |
+| `@xihan-ui/react` | React adapter |
 | `@xihan-ui/web-components` | Web Components adapter (own reactive base, no third-party runtime dep) |
 | `@xihan-ui/styles` | Default skins, layered CSS |
 | `@xihan-ui/tokens` | Design tokens (from DTCG sources) + theme runtime (color scheme / brand / density / contrast / direction) |
@@ -55,7 +55,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
 pnpm build
-pnpm size         # bundle size ratchet — builds, then checks the 46 budgets in .size-limit.json
+pnpm size         # bundle size ratchet — builds, then checks the budgets in .size-limit.json
 ```
 
 ## Conventions
