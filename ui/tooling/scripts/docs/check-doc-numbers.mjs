@@ -194,18 +194,6 @@ const truth = {
       return (await once('anatomy', () => componentDirs('anatomy.ts'))).length
     },
   },
-  键盘规格条数: {
-    how: '全部 <name>.keyboard.ts 里 id 行的总数',
-    async value() {
-      const names = await once('kbd', () => componentDirs('keyboard.ts'))
-      let n = 0
-      for (const name of names) {
-        const src = await readFile(join(HEADLESS, name, `${name}.keyboard.ts`), 'utf8')
-        n += (src.match(/\bid: '[^']*\.kbd\.[^']*'/g) ?? []).length
-      }
-      return n
-    },
-  },
   gate里的结构检查数: {
     how: 'tooling/scripts/gate.modules.mjs 各模块步骤里出现的 check-*.mjs 去重后条数',
     async value() {
@@ -310,12 +298,6 @@ const truth = {
       return n
     },
   },
-  React已铺组件数: {
-    how: 'tooling/scripts/react-coverage.json 的 covered 条数',
-    async value() {
-      return JSON.parse(await read('tooling/scripts/react-coverage.json')).covered.length
-    },
-  },
   用track的机器数: {
     how: '<name>.machine.ts 里出现 track( 的文件数',
     async value() {
@@ -344,40 +326,6 @@ const truth = {
         catch {}
       }
       return n
-    },
-  },
-  Vue导出组件数: {
-    how: 'packages/adapters/vue/src/index.ts 的值导出里 Xh 开头的去重条数',
-    async value() {
-      const src = await read('packages/adapters/vue/src/index.ts')
-      const names = new Set()
-      for (const block of src.matchAll(/^export\s+\{([\s\S]*?)\}\s+from/gm)) {
-        for (const raw of block[1].split(',')) {
-          const name = raw.trim().split(/\s+as\s+/).pop()?.trim()
-          if (name && /^Xh[A-Z]/.test(name))
-            names.add(name)
-        }
-      }
-      return names.size
-    },
-  },
-  表单字段组件数: {
-    how: '<name>.types.ts 的 props 里带 name?: 的组件数',
-    async value() {
-      const names = await once('anatomy', () => componentDirs('anatomy.ts'))
-      let n = 0
-      for (const name of names) {
-        const src = await readFile(join(HEADLESS, name, `${name}.types.ts`), 'utf8').catch(() => '')
-        if (/^\s{4}name\?:/m.test(src))
-          n++
-      }
-      return n
-    },
-  },
-  首方图标数: {
-    how: 'packages/design/icons/src/svg 下的 .svg 文件数',
-    async value() {
-      return (await readdir(join(uiRoot, 'packages/design/icons/src/svg'))).filter(f => f.endsWith('.svg')).length
     },
   },
   内置背景效果数: {
@@ -937,26 +885,6 @@ const truth = {
       return countTopLevelKeys(await read('tooling/testing/runners/parity.spec.ts'), 'EXCLUDED')
     },
   },
-  用指针原语的组件数: {
-    how: 'headless 的组件目录里引了 @xihan-ui/pointer 的那些',
-    async value() {
-      const dirs = (await readdir(HEADLESS, { withFileTypes: true })).filter(d => d.isDirectory()).map(d => d.name)
-      let n = 0
-      for (const name of dirs) {
-        const files = await readdir(join(HEADLESS, name), { withFileTypes: true, recursive: true })
-        for (const entry of files) {
-          if (!entry.isFile() || !entry.name.endsWith('.ts'))
-            continue
-          const src = await readFile(join(entry.parentPath ?? entry.path, entry.name), 'utf8')
-          if (src.includes('@xihan-ui/pointer')) {
-            n++
-            break
-          }
-        }
-      }
-      return n
-    },
-  },
 }
 
 /** 皮肤 CSS 真正消费的 data-* 属性：剥注释、排除解剖那两个。 */
@@ -1309,26 +1237,6 @@ for (const [key, [path, name]] of Object.entries(DWELL))
 const TABLE = [
   // 发版当天最容易漏的一批：正文里「当前版本是 X」的陈述
   // 文档站是私有包，但版本号一直照着库包写；不登记就会像此前那样停在 alpha.1
-  ['README.md', /Components-(\d+)-1f6feb/, '组件数'],
-  ['README.md', /- \*\*(\d+) components\*\* - covering/, '组件数'],
-  ['README.md', /In the box: (\d+) components/, '组件数'],
-  ['README.md', /^(\d+) public packages/m, '公开包数'],
-  ['README.md', /one command runs (\d+) structural checks/, 'gate里的结构检查数'],
-
-  ['README_cn.md', /Components-(\d+)-1f6feb/, '组件数'],
-  ['README_cn.md', /- \*\*(\d+) 个组件\*\* - 覆盖/, '组件数'],
-  ['README_cn.md', /库里有的：(\d+) 个组件/, '组件数'],
-  ['README_cn.md', /^(\d+) 个公开包/m, '公开包数'],
-  ['README_cn.md', /一条命令跑 (\d+) 项结构检查/, 'gate里的结构检查数'],
-
-  ['ui/README.md', /^(\d+) components, each shipping/m, '组件数'],
-  ['ui/README.md', /\| (\d+) components as anatomy/, '组件数'],
-  ['ui/README.md', /checks the (\d+) budgets/, '体积预算条数'],
-  ['ui/README.md', /The (\d+) public packages are released in lockstep/, '公开包数'],
-  ['ui/README_cn.md', /^(\d+) 个组件，每个都有/m, '组件数'],
-  ['ui/README_cn.md', /(\d+) 个公开包锁步发版/, '公开包数'],
-  ['ui/README_cn.md', /\| (\d+) 个组件的 anatomy/, '组件数'],
-  ['ui/README_cn.md', /里的 (\d+) 条产物限额/, '体积预算条数'],
 
   ['docs/guide/versioning.md', /\| Vue 组件导出 `Xh\*` \| \d+（(\d+) 个家族）/, '组件数'],
   ['docs/guide/versioning.md', /\| 无头内核 `connect\*` \| (\d+) \|/, '组件数'],
@@ -1342,27 +1250,11 @@ const TABLE = [
   ['docs/guide/versioning.md', /注册 (\d+) \+ `xh-background`/, '自定义元素数'],
   ['docs/guide/versioning.md', /调用即注册全部 (\d+) 个元素/, '自定义元素数'],
   ['docs/guide/versioning.md', /看它在不在上表列的那 (\d+) 个全局令牌里/, '全局令牌数'],
-  ['docs/index.md', /键盘规格表，共 (\d+) 条/, '键盘规格条数'],
-  ['docs/introduction.md', /当前提供 \*\*(\d+) 个组件\*\*/, '组件数'],
-  ['docs/introduction.md', /键盘规格表（共 (\d+) 条）/, '键盘规格条数'],
-  ['docs/overview.md', /\| (\d+) 个组件的解剖/, '组件数'],
-  ['docs/faq.md', /^(\d+) 个。每个组件同时有/m, '组件数'],
-  ['docs/faq.md', /覆盖全部 (\d+) 个组件/, '组件数'],
 
-  ['docs/installation.md', /XiHan\.UI 的 (\d+) 个公开包/, '公开包数'],
-  ['docs/installation.md', /(\d+) 个组件的示例都是真实组件/, '组件数'],
-  ['docs/installation.md', /一等图标集，当前 (\d+) 枚/, '首方图标数'],
-  ['docs/installation.md', /pnpm gate {9}# (\d+) 项结构门禁/, 'gate里的结构检查数'],
-  ['docs/installation.md', /全量是 (\d+) 份皮肤加令牌/, '皮肤份数'],
-
-  ['docs/guide/a11y.md', /全库共 (\d+) 条，分布在/, '键盘规格条数'],
-  ['docs/guide/a11y.md', /分布在 (\d+) 个组件上/, '组件数'],
   ['docs/guide/testing.md', /`pnpm gate` 运行 (\d+) 项结构检查/, 'gate里的结构检查数'],
   ['docs/guide/testing.md', /另有分层依赖检查与([\d一二三四五六七八九十]+)项单独的门禁/, '单独的gate脚本数'],
   ['docs/guide/testing.md', /^(\d+) 条产物各有上限/m, '体积预算条数'],
-  ['docs/guide/forms.md', /^(\d+) 个：checkbox、/m, '表单字段组件数'],
   ['docs/guide/position.md', /\| (\d+) 种：四个方向/, 'placement取值数'],
-  ['docs/guide/pointer.md', /这一层，(\d+) 个组件在用/, '用指针原语的组件数'],
   ['docs/guide/styling.md', /^(\d+) 份皮肤消费这条令牌/m, '吃控件最小宽度令牌的皮肤数'],
   ['docs/guide/styling.md', /^(\d+) 份皮肤消费缺省宽令牌/m, '吃字段缺省宽令牌的皮肤数'],
   ['docs/guide/styling.md', /派生 (\d+) 档原语/, '品牌原语档数'],
@@ -1374,9 +1266,6 @@ const TABLE = [
   ['docs/guide/animations.md', /(\d+) 个进场预设/, '进场预设数'],
   ['docs/guide/animations.md', /(\d+) 个注意预设/, '注意预设数'],
 
-  ['docs/adapters/vue.md', /全部 (\d+) 个导出组件/, 'Vue导出组件数'],
-  ['docs/adapters/react.md', /(\d+) 个组件中已覆盖 \d+ 个/, '组件数'],
-  ['docs/adapters/react.md', /\d+ 个组件中已覆盖 (\d+) 个/, 'React已铺组件数'],
   ['docs/adapters/react.md', /(\d+) 个状态机中的 `track`/, '用track的机器数'],
   ['docs/adapters/react.md', /(\d+) 个 `watch` 块会全部静默失效/, '带watch块的机器数'],
   ['docs/adapters/web-components.md', /注册全部 (\d+) 个 xh-\* 元素/, '自定义元素数'],
@@ -1397,16 +1286,11 @@ const TABLE = [
   ['docs/runtime/services.md', /\| `duration` \| \d+ \| (\d+) \|/, '停留:Notification 轻提示预设停留'],
 
   // 包 README——npm 把它们当落地页，改数字的人一般只翻文档站，这一片最容易停在旧值
-  ['ui/packages/README.md', /`headless` 的 (\d+) 个/, '组件数'],
-  ['ui/packages/README.md', /(\d+) 个组件共享同一套机器/, '组件数'],
   ['ui/tooling/scripts/package/check-version-lock.mjs', /version 而不动其余 (\d+) 个/, '除自己外的公开包数'],
 
-  ['ui/packages/adapters/vue/README.md', /^Vue 3 适配器：(\d+) 个组件的 Vue 形态/m, '组件数'],
   ['ui/packages/adapters/web-components/README.md', /逐帧 parity 覆盖 (\d+) 个套件/, '逐帧parity套件数'],
   ['ui/packages/adapters/web-components/README.md', /收不进来的 (\d+) 个逐条登记在/, 'parity排除套件数'],
   ['ui/packages/adapters/web-components/README.md', /dialog 在这 (\d+) 个里/, 'parity排除套件数'],
-  ['ui/packages/engine/headless/README.md', /^(\d+) 个组件的无视觉实现/m, '组件数'],
-  ['ui/packages/design/styles/README.md', /^默认皮肤：(\d+) 份纯 CSS/m, '皮肤份数'],
   ['ui/packages/engine/core/README.md', /以及([\d一二三四五六七八九十两]+)个端口的类型契约/, '内核端口数'],
   ['ui/packages/features/code-highlight/README.md', /只分([\d一二三四五六七八九十两]+)类：注释、字符串、数字、关键字、标点/, '着色记号种类数'],
   ['ui/packages/features/sound/README.md', /([\d一二三四五六七八九十两]+)套内置主题/, '内置音效主题数'],

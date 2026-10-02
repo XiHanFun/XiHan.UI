@@ -6,9 +6,9 @@ BasicApp 的前端构建于 XiHan.UI 之上：自 BasicApp v4.0.0 起，它的�
 
 BasicApp 的前端约定见[基础应用前端手册](https://basicapp.docs.xihanfun.com/frontend/introduction)。
 
-## 共有多少个组件
+## 有哪些组件
 
-140 个。每个组件同时有无头内核、Vue / React 组件、自定义元素与默认皮肤。[组件总览](./components/)按分类列出全部组件，每个组件一页。
+[组件总览](./components/)按分类列出全部组件，每个组件一页。每个组件同时有无头内核、Vue / React 组件、自定义元素与默认皮肤。
 
 ## 组件的 props 在哪里查看
 
@@ -107,4 +107,4 @@ BasicApp 的前端约定见[基础应用前端手册](https://basicapp.docs.xiha
 ## 其他问题
 
 - 源码仓库：[GitHub](https://github.com/XiHanFun/XiHan.UI) · [Gitee](https://gitee.com/XiHanFun/XiHan.UI) · [GitCode](https://gitcode.com/XiHanFun/XiHan.UI)
-- 文档站的组件示例覆盖全部 140 个组件，Vue、React 与自定义元素的写法并排，行为问题优先在那里复现
+- 文档站的组件示例覆盖全部组件，Vue、React 与自定义元素的写法并排，行为问题优先在那里复现

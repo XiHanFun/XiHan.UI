@@ -2,9 +2,9 @@
 <img src="./assets/banner_cn.png" alt="XiHan.UI" />
 <h1>XiHan.UI</h1>
 
-<p><b>快速、轻量、高效、用心的框架无关跨端组件库</b></p>
+<p><b>快速、轻量、高效、用心的框架无关 Headless UI 组件库</b></p>
 
-<p>以 Headless Core 为核心，提供 Vue 3、React 19 与 Web Components 三端适配，构建可组合、可访问、可主题化的现代 UI 基础设施</p>
+<p>以 Headless Core 为核心，提供 Vue、React 与 Web Components 多框架适配，构建可组合、可访问、可主题化的现代 UI 基础设施</p>
 
 <p><a href="./README.md">English</a> | <b>简体中文</b></p>
 
@@ -15,9 +15,8 @@
 </p>
 
 <p>
-  <img alt="Vue" src="https://img.shields.io/badge/Vue-3.5-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript&logoColor=white" />
-  <img alt="Components" src="https://img.shields.io/badge/Components-140-1f6feb?style=flat-square" />
+  <img alt="Vue" src="https://img.shields.io/badge/Vue-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
   <a href="https://www.npmjs.com/package/@xihan-ui/vue"><img alt="npm" src="https://img.shields.io/npm/v/@xihan-ui/vue?style=flat-square&logo=npm&logoColor=white" /></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/XiHanFun/XiHan.UI?style=flat-square&color=green" /></a>
 </p>
@@ -32,12 +31,12 @@
 
 ## 简介
 
-XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、交互与无障碍逻辑沉在无头内核里，各框架只写一层薄适配器。Vue、React 与 Web Components 对同一份 `connect()` 产出运行共享一致性套件，逐步推进用例并比对归一化后的 DOM。属于曦寒懿（XiHanFun）开源生态的组件层，拥有底座、组件、应用的完整生态。
+XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、交互与无障碍逻辑沉在无头内核里，各框架只写一层薄适配器。Vue、React 与 Web Components 对同一份 `connect()` 产出运行共享一致性套件，逐步推进用例并比对归一化后的 DOM。属于曦寒懿（XiHanFun）开源生态的前端基座。
 
 ## 特性
 
 - **框架无关** - 状态与无障碍逻辑住在无头内核，Vue、React 与 Web Components 共享同一份组件合同
-- **140 个组件** - 覆盖通用、布局、导航、数据录入、数据展示、反馈、浮层、AI 对话八组
+- **覆盖全面** - 通用、布局、导航、数据录入、数据展示、图表、反馈、浮层、AI 对话各类组件
 - **零第三方依赖** - 除宿主框架外，运行时不引入任何第三方包；日期运算、浮层定位、指针会话、代码着色、流式 Markdown 均为自研
 - **构建期样式** - 令牌从 DTCG 源产出 CSS 变量，皮肤按 `@layer` 分层，运行时不做 CSS-in-JS
 - **主题可切** - 明暗、品牌、密度、对比度、书写方向五个维度独立切换
@@ -46,7 +45,7 @@ XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、�
 
 ## 安装
 
-18 个公开包全部发布在 npm，版本以上方的 npm 徽章为准。
+公开包全部发布在 npm，版本以上方的 npm 徽章为准。
 
 ```bash
 pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
@@ -145,18 +144,18 @@ pnpm install
 pnpm dev
 ```
 
-改动需通过 CI 全套门禁，CI 与本地同一套命令：`pnpm lint`、`pnpm typecheck`、`pnpm boundaries`、`pnpm gate`（一条命令跑 130 项结构检查）、`pnpm test`、`pnpm build`、`pnpm size` 等。
+改动需通过 CI 全套门禁，CI 与本地同一套命令：`pnpm lint`、`pnpm typecheck`、`pnpm boundaries`、`pnpm gate`（结构检查）、`pnpm test`、`pnpm build`、`pnpm size` 等。
 
 ## 覆盖范围
 
-库里有的：140 个组件的内核与三个适配器、127 个视觉组件的默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
+库里有的：全部组件的内核与适配器、视觉组件的默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
 
-库里没有的：内建语言包（组件文案只内建英文，中文等要自备 `translations`，全局注入口已就绪）、令牌浏览器、AI 组件族的 MarkdownStream / Reasoning 与 ToolCall 折叠 / 工具审批、企业业务组件。
+库里没有的：内建语言包（组件文案只内建英文，中文等要自备 `translations`，全局注入口已就绪）、令牌浏览器、企业业务组件。
 
 ## 相关项目
 
 - [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) - .NET 模块化开发框架
-- [XiHan.BasicApp](https://github.com/XiHanFun/XiHan.BasicApp) - 基于 XiHan.Framework 与 Vue 3 的企业级中后台内核
+- [XiHan.BasicApp](https://github.com/XiHanFun/XiHan.BasicApp) - 基于 XiHan.Framework 和 XiHan.UI 的超高颜值通用中后台内核
 
 ## 贡献
 
