@@ -1,0 +1,1 @@
+async function c(){const e=document.getElementById("time-picker-basic"),n=document.getElementById("time-picker-basic-value");e.addEventListener("value-change",a=>{const t=a.detail.value;e.value=t,n.textContent=t[0]??"（未填齐）"})}export{c as default};

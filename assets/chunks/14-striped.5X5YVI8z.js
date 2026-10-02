@@ -1,0 +1,1 @@
+import{hk as e}from"./theme.3wlaQcnM.js";import{d as r,o as t,c as o,E as a,k as s}from"./framework.D1FqHTxE.js";const i={style:{width:"100%",display:"grid",gap:"12px"}},_=r({__name:"14-striped",setup(p){return(c,n)=>(t(),o("div",i,[a(s(e),{value:45,striped:"","aria-label":"导出进度"}),a(s(e),{value:100,striped:"",tone:"success","aria-label":"已完成的导出"})]))}});export{_ as default};

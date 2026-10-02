@@ -13328,6 +13328,7 @@ const slides = [
 
 ### 特性
 
+- 张数由 `slideCount` 声明，不从 DOM 计数；开发期挂载后若渲染出来的条目比它多（常见是漏传），诊断通道报 `carousel.slide-count-mismatch` 并在控制台告警。按需渲染时 DOM 里的条目少于张数是正常的，不报。
 - `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次移动一张。
 - 支持纵向轨道、指针拖拽、循环与自动播放。
 - 拖拽松手后轨道带着松手速度落到目标页：轻甩一下也能翻页，往回甩则收回；不循环时首末页往外拖越拉越沉，松手弹回。
@@ -13371,7 +13372,7 @@ const slides = [
 | --- | --- | --- | --- |
 | `page` | `number` |  | 当前页，0 基。提供即受控：内部不再自行修改，只发 onPageChange。 页不等于张：一页可能同时显示多张（见 slidesPerPage）。 |
 | `defaultPage` | `number` |  | 非受控初始页，默认 0。 |
-| `slideCount` | `number` |  | 条目总数，由作者声明，不从 DOM 统计。 |
+| `slideCount` | `number` |  | 条目总数，由作者声明，不从 DOM 统计（服务端渲染与按需渲染都靠它）。 开发期挂载后若渲染出来的条目比它多，经诊断通道报 carousel.slide-count-mismatch。 |
 | `slidesPerPage` | `number` |  | 一屏显示的张数，默认 1。 |
 | `slidesPerMove` | `number` |  | 一次翻动的张数，默认跟随 slidesPerPage（整屏翻页）。 |
 | `orientation` | `Orientation` |  | 轨道方向，默认 horizontal；方向键的轴随之变化。 |
@@ -18214,6 +18215,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | `loop` | `boolean` |  | 列内上下键到达首尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的进入子列 / 返回上一列语义。 |
 | `onValueChange` | `(details: CascaderValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: CascaderOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onBranchLoadStart` | `(details: CascaderBranchLoadStartDetails) => void` |  | 一轮有效分支请求开始；reason 区分展开路径走到它与显式重试。 |
 | `onBranchLoad` | `(details: CascaderBranchLoadDetails) => void` |  | 一轮有效分支请求成功；children 为空仍是成功，这个分支随之成了叶子。 |
@@ -18240,6 +18242,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `CascaderValueChangeDetails` | 选中路径集合变化；detail 为 `{ value: string[][] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `CascaderOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `branch-load-start` | `CascaderBranchLoadStartDetails` | 懒分支请求开始；detail 为 `{ value, path, node, reason }` |
 | `branch-load` | `CascaderBranchLoadDetails` | 懒分支请求成功；detail 为 `{ value, path, node, children }` |
@@ -19198,11 +19201,13 @@ const items = [
 - 方框是字段家族的控制盒：不填底、描边与无影，勾中后以语气色填充；整行接 Action Control row 档，悬停 / 按下换面不缩放，方框随行换到承载面阶梯的下一档。
 - `variant` 是结构形态：缺省 `list` 是一列「方框 + 文案」的行；`card` 把每个条目画成一张可点的描边卡（surface 圆角，白底承载阶梯悬停 100 → 按下 200），方框在卡的行首，整张卡是命中区。勾中的卡换品牌淡底（写了 `tone` 换语气淡底），与表格选中行、穿梭框选中项同一种标记，描边不换；只读时卡片不给悬停与按下面。竖排时卡片撑满一列，横排时各卡等分一行、放不下就折行。全选触发器在两种形态里都是一行。
 - `item-description` 是文案下方的说明行（13 / `--xh-fg-muted`），与文案一起构成条目的可及名；`collection` 里的 `description` 会自动铺出这一行。
+- 根是 `role=group`，`label` 部件真渲染了时才经 `aria-labelledby` 给组命名；不写标题时给根节点写 `aria-label`。Vue / React 的 `label` 属性不论手写选项还是数据驱动都会铺出标题。
 
 ### 组合
 
 - 每一项都是一个[复选框](./checkbox)，全选触发器是组内额外的一项，半选状态由组计算。
 - 在[表单](./form)中以整组的值数组作为一个字段参与校验与提交。
+- 直接放进[表单字段](./field)即可：字段的标题并进组名、说明进描述链，读屏进组时一起念出。
 
 ### 最佳实践
 
@@ -19246,6 +19251,7 @@ const items = [
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选方框使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框与文字的几何档位。 |
 | `variant` | `CheckboxGroupVariant` |  | 结构形态，默认 list；card 把每个条目画成一张可点的卡。 |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 会让组没有名字，作者写在根上的 aria-label 也会被它压住。 |
 | `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### CheckboxGroupNode
@@ -19355,7 +19361,7 @@ const items = [
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `role` | 'group' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
@@ -19366,7 +19372,7 @@ const items = [
 | `hidden-input` | `aria-hidden` | 'true' |
 | `select-all-trigger` | `aria-checked` | 'true' \| 'mixed' \| 'false' |
 | `select-all-trigger` | `aria-disabled` | 'false' \| 'true' |
-| `select-all-trigger` | `aria-labelledby` | `label` 部件的 id `select-all-trigger` 部件的 id |
+| `select-all-trigger` | `aria-labelledby` | `label` 部件的 id `select-all-trigger` 部件的 id \| `select-all-trigger` 部件的 id |
 | `select-all-trigger` | `aria-readonly` | 'true' \| 'false' |
 | `select-all-trigger` | `role` | 'checkbox' |
 
@@ -23787,6 +23793,7 @@ import {
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框、色块与清空按钮的几何档位。 |
 | `translations` | `Partial<ColorFieldTranslations>` |  | 读屏文案；默认英文。 |
 | `onValueChange` | `(details: ColorFieldValueChangeDetails) => void` |  |  |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 事件
 
@@ -23795,6 +23802,7 @@ import {
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `ColorFieldValueChangeDetails` | 已接受的值变化；detail 为 `{ value: string }`，输入途中不发出 |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 
@@ -24074,7 +24082,7 @@ import {
 
 加粗的是必需部件。
 
-`data-scope="color-picker"`：`root` · `label` · `control` · `trigger` · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `hue-slider` · `alpha-slider` · `channel-input` · `eye-dropper-trigger` · `swatch-picker` · `recent-swatch-picker` · `hidden-input`
+`data-scope="color-picker"`：`root` · `label` · `control` · `tag-list` · `trigger` · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `hue-slider` · `alpha-slider` · `channel-input` · `eye-dropper-trigger` · `swatch-picker` · `recent-swatch-picker` · `confirm-trigger` · `hidden-input`
 
 ## 示例
 
@@ -24507,7 +24515,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const color = ref("#3b82f6");
+const color = ref<string[]>(["#3b82f6"]);
 </script>
 
 <template>
@@ -24521,7 +24529,7 @@ const color = ref("#3b82f6");
       <XhColorPickerChannelInput channel="hex" />
     </XhColorPickerContent>
   </XhColorPickerRoot>
-  <p>当前：<code>{{ color }}</code></p>
+  <p>当前：<code>{{ color[0] }}</code></p>
 </template>
 ```
 
@@ -24549,7 +24557,7 @@ const color = ref("#3b82f6");
   const picker = document.getElementById("color-picker-inline");
   const readout = document.getElementById("color-picker-inline-value");
   picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value;
+    readout.textContent = event.detail.value[0];
   });
 </script>
 ```
@@ -24672,11 +24680,174 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 </script>
 ```
 
+### 多选成标签
+
+selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」收进值、浮层不收，可以接着添；预设色板点一下切换选中。选中的颜色在输入行里排成带色点的标签，点叉或在展开钮上按退格摘掉
+
+```vue
+<script setup lang="ts">
+import {
+  XhColorPickerAreaThumb,
+  XhColorPickerConfirmTrigger,
+  XhColorPickerContent,
+  XhColorPickerControl,
+  XhColorPickerHiddenInput,
+  XhColorPickerHueSlider,
+  XhColorPickerLabel,
+  XhColorPickerPositioner,
+  XhColorPickerRoot,
+  XhColorPickerSaturationArea,
+  XhColorPickerSwatch,
+  XhColorPickerSwatchPicker,
+  XhColorPickerTagList,
+  XhColorPickerTrigger,
+  XhColorPickerValueText,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const swatches = ["#00a98e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
+const value = ref<string[]>(["#00a98e", "#3b82f6"]);
+</script>
+
+<template>
+  <XhColorPickerRoot
+    v-model:value="value"
+    name="palette"
+    selection-mode="multiple"
+    :swatches="swatches"
+  >
+    <XhColorPickerLabel>配色</XhColorPickerLabel>
+    <XhColorPickerControl>
+      <XhColorPickerTagList />
+      <XhColorPickerTrigger>
+        <XhColorPickerSwatch />
+        <XhColorPickerValueText />
+      </XhColorPickerTrigger>
+    </XhColorPickerControl>
+    <XhColorPickerHiddenInput />
+    <XhColorPickerPositioner>
+      <XhColorPickerContent>
+        <XhColorPickerSaturationArea>
+          <XhColorPickerAreaThumb />
+        </XhColorPickerSaturationArea>
+        <XhColorPickerHueSlider />
+        <XhColorPickerSwatchPicker />
+        <XhColorPickerConfirmTrigger>添加</XhColorPickerConfirmTrigger>
+      </XhColorPickerContent>
+    </XhColorPickerPositioner>
+  </XhColorPickerRoot>
+
+  <span aria-live="polite" style="font-size: 13px">
+    当前值：{{ value.join("、") || "（空）" }}
+  </span>
+</template>
+```
+
+```html
+<xh-color-picker
+  id="color-picker-multiple"
+  name="palette"
+  selection-mode="multiple"
+  swatches="#00a98e,#3b82f6,#f59e0b,#ef4444,#8b5cf6"
+>
+  <div data-xh-part="root">
+    <label data-xh-part="label">配色</label>
+    <div data-xh-part="control">
+      <span data-xh-part="tag-list"></span>
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
+      </button>
+    </div>
+    <input data-xh-part="hidden-input" />
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="saturation-area">
+          <div data-xh-part="area-thumb"></div>
+        </div>
+        <div data-xh-part="hue-slider">
+          <div data-xh-part="control">
+            <div data-xh-part="track"></div>
+            <div data-xh-part="thumb"></div>
+          </div>
+        </div>
+        <div data-xh-part="swatch-picker">
+          <div data-xh-part="item" value="#00a98e">
+            <span data-xh-part="swatch"></span>
+            <span data-xh-part="indicator"></span>
+          </div>
+          <div data-xh-part="item" value="#3b82f6">
+            <span data-xh-part="swatch"></span>
+            <span data-xh-part="indicator"></span>
+          </div>
+          <div data-xh-part="item" value="#f59e0b">
+            <span data-xh-part="swatch"></span>
+            <span data-xh-part="indicator"></span>
+          </div>
+          <div data-xh-part="item" value="#ef4444">
+            <span data-xh-part="swatch"></span>
+            <span data-xh-part="indicator"></span>
+          </div>
+          <div data-xh-part="item" value="#8b5cf6">
+            <span data-xh-part="swatch"></span>
+            <span data-xh-part="indicator"></span>
+          </div>
+        </div>
+        <button data-xh-part="confirm-trigger">添加</button>
+      </div>
+    </div>
+  </div>
+</xh-color-picker>
+
+<span aria-live="polite" style="font-size: 13px">
+  当前值：<span id="color-picker-multiple-value">#00a98e、#3b82f6</span>
+</span>
+
+<script type="module">
+  const picker = document.getElementById("color-picker-multiple");
+  const readout = document.getElementById("color-picker-multiple-value");
+
+  const tagList = picker.querySelector('[data-xh-part="tag-list"]');
+
+  // 标签按 tags 铺：一个选中值一枚，带删除钮；放不下的那些合成一枚 +N，文字由元素填
+  function paintTags() {
+    const overflow = document.createElement("span");
+    overflow.dataset.xhPart = "overflow-tag";
+    tagList.replaceChildren(
+      ...picker.tags.map((tag) => {
+        const node = document.createElement("span");
+        node.dataset.xhPart = "tag";
+        node.setAttribute("value", tag.value);
+        const label = document.createElement("span");
+        label.dataset.xhPart = "tag-label";
+        label.textContent = tag.label;
+        const remove = document.createElement("button");
+        remove.dataset.xhPart = "item-delete-trigger";
+        node.append(label, remove);
+        return node;
+      }),
+      overflow,
+    );
+  }
+
+  // 多选的值是数组，只走 property：设初值、每次变更写回
+  function apply(next) {
+    picker.value = next;
+    readout.textContent = next.join("、") || "（空）";
+    paintTags();
+  }
+
+  apply(["#00a98e", "#3b82f6"]);
+  picker.addEventListener("value-change", (event) => apply(event.detail.value));
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
 
 - 用户需要自定义主题色、标注色或画布颜色，且不限于固定选项。
+- 需要挑出一组颜色（配色方案、图表系列色）时，用多选把它们收成一排标签。
 - 既需要可视化挑选（取色面、滑块）也需要精确输入（十六进制、分量框）。
 - 需要从屏幕取色。
 
@@ -24696,7 +24867,10 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 - 数值框输入只保留草稿，可解析时立即取值；不可解析时保留原文并报输入错误，回车同时拦截表单提交。
 - 屏幕取色通过浮层内的按钮触发，环境不提供 EyeDropper 时始终禁用；取到的颜色与色板、外部 setValue 走同一条取值路径。
 - 格式、输入、颜色解析与屏幕取色四路错误相互独立，修正一路不影响其他路。
-- 受控 `value` 与 `open`：宿主不写回时界面不变化，回调照常发出；表单出口经 `hidden-input` 提交当前值串。
+- 值恒为颜色串数组：单选恒为一项（取色器总有一个颜色），宿主可以写裸串；`onValueChange` 的 `value` 恒为数组。
+- 受控 `value` 与 `open`：宿主不写回时界面不变化，回调照常发出；表单出口经 `hidden-input` 提交选中的值串。
+- 多选（`selectionMode="multiple"`）时浮层里调出的工作色是草稿，按「添加」（`confirm-trigger`）收进值，浮层不收、工作色留着，接着调就能添下一个；预设色板点一下切换选中，格子本身不再标选中。工作色解析不出、已经选过（按颜色比较，写法不同也算同一个）或到了 `maxSelected` 时「添加」不可按。
+- 多选的选中值在输入行里排成标签（与[选择器](./select)多选同一套库内[标签](./tag)），按加入先后：每枚标签前一个该颜色的色点，值文字收起，触发钮只剩一颗显示工作色的色块并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签不截短、一行放不下就折行，超过 `maxTagCount`（默认 3）的折进 +N；表单一个选中值一份同名隐藏输入。
 - `inline` 是常驻形态：取色面直接铺在页面里，与浮层形态同一台机器、同一组部件，只是不写 `control` / `trigger` / `positioner`。取色面是静态内容面（surface 圆角、描边、不落影），不抢焦点、不入层栈，点外与 Escape 都不收起。
 - 最近使用色：一轮取色结束且颜色变了就记一笔，最新的在最前、同色只留一份、最多留 `maxRecentColors` 个（缺省 8）。浮层形态以收起为一轮，常驻形态以焦点离开取色面为一轮；只经 `setValue` 改的不记。`recentColors` 可受控，由宿主持久化；`recent-swatch-picker` 挂载点渲染它们，还没有时收起。
 
@@ -24710,6 +24884,7 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 
 - 通过 `swatches` 提供常用色，多数用户从这里即可完成选择。
 - 触发按钮内同时放色块与值串，读屏与视觉各有一路。
+- 多选时在浮层末尾放「添加」，并配上预设色板：常用色点一下就进出，自定义色调好再添。
 - 需要精确输入时放数值框；一个十六进制框比四个分量框更节省空间。
 
 ### 反模式
@@ -24725,7 +24900,7 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-color-picker>` |
-| Vue 组件 | `XhColorPickerAlphaSlider` `XhColorPickerAreaThumb` `XhColorPickerChannelInput` `XhColorPickerContent` `XhColorPickerControl` `XhColorPickerEyeDropperTrigger` `XhColorPickerHiddenInput` `XhColorPickerHueSlider` `XhColorPickerLabel` `XhColorPickerPositioner` `XhColorPickerRecentSwatchPicker` `XhColorPickerRoot` `XhColorPickerSaturationArea` `XhColorPickerSwatch` `XhColorPickerSwatchPicker` `XhColorPickerTrigger` `XhColorPickerValueText` |
+| Vue 组件 | `XhColorPickerAlphaSlider` `XhColorPickerAreaThumb` `XhColorPickerChannelInput` `XhColorPickerConfirmTrigger` `XhColorPickerContent` `XhColorPickerControl` `XhColorPickerEyeDropperTrigger` `XhColorPickerHiddenInput` `XhColorPickerHueSlider` `XhColorPickerItemDeleteTrigger` `XhColorPickerLabel` `XhColorPickerOverflowTag` `XhColorPickerPositioner` `XhColorPickerRecentSwatchPicker` `XhColorPickerRoot` `XhColorPickerSaturationArea` `XhColorPickerSwatch` `XhColorPickerSwatchPicker` `XhColorPickerTag` `XhColorPickerTagLabel` `XhColorPickerTagList` `XhColorPickerTrigger` `XhColorPickerValueText` |
 | 组合式函数 | `useColorPicker` |
 | 状态机 | `colorPickerMachine` |
 | 皮肤 | `@xihan-ui/styles/color-picker.css` |
@@ -24734,8 +24909,11 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 颜色值串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
-| `defaultValue` | `string` |  |  |
+| `value` | `string \| string[]` |  | 选中的颜色，值串数组。提供即受控：写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组；单选给空数组时按缺省色 #000000。 |
+| `defaultValue` | `string \| string[]` |  |  |
+| `selectionMode` | `ColorPickerSelectionMode` |  | 选择模式，默认 single。 |
+| `maxSelected` | `number` |  | multiple 下最多选几个颜色：选满后「添加」不可按、色块只能点掉已选的。非整数向下取整，小于 1 或不是有限数时不设上限。 |
+| `maxTagCount` | `number` |  | 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 |
 | `format` | `ColorFormat` |  | 值串的写法，默认 hex。修改它只改变对外的序列化，工作色恒为 HSVA。 |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
@@ -24765,7 +24943,7 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ColorPickerValueChangeDetails` | 颜色变化；detail 为 `{ value: string }` |
+| `value-change` | `ColorPickerValueChangeDetails` | 选中的颜色变化；detail 为 `{ value: string[] }`，单选恒为一项 |
 | `open-change` | `ColorPickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `color-error` | `ColorPickerErrorDetails` | 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象 |
 | `recent-colors-change` | `ColorPickerRecentColorsChangeDetails` | 一轮取色结束、颜色变了，最近使用色随之变化；detail 为 `{ recentColors: string[] }` |
@@ -24787,6 +24965,7 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 | `XhColorPickerChannelInput` | `channel` | `ColorPickerInputChannel` |  | 该输入框编辑的通道：hex 是整串，r/g/b 是分量，a 是透明度百分数；默认或无法识别时按 hex 处理。 |
 | `XhColorPickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhColorPickerRoot` | `children` | `SlotChildren<ColorPickerRootSlotProps>` |  |  |
+| `XhColorPickerTag` | `value` | `string` | 是 | 它代表哪个选中颜色。 |
 
 ### 状态
 
@@ -24811,7 +24990,7 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 
 **状态**：`closed` · `open` · `open.idle` · `open.dragging` · `open.picking`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `HSVA.SET` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `EYE_DROPPER.ERROR` · `ERROR.CLEAR` · `SESSION.END` · `RECENT.CLEAR` · `INLINE.SYNC` · `INLINE.CLOSE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `SELECTED.SET` · `VALUE.ADD` · `VALUE.REMOVE` · `VALUE.TOGGLE` · `TAG_LIST.TRACKED` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `HSVA.SET` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `EYE_DROPPER.ERROR` · `ERROR.CLEAR` · `SESSION.END` · `RECENT.CLEAR` · `INLINE.SYNC` · `INLINE.CLOSE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isOpenControlled` · `canInteract` · `canPick` · `isInline`
 
@@ -24822,7 +25001,9 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `value` | `string` | 当前值串（与 onValueChange 发出的是同一个）。 |
+| `value` | `string[]` | 选中的颜色，值串数组（与 onValueChange 发出的是同一个）：单选恒为一项，多选按加入先后。 |
+| `selectionMode` | `ColorPickerSelectionMode` |  |
+| `color` | `string` | 工作色的值串：触发钮里的色块与值文字显示它；单选时就是选中值，多选时是浮层里调着的草稿。 |
 | `rgba` | `ColorRgba` |  |
 | `hsva` | `ColorHsva` | 工作色。取色区与色相滑杆读取的都是它。 |
 | `format` | `ColorFormat` |  |
@@ -24836,18 +25017,29 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 | `swatches` | `string[]` | 预设色板（原样透传 swatches prop，默认为空数组）。 |
 | `inline` | `boolean` | 常驻形态。 |
 | `recentColors` | `string[]` | 最近使用色，最新的在最前。 |
+| `canAdd` | `boolean` | 多选时「添加」此刻可按：工作色还没选过、也没到 maxSelected。 |
+| `tags` | `ColorPickerTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 |
+| `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `hueSlider` | `ColorSliderApi<T>` | 色相颜色滑块的 api：部件属性与取值都从这里获取，DOM 带 data-scope="color-slider"。 |
 | `alphaSlider` | `ColorSliderApi<T>` | 透明度颜色滑块的 api。 |
 | `swatchPicker` | `ColorSwatchPickerApi<T>` | 预设色板的 api，DOM 带 data-scope="color-swatch-picker"。 |
 | `recentSwatchPicker` | `ColorSwatchPickerApi<T>` | 最近使用色那台色块选择器的 api。 |
 | `inputText` | `(channel: ColorPickerInputChannel) => string` | 某个数值框当前应显示的文字（有草稿显示草稿，否则显示规范文本）。 |
 | `setOpen` | `(next: boolean) => void` |  |
-| `setValue` | `(next: string) => void` |  |
+| `setValue` | `(next: string[]) => void` | 改选中值：单选取首项改工作色，多选整份替换。 |
+| `add` | `() => void` | 多选：把工作色收进值（与按「添加」同一条路）。 |
+| `deselect` | `(value: string) => void` | 多选：摘掉一个选中值。 |
 | `clearError` | `() => void` | 清除四路显式错误；屏幕取色重试也会先清除自己那一路。 |
 | `clearRecentColors` | `() => void` | 清空最近使用色。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
+| `getTagListProps` | `() => T['element']` | 标签行：多选时放在盒里、触发钮之前，收纳可见标签与 +N 标签；单选时整体 hidden。 |
+| `getTagProps` | `(props: ColorPickerTagProps) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"），另带 data-value 与画色点用的颜色。 |
+| `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）；标签与 +N 共用。 |
+| `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
+| `getItemDeleteTriggerProps` | `(props: ColorPickerTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；不占 Tab 位、按下不夺焦。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
 | `getSwatchProps` | `() => T['element']` |  |
@@ -24861,7 +25053,8 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 | `getEyeDropperTriggerProps` | `() => T['button']` |  |
 | `getSwatchPickerProps` | `() => T['element']` | 预设色板的挂载点，同时充当色板的根节点（role=radiogroup 与键盘处理都在它身上）。 |
 | `getRecentSwatchPickerProps` | `() => T['element']` | 最近使用色的挂载点，同上；还没有最近使用色时收起。 |
-| `getHiddenInputProps` | `() => T['input']` | 表单影子：值随表单提交。提供 name 后才带 name，未提供时不参与提交。 |
+| `getConfirmTriggerProps` | `() => T['button']` | 「添加」：多选时把工作色收进值，浮层不收；单选时 hidden。文字由作者写。 |
+| `getHiddenInputProps` | `(props?: ColorPickerHiddenInputProps) => T['input']` | 表单影子：值随表单提交。提供 name 后才带 name，未提供时不参与提交。 多选时一个选中值一份同名输入：传 `{ value }` 产出那一份，不传是首个选中值那一份。 |
 
 ## 无障碍
 
@@ -24871,6 +25064,7 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
+| `Backspace` | focus in trigger, multiple, 有选中值, not disabled/readOnly | 摘掉最后一个选中值（标签行末尾那一枚） |
 | `ArrowRight` / `ArrowLeft` | focus in area-thumb, not disabled/readOnly | 按 1 调饱和度；RTL 下左右对调，语义恒是"朝饱和走一格" |
 | `ArrowUp` / `ArrowDown` | focus in area-thumb, not disabled/readOnly | 按 1 调明度，屏幕向上恒是变亮，与 dir 无关 |
 | `Shift+ArrowRight` / `Shift+ArrowLeft` / `Shift+ArrowUp` / `Shift+ArrowDown` | focus in area-thumb, not disabled/readOnly | 同上，但一步走 10 |
@@ -24906,6 +25100,7 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 | `eye-dropper-trigger` | `aria-label` | label.eyeDropperTrigger |
 
 - 触发按钮是原生按钮，`aria-haspopup="dialog"`，名称由标题与当前值串合成；浮层是非模态 `role="dialog"`。
+- 多选标签上的删除钮不占 Tab 位，可及名取 `translations.deleteItem`；键盘从触发钮上按退格摘掉最后一个。色点只是辅助，标签文字就是值串，颜色不是唯一的信息通道。
 - 取色面的拇指是 `role="slider"`：`aria-valuenow` 报告饱和度，明度写入 `aria-valuetext`。
 - 两条滑块的名称与带单位的播报文本取自 `translations.channel` / `channelValueText`，由内嵌滑块读出。
 - 色板是 `role="radiogroup"`，每格 `role="radio"`；整组名称取 `translations.swatchGroup`，每格读 `translations.swatch(value)`；最近使用色同一套，整组名称取 `translations.recentSwatchGroup`。
@@ -24939,7 +25134,11 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
 | `control` | `data-xh-field-chrome` | '' |
+| `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
 | `control` | `data-xh-field-size` | props.size |
+| `tag-list` | `data-disabled` | ''（条件成立时才出现） |
+| `tag-list` | `data-instant` | ''（条件成立时才出现） |
+| `tag-list` | `data-xh-tag-list` | '' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
@@ -24983,6 +25182,15 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 | `eye-dropper-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `eye-dropper-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `eye-dropper-trigger` | `data-state` | 'picking' \| 'open' \| 'closed' |
+| `confirm-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-xh-action-control` | '' |
+| `confirm-trigger` | `data-xh-action-display` | 'always' |
+| `confirm-trigger` | `data-xh-action-profile` | 'text' |
+| `confirm-trigger` | `data-xh-action-size` | 'sm' |
+| `confirm-trigger` | `data-xh-action-variant` | 'solid' |
+| `confirm-trigger` | `data-xh-ink-surface` | '' |
+| `overflow-tag` | `data-count` | String(overflowCount) |
+| `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -25002,6 +25210,14 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 | `--xh-color-picker-action-radius` | `eye-dropper-trigger` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 eye-dropper-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-action-size` | `eye-dropper-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | color-picker 的 eye-dropper-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-color-picker-alpha-slider-gap` | `alpha-slider` | `gap` | `default` | `--xh-stack-gap-md` | color-picker 的 alpha-slider 部件 gap 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-bg` | `confirm-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | color-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-bg-active` | `confirm-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | color-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-bg-hover` | `confirm-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | color-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-fg` | `confirm-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | color-picker 的 confirm-trigger 部件 color 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-h` | `confirm-trigger` | `block-size` | `default` | `--xh-_action-profile-visual-size` | color-picker 的 confirm-trigger 部件 block-size 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-px` | `confirm-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | color-picker 的 confirm-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-radius` | `confirm-trigger` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 confirm-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-shadow` | `confirm-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | color-picker 的 confirm-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-color-picker-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | color-picker 的 content 部件 background 覆盖槽。 |
 | `--xh-color-picker-content-border` | `content` | `border` | `default` | `--xh-border-default` | color-picker 的 content 部件 border 覆盖槽。 |
 | `--xh-color-picker-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | color-picker 的 content 部件 color 覆盖槽。 |
@@ -25021,6 +25237,7 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 | `--xh-color-picker-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | color-picker 的 control 部件 color 覆盖槽。 |
 | `--xh-color-picker-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_color-picker-gap` | color-picker 的 control 部件 gap 覆盖槽。 |
 | `--xh-color-picker-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_color-picker-h` | color-picker 的 control 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-color-picker-control-max-h` | `control` | `max-block-size` | `xh-field-layout=multi-tag` | `--xh-viewport-h-sm` | color-picker 的 control 部件 max-block-size 覆盖槽。 |
 | `--xh-color-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | color-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-color-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_color-picker-px` | color-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-color-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | color-picker 的 control 部件 border-radius 覆盖槽。 |
@@ -25054,6 +25271,9 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 | `--xh-color-picker-swatch-picker-gap` | `recent-swatch-picker`<br>`swatch-picker` | `gap` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-_color-swatch-picker-gap` | color-picker 的 recent-swatch-picker、swatch-picker 部件 gap 覆盖槽。 |
 | `--xh-color-picker-swatch-radius` | `swatch` | `--xh-swatch-radius` | `default` | `--xh-shape-inset` | color-picker 的 swatch 部件 --xh-swatch-radius 覆盖槽。 |
 | `--xh-color-picker-swatch-size` | `swatch` | `--xh-swatch-size` | `default` | `--xh-_swatch-size` | color-picker 的 swatch 部件 --xh-swatch-size 覆盖槽。 |
+| `--xh-color-picker-tag-dot-border` | `root`<br>`tag-list` | `border` | `value` | `--xh-border-default` | color-picker 的 root、tag-list 部件 border 覆盖槽。 |
+| `--xh-color-picker-tag-dot-size` | `root`<br>`tag-list` | `block-size`<br>`inline-size` | `value` | `--xh-control-indicator-sm` | color-picker 的 root、tag-list 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-color-picker-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | color-picker 的 tag-list 部件 gap 覆盖槽。 |
 | `--xh-color-picker-thumb-border` | `area-thumb` | `border` | `default` | `--xh-color-neutral-0` | color-picker 的 area-thumb 部件 border 覆盖槽。 |
 | `--xh-color-picker-thumb-radius` | `area-thumb` | `border-radius` | `default` | `--xh-shape-circle` | color-picker 的 area-thumb 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-thumb-scale-dragging` | `area-thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-picker 的 area-thumb 部件 scale 覆盖槽。 |
@@ -25068,11 +25288,11 @@ const recent = ref<string[]>(["#ef4444", "#f59e0b"]);
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-color-picker-thumb-scale-dragging`。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -26221,6 +26441,7 @@ const swatches = [
 | `size` | `Size` |  | 尺寸：sm / md / lg，影响格子的边长与间距。 |
 | `tone` | `Tone` |  | 语气：决定选中环与选中标记使用哪族颜色。 |
 | `translations` | `Partial<ColorSwatchPickerTranslations>` |  |  |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby，名字交给 aria-label 的文案：指向未渲染的 id 是悬空引用。 |
 | `onValueChange` | `(details: ColorSwatchPickerValueChangeDetails) => void` |  | value 变化回调。 |
 
 ### ColorSwatchPickerNode
@@ -26321,7 +26542,7 @@ const swatches = [
 | --- | --- | --- |
 | `root` | `aria-invalid` | 'true' \| 'false' |
 | `root` | `aria-label` | label.group |
-| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `aria-readonly` | 'true' \| 'false' |
 | `root` | `aria-required` | 'true' \| 'false' |
 | `root` | `role` | 'radiogroup' |
@@ -26333,7 +26554,8 @@ const swatches = [
 | `indicator` | `aria-hidden` | 'true' |
 | `hidden-input` | `aria-hidden` | 'true' |
 
-- 根是 `role=radiogroup`，名称取 label 部件，未提供时读 `translations.group`。
+- 根是 `role=radiogroup`，名称取 label 部件，未提供时读 `translations.group`；`label` 部件真渲染了时才输出 `aria-labelledby`。Vue / React 的 `label` 属性不论手写格子还是数据驱动都会铺出标题。
+- 直接放进[表单字段](./field)时，字段的标题并进组名、说明进描述链。
 - 每格是 `role=radio` 并显式输出 `aria-checked`；名称依次取 `label`、`swatches` 中的 `label`、`translations.swatch(value)`，颜色串无法表达含义时务必提供名称。
 - 禁用格用 `aria-disabled` 表达，仍可聚焦，仍是方向键的起点。
 - 每格内有一个 `inert` 的隐藏原生 radio 承接表单提交，不进入焦点序列与可访问树。
@@ -27814,6 +28036,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入行高度、内边距与字号档位。 |
 | `onValueChange` | `(details: ComboboxValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onInputValueChange` | `(details: ComboboxInputValueChangeDetails) => void` |  | 输入串变化回调：调用方据此重新过滤候选。 |
 | `onOpenChange` | `(details: ComboboxOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
@@ -27836,6 +28059,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `ComboboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `input-value-change` | `ComboboxInputValueChangeDetails` | 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选 |
 | `open-change` | `ComboboxOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
@@ -29573,7 +29797,7 @@ const collection: ContextMenuNode[] = [
 ### 特性
 
 - 菜单默认贴近指针位置。
-- 支持分组、分隔线、标记位和子菜单。
+- 支持分组、分隔线、标记位和子菜单。数据驱动时节点写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。
 - `typeahead` 控制首字符检索，`longPressDelay` 设置长按时间。
@@ -29654,6 +29878,7 @@ const collection: ContextMenuNode[] = [
 | `groupLabel` | `string` |  | 分组标题文字，取本组首个提供它的条目；本组无人提供时不铺 group-label。 |
 | `separatorBefore` | `boolean` |  | 本条之前绘制一条分隔线；写在首条上不产出分隔线。本条领头一个分组时，分隔线绘制在分组外。 |
 | `closeOnSelect` | `boolean` |  | 选择型条目激活后是否关闭菜单；checkbox / radio 默认 false。 |
+| `children` | `MenuNode[]` |  | 子菜单的条目：给了 children 这一条就是子菜单的入口，Vue / React 的默认树按 children 递归铺出下一层， 深度不限；本条只能是普通条目（kind 为 item）。子层的选中经菜单树汇到根上，勾选与单选由各层自持。 手写部件时改用 Sub 部件；Web Components 由作者写 Light DOM，不读这一项。 |
 
 ### 事件
 
@@ -30538,6 +30763,7 @@ const value = ref<string | null>("2026-07-28T21:05");
 
 - `locale` 决定日期段的顺序和分隔方式。
 - `min` 与 `max` 限制可输入范围。
+- `placeholder` 给对象是逐段的占位串；给字符串是整条占位，一段都没填、焦点也不在段上时段位与分隔符让位给这句文字，焦点一进来就换回段位。
 - `granularity` 支持日期或精确到分钟的日期时间；`hourCycle={12}` 时小时段收 1-12，时刻段后面多出上下午段，值仍是 24 小时制的 ISO 串。
 - `year + week` 段集使用 ISO 周历，固定周一到周日，不随显示语言改变。
 - 不提供 `formatOptions`，也不解析 `YYYY/MM/DD` 这类格式串。能用 `Intl.DateTimeFormat` 选项表达的显示差异已经各有归口：段序与分隔符随 `locale`，由哪几段组成随 `granularity` / `segments`，小时制随 `hourCycle`。其余选项要么改变值的含义（两位年份还原不出唯一的世纪，`era` 需要另一套纪年），要么改变编辑方式（`month: 'long'` 的文字月份要按字母跳选，逐段键入与上下键加减都对不上）。格式串绕开 locale 的段序，还得自带一套解析器，同一个值在别的语言下会被写成对方读不懂的顺序。只是要换一种写法展示选中值时，用[时间戳](./timestamp)或 `Intl.DateTimeFormat` 另外格式化。
@@ -30592,12 +30818,13 @@ const value = ref<string | null>("2026-07-28T21:05");
 | `invalid` | `boolean` |  |  |
 | `required` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，ISO 串随表单一并提交。 |
-| `placeholder` | `{ readonly [K in DateSegmentType]?: string }` |  | 各段未填时显示的占位串，逐段覆盖内置默认（yyyy / mm / dd / hh / mm / ss）。 |
+| `placeholder` | `string \| DateSegmentPlaceholders` |  | 占位。给对象是逐段的占位串，覆盖内置默认（yyyy / mm / dd / hh / mm / ss）。 给字符串是整条占位：一段都没填、焦点也不在段上时，段位与分隔符让位给这句文字（「请选择生效时间」）， 焦点一进来就换回段位，段位仍显示内置的逐段占位。 |
 | `translations` | `DateFieldTranslations` |  | 各段的读屏名字，逐段覆盖内置默认。段是 spinbutton，没有名字时读屏只能朗读一串数字。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: DateFieldValueChangeDetails) => void` |  |  |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 事件
 
@@ -30606,6 +30833,7 @@ const value = ref<string | null>("2026-07-28T21:05");
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `DateFieldValueChangeDetails` | 值变化；detail 为 `{ value: string \| null }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 
@@ -30739,6 +30967,8 @@ const value = ref<string | null>("2026-07-28T21:05");
 | `control` | `data-xh-field-size` | props.size |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-text` | props.placeholder \| undefined |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-disabled` | ''（条件成立时才出现） |
 | `segment` | `data-focus` | ''（条件成立时才出现） |
@@ -30794,7 +31024,7 @@ const value = ref<string | null>("2026-07-28T21:05");
 | `--xh-date-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | date-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-date-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | date-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-date-field-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | date-field 的 segment-group 部件 color 覆盖槽。 |
-| `--xh-date-field-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | date-field 的 segment 部件 color 覆盖槽。 |
+| `--xh-date-field-placeholder-fg` | `segment`<br>`segment-group` | `color` | `placeholder`<br>`placeholder-shown` | `--xh-fg-subtle` | date-field 的 segment、segment-group 部件 color 覆盖槽。 |
 | `--xh-date-field-segment-bg-focus` | `segment` | `background` | `focus`<br>`focus-visible` | `--xh-_date-field-segment-bg` | date-field 的 segment 部件 background 覆盖槽。 |
 | `--xh-date-field-segment-bg-invalid-focus` | `segment` | `background` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-bg-subtle` | date-field 的 segment 部件 background 覆盖槽。 |
 | `--xh-date-field-segment-fg-focus` | `segment` | `color` | `focus`<br>`focus-visible`<br>`placeholder` | `--xh-_date-field-segment-fg` | date-field 的 segment 部件 color 覆盖槽。 |
@@ -31030,7 +31260,7 @@ import {
 
 加粗的是必需部件。
 
-`data-scope="date-picker"`：`root` · `label` · **`control`** · `segment-group` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
+`data-scope="date-picker"`：`root` · `label` · **`control`** · `tag-list` · `segment-group` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
 
 ## 示例
 
@@ -32757,6 +32987,221 @@ function literalBefore(type: string, index: number): string {
 </script>
 ```
 
+### 多选成标签
+
+selectionMode="multiple" 时选中的日期在输入行里排成标签，点标签上的叉或在日历钮上按退格摘掉，放不下的折进 +N；浮层选完不收起
+
+```vue
+<script setup lang="ts">
+import {
+  XhDatePickerCalendar,
+  XhDatePickerCell,
+  XhDatePickerCellTrigger,
+  XhDatePickerClearTrigger,
+  XhDatePickerContent,
+  XhDatePickerControl,
+  XhDatePickerGrid,
+  XhDatePickerGridBody,
+  XhDatePickerGridHead,
+  XhDatePickerHeader,
+  XhDatePickerHeading,
+  XhDatePickerHiddenInput,
+  XhDatePickerLabel,
+  XhDatePickerNextTrigger,
+  XhDatePickerPositioner,
+  XhDatePickerPrevTrigger,
+  XhDatePickerRoot,
+  XhDatePickerTagList,
+  XhDatePickerTrigger,
+  XhDatePickerWeekDay,
+  XhDatePickerWeekRow,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhDatePickerRoot
+    v-slot="{ weeks, weekDays }"
+    locale="zh-CN"
+    name="duty-days"
+    selection-mode="multiple"
+    placeholder="选择值班日期"
+    :default-value="['2026-10-08', '2026-10-15', '2026-10-22', '2026-10-29']"
+  >
+    <XhDatePickerLabel>值班日期</XhDatePickerLabel>
+    <XhDatePickerControl>
+      <XhDatePickerTagList />
+      <XhDatePickerClearTrigger />
+      <XhDatePickerTrigger />
+    </XhDatePickerControl>
+    <XhDatePickerHiddenInput />
+    <XhDatePickerPositioner>
+      <XhDatePickerContent>
+        <XhDatePickerCalendar>
+          <XhDatePickerHeader>
+            <XhDatePickerPrevTrigger aria-label="上个月" />
+            <XhDatePickerHeading />
+            <XhDatePickerNextTrigger aria-label="下个月" />
+          </XhDatePickerHeader>
+          <XhDatePickerGrid>
+            <XhDatePickerGridHead>
+              <XhDatePickerWeekRow>
+                <XhDatePickerWeekDay
+                  v-for="d in weekDays"
+                  :key="d.value"
+                  :value="d.value"
+                />
+              </XhDatePickerWeekRow>
+            </XhDatePickerGridHead>
+            <XhDatePickerGridBody>
+              <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].start">
+                <XhDatePickerCell
+                  v-for="day in week"
+                  :key="day.start"
+                  :value="day.start"
+                >
+                  <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
+                </XhDatePickerCell>
+              </XhDatePickerWeekRow>
+            </XhDatePickerGridBody>
+          </XhDatePickerGrid>
+        </XhDatePickerCalendar>
+      </XhDatePickerContent>
+    </XhDatePickerPositioner>
+  </XhDatePickerRoot>
+</template>
+```
+
+```html
+<div id="date-picker-multiple-mount"></div>
+
+<template id="date-picker-multiple-template">
+  <xh-date-picker locale="zh-CN" name="duty-days" selection-mode="multiple" placeholder="选择值班日期">
+    <div
+      data-xh-part="root"
+    >
+      <span data-xh-part="label">值班日期</span>
+      <div data-xh-part="control">
+        <span data-xh-part="tag-list"></span>
+        <button data-xh-part="clear-trigger"></button>
+        <button data-xh-part="trigger"></button>
+      </div>
+      <input data-xh-part="hidden-input" />
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="calendar">
+            <div data-xh-part="header">
+              <button data-xh-part="prev-trigger" aria-label="上个月"></button>
+              <div data-xh-part="heading"></div>
+              <button data-xh-part="next-trigger" aria-label="下个月"></button>
+            </div>
+            <div data-xh-part="grid">
+              <div data-xh-part="grid-head">
+                <div data-xh-part="week-row"></div>
+              </div>
+              <div data-xh-part="grid-body"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-date-picker>
+</template>
+
+<script type="module">
+  const fragment = document
+    .getElementById("date-picker-multiple-template")
+    .content.cloneNode(true);
+  const picker = fragment.querySelector("xh-date-picker");
+  const heading = fragment.querySelector('[data-xh-part="heading"]');
+  const head = fragment.querySelector(
+    '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
+  );
+  const body = fragment.querySelector('[data-xh-part="grid-body"]');
+  const tagList = fragment.querySelector('[data-xh-part="tag-list"]');
+
+  // 已经画出来的是哪个月
+  let month = "";
+
+  // 表头七列只跟 locale 走，画一次就够
+  function paintHead() {
+    head.replaceChildren(
+      ...picker.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+  }
+
+  // 换了月才重画格子：同月内移动焦点时格子原样留着，选中态与焦点态由元素自己写
+  function paintBody() {
+    const first = picker.weeks[0][0].start;
+    if (first === month) {
+      return;
+    }
+    month = first;
+    heading.textContent = picker.headingLabel;
+    body.replaceChildren(
+      ...picker.weeks.map((week) => {
+        const row = document.createElement("div");
+        row.dataset.xhPart = "week-row";
+        for (const day of week) {
+          const cell = document.createElement("div");
+          cell.dataset.xhPart = "cell";
+          cell.setAttribute("value", day.start);
+          const trigger = document.createElement("div");
+          trigger.dataset.xhPart = "cell-trigger";
+          trigger.textContent = day.day;
+          cell.append(trigger);
+          row.append(cell);
+        }
+        return row;
+      }),
+    );
+  }
+
+  // 标签按 tags 铺：一个选中值一枚，带删除钮；放不下的那些合成一枚 +N，文字由元素填
+  function paintTags() {
+    tagList.replaceChildren(
+      ...picker.tags.map((tag) => {
+        const node = document.createElement("span");
+        node.dataset.xhPart = "tag";
+        node.setAttribute("value", tag.value);
+        const label = document.createElement("span");
+        label.dataset.xhPart = "tag-label";
+        label.textContent = tag.label;
+        const remove = document.createElement("button");
+        remove.dataset.xhPart = "item-delete-trigger";
+        node.append(label, remove);
+        return node;
+      }),
+      overflowTag(),
+    );
+  }
+
+  // +N 那一枚：留空，文字由元素填
+  function overflowTag() {
+    const node = document.createElement("span");
+    node.dataset.xhPart = "overflow-tag";
+    return node;
+  }
+
+  // 多选的值是数组，只走 property
+  picker.defaultValue = ["2026-10-08", "2026-10-15", "2026-10-22", "2026-10-29"];
+
+  // 元素一连上就能读 weeks / weekDays，接线排在这之后，格子赶得上
+  document.getElementById("date-picker-multiple-mount").append(fragment);
+  paintHead();
+  paintBody();
+  paintTags();
+
+  picker.addEventListener("focused-value-change", paintBody);
+  picker.addEventListener("value-change", paintTags);
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -32773,6 +33218,8 @@ function literalBefore(type: string, index: number): string {
 ### 特性
 
 - `granularity` 支持 day / week / month / quarter / year，`selectionMode` 独立控制单选或多选。
+- 多选（`selectionMode="multiple"`）时选中的日期在输入行里排成标签（库内 [标签](./tag)，与[选择器](./select)多选同一套）：段位收起，日历钮常驻并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签文字按粒度与 `locale` 排出（日 2026/10/02、月 2026年10月、周 2026-W40、季 2026-Q4），标签是定长文字、不截短，一行放不下就折到下一行，盒随行数长高、到上限后在盒内滚动；超过 `maxTagCount`（默认 3）的折进 +N；没有选中时整条 `placeholder` 落在标签行上；表单一个选中值一份同名隐藏输入。
+- `placeholder` 给字符串是整条占位：一段都没填、焦点也不在段上时输入行显示这句文字（「请选择生效时间」），段位与分隔符淡出让位，焦点一进到段上就换回 yyyy / mm / dd 段位；给对象是逐段的占位串。整条占位由皮肤以生成内容画出，段位仍可聚焦、仍在读屏树里。
 - 周选择直接渲染整周周期格；不再需要 `weekSelection` 特殊开关。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
 - `min`、`max` 与 `isDateUnavailable` 限制可选日期。
 - `presets` 提供常用日期快捷项。
@@ -32817,7 +33264,7 @@ function literalBefore(type: string, index: number): string {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-picker>` |
-| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHeadingMonthTrigger` `XhDatePickerHeadingYearTrigger` `XhDatePickerHiddenInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerNextYearTrigger` `XhDatePickerPositioner` `XhDatePickerPreset` `XhDatePickerPresetGroup` `XhDatePickerPrevTrigger` `XhDatePickerPrevYearTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerSegmentGroup` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekNumber` `XhDatePickerWeekRow` |
+| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHeadingMonthTrigger` `XhDatePickerHeadingYearTrigger` `XhDatePickerHiddenInput` `XhDatePickerItemDeleteTrigger` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerNextYearTrigger` `XhDatePickerOverflowTag` `XhDatePickerPositioner` `XhDatePickerPreset` `XhDatePickerPresetGroup` `XhDatePickerPrevTrigger` `XhDatePickerPrevYearTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerSegmentGroup` `XhDatePickerTag` `XhDatePickerTagLabel` `XhDatePickerTagList` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekNumber` `XhDatePickerWeekRow` |
 | 组合式函数 | `useDatePicker` |
 | 状态机 | `datePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-picker.css` |
@@ -32837,6 +33284,7 @@ function literalBefore(type: string, index: number): string {
 | `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日 … 6 = 星期六（与日历选择器同一套写法）；不给按 locale。 只改浮层日历的表头、每一行的行首与 Home / End，月份名、星期名与段位先后仍按 locale。 |
 | `selectionMode` | `CalendarPickerSelectionMode` |  | 选择模式，默认 single。区间选择是另一个组件（日期范围选择器）。 |
 | `maxSelected` | `number` |  | multiple 下最多选几个周期，交给内嵌日历：选满后没选中的格子不可再加选，已选的仍可点掉。 带的日期比它多的快捷选项不可按下。非整数向下取整，小于 1 或不是有限数时不设上限。 |
+| `maxTagCount` | `number` |  | 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 |
 | `isDateUnavailable` | `(value: string) => boolean` |  | 不可用判定，接收 ISO 串。界外与判定为真的日期同等处理。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列，日历格子全部为 aria-disabled。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、日历照常翻月浏览，但选中值不可修改。 |
@@ -32846,6 +33294,7 @@ function literalBefore(type: string, index: number): string {
 | `granularity` | `CalendarGranularity` |  | 选择粒度；与 selectionMode 正交。输入行与周期网格都由它决定。 |
 | `activeView` | `CalendarView` |  | 面板当前所在的层级。提供即受控；未提供时跟随 granularity，每次展开都回到目标粒度。 点击标题中的年 / 月会修改它。 没有配套的 defaultActiveView：面板每次展开都会重置该档，非受控初值没有生效时刻， 提供后也观察不到任何效果。修改初始层级使用 granularity。 |
 | `segments` | `DateSegmentSet` |  | 输入行铺设的段。未提供时按 granularity 推导：按周为「2026-33」、按月为「2026-05」、 按季度为「2026-Q2」、按年为「2026」，按天则按 locale 排列年月日。 |
+| `placeholder` | `string \| DateSegmentPlaceholders` |  | 占位。给字符串是整条占位：一段都没填、焦点也不在段上时，输入行显示这句文字（「请选择生效时间」）， 焦点进到段上即换回段位。给对象是逐段的占位串，覆盖内置的 yyyy / mm / dd。 |
 | `presets` | `DatePickerPreset[]` |  | 快捷选项（「今天」「明天」等）。提供后浮层中多出一列，点击即整份写入选中值。 日期需计算后传入：连接层每帧求值，把 `today()` 放进渲染期会跨零点得出两个结果。 与 selectionMode 不匹配（单选提供了多条）、落在 min / max 之外或被 isDateUnavailable 判定不可用的选项 自动不可按下；showTime 下写入的日期附带当前已选的时间。 |
 | `visibleCount` | `number` |  | 展示的连续日历面板数；默认 1。 |
 | `fixedWeeks` | `boolean` |  | 日历恒渲染六行，默认开启。关闭后网格按当月实际周数收缩，翻页时浮层高度随之变化。 |
@@ -32864,6 +33313,7 @@ function literalBefore(type: string, index: number): string {
 | `timeStep` | `TimeStep` |  | showTime 时间列按单位的步进：`{ hour?, minute?, second? }`，各单位缺省 1。只影响列里的格，不限制段位上手动输入的数。 |
 | `isTimeUnavailable` | `TimeUnavailablePredicate` |  | showTime 时间列的逐格可选性。value 是两位补零的格值，时列恒按 24 小时制给出； context 带已选的时（24 小时制）与分、这份时间所属的日期（date，还没有值时是聚焦日），index 恒为 null。 判定为真的格子仍可聚焦，只是按不下去，与 min / max 之外的时刻同等对待。 |
 | `onValueChange` | `(details: DatePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: DatePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onFocusedValueChange` | `(details: DatePickerFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻月、展开、段位输入都会发出）。 网格由外部渲染，不监听该事件时日历不会换月。 |
 | `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板所在层级变化（点击标题向上、点击格子向下都会发出）；受控时是唯一出口。 |
@@ -32885,6 +33335,7 @@ function literalBefore(type: string, index: number): string {
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `DatePickerValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `DatePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `focused-value-change` | `DatePickerFocusChangeDetails` | 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格 |
 | `active-view-change` | `CalendarViewChangeDetails` | 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重绘网格 |
@@ -32920,6 +33371,7 @@ function literalBefore(type: string, index: number): string {
 | `XhDatePickerSegment` | `index` | `number \| string` |  | 段位下标，兼收字符串。 |
 | `XhDatePickerSegment` | `segment` | `DateSegmentType` |  | 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 |
 | `XhDatePickerSegment` | `children` | `SlotChildren<DatePickerSegmentSlotProps>` |  |  |
+| `XhDatePickerTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
 | `XhDatePickerWeekDay` | `value` | `number \| string` | 是 | 列序 0-6，兼收字符串。 |
 | `XhDatePickerWeekNumber` | `value` | `string` | 是 | 该行行首那一天的 ISO 串。 |
 
@@ -32942,7 +33394,7 @@ function literalBefore(type: string, index: number): string {
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `VALUE.CLEAR` · `FOCUSED.SET` · `VIEW.SET` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `VALUE.CLEAR` · `VALUE.REMOVE` · `TAG_LIST.TRACKED` · `FOCUSED.SET` · `VIEW.SET` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isOpenControlled` · `closesOnSelect` · `canPress`
 
@@ -32964,6 +33416,10 @@ function literalBefore(type: string, index: number): string {
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` | 校验失败：作者标记的或越界。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `tags` | `DatePickerTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 |
+| `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
+| `deselect` | `(value: string) => void` | 多选时摘掉一个选中值。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `clear` | `() => void` |  |
@@ -32981,7 +33437,12 @@ function literalBefore(type: string, index: number): string {
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
-| `getSegmentGroupProps` | `() => T['element']` | role=group 的分段容器，段位挂在其中。 |
+| `getTagListProps` | `() => T['element']` | 标签行：多选时放在盒里，收纳可见标签与 +N 标签；没有选中时承载整条占位。单选时整体 hidden。 |
+| `getTagProps` | `(props: DatePickerTagProps) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按盒的面派生，另带 data-value。 |
+| `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 |
+| `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
+| `getItemDeleteTriggerProps` | `(props: DatePickerTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem。 不占 Tab 位、按下不夺焦；键盘在触发钮上按退格删掉最后一个。 |
+| `getSegmentGroupProps` | `() => T['element']` | role=group 的分段容器，段位挂在其中；多选时整体 hidden，选中值改由标签行呈现。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
@@ -33009,6 +33470,7 @@ function literalBefore(type: string, index: number): string {
 | `ArrowUp` / `ArrowDown` / `Home` / `End` | open, focus in 快捷选项列 | 在快捷选项之间移动焦点，到头回绕；不写值 |
 | `Enter` / `Space` | open, focus in 某条快捷选项 | 把这条快捷选项整份写进选中值；closeOnSelect 时收起浮层 |
 | `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点移入；触发按钮是可选部件，键盘入口不能只挂在它上面 |
+| `Backspace` | focus in trigger, multiple, 有选中值, not disabled/readOnly | 摘掉最后一个选中值（标签行末尾那一枚）；多选时段位不出现，触发钮就是键盘入口 |
 | `Enter` | focus in 某一段, open | 收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势 |
 | `Enter` / `Space` | held on trigger / confirm-trigger（not disabled）、clear-trigger（可清）、preset 或 time-item（open, not disabled/readOnly, 该条可按） | 按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，浮层收起时一并撤下。日历里的部件由 calendar-picker 自己投影 |
 
@@ -33075,12 +33537,20 @@ function literalBefore(type: string, index: number): string {
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
 | `control` | `data-xh-field-chrome` | '' |
+| `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
 | `control` | `data-xh-field-size` | props.size |
+| `tag-list` | `data-disabled` | ''（条件成立时才出现） |
+| `tag-list` | `data-instant` | ''（条件成立时才出现） |
+| `tag-list` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `tag-list` | `data-placeholder-text` | props.placeholder \| undefined \| undefined |
+| `tag-list` | `data-xh-tag-list` | '' |
 | `segment-group` | `data-complete` | ''（条件成立时才出现） |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-empty` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-out-of-range` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-text` | props.placeholder \| undefined |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -33133,6 +33603,8 @@ function literalBefore(type: string, index: number): string {
 | `confirm-trigger` | `data-xh-action-size` | 'sm' |
 | `confirm-trigger` | `data-xh-action-variant` | 'solid' |
 | `confirm-trigger` | `data-xh-ink-surface` | '' |
+| `overflow-tag` | `data-count` | String(overflowCount) |
+| `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -33177,12 +33649,13 @@ function literalBefore(type: string, index: number): string {
 | `--xh-date-picker-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | date-picker 的 control 部件 color 覆盖槽。 |
 | `--xh-date-picker-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_date-picker-gap` | date-picker 的 control 部件 gap 覆盖槽。 |
 | `--xh-date-picker-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_date-picker-control-h` | date-picker 的 control 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-date-picker-control-max-h` | `control` | `max-block-size` | `xh-field-layout=multi-tag` | `--xh-viewport-h-sm` | date-picker 的 control 部件 max-block-size 覆盖槽。 |
 | `--xh-date-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | date-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_date-picker-control-px` | date-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-date-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | date-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-date-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-picker 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-date-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | date-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
-| `--xh-date-picker-font-size` | `segment-group` | `font-size` | `default` | `--xh-_date-picker-font-size` | date-picker 的 segment-group 部件 font-size 覆盖槽。 |
+| `--xh-date-picker-font-size` | `segment-group`<br>`tag-list` | `font-size` | `default` | `--xh-_date-picker-font-size` | date-picker 的 segment-group、tag-list 部件 font-size 覆盖槽。 |
 | `--xh-date-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-date-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-date-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | date-picker 的 label 部件 color 覆盖槽。 |
@@ -33191,9 +33664,10 @@ function literalBefore(type: string, index: number): string {
 | `--xh-date-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | date-picker 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-date-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | date-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-date-picker-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | date-picker 的 segment-group 部件 color 覆盖槽。 |
-| `--xh-date-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | date-picker 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-date-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-_date-picker-available-h` | date-picker 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-date-picker-panel-divider` | `calendar` | `border-block-start`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-solid-separator` | date-picker 的 calendar 部件 border-block-start、border-inline-start 覆盖槽。 |
 | `--xh-date-picker-panel-gap` | `calendar`<br>`preset-group` | `padding-block-start`<br>`padding-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-space-3` | date-picker 的 calendar、preset-group 部件 padding-block-start、padding-inline-start 覆盖槽。 |
+| `--xh-date-picker-placeholder-fg` | `segment-group`<br>`tag-list` | `color` | `placeholder-shown` | `--xh-fg-subtle` | date-picker 的 segment-group、tag-list 部件 color 覆盖槽。 |
 | `--xh-date-picker-preset-bg-hover` | `preset` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | date-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-date-picker-preset-bg-pressed` | `preset` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | date-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-date-picker-preset-check-fg` | `preset` | `background-color` | `default` | `--xh-_date-picker-check-fg` | date-picker 的 preset 部件 background-color 覆盖槽。 |
@@ -33206,6 +33680,7 @@ function literalBefore(type: string, index: number): string {
 | `--xh-date-picker-preset-px` | `preset` | `inset-inline-end`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-space-3` | date-picker 的 preset 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。 |
 | `--xh-date-picker-preset-py` | `preset` | `padding-block` | `default` | `--xh-space-1` | date-picker 的 preset 部件 padding-block 覆盖槽。 |
 | `--xh-date-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-inset` | date-picker 的 preset 部件 border-radius 覆盖槽。 |
+| `--xh-date-picker-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | date-picker 的 tag-list 部件 gap 覆盖槽。 |
 | `--xh-date-picker-time-column-gap` | `time-column` | `gap` | `default` | `0` | date-picker 的 time-column 部件 gap 覆盖槽。 |
 | `--xh-date-picker-time-column-h` | `time-column` | `block-size` | `default` | `--xh-overlay-calendar-column-h` | date-picker 的 time-column 部件 block-size 覆盖槽。 |
 | `--xh-date-picker-time-column-min-w` | `time-column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
@@ -33230,9 +33705,9 @@ function literalBefore(type: string, index: number): string {
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -35113,6 +35588,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入参不参与提交。
+- `startPlaceholder` / `endPlaceholder` 是两组段位各自的整条占位：哪一端一段都没填、焦点也不在它的段上，就在那一组显示这句文字（「开始日期」「结束日期」）；`placeholder` 是两端共用的逐段占位串。
 - 浮层内是[日历范围选择器](./calendar-range-picker)：先选起点再选终点，两端都落定后才写值并收起浮层；支持按住拖选与拖动已选区间的一端。
 - `granularity` 支持 day / week / month / quarter / year，输入段、网格和周期边界一起切换。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
 - `min`、`max`、`isDateUnavailable`（第二个参数是当前起点）与 `allowsNonContiguousRanges` 一并转给日历。
@@ -35178,6 +35654,9 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `required` | `boolean` |  | 必填标注，写入每一段的 aria-required。 |
 | `name` | `string` |  | 起点隐藏输入的表单字段名；提供后才带 name，ISO 串随表单一并提交。 |
 | `endName` | `string` |  | 终点隐藏输入的表单字段名；未提供时终点不参与提交。 |
+| `placeholder` | `DateSegmentPlaceholders` |  | 逐段的占位串，两组段位共用，覆盖内置的 yyyy / mm / dd。 |
+| `startPlaceholder` | `string` |  | 起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字（「开始日期」），焦点进到段上即换回段位。 |
+| `endPlaceholder` | `string` |  | 终点那组段位的整条占位，规则同 startPlaceholder。 |
 | `granularity` | `CalendarGranularity` |  | 选择粒度。输入行与周期网格都由它决定。 |
 | `activeView` | `CalendarView` |  | 面板当前所在的层级。提供即受控；未提供时跟随 granularity，每次展开都回到目标粒度。 点击标题中的年 / 月会修改它。 |
 | `segments` | `DateSegmentSet` |  | 输入行铺设的段。未提供时按 granularity 推导：按周为「2026-33」、按月为「2026-05」、 按季度为「2026-Q2」、按年为「2026」，按天则按 locale 排列年月日。 |
@@ -35202,6 +35681,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `activeIndex` | `DateRangePickerEndIndex` |  | 当前编辑区间的哪一端。提供即受控；未提供时每次展开都重新定：从终点那组段位展开为 1，其余为 0。 聚焦某一组段位、点某一端的时间格时随之改写。为 1 且已有起点时日历只改终点： 点在起点那一天或之后即落终点、起点不动，点在起点之前从那一天重新开始挑。 没有配套的 defaultActiveIndex：它每次展开都会重定，非受控初值没有生效时刻。 |
 | `onActiveIndexChange` | `(details: DateRangePickerActiveIndexChangeDetails) => void` |  | 当前编辑的一端变化；受控时是唯一出口。 |
 | `onValueChange` | `(details: DateRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: DateRangePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onFocusedValueChange` | `(details: DateRangePickerFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻月、展开、段位输入都会发出）。 网格由外部渲染，不监听该事件时日历不会换月。 |
 | `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板所在层级变化（点击标题向上、点击格子向下都会发出）；受控时是唯一出口。 |
@@ -35213,6 +35693,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `DateRangePickerValueChangeDetails` | 区间两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `DateRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `focused-value-change` | `DateRangePickerFocusChangeDetails` | 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格 |
 | `active-view-change` | `CalendarViewChangeDetails` | 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重绘网格 |
@@ -35423,6 +35904,8 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `segment-group` | `data-index` | String(index) |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-out-of-range` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-text` | props.endPlaceholder \| props.startPlaceholder \| undefined |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -35545,9 +36028,10 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `--xh-date-range-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | date-range-picker 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-date-range-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | date-range-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-date-range-picker-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | date-range-picker 的 segment-group 部件 color 覆盖槽。 |
-| `--xh-date-range-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | date-range-picker 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-date-range-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-_date-range-picker-available-h` | date-range-picker 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-date-range-picker-panel-divider` | `calendar` | `border-block-start`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-solid-separator` | date-range-picker 的 calendar 部件 border-block-start、border-inline-start 覆盖槽。 |
 | `--xh-date-range-picker-panel-gap` | `calendar`<br>`preset-group` | `padding-block-start`<br>`padding-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-space-3` | date-range-picker 的 calendar、preset-group 部件 padding-block-start、padding-inline-start 覆盖槽。 |
+| `--xh-date-range-picker-placeholder-fg` | `segment-group` | `color` | `placeholder-shown` | `--xh-fg-subtle` | date-range-picker 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-date-range-picker-preset-bg-hover` | `preset` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | date-range-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-date-range-picker-preset-bg-pressed` | `preset` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | date-range-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-date-range-picker-preset-check-fg` | `preset` | `background-color` | `default` | `--xh-_date-range-picker-check-fg` | date-range-picker 的 preset 部件 background-color 覆盖槽。 |
@@ -37252,7 +37736,7 @@ async function remove(): Promise<void> {
 ### 特性
 
 - `modal` 决定是否锁住下层：非模态不创建遮罩，页面仍可点击、聚焦和滚动；展开期间切换会同步更新这些约束。
-- 焦点进入时落在 `initialFocus`，关闭后归还触发器。
+- 焦点进入时落在 `initialFocus`；没给时落在内容里第一个可聚焦的控件上，越过关闭钮与拖动把手（除它们之外没有可聚焦的才落在关闭钮上），`alertdialog` 落在内容容器本身。关闭后归还触发器。
 - `closeOnEscape` 与 `closeOnInteractOutside` 可分别关闭，避免填写中的表单因误点外部而丢失。
 - 内容区可以内部滚动。Body 是模态滚动面：滚到头不带动页面，内容高度变化时保留稳定的滚动条空道。
 - `draggable` 让面板可以挪走：指针按住标题栏（header，没写 header 时是 title）即跟手，落在标题栏里的按钮、链接与表单控件照常点；面板四边始终夹在视口内，每次打开都从居中落点起。键盘经 `drag-trigger` 挪：它是一块透明的把手，放在 header 里时铺满标题栏，焦点落在它上面时方向键挪一步（10px）、Shift 挪一大步（50px）、Enter / Space 回到居中；初始焦点越过它，落到第一个真正的控件上。位移写成 content 上的两个私有槽、按 transform 平移，与进出场的 translate / scale 叠加，拖过的面板从拖到的位置退场。Web Components 侧的属性是 `panel-draggable`：`draggable` 是 HTML 全局属性，写在宿主上会把它变成原生拖放源。
@@ -40079,6 +40563,7 @@ const panel = ref<HTMLElement | null>(null);
 ### 特性
 
 - `side` 决定滑出方向；`contained` 让它只占据某个容器而不是整个视口。
+- 焦点进入时落在 `initialFocus`；没给时落在内容里第一个可聚焦的控件上，越过关闭钮与改尺把手（除它们之外没有可聚焦的才落在关闭钮上）。关闭后归还触发器。
 - `modal=false` 时不渲染遮罩，定位层也不截获页面指针；页面可以与抽屉并行交互。展开期间切换 `modal`，滚动锁、背景失活与焦点陷阱会同步切换。
 - `resizable` 在朝向页面的那条边上放一根改尺把手（`resize-trigger`，role=separator）：拖动它面板沿贴边方向变宽（左右放置）或变高（上下放置），聚焦后方向键推一步（8px）、Shift 大步（40px）、Home / End 推到下限与上限。推向页面那一侧变厚：从右往左排版时 `right` 贴在屏幕左边，把手与推的方向一起翻过来。厚度夹在 `minPanelSize`（缺省 160）与 `maxPanelSize` 之间，且不超出视口（`contained` 时是所在容器）。`panelSize` / `defaultPanelSize` / `onPanelSizeChange` 走受控与非受控；没调过时面板按 `size` 档绘制。拖动走 `@xihan-ui/pointer` 的指针会话，步长与 Resizable 同一档。把手是 content 里的绝对定位节点，content 自己滚动（不用 body 段）时它会随内容滚走，长内容请放进 body。
 - 关闭时内容立即失活并退出可访问树；面板与遮罩全部完成退场后释放模态资源并发出 `onExitComplete` / `exit-complete`。退场中重开不会被旧完成关闭，卸载立即清理。
@@ -42864,10 +43349,13 @@ import {
 - `disabled`、`readOnly`、`invalid` 和 `required` 可传递给内部控件。
 - 说明和错误信息可以同时显示。
 - `FieldControl` 默认将属性合并到唯一子节点。
+- 字段的标签、说明、状态与控件 id 沿组件树（Web Components 沿 DOM 祖先链）交给子树里的库内控件。组合控件内嵌的输入（图标选择器里的搜索框、筛选框）不该被读成外层字段的名字时，包进 `XhFieldBoundary`（Web Components 为 `display: contents` 的 `<xh-field-boundary>`）：边界后面的控件不再继承外层字段与表单字段组。浮层内容经 Portal 搬到落点后已自动断开，放在弹出层、对话框里的输入框不归外层字段管。
+- 字段族控件（文本框、下拉、日期、数字等）放进字段即铺满字段宽，跟着表单的列走，不必再在根上写 `inline-size: 100%`；单独摆放时仍是 16rem 缺省宽。横排一行流（`layout="inline"`）的表单里字段按内容收，那一档仍取缺省宽。
 
 ### 组合
 
 - 包裹任何单一控件：[文本字段](./text-field)、[选择器](./select)、[开关](./switch)等会把字段状态接到实际控件上。
+- 组类控件同样直接放进来：[单选组](./radio-group)、[复选框组](./checkbox-group)、[色板选择](./color-swatch-picker)、[切换按钮组](./toggle-group)、[评分](./rating)、[滑块](./slider)、[分格输入](./pin-input)把字段的标题并进组名（滑块落在拇指上）、说明进描述链；校验、必填与只读按字段状态由组件自己投影。
 - 多个字段一起提交与校验时放入[表单](./form)；一组相关字段使用[字段集](./fieldset)分区。
 
 ### 最佳实践
@@ -42890,7 +43378,7 @@ import {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-field>` |
-| Vue 组件 | `XhFieldControl` `XhFieldDescription` `XhFieldErrorText` `XhFieldLabel` `XhFieldRoot` |
+| Vue 组件 | `XhFieldBoundary` `XhFieldControl` `XhFieldDescription` `XhFieldErrorText` `XhFieldLabel` `XhFieldRoot` |
 | 组合式函数 | `useField` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/field.css` |
@@ -42919,6 +43407,7 @@ import {
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhFieldBoundary` | `children` | `ReactNode` |  |  |
 | `XhFieldControl` | `asChild` | `boolean` |  | 把接线属性合并到唯一的子节点上，默认开启。 子节点是薄封装（根不是可聚焦元素）时关闭它：属性只经函数式 children 交出， 由封装内部调用 useFieldControl 绑定到真实控件上。 |
 | `XhFieldControl` | `children` | `SlotChildren<FieldControlSlotProps>` |  |  |
 
@@ -45205,6 +45694,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `autoUpload` | `boolean` |  | 接受后即自动开始传输，默认 true；关闭后由 api.startUpload 逐个开始。 |
 | `translations` | `Partial<FileUploadTranslations>` |  |  |
 | `onFilesChange` | `(details: FileUploadFilesChangeDetails) => void` |  | 列表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onFileAccept` | `(details: FileUploadFileAcceptDetails) => void` |  | 本次接受了哪些文件。受控与否都发出：宿主据此发起上传。 |
 | `onFileReject` | `(details: FileUploadFileRejectDetails) => void` |  | 本次拒绝了哪些文件及各自的原因。 |
 | `onRemoteFilesChange` | `(details: FileUploadRemoteFilesChangeDetails) => void` |  | 远程附件列表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
@@ -45231,6 +45721,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `files-change` | `FileUploadFilesChangeDetails` | 列表变化；detail 为 `{ files: File[] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `remote-files-change` | `FileUploadRemoteFilesChangeDetails` | 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }` |
 | `upload-complete` | `FileUploadCompleteDetails` | 单个文件传输完成；detail 为 `{ file, url? }` |
 | `upload-error` | `FileUploadErrorDetails` | 单个文件传输失败；detail 为 `{ file, error }` |
@@ -46125,6 +46616,60 @@ const sizes = ["sm", "md", "lg"] as const;
 <xh-float-button size="lg"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
 ```
 
+### 拖动与贴边
+
+按住页面右侧的触发器拖到别处，松手贴到近的那条边；位置按比例记，宿主存下来下次照样落在原处
+
+```vue
+<script setup lang="ts">
+import type { FloatButtonPosition } from "@xihan-ui/headless";
+import { MessageCircleIcon, ShareIcon } from "@xihan-ui/icons";
+import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhIcon } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const position = ref<FloatButtonPosition>({ edge: "inline-end", ratio: 0.75 });
+</script>
+
+<template>
+  <p>当前位置：{{ JSON.stringify(position) }}</p>
+  <XhFloatButtonRoot v-model:position="position" draggable>
+    <XhFloatButtonTrigger />
+    <XhFloatButtonList>
+      <button type="button" aria-label="消息"><XhIcon :icon="MessageCircleIcon" /></button>
+      <button type="button" aria-label="分享"><XhIcon :icon="ShareIcon" /></button>
+    </XhFloatButtonList>
+  </XhFloatButtonRoot>
+</template>
+```
+
+```html
+<p>当前位置：<span id="float-button-draggable-position"></span></p>
+<xh-float-button id="float-button-draggable" button-draggable>
+  <div data-xh-part="root">
+    <button data-xh-part="trigger"></button>
+    <div data-xh-part="list">
+      <button type="button" aria-label="消息"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg></button>
+      <button type="button" aria-label="分享"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98M15.41 6.51 8.59 10.49"/></svg></button>
+    </div>
+  </div>
+</xh-float-button>
+
+<script type="module">
+  // 位置是对象，只走 property：设初值、每次落定写回
+  const button = document.getElementById("float-button-draggable");
+  const text = document.getElementById("float-button-draggable-position");
+  const show = (position) => {
+    text.textContent = JSON.stringify(position);
+  };
+  button.position = { edge: "inline-end", ratio: 0.75 };
+  show(button.position);
+  button.addEventListener("position-change", (event) => {
+    button.position = event.detail.position;
+    show(event.detail.position);
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -46141,6 +46686,10 @@ const sizes = ["sm", "md", "lg"] as const;
 ### 特性
 
 - 支持四个视口角与安全区偏移。
+- `draggable` 打开后可按住触发器拖到别处：移动过激活距离才跟手，不到这个距离仍是一次点按；起拖时展开的动作组先收起，拖完补派的点击不开合。
+- 松手按 `snap` 贴边：`inline`（缺省）贴左右两边里近的那条，`block` 贴上下两边，`nearest` 贴四条边里最近的，`none` 停在放手处；甩一下就贴到甩去的那一边。贴过去由弹簧带着松手速度落定，减弱动效下直接到位。
+- 位置由 `position` / `defaultPosition` 给出：贴边写 `{ edge, ratio }`（如 `{ edge: 'inline-end', ratio: 0.75 }` 贴行尾一侧、中心在视口 75% 高处），停在一点写像素坐标 `{ x, y }`；不给时停在 `placement` 那一角。贴边位置按比例记，视口尺寸变了仍贴在同一侧、同一比例上；离两端不足 `offset` 时收回，并与安全区取大的一头。展开组恒朝页面中间长。
+- 拖动落定后才发一次 `onPositionChange`（Vue 为 `position-change` / `v-model:position`）；要记住位置，就在这里存，下次作为 `defaultPosition` 传回。Web Components 的开关是 `button-draggable`：`draggable` 是 HTML 全局属性，写上会让宿主变成原生拖放源。
 - 支持点击或悬停展开；键盘与触控始终使用点击。
 - Escape、层外点击和再次触发均可收起。
 - 收起后动作项退出 Tab 序列。
@@ -46157,7 +46706,8 @@ const sizes = ["sm", "md", "lg"] as const;
 
 - 为每个图标按钮提供可访问名称。
 - 将操作数量控制在 2 至 5 个。
-- 使用 `offset` 避开系统手势区。
+- 使用 `offset` 避开系统手势区；拖动与贴边同样离视口四边留出这段距离。
+- 位置只是外观上的偏好，拖动不承载功能：键盘与读屏用户不需要移动它也能用全部动作。
 
 ### 反模式
 
@@ -46181,14 +46731,19 @@ const sizes = ["sm", "md", "lg"] as const;
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `defaultOpen` | `boolean` |  |  |
+| `defaultPosition` | `FloatButtonPosition` |  | 初始位置，例如 `{ edge: 'inline-end', ratio: 0.75 }`：贴右边（LTR）、中心在视口 75% 高处。 |
 | `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
 | `disabled` | `boolean` |  |  |
+| `draggable` | `boolean` |  | 能否用指针拖着触发器移动，默认 false。按下后移动过激活距离才算拖动，不到这个距离仍是一次点按。 |
 | `expandTrigger` | `FloatButtonExpandTrigger` |  | 展开方式，默认 click。 |
 | `offset` | `number` |  | 距两条边的距离（px），默认 24。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onPositionChange` | `(details: FloatButtonPositionChangeDetails) => void` |  | 拖动落定后的新位置：贴边时给贴边位置（按比例，换个视口尺寸照样成立），snap 为 none 时给像素坐标。 落定才通知一次，拖动途中不发；要记住位置就在这里存。 |
 | `open` | `boolean` |  |  |
 | `placement` | `FloatButtonPlacement` |  | 固定在哪一角，默认 bottom-end。 |
+| `position` | `FloatButtonPosition` |  | 位置。提供即受控：拖动只发 onPositionChange，宿主写回才落到新位置。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，默认与 lg 同档：悬浮按钮需要易于触达，起始即比行内按钮大一档。 |
+| `snap` | `FloatButtonSnap` |  | 松手后贴向哪里，默认 inline（贴左右两边里近的那条）。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `translations` | `Partial<FloatButtonTranslations>` |  |  |
 | `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 |
@@ -46200,6 +46755,7 @@ const sizes = ["sm", "md", "lg"] as const;
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `CollapsibleOpenChangeDetails` | 展开状态变化；detail 为 `{ open: boolean }` |
+| `position-change` | `FloatButtonPositionChangeDetails` | 拖动落定后的新位置；detail 为 `{ position: FloatButtonPosition }` |
 
 ### 插槽
 
@@ -46231,9 +46787,9 @@ const sizes = ["sm", "md", "lg"] as const;
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `DISABLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `DISABLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `PRESS.START` · `PRESS.END` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `CLICK.SWALLOW` · `VIEWPORT.RESIZE`
 
-**判据**：`isDisabled` · `isOpenControlled` · `canPress`
+**判据**：`isDisabled` · `isOpenControlled` · `canPress` · `canDrag`
 
 ### connect API
 
@@ -46243,6 +46799,9 @@ const sizes = ["sm", "md", "lg"] as const;
 | --- | --- | --- |
 | `open` | `boolean` | 展开的动作组当前是否显示。 |
 | `setOpen` | `(next: boolean) => void` |  |
+| `position` | `FloatButtonPosition \| null` | 提交了的位置；null 表示停在 placement 那一角。 |
+| `setPosition` | `(next: FloatButtonPosition) => void` | 改位置：受控时只发 onPositionChange。 |
+| `dragging` | `boolean` | 正被拖着。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getListProps` | `() => T['element']` |  |
@@ -46287,7 +46846,12 @@ const sizes = ["sm", "md", "lg"] as const;
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-placement` | props.placement |
+| `root` | `data-draggable` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-edge` | edge?.edge |
+| `root` | `data-moving` | ''（条件成立时才出现） |
+| `root` | `data-placement` | floatButtonPlacementOf(position, context.get('viewpor… \| props.placement |
+| `root` | `data-point` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
@@ -46304,7 +46868,7 @@ const sizes = ["sm", "md", "lg"] as const;
 | `trigger` | `data-xh-liquid` | '' |
 | `trigger` | `data-xh-material` | 'frosted' \| undefined |
 | `list` | `data-instant` | ''（条件成立时才出现） |
-| `list` | `data-placement` | props.placement |
+| `list` | `data-placement` | floatButtonPlacementOf(position, context.get('viewpor… \| props.placement |
 | `list` | `data-state` | 'open' \| 'closed' |
 | `list` | `data-xh-liquid` | '' |
 
@@ -46326,7 +46890,7 @@ const sizes = ["sm", "md", "lg"] as const;
 | `--xh-float-button-layer` | `root` | `z-index` | `default` | `--xh-_layer` | float-button 的 root 部件 z-index 覆盖槽。 |
 | `--xh-float-button-radius` | `list`<br>`trigger` | `border-radius` | `default` | `--xh-_action-profile-radius`<br>`--xh-shape-circle` | float-button 的 list、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-float-button-shadow` | `*`<br>`list`<br>`root`<br>`trigger` | `--xh-_liquid-goo-shadow`<br>`box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope])`<br>`pressed`<br>`variant=outline`<br>`xh-liquid-goo-layer` | `--xh-_float-button-shadow`<br>`--xh-_material-shadow`<br>`--xh-material-liquid-shadow`<br>`none` | float-button 的 *、list、root、trigger 部件 --xh-_liquid-goo-shadow、box-shadow 覆盖槽。 |
-| `--xh-float-button-size` | `list`<br>`trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size`<br>`--xh-_float-button-size` | float-button 的 list、trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-float-button-size` | `list`<br>`root`<br>`trigger` | `block-size`<br>`bottom`<br>`inline-size`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start`<br>`left`<br>`top` | `default`<br>`edge=block`<br>`edge=inline`<br>`moving`<br>`placement`<br>`placement=-end`<br>`placement=-start`<br>`placement=bottom`<br>`placement=top`<br>`point`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size`<br>`--xh-_float-button-size` | float-button 的 list、root、trigger 部件 block-size、bottom、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start、left、top 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -70611,7 +71175,7 @@ const radioValue = ref({ density: "comfortable" });
 - `collection` 可直接生成条目、分组、标记位、说明、快捷键提示和分隔线。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 快捷键提示贴行尾，与说明同档同色；它是纯装饰，读屏从命令文字取意。
-- 支持方向键、首字符检索、禁用条目和多级子菜单。
+- 支持方向键、首字符检索、禁用条目和多级子菜单。数据驱动时节点写 `children` 即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出下一层，深度不限，路由菜单这类按数据生成的多级菜单不必手写 `Sub` 部件；子层与本层同用 `item` / `item-prefix` / `item-suffix` 插槽，叶子的选中汇到根级 `select`。入口只能是普通条目，勾选与单选条目带 `children` 直接报错。
 - 子菜单使用安全三角避免指针斜向移动时误关闭。
 - 条目可组合图标、文字、说明和快捷键提示。
 - `CheckboxItem` 与 `RadioGroup / RadioItem` 表达菜单内的持久选项，值分别由 `checkboxValue` 与 `radioValue` 控制；默认切换后保持展开，逐条可用 `closeOnSelect` 改为收起。
@@ -70693,6 +71257,7 @@ const radioValue = ref({ density: "comfortable" });
 | `groupLabel` | `string` |  | 分组标题文字，取本组首个提供它的条目；本组无人提供时不铺 group-label。 |
 | `separatorBefore` | `boolean` |  | 本条之前绘制一条分隔线；写在首条上不产出分隔线。本条领头一个分组时，分隔线绘制在分组外。 |
 | `closeOnSelect` | `boolean` |  | 激活后是否关闭菜单；普通命令默认 true，checkbox / radio 默认 false。 |
+| `children` | `MenuNode[]` |  | 子菜单的条目：给了 children 这一条就是子菜单的入口，Vue / React 的默认树按 children 递归铺出下一层， 深度不限；本条只能是普通条目（kind 为 item）。子层的选中经菜单树汇到根上，勾选与单选由各层自持。 手写部件时改用 Sub 部件；Web Components 由作者写 Light DOM，不读这一项。 |
 
 ### 事件
 
@@ -71319,7 +71884,7 @@ const collection: MenubarNode[] = [{
 
 - 同一时间只展开一个顶层菜单。
 - 展开后移向相邻入口会直接切换菜单。
-- 支持方向键、首字符检索、禁用项、分组与子菜单。
+- 支持方向键、首字符检索、禁用项、分组与子菜单。数据驱动时菜单里的条目写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。手写时用 `XhMenubarSub`。
 - 条目可逐条声明语气；顶层入口表达的是位置，不接语气。
 - 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。
 - 条目可组合图标、文字、说明和快捷键提示。
@@ -71398,6 +71963,7 @@ const collection: MenubarNode[] = [{
 | `separatorBefore` | `boolean` |  | 本条之前绘制一条分隔线；写在首条上不产出分隔线。只在条目上读取。 |
 | `closeOnSelect` | `boolean` |  | 选择型条目激活后是否关闭菜单栏；checkbox / radio 默认 false。 |
 | `items` | `MenubarNode[]` |  | 该菜单中的条目；只在顶层节点上读取。 |
+| `children` | `MenuNode[]` |  | 子菜单的条目：只在条目上读取。给了 children 这一条就是子菜单的入口，Vue / React 的默认树按 children 递归铺出下一层，深度不限；本条只能是普通条目（kind 为 item）。子层的选中经菜单树汇到菜单栏上。 手写部件时改用 XhMenubarSub；Web Components 由作者写 Light DOM，不读这一项。 |
 
 ### 事件
 
@@ -71441,6 +72007,7 @@ const collection: MenubarNode[] = [{
 | `XhMenubarRoot` | `children` | `SlotChildren<MenubarRootSlotProps>` |  |  |
 | `XhMenubarSub` | `value` | `string` | 是 | 它在所属菜单中的条目身份。 |
 | `XhMenubarSub` | `disabled` | `boolean` |  |  |
+| `XhMenubarSub` | `collection` | `MenuNode[]` |  | 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 |
 | `XhMenubarSub` | `placement` | `Placement` |  |  |
 | `XhMenubarSub` | `offset` | `number` |  |  |
 | `XhMenubarSub` | `loop` | `boolean` |  |  |
@@ -75876,6 +76443,7 @@ function onAction(details: { id: string }): void {
 
 - `preset` 决定一组缺省值：卡片落右下、每个位置最多 5 条、逐条排开、停留 5000ms；轻提示落底部居中、最多 3 条、叠成一摞、停留 4000ms，页面转入后台时暂停计时。每一项都可以用同名 prop 单独改写。
 - 九宫格落位，`placement` 决定整摞的位置，也可以逐条指定。
+- 正文（`item-description`）有上限：缺省是中档滚动面高（`--xh-viewport-h-md`，16rem），长文在正文里竖滚、滚到头不带动页面，标题与操作钮留在卡片上；`--xh-notification-description-max-h` 可以改这条上限。整摞是不吃指针、不裁切的视口定位面，撑出视口的部分既看不到也滚不到，所以卡片不随正文无限长高。
 - `max` 限制每个位置同时显示的条数，超出时先挤出低优先级，同级中挤出最旧的；设为 `Infinity` 即不限制。
 - 同一个 id 再次发出即就地改写，位置不变，用于“处理中 → 已完成”；`loading` 期间换为加载环且不自动消失。
 - 每条自带计时与暂停：指针停在卡片上或焦点进入时暂停计时。`duration` 为 0 时常驻不消失。
@@ -76127,6 +76695,7 @@ function onAction(details: { id: string }): void {
 | `--xh-notification-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | notification 的 item-description 部件 color 覆盖槽。 |
 | `--xh-notification-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-secondary-size` | notification 的 item-description 部件 font-size 覆盖槽。 |
 | `--xh-notification-description-leading` | `item`<br>`item-description` | `line-height` | `preset=toast` | `--xh-leading-normal` | notification 的 item、item-description 部件 line-height 覆盖槽。 |
+| `--xh-notification-description-max-h` | `item-description` | `max-block-size` | `default` | `--xh-viewport-h-md` | notification 的 item-description 部件 max-block-size 覆盖槽。 |
 | `--xh-notification-icon-size` | `item`<br>`item-action-trigger`<br>`item-close-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | notification 的 item、item-action-trigger、item-close-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-notification-indicator-fg` | `item`<br>`item-indicator` | `background-color`<br>`border-block-start-color`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`preset=toast`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring` | `--xh-_tone-fg` | notification 的 item、item-indicator 部件 background-color、border-block-start-color、border-color、color 覆盖槽。 |
 | `--xh-notification-indicator-p` | `item`<br>`item-indicator` | `padding` | `preset=toast` | `--xh-space-1` | notification 的 item、item-indicator 部件 padding 覆盖槽。 |
@@ -76143,7 +76712,7 @@ function onAction(details: { id: string }): void {
 | `--xh-notification-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-overlay` | notification 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-notification-item-row-gap` | `item`<br>`item-content` | `row-gap` | `default` | `--xh-space-2` | notification 的 item、item-content 部件 row-gap 覆盖槽。 |
 | `--xh-notification-item-shadow` | `item` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | notification 的 item 部件 box-shadow 覆盖槽。 |
-| `--xh-notification-item-w` | `group`<br>`item` | `inline-size` | `default`<br>`preset=toast`<br>`stacked` | `--xh-overlay-max-w-lg`<br>`28.75rem` | notification 的 group、item 部件 inline-size 覆盖槽。 |
+| `--xh-notification-item-w` | `group`<br>`item` | `inline-size` | `default`<br>`preset=toast`<br>`stacked` | `--xh-overlay-max-w-lg`<br>`--xh-overlay-toast-w` | notification 的 group、item 部件 inline-size 覆盖槽。 |
 | `--xh-notification-layer` | `group` | `z-index` | `default` | `--xh-layer-toast` | notification 的 group 部件 z-index 覆盖槽。 |
 | `--xh-notification-progress-bg` | `item-progress` | `background` | `default` | `--xh-_tone-soft` | notification 的 item-progress 部件 background 覆盖槽。 |
 | `--xh-notification-progress-duration` | `item-progress` | `animation` | `default` | `--xh-motion-duration-slide` | notification 的 item-progress 部件 animation 覆盖槽。 |
@@ -82790,6 +83359,7 @@ function onConfirm() {
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |
@@ -89768,6 +90338,7 @@ import {
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `variant` | `RadioGroupVariant` |  | 结构形态，默认 list；card 把每个条目画成一张可点的卡，segmented 画成轨道里的一排段。 |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 会让组没有名字，作者写在根上的 aria-label 也会被它压住。 |
 | `onValueChange` | `(details: RadioGroupValueChangeDetails) => void` |  | value 变化回调。 |
 
 ### RadioGroupNode
@@ -89866,7 +90437,7 @@ import {
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-invalid` | 'true' \| 'false' |
-| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `aria-readonly` | 'true' \| 'false' |
 | `root` | `aria-required` | 'true' \| 'false' |
@@ -89883,6 +90454,8 @@ import {
 - 焦点进组时落在已选中的条目上，没有选中项才落第一个；方向键移动焦点的同时选中。键盘按 APG 的单选组：Space 选中当前条目，Enter 与 Home / End 不归单选组管。
 - 禁用的条目使用 `aria-disabled` 而不是原生 `disabled`：它仍可聚焦，仍是方向键的起点。
 - `label` 部件是组的可及名。segmented 形态的轨道里不排标题，`label` 部件在这一形态下视觉隐藏、只作可及名；需要可见标题时放进[表单字段](./field)，或给根节点写 `aria-label`。
+- 根节点只在 `label` 部件真渲染了时才输出 `aria-labelledby`；不写标题时给根节点写 `aria-label`。Vue / React 的 `label` 属性不论手写选项还是数据驱动都会铺出标题。
+- 方向键只认落在条目或根节点自身上的按键：组里放着的数字框、下拉等行内编辑控件，它们的方向键照常移光标、换值，不会切换选项。
 - 圆圈与滑块都是纯装饰，对读屏隐藏；当前项由条目自身的选中态表达。
 
 ## 样式参考
@@ -97034,6 +97607,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 |
 | `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: SelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### SelectNode
@@ -97055,6 +97629,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `SelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
@@ -99645,6 +100220,7 @@ function onValueChange(details: { value: SignaturePadValue }) {
 | `onDraw` | `(details: SignaturePadDrawDetails) => void` |  | 每收进一个点通知一次，清空、撤销、重做与表单重置时也通知一次。 |
 | `onDrawEnd` | `(details: SignaturePadDrawEndDetails) => void` |  | 签名定稿时通知一次并附带可直接提交的 SVG：抬笔、清空、撤销、重做与表单重置都发出。 |
 | `onValueChange` | `(details: SignaturePadValueChangeDetails) => void` |  | 签名数据变了：与 onDrawEnd 同一批时机，落笔途中不发。受控时是唯一出口。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 事件
 
@@ -99655,6 +100231,7 @@ function onValueChange(details: { value: SignaturePadValue }) {
 | `draw` | `SignaturePadDrawDetails` | 笔迹变化时通知一次（含清空、撤销、重做与表单重置）；detail 为 `{ paths: string[], path: string }` |
 | `draw-end` | `SignaturePadDrawEndDetails` | 签名定稿时通知一次（抬笔、清空、撤销、重做、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接存储 |
 | `value-change` | `SignaturePadValueChangeDetails` | 签名数据定稿，时机同 draw-end；detail 为 `{ value: { strokes, surface } }`，可原样存下再赋回 defaultValue 回显 |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 
@@ -111333,10 +111910,12 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 
 - 排序、选择、展开三套状态各自可受控。
 - 列名放在 `column-label` 里，它是列头里唯一可收窄的一格：列名太长时由它出省略号。排序钮、列宽把手与列拖拽把手都是它的兄弟，不装进它里面。列头是 flex 行，裸写的文本是匿名 flex item、缩不下去，窄列上会把定尺的把手连同外边距一起挤出列头盒，所以不可排序、不可改宽的列也要用它。
+- 列定义中的 `align` 控制该列所有格子（列头与数据格）的内容对齐方向：`start`（默认）、`center`、`end`，对应列头与单元格上的 `data-align` 属性。
 - 排序钮（`sort-trigger`）是列头里独立的定尺图标钮，不包列名：列名留在 `column-label` 上，钮写在列名之后、被推到行尾侧与列宽把手并排；点列头文字不排序，点钮才排序。
 - 选中行铺品牌淡底行面并由行首的勾选方框标记；悬停与按下只换面，行的几何与吸附列不动。
 - 表头吸顶与列吸附、条纹、密度、边框都是开关。
 - 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
+- 列宽：`width` 是伸缩的基准，表格比各列之和宽时各列一起分剩余空间、窄时一起收；`minWidth` / `maxWidth` 同时管布局与拖动改宽，伸缩时不越过这两条，三者写成同一个数就是一列定宽。没写下限的列收到皮肤的 `--xh-table-cell-min-w` 为止；拖动调过的列钉在拖出的宽度上，不再参与分配。
 - 表头分组：列给出 `children` 即为分组，只在表头占一格、横跨它的全部叶子列，不进列号空间，也不承载数据、排序、改宽与冻结。嵌套几层就有几行表头，按 `headerRows` 逐层渲染：表头行写明 `level`，列头按所在的行定位自己是哪一格；较浅的叶子列（含前缀列）在它起始的那一行出列头、纵向跨到最后一行（`aria-rowspan`），下面各行那一格是对读屏隐藏的占位，照样渲染以保住列宽。行号空间把各层表头都算进去，数据行从表头之后起算。分组内的叶子列要给出宽度，分组格的宽度按它们相加；列偏好把一个分组的叶子列拆开时，分组格按连续的段各出一格。
 - 单元格合并用 `cellSpan`，与 antd 的 `spanMethod` 同一种写法：逐格询问合并区的大小（`rowSpan` / `colSpan`）。表格按它算出起点格的 `aria-rowspan` / `aria-colspan`：与起点同一行、被横向跨过的格子不渲染（`hidden`）；下面行里被纵向跨过的，在合并区最左那一列留一格占位（`data-covered`，对读屏隐藏、只保住宽度），其余不渲染。作者照常逐格渲染，谁显谁藏由表格决定；`cellSpanOf(行, 列)` 可查某一格的合并情形。合并只在可见数据行之间，遇到展开的详情行截断。
 - 纵向合并的起点格（`data-row-span`）挂载后按实测行位铺满合并的几行，压在下面几行之上、底色随起点行；量到之前按普通格子排。
@@ -111427,12 +112006,13 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `label` | `string` |  | 展示名。只供调用方渲染，不作为可及名。 |
 | `sortable` | `boolean` |  | 可排序：提供后才产出 aria-sort，排序把手也才响应按键与点击。 |
 | `sticky` | `boolean \| 'start' \| 'end'` |  | 横向冻结（左右滚动时该列固定），写为条目上的 data-frozen。true 等于 'start'（固定在行首侧），'end' 固定在行尾侧。 与表头吸顶的 data-fixed 是两件事：那是布尔，这个带方向，同名会使 [data-fixed] 一条选择器命中两种语义。 同侧有多列吸附时，连接层按前面各列的宽度累加出偏移，写入 --xh-table-sticky-inset： 数字列宽直接累加，不是数字（没写、百分比、fr 这类）的列取挂载后实测的列头宽度，量到之前该侧从该列起暂时贴边。 |
-| `width` | `string \| number` |  | 列宽。数字按 px 处理，字符串原样写入内联 inline-size。 |
-| `minWidth` | `number` |  | 拖动改列宽时的下限（px）。未提供时使用 TABLE_COLUMN_MIN_WIDTH。 |
-| `maxWidth` | `number` |  | 拖动改列宽时的上限（px）。未提供时不封顶。 |
+| `width` | `string \| number` |  | 列宽。数字按 px 处理，字符串原样写入内联 inline-size。它是伸缩的基准：表格比各列之和宽时 与其余列一起分剩余空间，窄时一起收；要定宽就把 minWidth / maxWidth 写成与它同一个数。 |
+| `minWidth` | `number` |  | 列宽下限（px）：布局里伸缩时不窄过它，拖动改宽也不窄过它。 未提供时布局下限是皮肤的 --xh-table-cell-min-w，拖动下限是 TABLE_COLUMN_MIN_WIDTH。 |
+| `maxWidth` | `number` |  | 列宽上限（px）：布局里伸缩时不宽过它，拖动改宽也不宽过它。未提供时不封顶。 |
 | `resizable` | `boolean` |  | 该列的宽度可以拖动修改。提供后才产出改宽把手。 |
 | `children` | `TableColumnDef[]` |  | 表头分组：给了 children 即为分组列，只在表头占一格、横跨它全部叶子列，不进列号空间， 也不承载数据、排序、改宽与冻结。叶子列才是生效列；嵌套几层表头就有几行， 较浅的叶子列（含前缀列）的列头纵向跨到最后一行。分组内的叶子列都要给出宽度， 分组那一格的宽度才能按叶子列之和算准。 |
 | `reorderable` | `boolean` |  | 该列可以拖动换位。提供后才产出拖拽把手：每个把手都是一个 Tab 位， 未声明的表格不承担该代价。 不可拖动的列与冻结列一样是屏障：跨过它落下会把它挤走，而作者已声明该列不动。 |
+| `align` | `'start' \| 'center' \| 'end'` |  | 列内容的对齐方向，写为列头与数据格上的 data-align。 不提供时由皮肤决定（默认 start）。 |
 
 ### TableRowDef
 
@@ -111735,6 +112315,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `row` | `data-xh-collection-context` | 'page' |
 | `row` | `data-xh-collection-item` | '' |
 | `row` | `data-xh-collection-size` | props.size |
+| `column-header` | `data-align` | def?.align |
 | `column-header` | `data-covered` | ''（条件成立时才出现） |
 | `column-header` | `data-dragging` | ''（条件成立时才出现） |
 | `column-header` | `data-drop` | 'before' \| 'after' |
@@ -111745,6 +112326,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `column-header` | `data-sort` | 'asc' \| 'desc' |
 | `column-header` | `data-sort-index` | tableSortIndexOf(sort, value) \| undefined |
 | `column-header` | `data-sortable` | ''（条件成立时才出现） |
+| `cell` | `data-align` | def?.align |
 | `cell` | `data-covered` | ''（条件成立时才出现） |
 | `cell` | `data-disabled` | ''（条件成立时才出现） \| undefined |
 | `cell` | `data-dragging` | ''（条件成立时才出现） |
@@ -116544,6 +117126,7 @@ const delimiters = [",", "，", ";", "\n"];
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<TagsInputTranslations>` |  |  |
 | `onValueChange` | `(details: TagsInputValueChangeDetails) => void` |  |  |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onInputValueChange` | `(details: TagsInputInputValueChangeDetails) => void` |  |  |
 | `onTagReject` | `(details: TagsInputTagRejectDetails) => void` |  | 提交里有标签没进集合：重复（照常消费）、到了上限或被 validate 拒收，逐个报告原因。 |
 
@@ -116554,6 +117137,7 @@ const delimiters = [",", "，", ";", "\n"];
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TagsInputValueChangeDetails` | 标签集合变化；detail 为 `{ value: string[] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `input-value-change` | `TagsInputInputValueChangeDetails` | 输入文本变化；detail 为 `{ inputValue: string }` |
 | `tag-reject` | `TagsInputTagRejectDetails` | 提交里有标签没进集合（重复、到了上限或被 validate 拒收）；detail 为 `{ tags: { tag, reasons }[] }` |
 
@@ -118094,6 +118678,7 @@ const note = ref("");
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
 | `translations` | `Partial<TextFieldTranslations>` |  | 读屏文案；默认英文。 |
 | `onValueChange` | `(details: TextFieldValueChangeDetails) => void` |  |  |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 事件
 
@@ -118102,6 +118687,7 @@ const note = ref("");
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TextFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 
@@ -119162,6 +119748,7 @@ function snap(next: string) {
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |
 | `onValueChange` | `(details: TimeFieldValueChangeDetails) => void` |  |  |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 事件
 
@@ -119170,6 +119757,7 @@ function snap(next: string) {
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TimeFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 
@@ -119414,7 +120002,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("09:30");
+const value = ref<string[]>(["09:30"]);
 </script>
 
 <template>
@@ -119447,7 +120035,7 @@ const value = ref("09:30");
   </XhTimePickerRoot>
 
   <span aria-live="polite" style="font-size: 13px">
-    当前值：{{ value || "（未填齐）" }}
+    当前值：{{ value[0] ?? "（未填齐）" }}
   </span>
 </template>
 ```
@@ -119516,7 +120104,7 @@ const value = ref("09:30");
   picker.addEventListener("value-change", (event) => {
     const next = event.detail.value;
     picker.value = next;
-    readout.textContent = next || "（未填齐）";
+    readout.textContent = next[0] ?? "（未填齐）";
   });
 </script>
 ```
@@ -119525,7 +120113,7 @@ const value = ref("09:30");
 
 加粗的是必需部件。
 
-`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `segment-group` · **`segment`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `hidden-input`
+`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `tag-list` · `segment-group` · **`segment`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `confirm-trigger` · `hidden-input`
 
 ## 示例
 
@@ -119549,7 +120137,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("09:30");
+const value = ref<string[]>(["09:30"]);
 </script>
 
 <template>
@@ -119576,7 +120164,7 @@ const value = ref("09:30");
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
 </template>
 ```
 
@@ -119640,7 +120228,7 @@ const value = ref("09:30");
   const picker = document.getElementById("time-picker-step");
   const readout = document.getElementById("time-picker-step-value");
   picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value || "（空）";
+    readout.textContent = event.detail.value[0] ?? "（空）";
   });
 </script>
 ```
@@ -119665,7 +120253,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("09:30");
+const value = ref<string[]>(["09:30"]);
 </script>
 
 <template>
@@ -119696,7 +120284,7 @@ const value = ref("09:30");
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">值仍是 24 小时的串：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">值仍是 24 小时的串：{{ value[0] ?? "（空）" }}</span>
 </template>
 ```
 
@@ -119809,7 +120397,7 @@ const value = ref("09:30");
   const picker = document.getElementById("time-picker-hour-cycle");
   const readout = document.getElementById("time-picker-hour-cycle-value");
   picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value || "（空）";
+    readout.textContent = event.detail.value[0] ?? "（空）";
   });
 </script>
 ```
@@ -119834,7 +120422,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("");
+const value = ref<string[]>([]);
 </script>
 
 <template>
@@ -119865,7 +120453,7 @@ const value = ref("");
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
 </template>
 ```
 
@@ -120048,7 +120636,7 @@ const value = ref("");
   const picker = document.getElementById("time-picker-granularity");
   const readout = document.getElementById("time-picker-granularity-value");
   picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value || "（空）";
+    readout.textContent = event.detail.value[0] ?? "（空）";
   });
 </script>
 ```
@@ -120187,7 +120775,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("");
+const value = ref<string[]>([]);
 </script>
 
 <template>
@@ -120214,7 +120802,7 @@ const value = ref("");
   </XhTimePickerRoot>
 
   <span style="font-size: 13px">
-    手打进段位的时间不受裁剪限制，越界只被标注：{{ value || "（空）" }}
+    手打进段位的时间不受裁剪限制，越界只被标注：{{ value[0] ?? "（空）" }}
   </span>
 </template>
 ```
@@ -120287,7 +120875,7 @@ const value = ref("");
     picker.addEventListener(type, paint);
 
   picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value || "（空）";
+    readout.textContent = event.detail.value[0] ?? "（空）";
   });
 
   paint();
@@ -120314,7 +120902,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("");
+const value = ref<string[]>([]);
 
 // 此刻的时分，两位补零
 function now() {
@@ -120352,7 +120940,7 @@ function now() {
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 8px" @keydown.stop>
-          <XhButton size="sm" variant="ghost" @click="setValue(now())">此刻</XhButton>
+          <XhButton size="sm" variant="ghost" @click="setValue([now()])">此刻</XhButton>
           <XhButton size="sm" variant="ghost" :disabled="!canClear" @click="clear()">
             清空
           </XhButton>
@@ -120362,7 +120950,7 @@ function now() {
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
 </template>
 ```
 
@@ -120446,14 +121034,14 @@ function now() {
   // 值与开合都由宿主持有，写回元素才生效
   function setValue(next) {
     picker.value = next;
-    readout.textContent = next || "（空）";
+    readout.textContent = next[0] ?? "（空）";
   }
 
   function setOpen(next) {
     picker.open = next;
   }
 
-  setValue("");
+  setValue([]);
   setOpen(false);
   picker.addEventListener("value-change", (event) => setValue(event.detail.value));
   picker.addEventListener("open-change", (event) => setOpen(event.detail.open));
@@ -120463,12 +121051,12 @@ function now() {
     const now = new Date();
     const hour = String(now.getHours()).padStart(2, "0");
     const minute = String(now.getMinutes()).padStart(2, "0");
-    setValue(`${hour}:${minute}`);
+    setValue([`${hour}:${minute}`]);
   });
 
   document
     .getElementById("time-picker-actions-clear")
-    .addEventListener("click", () => setValue(""));
+    .addEventListener("click", () => setValue([]));
 
   document
     .getElementById("time-picker-actions-ok")
@@ -120498,7 +121086,7 @@ import { ref } from "vue";
 // 午休不接待
 const closed = [12, 13];
 
-const value = ref("09:00");
+const value = ref<string[]>(["09:00"]);
 
 // 列里只留通过谓词的那几格
 function bookable(options: readonly string[]) {
@@ -120521,7 +121109,7 @@ function snap(next: string) {
     :time-step="{ minute: 30 }"
     min="09:00"
     max="18:00"
-    @update:value="value = snap($event)"
+    @update:value="value = $event.map(snap)"
   >
     <XhTimePickerLabel>面谈时刻</XhTimePickerLabel>
     <XhTimePickerControl>
@@ -120546,7 +121134,7 @@ function snap(next: string) {
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
 </template>
 ```
 
@@ -120604,11 +121192,11 @@ function snap(next: string) {
   // 值由宿主持有：吸附之后写回元素才生效
   function apply(next) {
     picker.value = next;
-    readout.textContent = next || "（空）";
+    readout.textContent = next[0] ?? "（空）";
   }
 
-  apply("09:00");
-  picker.addEventListener("value-change", (event) => apply(snap(event.detail.value)));
+  apply(["09:00"]);
+  picker.addEventListener("value-change", (event) => apply(event.detail.value.map(snap)));
 </script>
 ```
 
@@ -120764,7 +121352,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("09:30");
+const value = ref<string[]>(["09:30"]);
 </script>
 
 <template>
@@ -120793,7 +121381,7 @@ const value = ref("09:30");
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
 </template>
 ```
 
@@ -120862,7 +121450,7 @@ const value = ref("09:30");
   }
 
   picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value || "（空）";
+    readout.textContent = event.detail.value[0] ?? "（空）";
   });
 </script>
 ```
@@ -120888,7 +121476,7 @@ import {
 } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 
-const value = ref("");
+const value = ref<string[]>([]);
 
 // 时刻算一次就固定下来：connect 每帧都会跑一遍，把「此刻」放进渲染期会每帧算出新值
 const presets = computed(() => [
@@ -120923,7 +121511,7 @@ const presets = computed(() => [
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
 </template>
 ```
 
@@ -121005,7 +121593,7 @@ const presets = computed(() => [
   const picker = node.querySelector("xh-time-picker");
   picker.presets = presets;
   picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value || "（空）";
+    readout.textContent = event.detail.value[0] ?? "（空）";
   });
 
   stage.append(node);
@@ -121032,7 +121620,7 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const value = ref("09:30");
+const value = ref<string[]>(["09:30"]);
 
 // 判真的格子仍在列里、仍可聚焦，只是选不中；时列的值恒按 24 小时制给
 function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUnavailableContext): boolean {
@@ -121068,7 +121656,7 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
 </template>
 ```
 
@@ -121121,8 +121709,159 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
     unit === "minute" && context.hour === 9 && Number(option) < 30;
 
   picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value || "（空）";
+    readout.textContent = event.detail.value[0] ?? "（空）";
   });
+</script>
+```
+
+### 多选成标签
+
+selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值、浮层不收，可以接着添；选中的时刻在输入行里排成标签，点叉或在展开钮上按退格摘掉
+
+```vue
+<script setup lang="ts">
+import {
+  XhTimePickerClearTrigger,
+  XhTimePickerColumn,
+  XhTimePickerConfirmTrigger,
+  XhTimePickerContent,
+  XhTimePickerControl,
+  XhTimePickerHiddenInput,
+  XhTimePickerItem,
+  XhTimePickerLabel,
+  XhTimePickerPositioner,
+  XhTimePickerRoot,
+  XhTimePickerTagList,
+  XhTimePickerTrigger,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const value = ref<string[]>(["09:00", "14:30"]);
+</script>
+
+<template>
+  <XhTimePickerRoot
+    v-model:value="value"
+    name="reminders"
+    selection-mode="multiple"
+    :time-step="{ minute: 15 }"
+  >
+    <XhTimePickerLabel>提醒时刻</XhTimePickerLabel>
+    <XhTimePickerControl>
+      <XhTimePickerTagList />
+      <XhTimePickerClearTrigger />
+      <XhTimePickerTrigger />
+    </XhTimePickerControl>
+    <XhTimePickerHiddenInput />
+    <XhTimePickerPositioner>
+      <XhTimePickerContent>
+        <XhTimePickerColumn v-slot="{ options }" unit="hour">
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
+        </XhTimePickerColumn>
+        <XhTimePickerColumn v-slot="{ options }" unit="minute">
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
+        </XhTimePickerColumn>
+        <XhTimePickerConfirmTrigger>添加</XhTimePickerConfirmTrigger>
+      </XhTimePickerContent>
+    </XhTimePickerPositioner>
+  </XhTimePickerRoot>
+
+  <span aria-live="polite" style="font-size: 13px">
+    当前值：{{ value.join("、") || "（空）" }}
+  </span>
+</template>
+```
+
+```html
+<xh-time-picker id="time-picker-multiple" name="reminders" selection-mode="multiple" time-step='{"minute":15}'>
+  <div data-xh-part="root">
+    <label data-xh-part="label">提醒时刻</label>
+    <div data-xh-part="control">
+      <span data-xh-part="tag-list"></span>
+      <button data-xh-part="clear-trigger"></button>
+      <button data-xh-part="trigger"></button>
+    </div>
+    <input data-xh-part="hidden-input" />
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="column" unit="hour">
+          <div data-xh-part="item" value="00"></div>
+          <div data-xh-part="item" value="01"></div>
+          <div data-xh-part="item" value="02"></div>
+          <div data-xh-part="item" value="03"></div>
+          <div data-xh-part="item" value="04"></div>
+          <div data-xh-part="item" value="05"></div>
+          <div data-xh-part="item" value="06"></div>
+          <div data-xh-part="item" value="07"></div>
+          <div data-xh-part="item" value="08"></div>
+          <div data-xh-part="item" value="09"></div>
+          <div data-xh-part="item" value="10"></div>
+          <div data-xh-part="item" value="11"></div>
+          <div data-xh-part="item" value="12"></div>
+          <div data-xh-part="item" value="13"></div>
+          <div data-xh-part="item" value="14"></div>
+          <div data-xh-part="item" value="15"></div>
+          <div data-xh-part="item" value="16"></div>
+          <div data-xh-part="item" value="17"></div>
+          <div data-xh-part="item" value="18"></div>
+          <div data-xh-part="item" value="19"></div>
+          <div data-xh-part="item" value="20"></div>
+          <div data-xh-part="item" value="21"></div>
+          <div data-xh-part="item" value="22"></div>
+          <div data-xh-part="item" value="23"></div>
+        </div>
+        <div data-xh-part="column" unit="minute">
+          <div data-xh-part="item" value="00"></div>
+          <div data-xh-part="item" value="15"></div>
+          <div data-xh-part="item" value="30"></div>
+          <div data-xh-part="item" value="45"></div>
+        </div>
+        <button data-xh-part="confirm-trigger">添加</button>
+      </div>
+    </div>
+  </div>
+</xh-time-picker>
+
+<span aria-live="polite" style="font-size: 13px">
+  当前值：<span id="time-picker-multiple-value">09:00、14:30</span>
+</span>
+
+<script type="module">
+  const picker = document.getElementById("time-picker-multiple");
+  const readout = document.getElementById("time-picker-multiple-value");
+
+  const tagList = picker.querySelector('[data-xh-part="tag-list"]');
+
+  // 标签按 tags 铺：一个选中值一枚，带删除钮；放不下的那些合成一枚 +N，文字由元素填
+  function paintTags() {
+    const overflow = document.createElement("span");
+    overflow.dataset.xhPart = "overflow-tag";
+    tagList.replaceChildren(
+      ...picker.tags.map((tag) => {
+        const node = document.createElement("span");
+        node.dataset.xhPart = "tag";
+        node.setAttribute("value", tag.value);
+        const label = document.createElement("span");
+        label.dataset.xhPart = "tag-label";
+        label.textContent = tag.label;
+        const remove = document.createElement("button");
+        remove.dataset.xhPart = "item-delete-trigger";
+        node.append(label, remove);
+        return node;
+      }),
+      overflow,
+    );
+  }
+
+  // 多选的值是数组，只走 property：设初值、每次变更写回
+  function apply(next) {
+    picker.value = next;
+    readout.textContent = next.join("、") || "（空）";
+    paintTags();
+  }
+
+  apply(["09:00", "14:30"]);
+  picker.addEventListener("value-change", (event) => apply(event.detail.value));
 </script>
 ```
 
@@ -121143,6 +121882,9 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 - `max` 直接把界外的格从列中裁掉；分钟列还会随已选的小时再裁一次。
 - `isTimeUnavailable` 逐格判断可选性：时列按 24 小时制给值，第三个参数带已选的时与分，写得出「9 点只能选 30 分以后」。
 - 浮层内可以放置“当前时刻”与确认按钮。
+- 值恒为 ISO 时间串数组：单选至多一项（还没填全时为空数组），宿主可以写裸串；`onValueChange` 的 `value` 恒为数组。
+- 多选（`selectionMode="multiple"`）时各列拼出的是草稿，按「添加」（`confirm-trigger`）收进值，浮层不收、草稿留着，改一列就能接着添；快捷选项点一下切换选中。草稿没填全、越界、已经选过或到了 `maxSelected` 时「添加」不可按。
+- 多选的选中值在输入行里排成标签（与[选择器](./select)多选同一套库内[标签](./tag)），按时刻升序：段位收起，展开钮常驻并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签按 `locale` 与小时制排出（13:45、下午1:45），不截短、一行放不下就折行，超过 `maxTagCount`（默认 3）的折进 +N；表单一个选中值一份同名隐藏输入。
 - 触发器打开空值时焦点直接落到第一项；从输入段打开时继续保留键入焦点。
 - 快捷选项与时/分/秒列都从当前值恢复持久选中，并在逻辑末端显示对号。
 - 悬停、键盘高亮与可见焦点使用中性实体底，与选中对号可以同时存在。数字格在左右保留等宽标记轨，选中和 RTL 都不会把数字推离中心。
@@ -121159,7 +121901,7 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 
 - 把不可选的时段裁掉而不是置灰，列更短、查找更快。
 - 打开时把浮层滚动到当前值。
-- 标准输入行应同时包含清空按钮与时钟图标触发器；二者按值互斥显示。参与表单时同时渲染隐藏输入。
+- 标准输入行应同时包含清空按钮与时钟图标触发器；单选时二者按值互斥显示，多选时都留着。参与表单时同时渲染隐藏输入。
 - 自定义格内文案保持简短；选中对号由皮肤统一绘制，不在插槽内重复添加。
 
 ### 反模式
@@ -121173,7 +121915,7 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-time-picker>` |
-| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerHiddenInput` `XhTimePickerItem` `XhTimePickerLabel` `XhTimePickerPositioner` `XhTimePickerPreset` `XhTimePickerPresetGroup` `XhTimePickerRoot` `XhTimePickerSegment` `XhTimePickerSegmentGroup` `XhTimePickerTrigger` |
+| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerConfirmTrigger` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerHiddenInput` `XhTimePickerItem` `XhTimePickerItemDeleteTrigger` `XhTimePickerLabel` `XhTimePickerOverflowTag` `XhTimePickerPositioner` `XhTimePickerPreset` `XhTimePickerPresetGroup` `XhTimePickerRoot` `XhTimePickerSegment` `XhTimePickerSegmentGroup` `XhTimePickerTag` `XhTimePickerTagLabel` `XhTimePickerTagList` `XhTimePickerTrigger` |
 | 组合式函数 | `useTimePicker` |
 | 状态机 | `timePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/time-picker.css` |
@@ -121182,8 +121924,11 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 受控值，ISO 时间串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
-| `defaultValue` | `string` |  |  |
+| `value` | `string \| string[]` |  | 受控值，ISO 时间串数组。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组（空串即空数组）。 |
+| `defaultValue` | `string \| string[]` |  |  |
+| `selectionMode` | `TimePickerSelectionMode` |  | 选择模式，默认 single。 |
+| `maxSelected` | `number` |  | multiple 下最多选几个时刻：选满后「添加」不可按、快捷选项只能点掉已选的。非整数向下取整，小于 1 或不是有限数时不设上限。 |
+| `maxTagCount` | `number` |  | 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `min` | `string` |  | 下界（含）。裁掉浮层中落在界外的可选值，并把已填的越界值标注出来（不改写它）。 |
@@ -121207,6 +121952,7 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 | `isTimeUnavailable` | `TimeUnavailablePredicate` |  | 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）； unit 区分同一个 '30' 属于哪一列；context 带这份值里已选的时（24 小时制）与分， 写得出「9 点只能选 30 分以后」。date 与 index 在本组件恒为 null。 与 min / max 裁掉的值同等处理：判定为真的格子仍可聚焦，只是不可选中。 连续区间用 min / max 表达即可，该项留给每隔 15 分钟才可预约这类离散规则。 |
 | `translations` | `Partial<TimePickerTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |
 | `onValueChange` | `(details: TimePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: TimePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### TimePickerPreset
@@ -121225,7 +121971,8 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `TimePickerValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+| `value-change` | `TimePickerValueChangeDetails` | 选中的时刻变化；detail 为 `{ value: string[] }`，单选至多一项 |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `TimePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
@@ -121253,6 +122000,7 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 | `XhTimePickerPresetGroup` | `children` | `SlotChildren<TimePickerPresetsSlotProps>` |  | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhTimePickerRoot` | `children` | `SlotChildren<TimePickerRootSlotProps>` |  |  |
 | `XhTimePickerSegment` | `segment` | `TimeSegmentType` | 是 | 段的身份由作者声明。 |
+| `XhTimePickerTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
 
 ### 状态
 
@@ -121273,7 +122021,7 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.DIGIT` · `SEGMENT.CLEAR` · `SEGMENT.PERIOD` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `OPTION.FOCUS` · `ITEM.SELECT` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `VALUE.ADD` · `VALUE.REMOVE` · `VALUE.TOGGLE` · `TAG_LIST.TRACKED` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.DIGIT` · `SEGMENT.CLEAR` · `SEGMENT.PERIOD` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `OPTION.FOCUS` · `ITEM.SELECT` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isOpenControlled` · `canEdit` · `closesOnPreset` · `canPress`
 
@@ -121284,8 +122032,10 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `value` | `string` | ISO 时间串；任一必填段为空时为空串。 |
-| `empty` | `boolean` | 值为空串（尚未填全）。 |
+| `value` | `string[]` | 选中的时刻，ISO 时间串数组；单选至多一项，任一必填段为空时为空数组。 |
+| `selectionMode` | `TimePickerSelectionMode` |  |
+| `draftValue` | `string` | 多选时浮层里拼着的草稿（填全了才有，否则空串）；单选时就是当前值。 |
+| `empty` | `boolean` | 没有选中值（单选时还没填全也算）。 |
 | `outOfRange` | `boolean` | 已填全但落在 min / max 之外。只是标注，不改写值。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
@@ -121300,17 +122050,28 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 | `focusedItem` | `string \| null` |  |
 | `presets` | `readonly TimePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `canAdd` | `boolean` | 多选时「添加」此刻可按：草稿填全、在 min / max 之内、还没选过、也没到 maxSelected。 |
+| `tags` | `TimePickerTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 |
+| `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `getSegmentText` | `(props: TimePickerSegmentProps) => string` | 某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 |
 | `getItemText` | `(props: TimePickerItemProps) => string` | 某一格应显示的文字。数字列即格子自身的值，上下午列按 locale 给出「上午 / 下午」。 各适配器都用它填充文本，保证同构。 |
 | `isItemSelected` | `(props: TimePickerItemProps) => boolean` |  |
 | `isItemDisabled` | `(props: TimePickerItemProps) => boolean` | 落在 min / max 之外（或整个控件禁用）：仍在列表中，但不可选、方向键跳过。 |
 | `setOpen` | `(next: boolean) => void` |  |
-| `setValue` | `(next: string) => void` |  |
+| `setValue` | `(next: string[]) => void` |  |
 | `clear` | `() => void` |  |
+| `add` | `() => void` | 多选：把草稿收进值（与按「添加」同一条路）。 |
+| `deselect` | `(value: string) => void` | 多选：摘掉一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
-| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒内剩余宽度，把尾部按钮推到框内末端。 |
+| `getTagListProps` | `() => T['element']` | 标签行：多选时放在盒里，收纳可见标签与 +N 标签；没有选中时整体留空。单选时整体 hidden。 |
+| `getTagProps` | `(props: TimePickerTagProps) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"），另带 data-value。 |
+| `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）；标签与 +N 共用。 |
+| `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
+| `getItemDeleteTriggerProps` | `(props: TimePickerTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；不占 Tab 位、按下不夺焦。 |
+| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒内剩余宽度，把尾部按钮推到框内末端；多选时整体 hidden。 |
 | `getSegmentProps` | `(props: TimePickerSegmentProps) => T['element']` | 分段输入：一段一个节点，与 TimeField 的段同构（role=spinbutton + roving tabindex）。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
@@ -121320,7 +122081,8 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 | `getPresetProps` | `(props: TimePickerPresetProps) => T['element']` | 一条快捷选项（role=option）：点击把整份时间写入值并收起浮层。 |
 | `getColumnProps` | `(props: TimePickerColumnProps) => T['element']` |  |
 | `getItemProps` | `(props: TimePickerItemProps) => T['element']` |  |
-| `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 |
+| `getConfirmTriggerProps` | `() => T['button']` | 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收起；单选时 hidden。文字由作者写。 |
+| `getHiddenInputProps` | `(props?: TimePickerHiddenInputProps) => T['input']` | 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 多选时一个选中值一份同名输入：传 `{ value }` 产出那一份，不传是首个选中值那一份。 |
 
 ## 无障碍
 
@@ -121330,6 +122092,7 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
+| `Backspace` | focus in trigger, multiple, 有选中值, not disabled/readOnly | 摘掉最后一个选中值（标签行末尾那一枚）；多选时段位不出现，触发钮就是键盘入口 |
 | `ArrowDown` / `ArrowUp` | focus in trigger, closed, not disabled | 展开浮层，焦点落到时列（已选的时仍可选就停在它上面，否则停在首格） |
 | `Enter` / `Space` | focus in trigger, not disabled | 按钮的默认激活即展开/收起（不额外拦键，否则会一开一关） |
 | `ArrowDown` | open, focus in 某一列 | 列内下移一格，到尾回绕；被 min/max 裁掉的格自动跳过 |
@@ -121433,7 +122196,11 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
 | `control` | `data-xh-field-chrome` | '' |
+| `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
 | `control` | `data-xh-field-size` | props.size |
+| `tag-list` | `data-disabled` | ''（条件成立时才出现） |
+| `tag-list` | `data-instant` | ''（条件成立时才出现） |
+| `tag-list` | `data-xh-tag-list` | '' |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
@@ -121482,6 +122249,16 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
 | `item` | `data-xh-collection-size` | props.size |
+| `confirm-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-xh-action-control` | '' |
+| `confirm-trigger` | `data-xh-action-display` | 'always' |
+| `confirm-trigger` | `data-xh-action-profile` | 'text' |
+| `confirm-trigger` | `data-xh-action-size` | 'sm' |
+| `confirm-trigger` | `data-xh-action-variant` | 'solid' |
+| `confirm-trigger` | `data-xh-ink-surface` | '' |
+| `overflow-tag` | `data-count` | String(overflowCount) |
+| `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -121503,6 +122280,15 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 | `--xh-time-picker-column-h` | `column` | `block-size` | `default` | `--xh-viewport-h-sm` | time-picker 的 column 部件 block-size 覆盖槽。 |
 | `--xh-time-picker-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | time-picker 的 column 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-picker-column-px` | `column` | `padding-inline` | `default` | `0` | time-picker 的 column 部件 padding-inline 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-bg` | `confirm-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | time-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-bg-active` | `confirm-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | time-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-bg-hover` | `confirm-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | time-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-fg` | `confirm-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | time-picker 的 confirm-trigger 部件 color 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-gap` | `confirm-trigger`<br>`content` | `margin-inline-start` | `default` | `--xh-space-1` | time-picker 的 confirm-trigger、content 部件 margin-inline-start 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-h` | `confirm-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | time-picker 的 confirm-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-px` | `confirm-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | time-picker 的 confirm-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-radius` | `confirm-trigger` | `border-radius` | `default` | `--xh-shape-control` | time-picker 的 confirm-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-time-picker-confirm-trigger-shadow` | `confirm-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | time-picker 的 confirm-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-time-picker-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | time-picker 的 content 部件 background 覆盖槽。 |
 | `--xh-time-picker-content-border` | `content` | `border` | `default` | `--xh-border-default` | time-picker 的 content 部件 border 覆盖槽。 |
 | `--xh-time-picker-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | time-picker 的 content 部件 color 覆盖槽。 |
@@ -121522,6 +122308,7 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 | `--xh-time-picker-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | time-picker 的 control 部件 color 覆盖槽。 |
 | `--xh-time-picker-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_time-picker-gap` | time-picker 的 control 部件 gap 覆盖槽。 |
 | `--xh-time-picker-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_time-picker-control-h` | time-picker 的 control 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-time-picker-control-max-h` | `control` | `max-block-size` | `xh-field-layout=multi-tag` | `--xh-viewport-h-sm` | time-picker 的 control 部件 max-block-size 覆盖槽。 |
 | `--xh-time-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | time-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-picker-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_time-picker-control-px` | time-picker 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | time-picker 的 control 部件 border-radius 覆盖槽。 |
@@ -121570,13 +122357,14 @@ function isTimeUnavailable(option: string, unit: TimeColumnUnit, context: TimeUn
 | `--xh-time-picker-segment-fg-invalid-focus` | `segment` | `color` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-fg-danger` | time-picker 的 segment 部件 color 覆盖槽。 |
 | `--xh-time-picker-segment-px` | `segment` | `padding-inline` | `default` | `--xh-space-0_5` | time-picker 的 segment 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-segment-radius` | `segment` | `border-radius` | `default` | `--xh-shape-inset` | time-picker 的 segment 部件 border-radius 覆盖槽。 |
+| `--xh-time-picker-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | time-picker 的 tag-list 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -122642,6 +123430,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `isTimeUnavailable` | `TimeUnavailablePredicate` |  | 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）； unit 区分同一个 '30' 属于哪一列；context 带这一端已选的时（24 小时制）与分，以及是哪一端（index）， 起点与终点可以各有规则；date 在本组件恒为 null。 与 min / max 的界外值同等处理：判定为真的格子仍可聚焦，只是不可选中。 |
 | `translations` | `Partial<TimeRangePickerTranslations>` |  | 段位与两端读屏名的覆盖；未提供时使用内置英文语义名。 |
 | `onValueChange` | `(details: TimeRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: TimeRangePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### TimeRangePickerPreset
@@ -122661,6 +123450,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TimeRangePickerValueChangeDetails` | 两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `TimeRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
@@ -136165,6 +136955,7 @@ function indent(level: number): Record<string, string> {
 | `name` | `string` |  | 表单字段名。提供后表单出口才带 name，选中值随表单一并提交。 |
 | `form` | `string` |  | 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 |
 | `onValueChange` | `(details: TreeSelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onExpandedValueChange` | `(details: TreeSelectExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 | `onOpenChange` | `(details: TreeSelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onBranchLoadStart` | `(details: TreeSelectBranchLoadStartDetails) => void` |  | 一轮有效分支请求开始；retry 与首次展开由 reason 区分。 |
@@ -136193,6 +136984,7 @@ function indent(level: number): Record<string, string> {
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TreeSelectValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `expanded-value-change` | `TreeSelectExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `open-change` | `TreeSelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `branch-load-start` | `TreeSelectBranchLoadStartDetails` | 分支请求开始；detail 为 `{ value, node, reason }` |
@@ -139474,9 +140266,9 @@ const nodes = Array.from({ length: 1000 }, (_, index) => ({
 </script>
 ```
 
-### 缩进参考线
+### 连接线
 
-lines 在每一层子节点的行首画一道竖线，对齐父节点的展开箭头，层级深的时候一眼看得出谁与谁同层；只是外观，不改结构与键盘
+lines 从父节点的展开箭头引出竖线，每个子节点横出一段接到行首、最后一个子节点拐成直角收住，层级深的时候一眼看得出谁挂在谁下面；只是外观，不改结构与键盘
 
 ```vue
 <script setup lang="ts">
@@ -139911,7 +140703,7 @@ const sizes = [
 - 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 内作为 `tree` 的兄弟；`loading` 为真时树报告 `aria-busy`，空态让位。在途分两种：还没有节点时在途占位露面，一枚加载环排在文案之前；已有节点时重新取数不换成占位，行保留上一帧淡下，取完再淡回。
 - `leafOrientation` 按结构判据横排：子节点全是叶子的层跟随它，其余始终竖排。
 - 节点级加载态：`loadingValue` 里的分支报告 `aria-busy`，展开箭头换成转圈（减弱动效下停住）。取数归作者：在 `onExpandedValueChange` 里发起请求，回来后写回 `collection` 并把它移出 `loadingValue`。
-- `lines` 打开缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头，颜色取内部分隔线（`--xh-tree-line-color`），只是外观，不改结构与键盘。
+- `lines` 打开连接线：父节点展开箭头的中线向下引一道竖线，每个子节点从竖线横出一段接到行首（分支接到展开箭头，叶子穿过占位那一格接到正文前），最后一个子节点的竖线止于它那一行的中线；展开着的分支，竖线沿它的整棵子树接到下一个兄弟。颜色取内部分隔线（`--xh-tree-line-color`），只是外观，不改结构与键盘。顶层节点没有父节点可连，不画线；线画在嵌套的子层里，虚拟化平铺渲染的行不画。
 - 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定该层子节点的排列方向，优先于 `leafOrientation`；标 `vertical` 可以把树级的 `horizontal` 改回竖排。根层不受影响，始终竖排。
 
 ### 组合
@@ -139962,7 +140754,7 @@ const sizes = [
 | `disabled` | `boolean` |  | 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不再改变展开 / 选中。 |
 | `loading` | `boolean` |  | 节点加载中：树报告 aria-busy、隐藏空态占位；还没有节点时显示在途占位，已有节点时行保留上一帧淡下。 |
 | `loadingValue` | `string[]` |  | 正在取子节点的分支（节点 value）。在其中的分支报告 aria-busy，展开箭头换成转圈； 取数本身归作者：常见写法是在 onExpandedValueChange 里发起请求、回来后写回 collection 并移出这里。 |
-| `lines` | `boolean` |  | 缩进参考线：每一层子节点的行首画一道竖线，对齐父节点的展开箭头，默认 false。只是外观，不改结构与键盘。 |
+| `lines` | `boolean` |  | 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点横出一段接到行首，最后一个子节点止于行中线，默认 false。只是外观，不改结构与键盘。 |
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
 | `typeahead` | `boolean` |  | 连打检索，默认开启。关闭后可打印字符一律放行给页面。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
@@ -140254,8 +141046,8 @@ const sizes = [
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tree-bg` | `root`<br>`tree` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | tree 的 root、tree 部件 background 覆盖槽。 |
 | `--xh-tree-border` | `tree` | `border` | `default` | `--xh-border-default` | tree 的 tree 部件 border 覆盖槽。 |
-| `--xh-tree-branch-content-gap` | `branch-content` | `gap`<br>`row-gap` | `default`<br>`orientation=horizontal` | `--xh-list-option-gap` | tree 的 branch-content 部件 gap、row-gap 覆盖槽。 |
-| `--xh-tree-branch-gap` | `branch` | `gap` | `default` | `--xh-list-option-gap` | tree 的 branch 部件 gap 覆盖槽。 |
+| `--xh-tree-branch-content-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block`<br>`row-gap` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-list-option-gap` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block、row-gap 覆盖槽。 |
+| `--xh-tree-branch-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block` | `default`<br>`first-child`<br>`lines`<br>`orientation=vertical`<br>`state=open` | `--xh-list-option-gap` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block 覆盖槽。 |
 | `--xh-tree-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-subtle` | tree 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg` | `node-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg-active` | `node-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
@@ -140275,15 +141067,15 @@ const sizes = [
 | `--xh-tree-fg` | `tree` | `color` | `default` | `--xh-fg-default` | tree 的 tree 部件 color 覆盖槽。 |
 | `--xh-tree-gap` | `root` | `gap` | `default` | `--xh-space-2` | tree 的 root 部件 gap 覆盖槽。 |
 | `--xh-tree-icon-size` | `branch-control`<br>`item`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tree 的 branch-control、item、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-tree-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-_tree-indent` | tree 的 branch-content 部件 padding-inline-start 覆盖槽。 |
-| `--xh-tree-indicator-size` | `branch-content`<br>`branch-control`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator`<br>`tree` | `--xh-icon-size`<br>`inline-size`<br>`inset-inline-start`<br>`padding-inline-start` | `default`<br>`lines`<br>`orientation=vertical` | `--xh-_tree-indicator` | tree 的 branch-content、branch-control、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。 |
+| `--xh-tree-indent` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `inline-size`<br>`inset-inline-start`<br>`padding-inline-start` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-indent` | tree 的 branch、branch-content、branch-control、item、tree 部件 inline-size、inset-inline-start、padding-inline-start 覆盖槽。 |
+| `--xh-tree-indicator-size` | `branch`<br>`branch-content`<br>`branch-control`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator`<br>`tree` | `--xh-icon-size`<br>`inline-size`<br>`inset-inline-start`<br>`padding-inline-start` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-indicator` | tree 的 branch、branch-content、branch-control、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。 |
 | `--xh-tree-item-check-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-tree-item-indicator-fg` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-item-indicator-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tree 的 label 部件 color 覆盖槽。 |
 | `--xh-tree-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tree 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tree-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tree 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-tree-leaf-row-gap` | `branch-content` | `column-gap` | `orientation=horizontal` | `--xh-space-3` | tree 的 branch-content 部件 column-gap 覆盖槽。 |
-| `--xh-tree-line-color` | `branch-content`<br>`tree` | `background` | `lines` | `--xh-border-subtle` | tree 的 branch-content、tree 部件 background 覆盖槽。 |
+| `--xh-tree-line-color` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`border-block-end`<br>`border-inline-start` | `last-child`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-border-subtle` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、border-block-end、border-inline-start 覆盖槽。 |
 | `--xh-tree-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | tree 的 loading 部件 color 覆盖槽。 |
 | `--xh-tree-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_tree-font-size` | tree 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-tree-loading-gap` | `loading` | `gap` | `default` | `--xh-_tree-row-gap` | tree 的 loading 部件 gap 覆盖槽。 |
@@ -140301,7 +141093,7 @@ const sizes = [
 | `--xh-tree-row-gap` | `branch-control`<br>`item` | `gap`<br>`padding-inline-start` | `default`<br>`orientation=vertical` | `--xh-_tree-row-gap` | tree 的 branch-control、item 部件 gap、padding-inline-start 覆盖槽。 |
 | `--xh-tree-row-leading` | `branch-control`<br>`item` | `line-height` | `default` | `--xh-leading-normal` | tree 的 branch-control、item 部件 line-height 覆盖槽。 |
 | `--xh-tree-row-loading-opacity` | `branch-control`<br>`item`<br>`tree` | `opacity` | `is([data-scope='tree'][data-part='item'], [data-scope='tree'][data-part='branch-control'])`<br>`loading` | `--xh-state-disabled-opacity` | tree 的 branch-control、item、tree 部件 opacity 覆盖槽。 |
-| `--xh-tree-row-px` | `branch-content`<br>`branch-control`<br>`item`<br>`tree` | `inset-inline-start`<br>`padding-inline`<br>`padding-inline-start` | `default`<br>`lines`<br>`orientation=vertical` | `--xh-_tree-row-px` | tree 的 branch-content、branch-control、item、tree 部件 inset-inline-start、padding-inline、padding-inline-start 覆盖槽。 |
+| `--xh-tree-row-px` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `inline-size`<br>`inset-inline-start`<br>`padding-inline`<br>`padding-inline-start` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-row-px` | tree 的 branch、branch-content、branch-control、item、tree 部件 inline-size、inset-inline-start、padding-inline、padding-inline-start 覆盖槽。 |
 | `--xh-tree-row-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_tree-row-py` | tree 的 branch-control、item 部件 padding-block 覆盖槽。 |
 | `--xh-tree-row-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-inset` | tree 的 branch-control、item 部件 border-radius 覆盖槽。 |
 | `--xh-tree-row-selected-font-weight` | `branch-control`<br>`item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | tree 的 branch-control、item 部件 font-weight 覆盖槽。 |

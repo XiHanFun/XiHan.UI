@@ -41,6 +41,7 @@ export const DIAGNOSTIC_CODES = {
   barCodeOptionIgnored: "bar-code.option-ignored", // 条形码收到一个对当前码制没有意义的选项，按没给处理
   progressOptionIgnored: "progress.option-ignored", // 进度条收到一个对当前形态或语义没有意义、或取值不合法的选项，按没给处理
   stepsOptionIgnored: "steps.option-ignored", // 步骤条收到一个对当前形态没有意义、或取值不合法的选项，按没给处理
+  carouselSlideCountMismatch: "carousel.slide-count-mismatch", // 轮播渲染出来的条目比 slideCount 多：张数只看 slideCount，多出来的那几张翻不到
   stylesMissingSkin: "styles.missing-skin", // 页面上出现了组件，但它那份皮肤没被引入
   versionMismatch: "core.version-mismatch", // 适配器与 core 的版本不一致，锁步发版被打破
   ignoredSlot: "core.ignored-slot", // 作者给了默认插槽，但该组件不渲染插槽内容

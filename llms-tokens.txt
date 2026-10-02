@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 设计令牌
 
-共 666 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
+共 667 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
 「改写档」列出还有哪几份令牌源重新给过它——深色、紧凑、更高对比度、减弱动效、打印各是一档。
 
 覆盖时在 `:root` 上直接设同名令牌即可，这一层是公开面。带下划线前缀的 `--xh-_*` 是私有槽，不要在外面设。
@@ -347,7 +347,7 @@
 | `--xh-control-caption-md` | dimension | `var(--xh-font-size-sm)` | — |
 | `--xh-control-caption-lg` | dimension | `var(--xh-font-size-md)` | — |
 | `--xh-control-action-size` | dimension | `24px` | compact |
-| `--xh-control-indicator-size` | dimension | `var(--xh-control-indicator-md)` | compact |
+| `--xh-control-indicator-size` | dimension | `var(--xh-control-indicator-md)` | — |
 | `--xh-control-indicator-sm` | dimension | `12px` | compact |
 | `--xh-control-indicator-md` | dimension | `16px` | compact |
 | `--xh-control-indicator-lg` | dimension | `20px` | compact |
@@ -635,7 +635,7 @@
 | `--xh-overlay-menu-min-w` | dimension | `10rem` | — |
 | `--xh-overlay-column-min-w` | dimension | `3.5rem` | — |
 | `--xh-overlay-column-item-h` | dimension | `calc(var(--xh-control-h-sm) - var(--xh-space-1))` | — |
-| `--xh-overlay-calendar-column-h` | dimension | `min(var(--xh-viewport-h-md), calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7)))` | — |
+| `--xh-overlay-calendar-column-h` | dimension | `calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7))` | — |
 | `--xh-overlay-menu-max-h` | dimension | `20rem` | compact |
 | `--xh-overlay-max-w-sm` | dimension | `16rem` | — |
 | `--xh-overlay-max-w` | dimension | `20rem` | — |
@@ -648,6 +648,7 @@
 | `--xh-overlay-drawer-w-sm` | dimension | `16rem` | — |
 | `--xh-overlay-drawer-w-md` | dimension | `20rem` | — |
 | `--xh-overlay-drawer-w-lg` | dimension | `28rem` | — |
+| `--xh-overlay-toast-w` | dimension | `28.75rem` | — |
 | `--xh-overlay-backdrop-blur` | dimension | `12px` | — |
 
 ## text

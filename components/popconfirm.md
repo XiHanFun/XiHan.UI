@@ -626,6 +626,7 @@ function onConfirm() {
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-xh-action-control` | '' |

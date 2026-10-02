@@ -21,7 +21,7 @@ import {
 } from "@xihan-ui/vue";
 ```
 
-只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1157 个导出组件按组件分组列在[组件参考](../components/)。
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1175 个导出组件按组件分组列在[组件参考](../components/)。
 
 没有插件，不需要 `app.use()`。按名称 import 即可，`sideEffects: false` 让打包器移除未使用的部分。
 
@@ -70,6 +70,27 @@ emits: {
 ```
 
 具体的绑定名按组件而定：开关是 `v-model:checked`，浮层是 `v-model:open`，输入框是 `v-model:value`。
+
+## 原生属性透传与严格模板检查
+
+组件上没声明成 prop 的属性按 Vue 的属性透传落到根元素上：给 `XhFormRoot` 写 `id`，外部的提交按钮就能用 `form="…"` 关联到这张表单；`class`、`style`、`aria-*`、`data-*` 同理。组件的类型只列出自己的 prop，没有把根元素的原生属性并进来——把几百个原生属性并进每个组件，会让 prop 表与类型提示都淹没在里面。
+
+开启 vue-tsc 的 `strictTemplates`（或单开 `checkUnknownProps`）后，这类透传属性会被报成未知属性。在项目的 `env.d.ts` 里扩一次 `ComponentCustomProps` 即可，组件自己的 prop 照常受检，拼错的属性名仍然会报：
+
+<!-- eslint-skip -->
+
+```ts
+// env.d.ts
+import type { HTMLAttributes } from 'vue'
+
+declare module 'vue' {
+  interface ComponentCustomProps extends Omit<HTMLAttributes, 'class' | 'style'> {}
+}
+```
+
+这条扩充对项目里所有组件生效（第三方组件同样放行原生属性），由项目自己决定是否开启。表单、按钮等元素专有的属性（`novalidate`、`form`）不在通用原生属性里，需要时把对应的 `FormHTMLAttributes`、`ButtonHTMLAttributes` 一并并进去。
+
+升级时同样建议开启 `checkUnknownProps` 与 `checkUnknownEvents`：移除或改名的属性不会报错，只会被当成原生属性透传到根元素上而静默失效，这两项检查能把它们一次扫出来。
 
 ## asChild 与事件取消
 

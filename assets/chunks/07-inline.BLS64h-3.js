@@ -1,0 +1,1 @@
+async function c(){const e=document.getElementById("color-picker-inline"),n=document.getElementById("color-picker-inline-value");e.addEventListener("value-change",t=>{n.textContent=t.detail.value[0]})}export{c as default};

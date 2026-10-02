@@ -4942,10 +4942,12 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 
 - 排序、选择、展开三套状态各自可受控。
 - 列名放在 `column-label` 里，它是列头里唯一可收窄的一格：列名太长时由它出省略号。排序钮、列宽把手与列拖拽把手都是它的兄弟，不装进它里面。列头是 flex 行，裸写的文本是匿名 flex item、缩不下去，窄列上会把定尺的把手连同外边距一起挤出列头盒，所以不可排序、不可改宽的列也要用它。
+- 列定义中的 `align` 控制该列所有格子（列头与数据格）的内容对齐方向：`start`（默认）、`center`、`end`，对应列头与单元格上的 `data-align` 属性。
 - 排序钮（`sort-trigger`）是列头里独立的定尺图标钮，不包列名：列名留在 `column-label` 上，钮写在列名之后、被推到行尾侧与列宽把手并排；点列头文字不排序，点钮才排序。
 - 选中行铺品牌淡底行面并由行首的勾选方框标记；悬停与按下只换面，行的几何与吸附列不动。
 - 表头吸顶与列吸附、条纹、密度、边框都是开关。
 - 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
+- 列宽：`width` 是伸缩的基准，表格比各列之和宽时各列一起分剩余空间、窄时一起收；`minWidth` / `maxWidth` 同时管布局与拖动改宽，伸缩时不越过这两条，三者写成同一个数就是一列定宽。没写下限的列收到皮肤的 `--xh-table-cell-min-w` 为止；拖动调过的列钉在拖出的宽度上，不再参与分配。
 - 表头分组：列给出 `children` 即为分组，只在表头占一格、横跨它的全部叶子列，不进列号空间，也不承载数据、排序、改宽与冻结。嵌套几层就有几行表头，按 `headerRows` 逐层渲染：表头行写明 `level`，列头按所在的行定位自己是哪一格；较浅的叶子列（含前缀列）在它起始的那一行出列头、纵向跨到最后一行（`aria-rowspan`），下面各行那一格是对读屏隐藏的占位，照样渲染以保住列宽。行号空间把各层表头都算进去，数据行从表头之后起算。分组内的叶子列要给出宽度，分组格的宽度按它们相加；列偏好把一个分组的叶子列拆开时，分组格按连续的段各出一格。
 - 单元格合并用 `cellSpan`，与 antd 的 `spanMethod` 同一种写法：逐格询问合并区的大小（`rowSpan` / `colSpan`）。表格按它算出起点格的 `aria-rowspan` / `aria-colspan`：与起点同一行、被横向跨过的格子不渲染（`hidden`）；下面行里被纵向跨过的，在合并区最左那一列留一格占位（`data-covered`，对读屏隐藏、只保住宽度），其余不渲染。作者照常逐格渲染，谁显谁藏由表格决定；`cellSpanOf(行, 列)` 可查某一格的合并情形。合并只在可见数据行之间，遇到展开的详情行截断。
 - 纵向合并的起点格（`data-row-span`）挂载后按实测行位铺满合并的几行，压在下面几行之上、底色随起点行；量到之前按普通格子排。
@@ -5036,12 +5038,13 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `label` | `string` |  | 展示名。只供调用方渲染，不作为可及名。 |
 | `sortable` | `boolean` |  | 可排序：提供后才产出 aria-sort，排序把手也才响应按键与点击。 |
 | `sticky` | `boolean \| 'start' \| 'end'` |  | 横向冻结（左右滚动时该列固定），写为条目上的 data-frozen。true 等于 'start'（固定在行首侧），'end' 固定在行尾侧。 与表头吸顶的 data-fixed 是两件事：那是布尔，这个带方向，同名会使 [data-fixed] 一条选择器命中两种语义。 同侧有多列吸附时，连接层按前面各列的宽度累加出偏移，写入 --xh-table-sticky-inset： 数字列宽直接累加，不是数字（没写、百分比、fr 这类）的列取挂载后实测的列头宽度，量到之前该侧从该列起暂时贴边。 |
-| `width` | `string \| number` |  | 列宽。数字按 px 处理，字符串原样写入内联 inline-size。 |
-| `minWidth` | `number` |  | 拖动改列宽时的下限（px）。未提供时使用 TABLE_COLUMN_MIN_WIDTH。 |
-| `maxWidth` | `number` |  | 拖动改列宽时的上限（px）。未提供时不封顶。 |
+| `width` | `string \| number` |  | 列宽。数字按 px 处理，字符串原样写入内联 inline-size。它是伸缩的基准：表格比各列之和宽时 与其余列一起分剩余空间，窄时一起收；要定宽就把 minWidth / maxWidth 写成与它同一个数。 |
+| `minWidth` | `number` |  | 列宽下限（px）：布局里伸缩时不窄过它，拖动改宽也不窄过它。 未提供时布局下限是皮肤的 --xh-table-cell-min-w，拖动下限是 TABLE_COLUMN_MIN_WIDTH。 |
+| `maxWidth` | `number` |  | 列宽上限（px）：布局里伸缩时不宽过它，拖动改宽也不宽过它。未提供时不封顶。 |
 | `resizable` | `boolean` |  | 该列的宽度可以拖动修改。提供后才产出改宽把手。 |
 | `children` | `TableColumnDef[]` |  | 表头分组：给了 children 即为分组列，只在表头占一格、横跨它全部叶子列，不进列号空间， 也不承载数据、排序、改宽与冻结。叶子列才是生效列；嵌套几层表头就有几行， 较浅的叶子列（含前缀列）的列头纵向跨到最后一行。分组内的叶子列都要给出宽度， 分组那一格的宽度才能按叶子列之和算准。 |
 | `reorderable` | `boolean` |  | 该列可以拖动换位。提供后才产出拖拽把手：每个把手都是一个 Tab 位， 未声明的表格不承担该代价。 不可拖动的列与冻结列一样是屏障：跨过它落下会把它挤走，而作者已声明该列不动。 |
+| `align` | `'start' \| 'center' \| 'end'` |  | 列内容的对齐方向，写为列头与数据格上的 data-align。 不提供时由皮肤决定（默认 start）。 |
 
 ### TableRowDef
 
@@ -5344,6 +5347,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `row` | `data-xh-collection-context` | 'page' |
 | `row` | `data-xh-collection-item` | '' |
 | `row` | `data-xh-collection-size` | props.size |
+| `column-header` | `data-align` | def?.align |
 | `column-header` | `data-covered` | ''（条件成立时才出现） |
 | `column-header` | `data-dragging` | ''（条件成立时才出现） |
 | `column-header` | `data-drop` | 'before' \| 'after' |
@@ -5354,6 +5358,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `column-header` | `data-sort` | 'asc' \| 'desc' |
 | `column-header` | `data-sort-index` | tableSortIndexOf(sort, value) \| undefined |
 | `column-header` | `data-sortable` | ''（条件成立时才出现） |
+| `cell` | `data-align` | def?.align |
 | `cell` | `data-covered` | ''（条件成立时才出现） |
 | `cell` | `data-disabled` | ''（条件成立时才出现） \| undefined |
 | `cell` | `data-dragging` | ''（条件成立时才出现） |

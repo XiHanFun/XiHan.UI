@@ -384,6 +384,7 @@ import {
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框、色块与清空按钮的几何档位。 |
 | `translations` | `Partial<ColorFieldTranslations>` |  | 读屏文案；默认英文。 |
 | `onValueChange` | `(details: ColorFieldValueChangeDetails) => void` |  |  |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 事件
 
@@ -392,6 +393,7 @@ import {
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `ColorFieldValueChangeDetails` | 已接受的值变化；detail 为 `{ value: string }`，输入途中不发出 |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
 

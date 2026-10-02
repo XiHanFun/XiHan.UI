@@ -1863,6 +1863,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入参不参与提交。
+- `startPlaceholder` / `endPlaceholder` 是两组段位各自的整条占位：哪一端一段都没填、焦点也不在它的段上，就在那一组显示这句文字（「开始日期」「结束日期」）；`placeholder` 是两端共用的逐段占位串。
 - 浮层内是[日历范围选择器](./calendar-range-picker)：先选起点再选终点，两端都落定后才写值并收起浮层；支持按住拖选与拖动已选区间的一端。
 - `granularity` 支持 day / week / month / quarter / year，输入段、网格和周期边界一起切换。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
 - `min`、`max`、`isDateUnavailable`（第二个参数是当前起点）与 `allowsNonContiguousRanges` 一并转给日历。
@@ -1928,6 +1929,9 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `required` | `boolean` |  | 必填标注，写入每一段的 aria-required。 |
 | `name` | `string` |  | 起点隐藏输入的表单字段名；提供后才带 name，ISO 串随表单一并提交。 |
 | `endName` | `string` |  | 终点隐藏输入的表单字段名；未提供时终点不参与提交。 |
+| `placeholder` | `DateSegmentPlaceholders` |  | 逐段的占位串，两组段位共用，覆盖内置的 yyyy / mm / dd。 |
+| `startPlaceholder` | `string` |  | 起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字（「开始日期」），焦点进到段上即换回段位。 |
+| `endPlaceholder` | `string` |  | 终点那组段位的整条占位，规则同 startPlaceholder。 |
 | `granularity` | `CalendarGranularity` |  | 选择粒度。输入行与周期网格都由它决定。 |
 | `activeView` | `CalendarView` |  | 面板当前所在的层级。提供即受控；未提供时跟随 granularity，每次展开都回到目标粒度。 点击标题中的年 / 月会修改它。 |
 | `segments` | `DateSegmentSet` |  | 输入行铺设的段。未提供时按 granularity 推导：按周为「2026-33」、按月为「2026-05」、 按季度为「2026-Q2」、按年为「2026」，按天则按 locale 排列年月日。 |
@@ -1952,6 +1956,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `activeIndex` | `DateRangePickerEndIndex` |  | 当前编辑区间的哪一端。提供即受控；未提供时每次展开都重新定：从终点那组段位展开为 1，其余为 0。 聚焦某一组段位、点某一端的时间格时随之改写。为 1 且已有起点时日历只改终点： 点在起点那一天或之后即落终点、起点不动，点在起点之前从那一天重新开始挑。 没有配套的 defaultActiveIndex：它每次展开都会重定，非受控初值没有生效时刻。 |
 | `onActiveIndexChange` | `(details: DateRangePickerActiveIndexChangeDetails) => void` |  | 当前编辑的一端变化；受控时是唯一出口。 |
 | `onValueChange` | `(details: DateRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: DateRangePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onFocusedValueChange` | `(details: DateRangePickerFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻月、展开、段位输入都会发出）。 网格由外部渲染，不监听该事件时日历不会换月。 |
 | `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板所在层级变化（点击标题向上、点击格子向下都会发出）；受控时是唯一出口。 |
@@ -1963,6 +1968,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `DateRangePickerValueChangeDetails` | 区间两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `DateRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `focused-value-change` | `DateRangePickerFocusChangeDetails` | 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格 |
 | `active-view-change` | `CalendarViewChangeDetails` | 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重绘网格 |
@@ -2173,6 +2179,8 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `segment-group` | `data-index` | String(index) |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-out-of-range` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-text` | props.endPlaceholder \| props.startPlaceholder \| undefined |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -2295,9 +2303,10 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `--xh-date-range-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | date-range-picker 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-date-range-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | date-range-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-date-range-picker-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | date-range-picker 的 segment-group 部件 color 覆盖槽。 |
-| `--xh-date-range-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | date-range-picker 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-date-range-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-_date-range-picker-available-h` | date-range-picker 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-date-range-picker-panel-divider` | `calendar` | `border-block-start`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-solid-separator` | date-range-picker 的 calendar 部件 border-block-start、border-inline-start 覆盖槽。 |
 | `--xh-date-range-picker-panel-gap` | `calendar`<br>`preset-group` | `padding-block-start`<br>`padding-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-space-3` | date-range-picker 的 calendar、preset-group 部件 padding-block-start、padding-inline-start 覆盖槽。 |
+| `--xh-date-range-picker-placeholder-fg` | `segment-group` | `color` | `placeholder-shown` | `--xh-fg-subtle` | date-range-picker 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-date-range-picker-preset-bg-hover` | `preset` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | date-range-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-date-range-picker-preset-bg-pressed` | `preset` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | date-range-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-date-range-picker-preset-check-fg` | `preset` | `background-color` | `default` | `--xh-_date-range-picker-check-fg` | date-range-picker 的 preset 部件 background-color 覆盖槽。 |

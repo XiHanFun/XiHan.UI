@@ -99,6 +99,16 @@
 - Tooltip 新增接替窗口 `skipDelayDuration`（缺省 300ms）：一个提示开着或刚收起时，指向下一个直接接替、不再等待也不播进场；要回到旧行为写 `skipDelayDuration={0}`
 - Tour 当前步的目标取不到时先不露面、等它出现，等满 `targetTimeout`（缺省 3000ms）仍没有才按居中呈现（此前立即居中）；要回到旧行为写 `targetTimeout={0}`
 - Heatmap 缺省播放填色动画（写 `animated={false}` 关闭）；数据含负数且未写 `scale` 时缺省按发散色阶（写 `scale="sequential"` 保持原口径）；`palette` 的 `green` / `blue` / `orange` / `red` 改取基础色板同名色相，要回到语气色写 `tone`
+
+**升级时最容易漏的几处**
+
+- 删掉或改了名的属性不会报错：Vue 与 Web Components 把它当成原生属性透传到根元素上，写了等于没写。Vue 项目建议开启 vue-tsc 的 `checkUnknownProps` 与 `checkUnknownEvents` 一次扫出来，透传的原生属性（`id`、`title`、`aria-*`）按 [Vue 适配器 · 原生属性透传与严格模板检查](/adapters/vue#原生属性透传与严格模板检查) 放行
+- Select 只负责从固定选项里选，不带输入筛选与远程搜索；要边输入边筛选改用 Combobox，它只负责呈现，筛选结果与输入框里的文字由调用方掌管
+- ImageViewer 的图片经 `collection` 传入，没给时打开只有工具条与空视口
+- Button 的加载态与文字分别放进 `XhButtonIndicator` / `XhButtonLabel`；纯图标按钮要写 `iconOnly`（Vue 模板里 `icon-only`）并自带可及名
+- Switch、Checkbox 的文字写进默认插槽才接得上可及名，写在组件外面的文字不会成为它的名字
+- SideNav 的 `item` 部件必须写，链接条目要带 `href`：回车激活走浏览器原生的链接行为
+- 合并与改名再提一次：轻提示并入通知（`preset="toast"`），分段控件并入单选组（`variant="segmented"`），令牌 `--xh-shimmer-duration` 改名 `--xh-motion-loop-shimmer`
 :::
 
 - **新增** `@xihan-ui/viz`：零运行时依赖、不碰 DOM 的图表引擎，以纯函数提供比例尺、刻度与时间间隔、统计与分箱、形状与曲线、坐标轴布局、场景与过渡、几何拾取、降采样、数字与时间格式、文字折行、颜色换算与色板校验，以及无障碍摘要与数据表模型；关系、层级、桑基布局与列式大数据工具放在子入口 `@xihan-ui/viz/graph`、`/hierarchy`、`/sankey`、`/columns`、`/canvas`，不用不计体积；非法输入抛 `VizError`。Headless 与三个适配器已依赖它，无需单独安装

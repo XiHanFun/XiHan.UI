@@ -336,7 +336,7 @@ const collection: MenubarNode[] = [{
 
 - 同一时间只展开一个顶层菜单。
 - 展开后移向相邻入口会直接切换菜单。
-- 支持方向键、首字符检索、禁用项、分组与子菜单。
+- 支持方向键、首字符检索、禁用项、分组与子菜单。数据驱动时菜单里的条目写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。手写时用 `XhMenubarSub`。
 - 条目可逐条声明语气；顶层入口表达的是位置，不接语气。
 - 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。
 - 条目可组合图标、文字、说明和快捷键提示。
@@ -415,6 +415,7 @@ const collection: MenubarNode[] = [{
 | `separatorBefore` | `boolean` |  | 本条之前绘制一条分隔线；写在首条上不产出分隔线。只在条目上读取。 |
 | `closeOnSelect` | `boolean` |  | 选择型条目激活后是否关闭菜单栏；checkbox / radio 默认 false。 |
 | `items` | `MenubarNode[]` |  | 该菜单中的条目；只在顶层节点上读取。 |
+| `children` | `MenuNode[]` |  | 子菜单的条目：只在条目上读取。给了 children 这一条就是子菜单的入口，Vue / React 的默认树按 children 递归铺出下一层，深度不限；本条只能是普通条目（kind 为 item）。子层的选中经菜单树汇到菜单栏上。 手写部件时改用 XhMenubarSub；Web Components 由作者写 Light DOM，不读这一项。 |
 
 ### 事件
 
@@ -458,6 +459,7 @@ const collection: MenubarNode[] = [{
 | `XhMenubarRoot` | `children` | `SlotChildren<MenubarRootSlotProps>` |  |  |
 | `XhMenubarSub` | `value` | `string` | 是 | 它在所属菜单中的条目身份。 |
 | `XhMenubarSub` | `disabled` | `boolean` |  |  |
+| `XhMenubarSub` | `collection` | `MenuNode[]` |  | 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 |
 | `XhMenubarSub` | `placement` | `Placement` |  |  |
 | `XhMenubarSub` | `offset` | `number` |  |  |
 | `XhMenubarSub` | `loop` | `boolean` |  |  |

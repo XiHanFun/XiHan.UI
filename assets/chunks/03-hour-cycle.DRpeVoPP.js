@@ -1,0 +1,1 @@
+async function n(){const e=document.getElementById("time-picker-hour-cycle"),t=document.getElementById("time-picker-hour-cycle-value");e.addEventListener("value-change",c=>{t.textContent=c.detail.value[0]??"（空）"})}export{n as default};
