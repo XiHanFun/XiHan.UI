@@ -10,6 +10,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { declarations, stripComments } from '../lib/css-declarations.mjs'
 
 const uiRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
 const repoRoot = join(uiRoot, '..')
@@ -1002,6 +1003,122 @@ async function thirdPartyRuntimeDeps() {
   return [...names].sort()
 }
 
+// —— 私有槽 --xh-_* 的三档：语气轴槽与跨包内联属性受约束，其余排除 ——
+
+/** 私有槽两边都有：组件皮肤与家族配方。 */
+const STYLE_DIRS = [SKIN_CSS, join(uiRoot, 'packages/design/styles/family')]
+
+/** headless 浮层共享函数按族名拼出的私有槽：函数名 → 拼出的后缀（--xh-_<族名>-<后缀>）。 */
+const OVERLAY_SLOT_HELPERS = {
+  overlayAvailableSpaceVars: ['available-w', 'available-h'],
+  overlayAnchorWidthVar: ['anchor-w'],
+  overlayArrowVars: ['arrow-x', 'arrow-y'],
+}
+
+/**
+ * 三档各自的名字。跨包内联属性 = headless 写进内联 style、皮肤经 var() 读取的那些：headless 一侧收
+ * 三种写法——style 对象的字面量键、setProperty 的字面量参数、被当作键或 setProperty 参数的具名常量——
+ * 再展开浮层共享函数按族名拼出的名字，最后与皮肤的 var() 取交集。图表几何度量是反方向（皮肤声明、
+ * 运行时从计算样式读），不算写入；认不出写法的字面量直接报错，免得少数。
+ * core 写的层级、动效与液态材质取值不在 headless 里，归其余。
+ */
+async function privateSlotTiers() {
+  const declared = new Set()
+  const consumed = new Set()
+  for (const dir of STYLE_DIRS) {
+    for (const file of (await readdir(dir)).filter(f => f.endsWith('.css'))) {
+      const src = stripCssComments(await readFile(join(dir, file), 'utf8'))
+      for (const [, name] of src.matchAll(/(--xh-_[\w-]+)\s*:/g))
+        declared.add(name)
+      for (const [, name] of src.matchAll(/var\(\s*(--xh-_[\w-]+)/g))
+        consumed.add(name)
+    }
+  }
+
+  // 与 check-demo-tokens 同一口径：tone.css 里由 [data-tone…] 规则声明的那一组
+  const tone = new Set()
+  for (const { prop, selectors } of declarations(stripComments(await readFile(join(SKIN_CSS, 'tone.css'), 'utf8')))) {
+    if (prop.startsWith('--xh-_') && (selectors.at(-1) ?? '').includes('[data-tone'))
+      tone.add(prop)
+  }
+
+  const overlay = join(HEADLESS, 'shared', 'overlay.ts')
+  const suffixes = Object.values(OVERLAY_SLOT_HELPERS).flat()
+  const written = new Set()
+  for (const [path, src] of await readTree(HEADLESS, '.ts')) {
+    const constants = new Map([...src.matchAll(/\bconst (\w+) = '(--xh-_[\w-]+)'/g)].map(hit => [hit[2], hit[1]]))
+    for (const hit of src.matchAll(/'(--xh-_[\w-]+)'/g)) {
+      const name = hit[1]
+      const after = src.slice(hit.index + hit[0].length)
+      const constant = constants.get(name)
+      if (/^\s*:/.test(after) || /setProperty\(\s*$/.test(src.slice(Math.max(0, hit.index - 40), hit.index)))
+        written.add(name)
+      else if (constant && new RegExp(`\\[${constant}\\]\\s*:|setProperty\\(\\s*${constant}\\b`).test(src))
+        written.add(name)
+      else if (!src.includes('getPropertyValue('))
+        throw new Error(`${path} 里的 ${name} 既不是写入内联 style 的写法，也不在读计算样式的文件里，跨包内联属性认不出它`)
+    }
+    for (const [helper, helperSuffixes] of Object.entries(OVERLAY_SLOT_HELPERS)) {
+      for (const [, scope, rest] of src.matchAll(new RegExp(`\\b${helper}\\(\\s*'([\\w-]+)'(.*)`, 'g'))) {
+        for (const suffix of helperSuffixes) {
+          // 块轴下限传 null 时只写宽度那条
+          if (suffix === 'available-h' && /,\s*null\s*\)/.test(rest))
+            continue
+          written.add(`--xh-_${scope}-${suffix}`)
+        }
+      }
+    }
+    // 按变量拼出的名字只认浮层共享函数那几条，别处新出现的拼法这里数不到，宁可报错也不少数
+    const templates = [...src.matchAll(/`--xh-_\$\{/g)].length
+    if (path !== overlay && templates > 0)
+      throw new Error(`${path} 按变量拼 --xh-_ 名字，跨包内联属性数不到它：改成字面量，或登记进 OVERLAY_SLOT_HELPERS`)
+    if (path === overlay) {
+      const known = [...src.matchAll(/`--xh-_\$\{scope\}-([\w-]*)`/g)].map(hit => hit[1])
+      if (known.length !== templates || known.some(stem => !suffixes.some(suffix => suffix.startsWith(stem))))
+        throw new Error(`${path} 拼出的私有槽与 OVERLAY_SLOT_HELPERS 对不上，先补登记`)
+    }
+  }
+
+  const inline = new Set([...written].filter(name => consumed.has(name)))
+  const rest = new Set([...declared, ...consumed].filter(name => !tone.has(name) && !inline.has(name)))
+  return { tone, inline, rest }
+}
+
+truth.语气轴槽数 = {
+  how: 'packages/design/styles/css/tone.css 里由 [data-tone…] 规则声明的 --xh-_* 去重数',
+  async value() {
+    return (await once('privateSlots', privateSlotTiers)).tone.size
+  },
+}
+
+truth.读语气轴槽的皮肤数 = {
+  how: 'packages/design/styles/css 下除 tone.css 自身外、var() 读过任一语气轴槽的 .css 文件数',
+  async value() {
+    const { tone } = await once('privateSlots', privateSlotTiers)
+    let n = 0
+    for (const file of (await readdir(SKIN_CSS)).filter(f => f.endsWith('.css') && f !== 'tone.css')) {
+      const src = stripCssComments(await readFile(join(SKIN_CSS, file), 'utf8'))
+      if ([...src.matchAll(/var\(\s*(--xh-_[\w-]+)/g)].some(([, name]) => tone.has(name)))
+        n++
+    }
+    return n
+  },
+}
+
+truth.跨包内联属性数 = {
+  how: 'headless 源码里写进内联 style 的 --xh-_*（字面量键、setProperty 参数、当键用的具名常量，加浮层共享函数按族名拼出的），与皮肤（css 与 family）经 var() 读取的取交集',
+  async value() {
+    return (await once('privateSlots', privateSlotTiers)).inline.size
+  },
+}
+
+truth.其余私有槽数 = {
+  how: '皮肤（css 与 family）里声明或经 var() 读取的 --xh-_* 去重数，减去语气轴槽与跨包内联属性',
+  async value() {
+    return (await once('privateSlots', privateSlotTiers)).rest.size
+  },
+}
+
 truth.诊断码名单 = {
   how: 'packages/engine/core/src/kernel/diagnostics/codes.ts 里 DIAGNOSTIC_CODES 的「键=码」全表，按源码顺序',
   async value() {
@@ -1413,6 +1530,12 @@ const TABLE = [
   ['docs/guide/versioning.md', /属性名、(\d+) 条「组件 × 属性」配对/, 'connect组件属性配对数'],
   ['docs/guide/versioning.md', /自带皮肤消费了 (\d+) 个属性名/, '皮肤消费的属性名数'],
   ['docs/guide/versioning.md', /个属性名 \/ (\d+) 条「皮肤 × 属性」配对/, '皮肤属性配对数'],
+
+  // 私有槽三档：两档受约束、其余排除，三者互补；跨包内联属性是换整套皮肤时必须读的那批
+  ['docs/guide/versioning.md', /\| 语气轴槽 \| (\d+) \|/, '语气轴槽数'],
+  ['docs/guide/versioning.md', /读取这批槽的 (\d+) 份皮肤/, '读语气轴槽的皮肤数'],
+  ['docs/guide/versioning.md', /\| 跨包内联属性 \| (\d+) \|/, '跨包内联属性数'],
+  ['docs/guide/versioning.md', /\| 其余 `--xh-_` 私有槽 \| (\d+) \|/, '其余私有槽数'],
 
   // 其余「当前状态是 X」式陈述
   ['docs/guide/versioning.md', /\| Node（安装并运行本库） \| \*\*≥ (\d+)\*\*/, '消费端Node主版本下限'],

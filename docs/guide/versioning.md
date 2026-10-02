@@ -186,9 +186,9 @@ brand  neutral  success  warning  danger  info
 | 全局令牌 · 原语层 | 115 | `--xh-color-brand-500`、`--xh-space-4`、`--xh-radius-md`。皮肤中不应直接使用它们，但接入品牌轴必须写 `--xh-color-brand-*`，因此它们是公开的 |
 | 全局令牌 · 语义层 | 302 | `--xh-bg-brand`、`--xh-fg-on-brand`、`--xh-control-h-md`、`--xh-shape-control`。主题定制的正门，见 [设计令牌与主题](./theme) |
 | 组件覆盖槽 | 4468（覆盖 140 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
-| 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。这是自定义语气的唯一机制：写入 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读取这批槽的 58 份皮肤随之生效。虽然带下划线前缀，但按受约束处理 |
+| 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。这是自定义语气的唯一机制：写入 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读取这批槽的 64 份皮肤随之生效。虽然带下划线前缀，但按受约束处理 |
 | 关键帧名 | 42 | `xh-pop-in`、`xh-fade-out`、`xh-spin`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
-| 跨包内联属性 | 4 | `--xh-_truncate-lines`、`--xh-_float-button-offset`、`--xh-_tour-spotlight-radius`、`--xh-_carousel-autoplay-duration`。由 headless 写入内联 `style`，皮肤必须读取。整套更换皮肤时若不读取这些值，文本截断、浮动按钮贴边、引导目标圆角或轮播进度会失效，且不报任何错误 |
+| 跨包内联属性 | 139 | 浮层定位共用的 `--xh-_<组件>-available-w` / `-available-h` / `-anchor-w` / `-arrow-x` / `-arrow-y`，指示条与滑块的几何 `--xh-_tabs-indicator-x`、`--xh-_radio-group-thumb-w`，值类比例 `--xh-_progress-value`、`--xh-_loading-bar-value`，浮动按钮的贴边与停点 `--xh-_float-button-offset`、`--xh-_float-button-ratio`、`--xh-_float-button-x`，图表提示框坐标 `--xh-_chart-tip-x`、`--xh-_chart-tip-y`，以及 `--xh-_truncate-lines`、`--xh-_color-picker-tag-color`、`--xh-_carousel-autoplay-duration` 等。由 headless 写入内联 `style`，皮肤必须读取。整套更换皮肤时若不读取这些值，浮层限高与箭头、选中指示、进度、文本截断、浮动按钮贴边或图表提示框会失效，且不报任何错误。core 写入的层级、动效与液态材质取值不在此列，见下方「排除」 |
 | `@xihan-ui/styles` 的 CSS 子路径 | 167 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./chart.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./material.css`、`./loading-ring.css`、`./motion.css`，与 152 条 `.css`：140 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
 | `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |
 
@@ -196,7 +196,7 @@ brand  neutral  success  warning  danger  info
 
 | 类别 | 数量 | 排除原因 |
 | --- | --- | --- |
-| 其余 `--xh-_` 私有槽 | 465 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们 |
+| 其余 `--xh-_` 私有槽 | 791 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
 | 令牌的取值 | — | `--xh-color-brand-500` 这个名字受约束，其对应的 `oklch()` 值不受约束。调色板随视觉迭代变化，这正是令牌存在的意义 |
 | `index.css` 的内部结构 | — | 它是生成的扁平文件：家族配方只内联一次、排在皮肤之前，皮肤段的顺序即源序。段标记注释（`/* styles/xxx.css */`）只作阅读定位，不是承诺 |
 | `index.unlayered.css` 的内部结构 | — | 它是同一源序的扁平镜像，不带 `@layer`。使用该入口时没有 `xihan.overrides` 覆盖槽位，层名承诺不适用 |
