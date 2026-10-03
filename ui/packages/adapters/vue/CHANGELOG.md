@@ -1,5 +1,64 @@
 # @xihan-ui/vue
 
+## 3.1.0
+
+### Minor Changes
+
+- 525029a: 带清空钮的 15 个组件统一新增清空事件：TextField、ColorField、Select、Combobox、Cascader、TreeSelect、TagsInput、DateField、DatePicker、DateRangePicker、TimeField、TimePicker、TimeRangePicker、FileUpload、SignaturePad。用户按清空钮（`clear-trigger`）清掉了值时，先发值变化、再发清空：headless 为 `onClear`，Vue 为 `@clear`，React 为 `onClear`，Web Components 派发 `clear` 事件。程序化的 `clear()` 与 Escape 清空不发，列表或画板本来就空时按清空钮是空操作，也不发。此前只能从值变为空推断清空，分不出是按了清空钮还是删光了字。
+- b96f8ac: ColorPicker 的值改为恒为颜色串数组，并支持多选。
+
+  - **破坏**：`onValueChange` / `value-change` 的 `value`、Vue `update:value`、`api.value` 由字符串改为 `string[]`：单选恒为一项；`setValue` 接收数组。宿主写入的 `value` / `defaultValue` 仍可写裸串，按一项处理。工作色（触发钮色块与值文字显示的那个）改由新增的 `api.color` 读出。迁移：读值处取 `value[0]`，写值处包一层数组。
+  - 新增 `selectionMode="multiple"`：浮层里调出的工作色是草稿，按新部件 `confirm-trigger`（`XhColorPickerConfirmTrigger`，文字由作者写）收进值，浮层不收；预设色板点一下切换选中；`maxSelected` 限制个数；同一个颜色按颜色比较只收一份。
+  - 多选的选中值在输入行里排成标签：新增 `tag-list` 部件与 `XhColorPickerTagList` / `XhColorPickerTag` / `XhColorPickerTagLabel` / `XhColorPickerOverflowTag` / `XhColorPickerItemDeleteTrigger`，与 Select 多选同一套库内标签，每枚前一个该颜色的色点；值文字收起，触发钮只留色块并成为键盘入口（退格摘掉最后一个）；标签不截短、放不下折行，超过 `maxTagCount`（默认 3）折进 +N；`translations` 新增 `deleteItem` / `overflowTag`；表单一个选中值一份同名隐藏输入。
+
+- 570af4d: DatePicker 多选（`selectionMode="multiple"`）的选中值在输入行里排成标签：新增 `tag-list` 部件与 `XhDatePickerTagList` / `XhDatePickerTag` / `XhDatePickerTagLabel` / `XhDatePickerOverflowTag` / `XhDatePickerItemDeleteTrigger`（Vue / React 的标签行不写子节点即按 `tags` 铺好；Web Components 按 `tags` 渲染 `tag` 节点），与 Select 多选同一套库内标签。段位在多选时收起，日历钮常驻并成为键盘入口：退格摘掉最后一个、点标签上的叉摘掉那一个；超过新增的 `maxTagCount`（默认 3）的折进 +N，`translations` 新增 `deleteItem` / `overflowTag`；没有选中时整条 `placeholder` 落在标签行上；表单一个选中值一份同名隐藏输入（`field.getHiddenInputProps({ value })`）。此前多选时输入行只显示、只编辑第一个日期，隐藏输入也只提交第一个。
+- 9ba6c54: DateField / DatePicker 的 `placeholder` 接受字符串：一段都没填、焦点也不在段上时，输入行显示这句整条占位（「请选择生效时间」），段位与分隔符淡出让位，焦点一进到段上就换回 yyyy / mm / dd 段位；给对象仍是逐段的占位串。DatePicker 此前不转发 `placeholder`，现在两种写法都转给内嵌的分段输入。DateRangePicker 新增 `startPlaceholder` / `endPlaceholder`（两组各自的整条占位）与两端共用的逐段 `placeholder`。整条占位以段位组上的 `data-placeholder-shown` 与 `data-placeholder-text` 表出，由皮肤用生成内容画，前景走新增的 `--xh-date-picker-placeholder-fg` / `--xh-date-range-picker-placeholder-fg`（DateField 沿用 `--xh-date-field-placeholder-fg`）；headless 新导出类型 `DateSegmentPlaceholders`。
+- c8b910e: 新增字段边界 `XhFieldBoundary`（Web Components 为 `display: contents` 的 `<xh-field-boundary>`）：子树里的库内控件不再继承外层字段的标签、说明、禁用 / 只读 / 必填 / 无效与控件 id，表单字段组也一并断开。组合控件把内嵌的搜索框、筛选框包进来，它们就不会被读成外层字段的名字，两个封装同处一个字段时也不会拿到同一个 id。Vue / React 的浮层内容经 Portal 搬到落点后自动断开，与 Web Components 物理搬迁后的行为一致；Vue 另导出 `clearFieldContext()` 供组合式封装在 setup 里断开。
+- f195f2d: 组类控件直接放进表单字段（不经 `XhFieldControl`）也接上字段的标题与说明：单选组、复选框组、色板选择、切换按钮组、评分、滑块、分格输入把字段的标题并进焦点宿主的名字链（组根、星组或拇指），说明与错误文案进描述链，读屏进组时一起念出；校验、必填与只读仍按字段状态由组件自己投影（`role=group` 不接受 `aria-invalid` / `aria-required`）。新增 `useFieldGroupWiring` 供组类封装只取字段的描述链。
+- df5d988: FloatButton 支持拖动与贴边：`draggable`（Web Components 为 `button-draggable`，避开 HTML 全局属性 `draggable`）打开后可按住触发器拖到别处，移动过激活距离才跟手，起拖时展开的动作组先收起、拖完补派的点击不开合；松手按 `snap` 贴边（`inline` 缺省贴左右两边里近的那条、`block` 贴上下、`nearest` 贴四边里最近的、`none` 停在放手处），甩一下贴到甩去的那一边，弹簧带着松手速度落定。新增 `position` / `defaultPosition` / `onPositionChange`（Vue `v-model:position`、Web Components `position-change` 事件）：贴边位置写 `{ edge, ratio }`，按比例记、换个视口尺寸照样贴在同一侧，停在一点写像素坐标 `{ x, y }`；不给时仍停在 `placement` 那一角。展开组恒朝页面中间长。
+- 90ead40: Menu、ContextMenu、Menubar 的数据驱动支持多级：节点写 `children`（一组菜单条目）即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出下一层，深度不限，叶子的选中经菜单树汇到根上；Menubar 在条目上读 `children`。入口只能是普通条目，勾选与单选条目带 `children` 直接报错。此前 `MenuNode` 没有 `children`，用数据描述菜单最多两级，路由菜单这类深度不定的场景只能手写 `Sub` 部件。Vue 的 `XhContextMenuSub`（与 React 对齐）与两端的 `XhMenubarSub` 新增 `collection`，供子层取显示文本与禁用。Web Components 由作者写 Light DOM，不读这一项。
+- 97fce6f: TimePicker 的值改为恒为 ISO 时间串数组，并支持多选。
+
+  - **破坏**：`onValueChange` / `value-change` 的 `value`、Vue `update:value`、`api.value` 由字符串改为 `string[]`：单选至多一项，还没填全时为空数组（此前是空串）；`setValue` 接收数组。宿主写入的 `value` / `defaultValue` 仍可写裸串，按一项处理。迁移：读值处取 `value[0] ?? ''`，写值处包一层数组。
+  - 新增 `selectionMode="multiple"`：各列拼出的是草稿，按新部件 `confirm-trigger`（`XhTimePickerConfirmTrigger`，文字由作者写）收进值，浮层不收；快捷选项点一下切换选中；`maxSelected` 限制个数。
+  - 多选的选中值在输入行里排成标签：新增 `tag-list` 部件与 `XhTimePickerTagList` / `XhTimePickerTag` / `XhTimePickerTagLabel` / `XhTimePickerOverflowTag` / `XhTimePickerItemDeleteTrigger`，与 Select 多选同一套库内标签；段位收起，展开钮常驻并成为键盘入口（退格摘掉最后一个）；标签不截短、放不下折行，超过 `maxTagCount`（默认 3）折进 +N；`translations` 新增 `deleteItem` / `overflowTag`；表单一个选中值一份同名隐藏输入。
+  - `segment` 不再列为必备部件（`meta.requiredParts` 去掉一条，属放宽）：多选时段位收起，Web Components 作者在多选里不写段不再报 `wc.missing-part`，与 DatePicker 同。
+
+### Patch Changes
+
+- dbcf03e: CheckboxGroup 与 ColorSwatchPicker 的根只在 `label` 部件真渲染了时才输出 `aria-labelledby`（新增由适配器统计的 `labelled`），不再指向不存在的节点；复选框组没有标题时全选格只念自己的文本，色板选择没有标题时名字交给 `translations.group`。Vue / React 的 `label` 属性在手写选项时同样铺出标题。
+- 44461b4: Popconfirm 补上文档已列出的 `disabled` 与 `dir`：三端根组件声明并转给 popover 状态机，`disabled` 时触发器转原生 `disabled` 并带 `data-disabled`、点按不展开、展开途中转为禁用即收起；`dir` 写在定位层上，浮层搬到落点后仍按作者给的方向排布。此前这两个属性写上后落到根节点上不起作用。
+- 5012c46: RadioGroup 的方向键只接落在条目或根节点自身上的按键，并跳过内层已 `preventDefault` 的事件：组里摆着的数字框、下拉等行内编辑控件，方向键照常移光标、换值，不再被当成切换选项。
+
+  根节点只在 `label` 部件真渲染了时才输出 `aria-labelledby`（新增由适配器统计的 `labelled`），不再指向不存在的节点；Vue / React 的 `label` 属性在手写选项时同样铺出标题，与文档「提供后不必再写 label 部件」一致。
+
+- f03b64d: `XhTruncate` 上作者写的属性改为与连接层逐条合并：`style` 与行数 `--xh-_truncate-lines` 并存，`class` 与监听器一并合上，同名的其余属性以作者的为准，与 React 一致。此前组件把连接层的属性平铺在作者的之后，作者写的 `style`（如 `max-inline-size: 20rem`）整个被盖掉。
+- Updated dependencies [fc9c306]
+- Updated dependencies [dbcf03e]
+- Updated dependencies [525029a]
+- Updated dependencies [b96f8ac]
+- Updated dependencies [570af4d]
+- Updated dependencies [9ba6c54]
+- Updated dependencies [ecccb6b]
+- Updated dependencies [d960188]
+- Updated dependencies [df5d988]
+- Updated dependencies [ba0fcdb]
+- Updated dependencies [999d7b9]
+- Updated dependencies [90ead40]
+- Updated dependencies [44461b4]
+- Updated dependencies [5012c46]
+- Updated dependencies [cf0da15]
+- Updated dependencies [113c99b]
+- Updated dependencies [97fce6f]
+- Updated dependencies [6d2c38c]
+- Updated dependencies [cf84bc9]
+  - @xihan-ui/core@3.1.0
+  - @xihan-ui/headless@3.1.0
+  - @xihan-ui/motion@3.1.0
+  - @xihan-ui/position@3.1.0
+  - @xihan-ui/pointer@3.1.0
+  - @xihan-ui/viz@3.1.0
+
 ## 3.0.0
 
 ### Major Changes

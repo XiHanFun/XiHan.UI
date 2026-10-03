@@ -1,5 +1,50 @@
 # @xihan-ui/headless
 
+## 3.1.0
+
+### Minor Changes
+
+- 525029a: 带清空钮的 15 个组件统一新增清空事件：TextField、ColorField、Select、Combobox、Cascader、TreeSelect、TagsInput、DateField、DatePicker、DateRangePicker、TimeField、TimePicker、TimeRangePicker、FileUpload、SignaturePad。用户按清空钮（`clear-trigger`）清掉了值时，先发值变化、再发清空：headless 为 `onClear`，Vue 为 `@clear`，React 为 `onClear`，Web Components 派发 `clear` 事件。程序化的 `clear()` 与 Escape 清空不发，列表或画板本来就空时按清空钮是空操作，也不发。此前只能从值变为空推断清空，分不出是按了清空钮还是删光了字。
+- b96f8ac: ColorPicker 的值改为恒为颜色串数组，并支持多选。
+
+  - **破坏**：`onValueChange` / `value-change` 的 `value`、Vue `update:value`、`api.value` 由字符串改为 `string[]`：单选恒为一项；`setValue` 接收数组。宿主写入的 `value` / `defaultValue` 仍可写裸串，按一项处理。工作色（触发钮色块与值文字显示的那个）改由新增的 `api.color` 读出。迁移：读值处取 `value[0]`，写值处包一层数组。
+  - 新增 `selectionMode="multiple"`：浮层里调出的工作色是草稿，按新部件 `confirm-trigger`（`XhColorPickerConfirmTrigger`，文字由作者写）收进值，浮层不收；预设色板点一下切换选中；`maxSelected` 限制个数；同一个颜色按颜色比较只收一份。
+  - 多选的选中值在输入行里排成标签：新增 `tag-list` 部件与 `XhColorPickerTagList` / `XhColorPickerTag` / `XhColorPickerTagLabel` / `XhColorPickerOverflowTag` / `XhColorPickerItemDeleteTrigger`，与 Select 多选同一套库内标签，每枚前一个该颜色的色点；值文字收起，触发钮只留色块并成为键盘入口（退格摘掉最后一个）；标签不截短、放不下折行，超过 `maxTagCount`（默认 3）折进 +N；`translations` 新增 `deleteItem` / `overflowTag`；表单一个选中值一份同名隐藏输入。
+
+- 570af4d: DatePicker 多选（`selectionMode="multiple"`）的选中值在输入行里排成标签：新增 `tag-list` 部件与 `XhDatePickerTagList` / `XhDatePickerTag` / `XhDatePickerTagLabel` / `XhDatePickerOverflowTag` / `XhDatePickerItemDeleteTrigger`（Vue / React 的标签行不写子节点即按 `tags` 铺好；Web Components 按 `tags` 渲染 `tag` 节点），与 Select 多选同一套库内标签。段位在多选时收起，日历钮常驻并成为键盘入口：退格摘掉最后一个、点标签上的叉摘掉那一个；超过新增的 `maxTagCount`（默认 3）的折进 +N，`translations` 新增 `deleteItem` / `overflowTag`；没有选中时整条 `placeholder` 落在标签行上；表单一个选中值一份同名隐藏输入（`field.getHiddenInputProps({ value })`）。此前多选时输入行只显示、只编辑第一个日期，隐藏输入也只提交第一个。
+- 9ba6c54: DateField / DatePicker 的 `placeholder` 接受字符串：一段都没填、焦点也不在段上时，输入行显示这句整条占位（「请选择生效时间」），段位与分隔符淡出让位，焦点一进到段上就换回 yyyy / mm / dd 段位；给对象仍是逐段的占位串。DatePicker 此前不转发 `placeholder`，现在两种写法都转给内嵌的分段输入。DateRangePicker 新增 `startPlaceholder` / `endPlaceholder`（两组各自的整条占位）与两端共用的逐段 `placeholder`。整条占位以段位组上的 `data-placeholder-shown` 与 `data-placeholder-text` 表出，由皮肤用生成内容画，前景走新增的 `--xh-date-picker-placeholder-fg` / `--xh-date-range-picker-placeholder-fg`（DateField 沿用 `--xh-date-field-placeholder-fg`）；headless 新导出类型 `DateSegmentPlaceholders`。
+- df5d988: FloatButton 支持拖动与贴边：`draggable`（Web Components 为 `button-draggable`，避开 HTML 全局属性 `draggable`）打开后可按住触发器拖到别处，移动过激活距离才跟手，起拖时展开的动作组先收起、拖完补派的点击不开合；松手按 `snap` 贴边（`inline` 缺省贴左右两边里近的那条、`block` 贴上下、`nearest` 贴四边里最近的、`none` 停在放手处），甩一下贴到甩去的那一边，弹簧带着松手速度落定。新增 `position` / `defaultPosition` / `onPositionChange`（Vue `v-model:position`、Web Components `position-change` 事件）：贴边位置写 `{ edge, ratio }`，按比例记、换个视口尺寸照样贴在同一侧，停在一点写像素坐标 `{ x, y }`；不给时仍停在 `placement` 那一角。展开组恒朝页面中间长。
+- 90ead40: Menu、ContextMenu、Menubar 的数据驱动支持多级：节点写 `children`（一组菜单条目）即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出下一层，深度不限，叶子的选中经菜单树汇到根上；Menubar 在条目上读 `children`。入口只能是普通条目，勾选与单选条目带 `children` 直接报错。此前 `MenuNode` 没有 `children`，用数据描述菜单最多两级，路由菜单这类深度不定的场景只能手写 `Sub` 部件。Vue 的 `XhContextMenuSub`（与 React 对齐）与两端的 `XhMenubarSub` 新增 `collection`，供子层取显示文本与禁用。Web Components 由作者写 Light DOM，不读这一项。
+- cf0da15: Table Column 新增 `align` 属性，支持 `'start' | 'center' | 'end'` 三档对齐，写入列头（`column-header`）与数据格（`cell`）的 `data-align`，皮肤按此调整 `text-align` 与 `justify-content`。
+- 113c99b: Table 列的 `minWidth` / `maxWidth` 同时管布局：连接层把它们写成列头格与数据格的内联 `min-inline-size` / `max-inline-size`，伸缩分剩余空间时不越过这两条（此前只约束拖动改宽）。`width` 仍是伸缩的基准，三者写成同一个数就是一列定宽；分组表头与横向合并格的上下限按跨过的各列相加。没写上下限的列不变。
+- 97fce6f: TimePicker 的值改为恒为 ISO 时间串数组，并支持多选。
+
+  - **破坏**：`onValueChange` / `value-change` 的 `value`、Vue `update:value`、`api.value` 由字符串改为 `string[]`：单选至多一项，还没填全时为空数组（此前是空串）；`setValue` 接收数组。宿主写入的 `value` / `defaultValue` 仍可写裸串，按一项处理。迁移：读值处取 `value[0] ?? ''`，写值处包一层数组。
+  - 新增 `selectionMode="multiple"`：各列拼出的是草稿，按新部件 `confirm-trigger`（`XhTimePickerConfirmTrigger`，文字由作者写）收进值，浮层不收；快捷选项点一下切换选中；`maxSelected` 限制个数。
+  - 多选的选中值在输入行里排成标签：新增 `tag-list` 部件与 `XhTimePickerTagList` / `XhTimePickerTag` / `XhTimePickerTagLabel` / `XhTimePickerOverflowTag` / `XhTimePickerItemDeleteTrigger`，与 Select 多选同一套库内标签；段位收起，展开钮常驻并成为键盘入口（退格摘掉最后一个）；标签不截短、放不下折行，超过 `maxTagCount`（默认 3）折进 +N；`translations` 新增 `deleteItem` / `overflowTag`；表单一个选中值一份同名隐藏输入。
+  - `segment` 不再列为必备部件（`meta.requiredParts` 去掉一条，属放宽）：多选时段位收起，Web Components 作者在多选里不写段不再报 `wc.missing-part`，与 DatePicker 同。
+
+### Patch Changes
+
+- fc9c306: Carousel 在开发期核对张数：挂载后与 `slideCount` 改写时，若渲染出来的条目比 `slideCount` 多（常见是漏传、按 0 张处理），经诊断通道报 `carousel.slide-count-mismatch` 并在控制台告警，不必再靠读文档排查「没有指示点、翻页禁用、播报总数为 0」。按需渲染时 DOM 里的条目少于张数是正常的，不报。core 新增诊断码 `DIAGNOSTIC_CODES.carouselSlideCountMismatch`。
+- dbcf03e: CheckboxGroup 与 ColorSwatchPicker 的根只在 `label` 部件真渲染了时才输出 `aria-labelledby`（新增由适配器统计的 `labelled`），不再指向不存在的节点；复选框组没有标题时全选格只念自己的文本，色板选择没有标题时名字交给 `translations.group`。Vue / React 的 `label` 属性在手写选项时同样铺出标题。
+- ecccb6b: Dialog 与 Drawer 没给 `initialFocus` 时，初始焦点落在内容里第一个可聚焦的控件上，越过关闭钮、拖动把手与改尺把手：关闭钮写在标题旁（常见布局）时，打开后焦点不再先落在关闭钮上。内容里除了这几样没有别的可聚焦节点时，仍落在关闭钮上；`alertdialog` 照旧落在内容容器本身。
+- d960188: FloatButton 的 root 几何（贴边距离等）改为逐条的内联自定义属性：Web Components 只写、只撤自己的那几条 `--xh-_float-button-*`，作者写在 root 上的内联样式（如 `position: static`）不再被整串覆盖。此前 `<xh-float-button>` 里写在 root 上的内联样式会在接线时丢掉，文档里排在示例框内的浮动按钮全部落到了页面右下角。
+- ba0fcdb: ImageViewer 放大后快甩平移、投影落点越过边界时，图片照原速滑到边界，碰到的那一刻交给硬弹簧收回；越出边界的那段与拖动越界同一条 80px 橡皮筋，只轻碰一下就停：以 1200px/s 甩向边界越界约 9px，半秒内落定。此前落点被夹到边界后由同一支滑行弹簧带着松手速度冲过去，越界量约为被截掉那段投影的 0.37 倍（同样的速度冲出约 110px，露出视口底色），要三四秒才落定。
+- 999d7b9: Marquee 的速度与实测长度改为逐条的内联自定义属性：Web Components 只写、只撤自己的那两条 `--xh-marquee-speed` 与 `--xh-_marquee-measured-span`，作者写在 root 上的内联样式（如 `max-inline-size: 20rem`、`--xh-marquee-span: 300`）不再被整串覆盖。此前 `<xh-marquee>` 里写在 root 上的内联样式会在接线时丢掉，作者自定的一份长度随之失效。
+- 44461b4: Popconfirm 补上文档已列出的 `disabled` 与 `dir`：三端根组件声明并转给 popover 状态机，`disabled` 时触发器转原生 `disabled` 并带 `data-disabled`、点按不展开、展开途中转为禁用即收起；`dir` 写在定位层上，浮层搬到落点后仍按作者给的方向排布。此前这两个属性写上后落到根节点上不起作用。
+- 5012c46: RadioGroup 的方向键只接落在条目或根节点自身上的按键，并跳过内层已 `preventDefault` 的事件：组里摆着的数字框、下拉等行内编辑控件，方向键照常移光标、换值，不再被当成切换选项。
+
+  根节点只在 `label` 部件真渲染了时才输出 `aria-labelledby`（新增由适配器统计的 `labelled`），不再指向不存在的节点；Vue / React 的 `label` 属性在手写选项时同样铺出标题，与文档「提供后不必再写 label 部件」一致。
+
+- 6d2c38c: Truncate 的行数改为逐条的内联自定义属性：Web Components 只写、只撤自己的那一条 `--xh-_truncate-lines`，作者写在 root 上的内联样式（如 `max-inline-size: 20rem`）不再被整串覆盖。此前 `<xh-truncate>` 里写在 root 上的内联样式会在接线时丢掉。
+- cf84bc9: Watermark 的图样与步距改为逐条的内联自定义属性：Web Components 只写、只撤自己的那两条 `--xh-watermark-image` 与 `--xh-watermark-tile`，作者写在 root 上的内联样式（如 `max-inline-size: 20rem`）不再被整串覆盖，文字清空时也只撤这两条。此前 `<xh-watermark>` 里写在 root 上的内联样式会在接线时丢掉，文字清空时整条 `style` 还会被一并移除。
+- Updated dependencies [fc9c306]
+  - @xihan-ui/core@3.1.0
+  - @xihan-ui/motion@3.1.0
+  - @xihan-ui/pointer@3.1.0
+  - @xihan-ui/viz@3.1.0
+
 ## 3.0.0
 
 ### Major Changes

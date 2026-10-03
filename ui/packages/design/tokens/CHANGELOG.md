@@ -1,5 +1,18 @@
 # @xihan-ui/tokens
 
+## 3.1.0
+
+### Minor Changes
+
+- 8e5081f: 新增语义令牌 `--xh-overlay-toast-w`（28.75rem），Notification 的 toast 预设卡宽与叠放定位面改从它取值，不再在皮肤里写字面尺寸。像素不变；要让全站轻提示统一变宽或变窄，在根上改这一个令牌即可，单个实例照旧用 `--xh-notification-item-w` 覆盖。
+
+### Patch Changes
+
+- 8f69093: 紧凑密度写在局部容器上（`<div data-density="compact">`）时，引用了收紧尺寸的派生令牌也跟着收紧：`--xh-overlay-calendar-column-h`、`--xh-overlay-column-item-h`、`--xh-section-py` 与 `--xh-control-indicator-size` 在 compact 边界上重新声明，按子树自己的控件高与留白解析，不再继承文档根上按宽松档算好的值。带时刻的日期选择器挂在局部 compact 子树里时，时间列底边不再比日历网格低 28px。只有引用链落到 compact 覆盖项的令牌会在 compact 边界上重新声明，祖先容器上对其余令牌的覆盖照常继承。
+- 0ee35f3: 日期选择器与日期范围选择器的浮层尺寸只按 px 结算，根字号不是 16px 时不再错位：与日历网格并排的时间列高 `--xh-overlay-calendar-column-h` 改为纯 px（周名一行加六周），不再与按 rem 的滚动面中档取小，根字号 14px 时列底不再比网格短 28px；浮层 `--xh-date-picker-max-h` / `--xh-date-range-picker-max-h` 的缺省值从按 rem 的 `--xh-viewport-h-lg` 改为定位引擎算出的可用高度，带时刻的面板在 14px 根字号或紧凑密度下不再把确认钮挤进滚动里。
+- Updated dependencies [fc9c306]
+  - @xihan-ui/core@3.1.0
+
 ## 3.0.0
 
 ### Major Changes

@@ -1,5 +1,39 @@
 # @xihan-ui/styles
 
+## 3.1.0
+
+### Minor Changes
+
+- b96f8ac: ColorPicker 的值改为恒为颜色串数组，并支持多选。
+
+  - **破坏**：`onValueChange` / `value-change` 的 `value`、Vue `update:value`、`api.value` 由字符串改为 `string[]`：单选恒为一项；`setValue` 接收数组。宿主写入的 `value` / `defaultValue` 仍可写裸串，按一项处理。工作色（触发钮色块与值文字显示的那个）改由新增的 `api.color` 读出。迁移：读值处取 `value[0]`，写值处包一层数组。
+  - 新增 `selectionMode="multiple"`：浮层里调出的工作色是草稿，按新部件 `confirm-trigger`（`XhColorPickerConfirmTrigger`，文字由作者写）收进值，浮层不收；预设色板点一下切换选中；`maxSelected` 限制个数；同一个颜色按颜色比较只收一份。
+  - 多选的选中值在输入行里排成标签：新增 `tag-list` 部件与 `XhColorPickerTagList` / `XhColorPickerTag` / `XhColorPickerTagLabel` / `XhColorPickerOverflowTag` / `XhColorPickerItemDeleteTrigger`，与 Select 多选同一套库内标签，每枚前一个该颜色的色点；值文字收起，触发钮只留色块并成为键盘入口（退格摘掉最后一个）；标签不截短、放不下折行，超过 `maxTagCount`（默认 3）折进 +N；`translations` 新增 `deleteItem` / `overflowTag`；表单一个选中值一份同名隐藏输入。
+
+- 570af4d: DatePicker 多选（`selectionMode="multiple"`）的选中值在输入行里排成标签：新增 `tag-list` 部件与 `XhDatePickerTagList` / `XhDatePickerTag` / `XhDatePickerTagLabel` / `XhDatePickerOverflowTag` / `XhDatePickerItemDeleteTrigger`（Vue / React 的标签行不写子节点即按 `tags` 铺好；Web Components 按 `tags` 渲染 `tag` 节点），与 Select 多选同一套库内标签。段位在多选时收起，日历钮常驻并成为键盘入口：退格摘掉最后一个、点标签上的叉摘掉那一个；超过新增的 `maxTagCount`（默认 3）的折进 +N，`translations` 新增 `deleteItem` / `overflowTag`；没有选中时整条 `placeholder` 落在标签行上；表单一个选中值一份同名隐藏输入（`field.getHiddenInputProps({ value })`）。此前多选时输入行只显示、只编辑第一个日期，隐藏输入也只提交第一个。
+- 9ba6c54: DateField / DatePicker 的 `placeholder` 接受字符串：一段都没填、焦点也不在段上时，输入行显示这句整条占位（「请选择生效时间」），段位与分隔符淡出让位，焦点一进到段上就换回 yyyy / mm / dd 段位；给对象仍是逐段的占位串。DatePicker 此前不转发 `placeholder`，现在两种写法都转给内嵌的分段输入。DateRangePicker 新增 `startPlaceholder` / `endPlaceholder`（两组各自的整条占位）与两端共用的逐段 `placeholder`。整条占位以段位组上的 `data-placeholder-shown` 与 `data-placeholder-text` 表出，由皮肤用生成内容画，前景走新增的 `--xh-date-picker-placeholder-fg` / `--xh-date-range-picker-placeholder-fg`（DateField 沿用 `--xh-date-field-placeholder-fg`）；headless 新导出类型 `DateSegmentPlaceholders`。
+- 50c535f: 字段族控件（文本框、下拉、组合框、级联、树选择、数字、日期 / 时间族、标签输入等 21 份皮肤）放进表单字段（Field）即铺满字段宽：Field 根上把 `--xh-control-w` 设为 `100%`，控件随表单的列走，不必再按组件种类逐个写 `inline-size: 100%`，新加一种控件也不会宽窄不一。单独摆放的控件仍是 16rem 缺省宽；单类槽 `--xh-<组件>-control-w` 照旧压过字段给的宽；横排一行流（`layout="inline"`）的表单里字段按内容收，那一档的字段仍取表单根上的缺省宽。
+- df5d988: FloatButton 支持拖动与贴边：`draggable`（Web Components 为 `button-draggable`，避开 HTML 全局属性 `draggable`）打开后可按住触发器拖到别处，移动过激活距离才跟手，起拖时展开的动作组先收起、拖完补派的点击不开合；松手按 `snap` 贴边（`inline` 缺省贴左右两边里近的那条、`block` 贴上下、`nearest` 贴四边里最近的、`none` 停在放手处），甩一下贴到甩去的那一边，弹簧带着松手速度落定。新增 `position` / `defaultPosition` / `onPositionChange`（Vue `v-model:position`、Web Components `position-change` 事件）：贴边位置写 `{ edge, ratio }`，按比例记、换个视口尺寸照样贴在同一侧，停在一点写像素坐标 `{ x, y }`；不给时仍停在 `placement` 那一角。展开组恒朝页面中间长。
+- f04c49e: Notification 的正文（`item-description`）有了上限：缺省取中档滚动面高 `--xh-viewport-h-md`（16rem），长文在正文里竖滚、滚到头不带动页面，标题与操作钮留在卡片上；新增覆盖槽 `--xh-notification-description-max-h` 调这条上限。此前推一段长文（公告全文）会把卡片撑到整屏高，而整摞是不吃指针、不裁切的视口定位面，撑出视口的部分既看不到也滚不到。
+- cf0da15: Table Column 新增 `align` 属性，支持 `'start' | 'center' | 'end'` 三档对齐，写入列头（`column-header`）与数据格（`cell`）的 `data-align`，皮肤按此调整 `text-align` 与 `justify-content`。
+- 97fce6f: TimePicker 的值改为恒为 ISO 时间串数组，并支持多选。
+
+  - **破坏**：`onValueChange` / `value-change` 的 `value`、Vue `update:value`、`api.value` 由字符串改为 `string[]`：单选至多一项，还没填全时为空数组（此前是空串）；`setValue` 接收数组。宿主写入的 `value` / `defaultValue` 仍可写裸串，按一项处理。迁移：读值处取 `value[0] ?? ''`，写值处包一层数组。
+  - 新增 `selectionMode="multiple"`：各列拼出的是草稿，按新部件 `confirm-trigger`（`XhTimePickerConfirmTrigger`，文字由作者写）收进值，浮层不收；快捷选项点一下切换选中；`maxSelected` 限制个数。
+  - 多选的选中值在输入行里排成标签：新增 `tag-list` 部件与 `XhTimePickerTagList` / `XhTimePickerTag` / `XhTimePickerTagLabel` / `XhTimePickerOverflowTag` / `XhTimePickerItemDeleteTrigger`，与 Select 多选同一套库内标签；段位收起，展开钮常驻并成为键盘入口（退格摘掉最后一个）；标签不截短、放不下折行，超过 `maxTagCount`（默认 3）折进 +N；`translations` 新增 `deleteItem` / `overflowTag`；表单一个选中值一份同名隐藏输入。
+  - `segment` 不再列为必备部件（`meta.requiredParts` 去掉一条，属放宽）：多选时段位收起，Web Components 作者在多选里不写段不再报 `wc.missing-part`，与 DatePicker 同。
+
+- 0d75a3f: Tree 的 `lines` 从每层一道贯穿到底的竖线改为完整的连接线：竖线仍从父节点展开箭头的中线引出，每个子节点从竖线横出一段接到行首（分支接到展开箭头，叶子穿过占位那一格接到正文前），最后一个子节点的竖线止于它那一行的中线并拐向行首；展开着的非末位分支，竖线沿它的整棵子树接到下一个兄弟，子节点之间与分支行下方的间距由线补齐、不断开。顶层节点不画线，强制色下取 GrayText。
+
+### Patch Changes
+
+- 0ee35f3: 日期选择器与日期范围选择器的浮层尺寸只按 px 结算，根字号不是 16px 时不再错位：与日历网格并排的时间列高 `--xh-overlay-calendar-column-h` 改为纯 px（周名一行加六周），不再与按 rem 的滚动面中档取小，根字号 14px 时列底不再比网格短 28px；浮层 `--xh-date-picker-max-h` / `--xh-date-range-picker-max-h` 的缺省值从按 rem 的 `--xh-viewport-h-lg` 改为定位引擎算出的可用高度，带时刻的面板在 14px 根字号或紧凑密度下不再把确认钮挤进滚动里。
+- 8e5081f: 新增语义令牌 `--xh-overlay-toast-w`（28.75rem），Notification 的 toast 预设卡宽与叠放定位面改从它取值，不再在皮肤里写字面尺寸。像素不变；要让全站轻提示统一变宽或变窄，在根上改这一个令牌即可，单个实例照旧用 `--xh-notification-item-w` 覆盖。
+- Updated dependencies [8f69093]
+- Updated dependencies [0ee35f3]
+- Updated dependencies [8e5081f]
+  - @xihan-ui/tokens@3.1.0
+
 ## 3.0.0
 
 ### Major Changes
