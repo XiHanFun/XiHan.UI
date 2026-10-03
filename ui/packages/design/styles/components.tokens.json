@@ -7557,7 +7557,9 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "inset-block",
+        "inset-inline"
       ],
       "state": [
         "@media (pointer: coarse)",
@@ -7571,7 +7573,7 @@
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "carousel 的 indicator、indicator-group、root 部件 block-size、inline-size 覆盖槽。"
+      "description": "carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。"
     },
     {
       "name": "--xh-carousel-indicator-size-current",
@@ -7625,6 +7627,34 @@
       ],
       "visibility": "public",
       "description": "carousel 的 indicator、root 部件 min-block-size、min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-carousel-indicator-thickness",
+      "component": "carousel",
+      "part": [
+        "indicator",
+        "indicator-group",
+        "root"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "inset-block",
+        "inset-inline"
+      ],
+      "state": [
+        "@media (pointer: coarse)",
+        "autoplay",
+        "current",
+        "default",
+        "orientation=vertical",
+        "paused"
+      ],
+      "defaultToken": [
+        "--xh-carousel-indicator-size"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。"
     },
     {
       "name": "--xh-carousel-trigger-bg",
