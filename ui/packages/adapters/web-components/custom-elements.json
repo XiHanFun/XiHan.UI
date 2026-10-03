@@ -6011,6 +6011,9 @@
               "name": "--xh-carousel-indicator-target-size"
             },
             {
+              "name": "--xh-carousel-indicator-thickness"
+            },
+            {
               "name": "--xh-carousel-trigger-bg"
             },
             {

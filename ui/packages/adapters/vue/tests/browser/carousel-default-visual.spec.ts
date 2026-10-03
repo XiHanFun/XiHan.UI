@@ -146,6 +146,58 @@ describe('carousel 默认视觉', () => {
     expect([otherMark.width, otherMark.height]).toEqual(['8px', '8px'])
   })
 
+  /** 细横条风格：沿轨道 16px、当前页 28px，垂直于轨道只有 4px；横条不是正方盒，圆角改走胶囊 */
+  function useBars(root: HTMLElement): void {
+    root.style.setProperty('--xh-carousel-indicator-size', '16px')
+    root.style.setProperty('--xh-carousel-indicator-size-current', '28px')
+    root.style.setProperty('--xh-carousel-indicator-thickness', '4px')
+    root.style.setProperty('--xh-carousel-indicator-radius', 'var(--xh-shape-pill)')
+  }
+
+  /** [沿轨道, 垂直于轨道] 的两段长度 */
+  function alongAndAcross(orientation: 'horizontal' | 'vertical', width: number | string, height: number | string): Array<number | string> {
+    return orientation === 'horizontal' ? [width, height] : [height, width]
+  }
+
+  it.each(['horizontal', 'vertical'] as const)('%s 粗细槽单独定点的粗细：细横条沿轨道伸长、垂直于轨道 4px，命中区垂直于轨道仍有 24px', (orientation) => {
+    const carousel = mount(orientation)
+    useBars(carousel.root)
+    const [current, other] = [...carousel.indicators.querySelectorAll<HTMLElement>('[data-part="indicator"]')]
+    const otherRect = other!.getBoundingClientRect()
+    const currentRect = current!.getBoundingClientRect()
+
+    expect(alongAndAcross(orientation, otherRect.width, otherRect.height)).toEqual([16, 4])
+    expect(alongAndAcross(orientation, currentRect.width, currentRect.height)).toEqual([28, 4])
+    // 细指针的命中区由 ::after 外扩：点变细了，外扩跟着补足，垂直于轨道不低于 24px 的最小目标
+    const hit = getComputedStyle(other!, '::after')
+    const [, across] = alongAndAcross(orientation, hit.width, hit.height)
+    expect(Number.parseFloat(String(across))).toBeGreaterThanOrEqual(24)
+  })
+
+  it.each(['horizontal', 'vertical'] as const)('%s 粗指针下伪元素画的点与进度条同样按粗细槽，命中区仍是 44px', async (orientation) => {
+    await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
+    const carousel = mount(orientation, true)
+    useBars(carousel.root)
+    const [current, other] = [...carousel.indicators.querySelectorAll<HTMLElement>('[data-part="indicator"]')]
+
+    expect(matchMedia('(pointer: coarse)').matches).toBe(true)
+    for (const indicator of [current!, other!]) {
+      const rect = indicator.getBoundingClientRect()
+      expect(rect.width).toBeGreaterThanOrEqual(44)
+      expect(rect.height).toBeGreaterThanOrEqual(44)
+    }
+    const otherMark = getComputedStyle(other!, '::after')
+    const currentMark = getComputedStyle(current!, '::after')
+    const progress = getComputedStyle(current!, '::before')
+    expect(alongAndAcross(orientation, otherMark.width, otherMark.height)).toEqual(['16px', '4px'])
+    expect(alongAndAcross(orientation, currentMark.width, currentMark.height)).toEqual(['28px', '4px'])
+    expect(alongAndAcross(orientation, progress.width, progress.height)).toEqual(['28px', '4px'])
+    // 点落在 44px 命中盒的正中：细指针按轨道方向外扩命中区的规则不能把粗指针下点的定位顶掉
+    const box = other!.getBoundingClientRect()
+    expect(Number.parseFloat(otherMark.top)).toBeCloseTo(box.height / 2, 0)
+    expect(Number.parseFloat(otherMark.left)).toBeCloseTo(box.width / 2, 0)
+  })
+
   it('粗指针下点的伸长与细指针同一档：尺寸变化走 move，不走 nudge', async () => {
     await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
     const carousel = mount()
