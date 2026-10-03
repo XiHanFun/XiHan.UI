@@ -2,6 +2,44 @@
 
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。只收录使用者可感知的变更，仓库自身的配置、CI、测试与门禁不列入。组件以 npm 包形式发布，升级前请留意「调整」类中的破坏性变更。
 
+## v3.1.0 (2026-10-03)
+
+本版补齐选择器的多选与表单字段接线：DatePicker、TimePicker、ColorPicker 多选时选中值在输入行里排成标签，与 Select 多选同一套；FloatButton 支持拖动与贴边，Menu 数据驱动支持多级，Tree 的连接线改为完整的树形连线；带清空钮的 15 个组件统一新增清空事件，组类控件直接放进表单字段也接上字段的标题与说明，并新增字段边界 FieldBoundary。另修复 Web Components 下 FloatButton、Marquee、Truncate、Watermark 盖掉作者写在 root 上的内联样式等问题。本版包含 TimePicker 与 ColorPicker 值类型的破坏性变更，按次版本发布，升级前请看下方升级须知。
+
+::: warning 升级须知
+**TimePicker**
+
+- 值改为恒为 ISO 时间串数组：`onValueChange` / `value-change` 的 `value`、Vue `update:value`、`api.value` 由字符串改为 `string[]`，单选至多一项，还没填全时为空数组（此前是空串）；`setValue` 接收数组。宿主写入的 `value` / `defaultValue` 仍可写裸串，按一项处理。迁移：读值处取 `value[0] ?? ''`，写值处包一层数组
+
+**ColorPicker**
+
+- 值改为恒为颜色串数组：`onValueChange` / `value-change` 的 `value`、Vue `update:value`、`api.value` 由字符串改为 `string[]`，单选恒为一项；`setValue` 接收数组。宿主写入的 `value` / `defaultValue` 仍可写裸串，按一项处理。触发钮色块与值文字显示的工作色改由新增的 `api.color` 读出。迁移：读值处取 `value[0]`，写值处包一层数组
+:::
+
+- **新增** 多选成标签：DatePicker、TimePicker、ColorPicker 在 `selectionMode="multiple"` 下把选中值排成输入行里的标签，与 Select 多选同一套库内标签。新增 `tag-list` 部件与 `Tag` / `TagLabel` / `OverflowTag` / `ItemDeleteTrigger` 一组组件；点标签上的叉、或在展开钮（DatePicker 为日历钮）上按退格摘掉，超过 `maxTagCount`（默认 3）折进 +N，`translations` 新增 `deleteItem` / `overflowTag`；表单一个选中值一份同名隐藏输入；多选时段位收起。此前 DatePicker 多选只显示、只提交第一个日期
+- **新增** TimePicker 与 ColorPicker 多选：面板里调出的是草稿，按新部件 `confirm-trigger`（文字由作者写）收进值、浮层不收；快捷选项与预设色板点一下切换选中，`maxSelected` 限制个数
+- **新增** FloatButton 拖动与贴边：`draggable`（Web Components 为 `button-draggable`）打开后按住触发器拖到别处，松手按 `snap`（`inline` 缺省、`block`、`nearest`、`none`）贴边，甩一下贴到甩去的那一边；`position` / `defaultPosition` / `onPositionChange`（Vue `v-model:position`、Web Components `position-change`）以贴边比例 `{ edge, ratio }` 或像素坐标 `{ x, y }` 记位置，展开组恒朝页面中间长
+- **新增** Menu、ContextMenu、Menubar 数据驱动支持多级：节点写 `children` 即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出，深度不限；Vue 的 `XhContextMenuSub` 与两端的 `XhMenubarSub` 新增 `collection`
+- **新增** 带清空钮的 15 个组件统一新增清空事件（Headless / React `onClear`、Vue `@clear`、Web Components `clear`）：用户按清空钮清掉值时，在值变化之后派发；程序化的 `clear()`、Escape 清空与本来就空时按清空钮都不派发
+- **新增** 字段边界 `XhFieldBoundary`（Web Components 为 `<xh-field-boundary>`）：子树里的库内控件不再继承外层字段的标签、说明、状态与控件 id；Vue / React 的浮层内容经 Portal 搬走后自动断开；Vue 另导出 `clearFieldContext()`
+- **新增** 组类控件直接放进表单字段也接上字段的标题与说明：RadioGroup、CheckboxGroup、ColorSwatchPicker、ToggleGroup、Rating、Slider、PinInput 把字段标题并进名字链，说明与错误文案进描述链；Vue / React 新增 `useFieldGroupWiring`
+- **新增** DateField / DatePicker 的 `placeholder` 可写成一句整条占位，未填且未聚焦时显示、聚焦段位即换回；DatePicker 转发 `placeholder`，DateRangePicker 新增 `startPlaceholder` / `endPlaceholder`；新增组件槽 `--xh-date-picker-placeholder-fg` / `--xh-date-range-picker-placeholder-fg`
+- **新增** Table 列的 `align`（`'start' | 'center' | 'end'`）；列的 `minWidth` / `maxWidth` 参与布局，与 `width` 写成同一个数即为定宽列
+- **新增** Notification 正文限高：缺省 16rem（`--xh-viewport-h-md`），长文在正文里滚动，卡片不再被撑到整屏高；新增覆盖槽 `--xh-notification-description-max-h`
+- **新增** 语义令牌 `--xh-overlay-toast-w`（28.75rem），toast 预设的卡宽改从它取值，像素不变
+- **新增** Carousel 开发期核对张数：渲染出来的条目比 `slideCount` 多时，经诊断通道报 `carousel.slide-count-mismatch`；core 新增诊断码 `DIAGNOSTIC_CODES.carouselSlideCountMismatch`
+
+- **修复** Web Components 下 FloatButton、Marquee、Truncate、Watermark 接线时整串写回 `style`，作者写在 root 上的内联样式被覆盖；现只写、只撤各自的内联自定义属性。Vue 的 `XhTruncate` 上作者写的 `style`、`class` 与监听器也改为与连接层逐条合并
+- **修复** Dialog 与 Drawer 未给 `initialFocus` 时，初始焦点越过关闭钮、拖动把手与改尺把手，落在内容里第一个可聚焦的控件上
+- **修复** Popconfirm 补上文档已列出的 `disabled` 与 `dir`：禁用时触发器转原生 `disabled`、点按不展开，`dir` 写在定位层上
+- **修复** RadioGroup 的方向键只接条目与根自身的按键，组里行内编辑控件的方向键不再被当成切换选项；RadioGroup、CheckboxGroup、ColorSwatchPicker 只在 `label` 部件真渲染时才输出 `aria-labelledby`，Vue / React 的 `label` 属性在手写选项时同样铺出标题
+- **修复** 日期选择器与日期范围选择器的浮层尺寸只按 px 结算：根字号不是 16px 时，时间列不再比日历网格短，带时刻的面板不再把确认钮挤进滚动里；浮层上限缺省改为定位引擎算出的可用高度
+- **修复** 紧凑密度写在局部容器上时，引用收紧尺寸的派生令牌（`--xh-overlay-calendar-column-h` 等）在 compact 边界上重新声明，局部紧凑子树里日期浮层的时间列与网格对齐
+- **修复** ImageViewer 放大后快甩越过边界时，越界量有上限、半秒内落定，不再冲出约 110px 露出视口底色
+
+- **调整** 字段族控件（文本框、下拉、日期 / 时间族等 21 份皮肤）放进表单字段（Field）即铺满字段宽；单独摆放仍是 16rem 缺省宽，单类槽 `--xh-<组件>-control-w` 照旧优先，横排一行流的表单仍取缺省宽
+- **调整** Tree 的 `lines` 由每层一道竖线改为完整连接线：子节点从竖线横出接到行首，最后一个子节点止于行中线并拐向行首，展开着的分支沿整棵子树接到下一个兄弟；顶层节点不画线，强制色下取 GrayText
+
 ## v3.0.0 (2026-09-29)
 
 本版为主版本升级。主要变化：首发零依赖图表引擎 `@xihan-ui/viz`，并新增图表家族——直角坐标图 CartesianChart、饼图 PieChart、漏斗图 FunnelChart、雷达图 RadarChart、桑基图 SankeyChart、关系图 GraphChart、层级图 HierarchyChart 与迷你图 Sparkline，Heatmap 一并归入新的「图表」分类；另新增网格列表 GridList 与 AI 引用来源 Citation。四组组件合并：Toast 并入 Notification（`preset="toast"`）、Segmented 并入 RadioGroup（`variant="segmented"`）、IconWrapper 并入 Icon（`frame`）、GradientText 并入 Typography（`variant="gradient"`）。组件由 134 个增至 140 个（新增 10 个，并入删除 4 个），公开包由 17 个增至 18 个；日期族改用自研的 `@xihan-ui/core/date`，库包不再有运行时第三方依赖。视觉上新增墨色域、视觉环境的材质轴（liquid 导航层材质）以及加载环、选择卡片、标签行等家族配方；全库动效按角色取令牌，初始内容不播进场，减弱动效改为去掉位移、保留淡变。所有删除与更名均不保留别名、转发或兼容层，升级前请逐项看下方升级须知。
