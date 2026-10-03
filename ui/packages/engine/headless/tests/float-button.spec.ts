@@ -439,7 +439,7 @@ describe('resolveFloatButtonSnap：松手后贴向哪里', () => {
     expect(right.position).toEqual({ edge: 'inline-end', ratio: 0.75 })
   })
 
-  it('RTL 下左边是行尾：贴边位置按书写方向命名，比例沿边仍从上往下', () => {
+  it('从右到左（RTL）下左边是行尾：贴边位置按书写方向命名，比例沿边仍从上往下', () => {
     const left = resolveFloatButtonSnap({ ...base, rtl: true, snap: 'inline', at: { x: 300, y: 376 } })
     expect(left.position).toEqual({ edge: 'inline-end', ratio: 0.5 })
   })
