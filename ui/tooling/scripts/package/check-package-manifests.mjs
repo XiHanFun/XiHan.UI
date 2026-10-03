@@ -96,12 +96,12 @@ const MANIFESTS = [
   },
   {
     file: 'ui/.changeset/README.md',
-    how: '开头那句「N 个公开包」后面的名单',
+    how: '开头那句「全部公开包」后面的名单',
     async names() {
       const source = await readUi('.changeset/README.md')
-      const list = section(source, '个公开包**', '经 `fixed` 组')
+      const list = section(source, '全部公开包**', '经 `fixed` 组')
       if (list == null)
-        throw new Error('找不到「N 个公开包」后面的名单')
+        throw new Error('找不到「全部公开包」后面的名单')
       return slashNames(list.replace(/[（）\n]/g, ' '))
     },
   },
