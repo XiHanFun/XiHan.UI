@@ -146,7 +146,29 @@ describe('float-button 拖动与贴边', () => {
     expect(positions).toEqual([{ x: rect.left, y: rect.top }])
   })
 
-  it('RTL 下拖到左边贴的是行尾', async () => {
+  it('停在一点时按视口高度定展开组朝向：挂载就在下半屏的朝上长，拖到下半屏的同样朝上长', async () => {
+    const { height } = viewport()
+    await mount({ defaultPosition: { x: 40, y: height - 120 }, defaultOpen: true })
+    // 视口在挂载后量：量得的高度再渲一拍，仍在首帧之前
+    await nextTick()
+    let trigger = part('trigger').getBoundingClientRect()
+    expect(part('root').dataset.placement).toBe('bottom-start')
+    expect(part('list').getBoundingClientRect().bottom).toBeLessThanOrEqual(trigger.top)
+    app?.unmount()
+    host?.remove()
+
+    // 挂载时没停在一点、不量视口；换到一点的那一刻才量
+    await mount({ draggable: true, snap: 'none' }, { motion: 'reduce' })
+    await drag(viewport().width / 2, height - 120)
+    await settled()
+    expect(part('root').dataset.placement).toBe('bottom-start')
+    part('trigger').click()
+    await nextTick()
+    trigger = part('trigger').getBoundingClientRect()
+    expect(part('list').getBoundingClientRect().bottom).toBeLessThanOrEqual(trigger.top)
+  })
+
+  it('从右到左（RTL）下拖到左边贴的是行尾', async () => {
     const { positions } = await mount({ draggable: true }, { motion: 'reduce', dir: 'rtl' })
     await drag(viewport().width / 4, 300)
     await settled()

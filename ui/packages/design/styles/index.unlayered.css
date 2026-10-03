@@ -5473,6 +5473,7 @@
    停着的点仍夹在视口里（视口变小时不跑出去）；跟手的坐标由连接层夹好，这里原样用 */
 [data-scope='float-button'][data-part='root'][data-point][data-placement] {
   inset-inline: auto;
+  /* stylelint-disable-next-line property-disallowed-list -- 停点由连接层按指针的物理坐标写成 x，横向从左边量、不随书写方向翻 */
   left: clamp(
     max(var(--xh-_float-button-offset), env(safe-area-inset-left)),
     var(--xh-_float-button-x),
@@ -5499,6 +5500,7 @@
 /* 跟手排在贴边与停点之后：拖动与落定途中压过提交了的位置 */
 [data-scope='float-button'][data-part='root'][data-moving][data-placement] {
   inset-inline: auto;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上：跟手坐标是指针的物理 x */
   left: var(--xh-_float-button-x);
 }
 

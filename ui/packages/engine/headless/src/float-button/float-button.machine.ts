@@ -16,7 +16,7 @@ import { trackLiquidPart } from '../shared/liquid'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import { waitForSubtreeAnimations } from '../shared/part-presence'
 import { resolveFloatButtonOffset } from './float-button.connect'
-import { FLOAT_BUTTON_DEFAULT_SNAP, resolveFloatButtonSnap, sameFloatButtonPosition } from './float-button.geometry'
+import { FLOAT_BUTTON_DEFAULT_SNAP, isFloatButtonEdgePosition, resolveFloatButtonSnap, sameFloatButtonPosition } from './float-button.geometry'
 
 const { createMachine } = setup<FloatButtonSchema>()
 
@@ -317,20 +317,28 @@ export const floatButtonMachine = createMachine({
     effects: {
       /**
        * 视口高度：停在一点时据此定展开组朝上还是朝下长；贴边位置与角落由样式层按包含块排，用不着它。
+       * 读 clientHeight 会强制一次同步布局，所以只在停在一点时量（挂载、换到一点、视口变化）：
+       * 挂载时白量一次，触发器就有了变化前样式，随后才写上的液态读数（墨色域、通透档、液态组）会播一段换面过渡。
        * 卸载时一并结清还没结束的拖动与落定
        */
-      trackViewport: ({ refs, send, flush }) => {
+      trackViewport: ({ refs, send, flush, track, context }) => {
         let off: (() => void) | undefined
+        let root: HTMLElement | null = null
+        const measure = (): void => {
+          const position = context.get('position')
+          if (root && position && !isFloatButtonEdgePosition(position))
+            send({ type: 'VIEWPORT.RESIZE', height: root.ownerDocument.documentElement.clientHeight })
+        }
         flush(() => {
-          const root = refs.get('getRootEl')()
+          root = refs.get('getRootEl')()
           const view = root?.ownerDocument.defaultView
           if (!root || !view)
             return
-          const measure = (): void => send({ type: 'VIEWPORT.RESIZE', height: root.ownerDocument.documentElement.clientHeight })
           measure()
           view.addEventListener('resize', measure)
           off = () => view.removeEventListener('resize', measure)
         })
+        track([() => context.get('position')], measure)
         return () => {
           off?.()
           releaseDrag(refs)
