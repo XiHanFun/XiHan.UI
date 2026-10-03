@@ -7,11 +7,12 @@
 
 import type { ComponentMeta } from '../spec/types'
 
-// control 是浮层定位锚点与段的读屏归属，input 是可编辑的段，trigger 是浮层的指针入口，
-// content 是消解层与焦点域的根节点，四者必需。
+// control 是浮层定位锚点与段的读屏归属，trigger 是浮层的指针入口，
+// content 是消解层与焦点域的根节点，三者必需。
+// segment 不列为必备：多选时段位收起、由 tag-list 占位，作者不渲染段是正常写法（与 DatePicker 同）；
 // column / option 不列为必备（某一列被 min/max 裁空是正常态）；
 // label / clear-trigger / positioner / hidden-input 都可缺省。
 export const timePickerMeta: ComponentMeta = {
   component: 'time-picker',
-  requiredParts: ['root', 'control', 'segment', 'trigger', 'content'],
+  requiredParts: ['root', 'control', 'trigger', 'content'],
 }

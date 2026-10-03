@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `tag-list` · `segment-group` · **`segment`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `confirm-trigger` · `hidden-input`
+`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `tag-list` · `segment-group` · `segment` · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `confirm-trigger` · `hidden-input`
 
 ## 示例
 
