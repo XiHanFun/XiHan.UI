@@ -25,6 +25,7 @@ function mount(orientation: 'horizontal' | 'vertical' = 'horizontal', autoplay =
         </div>
       </div>
       <button data-scope="carousel" data-part="next-trigger" data-orientation="${orientation}" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="md"></button>
+      <button data-scope="carousel" data-part="autoplay-trigger" data-state="running" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="md"></button>
       <div data-scope="carousel" data-part="indicator-group" data-orientation="${orientation}">
         <button data-scope="carousel" data-part="indicator" data-current></button>
         <button data-scope="carousel" data-part="indicator"></button>
@@ -36,6 +37,7 @@ function mount(orientation: 'horizontal' | 'vertical' = 'horizontal', autoplay =
     prev: host.querySelector<HTMLElement>('[data-part="prev-trigger"]')!,
     viewport: host.querySelector<HTMLElement>('[data-part="viewport"]')!,
     next: host.querySelector<HTMLElement>('[data-part="next-trigger"]')!,
+    autoplay: host.querySelector<HTMLElement>('[data-part="autoplay-trigger"]')!,
     indicators: host.querySelector<HTMLElement>('[data-part="indicator-group"]')!,
     current: host.querySelector<HTMLElement>('[data-part="indicator"][data-current]')!,
   }
@@ -60,9 +62,21 @@ describe('carousel 默认视觉', () => {
     expect(root.height).toBe(viewport.height)
     expect(getComputedStyle(carousel.viewport).overflow).toBe('hidden')
     expect(getComputedStyle(carousel.indicators).position).toBe('absolute')
-    // 翻页钮走 Action Control floating 档 md：48px 正圆
-    expect([prev.width, prev.height, next.width, next.height]).toEqual([48, 48, 48, 48])
+    // 翻页钮走 Action Control floating 档 md：40px 正圆
+    expect([prev.width, prev.height, next.width, next.height]).toEqual([40, 40, 40, 40])
     expect(getComputedStyle(carousel.prev).borderRadius).toBe('50%')
+  })
+
+  it('翻页与播放钮是 40px 圆钮：矮到 144px 的视口里右侧居中的翻页钮与右下角的播放钮仍不相叠', () => {
+    const carousel = mount()
+    // 居中的钮占下半 20px、角上的钮连 12px 控件内距占 52px：h / 2 + 20 ≤ h − 52 即 h ≥ 144；48px 钮在这个高度下会叠上 12px
+    carousel.viewport.style.blockSize = '144px'
+    for (const trigger of [carousel.prev, carousel.next, carousel.autoplay]) {
+      const rect = trigger.getBoundingClientRect()
+      expect([rect.width, rect.height]).toEqual([40, 40])
+      expect(getComputedStyle(trigger).borderRadius).toBe('50%')
+    }
+    expect(carousel.next.getBoundingClientRect().bottom).toBeLessThanOrEqual(carousel.autoplay.getBoundingClientRect().top)
   })
 
   it('分页点是 8px 圆点，当前页拉长成 20px 品牌胶囊', () => {

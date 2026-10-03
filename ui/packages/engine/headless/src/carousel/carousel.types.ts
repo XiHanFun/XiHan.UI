@@ -5,7 +5,7 @@
 
 // 定义 carousel 类型契约。
 
-import type { Direction, MachineSchema, Orientation, PropTypes } from '@xihan-ui/core'
+import type { Direction, MachineSchema, Orientation, PropTypes, Size } from '@xihan-ui/core'
 import type { SpringValue } from '@xihan-ui/motion'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 
@@ -114,6 +114,8 @@ export interface CarouselSchema extends MachineSchema {
      * fade 一页只放一张：slidesPerPage 大于 1 时报错。
      */
     effect?: CarouselEffect
+    /** 尺寸：sm / md / lg，默认 md；翻页与播放三颗钮走 Action Control floating 档（32 / 40 / 48px）。 */
+    size?: Size
     translations?: Partial<CarouselTranslations>
     /** 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onPageChange?: (details: CarouselPageChangeDetails) => void

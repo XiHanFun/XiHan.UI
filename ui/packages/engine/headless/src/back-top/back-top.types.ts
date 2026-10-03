@@ -38,7 +38,7 @@ export interface BackTopSchema extends MachineSchema {
     variant?: ActionVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定按钮使用哪族颜色。 */
     tone?: Tone
-    /** 尺寸：sm / md / lg，默认 md；触发器走 Action Control floating 档（40 / 48 / 56px）。 */
+    /** 尺寸：sm / md / lg，默认 md；触发器走 Action Control floating 档（32 / 40 / 48px）。 */
     size?: Size
     /** 显隐变化时回调。 */
     onVisibilityChange?: (details: BackTopVisibilityChangeDetails) => void

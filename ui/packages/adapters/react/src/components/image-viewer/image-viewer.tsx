@@ -5,7 +5,7 @@
 
 // 提供 image viewer 相关实现。
 
-import type { OverlayBackdropVariant } from '@xihan-ui/core'
+import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
 import type { ImageViewerApi, ImageViewerItem, ImageViewerSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
@@ -61,6 +61,8 @@ export interface XhImageViewerRootProps {
   closeOnInteractOutside?: boolean
   restoreFocus?: boolean
   variant?: OverlayBackdropVariant
+  /** 尺寸：sm / md / lg，默认 md；翻页钮走 Action Control floating 档（32 / 40 / 48px），关闭钮比它低一档、最低 sm。 */
+  size?: Size
   translations?: ImageViewerProps['translations']
   onOpenChange?: ImageViewerProps['onOpenChange']
   onIndexChange?: ImageViewerProps['onIndexChange']

@@ -11647,6 +11647,7 @@
       "onPageChange",
       "orientation",
       "page",
+      "size",
       "slideCount",
       "slidesPerMove",
       "slidesPerPage",
@@ -12541,6 +12542,7 @@
       "onOpenChange",
       "open",
       "restoreFocus",
+      "size",
       "translations",
       "variant",
       "zoomStep"
@@ -19614,6 +19616,7 @@
         "loop",
         "orientation",
         "page",
+        "size",
         "slide-count",
         "slides-per-move",
         "slides-per-page",
@@ -20572,6 +20575,7 @@
         "min-scale",
         "open",
         "restore-focus",
+        "size",
         "variant",
         "zoom-step"
       ],

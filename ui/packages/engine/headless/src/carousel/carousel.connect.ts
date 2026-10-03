@@ -49,6 +49,8 @@ export function connectCarousel<T extends PropTypes>(
   const allowPointerDrag = !!prop('allowPointerDrag')
   // spacing 为空时写空串摘掉内联声明；恒写 calc(0px / 2) 会盖掉样式表里的 padding
   const spacing = prop('spacing')
+  // 三颗控制钮的 floating 档：与组件同档，缺省 md（40px）
+  const size = prop('size') ?? 'md'
   const gutter = spacing == null ? '' : `calc(${spacing} / 2)`
 
   const slideCount = normalizeSlideCount(prop('slideCount'))
@@ -299,11 +301,11 @@ export function connectCarousel<T extends PropTypes>(
       'data-disabled': dataAttr(!canScrollPrev),
       'data-orientation': orientation,
       // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出；
-      // 组件没有 size 轴，固定 md；不投影 variant，面由皮肤桥接到磨砂缺省
+      // 档位跟组件的 size 走（sm 32 / md 40 / lg 48px）；不投影 variant，面由皮肤桥接到磨砂缺省
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'md',
+      'data-xh-action-size': size,
       // 浮在媒体之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
       'data-xh-liquid': '',
       // frosted 材质面：皮肤按材质家族配方取面，液态档由配方换值
@@ -323,11 +325,11 @@ export function connectCarousel<T extends PropTypes>(
       'data-disabled': dataAttr(!canScrollNext),
       'data-orientation': orientation,
       // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出；
-      // 组件没有 size 轴，固定 md；不投影 variant，面由皮肤桥接到磨砂缺省
+      // 档位跟组件的 size 走（sm 32 / md 40 / lg 48px）；不投影 variant，面由皮肤桥接到磨砂缺省
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'md',
+      'data-xh-action-size': size,
       // 浮在媒体之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
       'data-xh-liquid': '',
       // frosted 材质面：皮肤按材质家族配方取面，液态档由配方换值
@@ -354,11 +356,11 @@ export function connectCarousel<T extends PropTypes>(
       'data-disabled': dataAttr(autoplayInterval <= 0),
       'data-state': autoplayStopped ? 'paused' : 'running',
       // 浮在媒体之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出；
-      // 组件没有 size 轴，固定 md；不投影 variant，面由皮肤桥接到磨砂缺省
+      // 档位跟组件的 size 走（sm 32 / md 40 / lg 48px）；不投影 variant，面由皮肤桥接到磨砂缺省
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'md',
+      'data-xh-action-size': size,
       // 浮在媒体之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
       'data-xh-liquid': '',
       // frosted 材质面：皮肤按材质家族配方取面，液态档由配方换值

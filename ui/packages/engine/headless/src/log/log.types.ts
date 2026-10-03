@@ -114,7 +114,7 @@ export interface LogProps {
   levels?: readonly LogLevel[]
   /** 行仍在传输中：日志区报告 aria-busy，根写 data-loading。 */
   loading?: boolean
-  /** 尺寸：sm / md / lg。影响行文字号与内衬，行高不随档位变化。 */
+  /** 尺寸：sm / md / lg。影响行文字号与内衬，行高不随档位变化；回到底部钮比它低一档、最低 sm（32 / 32 / 40px）。 */
   size?: Size
   translations?: Partial<LogTranslations>
 }

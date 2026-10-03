@@ -5,7 +5,7 @@
 
 // 提供 image viewer 相关实现。
 
-import type { OverlayBackdropVariant } from '@xihan-ui/core'
+import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
 import type { imageViewerCounterText as counterTextFn, ImageViewerApi, ImageViewerItem, ImageViewerSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -62,6 +62,7 @@ export const XhImageViewerRoot = defineComponent({
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: undefined },
     variant: { type: String as PropType<OverlayBackdropVariant> },
+    size: { type: String as PropType<Size> },
     translations: { type: Object as PropType<ImageViewerProps['translations']> },
   },
   // *-change 携带 details 对象，update:* 携带裸值，支持 v-model:open 与 v-model:index

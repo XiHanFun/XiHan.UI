@@ -503,25 +503,16 @@
   inline-size: var(--xh-action-visual-size, var(--xh-_action-profile-visual-size));
 }
 
-[data-scope][data-xh-action-control][data-xh-action-profile='floating'][data-xh-action-size='xs'] {
+[data-scope][data-xh-action-control][data-xh-action-profile='floating'][data-xh-action-size='sm'] {
   --xh-_action-profile-visual-size: var(--xh-control-box-sm);
 }
 
-[data-scope][data-xh-action-control][data-xh-action-profile='floating'][data-xh-action-size='sm'] {
-  --xh-_action-profile-visual-size: var(--xh-control-box-md);
-  --xh-_action-profile-glyph-size: var(--xh-glyph-size-md);
-  --xh-_action-profile-font-size: var(--xh-control-font-md);
-}
-
 [data-scope][data-xh-action-control][data-xh-action-profile='floating'][data-xh-action-size='md'] {
-  --xh-_action-profile-visual-size: var(--xh-control-box-lg);
-  --xh-_action-profile-glyph-size: var(--xh-glyph-size-lg);
-  --xh-_action-profile-font-size: var(--xh-control-font-lg);
+  --xh-_action-profile-visual-size: var(--xh-control-box-md);
 }
 
 [data-scope][data-xh-action-control][data-xh-action-profile='floating'][data-xh-action-size='lg'] {
-  --xh-_action-profile-visual-size: calc(var(--xh-control-box-lg) + var(--xh-space-2));
-  --xh-_action-profile-glyph-size: var(--xh-glyph-size-xl);
+  --xh-_action-profile-visual-size: var(--xh-control-box-lg);
 }
 
 [data-scope][data-xh-action-control][data-xh-action-profile='row'] {
@@ -5383,10 +5374,10 @@
 [data-scope='float-button'][data-part='root'] {
   --xh-_float-button-offset: var(--xh-space-6);
   /* 展开列表里原生动作项的身量与字形尺：触发器自己走 Action Control floating 档
-     （sm = box-md / md = box-lg / lg = box-lg + space-2，字形 md / lg / xl），
+     （sm = box-sm / md = box-md / lg = box-lg，字形 sm / md / lg），
      原生动作项不是 Headless 部件、配方打不到它，这两支私有槽按同一张表镜像，换档只改这里 */
-  --xh-_float-button-size: var(--xh-control-box-lg);
-  --xh-_float-button-glyph-size: var(--xh-glyph-size-lg);
+  --xh-_float-button-size: var(--xh-control-box-md);
+  --xh-_float-button-glyph-size: var(--xh-glyph-size-md);
   /* 作者塞进指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-float-button-icon-size, var(--xh-_float-button-glyph-size));
 
@@ -5524,18 +5515,18 @@
 
 /* —— 尺寸：原生动作项与触发器的 floating 档逐档同表 —— */
 [data-scope='float-button'][data-part='root'][data-size='sm'] {
+  --xh-_float-button-size: var(--xh-control-box-sm);
+  --xh-_float-button-glyph-size: var(--xh-glyph-size-sm);
+}
+
+[data-scope='float-button'][data-part='root'][data-size='md'] {
   --xh-_float-button-size: var(--xh-control-box-md);
   --xh-_float-button-glyph-size: var(--xh-glyph-size-md);
 }
 
-[data-scope='float-button'][data-part='root'][data-size='md'] {
+[data-scope='float-button'][data-part='root'][data-size='lg'] {
   --xh-_float-button-size: var(--xh-control-box-lg);
   --xh-_float-button-glyph-size: var(--xh-glyph-size-lg);
-}
-
-[data-scope='float-button'][data-part='root'][data-size='lg'] {
-  --xh-_float-button-size: calc(var(--xh-control-box-lg) + var(--xh-space-2));
-  --xh-_float-button-glyph-size: var(--xh-glyph-size-xl);
 }
 
 /* —— 形态：给展开列表里原生动作项用的面 ——

@@ -102,8 +102,8 @@ afterEach(async () => {
 
 describe('action Control 四 profile', () => {
   it.each([
-    { density: 'comfortable' as const, expected: { 'text': [24, 32, 36, 40], 'icon': [24, 32, 36, 40], 'field-inset': [24, 24, 32, 36], 'floating': [32, 40, 48, 56] } },
-    { density: 'compact' as const, expected: { 'text': [20, 28, 32, 36], 'icon': [20, 28, 32, 36], 'field-inset': [20, 20, 28, 32], 'floating': [28, 36, 44, 52] } },
+    { density: 'comfortable' as const, expected: { 'text': [24, 32, 36, 40], 'icon': [24, 32, 36, 40], 'field-inset': [24, 24, 32, 36], 'floating': [24, 32, 40, 48] } },
+    { density: 'compact' as const, expected: { 'text': [20, 28, 32, 36], 'icon': [20, 28, 32, 36], 'field-inset': [20, 20, 28, 32], 'floating': [20, 28, 36, 44] } },
   ])('$density：四 profile × xs/sm/md/lg 的视觉盒由同一配方解析', ({ density, expected }) => {
     mount(() => h('div'), density)
     const sizes = ['xs', 'sm', 'md', 'lg'] as const

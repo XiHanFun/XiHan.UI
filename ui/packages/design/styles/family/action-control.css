@@ -256,25 +256,16 @@
     inline-size: var(--xh-action-visual-size, var(--xh-_action-profile-visual-size));
   }
 
-  [data-xh-action-control][data-xh-action-profile='floating'][data-xh-action-size='xs'] {
+  [data-xh-action-control][data-xh-action-profile='floating'][data-xh-action-size='sm'] {
     --xh-_action-profile-visual-size: var(--xh-control-box-sm);
   }
 
-  [data-xh-action-control][data-xh-action-profile='floating'][data-xh-action-size='sm'] {
-    --xh-_action-profile-visual-size: var(--xh-control-box-md);
-    --xh-_action-profile-glyph-size: var(--xh-glyph-size-md);
-    --xh-_action-profile-font-size: var(--xh-control-font-md);
-  }
-
   [data-xh-action-control][data-xh-action-profile='floating'][data-xh-action-size='md'] {
-    --xh-_action-profile-visual-size: var(--xh-control-box-lg);
-    --xh-_action-profile-glyph-size: var(--xh-glyph-size-lg);
-    --xh-_action-profile-font-size: var(--xh-control-font-lg);
+    --xh-_action-profile-visual-size: var(--xh-control-box-md);
   }
 
   [data-xh-action-control][data-xh-action-profile='floating'][data-xh-action-size='lg'] {
-    --xh-_action-profile-visual-size: calc(var(--xh-control-box-lg) + var(--xh-space-2));
-    --xh-_action-profile-glyph-size: var(--xh-glyph-size-xl);
+    --xh-_action-profile-visual-size: var(--xh-control-box-lg);
   }
 
   [data-xh-action-control][data-xh-action-profile='row'] {

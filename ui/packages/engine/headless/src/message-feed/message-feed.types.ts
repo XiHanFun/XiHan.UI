@@ -74,7 +74,7 @@ export interface MessageFeedSchema extends MachineSchema {
     threshold?: number
     /** 到达首尾是否回绕，默认 false：会话是线性的。 */
     loop?: boolean
-    /** 尺寸：sm / md / lg。 */
+    /** 尺寸：sm / md / lg；回到底部钮比它低一档、最低 sm（32 / 32 / 40px）。 */
     size?: Size
     translations?: Partial<MessageFeedTranslations>
     onStickChange?: (details: MessageFeedStickChangeDetails) => void

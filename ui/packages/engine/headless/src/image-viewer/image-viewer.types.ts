@@ -5,7 +5,7 @@
 
 // 定义 image viewer 类型契约。
 
-import type { Cleanup, Layer, MachineSchema, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, Layer, MachineSchema, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { SpringValue } from '@xihan-ui/motion'
 import type { MultiPointerSession, PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
@@ -122,6 +122,8 @@ export interface ImageViewerSchema extends MachineSchema {
     restoreFocus?: boolean
     /** 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 */
     variant?: OverlayBackdropVariant
+    /** 尺寸：sm / md / lg，默认 md；翻页钮走 Action Control floating 档（32 / 40 / 48px），关闭钮比它低一档、最低 sm。 */
+    size?: Size
     translations?: Partial<ImageViewerTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: ImageViewerOpenChangeDetails) => void

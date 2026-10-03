@@ -55,8 +55,8 @@ border-right-color: rgba(0, 0, 0, 0)
 border-bottom-color: rgba(0, 0, 0, 0)
 border-left-color: rgba(0, 0, 0, 0)
 min-height: 0px
-font-size: 14px
-line-height: 14px
+font-size: 13px
+line-height: 13px
 font-weight: 400
 color: oklch(1 0 0)
 background-color: rgba(0, 0, 0, 0)
@@ -265,8 +265,8 @@ border-right-color: rgba(0, 0, 0, 0)
 border-bottom-color: rgba(0, 0, 0, 0)
 border-left-color: rgba(0, 0, 0, 0)
 min-height: 0px
-font-size: 16px
-line-height: 16px
+font-size: 14px
+line-height: 14px
 font-weight: 400
 color: oklab(1 0 0 / 0.294)
 background-color: rgba(0, 0, 0, 0)
@@ -335,8 +335,8 @@ border-right-color: rgba(0, 0, 0, 0)
 border-bottom-color: rgba(0, 0, 0, 0)
 border-left-color: rgba(0, 0, 0, 0)
 min-height: 0px
-font-size: 16px
-line-height: 16px
+font-size: 14px
+line-height: 14px
 font-weight: 400
 color: oklab(1 0 0 / 0.294)
 background-color: rgba(0, 0, 0, 0)

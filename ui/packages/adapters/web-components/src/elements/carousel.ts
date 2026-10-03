@@ -5,7 +5,7 @@
 
 // 提供 carousel 相关实现。
 
-import type { Direction, Orientation } from '@xihan-ui/core'
+import type { Direction, Orientation, Size } from '@xihan-ui/core'
 import type { CarouselEffect, CarouselPageChangeDetails, CarouselSchema, CarouselTranslations } from '@xihan-ui/headless'
 import { carouselAnatomy, carouselMachine, carouselMeta, connectCarousel } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -65,6 +65,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} allow-pointer-drag - 允许指针拖拽切页，默认关闭
  * @attr {string} spacing - 张与张之间的间距（任意 CSS 长度）
  * @attr {'slide'|'fade'} effect - 换页方式，默认 slide；fade 时条目叠放、新一页淡入旧一页淡出，一页只放一张
+ * @attr {'sm'|'md'|'lg'} size - 尺寸，默认 md；翻页与播放三颗钮走 Action Control floating 档（32 / 40 / 48px）
  * @fires page-change - 页码变化；detail 为 `{ page: number }`
  * @csspart root - region 地标，承载 aria-roledescription="carousel" 与名字
  * @csspart viewport - 裁切窗口，兼作读屏活区
@@ -94,6 +95,7 @@ export class XhCarouselElement extends XhElement {
     allowPointerDrag: { converter: BOOLEAN_CONVERTER, attribute: 'allow-pointer-drag' },
     spacing: { converter: STRING_CONVERTER },
     effect: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }
@@ -110,6 +112,7 @@ export class XhCarouselElement extends XhElement {
   declare allowPointerDrag?: boolean
   declare spacing?: string
   declare effect?: CarouselEffect
+  declare size?: Size
   declare translations?: Partial<CarouselTranslations>
 
   private readonly notify = (details: CarouselPageChangeDetails): void => {
@@ -134,6 +137,7 @@ export class XhCarouselElement extends XhElement {
       allowPointerDrag: this.allowPointerDrag,
       spacing: this.spacing,
       effect: this.effect,
+      size: this.size,
       translations: this.translations,
       onPageChange: this.notify,
     }

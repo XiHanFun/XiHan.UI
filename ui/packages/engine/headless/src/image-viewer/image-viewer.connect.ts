@@ -8,6 +8,7 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ImageViewerApi, ImageViewerPressedPart, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
+import { floatingSizeBelow } from '../shared/floating-size'
 import { imageViewerAnatomy } from './image-viewer.anatomy'
 import {
   clampImageViewerIndex,
@@ -48,6 +49,8 @@ export function connectImageViewer<T extends PropTypes>(
   const loop = prop('loop') ?? true
   const minScale = prop('minScale') ?? IMAGE_VIEWER_MIN_SCALE
   const maxScale = prop('maxScale') ?? IMAGE_VIEWER_MAX_SCALE
+  // 翻页钮的 floating 档与组件同档（缺省 md 40px），关闭钮低一档
+  const size = prop('size') ?? 'md'
   const canPrev = count > 1 && (loop || index > 0)
   const canNext = count > 1 && (loop || index < count - 1)
   const stateAttr = open ? 'open' : 'closed'
@@ -346,20 +349,20 @@ export function connectImageViewer<T extends PropTypes>(
       ...press('reset-trigger'),
     }),
     getPrevTriggerProps: () => toolButton('prev-trigger', label.prev, () => send({ type: 'INDEX.PREV' }), !canPrev, {
-      // 浮在图上的翻页圆钮：接 Action Control floating 档 md（48px 圆形），面由皮肤桥接到自家深色 chrome
+      // 浮在图上的翻页圆钮：接 Action Control floating 档，与组件同档（缺省 md 40px 圆形），面由皮肤桥接到自家深色 chrome
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'md',
+      'data-xh-action-size': size,
       'data-xh-liquid': '',
       ...press('prev-trigger', !canPrev),
     }),
     getNextTriggerProps: () => toolButton('next-trigger', label.next, () => send({ type: 'INDEX.NEXT' }), !canNext, {
-      // 浮在图上的翻页圆钮：接 Action Control floating 档 md（48px 圆形），面由皮肤桥接到自家深色 chrome
+      // 浮在图上的翻页圆钮：接 Action Control floating 档，与组件同档（缺省 md 40px 圆形），面由皮肤桥接到自家深色 chrome
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'md',
+      'data-xh-action-size': size,
       'data-xh-liquid': '',
       ...press('next-trigger', !canNext),
     }),
@@ -376,12 +379,12 @@ export function connectImageViewer<T extends PropTypes>(
     }),
 
     getCloseTriggerProps: () => toolButton('close-trigger', label.close, () => send({ type: 'CLOSE', src: 'close-trigger' }), false, {
-      // 右上角的叉：悬浮在媒体上的单图标动作，与翻页钮同走 Action Control floating 档 sm（40px、圆形），
+      // 右上角的叉：悬浮在媒体上的单图标动作，与翻页钮同走 Action Control floating 档、比它低一档（缺省 sm 32px、圆形），
       // 面由皮肤桥接到自家深色 chrome
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'sm',
+      'data-xh-action-size': floatingSizeBelow(size),
       'data-xh-liquid': '',
       ...press('close-trigger'),
     }),

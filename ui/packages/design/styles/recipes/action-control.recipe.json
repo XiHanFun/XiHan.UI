@@ -41,10 +41,10 @@
       "description": "浮在页面或媒体上的独立动作；视觉盒与图形光学档均大于内嵌控制。",
       "layout": { "square": true, "fill": false, "justify": "center", "press": "scale", "radius": "var(--xh-shape-circle)" },
       "sizes": {
-        "xs": { "visualSize": "var(--xh-control-box-sm)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
-        "sm": { "visualSize": "var(--xh-control-box-md)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
-        "md": { "visualSize": "var(--xh-control-box-lg)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" },
-        "lg": { "visualSize": "calc(var(--xh-control-box-lg) + var(--xh-space-2))", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-xl)", "fontSize": "var(--xh-control-font-lg)" }
+        "xs": { "visualSize": "var(--xh-control-action-size)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "sm": { "visualSize": "var(--xh-control-box-sm)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "md": { "visualSize": "var(--xh-control-box-md)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
+        "lg": { "visualSize": "var(--xh-control-box-lg)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
       }
     },
     "row": {
