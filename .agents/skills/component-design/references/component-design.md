@@ -441,10 +441,11 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | --- | --- | --- | --- | --- | --- |
 | text / icon | Button、Toggle、ToggleGroup 与 Toolbar 条目、各组件的触发与提交钮 | `control-action-size` | `control-h-sm` | `control-h-md` | `control-h-lg` |
 | field-inset | 字段里的清空、展开、步进、可见性钮，档位随所在字段 | `control-action-size` | `control-action-size` | `control-h-sm` | `control-h-md` |
-| floating | FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer | `control-box-sm` | `control-box-md` | `control-box-lg` | `control-box-lg` + 8px |
+| floating | FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer | `control-action-size` | `control-box-sm` | `control-box-md` | `control-box-lg` |
 
 - text 档宽按内容，下限等于高；icon、field-inset、floating 是正方盒。
-- 字形：text / icon 为 16 / 16 / 20 / 24px；field-inset 为 `control-indicator-sm`、`control-indicator-md`、16px、20px；floating 为 16 / 20 / 24 / 32px。
+- 字形：text / icon 为 16 / 16 / 20 / 24px；field-inset 为 `control-indicator-sm`、`control-indicator-md`、16px、20px；floating 为 16 / 16 / 20 / 24px。
+- floating 缺省 md（40px，compact 36px）：浮在内容之上的圆钮在矮视口与小卡片里不叠住内容与彼此。主控制钮（Carousel 与 ImageViewer 的翻页、BackTop、FloatButton）随组件 `size` 同档；从属的钮（ImageViewer 的关闭、Log / MessageFeed 的回到底部）比组件低一档、最低 sm。
 - Dialog、Drawer、Popover、Tour、Notification 的关闭钮取 `control-h-sm`。
 
 #### 字段

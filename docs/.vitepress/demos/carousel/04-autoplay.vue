@@ -24,7 +24,7 @@ const slides = ["公告一", "公告二", "公告三"];
     style="inline-size: 100%"
   >
     <XhCarouselPrevTrigger />
-    <XhCarouselViewport style="block-size: 120px">
+    <XhCarouselViewport style="block-size: 176px">
       <XhCarouselList>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
           <div style="display: grid; place-items: center; block-size: 100%">

@@ -5,7 +5,7 @@
 
 // 提供 carousel 相关实现。
 
-import type { Direction, Orientation } from '@xihan-ui/core'
+import type { Direction, Orientation, Size } from '@xihan-ui/core'
 import type { CarouselApi, CarouselEffect, CarouselSchema, CarouselTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -56,6 +56,7 @@ export const XhCarouselRoot = defineComponent({
     allowPointerDrag: { type: Boolean, default: undefined },
     spacing: { type: String },
     effect: { type: String as PropType<CarouselEffect> },
+    size: { type: String as PropType<Size> },
     translations: { type: Object as PropType<Partial<CarouselTranslations>> },
   },
   // page-change 携带 { page }，update:page 携带裸页码

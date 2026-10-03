@@ -128,7 +128,7 @@ export const logSuite: ConformanceSuite = {
             'data-xh-action-profile': 'floating',
             'data-xh-action-variant': 'ghost',
             'data-xh-action-display': 'always',
-            'data-xh-action-size': 'xs',
+            'data-xh-action-size': 'sm',
           },
           'live-region': {
             'role': 'status',

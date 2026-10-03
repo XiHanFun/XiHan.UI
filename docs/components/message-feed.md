@@ -95,6 +95,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 
 - 粘底跟随：内容增高时自动到底，用户上滚即解除，滚回底部阈值内自动恢复。向上插入历史消息时补偿滚动位置，视口不跳动。
 - “回到底部”只判断是否在底部，不判断粘附意图：粘附中但内容尚未追上时按钮不显示。
+- “回到底部”是 Action Control floating 档的圆钮，比消息流的 `size` 低一档、最低 sm（sm / md 时 32px，lg 时 40px）。
 - 整份消息列表只占一个 Tab 停靠位：`PageDown` / `PageUp` 在消息之间移动，`Ctrl+End` / `Ctrl+Home` 一步移到消息流之外（会话界面中通常是输入框）。
 - 消息内容全部由作者编写：气泡、头像、时间、动作条都不是本组件的部件。
 - 新生成的消息与出现的“回到底部”各带一段淡入位移；减弱动效由令牌层收敛，不需要另行关闭。
@@ -145,7 +146,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `status` | `MessageFeedStatus` |  | 本轮的运行态，只写 data-state，状态机不读取它。 |
 | `threshold` | `number` |  | 距底部多少 px 视为在底部，默认使用贴底原语的默认值。 |
 | `loop` | `boolean` |  | 到达首尾是否回绕，默认 false：会话是线性的。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg；回到底部钮比它低一档、最低 sm（32 / 32 / 40px）。 |
 | `translations` | `Partial<MessageFeedTranslations>` |  |  |
 | `onStickChange` | `(details: MessageFeedStickChangeDetails) => void` |  |  |
 | `onItemFocus` | `(details: MessageFeedItemFocusDetails) => void` |  |  |
@@ -291,7 +292,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `scroll-to-end-trigger` | `data-xh-action-control` | '' |
 | `scroll-to-end-trigger` | `data-xh-action-display` | 'always' |
 | `scroll-to-end-trigger` | `data-xh-action-profile` | 'floating' |
-| `scroll-to-end-trigger` | `data-xh-action-size` | 'xs' |
+| `scroll-to-end-trigger` | `data-xh-action-size` | floatingSizeBelow(prop('size')) |
 | `scroll-to-end-trigger` | `data-xh-action-variant` | 'ghost' |
 | `scroll-to-end-trigger` | `data-xh-liquid` | '' |
 | `scroll-to-end-trigger` | `data-xh-material` | 'frosted' |

@@ -149,3 +149,20 @@ describe('connectImageViewer 按压通道：Space / Enter 与触屏按住投影 
     v.stop()
   })
 })
+
+describe('connectImageViewer 控制钮的尺寸档', () => {
+  it.each([
+    [undefined, 'md', 'sm'],
+    ['sm', 'sm', 'sm'],
+    ['md', 'md', 'sm'],
+    ['lg', 'lg', 'md'],
+  ] as const)('size 为 %s：翻页钮取 %s，关闭钮比它低一档取 %s', (size, nav, close) => {
+    const viewer = makeViewer(size ? { size } : {})
+    expect(viewer.prev()['data-xh-action-size']).toBe(nav)
+    expect(viewer.next()['data-xh-action-size']).toBe(nav)
+    expect(viewer.close()['data-xh-action-size']).toBe(close)
+    // 工具条钮走 icon 档，不随组件尺寸换档
+    expect(viewer.reset()['data-xh-action-size']).toBe('xs')
+    viewer.stop()
+  })
+})

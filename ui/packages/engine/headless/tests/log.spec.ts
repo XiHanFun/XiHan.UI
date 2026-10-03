@@ -109,13 +109,13 @@ describe('logMachine 粘底', () => {
     expect(l.api().showScrollToEndTrigger).toBe(false)
     expect(l.api().getRootProps()).toMatchObject({ 'data-at-bottom': '', 'data-sticking': '' })
     expect(l.api().getScrollToEndTriggerProps()).toMatchObject({ 'type': 'button', 'hidden': true, 'data-state': 'hidden' })
-    // 回底钮接 Action Control 的 floating 档：ghost 形态、固定 xs（32px 正方盒），材质由皮肤给 frosted
+    // 回底钮接 Action Control 的 floating 档：ghost 形态、比日志低一档（缺省 sm，32px 正方盒），材质由皮肤给 frosted
     expect(l.api().getScrollToEndTriggerProps()).toMatchObject({
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'xs',
+      'data-xh-action-size': 'sm',
     })
 
     // 先滚到底附近再往上滚：scrollTop 变小即视为用户上滚
@@ -320,5 +320,13 @@ describe('log 与虚拟滚动接线', () => {
     expect(l.api().atBottom).toBe(false)
     l.stop()
     scroller.remove()
+  })
+})
+
+describe('回底钮的尺寸档', () => {
+  it.each([['sm', 'sm'], ['md', 'sm'], ['lg', 'md']] as const)('日志 %s 档时回底钮取 %s：比组件低一档、最低 sm', (size, expected) => {
+    const l = makeLog({}, { size })
+    expect((l.api().getScrollToEndTriggerProps() as Dict)['data-xh-action-size']).toBe(expected)
+    l.stop()
   })
 })

@@ -5796,6 +5796,15 @@
             },
             {
               "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -5941,6 +5950,14 @@
               "description": "换页方式，默认 slide；fade 时条目叠放、新一页淡入旧一页淡出，一页只放一张",
               "name": "effect",
               "fieldName": "effect"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸，默认 md；翻页与播放三颗钮走 Action Control floating 档（32 / 40 / 48px）",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -35160,6 +35177,15 @@
             },
             {
               "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
@@ -35450,6 +35476,14 @@
               "description": "遮罩形态：只影响 backdrop 的底色与模糊",
               "name": "variant",
               "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸，默认 md；翻页钮走 Action Control floating 档（32 / 40 / 48px），关闭钮比它低一档、最低 sm",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {

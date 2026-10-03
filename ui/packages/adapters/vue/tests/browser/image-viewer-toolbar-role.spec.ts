@@ -190,7 +190,7 @@ describe('看片浮层的控件带：报的角色与拿得到的走位一致', (
 })
 
 describe('看片浮层的 chrome 钮：Action Control 档位落到真实盒子上', () => {
-  it('翻页钮是 48px 正圆、关闭钮 40px 正圆、工具条钮 24px；十颗钮的前景随 chrome 继承', async () => {
+  it('翻页钮是 40px 正圆（floating 缺省 md）、关闭钮低一档 32px 正圆、工具条钮 24px；十颗钮的前景随 chrome 继承', async () => {
     mount()
     await settle()
     const prev = part('prev-trigger')
@@ -201,12 +201,12 @@ describe('看片浮层的 chrome 钮：Action Control 档位落到真实盒子�
 
     for (const el of [prev, next]) {
       const rect = el.getBoundingClientRect()
-      expect([rect.width, rect.height]).toEqual([48, 48])
+      expect([rect.width, rect.height]).toEqual([40, 40])
       expect(getComputedStyle(el).borderRadius).toBe('50%')
       expect(getComputedStyle(el).color).toBe(chromeColor)
     }
     const closeRect = close.getBoundingClientRect()
-    expect([closeRect.width, closeRect.height]).toEqual([40, 40])
+    expect([closeRect.width, closeRect.height]).toEqual([32, 32])
     // 悬浮在媒体上的单图标动作：与翻页钮同一身份，正圆
     expect(getComputedStyle(close).borderRadius).toBe('50%')
     const zoomRect = zoomIn.getBoundingClientRect()

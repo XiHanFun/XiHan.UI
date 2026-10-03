@@ -105,7 +105,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 - 开启自动播放时渲染 `autoplay-trigger`：它是唯一能停止自动翻页且不会被其他交互重新启动的入口。
 - 自动播放在指针悬停或焦点进入时自动暂停，离开后重新计满一个间隔再翻页。
 - 减弱动效时自动播放不会自行启动，播放开关是用户唯一的启动入口。
-- 分页点应能看出总屏数与当前位置；自动播放时还应反馈本页剩余时间。翻页与播放按钮走 Action Control floating 档：48px 圆形磨砂面、图标 24px，按下缩放并换底。
+- 分页点应能看出总屏数与当前位置；自动播放时还应反馈本页剩余时间。翻页与播放按钮走 Action Control floating 档，随 `size` 取 sm / md / lg（32 / 40 / 48px，默认 md 40px）圆形磨砂面，按下缩放并换底。三颗钮浮在内容之上：翻页钮在两侧居中、播放钮贴右下角，视口不低于 3 × 钮径 + 24px（两倍控件内距）时互不相叠，即 sm 120 / md 144 / lg 168px。
 
 ### 反模式
 
@@ -140,6 +140,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | `allowPointerDrag` | `boolean` |  | 允许指针拖拽切页，默认 false。鼠标、触摸、触控笔一并门控。 开启后沿轨道轴的原生滚动让位给拖拽，关闭则完全没有拖拽、触摸使用原生滚动。 |
 | `spacing` | `string` |  | 张与张之间的间距，任意 CSS 长度（如 '12px'）。落为条目自身的内边距，不影响位移计算。 |
 | `effect` | `CarouselEffect` |  | 换页方式，默认 slide（轨道平移）。fade 时条目叠放、新一页淡入旧一页淡出，与平移同一段时长与曲线， 减弱动效下直接换；loop 回绕也只是一次淡变。拖拽仍按方向与速度决定翻不翻页，画面不跟手位移。 fade 一页只放一张：slidesPerPage 大于 1 时报错。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；翻页与播放三颗钮走 Action Control floating 档（32 / 40 / 48px）。 |
 | `translations` | `Partial<CarouselTranslations>` |  |  |
 | `onPageChange` | `(details: CarouselPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
@@ -303,7 +304,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'floating' |
-| `prev-trigger` | `data-xh-action-size` | 'md' |
+| `prev-trigger` | `data-xh-action-size` | props.size |
 | `prev-trigger` | `data-xh-liquid` | '' |
 | `prev-trigger` | `data-xh-material` | 'frosted' |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -312,7 +313,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'floating' |
-| `next-trigger` | `data-xh-action-size` | 'md' |
+| `next-trigger` | `data-xh-action-size` | props.size |
 | `next-trigger` | `data-xh-liquid` | '' |
 | `next-trigger` | `data-xh-material` | 'frosted' |
 | `autoplay-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -321,7 +322,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | `autoplay-trigger` | `data-xh-action-control` | '' |
 | `autoplay-trigger` | `data-xh-action-display` | 'always' |
 | `autoplay-trigger` | `data-xh-action-profile` | 'floating' |
-| `autoplay-trigger` | `data-xh-action-size` | 'md' |
+| `autoplay-trigger` | `data-xh-action-size` | props.size |
 | `autoplay-trigger` | `data-xh-liquid` | '' |
 | `autoplay-trigger` | `data-xh-material` | 'frosted' |
 | `indicator-group` | `data-orientation` | props.orientation |

@@ -5,7 +5,7 @@
 
 // 提供 image viewer 相关实现。
 
-import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { ImageViewerIndexChangeDetails, ImageViewerItem, ImageViewerOpenChangeDetails, ImageViewerSchema, ImageViewerTranslations } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -39,6 +39,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} close-on-interact-outside - 点击遮罩关闭，默认 true
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
  * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
+ * @attr {'sm'|'md'|'lg'} size - 尺寸，默认 md；翻页钮走 Action Control floating 档（32 / 40 / 48px），关闭钮比它低一档、最低 sm
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires index-change - 下标变化；detail 为 `{ index: number }`
  * @csspart trigger - 触发按钮
@@ -80,6 +81,7 @@ export class XhImageViewerElement extends XhPortalHostElement {
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
     variant: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     // 对象值进不了属性，只作为 property 暴露
     collection: { attribute: false },
     translations: { attribute: false },
@@ -97,6 +99,7 @@ export class XhImageViewerElement extends XhPortalHostElement {
   declare closeOnInteractOutside?: boolean
   declare restoreFocus?: boolean
   declare variant?: OverlayBackdropVariant
+  declare size?: Size
   /** 图片清单。查看单张时提供长度为 1 的数组。 */
   declare collection?: ImageViewerItem[]
   /** 工具条按钮的可及名与计数文案；connect 每帧重写，只能从此处提供。 */
@@ -153,6 +156,7 @@ export class XhImageViewerElement extends XhPortalHostElement {
       closeOnInteractOutside: this.closeOnInteractOutside,
       restoreFocus: this.restoreFocus,
       variant: this.variant,
+      size: this.size,
       translations: this.translations,
       onOpenChange: this.notifyOpen,
       onIndexChange: this.notifyIndex,

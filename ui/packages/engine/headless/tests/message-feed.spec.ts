@@ -144,7 +144,7 @@ describe('粘底', () => {
     expect(rig.api().showScrollToEndTrigger).toBe(false)
   })
 
-  it('回底钮接 Action Control 的 floating 档：ghost 形态、固定 xs 正方盒', () => {
+  it('回底钮接 Action Control 的 floating 档：ghost 形态、比消息流低一档的正方盒', () => {
     const rig = mount()
     expect(rig.api().getScrollToEndTriggerProps()).toMatchObject({
       'type': 'button',
@@ -152,8 +152,12 @@ describe('粘底', () => {
       'data-xh-action-profile': 'floating',
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'xs',
+      'data-xh-action-size': 'sm',
     })
+  })
+
+  it.each([['sm', 'sm'], ['md', 'sm'], ['lg', 'md']] as const)('消息流 %s 档时回底钮取 %s：比组件低一档、最低 sm', (size, expected) => {
+    expect((mount({ size }).api().getScrollToEndTriggerProps() as Dict)['data-xh-action-size']).toBe(expected)
   })
 
   it('句柄回报即转发给宿主', () => {

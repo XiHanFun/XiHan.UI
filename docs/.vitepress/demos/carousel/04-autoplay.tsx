@@ -25,7 +25,7 @@ export default function Demo(): ReactNode {
       {({ totalPages }) => (
         <>
           <XhCarouselPrevTrigger />
-          <XhCarouselViewport style={{ blockSize: "120px" }}>
+          <XhCarouselViewport style={{ blockSize: "176px" }}>
             <XhCarouselList>
               {slides.map((text, i) => (
                 <XhCarouselItem key={text} index={i}>

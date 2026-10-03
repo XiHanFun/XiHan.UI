@@ -25,11 +25,11 @@ const EMBEDDED = ['cascader', 'tree-select', 'combobox', 'date-picker', 'date-ra
 const STANDALONE = ['file-upload', 'signature-pad']
 /**
  * ③ 浮层角落关闭钮；值是尺寸基准的例外。
- * image-viewer：悬浮在媒体上的叉与翻页钮同走 floating 档 sm（--xh-control-box-md，圆形）。
+ * image-viewer：悬浮在媒体上的叉与翻页钮同走 floating 档、比翻页钮低一档（圆形）：组件 sm / md 时 sm（--xh-control-box-sm），lg 时 md（--xh-control-box-md）。
  * notification：按预设分两档。卡片的叉钉在面板角上，走 --xh-control-h-sm；轻提示的叉排在单行短消息里，
  * 不在面板角上——28px 比一行正文的行盒还高，走行级动作钮那一档。
  */
-const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'alert': null, 'floating-panel': null, 'image-viewer': '--xh-control-box-md', 'notification': ['--xh-control-h-sm', '--xh-control-action-size'] }
+const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'alert': null, 'floating-panel': null, 'image-viewer': ['--xh-control-box-sm', '--xh-control-box-md'], 'notification': ['--xh-control-h-sm', '--xh-control-action-size'] }
 /** 部件名与 close-trigger 不同的，逐条登记（通知的叉在卡片那一层，叫 item-close-trigger）。 */
 const CLOSE_PART = { notification: 'item-close-trigger' }
 /**
@@ -264,7 +264,10 @@ for (const c of STANDALONE) {
 }
 
 /** ③ 尺寸基准与 Action Control 档位的对应：接了家族的叉由连接层投 data-xh-action-size，档位得与基准同高。 */
-const CLOSE_ACTION_SIZE = { '--xh-control-h-sm': 'sm', '--xh-control-action-size': 'xs', '--xh-control-h-lg': 'lg', '--xh-control-box-md': 'sm' }
+const CLOSE_ACTION_SIZE = { '--xh-control-h-sm': 'sm', '--xh-control-action-size': 'xs', '--xh-control-h-lg': 'lg', '--xh-control-box-sm': 'sm', '--xh-control-box-md': 'md' }
+
+/** 共用取档函数投出的档位：表达式里没有字面量可读，按函数的取值范围登记（shared/floating-size.ts）。 */
+const SIZE_HELPERS = { floatingSizeBelow: ['md', 'sm'] }
 
 /** 基础块里某条桥接槽的取值（选择器尾巴为空的那些规则）。 */
 function bridgeIn(rules, name) {
@@ -322,7 +325,8 @@ for (const [c, sizeException] of Object.entries(CLOSE)) {
     const bases = [sizeException ?? '--xh-control-h-sm'].flat()
     const want = [...new Set(bases.map(base => CLOSE_ACTION_SIZE[base]))].sort()
     const expr = /['"]data-xh-action-size['"]\s*:\s*([^,\n]+)/.exec(g ?? '')?.[1] ?? ''
-    const sizes = [...new Set([...expr.matchAll(/['"]([a-z]+)['"]/g)].map(m => m[1]))].sort()
+    const helper = Object.entries(SIZE_HELPERS).find(([name]) => expr.includes(`${name}(`))?.[1]
+    const sizes = helper ? [...helper].sort() : [...new Set([...expr.matchAll(/['"]([a-z]+)['"]/g)].map(m => m[1]))].sort()
     if (sizes.join() !== want.join())
       problems.push(`${c}.connect.ts 的 ${part} 投的 data-xh-action-size 是 ${sizes.join(' / ') || '（没投）'}，尺寸基准 ${bases.join(' / ')} 对应 ${want.join(' / ')} 档`)
     checkActionCloseForeground(c, part, css)

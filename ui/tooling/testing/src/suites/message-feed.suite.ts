@@ -284,7 +284,7 @@ export const messageFeedSuite: ConformanceSuite = {
       initial: {
         parts: {
           // 回底钮接 Action Control 的 floating 档：ghost 形态、固定 xs 正方盒
-          'scroll-to-end-trigger': { 'hidden': '', 'data-state': 'hidden', 'aria-label': 'Scroll to bottom', 'type': 'button', 'data-xh-action-control': '', 'data-xh-action-profile': 'floating', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'xs' },
+          'scroll-to-end-trigger': { 'hidden': '', 'data-state': 'hidden', 'aria-label': 'Scroll to bottom', 'type': 'button', 'data-xh-action-control': '', 'data-xh-action-profile': 'floating', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'sm' },
         },
       },
       steps: [heldPressIgnored('message-feed', 'scroll-to-end-trigger', '视口在底、按钮带 hidden，不可按')],

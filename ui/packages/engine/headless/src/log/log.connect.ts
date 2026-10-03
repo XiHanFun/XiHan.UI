@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { LogApi, LogLevel, LogLineProps, LogProps, LogSchema } from './log.types'
 import { dataAttr } from '@xihan-ui/core'
+import { floatingSizeBelow } from '../shared/floating-size'
 import { pressHandlers } from '../shared/press'
 import { logAnatomy } from './log.anatomy'
 
@@ -109,7 +110,7 @@ export function connectLog<T extends PropTypes>(
 
     // 收起时置 hidden，不卸载节点：按钮反复建删会让它的进场动画每次从头播
     // 回底钮是浮在内容之上的单图标动作：接 Action Control 的 floating 档（circle 正方盒），ghost 形态、
-    // 固定 xs（--xh-control-box-sm 32px，与此前 --xh-control-h-sm 同尺寸），材质由皮肤按角落浮钮族给 frosted
+    // 比日志的尺寸低一档、最低 sm（缺省 32px），材质由皮肤按角落浮钮族给 frosted
     getScrollToEndTriggerProps: () => normalize.button({
       ...parts['scroll-to-end-trigger'].attrs,
       'type': 'button',
@@ -117,7 +118,7 @@ export function connectLog<T extends PropTypes>(
       'data-xh-action-profile': 'floating',
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'xs',
+      'data-xh-action-size': floatingSizeBelow(props.size),
       // 浮在内容之上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
       'data-xh-liquid': '',
       // frosted 材质面：皮肤按材质家族配方取面，液态档由配方换值
