@@ -1,5 +1,12 @@
 # @xihan-ui/chat-stream
 
+## 3.1.0
+
+### Patch Changes
+
+- Updated dependencies [fc9c306]
+  - @xihan-ui/core@3.1.0
+
 ## 3.0.0
 
 ### Minor Changes

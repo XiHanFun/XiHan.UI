@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/viz",
   "type": "module",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "XiHan.UI visualization engine — scales, ticks, shapes, axis layout, picking and sampling as pure functions, no third-party runtime dependency.",
   "author": {
     "name": "XiHanFun",
