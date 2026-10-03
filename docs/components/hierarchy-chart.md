@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="hierarchy-chart"`：**`root`** · `caption` · `path` · `path-item` · `legend` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `node` · `node-label` · `group-header` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="hierarchy-chart"`：**`root`** · `caption` · `path` · `path-item` · `legend` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `node` · `node-label` · `group-header` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -234,6 +234,7 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 | `getTooltipNameProps` | `(row: HierarchyTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍

@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="graph-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `link` · `arrow` · `node` · `node-label` · `link-label` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="graph-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `link` · `arrow` · `node` · `node-label` · `link-label` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -249,6 +249,7 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 | `getTooltipNameProps` | `(row: GraphTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍

@@ -22,7 +22,7 @@ const cases: readonly ConformanceCase[] = [
     name: '初始：绘图区是 graphics-document，每个阶段是带可及名的 graphics-symbol，转化率写在相邻阶段之间',
     spec: { apg: GRAPHICS },
     initial: {
-      counts: { 'stage': 4, 'stage-label': 4, 'conversion': 3, 'tooltip': 1, 'summary': 1, 'table': 1 },
+      counts: { 'stage': 4, 'stage-label': 4, 'conversion': 3, 'tooltip': 1, 'summary': 1, 'table-region': 1, 'table': 1 },
       parts: {
         'plot': { 'role': 'graphics-document', 'aria-roledescription': 'chart' },
         'stage': [

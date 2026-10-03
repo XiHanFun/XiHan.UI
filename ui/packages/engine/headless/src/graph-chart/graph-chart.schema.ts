@@ -143,5 +143,7 @@ export interface GraphChartApi<T extends PropTypes = PropTypes> {
   getTooltipNameProps: (row: GraphTooltipRow) => T['element']
   getEmptyProps: () => T['element']
   getSummaryProps: () => T['element']
+  /** 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 */
+  getTableRegionProps: () => T['element']
   getTableProps: () => T['element']
 }

@@ -548,9 +548,11 @@ export function connectGraphChart<T extends PropTypes>(
       style: VISUALLY_HIDDEN_STYLE,
     }),
 
-    getTableProps: () => normalize.element({
-      ...parts.table.attrs,
+    getTableRegionProps: () => normalize.element({
+      ...parts['table-region'].attrs,
       style: VISUALLY_HIDDEN_STYLE,
     }),
+
+    getTableProps: () => normalize.element(parts.table.attrs),
   }
 }

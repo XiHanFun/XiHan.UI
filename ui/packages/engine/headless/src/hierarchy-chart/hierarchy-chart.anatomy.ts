@@ -34,5 +34,7 @@ export const hierarchyChartAnatomy = createAnatomy('hierarchy-chart', [
   'tooltip-name',
   'empty',
   'summary',
+  // 视觉隐藏落在包着表格的块级区域上：表格的 block-size 只当最小高度、overflow 对表格不生效，1px 隐藏写在表格上收不住它
+  'table-region',
   'table',
 ])

@@ -37,7 +37,7 @@ const cases: readonly ConformanceCase[] = [
     name: '初始：绘图区是 graphics-document，节点是带可及名的 graphics-symbol，连线对读屏隐藏；三组时显示图例',
     spec: { apg: GRAPHICS },
     initial: {
-      counts: { 'legend-item': 3, 'link': 6, 'arrow': 0, 'node': 6, 'tooltip': 1, 'summary': 1, 'table': 1 },
+      counts: { 'legend-item': 3, 'link': 6, 'arrow': 0, 'node': 6, 'tooltip': 1, 'summary': 1, 'table-region': 1, 'table': 1 },
       parts: {
         plot: { 'role': 'graphics-document', 'aria-roledescription': 'chart' },
         legend: { 'role': 'toolbar', 'aria-label': 'Legend', 'hidden': null },

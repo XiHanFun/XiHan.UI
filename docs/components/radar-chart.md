@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="radar-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid-ring` · `ring-label` · `spoke` · `indicator-label` · `series` · `area-fill` · `line` · `point` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="radar-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid-ring` · `ring-label` · `spoke` · `indicator-label` · `series` · `area-fill` · `line` · `point` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -227,6 +227,7 @@ ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈�
 | `getTooltipNameProps` | `(row: RadarTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍

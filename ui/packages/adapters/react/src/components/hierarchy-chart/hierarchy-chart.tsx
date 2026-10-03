@@ -76,21 +76,24 @@ function A11y({ api }: { api: HierarchyChartApi }): ReactNode {
   return (
     <>
       <p {...api.getSummaryProps() as Record<string, unknown>}>{api.summary}</p>
-      <table {...api.getTableProps() as Record<string, unknown>}>
-        <caption>{api.tableCaption}</caption>
-        <thead>
-          <tr>{columns.map(column => <th key={column.id} scope="col">{column.label}</th>)}</tr>
-        </thead>
-        <tbody>
-          {rows.map((row, i) => (
-            <tr key={i}>
-              {row.cells.map((cell, c) => c === 0
-                ? <th key={c} scope="row">{cell.text}</th>
-                : <td key={c}>{cell.text}</td>)}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* 视觉隐藏落在包着表格的区域上，表格在里面照常排版：隐藏写在表格上收不住它的高度 */}
+      <div {...api.getTableRegionProps() as Record<string, unknown>}>
+        <table {...api.getTableProps() as Record<string, unknown>}>
+          <caption>{api.tableCaption}</caption>
+          <thead>
+            <tr>{columns.map(column => <th key={column.id} scope="col">{column.label}</th>)}</tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={i}>
+                {row.cells.map((cell, c) => c === 0
+                  ? <th key={c} scope="row">{cell.text}</th>
+                  : <td key={c}>{cell.text}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   )
 }

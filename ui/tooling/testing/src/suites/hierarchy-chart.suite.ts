@@ -26,7 +26,7 @@ const cases: readonly ConformanceCase[] = [
     name: '初始：绘图区是 tree，节点是带层级、组内位置与展开态的 treeitem；还在最顶层时路径收起',
     spec: { apg: APG },
     initial: {
-      counts: { 'node': 8, 'path-item': 1, 'tooltip': 1, 'summary': 1, 'table': 1 },
+      counts: { 'node': 8, 'path-item': 1, 'tooltip': 1, 'summary': 1, 'table-region': 1, 'table': 1 },
       parts: {
         plot: { role: 'tree' },
         node: [

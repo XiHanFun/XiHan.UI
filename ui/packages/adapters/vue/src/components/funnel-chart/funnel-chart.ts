@@ -70,11 +70,14 @@ function renderA11y(api: FunnelChartApi): VNode[] {
   const { columns, rows } = api.table
   return [
     h('p', api.getSummaryProps() as Record<string, unknown>, api.summary),
-    h('table', api.getTableProps() as Record<string, unknown>, [
-      h('caption', api.tableCaption),
-      h('thead', [h('tr', columns.map(column => h('th', { key: column.id, scope: 'col' }, column.label)))]),
-      h('tbody', rows.map((row, i) => h('tr', { key: i }, row.cells.map((cell, c) =>
-        c === 0 ? h('th', { key: c, scope: 'row' }, cell.text) : h('td', { key: c }, cell.text))))),
+    // 视觉隐藏落在包着表格的区域上，表格在里面照常排版：隐藏写在表格上收不住它的高度
+    h('div', api.getTableRegionProps() as Record<string, unknown>, [
+      h('table', api.getTableProps() as Record<string, unknown>, [
+        h('caption', api.tableCaption),
+        h('thead', [h('tr', columns.map(column => h('th', { key: column.id, scope: 'col' }, column.label)))]),
+        h('tbody', rows.map((row, i) => h('tr', { key: i }, row.cells.map((cell, c) =>
+          c === 0 ? h('th', { key: c, scope: 'row' }, cell.text) : h('td', { key: c }, cell.text))))),
+      ]),
     ]),
   ]
 }

@@ -1776,6 +1776,15 @@
       "radar-chart",
       "sankey-chart"
     ],
+    "table-region": [
+      "cartesian-chart",
+      "funnel-chart",
+      "graph-chart",
+      "hierarchy-chart",
+      "pie-chart",
+      "radar-chart",
+      "sankey-chart"
+    ],
     "tag-list": [
       "cascader",
       "color-picker",
