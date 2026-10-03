@@ -9,6 +9,7 @@ import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cartesianChartMachine, connectCartesianChart } from '../src/cartesian-chart'
 import { CHART_ANIMATION_MARK_LIMIT } from '../src/shared/chart'
+import { VISUALLY_HIDDEN_STYLE } from '../src/shared/visually-hidden'
 
 type Dict = Record<string, any>
 type Props = Partial<CartesianChartSchema['props']>
@@ -618,6 +619,19 @@ describe('无障碍', () => {
     const bar = marksOf(api, 'bar').find(m => m.key === 'online:s二月')!
     expect((api.getMarkProps(bar) as Dict)['aria-label']).toBe('二月, 线上 200')
     expect((api.getPlotProps() as Dict)['aria-describedby']).toBe((api.getSummaryProps() as Dict).id)
+  })
+
+  it('数据表的视觉隐藏落在包着它的区域上，表格自己不带：表格的高度收不住，1px 隐藏写在表格上会撑出祖先的滚动', async () => {
+    const rig = await makeRig(BARS)
+    const api = rig.api()
+    expect(api.getTableRegionProps() as Dict).toMatchObject({
+      'data-scope': 'cartesian-chart',
+      'data-part': 'table-region',
+      'style': VISUALLY_HIDDEN_STYLE,
+    })
+    const table = api.getTableProps() as Dict
+    expect(table['data-part']).toBe('table')
+    expect(table.style).toBeUndefined()
   })
 
   it('取数中还没有数据：空态写「加载中」并带加载状态；取完仍没有数据写「没有数据」', async () => {

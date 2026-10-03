@@ -22,7 +22,7 @@ const cases: readonly ConformanceCase[] = [
     name: '初始：绘图区是 graphics-document，每个扇区是带可及名的 graphics-symbol，环形中心显示合计',
     spec: { apg: GRAPHICS },
     initial: {
-      counts: { 'legend-item': 4, 'slice': 4, 'leader-line': 4, 'slice-label': 4, 'tooltip': 1, 'summary': 1, 'table': 1 },
+      counts: { 'legend-item': 4, 'slice': 4, 'leader-line': 4, 'slice-label': 4, 'tooltip': 1, 'summary': 1, 'table-region': 1, 'table': 1 },
       parts: {
         'plot': { 'role': 'graphics-document', 'aria-roledescription': 'chart' },
         'legend': { 'role': 'toolbar', 'aria-label': 'Legend', 'hidden': null },

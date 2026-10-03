@@ -383,16 +383,20 @@ export class XhHierarchyChartElement extends XhElement {
   /** 摘要与数据表追加在 root 末尾，视觉隐藏：无障碍等价物始终存在。 */
   #paintA11y(root: HTMLElement, api: HierarchyChartApi): void {
     const doc = root.ownerDocument
-    let [summary, table] = generated(root) as HTMLElement[]
-    if (!summary || !table) {
+    // 摘要之后是数据表的隐藏区域，表格放在区域里：视觉隐藏写在表格上收不住它的高度
+    let [summary, region] = generated(root) as HTMLElement[]
+    if (!summary || !region || region.firstElementChild?.localName !== 'table') {
       for (const node of generated(root)) node.remove()
       summary = root.appendChild(makeGen(doc, 'p'))
-      table = root.appendChild(makeGen(doc, 'table'))
+      region = root.appendChild(makeGen(doc, 'div'))
+      region.appendChild(doc.createElement('table'))
       this.#table = null
     }
+    const table = region.firstElementChild as HTMLElement
     this.spreader.spread(summary, api.getSummaryProps() as Record<string, unknown>)
     if (summary.textContent !== api.summary)
       summary.textContent = api.summary
+    this.spreader.spread(region, api.getTableRegionProps() as Record<string, unknown>)
     this.spreader.spread(table, api.getTableProps() as Record<string, unknown>)
     if (this.#table === api.table && this.#tableHost === table)
       return

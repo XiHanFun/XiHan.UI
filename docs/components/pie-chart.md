@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="pie-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `slice` · `leader-line` · `slice-label` · `focus-ring` · `center` · `center-value` · `center-label` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="pie-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `slice` · `leader-line` · `slice-label` · `focus-ring` · `center` · `center-value` · `center-label` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -268,6 +268,7 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 | `getTooltipNameProps` | `(row: PieTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍
