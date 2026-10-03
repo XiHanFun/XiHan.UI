@@ -13,7 +13,7 @@
 
 依赖：`react` 与 `react-dom` 是 peer 依赖，下限 19。当前版本只支持 React 19：状态机要求宿主提交完当前帧、DOM 落定之后再运行回调，`flushSync` 与 `useSyncExternalStore` 的行为是这条契约的基础。
 
-覆盖进度：140 个组件中已覆盖 141 个，与 Vue 侧一致。
+覆盖进度：已覆盖全部组件，与 Vue 侧一致。
 登记在 `ui/tooling/scripts/react-coverage.json`，多项门禁按它决定核对哪些组件：登记多余会核对不存在的组件，登记缺失会静默漏检，两种情况都判失败。
 
 ## 组件命名
@@ -233,7 +233,7 @@ import {
 } from "@xihan-ui/vue";
 ```
 
-只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1175 个导出组件按组件分组列在[组件参考](../components/)。
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部导出组件按组件分组列在[组件参考](../components/)。
 
 没有插件，不需要 `app.use()`。按名称 import 即可，`sideEffects: false` 让打包器移除未使用的部分。
 
@@ -121307,7 +121307,7 @@ const value = ref<string[]>(["09:30"]);
 
 加粗的是必需部件。
 
-`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `tag-list` · `segment-group` · **`segment`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `confirm-trigger` · `hidden-input`
+`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `tag-list` · `segment-group` · `segment` · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `confirm-trigger` · `hidden-input`
 
 ## 示例
 
@@ -148842,9 +148842,9 @@ BasicApp 的前端构建于 XiHan.UI 之上：自 BasicApp v4.0.0 起，它的�
 
 BasicApp 的前端约定见[基础应用前端手册](https://basicapp.docs.xihanfun.com/frontend/introduction)。
 
-## 共有多少个组件
+## 有哪些组件
 
-140 个。每个组件同时有无头内核、Vue / React 组件、自定义元素与默认皮肤。[组件总览](./components/)按分类列出全部组件，每个组件一页。
+[组件总览](./components/)按分类列出全部组件，每个组件一页。每个组件同时有无头内核、Vue / React 组件、自定义元素与默认皮肤。
 
 ## 组件的 props 在哪里查看
 
@@ -148943,7 +148943,7 @@ BasicApp 的前端约定见[基础应用前端手册](https://basicapp.docs.xiha
 ## 其他问题
 
 - 源码仓库：[GitHub](https://github.com/XiHanFun/XiHan.UI) · [Gitee](https://gitee.com/XiHanFun/XiHan.UI) · [GitCode](https://gitcode.com/XiHanFun/XiHan.UI)
-- 文档站的组件示例覆盖全部 140 个组件，Vue、React 与自定义元素的写法并排，行为问题优先在那里复现
+- 文档站的组件示例覆盖全部组件，Vue、React 与自定义元素的写法并排，行为问题优先在那里复现
 
 ---
 
@@ -148977,7 +148977,7 @@ export const accordionKeyboard: KeyboardTable = {
 };
 ```
 
-每一行有稳定的 `id`、触发按键、生效前置条件与效果。全库共 813 条，分布在 140 个组件上。
+每一行有稳定的 `id`、触发按键、生效前置条件与效果。每个组件各有一份。
 
 规格表由三方共同消费：
 
@@ -151041,7 +151041,7 @@ const controlProps = useFieldControl();
 
 ## 参与的组件
 
-33 个：checkbox、cascader、checkbox-group、color-field、color-picker、color-slider、color-swatch-picker、combobox、date-field、date-picker、date-range-picker、editable、field-array、file-upload、image-cropper、mention、number-field、password-input、pin-input、radio-group、rating、select、signature-pad、slider、switch、tags-input、text-field、time-field、time-picker、time-range-picker、toggle-group、transfer、tree-select。
+checkbox、cascader、checkbox-group、color-field、color-picker、color-slider、color-swatch-picker、combobox、date-field、date-picker、date-range-picker、editable、field-array、file-upload、image-cropper、mention、number-field、password-input、pin-input、radio-group、rating、select、signature-pad、slider、switch、tags-input、text-field、time-field、time-picker、time-range-picker、toggle-group、transfer、tree-select。
 
 新增的表单组件未接入重置会被门禁拦截：判据的分母从源码扫描得出（`types` 的 props 中有 `name?:` 即表单字段，字段名可以是标量字符串或 `FormPath`），不是手写名单。
 
@@ -152165,7 +152165,7 @@ session.dispose(); // 移除监听，重复调用是安全的
 
 ## 使用的组件
 
-跟手期间的指针监听统一经过这一层，18 个组件在用：`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `float-button` · `dialog` · `signature-pad` · `carousel` · `calendar` · `image-viewer` · `sortable` · `resizable` · `table` · `tabs` · `tree`。
+跟手期间的指针监听统一经过这一层，在用的组件：`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `float-button` · `dialog` · `signature-pad` · `carousel` · `calendar` · `image-viewer` · `sortable` · `resizable` · `table` · `tabs` · `tree`。
 
 在状态机中的接法是把会话挂进拖动态的效应，效应拆卸时 `dispose`：状态一离开拖动态，监听自动移除：
 
@@ -154146,7 +154146,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-scope` 取值（组件身份） | 140 | **受约束**（新增第 141 个组件是 minor） |
 | `data-part` 取值（部件名） | 367 个不同名字 / 1335 条「组件 × 部件」配对 | **受约束** |
 | `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 367 个 | **受约束** |
-| `meta.requiredParts`（必备部件） | 314 条 | **受约束**（加条目 = major），方向见下 |
+| `meta.requiredParts`（必备部件） | 313 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
 
@@ -154560,7 +154560,7 @@ features:
 
   - title: 无障碍是判据
     icon: ♿
-    details: 每个组件都有一份机读的键盘规格表，共 813 条，它同时是测试的分母，用例少覆盖一条即判套件失败。扫描运行在真实 Chromium 上。
+    details: 每个组件都有一份机读的键盘规格表，它同时是测试的分母，用例少覆盖一条即判套件失败。扫描运行在真实 Chromium 上。
     link: /guide/a11y
     linkText: "了解无障碍规格"
 
@@ -154591,12 +154591,12 @@ features:
 
 ## 从 npm 安装
 
-XiHan.UI 的 18 个公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
+XiHan.UI 的公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
 
 安装的包取决于使用的适配器：
 
 ```bash
-# Vue 3 项目：适配器 + 默认皮肤
+# Vue 项目：适配器 + 默认皮肤
 pnpm add @xihan-ui/vue @xihan-ui/styles
 
 # 原生 / 非 Vue 项目：自定义元素 + 默认皮肤
@@ -154618,11 +154618,11 @@ pnpm add @xihan-ui/code-highlight
 
 除了从 npm 安装，还有两条本地路径：
 
-1. 克隆仓库直接开发：构建库包后运行文档站，140 个组件的示例都是真实组件；
+1. 克隆仓库直接开发：构建库包后运行文档站，全部组件的示例都是真实组件；
 2. 本地构建后链接进项目：适合跟随仓库最新改动。
 
 ::: warning
-`@xihan-ui/icons` 只收录自研的一等图标集，当前 184 枚，覆盖组件与常见界面所需，不追求完整。
+`@xihan-ui/icons` 只收录自研的一等图标集，覆盖组件与常见界面所需，不追求完整。
 需要整套图标时请自行准备，或用 `XhIcon` 接入任意图标源：它接受 `IconRecord` 纯数据，任何来源都可以转换。
 :::
 
@@ -154661,7 +154661,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 130 项结构门禁
+pnpm gate         # 结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
@@ -154790,7 +154790,7 @@ import "@xihan-ui/tokens/tokens.css";
 2. 顺序按 `index.css` 里各皮肤段的相对顺序。同一个 `@layer xihan.components` 内，等特异性的规则由源序决定。自行排序（按字母、按目录读取序）当前可能看不出差别，将来增加跨组件规则后会与全量引入的渲染不同。需要按需引入时，按 `index.css` 里 `/* styles/xxx.css */` 段标记的顺序过滤，不自行排序。
 3. 混用多份单皮肤时，每份都各带一份家族 `@import`。打包器对同一 URL 的 `@import` 去重（Vite 默认的 postcss 路径会去重）时没有代价；不去重的内联器（例如 `@tailwindcss/vite` 自带的那条）会把家族复制多份，产物随之翻倍，而且后出现的副本会排在前面的皮肤之后。家族的关键覆盖点已按特指度而非源序设计，但多份副本仍是纯浪费——引入的皮肤超过几份时改用主入口。
 
-全量是 152 份皮肤加令牌，压缩后约 130 kB gzip。没有明确的体积压力时使用第一种。
+全量是全部皮肤加令牌，压缩后约 130 kB gzip。没有明确的体积压力时使用第一种。
 :::
 
 ### 开发模式下查漏引
@@ -154882,7 +154882,7 @@ import "@xihan-ui/styles/index.unlayered.css";
 
 XiHan.UI 是一套框架无关的组件库：状态机与无障碍逻辑位于无头内核，每个前端框架只有一层薄适配器。
 
-当前提供 **140 个组件**，每个组件都有无头内核、Vue 组件、React 组件、自定义元素与默认皮肤。各层同源，行为由内核唯一定义，三个适配器负责接入各自的渲染与事件机制。
+每个组件都有无头内核、Vue 组件、React 组件、自定义元素与默认皮肤。各层同源，行为由内核唯一定义，适配器负责接入各自的渲染与事件机制。
 
 ## 与常见组件库的区别
 
@@ -154899,7 +154899,7 @@ XiHan.UI 是一套框架无关的组件库：状态机与无障碍逻辑位于�
 
 - 同一份行为，三种宿主。Vue、React 与自定义元素共享状态机和 `connect`；文档站提供对应框架示例，覆盖情况由示例门禁核对。
 - 样式与逻辑解耦。皮肤只识别 `data-scope` / `data-part` / `data-*` 状态属性，不识别框架，也不识别类名。整体更换皮肤不需要修改 JS。
-- 无障碍是判据。每个组件都有一份机读的键盘规格表（共 813 条），它同时是测试的分母：用例少覆盖一条即判套件失败。
+- 无障碍是判据。每个组件都有一份机读的键盘规格表，它同时是测试的分母：用例少覆盖一条即判套件失败。
 - 依赖面收敛。库包的运行时代码不引入第三方依赖，适配器只依赖各自的宿主框架。日期运算、定位、代码着色、Web Components 响应式基类均为自研。
 
 ## 从这里开始
@@ -155164,9 +155164,9 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/headless` | 140 个组件的解剖 + 状态机 + `connect`，无样式、无框架 |
-| `@xihan-ui/vue` | Vue 3 适配器 |
-| `@xihan-ui/react` | React 19 适配器 |
+| `@xihan-ui/headless` | 全部组件的解剖 + 状态机 + `connect`，无样式、无框架 |
+| `@xihan-ui/vue` | Vue 适配器 |
+| `@xihan-ui/react` | React 适配器 |
 | `@xihan-ui/web-components` | Web Components 适配器，自研响应式基类 |
 
 **表现**

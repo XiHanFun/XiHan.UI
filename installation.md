@@ -4,12 +4,12 @@
 
 ## 从 npm 安装
 
-XiHan.UI 的 18 个公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
+XiHan.UI 的公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
 
 安装的包取决于使用的适配器：
 
 ```bash
-# Vue 3 项目：适配器 + 默认皮肤
+# Vue 项目：适配器 + 默认皮肤
 pnpm add @xihan-ui/vue @xihan-ui/styles
 
 # 原生 / 非 Vue 项目：自定义元素 + 默认皮肤
@@ -31,11 +31,11 @@ pnpm add @xihan-ui/code-highlight
 
 除了从 npm 安装，还有两条本地路径：
 
-1. 克隆仓库直接开发：构建库包后运行文档站，140 个组件的示例都是真实组件；
+1. 克隆仓库直接开发：构建库包后运行文档站，全部组件的示例都是真实组件；
 2. 本地构建后链接进项目：适合跟随仓库最新改动。
 
 ::: warning
-`@xihan-ui/icons` 只收录自研的一等图标集，当前 184 枚，覆盖组件与常见界面所需，不追求完整。
+`@xihan-ui/icons` 只收录自研的一等图标集，覆盖组件与常见界面所需，不追求完整。
 需要整套图标时请自行准备，或用 `XhIcon` 接入任意图标源：它接受 `IconRecord` 纯数据，任何来源都可以转换。
 :::
 
@@ -74,7 +74,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 130 项结构门禁
+pnpm gate         # 结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
@@ -203,7 +203,7 @@ import "@xihan-ui/tokens/tokens.css";
 2. 顺序按 `index.css` 里各皮肤段的相对顺序。同一个 `@layer xihan.components` 内，等特异性的规则由源序决定。自行排序（按字母、按目录读取序）当前可能看不出差别，将来增加跨组件规则后会与全量引入的渲染不同。需要按需引入时，按 `index.css` 里 `/* styles/xxx.css */` 段标记的顺序过滤，不自行排序。
 3. 混用多份单皮肤时，每份都各带一份家族 `@import`。打包器对同一 URL 的 `@import` 去重（Vite 默认的 postcss 路径会去重）时没有代价；不去重的内联器（例如 `@tailwindcss/vite` 自带的那条）会把家族复制多份，产物随之翻倍，而且后出现的副本会排在前面的皮肤之后。家族的关键覆盖点已按特指度而非源序设计，但多份副本仍是纯浪费——引入的皮肤超过几份时改用主入口。
 
-全量是 152 份皮肤加令牌，压缩后约 130 kB gzip。没有明确的体积压力时使用第一种。
+全量是全部皮肤加令牌，压缩后约 130 kB gzip。没有明确的体积压力时使用第一种。
 :::
 
 ### 开发模式下查漏引

@@ -1,1 +1,0 @@
-import{r as s}from"./index.Cgwy3NI6.js";import{pl as a,pm as m,pn as p}from"./theme.3wlaQcnM.js";function f(t,r){const o=a(t.machine);s.useEffect(()=>{if(!o)return;let e=m({getNode:()=>r.current,getFormId:()=>t.prop("form"),onReset:()=>{t.getStatus()==="Started"&&t.send({type:p})}});return()=>{e==null||e.dispose(),e=null}},[o,t,r])}export{f as u};

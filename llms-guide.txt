@@ -13,7 +13,7 @@
 
 依赖：`react` 与 `react-dom` 是 peer 依赖，下限 19。当前版本只支持 React 19：状态机要求宿主提交完当前帧、DOM 落定之后再运行回调，`flushSync` 与 `useSyncExternalStore` 的行为是这条契约的基础。
 
-覆盖进度：140 个组件中已覆盖 141 个，与 Vue 侧一致。
+覆盖进度：已覆盖全部组件，与 Vue 侧一致。
 登记在 `ui/tooling/scripts/react-coverage.json`，多项门禁按它决定核对哪些组件：登记多余会核对不存在的组件，登记缺失会静默漏检，两种情况都判失败。
 
 ## 组件命名
@@ -233,7 +233,7 @@ import {
 } from "@xihan-ui/vue";
 ```
 
-只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1175 个导出组件按组件分组列在[组件参考](../components/)。
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部导出组件按组件分组列在[组件参考](../components/)。
 
 没有插件，不需要 `app.use()`。按名称 import 即可，`sideEffects: false` 让打包器移除未使用的部分。
 
@@ -662,7 +662,7 @@ export const accordionKeyboard: KeyboardTable = {
 };
 ```
 
-每一行有稳定的 `id`、触发按键、生效前置条件与效果。全库共 813 条，分布在 140 个组件上。
+每一行有稳定的 `id`、触发按键、生效前置条件与效果。每个组件各有一份。
 
 规格表由三方共同消费：
 
@@ -2726,7 +2726,7 @@ const controlProps = useFieldControl();
 
 ## 参与的组件
 
-33 个：checkbox、cascader、checkbox-group、color-field、color-picker、color-slider、color-swatch-picker、combobox、date-field、date-picker、date-range-picker、editable、field-array、file-upload、image-cropper、mention、number-field、password-input、pin-input、radio-group、rating、select、signature-pad、slider、switch、tags-input、text-field、time-field、time-picker、time-range-picker、toggle-group、transfer、tree-select。
+checkbox、cascader、checkbox-group、color-field、color-picker、color-slider、color-swatch-picker、combobox、date-field、date-picker、date-range-picker、editable、field-array、file-upload、image-cropper、mention、number-field、password-input、pin-input、radio-group、rating、select、signature-pad、slider、switch、tags-input、text-field、time-field、time-picker、time-range-picker、toggle-group、transfer、tree-select。
 
 新增的表单组件未接入重置会被门禁拦截：判据的分母从源码扫描得出（`types` 的 props 中有 `name?:` 即表单字段，字段名可以是标量字符串或 `FormPath`），不是手写名单。
 
@@ -3850,7 +3850,7 @@ session.dispose(); // 移除监听，重复调用是安全的
 
 ## 使用的组件
 
-跟手期间的指针监听统一经过这一层，18 个组件在用：`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `float-button` · `dialog` · `signature-pad` · `carousel` · `calendar` · `image-viewer` · `sortable` · `resizable` · `table` · `tabs` · `tree`。
+跟手期间的指针监听统一经过这一层，在用的组件：`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `float-button` · `dialog` · `signature-pad` · `carousel` · `calendar` · `image-viewer` · `sortable` · `resizable` · `table` · `tabs` · `tree`。
 
 在状态机中的接法是把会话挂进拖动态的效应，效应拆卸时 `dispose`：状态一离开拖动态，监听自动移除：
 
@@ -5831,7 +5831,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-scope` 取值（组件身份） | 140 | **受约束**（新增第 141 个组件是 minor） |
 | `data-part` 取值（部件名） | 367 个不同名字 / 1335 条「组件 × 部件」配对 | **受约束** |
 | `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 367 个 | **受约束** |
-| `meta.requiredParts`（必备部件） | 314 条 | **受约束**（加条目 = major），方向见下 |
+| `meta.requiredParts`（必备部件） | 313 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
 

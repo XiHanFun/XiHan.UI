@@ -17,7 +17,7 @@
 - [更新日志 · XiHan.UI](https://ui.docs.xihanfun.com/changelog): 本文件记录 XiHan.UI 各版本的变更。
 - [常见问题](https://ui.docs.xihanfun.com/faq): BasicApp 的前端构建于 XiHan.UI 之上：自 BasicApp v4.0.0 起，它的前端整体使用本库重建。
 - [曦寒视图组件](https://ui.docs.xihanfun.com/): 快速 轻量 高效 用心的框架无关跨端组件库
-- [安装与接入](https://ui.docs.xihanfun.com/installation): XiHan.UI 的 18 个公开包都已发布到 npm，同属一个版本组、始终同号。
+- [安装与接入](https://ui.docs.xihanfun.com/installation): XiHan.UI 的公开包都已发布到 npm，同属一个版本组、始终同号。
 - [XiHan.UI 视图组件](https://ui.docs.xihanfun.com/introduction): XiHan.UI 是一套框架无关的组件库：状态机与无障碍逻辑位于无头内核，每个前端框架只有一层薄适配器。
 - [包与依赖关系](https://ui.docs.xihanfun.com/npm-package-dependency): XiHan.UI 是一个 pnpm workspace。
 - [架构总览](https://ui.docs.xihanfun.com/overview): XiHan.UI 是一个 pnpm + turbo 的 monorepo。

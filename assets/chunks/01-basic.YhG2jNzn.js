@@ -1,1 +1,0 @@
-import{j as o}from"./jsx-runtime.BjG_zV1W.js";import{X as r}from"./bar-code.7k7ntHLx.js";import"./normalize-props.BBtJgH4c.js";import"./theme.3wlaQcnM.js";import"./framework.D1FqHTxE.js";function a(){return o.jsx(r,{value:"XH-2026-0915"})}export{a as default};

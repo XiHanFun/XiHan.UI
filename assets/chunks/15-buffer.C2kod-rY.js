@@ -1,0 +1,1 @@
+import{hk as e}from"./theme.9ANMazNn.js";import{d as r,o as a,b as t,k as o}from"./framework.D1FqHTxE.js";const l=r({__name:"15-buffer",setup(s){return(f,n)=>(a(),t(o(e),{value:30,buffer:65,"value-text":"已播放 30%","aria-label":"播放进度",style:{width:"100%"}}))}});export{l as default};
