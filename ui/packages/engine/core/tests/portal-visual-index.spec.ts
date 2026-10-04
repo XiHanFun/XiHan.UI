@@ -1,6 +1,9 @@
 // @vitest-environment jsdom
 
+import type { DiagnosticRecord } from '../src/kernel/diagnostics/types'
 import { afterEach, describe, expect, it } from 'vitest'
+import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsLevel } from '../src/kernel/diagnostics/channel'
+import { DIAGNOSTIC_CODES } from '../src/kernel/diagnostics/codes'
 import { portalVisualIndex } from '../src/kernel/structure/portal-visual-index'
 
 const INPUT = { reproduced: new Set(['data-theme', 'data-density', 'data-tone', 'dir']) }
@@ -57,6 +60,12 @@ describe('portal 视觉索引', () => {
     expect(names()).toEqual(['--b', '--c'])
   })
 
+  it('只从壳复现不出来的声明里收 var() 引用，回退值里嵌套的一并收', () => {
+    css(':where(:root) { --a: var(--root-only); }')
+    css('.card { --b: calc(var(--gap) * 2); --c: var(--first, var(--fallback)); color: var(--not-custom); }')
+    expect([...index().references ?? []].sort()).toEqual(['--fallback', '--first', '--gap'])
+  })
+
   it('class 名只从声明了自定义属性的规则收集', () => {
     css('.declares { --a: 1; }')
     css('.plain { color: red; }')
@@ -74,6 +83,34 @@ describe('portal 视觉索引', () => {
     css('[class~=\'opaque\'] { --b: 1; }')
     expect(index().classes).toBeNull()
     expect(names()).toEqual(['--a', '--b'])
+  })
+
+  it('读不到规则的样式表让名字、引用与 class 集合一并作废，并点名投递诊断', () => {
+    // 节点交给内建 console 打印时会被测试运行器整个检视一遍，连同这里抛错的 cssRules；只经订阅收
+    setDiagnosticsConsoleOutput(false)
+    setDiagnosticsLevel('warn')
+    const records: DiagnosticRecord[] = []
+    const off = onDiagnostic(record => records.push(record))
+    css('.card { --a: 1; }')
+    // 跨域且没以 CORS 加载的表：读 cssRules 抛 SecurityError
+    const sheet = sheets[0]!.sheet!
+    Object.defineProperty(sheet, 'cssRules', {
+      configurable: true,
+      get() {
+        throw new DOMException('cross-origin', 'SecurityError')
+      },
+    })
+    const reported = (): DiagnosticRecord[] => records.filter(record => record.code === DIAGNOSTIC_CODES.portalUnreadableStylesheet)
+    expect(index()).toEqual({ names: null, references: null, classes: null })
+    expect(reported()).toHaveLength(1)
+    expect(reported()[0]!.message).toContain('crossorigin')
+    // 指纹不变的再次读取走缓存，不重复投递
+    index()
+    expect(reported()).toHaveLength(1)
+    off()
+    resetDiagnostics()
+    // 摘表时 jsdom 还会读 cssRules，先撤掉替身
+    delete (sheet as { cssRules?: unknown }).cssRules
   })
 
   it('样式表指纹不变时复用同一份结果，替换样式文本后重建', () => {

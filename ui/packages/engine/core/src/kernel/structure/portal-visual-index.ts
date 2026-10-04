@@ -12,6 +12,9 @@
 // 索引只给上界：多留一个名字只是多读一次，漏一个才会让壳停在旧值上。凡是判不准的形式
 // ——跨域样式表、[class] 属性选择器、看不懂的选择器——一律放弃对应优化，退回整表枚举与照旧重算。
 
+import { reportDiagnostic } from '../diagnostics/channel'
+import { DIAGNOSTIC_CODES } from '../diagnostics/codes'
+
 export interface PortalVisualIndexInput {
   /** 桥会逐项复制到壳上的属性名；只由这些属性选中的规则，壳自己就能解析出同样的值。 */
   readonly reproduced: ReadonlySet<string>
@@ -24,6 +27,12 @@ export interface PortalVisualIndex {
    */
   readonly names: ReadonlySet<string> | null
   /**
+   * 上面那些声明的值里经 var() 引用到的自定义属性名。文档根上改这些名字，来源与壳虽然继承到
+   * 同一个新值，别处据它算出来的声明却只在来源那一侧跟着变；没被引用的名字改了，两侧各自继承、
+   * 不会分叉。null 与 names 同时为 null。
+   */
+  readonly references: ReadonlySet<string> | null
+  /**
    * 出现在「声明了自定义属性」的规则选择器里的 class 名。
    * null 表示判不准（出现了 [class] 属性选择器等），调用方必须对任何 class 变更重算。
    */
@@ -32,6 +41,7 @@ export interface PortalVisualIndex {
 
 interface Collector {
   readonly names: Set<string>
+  readonly references: Set<string>
   readonly classes: Set<string>
   readonly reproduced: ReadonlySet<string>
   readonly rootIsHtml: boolean
@@ -54,7 +64,10 @@ const CLASS_TOKEN = /\.((?:[\w\P{ASCII}-]|\\[\s\S])+)/gu
 const CLASS_ATTRIBUTE = /\[\s*class\b/i
 const ATTRIBUTE_NAME = /^\s*([\w\P{ASCII}-]+)/u
 const ATTRIBUTE_TAIL = /^\s*(?:[~^|$*]?=|$)/
+/** var( 后的第一个参数：自定义属性名，允许转义与非 ASCII 码位。 */
+const VAR_REFERENCE = /var\(\s*(--(?:[\w\P{ASCII}-]|\\[\s\S])+)/gu
 const TEXT_NODE = 3
+const ELEMENT_NODE = 1
 
 function unescapeIdent(raw: string): string {
   if (!raw.includes('\\'))
@@ -239,6 +252,15 @@ function customPropertyNames(style: CSSStyleDeclaration): string[] {
   return names
 }
 
+/** 把一段声明值里 var() 引用到的自定义属性名收进 into；回退值里嵌套的 var() 一并收。 */
+export function collectReferences(value: string, into: Set<string>): void {
+  if (!value.includes('var('))
+    return
+  VAR_REFERENCE.lastIndex = 0
+  for (let matched = VAR_REFERENCE.exec(value); matched; matched = VAR_REFERENCE.exec(value))
+    into.add(unescapeIdent(matched[1]!))
+}
+
 function selectorOf(rule: CSSRule): string | null {
   const text = (rule as CSSStyleRule).selectorText
   return typeof text === 'string' ? text : null
@@ -278,8 +300,10 @@ function walkRule(rule: CSSRule, collector: Collector, classes: readonly string[
     if (declared.length) {
       // 没有选择器却带声明的（@font-face、关键帧、@page）一律按壳复现不出来处理。
       if (!inherited || selector === null) {
-        for (const name of declared)
+        for (const name of declared) {
           collector.names.add(name)
+          collectReferences(style.getPropertyValue(name), collector.references)
+        }
       }
       for (const name of nested)
         collector.classes.add(name)
@@ -298,6 +322,15 @@ function walkSheet(sheet: CSSStyleSheet, collector: Collector, classes: readonly
     // 跨域样式表读不到规则：名字集合不再是上界，class 集合同样不完整。
     collector.namesUsable = false
     collector.classesUsable = false
+    // 退化是全页性的且悄无声息：每台桥改走整表枚举，祖先上任何 class 变化都重算。
+    // 作者多半不知道某个第三方库往 <head> 里插了一张不带 crossorigin 的表，点名报出来
+    const owner = sheet.ownerNode
+    reportDiagnostic({
+      code: DIAGNOSTIC_CODES.portalUnreadableStylesheet,
+      level: 'warn',
+      message: `样式表 ${sheet.href ?? '(inline)'} 读不到规则：跨域且没以 CORS 加载，Portal 视觉桥退回整表枚举、祖先上任何 class 变化都让浮层重算。给它加 crossorigin 并让来源回 Access-Control-Allow-Origin 即可恢复`,
+      node: owner && owner.nodeType === ELEMENT_NODE ? owner as Element : undefined,
+    })
     return
   }
   walkRules(rules ?? undefined, collector, classes, reproducible)
@@ -340,6 +373,7 @@ export function portalVisualIndex(doc: Document, input: PortalVisualIndexInput):
 
   const collector: Collector = {
     names: new Set<string>(),
+    references: new Set<string>(),
     classes: new Set<string>(),
     reproduced: input.reproduced,
     rootIsHtml: doc.documentElement.localName === 'html',
@@ -351,6 +385,7 @@ export function portalVisualIndex(doc: Document, input: PortalVisualIndexInput):
 
   const index: PortalVisualIndex = {
     names: collector.namesUsable ? collector.names : null,
+    references: collector.namesUsable ? collector.references : null,
     classes: collector.namesUsable && collector.classesUsable ? collector.classes : null,
   }
   cache.set(doc, { signature, reproduced: input.reproduced, index })

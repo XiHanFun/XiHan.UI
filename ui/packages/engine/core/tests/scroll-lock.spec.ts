@@ -326,19 +326,34 @@ describe('acquireScrollLock epoch 与恢复', () => {
     expect(document.body.style.width).toBe('')
   })
 
-  it('几何差值为零时不触碰原 padding，只临时写 0px gutter', () => {
+  it('几何差值为零时不触碰原 padding，根上本无 gutter 变量也不写，免得白付两次整页样式重算', () => {
     const el = scrollableBox()
     emulatePriorities(el.style)
     fakeGeometry(el, { scrollHeight: 600, clientHeight: 600, clientWidth: 785, offsetWidth: 785 })
     el.style.setProperty('padding-inline-end', '8px', 'important')
+    const rootStyleWrites = vi.spyOn(document.documentElement.style, 'setProperty')
     const handle = lock(configFor(() => el))
 
     expect(el.style.getPropertyValue('padding-inline-end')).toBe('8px')
     expect(el.style.getPropertyPriority('padding-inline-end')).toBe('important')
-    expect(document.documentElement.style.getPropertyValue(GUTTER_VAR)).toBe('0px')
+    expect(document.documentElement.style.getPropertyValue(GUTTER_VAR)).toBe('')
     handle.dispose()
     expect(el.style.getPropertyValue('padding-inline-end')).toBe('8px')
     expect(document.documentElement.style.getPropertyValue(GUTTER_VAR)).toBe('')
+    expect(rootStyleWrites).not.toHaveBeenCalled()
+    rootStyleWrites.mockRestore()
+  })
+
+  it('几何差值为零但根上已有业务写的 gutter 时照常写成 0px，释放后还原', () => {
+    const el = scrollableBox()
+    fakeGeometry(el, { scrollHeight: 600, clientHeight: 600, clientWidth: 785, offsetWidth: 785 })
+    document.documentElement.style.setProperty(GUTTER_VAR, '7px')
+    const handle = lock(configFor(() => el))
+
+    expect(document.documentElement.style.getPropertyValue(GUTTER_VAR)).toBe('0px')
+    handle.dispose()
+    expect(document.documentElement.style.getPropertyValue(GUTTER_VAR)).toBe('7px')
+    document.documentElement.style.removeProperty(GUTTER_VAR)
   })
 
   it('强制滚动条即使内容未溢出也按页面与容器几何差值补偿', () => {
@@ -369,7 +384,7 @@ describe('acquireScrollLock epoch 与恢复', () => {
     const handle = lock(configFor(() => el))
 
     expect(el.style.paddingInlineEnd).toBe('8px')
-    expect(document.documentElement.style.getPropertyValue(GUTTER_VAR)).toBe('0px')
+    expect(document.documentElement.style.getPropertyValue(GUTTER_VAR)).toBe('')
     handle.dispose()
   })
 
