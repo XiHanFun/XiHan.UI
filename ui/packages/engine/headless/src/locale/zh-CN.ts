@@ -91,6 +91,8 @@ const translations = {
   'calendar-range-picker': rangeCalendar,
   'carousel': {
     root: '轮播',
+    rootRoleDescription: '轮播',
+    itemRoleDescription: '幻灯片',
     prevTrigger: '上一张',
     nextTrigger: '下一张',
     autoplayTriggerPlay: '开始自动播放',
@@ -478,6 +480,7 @@ const translations = {
   'sortable': {
     root: '可排序列表',
     itemDragTrigger: name => `调整 ${name} 的顺序`,
+    itemDragTriggerRoleDescription: '可排序项',
     picked: (name, position, total) => `已拿起 ${name}，位于第 ${position} 位，共 ${total} 位。用方向键移动，空格键放下，Esc 键取消。`,
     moved: (_name, position, total) => `已移到第 ${position} 位，共 ${total} 位。`,
     dropped: (name, position) => `${name} 已放在第 ${position} 位。`,
@@ -516,6 +519,7 @@ const translations = {
     sort: column => `按 ${column} 排序`,
     columnResize: column => `调整 ${column} 列宽`,
     columnDrag: column => `调整 ${column} 列的位置`,
+    columnDragRoleDescription: '可拖动的列',
     selectAll: '选择所有行',
     toolbar: '表格工具栏',
     columnList: '列设置',

@@ -91,6 +91,8 @@ const translations = {
   'calendar-range-picker': rangeCalendar,
   'carousel': {
     root: 'Carrusel',
+    rootRoleDescription: 'carrusel',
+    itemRoleDescription: 'diapositiva',
     prevTrigger: 'Diapositiva anterior',
     nextTrigger: 'Diapositiva siguiente',
     autoplayTriggerPlay: 'Iniciar la presentación automática',
@@ -478,6 +480,7 @@ const translations = {
   'sortable': {
     root: 'Lista ordenable',
     itemDragTrigger: name => `Reordenar ${name}`,
+    itemDragTriggerRoleDescription: 'elemento ordenable',
     picked: (name, position, total) => `Se ha levantado ${name}. Posición ${position} de ${total}. Usa las teclas de flecha para mover, Espacio para soltar y Escape para cancelar.`,
     moved: (_name, position, total) => `Se ha movido a la posición ${position} de ${total}.`,
     dropped: (name, position) => `Se ha soltado ${name} en la posición ${position}.`,
@@ -516,6 +519,7 @@ const translations = {
     sort: column => `Ordenar por ${column}`,
     columnResize: column => `Cambiar el tamaño de la columna ${column}`,
     columnDrag: column => `Reordenar la columna ${column}`,
+    columnDragRoleDescription: 'columna arrastrable',
     selectAll: 'Seleccionar todas las filas',
     toolbar: 'Barra de herramientas de la tabla',
     columnList: 'Configuración de columnas',

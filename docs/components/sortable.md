@@ -209,7 +209,7 @@
 | `item-drag-trigger` | `aria-disabled` | 'true' \| 'false' |
 | `item-drag-trigger` | `aria-label` | translations?.itemDragTrigger?.(name) |
 | `item-drag-trigger` | `aria-pressed` | 'true' \| 'false' |
-| `item-drag-trigger` | `aria-roledescription` | 'sortable' |
+| `item-drag-trigger` | `aria-roledescription` | translations?.itemDragTriggerRoleDescription |
 | `item-drag-trigger` | `role` | 'button' |
 | `drop-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |

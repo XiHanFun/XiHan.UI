@@ -93,6 +93,8 @@ export interface SortableTranslations {
   item: (id: string, position: number, total: number) => string
   /** 拖拽手柄的名字。 */
   itemDragTrigger: (name: string) => string
+  /** 拖拽手柄的角色说明（aria-roledescription）：告诉读屏这颗钮拖的是可排序的一项，默认 sortable。 */
+  itemDragTriggerRoleDescription: string
   /** 拾起时的播报。 */
   picked: (name: string, position: number, total: number) => string
   /** 移动一格后的播报。 */

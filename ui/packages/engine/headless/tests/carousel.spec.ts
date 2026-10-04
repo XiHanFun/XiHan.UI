@@ -716,6 +716,12 @@ describe('connectCarousel 属性', () => {
       expect(props['data-xh-action-size']).toBe(size)
   })
 
+  it('根与每一张的角色说明走 translations，换语言不再留下英文的 carousel / slide', () => {
+    const a = makeCarousel({ ...SIX, translations: { rootRoleDescription: '轮播', itemRoleDescription: '幻灯片' } }).api()
+    expect((a.getRootProps() as Dict)['aria-roledescription']).toBe('轮播')
+    expect((a.getItemProps({ index: 0 }) as Dict)['aria-roledescription']).toBe('幻灯片')
+  })
+
   it('条目自报"第几张 / 共几张"，只有当前页的那几张带 data-inview', () => {
     const a = makeCarousel({ slideCount: 6, slidesPerPage: 2, defaultPage: 1 }).api()
     const item = (i: number) => a.getItemProps({ index: i }) as Dict

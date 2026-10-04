@@ -91,6 +91,8 @@ const translations = {
   'calendar-range-picker': rangeCalendar,
   'carousel': {
     root: 'Carrousel',
+    rootRoleDescription: 'carrousel',
+    itemRoleDescription: 'diapositive',
     prevTrigger: 'Diapositive précédente',
     nextTrigger: 'Diapositive suivante',
     autoplayTriggerPlay: 'Démarrer le défilement automatique',
@@ -480,6 +482,7 @@ const translations = {
   'sortable': {
     root: 'Liste triable',
     itemDragTrigger: name => `Réorganiser ${name}`,
+    itemDragTriggerRoleDescription: 'élément triable',
     picked: (name, position, total) => `Élément saisi : ${name}. Position ${position} sur ${total}. Utilisez les touches fléchées pour déplacer, Espace pour déposer, Échap pour annuler.`,
     moved: (_name, position, total) => `Nouvelle position : ${position} sur ${total}.`,
     dropped: (name, position) => `Dépôt terminé : ${name} en position ${position}.`,
@@ -518,6 +521,7 @@ const translations = {
     sort: column => `Trier par ${column}`,
     columnResize: column => `Redimensionner la colonne ${column}`,
     columnDrag: column => `Réorganiser la colonne ${column}`,
+    columnDragRoleDescription: 'colonne déplaçable',
     selectAll: 'Sélectionner toutes les lignes',
     toolbar: 'Barre d’outils du tableau',
     columnList: 'Paramètres des colonnes',

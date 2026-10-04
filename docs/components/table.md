@@ -540,7 +540,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `column-resize-trigger` | `role` | 'separator' |
 | `column-drag-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `column-drag-trigger` | `aria-label` | label.columnDrag(def?.label ?? column.value) |
-| `column-drag-trigger` | `aria-roledescription` | 'draggable column' |
+| `column-drag-trigger` | `aria-roledescription` | label.columnDragRoleDescription |
 | `column-drag-trigger` | `role` | 'button' |
 | `row-drag-trigger` | `aria-hidden` | 'true' |
 | `expand-trigger` | `aria-hidden` | 'true' |

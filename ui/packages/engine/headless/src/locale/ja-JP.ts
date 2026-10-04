@@ -91,6 +91,8 @@ const translations = {
   'calendar-range-picker': rangeCalendar,
   'carousel': {
     root: 'カルーセル',
+    rootRoleDescription: 'カルーセル',
+    itemRoleDescription: 'スライド',
     prevTrigger: '前のスライド',
     nextTrigger: '次のスライド',
     autoplayTriggerPlay: 'スライドショーの自動再生を開始',
@@ -478,6 +480,7 @@ const translations = {
   'sortable': {
     root: '並べ替え可能なリスト',
     itemDragTrigger: name => `${name} を並べ替え`,
+    itemDragTriggerRoleDescription: '並べ替え可能な項目',
     picked: (name, position, total) => `${name} の移動を開始しました。${total} 個中 ${position} 番目です。矢印キーで移動、Space キーでドロップ、Esc キーでキャンセルします。`,
     moved: (_name, position, total) => `${total} 個中 ${position} 番目に移動しました。`,
     dropped: (name, position) => `${name} を ${position} 番目にドロップしました。`,
@@ -516,6 +519,7 @@ const translations = {
     sort: column => `${column} で並べ替え`,
     columnResize: column => `${column} 列の幅を変更`,
     columnDrag: column => `${column} 列の位置を変更`,
+    columnDragRoleDescription: 'ドラッグ可能な列',
     selectAll: 'すべての行を選択',
     toolbar: 'テーブルのツールバー',
     columnList: '列の設定',

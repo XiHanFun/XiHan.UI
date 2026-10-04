@@ -91,6 +91,8 @@ const translations = {
   'calendar-range-picker': rangeCalendar,
   'carousel': {
     root: 'Karussell',
+    rootRoleDescription: 'Karussell',
+    itemRoleDescription: 'Folie',
     prevTrigger: 'Vorherige Folie',
     nextTrigger: 'Nächste Folie',
     autoplayTriggerPlay: 'Automatische Wiedergabe starten',
@@ -480,6 +482,7 @@ const translations = {
   'sortable': {
     root: 'Sortierbare Liste',
     itemDragTrigger: name => `${name} neu anordnen`,
+    itemDragTriggerRoleDescription: 'sortierbares Element',
     picked: (name, position, total) => `${name} aufgenommen. Position ${position} von ${total}. Mit den Pfeiltasten verschieben, mit der Leertaste ablegen, mit Esc abbrechen.`,
     moved: (_name, position, total) => `An Position ${position} von ${total} verschoben.`,
     dropped: (name, position) => `${name} an Position ${position} abgelegt.`,
@@ -518,6 +521,7 @@ const translations = {
     sort: column => `Nach ${column} sortieren`,
     columnResize: column => `Breite der Spalte ${column} ändern`,
     columnDrag: column => `Spalte ${column} neu anordnen`,
+    columnDragRoleDescription: 'verschiebbare Spalte',
     selectAll: 'Alle Zeilen auswählen',
     toolbar: 'Tabellensymbolleiste',
     columnList: 'Spalteneinstellungen',

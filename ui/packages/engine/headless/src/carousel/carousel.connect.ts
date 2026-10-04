@@ -90,6 +90,8 @@ export function connectCarousel<T extends PropTypes>(
   const translations = prop('translations')
   const label = {
     root: translations?.root ?? 'Carousel',
+    rootRoleDescription: translations?.rootRoleDescription ?? 'carousel',
+    itemRoleDescription: translations?.itemRoleDescription ?? 'slide',
     prevTrigger: translations?.prevTrigger ?? 'Previous slide',
     nextTrigger: translations?.nextTrigger ?? 'Next slide',
     autoplayTriggerPlay: translations?.autoplayTriggerPlay ?? 'Start automatic slide show',
@@ -189,7 +191,7 @@ export function connectCarousel<T extends PropTypes>(
       // 机器按 id 找到它，按它所在的作用域判断减弱动效
       'id': scope.partId('carousel', 'root'),
       'role': 'region',
-      'aria-roledescription': 'carousel',
+      'aria-roledescription': label.rootRoleDescription,
       'aria-label': label.root,
       // 只在作者显式给了才写，写死 ltr 会切断从 RTL 祖先继承的方向
       'dir': dir,
@@ -277,7 +279,7 @@ export function connectCarousel<T extends PropTypes>(
       return normalize.element({
         ...parts.item.attrs,
         'role': 'group',
-        'aria-roledescription': 'slide',
+        'aria-roledescription': label.itemRoleDescription,
         'aria-label': label.item(index + 1, slideCount),
         'data-index': String(index),
         'data-orientation': orientation,

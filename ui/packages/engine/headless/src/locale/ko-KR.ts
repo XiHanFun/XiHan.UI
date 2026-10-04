@@ -91,6 +91,8 @@ const translations = {
   'calendar-range-picker': rangeCalendar,
   'carousel': {
     root: '캐러셀',
+    rootRoleDescription: '캐러셀',
+    itemRoleDescription: '슬라이드',
     prevTrigger: '이전 슬라이드',
     nextTrigger: '다음 슬라이드',
     autoplayTriggerPlay: '슬라이드 자동 재생 시작',
@@ -478,6 +480,7 @@ const translations = {
   'sortable': {
     root: '정렬 가능한 목록',
     itemDragTrigger: name => `${name} 순서 변경`,
+    itemDragTriggerRoleDescription: '정렬 가능한 항목',
     picked: (name, position, total) => `${name} 항목을 들어 올렸습니다. 총 ${total}개 중 ${position}번째 위치입니다. 화살표 키로 이동하고 Space 키로 놓거나 Esc 키로 취소하세요.`,
     moved: (_name, position, total) => `총 ${total}개 중 ${position}번째 위치로 이동했습니다.`,
     dropped: (name, position) => `${name} 항목을 ${position}번째 위치에 놓았습니다.`,
@@ -516,6 +519,7 @@ const translations = {
     sort: column => `${column} 기준 정렬`,
     columnResize: column => `${column} 열 크기 조정`,
     columnDrag: column => `${column} 열 순서 변경`,
+    columnDragRoleDescription: '드래그 가능한 열',
     selectAll: '모든 행 선택',
     toolbar: '표 도구 모음',
     columnList: '열 설정',
