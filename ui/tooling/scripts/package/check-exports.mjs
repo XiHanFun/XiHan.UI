@@ -9,7 +9,8 @@
 // 三个适配器各有各的「拿得到」：vue 与 react 是包级 index 的导出，wc 是自定义元素注册表。
 // react 正在按批次铺开，只核 react-coverage.json 登记为已铺的组件。
 import { readdir, readFile } from 'node:fs/promises'
-import { join, relative } from 'node:path'
+import { join, relative, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { ADAPTERS, reactCovered, reactProgress } from '../lib/adapters.mjs'
 
 const VUE_COMPONENTS = ADAPTERS.vue.components
@@ -20,7 +21,8 @@ const REACT_SRC = `${ADAPTERS.react.root}/src`
 const REACT_INDEX = `${ADAPTERS.react.root}/src/index.ts`
 const WC_ELEMENTS = ADAPTERS.wc.components
 const WC_DEFINE = `${ADAPTERS.wc.root}/src/define.ts`
-const HEADLESS_SRC = 'packages/engine/headless/src'
+const HEADLESS_ROOT = 'packages/engine/headless'
+const HEADLESS_SRC = `${HEADLESS_ROOT}/src`
 const HEADLESS_INDEX = 'packages/engine/headless/src/index.ts'
 
 /**
@@ -134,6 +136,8 @@ let vueCount = 0
 let reactCount = 0
 let wcCount = 0
 let headlessCount = 0
+/** 自成发布子入口、不必再经主入口导出的 headless 目录。 */
+const headlessSubEntries = []
 /** React 侧已经铺到的组件，没铺到的这轮不核。 */
 const covered = await reactCovered()
 
@@ -209,12 +213,23 @@ const covered = await reactCovered()
 }
 
 // 四、headless 子入口导出的名字必须在包级 index 再导一次
+//
+// 例外是自己就是发布子入口的目录（./locale → @xihan-ui/headless/locale）：包外经子路径拿得到，
+// 不必也不该再压进主入口。入口表取 tsdown.config.ts，与 gen-exports 回写 exports 是同一份真源
 {
   const index = parseReExports(await read(HEADLESS_INDEX))
+  const config = (await import(pathToFileURL(resolve(HEADLESS_ROOT, 'tsdown.config.ts')).href)).default
+  const published = new Set(Object.entries(config.entry ?? {})
+    .filter(([name]) => name !== 'index')
+    .map(([, source]) => posix(source)))
   for (const entry of await readdir(HEADLESS_SRC, { withFileTypes: true })) {
     if (!entry.isDirectory())
       continue
     const file = join(HEADLESS_SRC, entry.name, 'index.ts')
+    if (published.has(`src/${entry.name}/index.ts`)) {
+      headlessSubEntries.push(entry.name)
+      continue
+    }
     let source
     try {
       source = await read(file)
@@ -262,4 +277,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-exports] 通过：vue ${vueCount} 个部件、react ${reactCount} 个部件（${reactProgress(covered, await componentTotal())}，没铺到的不核）、wc ${wcCount} 个元素、headless ${headlessCount} 个名字都导出了（不对外 ${usedExempt.size} 个）`)
+console.log(`[check-exports] 通过：vue ${vueCount} 个部件、react ${reactCount} 个部件（${reactProgress(covered, await componentTotal())}，没铺到的不核）、wc ${wcCount} 个元素、headless ${headlessCount} 个名字都导出了（不对外 ${usedExempt.size} 个；自成子入口的目录 ${headlessSubEntries.length} 个：${headlessSubEntries.join('、') || '无'}）`)

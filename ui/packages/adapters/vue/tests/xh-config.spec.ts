@@ -5,6 +5,7 @@ import { getMotionOverride, setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick, ref } from 'vue'
 import { provideXhConfig, XhBadge, XhBreadcrumbRoot, XhButton, XhEmptyStateRoot, XhSpinner, XhTimestamp } from '../src'
+import { deDE, enUS, zhCN } from '../src/locale'
 
 let mounted: Array<() => void> = []
 
@@ -104,6 +105,22 @@ describe('provideXhConfig · translations', () => {
       return () => h(XhBreadcrumbRoot, { translations: { root: '路径' } }, () => '首页')
     })
     expect(host.querySelector('nav')?.getAttribute('aria-label')).toBe('路径')
+  })
+
+  it('内建语言包整份注入；ref 换成另一份时跟着切换', async () => {
+    const pack = ref<XhConfig>(zhCN)
+    const host = mount(() => {
+      provideXhConfig(pack)
+      return () => h(XhBreadcrumbRoot, () => '首页')
+    })
+    const label = (): string | null | undefined => host.querySelector('nav')?.getAttribute('aria-label')
+    expect(label()).toBe('面包屑')
+    pack.value = deDE
+    await nextTick()
+    expect(label()).toBe('Brotkrümelnavigation')
+    pack.value = enUS
+    await nextTick()
+    expect(label()).toBe('Breadcrumb')
   })
 
   it('全局值是 ref 时切换即重渲', async () => {

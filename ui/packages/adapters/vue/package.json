@@ -38,6 +38,10 @@
       "types": "./dist/behavior.d.ts",
       "import": "./dist/behavior.js"
     },
+    "./locale": {
+      "types": "./dist/locale.d.ts",
+      "import": "./dist/locale.js"
+    },
     "./sound": {
       "types": "./dist/sound.d.ts",
       "import": "./dist/sound.js"
