@@ -355,6 +355,7 @@ const translations = {
   },
   'hierarchy-chart': {
     ...chart,
+    chartRoleDescription: 'gráfico de árbol',
     datumLabel: (details) => {
       const head = `${details.seriesName}, ${details.formatted.value ?? ''}`
       return details.formatted.parentShare ? `${head}, ${details.formatted.parentShare} de ${details.formatted.parent ?? ''}` : head

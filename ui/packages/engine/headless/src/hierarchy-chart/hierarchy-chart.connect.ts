@@ -286,6 +286,8 @@ export function connectHierarchyChart<T extends PropTypes>(
       'data-xh-chart-part': 'plot',
       'id': ids.plot,
       'role': 'tree',
+      // 绘图区按树导航（方向键展开、收起），角色说明得留着「树」字，读屏才不会把操作提示一并盖掉
+      'aria-roledescription': translations.chartRoleDescription,
       'aria-labelledby': ids.caption,
       'aria-describedby': ids.summary,
       // 节点自己占 Tab 位，绘图区不占

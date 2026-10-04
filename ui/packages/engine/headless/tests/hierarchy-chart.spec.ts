@@ -367,6 +367,8 @@ describe('语义与着色', () => {
     const rig = await makeRig(BASE)
     const api = rig.api()
     expect((api.getPlotProps() as Dict).role).toBe('tree')
+    // 角色说明留着「树」：盖成笼统的「图表」，读屏就不再提示能按方向键展开
+    expect((api.getPlotProps() as Dict)['aria-roledescription']).toBe('tree chart')
     const south = api.getMarkProps(nodeOf(api, '华南')) as Dict
     expect([south.role, south['aria-level'], south['aria-setsize'], south['aria-posinset'], south['aria-expanded'], south.tabindex]).toEqual(['treeitem', 1, 3, 1, 'true', 0])
     expect(south['aria-label']).toBe('华南, 100, 50.0% of 全国')
@@ -445,5 +447,12 @@ describe('入场与无障碍', () => {
     rig.api().drillTo('华东')
     await settle()
     expect(rig.api().summary).toBe('华东: 2 items, total 80. Largest: 上海 50 (62.5%).')
+  })
+})
+
+describe('绘图区的角色说明走语言包', () => {
+  it('全局或实例换了 chartRoleDescription 就跟着换', async () => {
+    const rig = await makeRig({ ...BASE, translations: { chartRoleDescription: '树状图表' } })
+    expect((rig.api().getPlotProps() as Dict)['aria-roledescription']).toBe('树状图表')
   })
 })

@@ -28,7 +28,7 @@ const cases: readonly ConformanceCase[] = [
     initial: {
       counts: { 'node': 8, 'path-item': 1, 'tooltip': 1, 'summary': 1, 'table-region': 1, 'table': 1 },
       parts: {
-        plot: { role: 'tree' },
+        plot: { 'role': 'tree', 'aria-roledescription': 'tree chart' },
         node: [
           { 'role': 'treeitem', 'aria-label': 'South, 100, 50.0% of All', 'aria-level': '1', 'aria-setsize': '3', 'aria-posinset': '1', 'aria-expanded': 'true', 'tabindex': '0' },
           { 'aria-label': 'East, 80, 40.0% of All', 'aria-posinset': '2', 'tabindex': '-1' },
