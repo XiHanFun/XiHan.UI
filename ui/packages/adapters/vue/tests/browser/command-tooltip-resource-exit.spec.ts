@@ -75,7 +75,7 @@ describe.each(['command', 'tooltip'] as const)('vue %s 真实退场资源', (sco
     expect(getLayerRegistry(document).list()).toHaveLength(1)
     if (scope === 'command') {
       expect(document.body.style.overflow).toBe('hidden')
-      // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+      // 退场第一帧上屏后撤下背景失活、随即把焦点交回背景里的触发器；层与滚动锁留到退场结束
       expect(outside.inert).toBe(false)
     }
     const animations = [

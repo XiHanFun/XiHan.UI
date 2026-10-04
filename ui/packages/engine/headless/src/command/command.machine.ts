@@ -297,7 +297,7 @@ export const commandMachine = createMachine({
       trackOverlay: ({ refs, prop, scope, send, flush, state, track }) => {
         let reactivateFocus: (() => void) | null = null
         let returnFocusNow: (() => void) | null = null
-        let revealBackgroundNow: (() => void) | null = null
+        let revealBackgroundNow: ((then?: () => void) => void) | null = null
         return trackPresenceResources({
           presence: () => refs.get('presence'),
           open: () => state.get() === 'open',
@@ -383,11 +383,14 @@ export const commandMachine = createMachine({
               })
               syncModalResources()
             }, { registry: config.layerRegistry, flush })
-            // 关闭那一刻撤下背景失活并归还焦点：滚动锁留到退场播完，焦点不能跟着等
+            // 关闭时撤下背景失活并归还焦点：滚动锁留到退场播完，焦点不能跟着等。背景确实被失活了，
+            // 交接推迟到退场第一帧上屏之后（见 createModalLayerResources.reveal）
             return release && Object.assign(() => release(), {
               returnFocus: () => {
-                revealBackgroundNow?.()
-                returnFocusNow?.()
+                if (revealBackgroundNow)
+                  revealBackgroundNow(returnFocusNow ?? undefined)
+                else
+                  returnFocusNow?.()
               },
             })
           },

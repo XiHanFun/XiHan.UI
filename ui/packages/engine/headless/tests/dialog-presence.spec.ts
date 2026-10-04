@@ -51,11 +51,19 @@ async function flush(): Promise<void> {
   await new Promise(resolve => setTimeout(resolve, 0))
 }
 
+/** 等下一帧画出来之后：两层 requestAnimationFrame，与 afterNextPaint 同一口径 */
+async function afterPaint(): Promise<void> {
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+}
+
 describe('对话框行为与 Presence 共用退出生命周期', () => {
-  it('关闭立即失活内容并撤下背景失活，层与滚动锁保留至真实退出完成', async () => {
+  it('关闭立即失活内容，退场第一帧上屏后撤下背景失活，层与滚动锁保留至真实退出完成', async () => {
     const f = fixture()
     f.service.send({ type: 'OPEN' })
     await flush()
+    // 背景失活等浮层第一帧上屏之后才施加
+    expect(f.outside.inert).toBeFalsy()
+    await afterPaint()
     expect(f.outside.inert).toBeTruthy()
     expect(document.body.style.overflow).toBe('hidden')
     f.service.send({ type: 'CLOSE' })
@@ -65,7 +73,10 @@ describe('对话框行为与 Presence 共用退出生命周期', () => {
     f.presence.update(false)
     expect(f.presence.rendered).toBe(true)
     expect(f.config.layerRegistry.list()).toHaveLength(1)
-    // 焦点要在关闭那一刻回到背景里的触发器，背景不能还是 inert
+    // 撤 inert 要整棵背景重算样式：关闭这一拍不做，等退场第一帧上屏
+    expect(f.outside.inert).toBeTruthy()
+    await afterPaint()
+    // 焦点归还紧随其后，背景不能还是 inert
     expect(f.outside.inert).toBeFalsy()
     expect(document.body.style.overflow).toBe('hidden')
     f.leases[0]!.done()
@@ -79,6 +90,8 @@ describe('对话框行为与 Presence 共用退出生命周期', () => {
     const f = fixture()
     f.service.send({ type: 'OPEN' })
     await flush()
+    await afterPaint()
+    expect(f.outside.inert).toBeTruthy()
     f.service.send({ type: 'CLOSE' })
     f.presence.update(false)
     f.service.send({ type: 'OPEN' })
@@ -90,8 +103,8 @@ describe('对话框行为与 Presence 共用退出生命周期', () => {
     expect(f.config.layerRegistry.list()).toHaveLength(1)
     expect(f.completed).toEqual([])
     expect(connectDialog(f.service, normalizeProps).getContentProps().inert).toBeUndefined()
-    // 关闭时撤下的背景失活在重开时补回
-    await flush()
+    // 关闭时排期的交接在重开时作废：背景失活原样留着
+    await afterPaint()
     expect(f.outside.inert).toBeTruthy()
     f.service.send({ type: 'CLOSE' })
     f.presence.update(false)

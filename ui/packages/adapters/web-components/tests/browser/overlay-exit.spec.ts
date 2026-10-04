@@ -101,7 +101,7 @@ describe.each(['dialog', 'drawer'] as const)('wc %s 的行为资源退出合同'
     const action = content.querySelector('button')!
     action.focus()
     expect(document.activeElement).not.toBe(action)
-    // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+    // 退场第一帧上屏后撤下背景失活、随即把焦点交回背景里的触发器；层与滚动锁留到退场结束
     expect(outside.inert).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
     const animations = finite(content)
@@ -216,7 +216,7 @@ describe('wc image-viewer 的行为资源退出合同', () => {
     const content = part('image-viewer', 'content')!
     expect(content.inert).toBe(true)
     expect(content.getAttribute('aria-hidden')).toBe('true')
-    // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+    // 退场第一帧上屏后撤下背景失活、随即把焦点交回背景里的触发器；层与滚动锁留到退场结束
     expect(outside.inert).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
 

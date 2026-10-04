@@ -9,6 +9,8 @@ defineXhElements()
 
 async function settle(): Promise<void> {
   await Promise.resolve()
+  // 模态浮层的背景失活与关闭交接都排在「下一帧上屏之后」（两层 rAF），等两帧才落定
+  await new Promise(resolve => requestAnimationFrame(resolve))
   await new Promise(resolve => requestAnimationFrame(resolve))
   await Promise.resolve()
 }
@@ -66,7 +68,7 @@ describe('dialog 模态与非模态表面', () => {
     dialog.modal = true
     await settle()
     expect(part('backdrop').style.display).not.toBe('none')
-    expect(outside.inert).toBe(true)
+    await expect.poll(() => outside.inert).toBe(true)
     expect(document.body.style.overflow).toBe('hidden')
     expect(getLayerRegistry(document).top()?.isModal()).toBe(true)
     outside.focus()

@@ -37,6 +37,8 @@ async function settle(): Promise<void> {
   await inAct(async () => {
     for (let i = 0; i < 4; i++)
       await Promise.resolve()
+    // 模态浮层的背景失活与关闭交接都排在「下一帧上屏之后」（两层 rAF），等两帧才落定
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
     await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
   })
 }
@@ -104,7 +106,7 @@ describe.each(['command', 'tooltip'] as const)('react %s 真实退场资源', (s
     expect(getLayerRegistry(document).list()).toHaveLength(1)
     if (scope === 'command') {
       expect(document.body.style.overflow).toBe('hidden')
-      // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+      // 退场第一帧上屏后撤下背景失活、随即把焦点交回背景里的触发器；层与滚动锁留到退场结束
       expect(outside.inert).toBe(false)
     }
     const animations = [

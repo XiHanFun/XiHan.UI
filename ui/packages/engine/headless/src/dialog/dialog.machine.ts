@@ -217,7 +217,7 @@ export const dialogMachine = createMachine({
 
         let reactivateFocus: (() => void) | undefined
         let returnFocusNow: (() => void) | undefined
-        let revealBackgroundNow: (() => void) | undefined
+        let revealBackgroundNow: ((then?: () => void) => void) | undefined
         let resourcePolicy: string | undefined
         const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
           const role = prop('role') ?? 'dialog'
@@ -366,10 +366,13 @@ export const dialogMachine = createMachine({
             }
           }
           else {
-            // 关闭那一刻归还焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等
+            // 关闭时交接焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等。先撤下背景失活再归还——
+            // 背景确实被失活了，交接推迟到退场第一帧上屏之后（见 createModalLayerResources.reveal）
             if (closing) {
-              revealBackgroundNow?.()
-              returnFocusNow?.()
+              if (revealBackgroundNow)
+                revealBackgroundNow(returnFocusNow)
+              else
+                returnFocusNow?.()
             }
             if (!presence || !presence.rendered)
               finish()

@@ -78,7 +78,7 @@ function finiteAnimations(node: HTMLElement): Animation[] {
 }
 
 describe.each(['dialog', 'drawer'] as const)('%s 的行为资源退出合同', (scope) => {
-  it('等完内容全部有限动画和遮罩才释放层与滚动锁，内容当场失活、背景当场解除失活', async () => {
+  it('等完内容全部有限动画和遮罩才释放层与滚动锁，内容当场失活、退场第一帧上屏后背景解除失活', async () => {
     installLongExit(scope)
     const outside = document.createElement('button')
     document.body.append(outside)
@@ -102,6 +102,8 @@ describe.each(['dialog', 'drawer'] as const)('%s 的行为资源退出合同', (
           </XhDrawerRoot>
         ))
     await setOpen(false)
+    // 背景失活的撤下与焦点交接排在退场第一帧上屏之后（两层 rAF）
+    await new Promise(resolve => requestAnimationFrame(resolve))
     await new Promise(resolve => requestAnimationFrame(resolve))
     const content = part(scope, 'content')
     expect(content.inert).toBe(true)
@@ -111,7 +113,7 @@ describe.each(['dialog', 'drawer'] as const)('%s 的行为资源退出合同', (
     action.blur()
     action.focus()
     expect(document.activeElement).not.toBe(action)
-    // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+    // 退场第一帧上屏后撤下背景失活、随即把焦点交回背景里的触发器；层与滚动锁留到退场结束
     expect(outside.inert).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
     const animations = finiteAnimations(content)
@@ -451,11 +453,13 @@ describe('image-viewer 退场', () => {
     ))
 
     await setOpen(false)
+    // 背景失活的撤下与焦点交接排在退场第一帧上屏之后（两层 rAF）
+    await new Promise(resolve => requestAnimationFrame(resolve))
     await new Promise(resolve => requestAnimationFrame(resolve))
     const content = part('image-viewer', 'content')
     expect(content.inert).toBe(true)
     expect(content.getAttribute('aria-hidden')).toBe('true')
-    // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+    // 退场第一帧上屏后撤下背景失活、随即把焦点交回背景里的触发器；层与滚动锁留到退场结束
     expect(outside.inert).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
 
