@@ -138,9 +138,10 @@ export interface CartesianModelSource {
 export function cartesianModelOf(source: CartesianModelSource): CartesianModel {
   const { prop, context, refs, scope } = source
   const translations = cartesianTranslations(prop('translations'))
-  // 数据表的列名缺省取轴标题：键列取 x 轴，长表的数值列取 y 轴
-  const keyLabel = prop('translations')?.keyLabel ?? prop('xAxis')?.title ?? translations.keyLabel
-  const valueLabel = prop('translations')?.valueLabel ?? prop('yAxis')?.title ?? translations.valueLabel
+  // 数据表的列名先取轴标题：键列取 x 轴，长表的数值列取 y 轴。轴标题是这张图自己的内容，
+  // translations 的两条只在轴没写标题时顶上——全局语言包里的「类别」不能盖掉作者写的轴名
+  const keyLabel = prop('xAxis')?.title ?? translations.keyLabel
+  const valueLabel = prop('yAxis')?.title ?? translations.valueLabel
   const labelled = keyLabel !== translations.keyLabel || valueLabel !== translations.valueLabel
   return refs.get('pipeline')({
     data: prop('data'),

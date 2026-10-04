@@ -613,6 +613,13 @@ describe('无障碍', () => {
     expect(api.table.rows[2]!.cells.map(c => c.text)).toEqual(['三月', '150', 'No value'])
   })
 
+  it('轴标题优先于 translations 的列名：全局语言包里的 keyLabel 只在 x 轴没写标题时顶上', async () => {
+    const titled = (await makeRig({ ...BARS, xAxis: { title: '月份' }, translations: { keyLabel: '类别' } })).api()
+    expect(titled.table.columns[0]!.label).toBe('月份')
+    const untitled = (await makeRig({ ...BARS, translations: { keyLabel: '类别' } })).api()
+    expect(untitled.table.columns[0]!.label).toBe('类别')
+  })
+
   it('柱的可及名是「键, 系列 值」；绘图区描述指向摘要', async () => {
     const rig = await makeRig(BARS)
     const api = rig.api()

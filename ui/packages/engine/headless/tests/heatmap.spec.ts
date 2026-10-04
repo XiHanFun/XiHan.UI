@@ -1580,6 +1580,11 @@ describe('发散色阶与连续色阶', () => {
     expect(item['data-polarity']).toBe('negative')
   })
 
+  it('发散色阶两端恒写数值：translations 的 legendLow / legendHigh 只换顺序色阶两端的词', () => {
+    const api = apiOf(mountMatrix({ ...CORR, translations: { legendLow: '少', legendHigh: '多' } }).service)
+    expect(api.legendText).toEqual({ low: '-1', high: '1' })
+  })
+
   it('顺序色阶不写 data-scale', () => {
     const api = apiOf(mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE }).service)
     expect((api.getRootProps() as Record<string, unknown>)['data-scale']).toBeUndefined()

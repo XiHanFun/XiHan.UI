@@ -386,11 +386,11 @@ export interface CartesianTooltipModel {
 }
 
 export interface CartesianChartTranslations extends ChartTranslations {
-  /** 数据表第一列的列名，缺省取 x 轴标题。 */
+  /** 数据表第一列的列名。x 轴写了标题时取标题，这一条只在轴没有标题时使用。 */
   keyLabel: string
   /** 含散点时数据表改为每个数据一行：系列列的列名。 */
   seriesLabel: string
-  /** 含散点时数据表数值列的列名，缺省取 y 轴标题。 */
+  /** 含散点时数据表数值列的列名。y 轴写了标题时取标题，这一条只在轴没有标题时使用。 */
   valueLabel: string
   /** 气泡大小在数据表、提示框与可及名里的名字。 */
   sizeLabel: string
