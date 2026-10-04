@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 披露内容的挂卸判定：Collapsible 与 Accordion 共用同一条规则，适配器只负责按它挂卸节点。
+// 披露内容的挂卸判定：Collapsible、Accordion 与浮层（Dialog、Drawer）共用同一条规则，适配器只负责按它挂卸节点。
 
 export interface DisclosureContentMountInput {
   /** 第一次展开时才挂载。 */

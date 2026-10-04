@@ -14,6 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { OVERLAY_STOWED_PROPS } from '../../runtime/use-overlay-exit'
 import { provideDialog, useDialogContext } from './context'
 import { useDialog } from './use-dialog'
 
@@ -37,6 +38,8 @@ export const XhDialogRoot = /* @__PURE__ */ defineComponent({
     variant: { type: String as PropType<OverlayBackdropVariant> },
     /** 可拖动：按住标题栏或拖动把手挪走面板，方向键在把手上挪一步；面板始终夹在视口内。 */
     draggable: { type: Boolean, default: undefined },
+    /** 收起动画播完后卸载内容，默认 true；false 时第一次打开才挂载、此后收起只隐藏，再打开不重挂。 */
+    unmountOnExit: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<DialogProps['translations']> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
@@ -94,21 +97,24 @@ export const XhDialogContent = /* @__PURE__ */ defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useDialogContext()
     return () => {
-      if (!ctx.rendered.value)
-        return null
       const api = ctx.api.value
+      const shown = ctx.rendered.value
+      // 没打开过、或退场播完且要卸载时整棵不渲染
+      if (!api.isContentMounted(shown))
+        return null
       const backdrop = api.getBackdropProps() as Record<string, unknown>
-      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
-        !backdrop.hidden
+      // 收起后常驻（unmountOnExit 为 false）：遮罩不留，定位层以内联 display 收起，视觉桥随之断开
+      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value, present: shown }, () => [
+        shown && !backdrop.hidden
           ? h('div', {
               ...backdrop,
               ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
             })
           : null,
-        h('div', api.getPositionerProps() as Record<string, unknown>, [
+        h('div', mergeProps(api.getPositionerProps() as Record<string, unknown>, shown ? {} : OVERLAY_STOWED_PROPS), [
           h('div', {
             ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
-            hidden: !ctx.rendered.value || undefined,
+            hidden: !shown || undefined,
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
           }, slots.default?.()),
         ]),

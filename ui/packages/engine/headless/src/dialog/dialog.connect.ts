@@ -9,6 +9,7 @@ import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-u
 import type { DialogApi, DialogPressedPart, DialogSchema } from './dialog.types'
 import { createPressTracker, dataAttr, focusSafely } from '@xihan-ui/core'
 import { DIALOG_EN_US } from '../locale/en-US'
+import { disclosureContentMounted } from '../shared/disclosure-mount'
 import { resolveTranslations } from '../shared/translations'
 import { dialogAnatomy } from './dialog.anatomy'
 import { DIALOG_ARROW_DELTA, DIALOG_DRAG_LARGE_STEP, DIALOG_DRAG_STEP } from './dialog.gesture'
@@ -83,6 +84,13 @@ export function connectDialog<T extends PropTypes>(
     offset,
     dragging,
     setOpen,
+    // 浮层恒为懒挂载：第一次打开才有内容；收起之后卸不卸由 unmountOnExit 定，缺省卸
+    isContentMounted: present => disclosureContentMounted({
+      lazyMount: true,
+      unmountOnExit: prop('unmountOnExit') ?? true,
+      opened: context.get('opened'),
+      present,
+    }),
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,

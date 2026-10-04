@@ -11,6 +11,7 @@ import type { DrawerApi, DrawerSchema, DrawerSide } from './drawer.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { DRAWER_EN_US } from '../locale/en-US'
 import { RESIZABLE_LARGE_STEP, RESIZABLE_STEP } from '../resizable'
+import { disclosureContentMounted } from '../shared/disclosure-mount'
 import { resolveTranslations } from '../shared/translations'
 import { drawerAnatomy } from './drawer.anatomy'
 import { DRAWER_MIN_PANEL_SIZE } from './drawer.machine'
@@ -77,6 +78,13 @@ export function connectDrawer<T extends PropTypes>(
     panelSize,
     resizing,
     setOpen,
+    // 浮层恒为懒挂载：第一次打开才有内容；收起之后卸不卸由 unmountOnExit 定，缺省卸
+    isContentMounted: present => disclosureContentMounted({
+      lazyMount: true,
+      unmountOnExit: prop('unmountOnExit') ?? true,
+      opened: context.get('opened'),
+      present,
+    }),
     // root 留在页面原地（content 会被 portal 走），收起态也带 data-state / data-side
     getRootProps: () => normalize.element({
       ...parts.root.attrs,

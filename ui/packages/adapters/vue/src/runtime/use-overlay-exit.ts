@@ -20,6 +20,12 @@ import { getCurrentInstance, isRef, onBeforeUnmount, onMounted, ref, toValue, wa
 // 所有带退场的部件共用这一件：dialog / drawer / command / image-viewer 的遮罩经 additionalExitRefs
 // 一并计入，轻提示与通知卡片也经它把 Presence 交给机器。
 
+/**
+ * 退场播完却不卸载的浮层（unmountOnExit 为 false）收起定位层用的属性。
+ * 皮肤给定位层声明过 display，UA 的 [hidden]{display:none} 压不住，只能写内联。
+ */
+export const OVERLAY_STOWED_PROPS = { style: { display: 'none' } } as const
+
 export interface OverlayExitOptions {
   /**
    * 运行时配置，只用来区分有没有 DOM：服务端没有退场可言，传 null 即退化为可见与否跟随展开态。

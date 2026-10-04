@@ -65,6 +65,12 @@ export interface DrawerSchema extends Omit<DialogSchema, 'props' | 'context' | '
     size?: Size
     /** 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 */
     variant?: OverlayBackdropVariant
+    /**
+     * 收起动画播完后卸载内容，默认 true。内容总是第一次打开才挂载；设为 false 时此后收起只隐藏、不卸载，
+     * 再打开不重挂：内容里的组件状态、输入与滚动位置都留着，重开也不再付一遍挂载开销。
+     * 适合反复开合、内容又重（设置面板、长表单）的抽屉。
+     */
+    unmountOnExit?: boolean
     translations?: Partial<DrawerTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: DrawerOpenChangeDetails) => void
@@ -127,4 +133,9 @@ export interface DrawerApi<T extends PropTypes = PropTypes> {
   getCloseTriggerProps: () => T['button']
   /** 改尺把手：role=separator，落在朝向页面的那条边上；没开 resizable 时带 hidden。 */
   getResizeTriggerProps: () => T['element']
+  /**
+   * 浮层此刻该不该挂载。`present` 是适配器的退场闸门：打开中或收起动画还没播完为真。
+   * 没打开过恒为假；unmountOnExit 为 false 时打开过之后恒为真，闸门落下的那段由适配器隐藏而不卸载。
+   */
+  isContentMounted: (present: boolean) => boolean
 }

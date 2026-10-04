@@ -13,6 +13,7 @@ import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta } from '@xihan-
 import { resolveXhConfig } from '../config'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -54,6 +55,7 @@ const NUMBER_CONVERTER = {
  * @attr {number} default-panel-size - 非受控的初始厚度（像素）；不给即按 size 档
  * @attr {number} min-panel-size - 厚度下限（像素），默认 160
  * @attr {number} max-panel-size - 厚度上限（像素）；不给时只受视口（或所在容器）限制
+ * @attr {boolean} unmount-on-exit - 收起动画播完后卸掉 content 里 `<template>` 克隆出的内容，默认 true；写 "false" 时第一次打开克隆、此后常驻。没写模板的作者节点始终常驻
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires exit-complete - 退出完成且本层资源已释放
  * @fires panel-size-change - 厚度变化意图；detail 为 `{ panelSize: number }`
@@ -94,6 +96,7 @@ export class XhDrawerElement extends XhPortalHostElement {
     defaultPanelSize: { converter: NUMBER_CONVERTER, attribute: 'default-panel-size' },
     minPanelSize: { converter: NUMBER_CONVERTER, attribute: 'min-panel-size' },
     maxPanelSize: { converter: NUMBER_CONVERTER, attribute: 'max-panel-size' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }
@@ -113,6 +116,7 @@ export class XhDrawerElement extends XhPortalHostElement {
   declare defaultPanelSize?: number
   declare minPanelSize?: number
   declare maxPanelSize?: number
+  declare unmountOnExit?: boolean
   declare translations?: DrawerSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -122,6 +126,7 @@ export class XhDrawerElement extends XhPortalHostElement {
   private contentNode: HTMLElement | null = null
   private exit: OverlayExit | null = null
   private backdropNode: HTMLElement | null = null
+  private readonly lazyContent = new LazyContent({ stash: false })
   private readonly portal = this.createPortalLeaseController({
     name: 'Drawer 视口模态',
     config: () => this.config,
@@ -158,6 +163,7 @@ export class XhDrawerElement extends XhPortalHostElement {
       size: this.size,
       variant: this.variant,
       translations: this.translations,
+      unmountOnExit: this.unmountOnExit,
       resizable: this.resizable,
       panelSize: this.panelSize,
       defaultPanelSize: this.defaultPanelSize,
@@ -262,6 +268,9 @@ export class XhDrawerElement extends XhPortalHostElement {
       this.setPartHidden(this.backdropNode, !visible || !modal)
     // positioner 不是必需部件，content 自己也要收起
     this.setPartHidden(this.contentNode, !visible)
+
+    // 写在 content 里 <template> 中的内容按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    this.lazyContent.sync(this.contentNode, api.isContentMounted(visible))
   }
 
   override disconnectedCallback(): void {

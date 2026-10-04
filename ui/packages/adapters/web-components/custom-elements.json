@@ -22446,6 +22446,15 @@
             },
             {
               "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -22503,6 +22512,13 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "lazyContent",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LazyContent({ stash: false })"
             },
             {
               "kind": "field",
@@ -22702,6 +22718,14 @@
               "description": "可拖动：按住标题栏或拖动把手挪走面板，方向键在把手上挪一步；面板始终夹在视口内。不命名为 draggable：那是 HTML 全局属性，写上后宿主会变成原生拖放源",
               "name": "panel-draggable",
               "fieldName": "panelDraggable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起动画播完后卸掉 content 里 `<template>` 克隆出的内容，默认 true；写 \"false\" 时第一次打开克隆、此后常驻。没写模板的作者节点始终常驻",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
             }
           ],
           "superclass": {
@@ -23930,6 +23954,15 @@
             },
             {
               "kind": "field",
+              "name": "unmountOnExit",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "unmount-on-exit"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -23986,6 +24019,13 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "lazyContent",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LazyContent({ stash: false })"
             },
             {
               "kind": "field",
@@ -24240,6 +24280,14 @@
               "description": "厚度上限（像素）；不给时只受视口（或所在容器）限制",
               "name": "max-panel-size",
               "fieldName": "maxPanelSize"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收起动画播完后卸掉 content 里 `<template>` 克隆出的内容，默认 true；写 \"false\" 时第一次打开克隆、此后常驻。没写模板的作者节点始终常驻",
+              "name": "unmount-on-exit",
+              "fieldName": "unmountOnExit"
             }
           ],
           "superclass": {

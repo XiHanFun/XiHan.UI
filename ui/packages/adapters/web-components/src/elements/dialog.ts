@@ -13,6 +13,7 @@ import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta } from '@xihan-
 import { resolveXhConfig } from '../config'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -36,6 +37,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'sm'|'md'|'lg'} size - 尺寸：只影响 content 的最大宽度，写在 content 上
  * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
  * @attr {boolean} panel-draggable - 可拖动：按住标题栏或拖动把手挪走面板，方向键在把手上挪一步；面板始终夹在视口内。不命名为 draggable：那是 HTML 全局属性，写上后宿主会变成原生拖放源
+ * @attr {boolean} unmount-on-exit - 收起动画播完后卸掉 content 里 `<template>` 克隆出的内容，默认 true；写 "false" 时第一次打开克隆、此后常驻。没写模板的作者节点始终常驻
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires exit-complete - 退出完成且本层资源已释放
  * @csspart trigger - 触发按钮
@@ -69,6 +71,7 @@ export class XhDialogElement extends XhPortalHostElement {
     variant: { converter: STRING_CONVERTER },
     // 与浮动面板同一个名字：避开原生的 draggable，那是 HTML 全局枚举属性，同名的响应式字段还会与 HTMLElement.draggable 访问器打架
     panelDraggable: { converter: BOOLEAN_CONVERTER, attribute: 'panel-draggable' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     // 对象进不了属性，只作为 property 暴露
     translations: { attribute: false },
   }
@@ -82,6 +85,7 @@ export class XhDialogElement extends XhPortalHostElement {
   declare size?: Size
   declare variant?: OverlayBackdropVariant
   declare panelDraggable?: boolean
+  declare unmountOnExit?: boolean
   /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上的值会被覆盖，只能从此处提供。 */
   declare translations?: DialogSchema['props']['translations']
 
@@ -92,6 +96,7 @@ export class XhDialogElement extends XhPortalHostElement {
   private contentNode: HTMLElement | null = null
   private exit: OverlayExit | null = null
   private backdropNode: HTMLElement | null = null
+  private readonly lazyContent = new LazyContent({ stash: false })
   private readonly portal = this.createPortalLeaseController({
     name: 'Dialog 视口模态',
     config: () => this.config,
@@ -126,6 +131,7 @@ export class XhDialogElement extends XhPortalHostElement {
       size: this.size,
       variant: this.variant,
       draggable: this.panelDraggable,
+      unmountOnExit: this.unmountOnExit,
       translations: this.translations,
       onOpenChange: this.notify,
       onExitComplete: () => this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true })),
@@ -225,6 +231,9 @@ export class XhDialogElement extends XhPortalHostElement {
       this.setPartHidden(this.backdropNode, !visible || !modal)
     // positioner 不是必需部件，content 自己也要收起
     this.setPartHidden(this.contentNode, !visible)
+
+    // 写在 content 里 <template> 中的内容按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
+    this.lazyContent.sync(this.contentNode, api.isContentMounted(visible))
   }
 
   override disconnectedCallback(): void {
