@@ -14,6 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { OVERLAY_STOWED_PROPS } from '../../runtime/use-overlay-exit'
 import { provideDrawer, useDrawerContext } from './context'
 import { useDrawer } from './use-drawer'
 
@@ -56,6 +57,8 @@ export const XhDrawerRoot = defineComponent({
     defaultPanelSize: { type: Number },
     minPanelSize: { type: Number },
     maxPanelSize: { type: Number },
+    /** 收起动画播完后卸载内容，默认 true；false 时第一次打开才挂载、此后收起只隐藏，再打开不重挂。 */
+    unmountOnExit: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<DrawerProps['translations']> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔；panel-size-change 携带 { panelSize }
@@ -122,22 +125,24 @@ export const XhDrawerContent = defineComponent({
   setup(_, { slots, attrs }) {
     const ctx = useDrawerContext()
     return () => {
-      // presence 判定不在场则整棵不渲染，退场动画播完才翻假
-      if (!ctx.rendered.value)
-        return null
       const api = ctx.api.value
+      // presence 判定不在场即退场动画播完；没打开过、或播完且要卸载时整棵不渲染
+      const shown = ctx.rendered.value
+      if (!api.isContentMounted(shown))
+        return null
       const backdrop = api.getBackdropProps() as Record<string, unknown>
-      return h(XhPortal, { to: ctx.portalTarget.value }, () => [
-        !backdrop.hidden
+      // 收起后常驻（unmountOnExit 为 false）：遮罩不留，定位层以内联 display 收起，视觉桥随之断开
+      return h(XhPortal, { to: ctx.portalTarget.value, present: shown }, () => [
+        shown && !backdrop.hidden
           ? h('div', {
               ...backdrop,
               ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
             })
           : null,
-        h('div', api.getPositionerProps() as Record<string, unknown>, [
+        h('div', mergeProps(api.getPositionerProps() as Record<string, unknown>, shown ? {} : OVERLAY_STOWED_PROPS), [
           h('div', {
             ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
-            hidden: !ctx.rendered.value || undefined,
+            hidden: !shown || undefined,
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
           }, slots.default?.()),
         ]),

@@ -69,6 +69,27 @@ describe('drawerMachine 状态转移', () => {
   })
 })
 
+describe('connectDrawer 内容挂卸', () => {
+  it('缺省：没打开过不挂，闸门落下就卸', () => {
+    const s = makeService()
+    const api = () => connectDrawer(s, normalizeProps)
+    expect(api().isContentMounted(false)).toBe(false)
+    s.send({ type: 'OPEN' })
+    expect(api().isContentMounted(true)).toBe(true)
+    s.send({ type: 'CLOSE' })
+    expect(api().isContentMounted(false)).toBe(false)
+  })
+
+  it('unmountOnExit 为 false：与对话框共用的机器记下打开过，此后收起也挂着', () => {
+    const s = makeService({ unmountOnExit: false })
+    const api = () => connectDrawer(s, normalizeProps)
+    expect(api().isContentMounted(false)).toBe(false)
+    s.send({ type: 'OPEN' })
+    s.send({ type: 'CLOSE' })
+    expect(api().isContentMounted(false)).toBe(true)
+  })
+})
+
 describe('connectDrawer 属性输出', () => {
   it('side 缺省为 right，root 与 content 都带 data-side', () => {
     const api = connectDrawer(makeService(), normalizeProps)

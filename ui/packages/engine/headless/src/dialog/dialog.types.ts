@@ -121,6 +121,12 @@ export interface DialogSchema extends MachineSchema {
      * 键盘在 drag-trigger 上用方向键挪；面板始终夹在视口内。默认 false。每次打开都从居中落点起。
      */
     draggable?: boolean
+    /**
+     * 收起动画播完后卸载内容，默认 true。内容总是第一次打开才挂载；设为 false 时此后收起只隐藏、不卸载，
+     * 再打开不重挂：内容里的组件状态、输入与滚动位置都留着，重开也不再付一遍挂载开销。
+     * 适合反复开合、内容又重（设置面板、长表单）的浮层。
+     */
+    unmountOnExit?: boolean
     translations?: Partial<DialogTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: DialogOpenChangeDetails) => void
@@ -142,6 +148,8 @@ export interface DialogSchema extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
+    /** 挂载之后打开过没有（含首帧即打开）。内容从第一次打开起才挂载，unmountOnExit 为 false 时此后一直挂着。 */
+    opened: boolean
   }
   computed: Record<string, never>
   refs: DialogRefs
@@ -168,7 +176,7 @@ export interface DialogSchema extends MachineSchema {
     | { type: 'GESTURE.END' }
   tag: never
   guard: 'isOpenControlled' | 'canDrag'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress' | 'clearOpenedAtMount'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress' | 'clearOpenedAtMount' | 'markOpened'
     | 'startDrag' | 'nudgeDrag' | 'resetOffset' | 'moveGesture' | 'endGesture'
   effect: 'trackOverlay' | 'trackGesture'
 }
@@ -193,4 +201,9 @@ export interface DialogApi<T extends PropTypes = PropTypes> {
   getBodyProps: () => T['element']
   getFooterProps: () => T['element']
   getCloseTriggerProps: () => T['button']
+  /**
+   * 浮层此刻该不该挂载。`present` 是适配器的退场闸门：打开中或收起动画还没播完为真。
+   * 没打开过恒为假；unmountOnExit 为 false 时打开过之后恒为真，闸门落下的那段由适配器隐藏而不卸载。
+   */
+  isContentMounted: (present: boolean) => boolean
 }

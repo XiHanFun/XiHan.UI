@@ -16,6 +16,7 @@ import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { OVERLAY_STOWED_PROPS } from '../../runtime/use-overlay-exit'
 import { DrawerProvider, useDrawerContext } from './context'
 import { useDrawer } from './use-drawer'
 
@@ -53,6 +54,8 @@ export interface XhDrawerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'c
   defaultPanelSize?: number
   minPanelSize?: number
   maxPanelSize?: number
+  /** 收起动画播完后卸载内容，默认 true；false 时第一次打开才挂载、此后收起只隐藏，再打开不重挂。 */
+  unmountOnExit?: boolean
   translations?: DrawerProps['translations']
   onOpenChange?: DrawerProps['onOpenChange']
   onExitComplete?: DrawerProps['onExitComplete']
@@ -78,6 +81,7 @@ export function XhDrawerRoot({
   defaultPanelSize,
   minPanelSize,
   maxPanelSize,
+  unmountOnExit,
   translations,
   onOpenChange,
   onExitComplete,
@@ -103,6 +107,7 @@ export function XhDrawerRoot({
     defaultPanelSize,
     minPanelSize,
     maxPanelSize,
+    unmountOnExit,
     translations,
     onOpenChange,
     onExitComplete,
@@ -136,14 +141,16 @@ export interface XhDrawerContentProps extends ComponentPropsWithRef<'div'> {}
 
 export function XhDrawerContent({ children, ...rest }: XhDrawerContentProps): ReactNode {
   const ctx = useDrawerContext()
-  // 退场动画播完才翻假，翻假之后整棵不渲染
-  if (!ctx.rendered)
-    return null
   const api = ctx.api
+  // 退场动画播完才翻假；没打开过、或播完且要卸载时整棵不渲染
+  const shown = ctx.rendered
+  if (!api.isContentMounted(shown))
+    return null
   const backdrop = api.getBackdropProps() as Record<string, unknown>
+  // 收起后常驻（unmountOnExit 为 false）：遮罩不留，定位层以内联 display 收起，视觉桥随之断开
   return (
-    <XhPortal container={ctx.portalContainer}>
-      {!backdrop.hidden
+    <XhPortal container={ctx.portalContainer} present={shown}>
+      {shown && !backdrop.hidden
         ? (
             <div
               {...backdrop}
@@ -151,10 +158,10 @@ export function XhDrawerContent({ children, ...rest }: XhDrawerContentProps): Re
             />
           )
         : null}
-      <div {...api.getPositionerProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getPositionerProps() as Record<string, unknown>, shown ? {} : OVERLAY_STOWED_PROPS)}>
         <div
           {...mergeReactProps(api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}
-          hidden={!ctx.rendered || undefined}
+          hidden={!shown || undefined}
           ref={(el: HTMLDivElement | null) => { ctx.contentRef.current = el }}
         >
           {children}

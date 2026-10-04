@@ -34,6 +34,48 @@ describe('dialogMachine', () => {
   })
 })
 
+describe('connectDialog 内容挂卸', () => {
+  it('缺省：没打开过不挂，打开即挂，收起动画播放期间仍挂着、闸门落下就卸', () => {
+    const s = makeService()
+    const api = () => connectDialog(s, normalizeProps)
+    expect(api().isContentMounted(false)).toBe(false)
+    s.send({ type: 'OPEN' })
+    expect(api().isContentMounted(true)).toBe(true)
+    s.send({ type: 'CLOSE' })
+    expect(api().isContentMounted(true)).toBe(true)
+    expect(api().isContentMounted(false)).toBe(false)
+    s.send({ type: 'OPEN' })
+    expect(api().isContentMounted(true)).toBe(true)
+  })
+
+  it('unmountOnExit 为 false：第一次打开才挂，此后闸门落下也一直挂着', () => {
+    const s = makeService({ unmountOnExit: false })
+    const api = () => connectDialog(s, normalizeProps)
+    expect(api().isContentMounted(false)).toBe(false)
+    s.send({ type: 'OPEN' })
+    s.send({ type: 'CLOSE' })
+    expect(api().isContentMounted(false)).toBe(true)
+  })
+
+  it('首帧即打开就算打开过', () => {
+    const s = makeService({ defaultOpen: true, unmountOnExit: false })
+    s.send({ type: 'CLOSE' })
+    expect(connectDialog(s, normalizeProps).isContentMounted(false)).toBe(true)
+  })
+
+  it('受控：只发出打开意图不算打开过，宿主写回打开才算', () => {
+    const runtime = createVanillaRuntime()
+    const open = runtime.signal(false)
+    const service = createService(dialogMachine, { props: () => ({ open: open.get(), unmountOnExit: false }), runtime })
+    runtime.start()
+    service.send({ type: 'OPEN' })
+    expect(connectDialog(service, normalizeProps).isContentMounted(false)).toBe(false)
+    open.set(true)
+    open.set(false)
+    expect(connectDialog(service, normalizeProps).isContentMounted(false)).toBe(true)
+  })
+})
+
 describe('connectDialog', () => {
   it('content 的 role / aria-modal / aria-labelledby / data-state', () => {
     const s = makeService()

@@ -38,6 +38,8 @@ export const dialogMachine = createMachine({
     offset: cell<DialogOffset>(() => ({ defaultValue: HOME })),
     gesture: cell<DialogGesture | null>(() => ({ defaultValue: null })),
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
+    // 首帧即打开也算打开过：内容照常首屏就在
+    opened: cell<boolean>(() => ({ defaultValue: openAtMount(prop) })),
   }),
   refs: () => ({
     config: null,
@@ -84,7 +86,7 @@ export const dialogMachine = createMachine({
     },
     open: {
       // 每次打开都是一块新面板：拖动位移从居中落点起
-      entry: ['resetOffset'],
+      entry: ['resetOffset', 'markOpened'],
       // 收起即松开：按住 Enter 关掉面板，里面那颗关闭钮随内容一起藏起，不会再来 keyup 或 blur；
       // 拖到一半收起，手势一并收尾
       exit: ['releasePress', 'endGesture'],
@@ -190,6 +192,10 @@ export const dialogMachine = createMachine({
           context.set('gesture', null)
       },
       clearOpenedAtMount,
+      markOpened: ({ context }) => {
+        if (!context.get('opened'))
+          context.set('opened', true)
+      },
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
