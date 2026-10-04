@@ -139,9 +139,9 @@ export interface HeatmapTranslations {
   matrixCellLabel: (details: HeatmapCellDetails) => string
   /** 对照条整体的可及名：一排色块无法自行表达用途。 */
   legendLabel: string
-  /** 对照条起点一端的可见文字，默认 Less；发散色阶下默认是中点减去两侧最远距离的那个数。 */
+  /** 顺序色阶对照条起点一端的可见文字，默认 Less。发散色阶两端恒写数值（中点减去两侧最远距离），不读这一条。 */
   legendLow: string
-  /** 对照条终点一端的可见文字，默认 More；发散色阶下默认是中点加上两侧最远距离的那个数。 */
+  /** 顺序色阶对照条终点一端的可见文字，默认 More。发散色阶两端恒写数值（中点加上两侧最远距离），不读这一条。 */
   legendHigh: string
 }
 

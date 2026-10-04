@@ -39,7 +39,7 @@ export const HEATMAP_FIRST_DAY_OF_WEEK = 1
 
 /**
  * 色阶对照条两端的缺省文字。它是写进界面的可见文本，与其余内建文案同一口径写英文，
- * 换语言经 translations 的 legendLow / legendHigh。
+ * 换语言经 translations 的 legendLow / legendHigh；发散色阶两端写数值，不用这两个词。
  */
 export const HEATMAP_LEGEND_TEXT: { low: string, high: string } = { low: 'Less', high: 'More' }
 

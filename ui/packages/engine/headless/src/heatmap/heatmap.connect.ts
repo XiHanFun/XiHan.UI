@@ -127,10 +127,11 @@ export function connectHeatmap<T extends PropTypes>(
     ?? ((details: HeatmapCellDetails) => `${details.count} at ${details.row} ${details.column}`)
   const legendLabel = translations?.legendLabel ?? 'Activity level'
   // 对照条两端是写进界面的可见文字，缺省跟着月份名、星期名那条 locale 的缺省走。
-  // 发散色阶两端各代表中点两侧最远的那个数，「少 / 多」说不清哪端是负，缺省改写两端的数值
+  // 发散色阶两端各代表中点两侧最远的那个数，「少 / 多」说不清哪端是负，两端恒写数值；
+  // legendLow / legendHigh 只换顺序色阶两端的词，全局语言包里的「少 / 多」因此落不到发散色阶上
   const bound = (value: number): string => new Intl.NumberFormat(options.locale, { maximumFractionDigits: 2 }).format(value)
-  const legendLow = translations?.legendLow ?? (diverging ? bound(scale.midpoint - scale.extent) : HEATMAP_LEGEND_TEXT.low)
-  const legendHigh = translations?.legendHigh ?? (diverging ? bound(scale.midpoint + scale.extent) : HEATMAP_LEGEND_TEXT.high)
+  const legendLow = diverging ? bound(scale.midpoint - scale.extent) : (translations?.legendLow ?? HEATMAP_LEGEND_TEXT.low)
+  const legendHigh = diverging ? bound(scale.midpoint + scale.extent) : (translations?.legendHigh ?? HEATMAP_LEGEND_TEXT.high)
 
   const monthOf = new Map(grid.months.map(month => [month.value, month]))
   const monthBlockOf = new Map((monthGrid?.blocks ?? []).map(block => [block.value, block]))
