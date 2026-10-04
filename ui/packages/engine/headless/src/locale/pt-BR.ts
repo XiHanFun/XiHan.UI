@@ -74,7 +74,7 @@ const tagged = {
   overflowTag: (count: number) => `+${count}`,
 }
 
-const segments = { hour: 'hora', minute: 'minuto', second: 'segundo', dayPeriod: 'AM/PM' }
+const segments = { hour: 'hora', minute: 'minuto', second: 'segundo', dayPeriod: 'manhã/tarde' }
 
 const calendar = { todayDate: (date: string) => `Hoje, ${date}` }
 
