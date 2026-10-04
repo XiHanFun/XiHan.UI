@@ -31,6 +31,11 @@ async function tick(): Promise<void> {
   await nextTick()
 }
 
+/** 背景失活等浮层第一帧上屏之后才施加：两层 requestAnimationFrame，与 headless 的 afterNextPaint 同一口径 */
+async function afterPaint(): Promise<void> {
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+}
+
 /** 找到包住指定标题文本的那个 positioner。 */
 function positionerOf(scope: string, title: string): HTMLElement {
   const all = Array.from(document.querySelectorAll<HTMLElement>(`[data-scope="${scope}"][data-part="positioner"]`))
@@ -103,9 +108,11 @@ describe.each(['dialog', 'drawer'] as const)('%s 套自己', (kind) => {
     const m = mountNested(kind)
     try {
       await tick()
+      await afterPaint()
       expect(inertOf(m.background)).toBe(true)
 
       await m.openInner()
+      await afterPaint()
       const inner = positionerOf(kind, '乙层')
       const outer = positionerOf(kind, '甲层')
 

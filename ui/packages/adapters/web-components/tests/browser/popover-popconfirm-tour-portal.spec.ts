@@ -19,6 +19,8 @@ async function settle(): Promise<void> {
     for (const element of document.querySelectorAll<OverlayElement>('xh-popover, xh-popconfirm, xh-tour'))
       await element.updateComplete
   }
+  // 模态浮层的背景失活与关闭交接都排在「下一帧上屏之后」（两层 rAF），等两帧才落定
+  await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
   await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
 }
 

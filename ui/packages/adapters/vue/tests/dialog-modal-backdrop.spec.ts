@@ -30,6 +30,11 @@ async function tick(): Promise<void> {
   await nextTick()
 }
 
+/** 背景失活等浮层第一帧上屏之后才施加：两层 requestAnimationFrame，与 headless 的 afterNextPaint 同一口径 */
+async function afterPaint(): Promise<void> {
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+}
+
 function mountDialog(opts: { defaultOpen?: boolean, controlled?: boolean } = {}): Mounted {
   const background = document.createElement('div')
   background.id = 'background'
@@ -100,6 +105,7 @@ describe('模态 dialog 打开后背景失活', () => {
     try {
       await m.open(true)
       expect(document.querySelector('[data-part="content"]')?.getAttribute('data-state')).toBe('open')
+      await afterPaint()
       expect(inertOf(m.background)).toBe(true)
     }
     finally {
@@ -111,6 +117,7 @@ describe('模态 dialog 打开后背景失活', () => {
     const m = mountDialog({ defaultOpen: true })
     try {
       await tick()
+      await afterPaint()
       expect(inertOf(m.background)).toBe(true)
     }
     finally {
@@ -122,6 +129,7 @@ describe('模态 dialog 打开后背景失活', () => {
     const m = mountDialog({ controlled: true })
     try {
       await m.open(true)
+      await afterPaint()
       expect(inertOf(m.background)).toBe(true)
     }
     finally {
@@ -137,6 +145,7 @@ describe('模态 dialog 打开后背景失活', () => {
       // 关上之后要还回去，否则背景永远读不到了
       expect(inertOf(m.background)).toBe(false)
       await m.open(true)
+      await afterPaint()
       expect(inertOf(m.background)).toBe(true)
     }
     finally {

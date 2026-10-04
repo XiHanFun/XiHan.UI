@@ -41,6 +41,11 @@ async function tick(): Promise<void> {
   await nextTick()
 }
 
+/** 背景失活等浮层第一帧上屏之后才施加：两层 requestAnimationFrame，与 headless 的 afterNextPaint 同一口径 */
+async function afterPaint(): Promise<void> {
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+}
+
 const teardown: Array<() => void> = []
 
 afterEach(() => {
@@ -95,6 +100,7 @@ describe('模态打开时的通知队列', () => {
     document.body.appendChild(background)
     mountModal()
     await tick()
+    await afterPaint()
 
     expect(inertOf(background)).toBe(true)
     expect(inertOf(root)).toBe(false)

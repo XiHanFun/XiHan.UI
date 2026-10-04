@@ -21,6 +21,11 @@ async function flush(): Promise<void> {
   await Promise.resolve()
 }
 
+/** 等下一帧画出来之后：两层 requestAnimationFrame，与 afterNextPaint 同一口径 */
+async function afterPaint(): Promise<void> {
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+}
+
 function fixture(initial: PopoverSchema['props'] = { defaultOpen: true, modal: true }) {
   const outside = document.createElement('button')
   const trigger = document.createElement('button')
@@ -60,6 +65,9 @@ describe('popover 完整模态资源', () => {
   it('展开期间动态切换锁页与背景失活，并保留后开的 portal 层', async () => {
     const f = fixture()
     await flush()
+    // 背景失活等浮层第一帧上屏之后才施加
+    expect(f.outside.inert).not.toBe(true)
+    await afterPaint()
     expect(f.outside.inert).toBe(true)
     expect(document.body.style.overflow).toBe('hidden')
     expect(f.config.layerRegistry.top()?.isModal()).toBe(true)
@@ -83,13 +91,16 @@ describe('popover 完整模态资源', () => {
 
     f.props.set({ ...f.props.get(), modal: true })
     await flush()
+    await afterPaint()
     expect(f.outside.inert).toBe(true)
     expect(document.body.style.overflow).toBe('hidden')
   })
 
-  it('逻辑关闭立即失活内容并撤下背景失活，层与滚动锁保留到 Presence 完成', async () => {
+  it('逻辑关闭立即失活内容，退场第一帧上屏后撤下背景失活，层与滚动锁保留到 Presence 完成', async () => {
     const f = fixture()
     await flush()
+    await afterPaint()
+    expect(f.outside.inert).toBe(true)
     f.service.send({ type: 'CLOSE' })
     const contentProps = connectPopover(f.service, normalizeProps).getContentProps()
     expect(contentProps.inert).toBe(true)
@@ -97,7 +108,9 @@ describe('popover 完整模态资源', () => {
     f.presence.update(false)
     expect(f.presence.rendered).toBe(true)
     expect(f.config.layerRegistry.list()).toHaveLength(1)
-    // 焦点要在关闭那一刻回到背景里的触发器，背景不能还是 inert
+    // 撤 inert 要整棵背景重算样式：关闭这一拍不做，等退场第一帧上屏后撤下、随即归还焦点
+    expect(f.outside.inert).toBe(true)
+    await afterPaint()
     expect(f.outside.inert).not.toBe(true)
     expect(document.body.style.overflow).toBe('hidden')
 

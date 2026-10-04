@@ -12,6 +12,8 @@ let style: HTMLStyleElement | null = null
 
 async function settle(): Promise<void> {
   await Promise.resolve()
+  // 模态浮层的背景失活与关闭交接都排在「下一帧上屏之后」（两层 rAF），等两帧才落定
+  await new Promise(resolve => requestAnimationFrame(resolve))
   await new Promise(resolve => requestAnimationFrame(resolve))
   await Promise.resolve()
 }
@@ -69,7 +71,7 @@ describe('popover 模态资源', () => {
 
     f.element.modal = true
     await settle()
-    expect(f.outside.inert).toBe(true)
+    await expect.poll(() => f.outside.inert).toBe(true)
     expect(document.body.style.overflow).toBe('hidden')
     expect(getLayerRegistry(document).top()?.isModal()).toBe(true)
     expect(Number(getComputedStyle(positioner()).zIndex)).toBe(nonModalLayer + 1)
@@ -104,7 +106,7 @@ describe('popover 模态资源', () => {
     expect(document.activeElement).toBe(f.outside)
   })
 
-  it('关闭即撤背景失活，层与滚动锁保留至真实 CSS 退出，重开与卸载均不泄漏', async () => {
+  it('退场第一帧上屏后撤背景失活，层与滚动锁保留至真实 CSS 退出，重开与卸载均不泄漏', async () => {
     style = document.createElement('style')
     style.textContent = `
       @keyframes popover-long-exit { from { opacity: 1 } to { opacity: 0 } }
@@ -121,7 +123,7 @@ describe('popover 模态资源', () => {
     const closing = content()
     expect(closing.inert).toBe(true)
     expect(closing.getAttribute('aria-hidden')).toBe('true')
-    // 焦点要在关闭那一刻回到背景里的触发器：背景失活先撤下，层与滚动锁留到退场结束
+    // 退场第一帧上屏后撤下背景失活、随即把焦点交回背景里的触发器；层与滚动锁留到退场结束
     expect(f.outside.inert).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
     expect(getLayerRegistry(document).list()).toHaveLength(1)

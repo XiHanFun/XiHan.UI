@@ -15,6 +15,8 @@ async function settle(): Promise<void> {
       await Promise.resolve()
     })
   }
+  // 模态浮层的背景失活与关闭交接都排在「下一帧上屏之后」（两层 rAF），等两帧才落定
+  await new Promise(resolve => requestAnimationFrame(resolve))
   await new Promise(resolve => requestAnimationFrame(resolve))
 }
 
@@ -84,9 +86,12 @@ describe('drawer 模态与非模态表面', () => {
 
     await render(true)
     expect(backdrop()).not.toBeNull()
-    expect(outside.inert).toBe(true)
+    // 背景失活等浮层第一帧上屏之后才施加
+    await expect.poll(() => outside.inert).toBe(true)
     expect(document.body.style.overflow).toBe('hidden')
     expect(getLayerRegistry(document).top()?.isModal()).toBe(true)
+    // 失活前焦点就停在这颗按钮上；浏览器要到下一次渲染才把焦点从变 inert 的节点上收走，先松手再验证取不回焦点
+    outside.blur()
     outside.focus()
     expect(document.activeElement).not.toBe(outside)
 

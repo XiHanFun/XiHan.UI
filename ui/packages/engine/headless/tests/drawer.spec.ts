@@ -333,6 +333,8 @@ function makeDomHarness(props: DrawerSchema['props'] = {}): DomHarness {
 const microtask = (): Promise<void> => Promise.resolve()
 /** 等到 rAF 队列跑完一轮：焦点重试与焦点归还都排在这里。 */
 const frame = (): Promise<void> => new Promise(resolve => requestAnimationFrame(() => resolve()))
+/** 等下一帧画出来之后：两层 requestAnimationFrame，与 afterNextPaint 同一口径 */
+const afterPaint = (): Promise<void> => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
 
 describe('drawerMachine 展开期副作用', () => {
   afterEach(() => {
@@ -368,7 +370,7 @@ describe('drawerMachine 展开期副作用', () => {
     h.stop()
   })
 
-  it('模态下背景失活推迟到宿主提交之后才挂', async () => {
+  it('模态下背景失活推迟到面板第一帧上屏之后才挂；没有退场时关闭即整体释放', async () => {
     const h = makeDomHarness({ modal: true })
     h.service.send({ type: 'OPEN' })
     // 进入 open 的这一刻 content 还没提交：同步取 targets 只会取到空数组
@@ -376,9 +378,13 @@ describe('drawerMachine 展开期副作用', () => {
 
     h.commit()
     await microtask()
+    // 给整棵背景打 inert 要整棵重算样式：不跟面板的第一帧挤在同一拍里
+    expect(h.outside.inert).toBeFalsy()
+    await afterPaint()
     // 少了 flush 推迟，这里会永远是假——背景就此再也不 inert
     expect(h.outside.inert).toBeTruthy()
 
+    // 这个夹具不接退场：关闭即释放全部资源，背景失活随之撤下，没有要保护的退场帧
     h.service.send({ type: 'CLOSE' })
     expect(h.outside.inert).toBeFalsy()
     h.stop()
