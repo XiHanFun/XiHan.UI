@@ -12,38 +12,21 @@ import type { GraphModel, GraphNodeGeometry } from './graph-chart.model'
 import type { GraphChartSchema, GraphOverlay } from './graph-chart.schema'
 import type { GraphChartTranslations, GraphSummary, GraphTooltipModel, GraphTooltipRow, GraphView } from './graph-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
-import { CHART_TRANSLATIONS, chartActiveSource, resolveChartTranslations } from '../shared/chart'
+import { GRAPH_CHART_EN_US } from '../locale/en-US'
+import { chartActiveSource, resolveChartTranslations } from '../shared/chart'
 import { graphNodeKey } from './graph-chart.model'
 
-/** 节点的可及名：名字、数值（有的话）与连线数。 */
+/** 数据标记的缺省可及名，取自英文语言包。 */
 export function defaultGraphDatumLabel(details: ChartDatumDetails): string {
-  const parts = [details.seriesName]
-  if (details.formatted.value)
-    parts.push(details.formatted.value)
-  parts.push(`${details.formatted.links ?? '0'} ${details.values.links === 1 ? 'link' : 'links'}`)
-  return parts.join(', ')
+  return GRAPH_CHART_EN_US.datumLabel(details)
 }
 
-/** 缺省摘要：节点数、连线数与连线最多的节点。 */
+/** 缺省摘要，取自英文语言包。 */
 export function defaultGraphSummary(model: GraphSummary): string {
-  if (model.nodeCount === 0)
-    return 'No data.'
-  const head = `${model.nodeCount} ${model.nodeCount === 1 ? 'node' : 'nodes'}, ${model.linkCount} ${model.linkCount === 1 ? 'link' : 'links'}.`
-  return model.hub ? `${head} Most connected: ${model.hub.name} (${model.hub.degree} ${model.hub.degree === 1 ? 'link' : 'links'}).` : head
+  return GRAPH_CHART_EN_US.summary(model)
 }
 
-export const GRAPH_TRANSLATIONS: GraphChartTranslations = Object.freeze({
-  ...CHART_TRANSLATIONS,
-  datumLabel: defaultGraphDatumLabel,
-  sourceLabel: 'Source',
-  targetLabel: 'Target',
-  valueLabel: 'Value',
-  linkLabel: 'Label',
-  linksLabel: 'Links',
-  incomingLabel: 'Incoming',
-  outgoingLabel: 'Outgoing',
-  summary: defaultGraphSummary,
-})
+export const GRAPH_TRANSLATIONS: GraphChartTranslations = Object.freeze({ ...GRAPH_CHART_EN_US })
 
 const translationsCache = new WeakMap<object, GraphChartTranslations>()
 

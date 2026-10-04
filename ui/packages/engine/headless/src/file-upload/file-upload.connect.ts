@@ -8,6 +8,8 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { FileUploadApi, FileUploadFile, FileUploadPressedKey, FileUploadSchema, FileUploadSnapshot } from './file-upload.types'
 import { contains, createPressTracker, dataAttr, isHTMLElement } from '@xihan-ui/core'
+import { FILE_UPLOAD_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { fileUploadAnatomy, fileUploadHiddenInputId, fileUploadListId, fileUploadProgressId } from './file-upload.anatomy'
 import { acceptAttr, fileUploadFileKey, fileUploadPressKey, formatFileSize, normalizeMaxFiles } from './file-upload.machine'
@@ -91,12 +93,7 @@ export function connectFileUpload<T extends PropTypes>(
     return root?.querySelector<HTMLElement>(parts.dropzone.selector) ?? null
   }
 
-  const translations = prop('translations')
-  const label = {
-    dropzone: translations?.dropzone ?? 'Drop files here',
-    deleteItem: translations?.deleteItem ?? ((file: FileUploadFile) => `Delete ${file.name}`),
-    clearTrigger: translations?.clearTrigger ?? 'Clear all files',
-  }
+  const label = resolveTranslations(FILE_UPLOAD_EN_US, prop('translations'))
 
   /** 判断点击是否落在区内自带行为的节点上。只在事件回调里调用，渲染期不得调用。 */
   const fromInteractivePart = (target: EventTarget | null): boolean =>

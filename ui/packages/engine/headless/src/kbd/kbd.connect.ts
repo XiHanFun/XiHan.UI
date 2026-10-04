@@ -9,7 +9,9 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { HotkeySegment } from '../shared/hotkey'
 import type { KbdApi, KbdProps } from './kbd.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { KBD_EN_US } from '../locale/en-US'
 import { formatHotkey, isTypingTarget, matchesHotkey, resolveKbdPlatform } from '../shared/hotkey'
+import { resolveTranslations } from '../shared/translations'
 import { kbdAnatomy } from './kbd.anatomy'
 
 const parts = kbdAnatomy.build()
@@ -19,12 +21,13 @@ export function connectKbd<T extends PropTypes>(props: KbdProps, normalize: Norm
     throw new TypeError('[xh] Kbd keys 必须是非空且每项均为非空字符串的组合')
   const register = props.register ?? false
   const platform = resolveKbdPlatform(props.platform)
-  const segments = formatHotkey(props.keys, platform)
+  const translations = resolveTranslations(KBD_EN_US, props.translations)
+  const segments = formatHotkey(props.keys, platform, translations)
   const mainKeyCount = segments.filter(segment => !segment.modifier).length
   if (mainKeyCount > 1 || (register && mainKeyCount !== 1))
     throw new TypeError('[xh] Kbd 展示最多包含一枚主键，注册时必须且只能包含一枚主键')
-  const names = segments.map(segment => props.translations?.keyName?.(segment.key) ?? segment.name)
-  const label = props.translations?.hotkey?.(names) ?? names.join(' + ')
+  const names = segments.map(segment => segment.name)
+  const label = translations.hotkey(names)
   if (names.some(name => name.trim() === '') || label.trim() === '')
     throw new TypeError('[xh] Kbd 的逐键名称与整组可读名称不能为空')
   const enabled = register && (props.enabled ?? true)

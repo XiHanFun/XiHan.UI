@@ -229,7 +229,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `root` | `aria-busy` | 'true' \| undefined |
 | `root` | `aria-disabled` | 'true' \| 'false' |
 | `root` | `aria-invalid` | 'true' \| 'false' |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `aria-labelledby` | `label` 部件的 id |
 | `root` | `aria-multiselectable` | 'true' \| undefined |
 | `root` | `aria-readonly` | 'true' \| 'false' |

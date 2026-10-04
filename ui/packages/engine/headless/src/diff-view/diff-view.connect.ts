@@ -18,6 +18,8 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/core'
+import { DIFF_VIEW_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { diffViewAnatomy } from './diff-view.anatomy'
 import { diffStats } from './diff-view.model'
 import { diffViewSides } from './diff-view.projection'
@@ -140,7 +142,7 @@ export function connectDiffView<T extends PropTypes>(
   const view = prop('view') ?? 'unified'
   const split = view === 'split'
   const expandedValue = context.get('expandedValue')
-  const translations = prop('translations')
+  const translations = resolveTranslations(DIFF_VIEW_EN_US, prop('translations'))
   const ids = scope.ids('diff-view', 'header')
   // 按压通道：真源是机器 context 里「正被按住的那一格」（按折叠格 id 记），每格各自合成一份跟踪器；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档
@@ -164,10 +166,8 @@ export function connectDiffView<T extends PropTypes>(
 
   const truncatedLines = Math.max(0, Math.trunc(model.truncatedLines ?? 0))
   const truncated = model.truncated === true && truncatedLines > 0
-  const expandGapLabel = translations?.expandGap ?? ((count: number) => `Show ${count} hidden lines`)
-  const truncationText = truncated
-    ? (translations?.truncated ?? ((count: number) => `${count} more lines were cut off and are not shown`))(truncatedLines)
-    : ''
+  const expandGapLabel = translations.expandGap
+  const truncationText = truncated ? translations.truncated(truncatedLines) : ''
 
   /** 这一格折起来多少行。展开之后这一格就不在行序里了，取不到即 0。 */
   const hiddenCountOf = (gapId: string): number =>
@@ -175,10 +175,10 @@ export function connectDiffView<T extends PropTypes>(
 
   const labelOf = (change: DiffChange): string => {
     if (change === 'added')
-      return translations?.added ?? 'Added'
+      return translations.added
     if (change === 'removed')
-      return translations?.removed ?? 'Removed'
-    return translations?.unchanged ?? 'Unchanged'
+      return translations.removed
+    return translations.unchanged
   }
 
   const cellNumber = ({ rowIndex, side }: DiffViewCellProps): number | undefined => {
@@ -233,8 +233,7 @@ export function connectDiffView<T extends PropTypes>(
     : []
   const commentFocus = context.get('commentFocus') ?? null
   const commentStop = commentFocus !== null && commentKeys.includes(commentFocus) ? commentFocus : commentKeys[0]
-  const commentLabel = translations?.commentOn
-    ?? ((line: number, side: DiffSide) => `Comment on ${side === 'old' ? 'old' : 'new'} line ${line}`)
+  const commentLabel = translations.commentOn
 
   return {
     view,
@@ -284,7 +283,7 @@ export function connectDiffView<T extends PropTypes>(
       'role': 'table',
       ...parts.body.attrs,
       'aria-labelledby': byHeader ? ids.header : undefined,
-      'aria-label': byHeader ? undefined : (path ?? translations?.diff ?? 'Diff'),
+      'aria-label': byHeader ? undefined : (path ?? translations.diff),
       'aria-rowcount': rows.length,
       'aria-colcount': colCount,
     }),
@@ -457,5 +456,5 @@ export function connectDiffView<T extends PropTypes>(
 
 /** 无变更时的兜底文案。 */
 export function diffViewEmptyText(translations?: Partial<DiffViewSchema['props']['translations']>): string {
-  return translations?.noChanges ?? 'No changes'
+  return translations?.noChanges ?? DIFF_VIEW_EN_US.noChanges
 }

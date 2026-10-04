@@ -8,7 +8,9 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { PasswordInputApi, PasswordInputSchema } from './password-input.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { PASSWORD_INPUT_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { passwordInputAnatomy, passwordInputInputId } from './password-input.anatomy'
 
 const parts = passwordInputAnatomy.build()
@@ -45,13 +47,7 @@ export function connectPasswordInput<T extends PropTypes>(
   // 切换按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)
 
-  const translations = prop('translations')
-  const label = {
-    visibilityTriggerShow: translations?.visibilityTriggerShow ?? 'Show password',
-    visibilityTriggerHide: translations?.visibilityTriggerHide ?? 'Hide password',
-    capsLockOn: translations?.capsLockOn ?? 'Caps Lock is on',
-    strengthMeter: translations?.strengthMeter ?? 'Password strength',
-  }
+  const label = resolveTranslations(PASSWORD_INPUT_EN_US, prop('translations'))
 
   const rawStrength = prop('strength')
   const strength = rawStrength == null || !Number.isFinite(rawStrength)

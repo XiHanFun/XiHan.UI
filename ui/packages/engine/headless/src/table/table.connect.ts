@@ -24,8 +24,10 @@ import {
   queryItems,
   warn,
 } from '@xihan-ui/core'
+import { TABLE_EN_US } from '../locale/en-US'
 import { flatMoveIntentFromKey } from '../shared/drag'
 import { isEditableTarget } from '../shared/editable-target'
+import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionTarget } from '../shared/virtual-collection'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
@@ -211,21 +213,11 @@ export function connectTable<T extends PropTypes>(
   const stickyHeader = !!prop('stickyHeader')
   const hasFooter = !!prop('footer')
   const dir = prop('dir') ?? 'ltr'
-  const translations = prop('translations')
   const numericWidth = (id: string, def: TableColumnDef | undefined): number | null =>
     columnNumericWidth(context.get('columnPreference').widths?.[id], def?.width)
   /** 这一列的宽度是不是用户改出来的。 */
   const hasWidthOverride = (id: string): boolean => context.get('columnPreference').widths?.[id] != null
-  const label = {
-    sort: translations?.sort ?? ((columnLabel: string) => `Sort by ${columnLabel}`),
-    columnResize: translations?.columnResize ?? ((columnLabel: string) => `Resize column ${columnLabel}`),
-    columnDrag: translations?.columnDrag ?? ((columnLabel: string) => `Reorder column ${columnLabel}`),
-    columnDragRoleDescription: translations?.columnDragRoleDescription ?? 'draggable column',
-    selectAll: translations?.selectAll ?? 'Select all rows',
-    toolbar: translations?.toolbar ?? 'Table toolbar',
-    columnList: translations?.columnList ?? 'Column settings',
-    columnVisibility: translations?.columnVisibility ?? ((columnLabel: string) => `Show column ${columnLabel}`),
-  }
+  const label = resolveTranslations(TABLE_EN_US, prop('translations'))
   // 可拖的那一段列。谁能拖、落点算在谁身上、键盘能挪到哪儿，三处同一份口径
   const draggableColumns = draggableColumnIds(columns)
   const draggingColumn = context.get('draggingColumn')

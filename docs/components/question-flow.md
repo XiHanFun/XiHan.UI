@@ -288,23 +288,23 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `question` | `aria-hidden` | undefined \| 'true' |
-| `question` | `aria-label` | undefined \| translations?.prompt |
+| `question` | `aria-label` | undefined \| translations.prompt |
 | `question` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
 | `question` | `role` | 'group' |
 | `group` | `aria-describedby` | undefined \| `description` 部件的 id |
-| `group` | `aria-label` | undefined \| translations?.options |
+| `group` | `aria-label` | undefined \| translations.options |
 | `group` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
 | `group` | `role` | 'radiogroup' \| 'group' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `role` | 'radio' \| 'checkbox' |
 | `item-indicator` | `aria-hidden` | 'true' |
-| `note` | `aria-label` | translations?.note |
-| `prev-trigger` | `aria-label` | translations?.prev |
+| `note` | `aria-label` | translations.note |
+| `prev-trigger` | `aria-label` | translations.prev |
 | `counter` | `aria-hidden` | 'true' |
-| `next-trigger` | `aria-label` | translations?.next |
-| `skip-trigger` | `aria-label` | translations?.skip |
-| `submit-trigger` | `aria-label` | translations?.send \| translations?.continue |
+| `next-trigger` | `aria-label` | translations.next |
+| `skip-trigger` | `aria-label` | translations.skip |
+| `submit-trigger` | `aria-label` | translations.send \| translations.continue |
 | `result` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |

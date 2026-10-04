@@ -8,7 +8,9 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { AlertApi, AlertSchema } from './alert.types'
 import { dataAttr } from '@xihan-ui/core'
+import { ALERT_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { alertAnatomy } from './alert.anatomy'
 
 const parts = alertAnatomy.build()
@@ -33,6 +35,7 @@ export function connectAlert<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): AlertApi<T> {
   const { state, prop, send, scope, context } = service
+  const translations = resolveTranslations(ALERT_EN_US, prop('translations'))
   const open = state.get() === 'open'
   // 按压通道：真源在机器 context，跟踪器只把 Space / Enter 与触屏按住翻成事件；指针按住由 :active 表出
   const pressed = context.get('pressed')
@@ -113,7 +116,7 @@ export function connectAlert<T extends PropTypes>(
     getCloseTriggerProps: () => normalize.button({
       ...parts['close-trigger'].attrs,
       'type': 'button',
-      'aria-label': prop('translations')?.close ?? 'Close',
+      'aria-label': translations.close,
       // 只有字形的离散动作钮：盒、悬停 / 按下与按压、粗指针热区、焦点环、禁用面由 Action Control 家族按这几位给。
       // 取 icon ghost 档（静息透明、白底承载 hover 100 → pressed 200）；Alert 没有 size 轴，固定 sm（32px 正方盒）
       'data-xh-action-control': '',

@@ -8,6 +8,8 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ApprovalApi, ApprovalPressedKey, ApprovalSchema, ApprovalScope, ApprovalStatus } from './approval.types'
 import { createPressTracker, dataAttr, isComposingEvent, itemQuerySelector } from '@xihan-ui/core'
+import { APPROVAL_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { approvalAnatomy } from './approval.anatomy'
 import { canApproveScopes } from './approval.types'
 
@@ -22,16 +24,16 @@ function noteNear(from: EventTarget | null): HTMLElement | null {
   return el?.closest?.(ROOT_SELECTOR)?.querySelector<HTMLElement>(NOTE_SELECTOR) ?? null
 }
 
-function announcementOf(status: ApprovalStatus, translations: ApprovalSchema['props']['translations']): string {
+function announcementOf(status: ApprovalStatus, translations: typeof APPROVAL_EN_US): string {
   switch (status) {
     case 'approved':
-      return translations?.approved ?? 'Approved'
+      return translations.approved
     case 'denied':
-      return translations?.denied ?? 'Denied'
+      return translations.denied
     case 'expired':
-      return translations?.expired ?? 'Expired, treated as denied'
+      return translations.expired
     default:
-      return translations?.pending ?? 'Waiting for your decision'
+      return translations.pending
   }
 }
 
@@ -46,7 +48,7 @@ export function connectApproval<T extends PropTypes>(
   const granted = context.get('grantedScopes')
   const note = context.get('note')
   const scopes = prop('scopes')
-  const translations = prop('translations')
+  const translations = resolveTranslations(APPROVAL_EN_US, prop('translations'))
   const ids = scope.ids('approval', 'title', 'description')
   // 必选项没勾满、或判定在途，都批不了；拒绝这条路不受它们影响
   const canApprove = !loading && canApproveScopes(scopes, granted)
@@ -145,7 +147,7 @@ export function connectApproval<T extends PropTypes>(
     getGroupProps: () => normalize.element({
       ...parts.group.attrs,
       'role': 'group',
-      'aria-label': translations?.scopes ?? 'Permissions',
+      'aria-label': translations.scopes,
     }),
 
     // 每个复选框各占一个 Tab 停靠点，不做 roving：授权项要逐条读、逐条勾。
@@ -213,10 +215,10 @@ export function connectApproval<T extends PropTypes>(
       ...parts.note.attrs,
       'type': 'text',
       'value': note,
-      'aria-label': requireReason ? translations?.reason ?? 'Reason for denial' : translations?.note ?? 'Note',
+      'aria-label': requireReason ? translations.reason : translations.note,
       'aria-required': requireReason ? 'true' : undefined,
       'aria-invalid': reasonInvalid ? 'true' : undefined,
-      'placeholder': translations?.notePlaceholder,
+      'placeholder': translations.notePlaceholder,
       'disabled': settled || undefined,
       'data-state': status,
       'data-invalid': dataAttr(reasonInvalid),
@@ -278,7 +280,7 @@ export function connectApproval<T extends PropTypes>(
       'data-tone': prop('tone'),
       'aria-disabled': (!canApprove || loading) ? 'true' : 'false',
       'aria-busy': loading ? 'true' : undefined,
-      'aria-label': translations?.approve,
+      'aria-label': translations.approve,
       'disabled': settled || undefined,
       'data-state': status,
       'data-loading': dataAttr(loading),
@@ -307,7 +309,7 @@ export function connectApproval<T extends PropTypes>(
       'data-xh-action-size': size,
       'aria-disabled': loading ? 'true' : 'false',
       'aria-busy': loading ? 'true' : undefined,
-      'aria-label': translations?.deny,
+      'aria-label': translations.deny,
       'disabled': settled || undefined,
       'data-state': status,
       'data-loading': dataAttr(loading),

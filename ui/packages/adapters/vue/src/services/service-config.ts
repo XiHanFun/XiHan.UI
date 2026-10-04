@@ -17,6 +17,8 @@ export interface ServiceConfigSource {
   provide: () => void
   /** 更换配置源；下一帧起服务子树读取新值。 */
   set: (next: MaybeRefOrGetter<XhConfig> | undefined) => void
+  /** 现读当前配置：宿主组件自己 provide 的那份它自己 inject 不到，要在渲染里直接读。 */
+  read: () => XhConfig | undefined
 }
 
 export function createServiceConfig(initial?: MaybeRefOrGetter<XhConfig>): ServiceConfigSource {
@@ -27,5 +29,6 @@ export function createServiceConfig(initial?: MaybeRefOrGetter<XhConfig>): Servi
     set: (next) => {
       box.value = { src: next }
     },
+    read: () => toValue(box.value.src),
   }
 }

@@ -8,7 +8,9 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { PopoverApi, PopoverPressedPart, PopoverSchema } from './popover.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
+import { POPOVER_EN_US } from '../locale/en-US'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { resolveTranslations } from '../shared/translations'
 import { popoverAnatomy } from './popover.anatomy'
 import { POPOVER_DEFAULT_PLACEMENT } from './popover.machine'
 
@@ -19,6 +21,7 @@ export function connectPopover<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): PopoverApi<T> {
   const { state, prop, send, context, scope } = service
+  const translations = resolveTranslations(POPOVER_EN_US, prop('translations'))
   const open = state.get() === 'open'
   const modal = prop('modal') ?? false
   const ids = scope.ids('popover', 'trigger', 'content', 'title', 'description')
@@ -126,7 +129,7 @@ export function connectPopover<T extends PropTypes>(
     getCloseTriggerProps: () => normalize.button({
       ...parts['close-trigger'].attrs,
       'type': 'button',
-      'aria-label': prop('translations')?.close ?? 'Close',
+      'aria-label': translations.close,
       // 浮层角落的叉：icon 档 sm、ghost 面，磨砂白面上走画布承载阶梯（hover 100 → pressed 200）
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',

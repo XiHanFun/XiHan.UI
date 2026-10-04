@@ -120,11 +120,11 @@ export interface ConfirmOptions {
 export type AlertOptions = Omit<ConfirmOptions, 'tone' | 'badge'>
 
 export interface DialogServiceOptions extends ServiceHostOptions {
-  /** 确认按钮文案，默认 OK。 */
+  /** 确认按钮文案；未提供时取宿主所在处全局配置的 translations.dialog.ok，再退英文语言包（OK）。 */
   okText?: string
-  /** 取消按钮文案，默认 Cancel。 */
+  /** 取消按钮文案；未提供时取 translations.dialog.cancel，再退英文语言包（Cancel）。 */
   cancelText?: string
-  /** 动作失败时的安全提示，与按钮文案相同由调用方提供本地化文字。 */
+  /** 动作失败时的安全提示；未提供时取 translations.dialog.actionError。 */
   actionErrorText?: string
 }
 

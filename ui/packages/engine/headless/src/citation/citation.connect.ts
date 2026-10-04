@@ -26,7 +26,9 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/core'
+import { CITATION_EN_US } from '../locale/en-US'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { resolveTranslations } from '../shared/translations'
 import { citationAnatomy, citationSourceQuery } from './citation.anatomy'
 import { CITATION_DEFAULT_PLACEMENT, citationPreviewId, citationSourceLinkId } from './citation.machine'
 
@@ -88,19 +90,7 @@ export function connectCitation<T extends PropTypes>(
   const open = context.get('open')
   const disabled = !!prop('disabled')
   const loop = prop('loop') ?? true
-  const translations = prop('translations')
-  const labels = {
-    sources: translations?.sources ?? 'Sources',
-    preview: translations?.preview ?? 'Source preview',
-    closePreview: translations?.closePreview ?? 'Close source preview',
-    openSource: translations?.openSource ?? ((title: string) => `Open ${title}`),
-    citation: translations?.citation ?? ((index: number, title: string) => `Source ${index}: ${title}`),
-    citations: translations?.citations ?? ((indexes: readonly number[]) => `Sources ${indexes.join(', ')}`),
-    previousSource: translations?.previousSource ?? 'Previous source',
-    nextSource: translations?.nextSource ?? 'Next source',
-    source: translations?.source ?? ((index: number, title: string) => `Source ${index}: ${title}`),
-    document: translations?.document ?? 'Document',
-  }
+  const labels = resolveTranslations(CITATION_EN_US, prop('translations'))
   const indexOf = (sourceId: string): number => sources.findIndex(source => source.sourceId === sourceId)
   const previewId = (sourceId: string): string => citationPreviewId(scope, sourceId)
   const sourceLinkId = (sourceId: string): string => citationSourceLinkId(scope, sourceId)
@@ -356,6 +346,7 @@ export function connectCitation<T extends PropTypes>(
       ...parts.quote.attrs,
       hidden: quote(item).length === 0 || undefined,
     }),
+    previewLinkText: item => (source(item.sourceId)?.type === 'source-document' ? labels.previewLinkDocument : labels.previewLinkSource),
     getPreviewLinkProps: (item) => {
       const current = source(item.sourceId)
       const title = citationSourceTitle(current)

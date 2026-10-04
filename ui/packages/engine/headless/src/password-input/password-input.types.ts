@@ -48,7 +48,7 @@ export interface PasswordInputSchema extends MachineSchema {
      * 超出区间的值被夹回区间。
      */
     strength?: number
-    /** 读屏文案覆盖；未提供的条目使用组件内建英文。 */
+    /** 读屏文案覆盖；未提供的条目取英文语言包。 */
     translations?: Partial<PasswordInputTranslations>
     /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant

@@ -8,7 +8,9 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { SplitterApi, SplitterPanelState, SplitterSchema } from './splitter.types'
 import { dataAttr, focusSafely } from '@xihan-ui/core'
+import { SPLITTER_EN_US } from '../locale/en-US'
 import { clamp } from '../shared/number'
+import { resolveTranslations } from '../shared/translations'
 import { splitterAnatomy } from './splitter.anatomy'
 import { splitterConstraints } from './splitter.machine'
 import { isCollapsed, panelRange } from './splitter.sizing'
@@ -30,7 +32,7 @@ export function connectSplitter<T extends PropTypes>(
   const orientation = prop('orientation') ?? 'horizontal'
   const dir = prop('dir') ?? 'ltr'
   const disabled = !!prop('disabled')
-  const translations = prop('translations')
+  const translations = resolveTranslations(SPLITTER_EN_US, prop('translations'))
   const vertical = orientation === 'vertical'
   // 只有水平排布才看 dir：竖直排布上下不随文字方向换向，几何换算那边也是这条规矩
   const flipHorizontal = !vertical && dir === 'rtl'
@@ -111,7 +113,7 @@ export function connectSplitter<T extends PropTypes>(
       'data-animating': dataAttr(animating),
       // 一组彼此关联的面板与分隔条，读屏据此知道它们是一伙的
       'role': 'group',
-      'aria-label': translations?.root ?? 'Split panels',
+      'aria-label': translations.root,
     }),
 
     getPanelProps: (index) => {
@@ -148,7 +150,7 @@ export function connectSplitter<T extends PropTypes>(
          */
         'aria-orientation': vertical ? 'horizontal' : 'vertical',
         // 一组分隔条彼此长得一样，名字里带上位次才分得开
-        'aria-label': translations?.resizeTrigger?.(boundary, Math.max(0, lastPanel)) ?? `Resize panel ${boundary + 1}`,
+        'aria-label': translations.resizeTrigger(boundary, Math.max(0, lastPanel)),
         'aria-valuenow': String(panel.size),
         // 区间取这块面板眼下真能走到的范围，纸面上的 min/max 可能走不到
         'aria-valuemin': String(panel.min),

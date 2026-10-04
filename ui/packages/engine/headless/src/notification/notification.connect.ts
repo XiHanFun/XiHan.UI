@@ -18,6 +18,8 @@ import type {
   ResolvedNotification,
 } from './notification.types'
 import { createPressTracker, DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/core'
+import { NOTIFICATION_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { countdownSteps, resolveNotificationDuration, resolveNotificationItemId } from './notification-item.machine'
 import { notificationAnatomy } from './notification.anatomy'
 import {
@@ -35,6 +37,7 @@ export function connectNotification<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): NotificationApi<T> {
   const { prop, send, context, scope } = service
+  const translations = resolveTranslations(NOTIFICATION_EN_US, prop('translations'))
 
   const preset = prop('preset') ?? 'card'
   const defaults = notificationPresetOf(preset)
@@ -105,7 +108,7 @@ export function connectNotification<T extends PropTypes>(
         // 没有盒子、量出来 0×0，跳过去落不到任何看得见的地方。
         // 不是 live region——每条通知自己就是 status / alert，再套一层会宣读两遍
         'role': 'region',
-        'aria-label': prop('translations')?.region ?? 'Notifications',
+        'aria-label': translations.region,
         'data-placement': placement,
         // 摞的宽度与贴边随预设：轻提示一摞比卡片宽、离视口边更近
         'data-preset': preset,
@@ -152,6 +155,7 @@ export function connectNotificationItem<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): NotificationItemApi<T> {
   const { state, prop, send, context, scope } = service
+  const translations = resolveTranslations(NOTIFICATION_EN_US, prop('translations'))
   const ids = scope.ids('notification-item', 'title', 'description')
 
   const preset = prop('preset') ?? 'card'
@@ -285,7 +289,7 @@ export function connectNotificationItem<T extends PropTypes>(
     getItemCloseTriggerProps: () => normalize.button({
       ...parts['item-close-trigger'].attrs,
       'type': 'button',
-      'aria-label': prop('translations')?.close ?? 'Close',
+      'aria-label': translations.close,
       // 只有字形的离散动作钮：盒、悬停 / 按下与按压、粗指针热区、焦点环、禁用面由 Action Control 家族按这几位给。
       // 取 icon ghost 档。卡片的叉钉在角上，与浮层角落关闭钮同一档（sm，32px 正方盒）；
       // 轻提示的叉排在一行短消息的行尾，走行级动作钮的 xs（24px）。

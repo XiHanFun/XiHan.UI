@@ -9,6 +9,8 @@ import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-u
 import type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArrayPressedKey, FieldArraySchema } from './field-array.types'
 import { contains, createPressTracker, dataAttr } from '@xihan-ui/core'
 import { formArrayItemPath } from '../form'
+import { FIELD_ARRAY_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { fieldArrayAnatomy, fieldArrayTriggerId } from './field-array.anatomy'
 import { atRowMax, atRowMin, fieldArrayValue, rowBound } from './field-array.machine'
 
@@ -44,12 +46,7 @@ export function connectFieldArray<T extends PropTypes>(
 
   // 三个行内把手都只装得下一个图形，行号只能由名字带出来；
   // 新增把手装的是一句话，名字取它自己的内容，这里不覆盖
-  const translations = prop('translations')
-  const label = {
-    deleteItem: translations?.deleteItem ?? ((index: number, total: number) => `Remove row ${index} of ${total}`),
-    moveUpTrigger: translations?.moveUpTrigger ?? ((index: number, total: number) => `Move row ${index} of ${total} up`),
-    moveDownTrigger: translations?.moveDownTrigger ?? ((index: number, total: number) => `Move row ${index} of ${total} down`),
-  }
+  const label = resolveTranslations(FIELD_ARRAY_EN_US, prop('translations'))
 
   // 作者声明的下标可能指到列表外（行数刚变、声明还没跟上），一律按"这一行不在"处理
   const inRange = (index: number): boolean => Number.isInteger(index) && index >= 0 && index < count

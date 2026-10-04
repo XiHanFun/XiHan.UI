@@ -9,7 +9,9 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TagApi } from '../tag'
 import type { TagsInputApi, TagsInputItemProps, TagsInputSchema } from './tags-input.types'
 import { contains, dataAttr, isComposingEvent, ITEM_VALUE_ATTR, mergeProps } from '@xihan-ui/core'
+import { TAGS_INPUT_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { connectStaticTag, tagVariantForControl } from '../tag'
 import { tagsInputAnatomy, tagsInputEditInputId } from './tags-input.anatomy'
 import { appendTags, editRejection, isAtMax, isOverflow, splitTags, TAGS_INPUT_DELIMITER, tagsDelimiter } from './tags-input.machine'
@@ -58,12 +60,7 @@ export function connectTagsInput<T extends PropTypes>(
   // 清空按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)
 
-  const translations = prop('translations')
-  const label = {
-    deleteItem: translations?.deleteItem ?? ((tag: string) => `Delete ${tag}`),
-    editTagInput: translations?.editTagInput ?? ((tag: string) => `Edit ${tag}`),
-    clearTrigger: translations?.clearTrigger ?? 'Clear',
-  }
+  const label = resolveTranslations(TAGS_INPUT_EN_US, prop('translations'))
 
   // 宿主整份换掉 value 时锚点可能悬空：读侧一律夹回集合内
   const anchor = context.get('focusedValue')

@@ -8,7 +8,9 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ImageViewerApi, ImageViewerPressedPart, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
+import { IMAGE_VIEWER_EN_US } from '../locale/en-US'
 import { floatingSizeBelow } from '../shared/floating-size'
+import { resolveTranslations } from '../shared/translations'
 import { imageViewerAnatomy } from './image-viewer.anatomy'
 import {
   clampImageViewerIndex,
@@ -56,22 +58,7 @@ export function connectImageViewer<T extends PropTypes>(
   const stateAttr = open ? 'open' : 'closed'
   const ids = scope.ids('image-viewer', 'trigger', 'content')
 
-  const translations = prop('translations')
-  const label = {
-    content: translations?.content ?? 'Image preview',
-    toolbar: translations?.toolbar ?? 'Image tools',
-    close: translations?.close ?? 'Close',
-    zoomIn: translations?.zoomIn ?? 'Zoom in',
-    zoomOut: translations?.zoomOut ?? 'Zoom out',
-    rotateLeft: translations?.rotateLeft ?? 'Rotate left',
-    rotateRight: translations?.rotateRight ?? 'Rotate right',
-    flipHorizontal: translations?.flipHorizontal ?? 'Flip horizontal',
-    flipVertical: translations?.flipVertical ?? 'Flip vertical',
-    reset: translations?.reset ?? 'Reset',
-    prev: translations?.prev ?? 'Previous image',
-    next: translations?.next ?? 'Next image',
-    counter: translations?.counter ?? ((i: number, n: number) => `${i} / ${n}`),
-  }
+  const label = resolveTranslations(IMAGE_VIEWER_EN_US, prop('translations'))
 
   // 按压通道：十颗按钮共用一台机器，真源是机器 context 里「正被按住的那颗」，各自合成一份跟踪器；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
@@ -397,6 +384,5 @@ export function imageViewerCounterText(
   index: number,
   count: number,
 ): string {
-  const fn = translations?.counter ?? ((i: number, n: number) => `${i} / ${n}`)
-  return fn(index + 1, count)
+  return resolveTranslations(IMAGE_VIEWER_EN_US, translations).counter(index + 1, count)
 }

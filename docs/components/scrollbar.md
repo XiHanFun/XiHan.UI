@@ -214,7 +214,7 @@
 | `root` | `aria-hidden` | undefined \| 'true' |
 | `thumb` | `aria-controls` | props.controls \| undefined |
 | `thumb` | `aria-disabled` | 'true' \| undefined |
-| `thumb` | `aria-label` | props.translations.thumb \| undefined |
+| `thumb` | `aria-label` | translations.thumb \| undefined |
 | `thumb` | `aria-orientation` | props.orientation \| undefined |
 | `thumb` | `aria-valuemax` | Math.round(max) \| undefined |
 | `thumb` | `aria-valuemin` | 0 \| undefined |

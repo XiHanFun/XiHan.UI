@@ -8,7 +8,9 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ClipboardApi, ClipboardSchema } from './clipboard.types'
 import { dataAttr } from '@xihan-ui/core'
+import { CLIPBOARD_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { clipboardAnatomy } from './clipboard.anatomy'
 
 const parts = clipboardAnatomy.build()
@@ -25,11 +27,11 @@ export function connectClipboard<T extends PropTypes>(
   const copied = status === 'copied'
   const value = prop('value') ?? ''
   const disabled = !!prop('disabled')
-  const translations = prop('translations')
+  const translations = resolveTranslations(CLIPBOARD_EN_US, prop('translations'))
   // 缺省中性淡底（只有 Button 缺省品牌实心）
   const variant = prop('variant') ?? 'subtle'
   // 播报区只在成功那一档有话说；平时是空串，读屏不会念一段旧文案
-  const announcement = copied ? (translations?.copied ?? 'Copied') : ''
+  const announcement = copied ? translations.copied : ''
   // 复制按钮键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)
 
@@ -92,7 +94,7 @@ export function connectClipboard<T extends PropTypes>(
       'disabled': disabled || undefined,
       // 按钮里只放一个图标时没有可见文字，可及名字只能由这里给。
       // 不给缺省值：按钮上多半写着可见的「复制」，凭空盖一个名字会让读屏念的与屏上写的对不上
-      'aria-label': translations?.copy,
+      'aria-label': translations.copy,
       'data-state': status,
       'data-copied': dataAttr(copied),
       'data-disabled': dataAttr(disabled),

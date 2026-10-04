@@ -17,8 +17,10 @@ import type {
   TimeRangePickerSchema,
 } from './time-range-picker.types'
 import { createPressTracker, dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
+import { TIME_RANGE_PICKER_EN_US } from '../locale/en-US'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { isTimeItemUnavailable, resolveTimeStep, timeColumns, timeDraftPeriod, timeItemValue } from '../shared/time-constraint'
+import { resolveTranslations } from '../shared/translations'
 import {
   appendSegmentDigit,
   dayPeriodLabel,
@@ -57,25 +59,9 @@ const parts = timeRangePickerAnatomy.build()
 // 指针按下会把标记撤掉，键按下后没等来激活（按住空格再 Tab 走开）也不会留给下一次点击
 const keyActivated = new WeakSet<Element>()
 
-/**
- * 段与列的读屏名字。写死英文语义名，不走 Intl.DisplayNames：
- * 后者依赖运行环境的默认 locale 与 ICU 数据完整度，同一份代码会产出不同 DOM。
- */
-const SEGMENT_LABELS: Record<TimeSegmentType, string> = {
-  hour: 'hour',
-  minute: 'minute',
-  second: 'second',
-  dayPeriod: 'AM/PM',
-}
-
-/** 两端的读屏名字，同样写死英文语义名。 */
-const END_LABELS: Record<TimeRangePickerEndIndex, string> = {
-  0: 'Start time',
-  1: 'End time',
-}
-
-function endLabel(index: TimeRangePickerEndIndex, translations: TimeRangePickerSchema['props']['translations']): string {
-  return (index === 0 ? translations?.startTime : translations?.endTime) ?? END_LABELS[index]
+/** 两端的读屏名字。 */
+function endLabel(index: TimeRangePickerEndIndex, translations: Pick<typeof TIME_RANGE_PICKER_EN_US, 'startTime' | 'endTime'>): string {
+  return index === 0 ? translations.startTime : translations.endTime
 }
 
 function draftDirty(draft: TimeDraft): boolean {
@@ -93,7 +79,9 @@ export function connectTimeRangePicker<T extends PropTypes>(
   const ids = scope.ids('time-range-picker', 'label', 'control', 'trigger', 'content', 'segment-group', 'segment-group-end')
 
   const locale = prop('locale')
-  const translations = prop('translations')
+  // 段、列与两端的读屏名字缺省取 en-US 语言包，不走 Intl.DisplayNames：
+  // 后者依赖运行环境的默认 locale 与 ICU 数据完整度，同一份代码会产出不同 DOM。
+  const translations = resolveTranslations(TIME_RANGE_PICKER_EN_US, prop('translations'))
   const hourCycle = resolveHourCycle(prop('hourCycle'), locale)
   const granularity = prop('granularity') ?? TIME_FIELD_GRANULARITY
   const timeStep = resolveTimeStep(prop('timeStep'))
@@ -468,7 +456,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
         'role': 'spinbutton',
         // 导航与聚焦都以此为段的身份（事件那一刻现查 DOM 时按它定位）；哪一端由所在的 segment-group 定
         [ITEM_VALUE_ATTR]: segment,
-        'aria-label': (translations?.[segment] ?? SEGMENT_LABELS[segment]),
+        'aria-label': translations[segment],
         'aria-valuemin': range.min,
         'aria-valuemax': range.max,
         // 空段没有当前值，此时不写 aria-valuenow，写 0 会被念成零点
@@ -657,7 +645,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
         'type': 'button',
         // 不占 Tab 位：键盘用户在段上按退格即可清；读屏仍能摸到它，名字走文案键
         'tabindex': -1,
-        'aria-label': translations?.clearTrigger ?? 'Clear',
+        'aria-label': translations.clearTrigger,
         // 没值就整个收起，不是禁用：有值才出现，出现即可用
         'hidden': !canClear || undefined,
         // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里；触屏按下仍要进按压通道
@@ -762,7 +750,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
     getPresetGroupProps: () => normalize.element({
       ...parts['preset-group'].attrs,
       'role': 'listbox',
-      'aria-label': translations?.presets ?? 'Shortcuts',
+      'aria-label': translations.presets,
       'aria-orientation': 'vertical',
       // 单选与否必须显式说，省略只是没说
       'aria-multiselectable': 'false',
@@ -847,7 +835,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
         // 换列时按它定位（事件那一刻现查 DOM）；哪一端由所在的 column-group 定
         [ITEM_VALUE_ATTR]: unit,
         'role': 'listbox',
-        'aria-label': (translations?.[unit] ?? SEGMENT_LABELS[unit]),
+        'aria-label': translations[unit],
         'aria-orientation': 'vertical',
         // 单选与否必须显式说，省略只是没说
         'aria-multiselectable': 'false',

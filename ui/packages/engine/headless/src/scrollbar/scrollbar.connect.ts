@@ -8,7 +8,9 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ScrollbarApi, ScrollbarSchema } from './scrollbar.types'
 import { dataAttr } from '@xihan-ui/core'
+import { SCROLLBAR_EN_US } from '../locale/en-US'
 import { maxScrollOffset, SCROLL_MIN_THUMB_SIZE, scrollbarGeometry } from '../shared/scroll-geometry'
+import { resolveTranslations } from '../shared/translations'
 import { scrollbarAnatomy } from './scrollbar.anatomy'
 import { SCROLLBAR_DEFAULT_TYPE, SCROLLBAR_STEP } from './scrollbar.machine'
 
@@ -24,6 +26,7 @@ export function connectScrollbar<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): ScrollbarApi<T> {
   const { state, prop, send, context } = service
+  const translations = resolveTranslations(SCROLLBAR_EN_US, prop('translations'))
 
   const orientation = prop('orientation') ?? 'vertical'
   const type = prop('type') ?? SCROLLBAR_DEFAULT_TYPE
@@ -192,7 +195,7 @@ export function connectScrollbar<T extends PropTypes>(
       // 不进 Tab 序时不报 role：一个没有名字也够不着的 scrollbar 只会让读屏多念一句
       'role': focusable ? 'scrollbar' : undefined,
       'aria-orientation': focusable ? orientation : undefined,
-      'aria-label': focusable ? (prop('translations')?.thumb ?? 'Scrollbar') : undefined,
+      'aria-label': focusable ? translations.thumb : undefined,
       'aria-controls': focusable ? (prop('controls') ?? context.get('scrollableId') ?? undefined) : undefined,
       'aria-valuemin': focusable ? 0 : undefined,
       'aria-valuemax': focusable ? Math.round(max) : undefined,

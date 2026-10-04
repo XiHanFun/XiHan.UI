@@ -8,7 +8,9 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { MarqueeApi, MarqueeDirection, MarqueeSchema } from './marquee.types'
 import { dataAttr } from '@xihan-ui/core'
+import { MARQUEE_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { marqueeAnatomy } from './marquee.anatomy'
 
 const parts = marqueeAnatomy.build()
@@ -45,11 +47,7 @@ export function connectMarquee<T extends PropTypes>(
     '--xh-marquee-speed': speed === undefined ? undefined : String(speed),
     [MEASURED_SPAN]: span == null ? undefined : String(span),
   }
-  const translations = prop('translations')
-  const label = {
-    autoplayTriggerPause: translations?.autoplayTriggerPause ?? 'Pause scrolling',
-    autoplayTriggerPlay: translations?.autoplayTriggerPlay ?? 'Resume scrolling',
-  }
+  const label = resolveTranslations(MARQUEE_EN_US, prop('translations'))
   const contentId = scope.partId('marquee', 'content')
   // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
   const press = pressHandlers(service)

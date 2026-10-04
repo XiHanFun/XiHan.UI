@@ -187,7 +187,7 @@ banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页�
 | `root` | `aria-live` | live |
 | `root` | `role` | role |
 | `indicator` | `aria-hidden` | 'true' |
-| `close-trigger` | `aria-label` | props.translations.close |
+| `close-trigger` | `aria-label` | translations.close |
 
 ## 样式参考
 

@@ -278,7 +278,7 @@
 | `separator` | `aria-hidden` | 'true' |
 | `prev-trigger` | `aria-hidden` | 'true' |
 | `next-trigger` | `aria-hidden` | 'true' |
-| `overflow-trigger` | `aria-label` | props.translations.overflowTrigger |
+| `overflow-trigger` | `aria-label` | translations.overflowTrigger |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'tabpanel' |
 | `tab-drag-trigger` | `aria-hidden` | 'true' |

@@ -10,8 +10,10 @@ import type { SelectSchema } from '../select'
 import type { PaginationEllipsisSide } from './pagination.range'
 import type { PaginationPressedKey, PaginationSchema, PaginationTranslations } from './pagination.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
+import { PAGINATION_EN_US } from '../locale/en-US'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { resolveTranslations } from '../shared/translations'
 import { clampPage, normalizePageSize, pageForResize, pageSizeOptionsOf, totalPagesOf } from './pagination.range'
 
 const { createMachine } = setup<PaginationSchema>()
@@ -26,22 +28,9 @@ export const PAGINATION_OPEN_DELAY = 200
 /** 指针离开后多久收起（ms）：留出斜着划进浮层的时间。 */
 export const PAGINATION_CLOSE_DELAY = 300
 
-/** 文案桶：缺省英文，作者给了哪条就换哪条。连接层与内嵌下拉的档位文字都从这里取。 */
+/** 文案桶：缺省取 en-US 语言包，作者给了哪条就换哪条。连接层与内嵌下拉的档位文字都从这里取。 */
 export function paginationLabels(prop: PropFn<PaginationSchema>): PaginationTranslations {
-  const translations = prop('translations')
-  return {
-    root: translations?.root ?? 'Pagination',
-    firstTrigger: translations?.firstTrigger ?? 'First page',
-    prevTrigger: translations?.prevTrigger ?? 'Previous page',
-    nextTrigger: translations?.nextTrigger ?? 'Next page',
-    lastTrigger: translations?.lastTrigger ?? 'Last page',
-    item: translations?.item ?? ((value: number) => `Page ${value}`),
-    ellipsis: translations?.ellipsis ?? ((n: number) => `${n} more pages`),
-    pageSizeSelect: translations?.pageSizeSelect ?? 'Items per page',
-    pageSizeOption: translations?.pageSizeOption ?? ((size: number) => `${size} / page`),
-    summary: translations?.summary ?? ((start: number, end: number, total: number) => `${start}-${end} of ${total}`),
-    jumper: translations?.jumper ?? 'Go to page',
-  }
+  return resolveTranslations(PAGINATION_EN_US, prop('translations'))
 }
 
 /**

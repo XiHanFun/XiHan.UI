@@ -28697,6 +28697,15 @@
             },
             {
               "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "FormSchema['props']['translations'] | undefined"
+              },
+              "description": "校验报错的文案模板；对象只作为 property 暴露，全局配置（setXhConfig）的 form 那一桶垫在它下面。"
+            },
+            {
+              "kind": "field",
               "name": "validateOn",
               "privacy": "public",
               "type": {
@@ -58174,7 +58183,7 @@
               "name": "clear-trigger"
             },
             {
-              "description": "签名状态的活区域（role=status）；节点中未写文字时由元素填入内建文案",
+              "description": "签名状态的活区域（role=status）；节点中未写文字时由元素填入语言包里的文案",
               "name": "status"
             },
             {

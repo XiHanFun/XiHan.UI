@@ -256,8 +256,8 @@ function DefaultPreview({ item }: { item: CitationPreviewProps }): ReactNode {
       </header>
       <blockquote {...api.getQuoteProps(item)}>{quote}</blockquote>
       {current.type === 'source-url'
-        ? <a {...linkProps}>Open source</a>
-        : <button {...linkProps}>Open document</button>}
+        ? <a {...linkProps}>{api.previewLinkText(item)}</a>
+        : <button {...linkProps}>{api.previewLinkText(item)}</button>}
     </>
   )
 }

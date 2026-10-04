@@ -6,6 +6,8 @@
 // 定义 reasoning 类型契约。
 
 import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
+import { REASONING_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 
 /** 视图属性，经 connect 的第二个参数传入。状态机属性与 tool-call 共用一组。 */
 export interface ReasoningProps {
@@ -84,17 +86,17 @@ export function reasoningStatusText(
   translations?: Partial<ReasoningTranslations>,
   elapsedMs?: number,
 ): string {
+  const text = resolveTranslations(REASONING_EN_US, translations)
   if (streaming) {
-    // 只换了 thinking 没给 thinkingFor 的，照旧显示 thinking：不把英文缺省串混进本地化过的文案
-    const template = translations?.thinkingFor ?? (translations?.thinking === undefined ? 'Thinking for {seconds}s' : undefined)
-    if (elapsedMs === undefined || template === undefined)
-      return translations?.thinking ?? 'Thinking…'
-    return template.replace('{seconds}', String(Math.floor(elapsedMs / 1000)))
+    // 只换了 thinking 没给 thinkingFor 的，照旧显示 thinking：不把英文缺省串混进本地化过的文案。
+    // 判据看作者原本给的那份，并上语言包之后两个键恒有值，分不出来
+    const keepThinking = translations?.thinkingFor === undefined && translations?.thinking !== undefined
+    if (elapsedMs === undefined || keepThinking)
+      return text.thinking
+    return text.thinkingFor.replace('{seconds}', String(Math.floor(elapsedMs / 1000)))
   }
-  const label = translations?.label ?? 'Thought process'
   if (durationMs === undefined)
-    return label
+    return text.label
   const seconds = Math.round(durationMs / 100) / 10
-  const template = translations?.thoughtFor ?? 'Thought for {seconds}s'
-  return template.replace('{seconds}', String(seconds))
+  return text.thoughtFor.replace('{seconds}', String(seconds))
 }

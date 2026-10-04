@@ -194,11 +194,11 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | translations?.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `role` | 'group' |
 | `resize-trigger` | `aria-controls` | `panel` 部件的 id |
 | `resize-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `resize-trigger` | `aria-label` | translations?.resizeTrigger?.(boundary, Math.max(0, l… |
+| `resize-trigger` | `aria-label` | translations.resizeTrigger(boundary, Math.max(0, last… |
 | `resize-trigger` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `resize-trigger` | `aria-valuemax` | String(panel.max) |
 | `resize-trigger` | `aria-valuemin` | String(panel.min) |

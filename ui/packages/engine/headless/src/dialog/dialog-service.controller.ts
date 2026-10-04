@@ -6,6 +6,9 @@
 // 提供 dialog service.controller 相关实现。
 
 import type { Tone } from '@xihan-ui/core'
+import type { DialogTranslations } from './dialog.types'
+import { DIALOG_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 
 /** 命令式告知框标题旁的语义徽记。 */
 export type DialogServiceBadge = 'info' | 'success' | 'warning' | 'error'
@@ -13,6 +16,14 @@ export type DialogServiceBadge = 'info' | 'success' | 'warning' | 'error'
 /** 徽记的 error 语义在视觉语气轴上统一命名为 danger。 */
 export function dialogServiceBadgeTone(badge: DialogServiceBadge): Tone {
   return badge === 'error' ? 'danger' : badge
+}
+
+/**
+ * 服务里的按钮与报错文字：服务自己的配置里 dialog 那一桶垫在英文语言包之上。
+ * 调用时显式给的 okText / cancelText / actionErrorText 由适配器再压在它上面。
+ */
+export function dialogServiceTranslations(overrides: Partial<DialogTranslations> | undefined): DialogTranslations {
+  return resolveTranslations(DIALOG_EN_US, overrides)
 }
 
 /** 命令式对话框动作异常；保留原始原因，展示文案由适配器决定。 */

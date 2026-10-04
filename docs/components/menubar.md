@@ -292,7 +292,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-disabled` | 'true' \| 'false' |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `aria-orientation` | props.orientation |
 | `root` | `role` | 'menubar' |
 | `trigger` | `aria-controls` | `content` 部件的 id |

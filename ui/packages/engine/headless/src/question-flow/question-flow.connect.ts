@@ -14,6 +14,8 @@ import type {
   QuestionFlowSchema,
 } from './question-flow.types'
 import { createPressTracker, dataAttr, focusItem, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { QUESTION_FLOW_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { questionFlowAnatomy, questionFlowItemQuery } from './question-flow.anatomy'
 import { canAdvanceQuestion, clampQuestionIndex, questionSelectionLimits } from './question-flow.types'
 
@@ -37,7 +39,7 @@ export function connectQuestionFlow<T extends PropTypes>(
   const answers = context.get('answers')
   const notes = context.get('notes')
   const viewport = context.get('viewport')
-  const translations = prop('translations')
+  const translations = resolveTranslations(QUESTION_FLOW_EN_US, prop('translations'))
   const allowSkip = prop('allowSkip') !== false
   const loop = prop('loop') ?? true
   const isFirst = index <= 0
@@ -58,13 +60,7 @@ export function connectQuestionFlow<T extends PropTypes>(
   const selectionLimitsOf = (id: string): ReturnType<typeof questionSelectionLimits> => questionSelectionLimits(questionOf(id))
 
   // 题目自带的说明优先；缺席时多选的数量要求代填（至少 1 项、没有上限时不必说）
-  const rangeText = translations?.selectionRange ?? ((min: number, max: number | undefined): string => {
-    if (max === undefined)
-      return `Choose at least ${min}`
-    if (min === max)
-      return `Choose ${min}`
-    return min > 1 ? `Choose ${min} to ${max}` : `Choose up to ${max}`
-  })
+  const rangeText = translations.selectionRange
   const descriptionOf = (id: string): string => {
     const question = questionOf(id)
     if (question?.description)
@@ -128,9 +124,7 @@ export function connectQuestionFlow<T extends PropTypes>(
   }
 
   const counter = `${count === 0 ? 0 : index + 1} / ${count}`
-  const announcement = submitted
-    ? (translations?.submitted ?? 'Answers sent')
-    : (translations?.progress?.(index + 1, count) ?? `Question ${index + 1} of ${count}`)
+  const announcement = submitted ? translations.submitted : translations.progress(index + 1, count)
 
   return {
     status,
@@ -190,7 +184,7 @@ export function connectQuestionFlow<T extends PropTypes>(
         'role': 'group',
         ...parts.question.attrs,
         'aria-labelledby': prompt ? promptId(item.id) : undefined,
-        'aria-label': prompt ? undefined : (translations?.prompt ?? 'Question'),
+        'aria-label': prompt ? undefined : translations.prompt,
         'aria-hidden': active ? undefined : true,
         'inert': active ? undefined : true,
         'data-current': dataAttr(active),
@@ -218,7 +212,7 @@ export function connectQuestionFlow<T extends PropTypes>(
         'role': single ? 'radiogroup' : 'group',
         ...parts.group.attrs,
         'aria-labelledby': prompt ? promptId(item.id) : undefined,
-        'aria-label': prompt ? undefined : (translations?.options ?? 'Options'),
+        'aria-label': prompt ? undefined : translations.options,
         'aria-describedby': descriptionOf(item.id) === '' ? undefined : descriptionId(item.id),
         'data-select-mode': single ? 'single' : 'multiple',
         // 多选选满了：未选项各自已是 aria-disabled，组上这一位留给作者的样式钩子
@@ -351,8 +345,8 @@ export function connectQuestionFlow<T extends PropTypes>(
       ...parts.note.attrs,
       'type': 'text',
       'value': noteOf(item.id),
-      'aria-label': translations?.note ?? 'Other answer',
-      'placeholder': translations?.notePlaceholder,
+      'aria-label': translations.note,
+      'placeholder': translations.notePlaceholder,
       'disabled': submitted || undefined,
       'tabindex': isCurrent(item.id) ? undefined : -1,
       'onInput': (event: Event) => {
@@ -387,7 +381,7 @@ export function connectQuestionFlow<T extends PropTypes>(
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
-      'aria-label': translations?.prev ?? 'Previous question',
+      'aria-label': translations.prev,
       'disabled': (isFirst || submitted) || undefined,
       'data-disabled': dataAttr(isFirst || submitted),
       // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；首题上不进
@@ -409,7 +403,7 @@ export function connectQuestionFlow<T extends PropTypes>(
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'xs',
-      'aria-label': translations?.next ?? 'Next question',
+      'aria-label': translations.next,
       'disabled': (isLast || submitted) || undefined,
       'data-disabled': dataAttr(isLast || submitted),
       // 末题上不进
@@ -427,7 +421,7 @@ export function connectQuestionFlow<T extends PropTypes>(
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
       'data-xh-action-size': size,
-      'aria-label': translations?.skip,
+      'aria-label': translations.skip,
       'hidden': !allowSkip || undefined,
       'disabled': submitted || undefined,
       'data-disabled': dataAttr(submitted),
@@ -453,7 +447,7 @@ export function connectQuestionFlow<T extends PropTypes>(
       'data-xh-action-size': size,
       'data-tone': prop('tone'),
       'data-mode': isLast ? 'send' : 'continue',
-      'aria-label': isLast ? translations?.send : translations?.continue,
+      'aria-label': isLast ? translations.send : translations.continue,
       'disabled': !canAdvance || undefined,
       'data-disabled': dataAttr(!canAdvance),
       // 这一题答得不能往下走时不进

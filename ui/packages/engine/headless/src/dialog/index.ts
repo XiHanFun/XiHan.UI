@@ -6,7 +6,7 @@
 // 导出 dialog 模块的公共接口。
 
 export { createDialogServiceController } from './dialog-service.controller'
-export { dialogServiceBadgeTone } from './dialog-service.controller'
+export { dialogServiceBadgeTone, dialogServiceTranslations } from './dialog-service.controller'
 export type { DialogServiceActionError, DialogServiceBadge, DialogServiceController, DialogServiceControllerOptions, DialogServiceControllerSpec, DialogServiceControllerState, DialogServiceRequest } from './dialog-service.controller'
 export { dialogAnatomy } from './dialog.anatomy'
 export { connectDialog } from './dialog.connect'

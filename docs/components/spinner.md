@@ -134,7 +134,7 @@ delay 让转圈挂载后等一段时间才出现：快请求在这之前就回�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `label` | `string` | 解析后的文案：label → translations.label → 内置默认值。 |
+| `label` | `string` | 解析后的文案：label → translations.label → en-US 语言包。 |
 | `visible` | `boolean` | 已经露面；等待 delay 期间为 false。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |

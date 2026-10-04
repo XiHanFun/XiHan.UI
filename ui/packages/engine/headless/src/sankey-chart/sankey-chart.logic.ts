@@ -12,35 +12,24 @@ import type { SankeyLinkGeometry, SankeyModel, SankeyNodeGeometry } from './sank
 import type { SankeyChartSchema, SankeyOverlay } from './sankey-chart.schema'
 import type { SankeyChartTranslations, SankeySummary, SankeyTooltipModel, SankeyTooltipRow } from './sankey-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
-import { CHART_TRANSLATIONS, chartActiveSource, resolveChartTranslations } from '../shared/chart'
+import { SANKEY_CHART_EN_US } from '../locale/en-US'
+import { chartActiveSource, resolveChartTranslations } from '../shared/chart'
 import { sankeyLinkKey, sankeyNodeKey } from './sankey-chart.model'
 
 /** 提示框里流入、流出各列几条；多出来的合成一行「其他」。 */
 const TOOLTIP_FLOWS = 6
 
-/** 节点与流带的可及名：名字（流带是「源 → 目标」）与流量。 */
+/** 数据标记的缺省可及名，取自英文语言包。 */
 export function defaultSankeyDatumLabel(details: ChartDatumDetails): string {
-  return `${details.seriesName}, ${details.formatted.value ?? ''}`
+  return SANKEY_CHART_EN_US.datumLabel(details)
 }
 
-/** 缺省摘要：节点数、流带数、合计与最大的一条流带。 */
+/** 缺省摘要，取自英文语言包。 */
 export function defaultSankeySummary(model: SankeySummary): string {
-  if (model.linkCount === 0)
-    return 'No data.'
-  const head = `${model.nodeCount} nodes, ${model.linkCount} ${model.linkCount === 1 ? 'flow' : 'flows'}, total ${model.total}.`
-  return model.largest ? `${head} Largest flow: ${model.largest.source} to ${model.largest.target}, ${model.largest.value}.` : head
+  return SANKEY_CHART_EN_US.summary(model)
 }
 
-export const SANKEY_TRANSLATIONS: SankeyChartTranslations = Object.freeze({
-  ...CHART_TRANSLATIONS,
-  datumLabel: defaultSankeyDatumLabel,
-  sourceLabel: 'Source',
-  targetLabel: 'Target',
-  valueLabel: 'Value',
-  inflowLabel: 'From',
-  outflowLabel: 'To',
-  summary: defaultSankeySummary,
-})
+export const SANKEY_TRANSLATIONS: SankeyChartTranslations = Object.freeze({ ...SANKEY_CHART_EN_US })
 
 const translationsCache = new WeakMap<object, SankeyChartTranslations>()
 

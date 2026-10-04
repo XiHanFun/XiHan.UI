@@ -238,7 +238,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | 'dialog' |
-| `close-trigger` | `aria-label` | props.translations.close |
+| `close-trigger` | `aria-label` | translations.close |
 | `arrow` | `aria-hidden` | 'true' |
 
 ## 样式参考

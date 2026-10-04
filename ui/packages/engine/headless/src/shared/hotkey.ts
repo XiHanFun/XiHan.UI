@@ -7,7 +7,9 @@
 //
 // 翻写与判定全程不读 navigator：服务端渲染时没有它，读了会炸；平台由适配器挂载后
 // 调 detectKbdPlatform 测出来往下传。
+import type { KbdTranslations } from '../kbd/kbd.types'
 import { isHTMLElement } from '@xihan-ui/core'
+import { KBD_EN_US } from '../locale/en-US'
 
 /** 平台写法。'auto' 表示还没测出来，由适配器挂载后换成实测值。 */
 export type KbdPlatform = 'auto' | 'mac' | 'other'
@@ -24,9 +26,9 @@ export interface HotkeySegment {
   readonly source: string
   /** 归一化键名：修饰键是 Meta / Control / Alt / Shift，主键是 KeyboardEvent.key 的写法。 */
   readonly key: string
-  /** 键帽上显示的字。 */
+  /** 键帽上显示的字，取自语言包。 */
   readonly label: string
-  /** 读屏念的名字，内建英文。 */
+  /** 读屏念的名字，取自语言包。 */
   readonly name: string
   /** 是不是修饰键。 */
   readonly modifier: boolean
@@ -48,22 +50,6 @@ const MODIFIER_ALIAS: Record<string, HotkeyModifier | 'Mod'> = {
   win: 'Meta',
 }
 
-/** 修饰键的键帽写法。 */
-const MODIFIER_LABEL: Record<HotkeyModifier, Record<KbdResolvedPlatform, string>> = {
-  Alt: { mac: '⌥', other: 'Alt' },
-  Control: { mac: '⌃', other: 'Ctrl' },
-  Meta: { mac: '⌘', other: 'Win' },
-  Shift: { mac: '⇧', other: 'Shift' },
-}
-
-/** 修饰键读屏念的名字：同一枚键在两个平台上的叫法不一样。 */
-const MODIFIER_NAME: Record<HotkeyModifier, Record<KbdResolvedPlatform, string>> = {
-  Alt: { mac: 'Option', other: 'Alt' },
-  Control: { mac: 'Control', other: 'Control' },
-  Meta: { mac: 'Command', other: 'Windows' },
-  Shift: { mac: 'Shift', other: 'Shift' },
-}
-
 /** 主键别名 → KeyboardEvent.key 的写法。 */
 const KEY_ALIAS: Record<string, string> = {
   arrowdown: 'ArrowDown',
@@ -83,34 +69,6 @@ const KEY_ALIAS: Record<string, string> = {
   space: ' ',
   tab: 'Tab',
   up: 'ArrowUp',
-}
-
-/** 主键的键帽写法；表里没有的键（字母、数字、标点）直接用大写形式。 */
-const KEY_LABEL: Record<string, Record<KbdResolvedPlatform, string>> = {
-  ' ': { mac: 'Space', other: 'Space' },
-  'ArrowDown': { mac: '↓', other: '↓' },
-  'ArrowLeft': { mac: '←', other: '←' },
-  'ArrowRight': { mac: '→', other: '→' },
-  'ArrowUp': { mac: '↑', other: '↑' },
-  'Backspace': { mac: '⌫', other: 'Backspace' },
-  'Delete': { mac: '⌦', other: 'Del' },
-  'Enter': { mac: '⏎', other: 'Enter' },
-  'Escape': { mac: '⎋', other: 'Esc' },
-  'Tab': { mac: '⇥', other: 'Tab' },
-}
-
-/** 主键读屏念的名字；表里没有的键用大写形式，单个字母正好读成字母本身。 */
-const KEY_NAME: Record<string, string> = {
-  ' ': 'Space',
-  'ArrowDown': 'Arrow Down',
-  'ArrowLeft': 'Arrow Left',
-  'ArrowRight': 'Arrow Right',
-  'ArrowUp': 'Arrow Up',
-  'Backspace': 'Backspace',
-  'Delete': 'Delete',
-  'Enter': 'Enter',
-  'Escape': 'Escape',
-  'Tab': 'Tab',
 }
 
 /** 不接受打字的输入类型：这些控件按键盘不产生文字，单键组合落在它们身上不算打字。 */
@@ -160,16 +118,19 @@ function resolveMod(platform: KbdResolvedPlatform): HotkeyModifier {
   return platform === 'mac' ? 'Meta' : 'Control'
 }
 
+/** 键名与键帽字从哪儿取：语言包里 kbd 那一桶。 */
+export type HotkeyText = Pick<KbdTranslations, 'keyName' | 'keyLabel'>
+
 /** 单个词翻成一枚键。 */
-function toSegment(source: string, platform: KbdResolvedPlatform): HotkeySegment {
+function toSegment(source: string, platform: KbdResolvedPlatform, text: HotkeyText): HotkeySegment {
   const alias = lookup(MODIFIER_ALIAS, source.toLowerCase())
   if (alias) {
     const key = alias === 'Mod' ? resolveMod(platform) : alias
     return {
       source,
       key,
-      label: MODIFIER_LABEL[key][platform],
-      name: MODIFIER_NAME[key][platform],
+      label: text.keyLabel(key, platform),
+      name: text.keyName(key, platform),
       modifier: true,
     }
   }
@@ -177,14 +138,14 @@ function toSegment(source: string, platform: KbdResolvedPlatform): HotkeySegment
   return {
     source,
     key,
-    label: lookup(KEY_LABEL, key)?.[platform] ?? key.toUpperCase(),
-    name: lookup(KEY_NAME, key) ?? key.toUpperCase(),
+    label: text.keyLabel(key, platform),
+    name: text.keyName(key, platform),
     modifier: false,
   }
 }
 
 /**
- * 把一组键翻成当前平台的写法，顺序与 keys 一致。
+ * 把一组键翻成当前平台的写法，顺序与 keys 一致。键名与键帽字取 text，缺省是英文语言包。
  *
  * @example
  * // Mac 上出 ⌘ 与 S 两枚键帽
@@ -195,10 +156,11 @@ function toSegment(source: string, platform: KbdResolvedPlatform): HotkeySegment
 export function formatHotkey(
   keys: readonly string[] | undefined,
   platform?: KbdPlatform,
+  text: HotkeyText = KBD_EN_US,
 ): readonly HotkeySegment[] {
   const resolved = resolveKbdPlatform(platform)
   // 空串翻不出任何键，留着会铺出一枚没有字的键帽
-  return (keys ?? []).filter(key => typeof key === 'string' && key !== '').map(key => toSegment(key, resolved))
+  return (keys ?? []).filter(key => typeof key === 'string' && key !== '').map(key => toSegment(key, resolved, text))
 }
 
 /**

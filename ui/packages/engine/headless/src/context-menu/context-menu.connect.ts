@@ -21,8 +21,10 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/core'
+import { CONTEXT_MENU_EN_US } from '../locale/en-US'
 import { menuChoiceCloses } from '../shared/menu-choice'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { resolveTranslations } from '../shared/translations'
 import { contextMenuAnatomy, contextMenuItemQuery, contextMenuItemText } from './context-menu.anatomy'
 import { CONTEXT_MENU_DEFAULT_PLACEMENT } from './context-menu.machine'
 
@@ -39,6 +41,7 @@ export function connectContextMenu<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): ContextMenuApi<T> {
   const { state, prop, send, context, refs, scope } = service
+  const translations = resolveTranslations(CONTEXT_MENU_EN_US, prop('translations'))
   const open = state.get() === 'open'
   const pressing = state.get() === 'pressing'
   const ids = scope.ids('context-menu', 'trigger', 'content')
@@ -358,7 +361,7 @@ export function connectContextMenu<T extends PropTypes>(
       // 名字只能自己给：触发区是作者的一整块内容且不带 role，指过去会把整块区域的文字
       // 算成菜单名（右键一个表格行 = 把整行念一遍）。无锚点时焦点歇在这儿，
       // 读屏此刻只报得出容器的名字与角色
-      'aria-label': prop('translations')?.content ?? 'Context menu',
+      'aria-label': translations.content,
       // 有锚点时 Tab 位归锚点条目；展开着却没有锚点时由容器兜底，否则整个菜单没有 Tab 停靠点
       'tabindex': open && anchor == null ? 0 : -1,
       'data-state': stateAttr,

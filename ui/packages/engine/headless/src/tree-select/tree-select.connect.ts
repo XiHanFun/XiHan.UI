@@ -9,8 +9,10 @@ import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } fro
 import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
 import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectPressedPart, TreeSelectSchema, TreeSelectTranslations } from './tree-select.types'
 import { cascadeState, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
+import { TREE_SELECT_EN_US } from '../locale/en-US'
 import { overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
+import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { flattenTree, indexTree } from '../tree'
 import { treeSelectAnatomy } from './tree-select.anatomy'
@@ -79,19 +81,7 @@ export function connectTreeSelect<T extends PropTypes>(
   const counted = prop('collection') != null
   const renderedNodeCount = context.get('renderedNodeCount')
   const empty = (counted ? collection.length : renderedNodeCount) === 0
-  const translations: TreeSelectTranslations = {
-    tree: prop('translations')?.tree ?? 'Tree options',
-    clearTrigger: prop('translations')?.clearTrigger ?? 'Clear',
-    empty: prop('translations')?.empty ?? 'No data',
-    loading: prop('translations')?.loading ?? 'Loading',
-    branchError: prop('translations')?.branchError ?? 'Could not load children',
-    retry: prop('translations')?.retry ?? 'Retry',
-    branchEmpty: prop('translations')?.branchEmpty ?? 'No children',
-    searchInput: prop('translations')?.searchInput ?? 'Search',
-    noMatch: prop('translations')?.noMatch ?? 'No matches',
-    deleteItem: prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`),
-    overflowTag: prop('translations')?.overflowTag ?? ((count: number) => `+${count}`),
-  }
+  const translations: TreeSelectTranslations = resolveTranslations(TREE_SELECT_EN_US, prop('translations'))
   // 形态默认落 outline：不写时 root 与 positioner 如实投影同一常量，皮肤不再依赖缺省档
   const variant = prop('variant') ?? 'outline'
   // 只读与禁用都改不了选中值，禁用还额外禁止展开浮层

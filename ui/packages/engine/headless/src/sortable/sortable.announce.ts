@@ -5,6 +5,7 @@
 
 // 拖动过程的读屏播报。拆出来是因为它是纯文本拼装，可以脱开状态机单独验。
 import type { SortableTranslations } from './sortable.types'
+import { SORTABLE_EN_US } from '../locale/en-US'
 
 export type SortableAnnounceKind = 'picked' | 'moved' | 'dropped' | 'canceled' | 'movedToList' | 'droppedInList'
 
@@ -36,19 +37,16 @@ export function sortableAnnouncement(kind: SortableAnnounceKind, input: Sortable
 
   switch (kind) {
     case 'picked':
-      return t?.picked?.(name, position, total)
-        ?? `Picked up ${name}. Position ${position} of ${total}. Use arrow keys to move, space to drop, escape to cancel.`
+      return (t?.picked ?? SORTABLE_EN_US.picked)(name, position, total)
     case 'moved':
-      return t?.moved?.(name, position, total) ?? `Moved to position ${position} of ${total}.`
+      return (t?.moved ?? SORTABLE_EN_US.moved)(name, position, total)
     case 'dropped':
-      return t?.dropped?.(name, position) ?? `${name} dropped at position ${position}.`
+      return (t?.dropped ?? SORTABLE_EN_US.dropped)(name, position)
     case 'canceled':
-      return t?.canceled?.(name, position) ?? `Sorting canceled. ${name} returned to position ${position}.`
+      return (t?.canceled ?? SORTABLE_EN_US.canceled)(name, position)
     case 'movedToList':
-      return t?.movedToList?.(listName, listPosition, listTotal, position, total)
-        ?? `Moved to ${listName}, list ${listPosition} of ${listTotal}. Position ${position} of ${total}.`
+      return (t?.movedToList ?? SORTABLE_EN_US.movedToList)(listName, listPosition, listTotal, position, total)
     case 'droppedInList':
-      return t?.droppedInList?.(name, listName, listPosition, position)
-        ?? `${name} dropped into ${listName}, list ${listPosition}, at position ${position}.`
+      return (t?.droppedInList ?? SORTABLE_EN_US.droppedInList)(name, listName, listPosition, position)
   }
 }

@@ -61,10 +61,10 @@ export interface SelectionTagsOptions {
   entries: readonly SelectionTagEntry[]
   /** 最多显示几枚；未提供时取 SELECTION_TAG_DEFAULT_MAX，负数按 0 处理。 */
   maxTagCount: number | undefined
-  /** +N 那一枚的文字，接收折起的个数；未提供时写 `+N`。 */
-  overflowTag: ((count: number) => string) | undefined
-  /** 删除钮的可及名，接收标签文字；未提供时写 `Delete <label>`。 */
-  deleteItem: ((label: string) => string) | undefined
+  /** +N 那一枚的文字，接收折起的个数。调用方从自己的语言包那一桶取。 */
+  overflowTag: (count: number) => string
+  /** 删除钮的可及名，接收标签文字。调用方从自己的语言包那一桶取。 */
+  deleteItem: (label: string) => string
   /** 控件的面：标签的形态由它派生（淡底面里摆描边标签，其余摆淡底标签）。 */
   variant: ControlVariant
   tone: Tone | undefined
@@ -100,7 +100,7 @@ export function connectSelectionTags<T extends PropTypes>(
   const visible = options.entries.slice(0, max)
   const overflowCount = options.entries.length - visible.length
   const overflowText = overflowCount > 0
-    ? (options.overflowTag ?? ((count: number) => `+${count}`))(overflowCount)
+    ? options.overflowTag(overflowCount)
     : ''
   const axes = {
     variant: tagVariantForControl(options.variant),
@@ -110,7 +110,6 @@ export function connectSelectionTags<T extends PropTypes>(
     readOnly: options.readOnly,
   }
   const labelOf = (key: string): string => options.entries.find(entry => entry.key === key)?.label ?? key
-  const deleteLabel = options.deleteItem ?? ((label: string) => `Delete ${label}`)
 
   return {
     visible,
@@ -123,7 +122,7 @@ export function connectSelectionTags<T extends PropTypes>(
         ...axes,
         closable: true,
         open: true,
-        translations: { close: deleteLabel(labelOf(key)) },
+        translations: { close: options.deleteItem(labelOf(key)) },
         onOpenChange: ({ open }) => {
           if (!open)
             options.onDelete(key)

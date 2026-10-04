@@ -8,6 +8,8 @@
 import type { NormalizeProps, Orientation, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ToolbarApi, ToolbarItemProps, ToolbarSchema } from './toolbar.types'
 import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, stepIndex } from '@xihan-ui/core'
+import { TOOLBAR_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { toolbarAnatomy, toolbarItemQuery } from './toolbar.anatomy'
 import { toolbarOverflowTrigger } from './toolbar.overflow'
 
@@ -25,7 +27,7 @@ export function connectToolbar<T extends PropTypes>(
   const orientation = prop('orientation') ?? 'horizontal'
   const dir = prop('dir') ?? 'ltr'
   const loop = prop('loop') ?? true
-  const overflowTriggerLabel = prop('translations')?.overflowTrigger ?? 'More'
+  const overflowTriggerLabel = resolveTranslations(TOOLBAR_EN_US, prop('translations')).overflowTrigger
 
   // 分隔线恒与主轴垂直：横排工具条里分隔的是左右两段，那条线是竖的。
   const separatorOrientation: Orientation = orientation === 'horizontal' ? 'vertical' : 'horizontal'

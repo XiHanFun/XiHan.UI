@@ -13,7 +13,8 @@ import type { XhButtonElement } from '../elements/button'
 import type { XhDialogElement } from '../elements/dialog'
 import type { AlertOptions, ConfirmOptions, DialogActionError, DialogBody, DialogService, DialogServiceOptions } from './types'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { createDialogServiceController, dialogServiceBadgeTone } from '@xihan-ui/headless'
+import { createDialogServiceController, dialogServiceBadgeTone, dialogServiceTranslations } from '@xihan-ui/headless'
+import { resolveXhConfig } from '../config'
 import { spinArc } from './glyph'
 import { partNode } from './host'
 import { defineFeedbackElements } from './register'
@@ -22,8 +23,9 @@ interface Spec extends DialogServiceControllerSpec {
   title: string
   content?: DialogBody
   tone: Tone
-  okText: string
-  cancelText: string
+  /** 未给时取宿主所在处的全局配置里 dialog 那一桶的 ok，再退英文语言包。 */
+  okText?: string
+  cancelText?: string
   showCancel: boolean
   /** 标题旁的类型徽记（预设档用），confirm 不带。 */
   badge?: DialogServiceBadge
@@ -35,7 +37,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   if (typeof document === 'undefined')
     throw new Error('createDialogService 需要 document；SSR 里请等到客户端再创建')
 
-  const defaults = { okText: options.okText ?? 'OK', cancelText: options.cancelText ?? 'Cancel' }
+  // 没给的那几句在渲染时按宿主所在处的全局配置取语言包
+  const defaults = { okText: options.okText, cancelText: options.cancelText }
   const holder = options.target ?? document.createElement('div')
   const release = (): void => {
     if (!options.target)
@@ -124,15 +127,17 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     else {
       description.textContent = spec.content ?? ''
     }
+    const text = dialogServiceTranslations(resolveXhConfig(dialog).translations?.dialog)
+    const okText = spec.okText ?? text.ok
     cancel.hidden = !spec.showCancel
     cancel.disabled = serviceState.busy
-    cancelLabel.textContent = spec.cancelText
+    cancelLabel.textContent = spec.cancelText ?? text.cancel
     ok.tone = spec.tone
     ok.loading = serviceState.busy
     okIndicator.replaceChildren(...(serviceState.busy ? [spinArc()] : []))
-    okLabel.textContent = serviceState.busy ? `${spec.okText}…` : spec.okText
+    okLabel.textContent = serviceState.busy ? `${okText}…` : okText
     errorMessage.hidden = serviceState.actionError === null
-    errorMessage.textContent = serviceState.actionError ? options.actionErrorText ?? 'Action failed. Please try again.' : ''
+    errorMessage.textContent = serviceState.actionError ? options.actionErrorText ?? text.actionError : ''
     // 忙的时候 Esc 也拦住：正在提交的那一下不该被一个按键撤销
     dialog.closeOnEscape = !serviceState.busy
   }

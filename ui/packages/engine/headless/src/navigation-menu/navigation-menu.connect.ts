@@ -8,6 +8,8 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { NavigationMenuApi, NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuPressedPart, NavigationMenuSchema, NavigationMenuTriggerProps } from './navigation-menu.types'
 import { contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { NAVIGATION_MENU_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { navigationMenuAnatomy, navigationMenuPartId, navigationMenuTriggerQuery } from './navigation-menu.anatomy'
 import { branchTriggerHoldingFocus } from './navigation-menu.dom'
 
@@ -55,7 +57,7 @@ export function connectNavigationMenu<T extends PropTypes>(
   const orientation = prop('orientation') ?? 'horizontal'
   const dir = prop('dir')
   const loop = prop('loop') ?? true
-  const label = prop('translations')?.root ?? 'Main navigation'
+  const label = resolveTranslations(NAVIGATION_MENU_EN_US, prop('translations')).root
   const open = value != null
   const exitPending = context.get('exitPending') ?? false
   const switching = context.get('switching')

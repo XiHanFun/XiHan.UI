@@ -6,7 +6,45 @@
 // 繁體中文（台灣）語言包。
 
 import type { ChartDatumDetails } from '../shared/chart'
+import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleTranslations } from './types'
+import { keyText } from './key-text'
+
+/** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
+const KEY_NAME: KeyTextTable = {
+  'Alt': { mac: 'Option 鍵', other: 'Alt 鍵' },
+  'Control': 'Control 鍵',
+  'Meta': { mac: 'Command 鍵', other: 'Windows 鍵' },
+  'Shift': 'Shift 鍵',
+  ' ': '空白鍵',
+  'ArrowDown': '下方向鍵',
+  'ArrowLeft': '左方向鍵',
+  'ArrowRight': '右方向鍵',
+  'ArrowUp': '上方向鍵',
+  'Backspace': '退格鍵',
+  'Delete': '刪除鍵',
+  'Enter': 'Enter 鍵',
+  'Escape': 'Esc 鍵',
+  'Tab': 'Tab 鍵',
+}
+
+/** 键帽上写的字：Mac 用系统符号。 */
+const KEY_LABEL: KeyTextTable = {
+  'Alt': { mac: '⌥', other: 'Alt' },
+  'Control': { mac: '⌃', other: 'Ctrl' },
+  'Meta': { mac: '⌘', other: 'Win' },
+  'Shift': { mac: '⇧', other: 'Shift' },
+  ' ': '空白鍵',
+  'ArrowDown': '↓',
+  'ArrowLeft': '←',
+  'ArrowRight': '→',
+  'ArrowUp': '↑',
+  'Backspace': { mac: '⌫', other: 'Backspace' },
+  'Delete': { mac: '⌦', other: 'Del' },
+  'Enter': { mac: '⏎', other: 'Enter' },
+  'Escape': { mac: '⎋', other: 'Esc' },
+  'Tab': { mac: '⇥', other: 'Tab' },
+}
 
 const EDGE = {
   n: '上邊緣',
@@ -157,6 +195,8 @@ const translations = {
     nextSource: '下一個來源',
     source: (index, title) => `來源 ${index}：${title}`,
     document: '文件',
+    previewLinkSource: '開啟來源',
+    previewLinkDocument: '開啟文件',
   },
   'clipboard': { copied: '已複製' },
   'code-view': {
@@ -206,7 +246,13 @@ const translations = {
     presets: '快速選項',
     clearTrigger: '清除',
   },
-  'dialog': { close: '關閉', dragTrigger: '移動對話方塊' },
+  'dialog': {
+    close: '關閉',
+    dragTrigger: '移動對話方塊',
+    ok: '確定',
+    cancel: '取消',
+    actionError: '操作失敗，請再試一次。',
+  },
   'diff-view': {
     added: '新增',
     removed: '移除',
@@ -235,6 +281,22 @@ const translations = {
     resizeValueText: size => `寬 ${Math.round(size.width)}，高 ${Math.round(size.height)}`,
     windowStateTrigger: state => ({ default: '還原面板', maximized: '最大化面板', minimized: '最小化面板' })[state],
     close: '關閉',
+  },
+  'form': {
+    required: '{name} 為必填欄位',
+    type: {
+      string: '{name} 必須是字串',
+      number: '{name} 必須是數字',
+      integer: '{name} 必須是整數',
+      email: '{name} 不是有效的電子郵件地址',
+      url: '{name} 不是有效的網址',
+      array: '{name} 必須是陣列',
+    },
+    minLength: '{name} 至少需要 {min} 個字元',
+    maxLength: '{name} 不能超過 {max} 個字元',
+    minNumber: '{name} 不能小於 {min}',
+    maxNumber: '{name} 不能大於 {max}',
+    pattern: '{name} 格式不正確',
   },
   'funnel-chart': {
     ...chart,
@@ -352,12 +414,16 @@ const translations = {
     moreItems: count => `… 還有 ${count} 項`,
     empty: '沒有資料',
   },
-  'kbd': { hotkey: names => names.join(' + ') },
+  'kbd': {
+    keyName: (key, platform) => keyText(KEY_NAME, key, platform),
+    keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform),
+    hotkey: names => names.join(' + '),
+  },
   'loading-bar': { root: '載入中' },
   'log': { log: '記錄', scrollToBottom: '捲動到底部' },
   'markdown-stream': { completed: '回應已完成' },
   'marquee': { autoplayTriggerPause: '暫停捲動', autoplayTriggerPlay: '繼續捲動' },
-  'mention': { content: '提及' },
+  'mention': { content: '提及', empty: '沒有相符的結果' },
   'menubar': { root: '選單列' },
   'message-feed': {
     feed: '對話',

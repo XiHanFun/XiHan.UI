@@ -202,7 +202,7 @@ export interface TimePickerSchema extends MachineSchema {
      * 连续区间用 min / max 表达即可，该项留给每隔 15 分钟才可预约这类离散规则。
      */
     isTimeUnavailable?: TimeUnavailablePredicate
-    /** 段位读屏名的覆盖；未提供时使用内置英文语义名。 */
+    /** 段位读屏名的覆盖；未提供时取英文语言包里的语义名。 */
     translations?: Partial<TimePickerTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: TimePickerValueChangeDetails) => void

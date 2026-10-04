@@ -12,7 +12,7 @@ import type { DialogServiceBadge, DialogServiceControllerSpec, DialogServiceCont
 import type { App, MaybeRefOrGetter, VNodeChild } from 'vue'
 import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { createDialogServiceController, dialogServiceBadgeTone } from '@xihan-ui/headless'
+import { createDialogServiceController, dialogServiceBadgeTone, dialogServiceTranslations } from '@xihan-ui/headless'
 import { createApp, defineComponent, h, reactive, shallowRef, toRaw, toValue } from 'vue'
 import { XhButton, XhButtonIndicator, XhButtonLabel } from '../components/button'
 import { XhDialogBody, XhDialogContent, XhDialogDescription, XhDialogFooter, XhDialogHeader, XhDialogIndicator, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
@@ -64,11 +64,11 @@ export interface PromptOptions<T extends object> extends Omit<ConfirmOptions, 'o
 }
 
 export interface DialogServiceOptions {
-  /** 确认按钮文案，默认 OK。 */
+  /** 确认按钮文案；未提供时取 config 里 translations.dialog.ok，再退英文语言包（OK）。 */
   okText?: MaybeRefOrGetter<string>
-  /** 取消按钮文案，默认 Cancel。 */
+  /** 取消按钮文案；未提供时取 translations.dialog.cancel，再退英文语言包（Cancel）。 */
   cancelText?: MaybeRefOrGetter<string>
-  /** 动作失败时的安全提示，支持与按钮文案相同的响应式来源。 */
+  /** 动作失败时的安全提示，支持与按钮文案相同的响应式来源；未提供时取 translations.dialog.actionError。 */
   actionErrorText?: MaybeRefOrGetter<string>
   /**
    * 提供给对话框子树的全局配置（locale / translations / size / portalContainer）。
@@ -101,8 +101,9 @@ interface Spec extends DialogServiceControllerSpec {
   title: string
   content?: DialogBody
   tone: Tone
-  okText: MaybeRefOrGetter<string>
-  cancelText: MaybeRefOrGetter<string>
+  /** 未给时取服务配置里 dialog 那一桶的 ok，再退英文语言包。 */
+  okText?: MaybeRefOrGetter<string>
+  cancelText?: MaybeRefOrGetter<string>
   showCancel: boolean
   /** 标题旁的类型徽记（预设档使用），confirm 不带。 */
   badge?: DialogServiceBadge
@@ -119,8 +120,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   if (typeof document === 'undefined')
     throw new Error('createDialogService 需要 document；SSR 里请等到客户端再创建')
 
-  // 文案不在创建时求值：队列里的对话框会跨过一次切语言
-  const defaults = { okText: options.okText ?? 'OK', cancelText: options.cancelText ?? 'Cancel' }
+  // 文案不在创建时求值：队列里的对话框会跨过一次切语言。没给的那几句在渲染时取服务配置的语言包
+  const defaults = { okText: options.okText, cancelText: options.cancelText }
   const configSource = createServiceConfig(options.config)
   const holder = options.target ?? document.createElement('div')
   let hostFailure: { cause: unknown } | null = null
@@ -161,6 +162,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
           return null
         const request = serviceState.current
         const spec = request?.spec
+        const text = dialogServiceTranslations(configSource.read()?.translations?.dialog)
+        const okText = toValue(spec?.okText) ?? text.ok
         return h(XhDialogRoot, {
           'open': serviceState.open,
           'onUpdate:open': onOpenChange,
@@ -182,15 +185,15 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
                   ? h(XhDialogDescription, () => spec.content as string)
                   : typeof spec.content === 'function' ? spec.content() : null,
                 spec.body && spec.value ? spec.body(spec.value) : null,
-                serviceState.actionError ? h('p', { role: 'alert', style: { color: 'var(--xh-fg-danger)' } }, toValue(options.actionErrorText) ?? 'Action failed. Please try again.') : null,
+                serviceState.actionError ? h('p', { role: 'alert', style: { color: 'var(--xh-fg-danger)' } }, toValue(options.actionErrorText) ?? text.actionError) : null,
               ]),
               h(XhDialogFooter, null, () => [
                 spec.showCancel
-                  ? h(XhButton, { variant: 'ghost', disabled: serviceState.busy, onClick: () => controller.close(false) }, () => toValue(spec.cancelText))
+                  ? h(XhButton, { variant: 'ghost', disabled: serviceState.busy, onClick: () => controller.close(false) }, () => toValue(spec.cancelText) ?? text.cancel)
                   : null,
                 h(XhButton, { variant: 'solid', tone: spec.tone, loading: serviceState.busy, onClick: controller.confirmCurrent }, () => [
                   serviceState.busy ? h(XhButtonIndicator, () => spinArc()) : null,
-                  h(XhButtonLabel, () => (serviceState.busy ? `${toValue(spec.okText)}…` : toValue(spec.okText))),
+                  h(XhButtonLabel, () => (serviceState.busy ? `${okText}…` : okText)),
                 ]),
               ]),
             ])

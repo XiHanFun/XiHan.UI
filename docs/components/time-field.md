@@ -139,7 +139,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |
+| `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；未提供时取英文语言包里的语义名。 |
 | `onValueChange` | `(details: TimeFieldValueChangeDetails) => void` |  |  |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
@@ -238,7 +238,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | `control` | `role` | 'group' |
 | `segment` | `aria-disabled` | 'true' \| 'false' |
 | `segment` | `aria-invalid` | 'true' \| 'false' |
-| `segment` | `aria-label` | prop('translations')?.[segment] |
+| `segment` | `aria-label` | translations[segment] |
 | `segment` | `aria-readonly` | 'true' \| 'false' |
 | `segment` | `aria-required` | 'true' \| 'false' |
 | `segment` | `aria-valuemax` | range.max |
@@ -246,7 +246,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | `segment` | `aria-valuenow` | segmentNumber(draft, segment, hourCycle) |
 | `segment` | `aria-valuetext` | timeSegmentText(draft, segment, { hourCycle, locale, … |
 | `segment` | `role` | 'spinbutton' |
-| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 
 ## 样式参考
 

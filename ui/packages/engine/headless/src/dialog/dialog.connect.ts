@@ -8,6 +8,8 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { DialogApi, DialogPressedPart, DialogSchema } from './dialog.types'
 import { createPressTracker, dataAttr, focusSafely } from '@xihan-ui/core'
+import { DIALOG_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { dialogAnatomy } from './dialog.anatomy'
 import { DIALOG_ARROW_DELTA, DIALOG_DRAG_LARGE_STEP, DIALOG_DRAG_STEP } from './dialog.gesture'
 
@@ -26,6 +28,7 @@ export function connectDialog<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): DialogApi<T> {
   const { state, prop, send, context, scope } = service
+  const translations = resolveTranslations(DIALOG_EN_US, prop('translations'))
   const open = state.get() === 'open'
   const modal = prop('modal') ?? true
   const role = prop('role') ?? 'dialog'
@@ -150,7 +153,7 @@ export function connectDialog<T extends PropTypes>(
     getDragTriggerProps: () => normalize.button({
       ...parts['drag-trigger'].attrs,
       'type': 'button',
-      'aria-label': prop('translations')?.dragTrigger ?? 'Move dialog',
+      'aria-label': translations.dragTrigger,
       // 没开拖动时推不动：用 aria-disabled 而不是原生 disabled，把手仍留在 Tab 序列里读得到
       'aria-disabled': draggable ? 'false' : 'true',
       'data-disabled': dataAttr(!draggable),
@@ -197,7 +200,7 @@ export function connectDialog<T extends PropTypes>(
     getCloseTriggerProps: () => normalize.button({
       ...parts['close-trigger'].attrs,
       'type': 'button',
-      'aria-label': prop('translations')?.close ?? 'Close',
+      'aria-label': translations.close,
       // 面板角落的叉：icon 档 sm、ghost 面，白面上走画布承载阶梯（hover 100 → pressed 200）
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',

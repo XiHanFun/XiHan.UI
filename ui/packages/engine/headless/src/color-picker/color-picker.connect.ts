@@ -6,55 +6,27 @@
 // 提供 color picker 相关实现。
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { ColorPickerChannel, ColorPickerInputChannel } from './color-picker.color'
+import type { ColorPickerInputChannel } from './color-picker.color'
 import type {
   ColorPickerApi,
   ColorPickerInputProps,
   ColorPickerServices,
-  ColorPickerTranslations,
 } from './color-picker.types'
 import { contains, dataAttr, isComposingEvent, mergeProps } from '@xihan-ui/core'
 import { connectColorSlider } from '../color-slider'
 import { connectColorSwatchPicker } from '../color-swatch-picker'
+import { COLOR_PICKER_EN_US } from '../locale/en-US'
 import { COLOR_FALLBACK, colorCss, colorHsvaToRgba, colorHueCss, colorParse, colorResolveFormat, colorResolveHsva } from '../shared/color'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { pressHandlers } from '../shared/press'
 import { connectSelectionTags } from '../shared/selection-tags'
+import { resolveTranslations } from '../shared/translations'
 import { colorPickerAnatomy } from './color-picker.anatomy'
 import { colorPickerInputText } from './color-picker.color'
 import { colorPickerPercent } from './color-picker.geometry'
 import { COLOR_PICKER_DEFAULT_PLACEMENT, colorPickerIncludes, resolveColorPickerMaxSelected } from './color-picker.machine'
 
 const parts = colorPickerAnatomy.build()
-
-/** 通道对外的单位：色相是角度，透明度是百分数。播报文本缺省就靠它们拼。 */
-const CHANNEL_UNIT: Record<ColorPickerChannel, string> = { hue: '°', alpha: '%' }
-const CHANNEL_NAME: Record<ColorPickerChannel, string> = { hue: 'Hue', alpha: 'Alpha' }
-const INPUT_NAME: Record<ColorPickerInputChannel, string> = {
-  hex: 'Hex',
-  r: 'Red',
-  g: 'Green',
-  b: 'Blue',
-  a: 'Alpha',
-}
-
-/** 标签的两句交给共享的标签连接层兜底，这里只收本组件自己的。 */
-type OwnTranslations = Omit<ColorPickerTranslations, 'deleteItem' | 'overflowTag'>
-
-function resolveTranslations(input: Partial<ColorPickerTranslations> | undefined): OwnTranslations {
-  return {
-    area: input?.area ?? 'Saturation and brightness',
-    areaValueText: input?.areaValueText
-      ?? ((saturation, brightness) => `Saturation ${saturation}%, brightness ${brightness}%`),
-    channel: input?.channel ?? (channel => CHANNEL_NAME[channel]),
-    channelValueText: input?.channelValueText ?? ((channel, value) => `${value}${CHANNEL_UNIT[channel]}`),
-    input: input?.input ?? (channel => INPUT_NAME[channel]),
-    swatch: input?.swatch ?? (value => `Color ${value}`),
-    swatchGroup: input?.swatchGroup ?? 'Color swatches',
-    recentSwatchGroup: input?.recentSwatchGroup ?? 'Recent colors',
-    eyeDropperTrigger: input?.eyeDropperTrigger ?? 'Pick a color from the screen',
-  }
-}
 
 type Dict = Record<string, unknown>
 
@@ -110,7 +82,7 @@ export function connectColorPicker<T extends PropTypes>(
   const swatches = prop('swatches') ?? []
   const inline = !!prop('inline')
   const recentColors = context.get('recentColors')
-  const label = resolveTranslations(prop('translations'))
+  const label = resolveTranslations(COLOR_PICKER_EN_US, prop('translations'))
   // 只读与禁用都不改值；区别在于浮层还开不开得了、控件还聚不聚得上焦
   const interactive = !disabled && !readOnly
   const maxSelected = resolveColorPickerMaxSelected(prop('maxSelected'))
@@ -174,8 +146,8 @@ export function connectColorPicker<T extends PropTypes>(
   const selectionTags = connectSelectionTags({
     entries: multiple ? selected.map(v => ({ key: v, label: v })) : [],
     maxTagCount: prop('maxTagCount'),
-    overflowTag: prop('translations')?.overflowTag,
-    deleteItem: prop('translations')?.deleteItem,
+    overflowTag: label.overflowTag,
+    deleteItem: label.deleteItem,
     variant: prop('variant') ?? 'outline',
     tone: undefined,
     size: prop('size'),

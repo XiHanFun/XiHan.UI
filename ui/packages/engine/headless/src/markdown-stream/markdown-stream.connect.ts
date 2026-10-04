@@ -8,6 +8,8 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { MarkdownStreamApi, MarkdownStreamProps } from './markdown-stream.types'
 import { dataAttr } from '@xihan-ui/core'
+import { MARKDOWN_STREAM_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { markdownStreamAnatomy } from './markdown-stream.anatomy'
 import { isLiveMarkdownBlock } from './markdown-stream.types'
 
@@ -21,10 +23,9 @@ export function connectMarkdownStream<T extends PropTypes>(
   const streaming = !!props.streaming
   const caret = props.caret !== false
   const announce = props.announce ?? 'off'
+  const translations = resolveTranslations(MARKDOWN_STREAM_EN_US, props.translations)
   // 还在增长时不播报：每来一个 token 念一次会把读屏刷爆
-  const announcement = announce !== 'off' && !streaming
-    ? props.translations?.completed ?? 'Response complete'
-    : undefined
+  const announcement = announce !== 'off' && !streaming ? translations.completed : undefined
 
   return {
     blocks: props.blocks,

@@ -8,7 +8,9 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { MentionApi, MentionInputEl, MentionInputProps, MentionItemProps, MentionNodeMeta, MentionSchema } from './mention.types'
 import { contains, createPressTracker, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
+import { MENTION_EN_US } from '../locale/en-US'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { resolveTranslations } from '../shared/translations'
 import { mentionAnatomy, mentionItemQuery, mentionItemText } from './mention.anatomy'
 import { MENTION_DEFAULT_PLACEMENT } from './mention.machine'
 import { remapMentionRanges } from './mention.trigger'
@@ -55,7 +57,8 @@ export function connectMention<T extends PropTypes>(
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   const loop = prop('loop') ?? true
-  const inputLabel = prop('translations')?.input
+  const translations = resolveTranslations(MENTION_EN_US, prop('translations'))
+  const inputLabel = translations.input
   const placeholder = prop('placeholder')
   const stateAttr = open ? 'open' : 'closed'
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
@@ -147,6 +150,7 @@ export function connectMention<T extends PropTypes>(
     open,
     collection,
     empty,
+    emptyText: translations.empty,
     value,
     query: trigger?.query ?? null,
     activePrefix: trigger?.prefix ?? null,
@@ -337,7 +341,7 @@ export function connectMention<T extends PropTypes>(
       'id': ids.content,
       'role': 'listbox',
       // role=listbox 必须有可及名字，而这里没有可指的标题部件，只能自带一句
-      'aria-label': prop('translations')?.content ?? 'Mentions',
+      'aria-label': translations.content,
       // 取数在途的播报归候选面板：两个相位占位自己不带这一位
       'aria-busy': loading ? 'true' : undefined,
       // tabindex 写 -1 不能省：可滚动容器会被某些浏览器自动塞进 Tab 序列

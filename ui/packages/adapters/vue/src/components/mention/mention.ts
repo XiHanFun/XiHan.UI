@@ -73,7 +73,7 @@ export const XhMentionRoot = defineComponent({
     'item-prefix'?: (props: MentionNodeMeta) => VNode[]
     /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */
     'item-suffix'?: (props: MentionNodeMeta) => VNode[]
-    /** 铺开 collection 时空态中的文案；未写时使用内建英文。 */
+    /** 铺开 collection 时空态中的文案；未写时取 translations.empty（缺省走英文语言包）。 */
     'empty'?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
@@ -112,7 +112,7 @@ export const XhMentionRoot = defineComponent({
             close: ctx.api.value.close,
           })
         : props.collection
-          ? renderDefaultTree(ctx.api.value.collection, slots.item, slots['item-prefix'], slots['item-suffix'], slots.empty)
+          ? renderDefaultTree(ctx.api.value.collection, ctx.api.value.emptyText, slots.item, slots['item-prefix'], slots['item-suffix'], slots.empty)
           : [],
     )
   },
@@ -164,7 +164,7 @@ export const XhMentionPositioner = defineComponent({
     // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.inputRef }, () => [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.inputRef, present: ctx.visible.value }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
@@ -271,12 +271,13 @@ export const XhMentionItemDescription = defineComponent({
  */
 function renderDefaultTree(
   collection: readonly MentionNodeMeta[],
+  defaultEmpty: string,
   itemSlot?: (node: MentionNodeMeta) => VNode[],
   prefixSlot?: (node: MentionNodeMeta) => VNode[],
   suffixSlot?: (node: MentionNodeMeta) => VNode[],
   emptySlot?: () => VNode[],
 ): VNode[] {
-  const emptyText = emptySlot?.() ?? 'No results'
+  const emptyText = emptySlot?.() ?? defaultEmpty
   return [
     h(XhMentionInput),
     h(XhMentionPositioner, null, () => [

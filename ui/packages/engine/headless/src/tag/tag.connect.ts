@@ -8,6 +8,8 @@
 import type { ControlVariant, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TagApi, TagPressedPart, TagPressPort, TagSchema, TagVariant } from './tag.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
+import { TAG_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { tagAnatomy } from './tag.anatomy'
 
 const parts = tagAnatomy.build()
@@ -46,6 +48,7 @@ function buildTagApi<T extends PropTypes>(
   press: TagPressPort,
   normalize: NormalizeProps<T>,
 ): TagApi<T> {
+  const translations = resolveTranslations(TAG_EN_US, prop('translations'))
   const open = port.get()
   // 收起后先播完退场才写 hidden：期间 data-state 已是 closed，根节点不可交互
   const exiting = !open && !!port.rendered
@@ -93,7 +96,7 @@ function buildTagApi<T extends PropTypes>(
       ...parts['close-trigger'].attrs,
       'type': 'button',
       // 摘掉一枚标签这个动作在 select 与 tags-input 里念的是 Delete，三处用同一个词
-      'aria-label': prop('translations')?.close ?? 'Delete',
+      'aria-label': translations.close,
       // 单体控件用原生 disabled：不可聚焦、也不占 Tab 位
       'disabled': !canClose || undefined,
       'data-disabled': dataAttr(!canClose),

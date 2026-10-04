@@ -192,7 +192,7 @@
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `copy-trigger` | `aria-busy` | 'true' \| undefined |
 | `copy-trigger` | `aria-disabled` | 'true' \| undefined |
-| `copy-trigger` | `aria-label` | translations?.copy |
+| `copy-trigger` | `aria-label` | translations.copy |
 | `indicator` | `aria-hidden` | indicator.copied !== copied \|\| undefined |
 | `status` | `aria-atomic` | 'true' |
 | `status` | `aria-live` | 'polite' |

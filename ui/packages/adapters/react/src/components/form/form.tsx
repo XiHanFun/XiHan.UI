@@ -18,6 +18,7 @@ import type {
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useMemo } from 'react'
+import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
 import { FormFieldProvider, FormProvider, useFormContext } from './context'
@@ -82,6 +83,8 @@ export interface XhFormRootProps extends FormElementProps {
   validate?: FormProps['validate']
   rules?: FormProps['rules']
   validateMessages?: FormProps['validateMessages']
+  /** 校验报错的文案模板；全局语言包经它到达，validateMessages 再逐条压在上面。 */
+  translations?: FormProps['translations']
   validateOn?: FormValidateOn
   layout?: FormProps['layout']
   /** grid 排布下分几列：整数即各档同一个列数，断点对象 `{ base, sm, md, lg, xl }` 则逐档取值。 */
@@ -108,6 +111,7 @@ export function XhFormRoot({
   validate,
   rules,
   validateMessages,
+  translations,
   validateOn,
   layout,
   columns,
@@ -125,7 +129,7 @@ export function XhFormRoot({
   ...rest
 }: XhFormRootProps): ReactNode {
   const ctx = useForm(
-    {
+    withXhConfig('form', {
       values,
       defaultValues,
       errors,
@@ -133,6 +137,7 @@ export function XhFormRoot({
       validate,
       rules,
       validateMessages,
+      translations,
       validateOn,
       layout,
       columns,
@@ -140,7 +145,7 @@ export function XhFormRoot({
       labelAlign,
       disabled,
       readOnly,
-    } as FormProps,
+    } as FormProps),
     { onValuesChange, onErrorsChange, onSubmit, onInvalid, onValidationError, onSubmitError },
   )
   const api = ctx.api

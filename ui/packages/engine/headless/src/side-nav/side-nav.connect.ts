@@ -7,24 +7,17 @@
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { TooltipSchema } from '../tooltip'
-import type { SideNavApi, SideNavNode, SideNavPressedPart, SideNavSchema, SideNavTranslations } from './side-nav.types'
+import type { SideNavApi, SideNavNode, SideNavPressedPart, SideNavSchema } from './side-nav.types'
 import { createPressTracker, dataAttr, focusItem, isComposingEvent, itemValue, navigateItems, navIntentFromKey, normalizeProps, queryItems } from '@xihan-ui/core'
+import { SIDE_NAV_EN_US } from '../locale/en-US'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { resolveTranslations } from '../shared/translations'
 import { connectTooltip } from '../tooltip'
 import { flattenTree, indexTree } from '../tree'
 import { sideNavAnatomy, sideNavLinkQuery, sideNavTriggerQuery } from './side-nav.anatomy'
 import { resolveSideNavSearch } from './side-nav.search'
 
 const parts = sideNavAnatomy.build()
-
-/** 读屏文案补齐缺省值；缺省为英文。 */
-function resolveTranslations(input: Partial<SideNavTranslations> | undefined): SideNavTranslations {
-  return {
-    root: input?.root ?? 'Sidebar',
-    input: input?.input ?? 'Filter navigation',
-    noMatch: input?.noMatch ?? 'No matches',
-  }
-}
 
 /**
  * tooltip 是图标栏名称提示的那台内嵌 Tooltip 机器（props 取 sideNavTooltipProps）：适配器在作者放了 tooltip 部件时交进来，
@@ -110,7 +103,7 @@ export function connectSideNav<T extends PropTypes>(
     ?? rows[0]?.value
     ?? null
 
-  const translations = resolveTranslations(prop('translations'))
+  const translations = resolveTranslations(SIDE_NAV_EN_US, prop('translations'))
 
   // 配对 id 由 scope 派生，同页多实例不相撞
   const listId = scope.partId('side-nav', 'list')

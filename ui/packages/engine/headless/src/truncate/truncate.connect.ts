@@ -6,18 +6,14 @@
 // 提供 truncate 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { TruncateApi, TruncateSchema, TruncateTranslations } from './truncate.types'
+import type { TruncateApi, TruncateSchema } from './truncate.types'
 import { dataAttr } from '@xihan-ui/core'
+import { TRUNCATE_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { truncateAnatomy } from './truncate.anatomy'
 import { resolveTruncateLines } from './truncate.machine'
 
 const parts = truncateAnatomy.build()
-
-/** 作者与语言包都没给文案时按钮上的字。 */
-const DEFAULT_TRANSLATIONS: TruncateTranslations = {
-  expand: 'Show more',
-  collapse: 'Show less',
-}
 
 /**
  * 溢出与否是量出来的，这里只读结果并落成 data-overflowing——浮层不在这层做，
@@ -50,10 +46,8 @@ export function connectTruncate<T extends PropTypes>(
   // 中间省略只在单行成立；真被裁了、又收着时才把整段文字交给皮肤去拼首尾两段
   const middle = prop('position') === 'middle' && !multiline
   const middleText = middle && overflowing && !open ? context.get('text') : undefined
-  const translations = prop('translations')
-  const triggerLabel = open
-    ? translations?.collapse ?? DEFAULT_TRANSLATIONS.collapse
-    : translations?.expand ?? DEFAULT_TRANSLATIONS.expand
+  const translations = resolveTranslations(TRUNCATE_EN_US, prop('translations'))
+  const triggerLabel = open ? translations.collapse : translations.expand
 
   const setOpen = (next: boolean): void => {
     if (next !== open)

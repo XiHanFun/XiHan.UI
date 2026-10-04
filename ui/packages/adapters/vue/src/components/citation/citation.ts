@@ -231,6 +231,6 @@ function renderPreview(api: ReturnType<typeof useCitationContext>['api']['value'
       h('button', api.getDismissTriggerProps(item) as Record<string, unknown>),
     ]),
     h('blockquote', api.getQuoteProps(item) as Record<string, unknown>, quote),
-    h(linkTag, api.getPreviewLinkProps(item) as Record<string, unknown>, current.type === 'source-url' ? 'Open source' : 'Open document'),
+    h(linkTag, api.getPreviewLinkProps(item) as Record<string, unknown>, api.previewLinkText(item)),
   ]
 }

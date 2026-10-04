@@ -5,28 +5,34 @@
 
 // 声明式校验规则的纯运算：不碰 DOM、不看状态机。
 // 语义：非 required 规则对空值放行（空值只由 required 拦）；一个字段按规则声明序首败即停；
-// 文案取 rule.message → 表单 validateMessages 模板 → 内置模板，模板里 {name}/{min}/{max} 现场代入。
+// 文案取 rule.message → 表单 validateMessages → translations → 英文语言包，模板里 {name}/{min}/{max} 现场代入。
 import type { FormErrorPatch, FormErrors } from './form.errors'
 import type { FormPath } from './form.path'
-import type { FormRule, FormRules, FormRuleType, FormValidateMessages, FormValues } from './form.types'
+import type { FormRule, FormRules, FormRuleType, FormTranslations, FormValidateMessages, FormValues } from './form.types'
+import { FORM_EN_US } from '../locale/en-US'
 import { normalizeFormErrors } from './form.errors'
 import { formPathEntries, getFormPathValue, setFormPathValue } from './form.path'
 
-const DEFAULT_MESSAGES: Required<Omit<FormValidateMessages, 'type'>> & { type: Record<FormRuleType, string> } = {
-  required: '{name} is required',
-  type: {
-    string: '{name} must be a string',
-    number: '{name} must be a number',
-    integer: '{name} must be an integer',
-    email: '{name} is not a valid email',
-    url: '{name} is not a valid URL',
-    array: '{name} must be an array',
-  },
-  minLength: '{name} must be at least {min} characters',
-  maxLength: '{name} cannot exceed {max} characters',
-  minNumber: '{name} must be at least {min}',
-  maxNumber: '{name} cannot exceed {max}',
-  pattern: '{name} does not match the required pattern',
+/**
+ * 表单这一层的文案模板：validateMessages 逐条压在 translations（含全局语言包）之上，type 按类再逐条并。
+ * 两边都没给时原样返回 undefined，规则运算再退英文语言包。
+ */
+export function formValidateMessages(
+  validateMessages: FormValidateMessages | undefined,
+  translations: Partial<FormTranslations> | undefined,
+): FormValidateMessages | undefined {
+  if (!translations)
+    return validateMessages
+  if (!validateMessages)
+    return translations
+  const out: FormValidateMessages = { ...translations }
+  for (const [key, value] of Object.entries(validateMessages) as Array<[keyof FormValidateMessages, unknown]>) {
+    if (value !== undefined && key !== 'type')
+      (out as Record<string, unknown>)[key] = value
+  }
+  if (validateMessages.type)
+    out.type = { ...translations.type, ...validateMessages.type }
+  return out
 }
 
 /** 这组规则里有没有 required：字段的必填标记（aria-required 与星号）从这里推。 */
@@ -123,9 +129,9 @@ export function runFieldRules(
       return rule.message
     if (kind === 'type') {
       const t = type!
-      return interpolate(messages?.type?.[t] ?? DEFAULT_MESSAGES.type[t], slots)
+      return interpolate(messages?.type?.[t] ?? FORM_EN_US.type[t], slots)
     }
-    const template = (messages?.[kind] as string | undefined) ?? DEFAULT_MESSAGES[kind]
+    const template = (messages?.[kind] as string | undefined) ?? FORM_EN_US[kind]
     return interpolate(template, slots)
   }
 

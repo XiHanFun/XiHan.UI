@@ -287,7 +287,7 @@
 | `trigger` | `aria-haspopup` | undefined \| 'menu' |
 | `trigger` | `aria-keyshortcuts` | undefined \| 'Shift+F10' |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-label` | props.translations.content |
+| `content` | `aria-label` | translations.content |
 | `content` | `role` | 'menu' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `item-shortcut` | `aria-hidden` | 'true' |

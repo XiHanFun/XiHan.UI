@@ -150,6 +150,7 @@ export class XhFormElement extends XhElement {
     validate: { attribute: false },
     rules: { attribute: false },
     validateMessages: { attribute: false },
+    translations: { attribute: false },
     validateOn: { converter: STRING_CONVERTER, attribute: 'validate-on' },
     layout: { converter: STRING_CONVERTER },
     columns: { converter: COLUMNS_CONVERTER },
@@ -167,6 +168,8 @@ export class XhFormElement extends XhElement {
   /** 声明式校验规则；对象无法表达为属性，只作为 property 暴露。 */
   declare rules?: FormSchema['props']['rules']
   declare validateMessages?: FormSchema['props']['validateMessages']
+  /** 校验报错的文案模板；对象只作为 property 暴露，全局配置（setXhConfig）的 form 那一桶垫在它下面。 */
+  declare translations?: FormSchema['props']['translations']
   declare validateOn?: FormValidateOn
   declare layout?: FormSchema['props']['layout']
   declare columns?: FormColumns
@@ -232,6 +235,7 @@ export class XhFormElement extends XhElement {
       validate: this.validate,
       rules: this.rules,
       validateMessages: this.validateMessages,
+      translations: this.translations,
       validateOn: this.validateOn,
       layout: this.layout,
       columns: this.columns,

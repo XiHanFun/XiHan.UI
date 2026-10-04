@@ -7,12 +7,13 @@
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { SpinnerApi, SpinnerProps, SpinnerSchema } from './spinner.types'
+import { SPINNER_EN_US } from '../locale/en-US'
 import { spinnerAnatomy } from './spinner.anatomy'
 
 const parts = spinnerAnatomy.build()
 
-/** 作者与语言包都没给文案时的兜底可及名字。 */
-export const SPINNER_DEFAULT_LABEL = 'Loading'
+/** 作者与语言包都没给文案时的兜底可及名字，取自 en-US 语言包。 */
+export const SPINNER_DEFAULT_LABEL = SPINNER_EN_US.label
 
 /**
  * 按 label → translations.label → 兜底值挑出第一段有字的文案。

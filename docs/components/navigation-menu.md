@@ -247,7 +247,7 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | resolveTranslations(NAVIGATION_MENU_EN_US, prop('tran… |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |

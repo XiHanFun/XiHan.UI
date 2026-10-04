@@ -241,6 +241,8 @@ export interface CitationApi<T extends PropTypes = PropTypes> {
   getPreviewMetaProps: (props: CitationPreviewProps) => T['element']
   getQuoteProps: (props: CitationPreviewProps) => T['element']
   getPreviewLinkProps: (props: CitationPreviewProps) => T['element']
+  /** 预览链接上写的字：网页来源取 previewLinkSource，文档来源取 previewLinkDocument。 */
+  previewLinkText: (props: CitationPreviewProps) => string
   getDismissTriggerProps: (props: CitationPreviewProps) => T['button']
   /** 一处多源时换到上一个来源；只有一个来源时带 hidden。 */
   getPrevTriggerProps: (props: CitationPreviewProps) => T['button']
@@ -272,4 +274,8 @@ export interface CitationTranslations {
   nextSource: string
   source: (index: number, title: string) => string
   document: string
+  /** 预览卡里打开网页来源的链接上写的字。 */
+  previewLinkSource: string
+  /** 预览卡里打开文档来源的按钮上写的字。 */
+  previewLinkDocument: string
 }

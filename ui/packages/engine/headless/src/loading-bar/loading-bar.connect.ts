@@ -8,6 +8,8 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { LoadingBarApi, LoadingBarSchema } from './loading-bar.types'
 import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/core'
+import { LOADING_BAR_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { loadingBarAnatomy } from './loading-bar.anatomy'
 import { LOADING_BAR_HEIGHT, resolveLoadingBarFadeDuration } from './loading-bar.machine'
 import { clampLoadingBarValue, isLoadingBarDeterminate, LOADING_BAR_MAX } from './loading-bar.trickle'
@@ -26,6 +28,7 @@ export function connectLoadingBar<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): LoadingBarApi<T> {
   const { state, prop, context, scope } = service
+  const translations = resolveTranslations(LOADING_BAR_EN_US, prop('translations'))
   const fade = resolveLoadingBarFadeDuration(prop('fadeDuration'))
 
   const phase = state.get()
@@ -45,7 +48,7 @@ export function connectLoadingBar<T extends PropTypes>(
       'id': scope.partId('loading-bar', 'root'),
       'role': 'progressbar',
       // progressbar 没有可见标题，可及名字只能由这里给
-      'aria-label': prop('translations')?.root ?? 'Loading',
+      'aria-label': translations.root,
       'aria-valuemin': '0',
       'aria-valuemax': String(LOADING_BAR_MAX),
       // 不确定进度按规范省略 aria-valuenow

@@ -9,7 +9,9 @@ import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-u
 import type { DialogPressedPart } from '../dialog'
 import type { DrawerApi, DrawerSchema, DrawerSide } from './drawer.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
+import { DRAWER_EN_US } from '../locale/en-US'
 import { RESIZABLE_LARGE_STEP, RESIZABLE_STEP } from '../resizable'
+import { resolveTranslations } from '../shared/translations'
 import { drawerAnatomy } from './drawer.anatomy'
 import { DRAWER_MIN_PANEL_SIZE } from './drawer.machine'
 
@@ -31,6 +33,7 @@ export function connectDrawer<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): DrawerApi<T> {
   const { state, prop, send, context, scope } = service
+  const translations = resolveTranslations(DRAWER_EN_US, prop('translations'))
   const open = state.get() === 'open'
   const modal = prop('modal') ?? true
   const role = prop('role') ?? 'dialog'
@@ -153,7 +156,7 @@ export function connectDrawer<T extends PropTypes>(
     getCloseTriggerProps: () => normalize.button({
       ...parts['close-trigger'].attrs,
       'type': 'button',
-      'aria-label': prop('translations')?.close ?? 'Close',
+      'aria-label': translations.close,
       // 面板角落的叉：icon 档 sm、ghost 面，白面上走画布承载阶梯（hover 100 → pressed 200）
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
@@ -174,7 +177,7 @@ export function connectDrawer<T extends PropTypes>(
         'role': 'separator',
         // 竖着的分隔条推的是宽度：左右放置的抽屉把手是竖线
         'aria-orientation': horizontal ? 'vertical' : 'horizontal',
-        'aria-label': prop('translations')?.resizeTrigger ?? 'Resize drawer',
+        'aria-label': translations.resizeTrigger,
         'aria-controls': ids.content,
         // 没调过、也还没量过时不报当前值：把手得焦那一刻会量一次
         'aria-valuenow': now != null ? String(now) : undefined,

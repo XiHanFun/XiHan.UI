@@ -70,7 +70,7 @@
 
 - Vue：`XhSignaturePadRoot` 的默认插槽给出 `value` / `empty` / `paths` / `drawing` / `canUndo` / `canRedo` / `statusText` 与 `toSvg()` / `clear()` / `undo()` / `redo()`，签名数据走 `v-model:value`；也可以用 `useSignaturePad()` 自行获取。`XhSignaturePadGuide` 与 `XhSignaturePadPath` 必须写在 `XhSignaturePadControl` 内：SVG 命名空间由该子树带下，移出后会成为 HTML 元素，无法绘制。
 - Web Components：结构由作者编写（Light DOM，不投影插槽）。`<xh-signature-pad>` 上有 `clear()`、`undo()`、`redo()`、`toSvg()` 与只读的 `empty` / `canUndo` / `canRedo`；`value` / `defaultValue` 是对象，只走 property。提交前取签名用 `toSvg()`，不需要缓存上一次 `draw-end`。
-- 两侧的 `status` 部件内都不需要自行写文字：节点为空时由适配器填入内建文案；写了文字则以作者的为准。
+- 两侧的 `status` 部件内都不需要自行写文字：节点为空时由适配器填入语言包里的文案；写了文字则以作者的为准。
 
 ## 最佳实践
 

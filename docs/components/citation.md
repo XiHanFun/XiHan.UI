@@ -193,6 +193,7 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `getPreviewMetaProps` | `(props: CitationPreviewProps) => T['element']` |  |
 | `getQuoteProps` | `(props: CitationPreviewProps) => T['element']` |  |
 | `getPreviewLinkProps` | `(props: CitationPreviewProps) => T['element']` |  |
+| `previewLinkText` | `(props: CitationPreviewProps) => string` | 预览链接上写的字：网页来源取 previewLinkSource，文档来源取 previewLinkDocument。 |
 | `getDismissTriggerProps` | `(props: CitationPreviewProps) => T['button']` |  |
 | `getPrevTriggerProps` | `(props: CitationPreviewProps) => T['button']` | 一处多源时换到上一个来源；只有一个来源时带 hidden。 |
 | `getNextTriggerProps` | `(props: CitationPreviewProps) => T['button']` | 一处多源时换到下一个来源；只有一个来源时带 hidden。 |

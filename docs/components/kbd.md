@@ -146,7 +146,7 @@ default 使用中性底，light 保持透明
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations?.hotkey?.(names) |
+| `root` | `aria-label` | translations.hotkey(names) |
 | `root` | `role` | 'img' |
 | `key` | `aria-hidden` | 'true' |
 

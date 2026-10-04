@@ -9,6 +9,8 @@
 // 放在 shared/ 而不是某个组件里：table 的行与列、tree 的节点、tabs 的标签
 // 四处吃同一套判定与同一套播报，四处的落点语义必须一模一样。
 
+import { DRAG_EN_US } from '../locale/en-US'
+
 /** 落在参照项的哪一侧。`inside` 只有层级结构（树）才用得上。 */
 export type DropPosition = 'before' | 'after' | 'inside'
 
@@ -110,7 +112,7 @@ export interface DragTranslations {
    * 带容器的那三句：搬进了哪一层，以及在那一层的第几位。
    * 层级结构（树）报这三句，一维重排（行、列、标签）报上面那三句。
    *
-   * 缺哪一句就退到上面同名的那一句，只是不报容器；两处都没给才用内建英文。
+   * 缺哪一句就退到上面同名的那一句，只是不报容器；两处都没给才用英文语言包的那一句。
    */
   movedInto: (name: string, into: string, position: number, total: number) => string
   droppedInto: (name: string, into: string, position: number) => string
@@ -145,32 +147,32 @@ export function dragAnnouncement(kind: DragAnnounceKind, input: DragAnnounceInpu
 
   // 给了 into 就报带容器的那一套。rejected 那一档没有落点可言，恒走原句
   if (into !== undefined && kind !== 'rejected') {
-    const container = into ?? t?.rootLevel ?? 'the top level'
+    const container = into ?? t?.rootLevel ?? DRAG_EN_US.rootLevel
     switch (kind) {
       case 'moved':
         return t?.movedInto?.(name, container, position, total)
           ?? t?.moved?.(name, position, total)
-          ?? `Moved ${name} into ${container}, position ${position} of ${total}.`
+          ?? DRAG_EN_US.movedInto(name, container, position, total)
       case 'dropped':
         return t?.droppedInto?.(name, container, position)
           ?? t?.dropped?.(name, position)
-          ?? `${name} dropped into ${container} at position ${position}.`
+          ?? DRAG_EN_US.droppedInto(name, container, position)
       case 'canceled':
         return t?.canceledInto?.(name, container, position)
           ?? t?.canceled?.(name, position)
-          ?? `Move canceled. ${name} returned to ${container}, position ${position}.`
+          ?? DRAG_EN_US.canceledInto(name, container, position)
     }
   }
 
   switch (kind) {
     case 'moved':
-      return t?.moved?.(name, position, total) ?? `Moved ${name} to position ${position} of ${total}.`
+      return t?.moved?.(name, position, total) ?? DRAG_EN_US.moved(name, position, total)
     case 'dropped':
-      return t?.dropped?.(name, position) ?? `${name} dropped at position ${position}.`
+      return t?.dropped?.(name, position) ?? DRAG_EN_US.dropped(name, position)
     case 'canceled':
-      return t?.canceled?.(name, position) ?? `Move canceled. ${name} returned to position ${position}.`
+      return t?.canceled?.(name, position) ?? DRAG_EN_US.canceled(name, position)
     case 'rejected':
-      return t?.rejected?.(name) ?? `${name} cannot be dropped here.`
+      return t?.rejected?.(name) ?? DRAG_EN_US.rejected(name)
   }
 }
 

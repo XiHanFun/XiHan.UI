@@ -70,7 +70,7 @@ export interface XhMentionRootProps extends RootElementProps {
   renderItemPrefix?: (node: MentionNodeMeta) => ReactNode
   /** 只接管条目行尾那一格；其余槽仍由数据铺。 */
   renderItemSuffix?: (node: MentionNodeMeta) => ReactNode
-  /** 铺开 collection 时空态中的文案；未写时使用内建英文。 */
+  /** 铺开 collection 时空态中的文案；未写时取 translations.empty（缺省走英文语言包）。 */
   empty?: ReactNode
   children?: SlotChildren<MentionRootSlotProps>
 }
@@ -211,7 +211,7 @@ export function XhMentionPositioner({ children, container, ...rest }: XhMentionP
   // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
-    <XhPortal container={container ?? ctx.portalContainer} source={ctx.inputRef}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.inputRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,
@@ -330,6 +330,7 @@ function DefaultTree(props: {
   renderItemPrefix?: (node: MentionNodeMeta) => ReactNode
   renderItemSuffix?: (node: MentionNodeMeta) => ReactNode
 }): ReactNode {
+  const ctx = useMentionContext()
   return (
     <>
       <XhMentionInput />
@@ -345,7 +346,7 @@ function DefaultTree(props: {
           ))}
         </XhMentionContent>
         {/* 空态节点是 content 的兄弟，不进 role=listbox */}
-        <XhMentionEmpty>{props.empty ?? 'No results'}</XhMentionEmpty>
+        <XhMentionEmpty>{props.empty ?? ctx.api.emptyText}</XhMentionEmpty>
       </XhMentionPositioner>
     </>
   )

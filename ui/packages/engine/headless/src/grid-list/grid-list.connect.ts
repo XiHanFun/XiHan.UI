@@ -8,8 +8,10 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { GridListApi, GridListNodeMeta, GridListRowProps, GridListSchema } from './grid-list.types'
 import { createPressTracker, dataAttr, isComposingEvent, ITEM_VALUE_ATTR, queryItems } from '@xihan-ui/core'
+import { GRID_LIST_EN_US } from '../locale/en-US'
 import { isEditableTarget } from '../shared/editable-target'
 import { createGridCollection, fromInlineControl, readGridKey } from '../shared/grid-collection'
+import { resolveTranslations } from '../shared/translations'
 import { gridListAnatomy, gridListRowQuery, gridListRowText } from './grid-list.anatomy'
 
 const parts = gridListAnatomy.build()
@@ -19,6 +21,7 @@ export function connectGridList<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): GridListApi<T> {
   const { context, prop, refs, scope, send } = service
+  const translations = resolveTranslations(GRID_LIST_EN_US, prop('translations'))
   const value = context.get('value')
   const focusedValue = context.get('focusedValue')
   const selectionMode = prop('selectionMode') ?? 'single'
@@ -104,7 +107,7 @@ export function connectGridList<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'role': 'grid',
-      'aria-label': prop('translations')?.root ?? 'Items',
+      'aria-label': translations.root,
       'aria-labelledby': ids.label,
       'aria-multiselectable': selectionMode === 'multiple' ? 'true' : undefined,
       'aria-disabled': disabled ? 'true' : 'false',

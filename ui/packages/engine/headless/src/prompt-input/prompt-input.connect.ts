@@ -8,7 +8,9 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { PromptInputApi, PromptInputSchema } from './prompt-input.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { PROMPT_INPUT_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { promptInputAnatomy } from './prompt-input.anatomy'
 
 const parts = promptInputAnatomy.build()
@@ -25,7 +27,7 @@ export function connectPromptInput<T extends PropTypes>(
   const loading = prop('loading') === true
   const submitKey = prop('submitKey') ?? 'enter'
   const allowEmptySubmit = prop('allowEmptySubmit') === true
-  const translations = prop('translations')
+  const translations = resolveTranslations(PROMPT_INPUT_EN_US, prop('translations'))
   // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档
   const variant = prop('variant') ?? 'outline'
 
@@ -75,7 +77,7 @@ export function connectPromptInput<T extends PropTypes>(
       // 用原生 disabled 属性，同时挡住聚焦与输入
       'disabled': disabled || undefined,
       // 只在作者给了文案时才发：无条件发会盖掉他自己的 <label for> 与 aria-label
-      'aria-label': translations?.input,
+      'aria-label': translations.input,
       'data-state': state.get(),
       'value': value,
       'onInput': (event: Event) => {
@@ -131,7 +133,7 @@ export function connectPromptInput<T extends PropTypes>(
       'data-mode': loading ? 'stop' : 'send',
       // 身份换过之前兜底字形直接呈现；换过之后换上来的那一枚淡入
       'data-instant': dataAttr(!context.get('modeChanged')),
-      'aria-label': loading ? (translations?.stop ?? 'Stop generating') : (translations?.send ?? 'Send'),
+      'aria-label': loading ? translations.stop : translations.send,
       // 生成期间恒可用，此刻按钮的语义是停止；家族按 data-disabled 给禁用面，与原生 disabled 同步
       'disabled': (!loading && !canSubmit) || undefined,
       'data-disabled': dataAttr(!loading && !canSubmit),

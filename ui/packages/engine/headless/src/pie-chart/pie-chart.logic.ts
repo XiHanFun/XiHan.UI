@@ -12,35 +12,21 @@ import type { PieModel, PieSliceSpec } from './pie-chart.model'
 import type { PieChartSchema, PieOverlay } from './pie-chart.schema'
 import type { PieChartTranslations, PieSummary, PieTooltipModel } from './pie-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
-import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, resolveChartTranslations } from '../shared/chart'
+import { PIE_CHART_EN_US } from '../locale/en-US'
+import { chartActiveSource, chartPageSize, resolveChartTranslations } from '../shared/chart'
 import { PIE_OTHER_ID, pieRefOf, pieSliceKey } from './pie-chart.model'
 
-/** 扇区的可及名：名字、数值、占比。 */
+/** 数据标记的缺省可及名，取自英文语言包。 */
 export function defaultPieDatumLabel(details: ChartDatumDetails): string {
-  return `${details.seriesName}, ${details.formatted.value ?? ''}, ${details.formatted.share ?? ''}`
+  return PIE_CHART_EN_US.datumLabel(details)
 }
 
-/** 缺省摘要：扇区数与合计，最大与最小的扇区。 */
+/** 缺省摘要，取自英文语言包。 */
 export function defaultPieSummary(model: PieSummary): string {
-  if (model.sliceCount === 0)
-    return 'No data.'
-  const head = `${model.sliceCount} ${model.sliceCount === 1 ? 'slice' : 'slices'}, total ${model.total}.`
-  const first = model.slices[0]!
-  const last = model.slices.at(-1)!
-  if (model.sliceCount === 1)
-    return `${head} ${first.name}: ${first.share}.`
-  return `${head} Largest: ${first.name} ${first.share}. Smallest: ${last.name} ${last.share}.`
+  return PIE_CHART_EN_US.summary(model)
 }
 
-export const PIE_TRANSLATIONS: PieChartTranslations = Object.freeze({
-  ...CHART_TRANSLATIONS,
-  datumLabel: defaultPieDatumLabel,
-  centerLabel: 'Total',
-  nameLabel: 'Name',
-  valueLabel: 'Value',
-  shareLabel: 'Share',
-  summary: defaultPieSummary,
-})
+export const PIE_TRANSLATIONS: PieChartTranslations = Object.freeze({ ...PIE_CHART_EN_US })
 
 const translationsCache = new WeakMap<object, PieChartTranslations>()
 

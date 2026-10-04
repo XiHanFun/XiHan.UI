@@ -61,7 +61,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart undo-trigger - 撤销按钮，必须是原生 `<button>`；没有可撤销的一步时 aria-disabled
  * @csspart redo-trigger - 重做按钮，必须是原生 `<button>`；没有可重做的一步时 aria-disabled
  * @csspart clear-trigger - 清空按钮，必须是原生 `<button>`
- * @csspart status - 签名状态的活区域（role=status）；节点中未写文字时由元素填入内建文案
+ * @csspart status - 签名状态的活区域（role=status）；节点中未写文字时由元素填入语言包里的文案
  * @csspart hidden-input - 表单影子输入（必须是原生 input），提交的是一份独立 SVG 文档
  */
 export class XhSignaturePadElement extends XhElement {

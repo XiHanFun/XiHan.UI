@@ -6,10 +6,12 @@
 // 提供 text field 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { TextFieldApi, TextFieldSchema, TextFieldTranslations } from './text-field.types'
+import type { TextFieldApi, TextFieldSchema } from './text-field.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { TEXT_FIELD_EN_US } from '../locale/en-US'
 import { graphemeLength } from '../shared/grapheme'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { textFieldAnatomy } from './text-field.anatomy'
 import { autoSizeTextarea } from './text-field.autosize'
 import { fitToMaxLength, isAtLimit } from './text-field.machine'
@@ -19,19 +21,13 @@ const parts = textFieldAnatomy.build()
 /** 输入法组合开始时框里的值：组合落定后按它判这一次插入了什么。 */
 const composeBase = new WeakMap<Element, string>()
 
-function resolveTranslations(input: Partial<TextFieldTranslations> | undefined): TextFieldTranslations {
-  return {
-    clearTrigger: input?.clearTrigger ?? 'Clear',
-  }
-}
-
 export function connectTextField<T extends PropTypes>(
   service: Service<TextFieldSchema>,
   normalize: NormalizeProps<T>,
 ): TextFieldApi<T> {
   const { prop, send, context, scope } = service
   const ids = scope.ids('text-field', 'label', 'input')
-  const label = resolveTranslations(prop('translations'))
+  const label = resolveTranslations(TEXT_FIELD_EN_US, prop('translations'))
 
   const value = context.get('value')
   const empty = value === ''

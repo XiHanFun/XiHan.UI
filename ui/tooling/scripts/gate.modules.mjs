@@ -138,6 +138,7 @@ export const MODULES = [
       'node tooling/scripts/a11y/check-focus-report.mjs',
       'node tooling/scripts/a11y/check-focus-restore.mjs',
       'node tooling/scripts/a11y/check-aria-shapes.mjs',
+      'node tooling/scripts/a11y/check-builtin-text.mjs',
     ],
   },
   {

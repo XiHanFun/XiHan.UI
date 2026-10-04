@@ -6,9 +6,11 @@
 // 提供 timer 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { TimerApi, TimerControlAction, TimerSchema, TimerSegments } from './timer.types'
+import type { TimerApi, TimerControlAction, TimerSchema } from './timer.types'
 import { dataAttr } from '@xihan-ui/core'
+import { TIMER_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { timerAnatomy } from './timer.anatomy'
 import { formatTimerText, isTimerControlled, quantizeTimer, resolveTimerPrecision, splitTimer, timerRunOf, timerSegmentText, timerValueAt } from './timer.format'
 
@@ -22,25 +24,14 @@ const CONTROL_EVENT: Record<TimerControlAction, TimerSchema['event']> = {
   reset: { type: 'RUN.RESET' },
 }
 
-/** 一个数配它的英文单位，1 用单数其余用复数。 */
-function plural(count: number, unit: string): string {
-  return `${count} ${count === 1 ? unit : `${unit}s`}`
-}
-
-/**
- * 时间区的内建名字，恒按时、分、秒念（天数为 0 时不念它，读屏不必每次都听一句「0 天」）。
- * 这里看不见作者摆了哪几段，只显示其中几段时请用 translations.time 自己给名字。
- */
-function defaultTimeLabel(segments: TimerSegments): string {
-  const words = [plural(segments.hours, 'hour'), plural(segments.minutes, 'minute'), plural(segments.seconds, 'second')]
-  return segments.days > 0 ? [plural(segments.days, 'day'), ...words].join(' ') : words.join(' ')
-}
-
 export function connectTimer<T extends PropTypes>(
   service: Service<TimerSchema>,
   normalize: NormalizeProps<T>,
 ): TimerApi<T> {
   const { context, prop, send, state } = service
+  // 时间区的缺省名字取 en-US 语言包，恒按时、分、秒念。
+  // 这里看不见作者摆了哪几段，只显示其中几段时请用 translations.time 自己给名字。
+  const label = resolveTranslations(TIMER_EN_US, prop('translations'))
 
   const phase = state.get()
   const run = timerRunOf({
@@ -61,15 +52,6 @@ export function connectTimer<T extends PropTypes>(
   // 按压通道：真源在机器 context，跟踪器只把 Space / Enter 与触屏按住翻成事件；指针按住由 :active 表出
   const pressed = context.get('pressed')
   const press = pressHandlers(service)
-
-  const translations = prop('translations')
-  const label = {
-    time: translations?.time ?? defaultTimeLabel,
-    start: translations?.start ?? 'Start',
-    pause: translations?.pause ?? 'Pause',
-    resume: translations?.resume ?? 'Resume',
-    reset: translations?.reset ?? 'Reset',
-  }
 
   // 起停按钮这一下要做的事由当前状态定：走着的暂停、停在半路的接着走、走完的归零、其余开跑
   const controlAction: TimerControlAction

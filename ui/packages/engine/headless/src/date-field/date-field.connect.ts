@@ -16,15 +16,15 @@ import type {
 } from './date-field.types'
 import { dataAttr, focusSafely, navIntentFromKey, queryItems, readDirection, resolveLocale, stepIndex } from '@xihan-ui/core'
 import { getLocalTimeZone, PlainDateTime } from '@xihan-ui/core/date'
+import { DATE_FIELD_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { dateFieldAnatomy } from './date-field.anatomy'
 import { isMetaSegment } from './date-field.blocks'
 import {
   applySegmentDigit,
   compareDateSegments,
-  DATE_FIELD_CLEAR_LABEL,
   DATE_FIELD_GRANULARITY,
-  DATE_SEGMENT_LABEL,
   DATE_SEGMENT_PLACEHOLDER,
   dateSegmentRange,
   dateSegmentText,
@@ -46,6 +46,7 @@ export function connectDateField<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): DateFieldApi<T> {
   const { context, prop, send, scope } = service
+  const translations = resolveTranslations(DATE_FIELD_EN_US, prop('translations'))
 
   const locale = resolveLocale(prop('locale'), scope)
   const granularity = prop('granularity') ?? DATE_FIELD_GRANULARITY
@@ -81,9 +82,8 @@ export function connectDateField<T extends PropTypes>(
   const placeholderText = typeof placeholder === 'string' && placeholder !== '' ? placeholder : undefined
   const placeholderShown = placeholderText != null && empty && focusedSegment == null
 
-  const labelOf = (type: DateSegmentType): string =>
-    prop('translations')?.[type] ?? DATE_SEGMENT_LABEL[type]
-  const clearLabel = prop('translations')?.clearTrigger ?? DATE_FIELD_CLEAR_LABEL
+  const labelOf = (type: DateSegmentType): string => translations[type]
+  const clearLabel = translations.clearTrigger
   // 填了哪怕一段就能清；禁用与只读下清空钮收起
   const canClear = editable && !empty
   // 清空按钮的按压通道：键盘 / 触屏按住期间的按压面，指针按住由 :active 表出，皮肤两者同一档

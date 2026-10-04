@@ -175,7 +175,7 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `trigger` | `aria-label` | props.translations.trigger |
+| `trigger` | `aria-label` | translations.trigger |
 
 ## 样式参考
 

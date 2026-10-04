@@ -350,7 +350,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `grid` | `aria-colcount` | counts.columns \| undefined |
-| `grid` | `aria-label` | translations?.gridLabel |
+| `grid` | `aria-label` | gridLabel |
 | `grid` | `aria-readonly` | 'true' |
 | `grid` | `aria-rowcount` | counts.rows \| undefined |
 | `grid` | `role` | 'grid' |
@@ -371,7 +371,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `cell` | `aria-label` | matrixCellLabel({ date: '', row, column, count, ...pl… |
 | `cell` | `role` | 'gridcell' |
 | `tooltip` | `aria-hidden` | 'true' |
-| `legend` | `aria-label` | translations?.legendLabel |
+| `legend` | `aria-label` | legendLabel |
 | `legend` | `role` | 'group' |
 | `legend-item` | `aria-hidden` | 'true' |
 

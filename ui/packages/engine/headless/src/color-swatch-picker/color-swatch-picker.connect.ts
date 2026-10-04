@@ -6,9 +6,11 @@
 // 提供 color swatch picker 相关实现。
 
 import type { ItemQuery, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { ColorSwatchPickerApi, ColorSwatchPickerItemProps, ColorSwatchPickerNodeMeta, ColorSwatchPickerSchema, ColorSwatchPickerTranslations } from './color-swatch-picker.types'
+import type { ColorSwatchPickerApi, ColorSwatchPickerItemProps, ColorSwatchPickerNodeMeta, ColorSwatchPickerSchema } from './color-swatch-picker.types'
 import { anchorItem, contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { COLOR_SWATCH_PICKER_EN_US } from '../locale/en-US'
 import { colorCss, colorParse, colorSameColor } from '../shared/color'
+import { resolveTranslations } from '../shared/translations'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { colorSwatchPickerAnatomy } from './color-swatch-picker.anatomy'
 
@@ -16,13 +18,6 @@ const parts = colorSwatchPickerAnatomy.build()
 
 // 格子查询描述符；只在事件处理器里查活 DOM，渲染期不得调用
 const ITEM_QUERY: ItemQuery = { scope: colorSwatchPickerAnatomy.name, part: 'item' }
-
-function resolveTranslations(input: Partial<ColorSwatchPickerTranslations> | undefined): ColorSwatchPickerTranslations {
-  return {
-    group: input?.group ?? 'Color swatches',
-    swatch: input?.swatch ?? (value => `Color ${value}`),
-  }
-}
 
 export function connectColorSwatchPicker<T extends PropTypes>(
   service: Service<ColorSwatchPickerSchema>,
@@ -37,7 +32,7 @@ export function connectColorSwatchPicker<T extends PropTypes>(
   const required = !!prop('required')
   const dir = prop('dir') ?? 'ltr'
   const name = prop('name')
-  const label = resolveTranslations(prop('translations'))
+  const label = resolveTranslations(COLOR_SWATCH_PICKER_EN_US, prop('translations'))
   const ids = scope.ids('color-swatch-picker', 'label')
 
   // swatches 推出的格子元信息：名字与禁用都在这里定案，格子部件只报 value

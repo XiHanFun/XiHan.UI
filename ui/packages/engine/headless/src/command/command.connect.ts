@@ -8,6 +8,8 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CommandApi, CommandGroupMeta, CommandItemProps, CommandNodeMeta, CommandSchema } from './command.types'
 import { contains, createPressTracker, dataAttr, isComposingEvent, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'
+import { COMMAND_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { commandAnatomy, commandItemQuery, commandItemText } from './command.anatomy'
 import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
 import { hiddenCommandValues } from './command.visibility'
@@ -30,7 +32,7 @@ export function connectCommand<T extends PropTypes>(
   const loop = prop('loop') ?? true
   const modal = prop('modal') ?? true
   const stateAttr = open ? 'open' : 'closed'
-  const translations = prop('translations')
+  const translations = resolveTranslations(COMMAND_EN_US, prop('translations'))
 
   // 清单是过滤与导航的事实源。没给清单时整套过滤让开：条目一个不收，空态也不判——
   // 那种用法下作者自己决定渲染什么，库这一层没有可依据的数据
@@ -188,7 +190,7 @@ export function connectCommand<T extends PropTypes>(
       // 显式写 false 而非省略：读屏对未声明与声明为非模态处理不同
       'aria-modal': modal ? 'true' : 'false',
       // 面板里没有标题栏，名字只能从文案表给
-      'aria-label': translations?.title ?? 'Command palette',
+      'aria-label': translations.title,
       'data-state': stateAttr,
       // 挂载时就开着的这一段直接呈现，不播进场
       'data-instant': dataAttr(context.get('openedAtMount')),
@@ -213,7 +215,7 @@ export function connectCommand<T extends PropTypes>(
       'spellcheck': false,
       'placeholder': prop('placeholder'),
       'value': inputValue,
-      'aria-label': translations?.input ?? 'Search commands',
+      'aria-label': translations.input,
       // 面板内嵌的检索框：重置与占位前景走字段家族，下划线与高度由皮肤给
       'data-xh-field-input': '',
       'aria-haspopup': 'listbox',
@@ -276,7 +278,7 @@ export function connectCommand<T extends PropTypes>(
       'data-instant': dataAttr(!context.get('arrivalsTracked')),
       'role': 'listbox',
       // 列表落焦要有名字：面板里没有可引的标题节点，只能从文案表给
-      'aria-label': translations?.list ?? 'Commands',
+      'aria-label': translations.list,
       // 取数在途的播报归列表本体：两个相位占位自己不带这一位
       'aria-busy': loading ? 'true' : undefined,
       // tabindex 写 -1 不能省：可滚动容器会被某些浏览器自动塞进 Tab 序列

@@ -14,7 +14,7 @@ import type { Root } from 'react-dom/client'
 import type { XhConfig } from '../config/config'
 import type { XhConfigSource } from './service-config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { createDialogServiceController, dialogServiceBadgeTone } from '@xihan-ui/headless'
+import { createDialogServiceController, dialogServiceBadgeTone, dialogServiceTranslations } from '@xihan-ui/headless'
 import { Component, useSyncExternalStore } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
@@ -73,11 +73,11 @@ export interface PromptOptions<T extends object> extends Omit<ConfirmOptions, 'o
 }
 
 export interface DialogServiceOptions {
-  /** 确认按钮文案，默认 OK。 */
+  /** 确认按钮文案；未提供时取 config 里 translations.dialog.ok，再退英文语言包（OK）。 */
   okText?: ServiceText
-  /** 取消按钮文案，默认 Cancel。 */
+  /** 取消按钮文案；未提供时取 translations.dialog.cancel，再退英文语言包（Cancel）。 */
   cancelText?: ServiceText
-  /** 动作失败时的安全提示，与按钮文案采用相同取值方式。 */
+  /** 动作失败时的安全提示，与按钮文案采用相同取值方式；未提供时取 translations.dialog.actionError。 */
   actionErrorText?: ServiceText
   /**
    * 提供给对话框子树的全局配置（locale / translations / size / portalContainer）。
@@ -110,8 +110,9 @@ interface Spec extends DialogServiceControllerSpec {
   title: string
   content?: DialogBody
   tone: Tone
-  okText: ServiceText
-  cancelText: ServiceText
+  /** 未给时取服务配置里 dialog 那一桶的 ok，再退英文语言包。 */
+  okText?: ServiceText
+  cancelText?: ServiceText
   showCancel: boolean
   /** 标题旁的类型徽记（预设档使用），confirm 不带。 */
   badge?: DialogServiceBadge
@@ -129,7 +130,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     throw new Error('createDialogService 需要 document；SSR 里请等到客户端再创建')
 
   // 文案不在创建时求值：队列里的对话框会跨过一次切语言
-  const defaults = { okText: options.okText ?? 'OK', cancelText: options.cancelText ?? 'Cancel' }
+  // 没给的那几句在渲染时取服务配置的语言包，队列里的对话框跨过一次切语言也跟得上
+  const defaults = { okText: options.okText, cancelText: options.cancelText }
   const configSource = createServiceConfig(options.config)
   const holder = options.target ?? document.createElement('div')
   let hostFailure: { cause: unknown } | null = null
@@ -183,6 +185,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     const config: XhConfig = configSource.read()
     const request = serviceState.current
     const spec = request?.spec
+    const text = dialogServiceTranslations(config.translations?.dialog)
+    const okText = spec?.okText === undefined ? text.ok : textOf(spec.okText)
     return (
       <XhConfigProvider config={config}>
         <XhDialogRoot
@@ -208,15 +212,15 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
                       ? <XhDialogDescription>{spec.content}</XhDialogDescription>
                       : typeof spec.content === 'function' ? spec.content() : null}
                     {spec.body && spec.value ? spec.body(spec.value, patchValue) : null}
-                    {serviceState.actionError ? <p role="alert" style={{ color: 'var(--xh-fg-danger)' }}>{textOf(options.actionErrorText ?? 'Action failed. Please try again.')}</p> : null}
+                    {serviceState.actionError ? <p role="alert" style={{ color: 'var(--xh-fg-danger)' }}>{textOf(options.actionErrorText ?? text.actionError)}</p> : null}
                   </XhDialogBody>
                   <XhDialogFooter>
                     {spec.showCancel
-                      ? <XhButton variant="ghost" disabled={serviceState.busy} onClick={() => controller.close(false)}>{textOf(spec.cancelText)}</XhButton>
+                      ? <XhButton variant="ghost" disabled={serviceState.busy} onClick={() => controller.close(false)}>{spec.cancelText === undefined ? text.cancel : textOf(spec.cancelText)}</XhButton>
                       : null}
                     <XhButton variant="solid" tone={spec.tone} loading={serviceState.busy} onClick={controller.confirmCurrent}>
                       {serviceState.busy ? <XhButtonIndicator>{spinArc()}</XhButtonIndicator> : null}
-                      <XhButtonLabel>{serviceState.busy ? `${textOf(spec.okText)}…` : textOf(spec.okText)}</XhButtonLabel>
+                      <XhButtonLabel>{serviceState.busy ? `${okText}…` : okText}</XhButtonLabel>
                     </XhButton>
                   </XhDialogFooter>
                 </XhDialogContent>
