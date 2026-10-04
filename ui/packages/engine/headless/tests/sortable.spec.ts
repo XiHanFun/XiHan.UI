@@ -298,6 +298,11 @@ describe('排序 · 产出的属性', () => {
     expect((handle.style as Record<string, unknown>).touchAction).toBe('none')
   })
 
+  it('手柄的角色说明走 translations', () => {
+    const s = makeSortable({ translations: { itemDragTriggerRoleDescription: '可排序项' } })
+    expect((s.api().getItemDragTriggerProps({ id: 'a' }) as Record<string, unknown>)['aria-roledescription']).toBe('可排序项')
+  })
+
   it('手柄投影 Action Control 家族属性：icon ghost 档、xs 正方盒、常显', () => {
     const s = makeSortable()
     const handle = s.api().getItemDragTriggerProps({ id: 'a' }) as Record<string, unknown>

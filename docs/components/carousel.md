@@ -252,12 +252,12 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | label.root |
-| `root` | `aria-roledescription` | 'carousel' |
+| `root` | `aria-roledescription` | label.rootRoleDescription |
 | `root` | `role` | 'region' |
 | `viewport` | `aria-atomic` | 'false' |
 | `viewport` | `aria-live` | 'off' \| 'polite' |
 | `item` | `aria-label` | label.item(index + 1, slideCount) |
-| `item` | `aria-roledescription` | 'slide' |
+| `item` | `aria-roledescription` | label.itemRoleDescription |
 | `item` | `role` | 'group' |
 | `prev-trigger` | `aria-controls` | `viewport` 部件的 id |
 | `prev-trigger` | `aria-label` | label.prevTrigger |

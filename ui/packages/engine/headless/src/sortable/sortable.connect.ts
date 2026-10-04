@@ -250,7 +250,7 @@ export function connectSortable<T extends PropTypes>(
         'role': 'button',
         'tabindex': off ? undefined : 0,
         'aria-label': translations?.itemDragTrigger?.(name) ?? `Reorder ${name}`,
-        'aria-roledescription': 'sortable',
+        'aria-roledescription': translations?.itemDragTriggerRoleDescription ?? 'sortable',
         'aria-disabled': off ? 'true' : 'false',
         'aria-pressed': isDragging ? 'true' : 'false',
         // 把手是只有字形的离散动作钮（定尺把手）：盒、悬停 / 按下与按压、粗指针热区、焦点环、禁用面由

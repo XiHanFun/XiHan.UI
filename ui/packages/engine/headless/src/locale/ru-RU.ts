@@ -104,6 +104,8 @@ const translations = {
   'calendar-range-picker': rangeCalendar,
   'carousel': {
     root: 'Карусель',
+    rootRoleDescription: 'карусель',
+    itemRoleDescription: 'слайд',
     prevTrigger: 'Предыдущий слайд',
     nextTrigger: 'Следующий слайд',
     autoplayTriggerPlay: 'Запустить автоматический показ слайдов',
@@ -498,6 +500,7 @@ const translations = {
   'sortable': {
     root: 'Сортируемый список',
     itemDragTrigger: name => `Изменить порядок: ${name}`,
+    itemDragTriggerRoleDescription: 'сортируемый элемент',
     picked: (name, position, total) =>
       `Элемент «${name}» взят. Позиция ${position} из ${total}. Используйте клавиши со стрелками для перемещения, пробел — чтобы поместить, Escape — чтобы отменить.`,
     moved: (_name, position, total) => `Перемещено на позицию ${position} из ${total}.`,
@@ -541,6 +544,7 @@ const translations = {
     sort: column => `Сортировать по столбцу «${column}»`,
     columnResize: column => `Изменить ширину столбца «${column}»`,
     columnDrag: column => `Переместить столбец «${column}»`,
+    columnDragRoleDescription: 'перетаскиваемый столбец',
     selectAll: 'Выбрать все строки',
     toolbar: 'Панель инструментов таблицы',
     columnList: 'Настройка столбцов',

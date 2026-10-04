@@ -427,6 +427,11 @@ describe('列拖拽 · 把手产出的属性', () => {
     expect(resize.role).toBe('separator')
   })
 
+  it('列拖拽把手的角色说明走 translations', () => {
+    const h = mount({ translations: { columnDragRoleDescription: '可拖动的列' } })
+    expect((h.api().getColumnDragTriggerProps({ value: 'name' }) as Dict)['aria-roledescription']).toBe('可拖动的列')
+  })
+
   it('不可拖的列报 aria-disabled，但仍在标记里——列头构成随拖动变会让 Tab 序列跳动', () => {
     const h = mount()
     const props = h.api().getColumnDragTriggerProps({ value: 'fixed' }) as Dict

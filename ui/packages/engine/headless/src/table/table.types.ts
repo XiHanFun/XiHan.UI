@@ -827,6 +827,11 @@ export interface TableTranslations extends Partial<DragTranslations> {
   /** 列拖拽把手的名字。同一个列头中有两个把手，两个都需要说明各自的身份。 */
   columnDrag: (columnLabel: string) => string
   /**
+   * 列拖拽把手的角色说明（aria-roledescription），默认 draggable column。
+   * 它与同一列头里的改宽把手（role=separator）都答方向键，读屏靠这一句分清哪个是换位。
+   */
+  columnDragRoleDescription: string
+  /**
    * 全选把手的名字。它是默认为空的角色节点，行内的把手又是 aria-hidden 的，
    * 这里是整张表的选择功能对读屏唯一的入口，因此该文案总会发出。
    */

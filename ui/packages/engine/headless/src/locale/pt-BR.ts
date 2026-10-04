@@ -91,6 +91,8 @@ const translations = {
   'calendar-range-picker': rangeCalendar,
   'carousel': {
     root: 'Carrossel',
+    rootRoleDescription: 'carrossel',
+    itemRoleDescription: 'slide',
     prevTrigger: 'Slide anterior',
     nextTrigger: 'Próximo slide',
     autoplayTriggerPlay: 'Iniciar reprodução automática dos slides',
@@ -481,6 +483,7 @@ const translations = {
   'sortable': {
     root: 'Lista ordenável',
     itemDragTrigger: name => `Reordenar ${name}`,
+    itemDragTriggerRoleDescription: 'item ordenável',
     picked: (name, position, total) =>
       `Arrastando ${name}. Posição ${position} de ${total}. Use as teclas de seta para mover, Espaço para soltar e Esc para cancelar.`,
     moved: (_name, position, total) => `Agora na posição ${position} de ${total}.`,
@@ -520,6 +523,7 @@ const translations = {
     sort: column => `Ordenar por ${column}`,
     columnResize: column => `Redimensionar coluna ${column}`,
     columnDrag: column => `Reordenar coluna ${column}`,
+    columnDragRoleDescription: 'coluna arrastável',
     selectAll: 'Selecionar todas as linhas',
     toolbar: 'Barra de ferramentas da tabela',
     columnList: 'Configurações de colunas',

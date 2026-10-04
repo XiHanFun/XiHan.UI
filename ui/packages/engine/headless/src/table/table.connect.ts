@@ -220,6 +220,7 @@ export function connectTable<T extends PropTypes>(
     sort: translations?.sort ?? ((columnLabel: string) => `Sort by ${columnLabel}`),
     columnResize: translations?.columnResize ?? ((columnLabel: string) => `Resize column ${columnLabel}`),
     columnDrag: translations?.columnDrag ?? ((columnLabel: string) => `Reorder column ${columnLabel}`),
+    columnDragRoleDescription: translations?.columnDragRoleDescription ?? 'draggable column',
     selectAll: translations?.selectAll ?? 'Select all rows',
     toolbar: translations?.toolbar ?? 'Table toolbar',
     columnList: translations?.columnList ?? 'Column settings',
@@ -1349,7 +1350,7 @@ export function connectTable<T extends PropTypes>(
         'aria-label': label.columnDrag(def?.label ?? column.value),
         // 与同一个列头里的改宽把手（role=separator）区分开：两个都答方向键，
         // 一个改宽一个换位，读屏得能说清按的是哪一个
-        'aria-roledescription': 'draggable column',
+        'aria-roledescription': label.columnDragRoleDescription,
         // 拖拽把手自己占一个 Tab 位，不属于表体的 roving 行组；不可拖的列退出 Tab 序列
         'tabindex': draggable ? 0 : -1,
         'aria-disabled': draggable ? 'false' : 'true',

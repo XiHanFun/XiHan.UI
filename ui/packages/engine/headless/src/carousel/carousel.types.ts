@@ -50,6 +50,10 @@ export type CarouselPressedKey = 'prev' | 'next' | 'autoplay' | `indicator:${num
 export interface CarouselTranslations {
   /** 根节点（region 地标）的名字。 */
   root: string
+  /** 根节点的角色说明（aria-roledescription）：读屏把它念作这块区域是什么，默认 carousel。 */
+  rootRoleDescription: string
+  /** 每一张的角色说明（aria-roledescription），默认 slide。 */
+  itemRoleDescription: string
   prevTrigger: string
   nextTrigger: string
   /** 自动播放开关停止时的名字（按下开始播放）。 */
@@ -62,7 +66,7 @@ export interface CarouselTranslations {
   indicator: (page: number) => string
   /**
    * 条目文案，入参为 1 基张号与总张数。
-   * 默认只提供 "1 of 6"：条目上已有 aria-roledescription="slide"，文案中不再重复。
+   * 默认只提供 "1 of 6"：条目上已有 itemRoleDescription 那句角色说明，文案中不再重复。
    */
   item: (index: number, count: number) => string
 }
