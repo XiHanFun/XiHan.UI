@@ -9,7 +9,7 @@ import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type { CitationPreviewMode, CitationPreviewProps, CitationSchema, CitationSource, CitationTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { PortalContainer } from '../../runtime/portal'
-import { citationSourceMetaText, citationSourceTitle } from '@xihan-ui/headless'
+import { citationSourceTitle } from '@xihan-ui/headless'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -229,7 +229,7 @@ export function XhCitationSourceMeta({ children, ...rest }: XhCitationSourcePart
   const { api } = useCitationContext()
   const item = useCitationSource()
   const current = api.sources.find(source => source.sourceId === item.sourceId)
-  return <span {...mergeReactProps(api.getSourceMetaProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? citationSourceMetaText(current, 'Document')}</span>
+  return <span {...mergeReactProps(api.getSourceMetaProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? api.sourceMetaText(current)}</span>
 }
 
 function DefaultPreview({ item }: { item: CitationPreviewProps }): ReactNode {
@@ -246,7 +246,7 @@ function DefaultPreview({ item }: { item: CitationPreviewProps }): ReactNode {
       <header {...api.getPreviewHeaderProps(item)}>
         <span>
           <strong {...api.getPreviewTitleProps(item)}>{citationSourceTitle(current)}</strong>
-          <span {...api.getPreviewMetaProps(item)}>{citationSourceMetaText(current, 'Document')}</span>
+          <span {...api.getPreviewMetaProps(item)}>{api.sourceMetaText(current)}</span>
         </span>
         {/* 一处多源的轮换：只有一个来源时这三件带 hidden */}
         <button {...api.getPrevTriggerProps(item)} />

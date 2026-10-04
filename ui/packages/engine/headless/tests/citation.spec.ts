@@ -339,3 +339,23 @@ describe('citation 一处多源', () => {
     expect(() => api().getTriggerProps({})).toThrow(/至少要引一个来源/)
   })
 })
+
+describe('citation 来源副文字与预览链接字走语言包', () => {
+  const plain = { type: 'source-document' as const, sourceId: 'plain', title: '无媒体类型的文档' }
+
+  it('网页写域名、文档写媒体类型；文档没有媒体类型时取 translations.document，缺省英文语言包', () => {
+    const { api } = setup({ sources: [...sources, plain] })
+    expect(api().sourceMetaText(sources[0])).toBe('example.com')
+    expect(api().sourceMetaText(sources[1])).toBe('application/pdf')
+    expect(api().sourceMetaText(plain)).toBe('Document')
+    expect(api().previewLinkText({ sourceId: 'web' })).toBe('Open source')
+    expect(api().previewLinkText({ sourceId: 'doc' })).toBe('Open document')
+  })
+
+  it('换成别的说法时三句一起跟着换', () => {
+    const { api } = setup({ sources: [...sources, plain], translations: { document: '文档', previewLinkSource: '打开来源', previewLinkDocument: '打开文档' } })
+    expect(api().sourceMetaText(plain)).toBe('文档')
+    expect(api().previewLinkText({ sourceId: 'web' })).toBe('打开来源')
+    expect(api().previewLinkText({ sourceId: 'doc' })).toBe('打开文档')
+  })
+})

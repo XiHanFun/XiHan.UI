@@ -346,6 +346,7 @@ export function connectCitation<T extends PropTypes>(
       ...parts.quote.attrs,
       hidden: quote(item).length === 0 || undefined,
     }),
+    sourceMetaText: source => citationSourceMetaText(source, labels.document),
     previewLinkText: item => (source(item.sourceId)?.type === 'source-document' ? labels.previewLinkDocument : labels.previewLinkSource),
     getPreviewLinkProps: (item) => {
       const current = source(item.sourceId)

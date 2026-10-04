@@ -7,6 +7,7 @@
 //   `?? 'Close'`                带大写或空格的文字串当兜底（'md'、'outline'、'B' 这类取值记号不拦）
 //   `?? (n => \`Page ${n}\`)`   箭头函数拼出英文句子当兜底
 //   `<a>Open source</a>`        React 里直接写的英文文本节点
+//   `metaText(x, 'Document')`   给 *Text / *Label 这类出文字的函数直接传英文
 // 例外逐条登记在 ALLOWED，写明它为什么不是界面文字。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -26,6 +27,10 @@ const SKIP_DIRS = new Set(['locale'])
 const ALLOWED = {}
 
 const TEXT_FALLBACK = /\?\?\s*(?:'([^']*)'|"([^"]*)")/g
+/** 出文字的函数（名字以 Text / Label 收尾）的实参段。 */
+const TEXT_CALL = /\b\w*(?:Text|Label)\(([^()]*)\)/g
+/** 实参里首字母大写、带小写字母的英文串。 */
+const ENGLISH_ARG = /'([A-Z][a-z][^']*)'/g
 /** 箭头的形参段：只有标识符、类型标注与括号。 */
 const ARROW_PARAMS = /^[\w\s(),:?]*$/
 
@@ -91,6 +96,10 @@ for (const root of ROOTS) {
       for (const template of arrowTemplates(code)) {
         if (spellsWords(template))
           hits.push(template)
+      }
+      for (const call of code.matchAll(TEXT_CALL)) {
+        for (const arg of call[1].matchAll(ENGLISH_ARG))
+          hits.push(arg[1])
       }
       if (where.endsWith('.tsx')) {
         for (const match of code.matchAll(JSX_TEXT))
