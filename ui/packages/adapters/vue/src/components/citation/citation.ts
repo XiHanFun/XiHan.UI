@@ -9,7 +9,7 @@ import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type { CitationPreviewMode, CitationPreviewProps, CitationSchema, CitationSource, CitationSourceItemProps } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { citationSourceMetaText, citationSourceTitle } from '@xihan-ui/headless'
+import { citationSourceTitle } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
@@ -162,7 +162,7 @@ function sourcePart(
   const item = useCitationSource()
   return () => {
     const current = api.value.sources.find(source => source.sourceId === item.value.sourceId)
-    const text = name === 'getSourceTitleProps' ? citationSourceTitle(current) : citationSourceMetaText(current, 'Document')
+    const text = name === 'getSourceTitleProps' ? citationSourceTitle(current) : api.value.sourceMetaText(current)
     return h('span', api.value[name](item.value) as Record<string, unknown>, slots.default?.() ?? text)
   }
 }
@@ -222,7 +222,7 @@ function renderPreview(api: ReturnType<typeof useCitationContext>['api']['value'
     h('header', api.getPreviewHeaderProps(item) as Record<string, unknown>, [
       h('span', null, [
         h('strong', api.getPreviewTitleProps(item) as Record<string, unknown>, citationSourceTitle(current)),
-        h('span', api.getPreviewMetaProps(item) as Record<string, unknown>, citationSourceMetaText(current, 'Document')),
+        h('span', api.getPreviewMetaProps(item) as Record<string, unknown>, api.sourceMetaText(current)),
       ]),
       // 一处多源的轮换：只有一个来源时这三件带 hidden
       h('button', api.getPrevTriggerProps(item) as Record<string, unknown>),

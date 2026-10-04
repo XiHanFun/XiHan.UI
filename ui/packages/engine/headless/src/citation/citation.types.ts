@@ -241,6 +241,8 @@ export interface CitationApi<T extends PropTypes = PropTypes> {
   getPreviewMetaProps: (props: CitationPreviewProps) => T['element']
   getQuoteProps: (props: CitationPreviewProps) => T['element']
   getPreviewLinkProps: (props: CitationPreviewProps) => T['element']
+  /** 来源的副文字：网页来源写域名，文档来源写媒体类型，没有媒体类型时取 translations.document。 */
+  sourceMetaText: (source: CitationSource | undefined) => string
   /** 预览链接上写的字：网页来源取 previewLinkSource，文档来源取 previewLinkDocument。 */
   previewLinkText: (props: CitationPreviewProps) => string
   getDismissTriggerProps: (props: CitationPreviewProps) => T['button']
