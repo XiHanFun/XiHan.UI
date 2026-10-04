@@ -355,6 +355,7 @@ const translations = {
   },
   'hierarchy-chart': {
     ...chart,
+    chartRoleDescription: '树状图表',
     datumLabel: (details) => {
       const head = `${details.seriesName}，${details.formatted.value ?? ''}`
       return details.formatted.parentShare ? `${head}，占 ${details.formatted.parent ?? ''} 的 ${details.formatted.parentShare}` : head

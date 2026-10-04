@@ -373,6 +373,7 @@ const translations = {
   },
   'hierarchy-chart': {
     ...chart,
+    chartRoleDescription: 'древовидная диаграмма',
     datumLabel: (details) => {
       const head = `${details.seriesName}, ${details.formatted.value ?? ''}`
       return details.formatted.parentShare ? `${head}, ${details.formatted.parentShare} от группы «${details.formatted.parent ?? ''}»` : head

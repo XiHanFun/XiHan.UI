@@ -457,7 +457,8 @@ export const HEATMAP_EN_US: XhLocaleBucket<'heatmap'> = {
 }
 
 export const HIERARCHY_CHART_EN_US: XhLocaleBucket<'hierarchy-chart'> = {
-  chartRoleDescription,
+  // 绘图区是 role=tree：说明里留着 tree，读屏才知道能按方向键展开、收起
+  chartRoleDescription: 'tree chart',
   seriesRoleDescription,
   legendLabel,
   missingValue,
