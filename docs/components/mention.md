@@ -181,7 +181,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `XhMentionRoot` | `item` | `MentionNodeMeta` | 铺开 collection 时每条候选的文本插槽。 |
 | `XhMentionRoot` | `item-prefix` | `MentionNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
 | `XhMentionRoot` | `item-suffix` | `MentionNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
-| `XhMentionRoot` | `empty` | — | 铺开 collection 时空态中的文案；未写时使用内建英文。 |
+| `XhMentionRoot` | `empty` | — | 铺开 collection 时空态中的文案；未写时取 translations.empty（缺省走英文语言包）。 |
 
 ### React 适配器 props
 
@@ -196,7 +196,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `XhMentionRoot` | `renderItem` | `(node: MentionNodeMeta) => ReactNode` |  | 铺开 collection 时每条候选的内容；未提供时使用 collection 中的 label。 |
 | `XhMentionRoot` | `renderItemPrefix` | `(node: MentionNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
 | `XhMentionRoot` | `renderItemSuffix` | `(node: MentionNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
-| `XhMentionRoot` | `empty` | `ReactNode` |  | 铺开 collection 时空态中的文案；未写时使用内建英文。 |
+| `XhMentionRoot` | `empty` | `ReactNode` |  | 铺开 collection 时空态中的文案；未写时取 translations.empty（缺省走英文语言包）。 |
 | `XhMentionRoot` | `children` | `SlotChildren<MentionRootSlotProps>` |  |  |
 
 ### 状态
@@ -235,6 +235,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `mentions` | `readonly MentionRange[]` | 正文里插入过、仍然完整的提及，按出现先后排列；宿主据此取出被 @ 到的是哪几条。 |
 | `disabled` | `boolean` |  |
 | `empty` | `boolean` | 没有候选可显示：提供了 collection 且没有剩余条目。作者据此显示空态部件。 |
+| `emptyText` | `string` | 空态部件的缺省文字，取自 translations.empty；作者自己往空态里写了内容就不用它。 |
 | `isHighlighted` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string) => void` | 整段改写正文，浮层随之收起。 |
 | `close` | `() => void` |  |
@@ -282,12 +283,12 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
-| `input` | `aria-label` | props.translations.input |
+| `input` | `aria-label` | translations.input |
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `input` | `role` | undefined \| 'combobox' |
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-label` | props.translations.content |
+| `content` | `aria-label` | translations.content |
 | `content` | `role` | 'listbox' |
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |

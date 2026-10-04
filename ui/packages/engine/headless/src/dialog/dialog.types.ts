@@ -12,6 +12,12 @@ export interface DialogTranslations {
   close: string
   /** 拖动把手的 aria-label：把手是一块透明的命中区，读屏读不出它的用途。 */
   dragTrigger: string
+  /** 命令式对话框服务（createDialogService）确认钮的文字；组件本身不渲这颗钮。 */
+  ok: string
+  /** 命令式对话框服务取消钮的文字。 */
+  cancel: string
+  /** 命令式对话框服务里确认动作抛错后，正文下方那句提示。 */
+  actionError: string
 }
 
 /** 面板相对居中落点的位移，屏幕坐标、像素：向右、向下为正。 */

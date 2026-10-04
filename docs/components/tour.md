@@ -248,8 +248,8 @@
 | `content` | `role` | 'dialog' |
 | `progress-text` | `aria-live` | 'polite' |
 | `progress-indicator` | `aria-hidden` | 'true' |
-| `next-trigger` | `aria-label` | translations?.finish \| translations?.next |
-| `close-trigger` | `aria-label` | translations?.close |
+| `next-trigger` | `aria-label` | translations.finish \| translations.next |
+| `close-trigger` | `aria-label` | translations.close |
 | `arrow` | `aria-hidden` | 'true' |
 
 ## 样式参考

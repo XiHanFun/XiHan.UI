@@ -6,15 +6,10 @@
 // 提供 floating panel 相关实现。
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type {
-  FloatingPanelApi,
-  FloatingPanelPressedPart,
-  FloatingPanelResizeEdge,
-  FloatingPanelSchema,
-  FloatingPanelSize,
-  FloatingPanelWindowState,
-} from './floating-panel.types'
+import type { FloatingPanelApi, FloatingPanelPressedPart, FloatingPanelSchema } from './floating-panel.types'
 import { createPressTracker, dataAttr, focusSafely } from '@xihan-ui/core'
+import { FLOATING_PANEL_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { floatingPanelAnatomy } from './floating-panel.anatomy'
 import {
   fitFloatingPanelToViewport,
@@ -27,25 +22,6 @@ import {
 } from './floating-panel.geometry'
 
 const parts = floatingPanelAnatomy.build()
-
-/** 内建的改尺把手方位说法，读屏用；作者要中文就传 translations。 */
-const EDGE_LABEL: Record<FloatingPanelResizeEdge, string> = {
-  e: 'right edge',
-  n: 'top edge',
-  ne: 'top right corner',
-  nw: 'top left corner',
-  s: 'bottom edge',
-  se: 'bottom right corner',
-  sw: 'bottom left corner',
-  w: 'left edge',
-}
-
-/** 内建的形态按钮说法：按钮上通常只有一个图标。 */
-const WINDOW_STATE_LABEL: Record<FloatingPanelWindowState, string> = {
-  default: 'Restore panel',
-  maximized: 'Maximize panel',
-  minimized: 'Minimize panel',
-}
 
 /** 四个方向键对应的屏幕位移方向；不在表里的键不归本组件管。 */
 const ARROW_DELTA: Record<string, { dx: number, dy: number } | undefined> = {
@@ -100,15 +76,7 @@ export function connectFloatingPanel<T extends PropTypes>(
   }
   const stateAttr = open ? 'open' : 'closed'
 
-  const translations = prop('translations')
-  const label = {
-    dragTrigger: translations?.dragTrigger ?? 'Move panel',
-    resizeTrigger: translations?.resizeTrigger ?? ((edge: FloatingPanelResizeEdge) => `Resize ${EDGE_LABEL[edge]}`),
-    resizeValueText: translations?.resizeValueText
-      ?? ((rect: FloatingPanelSize) => `Width ${Math.round(rect.width)}, height ${Math.round(rect.height)}`),
-    windowStateTrigger: translations?.windowStateTrigger ?? ((next: FloatingPanelWindowState) => WINDOW_STATE_LABEL[next]),
-    close: translations?.close ?? 'Close',
-  }
+  const label = resolveTranslations(FLOATING_PANEL_EN_US, prop('translations'))
 
   // 改尺把手报值用的上下限，与机器夹取用的是同一份缺省
   const minSize = prop('minSize') ?? FLOATING_PANEL_MIN_SIZE

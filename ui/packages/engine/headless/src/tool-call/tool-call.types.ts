@@ -6,6 +6,8 @@
 // 定义 tool call 类型契约。
 
 import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
+import { TOOL_CALL_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 
 /**
  * 一次工具调用所处的阶段。
@@ -208,16 +210,17 @@ export function toolCallDuration(startTime?: number, endTime?: number): number |
 
 /** 阶段对应的兜底播报文案。 */
 export function toolCallStatusText(phase: ToolCallPhase, translations?: Partial<ToolCallTranslations>): string {
+  const text = resolveTranslations(TOOL_CALL_EN_US, translations)
   switch (phase) {
     case 'input-streaming':
-      return translations?.inputStreaming ?? 'Preparing…'
+      return text.inputStreaming
     case 'awaiting-approval':
-      return translations?.awaitingApproval ?? 'Waiting for approval'
+      return text.awaitingApproval
     case 'output-available':
-      return translations?.outputAvailable ?? 'Completed'
+      return text.outputAvailable
     case 'output-error':
-      return translations?.outputError ?? 'Failed'
+      return text.outputError
     default:
-      return translations?.inputAvailable ?? 'Running…'
+      return text.inputAvailable
   }
 }

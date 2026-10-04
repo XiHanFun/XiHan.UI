@@ -55,7 +55,7 @@ export interface SpinnerSchema extends MachineSchema {
 }
 
 export interface SpinnerApi<T extends PropTypes = PropTypes> {
-  /** 解析后的文案：label → translations.label → 内置默认值。 */
+  /** 解析后的文案：label → translations.label → en-US 语言包。 */
   label: string
   /** 已经露面；等待 delay 期间为 false。 */
   visible: boolean

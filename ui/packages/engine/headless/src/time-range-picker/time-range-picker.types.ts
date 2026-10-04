@@ -184,7 +184,7 @@ export interface TimeRangePickerSchema extends MachineSchema {
      * 与 min / max 的界外值同等处理：判定为真的格子仍可聚焦，只是不可选中。
      */
     isTimeUnavailable?: TimeUnavailablePredicate
-    /** 段位与两端读屏名的覆盖；未提供时使用内置英文语义名。 */
+    /** 段位与两端读屏名的覆盖；未提供时取英文语言包里的语义名。 */
     translations?: Partial<TimeRangePickerTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: TimeRangePickerValueChangeDetails) => void

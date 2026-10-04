@@ -12,35 +12,21 @@ import type { HierarchyModel, HierarchyNodeGeometry, HierarchyTreeNode } from '.
 import type { HierarchyChartSchema, HierarchyOverlay } from './hierarchy-chart.schema'
 import type { HierarchyChartTranslations, HierarchyLegendScale, HierarchyPathItem, HierarchySummary, HierarchyTooltipModel } from './hierarchy-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
-import { CHART_TRANSLATIONS, chartActiveSource, resolveChartTranslations } from '../shared/chart'
+import { HIERARCHY_CHART_EN_US } from '../locale/en-US'
+import { chartActiveSource, resolveChartTranslations } from '../shared/chart'
 import { hierarchyNodeKey } from './hierarchy-chart.model'
 
-/** 节点的可及名：名字、数值，以及占上一层的比例。 */
+/** 数据标记的缺省可及名，取自英文语言包。 */
 export function defaultHierarchyDatumLabel(details: ChartDatumDetails): string {
-  const head = `${details.seriesName}, ${details.formatted.value ?? ''}`
-  return details.formatted.parentShare ? `${head}, ${details.formatted.parentShare} of ${details.formatted.parent ?? ''}` : head
+  return HIERARCHY_CHART_EN_US.datumLabel(details)
 }
 
-/** 缺省摘要：当前的根、合计、下面一层的项数与最大的一项。 */
+/** 缺省摘要，取自英文语言包。 */
 export function defaultHierarchySummary(model: HierarchySummary): string {
-  if (model.childCount === 0)
-    return 'No data.'
-  const head = `${model.root}: ${model.childCount} ${model.childCount === 1 ? 'item' : 'items'}, total ${model.total}.`
-  return model.largest ? `${head} Largest: ${model.largest.name} ${model.largest.value} (${model.largest.share}).` : head
+  return HIERARCHY_CHART_EN_US.summary(model)
 }
 
-export const HIERARCHY_TRANSLATIONS: HierarchyChartTranslations = Object.freeze({
-  ...CHART_TRANSLATIONS,
-  datumLabel: defaultHierarchyDatumLabel,
-  rootLabel: 'All',
-  pathLabel: 'Path',
-  nameLabel: 'Path',
-  valueLabel: 'Value',
-  levelLabel: (level: number) => `Level ${level}`,
-  parentShareLabel: 'Share of parent',
-  rootShareLabel: 'Share of total',
-  summary: defaultHierarchySummary,
-})
+export const HIERARCHY_TRANSLATIONS: HierarchyChartTranslations = Object.freeze({ ...HIERARCHY_CHART_EN_US })
 
 const translationsCache = new WeakMap<object, HierarchyChartTranslations>()
 

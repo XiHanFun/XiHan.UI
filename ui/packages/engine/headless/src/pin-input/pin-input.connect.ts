@@ -8,6 +8,8 @@
 import type { ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { PinInputApi, PinInputSchema } from './pin-input.types'
 import { dataAttr, focusSafely, isComposingEvent, navIntentFromKey, queryItems, readDirection, stepIndex } from '@xihan-ui/core'
+import { PIN_INPUT_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { pinInputAnatomy } from './pin-input.anatomy'
 import { firstEmptyPinIndex, isPinComplete, padPinValue, pinLength, sanitizePin } from './pin-input.machine'
 
@@ -46,10 +48,7 @@ export function connectPinInput<T extends PropTypes>(
   const valueAsString = value.join('')
   const complete = isPinComplete(value)
   const focusedIndex = context.get('focusedIndex') ?? -1
-  const translations = prop('translations')
-  const label = {
-    input: translations?.input ?? ((index: number, count: number) => `Character ${index} of ${count}`),
-  }
+  const label = resolveTranslations(PIN_INPUT_EN_US, prop('translations'))
   const ids = scope.ids('pin-input', 'label')
   const inputId = (index: number): string => scope.partId('pin-input', `input-${index}`)
 

@@ -10,6 +10,8 @@ import type { HighlightSegment } from '../highlight/highlight.split'
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema } from './json-viewer.types'
 import { contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { splitHighlight } from '../highlight/highlight.split'
+import { JSON_VIEWER_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery } from './json-viewer.anatomy'
 import { flattenJson, jsonSearch, jsonSearchQuery, jsonSeedExpanded, jsonText } from './json-viewer.machine'
 
@@ -33,18 +35,7 @@ export function connectJsonViewer<T extends PropTypes>(
   })
   const byPath = new Map(rows.map(row => [row.value, row]))
 
-  const translations = prop('translations')
-  const label = {
-    tree: translations?.tree ?? 'JSON',
-    text: translations?.text ?? 'JSON source',
-    root: translations?.root ?? 'root',
-    objectPreview: translations?.objectPreview ?? ((count: number) => `{…} ${count}`),
-    arrayPreview: translations?.arrayPreview ?? ((count: number) => `[…] ${count}`),
-    collapsedBranchLabel: translations?.collapsedBranchLabel
-      ?? ((name: string, count: number) => `${name}, ${count === 1 ? '1 item' : `${count} items`}`),
-    moreItems: translations?.moreItems ?? ((count: number) => `… ${count} more`),
-    empty: translations?.empty ?? 'No data',
-  }
+  const label = resolveTranslations(JSON_VIEWER_EN_US, prop('translations'))
 
   // 焦点锚点投影成可见的：分支一收起，它底下的行就不在 DOM 里了，
   // 让一个已消失的路径继续认领 tabindex=0 会让整棵树没有 Tab 停靠点

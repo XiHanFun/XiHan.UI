@@ -10,6 +10,8 @@ import type { DndDelta } from '@xihan-ui/pointer'
 import type { SortableApi, SortableItemState, SortableSchema } from './sortable.types'
 import { createPressTracker, dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { insertionOffsets, insertionSlot, sortableOffsets } from '@xihan-ui/pointer'
+import { SORTABLE_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { sortableAnatomy } from './sortable.anatomy'
 import { assertSortableGroupProps } from './sortable.group'
@@ -68,7 +70,7 @@ export function connectSortable<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const axis = prop('orientation') ?? 'vertical'
   const rtl = prop('dir') === 'rtl'
-  const translations = prop('translations')
+  const translations = resolveTranslations(SORTABLE_EN_US, prop('translations'))
   const group = prop('group')
   assertSortableGroupProps({ group, listId: prop('listId'), orientation: axis })
 
@@ -169,7 +171,7 @@ export function connectSortable<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'role': 'group',
-      'aria-label': translations?.root ?? 'Sortable list',
+      'aria-label': translations.root,
       'data-orientation': axis,
       'data-disabled': dataAttr(disabled),
       'data-dragging': dataAttr(dragging),
@@ -240,7 +242,7 @@ export function connectSortable<T extends PropTypes>(
       const item = itemAt(id)
       const isDragging = !!item?.dragging
       const position = (item?.index ?? 0) + 1
-      const name = translations?.item?.(id, position, ids.length) ?? id
+      const name = translations.item?.(id, position, ids.length) ?? id
       const off = disabled || !!itemDisabled
       const handlers = press(id, off)
       return normalize.element({
@@ -249,8 +251,8 @@ export function connectSortable<T extends PropTypes>(
         'type': 'button',
         'role': 'button',
         'tabindex': off ? undefined : 0,
-        'aria-label': translations?.itemDragTrigger?.(name) ?? `Reorder ${name}`,
-        'aria-roledescription': translations?.itemDragTriggerRoleDescription ?? 'sortable',
+        'aria-label': translations.itemDragTrigger(name),
+        'aria-roledescription': translations.itemDragTriggerRoleDescription,
         'aria-disabled': off ? 'true' : 'false',
         'aria-pressed': isDragging ? 'true' : 'false',
         // 把手是只有字形的离散动作钮（定尺把手）：盒、悬停 / 按下与按压、粗指针热区、焦点环、禁用面由

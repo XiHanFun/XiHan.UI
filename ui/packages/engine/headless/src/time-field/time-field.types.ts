@@ -77,7 +77,7 @@ export interface TimeFieldSchema extends MachineSchema {
     /** 尺寸：sm / md / lg。 */
     size?: Size
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
-    /** 段位读屏名的覆盖；未提供时使用内置英文语义名。 */
+    /** 段位读屏名的覆盖；未提供时取英文语言包里的语义名。 */
     translations?: Partial<TimeFieldTranslations>
     onValueChange?: (details: TimeFieldValueChangeDetails) => void
     /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */

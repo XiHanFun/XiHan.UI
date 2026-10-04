@@ -185,10 +185,10 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | translations?.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `role` | 'group' |
 | `handle` | `aria-disabled` | 'false' \| 'true' |
-| `handle` | `aria-label` | translations?.handle?.(edge) |
+| `handle` | `aria-label` | translations.handle(edge) |
 | `handle` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `handle` | `aria-valuenow` | Math.round(edge === 'n' \|\| edge === 's' ? dimensions.… |
 | `handle` | `role` | 'separator' |

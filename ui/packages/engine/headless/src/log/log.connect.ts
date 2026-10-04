@@ -8,8 +8,10 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { LogApi, LogLevel, LogLineProps, LogProps, LogSchema } from './log.types'
 import { dataAttr } from '@xihan-ui/core'
+import { LOG_EN_US } from '../locale/en-US'
 import { floatingSizeBelow } from '../shared/floating-size'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { logAnatomy } from './log.anatomy'
 
 const parts = logAnatomy.build()
@@ -41,10 +43,7 @@ export function connectLog<T extends PropTypes>(
   const rows = props.rows != null && Number.isFinite(props.rows) && props.rows > 0
     ? Math.floor(props.rows)
     : undefined
-  const label = {
-    log: props.translations?.log ?? 'Log',
-    scrollToBottom: props.translations?.scrollToBottom ?? 'Scroll to bottom',
-  }
+  const label = resolveTranslations(LOG_EN_US, props.translations)
   // 只按 atBottom 判定，不看粘附意图
   const showScrollToEndTrigger = !atBottom
   // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，家族配方两者同一档

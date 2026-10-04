@@ -16,7 +16,8 @@ import type { CartesianAnnotationSummary, CartesianBrushing, CartesianBrushSelec
 import { resolveLocale } from '@xihan-ui/core'
 import { createPicker, domainToWindow, FULL_WINDOW, isFullWindow, lttb } from '@xihan-ui/viz'
 import { nearestIndex } from '@xihan-ui/viz/columns'
-import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, defaultChartSummary, memoizeLast, resolveChartTranslations } from '../shared/chart'
+import { CARTESIAN_CHART_EN_US } from '../locale/en-US'
+import { chartActiveSource, chartPageSize, memoizeLast, resolveChartTranslations } from '../shared/chart'
 import {
   columnsAnchorAt,
   columnsColorDomain,
@@ -40,19 +41,9 @@ import { cartesianProbesOf } from './cartesian-chart.probe'
 export { CARTESIAN_SEQUENTIAL_ANCHORS, cartesianProbeDescriptor, isCartesianProbe } from './cartesian-chart.probe'
 export type { CartesianProbeDescriptor } from './cartesian-chart.probe'
 
-/** 缺省的注释摘要：每条一句「名字（系列）：值。」。 */
+/** 缺省的注释摘要：每条一句「名字（系列）：值。」，取自英文语言包。 */
 export function defaultCartesianAnnotationSummary(items: readonly CartesianAnnotationSummary[]): string {
-  return items.map(item => `${item.label}${item.series ? ` (${item.series})` : ''}: ${item.value}.`).join(' ')
-}
-
-/** 缺省的开高低收写法：四个价依次写出。 */
-function defaultOhlcLabel({ open, high, low, close }: { open: string, high: string, low: string, close: string }): string {
-  return `Open ${open}, High ${high}, Low ${low}, Close ${close}`
-}
-
-/** 缺省的聚合表题：原表题后注明多少行聚合成了多少个区间。 */
-function defaultAggregatedCaption({ caption, rows, ranges }: { caption: string, rows: string, ranges: string }): string {
-  return `${caption} (${rows} rows in ${ranges} ranges)`
+  return CARTESIAN_CHART_EN_US.annotationSummary(items)
 }
 
 /** 整条轴：两个方向都没缩放。 */
@@ -83,31 +74,7 @@ export function sameSelection(a: CartesianBrushSelection | null | undefined, b: 
   return sameWindow(a, b)
 }
 
-/** 缺省的五数写法：须线两端、四分位与中位数依次写出。 */
-function defaultBoxLabel({ min, q1, median, q3, max }: { min: string, q1: string, median: string, q3: string, max: string }): string {
-  return `Min ${min}, Q1 ${q1}, Median ${median}, Q3 ${q3}, Max ${max}`
-}
-
-export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze({
-  ...CHART_TRANSLATIONS,
-  keyLabel: 'Category',
-  seriesLabel: 'Series',
-  valueLabel: 'Value',
-  sizeLabel: 'Size',
-  colorLabel: 'Color',
-  zoomLabel: 'Zoom',
-  zoomStartLabel: 'Window start',
-  zoomEndLabel: 'Window end',
-  ohlcLabel: defaultOhlcLabel,
-  ohlcColumns: { open: 'Open', high: 'High', low: 'Low', close: 'Close' },
-  boxLabel: defaultBoxLabel,
-  boxColumns: { min: 'Min', q1: 'Q1', median: 'Median', q3: 'Q3', max: 'Max', outliers: 'Outliers' },
-  aggregatedCaption: defaultAggregatedCaption,
-  referenceLabel: 'Reference',
-  averageLabel: 'Average',
-  annotationSummary: defaultCartesianAnnotationSummary,
-  summary: defaultChartSummary,
-})
+export const CARTESIAN_TRANSLATIONS: CartesianChartTranslations = Object.freeze({ ...CARTESIAN_CHART_EN_US })
 
 const translationsCache = new WeakMap<object, CartesianChartTranslations>()
 

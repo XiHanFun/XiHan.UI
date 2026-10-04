@@ -7,26 +7,22 @@
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CalendarCellBaseState, CalendarCellProps, CalendarPeriod } from '../shared/calendar'
-import type { CalendarPickerApi, CalendarPickerPressedKey, CalendarPickerSchema, CalendarPickerTranslations } from './calendar-picker.types'
+import type { CalendarPickerApi, CalendarPickerPressedKey, CalendarPickerSchema } from './calendar-picker.types'
 import { createPressTracker, dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { CALENDAR_PICKER_EN_US } from '../locale/en-US'
 import { createCalendarFrame } from '../shared/calendar'
+import { resolveTranslations } from '../shared/translations'
 import { calendarPickerAnatomy } from './calendar-picker.anatomy'
 import { calendarPickerMaxSelected } from './calendar-picker.machine'
 
 const parts = calendarPickerAnatomy.build()
-
-function resolveTranslations(input: Partial<CalendarPickerTranslations> | undefined): CalendarPickerTranslations {
-  return {
-    todayDate: input?.todayDate ?? (date => `Today, ${date}`),
-  }
-}
 
 export function connectCalendarPicker<T extends PropTypes>(
   service: Service<CalendarPickerSchema>,
   normalize: NormalizeProps<T>,
 ): CalendarPickerApi<T> {
   const { context, prop, send } = service
-  const translations = resolveTranslations(prop('translations'))
+  const translations = resolveTranslations(CALENDAR_PICKER_EN_US, prop('translations'))
   const frame = createCalendarFrame(service, calendarPickerAnatomy.name)
   const { periodAt, focusedValue, view, disabled: calendarDisabled, readOnly } = frame
 

@@ -14,12 +14,14 @@ import type { ColorPickerPoint } from './color-picker.geometry'
 import type { ColorPickerDragTarget, ColorPickerErrorDetails, ColorPickerErrors, ColorPickerSchema } from './color-picker.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
+import { COLOR_PICKER_EN_US } from '../locale/en-US'
 import { sameArray } from '../shared/array'
 import { COLOR_FALLBACK, colorHsvaToRgba, colorParse, colorResolveFormat, colorResolveHsva, colorRgbaToHsva, colorSameColor, colorToString } from '../shared/color'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
+import { resolveTranslations } from '../shared/translations'
 import { COLOR_PICKER_TAG_LIST_SELECTOR, colorPickerAnatomy } from './color-picker.anatomy'
 import { colorPickerApplyInput, colorPickerWithArea } from './color-picker.color'
 import { colorPickerPointRatio } from './color-picker.geometry'
@@ -221,10 +223,6 @@ function applyPoint(params: MachineParams, point: ColorPickerPoint): void {
   applyHsva(params, { ...currentHsva(params), s: ratio.x * 100, v: (1 - ratio.y) * 100 })
 }
 
-/** 通道名与播报文本：取色器文案桶里的两条，转成滑块那份文案的形状。 */
-const CHANNEL_UNIT: Record<ColorPickerChannel, string> = { hue: '°', alpha: '%' }
-const CHANNEL_NAME: Record<ColorPickerChannel, string> = { hue: 'Hue', alpha: 'Alpha' }
-
 /**
  * 喂给某条内嵌颜色滑块的 props：值串、工作色与状态都受控于取色器，推动经 HSVA.SET 送回来。
  * 工作色整份交过去（而不只是串）：灰度处的色相、全透明处的三个分量串里写不进，滑块推色相时才不会把它们抹掉。
@@ -233,7 +231,7 @@ const CHANNEL_NAME: Record<ColorPickerChannel, string> = { hue: 'Hue', alpha: 'A
  */
 function colorPickerSliderProps(service: Service<ColorPickerSchema>, channel: ColorPickerChannel): ColorSliderSchema['props'] {
   const { prop, context, send } = service
-  const translations = prop('translations')
+  const translations = resolveTranslations(COLOR_PICKER_EN_US, prop('translations'))
   const format = colorResolveFormat(prop('format') as string | undefined) ?? 'hex'
   const alpha = prop('alpha') ?? false
   return {
@@ -248,9 +246,10 @@ function colorPickerSliderProps(service: Service<ColorPickerSchema>, channel: Co
     size: prop('size'),
     disabled: !!prop('disabled') || (channel === 'alpha' && !alpha),
     readOnly: !!prop('readOnly'),
+    // 通道名与播报文本：取色器文案桶里的两条，转成滑块那份文案的形状
     translations: {
-      label: () => translations?.channel?.(channel) ?? CHANNEL_NAME[channel],
-      valueText: (_, value) => translations?.channelValueText?.(channel, value) ?? `${value}${CHANNEL_UNIT[channel]}`,
+      label: () => translations.channel(channel),
+      valueText: (_, value) => translations.channelValueText(channel, value),
     },
     onValueChange: ({ hsva }) => send({ type: 'HSVA.SET', hsva }),
   }
@@ -271,19 +270,19 @@ export function colorPickerAlphaSliderProps(service: Service<ColorPickerSchema>)
  * 挑一格经 VALUE.SET 送回来。只读与禁用都不改值；色板整组禁用时格子仍可聚焦，与色板单独用时一致。
  */
 export function colorPickerSwatchPickerProps(service: Service<ColorPickerSchema>): ColorSwatchPickerSchema['props'] {
-  const translations = service.prop('translations')
-  return swatchPickerProps(service, service.prop('swatches') ?? [], translations?.swatchGroup ?? 'Color swatches')
+  const translations = resolveTranslations(COLOR_PICKER_EN_US, service.prop('translations'))
+  return swatchPickerProps(service, service.prop('swatches') ?? [], translations.swatchGroup)
 }
 
 /** 最近使用色那台色块选择器的 props：格子取 recentColors，其余与预设色板同一套。 */
 export function colorPickerRecentSwatchPickerProps(service: Service<ColorPickerSchema>): ColorSwatchPickerSchema['props'] {
-  const translations = service.prop('translations')
-  return swatchPickerProps(service, service.context.get('recentColors'), translations?.recentSwatchGroup ?? 'Recent colors')
+  const translations = resolveTranslations(COLOR_PICKER_EN_US, service.prop('translations'))
+  return swatchPickerProps(service, service.context.get('recentColors'), translations.recentSwatchGroup)
 }
 
 function swatchPickerProps(service: Service<ColorPickerSchema>, swatches: readonly string[], group: string): ColorSwatchPickerSchema['props'] {
   const { prop, context, send } = service
-  const translations = prop('translations')
+  const translations = resolveTranslations(COLOR_PICKER_EN_US, prop('translations'))
   const multiple = prop('selectionMode') === 'multiple'
   return {
     swatches: swatches.map(value => ({ value })),
@@ -295,7 +294,7 @@ function swatchPickerProps(service: Service<ColorPickerSchema>, swatches: readon
     size: prop('size'),
     translations: {
       group,
-      swatch: translations?.swatch ?? (value => `Color ${value}`),
+      swatch: translations.swatch,
     },
     onValueChange: ({ value }) => {
       if (value == null)

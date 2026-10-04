@@ -205,7 +205,7 @@
 | --- | --- | --- |
 | `trigger` | `aria-controls` | `list` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
-| `trigger` | `aria-label` | props.translations?.trigger |
+| `trigger` | `aria-label` | translations.trigger |
 | `list` | `aria-labelledby` | `trigger` 部件的 id |
 | `list` | `role` | 'group' |
 

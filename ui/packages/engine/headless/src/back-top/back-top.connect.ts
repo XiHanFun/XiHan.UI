@@ -8,7 +8,9 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { BackTopApi, BackTopSchema } from './back-top.types'
 import { dataAttr } from '@xihan-ui/core'
+import { BACK_TOP_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { backTopAnatomy } from './back-top.anatomy'
 
 const parts = backTopAnatomy.build()
@@ -18,6 +20,7 @@ export function connectBackTop<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): BackTopApi<T> {
   const { state, context, prop, send, scope } = service
+  const translations = resolveTranslations(BACK_TOP_EN_US, prop('translations'))
 
   const visible = state.matches('visible')
   // 缺省 outline：描边 + 磨砂面的中性圆钮（只有 Button 缺省品牌实心）
@@ -48,7 +51,7 @@ export function connectBackTop<T extends PropTypes>(
       // 写死 button：不写的话放在表单里会当成提交按钮
       'type': 'button',
       // 按钮里通常只有一个图标，可及名字只能由这里给
-      'aria-label': prop('translations')?.trigger ?? 'Back to top',
+      'aria-label': translations.trigger,
       'data-state': visible ? 'visible' : 'hidden',
       // 浮在内容之上的单图标圆钮：盒型、四态面、0.97 按压与 44px 命中区由家族配方按 floating 档给出
       'data-xh-action-control': '',

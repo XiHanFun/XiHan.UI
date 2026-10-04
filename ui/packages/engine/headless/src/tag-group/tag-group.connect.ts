@@ -9,8 +9,10 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TagApi, TagPressPort } from '../tag'
 import type { TagGroupApi, TagGroupItemProps, TagGroupNodeMeta, TagGroupSchema } from './tag-group.types'
 import { contains, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, mergeProps } from '@xihan-ui/core'
+import { TAG_GROUP_EN_US } from '../locale/en-US'
 import { isEditableTarget } from '../shared/editable-target'
 import { createGridCollection, fromInlineControl, readGridKey } from '../shared/grid-collection'
+import { resolveTranslations } from '../shared/translations'
 import { connectStaticTag } from '../tag'
 import { tagGroupAnatomy, tagGroupItems, tagGroupItemText } from './tag-group.anatomy'
 
@@ -36,11 +38,7 @@ export function connectTagGroup<T extends PropTypes>(
   const editable = !groupDisabled && !readOnly
   const ids = scope.ids('tag-group', 'label', 'list')
 
-  const translations = prop('translations')
-  const label = {
-    deleteItem: translations?.deleteItem ?? ((text: string) => `Delete ${text}`),
-    list: translations?.list ?? 'Tags',
-  }
+  const label = resolveTranslations(TAG_GROUP_EN_US, prop('translations'))
 
   // roving tabindex 锚点：焦点在组内跟焦点走，否则落在选中集合的第一个。
   // 不取文档序里最靠前的选中项，那要查 DOM，而 connect 在 render 期求值、此时 DOM 尚不存在

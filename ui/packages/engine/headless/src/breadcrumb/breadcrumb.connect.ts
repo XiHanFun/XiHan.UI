@@ -8,6 +8,8 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { BreadcrumbApi, BreadcrumbNodeMeta, BreadcrumbSchema } from './breadcrumb.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
+import { BREADCRUMB_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { breadcrumbAnatomy } from './breadcrumb.anatomy'
 import { breadcrumbCollapsedRange, buildBreadcrumbItems, normalizeBreadcrumbNodes } from './breadcrumb.range'
 
@@ -20,8 +22,9 @@ export function connectBreadcrumb<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): BreadcrumbApi<T> {
   const { prop, context, send } = service
-  const label = prop('translations')?.root ?? 'Breadcrumb'
-  const ellipsisLabel = prop('translations')?.ellipsis ?? 'Show full path'
+  const translations = resolveTranslations(BREADCRUMB_EN_US, prop('translations'))
+  const label = translations.root
+  const ellipsisLabel = translations.ellipsis
   // collection 推出的层级元信息，折叠序列由它派生，两处数学只有一份；展开后不再折
   const collection: BreadcrumbNodeMeta[] = normalizeBreadcrumbNodes(prop('collection') ?? [])
   const expanded = context.get('expanded')

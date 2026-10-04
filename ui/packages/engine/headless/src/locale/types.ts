@@ -25,7 +25,6 @@ interface LocaleExcludedKeys {
   'approval': 'approve' | 'deny' | 'notePlaceholder'
   'clipboard': 'copy'
   'download-trigger': 'trigger'
-  'kbd': 'keyName'
   'mention': 'input'
   'menu': 'content'
   'prompt-input': 'input'
@@ -52,3 +51,6 @@ type LocaleKeys<K extends keyof XhTranslationOverrides> = Exclude<keyof Bucket<K
 export type XhLocaleTranslations = {
   readonly [K in keyof XhTranslationOverrides as [LocaleKeys<K>] extends [never] ? never : K]-?: Pick<Bucket<K>, LocaleKeys<K>>
 }
+
+/** 语言包里一个组件的那一桶。 */
+export type XhLocaleBucket<K extends keyof XhLocaleTranslations> = XhLocaleTranslations[K]

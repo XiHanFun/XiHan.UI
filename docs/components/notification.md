@@ -264,7 +264,7 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `group` | `aria-label` | props.translations.region |
+| `group` | `aria-label` | translations.region |
 | `group` | `role` | 'region' |
 | `item` | `aria-atomic` | 'true' |
 | `item` | `aria-describedby` | `description` 部件的 id |
@@ -273,7 +273,7 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 | `item` | `role` | 'alert' \| 'status' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `item-progress` | `aria-hidden` | 'true' |
-| `item-close-trigger` | `aria-label` | props.translations.close |
+| `item-close-trigger` | `aria-label` | translations.close |
 
 ## 样式参考
 

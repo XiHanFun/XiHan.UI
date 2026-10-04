@@ -3,8 +3,9 @@ import { describe, expect, it } from 'vitest'
 import { componentTranslations } from '../src/config/config-merge'
 import { deDE, enUS, esES, frFR, jaJP, koKR, ptBR, ruRU, zhCN, zhTW } from '../src/locale'
 import { paginationLabels } from '../src/pagination'
+import { resolveTranslations } from '../src/shared/translations'
 
-const PACKS: Record<string, XhLocale> = { deDE, esES, frFR, jaJP, koKR, ptBR, ruRU, zhCN, zhTW }
+const PACKS: Record<string, XhLocale> = { deDE, enUS, esES, frFR, jaJP, koKR, ptBR, ruRU, zhCN, zhTW }
 
 const EDGES = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].map(edge => [edge])
 const COLOR_CHANNELS = ['hue', 'saturation', 'brightness', 'alpha', 'red', 'green', 'blue']
@@ -36,6 +37,10 @@ const DRAG = {
   droppedInto: [['Name', 'Folder', 1]],
   canceledInto: [['Name', 'Folder', 2]],
 }
+
+/** 修饰键两个平台都要有叫法；字母键没有专名，照大写写。 */
+const KEY_SAMPLES = ['Alt', 'Control', 'Meta', 'Shift', ' ', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Backspace', 'Delete', 'Enter', 'Escape', 'Tab', 's']
+  .flatMap(key => [[key, 'mac'], [key, 'other']])
 
 const TAGGED = { deleteItem: [['A / B']], overflowTag: [[3]] }
 
@@ -127,7 +132,11 @@ const SAMPLES: Record<string, Record<string, unknown[][]>> = {
   'image-cropper': { valueText: [[{ x: 0, y: 0, width: 100, height: 50 }]] },
   'image-viewer': { counter: [[1, 5]] },
   'json-viewer': { objectPreview: [[3]], arrayPreview: [[1]], collapsedBranchLabel: [['root', 1], ['items', 3]], moreItems: [[1], [10]] },
-  'kbd': { hotkey: [[['Ctrl', 'K']]] },
+  'kbd': {
+    hotkey: [[['Ctrl', 'K']]],
+    keyName: KEY_SAMPLES,
+    keyLabel: KEY_SAMPLES,
+  },
   'message-feed': {
     scrollToBottomUnread: [[1], [3]],
     item: [[1, 5, 'user'], [2, -1, 'assistant'], [3, 5, 'system'], [4, 5, undefined]],
@@ -229,12 +238,16 @@ describe('内建语言包', () => {
   })
 
   it('locale 是规范的 BCP 47 语言标记', () => {
-    for (const [name, pack] of Object.entries({ ...PACKS, enUS }))
+    for (const [name, pack] of Object.entries(PACKS))
       expect(Intl.getCanonicalLocales(pack.locale)[0], name).toBe(pack.locale)
   })
 
-  it('英文只带 locale：内建文案本身就是英文', () => {
-    expect(enUS).toEqual({ locale: 'en-US', translations: {} })
+  it('组件没配语言包时用的就是 enUS 那一桶：解析结果原样是那一桶，覆盖逐键压上、undefined 不算给过', () => {
+    const bucket = enUS.translations.dialog!
+    expect(resolveTranslations(bucket, undefined)).toBe(bucket)
+    expect(resolveTranslations(bucket, { close: undefined })).toBe(bucket)
+    expect(resolveTranslations(bucket, { close: '关掉' })).toEqual({ ...bucket, close: '关掉' })
+    expect(bucket.close).toBe('Close')
   })
 
   for (const [name, pack] of Object.entries(PACKS)) {
@@ -259,16 +272,23 @@ describe('内建语言包', () => {
       }
     })
 
-    it(`${name}：思考时长的模板留着 {seconds} 占位符`, () => {
+    it(`${name}：模板里的占位符一个不少（思考时长的 {seconds}、校验报错的 {name} / {min} / {max}）`, () => {
       const reasoning = pack.translations.reasoning!
       expect(reasoning.thinkingFor).toContain('{seconds}')
       expect(reasoning.thoughtFor).toContain('{seconds}')
+      const form = pack.translations.form as Required<NonNullable<XhLocale['translations']['form']>>
+      for (const text of [form.required, form.pattern, ...Object.values(form.type)])
+        expect(text).toContain('{name}')
+      for (const text of [form.minLength, form.minNumber])
+        expect([text.includes('{name}'), text.includes('{min}')]).toEqual([true, true])
+      for (const text of [form.maxLength, form.maxNumber])
+        expect([text.includes('{name}'), text.includes('{max}')]).toEqual([true, true])
     })
   }
 
   it('语言包当作全局配置：组件按名字取到自己那一桶，实例上写的键照旧压在上面', () => {
-    expect(componentTranslations('dialog', undefined, zhCN)).toEqual({ close: '关闭', dragTrigger: '移动对话框' })
-    expect(componentTranslations('dialog', { close: '关掉' }, zhCN)).toEqual({ close: '关掉', dragTrigger: '移动对话框' })
+    expect(componentTranslations('dialog', undefined, zhCN)).toBe(zhCN.translations.dialog)
+    expect(componentTranslations('dialog', { close: '关掉' }, zhCN)).toEqual({ ...zhCN.translations.dialog, close: '关掉' })
     const labels = paginationLabels(key => (key === 'translations' ? zhCN.translations.pagination : undefined) as never)
     expect(labels.summary(1, 10, 42)).toBe('第 1-10 条，共 42 条')
     expect(labels.pageSizeOption(20)).toBe('20 条/页')

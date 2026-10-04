@@ -246,7 +246,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | `segment` | `aria-valuenow` | undefined \| String(item.value) |
 | `segment` | `aria-valuetext` | item?.text |
 | `segment` | `role` | undefined \| 'spinbutton' |
-| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 
 ## 样式参考
 

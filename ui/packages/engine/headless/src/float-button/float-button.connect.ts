@@ -8,7 +8,9 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { FloatButtonApi, FloatButtonAppearance, FloatButtonPlacement, FloatButtonPosition, FloatButtonSchema } from './float-button.types'
 import { dataAttr } from '@xihan-ui/core'
+import { FLOAT_BUTTON_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { floatButtonAnatomy } from './float-button.anatomy'
 import { floatButtonPlacementOf, isFloatButtonEdgePosition, normalizeFloatButtonRatio } from './float-button.geometry'
 
@@ -36,6 +38,7 @@ export function connectFloatButton<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): FloatButtonApi<T> {
   const { state, context, prop, send, scope } = service
+  const translations = resolveTranslations(FLOAT_BUTTON_EN_US, props.translations)
 
   const open = state.get() === 'open'
   // 液态档收起后动作正融回触发器：展开组还在原处，但已不可交互
@@ -120,7 +123,7 @@ export function connectFloatButton<T extends PropTypes>(
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.list,
       // 里面通常只有一个图标，可及名字只能由这里给
-      'aria-label': props.translations?.trigger ?? 'Actions',
+      'aria-label': translations.trigger,
       // 单体控件用原生 disabled，只留 data-disabled 的话禁用态只是样式
       'disabled': disabled || undefined,
       'data-state': stateAttr,

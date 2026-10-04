@@ -10,11 +10,12 @@ import type {
   ImageCropperApi,
   ImageCropperFlipAxis,
   ImageCropperHandlePosition,
-  ImageCropperRect,
   ImageCropperSchema,
   ImageCropperTranslations,
 } from './image-cropper.types'
 import { createPressTracker, dataAttr, focusItem } from '@xihan-ui/core'
+import { IMAGE_CROPPER_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { imageCropperAnatomy } from './image-cropper.anatomy'
 import { cropToCanvas } from './image-cropper.canvas'
 import { screenStepToImage, serializeCropRect } from './image-cropper.geometry'
@@ -45,16 +46,16 @@ const ARROW_DELTA: Record<string, readonly [number, number] | undefined> = {
   ArrowDown: [0, 1],
 }
 
-/** 把手方位 → translations 的键与内建英文名。内建默认一律英文，覆盖走 translations。 */
-const HANDLE_LABELS: Record<ImageCropperHandlePosition, { key: Exclude<keyof ImageCropperTranslations, 'valueText'>, en: string }> = {
-  nw: { key: 'handleTopLeft', en: 'Top left handle' },
-  n: { key: 'handleTop', en: 'Top edge handle' },
-  ne: { key: 'handleTopRight', en: 'Top right handle' },
-  e: { key: 'handleRight', en: 'Right edge handle' },
-  se: { key: 'handleBottomRight', en: 'Bottom right handle' },
-  s: { key: 'handleBottom', en: 'Bottom edge handle' },
-  sw: { key: 'handleBottomLeft', en: 'Bottom left handle' },
-  w: { key: 'handleLeft', en: 'Left edge handle' },
+/** 把手方位 → translations 的键。缺省说法取 en-US 语言包，覆盖走 translations。 */
+const HANDLE_LABELS: Record<ImageCropperHandlePosition, Exclude<keyof ImageCropperTranslations, 'valueText'>> = {
+  nw: 'handleTopLeft',
+  n: 'handleTop',
+  ne: 'handleTopRight',
+  e: 'handleRight',
+  se: 'handleBottomRight',
+  s: 'handleBottom',
+  sw: 'handleBottomLeft',
+  w: 'handleLeft',
 }
 
 /** 每个把手主要推动的是哪条边长：上下两条边的把手改高度，其余六个改宽度。 */
@@ -100,21 +101,17 @@ export function connectImageCropper<T extends PropTypes>(
   const maxRotation = prop('maxRotation') ?? IMAGE_CROPPER_MAX_ROTATION
   const rotationStep = prop('rotationStep') ?? IMAGE_CROPPER_ROTATION_STEP
 
-  const translations = prop('translations')
+  const translations = resolveTranslations(IMAGE_CROPPER_EN_US, prop('translations'))
   const label = {
-    cropArea: translations?.cropArea ?? 'Crop area',
-    handle: (position: ImageCropperHandlePosition): string => {
-      const { key, en } = HANDLE_LABELS[position]
-      return translations?.[key] ?? en
-    },
-    zoomSlider: translations?.zoomSlider ?? 'Zoom',
-    rotateSlider: translations?.rotateSlider ?? 'Rotate',
+    cropArea: translations.cropArea,
+    handle: (position: ImageCropperHandlePosition): string => translations[HANDLE_LABELS[position]],
+    zoomSlider: translations.zoomSlider,
+    rotateSlider: translations.rotateSlider,
     flip: (axis: ImageCropperFlipAxis): string => axis === 'horizontal'
-      ? translations?.flipHorizontal ?? 'Flip horizontally'
-      : translations?.flipVertical ?? 'Flip vertically',
+      ? translations.flipHorizontal
+      : translations.flipVertical,
     // 二维控件只报得出一个 aria-valuenow，另外三个数只能写进播报文本
-    valueText: translations?.valueText
-      ?? ((rect: ImageCropperRect) => `X ${rect.x}, Y ${rect.y}, width ${rect.width}, height ${rect.height}`),
+    valueText: translations.valueText,
   }
 
   // 图片没加载完就量不出比例，裁切框此时收成 0 尺寸、等 IMAGE.LOAD 铺初值

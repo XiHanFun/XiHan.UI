@@ -6,7 +6,6 @@
 // 提供 date range picker 相关实现。
 
 import type { Dict, NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { CalendarRangePickerTranslations } from '../calendar-range-picker'
 import type { DateFieldApi, DateFieldSchema, DateSegmentType } from '../date-field'
 import type { DatePickerTimeModel, DatePickerTimeUnit } from '../date-picker'
 import type {
@@ -17,7 +16,6 @@ import type {
   DateRangePickerPressedKey,
   DateRangePickerServices,
   DateRangePickerTimeColumnGroup,
-  DateRangePickerTranslations,
 } from './date-range-picker.types'
 import { createPressTracker, dataAttr, focusSafely, navIntentFromKey, normalizeProps, readDirection, stepIndex } from '@xihan-ui/core'
 import { connectCalendarRangePicker } from '../calendar-range-picker'
@@ -30,10 +28,12 @@ import {
   segmentMaxDigits,
 } from '../date-field'
 import { datePickerDatePart, datePickerJoinDateTime, datePickerPresetDates, datePickerTimeModel, datePickerTimePart } from '../date-picker'
+import { DATE_RANGE_PICKER_EN_US } from '../locale/en-US'
 import { sameArray as sameDates } from '../shared/array'
 import { calendarPeriodValue } from '../shared/calendar'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { resolveTimeStep } from '../shared/time-constraint'
+import { resolveTranslations } from '../shared/translations'
 import { resolveHourCycle } from '../time-field'
 import { dateRangePickerAnatomy } from './date-range-picker.anatomy'
 import {
@@ -54,25 +54,6 @@ function hasModifier(event: KeyboardEvent): boolean {
   return event.ctrlKey || event.metaKey || event.altKey
 }
 
-/** 只收本组件自己那几句；内嵌日历的文案由日历自己兜底。 */
-type OwnTranslations = Omit<DateRangePickerTranslations, keyof CalendarRangePickerTranslations>
-
-function resolveTranslations(input: Partial<DateRangePickerTranslations> | undefined): OwnTranslations {
-  return {
-    startDate: input?.startDate ?? 'Start date',
-    endDate: input?.endDate ?? 'End date',
-    presets: input?.presets ?? 'Shortcuts',
-    clearTrigger: input?.clearTrigger ?? 'Clear',
-    startTime: input?.startTime ?? 'Start time',
-    endTime: input?.endTime ?? 'End time',
-    // 内建英文与时间选择器那份逐字相同：同一页上的两个组件不该把同一列念成两个名字
-    hour: input?.hour ?? 'hour',
-    minute: input?.minute ?? 'minute',
-    second: input?.second ?? 'second',
-    dayPeriod: input?.dayPeriod ?? 'AM/PM',
-  }
-}
-
 export function connectDateRangePicker<T extends PropTypes>(
   services: DateRangePickerServices,
   normalize: NormalizeProps<T>,
@@ -85,7 +66,8 @@ export function connectDateRangePicker<T extends PropTypes>(
   const value = context.get('value')
   // 空串是空缺那一端的占位，算数的只有填了的
   const filled = value.filter(v => v !== '')
-  const label = resolveTranslations(prop('translations'))
+  // 内嵌日历拿原始的 translations 自取那几句读屏文案，这里只读本组件自己那一桶
+  const label = resolveTranslations(DATE_RANGE_PICKER_EN_US, prop('translations'))
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')

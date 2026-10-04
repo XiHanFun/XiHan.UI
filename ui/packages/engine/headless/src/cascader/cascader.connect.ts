@@ -8,8 +8,10 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CascaderApi, CascaderBranchLoadSnapshot, CascaderColumnProps, CascaderLevel, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
 import { cascadeState, createPressTracker, dataAttr, focusItem, isComposingEvent, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/core'
+import { CASCADER_EN_US } from '../locale/en-US'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
+import { resolveTranslations } from '../shared/translations'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
@@ -279,19 +281,7 @@ export function connectCascader<T extends PropTypes>(
 
   // 读屏与空态占位的文案：实例覆盖并入默认。
   // 两条占位露不露面由 getEmptyProps 按当前视图判定，根列的兜底名字见 getColumnProps
-  const translations: CascaderTranslations = {
-    empty: prop('translations')?.empty ?? 'No data',
-    noMatch: prop('translations')?.noMatch ?? 'No matches',
-    loading: prop('translations')?.loading ?? 'Loading',
-    branchError: prop('translations')?.branchError ?? 'Could not load children',
-    retry: prop('translations')?.retry ?? 'Retry',
-    column: prop('translations')?.column ?? 'Options',
-    searchInput: prop('translations')?.searchInput ?? 'Search',
-    searchList: prop('translations')?.searchList ?? 'Search results',
-    clearTrigger: prop('translations')?.clearTrigger ?? 'Clear',
-    deleteItem: prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`),
-    overflowTag: prop('translations')?.overflowTag ?? ((count: number) => `+${count}`),
-  }
+  const translations: CascaderTranslations = resolveTranslations(CASCADER_EN_US, prop('translations'))
 
   // 多选的已选路径在触发器里排成标签：套的是库里的 tag，截断与 +N 的做法与 Select 同一套。
   // 标签身份是整条路径的比较键；删除钮摘值回到机器，只读与禁用由 tag 挡在钮上

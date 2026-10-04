@@ -13,29 +13,16 @@ import type { RadarModel, RadarSeriesSpec } from './radar-chart.model'
 import type { RadarChartSchema, RadarOverlay } from './radar-chart.schema'
 import type { RadarChartTranslations, RadarSummary, RadarTooltipModel } from './radar-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
-import { CHART_TRANSLATIONS, chartActiveSource, resolveChartTranslations } from '../shared/chart'
+import { RADAR_CHART_EN_US } from '../locale/en-US'
+import { chartActiveSource, resolveChartTranslations } from '../shared/chart'
 import { radarPointKey } from './radar-chart.model'
 
-/** 缺省摘要：实体数与指标数，每个实体最高与最低的指标。 */
+/** 缺省摘要，取自英文语言包。 */
 export function defaultRadarSummary(model: RadarSummary): string {
-  if (model.seriesCount === 0)
-    return 'No data.'
-  const head = `${model.seriesCount} ${model.seriesCount === 1 ? 'series' : 'series'} across ${model.indicatorCount} indicators.`
-  const parts = model.series.map((s) => {
-    if (!s.highest)
-      return `${s.name}: no values.`
-    return s.lowest
-      ? `${s.name}: highest ${s.highest.indicator} ${s.highest.value}, lowest ${s.lowest.indicator} ${s.lowest.value}.`
-      : `${s.name}: ${s.highest.indicator} ${s.highest.value}.`
-  })
-  return [head, ...parts].join(' ')
+  return RADAR_CHART_EN_US.summary(model)
 }
 
-export const RADAR_TRANSLATIONS: RadarChartTranslations = Object.freeze({
-  ...CHART_TRANSLATIONS,
-  nameLabel: 'Name',
-  summary: defaultRadarSummary,
-})
+export const RADAR_TRANSLATIONS: RadarChartTranslations = Object.freeze({ ...RADAR_CHART_EN_US })
 
 const translationsCache = new WeakMap<object, RadarChartTranslations>()
 

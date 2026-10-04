@@ -10,35 +10,14 @@ import type { SparklineModel } from './sparkline.model'
 import type { SparklineSchema } from './sparkline.schema'
 import type { SparklineSummary, SparklineTranslations } from './sparkline.types'
 import { resolveLocale } from '@xihan-ui/core'
+import { SPARKLINE_EN_US } from '../locale/en-US'
 
-function plural(count: number, one: string, many: string): string {
-  return `${count} ${count === 1 ? one : many}`
-}
-
-/** 缺省摘要：点数与范围一句，末值与首末变化一句；盈亏形态报正负各几个。 */
+/** 缺省摘要，取自英文语言包。 */
 export function defaultSparklineSummary(model: SparklineSummary): string {
-  if (model.count === 0)
-    return 'No data.'
-  if (model.variant === 'win-loss') {
-    const parts = [plural(model.wins, 'win', 'wins'), plural(model.losses, 'loss', 'losses')]
-    if (model.ties > 0)
-      parts.push(plural(model.ties, 'tie', 'ties'))
-    return `${plural(model.count, 'result', 'results')}: ${parts.join(', ')}.`
-  }
-  if (model.count === 1)
-    return `1 point: ${model.last}.${model.reference == null ? '' : ` Reference ${model.reference}.`}`
-  const range = model.min === model.max ? `all ${model.max}` : `ranging from ${model.min} to ${model.max}`
-  const head = `${model.count} points, ${range}.${model.reference == null ? '' : ` Reference ${model.reference}.`}`
-  if (model.direction === 'flat')
-    return `${head} Last ${model.last}, unchanged from the first.`
-  if (model.change == null)
-    return `${head} Last ${model.last}.`
-  return `${head} Last ${model.last}, ${model.direction} ${model.change} from the first.`
+  return SPARKLINE_EN_US.summary(model)
 }
 
-export const SPARKLINE_TRANSLATIONS: SparklineTranslations = Object.freeze({
-  summary: defaultSparklineSummary,
-})
+export const SPARKLINE_TRANSLATIONS: SparklineTranslations = Object.freeze({ ...SPARKLINE_EN_US })
 
 const translationsCache = new WeakMap<object, SparklineTranslations>()
 

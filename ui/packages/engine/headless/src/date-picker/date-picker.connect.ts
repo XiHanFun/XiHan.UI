@@ -6,7 +6,6 @@
 // 提供 date picker 相关实现。
 
 import type { Dict, NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { CalendarPickerTranslations } from '../calendar-picker'
 import type { DateFieldApi, DateFieldSchema, DateSegmentType } from '../date-field'
 import type { CalendarGranularity } from '../shared/calendar'
 import type { TimePickerColumn } from '../time-picker'
@@ -18,7 +17,6 @@ import type {
   DatePickerServices,
   DatePickerTagMeta,
   DatePickerTimeUnit,
-  DatePickerTranslations,
 } from './date-picker.types'
 import { createPressTracker, dataAttr, focusSafely, mergeProps, navIntentFromKey, normalizeProps, readDirection, stepIndex } from '@xihan-ui/core'
 import { createDateFormatter } from '@xihan-ui/core/date'
@@ -31,11 +29,13 @@ import {
   parseBoundary,
   segmentMaxDigits,
 } from '../date-field'
+import { DATE_PICKER_EN_US } from '../locale/en-US'
 import { sameArray as sameDates } from '../shared/array'
 import { CALENDAR_LOCALE, calendarPeriodOf, calendarPeriodValue, parseCalendarDate } from '../shared/calendar'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTimeStep } from '../shared/time-constraint'
+import { resolveTranslations } from '../shared/translations'
 import { resolveHourCycle } from '../time-field'
 import { datePickerAnatomy } from './date-picker.anatomy'
 import { DATE_PICKER_DEFAULT_PLACEMENT } from './date-picker.machine'
@@ -51,9 +51,6 @@ const DIGIT = /^\d$/
 function hasModifier(event: KeyboardEvent): boolean {
   return event.ctrlKey || event.metaKey || event.altKey
 }
-
-/** 只收本组件自己那几句；内嵌日历的文案由日历自己兜底，标签的两句交给共享的标签连接层兜底。 */
-type OwnTranslations = Omit<DatePickerTranslations, keyof CalendarPickerTranslations | 'deleteItem' | 'overflowTag'>
 
 /**
  * 多选标签的显示文本：按粒度取一个周期的名字。日与月按 locale 排成紧凑的写法（zh-CN 2026/10/02、2026年10月），
@@ -82,18 +79,6 @@ function keepFocus(event: PointerEvent): void {
     event.preventDefault()
 }
 
-function resolveTranslations(input: Partial<DatePickerTranslations> | undefined): OwnTranslations {
-  return {
-    presets: input?.presets ?? 'Shortcuts',
-    clearTrigger: input?.clearTrigger ?? 'Clear',
-    // 内建英文与时间选择器那份逐字相同：同一页上的两个组件不该把同一列念成两个名字
-    hour: input?.hour ?? 'hour',
-    minute: input?.minute ?? 'minute',
-    second: input?.second ?? 'second',
-    dayPeriod: input?.dayPeriod ?? 'AM/PM',
-  }
-}
-
 export function connectDatePicker<T extends PropTypes>(
   services: DatePickerServices,
   normalize: NormalizeProps<T>,
@@ -104,7 +89,8 @@ export function connectDatePicker<T extends PropTypes>(
 
   const value = context.get('value')
   const selectionMode = prop('selectionMode') ?? 'single'
-  const label = resolveTranslations(prop('translations'))
+  // 内嵌日历拿原始的 translations 自取那几句读屏文案，这里只读本组件自己那一桶
+  const label = resolveTranslations(DATE_PICKER_EN_US, prop('translations'))
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
@@ -285,8 +271,8 @@ export function connectDatePicker<T extends PropTypes>(
   const selectionTags = connectSelectionTags({
     entries: multiple ? value.map(v => ({ key: v, label: tagLabel(v) })) : [],
     maxTagCount: prop('maxTagCount'),
-    overflowTag: prop('translations')?.overflowTag,
-    deleteItem: prop('translations')?.deleteItem,
+    overflowTag: label.overflowTag,
+    deleteItem: label.deleteItem,
     variant,
     tone: prop('tone'),
     size: prop('size'),

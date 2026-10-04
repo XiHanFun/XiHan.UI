@@ -8,8 +8,10 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNodeMeta, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
 import { contains, createPressTracker, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, mergeProps, navigateItems, queryItems } from '@xihan-ui/core'
+import { COMBOBOX_EN_US } from '../locale/en-US'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
+import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionTarget } from '../shared/virtual-collection'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
@@ -36,6 +38,7 @@ export function connectCombobox<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): ComboboxApi<T> {
   const { state, prop, send, context, refs, scope } = service
+  const translations = resolveTranslations(COMBOBOX_EN_US, prop('translations'))
   const open = state.get() === 'open'
   const ids = scope.ids('combobox', 'label', 'input', 'content')
 
@@ -92,8 +95,8 @@ export function connectCombobox<T extends PropTypes>(
   const selectionTags = connectSelectionTags({
     entries: multiple ? value.map(v => ({ key: v, label: metaOf.get(v)?.label ?? valueLabels[v] ?? v })) : [],
     maxTagCount: prop('maxTagCount'),
-    overflowTag: prop('translations')?.overflowTag,
-    deleteItem: prop('translations')?.deleteItem,
+    overflowTag: translations.overflowTag,
+    deleteItem: translations.deleteItem,
     variant,
     tone: prop('tone'),
     size: prop('size'),
@@ -476,7 +479,7 @@ export function connectCombobox<T extends PropTypes>(
         // 单体控件用原生 disabled（与候选条目的 aria-disabled 相反）
         'disabled': !interactive || undefined,
         // 钮里只有一枚箭头，名字只能从这里给；展开与否由输入框的 aria-expanded 说，名字不跟着变
-        'aria-label': prop('translations')?.trigger ?? 'Show suggestions',
+        'aria-label': translations.trigger,
         'aria-controls': ids.content,
         'data-state': stateAttr,
         'data-disabled': dataAttr(!interactive),
@@ -516,7 +519,7 @@ export function connectCombobox<T extends PropTypes>(
         'type': 'button',
         // 键盘用户走退格与 Escape，这个按钮不进 Tab 序列；读屏按虚拟光标仍找得到它
         'tabindex': -1,
-        'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
+        'aria-label': translations.clearTrigger,
         // 没值就整个收起，不是禁用：有值才出现，出现即可用
         'hidden': !canClear || undefined,
         // 按下不夺焦：焦点留在输入框，aria-activedescendant 才不断；触屏按下仍要进按压通道

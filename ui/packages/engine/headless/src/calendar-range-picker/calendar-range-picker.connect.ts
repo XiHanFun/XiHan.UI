@@ -7,10 +7,12 @@
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CalendarCellBaseState, CalendarCellProps, CalendarPeriod } from '../shared/calendar'
-import type { CalendarRangePickerApi, CalendarRangePickerPress, CalendarRangePickerPressedKey, CalendarRangePickerSchema, CalendarRangePickerTranslations } from './calendar-range-picker.types'
+import type { CalendarRangePickerApi, CalendarRangePickerPress, CalendarRangePickerPressedKey, CalendarRangePickerSchema } from './calendar-range-picker.types'
 import { createPressTracker, dataAttr, isElement, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { PlainDate } from '@xihan-ui/core/date'
+import { CALENDAR_RANGE_PICKER_EN_US } from '../locale/en-US'
 import { calendarNavTarget, calendarPageMonths, createCalendarFrame, parseCalendarDate } from '../shared/calendar'
+import { resolveTranslations } from '../shared/translations'
 import { calendarRangePickerAnatomy } from './calendar-range-picker.anatomy'
 
 const parts = calendarRangePickerAnatomy.build()
@@ -28,15 +30,6 @@ interface RangeCellState extends CalendarCellBaseState {
   invalid: boolean
 }
 
-function resolveTranslations(input: Partial<CalendarRangePickerTranslations> | undefined): CalendarRangePickerTranslations {
-  return {
-    startRangeSelectionPrompt: input?.startRangeSelectionPrompt ?? 'Click to start selecting date range',
-    finishRangeSelectionPrompt: input?.finishRangeSelectionPrompt ?? 'Click to finish selecting date range',
-    selectedRange: input?.selectedRange ?? ((start, end) => `Selected Range: ${start} to ${end}`),
-    todayDate: input?.todayDate ?? (date => `Today, ${date}`),
-  }
-}
-
 /**
  * 读屏合成的指针事件：没有接触面，或是 1×1 且无压感的鼠标事件。
  * 这一路不走按下 / 松开那套拖动逻辑，交给随后的 click。
@@ -51,7 +44,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): CalendarRangePickerApi<T> {
   const { context, prop, send, scope, refs } = service
-  const translations = resolveTranslations(prop('translations'))
+  const translations = resolveTranslations(CALENDAR_RANGE_PICKER_EN_US, prop('translations'))
   const frame = createCalendarFrame(service, calendarRangePickerAnatomy.name)
   const { periodAt, focusedValue, view, locale, disabled: calendarDisabled, readOnly } = frame
 

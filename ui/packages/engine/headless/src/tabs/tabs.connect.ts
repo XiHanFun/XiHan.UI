@@ -9,7 +9,9 @@ import type { ItemQuery, NavIntent, NormalizeProps, PressHandlers, PropTypes, Se
 import type { DragRect } from '../shared/drag'
 import type { TabsApi, TabsNodeMeta, TabsOverflow, TabsSchema, TabsTriggerProps } from './tabs.types'
 import { anchorItem, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { TABS_EN_US } from '../locale/en-US'
 import { flatMoveCommand, flatMoveIntentFromKey } from '../shared/drag'
+import { resolveTranslations } from '../shared/translations'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tabsAnatomy } from './tabs.anatomy'
 
@@ -27,6 +29,7 @@ export function connectTabs<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): TabsApi<T> {
   const { context, prop, send, scope } = service
+  const translations = resolveTranslations(TABS_EN_US, prop('translations'))
   // value 与 defaultValue 皆缺省时 cell 初值是 undefined，这里归一成 null
   const value = context.get('value') ?? null
   const focusedValue = context.get('focusedValue') ?? null
@@ -509,7 +512,7 @@ export function connectTabs<T extends PropTypes>(
     getOverflowTriggerProps: () => normalize.button({
       ...parts['overflow-trigger'].attrs,
       'type': 'button',
-      'aria-label': prop('translations')?.overflowTrigger ?? 'More tabs',
+      'aria-label': translations.overflowTrigger,
       'hidden': overflowItems.length === 0 || undefined,
       'data-orientation': orientation,
       'data-xh-action-control': '',

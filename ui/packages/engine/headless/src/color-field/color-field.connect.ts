@@ -6,19 +6,15 @@
 // 提供 color field 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { ColorFieldApi, ColorFieldSchema, ColorFieldTranslations } from './color-field.types'
+import type { ColorFieldApi, ColorFieldSchema } from './color-field.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { COLOR_FIELD_EN_US } from '../locale/en-US'
 import { colorCss, colorParse, colorToRgba } from '../shared/color'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { colorFieldAnatomy } from './color-field.anatomy'
 
 const parts = colorFieldAnatomy.build()
-
-function resolveTranslations(input: Partial<ColorFieldTranslations> | undefined): ColorFieldTranslations {
-  return {
-    clearTrigger: input?.clearTrigger ?? 'Clear',
-  }
-}
 
 export function connectColorField<T extends PropTypes>(
   service: Service<ColorFieldSchema>,
@@ -26,7 +22,7 @@ export function connectColorField<T extends PropTypes>(
 ): ColorFieldApi<T> {
   const { prop, send, context, scope } = service
   const ids = scope.ids('color-field', 'label', 'input')
-  const label = resolveTranslations(prop('translations'))
+  const label = resolveTranslations(COLOR_FIELD_EN_US, prop('translations'))
 
   const value = context.get('value')
   // cell 的 null 默认值在首帧读出来是 undefined，两者都当作「没在编辑」

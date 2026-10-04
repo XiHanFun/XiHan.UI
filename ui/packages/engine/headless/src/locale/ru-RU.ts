@@ -6,7 +6,45 @@
 // 俄语语言包。
 
 import type { ChartDatumDetails } from '../shared/chart'
+import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleTranslations } from './types'
+import { keyText } from './key-text'
+
+/** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
+const KEY_NAME: KeyTextTable = {
+  'Alt': { mac: 'Option', other: 'Alt' },
+  'Control': { mac: 'Control', other: 'Ctrl' },
+  'Meta': { mac: 'Command', other: 'Windows' },
+  'Shift': 'Shift',
+  ' ': 'Пробел',
+  'ArrowDown': 'Стрелка вниз',
+  'ArrowLeft': 'Стрелка влево',
+  'ArrowRight': 'Стрелка вправо',
+  'ArrowUp': 'Стрелка вверх',
+  'Backspace': 'Backspace',
+  'Delete': 'Delete',
+  'Enter': 'Enter',
+  'Escape': 'Escape',
+  'Tab': 'Tab',
+}
+
+/** 键帽上写的字：Mac 用系统符号。 */
+const KEY_LABEL: KeyTextTable = {
+  'Alt': { mac: '⌥', other: 'Alt' },
+  'Control': { mac: '⌃', other: 'Ctrl' },
+  'Meta': { mac: '⌘', other: 'Win' },
+  'Shift': { mac: '⇧', other: 'Shift' },
+  ' ': 'Пробел',
+  'ArrowDown': '↓',
+  'ArrowLeft': '←',
+  'ArrowRight': '→',
+  'ArrowUp': '↑',
+  'Backspace': { mac: '⌫', other: 'Backspace' },
+  'Delete': { mac: '⌦', other: 'Del' },
+  'Enter': { mac: '⏎', other: 'Enter' },
+  'Escape': { mac: '⎋', other: 'Esc' },
+  'Tab': { mac: '⇥', other: 'Tab' },
+}
 
 const EDGE = {
   n: 'верхний край',
@@ -171,6 +209,8 @@ const translations = {
     nextSource: 'Следующий источник',
     source: (index, title) => `Источник ${index}: ${title}`,
     document: 'Документ',
+    previewLinkSource: 'Открыть источник',
+    previewLinkDocument: 'Открыть документ',
   },
   'clipboard': { copied: 'Скопировано' },
   'code-view': {
@@ -220,7 +260,13 @@ const translations = {
     presets: 'Быстрый выбор',
     clearTrigger: 'Очистить',
   },
-  'dialog': { close: 'Закрыть', dragTrigger: 'Переместить диалоговое окно' },
+  'dialog': {
+    close: 'Закрыть',
+    dragTrigger: 'Переместить диалоговое окно',
+    ok: 'ОК',
+    cancel: 'Отмена',
+    actionError: 'Не удалось выполнить действие. Повторите попытку.',
+  },
   'diff-view': {
     added: 'Добавлено',
     removed: 'Удалено',
@@ -249,6 +295,22 @@ const translations = {
     resizeValueText: size => `Ширина ${Math.round(size.width)}, высота ${Math.round(size.height)}`,
     windowStateTrigger: state => ({ default: 'Восстановить панель', maximized: 'Развернуть панель', minimized: 'Свернуть панель' })[state],
     close: 'Закрыть',
+  },
+  'form': {
+    required: 'Поле «{name}» обязательно для заполнения',
+    type: {
+      string: 'Поле «{name}» должно быть строкой',
+      number: 'Поле «{name}» должно быть числом',
+      integer: 'Поле «{name}» должно быть целым числом',
+      email: 'Поле «{name}» должно содержать корректный адрес электронной почты',
+      url: 'Поле «{name}» должно содержать корректный URL',
+      array: 'Поле «{name}» должно быть списком',
+    },
+    minLength: 'Поле «{name}» должно содержать не менее {min} симв.',
+    maxLength: 'Поле «{name}» должно содержать не более {max} симв.',
+    minNumber: 'Значение поля «{name}» должно быть не меньше {min}',
+    maxNumber: 'Значение поля «{name}» должно быть не больше {max}',
+    pattern: 'Поле «{name}» не соответствует требуемому формату',
   },
   'funnel-chart': {
     ...chart,
@@ -370,12 +432,16 @@ const translations = {
     moreItems: count => `… ещё ${count}`,
     empty: 'Нет данных',
   },
-  'kbd': { hotkey: names => names.join(' + ') },
+  'kbd': {
+    keyName: (key, platform) => keyText(KEY_NAME, key, platform),
+    keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform),
+    hotkey: names => names.join(' + '),
+  },
   'loading-bar': { root: 'Загрузка' },
   'log': { log: 'Журнал', scrollToBottom: 'Прокрутить в конец' },
   'markdown-stream': { completed: 'Ответ готов' },
   'marquee': { autoplayTriggerPause: 'Приостановить прокрутку', autoplayTriggerPlay: 'Возобновить прокрутку' },
-  'mention': { content: 'Упоминания' },
+  'mention': { content: 'Упоминания', empty: 'Нет совпадений' },
   'menubar': { root: 'Строка меню' },
   'message-feed': {
     feed: 'Беседа',

@@ -6,7 +6,45 @@
 // 简体中文语言包。
 
 import type { ChartDatumDetails } from '../shared/chart'
+import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleTranslations } from './types'
+import { keyText } from './key-text'
+
+/** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
+const KEY_NAME: KeyTextTable = {
+  'Alt': { mac: 'Option 键', other: 'Alt 键' },
+  'Control': 'Control 键',
+  'Meta': { mac: 'Command 键', other: 'Windows 键' },
+  'Shift': 'Shift 键',
+  ' ': '空格键',
+  'ArrowDown': '下方向键',
+  'ArrowLeft': '左方向键',
+  'ArrowRight': '右方向键',
+  'ArrowUp': '上方向键',
+  'Backspace': '退格键',
+  'Delete': '删除键',
+  'Enter': '回车键',
+  'Escape': 'Esc 键',
+  'Tab': 'Tab 键',
+}
+
+/** 键帽上写的字：Mac 用系统符号。 */
+const KEY_LABEL: KeyTextTable = {
+  'Alt': { mac: '⌥', other: 'Alt' },
+  'Control': { mac: '⌃', other: 'Ctrl' },
+  'Meta': { mac: '⌘', other: 'Win' },
+  'Shift': { mac: '⇧', other: 'Shift' },
+  ' ': '空格',
+  'ArrowDown': '↓',
+  'ArrowLeft': '←',
+  'ArrowRight': '→',
+  'ArrowUp': '↑',
+  'Backspace': { mac: '⌫', other: 'Backspace' },
+  'Delete': { mac: '⌦', other: 'Del' },
+  'Enter': { mac: '⏎', other: 'Enter' },
+  'Escape': { mac: '⎋', other: 'Esc' },
+  'Tab': { mac: '⇥', other: 'Tab' },
+}
 
 const EDGE = {
   n: '上边缘',
@@ -157,6 +195,8 @@ const translations = {
     nextSource: '下一个来源',
     source: (index, title) => `来源 ${index}：${title}`,
     document: '文档',
+    previewLinkSource: '打开来源',
+    previewLinkDocument: '打开文档',
   },
   'clipboard': { copied: '已复制' },
   'code-view': {
@@ -206,7 +246,13 @@ const translations = {
     presets: '快捷选项',
     clearTrigger: '清空',
   },
-  'dialog': { close: '关闭', dragTrigger: '移动对话框' },
+  'dialog': {
+    close: '关闭',
+    dragTrigger: '移动对话框',
+    ok: '确定',
+    cancel: '取消',
+    actionError: '操作失败，请重试。',
+  },
   'diff-view': {
     added: '新增',
     removed: '删除',
@@ -235,6 +281,22 @@ const translations = {
     resizeValueText: size => `宽 ${Math.round(size.width)}，高 ${Math.round(size.height)}`,
     windowStateTrigger: state => ({ default: '还原面板', maximized: '最大化面板', minimized: '最小化面板' })[state],
     close: '关闭',
+  },
+  'form': {
+    required: '{name} 为必填项',
+    type: {
+      string: '{name} 必须是字符串',
+      number: '{name} 必须是数字',
+      integer: '{name} 必须是整数',
+      email: '{name} 不是有效的邮箱地址',
+      url: '{name} 不是有效的网址',
+      array: '{name} 必须是数组',
+    },
+    minLength: '{name} 至少 {min} 个字符',
+    maxLength: '{name} 不能超过 {max} 个字符',
+    minNumber: '{name} 不能小于 {min}',
+    maxNumber: '{name} 不能大于 {max}',
+    pattern: '{name} 格式不正确',
   },
   'funnel-chart': {
     ...chart,
@@ -352,12 +414,16 @@ const translations = {
     moreItems: count => `… 另有 ${count} 项`,
     empty: '暂无数据',
   },
-  'kbd': { hotkey: names => names.join(' + ') },
+  'kbd': {
+    keyName: (key, platform) => keyText(KEY_NAME, key, platform),
+    keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform),
+    hotkey: names => names.join(' + '),
+  },
   'loading-bar': { root: '加载中' },
   'log': { log: '日志', scrollToBottom: '滚动到底部' },
   'markdown-stream': { completed: '回复已完成' },
   'marquee': { autoplayTriggerPause: '暂停滚动', autoplayTriggerPlay: '继续滚动' },
-  'mention': { content: '提及' },
+  'mention': { content: '提及', empty: '无匹配结果' },
   'menubar': { root: '菜单栏' },
   'message-feed': {
     feed: '对话',

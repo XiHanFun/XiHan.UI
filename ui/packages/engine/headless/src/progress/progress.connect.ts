@@ -9,11 +9,12 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { ProgressMeterIssue } from './progress.meter'
 import type { ProgressApi, ProgressBand, ProgressProps, ProgressTick } from './progress.types'
 import { dataAttr, DIAGNOSTIC_CODES, reportDiagnostic, resolveLocale } from '@xihan-ui/core'
+import { PROGRESS_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { progressAnatomy } from './progress.anatomy'
 import { PROGRESS_VIEW, progressRing, resolveMax, resolveValue } from './progress.geometry'
 import {
   activeBand,
-  defaultSegmentValueText,
   progressBands,
   progressTarget,
   progressTicks,
@@ -139,7 +140,7 @@ export function connectProgress<T extends PropTypes>(
     reportDiagnostic({ code: issue.code, level: issue.level, scope: progressAnatomy.name, message: issue.message, detail: issue.detail })
 
   // 落在带名字的分段里时，读屏在数值后面补上分段名：「72%，警戒」；作者给了 valueText 就只念作者那句
-  const segmentText = props.translations?.segmentValueText ?? defaultSegmentValueText
+  const segmentText = resolveTranslations(PROGRESS_EN_US, props.translations).segmentValueText
   const valueText = props.valueText ?? (active?.label ? segmentText({ value: `${percent}%`, label: active.label }) : undefined)
 
   /** 三个子部件共用的形态与状态标记，皮肤据此分线形与环形两套画法。 */

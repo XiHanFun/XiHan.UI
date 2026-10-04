@@ -191,7 +191,7 @@ readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `close-trigger` | `aria-label` | props.translations.close |
+| `close-trigger` | `aria-label` | translations.close |
 
 ## 样式参考
 

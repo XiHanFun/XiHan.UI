@@ -129,7 +129,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `isTimeUnavailable` | `TimeUnavailablePredicate` |  | 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）； unit 区分同一个 '30' 属于哪一列；context 带这一端已选的时（24 小时制）与分，以及是哪一端（index）， 起点与终点可以各有规则；date 在本组件恒为 null。 与 min / max 的界外值同等处理：判定为真的格子仍可聚焦，只是不可选中。 |
-| `translations` | `Partial<TimeRangePickerTranslations>` |  | 段位与两端读屏名的覆盖；未提供时使用内置英文语义名。 |
+| `translations` | `Partial<TimeRangePickerTranslations>` |  | 段位与两端读屏名的覆盖；未提供时取英文语言包里的语义名。 |
 | `onValueChange` | `(details: TimeRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: TimeRangePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -309,7 +309,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `segment-group` | `role` | 'group' |
 | `segment` | `aria-disabled` | 'true' \| 'false' |
 | `segment` | `aria-invalid` | 'true' \| 'false' |
-| `segment` | `aria-label` | translations?.[segment] |
+| `segment` | `aria-label` | translations[segment] |
 | `segment` | `aria-readonly` | 'true' \| 'false' |
 | `segment` | `aria-required` | 'true' \| 'false' |
 | `segment` | `aria-valuemax` | range.max |
@@ -322,13 +322,13 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `trigger` | `aria-labelledby` | `label` 部件的 id |
-| `clear-trigger` | `aria-label` | translations?.clearTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `label` 部件的 id |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `preset-group` | `aria-disabled` | 'true' \| 'false' |
-| `preset-group` | `aria-label` | translations?.presets |
+| `preset-group` | `aria-label` | translations.presets |
 | `preset-group` | `aria-multiselectable` | 'false' |
 | `preset-group` | `aria-orientation` | 'vertical' |
 | `preset-group` | `role` | 'listbox' |
@@ -339,7 +339,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `column-group` | `role` | 'group' |
 | `column-group-label` | `aria-hidden` | 'true' |
 | `column` | `aria-disabled` | 'true' \| 'false' |
-| `column` | `aria-label` | translations?.[unit] |
+| `column` | `aria-label` | translations[unit] |
 | `column` | `aria-multiselectable` | 'false' |
 | `column` | `aria-orientation` | 'vertical' |
 | `column` | `role` | 'listbox' |

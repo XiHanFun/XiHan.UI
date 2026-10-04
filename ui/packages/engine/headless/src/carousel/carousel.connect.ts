@@ -8,6 +8,8 @@
 import type { Dict, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { CarouselApi, CarouselPressedKey, CarouselSchema } from './carousel.types'
 import { createPressTracker, dataAttr, isHTMLElement, navIntentFromKey } from '@xihan-ui/core'
+import { CAROUSEL_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { carouselAnatomy } from './carousel.anatomy'
 import { resolveAutoplayInterval } from './carousel.machine'
 import {
@@ -87,19 +89,7 @@ export function connectCarousel<T extends PropTypes>(
   const canScrollPrev = totalPages > 1 && (loop || page > 0)
   const canScrollNext = totalPages > 1 && (loop || page < totalPages - 1)
 
-  const translations = prop('translations')
-  const label = {
-    root: translations?.root ?? 'Carousel',
-    rootRoleDescription: translations?.rootRoleDescription ?? 'carousel',
-    itemRoleDescription: translations?.itemRoleDescription ?? 'slide',
-    prevTrigger: translations?.prevTrigger ?? 'Previous slide',
-    nextTrigger: translations?.nextTrigger ?? 'Next slide',
-    autoplayTriggerPlay: translations?.autoplayTriggerPlay ?? 'Start automatic slide show',
-    autoplayTriggerPause: translations?.autoplayTriggerPause ?? 'Stop automatic slide show',
-    indicatorGroup: translations?.indicatorGroup ?? 'Choose slide to display',
-    indicator: translations?.indicator ?? ((value: number) => `Go to slide ${value}`),
-    item: translations?.item ?? ((index: number, count: number) => `${index} of ${count}`),
-  }
+  const label = resolveTranslations(CAROUSEL_EN_US, prop('translations'))
 
   const isInView = (index: number): boolean => index >= range.start && index <= range.end
 

@@ -416,10 +416,10 @@ outline、subtle 和 ghost
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
-| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `list` | `aria-busy` | 'true' \| undefined |
-| `list` | `aria-label` | props.translations.content |
+| `list` | `aria-label` | translations.content |
 | `list` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `role` | 'listbox' |

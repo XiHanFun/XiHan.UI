@@ -21,8 +21,10 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/core'
+import { MENUBAR_EN_US } from '../locale/en-US'
 import { menuChoiceCloses } from '../shared/menu-choice'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { resolveTranslations } from '../shared/translations'
 import {
   menubarAnatomy,
   menubarItemQuery,
@@ -38,6 +40,7 @@ export function connectMenubar<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): MenubarApi<T> {
   const { context, prop, send, refs, scope } = service
+  const translations = resolveTranslations(MENUBAR_EN_US, prop('translations'))
   // cell 初值可能是 undefined，这里归一成 null；有无菜单展开一律看它
   const value = context.get('value') ?? null
   const open = value != null
@@ -323,7 +326,7 @@ export function connectMenubar<T extends PropTypes>(
       ...parts.root.attrs,
       'role': 'menubar',
       // menubar 的名字不从内容来：不给这一句，读屏念到的就是一个没有名字的菜单栏
-      'aria-label': prop('translations')?.root ?? 'Menu bar',
+      'aria-label': translations.root,
       'aria-orientation': orientation,
       'aria-disabled': menubarDisabled ? 'true' : 'false',
       'data-orientation': orientation,

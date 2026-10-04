@@ -6,43 +6,16 @@
 // 提供 color slider 相关实现。
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { ColorChannel } from '../shared/color'
-import type { ColorSliderApi, ColorSliderServices, ColorSliderTranslations } from './color-slider.types'
+import type { ColorSliderApi, ColorSliderServices } from './color-slider.types'
 import { dataAttr, normalizeProps } from '@xihan-ui/core'
+import { COLOR_SLIDER_EN_US } from '../locale/en-US'
 import { colorChannelRange, colorChannelValue, colorCss, colorHsvaToRgba, colorResolveHsva, colorToChannel } from '../shared/color'
+import { resolveTranslations } from '../shared/translations'
 import { connectSlider } from '../slider'
 import { colorSliderAnatomy } from './color-slider.anatomy'
 import { colorSliderAlpha, colorSliderTrackGradient } from './color-slider.machine'
 
 const parts = colorSliderAnatomy.build()
-
-const CHANNEL_NAME: Record<ColorChannel, string> = {
-  hue: 'Hue',
-  saturation: 'Saturation',
-  brightness: 'Brightness',
-  alpha: 'Alpha',
-  red: 'Red',
-  green: 'Green',
-  blue: 'Blue',
-}
-
-/** 播报单位：色相是角度，百分数那几路是 %，红绿蓝念裸数。 */
-const CHANNEL_UNIT: Record<ColorChannel, string> = {
-  hue: '°',
-  saturation: '%',
-  brightness: '%',
-  alpha: '%',
-  red: '',
-  green: '',
-  blue: '',
-}
-
-function resolveTranslations(input: Partial<ColorSliderTranslations> | undefined): ColorSliderTranslations {
-  return {
-    label: input?.label ?? (channel => CHANNEL_NAME[channel]),
-    valueText: input?.valueText ?? ((channel, value) => `${value}${CHANNEL_UNIT[channel]}`),
-  }
-}
 
 type Dict = Record<string, unknown>
 
@@ -74,7 +47,7 @@ export function connectColorSlider<T extends PropTypes>(
   const invalid = !!prop('invalid')
   const editable = !disabled && !readOnly
   const vertical = orientation === 'vertical'
-  const label = resolveTranslations(prop('translations'))
+  const label = resolveTranslations(COLOR_SLIDER_EN_US, prop('translations'))
   // 拇指里填的颜色：推透明度时按当前透明度画，其余通道画实色
   const alpha = colorSliderAlpha({ alpha: prop('alpha'), channel })
 

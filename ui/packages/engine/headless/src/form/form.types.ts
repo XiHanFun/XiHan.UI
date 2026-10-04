@@ -47,7 +47,7 @@ export interface FormRule {
 /** 字段名 → 一条或一组规则。 */
 export type FormRules = FormPathRecord<FormRule | FormRule[]>
 
-/** 文案模板，{name}/{min}/{max} 现场代入；未提供时使用内置英文模板。 */
+/** 文案模板，{name}/{min}/{max} 现场代入；未提供的取 translations，再退英文语言包。 */
 export interface FormValidateMessages {
   required?: string
   type?: Partial<Record<FormRuleType, string>>
@@ -230,8 +230,10 @@ export interface FormSchema extends MachineSchema {
     validate?: (values: FormValues) => FormErrorPatch | Promise<FormErrorPatch>
     /** 声明式校验规则：字段名 → 一条或一组规则，与 validate 可并用。 */
     rules?: FormRules
-    /** 规则文案模板，{name}/{min}/{max} 现场代入；未提供时使用内置英文模板。 */
+    /** 规则文案模板，{name}/{min}/{max} 现场代入；逐条压在 translations 之上，都没给的取英文语言包。 */
     validateMessages?: FormValidateMessages
+    /** 校验报错的文案模板，形状同 validateMessages；全局语言包经它到达。 */
+    translations?: Partial<FormTranslations>
     /** 校验时机，默认 submit。 */
     validateOn?: FormValidateOn
     /** 排布，默认 vertical。 */
@@ -447,5 +449,19 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   getResetTriggerProps: () => T['button']
 }
 
-/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
-export interface FormTranslations {}
+/**
+ * 校验报错的文案模板：规则自己没写 message、表单也没给 validateMessages 时，从这里取。
+ * {name} 换成字段名，{min} / {max} 换成规则的界限。
+ */
+export interface FormTranslations {
+  required: string
+  /** 按 type 规则逐类给出。 */
+  type: Record<FormRuleType, string>
+  /** 字符串 / 数组的长度下限模板。 */
+  minLength: string
+  maxLength: string
+  /** 数值的大小界限模板。 */
+  minNumber: string
+  maxNumber: string
+  pattern: string
+}

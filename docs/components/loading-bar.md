@@ -183,7 +183,7 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `aria-valuemax` | String(LOADING_BAR_MAX) |
 | `root` | `aria-valuemin` | '0' |
 | `root` | `aria-valuenow` | String(value) \| undefined |

@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createDialogService } from '../src/services/dialog-service'
+import { setXhConfig } from '../src/config'
+import { zhCN } from '../src/locale'
 
 let service: ReturnType<typeof createDialogService> | null = null
 async function change(fn: () => unknown): Promise<void> {
@@ -209,5 +211,31 @@ describe('命令对话框显式异常', () => {
     })
     await flush()
     await rejection
+  })
+})
+
+describe('服务文案走语言包', () => {
+  afterEach(() => setXhConfig({}))
+
+  it('没给 okText / cancelText / actionErrorText 时取所在配置的语言包', async () => {
+    await change(() => {
+      setXhConfig(zhCN)
+      service = createDialogService()
+      service!.confirm({ title: '删除', onOk: () => { throw new Error('boom') } }).catch(() => {})
+    })
+    await flush()
+    expect(buttons().map(button => button.textContent?.trim())).toEqual(['取消', '确定'])
+    await change(() => buttons()[1]!.click())
+    await flush()
+    expect(message()).toBe('操作失败，请重试。')
+  })
+
+  it('什么都没配时就是英文语言包', async () => {
+    await change(() => {
+      service = createDialogService()
+      service.confirm({ title: 'Delete' }).catch(() => {})
+    })
+    await flush()
+    expect(buttons().map(button => button.textContent?.trim())).toEqual(['Cancel', 'OK'])
   })
 })

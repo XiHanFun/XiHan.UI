@@ -6,7 +6,45 @@
 // 韩语语言包。
 
 import type { ChartDatumDetails } from '../shared/chart'
+import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleTranslations } from './types'
+import { keyText } from './key-text'
+
+/** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
+const KEY_NAME: KeyTextTable = {
+  'Alt': { mac: 'Option 키', other: 'Alt 키' },
+  'Control': { mac: 'Control 키', other: 'Ctrl 키' },
+  'Meta': { mac: 'Command 키', other: 'Windows 키' },
+  'Shift': 'Shift 키',
+  ' ': '스페이스 바',
+  'ArrowDown': '아래쪽 화살표 키',
+  'ArrowLeft': '왼쪽 화살표 키',
+  'ArrowRight': '오른쪽 화살표 키',
+  'ArrowUp': '위쪽 화살표 키',
+  'Backspace': '백스페이스 키',
+  'Delete': 'Delete 키',
+  'Enter': 'Enter 키',
+  'Escape': 'Esc 키',
+  'Tab': 'Tab 키',
+}
+
+/** 键帽上写的字：Mac 用系统符号。 */
+const KEY_LABEL: KeyTextTable = {
+  'Alt': { mac: '⌥', other: 'Alt' },
+  'Control': { mac: '⌃', other: 'Ctrl' },
+  'Meta': { mac: '⌘', other: 'Win' },
+  'Shift': { mac: '⇧', other: 'Shift' },
+  ' ': 'Space',
+  'ArrowDown': '↓',
+  'ArrowLeft': '←',
+  'ArrowRight': '→',
+  'ArrowUp': '↑',
+  'Backspace': { mac: '⌫', other: 'Backspace' },
+  'Delete': { mac: '⌦', other: 'Del' },
+  'Enter': { mac: '⏎', other: 'Enter' },
+  'Escape': { mac: '⎋', other: 'Esc' },
+  'Tab': { mac: '⇥', other: 'Tab' },
+}
 
 const EDGE = {
   n: '위쪽 가장자리',
@@ -157,6 +195,8 @@ const translations = {
     nextSource: '다음 출처',
     source: (index, title) => `출처 ${index}: ${title}`,
     document: '문서',
+    previewLinkSource: '출처 열기',
+    previewLinkDocument: '문서 열기',
   },
   'clipboard': { copied: '복사됨' },
   'code-view': {
@@ -206,7 +246,13 @@ const translations = {
     presets: '바로 가기',
     clearTrigger: '지우기',
   },
-  'dialog': { close: '닫기', dragTrigger: '대화 상자 이동' },
+  'dialog': {
+    close: '닫기',
+    dragTrigger: '대화 상자 이동',
+    ok: '확인',
+    cancel: '취소',
+    actionError: '작업에 실패했습니다. 다시 시도하세요.',
+  },
   'diff-view': {
     added: '추가됨',
     removed: '삭제됨',
@@ -235,6 +281,22 @@ const translations = {
     resizeValueText: size => `너비 ${Math.round(size.width)}, 높이 ${Math.round(size.height)}`,
     windowStateTrigger: state => ({ default: '패널 복원', maximized: '패널 최대화', minimized: '패널 최소화' })[state],
     close: '닫기',
+  },
+  'form': {
+    required: '{name} 항목은 필수입니다',
+    type: {
+      string: '{name} 항목은 문자열이어야 합니다',
+      number: '{name} 항목은 숫자여야 합니다',
+      integer: '{name} 항목은 정수여야 합니다',
+      email: '{name} 항목에 올바른 이메일 주소를 입력하세요',
+      url: '{name} 항목에 올바른 URL을 입력하세요',
+      array: '{name} 항목은 배열이어야 합니다',
+    },
+    minLength: '{name} 항목은 {min}자 이상이어야 합니다',
+    maxLength: '{name} 항목은 {max}자를 넘을 수 없습니다',
+    minNumber: '{name} 항목은 {min} 이상이어야 합니다',
+    maxNumber: '{name} 항목은 {max} 이하여야 합니다',
+    pattern: '{name} 항목의 형식이 올바르지 않습니다',
   },
   'funnel-chart': {
     ...chart,
@@ -352,12 +414,16 @@ const translations = {
     moreItems: count => `… 외 ${count}개`,
     empty: '데이터 없음',
   },
-  'kbd': { hotkey: names => names.join(' + ') },
+  'kbd': {
+    keyName: (key, platform) => keyText(KEY_NAME, key, platform),
+    keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform),
+    hotkey: names => names.join(' + '),
+  },
   'loading-bar': { root: '로드 중' },
   'log': { log: '로그', scrollToBottom: '맨 아래로 스크롤' },
   'markdown-stream': { completed: '응답 완료' },
   'marquee': { autoplayTriggerPause: '스크롤 일시 중지', autoplayTriggerPlay: '스크롤 재개' },
-  'mention': { content: '멘션' },
+  'mention': { content: '멘션', empty: '일치하는 항목 없음' },
   'menubar': { root: '메뉴 모음' },
   'message-feed': {
     feed: '대화',

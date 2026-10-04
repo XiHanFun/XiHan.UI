@@ -8,6 +8,8 @@
 import type { ItemQuery, NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { StepNodeMeta, StepsApi, StepsItemProps, StepsItemState, StepsSchema, StepsVariant } from './steps.types'
 import { contains, createPressTracker, dataAttr, DIAGNOSTIC_CODES, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, reportDiagnostic } from '@xihan-ui/core'
+import { STEPS_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { stepsAnatomy } from './steps.anatomy'
 import { clampStep, normalizeStepCount } from './steps.machine'
 
@@ -70,11 +72,11 @@ export function connectSteps<T extends PropTypes>(
   const loop = !!prop('loop')
   // 标记形态不写时显式落 number：root 与圆点上始终带 data-variant，嵌套的步骤条各认各的形态
   const variant = prop('variant') ?? 'number'
-  const translations = prop('translations')
-  const listLabel = translations?.list
+  const translations = resolveTranslations(STEPS_EN_US, prop('translations'))
+  const listLabel = translations.list
   const percent = resolvePercent(prop('percent'), variant)
-  const progressLabel = translations?.progressLabel ?? 'Step progress'
-  const progressValueText = translations?.progressValueText ?? ((value: number) => `${value}% complete`)
+  const progressLabel = translations.progressLabel
+  const progressValueText = translations.progressValueText
   const complete = count > 0 && value >= count
 
   const triggerId = (index: number): string => scope.partId(stepsAnatomy.name, `trigger:${index}`)

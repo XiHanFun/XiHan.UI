@@ -8,7 +8,9 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { TourApi, TourPressedPart, TourSchema } from './tour.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
+import { TOUR_EN_US } from '../locale/en-US'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayPositioned } from '../shared/overlay'
+import { resolveTranslations } from '../shared/translations'
 import { tourAnatomy } from './tour.anatomy'
 import { clampTourStep, currentTourStep, isTourLastStep, TOUR_DEFAULT_PLACEMENT, tourStepCount } from './tour.machine'
 
@@ -51,9 +53,9 @@ export function connectTour<T extends PropTypes>(
   const stepping = context.get('stepping')
   const placement = position?.placement ?? currentStep?.placement ?? prop('placement') ?? TOUR_DEFAULT_PLACEMENT
 
-  const translations = prop('translations')
-  const closeLabel = translations?.close ?? 'Close'
-  const progress = translations?.progress ?? ((m: number, n: number) => `Step ${m} of ${n}`)
+  const translations = resolveTranslations(TOUR_EN_US, prop('translations'))
+  const closeLabel = translations.close
+  const progress = translations.progress
   // 空清单时序号写 0，避免念出第 1 步共 0 步
   const progressText = count > 0 ? progress(value + 1, count) : progress(0, 0)
 
@@ -253,7 +255,7 @@ export function connectTour<T extends PropTypes>(
       // 末步这颗按钮的语义是完成，作者据此换文案
       'data-last': dataAttr(lastStep),
       // 两句都不给就整条不输出：这颗按钮通常带可见文字，发一句会把它盖掉
-      'aria-label': lastStep ? translations?.finish : translations?.next,
+      'aria-label': lastStep ? translations.finish : translations.next,
       'data-state': stateAttr,
       // 整条引导的主线动作：与 Popconfirm 的确认钮同列，显式 solid 品牌实心
       'data-xh-action-control': '',

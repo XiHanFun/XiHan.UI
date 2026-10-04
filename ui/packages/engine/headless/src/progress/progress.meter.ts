@@ -10,6 +10,7 @@ import type { ProgressRing } from './progress.geometry'
 import type { ProgressBand, ProgressScaleOptions, ProgressThreshold, ProgressTick } from './progress.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import { scaleLinear } from '@xihan-ui/viz'
+import { PROGRESS_EN_US } from '../locale/en-US'
 import { PROGRESS_VIEW } from './progress.geometry'
 
 /** 刻度数量的缺省提示。 */
@@ -158,7 +159,7 @@ export function ringNeedlePath(ring: ProgressRing, strokeWidth: number): string 
     + `M${c - HUB_RADIUS} ${c}a${HUB_RADIUS} ${HUB_RADIUS} 0 1 0 ${HUB_RADIUS * 2} 0a${HUB_RADIUS} ${HUB_RADIUS} 0 1 0 ${-HUB_RADIUS * 2} 0Z`
 }
 
-/** 缺省的分段读屏文字：「72%, Warning」。 */
+/** 缺省的分段读屏文字：「72%, Warning」，取自 en-US 语言包。 */
 export function defaultSegmentValueText(details: { value: string, label: string }): string {
-  return `${details.value}, ${details.label}`
+  return PROGRESS_EN_US.segmentValueText(details)
 }

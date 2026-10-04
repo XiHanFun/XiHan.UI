@@ -242,8 +242,8 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `input` | `aria-label` | translations?.input |
-| `submit-trigger` | `aria-label` | translations?.stop \| translations?.send |
+| `input` | `aria-label` | translations.input |
+| `submit-trigger` | `aria-label` | translations.stop \| translations.send |
 
 - 输入框的可访问名称只在提供 `translations.input` 时才发出：无条件发出会覆盖作者自己的 `<label for>` 与 `aria-label`。
 - 按钮的可访问名称随身份切换，读屏读到的与屏幕上看到的一致。

@@ -99,6 +99,8 @@ export interface MentionTranslations {
    * 标注 aria-label 时，输出一条空的 aria-label 会覆盖作者的声明。
    */
   input?: string
+  /** 没有候选时空态的缺省文字。 */
+  empty?: string
 }
 
 export interface MentionValueChangeDetails {
@@ -290,6 +292,8 @@ export interface MentionApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   /** 没有候选可显示：提供了 collection 且没有剩余条目。作者据此显示空态部件。 */
   empty: boolean
+  /** 空态部件的缺省文字，取自 translations.empty；作者自己往空态里写了内容就不用它。 */
+  emptyText: string
   isHighlighted: (value: string) => boolean
   /** 整段改写正文，浮层随之收起。 */
   setValue: (next: string) => void

@@ -9,6 +9,8 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ResizeEdge } from '@xihan-ui/pointer'
 import type { ResizableApi, ResizableSchema } from './resizable.types'
 import { dataAttr } from '@xihan-ui/core'
+import { RESIZABLE_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { resizableAnatomy } from './resizable.anatomy'
 import { RESIZABLE_EDGES, RESIZABLE_LARGE_STEP, RESIZABLE_STEP } from './resizable.machine'
 
@@ -26,18 +28,6 @@ const EDGE_CURSOR: Record<ResizeEdge, string> = {
   se: 'nwse-resize',
 }
 
-/** 内建的把手方位说法，读屏用；作者要中文就传 translations。 */
-const EDGE_LABEL: Record<ResizeEdge, string> = {
-  n: 'top edge',
-  s: 'bottom edge',
-  e: 'right edge',
-  w: 'left edge',
-  ne: 'top right corner',
-  nw: 'top left corner',
-  se: 'bottom right corner',
-  sw: 'bottom left corner',
-}
-
 export function connectResizable<T extends PropTypes>(
   service: Service<ResizableSchema>,
   normalize: NormalizeProps<T>,
@@ -49,7 +39,7 @@ export function connectResizable<T extends PropTypes>(
   const activeEdge = context.get('activeEdge')
   const resizing = state.matches('resizing')
   const disabled = !!prop('disabled')
-  const translations = prop('translations')
+  const translations = resolveTranslations(RESIZABLE_EN_US, prop('translations'))
 
   const allowed = new Set<ResizeEdge>(prop('edges') ?? RESIZABLE_EDGES)
   const edgeEnabled = (edge: ResizeEdge): boolean => !disabled && allowed.has(edge)
@@ -69,7 +59,7 @@ export function connectResizable<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'role': 'group',
-      'aria-label': translations?.root ?? 'Resizable',
+      'aria-label': translations.root,
       'data-disabled': dataAttr(disabled),
       'data-resizing': dataAttr(resizing),
       'data-edge': activeEdge ?? undefined,
@@ -94,7 +84,7 @@ export function connectResizable<T extends PropTypes>(
         // 分隔条自身的横竖与它推的那一轴垂直：推东西两边的是竖线
         'aria-orientation': edge === 'n' || edge === 's' ? 'horizontal' : 'vertical',
         // edge 是内部枚举，直接拼进名字读屏念的就是 n / ne / se 这几个字母
-        'aria-label': translations?.handle?.(edge) ?? `Resize ${EDGE_LABEL[edge]}`,
+        'aria-label': translations.handle(edge),
         'aria-valuenow': Math.round(edge === 'n' || edge === 's' ? dimensions.height : dimensions.width),
         'aria-disabled': enabled ? 'false' : 'true',
         'tabindex': enabled ? 0 : -1,

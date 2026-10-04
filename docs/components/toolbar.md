@@ -191,7 +191,7 @@
 | `separator` | `aria-orientation` | 'vertical' \| 'horizontal' |
 | `separator` | `role` | 'separator' |
 | `overflow-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `overflow-trigger` | `aria-label` | props.translations.overflowTrigger |
+| `overflow-trigger` | `aria-label` | resolveTranslations(TOOLBAR_EN_US, prop('translations… |
 
 ## 样式参考
 

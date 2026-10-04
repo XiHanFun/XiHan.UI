@@ -245,7 +245,7 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `list` | `aria-disabled` | 'true' \| 'false' |
-| `list` | `aria-label` | translations?.list |
+| `list` | `aria-label` | translations.list |
 | `list` | `aria-orientation` | props.orientation |
 | `list` | `role` | 'list' |
 | `item` | `aria-current` | 'step' \| undefined |
@@ -259,7 +259,7 @@
 | `trigger` | `aria-setsize` | normalizeStepCount(prop('count') ?? (collection.lengt… \| undefined |
 | `trigger` | `role` | 'tab' |
 | `indicator` | `aria-hidden` | 'true' |
-| `indicator` | `aria-label` | translations?.progressLabel |
+| `indicator` | `aria-label` | translations.progressLabel |
 | `indicator` | `aria-valuemax` | '100' |
 | `indicator` | `aria-valuemin` | '0' |
 | `indicator` | `aria-valuenow` | String(percent) |

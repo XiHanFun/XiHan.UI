@@ -164,7 +164,7 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | resolveTranslations(ANCHOR_EN_US, prop('translations'… |
 | `link` | `aria-current` | 'location' \| undefined |
 | `indicator` | `aria-hidden` | 'true' |
 

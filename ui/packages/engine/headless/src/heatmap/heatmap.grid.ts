@@ -8,6 +8,7 @@
 import type { Direction } from '@xihan-ui/core'
 import type { LevelScale } from '@xihan-ui/viz'
 import { scaleQuantize, scaleThreshold } from '@xihan-ui/viz'
+import { HEATMAP_EN_US } from '../locale/en-US'
 
 // 热力图的纯数学与纯格式化：把一段日期区间摊成「周列 × 星期行」的网格，把计数分成档位，
 // 再把方向键翻成落点。不碰 DOM、不认识状态机，也不引日期库——日期一律是 ISO 的 YYYY-MM-DD 串。
@@ -38,10 +39,10 @@ export const HEATMAP_LOCALE = 'en-US'
 export const HEATMAP_FIRST_DAY_OF_WEEK = 1
 
 /**
- * 色阶对照条两端的缺省文字。它是写进界面的可见文本，与其余内建文案同一口径写英文，
+ * 色阶对照条两端的缺省文字，取自 en-US 语言包。它是写进界面的可见文本，
  * 换语言经 translations 的 legendLow / legendHigh；发散色阶两端写数值，不用这两个词。
  */
-export const HEATMAP_LEGEND_TEXT: { low: string, high: string } = { low: 'Less', high: 'More' }
+export const HEATMAP_LEGEND_TEXT: { low: string, high: string } = { low: HEATMAP_EN_US.legendLow, high: HEATMAP_EN_US.legendHigh }
 
 /** 三种形态：连续周列的日历、按自然月分块的月历、行列由作者给的矩阵。 */
 export type HeatmapVariant = 'calendar' | 'month' | 'matrix'

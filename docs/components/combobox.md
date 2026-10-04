@@ -342,8 +342,8 @@
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `input` | `role` | undefined \| 'combobox' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
-| `trigger` | `aria-label` | props.translations.trigger |
-| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `trigger` | `aria-label` | translations.trigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `label` 部件的 id |

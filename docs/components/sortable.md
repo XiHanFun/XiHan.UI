@@ -204,12 +204,12 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | translations?.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `role` | 'group' |
 | `item-drag-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `item-drag-trigger` | `aria-label` | translations?.itemDragTrigger?.(name) |
+| `item-drag-trigger` | `aria-label` | translations.itemDragTrigger(name) |
 | `item-drag-trigger` | `aria-pressed` | 'true' \| 'false' |
-| `item-drag-trigger` | `aria-roledescription` | translations?.itemDragTriggerRoleDescription |
+| `item-drag-trigger` | `aria-roledescription` | translations.itemDragTriggerRoleDescription |
 | `item-drag-trigger` | `role` | 'button' |
 | `drop-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |

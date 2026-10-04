@@ -9,6 +9,7 @@ import type { FormApi, FormColumns, FormErrorPatch, FormFieldSpan, FormPath, For
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideForm, provideFormField, useFormContext } from './context'
 import { useForm } from './use-form'
 
@@ -71,6 +72,8 @@ export const XhFormRoot = defineComponent({
     validate: { type: Function as PropType<FormProps['validate']> },
     rules: { type: Object as PropType<FormProps['rules']> },
     validateMessages: { type: Object as PropType<FormProps['validateMessages']> },
+    /** 校验报错的文案模板；全局语言包经它到达，validateMessages 再逐条压在上面。 */
+    translations: { type: Object as PropType<FormProps['translations']> },
     validateOn: { type: String as PropType<FormValidateOn> },
     layout: { type: String as PropType<FormProps['layout']> },
     /** grid 排布下分几列：整数即各档同一个列数，断点对象 `{ base, sm, md, lg, xl }` 则逐档取值。 */
@@ -99,7 +102,7 @@ export const XhFormRoot = defineComponent({
     default?: (props: FormRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const ctx = useForm(props as FormProps, {
+    const ctx = useForm(withXhConfig('form', props) as FormProps, {
       onValuesChange: (details) => {
         emit('values-change', details)
         emit('update:values', details.values)

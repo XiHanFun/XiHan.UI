@@ -16,6 +16,8 @@ import type {
   TransferSide,
 } from './transfer.types'
 import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { TRANSFER_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionTarget } from '../shared/virtual-collection'
 import { transferAnatomy, transferItemQuery } from './transfer.anatomy'
 import { transferFocusKey, transferOppositeSide, transferPageKey, transferQueryKey } from './transfer.machine'
@@ -58,11 +60,7 @@ export function connectTransfer<T extends PropTypes>(
   const loop = prop('loop') ?? true
   const dir = prop('dir') ?? 'ltr'
   const filter = prop('filter')
-  const translations = prop('translations')
-  const label = {
-    toTarget: translations?.toTarget ?? 'Move to target list',
-    toSource: translations?.toSource ?? 'Move to source list',
-  }
+  const label = resolveTranslations(TRANSFER_EN_US, prop('translations'))
   const ids = scope.ids('transfer', 'source-title', 'target-title', 'source-list', 'target-list')
 
   const titleId: BySide<string> = { source: ids['source-title'], target: ids['target-title'] }

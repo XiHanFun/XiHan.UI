@@ -194,12 +194,12 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | translations.root |
 | `link` | `aria-current` | 'page' \| undefined |
 | `link` | `aria-disabled` | 'true' \| 'false' |
 | `link-icon` | `aria-hidden` | 'true' |
 | `separator` | `aria-hidden` | 'true' |
-| `ellipsis-trigger` | `aria-label` | props.translations.ellipsis |
+| `ellipsis-trigger` | `aria-label` | translations.ellipsis |
 
 ## 样式参考
 

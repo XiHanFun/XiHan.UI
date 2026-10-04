@@ -8,7 +8,9 @@
 import type { ItemQuery, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TimeFieldApi, TimeFieldSchema, TimeSegmentType } from './time-field.types'
 import { dataAttr, focusSafely, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
+import { TIME_FIELD_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { timeFieldAnatomy } from './time-field.anatomy'
 import {
   appendSegmentDigit,
@@ -27,23 +29,14 @@ const parts = timeFieldAnatomy.build()
 // 段集合只在事件处理器里查活 DOM：那一刻两个适配器看到的是同一份文档，顺序即文档序。
 const SEGMENT_QUERY: ItemQuery = { scope: timeFieldAnatomy.name, part: 'segment' }
 
-/**
- * 段的读屏名字的兜底。写死英文语义名，不走 Intl.DisplayNames：
- * 后者依赖运行环境的默认 locale 与 ICU 数据完整度，同一份代码会产出不同 DOM。
- * 要本地化就经 translations 交进来。
- */
-const SEGMENT_LABELS: Record<TimeSegmentType, string> = {
-  hour: 'hour',
-  minute: 'minute',
-  second: 'second',
-  dayPeriod: 'AM/PM',
-}
-
 export function connectTimeField<T extends PropTypes>(
   service: Service<TimeFieldSchema>,
   normalize: NormalizeProps<T>,
 ): TimeFieldApi<T> {
   const { context, prop, send, scope } = service
+  // 段的读屏名字缺省取 en-US 语言包，不走 Intl.DisplayNames：
+  // 后者依赖运行环境的默认 locale 与 ICU 数据完整度，同一份代码会产出不同 DOM。要本地化就经 translations 交进来。
+  const translations = resolveTranslations(TIME_FIELD_EN_US, prop('translations'))
   const ids = scope.ids('time-field', 'label', 'control')
 
   const locale = prop('locale')
@@ -182,7 +175,7 @@ export function connectTimeField<T extends PropTypes>(
         'role': 'spinbutton',
         // 导航与聚焦都以此为段的身份（事件那一刻现查 DOM 时按它定位）
         [ITEM_VALUE_ATTR]: segment,
-        'aria-label': (prop('translations')?.[segment] ?? SEGMENT_LABELS[segment]),
+        'aria-label': translations[segment],
         'aria-valuemin': range.min,
         'aria-valuemax': range.max,
         // 空段没有当前值，此时不写 aria-valuenow，写 0 会被念成零点
@@ -283,7 +276,7 @@ export function connectTimeField<T extends PropTypes>(
       'type': 'button',
       // 不占 Tab 位：键盘用户在段上按退格即可清；读屏仍能摸到它，名字走文案键
       'tabindex': -1,
-      'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
+      'aria-label': translations.clearTrigger,
       // 没值就整个收起，不是禁用：有值才出现，出现即可用
       'hidden': !canClear || undefined,
       // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里；触屏按下仍要进按压通道

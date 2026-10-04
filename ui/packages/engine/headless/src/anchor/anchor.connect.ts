@@ -8,6 +8,8 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { AnchorApi, AnchorSchema } from './anchor.types'
 import { createPressTracker, dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { ANCHOR_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { anchorAnatomy } from './anchor.anatomy'
 
 const parts = anchorAnatomy.build()
@@ -21,7 +23,7 @@ export function connectAnchor<T extends PropTypes>(
   const indicator = context.get('indicator')
   const indicatorStretch = context.get('indicatorStretch')
   const orientation = prop('orientation') ?? 'vertical'
-  const label = prop('translations')?.root ?? 'Anchor navigation'
+  const label = resolveTranslations(ANCHOR_EN_US, prop('translations')).root
   const smooth = !!prop('smooth')
 
   const isActive = (target: string): boolean => target === value

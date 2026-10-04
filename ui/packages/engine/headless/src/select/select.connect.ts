@@ -8,8 +8,10 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
 import { contains, createPressTracker, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { SELECT_EN_US } from '../locale/en-US'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
+import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
@@ -25,6 +27,7 @@ export function connectSelect<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): SelectApi<T> {
   const { state, prop, send, context, refs, scope } = service
+  const translations = resolveTranslations(SELECT_EN_US, prop('translations'))
   const open = state.get() === 'open'
   const ids = scope.ids('select', 'label', 'trigger', 'content', 'value-text')
   // 分组标题的 id：group 与 group-label 靠这一个值互相认领
@@ -73,8 +76,8 @@ export function connectSelect<T extends PropTypes>(
   const selectionTags = connectSelectionTags({
     entries: value.map((v, i) => ({ key: v, label: valueText[i] ?? v })),
     maxTagCount: prop('maxTagCount') ?? SELECT_DEFAULT_MAX_TAG_COUNT,
-    overflowTag: prop('translations')?.overflowTag,
-    deleteItem: prop('translations')?.deleteItem,
+    overflowTag: translations.overflowTag,
+    deleteItem: translations.deleteItem,
     variant,
     tone: prop('tone'),
     size: prop('size'),
@@ -360,7 +363,7 @@ export function connectSelect<T extends PropTypes>(
         'type': 'button',
         // 整个控件只占一个 Tab 位（trigger）：清空钮不进 Tab 序，但仍对读屏可见
         'tabindex': -1,
-        'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
+        'aria-label': translations.clearTrigger,
         // 清不了就整个收起，不灰留位
         'hidden': !canClear || undefined,
         // 拦掉默认聚焦，否则焦点会从 trigger 挪到这个按钮上；触屏按下仍要进按压通道
@@ -479,7 +482,7 @@ export function connectSelect<T extends PropTypes>(
       // 作者没渲染 label / value-text 时两段都是悬空 IDREF，按 accname 规则整条落空，
       // 名字退回下面那个可写的兜底
       'aria-labelledby': `${ids.label} ${ids['value-text']}`,
-      'aria-label': prop('translations')?.content ?? 'Options',
+      'aria-label': translations.content,
       // 多选语义显式报出，读屏据此播报「可多选」
       'aria-multiselectable': multiple ? 'true' : 'false',
       // 取数在途的播报归列表本体：两个相位占位自己不带 role

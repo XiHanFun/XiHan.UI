@@ -243,9 +243,9 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
-| `close-trigger` | `aria-label` | props.translations.close |
+| `close-trigger` | `aria-label` | translations.close |
 | `resize-trigger` | `aria-controls` | `content` 部件的 id |
-| `resize-trigger` | `aria-label` | props.translations.resizeTrigger |
+| `resize-trigger` | `aria-label` | translations.resizeTrigger |
 | `resize-trigger` | `aria-orientation` | 'vertical' \| 'horizontal' |
 | `resize-trigger` | `aria-valuemax` | String(max) \| undefined |
 | `resize-trigger` | `aria-valuemin` | String(min) |

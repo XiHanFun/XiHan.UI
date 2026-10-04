@@ -17,6 +17,7 @@ import type {
 } from './date-field.types'
 import { resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
 import { daysInMonth as daysInCalendarMonth, getLocalTimeZone, PlainDate, PlainDateTime, PlainTime, today } from '@xihan-ui/core/date'
+import { DATE_FIELD_EN_US } from '../locale/en-US'
 import { dayPeriodLabel } from '../shared/day-period'
 import {
   blockRange,
@@ -60,20 +61,20 @@ export const DATE_SEGMENT_PLACEHOLDER: Readonly<Record<DateSegmentType, string>>
   dayPeriod: '--',
 }
 
-/** 清空钮的缺省 aria-label。 */
-export const DATE_FIELD_CLEAR_LABEL = 'Clear'
+/** 清空钮的缺省 aria-label，取自 en-US 语言包。 */
+export const DATE_FIELD_CLEAR_LABEL = DATE_FIELD_EN_US.clearTrigger
 
-/** 各段默认的读屏名字。段是 spinbutton，没有名字读屏只念得出一串数字。 */
+/** 各段默认的读屏名字，取自 en-US 语言包。段是 spinbutton，没有名字读屏只念得出一串数字。 */
 export const DATE_SEGMENT_LABEL: Readonly<Record<DateSegmentType, string>> = {
-  year: 'year',
-  quarter: 'quarter',
-  month: 'month',
-  week: 'week of year',
-  day: 'day',
-  hour: 'hour',
-  minute: 'minute',
-  second: 'second',
-  dayPeriod: 'AM/PM',
+  year: DATE_FIELD_EN_US.year,
+  quarter: DATE_FIELD_EN_US.quarter,
+  month: DATE_FIELD_EN_US.month,
+  week: DATE_FIELD_EN_US.week,
+  day: DATE_FIELD_EN_US.day,
+  hour: DATE_FIELD_EN_US.hour,
+  minute: DATE_FIELD_EN_US.minute,
+  second: DATE_FIELD_EN_US.second,
+  dayPeriod: DATE_FIELD_EN_US.dayPeriod,
 }
 
 /** 各段最多能敲几位。年四位，其余两位。 */

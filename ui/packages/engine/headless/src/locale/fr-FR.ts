@@ -6,7 +6,45 @@
 // 法语语言包。
 
 import type { ChartDatumDetails } from '../shared/chart'
+import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleTranslations } from './types'
+import { keyText } from './key-text'
+
+/** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
+const KEY_NAME: KeyTextTable = {
+  'Alt': { mac: 'Option', other: 'Alt' },
+  'Control': { mac: 'Contrôle', other: 'Ctrl' },
+  'Meta': { mac: 'Commande', other: 'Windows' },
+  'Shift': 'Maj',
+  ' ': 'Espace',
+  'ArrowDown': 'Flèche bas',
+  'ArrowLeft': 'Flèche gauche',
+  'ArrowRight': 'Flèche droite',
+  'ArrowUp': 'Flèche haut',
+  'Backspace': 'Retour arrière',
+  'Delete': 'Suppr',
+  'Enter': 'Entrée',
+  'Escape': 'Échap',
+  'Tab': 'Tab',
+}
+
+/** 键帽上写的字：Mac 用系统符号。 */
+const KEY_LABEL: KeyTextTable = {
+  'Alt': { mac: '⌥', other: 'Alt' },
+  'Control': { mac: '⌃', other: 'Ctrl' },
+  'Meta': { mac: '⌘', other: 'Win' },
+  'Shift': { mac: '⇧', other: 'Maj' },
+  ' ': 'Espace',
+  'ArrowDown': '↓',
+  'ArrowLeft': '←',
+  'ArrowRight': '→',
+  'ArrowUp': '↑',
+  'Backspace': { mac: '⌫', other: 'Retour' },
+  'Delete': { mac: '⌦', other: 'Suppr' },
+  'Enter': { mac: '⏎', other: 'Entrée' },
+  'Escape': { mac: '⎋', other: 'Échap' },
+  'Tab': { mac: '⇥', other: 'Tab' },
+}
 
 const EDGE = {
   n: 'bord supérieur',
@@ -157,6 +195,8 @@ const translations = {
     nextSource: 'Source suivante',
     source: (index, title) => `Source ${index} : ${title}`,
     document: 'Document',
+    previewLinkSource: 'Ouvrir la source',
+    previewLinkDocument: 'Ouvrir le document',
   },
   'clipboard': { copied: 'Copié' },
   'code-view': {
@@ -206,7 +246,13 @@ const translations = {
     presets: 'Raccourcis',
     clearTrigger: 'Effacer',
   },
-  'dialog': { close: 'Fermer', dragTrigger: 'Déplacer la boîte de dialogue' },
+  'dialog': {
+    close: 'Fermer',
+    dragTrigger: 'Déplacer la boîte de dialogue',
+    ok: 'OK',
+    cancel: 'Annuler',
+    actionError: 'L’action a échoué. Veuillez réessayer.',
+  },
   'diff-view': {
     added: 'Ajouté',
     removed: 'Supprimé',
@@ -237,6 +283,22 @@ const translations = {
     resizeValueText: size => `Largeur ${Math.round(size.width)}, hauteur ${Math.round(size.height)}`,
     windowStateTrigger: state => ({ default: 'Restaurer le panneau', maximized: 'Agrandir le panneau', minimized: 'Réduire le panneau' })[state],
     close: 'Fermer',
+  },
+  'form': {
+    required: '{name} est obligatoire',
+    type: {
+      string: '{name} doit être une chaîne de caractères',
+      number: '{name} doit être un nombre',
+      integer: '{name} doit être un nombre entier',
+      email: '{name} n’est pas une adresse e-mail valide',
+      url: '{name} n’est pas une URL valide',
+      array: '{name} doit être une liste',
+    },
+    minLength: '{name} doit contenir au moins {min} caractères',
+    maxLength: '{name} ne peut pas dépasser {max} caractères',
+    minNumber: '{name} doit être supérieur ou égal à {min}',
+    maxNumber: '{name} doit être inférieur ou égal à {max}',
+    pattern: '{name} ne respecte pas le format requis',
   },
   'funnel-chart': {
     ...chart,
@@ -354,12 +416,16 @@ const translations = {
     moreItems: count => `… ${count} de plus`,
     empty: 'Aucune donnée',
   },
-  'kbd': { hotkey: names => names.join(' + ') },
+  'kbd': {
+    keyName: (key, platform) => keyText(KEY_NAME, key, platform),
+    keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform),
+    hotkey: names => names.join(' + '),
+  },
   'loading-bar': { root: 'Chargement' },
   'log': { log: 'Journal', scrollToBottom: 'Faire défiler jusqu’en bas' },
   'markdown-stream': { completed: 'Réponse terminée' },
   'marquee': { autoplayTriggerPause: 'Suspendre le défilement', autoplayTriggerPlay: 'Reprendre le défilement' },
-  'mention': { content: 'Mentions' },
+  'mention': { content: 'Mentions', empty: 'Aucun résultat' },
   'menubar': { root: 'Barre de menus' },
   'message-feed': {
     feed: 'Conversation',

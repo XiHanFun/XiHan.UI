@@ -8,6 +8,8 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { SignaturePadApi, SignaturePadSchema, SignaturePadTrigger } from './signature-pad.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
+import { SIGNATURE_PAD_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { signaturePadAnatomy } from './signature-pad.anatomy'
 import { signaturePadSvg, strokesToPaths } from './signature-pad.geometry'
@@ -34,7 +36,7 @@ export function connectSignaturePad<T extends PropTypes>(
   // 能否落笔；三颗按钮用的是同一道判据
   const editable = !disabled && !readOnly
   const drawing = state.matches('drawing')
-  const translations = prop('translations')
+  const translations = resolveTranslations(SIGNATURE_PAD_EN_US, prop('translations'))
   const ids = scope.ids('signature-pad', 'label')
 
   const value = context.get('value')
@@ -48,8 +50,8 @@ export function connectSignaturePad<T extends PropTypes>(
   const canUndo = !drawing && context.get('past').length > 0
   const canRedo = !drawing && context.get('future').length > 0
   const statusText = empty
-    ? translations?.statusEmpty ?? 'No signature yet'
-    : translations?.statusSigned ?? 'Signed'
+    ? translations.statusEmpty
+    : translations.statusSigned
   // 每一笔是一条子路径，全部落在同一条 path 上：条数是画出来的，作者写不出对应数量的节点
   const d = paths.join(' ')
   const toSvg = (): string => signaturePadSvg(paths, surface)
@@ -122,7 +124,7 @@ export function connectSignaturePad<T extends PropTypes>(
       'role': 'img',
       // 作者渲染了标题就用标题；没渲染时这条 IDREF 悬空，读屏退回下面这句内建文案
       'aria-labelledby': ids.label,
-      'aria-label': translations?.label ?? 'Signature',
+      'aria-label': translations.label,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
@@ -170,7 +172,7 @@ export function connectSignaturePad<T extends PropTypes>(
       // 少了 type，按钮落在 form 里会变成 submit
       'type': 'button',
       // 按钮里通常只有一个叉，读屏念不出它清掉的是什么
-      'aria-label': translations?.clearTrigger ?? 'Clear signature',
+      'aria-label': translations.clearTrigger,
       // 单体控件用原生 disabled；它不是集合条目，不必留着当导航起点
       'disabled': !editable || undefined,
       'data-disabled': dataAttr(!editable),
@@ -198,7 +200,7 @@ export function connectSignaturePad<T extends PropTypes>(
       ...parts['undo-trigger'].attrs,
       'type': 'button',
       // 按钮里通常只有一个回转箭头，读屏念不出它撤销的是什么
-      'aria-label': translations?.undoTrigger ?? 'Undo last stroke',
+      'aria-label': translations.undoTrigger,
       // 整块禁用或只读时走原生 disabled；撤销栈空时走 aria-disabled，焦点留在原处——
       // 原生 disabled 会让刚把最后一笔撤掉的这颗钮把焦点丢回 body
       'disabled': !editable || undefined,
@@ -220,7 +222,7 @@ export function connectSignaturePad<T extends PropTypes>(
     getRedoTriggerProps: () => normalize.button({
       ...parts['redo-trigger'].attrs,
       'type': 'button',
-      'aria-label': translations?.redoTrigger ?? 'Redo stroke',
+      'aria-label': translations.redoTrigger,
       // 重做栈空时走 aria-disabled，理由同撤销按钮
       'disabled': !editable || undefined,
       'aria-disabled': editable && !canRedo ? 'true' : undefined,

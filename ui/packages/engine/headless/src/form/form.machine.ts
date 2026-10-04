@@ -14,7 +14,7 @@ import { trackPartPresence } from '../shared/part-presence'
 import { formFieldGroupQuery, formFieldName } from './form.anatomy'
 import { firstFormErrorName, formErrorNames, mergeFormErrors, normalizeFormErrors, sameFormErrors } from './form.errors'
 import { cloneFormPathRecord, deleteFormPathValue, formPathEntries, formPathKey, getFormPathValue, rebaseFormArrayPath, rebaseFormPathRecord, sameFormPathRecords, setFormPathValue } from './form.path'
-import { runFormRules } from './form.rules'
+import { formValidateMessages, runFormRules } from './form.rules'
 
 const { createMachine, guards } = setup<FormSchema>()
 const { not } = guards
@@ -316,7 +316,7 @@ function validateOneField(params: Params<FormSchema>, values: FormValues, name: 
       rule ? setFormPathValue({}, name, rule) : undefined,
       validate,
       values,
-      params.prop('validateMessages'),
+      formValidateMessages(params.prop('validateMessages'), params.prop('translations')),
     ),
     settle,
     hooks,
@@ -639,7 +639,7 @@ export const formMachine = createMachine({
           params,
           values,
           null,
-          () => computed ? runFormRules(rules, validate, values, prop('validateMessages')) : context.get('errors'),
+          () => computed ? runFormRules(rules, validate, values, formValidateMessages(prop('validateMessages'), prop('translations'))) : context.get('errors'),
           settle,
         )
       },
@@ -726,7 +726,7 @@ export const formMachine = createMachine({
             params,
             values,
             null,
-            () => runFormRules(rules, validate, values, prop('validateMessages')),
+            () => runFormRules(rules, validate, values, formValidateMessages(prop('validateMessages'), prop('translations'))),
             (errors) => {
               const validated = refs.get('validatedErrors')
               validated.clear()

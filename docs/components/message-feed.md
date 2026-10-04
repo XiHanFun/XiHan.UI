@@ -247,7 +247,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `list` | `aria-label` | translations?.feed |
+| `list` | `aria-label` | translations.feed |
 | `list` | `role` | 'feed' |
 | `item` | `aria-label` | undefined \| itemLabel(item.index + 1, count ?? -1, item.role) |
 | `item` | `aria-labelledby` | scope.partId('message-feed', `item-label:${item.id}`) \| undefined |
@@ -256,7 +256,7 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `item` | `role` | 'article' |
 | `separator` | `aria-hidden` | 'true' |
 | `pending-indicator` | `aria-hidden` | 'true' |
-| `scroll-to-end-trigger` | `aria-label` | (translations?.scrollToBottomUnread ?? ((n: number) =… \| translations?.scrollToBottom |
+| `scroll-to-end-trigger` | `aria-label` | translations.scrollToBottomUnread(unreadCount) \| translations.scrollToBottom |
 | `unread-count` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |

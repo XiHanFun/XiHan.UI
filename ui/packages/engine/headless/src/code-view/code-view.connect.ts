@@ -17,7 +17,9 @@ import {
   queryItems,
   resolveLabelling,
 } from '@xihan-ui/core'
+import { CODE_VIEW_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { codeViewAnatomy } from './code-view.anatomy'
 import {
   CODE_VIEW_FALLBACK_LANG,
@@ -54,7 +56,7 @@ export function connectCodeView<T extends PropTypes>(
 ): CodeViewApi<T> {
   const { prop, context, scope } = service
   const code = prop('code')
-  const translations = prop('translations')
+  const translations = resolveTranslations(CODE_VIEW_EN_US, prop('translations'))
   const size = prop('size')
   // 空串与纯空白的语言标注一律落到 plaintext，保证 lang 非空
   const lang = prop('lang')?.trim() || CODE_VIEW_FALLBACK_LANG
@@ -122,7 +124,7 @@ export function connectCodeView<T extends PropTypes>(
     labelId: ids.filename,
     labelCount: prop('labelled') === true ? 1 : 0,
     descriptionCount: 0,
-    ariaLabel: translations?.code ?? 'Code',
+    ariaLabel: translations.code,
   })
 
   const lineNumbers = !!prop('lineNumbers')
@@ -141,8 +143,7 @@ export function connectCodeView<T extends PropTypes>(
     'data-folded': dataAttr(isFolded(index)),
   })
 
-  const foldLabel = translations?.foldBlock
-    ?? ((first: number, last: number) => (first === last ? `Line ${first}` : `Lines ${first}–${last}`))
+  const foldLabel = translations.foldBlock
 
   return {
     lang,
@@ -246,9 +247,7 @@ export function connectCodeView<T extends PropTypes>(
       'data-xh-action-size': size ?? 'md',
       'aria-controls': ids.pre,
       'aria-expanded': clamped ? 'false' : 'true',
-      'aria-label': clamped
-        ? translations?.expand ?? 'Expand code'
-        : translations?.collapse ?? 'Collapse code',
+      'aria-label': clamped ? translations.expand : translations.collapse,
       'data-state': clamped ? 'closed' : 'open',
       'hidden': !foldable || undefined,
       // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；不可折叠时不进

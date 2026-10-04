@@ -12,38 +12,21 @@ import type { FunnelModel, FunnelStage } from './funnel-chart.model'
 import type { FunnelChartSchema, FunnelOverlay } from './funnel-chart.schema'
 import type { FunnelChartTranslations, FunnelSummary, FunnelTooltipModel } from './funnel-chart.types'
 import { resolveLocale } from '@xihan-ui/core'
-import { CHART_TRANSLATIONS, chartActiveSource, chartPageSize, resolveChartTranslations } from '../shared/chart'
+import { FUNNEL_CHART_EN_US } from '../locale/en-US'
+import { chartActiveSource, chartPageSize, resolveChartTranslations } from '../shared/chart'
 import { funnelStageKey } from './funnel-chart.model'
 
-/** 阶段的可及名：名字、数值，以及相对上一阶段的转化率（第一阶段没有）。 */
+/** 数据标记的缺省可及名，取自英文语言包。 */
 export function defaultFunnelDatumLabel(details: ChartDatumDetails): string {
-  const head = `${details.seriesName}, ${details.formatted.value ?? ''}`
-  return details.formatted.previous ? `${head}, ${details.formatted.previous} of previous` : head
+  return FUNNEL_CHART_EN_US.datumLabel(details)
 }
 
-/** 缺省摘要：阶段数、首尾两个阶段、总转化率与流失最多的一步。 */
+/** 缺省摘要，取自英文语言包。 */
 export function defaultFunnelSummary(model: FunnelSummary): string {
-  if (model.stageCount === 0 || !model.first)
-    return 'No data.'
-  if (model.stageCount === 1)
-    return `1 stage: ${model.first.name} ${model.first.value}.`
-  const parts = [`${model.stageCount} stages from ${model.first.name} (${model.first.value}) to ${model.last!.name} (${model.last!.value}).`]
-  if (model.overall)
-    parts.push(`Overall conversion ${model.overall}.`)
-  if (model.steepest)
-    parts.push(`Largest drop: ${model.steepest.from} to ${model.steepest.to}, ${model.steepest.rate} kept.`)
-  return parts.join(' ')
+  return FUNNEL_CHART_EN_US.summary(model)
 }
 
-export const FUNNEL_TRANSLATIONS: FunnelChartTranslations = Object.freeze({
-  ...CHART_TRANSLATIONS,
-  datumLabel: defaultFunnelDatumLabel,
-  nameLabel: 'Stage',
-  valueLabel: 'Value',
-  previousLabel: 'From previous',
-  firstLabel: 'From first',
-  summary: defaultFunnelSummary,
-})
+export const FUNNEL_TRANSLATIONS: FunnelChartTranslations = Object.freeze({ ...FUNNEL_CHART_EN_US })
 
 const translationsCache = new WeakMap<object, FunnelChartTranslations>()
 

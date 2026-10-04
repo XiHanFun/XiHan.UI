@@ -261,7 +261,7 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | `line-number` | `aria-hidden` | 'true' |
 | `fold-trigger` | `aria-controls` | `pre` 部件的 id |
 | `fold-trigger` | `aria-expanded` | 'false' \| 'true' |
-| `fold-trigger` | `aria-label` | translations?.expand \| translations?.collapse |
+| `fold-trigger` | `aria-label` | translations.expand \| translations.collapse |
 | `line-fold-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `line-fold-trigger` | `aria-label` | undefined \| foldLabel(lineNumberAt(region.start + 1), lineNumberA… |
 

@@ -130,7 +130,7 @@
     "name": "headless/locale（十种语言整份）",
     "path": "packages/engine/headless/dist/locale.js",
     "gzip": true,
-    "limit": "46.5 kB"
+    "limit": "56.5 kB"
   },
   {
     "name": "vue",
@@ -213,7 +213,7 @@
     "path": "packages/adapters/vue/dist/locale.js",
     "import": "{ zhCN }",
     "gzip": true,
-    "limit": "7.2 kB"
+    "limit": "8 kB"
   },
   {
     "name": "web-components",

@@ -54,7 +54,11 @@ export interface KbdApi<T extends PropTypes = PropTypes> {
   getKeyProps: (props: KbdKeyProps) => T['element']
 }
 
+/** 键名与键帽字。key 是归一化键名：修饰键是 Meta / Control / Alt / Shift，主键是 KeyboardEvent.key 的写法。 */
 export interface KbdTranslations {
-  keyName: (key: string) => string
+  /** 一枚键读屏念的名字；同一枚修饰键在两个平台上叫法不同，按 platform 取。 */
+  keyName: (key: string, platform: KbdResolvedPlatform) => string
+  /** 一枚键键帽上写的字。 */
+  keyLabel: (key: string, platform: KbdResolvedPlatform) => string
   hotkey: (names: readonly string[]) => string
 }

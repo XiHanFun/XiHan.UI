@@ -6,10 +6,12 @@
 // 提供 message feed 相关实现。
 
 import type { FocusableElement, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { MessageFeedApi, MessageFeedItemRole, MessageFeedSchema, MessageFeedStatus } from './message-feed.types'
+import type { MessageFeedApi, MessageFeedSchema, MessageFeedStatus } from './message-feed.types'
 import { contains, dataAttr, focusItem, getTabbables, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
+import { MESSAGE_FEED_EN_US } from '../locale/en-US'
 import { floatingSizeBelow } from '../shared/floating-size'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { messageFeedAnatomy, messageFeedItemQuery } from './message-feed.anatomy'
 
 const parts = messageFeedAnatomy.build()
@@ -30,15 +32,10 @@ export function connectMessageFeed<T extends PropTypes>(
   const status: MessageFeedStatus = prop('status') ?? 'idle'
   const loop = prop('loop') ?? false
   const count = prop('count')
-  const translations = prop('translations')
+  const translations = resolveTranslations(MESSAGE_FEED_EN_US, prop('translations'))
   const unreadCount = context.get('unread') ?? 0
 
-  const itemLabel = translations?.item
-    ?? ((position: number, size: number, role?: MessageFeedItemRole): string => {
-      const who = role == null ? '' : `, ${role}`
-      // size 为 -1 是 ARIA 的「总数未知」，念出来只会让人以为倒数
-      return size > 0 ? `Message ${position} of ${size}${who}` : `Message ${position}${who}`
-    })
+  const itemLabel = translations.item
 
   /**
    * 条目集合只在事件处理器与命令式方法里查活 DOM，顺序即文档序。
@@ -173,7 +170,7 @@ export function connectMessageFeed<T extends PropTypes>(
       // 到达追踪接上之前：首帧（含服务端渲染）的历史消息不播进场
       'data-instant': dataAttr(!context.get('arrivalsTracked')),
       'role': 'feed',
-      'aria-label': translations?.feed ?? 'Conversation',
+      'aria-label': translations.feed,
     }),
 
     getItemProps: item => normalize.element({
@@ -214,9 +211,7 @@ export function connectMessageFeed<T extends PropTypes>(
       'data-xh-material': 'frosted',
       'id': scope.partId('message-feed', 'scroll-to-end-trigger'),
       // 有未读时名字里带上条数：未读数本身是给眼睛看的角标，对读屏隐藏
-      'aria-label': unreadCount > 0
-        ? (translations?.scrollToBottomUnread ?? ((n: number) => `Scroll to bottom, ${n} new messages`))(unreadCount)
-        : translations?.scrollToBottom ?? 'Scroll to bottom',
+      'aria-label': unreadCount > 0 ? translations.scrollToBottomUnread(unreadCount) : translations.scrollToBottom,
       'data-state': atBottom ? 'hidden' : 'visible',
       // 收起不卸载：按钮反复建删会让它的进场动画每次从头播。回底后先播完退场再藏起
       'hidden': (atBottom && !context.get('triggerRendered')) || undefined,
