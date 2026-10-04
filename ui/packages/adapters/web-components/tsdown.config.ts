@@ -5,6 +5,7 @@ export default defineXihanPackage({
     index: 'src/index.ts',
     define: 'src/define.ts',
     backgrounds: 'src/backgrounds.ts',
+    locale: 'src/locale.ts',
     services: 'src/services.ts',
   },
 })

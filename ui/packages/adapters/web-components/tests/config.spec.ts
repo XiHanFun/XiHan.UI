@@ -3,6 +3,7 @@ import { getMotionOverride, setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, describe, expect, it } from 'vitest'
 import { getXhConfig, setXhConfig, withXhConfig } from '../src/config'
 import { defineXhElements } from '../src/define'
+import { enUS, jaJP, zhCN } from '../src/locale'
 
 defineXhElements()
 
@@ -222,6 +223,23 @@ describe('接到真元素上', () => {
     await element.updateComplete
     await element.updateComplete
     expect(element.querySelector('[data-xh-part="close-trigger"]')?.getAttribute('aria-label')).toBe('右')
+  })
+
+  it('内建语言包整份交给 setXhConfig，切到另一份已挂载的元素跟着换，切回 enUS 即内建英文', async () => {
+    setXhConfig(zhCN)
+    const element = await mount(html)
+    const trigger = element.querySelector('[data-xh-part="close-trigger"]')
+    expect(trigger?.getAttribute('aria-label')).toBe('关闭')
+
+    setXhConfig(jaJP)
+    await element.updateComplete
+    await element.updateComplete
+    expect(trigger?.getAttribute('aria-label')).toBe('閉じる')
+
+    setXhConfig(enUS)
+    await element.updateComplete
+    await element.updateComplete
+    expect(trigger?.getAttribute('aria-label')).toBe('Close')
   })
 
   it('切语言时已挂载的元素跟着重渲', async () => {

@@ -11,6 +11,7 @@ import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { XhConfigProvider, XhDialogCloseTrigger, XhDialogContent, XhDialogRoot, XhSelectRoot } from '../src'
+import { koKR } from '../src/locale'
 
 let host: HTMLElement | null = null
 let root: ReturnType<typeof createRoot> | null = null
@@ -60,6 +61,17 @@ describe('全局配置到达机器', () => {
       </XhConfigProvider>,
     )
     expect(closeLabel()).toBe('实例说了算')
+  })
+
+  it('内建语言包整份交给 Provider：文案与 locale 一起到达', () => {
+    mount(
+      <XhConfigProvider config={koKR}>
+        <XhDialogRoot defaultOpen>
+          <XhDialogContent><XhDialogCloseTrigger /></XhDialogContent>
+        </XhDialogRoot>
+      </XhConfigProvider>,
+    )
+    expect(closeLabel()).toBe('닫기')
   })
 
   it('没套 Provider 时回落内建文案', () => {
