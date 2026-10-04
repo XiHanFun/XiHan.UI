@@ -62,6 +62,43 @@ afterEach(() => {
 })
 
 describe('react Portal 的局部视觉环境', () => {
+  it('关着的浮层不建桥；展开的那次提交里绘制前桥接，收起后撤掉', async () => {
+    const scope = document.createElement('section')
+    scope.setAttribute('data-theme', 'dark')
+    document.body.append(scope)
+    function Demo({ open }: { open: boolean }): ReactNode {
+      return (
+        <XhPopoverRoot open={open}>
+          <XhPopoverTrigger>打开</XhPopoverTrigger>
+          <XhPopoverPositioner>
+            <XhPopoverContent><span data-testid="lazy">内容</span></XhPopoverContent>
+          </XhPopoverPositioner>
+        </XhPopoverRoot>
+      )
+    }
+    mount(<Demo open={false} />, scope)
+    const shell = document.querySelector('[data-testid="lazy"]')!.closest<HTMLElement>('[data-xh-portal-shell]')!
+    expect(shell.hasAttribute('data-theme')).toBe(false)
+
+    act(() => root!.render(<Demo open />))
+    expect(shell.getAttribute('data-theme')).toBe('dark')
+
+    act(() => root!.render(<Demo open={false} />))
+    await settleMutations()
+    expect(shell.hasAttribute('data-theme')).toBe(false)
+  })
+
+  it('present 为假的落点不建桥，转为真时补建', () => {
+    const scope = document.createElement('section')
+    scope.setAttribute('data-density', 'compact')
+    document.body.append(scope)
+    mount(<XhPortal present={false}><span data-testid="bare">内容</span></XhPortal>, scope)
+    const shell = shellOf('bare')
+    expect(shell.hasAttribute('data-density')).toBe(false)
+    act(() => root!.render(<XhPortal present><span data-testid="bare">内容</span></XhPortal>))
+    expect(shell.getAttribute('data-density')).toBe('compact')
+  })
+
   it('provider 的单一八轴设置经来源 scope 桥接到实例壳', async () => {
     const scope = document.createElement('section')
     scope.style.setProperty('--business-color', 'rebeccapurple')

@@ -325,7 +325,7 @@ export function XhTimeRangePickerPositioner({ children, container, ...rest }: Xh
     props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
   })
   return (
-    <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

@@ -146,7 +146,7 @@ export const XhMenuPositioner = /* @__PURE__ */ defineComponent({
     // 条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；浮层里的条子走 4px 档
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef }, () => [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {
         ...mergeVueProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },

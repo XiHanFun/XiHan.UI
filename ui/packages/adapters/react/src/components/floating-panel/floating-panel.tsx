@@ -145,7 +145,7 @@ export interface XhFloatingPanelPositionerProps extends ComponentPropsWithRef<'d
 export function XhFloatingPanelPositioner({ children, container, ...rest }: XhFloatingPanelPositionerProps): ReactNode {
   const ctx = useFloatingPanelContext()
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} present={ctx.visible}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

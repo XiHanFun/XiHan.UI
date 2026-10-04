@@ -111,7 +111,7 @@ export const XhTourBackdrop = defineComponent({
   setup(_, { slots, attrs }) {
     const ctx = useTourContext()
     // 与浮层同去一个落点：遮罩留在原地就会被面板甩下，两层不再叠在一起
-    return () => h(XhPortal, { to: ctx.portalTarget.value }, () => [
+    return () => h(XhPortal, { to: ctx.portalTarget.value, present: ctx.visible.value }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getBackdropProps() as Record<string, unknown>, attrs),
         // 收起跟着退场闸门走：遮罩的淡出与气泡的退场并行播
@@ -129,7 +129,7 @@ export const XhTourSpotlight = defineComponent({
   setup(_, { attrs }) {
     const ctx = useTourContext()
     // 高亮框与遮罩是同一层暗幕的两半，必须一起搬
-    return () => h(XhPortal, { to: ctx.portalTarget.value }, () => [
+    return () => h(XhPortal, { to: ctx.portalTarget.value, present: ctx.visible.value }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getSpotlightProps() as Record<string, unknown>, attrs),
         // 收起跟着退场闸门走：高亮框的退场与气泡并行播；居中步照常不画
@@ -147,7 +147,7 @@ export const XhTourPositioner = defineComponent({
   setup(_, { slots, attrs }) {
     const ctx = useTourContext()
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(XhPortal, { to: ctx.portalTarget.value }, () => [
+    return () => h(XhPortal, { to: ctx.portalTarget.value, present: ctx.visible.value }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         // 定位层收起跟着退场闸门走：它先 display:none 的话，里面气泡的退场一帧都播不出来

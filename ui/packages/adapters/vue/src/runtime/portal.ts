@@ -23,6 +23,12 @@ export const XhPortal = defineComponent({
     disabled: Boolean,
     /** 已有锚点时直接作为逻辑来源，避免在结构敏感的 ButtonGroup/Toolbar 里增加元素标记。 */
     source: { type: Object as PropType<Readonly<Ref<HTMLElement | null>>>, default: undefined },
+    /**
+     * 浮层此刻是否呈现（展开中，或退场动画还没播完）。为假时不建视觉桥：关着的浮层壳里只有藏起来的
+     * 内容，而每台桥都要在来源整条祖先链上挂观察、建时读一遍计算样式，页面上几十个关着的提示与下拉
+     * 白付这笔账，缓存页一进一出还要各重算一遍。缺省为真：常显、或展开才渲染的落点照旧随挂载建桥。
+     */
+    present: { type: Boolean, default: true },
   },
   setup(props, { slots }) {
     // 浮层内容搬到落点后不再是外层字段的控件：放在里面的输入框不被外层字段命名、描述，也不拿同一个 id。
@@ -37,12 +43,15 @@ export const XhPortal = defineComponent({
       bridge = null
       const source = props.source?.value ?? sourceRef.value
       const shell = shellRef.value
-      if (!source || !shell)
+      if (!source || !shell || !props.present)
         return
       bridge = createPortalVisualBridge({ source, shell })
     }
 
     watch([sourceRef, shellRef, () => props.source?.value, () => props.to, () => props.disabled], connect, { flush: 'post' })
+    // 来源与壳在挂载时就已就位，转为呈现时赶在本轮渲染之前建桥：内容第一次排版、定位引擎第一次
+    // 量尺寸时，壳上已经是来源的环境（密度、方向、主题），不会先按落点的环境量一遍再跳
+    watch(() => props.present, connect, { flush: 'pre' })
     onBeforeUnmount(() => {
       bridge?.dispose()
       bridge = null

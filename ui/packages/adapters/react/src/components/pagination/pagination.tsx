@@ -312,7 +312,7 @@ export function XhPaginationPageSizeSelect({ container, ...rest }: XhPaginationP
           </div>
         </div>
       </div>
-      <XhPortal container={container ?? ctx.portalContainer} source={ctx.pageSizeTriggerRef}>
+      <XhPortal container={container ?? ctx.portalContainer} source={ctx.pageSizeTriggerRef} present={ctx.pageSizeVisible}>
         <div
           {...mergeReactProps(
             select.getPositionerProps() as Record<string, unknown>,
@@ -352,7 +352,7 @@ export function XhPaginationPositioner({ children, container, ...rest }: XhPagin
   // 浮层里的条子走 4px 档
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
-    <XhPortal container={container ?? ctx.portalContainer} source={ctx.rootRef}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.rootRef} present={ctx.visible}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

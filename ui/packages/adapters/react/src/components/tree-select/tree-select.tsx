@@ -421,7 +421,7 @@ export function XhTreeSelectPositioner({ children, container, ...rest }: XhTreeS
     props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
   })
   return (
-    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

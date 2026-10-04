@@ -306,7 +306,7 @@ export const XhTimePickerPositioner = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useTimePickerContext()
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.controlRef }, () => [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.controlRef, present: ctx.visible.value }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
