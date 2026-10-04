@@ -22,7 +22,7 @@
 
 import type { PortalVisualIndex } from './portal-visual-index'
 import { isShadowRoot } from '../guards'
-import { portalVisualIndex } from './portal-visual-index'
+import { collectReferences, portalVisualIndex } from './portal-visual-index'
 
 const VISUAL_AXES = [
   'data-theme',
@@ -444,6 +444,97 @@ function classTokens(value: string | null): Set<string> {
   return tokens
 }
 
+const scratches = new WeakMap<Document, CSSStyleDeclaration>()
+
+/** inline 样式串的解析借一张不挂进文档的声明表，不自己切字符串；按文档各留一张反复用。 */
+function scratchStyle(doc: Document): CSSStyleDeclaration {
+  let style = scratches.get(doc)
+  if (!style) {
+    style = doc.createElement('div').style
+    scratches.set(doc, style)
+  }
+  return style
+}
+
+/** 一段 inline 样式串里的自定义属性：名字 → 值连同优先级。 */
+function inlineCustomProperties(doc: Document, text: string | null): Map<string, string> {
+  const values = new Map<string, string>()
+  if (!text || !text.includes('--'))
+    return values
+  const style = scratchStyle(doc)
+  style.cssText = text
+  for (let index = 0; index < style.length; index++) {
+    const name = style.item(index)
+    if (name.startsWith('--'))
+      values.set(name, `${style.getPropertyValue(name)}!${style.getPropertyPriority(name)}`)
+  }
+  style.cssText = ''
+  return values
+}
+
+/** 一次 style 变更前后，值或优先级变了的自定义属性名；只改了普通属性时为空。 */
+function changedCustomProperties(doc: Document, record: MutationRecord): string[] {
+  const before = inlineCustomProperties(doc, record.oldValue)
+  const after = inlineCustomProperties(doc, (record.target as Element).getAttribute('style'))
+  const changed: string[] = []
+  for (const [name, value] of after) {
+    if (before.get(name) !== value)
+      changed.push(name)
+  }
+  for (const name of before.keys()) {
+    if (!after.has(name))
+      changed.push(name)
+  }
+  return changed
+}
+
+/**
+ * 链上公共祖先以下（来源一侧独有）那几层 inline 声明的、以及经 var() 引用的自定义属性名。
+ * 祖先链从来源往上走，碰到第一个也包着壳的节点，往上就全是公共祖先了。
+ */
+function sourceSideInlineNames(chain: AncestorChain, shell: Element): Set<string> {
+  const names = new Set<string>()
+  for (const element of chain.elements) {
+    if (element.contains(shell))
+      break
+    const style = styleOf(element)
+    if (!style)
+      continue
+    for (let index = 0; index < style.length; index++) {
+      const name = style.item(index)
+      if (!name.startsWith('--'))
+        continue
+      names.add(name)
+      collectReferences(style.getPropertyValue(name), names)
+    }
+  }
+  return names
+}
+
+interface ChangeScope {
+  readonly doc: Document
+  readonly chain: AncestorChain
+  readonly shell: Element
+  /** 链穿过 ShadowRoot 时为 null：文档索引看不到影子树里的样式表。 */
+  readonly index: PortalVisualIndex | null
+  /** 见 sourceSideInlineNames。 */
+  readonly sourceSide: ReadonlySet<string>
+}
+
+/**
+ * 改动落在壳也继承得到的公共祖先上（文档根、body 之类）时，被改的名字来源与壳各自继承到
+ * 同一个新值，两侧不会分叉，不必重算。三种名字例外：样式表在壳复现不出来的位置声明过的
+ * （来源那侧被就近声明盖住、壳那侧却跟着变）、这些声明经 var() 引用的（派生值只在来源那侧
+ * 重算）、来源一侧独有的那几层 inline 声明或引用的。样式表读不全或链穿过影子根时判不准，照旧重算。
+ */
+function inheritedAlike(target: Node, changed: readonly string[], scope: ChangeScope): boolean {
+  const { index } = scope
+  if (!index?.names || !index.references || !target.contains(scope.shell))
+    return false
+  const { names, references } = index
+  return changed.every(name => !names.has(name) && !references.has(name) && !scope.sourceSide.has(name))
+}
+
 /** 这次 class 变更增删的名字里，有没有出现在声明了自定义属性的选择器里的。 */
 function changedClassDeclares(record: MutationRecord, classes: ReadonlySet<string>): boolean {
   const before = classTokens(record.oldValue)
@@ -463,22 +554,25 @@ function changedClassDeclares(record: MutationRecord, classes: ReadonlySet<strin
  * 一批变更记录里是否有会改变来源视觉环境的那种。
  *
  * - 视觉轴、语气与 slot 的属性变化一律算。
- * - inline 样式只在前后任一侧含自定义属性时才算：body 滚动锁定写的 overflow / padding、
- *   定位引擎写的 transform 都落在链上，但改不了任何自定义属性。
+ * - inline 样式只在有自定义属性的值或优先级真的变了时才算：body 滚动锁定写的 overflow / padding、
+ *   定位引擎写的 transform 都落在链上，但改不了任何自定义属性；文档根上早就挂着一串应用主题变量时，
+ *   旁的属性改动也不该把它们当成变化。变了的若落在公共祖先上且两侧各自继承得到，同样不算
+ *   （见 inheritedAlike）：滚动锁定往文档根写的 --xh-scroll-lock-gutter 就是这种。
  * - class 只在增删的名字出现在「声明了自定义属性的选择器」里时才算：页面级过渡类、
  *   展开态与加载态每帧都在链上增删 class，它们与自定义属性无关。判不准时照旧重算。
  * - childList 只在摘掉或挂入链上节点时才算换父：焦点护栏插进 body、触发器换文本都不是。
  */
-function affectsVisualEnvironment(records: MutationRecord[], chain: AncestorChain, classes: ReadonlySet<string> | null): boolean {
+function affectsVisualEnvironment(records: MutationRecord[], scope: ChangeScope): boolean {
+  const classes = scope.index ? scope.index.classes : null
   for (const record of records) {
     if (record.type === 'childList') {
-      if (touchesChain(record.removedNodes, chain.nodes) || touchesChain(record.addedNodes, chain.nodes))
+      if (touchesChain(record.removedNodes, scope.chain.nodes) || touchesChain(record.addedNodes, scope.chain.nodes))
         return true
       continue
     }
     if (record.attributeName === 'style') {
-      const target = record.target as Element
-      if ((record.oldValue ?? '').includes('--') || (target.getAttribute('style') ?? '').includes('--'))
+      const changed = changedCustomProperties(scope.doc, record)
+      if (changed.length && !inheritedAlike(record.target, changed, scope))
         return true
       continue
     }
@@ -517,6 +611,7 @@ export function createPortalVisualBridge(options: PortalVisualBridgeOptions): Po
   let initialCustom = new Map<string, CustomPropertySnapshot>()
   let appliedCustom = new Set<string>()
   let observed: AncestorChain = { elements: [], slots: [], observations: [], nodes: new Set(), crossesShadowRoot: true }
+  let sourceSide = new Set<string>()
   let attachedSlots: HTMLSlotElement[] = []
   let disposed = false
   let syncing = false
@@ -526,8 +621,8 @@ export function createPortalVisualBridge(options: PortalVisualBridgeOptions): Po
     if (disposed)
       return
     const batch = openBatch(doc)
-    const classes = observed.crossesShadowRoot ? null : indexOf(batch).classes
-    if (affectsVisualEnvironment(records, observed, classes))
+    const index = observed.crossesShadowRoot ? null : indexOf(batch)
+    if (affectsVisualEnvironment(records, { doc, chain: observed, shell, index, sourceSide }))
       runSync(batch)
   })
   const onSlotChange = (): void => runSync(openBatch(doc))
@@ -548,6 +643,15 @@ export function createPortalVisualBridge(options: PortalVisualBridgeOptions): Po
   function syncOnce(context: SyncContext): void {
     if (source.ownerDocument !== doc || shell.ownerDocument !== doc)
       throw new Error('[xh] Portal 视觉环境同步期间来源或实例壳切换了 Document')
+    // 来源被摘下文档（缓存页离开时整块搬进缓存容器、整段节点暂时移走）：计算样式读不到东西，
+    // 照算只会把壳上的环境清空、挂回来再整套写回，缓存页一进一出就是页内每台桥各算两遍。
+    // 这里只把观察挪到摘下后的那条链上，壳原样不动；挂回文档时链顶那次换父记录触发正常重算
+    if (!source.isConnected) {
+      const detached = chainOf(source)
+      observe(detached)
+      observed = detached
+      return
+    }
     const before = snapshotAttributes(shell)
     const chain = chainOf(source)
     const nextCustom = projectedCustomProperties(chain, shell, context)
@@ -561,6 +665,7 @@ export function createPortalVisualBridge(options: PortalVisualBridgeOptions): Po
         invalidateParents(context, shell)
       observe(chain)
       observed = chain
+      sourceSide = sourceSideInlineNames(chain, shell)
     }
     catch (error) {
       const rollbackErrors: unknown[] = []

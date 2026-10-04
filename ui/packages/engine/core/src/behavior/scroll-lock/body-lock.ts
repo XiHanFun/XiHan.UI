@@ -191,7 +191,12 @@ function createEpoch(target: LockTarget, doc: Document, win: Window & typeof glo
     setOwnedStyle(cleanups, el.style, 'overflow', 'hidden')
     if (gutter > 0)
       setOwnedStyle(cleanups, el.style, 'padding-inline-end', `${padding + gutter}px`)
-    setOwnedStyle(cleanups, doc.documentElement.style, GUTTER_VAR, `${gutter}px`)
+    // 文档根上的自定义属性一变，整份文档的元素都要重算样式（大页面几十毫秒），加锁、解锁各一次。
+    // 没让出宽度、根上也没有这个变量时什么都不写：消费方本就要带 0px 回退值（锁外它同样不存在），
+    // 写个 0px 进去观感一样、却白付两次整页重算。根上已有业务写的值时照常覆盖成本轮的宽度，释放时还原
+    const rootStyle = doc.documentElement.style
+    if (gutter > 0 || rootStyle.getPropertyValue(GUTTER_VAR))
+      setOwnedStyle(cleanups, rootStyle, GUTTER_VAR, `${gutter}px`)
   }
   catch (setupError) {
     throwWithCleanup(

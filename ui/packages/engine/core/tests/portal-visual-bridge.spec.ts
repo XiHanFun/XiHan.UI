@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createPortalVisualBridge } from '../src/kernel/structure/portal-visual-bridge'
 
 const AXES = ['data-theme', 'data-brand', 'data-density', 'data-contrast', 'data-motion', 'data-transparency', 'dir'] as const
@@ -271,15 +271,128 @@ describe('portal 视觉环境桥', () => {
     await settleMutations()
     expect(shell.style.getPropertyValue('--business-color')).toBe('second')
 
+    // 来源一侧独有的祖先（壳不在它下面）改自定义属性，壳继承不到，照旧重算
     style.textContent = '.portal-source { --business-color: third; } .tinted { --tint: 1; }'
-    document.body.style.setProperty('--other', '1')
+    source.parentElement!.style.setProperty('--other', '1')
     await settleMutations()
     expect(shell.style.getPropertyValue('--business-color')).toBe('third')
 
     bridge.dispose()
     style.remove()
-    document.body.style.removeProperty('--other')
     document.body.style.overflow = ''
+  })
+
+  it('来源被摘下文档期间不读计算样式、壳原样保留，挂回文档后照常重算', async () => {
+    const style = document.createElement('style')
+    style.textContent = '.portal-source { --business-color: first; }'
+    document.head.append(style)
+    const { outer, source, shell } = fixture()
+    source.className = 'portal-source'
+    outer.setAttribute('data-theme', 'dark')
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.getAttribute('data-theme')).toBe('dark')
+
+    // 缓存页离开：整块搬进一个不在文档里的容器
+    const storage = document.createElement('div')
+    const reads = vi.spyOn(window, 'getComputedStyle')
+    storage.append(outer)
+    await settleMutations()
+    // 批次上下文会顺手拿一份文档根的计算样式对象（只建对象不读值）；来源与壳父节点一份都不该读
+    expect(reads.mock.calls.filter(([el]) => el !== document.documentElement)).toEqual([])
+    expect(shell.getAttribute('data-theme')).toBe('dark')
+    expect(shell.style.getPropertyValue('--business-color')).toBe('first')
+    reads.mockRestore()
+
+    // 挂回来：容器那次换父记录触发重算，读到期间改过的样式
+    style.textContent = '.portal-source { --business-color: second; }'
+    document.body.prepend(outer)
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('second')
+
+    bridge.dispose()
+    style.remove()
+  })
+
+  it('公共祖先上没被别处声明或引用的自定义属性改动不触发重同步，滚动锁定的让位变量不拖动每台桥', async () => {
+    const root = document.documentElement
+    const style = document.createElement('style')
+    style.textContent = '.portal-source { --business-color: first; }'
+    document.head.append(style)
+    // 应用把主题变量写在文档根上：此后根上任何 style 变更的前后两侧都含自定义属性
+    root.style.setProperty('--app-primary', 'blue')
+    const { source, shell } = fixture()
+    source.className = 'portal-source'
+    const bridge = createPortalVisualBridge({ source, shell })
+    expect(shell.style.getPropertyValue('--business-color')).toBe('first')
+
+    style.textContent = '.portal-source { --business-color: second; }'
+    root.style.setProperty('--xh-scroll-lock-gutter', '15px', 'important')
+    root.style.fontSize = '90%'
+    document.body.style.setProperty('--other', '1')
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('first')
+
+    bridge.dispose()
+    style.remove()
+    root.removeAttribute('style')
+  })
+
+  it('公共祖先上改了样式表在别处声明过的名字照旧重算', async () => {
+    const root = document.documentElement
+    const style = document.createElement('style')
+    style.textContent = '.portal-source { --business-color: first; --tint: red; }'
+    document.head.append(style)
+    const { source, shell } = fixture()
+    source.className = 'portal-source'
+    const bridge = createPortalVisualBridge({ source, shell })
+
+    style.textContent = '.portal-source { --business-color: second; --tint: red; }'
+    root.style.setProperty('--tint', 'blue')
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('second')
+
+    bridge.dispose()
+    style.remove()
+    root.removeAttribute('style')
+  })
+
+  it('公共祖先上改了被别处声明经 var() 引用的名字照旧重算，派生值不停在旧值上', async () => {
+    const root = document.documentElement
+    const style = document.createElement('style')
+    style.textContent = '.portal-source { --business-color: first; --derived: calc(var(--gap) * 2); }'
+    document.head.append(style)
+    const { source, shell } = fixture()
+    source.className = 'portal-source'
+    const bridge = createPortalVisualBridge({ source, shell })
+
+    style.textContent = '.portal-source { --business-color: second; --derived: calc(var(--gap) * 2); }'
+    root.style.setProperty('--gap', '4px')
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('second')
+
+    bridge.dispose()
+    style.remove()
+    root.removeAttribute('style')
+  })
+
+  it('来源一侧独有的祖先 inline 引用了公共祖先上的名字时照旧重算', async () => {
+    const root = document.documentElement
+    const style = document.createElement('style')
+    style.textContent = '.portal-source { --business-color: first; }'
+    document.head.append(style)
+    const { inner, source, shell } = fixture()
+    source.className = 'portal-source'
+    inner.style.setProperty('--local', 'var(--from-root)')
+    const bridge = createPortalVisualBridge({ source, shell })
+
+    style.textContent = '.portal-source { --business-color: second; }'
+    root.style.setProperty('--from-root', '1')
+    await settleMutations()
+    expect(shell.style.getPropertyValue('--business-color')).toBe('second')
+
+    bridge.dispose()
+    style.remove()
+    root.removeAttribute('style')
   })
 
   it('祖先上与自定义属性无关的 class 增删不触发重同步，页面级过渡类不再拖动链下每台桥', async () => {

@@ -47,6 +47,8 @@ export const DIAGNOSTIC_CODES = {
   scrollbarMissingScrollable: 'scrollbar.missing-scrollable',
   /** 浮层展开了却没有锚点：坐标与触发区都缺席，位置无从算起。 */
   overlayMissingAnchor: 'overlay.missing-anchor',
+  /** 文档里有读不到规则的样式表（跨域且没以 CORS 加载）：Portal 视觉桥的样式索引整份作废，退回整表枚举与照旧重算。 */
+  portalUnreadableStylesheet: 'portal.unreadable-stylesheet',
   /** 图表没有可及名：caption 部件、aria-label、aria-labelledby 都没有。 */
   chartMissingName: 'chart.missing-name',
   /** 系列引用的字段在数据里不存在。 */
