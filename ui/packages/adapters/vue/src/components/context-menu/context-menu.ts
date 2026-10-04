@@ -179,7 +179,7 @@ export const XhContextMenuPositioner = defineComponent({
     // 浮层里的条子走 4px 档
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
-    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef }, () => [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {
         ...mergeVueProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },

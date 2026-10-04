@@ -69,6 +69,58 @@ afterEach(() => {
 })
 
 describe('vue Portal 的局部视觉环境', () => {
+  it('关着的浮层不建桥；展开时赶在内容露出前桥接，收起后撤掉', async () => {
+    const scope = document.createElement('section')
+    scope.setAttribute('data-theme', 'dark')
+    document.body.append(scope)
+    const open = ref(false)
+    await mount(() => h(XhPopoverRoot, { open: open.value }, () => [
+      h(XhPopoverTrigger, null, () => '打开'),
+      h(XhPopoverPositioner, null, () => [
+        h(XhPopoverContent, null, () => h('span', { 'data-testid': 'lazy' }, '内容')),
+      ]),
+    ]), scope)
+    const shell = shellOf('lazy')
+    const content = shell.querySelector<HTMLElement>('[data-scope="popover"][data-part="content"]')!
+    expect(content.hasAttribute('hidden')).toBe(true)
+    expect(shell.hasAttribute('data-theme')).toBe(false)
+
+    // 同一个观察器按发生顺序交付记录：壳先拿到来源的主题，内容才去掉 hidden
+    const order: string[] = []
+    const observer = new MutationObserver((records) => {
+      for (const record of records)
+        order.push(record.target === shell ? `shell:${shell.getAttribute('data-theme')}` : `content:${content.hasAttribute('hidden') ? 'hidden' : 'shown'}`)
+    })
+    observer.observe(shell, { attributes: true, attributeFilter: ['data-theme'] })
+    observer.observe(content, { attributes: true, attributeFilter: ['hidden'] })
+    open.value = true
+    await settleMutations()
+    await nextTick()
+    observer.disconnect()
+    expect(order[0]).toBe('shell:dark')
+    expect(order).toContain('content:shown')
+    expect(shell.getAttribute('data-theme')).toBe('dark')
+
+    open.value = false
+    await settleMutations()
+    await nextTick()
+    expect(content.hasAttribute('hidden')).toBe(true)
+    expect(shell.hasAttribute('data-theme')).toBe(false)
+  })
+
+  it('present 为假的落点不建桥，转为真时补建', async () => {
+    const scope = document.createElement('section')
+    scope.setAttribute('data-density', 'compact')
+    document.body.append(scope)
+    const present = ref(false)
+    await mount(() => h(XhPortal, { to: 'body', present: present.value }, () => h('span', { 'data-testid': 'bare' }, '内容')), scope)
+    const shell = shellOf('bare')
+    expect(shell.hasAttribute('data-density')).toBe(false)
+    present.value = true
+    await nextTick()
+    expect(shell.getAttribute('data-density')).toBe('compact')
+  })
+
   it('provideXhConfig 的单一八轴设置经来源 scope 桥接到实例壳', async () => {
     const scope = document.createElement('section')
     scope.style.setProperty('--business-color', 'rebeccapurple')

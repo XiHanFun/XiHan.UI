@@ -51,6 +51,12 @@ export interface XhPortalProps {
    * 开启后内容会被拆建一次，状态机放入的焦点会丢失。
    */
   deferUntilMounted?: boolean
+  /**
+   * 浮层此刻是否呈现（展开中，或退场动画还没播完）。为假时不建视觉桥：关着的浮层壳里只有藏起来的
+   * 内容，而每台桥都要在来源整条祖先链上挂观察、建时读一遍计算样式，页面上几十个关着的提示与下拉
+   * 白付这笔账，缓存页一进一出还要各重算一遍。缺省为真：常显、或展开才渲染的落点照旧随挂载建桥。
+   */
+  present?: boolean
   children?: ReactNode
 }
 
@@ -60,14 +66,15 @@ export interface XhPortalProps {
  * 服务端一律就地渲染：react-dom/server 不支持 createPortal，而首屏即展开的浮层
  * 必须直出展开态：正文既要能被索引也要能被读屏朗读，渲染为空占位等于丢失这一屏。
  */
-export function XhPortal({ container, source, deferUntilMounted, children }: XhPortalProps): ReactNode {
+export function XhPortal({ container, source, deferUntilMounted, present = true, children }: XhPortalProps): ReactNode {
   const target = usePortalTarget(container, deferUntilMounted)
-  return <PortalWithVisualBridge target={target} source={source}>{children}</PortalWithVisualBridge>
+  return <PortalWithVisualBridge target={target} source={source} present={present}>{children}</PortalWithVisualBridge>
 }
 
-function PortalWithVisualBridge({ target, source, children }: {
+function PortalWithVisualBridge({ target, source, present, children }: {
   target: Element | null
   source?: { readonly current: Element | null }
+  present: boolean
   children?: ReactNode
 }): ReactNode {
   const sourceRef = useRef<HTMLTemplateElement | null>(null)
@@ -96,11 +103,13 @@ function PortalWithVisualBridge({ target, source, children }: {
     if (sourceCommitProbe !== 0)
       setSourceCommitProbe(0)
     const current = bridgeRef.current
-    if (sourceNode && shell && current?.source === sourceNode && current.shell === shell)
+    if (present && sourceNode && shell && current?.source === sourceNode && current.shell === shell)
       return
     current?.dispose()
     bridgeRef.current = null
-    if (!sourceNode || !shell)
+    // 关着的浮层不建桥。转为呈现的那次提交里，本效应先于外层定位效应执行（子先于父），
+    // 定位引擎第一次量尺寸时壳上已经是来源的环境
+    if (!sourceNode || !shell || !present)
       return
     const bridge = createPortalVisualBridge({ source: sourceNode, shell })
     bridgeRef.current = { source: sourceNode, shell, dispose: bridge.dispose }

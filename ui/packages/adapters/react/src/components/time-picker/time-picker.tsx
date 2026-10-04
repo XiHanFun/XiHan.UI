@@ -357,7 +357,7 @@ export interface XhTimePickerPositionerProps extends ComponentPropsWithRef<'div'
 export function XhTimePickerPositioner({ children, container, ...rest }: XhTimePickerPositionerProps): ReactNode {
   const ctx = useTimePickerContext()
   return (
-    <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

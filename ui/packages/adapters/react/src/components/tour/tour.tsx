@@ -140,7 +140,7 @@ export function XhTourBackdrop({ children, ...rest }: XhTourBackdropProps): Reac
   const ctx = useTourContext()
   // 与浮层同去一个落点：遮罩留在原地就会被面板甩下，两层不再叠在一起
   return (
-    <XhPortal container={ctx.portalContainer}>
+    <XhPortal container={ctx.portalContainer} present={ctx.rendered}>
       <div
         {...mergeReactProps(
           ctx.api.getBackdropProps() as Record<string, unknown>,
@@ -163,7 +163,7 @@ export function XhTourSpotlight({ ...rest }: XhTourSpotlightProps): ReactNode {
   const ctx = useTourContext()
   // 高亮框与遮罩是同一层暗幕的两半，必须一起搬
   return (
-    <XhPortal container={ctx.portalContainer}>
+    <XhPortal container={ctx.portalContainer} present={ctx.rendered}>
       <div
         {...mergeReactProps(
           ctx.api.getSpotlightProps() as Record<string, unknown>,
@@ -184,7 +184,7 @@ export interface XhTourPositionerProps extends ComponentPropsWithRef<'div'> {}
 export function XhTourPositioner({ children, ...rest }: XhTourPositionerProps): ReactNode {
   const ctx = useTourContext()
   return (
-    <XhPortal container={ctx.portalContainer}>
+    <XhPortal container={ctx.portalContainer} present={ctx.rendered}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

@@ -201,7 +201,7 @@ export function XhContextMenuPositioner({ children, container, ...rest }: XhCont
   // 浮层里的条子走 4px 档
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
-    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

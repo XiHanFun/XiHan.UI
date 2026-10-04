@@ -368,6 +368,7 @@ export const XhDateRangePickerPositioner = defineComponent({
       return h(XhPortal, {
         to: target,
         source: ctx.controlRef,
+        present: ctx.visible.value,
         // SSR 与客户端首帧都还没有真实 root：保持同一原地结构，绑定 Scope 后再搬运。
         disabled: props.container == null && typeof target === 'string',
       }, () => [

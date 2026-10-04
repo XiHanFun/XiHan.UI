@@ -121,7 +121,7 @@ export const XhFloatingPanelPositioner = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useFloatingPanelContext()
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, present: ctx.visible.value }, () => [
       h(
         'div',
         {
