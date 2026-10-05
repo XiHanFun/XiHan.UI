@@ -25,6 +25,9 @@ import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environ
 import { notifyXhConfigChange } from '../config'
 import { XhReactiveElement } from '../reactive'
 
+/** 视觉环境轴：只写到节点上供 CSS 读，不进元素解析到的配置。 */
+const VISUAL_KEYS = new Set(['mode', 'brand', 'density', 'direction', 'contrast', 'motion', 'transparency', 'material'])
+
 // 属性缺席翻成 undefined：这一层「没说」，取值回落外层而不是清空。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
@@ -120,21 +123,26 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
       initial: this.visualPreference(),
     })
     // 进出文档改变的是子树里每个元素解析到的那条链，与改属性等价，同样要叫醒它们
-    notifyXhConfigChange()
+    notifyXhConfigChange(this)
   }
 
   override disconnectedCallback(): void {
     this._visualEnvironmentController?.dispose()
     this._visualEnvironmentController = undefined
     super.disconnectedCallback()
-    notifyXhConfigChange()
+    notifyXhConfigChange(this)
   }
 
-  /** 改了任一项都要让子树里已挂载的元素重算一遍。 */
+  /**
+   * 视觉轴（主题、密度、动效等）交给视觉环境控制器写到本层节点上、由 CSS 生效，元素解析到的配置里没有它们，
+   * 只改视觉轴时不叫醒子树；locale / size / 文案 / 落点这些配置项变了，才让子树里已挂载的元素重算一遍。
+   */
   protected override updated(changed: PropertyValues): void {
-    if (['mode', 'brand', 'density', 'direction', 'contrast', 'motion', 'transparency', 'material'].some(key => changed.has(key)))
+    const keys = [...changed.keys()].map(String)
+    if (keys.some(key => VISUAL_KEYS.has(key)))
       this._visualEnvironmentController?.setPreference(this.visualPreference())
-    notifyXhConfigChange()
+    if (keys.some(key => !VISUAL_KEYS.has(key)))
+      notifyXhConfigChange(this)
   }
 
   private visualPreference(): VisualEnvironmentPreference {

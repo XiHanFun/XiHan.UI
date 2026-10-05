@@ -131,7 +131,7 @@ export abstract class XhElement extends XhReactiveElement {
     super.connectedCallback()
     this.observeParts()
     // 配置一变就重铺：文案、locale、尺寸档都可能从全局或某个 <xh-config> 进来
-    this.stopConfigWatch ??= onXhConfigChange(() => this.requestUpdate())
+    this.stopConfigWatch ??= onXhConfigChange(() => this.requestUpdate(), this)
     // 重连（元素在 DOM 中被移动）时 controller 会重建机器，但重建前后状态相同、cell 不 bump 版本，
     // 于是不会自动排更新——wire 不再跑，角色节点上仍挂着指向已停机器的处理器（送事件会被静默丢弃，等于全是死的）。
     // 这里显式排一次；首帧与基类的初次更新合并，不多跑一帧
