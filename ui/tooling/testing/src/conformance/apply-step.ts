@@ -78,6 +78,8 @@ async function dispatchKey(ctx: ApplyContext, target: EventTarget, key: string, 
 }
 
 function checkSettle(ctx: ApplyContext, cond: SettleCondition): boolean {
+  if ('all' in cond)
+    return cond.all.every(c => checkSettle(ctx, c))
   if ('present' in cond)
     return findPartElement(ctx, cond.present) != null
   if ('absent' in cond)
@@ -93,8 +95,8 @@ function checkSettle(ctx: ApplyContext, cond: SettleCondition): boolean {
   return actual === cond.attr.value
 }
 
-/** 条件盯着哪个部件。 */
-function refOf(cond: SettleCondition): PartRef {
+/** 条件盯着哪个部件。组合条件由 describeSettle 拆开逐条报，不走这里。 */
+function refOf(cond: Exclude<SettleCondition, { all: unknown }>): PartRef {
   if ('present' in cond)
     return cond.present
   if ('absent' in cond)
@@ -114,6 +116,13 @@ function stateAttrs(el: Element): string {
 
 /** 超时那一刻的实况：同名部件有几个、盯的那个现在什么样、root 什么样。 */
 function describeSettle(ctx: ApplyContext, cond: SettleCondition): string {
+  // 组合条件只报还没成立的那几条
+  if ('all' in cond) {
+    return cond.all
+      .filter(c => !checkSettle(ctx, c))
+      .map(c => `未成立 ${JSON.stringify(c)}：${describeSettle(ctx, c)}`)
+      .join('\n')
+  }
   const { part, index } = parseRef(refOf(cond))
   const els = ctx.doc.querySelectorAll<HTMLElement>(
     `[data-scope="${ctx.component}"][data-part="${part}"]`,
