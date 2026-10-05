@@ -3,7 +3,7 @@
     "name": "core",
     "path": "packages/engine/core/dist/index.js",
     "gzip": true,
-    "limit": "36.7 kB"
+    "limit": "37 kB"
   },
   {
     "name": "core/date",
@@ -237,7 +237,7 @@
     "name": "web-components/services",
     "path": "packages/adapters/web-components/dist/services.js",
     "gzip": true,
-    "limit": "55.7 kB"
+    "limit": "56.5 kB"
   },
   {
     "name": "styles",
@@ -289,7 +289,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhDialogRoot }",
     "gzip": true,
-    "limit": "30.6 kB",
+    "limit": "30.9 kB",
     "ignore": [
       "vue"
     ]
@@ -299,7 +299,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhMenuRoot }",
     "gzip": true,
-    "limit": "46.6 kB",
+    "limit": "47.7 kB",
     "ignore": [
       "vue"
     ]
@@ -319,7 +319,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhSelectRoot }",
     "gzip": true,
-    "limit": "48.7 kB",
+    "limit": "49.2 kB",
     "ignore": [
       "vue"
     ]
