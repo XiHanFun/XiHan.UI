@@ -55,6 +55,8 @@ export function connectSelect<T extends PropTypes>(
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
   const indexOf = new Map(collection.map((meta, index) => [meta.value, index]))
   const virtualizer = prop('virtualizer')
+  // lazyMount 下第一次展开之前列表内容不在 DOM 里：收起态连打与选中文字都只能按 collection 算
+  const contentMounted = !prop('lazyMount') || context.get('opened')
   assertCollectionVirtualizer('Select', virtualizer, collection.length, prop('collection') != null)
 
   // 给了 collection 就当场按数据算，首帧即准；没给才读机器现查 DOM 后回填的那一份。
@@ -140,9 +142,8 @@ export function connectSelect<T extends PropTypes>(
     })
   }
 
-  const matchVirtual = (query: string, from: string | null): { index: number, value: string } | null => {
-    if (!virtualizer)
-      return null
+  /** 按 collection 数据连打检索：虚拟列表恒走这条；lazyMount 下列表还没挂上时收起态连打也走这条。 */
+  const matchCollection = (query: string, from: string | null): { index: number, value: string } | null => {
     return virtualCollectionMatch(collection, from, query, {
       value: item => item.value,
       text: item => item.label,
@@ -293,8 +294,8 @@ export function connectSelect<T extends PropTypes>(
         const query = isTypeaheadEvent(event) ? refs.get('typeahead').push(event.key) : null
         if (query != null) {
           event.preventDefault()
-          const next = virtualizer
-            ? matchVirtual(query, value.at(-1) ?? null)?.value ?? null
+          const next = virtualizer || !contentMounted
+            ? matchCollection(query, value.at(-1) ?? null)?.value ?? null
             : itemValue(match(query, value.at(-1) ?? null))
           if (next != null && interactive)
             send({ type: 'VALUE.SET', value: multiple ? (value.includes(next) ? value : [...value, next]) : [next] })
@@ -417,6 +418,7 @@ export function connectSelect<T extends PropTypes>(
     // 浮层的外壳：描边、底色、阴影画在它身上，键盘也在它上面收口（条目只管声明自己）。
     // 列表框语义与滚动都归 list——底部操作区要留在滚动之外，且 listbox 里不能塞按钮。
     // Escape 归消解层管，只有栈顶层响应。
+    isContentMounted: () => contentMounted,
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
       // 锚定瞬态浮层的内容面：皮肤按材质家族配方画 frosted 四件套与 1px 顶光
@@ -457,7 +459,7 @@ export function connectSelect<T extends PropTypes>(
         if (query != null) {
           event.preventDefault()
           if (virtualizer) {
-            const target = matchVirtual(query, highlighted)
+            const target = matchCollection(query, highlighted)
             if (target) {
               send({ type: 'ITEM.HIGHLIGHT', value: target.value })
               virtualizer.focusIndex(target.index, { align: 'auto', selector: itemQuerySelector(selectItemQuery) })

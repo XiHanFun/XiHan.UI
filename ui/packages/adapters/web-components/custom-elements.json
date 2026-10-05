@@ -56117,6 +56117,15 @@
             },
             {
               "kind": "field",
+              "name": "lazyMount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -56410,6 +56419,14 @@
               "readonly": true,
               "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('list'), props: () => ({ size: 'sm' }), })",
               "description": "列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，滚动层是 list，条子走浮层 4px 档"
+            },
+            {
+              "kind": "field",
+              "name": "lazyList",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LazyContent({ stash: false })",
+              "description": "list 里 `<template>` 写的条目按 headless 的判定克隆进来；没写模板的作者节点照旧常驻"
             },
             {
               "kind": "field",
@@ -56858,6 +56875,14 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "列表内容第一次展开时才挂载：条目写在 list 里的一个 `<template>` 中时，第一次展开才克隆、之后常驻；打开前的选中文字与收起态连打按 collection 算",
+              "name": "lazy-mount",
+              "fieldName": "lazyMount"
             }
           ],
           "superclass": {
