@@ -1,4 +1,4 @@
-import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, SettleCondition, StepWithExpect } from '../conformance/types'
 import { scrollAreaAnatomy, scrollAreaKeyboard } from '@xihan-ui/headless'
 
 // 自绘滚动条没有 APG 模式可依：可达性的落点是"原生滚动一点都别接管"，
@@ -74,6 +74,17 @@ const layoutStep: StepWithExpect = {
   kind: 'raw',
   why: 'jsdom 不做布局，四个尺寸恒是 0，不桩尺寸就永远量不出溢出，滚动条一条也显不出来',
   run: ({ doc }) => layout(doc),
+}
+
+/**
+ * 两条滚动条都收起。每条轴各有一台机器、各起一个收起倒计时，两个倒计时前后差一点点到点；
+ * 只等其中一条，轮询可能正好落在两者之间，拍下的那一帧另一条还露着。
+ */
+const bothBarsHidden: SettleCondition = {
+  all: [
+    { attr: { part: 'scrollbar[0]', name: 'data-state', value: 'hidden' } },
+    { attr: { part: 'scrollbar[1]', name: 'data-state', value: 'hidden' } },
+  ],
 }
 
 /** 指针进出没有对应的声明式步骤：这两个事件不冒泡，机器把它们挂在视口与挂载点上。 */
@@ -312,7 +323,7 @@ export const scrollAreaSuite: ConformanceSuite = {
         },
         {
           kind: 'settle',
-          until: { attr: { part: 'scrollbar[0]', name: 'data-state', value: 'hidden' } },
+          until: bothBarsHidden,
         },
       ],
       expect: { parts: { 'scrollbar[0]': { 'data-state': 'hidden', 'data-gutter': '' } } },
@@ -346,7 +357,7 @@ export const scrollAreaSuite: ConformanceSuite = {
         },
         {
           kind: 'settle',
-          until: { attr: { part: 'scrollbar[0]', name: 'data-state', value: 'hidden' } },
+          until: bothBarsHidden,
         },
         {
           ...pointerOnViewport('pointerenter'),
@@ -365,7 +376,7 @@ export const scrollAreaSuite: ConformanceSuite = {
         },
         {
           kind: 'settle',
-          until: { attr: { part: 'scrollbar[0]', name: 'data-state', value: 'hidden' } },
+          until: bothBarsHidden,
         },
       ],
     },

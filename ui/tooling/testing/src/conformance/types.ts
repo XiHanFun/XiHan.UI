@@ -115,6 +115,8 @@ export type SettleCondition
     | { readonly present: PartRef }
     | { readonly absent: PartRef }
     | { readonly activeElement: PartRef }
+    /** 几条同时成立才算到点：终态落在多个部件上、它们又各自计时时，只等其中一个会停在半路。 */
+    | { readonly all: readonly SettleCondition[] }
 
 export interface RawStepContext {
   readonly root: HTMLElement
