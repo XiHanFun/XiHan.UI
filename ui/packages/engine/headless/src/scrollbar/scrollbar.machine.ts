@@ -10,6 +10,7 @@ import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
 import type { ScrollbarLayerBox, ScrollbarSchema, ScrollbarType } from './scrollbar.types'
 import { DIAGNOSTIC_CODES, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
+import { watchCoarsePointer } from '../shared/coarse-pointer'
 import { clamp } from '../shared/number'
 import {
   maxScrollOffset,
@@ -529,7 +530,13 @@ export const scrollbarMachine = createMachine({
           detach = attach(next)
           context.set('scrollableId', next.id || null)
           syncMark()
-          send({ type: 'MEASURE' })
+          // 首次测量排进微任务：同一批挂载的轴先全部挂完、打完标记，再集中读尺寸。
+          // 页面上几百条轴（关着的下拉、选择器里各有一条）同时挂载时，逐条「写标记—读尺寸」会把
+          // 布局强制刷几百遍；排到微任务里，写全在读之前，整批只排一次布局，量的时机仍在同一拍
+          queueMicrotask(() => {
+            if (!disposed && attached === next)
+              send({ type: 'MEASURE' })
+          })
         }
 
         flush(sync)
@@ -557,17 +564,9 @@ export const scrollbarMachine = createMachine({
         }
       },
 
-      /** 触屏（粗指针）上默认交给原生滚动；外接鼠标等设备切换时跟着变。 */
-      trackPointerType: ({ scope, context }) => {
-        const win = scope.getWin()
-        if (typeof win.matchMedia !== 'function')
-          return undefined
-        const query = win.matchMedia('(pointer: coarse)')
-        const sync = (): void => context.set('coarse', query.matches)
-        sync()
-        query.addEventListener('change', sync)
-        return () => query.removeEventListener('change', sync)
-      },
+      /** 触屏（粗指针）上默认交给原生滚动；外接鼠标等设备切换时跟着变。媒体查询全窗口共用一份 */
+      trackPointerType: ({ scope, context }) =>
+        watchCoarsePointer(scope.getWin(), coarse => context.set('coarse', coarse)) ?? undefined,
 
       waitForHideDelay: ({ prop, send }) => {
         const delay = resolveHideDelay(prop('hideDelay'))
