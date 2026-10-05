@@ -301,7 +301,8 @@ export const XhSideNavBranchContent = defineComponent({
         hidden,
         ref: (el: unknown) => { panelRef.value = el as HTMLElement | null },
       }, slots.default?.())
-      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
+      // 关着的弹出面板不建视觉桥：折叠态下每个分支各有一个定位层
+      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value, present: visible.value }, () => [
         h('div', {
           ...ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>,
           hidden,
@@ -359,7 +360,7 @@ export const XhSideNavTooltip = defineComponent({
         ctx.tooltip.value = null
     })
     const api = computed(() => connectSideNav(ctx.service, vueNormalize, hint))
-    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, present: visible.value }, () => [
       h('div', {
         ...api.value.getTooltipPositionerProps() as Record<string, unknown>,
         ref: (el: unknown) => { positionerRef.value = el as HTMLElement | null },

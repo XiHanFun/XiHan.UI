@@ -209,13 +209,15 @@ export const XhMenubarPositioner = defineComponent({
     const menu = computed<MenubarContentProps>(() => ({ value: props.value }))
     // 供内部 content 继承 value，并把它的内容节点写回来给自绘条
     const contentRef = ref<HTMLElement | null>(null)
-    provideMenubarMenu({ menu, contentRef })
+    const visible = ref(false)
+    provideMenubarMenu({ menu, contentRef, visible })
     const setEl = useMenubarPart(ctx.registerPositioner, () => props.value)
     // 这张菜单的条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；
     // 一张菜单一套，浮层里的条子走 4px 档
     const bars = useScrollbars({ scrollable: () => contentRef.value, props: { size: 'sm' } })
     // 每张菜单各搬各的定位层到 portal 落点，逃开祖先的层叠上下文
-    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.rootRef }, () => [
+    // 关着的菜单不建视觉桥：菜单栏上每一项各有一个定位层，几项就是几台挂在祖先链上的观察
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.rootRef, present: visible.value }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps(menu.value) as Record<string, unknown>, attrs),
         ref: (el: unknown) => setEl(el as HTMLElement | null),
@@ -267,6 +269,15 @@ export const XhMenubarContent = defineComponent({
           sendPresence({ type: 'PRESENCE.SET', value: previousValue, presence: previous, connected: false })
       },
     })
+    // 呈现与否同步写回外层 positioner：同一轮刷新里它就按新值建桥或撤桥
+    if (inherited) {
+      watch(visible, (next) => {
+        inherited.visible.value = next
+      }, { flush: 'sync', immediate: true })
+      onBeforeUnmount(() => {
+        inherited.visible.value = false
+      })
+    }
     return () => h('div', {
       ...ctx.api.value.getContentProps(menu.value) as Record<string, unknown>,
       // 收起跟着闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场就一帧都

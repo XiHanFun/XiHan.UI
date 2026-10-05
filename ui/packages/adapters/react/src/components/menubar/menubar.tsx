@@ -13,7 +13,7 @@ import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import type { MenubarPartRegistry } from './use-menubar'
 import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
-import { Fragment, useCallback, useEffect, useMemo, useRef } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
@@ -235,10 +235,13 @@ export function XhMenubarPositioner({ value, container, children, ...rest }: XhM
   // 壳是这层已经 fixed 的 positioner；一张菜单一套，浮层里的条子走 4px 档
   const contentRef = useRef<HTMLElement | null>(null)
   const bars = useScrollbars({ scrollable: () => contentRef.current, props: () => ({ size: 'sm' }) })
+  // 关着的菜单不建视觉桥：菜单栏上每一项各有一个定位层，几项就是几台挂在祖先链上的观察
+  const [present, setPresent] = useState(false)
+  const link = useMemo(() => ({ contentRef, setPresent }), [])
   return (
     <MenubarMenuProvider value={menu}>
-      <MenubarPositionerProvider value={contentRef}>
-        <XhPortal container={container ?? ctx.portalContainer} source={source}>
+      <MenubarPositionerProvider value={link}>
+        <XhPortal container={container ?? ctx.portalContainer} source={source} present={present}>
           <div
             {...mergeReactProps(
               ctx.api.getPositionerProps(menu) as Record<string, unknown>,
@@ -268,8 +271,8 @@ export function XhMenubarContent({ value, children, ...rest }: XhMenubarContentP
   const menu = useMemo<MenubarContentProps>(() => ({ value: own }), [own])
   const setEl = useMenubarPart(ctx.registerContent, own)
   const contentRef = useRef<HTMLElement | null>(null)
-  // 外层 positioner 按这个节点配自绘条
-  const positionerContentRef = useMenubarPositionerContext()
+  // 外层 positioner 按这个节点配自绘条、按呈现与否建视觉桥
+  const positioner = useMenubarPositionerContext()
   const presenceRef = useRef<PresenceHandle | null>(null)
   const presenceValueRef = useRef<string | null>(null)
   const sendPresence = (event: MenubarSchema['event']): void => {
@@ -299,6 +302,13 @@ export function XhMenubarContent({ value, children, ...rest }: XhMenubarContentP
         sendPresence({ type: 'PRESENCE.SET', value: previousValue, presence: previous, connected: false })
     },
   })
+  // 布局阶段写回：positioner 在绘制前跟着重渲一次，按新值建桥或撤桥
+  useIsomorphicLayoutEffect(() => {
+    if (!positioner)
+      return
+    positioner.setPresent(visible)
+    return () => positioner.setPresent(false)
+  }, [positioner, visible])
   return (
     <div
       {...mergeReactProps(
@@ -313,8 +323,8 @@ export function XhMenubarContent({ value, children, ...rest }: XhMenubarContentP
         {
           ref: (el: HTMLDivElement | null) => {
             contentRef.current = el
-            if (positionerContentRef)
-              positionerContentRef.current = el
+            if (positioner)
+              positioner.contentRef.current = el
           },
         },
       )}

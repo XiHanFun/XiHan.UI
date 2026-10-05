@@ -31,13 +31,20 @@ export function useMenubarMenuContext(): MenubarContentProps | null {
   return useContext(MenuCtx) ?? null
 }
 
-/** positioner 交给 content 的内容节点 ref：positioner 按它给这张菜单配自绘条，content 挂载后写回。 */
-const PositionerCtx = createContext<RefObject<HTMLElement | null> | undefined>(undefined)
+/** positioner 交给 content 的回写口：content 挂载后写回内容节点、退场闸门写回呈现与否。 */
+export interface MenubarPositionerLink {
+  /** 这张菜单的内容节点：positioner 按它配自绘条。 */
+  contentRef: RefObject<HTMLElement | null>
+  /** 这张菜单此刻是否呈现（展开中，或退场还没播完）：positioner 据此决定建不建视觉桥。 */
+  setPresent: (present: boolean) => void
+}
+
+const PositionerCtx = createContext<MenubarPositionerLink | undefined>(undefined)
 
 export const MenubarPositionerProvider = PositionerCtx
 
-/** 取外层 positioner 的内容节点 ref，不在 positioner 内时返回 null。 */
-export function useMenubarPositionerContext(): RefObject<HTMLElement | null> | null {
+/** 取外层 positioner 的回写口，不在 positioner 内时返回 null。 */
+export function useMenubarPositionerContext(): MenubarPositionerLink | null {
   return useContext(PositionerCtx) ?? null
 }
 
