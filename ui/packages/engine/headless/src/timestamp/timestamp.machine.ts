@@ -7,6 +7,7 @@
 
 import type { TimestampProps, TimestampSchema } from './timestamp.types'
 import { setup } from '@xihan-ui/core'
+import { watchInView, watchPageVisibility } from '../shared/view-watch'
 import { isTimestampTimeZone, timestampRefreshDelay, toTimeDate } from './timestamp.format'
 
 const { createMachine } = setup<TimestampSchema>()
@@ -43,6 +44,7 @@ export function timestampNextRefresh(prop: PropReader, now: number): number | nu
  * 两段状态：idle 不刷新，live 挂一个计时器到文字下一次会变的那一刻。到点只做一件事——
  * 取一次当前时刻写进 context，再重入 live 按新的距离重新定时。
  * 页面隐藏或元素离开视口时撤掉计时器，回来时立即取一次当前时刻：隐藏期间过去的时间一步补上。
+ * 可见性监听与视口观察器全页共用（见 shared/view-watch）：表格里几百个相对时间不再各挂一份。
  */
 export const timestampMachine = createMachine({
   name: 'timestamp',
@@ -105,8 +107,7 @@ export const timestampMachine = createMachine({
             timer = win.setTimeout(() => send({ type: 'TICK' }), delay)
         }
 
-        const onVisibility = (): void => {
-          const visible = doc.visibilityState !== 'hidden'
+        const stopVisibility = watchPageVisibility(doc, (visible) => {
           if (visible === pageVisible)
             return
           pageVisible = visible
@@ -114,35 +115,27 @@ export const timestampMachine = createMachine({
             disarm()
           else if (inView)
             send({ type: 'TICK' })
-        }
-        doc.addEventListener('visibilitychange', onVisibility)
+        })
 
-        // 视口：离开视口不再刷新，重回视口补刷一次。观察器建立时会先报一次当前状态，那一次只记下、不补刷
-        let observer: IntersectionObserver | undefined
+        // 视口：离开视口不再刷新，重回视口补刷一次。订阅后会先报一次当前状态，那一次只记下、不补刷
         const root = scope.getById(scope.partId('timestamp', 'root'))
-        const Observer = win.IntersectionObserver as typeof IntersectionObserver | undefined
-        if (root && Observer) {
-          observer = new Observer((entries) => {
-            const entry = entries[entries.length - 1]
-            if (!entry)
-              return
-            const visible = entry.isIntersecting
-            if (visible === inView)
-              return
-            inView = visible
-            if (!visible)
-              disarm()
-            else if (pageVisible)
-              send({ type: 'TICK' })
-          })
-          observer.observe(root)
-        }
+        const stopView = root
+          ? watchInView(win, root, (visible) => {
+              if (visible === inView)
+                return
+              inView = visible
+              if (!visible)
+                disarm()
+              else if (pageVisible)
+                send({ type: 'TICK' })
+            })
+          : null
 
         arm()
         return () => {
           disarm()
-          doc.removeEventListener('visibilitychange', onVisibility)
-          observer?.disconnect()
+          stopVisibility()
+          stopView?.()
         }
       },
     },
