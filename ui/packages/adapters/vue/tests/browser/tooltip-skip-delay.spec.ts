@@ -65,7 +65,9 @@ describe('tooltip 跳过延迟', () => {
   })
 
   it('刚关掉一个的窗口内指向下一个同样立即打开；窗口过后恢复等待', async () => {
-    await mount({ closeDelay: 0, skipDelayDuration: 300 })
+    // 窗口从收起那一刻起算，到指向下一个之间隔着「移开—等收起—再悬停」几次真指针往返；
+    // 负载重的 CI 上这几步能吃掉三百来毫秒，窗口给宽，量的才是接替本身而不是往返快慢
+    await mount({ closeDelay: 0, skipDelayDuration: 1500 })
     await userEvent.hover(trigger('保存'))
     await expect.poll(() => content('保存').dataset.state, { timeout: 2000 }).toBe('open')
     await userEvent.hover(document.body)
@@ -77,7 +79,7 @@ describe('tooltip 跳过延迟', () => {
     await expect.poll(() => content('撤销').dataset.state).toBe('closed')
 
     // 窗口过后：又得等 openDelay，也照常播进场
-    await new Promise(resolve => setTimeout(resolve, 450))
+    await new Promise(resolve => setTimeout(resolve, 1650))
     await userEvent.hover(trigger('重做'))
     await new Promise(resolve => setTimeout(resolve, 150))
     expect(content('重做').dataset.state).toBe('closed')
