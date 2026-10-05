@@ -1,5 +1,15 @@
 # @xihan-ui/code-highlight
 
+## 3.2.0
+
+### Patch Changes
+
+- Updated dependencies [a566f82]
+- Updated dependencies [3f54a40]
+- Updated dependencies [b33ae37]
+- Updated dependencies [831acc9]
+  - @xihan-ui/core@3.2.0
+
 ## 3.1.0
 
 ### Patch Changes

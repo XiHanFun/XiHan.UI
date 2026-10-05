@@ -1,5 +1,94 @@
 # @xihan-ui/react
 
+## 3.2.0
+
+### Minor Changes
+
+- 9b0a9d8: 新增十种常用语言的内建语言包：`zhCN`（简体中文）、`zhTW`（繁體中文）、`enUS`、`jaJP`、`koKR`、`frFR`、`deDE`、`esES`、`ptBR`、`ruRU`。
+
+  语言包放在新的 `locale` 子入口，四个包各一个：`@xihan-ui/headless/locale`、`@xihan-ui/vue/locale`、`@xihan-ui/react/locale`、`@xihan-ui/web-components/locale`，主入口体积不变，各语言是独立的具名导出，只打进用到的那几份。一份语言包就是一份全局配置 `{ locale, translations }`（类型 `XhLocale`），直接交给 `provideXhConfig` / `XhConfigProvider` / `setXhConfig`，日期时间类组件的 `locale` 随之一起切换；还要配别的项时展开合并，个别文案仍可在实例上覆盖。
+
+  语言包覆盖组件的每一条文案，含图表摘要、拖拽播报等函数式文案；`enUS` 与其余九份同形，也是组件没配语言包时用的那一份。没有缺省、或缺省取自实例内容的键（作者自写的可见文字与标签、条目自己的名字、`timestamp.justNow`）刻意不收，给了会改变行为。组件新增文案键时，各语言包在类型检查里一并报缺。
+
+- bd63fd4: 组件不再自带英文：界面文字一律取语言包，没配语言包时取英文语言包 `enUS`（现为与其余九份同形的完整语言包）。英文输出与此前逐字相同；新门禁 `check-builtin-text` 拦住把英文兜底写回组件或适配器。
+
+  原先写死、语言包管不到的文字一并收进 translations，九种语言同步补齐：
+
+  - Dialog 新增 `ok` / `cancel` / `actionError`：命令式对话框服务（三端 `createDialogService`）的确定、取消钮与动作失败提示。没传 `okText` / `cancelText` / `actionErrorText` 时取服务 `config`（自定义元素侧取宿主所在处的 `setXhConfig`）里的语言包，此前固定为 `OK` / `Cancel` / 英文失败提示。新增导出 `dialogServiceTranslations()`。
+  - Form 新增 `translations` 属性，`FormTranslations` 收进校验报错模板（`required`、`type`、`minLength` 等，形状同 `validateMessages`），三端接全局配置。取值顺序：规则的 `message` → `validateMessages` → `translations`（含全局语言包）→ 英文语言包。`runFieldRules` / `runFormRules` 签名不变。
+  - Kbd：`keyName` 有了缺省（读屏键名，按平台区分 Option / Alt、Command / Windows），新增 `keyLabel`（键帽字，Mac 用系统符号）。两者第二个参数是平台；`formatHotkey` 新增可选的第三个参数接收这两条，缺省取英文语言包。
+  - Citation 新增 `previewLinkSource` / `previewLinkDocument`（预览卡里打开来源的链接字），API 新增 `previewLinkText(item)` 与 `sourceMetaText(source)`；Vue / React 的缺省渲染改用它们，来源副文字里没有媒体类型的文档不再写死 `Document`，改取 `translations.document`。
+  - Mention 新增 `empty`（缺省空态文字），API 新增 `emptyText`，Vue / React 的缺省渲染改用它。
+
+  带英文缺省的公开常量（`CHART_TRANSLATIONS`、`CARTESIAN_TRANSLATIONS` 等七种图表的文案表、`HEATMAP_LEGEND_TEXT`、`SPINNER_DEFAULT_LABEL`、`DATE_SEGMENT_LABEL`、`DATE_FIELD_CLEAR_LABEL`、`default*Summary` 一类函数）名字与签名不变，值改为取自英文语言包。
+
+- 8b8d520: 浮在内容之上的圆钮（Action Control `floating` 档）整体下移一档：sm / md / lg 由 40 / 48 / 56px 改为 32 / 40 / 48px（compact 28 / 36 / 44px），图标 16 / 20 / 24px，缺省 md 即 40px。48px 的钮在矮视口与小卡片里会叠住内容与彼此（走马灯的翻页钮与播放钮、纵向轨道压住正文）。
+
+  视觉默认变化：BackTop、FloatButton（含展开列表里的动作项）缺省由 48px 变为 40px，`size="lg"` 由 56px 变为 48px；ImageViewer 翻页钮由 48px 变为 40px、关闭钮由 40px 变为 32px；Carousel 翻页与播放钮为 40px。Log / MessageFeed 的回到底部钮缺省仍是 32px。
+
+  新增尺寸档：
+
+  - Carousel 新增 `size`（sm / md / lg，缺省 md），翻页、播放三颗钮同档。
+  - ImageViewer 新增 `size`（sm / md / lg，缺省 md），翻页钮同档，关闭钮比它低一档、最低 sm。
+  - Log、MessageFeed 的回到底部钮随组件已有的 `size` 换档：比组件低一档、最低 sm（sm / md 时 32px，lg 时 40px）。
+
+  新增的 `size` 与其他组件一样接全局配置，没写时取全局尺寸。
+
+- 68b0410: Dialog 与 Drawer 新增 `unmountOnExit`（缺省 true，行为不变：第一次打开才挂载，退场动画播完就卸载）。设为 false 时打开过之后收起只隐藏、不卸载：Vue 与 React 把定位层以内联 `display: none` 收起、遮罩不留、Portal 视觉桥断开，再打开不重挂，内容里的组件状态、输入与滚动位置都留着，反复开合的重内容面板（设置面板、长表单）不再每次付一遍挂载开销。
+
+  headless 的 Dialog / Drawer connect 多出 `isContentMounted(present)`，与 Collapsible、Accordion 共用同一条挂卸判定；机器 context 多出 `opened`（挂载之后打开过没有）。
+
+  Web Components 的作者节点一向常驻，行为不变；写进 content 里一个 `<template>` 的内容按同一规则挂卸：第一次打开克隆，缺省退场播完撤走，`unmount-on-exit="false"` 时克隆一次之后常驻。
+
+- 5b21815: 四处写死英文的读屏角色说明（`aria-roledescription`）改为可经 `translations` 翻译，缺省仍是原来的英文：
+
+  - Carousel：`rootRoleDescription`（根，缺省 `carousel`）、`itemRoleDescription`（每一张，缺省 `slide`）。
+  - Sortable：`itemDragTriggerRoleDescription`（拖拽手柄，缺省 `sortable`）。
+  - Table：`columnDragRoleDescription`（列拖拽把手，缺省 `draggable column`）。
+
+  内建语言包同步补齐这四个键，切换语言后读屏不再夹着英文的角色名。
+
+- 831acc9: 每个角色节点另带皮肤挂载类 `xh-scope-<组件名>`，与 `data-scope` 一一对应（`data-scope="dialog"` 的节点带 `xh-scope-dialog`）。解剖产出的 attrs 多一项 `class`，Vue 与作者的 class 合并、React 落成 `className` 并与作者的拼接、Web Components 按词增删不覆盖作者写的类；asChild 把部件属性合进自带解剖的子节点时，挂载类随 `data-scope` 一起让位，一个节点不会同时吃两个组件的皮肤。core 新增导出 `SCOPE_CLASS_PREFIX`、`scopeClass()` 与 `stripScopeClass()`。
+
+  挂载类是皮肤产物改以类名领头的前提：浏览器按类名给规则分桶，属性选择器只按属性名分桶，几千条以 `[data-scope=…]` 领头的皮肤规则挤在同一个桶里，每个组件节点每次样式重算都要逐条试一遍。`data-scope` / `data-part` 仍是公开的样式契约，作者的覆盖写法不变。节点的 class 属性因此多了一个词：对 DOM 做快照或精确比对 `className` 的测试需要随之更新。只用 `@xihan-ui/styles`、自己书写标记的页面，要给每个带 `data-scope="x"` 的节点补上 `class="xh-scope-x"`，否则皮肤不命中。
+
+- ecd3fcf: Select 新增 `lazyMount`（缺省 false，行为不变）：列表内容第一次展开时才挂载，之后常驻、来回开合不重建。页面上 Select 很多时，收起态每个实例都背着一整份条目，挂载开销大半在这里——300 个各带 20 个条目、传了 `collection` 的 Select 挂载由约 530ms 降到约 183ms。打开前的选中文字与收起态连打（焦点在触发器上直接打字选中）改按 `collection` 计算；没给 `collection` 时打开前选中文字退回值本身、连打不生效。headless 的 connect 新增 `isContentMounted()`，机器 context 记 `opened`。Web Components 里把条目写进 list 里的一个 `<template>`，第一次展开才克隆（未开 lazy-mount 时模板也照常克隆进来）。
+
+  自绘滚动条在 `disabled` 时容器暂缺不再报「找不到滚动容器」诊断：列表懒挂载、还没展开过时轴先禁用着。
+
+### Patch Changes
+
+- b986a55: 图表（CartesianChart、PieChart、FunnelChart、RadarChart、GraphChart、HierarchyChart、SankeyChart）在根末尾追加的视觉隐藏数据表不再撑出祖先的滚动条。此前 1px 的隐藏样式直接写在 `<table>` 上，而表格的 `block-size` 只当最小高度、`overflow` 对表格不生效，表格照样有几十行那么高，绝对定位的盒子算进祖先的可滚动溢出，图表放进 `overflow: auto` 的容器（卡片、面板、对话框正文）就多出一截空滚动。新增部件 `table-region`（`getTableRegionProps()`）：块级、1px、裁掉，视觉隐藏落在它上面，表格放在里面照常排版，读屏读到的数据表不变；`table` 部件不再带隐藏样式。三个适配器同步改为「摘要 + 区域（内含表格）」。
+- dfdbf5e: 两处缺省取自实例数据的文案改为实例内容优先，全局配置里的 `translations`（包括内建语言包）不再盖掉它们：
+
+  - CartesianChart 数据表的列名先取轴标题：x 轴写了 `title` 时首列就叫这个名字，`translations.keyLabel` 只在轴没有标题时使用；含散点时的数值列同理，先取 y 轴标题，再用 `translations.valueLabel`。此前 `keyLabel` / `valueLabel` 一旦给出就压过轴标题，全局注入一份中文「类别」会把作者写的「月份」换掉。
+  - Heatmap 发散色阶的对照条两端恒写数值（中点减去 / 加上两侧最远距离），`translations.legendLow` / `legendHigh` 只换顺序色阶两端的词。此前两者给出时发散色阶两端也被换成「少 / 多」，读不出哪端是负。需要在发散色阶两端写别的字时，改写 `legend-label` 部件的内容。
+
+- e0bf1ee: HierarchyChart 的绘图区补上读屏角色说明（`aria-roledescription`），取 `translations.chartRoleDescription`，与其余六种图表一致。绘图区是 `role="tree"`、按方向键展开收起，缺省说法因此用 `tree chart`（各语言包同为「树状图表」一类保留「树」字的说法），不用笼统的 `chart`，读屏才不会把树的操作提示盖掉。
+- 581ba6f: Portal 视觉桥只在浮层呈现期间存在。此前每个浮层定位层一挂载就建桥：在来源整条祖先链上挂观察、建时把候选自定义属性读一遍，页面上几十个关着的提示与下拉白付这笔账，含几十个提示的面板一打开就多出数万次计算样式读取；缓存页一进一出，页内每台桥还要各重算两遍。现在 Vue 与 React 的内部 `XhPortal` 多一个 `present`（缺省为真，常显与展开才渲染的落点不变），带退场闸门的浮层（Tooltip、Popover、HoverCard、Popconfirm、Menu、ContextMenu、Select、Combobox、Cascader、TreeSelect、Mention、ColorPicker、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、FloatingPanel、Pagination、Tour）把可见与否交给它：关着时不建桥，转为呈现时在内容露出、定位引擎第一次量尺寸之前建桥，退场播完后撤掉。Web Components 不经视觉桥，不受影响。
+- bdd28ca: 菜单栏、侧栏与引用悬停卡的浮层也只在呈现期间建 Portal 视觉桥。这几个部件的定位层随组件常驻——菜单栏每一项一个、折叠侧栏每个分支一个弹出面板外加一个名称提示、正文里每处 hover 档引用一个——此前一挂载就各建一台桥，在来源整条祖先链上挂观察、建时读一遍计算样式。现在 `XhMenubarPositioner` 跟着这张菜单的退场闸门（由 `XhMenubarContent` 写回）、`XhSideNavBranchContent` 的弹出面板与 `XhSideNavTooltip` 跟着各自的退场闸门、`XhCitationPositioner` 跟着卡片是否渲染（展开中或退场未播完）决定建不建桥：关着不建，展开时在内容露出前建，退场播完后撤掉。Web Components 不经视觉桥，不受影响。
+- Updated dependencies [9b0a9d8]
+- Updated dependencies [bd63fd4]
+- Updated dependencies [b986a55]
+- Updated dependencies [dfdbf5e]
+- Updated dependencies [8b8d520]
+- Updated dependencies [e0bf1ee]
+- Updated dependencies [a566f82]
+- Updated dependencies [3f54a40]
+- Updated dependencies [68b0410]
+- Updated dependencies [b33ae37]
+- Updated dependencies [5b21815]
+- Updated dependencies [831acc9]
+- Updated dependencies [b991ede]
+- Updated dependencies [ecd3fcf]
+- Updated dependencies [736fc04]
+  - @xihan-ui/headless@3.2.0
+  - @xihan-ui/core@3.2.0
+  - @xihan-ui/motion@3.2.0
+  - @xihan-ui/position@3.2.0
+  - @xihan-ui/pointer@3.2.0
+  - @xihan-ui/viz@3.2.0
+
 ## 3.1.0
 
 ### Minor Changes
