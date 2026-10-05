@@ -95,7 +95,7 @@ export function connectNotification<T extends PropTypes>(
       ...parts.root.attrs,
       'data-count': list.length,
       'data-empty': dataAttr(list.length === 0),
-      // 模态浮层给背景施加 inert 时跳过这棵子树，通知照旧可点、读屏也读得到
+      // 模态浮层藏起背景时跳过这棵子树：读屏照旧读得到；层号在模态之上，照旧可点
       [DATA_INERT_EXEMPT]: '',
     }),
 

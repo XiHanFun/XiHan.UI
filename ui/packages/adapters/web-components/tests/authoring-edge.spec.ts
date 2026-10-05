@@ -133,7 +133,7 @@ describe('radio-group 条目禁用声明的读取', () => {
 // 于是"我要非模态"这句话在 HTML 里根本说不出口——只能靠整个不写属性。
 // 而"不写"表达的是"用默认值"，默认值恰好就是 true，两条路都通向开着。
 describe('缺省为真的布尔开关，写 ="false" 关得掉', () => {
-  it('xh-dialog：modal="false" 不陷焦点、不给背景打 inert', async () => {
+  it('xh-dialog：modal="false" 不陷焦点、不藏背景', async () => {
     const outside = document.createElement('p')
     outside.textContent = '背景内容'
     document.body.appendChild(outside)
@@ -153,7 +153,7 @@ describe('缺省为真的布尔开关，写 ="false" 关得掉', () => {
 
     const content = el.querySelector('[data-xh-part="content"]')!
     expect(content.getAttribute('aria-modal')).toBe('false')
-    expect(outside.hasAttribute('inert')).toBe(false)
+    expect(outside.hasAttribute('aria-hidden')).toBe(false)
     outside.remove()
   })
 

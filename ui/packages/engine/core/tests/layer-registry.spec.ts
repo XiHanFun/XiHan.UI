@@ -3,8 +3,8 @@
 import type { Layer } from '../src/kernel/structure/layer-registry'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createFocusScope } from '../src/behavior/focus-scope'
+import { getAriaHiddenRegistry } from '../src/kernel/capability/a11y/aria-hidden-registry'
 import { hideOutside } from '../src/kernel/capability/a11y/hide-outside'
-import { getInertRegistry } from '../src/kernel/capability/a11y/inert-registry'
 import {
   onDiagnostic,
   resetDiagnostics,
@@ -592,14 +592,15 @@ describe('layer registry 真实订阅者补偿', () => {
       },
     )
     cleanups.push(cleanupHide)
-    const inert = getInertRegistry(document)
-    expect(upperNode.inert).toBe(true)
-    expect(inert.countOf(upperNode)).toBe(1)
+    const ariaHidden = getAriaHiddenRegistry(document)
+    const hiddenOf = (el: Element): boolean => el.getAttribute('aria-hidden') === 'true'
+    expect(hiddenOf(upperNode)).toBe(true)
+    expect(ariaHidden.countOf(upperNode)).toBe(1)
 
     const observedUpperInert: boolean[] = []
     const registrationError = new Error('临时上层登记失败')
     const stopFailure = registry.subscribe((snapshot) => {
-      observedUpperInert.push(upperNode.inert === true)
+      observedUpperInert.push(hiddenOf(upperNode))
       if (snapshot.length === 2)
         throw registrationError
     })
@@ -611,15 +612,15 @@ describe('layer registry 真实订阅者补偿', () => {
 
     expect(observedUpperInert).toEqual([false, true])
     expect(registry.list()).toEqual([lower.layer])
-    expect(upperNode.inert).toBe(true)
-    expect(inert.countOf(upperNode)).toBe(1)
+    expect(hiddenOf(upperNode)).toBe(true)
+    expect(ariaHidden.countOf(upperNode)).toBe(1)
 
     stopFailure()
     cleanupHide()
-    expect(background.inert === true).toBe(false)
-    expect(upperNode.inert === true).toBe(false)
-    expect(inert.countOf(background)).toBe(0)
-    expect(inert.countOf(upperNode)).toBe(0)
+    expect(hiddenOf(background)).toBe(false)
+    expect(hiddenOf(upperNode)).toBe(false)
+    expect(ariaHidden.countOf(background)).toBe(0)
+    expect(ariaHidden.countOf(upperNode)).toBe(0)
     expect(background.getAttribute('aria-hidden')).toBe('false')
   })
 })

@@ -361,7 +361,7 @@ export const commandMachine = createMachine({
                 layer,
                 enabled: () => prop('modal') ?? true,
                 // 栈中位于本层之上的层一并算作目标：内层浮层搬到落点之后也是它的
-                // 直接子元素，不排除会被本层的 MutationObserver 打上 inert
+                // 直接子元素，不排除会被本层的 MutationObserver 打上 aria-hidden
                 targets: () => [
                   getContentEl(),
                   ...config.layerRegistry.elementsAbove(layer),
@@ -383,8 +383,8 @@ export const commandMachine = createMachine({
               })
               syncModalResources()
             }, { registry: config.layerRegistry, flush })
-            // 关闭时撤下背景失活并归还焦点：滚动锁留到退场播完，焦点不能跟着等。背景确实被失活了，
-            // 交接推迟到退场第一帧上屏之后（见 createModalLayerResources.reveal）
+            // 关闭时撤下背景失活并归还焦点：滚动锁留到退场播完，焦点不能跟着等。先撤下再归还，
+            // 焦点不落进还对读屏藏着的背景（见 createModalLayerResources.reveal）
             return release && Object.assign(() => release(), {
               returnFocus: () => {
                 if (revealBackgroundNow)

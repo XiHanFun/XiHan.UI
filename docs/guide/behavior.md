@@ -241,15 +241,17 @@ const restore = hideOutside(() => [
 });
 ```
 
-给 `body` 下除目标与豁免节点外的直接子元素加 `inert`，背景内容对读屏与键盘一并消失。
+沿每个目标到 `body` 的祖先链，给链上每一层里既不在链上、也不豁免的兄弟加 `aria-hidden="true"`，背景内容从无障碍树里消失；实时区域（`aria-live`、`role="status"` / `alert` / `log`）与脚本、样式这类节点不藏，模态开着时播报照旧。焦点还留在被藏起的背景里时照 `inert` 的样子放掉（`blur()`），之后再往背景里塞焦点由焦点域拉回。
 
-第一个参数是函数而不是数组：施加 `inert` 的时机横跨整个展开期（`MutationObserver` 观察后续新增到 `body` 的节点），晚于调用时刻挂载的节点也必须能计入目标。目标必须包含全部分支节点，以及栈中位于自己之上的层（`config.layerRegistry.elementsAbove(layer)`），漏传会把 portal 出去的嵌套浮层一起设为 inert：可见但无法操作。
+只打 `aria-hidden`、不打 `inert`：`inert` 会让浏览器把被罩住的整棵子树（通常是整个应用根）的样式重算一遍，几千个节点的页面上开、关各要几十毫秒；`aria-hidden` 不进样式计算，开销与页面大小无关。键盘由焦点域收在浮层里，指针由遮罩（或模态底板）拦下。
+
+第一个参数是函数而不是数组：藏起背景的时机横跨整个展开期（`MutationObserver` 观察后续新增到 `body` 的节点），晚于调用时刻挂载的节点也必须能计入目标。目标必须包含全部分支节点，以及栈中位于自己之上的层（`config.layerRegistry.elementsAbove(layer)`），漏传会把 portal 出去的嵌套浮层一起藏起：看得见，读屏却跳过。
 
 第二个参数必须同时提供 Scope 和计算 `elementsAbove` 的同一份 `LayerRegistry`，通常直接传 `RuntimeConfig`。`hideOutside` 只订阅该实例的层栈变化，并校验注册表的 `ownerDocument` 与 Scope Document 相同；自定义注册表、iframe 与画中画窗口都不再暗中切换到按 Document 获取的默认注册表。
 
 带 `data-xh-inert-exempt` 的元素默认豁免。
 
-`hideOutside` 的目标、`body`、层栈、`MutationObserver` 与 inert 引用计数严格属于 Scope 的同一 Document。iframe 与画中画窗口中的后挂节点会由各自 Window 的观察器重新计算；从其他窗口 adopt 进来的豁免节点也按当前所属 Document 生效。注册表或目标来自其他 Document、Document 没有活动 Window 或宿主缺少 `MutationObserver` 时会明确报错，初始化失败不会留下半施加的 inert 状态。
+`hideOutside` 的目标、`body`、层栈、`MutationObserver` 与 `aria-hidden` 引用计数严格属于 Scope 的同一 Document。iframe 与画中画窗口中的后挂节点会由各自 Window 的观察器重新计算；从其他窗口 adopt 进来的豁免节点也按当前所属 Document 生效。注册表或目标来自其他 Document、Document 没有活动 Window 或宿主缺少 `MutationObserver` 时会明确报错，初始化失败不会留下半施加的 `aria-hidden`。
 
 ## 进出场
 
@@ -272,7 +274,7 @@ export interface PresenceHandle {
 
 Dialog 与共用其机器的 Drawer 在逻辑关闭时立即给内容设置 `inert` 和 `aria-hidden`，浮层登记与滚动锁保留到内容及遮罩完成退场，然后通知 `onExitComplete`（Vue/Web Components 为 `exit-complete`）。退场中重开保留原资源，旧完成不影响新状态；必要时通过原焦点域的 `reactivate()` 恢复域内焦点，不重复派发挂载自动聚焦通知。卸载立即释放资源，不等 CSS。
 
-模态浮层（Dialog、Drawer、Command、ImageViewer、模态 Popover）的背景失活不与展开、关闭挤在同一拍：给整棵背景打上或撤下 `inert`，浏览器都要把整棵子树的样式重算一遍，几千个节点的页面上百毫秒，同步做会把浮层的第一帧、退场的第一帧一起拖住。展开时等浮层第一帧上屏之后才施加——其间焦点已由焦点域收进浮层、指针由遮罩拦下，背景只是晚一两帧才对读屏与页内查找消失；关闭时等退场第一帧上屏之后再撤下，随即把焦点归还触发器（背景还是 `inert` 时 `focus()` 是空操作，两件事一起推迟）。交接之前又重开则交接作废，背景失活原样保留；没有退场动画、资源当场释放时背景失活随之撤下。
+模态浮层（Dialog、Drawer、Command、ImageViewer、模态 Popover）的背景失活由两件事组成，都不碰背景节点的样式：背景打 `aria-hidden`（`hideOutside`），对读屏隐藏；没有遮罩的层（模态 Popover，或没放遮罩的对话框）在自己的定位层里垫一块铺满视口的透明底板（`data-xh-modal-underlay`，`z-index: -1`，画在本层自己的层叠上下文里），点在底板上即层外交互，由消解层照常收起，背景上的控件收不到这次点击。两件事都与页面大小无关，展开时随宿主提交当场施加；关闭时当场撤下，再把焦点归还触发器，焦点不会落进还对读屏藏着的背景。之后又重开即补回；没有退场动画、资源当场释放时背景失活随之撤下。
 
 适配器必须在 `data-state` 已提交到 DOM 之后才调用 `update(open)`：先改属性再让 CSS 过渡开始，顺序颠倒时动画不会播放。
 

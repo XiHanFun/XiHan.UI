@@ -21,9 +21,9 @@ async function flush(): Promise<void> {
   await Promise.resolve()
 }
 
-/** 等下一帧画出来之后：两层 requestAnimationFrame，与 afterNextPaint 同一口径 */
-async function afterPaint(): Promise<void> {
-  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+/** 背景是否被藏起：模态只给背景写 aria-hidden，不打 inert。 */
+function hidden(el: Element): boolean {
+  return el.getAttribute('aria-hidden') === 'true'
 }
 
 function fixture(initial: PopoverSchema['props'] = { defaultOpen: true, modal: true }) {
@@ -65,10 +65,8 @@ describe('popover 完整模态资源', () => {
   it('展开期间动态切换锁页与背景失活，并保留后开的 portal 层', async () => {
     const f = fixture()
     await flush()
-    // 背景失活等浮层第一帧上屏之后才施加
+    expect(hidden(f.outside)).toBe(true)
     expect(f.outside.inert).not.toBe(true)
-    await afterPaint()
-    expect(f.outside.inert).toBe(true)
     expect(document.body.style.overflow).toBe('hidden')
     expect(f.config.layerRegistry.top()?.isModal()).toBe(true)
 
@@ -81,26 +79,24 @@ describe('popover 完整模态资源', () => {
       isModal: () => false,
       surfaces: () => [],
     })
-    expect(nested.inert).not.toBe(true)
+    expect(hidden(nested)).toBe(false)
     nestedLayer.dispose()
 
     f.props.set({ ...f.props.get(), modal: false })
-    expect(f.outside.inert).not.toBe(true)
+    expect(hidden(f.outside)).toBe(false)
     expect(document.body.style.overflow).not.toBe('hidden')
     expect(f.config.layerRegistry.top()?.isModal()).toBe(false)
 
     f.props.set({ ...f.props.get(), modal: true })
     await flush()
-    await afterPaint()
-    expect(f.outside.inert).toBe(true)
+    expect(hidden(f.outside)).toBe(true)
     expect(document.body.style.overflow).toBe('hidden')
   })
 
-  it('逻辑关闭立即失活内容，退场第一帧上屏后撤下背景失活，层与滚动锁保留到 Presence 完成', async () => {
+  it('逻辑关闭立即失活内容并撤下背景失活，层与滚动锁保留到 Presence 完成', async () => {
     const f = fixture()
     await flush()
-    await afterPaint()
-    expect(f.outside.inert).toBe(true)
+    expect(hidden(f.outside)).toBe(true)
     f.service.send({ type: 'CLOSE' })
     const contentProps = connectPopover(f.service, normalizeProps).getContentProps()
     expect(contentProps.inert).toBe(true)
@@ -108,15 +104,13 @@ describe('popover 完整模态资源', () => {
     f.presence.update(false)
     expect(f.presence.rendered).toBe(true)
     expect(f.config.layerRegistry.list()).toHaveLength(1)
-    // 撤 inert 要整棵背景重算样式：关闭这一拍不做，等退场第一帧上屏后撤下、随即归还焦点
-    expect(f.outside.inert).toBe(true)
-    await afterPaint()
-    expect(f.outside.inert).not.toBe(true)
+    // 焦点要在关闭那一刻回到背景里的触发器，背景不能还对读屏藏着
+    expect(hidden(f.outside)).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
 
     f.leases[0]!.done()
     expect(f.config.layerRegistry.list()).toHaveLength(0)
-    expect(f.outside.inert).not.toBe(true)
+    expect(hidden(f.outside)).toBe(false)
     expect(document.body.style.overflow).not.toBe('hidden')
   })
 
@@ -134,7 +128,7 @@ describe('popover 完整模态资源', () => {
     f.presence.update(false)
     f.runtime.stop()
     expect(f.config.layerRegistry.list()).toHaveLength(0)
-    expect(f.outside.inert).not.toBe(true)
+    expect(hidden(f.outside)).toBe(false)
     f.leases[1]!.done()
     expect(f.config.layerRegistry.list()).toHaveLength(0)
   })

@@ -63,8 +63,8 @@ describe.each(['command', 'tooltip'] as const)('wc %s 真实退场资源', (scop
     expect(getLayerRegistry(document).list()).toHaveLength(1)
     if (scope === 'command') {
       expect(document.body.style.overflow).toBe('hidden')
-      // 退场第一帧上屏后撤下背景失活、随即把焦点交回背景里的触发器；层与滚动锁留到退场结束
-      expect(outside.inert).toBe(false)
+      // 关闭时当场撤下背景失活、随即把焦点交回背景里的触发器；层与滚动锁留到退场结束
+      expect(outside.hasAttribute('aria-hidden')).toBe(false)
     }
     const animations = [
       content,
@@ -79,12 +79,12 @@ describe.each(['command', 'tooltip'] as const)('wc %s 真实退场资源', (scop
     expect(getLayerRegistry(document).list()).toHaveLength(scope === 'command' ? 1 : 0)
     if (scope === 'command') {
       expect(document.body.style.overflow).toBe('hidden')
-      expect(outside.inert).toBe(false)
+      expect(outside.hasAttribute('aria-hidden')).toBe(false)
       animations[1]!.finish()
       await settle()
       expect(getLayerRegistry(document).list()).toHaveLength(0)
       expect(document.body.style.overflow).not.toBe('hidden')
-      expect(outside.inert).toBe(false)
+      expect(outside.hasAttribute('aria-hidden')).toBe(false)
     }
   })
 })

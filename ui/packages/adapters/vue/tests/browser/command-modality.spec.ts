@@ -10,7 +10,7 @@ let app: App | null = null
 
 async function settle(): Promise<void> {
   await nextTick()
-  // 模态浮层的背景失活与关闭交接都排在「下一帧上屏之后」（两层 rAF），等两帧才落定
+  // 等宿主提交与定位落定：两帧
   await new Promise(resolve => requestAnimationFrame(resolve))
   await new Promise(resolve => requestAnimationFrame(resolve))
   await nextTick()
@@ -81,7 +81,7 @@ describe('command 模态与非模态表面', () => {
     modal.value = true
     await settle()
     expect(backdrop()).not.toBeNull()
-    await expect.poll(() => outside.inert).toBe(true)
+    await expect.poll(() => outside.getAttribute('aria-hidden')).toBe('true')
     expect(document.body.style.overflow).toBe('hidden')
     expect(getLayerRegistry(document).top()?.isModal()).toBe(true)
     outside.focus()
@@ -90,7 +90,7 @@ describe('command 模态与非模态表面', () => {
     modal.value = false
     await settle()
     expect(backdrop()).toBeNull()
-    expect(outside.inert).toBe(false)
+    expect(outside.hasAttribute('aria-hidden')).toBe(false)
     expect(document.body.style.overflow).not.toBe('hidden')
     expect(hit(outside)).toBe(outside)
     outside.focus()

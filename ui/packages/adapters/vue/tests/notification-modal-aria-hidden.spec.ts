@@ -15,20 +15,18 @@ import {
 } from '../src'
 
 /**
- * 模态浮层给 body 的其它直接子元素打 inert 让背景失活，通知却画在遮罩之上：
- * 被一并罩住就成了看得见、点不动、读屏也跳过。判据钉的是通知子树带着豁免标记逃出 inert。
- *
- * jsdom 不实现 inert，hideOutside 走 `el.inert = true`，落成 expando 属性。
+ * 模态浮层给 body 的其它直接子元素打 aria-hidden 让背景对读屏隐藏，通知却画在遮罩之上：
+ * 被一并藏起就成了看得见、读屏却跳过。判据钉的是通知子树带着豁免标记逃出背景失活。
  */
 
-function inertOf(el: Element): boolean {
-  return (el as unknown as { inert?: boolean }).inert === true
+function hiddenOf(el: Element): boolean {
+  return el.getAttribute('aria-hidden') === 'true'
 }
 
-/** 自己或任一祖先被 inert：inert 沿子树生效，只看节点自己不够。 */
-function inertInChain(el: Element | null): boolean {
+/** 自己或任一祖先被藏起：aria-hidden 沿子树生效，只看节点自己不够。 */
+function hiddenInChain(el: Element | null): boolean {
   for (let node: Element | null = el; node; node = node.parentElement) {
-    if (inertOf(node))
+    if (hiddenOf(node))
       return true
   }
   return false
@@ -39,11 +37,6 @@ async function tick(): Promise<void> {
   await nextTick()
   await new Promise(r => setTimeout(r, 0))
   await nextTick()
-}
-
-/** 背景失活等浮层第一帧上屏之后才施加：两层 requestAnimationFrame，与 headless 的 afterNextPaint 同一口径 */
-async function afterPaint(): Promise<void> {
-  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
 }
 
 const teardown: Array<() => void> = []
@@ -75,7 +68,7 @@ function mountNotifications(): HTMLElement {
   return document.querySelector<HTMLElement>('[data-scope="notification"][data-part="root"]')!
 }
 
-/** 打开一个模态对话框，它会给 body 下其余直接子元素施加 inert。 */
+/** 打开一个模态对话框，它会给 body 下其余直接子元素打 aria-hidden。 */
 function mountModal(): void {
   const host = document.createElement('div')
   document.body.appendChild(host)
@@ -93,22 +86,21 @@ function mountModal(): void {
 }
 
 describe('模态打开时的通知队列', () => {
-  it('背景被 inert 罩住，通知子树逃出来', async () => {
+  it('背景被藏起，通知子树逃出来', async () => {
     const root = mountNotifications()
     const background = document.createElement('div')
     background.id = 'background'
     document.body.appendChild(background)
     mountModal()
     await tick()
-    await afterPaint()
 
-    expect(inertOf(background)).toBe(true)
-    expect(inertOf(root)).toBe(false)
-    expect(inertInChain(document.querySelector('[data-scope="notification"][data-part="item-close-trigger"]'))).toBe(false)
+    expect(hiddenOf(background)).toBe(true)
+    expect(hiddenOf(root)).toBe(false)
+    expect(hiddenInChain(document.querySelector('[data-scope="notification"][data-part="item-close-trigger"]'))).toBe(false)
   })
 
   // 组件形态与服务档两条路都得逃得出来：服务档的那一摞由服务自己的宿主渲染
-  it('轻提示预设的服务渲染的那一摞同样逃出 inert', async () => {
+  it('轻提示预设的服务渲染的那一摞同样逃出背景失活', async () => {
     const toast = createNotificationService({ preset: 'toast' })
     toast.success('已保存')
     await tick()
@@ -116,7 +108,7 @@ describe('模态打开时的通知队列', () => {
     await tick()
 
     const group = document.querySelector<HTMLElement>('[data-scope="notification"][data-part="group"]')!
-    expect(inertInChain(group)).toBe(false)
+    expect(hiddenInChain(group)).toBe(false)
     toast.dispose()
   })
 })

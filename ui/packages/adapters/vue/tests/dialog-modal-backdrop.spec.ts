@@ -5,16 +5,13 @@ import { createApp, h, nextTick, ref } from 'vue'
 import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '../src'
 
 /**
- * 模态对话框把背景移出无障碍树，靠的是给 body 的其它直接子元素打 inert。
+ * 模态对话框把背景移出无障碍树，靠的是给 body 的其它直接子元素打 aria-hidden。
  * 这一步此前是在进入 open 的那一刻同步取 content 做的，而那时 Vue 还没渲染 content，
- * 取到空数组就直接跳过——背景于是永远不 inert。
+ * 取到空数组就直接跳过——背景于是永远不藏。
  *
  * 四条打开路径都要验：这个 bug 之所以活了这么久，正是因为两个适配器漏的那半边是
  * 互补的（Vue 只有 defaultOpen 首屏侥幸生效，WC 反过来只有 defaultOpen 首屏漏），
  * 任何只覆盖一条路径的用例都会放它过去。
- *
- * jsdom 不实现 inert，hideOutside 走的是 `el.inert = true` 这条路，
- * 落成 expando 属性；断言属性而不是 hasAttribute('inert')。
  */
 
 interface Mounted {
@@ -28,11 +25,6 @@ async function tick(): Promise<void> {
   await nextTick()
   await new Promise(r => setTimeout(r, 0))
   await nextTick()
-}
-
-/** 背景失活等浮层第一帧上屏之后才施加：两层 requestAnimationFrame，与 headless 的 afterNextPaint 同一口径 */
-async function afterPaint(): Promise<void> {
-  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
 }
 
 function mountDialog(opts: { defaultOpen?: boolean, controlled?: boolean } = {}): Mounted {
@@ -91,8 +83,9 @@ function mountDialog(opts: { defaultOpen?: boolean, controlled?: boolean } = {})
   }
 }
 
-function inertOf(el: HTMLElement): boolean {
-  return (el as unknown as { inert?: boolean }).inert === true
+/** 被藏起：aria-hidden 写成 "true"。背景只藏不打 inert，免得整棵子树样式重算。 */
+function hiddenOf(el: HTMLElement): boolean {
+  return el.getAttribute('aria-hidden') === 'true' && !el.inert
 }
 
 afterEach(() => {
@@ -105,8 +98,7 @@ describe('模态 dialog 打开后背景失活', () => {
     try {
       await m.open(true)
       expect(document.querySelector('[data-part="content"]')?.getAttribute('data-state')).toBe('open')
-      await afterPaint()
-      expect(inertOf(m.background)).toBe(true)
+      expect(hiddenOf(m.background)).toBe(true)
     }
     finally {
       m.unmount()
@@ -117,8 +109,7 @@ describe('模态 dialog 打开后背景失活', () => {
     const m = mountDialog({ defaultOpen: true })
     try {
       await tick()
-      await afterPaint()
-      expect(inertOf(m.background)).toBe(true)
+      expect(hiddenOf(m.background)).toBe(true)
     }
     finally {
       m.unmount()
@@ -129,8 +120,7 @@ describe('模态 dialog 打开后背景失活', () => {
     const m = mountDialog({ controlled: true })
     try {
       await m.open(true)
-      await afterPaint()
-      expect(inertOf(m.background)).toBe(true)
+      expect(hiddenOf(m.background)).toBe(true)
     }
     finally {
       m.unmount()
@@ -143,10 +133,9 @@ describe('模态 dialog 打开后背景失活', () => {
       await m.open(true)
       await m.open(false)
       // 关上之后要还回去，否则背景永远读不到了
-      expect(inertOf(m.background)).toBe(false)
+      expect(hiddenOf(m.background)).toBe(false)
       await m.open(true)
-      await afterPaint()
-      expect(inertOf(m.background)).toBe(true)
+      expect(hiddenOf(m.background)).toBe(true)
     }
     finally {
       m.unmount()
@@ -159,7 +148,7 @@ describe('模态 dialog 打开后背景失活', () => {
       await m.open(true)
       await m.open(false)
       await tick()
-      expect(inertOf(m.background)).toBe(false)
+      expect(hiddenOf(m.background)).toBe(false)
     }
     finally {
       m.unmount()

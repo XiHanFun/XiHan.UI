@@ -5,20 +5,18 @@ import { createApp, h, nextTick } from 'vue'
 import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger, XhDrawerContent, XhDrawerRoot, XhDrawerTitle, XhDrawerTrigger } from '../src'
 
 /**
- * 外层模态浮层给 body 的其它直接子元素打 inert 让背景失活；内层浮层 Teleport 到共享根的
- * 独立实例壳后，会被外层的 MutationObserver 一并接住——壳不能被误罩得看得见、点不动。
- * 判据钉的是：栈中位于自己之上的层不受自己的 inert 管辖。
- *
- * jsdom 不实现 inert，hideOutside 走 `el.inert = true`，落成 expando 属性。
+ * 外层模态浮层给 body 的其它直接子元素打 aria-hidden 让背景对读屏隐藏；内层浮层 Teleport 到共享根的
+ * 独立实例壳后，会被外层的 MutationObserver 一并接住——壳不能被误藏得看得见、读屏却跳过。
+ * 判据钉的是：栈中位于自己之上的层不受自己的背景失活管辖。
  */
 
-function inertOf(el: Element): boolean {
-  return (el as unknown as { inert?: boolean }).inert === true
+function hiddenOf(el: Element): boolean {
+  return el.getAttribute('aria-hidden') === 'true'
 }
 
-function hasInertAncestor(el: Element): boolean {
+function hasHiddenAncestor(el: Element): boolean {
   for (let node: Element | null = el; node; node = node.parentElement) {
-    if (inertOf(node))
+    if (hiddenOf(node))
       return true
   }
   return false
@@ -29,11 +27,6 @@ async function tick(): Promise<void> {
   await nextTick()
   await new Promise(r => setTimeout(r, 0))
   await nextTick()
-}
-
-/** 背景失活等浮层第一帧上屏之后才施加：两层 requestAnimationFrame，与 headless 的 afterNextPaint 同一口径 */
-async function afterPaint(): Promise<void> {
-  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
 }
 
 /** 找到包住指定标题文本的那个 positioner。 */
@@ -104,22 +97,20 @@ afterEach(() => {
 })
 
 describe.each(['dialog', 'drawer'] as const)('%s 套自己', (kind) => {
-  it('内层打开后不被外层 inert 罩死，外层反过来被内层罩住', async () => {
+  it('内层打开后不被外层藏起，外层反过来被内层藏起', async () => {
     const m = mountNested(kind)
     try {
       await tick()
-      await afterPaint()
-      expect(inertOf(m.background)).toBe(true)
+      expect(hiddenOf(m.background)).toBe(true)
 
       await m.openInner()
-      await afterPaint()
       const inner = positionerOf(kind, '乙层')
       const outer = positionerOf(kind, '甲层')
 
-      expect(inertOf(inner)).toBe(false)
-      expect(document.querySelector('#inner-button')?.closest('[inert]')).toBe(null)
+      expect(hiddenOf(inner)).toBe(false)
+      expect(document.querySelector('#inner-button')?.closest('[aria-hidden="true"]')).toBe(null)
       // 内层在栈顶：外层反过来要被内层的 hideOutside 罩住
-      expect(hasInertAncestor(outer)).toBe(true)
+      expect(hasHiddenAncestor(outer)).toBe(true)
     }
     finally {
       m.unmount()

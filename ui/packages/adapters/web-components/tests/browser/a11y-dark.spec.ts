@@ -14,5 +14,5 @@ import '@xihan-ui/styles'
 // 拆开才能分到不同的 worker 与 CI 分片上并行。登记表的核对只在 light 那份里跑
 //
 // 三个模态的 presence 模型与共享套件对不上，各自单开了一份 WC 规格；它们不在 wcSuites 里，
-// 但焦点陷阱、aria-modal、背景 inert 恰恰最该在真机里扫
+// 但焦点陷阱、aria-modal、背景 aria-hidden 恰恰最该在真机里扫
 runA11y(createWcHarness(), [...wcSuites, wcDialogSuite, wcDrawerSuite, wcImageViewerSuite], { describe, it }, { ...wcA11yBaseline, onlyTheme: 'dark' })

@@ -2,21 +2,21 @@
 
 import type { Cleanup } from '../src/kernel/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { getAriaHiddenRegistry } from '../src/kernel/capability/a11y/aria-hidden-registry'
 import { hideOutside } from '../src/kernel/capability/a11y/hide-outside'
-import { getInertRegistry } from '../src/kernel/capability/a11y/inert-registry'
 import { DATA_INERT_EXEMPT } from '../src/kernel/constants'
 import { setDiagnosticsConsoleOutput } from '../src/kernel/diagnostics/channel'
 import { createCounterIdGenerator } from '../src/kernel/id-generator'
 import { createScope } from '../src/kernel/scope'
 import { createLayerRegistry, getLayerRegistry } from '../src/kernel/structure/layer-registry'
 
-/** jsdom 不实现 inert，赋值落成 expando，读值统一按「是不是 true」判。 */
-function inertOf(el: Element): boolean {
-  return (el as HTMLElement).inert === true
+/** 是否被藏起：aria-hidden 写成 "true" 才算。 */
+function hiddenOf(el: Element): boolean {
+  return el.getAttribute('aria-hidden') === 'true'
 }
 
 function countOf(el: Element): number {
-  return getInertRegistry(document).countOf(el as HTMLElement)
+  return getAriaHiddenRegistry(document).countOf(el as HTMLElement)
 }
 
 /** 等 MutationObserver 的微任务与一轮宏任务。 */
@@ -27,11 +27,11 @@ async function flush(win: Window = window): Promise<void> {
 
 interface Overlay {
   node: HTMLElement
-  /** 只撤 inert，不退层。 */
+  /** 只撤藏起，不退层。 */
   unhide: Cleanup
-  /** 只退层，不撤 inert。 */
+  /** 只退层，不撤藏起。 */
   unregister: Cleanup
-  /** 照机器里的拆除顺序：先撤 inert 再退层。 */
+  /** 照机器里的拆除顺序：先撤藏起再退层。 */
   close: Cleanup
 }
 
@@ -109,12 +109,12 @@ describe('hideOutside 单层', () => {
     const overlay = openOverlay()
     await flush()
 
-    expect(inertOf(bg)).toBe(true)
-    expect(inertOf(overlay.node)).toBe(false)
+    expect(hiddenOf(bg)).toBe(true)
+    expect(hiddenOf(overlay.node)).toBe(false)
 
     overlay.close()
     await flush()
-    expect(inertOf(bg)).toBe(false)
+    expect(hiddenOf(bg)).toBe(false)
     expect(countOf(bg)).toBe(0)
   })
 
@@ -124,7 +124,7 @@ describe('hideOutside 单层', () => {
     const overlay = openOverlay()
     await flush()
 
-    expect(inertOf(exempt)).toBe(false)
+    expect(hiddenOf(exempt)).toBe(false)
     overlay.close()
   })
 
@@ -138,12 +138,12 @@ describe('hideOutside 单层', () => {
     outer.unhide()
     outer.unhide()
     expect(countOf(bg)).toBe(1)
-    expect(inertOf(bg)).toBe(true)
+    expect(hiddenOf(bg)).toBe(true)
 
     outer.unregister()
     inner.close()
     await flush()
-    expect(inertOf(bg)).toBe(false)
+    expect(hiddenOf(bg)).toBe(false)
     expect(countOf(bg)).toBe(0)
   })
 })
@@ -155,21 +155,21 @@ describe('hideOutside 多层拆除', () => {
     const inner = openOverlay()
     await flush()
 
-    expect(inertOf(bg)).toBe(true)
-    expect(inertOf(outer.node)).toBe(true)
-    expect(inertOf(inner.node)).toBe(false)
+    expect(hiddenOf(bg)).toBe(true)
+    expect(hiddenOf(outer.node)).toBe(true)
+    expect(hiddenOf(inner.node)).toBe(false)
     expect(countOf(bg)).toBe(2)
 
     inner.close()
     await flush()
-    expect(inertOf(bg)).toBe(true)
-    expect(inertOf(outer.node)).toBe(false)
+    expect(hiddenOf(bg)).toBe(true)
+    expect(hiddenOf(outer.node)).toBe(false)
 
     outer.close()
     await flush()
-    expect(inertOf(bg)).toBe(false)
-    expect(inertOf(outer.node)).toBe(false)
-    expect(inertOf(inner.node)).toBe(false)
+    expect(hiddenOf(bg)).toBe(false)
+    expect(hiddenOf(outer.node)).toBe(false)
+    expect(hiddenOf(inner.node)).toBe(false)
   })
 
   it('两层乱序拆除（外层先关）后同样复位', async () => {
@@ -177,19 +177,19 @@ describe('hideOutside 多层拆除', () => {
     const outer = openOverlay()
     const inner = openOverlay()
     await flush()
-    expect(inertOf(bg)).toBe(true)
+    expect(hiddenOf(bg)).toBe(true)
 
     outer.close()
     await flush()
     // 内层还开着，背景仍失活
-    expect(inertOf(bg)).toBe(true)
+    expect(hiddenOf(bg)).toBe(true)
     expect(countOf(bg)).toBe(1)
 
     inner.close()
     await flush()
-    expect(inertOf(bg)).toBe(false)
-    expect(inertOf(outer.node)).toBe(false)
-    expect(inertOf(inner.node)).toBe(false)
+    expect(hiddenOf(bg)).toBe(false)
+    expect(hiddenOf(outer.node)).toBe(false)
+    expect(hiddenOf(inner.node)).toBe(false)
     expect(countOf(bg)).toBe(0)
   })
 
@@ -200,40 +200,40 @@ describe('hideOutside 多层拆除', () => {
     const third = openOverlay()
     await flush()
     expect(countOf(bg)).toBe(3)
-    expect(inertOf(third.node)).toBe(false)
+    expect(hiddenOf(third.node)).toBe(false)
 
     first.close()
     await flush()
-    expect(inertOf(bg)).toBe(true)
+    expect(hiddenOf(bg)).toBe(true)
     expect(countOf(bg)).toBe(2)
 
     second.close()
     await flush()
-    expect(inertOf(bg)).toBe(true)
+    expect(hiddenOf(bg)).toBe(true)
     expect(countOf(bg)).toBe(1)
 
     third.close()
     await flush()
-    expect(inertOf(bg)).toBe(false)
-    expect(inertOf(first.node)).toBe(false)
-    expect(inertOf(second.node)).toBe(false)
-    expect(inertOf(third.node)).toBe(false)
+    expect(hiddenOf(bg)).toBe(false)
+    expect(hiddenOf(first.node)).toBe(false)
+    expect(hiddenOf(second.node)).toBe(false)
+    expect(hiddenOf(third.node)).toBe(false)
     expect(countOf(bg)).toBe(0)
   })
 
-  it('宿主自己设的 inert 在全部拆除后仍然保留', async () => {
+  it('宿主自己写的 aria-hidden 在全部拆除后仍然保留', async () => {
     const bg = appendBackground()
-    bg.inert = true
+    bg.setAttribute('aria-hidden', 'true')
 
     const outer = openOverlay()
     const inner = openOverlay()
     await flush()
-    expect(inertOf(bg)).toBe(true)
+    expect(hiddenOf(bg)).toBe(true)
 
     outer.close()
     inner.close()
     await flush()
-    expect(inertOf(bg)).toBe(true)
+    expect(hiddenOf(bg)).toBe(true)
     expect(countOf(bg)).toBe(0)
   })
 })
@@ -259,7 +259,7 @@ describe('hideOutside 跟随层栈重算', () => {
       { scope, layerRegistry: customRegistry },
     )
     cleanups.push(cleanup)
-    expect(inertOf(upperNode)).toBe(true)
+    expect(hiddenOf(upperNode)).toBe(true)
 
     const unrelated = ambientRegistry.register({
       kind: 'modal',
@@ -269,7 +269,7 @@ describe('hideOutside 跟随层栈重算', () => {
       surfaces: () => [],
     })
     cleanups.push(unrelated.dispose)
-    expect(inertOf(upperNode)).toBe(true)
+    expect(hiddenOf(upperNode)).toBe(true)
 
     const upper = customRegistry.register({
       kind: 'modal',
@@ -279,11 +279,11 @@ describe('hideOutside 跟随层栈重算', () => {
       surfaces: () => [],
     })
     cleanups.push(upper.dispose)
-    expect(inertOf(upperNode)).toBe(false)
-    expect(inertOf(bg)).toBe(true)
+    expect(hiddenOf(upperNode)).toBe(false)
+    expect(hiddenOf(bg)).toBe(true)
 
     upper.dispose()
-    expect(inertOf(upperNode)).toBe(true)
+    expect(hiddenOf(upperNode)).toBe(true)
     await flush()
   })
 
@@ -296,19 +296,19 @@ describe('hideOutside 跟随层栈重算', () => {
     const late = document.createElement('div')
     document.body.appendChild(late)
     await flush()
-    expect(inertOf(late)).toBe(true)
+    expect(hiddenOf(late)).toBe(true)
 
     const inner = openOverlay(late)
     await flush()
-    expect(inertOf(late)).toBe(false)
+    expect(hiddenOf(late)).toBe(false)
     expect(countOf(late)).toBe(0)
-    expect(inertOf(bg)).toBe(true)
+    expect(hiddenOf(bg)).toBe(true)
 
     inner.close()
     outer.close()
     await flush()
-    expect(inertOf(bg)).toBe(false)
-    expect(inertOf(late)).toBe(false)
+    expect(hiddenOf(bg)).toBe(false)
+    expect(hiddenOf(late)).toBe(false)
   })
 
   it('上层退场后其节点转由下层接管', async () => {
@@ -316,18 +316,18 @@ describe('hideOutside 跟随层栈重算', () => {
     const outer = openOverlay()
     const inner = openOverlay()
     await flush()
-    expect(inertOf(inner.node)).toBe(false)
+    expect(hiddenOf(inner.node)).toBe(false)
 
-    // 内层只退层不撤 inert，节点仍留在 DOM 里：外层重算后该把它罩住
+    // 内层只退层不撤藏起，节点仍留在 DOM 里：外层重算后该把它罩住
     inner.unregister()
     await flush()
-    expect(inertOf(inner.node)).toBe(true)
+    expect(hiddenOf(inner.node)).toBe(true)
 
     inner.unhide()
     outer.close()
     await flush()
-    expect(inertOf(inner.node)).toBe(false)
-    expect(inertOf(bg)).toBe(false)
+    expect(hiddenOf(inner.node)).toBe(false)
+    expect(hiddenOf(bg)).toBe(false)
   })
 })
 
@@ -343,10 +343,10 @@ describe('hideOutside 内容嵌在应用容器里', () => {
     hide(content)
     await flush()
 
-    expect(inertOf(app)).toBe(false)
-    expect(inertOf(content)).toBe(false)
-    expect(inertOf(aside)).toBe(true)
-    expect(inertOf(outside)).toBe(true)
+    expect(hiddenOf(app)).toBe(false)
+    expect(hiddenOf(content)).toBe(false)
+    expect(hiddenOf(aside)).toBe(true)
+    expect(hiddenOf(outside)).toBe(true)
   })
 
   it('三层嵌套时链外的每一层兄弟都被罩住', async () => {
@@ -365,13 +365,13 @@ describe('hideOutside 内容嵌在应用容器里', () => {
     hide(content)
     await flush()
 
-    expect(inertOf(sidebar)).toBe(true)
-    expect(inertOf(tools)).toBe(true)
-    expect(inertOf(outside)).toBe(true)
-    expect(inertOf(app)).toBe(false)
-    expect(inertOf(layout)).toBe(false)
-    expect(inertOf(main)).toBe(false)
-    expect(inertOf(content)).toBe(false)
+    expect(hiddenOf(sidebar)).toBe(true)
+    expect(hiddenOf(tools)).toBe(true)
+    expect(hiddenOf(outside)).toBe(true)
+    expect(hiddenOf(app)).toBe(false)
+    expect(hiddenOf(layout)).toBe(false)
+    expect(hiddenOf(main)).toBe(false)
+    expect(hiddenOf(content)).toBe(false)
   })
 
   it('多个 target 时两条祖先链上的节点都不被罩住', async () => {
@@ -390,13 +390,13 @@ describe('hideOutside 内容嵌在应用容器里', () => {
     hide(contentA, contentB)
     await flush()
 
-    expect(inertOf(app)).toBe(false)
-    expect(inertOf(portal)).toBe(false)
-    expect(inertOf(contentA)).toBe(false)
-    expect(inertOf(contentB)).toBe(false)
-    expect(inertOf(aside)).toBe(true)
-    expect(inertOf(sibling)).toBe(true)
-    expect(inertOf(outside)).toBe(true)
+    expect(hiddenOf(app)).toBe(false)
+    expect(hiddenOf(portal)).toBe(false)
+    expect(hiddenOf(contentA)).toBe(false)
+    expect(hiddenOf(contentB)).toBe(false)
+    expect(hiddenOf(aside)).toBe(true)
+    expect(hiddenOf(sibling)).toBe(true)
+    expect(hiddenOf(outside)).toBe(true)
   })
 
   it('深层的豁免节点不被罩住', async () => {
@@ -411,9 +411,9 @@ describe('hideOutside 内容嵌在应用容器里', () => {
     hide(content)
     await flush()
 
-    expect(inertOf(toaster)).toBe(false)
+    expect(hiddenOf(toaster)).toBe(false)
     expect(countOf(toaster)).toBe(0)
-    expect(inertOf(aside)).toBe(true)
+    expect(hiddenOf(aside)).toBe(true)
   })
 
   it('链上深层后来新增的兄弟也被罩住', async () => {
@@ -430,14 +430,14 @@ describe('hideOutside 内容嵌在应用容器里', () => {
     const late = div('late')
     main.appendChild(late)
     await flush()
-    expect(inertOf(late)).toBe(true)
+    expect(hiddenOf(late)).toBe(true)
   })
 
-  it('两层全部关闭后逐层复位，宿主自带的 inert 保留', async () => {
+  it('两层全部关闭后逐层复位，宿主自带的 aria-hidden 保留', async () => {
     const outside = appendBackground()
     const app = div('app')
     const aside = div('aside')
-    aside.inert = true
+    aside.setAttribute('aria-hidden', 'true')
     const main = div('main')
     const tools = div('tools')
     const content = div('content')
@@ -451,20 +451,20 @@ describe('hideOutside 内容嵌在应用容器里', () => {
     expect(countOf(outside)).toBe(2)
     expect(countOf(aside)).toBe(2)
     expect(countOf(tools)).toBe(1)
-    expect(inertOf(tools)).toBe(true)
+    expect(hiddenOf(tools)).toBe(true)
 
     deep()
     await flush()
-    expect(inertOf(outside)).toBe(true)
-    expect(inertOf(aside)).toBe(true)
-    expect(inertOf(tools)).toBe(false)
+    expect(hiddenOf(outside)).toBe(true)
+    expect(hiddenOf(aside)).toBe(true)
+    expect(hiddenOf(tools)).toBe(false)
 
     shallow()
     await flush()
-    expect(inertOf(outside)).toBe(false)
-    expect(inertOf(app)).toBe(false)
-    expect(inertOf(main)).toBe(false)
-    expect(inertOf(aside)).toBe(true)
+    expect(hiddenOf(outside)).toBe(false)
+    expect(hiddenOf(app)).toBe(false)
+    expect(hiddenOf(main)).toBe(false)
+    expect(hiddenOf(aside)).toBe(true)
     expect(countOf(aside)).toBe(0)
   })
 })
@@ -486,9 +486,9 @@ describe('hideOutside 豁免标记在任意深度都留出通路', () => {
     )
     cleanups.push(cleanup)
 
-    expect(inertOf(app)).toBe(false)
-    expect(inertOf(page)).toBe(true)
-    expect(inertOf(exempt)).toBe(false)
+    expect(hiddenOf(app)).toBe(false)
+    expect(hiddenOf(page)).toBe(true)
+    expect(hiddenOf(exempt)).toBe(false)
   })
 
   it('豁免节点嵌在应用容器里时，容器只递归不整块罩住', () => {
@@ -503,9 +503,9 @@ describe('hideOutside 豁免标记在任意深度都留出通路', () => {
 
     hide(content)
 
-    expect(inertOf(app)).toBe(false)
-    expect(inertOf(toaster)).toBe(false)
-    expect(inertOf(page)).toBe(true)
+    expect(hiddenOf(app)).toBe(false)
+    expect(hiddenOf(toaster)).toBe(false)
+    expect(hiddenOf(page)).toBe(true)
   })
 
   it('豁免节点的后代不被罩住', () => {
@@ -521,7 +521,7 @@ describe('hideOutside 豁免标记在任意深度都留出通路', () => {
 
     hide(content)
 
-    expect(inertOf(action)).toBe(false)
+    expect(hiddenOf(action)).toBe(false)
     expect(countOf(action)).toBe(0)
   })
 
@@ -536,12 +536,12 @@ describe('hideOutside 豁免标记在任意深度都留出通路', () => {
     document.body.append(content)
 
     hide(content)
-    expect(inertOf(app)).toBe(false)
+    expect(hiddenOf(app)).toBe(false)
 
     toaster.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
 
-    expect(inertOf(app)).toBe(true)
+    expect(hiddenOf(app)).toBe(true)
     expect(countOf(page)).toBe(0)
   })
 
@@ -558,8 +558,8 @@ describe('hideOutside 豁免标记在任意深度都留出通路', () => {
     const cleanup = hide(content)
     cleanup()
 
-    expect(inertOf(page)).toBe(false)
-    expect(inertOf(app)).toBe(false)
+    expect(hiddenOf(page)).toBe(false)
+    expect(hiddenOf(app)).toBe(false)
     expect(countOf(page)).toBe(0)
   })
 })
@@ -585,7 +585,7 @@ describe('hideOutside 的所属 realm', () => {
     return { frame, doc, win, app, page, content }
   }
 
-  it('iframe 的 inert 背景深处后挂豁免节点时重新留出通路', async () => {
+  it('iframe 的已藏起背景深处后挂豁免节点时重新留出通路', async () => {
     const { frame, doc, win, app, page, content } = setupForeignDocument()
     const scope = createScope(content, createCounterIdGenerator())
     const registry = createLayerRegistry(doc)
@@ -593,15 +593,15 @@ describe('hideOutside 的所属 realm', () => {
       () => [content],
       { scope, layerRegistry: registry },
     )
-    expect(inertOf(app)).toBe(true)
+    expect(hiddenOf(app)).toBe(true)
     const exempt = doc.createElement('div')
     exempt.setAttribute(DATA_INERT_EXEMPT, '')
     app.appendChild(exempt)
 
     await flush(win)
-    expect(inertOf(app)).toBe(false)
-    expect(inertOf(page)).toBe(true)
-    expect(inertOf(exempt)).toBe(false)
+    expect(hiddenOf(app)).toBe(false)
+    expect(hiddenOf(page)).toBe(true)
+    expect(hiddenOf(exempt)).toBe(false)
     cleanup()
     frame.remove()
   })
@@ -618,13 +618,13 @@ describe('hideOutside 的所属 realm', () => {
       () => [content],
       { scope, layerRegistry: getLayerRegistry(doc) },
     )
-    expect(inertOf(app)).toBe(true)
+    expect(hiddenOf(app)).toBe(true)
     app.appendChild(exempt)
 
     await flush(win)
-    expect(inertOf(app)).toBe(false)
-    expect(inertOf(page)).toBe(true)
-    expect(inertOf(exempt)).toBe(false)
+    expect(hiddenOf(app)).toBe(false)
+    expect(hiddenOf(page)).toBe(true)
+    expect(hiddenOf(exempt)).toBe(false)
     cleanup()
     sourceFrame.remove()
     frame.remove()
@@ -647,8 +647,8 @@ describe('hideOutside 的所属 realm', () => {
     app.appendChild(exempt)
 
     await flush(win)
-    expect(inertOf(app)).toBe(false)
-    expect(inertOf(exempt)).toBe(false)
+    expect(hiddenOf(app)).toBe(false)
+    expect(hiddenOf(exempt)).toBe(false)
     cleanup()
     vi.unstubAllGlobals()
     frame.remove()
@@ -684,11 +684,11 @@ describe('hideOutside 的所属 realm', () => {
       { scope, layerRegistry: getLayerRegistry(document) },
     )).toThrow(/layerRegistry 必须属于 Scope 的 Document/)
     expect(getTargets).not.toHaveBeenCalled()
-    expect(inertOf(app)).toBe(false)
+    expect(hiddenOf(app)).toBe(false)
     frame.remove()
   })
 
-  it('观察器启动失败时不留下 inert 或层栈订阅', () => {
+  it('观察器启动失败时不留下 aria-hidden 或层栈订阅', () => {
     const { frame, win, app, content } = setupForeignDocument()
     const scope = createScope(content, createCounterIdGenerator())
     const registry = getLayerRegistry(content.ownerDocument)
@@ -711,7 +711,7 @@ describe('hideOutside 的所属 realm', () => {
       () => [content],
       { scope, layerRegistry: registry },
     )).toThrow('observe failed')
-    expect(inertOf(app)).toBe(false)
+    expect(hiddenOf(app)).toBe(false)
     const node = content.ownerDocument.createElement('div')
     const registration = registry.register({
       kind: 'modal',
@@ -720,12 +720,12 @@ describe('hideOutside 的所属 realm', () => {
       isModal: () => true,
       surfaces: () => [],
     })
-    expect(inertOf(app)).toBe(false)
+    expect(hiddenOf(app)).toBe(false)
     registration.dispose()
     frame.remove()
   })
 
-  it('拒绝来自其他 Document 的 target 且不留下 inert', () => {
+  it('拒绝来自其他 Document 的 target 且不留下 aria-hidden', () => {
     const { frame, app, content } = setupForeignDocument()
     const otherFrame = document.createElement('iframe')
     document.body.appendChild(otherFrame)
@@ -738,7 +738,7 @@ describe('hideOutside 的所属 realm', () => {
       () => [foreignTarget],
       { scope, layerRegistry: registry },
     )).toThrow(/必须属于 Scope 的 Document/)
-    expect(inertOf(app)).toBe(false)
+    expect(hiddenOf(app)).toBe(false)
     const registration = registry.register({
       kind: 'modal',
       node: () => content,
@@ -761,5 +761,78 @@ describe('hideOutside 的所属 realm', () => {
       { scope, layerRegistry: getLayerRegistry(doc) },
     )).toThrow(/Document 没有 body/)
     frame.remove()
+  })
+})
+
+describe('hideOutside 只藏不失活', () => {
+  it('背景只写 aria-hidden，不打 inert', () => {
+    const bg = appendBackground()
+    const content = div('content')
+    document.body.appendChild(content)
+    hide(content)
+    expect(hiddenOf(bg)).toBe(true)
+    expect((bg as HTMLElement & { inert?: boolean }).inert === true).toBe(false)
+    expect(bg.hasAttribute('inert')).toBe(false)
+  })
+
+  it('实时区域、脚本与样式不藏：模态开着时播报照旧', () => {
+    const content = div('content')
+    const polite = div('polite')
+    polite.setAttribute('aria-live', 'polite')
+    const status = div('status')
+    status.setAttribute('role', 'status')
+    const alert = div('alert')
+    alert.setAttribute('role', 'alert')
+    const script = document.createElement('script')
+    const style = document.createElement('style')
+    const bg = appendBackground()
+    document.body.append(content, polite, status, alert, script, style)
+    hide(content)
+    expect(hiddenOf(bg)).toBe(true)
+    for (const el of [polite, status, alert, script, style])
+      expect(el.hasAttribute('aria-hidden')).toBe(false)
+  })
+
+  it('宿主原本写的 aria-hidden="false" 在撤销后写回原值', () => {
+    const bg = appendBackground()
+    bg.setAttribute('aria-hidden', 'false')
+    const content = div('content')
+    document.body.appendChild(content)
+    const cleanup = hide(content)
+    expect(hiddenOf(bg)).toBe(true)
+    cleanup()
+    expect(bg.getAttribute('aria-hidden')).toBe('false')
+  })
+})
+
+describe('hideOutside 放掉背景里的焦点', () => {
+  it('焦点还留在被藏起的背景里时放掉，像 inert 一样不让它停在读屏读不到的地方', () => {
+    const button = document.createElement('button')
+    document.body.appendChild(button)
+    const content = div('content')
+    const inside = document.createElement('button')
+    content.appendChild(inside)
+    document.body.appendChild(content)
+    button.focus()
+    expect(document.activeElement).toBe(button)
+    hide(content)
+    expect(document.activeElement).not.toBe(button)
+  })
+
+  it('焦点在目标或豁免节点里时不动', () => {
+    const content = div('content')
+    const inside = document.createElement('button')
+    content.appendChild(inside)
+    const exempt = div('exempt')
+    exempt.setAttribute(DATA_INERT_EXEMPT, '')
+    const toast = document.createElement('button')
+    exempt.appendChild(toast)
+    document.body.append(content, exempt)
+    inside.focus()
+    hide(content)
+    expect(document.activeElement).toBe(inside)
+    toast.focus()
+    hide(content)
+    expect(document.activeElement).toBe(toast)
   })
 })

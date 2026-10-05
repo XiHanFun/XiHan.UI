@@ -17,7 +17,7 @@ afterEach(() => {
 
 async function settle(): Promise<void> {
   await nextTick()
-  // 模态浮层的背景失活与关闭交接都排在「下一帧上屏之后」（两层 rAF），等两帧才落定
+  // 等宿主提交与定位落定：两帧
   await new Promise(resolve => requestAnimationFrame(resolve))
   await new Promise(resolve => requestAnimationFrame(resolve))
   await nextTick()
@@ -72,7 +72,7 @@ describe.each(['dialog', 'drawer'] as const)('%s 的真实退场与模态资源'
     f.open.value = true
     await settle()
     expect(document.body.style.overflow).not.toBe('hidden')
-    expect(f.outside.inert).toBe(false)
+    expect(f.outside.hasAttribute('aria-hidden')).toBe(false)
     expect(getLayerRegistry(document).list()).toHaveLength(1)
     expect(f.completed).toEqual([])
     f.open.value = false
@@ -81,11 +81,11 @@ describe.each(['dialog', 'drawer'] as const)('%s 的真实退场与模态资源'
     f.open.value = true
     await settle()
     expect(document.body.style.overflow).toBe('hidden')
-    await expect.poll(() => f.outside.inert).toBe(true)
+    await expect.poll(() => f.outside.getAttribute('aria-hidden')).toBe('true')
     expect(getLayerRegistry(document).list()).toHaveLength(1)
   })
 
-  it('内容即时失活、退场第一帧上屏后背景解除失活，层与滚动锁在全部有限内容动画及遮罩完成后释放', async () => {
+  it('内容即时失活、背景当场解除失活，层与滚动锁在全部有限内容动画及遮罩完成后释放', async () => {
     const f = fixture(scope)
     await settle()
     f.open.value = false
@@ -96,8 +96,8 @@ describe.each(['dialog', 'drawer'] as const)('%s 的真实退场与模态资源'
     const action = content.querySelector('button')!
     action.focus()
     expect(document.activeElement).not.toBe(action)
-    // 退场第一帧上屏后撤下背景失活、随即把焦点交回背景里的触发器；层与滚动锁留到退场结束
-    expect(f.outside.inert).toBe(false)
+    // 关闭时当场撤下背景失活、随即把焦点交回背景里的触发器；层与滚动锁留到退场结束
+    expect(f.outside.hasAttribute('aria-hidden')).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
     const animations = finite(content)
     expect(animations).toHaveLength(2)
@@ -111,7 +111,7 @@ describe.each(['dialog', 'drawer'] as const)('%s 的真实退场与模态资源'
     for (const animation of finite(f.part('backdrop'))) animation.finish()
     await settle()
     expect(f.completed).toEqual([0])
-    expect(f.outside.inert).toBe(false)
+    expect(f.outside.hasAttribute('aria-hidden')).toBe(false)
     expect(document.body.style.overflow).not.toBe('hidden')
     expect(f.part('content')).toBeNull()
   })
