@@ -26,7 +26,7 @@ let app: App | null = null
 
 async function settle(): Promise<void> {
   await nextTick()
-  // 模态浮层的背景失活与关闭交接都排在「下一帧上屏之后」（两层 rAF），等两帧才落定
+  // 等宿主提交与定位落定：两帧
   await new Promise(resolve => requestAnimationFrame(resolve))
   await new Promise(resolve => requestAnimationFrame(resolve))
   await nextTick()
@@ -68,7 +68,7 @@ describe.each(CASES)('$name unmountOnExit 为 false 的再次打开', (c) => {
     open.value = false
     await expect.poll(() => getComputedStyle(part('positioner')!).display).toBe('none')
     expect(part('backdrop')).toBeNull()
-    await expect.poll(() => outside.inert).toBe(false)
+    await expect.poll(() => outside.hasAttribute('aria-hidden')).toBe(false)
     await expect.poll(() => document.body.style.overflow).not.toBe('hidden')
 
     open.value = true
@@ -78,7 +78,7 @@ describe.each(CASES)('$name unmountOnExit 为 false 的再次打开', (c) => {
     await expect.poll(() => part('content')!.getAnimations().length).toBeGreaterThan(0)
     expect(part('backdrop')).not.toBeNull()
     await expect.poll(() => document.activeElement).toBe(field)
-    await expect.poll(() => outside.inert).toBe(true)
+    await expect.poll(() => outside.getAttribute('aria-hidden')).toBe('true')
     expect(document.body.style.overflow).toBe('hidden')
   })
 })

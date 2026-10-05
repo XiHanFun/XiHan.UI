@@ -56,7 +56,7 @@ export function connectLoadingBar<T extends PropTypes>(
       'data-state': phase,
       'data-tone': prop('tone'),
       'data-indeterminate': dataAttr(!determinate),
-      // 模态浮层给背景施加 inert 时跳过这棵子树：进度条是全局的，
+      // 模态浮层藏起背景时跳过这棵子树：进度条是全局的，
       // 对话框开着时它照旧要可见、role=progressbar 也要留在无障碍树里
       [DATA_INERT_EXEMPT]: '',
       // 收起时留着节点，只加 hidden

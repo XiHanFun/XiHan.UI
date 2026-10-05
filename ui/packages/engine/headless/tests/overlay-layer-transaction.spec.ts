@@ -5,8 +5,8 @@ import { createCounterIdGenerator, createLayerRegistry, createRuntimeConfig, cre
 import { describe, expect, it, vi } from 'vitest'
 import { createModalLayerResources, setupLayerTransaction, trackOverlayLayer, trackPresenceResources } from '../src/shared/overlay-shell'
 
-/** 等下一帧画出来之后：两层 requestAnimationFrame，与 afterNextPaint 同一口径 */
-const afterPaint = (): Promise<void> => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+/** 背景是否被藏起：模态只给背景写 aria-hidden，不打 inert。 */
+const hidden = (el: Element): boolean => el.getAttribute('aria-hidden') === 'true'
 
 describe('浮层资源初始化事务', () => {
   it('父机先停时等待子 Layer 退栈，再按严格 LIFO 清理', async () => {
@@ -61,7 +61,7 @@ describe('浮层资源初始化事务', () => {
     expect(order).toEqual(['child', 'parent'])
   })
 
-  it('展开生命周期内切换模态策略：锁页同步取得和释放，背景失活等首帧上屏后才施加', async () => {
+  it('展开生命周期内切换模态策略：锁页与背景失活同步取得和释放', () => {
     const outside = document.createElement('button')
     const content = document.createElement('div')
     document.body.append(outside, content)
@@ -91,18 +91,17 @@ describe('浮层资源初始化事务', () => {
     )
 
     expect(document.body.style.overflow).not.toBe('hidden')
-    expect(outside.inert).not.toBe(true)
+    expect(hidden(outside)).toBe(false)
     enabled = true
     modal.sync()
     expect(document.body.style.overflow).toBe('hidden')
-    // 给整棵背景打 inert 要整棵重算样式，不放在切换这一拍里：先让浮层的第一帧上屏
+    // aria-hidden 不进样式计算，随宿主提交当场施加；背景不打 inert
+    expect(hidden(outside)).toBe(true)
     expect(outside.inert).not.toBe(true)
-    await afterPaint()
-    expect(outside.inert).toBe(true)
     enabled = false
     modal.sync()
     expect(document.body.style.overflow).not.toBe('hidden')
-    expect(outside.inert).not.toBe(true)
+    expect(hidden(outside)).toBe(false)
 
     cleanup()
     outside.remove()
@@ -135,53 +134,119 @@ describe('浮层资源初始化事务', () => {
       }
     }
 
-    it('背景还没失活（推迟的失活尚未施加）时当场交接，也不再补挂失活', async () => {
+    it('关闭时当场撤下背景失活，再交接', () => {
       const f = modalFixture()
-      const handoff = vi.fn()
+      expect(hidden(f.outside)).toBe(true)
+      // 交接时背景已撤下：焦点落回背景里的触发器时，那里已不对读屏藏着
+      const handoff = vi.fn(() => expect(hidden(f.outside)).toBe(false))
       f.modal.reveal(handoff)
       expect(handoff).toHaveBeenCalledTimes(1)
-      await afterPaint()
-      expect(f.outside.inert).not.toBe(true)
+      expect(hidden(f.outside)).toBe(false)
       f.cleanup()
     })
 
-    it('背景已失活时推迟到下一帧上屏之后再撤下并交接', async () => {
+    it('撤下之后、资源释放之前重开：补回背景失活', () => {
       const f = modalFixture()
-      await afterPaint()
-      expect(f.outside.inert).toBe(true)
-      const handoff = vi.fn(() => expect(f.outside.inert).not.toBe(true))
-      f.modal.reveal(handoff)
-      expect(f.outside.inert).toBe(true)
-      expect(handoff).not.toHaveBeenCalled()
-      await afterPaint()
-      // 交接时背景已撤下：焦点能落回背景里的触发器
-      expect(handoff).toHaveBeenCalledTimes(1)
-      expect(f.outside.inert).not.toBe(true)
-      f.cleanup()
-    })
-
-    it('交接之前重开：背景失活原样留着，交接作废', async () => {
-      const f = modalFixture()
-      await afterPaint()
-      const handoff = vi.fn()
-      f.modal.reveal(handoff)
+      f.modal.reveal()
+      expect(hidden(f.outside)).toBe(false)
       f.modal.sync()
-      await afterPaint()
-      expect(f.outside.inert).toBe(true)
-      expect(handoff).not.toHaveBeenCalled()
+      expect(hidden(f.outside)).toBe(true)
       f.cleanup()
     })
 
-    it('交接之前释放资源：背景失活随资源当场撤下，交接不再执行', async () => {
+    it('撤下之后释放资源：交接只执行一次，背景保持撤下', () => {
       const f = modalFixture()
-      await afterPaint()
       const handoff = vi.fn()
       f.modal.reveal(handoff)
       f.modal.dispose()
-      expect(f.outside.inert).not.toBe(true)
-      await afterPaint()
-      expect(handoff).not.toHaveBeenCalled()
+      expect(handoff).toHaveBeenCalledTimes(1)
+      expect(hidden(f.outside)).toBe(false)
       f.cleanup()
+    })
+  })
+
+  describe('模态底板', () => {
+    function underlayFixture(surfaces: () => Element[] = () => []): { outside: HTMLElement, positioner: HTMLElement, modal: ReturnType<typeof createModalLayerResources>, cleanup: () => void } {
+      const outside = document.createElement('button')
+      const positioner = document.createElement('div')
+      positioner.dataset.scope = 'popover'
+      positioner.dataset.part = 'positioner'
+      const content = document.createElement('div')
+      content.dataset.scope = 'popover'
+      content.dataset.part = 'content'
+      positioner.appendChild(content)
+      document.body.append(outside, positioner)
+      const config = createRuntimeConfig()
+      let modal!: ReturnType<typeof createModalLayerResources>
+      const cleanup = setupLayerTransaction(
+        () => config.layerRegistry.register({ kind: 'popover', node: () => content, branches: () => [], isModal: () => true, surfaces }),
+        (layer, defer, run) => {
+          modal = createModalLayerResources({ config, layer, enabled: () => true, targets: () => [content], flush: task => task(), run })
+          defer(modal.dispose)
+          modal.sync()
+        },
+      )
+      return {
+        outside,
+        positioner,
+        modal,
+        cleanup: () => {
+          cleanup()
+          outside.remove()
+          positioner.remove()
+        },
+      }
+    }
+
+    const underlayOf = (positioner: HTMLElement): HTMLElement | null => positioner.querySelector<HTMLElement>('[data-xh-modal-underlay]')
+
+    it('没有遮罩的模态层在定位层里垫一块铺满视口的透明底板，撤下背景失活即移除', () => {
+      const f = underlayFixture()
+      const underlay = underlayOf(f.positioner)
+      expect(underlay).not.toBeNull()
+      expect(underlay!.getAttribute('aria-hidden')).toBe('true')
+      expect(underlay!.style.position).toBe('fixed')
+      expect(underlay!.style.inset).toBe('0')
+      expect(underlay!.style.zIndex).toBe('-1')
+      // 定位层皮肤是 pointer-events:none，底板自己写回 auto 才拦得住指针
+      expect(underlay!.style.pointerEvents).toBe('auto')
+      f.modal.reveal()
+      expect(underlayOf(f.positioner)).toBeNull()
+      f.modal.sync()
+      expect(underlayOf(f.positioner)).not.toBeNull()
+      f.cleanup()
+      expect(underlayOf(f.positioner)).toBeNull()
+    })
+
+    it('有遮罩（surfaces）的层不垫底板：遮罩本就铺满视口', () => {
+      const backdrop = document.createElement('div')
+      document.body.appendChild(backdrop)
+      const f = underlayFixture(() => [backdrop])
+      expect(hidden(f.outside)).toBe(true)
+      expect(underlayOf(f.positioner)).toBeNull()
+      f.cleanup()
+      backdrop.remove()
+    })
+
+    it('内容节点没有同 scope 定位层时不垫', () => {
+      const outside = document.createElement('button')
+      const content = document.createElement('div')
+      content.dataset.scope = 'popover'
+      document.body.append(outside, content)
+      const config = createRuntimeConfig()
+      const cleanup = setupLayerTransaction(
+        () => config.layerRegistry.register({ kind: 'popover', node: () => content, branches: () => [], isModal: () => true, surfaces: () => [] }),
+        (layer, defer, run) => {
+          const modal = createModalLayerResources({ config, layer, enabled: () => true, targets: () => [content], flush: task => task(), run })
+          defer(modal.dispose)
+          modal.sync()
+        },
+      )
+      expect(hidden(outside)).toBe(true)
+      expect(document.querySelector('[data-xh-modal-underlay]')).toBeNull()
+      cleanup()
+      outside.remove()
+      content.remove()
     })
   })
 

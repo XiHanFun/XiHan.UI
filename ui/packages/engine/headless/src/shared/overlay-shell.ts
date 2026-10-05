@@ -145,46 +145,56 @@ export interface ModalLayerResources {
   /** 按最新 enabled 值取得或释放模态资源；关闭时撤下的背景失活在这里补回。 */
   sync: () => void
   /**
-   * 关闭时撤下背景失活，滚动锁留到退场结束；撤下之后执行 then（归还焦点：背景还是 inert 时
-   * focus() 是空操作，所以总在撤下之后）。背景确实被失活了才推迟到退场第一帧上屏之后再交接——
-   * 撤 inert 同样要把整棵背景子树的样式重算一遍，放在关闭那一拍里同步做，退场动画的第一帧就被拖住；
-   * 背景没被失活（非模态、或推迟的失活还没施加）就当场执行 then。交接前重开或资源释放即作废：
-   * 重开时背景失活原样留着、焦点也不动，释放时背景失活随资源撤下、焦点由焦点域卸载归还。
+   * 关闭时当场撤下背景失活（aria-hidden 与模态底板），滚动锁留到退场结束；撤下之后执行 then
+   * （归还焦点：焦点不该落进还对读屏藏着的背景里，所以总在撤下之后）。之后又重开即补回背景失活；
+   * 资源释放时背景失活随之撤下，焦点由焦点域卸载归还。
    */
   reveal: (then?: () => void) => void
   dispose: Cleanup
 }
 
+/** 模态底板的标记属性。 */
+const DATA_MODAL_UNDERLAY = 'data-xh-modal-underlay'
+
 /**
- * 等下一帧画出来之后再执行：两层 requestAnimationFrame。第一层回调排在下一帧的绘制之前，
- * 在它里面再排一层，第二层执行时上一帧已经上屏。返回的撤销句柄在任一层之前调用都能拦下。
+ * 模态底板：在本层定位层里垫一块铺满视口的透明板，拦下落到背景上的指针。
  *
- * 只推迟一层不够：rAF 回调与它之后的样式、布局、绘制同属一帧，回调里做的重活照样拖住这一帧。
+ * 背景只打 aria-hidden、不再 inert，底下的按钮与链接照样接得到指针。Dialog 一族有遮罩（层的 surfaces），
+ * 遮罩本就铺满视口、点在上面即消解，不再另垫；没有遮罩的模态层（模态 Popover，或没放遮罩的对话框）
+ * 由底板兜住：点在底板上即层外交互，消解层照常收起，背景上的控件收不到这次点击，悬停也落不到背景上。
+ *
+ * 底板是定位层的子节点、z-index:-1：画在本层自己的层叠上下文里、压在内容之下，层号天然跟着本层走，
+ * 作者改了浮层层号也不会错位。定位层皮肤普遍 pointer-events:none，底板自己写回 auto。消解层只认
+ * 内容节点、分支与遮罩，定位层不算本层，点在底板上照旧判为层外。
  */
-export function afterNextPaint(win: Window, task: () => void): Cleanup {
-  let inner = 0
-  const outer = win.requestAnimationFrame(() => {
-    inner = win.requestAnimationFrame(() => {
-      inner = 0
-      task()
-    })
-  })
-  return () => {
-    win.cancelAnimationFrame(outer)
-    if (inner)
-      win.cancelAnimationFrame(inner)
-  }
+function mountModalUnderlay(layer: Layer): Cleanup {
+  if (layer.surfaces().length)
+    return () => {}
+  const node = layer.node()
+  const parent = node?.parentElement
+  // 标准结构里定位层是内容节点的同 scope 直属父节点；没有定位层的结构不垫
+  if (!node || !parent || !parent.dataset.scope || parent.dataset.scope !== node.dataset.scope)
+    return () => {}
+  const underlay = parent.ownerDocument.createElement('div')
+  underlay.setAttribute(DATA_MODAL_UNDERLAY, '')
+  underlay.setAttribute('aria-hidden', 'true')
+  underlay.style.position = 'fixed'
+  underlay.style.inset = '0'
+  underlay.style.zIndex = '-1'
+  underlay.style.pointerEvents = 'auto'
+  parent.append(underlay)
+  return () => underlay.remove()
 }
 
 /**
  * 管理一层可动态切换的模态资源：滚动锁与背景失活同进同退，只有关闭那一刻背景先解除失活。
  * 层登记、消解层与焦点域仍由调用方持有，不因 modal 改值而重建。
  *
- * 背景失活等浮层第一帧画出来之后才施加。失活打的是 inert：浏览器要把被罩住的整棵子树
- * （通常是整个应用根）的样式重算一遍，几千个节点的页面上百毫秒；放在展开那一拍里同步做，
- * 面板的第一帧就被拖住这么久，点下去要等一会儿才有反应。推迟的这一两帧里焦点已由焦点域
- * 收进浮层、指针由遮罩拦下，背景只是晚一两帧才对读屏与查找消失（Zag 的 ariaHidden 缺省
- * 同样推迟到下一帧）。
+ * 背景失活由两件事组成，都不碰背景节点的样式：背景打 aria-hidden（hideOutside），对读屏隐藏；
+ * 没有遮罩的层在自己下面垫一块透明底板（mountModalUnderlay），拦下落到背景上的指针。键盘由焦点域
+ * 收在浮层里。早先打的是 inert，能一并挡住这几样，代价是整棵背景子树（通常是整个应用根）样式重算，
+ * 大页面开、关各几十毫秒，只好推迟到首帧之后；现在两件事都与页面大小无关，展开时随宿主提交当场施加，
+ * 关闭时当场撤下。
  */
 export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalLayerResources {
   let disposed = false
@@ -192,38 +202,35 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
   // 当前这一份背景失活：撤下时置空，补回时重建
   let hidden: Cleanup | undefined
   let revealed = false
-  // 已排期、还没执行的背景失活
-  let pendingHide: Cleanup | undefined
-  // 已排期、还没执行的「撤下背景失活并交接」
-  let pendingReveal: Cleanup | undefined
-
-  const cancelPendingReveal = (): void => {
-    const cancel = pendingReveal
-    pendingReveal = undefined
-    cancel?.()
-  }
 
   const hideBackground = (): void => {
     o.run(() => {
-      const targets = o.targets()
-      if (targets.length)
-        hidden = hideOutside(o.targets, o.config)
-    })
-  }
-
-  const cancelPendingHide = (): void => {
-    const cancel = pendingHide
-    pendingHide = undefined
-    cancel?.()
-  }
-
-  /** 第一帧上屏后再失活背景；到点时仍要失活（没被关、没被撤、没切成非模态）才施加 */
-  const scheduleHide = (stillWanted: () => boolean): void => {
-    cancelPendingHide()
-    pendingHide = afterNextPaint(o.config.scope.getWin(), () => {
-      pendingHide = undefined
-      if (stillWanted())
-        hideBackground()
+      if (!o.targets().length)
+        return
+      const showOutside = hideOutside(o.targets, o.config)
+      let removeUnderlay: Cleanup
+      try {
+        removeUnderlay = mountModalUnderlay(o.layer)
+      }
+      catch (error) {
+        showOutside()
+        throw error
+      }
+      hidden = () => {
+        const errors: unknown[] = []
+        for (const restore of [removeUnderlay, showOutside]) {
+          try {
+            restore()
+          }
+          catch (error) {
+            errors.push(error)
+          }
+        }
+        if (errors.length === 1)
+          throw errors[0]
+        if (errors.length > 1)
+          throw new AggregateError(errors, '[xh] 模态背景失活撤销出现多个异常', { cause: errors[0] })
+      }
     })
   }
 
@@ -235,8 +242,6 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
       if (!alive)
         return
       alive = false
-      cancelPendingHide()
-      cancelPendingReveal()
       const errors: unknown[] = []
       try {
         const restore = hidden
@@ -259,10 +264,11 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
     }
     release = cleanup
 
-    const stillWanted = (): boolean => !disposed && alive && release === cleanup && o.enabled() && !revealed && !hidden
+    // 等宿主把浮层节点提交到 DOM：targets 与定位层这时才在
     o.flush(() => {
-      if (stillWanted())
-        scheduleHide(stillWanted)
+      if (disposed || !alive || release !== cleanup || !o.enabled() || revealed || hidden)
+        return
+      hideBackground()
     })
   }
 
@@ -274,14 +280,12 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
         acquire()
       }
       else if (revealed) {
+        // 关上之后、资源释放之前又重开：补回背景失活
         revealed = false
-        // 关上又在交接之前重开：背景失活原样留着（hidden 还在），交接作废
-        cancelPendingReveal()
         const current = release
-        const stillWanted = (): boolean => !disposed && release === current && !revealed && !hidden && o.enabled()
         o.flush(() => {
-          if (stillWanted())
-            scheduleHide(stillWanted)
+          if (!disposed && release === current && !revealed && !hidden && o.enabled())
+            hideBackground()
         })
       }
     }
@@ -297,26 +301,13 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
   return {
     sync,
     reveal(then) {
-      if (disposed || !release || revealed) {
-        then?.()
-        return
-      }
-      revealed = true
-      cancelPendingHide()
-      if (!hidden) {
-        then?.()
-        return
-      }
-      cancelPendingReveal()
-      pendingReveal = afterNextPaint(o.config.scope.getWin(), () => {
-        pendingReveal = undefined
-        if (disposed || !revealed)
-          return
+      if (!disposed && release && !revealed) {
+        revealed = true
         const restore = hidden
         hidden = undefined
         restore?.()
-        then?.()
-      })
+      }
+      then?.()
     },
     dispose() {
       if (disposed)

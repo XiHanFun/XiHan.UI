@@ -288,8 +288,8 @@ describe('image-viewer 退场', () => {
     const content = part('image-viewer', 'content')!
     expect(content.inert).toBe(true)
     expect(content.getAttribute('aria-hidden')).toBe('true')
-    // 退场第一帧上屏后撤下背景失活、随即把焦点交回背景里的触发器；滚动锁留到退场结束
-    expect(outside.inert).toBe(false)
+    // 关闭时当场撤下背景失活、随即把焦点交回背景里的触发器；滚动锁留到退场结束
+    expect(outside.hasAttribute('aria-hidden')).toBe(false)
     expect(document.body.style.overflow).toBe('hidden')
 
     const finite = content.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
@@ -306,7 +306,7 @@ describe('image-viewer 退场', () => {
     await settle()
 
     expect(getLayerRegistry(document).list()).toHaveLength(0)
-    expect(outside.inert).toBe(false)
+    expect(outside.hasAttribute('aria-hidden')).toBe(false)
     expect(part('image-viewer', 'content')).toBeNull()
   })
 })

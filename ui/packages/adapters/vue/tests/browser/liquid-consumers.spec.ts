@@ -135,7 +135,7 @@ function image(fill: string, width = 40, height = 30): string {
   return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="${width}" height="${height}" fill="${fill}"/></svg>`)}`
 }
 
-/** variant 为 transparent 时遮罩不画底，下层直接透出来（背景被模态设为 inert，命中不到）。 */
+/** variant 为 transparent 时遮罩不画底，下层直接透出来（模态只给背景打 aria-hidden，背景仍在命中栈里）。 */
 function imageViewer(src = image('transparent'), variant?: 'transparent'): () => VNode {
   const collection = [{ src, alt: '样图' }, { src, alt: '样图' }]
   return () => h(XhImageViewerRoot, { collection, defaultOpen: true, defaultIndex: 1, variant }, () => [
@@ -310,7 +310,7 @@ describe('接入液态面', () => {
     expectNoNestedLiquid()
   })
 
-  it('图片预览：缺省遮罩读成深色下层；透明遮罩下背景被模态压住，只猜色调、不换通透档', async () => {
+  it('图片预览：缺省遮罩读成深色下层；透明遮罩下读到真实的均匀浅底，换通透档', async () => {
     await mount(imageViewer(), 'oklch(0.96 0.02 100)')
     const toolbar = part('image-viewer', 'toolbar')
     await judged(toolbar)
@@ -322,7 +322,9 @@ describe('接入液态面', () => {
     await mount(imageViewer(undefined, 'transparent'), 'oklch(0.96 0.02 100)')
     const counter = part('image-viewer', 'counter')
     await judged(counter)
-    expect(counter.hasAttribute('data-xh-liquid-clarity')).toBe(false)
+    // 模态只给背景打 aria-hidden，背景仍在命中栈里：透明遮罩下读到的就是页面本身
+    expect(counter.getAttribute('data-xh-ink')).toBe('dark')
+    expect(counter.hasAttribute('data-xh-liquid-clarity')).toBe(true)
   })
 
   it('图片预览：standard 档仍是那层深色纱', async () => {

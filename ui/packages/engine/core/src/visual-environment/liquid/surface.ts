@@ -148,7 +148,7 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
     // 没有液态成员时不取样，连下面那次全文档的 [inert] 查询也省掉
     if (!canSample || active.size === 0)
       return
-    // 模态把背景设成 inert：那些内容照样画在下面，命中栈里却没有它们
+    // 页面里有 inert 内容（作者自己打的）：它们照样画在下面，命中栈里却没有它们
     const obscured = doc.querySelector('[inert]') !== null
     for (const [el, state] of active) {
       const rect = el.getBoundingClientRect()

@@ -306,8 +306,8 @@ export const popoverMachine = createMachine({
             }
           }
           else {
-            // 关闭时交接焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等。先撤下背景失活再归还——
-            // 背景确实被失活了，交接推迟到退场第一帧上屏之后（见 createModalLayerResources.reveal）
+            // 关闭时交接焦点：内容随即 inert，资源要留到退场播完，焦点不能跟着等。先撤下背景失活再归还，
+            // 焦点不落进还对读屏藏着的背景（见 createModalLayerResources.reveal）
             if (closing) {
               if (revealBackgroundNow)
                 revealBackgroundNow(returnFocusNow)

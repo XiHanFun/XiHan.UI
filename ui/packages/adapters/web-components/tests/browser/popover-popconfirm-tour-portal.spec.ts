@@ -19,7 +19,7 @@ async function settle(): Promise<void> {
     for (const element of document.querySelectorAll<OverlayElement>('xh-popover, xh-popconfirm, xh-tour'))
       await element.updateComplete
   }
-  // 模态浮层的背景失活与关闭交接都排在「下一帧上屏之后」（两层 rAF），等两帧才落定
+  // 等宿主提交与定位落定：两帧
   await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
   await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
 }
@@ -81,7 +81,7 @@ describe.each(['popover', 'popconfirm'] as const)('wc %s 锚定 Portal', (scope)
       await settle()
       expect(positioner.parentElement).toBe(shell)
       expect(getLayerRegistry(document).top()?.isModal()).toBe(true)
-      expect(outside.inert).toBe(true)
+      expect(outside.getAttribute('aria-hidden')).toBe('true')
     }
 
     element.open = false
@@ -96,7 +96,7 @@ describe.each(['popover', 'popconfirm'] as const)('wc %s 锚定 Portal', (scope)
     expect(positioner.previousSibling).toBe(originalPrevious)
     expect(positioner.nextSibling).toBe(originalNext)
     expect(shell.isConnected).toBe(false)
-    expect(outside.inert).toBe(false)
+    expect(outside.hasAttribute('aria-hidden')).toBe(false)
   })
 })
 

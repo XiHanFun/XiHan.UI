@@ -32,7 +32,10 @@ export function stripScopeClass(value: string): string {
 
 // —— core 自用的内部标记（不作为公共样式接口）——
 export const DATA_FOCUS_GUARD = 'data-xh-focus-guard'
-/** 带此属性的元素及其后代不被 hideOutside 施加 inert，其祖先只递归不整块罩住。 */
+/**
+ * 带此属性的元素及其后代不被 hideOutside 藏起（不打 aria-hidden），其祖先只递归不整块罩住。
+ * 属性名沿用早先打 inert 时的叫法，语义仍是「不随模态背景一起失活」。
+ */
 export const DATA_INERT_EXEMPT = 'data-xh-inert-exempt'
 
 // —— 结构落点 ——

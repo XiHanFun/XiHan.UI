@@ -15,7 +15,7 @@ async function settle(): Promise<void> {
       await Promise.resolve()
     })
   }
-  // 模态浮层的背景失活与关闭交接都排在「下一帧上屏之后」（两层 rAF），等两帧才落定
+  // 等宿主提交与定位落定：两帧
   await new Promise(resolve => requestAnimationFrame(resolve))
   await new Promise(resolve => requestAnimationFrame(resolve))
 }
@@ -86,18 +86,18 @@ describe('dialog 模态与非模态表面', () => {
 
     await render(true)
     expect(backdrop()).not.toBeNull()
-    // 背景失活等浮层第一帧上屏之后才施加
-    await expect.poll(() => outside.inert).toBe(true)
+    // 背景失活随宿主提交当场施加
+    await expect.poll(() => outside.getAttribute('aria-hidden')).toBe('true')
     expect(document.body.style.overflow).toBe('hidden')
     expect(getLayerRegistry(document).top()?.isModal()).toBe(true)
-    // 失活前焦点就停在这颗按钮上；浏览器要到下一次渲染才把焦点从变 inert 的节点上收走，先松手再验证取不回焦点
+    // 失活前焦点就停在这颗按钮上：藏起背景时已把它放掉，再往背景里塞焦点会被焦点域拉回
     outside.blur()
     outside.focus()
     expect(document.activeElement).not.toBe(outside)
 
     await render(false)
     expect(backdrop()).toBeNull()
-    expect(outside.inert).toBe(false)
+    expect(outside.hasAttribute('aria-hidden')).toBe(false)
     expect(document.body.style.overflow).not.toBe('hidden')
     expect(hit(outside)).toBe(outside)
     outside.focus()
