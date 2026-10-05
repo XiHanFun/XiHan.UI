@@ -362,7 +362,8 @@ describe('menu 的 collection', () => {
     }), { attachTo: document.body })
     const trigger = w.element.querySelector('[data-part="trigger"]')!
     expect(trigger.tagName).toBe('SPAN')
-    expect(trigger.className).toBe('mine')
+    // 作者的节点没有自己的解剖：部件的解剖连同挂载类整套落上去
+    expect(trigger.className).toBe('mine xh-scope-menu')
     expect(w.element.querySelectorAll('button').length).toBe(0)
     w.unmount()
   })

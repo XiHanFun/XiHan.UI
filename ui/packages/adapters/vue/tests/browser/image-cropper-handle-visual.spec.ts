@@ -14,11 +14,11 @@ function mount(radius: string, shape: 'rect' | 'round' = 'rect') {
   host?.remove()
   host = document.createElement('div')
   host.innerHTML = `
-    <div data-scope="image-cropper" data-part="root" style="--xh-_image-cropper-zoom: 1; inline-size: 320px">
-      <div data-scope="image-cropper" data-part="crop-area" data-shape="${shape}" style="position: relative; inline-size: 200px; block-size: 120px; border-radius: ${radius}">
-        <span data-scope="image-cropper" data-part="crop-handle" data-position="n"></span>
-        <span data-scope="image-cropper" data-part="crop-handle" data-position="e" tabindex="0"></span>
-        <span data-scope="image-cropper" data-part="crop-handle" data-position="se" tabindex="0"></span>
+    <div data-scope="image-cropper" class="xh-scope-image-cropper" data-part="root" style="--xh-_image-cropper-zoom: 1; inline-size: 320px">
+      <div data-scope="image-cropper" class="xh-scope-image-cropper" data-part="crop-area" data-shape="${shape}" style="position: relative; inline-size: 200px; block-size: 120px; border-radius: ${radius}">
+        <span data-scope="image-cropper" class="xh-scope-image-cropper" data-part="crop-handle" data-position="n"></span>
+        <span data-scope="image-cropper" class="xh-scope-image-cropper" data-part="crop-handle" data-position="e" tabindex="0"></span>
+        <span data-scope="image-cropper" class="xh-scope-image-cropper" data-part="crop-handle" data-position="se" tabindex="0"></span>
       </div>
     </div>`
   document.body.append(host)

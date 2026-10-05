@@ -17,12 +17,12 @@ function mount(dir: 'ltr' | 'rtl' = 'ltr') {
   host = document.createElement('div')
   host.dir = dir
   host.innerHTML = `
-    <div data-scope="rating" data-part="root">
-      <div data-scope="rating" data-part="control">
-        <span data-scope="rating" data-part="item" ${STAR} data-highlighted></span>
-        <span data-scope="rating" data-part="item" ${STAR} data-highlighted data-half></span>
-        <span data-scope="rating" data-part="item" ${STAR}></span>
-        <span data-scope="rating" data-part="item" ${STAR}><svg viewBox="0 0 24 24"></svg></span>
+    <div data-scope="rating" class="xh-scope-rating" data-part="root">
+      <div data-scope="rating" class="xh-scope-rating" data-part="control">
+        <span data-scope="rating" class="xh-scope-rating" data-part="item" ${STAR} data-highlighted></span>
+        <span data-scope="rating" class="xh-scope-rating" data-part="item" ${STAR} data-highlighted data-half></span>
+        <span data-scope="rating" class="xh-scope-rating" data-part="item" ${STAR}></span>
+        <span data-scope="rating" class="xh-scope-rating" data-part="item" ${STAR}><svg viewBox="0 0 24 24"></svg></span>
       </div>
     </div>`
   document.body.append(host)

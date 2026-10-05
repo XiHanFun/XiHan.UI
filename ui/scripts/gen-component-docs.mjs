@@ -1354,8 +1354,9 @@ function renderComponent(entry, category) {
   if (sk && ad.skin) {
     push('### 皮肤', '')
     push(
-      `${code(ad.skin)} 使用 ${code(`[data-scope="${id}"][data-part="${rt.parts[0]}"]`)} 部件选择器，`
-      + `位于 ${sk.layers.map(code).join(' 与 ')} 层。覆盖样式使用 ${code('xihan.overrides')}。`,
+      `${code(ad.skin)} 按 ${code(`[data-scope="${id}"][data-part="${rt.parts[0]}"]`)} 部件选择器书写，`
+      + `发布产物以挂载类 ${code(`.xh-scope-${id}`)} 代替其中的 data-scope（特异性相同），`
+      + `位于 ${sk.layers.map(code).join(' 与 ')} 层。覆盖样式使用 ${code('xihan.overrides')}，部件选择器照常可用。`,
       '',
     )
     if (sk.forcedColors)

@@ -20,7 +20,10 @@
 //
 // 位置关系按样式规则的选择器序判定，不依赖注释是否被打包器保留：公共层的每条选择器在产物里的
 // 首次出现（皮肤可以照抄同一条选择器来压过公共层，但首次出现的一定是公共层那份）都要在家族根
-// 规则之前；家族根规则要在第一条不属于公共层的 [data-scope 规则之前。
+// 规则之前；家族根规则要在第一条不属于公共层的组件皮肤规则之前。
+//
+// 产物里带取值的 `[data-scope='x']` 已换成挂载类 `.xh-scope-x`（build/emit-entries.mjs），
+// 公共层源文件仍按属性书写，比对前照同一规则换一遍。
 import { Buffer } from 'node:buffer'
 import { readFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
@@ -40,8 +43,15 @@ const FAMILY_ROOT = '[data-xh-action-control]'
 const FAMILY_COARSE_HIT = ':where([data-xh-action-control]:is([data-xh-action-profile=text],[data-xh-action-profile=row],[data-xh-action-profile=disclosure-trigger])):after'
 /** 排在家族之前的公共层，与 check-layer-order 的 PUBLIC_LAYERS 一致。 */
 const PUBLIC_LAYERS = ['focus.css', 'label.css', 'description.css', 'pointer.css']
-/** 组件皮肤规则：以 [data-scope 开头、且不是公共层里那条的顶层选择器。 */
-const SKIN_RULE = /^\[data-scope\b/
+/** 组件皮肤规则：以挂载类或 [data-scope 开头、且不是公共层里那条的顶层选择器。 */
+const SKIN_RULE = /^(?:\.xh-scope-|\[data-scope\b)/
+/** 带取值的 data-scope 精确匹配，与 build/emit-entries.mjs 换挂载类时认的是同一种。 */
+const SCOPE_ATTR = /\[data-scope=(['"]?)([a-z][a-z0-9-]*)\1\]/g
+
+/** 源文件选择器换成产物里的写法：`[data-scope=x]` → `.xh-scope-x`，存在式的 [data-scope] 照旧。 */
+function mountScopeClasses(selector) {
+  return selector.replace(SCOPE_ATTR, (_, _quote, scope) => `.xh-scope-${scope}`)
+}
 
 /** 去引号、去空白、`::after` 归一到 `:after`：minify 与否、单双引号都比得出同一条选择器。 */
 function normalizeSelector(selector) {
@@ -84,12 +94,12 @@ function firstIndex(selectors, predicate) {
   return hit ? hit.index : -1
 }
 
-/** 读四份公共层源文件，按文件收集各自的全部选择器（归一化后）。 */
+/** 读四份公共层源文件，按文件收集各自的全部选择器（归一化并换成产物写法后）。 */
 async function publicLayerSelectors() {
   const out = new Map()
   for (const name of PUBLIC_LAYERS) {
     const css = await readFile(join(STYLES_ROOT, 'css', name), 'utf8')
-    out.set(name, selectorsOf(css).map(entry => entry.selector))
+    out.set(name, selectorsOf(css).map(entry => mountScopeClasses(entry.selector)))
   }
   return out
 }

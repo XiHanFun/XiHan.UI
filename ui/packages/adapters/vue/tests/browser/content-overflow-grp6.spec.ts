@@ -60,9 +60,9 @@ describe('内容撑破行', () => {
   describe('typography', () => {
     it.each(WIDTHS)('%ipx：不可断的长串在段落里断开，不把整块正文顶宽', (w) => {
       const doc = mount(w, `
-        <div data-scope="typography" data-part="root" id="root">
-          <p data-scope="typography" data-part="paragraph" id="para">前缀 ${LONG_RUN} 后缀</p>
-          <div data-scope="typography" data-part="prose" id="prose"><p>前缀 ${LONG_RUN} 后缀</p></div>
+        <div data-scope="typography" class="xh-scope-typography" data-part="root" id="root">
+          <p data-scope="typography" class="xh-scope-typography" data-part="paragraph" id="para">前缀 ${LONG_RUN} 后缀</p>
+          <div data-scope="typography" class="xh-scope-typography" data-part="prose" id="prose"><p>前缀 ${LONG_RUN} 后缀</p></div>
         </div>`)
 
       expect(pick(doc, '#para').scrollWidth).toBe(pick(doc, '#para').clientWidth)
@@ -73,8 +73,8 @@ describe('内容撑破行', () => {
 
     it.each(WIDTHS)('%ipx：富文本表格里的长单元格断得开，整张表收在正文宽度里', (w) => {
       const doc = mount(w, `
-        <div data-scope="typography" data-part="root">
-          <div data-scope="typography" data-part="prose" id="prose">
+        <div data-scope="typography" class="xh-scope-typography" data-part="root">
+          <div data-scope="typography" class="xh-scope-typography" data-part="prose" id="prose">
             <table id="tbl"><tbody><tr>
               <td>${ORDER_NO}${ORDER_NO}</td><td>${ORDER_NO}${ORDER_NO}</td>
               <td>${ORDER_NO}${ORDER_NO}</td><td>${ORDER_NO}${ORDER_NO}</td>
@@ -91,10 +91,10 @@ describe('内容撑破行', () => {
   describe('tool-call', () => {
     function mountCall(w: number): Document {
       return mount(w, `
-        <div data-scope="tool-call" data-part="root" style="inline-size: 240px">
-          <button data-scope="tool-call" data-part="trigger">查询</button>
-          <div data-scope="tool-call" data-part="content" data-state="open" id="content">
-            <div data-scope="tool-call" data-part="output" id="output"><pre style="margin:0">{"q":"${LONG_RUN}"}</pre></div>
+        <div data-scope="tool-call" class="xh-scope-tool-call" data-part="root" style="inline-size: 240px">
+          <button data-scope="tool-call" class="xh-scope-tool-call" data-part="trigger">查询</button>
+          <div data-scope="tool-call" class="xh-scope-tool-call" data-part="content" data-state="open" id="content">
+            <div data-scope="tool-call" class="xh-scope-tool-call" data-part="output" id="output"><pre style="margin:0">{"q":"${LONG_RUN}"}</pre></div>
           </div>
         </div>`)
     }
@@ -125,9 +125,9 @@ describe('内容撑破行', () => {
       // 十二格：最宽的那一档也放不下，三档量的是同一件事
       const cells = Array.from({ length: 12 }).fill(`<td>${ORDER_NO}</td>`).join('')
       const doc = mount(w, `
-        <div data-scope="markdown-stream" data-part="root" id="root">
-          <div data-scope="markdown-stream" data-part="content" id="content">
-            <div data-scope="markdown-stream" data-part="block" data-kind="table" id="block">
+        <div data-scope="markdown-stream" class="xh-scope-markdown-stream" data-part="root" id="root">
+          <div data-scope="markdown-stream" class="xh-scope-markdown-stream" data-part="content" id="content">
+            <div data-scope="markdown-stream" class="xh-scope-markdown-stream" data-part="block" data-kind="table" id="block">
               <table><tbody><tr>${cells}</tr></tbody></table>
             </div>
           </div>
@@ -142,9 +142,9 @@ describe('内容撑破行', () => {
 
     it('接了横滚之后光标那一格不多出一条竖滚动', () => {
       const doc = mount(375, `
-        <div data-scope="markdown-stream" data-part="root">
-          <div data-scope="markdown-stream" data-part="content">
-            <div data-scope="markdown-stream" data-part="block" data-caret id="caret"><p style="margin:0">正在生成的一段话</p></div>
+        <div data-scope="markdown-stream" class="xh-scope-markdown-stream" data-part="root">
+          <div data-scope="markdown-stream" class="xh-scope-markdown-stream" data-part="content">
+            <div data-scope="markdown-stream" class="xh-scope-markdown-stream" data-part="block" data-caret id="caret"><p style="margin:0">正在生成的一段话</p></div>
           </div>
         </div>`)
       const caret = pick(doc, '#caret')
@@ -156,9 +156,9 @@ describe('内容撑破行', () => {
   describe('page-header', () => {
     it.each(WIDTHS)('%ipx：不可断的长标题断在行内，不把页头撑出容器', (w) => {
       const doc = mount(w, `
-        <div data-scope="page-header" data-part="root" id="root">
-          <h1 data-scope="page-header" data-part="title" id="title">${LONG_RUN}</h1>
-          <p data-scope="page-header" data-part="description">说明文字</p>
+        <div data-scope="page-header" class="xh-scope-page-header" data-part="root" id="root">
+          <h1 data-scope="page-header" class="xh-scope-page-header" data-part="title" id="title">${LONG_RUN}</h1>
+          <p data-scope="page-header" class="xh-scope-page-header" data-part="description">说明文字</p>
         </div>`)
       const root = pick(doc, '#root')
 
@@ -171,15 +171,15 @@ describe('内容撑破行', () => {
   describe('timeline', () => {
     it.each(WIDTHS)('%ipx：横排四条带长单号，整条轴不被顶出容器', (w) => {
       const items = Array.from({ length: 4 }, (_, i) => `
-        <li data-scope="timeline" data-part="item" data-orientation="horizontal">
-          <span data-scope="timeline" data-part="indicator"></span>
-          <span data-scope="timeline" data-part="connector"></span>
-          <div data-scope="timeline" data-part="content">
-            <div data-scope="timeline" data-part="title">${ORDER_NO}</div>
-            <div data-scope="timeline" data-part="time">10:0${i}</div>
+        <li data-scope="timeline" class="xh-scope-timeline" data-part="item" data-orientation="horizontal">
+          <span data-scope="timeline" class="xh-scope-timeline" data-part="indicator"></span>
+          <span data-scope="timeline" class="xh-scope-timeline" data-part="connector"></span>
+          <div data-scope="timeline" class="xh-scope-timeline" data-part="content">
+            <div data-scope="timeline" class="xh-scope-timeline" data-part="title">${ORDER_NO}</div>
+            <div data-scope="timeline" class="xh-scope-timeline" data-part="time">10:0${i}</div>
           </div>
         </li>`).join('')
-      const doc = mount(w, `<ol data-scope="timeline" data-part="root" data-orientation="horizontal" id="root">${items}</ol>`)
+      const doc = mount(w, `<ol data-scope="timeline" class="xh-scope-timeline" data-part="root" data-orientation="horizontal" id="root">${items}</ol>`)
       const root = pick(doc, '#root')
 
       expect(root.scrollWidth).toBe(root.clientWidth)
@@ -192,7 +192,7 @@ describe('内容撑破行', () => {
     it.each([200, 320])('%ipx 的栏里：长文案不把按钮撑出那一栏', (w) => {
       const doc = mount(375, `
         <div style="inline-size: ${w}px" id="host">
-          <button data-scope="download-trigger" data-part="root" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle" id="root"><span id="label">导出当前筛选条件下的全部记录（CSV）</span></button>
+          <button data-scope="download-trigger" class="xh-scope-download-trigger" data-part="root" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle" id="root"><span id="label">导出当前筛选条件下的全部记录（CSV）</span></button>
         </div>`)
       const host = pick(doc, '#host')
       const root = pick(doc, '#root')
@@ -205,7 +205,7 @@ describe('内容撑破行', () => {
     it('裁的是文案末尾，开头仍排在按钮的行首内衬处', () => {
       const doc = mount(375, `
         <div style="inline-size: 200px">
-          <button data-scope="download-trigger" data-part="root" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle" id="root"><span id="label">导出当前筛选条件下的全部记录（CSV）</span></button>
+          <button data-scope="download-trigger" class="xh-scope-download-trigger" data-part="root" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle" id="root"><span id="label">导出当前筛选条件下的全部记录（CSV）</span></button>
         </div>`)
       const root = pick(doc, '#root')
       const label = pick(doc, '#label')

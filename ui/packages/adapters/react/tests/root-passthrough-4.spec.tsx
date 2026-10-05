@@ -3,6 +3,7 @@
 // 根部件接住作者写在它上面的其余属性：逐实例令牌覆盖靠的就是这一层。
 // 共享一致性套件只喂机器 props，作者自己写的 style / className 一次都走不到。
 import type { CSSProperties, ReactElement } from 'react'
+import { scopeClass } from '@xihan-ui/core'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -182,13 +183,14 @@ describe.each(cases)('$scope 的 root 收作者写在上面的属性', (item) =>
   it('className 落到 root 上，且部件自己的接线一条不少', () => {
     mount(item.bare)
     const before = attrNames(rootOf(item.scope))
-    expect(before).not.toContain('class')
+    // 部件自己只写挂载类
+    expect([...rootOf(item.scope).classList]).toEqual([scopeClass(item.scope)])
     act(() => root!.render(item.probed))
     const el = rootOf(item.scope)
-    expect([...el.classList]).toContain(PROBE_CLASS)
-    // 作者的 class / style 是净增的：部件原本写上的属性一个都没被顶掉
+    expect([...el.classList]).toEqual([scopeClass(item.scope), PROBE_CLASS])
+    // 作者的 class 拼在挂载类后面、style 是净增的：部件原本写上的属性一个都没被顶掉
     expect(attrNames(el)).toEqual(expect.arrayContaining(before))
-    expect(attrNames(el).filter(n => !before.includes(n)).sort()).toEqual(['class', 'style'])
+    expect(attrNames(el).filter(n => !before.includes(n)).sort()).toEqual(['style'])
   })
 
   it('机器 props 不漏成 DOM 属性', () => {

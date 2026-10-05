@@ -27,16 +27,16 @@ function mount(variant: 'ghost' | 'outline' | 'subtle' = 'ghost', hoverable = fa
   // 并行跑的别份用例一起步就把它停回角落，等 120ms 过渡走完再读，读到的多半已是失去悬停的透明底
   host.style.setProperty('--xh-motion-duration-micro', '0ms')
   host.innerHTML = `
-    <ul data-scope="list" data-part="root" data-variant="${variant}"${hoverable ? ' data-hoverable' : ''} data-split>
-      <li data-scope="list" data-part="item">
-        <div data-scope="list" data-part="item-content">
-          <div data-scope="list" data-part="item-title">周报</div>
-          <div data-scope="list" data-part="item-description">每周五下班前提交</div>
+    <ul data-scope="list" class="xh-scope-list" data-part="root" data-variant="${variant}"${hoverable ? ' data-hoverable' : ''} data-split>
+      <li data-scope="list" class="xh-scope-list" data-part="item">
+        <div data-scope="list" class="xh-scope-list" data-part="item-content">
+          <div data-scope="list" class="xh-scope-list" data-part="item-title">周报</div>
+          <div data-scope="list" class="xh-scope-list" data-part="item-description">每周五下班前提交</div>
         </div>
       </li>
-      <li data-scope="list" data-part="item">
-        <div data-scope="list" data-part="item-content">
-          <div data-scope="list" data-part="item-title">月报</div>
+      <li data-scope="list" class="xh-scope-list" data-part="item">
+        <div data-scope="list" class="xh-scope-list" data-part="item-content">
+          <div data-scope="list" class="xh-scope-list" data-part="item-title">月报</div>
         </div>
       </li>
     </ul>`

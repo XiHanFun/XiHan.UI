@@ -125,6 +125,7 @@ describe('颜色选择器浮层：floating 实体面', () => {
     const outer = part('positioner')
     const inner = document.createElement('div')
     inner.dataset.scope = 'color-picker'
+    inner.classList.add('xh-scope-color-picker')
     inner.dataset.part = 'positioner'
     outer.dataset.placement = 'bottom-start'
     outer.append(inner)

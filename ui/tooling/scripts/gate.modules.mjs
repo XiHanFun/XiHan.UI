@@ -45,6 +45,7 @@ export const MODULES = [
     label: '皮肤结构与环境档',
     steps: [
       'node tooling/scripts/skin/check-style-entries.mjs',
+      'node tooling/scripts/skin/check-selector-buckets.mjs',
       'node tooling/scripts/skin/check-skin-markers.mjs',
       'node tooling/scripts/skin/check-hidden-override.mjs',
       'node tooling/scripts/skin/check-undefined-guard.mjs',

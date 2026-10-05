@@ -18,16 +18,16 @@ function mount(tokens: Record<string, string> = {}) {
   for (const [name, value] of Object.entries(tokens))
     host.style.setProperty(name, value)
   host.innerHTML = `
-    <div data-scope="layout" data-part="root">
-      <aside data-scope="layout" data-part="sider" data-sider="expanded"></aside>
-      <main data-scope="layout" data-part="content"></main>
+    <div data-scope="layout" class="xh-scope-layout" data-part="root">
+      <aside data-scope="layout" class="xh-scope-layout" data-part="sider" data-sider="expanded"></aside>
+      <main data-scope="layout" class="xh-scope-layout" data-part="content"></main>
     </div>
-    <div data-scope="layout" data-part="root">
-      <aside data-scope="layout" data-part="sider" data-collapsed data-sider="collapsed"></aside>
-      <main data-scope="layout" data-part="content"></main>
+    <div data-scope="layout" class="xh-scope-layout" data-part="root">
+      <aside data-scope="layout" class="xh-scope-layout" data-part="sider" data-collapsed data-sider="collapsed"></aside>
+      <main data-scope="layout" class="xh-scope-layout" data-part="content"></main>
     </div>
-    <nav data-scope="side-nav" data-part="root" data-sider="nav-expanded"></nav>
-    <nav data-scope="side-nav" data-part="root" data-collapsed data-sider="nav-collapsed"></nav>`
+    <nav data-scope="side-nav" class="xh-scope-side-nav" data-part="root" data-sider="nav-expanded"></nav>
+    <nav data-scope="side-nav" class="xh-scope-side-nav" data-part="root" data-collapsed data-sider="nav-collapsed"></nav>`
   document.body.append(host)
   const width = (selector: string) => host!.querySelector<HTMLElement>(selector)!.getBoundingClientRect().width
   return {

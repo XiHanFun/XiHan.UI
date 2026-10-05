@@ -13,7 +13,7 @@ afterEach(() => {
 
 function mount(style = ''): HTMLElement {
   host = document.createElement('div')
-  host.innerHTML = `<div data-scope="tour" data-part="content" style="${style}"><p data-scope="tour" data-part="description">下一步：打开设置</p></div>`
+  host.innerHTML = `<div data-scope="tour" class="xh-scope-tour" data-part="content" style="${style}"><p data-scope="tour" class="xh-scope-tour" data-part="description">下一步：打开设置</p></div>`
   document.body.append(host)
   return host.querySelector<HTMLElement>(`[data-part='description']`)!
 }

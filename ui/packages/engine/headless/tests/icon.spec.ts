@@ -51,8 +51,8 @@ function root(props: IconProps = {}): Dict {
 
 describe('icon 解剖', () => {
   it('两个部件：svg 本身与作者留出的空壳，只有 root 是必需的', () => {
-    expect(iconAnatomy.build().root.attrs).toEqual({ 'data-scope': 'icon', 'data-part': 'root' })
-    expect(iconAnatomy.build().glyph.attrs).toEqual({ 'data-scope': 'icon', 'data-part': 'glyph' })
+    expect(iconAnatomy.build().root.attrs).toEqual({ 'data-scope': 'icon', 'data-part': 'root', 'class': 'xh-scope-icon' })
+    expect(iconAnatomy.build().glyph.attrs).toEqual({ 'data-scope': 'icon', 'data-part': 'glyph', 'class': 'xh-scope-icon' })
     expect(iconMeta.requiredParts).toEqual(['root'])
   })
 
@@ -232,6 +232,7 @@ describe('connectIcon 空壳', () => {
     expect(api({ icon: check, label: '已通过' }).getGlyphProps()).toEqual({
       'data-scope': 'icon',
       'data-part': 'glyph',
+      'class': 'xh-scope-icon',
     })
   })
 })

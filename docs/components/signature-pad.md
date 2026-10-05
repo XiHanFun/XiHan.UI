@@ -275,7 +275,7 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 
 ### 皮肤
 
-`@xihan-ui/styles/signature-pad.css` 使用 `[data-scope="signature-pad"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/signature-pad.css` 按 `[data-scope="signature-pad"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-signature-pad` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 

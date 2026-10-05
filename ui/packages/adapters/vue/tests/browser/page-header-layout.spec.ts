@@ -31,11 +31,11 @@ function mountAt(width: number): Document {
     doc.head.append(node.cloneNode(true))
   doc.body.style.margin = '0'
   doc.body.innerHTML = `
-    <header data-scope="page-header" data-part="root">
-      <div data-scope="page-header" data-part="back-trigger">←</div>
-      <h1 data-scope="page-header" data-part="title">订单详情</h1>
-      <p data-scope="page-header" data-part="description">创建于 2026 年 7 月 31 日</p>
-      <div data-scope="page-header" data-part="extra">编辑</div>
+    <header data-scope="page-header" class="xh-scope-page-header" data-part="root">
+      <div data-scope="page-header" class="xh-scope-page-header" data-part="back-trigger">←</div>
+      <h1 data-scope="page-header" class="xh-scope-page-header" data-part="title">订单详情</h1>
+      <p data-scope="page-header" class="xh-scope-page-header" data-part="description">创建于 2026 年 7 月 31 日</p>
+      <div data-scope="page-header" class="xh-scope-page-header" data-part="extra">编辑</div>
     </header>
   `
   return doc
@@ -49,14 +49,14 @@ describe('page-header 信息层级', () => {
   it('窄屏标题与说明上下排列，操作区换到下一行', () => {
     host = document.createElement('div')
     host.innerHTML = `
-      <header data-scope="page-header" data-part="root" style="inline-size:720px">
-        <div data-scope="page-header" data-part="breadcrumb">首页 / 订单</div>
-        <div data-scope="page-header" data-part="back-trigger">←</div>
-        <div data-scope="page-header" data-part="media">◎</div>
-        <h1 data-scope="page-header" data-part="title">订单 SO-20260731-004</h1>
-        <p data-scope="page-header" data-part="description">创建于 2026 年 7 月 31 日</p>
-        <div data-scope="page-header" data-part="extra">编辑</div>
-        <div data-scope="page-header" data-part="footer">已支付</div>
+      <header data-scope="page-header" class="xh-scope-page-header" data-part="root" style="inline-size:720px">
+        <div data-scope="page-header" class="xh-scope-page-header" data-part="breadcrumb">首页 / 订单</div>
+        <div data-scope="page-header" class="xh-scope-page-header" data-part="back-trigger">←</div>
+        <div data-scope="page-header" class="xh-scope-page-header" data-part="media">◎</div>
+        <h1 data-scope="page-header" class="xh-scope-page-header" data-part="title">订单 SO-20260731-004</h1>
+        <p data-scope="page-header" class="xh-scope-page-header" data-part="description">创建于 2026 年 7 月 31 日</p>
+        <div data-scope="page-header" class="xh-scope-page-header" data-part="extra">编辑</div>
+        <div data-scope="page-header" class="xh-scope-page-header" data-part="footer">已支付</div>
       </header>
     `
     document.body.append(host)
@@ -91,8 +91,8 @@ describe('page-header 信息层级', () => {
   it('省略返回位与媒体位时标题不保留空轨道间距', () => {
     host = document.createElement('div')
     host.innerHTML = `
-      <header data-scope="page-header" data-part="root" style="inline-size:320px">
-        <h1 data-scope="page-header" data-part="title">订单详情</h1>
+      <header data-scope="page-header" class="xh-scope-page-header" data-part="root" style="inline-size:320px">
+        <h1 data-scope="page-header" class="xh-scope-page-header" data-part="title">订单详情</h1>
       </header>
     `
     document.body.append(host)

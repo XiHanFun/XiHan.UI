@@ -25,15 +25,15 @@ interface Cell {
 function probe(size: string | null, vars: Record<string, string> = {}): Cell {
   host = document.createElement('div')
   host.innerHTML = `
-    <div data-scope="heatmap" data-part="root" data-variant="matrix"${size ? ` data-size="${size}"` : ''}>
-      <div data-scope="heatmap" data-part="grid">
-        <div data-scope="heatmap" data-part="row">
-          <span data-scope="heatmap" data-part="row-label"></span>
-          <span data-scope="heatmap" data-part="column-label">09:00</span>
+    <div data-scope="heatmap" class="xh-scope-heatmap" data-part="root" data-variant="matrix"${size ? ` data-size="${size}"` : ''}>
+      <div data-scope="heatmap" class="xh-scope-heatmap" data-part="grid">
+        <div data-scope="heatmap" class="xh-scope-heatmap" data-part="row">
+          <span data-scope="heatmap" class="xh-scope-heatmap" data-part="row-label"></span>
+          <span data-scope="heatmap" class="xh-scope-heatmap" data-part="column-label">09:00</span>
         </div>
-        <div data-scope="heatmap" data-part="row">
-          <span data-scope="heatmap" data-part="row-label">周一</span>
-          <div data-scope="heatmap" data-part="cell" data-level="0"></div>
+        <div data-scope="heatmap" class="xh-scope-heatmap" data-part="row">
+          <span data-scope="heatmap" class="xh-scope-heatmap" data-part="row-label">周一</span>
+          <div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell" data-level="0"></div>
         </div>
       </div>
     </div>

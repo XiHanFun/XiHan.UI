@@ -96,7 +96,7 @@ interface Tier {
   达标: boolean
 }
 
-const 表格根 = (inner: string) => `<div data-scope="table" data-part="root">${inner}</div>`
+const 表格根 = (inner: string) => `<div data-scope="table" class="xh-scope-table" data-part="root">${inner}</div>`
 // 全选与列显隐把手与连接层投影一致：Action Control 的 icon outline 档，勾选的品牌实心面与换环色规则挂在家族角色上
 const 表格把手 = 'data-xh-action-control data-xh-action-profile="icon" data-xh-action-variant="outline" data-xh-action-display="always" data-xh-action-size="md"'
 
@@ -104,29 +104,29 @@ const 失效档: Tier[] = [
   {
     // 表体行走 Collection Item 的 page 语境：选中面是品牌淡底、失效面透明，都不是反白实心面，默认环过得了线
     名: 'table/row 选中且失效',
-    markup: 表格根(`<div data-scope="table" data-part="body">
-      <div data-scope="table" data-part="row" data-xh-collection-item data-xh-collection-context="page"
+    markup: 表格根(`<div data-scope="table" class="xh-scope-table" data-part="body">
+      <div data-scope="table" class="xh-scope-table" data-part="row" data-xh-collection-item data-xh-collection-context="page"
            aria-selected="true" aria-disabled="true" data-selected data-disabled tabindex="0" data-anchor>文</div>
     </div>`),
     达标: true,
   },
   {
     名: 'table/select-all-trigger 勾选且失效',
-    markup: 表格根(`<button data-scope="table" data-part="select-all-trigger" ${表格把手}
+    markup: 表格根(`<button data-scope="table" class="xh-scope-table" data-part="select-all-trigger" ${表格把手}
       data-state="checked" data-disabled aria-disabled="true" data-anchor></button>`),
     达标: true,
   },
   {
     名: 'table/column-visibility-trigger 勾选且失效',
-    markup: 表格根(`<button data-scope="table" data-part="column-visibility-trigger" ${表格把手}
+    markup: 表格根(`<button data-scope="table" class="xh-scope-table" data-part="column-visibility-trigger" ${表格把手}
       data-state="checked" data-disabled aria-disabled="true" data-anchor></button>`),
     达标: true,
   },
   {
     名: 'time-picker/item 失效',
-    markup: `<div data-scope="time-picker" data-part="content">
-      <div data-scope="time-picker" data-part="column">
-        <div data-scope="time-picker" data-part="item" data-disabled data-highlighted
+    markup: `<div data-scope="time-picker" class="xh-scope-time-picker" data-part="content">
+      <div data-scope="time-picker" class="xh-scope-time-picker" data-part="column">
+        <div data-scope="time-picker" class="xh-scope-time-picker" data-part="item" data-disabled data-highlighted
              tabindex="0" data-anchor>01</div>
       </div>
     </div>`,
@@ -137,7 +137,7 @@ const 失效档: Tier[] = [
 const 实心档: Tier[] = [
   {
     名: 'table/select-all-trigger 勾选未失效',
-    markup: 表格根(`<button data-scope="table" data-part="select-all-trigger" ${表格把手}
+    markup: 表格根(`<button data-scope="table" class="xh-scope-table" data-part="select-all-trigger" ${表格把手}
       data-state="checked" data-anchor></button>`),
     达标: true,
   },
@@ -148,17 +148,17 @@ const 实心档: Tier[] = [
 const 中性选中档: Tier[] = [
   {
     名: 'table/row 选中未失效',
-    markup: 表格根(`<div data-scope="table" data-part="body">
-      <div data-scope="table" data-part="row" data-xh-collection-item data-xh-collection-context="page"
+    markup: 表格根(`<div data-scope="table" class="xh-scope-table" data-part="body">
+      <div data-scope="table" class="xh-scope-table" data-part="row" data-xh-collection-item data-xh-collection-context="page"
            aria-selected="true" data-selected tabindex="0" data-anchor>文</div>
     </div>`),
     达标: true,
   },
   {
     名: 'time-picker/item 对号选中',
-    markup: `<div data-scope="time-picker" data-part="content">
-      <div data-scope="time-picker" data-part="column">
-        <div data-scope="time-picker" data-part="item" data-state="checked"
+    markup: `<div data-scope="time-picker" class="xh-scope-time-picker" data-part="content">
+      <div data-scope="time-picker" class="xh-scope-time-picker" data-part="column">
+        <div data-scope="time-picker" class="xh-scope-time-picker" data-part="item" data-state="checked"
              tabindex="0" data-anchor>01</div>
       </div>
     </div>`,

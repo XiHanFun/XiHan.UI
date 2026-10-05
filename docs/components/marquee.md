@@ -180,7 +180,7 @@ fade 让内容从窗口一端淡入、从另一端淡出，边缘不再生硬地
 
 ### 皮肤
 
-`@xihan-ui/styles/marquee.css` 使用 `[data-scope="marquee"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/marquee.css` 按 `[data-scope="marquee"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-marquee` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

@@ -24,15 +24,15 @@ interface Fixture {
 function mount(attrs = ''): Fixture {
   host = document.createElement('div')
   host.innerHTML = `
-    <div data-scope="radio-group" data-part="root" data-orientation="vertical"${attrs}>
-      <span data-scope="radio-group" data-part="label">套餐</span>
-      <div data-scope="radio-group" data-part="item">
-        <span data-scope="radio-group" data-part="indicator" data-state="checked"></span>
-        <span data-scope="radio-group" data-part="item-text">免费版</span>
+    <div data-scope="radio-group" class="xh-scope-radio-group" data-part="root" data-orientation="vertical"${attrs}>
+      <span data-scope="radio-group" class="xh-scope-radio-group" data-part="label">套餐</span>
+      <div data-scope="radio-group" class="xh-scope-radio-group" data-part="item">
+        <span data-scope="radio-group" class="xh-scope-radio-group" data-part="indicator" data-state="checked"></span>
+        <span data-scope="radio-group" class="xh-scope-radio-group" data-part="item-text">免费版</span>
       </div>
-      <div data-scope="radio-group" data-part="item">
-        <span data-scope="radio-group" data-part="indicator" data-state="unchecked"></span>
-        <span data-scope="radio-group" data-part="item-text">专业版</span>
+      <div data-scope="radio-group" class="xh-scope-radio-group" data-part="item">
+        <span data-scope="radio-group" class="xh-scope-radio-group" data-part="indicator" data-state="unchecked"></span>
+        <span data-scope="radio-group" class="xh-scope-radio-group" data-part="item-text">专业版</span>
       </div>
     </div>`
   document.body.append(host)

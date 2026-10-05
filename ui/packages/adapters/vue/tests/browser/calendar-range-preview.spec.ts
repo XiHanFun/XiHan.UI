@@ -18,13 +18,13 @@ function mountRow(preview: boolean): HTMLElement[] {
   host = document.createElement('div')
   const flag = preview ? ' data-range-preview' : ''
   const cell = (edge: string): string =>
-    `<div data-scope="calendar-range-picker" data-part="cell" data-in-range${flag}${edge}>
-      <button data-scope="calendar-range-picker" data-part="cell-trigger" data-in-range${flag}${edge}>1</button>
+    `<div data-scope="calendar-range-picker" class="xh-scope-calendar-range-picker" data-part="cell" data-in-range${flag}${edge}>
+      <button data-scope="calendar-range-picker" class="xh-scope-calendar-range-picker" data-part="cell-trigger" data-in-range${flag}${edge}>1</button>
     </div>`
   host.innerHTML = `
-    <div data-scope="calendar-range-picker" data-part="root">
-      <div data-scope="calendar-range-picker" data-part="grid" data-view="day">
-        <div data-scope="calendar-range-picker" data-part="week-row">
+    <div data-scope="calendar-range-picker" class="xh-scope-calendar-range-picker" data-part="root">
+      <div data-scope="calendar-range-picker" class="xh-scope-calendar-range-picker" data-part="grid" data-view="day">
+        <div data-scope="calendar-range-picker" class="xh-scope-calendar-range-picker" data-part="week-row">
           ${cell(' data-range-start')}${cell('')}${cell(' data-range-end')}
         </div>
       </div>

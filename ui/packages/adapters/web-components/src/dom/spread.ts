@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 把 connect 产出的 prop 字典打到 Light-DOM 角色节点上；事件每帧移旧加新，不碰 class。
+// 把 connect 产出的 prop 字典打到 Light-DOM 角色节点上；事件每帧移旧加新，class 按词增删、不整串覆盖。
 
 const BOOLEAN_ATTRS = new Set(['disabled', 'hidden', 'inert', 'readonly', 'required', 'checked', 'selected', 'open', 'multiple'])
 const PROP_KEYS = new Set(['value', 'checked', 'selected'])
@@ -48,6 +48,16 @@ const owners = new WeakMap<Element, symbol>()
  */
 const writtenStyles = new WeakMap<Element, Set<string>>()
 
+/**
+ * 一个角色节点上由连接层写进 class 的词（解剖带的皮肤挂载类 xh-scope-*），同样不分是哪一台 spreader 写的。
+ * class 按词增删、不整串覆盖：作者写在节点上的类原样留着，只撤连接层自己写过、这一帧不再给的词。
+ */
+const writtenClasses = new WeakMap<Element, Set<string>>()
+
+function classTokens(value: unknown): string[] {
+  return typeof value === 'string' ? value.split(/\s+/).filter(Boolean) : []
+}
+
 function clearStyle(node: HTMLElement, key: string): void {
   if (key.startsWith('--'))
     node.style.removeProperty(key)
@@ -69,6 +79,7 @@ export function createSpreader(): Spreader {
     const nextAttrs = new Set<string>()
     const nextEvents = new Set<string>()
     const nextStyles = new Set<string>()
+    const nextClasses = new Set<string>()
 
     for (const [key, value] of Object.entries(props)) {
       const ev = eventName(key)
@@ -103,6 +114,15 @@ export function createSpreader(): Spreader {
           }
           if (styleValue !== '')
             nextStyles.add(styleKey)
+        }
+        continue
+      }
+      if (key === 'class') {
+        for (const token of classTokens(value)) {
+          // 已在就不加：classList.add 哪怕没变也会重写一次 class 属性，留下一条多余的变更记录
+          if (!node.classList.contains(token))
+            node.classList.add(token)
+          nextClasses.add(token)
         }
         continue
       }
@@ -144,6 +164,11 @@ export function createSpreader(): Spreader {
         clearStyle(node, key)
     }
     writtenStyles.set(node, nextStyles)
+    for (const token of writtenClasses.get(node) ?? []) {
+      if (!nextClasses.has(token))
+        node.classList.remove(token)
+    }
+    writtenClasses.set(node, nextClasses)
   }
 
   function release(node: HTMLElement): void {
@@ -156,6 +181,8 @@ export function createSpreader(): Spreader {
       for (const key of s.attrs) node.removeAttribute(key)
       for (const key of writtenStyles.get(node) ?? []) clearStyle(node, key)
       writtenStyles.delete(node)
+      for (const token of writtenClasses.get(node) ?? []) node.classList.remove(token)
+      writtenClasses.delete(node)
       owners.delete(node)
     }
     state.delete(node)

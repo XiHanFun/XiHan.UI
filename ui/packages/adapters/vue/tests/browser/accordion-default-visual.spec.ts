@@ -22,18 +22,18 @@ function tokenColor(name: string): string {
 function mount(variant?: 'ghost' | 'outline' | 'subtle') {
   host = document.createElement('div')
   host.innerHTML = `
-    <div data-scope="accordion" data-part="root"${variant ? ` data-variant="${variant}"` : ''}>
-      <div data-scope="accordion" data-part="item">
-        <h3 data-scope="accordion" data-part="header">
-          <button data-scope="accordion" data-part="trigger" data-state="open" data-xh-action-control data-xh-action-profile="disclosure-trigger" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="md">第一项</button>
+    <div data-scope="accordion" class="xh-scope-accordion" data-part="root"${variant ? ` data-variant="${variant}"` : ''}>
+      <div data-scope="accordion" class="xh-scope-accordion" data-part="item">
+        <h3 data-scope="accordion" class="xh-scope-accordion" data-part="header">
+          <button data-scope="accordion" class="xh-scope-accordion" data-part="trigger" data-state="open" data-xh-action-control data-xh-action-profile="disclosure-trigger" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="md">第一项</button>
         </h3>
-        <div data-scope="accordion" data-part="content">第一项内容</div>
+        <div data-scope="accordion" class="xh-scope-accordion" data-part="content">第一项内容</div>
       </div>
-      <div data-scope="accordion" data-part="item">
-        <h3 data-scope="accordion" data-part="header">
-          <button data-scope="accordion" data-part="trigger" data-state="closed" data-xh-action-control data-xh-action-profile="disclosure-trigger" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="md">第二项</button>
+      <div data-scope="accordion" class="xh-scope-accordion" data-part="item">
+        <h3 data-scope="accordion" class="xh-scope-accordion" data-part="header">
+          <button data-scope="accordion" class="xh-scope-accordion" data-part="trigger" data-state="closed" data-xh-action-control data-xh-action-profile="disclosure-trigger" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="md">第二项</button>
         </h3>
-        <div data-scope="accordion" data-part="content">第二项内容</div>
+        <div data-scope="accordion" class="xh-scope-accordion" data-part="content">第二项内容</div>
       </div>
     </div>`
   document.body.append(host)

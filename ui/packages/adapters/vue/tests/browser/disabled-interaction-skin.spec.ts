@@ -17,6 +17,7 @@ import {
   XhTabsRoot,
   XhTabsTrigger,
 } from '../../src'
+import { sourceSelector } from './scope-selector'
 // 皮肤要一起加载：这里查的就是皮肤算出来的取值
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -93,7 +94,7 @@ function activeSelectors(scope: string, part: string): string[] {
   const walk = (rules: CSSRuleList): void => {
     for (let i = 0; i < rules.length; i++) {
       const rule = rules.item(i) as CSSStyleRule & CSSGroupingRule
-      const selector = typeof rule.selectorText === 'string' ? rule.selectorText : ''
+      const selector = typeof rule.selectorText === 'string' ? sourceSelector(rule.selectorText) : ''
       if (selector.includes(':active')) {
         for (const one of splitTopLevel(selector)) {
           if (scopeRe.test(one) && partRe.test(one))

@@ -23,17 +23,17 @@ function mount(attrs = '') {
   host = document.createElement('div')
   host.style.cssText = 'inline-size: 240px; padding: 24px'
   host.innerHTML = `
-    <div data-scope="slider" data-part="root" data-orientation="horizontal" ${attrs}>
-      <label data-scope="slider" data-part="label" ${attrs}>音量</label>
-      <div data-scope="slider" data-part="control" data-orientation="horizontal" ${attrs}>
-        <div data-scope="slider" data-part="track" data-orientation="horizontal" ${attrs}>
-          <div data-scope="slider" data-part="range" data-orientation="horizontal" style="inset-inline-start:0%;inline-size:40%" ${attrs}></div>
+    <div data-scope="slider" class="xh-scope-slider" data-part="root" data-orientation="horizontal" ${attrs}>
+      <label data-scope="slider" class="xh-scope-slider" data-part="label" ${attrs}>音量</label>
+      <div data-scope="slider" class="xh-scope-slider" data-part="control" data-orientation="horizontal" ${attrs}>
+        <div data-scope="slider" class="xh-scope-slider" data-part="track" data-orientation="horizontal" ${attrs}>
+          <div data-scope="slider" class="xh-scope-slider" data-part="range" data-orientation="horizontal" style="inset-inline-start:0%;inline-size:40%" ${attrs}></div>
         </div>
-        <div data-scope="slider" data-part="tick-group" ${attrs}>
-          <span data-scope="slider" data-part="tick" data-passed style="inset-inline-start:20%"></span>
-          <span data-scope="slider" data-part="tick" style="inset-inline-start:80%"></span>
+        <div data-scope="slider" class="xh-scope-slider" data-part="tick-group" ${attrs}>
+          <span data-scope="slider" class="xh-scope-slider" data-part="tick" data-passed style="inset-inline-start:20%"></span>
+          <span data-scope="slider" class="xh-scope-slider" data-part="tick" style="inset-inline-start:80%"></span>
         </div>
-        <div data-scope="slider" data-part="thumb" data-orientation="horizontal" role="slider" tabindex="0" style="inset-inline-start:40%" ${attrs}></div>
+        <div data-scope="slider" class="xh-scope-slider" data-part="thumb" data-orientation="horizontal" role="slider" tabindex="0" style="inset-inline-start:40%" ${attrs}></div>
       </div>
     </div>`
   document.body.append(host)

@@ -60,17 +60,17 @@ const STEP_TITLES = ['填写收货地址', '选择支付方式', '确认订单�
 
 function stepsMarkup(orientation: 'horizontal' | 'vertical', titles = STEP_TITLES): string {
   const items = titles.map((t, i) => `
-    <div data-scope="steps" data-part="item" data-orientation="${orientation}" id="item${i}">
-      <button data-scope="steps" data-part="trigger" type="button">
-        <span data-scope="steps" data-part="indicator">${i + 1}</span>
-        <span data-scope="steps" data-part="title" id="title${i}">${t}</span>
+    <div data-scope="steps" class="xh-scope-steps" data-part="item" data-orientation="${orientation}" id="item${i}">
+      <button data-scope="steps" class="xh-scope-steps" data-part="trigger" type="button">
+        <span data-scope="steps" class="xh-scope-steps" data-part="indicator">${i + 1}</span>
+        <span data-scope="steps" class="xh-scope-steps" data-part="title" id="title${i}">${t}</span>
       </button>
-      <span data-scope="steps" data-part="separator" data-orientation="${orientation}"></span>
+      <span data-scope="steps" class="xh-scope-steps" data-part="separator" data-orientation="${orientation}"></span>
     </div>`).join('')
   return `
-    <div data-scope="steps" data-part="root" data-orientation="${orientation}" id="root">
-      <div data-scope="steps" data-part="list" data-orientation="${orientation}" id="list">${items}</div>
-      <div data-scope="steps" data-part="content" id="panel">面板：填写收货地址，含收货人、手机号与详细地址。</div>
+    <div data-scope="steps" class="xh-scope-steps" data-part="root" data-orientation="${orientation}" id="root">
+      <div data-scope="steps" class="xh-scope-steps" data-part="list" data-orientation="${orientation}" id="list">${items}</div>
+      <div data-scope="steps" class="xh-scope-steps" data-part="content" id="panel">面板：填写收货地址，含收货人、手机号与详细地址。</div>
     </div>`
 }
 
@@ -78,16 +78,16 @@ const EVENTS = ['内测启动', '公测开放', '商业化', '海外版']
 
 function timelineMarkup(orientation: 'horizontal' | 'vertical', withLabel = false): string {
   const items = EVENTS.map((title, i) => `
-    <li data-scope="timeline" data-part="item" data-orientation="${orientation}" id="event${i}">
-      ${withLabel ? `<span data-scope="timeline" data-part="label" id="label${i}">2026-09-08</span>` : ''}
-      <span data-scope="timeline" data-part="indicator" id="dot${i}"></span>
-      <span data-scope="timeline" data-part="connector" id="line${i}"></span>
-      <div data-scope="timeline" data-part="content" id="body${i}">
-        <span data-scope="timeline" data-part="title">${title}</span>
-        <span data-scope="timeline" data-part="description">这一步做了什么的说明文字</span>
+    <li data-scope="timeline" class="xh-scope-timeline" data-part="item" data-orientation="${orientation}" id="event${i}">
+      ${withLabel ? `<span data-scope="timeline" class="xh-scope-timeline" data-part="label" id="label${i}">2026-09-08</span>` : ''}
+      <span data-scope="timeline" class="xh-scope-timeline" data-part="indicator" id="dot${i}"></span>
+      <span data-scope="timeline" class="xh-scope-timeline" data-part="connector" id="line${i}"></span>
+      <div data-scope="timeline" class="xh-scope-timeline" data-part="content" id="body${i}">
+        <span data-scope="timeline" class="xh-scope-timeline" data-part="title">${title}</span>
+        <span data-scope="timeline" class="xh-scope-timeline" data-part="description">这一步做了什么的说明文字</span>
       </div>
     </li>`).join('')
-  return `<ol data-scope="timeline" data-part="root" data-orientation="${orientation}" id="axis">${items}</ol>`
+  return `<ol data-scope="timeline" class="xh-scope-timeline" data-part="root" data-orientation="${orientation}" id="axis">${items}</ol>`
 }
 
 // 手机 = 不写查询的那一档，平板与电脑各取一档

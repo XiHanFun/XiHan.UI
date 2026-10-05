@@ -33,19 +33,19 @@ function mount() {
   host.style.setProperty('--xh-motion-duration-release', '0ms')
   // 两枚都是首帧就在的标签：列表动效给它们标上 data-instant，不播进场
   host.innerHTML = `
-    <div data-scope="tag-group" data-part="root">
-      <div data-scope="tag-group" data-part="list" role="grid">
-        <span data-scope="tag" data-part="root" role="row" data-state="open" data-instant data-selectable data-selected aria-selected="true">
-          <span data-scope="tag-group" data-part="cell" role="gridcell" data-selected>
-            <span data-scope="tag-group" data-part="item-indicator" aria-hidden="true" data-selected></span>
-            <span data-scope="tag" data-part="label">设计</span>
-            <button data-scope="tag" data-part="close-trigger" type="button" aria-label="移除"></button>
+    <div data-scope="tag-group" class="xh-scope-tag-group" data-part="root">
+      <div data-scope="tag-group" class="xh-scope-tag-group" data-part="list" role="grid">
+        <span data-scope="tag" class="xh-scope-tag" data-part="root" role="row" data-state="open" data-instant data-selectable data-selected aria-selected="true">
+          <span data-scope="tag-group" class="xh-scope-tag-group" data-part="cell" role="gridcell" data-selected>
+            <span data-scope="tag-group" class="xh-scope-tag-group" data-part="item-indicator" aria-hidden="true" data-selected></span>
+            <span data-scope="tag" class="xh-scope-tag" data-part="label">设计</span>
+            <button data-scope="tag" class="xh-scope-tag" data-part="close-trigger" type="button" aria-label="移除"></button>
           </span>
         </span>
-        <span data-scope="tag" data-part="root" role="row" data-state="open" data-instant data-selectable aria-selected="false">
-          <span data-scope="tag-group" data-part="cell" role="gridcell">
-            <span data-scope="tag-group" data-part="item-indicator" aria-hidden="true" hidden></span>
-            <span data-scope="tag" data-part="label">无障碍</span>
+        <span data-scope="tag" class="xh-scope-tag" data-part="root" role="row" data-state="open" data-instant data-selectable aria-selected="false">
+          <span data-scope="tag-group" class="xh-scope-tag-group" data-part="cell" role="gridcell">
+            <span data-scope="tag-group" class="xh-scope-tag-group" data-part="item-indicator" aria-hidden="true" hidden></span>
+            <span data-scope="tag" class="xh-scope-tag" data-part="label">无障碍</span>
           </span>
         </span>
       </div>

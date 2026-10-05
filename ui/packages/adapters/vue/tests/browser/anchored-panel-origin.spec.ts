@@ -12,11 +12,13 @@ let positioner: HTMLElement | null = null
 function mount(scope: string, placement: string, dir: 'ltr' | 'rtl'): HTMLElement {
   positioner = document.createElement('div')
   positioner.dataset.scope = scope
+  positioner.classList.add(`xh-scope-${scope}`)
   positioner.dataset.part = 'positioner'
   positioner.dataset.placement = placement
   positioner.dir = dir
   const content = document.createElement('div')
   content.dataset.scope = scope
+  content.classList.add(`xh-scope-${scope}`)
   content.dataset.part = 'content'
   content.style.cssText = 'width:200px;height:100px'
   positioner.append(content)

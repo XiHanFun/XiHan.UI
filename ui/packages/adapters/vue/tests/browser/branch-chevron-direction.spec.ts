@@ -20,7 +20,7 @@ function angle(el: HTMLElement): number {
 describe.each(['tree', 'tree-select', 'side-nav'] as const)('%s 分支箭头朝向', (scope) => {
   function mount(): Record<string, HTMLElement> {
     const chevron = (id: string, state: 'open' | 'closed'): string =>
-      `<span data-id="${id}" data-scope="${scope}" data-part="branch-indicator" data-state="${state}"></span>`
+      `<span data-id="${id}" data-scope="${scope}" class="xh-scope-${scope}" data-part="branch-indicator" data-state="${state}"></span>`
     host = document.createElement('div')
     host.innerHTML = `
       <div dir="ltr">${chevron('ltr-closed', 'closed')}${chevron('ltr-open', 'open')}</div>

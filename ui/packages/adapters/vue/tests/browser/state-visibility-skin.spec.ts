@@ -135,12 +135,14 @@ describe('mention 的只读手势', () => {
   function popup(readOnly: boolean): HTMLElement {
     const positioner = document.createElement('div')
     positioner.dataset.scope = 'mention'
+    positioner.classList.add('xh-scope-mention')
     positioner.dataset.part = 'positioner'
     if (readOnly)
       positioner.dataset.readonly = ''
     for (const disabled of [false, true]) {
       const item = document.createElement('div')
       item.dataset.scope = 'mention'
+      item.classList.add('xh-scope-mention')
       item.dataset.part = 'item'
       // 与 connect 投影一致：手型由集合条目家族配方给，缺了家族标记只有裸盒的 auto
       item.dataset.xhCollectionItem = ''

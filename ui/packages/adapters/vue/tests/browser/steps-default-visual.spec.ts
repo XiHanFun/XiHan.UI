@@ -26,18 +26,18 @@ function mount(orientation: 'horizontal' | 'vertical' = 'horizontal') {
   const states = ['completed', 'current', 'incomplete']
   host = document.createElement('div')
   host.innerHTML = `
-    <div data-scope="steps" data-part="root" data-orientation="${orientation}">
-      <div data-scope="steps" data-part="list" data-orientation="${orientation}">
+    <div data-scope="steps" class="xh-scope-steps" data-part="root" data-orientation="${orientation}">
+      <div data-scope="steps" class="xh-scope-steps" data-part="list" data-orientation="${orientation}">
         ${states.map((state, index) => `
-          <div data-scope="steps" data-part="item" data-orientation="${orientation}" data-state="${state}">
-            <button data-scope="steps" data-part="trigger" data-state="${state}"
+          <div data-scope="steps" class="xh-scope-steps" data-part="item" data-orientation="${orientation}" data-state="${state}">
+            <button data-scope="steps" class="xh-scope-steps" data-part="trigger" data-state="${state}"
               data-xh-action-control data-xh-action-profile="row" data-xh-action-variant="ghost"
               data-xh-action-display="always" data-xh-action-size="md">
-              <span data-scope="steps" data-part="indicator" data-state="${state}">${index + 1}</span>
-              <span data-scope="steps" data-part="title" data-state="${state}">步骤 ${index + 1}</span>
-              <span data-scope="steps" data-part="description" data-state="${state}">步骤说明</span>
+              <span data-scope="steps" class="xh-scope-steps" data-part="indicator" data-state="${state}">${index + 1}</span>
+              <span data-scope="steps" class="xh-scope-steps" data-part="title" data-state="${state}">步骤 ${index + 1}</span>
+              <span data-scope="steps" class="xh-scope-steps" data-part="description" data-state="${state}">步骤说明</span>
             </button>
-            <span data-scope="steps" data-part="separator" data-orientation="${orientation}" data-state="${state}"></span>
+            <span data-scope="steps" class="xh-scope-steps" data-part="separator" data-orientation="${orientation}" data-state="${state}"></span>
           </div>
         `).join('')}
       </div>

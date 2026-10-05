@@ -323,3 +323,20 @@ describe('触发器 asChild', () => {
     expect(seen).toEqual(['作者', '部件'])
   })
 })
+
+describe('asChild 的皮肤挂载类', () => {
+  const part = { 'data-scope': 'menu', 'data-part': 'trigger', 'class': 'xh-scope-menu author', 'id': 'menu-trigger' }
+
+  it('子节点自带解剖时挂载类随 data-scope 让位：作者的类照合，部件的 xh-scope-* 不落上去', () => {
+    const merged = mergeIntoChild([h('span', { 'data-scope': 'tooltip', 'data-part': 'trigger', 'class': 'xh-scope-tooltip mine' })], part, 'menu')
+    expect(merged.props!['data-scope']).toBe('tooltip')
+    expect(String(merged.props!.class).split(/\s+/).sort()).toEqual(['author', 'mine', 'xh-scope-tooltip'])
+    expect(merged.props!.id).toBe('menu-trigger')
+  })
+
+  it('子节点没有自己的解剖时部件的解剖连同挂载类整套落上去', () => {
+    const merged = mergeIntoChild([h('span', { class: 'mine' })], part, 'menu')
+    expect(merged.props!['data-scope']).toBe('menu')
+    expect(String(merged.props!.class).split(/\s+/).sort()).toEqual(['author', 'mine', 'xh-scope-menu'])
+  })
+})

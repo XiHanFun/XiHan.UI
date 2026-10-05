@@ -39,6 +39,7 @@ import droppedRegistry from './focus-ring-face-contrast.dropped.json'
 import reconcileRegistry from './focus-ring-face-contrast.reconcile.json'
 import solidRegistry from './focus-ring-face-contrast.solid.json'
 import { canonicalKeys, coversKey, parseStaticCompound, renderStaticCompound, splitTop, staticKey } from './focus-ring-surface-key'
+import { sourceSelector } from './scope-selector'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -292,7 +293,7 @@ function recipes(): Recipe[] {
   const rules = unconditionalRules().filter(rule => paintsFaceOrRing(rule.style))
   const paintsFace = (rule: CSSStyleRule) => !!(rule.style.getPropertyValue('background') || rule.style.getPropertyValue('background-color'))
   for (const rule of [...rules.filter(paintsFace), ...rules.filter(rule => !paintsFace(rule))]) {
-    for (const branch of branchesOf(rule.selectorText)) {
+    for (const branch of branchesOf(sourceSelector(rule.selectorText))) {
       const recipe = toRecipe(branch, true)
       if (recipe && !bySignature.has(recipe.signature))
         bySignature.set(recipe.signature, recipe)
@@ -306,7 +307,7 @@ function contexts(): Context[] {
   for (const rule of unconditionalRules()) {
     if (!shapesTier(rule.style))
       continue
-    for (const branch of branchesOf(rule.selectorText)) {
+    for (const branch of branchesOf(sourceSelector(rule.selectorText))) {
       // 改环色的聚焦规则自己就是配方，不再当上下文套一遍
       if (/:focus-(?:visible|within)/.test(branch))
         continue
@@ -458,6 +459,7 @@ function mount(recipe: Recipe, contexts: readonly Context[], tone: string | null
     const tag = last && !recipe.focusWithin ? (tags.get(`${scope}/${compound.part}`) ?? 'div') : 'div'
     const el = document.createElement(tag)
     el.dataset.scope = scope
+    el.classList.add(`xh-scope-${scope}`)
     if (compound.part)
       el.dataset.part = compound.part
     // 定位层落位才露（reset.css 的契约），不打这一条整棵浮层都是隐形的
@@ -507,7 +509,7 @@ function ringOffKeys(target: HTMLElement): string[] {
   ringOffRules ??= unconditionalRules().filter(rule => turnsRingOff(rule.style))
   const keys = new Set<string>()
   for (const rule of ringOffRules) {
-    for (const branch of splitTop(rule.selectorText, ch => ch === ',')) {
+    for (const branch of splitTop(sourceSelector(rule.selectorText), ch => ch === ',')) {
       let hit = false
       try {
         hit = target.matches(branch.replace(/:focus-(?:visible|within)/g, ''))
@@ -542,7 +544,7 @@ function consumerOwnsFace(target: HTMLElement): boolean {
   for (const rule of unconditionalRules()) {
     if (!(rule.style.getPropertyValue('background') || rule.style.getPropertyValue('background-color')))
       continue
-    for (const branch of splitTop(rule.selectorText, ch => ch === ',')) {
+    for (const branch of splitTop(sourceSelector(rule.selectorText), ch => ch === ',')) {
       try {
         if (target.matches(branch.replace(/:focus-(?:visible|within)/g, '')))
           return false
@@ -648,7 +650,7 @@ function namedBySkins(): Set<string> {
   const out = new Set<string>()
   for (const rule of unconditionalRules()) {
     const ring = rule.style.getPropertyValue('--xh-_ring-color')
-    for (const branch of splitTop(rule.selectorText, ch => ch === ',')) {
+    for (const branch of splitTop(sourceSelector(rule.selectorText), ch => ch === ',')) {
       const compounds = splitCompounds(branch.replace(/\s+/g, ' '))
       const parsed = compounds.map(parseCompound)
       // 顺手记下选择器里写明的嵌套：写成后代关系就是当外层套得住内层
@@ -1167,7 +1169,7 @@ describe('聚焦环压着的那块面', () => {
   it('两个方向都响：实心面吃默认环量出来不合格，灌成 currentColor 才合格', () => {
     paintPage()
     host = document.createElement('div')
-    host.innerHTML = `<div data-scope="button" data-part="root" tabindex="0"
+    host.innerHTML = `<div data-scope="button" class="xh-scope-button" data-part="root" tabindex="0"
       style="background:var(--xh-color-brand-600);color:var(--xh-fg-on-brand)">文</div>`
     document.body.append(host)
     const el = host.firstElementChild as HTMLElement
@@ -1183,7 +1185,7 @@ describe('聚焦环压着的那块面', () => {
   it('反方向也响：透空的面灌成 currentColor，环糊在底上照样判红', () => {
     paintPage()
     host = document.createElement('div')
-    host.innerHTML = `<div data-scope="button" data-part="root" tabindex="0"
+    host.innerHTML = `<div data-scope="button" class="xh-scope-button" data-part="root" tabindex="0"
       style="background:transparent;color:var(--xh-color-neutral-100)">文</div>`
     document.body.append(host)
     const el = host.firstElementChild as HTMLElement
@@ -1199,6 +1201,7 @@ describe('聚焦环压着的那块面', () => {
   it('面归使用者的部件不进档位表：裸 <button> 的 UA 底色不是库画的', () => {
     const probe = document.createElement('button')
     probe.dataset.scope = 'menu'
+    probe.classList.add('xh-scope-menu')
     probe.dataset.part = 'trigger'
     document.body.append(probe)
     expect(consumerOwnsFace(probe)).toBe(true)

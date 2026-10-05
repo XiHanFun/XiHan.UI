@@ -145,10 +145,10 @@ afterEach(() => {
  */
 function 分段(tone: string | null, 带指示器 = true): { root: HTMLElement, item: HTMLElement, indicator: HTMLElement | null } {
   const root = mount(`
-    <div data-scope="radio-group" data-part="root" data-variant="segmented" data-orientation="horizontal" role="radiogroup"${tone ? ` data-tone="${tone}"` : ''}>
-      ${带指示器 ? '<span data-scope="radio-group" data-part="thumb"></span>' : ''}
-      <div data-scope="radio-group" data-part="item" role="radio" tabindex="0" data-state="checked">甲</div>
-      <div data-scope="radio-group" data-part="item" role="radio" tabindex="-1">乙</div>
+    <div data-scope="radio-group" class="xh-scope-radio-group" data-part="root" data-variant="segmented" data-orientation="horizontal" role="radiogroup"${tone ? ` data-tone="${tone}"` : ''}>
+      ${带指示器 ? '<span data-scope="radio-group" class="xh-scope-radio-group" data-part="thumb"></span>' : ''}
+      <div data-scope="radio-group" class="xh-scope-radio-group" data-part="item" role="radio" tabindex="0" data-state="checked">甲</div>
+      <div data-scope="radio-group" class="xh-scope-radio-group" data-part="item" role="radio" tabindex="-1">乙</div>
     </div>`)
   const item = root.querySelector<HTMLElement>('[data-part=\'item\'][data-state=\'checked\']')!
   const indicator = root.querySelector<HTMLElement>('[data-part=\'thumb\']')
@@ -170,12 +170,12 @@ function 分段(tone: string | null, 带指示器 = true): { root: HTMLElement, 
 /** 标签组里的一枚实心标签（tag 的 root），标签里带一颗摘除钮（tag 的 close-trigger）。 */
 function 标签(attrs: string): { item: HTMLElement, 叉: HTMLElement } {
   const root = mount(`
-    <div data-scope="tag-group" data-part="root">
-      <div data-scope="tag-group" data-part="list">
-        <span data-scope="tag" data-part="root" data-variant="solid" data-selectable data-deletable ${attrs} tabindex="0">
-          <span data-scope="tag-group" data-part="cell">
-            <span data-scope="tag" data-part="label">甲</span>
-            <button type="button" data-scope="tag" data-part="close-trigger"></button>
+    <div data-scope="tag-group" class="xh-scope-tag-group" data-part="root">
+      <div data-scope="tag-group" class="xh-scope-tag-group" data-part="list">
+        <span data-scope="tag" class="xh-scope-tag" data-part="root" data-variant="solid" data-selectable data-deletable ${attrs} tabindex="0">
+          <span data-scope="tag-group" class="xh-scope-tag-group" data-part="cell">
+            <span data-scope="tag" class="xh-scope-tag" data-part="label">甲</span>
+            <button type="button" data-scope="tag" class="xh-scope-tag" data-part="close-trigger"></button>
           </span>
         </span>
       </div>

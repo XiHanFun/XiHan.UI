@@ -43,8 +43,8 @@ function micro(): string {
 describe('换面节奏', () => {
   it.each([
     ['集合行', { 'data-xh-collection-item': '', 'data-xh-collection-size': 'md' }],
-    ['树行', { 'data-scope': 'tree', 'data-part': 'item' }],
-    ['表单汇总条目', { 'data-scope': 'form', 'data-part': 'error-summary-item' }],
+    ['树行', { 'data-scope': 'tree', 'class': 'xh-scope-tree', 'data-part': 'item' }],
+    ['表单汇总条目', { 'data-scope': 'form', 'class': 'xh-scope-form', 'data-part': 'error-summary-item' }],
   ])('%s的底色与字色同走 micro', (_name, attrs) => {
     const element = mountRaw(attrs)
     expect(durationOf(element, 'background-color')).toBe(micro())

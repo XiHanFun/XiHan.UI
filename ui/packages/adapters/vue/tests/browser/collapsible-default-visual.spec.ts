@@ -25,12 +25,12 @@ const TRIGGER_ATTRS = 'data-xh-action-control data-xh-action-profile="disclosure
 function mount(state: 'closed' | 'open' = 'open') {
   host = document.createElement('div')
   host.innerHTML = `
-    <div data-scope="collapsible" data-part="root">
-      <button data-scope="collapsible" data-part="trigger" data-state="${state}" ${TRIGGER_ATTRS}>
+    <div data-scope="collapsible" class="xh-scope-collapsible" data-part="root">
+      <button data-scope="collapsible" class="xh-scope-collapsible" data-part="trigger" data-state="${state}" ${TRIGGER_ATTRS}>
         详情
-        <span data-scope="collapsible" data-part="indicator" data-state="${state}"></span>
+        <span data-scope="collapsible" class="xh-scope-collapsible" data-part="indicator" data-state="${state}"></span>
       </button>
-      <div data-scope="collapsible" data-part="content">详情内容</div>
+      <div data-scope="collapsible" class="xh-scope-collapsible" data-part="content">详情内容</div>
     </div>`
   document.body.append(host)
   return {

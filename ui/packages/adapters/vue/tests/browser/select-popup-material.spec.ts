@@ -288,6 +288,7 @@ describe('选择器四向短位移', () => {
     outer.dataset.placement = 'bottom-start'
     const inner = document.createElement('div')
     inner.dataset.scope = 'select'
+    inner.classList.add('xh-scope-select')
     inner.dataset.part = 'positioner'
     inner.dataset.placement = 'right-start'
     outer.append(inner)

@@ -5521,6 +5521,7 @@
       "RuntimeConfig",
       "RuntimeHostInfo",
       "RuntimeInfo",
+      "SCOPE_CLASS_PREFIX",
       "SSR_ENV",
       "STAGGER_CAP",
       "STAGGER_INDEX_PROPERTY",
@@ -5758,6 +5759,7 @@
       "resolveToLeaf",
       "resolveVisualEnvironment",
       "safeTriangle",
+      "scopeClass",
       "scrollBlockTo",
       "setDiagnosticsConsoleOutput",
       "setDiagnosticsDedupe",
@@ -5773,6 +5775,7 @@
       "startOfYear",
       "startSkinCheck",
       "stepIndex",
+      "stripScopeClass",
       "toCleanup",
       "toThemeAttrs",
       "toVisualEnvironmentAttrs",
@@ -12180,6 +12183,7 @@
       "role",
       "size",
       "translations",
+      "unmountOnExit",
       "variant"
     ],
     "diff-view": [
@@ -12229,6 +12233,7 @@
       "side",
       "size",
       "translations",
+      "unmountOnExit",
       "variant"
     ],
     "editable": [
@@ -20183,6 +20188,7 @@
         "restore-focus",
         "role",
         "size",
+        "unmount-on-exit",
         "variant"
       ],
       "events": [
@@ -20236,6 +20242,7 @@
         "role",
         "side",
         "size",
+        "unmount-on-exit",
         "variant"
       ],
       "events": [

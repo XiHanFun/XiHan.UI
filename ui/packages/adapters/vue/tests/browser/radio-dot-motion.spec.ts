@@ -42,26 +42,26 @@ function channel(el: HTMLElement, property: string): { duration: string, easing:
 
 const DOTS = {
   'radio-group': () => mount(`
-    <div data-scope="radio-group" data-part="root" data-orientation="vertical">
-      <div data-scope="radio-group" data-part="item">
-        <span data-scope="radio-group" data-part="indicator" data-state="checked"></span>
-        <span data-scope="radio-group" data-part="item-text">免费版</span>
+    <div data-scope="radio-group" class="xh-scope-radio-group" data-part="root" data-orientation="vertical">
+      <div data-scope="radio-group" class="xh-scope-radio-group" data-part="item">
+        <span data-scope="radio-group" class="xh-scope-radio-group" data-part="indicator" data-state="checked"></span>
+        <span data-scope="radio-group" class="xh-scope-radio-group" data-part="item-text">免费版</span>
       </div>
-      <div data-scope="radio-group" data-part="item">
-        <span data-scope="radio-group" data-part="indicator" data-state="unchecked"></span>
-        <span data-scope="radio-group" data-part="item-text">专业版</span>
+      <div data-scope="radio-group" class="xh-scope-radio-group" data-part="item">
+        <span data-scope="radio-group" class="xh-scope-radio-group" data-part="indicator" data-state="unchecked"></span>
+        <span data-scope="radio-group" class="xh-scope-radio-group" data-part="item-text">专业版</span>
       </div>
     </div>`),
   'question-flow': () => mount(`
-    <div data-scope="question-flow" data-part="root">
-      <div data-scope="question-flow" data-part="group">
-        <button data-scope="question-flow" data-part="item" data-state="checked" data-xh-action-control data-xh-action-profile="row" data-xh-action-variant="ghost">
-          <span data-scope="question-flow" data-part="item-indicator" data-state="checked" data-select-mode="single"></span>
-          <span data-scope="question-flow" data-part="item-text">甲</span>
+    <div data-scope="question-flow" class="xh-scope-question-flow" data-part="root">
+      <div data-scope="question-flow" class="xh-scope-question-flow" data-part="group">
+        <button data-scope="question-flow" class="xh-scope-question-flow" data-part="item" data-state="checked" data-xh-action-control data-xh-action-profile="row" data-xh-action-variant="ghost">
+          <span data-scope="question-flow" class="xh-scope-question-flow" data-part="item-indicator" data-state="checked" data-select-mode="single"></span>
+          <span data-scope="question-flow" class="xh-scope-question-flow" data-part="item-text">甲</span>
         </button>
-        <button data-scope="question-flow" data-part="item" data-state="unchecked" data-xh-action-control data-xh-action-profile="row" data-xh-action-variant="ghost">
-          <span data-scope="question-flow" data-part="item-indicator" data-state="unchecked" data-select-mode="single"></span>
-          <span data-scope="question-flow" data-part="item-text">乙</span>
+        <button data-scope="question-flow" class="xh-scope-question-flow" data-part="item" data-state="unchecked" data-xh-action-control data-xh-action-profile="row" data-xh-action-variant="ghost">
+          <span data-scope="question-flow" class="xh-scope-question-flow" data-part="item-indicator" data-state="unchecked" data-select-mode="single"></span>
+          <span data-scope="question-flow" class="xh-scope-question-flow" data-part="item-text">乙</span>
         </button>
       </div>
     </div>`),

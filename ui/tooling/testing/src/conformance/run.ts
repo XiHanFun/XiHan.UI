@@ -5,6 +5,7 @@ import { collectDomSnapshot } from '../snapshot/collect'
 import { applyStep } from './apply-step'
 import { pendingFrames, settleFrame, settleTeardown } from './frame'
 import { checkExpectation } from './match'
+import { assertScopeClasses } from './scope-class'
 
 export interface RunOptions {
   /** 逐行豁免：键盘行 id → 理由。 */
@@ -104,12 +105,14 @@ async function recordMountedTrace(
     await settleFrame(harness, ctx.doc)
     assertOwned()
     frames.push(snap(ctx, harness))
-    for (const step of c.steps ?? []) {
+    assertScopeClasses(ctx.doc, `${harness.adapterName} ${ctx.component} @ mount`)
+    for (const [i, step] of (c.steps ?? []).entries()) {
       assertOwned()
       await applyStep(ctx, step)
       await settleFrame(harness, ctx.doc)
       assertOwned()
       frames.push(snap(ctx, harness))
+      assertScopeClasses(ctx.doc, `${harness.adapterName} ${ctx.component} @ step#${i} (${step.kind})`)
     }
   }
   finally {

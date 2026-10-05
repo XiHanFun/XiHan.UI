@@ -41,18 +41,18 @@ function mount(variant: string | null): Mounted {
   ].join('; ')
   const rows = WEEK_DAYS.map((weekDay) => {
     const cells = Array.from({ length: COLUMNS }, (_, i) =>
-      `<div data-scope="heatmap" data-part="cell" data-value="2024-0${weekDay + 1}-${String(i + 1).padStart(2, '0')}"></div>`).join('')
+      `<div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell" data-value="2024-0${weekDay + 1}-${String(i + 1).padStart(2, '0')}"></div>`).join('')
     return `
-      <div data-scope="heatmap" data-part="row" data-week-day="${weekDay}">
-        <span data-scope="heatmap" data-part="week-day" data-week-day="${weekDay}">${'一二三四五六日'[weekDay]}</span>
+      <div data-scope="heatmap" class="xh-scope-heatmap" data-part="row" data-week-day="${weekDay}">
+        <span data-scope="heatmap" class="xh-scope-heatmap" data-part="week-day" data-week-day="${weekDay}">${'一二三四五六日'[weekDay]}</span>
         ${cells}
       </div>
     `
   }).join('')
   host = document.createElement('div')
   host.innerHTML = `
-    <div data-scope="heatmap" data-part="root"${variant ? ` data-variant="${variant}"` : ''} style="${style}">
-      <div data-scope="heatmap" data-part="grid">${rows}</div>
+    <div data-scope="heatmap" class="xh-scope-heatmap" data-part="root"${variant ? ` data-variant="${variant}"` : ''} style="${style}">
+      <div data-scope="heatmap" class="xh-scope-heatmap" data-part="grid">${rows}</div>
     </div>
   `
   document.body.append(host)

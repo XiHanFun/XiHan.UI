@@ -58,9 +58,9 @@ describe('高对比档', () => {
 
   it('强档与轻档各画一圈环，两档的线型与粗细都不同', () => {
     mount(`
-      <div data-scope="menu" data-part="item" data-highlighted></div>
-      <div data-scope="menu" data-part="item" data-selected></div>
-      <div data-scope="menu" data-part="item"></div>
+      <div data-scope="menu" class="xh-scope-menu" data-part="item" data-highlighted></div>
+      <div data-scope="menu" class="xh-scope-menu" data-part="item" data-selected></div>
+      <div data-scope="menu" class="xh-scope-menu" data-part="item"></div>
     `)
     const light = styleOf('[data-highlighted]')
     const strong = styleOf('[data-selected]')
@@ -79,8 +79,8 @@ describe('高对比档', () => {
 
   it('定位层里那张面补一圈实边——阴影在这一档被丢弃', () => {
     mount(`
-      <div data-scope="popover" data-part="positioner">
-        <div data-scope="popover" data-part="content"></div>
+      <div data-scope="popover" class="xh-scope-popover" data-part="positioner">
+        <div data-scope="popover" class="xh-scope-popover" data-part="content"></div>
       </div>
     `)
     const content = styleOf('[data-part="content"]')
@@ -90,9 +90,9 @@ describe('高对比档', () => {
 
   it('铺满视口的定位层与遮罩自己不画环', () => {
     mount(`
-      <div data-scope="dialog" data-part="positioner" data-state="open"></div>
-      <div data-scope="dialog" data-part="backdrop" data-state="open"></div>
-      <div data-scope="menu" data-part="item" data-state="open"></div>
+      <div data-scope="dialog" class="xh-scope-dialog" data-part="positioner" data-state="open"></div>
+      <div data-scope="dialog" class="xh-scope-dialog" data-part="backdrop" data-state="open"></div>
+      <div data-scope="menu" class="xh-scope-menu" data-part="item" data-state="open"></div>
     `)
     expect(styleOf('[data-part="positioner"]').outlineStyle).toBe('none')
     expect(styleOf('[data-part="backdrop"]').outlineStyle).toBe('none')
@@ -104,9 +104,9 @@ describe('高对比档', () => {
     // 描边由字段家族（data-xh-field-chrome）画在 control 上，与 connect 的投影一致；
     // 缺了家族标记这个节点就是一只裸盒，整条 border 都不存在
     mount(`
-      <div data-scope="text-field" data-part="root">
-        <div data-scope="text-field" data-part="control" data-xh-field-chrome data-variant="outline" data-readonly></div>
-        <div data-scope="text-field" data-part="control" data-xh-field-chrome data-variant="outline"></div>
+      <div data-scope="text-field" class="xh-scope-text-field" data-part="root">
+        <div data-scope="text-field" class="xh-scope-text-field" data-part="control" data-xh-field-chrome data-variant="outline" data-readonly></div>
+        <div data-scope="text-field" class="xh-scope-text-field" data-part="control" data-xh-field-chrome data-variant="outline"></div>
       </div>
     `)
     expect(styleOf('[data-readonly]').borderTopStyle).toBe('dashed')
@@ -115,8 +115,8 @@ describe('高对比档', () => {
 
   it('新增行与删除行的两条通道各自还在：一实一虚', () => {
     mount(`
-      <div data-scope="diff-view" data-part="row" data-change="added"></div>
-      <div data-scope="diff-view" data-part="row" data-change="removed"></div>
+      <div data-scope="diff-view" class="xh-scope-diff-view" data-part="row" data-change="added"></div>
+      <div data-scope="diff-view" class="xh-scope-diff-view" data-part="row" data-change="removed"></div>
     `)
     expect(styleOf('[data-change="added"]').outlineStyle).toBe('solid')
     expect(styleOf('[data-change="removed"]').outlineStyle).toBe('dashed')
@@ -124,8 +124,8 @@ describe('高对比档', () => {
 
   it('画的就是颜色的那几处退出强制着色，并各补一圈系统描边', () => {
     mount(`
-      <div data-scope="color-picker" data-part="saturation-area"></div>
-      <div data-scope="heatmap" data-part="root"><div data-scope="heatmap" data-part="cell"></div></div>
+      <div data-scope="color-picker" class="xh-scope-color-picker" data-part="saturation-area"></div>
+      <div data-scope="heatmap" class="xh-scope-heatmap" data-part="root"><div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell"></div></div>
     `)
     expect(styleOf('[data-scope="color-picker"][data-part="saturation-area"]').forcedColorAdjust).toBe('none')
     const cell = styleOf('[data-part="cell"]')
@@ -136,9 +136,9 @@ describe('高对比档', () => {
   it('常态下这几条一条都不生效', async () => {
     await emulate({})
     mount(`
-      <div data-scope="menu" data-part="item" data-selected></div>
-      <div data-scope="text-field" data-part="root">
-        <div data-scope="text-field" data-part="control" data-xh-field-chrome data-variant="outline" data-readonly></div>
+      <div data-scope="menu" class="xh-scope-menu" data-part="item" data-selected></div>
+      <div data-scope="text-field" class="xh-scope-text-field" data-part="root">
+        <div data-scope="text-field" class="xh-scope-text-field" data-part="control" data-xh-field-chrome data-variant="outline" data-readonly></div>
       </div>
     `)
     expect(styleOf('[data-selected]').outlineStyle).toBe('none')
@@ -153,12 +153,12 @@ describe('打印档', () => {
 
   it('热度档位改画成边框的粗细，档位越高边越厚', () => {
     mount(`
-      <div data-scope="heatmap" data-part="root">
-        <div data-scope="heatmap" data-part="cell" data-level="0"></div>
-        <div data-scope="heatmap" data-part="cell" data-level="1"></div>
-        <div data-scope="heatmap" data-part="cell" data-level="2"></div>
-        <div data-scope="heatmap" data-part="cell" data-level="3"></div>
-        <div data-scope="heatmap" data-part="cell" data-level="4"></div>
+      <div data-scope="heatmap" class="xh-scope-heatmap" data-part="root">
+        <div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell" data-level="0"></div>
+        <div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell" data-level="1"></div>
+        <div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell" data-level="2"></div>
+        <div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell" data-level="3"></div>
+        <div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell" data-level="4"></div>
       </div>
     `)
     const widths = [0, 1, 2, 3, 4].map(level => Number.parseFloat(styleOf(`[data-level="${level}"]`).borderTopWidth))
@@ -173,9 +173,9 @@ describe('打印档', () => {
 
   it('标出来的那几行改画一圈内收的实边', () => {
     mount(`
-      <div data-scope="code-view" data-part="root">
-        <div data-scope="code-view" data-part="line" data-highlighted></div>
-        <div data-scope="code-view" data-part="line"></div>
+      <div data-scope="code-view" class="xh-scope-code-view" data-part="root">
+        <div data-scope="code-view" class="xh-scope-code-view" data-part="line" data-highlighted></div>
+        <div data-scope="code-view" class="xh-scope-code-view" data-part="line"></div>
       </div>
     `)
     const marked = styleOf('[data-highlighted]')
@@ -188,11 +188,11 @@ describe('打印档', () => {
   it('常态下这两条一条都不生效', async () => {
     await emulate({})
     mount(`
-      <div data-scope="heatmap" data-part="root">
-        <div data-scope="heatmap" data-part="cell" data-level="4"></div>
+      <div data-scope="heatmap" class="xh-scope-heatmap" data-part="root">
+        <div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell" data-level="4"></div>
       </div>
-      <div data-scope="code-view" data-part="root">
-        <div data-scope="code-view" data-part="line" data-highlighted></div>
+      <div data-scope="code-view" class="xh-scope-code-view" data-part="root">
+        <div data-scope="code-view" class="xh-scope-code-view" data-part="line" data-highlighted></div>
       </div>
     `)
     expect(styleOf('[data-level="4"]').borderTopWidth).toBe('0px')
@@ -204,8 +204,8 @@ describe('安全区', () => {
   it('系统没让出任何一段时，贴边就是贴边槽本来的取值', () => {
     // 逐条排开的一摞是一整面视口大小的定位面，贴边靠 padding；叠放的一摞是定宽的堆叠面，贴边靠落位那一角的 inset
     mount(`
-      <div data-scope="notification" data-part="group" data-preset="card"></div>
-      <div data-scope="notification" data-part="group" data-preset="toast" data-stacked data-placement="top-start"></div>
+      <div data-scope="notification" class="xh-scope-notification" data-part="group" data-preset="card"></div>
+      <div data-scope="notification" class="xh-scope-notification" data-part="group" data-preset="toast" data-stacked data-placement="top-start"></div>
     `)
     const group = styleOf('[data-scope="notification"][data-part="group"][data-preset="card"]')
     // --xh-space-6 = 24px；env() 在没有安全区的视口上恒为 0，max() 取的是贴边槽那一头
@@ -223,11 +223,11 @@ describe('安全区', () => {
     // 四周各占一段：上下比贴边宽，左右比贴边窄
     await emulateSafeArea({ top: 47, bottom: 59, left: 13, right: 17 })
     mount(`
-      <div data-scope="notification" data-part="group" data-preset="card"></div>
-      <div data-scope="notification" data-part="group" data-preset="toast" data-stacked data-placement="top-start"></div>
-      <div data-scope="notification" data-part="group" data-preset="toast" data-stacked data-placement="bottom-end"></div>
-      <div data-scope="back-top" data-part="root"></div>
-      <div data-scope="loading-bar" data-part="root"></div>
+      <div data-scope="notification" class="xh-scope-notification" data-part="group" data-preset="card"></div>
+      <div data-scope="notification" class="xh-scope-notification" data-part="group" data-preset="toast" data-stacked data-placement="top-start"></div>
+      <div data-scope="notification" class="xh-scope-notification" data-part="group" data-preset="toast" data-stacked data-placement="bottom-end"></div>
+      <div data-scope="back-top" class="xh-scope-back-top" data-part="root"></div>
+      <div data-scope="loading-bar" class="xh-scope-loading-bar" data-part="root"></div>
     `)
     const notification = styleOf('[data-scope="notification"][data-part="group"][data-preset="card"]')
     // 上下让到系统那一段外面；左右两段都比 24px 窄，贴边槽那一头仍然赢
@@ -256,8 +256,8 @@ describe('安全区', () => {
     // 只有物理左边被占住，且比贴边宽
     await emulateSafeArea({ top: 0, bottom: 0, left: 40, right: 0 })
     mount(`
-      <div data-scope="notification" data-part="group"></div>
-      <div data-scope="back-top" data-part="root"></div>
+      <div data-scope="notification" class="xh-scope-notification" data-part="group"></div>
+      <div data-scope="back-top" class="xh-scope-back-top" data-part="root"></div>
     `)
     const notification = styleOf('[data-scope="notification"][data-part="group"]')
     expect(notification.paddingLeft).toBe('40px')
@@ -269,8 +269,8 @@ describe('安全区', () => {
   it('局部容器里的抽屉不让位，铺满视口的那一档才让', async () => {
     await emulateSafeArea({ top: 47, bottom: 59, left: 0, right: 0 })
     mount(`
-      <div data-scope="drawer" data-part="content"></div>
-      <div data-scope="drawer" data-part="content" data-contained></div>
+      <div data-scope="drawer" class="xh-scope-drawer" data-part="content"></div>
+      <div data-scope="drawer" class="xh-scope-drawer" data-part="content" data-contained></div>
     `)
     const full = styleOf('[data-scope="drawer"][data-part="content"]:not([data-contained])')
     expect(full.paddingTop).toBe('47px')
@@ -283,8 +283,8 @@ describe('安全区', () => {
   it('浮动按钮四个角，各让各那条边', async () => {
     await emulateSafeArea({ top: 47, bottom: 59, left: 40, right: 0 })
     mount(`
-      <div data-scope="float-button" data-part="root" data-placement="top-start"></div>
-      <div data-scope="float-button" data-part="root" data-placement="bottom-end"></div>
+      <div data-scope="float-button" class="xh-scope-float-button" data-part="root" data-placement="top-start"></div>
+      <div data-scope="float-button" class="xh-scope-float-button" data-part="root" data-placement="bottom-end"></div>
     `)
     const topStart = styleOf('[data-placement="top-start"]')
     const bottomEnd = styleOf('[data-placement="bottom-end"]')
@@ -299,12 +299,12 @@ describe('安全区', () => {
   it('看图时那四件悬浮件贴的是屏幕边，四条边逐条让位', async () => {
     await emulateSafeArea({ top: 47, bottom: 59, left: 40, right: 0 })
     mount(`
-      <div data-scope="image-viewer" data-part="content">
-        <div data-scope="image-viewer" data-part="toolbar"></div>
-        <div data-scope="image-viewer" data-part="counter"></div>
-        <div data-scope="image-viewer" data-part="prev-trigger"></div>
-        <div data-scope="image-viewer" data-part="next-trigger"></div>
-        <div data-scope="image-viewer" data-part="close-trigger"></div>
+      <div data-scope="image-viewer" class="xh-scope-image-viewer" data-part="content">
+        <div data-scope="image-viewer" class="xh-scope-image-viewer" data-part="toolbar"></div>
+        <div data-scope="image-viewer" class="xh-scope-image-viewer" data-part="counter"></div>
+        <div data-scope="image-viewer" class="xh-scope-image-viewer" data-part="prev-trigger"></div>
+        <div data-scope="image-viewer" class="xh-scope-image-viewer" data-part="next-trigger"></div>
+        <div data-scope="image-viewer" class="xh-scope-image-viewer" data-part="close-trigger"></div>
       </div>
     `)
     expect(styleOf('[data-part="toolbar"]').bottom).toBe('59px')
@@ -318,8 +318,8 @@ describe('安全区', () => {
 
   it('贴边那几条声明都真解析了：写坏时会整条失效退回 0', () => {
     mount(`
-      <div data-scope="back-top" data-part="root"></div>
-      <div data-scope="loading-bar" data-part="root"></div>
+      <div data-scope="back-top" class="xh-scope-back-top" data-part="root"></div>
+      <div data-scope="loading-bar" class="xh-scope-loading-bar" data-part="root"></div>
     `)
     const backTop = styleOf('[data-scope="back-top"][data-part="root"]')
     // --xh-space-8 = 32px；声明若因 env() 不认而整条失效，这里会读到 auto

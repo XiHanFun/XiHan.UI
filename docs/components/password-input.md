@@ -262,7 +262,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 
 ### 皮肤
 
-`@xihan-ui/styles/password-input.css` 使用 `[data-scope="password-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/password-input.css` 按 `[data-scope="password-input"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-password-input` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

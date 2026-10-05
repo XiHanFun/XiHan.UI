@@ -18,7 +18,7 @@ const parts = watermarkAnatomy.build()
 /** 取回的图片画进 canvas 时长边的上限：图样里最大 512，留一倍给高分屏。 */
 const MAX_IMAGE_EDGE = 1024
 
-/** 防篡改盯住的根节点属性：解剖两位与状态属性，外加内联 style 里的两支图样变量。 */
+/** 防篡改盯住的根节点属性：解剖两位与状态属性，外加内联 style 里的两支图样变量与 class 里的皮肤挂载类。 */
 const GUARDED_ATTRS = ['data-scope', 'data-part', 'data-state', 'data-fullscreen'] as const
 
 function readProps(prop: PropFn<WatermarkSchema>): WatermarkProps {
@@ -171,6 +171,10 @@ export const watermarkMachine = createMachine({
             else
               el.setAttribute(name, want)
           }
+          // 挂载类只补不删：class 里作者自己的词不归这里管
+          const mount = parts.root.attrs.class
+          if (mount && !el.classList.contains(mount))
+            el.classList.add(mount)
           for (const [name, value] of Object.entries(plan.vars)) {
             if (el.style.getPropertyValue(name).trim() !== value)
               el.style.setProperty(name, value)
@@ -181,7 +185,7 @@ export const watermarkMachine = createMachine({
           if (!observer || !root)
             return
           observer.disconnect()
-          observer.observe(root, { attributes: true, attributeFilter: [...GUARDED_ATTRS, 'style'] })
+          observer.observe(root, { attributes: true, attributeFilter: [...GUARDED_ATTRS, 'style', 'class'] })
           if (root.parentNode)
             observer.observe(root.parentNode, { childList: true })
         }

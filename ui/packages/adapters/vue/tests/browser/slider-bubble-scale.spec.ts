@@ -17,11 +17,11 @@ function mount(scope: 'slider' | 'color-slider', orientation: 'horizontal' | 've
   host.dir = dir
   host.style.cssText = 'padding: 64px'
   host.innerHTML = `
-    <div data-scope="${scope}" data-part="root" data-orientation="${orientation}" style="${orientation === 'horizontal' ? 'inline-size: 240px' : 'block-size: 200px'}">
-      <div data-scope="${scope}" data-part="control" data-orientation="${orientation}">
-        <div data-scope="${scope}" data-part="track" data-orientation="${orientation}"></div>
-        <span data-scope="${scope}" data-part="thumb" data-orientation="${orientation}" data-dragging style="${axis}: 50%">
-          <span data-scope="${scope}" data-part="value-text" data-orientation="${orientation}" data-dragging>128</span>
+    <div data-scope="${scope}" class="xh-scope-${scope}" data-part="root" data-orientation="${orientation}" style="${orientation === 'horizontal' ? 'inline-size: 240px' : 'block-size: 200px'}">
+      <div data-scope="${scope}" class="xh-scope-${scope}" data-part="control" data-orientation="${orientation}">
+        <div data-scope="${scope}" class="xh-scope-${scope}" data-part="track" data-orientation="${orientation}"></div>
+        <span data-scope="${scope}" class="xh-scope-${scope}" data-part="thumb" data-orientation="${orientation}" data-dragging style="${axis}: 50%">
+          <span data-scope="${scope}" class="xh-scope-${scope}" data-part="value-text" data-orientation="${orientation}" data-dragging>128</span>
         </span>
       </div>
     </div>`

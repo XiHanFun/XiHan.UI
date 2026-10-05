@@ -86,6 +86,7 @@ async function mountContextMenu(): Promise<void> {
 function menuProbe(partName: 'content' | 'separator'): HTMLElement {
   const probe = document.createElement('div')
   probe.dataset.scope = 'menu'
+  probe.classList.add('xh-scope-menu')
   probe.dataset.part = partName
   // 内容面的材质由家族配方按连接层投影的标记画
   if (partName === 'content')
@@ -243,6 +244,7 @@ describe('右键菜单四向短位移', () => {
     outer.dataset.placement = 'bottom-start'
     const inner = document.createElement('div')
     inner.dataset.scope = 'context-menu'
+    inner.classList.add('xh-scope-context-menu')
     inner.dataset.part = 'positioner'
     inner.dataset.placement = 'right-start'
     outer.append(inner)

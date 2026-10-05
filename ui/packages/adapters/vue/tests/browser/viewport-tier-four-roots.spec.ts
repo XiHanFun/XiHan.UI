@@ -37,11 +37,11 @@ function box(root: ParentNode, selector: string): DOMRect {
 /** 六组「标签 + 取值」，作者写 data-columns=4、标签左置。 */
 function descriptions(): string {
   const items = Array.from({ length: 6 }, (_, i) => `
-    <div data-scope="descriptions" data-part="item">
-      <dt data-scope="descriptions" data-part="label">创建时间${i}</dt>
-      <dd data-scope="descriptions" data-part="value">2026-09-08 12:34:56</dd>
+    <div data-scope="descriptions" class="xh-scope-descriptions" data-part="item">
+      <dt data-scope="descriptions" class="xh-scope-descriptions" data-part="label">创建时间${i}</dt>
+      <dd data-scope="descriptions" class="xh-scope-descriptions" data-part="value">2026-09-08 12:34:56</dd>
     </div>`).join('')
-  return `<dl data-scope="descriptions" data-part="root" data-columns="4"
+  return `<dl data-scope="descriptions" class="xh-scope-descriptions" data-part="root" data-columns="4"
     data-placement="left">${items}</dl>`
 }
 
@@ -84,17 +84,17 @@ describe('descriptions', () => {
 /** 两行并排差异：每行左右各一个行号槽与一段正文。 */
 function diffView(): string {
   const rows = ['const base = options.base', 'return normalize(base)'].map((text, i) => `
-    <div data-scope="diff-view" data-part="row">
-      <span data-scope="diff-view" data-part="line-number" data-side="old"
+    <div data-scope="diff-view" class="xh-scope-diff-view" data-part="row">
+      <span data-scope="diff-view" class="xh-scope-diff-view" data-part="line-number" data-side="old"
         data-line-number="${i + 1}"></span>
-      <span data-scope="diff-view" data-part="line-content" data-side="old">${text}</span>
-      <span data-scope="diff-view" data-part="line-number" data-side="new"
+      <span data-scope="diff-view" class="xh-scope-diff-view" data-part="line-content" data-side="old">${text}</span>
+      <span data-scope="diff-view" class="xh-scope-diff-view" data-part="line-number" data-side="new"
         data-line-number="${i + 1}"></span>
-      <span data-scope="diff-view" data-part="line-content" data-side="new">${text} ?? FALLBACK</span>
+      <span data-scope="diff-view" class="xh-scope-diff-view" data-part="line-content" data-side="new">${text} ?? FALLBACK</span>
     </div>`).join('')
-  return `<div data-scope="diff-view" data-part="root" data-view="split">
-    <div data-scope="diff-view" data-part="viewport">
-      <div data-scope="diff-view" data-part="body">${rows}</div>
+  return `<div data-scope="diff-view" class="xh-scope-diff-view" data-part="root" data-view="split">
+    <div data-scope="diff-view" class="xh-scope-diff-view" data-part="viewport">
+      <div data-scope="diff-view" class="xh-scope-diff-view" data-part="body">${rows}</div>
     </div>
   </div>`
 }
@@ -132,20 +132,20 @@ describe('diff-view 的 split 视图', () => {
 /** 两块面板加两颗搬运钮。 */
 function transfer(): string {
   const panel = (part: string, title: string) => `
-    <div data-scope="transfer" data-part="${part}">
-      <div data-scope="transfer" data-part="panel-header">
-        <span data-scope="transfer" data-part="panel-title">${title}</span>
+    <div data-scope="transfer" class="xh-scope-transfer" data-part="${part}">
+      <div data-scope="transfer" class="xh-scope-transfer" data-part="panel-header">
+        <span data-scope="transfer" class="xh-scope-transfer" data-part="panel-title">${title}</span>
       </div>
-      <ul data-scope="transfer" data-part="list">
-        <li data-scope="transfer" data-part="item">
-          <span data-scope="transfer" data-part="item-text">组织架构与岗位</span>
+      <ul data-scope="transfer" class="xh-scope-transfer" data-part="list">
+        <li data-scope="transfer" class="xh-scope-transfer" data-part="item">
+          <span data-scope="transfer" class="xh-scope-transfer" data-part="item-text">组织架构与岗位</span>
         </li>
       </ul>
     </div>`
-  return `<div data-scope="transfer" data-part="root">
+  return `<div data-scope="transfer" class="xh-scope-transfer" data-part="root">
     ${panel('source-panel', '可选权限')}
-    <button data-scope="transfer" data-part="to-target-trigger" type="button"></button>
-    <button data-scope="transfer" data-part="to-source-trigger" type="button"></button>
+    <button data-scope="transfer" class="xh-scope-transfer" data-part="to-target-trigger" type="button"></button>
+    <button data-scope="transfer" class="xh-scope-transfer" data-part="to-source-trigger" type="button"></button>
     ${panel('target-panel', '已选权限')}
   </div>`
 }
@@ -187,14 +187,14 @@ describe('transfer 的两块面板', () => {
 /** 四条横排事件。 */
 function timeline(): string {
   const items = ['内测启动', '公测开放', '商业化', '海外版'].map(title => `
-    <li data-scope="timeline" data-part="item" data-orientation="horizontal">
-      <span data-scope="timeline" data-part="indicator"></span>
-      <span data-scope="timeline" data-part="connector"></span>
-      <div data-scope="timeline" data-part="content">
-        <span data-scope="timeline" data-part="title">${title}</span>
+    <li data-scope="timeline" class="xh-scope-timeline" data-part="item" data-orientation="horizontal">
+      <span data-scope="timeline" class="xh-scope-timeline" data-part="indicator"></span>
+      <span data-scope="timeline" class="xh-scope-timeline" data-part="connector"></span>
+      <div data-scope="timeline" class="xh-scope-timeline" data-part="content">
+        <span data-scope="timeline" class="xh-scope-timeline" data-part="title">${title}</span>
       </div>
     </li>`).join('')
-  return `<ol data-scope="timeline" data-part="root"
+  return `<ol data-scope="timeline" class="xh-scope-timeline" data-part="root"
     data-orientation="horizontal">${items}</ol>`
 }
 

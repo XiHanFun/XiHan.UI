@@ -23,15 +23,15 @@ function mount(options: { pressed?: boolean, size?: 'lg' | 'md' | 'sm', variant?
   host = document.createElement('div')
   // 静态夹具带上 connect 投影的家族属性：条目的盒型与三态面由 Action Control 配方按它们画
   const size = options.size ?? 'md'
-  const item = (text: string, extra = '') => `<button data-scope="toolbar" data-part="item" data-xh-action-control data-xh-action-profile="text" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="${size}"${extra}>${text}</button>`
+  const item = (text: string, extra = '') => `<button data-scope="toolbar" class="xh-scope-toolbar" data-part="item" data-xh-action-control data-xh-action-profile="text" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="${size}"${extra}>${text}</button>`
   host.innerHTML = `
-    <div data-scope="toolbar" data-part="root" data-orientation="horizontal"${options.variant ? ` data-variant="${options.variant}"` : ''}${options.size ? ` data-size="${options.size}"` : ''}>
+    <div data-scope="toolbar" class="xh-scope-toolbar" data-part="root" data-orientation="horizontal"${options.variant ? ` data-variant="${options.variant}"` : ''}${options.size ? ` data-size="${options.size}"` : ''}>
       ${options.loose ? item('散落') : ''}
-      <div data-scope="toolbar" data-part="group" data-orientation="horizontal">
+      <div data-scope="toolbar" class="xh-scope-toolbar" data-part="group" data-orientation="horizontal">
         ${item('撤销')}
-        <span data-scope="toolbar" data-part="separator" data-orientation="vertical"></span>
+        <span data-scope="toolbar" class="xh-scope-toolbar" data-part="separator" data-orientation="vertical"></span>
         ${item('加粗', options.pressed ? ' aria-pressed="true"' : '')}
-        <span data-scope="toolbar" data-part="separator" data-orientation="vertical"></span>
+        <span data-scope="toolbar" class="xh-scope-toolbar" data-part="separator" data-orientation="vertical"></span>
         ${item('复制')}
       </div>
     </div>`

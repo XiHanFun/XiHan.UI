@@ -15,20 +15,20 @@ function mount(orientation: 'horizontal' | 'vertical' = 'horizontal', autoplay =
   host = document.createElement('div')
   host.style.inlineSize = orientation === 'horizontal' ? '560px' : '360px'
   host.innerHTML = `
-    <div data-scope="carousel" data-part="root" data-orientation="${orientation}"${autoplay ? ' data-autoplay style="--xh-_carousel-autoplay-duration:2500ms"' : ''}>
-      <button data-scope="carousel" data-part="prev-trigger" data-orientation="${orientation}" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="md"></button>
-      <div data-scope="carousel" data-part="viewport" data-orientation="${orientation}" style="block-size:176px">
-        <div data-scope="carousel" data-part="list" data-orientation="${orientation}">
-          <div data-scope="carousel" data-part="item" data-orientation="${orientation}" style="flex-basis:100%">
+    <div data-scope="carousel" class="xh-scope-carousel" data-part="root" data-orientation="${orientation}"${autoplay ? ' data-autoplay style="--xh-_carousel-autoplay-duration:2500ms"' : ''}>
+      <button data-scope="carousel" class="xh-scope-carousel" data-part="prev-trigger" data-orientation="${orientation}" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="md"></button>
+      <div data-scope="carousel" class="xh-scope-carousel" data-part="viewport" data-orientation="${orientation}" style="block-size:176px">
+        <div data-scope="carousel" class="xh-scope-carousel" data-part="list" data-orientation="${orientation}">
+          <div data-scope="carousel" class="xh-scope-carousel" data-part="item" data-orientation="${orientation}" style="flex-basis:100%">
             <article>Vue、React 与 Web Components 共享同一份行为契约</article>
           </div>
         </div>
       </div>
-      <button data-scope="carousel" data-part="next-trigger" data-orientation="${orientation}" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="md"></button>
-      <button data-scope="carousel" data-part="autoplay-trigger" data-state="running" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="md"></button>
-      <div data-scope="carousel" data-part="indicator-group" data-orientation="${orientation}">
-        <button data-scope="carousel" data-part="indicator" data-current></button>
-        <button data-scope="carousel" data-part="indicator"></button>
+      <button data-scope="carousel" class="xh-scope-carousel" data-part="next-trigger" data-orientation="${orientation}" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="md"></button>
+      <button data-scope="carousel" class="xh-scope-carousel" data-part="autoplay-trigger" data-state="running" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="md"></button>
+      <div data-scope="carousel" class="xh-scope-carousel" data-part="indicator-group" data-orientation="${orientation}">
+        <button data-scope="carousel" class="xh-scope-carousel" data-part="indicator" data-current></button>
+        <button data-scope="carousel" class="xh-scope-carousel" data-part="indicator"></button>
       </div>
     </div>`
   document.body.append(host)

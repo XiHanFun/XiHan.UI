@@ -26,14 +26,14 @@ function mount() {
   host.style.setProperty('--xh-motion-duration-micro', '0ms')
   host.style.setProperty('--xh-motion-duration-press', '0ms')
   host.style.setProperty('--xh-motion-duration-release', '0ms')
-  const handle = (extra = '') => `<button type="button" data-scope="sortable" data-part="item-drag-trigger"
+  const handle = (extra = '') => `<button type="button" data-scope="sortable" class="xh-scope-sortable" data-part="item-drag-trigger"
     data-xh-action-control="" data-xh-action-profile="icon" data-xh-action-variant="ghost"
     data-xh-action-display="always" data-xh-action-size="xs" aria-roledescription="sortable" ${extra}></button>`
   host.innerHTML = `
-    <div data-scope="sortable" data-part="root" data-orientation="vertical">
-      <div data-scope="sortable" data-part="item" data-dragging>${handle('data-dragging aria-pressed="true"')}<span>一</span></div>
-      <div data-scope="sortable" data-part="item">${handle('aria-pressed="false"')}<span>二</span></div>
-      <div data-scope="sortable" data-part="item">${handle('data-disabled aria-disabled="true"')}<span>三</span></div>
+    <div data-scope="sortable" class="xh-scope-sortable" data-part="root" data-orientation="vertical">
+      <div data-scope="sortable" class="xh-scope-sortable" data-part="item" data-dragging>${handle('data-dragging aria-pressed="true"')}<span>一</span></div>
+      <div data-scope="sortable" class="xh-scope-sortable" data-part="item">${handle('aria-pressed="false"')}<span>二</span></div>
+      <div data-scope="sortable" class="xh-scope-sortable" data-part="item">${handle('data-disabled aria-disabled="true"')}<span>三</span></div>
     </div>`
   document.body.append(host)
   return {

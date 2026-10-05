@@ -12,6 +12,7 @@ describe('空菜单的实体焦点保护面', () => {
     host.dataset.theme = theme
     const content = document.createElement('div')
     content.dataset.scope = 'context-menu'
+    content.classList.add('xh-scope-context-menu')
     content.dataset.part = 'content'
     content.tabIndex = 0
     content.setAttribute('role', 'menu')
@@ -19,6 +20,7 @@ describe('空菜单的实体焦点保护面', () => {
     content.style.minBlockSize = '40px'
     const arrow = document.createElement('div')
     arrow.dataset.scope = 'context-menu'
+    arrow.classList.add('xh-scope-context-menu')
     arrow.dataset.part = 'arrow'
     arrow.dataset.placement = 'bottom'
     content.append(arrow)

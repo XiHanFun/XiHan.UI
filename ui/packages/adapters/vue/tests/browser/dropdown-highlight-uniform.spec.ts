@@ -21,7 +21,7 @@ afterEach(() => {
 function highlighted(scope: string, part: string): CSSStyleDeclaration {
   host?.remove()
   host = document.createElement('div')
-  host.innerHTML = `<div data-scope="${scope}" data-part="${part}" data-xh-collection-item data-xh-collection-size="md" data-xh-collection-context="overlay" data-highlighted>候选</div>`
+  host.innerHTML = `<div data-scope="${scope}" class="xh-scope-${scope}" data-part="${part}" data-xh-collection-item data-xh-collection-size="md" data-xh-collection-context="overlay" data-highlighted>候选</div>`
   document.body.append(host)
   return getComputedStyle(host.firstElementChild!)
 }

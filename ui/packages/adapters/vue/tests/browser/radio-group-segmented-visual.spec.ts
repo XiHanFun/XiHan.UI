@@ -29,14 +29,14 @@ function mount(options: { tone?: string, dir?: string } = {}): Fixture {
   if (options.dir)
     host.setAttribute('dir', options.dir)
   host.innerHTML = `
-    <div data-scope="radio-group" data-part="root" data-variant="segmented" data-orientation="horizontal" role="radiogroup"${options.tone ? ` data-tone="${options.tone}"` : ''}>
-      <span data-scope="radio-group" data-part="label">视图</span>
-      <span data-scope="radio-group" data-part="thumb" style="--xh-_radio-group-thumb-x:64px;--xh-_radio-group-thumb-w:64px;--xh-_radio-group-thumb-h:28px"></span>
-      <div data-scope="radio-group" data-part="item" role="radio" data-state="unchecked" style="inline-size:64px">
-        <span data-scope="radio-group" data-part="indicator" data-state="unchecked"></span>日
+    <div data-scope="radio-group" class="xh-scope-radio-group" data-part="root" data-variant="segmented" data-orientation="horizontal" role="radiogroup"${options.tone ? ` data-tone="${options.tone}"` : ''}>
+      <span data-scope="radio-group" class="xh-scope-radio-group" data-part="label">视图</span>
+      <span data-scope="radio-group" class="xh-scope-radio-group" data-part="thumb" style="--xh-_radio-group-thumb-x:64px;--xh-_radio-group-thumb-w:64px;--xh-_radio-group-thumb-h:28px"></span>
+      <div data-scope="radio-group" class="xh-scope-radio-group" data-part="item" role="radio" data-state="unchecked" style="inline-size:64px">
+        <span data-scope="radio-group" class="xh-scope-radio-group" data-part="indicator" data-state="unchecked"></span>日
       </div>
-      <div data-scope="radio-group" data-part="item" role="radio" data-state="checked" style="inline-size:64px">
-        <span data-scope="radio-group" data-part="indicator" data-state="checked"></span>周
+      <div data-scope="radio-group" class="xh-scope-radio-group" data-part="item" role="radio" data-state="checked" style="inline-size:64px">
+        <span data-scope="radio-group" class="xh-scope-radio-group" data-part="indicator" data-state="checked"></span>周
       </div>
     </div>`
   document.body.append(host)
