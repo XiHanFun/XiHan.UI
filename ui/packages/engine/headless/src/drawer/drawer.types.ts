@@ -6,7 +6,7 @@
 // 定义 drawer 类型契约。
 
 import type { OverlayBackdropVariant, OverlayCloseReason, PropTypes, Size } from '@xihan-ui/core'
-import type { DialogPoint, DialogRefs, DialogSchema } from '../dialog'
+import type { DialogPoint, DialogRefs, DialogSchema } from '../dialog/dialog.types'
 
 /** 抽屉贴靠的视口边，也是滑入方向的来源。 */
 export type DrawerSide = 'top' | 'right' | 'bottom' | 'left'

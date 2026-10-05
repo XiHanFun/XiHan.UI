@@ -8,8 +8,8 @@
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { ResolvedTimeStep, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
-import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
-import type { TimePickerColumn, TimePickerColumnUnit, TimePickerFocusIntent } from '../time-picker'
+import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field/time-field.types'
+import type { TimePickerColumn, TimePickerColumnUnit, TimePickerFocusIntent } from '../time-picker/time-picker.types'
 
 /** 区间的哪一端：0 起点、1 终点。两组段位、两组时列、两份表单出口都按它归属。 */
 export type TimeRangePickerEndIndex = 0 | 1

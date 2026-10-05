@@ -6,7 +6,26 @@
 // 定义 kbd 类型契约。
 
 import type { PropTypes } from '@xihan-ui/core'
-import type { HotkeySegment, KbdPlatform, KbdResolvedPlatform } from '../shared/hotkey'
+
+/** 平台写法。'auto' 表示还没测出来，由适配器挂载后换成实测值。 */
+export type KbdPlatform = 'auto' | 'mac' | 'other'
+
+/** 落定后的平台写法，只有两种。 */
+export type KbdResolvedPlatform = 'mac' | 'other'
+
+/** 一枚键翻好的几种写法。 */
+export interface HotkeySegment {
+  /** keys 里原样写的那个词；键帽部件按它认领自己是哪一枚。 */
+  readonly source: string
+  /** 归一化键名：修饰键是 Meta / Control / Alt / Shift，主键是 KeyboardEvent.key 的写法。 */
+  readonly key: string
+  /** 键帽上显示的字，取自语言包。 */
+  readonly label: string
+  /** 读屏念的名字，取自语言包。 */
+  readonly name: string
+  /** 是不是修饰键。 */
+  readonly modifier: boolean
+}
 
 export type KbdVariant = 'default' | 'light'
 export type KbdTarget = 'document' | (() => EventTarget | null)

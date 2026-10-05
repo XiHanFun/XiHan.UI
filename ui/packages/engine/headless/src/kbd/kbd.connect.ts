@@ -6,8 +6,7 @@
 // 提供 kbd 展示与快捷键匹配实现。
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { HotkeySegment } from '../shared/hotkey'
-import type { KbdApi, KbdProps } from './kbd.types'
+import type { HotkeySegment, KbdApi, KbdProps } from './kbd.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { KBD_EN_US } from '../locale/en-US'
 import { formatHotkey, isTypingTarget, matchesHotkey, resolveKbdPlatform } from '../shared/hotkey'

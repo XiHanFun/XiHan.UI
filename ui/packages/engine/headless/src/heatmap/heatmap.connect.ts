@@ -40,6 +40,12 @@ import { heatmapActiveCell, heatmapActiveTip, heatmapGridOptions } from './heatm
 
 const parts = heatmapAnatomy.build()
 
+/**
+ * 色阶对照条两端的缺省文字，取自 en-US 语言包。它是写进界面的可见文本，
+ * 换语言经 translations 的 legendLow / legendHigh；发散色阶两端写数值，不用这两个词。
+ */
+export const HEATMAP_LEGEND_TEXT: { low: string, high: string } = { low: HEATMAP_EN_US.legendLow, high: HEATMAP_EN_US.legendHigh }
+
 // 格子集合只在事件处理器里查活 DOM，顺序即文档序
 const CELL_QUERY = heatmapCellQuery
 

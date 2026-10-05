@@ -7,13 +7,14 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { CalendarRangePickerApi, CalendarRangePickerSchema, CalendarRangePickerTranslations } from '../calendar-range-picker'
-import type { DateFieldSchema, DateSegmentPlaceholders, DateSegmentSet } from '../date-field'
-import type { DatePickerFieldApi, DatePickerPreset, DatePickerPresetProps, DatePickerPresetState, DatePickerTimeGranularity, DatePickerTimeUnit } from '../date-picker'
+import type { CalendarRangePickerApi, CalendarRangePickerSchema, CalendarRangePickerTranslations } from '../calendar-range-picker/calendar-range-picker.types'
+import type { DateFieldSchema, DateSegmentPlaceholders, DateSegmentSet } from '../date-field/date-field.types'
+import type { DatePickerTimeGranularity } from '../date-picker/date-picker.time'
+import type { DatePickerFieldApi, DatePickerPreset, DatePickerPresetProps, DatePickerPresetState, DatePickerTimeUnit } from '../date-picker/date-picker.types'
 import type { CalendarGranularity, CalendarPeriodValue, CalendarView, CalendarViewChangeDetails } from '../shared/calendar'
 import type { ResolvedTimeStep, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
-import type { TimeHourCycle } from '../time-field'
-import type { TimePickerColumn } from '../time-picker'
+import type { TimeHourCycle } from '../time-field/time-field.types'
+import type { TimePickerColumn } from '../time-picker/time-picker.types'
 
 /**
  * 值的来源；calendar 与 preset 两路参与选完即收起的判定。

@@ -6,7 +6,7 @@
 // 定义 popconfirm 类型契约。
 
 import type { PropTypes } from '@xihan-ui/core'
-import type { PopoverOpenChangeDetails, PopoverSchema } from '../popover'
+import type { PopoverOpenChangeDetails, PopoverSchema } from '../popover/popover.types'
 
 /**
  * 开合与浮层部分与 popover 相同：气泡确认运行的即 popover 状态机。

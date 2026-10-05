@@ -7,13 +7,43 @@
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ToolCallSchema } from '../tool-call'
-import type { ReasoningApi, ReasoningProps } from './reasoning.types'
+import type { ReasoningApi, ReasoningProps, ReasoningTranslations } from './reasoning.types'
 import { dataAttr } from '@xihan-ui/core'
+import { REASONING_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { reasoningAnatomy } from './reasoning.anatomy'
-import { reasoningDuration, reasoningStatusText } from './reasoning.types'
+import { reasoningDuration } from './reasoning.types'
 
 const parts = reasoningAnatomy.build()
+
+/**
+ * 当前应显示的状态文案。
+ *
+ * 仍在思考时：知道已经想了多久就把整秒数代入 thinkingFor，否则是思考中文案；
+ * 已完成且可计算时长时，把秒数代入模板串；
+ * 时长无法计算（流被中止、未写结束时刻）时回退为折叠区的名字。
+ */
+export function reasoningStatusText(
+  streaming: boolean,
+  durationMs: number | undefined,
+  translations?: Partial<ReasoningTranslations>,
+  elapsedMs?: number,
+): string {
+  const text = resolveTranslations(REASONING_EN_US, translations)
+  if (streaming) {
+    // 只换了 thinking 没给 thinkingFor 的，照旧显示 thinking：不把英文缺省串混进本地化过的文案。
+    // 判据看作者原本给的那份，并上语言包之后两个键恒有值，分不出来
+    const keepThinking = translations?.thinkingFor === undefined && translations?.thinking !== undefined
+    if (elapsedMs === undefined || keepThinking)
+      return text.thinking
+    return text.thinkingFor.replace('{seconds}', String(Math.floor(elapsedMs / 1000)))
+  }
+  if (durationMs === undefined)
+    return text.label
+  const seconds = Math.round(durationMs / 100) / 10
+  return text.thoughtFor.replace('{seconds}', String(seconds))
+}
 
 /**
  * 思考过程的连接层。自动开合整套复用 tool-call 的机器：那台机器不认解剖，

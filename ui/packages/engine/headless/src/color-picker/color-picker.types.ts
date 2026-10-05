@@ -7,8 +7,8 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { ColorSliderApi, ColorSliderServices } from '../color-slider'
-import type { ColorSwatchPickerApi, ColorSwatchPickerSchema } from '../color-swatch-picker'
+import type { ColorSliderApi, ColorSliderServices } from '../color-slider/color-slider.types'
+import type { ColorSwatchPickerApi, ColorSwatchPickerSchema } from '../color-swatch-picker/color-swatch-picker.types'
 import type { ColorAnchor, ColorFormat, ColorHsva, ColorRgba } from '../shared/color'
 import type { ColorPickerChannel, ColorPickerInputChannel } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'

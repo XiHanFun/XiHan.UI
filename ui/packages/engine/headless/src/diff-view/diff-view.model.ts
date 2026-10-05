@@ -6,7 +6,7 @@
 // 提供 diff view.model 相关实现。
 
 import type { CodeToken, HighlighterPort } from '@xihan-ui/core'
-import { splitCodeLines } from '../code-view'
+import { splitCodeLines } from '../code-view/code-view.types'
 
 /** 一行的变更类型。 */
 export type DiffChange = 'context' | 'added' | 'removed'

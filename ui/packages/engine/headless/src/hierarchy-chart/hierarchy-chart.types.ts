@@ -7,7 +7,7 @@
 
 import type {
   ChartTranslations,
-} from '../shared/chart'
+} from '../shared/chart/types'
 
 /** 空间填充的方式：treemap 矩形树图（缺省）、sunburst 旭日图、icicle 冰柱图、pack 圆堆积。 */
 export type HierarchyLayout = 'treemap' | 'sunburst' | 'icicle' | 'pack'

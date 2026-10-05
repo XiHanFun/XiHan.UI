@@ -7,7 +7,7 @@
 
 import type {
   ChartTranslations,
-} from '../shared/chart'
+} from '../shared/chart/types'
 
 /** 一个节点：身份、名字、分组与数值；分组决定颜色与图例，数值决定面积。 */
 export interface GraphNodeDatum {

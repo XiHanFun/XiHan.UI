@@ -6,9 +6,9 @@
 // 时间列的约束：小时制、按单位的步进、min / max 裁剪与带上下文的逐值可选性。
 // 时间选择器、时间范围选择器、日期选择器与日期范围选择器的时间列共用这一份，纯运算，不碰 DOM。
 
-import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle } from '../time-field'
+import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle } from '../time-field/time-field.types'
 import { PlainDate, PlainTime } from '@xihan-ui/core/date'
-import { parseTimeValue, TIME_FIELD_GRANULARITY, TIME_FIELD_HOUR_CYCLE, to12Hour, to24Hour } from '../time-field'
+import { parseTimeValue, TIME_FIELD_GRANULARITY, TIME_FIELD_HOUR_CYCLE, to12Hour, to24Hour } from '../time-field/time-field.machine'
 
 /**
  * 成列排布的单位，与分段输入里的段同名同域：列上选择与段上输入写入的是同一个值。

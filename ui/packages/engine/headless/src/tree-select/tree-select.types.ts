@@ -7,7 +7,7 @@
 
 import type { CascadeStrategy, Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { TreeNode, TreeVisibleNode } from '../tree'
+import type { TreeNode, TreeVisibleNode } from '../tree/tree.types'
 import type { CollectionVirtualizer } from '../virtualizer'
 
 /**

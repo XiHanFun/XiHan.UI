@@ -6,7 +6,7 @@
 // 导出 heatmap 模块的公共接口。
 
 export { heatmapAnatomy, heatmapCellQuery } from './heatmap.anatomy'
-export { connectHeatmap } from './heatmap.connect'
+export { connectHeatmap, HEATMAP_LEGEND_TEXT } from './heatmap.connect'
 export {
   addHeatmapDays,
   buildHeatmapAxis,
@@ -17,7 +17,6 @@ export {
   buildHeatmapWeekDays,
   formatHeatmapDate,
   HEATMAP_FIRST_DAY_OF_WEEK,
-  HEATMAP_LEGEND_TEXT,
   HEATMAP_LEVELS,
   HEATMAP_LOCALE,
   HEATMAP_WEEK_LENGTH,

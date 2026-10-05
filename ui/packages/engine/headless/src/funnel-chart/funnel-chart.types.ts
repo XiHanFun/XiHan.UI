@@ -7,7 +7,7 @@
 
 import type {
   ChartTranslations,
-} from '../shared/chart'
+} from '../shared/chart/types'
 
 /** 阶段的形状：trapezoid 梯形（缺省，上下两边接着相邻阶段的宽度），bar 居中的条形，更利于比较。 */
 export type FunnelShape = 'trapezoid' | 'bar'
