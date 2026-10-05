@@ -1,0 +1,1 @@
+import{cS as e}from"./theme.CivESN_z.js";import{d as t,o,c,E as s,k as a}from"./framework.D1FqHTxE.js";const n={style:{display:"flex","align-items":"center",gap:"12px"}},m=t({__name:"01-basic",setup(r){return(p,i)=>(o(),c("div",n,[s(a(e),{keys:["Escape"]}),s(a(e),{keys:["Mod","K"]})]))}});export{m as default};

@@ -4,6 +4,39 @@
 
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。只收录使用者可感知的变更，仓库自身的配置、CI、测试与门禁不列入。组件以 npm 包形式发布，升级前请留意「调整」类中的破坏性变更。
 
+## v3.2.0 (2026-10-06)
+
+本版新增十种常用语言的内建语言包（`locale` 子入口），组件不再自带英文，界面文字一律取语言包；Dialog 与 Drawer 新增 `unmountOnExit`，Select 新增 `lazyMount`，Carousel 与 ImageViewer 新增 `size`，浮动圆钮整体下移一档。另有一批面向大页面的性能优化：模态背景失活改为只打 `aria-hidden`，Portal 视觉桥只在浮层呈现期间存在，皮肤产物改以挂载类 `xh-scope-<组件名>` 领头。挂载类、浮动圆钮尺寸与模态背景的变化会影响自写标记、视觉快照与页内查找，升级前请看下方升级须知。
+
+::: warning 升级须知
+- **皮肤挂载类**：每个角色节点多带一个类 `xh-scope-<组件名>`，与 `data-scope` 一一对应，皮肤产物改以它领头。经 Vue / React / Web Components 使用组件的项目无需改动；只用 `@xihan-ui/styles`、自己书写标记的页面，要给每个带 `data-scope="x"` 的节点补上 `class="xh-scope-x"`，否则皮肤不命中。对 DOM 做快照或精确比对 `className` 的测试需要随之更新。`data-scope` / `data-part` 仍是公开的样式契约，覆盖写法不变
+- **浮动圆钮尺寸**：Action Control 的 `floating` 档 sm / md / lg 由 40 / 48 / 56px 改为 32 / 40 / 48px（compact 28 / 36 / 44px）。BackTop、FloatButton 缺省由 48px 变为 40px、`size="lg"` 由 56px 变为 48px，ImageViewer 翻页钮由 48px 变为 40px、关闭钮由 40px 变为 32px，Carousel 翻页与播放钮为 40px；要保持原尺寸，把 `size` 调高一档
+- **模态背景**：模态浮层的背景改为只打 `aria-hidden`、不再打 `inert`。键盘仍由焦点域收在浮层里，指针由遮罩或新加的透明底板拦下；页内查找（Ctrl+F）与文本选择现在能落到模态下面的内容上
+:::
+
+- **新增** 内建语言包 `zhCN`、`zhTW`、`enUS`、`jaJP`、`koKR`、`frFR`、`deDE`、`esES`、`ptBR`、`ruRU`，放在新的 `locale` 子入口（`@xihan-ui/headless/locale`、`@xihan-ui/vue/locale`、`@xihan-ui/react/locale`、`@xihan-ui/web-components/locale`），主入口体积不变，只打进用到的那几份。一份语言包即一份全局配置 `{ locale, translations }`（类型 `XhLocale`），直接交给 `provideXhConfig` / `XhConfigProvider` / `setXhConfig`，日期时间类组件的 `locale` 一并切换；语言包覆盖组件的每一条文案，含图表摘要、拖拽播报等函数式文案，个别文案仍可在实例上覆盖
+- **新增** 原先写死的界面文字收进 `translations`，十种语言同步补齐：Dialog 新增 `ok` / `cancel` / `actionError`，命令式对话框服务没传 `okText` / `cancelText` / `actionErrorText` 时取服务所在配置的语言包，新增导出 `dialogServiceTranslations()`；Form 新增 `translations` 属性收进校验报错模板，取值顺序为规则的 `message` → `validateMessages` → `translations` → 英文语言包；Kbd 的 `keyName` 有了按平台区分的缺省，新增键帽字 `keyLabel`，`formatHotkey` 新增可选的第三个参数；Citation 新增 `previewLinkSource` / `previewLinkDocument`，API 新增 `previewLinkText(item)` 与 `sourceMetaText(source)`；Mention 新增空态文字 `empty` 与 API `emptyText`；Carousel、Sortable、Table 的读屏角色说明（`aria-roledescription`）可经 `translations` 翻译
+- **新增** Dialog 与 Drawer 的 `unmountOnExit`（缺省 true，行为不变）：设为 false 时打开过之后收起只隐藏、不卸载，再打开不重挂，内容里的组件状态、输入与滚动位置都保留；Web Components 写进 content 里 `<template>` 的内容按同一规则挂卸，Headless connect 新增 `isContentMounted(present)`
+- **新增** Select 的 `lazyMount`（缺省 false，行为不变）：列表内容第一次展开时才挂载，之后常驻；打开前的选中文字与收起态连打改按 `collection` 计算。300 个各带 20 个条目的 Select 挂载由约 530ms 降到约 183ms。Web Components 把条目写进 list 里的 `<template>`，第一次展开才克隆
+- **新增** Carousel 与 ImageViewer 的 `size`（sm / md / lg，缺省 md），翻页与播放钮同档，ImageViewer 的关闭钮比它低一档；Log、MessageFeed 的回到底部钮随组件已有的 `size` 换档。新增的 `size` 接全局配置
+- **新增** Carousel 分页点组件槽 `--xh-carousel-indicator-thickness`：垂直于轨道的粗细单独可调，缺省与 `--xh-carousel-indicator-size` 同值；调小即成细横条，粗指针下 44px 命中区不变
+- **新增** core 导出 `SCOPE_CLASS_PREFIX`、`scopeClass()` 与 `stripScopeClass()`；诊断码 `portal.unreadable-stylesheet`：文档里有读不到规则的跨域样式表时点名报出，给它加 `crossorigin` 并让来源回 `Access-Control-Allow-Origin` 即可恢复浮层样式同步的增量判断；Web Components 的 `onXhConfigChange` 新增可选的第二个参数 `host`，只接收它所在子树的配置变化
+
+- **修复** CartesianChart、PieChart、FunnelChart、RadarChart、GraphChart、HierarchyChart、SankeyChart 在根末尾追加的视觉隐藏数据表不再撑出祖先的滚动条，图表放进 `overflow: auto` 的卡片、面板、对话框正文时不再多出一截空滚动；新增部件 `table-region`（`getTableRegionProps()`），`table` 部件不再带隐藏样式
+- **修复** HierarchyChart 的绘图区补上读屏角色说明，取 `translations.chartRoleDescription`，缺省为 `tree chart`，与其余六种图表一致
+- **修复** CartesianChart 数据表的列名先取轴标题，全局配置里的 `translations.keyLabel` / `valueLabel` 不再盖掉作者写的轴标题；Heatmap 发散色阶的对照条两端恒写数值，`translations.legendLow` / `legendHigh` 只换顺序色阶两端的词
+- **修复** Citation 来源副文字里没有媒体类型的文档不再写死 `Document`，改取 `translations.document`
+- **修复** 自绘滚动条在 `disabled` 时容器暂缺不再报「找不到滚动容器」诊断
+
+- **优化** 模态浮层的背景失活改为只打 `aria-hidden`：四千多个节点的页面上打开、关闭模态抽屉不再各多出 40–55 毫秒的长任务；实时区域照常播报；没有遮罩的模态层在定位层里垫一块透明底板（`data-xh-modal-underlay`）拦下背景点击；背景失活随宿主提交当场施加与撤下，关闭后焦点不再晚两帧回到触发器
+- **优化** Vue 与 React 的 Portal 视觉桥只在浮层呈现期间存在：Tooltip、Popover、Select、DatePicker 等 19 种带退场闸门的浮层，以及菜单栏、侧栏与引用悬停卡常驻的定位层，关着时不建桥，展开时建、退场播完即撤；视觉桥按真正变了的自定义属性判断是否重算，模态浮层开合不再让全页浮层整批重算；滚动锁没让出宽度时不再往文档根写 `0px`
+- **优化** 皮肤规则改以挂载类领头，挂在运行期状态后面的后代与兄弟规则主体带上组件特征：3500 个组件节点的容器上翻一次 `data-state` 由 150ms 降到 4ms，`data-current`、`data-disabled` 同量级下降
+- **优化** 自绘滚动条首次测量按批读布局，粗指针探测全窗口共用一个媒体查询；Timestamp 的可见性监听与视口观察器全页共用；液态面协调器只在有液态成员时挂文档级监听
+- **优化** Web Components 的 `<xh-config>` 只改视觉轴（mode、brand、density 等）时不再通知元素重新接线，改 locale / size / 文案时只叫醒它子树里的元素
+
+- **调整** 组件不再自带英文：界面文字一律取语言包，没配语言包时取 `enUS`，英文输出与此前逐字相同；带英文缺省的公开常量（`CHART_TRANSLATIONS`、`HEATMAP_LEGEND_TEXT`、`SPINNER_DEFAULT_LABEL` 等）名字与签名不变，值改取自英文语言包
+- **调整** 浮动圆钮整体下移一档、每个角色节点另带挂载类 `xh-scope-<组件名>`、模态背景不再 `inert`，详见升级须知
+
 ## v3.1.0 (2026-10-03)
 
 本版补齐选择器的多选与表单字段接线：DatePicker、TimePicker、ColorPicker 多选时选中值在输入行里排成标签，与 Select 多选同一套；FloatButton 支持拖动与贴边，Menu 数据驱动支持多级，Tree 的连接线改为完整的树形连线；带清空钮的 15 个组件统一新增清空事件，组类控件直接放进表单字段也接上字段的标题与说明，并新增字段边界 FieldBoundary。另修复 Web Components 下 FloatButton、Marquee、Truncate、Watermark 盖掉作者写在 root 上的内联样式等问题。本版包含 TimePicker 与 ColorPicker 值类型的破坏性变更，按次版本发布，升级前请看下方升级须知。

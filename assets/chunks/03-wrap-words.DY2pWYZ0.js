@@ -1,5 +1,0 @@
-import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{createHighlighter as i}from"./index.Dl0MBU8T.js";import{eL as o}from"./theme.B46t0kFy.js";import{X as r,a as s,d as e,b as n,c as m}from"./diff-view.Cd4LERvr.js";import"./framework.D1FqHTxE.js";import"./normalize-props.6NRwZiAL.js";import"./config.DUm_4YtF.js";import"./index.Cgwy3NI6.js";import"./slot-content.BDi8aYdV.js";import"./react-id.om8_0ohg.js";import"./use-machine.w4kYzT_G.js";import"./index.DEmbwZee.js";const c=`const endpoint = "https://api.example.com/v1/workspaces/{id}/documents?include=revisions&limit=50"
-const timeout = 3000
-export const client = createClient({ endpoint, timeout })`,p=`const endpoint = "https://api.example.com/v2/workspaces/{id}/documents?include=revisions,authors&limit=100"
-const timeout = 8000
-export const client = createClient({ endpoint, timeout })`,a=o(c,p,{lang:"typescript",highlighter:i()});function v(){return t.jsxs(r,{model:a,wrap:!0,children:[t.jsxs(s,{children:[t.jsx("span",{children:"src/client.ts"}),t.jsx(e,{change:"added"}),t.jsx(e,{change:"removed"})]}),t.jsx(n,{children:t.jsx(m,{})})]})}export{v as default};
