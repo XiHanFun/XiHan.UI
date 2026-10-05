@@ -14,6 +14,7 @@ import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
+import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
@@ -59,6 +60,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {boolean} lazy-mount - 列表内容第一次展开时才挂载：条目写在 list 里的一个 `<template>` 中时，第一次展开才克隆、之后常驻；打开前的选中文字与收起态连打按 collection 算
  * @fires value-change - 选中值变化；detail 为 `{ value: string[] }`
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
@@ -106,6 +108,7 @@ export class XhSelectElement extends XhPortalHostElement {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
     virtualizer: { attribute: false },
+    lazyMount: { type: Boolean, attribute: 'lazy-mount' },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     open: { converter: BOOLEAN_CONVERTER },
@@ -132,6 +135,7 @@ export class XhSelectElement extends XhPortalHostElement {
   // 属性只递得进单值，多选集合走 property
   declare collection?: SelectNode[]
   declare virtualizer?: CollectionVirtualizer
+  declare lazyMount?: boolean
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare open?: boolean
@@ -203,6 +207,9 @@ export class XhSelectElement extends XhPortalHostElement {
     props: () => ({ size: 'sm' }),
   })
 
+  /** list 里 `<template>` 写的条目按 headless 的判定克隆进来；没写模板的作者节点照旧常驻 */
+  private readonly lazyList = new LazyContent({ stash: false })
+
   /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
   private inheritedControl: FormControlState | undefined
@@ -222,6 +229,7 @@ export class XhSelectElement extends XhPortalHostElement {
     return {
       collection: this.collection,
       virtualizer: this.virtualizer,
+      lazyMount: this.lazyMount,
       value: this.value,
       defaultValue: this.defaultValue ?? null,
       open: this.open,
@@ -411,6 +419,8 @@ export class XhSelectElement extends XhPortalHostElement {
 
   protected wire(): void {
     const api = connectSelect(this.ctrl.service, wcNormalize)
+    // 新克隆进来的条目由部件观察器补一轮 wire 接上属性
+    this.lazyList.sync(this.getPart('list'), api.isContentMounted())
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)

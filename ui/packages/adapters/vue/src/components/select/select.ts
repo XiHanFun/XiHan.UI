@@ -33,6 +33,8 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   props: {
     collection: { type: Array as PropType<SelectNode[]> },
     virtualizer: { type: Object as PropType<CollectionVirtualizer> },
+    /** 列表内容第一次展开时才挂载；打开前的选中文字与收起态连打按 collection 算。 */
+    lazyMount: { type: Boolean, default: undefined },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
     value: { type: [String, Array] as PropType<string | string[] | null> },
@@ -275,7 +277,8 @@ export const XhSelectPositioner = /* @__PURE__ */ defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useSelectContext()
     // 列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
-    const bars = useScrollbars({ scrollable: () => ctx.listRef.value, props: { size: 'sm' } })
+    // 列表内容懒挂载、还没展开过时轴先禁用着：容器暂缺属于预期
+    const bars = useScrollbars({ scrollable: () => ctx.listRef.value, props: () => ({ size: 'sm', disabled: !ctx.api.value.isContentMounted() }) })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {
@@ -296,7 +299,7 @@ export const XhSelectContent = /* @__PURE__ */ defineComponent({
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+    }, ctx.api.value.isContentMounted() ? slots.default?.() : undefined)
   },
 })
 

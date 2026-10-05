@@ -133,6 +133,12 @@ export interface SelectSchema extends MachineSchema {
     /** 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 */
     virtualizer?: CollectionVirtualizer
     /**
+     * 列表内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。挂过之后一直留着，来回开合不重建。
+     * 页面上 Select 很多（表格每行一个、长表单）时打开它：收起态每个实例都背着一整份条目，挂载开销大半在这里。
+     * 打开前的选中文字与收起态连打按 collection 计算；没给 collection 时，打开前选中文字退回值本身、连打不生效。
+     */
+    lazyMount?: boolean
+    /**
      * 选中值。裸串是单选的简写，null 是受控且无选中，未提供（undefined）才是非受控；内部一律按数组处理。
      * 受控时 cell 直读 prop，写入只发 onValueChange 不落内部值。
      */
@@ -187,6 +193,8 @@ export interface SelectSchema extends MachineSchema {
      * 第一次收起时清掉，之后的每一次打开照常进场。
      */
     openedAtMount: boolean
+    /** 挂载之后展开过没有（含首帧即展开）。lazyMount 下列表内容从第一次展开起才挂载。 */
+    opened: boolean
     /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
     /** 选中值。受控（value 提供）时 cell 直读 prop。单选恒为长度 ≤ 1。 */
@@ -240,6 +248,7 @@ export interface SelectSchema extends MachineSchema {
     | 'invokeOnClose'
     | 'syncOpen'
     | 'syncValueText'
+    | 'markOpened'
     | 'setValue'
     | 'clearValue'
     | 'normalizeValue'
@@ -313,6 +322,11 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   getPositionerProps: () => T['element']
   /** 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 */
   getContentProps: () => T['element']
+  /**
+   * content 里的列表内容此刻该不该挂载。未开 lazyMount 时恒为真；开了的话第一次展开起为真。
+   * content 节点本身始终在场，只有它的内容按此挂载。
+   */
+  isContentMounted: () => boolean
   /** 列表框本体，滚动在这一层；role=listbox 与条目的拥有关系都归它。 */
   getListProps: () => T['element']
   /** 浮层底部的操作区，是 list 的兄弟；不在列表框的拥有关系中，也不参与方向键与连打检索。 */

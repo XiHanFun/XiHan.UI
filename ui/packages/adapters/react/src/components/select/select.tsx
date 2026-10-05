@@ -45,6 +45,8 @@ type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'default
 export interface XhSelectRootProps extends RootElementProps {
   collection?: SelectNode[]
   virtualizer?: CollectionVirtualizer
+  /** 列表内容第一次展开时才挂载；打开前的选中文字与收起态连打按 collection 算。 */
+  lazyMount?: boolean
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
   value?: string | string[] | null
@@ -87,6 +89,7 @@ export interface XhSelectRootProps extends RootElementProps {
 export function XhSelectRoot({
   collection,
   virtualizer,
+  lazyMount,
   label,
   value,
   defaultValue,
@@ -122,6 +125,7 @@ export function XhSelectRoot({
   const ctx = useSelect(withXhConfig('select', useFormControlProps({
     collection,
     virtualizer,
+    lazyMount,
     value,
     defaultValue,
     multiple,
@@ -327,7 +331,8 @@ export interface XhSelectPositionerProps extends ComponentPropsWithRef<'div'> {
 export function XhSelectPositioner({ children, container, ...rest }: XhSelectPositionerProps): ReactNode {
   const ctx = useSelectContext()
   // 列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
-  const bars = useScrollbars({ scrollable: () => ctx.listRef.current, props: () => ({ size: 'sm' }) })
+  // 列表内容懒挂载、还没展开过时轴先禁用着：容器暂缺属于预期
+  const bars = useScrollbars({ scrollable: () => ctx.listRef.current, props: () => ({ size: 'sm', disabled: !ctx.api.isContentMounted() }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
@@ -360,7 +365,7 @@ export function XhSelectContent({ children, ...rest }: XhSelectContentProps): Re
         },
       )}
     >
-      {children}
+      {ctx.api.isContentMounted() ? children : null}
     </div>
   )
 }

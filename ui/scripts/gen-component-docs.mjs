@@ -519,7 +519,14 @@ function skinTraits(id) {
   const familyDeclared = uniq(/@keyframes\s+([\w-]+)/g, [...css.matchAll(/^@import\s+'(\.\.\/family\/[\w-]+\.css)';/gm)]
     .map(m => fs.readFileSync(path.join(uiRoot, 'packages/design/styles/css', m[1]), 'utf8'))
     .join('\n'))
-  const animations = uniq(/^[ \t]*animation(?:-name)?\s*:\s*([^;}]+)/gm, base).filter(v => !motionOff(v))
+  const declaredAnimations = uniq(/^[ \t]*animation(?:-name)?\s*:\s*([^;}]+)/gm, base).filter(v => !motionOff(v))
+  // 整条 animation 简写装在私有槽里、由 animation: var(--xh-_…) 读（子节点没有可认特征时把条件挪到父节点的写法）：
+  // 槽里的那条同样算在播
+  const animationSlots = new Set(declaredAnimations.flatMap(v => [...v.matchAll(/var\(\s*(--xh-_[\w-]+)/g)].map(m => m[1])))
+  const slotAnimations = [...base.matchAll(/^[ \t]*(--xh-_[\w-]+)\s*:\s*(xh-[^;}]+)/gm)]
+    .filter(m => animationSlots.has(m[1]))
+    .map(m => m[2].trim())
+  const animations = [...new Set([...declaredAnimations, ...slotAnimations])].sort()
   // 名字被正文里的 animation 引到才算在播；名字走私有槽转发时解不出来，退回全部声明
   const referenced = k => animations.some(v => new RegExp(`(?:^|[\\s,(])${k}(?=$|[\\s,)])`).test(v))
   const named = declared.filter(referenced)

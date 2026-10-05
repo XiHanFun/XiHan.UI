@@ -40,6 +40,8 @@ export const selectMachine = createMachine({
   context: ({ prop, cell }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
+    // 首帧即展开也算展开过：lazyMount 下列表内容照常首屏就在
+    opened: cell<boolean>(() => ({ defaultValue: openAtMount(prop) })),
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 值住在 cell 里，受控/非受控在此收口，不需要影子事件
@@ -122,7 +124,7 @@ export const selectMachine = createMachine({
     },
     open: {
       // 锚点在进入展开态时就位；条目常挂，此刻查到的顺序即最终顺序。
-      entry: ['setInitialHighlightedValue'],
+      entry: ['markOpened', 'setInitialHighlightedValue'],
       // 收起就丢缓冲，否则下次展开首字母会拼进上一轮查询串。
       // 收起即松开：按住 Enter 选中条目后浮层收起，条目随内容一起藏起，不会再来 keyup 或 blur
       exit: ['clearHighlightedValue', 'clearTypeahead', 'releasePress'],
@@ -169,6 +171,10 @@ export const selectMachine = createMachine({
     actions: {
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       clearOpenedAtMount,
+      markOpened: ({ context }) => {
+        if (!context.get('opened'))
+          context.set('opened', true)
+      },
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PRESS.START')

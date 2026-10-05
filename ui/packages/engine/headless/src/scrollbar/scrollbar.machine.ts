@@ -519,6 +519,9 @@ export const scrollbarMachine = createMachine({
           if (!next) {
             syncMark()
             context.set('scrollableId', null)
+            // 禁用着的轴不显形，容器暂缺属于预期（例如列表内容懒挂载、还没展开过），不报诊断
+            if (prop('disabled'))
+              return
             reportDiagnostic({
               code: DIAGNOSTIC_CODES.scrollbarMissingScrollable,
               level: 'warn',
