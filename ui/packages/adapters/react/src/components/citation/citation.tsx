@@ -142,7 +142,8 @@ export interface XhCitationPositionerProps extends ComponentPropsWithRef<'div'> 
 export function XhCitationPositioner({ container, children, ...rest }: XhCitationPositionerProps): ReactNode {
   const ctx = useCitationContext()
   // 只摘指针进出：焦点那两个处理器挂的是冒泡的 focusin / focusout，落在 React 的 onFocus / onBlur 上正好
-  const bind = useNativeEvents(ctx.api.getPositionerProps() as Record<string, unknown>, ['onPointerEnter', 'onPointerLeave'])
+  const positioner = ctx.api.getPositionerProps() as Record<string, unknown>
+  const bind = useNativeEvents(positioner, ['onPointerEnter', 'onPointerLeave'])
   const shell = (
     <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, { ref: ctx.positionerRef }, rest as Record<string, unknown>)}>
       {children}
@@ -150,7 +151,8 @@ export function XhCitationPositioner({ container, children, ...rest }: XhCitatio
   )
   if (ctx.api.previewMode !== 'hover')
     return shell
-  return <XhPortal container={container} source={ctx.rootRef}>{shell}</XhPortal>
+  // 卡片没渲染（没展开，退场也播完）时定位壳是 hidden，不建视觉桥：正文里引用多，每处一台
+  return <XhPortal container={container} source={ctx.rootRef} present={positioner.hidden !== true}>{shell}</XhPortal>
 }
 
 export interface XhCitationPreviewProps extends ComponentPropsWithRef<'section'> {

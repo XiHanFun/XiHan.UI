@@ -15,6 +15,8 @@ export interface MenubarMenuContext {
   menu: ComputedRef<MenubarContentProps>
   /** 这张菜单的内容节点：positioner 给它配自绘条，content 挂载后写回。 */
   contentRef: Ref<HTMLElement | null>
+  /** 这张菜单此刻是否呈现（展开中，或退场还没播完）：content 的退场闸门写回，positioner 据此决定建不建视觉桥。 */
+  visible: Ref<boolean>
 }
 
 /** 条目声明的值与禁用，供 item-text / item-indicator 等子部件复用同一份声明。 */

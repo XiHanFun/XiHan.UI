@@ -327,8 +327,9 @@ export function XhSideNavBranchContent({ children, container, ...rest }: XhSideN
   // 折叠态的弹出面板：定位层搬到浮层落点，逃开祖先的层叠上下文。
   // 收起跟着退场闸门走：定位层与面板的 hidden 都押后到退场动画播完
   const hidden = !visible || undefined
+  // 关着的弹出面板不建视觉桥：折叠态下每个分支各有一个定位层
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} present={visible}>
       <div {...ctx.api.getPopoutPositionerProps({ value }) as Record<string, unknown>} hidden={hidden}>
         <ul
           {...mergeReactProps(
@@ -398,7 +399,7 @@ export function XhSideNavTooltip({ container }: XhSideNavTooltipProps): ReactNod
   // 指针进出装成原生监听器：移入提示要能撤销收起等待
   const bind = useNativeEvents(api.getTooltipContentProps() as Record<string, unknown>)
   return (
-    <XhPortal container={container ?? ctx.portalContainer}>
+    <XhPortal container={container ?? ctx.portalContainer} present={overlay.rendered}>
       <div
         {...mergeReactProps(
           api.getTooltipPositionerProps() as Record<string, unknown>,

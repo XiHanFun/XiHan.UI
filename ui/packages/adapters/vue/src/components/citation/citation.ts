@@ -107,13 +107,15 @@ export const XhCitationPositioner = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useCitationContext()
     return () => {
+      const positioner = ctx.api.value.getPositionerProps() as Record<string, unknown>
       const shell = h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(positioner, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement | null },
       }, slots.default?.())
       if (ctx.api.value.previewMode !== 'hover')
         return shell
-      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.rootRef }, () => [shell])
+      // 卡片没渲染（没展开，退场也播完）时定位壳是 hidden，不建视觉桥：正文里引用多，每处一台
+      return h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.rootRef, present: positioner.hidden !== true }, () => [shell])
     }
   },
 })
