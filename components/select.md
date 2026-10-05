@@ -2880,6 +2880,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 - 选中项保留普通文字，通过末端对号表示状态。
 - 关闭时立即退出交互，资源在退场动画结束后释放。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- `lazyMount` 让列表内容第一次展开时才挂载、之后常驻：页面上 Select 很多（表格每行一个、长表单）时，收起态每个实例背着的整份条目是挂载开销的大头。打开前的选中文字与收起态连打按 `collection` 计算，所以要配 `collection` 用；没给时打开前选中文字退回值本身、连打不生效。Web Components 里把条目写进 list 里的一个 `<template>`，第一次展开才克隆。
 
 ### 组合
 
@@ -2916,6 +2917,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | --- | --- | --- | --- |
 | `collection` | `SelectNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value， 显示文本也不再从 DOM 查询。未提供时回到文本写在条目中、从 DOM 查询的方式。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 |
+| `lazyMount` | `boolean` |  | 列表内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。挂过之后一直留着，来回开合不重建。 页面上 Select 很多（表格每行一个、长表单）时打开它：收起态每个实例都背着一整份条目，挂载开销大半在这里。 打开前的选中文字与收起态连打按 collection 计算；没给 collection 时，打开前选中文字退回值本身、连打不生效。 |
 | `value` | `string \| string[] \| null` |  | 选中值。裸串是单选的简写，null 是受控且无选中，未提供（undefined）才是非受控；内部一律按数组处理。 受控时 cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string \| string[] \| null` |  | 非受控初始选中值。与 value 同样接受裸串与 null。 |
 | `multiple` | `boolean` |  | 允许选中多项。单选时选完即收起，多选时保持展开继续选。 |
@@ -3061,6 +3063,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `getItemDeleteTriggerProps` | `(props: SelectTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，禁用时保留位置、原生 disabled；点击移除所在标签的选中值；须放在标签中。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` | 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 |
+| `isContentMounted` | `() => boolean` | content 里的列表内容此刻该不该挂载。未开 lazyMount 时恒为真；开了的话第一次展开起为真。 content 节点本身始终在场，只有它的内容按此挂载。 |
 | `getListProps` | `() => T['element']` | 列表框本体，滚动在这一层；role=listbox 与条目的拥有关系都归它。 |
 | `getFooterProps` | `() => T['element']` | 浮层底部的操作区，是 list 的兄弟；不在列表框的拥有关系中，也不参与方向键与连打检索。 |
 | `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 中、list 的兄弟。 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。 |
@@ -3114,10 +3117,10 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
-| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `list` | `aria-busy` | 'true' \| undefined |
-| `list` | `aria-label` | props.translations.content |
+| `list` | `aria-label` | translations.content |
 | `list` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `role` | 'listbox' |
@@ -3134,7 +3137,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 
 ### 皮肤
 
-`@xihan-ui/styles/select.css` 使用 `[data-scope="select"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/select.css` 按 `[data-scope="select"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-select` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

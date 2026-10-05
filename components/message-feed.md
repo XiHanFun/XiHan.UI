@@ -1693,6 +1693,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 
 - 粘底跟随：内容增高时自动到底，用户上滚即解除，滚回底部阈值内自动恢复。向上插入历史消息时补偿滚动位置，视口不跳动。
 - “回到底部”只判断是否在底部，不判断粘附意图：粘附中但内容尚未追上时按钮不显示。
+- “回到底部”是 Action Control floating 档的圆钮，比消息流的 `size` 低一档、最低 sm（sm / md 时 32px，lg 时 40px）。
 - 整份消息列表只占一个 Tab 停靠位：`PageDown` / `PageUp` 在消息之间移动，`Ctrl+End` / `Ctrl+Home` 一步移到消息流之外（会话界面中通常是输入框）。
 - 消息内容全部由作者编写：气泡、头像、时间、动作条都不是本组件的部件。
 - 新生成的消息与出现的“回到底部”各带一段淡入位移；减弱动效由令牌层收敛，不需要另行关闭。
@@ -1743,7 +1744,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 | `status` | `MessageFeedStatus` |  | 本轮的运行态，只写 data-state，状态机不读取它。 |
 | `threshold` | `number` |  | 距底部多少 px 视为在底部，默认使用贴底原语的默认值。 |
 | `loop` | `boolean` |  | 到达首尾是否回绕，默认 false：会话是线性的。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg；回到底部钮比它低一档、最低 sm（32 / 32 / 40px）。 |
 | `translations` | `Partial<MessageFeedTranslations>` |  |  |
 | `onStickChange` | `(details: MessageFeedStickChangeDetails) => void` |  |  |
 | `onItemFocus` | `(details: MessageFeedItemFocusDetails) => void` |  |  |
@@ -1844,7 +1845,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `list` | `aria-label` | translations?.feed |
+| `list` | `aria-label` | translations.feed |
 | `list` | `role` | 'feed' |
 | `item` | `aria-label` | undefined \| itemLabel(item.index + 1, count ?? -1, item.role) |
 | `item` | `aria-labelledby` | scope.partId('message-feed', `item-label:${item.id}`) \| undefined |
@@ -1853,7 +1854,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 | `item` | `role` | 'article' |
 | `separator` | `aria-hidden` | 'true' |
 | `pending-indicator` | `aria-hidden` | 'true' |
-| `scroll-to-end-trigger` | `aria-label` | (translations?.scrollToBottomUnread ?? ((n: number) =… \| translations?.scrollToBottom |
+| `scroll-to-end-trigger` | `aria-label` | translations.scrollToBottomUnread(unreadCount) \| translations.scrollToBottom |
 | `unread-count` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
@@ -1868,7 +1869,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 
 ### 皮肤
 
-`@xihan-ui/styles/message-feed.css` 使用 `[data-scope="message-feed"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/message-feed.css` 按 `[data-scope="message-feed"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-message-feed` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -1889,7 +1890,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 | `scroll-to-end-trigger` | `data-xh-action-control` | '' |
 | `scroll-to-end-trigger` | `data-xh-action-display` | 'always' |
 | `scroll-to-end-trigger` | `data-xh-action-profile` | 'floating' |
-| `scroll-to-end-trigger` | `data-xh-action-size` | 'xs' |
+| `scroll-to-end-trigger` | `data-xh-action-size` | floatingSizeBelow(prop('size')) |
 | `scroll-to-end-trigger` | `data-xh-action-variant` | 'ghost' |
 | `scroll-to-end-trigger` | `data-xh-liquid` | '' |
 | `scroll-to-end-trigger` | `data-xh-material` | 'frosted' |

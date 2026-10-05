@@ -219,7 +219,7 @@ lock.dispose();
 
 同一 Document 的并行锁共享同一个规范化目标，混用不同目标会明确失败；最后一把锁释放后，下一次获取可以使用新目标。每轮保存双轴滚动位置、内联样式值与优先级及原 gutter 变量。初始化失败逆序回滚，最终释放先终结状态再尝试全部恢复；业务期间主动改写的样式不会被旧锁覆盖。页面位置按 instant 行为恢复，避免受 smooth 滚动影响。
 
-加锁期间让出来的滚动条宽度写在文档根的 `--xh-scroll-lock-gutter` 上，供 `fixed` 定位的元素让位：
+加锁期间让出来的滚动条宽度写在文档根的 `--xh-scroll-lock-gutter` 上，供 `fixed` 定位的元素让位。没让出宽度（页面没有滚动条、或已用 `scrollbar-gutter: stable` 预留）且根上原本没有这个变量时不写——根上的自定义属性一变整份文档都要重算样式，所以消费时总要带 `0px` 回退值：
 
 ```css
 .my-fixed-header {
@@ -243,15 +243,17 @@ const restore = hideOutside(() => [
 });
 ```
 
-给 `body` 下除目标与豁免节点外的直接子元素加 `inert`，背景内容对读屏与键盘一并消失。
+沿每个目标到 `body` 的祖先链，给链上每一层里既不在链上、也不豁免的兄弟加 `aria-hidden="true"`，背景内容从无障碍树里消失；实时区域（`aria-live`、`role="status"` / `alert` / `log`）与脚本、样式这类节点不藏，模态开着时播报照旧。焦点还留在被藏起的背景里时照 `inert` 的样子放掉（`blur()`），之后再往背景里塞焦点由焦点域拉回。
 
-第一个参数是函数而不是数组：施加 `inert` 的时机横跨整个展开期（`MutationObserver` 观察后续新增到 `body` 的节点），晚于调用时刻挂载的节点也必须能计入目标。目标必须包含全部分支节点，以及栈中位于自己之上的层（`config.layerRegistry.elementsAbove(layer)`），漏传会把 portal 出去的嵌套浮层一起设为 inert：可见但无法操作。
+只打 `aria-hidden`、不打 `inert`：`inert` 会让浏览器把被罩住的整棵子树（通常是整个应用根）的样式重算一遍，几千个节点的页面上开、关各要几十毫秒；`aria-hidden` 不进样式计算，开销与页面大小无关。键盘由焦点域收在浮层里，指针由遮罩（或模态底板）拦下。
+
+第一个参数是函数而不是数组：藏起背景的时机横跨整个展开期（`MutationObserver` 观察后续新增到 `body` 的节点），晚于调用时刻挂载的节点也必须能计入目标。目标必须包含全部分支节点，以及栈中位于自己之上的层（`config.layerRegistry.elementsAbove(layer)`），漏传会把 portal 出去的嵌套浮层一起藏起：看得见，读屏却跳过。
 
 第二个参数必须同时提供 Scope 和计算 `elementsAbove` 的同一份 `LayerRegistry`，通常直接传 `RuntimeConfig`。`hideOutside` 只订阅该实例的层栈变化，并校验注册表的 `ownerDocument` 与 Scope Document 相同；自定义注册表、iframe 与画中画窗口都不再暗中切换到按 Document 获取的默认注册表。
 
 带 `data-xh-inert-exempt` 的元素默认豁免。
 
-`hideOutside` 的目标、`body`、层栈、`MutationObserver` 与 inert 引用计数严格属于 Scope 的同一 Document。iframe 与画中画窗口中的后挂节点会由各自 Window 的观察器重新计算；从其他窗口 adopt 进来的豁免节点也按当前所属 Document 生效。注册表或目标来自其他 Document、Document 没有活动 Window 或宿主缺少 `MutationObserver` 时会明确报错，初始化失败不会留下半施加的 inert 状态。
+`hideOutside` 的目标、`body`、层栈、`MutationObserver` 与 `aria-hidden` 引用计数严格属于 Scope 的同一 Document。iframe 与画中画窗口中的后挂节点会由各自 Window 的观察器重新计算；从其他窗口 adopt 进来的豁免节点也按当前所属 Document 生效。注册表或目标来自其他 Document、Document 没有活动 Window 或宿主缺少 `MutationObserver` 时会明确报错，初始化失败不会留下半施加的 `aria-hidden`。
 
 ## 进出场
 
@@ -272,7 +274,9 @@ export interface PresenceHandle {
 
 关闭时先同步触发 `onBeforeExit`，动画探测器在此申领租约；所有租约归还之前 `rendered` 保持 `true`，DOM 不移除。退场中途又被打开则取消旧租约，不卸载。租约不设猜测时限：CSS 观察器等待浏览器实际创建的有限动画对象完成或取消，同名的多个动画也分别计入；没有实际动画对象时不等待，无限装饰动画不阻塞退出。减弱动效下退场关键帧去掉位移、只剩 120ms 淡出，租约照样等它播完。自定义动画租约由创建方明确完成或取消。
 
-Dialog 与共用其机器的 Drawer 在逻辑关闭时立即给内容设置 `inert` 和 `aria-hidden`，保持浮层登记、滚动锁与背景失活直到内容及遮罩完成退场，然后通知 `onExitComplete`（Vue/Web Components 为 `exit-complete`）。退场中重开保留原资源，旧完成不影响新状态；必要时通过原焦点域的 `reactivate()` 恢复域内焦点，不重复派发挂载自动聚焦通知。卸载立即释放资源，不等 CSS。
+Dialog 与共用其机器的 Drawer 在逻辑关闭时立即给内容设置 `inert` 和 `aria-hidden`，浮层登记与滚动锁保留到内容及遮罩完成退场，然后通知 `onExitComplete`（Vue/Web Components 为 `exit-complete`）。退场中重开保留原资源，旧完成不影响新状态；必要时通过原焦点域的 `reactivate()` 恢复域内焦点，不重复派发挂载自动聚焦通知。卸载立即释放资源，不等 CSS。
+
+模态浮层（Dialog、Drawer、Command、ImageViewer、模态 Popover）的背景失活由两件事组成，都不碰背景节点的样式：背景打 `aria-hidden`（`hideOutside`），对读屏隐藏；没有遮罩的层（模态 Popover，或没放遮罩的对话框）在自己的定位层里垫一块铺满视口的透明底板（`data-xh-modal-underlay`，`z-index: -1`，画在本层自己的层叠上下文里），点在底板上即层外交互，由消解层照常收起，背景上的控件收不到这次点击。两件事都与页面大小无关，展开时随宿主提交当场施加；关闭时当场撤下，再把焦点归还触发器，焦点不会落进还对读屏藏着的背景。之后又重开即补回；没有退场动画、资源当场释放时背景失活随之撤下。
 
 适配器必须在 `data-state` 已提交到 DOM 之后才调用 `update(open)`：先改属性再让 CSS 过渡开始，顺序颠倒时动画不会播放。
 

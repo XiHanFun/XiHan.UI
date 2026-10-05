@@ -1018,7 +1018,7 @@ const lines = Array.from({ length: 10000 }, (_, index) =>
 - 结构四层：`root` · `viewport` · `content` · `line`；每行内容由作者决定，组件只提供身份与等宽排版。另有两个可选部件：`scroll-to-end-trigger` 与 `live-region`。
 - `rows` 按行数定高。
 - 自动跟随到底部；用户向上翻时停止跟随，回到底部后恢复。
-- 内置“回到底部”：离开底部时出现，按下后归位并重新粘附。留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
+- 内置“回到底部”：离开底部时出现，按下后归位并重新粘附。它是 Action Control floating 档的圆钮，比日志的 `size` 低一档、最低 sm（sm / md 时 32px，lg 时 40px）。留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
 - 应用设为 `data-material="liquid"` 时，“回到底部”换成液态面：按下层换色调，按住时液面随手指形变。
 - 视口自身可聚焦，整块日志占一个 Tab 停靠位，方向键与翻页键交给浏览器滚动。
 - ANSI 着色：行上写 `ansi` 交出带转义的原文（Web Components 在行上写 `ansi` 属性、文字就是原文），按 SGR 拆成 `segment`。八种前景色映射到语义色：红、绿、黄、蓝取语气前景，品红、青借代码着色的关键字与字符串色，黑与白取正文与次要前景，每一种都可经 `--xh-log-ansi-<颜色>` 覆盖；高亮色（90–97）与基础色同一档。粗体、暗淡、斜体、下划线各自生效；背景色、256 色的高位与真彩色不着色，清行、挪光标之类的转义直接去掉。`parseAnsi` 与 `stripAnsi` 同时导出，复制与播报用去掉转义的纯文字。
@@ -1064,7 +1064,7 @@ const lines = Array.from({ length: 10000 }, (_, index) =>
 | `levels` | `readonly LogLevel[]` |  | 只显示这几个级别的行，缺省全部显示。没写 level 的行不受过滤影响。 接了虚拟滚动时 DOM 里只有窗口里的行，过滤要在交给 Virtualizer 之前按 isLevelVisible 做。 |
 | `loading` | `boolean` |  | 行仍在传输中：日志区报告 aria-busy，根写 data-loading。 |
 | `rows` | `number` |  | 视口按多少行定高；未提供时高度由皮肤决定。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。影响行文字号与内衬，行高不随档位变化。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。影响行文字号与内衬，行高不随档位变化；回到底部钮比它低一档、最低 sm（32 / 32 / 40px）。 |
 | `translations` | `Partial<LogTranslations>` |  |  |
 
 ### 事件
@@ -1167,7 +1167,7 @@ const lines = Array.from({ length: 10000 }, (_, index) =>
 
 ### 皮肤
 
-`@xihan-ui/styles/log.css` 使用 `[data-scope="log"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/log.css` 按 `[data-scope="log"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-log` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -1194,7 +1194,7 @@ const lines = Array.from({ length: 10000 }, (_, index) =>
 | `scroll-to-end-trigger` | `data-xh-action-control` | '' |
 | `scroll-to-end-trigger` | `data-xh-action-display` | 'always' |
 | `scroll-to-end-trigger` | `data-xh-action-profile` | 'floating' |
-| `scroll-to-end-trigger` | `data-xh-action-size` | 'xs' |
+| `scroll-to-end-trigger` | `data-xh-action-size` | floatingSizeBelow(props.size) |
 | `scroll-to-end-trigger` | `data-xh-action-variant` | 'ghost' |
 | `scroll-to-end-trigger` | `data-xh-liquid` | '' |
 | `scroll-to-end-trigger` | `data-xh-material` | 'frosted' |

@@ -682,6 +682,8 @@ const sources: CitationSource[] = [
 | `getPreviewMetaProps` | `(props: CitationPreviewProps) => T['element']` |  |
 | `getQuoteProps` | `(props: CitationPreviewProps) => T['element']` |  |
 | `getPreviewLinkProps` | `(props: CitationPreviewProps) => T['element']` |  |
+| `sourceMetaText` | `(source: CitationSource \| undefined) => string` | 来源的副文字：网页来源写域名，文档来源写媒体类型，没有媒体类型时取 translations.document。 |
+| `previewLinkText` | `(props: CitationPreviewProps) => string` | 预览链接上写的字：网页来源取 previewLinkSource，文档来源取 previewLinkDocument。 |
 | `getDismissTriggerProps` | `(props: CitationPreviewProps) => T['button']` |  |
 | `getPrevTriggerProps` | `(props: CitationPreviewProps) => T['button']` | 一处多源时换到上一个来源；只有一个来源时带 hidden。 |
 | `getNextTriggerProps` | `(props: CitationPreviewProps) => T['button']` | 一处多源时换到下一个来源；只有一个来源时带 hidden。 |
@@ -740,7 +742,7 @@ const sources: CitationSource[] = [
 
 ### 皮肤
 
-`@xihan-ui/styles/citation.css` 使用 `[data-scope="citation"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/citation.css` 按 `[data-scope="citation"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-citation` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

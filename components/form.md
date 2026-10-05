@@ -1211,7 +1211,8 @@ function save({ values }: FormSubmitDetails): Promise<void> {
 | `defaultErrors` | `FormErrorPatch` |  |  |
 | `validate` | `(values: FormValues) => FormErrorPatch \| Promise<FormErrorPatch>` |  | 校验函数。返回字段名 → 错误文案，无错的字段给空串或省略； 允许返回 Promise（远程校验），期间 validating 置真。 与 rules 并用时同字段两边都报错按 rules 的文案计算。 |
 | `rules` | `FormRules` |  | 声明式校验规则：字段名 → 一条或一组规则，与 validate 可并用。 |
-| `validateMessages` | `FormValidateMessages` |  | 规则文案模板，{name}/{min}/{max} 现场代入；未提供时使用内置英文模板。 |
+| `validateMessages` | `FormValidateMessages` |  | 规则文案模板，{name}/{min}/{max} 现场代入；逐条压在 translations 之上，都没给的取英文语言包。 |
+| `translations` | `Partial<FormTranslations>` |  | 校验报错的文案模板，形状同 validateMessages；全局语言包经它到达。 |
 | `validateOn` | `FormValidateOn` |  | 校验时机，默认 submit。 |
 | `layout` | `FormLayout` |  | 排布，默认 vertical。 |
 | `columns` | `FormColumns` |  | grid 排布下的列数：1 至 4 的整数，未提供时按一列排列；范围外的值也按一列排列。 也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，未写的档沿用更窄的一档。 其余三档排布下不参与排版。 |
@@ -1355,7 +1356,7 @@ function save({ values }: FormSubmitDetails): Promise<void> {
 
 ### 皮肤
 
-`@xihan-ui/styles/form.css` 使用 `[data-scope="form"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/form.css` 按 `[data-scope="form"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-form` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

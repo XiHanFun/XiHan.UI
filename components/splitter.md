@@ -407,11 +407,11 @@ const inner = [
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | translations?.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `role` | 'group' |
 | `resize-trigger` | `aria-controls` | `panel` 部件的 id |
 | `resize-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `resize-trigger` | `aria-label` | translations?.resizeTrigger?.(boundary, Math.max(0, l… |
+| `resize-trigger` | `aria-label` | translations.resizeTrigger(boundary, Math.max(0, last… |
 | `resize-trigger` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `resize-trigger` | `aria-valuemax` | String(panel.max) |
 | `resize-trigger` | `aria-valuemin` | String(panel.min) |
@@ -422,7 +422,7 @@ const inner = [
 
 ### 皮肤
 
-`@xihan-ui/styles/splitter.css` 使用 `[data-scope="splitter"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/splitter.css` 按 `[data-scope="splitter"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-splitter` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

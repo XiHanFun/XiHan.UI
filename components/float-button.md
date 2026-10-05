@@ -216,7 +216,7 @@ const position = ref<FloatButtonPosition>({ edge: "inline-end", ratio: 0.75 });
 - 支持点击或悬停展开；键盘与触控始终使用点击。
 - Escape、层外点击和再次触发均可收起。
 - 收起后动作项退出 Tab 序列。
-- 触发器走 Action Control floating 档：默认 48px 圆形、图标 24px，按下缩放并换底；默认（outline）使用磨砂浮动表面，solid / subtle / ghost 使用对应语义表面。
+- 触发器走 Action Control floating 档：`size` 取 sm / md / lg（32 / 40 / 48px），默认 md 40px 圆形、图标 20px，按下缩放并换底；默认（outline）使用磨砂浮动表面，solid / subtle / ghost 使用对应语义表面。
 - 原生按钮动作项自动继承触发器的尺寸与外观。
 - 应用设为 `data-material="liquid"` 时，默认（outline）的触发器与原生按钮动作项换成液态面并结成一组：展开时动作从触发器里分离，收起时融回后再隐藏；彼此靠近的部分边缘相连。按住触发器时液面随手指形变。减弱动效下不分离、不形变。
 
@@ -350,7 +350,7 @@ const position = ref<FloatButtonPosition>({ edge: "inline-end", ratio: 0.75 });
 | --- | --- | --- |
 | `trigger` | `aria-controls` | `list` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
-| `trigger` | `aria-label` | props.translations?.trigger |
+| `trigger` | `aria-label` | translations.trigger |
 | `list` | `aria-labelledby` | `trigger` 部件的 id |
 | `list` | `role` | 'group' |
 
@@ -358,7 +358,7 @@ const position = ref<FloatButtonPosition>({ edge: "inline-end", ratio: 0.75 });
 
 ### 皮肤
 
-`@xihan-ui/styles/float-button.css` 使用 `[data-scope="float-button"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/float-button.css` 按 `[data-scope="float-button"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-float-button` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

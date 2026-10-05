@@ -375,7 +375,7 @@ const slides = ["公告一", "公告二", "公告三"];
     style="inline-size: 100%"
   >
     <XhCarouselPrevTrigger />
-    <XhCarouselViewport style="block-size: 120px">
+    <XhCarouselViewport style="block-size: 176px">
       <XhCarouselList>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
           <div style="display: grid; place-items: center; block-size: 100%">
@@ -397,7 +397,7 @@ const slides = ["公告一", "公告二", "公告三"];
 <xh-carousel id="carousel-autoplay" slide-count="3" autoplay="2500" loop>
   <div data-xh-part="root" style="inline-size: 100%">
     <button data-xh-part="prev-trigger"></button>
-    <div data-xh-part="viewport" style="block-size: 120px">
+    <div data-xh-part="viewport" style="block-size: 176px">
       <div data-xh-part="list">
         <div data-xh-part="item" index="0">
           <div style="display: grid; place-items: center; block-size: 100%">
@@ -975,6 +975,7 @@ const slides = [
 - 支持纵向轨道、指针拖拽、循环与自动播放。
 - 拖拽松手后轨道带着松手速度落到目标页：轻甩一下也能翻页，往回甩则收回；不循环时首末页往外拖越拉越沉，松手弹回。
 - 分页点为 8px 圆点，当前页拉长为 20px 品牌胶囊；自动播放时胶囊按停留间隔显示进度。悬停、聚焦等临时暂停时进度回到起点，恢复后与计时器一起从头计满一整个间隔。
+- 分页点沿轨道的长度取 `--xh-carousel-indicator-size`（当前页 `--xh-carousel-indicator-size-current`），垂直于轨道的粗细取 `--xh-carousel-indicator-thickness`，缺省与长度同值、仍是圆点。粗细单独调小就成细横条；横条不是正方盒，圆角同时把 `--xh-carousel-indicator-radius` 换成 `var(--xh-shape-pill)`。点调细时细指针的命中区垂直于轨道多外扩一些，不低于 24px；粗指针下 44px 的命中区与伪元素画点的方式不变，点与进度条同样按粗细画。
 - `loop` 下从末页往后翻（或首页往前翻）轨道继续朝同一方向走一张，接到首页（或末页），不倒着刷过全部页。
 - `effect="fade"` 换成淡入淡出：各张叠放在同一格，新一张淡入、旧一张同时淡出，时长与平移同一档，减弱动效下直接换；一页只放一张。
 - 指示点可以配置为悬停即切页。
@@ -989,7 +990,7 @@ const slides = [
 - 开启自动播放时渲染 `autoplay-trigger`：它是唯一能停止自动翻页且不会被其他交互重新启动的入口。
 - 自动播放在指针悬停或焦点进入时自动暂停，离开后重新计满一个间隔再翻页。
 - 减弱动效时自动播放不会自行启动，播放开关是用户唯一的启动入口。
-- 分页点应能看出总屏数与当前位置；自动播放时还应反馈本页剩余时间。翻页与播放按钮走 Action Control floating 档：48px 圆形磨砂面、图标 24px，按下缩放并换底。
+- 分页点应能看出总屏数与当前位置；自动播放时还应反馈本页剩余时间。翻页与播放按钮走 Action Control floating 档，随 `size` 取 sm / md / lg（32 / 40 / 48px，默认 md 40px）圆形磨砂面，按下缩放并换底。三颗钮浮在内容之上：翻页钮在两侧居中、播放钮贴右下角，视口不低于 3 × 钮径 + 24px（两倍控件内距）时互不相叠，即 sm 120 / md 144 / lg 168px。
 
 ### 反模式
 
@@ -1024,6 +1025,7 @@ const slides = [
 | `allowPointerDrag` | `boolean` |  | 允许指针拖拽切页，默认 false。鼠标、触摸、触控笔一并门控。 开启后沿轨道轴的原生滚动让位给拖拽，关闭则完全没有拖拽、触摸使用原生滚动。 |
 | `spacing` | `string` |  | 张与张之间的间距，任意 CSS 长度（如 '12px'）。落为条目自身的内边距，不影响位移计算。 |
 | `effect` | `CarouselEffect` |  | 换页方式，默认 slide（轨道平移）。fade 时条目叠放、新一页淡入旧一页淡出，与平移同一段时长与曲线， 减弱动效下直接换；loop 回绕也只是一次淡变。拖拽仍按方向与速度决定翻不翻页，画面不跟手位移。 fade 一页只放一张：slidesPerPage 大于 1 时报错。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；翻页与播放三颗钮走 Action Control floating 档（32 / 40 / 48px）。 |
 | `translations` | `Partial<CarouselTranslations>` |  |  |
 | `onPageChange` | `(details: CarouselPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
@@ -1135,12 +1137,12 @@ const slides = [
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | label.root |
-| `root` | `aria-roledescription` | 'carousel' |
+| `root` | `aria-roledescription` | label.rootRoleDescription |
 | `root` | `role` | 'region' |
 | `viewport` | `aria-atomic` | 'false' |
 | `viewport` | `aria-live` | 'off' \| 'polite' |
 | `item` | `aria-label` | label.item(index + 1, slideCount) |
-| `item` | `aria-roledescription` | 'slide' |
+| `item` | `aria-roledescription` | label.itemRoleDescription |
 | `item` | `role` | 'group' |
 | `prev-trigger` | `aria-controls` | `viewport` 部件的 id |
 | `prev-trigger` | `aria-label` | label.prevTrigger |
@@ -1157,7 +1159,7 @@ const slides = [
 
 ### 皮肤
 
-`@xihan-ui/styles/carousel.css` 使用 `[data-scope="carousel"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/carousel.css` 按 `[data-scope="carousel"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-carousel` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -1187,7 +1189,7 @@ const slides = [
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'floating' |
-| `prev-trigger` | `data-xh-action-size` | 'md' |
+| `prev-trigger` | `data-xh-action-size` | props.size |
 | `prev-trigger` | `data-xh-liquid` | '' |
 | `prev-trigger` | `data-xh-material` | 'frosted' |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -1196,7 +1198,7 @@ const slides = [
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'floating' |
-| `next-trigger` | `data-xh-action-size` | 'md' |
+| `next-trigger` | `data-xh-action-size` | props.size |
 | `next-trigger` | `data-xh-liquid` | '' |
 | `next-trigger` | `data-xh-material` | 'frosted' |
 | `autoplay-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -1205,7 +1207,7 @@ const slides = [
 | `autoplay-trigger` | `data-xh-action-control` | '' |
 | `autoplay-trigger` | `data-xh-action-display` | 'always' |
 | `autoplay-trigger` | `data-xh-action-profile` | 'floating' |
-| `autoplay-trigger` | `data-xh-action-size` | 'md' |
+| `autoplay-trigger` | `data-xh-action-size` | props.size |
 | `autoplay-trigger` | `data-xh-liquid` | '' |
 | `autoplay-trigger` | `data-xh-material` | 'frosted' |
 | `indicator-group` | `data-orientation` | props.orientation |
@@ -1238,9 +1240,10 @@ const slides = [
 | `--xh-carousel-indicator-inset` | `indicator-group` | `inset-block-end` | `orientation=horizontal` | `--xh-space-3` | carousel 的 indicator-group 部件 inset-block-end 覆盖槽。 |
 | `--xh-carousel-indicator-radius` | `indicator` | `border-radius` | `@media (pointer: coarse)`<br>`default` | `--xh-shape-circle` | carousel 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-carousel-indicator-radius-current` | `indicator`<br>`root` | `border-radius` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`paused` | `--xh-shape-pill` | carousel 的 indicator、root 部件 border-radius 覆盖槽。 |
-| `--xh-carousel-indicator-size` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`default`<br>`orientation=vertical`<br>`paused` | `--xh-space-2` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-carousel-indicator-size` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-inline` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`default`<br>`orientation=vertical`<br>`paused` | `--xh-space-2` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。 |
 | `--xh-carousel-indicator-size-current` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`orientation=vertical`<br>`paused` | `--xh-space-5` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-carousel-indicator-target-size` | `indicator`<br>`root` | `min-block-size`<br>`min-inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`hover`<br>`is(:active, [data-pressed])`<br>`not([data-autoplay], [data-paused])`<br>`not([data-current])`<br>`paused`<br>`pressed` | `44px` | carousel 的 indicator、root 部件 min-block-size、min-inline-size 覆盖槽。 |
+| `--xh-carousel-indicator-thickness` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-inline` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`default`<br>`orientation=vertical`<br>`paused` | `--xh-carousel-indicator-size` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。 |
 | `--xh-carousel-trigger-bg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_material-bg`<br>`--xh-_material-bg-focus` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-carousel-trigger-bg-active` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_material-bg-pressed`<br>`--xh-bg-subtle-hover-opaque` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
 | `--xh-carousel-trigger-bg-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_material-bg-hover`<br>`--xh-bg-subtle-opaque` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |

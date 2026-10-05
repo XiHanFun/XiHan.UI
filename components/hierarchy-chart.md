@@ -118,7 +118,7 @@ const budget = {
 
 加粗的是必需部件。
 
-`data-scope="hierarchy-chart"`：**`root`** · `caption` · `path` · `path-item` · `legend` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `node` · `node-label` · `group-header` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="hierarchy-chart"`：**`root`** · `caption` · `path` · `path-item` · `legend` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `node` · `node-label` · `group-header` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -784,6 +784,7 @@ const translations = { levelLabel: (level: number) => (level === 1 ? "部门" : 
 | `getTooltipNameProps` | `(row: HierarchyTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -819,12 +820,13 @@ const translations = { levelLabel: (level: number) => (level === 1 ? "部门" : 
 | `legend` | `aria-hidden` | 'true' |
 | `plot` | `aria-describedby` | `summary` 部件的 id |
 | `plot` | `aria-labelledby` | `caption` 部件的 id |
+| `plot` | `aria-roledescription` | translations.chartRoleDescription |
 | `plot` | `role` | 'tree' |
 | `tooltip` | `aria-hidden` | 'true' |
 | `mark` | `aria-hidden` | 'true' |
 
 - 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label`。
-- 绘图区是 `role="tree"`，`aria-describedby` 指向组件生成的摘要；每个看得见的节点是 `role="treeitem"`，带 `aria-level`、`aria-setsize` 与 `aria-posinset`。有子节点的节点带 `aria-expanded`：子节点看得见时为 `true`，到了可见层数的底为 `false`，按 Enter 下钻才看得到。节点的名称取 `translations.datumLabel`（缺省「名字, 数值, 占比 of 上一层」），务必按本地语言改写。
+- 绘图区是 `role="tree"`，角色说明取 `translations.chartRoleDescription`（缺省 `tree chart`：说明里留着「树」，读屏才知道能按方向键展开、收起，不要改成笼统的「图表」），`aria-describedby` 指向组件生成的摘要；每个看得见的节点是 `role="treeitem"`，带 `aria-level`、`aria-setsize` 与 `aria-posinset`。有子节点的节点带 `aria-expanded`：子节点看得见时为 `true`，到了可见层数的底为 `false`，按 Enter 下钻才看得到。节点的名称取 `translations.datumLabel`（缺省「名字, 数值, 占比 of 上一层」），务必按本地语言改写。
 - 绘图区只占一个 Tab 位，焦点落在节点上：左右键在同一层的兄弟之间走（矩形树图与圆堆积按阅读序，旭日图顺时针，冰柱图按排列次序），下键进入第一个子节点，上键回到父节点，Home / End 到同一层的头尾。Enter 下钻、Backspace 上钻，焦点跟着落到新的一层。焦点环画在节点之外，只在键盘聚焦时出现。
 - 下钻路径是一组按钮（与面包屑的链接同一身份），当前的根写 `aria-current="location"`、不可按。
 - 标签与焦点环一律 `aria-hidden`；提示框同样 `aria-hidden`：它显示的内容与节点的名称是同一份。图例的色阶也 `aria-hidden`：每个节点的可及名与数据表里都写着它的值。
@@ -836,7 +838,7 @@ const translations = { levelLabel: (level: number) => (level === 1 ? "部门" : 
 
 ### 皮肤
 
-`@xihan-ui/styles/hierarchy-chart.css` 使用 `[data-scope="hierarchy-chart"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/hierarchy-chart.css` 按 `[data-scope="hierarchy-chart"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-hierarchy-chart` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

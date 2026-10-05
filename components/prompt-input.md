@@ -1249,8 +1249,8 @@ function send(value: string) {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `input` | `aria-label` | translations?.input |
-| `submit-trigger` | `aria-label` | translations?.stop \| translations?.send |
+| `input` | `aria-label` | translations.input |
+| `submit-trigger` | `aria-label` | translations.stop \| translations.send |
 
 - 输入框的可访问名称只在提供 `translations.input` 时才发出：无条件发出会覆盖作者自己的 `<label for>` 与 `aria-label`。
 - 按钮的可访问名称随身份切换，读屏读到的与屏幕上看到的一致。
@@ -1260,7 +1260,7 @@ function send(value: string) {
 
 ### 皮肤
 
-`@xihan-ui/styles/prompt-input.css` 使用 `[data-scope="prompt-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/prompt-input.css` 按 `[data-scope="prompt-input"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-prompt-input` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

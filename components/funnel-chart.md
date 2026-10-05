@@ -73,7 +73,7 @@ const steps = [
 
 加粗的是必需部件。
 
-`data-scope="funnel-chart"`：**`root`** · `caption` · **`viewport`** · **`plot`** · `stage` · `stage-label` · `conversion` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="funnel-chart"`：**`root`** · `caption` · **`viewport`** · **`plot`** · `stage` · `stage-label` · `conversion` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -465,6 +465,7 @@ const steps = [
 | `getTooltipNameProps` | `(row: FunnelTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -509,7 +510,7 @@ const steps = [
 
 ### 皮肤
 
-`@xihan-ui/styles/funnel-chart.css` 使用 `[data-scope="funnel-chart"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/funnel-chart.css` 按 `[data-scope="funnel-chart"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-funnel-chart` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

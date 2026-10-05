@@ -825,7 +825,7 @@ function onSelect(details: { label: string }) {
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-label` | translations?.title |
+| `content` | `aria-label` | translations.title |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | 'dialog' |
 | `input` | `aria-activedescendant` | `item` 部件的 id \| undefined |
@@ -833,10 +833,10 @@ function onSelect(details: { label: string }) {
 | `input` | `aria-controls` | `list` 部件的 id |
 | `input` | `aria-expanded` | 'true' |
 | `input` | `aria-haspopup` | 'listbox' |
-| `input` | `aria-label` | translations?.input |
+| `input` | `aria-label` | translations.input |
 | `input` | `role` | 'combobox' |
 | `list` | `aria-busy` | 'true' \| undefined |
-| `list` | `aria-label` | translations?.list |
+| `list` | `aria-label` | translations.list |
 | `list` | `role` | 'listbox' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
@@ -852,7 +852,7 @@ function onSelect(details: { label: string }) {
 
 ### 皮肤
 
-`@xihan-ui/styles/command.css` 使用 `[data-scope="command"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/command.css` 按 `[data-scope="command"][data-part="trigger"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-command` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 

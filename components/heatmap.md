@@ -1953,7 +1953,7 @@ const picked = ref<HeatmapCellDetails | null>(null);
 - 三张网格的推导都是纯函数（`buildHeatmapGrid` / `buildHeatmapMonthGrid` / `buildHeatmapMatrixGrid`），可脱离组件单独调用以预生成数据。
 - 格距四周相同：数据行的高度固定为格子边长，不由行首星期名的文字撑开。三档尺寸的横向与纵向格距是同一个值（默认 4px），格子 sm 8px / md 10px / lg 12px。
 - 行首的星期名隔行绘制：只保留第 0/2/4/6 行之外的三行，周首日是星期一时是“二 / 四 / 六”，是星期日时是“一 / 三 / 五”。一行只有 10px 高而字号是 12px，七个连续书写会上下重叠；隔行后每个保留的字有两行高度可用。三档尺寸一致，不随档位变化。需要七行全部绘制时把 `--xh-heatmap-week-day-skip` 改为可见颜色，例如 `var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`（此时 `sm` 档会较为紧凑）。跳过的是文字着色而不是盒子：节点、文字、盒子与底色都在，固定列的实色底不能缺四行，否则格子会从行首透出，那四行也会不再参与命中测试。
-- 色阶对照条两端各有一个词（默认 `Less` `More`），一排色块本身无法说明哪端表示多。文案使用 `translations.legendLow` / `legendHigh`，部件是 `legend-label`（`value` 为 `low` 或 `high`）；Vue 侧不写默认插槽时两端自动铺出，WC 侧从元素的 `legendText` 属性读取。
+- 色阶对照条两端各有一个词（默认 `Less` `More`），一排色块本身无法说明哪端表示多。文案使用 `translations.legendLow` / `legendHigh`（只作用于顺序色阶，发散色阶两端恒写数值），部件是 `legend-label`（`value` 为 `low` 或 `high`）；Vue 侧不写默认插槽时两端自动铺出，WC 侧从元素的 `legendText` 属性读取。
 - 配色有两条路径，默认为品牌色。一条是 `tone` 语气轴（brand / neutral / success / warning / danger / info），与其他组件共用；另一条是 `palette` 色板轴（基础色板的十二个色相 red / orange / amber / yellow / lime / green / teal / cyan / blue / indigo / purple / pink，加上 gray），直接按颜色指定，满档取同名色相的 600 档。色板只决定色阶满档一端的实心底，0 档的空格底与中间各档的混合方式不变，也不参与语气层的悬停 / 淡底 / 前景派生；它是装饰性的轴，不是语义轴。两者都写时以色板为准：色板指定了具体颜色，语气只能推导出颜色。
 - 色阶有两种，由 `scale` 切换：`sequential` 顺序色阶从空格底到满档单向加深；`diverging` 发散色阶以 `midpoint`（缺省 0）为界，低于中点兑向负向色、高于中点兑向正向色，中点那一格是中性的中点色。不写 `scale` 时按数据定：出现负数即按发散色阶，相关系数、同比涨跌、盈亏这类有正有负的数据不必额外声明；显式写 `sequential` 时负数照旧落第 0 档。发散色阶取数据色的发散三色（`--xh-chart-diverging-negative` / `-center` / `-positive`，组件槽 `--xh-heatmap-diverging-*` 可单独改写），`tone` 与 `palette` 在这一档不生效：两侧的含义由中点决定，不由语气决定。两侧共用同一套档数，按离中点最远的距离均分，离中点同样远的正负两格深浅相同；格子与详情带 `polarity`（`negative` / `positive`，中点那一格为 null）。对照条随之从负向满档经中点排到正向满档，两端文字缺省是两侧最远的那两个数。打印时两侧同档的环一样粗，负向一侧改用点线区分。
 - `continuous` 打开连续色阶：着色按数值在色阶上的确切比例，不按档位取整，挤在同一档里的几格也分得出高低。档位照常计算，格子的 `data-level`、打印纹理与可访问名称里的档位都不变；对照条仍是分档的色块，作为刻度参照。
@@ -2169,7 +2169,7 @@ const picked = ref<HeatmapCellDetails | null>(null);
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `grid` | `aria-colcount` | counts.columns \| undefined |
-| `grid` | `aria-label` | translations?.gridLabel |
+| `grid` | `aria-label` | gridLabel |
 | `grid` | `aria-readonly` | 'true' |
 | `grid` | `aria-rowcount` | counts.rows \| undefined |
 | `grid` | `role` | 'grid' |
@@ -2190,7 +2190,7 @@ const picked = ref<HeatmapCellDetails | null>(null);
 | `cell` | `aria-label` | matrixCellLabel({ date: '', row, column, count, ...pl… |
 | `cell` | `role` | 'gridcell' |
 | `tooltip` | `aria-hidden` | 'true' |
-| `legend` | `aria-label` | translations?.legendLabel |
+| `legend` | `aria-label` | legendLabel |
 | `legend` | `role` | 'group' |
 | `legend-item` | `aria-hidden` | 'true' |
 
@@ -2212,7 +2212,7 @@ const picked = ref<HeatmapCellDetails | null>(null);
 
 ### 皮肤
 
-`@xihan-ui/styles/heatmap.css` 使用 `[data-scope="heatmap"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/heatmap.css` 按 `[data-scope="heatmap"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-heatmap` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

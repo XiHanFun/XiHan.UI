@@ -852,7 +852,7 @@ function snap(next: string) {
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |
+| `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；未提供时取英文语言包里的语义名。 |
 | `onValueChange` | `(details: TimeFieldValueChangeDetails) => void` |  |  |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
@@ -951,7 +951,7 @@ function snap(next: string) {
 | `control` | `role` | 'group' |
 | `segment` | `aria-disabled` | 'true' \| 'false' |
 | `segment` | `aria-invalid` | 'true' \| 'false' |
-| `segment` | `aria-label` | prop('translations')?.[segment] |
+| `segment` | `aria-label` | translations[segment] |
 | `segment` | `aria-readonly` | 'true' \| 'false' |
 | `segment` | `aria-required` | 'true' \| 'false' |
 | `segment` | `aria-valuemax` | range.max |
@@ -959,13 +959,13 @@ function snap(next: string) {
 | `segment` | `aria-valuenow` | segmentNumber(draft, segment, hourCycle) |
 | `segment` | `aria-valuetext` | timeSegmentText(draft, segment, { hourCycle, locale, … |
 | `segment` | `role` | 'spinbutton' |
-| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/time-field.css` 使用 `[data-scope="time-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/time-field.css` 按 `[data-scope="time-field"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-time-field` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

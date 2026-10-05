@@ -385,7 +385,7 @@ import {
 
 - `visibilityHeight` 设置显示阈值。
 - `behavior` 支持平滑或立即返回。
-- 触发器走 Action Control floating 档：默认 48px 圆形、图标 24px，按下缩放并换底；默认（outline）使用磨砂浮动表面，也可通过 `variant` 切换为 solid / subtle / ghost。
+- 触发器走 Action Control floating 档：`size` 取 sm / md / lg（32 / 40 / 48px），默认 md 40px 圆形、图标 20px，按下缩放并换底；默认（outline）使用磨砂浮动表面，也可通过 `variant` 切换为 solid / subtle / ghost。
 - 减少动效、减少透明度与强制色模式会自动降级。
 
 ### 组合
@@ -423,7 +423,7 @@ import {
 | `translations` | `Partial<BackTopTranslations>` |  |  |
 | `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定按钮使用哪族颜色。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；触发器走 Action Control floating 档（40 / 48 / 56px）。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；触发器走 Action Control floating 档（32 / 40 / 48px）。 |
 | `onVisibilityChange` | `(details: BackTopVisibilityChangeDetails) => void` |  | 显隐变化时回调。 |
 
 ### 事件
@@ -497,13 +497,13 @@ import {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `trigger` | `aria-label` | props.translations.trigger |
+| `trigger` | `aria-label` | translations.trigger |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/back-top.css` 使用 `[data-scope="back-top"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/back-top.css` 按 `[data-scope="back-top"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-back-top` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

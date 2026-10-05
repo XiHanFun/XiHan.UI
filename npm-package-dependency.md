@@ -123,11 +123,13 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
 | `@xihan-ui/icons` | `./codegen` |
 | `@xihan-ui/viz` | `./hierarchy`（层级布局：层级节点、组树、矩形树图、分区与圆堆积） `./sankey`（桑基布局） |
-| `@xihan-ui/vue` | `./backgrounds` `./behavior` `./sound` |
-| `@xihan-ui/web-components` | `./define` `./backgrounds` `./custom-elements.json` |
+| `@xihan-ui/headless` | `./locale`（内建语言包） |
+| `@xihan-ui/vue` | `./backgrounds` `./behavior` `./locale` `./sound` |
+| `@xihan-ui/react` | `./backgrounds` `./behavior` `./locale` `./sound` |
+| `@xihan-ui/web-components` | `./define` `./backgrounds` `./locale` `./services` `./custom-elements.json` |
 | `@xihan-ui/styles` | 每份皮肤一条 CSS，共 152 条（140 份组件皮肤 + 12 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口 |
 
-其余十个包（`headless` / `motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound`）只有主入口。
+其余九个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound`）只有主入口。
 
 组件没有单独的子路径导出：按需引入依靠 tree-shaking，不依靠手写路径。
 

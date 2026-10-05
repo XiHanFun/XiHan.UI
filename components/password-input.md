@@ -631,7 +631,7 @@ import {
 | `placeholder` | `string` |  |  |
 | `autoComplete` | `string` |  | 写到 input 上的 autocomplete，默认 current-password。 密码管理器据此决定该字段是填入旧密码还是保存新密码，注册表单要显式写 new-password。 |
 | `strength` | `number` |  | 强度档位，0 到 4 共五档。提供后才显示强度条，默认不显示。 打分算法归调用方：口令强弱是产品规则（字典、泄漏库、业务口径），组件只负责绘制档位。 超出区间的值被夹回区间。 |
-| `translations` | `Partial<PasswordInputTranslations>` |  | 读屏文案覆盖；未提供的条目使用组件内建英文。 |
+| `translations` | `Partial<PasswordInputTranslations>` |  | 读屏文案覆盖；未提供的条目取英文语言包。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
@@ -750,7 +750,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/password-input.css` 使用 `[data-scope="password-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/password-input.css` 按 `[data-scope="password-input"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-password-input` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

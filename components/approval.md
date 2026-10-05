@@ -953,7 +953,7 @@ function denyAll(): void {
 | `pending-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | props.live |
-| `group` | `aria-label` | translations?.scopes |
+| `group` | `aria-label` | translations.scopes |
 | `group` | `role` | 'group' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
@@ -961,16 +961,16 @@ function denyAll(): void {
 | `item` | `role` | 'checkbox' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `note` | `aria-invalid` | 'true' \| undefined |
-| `note` | `aria-label` | translations?.reason \| translations?.note |
+| `note` | `aria-label` | translations.reason \| translations.note |
 | `note` | `aria-required` | 'true' \| undefined |
 | `timer` | `aria-hidden` | 'true' |
 | `result` | `aria-hidden` | 'true' |
 | `approve-trigger` | `aria-busy` | 'true' \| undefined |
 | `approve-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `approve-trigger` | `aria-label` | translations?.approve |
+| `approve-trigger` | `aria-label` | translations.approve |
 | `deny-trigger` | `aria-busy` | 'true' \| undefined |
 | `deny-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `deny-trigger` | `aria-label` | translations?.deny |
+| `deny-trigger` | `aria-label` | translations.deny |
 
 - 闸门是 `role=group`，由标题命名、由说明描述。
 - 待决时批准键使用 `aria-disabled` 而不是原生 `disabled`：保持可聚焦，读屏可以读出不可用的原因。
@@ -982,7 +982,7 @@ function denyAll(): void {
 
 ### 皮肤
 
-`@xihan-ui/styles/approval.css` 使用 `[data-scope="approval"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/approval.css` 按 `[data-scope="approval"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-approval` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

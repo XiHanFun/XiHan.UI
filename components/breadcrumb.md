@@ -364,18 +364,18 @@ const sizes = [
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | translations.root |
 | `link` | `aria-current` | 'page' \| undefined |
 | `link` | `aria-disabled` | 'true' \| 'false' |
 | `link-icon` | `aria-hidden` | 'true' |
 | `separator` | `aria-hidden` | 'true' |
-| `ellipsis-trigger` | `aria-label` | props.translations.ellipsis |
+| `ellipsis-trigger` | `aria-label` | translations.ellipsis |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/breadcrumb.css` 使用 `[data-scope="breadcrumb"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/breadcrumb.css` 按 `[data-scope="breadcrumb"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-breadcrumb` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

@@ -516,12 +516,12 @@ function onTransfer(detail: SortableTransferDetails): void {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | translations?.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `role` | 'group' |
 | `item-drag-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `item-drag-trigger` | `aria-label` | translations?.itemDragTrigger?.(name) |
+| `item-drag-trigger` | `aria-label` | translations.itemDragTrigger(name) |
 | `item-drag-trigger` | `aria-pressed` | 'true' \| 'false' |
-| `item-drag-trigger` | `aria-roledescription` | 'sortable' |
+| `item-drag-trigger` | `aria-roledescription` | translations.itemDragTriggerRoleDescription |
 | `item-drag-trigger` | `role` | 'button' |
 | `drop-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
@@ -537,7 +537,7 @@ function onTransfer(detail: SortableTransferDetails): void {
 
 ### 皮肤
 
-`@xihan-ui/styles/sortable.css` 使用 `[data-scope="sortable"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/sortable.css` 按 `[data-scope="sortable"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-sortable` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

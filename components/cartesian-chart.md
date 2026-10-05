@@ -77,7 +77,7 @@ const sales = [
 
 加粗的是必需部件。
 
-`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · `underlay` · `canvas` · **`plot`** · `defs` · `pattern` · `pattern-line` · `clip-path` · `clip-rect` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `stem` · `connector` · `candle` · `wick` · `box` · `whisker` · `median` · `outlier` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `brush` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `zoom-slider` · `zoom-track` · `zoom-window` · `zoom-handle` · `zoom-preview` · `zoom-preview-line` · `summary` · `table`
+`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · `underlay` · `canvas` · **`plot`** · `defs` · `pattern` · `pattern-line` · `clip-path` · `clip-rect` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `stem` · `connector` · `candle` · `wick` · `box` · `whisker` · `median` · `outlier` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `brush` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `zoom-slider` · `zoom-track` · `zoom-window` · `zoom-handle` · `zoom-preview` · `zoom-preview-line` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -3081,6 +3081,7 @@ const valueAxis = { fit: "window", minSize: 64 } as const;
 | `getZoomPreviewProps` | `() => T['element']` | 缩放条轨道里的缩略线：整条轴上的走势，只给眼睛看；轨道里跟在窗口后面，一个 svg 里一条 path。 |
 | `getZoomPreviewLineProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -3146,7 +3147,7 @@ const valueAxis = { fit: "window", minSize: 64 } as const;
 - 绘图区是 `role="graphics-document"`，`aria-roledescription` 取 `translations.chartRoleDescription`（缺省 chart），`aria-describedby` 指向组件生成的摘要。
 - 每个系列是一个 `role="graphics-object"` 的分组，名称是系列名；每根柱、每个散点、每个焦点代理点是 `role="graphics-symbol"`，名称取 `translations.datumLabel`（缺省“键, 系列名 值”），务必按本地语言改写。
 - 坐标轴、网格、十字准线、注释与焦点环一律 `aria-hidden`：它们的信息由每个数据的名称、摘要与数据表承担。摘要末尾按 `translations.annotationSummary` 写出参考线、参考带与平均线的名字与值（没写标签的取 `referenceLabel`）；标出的点与趋势线不写，前者的值在数据表里，后者由数据推出。
-- 组件在根内生成一段摘要与一张数据表，二者视觉隐藏、对读屏可见，服务端即输出。摘要写系列数、自变量的范围以及每个系列的最小值与最大值，模板是 `translations.summary`；数据表首列是自变量，列名缺省取 x 轴标题，其余每个可见系列一列，缺失值写 `translations.missingValue`。含散点时一个 x 上可以有多个点，数据表改为每个数据一行：系列、x、y 各一列（列名取 `translations.seriesLabel` 与两根轴的标题），有气泡时再加大小一列，按值着色时再加一列。气泡与按值着色的点的缺省名称在末尾补上大小与颜色对应的值；色阶图例只给眼睛看。
+- 组件在根内生成一段摘要与一张数据表，二者视觉隐藏、对读屏可见，服务端即输出。摘要写系列数、自变量的范围以及每个系列的最小值与最大值，模板是 `translations.summary`；数据表首列是自变量，列名取 x 轴标题（轴没有标题时用 `translations.keyLabel`），其余每个可见系列一列，缺失值写 `translations.missingValue`。含散点时一个 x 上可以有多个点，数据表改为每个数据一行：系列、x、y 各一列（列名取 `translations.seriesLabel` 与两根轴的标题，y 轴没有标题时用 `translations.valueLabel`），有气泡时再加大小一列，按值着色时再加一列。气泡与按值着色的点的缺省名称在末尾补上大小与颜色对应的值；色阶图例只给眼睛看。
 - 绘图区只占一个 Tab 位，进入后焦点落在一个真实的元素上（放大后落在窗口里的第一个数据上，不落在窗外）：柱与散点直接获得焦点，散点按 x 的次序走，上下键换到另一个系列里 x 最近的点；折线没有逐点的元素，由绘图区为聚焦的数据生成一个点作为焦点代理，移动时替换并聚焦新点，读屏据此播报新的名称。
 - 数据层画在画布上时，读屏听到的与 SVG 模式相同：绘图区占一个 Tab 位，进来后焦点落在锚点数据的焦点代理上——就是那根柱、那个点或那根 K 线的 SVG 版本，放回所属系列的分组、叠在画布上，名称、方向键与提示框都与 SVG 模式一致；折线的焦点代理照旧是激活的点。画布与垫层 `aria-hidden`，样式探针 `aria-hidden`、不可聚焦。
 - 列式数据的数据表：行数不超过 500 时逐行写出；超过时按自变量区间聚合成不超过 100 行，区间取整到时间或数值的整刻度，每行写区间与每个系列在区间里的范围（最小 – 最大），K 线写合并后的开高低收，表题按 `translations.aggregatedCaption` 注明多少行聚合成了多少个区间。摘要的最值、首末与变化率由分块极值直接算。焦点代理照样逐点可达：方向键一次走一个点，PageUp / PageDown 跨一成，Home / End 到头。
@@ -3163,7 +3164,7 @@ const valueAxis = { fit: "window", minSize: 64 } as const;
 
 ### 皮肤
 
-`@xihan-ui/styles/cartesian-chart.css` 使用 `[data-scope="cartesian-chart"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/cartesian-chart.css` 按 `[data-scope="cartesian-chart"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-cartesian-chart` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

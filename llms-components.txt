@@ -1621,7 +1621,7 @@ const items = Array.from({ length: 6 }, (_, i) => ({
 
 ### 皮肤
 
-`@xihan-ui/styles/accordion.css` 使用 `[data-scope="accordion"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/accordion.css` 按 `[data-scope="accordion"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-accordion` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -2225,7 +2225,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 
 ### 皮肤
 
-`@xihan-ui/styles/affix.css` 使用 `[data-scope="affix"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/affix.css` 按 `[data-scope="affix"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-affix` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -2734,13 +2734,13 @@ import {
 | `root` | `aria-live` | live |
 | `root` | `role` | role |
 | `indicator` | `aria-hidden` | 'true' |
-| `close-trigger` | `aria-label` | props.translations.close |
+| `close-trigger` | `aria-label` | translations.close |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/alert.css` 使用 `[data-scope="alert"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/alert.css` 按 `[data-scope="alert"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-alert` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -3602,7 +3602,7 @@ function isGroupActive(group: {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | resolveTranslations(ANCHOR_EN_US, prop('translations'… |
 | `link` | `aria-current` | 'location' \| undefined |
 | `indicator` | `aria-hidden` | 'true' |
 
@@ -3610,7 +3610,7 @@ function isGroupActive(group: {
 
 ### 皮肤
 
-`@xihan-ui/styles/anchor.css` 使用 `[data-scope="anchor"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/anchor.css` 按 `[data-scope="anchor"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-anchor` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -4632,7 +4632,7 @@ function denyAll(): void {
 | `pending-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | props.live |
-| `group` | `aria-label` | translations?.scopes |
+| `group` | `aria-label` | translations.scopes |
 | `group` | `role` | 'group' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
@@ -4640,16 +4640,16 @@ function denyAll(): void {
 | `item` | `role` | 'checkbox' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `note` | `aria-invalid` | 'true' \| undefined |
-| `note` | `aria-label` | translations?.reason \| translations?.note |
+| `note` | `aria-label` | translations.reason \| translations.note |
 | `note` | `aria-required` | 'true' \| undefined |
 | `timer` | `aria-hidden` | 'true' |
 | `result` | `aria-hidden` | 'true' |
 | `approve-trigger` | `aria-busy` | 'true' \| undefined |
 | `approve-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `approve-trigger` | `aria-label` | translations?.approve |
+| `approve-trigger` | `aria-label` | translations.approve |
 | `deny-trigger` | `aria-busy` | 'true' \| undefined |
 | `deny-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `deny-trigger` | `aria-label` | translations?.deny |
+| `deny-trigger` | `aria-label` | translations.deny |
 
 - 闸门是 `role=group`，由标题命名、由说明描述。
 - 待决时批准键使用 `aria-disabled` 而不是原生 `disabled`：保持可聚焦，读屏可以读出不可用的原因。
@@ -4661,7 +4661,7 @@ function denyAll(): void {
 
 ### 皮肤
 
-`@xihan-ui/styles/approval.css` 使用 `[data-scope="approval"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/approval.css` 按 `[data-scope="approval"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-approval` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -5343,7 +5343,7 @@ const rest = members.slice(max);
 
 ### 皮肤
 
-`@xihan-ui/styles/avatar-group.css` 使用 `[data-scope="avatar-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/avatar-group.css` 按 `[data-scope="avatar-group"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-avatar-group` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -6172,7 +6172,7 @@ const tones = [
 
 ### 皮肤
 
-`@xihan-ui/styles/avatar.css` 使用 `[data-scope="avatar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/avatar.css` 按 `[data-scope="avatar"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-avatar` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -6598,7 +6598,7 @@ import {
 
 - `visibilityHeight` 设置显示阈值。
 - `behavior` 支持平滑或立即返回。
-- 触发器走 Action Control floating 档：默认 48px 圆形、图标 24px，按下缩放并换底；默认（outline）使用磨砂浮动表面，也可通过 `variant` 切换为 solid / subtle / ghost。
+- 触发器走 Action Control floating 档：`size` 取 sm / md / lg（32 / 40 / 48px），默认 md 40px 圆形、图标 20px，按下缩放并换底；默认（outline）使用磨砂浮动表面，也可通过 `variant` 切换为 solid / subtle / ghost。
 - 减少动效、减少透明度与强制色模式会自动降级。
 
 ### 组合
@@ -6636,7 +6636,7 @@ import {
 | `translations` | `Partial<BackTopTranslations>` |  |  |
 | `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定按钮使用哪族颜色。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；触发器走 Action Control floating 档（40 / 48 / 56px）。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；触发器走 Action Control floating 档（32 / 40 / 48px）。 |
 | `onVisibilityChange` | `(details: BackTopVisibilityChangeDetails) => void` |  | 显隐变化时回调。 |
 
 ### 事件
@@ -6710,13 +6710,13 @@ import {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `trigger` | `aria-label` | props.translations.trigger |
+| `trigger` | `aria-label` | translations.trigger |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/back-top.css` 使用 `[data-scope="back-top"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/back-top.css` 按 `[data-scope="back-top"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-back-top` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -7390,7 +7390,7 @@ const inward = { "--xh-badge-offset-inline": "-4px", "--xh-badge-offset-block": 
 
 ### 皮肤
 
-`@xihan-ui/styles/badge.css` 使用 `[data-scope="badge"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/badge.css` 按 `[data-scope="badge"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-badge` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -7930,7 +7930,7 @@ function svgOf(box: HTMLElement): Blob {
 
 ### 皮肤
 
-`@xihan-ui/styles/bar-code.css` 使用 `[data-scope="bar-code"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/bar-code.css` 按 `[data-scope="bar-code"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-bar-code` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -8334,18 +8334,18 @@ const sizes = [
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | translations.root |
 | `link` | `aria-current` | 'page' \| undefined |
 | `link` | `aria-disabled` | 'true' \| 'false' |
 | `link-icon` | `aria-hidden` | 'true' |
 | `separator` | `aria-hidden` | 'true' |
-| `ellipsis-trigger` | `aria-label` | props.translations.ellipsis |
+| `ellipsis-trigger` | `aria-label` | translations.ellipsis |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/breadcrumb.css` 使用 `[data-scope="breadcrumb"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/breadcrumb.css` 按 `[data-scope="breadcrumb"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-breadcrumb` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -8906,7 +8906,7 @@ import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 
 ### 皮肤
 
-`@xihan-ui/styles/button-group.css` 使用 `[data-scope="button-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/button-group.css` 按 `[data-scope="button-group"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-button-group` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -9423,7 +9423,7 @@ import { XhButton } from "@xihan-ui/vue";
 
 ### 皮肤
 
-`@xihan-ui/styles/button.css` 使用 `[data-scope="button"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/button.css` 按 `[data-scope="button"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-button` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -10658,7 +10658,7 @@ const value = ref<string[]>(["2026-09-08", "2026-09-15"]);
 
 ### 皮肤
 
-`@xihan-ui/styles/calendar-picker.css` 使用 `[data-scope="calendar-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/calendar-picker.css` 按 `[data-scope="calendar-picker"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-calendar-picker` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -11780,7 +11780,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
 ### 皮肤
 
-`@xihan-ui/styles/calendar-range-picker.css` 使用 `[data-scope="calendar-range-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/calendar-range-picker.css` 按 `[data-scope="calendar-range-picker"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-calendar-range-picker` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -12301,7 +12301,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/card.css` 使用 `[data-scope="card"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/card.css` 按 `[data-scope="card"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-card` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -12733,7 +12733,7 @@ const slides = ["公告一", "公告二", "公告三"];
     style="inline-size: 100%"
   >
     <XhCarouselPrevTrigger />
-    <XhCarouselViewport style="block-size: 120px">
+    <XhCarouselViewport style="block-size: 176px">
       <XhCarouselList>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
           <div style="display: grid; place-items: center; block-size: 100%">
@@ -12755,7 +12755,7 @@ const slides = ["公告一", "公告二", "公告三"];
 <xh-carousel id="carousel-autoplay" slide-count="3" autoplay="2500" loop>
   <div data-xh-part="root" style="inline-size: 100%">
     <button data-xh-part="prev-trigger"></button>
-    <div data-xh-part="viewport" style="block-size: 120px">
+    <div data-xh-part="viewport" style="block-size: 176px">
       <div data-xh-part="list">
         <div data-xh-part="item" index="0">
           <div style="display: grid; place-items: center; block-size: 100%">
@@ -13333,6 +13333,7 @@ const slides = [
 - 支持纵向轨道、指针拖拽、循环与自动播放。
 - 拖拽松手后轨道带着松手速度落到目标页：轻甩一下也能翻页，往回甩则收回；不循环时首末页往外拖越拉越沉，松手弹回。
 - 分页点为 8px 圆点，当前页拉长为 20px 品牌胶囊；自动播放时胶囊按停留间隔显示进度。悬停、聚焦等临时暂停时进度回到起点，恢复后与计时器一起从头计满一整个间隔。
+- 分页点沿轨道的长度取 `--xh-carousel-indicator-size`（当前页 `--xh-carousel-indicator-size-current`），垂直于轨道的粗细取 `--xh-carousel-indicator-thickness`，缺省与长度同值、仍是圆点。粗细单独调小就成细横条；横条不是正方盒，圆角同时把 `--xh-carousel-indicator-radius` 换成 `var(--xh-shape-pill)`。点调细时细指针的命中区垂直于轨道多外扩一些，不低于 24px；粗指针下 44px 的命中区与伪元素画点的方式不变，点与进度条同样按粗细画。
 - `loop` 下从末页往后翻（或首页往前翻）轨道继续朝同一方向走一张，接到首页（或末页），不倒着刷过全部页。
 - `effect="fade"` 换成淡入淡出：各张叠放在同一格，新一张淡入、旧一张同时淡出，时长与平移同一档，减弱动效下直接换；一页只放一张。
 - 指示点可以配置为悬停即切页。
@@ -13347,7 +13348,7 @@ const slides = [
 - 开启自动播放时渲染 `autoplay-trigger`：它是唯一能停止自动翻页且不会被其他交互重新启动的入口。
 - 自动播放在指针悬停或焦点进入时自动暂停，离开后重新计满一个间隔再翻页。
 - 减弱动效时自动播放不会自行启动，播放开关是用户唯一的启动入口。
-- 分页点应能看出总屏数与当前位置；自动播放时还应反馈本页剩余时间。翻页与播放按钮走 Action Control floating 档：48px 圆形磨砂面、图标 24px，按下缩放并换底。
+- 分页点应能看出总屏数与当前位置；自动播放时还应反馈本页剩余时间。翻页与播放按钮走 Action Control floating 档，随 `size` 取 sm / md / lg（32 / 40 / 48px，默认 md 40px）圆形磨砂面，按下缩放并换底。三颗钮浮在内容之上：翻页钮在两侧居中、播放钮贴右下角，视口不低于 3 × 钮径 + 24px（两倍控件内距）时互不相叠，即 sm 120 / md 144 / lg 168px。
 
 ### 反模式
 
@@ -13382,6 +13383,7 @@ const slides = [
 | `allowPointerDrag` | `boolean` |  | 允许指针拖拽切页，默认 false。鼠标、触摸、触控笔一并门控。 开启后沿轨道轴的原生滚动让位给拖拽，关闭则完全没有拖拽、触摸使用原生滚动。 |
 | `spacing` | `string` |  | 张与张之间的间距，任意 CSS 长度（如 '12px'）。落为条目自身的内边距，不影响位移计算。 |
 | `effect` | `CarouselEffect` |  | 换页方式，默认 slide（轨道平移）。fade 时条目叠放、新一页淡入旧一页淡出，与平移同一段时长与曲线， 减弱动效下直接换；loop 回绕也只是一次淡变。拖拽仍按方向与速度决定翻不翻页，画面不跟手位移。 fade 一页只放一张：slidesPerPage 大于 1 时报错。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；翻页与播放三颗钮走 Action Control floating 档（32 / 40 / 48px）。 |
 | `translations` | `Partial<CarouselTranslations>` |  |  |
 | `onPageChange` | `(details: CarouselPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
@@ -13493,12 +13495,12 @@ const slides = [
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | label.root |
-| `root` | `aria-roledescription` | 'carousel' |
+| `root` | `aria-roledescription` | label.rootRoleDescription |
 | `root` | `role` | 'region' |
 | `viewport` | `aria-atomic` | 'false' |
 | `viewport` | `aria-live` | 'off' \| 'polite' |
 | `item` | `aria-label` | label.item(index + 1, slideCount) |
-| `item` | `aria-roledescription` | 'slide' |
+| `item` | `aria-roledescription` | label.itemRoleDescription |
 | `item` | `role` | 'group' |
 | `prev-trigger` | `aria-controls` | `viewport` 部件的 id |
 | `prev-trigger` | `aria-label` | label.prevTrigger |
@@ -13515,7 +13517,7 @@ const slides = [
 
 ### 皮肤
 
-`@xihan-ui/styles/carousel.css` 使用 `[data-scope="carousel"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/carousel.css` 按 `[data-scope="carousel"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-carousel` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -13545,7 +13547,7 @@ const slides = [
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'floating' |
-| `prev-trigger` | `data-xh-action-size` | 'md' |
+| `prev-trigger` | `data-xh-action-size` | props.size |
 | `prev-trigger` | `data-xh-liquid` | '' |
 | `prev-trigger` | `data-xh-material` | 'frosted' |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -13554,7 +13556,7 @@ const slides = [
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'floating' |
-| `next-trigger` | `data-xh-action-size` | 'md' |
+| `next-trigger` | `data-xh-action-size` | props.size |
 | `next-trigger` | `data-xh-liquid` | '' |
 | `next-trigger` | `data-xh-material` | 'frosted' |
 | `autoplay-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -13563,7 +13565,7 @@ const slides = [
 | `autoplay-trigger` | `data-xh-action-control` | '' |
 | `autoplay-trigger` | `data-xh-action-display` | 'always' |
 | `autoplay-trigger` | `data-xh-action-profile` | 'floating' |
-| `autoplay-trigger` | `data-xh-action-size` | 'md' |
+| `autoplay-trigger` | `data-xh-action-size` | props.size |
 | `autoplay-trigger` | `data-xh-liquid` | '' |
 | `autoplay-trigger` | `data-xh-material` | 'frosted' |
 | `indicator-group` | `data-orientation` | props.orientation |
@@ -13596,9 +13598,10 @@ const slides = [
 | `--xh-carousel-indicator-inset` | `indicator-group` | `inset-block-end` | `orientation=horizontal` | `--xh-space-3` | carousel 的 indicator-group 部件 inset-block-end 覆盖槽。 |
 | `--xh-carousel-indicator-radius` | `indicator` | `border-radius` | `@media (pointer: coarse)`<br>`default` | `--xh-shape-circle` | carousel 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-carousel-indicator-radius-current` | `indicator`<br>`root` | `border-radius` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`paused` | `--xh-shape-pill` | carousel 的 indicator、root 部件 border-radius 覆盖槽。 |
-| `--xh-carousel-indicator-size` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`default`<br>`orientation=vertical`<br>`paused` | `--xh-space-2` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-carousel-indicator-size` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-inline` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`default`<br>`orientation=vertical`<br>`paused` | `--xh-space-2` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。 |
 | `--xh-carousel-indicator-size-current` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`orientation=vertical`<br>`paused` | `--xh-space-5` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-carousel-indicator-target-size` | `indicator`<br>`root` | `min-block-size`<br>`min-inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`hover`<br>`is(:active, [data-pressed])`<br>`not([data-autoplay], [data-paused])`<br>`not([data-current])`<br>`paused`<br>`pressed` | `44px` | carousel 的 indicator、root 部件 min-block-size、min-inline-size 覆盖槽。 |
+| `--xh-carousel-indicator-thickness` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-inline` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`default`<br>`orientation=vertical`<br>`paused` | `--xh-carousel-indicator-size` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。 |
 | `--xh-carousel-trigger-bg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_material-bg`<br>`--xh-_material-bg-focus` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-carousel-trigger-bg-active` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_material-bg-pressed`<br>`--xh-bg-subtle-hover-opaque` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
 | `--xh-carousel-trigger-bg-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_material-bg-hover`<br>`--xh-bg-subtle-opaque` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
@@ -13712,7 +13715,7 @@ const sales = [
 
 加粗的是必需部件。
 
-`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · `underlay` · `canvas` · **`plot`** · `defs` · `pattern` · `pattern-line` · `clip-path` · `clip-rect` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `stem` · `connector` · `candle` · `wick` · `box` · `whisker` · `median` · `outlier` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `brush` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `zoom-slider` · `zoom-track` · `zoom-window` · `zoom-handle` · `zoom-preview` · `zoom-preview-line` · `summary` · `table`
+`data-scope="cartesian-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · `underlay` · `canvas` · **`plot`** · `defs` · `pattern` · `pattern-line` · `clip-path` · `clip-rect` · `grid` · `grid-line` · `axis` · `axis-line` · `tick` · `tick-label` · `axis-title` · `series` · `bar` · `stem` · `connector` · `candle` · `wick` · `box` · `whisker` · `median` · `outlier` · `line` · `area-fill` · `dot` · `point` · `data-label` · `total-label` · `end-label` · `leader-line` · `annotation` · `annotation-label` · `brush` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `zoom-slider` · `zoom-track` · `zoom-window` · `zoom-handle` · `zoom-preview` · `zoom-preview-line` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -16716,6 +16719,7 @@ const valueAxis = { fit: "window", minSize: 64 } as const;
 | `getZoomPreviewProps` | `() => T['element']` | 缩放条轨道里的缩略线：整条轴上的走势，只给眼睛看；轨道里跟在窗口后面，一个 svg 里一条 path。 |
 | `getZoomPreviewLineProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -16781,7 +16785,7 @@ const valueAxis = { fit: "window", minSize: 64 } as const;
 - 绘图区是 `role="graphics-document"`，`aria-roledescription` 取 `translations.chartRoleDescription`（缺省 chart），`aria-describedby` 指向组件生成的摘要。
 - 每个系列是一个 `role="graphics-object"` 的分组，名称是系列名；每根柱、每个散点、每个焦点代理点是 `role="graphics-symbol"`，名称取 `translations.datumLabel`（缺省“键, 系列名 值”），务必按本地语言改写。
 - 坐标轴、网格、十字准线、注释与焦点环一律 `aria-hidden`：它们的信息由每个数据的名称、摘要与数据表承担。摘要末尾按 `translations.annotationSummary` 写出参考线、参考带与平均线的名字与值（没写标签的取 `referenceLabel`）；标出的点与趋势线不写，前者的值在数据表里，后者由数据推出。
-- 组件在根内生成一段摘要与一张数据表，二者视觉隐藏、对读屏可见，服务端即输出。摘要写系列数、自变量的范围以及每个系列的最小值与最大值，模板是 `translations.summary`；数据表首列是自变量，列名缺省取 x 轴标题，其余每个可见系列一列，缺失值写 `translations.missingValue`。含散点时一个 x 上可以有多个点，数据表改为每个数据一行：系列、x、y 各一列（列名取 `translations.seriesLabel` 与两根轴的标题），有气泡时再加大小一列，按值着色时再加一列。气泡与按值着色的点的缺省名称在末尾补上大小与颜色对应的值；色阶图例只给眼睛看。
+- 组件在根内生成一段摘要与一张数据表，二者视觉隐藏、对读屏可见，服务端即输出。摘要写系列数、自变量的范围以及每个系列的最小值与最大值，模板是 `translations.summary`；数据表首列是自变量，列名取 x 轴标题（轴没有标题时用 `translations.keyLabel`），其余每个可见系列一列，缺失值写 `translations.missingValue`。含散点时一个 x 上可以有多个点，数据表改为每个数据一行：系列、x、y 各一列（列名取 `translations.seriesLabel` 与两根轴的标题，y 轴没有标题时用 `translations.valueLabel`），有气泡时再加大小一列，按值着色时再加一列。气泡与按值着色的点的缺省名称在末尾补上大小与颜色对应的值；色阶图例只给眼睛看。
 - 绘图区只占一个 Tab 位，进入后焦点落在一个真实的元素上（放大后落在窗口里的第一个数据上，不落在窗外）：柱与散点直接获得焦点，散点按 x 的次序走，上下键换到另一个系列里 x 最近的点；折线没有逐点的元素，由绘图区为聚焦的数据生成一个点作为焦点代理，移动时替换并聚焦新点，读屏据此播报新的名称。
 - 数据层画在画布上时，读屏听到的与 SVG 模式相同：绘图区占一个 Tab 位，进来后焦点落在锚点数据的焦点代理上——就是那根柱、那个点或那根 K 线的 SVG 版本，放回所属系列的分组、叠在画布上，名称、方向键与提示框都与 SVG 模式一致；折线的焦点代理照旧是激活的点。画布与垫层 `aria-hidden`，样式探针 `aria-hidden`、不可聚焦。
 - 列式数据的数据表：行数不超过 500 时逐行写出；超过时按自变量区间聚合成不超过 100 行，区间取整到时间或数值的整刻度，每行写区间与每个系列在区间里的范围（最小 – 最大），K 线写合并后的开高低收，表题按 `translations.aggregatedCaption` 注明多少行聚合成了多少个区间。摘要的最值、首末与变化率由分块极值直接算。焦点代理照样逐点可达：方向键一次走一个点，PageUp / PageDown 跨一成，Home / End 到头。
@@ -16798,7 +16802,7 @@ const valueAxis = { fit: "window", minSize: 64 } as const;
 
 ### 皮肤
 
-`@xihan-ui/styles/cartesian-chart.css` 使用 `[data-scope="cartesian-chart"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/cartesian-chart.css` 按 `[data-scope="cartesian-chart"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-cartesian-chart` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -18467,7 +18471,7 @@ const filter: CascaderFilter = (candidate, query) =>
 
 ### 皮肤
 
-`@xihan-ui/styles/cascader.css` 使用 `[data-scope="cascader"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/cascader.css` 按 `[data-scope="cascader"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-cascader` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -19380,7 +19384,7 @@ const items = [
 
 ### 皮肤
 
-`@xihan-ui/styles/checkbox-group.css` 使用 `[data-scope="checkbox-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/checkbox-group.css` 按 `[data-scope="checkbox-group"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-checkbox-group` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -19887,7 +19891,7 @@ import { XhCheckbox } from "@xihan-ui/vue";
 
 ### 皮肤
 
-`@xihan-ui/styles/checkbox.css` 使用 `[data-scope="checkbox"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/checkbox.css` 按 `[data-scope="checkbox"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-checkbox` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -20655,6 +20659,8 @@ const sources: CitationSource[] = [
 | `getPreviewMetaProps` | `(props: CitationPreviewProps) => T['element']` |  |
 | `getQuoteProps` | `(props: CitationPreviewProps) => T['element']` |  |
 | `getPreviewLinkProps` | `(props: CitationPreviewProps) => T['element']` |  |
+| `sourceMetaText` | `(source: CitationSource \| undefined) => string` | 来源的副文字：网页来源写域名，文档来源写媒体类型，没有媒体类型时取 translations.document。 |
+| `previewLinkText` | `(props: CitationPreviewProps) => string` | 预览链接上写的字：网页来源取 previewLinkSource，文档来源取 previewLinkDocument。 |
 | `getDismissTriggerProps` | `(props: CitationPreviewProps) => T['button']` |  |
 | `getPrevTriggerProps` | `(props: CitationPreviewProps) => T['button']` | 一处多源时换到上一个来源；只有一个来源时带 hidden。 |
 | `getNextTriggerProps` | `(props: CitationPreviewProps) => T['button']` | 一处多源时换到下一个来源；只有一个来源时带 hidden。 |
@@ -20713,7 +20719,7 @@ const sources: CitationSource[] = [
 
 ### 皮肤
 
-`@xihan-ui/styles/citation.css` 使用 `[data-scope="citation"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/citation.css` 按 `[data-scope="citation"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-citation` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -21166,7 +21172,7 @@ const sizes = ["sm", "md", "lg"] as const;
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `copy-trigger` | `aria-busy` | 'true' \| undefined |
 | `copy-trigger` | `aria-disabled` | 'true' \| undefined |
-| `copy-trigger` | `aria-label` | translations?.copy |
+| `copy-trigger` | `aria-label` | translations.copy |
 | `indicator` | `aria-hidden` | indicator.copied !== copied \|\| undefined |
 | `status` | `aria-atomic` | 'true' |
 | `status` | `aria-live` | 'polite' |
@@ -21176,7 +21182,7 @@ const sizes = ["sm", "md", "lg"] as const;
 
 ### 皮肤
 
-`@xihan-ui/styles/clipboard.css` 使用 `[data-scope="clipboard"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/clipboard.css` 按 `[data-scope="clipboard"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-clipboard` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -22466,7 +22472,7 @@ const folded = ref([11]);
 | `line-number` | `aria-hidden` | 'true' |
 | `fold-trigger` | `aria-controls` | `pre` 部件的 id |
 | `fold-trigger` | `aria-expanded` | 'false' \| 'true' |
-| `fold-trigger` | `aria-label` | translations?.expand \| translations?.collapse |
+| `fold-trigger` | `aria-label` | translations.expand \| translations.collapse |
 | `line-fold-trigger` | `aria-expanded` | 'true' \| 'false' |
 | `line-fold-trigger` | `aria-label` | undefined \| foldLabel(lineNumberAt(region.start + 1), lineNumberA… |
 
@@ -22479,7 +22485,7 @@ const folded = ref([11]);
 
 ### 皮肤
 
-`@xihan-ui/styles/code-view.css` 使用 `[data-scope="code-view"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/code-view.css` 按 `[data-scope="code-view"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-code-view` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -23333,7 +23339,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/collapsible.css` 使用 `[data-scope="collapsible"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/collapsible.css` 按 `[data-scope="collapsible"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-collapsible` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -23889,7 +23895,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/color-field.css` 使用 `[data-scope="color-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/color-field.css` 按 `[data-scope="color-field"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-color-field` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -25111,7 +25117,7 @@ const value = ref<string[]>(["#00a98e", "#3b82f6"]);
 
 ### 皮肤
 
-`@xihan-ui/styles/color-picker.css` 使用 `[data-scope="color-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/color-picker.css` 按 `[data-scope="color-picker"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-color-picker` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -25885,7 +25891,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/color-slider.css` 使用 `[data-scope="color-slider"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/color-slider.css` 按 `[data-scope="color-slider"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-color-slider` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -26564,7 +26570,7 @@ const swatches = [
 
 ### 皮肤
 
-`@xihan-ui/styles/color-swatch-picker.css` 使用 `[data-scope="color-swatch-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/color-swatch-picker.css` 按 `[data-scope="color-swatch-picker"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-color-swatch-picker` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -26930,7 +26936,7 @@ const legend = [
 
 ### 皮肤
 
-`@xihan-ui/styles/color-swatch.css` 使用 `[data-scope="color-swatch"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/color-swatch.css` 按 `[data-scope="color-swatch"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-color-swatch` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -28216,8 +28222,8 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `input` | `role` | undefined \| 'combobox' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
-| `trigger` | `aria-label` | props.translations.trigger |
-| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `trigger` | `aria-label` | translations.trigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `label` 部件的 id |
@@ -28237,7 +28243,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 
 ### 皮肤
 
-`@xihan-ui/styles/combobox.css` 使用 `[data-scope="combobox"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/combobox.css` 按 `[data-scope="combobox"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-combobox` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -29266,7 +29272,7 @@ function onSelect(details: { label: string }) {
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-label` | translations?.title |
+| `content` | `aria-label` | translations.title |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | 'dialog' |
 | `input` | `aria-activedescendant` | `item` 部件的 id \| undefined |
@@ -29274,10 +29280,10 @@ function onSelect(details: { label: string }) {
 | `input` | `aria-controls` | `list` 部件的 id |
 | `input` | `aria-expanded` | 'true' |
 | `input` | `aria-haspopup` | 'listbox' |
-| `input` | `aria-label` | translations?.input |
+| `input` | `aria-label` | translations.input |
 | `input` | `role` | 'combobox' |
 | `list` | `aria-busy` | 'true' \| undefined |
-| `list` | `aria-label` | translations?.list |
+| `list` | `aria-label` | translations.list |
 | `list` | `role` | 'listbox' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
@@ -29293,7 +29299,7 @@ function onSelect(details: { label: string }) {
 
 ### 皮肤
 
-`@xihan-ui/styles/command.css` 使用 `[data-scope="command"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/command.css` 按 `[data-scope="command"][data-part="trigger"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-command` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -30021,7 +30027,7 @@ const collection: ContextMenuNode[] = [
 | `trigger` | `aria-haspopup` | undefined \| 'menu' |
 | `trigger` | `aria-keyshortcuts` | undefined \| 'Shift+F10' |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-label` | props.translations.content |
+| `content` | `aria-label` | translations.content |
 | `content` | `role` | 'menu' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `item-shortcut` | `aria-hidden` | 'true' |
@@ -30037,7 +30043,7 @@ const collection: ContextMenuNode[] = [
 
 ### 皮肤
 
-`@xihan-ui/styles/context-menu.css` 使用 `[data-scope="context-menu"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/context-menu.css` 按 `[data-scope="context-menu"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-context-menu` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -30933,13 +30939,13 @@ const value = ref<string | null>("2026-07-28T21:05");
 | `segment` | `aria-valuenow` | undefined \| String(item.value) |
 | `segment` | `aria-valuetext` | item?.text |
 | `segment` | `role` | undefined \| 'spinbutton' |
-| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/date-field.css` 使用 `[data-scope="date-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/date-field.css` 按 `[data-scope="date-field"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-date-field` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -33513,7 +33519,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/date-picker.css` 使用 `[data-scope="date-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/date-picker.css` 按 `[data-scope="date-picker"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-date-picker` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -35873,7 +35879,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 
 ### 皮肤
 
-`@xihan-ui/styles/date-range-picker.css` 使用 `[data-scope="date-range-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/date-range-picker.css` 按 `[data-scope="date-range-picker"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-date-range-picker` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -36701,7 +36707,7 @@ const order = [
 
 ### 皮肤
 
-`@xihan-ui/styles/descriptions.css` 使用 `[data-scope="descriptions"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/descriptions.css` 按 `[data-scope="descriptions"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-descriptions` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -37742,10 +37748,11 @@ async function remove(): Promise<void> {
 - `draggable` 让面板可以挪走：指针按住标题栏（header，没写 header 时是 title）即跟手，落在标题栏里的按钮、链接与表单控件照常点；面板四边始终夹在视口内，每次打开都从居中落点起。键盘经 `drag-trigger` 挪：它是一块透明的把手，放在 header 里时铺满标题栏，焦点落在它上面时方向键挪一步（10px）、Shift 挪一大步（50px）、Enter / Space 回到居中；初始焦点越过它，落到第一个真正的控件上。位移写成 content 上的两个私有槽、按 transform 平移，与进出场的 translate / scale 叠加，拖过的面板从拖到的位置退场。Web Components 侧的属性是 `panel-draggable`：`draggable` 是 HTML 全局属性，写在宿主上会把它变成原生拖放源。
 - 面板走 M4 sheet 三件套（描边、不透明底、投影）。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`。标题为 heading-3，说明文字为 13px 说明档。
 - 关闭时内容立即失活并退出可访问树，内容与遮罩的有限退场动画全部完成后再释放模态资源，并发出 `onExitComplete` / `exit-complete`。重开撤销旧退出，卸载立即清理。
+- 内容第一次打开才挂载，缺省在退场动画播完后卸载、下次打开重新挂载。反复开合而内容又重时（设置面板、长表单）把 `unmountOnExit` 设为 false：打开过之后收起只隐藏——定位层以内联 `display: none` 收起、遮罩不留、Portal 视觉桥断开——面板里的组件状态、输入与滚动位置都留着，再打开不必重挂。Web Components 的作者节点一向常驻；写进 content 里一个 `<template>` 的内容按同一规则挂卸：第一次打开克隆，缺省退场播完撤走，`unmount-on-exit="false"` 时克隆一次之后常驻。
 - 另有命令式服务，业务代码一次调用即可弹出。
 - 命令式服务与声明式组件共用 `Header / Body / Footer` 三段：标题和徽记在 Header，字符串、函数正文及取值表单在 Body，操作按钮在 Footer。长内容只滚动 Body，头尾保留在面板内。
 - 命令式服务的 `onOk` 返回 `false` 只阻止关闭；同步抛错或 Promise 拒绝会保持对话框打开，设置独立 `service.actionError` 并触发 `onActionError({ cause })`。`cause` 保留原始异常，不直接转成用户提示。
-- 失败提示通过服务的 `actionErrorText` 本地化：Vue 支持字符串/ref/getter，React 支持字符串/getter，Web Components 使用字符串，与各端按钮文案合同一致；提示位于 Body 的 `role=alert` 实时区。重试先清理旧异常，关闭或切换请求后旧 Promise 不再写回。
+- 失败提示与确定 / 取消钮缺省取语言包里 `translations.dialog` 的 `actionError` / `ok` / `cancel`（服务 `config` 里的语言包，自定义元素侧取宿主所在处的全局配置），个别服务用 `actionErrorText` / `okText` / `cancelText` 覆盖：Vue 支持字符串/ref/getter，React 支持字符串/getter，Web Components 使用字符串，与各端按钮文案合同一致；提示位于 Body 的 `role=alert` 实时区。重试先清理旧异常，关闭或切换请求后旧 Promise 不再写回。
 - 服务宿主或函数正文渲染失败会拒绝所属请求，`onActionError` 通知自身失败也会拒绝所属请求；业务需要处理返回 Promise 的拒绝。显式 `target` 必须是当前文档中已经连接的元素，无法展示时不会解析为取消或永久等待。
 
 ### 组合
@@ -37790,6 +37797,7 @@ async function remove(): Promise<void> {
 | `size` | `Size` |  | 尺寸：sm / md / lg。只影响 content 的最大宽度，写在 content 上（本组件没有 root 部件）。 |
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
 | `draggable` | `boolean` |  | 可拖动：指针按住标题栏（header，没有 header 时是 title）或 drag-trigger 把面板挪走， 键盘在 drag-trigger 上用方向键挪；面板始终夹在视口内。默认 false。每次打开都从居中落点起。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载内容，默认 true。内容总是第一次打开才挂载；设为 false 时此后收起只隐藏、不卸载， 再打开不重挂：内容里的组件状态、输入与滚动位置都留着，重开也不再付一遍挂载开销。 适合反复开合、内容又重（设置面板、长表单）的浮层。 |
 | `translations` | `Partial<DialogTranslations>` |  |  |
 | `onOpenChange` | `(details: DialogOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onExitComplete` | `() => void` |  | 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 |
@@ -37861,6 +37869,7 @@ async function remove(): Promise<void> {
 | `getBodyProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
 | `getCloseTriggerProps` | `() => T['button']` |  |
+| `isContentMounted` | `(present: boolean) => boolean` | 浮层此刻该不该挂载。`present` 是适配器的退场闸门：打开中或收起动画还没播完为真。 没打开过恒为假；unmountOnExit 为 false 时打开过之后恒为真，闸门落下的那段由适配器隐藏而不卸载。 |
 
 ## 无障碍
 
@@ -37894,15 +37903,15 @@ async function remove(): Promise<void> {
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
 | `drag-trigger` | `aria-disabled` | 'false' \| 'true' |
-| `drag-trigger` | `aria-label` | props.translations.dragTrigger |
+| `drag-trigger` | `aria-label` | translations.dragTrigger |
 | `indicator` | `aria-hidden` | 'true' |
-| `close-trigger` | `aria-label` | props.translations.close |
+| `close-trigger` | `aria-label` | translations.close |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/dialog.css` 使用 `[data-scope="dialog"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/dialog.css` 按 `[data-scope="dialog"][data-part="trigger"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-dialog` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -39214,7 +39223,7 @@ const removed = files.reduce((sum, file) => sum + file.stats.removed, 0);
 
 ### 皮肤
 
-`@xihan-ui/styles/diff-view.css` 使用 `[data-scope="diff-view"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/diff-view.css` 按 `[data-scope="diff-view"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-diff-view` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -39695,7 +39704,7 @@ import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
 
 ### 皮肤
 
-`@xihan-ui/styles/download-trigger.css` 使用 `[data-scope="download-trigger"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/download-trigger.css` 按 `[data-scope="download-trigger"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-download-trigger` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -40567,6 +40576,7 @@ const panel = ref<HTMLElement | null>(null);
 - `modal=false` 时不渲染遮罩，定位层也不截获页面指针；页面可以与抽屉并行交互。展开期间切换 `modal`，滚动锁、背景失活与焦点陷阱会同步切换。
 - `resizable` 在朝向页面的那条边上放一根改尺把手（`resize-trigger`，role=separator）：拖动它面板沿贴边方向变宽（左右放置）或变高（上下放置），聚焦后方向键推一步（8px）、Shift 大步（40px）、Home / End 推到下限与上限。推向页面那一侧变厚：从右往左排版时 `right` 贴在屏幕左边，把手与推的方向一起翻过来。厚度夹在 `minPanelSize`（缺省 160）与 `maxPanelSize` 之间，且不超出视口（`contained` 时是所在容器）。`panelSize` / `defaultPanelSize` / `onPanelSizeChange` 走受控与非受控；没调过时面板按 `size` 档绘制。拖动走 `@xihan-ui/pointer` 的指针会话，步长与 Resizable 同一档。把手是 content 里的绝对定位节点，content 自己滚动（不用 body 段）时它会随内容滚走，长内容请放进 body。
 - 关闭时内容立即失活并退出可访问树；面板与遮罩全部完成退场后释放模态资源并发出 `onExitComplete` / `exit-complete`。退场中重开不会被旧完成关闭，卸载立即清理。
+- 内容第一次打开才挂载，缺省在退场动画播完后卸载、下次打开重新挂载。反复开合而内容又重时（设置面板、长表单）把 `unmountOnExit` 设为 false：打开过之后收起只隐藏——定位层以内联 `display: none` 收起、遮罩不留、Portal 视觉桥断开——面板里的组件状态、输入与滚动位置都留着，再打开不必重挂。Web Components 的作者节点一向常驻；写进 content 里一个 `<template>` 的内容按同一规则挂卸：第一次打开克隆，缺省退场播完撤走，`unmount-on-exit="false"` 时克隆一次之后常驻。
 - 关闭前可以拦截，例如有未保存改动时先确认。
 - 面板走 M4 sheet 三件套（1px 描边、不透明底、投影），边界由描边承担，不只靠影分层；入场是整面板从画外推入的大尺度位移，走 slide 时长与曲线，退场仍走 exit 档。
 - 触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，展开期间压住为悬停同档的中性面；关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底；Space / Enter 与触屏按住期间投影 `data-pressed`。标题为 heading-3，说明文字为 13px 说明档。
@@ -40613,6 +40623,7 @@ const panel = ref<HTMLElement | null>(null);
 | `restoreFocus` | `boolean` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg。横向放置时影响面板宽度、纵向放置时影响面板高度，随 side 而定。 |
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载内容，默认 true。内容总是第一次打开才挂载；设为 false 时此后收起只隐藏、不卸载， 再打开不重挂：内容里的组件状态、输入与滚动位置都留着，重开也不再付一遍挂载开销。 适合反复开合、内容又重（设置面板、长表单）的抽屉。 |
 | `translations` | `Partial<DrawerTranslations>` |  |  |
 | `onOpenChange` | `(details: DrawerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onExitComplete` | `() => void` |  | 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 |
@@ -40693,6 +40704,7 @@ const panel = ref<HTMLElement | null>(null);
 | `getFooterProps` | `() => T['element']` |  |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 | `getResizeTriggerProps` | `() => T['element']` | 改尺把手：role=separator，落在朝向页面的那条边上；没开 resizable 时带 hidden。 |
+| `isContentMounted` | `(present: boolean) => boolean` | 浮层此刻该不该挂载。`present` 是适配器的退场闸门：打开中或收起动画还没播完为真。 没打开过恒为假；unmountOnExit 为 false 时打开过之后恒为真，闸门落下的那段由适配器隐藏而不卸载。 |
 
 ## 无障碍
 
@@ -40725,9 +40737,9 @@ const panel = ref<HTMLElement | null>(null);
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
-| `close-trigger` | `aria-label` | props.translations.close |
+| `close-trigger` | `aria-label` | translations.close |
 | `resize-trigger` | `aria-controls` | `content` 部件的 id |
-| `resize-trigger` | `aria-label` | props.translations.resizeTrigger |
+| `resize-trigger` | `aria-label` | translations.resizeTrigger |
 | `resize-trigger` | `aria-orientation` | 'vertical' \| 'horizontal' |
 | `resize-trigger` | `aria-valuemax` | String(max) \| undefined |
 | `resize-trigger` | `aria-valuemin` | String(min) |
@@ -40738,7 +40750,7 @@ const panel = ref<HTMLElement | null>(null);
 
 ### 皮肤
 
-`@xihan-ui/styles/drawer.css` 使用 `[data-scope="drawer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/drawer.css` 按 `[data-scope="drawer"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-drawer` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -41373,7 +41385,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/editable.css` 使用 `[data-scope="editable"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/editable.css` 按 `[data-scope="editable"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-editable` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -42200,7 +42212,7 @@ const results = [
 
 ### 皮肤
 
-`@xihan-ui/styles/empty-state.css` 使用 `[data-scope="empty-state"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/empty-state.css` 按 `[data-scope="empty-state"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-empty-state` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -43005,7 +43017,7 @@ function setAt(index: number, next: string) {
 
 ### 皮肤
 
-`@xihan-ui/styles/field-array.css` 使用 `[data-scope="field-array"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/field-array.css` 按 `[data-scope="field-array"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-field-array` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -43456,7 +43468,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/field.css` 使用 `[data-scope="field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/field.css` 按 `[data-scope="field"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-field` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -43945,7 +43957,7 @@ const enabled = ref(false);
 
 ### 皮肤
 
-`@xihan-ui/styles/fieldset.css` 使用 `[data-scope="fieldset"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/fieldset.css` 按 `[data-scope="fieldset"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-fieldset` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -45838,7 +45850,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 
 ### 皮肤
 
-`@xihan-ui/styles/file-upload.css` 使用 `[data-scope="file-upload"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/file-upload.css` 按 `[data-scope="file-upload"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-file-upload` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -46420,7 +46432,7 @@ const items = [
 
 ### 皮肤
 
-`@xihan-ui/styles/flex.css` 使用 `[data-scope="flex"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/flex.css` 按 `[data-scope="flex"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-flex` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -46693,7 +46705,7 @@ const position = ref<FloatButtonPosition>({ edge: "inline-end", ratio: 0.75 });
 - 支持点击或悬停展开；键盘与触控始终使用点击。
 - Escape、层外点击和再次触发均可收起。
 - 收起后动作项退出 Tab 序列。
-- 触发器走 Action Control floating 档：默认 48px 圆形、图标 24px，按下缩放并换底；默认（outline）使用磨砂浮动表面，solid / subtle / ghost 使用对应语义表面。
+- 触发器走 Action Control floating 档：`size` 取 sm / md / lg（32 / 40 / 48px），默认 md 40px 圆形、图标 20px，按下缩放并换底；默认（outline）使用磨砂浮动表面，solid / subtle / ghost 使用对应语义表面。
 - 原生按钮动作项自动继承触发器的尺寸与外观。
 - 应用设为 `data-material="liquid"` 时，默认（outline）的触发器与原生按钮动作项换成液态面并结成一组：展开时动作从触发器里分离，收起时融回后再隐藏；彼此靠近的部分边缘相连。按住触发器时液面随手指形变。减弱动效下不分离、不形变。
 
@@ -46827,7 +46839,7 @@ const position = ref<FloatButtonPosition>({ edge: "inline-end", ratio: 0.75 });
 | --- | --- | --- |
 | `trigger` | `aria-controls` | `list` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
-| `trigger` | `aria-label` | props.translations?.trigger |
+| `trigger` | `aria-label` | translations.trigger |
 | `list` | `aria-labelledby` | `trigger` 部件的 id |
 | `list` | `role` | 'group' |
 
@@ -46835,7 +46847,7 @@ const position = ref<FloatButtonPosition>({ edge: "inline-end", ratio: 0.75 });
 
 ### 皮肤
 
-`@xihan-ui/styles/float-button.css` 使用 `[data-scope="float-button"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/float-button.css` 按 `[data-scope="float-button"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-float-button` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -47690,7 +47702,7 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 
 ### 皮肤
 
-`@xihan-ui/styles/floating-panel.css` 使用 `[data-scope="floating-panel"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/floating-panel.css` 按 `[data-scope="floating-panel"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-floating-panel` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -49027,7 +49039,8 @@ function save({ values }: FormSubmitDetails): Promise<void> {
 | `defaultErrors` | `FormErrorPatch` |  |  |
 | `validate` | `(values: FormValues) => FormErrorPatch \| Promise<FormErrorPatch>` |  | 校验函数。返回字段名 → 错误文案，无错的字段给空串或省略； 允许返回 Promise（远程校验），期间 validating 置真。 与 rules 并用时同字段两边都报错按 rules 的文案计算。 |
 | `rules` | `FormRules` |  | 声明式校验规则：字段名 → 一条或一组规则，与 validate 可并用。 |
-| `validateMessages` | `FormValidateMessages` |  | 规则文案模板，{name}/{min}/{max} 现场代入；未提供时使用内置英文模板。 |
+| `validateMessages` | `FormValidateMessages` |  | 规则文案模板，{name}/{min}/{max} 现场代入；逐条压在 translations 之上，都没给的取英文语言包。 |
+| `translations` | `Partial<FormTranslations>` |  | 校验报错的文案模板，形状同 validateMessages；全局语言包经它到达。 |
 | `validateOn` | `FormValidateOn` |  | 校验时机，默认 submit。 |
 | `layout` | `FormLayout` |  | 排布，默认 vertical。 |
 | `columns` | `FormColumns` |  | grid 排布下的列数：1 至 4 的整数，未提供时按一列排列；范围外的值也按一列排列。 也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，未写的档沿用更窄的一档。 其余三档排布下不参与排版。 |
@@ -49171,7 +49184,7 @@ function save({ values }: FormSubmitDetails): Promise<void> {
 
 ### 皮肤
 
-`@xihan-ui/styles/form.css` 使用 `[data-scope="form"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/form.css` 按 `[data-scope="form"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-form` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -49366,7 +49379,7 @@ const steps = [
 
 加粗的是必需部件。
 
-`data-scope="funnel-chart"`：**`root`** · `caption` · **`viewport`** · **`plot`** · `stage` · `stage-label` · `conversion` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="funnel-chart"`：**`root`** · `caption` · **`viewport`** · **`plot`** · `stage` · `stage-label` · `conversion` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -49758,6 +49771,7 @@ const steps = [
 | `getTooltipNameProps` | `(row: FunnelTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -49802,7 +49816,7 @@ const steps = [
 
 ### 皮肤
 
-`@xihan-ui/styles/funnel-chart.css` 使用 `[data-scope="funnel-chart"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/funnel-chart.css` 按 `[data-scope="funnel-chart"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-funnel-chart` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -49994,7 +50008,7 @@ const calls = [
 
 加粗的是必需部件。
 
-`data-scope="graph-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `link` · `arrow` · `node` · `node-label` · `link-label` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="graph-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `link` · `arrow` · `node` · `node-label` · `link-label` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -51020,6 +51034,7 @@ const view = ref<GraphView>({ k: 1, x: 0, y: 0 });
 | `getTooltipNameProps` | `(row: GraphTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -51072,7 +51087,7 @@ const view = ref<GraphView>({ k: 1, x: 0, y: 0 });
 
 ### 皮肤
 
-`@xihan-ui/styles/graph-chart.css` 使用 `[data-scope="graph-chart"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/graph-chart.css` 按 `[data-scope="graph-chart"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-graph-chart` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -51659,7 +51674,7 @@ const result = ref("等待操作");
 | `root` | `aria-busy` | 'true' \| undefined |
 | `root` | `aria-disabled` | 'true' \| 'false' |
 | `root` | `aria-invalid` | 'true' \| 'false' |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `aria-labelledby` | `label` 部件的 id |
 | `root` | `aria-multiselectable` | 'true' \| undefined |
 | `root` | `aria-readonly` | 'true' \| 'false' |
@@ -51675,7 +51690,7 @@ const result = ref("等待操作");
 
 ### 皮肤
 
-`@xihan-ui/styles/grid-list.css` 使用 `[data-scope="grid-list"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/grid-list.css` 按 `[data-scope="grid-list"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-grid-list` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -52123,7 +52138,7 @@ import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
 ### 皮肤
 
-`@xihan-ui/styles/grid.css` 使用 `[data-scope="grid"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/grid.css` 按 `[data-scope="grid"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-grid` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -54138,7 +54153,7 @@ const picked = ref<HeatmapCellDetails | null>(null);
 - 三张网格的推导都是纯函数（`buildHeatmapGrid` / `buildHeatmapMonthGrid` / `buildHeatmapMatrixGrid`），可脱离组件单独调用以预生成数据。
 - 格距四周相同：数据行的高度固定为格子边长，不由行首星期名的文字撑开。三档尺寸的横向与纵向格距是同一个值（默认 4px），格子 sm 8px / md 10px / lg 12px。
 - 行首的星期名隔行绘制：只保留第 0/2/4/6 行之外的三行，周首日是星期一时是“二 / 四 / 六”，是星期日时是“一 / 三 / 五”。一行只有 10px 高而字号是 12px，七个连续书写会上下重叠；隔行后每个保留的字有两行高度可用。三档尺寸一致，不随档位变化。需要七行全部绘制时把 `--xh-heatmap-week-day-skip` 改为可见颜色，例如 `var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`（此时 `sm` 档会较为紧凑）。跳过的是文字着色而不是盒子：节点、文字、盒子与底色都在，固定列的实色底不能缺四行，否则格子会从行首透出，那四行也会不再参与命中测试。
-- 色阶对照条两端各有一个词（默认 `Less` `More`），一排色块本身无法说明哪端表示多。文案使用 `translations.legendLow` / `legendHigh`，部件是 `legend-label`（`value` 为 `low` 或 `high`）；Vue 侧不写默认插槽时两端自动铺出，WC 侧从元素的 `legendText` 属性读取。
+- 色阶对照条两端各有一个词（默认 `Less` `More`），一排色块本身无法说明哪端表示多。文案使用 `translations.legendLow` / `legendHigh`（只作用于顺序色阶，发散色阶两端恒写数值），部件是 `legend-label`（`value` 为 `low` 或 `high`）；Vue 侧不写默认插槽时两端自动铺出，WC 侧从元素的 `legendText` 属性读取。
 - 配色有两条路径，默认为品牌色。一条是 `tone` 语气轴（brand / neutral / success / warning / danger / info），与其他组件共用；另一条是 `palette` 色板轴（基础色板的十二个色相 red / orange / amber / yellow / lime / green / teal / cyan / blue / indigo / purple / pink，加上 gray），直接按颜色指定，满档取同名色相的 600 档。色板只决定色阶满档一端的实心底，0 档的空格底与中间各档的混合方式不变，也不参与语气层的悬停 / 淡底 / 前景派生；它是装饰性的轴，不是语义轴。两者都写时以色板为准：色板指定了具体颜色，语气只能推导出颜色。
 - 色阶有两种，由 `scale` 切换：`sequential` 顺序色阶从空格底到满档单向加深；`diverging` 发散色阶以 `midpoint`（缺省 0）为界，低于中点兑向负向色、高于中点兑向正向色，中点那一格是中性的中点色。不写 `scale` 时按数据定：出现负数即按发散色阶，相关系数、同比涨跌、盈亏这类有正有负的数据不必额外声明；显式写 `sequential` 时负数照旧落第 0 档。发散色阶取数据色的发散三色（`--xh-chart-diverging-negative` / `-center` / `-positive`，组件槽 `--xh-heatmap-diverging-*` 可单独改写），`tone` 与 `palette` 在这一档不生效：两侧的含义由中点决定，不由语气决定。两侧共用同一套档数，按离中点最远的距离均分，离中点同样远的正负两格深浅相同；格子与详情带 `polarity`（`negative` / `positive`，中点那一格为 null）。对照条随之从负向满档经中点排到正向满档，两端文字缺省是两侧最远的那两个数。打印时两侧同档的环一样粗，负向一侧改用点线区分。
 - `continuous` 打开连续色阶：着色按数值在色阶上的确切比例，不按档位取整，挤在同一档里的几格也分得出高低。档位照常计算，格子的 `data-level`、打印纹理与可访问名称里的档位都不变；对照条仍是分档的色块，作为刻度参照。
@@ -54354,7 +54369,7 @@ const picked = ref<HeatmapCellDetails | null>(null);
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `grid` | `aria-colcount` | counts.columns \| undefined |
-| `grid` | `aria-label` | translations?.gridLabel |
+| `grid` | `aria-label` | gridLabel |
 | `grid` | `aria-readonly` | 'true' |
 | `grid` | `aria-rowcount` | counts.rows \| undefined |
 | `grid` | `role` | 'grid' |
@@ -54375,7 +54390,7 @@ const picked = ref<HeatmapCellDetails | null>(null);
 | `cell` | `aria-label` | matrixCellLabel({ date: '', row, column, count, ...pl… |
 | `cell` | `role` | 'gridcell' |
 | `tooltip` | `aria-hidden` | 'true' |
-| `legend` | `aria-label` | translations?.legendLabel |
+| `legend` | `aria-label` | legendLabel |
 | `legend` | `role` | 'group' |
 | `legend-item` | `aria-hidden` | 'true' |
 
@@ -54397,7 +54412,7 @@ const picked = ref<HeatmapCellDetails | null>(null);
 
 ### 皮肤
 
-`@xihan-ui/styles/heatmap.css` 使用 `[data-scope="heatmap"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/heatmap.css` 按 `[data-scope="heatmap"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-heatmap` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -54613,7 +54628,7 @@ const budget = {
 
 加粗的是必需部件。
 
-`data-scope="hierarchy-chart"`：**`root`** · `caption` · `path` · `path-item` · `legend` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `node` · `node-label` · `group-header` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="hierarchy-chart"`：**`root`** · `caption` · `path` · `path-item` · `legend` · `legend-scale` · `legend-scale-name` · `legend-scale-bar` · `legend-scale-value` · **`viewport`** · **`plot`** · `node` · `node-label` · `group-header` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -55279,6 +55294,7 @@ const translations = { levelLabel: (level: number) => (level === 1 ? "部门" : 
 | `getTooltipNameProps` | `(row: HierarchyTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -55314,12 +55330,13 @@ const translations = { levelLabel: (level: number) => (level === 1 ? "部门" : 
 | `legend` | `aria-hidden` | 'true' |
 | `plot` | `aria-describedby` | `summary` 部件的 id |
 | `plot` | `aria-labelledby` | `caption` 部件的 id |
+| `plot` | `aria-roledescription` | translations.chartRoleDescription |
 | `plot` | `role` | 'tree' |
 | `tooltip` | `aria-hidden` | 'true' |
 | `mark` | `aria-hidden` | 'true' |
 
 - 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label`。
-- 绘图区是 `role="tree"`，`aria-describedby` 指向组件生成的摘要；每个看得见的节点是 `role="treeitem"`，带 `aria-level`、`aria-setsize` 与 `aria-posinset`。有子节点的节点带 `aria-expanded`：子节点看得见时为 `true`，到了可见层数的底为 `false`，按 Enter 下钻才看得到。节点的名称取 `translations.datumLabel`（缺省「名字, 数值, 占比 of 上一层」），务必按本地语言改写。
+- 绘图区是 `role="tree"`，角色说明取 `translations.chartRoleDescription`（缺省 `tree chart`：说明里留着「树」，读屏才知道能按方向键展开、收起，不要改成笼统的「图表」），`aria-describedby` 指向组件生成的摘要；每个看得见的节点是 `role="treeitem"`，带 `aria-level`、`aria-setsize` 与 `aria-posinset`。有子节点的节点带 `aria-expanded`：子节点看得见时为 `true`，到了可见层数的底为 `false`，按 Enter 下钻才看得到。节点的名称取 `translations.datumLabel`（缺省「名字, 数值, 占比 of 上一层」），务必按本地语言改写。
 - 绘图区只占一个 Tab 位，焦点落在节点上：左右键在同一层的兄弟之间走（矩形树图与圆堆积按阅读序，旭日图顺时针，冰柱图按排列次序），下键进入第一个子节点，上键回到父节点，Home / End 到同一层的头尾。Enter 下钻、Backspace 上钻，焦点跟着落到新的一层。焦点环画在节点之外，只在键盘聚焦时出现。
 - 下钻路径是一组按钮（与面包屑的链接同一身份），当前的根写 `aria-current="location"`、不可按。
 - 标签与焦点环一律 `aria-hidden`；提示框同样 `aria-hidden`：它显示的内容与节点的名称是同一份。图例的色阶也 `aria-hidden`：每个节点的可及名与数据表里都写着它的值。
@@ -55331,7 +55348,7 @@ const translations = { levelLabel: (level: number) => (level === 1 ? "部门" : 
 
 ### 皮肤
 
-`@xihan-ui/styles/hierarchy-chart.css` 使用 `[data-scope="hierarchy-chart"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/hierarchy-chart.css` 按 `[data-scope="hierarchy-chart"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-hierarchy-chart` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -55771,7 +55788,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 
 ### 皮肤
 
-`@xihan-ui/styles/highlight.css` 使用 `[data-scope="highlight"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/highlight.css` 按 `[data-scope="highlight"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-highlight` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -56439,7 +56456,7 @@ const clicks = ref(0);
 
 ### 皮肤
 
-`@xihan-ui/styles/hover-card.css` 使用 `[data-scope="hover-card"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/hover-card.css` 按 `[data-scope="hover-card"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-hover-card` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -56881,7 +56898,7 @@ const sizes = ["sm", "md", "lg"] as const;
 
 ### 皮肤
 
-`@xihan-ui/styles/icon.css` 使用 `[data-scope="icon"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/icon.css` 按 `[data-scope="icon"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-icon` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -57662,7 +57679,7 @@ function exportAvatar(toCanvas: (options?: { width?: number }) => HTMLCanvasElem
 
 ### 皮肤
 
-`@xihan-ui/styles/image-cropper.css` 使用 `[data-scope="image-cropper"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/image-cropper.css` 按 `[data-scope="image-cropper"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-image-cropper` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -58416,7 +58433,7 @@ function blobOf(index: number): () => Promise<Blob> {
 - 取图时画面正中转一枚加载环；取图失败时画面正中画一枚警示字形，不露浏览器的破图，替代文字仍在可及树里。到头的翻页钮与贴住端点的缩放钮禁用时前景换成禁用色，不压低整颗钮的不透明度。
 - 逻辑关闭立即退出交互与可访问树；内容和遮罩完成退场后才释放模态资源，重开会撤销旧退场。
 - 底部控件带是一组有名称的控件，每个按钮各占一个 Tab 位；左右方向键与 Home/End 用于翻页，控件带内外一致。
-- 翻页按钮走 Action Control floating 档（48px 圆形），关闭按钮与控件带按钮走 icon 档；十个按钮共用取景器自己的深色半透明 chrome，不取页面语义面。
+- 翻页按钮走 Action Control floating 档，随 `size` 取 sm / md / lg（32 / 40 / 48px 圆形，默认 md）；关闭按钮同走 floating 档、比翻页钮低一档（最低 sm），控件带按钮走 icon 档；十个按钮共用取景器自己的深色半透明 chrome，不取页面语义面。
 - 应用设为 `data-material="liquid"` 时，工具条、计数、翻页与关闭钮换成液态面：按下层换色调，前景随之在黑白之间切换；工具条与计数取胶囊形，三颗钮取圆形，按住时液面随手指形变。
 
 ### 组合
@@ -58462,6 +58479,7 @@ function blobOf(index: number): () => Promise<Blob> {
 | `closeOnInteractOutside` | `boolean` |  | 点击遮罩（内容之外）关闭，默认 true。 |
 | `restoreFocus` | `boolean` |  |  |
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；翻页钮走 Action Control floating 档（32 / 40 / 48px），关闭钮比它低一档、最低 sm。 |
 | `translations` | `Partial<ImageViewerTranslations>` |  |  |
 | `onOpenChange` | `(details: ImageViewerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onIndexChange` | `(details: ImageViewerIndexChangeDetails) => void` |  | 下标变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
@@ -58614,7 +58632,7 @@ function blobOf(index: number): () => Promise<Blob> {
 
 ### 皮肤
 
-`@xihan-ui/styles/image-viewer.css` 使用 `[data-scope="image-viewer"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/image-viewer.css` 按 `[data-scope="image-viewer"][data-part="trigger"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-image-viewer` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -58685,13 +58703,13 @@ function blobOf(index: number): () => Promise<Blob> {
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'floating' |
-| `prev-trigger` | `data-xh-action-size` | 'md' |
+| `prev-trigger` | `data-xh-action-size` | props.size |
 | `prev-trigger` | `data-xh-liquid` | '' |
 | `next-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'floating' |
-| `next-trigger` | `data-xh-action-size` | 'md' |
+| `next-trigger` | `data-xh-action-size` | props.size |
 | `next-trigger` | `data-xh-liquid` | '' |
 | `counter` | `data-count` | String(count) |
 | `counter` | `data-index` | String(index + 1) |
@@ -58701,7 +58719,7 @@ function blobOf(index: number): () => Promise<Blob> {
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'floating' |
-| `close-trigger` | `data-xh-action-size` | 'sm' |
+| `close-trigger` | `data-xh-action-size` | floatingSizeBelow(size) |
 | `close-trigger` | `data-xh-liquid` | '' |
 
 <!-- xh-component-tokens:start -->
@@ -59918,7 +59936,7 @@ onBeforeUnmount(() => observer?.disconnect());
 
 ### 皮肤
 
-`@xihan-ui/styles/image.css` 使用 `[data-scope="image"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/image.css` 按 `[data-scope="image"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-image` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -61120,7 +61138,7 @@ function onLoad(): void {
 
 ### 皮肤
 
-`@xihan-ui/styles/infinite-scroll.css` 使用 `[data-scope="infinite-scroll"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/infinite-scroll.css` 按 `[data-scope="infinite-scroll"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-infinite-scroll` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -61475,7 +61493,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/input-group.css` 使用 `[data-scope="input-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/input-group.css` 按 `[data-scope="input-group"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-input-group` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -62356,7 +62374,7 @@ const query = ref("xihan");
 
 ### 皮肤
 
-`@xihan-ui/styles/json-viewer.css` 使用 `[data-scope="json-viewer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/json-viewer.css` 按 `[data-scope="json-viewer"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-json-viewer` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -62738,7 +62756,7 @@ const count = ref(0);
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations?.hotkey?.(names) |
+| `root` | `aria-label` | translations.hotkey(names) |
 | `root` | `role` | 'img' |
 | `key` | `aria-hidden` | 'true' |
 
@@ -62749,7 +62767,7 @@ const count = ref(0);
 
 ### 皮肤
 
-`@xihan-ui/styles/kbd.css` 使用 `[data-scope="kbd"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/kbd.css` 按 `[data-scope="kbd"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-kbd` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -63088,7 +63106,7 @@ const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: to
 
 ### 皮肤
 
-`@xihan-ui/styles/layout.css` 使用 `[data-scope="layout"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/layout.css` 按 `[data-scope="layout"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-layout` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -63881,7 +63899,7 @@ async function loadMore() {
 
 ### 皮肤
 
-`@xihan-ui/styles/list.css` 使用 `[data-scope="list"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/list.css` 按 `[data-scope="list"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-list` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -64592,7 +64610,7 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 
 ### 皮肤
 
-`@xihan-ui/styles/listbox.css` 使用 `[data-scope="listbox"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/listbox.css` 按 `[data-scope="listbox"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-listbox` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -65412,7 +65430,7 @@ function reload(): void {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `aria-valuemax` | String(LOADING_BAR_MAX) |
 | `root` | `aria-valuemin` | '0' |
 | `root` | `aria-valuenow` | String(value) \| undefined |
@@ -65423,7 +65441,7 @@ function reload(): void {
 
 ### 皮肤
 
-`@xihan-ui/styles/loading-bar.css` 使用 `[data-scope="loading-bar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/loading-bar.css` 按 `[data-scope="loading-bar"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-loading-bar` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -66490,7 +66508,7 @@ const lines = Array.from({ length: 10000 }, (_, index) =>
 - 结构四层：`root` · `viewport` · `content` · `line`；每行内容由作者决定，组件只提供身份与等宽排版。另有两个可选部件：`scroll-to-end-trigger` 与 `live-region`。
 - `rows` 按行数定高。
 - 自动跟随到底部；用户向上翻时停止跟随，回到底部后恢复。
-- 内置“回到底部”：离开底部时出现，按下后归位并重新粘附。留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
+- 内置“回到底部”：离开底部时出现，按下后归位并重新粘附。它是 Action Control floating 档的圆钮，比日志的 `size` 低一档、最低 sm（sm / md 时 32px，lg 时 40px）。留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
 - 应用设为 `data-material="liquid"` 时，“回到底部”换成液态面：按下层换色调，按住时液面随手指形变。
 - 视口自身可聚焦，整块日志占一个 Tab 停靠位，方向键与翻页键交给浏览器滚动。
 - ANSI 着色：行上写 `ansi` 交出带转义的原文（Web Components 在行上写 `ansi` 属性、文字就是原文），按 SGR 拆成 `segment`。八种前景色映射到语义色：红、绿、黄、蓝取语气前景，品红、青借代码着色的关键字与字符串色，黑与白取正文与次要前景，每一种都可经 `--xh-log-ansi-<颜色>` 覆盖；高亮色（90–97）与基础色同一档。粗体、暗淡、斜体、下划线各自生效；背景色、256 色的高位与真彩色不着色，清行、挪光标之类的转义直接去掉。`parseAnsi` 与 `stripAnsi` 同时导出，复制与播报用去掉转义的纯文字。
@@ -66536,7 +66554,7 @@ const lines = Array.from({ length: 10000 }, (_, index) =>
 | `levels` | `readonly LogLevel[]` |  | 只显示这几个级别的行，缺省全部显示。没写 level 的行不受过滤影响。 接了虚拟滚动时 DOM 里只有窗口里的行，过滤要在交给 Virtualizer 之前按 isLevelVisible 做。 |
 | `loading` | `boolean` |  | 行仍在传输中：日志区报告 aria-busy，根写 data-loading。 |
 | `rows` | `number` |  | 视口按多少行定高；未提供时高度由皮肤决定。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。影响行文字号与内衬，行高不随档位变化。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。影响行文字号与内衬，行高不随档位变化；回到底部钮比它低一档、最低 sm（32 / 32 / 40px）。 |
 | `translations` | `Partial<LogTranslations>` |  |  |
 
 ### 事件
@@ -66639,7 +66657,7 @@ const lines = Array.from({ length: 10000 }, (_, index) =>
 
 ### 皮肤
 
-`@xihan-ui/styles/log.css` 使用 `[data-scope="log"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/log.css` 按 `[data-scope="log"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-log` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -66666,7 +66684,7 @@ const lines = Array.from({ length: 10000 }, (_, index) =>
 | `scroll-to-end-trigger` | `data-xh-action-control` | '' |
 | `scroll-to-end-trigger` | `data-xh-action-display` | 'always' |
 | `scroll-to-end-trigger` | `data-xh-action-profile` | 'floating' |
-| `scroll-to-end-trigger` | `data-xh-action-size` | 'xs' |
+| `scroll-to-end-trigger` | `data-xh-action-size` | floatingSizeBelow(props.size) |
 | `scroll-to-end-trigger` | `data-xh-action-variant` | 'ghost' |
 | `scroll-to-end-trigger` | `data-xh-liquid` | '' |
 | `scroll-to-end-trigger` | `data-xh-material` | 'frosted' |
@@ -67572,7 +67590,7 @@ const ordinal = (sourceId: string): number => sources.findIndex(source => source
 
 ### 皮肤
 
-`@xihan-ui/styles/markdown-stream.css` 使用 `[data-scope="markdown-stream"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/markdown-stream.css` 按 `[data-scope="markdown-stream"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-markdown-stream` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -68291,7 +68309,7 @@ const notices = [
 
 ### 皮肤
 
-`@xihan-ui/styles/marquee.css` 使用 `[data-scope="marquee"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/marquee.css` 按 `[data-scope="marquee"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-marquee` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -68623,7 +68641,7 @@ const steps = [
 
 ### 皮肤
 
-`@xihan-ui/styles/masonry.css` 使用 `[data-scope="masonry"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/masonry.css` 按 `[data-scope="masonry"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-masonry` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -69459,7 +69477,7 @@ function svgOf(box: HTMLElement): Blob {
 
 ### 皮肤
 
-`@xihan-ui/styles/matrix-code.css` 使用 `[data-scope="matrix-code"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/matrix-code.css` 按 `[data-scope="matrix-code"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-matrix-code` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -70449,7 +70467,7 @@ const filtered = computed(() => {
 | `XhMentionRoot` | `item` | `MentionNodeMeta` | 铺开 collection 时每条候选的文本插槽。 |
 | `XhMentionRoot` | `item-prefix` | `MentionNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
 | `XhMentionRoot` | `item-suffix` | `MentionNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
-| `XhMentionRoot` | `empty` | — | 铺开 collection 时空态中的文案；未写时使用内建英文。 |
+| `XhMentionRoot` | `empty` | — | 铺开 collection 时空态中的文案；未写时取 translations.empty（缺省走英文语言包）。 |
 
 ### React 适配器 props
 
@@ -70464,7 +70482,7 @@ const filtered = computed(() => {
 | `XhMentionRoot` | `renderItem` | `(node: MentionNodeMeta) => ReactNode` |  | 铺开 collection 时每条候选的内容；未提供时使用 collection 中的 label。 |
 | `XhMentionRoot` | `renderItemPrefix` | `(node: MentionNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
 | `XhMentionRoot` | `renderItemSuffix` | `(node: MentionNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
-| `XhMentionRoot` | `empty` | `ReactNode` |  | 铺开 collection 时空态中的文案；未写时使用内建英文。 |
+| `XhMentionRoot` | `empty` | `ReactNode` |  | 铺开 collection 时空态中的文案；未写时取 translations.empty（缺省走英文语言包）。 |
 | `XhMentionRoot` | `children` | `SlotChildren<MentionRootSlotProps>` |  |  |
 
 ### 状态
@@ -70503,6 +70521,7 @@ const filtered = computed(() => {
 | `mentions` | `readonly MentionRange[]` | 正文里插入过、仍然完整的提及，按出现先后排列；宿主据此取出被 @ 到的是哪几条。 |
 | `disabled` | `boolean` |  |
 | `empty` | `boolean` | 没有候选可显示：提供了 collection 且没有剩余条目。作者据此显示空态部件。 |
+| `emptyText` | `string` | 空态部件的缺省文字，取自 translations.empty；作者自己往空态里写了内容就不用它。 |
 | `isHighlighted` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string) => void` | 整段改写正文，浮层随之收起。 |
 | `close` | `() => void` |  |
@@ -70550,12 +70569,12 @@ const filtered = computed(() => {
 | `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
-| `input` | `aria-label` | props.translations.input |
+| `input` | `aria-label` | translations.input |
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `input` | `role` | undefined \| 'combobox' |
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-label` | props.translations.content |
+| `content` | `aria-label` | translations.content |
 | `content` | `role` | 'listbox' |
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |
@@ -70568,7 +70587,7 @@ const filtered = computed(() => {
 
 ### 皮肤
 
-`@xihan-ui/styles/mention.css` 使用 `[data-scope="mention"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/mention.css` 按 `[data-scope="mention"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-mention` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -71426,7 +71445,7 @@ const radioValue = ref({ density: "comfortable" });
 
 ### 皮肤
 
-`@xihan-ui/styles/menu.css` 使用 `[data-scope="menu"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/menu.css` 按 `[data-scope="menu"][data-part="trigger"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-menu` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -72112,7 +72131,7 @@ const collection: MenubarNode[] = [{
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-disabled` | 'true' \| 'false' |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `aria-orientation` | props.orientation |
 | `root` | `role` | 'menubar' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
@@ -72137,7 +72156,7 @@ const collection: MenubarNode[] = [{
 
 ### 皮肤
 
-`@xihan-ui/styles/menubar.css` 使用 `[data-scope="menubar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/menubar.css` 按 `[data-scope="menubar"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-menubar` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -73969,6 +73988,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 
 - 粘底跟随：内容增高时自动到底，用户上滚即解除，滚回底部阈值内自动恢复。向上插入历史消息时补偿滚动位置，视口不跳动。
 - “回到底部”只判断是否在底部，不判断粘附意图：粘附中但内容尚未追上时按钮不显示。
+- “回到底部”是 Action Control floating 档的圆钮，比消息流的 `size` 低一档、最低 sm（sm / md 时 32px，lg 时 40px）。
 - 整份消息列表只占一个 Tab 停靠位：`PageDown` / `PageUp` 在消息之间移动，`Ctrl+End` / `Ctrl+Home` 一步移到消息流之外（会话界面中通常是输入框）。
 - 消息内容全部由作者编写：气泡、头像、时间、动作条都不是本组件的部件。
 - 新生成的消息与出现的“回到底部”各带一段淡入位移；减弱动效由令牌层收敛，不需要另行关闭。
@@ -74019,7 +74039,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 | `status` | `MessageFeedStatus` |  | 本轮的运行态，只写 data-state，状态机不读取它。 |
 | `threshold` | `number` |  | 距底部多少 px 视为在底部，默认使用贴底原语的默认值。 |
 | `loop` | `boolean` |  | 到达首尾是否回绕，默认 false：会话是线性的。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg；回到底部钮比它低一档、最低 sm（32 / 32 / 40px）。 |
 | `translations` | `Partial<MessageFeedTranslations>` |  |  |
 | `onStickChange` | `(details: MessageFeedStickChangeDetails) => void` |  |  |
 | `onItemFocus` | `(details: MessageFeedItemFocusDetails) => void` |  |  |
@@ -74120,7 +74140,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `list` | `aria-label` | translations?.feed |
+| `list` | `aria-label` | translations.feed |
 | `list` | `role` | 'feed' |
 | `item` | `aria-label` | undefined \| itemLabel(item.index + 1, count ?? -1, item.role) |
 | `item` | `aria-labelledby` | scope.partId('message-feed', `item-label:${item.id}`) \| undefined |
@@ -74129,7 +74149,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 | `item` | `role` | 'article' |
 | `separator` | `aria-hidden` | 'true' |
 | `pending-indicator` | `aria-hidden` | 'true' |
-| `scroll-to-end-trigger` | `aria-label` | (translations?.scrollToBottomUnread ?? ((n: number) =… \| translations?.scrollToBottom |
+| `scroll-to-end-trigger` | `aria-label` | translations.scrollToBottomUnread(unreadCount) \| translations.scrollToBottom |
 | `unread-count` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
@@ -74144,7 +74164,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 
 ### 皮肤
 
-`@xihan-ui/styles/message-feed.css` 使用 `[data-scope="message-feed"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/message-feed.css` 按 `[data-scope="message-feed"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-message-feed` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -74165,7 +74185,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 | `scroll-to-end-trigger` | `data-xh-action-control` | '' |
 | `scroll-to-end-trigger` | `data-xh-action-display` | 'always' |
 | `scroll-to-end-trigger` | `data-xh-action-profile` | 'floating' |
-| `scroll-to-end-trigger` | `data-xh-action-size` | 'xs' |
+| `scroll-to-end-trigger` | `data-xh-action-size` | floatingSizeBelow(prop('size')) |
 | `scroll-to-end-trigger` | `data-xh-action-variant` | 'ghost' |
 | `scroll-to-end-trigger` | `data-xh-liquid` | '' |
 | `scroll-to-end-trigger` | `data-xh-material` | 'frosted' |
@@ -74854,7 +74874,7 @@ const entries = [
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-label` | resolveTranslations(NAVIGATION_MENU_EN_US, prop('tran… |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
@@ -74879,7 +74899,7 @@ const entries = [
 
 ### 皮肤
 
-`@xihan-ui/styles/navigation-menu.css` 使用 `[data-scope="navigation-menu"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/navigation-menu.css` 按 `[data-scope="navigation-menu"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-navigation-menu` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -76611,7 +76631,7 @@ function onAction(details: { id: string }): void {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `group` | `aria-label` | props.translations.region |
+| `group` | `aria-label` | translations.region |
 | `group` | `role` | 'region' |
 | `item` | `aria-atomic` | 'true' |
 | `item` | `aria-describedby` | `description` 部件的 id |
@@ -76620,13 +76640,13 @@ function onAction(details: { id: string }): void {
 | `item` | `role` | 'alert' \| 'status' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `item-progress` | `aria-hidden` | 'true' |
-| `item-close-trigger` | `aria-label` | props.translations.close |
+| `item-close-trigger` | `aria-label` | translations.close |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/notification.css` 使用 `[data-scope="notification"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/notification.css` 按 `[data-scope="notification"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-notification` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -77210,7 +77230,7 @@ const compact = { notation: "compact" } as const;
 
 ### 皮肤
 
-`@xihan-ui/styles/number-animation.css` 使用 `[data-scope="number-animation"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/number-animation.css` 按 `[data-scope="number-animation"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-number-animation` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -78313,7 +78333,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/number-field.css` 使用 `[data-scope="number-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/number-field.css` 按 `[data-scope="number-field"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-number-field` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -78700,7 +78720,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/page-header.css` 使用 `[data-scope="page-header"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/page-header.css` 按 `[data-scope="page-header"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-page-header` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -79669,7 +79689,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/pagination.css` 使用 `[data-scope="pagination"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/pagination.css` 按 `[data-scope="pagination"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-pagination` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -80446,7 +80466,7 @@ import {
 | `placeholder` | `string` |  |  |
 | `autoComplete` | `string` |  | 写到 input 上的 autocomplete，默认 current-password。 密码管理器据此决定该字段是填入旧密码还是保存新密码，注册表单要显式写 new-password。 |
 | `strength` | `number` |  | 强度档位，0 到 4 共五档。提供后才显示强度条，默认不显示。 打分算法归调用方：口令强弱是产品规则（字典、泄漏库、业务口径），组件只负责绘制档位。 超出区间的值被夹回区间。 |
-| `translations` | `Partial<PasswordInputTranslations>` |  | 读屏文案覆盖；未提供的条目使用组件内建英文。 |
+| `translations` | `Partial<PasswordInputTranslations>` |  | 读屏文案覆盖；未提供的条目取英文语言包。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
@@ -80565,7 +80585,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/password-input.css` 使用 `[data-scope="password-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/password-input.css` 按 `[data-scope="password-input"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-password-input` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -80751,7 +80771,7 @@ const rows = [
 
 加粗的是必需部件。
 
-`data-scope="pie-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `slice` · `leader-line` · `slice-label` · `focus-ring` · `center` · `center-value` · `center-label` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="pie-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `slice` · `leader-line` · `slice-label` · `focus-ring` · `center` · `center-value` · `center-label` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -81654,6 +81674,7 @@ const activeKey = computed<ChartKey | null>(() => (choice.value === "none" ? nul
 | `getTooltipNameProps` | `(row: PieTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -81705,7 +81726,7 @@ const activeKey = computed<ChartKey | null>(() => (choice.value === "none" ? nul
 
 ### 皮肤
 
-`@xihan-ui/styles/pie-chart.css` 使用 `[data-scope="pie-chart"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/pie-chart.css` 按 `[data-scope="pie-chart"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-pie-chart` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -82656,7 +82677,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 ### 皮肤
 
-`@xihan-ui/styles/pin-input.css` 使用 `[data-scope="pin-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/pin-input.css` 按 `[data-scope="pin-input"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-pin-input` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -83348,7 +83369,7 @@ function onConfirm() {
 
 ### 皮肤
 
-`@xihan-ui/styles/popconfirm.css` 使用 `[data-scope="popconfirm"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/popconfirm.css` 按 `[data-scope="popconfirm"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-popconfirm` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -84663,14 +84684,14 @@ function pin(event: MouseEvent): void {
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | 'dialog' |
-| `close-trigger` | `aria-label` | props.translations.close |
+| `close-trigger` | `aria-label` | translations.close |
 | `arrow` | `aria-hidden` | 'true' |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/popover.css` 使用 `[data-scope="popover"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/popover.css` 按 `[data-scope="popover"][data-part="trigger"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-popover` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -85841,7 +85862,7 @@ import { XhProgress } from "@xihan-ui/vue";
 
 ### 皮肤
 
-`@xihan-ui/styles/progress.css` 使用 `[data-scope="progress"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/progress.css` 按 `[data-scope="progress"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-progress` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -87171,8 +87192,8 @@ function send(value: string) {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `input` | `aria-label` | translations?.input |
-| `submit-trigger` | `aria-label` | translations?.stop \| translations?.send |
+| `input` | `aria-label` | translations.input |
+| `submit-trigger` | `aria-label` | translations.stop \| translations.send |
 
 - 输入框的可访问名称只在提供 `translations.input` 时才发出：无条件发出会覆盖作者自己的 `<label for>` 与 `aria-label`。
 - 按钮的可访问名称随身份切换，读屏读到的与屏幕上看到的一致。
@@ -87182,7 +87203,7 @@ function send(value: string) {
 
 ### 皮肤
 
-`@xihan-ui/styles/prompt-input.css` 使用 `[data-scope="prompt-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/prompt-input.css` 按 `[data-scope="prompt-input"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-prompt-input` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -88531,23 +88552,23 @@ const sent = ref("");
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `question` | `aria-hidden` | undefined \| 'true' |
-| `question` | `aria-label` | undefined \| translations?.prompt |
+| `question` | `aria-label` | undefined \| translations.prompt |
 | `question` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
 | `question` | `role` | 'group' |
 | `group` | `aria-describedby` | undefined \| `description` 部件的 id |
-| `group` | `aria-label` | undefined \| translations?.options |
+| `group` | `aria-label` | undefined \| translations.options |
 | `group` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
 | `group` | `role` | 'radiogroup' \| 'group' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `role` | 'radio' \| 'checkbox' |
 | `item-indicator` | `aria-hidden` | 'true' |
-| `note` | `aria-label` | translations?.note |
-| `prev-trigger` | `aria-label` | translations?.prev |
+| `note` | `aria-label` | translations.note |
+| `prev-trigger` | `aria-label` | translations.prev |
 | `counter` | `aria-hidden` | 'true' |
-| `next-trigger` | `aria-label` | translations?.next |
-| `skip-trigger` | `aria-label` | translations?.skip |
-| `submit-trigger` | `aria-label` | translations?.send \| translations?.continue |
+| `next-trigger` | `aria-label` | translations.next |
+| `skip-trigger` | `aria-label` | translations.skip |
+| `submit-trigger` | `aria-label` | translations.send \| translations.continue |
 | `result` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
@@ -88563,7 +88584,7 @@ const sent = ref("");
 
 ### 皮肤
 
-`@xihan-ui/styles/question-flow.css` 使用 `[data-scope="question-flow"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/question-flow.css` 按 `[data-scope="question-flow"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-question-flow` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -88823,7 +88844,7 @@ const indicators = [
 
 加粗的是必需部件。
 
-`data-scope="radar-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid-ring` · `ring-label` · `spoke` · `indicator-label` · `series` · `area-fill` · `line` · `point` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="radar-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `pattern` · `pattern-line` · `grid-ring` · `ring-label` · `spoke` · `indicator-label` · `series` · `area-fill` · `line` · `point` · `crosshair` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -89352,6 +89373,7 @@ const indicators = [
 | `getTooltipNameProps` | `(row: RadarTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -89408,7 +89430,7 @@ const indicators = [
 
 ### 皮肤
 
-`@xihan-ui/styles/radar-chart.css` 使用 `[data-scope="radar-chart"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/radar-chart.css` 按 `[data-scope="radar-chart"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-radar-chart` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -90462,7 +90484,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/radio-group.css` 使用 `[data-scope="radio-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/radio-group.css` 按 `[data-scope="radio-group"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-radio-group` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -91396,7 +91418,7 @@ const sticky = ref(3);
 
 ### 皮肤
 
-`@xihan-ui/styles/rating.css` 使用 `[data-scope="rating"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/rating.css` 按 `[data-scope="rating"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-rating` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -92153,7 +92175,7 @@ const translations = {
 
 ### 皮肤
 
-`@xihan-ui/styles/reasoning.css` 使用 `[data-scope="reasoning"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/reasoning.css` 按 `[data-scope="reasoning"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-reasoning` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -92637,10 +92659,10 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | translations?.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `role` | 'group' |
 | `handle` | `aria-disabled` | 'false' \| 'true' |
-| `handle` | `aria-label` | translations?.handle?.(edge) |
+| `handle` | `aria-label` | translations.handle(edge) |
 | `handle` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `handle` | `aria-valuenow` | Math.round(edge === 'n' \|\| edge === 's' ? dimensions.… |
 | `handle` | `role` | 'separator' |
@@ -92649,7 +92671,7 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 
 ### 皮肤
 
-`@xihan-ui/styles/resizable.css` 使用 `[data-scope="resizable"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/resizable.css` 按 `[data-scope="resizable"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-resizable` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -92813,7 +92835,7 @@ const links = [
 
 加粗的是必需部件。
 
-`data-scope="sankey-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `gradient` · `gradient-stop` · `link` · `node` · `node-label` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table`
+`data-scope="sankey-chart"`：**`root`** · `caption` · `legend` · `legend-item` · `legend-swatch` · `legend-label` · **`viewport`** · **`plot`** · `defs` · `gradient` · `gradient-stop` · `link` · `node` · `node-label` · `focus-ring` · `tooltip` · `tooltip-header` · `tooltip-row` · `tooltip-swatch` · `tooltip-value` · `tooltip-name` · `empty` · `summary` · `table-region` · `table`
 
 ## 示例
 
@@ -93318,6 +93340,7 @@ const links = [
 | `getTooltipNameProps` | `(row: SankeyTooltipRow) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
+| `getTableRegionProps` | `() => T['element']` | 数据表的视觉隐藏区域：块级、1px、裁掉，表格放在里面；隐藏不写在表格上，表格的高度收不住。 |
 | `getTableProps` | `() => T['element']` |  |
 
 ## 无障碍
@@ -93371,7 +93394,7 @@ const links = [
 
 ### 皮肤
 
-`@xihan-ui/styles/sankey-chart.css` 使用 `[data-scope="sankey-chart"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/sankey-chart.css` 按 `[data-scope="sankey-chart"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-sankey-chart` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -93982,7 +94005,7 @@ function onReachEnd(details: ScrollAreaScrollDetails): void {
 
 ### 皮肤
 
-`@xihan-ui/styles/scroll-area.css` 使用 `[data-scope="scroll-area"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/scroll-area.css` 按 `[data-scope="scroll-area"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-scroll-area` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -94599,7 +94622,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | `root` | `aria-hidden` | undefined \| 'true' |
 | `thumb` | `aria-controls` | props.controls \| undefined |
 | `thumb` | `aria-disabled` | 'true' \| undefined |
-| `thumb` | `aria-label` | props.translations.thumb \| undefined |
+| `thumb` | `aria-label` | translations.thumb \| undefined |
 | `thumb` | `aria-orientation` | props.orientation \| undefined |
 | `thumb` | `aria-valuemax` | Math.round(max) \| undefined |
 | `thumb` | `aria-valuemin` | 0 \| undefined |
@@ -94610,7 +94633,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 
 ### 皮肤
 
-`@xihan-ui/styles/scrollbar.css` 使用 `[data-scope="scrollbar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/scrollbar.css` 按 `[data-scope="scrollbar"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-scrollbar` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -97549,6 +97572,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 - 选中项保留普通文字，通过末端对号表示状态。
 - 关闭时立即退出交互，资源在退场动画结束后释放。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- `lazyMount` 让列表内容第一次展开时才挂载、之后常驻：页面上 Select 很多（表格每行一个、长表单）时，收起态每个实例背着的整份条目是挂载开销的大头。打开前的选中文字与收起态连打按 `collection` 计算，所以要配 `collection` 用；没给时打开前选中文字退回值本身、连打不生效。Web Components 里把条目写进 list 里的一个 `<template>`，第一次展开才克隆。
 
 ### 组合
 
@@ -97585,6 +97609,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | --- | --- | --- | --- |
 | `collection` | `SelectNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value， 显示文本也不再从 DOM 查询。未提供时回到文本写在条目中、从 DOM 查询的方式。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 |
+| `lazyMount` | `boolean` |  | 列表内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。挂过之后一直留着，来回开合不重建。 页面上 Select 很多（表格每行一个、长表单）时打开它：收起态每个实例都背着一整份条目，挂载开销大半在这里。 打开前的选中文字与收起态连打按 collection 计算；没给 collection 时，打开前选中文字退回值本身、连打不生效。 |
 | `value` | `string \| string[] \| null` |  | 选中值。裸串是单选的简写，null 是受控且无选中，未提供（undefined）才是非受控；内部一律按数组处理。 受控时 cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string \| string[] \| null` |  | 非受控初始选中值。与 value 同样接受裸串与 null。 |
 | `multiple` | `boolean` |  | 允许选中多项。单选时选完即收起，多选时保持展开继续选。 |
@@ -97730,6 +97755,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `getItemDeleteTriggerProps` | `(props: SelectTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，禁用时保留位置、原生 disabled；点击移除所在标签的选中值；须放在标签中。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` | 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 |
+| `isContentMounted` | `() => boolean` | content 里的列表内容此刻该不该挂载。未开 lazyMount 时恒为真；开了的话第一次展开起为真。 content 节点本身始终在场，只有它的内容按此挂载。 |
 | `getListProps` | `() => T['element']` | 列表框本体，滚动在这一层；role=listbox 与条目的拥有关系都归它。 |
 | `getFooterProps` | `() => T['element']` | 浮层底部的操作区，是 list 的兄弟；不在列表框的拥有关系中，也不参与方向键与连打检索。 |
 | `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 中、list 的兄弟。 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。 |
@@ -97783,10 +97809,10 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
-| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `list` | `aria-busy` | 'true' \| undefined |
-| `list` | `aria-label` | props.translations.content |
+| `list` | `aria-label` | translations.content |
 | `list` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `role` | 'listbox' |
@@ -97803,7 +97829,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 
 ### 皮肤
 
-`@xihan-ui/styles/select.css` 使用 `[data-scope="select"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/select.css` 按 `[data-scope="select"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-select` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -98221,7 +98247,7 @@ import { XhSeparator } from "@xihan-ui/vue";
 
 ### 皮肤
 
-`@xihan-ui/styles/separator.css` 使用 `[data-scope="separator"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/separator.css` 按 `[data-scope="separator"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-separator` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -99493,7 +99519,7 @@ const icons = {
 
 ### 皮肤
 
-`@xihan-ui/styles/side-nav.css` 使用 `[data-scope="side-nav"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/side-nav.css` 按 `[data-scope="side-nav"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-side-nav` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -100175,7 +100201,7 @@ function onValueChange(details: { value: SignaturePadValue }) {
 
 - Vue：`XhSignaturePadRoot` 的默认插槽给出 `value` / `empty` / `paths` / `drawing` / `canUndo` / `canRedo` / `statusText` 与 `toSvg()` / `clear()` / `undo()` / `redo()`，签名数据走 `v-model:value`；也可以用 `useSignaturePad()` 自行获取。`XhSignaturePadGuide` 与 `XhSignaturePadPath` 必须写在 `XhSignaturePadControl` 内：SVG 命名空间由该子树带下，移出后会成为 HTML 元素，无法绘制。
 - Web Components：结构由作者编写（Light DOM，不投影插槽）。`<xh-signature-pad>` 上有 `clear()`、`undo()`、`redo()`、`toSvg()` 与只读的 `empty` / `canUndo` / `canRedo`；`value` / `defaultValue` 是对象，只走 property。提交前取签名用 `toSvg()`，不需要缓存上一次 `draw-end`。
-- 两侧的 `status` 部件内都不需要自行写文字：节点为空时由适配器填入内建文案；写了文字则以作者的为准。
+- 两侧的 `status` 部件内都不需要自行写文字：节点为空时由适配器填入语言包里的文案；写了文字则以作者的为准。
 
 ### 最佳实践
 
@@ -100308,15 +100334,15 @@ function onValueChange(details: { value: SignaturePadValue }) {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `control` | `aria-label` | translations?.label |
+| `control` | `aria-label` | translations.label |
 | `control` | `aria-labelledby` | `label` 部件的 id |
 | `control` | `role` | 'img' |
 | `guide` | `aria-hidden` | 'true' |
 | `undo-trigger` | `aria-disabled` | 'true' \| undefined |
-| `undo-trigger` | `aria-label` | translations?.undoTrigger |
+| `undo-trigger` | `aria-label` | translations.undoTrigger |
 | `redo-trigger` | `aria-disabled` | 'true' \| undefined |
-| `redo-trigger` | `aria-label` | translations?.redoTrigger |
-| `clear-trigger` | `aria-label` | translations?.clearTrigger |
+| `redo-trigger` | `aria-label` | translations.redoTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `status` | `aria-atomic` | 'true' |
 | `status` | `aria-live` | 'polite' |
 | `status` | `role` | 'status' |
@@ -100335,7 +100361,7 @@ function onValueChange(details: { value: SignaturePadValue }) {
 
 ### 皮肤
 
-`@xihan-ui/styles/signature-pad.css` 使用 `[data-scope="signature-pad"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/signature-pad.css` 按 `[data-scope="signature-pad"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-signature-pad` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -100758,7 +100784,7 @@ const animations: SkeletonAnimation[] = ["shimmer", "pulse", "none"];
 
 ### 皮肤
 
-`@xihan-ui/styles/skeleton.css` 使用 `[data-scope="skeleton"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/skeleton.css` 按 `[data-scope="skeleton"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-skeleton` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -102192,7 +102218,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/slider.css` 使用 `[data-scope="slider"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/slider.css` 按 `[data-scope="slider"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-slider` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -102835,12 +102861,12 @@ function onTransfer(detail: SortableTransferDetails): void {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | translations?.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `role` | 'group' |
 | `item-drag-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `item-drag-trigger` | `aria-label` | translations?.itemDragTrigger?.(name) |
+| `item-drag-trigger` | `aria-label` | translations.itemDragTrigger(name) |
 | `item-drag-trigger` | `aria-pressed` | 'true' \| 'false' |
-| `item-drag-trigger` | `aria-roledescription` | 'sortable' |
+| `item-drag-trigger` | `aria-roledescription` | translations.itemDragTriggerRoleDescription |
 | `item-drag-trigger` | `role` | 'button' |
 | `drop-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
@@ -102856,7 +102882,7 @@ function onTransfer(detail: SortableTransferDetails): void {
 
 ### 皮肤
 
-`@xihan-ui/styles/sortable.css` 使用 `[data-scope="sortable"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/sortable.css` 按 `[data-scope="sortable"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-sortable` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -103483,7 +103509,7 @@ const sales = [150, 162, 188, 171, 196, 214, 176, 182, 165, 158, 201, 194, 179, 
 
 ### 皮肤
 
-`@xihan-ui/styles/sparkline.css` 使用 `[data-scope="sparkline"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/sparkline.css` 按 `[data-scope="sparkline"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-sparkline` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -104004,7 +104030,7 @@ function query(ms: number): void {
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `label` | `string` | 解析后的文案：label → translations.label → 内置默认值。 |
+| `label` | `string` | 解析后的文案：label → translations.label → en-US 语言包。 |
 | `visible` | `boolean` | 已经露面；等待 delay 期间为 false。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
@@ -104031,7 +104057,7 @@ function query(ms: number): void {
 
 ### 皮肤
 
-`@xihan-ui/styles/spinner.css` 使用 `[data-scope="spinner"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/spinner.css` 按 `[data-scope="spinner"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-spinner` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -104489,11 +104515,11 @@ const inner = [
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | translations?.root |
+| `root` | `aria-label` | translations.root |
 | `root` | `role` | 'group' |
 | `resize-trigger` | `aria-controls` | `panel` 部件的 id |
 | `resize-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `resize-trigger` | `aria-label` | translations?.resizeTrigger?.(boundary, Math.max(0, l… |
+| `resize-trigger` | `aria-label` | translations.resizeTrigger(boundary, Math.max(0, last… |
 | `resize-trigger` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `resize-trigger` | `aria-valuemax` | String(panel.max) |
 | `resize-trigger` | `aria-valuemin` | String(panel.min) |
@@ -104504,7 +104530,7 @@ const inner = [
 
 ### 皮肤
 
-`@xihan-ui/styles/splitter.css` 使用 `[data-scope="splitter"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/splitter.css` 按 `[data-scope="splitter"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-splitter` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -105026,7 +105052,7 @@ const cards = [
 
 ### 皮肤
 
-`@xihan-ui/styles/statistic.css` 使用 `[data-scope="statistic"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/statistic.css` 按 `[data-scope="statistic"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-statistic` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -105929,7 +105955,7 @@ const steps = [
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `list` | `aria-disabled` | 'true' \| 'false' |
-| `list` | `aria-label` | translations?.list |
+| `list` | `aria-label` | translations.list |
 | `list` | `aria-orientation` | props.orientation |
 | `list` | `role` | 'list' |
 | `item` | `aria-current` | 'step' \| undefined |
@@ -105943,7 +105969,7 @@ const steps = [
 | `trigger` | `aria-setsize` | normalizeStepCount(prop('count') ?? (collection.lengt… \| undefined |
 | `trigger` | `role` | 'tab' |
 | `indicator` | `aria-hidden` | 'true' |
-| `indicator` | `aria-label` | translations?.progressLabel |
+| `indicator` | `aria-label` | translations.progressLabel |
 | `indicator` | `aria-valuemax` | '100' |
 | `indicator` | `aria-valuemin` | '0' |
 | `indicator` | `aria-valuenow` | String(percent) |
@@ -105957,7 +105983,7 @@ const steps = [
 
 ### 皮肤
 
-`@xihan-ui/styles/steps.css` 使用 `[data-scope="steps"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/steps.css` 按 `[data-scope="steps"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-steps` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -106867,7 +106893,7 @@ function onSubmit(event: Event) {
 
 ### 皮肤
 
-`@xihan-ui/styles/switch.css` 使用 `[data-scope="switch"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/switch.css` 按 `[data-scope="switch"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-switch` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -112254,7 +112280,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `column-resize-trigger` | `role` | 'separator' |
 | `column-drag-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `column-drag-trigger` | `aria-label` | label.columnDrag(def?.label ?? column.value) |
-| `column-drag-trigger` | `aria-roledescription` | 'draggable column' |
+| `column-drag-trigger` | `aria-roledescription` | label.columnDragRoleDescription |
 | `column-drag-trigger` | `role` | 'button' |
 | `row-drag-trigger` | `aria-hidden` | 'true' |
 | `expand-trigger` | `aria-hidden` | 'true' |
@@ -112282,7 +112308,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 
 ### 皮肤
 
-`@xihan-ui/styles/table.css` 使用 `[data-scope="table"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/table.css` 按 `[data-scope="table"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-table` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -113404,7 +113430,7 @@ const branches = [
 | `separator` | `aria-hidden` | 'true' |
 | `prev-trigger` | `aria-hidden` | 'true' |
 | `next-trigger` | `aria-hidden` | 'true' |
-| `overflow-trigger` | `aria-label` | props.translations.overflowTrigger |
+| `overflow-trigger` | `aria-label` | translations.overflowTrigger |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'tabpanel' |
 | `tab-drag-trigger` | `aria-hidden` | 'true' |
@@ -113416,7 +113442,7 @@ const branches = [
 
 ### 皮肤
 
-`@xihan-ui/styles/tabs.css` 使用 `[data-scope="tabs"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/tabs.css` 按 `[data-scope="tabs"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-tabs` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -114186,7 +114212,7 @@ const avatar
 
 ### 皮肤
 
-`@xihan-ui/styles/tag-group.css` 使用 `[data-scope="tag-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/tag-group.css` 按 `[data-scope="tag-group"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-tag-group` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -114957,13 +114983,13 @@ const tags = [
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `close-trigger` | `aria-label` | props.translations.close |
+| `close-trigger` | `aria-label` | translations.close |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/tag.css` 使用 `[data-scope="tag"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/tag.css` 按 `[data-scope="tag"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-tag` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -117254,7 +117280,7 @@ const delimiters = [",", "，", ";", "\n"];
 
 ### 皮肤
 
-`@xihan-ui/styles/tags-input.css` 使用 `[data-scope="tags-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/tags-input.css` 按 `[data-scope="tags-input"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-tags-input` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -118777,7 +118803,7 @@ const note = ref("");
 
 ### 皮肤
 
-`@xihan-ui/styles/text-field.css` 使用 `[data-scope="text-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/text-field.css` 按 `[data-scope="text-field"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-text-field` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -119746,7 +119772,7 @@ function snap(next: string) {
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |
+| `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；未提供时取英文语言包里的语义名。 |
 | `onValueChange` | `(details: TimeFieldValueChangeDetails) => void` |  |  |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
@@ -119845,7 +119871,7 @@ function snap(next: string) {
 | `control` | `role` | 'group' |
 | `segment` | `aria-disabled` | 'true' \| 'false' |
 | `segment` | `aria-invalid` | 'true' \| 'false' |
-| `segment` | `aria-label` | prop('translations')?.[segment] |
+| `segment` | `aria-label` | translations[segment] |
 | `segment` | `aria-readonly` | 'true' \| 'false' |
 | `segment` | `aria-required` | 'true' \| 'false' |
 | `segment` | `aria-valuemax` | range.max |
@@ -119853,13 +119879,13 @@ function snap(next: string) {
 | `segment` | `aria-valuenow` | segmentNumber(draft, segment, hourCycle) |
 | `segment` | `aria-valuetext` | timeSegmentText(draft, segment, { hourCycle, locale, … |
 | `segment` | `role` | 'spinbutton' |
-| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/time-field.css` 使用 `[data-scope="time-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/time-field.css` 按 `[data-scope="time-field"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-time-field` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -121950,7 +121976,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `isTimeUnavailable` | `TimeUnavailablePredicate` |  | 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）； unit 区分同一个 '30' 属于哪一列；context 带这份值里已选的时（24 小时制）与分， 写得出「9 点只能选 30 分以后」。date 与 index 在本组件恒为 null。 与 min / max 裁掉的值同等处理：判定为真的格子仍可聚焦，只是不可选中。 连续区间用 min / max 表达即可，该项留给每隔 15 分钟才可预约这类离散规则。 |
-| `translations` | `Partial<TimePickerTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |
+| `translations` | `Partial<TimePickerTranslations>` |  | 段位读屏名的覆盖；未提供时取英文语言包里的语义名。 |
 | `onValueChange` | `(details: TimePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: TimePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -122131,7 +122157,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | `control` | `role` | 'group' |
 | `segment` | `aria-disabled` | 'true' \| 'false' |
 | `segment` | `aria-invalid` | 'true' \| 'false' |
-| `segment` | `aria-label` | prop('translations')?.[segment] |
+| `segment` | `aria-label` | translations[segment] |
 | `segment` | `aria-readonly` | 'true' \| 'false' |
 | `segment` | `aria-required` | 'true' \| 'false' |
 | `segment` | `aria-valuemax` | range.max |
@@ -122143,13 +122169,13 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `trigger` | `aria-labelledby` | `label` 部件的 id |
-| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `label` 部件的 id |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `preset-group` | `aria-disabled` | 'true' \| 'false' |
-| `preset-group` | `aria-label` | props.translations.presets |
+| `preset-group` | `aria-label` | translations.presets |
 | `preset-group` | `aria-multiselectable` | 'false' |
 | `preset-group` | `aria-orientation` | 'vertical' |
 | `preset-group` | `role` | 'listbox' |
@@ -122157,7 +122183,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | `preset` | `aria-selected` | 'true' \| 'false' |
 | `preset` | `role` | 'option' |
 | `column` | `aria-disabled` | 'true' \| 'false' |
-| `column` | `aria-label` | prop('translations')?.[unit] |
+| `column` | `aria-label` | translations[unit] |
 | `column` | `aria-multiselectable` | 'false' |
 | `column` | `aria-orientation` | 'vertical' |
 | `column` | `role` | 'listbox' |
@@ -122169,7 +122195,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
 
 ### 皮肤
 
-`@xihan-ui/styles/time-picker.css` 使用 `[data-scope="time-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/time-picker.css` 按 `[data-scope="time-picker"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-time-picker` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -123428,7 +123454,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `isTimeUnavailable` | `TimeUnavailablePredicate` |  | 逐值可选性。value 是两位补零的格值，时列恒按 24 小时制给出（12 小时制下也换算成真实的时）； unit 区分同一个 '30' 属于哪一列；context 带这一端已选的时（24 小时制）与分，以及是哪一端（index）， 起点与终点可以各有规则；date 在本组件恒为 null。 与 min / max 的界外值同等处理：判定为真的格子仍可聚焦，只是不可选中。 |
-| `translations` | `Partial<TimeRangePickerTranslations>` |  | 段位与两端读屏名的覆盖；未提供时使用内置英文语义名。 |
+| `translations` | `Partial<TimeRangePickerTranslations>` |  | 段位与两端读屏名的覆盖；未提供时取英文语言包里的语义名。 |
 | `onValueChange` | `(details: TimeRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: TimeRangePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -123608,7 +123634,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `segment-group` | `role` | 'group' |
 | `segment` | `aria-disabled` | 'true' \| 'false' |
 | `segment` | `aria-invalid` | 'true' \| 'false' |
-| `segment` | `aria-label` | translations?.[segment] |
+| `segment` | `aria-label` | translations[segment] |
 | `segment` | `aria-readonly` | 'true' \| 'false' |
 | `segment` | `aria-required` | 'true' \| 'false' |
 | `segment` | `aria-valuemax` | range.max |
@@ -123621,13 +123647,13 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `trigger` | `aria-labelledby` | `label` 部件的 id |
-| `clear-trigger` | `aria-label` | translations?.clearTrigger |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `label` 部件的 id |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `preset-group` | `aria-disabled` | 'true' \| 'false' |
-| `preset-group` | `aria-label` | translations?.presets |
+| `preset-group` | `aria-label` | translations.presets |
 | `preset-group` | `aria-multiselectable` | 'false' |
 | `preset-group` | `aria-orientation` | 'vertical' |
 | `preset-group` | `role` | 'listbox' |
@@ -123638,7 +123664,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `column-group` | `role` | 'group' |
 | `column-group-label` | `aria-hidden` | 'true' |
 | `column` | `aria-disabled` | 'true' \| 'false' |
-| `column` | `aria-label` | translations?.[unit] |
+| `column` | `aria-label` | translations[unit] |
 | `column` | `aria-multiselectable` | 'false' |
 | `column` | `aria-orientation` | 'vertical' |
 | `column` | `role` | 'listbox' |
@@ -123650,7 +123676,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 
 ### 皮肤
 
-`@xihan-ui/styles/time-range-picker.css` 使用 `[data-scope="time-range-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/time-range-picker.css` 按 `[data-scope="time-range-picker"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-time-range-picker` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -124750,7 +124776,7 @@ const events = [
 
 ### 皮肤
 
-`@xihan-ui/styles/timeline.css` 使用 `[data-scope="timeline"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/timeline.css` 按 `[data-scope="timeline"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-timeline` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -125438,7 +125464,7 @@ function restart(): void {
 
 ### 皮肤
 
-`@xihan-ui/styles/timer.css` 使用 `[data-scope="timer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/timer.css` 按 `[data-scope="timer"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-timer` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -126050,7 +126076,7 @@ const zones = [
 
 ### 皮肤
 
-`@xihan-ui/styles/timestamp.css` 使用 `[data-scope="timestamp"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/timestamp.css` 按 `[data-scope="timestamp"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-timestamp` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -126614,7 +126640,7 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 
 ### 皮肤
 
-`@xihan-ui/styles/toggle-group.css` 使用 `[data-scope="toggle-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/toggle-group.css` 按 `[data-scope="toggle-group"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-toggle-group` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -127042,7 +127068,7 @@ const pressed = ref(false);
 
 ### 皮肤
 
-`@xihan-ui/styles/toggle.css` 使用 `[data-scope="toggle"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/toggle.css` 按 `[data-scope="toggle"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-toggle` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 
@@ -127923,7 +127949,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/tool-call.css` 使用 `[data-scope="tool-call"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/tool-call.css` 按 `[data-scope="tool-call"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-tool-call` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -128590,13 +128616,13 @@ function toggle(value: string) {
 | `separator` | `aria-orientation` | 'vertical' \| 'horizontal' |
 | `separator` | `role` | 'separator' |
 | `overflow-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `overflow-trigger` | `aria-label` | props.translations.overflowTrigger |
+| `overflow-trigger` | `aria-label` | resolveTranslations(TOOLBAR_EN_US, prop('translations… |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/toolbar.css` 使用 `[data-scope="toolbar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/toolbar.css` 按 `[data-scope="toolbar"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-toolbar` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -129552,7 +129578,7 @@ import {
 
 ### 皮肤
 
-`@xihan-ui/styles/tooltip.css` 使用 `[data-scope="tooltip"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/tooltip.css` 按 `[data-scope="tooltip"][data-part="trigger"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-tooltip` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -130394,15 +130420,15 @@ const translations = {
 | `content` | `role` | 'dialog' |
 | `progress-text` | `aria-live` | 'polite' |
 | `progress-indicator` | `aria-hidden` | 'true' |
-| `next-trigger` | `aria-label` | translations?.finish \| translations?.next |
-| `close-trigger` | `aria-label` | translations?.close |
+| `next-trigger` | `aria-label` | translations.finish \| translations.next |
+| `close-trigger` | `aria-label` | translations.close |
 | `arrow` | `aria-hidden` | 'true' |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/tour.css` 使用 `[data-scope="tour"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/tour.css` 按 `[data-scope="tour"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-tour` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -133427,7 +133453,7 @@ const value = ref<string[]>([]);
 
 ### 皮肤
 
-`@xihan-ui/styles/transfer.css` 使用 `[data-scope="transfer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/transfer.css` 按 `[data-scope="transfer"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-transfer` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -137213,7 +137239,7 @@ function indent(level: number): Record<string, string> {
 
 ### 皮肤
 
-`@xihan-ui/styles/tree-select.css` 使用 `[data-scope="tree-select"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/tree-select.css` 按 `[data-scope="tree-select"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-tree-select` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -140934,7 +140960,7 @@ const sizes = [
 
 ### 皮肤
 
-`@xihan-ui/styles/tree.css` 使用 `[data-scope="tree"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/tree.css` 按 `[data-scope="tree"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-tree` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -141427,7 +141453,7 @@ const files = [
 
 ### 皮肤
 
-`@xihan-ui/styles/truncate.css` 使用 `[data-scope="truncate"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/truncate.css` 按 `[data-scope="truncate"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-truncate` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -141983,7 +142009,7 @@ const tones = [
 
 ### 皮肤
 
-`@xihan-ui/styles/typography.css` 使用 `[data-scope="typography"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/typography.css` 按 `[data-scope="typography"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-typography` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -143304,7 +143330,7 @@ const stickyIndices = rows.flatMap((row, index) => (row.header ? [index] : []));
 
 ### 皮肤
 
-`@xihan-ui/styles/virtualizer.css` 使用 `[data-scope="virtualizer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/virtualizer.css` 按 `[data-scope="virtualizer"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-virtualizer` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -143747,7 +143773,7 @@ const on = ref(false);
 
 ### 皮肤
 
-`@xihan-ui/styles/watermark.css` 使用 `[data-scope="watermark"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/watermark.css` 按 `[data-scope="watermark"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-watermark` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

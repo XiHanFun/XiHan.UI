@@ -798,6 +798,7 @@ const panel = ref<HTMLElement | null>(null);
 - `modal=false` 时不渲染遮罩，定位层也不截获页面指针；页面可以与抽屉并行交互。展开期间切换 `modal`，滚动锁、背景失活与焦点陷阱会同步切换。
 - `resizable` 在朝向页面的那条边上放一根改尺把手（`resize-trigger`，role=separator）：拖动它面板沿贴边方向变宽（左右放置）或变高（上下放置），聚焦后方向键推一步（8px）、Shift 大步（40px）、Home / End 推到下限与上限。推向页面那一侧变厚：从右往左排版时 `right` 贴在屏幕左边，把手与推的方向一起翻过来。厚度夹在 `minPanelSize`（缺省 160）与 `maxPanelSize` 之间，且不超出视口（`contained` 时是所在容器）。`panelSize` / `defaultPanelSize` / `onPanelSizeChange` 走受控与非受控；没调过时面板按 `size` 档绘制。拖动走 `@xihan-ui/pointer` 的指针会话，步长与 Resizable 同一档。把手是 content 里的绝对定位节点，content 自己滚动（不用 body 段）时它会随内容滚走，长内容请放进 body。
 - 关闭时内容立即失活并退出可访问树；面板与遮罩全部完成退场后释放模态资源并发出 `onExitComplete` / `exit-complete`。退场中重开不会被旧完成关闭，卸载立即清理。
+- 内容第一次打开才挂载，缺省在退场动画播完后卸载、下次打开重新挂载。反复开合而内容又重时（设置面板、长表单）把 `unmountOnExit` 设为 false：打开过之后收起只隐藏——定位层以内联 `display: none` 收起、遮罩不留、Portal 视觉桥断开——面板里的组件状态、输入与滚动位置都留着，再打开不必重挂。Web Components 的作者节点一向常驻；写进 content 里一个 `<template>` 的内容按同一规则挂卸：第一次打开克隆，缺省退场播完撤走，`unmount-on-exit="false"` 时克隆一次之后常驻。
 - 关闭前可以拦截，例如有未保存改动时先确认。
 - 面板走 M4 sheet 三件套（1px 描边、不透明底、投影），边界由描边承担，不只靠影分层；入场是整面板从画外推入的大尺度位移，走 slide 时长与曲线，退场仍走 exit 档。
 - 触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，展开期间压住为悬停同档的中性面；关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底；Space / Enter 与触屏按住期间投影 `data-pressed`。标题为 heading-3，说明文字为 13px 说明档。
@@ -844,6 +845,7 @@ const panel = ref<HTMLElement | null>(null);
 | `restoreFocus` | `boolean` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg。横向放置时影响面板宽度、纵向放置时影响面板高度，随 side 而定。 |
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
+| `unmountOnExit` | `boolean` |  | 收起动画播完后卸载内容，默认 true。内容总是第一次打开才挂载；设为 false 时此后收起只隐藏、不卸载， 再打开不重挂：内容里的组件状态、输入与滚动位置都留着，重开也不再付一遍挂载开销。 适合反复开合、内容又重（设置面板、长表单）的抽屉。 |
 | `translations` | `Partial<DrawerTranslations>` |  |  |
 | `onOpenChange` | `(details: DrawerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onExitComplete` | `() => void` |  | 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 |
@@ -924,6 +926,7 @@ const panel = ref<HTMLElement | null>(null);
 | `getFooterProps` | `() => T['element']` |  |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 | `getResizeTriggerProps` | `() => T['element']` | 改尺把手：role=separator，落在朝向页面的那条边上；没开 resizable 时带 hidden。 |
+| `isContentMounted` | `(present: boolean) => boolean` | 浮层此刻该不该挂载。`present` 是适配器的退场闸门：打开中或收起动画还没播完为真。 没打开过恒为假；unmountOnExit 为 false 时打开过之后恒为真，闸门落下的那段由适配器隐藏而不卸载。 |
 
 ## 无障碍
 
@@ -956,9 +959,9 @@ const panel = ref<HTMLElement | null>(null);
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
-| `close-trigger` | `aria-label` | props.translations.close |
+| `close-trigger` | `aria-label` | translations.close |
 | `resize-trigger` | `aria-controls` | `content` 部件的 id |
-| `resize-trigger` | `aria-label` | props.translations.resizeTrigger |
+| `resize-trigger` | `aria-label` | translations.resizeTrigger |
 | `resize-trigger` | `aria-orientation` | 'vertical' \| 'horizontal' |
 | `resize-trigger` | `aria-valuemax` | String(max) \| undefined |
 | `resize-trigger` | `aria-valuemin` | String(min) |
@@ -969,7 +972,7 @@ const panel = ref<HTMLElement | null>(null);
 
 ### 皮肤
 
-`@xihan-ui/styles/drawer.css` 使用 `[data-scope="drawer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/drawer.css` 按 `[data-scope="drawer"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-drawer` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

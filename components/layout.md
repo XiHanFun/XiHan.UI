@@ -290,7 +290,7 @@ const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: to
 
 ### 皮肤
 
-`@xihan-ui/styles/layout.css` 使用 `[data-scope="layout"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/layout.css` 按 `[data-scope="layout"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-layout` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 

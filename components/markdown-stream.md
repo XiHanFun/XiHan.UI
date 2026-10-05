@@ -841,7 +841,7 @@ const ordinal = (sourceId: string): number => sources.findIndex(source => source
 
 ### 皮肤
 
-`@xihan-ui/styles/markdown-stream.css` 使用 `[data-scope="markdown-stream"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/markdown-stream.css` 按 `[data-scope="markdown-stream"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-markdown-stream` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 

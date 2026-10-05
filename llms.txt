@@ -50,7 +50,7 @@
 - [日期与时间](https://ui.docs.xihanfun.com/guide/date): `@xihan-ui/core/date` 提供不带时区与带 IANA 时区的日期时间值、公历运算、时区换算、按地区划分的周与格式化。
 - [诊断通道](https://ui.docs.xihanfun.com/guide/diagnostics): 组件在运行期发现契约问题时不直接 `console.warn`，而是向诊断通道投递一条结构化记录。
 - [表单参与与重置](https://ui.docs.xihanfun.com/guide/forms): 复合控件的值保存在自己的状态机中，浏览器不可见。
-- [国际化](https://ui.docs.xihanfun.com/guide/i18n): 默认行为：组件内建的文本是英文，其余全部跟随 `locale`，`locale` 未提供时跟随宿主浏览器。
+- [国际化](https://ui.docs.xihanfun.com/guide/i18n): 默认行为：组件自己不写文案，界面文字一律取语言包，没配语言包时取英文语言包 `enUS`；其余全部跟随 `locale`，`locale` 未提供时跟随宿主浏览器。
 - [图标集](https://ui.docs.xihanfun.com/guide/icons): `@xihan-ui/icons` 是一套结构化数据，不是 SVG 字符串，也不是字体。
 - [状态机运行时](https://ui.docs.xihanfun.com/guide/machine): `@xihan-ui/core` 中的状态机是一台轻量的有限状态机运行时：零第三方运行时依赖。
 - [框架元数据](https://ui.docs.xihanfun.com/guide/metadata): 框架名称、版本、版权与运行时信息的单一事实源在 `@xihan-ui/core` 的 `XIHAN_UI_METADATA` 中，与 XiHan.Framework 的 `XiHanMetadata` 同构：常量集中维护在一份文件中，版本从 package.json 派生，运行时信息由适配器登记。

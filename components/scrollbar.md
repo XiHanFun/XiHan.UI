@@ -557,7 +557,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | `root` | `aria-hidden` | undefined \| 'true' |
 | `thumb` | `aria-controls` | props.controls \| undefined |
 | `thumb` | `aria-disabled` | 'true' \| undefined |
-| `thumb` | `aria-label` | props.translations.thumb \| undefined |
+| `thumb` | `aria-label` | translations.thumb \| undefined |
 | `thumb` | `aria-orientation` | props.orientation \| undefined |
 | `thumb` | `aria-valuemax` | Math.round(max) \| undefined |
 | `thumb` | `aria-valuemin` | 0 \| undefined |
@@ -568,7 +568,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 
 ### 皮肤
 
-`@xihan-ui/styles/scrollbar.css` 使用 `[data-scope="scrollbar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/scrollbar.css` 按 `[data-scope="scrollbar"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-scrollbar` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 

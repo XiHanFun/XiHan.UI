@@ -673,7 +673,7 @@ function blobOf(index: number): () => Promise<Blob> {
 - 取图时画面正中转一枚加载环；取图失败时画面正中画一枚警示字形，不露浏览器的破图，替代文字仍在可及树里。到头的翻页钮与贴住端点的缩放钮禁用时前景换成禁用色，不压低整颗钮的不透明度。
 - 逻辑关闭立即退出交互与可访问树；内容和遮罩完成退场后才释放模态资源，重开会撤销旧退场。
 - 底部控件带是一组有名称的控件，每个按钮各占一个 Tab 位；左右方向键与 Home/End 用于翻页，控件带内外一致。
-- 翻页按钮走 Action Control floating 档（48px 圆形），关闭按钮与控件带按钮走 icon 档；十个按钮共用取景器自己的深色半透明 chrome，不取页面语义面。
+- 翻页按钮走 Action Control floating 档，随 `size` 取 sm / md / lg（32 / 40 / 48px 圆形，默认 md）；关闭按钮同走 floating 档、比翻页钮低一档（最低 sm），控件带按钮走 icon 档；十个按钮共用取景器自己的深色半透明 chrome，不取页面语义面。
 - 应用设为 `data-material="liquid"` 时，工具条、计数、翻页与关闭钮换成液态面：按下层换色调，前景随之在黑白之间切换；工具条与计数取胶囊形，三颗钮取圆形，按住时液面随手指形变。
 
 ### 组合
@@ -719,6 +719,7 @@ function blobOf(index: number): () => Promise<Blob> {
 | `closeOnInteractOutside` | `boolean` |  | 点击遮罩（内容之外）关闭，默认 true。 |
 | `restoreFocus` | `boolean` |  |  |
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；翻页钮走 Action Control floating 档（32 / 40 / 48px），关闭钮比它低一档、最低 sm。 |
 | `translations` | `Partial<ImageViewerTranslations>` |  |  |
 | `onOpenChange` | `(details: ImageViewerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onIndexChange` | `(details: ImageViewerIndexChangeDetails) => void` |  | 下标变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
@@ -871,7 +872,7 @@ function blobOf(index: number): () => Promise<Blob> {
 
 ### 皮肤
 
-`@xihan-ui/styles/image-viewer.css` 使用 `[data-scope="image-viewer"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/image-viewer.css` 按 `[data-scope="image-viewer"][data-part="trigger"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-image-viewer` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
@@ -942,13 +943,13 @@ function blobOf(index: number): () => Promise<Blob> {
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'floating' |
-| `prev-trigger` | `data-xh-action-size` | 'md' |
+| `prev-trigger` | `data-xh-action-size` | props.size |
 | `prev-trigger` | `data-xh-liquid` | '' |
 | `next-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'floating' |
-| `next-trigger` | `data-xh-action-size` | 'md' |
+| `next-trigger` | `data-xh-action-size` | props.size |
 | `next-trigger` | `data-xh-liquid` | '' |
 | `counter` | `data-count` | String(count) |
 | `counter` | `data-index` | String(index + 1) |
@@ -958,7 +959,7 @@ function blobOf(index: number): () => Promise<Blob> {
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'floating' |
-| `close-trigger` | `data-xh-action-size` | 'sm' |
+| `close-trigger` | `data-xh-action-size` | floatingSizeBelow(size) |
 | `close-trigger` | `data-xh-liquid` | '' |
 
 <!-- xh-component-tokens:start -->

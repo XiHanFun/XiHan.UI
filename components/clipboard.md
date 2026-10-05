@@ -319,7 +319,7 @@ const sizes = ["sm", "md", "lg"] as const;
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `copy-trigger` | `aria-busy` | 'true' \| undefined |
 | `copy-trigger` | `aria-disabled` | 'true' \| undefined |
-| `copy-trigger` | `aria-label` | translations?.copy |
+| `copy-trigger` | `aria-label` | translations.copy |
 | `indicator` | `aria-hidden` | indicator.copied !== copied \|\| undefined |
 | `status` | `aria-atomic` | 'true' |
 | `status` | `aria-live` | 'polite' |
@@ -329,7 +329,7 @@ const sizes = ["sm", "md", "lg"] as const;
 
 ### 皮肤
 
-`@xihan-ui/styles/clipboard.css` 使用 `[data-scope="clipboard"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/clipboard.css` 按 `[data-scope="clipboard"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-clipboard` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 

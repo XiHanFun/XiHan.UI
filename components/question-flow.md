@@ -1260,23 +1260,23 @@ const sent = ref("");
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `question` | `aria-hidden` | undefined \| 'true' |
-| `question` | `aria-label` | undefined \| translations?.prompt |
+| `question` | `aria-label` | undefined \| translations.prompt |
 | `question` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
 | `question` | `role` | 'group' |
 | `group` | `aria-describedby` | undefined \| `description` 部件的 id |
-| `group` | `aria-label` | undefined \| translations?.options |
+| `group` | `aria-label` | undefined \| translations.options |
 | `group` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
 | `group` | `role` | 'radiogroup' \| 'group' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `role` | 'radio' \| 'checkbox' |
 | `item-indicator` | `aria-hidden` | 'true' |
-| `note` | `aria-label` | translations?.note |
-| `prev-trigger` | `aria-label` | translations?.prev |
+| `note` | `aria-label` | translations.note |
+| `prev-trigger` | `aria-label` | translations.prev |
 | `counter` | `aria-hidden` | 'true' |
-| `next-trigger` | `aria-label` | translations?.next |
-| `skip-trigger` | `aria-label` | translations?.skip |
-| `submit-trigger` | `aria-label` | translations?.send \| translations?.continue |
+| `next-trigger` | `aria-label` | translations.next |
+| `skip-trigger` | `aria-label` | translations.skip |
+| `submit-trigger` | `aria-label` | translations.send \| translations.continue |
 | `result` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
@@ -1292,7 +1292,7 @@ const sent = ref("");
 
 ### 皮肤
 
-`@xihan-ui/styles/question-flow.css` 使用 `[data-scope="question-flow"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/question-flow.css` 按 `[data-scope="question-flow"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-question-flow` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

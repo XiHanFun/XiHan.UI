@@ -556,13 +556,13 @@ function toggle(value: string) {
 | `separator` | `aria-orientation` | 'vertical' \| 'horizontal' |
 | `separator` | `role` | 'separator' |
 | `overflow-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `overflow-trigger` | `aria-label` | props.translations.overflowTrigger |
+| `overflow-trigger` | `aria-label` | resolveTranslations(TOOLBAR_EN_US, prop('translations… |
 
 ## 样式参考
 
 ### 皮肤
 
-`@xihan-ui/styles/toolbar.css` 使用 `[data-scope="toolbar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/toolbar.css` 按 `[data-scope="toolbar"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-toolbar` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
