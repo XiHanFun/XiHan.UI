@@ -204,8 +204,8 @@
     "component-tokens.d.ts",
     "component-tokens.js",
     "components.tokens.json",
-    "dist",
     "css",
+    "dist",
     "family",
     "index.css",
     "index.unlayered.css"

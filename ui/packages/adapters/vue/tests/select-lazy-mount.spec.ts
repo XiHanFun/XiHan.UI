@@ -56,7 +56,7 @@ function mount(lazyMount?: boolean) {
   }
 }
 
-describe('XhSelectRoot lazyMount', () => {
+describe('xhSelectRoot lazyMount', () => {
   it('缺省：收起态条目照常挂着', async () => {
     const m = mount()
     await tick()

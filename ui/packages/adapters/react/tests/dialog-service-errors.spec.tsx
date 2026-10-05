@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { act } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createDialogService } from '../src/services/dialog-service'
 import { zhCN } from '../src/locale'
+import { createDialogService } from '../src/services/dialog-service'
 
 let service: ReturnType<typeof createDialogService> | null = null
 async function change(fn: () => unknown): Promise<void> {
@@ -222,7 +222,12 @@ describe('服务文案走语言包', () => {
   it('没给 okText / cancelText / actionErrorText 时取所在配置的语言包', async () => {
     await change(() => {
       service = createDialogService({ config: zhCN })
-      service!.confirm({ title: '删除', onOk: () => { throw new Error('boom') } }).catch(() => {})
+      service!.confirm({
+        title: '删除',
+        onOk: () => {
+          throw new Error('boom')
+        },
+      }).catch(() => {})
     })
     await flush()
     expect(buttons().map(button => button.textContent?.trim())).toEqual(['取消', '确定'])

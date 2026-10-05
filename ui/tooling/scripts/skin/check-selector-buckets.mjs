@@ -25,11 +25,11 @@ const BUDGET_FILE = 'index.css'
  * 上限给到当下规模之上一点，涨过去先看能不能把主体收回类名。
  */
 const BUDGET = {
-  class: 320,
+  'class': 320,
   'attr:data-part': 60,
-  universal: 100,
-  attr: 100,
-  tag: 60,
+  'universal': 100,
+  'attr': 100,
+  'tag': 60,
 }
 
 const scopeExact = /\[data-scope=(['"]?)[a-z][a-z0-9-]*\1\]/
