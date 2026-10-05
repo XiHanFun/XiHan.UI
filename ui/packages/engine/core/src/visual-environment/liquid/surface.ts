@@ -18,7 +18,8 @@
 // 同一宿主里的几块还可以结成液态组（trackLiquidGoo，见 goo.ts）：共用一层套粘连滤镜的色块，
 // 靠近时边缘连起来，并能从源块中分离、融回。组跟着同一根材质轴开关，色调与通透档跟源块的读数走。
 //
-// 同一文档里的部件共用一套监听与按帧调度；材质轴不是 liquid 时部件留在原样，写过的东西随时撤回。
+// 同一文档里的部件共用一套监听与按帧调度；材质轴不是 liquid 时部件留在原样，写过的东西随时撤回，
+// 滚动、指针与尺寸监听也不挂（只留一个盯材质轴的观察者）。
 // 撤出最后一个部件时整套监听拆掉，滤镜库一并移除。
 
 import type { SpringValue } from '@xihan-ui/motion'
@@ -118,6 +119,7 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
 
   /** 按材质轴重新分组：轴改成 liquid 的部件开始跟踪，改走的撤回。 */
   function sync(): void {
+    let groupActive = false
     for (const el of members) {
       if (!el.isConnected)
         continue
@@ -132,12 +134,19 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
         release(el)
       }
     }
-    for (const group of groups)
-      group.setActive(group.host.isConnected && isLiquidMaterial(group.host))
+    for (const group of groups) {
+      const on = group.host.isConnected && isLiquidMaterial(group.host)
+      group.setActive(on)
+      groupActive ||= on
+    }
+    // 滚动、指针与尺寸那组文档级监听只在真有液态成员时挂：材质轴是 standard 的页面上，
+    // 成员只是登记在册，每个滚动帧、每次指针移动都不该为它们排帧
+    listen(active.size > 0 || groupActive)
   }
 
   function probe(): void {
-    if (!canSample)
+    // 没有液态成员时不取样，连下面那次全文档的 [inert] 查询也省掉
+    if (!canSample || active.size === 0)
       return
     // 模态把背景设成 inert：那些内容照样画在下面，命中栈里却没有它们
     const obscured = doc.querySelector('[inert]') !== null
@@ -335,8 +344,24 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
     schedule({ light: true })
   }
 
-  function start(): void {
-    axis?.observe(doc.documentElement, { subtree: true, attributes: true, attributeFilter: ['data-material', 'data-animating'] })
+  let listening = false
+  /** 挂上或摘掉滚动、指针与尺寸监听；由 sync 按有没有液态成员决定。 */
+  function listen(on: boolean): void {
+    if (on === listening)
+      return
+    listening = on
+    if (!on) {
+      doc.removeEventListener('scroll', onScroll, { capture: true })
+      for (const type of SETTLE_EVENTS)
+        doc.removeEventListener(type, onSettle, { capture: true })
+      win.removeEventListener('resize', onResize)
+      doc.removeEventListener('pointermove', onPointerMove)
+      doc.removeEventListener('pointerdown', onPointerDown, { capture: true })
+      doc.removeEventListener('pointerup', onPointerEnd, { capture: true })
+      doc.removeEventListener('pointercancel', onPointerEnd, { capture: true })
+      doc.documentElement.removeEventListener('pointerleave', onPointerLeave)
+      return
+    }
     doc.addEventListener('scroll', onScroll, { capture: true, passive: true })
     for (const type of SETTLE_EVENTS)
       doc.addEventListener(type, onSettle, { capture: true, passive: true })
@@ -348,21 +373,18 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
     doc.documentElement.addEventListener('pointerleave', onPointerLeave)
   }
 
+  /** 第一个成员登记时只盯材质轴：哪个成员（或它的祖先）改成 liquid，sync 再挂其余监听。 */
+  function start(): void {
+    axis?.observe(doc.documentElement, { subtree: true, attributes: true, attributeFilter: ['data-material', 'data-animating'] })
+  }
+
   function stop(): void {
     if (frame)
       win.cancelAnimationFrame(frame)
     frame = 0
     axis?.disconnect()
     resizer?.disconnect()
-    doc.removeEventListener('scroll', onScroll, { capture: true })
-    for (const type of SETTLE_EVENTS)
-      doc.removeEventListener(type, onSettle, { capture: true })
-    win.removeEventListener('resize', onResize)
-    doc.removeEventListener('pointermove', onPointerMove)
-    doc.removeEventListener('pointerdown', onPointerDown, { capture: true })
-    doc.removeEventListener('pointerup', onPointerEnd, { capture: true })
-    doc.removeEventListener('pointercancel', onPointerEnd, { capture: true })
-    doc.documentElement.removeEventListener('pointerleave', onPointerLeave)
+    listen(false)
     press?.x.stop()
     press?.y.stop()
     press = null
@@ -387,6 +409,10 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
         stop()
         onEmpty()
       }
+      else {
+        // 撤走的可能是最后一个液态成员：重新分组，没有液态成员了就摘掉文档级监听
+        schedule({ sync: true })
+      }
     },
     addGroup(group) {
       if (members.size === 0 && groups.size === 0)
@@ -401,6 +427,9 @@ function createCoordinator(doc: Document, win: Window, onEmpty: () => void): Coo
       if (members.size === 0 && groups.size === 0) {
         stop()
         onEmpty()
+      }
+      else {
+        schedule({ sync: true })
       }
     },
   }
