@@ -64,7 +64,7 @@
      排了刻度文案的横轨两侧各让出一段，那半个文案落进让出来的这一段里。
      让在控件上而不是根上：轨道、刻度、拇指的坐标都以控件为基准，一起让开才不会彼此错位。 */
   [data-scope='slider'][data-part='root']:has([data-part='tick-label'])
-    [data-part='control'][data-orientation='horizontal'] {
+    [data-part='control'][data-orientation='horizontal']:where([data-scope='slider']) {
     margin-inline: var(--xh-slider-control-gutter, var(--xh-space-6));
   }
 
@@ -335,27 +335,27 @@
 
   /* 禁用：刻度点与文案由 tick-group 上的 data-disabled 下发（连接层不给每个刻度单发），
      已过的刻度点与区间同色，文案换禁用前景，点它跳档的手型收掉 */
-  [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick'] {
+  [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick']:where([data-scope='slider']) {
     background: var(--xh-slider-tick-bg-disabled, var(--xh-border-default));
   }
 
-  [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick'][data-passed] {
+  [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick'][data-passed]:where([data-scope='slider']) {
     background: var(--xh-slider-tick-bg-active-disabled, var(--xh-fg-disabled));
   }
 
-  [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick-label'] {
+  [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick-label']:where([data-scope='slider']) {
     color: var(--xh-slider-tick-label-fg-disabled, var(--xh-fg-disabled));
     cursor: not-allowed;
   }
 
   /* 竖直轨道：点与文案换轴，坐标由连接层写在 block 轴上 */
-  [data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick'] {
+  [data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick']:where([data-scope='slider']) {
     inset-block-start: auto;
     inset-inline-start: 50%;
     translate: calc(-50% * var(--xh-direction-sign)) 50%;
   }
 
-  [data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick-label'] {
+  [data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='tick-label']:where([data-scope='slider']) {
     inset-block-start: auto;
     inset-inline-start: 100%;
     margin-block-start: 0;

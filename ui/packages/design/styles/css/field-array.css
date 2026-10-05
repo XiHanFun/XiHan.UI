@@ -42,7 +42,7 @@
   }
 
   /* 新增的行进场，同一批按到达顺序错开；首帧就在的直接呈现（自己或根节点带 data-instant） */
-  [data-scope='field-array'][data-part='item']:not([data-instant], [data-instant] > *) {
+  [data-scope='field-array'][data-part='item']:not([data-instant], [data-instant] > :where([data-scope='field-array'])) {
     animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }

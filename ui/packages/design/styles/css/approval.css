@@ -48,7 +48,7 @@
   }
 
   /* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-  [data-scope='approval'][data-part='root']:not([data-scope][data-part='item'][data-instant] *) {
+  [data-scope='approval'][data-part='root']:not([data-scope][data-part='item'][data-instant] :where([data-scope='approval'])) {
     animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -252,12 +252,12 @@
     color: var(--xh-approval-item-text-fg, var(--xh-fg-muted));
   }
 
-  [data-scope='approval'][data-part='item'][data-state='checked'] [data-part='item-text'] {
+  [data-scope='approval'][data-part='item'][data-state='checked'] [data-part='item-text']:where([data-scope='approval']) {
     color: var(--xh-approval-item-text-fg-checked, var(--xh-fg-default));
   }
 
   /* 排在勾选档之后：禁用项无论勾没勾都是禁用色 */
-  [data-scope='approval'][data-part='item'][data-disabled] [data-part='item-text'] {
+  [data-scope='approval'][data-part='item'][data-disabled] [data-part='item-text']:where([data-scope='approval']) {
     color: var(--xh-fg-disabled);
   }
 
@@ -325,7 +325,7 @@
   }
 
   /* 落定结果弹出；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-  [data-scope='approval'][data-part='result']:not([data-scope][data-part='item'][data-instant] *) {
+  [data-scope='approval'][data-part='result']:not([data-scope][data-part='item'][data-instant] :where([data-scope='approval'])) {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 

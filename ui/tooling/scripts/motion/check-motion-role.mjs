@@ -472,6 +472,18 @@ for (const file of files) {
     for (const part of splitTopLevel(m[1]))
       checkAnimation(line, part, scope == null || scope === comp)
   }
+  // 整条 animation 简写装在私有槽里、由 animation: var(--xh-_…) 读（子节点没有可认特征时把条件挪到父节点的写法）：
+  // 槽的值按 animation 一样核
+  const animationSlots = new Set([...css.matchAll(ANIMATION_DECL)]
+    .flatMap(m => [...m[1].matchAll(/var\(\s*(--xh-_[\w-]+)/g)].map(n => n[1])))
+  for (const m of css.matchAll(/(--xh-_[\w-]+)\s*:([^;{}]+)[;}]/g)) {
+    if (!animationSlots.has(m[1]) || !/^\s*xh-[a-z0-9-]+\s/.test(m[2]))
+      continue
+    const line = css.slice(0, m.index).split('\n').length
+    const scope = ruleTargetScope(css, m.index)
+    for (const part of splitTopLevel(m[2]))
+      checkAnimation(line, part, scope == null || scope === comp)
+  }
 
   for (const m of css.matchAll(TRANSITION_DECL)) {
     const line = css.slice(0, m.index).split('\n').length

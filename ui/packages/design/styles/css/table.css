@@ -419,8 +419,8 @@
   }
 
   /* root 恒报两端（没有冻结列时两端都算贴着）；虚拟滚动的行隔着视口，按后代认 */
-  [data-scope='table'][data-part='root']:not([data-at-min-horizontal]) :is([data-part='column-header'], [data-part='cell'])[data-frozen-edge][data-frozen='start']::after,
-  [data-scope='table'][data-part='root']:not([data-at-max-horizontal]) :is([data-part='column-header'], [data-part='cell'])[data-frozen-edge][data-frozen='end']::after {
+  [data-scope='table'][data-part='root']:not([data-at-min-horizontal]) :is([data-part='column-header'], [data-part='cell']):where([data-scope='table'])[data-frozen-edge][data-frozen='start']::after,
+  [data-scope='table'][data-part='root']:not([data-at-max-horizontal]) :is([data-part='column-header'], [data-part='cell']):where([data-scope='table'])[data-frozen-edge][data-frozen='end']::after {
     opacity: 1;
   }
 

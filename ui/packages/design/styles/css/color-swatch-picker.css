@@ -186,10 +186,12 @@
   }
 
   /* 作者塞进来的图形跟着勾同一套显隐 */
+  /* 显隐写在 indicator 自己的私有槽上、图形只读槽：作者的图形没有可认的特征，
+     规则主体不能挂在 data-state 后面（翻转时会让全页同名属性的变化整棵子树重算） */
   [data-scope='color-swatch-picker'][data-part='indicator'] > * {
     position: relative;
     color: var(--xh-color-swatch-picker-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-    opacity: 0;
+    opacity: var(--xh-_color-swatch-picker-glyph-opacity, 0);
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -199,8 +201,11 @@
     scale: 1;
   }
 
-  [data-scope='color-swatch-picker'][data-part='indicator'][data-state='checked']:empty::after,
-  [data-scope='color-swatch-picker'][data-part='indicator'][data-state='checked'] > * {
+  [data-scope='color-swatch-picker'][data-part='indicator'][data-state='checked'] {
+    --xh-_color-swatch-picker-glyph-opacity: 1;
+  }
+
+  [data-scope='color-swatch-picker'][data-part='indicator'][data-state='checked']:empty::after {
     opacity: 1;
   }
 
@@ -227,7 +232,7 @@
    */
   @media (forced-colors: active) {
     /* 家族在这一档把色块描边统一钉成 CanvasText，选中的那一格要在它之上换成高亮色 */
-    [data-scope='color-swatch-picker'][data-part='item'][data-state='checked'] > [data-part='swatch'] {
+    [data-scope='color-swatch-picker'][data-part='item'][data-state='checked'] > [data-part='swatch']:where([data-scope='color-swatch-picker']) {
       border-color: Highlight;
     }
 

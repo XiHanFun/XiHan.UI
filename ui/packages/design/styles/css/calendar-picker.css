@@ -143,7 +143,7 @@
   }
 
   /* 周期格沿横轴铺开，但始终保持控制件高度；选中面只换颜色，不改变几何尺寸。 */
-  [data-scope='calendar-picker'][data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger'] {
+  [data-scope='calendar-picker'][data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger']:where([data-scope='calendar-picker']) {
     flex: 0 0 auto;
     aspect-ratio: auto;
     min-inline-size: 0;
@@ -152,7 +152,7 @@
     border-radius: var(--xh-calendar-picker-period-radius, var(--xh-shape-control));
   }
 
-  [data-scope='calendar-picker'][data-part='grid'][data-view='week'] [data-part='cell-trigger'] {
+  [data-scope='calendar-picker'][data-part='grid'][data-view='week'] [data-part='cell-trigger']:where([data-scope='calendar-picker']) {
     flex: 1 1 auto;
     justify-content: flex-start;
     inline-size: 100%;
@@ -361,7 +361,7 @@
      只收日视图这一档：粗粒度视图（月格、年格）点一格是往下钻一层，只读也照做，
      那些格子仍是按得动的按钮，手型不能撤 */
   [data-scope='calendar-picker'][data-part='grid'][data-readonly][data-view='day']
-    [data-part='cell-trigger']:not([data-disabled]) {
+    [data-part='cell-trigger']:where([data-scope='calendar-picker']):not([data-disabled]) {
     --xh-action-cursor-rest: default;
     --xh-action-cursor-hover: default;
     --xh-action-cursor-pressed: default;

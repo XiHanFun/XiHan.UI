@@ -130,8 +130,14 @@
     color: transparent;
   }
 
-  [data-scope='date-field'][data-part='segment-group'][data-placeholder-shown] > * {
-    opacity: 0;
+  /* 段位与分隔符（后者是不带解剖的文字节点）一起淡出：显隐写在 segment-group 自己的私有槽上，
+     子节点只读槽——主体无特征的规则不挂在 data-placeholder-shown 后面，输入时翻转只让这一组失效 */
+  [data-scope='date-field'][data-part='segment-group'][data-placeholder-shown] {
+    --xh-_date-field-segment-opacity: 0;
+  }
+
+  [data-scope='date-field'][data-part='segment-group'] > * {
+    opacity: var(--xh-_date-field-segment-opacity, 1);
   }
 
   [data-scope='date-field'][data-part='segment-group'][data-placeholder-shown]::before {

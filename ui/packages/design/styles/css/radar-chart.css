@@ -167,12 +167,12 @@
 
   /* —— 纹理：颜色不可用或不可靠时（强制色、打印、祖先写了 data-xh-chart-patterns），面积改用本系列在 defs 里的
      纹理填充、描出轮廓，轮廓换线型。色标的纹理在配方里 —— */
-  :where([data-xh-chart-patterns]) [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+  :where([data-xh-chart-patterns]) [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='area-fill']:where([data-scope='radar-chart']) {
     fill: var(--xh-_chart-pattern);
     fill-opacity: 1;
   }
 
-  :where([data-xh-chart-patterns]) [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='line'] {
+  :where([data-xh-chart-patterns]) [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='line']:where([data-scope='radar-chart']) {
     stroke-dasharray: var(--xh-_chart-dash);
   }
 
@@ -204,13 +204,13 @@
       stroke: Canvas;
     }
 
-    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='area-fill']:where([data-scope='radar-chart']) {
       forced-color-adjust: none;
       fill: var(--xh-_chart-pattern);
       fill-opacity: 1;
     }
 
-    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='line'] {
+    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='line']:where([data-scope='radar-chart']) {
       stroke-dasharray: var(--xh-_chart-dash);
     }
   }
@@ -221,12 +221,12 @@
       display: none;
     }
 
-    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='area-fill']:where([data-scope='radar-chart']) {
       fill: var(--xh-_chart-pattern);
       fill-opacity: 1;
     }
 
-    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='line'] {
+    [data-scope='radar-chart'][data-xh-chart-pattern] > [data-part='line']:where([data-scope='radar-chart']) {
       stroke-dasharray: var(--xh-_chart-dash);
     }
   }

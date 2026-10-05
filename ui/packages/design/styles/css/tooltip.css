@@ -181,7 +181,7 @@
   }
 
   /* 高对比仍保持反白语义：compact 配方已把 tint / blur / shadow 换成实体档，此处只加强同色边界。 */
-  :is([data-contrast='more'] *, [data-contrast='more'])[data-scope='tooltip'][data-part='content'] {
+  :is([data-contrast='more'] :where([data-scope='tooltip']), [data-contrast='more'])[data-scope='tooltip'][data-part='content'] {
     --xh-_tooltip-border: var(--xh-_tooltip-on);
   }
 

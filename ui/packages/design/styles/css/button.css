@@ -156,16 +156,20 @@
     content: none;
   }
 
+  /* 作者的图形是任意节点，规则主体没有可认的特征：加载与否写在 indicator 自己的私有槽上，
+     图形只读槽。翻转 data-loading 时失效的只有 indicator 本身，不会让全页同名属性的变化整棵子树重算 */
   [data-scope='button'][data-part='indicator'] > * {
-    opacity: 0;
+    opacity: var(--xh-_button-indicator-opacity, 0);
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition-delay: calc(var(--xh-motion-duration-micro) * var(--xh-_button-indicator-delay, 0));
     animation: xh-spin var(--xh-button-spin-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite paused;
+    animation-play-state: var(--xh-_button-indicator-play, paused);
   }
 
-  [data-scope='button'][data-part='root'][data-loading] > [data-scope='button'][data-part='indicator'] > * {
-    opacity: 1;
-    transition-delay: var(--xh-motion-duration-micro);
-    animation-play-state: running;
+  [data-scope='button'][data-part='root'][data-loading] > [data-scope='button'][data-part='indicator'] {
+    --xh-_button-indicator-opacity: 1;
+    --xh-_button-indicator-delay: 1;
+    --xh-_button-indicator-play: running;
   }
 
   /* 钮里原有的内容与环交叉：进入在途同样等一个 micro 才淡出、留位不塌，退出不等 */

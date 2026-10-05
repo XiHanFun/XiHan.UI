@@ -100,8 +100,8 @@
   }
 
   /* 列里的两段文字不再参与 root 那一行的伸缩：宽度由列自己给 */
-  [data-scope='alert'][data-part='content'] [data-part='title'],
-  [data-scope='alert'][data-part='content'] [data-part='description'] {
+  [data-scope='alert'][data-part='content'] [data-part='title']:where([data-scope='alert']),
+  [data-scope='alert'][data-part='content'] [data-part='description']:where([data-scope='alert']) {
     flex: none;
   }
 

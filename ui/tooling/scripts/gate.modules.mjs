@@ -46,6 +46,7 @@ export const MODULES = [
     steps: [
       'node tooling/scripts/skin/check-style-entries.mjs',
       'node tooling/scripts/skin/check-selector-buckets.mjs',
+      'node tooling/scripts/skin/check-invalidation-features.mjs',
       'node tooling/scripts/skin/check-skin-markers.mjs',
       'node tooling/scripts/skin/check-hidden-override.mjs',
       'node tooling/scripts/skin/check-undefined-guard.mjs',

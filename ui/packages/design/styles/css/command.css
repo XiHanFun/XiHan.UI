@@ -298,7 +298,7 @@
      不会拖出一条越来越慢的尾巴）。打开时已有的结果直接呈现：自己或本列表带 data-instant。
      检索过滤筛掉的条目带 hidden 不生成盒子，重新露面只是换一批已有结果，机器给它打上 data-instant 直接呈现。
      backwards 让每条在自己那份延迟里保持起始帧 */
-  [data-scope='command'][data-part='list'] [data-part='item']:not([data-instant], [data-scope='command'][data-part='list'][data-instant] *) {
+  [data-scope='command'][data-part='list'] [data-part='item']:where([data-scope='command']):not([data-instant], [data-scope='command'][data-part='list'][data-instant] :where([data-scope='command'])) {
     animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }

@@ -184,7 +184,7 @@
     transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  [data-scope='file-upload'][data-part='item']:not([data-instant], [data-instant] > *) {
+  [data-scope='file-upload'][data-part='item']:not([data-instant], [data-instant] > :where([data-scope='file-upload'])) {
     animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }

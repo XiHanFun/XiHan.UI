@@ -15,7 +15,9 @@ import { join } from 'node:path'
 const STYLES_DIR = 'packages/design/styles/css'
 
 /** 刻意只有进场的部件：键写「组件:部件」，值写理由。 */
-const EXEMPT = {}
+const EXEMPT = {
+  'form:error-summary-item': '条目随摘要整块进出：摘要翻成 idle 时自己播 xh-fade-out，播完才写 hidden，条目不另播退场',
+}
 
 /** 待办：已知缺退场的部件，只减不增。 */
 const BACKLOG = {}

@@ -236,14 +236,19 @@
   /* 有值时清空钮顶上来，展开钮让位：两颗并排堆着用户分不清点哪个，换来换去还会让盒的宽度跳一下。
      判据是盒里此刻有一颗没收起的清空钮——没写清空钮的结构里展开钮照常留着；
      输入框仍是展开的入口（打字、方向键、openOnClick） */
-  [data-scope='combobox'][data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='trigger'] {
+  [data-scope='combobox'][data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='trigger']:where([data-scope='combobox']) {
     display: none;
   }
 
   /* 展开时箭头翻个面，指向与列表的去向一致。转的是字形或作者塞的图形，不转按钮本体：
      按钮自带悬停底色，整个按钮转会带着底色一起转；家族按压缩放的是整钮，不影响这里的转向 */
-  [data-scope='combobox'][data-part='trigger']:empty::before,
+  [data-scope='combobox'][data-part='trigger']:empty::before {
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+  }
+
+  /* 作者的箭头是任意节点：转向写在 trigger 自己的私有槽上，箭头只读槽（规则主体无特征时不挂在 data-state 后面） */
   [data-scope='combobox'][data-part='trigger'] > * {
+    rotate: var(--xh-_combobox-trigger-turn, none);
     transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
@@ -272,9 +277,12 @@
   }
 
   /* 打开中与悬停同档：展开钮不另上底，方向由箭头转向承担 */
-  [data-scope='combobox'][data-part='trigger'][data-state='open']:empty::before,
-  [data-scope='combobox'][data-part='trigger'][data-state='open'] > * {
+  [data-scope='combobox'][data-part='trigger'][data-state='open']:empty::before {
     rotate: 180deg;
+  }
+
+  [data-scope='combobox'][data-part='trigger'][data-state='open'] {
+    --xh-_combobox-trigger-turn: 180deg;
   }
 
   [data-scope='combobox'][data-part='content'] {
